@@ -19,7 +19,7 @@ const PROJECTS = [
   {
     id:'retail', name:'Proyecto Retail', client:'Cliente Retail (demo)', industry:'Retail · Cadena de tiendas',
     countries:['GT','HN'], currency:{GT:'Q',HN:'L'}, accent:'#2196d3',
-    sucursales:24, honorario:{GT:60,HN:200}, boleto:{GT:33,HN:127}, combo:'Reembolso de compra', comboAmt:{GT:121,HN:291},
+    sucursales:24, honorario:{GT:60,HN:200}, honRecibe:{GT:170,HN:520}, modelo:'directo', isr:5, regalias:10, boleto:{GT:33,HN:127}, combo:'Reembolso de compra', comboAmt:{GT:121,HN:291},
     scenarios:['Compra estándar','Fin de semana','Cliente incógnito'],
     quincenas:['Quincena 1','Quincena 2'], nVisitas:44,
     canales:['App móvil','Tienda física','Teléfono'], formato:'Compra incógnita', ronda:'JUN 26',
@@ -33,7 +33,7 @@ const PROJECTS = [
   {
     id:'banca', name:'Proyecto Banca', client:'Cliente Banca (demo)', industry:'Banca · Red de agencias',
     countries:['GT','HN'], currency:{GT:'Q',HN:'L'}, accent:'#0e9c6e',
-    sucursales:18, honorario:{GT:90,HN:240}, boleto:{GT:0,HN:0}, combo:null, comboAmt:{GT:0,HN:0},
+    sucursales:18, honorario:{GT:90,HN:240}, honRecibe:{GT:230,HN:600}, modelo:'directo', isr:5, regalias:0, boleto:{GT:0,HN:0}, combo:null, comboAmt:{GT:0,HN:0},
     scenarios:['Apertura de cuenta','Solicitud de préstamo','Atención telefónica'],
     quincenas:['Quincena 1','Quincena 2'], nVisitas:30,
     canales:['Agencia','Teléfono','App'], formato:'Cliente incógnito', ronda:'JUN 26',
@@ -47,7 +47,7 @@ const PROJECTS = [
   {
     id:'food', name:'Proyecto Restaurantes', client:'Cliente Restaurantes (demo)', industry:'Restaurantes · Multimarca',
     countries:['GT'], currency:{GT:'Q'}, accent:'#7c3aed',
-    sucursales:30, honorario:{GT:75}, boleto:{GT:0}, combo:'Combo + bebida', comboAmt:{GT:90},
+    sucursales:30, honorario:{GT:75}, honRecibe:{GT:190}, modelo:'delegado', isr:0, regalias:0, boleto:{GT:0}, combo:'Combo + bebida', comboAmt:{GT:90},
     scenarios:['Almuerzo','Cena fin de semana','Drive-thru'],
     quincenas:['Quincena 1','Quincena 2'], nVisitas:34,
     canales:['Salón','Drive-thru','Delivery'], formato:'Experiencia de consumo', ronda:'JUN 26',

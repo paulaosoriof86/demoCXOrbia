@@ -16,6 +16,9 @@ _Última actualización: sesión 5 (sync visita↔liquidación + wizard de proye
 | H18 | **Liquidaciones**: cambio de estado + **preparar lote seleccionando visitas** (una moneda/lote) | Genera egresos |
 | H19 | **Wizard de proyecto inteligente** (`proyecto-wizard.js`), 5 pasos | Proyecto **aislado y persistente** |
 | H20 | Wizard: países+moneda (lista larga), honorarios **recibido/pagado**, modelo **directo/delegado** (ISR/regalías), modo cuestionario, HR, restricciones, días de pago, base conocimiento | |
+| H21 | **Motor financiero** (`core/finanzas-core.js`): ingreso/egreso, margen por país, modelo directo (ISR+regalías) vs delegado | Multipaís separado |
+| H22 | **Dashboard Financiero** ampliado: margen real por país, comparativo mensual, **presupuesto de gastos fijos** editable, CxC/CxP | |
+| H23 | **Movimientos** ampliado: ingresos/egresos/anticipos, **pago de lote genera egresos** de todos los shoppers de una vez, import histórico (vista previa), CxC/CxP | |
 
 | # | Item | Notas |
 |---|---|---|
