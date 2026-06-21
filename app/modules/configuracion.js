@@ -125,63 +125,166 @@ CX.module('usuarios', ({ui})=>{
   return host;
 });
 
-/* ---------- Configuración general (paneles editables) ---------- */
+/* ---------- Configuración general (submenús + consola cliente/proveedor) ---------- */
+let _cfgTab='marca', _cfgMode='proveedor';
 CX.module('config', ({data,ui})=>{
   const p=data.project();
   const host=ui.el('div');
-  const draw=()=>{
-  const allMods=Object.keys(CX.MODULES);
-  host.innerHTML=`
-    ${ui.ph('Configuración', 'Marca, módulos, países y reglas — editable sin tocar código')}
-    <div class="grid g2" style="margin-bottom:16px">
+
+  const TABS=[
+    {id:'marca',  ic:'🎨', label:'Marca & Tema'},
+    {id:'plan',   ic:'📦', label:'Plan & Módulos', prov:true},
+    {id:'paises', ic:'🌎', label:'Países & Monedas'},
+    {id:'integ',  ic:'🔗', label:'Integraciones'},
+    {id:'plant',  ic:'✉️', label:'Plantillas'},
+  ];
+
+  /* ----- contenido por pestaña ----- */
+  const tabMarca=()=>`
+    <div class="grid g2">
       <div class="card card-p">
-        <div class="card-t" style="margin-bottom:12px">🎨 Marca, logo y plantilla</div>
+        <div class="card-t" style="margin-bottom:12px">Identidad</div>
         <label class="lbl">Nombre del producto (tu consultora)</label><input class="inp" id="brName" value="${CX.BRAND.name}" style="margin-bottom:10px">
-        <label class="lbl">Nombre del cliente (aparece en el login)</label><input class="inp" id="brClient" value="${CX.BRAND.clientName||''}" placeholder="Ej. T&A Consultores" style="margin-bottom:4px">
-        <div style="font-size:11px;color:var(--t3);margin-bottom:10px">Se mostrará: "Plataforma desarrollada para <b>${CX.BRAND.clientName||'(cliente)'}</b> por ${CX.BRAND.name}".</div>
+        <label class="lbl">Nombre del cliente (login)</label><input class="inp" id="brClient" value="${CX.BRAND.clientName||''}" placeholder="Ej. T&A Consultores" style="margin-bottom:4px">
+        <div style="font-size:11px;color:var(--t3);margin-bottom:10px">Login: "Plataforma desarrollada para <b>${CX.BRAND.clientName||'(cliente)'}</b> por ${CX.BRAND.name}".</div>
         <label class="lbl">Logo del cliente</label>
-        <div class="flex" style="gap:8px;margin-bottom:10px"><input type="file" id="brLogo" accept="image/*" class="inp" style="padding:6px">${CX.BRAND.logoUrl?'<button class="btn btn-ghost btn-sm" id="brLogoClr">Quitar</button>':''}</div>
-        <label class="lbl">Plantilla de tema</label>
-        <select class="sel" id="brTheme" style="margin-bottom:12px">${Object.keys(CX.THEMES).map(k=>`<option value="${k}" ${CX.BRAND.theme===k?'selected':''}>${CX.THEMES[k].label}</option>`).join('')}</select>
+        <div class="flex" style="gap:8px"><input type="file" id="brLogo" accept="image/*" class="inp" style="padding:6px">${CX.BRAND.logoUrl?'<button class="btn btn-ghost btn-sm" id="brLogoClr">Quitar</button>':''}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:8px">También puedes extraer la paleta desde el logo (próximamente).</div>
+      </div>
+      <div class="card card-p">
+        <div class="card-t" style="margin-bottom:12px">Tema, colores y tipografía</div>
+        <label class="lbl">Plantilla</label>
+        <div class="grid g2" style="gap:8px;margin-bottom:12px">
+          ${Object.keys(CX.THEMES).map(k=>{const t=CX.THEMES[k];return `<label class="card hov" style="padding:10px;cursor:pointer;${CX.BRAND.theme===k?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}">
+            <input type="radio" name="thm" value="${k}" ${CX.BRAND.theme===k?'checked':''} style="display:none">
+            <div class="flex" style="gap:6px;margin-bottom:6px">${[t.colors.brand,t.colors.accent,t.colors.navy].map(c=>`<span style="width:18px;height:18px;border-radius:5px;background:${c};border:1px solid rgba(0,0,0,.1)"></span>`).join('')}</div>
+            <div style="font-size:11.5px;font-weight:700;color:var(--t1)">${t.label}</div>
+            <div style="font-size:10px;color:var(--t3)">${t.railStyle==='light'?'Sidebar claro':'Sidebar oscuro'}</div></label>`;}).join('')}
+        </div>
+        <label class="lbl">Tipografía</label>
+        <select class="sel" id="brFont" style="margin-bottom:14px">${CX.FONTS.map(f=>`<option value="${f.id}" ${CX.BRAND.font===f.id?'selected':''}>${f.label}</option>`).join('')}</select>
         <button class="btn btn-pr btn-sm" id="brApply">Aplicar marca y tema</button>
       </div>
-      <div class="card card-p">
-        <div class="card-t" style="margin-bottom:12px">🧩 Módulos activos para este cliente</div>
-        <div style="font-size:11.5px;color:var(--t3);margin-bottom:10px">Activa o desactiva módulos según la necesidad. <b>Nunca se eliminan</b>: puedes reactivarlos cuando el cliente los necesite.</div>
-        <div style="max-height:280px;overflow:auto;padding-right:4px">
-        ${allMods.map(id=>{const m=CX.MODULES[id];return `<label class="between" style="padding:7px 9px;border:1px solid var(--border-2);border-radius:9px;margin-bottom:6px;cursor:pointer">
-          <span style="font-size:12.5px;color:var(--t1)">${m.icon} ${m.label}</span>
+    </div>`;
+
+  const tabPlan=()=>{
+    const plan=CX.BRAND.plan||'pro';
+    const allMods=Object.keys(CX.MODULES);
+    return `
+    <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
+      <div style="font-size:12.5px;color:var(--brand-dark)"><b>Consola del proveedor.</b> Elige el plan contratado: preconfigura módulos, temas e integraciones — y luego puedes ajustar todo manualmente.</div>
+    </div>
+    <div class="card card-p" style="margin-bottom:14px">
+      <div class="card-t" style="margin-bottom:12px">Plan contratado</div>
+      <div class="grid g4" style="gap:10px">
+        ${Object.keys(CX.PLANS).map(k=>`<label class="card hov" style="padding:12px;cursor:pointer;text-align:center;${plan===k?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}">
+          <input type="radio" name="plan" value="${k}" ${plan===k?'checked':''} style="display:none">
+          <div style="font-size:13px;font-weight:800;color:var(--t1)">${CX.PLANS[k].label}</div>
+          <div style="font-size:10.5px;color:var(--t3);margin-top:3px">${CX.planModules(k).length} módulos</div></label>`).join('')}
+      </div>
+      <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="applyPlan">Aplicar plan</button></div>
+    </div>
+    <div class="card card-p">
+      <div class="card-t" style="margin-bottom:6px">🧩 Módulos activos <span class="muted" style="font-weight:500">(ajuste fino)</span></div>
+      <div style="font-size:11.5px;color:var(--t3);margin-bottom:10px">Activa/desactiva sobre el plan. <b>Nunca se eliminan.</b></div>
+      <div style="max-height:260px;overflow:auto;padding-right:4px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        ${allMods.map(id=>{const m=CX.MODULES[id];return `<label class="between" style="padding:7px 9px;border:1px solid var(--border-2);border-radius:9px;cursor:pointer">
+          <span style="font-size:12px;color:var(--t1)">${m.icon} ${m.label}</span>
           <input type="checkbox" data-mod="${id}" ${CX.moduleEnabled(id)?'checked':''}></label>`;}).join('')}
+      </div>
+    </div>`;
+  };
+
+  const tabPaises=()=>`
+    <div class="card card-p" style="margin-bottom:14px">
+      <div class="between" style="margin-bottom:12px"><div class="card-t">🌎 Países y monedas del proyecto</div><button class="btn btn-soft btn-sm">＋ País</button></div>
+      ${p.countries.map(c=>`<div class="between" style="padding:9px 0;border-bottom:1px solid var(--border-2)">
+        <span style="font-size:13px;font-weight:600">${CX.paisLabel(c)}</span>
+        <div class="flex" style="gap:10px"><span class="bdg bdg-b">${CX.moneda(p,c)}</span>
+        <span style="font-size:12px;color:var(--t3)">recibe ${CX.moneda(p,c)} ${CX.fin?CX.fin.honRecibe(p,c):'—'} · paga ${CX.moneda(p,c)} ${(p.honorario&&p.honorario[c])||'—'}</span></div></div>`).join('')}
+      <div style="background:var(--amber-bg);border-radius:9px;padding:9px 12px;font-size:11.5px;color:#8a5b00;margin-top:10px">Cada país mantiene su moneda; nunca se suman. El shopper solo ve proyectos de su país.</div>
+    </div>`;
+
+  const INTEGS=[
+    ['🔄','Make','Automatizaciones (HR, mensajes, estados)','pro'],
+    ['📊','Google Sheets','HR externa en vivo','estandar'],
+    ['📈','Excel Online','HR externa (Microsoft Graph)','estandar'],
+    ['📲','WhatsApp Web','Mensajes vía wa.me (sin API)','basico'],
+    ['🟢','Green API / WhatsApp API','Envío automático y masivo','pro'],
+    ['📧','Gmail / Workspace','Correo + SSO','estandar'],
+    ['📨','Outlook / M365','Correo y gestión interna','pro'],
+    ['📬','Mailchimp','Campañas masivas a shoppers','pro'],
+    ['📁','Google Docs/Drive','Documentos del proyecto','estandar'],
+    ['📘','Facebook','Difusión de convocatorias','estandar'],
+  ];
+  const tabInteg=()=>`
+    <div class="card card-p">
+      <div class="card-t" style="margin-bottom:12px">Integraciones disponibles</div>
+      <div class="grid g2" style="gap:10px">
+        ${INTEGS.map(r=>`<div class="between" style="padding:11px 13px;border:1px solid var(--border);border-radius:10px">
+          <div class="flex" style="gap:10px"><span style="font-size:20px">${r[0]}</span><div><div style="font-size:13px;font-weight:700;color:var(--t1)">${r[1]}</div><div style="font-size:11px;color:var(--t3)">${r[2]}</div></div></div>
+          <label class="flex" style="gap:6px"><span class="bdg bdg-n" style="font-size:9px">${r[3]}+</span><input type="checkbox"></label></div>`).join('')}
+      </div>
+      <div style="margin-top:12px">${ui.aiBox('Las integraciones se activan por proyecto y plan. WhatsApp tiene modo Web (sin API) y modo API para masivo. Detalle en docs/INTEGRACIONES.md.','Conectores')}</div>
+    </div>`;
+
+  const PLANTILLAS=[
+    ['Ofrecer visita','📲 WA','Hola {shopper}, hay una visita en {sucursal} ({ciudad}) por {honorario}. ¿Te interesa?'],
+    ['Recordatorio de agenda','📲 WA','{shopper}, recuerda tu visita agendada en {sucursal} el {fecha}.'],
+    ['¿Realizaste la visita?','📲 WA','{shopper}, ¿pudiste realizar la visita de {sucursal}? Avísanos.'],
+    ['Recordatorio cuestionario','📧 Correo','{shopper}, completa el cuestionario de {sucursal} para procesar tu pago.'],
+    ['Marcar completada','📲 WA','{shopper}, marca tu visita de {sucursal} como completada en la plataforma.'],
+    ['Invitación a certificarse','📧 Correo','{shopper}, certifícate para {proyecto} y desbloquea más visitas.'],
+  ];
+  const tabPlant=()=>`
+    <div class="card card-p">
+      <div class="between" style="margin-bottom:12px"><div class="card-t">Plantillas de mensajes (WhatsApp + correo)</div><button class="btn btn-soft btn-sm">＋ Plantilla</button></div>
+      ${PLANTILLAS.map(t=>`<div style="border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-bottom:9px">
+        <div class="between" style="margin-bottom:6px"><div style="font-size:13px;font-weight:700;color:var(--t1)">${t[0]} <span class="bdg bdg-n" style="font-size:9px">${t[1]}</span></div><button class="btn btn-ghost btn-sm">Editar</button></div>
+        <div style="font-size:12px;color:var(--t2);background:var(--panel-2);border-radius:8px;padding:8px 10px">${t[2]}</div></div>`).join('')}
+      <div style="margin-top:8px">${ui.aiBox('Variables dinámicas: {shopper} {sucursal} {ciudad} {fecha} {honorario} {proyecto} {link}. Se usan para ofrecer visitas, recordatorios, cuestionario, certificación y pago.','Mensajería con variables')}</div>
+    </div>`;
+
+  const draw=()=>{
+    const tabs=TABS.filter(t=>!(t.prov&&_cfgMode==='cliente'));
+    if(!tabs.some(t=>t.id===_cfgTab))_cfgTab='marca';
+    const body={marca:tabMarca,plan:tabPlan,paises:tabPaises,integ:tabInteg,plant:tabPlant}[_cfgTab]();
+    host.innerHTML=`
+      <div class="between" style="margin-bottom:8px">
+        <div>${ui.ph('Configuración', _cfgMode==='proveedor'?'Consola del proveedor — control total':'Consola del cliente — autogestión según tu plan')}</div>
+        <div class="flex" style="gap:0;border:1px solid var(--border);border-radius:9px;overflow:hidden">
+          <button class="cfgMode btn btn-sm ${_cfgMode==='proveedor'?'btn-pr':'btn-ghost'}" data-mode="proveedor" style="border-radius:0">🛠️ Proveedor</button>
+          <button class="cfgMode btn btn-sm ${_cfgMode==='cliente'?'btn-pr':'btn-ghost'}" data-mode="cliente" style="border-radius:0">👤 Cliente</button>
         </div>
       </div>
-    </div>
-    <div class="grid g2" style="margin-bottom:16px">
-      <div class="card card-p">
-        <div class="card-t" style="margin-bottom:12px">🌎 Países y monedas (multipaís)</div>
-        ${p.countries.map(c=>`<div class="between" style="padding:8px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:13px;font-weight:600">${CX.paisLabel(c)}</span><span class="bdg bdg-b">${CX.moneda(p,c)}</span></div>`).join('')}
-        <div style="background:var(--amber-bg);border-radius:9px;padding:8px 11px;font-size:11px;color:#8a5b00;margin-top:10px">Las monedas nunca se suman entre sí. Cada shopper ve solo proyectos de su país.</div>
+      <div class="flex wrap" style="gap:6px;margin-bottom:16px">
+        ${tabs.map(t=>`<button class="cfgTab btn btn-sm ${_cfgTab===t.id?'btn-pr':'btn-ghost'}" data-tab="${t.id}">${t.ic} ${t.label}</button>`).join('')}
       </div>
-      <div class="card card-p">
-        <div class="card-t" style="margin-bottom:12px">🔗 Integraciones y reglas (por proyecto)</div>
-        ${[['📋','Hoja de ruta: '+(p.hrMap?p.hrMap.fuente:'—'),'online / importar / interna'],['📝','Cuestionario: '+(p.cuestionario?p.cuestionario.modo:'—'),(p.cuestionario&&p.cuestionario.label)||''],['💸','Pago: '+(p.pago?p.pago.diasPago+' días':'—'),(p.pago&&p.pago.logica)||''],['🤖','Make / WhatsApp','auto-update de HR y notificaciones'],['📍','Geolocalización',p.geoloc?'activada':'desactivada']].map(r=>`<div class="between" style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div><div style="font-size:12.5px;font-weight:600;color:var(--t1)">${r[0]} ${r[1]}</div><div style="font-size:11px;color:var(--t3)">${r[2]}</div></div><button class="btn btn-ghost btn-sm">Editar</button></div>`).join('')}
-      </div>
-    </div>
-    <div class="card card-p">${ui.aiBox('Cuanto más se resuelve por configuración, mayor el margen del producto: la marca, el logo, los países, las tarifas, el modo de cuestionario, la lógica de pago y los módulos activos se editan por cliente y se propagan solos. La capa IA extrae estas reglas al crear el proyecto.','Cero dependencia técnica')}</div>`;
+      ${body}`;
     bind();
   };
+
   const bind=()=>{
-    host.querySelectorAll('[data-mod]').forEach(c=>c.addEventListener('change',()=>{CX.setModuleEnabled(c.dataset.mod,c.checked);CX.router.buildRail(CX.session.role);ui.toast((c.checked?'Activado: ':'Desactivado: ')+CX.MODULES[c.dataset.mod].label,c.checked?'ok':'');}));
+    host.querySelectorAll('.cfgMode').forEach(b=>b.addEventListener('click',()=>{_cfgMode=b.dataset.mode;draw();}));
+    host.querySelectorAll('.cfgTab').forEach(b=>b.addEventListener('click',()=>{_cfgTab=b.dataset.tab;draw();}));
+    // marca
     const logoInput=host.querySelector('#brLogo');
     if(logoInput)logoInput.addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{CX.BRAND.logoUrl=rd.result;ui.toast('Logo cargado · pulsa Aplicar','ok');};rd.readAsDataURL(f);});
     const clr=host.querySelector('#brLogoClr'); if(clr)clr.addEventListener('click',()=>{CX.BRAND.logoUrl='';draw();});
-    host.querySelector('#brApply').addEventListener('click',()=>{
+    host.querySelectorAll('input[name="thm"]').forEach(r=>r.addEventListener('change',()=>{CX.applyTheme(r.value);CX.router.buildRail(CX.session.role);}));
+    const ap=host.querySelector('#brApply');
+    if(ap)ap.addEventListener('click',()=>{
       CX.BRAND.name=host.querySelector('#brName').value||'CXOrbia';
       CX.BRAND.clientName=host.querySelector('#brClient').value||'';
-      CX.applyTheme(host.querySelector('#brTheme').value);
-      try{localStorage.setItem('cx_tenant',JSON.stringify({name:CX.BRAND.name,clientName:CX.BRAND.clientName,logoUrl:CX.BRAND.logoUrl,theme:CX.BRAND.theme}));}catch(e){}
-      CX.router.buildRail(CX.session.role);
-      ui.toast('Marca y tema aplicados a toda la plataforma','ok');draw();
+      const thm=host.querySelector('input[name="thm"]:checked'); if(thm)CX.applyTheme(thm.value);
+      CX.applyFont(host.querySelector('#brFont').value);
+      try{localStorage.setItem('cx_tenant',JSON.stringify({name:CX.BRAND.name,clientName:CX.BRAND.clientName,logoUrl:CX.BRAND.logoUrl,theme:CX.BRAND.theme,font:CX.BRAND.font}));}catch(e){}
+      CX.router.buildRail(CX.session.role); ui.toast('Marca y tema aplicados a toda la plataforma','ok');
     });
+    // plan
+    const apPlan=host.querySelector('#applyPlan');
+    if(apPlan)apPlan.addEventListener('click',()=>{const r=host.querySelector('input[name="plan"]:checked');if(r){CX.applyPlan(r.value);CX.router.buildRail(CX.session.role);ui.toast('Plan '+CX.PLANS[r.value].label+' aplicado · módulos preconfigurados','ok',3500);draw();}});
+    host.querySelectorAll('[data-mod]').forEach(c=>c.addEventListener('change',()=>{CX.setModuleEnabled(c.dataset.mod,c.checked);CX.router.buildRail(CX.session.role);ui.toast((c.checked?'Activado: ':'Desactivado: ')+CX.MODULES[c.dataset.mod].label,c.checked?'ok':'');}));
   };
   draw();
   return host;

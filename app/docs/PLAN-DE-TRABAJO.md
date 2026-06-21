@@ -87,6 +87,10 @@ _Última actualización: sesión 6 (notificaciones bidireccionales + brief ampli
 | H25 | **Dashboard Operativo**: KPIs y fases **clickeables** (drill con listado), **filtro de meses**, **comparativo último trimestre**, **notificación WhatsApp** en gestiones externas | |
 | H26 | **Centro de notificaciones** (`core/notif.js`) por rol, badge de no leídas, alimenta **Mi Día + Tablón** | |
 | H27 | **Postulaciones bidireccionales**: el equipo **pide** confirmar/cambiar/reprogramar fecha al shopper; el shopper **responde** (Confirmar / Proponer otra) desde Tablón/Mi Día | |
+| H28 | **Configuración con submenús** (Marca&Tema, Plan&Módulos, Países&Monedas, Integraciones, Plantillas) + **consola Proveedor/Cliente** | `configuracion.js` |
+| H29 | **Selector de Tema visible**: plantillas (swatches) + **tipografía** (`CX.FONTS`) + colores | |
+| H30 | **Motor de planes** (`CX.PLANS`): Básico/Estándar/Pro/Enterprise → preconfigura módulos/temas/integraciones, editable | |
+| H31 | **Plantillas de mensajes** y **catálogo de integraciones** en la consola | ver INTEGRACIONES.md |
 
 | # | Item | Notas |
 |---|---|---|

@@ -149,6 +149,49 @@ CX.paisFlag = function(c){ if(!c||c.length!==2) return '🏳️'; try{return Str
 CX.paisLabel = function(c){ return CX.paisFlag(c)+' '+CX.paisName(c); };
 CX.moneda = function(p,c){ return (p.currency&&p.currency[c]) || (CX.COUNTRIES.find(x=>x.c===c)||{}).cur || '$'; };
 
+/* ---------- Catálogo de tipografías seleccionables ---------- */
+CX.FONTS = [
+  { id:'segoe',   label:'Segoe UI (corporativa)', stack:"'Segoe UI', Tahoma, system-ui, sans-serif" },
+  { id:'manrope', label:'Manrope',                stack:"'Manrope', system-ui, sans-serif" },
+  { id:'inter',   label:'Inter',                  stack:"'Inter', system-ui, sans-serif" },
+  { id:'system',  label:'Sistema',                stack:"system-ui, -apple-system, sans-serif" },
+  { id:'georgia', label:'Georgia (serif)',        stack:"Georgia, 'Times New Roman', serif" },
+];
+CX.applyFont = function(id){
+  const f=CX.FONTS.find(x=>x.id===id); if(!f)return;
+  document.documentElement.style.setProperty('--ui', f.stack);
+  document.documentElement.style.setProperty('--disp', f.stack);
+  CX.BRAND.font=id; try{localStorage.setItem('cx_font',id);}catch(e){}
+};
+
+/* ---------- Planes comerciales (preconfiguran el tenant) ---------- */
+CX.PLANS = {
+  basico:    { label:'Básico',     temas:['cxorbia','tya'], integraciones:['whatsapp_web','sheets_import'],
+               modulos:['midia','dashboard','proyectos','visitas','postulaciones','shoppers','misvisitas','miperfil','documentos','tablon','soporte','beneficios'] },
+  estandar:  { label:'Estándar',   temas:['cxorbia','tya','esmeralda','violeta'], integraciones:['whatsapp_web','sheets','excel_online','gmail'],
+               modulos:'+aprendizaje,cert,rutas,informes' },
+  pro:       { label:'Pro',        temas:'all', integraciones:['make','whatsapp_api','sheets','excel_online','gmail','outlook','mailchimp'],
+               modulos:'+financiero,movimientos,liquidaciones,lotes,cuestionarios' },
+  enterprise:{ label:'Enterprise', temas:'all', integraciones:'all', modulos:'all' },
+};
+/* devuelve la lista de módulos habilitados por un plan */
+CX.planModules = function(planId){
+  const order=Object.keys(CX.PLANS), idx=order.indexOf(planId);
+  if(planId==='enterprise') return Object.keys(CX.MODULES);
+  let set=new Set(CX.PLANS.basico.modulos);
+  for(let i=1;i<=idx;i++){ const m=CX.PLANS[order[i]].modulos;
+    if(m==='all'){return Object.keys(CX.MODULES);}
+    if(typeof m==='string'&&m[0]==='+'){ m.slice(1).split(',').forEach(x=>set.add(x)); }
+  }
+  return [...set];
+};
+CX.applyPlan = function(planId){
+  const mods=CX.planModules(planId), all=Object.keys(CX.MODULES), map={};
+  all.forEach(id=>map[id]=mods.includes(id));
+  try{localStorage.setItem('cx_modules',JSON.stringify(map));localStorage.setItem('cx_plan',planId);}catch(e){}
+  CX.BRAND.plan=planId;
+};
+
 /* ---------- Roles (for Usuarios module) ---------- */
 CX.ROLES = [
   { id:'super',  label:'Super Admin',     desc:'Acceso total a toda la plataforma' },
