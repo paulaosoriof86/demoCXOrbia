@@ -143,6 +143,18 @@ CX.data = {
   project(){return this.projects.find(p=>p.id===this.currentProjectId);},
   setProject(id){this.currentProjectId=id;CX.bus&&CX.bus.emit('project');},
 
+  /* alta de proyecto nuevo (persistente, aislado: id propio, sin tocar los demás) */
+  addProject(cfg){
+    const id = cfg.id || ('proj-'+Date.now().toString(36));
+    const proj = Object.assign({
+      id, accent:'#2196d3', quincenas:['Quincena 1','Quincena 2'], nVisitas:0,
+    }, cfg, {id});
+    this.projects.push(proj);
+    this.currentProjectId = id;
+    CX.bus && CX.bus.emit('project');
+    return proj;
+  },
+
   /* proyectos visibles por rol: el shopper solo ve los de su país */
   projectsFor(role){
     if(role!=='shopper') return this.projects;

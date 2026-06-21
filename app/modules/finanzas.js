@@ -77,25 +77,77 @@ CX.module('movimientos', ({data,ui})=>{
 });
 
 CX.module('liquidaciones', ({data,ui})=>{
-  const p=data.project(), f=_fin(data);
-  const oblig=Object.keys(f).map(c=>{const d=f[c];return `<tr><td><b>${c}</b></td><td>${d.cur}</td><td>${d.vis}</td><td>${_m(d.cur,d.hon)}</td><td>${_m(d.cur,d.reemb)}</td><td><b>${_m(d.cur,d.total)}</b></td><td>${d.cur} 0</td></tr>`;}).join('');
-  const liq=data.visitas().filter(v=>['realizada','cuestionario','liquidada'].includes(v.estado)).slice(0,8);
-  const lrow=(v)=>{const total=v.honorario+(v.boleto||0)+(v.comboAmt||0);const est=v.estado==='liquidada'?['Liquidada','g']:v.estado==='cuestionario'?['Pend. submitir','a']:['Pend. cuestionario','a'];
-    return `<tr><td><b>${v.shopper||'—'}</b><div style="font-size:10px;color:var(--t3)">${v.shopperCode||''}</div></td><td style="font-size:12px">${v.sucursal}</td><td style="font-size:12px">${v.realizada||'—'}</td><td>${ui.bdg(est[0],est[1])}</td><td>${v.submit?'✅':'—'}</td><td>${_m(v.currency,v.honorario)}</td><td>${v.boleto?_m(v.currency,v.boleto):'—'}</td><td>${v.comboAmt?_m(v.currency,v.comboAmt):'—'}</td><td style="font-weight:700;color:var(--t1)">${_m(v.currency,total)}</td></tr>`;};
-  return `
-  <div class="between" style="margin-bottom:12px"><div>${ui.ph('Liquidaciones', p.name+' · honorarios por pagar a shoppers')}</div>
+  const p=data.project();
+  const all=CX.liq.forProject(data);
+  const res=CX.liq.resumen(all);
+  // obligaciones por país/moneda
+  const oblig=p.countries.map(c=>{
+    const ls=all.filter(l=>l.pais===c);
+    const hon=ls.reduce((a,l)=>a+l.honorario,0), reemb=ls.reduce((a,l)=>a+l.reembolso,0), tot=ls.reduce((a,l)=>a+l.total,0);
+    const listo=ls.filter(l=>l.estado==='validada').reduce((a,l)=>a+l.total,0);
+    return `<tr><td><b>${c}</b></td><td>${p.currency[c]}</td><td>${ls.length}</td><td>${ui.money(p.currency[c],hon)}</td><td>${ui.money(p.currency[c],reemb)}</td><td><b>${ui.money(p.currency[c],tot)}</b></td><td>${ui.money(p.currency[c],listo)}</td></tr>`;
+  }).join('');
+
+  const lrow=(l,i)=>{const lb=CX.liq.label(l.estado);
+    return `<tr data-li="${i}"><td><b>${l.shopper||'—'}</b><div style="font-size:10px;color:var(--t3)">${l.shopperCode||''}</div></td>
+      <td style="font-size:12px">${l.sucursal}</td><td style="font-size:12px">${l.freal||'—'}</td>
+      <td>${ui.bdg(lb[0],lb[1])}</td><td>${l.submit?'✅':'—'}</td>
+      <td>${ui.money(l.moneda,l.honorario)}</td><td>${l.boleto?ui.money(l.moneda,l.boleto):'—'}</td><td>${l.combo?ui.money(l.moneda,l.combo):'—'}</td>
+      <td style="font-weight:700;color:var(--t1)">${ui.money(l.moneda,l.total)}</td>
+      <td style="font-size:12px">${l.fechaEstimadaPago||'—'}</td>
+      <td style="text-align:right">${l.estado==='validada'?`<button class="btn btn-ghost btn-sm" data-adv="${i}">▶ Mover</button>`:l.estado==='pendiente_cuestionario'?ui.bdg('espera shopper','n'):l.estado==='pagada'?ui.bdg('✓','g'):ui.bdg('—','n')}</td></tr>`;};
+
+  const html=`
+  <div class="between" style="margin-bottom:12px"><div>${ui.ph('Liquidaciones', p.name+' · sincronizadas con el avance de cada visita')}</div>
     <div class="flex"><span class="bdg bdg-g">● En vivo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
-  <div class="card card-p" style="margin-bottom:16px">
-    <div class="card-t" style="margin-bottom:8px">📊 Obligaciones derivadas de HR por país y moneda</div>
-    <div style="background:var(--amber-bg);border-radius:9px;padding:9px 12px;font-size:11.5px;color:#8a5b00;margin-bottom:12px">No se suman quetzales y lempiras. Reembolso = boleto + combo. Total shopper = honorario + reembolso.</div>
-    <table class="tbl"><thead><tr><th>País</th><th>Moneda</th><th>Visitas</th><th>Honorarios</th><th>Reembolsos</th><th>Total</th><th>Listo para pago</th></tr></thead><tbody>${oblig}</tbody></table>
+
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px">
+    ${ui.kpi('Pend. cuestionario',res.pendiente_cuestionario||0,'a')}
+    ${ui.kpi('Pend./Validadas',(res.pendiente_submitir||0)+(res.validada||0),'b')}
+    ${ui.kpi('Listas para lote',res.validada||0,'b')}
+    ${ui.kpi('Pagadas',res.pagada||0,'g')}
   </div>
+
+  <div class="card card-p" style="margin-bottom:16px">
+    <div class="card-t" style="margin-bottom:8px">📊 Obligaciones por país y moneda</div>
+    <div style="background:var(--amber-bg);border-radius:9px;padding:9px 12px;font-size:11.5px;color:#8a5b00;margin-bottom:12px">No se suman quetzales y lempiras. Total = honorario + reembolso (boleto + combo). El estado y la <b>fecha estimada de pago</b> se derivan del avance de la visita.</div>
+    <table class="tbl"><thead><tr><th>País</th><th>Moneda</th><th>Visitas</th><th>Honorarios</th><th>Reembolsos</th><th>Total</th><th>Listo para lote</th></tr></thead><tbody>${oblig}</tbody></table>
+  </div>
+
   <div class="card card-p">
-    <div class="between" style="margin-bottom:12px"><div><div class="card-t">💸 Liquidaciones operativas</div><div style="font-size:11px;color:var(--t3)">Las visitas aparecen automáticamente desde HR. Solo el marcado de pago persiste y crea el egreso.</div></div>
-      <div class="flex"><select class="sel btn-sm" style="width:auto"><option>Todos los estados</option></select><button class="btn btn-ghost btn-sm">⤓ Excel</button><button class="btn btn-pr btn-sm">📦 Preparar lote</button></div></div>
-    <table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Visita</th><th>Estado</th><th>Submit.</th><th>Honorario</th><th>Boleto</th><th>Combo</th><th>Total</th></tr></thead><tbody>${liq.map(lrow).join('')}</tbody></table>
-    <div style="margin-top:14px">${ui.aiBox('Calculo honorarios y reembolsos solo y armo el lote sin Excel. Ahorra horas administrativas: ROI directo para consultoras con muchos shoppers.','Liquidación automática')}</div>
+    <div class="between" style="margin-bottom:12px"><div><div class="card-t">💸 Liquidaciones operativas</div>
+      <div style="font-size:11px;color:var(--t3)">El estado avanza solo con la visita. Al preparar lote eliges qué visitas incluir.</div></div>
+      <button class="btn btn-pr btn-sm" id="prepLote">📦 Preparar lote</button></div>
+    <table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Realizada</th><th>Estado</th><th>Submit.</th><th>Honorario</th><th>Boleto</th><th>Combo</th><th>Total</th><th>Pago est.</th><th></th></tr></thead>
+    <tbody id="liqBody">${all.map(lrow).join('')}</tbody></table>
+    <div style="margin-top:14px">${ui.aiBox('Cada liquidación nace del avance de la visita: realizada → pend. cuestionario → validada → en lote → pagada, con fecha estimada de pago según las reglas del cliente. Cero captura manual.','Liquidación sincronizada')}</div>
   </div>`;
+
+  setTimeout(()=>{
+    document.querySelectorAll('[data-adv]').forEach(b=>b.addEventListener('click',()=>{
+      const tr=b.closest('tr'); tr.children[3].innerHTML=ui.bdg('En lote','p'); tr.children[10].innerHTML=ui.bdg('—','n');
+      ui.toast('Liquidación movida a "en lote"','ok');
+    }));
+    const prep=document.getElementById('prepLote');
+    if(prep)prep.addEventListener('click',()=>{
+      const validadas=all.map((l,i)=>({l,i})).filter(x=>x.l.estado==='validada');
+      const rows=validadas.length?validadas.map(x=>`<label class="between" style="padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer">
+        <span><input type="checkbox" class="loteChk" data-i="${x.i}" checked style="margin-right:8px"><b style="font-size:13px">${x.l.shopper}</b> · ${x.l.sucursal}<div style="font-size:11px;color:var(--t3)">${x.l.pais} · pago est. ${x.l.fechaEstimadaPago}</div></span>
+        <b style="color:var(--green)">${ui.money(x.l.moneda,x.l.total)}</b></label>`).join('')
+        : ui.empty('📦','No hay liquidaciones validadas para incluir');
+      ui.modal('Preparar lote de pago',`
+        <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Selecciona las visitas <b>validadas</b> a incluir. Una sola moneda por lote (GT y HN no se mezclan). Al pagar el lote se generan los movimientos de egreso de cada shopper de una sola vez.</p>
+        ${rows}
+        <div class="between" style="margin-top:14px"><div id="loteTot" style="font-size:13px;font-weight:700;color:var(--t1)"></div>
+        <button class="btn btn-green btn-sm" id="loteCreate" ${validadas.length?'':'disabled'}>Crear lote</button></div>
+      `,{onMount:(ov,close)=>{
+        const calc=()=>{let t=0,m='';ov.querySelectorAll('.loteChk:checked').forEach(c=>{const l=all[+c.dataset.i];t+=l.total;m=l.moneda;});ov.querySelector('#loteTot').textContent=validadas.length?('Total lote: '+ui.money(m||p.currency[p.countries[0]],t)):'';};
+        ov.querySelectorAll('.loteChk').forEach(c=>c.addEventListener('change',calc));calc();
+        const cr=ov.querySelector('#loteCreate'); if(cr)cr.addEventListener('click',()=>{const n=ov.querySelectorAll('.loteChk:checked').length;close();ui.toast('Lote creado con '+n+' visita(s) · egresos generados en Movimientos','ok');});
+      }});
+    });
+  },0);
+  return html;
 });
 
 CX.module('lotes', ({data,ui})=>{

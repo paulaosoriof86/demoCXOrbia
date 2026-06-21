@@ -37,17 +37,7 @@ CX.module('proyectos', ({data,ui})=>{
       data.setProject(c.dataset.pid); ui.toast('Plataforma adaptada a: '+data.project().name,'ok');
     }));
     const nb=document.getElementById('newProj');
-    if(nb)nb.addEventListener('click',()=>ui.modal('Nuevo proyecto',`
-      <p style="font-size:13px;color:var(--t2);margin-bottom:14px">Configura un cliente nuevo; la IA generará dashboard, reglas y cuestionarios base.</p>
-      <div style="margin-bottom:12px"><label class="lbl">Cliente</label><input class="inp" placeholder="Ej. Cadena de retail"></div>
-      <div class="grid g2" style="margin-bottom:12px">
-        <div><label class="lbl">Países</label><input class="inp" placeholder="GT, HN"></div>
-        <div><label class="lbl">Sucursales</label><input class="inp" placeholder="24"></div>
-      </div>
-      <div style="margin-bottom:16px"><label class="lbl">Escenarios</label><input class="inp" placeholder="Semana, Estreno, Incógnito"></div>
-      ${ui.aiBox('Al crear, se reconfiguran automáticamente: dashboard, KPIs por sucursal, reglas de quincena y franja, tablero y filtros.','La plataforma se adapta sola')}
-      <div style="text-align:right;margin-top:16px"><button class="btn btn-pr" onclick="CX.ui.toast('Proyecto creado (demo)','ok');this.closest('.cx-ov').remove()">Crear proyecto</button></div>
-    `));
+    if(nb)nb.addEventListener('click',()=>CX.projectWizard(data,ui));
   },0);
   return html;
 });

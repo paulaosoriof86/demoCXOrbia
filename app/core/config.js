@@ -132,6 +132,18 @@ CX.NAV = {
   ],
 };
 
+/* ---------- Catálogo de países + moneda (lista larga, no limitar) ---------- */
+CX.COUNTRIES = [
+  {c:'GT',n:'Guatemala',cur:'Q'},   {c:'HN',n:'Honduras',cur:'L'},
+  {c:'SV',n:'El Salvador',cur:'$'}, {c:'NI',n:'Nicaragua',cur:'C$'},
+  {c:'CR',n:'Costa Rica',cur:'₡'},  {c:'PA',n:'Panamá',cur:'B/.'},
+  {c:'MX',n:'México',cur:'$'},      {c:'CO',n:'Colombia',cur:'$'},
+  {c:'PE',n:'Perú',cur:'S/'},       {c:'EC',n:'Ecuador',cur:'$'},
+  {c:'CL',n:'Chile',cur:'$'},       {c:'AR',n:'Argentina',cur:'$'},
+  {c:'DO',n:'Rep. Dominicana',cur:'RD$'}, {c:'US',n:'Estados Unidos',cur:'US$'},
+  {c:'ES',n:'España',cur:'€'},
+];
+
 /* ---------- Roles (for Usuarios module) ---------- */
 CX.ROLES = [
   { id:'super',  label:'Super Admin',     desc:'Acceso total a toda la plataforma' },

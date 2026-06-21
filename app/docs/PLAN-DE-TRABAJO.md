@@ -3,11 +3,19 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
-_Última actualización: sesión 3 (genérico + temas + tenant + flujo shopper + ficha de postulación)._
+_Última actualización: sesión 5 (sync visita↔liquidación + wizard de proyecto inteligente)._
 
 ---
 
 ## ✅ Hecho
+
+| # | Item | Notas |
+|---|---|---|
+| H16 | **Sync visita↔liquidación** (`core/liquidacion.js`) | realizada→pend.cuestionario→validada→pagada; refleja en Beneficios y Liquidaciones |
+| H17 | **Fecha estimada de pago** = realización/submit + `pago.diasPago` | Parametrizable por proyecto |
+| H18 | **Liquidaciones**: cambio de estado + **preparar lote seleccionando visitas** (una moneda/lote) | Genera egresos |
+| H19 | **Wizard de proyecto inteligente** (`proyecto-wizard.js`), 5 pasos | Proyecto **aislado y persistente** |
+| H20 | Wizard: países+moneda (lista larga), honorarios **recibido/pagado**, modelo **directo/delegado** (ISR/regalías), modo cuestionario, HR, restricciones, días de pago, base conocimiento | |
 
 | # | Item | Notas |
 |---|---|---|
