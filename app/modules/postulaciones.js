@@ -56,6 +56,7 @@ CX.module('postulaciones', ({data,ui})=>{
     <button class="btn btn-green btn-sm">＋ Asignar visita manual</button>
     <button class="btn btn-ghost btn-sm">⤓ Exportar</button>
     <div class="spacer"></div>
+    <button class="btn btn-pr btn-sm" id="reqShopper">📤 Pedir al shopper…</button>
     <button class="btn btn-pr btn-sm" id="openAgenda">🗓️ Gestionar agendamientos</button>
   </div>
 
@@ -97,6 +98,33 @@ CX.module('postulaciones', ({data,ui})=>{
         const ok=(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});};
     ['pSearch','pPais','pEst'].forEach(id=>document.getElementById(id).addEventListener('input',search));
     document.querySelectorAll('[data-perfil]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('shoppers')));
+    const reqBtn=document.getElementById('reqShopper');
+    if(reqBtn)reqBtn.addEventListener('click',()=>{
+      ui.modal('📤 Pedir acción al shopper',`
+        <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">El equipo puede <b>solicitar</b> al shopper (no solo gestionar lo que él pide). La solicitud le llega en Mi Día, Tablón y por WhatsApp.</p>
+        <label class="lbl">Shopper</label>
+        <select class="sel" id="rqSh" style="margin-bottom:12px">${posts.slice(0,10).map(x=>`<option>${x.shopper} · ${x.sucursal}</option>`).join('')}</select>
+        <label class="lbl">Solicitud</label>
+        <select class="sel" id="rqTipo" style="margin-bottom:12px">
+          <option value="confirmar">Confirmar fecha propuesta</option>
+          <option value="cambio">Pedir cambio de fecha</option>
+          <option value="reprog">Solicitar reprogramación</option>
+          <option value="agendar">Recordar que agende</option>
+        </select>
+        <label class="lbl">Nota (opcional)</label>
+        <textarea class="inp" id="rqNota" rows="2" placeholder="Detalle para el shopper…" style="margin-bottom:14px"></textarea>
+        <div class="flex" style="justify-content:flex-end;gap:8px"><button class="btn btn-ghost btn-sm" data-x4>Cancelar</button><button class="btn btn-pr btn-sm" id="rqSend">📲 Enviar solicitud</button></div>
+      `,{onMount:(ov,close)=>{
+        ov.querySelector('[data-x4]').addEventListener('click',close);
+        ov.querySelector('#rqSend').addEventListener('click',()=>{
+          const tipo=ov.querySelector('#rqTipo').value, sh=ov.querySelector('#rqSh').value.split(' · ')[0];
+          const map={confirmar:['📅','El equipo pide confirmar fecha','confirmar_fecha'],cambio:['📅','El equipo pide cambio de fecha','confirmar_fecha'],reprog:['🔄','El equipo solicita reprogramación',''],agendar:['📅','Recordatorio: agenda tu visita','']};
+          const m=map[tipo];
+          CX.notif.push({to:'shopper',tipo,icon:m[0],tono:'a',titulo:m[1],txt:sh+' · responde desde Mis Visitas',nav:'misvisitas',accion:m[2]||undefined});
+          close();ui.toast('Solicitud enviada a '+sh+' · Mi Día + Tablón + WhatsApp','ok',3500);
+        });
+      }});
+    });
     document.getElementById('openAgenda').addEventListener('click',()=>{
       const rows=agendadas.slice(0,4).map(v=>`<div class="between" style="padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
         <div><b style="font-size:13px">${v.shopper}</b> · ${v.sucursal}<div style="font-size:11px;color:var(--t3)">📅 ${v.agendada} · ${v.franjaCode} · autorizada por Coordinación</div></div>

@@ -3,7 +3,71 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
-_Última actualización: sesión 5 (sync visita↔liquidación + wizard de proyecto inteligente)._
+_Última actualización: sesión 6 (notificaciones bidireccionales + brief amplio incorporado y priorizado por criticidad)._
+
+---
+
+## 🔴 Sesión 6 · brief amplio incorporado — priorizado por criticidad
+
+### P0 — Crítico (estructura comercial; sin esto no se vende ni se adapta bien)
+- ⬜ **Configuración con submenús** (no todo regado): pestañas/sección — **Marca & Tema** (colores, plantillas, **tipografía** — hoy no se ve dónde elegirlo), Proyecto, Países & Monedas, Honorarios, Cuestionario, HR/Integraciones, Notificaciones/Plantillas, Pagos, Módulos.
+- ⬜ **Dos consolas de configuración**:
+  - **Cliente (autogestión)**: ajustes básicos permitidos por su plan.
+  - **Proveedor (nosotros)**: seleccionar módulos, personalizar todo, **elegir el plan contratado** → habilita de una vez lo del plan (editable).
+- ⬜ **Motor de planes**: definir planes (Básico/Estándar/Pro/Enterprise) con módulos, límites, temas y permisos; al asignar plan se preconfigura el tenant.
+- ⬜ **Selector de Tema visible**: colores + plantillas + **tipografía**, dentro de "Marca & Tema".
+- ⬜ **Login: descargar como app (PWA)** con detección de dispositivo/navegador (Android/iOS/desktop) y CTA directo.
+- ⬜ **Cláusula de confidencialidad** en el primer ingreso de cada usuario, según rol.
+
+### P1 — Núcleo operativo (lo que hace la plataforma usable de verdad)
+- ⬜ **Registro de shopper completo** (desde login): país (lista larga LatAm) → **departamento** → **ciudad** (dependientes), **nombre y apellido por separado**, correo, WhatsApp, **edad y sexo** (para automatización). Usuario = `nombre.apellido`; contraseña `Nombre123*` (patrón **configurable por el cliente**).
+- ⬜ **Alta manual por admin**: solo obligatorios primer nombre + primer apellido + WhatsApp; el shopper completa el resto al ingresar.
+- ⬜ **Perfil del shopper completo y editable** + histórico de visitas + KPIs clickeables.
+- ⬜ **Asignación manual desde Visitas Disponibles**: elegir cuál visita y a quién (shopper existente o **crearlo ahí** con nombre + teléfono mínimo).
+- ⬜ **Ofrecer visitas a shoppers de la misma ciudad**: individual (WhatsApp/correo) y **masivo** (WhatsApp/correo/Mailchimp).
+- ⬜ **Plantillas de mensajes** (WhatsApp + correo) editables: ofrecer visita, recordatorio de agenda, "¿hiciste la visita?", recordatorio de cuestionario, marcar completada, certificarse, pago. Variables dinámicas.
+- ⬜ **WhatsApp por WhatsApp Web** (`wa.me` + plantilla) además de API — sin obligar a automatización.
+- ⬜ **Notificación WhatsApp por registro seleccionable** (hoy notifica el lote completo): elegir de cuáles registros.
+- ⬜ **Soporte para el shopper**: por plataforma o por WhatsApp a los **contactos por rol** configurables por el cliente.
+- ⬜ **Notificaciones al entrar**: mostrar en **drill/modal grande** apenas el shopper ingresa.
+- ⬜ **Tablón editable**: publicar, editar, marcar leídas, clickeables, **orden cronológico**, recibir notificaciones.
+- ⬜ **Cronograma de actividades en Mi Día** (agenda del día).
+
+### P1/P2 — Patrones transversales
+- ⬜ **Tarjetas clickeables con detalle en TODAS las secciones** (no solo dashboard).
+- ⬜ **Filtros en TODAS las secciones** con las opciones que correspondan.
+- ⬜ **Buscador en todas las listas desplegables** (países, rubros, ciudades, shoppers, etc.).
+- ⬜ **Top shoppers: Top 5 + "ver ranking completo"** + seleccionar shopper → **perfil completo**.
+
+### P2 — Wizard de proyecto (mejoras)
+- ⬜ **Rubro/industria**: lista desplegable amplia + **"crear nuevo"**.
+- ⬜ **Países**: lista amplia (sobre todo **LatAm**) con **buscador**.
+- ⬜ **Reembolsos genéricos**: elegir **tipo de reembolso por consumo**; basado en **consumo registrado en HR** o **monto fijo**; **mapear** en qué columna(s) de la HR aparece el consumo. (Quitar "boleto/combo" cableado.)
+- ⬜ **HR origen**: Google Sheets **y Excel Online**; si **Excel importado** → cargar y **mapear**.
+- ⬜ **Escenarios**: manual **+ extracción inteligente** (como el mapeo de HR).
+- ⬜ **Cuestionario / instructivo / base de conocimiento**: opción **importar / crear con IA / manual**.
+- ⬜ **Base de conocimiento IA**: **importar y extraer inteligentemente** (alimenta todos los módulos: resumen, escenarios, soporte).
+- ⬜ **Lógica de liquidación**: días de pago calculados desde un **criterio elegible** (visita realizada / cuestionario lleno / visita revisada / submitida…).
+- ⬜ **Cuestionarios por versión** (marca / tipo de establecimiento / criterio).
+
+### P2 — Hojas de Ruta / HR
+- ⬜ **HR propuesta por extracción del proyecto** + import + creación manual.
+- ⬜ **HR externa en vivo**: sincroniza y se lee en vivo en **todas** las secciones; **sin duplicar** datos entre HR y Postulaciones (el sistema se alimenta de ambas vías) + automatizaciones de actualización.
+
+### P2 — Documentos / Aprendizaje / Certificación
+- ⬜ **Documentos**: al subir, elegir **quién puede verlos** y **a qué proyecto** corresponden; edición.
+- ⬜ **Aprendizaje**: recursos vistos **en la plataforma** + **descargables**, **videos embebidos**, **bloques de capacitación con progreso**, edición.
+- ⬜ **Certificación**: elegir **tipo de certificación** + **repasar**; recertificación.
+- ⬜ Formato/edición consistente en Tablón, Aprendizaje y Documentos.
+
+### P2 — Cuestionarios
+- ⬜ Generar con **IA**, **importar** y **manual**.
+
+### P2/P3 — Análisis
+- ⬜ **KPIs y OKRs** en el análisis comparativo (tiempos, efectividad, porcentajes, metas).
+
+### P2/P3 — Integraciones (ver `INTEGRACIONES.md`)
+- ⬜ Google Sheets, Excel Online, Make, WhatsApp (Web + Green API/Cloud), Gmail/Workspace, Outlook/M365, Mailchimp, Google Docs/Drive, Facebook, YouTube/Vimeo embed, SSO, BI.
 
 ---
 
@@ -19,6 +83,10 @@ _Última actualización: sesión 5 (sync visita↔liquidación + wizard de proye
 | H21 | **Motor financiero** (`core/finanzas-core.js`): ingreso/egreso, margen por país, modelo directo (ISR+regalías) vs delegado | Multipaís separado |
 | H22 | **Dashboard Financiero** ampliado: margen real por país, comparativo mensual, **presupuesto de gastos fijos** editable, CxC/CxP | |
 | H23 | **Movimientos** ampliado: ingresos/egresos/anticipos, **pago de lote genera egresos** de todos los shoppers de una vez, import histórico (vista previa), CxC/CxP | |
+| H24 | **Separación por moneda 100% genérica** (`CX.paisLabel/paisFlag/moneda`) — cualquier país, no solo GT/HN | |
+| H25 | **Dashboard Operativo**: KPIs y fases **clickeables** (drill con listado), **filtro de meses**, **comparativo último trimestre**, **notificación WhatsApp** en gestiones externas | |
+| H26 | **Centro de notificaciones** (`core/notif.js`) por rol, badge de no leídas, alimenta **Mi Día + Tablón** | |
+| H27 | **Postulaciones bidireccionales**: el equipo **pide** confirmar/cambiar/reprogramar fecha al shopper; el shopper **responde** (Confirmar / Proponer otra) desde Tablón/Mi Día | |
 
 | # | Item | Notas |
 |---|---|---|

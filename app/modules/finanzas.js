@@ -1,6 +1,6 @@
 /* CXOrbia · Finanzas (admin) — full fidelity
    Dashboard Financiero · Movimientos · Liquidaciones · Lotes de Pago
-   GT (Q) y HN (L) SIEMPRE separados, nunca se suman. */
+   Separación SIEMPRE por moneda y por país del proyecto (genérico, cualquier país). */
 
 function _fin(data){
   const p=data.project(), out={};
@@ -21,7 +21,7 @@ CX.module('financiero', ({data,ui})=>{
   const modelLbl = p.modelo==='delegado' ? 'Delegado (franquicia)' : 'Facturado directamente';
 
   const tile=(c)=>{const d=fp[c];return `<div class="card card-p">
-    <div class="between" style="margin-bottom:10px"><div class="card-t">${c==='GT'?'🇬🇹 Guatemala':c==='HN'?'🇭🇳 Honduras':c} <span class="muted" style="font-weight:500">(${d.cur})</span></div>${ui.bdg(d.margenPct+'% margen',d.margenPct>=30?'g':'a')}</div>
+    <div class="between" style="margin-bottom:10px"><div class="card-t">${CX.paisLabel(c)} <span class="muted" style="font-weight:500">(${d.cur})</span></div>${ui.bdg(d.margenPct+'% margen',d.margenPct>=30?'g':'a')}</div>
     <div class="grid g2" style="gap:8px">
       ${ui.kpi('Ingresos',d.cur+' '+d.ingreso.toLocaleString(),'g')}
       ${ui.kpi('Honorarios',d.cur+' '+d.honPaga.toLocaleString(),'r')}
@@ -50,7 +50,7 @@ CX.module('financiero', ({data,ui})=>{
       </div></div>`;};
 
   const html_fin = `
-  <div class="between" style="margin-bottom:12px"><div>${ui.ph('Dashboard Financiero', p.name+' · '+modelLbl+' · GT (Q) y HN (L) separados')}</div>
+  <div class="between" style="margin-bottom:12px"><div>${ui.ph('Dashboard Financiero', p.name+' · '+modelLbl+' · '+p.countries.map(c=>c+' ('+CX.moneda(p,c)+')').join(' y ')+' separados')}</div>
     <div class="flex"><span class="bdg ${p.modelo==='directo'?'bdg-b':'bdg-p'}">${modelLbl}</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
 
   <div class="card card-p" style="margin-bottom:16px;background:var(--brand-light);border-color:#cfe6f7">

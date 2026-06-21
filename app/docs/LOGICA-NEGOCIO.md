@@ -95,7 +95,7 @@ en lote pagado → "pagada"
 
 ## 6. Finanzas (reglas)
 
-- **Monedas separadas**: GT (Q) y HN (L) **nunca** se suman.
+- **Monedas separadas**: cada país del proyecto mantiene su moneda y **nunca** se suman entre sí (genérico para cualquier país, no solo GT/HN).
 - **Movimientos**: ingresos, egresos, **pagos**. Pagar un **lote** genera de una vez los movimientos de egreso de cada shopper del lote (no uno por uno).
 - **Cuentas por pagar / por cobrar**: el histórico las refleja y el Dashboard Financiero las muestra.
 - **Comparativos mensuales** y controles para decisiones de rentabilidad/honorarios.

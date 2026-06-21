@@ -158,7 +158,7 @@ CX.module('config', ({data,ui})=>{
     <div class="grid g2" style="margin-bottom:16px">
       <div class="card card-p">
         <div class="card-t" style="margin-bottom:12px">🌎 Países y monedas (multipaís)</div>
-        ${p.countries.map(c=>`<div class="between" style="padding:8px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:13px;font-weight:600">${c==='GT'?'🇬🇹 Guatemala':'🇭🇳 Honduras'}</span><span class="bdg bdg-b">${p.currency[c]}</span></div>`).join('')}
+        ${p.countries.map(c=>`<div class="between" style="padding:8px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:13px;font-weight:600">${CX.paisLabel(c)}</span><span class="bdg bdg-b">${CX.moneda(p,c)}</span></div>`).join('')}
         <div style="background:var(--amber-bg);border-radius:9px;padding:8px 11px;font-size:11px;color:#8a5b00;margin-top:10px">Las monedas nunca se suman entre sí. Cada shopper ve solo proyectos de su país.</div>
       </div>
       <div class="card card-p">

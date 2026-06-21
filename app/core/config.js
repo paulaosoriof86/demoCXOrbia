@@ -104,7 +104,7 @@ CX.MODULES = {
   documentos:    { icon:'📎', label:'Documentos',           roles:['admin','shopper'], status:'ready' },
   aprendizaje:   { icon:'📚', label:'Aprendizaje',          roles:['admin','shopper'], status:'ready' },
   cert:          { icon:'🏆', label:'Certificación',        roles:['admin','shopper'], status:'ready' },
-  tablon:        { icon:'📢', label:'Tablón / Novedades',   roles:['admin','shopper'], status:'ready' },
+  tablon:        { icon:'📢', label:'Tablón / Novedades',   roles:['admin','shopper'], badgeNotif:true, status:'ready' },
   soporte:       { icon:'🤖', label:'Soporte IA',           roles:['admin','shopper'], status:'ready' },
   informes:      { icon:'📑', label:'Reportes & KPIs',      roles:['admin'],           status:'ready' },
   // Finanzas (admin)
@@ -143,6 +143,11 @@ CX.COUNTRIES = [
   {c:'DO',n:'Rep. Dominicana',cur:'RD$'}, {c:'US',n:'Estados Unidos',cur:'US$'},
   {c:'ES',n:'España',cur:'€'},
 ];
+/* etiqueta de país genérica (bandera emoji desde el código ISO + nombre) — funciona para cualquier país */
+CX.paisName = function(c){ const f=CX.COUNTRIES.find(x=>x.c===c); return f?f.n:c; };
+CX.paisFlag = function(c){ if(!c||c.length!==2) return '🏳️'; try{return String.fromCodePoint(...[...c.toUpperCase()].map(ch=>0x1F1E6+ch.charCodeAt(0)-65));}catch(e){return '🏳️';} };
+CX.paisLabel = function(c){ return CX.paisFlag(c)+' '+CX.paisName(c); };
+CX.moneda = function(p,c){ return (p.currency&&p.currency[c]) || (CX.COUNTRIES.find(x=>x.c===c)||{}).cur || '$'; };
 
 /* ---------- Roles (for Usuarios module) ---------- */
 CX.ROLES = [

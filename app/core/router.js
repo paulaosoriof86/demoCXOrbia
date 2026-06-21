@@ -37,7 +37,8 @@ CX.router = {
     const nav=CX.NAV[role].map(group=>{
       const items=group.items.filter(id=>CX.moduleEnabled(id)).map(id=>{
         const m=CX.MODULES[id]; if(!m)return '';
-        const badge = (m.badge && role==='admin') ? `<span class="n-badge">${d.kpis().postPend||''}</span>` : '';
+        const badge = (m.badge && role==='admin') ? `<span class="n-badge">${d.kpis().postPend||''}</span>`
+          : (m.badgeNotif && CX.notif && CX.notif.unread(role)) ? `<span class="n-badge">${CX.notif.unread(role)}</span>` : '';
         const soon  = m.status==='soon' ? `<span class="n-soon">pronto</span>` : '';
         return `<div class="nav-i" id="nav-${id}" data-id="${id}">
           <span class="n-ic">${m.icon}</span><span>${m.label}</span>${badge||soon}</div>`;

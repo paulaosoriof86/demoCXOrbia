@@ -4,7 +4,7 @@
    - Modelo directo (ISR + regalías) vs delegado (solo honorario recibido/pagado)
    - Presupuesto de gastos fijos vs real
    - Cuentas por pagar (liquidaciones no pagadas) y por cobrar (facturas pendientes)
-   GT (Q) y HN (L) SIEMPRE separados por moneda.
+   Separación SIEMPRE por moneda y país del proyecto (genérico, cualquier país).
    ============================================================ */
 window.CX = window.CX || {};
 

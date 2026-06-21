@@ -11,7 +11,7 @@ CX.module('proyectos', ({data,ui})=>{
         ${active?ui.bdg('Activo','g'):ui.bdg('Cambiar','n')}
       </div>
       <div class="flex wrap" style="gap:6px;margin-bottom:10px">
-        ${p.countries.map(c=>ui.bdg(c==='GT'?'🇬🇹 GT':'🇭🇳 HN','b')).join('')}
+        ${p.countries.map(c=>ui.bdg(CX.paisFlag(c)+' '+c,'b')).join('')}
         ${ui.bdg(p.sucursales+' sucursales','n')}
         ${ui.bdg(v.length+' visitas','n')}
       </div>
