@@ -197,7 +197,7 @@ CX.module('config', ({data,ui})=>{
 
   const tabPaises=()=>`
     <div class="card card-p" style="margin-bottom:14px">
-      <div class="between" style="margin-bottom:12px"><div class="card-t">🌎 Países y monedas del proyecto</div><button class="btn btn-soft btn-sm">＋ País</button></div>
+      <div class="between" style="margin-bottom:12px"><div class="card-t">🌎 Países y monedas del proyecto</div><button class="btn btn-soft btn-sm" id="addPais">＋ País</button></div>
       ${p.countries.map(c=>`<div class="between" style="padding:9px 0;border-bottom:1px solid var(--border-2)">
         <span style="font-size:13px;font-weight:600">${CX.paisLabel(c)}</span>
         <div class="flex" style="gap:10px"><span class="bdg bdg-b">${CX.moneda(p,c)}</span>
@@ -284,6 +284,22 @@ CX.module('config', ({data,ui})=>{
     // plan
     const apPlan=host.querySelector('#applyPlan');
     if(apPlan)apPlan.addEventListener('click',()=>{const r=host.querySelector('input[name="plan"]:checked');if(r){CX.applyPlan(r.value);CX.router.buildRail(CX.session.role);ui.toast('Plan '+CX.PLANS[r.value].label+' aplicado · módulos preconfigurados','ok',3500);draw();}});
+    const apPais=host.querySelector('#addPais');
+    if(apPais)apPais.addEventListener('click',()=>{
+      const opts=CX.COUNTRIES.filter(co=>!p.countries.includes(co.c));
+      ui.modal('Agregar país al proyecto',`
+        <input class="inp" id="paisSearch" placeholder="🔎 Buscar país…" style="margin-bottom:10px">
+        <div id="paisList" style="max-height:240px;overflow:auto">
+          ${opts.map(co=>`<button class="paisOpt btn btn-ghost btn-sm" data-c="${co.c}" data-n="${co.n}" style="width:100%;justify-content:space-between;margin-bottom:6px">${CX.paisFlag(co.c)} ${co.n}<span class="bdg bdg-n">${co.cur}</span></button>`).join('')}
+        </div>`,{onMount:(ov,close)=>{
+        const filt=()=>{const q=(ov.querySelector('#paisSearch').value||'').toLowerCase();ov.querySelectorAll('.paisOpt').forEach(b=>{b.style.display=b.dataset.n.toLowerCase().includes(q)?'':'none';});};
+        ov.querySelector('#paisSearch').addEventListener('input',filt);
+        ov.querySelectorAll('.paisOpt').forEach(b=>b.addEventListener('click',()=>{
+          const c=b.dataset.c; p.countries.push(c); p.currency=p.currency||{}; p.currency[c]=CX.moneda(p,c);
+          close(); ui.toast(b.dataset.n+' agregado al proyecto','ok'); draw();
+        }));
+      }});
+    });
     host.querySelectorAll('[data-mod]').forEach(c=>c.addEventListener('change',()=>{CX.setModuleEnabled(c.dataset.mod,c.checked);CX.router.buildRail(CX.session.role);ui.toast((c.checked?'Activado: ':'Desactivado: ')+CX.MODULES[c.dataset.mod].label,c.checked?'ok':'');}));
   };
   draw();

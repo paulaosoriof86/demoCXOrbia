@@ -30,7 +30,7 @@ CX.THEMES = {
              navy:'#0d2740', navy2:'#123553', accent:'#c8232c' },
   },
   tya: {
-    label: 'T&A Consultores (corporativo)', font: "'Segoe UI', Tahoma, system-ui, sans-serif", railStyle:'light',
+    label: 'Corporativo claro (Segoe UI)', font: "'Segoe UI', Tahoma, system-ui, sans-serif", railStyle:'light',
     colors:{ brand:'#2196d3', brandDark:'#1565a8', brandMid:'#4ab4e6', brandLight:'#e8f4fd',
              navy:'#ffffff', navy2:'#fafbfd', accent:'#c8232c' },
   },

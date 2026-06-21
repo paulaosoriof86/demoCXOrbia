@@ -5,26 +5,39 @@ CX.module('visitas', ({data,role,ui})=>{
   /* ---------------- SHOPPER: marketplace de oportunidades ---------------- */
   if(role==='shopper'){
     const list=data.visitas().filter(v=>v.estado==='disponible');
-    const card=(v)=>`<div class="card hov" style="overflow:hidden">
-      <div style="background:linear-gradient(135deg,${p.accent},var(--brand-dark));color:#fff;padding:11px 14px" class="between">
-        <b style="font-size:13px">${v.sucursal}</b>${ui.bdg(v.franja,'n')}</div>
-      <div class="card-p" style="padding:13px 15px">
-        <div style="font-size:11.5px;color:var(--t3);margin-bottom:8px">📍 ${v.ciudad}, ${v.pais} · ${v.quincena} · ${v.escenario}</div>
-        <div style="font-size:11px;color:var(--t3);margin-bottom:8px">🗓️ Rango ${v.rango}${v.canal?' · '+v.canal:''}</div>
+    const escEmoji=(s)=>{const t=(s||'').toLowerCase();
+      if(t.includes('fin de semana')||t.includes('estreno'))return '🎉';
+      if(t.includes('incógnito')||t.includes('incognito'))return '🕵️';
+      if(t.includes('almuerzo')||t.includes('cena')||t.includes('combo'))return '🍽️';
+      if(t.includes('drive'))return '🚗'; if(t.includes('préstamo')||t.includes('cuenta'))return '🏦';
+      if(t.includes('telef'))return '📞'; return '🎯';};
+    const cell=(lbl,val)=>`<div><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--t3)">${lbl}</div><div style="font-size:13px;font-weight:700;color:var(--t1)">${val}</div></div>`;
+    const card=(v)=>`<div class="card hov" style="overflow:hidden;display:flex;flex-direction:column">
+      <div style="background:linear-gradient(135deg,${p.accent},var(--brand-dark));color:#fff;padding:12px 15px" class="between">
+        <div><b style="font-size:14px">${v.sucursal.split(' · ')[0]}</b><div style="font-size:11px;opacity:.9">📍 ${v.ciudad}, ${CX.paisName(v.pais)}</div></div>
+        <span style="background:rgba(255,255,255,.22);border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700">Disponible</span></div>
+      <div class="card-p" style="padding:13px 15px;flex:1">
+        <div class="grid g2" style="gap:11px;margin-bottom:11px">
+          ${cell('Quincena',v.quincena)}${cell('Franja',(v.franja==='Fin de semana'?'🎉 ':'📅 ')+v.franja)}
+          ${cell('Canal',v.canal||'—')}${cell('Escenario',escEmoji(v.escenario)+' '+v.escenario)}
+        </div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--t3)">📅 Disponible desde</div>
+        <div style="font-size:12.5px;font-weight:600;color:var(--t1);margin-bottom:10px">${v.disponibleDesde||v.rango}</div>
+        ${v.combo?`<div style="background:var(--amber-bg);border-radius:8px;padding:7px 10px;font-size:11.5px;color:#8a5b00;margin-bottom:11px">🍿 ${v.combo}</div>`:''}
         <div class="between">
           <div><span style="font-size:16px;font-weight:800;color:var(--green);font-family:var(--disp)">${ui.money(v.currency,v.honorario)}</span>
-          ${v.boleto?`<span style="font-size:11px;color:var(--t3)"> + boleto</span>`:''}${v.combo?`<span style="font-size:11px;color:var(--t3)"> + combo</span>`:''}</div>
+          <div style="font-size:10.5px;color:var(--t3)">${[v.combo?'+ combo':'',v.boleto?'+ boleto':''].filter(Boolean).join(' ')||'honorario'}</div></div>
           <button class="btn btn-pr btn-sm" data-detail="${v.id}">Ver detalle →</button>
         </div>
       </div></div>`;
     const html=`
-      ${ui.ph('Visitas Disponibles', p.name+' · '+p.ronda+' · oportunidades para tu perfil y país')}
+      ${ui.ph('Visitas Disponibles', p.name+' · '+p.ronda+' · '+list.length+' oportunidades para tu perfil')}
       <div class="flex wrap" style="gap:8px;margin-bottom:12px">
-        <select class="sel" id="fQuin" style="width:auto"><option value="">Toda quincena</option>${p.quincenas.map(q=>`<option>${q}</option>`).join('')}</select>
-        <select class="sel" id="fEsc" style="width:auto"><option value="">Todo escenario</option>${p.scenarios.map(s=>`<option>${s}</option>`).join('')}</select>
-        <select class="sel" id="fCanal" style="width:auto"><option value="">Todo canal</option>${(p.canales||[]).map(s=>`<option>${s}</option>`).join('')}</select>
+        <select class="sel" id="fQuin" style="width:auto"><option value="">📆 Toda quincena</option>${p.quincenas.map(q=>`<option>${q}</option>`).join('')}</select>
+        <select class="sel" id="fEsc" style="width:auto"><option value="">🎯 Todo escenario</option>${p.scenarios.map(s=>`<option>${s}</option>`).join('')}</select>
+        <select class="sel" id="fCanal" style="width:auto"><option value="">📲 Todo canal</option>${(p.canales||[]).map(s=>`<option>${s}</option>`).join('')}</select>
       </div>
-      ${ui.aiBox('Filtradas y priorizadas según tu país, perfil y disponibilidad. Las visitas se derivan de la hoja de ruta del proyecto (online, importada o creada en la plataforma).','Para ti')}
+      ${ui.aiBox('Filtradas y priorizadas según tu país, perfil y disponibilidad. Las visitas se derivan de la hoja de ruta del proyecto (online, importada o creada en la plataforma).','Para ti ✨')}
       <div id="vList" style="margin-top:14px">${list.length?`<div class="grid g3">${list.map(card).join('')}</div>`:ui.empty('🔍','Sin visitas disponibles')}</div>`;
     setTimeout(()=>{
       const bind=()=>document.querySelectorAll('[data-detail]').forEach(b=>b.addEventListener('click',()=>CX.shopperVisitDetail(data,p,list.find(v=>v.id===b.dataset.detail),ui)));

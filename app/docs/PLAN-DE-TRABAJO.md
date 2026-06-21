@@ -91,6 +91,8 @@ _Última actualización: sesión 6 (notificaciones bidireccionales + brief ampli
 | H29 | **Selector de Tema visible**: plantillas (swatches) + **tipografía** (`CX.FONTS`) + colores | |
 | H30 | **Motor de planes** (`CX.PLANS`): Básico/Estándar/Pro/Enterprise → preconfigura módulos/temas/integraciones, editable | |
 | H31 | **Plantillas de mensajes** y **catálogo de integraciones** en la consola | ver INTEGRACIONES.md |
+| H32 | **Beneficios shopper**: honorarios vs reembolsos separados + resumen "beneficio total" (ganancia + consumos/entretenimiento disfrutado) | |
+| H33 | **Visitas Disponibles**: tarjetas estilo corporativo (grid quincena/franja/canal/escenario + emoticones + disponible-desde + combo) genéricas por proyecto | |
 
 | # | Item | Notas |
 |---|---|---|
