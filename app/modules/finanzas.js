@@ -207,15 +207,15 @@ CX.module('liquidaciones', ({data,ui})=>{
   <div class="card card-p" style="margin-bottom:16px">
     <div class="card-t" style="margin-bottom:8px">📊 Obligaciones por país y moneda</div>
     <div style="background:var(--amber-bg);border-radius:9px;padding:9px 12px;font-size:11.5px;color:#8a5b00;margin-bottom:12px">No se suman quetzales y lempiras. Total = honorario + reembolso (boleto + combo). El estado y la <b>fecha estimada de pago</b> se derivan del avance de la visita.</div>
-    <table class="tbl"><thead><tr><th>País</th><th>Moneda</th><th>Visitas</th><th>Honorarios</th><th>Reembolsos</th><th>Total</th><th>Listo para lote</th></tr></thead><tbody>${oblig}</tbody></table>
+    <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>País</th><th>Moneda</th><th>Visitas</th><th>Honorarios</th><th>Reembolsos</th><th>Total</th><th>Listo para lote</th></tr></thead><tbody>${oblig}</tbody></table></div>
   </div>
 
   <div class="card card-p">
     <div class="between" style="margin-bottom:12px"><div><div class="card-t">💸 Liquidaciones operativas</div>
       <div style="font-size:11px;color:var(--t3)">El estado avanza solo con la visita. Al preparar lote eliges qué visitas incluir.</div></div>
       <button class="btn btn-pr btn-sm" id="prepLote">📦 Preparar lote</button></div>
-    <table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Realizada</th><th>Estado</th><th>Submit.</th><th>Honorario</th><th>Boleto</th><th>Combo</th><th>Total</th><th>Pago est.</th><th></th></tr></thead>
-    <tbody id="liqBody">${all.map(lrow).join('')}</tbody></table>
+    <div style="overflow-x:auto"><table class="tbl" style="min-width:840px"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Realizada</th><th>Estado</th><th>Submit.</th><th>Honorario</th><th>Boleto</th><th>Combo</th><th>Total</th><th>Pago est.</th><th></th></tr></thead>
+    <tbody id="liqBody">${all.map(lrow).join('')}</tbody></table></div>
     <div style="margin-top:14px">${ui.aiBox('Cada liquidación nace del avance de la visita: realizada → pend. cuestionario → validada → en lote → pagada, con fecha estimada de pago según las reglas del cliente. Cero captura manual.','Liquidación sincronizada')}</div>
   </div>`;
 
