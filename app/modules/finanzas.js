@@ -71,6 +71,14 @@ CX.module('financiero', ({data,ui})=>{
       <div id="presList"></div>
       <div style="margin-top:10px">${ui.aiBox('Los gastos fijos se presupuestan; los variables (honorarios) van según ejecución. El dashboard compara real vs presupuesto para decidir rentabilidad y honorarios.','Presupuesto vs real')}</div>
     </div>
+  </div>
+
+  <div class="card card-p" style="margin-bottom:16px">
+    <div class="card-h"><div class="card-t">🎟️ Reembolsos mensuales · conciliación</div><span class="muted" style="font-size:11px">¿el cliente / casa matriz reembolsó bien?</span></div>
+    <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>País</th><th>Reembolso del periodo</th><th>Reembolsado por cliente</th><th>Diferencia</th><th>Estado</th></tr></thead><tbody>
+    ${p.countries.map(c=>{const d=fp[c];const reembolsado=Math.round(d.reemb*0.85);const dif=d.reemb-reembolsado;return `<tr><td><b>${CX.paisLabel(c)}</b></td><td>${d.cur} ${d.reemb.toLocaleString()}</td><td>${d.cur} ${reembolsado.toLocaleString()}</td><td style="color:${dif>0?'var(--red)':'var(--green)'};font-weight:700">${dif>0?'falta ':''}${d.cur} ${Math.abs(dif).toLocaleString()}</td><td>${dif>0?ui.bdg('Pendiente conciliar','a'):ui.bdg('Conciliado','g')}</td></tr>`;}).join('')}
+    </tbody></table></div>
+    <div style="margin-top:10px">${ui.aiBox('Los reembolsos son flujo (no utilidad): el programa cubre consumos/boletos y el cliente o casa matriz los reintegra. Aquí concilias lo gastado vs lo reembolsado para no perder dinero.','Conciliación de reembolsos')}</div>
   </div>`;
 
   setTimeout(()=>{
@@ -110,63 +118,143 @@ CX.module('movimientos', ({data,ui})=>{
     {tipo:'ingreso',cat:'Factura final cliente',pais:p.countries[0],monto:46400,fecha:'2026-06-20',desc:'Factura de cierre',estado:'Pendiente (CxC)'},
   ];
   const host=ui.el('div');
+  let scope='proyecto'; // 'proyecto' | 'global'
+  const pid=()=>scope==='global'?CX.finStore.GLOBAL:p.id;
+  const CAT=CX.finStore.CATEGORIAS, TI=CX.finStore.TIPOS_INGRESO, TE=CX.finStore.TIPOS_EGRESO;
   const draw=()=>{
-    const movs=[...seed,...CX.finStore.mov(p.id)];
+    const isG=scope==='global';
+    const movs=[...(isG?[]:seed),...CX.finStore.mov(pid())];
     const ing=movs.filter(m=>m.monto>0).reduce((a,m)=>a+m.monto,0);
     const egr=movs.filter(m=>m.monto<0).reduce((a,m)=>a+m.monto,0);
-    const cxc=movs.filter(m=>(m.estado||'').includes('CxC')).reduce((a,m)=>a+Math.abs(m.monto),0);
-    const cxp=CX.liq.forProject(data).filter(l=>l.estado!=='pagada').reduce((a,l)=>a+l.total,0);
+    // ingresos por tipo (separar financiamiento del resto)
+    const porTipoIng={}; movs.filter(m=>m.monto>0).forEach(m=>{const t=m.tipoIngreso||'otro';porTipoIng[t]=(porTipoIng[t]||0)+m.monto;});
+    const financiamiento=porTipoIng.financiamiento||0;
+    const remesas=movs.filter(m=>m.tipoIngreso==='remesa').reduce((a,m)=>a+m.monto,0);
+    // CxC/CxP: manuales (importación) + financiamiento + liquidaciones no pagadas (solo proyecto)
+    const cxpManual=CX.finStore.cxp(pid()).reduce((a,r)=>a+(r.saldo||0),0);
+    const cxpLiq=isG?0:CX.liq.forProject(data).filter(l=>l.estado!=='pagada').reduce((a,l)=>a+l.total,0);
+    const cxp=cxpManual+cxpLiq+financiamiento;
+    const cxc=CX.finStore.cxc(pid()).reduce((a,r)=>a+(r.saldo||0),0) + (isG?0:movs.filter(m=>(m.estado||'').includes('CxC')).reduce((a,m)=>a+Math.abs(m.monto),0));
+
     host.innerHTML=`
-    <div class="between" style="margin-bottom:12px"><div>${ui.ph('Movimientos', p.name+' · ingresos, egresos, anticipos y pagos · CxC / CxP')}</div>
+    <div class="between" style="margin-bottom:12px"><div>${ui.ph('Movimientos & Tesorería', 'Ingresos, egresos, CxC/CxP, financiamientos y remesas · por proyecto o globales')}</div>
       <div class="flex"><span class="bdg bdg-g">● En vivo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
+
+    <div class="flex" style="gap:0;border:1px solid var(--border);border-radius:9px;overflow:hidden;width:max-content;margin-bottom:14px">
+      <button class="btn btn-sm ${scope==='proyecto'?'btn-pr':'btn-ghost'}" data-scope="proyecto" style="border-radius:0">📁 ${p.name}</button>
+      <button class="btn btn-sm ${scope==='global'?'btn-pr':'btn-ghost'}" data-scope="global" style="border-radius:0">🌐 Global (administrativo)</button>
+    </div>
+
     <div class="flex wrap" style="gap:8px;margin-bottom:14px">
       <button class="btn btn-green btn-sm" data-new="ingreso">＋ Ingreso</button>
       <button class="btn btn-soft btn-sm" data-new="egreso">＋ Egreso</button>
-      <button class="btn btn-soft btn-sm" data-new="anticipo">＋ Anticipo</button>
-      <button class="btn btn-pr btn-sm" id="payLote">💳 Pagar lote (genera egresos)</button>
+      <button class="btn btn-soft btn-sm" data-cuenta="cxc">＋ Cuenta por cobrar</button>
+      <button class="btn btn-soft btn-sm" data-cuenta="cxp">＋ Cuenta por pagar</button>
+      <button class="btn btn-soft btn-sm" data-new="remesa">＋ Remesa</button>
+      ${!isG?`<button class="btn btn-pr btn-sm" id="payLote">💳 Pagar lote</button>`:''}
       <button class="btn btn-ghost btn-sm" id="impHist">⤒ Importar histórico</button>
     </div>
-    <div class="grid g4" style="margin-bottom:16px">
-      ${ui.kpi('Ingresos',ui.money(cur,ing),'g')}${ui.kpi('Egresos',ui.money(cur,Math.abs(egr)),'r')}
-      ${ui.kpi('Por cobrar (CxC)',ui.money(cur,cxc),'a')}${ui.kpi('Por pagar (CxP)',ui.money(cur,cxp),'a')}
+
+    <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px">
+      <div data-drill="ing" style="cursor:pointer">${ui.kpi('Ingresos',ui.money(cur,ing),'g')}</div>
+      <div data-drill="egr" style="cursor:pointer">${ui.kpi('Egresos',ui.money(cur,Math.abs(egr)),'r')}</div>
+      <div data-drill="cxc" style="cursor:pointer">${ui.kpi('Por cobrar (CxC)',ui.money(cur,cxc),'a')}</div>
+      <div data-drill="cxp" style="cursor:pointer">${ui.kpi('Por pagar (CxP)',ui.money(cur,cxp),'a',financiamiento?'incl. financiamiento':'')}</div>
+      <div data-drill="rem" style="cursor:pointer">${ui.kpi('Remesas',ui.money(cur,remesas),'b','conciliación')}</div>
     </div>
+
+    <div class="grid g2" style="gap:14px;margin-bottom:16px">
+      <div class="card card-p"><div class="card-h"><div class="card-t">Ingresos por tipo</div></div>
+        ${Object.keys(TI).map(t=>{const val=porTipoIng[t]||0;return val?`<div class="between" style="padding:6px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12px;color:var(--t2)">${TI[t]}${t==='financiamiento'?' <span class="bdg bdg-a" style="font-size:9px">→CxP</span>':''}</span><b style="font-size:12.5px;color:${t==='financiamiento'?'var(--amber)':'var(--green)'}">${ui.money(cur,val)}</b></div>`:'';}).join('')||'<div class="muted" style="font-size:12px;padding:8px 0">Sin ingresos registrados</div>'}
+        <div style="font-size:11px;color:var(--t3);margin-top:8px">Los <b>financiamientos</b> no son utilidad: se suman a CxP hasta devolverse.</div>
+      </div>
+      <div class="card card-p"><div class="card-h"><div class="card-t">Cuentas por pagar (CxP)</div></div>
+        ${CX.finStore.cxp(pid()).length?CX.finStore.cxp(pid()).map(r=>`<div class="between" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12px">${r.concepto}</b><div style="font-size:10px;color:var(--t3)">${r.pais||''} · saldo</div></div><div class="flex" style="gap:8px"><b style="font-size:12.5px;color:var(--amber)">${ui.money(cur,r.saldo||0)}</b><button class="btn btn-soft btn-sm" data-abono="${r.id}">Abonar</button></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:8px 0">Sin CxP registradas. Útil al importar saldos iniciales.</div>'}
+      </div>
+    </div>
+
     <div class="card card-p">
-      <div class="card-h"><div class="card-t">Movimientos del periodo</div><span class="muted" style="font-size:11px">Vista previa anti-duplicados al importar</span></div>
-      <table class="tbl"><thead><tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>País</th><th style="text-align:right">Monto</th><th>Estado</th></tr></thead><tbody>
+      <div class="card-h"><div class="card-t">Movimientos${isG?' globales':' del proyecto'}</div><span class="muted" style="font-size:11px">conceptos categorizados · anti-duplicado al importar</span></div>
+      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Fecha</th><th>Concepto</th><th>Categoría</th><th>Tipo</th><th>País</th><th style="text-align:right">Monto</th><th>Estado</th><th></th></tr></thead><tbody>
         ${movs.map(m=>`<tr><td style="font-size:12px">${m.fecha}</td><td><b>${m.cat}</b><div style="font-size:10px;color:var(--t3)">${m.desc||''}</div></td>
-          <td>${ui.bdg(m.tipo,m.monto>=0?'g':'r')}</td><td>${m.pais}</td>
+          <td style="font-size:11.5px">${m.categoria||(m.global?'Administrativo':'Proyecto')}</td>
+          <td style="font-size:11px">${TI[m.tipoIngreso]||TE[m.tipoEgreso]||m.tipo}</td><td>${m.pais||'—'}</td>
           <td style="text-align:right;font-weight:700;color:var(--${m.monto<0?'red':'green'})">${m.monto<0?'− ':'+ '}${ui.money(cur,Math.abs(m.monto))}</td>
-          <td>${ui.bdg(m.estado||'—',(m.estado||'').includes('Cx')?'a':m.monto<0?'r':'g')}</td></tr>`).join('')}
-      </tbody></table>
-      <div style="margin-top:14px">${ui.aiBox('Pagar un lote genera de una sola vez los egresos de cada shopper del lote (no uno por uno) y mueve sus liquidaciones a "pagada". Cuentas por cobrar y por pagar se reflejan aquí y en el Dashboard Financiero.','Movimientos vinculados a lotes')}</div>
+          <td>${ui.bdg(m.estado||'—',(m.estado||'').includes('Cx')?'a':m.monto<0?'r':'g')}</td>
+          <td style="text-align:right">${m.id?`<button class="btn btn-ghost btn-sm" data-delm="${m.id}" style="color:var(--red);padding:2px 6px">✕</button>`:''}</td></tr>`).join('')}
+      </tbody></table></div>
+      <div style="margin-top:14px">${ui.aiBox('Separo ingresos por comisiones, honorarios, anticipos y facturación de los financiamientos (que van a CxP). Registro CxC/CxP iniciales en la importación y vinculo cada abono a su egreso. Las remesas recibidas se concilian aquí.','Tesorería completa, no solo gastos del proyecto')}</div>
     </div>`;
-    host.querySelectorAll('[data-new]').forEach(b=>b.addEventListener('click',()=>{
-      const t=b.dataset.new;
-      ui.modal('Registrar '+t,`
-        <div style="margin-bottom:12px"><label class="lbl">Concepto</label><input class="inp" id="mvCat" placeholder="Concepto"></div>
-        <div class="grid g2" style="gap:10px;margin-bottom:12px">
-          <div><label class="lbl">Monto (${cur})</label><input class="inp" id="mvMonto" type="number"></div>
-          <div><label class="lbl">País</label><select class="sel" id="mvPais">${p.countries.map(c=>`<option>${c}</option>`).join('')}</select></div>
-        </div>
-        <div style="margin-bottom:16px"><label class="lbl">Descripción</label><input class="inp" id="mvDesc" placeholder="Opcional"></div>
-        <div style="text-align:right"><button class="btn btn-pr btn-sm" id="mvSave">Registrar</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#mvSave').addEventListener('click',()=>{
-        const monto=Math.abs(+ov.querySelector('#mvMonto').value||0)*(t==='egreso'?-1:1);
-        CX.finStore.addMov(p.id,{tipo:t,cat:ov.querySelector('#mvCat').value||t,pais:ov.querySelector('#mvPais').value,monto,desc:ov.querySelector('#mvDesc').value,estado:t==='egreso'?'Pagado':'Conciliado'});
-        close();draw();ui.toast('Movimiento registrado','ok');});}});
+
+    host.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>{scope=b.dataset.scope;draw();}));
+    host.querySelectorAll('[data-delm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.delMov(pid(),b.dataset.delm);draw();ui.toast('Movimiento eliminado','');}));
+    host.querySelectorAll('[data-drill]').forEach(el=>el.addEventListener('click',()=>{
+      const k=el.dataset.drill; let title,rows;
+      if(k==='ing'||k==='egr'){const f=movs.filter(m=>k==='ing'?m.monto>0:m.monto<0);title=k==='ing'?'Ingresos':'Egresos';rows=f.map(m=>`<tr><td>${m.fecha}</td><td><b>${m.cat}</b></td><td>${TI[m.tipoIngreso]||TE[m.tipoEgreso]||m.tipo}</td><td style="text-align:right">${ui.money(cur,Math.abs(m.monto))}</td></tr>`).join('');}
+      else if(k==='rem'){const f=movs.filter(m=>m.tipoIngreso==='remesa');title='Remesas recibidas';rows=f.map(m=>`<tr><td>${m.fecha}</td><td><b>${m.cat}</b></td><td>${m.estado||''}</td><td style="text-align:right">${ui.money(cur,m.monto)}</td></tr>`).join('');}
+      else {const arr=k==='cxc'?CX.finStore.cxc(pid()):CX.finStore.cxp(pid());title=k==='cxc'?'Cuentas por cobrar':'Cuentas por pagar';rows=arr.map(r=>`<tr><td><b>${r.concepto}</b></td><td>${r.pais||''}</td><td style="text-align:right">${ui.money(cur,r.saldo||0)}</td></tr>`).join('');}
+      ui.modal(title,rows?`<table class="tbl"><tbody>${rows}</tbody></table>`:ui.empty('💰','Sin registros.'));
     }));
+
+    host.querySelectorAll('[data-new]').forEach(b=>b.addEventListener('click',()=>{
+      const t=b.dataset.new; const esIng=t!=='egreso'; const tipos=esIng?TI:TE;
+      const defTipo=t==='remesa'?'remesa':Object.keys(tipos)[0];
+      ui.modal('Registrar '+(t==='remesa'?'remesa recibida':t),`
+        <div class="grid g2" style="gap:10px 12px">
+          <div style="grid-column:1/3"><label class="lbl">Concepto</label><input class="inp" id="mvCat" placeholder="Concepto del movimiento"></div>
+          <div><label class="lbl">Categoría</label><select class="sel" id="mvCateg">${CAT.map(c=>`<option ${(scope==='global'&&c==='Administrativo')?'selected':''}>${c}</option>`).join('')}</select></div>
+          <div><label class="lbl">Tipo de ${esIng?'ingreso':'egreso'}</label><select class="sel" id="mvTipo">${Object.keys(tipos).map(k=>`<option value="${k}" ${k===defTipo?'selected':''}>${tipos[k]}</option>`).join('')}</select></div>
+          <div><label class="lbl">Monto (${cur})</label><input class="inp" id="mvMonto" type="number"></div>
+          <div><label class="lbl">País</label><select class="sel" id="mvPais"><option value="">— global —</option>${p.countries.map(c=>`<option ${scope!=='global'?'selected':''}>${c}</option>`).join('')}</select></div>
+          <div><label class="lbl">Fecha (admite histórico)</label><input class="inp" id="mvFecha" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
+          <div><label class="lbl">Estado</label><select class="sel" id="mvEstado">${(esIng?['Conciliado','Pendiente (CxC)','Por conciliar']:['Pagado','Programado']).map(s=>`<option>${s}</option>`).join('')}</select></div>
+          <div style="grid-column:1/3"><label class="lbl">Descripción</label><input class="inp" id="mvDesc" placeholder="Opcional"></div>
+        </div>
+        <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="mvSave">Registrar</button></div>
+      `,{onMount:(ov,close)=>{ov.querySelector('#mvSave').addEventListener('click',()=>{
+        const monto=Math.abs(+ov.querySelector('#mvMonto').value||0)*(esIng?1:-1);
+        const rec={tipo:esIng?'ingreso':'egreso',cat:ov.querySelector('#mvCat').value||t,categoria:ov.querySelector('#mvCateg').value,pais:ov.querySelector('#mvPais').value,monto,fecha:ov.querySelector('#mvFecha').value,desc:ov.querySelector('#mvDesc').value,estado:ov.querySelector('#mvEstado').value};
+        if(esIng)rec.tipoIngreso=ov.querySelector('#mvTipo').value; else rec.tipoEgreso=ov.querySelector('#mvTipo').value;
+        CX.finStore.addMov(pid(),rec);close();draw();ui.toast('Movimiento registrado','ok');});}});
+    }));
+
+    host.querySelectorAll('[data-cuenta]').forEach(b=>b.addEventListener('click',()=>{
+      const k=b.dataset.cuenta;
+      ui.modal('Registrar cuenta por '+(k==='cxc'?'cobrar':'pagar'),`
+        <p style="font-size:12px;color:var(--t2);margin-bottom:10px">Útil para cargar saldos iniciales en la importación o registrar deudas/derechos del periodo.</p>
+        <div class="grid g2" style="gap:10px 12px">
+          <div style="grid-column:1/3"><label class="lbl">Concepto / contraparte</label><input class="inp" id="ctCon" placeholder="${k==='cxc'?'Cliente / casa matriz':'Proveedor / financiamiento'}"></div>
+          <div><label class="lbl">Monto (${cur})</label><input class="inp" id="ctMonto" type="number"></div>
+          <div><label class="lbl">País</label><select class="sel" id="ctPais"><option value="">—</option>${p.countries.map(c=>`<option>${c}</option>`).join('')}</select></div>
+          <div style="grid-column:1/3"><label class="lbl">Vence</label><input class="inp" id="ctVence" type="date"></div>
+        </div>
+        <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="ctSave">Registrar</button></div>
+      `,{onMount:(ov,close)=>{ov.querySelector('#ctSave').addEventListener('click',()=>{
+        const r={concepto:ov.querySelector('#ctCon').value||'(sin concepto)',monto:+ov.querySelector('#ctMonto').value||0,pais:ov.querySelector('#ctPais').value,vence:ov.querySelector('#ctVence').value};
+        if(k==='cxc')CX.finStore.addCxc(pid(),r);else CX.finStore.addCxp(pid(),r);close();draw();ui.toast('Cuenta por '+(k==='cxc'?'cobrar':'pagar')+' registrada','ok');});}});
+    }));
+
+    host.querySelectorAll('[data-abono]').forEach(b=>b.addEventListener('click',()=>{
+      const r=CX.finStore.cxp(pid()).find(x=>x.id===b.dataset.abono);
+      ui.modal('Abonar a CxP · '+r.concepto,`
+        <div style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Saldo actual: <b>${ui.money(cur,r.saldo||0)}</b></div>
+        <label class="lbl">Monto del abono (${cur})</label><input class="inp" id="abMonto" type="number" value="${r.saldo||0}" style="margin-bottom:14px">
+        <div style="text-align:right"><button class="btn btn-green btn-sm" id="abSave">Registrar abono</button></div>
+      `,{onMount:(ov,close)=>{ov.querySelector('#abSave').addEventListener('click',()=>{CX.finStore.abonarCxp(pid(),r.id,+ov.querySelector('#abMonto').value||0);close();draw();ui.toast('Abono registrado · egreso vinculado','ok');});}});
+    }));
+
     const pl=host.querySelector('#payLote');
     if(pl)pl.addEventListener('click',()=>{
       const val=CX.liq.forProject(data).filter(l=>l.estado==='validada');
       if(!val.length){ui.toast('No hay liquidaciones validadas para pagar','warn');return;}
       const r=data.payVisits(val.map(l=>l.visitaId));
-      ui.toast(r.pagadas+' liquidaciones pagadas · egreso(s) generados automáticamente · Beneficios y Finanzas sincronizados','ok',4200);
+      ui.toast(r.pagadas+' liquidaciones pagadas · egreso(s) automáticos · Beneficios y Finanzas sincronizados','ok',4200);
     });
     const ih=host.querySelector('#impHist');
     if(ih)ih.addEventListener('click',()=>ui.modal('Importar histórico de movimientos',`
-      <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Sube tu archivo (Excel/CSV). Se muestra una <b>vista previa</b> y se detectan duplicados antes de confirmar.</p>
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Sube tu archivo (Excel/CSV) de movimientos, remesas, CxC/CxP. Vista previa + anti-duplicado por fecha+monto+concepto.</p>
       <input type="file" class="inp" style="padding:7px;margin-bottom:12px">
-      <div style="background:var(--brand-light);border-radius:9px;padding:10px 12px;font-size:12px;color:var(--brand-dark)">En producción: mapeo de columnas → tipo/monto/fecha/país, y conciliación anti-duplicado por fecha+monto+concepto.</div>
+      <div style="background:var(--brand-light);border-radius:9px;padding:10px 12px;font-size:12px;color:var(--brand-dark)">Mapeo de columnas → tipo/categoría/monto/fecha/país/estado. Permite cargar <b>saldos iniciales</b> de CxC/CxP y remesas para conciliar.</div>
       <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Vista previa lista (demo)','ok');this.closest('.cx-ov').remove()">Ver vista previa</button></div>
     `));
   };

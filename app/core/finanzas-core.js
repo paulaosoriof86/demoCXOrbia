@@ -12,9 +12,33 @@ window.CX = window.CX || {};
 CX.finStore = {
   _mov:{}, _pres:{},
   mov(pid){ return this._mov[pid] || (this._mov[pid]=[]); },
-  addMov(pid,m){ this.mov(pid).push(Object.assign({id:'m'+Date.now().toString(36),fecha:new Date().toISOString().slice(0,10)},m)); CX.bus&&CX.bus.emit('fin'); },
+  addMov(pid,m){ this.mov(pid).push(Object.assign({id:'m'+Date.now().toString(36)+Math.floor(Math.random()*99),fecha:new Date().toISOString().slice(0,10)},m)); CX.bus&&CX.bus.emit('fin'); },
+  delMov(pid,id){ this._mov[pid]=(this._mov[pid]||[]).filter(m=>m.id!==id); CX.bus&&CX.bus.emit('fin'); },
   pres(pid){ return this._pres[pid] || (this._pres[pid]={}); },
   setPres(pid,k,v){ this.pres(pid)[k]=+v||0; CX.bus&&CX.bus.emit('fin'); },
+
+  /* ----- movimientos GLOBALES (no atados a un proyecto) ----- */
+  GLOBAL:'__global__',
+  globalMov(){ return this.mov(this.GLOBAL); },
+  addGlobalMov(m){ this.addMov(this.GLOBAL, Object.assign({global:true},m)); },
+
+  /* ----- taxonomía de conceptos (listas desplegables) ----- */
+  CATEGORIAS:['Administrativo','Financiero','Tecnología','Proyecto','Comercial','Impuestos','Nómina','Otro'],
+  /* tipos de INGRESO separados (comisiones/honorarios/anticipos/facturación vs financiamiento) */
+  TIPOS_INGRESO:{
+    comisiones:'Comisiones', honorarios:'Honorarios', anticipo:'Anticipo de programa',
+    facturacion:'Facturación de programa', financiamiento:'Financiamiento (→ CxP)', remesa:'Remesa recibida',
+  },
+  TIPOS_EGRESO:{ honorarios_shopper:'Honorarios a shoppers', gasto:'Gasto operativo', impuesto:'Impuesto', abono_cxp:'Abono a CxP', otro:'Otro' },
+
+  /* ----- cuentas por pagar / cobrar registradas manualmente (p.ej. en importación inicial) ----- */
+  _cxp:{}, _cxc:{},
+  cxp(pid){ return this._cxp[pid] || (this._cxp[pid]=[]); },
+  cxc(pid){ return this._cxc[pid] || (this._cxc[pid]=[]); },
+  addCxp(pid,r){ this.cxp(pid).push(Object.assign({id:'p'+Date.now().toString(36),saldo:+r.monto||0},r)); CX.bus&&CX.bus.emit('fin'); },
+  addCxc(pid,r){ this.cxc(pid).push(Object.assign({id:'c'+Date.now().toString(36),saldo:+r.monto||0},r)); CX.bus&&CX.bus.emit('fin'); },
+  /* abono a una CxP: reduce saldo y registra egreso vinculado */
+  abonarCxp(pid,id,monto){ const r=this.cxp(pid).find(x=>x.id===id); if(!r)return; r.saldo=Math.max(0,(r.saldo||0)-(+monto||0)); this.addMov(pid,{tipo:'egreso',cat:'Abono CxP · '+(r.concepto||''),tipoEgreso:'abono_cxp',pais:r.pais,monto:-(+monto||0),desc:'Abono a cuenta por pagar',estado:'Pagado',origen:'cxp',cxpId:id}); },
 };
 
 CX.fin = {

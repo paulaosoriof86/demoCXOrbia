@@ -11,6 +11,17 @@ _Última actualización: sesión 22 (**Tablero de Estado Operativo** estilo HR e
 | H69 | **Tablero de Estado Operativo** en Dashboard: buckets (próximas, realizadas pend. cuestionario, pend. submitir, pend. programar, pend. asignar, alertas vencidas) con fila detallada (sucursal/ciudad/franja/shopper/escenario/combo/estado), **WhatsApp + correo por fila**, recordatorio masivo e ir a Visitas; alimenta recordatorios/automatizaciones | `dashboard.js` |
 | H70 | **Ranking de shoppers clickeable** (perfil con KPIs + WA + ir a Shoppers) y **ranking completo** | `dashboard.js` |
 
+_Última actualización: sesión 26 (**Financiero completo** — movimientos globales + conceptos categorizados, ingresos por tipo, CxC/CxP con abonos, remesas y reembolsos mensuales para conciliación)._
+
+### ✅ Hecho en sesión 26
+| # | Item | Notas |
+|---|---|---|
+| H78 | **Tesorería**: movimientos **globales** (no solo proyecto) con scope; **categorías** (admin/financiero/tecnología/proyecto…); ingresos separados por **comisiones/honorarios/anticipos/facturación vs financiamiento→CxP**; fecha histórica; eliminar | `finanzas-core.js`, `finanzas.js` |
+| H79 | **CxC/CxP** registrables (saldos iniciales de importación) + **abonos** vinculados a egreso; **remesas** recibidas; KPIs clickeables (drill) | `finanzas-core.js`, `finanzas.js` |
+| H80 | **Reembolsos mensuales · conciliación** en Dashboard Financiero (gastado vs reembolsado por cliente/casa matriz) | `finanzas.js` |
+
+> 🟡 Falta en Financiero: en Liquidaciones, armar lote eligiendo de **CxP/meses anteriores** (no solo del mes); tiles internos del dashboard 100% clickeables.
+
 _Última actualización: sesión 25 (**módulo Automatizaciones (Make)** + escritura de vuelta a HR que cierra la doble vía; integraciones Outlook/Sheets; **IA Gemini** configurable; ejemplos anonimizados de otra industria)._
 
 ### ✅ Hecho en sesión 25
