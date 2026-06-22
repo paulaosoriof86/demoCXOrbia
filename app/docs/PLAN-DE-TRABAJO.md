@@ -3,7 +3,13 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
-_Última actualización: sesión 11 (motor de cuestionario ponderado como **fuente única** — editor secciones/preguntas con pesos y **versiones**, **score real** del shopper, sincronizado al Portal del Cliente)._
+_Última actualización: sesión 12 (gestión de **Clientes** en administración · proyectos por cliente; **Importar / Crear con IA** en el editor de cuestionarios; KPIs clickeables en el módulo nuevo)._
+
+### ✅ Hecho en sesión 12
+| # | Item | Notas |
+|---|---|---|
+| H47 | **Módulo Clientes (admin)**: cartera de clientes/marcas, **cada proyecto cuelga de un cliente** (`clientId`), detalle con proyectos+contactos, alta/edición persistente, abrir proyecto desde el cliente, **KPIs y filas clickeables** | `modules/clientes.js` |
+| H48 | **Importar** (pegar/CSV simple) y **Crear con IA** en el editor de Cuestionarios (genera secciones/preguntas ponderadas según descripción del negocio); manual sigue disponible | `configuracion.js` |
 
 ### ✅ Hecho en sesión 11 (transversal · operativa + cliente)
 | # | Item | Notas |
@@ -113,6 +119,12 @@ _Última actualización: sesión 11 (motor de cuestionario ponderado como **fuen
 - ⬜ Configuración con submenús + motor de planes/consolas (P0 sesión 6).
 - ⬜ Importador de migración (visitas/certificaciones/estados de TyA, anti-duplicado).
 - ⬜ Responsive total revisado.
+
+### P0/P1 — Pendientes que siguen (de feedback)
+- ✅ **Control de clientes en administración** (no solo proyectos) — H47.
+- ✅ **Importar / crear con IA** en cuestionarios — H48; ⬜ replicar el patrón **importar/IA/manual** en **instructivos, certificaciones, hojas de ruta, base de conocimiento**.
+- ✅ **Pesos por sección y por pregunta** configurables (el cliente/operación eligen) — editor H46.
+- 🟡 **KPIs/tarjetas clickeables con detalle en TODAS las secciones** — hecho en dashboard, shoppers, portal cliente y **clientes**; ⬜ pasada transversal en finanzas, informes, postulaciones, visitas, beneficios, midía.
 
 ### P2 — Profundización del ecosistema (recomendado, ver `ECOSISTEMA.md §7`)
 - ⬜ Investigación de mercados · Voz del Cliente (VoC) · Quality Assurance / calibración · Facturación & contratos · SLAs/cumplimiento · Gobernanza de datos/privacidad · Centro de Inteligencia (IA) · Benchmarking sectorial.

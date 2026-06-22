@@ -11,6 +11,47 @@ CX.module('cuestionarios', ({data,ui})=>{
 
   const ver=()=>_qProg.versions.find(v=>v.id===_qProg.activeId)||_qProg.versions[0];
 
+  /* importar cuestionario (pegar/CSV simple) y crear con IA */
+  const IMPORT_SAMPLE=`# Recibimiento | 20\n- Saludo y bienvenida | Escala 1–5 | 60 | req\n- Tiempo de espera | Escala 1–5 | 40\n# Atención | 50\n- Conocimiento del asesor | Escala 1–5 | 50 | req\n- Amabilidad | Escala 1–5 | 50\n# Cierre | 30\n- Despedida | Sí / No | 100`;
+  function parseImport(text){
+    const secs=[]; let cur=null;
+    (text||'').split(/\n/).forEach(l=>{ l=l.trim(); if(!l)return;
+      if(l[0]==='#'){ const [name,w]=l.slice(1).split('|').map(x=>x.trim()); cur={id:CX.programa.uid('sec'),name:name||'Sección',weight:+w||0,questions:[]}; secs.push(cur); }
+      else if((l[0]==='-'||l[0]==='*')&&cur){ const p=l.slice(1).split('|').map(x=>x.trim());
+        cur.questions.push({id:CX.programa.uid('q'),name:p[0]||'Pregunta',tipo:CX.programa.TIPOS.includes(p[1])?p[1]:'Escala 1–5',weight:+p[2]||0,req:/req/i.test(p[3]||''),critico:/ko|crít|crit/i.test(p[4]||'')}); }
+    });
+    return secs;
+  }
+  function importModal(){
+    ui.modal('Importar cuestionario', `
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Pega tu cuestionario (o llénalo desde Excel/CSV exportado). Formato: <b># Sección | peso</b> y por pregunta <b>- texto | tipo | peso | req | ko</b>.</p>
+      <textarea class="inp" id="impTxt" rows="9" style="font-family:monospace;font-size:12px"></textarea>
+      <div class="flex" style="justify-content:space-between;margin-top:12px"><button class="btn btn-ghost btn-sm" id="impSample">Cargar ejemplo</button>
+        <button class="btn btn-green btn-sm" id="impApply">Importar a esta versión</button></div>`,
+    {onMount:(ov,close)=>{
+      ov.querySelector('#impSample').addEventListener('click',()=>{ov.querySelector('#impTxt').value=IMPORT_SAMPLE;});
+      ov.querySelector('#impApply').addEventListener('click',()=>{ const secs=parseImport(ov.querySelector('#impTxt').value);
+        if(!secs.length){ ui.toast('No se detectaron secciones (revisa el formato)','err'); return; }
+        ver().sections=secs; close(); draw(); ui.toast('Importadas '+secs.length+' secciones','ok'); }); }});
+  }
+  function aiGenerate(desc){
+    const d=(desc||'').toLowerCase(); let banks;
+    if(/restau|comida|food|bebida|sabor|menú|menu/.test(d)) banks=[['Recibimiento',15,['Saludo y bienvenida','Tiempo hasta atención']],['Toma de orden',25,['Sugerencia del menú','Claridad del pedido']],['Calidad de alimentos',30,['Sabor y temperatura','Presentación del plato']],['Tiempos',15,['Tiempo de entrega']],['Limpieza',10,['Mesa e instalaciones']],['Cierre',5,['Despedida e invitación a volver']]];
+    else if(/banc|finan|agencia|asesor|préstamo|prestamo|cuenta/.test(d)) banks=[['Espera',15,['Tiempo en fila']],['Asesoría',35,['Conocimiento del asesor','Claridad de la información']],['Protocolo',25,['Cumplimiento de protocolo','Verificación de identidad']],['Instalaciones',15,['Orden y señalización']],['Cierre',10,['Despedida y seguimiento']]];
+    else if(/retail|tienda|super|caja|producto|ropa|calzado/.test(d)) banks=[['Recibimiento',15,['Saludo en piso']],['Asesoría de producto',30,['Conocimiento','Disponibilidad de stock']],['Experiencia de compra',25,['Orden y exhibición','Facilidad para encontrar']],['Caja',20,['Tiempo en caja','Amabilidad en el cobro']],['Cierre',10,['Invitación a volver']]];
+    else banks=null;
+    const base=banks||CX.programa.sections(p.id).map(s=>[s.name,s.weight,s.questions.map(q=>q.name)]);
+    return base.map(([name,weight,qs])=>({id:CX.programa.uid('sec'),name,weight,questions:qs.map((qn,i)=>({id:CX.programa.uid('q'),name:qn,tipo:'Escala 1–5',weight:Math.round(100/qs.length),req:i===0,critico:false}))}));
+  }
+  function aiModal(){
+    ui.modal('✨ Crear cuestionario con IA', `
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Describe qué quieres evaluar o pega tu protocolo/manual de servicio. La IA propone secciones y preguntas ponderadas; luego editas.</p>
+      <textarea class="inp" id="aiTxt" rows="5" placeholder="Ej. Restaurante de comida rápida: evaluar bienvenida, toma de orden, sabor, tiempos y limpieza…"></textarea>
+      <div style="text-align:right;margin-top:12px"><button class="btn btn-green btn-sm" id="aiGo">Generar</button></div>`,
+    {onMount:(ov,close)=>{ ov.querySelector('#aiGo').addEventListener('click',()=>{ const secs=aiGenerate(ov.querySelector('#aiTxt').value);
+      ver().sections=secs; close(); draw(); ui.toast('IA generó '+secs.length+' secciones · ajusta pesos si hace falta','ok',3200); }); }});
+  }
+
   const sync=()=>{
     const v=ver();
     host.querySelectorAll('[data-sec]').forEach(secEl=>{
@@ -79,7 +120,11 @@ CX.module('cuestionarios', ({data,ui})=>{
       </div>
     </div>
     <div id="secList">${v.sections.map(secCard).join('')}</div>
-    <button class="btn btn-soft btn-sm" id="addSec" style="margin-bottom:14px">＋ Sección</button>
+    <div class="flex" style="gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="btn btn-soft btn-sm" id="addSec">＋ Sección</button>
+      <button class="btn btn-ghost btn-sm" id="impBtn">📥 Importar</button>
+      <button class="btn btn-ghost btn-sm" id="aiBtn">✨ Crear con IA</button>
+    </div>
     <div class="card card-p">${ui.aiBox('Valido que las secciones sumen 100% y que cada sección sume 100% en sus preguntas. Puedes versionar el cuestionario por sucursal, marca o cadena. Las preguntas crítico/KO limitan el score si se incumplen.','Editor ponderado · una sola fuente para las 3 caras')}</div>`;
     bind();
   };
@@ -90,6 +135,8 @@ CX.module('cuestionarios', ({data,ui})=>{
     const dv=host.querySelector('#delVer'); if(dv)dv.addEventListener('click',()=>{_qProg.versions=_qProg.versions.filter(x=>x.id!==_qProg.activeId);_qProg.activeId=_qProg.versions[0].id;draw();ui.toast('Versión eliminada','');});
     host.querySelector('#dupVer').addEventListener('click',()=>{sync();const src=ver();const c=JSON.parse(JSON.stringify(src));c.id=CX.programa.uid('ver');c.name=src.name+' (copia)';c.sections.forEach(s=>{s.id=CX.programa.uid('sec');s.questions.forEach(q=>q.id=CX.programa.uid('q'));});_qProg.versions.push(c);_qProg.activeId=c.id;draw();ui.toast('Versión duplicada','ok');});
     host.querySelector('#addSec').addEventListener('click',()=>{sync();ver().sections.push({id:CX.programa.uid('sec'),name:'Nueva sección',weight:0,questions:[]});draw();});
+    host.querySelector('#impBtn').addEventListener('click',()=>{sync();importModal();});
+    host.querySelector('#aiBtn').addEventListener('click',()=>{sync();aiModal();});
     host.querySelectorAll('[data-dels]').forEach(b=>b.addEventListener('click',()=>{sync();const v=ver();v.sections=v.sections.filter(s=>s.id!==b.dataset.dels);draw();}));
     host.querySelectorAll('[data-addq]').forEach(b=>b.addEventListener('click',()=>{sync();const s=ver().sections.find(x=>x.id===b.dataset.addq);s.questions.push({id:CX.programa.uid('q'),name:'Nueva pregunta',tipo:'Escala 1–5',weight:0,req:false,critico:false});draw();}));
     host.querySelectorAll('[data-delq]').forEach(b=>b.addEventListener('click',()=>{sync();const[sid,qid]=b.dataset.delq.split('|');const s=ver().sections.find(x=>x.id===sid);s.questions=s.questions.filter(q=>q.id!==qid);draw();}));
