@@ -11,13 +11,35 @@ _Última actualización: sesión 22 (**Tablero de Estado Operativo** estilo HR e
 | H69 | **Tablero de Estado Operativo** en Dashboard: buckets (próximas, realizadas pend. cuestionario, pend. submitir, pend. programar, pend. asignar, alertas vencidas) con fila detallada (sucursal/ciudad/franja/shopper/escenario/combo/estado), **WhatsApp + correo por fila**, recordatorio masivo e ir a Visitas; alimenta recordatorios/automatizaciones | `dashboard.js` |
 | H70 | **Ranking de shoppers clickeable** (perfil con KPIs + WA + ir a Shoppers) y **ranking completo** | `dashboard.js` |
 
-### 🔴 BACKLOG de feedback (sesión 22 · priorizado — pre-migración TyA)
+_Última actualización: sesión 24 (**anti-duplicación robusta en doble vía HR↔plataforma** — llave natural inmutable compartida por importador y HR viva)._
+
+### ✅ Hecho en sesión 24
+| # | Item | Notas |
+|---|---|---|
+| H72 | **`core/dedupe.js` — llave natural estable**: identidad por id externo (ref/extId) **y** llave compuesta inmutable (sucursal+ciudad+escenario+quincena). NUNCA deduplica por fecha/estado/shopper (mutables) | evita el duplicado clásico de doble vía |
+| H73 | **HR viva sin duplicar**: `hr.diff` resuelve cada fila por extId y, si no, por **llave natural** contra visitas ya existentes (creadas en plataforma vía postulación) → las marca como update, no como nuevas | doble vía HR↔plataforma idempotente |
+| H74 | **Importador con misma llave**: detecta duplicados por identidad estable (no por fecha); commit fija `extId=ref` para convergencia | verificado: fila con fecha distinta = mismo registro |
+
+> ⚠️ Recomendación que confirma el fix: el problema de duplicación en la otra plataforma venía de deduplicar por campos que cambian (fecha al agendar, estado al avanzar). Aquí la identidad es inmutable y compartida en ambos sentidos.
+
+### 🤖 IA económica para importadores/herramientas (decisión pendiente)
+- ⬜ Vincular un proveedor de IA **económico y con tokens duraderos** para: mapeo de columnas del importador, extracción desde documentos (instructivos/protocolos), generación de cuestionarios/propuestas. Recomendado: modelo pequeño/barato (p.ej. gama "mini/flash/haiku") con caché de prompts y plantillas; abstraer en `CX.ai` configurable por tenant (endpoint + key + modelo) para no acoplar. Hoy los importadores usan heurística determinística (sin costo); la IA sería un asistente opcional encima.
+
+_Última actualización: sesión 23 (**Importador inteligente genérico** — detecta columnas de cualquier HR/histórico, mapeo editable, anti-duplicado, preview y commit que crea visitas+shoppers y sincroniza)._
+
+### ✅ Hecho en sesión 23
+| # | Item | Notas |
+|---|---|---|
+| H71 | **Importador inteligente** `core/importador.js` + módulo: parse CSV/TSV/pegado, **autodetección de columnas** por palabras clave (sucursal/ciudad/fecha/shopper/escenario/honorario/reembolso/estado), mapeo editable, normaliza fechas/estados, **anti-duplicado** (sucursal+fecha), preview 3 pasos, commit crea visitas + vincula/crea shoppers + emite `visit-flow` | sirve HR viva y migración inicial de cualquier consultora |
+
+> 🟡 Pendiente del backlog que sigue: importar HR **dentro de la creación de proyecto** (mapear criterios/KPIs), e importadores en instructivos/cert/aprendizaje. En **Liquidaciones**: el armado de lote debe permitir elegir de **CxP/meses anteriores**, no solo del mes activo.
+
 > Pendientes reales detectados/confirmados. La operativa NO está al 100% hasta cerrar P0–P1.
 
 **P0 — Importaciones inteligentes (genéricas, cualquier consultora)**
 - ⬜ Importar HR en **creación de proyecto**: mapear columnas, elegir criterios/KPIs, mantener colaborativa online; adaptar plataforma a industria/características.
 - ⬜ Importador inteligente en **instructivos, certificaciones, hojas de ruta, aprendizaje** (patrón importar/IA/manual ya en cuestionarios).
-- ⬜ **Importador de migración inicial** (cualquier proyecto): shoppers, visitas, certificaciones, **CxC/CxP, históricos de HR**, anti-duplicado, preview→commit.
+- ⬜ **Importador de migración inicial** (cualquier proyecto): shoppers, visitas, certificaciones, **CxC/CxP, históricos de HR**, anti-duplicado, preview→commit. 🟡 base lista (H71); falta CxC/CxP/cert.
 - ⬜ Importar **históricos por shopper** (de HR históricas) → perfil con histórico real.
 
 **P0 — Autoadministración / edición**
@@ -28,7 +50,7 @@ _Última actualización: sesión 22 (**Tablero de Estado Operativo** estilo HR e
 **P0 — Financiero**
 - ⬜ Tarjetas del Dashboard Financiero **clickeables**; **reembolsos mensuales** (conciliar pago cliente/casa matriz).
 - ⬜ **Movimientos globales** (no solo por proyecto) + **conceptos con listas** (admin/financiero/tecnología/proyecto…); separar ingresos por comisiones/honorarios/anticipos/facturación vs **financiamientos**→CxP; **históricos**; **remesas** para conciliar; **presupuesto** dentro del módulo.
-- ⬜ **Liquidaciones**: selección real de cuáles entran al lote; CxC/CxP desde importación; abonos vinculados a egresos.
+- ⬜ **Liquidaciones**: selección real de cuáles entran al lote; CxC/CxP desde importación; abonos vinculados a egresos; **elegir de CxP/meses anteriores, no solo del mes**.
 
 **P1 — Gestión accionable (detalles ampliados)**
 - ⬜ Ampliar **detalle de TODOS los KPIs/secciones**: contacto individual y **masivo** WA+correo desde cada registro.

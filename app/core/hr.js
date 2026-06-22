@@ -54,8 +54,10 @@ window.CX = window.CX || {};
       const rows=this.external(p);
       const nuevos=[], updates=[], iguales=[];
       rows.forEach(r=>{
-        if(!r.visitId){ nuevos.push(r); return; }
-        const v=CX.data._visitas.find(x=>x.id===r.visitId);
+        // resolver visitId por extId; si no, por LLAVE NATURAL estable (evita duplicar
+        // filas que ya existen como visita creada en la plataforma — doble vía)
+        let v = r.visitId ? CX.data._visitas.find(x=>x.id===r.visitId) : null;
+        if(!v && CX.dedupe){ v = CX.dedupe.match(r, p.id); if(v) r.visitId=v.id; }
         if(!v){ nuevos.push(r); return; }
         const cambioFecha=(v.agendada||v.disponibleDesde||'')!==r.fecha;
         const cambioReemb=((v.boleto||0)+(v.comboAmt||0))!==(+r.reembolso||0);
