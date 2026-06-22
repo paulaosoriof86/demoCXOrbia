@@ -72,12 +72,12 @@ CX.module('visitas', ({data,role,ui})=>{
       <select class="sel" id="vEst" style="width:auto"><option value="">Todos los estados</option>${['disponible','postulada','asignada','agendada','realizada','cuestionario','liquidada','fuera_rango'].map(e=>`<option value="${e}">${e}</option>`).join('')}</select>
       <select class="sel" id="vPais" style="width:auto"><option value="">País</option>${p.countries.map(c=>`<option>${c}</option>`).join('')}</select>
     </div>
-    <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px">
-      ${ui.kpi('Disponibles',all.filter(v=>v.estado==='disponible').length,'b')}
-      ${ui.kpi('Asignadas',k.asignadas.t,'b')}
-      ${ui.kpi('Realizadas',k.realizadas.t,'g')}
-      ${ui.kpi('Sin asignar',k.sinAsignar.t,'r')}
-      ${ui.kpi('Fuera de rango',k.fueraRango.t,'a')}
+    <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px" id="vKpis">
+      <div data-k="disp" style="cursor:pointer">${ui.kpi('Disponibles',all.filter(v=>v.estado==='disponible').length,'b')}</div>
+      <div data-k="asig" style="cursor:pointer">${ui.kpi('Asignadas',k.asignadas.t,'b')}</div>
+      <div data-k="real" style="cursor:pointer">${ui.kpi('Realizadas',k.realizadas.t,'g')}</div>
+      <div data-k="sinasig" style="cursor:pointer">${ui.kpi('Sin asignar',k.sinAsignar.t,'r')}</div>
+      <div data-k="fuera" style="cursor:pointer">${ui.kpi('Fuera de rango',k.fueraRango.t,'a')}</div>
     </div>
     <div class="card card-p">
       <table class="tbl"><thead><tr><th>#</th><th>Sucursal</th><th>Quincena</th><th>Shopper</th><th>Estado</th><th>Agenda</th><th>Honorario</th><th></th></tr></thead>
@@ -88,6 +88,9 @@ CX.module('visitas', ({data,role,ui})=>{
     const filt=()=>{const q=(document.getElementById('vSearch').value||'').toLowerCase(),fe=document.getElementById('vEst').value,fp=document.getElementById('vPais').value;
       document.querySelectorAll('#vBody tr').forEach(tr=>{const v=all.find(z=>z.id===tr.dataset.vid);const ok=(!q||(v.sucursal+(v.shopper||'')+v.ciudad).toLowerCase().includes(q))&&(!fe||v.estado===fe)&&(!fp||v.pais===fp);tr.style.display=ok?'':'none';});};
     ['vSearch','vEst','vPais'].forEach(id=>document.getElementById(id).addEventListener('input',filt));
+    const vKp={disp:['Visitas disponibles',v=>v.estado==='disponible'],asig:['Visitas asignadas',v=>v.shopperId],real:['Visitas realizadas',v=>['realizada','cuestionario','liquidada'].includes(v.estado)],sinasig:['Visitas sin asignar',v=>!v.shopperId&&v.estado!=='fuera_rango'],fuera:['Fuera de rango',v=>v.estado==='fuera_rango']};
+    document.querySelectorAll('#vKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{ const d=vKp[el.dataset.k]; const L=all.filter(d[1]);
+      ui.modal(d[0]+' ('+L.length+')', L.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Shopper</th><th>Estado</th><th>Honorario</th></tr></thead><tbody>${L.map(v=>`<tr><td><b style="font-size:12.5px">${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.shopper||'<span class="muted">—</span>'}</td><td>${ui.estadoBadge(v.estado)}</td><td style="font-size:12px;color:var(--green)">${ui.money(v.currency,v.honorario)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🔍','Sin visitas en esta categoría.')); }));
     const editor=(v)=>ui.modal((v?'Editar':'Publicar')+' visita',`
       <div class="grid g2" style="gap:12px">
         <div><label class="lbl">Sucursal</label><input class="inp" value="${v?v.sucursal:''}" placeholder="Sucursal 01 · Ciudad"></div>

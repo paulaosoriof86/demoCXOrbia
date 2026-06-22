@@ -1,4 +1,6 @@
 /* CXOrbia · Mi Día (admin + shopper) */
+let _cgMonth='2026-06', _cgByDay={};
+function _shiftMonth(ym,delta){let[y,m]=ym.split('-').map(Number);m+=delta;if(m<1){m=12;y--;}if(m>12){m=1;y++;}return y+'-'+String(m).padStart(2,'0');}
 CX.module('midia', ({data,role,ui})=>{
   const p=data.project();
   /* bloque de notificaciones (común a ambos roles) */
@@ -16,6 +18,13 @@ CX.module('midia', ({data,role,ui})=>{
     document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.nav)));
     document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.go)));
     document.querySelectorAll('[data-cgo]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.cgo)));
+    document.querySelectorAll('[data-day]').forEach(c=>c.addEventListener('click',()=>{
+      const its=_cgByDay[c.dataset.day]||[];
+      const body=its.map(it=>`<div class="between" data-cgo2="${it.nav}" style="cursor:pointer;padding:9px 11px;border:1px solid var(--border);border-radius:9px;margin-bottom:8px"><div class="flex"><span style="font-size:16px">${it.icon}</span><div><div style="font-size:13px;font-weight:700">${it.titulo}</div><div style="font-size:11px;color:var(--t3)">${it.sub}</div></div></div>${it.estado==='tarea'?CX.ui.bdg('Tarea','a'):CX.ui.estadoBadge(it.estado)}</div>`).join('');
+      CX.ui.modal('Agenda · '+c.dataset.day, body, {onMount:(ov,close)=>ov.querySelectorAll('[data-cgo2]').forEach(b=>b.addEventListener('click',()=>{close();CX.router.nav(b.dataset.cgo2);}))});
+    }));
+    const pv=document.getElementById('cgPrev'); if(pv)pv.addEventListener('click',()=>{_cgMonth=_shiftMonth(_cgMonth,-1);CX.router.nav('midia');});
+    const nx=document.getElementById('cgNext'); if(nx)nx.addEventListener('click',()=>{_cgMonth=_shiftMonth(_cgMonth,1);CX.router.nav('midia');});
   },0);};
 
   /* Cronograma: visitas + tareas agrupadas por día (admin y shopper) */
@@ -35,17 +44,28 @@ CX.module('midia', ({data,role,ui})=>{
       if(k.sinAsignar.t) items.push({fecha:hoy,icon:'📌',titulo:k.sinAsignar.t+' visitas sin asignar',sub:'Asignar shoppers',estado:'tarea',nav:'visitas'});
     }
     const byDay={}; items.forEach(it=>{ if(!it.fecha)return; (byDay[it.fecha]=byDay[it.fecha]||[]).push(it); });
-    const days=Object.keys(byDay).sort().slice(0,6);
-    if(!days.length) return '';
-    const fmt=(f)=>{ try{ return new Date(f+'T00:00:00').toLocaleDateString('es-GT',{weekday:'long',day:'numeric',month:'short'}); }catch(e){ return f; } };
+    _cgByDay=byDay;
+    const [Y,M]=_cgMonth.split('-').map(Number);
+    const first=new Date(Y,M-1,1); const startDow=(first.getDay()+6)%7;
+    const daysIn=new Date(Y,M,0).getDate(); const today='2026-06-21';
+    const monthLabel=first.toLocaleDateString('es-GT',{month:'long',year:'numeric'});
+    const wd=['L','M','M','J','V','S','D'];
+    let cells='';
+    for(let i=0;i<startDow;i++) cells+='<div class="cg-cell cg-empty"></div>';
+    for(let dd=1;dd<=daysIn;dd++){
+      const ds=Y+'-'+String(M).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
+      const its=byDay[ds]||[]; const isT=ds===today;
+      cells+=`<div class="cg-cell${its.length?' cg-has':''}${isT?' cg-today':''}"${its.length?` data-day="${ds}"`:''}>
+        <div class="cg-num">${dd}</div>
+        ${its.length?`<div class="cg-dots">${its.slice(0,4).map(it=>`<span class="cg-dot" style="background:${it.estado==='tarea'?'var(--amber)':'var(--brand)'}"></span>`).join('')}${its.length>4?`<span style="font-size:9px;color:var(--t3)">+${its.length-4}</span>`:''}</div>`:''}
+      </div>`;
+    }
     return `<div class="card card-p" style="margin-bottom:16px">
-      <div class="card-h"><div class="card-t">🗓️ Cronograma</div><span class="bdg bdg-n">visitas y tareas por día</span></div>
-      ${days.map(day=>`<div style="margin-bottom:12px">
-        <div style="font-size:11px;font-weight:800;color:var(--brand-dark);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">${fmt(day)}</div>
-        ${byDay[day].map(it=>`<div class="between" data-cgo="${it.nav}" style="cursor:pointer;padding:8px 10px;border:1px solid var(--border);border-radius:9px;margin-bottom:6px">
-          <div class="flex"><span style="font-size:15px">${it.icon}</span><div><div style="font-size:12.5px;font-weight:700;color:var(--t1)">${it.titulo}</div><div style="font-size:11px;color:var(--t3)">${it.sub}</div></div></div>
-          ${it.estado==='tarea'?ui.bdg('Tarea','a'):ui.estadoBadge(it.estado)}</div>`).join('')}
-      </div>`).join('')}
+      <div class="card-h"><div class="card-t">🗓️ Cronograma</div>
+        <div class="flex" style="gap:6px"><button class="btn btn-ghost btn-sm" id="cgPrev">‹</button><span style="font-size:12.5px;font-weight:800;text-transform:capitalize;min-width:130px;text-align:center">${monthLabel}</span><button class="btn btn-ghost btn-sm" id="cgNext">›</button></div></div>
+      <div class="cg-grid cg-head">${wd.map(w=>`<div class="cg-wd">${w}</div>`).join('')}</div>
+      <div class="cg-grid">${cells}</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:10px"><span class="cg-dot" style="background:var(--brand)"></span> visita &nbsp; <span class="cg-dot" style="background:var(--amber)"></span> tarea &nbsp;·&nbsp; toca un día con actividad</div>
     </div>`;
   };
   if(role==='admin'){

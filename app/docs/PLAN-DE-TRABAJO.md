@@ -3,7 +3,16 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
-_Última actualización: sesión 14 (**Cronograma en Mi Día** admin+shopper; **Hojas de Ruta funcionales** — interna/import/online con lectura en vivo y **sync sin duplicar**; wizard con rubro buscable, buscador de países e importador IA)._
+_Última actualización: sesión 15 (Cronograma **tipo calendario** en Mi Día — admin+shopper, clickeable por día; KPIs clickeables en Visitas admin)._
+
+### ✅ Hecho en sesión 15
+| # | Item | Notas |
+|---|---|---|
+| H54 | **Cronograma tipo calendario** en Mi Día (mes navegable, marcadores visita/tarea por día, click en día → agenda del día) — admin y shopper | `midia.js`, `theme.css` |
+| H55 | **KPIs clickeables en Visitas (admin)** con drill a la lista filtrada (disponibles/asignadas/realizadas/sin asignar/fuera de rango) | `visitas.js` |
+
+> 🟡 **KPIs clickeables (transversal)**: hecho en dashboard, shoppers, portal cliente, clientes y **visitas**; ⬜ falta pasada en **finanzas, informes, postulaciones, beneficios, midía-acción**.
+
 
 ### ✅ Hecho en sesión 14
 | # | Item | Notas |
