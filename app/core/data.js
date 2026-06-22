@@ -172,6 +172,7 @@ CX.data = {
     const v=this._visitas.find(x=>x.id===id); if(!v) return null;
     v.estado=estado;
     if(dateField && dateVal) v[dateField]=dateVal;
+    if(CX.hr) CX.hr.writeBack(this.project(), v);
     CX.bus && CX.bus.emit('visit-flow');
     return v;
   },
@@ -183,6 +184,7 @@ CX.data = {
     if(!v||!s) return null;
     v.shopperId=s.id; v.shopper=s.nombre; v.shopperCode=s.code;
     if(v.estado==='disponible') v.estado='asignada';
+    if(CX.hr) CX.hr.writeBack(this.project(), v);
     CX.bus && CX.bus.emit('visit-flow');
     return v;
   },

@@ -24,12 +24,23 @@ window.CX = window.CX || {};
       {id:'a_pago',        evento:'pago',        activa:true,  canal:'whatsapp', to:'shopper', titulo:'Pago realizado', plantilla:'Tu liquidación de {sucursal} pasó a pagada'},
       {id:'a_atraso',      evento:'atraso',      activa:true,  canal:'whatsapp', to:'admin', titulo:'Visita atrasada', plantilla:'{sucursal} sin avance · vence {fecha}'},
       {id:'a_aprobacion',  evento:'aprobacion',  activa:true,  canal:'whatsapp', to:'shopper', titulo:'Postulación aprobada', plantilla:'Tu visita a {sucursal} fue aprobada'},
+      {id:'a_hr_writeback',evento:'hr_writeback', activa:true,  canal:'sheet',    to:'admin', titulo:'HR actualizada', plantilla:'{sucursal}: {shopper} · {fecha} · {estado} (sincronizado a la HR)'},
     ];
   }
 
+  /* ---------- Proveedor de IA (configurable · por defecto Gemini económico) ---------- */
+  CX.ai = {
+    _cfg:null,
+    defaults(){ return {provider:'gemini', model:'gemini-1.5-flash', apiKey:'', endpoint:'', activa:false, cacheTpl:true}; },
+    cfg(){ if(this._cfg)return this._cfg; try{ this._cfg=Object.assign(this.defaults(), JSON.parse(localStorage.getItem('cx_ai')||'{}')); }catch(e){ this._cfg=this.defaults(); } return this._cfg; },
+    save(patch){ this._cfg=Object.assign(this.cfg(), patch||{}); try{ localStorage.setItem('cx_ai', JSON.stringify(this._cfg)); }catch(e){} },
+    ready(){ const c=this.cfg(); return c.activa && (c.apiKey||c.endpoint); },
+    PROVIDERS:{gemini:{label:'Google Gemini', modelos:['gemini-1.5-flash','gemini-1.5-flash-8b','gemini-2.0-flash']}, openai:{label:'OpenAI', modelos:['gpt-4o-mini']}, anthropic:{label:'Anthropic', modelos:['claude-3-haiku']}, custom:{label:'Endpoint propio', modelos:['custom']}},
+  };
+
   CX.automations = {
     CANALES:{push:'Notificación in-app', whatsapp:'WhatsApp (Make)', correo:'Correo (Make)', sheet:'Google Sheets (Make)'},
-    EVENTOS:{postulacion:'Postulación creada', agenda:'Visita agendada', realizada:'Visita realizada', cuestionario:'Cuestionario enviado', reprog:'Reprogramación', pago:'Pago/liquidación', atraso:'Visita atrasada/pendiente', aprobacion:'Postulación aprobada'},
+    EVENTOS:{postulacion:'Postulación creada', agenda:'Visita agendada', realizada:'Visita realizada', cuestionario:'Cuestionario enviado', reprog:'Reprogramación', pago:'Pago/liquidación', atraso:'Visita atrasada/pendiente', aprobacion:'Postulación aprobada', hr_writeback:'Escritura de vuelta a HR'},
 
     list(){ try{ const s=JSON.parse(localStorage.getItem(LS)||'null'); if(s&&s.length) return s; }catch(e){} return defaults(); },
     save(list){ try{ localStorage.setItem(LS, JSON.stringify(list)); }catch(e){} CX.bus&&CX.bus.emit('automations'); },
@@ -57,8 +68,8 @@ window.CX = window.CX || {};
         }
       });
     },
-    _icon(e){ return {postulacion:'📩',agenda:'📅',realizada:'✅',cuestionario:'📝',reprog:'🔄',pago:'💰',atraso:'⏰',aprobacion:'✅'}[e]||'🔔'; },
-    _tone(e){ return {postulacion:'b',agenda:'g',realizada:'b',cuestionario:'b',reprog:'a',pago:'g',atraso:'r',aprobacion:'g'}[e]||'b'; },
+    _icon(e){ return {postulacion:'📩',agenda:'📅',realizada:'✅',cuestionario:'📝',reprog:'🔄',pago:'💰',atraso:'⏰',aprobacion:'✅',hr_writeback:'🔃'}[e]||'🔔'; },
+    _tone(e){ return {postulacion:'b',agenda:'g',realizada:'b',cuestionario:'b',reprog:'a',pago:'g',atraso:'r',aprobacion:'g',hr_writeback:'b'}[e]||'b'; },
     _nav(to,e){ if(to==='shopper') return e==='pago'?'beneficios':'misvisitas'; return e==='atraso'?'visitas':'postulaciones'; },
 
     /* escanea visitas y detecta atrasadas / pendientes / desactualizadas */

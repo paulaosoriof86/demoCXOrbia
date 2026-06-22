@@ -98,6 +98,19 @@ window.CX = window.CX || {};
     /* edición de una celda de la HR externa (fecha/reembolso/shopper) */
     editRow(p, extId, patch){ const rows=this.external(p); const r=rows.find(x=>x.extId===extId); if(r)Object.assign(r,patch); return r; },
 
+    /* ESCRITURA DE VUELTA a la HR (cierra la doble vía sin duplicar):
+       al asignar/agendar en la plataforma, actualiza la fila externa que
+       corresponde (por llave natural/extId) y dispara la automatización Make. */
+    writeBack(p, v){
+      p=p||CX.data.project(); if(!v) return;
+      const rows=this.external(p);
+      let r = rows.find(x=>x.visitId===v.id) ||
+              (CX.dedupe && rows.find(x=>CX.dedupe.natKey(x)===CX.dedupe.natKey(v)));
+      if(r){ r.visitId=v.id; r.shopper=v.shopper||r.shopper; r.fecha=v.agendada||v.disponibleDesde||r.fecha; r.estado=v.estado; }
+      else { rows.push({extId:'HR-PB'+(rows.length+1), visitId:v.id, sucursal:v.sucursal, ciudad:v.ciudad, pais:v.pais, quincena:v.quincena, escenario:v.escenario, fecha:v.agendada||v.disponibleDesde||'', honorario:v.honorario, reembolso:(v.boleto||0)+(v.comboAmt||0), shopper:v.shopper||'', estado:v.estado, origen:'plataforma'}); }
+      if(this.esOnline(p) && CX.automations) CX.automations.fire('hr_writeback',{sucursal:v.sucursal, shopper:v.shopper||'', fecha:v.agendada||v.disponibleDesde||'', estado:v.estado});
+    },
+
     invalidate(p){ if(p)delete this._ext[p.id]; else this._ext={}; },
   };
 

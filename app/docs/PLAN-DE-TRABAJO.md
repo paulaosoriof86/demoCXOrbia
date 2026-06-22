@@ -11,6 +11,17 @@ _Última actualización: sesión 22 (**Tablero de Estado Operativo** estilo HR e
 | H69 | **Tablero de Estado Operativo** en Dashboard: buckets (próximas, realizadas pend. cuestionario, pend. submitir, pend. programar, pend. asignar, alertas vencidas) con fila detallada (sucursal/ciudad/franja/shopper/escenario/combo/estado), **WhatsApp + correo por fila**, recordatorio masivo e ir a Visitas; alimenta recordatorios/automatizaciones | `dashboard.js` |
 | H70 | **Ranking de shoppers clickeable** (perfil con KPIs + WA + ir a Shoppers) y **ranking completo** | `dashboard.js` |
 
+_Última actualización: sesión 25 (**módulo Automatizaciones (Make)** + escritura de vuelta a HR que cierra la doble vía; integraciones Outlook/Sheets; **IA Gemini** configurable; ejemplos anonimizados de otra industria)._
+
+### ✅ Hecho en sesión 25
+| # | Item | Notas |
+|---|---|---|
+| H75 | **Módulo Automatizaciones**: activar/editar automatizaciones (canal + plantilla), **webhook de escenario Make**, integraciones (Outlook/M365, Gmail, Sheets, WhatsApp Cloud), panel de alertas de pendientes y **registro de disparos** | `modules/automatizaciones.js` |
+| H76 | **Escritura de vuelta a HR** (`hr.writeBack`): al asignar/agendar en plataforma, actualiza la fila externa correspondiente (por llave natural) y dispara `hr_writeback` a Make → **doble vía sin duplicar** (verificado: 1 fila por visita) | `core/hr.js`, `core/data.js` |
+| H77 | **IA configurable `CX.ai`**: proveedor **Gemini** por defecto (`gemini-1.5-flash`, económico), modelo/endpoint/key por tenant, activación opcional; asistente para importadores/extracción/generación | `core/automations.js` |
+
+> Datos de ejemplo del módulo: **anonimizados, industria red de farmacias** (no cine), 100% genérico.
+
 _Última actualización: sesión 24 (**anti-duplicación robusta en doble vía HR↔plataforma** — llave natural inmutable compartida por importador y HR viva)._
 
 ### ✅ Hecho en sesión 24

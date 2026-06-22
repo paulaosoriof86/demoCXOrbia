@@ -120,6 +120,7 @@ CX.MODULES = {
   cuestionarios: { icon:'🧩', label:'Cuestionarios',        roles:['admin'],           status:'ready' },
   usuarios:      { icon:'🔐', label:'Usuarios & Permisos',  roles:['admin'],           status:'ready' },
   config:        { icon:'⚙️', label:'Configuración',         roles:['admin'],           status:'ready' },
+  automatizaciones:{ icon:'⚡', label:'Automatizaciones',     roles:['admin'],           status:'ready' },
   // Comercial / consultora (CRM + marketing) — roadmap del ecosistema
   costos:        { icon:'🧮', label:'Costos & Propuestas',  roles:['admin'],           status:'ready' },
   crm:           { icon:'🤝', label:'CRM Comercial',         roles:['admin'],           status:'soon' },
@@ -140,7 +141,7 @@ CX.NAV = {
     { sec:'Operación', items:['midia','dashboard','clientes','proyectos','visitas','postulaciones','shoppers','rutas','importador','documentos','aprendizaje','cert','tablon','soporte','informes'] },
     { sec:'Finanzas',  items:['financiero','movimientos','liquidaciones','lotes'] },
     { sec:'Comercial', items:['costos','crm','marketing'] },
-    { sec:'Configuración', items:['cuestionarios','usuarios','config'] },
+    { sec:'Configuración', items:['cuestionarios','usuarios','config','automatizaciones'] },
   ],
   shopper: [
     { sec:'Operación', items:['midia','miperfil','visitas','misvisitas','documentos','aprendizaje','cert','tablon','soporte'] },
