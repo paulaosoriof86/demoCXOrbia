@@ -67,12 +67,12 @@ CX.module('postulaciones', ({data,ui})=>{
     <label class="flex" style="font-size:12px;color:var(--t2);gap:6px"><input type="checkbox" id="pHist"> Ver históricas</label>
   </div>
 
-  <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px">
-    ${ui.kpi('Pendientes',c('pendiente'),'a')}
-    ${ui.kpi('Reprogramaciones',reprog.length,'r')}
-    ${ui.kpi('Aprobadas',c('aprobada'),'g')}
-    ${ui.kpi('Todas',posts.length,'b')}
-    ${ui.kpi('Agendamientos',agendadas.length,'n')}
+  <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px" id="poKpis">
+    <div data-k="pend" style="cursor:pointer">${ui.kpi('Pendientes',c('pendiente'),'a')}</div>
+    <div data-k="reprog" style="cursor:pointer">${ui.kpi('Reprogramaciones',reprog.length,'r')}</div>
+    <div data-k="aprob" style="cursor:pointer">${ui.kpi('Aprobadas',c('aprobada'),'g')}</div>
+    <div data-k="todas" style="cursor:pointer">${ui.kpi('Todas',posts.length,'b')}</div>
+    <div data-k="agenda" style="cursor:pointer">${ui.kpi('Agendamientos',agendadas.length,'n')}</div>
   </div>
 
   ${reprog.length?`<div class="card card-p" style="border-left:3px solid var(--amber);margin-bottom:16px">
@@ -87,6 +87,15 @@ CX.module('postulaciones', ({data,ui})=>{
   <div class="card card-p">${ui.aiBox('Sugiero el mejor shopper por historial y certificación, detecto reprogramaciones tardías y disparo WhatsApp y notificaciones automáticamente al aprobar. Cada decisión queda firmada y trazada.','Asistente de asignación')}</div>`;
 
   setTimeout(()=>{
+    const poList=(title,arr,render)=>ui.modal(title+' ('+arr.length+')', arr.length?(render?arr.map(render).join(''):`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Estado</th><th>Honorario</th></tr></thead><tbody>${arr.map(x=>`<tr><td><b style="font-size:12.5px">${x.shopper}</b><div style="font-size:10px;color:var(--t3)">${x.shopperCode}</div></td><td style="font-size:12px">${x.sucursal}<div style="font-size:10px;color:var(--t3)">${CX.paisFlag(x.pais)} ${x.ciudad}</div></td><td>${estTag(x.estado)}</td><td style="font-size:12px;color:var(--green)">${x.currency} ${x.honorario}</td></tr>`).join('')}</tbody></table>`):ui.empty('📭','Sin elementos en esta categoría.'));
+    const poKp={
+      pend:['Postulaciones pendientes',posts.filter(x=>x.estado==='pendiente')],
+      reprog:['Reprogramaciones',reprog],
+      aprob:['Postulaciones aprobadas',posts.filter(x=>x.estado==='aprobada')],
+      todas:['Todas las postulaciones',posts],
+      agenda:['Agendamientos autorizados',agendadas.map(v=>({shopper:v.shopper,shopperCode:v.shopperCode||'',sucursal:v.sucursal,ciudad:v.ciudad,pais:v.pais,estado:v.estado,currency:v.currency,honorario:v.honorario}))],
+    };
+    document.querySelectorAll('#poKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=poKp[el.dataset.k];poList(d[0],d[1]);}));
     const act=(id,label,tone,extra)=>{const el=document.querySelector(`[data-pid="${id}"]`);if(!el)return;
       el.querySelector('div[style*="flex-direction:column"]').innerHTML=`<div style="background:var(--${tone}-bg);border-radius:9px;padding:8px 14px;text-align:center"><div style="font-size:12px;font-weight:700;color:var(--${tone})">${label}</div></div>`;
       ui.toast(extra,'ok');};

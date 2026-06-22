@@ -3,7 +3,13 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
-_Última actualización: sesión 15 (Cronograma **tipo calendario** en Mi Día — admin+shopper, clickeable por día; KPIs clickeables en Visitas admin)._
+_Última actualización: sesión 16 (KPIs clickeables — pasada transversal completada: informes, postulaciones, beneficios y finanzas)._
+
+### ✅ Hecho en sesión 16
+| # | Item | Notas |
+|---|---|---|
+| H56 | **KPIs clickeables** en Reportes&KPIs (informes), Postulaciones (drill por estado), Mis Beneficios (drill por concepto) y Dashboard Financiero (drill de liquidaciones por país) | `operacion-extra.js`, `postulaciones.js`, `beneficios.js`, `finanzas.js` |
+
 
 ### ✅ Hecho en sesión 15
 | # | Item | Notas |
@@ -11,7 +17,7 @@ _Última actualización: sesión 15 (Cronograma **tipo calendario** en Mi Día �
 | H54 | **Cronograma tipo calendario** en Mi Día (mes navegable, marcadores visita/tarea por día, click en día → agenda del día) — admin y shopper | `midia.js`, `theme.css` |
 | H55 | **KPIs clickeables en Visitas (admin)** con drill a la lista filtrada (disponibles/asignadas/realizadas/sin asignar/fuera de rango) | `visitas.js` |
 
-> 🟡 **KPIs clickeables (transversal)**: hecho en dashboard, shoppers, portal cliente, clientes y **visitas**; ⬜ falta pasada en **finanzas, informes, postulaciones, beneficios, midía-acción**.
+> 🟢 **KPIs clickeables (transversal) — COMPLETO**: dashboard, shoppers, portal cliente, clientes, visitas, **informes, postulaciones, beneficios y finanzas** (drill por país). Pendiente solo donde no aplica.
 
 
 ### ✅ Hecho en sesión 14

@@ -170,13 +170,23 @@ CX.module('rutas', ({data,ui})=>{
 /* CXOrbia · Reportes & KPIs / Informes (admin) */
 CX.module('informes', ({data,ui})=>{
   const k=data.kpis(), p=data.project();
+  setTimeout(()=>{
+    const cump=p.countries.map(c=>`<tr><td><b>${CX.paisLabel(c)}</b></td><td>${k.realizadas[c]||0}/${k.total[c]||0}</td><td>${ui.bdg(Math.round((k.realizadas[c]||0)/Math.max(k.total[c]||1,1)*100)+'%','g')}</td></tr>`).join('');
+    const drills={
+      cump:['Cumplimiento por país',`<table class="tbl"><thead><tr><th>País</th><th>Realizadas/Total</th><th>%</th></tr></thead><tbody>${cump}</tbody></table>`],
+      vel:['Velocidad media','<p style="font-size:13px;color:var(--t2);line-height:1.7">Tiempo medio entre agendar y enviar el cuestionario. Calculado sobre las visitas realizadas del periodo; baja con recordatorios automáticos.</p>'],
+      cal:['Calidad del cuestionario','<p style="font-size:13px;color:var(--t2);line-height:1.7">Porcentaje de cuestionarios sin observaciones de QA (campos completos, evidencia válida, sin contradicciones). El editor con pesos y evidencia mejora este indicador.</p>'],
+      rent:['Rentabilidad','<p style="font-size:13px;color:var(--t2);line-height:1.7">Margen del proyecto según el modelo (directo: ingreso − honorarios − ISR/regalías; delegado: neto). Detalle por país en el Dashboard Financiero.</p>'],
+    };
+    document.querySelectorAll('#infKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=drills[el.dataset.k];ui.modal(d[0],d[1]);}));
+  },0);
   return `
     ${ui.ph('Reportes & KPIs', p.name+' · entregables listos para dirección y cliente')}
-    <div class="grid g4" style="margin-bottom:16px">
-      ${ui.kpi('Cumplimiento',Math.round(k.realizadas.t/Math.max(k.total.t,1)*100)+'%','g')}
-      ${ui.kpi('Velocidad media','1.4d','b')}
-      ${ui.kpi('Calidad cuest.','92%','p')}
-      ${ui.kpi('Rentabilidad','39.6%','a')}
+    <div class="grid g4" style="margin-bottom:16px" id="infKpis">
+      <div data-k="cump" style="cursor:pointer">${ui.kpi('Cumplimiento',Math.round(k.realizadas.t/Math.max(k.total.t,1)*100)+'%','g')}</div>
+      <div data-k="vel" style="cursor:pointer">${ui.kpi('Velocidad media','1.4d','b')}</div>
+      <div data-k="cal" style="cursor:pointer">${ui.kpi('Calidad cuest.','92%','p')}</div>
+      <div data-k="rent" style="cursor:pointer">${ui.kpi('Rentabilidad','39.6%','a')}</div>
     </div>
     <div class="card card-p">
       <div class="card-h"><div class="card-t">Exportables</div></div>

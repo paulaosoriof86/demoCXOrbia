@@ -30,14 +30,20 @@ CX.module('beneficios', ({data,ui})=>{
   if(boleto) especie.push(['🎟️','Gasto reembolsado del programa', ui.money(cur,boleto)]);
   especie.push(['💵','Honorario neto (tu ganancia)',ui.money(cur,hon)]);
 
+  setTimeout(()=>{
+    const benDrill=(title,arr)=>ui.modal(title+' · '+arr.length+' visita(s)', arr.length?`<table class="tbl"><thead><tr><th>Visita</th><th>Honorario</th><th>Reembolso</th><th>Total</th><th>Estado</th><th>Pago</th></tr></thead><tbody>${arr.map(l=>{const lb=CX.liq.label(l.estado);return `<tr><td><b style="font-size:12.5px">${l.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(l.pais)} ${l.freal||''}</div></td><td style="color:var(--green);font-weight:700">${ui.money(l.moneda,l.honorario)}</td><td style="color:var(--purple)">${l.reembolso?ui.money(l.moneda,l.reembolso):'—'}</td><td style="font-weight:700">${ui.money(l.moneda,l.total)}</td><td>${ui.bdg(lb[0],lb[1])}</td><td style="font-size:11px">${l.fechaEstimadaPago||'—'}</td></tr>`;}).join('')}</tbody></table>`:ui.empty('💰','Sin visitas en esta categoría.'));
+    const benKp={hon:['💵 Honorarios',all],reemb:['🎁 Reembolsos',all.filter(l=>l.reembolso>0)],cobrar:['⏳ Por cobrar',all.filter(l=>l.estado!=='pagada')],pagado:['✅ Pagado',all.filter(l=>l.estado==='pagada')]};
+    document.querySelectorAll('#benKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=benKp[el.dataset.k];benDrill(d[0],d[1]);}));
+  },0);
+
   return `
     ${ui.ph('Mis Beneficios', p.name+' · lo que ganas y lo que disfrutas, claro y separado')}
 
-    <div class="grid g4" style="margin-bottom:16px">
-      ${ui.kpi('💵 Honorarios',ui.money(cur,hon),'g','tu ganancia en efectivo')}
-      ${ui.kpi('🎁 Reembolsos',ui.money(cur,reemb),'p','gastos del programa cubiertos')}
-      ${ui.kpi('⏳ Por cobrar',ui.money(cur,porCobrar),'a')}
-      ${ui.kpi('✅ Pagado',ui.money(cur,pagado),'b')}
+    <div class="grid g4" style="margin-bottom:16px" id="benKpis">
+      <div data-k="hon" style="cursor:pointer">${ui.kpi('💵 Honorarios',ui.money(cur,hon),'g','tu ganancia en efectivo')}</div>
+      <div data-k="reemb" style="cursor:pointer">${ui.kpi('🎁 Reembolsos',ui.money(cur,reemb),'p','gastos del programa cubiertos')}</div>
+      <div data-k="cobrar" style="cursor:pointer">${ui.kpi('⏳ Por cobrar',ui.money(cur,porCobrar),'a')}</div>
+      <div data-k="pagado" style="cursor:pointer">${ui.kpi('✅ Pagado',ui.money(cur,pagado),'b')}</div>
     </div>
 
     <div class="grid g2" style="margin-bottom:16px">

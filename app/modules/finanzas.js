@@ -21,7 +21,7 @@ CX.module('financiero', ({data,ui})=>{
   const modelLbl = p.modelo==='delegado' ? 'Delegado (franquicia)' : 'Facturado directamente';
 
   const tile=(c)=>{const d=fp[c];return `<div class="card card-p">
-    <div class="between" style="margin-bottom:10px"><div class="card-t">${CX.paisLabel(c)} <span class="muted" style="font-weight:500">(${d.cur})</span></div>${ui.bdg(d.margenPct+'% margen',d.margenPct>=30?'g':'a')}</div>
+    <div class="between" style="margin-bottom:10px"><div class="card-t finDrill" data-c="${c}" style="cursor:pointer">${CX.paisLabel(c)} <span class="muted" style="font-weight:500">(${d.cur})</span> <span style="font-size:11px;color:var(--brand)">ver visitas →</span></div>${ui.bdg(d.margenPct+'% margen',d.margenPct>=30?'g':'a')}</div>
     <div class="grid g2" style="gap:8px">
       ${ui.kpi('Ingresos',d.cur+' '+d.ingreso.toLocaleString(),'g')}
       ${ui.kpi('Honorarios',d.cur+' '+d.honPaga.toLocaleString(),'r')}
@@ -74,6 +74,10 @@ CX.module('financiero', ({data,ui})=>{
   </div>`;
 
   setTimeout(()=>{
+    document.querySelectorAll('.finDrill').forEach(el=>el.addEventListener('click',()=>{
+      const c=el.dataset.c, liqs=CX.liq.forProject(data).filter(l=>l.pais===c);
+      ui.modal('Liquidaciones · '+CX.paisLabel(c)+' ('+liqs.length+')', liqs.length?`<table class="tbl"><thead><tr><th>Visita</th><th>Shopper</th><th>Honorario</th><th>Reembolso</th><th>Total</th><th>Estado</th></tr></thead><tbody>${liqs.map(l=>{const lb=CX.liq.label(l.estado);return `<tr><td><b style="font-size:12.5px">${l.sucursal}</b></td><td style="font-size:12px">${l.shopper||'—'}</td><td style="color:var(--green)">${ui.money(l.moneda,l.honorario)}</td><td style="color:var(--purple)">${l.reembolso?ui.money(l.moneda,l.reembolso):'—'}</td><td style="font-weight:700">${ui.money(l.moneda,l.total)}</td><td>${ui.bdg(lb[0],lb[1])}</td></tr>`;}).join('')}</tbody></table>`:ui.empty('💰','Sin liquidaciones en este país.'));
+    }));
     const cur=p.currency[p.countries[0]];
     const defaults={'Coordinación':4000,'Software/plataforma':1200,'Transporte':800};
     const store=CX.finStore.pres(p.id);
