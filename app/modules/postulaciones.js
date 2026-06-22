@@ -99,7 +99,7 @@ CX.module('postulaciones', ({data,ui})=>{
     const act=(id,label,tone,extra)=>{const el=document.querySelector(`[data-pid="${id}"]`);if(!el)return;
       el.querySelector('div[style*="flex-direction:column"]').innerHTML=`<div style="background:var(--${tone}-bg);border-radius:9px;padding:8px 14px;text-align:center"><div style="font-size:12px;font-weight:700;color:var(--${tone})">${label}</div></div>`;
       ui.toast(extra,'ok');};
-    document.querySelectorAll('[data-ap]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.ap,'✅ Aprobada','green','Aprobada · WhatsApp enviado al shopper')));
+    document.querySelectorAll('[data-ap]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.ap);if(x&&CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(b.dataset.ap,'✅ Aprobada','green','Aprobada · WhatsApp enviado al shopper');}));
     document.querySelectorAll('[data-sb]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.sb,'⏸ Standby','amber','Postulación en standby')));
     document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.rj,'✕ Rechazada','red','Postulación rechazada · shopper notificado')));
     const search=()=>{const q=(document.getElementById('pSearch').value||'').toLowerCase(),fp=document.getElementById('pPais').value,fe=document.getElementById('pEst').value;

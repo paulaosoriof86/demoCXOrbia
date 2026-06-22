@@ -61,24 +61,62 @@ CX.module('misvisitas', ({data,ui})=>{
 
   setTimeout(()=>{
     const find=(id)=>base.find(v=>v.id===id);
+    const today=new Date().toISOString().slice(0,10);
     document.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('documentos')));
     document.querySelectorAll('[data-cert]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('cert')));
     document.querySelectorAll('[data-quest]').forEach(b=>b.addEventListener('click',()=>CX.shopperQuestionnaire(data,p,find(b.dataset.quest),ui)));
-    document.querySelectorAll('[data-sched]').forEach(b=>b.addEventListener('click',()=>ui.modal('Agendar visita',`
-      <p style="font-size:13px;color:var(--t2);margin-bottom:10px">Elige una fecha dentro del rango y la franja <b>${(find(b.dataset.sched)||{}).franja||''}</b>.</p>
-      <label class="lbl">Fecha</label><input class="inp" type="date" value="${(find(b.dataset.sched)||{}).disponibleDesde||''}" style="margin-bottom:14px">
-      <div class="flex"><button class="btn btn-soft btn-sm">AM 8–12h</button><button class="btn btn-ghost btn-sm">PM 14–18h</button></div>
-      <div style="text-align:right;margin-top:16px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Visita agendada · equipo notificado · HR actualizada','ok');this.closest('.cx-ov').remove()">Confirmar</button></div>`)));
-    document.querySelectorAll('[data-reprog]').forEach(b=>b.addEventListener('click',()=>ui.modal('Solicitar reprogramación',`
-      <p style="font-size:13px;color:var(--t2);margin-bottom:10px">La solicitud se autoriza desde Gestión de Postulaciones.</p>
-      <label class="lbl">Nueva fecha propuesta</label><input class="inp" type="date" style="margin-bottom:10px">
-      <label class="lbl">Motivo</label><textarea class="inp" rows="2" placeholder="Motivo de la reprogramación…" style="margin-bottom:14px"></textarea>
-      <div style="text-align:right"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Solicitud enviada · pendiente de autorización','ok');this.closest('.cx-ov').remove()">Enviar solicitud</button></div>`)));
-    document.querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>{ui.toast('Solicitud de cancelación enviada al equipo','warn');}));
-    document.querySelectorAll('[data-done]').forEach(b=>b.addEventListener('click',()=>ui.modal('Marcar visita realizada',`
-      <label class="lbl">Fecha de realización</label><input class="inp" type="date" value="${(find(b.dataset.done)||{}).agendada||''}" style="margin-bottom:14px">
-      <div style="background:var(--brand-light);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--brand-dark);margin-bottom:14px">Al confirmar, se habilita el cuestionario y tu liquidación pasa a "pend. cuestionario".</div>
-      <div style="text-align:right"><button class="btn btn-green btn-sm" onclick="CX.ui.toast('Visita realizada · cuestionario habilitado','ok');this.closest('.cx-ov').remove()">Confirmar realizada</button></div>`)));
+
+    document.querySelectorAll('[data-sched]').forEach(b=>b.addEventListener('click',()=>{
+      const v=find(b.dataset.sched);
+      ui.modal('Agendar visita',`
+        <p style="font-size:13px;color:var(--t2);margin-bottom:10px">Elige una fecha dentro del rango y la franja <b>${(v||{}).franja||''}</b>.</p>
+        <label class="lbl">Fecha</label><input class="inp" id="schD" type="date" value="${(v||{}).disponibleDesde||today}" style="margin-bottom:14px">
+        <div class="flex" id="schF" style="gap:6px"><button class="btn btn-soft btn-sm" data-fr="AM 8–12h">AM 8–12h</button><button class="btn btn-ghost btn-sm" data-fr="PM 14–18h">PM 14–18h</button></div>
+        <div style="text-align:right;margin-top:16px"><button class="btn btn-pr btn-sm" id="schOk">Confirmar agenda</button></div>`,
+      {onMount:(ov,close)=>{
+        let franja='AM 8–12h';
+        ov.querySelectorAll('[data-fr]').forEach(x=>x.addEventListener('click',()=>{ov.querySelectorAll('[data-fr]').forEach(y=>y.classList.replace('btn-soft','btn-ghost'));x.classList.replace('btn-ghost','btn-soft');franja=x.dataset.fr;}));
+        ov.querySelector('#schOk').addEventListener('click',()=>{
+          const f=ov.querySelector('#schD').value||today;
+          data.setVisitState(v.id,'agendada','agendada',f);
+          CX.automations&&CX.automations.fire('agenda',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal,fecha:f});
+          close(); ui.toast('Visita agendada · equipo notificado · HR y liquidación sincronizadas','ok',3600);
+        });
+      }});
+    }));
+
+    document.querySelectorAll('[data-done]').forEach(b=>b.addEventListener('click',()=>{
+      const v=find(b.dataset.done);
+      ui.modal('Marcar visita realizada',`
+        <label class="lbl">Fecha de realización</label><input class="inp" id="doneD" type="date" value="${(v||{}).agendada||today}" style="margin-bottom:14px">
+        <div style="background:var(--brand-light);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--brand-dark);margin-bottom:14px">Al confirmar, se habilita el cuestionario y tu liquidación pasa a "pend. cuestionario".</div>
+        <div style="text-align:right"><button class="btn btn-green btn-sm" id="doneOk">Confirmar realizada</button></div>`,
+      {onMount:(ov,close)=>{ ov.querySelector('#doneOk').addEventListener('click',()=>{
+        data.setVisitState(v.id,'realizada','realizada',ov.querySelector('#doneD').value||today);
+        CX.automations&&CX.automations.fire('realizada',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal});
+        close(); ui.toast('Visita realizada · cuestionario habilitado · liquidación actualizada','ok',3600);
+      }); }});
+    }));
+
+    document.querySelectorAll('[data-reprog]').forEach(b=>b.addEventListener('click',()=>{
+      const v=find(b.dataset.reprog);
+      ui.modal('Solicitar reprogramación',`
+        <p style="font-size:13px;color:var(--t2);margin-bottom:10px">La solicitud se autoriza desde Gestión de Postulaciones.</p>
+        <label class="lbl">Nueva fecha propuesta</label><input class="inp" id="rpD" type="date" style="margin-bottom:10px">
+        <label class="lbl">Motivo</label><textarea class="inp" id="rpM" rows="2" placeholder="Motivo de la reprogramación…" style="margin-bottom:14px"></textarea>
+        <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rpOk">Enviar solicitud</button></div>`,
+      {onMount:(ov,close)=>{ ov.querySelector('#rpOk').addEventListener('click',()=>{
+        if(v){v.reprog=true; v.reprogFecha=ov.querySelector('#rpD').value;}
+        CX.automations&&CX.automations.fire('reprog',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal,fecha:ov.querySelector('#rpD').value||''});
+        close(); CX.bus.emit('visit-flow'); ui.toast('Solicitud enviada · pendiente de autorización','ok');
+      }); }});
+    }));
+
+    document.querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>{
+      const v=find(b.dataset.cancel);
+      CX.notif&&CX.notif.push({to:'admin',tipo:'cancel',icon:'⚠',tono:'r',titulo:'Solicitud de cancelación',txt:v.sucursal,nav:'postulaciones'});
+      ui.toast('Solicitud de cancelación enviada al equipo','warn');
+    }));
   },0);
   return html;
 });

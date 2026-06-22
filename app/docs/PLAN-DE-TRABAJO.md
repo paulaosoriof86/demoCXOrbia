@@ -3,7 +3,23 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
-_Última actualización: sesión 19 (**Comercial: Calculadora de Costos & Propuestas** — costeo multimodalidad/multimoneda con pricing por margen objetivo, comparador y generador de propuesta; honorario shopper sugerido)._
+_Última actualización: sesión 21 (**motor de automatizaciones Make** + alertas de atrasados/pendientes; movimientos del shopper enrutados por automatizaciones configurables; **NDA editable por rol**)._
+
+### ✅ Hecho en sesión 21
+| # | Item | Notas |
+|---|---|---|
+| H65 | **Motor de automatizaciones** `core/automations.js`: 8 automatizaciones editables/activables (evento→canal push/WhatsApp/correo/Sheets vía **Make**), webhook configurable, log de disparos; `fire()` notifica + registra | base de la integración Make |
+| H66 | **Movimientos del shopper → automatizaciones**: agendar/realizar/reprogramar/cuestionario/pago/aprobación disparan `fire()` (notifica al equipo y registra canal externo) | `misvisitas.js`, `cuestionario-shopper.js`, `data.js`, `postulaciones.js` |
+| H67 | **Alertas de pendientes**: `scanPendientes()` detecta visitas **atrasadas / pend. cuestionario / sin agendar** y genera alertas | `core/automations.js` |
+| H68 | **Cláusula de confidencialidad editable** por rol (shopper/admin/cliente), persistente | `core/pwa.js` |
+
+_Última actualización: sesión 20 (**flujo del shopper funcional y sincronizado** — agendar/realizar/reprogramar mutan estado real y disparan toda la cadena; revisión del checklist de cierre operativo)._
+
+### ✅ Hecho en sesión 20
+| # | Item | Notas |
+|---|---|---|
+| H64 | **Flujo del shopper real**: `data.setVisitState` + recableo de Mis Visitas — agendar (→agendada), marcar realizada (→realizada), reprogramar y cancelar **mutan el estado** y emiten `visit-flow`; notifican al admin; sincronizan liquidación/beneficios/finanzas/portal. Antes solo mostraban un toast | `core/data.js`, `misvisitas.js` |
+
 
 ### ✅ Hecho en sesión 19
 | # | Item | Notas |
@@ -167,15 +183,18 @@ _Última actualización: sesión 17 (**auditoría de sincronía completa** — r
 
 ### ✅ Checklist de cierre — "Plataforma OPERATIVA completa" (avisar a stakeholder al llegar a 100%)
 > Cuando todo esto esté en ✅, la operativa está lista para **lanzar/migrar TyA Online**.
-- 🟡 Registro/alta/perfil de shoppers (✅ hecho) · asignación manual desde Visitas Disponibles (⬜).
-- ⬜ Hojas de Ruta: online/import/interna → de aquí derivan Visitas Disponibles.
-- 🟡 Cuestionario operativo: interno/externo/link **+ pesos** y llenado con score real (✅ interno ponderado con score; ⬜ vínculo score↔sucursal en portal y score en modos externo/link).
-- ⬜ Sincronía completa visita↔liquidación↔beneficios con fecha de pago.
-- ⬜ Documentos/Aprendizaje/Certificación filtrados por proyecto + instructivo en la visita.
-- ⬜ Notificaciones (Mi Día/Drill/Tablón) + WhatsApp por evento.
+- ✅ Registro/alta/perfil de shoppers · asignación manual desde Visitas Disponibles (H37–H39, H50).
+- ✅ Hojas de Ruta: online/import/interna → de aquí derivan Visitas Disponibles (H52).
+- ✅ **Flujo del shopper end-to-end**: instructivo→certificar→agendar→realizar→cuestionario→submit, mutando estado real y sincronizado (H64).
+- 🟡 Cuestionario operativo: interno/externo/link **+ pesos** y llenado con score real (✅ interno ponderado con score real y evidencia; ⬜ score en modos externo/link).
+- ✅ Sincronía completa visita↔liquidación↔beneficios con fecha de pago (H58/H61).
+- ⬜ Documentos/Aprendizaje/Certificación **filtrados por proyecto** + instructivo contextual en la visita (hoy presentacionales; navegación desde la visita ✅).
+- 🟡 Notificaciones (Mi Día/Drill/Tablón) + WhatsApp por evento (bus + Tablón ✅; ⬜ WhatsApp real/Make).
 - ⬜ Configuración con submenús + motor de planes/consolas (P0 sesión 6).
 - ⬜ Importador de migración (visitas/certificaciones/estados de TyA, anti-duplicado).
 - ⬜ Responsive total revisado.
+
+> **Estado para migrar TyA:** núcleo operativo (proyectos→HR→visitas→asignación→flujo shopper→cuestionario→liquidación→beneficios→finanzas) **funcional y sincronizado**. Faltan para 100%: filtrar Documentos/Aprendizaje/Cert por proyecto, **importador de migración**, Configuración con submenús, WhatsApp real y repaso responsive.
 
 ### P0/P1 — Pendientes que siguen (de feedback)
 - ✅ **Control de clientes en administración** (no solo proyectos) — H47.

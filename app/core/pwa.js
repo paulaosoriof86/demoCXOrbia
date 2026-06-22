@@ -50,11 +50,16 @@ CX.confidencialidad = {
   key(role){ const u=(CX.session.user&&CX.session.user.name)||'demo'; return 'cx_nda_'+role+'_'+u.replace(/\s+/g,'_'); },
   pending(role){ try{ return !localStorage.getItem(this.key(role)); }catch(e){ return false; } },
   accept(role){ try{ localStorage.setItem(this.key(role), new Date().toISOString()); }catch(e){} },
+  /* textos EDITABLES por la consultora (persistentes) */
+  _defaults(){ return {
+    shopper:'Como evaluador, me comprometo a mantener absoluta <b>confidencialidad</b> sobre los proyectos, clientes, sucursales evaluadas y resultados. No divulgaré mi condición de evaluador durante las visitas ni compartiré información de las evaluaciones con terceros.',
+    admin:'Como miembro del equipo, me comprometo a tratar con <b>confidencialidad</b> los datos de clientes, evaluadores, proyectos y resultados, usándolos solo para fines operativos autorizados conforme a la política de la plataforma.',
+    cliente:'Como usuario del portal del cliente, me comprometo a tratar con <b>confidencialidad</b> los resultados, evaluaciones y datos de mis sucursales y personal, conforme al acuerdo con la consultora.'};
+  },
+  text(role){ try{ const s=JSON.parse(localStorage.getItem('cx_nda_text')||'null'); if(s&&s[role])return s[role]; }catch(e){} return this._defaults()[role]||this._defaults().admin; },
+  setText(role, txt){ let s={}; try{ s=JSON.parse(localStorage.getItem('cx_nda_text')||'{}'); }catch(e){} s[role]=txt; try{ localStorage.setItem('cx_nda_text',JSON.stringify(s)); }catch(e){} },
   show(role, onDone){
-    const esShopper = role==='shopper';
-    const texto = esShopper
-      ? 'Como evaluador, me comprometo a mantener absoluta <b>confidencialidad</b> sobre los proyectos, clientes, sucursales evaluadas y resultados. No divulgaré mi condición de evaluador durante las visitas ni compartiré información de las evaluaciones con terceros.'
-      : 'Como miembro del equipo, me comprometo a tratar con <b>confidencialidad</b> los datos de clientes, evaluadores, proyectos y resultados, usándolos solo para fines operativos autorizados conforme a la política de la plataforma.';
+    const texto = this.text(role);
     const ov=document.createElement('div'); ov.className='cx-ov'; ov.style.zIndex='9500';
     ov.innerHTML=`<div class="cx-modal" style="width:min(520px,96vw)">
       <div class="cx-modal-h"><div class="card-t" style="font-size:16px">🔒 Cláusula de confidencialidad</div></div>

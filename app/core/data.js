@@ -167,6 +167,15 @@ CX.data = {
   posts(){return this._posts.filter(p=>p.projectId===this.currentProjectId);},
   shoppersFor(){const cs=this.project().countries;return this.shoppers.filter(s=>cs.includes(s.pais));},
 
+  /* cambio de estado de una visita (flujo del shopper) + sincronía */
+  setVisitState(id, estado, dateField, dateVal){
+    const v=this._visitas.find(x=>x.id===id); if(!v) return null;
+    v.estado=estado;
+    if(dateField && dateVal) v[dateField]=dateVal;
+    CX.bus && CX.bus.emit('visit-flow');
+    return v;
+  },
+
   /* asignación manual de una visita a un shopper (existente o recién creado) */
   assignVisit(visitId, shopperId){
     const v=this._visitas.find(x=>x.id===visitId);
@@ -197,6 +206,7 @@ CX.data = {
       });
     }
     if(n) CX.bus && CX.bus.emit('visit-flow');
+    (ids||[]).forEach(id=>{ const v=this._visitas.find(x=>x.id===id); if(v&&CX.automations) CX.automations.fire('pago',{shopper:v.shopper||'',sucursal:v.sucursal}); });
     return {pagadas:n, fechaPago:f, porPais};
   },
 

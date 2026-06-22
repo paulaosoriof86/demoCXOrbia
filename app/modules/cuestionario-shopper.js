@@ -70,6 +70,7 @@ CX.shopperQuestionnaire = function(data, p, visita, ui){
       const res=CX.programa.score(sections, answers);
       if(visita){ visita.score=res.total; visita.scoreBySection=res.bySection; visita.evaluada=true; visita.koFail=res.koFail; }
       close(); CX.bus.emit('visit-flow');
+      CX.automations&&CX.automations.fire('cuestionario',{shopper:visita&&visita.shopper||CX.session.user.name,sucursal:visita?visita.sucursal:p.name,score:res.total});
       ui.modal('Cuestionario enviado', `
         <div style="text-align:center;padding:8px 0">
           <div style="font-size:13px;color:var(--t2);margin-bottom:10px">Score de la visita</div>
