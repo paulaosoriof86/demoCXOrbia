@@ -15,7 +15,39 @@ CX.module('midia', ({data,role,ui})=>{
     document.querySelectorAll('[data-ngo]').forEach(b=>b.addEventListener('click',()=>{const n=CX.notif.for(role).find(x=>x.id===b.dataset.ngo);CX.notif.markRead(n.id);CX.router.nav(n.nav||'tablon');}));
     document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.nav)));
     document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.go)));
+    document.querySelectorAll('[data-cgo]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.cgo)));
   },0);};
+
+  /* Cronograma: visitas + tareas agrupadas por día (admin y shopper) */
+  const cronograma=()=>{
+    const sid=CX.session.user.shopperId;
+    let vis;
+    if(role==='shopper') vis=data.visitas().filter(v=>v.shopperId===sid||['asignada','agendada','realizada'].includes(v.estado));
+    else vis=data.visitas().filter(v=>v.agendada||['asignada','realizada','cuestionario'].includes(v.estado));
+    const items=[];
+    vis.forEach(v=>{
+      const f=(v.agendada||v.disponibleDesde||'').slice(0,10);
+      if(f) items.push({fecha:f, icon:'📍', titulo:v.sucursal, sub:(v.escenario||'')+(role==='admin'&&v.shopper?(' · '+v.shopper):(' · '+v.ciudad)), estado:v.estado, nav:role==='shopper'?'misvisitas':'visitas'});
+      if(v.estado==='realizada') items.push({fecha:(v.realizada||f||'').slice(0,10), icon:'📝', titulo:'Cuestionario pendiente', sub:v.sucursal, estado:'tarea', nav:role==='shopper'?'misvisitas':'visitas'});
+    });
+    if(role==='admin'){ const k=data.kpis(); const hoy='2026-06-21';
+      if(k.postPend) items.push({fecha:hoy,icon:'📩',titulo:k.postPend+' postulaciones por revisar',sub:'Gestión de postulaciones',estado:'tarea',nav:'postulaciones'});
+      if(k.sinAsignar.t) items.push({fecha:hoy,icon:'📌',titulo:k.sinAsignar.t+' visitas sin asignar',sub:'Asignar shoppers',estado:'tarea',nav:'visitas'});
+    }
+    const byDay={}; items.forEach(it=>{ if(!it.fecha)return; (byDay[it.fecha]=byDay[it.fecha]||[]).push(it); });
+    const days=Object.keys(byDay).sort().slice(0,6);
+    if(!days.length) return '';
+    const fmt=(f)=>{ try{ return new Date(f+'T00:00:00').toLocaleDateString('es-GT',{weekday:'long',day:'numeric',month:'short'}); }catch(e){ return f; } };
+    return `<div class="card card-p" style="margin-bottom:16px">
+      <div class="card-h"><div class="card-t">🗓️ Cronograma</div><span class="bdg bdg-n">visitas y tareas por día</span></div>
+      ${days.map(day=>`<div style="margin-bottom:12px">
+        <div style="font-size:11px;font-weight:800;color:var(--brand-dark);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">${fmt(day)}</div>
+        ${byDay[day].map(it=>`<div class="between" data-cgo="${it.nav}" style="cursor:pointer;padding:8px 10px;border:1px solid var(--border);border-radius:9px;margin-bottom:6px">
+          <div class="flex"><span style="font-size:15px">${it.icon}</span><div><div style="font-size:12.5px;font-weight:700;color:var(--t1)">${it.titulo}</div><div style="font-size:11px;color:var(--t3)">${it.sub}</div></div></div>
+          ${it.estado==='tarea'?ui.bdg('Tarea','a'):ui.estadoBadge(it.estado)}</div>`).join('')}
+      </div>`).join('')}
+    </div>`;
+  };
   if(role==='admin'){
     const k=data.kpis();
     const tasks=[
@@ -32,6 +64,7 @@ CX.module('midia', ({data,role,ui})=>{
         ${ui.kpi('Realizadas',k.realizadas.t,'g')}${ui.kpi('Sin asignar',k.sinAsignar.t,'r')}
       </div>
       ${notifBlock()}
+      ${cronograma()}
       <div class="card card-p">
         <div class="card-h"><div class="card-t">Lo que requiere tu acción</div></div>
         ${tasks.length?tasks.map(t=>`<div class="between" data-go="${t[2]}" style="cursor:pointer;padding:12px 13px;border:1px solid var(--border);border-radius:11px;margin-bottom:9px">
@@ -47,6 +80,7 @@ CX.module('midia', ({data,role,ui})=>{
   return `
     ${ui.ph('Mi Día', 'Hola, '+CX.session.user.name.split(' ')[0]+' 👋')}
     ${notifBlock()}
+    ${cronograma()}
     <div class="card card-p" style="margin-bottom:16px">
       <div class="card-h"><div class="card-t">Tu próxima visita</div>${ui.bdg('Por agendar','a')}</div>
       ${mine[0]?`<div style="font-size:15px;font-weight:700;color:var(--t1)">${mine[0].sucursal}</div>

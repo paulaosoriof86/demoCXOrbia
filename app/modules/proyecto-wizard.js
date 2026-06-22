@@ -27,10 +27,13 @@ CX.projectWizard = function(data, ui){
   const stepHTML=()=>{
     if(st.step===1) return `
       <div style="margin-bottom:12px"><label class="lbl">Nombre del proyecto / cliente</label><input class="inp" id="f_name" value="${st.name}" placeholder="Ej. Cadena de retail"></div>
-      <div style="margin-bottom:12px"><label class="lbl">Rubro / industria</label><input class="inp" id="f_ind" value="${st.industry}" placeholder="Ej. Retail · Cadena de tiendas"></div>
+      <div style="margin-bottom:12px"><label class="lbl">Rubro / industria</label><input class="inp" id="f_ind" list="rubroList" value="${st.industry}" placeholder="Busca o crea uno nuevo…">
+      <datalist id="rubroList">${['Retail · Cadena de tiendas','Banca · Red de agencias','Restaurantes · Multimarca','Salud · Clínicas','Telecomunicaciones','Automotriz · Concesionarios','Hotelería & Turismo','Seguros','Educación','Gobierno / Sector público','Supermercados','Farmacias'].map(r=>`<option value="${r}">`).join('')}</datalist>
+      <div style="font-size:11px;color:var(--t3);margin-top:4px">Elige de la lista o escribe uno nuevo.</div></div>
       <label class="lbl">Países donde se ejecuta (multipaís)</label>
+      <input class="inp" id="f_paisSearch" placeholder="🔎 Buscar país…" style="margin-bottom:8px">
       <div style="max-height:160px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:8px">
-        ${CX.COUNTRIES.map(co=>`<label class="between" style="padding:5px 6px;cursor:pointer"><span style="font-size:13px">${co.n} <span class="muted">(${co.cur})</span></span><input type="checkbox" class="wCountry" data-c="${co.c}" data-cur="${co.cur}" ${st.countries.includes(co.c)?'checked':''}></label>`).join('')}
+        ${CX.COUNTRIES.map(co=>`<label class="between wPaisRow" data-n="${co.n.toLowerCase()}" style="padding:5px 6px;cursor:pointer"><span style="font-size:13px">${co.n} <span class="muted">(${co.cur})</span></span><input type="checkbox" class="wCountry" data-c="${co.c}" data-cur="${co.cur}" ${st.countries.includes(co.c)?'checked':''}></label>`).join('')}
       </div>
       ${ui.aiBox('La capa IA asocia cada país a su moneda y prepara KPIs y finanzas multipaís. Las monedas nunca se suman entre sí.','Multipaís automático')}`;
 
@@ -79,6 +82,7 @@ CX.projectWizard = function(data, ui){
         <option ${st.hrFuente==='Excel importado'?'selected':''}>Excel importado</option>
       </select>
       <div style="margin-bottom:6px"><label class="lbl">Escenarios (separados por coma)</label><input class="inp" id="f_scn" value="${st.scenarios}" placeholder="Compra estándar, Fin de semana, Incógnito"></div>
+      <div class="flex" style="gap:8px;margin:8px 0"><button class="btn btn-soft btn-sm" id="f_import" type="button">📥 Importar instructivo / HR (IA)</button></div>
       <div style="font-size:11.5px;color:var(--t3)">Los cuestionarios pueden tener versiones por escenario, marca o tipo de establecimiento (editables luego en el módulo Cuestionarios).</div>`;
 
     // step 5
@@ -145,7 +149,19 @@ CX.projectWizard = function(data, ui){
     wrap.querySelector('#wNext').addEventListener('click',()=>{persist();if(st.step===st.total){create();}else{st.step++;render();}});
     const modR=wrap.querySelectorAll('input[name="wmod"]'); modR.forEach(r=>r.addEventListener('change',()=>{st.modelo=r.value;const d=wrap.querySelector('#directoCosts');if(d)d.style.display=st.modelo==='directo'?'':'none';}));
     const cm=wrap.querySelector('#f_cmodo'); if(cm)cm.addEventListener('change',()=>{const w=wrap.querySelector('#cUrlWrap');if(w)w.style.display=cm.value==='interna'?'none':'';});
+    const ps=wrap.querySelector('#f_paisSearch'); if(ps)ps.addEventListener('input',()=>{const q=ps.value.toLowerCase();wrap.querySelectorAll('.wPaisRow').forEach(l=>{l.style.display=l.dataset.n.includes(q)?'':'none';});});
+    const imp=wrap.querySelector('#f_import'); if(imp)imp.addEventListener('click',()=>importWizard());
   };
+
+  const importWizard=()=>{ ui.modal('Importar instructivo / HR', `
+    <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Sube el instructivo, manual de servicio o HR del cliente. La IA <b>extrae</b> escenarios, restricciones y arma la <b>base de conocimiento</b> del proyecto.</p>
+    <input type="file" accept=".pdf,.doc,.docx,.xlsx,.csv" class="inp" style="padding:7px;margin-bottom:10px">
+    <div style="text-align:right"><button class="btn btn-green btn-sm" id="impGo">✨ Extraer con IA</button></div>`,
+    {onMount:(ov,close)=>{ ov.querySelector('#impGo').addEventListener('click',()=>{ persist();
+      if(!st.scenarios) st.scenarios='Compra estándar, Fin de semana, Incógnito';
+      st.restriccion=st.restriccion||'No visitar la misma sucursal en 2 meses';
+      st.conocimiento=((st.conocimiento||'')+' [Extraído del documento: criterios de servicio, tiempos de atención y protocolo de cierre].').trim();
+      close(); render(); ui.toast('IA extrajo escenarios, restricción y base de conocimiento (demo)','ok',3400); }); }}); };
 
   render();
   CX._wizClose = ui.modal('Crear proyecto', '<div id="wizMount"></div>', {onMount:(ov,close)=>{

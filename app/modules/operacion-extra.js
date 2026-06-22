@@ -101,27 +101,70 @@ CX.module('miperfil', ({data,ui})=>{
     <div class="card card-p">${ui.aiBox('Tu calificación se calcula por cumplimiento + tiempos + alertas + certificaciones. Mantén tu perfil completo para acceder a más visitas y honorarios preferentes.','Cómo subir tu rating')}</div>`;
 });
 
-/* CXOrbia · Hojas de Ruta (admin) */
+/* CXOrbia · Hojas de Ruta (admin) — interna / importada / ONLINE con sync sin duplicar */
 CX.module('rutas', ({data,ui})=>{
   const p=data.project();
-  const rows=[
-    ['1','Zona 10','15 jun','Daniela R.','Hecha','g'],
-    ['2','Cayalá','16 jun','Marco T.','Hoy','a'],
-    ['3','Miraflores','17 jun','Lucía P.','Plan','n'],
-    ['4','Cayalá Norte','18 jun','— sin asignar','Plan','n'],
-  ];
-  return `
-    ${ui.ph('Hojas de Ruta', p.name+' · planificación colaborativa, sincronizada con el estado real')}
-    <div class="between" style="margin-bottom:14px">
-      <div class="flex">${ui.bdg('Ruta Q2 · GT','b')} ${ui.bdg('👥 3 editando','p')}</div>
-      <button class="btn btn-pr btn-sm">+ Parada</button>
+  const online=CX.hr.esOnline(p);
+  const rows=CX.hr.external(p);
+  const d=CX.hr.diff(p);
+  const fuentes=['Hoja creada en plataforma','Google Sheets (online)','Excel Online','Excel importado'];
+  const flag=(r)=>{ if(!r.visitId) return ui.bdg('Nuevo en HR','a'); const u=d.updates.find(x=>x.row.extId===r.extId); return u?ui.bdg('Cambió','b'):ui.bdg('Sincronizado','g'); };
+  const row=(r)=>`<tr>
+    <td style="font-size:11px;color:var(--t3)">${r.extId}</td>
+    <td><b style="font-size:12.5px">${r.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(r.pais)} ${r.ciudad} · ${r.quincena} · ${r.escenario}</div></td>
+    <td><input class="inp hrF" data-id="${r.extId}" type="date" value="${(r.fecha||'').slice(0,10)}" style="padding:5px 7px;width:140px"></td>
+    <td><input class="inp hrR" data-id="${r.extId}" type="number" value="${r.reembolso||0}" style="padding:5px 7px;width:84px"></td>
+    <td style="font-size:12px">${r.shopper||'<span class="muted">—</span>'}</td>
+    <td>${r.origen==='hr'?ui.bdg('Alta en HR','t'):ui.bdg('Plataforma','n')}</td>
+    <td>${flag(r)}</td>
+  </tr>`;
+
+  const syncBar = online ? `
+    <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
+      <div class="between" style="flex-wrap:wrap;gap:10px">
+        <div style="font-size:12.5px;color:var(--brand-dark)">Lectura en vivo de la HR externa. Detecté
+          <b>${d.nuevos.length}</b> alta(s) hecha(s) directamente en la hoja y <b>${d.updates.length}</b> cambio(s) de fecha/reembolso.
+          Se sincronizan a la plataforma <b>sin duplicar</b>.</div>
+        <div class="flex" style="gap:8px"><button class="btn btn-ghost btn-sm" id="hrRead">🔄 Leer en vivo</button>
+          <button class="btn btn-green btn-sm" id="hrSync">⇄ Sincronizar (${d.nuevos.length+d.updates.length})</button></div>
+      </div>
+    </div>` : '';
+
+  const host=ui.el('div');
+  host.innerHTML=`
+    ${ui.ph('Hojas de Ruta', p.name+' · las Visitas Disponibles se derivan de la HR activa')}
+    <div class="card card-p" style="margin-bottom:14px">
+      <div class="between" style="flex-wrap:wrap;gap:12px;align-items:flex-end">
+        <div><label class="lbl">Origen de la HR</label><select class="sel" id="hrSrc" style="width:auto;min-width:230px">${fuentes.map(f=>`<option ${f===CX.hr.fuente(p)?'selected':''}>${f}</option>`).join('')}</select></div>
+        <div class="flex" style="gap:8px">
+          <button class="btn btn-soft btn-sm" id="hrImport">📥 Importar archivo</button>
+          <button class="btn btn-ghost btn-sm" id="hrNew">＋ Parada</button>
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--t3);margin-top:10px">${online?'🟢 HR externa conectada: el equipo puede asignar/editar en Sheets/Excel y la plataforma se alimenta de ahí.':'🗂️ HR interna: se trabaja dentro de la plataforma.'}</div>
     </div>
+    ${syncBar}
     <div class="card card-p">
-      <table class="tbl"><thead><tr><th>#</th><th>Sucursal</th><th>Fecha</th><th>Responsable</th><th>Estado</th></tr></thead><tbody>
-        ${rows.map(r=>`<tr><td><b>${r[0]}</b></td><td><b>${r[1]}</b></td><td style="font-size:12px">${r[2]}</td><td style="font-size:12px;color:var(--t2)">${r[3]}</td><td>${ui.bdg(r[4],r[5])}</td></tr>`).join('')}
-      </tbody></table>
-      <div style="margin-top:14px">${ui.aiBox('Una sola fuente de verdad: ordeno la ruta y la mantengo sincronizada con el avance real de las visitas, sin Excel externo.','Sin Excel paralelo')}</div>
+      <div class="card-h"><div class="card-t">Filas de la hoja de ruta</div><span class="bdg bdg-b">${rows.length} paradas</span></div>
+      <table class="tbl"><thead><tr><th>ID</th><th>Sucursal</th><th>Fecha</th><th>Reembolso</th><th>Shopper</th><th>Origen</th><th>Estado sync</th></tr></thead>
+      <tbody>${rows.map(row).join('')}</tbody></table>
+      <div style="margin-top:14px">${ui.aiBox('Una sola fuente de verdad: edita fechas y reembolsos aquí o en la hoja externa; la plataforma se mantiene sincronizada y no duplica visitas (match por ID de fila).','HR viva, sin Excel paralelo')}</div>
     </div>`;
+
+  setTimeout(()=>{
+    host.querySelector('#hrSrc').addEventListener('change',e=>{ CX.hr.setFuente(p,e.target.value); CX.hr.invalidate(p); CX.ui.toast('Origen de HR: '+e.target.value,'ok'); CX.router.nav('rutas'); });
+    host.querySelectorAll('.hrF').forEach(i=>i.addEventListener('change',()=>CX.hr.editRow(p,i.dataset.id,{fecha:i.value})));
+    host.querySelectorAll('.hrR').forEach(i=>i.addEventListener('change',()=>CX.hr.editRow(p,i.dataset.id,{reembolso:+i.value||0})));
+    const rd=host.querySelector('#hrRead'); if(rd)rd.addEventListener('click',()=>{ const dd=CX.hr.diff(p); CX.ui.toast('Leída en vivo · '+dd.total+' filas ('+dd.nuevos.length+' nuevas, '+dd.updates.length+' cambios)','ok',3200); CX.router.nav('rutas'); });
+    const sy=host.querySelector('#hrSync'); if(sy)sy.addEventListener('click',()=>{ const res=CX.hr.sync(p); CX.ui.toast('Sincronizado · '+res.creadas+' visita(s) creada(s), '+res.actualizadas+' actualizada(s)','ok',3600); CX.router.nav('rutas'); });
+    host.querySelector('#hrImport').addEventListener('click',()=>ui.modal('Importar Hoja de Ruta', `
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Sube tu HR (Excel/CSV). El sistema detecta columnas y las <b>mapea</b> a los campos de visita (sucursal, ciudad, fecha, escenario, honorario, reembolso). Anti-duplicado por sucursal+quincena.</p>
+      <input type="file" accept=".csv,.xlsx,.xls" class="inp" style="padding:7px;margin-bottom:12px">
+      <div style="background:var(--panel-2);border:1px solid var(--border);border-radius:9px;padding:10px;font-size:11.5px;color:var(--t3)">Vista previa de mapeo: Columna A→Sucursal · B→Ciudad · C→Fecha · D→Escenario · E→Honorario (editable en demo).</div>
+      <div style="text-align:right;margin-top:14px"><button class="btn btn-green btn-sm" onclick="CX.ui.toast('HR importada y mapeada (demo)','ok');this.closest('.cx-ov').remove()">Importar y mapear</button></div>`));
+    host.querySelector('#hrNew').addEventListener('click',()=>CX.ui.toast('Agrega paradas internas o impórtalas; en HR online se crean en la hoja','ok',3200));
+  },0);
+  return host;
 });
 
 /* CXOrbia · Reportes & KPIs / Informes (admin) */

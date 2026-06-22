@@ -3,7 +3,14 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
-_Última actualización: sesión 13 (**tipo de evidencia por pregunta/visita** — foto/foto-geo/video/audio — en editor y llenado del shopper; **asignación manual desde Visitas** con crear shopper al vuelo)._
+_Última actualización: sesión 14 (**Cronograma en Mi Día** admin+shopper; **Hojas de Ruta funcionales** — interna/import/online con lectura en vivo y **sync sin duplicar**; wizard con rubro buscable, buscador de países e importador IA)._
+
+### ✅ Hecho en sesión 14
+| # | Item | Notas |
+|---|---|---|
+| H51 | **Cronograma en Mi Día** (admin y shopper): visitas y tareas **agrupadas por día**, clickeables, adicional a lo actual | `midia.js` |
+| H52 | **Hojas de Ruta funcionales** (`core/hr.js`): origen interna/import/**online** (Sheets/Excel); **lectura en vivo**; filas dadas de alta directamente en la HR se **sincronizan sin duplicar** (match por extId/visitId); edición de **fechas y reembolsos** se refleja en las visitas; las Visitas Disponibles derivan de la HR | `core/hr.js`, `operacion-extra.js` |
+| H53 | **Wizard mejorado**: rubro con **datalist buscable + crear nuevo**, **buscador de países**, **importador de instructivo/HR con extracción IA** (prefill de escenarios/restricción/base de conocimiento) | `proyecto-wizard.js` |
 
 ### ✅ Hecho en sesión 13
 | # | Item | Notas |
@@ -167,7 +174,7 @@ _Última actualización: sesión 13 (**tipo de evidencia por pregunta/visita** �
 - ⬜ **Soporte para el shopper**: por plataforma o por WhatsApp a los **contactos por rol** configurables por el cliente.
 - ⬜ **Notificaciones al entrar**: mostrar en **drill/modal grande** apenas el shopper ingresa.
 - ⬜ **Tablón editable**: publicar, editar, marcar leídas, clickeables, **orden cronológico**, recibir notificaciones.
-- ⬜ **Cronograma de actividades en Mi Día** (agenda del día).
+- ✅ **Cronograma de actividades en Mi Día** (agenda del día) — H51 (admin + shopper).
 
 ### P1/P2 — Patrones transversales
 - ⬜ **Tarjetas clickeables con detalle en TODAS las secciones** (no solo dashboard).
@@ -188,7 +195,7 @@ _Última actualización: sesión 13 (**tipo de evidencia por pregunta/visita** �
 
 ### P2 — Hojas de Ruta / HR
 - ⬜ **HR propuesta por extracción del proyecto** + import + creación manual.
-- ⬜ **HR externa en vivo**: sincroniza y se lee en vivo en **todas** las secciones; **sin duplicar** datos entre HR y Postulaciones (el sistema se alimenta de ambas vías) + automatizaciones de actualización.
+- 🟡 **HR externa en vivo**: sincroniza y se lee en vivo en **todas** las secciones; **sin duplicar** datos entre HR y Postulaciones (el sistema se alimenta de ambas vías) + automatizaciones de actualización. — H52 (lectura en vivo + sync sin duplicar listo; falta Make/automatización y propagación a todas las secciones).
 
 ### P2 — Documentos / Aprendizaje / Certificación
 - ⬜ **Documentos**: al subir, elegir **quién puede verlos** y **a qué proyecto** corresponden; edición.
