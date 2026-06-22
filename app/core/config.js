@@ -117,6 +117,17 @@ CX.MODULES = {
   cuestionarios: { icon:'🧩', label:'Cuestionarios',        roles:['admin'],           status:'ready' },
   usuarios:      { icon:'🔐', label:'Usuarios & Permisos',  roles:['admin'],           status:'ready' },
   config:        { icon:'⚙️', label:'Configuración',         roles:['admin'],           status:'ready' },
+  // Comercial / consultora (CRM + marketing) — roadmap del ecosistema
+  crm:           { icon:'🤝', label:'CRM Comercial',         roles:['admin'],           status:'soon' },
+  marketing:     { icon:'📣', label:'Marketing & Contenidos',roles:['admin'],           status:'soon' },
+  // Portal Estratégico del Cliente final (marca evaluada)
+  cli_dashboard:   { icon:'📈', label:'Panorama',             roles:['cliente'], status:'ready' },
+  cli_sucursales:  { icon:'🏬', label:'Sucursales & Score',   roles:['cliente'], status:'ready' },
+  cli_acciones:    { icon:'🎯', label:'Planes de Acción',     roles:['cliente'], status:'ready' },
+  cli_capacitacion:{ icon:'🎓', label:'Capacitación',         roles:['cliente'], status:'ready' },
+  cli_reportes:    { icon:'📤', label:'Reportes',             roles:['cliente'], status:'ready' },
+  cli_programa:    { icon:'🧮', label:'Mi Programa',          roles:['cliente'], status:'ready' },
+  cli_market:      { icon:'✨', label:'Servicios & Add-ons',  roles:['cliente'], status:'ready' },
 };
 
 /* ---------- Navigation layout per role ---------- */
@@ -124,13 +135,26 @@ CX.NAV = {
   admin: [
     { sec:'Operación', items:['midia','dashboard','proyectos','visitas','postulaciones','shoppers','rutas','documentos','aprendizaje','cert','tablon','soporte','informes'] },
     { sec:'Finanzas',  items:['financiero','movimientos','liquidaciones','lotes'] },
+    { sec:'Comercial', items:['crm','marketing'] },
     { sec:'Configuración', items:['cuestionarios','usuarios','config'] },
   ],
   shopper: [
     { sec:'Operación', items:['midia','miperfil','visitas','misvisitas','documentos','aprendizaje','cert','tablon','soporte'] },
     { sec:'Mis Beneficios', items:['beneficios'] },
   ],
+  cliente: [
+    { sec:'Estrategia',  items:['cli_dashboard','cli_sucursales','cli_acciones'] },
+    { sec:'Desarrollo',  items:['cli_capacitacion','cli_reportes','cli_programa'] },
+    { sec:'Crecimiento', items:['cli_market'] },
+  ],
 };
+
+/* ---------- Roles del Portal del Cliente (scope de datos) ---------- */
+CX.CLIENTE_ROLES = [
+  { id:'director', label:'Director / C-level',        scope:'all',      desc:'Toda la marca' },
+  { id:'regional', label:'Gerente Regional',          scope:'region',   desc:'Su región' },
+  { id:'sucursal', label:'Responsable de Sucursal',   scope:'sucursal', desc:'Su sucursal' },
+];
 
 /* ---------- Catálogo de países + moneda (lista larga, no limitar) ---------- */
 CX.COUNTRIES = [

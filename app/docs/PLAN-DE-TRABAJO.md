@@ -3,7 +3,39 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
-_Última actualización: sesión 7 (registro de shopper completo + alta manual + perfil editable con histórico y KPIs clickeables)._
+_Última actualización: sesión 8 (giro a ecosistema estratégico — Portal del Cliente v1: scoring ponderado, roles/scope, planes de acción, capacitación, reportes, marketplace; CRM/Marketing en roadmap)._
+
+---
+
+## 🟣 Sesión 8 · Ecosistema estratégico (ver `ECOSISTEMA.md`)
+
+> CXOrbia pasa de **plataforma operativa** a **ecosistema de 3 caras**: Comercial (consultora) → Operación (campo) → Estrategia (cliente final). Login unificado + enrutamiento por persona (recomendación de arquitectura en `ECOSISTEMA.md`).
+
+### ✅ Hecho en esta sesión
+| # | Item | Notas |
+|---|---|---|
+| H40 | **Portal Estratégico del Cliente v1** (rol `cliente` + `CX.NAV.cliente`) con login propio y **conmutador de persona** (Director / Gerente Regional / Responsable de Sucursal) y **scope de datos** | `core/cliente-data.js`, `modules/cliente*.js`, `app.js` |
+| H41 | **Motor de score ponderado**: programa con **secciones y preguntas con pesos %**; scorecard por sucursal (0–100 + desglose por sección) | `core/cliente-data.js` |
+| H42 | **Panorama ejecutivo** (score global, NPS, ranking mejores/peores clickeable, distribución, brechas) + **Sucursales & Score** (filtros, detalle con histórico) | `modules/cliente.js` |
+| H43 | **Planes de Acción** (reconocimiento/incentivo/mejora/sanción, persistentes) + **Capacitación** (brechas→cursos) + **Reportes** + **Mi Programa** (simulador) + **Servicios & Add-ons** | `modules/cliente*.js` |
+| H44 | Sección **Comercial** en consola consultora (CRM + Marketing) declarada en nav (scaffold) | roadmap |
+
+### P0 — Ecosistema (siguiente, por criticidad)
+- ⬜ **Editor de cuestionarios con pesos %** (secciones/preguntas, validación suma 100, KO/críticas, NPS, versiones por criterio) en módulo Cuestionarios + **simulador**; el Portal del Cliente lee de ahí.
+- ⬜ **Roles & permisos del cliente completos**: matriz por módulo/acción (ver/editar/exportar/accionar) + **scope** país/región/sucursal + **alta de usuarios del cliente** por la consultora.
+- ⬜ **Vincular score real visita↔sucursal**: que el cuestionario llenado alimente el scorecard (hoy el score es derivado/demostrativo por proyecto).
+- ⬜ **Seguimiento de planes de acción**: estados (Abierto/En curso/Cerrado), evidencia de cierre, recordatorios.
+
+### P1 — Comercial (consultora)
+- ⬜ **CRM**: pipeline de prospectos/oportunidades (kanban), cuentas y contactos.
+- ⬜ **Propuestas inteligentes** a partir de relevamiento (IA arma alcance/programa/precio).
+- ⬜ **Demos & simuladores** de programa y cuestionario para prospección.
+- ⬜ **Actas inteligentes** (transcribe/resume Zoom·Meet, extrae acuerdos/tareas) + **Notion**.
+- ⬜ **Marketing & Contenidos**: generación de piezas/publicaciones, calendario, mediciones, estrategia.
+
+### P2 — Profundización del ecosistema (recomendado, ver `ECOSISTEMA.md §7`)
+- ⬜ Investigación de mercados · Voz del Cliente (VoC) · Quality Assurance / calibración · Facturación & contratos · SLAs/cumplimiento · Gobernanza de datos/privacidad · Centro de Inteligencia (IA) · Benchmarking sectorial.
+- ⬜ Integraciones: Notion, Zoom, Google Meet, Power BI/Looker, SSO (añadir a `INTEGRACIONES.md`).
 
 ---
 

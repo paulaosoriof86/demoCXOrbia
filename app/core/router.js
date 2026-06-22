@@ -61,7 +61,7 @@ CX.router = {
       <div class="rail-foot">
         <div class="rail-user"><div class="rail-av">${initials}</div>
           <div><div style="font-size:12.5px;font-weight:700;color:#fff">${u.name||'Usuario demo'}</div>
-          <div style="font-size:10.5px;color:rgba(255,255,255,.5)">${role==='admin'?'Administración':'Shopper · '+(p.countries.join('/'))}</div></div></div>
+          <div style="font-size:10.5px;color:rgba(255,255,255,.5)">${role==='admin'?'Administración':role==='cliente'?'Portal del cliente':'Shopper · '+(p.countries.join('/'))}</div></div></div>
         <button class="rail-logout" id="logoutBtn">Cerrar sesión</button>
       </div>`;
 

@@ -33,6 +33,11 @@ CX.app = {
           <div><div class="r-t">Administración / Coordinación</div>
           <div class="r-d">Operación, proyectos, finanzas y configuración</div></div>
         </button>
+        <button class="role-btn role-cliente" data-role="cliente">
+          <div class="r-ic">📈</div>
+          <div><div class="r-t">Portal del Cliente (marca evaluada)</div>
+          <div class="r-d">Resultados, score por sucursal, acciones y reportes</div></div>
+        </button>
         <button class="role-btn role-shopper" data-role="shopper">
           <div class="r-ic">📱</div>
           <div><div class="r-t">Shopper / Evaluador</div>
@@ -119,6 +124,8 @@ CX.app = {
     CX.session.role=role;
     if(role==='admin'){
       CX.session.user={name:'Admin Demo', role:'super', org:'Tu Consultora'};
+    } else if(role==='cliente'){
+      CX.session.user={name:'Cliente Demo', role:'cliente', clienteRole:'director', org:'Marca Cliente'};
     } else {
       const sid=shopperId||'sh1';
       const s=CX.data.getShopper ? CX.data.getShopper(sid) : null;
