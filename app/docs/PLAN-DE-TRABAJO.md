@@ -3,7 +3,15 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
-_Última actualización: sesión 16 (KPIs clickeables — pasada transversal completada: informes, postulaciones, beneficios y finanzas)._
+_Última actualización: sesión 17 (**auditoría de sincronía completa** — re-render central por bus para toda la plataforma; cierre del ciclo visita→liquidación→beneficios→finanzas con fecha de pago; **score real del cuestionario alimenta el Portal del Cliente**)._
+
+### ✅ Hecho en sesión 17 (ver `SINCRONIA.md`)
+| # | Item | Notas |
+|---|---|---|
+| H57 | **Sincronía central**: re-render único por bus (`visit-flow`/`shoppers`/`clients`/`programa`) registrado una sola vez en `router.js`, sin fugas de listeners → toda vista activa + badges se actualizan en vivo ante cualquier mutación | `core/router.js` |
+| H58 | **Cierre del ciclo de pago**: `data.payVisits(ids)` marca visitas `liquidada` con **fecha de pago** real → Liquidaciones, Beneficios (Pagado+fecha) y Finanzas (CxP) se sincronizan; "Crear lote" lo dispara | `core/data.js`, `core/liquidacion.js`, `finanzas.js` |
+| H59 | **Score real → Portal del Cliente**: el cuestionario guarda `score`/`scoreBySection`/`evaluada`; el Panorama muestra **Resultados en vivo de operación** (`CX.clienteData.realResults`) | `cuestionario-shopper.js`, `core/cliente-data.js`, `cliente.js` |
+
 
 ### ✅ Hecho en sesión 16
 | # | Item | Notas |

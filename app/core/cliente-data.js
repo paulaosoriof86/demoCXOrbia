@@ -159,6 +159,20 @@ window.CX = window.CX || {};
     ],
 
     invalidate(){ this._cache=null; },
+
+    /* RESULTADOS REALES de operación: scores de cuestionarios efectivamente
+       enviados por shoppers en este proyecto (sincronía operación → cliente). */
+    realResults(p){
+      p=p||CX.data.project();
+      const vis=CX.data._visitas.filter(v=>v.projectId===p.id && typeof v.score==='number' && v.evaluada);
+      if(!vis.length) return {count:0};
+      const avg=Math.round(vis.reduce((a,v)=>a+v.score,0)/vis.length);
+      const prog=this.programa(p); const bySection={};
+      prog.forEach(sec=>{ const vals=vis.map(v=>v.scoreBySection&&v.scoreBySection[sec.id]).filter(x=>typeof x==='number');
+        if(vals.length) bySection[sec.id]=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length); });
+      const ko=vis.filter(v=>v.koFail).length;
+      return {count:vis.length, avg, bySection, ko, visitas:vis};
+    },
   };
 
   CX.bus && CX.bus.on('project', ()=>CX.clienteData.invalidate());

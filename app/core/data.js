@@ -178,6 +178,16 @@ CX.data = {
     return v;
   },
 
+  /* pago de un lote: marca visitas como liquidadas con fecha de pago real.
+     Cierra la cadena visita → liquidación → beneficios → finanzas (CxP). */
+  payVisits(ids, fechaPago){
+    const f=fechaPago||new Date().toISOString().slice(0,10);
+    let n=0;
+    (ids||[]).forEach(id=>{ const v=this._visitas.find(x=>x.id===id); if(v){ v.estado='liquidada'; v.fechaPago=f; v.realizada=v.realizada||f; n++; } });
+    if(n) CX.bus && CX.bus.emit('visit-flow');
+    return {pagadas:n, fechaPago:f};
+  },
+
   /* conteo por fase con desglose por país */
   _phaseCount(v,fn){const cs=this.project().countries;const o={t:v.filter(fn).length};cs.forEach(c=>o[c]=v.filter(x=>x.pais===c&&fn(x)).length);return o;},
   kpis(){

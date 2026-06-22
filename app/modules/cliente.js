@@ -151,11 +151,27 @@ CX.module('cli_dashboard', ({ui})=>{
 
   setTimeout(()=>{ CX.cliUI.wirePersona();
     document.querySelectorAll('[data-suc]').forEach(el=>el.addEventListener('click',()=>{const s=C.sucursales(p).find(x=>x.id===el.dataset.suc); if(s)CX.cliUI.branchModal(s);}));
+    const rr=C.realResults(p);
+    const liveEl=document.getElementById('cliLive'); if(liveEl&&rr.count) liveEl.addEventListener('click',()=>{
+      ui.modal('Resultados en vivo de operación ('+rr.count+')', `<table class="tbl"><thead><tr><th>Sucursal</th><th>Evaluador</th><th>Score</th></tr></thead><tbody>${rr.visitas.map(v=>`<tr><td><b style="font-size:12.5px">${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.shopper||'—'}</td><td>${CX.cliUI.pill(v.score)}</td></tr>`).join('')}</tbody></table>`);
+    });
   },0);
+
+  const rr=C.realResults(p);
+  const liveBlock = rr.count ? `
+    <div class="card card-p" id="cliLive" style="margin-bottom:16px;cursor:pointer;border-left:4px solid var(--green);background:#f0fbf4">
+      <div class="between" style="flex-wrap:wrap;gap:10px">
+        <div class="flex" style="gap:14px;align-items:center">${CX.cliUI.donut(rr.avg,60)}
+          <div><div class="card-t" style="font-size:14px">🟢 Resultados en vivo de operación</div>
+          <div style="font-size:12px;color:var(--t2);margin-top:2px"><b>${rr.count}</b> cuestionario(s) enviados por evaluadores · score real promedio <b>${rr.avg}</b>${rr.ko?` · <span style="color:var(--red)">${rr.ko} con KO</span>`:''}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:3px">Alimentado directamente por el cuestionario ponderado del programa · toca para ver el detalle →</div></div></div>
+      </div>
+    </div>` : '';
 
   return `
     ${ui.ph('Panorama de '+p.name, 'Resultados de la marca · score ponderado por programa')}
     ${CX.cliUI.personaBarHTML()}
+    ${liveBlock}
     <div class="flex" style="gap:16px;align-items:stretch;margin-bottom:16px;flex-wrap:wrap">
       <div class="card card-p flex" style="gap:16px;min-width:260px;flex:1">
         ${CX.cliUI.donut(R.score,86)}

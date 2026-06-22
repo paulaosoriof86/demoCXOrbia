@@ -243,7 +243,7 @@ CX.module('liquidaciones', ({data,ui})=>{
       `,{onMount:(ov,close)=>{
         const calc=()=>{let t=0,m='';ov.querySelectorAll('.loteChk:checked').forEach(c=>{const l=all[+c.dataset.i];t+=l.total;m=l.moneda;});ov.querySelector('#loteTot').textContent=validadas.length?('Total lote: '+ui.money(m||p.currency[p.countries[0]],t)):'';};
         ov.querySelectorAll('.loteChk').forEach(c=>c.addEventListener('change',calc));calc();
-        const cr=ov.querySelector('#loteCreate'); if(cr)cr.addEventListener('click',()=>{const n=ov.querySelectorAll('.loteChk:checked').length;close();ui.toast('Lote creado con '+n+' visita(s) · egresos generados en Movimientos','ok');});
+        const cr=ov.querySelector('#loteCreate'); if(cr)cr.addEventListener('click',()=>{const ids=[...ov.querySelectorAll('.loteChk:checked')].map(c=>all[+c.dataset.i].visitaId);close();const r=data.payVisits(ids);ui.toast('Lote pagado · '+r.pagadas+' visita(s) liquidada(s) · fecha de pago '+r.fechaPago+' · Beneficios y Finanzas actualizados','ok',4200);});
       }});
     });
   },0);

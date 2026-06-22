@@ -105,3 +105,25 @@ CX.bus.on('project',()=>{
   CX.router.buildRail(CX.session.role);
   CX.router.nav(CX.session.view);
 });
+
+/* ============================================================
+   SINCRONÍA CENTRAL · una sola fuente de re-render para toda la
+   plataforma. Cualquier mutación de datos re-renderiza la vista
+   activa + recalcula badges del rail. Registrado UNA vez aquí
+   (no en los módulos) para evitar fugas de listeners.
+   visit-flow → asignación, cuestionario/score, sync HR, agenda
+   shoppers   → alta/edición de evaluadores
+   clients    → alta/edición de clientes
+   programa   → edición de cuestionario ponderado (op ↔ cliente)
+   ============================================================ */
+(function(){
+  let _busy=false;
+  function reRender(){
+    if(_busy || !CX.session.role || !CX.session.view) return;
+    _busy=true;
+    try{ CX.router.buildRail(CX.session.role); CX.router.nav(CX.session.view); }
+    finally{ _busy=false; }
+  }
+  ['visit-flow','shoppers','clients','programa'].forEach(ev=>CX.bus.on(ev, reRender));
+  CX.router._reRender = reRender;
+})();

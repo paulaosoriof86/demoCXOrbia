@@ -68,7 +68,7 @@ CX.shopperQuestionnaire = function(data, p, visita, ui){
         else answers[qid]=(el.querySelector('[data-txt]')||el).value;
       });
       const res=CX.programa.score(sections, answers);
-      if(visita) visita.score=res.total;
+      if(visita){ visita.score=res.total; visita.scoreBySection=res.bySection; visita.evaluada=true; visita.koFail=res.koFail; }
       close(); CX.bus.emit('visit-flow');
       ui.modal('Cuestionario enviado', `
         <div style="text-align:center;padding:8px 0">

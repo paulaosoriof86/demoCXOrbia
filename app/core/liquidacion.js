@@ -59,7 +59,7 @@ CX.liq = {
       sucursal:v.sucursal, pais:v.pais, moneda:v.currency,
       honorario:v.honorario, boleto:v.boleto||0, combo:v.comboAmt||0, reembolso, total,
       estado, freal:v.realizada||'', cuest:v.cuestFecha||'', submit:v.submit?(v.cuestFecha||''):'',
-      fechaEstimadaPago: estado==='pagada' ? (v.realizada||'') : this.fechaEstimadaPago(p, baseISO),
+      fechaEstimadaPago: estado==='pagada' ? (v.fechaPago||v.realizada||'') : this.fechaEstimadaPago(p, baseISO),
       pagada: estado==='pagada',
     };
   },
