@@ -3,7 +3,55 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
-_Última actualización: sesión 8 (giro a ecosistema estratégico — Portal del Cliente v1: scoring ponderado, roles/scope, planes de acción, capacitación, reportes, marketplace; CRM/Marketing en roadmap)._
+_Última actualización: sesión 11 (motor de cuestionario ponderado como **fuente única** — editor secciones/preguntas con pesos y **versiones**, **score real** del shopper, sincronizado al Portal del Cliente)._
+
+### ✅ Hecho en sesión 11 (transversal · operativa + cliente)
+| # | Item | Notas |
+|---|---|---|
+| H45 | **Motor de programa/cuestionario `core/programa.js`** = fuente única de verdad por proyecto (persistente): secciones→preguntas con **pesos %**, **versiones por criterio** (sucursal/marca/cadena/tipo), validación 100%, preguntas **crítico/KO**, motor de **score ponderado** | consumido por las 3 caras |
+| H46 | **Editor admin de Cuestionarios** reescrito a 2 niveles (secciones+preguntas) con versiones, validación de pesos y **persistencia**; **Shopper** llena por secciones y se calcula **score real**; **Portal del Cliente** lee la misma estructura (sincronizado) | `configuracion.js`, `cuestionario-shopper.js`, `cliente-data.js` |
+
+---
+
+## 🟠 Sesión 10 · feedback de producto + insumos reales TyA (incorporado, priorizado)
+
+> **Insumos cargados** (para minar el próximo bloque, en `uploads/`): `Costos Grupo Rimet 2025.xlsx`, `T&A Propuesta Grupo Rimet feb-2025.pdf`, `Cuestionario Maestro Rimet (Coordinación IT).xlsx`, `Listado de Usuarios - Tipo de Usuarios.xlsx`, `Manual de usuario APP de Checker V1.pdf`, `TA GT Presentacion 2025.pdf`. **Genérico/comercializable**: extraer patrones, no datos reales.
+
+### Decisiones de diseño (respuestas a feedback)
+- **Selector del portal del cliente = "Programa / Servicio", NO "Proyecto".** Un mismo cliente puede contratar varios programas: **mystery presencial, mystery call, telemarketing, auditoría, campañas especiales**. El selector cambia de programa; el **scope sucursal/región** se resuelve por el **rol** (Director/Regional/Responsable) + filtros. → renombrar y reencuadrar.
+- **Config: todo desde Admin (consultora) + futura autogestión del cliente por plan.** Habrá **dos consolas**: Cliente (autogestión según plan) y Proveedor (nosotros, todo). En el portal del cliente NO va config global del tenant; sí preferencias propias permitidas por su plan. → incluir opciones de config correspondientes.
+- **El set-up del programa se puede crear desde Operaciones O desde el portal del Cliente** (según plan) y **sincroniza en ambos sentidos** (fuente única de verdad por programa).
+
+### P0 — Analíticas y rankings (alto valor de decisión)
+- ⬜ **Analíticas clickeables con drill de alto detalle**: por **sucursal**, por **responsable**, por **visita**, por **puntuación**, por **sección/hallazgo**. Sección de "detalle profundo".
+- ⬜ **Rankings**: de **tiendas/sucursales**, y de **personas por rol y ubicación** (responsables, asesores, gerentes, supervisores) por programa y por región.
+- ⬜ **Hallazgos**: registro y ranking de hallazgos (críticos/recurrentes) para acción.
+- ⬜ **Reportes ampliados**: ranking de tiendas, ranking de hallazgos, desempeño por responsable, tendencias — exportables para toma de decisiones.
+
+### P0 — Mi Programa / Cuestionarios (editable, versionable, sincronizado)
+- 🟡 **Secciones y preguntas editables/configurables** con **pesos %** — ✅ manual desde Operaciones, **sincronizado** a Cliente; ⬜ importar/IA y edición desde portal Cliente según plan.
+- ✅ **Versiones de cuestionario por criterio** (sucursal / marca / tienda / cadena) dentro del mismo programa (H45).
+- ⬜ **Carga de documentación corporativa** (protocolos de servicio, manual de imagen, etc.) → **entrenar el modelo del cliente** y **extraer el set-up** (escenarios, preguntas, instructivos).
+- ⬜ **Add-ons activables por plan** reflejados en el portal del cliente.
+
+### P0 — Comercial (consultora)
+- ⬜ **Calculadora de estructura de costos MEJORADA** (base: lógica del `Costos Rimet.xlsx`, mejorada): honorarios shopper, reembolsos pass-through, overhead/coordinación, **ISR/regalías** por modelo directo/delegado, **margen objetivo → precio**, por país/moneda y por **tipo de servicio**; comparador de escenarios.
+- ⬜ **Propuesta de honorarios para shoppers** sugerida por **relevamiento** (zona, dificultad, escenario, recencia).
+- ⬜ **Plantillas de propuesta** (base: `Propuesta Rimet.pdf`): generar propuesta desde plantilla + **investigación en línea del cliente** + relevamiento + costo de la calculadora (propuesta inteligente).
+
+### P0 — Nuevo rol: **Coordinador / Representante** (franquiciado / coordinador de campo)
+> TyA hoy no da herramienta a sus representantes; esto es diferenciador comercial.
+- ⬜ **Rol Coordinador/Representante** con consola de **administración de proyectos** asignados (visitas, shoppers, agenda, avance).
+- ⬜ **Liquidación de honorarios del representante** y/o **cuenta cruzada** cuando factura localmente los programas (cobra al cliente local, paga shoppers, neto vs consultora).
+- ⬜ **Plantillas de propuesta para el representante** (como ejemplo/editable) para vender en su plaza.
+- ⬜ Scope por plaza/territorio; permisos configurables.
+
+### P1 — Soporte y capacitación (transversal)
+- ⬜ **Solicitud de soporte** desde portal del cliente (plataforma / WhatsApp a contactos por rol).
+- ⬜ **Capacitación**: a **personal del cliente** (servicio, comercial, técnica) y **capacitación de uso de plataforma**; ligada a brechas detectadas. Academia white-label.
+
+### Usuarios/roles/permisos (reforzar — configurables)
+- ⬜ **Matriz de roles/permisos por módulo y acción** (ver/editar/exportar/accionar) configurable por tenant; **crear roles nuevos** (incl. Coordinador). Base: `Listado de Usuarios - Tipo de Usuarios.xlsx`.
 
 ---
 
@@ -32,6 +80,39 @@ _Última actualización: sesión 8 (giro a ecosistema estratégico — Portal de
 - ⬜ **Demos & simuladores** de programa y cuestionario para prospección.
 - ⬜ **Actas inteligentes** (transcribe/resume Zoom·Meet, extrae acuerdos/tareas) + **Notion**.
 - ⬜ **Marketing & Contenidos**: generación de piezas/publicaciones, calendario, mediciones, estrategia.
+
+### P0/P1 — Apoyo IA, costos y base de conocimiento (sesión 9 · incorporado)
+- ⬜ **Calculadora de estructura de costos** (consola comercial/admin): honorarios, reembolsos pass-through, overhead, impuestos (ISR/regalías según modelo directo/delegado), **margen objetivo → precio sugerido**; por moneda. Alimenta la propuesta. *(en curso — siguiente bloque)*
+- ⬜ **Elaboración de propuestas**: desde **plantilla** + **investigación en línea del cliente** + **relevamiento**; la IA arma alcance, programa, cronograma y precio (toma el costo de la calculadora).
+- ⬜ **IA en cada sección del set-up**: generación asistida de **instructivos, certificaciones, hojas de ruta, cuestionarios (con pesos)** — opción crear con IA / importar / manual.
+- ⬜ **Base de conocimiento del cliente (entrenar el modelo)**: cargar **protocolos de servicio, manual de imagen y documentos corporativos** → extracción inteligente que **alimenta todo el set-up** (escenarios, cuestionarios, soporte, capacitación). Campo `conocimiento` + repositorio por proyecto.
+- ⬜ **Automatizaciones transversales** en cada sección (Make/webhooks): recordatorios, actualización de HR, notificaciones WhatsApp/correo por evento, generación/distribución de reportes.
+- ⬜ **Portal del Cliente — áreas más débiles → estadísticas + planes de capacitación dirigidos** (parcial: brechas y cursos ya en `cli_capacitacion`; falta histórico/tendencia de brechas y asignación con seguimiento).
+
+### 🔌 Transversal — módulos que impactan 2–3 caras (construir en paralelo)
+> Tienen criterios complementarios entre Comercial ↔ Operación ↔ Estrategia; se trabajan junto con la operativa.
+- ✅ **Cuestionarios con pesos** (Operación crea ↔ Cliente consume ↔ Comercial simula) — `core/programa.js` fuente única (H45/H46).
+- ⬜ **Base de conocimiento IA** (Comercial relevamiento ↔ Operación set-up ↔ Cliente soporte/capacitación).
+- ⬜ **Automatizaciones/notificaciones** (las tres caras).
+- ⬜ **Reportería/score** (Operación produce ↔ Cliente visualiza).
+
+### 🧱 Arquitectura escalable / Multi-tenant (base correcta — decisiones confirmadas)
+- ⬜ **Tenant = consultora**; **TyA = tenant #1**. Migrar TyA activando **solo módulos contratados** (`CX.applyPlan` + `cx_modules`); el resto queda **disponible para activar** cuando lo desee (los módulos nunca se eliminan).
+- ⬜ **Login unificado + enrutamiento por persona** (Proveedor/Consultora/Cliente/Shopper); en producción, subdominios por cara sobre el mismo backend (ver `ECOSISTEMA.md §2`).
+- ⬜ **Aislamiento de datos por tenant** + scope por país/región/sucursal; reglas en backend (ver `SECURITY.md`).
+- ⬜ **Modelo de datos versionado** para soportar add-ons sin romper tenants existentes.
+
+### ✅ Checklist de cierre — "Plataforma OPERATIVA completa" (avisar a stakeholder al llegar a 100%)
+> Cuando todo esto esté en ✅, la operativa está lista para **lanzar/migrar TyA Online**.
+- 🟡 Registro/alta/perfil de shoppers (✅ hecho) · asignación manual desde Visitas Disponibles (⬜).
+- ⬜ Hojas de Ruta: online/import/interna → de aquí derivan Visitas Disponibles.
+- 🟡 Cuestionario operativo: interno/externo/link **+ pesos** y llenado con score real (✅ interno ponderado con score; ⬜ vínculo score↔sucursal en portal y score en modos externo/link).
+- ⬜ Sincronía completa visita↔liquidación↔beneficios con fecha de pago.
+- ⬜ Documentos/Aprendizaje/Certificación filtrados por proyecto + instructivo en la visita.
+- ⬜ Notificaciones (Mi Día/Drill/Tablón) + WhatsApp por evento.
+- ⬜ Configuración con submenús + motor de planes/consolas (P0 sesión 6).
+- ⬜ Importador de migración (visitas/certificaciones/estados de TyA, anti-duplicado).
+- ⬜ Responsive total revisado.
 
 ### P2 — Profundización del ecosistema (recomendado, ver `ECOSISTEMA.md §7`)
 - ⬜ Investigación de mercados · Voz del Cliente (VoC) · Quality Assurance / calibración · Facturación & contratos · SLAs/cumplimiento · Gobernanza de datos/privacidad · Centro de Inteligencia (IA) · Benchmarking sectorial.

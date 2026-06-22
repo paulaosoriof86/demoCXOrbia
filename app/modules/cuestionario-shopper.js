@@ -23,31 +23,51 @@ CX.shopperQuestionnaire = function(data, p, visita, ui){
     return;
   }
 
-  /* ----- Cuestionario INTERNO (se llena en la plataforma) ----- */
-  const preguntas=[
-    {t:'¿Cómo fue el saludo y el tiempo de espera?',tipo:'escala'},
-    {t:'¿El local estaba limpio y ordenado?',tipo:'sino'},
-    {t:'¿El personal mostró conocimiento del producto?',tipo:'escala'},
-    {t:'¿Te ofrecieron '+(p.combo?'el combo/producto sugerido':'productos adicionales')+'?',tipo:'sino'},
-    {t:'Comentario abierto y evidencia',tipo:'texto'},
-  ];
-  const qHTML=preguntas.map((q,i)=>{
-    let input='';
-    if(q.tipo==='escala') input=`<div class="flex" data-q="${i}" style="gap:6px">${[1,2,3,4,5].map(n=>`<button class="btn btn-ghost btn-sm qscale" data-v="${n}" style="width:38px;justify-content:center">${n}</button>`).join('')}</div>`;
-    else if(q.tipo==='sino') input=`<div class="flex" data-q="${i}" style="gap:6px"><button class="btn btn-ghost btn-sm qbin" data-v="Sí">Sí</button><button class="btn btn-ghost btn-sm qbin" data-v="No">No</button></div>`;
-    else input=`<textarea class="inp" data-q="${i}" rows="2" placeholder="Escribe aquí…"></textarea>`;
-    return `<div style="margin-bottom:14px"><div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:7px">${i+1}. ${q.t}</div>${input}</div>`;
-  }).join('');
+  /* ----- Cuestionario INTERNO (se llena en la plataforma · score real ponderado) ----- */
+  const sections = CX.programa ? CX.programa.sections(p.id) : [];
+  const inputFor=(q)=>{
+    if(q.tipo==='Escala 1–5') return `<div class="flex qans" data-qid="${q.id}" data-tipo="${q.tipo}" style="gap:6px">${[1,2,3,4,5].map(n=>`<button class="btn btn-ghost btn-sm qopt" data-v="${n}" style="width:38px;justify-content:center">${n}</button>`).join('')}</div>`;
+    if(q.tipo==='Sí / No') return `<div class="flex qans" data-qid="${q.id}" data-tipo="${q.tipo}" style="gap:6px"><button class="btn btn-ghost btn-sm qopt" data-v="Sí">Sí</button><button class="btn btn-ghost btn-sm qopt" data-v="No">No</button></div>`;
+    if(q.tipo==='Numérico') return `<input class="inp qans" data-qid="${q.id}" data-tipo="${q.tipo}" type="number" min="0" max="100" placeholder="0–100" style="max-width:120px">`;
+    if(q.tipo==='Texto + foto') return `<div class="qans" data-qid="${q.id}" data-tipo="${q.tipo}"><textarea class="inp" data-txt rows="2" placeholder="Comentario…"></textarea><input type="file" accept="image/*" class="inp" style="padding:6px;margin-top:6px"></div>`;
+    return `<textarea class="inp qans" data-qid="${q.id}" data-tipo="${q.tipo}" rows="2" placeholder="Escribe aquí…"></textarea>`;
+  };
+  const secHTML=sections.map(s=>`
+    <div style="margin-bottom:16px">
+      <div class="between" style="margin-bottom:8px"><div style="font-size:12px;font-weight:800;color:var(--brand-dark);text-transform:uppercase;letter-spacing:.5px">${s.name}</div><span class="bdg bdg-n">peso ${s.weight}%</span></div>
+      ${s.questions.map((q,i)=>`<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:7px">${i+1}. ${q.name}${q.req?' <span style="color:var(--accent)">*</span>':''}${q.critico?' <span class="bdg bdg-r" style="font-size:9px">KO</span>':''}</div>${inputFor(q)}</div>`).join('')}
+    </div>`).join('');
 
   ui.modal('Cuestionario · '+(visita?visita.sucursal:p.name), `
-    <div style="background:var(--brand-light);border-radius:11px;padding:10px 13px;margin-bottom:14px;font-size:12px;color:var(--brand-dark)">Cuestionario configurado en la plataforma para <b>${p.name}</b>. Al enviarlo, la visita y la liquidación se actualizan solas.</div>
-    <div id="qForm">${qHTML}</div>
+    <div style="background:var(--brand-light);border-radius:11px;padding:10px 13px;margin-bottom:14px;font-size:12px;color:var(--brand-dark)">Cuestionario ponderado de <b>${p.name}</b>. Al enviarlo se calcula tu <b>score</b> y la liquidación se actualiza.</div>
+    <div id="qForm">${secHTML||'<div style="font-size:13px;color:var(--t3)">Sin secciones configuradas.</div>'}</div>
     <button class="btn btn-green" id="qSubmit" style="width:100%;justify-content:center;margin-top:6px">✅ Enviar cuestionario</button>
   `, {onMount:(ov,close)=>{
-    ov.querySelectorAll('.qscale,.qbin').forEach(b=>b.addEventListener('click',()=>{
-      b.parentElement.querySelectorAll('button').forEach(x=>x.classList.replace('btn-pr','btn-ghost'));
-      b.classList.replace('btn-ghost','btn-pr');
+    ov.querySelectorAll('.qopt').forEach(b=>b.addEventListener('click',()=>{
+      b.parentElement.querySelectorAll('.qopt').forEach(x=>x.classList.replace('btn-pr','btn-ghost'));
+      b.classList.replace('btn-ghost','btn-pr'); b.parentElement.dataset.val=b.dataset.v;
     }));
-    ov.querySelector('#qSubmit').addEventListener('click',()=>{close();ui.toast('Cuestionario enviado · liquidación pasa a "pend. validar"','ok');CX.bus.emit('visit-flow');});
+    ov.querySelector('#qSubmit').addEventListener('click',()=>{
+      const answers={};
+      ov.querySelectorAll('.qans').forEach(el=>{
+        const qid=el.dataset.qid, tipo=el.dataset.tipo;
+        if(tipo==='Escala 1–5'||tipo==='Sí / No') answers[qid]=el.dataset.val;
+        else if(tipo==='Numérico') answers[qid]=el.value;
+        else answers[qid]=(el.querySelector('[data-txt]')||el).value;
+      });
+      const res=CX.programa.score(sections, answers);
+      if(visita) visita.score=res.total;
+      close(); CX.bus.emit('visit-flow');
+      ui.modal('Cuestionario enviado', `
+        <div style="text-align:center;padding:8px 0">
+          <div style="font-size:13px;color:var(--t2);margin-bottom:10px">Score de la visita</div>
+          ${CX.cliUI?CX.cliUI.donut(res.total,96):'<div style="font-size:40px;font-weight:800">'+res.total+'</div>'}
+          ${res.koFail?'<div class="bdg bdg-r" style="margin-top:10px">Pregunta crítica (KO) incumplida</div>':''}
+          <div style="font-size:12.5px;color:var(--t3);margin-top:12px">La liquidación pasa a "pend. validar". El resultado alimenta el Portal del Cliente.</div>
+        </div>
+        <div style="text-align:right;margin-top:8px"><button class="btn btn-pr" data-okk>Entendido</button></div>
+      `, {onMount:(o2,c2)=>{o2.querySelector('[data-okk]').addEventListener('click',c2);}});
+      ui.toast('Cuestionario enviado · score '+res.total+'/100','ok',3200);
+    });
   }});
 };

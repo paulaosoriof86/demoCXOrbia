@@ -1,69 +1,106 @@
 /* CXOrbia · Configuración: Cuestionarios, Usuarios, Configuración (admin)
    Módulos AUTO-ADMINISTRABLES: todo editable desde la UI, sin tocar código. */
 
-/* ---------- Cuestionarios (editor de escenarios + preguntas) ---------- */
-let _qState=null;
+/* ---------- Cuestionarios: editor del PROGRAMA (secciones→preguntas, pesos, versiones) ---------- */
+let _qProg=null, _qPid=null;
 CX.module('cuestionarios', ({data,ui})=>{
   const p=data.project();
-  if(!_qState||_qState.projectId!==p.id){
-    _qState={projectId:p.id, active:0, scenarios:p.scenarios.map((s,i)=>({
-      name:s, version:'v'+(i+1), preguntas:[
-        {t:'Saludo y tiempo de espera',tipo:'Escala 1–5',peso:20,req:true},
-        {t:'Limpieza y orden del local',tipo:'Sí / No',peso:15,req:true},
-        {t:'Conocimiento del personal',tipo:'Escala 1–5',peso:25,req:true},
-        {t:'Sugerencia de producto / combo',tipo:'Sí / No',peso:20,req:false},
-        {t:'Comentario abierto / evidencia',tipo:'Texto + foto',peso:20,req:false},
-      ]})) };
-  }
-  const st=_qState, sc=st.scenarios[st.active];
-  const tipos=['Escala 1–5','Sí / No','Opción múltiple','Texto','Texto + foto','Numérico'];
+  if(!_qProg||_qPid!==p.id){ _qProg=JSON.parse(JSON.stringify(CX.programa.get(p.id))); _qPid=p.id; }
+  const TIPOS=CX.programa.TIPOS, CRIT=CX.programa.CRITERIOS;
+  const host=ui.el('div');
 
-  const qrow=(q,i)=>`<tr data-qi="${i}">
-    <td style="width:28px;color:var(--brand);font-weight:700">${i+1}</td>
-    <td><input class="inp" data-f="t" value="${q.t}" style="border-color:transparent;background:transparent;font-weight:600"></td>
-    <td><select class="sel" data-f="tipo" style="width:auto;padding:5px 8px">${tipos.map(t=>`<option ${t===q.tipo?'selected':''}>${t}</option>`).join('')}</select></td>
-    <td style="width:80px"><input class="inp" data-f="peso" type="number" value="${q.peso}" style="padding:5px 8px"></td>
-    <td style="width:60px;text-align:center"><input type="checkbox" data-f="req" ${q.req?'checked':''}></td>
-    <td style="width:40px;text-align:right"><button class="btn btn-ghost btn-sm" data-del="${i}" style="color:var(--red)">✕</button></td>
+  const ver=()=>_qProg.versions.find(v=>v.id===_qProg.activeId)||_qProg.versions[0];
+
+  const sync=()=>{
+    const v=ver();
+    host.querySelectorAll('[data-sec]').forEach(secEl=>{
+      const s=v.sections.find(x=>x.id===secEl.dataset.sec); if(!s)return;
+      const nm=secEl.querySelector('[data-sf="name"]'); if(nm)s.name=nm.value;
+      const wt=secEl.querySelector('[data-sf="weight"]'); if(wt)s.weight=+wt.value||0;
+      secEl.querySelectorAll('[data-qi]').forEach(tr=>{
+        const q=s.questions.find(x=>x.id===tr.dataset.qi); if(!q)return;
+        tr.querySelectorAll('[data-qf]').forEach(el=>{const f=el.dataset.qf; q[f]=el.type==='checkbox'?el.checked:(f==='weight'?(+el.value||0):el.value);});
+      });
+    });
+  };
+
+  const qrow=(s,q,i)=>`<tr data-qi="${q.id}">
+    <td style="width:26px;color:var(--brand);font-weight:700">${i+1}</td>
+    <td><input class="inp" data-qf="name" value="${q.name}" style="border-color:transparent;background:transparent;font-weight:600"></td>
+    <td><select class="sel" data-qf="tipo" style="width:auto;padding:5px 8px">${TIPOS.map(t=>`<option ${t===q.tipo?'selected':''}>${t}</option>`).join('')}</select></td>
+    <td style="width:70px"><input class="inp" data-qf="weight" type="number" value="${q.weight}" style="padding:5px 8px"></td>
+    <td style="width:50px;text-align:center"><input type="checkbox" data-qf="req" ${q.req?'checked':''}></td>
+    <td style="width:50px;text-align:center" title="Pregunta crítica / KO"><input type="checkbox" data-qf="critico" ${q.critico?'checked':''}></td>
+    <td style="width:34px;text-align:right"><button class="btn btn-ghost btn-sm" data-delq="${s.id}|${q.id}" style="color:var(--red)">✕</button></td>
   </tr>`;
 
-  const host=ui.el('div');
+  const secCard=(s)=>{
+    const qs=s.questions.reduce((a,q)=>a+(+q.weight||0),0);
+    return `<div class="card card-p" data-sec="${s.id}" style="margin-bottom:12px">
+      <div class="between" style="margin-bottom:10px;gap:10px;flex-wrap:wrap">
+        <div class="flex" style="gap:8px;flex:1;min-width:220px">
+          <input class="inp" data-sf="name" value="${s.name}" style="max-width:260px;font-weight:700">
+          <span class="flex" style="gap:4px"><span style="font-size:11px;color:var(--t3)">peso</span><input class="inp" data-sf="weight" type="number" value="${s.weight}" style="width:64px;padding:5px 8px"><span style="font-size:12px;color:var(--t3)">%</span></span>
+          ${qs===100?ui.bdg('preguntas 100%','g'):ui.bdg('preguntas '+qs+'%','a')}
+        </div>
+        <button class="btn btn-ghost btn-sm" data-dels="${s.id}" style="color:var(--red)">✕ sección</button>
+      </div>
+      <table class="tbl"><thead><tr><th></th><th>Pregunta</th><th>Tipo</th><th>Peso %</th><th>Oblig.</th><th>Crít.</th><th></th></tr></thead>
+      <tbody>${s.questions.map((q,i)=>qrow(s,q,i)).join('')}</tbody></table>
+      <button class="btn btn-soft btn-sm" data-addq="${s.id}" style="margin-top:10px">＋ Pregunta</button>
+    </div>`;
+  };
+
   const draw=()=>{
-    const sc=st.scenarios[st.active];
-    const totalPeso=sc.preguntas.reduce((a,q)=>a+(+q.peso||0),0);
+    const v=ver(); const val=CX.programa.validate(v.sections);
     host.innerHTML=`
-    ${ui.ph('Cuestionarios y Escenarios', p.name+' · crea versiones por escenario y edita preguntas en vivo')}
-    <div class="flex wrap" style="gap:7px;margin-bottom:14px">
-      ${st.scenarios.map((s,i)=>`<button class="btn ${i===st.active?'btn-pr':'btn-ghost'} btn-sm" data-sc="${i}">${s.version} · ${s.name}</button>`).join('')}
-      <button class="btn btn-soft btn-sm" id="addSc">＋ Nueva versión</button>
+    ${ui.ph('Cuestionarios y Programa', p.name+' · secciones y preguntas ponderadas · versiones por criterio')}
+    <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
+      <div style="font-size:12.5px;color:var(--brand-dark)">📌 <b>Fuente única.</b> Lo que definas aquí calcula el <b>score del shopper</b> al llenar el cuestionario y se refleja en el <b>Portal del Cliente</b> (mismas secciones y pesos).</div>
+    </div>
+    <div class="flex wrap" style="gap:7px;margin-bottom:14px;align-items:center">
+      <span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Versión</span>
+      ${_qProg.versions.map(vv=>`<button class="btn ${vv.id===_qProg.activeId?'btn-pr':'btn-ghost'} btn-sm" data-ver="${vv.id}">${vv.name} · ${vv.criterio}</button>`).join('')}
+      <button class="btn btn-soft btn-sm" id="addVer">＋ Versión</button>
+      ${_qProg.versions.length>1?`<button class="btn btn-ghost btn-sm" id="delVer" style="color:var(--red)">✕ versión</button>`:''}
+      <button class="btn btn-ghost btn-sm" id="dupVer">⧉ Duplicar</button>
     </div>
     <div class="card card-p" style="margin-bottom:14px">
-      <div class="between" style="margin-bottom:12px">
-        <div class="flex" style="gap:10px;flex:1">
-          <input class="inp" id="scName" value="${sc.name}" style="max-width:280px;font-weight:700">
-          ${ui.bdg(sc.version,'b')} ${ui.bdg(sc.preguntas.length+' preguntas','n')}
-          ${totalPeso===100?ui.bdg('Pesos OK · 100%','g'):ui.bdg('Pesos: '+totalPeso+'%','a')}
+      <div class="between" style="gap:10px;flex-wrap:wrap">
+        <div class="flex" style="gap:8px;flex:1;min-width:240px">
+          <input class="inp" id="verName" value="${v.name}" style="max-width:220px;font-weight:700">
+          <select class="sel" id="verCrit" style="width:auto">${CRIT.map(c=>`<option ${c===v.criterio?'selected':''}>${c}</option>`).join('')}</select>
+          <input class="inp" id="verAplica" value="${v.aplica||''}" placeholder="Aplica a (ej. Cadena X / Marca Y)" style="max-width:240px">
         </div>
-        <div class="flex"><button class="btn btn-ghost btn-sm" id="dupSc">⧉ Duplicar</button><button class="btn btn-green btn-sm" id="saveSc">💾 Guardar</button></div>
+        <div class="flex" style="gap:6px">
+          ${val.sectionsOk?ui.bdg('Secciones 100%','g'):ui.bdg('Secciones '+val.sectionsSum+'%','a')}
+          <button class="btn btn-green btn-sm" id="saveProg">💾 Guardar programa</button>
+        </div>
       </div>
-      <table class="tbl"><thead><tr><th></th><th>Pregunta</th><th>Tipo de respuesta</th><th>Peso %</th><th>Oblig.</th><th></th></tr></thead>
-      <tbody id="qBody">${sc.preguntas.map(qrow).join('')}</tbody></table>
-      <button class="btn btn-soft btn-sm" id="addQ" style="margin-top:12px">＋ Agregar pregunta</button>
     </div>
-    <div class="card card-p">${ui.aiBox('Sugiero preguntas según el rubro del proyecto, valido que los pesos sumen 100% y permito versionar el cuestionario por escenario sin empezar de cero. Lo que edites aquí alimenta la certificación y el reporte de calidad.','Cuestionarios a medida · editor en vivo')}</div>`;
+    <div id="secList">${v.sections.map(secCard).join('')}</div>
+    <button class="btn btn-soft btn-sm" id="addSec" style="margin-bottom:14px">＋ Sección</button>
+    <div class="card card-p">${ui.aiBox('Valido que las secciones sumen 100% y que cada sección sume 100% en sus preguntas. Puedes versionar el cuestionario por sucursal, marca o cadena. Las preguntas crítico/KO limitan el score si se incumplen.','Editor ponderado · una sola fuente para las 3 caras')}</div>`;
     bind();
   };
-  const sync=()=>{
-    host.querySelectorAll('#qBody tr').forEach(tr=>{const i=+tr.dataset.qi,q=st.scenarios[st.active].preguntas[i];if(!q)return;
-      tr.querySelectorAll('[data-f]').forEach(el=>{const f=el.dataset.f;q[f]=el.type==='checkbox'?el.checked:(f==='peso'?+el.value:el.value);});});
-  };
+
   const bind=()=>{
-    host.querySelectorAll('[data-sc]').forEach(b=>b.addEventListener('click',()=>{sync();st.active=+b.dataset.sc;draw();}));
-    host.querySelector('#addSc').addEventListener('click',()=>{st.scenarios.push({name:'Escenario nuevo',version:'v'+(st.scenarios.length+1),preguntas:[]});st.active=st.scenarios.length-1;draw();ui.toast('Versión creada','ok');});
-    host.querySelector('#dupSc').addEventListener('click',()=>{sync();const c=JSON.parse(JSON.stringify(st.scenarios[st.active]));c.name+=' (copia)';c.version='v'+(st.scenarios.length+1);st.scenarios.push(c);st.active=st.scenarios.length-1;draw();ui.toast('Escenario duplicado','ok');});
-    host.querySelector('#addQ').addEventListener('click',()=>{sync();st.scenarios[st.active].preguntas.push({t:'Nueva pregunta',tipo:'Escala 1–5',peso:0,req:false});draw();});
-    host.querySelector('#saveSc').addEventListener('click',()=>{sync();st.scenarios[st.active].name=host.querySelector('#scName').value;ui.toast('Cuestionario guardado · se aplica a las próximas visitas','ok');draw();});
-    host.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{sync();st.scenarios[st.active].preguntas.splice(+b.dataset.del,1);draw();}));
+    host.querySelectorAll('[data-ver]').forEach(b=>b.addEventListener('click',()=>{sync();_qProg.activeId=b.dataset.ver;draw();}));
+    host.querySelector('#addVer').addEventListener('click',()=>{sync();const v={id:CX.programa.uid('ver'),name:'Versión '+(_qProg.versions.length+1),criterio:'Por sucursal',aplica:'',sections:JSON.parse(JSON.stringify(ver().sections))};v.sections.forEach(s=>{s.id=CX.programa.uid('sec');s.questions.forEach(q=>q.id=CX.programa.uid('q'));});_qProg.versions.push(v);_qProg.activeId=v.id;draw();ui.toast('Versión creada','ok');});
+    const dv=host.querySelector('#delVer'); if(dv)dv.addEventListener('click',()=>{_qProg.versions=_qProg.versions.filter(x=>x.id!==_qProg.activeId);_qProg.activeId=_qProg.versions[0].id;draw();ui.toast('Versión eliminada','');});
+    host.querySelector('#dupVer').addEventListener('click',()=>{sync();const src=ver();const c=JSON.parse(JSON.stringify(src));c.id=CX.programa.uid('ver');c.name=src.name+' (copia)';c.sections.forEach(s=>{s.id=CX.programa.uid('sec');s.questions.forEach(q=>q.id=CX.programa.uid('q'));});_qProg.versions.push(c);_qProg.activeId=c.id;draw();ui.toast('Versión duplicada','ok');});
+    host.querySelector('#addSec').addEventListener('click',()=>{sync();ver().sections.push({id:CX.programa.uid('sec'),name:'Nueva sección',weight:0,questions:[]});draw();});
+    host.querySelectorAll('[data-dels]').forEach(b=>b.addEventListener('click',()=>{sync();const v=ver();v.sections=v.sections.filter(s=>s.id!==b.dataset.dels);draw();}));
+    host.querySelectorAll('[data-addq]').forEach(b=>b.addEventListener('click',()=>{sync();const s=ver().sections.find(x=>x.id===b.dataset.addq);s.questions.push({id:CX.programa.uid('q'),name:'Nueva pregunta',tipo:'Escala 1–5',weight:0,req:false,critico:false});draw();}));
+    host.querySelectorAll('[data-delq]').forEach(b=>b.addEventListener('click',()=>{sync();const[sid,qid]=b.dataset.delq.split('|');const s=ver().sections.find(x=>x.id===sid);s.questions=s.questions.filter(q=>q.id!==qid);draw();}));
+    host.querySelector('#saveProg').addEventListener('click',()=>{
+      sync(); const v=ver();
+      v.name=host.querySelector('#verName').value||v.name; v.criterio=host.querySelector('#verCrit').value; v.aplica=host.querySelector('#verAplica').value;
+      const val=CX.programa.validate(v.sections);
+      CX.programa.save(p.id,_qProg);
+      ui.toast(val.sectionsOk&&val.allQOk?'Programa guardado · aplica a shopper y portal del cliente':'Guardado (revisa pesos: deben sumar 100%)', val.sectionsOk&&val.allQOk?'ok':'a',3600);
+      draw();
+    });
   };
   draw();
   return host;

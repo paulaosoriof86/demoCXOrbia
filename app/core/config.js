@@ -57,6 +57,7 @@ CX.applyTheme = function(id){
   r.setProperty('--brand-light', c.brandLight);
   r.setProperty('--navy', c.navy);
   r.setProperty('--navy-2', c.navy2);
+  r.setProperty('--accent', c.accent);
   r.setProperty('--ui', t.font);
   r.setProperty('--disp', t.font);
   document.documentElement.setAttribute('data-rail', t.railStyle);

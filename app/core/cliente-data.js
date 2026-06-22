@@ -35,10 +35,10 @@ window.CX = window.CX || {};
   CX.clienteData = {
     NAMES,
 
-    /* ---- programa del proyecto (con pesos). En el futuro: editable y por versión ---- */
+    /* ---- programa del proyecto (FUENTE ÚNICA: core/programa.js) ---- */
     programa(p){
       p = p || CX.data.project();
-      // clon profundo del base (cada proyecto podría sobreescribirlo)
+      if(CX.programa) return CX.programa.sections(p.id).map(s=>({...s, questions:s.questions.map(q=>({...q}))}));
       return (p.programa || PROGRAMA_BASE).map(s=>({...s, questions:s.questions.map(q=>({...q}))}));
     },
 
