@@ -48,10 +48,11 @@ vez en `router.js` (sin fugas de listeners):
 - Lee visitas + tareas en vivo; cualquier `visit-flow` lo refresca (admin y shopper).
 
 ## 3. Pendientes de sincronía (siguientes)
-- ⬜ **Mapear visitas reales ↔ sucursales del Portal del Cliente** (hoy las sucursales del portal son
-  sintéticas; los resultados en vivo ya entran de forma agregada). Requiere que la HR/visitas traigan
-  el `sucursalId` del catálogo del cliente.
-- ⬜ **Movimientos financieros automáticos** al pagar lote (egresos en Movimientos con su asiento).
+- ✅ **Visitas reales → sucursales del Portal del Cliente**: el scorecard se deriva de las visitas del
+  proyecto; el score usa cuestionarios realmente enviados (real) con fallback determinístico. Pendiente:
+  catalogar `sucursalId` formal del cliente (hoy se agrupa por nombre de sucursal de la visita).
+- ✅ **Movimientos financieros automáticos** al pagar lote: `payVisits` genera el egreso consolidado por
+  país y emite `fin` + `visit-flow` (Liquidaciones, Beneficios, Movimientos y Dashboard sincronizados).
 - ⬜ **Automatizaciones externas** (Make/WhatsApp) al disparar cada evento del bus.
-- ⬜ **Backend real**: reemplazar el mock en memoria por adapter (los datos de visita hoy viven en
-  memoria y se reinician al recargar; las ediciones de shoppers/clientes/programa sí persisten).
+- ⬜ **Backend real**: reemplazar el mock en memoria por adapter (las visitas viven en memoria y se
+  reinician al recargar; shoppers/clientes/programa sí persisten).

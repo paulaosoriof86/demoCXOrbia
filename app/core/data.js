@@ -178,14 +178,26 @@ CX.data = {
     return v;
   },
 
-  /* pago de un lote: marca visitas como liquidadas con fecha de pago real.
-     Cierra la cadena visita → liquidación → beneficios → finanzas (CxP). */
+  /* pago de un lote: marca visitas como liquidadas con fecha de pago real Y
+     genera el/los egreso(s) financiero(s) agrupados por país.
+     Cierra la cadena visita → liquidación → beneficios → finanzas (CxP + Movimientos). */
   payVisits(ids, fechaPago){
     const f=fechaPago||new Date().toISOString().slice(0,10);
-    let n=0;
-    (ids||[]).forEach(id=>{ const v=this._visitas.find(x=>x.id===id); if(v){ v.estado='liquidada'; v.fechaPago=f; v.realizada=v.realizada||f; n++; } });
+    const porPais={}; let n=0;
+    (ids||[]).forEach(id=>{ const v=this._visitas.find(x=>x.id===id); if(v){
+      v.estado='liquidada'; v.fechaPago=f; v.realizada=v.realizada||f;
+      const tot=(v.honorario||0)+(v.boleto||0)+(v.comboAmt||0);
+      porPais[v.pais]=porPais[v.pais]||{monto:0,n:0,cur:v.currency}; porPais[v.pais].monto+=tot; porPais[v.pais].n++;
+      n++;
+    }});
+    // egreso consolidado por país (automatización financiera)
+    if(n && CX.finStore){
+      Object.keys(porPais).forEach(c=>{ const d=porPais[c];
+        CX.finStore.addMov(this.currentProjectId,{tipo:'egreso',cat:'Pago de lote ('+d.n+' visitas · '+c+')',pais:c,monto:-d.monto,desc:'Egreso consolidado · pago a evaluadores',estado:'Pagado',origen:'lote',fecha:f});
+      });
+    }
     if(n) CX.bus && CX.bus.emit('visit-flow');
-    return {pagadas:n, fechaPago:f};
+    return {pagadas:n, fechaPago:f, porPais};
   },
 
   /* conteo por fase con desglose por país */

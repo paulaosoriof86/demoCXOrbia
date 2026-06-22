@@ -3,6 +3,14 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
+_Última actualización: sesión 18 (sincronía 2 — Portal del Cliente alimentado por **visitas reales**; **egresos financieros automáticos** al pagar lote, centralizados en `payVisits`)._
+
+### ✅ Hecho en sesión 18 (ver `SINCRONIA.md`)
+| # | Item | Notas |
+|---|---|---|
+| H60 | **Portal del Cliente derivado de visitas reales**: `sucursales()` agrupa las visitas del proyecto; score real de cuestionarios enviados con fallback determinístico; invalida caché en `visit-flow` | `core/cliente-data.js` |
+| H61 | **Egresos financieros automáticos al pagar**: `payVisits` genera egreso consolidado por país y sincroniza Liquidaciones, Beneficios, Movimientos y Dashboard; "Crear lote" y "Pagar lote" usan la misma ruta | `core/data.js`, `finanzas.js` |
+
 _Última actualización: sesión 17 (**auditoría de sincronía completa** — re-render central por bus para toda la plataforma; cierre del ciclo visita→liquidación→beneficios→finanzas con fecha de pago; **score real del cuestionario alimenta el Portal del Cliente**)._
 
 ### ✅ Hecho en sesión 17 (ver `SINCRONIA.md`)

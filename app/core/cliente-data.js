@@ -49,42 +49,68 @@ window.CX = window.CX || {};
       return [{dep:'Región Central',city:'Ciudad'}];
     },
 
-    /* ---- scorecards por sucursal (determinístico por proyecto) ---- */
+    /* ---- scorecards por sucursal ----
+       Se derivan de las VISITAS REALES del proyecto (sincronía operación→cliente).
+       El score usa cuestionarios efectivamente enviados (evaluada); si una sucursal
+       aún no tiene score real, cae a un valor determinístico estable. */
     sucursales(p){
       p = p || CX.data.project();
       if(this._cache && this._cache.id===p.id) return this._cache.list;
       const prog=this.programa(p);
-      const r=rng(hash(p.id));
-      const n=Math.min(p.sucursales||12, 14);
-      const list=[];
-      for(let i=0;i<n;i++){
-        const pais=pick(r,p.countries||['GT']);
-        const loc=pick(r,this._cities(pais));
-        // score base de la sucursal + variación por sección
-        const base=58+Math.floor(r()*38); // 58..95
-        const sectionScores={};
-        let score=0;
-        prog.forEach(sec=>{
-          const v=Math.max(35,Math.min(100, base + Math.round((r()-0.5)*26)));
-          sectionScores[sec.id]=v;
-          score += v*(sec.weight/100);
-        });
-        score=Math.round(score);
-        const prev=Math.max(35,Math.min(100, score + Math.round((r()-0.5)*16)));
-        list.push({
-          id:p.id+'-su'+(i+1), code:'SUC-'+String(i+1).padStart(2,'0'),
-          name:'Sucursal '+loc.city+' '+(String.fromCharCode(65+(i%6))),
-          ciudad:loc.city, region:loc.dep, pais,
-          responsable:pick(r,NAMES),
-          visitas:2+Math.floor(r()*8),
-          score, prev, delta:score-prev,
-          nps:Math.max(-100,Math.min(100,Math.round((score-55)*1.6))),
-          sectionScores,
-          lastVisit:'2026-06-'+String(8+Math.floor(r()*18)).padStart(2,'0'),
-        });
-      }
+      const vis=(CX.data._visitas||[]).filter(v=>v.projectId===p.id);
+      const list = vis.length ? this._fromVisitas(p, prog, vis) : this._synthetic(p, prog);
       list.sort((a,b)=>b.score-a.score);
       this._cache={id:p.id, list};
+      return list;
+    },
+
+    /* agrupa visitas por sucursal y arma el scorecard con datos reales */
+    _fromVisitas(p, prog, vis){
+      const groups={};
+      vis.forEach(v=>{ (groups[v.sucursal]=groups[v.sucursal]||[]).push(v); });
+      return Object.keys(groups).map((name,i)=>{
+        const vs=groups[name];
+        const r=rng(hash(p.id+name));
+        const evals=vs.filter(v=>typeof v.score==='number' && v.evaluada);
+        // score: real si hay cuestionarios enviados; si no, determinístico estable
+        let score, sectionScores={};
+        if(evals.length){
+          score=Math.round(evals.reduce((a,v)=>a+v.score,0)/evals.length);
+          prog.forEach(sec=>{ const vals=evals.map(v=>v.scoreBySection&&v.scoreBySection[sec.id]).filter(x=>typeof x==='number');
+            sectionScores[sec.id]= vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : Math.max(35,Math.min(100,score+Math.round((r()-0.5)*20))); });
+        } else {
+          const base=58+Math.floor(r()*38); score=0;
+          prog.forEach(sec=>{ const sv=Math.max(35,Math.min(100,base+Math.round((r()-0.5)*26))); sectionScores[sec.id]=sv; score+=sv*(sec.weight/100); });
+          score=Math.round(score);
+        }
+        const prev=Math.max(35,Math.min(100,score+Math.round((r()-0.5)*16)));
+        const v0=vs[0];
+        return {
+          id:p.id+'-su'+(i+1), code:'SUC-'+String(i+1).padStart(2,'0'), name,
+          ciudad:v0.ciudad||'—', region:(CX.geo&&CX.geo.deptLabel?'':'')||v0.region||v0.ciudad||'Región', pais:v0.pais||(p.countries&&p.countries[0]),
+          responsable:pick(r,NAMES), visitas:vs.length, evaluadas:evals.length,
+          score, prev, delta:score-prev,
+          nps:Math.max(-100,Math.min(100,Math.round((score-55)*1.6))),
+          sectionScores, real:evals.length>0,
+          lastVisit:(vs.map(v=>v.realizada||v.agendada||v.disponibleDesde||'').filter(Boolean).sort().slice(-1)[0])||'2026-06-15',
+        };
+      });
+    },
+
+    /* fallback puramente determinístico (proyectos sin visitas cargadas) */
+    _synthetic(p, prog){
+      const r=rng(hash(p.id)); const n=Math.min(p.sucursales||12,14); const list=[];
+      for(let i=0;i<n;i++){
+        const pais=pick(r,p.countries||['GT']); const loc=pick(r,this._cities(pais));
+        const base=58+Math.floor(r()*38); const sectionScores={}; let score=0;
+        prog.forEach(sec=>{ const v=Math.max(35,Math.min(100,base+Math.round((r()-0.5)*26))); sectionScores[sec.id]=v; score+=v*(sec.weight/100); });
+        score=Math.round(score); const prev=Math.max(35,Math.min(100,score+Math.round((r()-0.5)*16)));
+        list.push({ id:p.id+'-su'+(i+1), code:'SUC-'+String(i+1).padStart(2,'0'),
+          name:'Sucursal '+loc.city+' '+(String.fromCharCode(65+(i%6))), ciudad:loc.city, region:loc.dep, pais,
+          responsable:pick(r,NAMES), visitas:2+Math.floor(r()*8), evaluadas:0,
+          score, prev, delta:score-prev, nps:Math.max(-100,Math.min(100,Math.round((score-55)*1.6))),
+          sectionScores, real:false, lastVisit:'2026-06-'+String(8+Math.floor(r()*18)).padStart(2,'0') });
+      }
       return list;
     },
 
@@ -176,4 +202,5 @@ window.CX = window.CX || {};
   };
 
   CX.bus && CX.bus.on('project', ()=>CX.clienteData.invalidate());
+  CX.bus && CX.bus.on('visit-flow', ()=>CX.clienteData.invalidate());
 })();

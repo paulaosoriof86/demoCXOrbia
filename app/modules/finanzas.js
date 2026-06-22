@@ -159,9 +159,8 @@ CX.module('movimientos', ({data,ui})=>{
     if(pl)pl.addEventListener('click',()=>{
       const val=CX.liq.forProject(data).filter(l=>l.estado==='validada');
       if(!val.length){ui.toast('No hay liquidaciones validadas para pagar','warn');return;}
-      const tot=val.reduce((a,l)=>a+l.total,0);
-      CX.finStore.addMov(p.id,{tipo:'egreso',cat:'Pago de lote ('+val.length+' visitas)',pais:val[0].pais,monto:-tot,desc:'Egreso consolidado del lote',estado:'Pagado',origen:'lote'});
-      draw();ui.toast(val.length+' liquidaciones pagadas en un solo egreso de '+ui.money(cur,tot),'ok',4000);
+      const r=data.payVisits(val.map(l=>l.visitaId));
+      ui.toast(r.pagadas+' liquidaciones pagadas · egreso(s) generados automáticamente · Beneficios y Finanzas sincronizados','ok',4200);
     });
     const ih=host.querySelector('#impHist');
     if(ih)ih.addEventListener('click',()=>ui.modal('Importar histórico de movimientos',`
