@@ -27,11 +27,11 @@ window.CX = window.CX || {};
         {id:'q6',name:'Agilidad del proceso',tipo:'Escala 1–5',weight:60,req:true,critico:false},
         {id:'q7',name:'Manejo de filas',tipo:'Escala 1–5',weight:40,req:false,critico:false}]},
       {id:'inst', name:'Instalaciones y limpieza', weight:15, questions:[
-        {id:'q8',name:'Limpieza y orden',tipo:'Sí / No',weight:50,req:true,critico:false},
-        {id:'q9',name:'Imagen y señalización',tipo:'Escala 1–5',weight:50,req:false,critico:false}]},
+        {id:'q8',name:'Limpieza y orden',tipo:'Sí / No',weight:50,req:true,critico:false,evidencia:'foto',evidNota:'Foto del área de atención y piso de venta.'},
+        {id:'q9',name:'Imagen y señalización',tipo:'Escala 1–5',weight:50,req:false,critico:false,evidencia:'foto'}]},
       {id:'proc', name:'Proceso / Producto', weight:15, questions:[
         {id:'q10',name:'Cumplimiento del protocolo',tipo:'Sí / No',weight:55,req:true,critico:true},
-        {id:'q11',name:'Calidad del producto/servicio',tipo:'Escala 1–5',weight:45,req:true,critico:false}]},
+        {id:'q11',name:'Calidad del producto/servicio',tipo:'Escala 1–5',weight:45,req:true,critico:false,evidencia:'foto_geo',evidNota:'Foto del producto con ubicación de la sucursal.'}]},
       {id:'cierre', name:'Cierre y despedida', weight:10, questions:[
         {id:'q12',name:'Despedida e invitación a volver',tipo:'Escala 1–5',weight:60,req:false,critico:false},
         {id:'q13',name:'Venta cruzada / adicional',tipo:'Sí / No',weight:40,req:false,critico:false}]},
@@ -45,16 +45,27 @@ window.CX = window.CX || {};
   const TIPOS = ['Escala 1–5','Sí / No','Opción múltiple','Texto','Texto + foto','Numérico'];
   const TIPOS_SCORE = ['Escala 1–5','Sí / No','Numérico']; // tipos que aportan al score
   const CRITERIOS = ['General','Por sucursal','Por marca','Por cadena','Por tipo de establecimiento'];
+  /* tipos de evidencia que el shopper debe aportar por pregunta/visita */
+  const EVID = [
+    {id:'none',  label:'Sin evidencia',        icon:'—'},
+    {id:'foto',  label:'Foto',                 icon:'📷'},
+    {id:'foto_geo',label:'Foto geolocalizada', icon:'📍'},
+    {id:'video', label:'Video',                icon:'🎥'},
+    {id:'audio', label:'Audio',                icon:'🎙️'},
+    {id:'varios',label:'Varios (foto+video)',  icon:'🗂️'},
+  ];
 
   CX.programa = {
-    TIPOS, TIPOS_SCORE, CRITERIOS, uid,
+    TIPOS, TIPOS_SCORE, CRITERIOS, EVID, uid,
+    evidLabel(id){ const e=EVID.find(x=>x.id===id); return e?e.label:'Sin evidencia'; },
+    evidIcon(id){ const e=EVID.find(x=>x.id===id); return e?e.icon:'—'; },
 
     _ls(pid){ return 'cx_programa_'+pid; },
     _migrate(prog){
       // garantiza ids y estructura
       if(!prog.versions) prog=defaultProgram();
       prog.versions.forEach(v=>{ if(!v.id)v.id=uid('ver'); v.sections=(v.sections||[]).map(s=>{
-        if(!s.id)s.id=uid('sec'); s.questions=(s.questions||[]).map(q=>({id:q.id||uid('q'),name:q.name||q.t||'Pregunta',tipo:q.tipo||'Escala 1–5',weight:+q.weight||+q.peso||0,req:!!q.req,critico:!!q.critico}));
+        if(!s.id)s.id=uid('sec'); s.questions=(s.questions||[]).map(q=>({id:q.id||uid('q'),name:q.name||q.t||'Pregunta',tipo:q.tipo||'Escala 1–5',weight:+q.weight||+q.peso||0,req:!!q.req,critico:!!q.critico,evidencia:q.evidencia||'none',evidNota:q.evidNota||''}));
         return s; }); });
       if(!prog.activeId||!prog.versions.some(v=>v.id===prog.activeId)) prog.activeId=prog.versions[0].id;
       return prog;

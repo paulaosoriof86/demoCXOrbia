@@ -72,6 +72,7 @@ CX.module('cuestionarios', ({data,ui})=>{
     <td style="width:70px"><input class="inp" data-qf="weight" type="number" value="${q.weight}" style="padding:5px 8px"></td>
     <td style="width:50px;text-align:center"><input type="checkbox" data-qf="req" ${q.req?'checked':''}></td>
     <td style="width:50px;text-align:center" title="Pregunta crítica / KO"><input type="checkbox" data-qf="critico" ${q.critico?'checked':''}></td>
+    <td style="width:140px"><select class="sel" data-qf="evidencia" style="width:auto;padding:5px 8px">${CX.programa.EVID.map(e=>`<option value="${e.id}" ${e.id===(q.evidencia||'none')?'selected':''}>${e.icon} ${e.label}</option>`).join('')}</select></td>
     <td style="width:34px;text-align:right"><button class="btn btn-ghost btn-sm" data-delq="${s.id}|${q.id}" style="color:var(--red)">✕</button></td>
   </tr>`;
 
@@ -86,7 +87,7 @@ CX.module('cuestionarios', ({data,ui})=>{
         </div>
         <button class="btn btn-ghost btn-sm" data-dels="${s.id}" style="color:var(--red)">✕ sección</button>
       </div>
-      <table class="tbl"><thead><tr><th></th><th>Pregunta</th><th>Tipo</th><th>Peso %</th><th>Oblig.</th><th>Crít.</th><th></th></tr></thead>
+      <table class="tbl"><thead><tr><th></th><th>Pregunta</th><th>Tipo</th><th>Peso %</th><th>Oblig.</th><th>Crít.</th><th>Evidencia</th><th></th></tr></thead>
       <tbody>${s.questions.map((q,i)=>qrow(s,q,i)).join('')}</tbody></table>
       <button class="btn btn-soft btn-sm" data-addq="${s.id}" style="margin-top:10px">＋ Pregunta</button>
     </div>`;

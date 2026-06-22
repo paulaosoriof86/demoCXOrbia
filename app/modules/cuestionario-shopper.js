@@ -32,10 +32,21 @@ CX.shopperQuestionnaire = function(data, p, visita, ui){
     if(q.tipo==='Texto + foto') return `<div class="qans" data-qid="${q.id}" data-tipo="${q.tipo}"><textarea class="inp" data-txt rows="2" placeholder="Comentario…"></textarea><input type="file" accept="image/*" class="inp" style="padding:6px;margin-top:6px"></div>`;
     return `<textarea class="inp qans" data-qid="${q.id}" data-tipo="${q.tipo}" rows="2" placeholder="Escribe aquí…"></textarea>`;
   };
+  const evidBlock=(q)=>{
+    if(!q.evidencia||q.evidencia==='none') return '';
+    const accept=q.evidencia==='video'?'video/*':q.evidencia==='audio'?'audio/*':'image/*';
+    const multi=q.evidencia==='varios'?'multiple':'';
+    const geo=q.evidencia==='foto_geo';
+    return `<div style="margin-top:8px;background:var(--panel-2);border:1px dashed var(--border);border-radius:9px;padding:9px 11px">
+      <div class="between" style="margin-bottom:6px"><span style="font-size:11px;font-weight:800;color:var(--brand-dark)">${CX.programa.evidIcon(q.evidencia)} Evidencia requerida: ${CX.programa.evidLabel(q.evidencia)}</span>${geo?'<button class="btn btn-ghost btn-sm geoBtn" type="button">📍 Capturar ubicación</button>':''}</div>
+      ${q.evidNota?`<div style="font-size:11px;color:var(--t3);margin-bottom:6px">${q.evidNota}</div>`:''}
+      <input type="file" accept="${accept}" ${multi} class="inp" style="padding:6px;font-size:11px">
+    </div>`;
+  };
   const secHTML=sections.map(s=>`
     <div style="margin-bottom:16px">
       <div class="between" style="margin-bottom:8px"><div style="font-size:12px;font-weight:800;color:var(--brand-dark);text-transform:uppercase;letter-spacing:.5px">${s.name}</div><span class="bdg bdg-n">peso ${s.weight}%</span></div>
-      ${s.questions.map((q,i)=>`<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:7px">${i+1}. ${q.name}${q.req?' <span style="color:var(--accent)">*</span>':''}${q.critico?' <span class="bdg bdg-r" style="font-size:9px">KO</span>':''}</div>${inputFor(q)}</div>`).join('')}
+      ${s.questions.map((q,i)=>`<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:7px">${i+1}. ${q.name}${q.req?' <span style="color:var(--accent)">*</span>':''}${q.critico?' <span class="bdg bdg-r" style="font-size:9px">KO</span>':''}</div>${inputFor(q)}${evidBlock(q)}</div>`).join('')}
     </div>`).join('');
 
   ui.modal('Cuestionario · '+(visita?visita.sucursal:p.name), `
@@ -47,6 +58,7 @@ CX.shopperQuestionnaire = function(data, p, visita, ui){
       b.parentElement.querySelectorAll('.qopt').forEach(x=>x.classList.replace('btn-pr','btn-ghost'));
       b.classList.replace('btn-ghost','btn-pr'); b.parentElement.dataset.val=b.dataset.v;
     }));
+    ov.querySelectorAll('.geoBtn').forEach(b=>b.addEventListener('click',()=>{b.textContent='✅ Ubicación capturada';b.disabled=true;ui.toast('Ubicación y hora registradas (demo)','ok');}));
     ov.querySelector('#qSubmit').addEventListener('click',()=>{
       const answers={};
       ov.querySelectorAll('.qans').forEach(el=>{

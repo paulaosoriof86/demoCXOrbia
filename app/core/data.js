@@ -167,6 +167,17 @@ CX.data = {
   posts(){return this._posts.filter(p=>p.projectId===this.currentProjectId);},
   shoppersFor(){const cs=this.project().countries;return this.shoppers.filter(s=>cs.includes(s.pais));},
 
+  /* asignación manual de una visita a un shopper (existente o recién creado) */
+  assignVisit(visitId, shopperId){
+    const v=this._visitas.find(x=>x.id===visitId);
+    const s=this.getShopper?this.getShopper(shopperId):this.shoppers.find(x=>x.id===shopperId);
+    if(!v||!s) return null;
+    v.shopperId=s.id; v.shopper=s.nombre; v.shopperCode=s.code;
+    if(v.estado==='disponible') v.estado='asignada';
+    CX.bus && CX.bus.emit('visit-flow');
+    return v;
+  },
+
   /* conteo por fase con desglose por país */
   _phaseCount(v,fn){const cs=this.project().countries;const o={t:v.filter(fn).length};cs.forEach(c=>o[c]=v.filter(x=>x.pais===c&&fn(x)).length);return o;},
   kpis(){

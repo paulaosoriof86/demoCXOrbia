@@ -3,7 +3,19 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
-_Última actualización: sesión 12 (gestión de **Clientes** en administración · proyectos por cliente; **Importar / Crear con IA** en el editor de cuestionarios; KPIs clickeables en el módulo nuevo)._
+_Última actualización: sesión 13 (**tipo de evidencia por pregunta/visita** — foto/foto-geo/video/audio — en editor y llenado del shopper; **asignación manual desde Visitas** con crear shopper al vuelo)._
+
+### ✅ Hecho en sesión 13
+| # | Item | Notas |
+|---|---|---|
+| H49 | **Tipo de evidencia por pregunta** (foto / foto geolocalizada / video / audio / varios) + **nota/recomendación**: configurable en el editor, mostrado y **capturado por el shopper** al llenar (con botón de ubicación para foto-geo) | `programa.js`, `configuracion.js`, `cuestionario-shopper.js` |
+| H50 | **Asignación manual desde Visitas** (admin): botón Asignar → elegir shopper existente (buscador) o **crear nuevo con nombre+apellido+WhatsApp** y asignar en el acto; pasa la visita a `asignada` | `visitas.js`, `data.js (assignVisit)` |
+
+### ℹ️ Estado de la INTELIGENCIA/IA (honesto, para no perder el hilo)
+- ✅ **Cuestionarios**: importar + crear con IA (H48). ✅ **Evidencia** configurable por pregunta (H49).
+- ⚠️ **Wizard/Set-up de proyecto**: captura toda la config pero la “inteligencia” es **presentacional**; **no** extrae aún escenarios/cuestionario/HR desde documentos.
+- ⬜ **Pendiente con IA real**: extracción desde **documentos corporativos** (entrenar modelo del cliente → generar set-up), **certificaciones**, **hojas de ruta**, **proponer honorarios** desde relevamiento, **mapeo HR**, **calculadora de costos** y **elaboración de propuestas** (estos dos aún no existen).
+- ➡️ Conclusión: **NO** está implementado todo lo inteligente del set-up de proyecto; falta la capa de **extracción por documentos** y los módulos comerciales (costos/propuestas).
 
 ### ✅ Hecho en sesión 12
 | # | Item | Notas |
@@ -87,8 +99,7 @@ _Última actualización: sesión 12 (gestión de **Clientes** en administración
 - ⬜ **Actas inteligentes** (transcribe/resume Zoom·Meet, extrae acuerdos/tareas) + **Notion**.
 - ⬜ **Marketing & Contenidos**: generación de piezas/publicaciones, calendario, mediciones, estrategia.
 
-### P0/P1 — Apoyo IA, costos y base de conocimiento (sesión 9 · incorporado)
-- ⬜ **Calculadora de estructura de costos** (consola comercial/admin): honorarios, reembolsos pass-through, overhead, impuestos (ISR/regalías según modelo directo/delegado), **margen objetivo → precio sugerido**; por moneda. Alimenta la propuesta. *(en curso — siguiente bloque)*
+### P0/P1 — Apoyo IA, costos y base de conocimiento (sesión 9 · incorporado)- ⬜ **Calculadora de estructura de costos** (consola comercial/admin): honorarios, reembolsos pass-through, overhead, impuestos (ISR/regalías según modelo directo/delegado), **margen objetivo → precio sugerido**; por moneda. Alimenta la propuesta. *(en curso — siguiente bloque)*
 - ⬜ **Elaboración de propuestas**: desde **plantilla** + **investigación en línea del cliente** + **relevamiento**; la IA arma alcance, programa, cronograma y precio (toma el costo de la calculadora).
 - ⬜ **IA en cada sección del set-up**: generación asistida de **instructivos, certificaciones, hojas de ruta, cuestionarios (con pesos)** — opción crear con IA / importar / manual.
 - ⬜ **Base de conocimiento del cliente (entrenar el modelo)**: cargar **protocolos de servicio, manual de imagen y documentos corporativos** → extracción inteligente que **alimenta todo el set-up** (escenarios, cuestionarios, soporte, capacitación). Campo `conocimiento` + repositorio por proyecto.
@@ -148,7 +159,7 @@ _Última actualización: sesión 12 (gestión de **Clientes** en administración
 - ✅ **Registro de shopper completo** (desde login): país (lista larga LatAm) → **departamento** → **ciudad** (dependientes), **nombre y apellido por separado**, correo, WhatsApp, **edad y sexo** (para automatización). Usuario = `nombre.apellido`; contraseña `Nombre123*` (patrón **configurable por el cliente** vía `CX.CREDS`). → H37
 - ✅ **Alta manual por admin**: solo obligatorios primer nombre + primer apellido + WhatsApp; el shopper completa el resto al ingresar. → H38
 - ✅ **Perfil del shopper completo y editable** + histórico de visitas + KPIs clickeables. → H39
-- ⬜ **Asignación manual desde Visitas Disponibles**: elegir cuál visita y a quién (shopper existente o **crearlo ahí** con nombre + teléfono mínimo).
+- ✅ **Asignación manual desde Visitas Disponibles**: elegir cuál visita y a quién (shopper existente o **crearlo ahí** con nombre + teléfono mínimo). — H50
 - ⬜ **Ofrecer visitas a shoppers de la misma ciudad**: individual (WhatsApp/correo) y **masivo** (WhatsApp/correo/Mailchimp).
 - ⬜ **Plantillas de mensajes** (WhatsApp + correo) editables: ofrecer visita, recordatorio de agenda, "¿hiciste la visita?", recordatorio de cuestionario, marcar completada, certificarse, pago. Variables dinámicas.
 - ⬜ **WhatsApp por WhatsApp Web** (`wa.me` + plantilla) además de API — sin obligar a automatización.

@@ -58,7 +58,7 @@ CX.module('visitas', ({data,role,ui})=>{
     <td>${ui.estadoBadge(v.estado)}</td>
     <td style="font-size:12px">${v.agendada||'<span class="muted">—</span>'}</td>
     <td style="font-size:12px;font-weight:600;color:var(--green)">${ui.money(v.currency,v.honorario)}</td>
-    <td style="text-align:right"><button class="btn btn-ghost btn-sm" data-edit="${v.id}">✏️</button></td>
+    <td style="text-align:right">${!v.shopper&&v.estado!=='fuera_rango'?`<button class="btn btn-soft btn-sm" data-assign="${v.id}">Asignar</button> `:''}<button class="btn btn-ghost btn-sm" data-edit="${v.id}">✏️</button></td>
   </tr>`;
   const html=`
     <div class="between" style="margin-bottom:6px"><div>${ui.ph('Visitas', p.name+' · base operativa · publica, asigna y edita cada visita')}</div>
@@ -100,6 +100,31 @@ CX.module('visitas', ({data,role,ui})=>{
       <div style="text-align:right;margin-top:16px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Visita guardada','ok');this.closest('.cx-ov').remove()">💾 Guardar</button></div>`);
     document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editor(all.find(z=>z.id===b.dataset.edit))));
     document.getElementById('addV').addEventListener('click',()=>editor(null));
+    const assignModal=(v)=>{
+      const shoppers=data.shoppersFor();
+      ui.modal('Asignar visita · '+v.sucursal, `
+        <div style="background:var(--brand-light);border-radius:10px;padding:9px 12px;font-size:12px;color:var(--brand-dark);margin-bottom:12px">${v.escenario} · ${v.ciudad} · ${ui.money(v.currency,v.honorario)} · ${v.quincena}</div>
+        <div class="flex" style="gap:0;border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-bottom:12px">
+          <button class="btn btn-sm btn-pr asgTab" data-t="exist" style="border-radius:0;flex:1">Shopper existente</button>
+          <button class="btn btn-sm btn-ghost asgTab" data-t="new" style="border-radius:0;flex:1">Crear nuevo</button>
+        </div>
+        <div id="asgExist"><input class="inp" id="asgSearch" placeholder="Buscar shopper…" style="margin-bottom:8px"><div id="asgList" style="max-height:240px;overflow:auto"></div></div>
+        <div id="asgNew" style="display:none"><div class="grid g2" style="gap:10px 12px">
+          <div><label class="lbl">Primer nombre <b style="color:var(--accent)">*</b></label><input class="inp" id="an_f"></div>
+          <div><label class="lbl">Primer apellido <b style="color:var(--accent)">*</b></label><input class="inp" id="an_l"></div>
+          <div style="grid-column:1/3"><label class="lbl">WhatsApp <b style="color:var(--accent)">*</b></label><input class="inp" id="an_w" placeholder="+502 ..."></div>
+        </div><div style="text-align:right;margin-top:12px"><button class="btn btn-green btn-sm" id="an_save">Crear y asignar</button></div></div>
+      `, {onMount:(ov,close)=>{
+        const renderList=(q)=>{ const f=shoppers.filter(s=>!q||s.nombre.toLowerCase().includes(q.toLowerCase()));
+          ov.querySelector('#asgList').innerHTML=f.length?f.map(s=>`<button class="btn btn-ghost btn-sm asgPick" data-id="${s.id}" style="width:100%;justify-content:space-between;margin-bottom:6px">${s.nombre}<span class="bdg bdg-n">${s.ciudad||CX.paisName(s.pais)}</span></button>`).join(''):ui.empty('🔍','Sin shoppers en este país. Crea uno nuevo.');
+          ov.querySelectorAll('.asgPick').forEach(b=>b.addEventListener('click',()=>{ data.assignVisit(v.id,b.dataset.id); close(); ui.toast('Visita asignada a '+data.getShopper(b.dataset.id).nombre,'ok'); CX.router.nav('visitas'); })); };
+        renderList('');
+        ov.querySelector('#asgSearch').addEventListener('input',e=>renderList(e.target.value));
+        ov.querySelectorAll('.asgTab').forEach(b=>b.addEventListener('click',()=>{ ov.querySelectorAll('.asgTab').forEach(x=>x.classList.replace('btn-pr','btn-ghost')); b.classList.replace('btn-ghost','btn-pr'); ov.querySelector('#asgExist').style.display=b.dataset.t==='exist'?'':'none'; ov.querySelector('#asgNew').style.display=b.dataset.t==='new'?'':'none'; }));
+        ov.querySelector('#an_save').addEventListener('click',()=>{ const f=ov.querySelector('#an_f').value.trim(),l=ov.querySelector('#an_l').value.trim(),w=ov.querySelector('#an_w').value.trim(); if(!f||!l||!w){ui.toast('Nombre, apellido y WhatsApp','err');return;} const s=data.addShopper({via:'asignacion',estado:'Pendiente',firstName:f,lastName:l,whatsapp:w,pais:v.pais,ciudad:v.ciudad}); data.assignVisit(v.id,s.id); close(); ui.toast('Shopper creado y visita asignada','ok',3200); CX.router.nav('visitas'); });
+      }});
+    };
+    document.querySelectorAll('[data-assign]').forEach(b=>b.addEventListener('click',()=>assignModal(all.find(z=>z.id===b.dataset.assign))));
   },0);
   return html;
 });
