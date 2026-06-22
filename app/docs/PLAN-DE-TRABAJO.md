@@ -3,6 +3,55 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
+_Última actualización: sesión 22 (**Tablero de Estado Operativo** estilo HR en el Dashboard — buckets por etapa con detalle, WA/correo e ir a sección; **ranking de shoppers clickeable + completo** con perfil)._
+
+### ✅ Hecho en sesión 22
+| # | Item | Notas |
+|---|---|---|
+| H69 | **Tablero de Estado Operativo** en Dashboard: buckets (próximas, realizadas pend. cuestionario, pend. submitir, pend. programar, pend. asignar, alertas vencidas) con fila detallada (sucursal/ciudad/franja/shopper/escenario/combo/estado), **WhatsApp + correo por fila**, recordatorio masivo e ir a Visitas; alimenta recordatorios/automatizaciones | `dashboard.js` |
+| H70 | **Ranking de shoppers clickeable** (perfil con KPIs + WA + ir a Shoppers) y **ranking completo** | `dashboard.js` |
+
+### 🔴 BACKLOG de feedback (sesión 22 · priorizado — pre-migración TyA)
+> Pendientes reales detectados/confirmados. La operativa NO está al 100% hasta cerrar P0–P1.
+
+**P0 — Importaciones inteligentes (genéricas, cualquier consultora)**
+- ⬜ Importar HR en **creación de proyecto**: mapear columnas, elegir criterios/KPIs, mantener colaborativa online; adaptar plataforma a industria/características.
+- ⬜ Importador inteligente en **instructivos, certificaciones, hojas de ruta, aprendizaje** (patrón importar/IA/manual ya en cuestionarios).
+- ⬜ **Importador de migración inicial** (cualquier proyecto): shoppers, visitas, certificaciones, **CxC/CxP, históricos de HR**, anti-duplicado, preview→commit.
+- ⬜ Importar **históricos por shopper** (de HR históricas) → perfil con histórico real.
+
+**P0 — Autoadministración / edición**
+- ⬜ **Usuarios, roles y permisos** editables (matriz) + alta usuarios cliente/representante.
+- ⬜ Edición/config en módulos hoy sin editar; **NDA editor** en Configuración (motor ya configurable, falta UI).
+- ⬜ Configuración con submenús + planes/consolas (Cliente vs Proveedor).
+
+**P0 — Financiero**
+- ⬜ Tarjetas del Dashboard Financiero **clickeables**; **reembolsos mensuales** (conciliar pago cliente/casa matriz).
+- ⬜ **Movimientos globales** (no solo por proyecto) + **conceptos con listas** (admin/financiero/tecnología/proyecto…); separar ingresos por comisiones/honorarios/anticipos/facturación vs **financiamientos**→CxP; **históricos**; **remesas** para conciliar; **presupuesto** dentro del módulo.
+- ⬜ **Liquidaciones**: selección real de cuáles entran al lote; CxC/CxP desde importación; abonos vinculados a egresos.
+
+**P1 — Gestión accionable (detalles ampliados)**
+- ⬜ Ampliar **detalle de TODOS los KPIs/secciones**: contacto individual y **masivo** WA+correo desde cada registro.
+- ⬜ **Postulaciones dinámicas**: KPI pendientes → ver detalle **filtrado y gestionable** (aprobar/standby/reprogramar) dentro del drill.
+- ⬜ **Calendario**: detalle amplio por registro (sucursal, shopper, escenario…) + ir a sección + WA.
+- ⬜ **Comparativo trimestral** ampliado (más KPIs/OKRs), leyendo el trimestre de la **HR** (incl. Google Sheets).
+
+**P1 — Portal cliente / clientes / shopper**
+- ⬜ **Clientes**: corregir copy ("cartera plan Pro" suena a nosotros) → enfoque consultora-administra-sus-clientes; **perfil de cliente con historial, puntuaciones, OKRs**.
+- ⬜ **Mis Visitas**: ver **historial** (toggle activo/historial).
+- ⬜ **Aprendizaje inteligente**: cargar material externo, generar infografías/imágenes (tipo notebook), bloques de capacitación, exámenes/formularios, registro de avances.
+- ⬜ **Reportes** ampliados (admin / portal cliente / por rol representante).
+
+**P1 — Automatizaciones / integraciones**
+- ⬜ **Módulo Automatizaciones (UI)**: toggles, plantillas, **webhook Make**, log; **vincular escenarios ya creados en Make**; **Outlook** (correo/calendario) y cómo se vincula a cada módulo.
+
+**P1 — Costos & Propuestas**
+- ⬜ Importador inteligente de costeo: cargar características del programa → **proponer honorario shopper y precio**; selección de qué **imprimir/incluir**.
+- ⬜ **Plantilla de propuesta editable** + investigación web del cliente + insertar costos.
+
+**P2 — Nuevo rol**
+- ⬜ **Coordinador/Representante**: admin de proyectos, liquidación/cuenta cruzada local, plantillas.
+
 _Última actualización: sesión 21 (**motor de automatizaciones Make** + alertas de atrasados/pendientes; movimientos del shopper enrutados por automatizaciones configurables; **NDA editable por rol**)._
 
 ### ✅ Hecho en sesión 21

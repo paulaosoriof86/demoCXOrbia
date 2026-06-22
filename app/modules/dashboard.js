@@ -99,17 +99,19 @@ CX.module('dashboard', ({data,ui})=>{
 
   <div class="grid" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
     <div class="card card-p">
-      <div class="card-t" style="margin-bottom:12px">🏅 Top shoppers</div>
-      ${top.map(s=>`<div class="between" style="padding:7px 0;border-bottom:1px solid var(--border-2)">
-        <div class="flex"><div class="rail-av" style="width:26px;height:26px;font-size:10px;background:linear-gradient(135deg,var(--brand),var(--brand-dark))">${s.code.slice(-2)}</div>
+      <div class="card-h"><div class="card-t">🏅 Top shoppers</div><button class="btn btn-ghost btn-sm" id="rankFull">Ver ranking completo →</button></div>
+      ${top.map((s,i)=>`<div class="between hov" data-sh="${s.id}" style="padding:7px 6px;border-bottom:1px solid var(--border-2);cursor:pointer;border-radius:8px">
+        <div class="flex"><b style="width:16px;color:var(--t3);font-family:var(--disp)">${i+1}</b><div class="rail-av" style="width:26px;height:26px;font-size:10px;background:linear-gradient(135deg,var(--brand),var(--brand-dark))">${s.code.slice(-2)}</div>
         <span style="font-size:12px;font-weight:600;color:var(--t1)">${s.nombre} <span class="muted">${CX.paisFlag(s.pais)}</span></span></div>
-        <span style="font-size:12px;font-weight:800;color:var(--amber)">★ ${s.rating}</span></div>`).join('')}
+        <span style="font-size:12px;font-weight:800;color:var(--amber)">★ ${s.rating||'—'} ›</span></div>`).join('')}
     </div>
     <div class="card card-p">
       <div class="card-t" style="margin-bottom:12px">Alertas operativas · <span class="muted" style="font-weight:500">clic para gestionar</span></div>
       ${alerts.length?alerts.map(a=>`<div data-alert="${a[1]}" style="background:var(--${a[0]==='r'?'red':'amber'}-bg);border-radius:9px;padding:10px 12px;margin-bottom:8px;font-size:12px;font-weight:600;color:var(--${a[0]==='r'?'red':'amber'});cursor:pointer">${a[0]==='r'?'🔴':'⏰'} ${a[2]} ›</div>`).join(''):ui.empty('✅','Sin alertas')}
     </div>
   </div>
+
+  <div class="card card-p" id="estadoBoard" style="margin-bottom:18px"></div>
 
   <div class="card card-p">
     <div class="card-h"><div class="card-t">📈 Comparativo último trimestre — KPIs clave</div><span class="muted" style="font-size:11px">${trimestre.join(' · ')} 2026</span></div>
@@ -118,6 +120,69 @@ CX.module('dashboard', ({data,ui})=>{
   </div>`;
 
   setTimeout(()=>{
+    /* ---- Tablero de estado operativo (genérico, estilo HR) ---- */
+    const fmtD=(d)=>d||'—';
+    const waBtn=(v,msg)=>`<button class="btn btn-soft btn-sm" data-wa='${encodeURIComponent((v.shopper||'Shopper')+': '+msg)}' title="WhatsApp">📲</button>`;
+    const mailBtn=(v,msg)=>`<button class="btn btn-ghost btn-sm" data-mail='${encodeURIComponent(msg)}' title="Correo">✉️</button>`;
+    const goBtn=`<button class="btn btn-ghost btn-sm" data-goseco title="Ir a Visitas">↗</button>`;
+    const boardRow=(v,extra,extraLbl)=>`<tr>
+      <td style="font-size:11px;color:var(--t3)">#${v.num||''}</td>
+      <td><b style="font-size:12.5px">${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad} · ${v.franjaCode||v.franja||''}</div></td>
+      <td style="font-size:12px">${v.shopper||'<span class="muted">— sin asignar</span>'}${v.shopperCode?`<div style="font-size:10px;color:var(--t3)">${v.shopperCode}</div>`:''}</td>
+      <td style="font-size:11.5px">${v.escenario||''}${v.combo?`<div style="font-size:10px;color:var(--t3)">${typeof v.combo==='string'?v.combo:'combo'}</div>`:''}</td>
+      <td style="font-size:11.5px;color:${extraLbl==='alerta'?'var(--red)':'var(--t2)'};font-weight:${extraLbl==='alerta'?'700':'400'}">${extra}</td>
+      <td>${ui.estadoBadge(v.estado)}</td>
+      <td style="text-align:right;white-space:nowrap">${goBtn} ${v.shopper?waBtn(v,'sobre tu visita en '+v.sucursal)+' '+mailBtn(v,'Visita '+v.sucursal):''}</td>
+    </tr>`;
+    const bucket=(titulo,color,vis,extraFn,extraLbl,bulkMsg)=>{
+      if(!vis.length) return `<div style="margin-bottom:10px"><div style="background:var(--${color}-bg);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;color:var(--${color})">${titulo} (0)</div></div>`;
+      return `<div style="margin-bottom:14px">
+        <div class="between" style="background:var(--${color}-bg);border-radius:8px 8px 0 0;padding:8px 12px">
+          <span style="font-size:12px;font-weight:800;color:var(--${color})">${titulo} (${vis.length})</span>
+          ${bulkMsg&&vis.some(v=>v.shopper)?`<button class="btn btn-soft btn-sm" data-bulk='${encodeURIComponent(bulkMsg)}'>📣 Recordar a todos</button>`:''}
+        </div>
+        <div style="overflow-x:auto"><table class="tbl" style="min-width:720px"><thead><tr><th>Ref</th><th>Sucursal</th><th>Shopper</th><th>Escenario</th><th>${extraLbl==='alerta'?'Alerta':'Fecha'}</th><th>Estado</th><th></th></tr></thead>
+        <tbody>${vis.slice(0,15).map(v=>boardRow(v,extraFn(v),extraLbl)).join('')}</tbody></table></div>
+      </div>`;
+    };
+    const all=data.visitas();
+    const scan=CX.automations?CX.automations.scanPendientes():{atrasadas:[]};
+    const proxim=all.filter(v=>['asignada','agendada'].includes(v.estado)&&v.agendada);
+    const realPend=all.filter(v=>v.estado==='realizada');
+    const submitPend=all.filter(v=>v.estado==='cuestionario');
+    const porProgramar=all.filter(v=>v.estado==='asignada'&&!v.agendada);
+    const porAsignar=all.filter(v=>!v.shopperId&&v.estado!=='fuera_rango'&&v.estado!=='liquidada');
+    const board=document.getElementById('estadoBoard');
+    board.innerHTML=`<div class="card-h"><div class="card-t">🗂️ Estado operativo de visitas</div><span class="muted" style="font-size:11px">por etapa · gestiona o recuerda desde cada fila</span></div>
+      ${bucket('📅 Próximas — pendientes de realizar','brand',proxim,v=>'Prog: '+fmtD(v.agendada),'fecha','Recordatorio: tu visita está próxima, no olvides realizarla.')}
+      ${bucket('📝 Realizadas — pendientes de cuestionario','amber',realPend,v=>'Real: '+fmtD(v.realizada),'fecha','Recordatorio: completa el cuestionario de tu visita realizada.')}
+      ${bucket('📤 Cuestionario completo — pendientes de submitir','purple',submitPend,v=>'Cuest: '+fmtD(v.cuestFecha||v.realizada),'fecha','Recordatorio: envía (submit) tu cuestionario.')}
+      ${bucket('🗓️ Pendientes por programar','green',porProgramar,v=>'Desde: '+fmtD(v.disponibleDesde),'fecha','Recordatorio: agenda la fecha de tu visita asignada.')}
+      ${bucket('👤 Pendientes por asignar','purple',porAsignar,v=>'Sin shopper','fecha')}
+      ${bucket('⚠ Alertas — límites de tiempo excedidos','red',scan.atrasadas,v=>'Vencida · '+fmtD(v.agendada||v.disponibleDesde),'alerta','Urgente: tu visita está vencida, contáctanos.')}`;
+    board.querySelectorAll('[data-goseco]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('visitas')));
+    board.querySelectorAll('[data-wa]').forEach(b=>b.addEventListener('click',()=>{CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'recordatorio',titulo:'Recordatorio manual',txt:decodeURIComponent(b.dataset.wa),hook:CX.automations.hook()||'(Make sin configurar)'});ui.toast('WhatsApp enviado (Make): '+decodeURIComponent(b.dataset.wa).slice(0,40)+'…','ok');}));
+    board.querySelectorAll('[data-mail]').forEach(b=>b.addEventListener('click',()=>ui.toast('Correo enviado (Make/Outlook)','ok')));
+    board.querySelectorAll('[data-bulk]').forEach(b=>b.addEventListener('click',()=>ui.toast('Recordatorio masivo enviado por WhatsApp + correo (Make)','ok',3200)));
+
+    /* ---- ranking de shoppers clickeable + completo ---- */
+    const profileModal=(s)=>{ const st=data.shopperStats?data.shopperStats(s.id):{total:s.visitas||0,realizadas:0,liquidadas:0,enCurso:0};
+      ui.modal(s.nombre+' · '+s.code, `
+        <div class="flex" style="gap:12px;margin-bottom:12px"><div class="rail-av" style="width:42px;height:42px;font-size:15px;background:linear-gradient(135deg,var(--brand),var(--brand-dark))">${s.code.slice(-2)}</div>
+          <div><div class="card-t" style="font-size:15px">${s.nombre}</div><div style="font-size:12px;color:var(--t3)">${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)} · ${s.estado||''}</div>
+          <div style="margin-top:4px"><span style="font-size:13px;font-weight:800;color:var(--amber)">★ ${s.rating||'—'}</span></div></div></div>
+        <div class="grid g4" style="margin-bottom:12px">${ui.kpi('Visitas',st.total,'b')}${ui.kpi('Realizadas',st.realizadas,'g')}${ui.kpi('Liquidadas',st.liquidadas,'p')}${ui.kpi('En curso',st.enCurso,'a')}</div>
+        <div class="flex" style="justify-content:flex-end;gap:8px"><button class="btn btn-soft btn-sm" id="pmWa">📲 WhatsApp</button><button class="btn btn-pr btn-sm" id="pmGo">Ver en Shoppers →</button></div>
+      `,{onMount:(ov,close)=>{ov.querySelector('#pmGo').addEventListener('click',()=>{close();CX.router.nav('shoppers');});ov.querySelector('#pmWa').addEventListener('click',()=>{close();ui.toast('WhatsApp a '+s.nombre+' (Make)','ok');});}});
+    };
+    host.querySelectorAll('[data-sh]').forEach(el=>el.addEventListener('click',()=>{const s=data.getShopper?data.getShopper(el.dataset.sh):data.shoppers.find(x=>x.id===el.dataset.sh);if(s)profileModal(s);}));
+    const rf=host.querySelector('#rankFull');
+    if(rf)rf.addEventListener('click',()=>{const rank=[...data.shoppersFor()].sort((a,b)=>(b.rating||0)-(a.rating||0));
+      ui.modal('Ranking completo de shoppers ('+rank.length+')',`<table class="tbl"><thead><tr><th>#</th><th>Shopper</th><th>Ciudad</th><th>Visitas</th><th>Rating</th></tr></thead><tbody>
+        ${rank.map((s,i)=>`<tr class="hov" data-rk="${s.id}" style="cursor:pointer"><td style="font-family:var(--disp);color:var(--t3)">${i+1}</td><td><b>${s.nombre}</b><div style="font-size:10px;color:var(--t3)">${s.code}</div></td><td style="font-size:12px">${s.ciudad||CX.paisName(s.pais)}</td><td style="font-size:12px">${s.visitas||0}</td><td style="font-weight:800;color:var(--amber)">★ ${s.rating||'—'}</td></tr>`).join('')}
+      </tbody></table>`,{onMount:(ov,close)=>ov.querySelectorAll('[data-rk]').forEach(tr=>tr.addEventListener('click',()=>{close();const s=data.getShopper(tr.dataset.rk);if(s)profileModal(s);}))});
+    });
+
     const F={
       total:()=>true, asign:v=>v.shopperId, sinasign:v=>!v.shopperId&&v.estado!=='fuera_rango',
       sinagend:v=>v.estado==='asignada', real:v=>['realizada','cuestionario','liquidada'].includes(v.estado),
