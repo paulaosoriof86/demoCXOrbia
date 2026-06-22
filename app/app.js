@@ -40,11 +40,13 @@ CX.app = {
         </button>
         <div style="text-align:center;margin-top:6px"><a id="goReg" style="font-size:12.5px;color:var(--brand);font-weight:600;cursor:pointer">¿Eres evaluador nuevo? Regístrate aquí →</a></div>
         ${b.clientName?`<div class="login-devfor">Plataforma operativa desarrollada para <b>${b.clientName}</b> por <b>${b.name}</b></div>`:''}
-        ${b.demoMode?`<div style="text-align:center;margin-top:14px;font-size:11px;color:var(--t3)">
+        <div style="text-align:center;margin-top:14px"><button class="btn btn-ghost btn-sm" id="pwaBtn">📲 Instalar como app</button></div>
+        ${b.demoMode?`<div style="text-align:center;margin-top:10px;font-size:11px;color:var(--t3)">
           <span class="bdg bdg-a">● Demo comercial · datos ficticios</span></div>`:''}
       </div>`;
     lg.querySelectorAll('.role-btn').forEach(b=>b.addEventListener('click',()=>this.selectRole(b.dataset.role)));
     const gr=lg.querySelector('#goReg'); if(gr)gr.addEventListener('click',()=>this.showRegister());
+    const pw=lg.querySelector('#pwaBtn'); if(pw)pw.addEventListener('click',()=>CX.pwa.openInstall(CX.ui));
   },
 
   showRegister(){
@@ -82,7 +84,10 @@ CX.app = {
   enter(){
     document.getElementById('login').classList.add('hidden');
     document.getElementById('app').classList.add('on');
-    CX.router.mount();
+    const go=()=>CX.router.mount();
+    if(CX.confidencialidad && CX.confidencialidad.pending(CX.session.role)){
+      CX.confidencialidad.show(CX.session.role, go);
+    } else { go(); }
   },
 
   logout(){
@@ -92,4 +97,4 @@ CX.app = {
   },
 };
 
-document.addEventListener('DOMContentLoaded',()=>CX.app.init());
+document.addEventListener('DOMContentLoaded',()=>{ CX.pwa && CX.pwa.init(); CX.app.init(); });

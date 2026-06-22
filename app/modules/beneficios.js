@@ -22,10 +22,12 @@ CX.module('beneficios', ({data,ui})=>{
       <td style="font-size:12px;${l.estado==='pagada'?'color:var(--green);font-weight:700':''}">${l.estado==='pagada'?'✓ '+(l.fechaEstimadaPago||''):(l.fechaEstimadaPago||'—')}</td></tr>`;
   };
 
-  /* beneficios en especie disfrutados (combo/boleto = experiencia, no dinero) */
+  /* conceptos de reembolso GENÉRICOS: cada programa define qué se reembolsa.
+     comboAmt → concepto principal (p.combo); boleto → gasto secundario del programa. */
+  const conceptoReemb = p.combo || 'Consumo del programa';
   const especie=[];
-  if(combo) especie.push(['🍿','Consumos / combos disfrutados',ui.money(cur,combo)]);
-  if(boleto) especie.push(['🎟️','Entradas / boletos cubiertos',ui.money(cur,boleto)]);
+  if(combo) especie.push(['🧾','Reembolso: '+conceptoReemb, ui.money(cur,combo)]);
+  if(boleto) especie.push(['🎟️','Gasto reembolsado del programa', ui.money(cur,boleto)]);
   especie.push(['💵','Honorario neto (tu ganancia)',ui.money(cur,hon)]);
 
   return `
@@ -33,7 +35,7 @@ CX.module('beneficios', ({data,ui})=>{
 
     <div class="grid g4" style="margin-bottom:16px">
       ${ui.kpi('💵 Honorarios',ui.money(cur,hon),'g','tu ganancia en efectivo')}
-      ${ui.kpi('🎁 Reembolsos',ui.money(cur,reemb),'p','consumos + boletos cubiertos')}
+      ${ui.kpi('🎁 Reembolsos',ui.money(cur,reemb),'p','gastos del programa cubiertos')}
       ${ui.kpi('⏳ Por cobrar',ui.money(cur,porCobrar),'a')}
       ${ui.kpi('✅ Pagado',ui.money(cur,pagado),'b')}
     </div>
@@ -41,7 +43,7 @@ CX.module('beneficios', ({data,ui})=>{
     <div class="grid g2" style="margin-bottom:16px">
       <div class="card card-p" style="background:linear-gradient(135deg,#eafaf1,#f3eeff);border-color:#d7ead9">
         <div class="card-t" style="margin-bottom:6px">🎉 Tu beneficio total como evaluador</div>
-        <div style="font-size:12.5px;color:var(--t2);margin-bottom:12px">No solo cobras honorarios: también <b>disfrutas experiencias y consumos sin costo</b>. Así se ve tu beneficio real:</div>
+        <div style="font-size:12.5px;color:var(--t2);margin-bottom:12px">No solo cobras honorarios: el programa también <b>cubre los gastos/consumos requeridos por la evaluación</b>. Así se ve tu beneficio real:</div>
         ${especie.map(e=>`<div class="between" style="padding:8px 0;border-bottom:1px solid var(--border-2)">
           <span style="font-size:13px;color:var(--t1)">${e[0]} ${e[1]}</span><b style="font-size:13px;color:var(--t1)">${e[2]}</b></div>`).join('')}
         <div class="between" style="padding:11px 0 0">
@@ -50,10 +52,10 @@ CX.module('beneficios', ({data,ui})=>{
       </div>
       <div class="card card-p">
         <div class="card-t" style="margin-bottom:10px">💡 Honorarios vs reembolsos</div>
-        <div style="font-size:12px;color:var(--t2);margin-bottom:12px">El <b style="color:var(--green)">honorario</b> es tu pago por evaluar. El <b style="color:var(--purple)">reembolso</b> te devuelve lo que consumiste durante la visita (no sale de tu bolsillo).</div>
+        <div style="font-size:12px;color:var(--t2);margin-bottom:12px">El <b style="color:var(--green)">honorario</b> es tu pago por evaluar. El <b style="color:var(--purple)">reembolso</b> te devuelve los gastos o consumos que el programa requiere (no salen de tu bolsillo). Cada proyecto define qué se reembolsa.</div>
         ${ui.bar(hon+reemb?Math.round(hon/(hon+reemb)*100):0,'Honorario',ui.money(cur,hon))}
         ${ui.bar(hon+reemb?Math.round(reemb/(hon+reemb)*100):0,'Reembolso',ui.money(cur,reemb))}
-        <div style="margin-top:12px">${ui.aiBox('El reembolso es flujo: te devuelve tu consumo. El honorario es tu ganancia real. Separarlos evita confusiones y resalta cuánto ganas + cuánto disfrutas gratis.','Beneficio claro')}</div>
+        <div style="margin-top:12px">${ui.aiBox('El reembolso es flujo: te devuelve los gastos/consumos que el programa requiere. El honorario es tu ganancia real. Cada proyecto define sus conceptos de reembolso (genérico, no fijo).','Beneficio claro')}</div>
       </div>
     </div>
 

@@ -93,6 +93,9 @@ _Última actualización: sesión 6 (notificaciones bidireccionales + brief ampli
 | H31 | **Plantillas de mensajes** y **catálogo de integraciones** en la consola | ver INTEGRACIONES.md |
 | H32 | **Beneficios shopper**: honorarios vs reembolsos separados + resumen "beneficio total" (ganancia + consumos/entretenimiento disfrutado) | |
 | H33 | **Visitas Disponibles**: tarjetas estilo corporativo (grid quincena/franja/canal/escenario + emoticones + disponible-desde + combo) genéricas por proyecto | |
+| H34 | **Beneficios**: conceptos de reembolso **genéricos por proyecto** (no "combo/boleto" fijo) | |
+| H35 | **Login: Instalar como app (PWA)** con detección de SO/navegador + manifest | `core/pwa.js` |
+| H36 | **Cláusula de confidencialidad** al primer ingreso por usuario+rol (registro de aceptación) | |
 
 | # | Item | Notas |
 |---|---|---|
