@@ -120,6 +120,7 @@ CX.MODULES = {
   usuarios:      { icon:'🔐', label:'Usuarios & Permisos',  roles:['admin'],           status:'ready' },
   config:        { icon:'⚙️', label:'Configuración',         roles:['admin'],           status:'ready' },
   // Comercial / consultora (CRM + marketing) — roadmap del ecosistema
+  costos:        { icon:'🧮', label:'Costos & Propuestas',  roles:['admin'],           status:'ready' },
   crm:           { icon:'🤝', label:'CRM Comercial',         roles:['admin'],           status:'soon' },
   marketing:     { icon:'📣', label:'Marketing & Contenidos',roles:['admin'],           status:'soon' },
   // Portal Estratégico del Cliente final (marca evaluada)
@@ -137,7 +138,7 @@ CX.NAV = {
   admin: [
     { sec:'Operación', items:['midia','dashboard','clientes','proyectos','visitas','postulaciones','shoppers','rutas','documentos','aprendizaje','cert','tablon','soporte','informes'] },
     { sec:'Finanzas',  items:['financiero','movimientos','liquidaciones','lotes'] },
-    { sec:'Comercial', items:['crm','marketing'] },
+    { sec:'Comercial', items:['costos','crm','marketing'] },
     { sec:'Configuración', items:['cuestionarios','usuarios','config'] },
   ],
   shopper: [

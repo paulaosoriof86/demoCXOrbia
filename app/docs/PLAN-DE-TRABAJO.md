@@ -3,6 +3,14 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
+_Última actualización: sesión 19 (**Comercial: Calculadora de Costos & Propuestas** — costeo multimodalidad/multimoneda con pricing por margen objetivo, comparador y generador de propuesta; honorario shopper sugerido)._
+
+### ✅ Hecho en sesión 19
+| # | Item | Notas |
+|---|---|---|
+| H62 | **Motor de costos** `core/costos.js`: modalidades (tradicional/audio/video/online/auditoría/call), honorario por ubicación (capital/interior + incremento), viáticos, overhead (revisión/RRHH/coordinación/plataforma), **regalías + retención/ISR**, **precio por margen objetivo**, reembolsos pass-through | basado en la lógica real de costeo, generalizado |
+| H63 | **Módulo Comercial · Costos & Propuestas**: calculadora en vivo, panel de resultado, **comparador de modalidades**, **honorario sugerido al shopper** y **generador de propuesta** (exportar/enviar) | `modules/comercial.js` |
+
 _Última actualización: sesión 18 (sincronía 2 — Portal del Cliente alimentado por **visitas reales**; **egresos financieros automáticos** al pagar lote, centralizados en `payVisits`)._
 
 ### ✅ Hecho en sesión 18 (ver `SINCRONIA.md`)
