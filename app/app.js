@@ -50,32 +50,80 @@ CX.app = {
   },
 
   showRegister(){
+    const ids={pais:'rgPais',depto:'rgDepto',ciudad:'rgCiudad'};
     CX.ui.modal('Registro de evaluador', `
-      <p style="font-size:13px;color:var(--t2);margin-bottom:14px">Crea tu cuenta. El equipo revisará tu perfil y te habilitará las visitas de tu país.</p>
-      <div class="grid g2" style="gap:12px">
-        <div><label class="lbl">Nombre completo</label><input class="inp" id="rgName" placeholder="Nombre y apellido"></div>
-        <div><label class="lbl">País</label><select class="sel" id="rgPais"><option>Guatemala</option><option>Honduras</option><option>El Salvador</option><option>Costa Rica</option><option>Panamá</option><option>México</option><option>Colombia</option></select></div>
-        <div><label class="lbl">Ciudad</label><input class="inp" id="rgCity" placeholder="Ciudad"></div>
-        <div><label class="lbl">Teléfono</label><input class="inp" id="rgPhone" placeholder="+502 ..."></div>
-        <div style="grid-column:1/3"><label class="lbl">Correo</label><input class="inp" id="rgMail" placeholder="correo@ejemplo.com"></div>
+      <p style="font-size:13px;color:var(--t2);margin-bottom:14px">Crea tu cuenta. El equipo revisará tu perfil y te habilitará las visitas de tu país. Los campos marcados con <b style="color:var(--accent)">*</b> son obligatorios.</p>
+      <div class="grid g2" style="gap:12px 14px">
+        <div><label class="lbl">Primer nombre <b style="color:var(--accent)">*</b></label><input class="inp" id="rgFirst" placeholder="Ej. María"></div>
+        <div><label class="lbl">Primer apellido <b style="color:var(--accent)">*</b></label><input class="inp" id="rgLast" placeholder="Ej. López"></div>
+        ${CX.geo.fieldsHTML(ids)}
+        <div><label class="lbl">WhatsApp <b style="color:var(--accent)">*</b></label><input class="inp" id="rgWa" placeholder="+502 5555 5555"></div>
+        <div><label class="lbl">Correo</label><input class="inp" id="rgMail" placeholder="correo@ejemplo.com"></div>
+        <div><label class="lbl">Edad</label><input class="inp" id="rgEdad" type="number" min="16" max="99" placeholder="Ej. 28"></div>
+        <div><label class="lbl">Sexo</label><select class="sel" id="rgSexo"><option value="">Selecciona…</option><option>Femenino</option><option>Masculino</option><option>Otro</option><option>Prefiero no decir</option></select></div>
       </div>
-      <div style="background:var(--brand-light);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--brand-dark);margin:14px 0">Tu usuario se generará automáticamente (patrón configurable por el cliente, ej. <b>nombre.apellido</b>). Podrás completar tu perfil al ingresar.</div>
+      <div id="rgCreds" style="background:var(--brand-light);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--brand-dark);margin:14px 0">
+        Tu usuario y contraseña se generan automáticamente según el patrón del cliente
+        (<b>${CX.CREDS.userExample()}</b> · <b>${CX.CREDS.passExample()}</b>). Edad y sexo se usan para automatizar la asignación de visitas.</div>
       <div style="text-align:right"><button class="btn btn-green" id="rgSave">Crear mi cuenta</button></div>
     `, {onMount:(ov,close)=>{
+      CX.geo.wire(ov, ids);
+      // previsualizar credenciales al escribir nombre/apellido
+      const upd=()=>{
+        const f=ov.querySelector('#rgFirst').value, l=ov.querySelector('#rgLast').value;
+        if(f&&l) ov.querySelector('#rgCreds').innerHTML=`Tu cuenta será — usuario: <b>${CX.CREDS.user(f,l)}</b> · contraseña: <b>${CX.CREDS.pass(f,l)}</b>. Edad y sexo se usan para automatizar la asignación de visitas.`;
+      };
+      ov.querySelector('#rgFirst').addEventListener('input',upd);
+      ov.querySelector('#rgLast').addEventListener('input',upd);
       ov.querySelector('#rgSave').addEventListener('click',()=>{
-        const n=(ov.querySelector('#rgName').value||'Evaluador Nuevo');
-        const user=n.toLowerCase().trim().replace(/\s+/g,'.').replace(/[^a-z.]/g,'');
+        const first=(ov.querySelector('#rgFirst').value||'').trim();
+        const last =(ov.querySelector('#rgLast').value||'').trim();
+        const wa   =(ov.querySelector('#rgWa').value||'').trim();
+        if(!first||!last||!wa){ CX.ui.toast('Completa nombre, apellido y WhatsApp','err'); return; }
+        const geo=CX.geo.read(ov, ids);
+        const s=CX.data.addShopper({
+          via:'registro', estado:'Pendiente',
+          firstName:first, lastName:last, whatsapp:wa,
+          pais:geo.pais, depto:geo.depto, ciudad:geo.ciudad,
+          email:(ov.querySelector('#rgMail').value||'').trim(),
+          edad:(ov.querySelector('#rgEdad').value||'').trim(),
+          sexo:ov.querySelector('#rgSexo').value||'',
+        });
         close();
-        CX.ui.toast('Cuenta creada · usuario: '+user+' · completa tu perfil al ingresar','ok',4000);
+        this.afterRegister(s);
       });
     }});
   },
 
-  selectRole(role){
+  /* confirmación de registro + acceso directo al portal del nuevo shopper */
+  afterRegister(s){
+    CX.ui.modal('¡Cuenta creada!', `
+      <div style="text-align:center;padding:6px 0 4px">
+        <div style="font-size:40px;line-height:1">✅</div>
+        <div class="card-t" style="font-size:17px;margin-top:8px">Bienvenido, ${s.firstName}</div>
+        <div style="font-size:12.5px;color:var(--t3);margin-top:2px">Tu perfil queda en revisión del equipo.</div>
+      </div>
+      <div style="background:var(--brand-light);border-radius:12px;padding:14px 16px;margin:14px 0">
+        <div class="between" style="margin-bottom:8px"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Usuario</span><b style="font-family:var(--disp)">${s.user}</b></div>
+        <div class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Contraseña</span><b style="font-family:var(--disp)">${s.pass}</b></div>
+      </div>
+      <p style="font-size:12.5px;color:var(--t2);line-height:1.6">Al ingresar podrás <b>completar tu perfil</b> (documento, ciudad, cuenta de pago) y empezar a postularte a visitas de tu país.</p>
+      <div class="flex" style="justify-content:flex-end;margin-top:14px"><button class="btn btn-ghost btn-sm" data-x2>Cerrar</button><button class="btn btn-pr" id="rgEnter">Entrar a mi portal →</button></div>
+    `, {onMount:(ov,close)=>{
+      ov.querySelector('[data-x2]').addEventListener('click',close);
+      ov.querySelector('#rgEnter').addEventListener('click',()=>{ close(); this.selectRole('shopper', s.id); });
+    }});
+  },
+
+  selectRole(role, shopperId){
     CX.session.role=role;
-    CX.session.user = role==='admin'
-      ? {name:'Admin Demo', role:'super', org:'Tu Consultora'}
-      : {name:'Evaluador 01', role:'shopper', shopperId:'sh1', code:'EVL-01'};
+    if(role==='admin'){
+      CX.session.user={name:'Admin Demo', role:'super', org:'Tu Consultora'};
+    } else {
+      const sid=shopperId||'sh1';
+      const s=CX.data.getShopper ? CX.data.getShopper(sid) : null;
+      CX.session.user={name:(s&&s.nombre)||'Evaluador 01', role:'shopper', shopperId:sid, code:(s&&s.code)||'EVL-01'};
+    }
     CX.session.view=null;
     CX.session.save();
     this.enter();

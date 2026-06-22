@@ -3,7 +3,7 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
-_Última actualización: sesión 6 (notificaciones bidireccionales + brief amplio incorporado y priorizado por criticidad)._
+_Última actualización: sesión 7 (registro de shopper completo + alta manual + perfil editable con histórico y KPIs clickeables)._
 
 ---
 
@@ -20,9 +20,9 @@ _Última actualización: sesión 6 (notificaciones bidireccionales + brief ampli
 - ⬜ **Cláusula de confidencialidad** en el primer ingreso de cada usuario, según rol.
 
 ### P1 — Núcleo operativo (lo que hace la plataforma usable de verdad)
-- ⬜ **Registro de shopper completo** (desde login): país (lista larga LatAm) → **departamento** → **ciudad** (dependientes), **nombre y apellido por separado**, correo, WhatsApp, **edad y sexo** (para automatización). Usuario = `nombre.apellido`; contraseña `Nombre123*` (patrón **configurable por el cliente**).
-- ⬜ **Alta manual por admin**: solo obligatorios primer nombre + primer apellido + WhatsApp; el shopper completa el resto al ingresar.
-- ⬜ **Perfil del shopper completo y editable** + histórico de visitas + KPIs clickeables.
+- ✅ **Registro de shopper completo** (desde login): país (lista larga LatAm) → **departamento** → **ciudad** (dependientes), **nombre y apellido por separado**, correo, WhatsApp, **edad y sexo** (para automatización). Usuario = `nombre.apellido`; contraseña `Nombre123*` (patrón **configurable por el cliente** vía `CX.CREDS`). → H37
+- ✅ **Alta manual por admin**: solo obligatorios primer nombre + primer apellido + WhatsApp; el shopper completa el resto al ingresar. → H38
+- ✅ **Perfil del shopper completo y editable** + histórico de visitas + KPIs clickeables. → H39
 - ⬜ **Asignación manual desde Visitas Disponibles**: elegir cuál visita y a quién (shopper existente o **crearlo ahí** con nombre + teléfono mínimo).
 - ⬜ **Ofrecer visitas a shoppers de la misma ciudad**: individual (WhatsApp/correo) y **masivo** (WhatsApp/correo/Mailchimp).
 - ⬜ **Plantillas de mensajes** (WhatsApp + correo) editables: ofrecer visita, recordatorio de agenda, "¿hiciste la visita?", recordatorio de cuestionario, marcar completada, certificarse, pago. Variables dinámicas.
@@ -96,6 +96,9 @@ _Última actualización: sesión 6 (notificaciones bidireccionales + brief ampli
 | H34 | **Beneficios**: conceptos de reembolso **genéricos por proyecto** (no "combo/boleto" fijo) | |
 | H35 | **Login: Instalar como app (PWA)** con detección de SO/navegador + manifest | `core/pwa.js` |
 | H36 | **Cláusula de confidencialidad** al primer ingreso por usuario+rol (registro de aceptación) | |
+| H37 | **Registro de shopper completo** desde login: geo dependiente LatAm (`core/geo.js`), nombre/apellido separados, edad/sexo, credenciales auto (`CX.CREDS` configurable) + acceso directo al portal | `app.js`, `core/geo.js`, `core/config.js` |
+| H38 | **Alta manual por admin** (mínimos: nombre+apellido+WhatsApp) con datos extra opcionales; perfil queda "incompleto" hasta que el shopper lo complete | `modules/shoppers.js` |
+| H39 | **Perfil de shopper editable + persistente** (`core/shoppers-store.js`): histórico de visitas, KPIs clickeables (drill), buscador en base de shoppers, Mi Perfil con banner "completar perfil" | `modules/shoppers.js`, `modules/operacion-extra.js` |
 
 | # | Item | Notas |
 |---|---|---|

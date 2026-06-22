@@ -164,6 +164,35 @@ CX.applyFont = function(id){
   CX.BRAND.font=id; try{localStorage.setItem('cx_font',id);}catch(e){}
 };
 
+/* ---------- Patrón de credenciales (configurable por el cliente) ----------
+   Tokens disponibles en los patrones:
+     {nombre} {apellido}     → minúsculas sin tildes ni espacios
+     {Nombre} {Apellido}     → capitalizado
+     {inicial}               → primera letra del nombre (minúscula)
+   Por defecto: usuario = nombre.apellido · contraseña = Nombre123*  */
+CX.CREDS = {
+  userPattern: '{nombre}.{apellido}',
+  passPattern: '{Nombre}123*',
+  load(){ try{ const s=JSON.parse(localStorage.getItem('cx_creds')||'null'); if(s){ this.userPattern=s.userPattern||this.userPattern; this.passPattern=s.passPattern||this.passPattern; } }catch(e){} },
+  save(){ try{ localStorage.setItem('cx_creds',JSON.stringify({userPattern:this.userPattern,passPattern:this.passPattern})); }catch(e){} },
+  _slug(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,''); },
+  _cap(s){ const t=this._slug(s); return t.charAt(0).toUpperCase()+t.slice(1); },
+  _fill(pattern, nombre, apellido){
+    return (pattern||'')
+      .replace(/\{Nombre\}/g, this._cap(nombre))
+      .replace(/\{Apellido\}/g, this._cap(apellido))
+      .replace(/\{nombre\}/g, this._slug(nombre))
+      .replace(/\{apellido\}/g, this._slug(apellido))
+      .replace(/\{inicial\}/g, this._slug(nombre).charAt(0));
+  },
+  user(nombre, apellido){ return this._fill(this.userPattern, nombre, apellido) || 'usuario'; },
+  pass(nombre, apellido){ return this._fill(this.passPattern, nombre, apellido) || 'Cambiar123*'; },
+  /* descripción legible del patrón para la UI */
+  userExample(){ return this.user('Nombre','Apellido'); },
+  passExample(){ return this.pass('Nombre','Apellido'); },
+};
+try{ CX.CREDS.load(); }catch(e){}
+
 /* ---------- Planes comerciales (preconfiguran el tenant) ---------- */
 CX.PLANS = {
   basico:    { label:'Básico',     temas:['cxorbia','tya'], integraciones:['whatsapp_web','sheets_import'],
