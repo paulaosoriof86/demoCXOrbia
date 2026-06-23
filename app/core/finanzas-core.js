@@ -39,6 +39,13 @@ CX.finStore = {
   addCxc(pid,r){ this.cxc(pid).push(Object.assign({id:'c'+Date.now().toString(36),saldo:+r.monto||0},r)); CX.bus&&CX.bus.emit('fin'); },
   /* abono a una CxP: reduce saldo y registra egreso vinculado */
   abonarCxp(pid,id,monto){ const r=this.cxp(pid).find(x=>x.id===id); if(!r)return; r.saldo=Math.max(0,(r.saldo||0)-(+monto||0)); this.addMov(pid,{tipo:'egreso',cat:'Abono CxP · '+(r.concepto||''),tipoEgreso:'abono_cxp',pais:r.pais,monto:-(+monto||0),desc:'Abono a cuenta por pagar',estado:'Pagado',origen:'cxp',cxpId:id}); },
+
+  /* ----- lote en construcción (carrito) por proyecto ----- */
+  _draft:{},
+  draft(pid){ return this._draft[pid] || (this._draft[pid]=[]); },
+  inDraft(pid,vid){ return this.draft(pid).includes(vid); },
+  toggleDraft(pid,vid){ const d=this.draft(pid); const i=d.indexOf(vid); if(i>=0)d.splice(i,1); else d.push(vid); CX.bus&&CX.bus.emit('lote'); return i<0; },
+  clearDraft(pid){ this._draft[pid]=[]; CX.bus&&CX.bus.emit('lote'); },
 };
 
 CX.fin = {

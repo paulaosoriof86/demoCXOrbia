@@ -25,6 +25,9 @@ _Última actualización: sesión 26 (**Financiero completo** — movimientos glo
 ### ✅ Hecho en sesión 28
 | # | Item | Notas |
 |---|---|---|
+| H83 | **Lote en construcción (carrito)** en Liquidaciones: panel reactivo que muestra las liquidaciones movidas al lote con **total por moneda**, opción de **retirar** (✕) por fila o desde el carrito, validación de **una sola moneda por lote**, y pago con arrastre de no incluidas a CxP. Columna "Mover/Retirar" + Shopper **sticky** a la izquierda. Pago genera egresos en Movimientos (`payVisits`) | `finanzas-core.js` (`draft`), `modules/finanzas.js` |
+| # | Item | Notas |
+|---|---|---|
 | H82 | **Liquidaciones — lote con selección real + arrastre a CxP**: el modal "Preparar lote" permite elegir qué visitas validadas incluir; las **no seleccionadas se difieren a Cuentas por Pagar** (cierre de mes) y alimentan los próximos lotes. Pago del lote sincroniza Beneficios y Finanzas; una sola moneda por lote | `modules/finanzas.js` |
 
 ### 🟠 Hallazgos sesión 27 (financiero/integraciones — priorizado, pre-migración)
