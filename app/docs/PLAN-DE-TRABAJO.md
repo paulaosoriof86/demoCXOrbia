@@ -3,6 +3,63 @@
 > Documento **vivo**: se actualiza cada sesión. No se borra lo pendiente; se complementa y se re-prioriza.
 > Convención de estado: ✅ hecho · 🟡 en progreso · ⬜ pendiente. Prioridad: **P0** (base comercial / desbloquea TyA) · **P1** (núcleo operativo) · **P2** (profundidad) · **P3** (diferenciadores).
 
+### 🔴🔴 BACKLOG sesión 29 (feedback extenso — re-priorizado pre-migración)
+> Reorganización de menú HECHA (Operación / Admin del Proyecto / Capacitación & IA / Finanzas / Comercial / Configuración). Resto pendiente abajo.
+
+**P0 — Bugs que rompen flujo operativo (arreglar YA)**
+- ⬜ **Postulaciones**: botón "Asignar manual" no funciona. "Perfil" abre el listado de shoppers, no el perfil del shopper. Botones Editar/Reasignar no funcionan; falta **Cancelar**. Al seleccionar visita del listado no muestra detalle.
+- ⬜ **Postulaciones — trazabilidad**: mostrar **quién/desde dónde** se gestionó (varias personas) y que la visita **desaparezca de pendientes** al gestionarse.
+- ⬜ **Proyectos**: al seleccionar uno NO permite ver/editar su configuración (detalle + edición completa del set-up).
+- ⬜ **Liquidaciones**: tarjetas/KPIs NO clickeables; **editar una liquidación** equivocada; **Lotes de Pago** no muestra detalle.
+- ⬜ **Mi Perfil (admin)**: tarjetas superiores no clickeables.
+
+**P0 — Multi-proyecto en vistas operativas (deben mostrar TODOS + filtro)**
+- ⬜ **Visitas Disponibles (shopper)**: mostrar ofertas de **todos los proyectos** + filtro (total / por proyecto / criterios actuales).
+- ⬜ **Mi Día (admin y shopper)**: mostrar de **todos los proyectos** + filtro por proyecto.
+- ⬜ **Gestión de Postulaciones**: todos los proyectos + filtro.
+- ⬜ **Estado Operativo (Dashboard)**: filtro por proyecto (mostrar todos) + **selección masiva** para gestionar/recordar (hoy solo individual o "todos").
+- ⬜ **HR por proyecto**: seleccionar **cuál hoja de ruta** gestionar (puede haber varias, p.ej. una por país) + **filtro de mes**. Lectura en vivo (HR plataforma + HR externa), dinámico.
+
+**P0 — Cuestionarios (núcleo de evaluación)**
+- ⬜ **Múltiples cuestionarios por proyecto**: crear/importar/seleccionar y **asignar a un tipo de visita** (tienda/marca/cadena/cualquier agrupador de sucursales). Versionado.
+- ⬜ Importación + **creación inteligente (IA)** de cuestionarios **a partir del instructivo**.
+
+**P0 — Dashboard operativo (detalle accionable)**
+- ⬜ KPIs con **detalle ampliado** + **contacto WA individual** por registro (hoy solo masivo sin elegir cuáles) → permitir **seleccionar cuáles** contactar.
+- ⬜ **Top/Ranking de shoppers**: al elegir uno, mostrar **detalle real** (hoy muestra tarjetas vacías).
+- ⬜ **Comparativo último trimestre**: faltan KPIs/OKRs clave (muy básico).
+- ⬜ **% de avance real vs ideal** del mes, **por país**.
+
+**P1 — Capacitación & IA**
+- ⬜ **Aprendizaje**: tarjeta de creación **mucho más completa** (contenido enriquecido como el demo, **emojis/formato**, **subir y embeber videos**, leer todo tipo de recursos), y **editar** cursos/recursos creados.
+- ⬜ **Certificaciones con IA**; **Instructivos inteligentes** a partir de material/protocolos del cliente (confirmar/implementar IA real en cada uno).
+- ⬜ **Feedback de certificación ampliado** al shopper: qué respondió mal + **respuesta correcta explicada** ampliamente.
+- ⬜ Material de aprendizaje/documentos **aparecen en el Tablón** mientras se leen.
+
+**P1 — Shopper UX**
+- ⬜ **Dashboard del shopper** (en Mi Perfil o Beneficios, menú priorizado): KPIs/OKRs propios — cumplimiento, efectividad, tiempos, cantidades, %.
+- ⬜ **Soporte por WA/correo** desde el panel superior (y/o sección).
+
+**P1 — Tablón / Notificaciones**
+- ⬜ **Campanita en topbar** (mover Tablón a notificación superior para visibilidad).
+- ⬜ **Crear notificaciones desde admin** con **formato, emojis, video embebido**.
+
+**P1 — Proyecto: periodicidad**
+- ⬜ En creación de proyecto: **periodicidad de rondas** (mensual/bimensual/trimestral/semestral/anual…) y **periodo de cumplimiento/medición** independiente (ej: ronda mensual con metas **quincenales** — mitad de visitas obligatorias por quincena).
+
+**P1 — Importador transversal**
+- ⬜ Importador inteligente en **todos los formatos** (no solo CSV: Excel/TSV/PDF/imagen) y para **todas las secciones** (HR, instructivos, cuestionarios, certificaciones, movimientos, históricos).
+
+**P1 — Finanzas (profundidad)**
+- ⬜ **CxC/CxP automáticas** desde histórico + opción manual; **cruce/descarga** con egresos de devolución; CxP del histórico **y** de liquidaciones no pagadas que pasan al mes siguiente.
+- ⬜ Dashboard Financiero: **comparativo intermensual e interanual** (especialmente de **márgenes**).
+
+**P1 — Clientes (admin) + Usuarios**
+- ⬜ **Clientes admin**: la profundidad (desempeño/ranking) no se visualiza como se describió → revisar dónde se muestra y rehacer la sección.
+- ⬜ **Usuarios & Permisos** configurables (matriz por rol).
+
+
+
 _Última actualización: sesión 22 (**Tablero de Estado Operativo** estilo HR en el Dashboard — buckets por etapa con detalle, WA/correo e ir a sección; **ranking de shoppers clickeable + completo** con perfil)._
 
 ### ✅ Hecho en sesión 22

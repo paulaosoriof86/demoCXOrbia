@@ -138,13 +138,16 @@ CX.MODULES = {
 /* ---------- Navigation layout per role ---------- */
 CX.NAV = {
   admin: [
-    { sec:'Operación', items:['midia','dashboard','clientes','proyectos','visitas','postulaciones','shoppers','rutas','importador','documentos','aprendizaje','cert','tablon','soporte','informes'] },
+    { sec:'Operación', items:['midia','dashboard','visitas','postulaciones','shoppers','tablon','informes'] },
+    { sec:'Admin del Proyecto', items:['clientes','proyectos','rutas','cuestionarios','importador'] },
+    { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte'] },
     { sec:'Finanzas',  items:['financiero','movimientos','liquidaciones','lotes'] },
     { sec:'Comercial', items:['costos','crm','marketing'] },
-    { sec:'Configuración', items:['cuestionarios','usuarios','config','automatizaciones'] },
+    { sec:'Configuración', items:['usuarios','config','automatizaciones'] },
   ],
   shopper: [
-    { sec:'Operación', items:['midia','miperfil','visitas','misvisitas','documentos','aprendizaje','cert','tablon','soporte'] },
+    { sec:'Operación', items:['midia','miperfil','visitas','misvisitas','tablon'] },
+    { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte'] },
     { sec:'Mis Beneficios', items:['beneficios'] },
   ],
   cliente: [

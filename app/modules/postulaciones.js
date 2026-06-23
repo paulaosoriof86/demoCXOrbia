@@ -31,7 +31,7 @@ CX.module('postulaciones', ({data,ui})=>{
             ? `<button class="btn btn-green btn-sm" data-ap="${x.id}">✅ Aprobar</button>
                <div class="flex"><button class="btn btn-ghost btn-sm" data-sb="${x.id}">Standby</button><button class="btn bt-x btn-sm" data-rj="${x.id}" style="background:var(--red-bg);color:var(--red)">Rechazar</button></div>`
             : `<div style="background:var(--green-bg);border-radius:9px;padding:8px 14px;text-align:center"><div style="font-size:12px;font-weight:700;color:var(--green)">✅ Aprobada</div><div style="font-size:10px;color:var(--t3)">${x.quincena}</div></div>
-               <div class="flex"><button class="btn btn-ghost btn-sm" data-perfil="${x.shopperId}">👤 Perfil</button><button class="btn btn-ghost btn-sm">✏️ Editar</button><button class="btn btn-ghost btn-sm">🔁 Reasig.</button></div>`}
+               <div class="flex" style="flex-wrap:wrap;justify-content:flex-end"><button class="btn btn-ghost btn-sm" data-perfil="${x.shopperId}">👤 Perfil</button><button class="btn btn-ghost btn-sm" data-edit="${x.id}">✏️ Editar</button><button class="btn btn-ghost btn-sm" data-reasig="${x.id}">🔁 Reasig.</button><button class="btn btn-ghost btn-sm" data-cancel="${x.id}" style="color:var(--red)">✕ Cancelar</button></div>`}
         </div>
       </div>
     </div>`;
@@ -52,8 +52,8 @@ CX.module('postulaciones', ({data,ui})=>{
   </div>
 
   <div class="flex wrap" style="gap:8px;margin-bottom:12px">
-    <button class="btn btn-soft btn-sm">🔄 Sincronizar HR</button>
-    <button class="btn btn-green btn-sm">＋ Asignar visita manual</button>
+    <button class="btn btn-soft btn-sm" id="syncHR">🔄 Sincronizar HR</button>
+    <button class="btn btn-green btn-sm" id="asignManual">＋ Asignar visita manual</button>
     <button class="btn btn-ghost btn-sm">⤓ Exportar</button>
     <div class="spacer"></div>
     <button class="btn btn-pr btn-sm" id="reqShopper">📤 Pedir al shopper…</button>
@@ -96,9 +96,25 @@ CX.module('postulaciones', ({data,ui})=>{
       agenda:['Agendamientos autorizados',agendadas.map(v=>({shopper:v.shopper,shopperCode:v.shopperCode||'',sucursal:v.sucursal,ciudad:v.ciudad,pais:v.pais,estado:v.estado,currency:v.currency,honorario:v.honorario}))],
     };
     document.querySelectorAll('#poKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=poKp[el.dataset.k];poList(d[0],d[1]);}));
+    const gestor=()=>(CX.session.user&&CX.session.user.name)||'Equipo';
     const act=(id,label,tone,extra)=>{const el=document.querySelector(`[data-pid="${id}"]`);if(!el)return;
-      el.querySelector('div[style*="flex-direction:column"]').innerHTML=`<div style="background:var(--${tone}-bg);border-radius:9px;padding:8px 14px;text-align:center"><div style="font-size:12px;font-weight:700;color:var(--${tone})">${label}</div></div>`;
-      ui.toast(extra,'ok');};
+      const x=posts.find(z=>z.id===id); if(x){x.estado=(tone==='green'?'aprobada':tone==='amber'?'standby':'rechazada');x.gestionadoPor=gestor();}
+      el.querySelector('div[style*="flex-direction:column"]').innerHTML=`<div style="background:var(--${tone}-bg);border-radius:9px;padding:8px 14px;text-align:center"><div style="font-size:12px;font-weight:700;color:var(--${tone})">${label}</div><div style="font-size:10px;color:var(--t3)">por ${gestor()}</div></div>`;
+      // marca trazabilidad en el cuerpo y "saca de pendientes" visualmente
+      el.style.opacity=tone==='green'?'1':'.7';
+      ui.toast(extra+' · gestionado por '+gestor(),'ok');};
+
+    /* perfil real del shopper (no el listado) */
+    const profileModal=(sid)=>{ const s=data.getShopper?data.getShopper(sid):data.shoppers.find(x=>x.id===sid); if(!s){ui.toast('Shopper no encontrado','warn');return;}
+      const st=data.shopperStats?data.shopperStats(s.id):{total:0,realizadas:0,liquidadas:0,enCurso:0,cumpl:0};
+      ui.modal(s.nombre+' · '+s.code,`
+        <div class="flex" style="gap:12px;margin-bottom:12px"><div class="rail-av" style="width:42px;height:42px;font-size:15px;background:linear-gradient(135deg,var(--brand),var(--brand-dark))">${s.code.slice(-2)}</div>
+        <div><div class="card-t" style="font-size:15px">${s.nombre}</div><div style="font-size:12px;color:var(--t3)">${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)} · ${s.whatsapp||s.phone||''}</div>
+        <div style="margin-top:4px"><span style="font-size:13px;font-weight:800;color:var(--amber)">★ ${s.rating||'—'}</span></div></div></div>
+        <div class="grid g4" style="margin-bottom:12px">${ui.kpi('Visitas',st.total,'b')}${ui.kpi('Realizadas',st.realizadas,'g')}${ui.kpi('Liquidadas',st.liquidadas,'p')}${ui.kpi('Cumpl.',(st.cumpl||0)+'%','a')}</div>
+        <div class="flex" style="justify-content:flex-end;gap:8px"><button class="btn btn-soft btn-sm" id="pmWa">📲 WhatsApp</button><button class="btn btn-pr btn-sm" id="pmGo">Ver en Shoppers →</button></div>
+      `,{onMount:(ov,close)=>{ov.querySelector('#pmGo').addEventListener('click',()=>{close();CX.router.nav('shoppers');});ov.querySelector('#pmWa').addEventListener('click',()=>{close();ui.toast('WhatsApp a '+s.nombre+' (Make)','ok');});}});
+    };
     document.querySelectorAll('[data-ap]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.ap);if(x&&CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(b.dataset.ap,'✅ Aprobada','green','Aprobada · WhatsApp enviado al shopper');}));
     document.querySelectorAll('[data-sb]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.sb,'⏸ Standby','amber','Postulación en standby')));
     document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.rj,'✕ Rechazada','red','Postulación rechazada · shopper notificado')));
@@ -106,7 +122,48 @@ CX.module('postulaciones', ({data,ui})=>{
       document.querySelectorAll('#pGroups [data-pid]').forEach(el=>{const x=posts.find(z=>z.id===el.dataset.pid);
         const ok=(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});};
     ['pSearch','pPais','pEst'].forEach(id=>document.getElementById(id).addEventListener('input',search));
-    document.querySelectorAll('[data-perfil]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('shoppers')));
+    document.querySelectorAll('[data-perfil]').forEach(b=>b.addEventListener('click',()=>profileModal(b.dataset.perfil)));
+
+    /* editar fecha/franja de la visita de una postulación */
+    document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const x=posts.find(z=>z.id===b.dataset.edit); if(!x)return;
+      ui.modal('Editar asignación · '+x.shopper,`
+        <div style="font-size:12px;color:var(--t2);margin-bottom:10px">📍 ${x.sucursal} · ${x.ciudad}</div>
+        <label class="lbl">Fecha</label><input class="inp" id="edF" type="date" value="${x.fechaProp||''}" style="margin-bottom:10px">
+        <label class="lbl">Franja</label><select class="sel" id="edFr" style="margin-bottom:14px">${['AM 8–12h','PM 14–18h','WK fin de semana'].map(o=>`<option ${o.startsWith(x.franjaCode||'')?'selected':''}>${o}</option>`).join('')}</select>
+        <div style="text-align:right"><button class="btn btn-pr btn-sm" id="edOk">Guardar</button></div>
+      `,{onMount:(ov,close)=>{ov.querySelector('#edOk').addEventListener('click',()=>{ const f=ov.querySelector('#edF').value; x.fechaProp=f; const v=data._visitas.find(z=>z.id===x.visitaId); if(v){v.agendada=f;} CX.hr&&CX.hr.writeBack&&CX.hr.writeBack(p,v); close(); ui.toast('Asignación actualizada · HR sincronizada · por '+gestor(),'ok'); });}});
+    }));
+
+    /* reasignar a otro shopper */
+    document.querySelectorAll('[data-reasig]').forEach(b=>b.addEventListener('click',()=>{ const x=posts.find(z=>z.id===b.dataset.reasig); if(!x)return;
+      const cands=data.shoppersFor().filter(s=>s.id!==x.shopperId);
+      ui.modal('Reasignar visita · '+x.sucursal,`
+        <p style="font-size:12px;color:var(--t2);margin-bottom:10px">Actualmente: <b>${x.shopper}</b>. Elige el nuevo evaluador.</p>
+        <select class="sel" id="rsSh" style="margin-bottom:14px">${cands.slice(0,30).map(s=>`<option value="${s.id}">${s.nombre} · ${s.code} · ${s.ciudad||CX.paisName(s.pais)}</option>`).join('')}</select>
+        <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rsOk">Reasignar</button></div>
+      `,{onMount:(ov,close)=>{ov.querySelector('#rsOk').addEventListener('click',()=>{ const nid=ov.querySelector('#rsSh').value; data.assignVisit&&data.assignVisit(x.visitaId,nid); const ns=data.getShopper(nid); if(ns){x.shopperId=ns.id;x.shopper=ns.nombre;x.shopperCode=ns.code;x.gestionadoPor=gestor();} close(); CX.notif&&CX.notif.push({to:'admin',tipo:'reasig',icon:'🔁',tono:'a',titulo:'Visita reasignada',txt:x.sucursal+' → '+(ns?ns.nombre:''),nav:'postulaciones'}); ui.toast('Reasignada a '+(ns?ns.nombre:'')+' · por '+gestor(),'ok',3600); });}});
+    }));
+
+    /* cancelar: la visita vuelve a disponible */
+    document.querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>{ const x=posts.find(z=>z.id===b.dataset.cancel); if(!x)return;
+      ui.modal('Cancelar visita · '+x.sucursal,`
+        <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">La visita de <b>${x.shopper}</b> volverá a <b>disponible</b> y el shopper será notificado.</p>
+        <label class="lbl">Motivo</label><textarea class="inp" id="cnM" rows="2" placeholder="Motivo de la cancelación…" style="margin-bottom:14px"></textarea>
+        <div style="text-align:right"><button class="btn btn-sm" style="background:var(--red-bg);color:var(--red)" id="cnOk">Confirmar cancelación</button></div>
+      `,{onMount:(ov,close)=>{ov.querySelector('#cnOk').addEventListener('click',()=>{ const v=data._visitas.find(z=>z.id===x.visitaId); if(v){v.estado='disponible';v.shopperId=null;v.shopper=null;v.agendada=null;} x.estado='cancelada';x.gestionadoPor=gestor(); CX.notif&&CX.notif.push({to:'shopper',tipo:'cancel',icon:'❌',tono:'r',titulo:'Visita cancelada',txt:x.sucursal+' · puedes postularte a otras',nav:'misvisitas'}); CX.bus&&CX.bus.emit('visit-flow'); close(); act(x.id,'✕ Cancelada','red','Visita cancelada · vuelve a disponible'); });}});
+    }));
+
+    /* asignar visita manual */
+    const am=document.getElementById('asignManual');
+    if(am)am.addEventListener('click',()=>{ const disp=data.visitas().filter(v=>v.estado==='disponible'||!v.shopperId);
+      const cands=data.shoppersFor();
+      ui.modal('Asignar visita manual',`
+        <p style="font-size:12px;color:var(--t2);margin-bottom:12px">Asigna directamente una visita disponible a un shopper (queda trazado a tu nombre).</p>
+        <label class="lbl">Visita disponible</label><select class="sel" id="amV" style="margin-bottom:10px">${disp.length?disp.slice(0,40).map(v=>`<option value="${v.id}">${v.sucursal} · ${v.ciudad} · ${v.quincena}</option>`).join(''):'<option value="">— no hay disponibles —</option>'}</select>
+        <label class="lbl">Shopper</label><select class="sel" id="amS" style="margin-bottom:14px">${cands.slice(0,40).map(s=>`<option value="${s.id}">${s.nombre} · ${s.code} · ${s.ciudad||CX.paisName(s.pais)}</option>`).join('')}</select>
+        <div style="text-align:right"><button class="btn btn-pr btn-sm" id="amOk" ${disp.length?'':'disabled'}>Asignar</button></div>
+      `,{onMount:(ov,close)=>{ov.querySelector('#amOk').addEventListener('click',()=>{ const vid=ov.querySelector('#amV').value, sid=ov.querySelector('#amS').value; if(!vid){close();return;} const v=data.assignVisit&&data.assignVisit(vid,sid); const s=data.getShopper(sid); CX.hr&&CX.hr.writeBack&&CX.hr.writeBack(p,v); CX.notif&&CX.notif.push({to:'admin',tipo:'asignacion',icon:'📌',tono:'g',titulo:'Visita asignada manual',txt:(v?v.sucursal:'')+' → '+(s?s.nombre:''),nav:'postulaciones'}); close(); ui.toast('Visita asignada a '+(s?s.nombre:'')+' · HR sincronizada · por '+gestor(),'ok',3800); });}});
+    });
     const reqBtn=document.getElementById('reqShopper');
     if(reqBtn)reqBtn.addEventListener('click',()=>{
       ui.modal('📤 Pedir acción al shopper',`
