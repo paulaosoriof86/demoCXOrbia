@@ -49,6 +49,25 @@ CX.module('financiero', ({data,ui})=>{
         <div style="font-size:10px;font-weight:700;color:var(--t1)">${(x.ingreso/1000).toFixed(0)}k</div></div>`).join('')}
       </div></div>`;};
 
+  /* motor de análisis crítico inteligente: deriva hallazgos/estrategias de los datos */
+  const analizar=()=>{
+    const H=[]; const M=(cur,n)=>`${cur} ${Number(Math.round(n)).toLocaleString('es-GT')}`;
+    p.countries.forEach(c=>{
+      const d=fp[c], cur=d.cur;
+      if(d.margenPct<20) H.push({tono:'r',icon:'⚠',titulo:`Margen crítico en ${CX.paisLabel(c)} (${d.margenPct}%)`,txt:`Por debajo del 20% objetivo. Revisa honorarios pagados (${M(cur,d.honPaga)}) o renegocia la tarifa del programa.`,accion:'Revisar estructura de costos'});
+      else if(d.margenPct<30) H.push({tono:'a',icon:'⚑',titulo:`Margen ajustado en ${CX.paisLabel(c)} (${d.margenPct}%)`,txt:`Cerca del mínimo saludable (30%). Vigila los gastos fijos (${M(cur,d.fijos)}).`,accion:'Optimizar gastos fijos'});
+      else H.push({tono:'g',icon:'✓',titulo:`Margen sano en ${CX.paisLabel(c)} (${d.margenPct}%)`,txt:`Rentabilidad sobre el objetivo. Hay espacio para incentivos a shoppers o inversión comercial.`,accion:'Considerar incentivos'});
+      if(d.cxc>d.ingreso*0.4) H.push({tono:'a',icon:'⏳',titulo:`Cobranza alta en ${CX.paisLabel(c)}`,txt:`Por cobrar (${M(cur,d.cxc)}) supera el 40% del ingreso. Riesgo de liquidez; prioriza conciliación de reembolsos.`,accion:'Gestionar cobranza'});
+    });
+    const cur0=p.currency[p.countries[0]];
+    const fin=CX.finStore.cxp(p.id).filter(r=>/financ/i.test(r.concepto)).reduce((s,r)=>s+(r.saldo||0),0);
+    if(fin>0) H.push({tono:'a',icon:'🏦',titulo:'Financiamientos activos',txt:`Hay ${M(cur0,fin)} en financiamientos. No son utilidad operativa: van como CxP hasta devolverse. Vigila el calendario de devolución.`,accion:'Ver CxP'});
+    const store=CX.finStore.pres(p.id), pres=Object.keys(store).reduce((a,k)=>a+(+store[k]||0),0);
+    const fijReal=p.countries.reduce((a,c)=>a+(fp[c].fijos||0),0);
+    if(pres && fijReal>pres*1.05) H.push({tono:'r',icon:'📊',titulo:'Gasto fijo sobre presupuesto',txt:`El gasto fijo real (${M(cur0,fijReal)}) excede el presupuesto (${M(cur0,pres)}) en ${Math.round((fijReal/pres-1)*100)}%.`,accion:'Ajustar presupuesto'});
+    return H;
+  };
+
   const html_fin = `
   <div class="between" style="margin-bottom:12px"><div>${ui.ph('Dashboard Financiero', p.name+' · '+modelLbl+' · '+p.countries.map(c=>c+' ('+CX.moneda(p,c)+')').join(' y ')+' separados')}</div>
     <div class="flex"><span class="bdg ${p.modelo==='directo'?'bdg-b':'bdg-p'}">${modelLbl}</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
@@ -60,6 +79,23 @@ CX.module('financiero', ({data,ui})=>{
   </div>
 
   <div class="grid ${p.countries.length>1?'g2':''}" style="margin-bottom:16px">${p.countries.map(tile).join('')}</div>
+
+  <div class="card card-p" style="margin-bottom:16px;border-color:#e3d9f5">
+    <div class="card-h"><div class="card-t">🧠 Análisis crítico inteligente</div><span class="bdg bdg-p">IA · hallazgos & estrategias</span></div>
+    <div class="grid g2" style="gap:10px">
+      ${analizar().map(h=>`<div style="display:flex;gap:10px;padding:11px 12px;background:var(--${h.tono}-bg);border-radius:10px">
+        <div style="font-size:17px;line-height:1">${h.icon}</div>
+        <div style="flex:1"><b style="font-size:12.5px;color:var(--${h.tono})">${h.titulo}</b>
+        <div style="font-size:11.5px;color:var(--t2);margin-top:3px">${h.txt}</div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:7px;padding:3px 9px;font-size:11px">${h.accion} →</button></div></div>`).join('')}
+    </div>
+    <div style="margin-top:10px">${ui.aiBox('Leo márgenes por país, cobranza (CxC), financiamientos (que NO cuento como ingreso operativo) y presupuesto vs real para sugerir acciones. Con IA conectada (Gemini), el análisis se enriquece con tendencias del trimestre.','Decisiones, no solo números')}</div>
+  </div>
+
+  <div class="card card-p" id="presAvance" style="margin-bottom:16px">
+    <div class="card-h"><div class="card-t">🚦 Avance de presupuesto · semáforos</div><span class="muted" style="font-size:11px">real vs presupuestado por rubro</span></div>
+    <div id="presBars"></div>
+  </div>
 
   <div class="grid g2" style="margin-bottom:16px">
     <div class="card card-p">
@@ -100,6 +136,23 @@ CX.module('financiero', ({data,ui})=>{
       list.querySelectorAll('[data-delp]').forEach(b=>b.addEventListener('click',()=>{delete store[b.dataset.delp];draw();}));
     };
     draw();
+    // barras de avance de presupuesto con semáforos (real vs presupuestado)
+    const drawAvance=()=>{
+      const bars=document.getElementById('presBars'); if(!bars)return;
+      const fijReal=p.countries.reduce((a,c)=>a+(fp[c].fijos||0),0);
+      const ks=Object.keys(store);
+      const totalPres=ks.reduce((a,k)=>a+(+store[k]||0),0)||1;
+      // distribuye el real proporcional al peso presupuestado (demo) — en prod viene de movimientos por rubro
+      bars.innerHTML = ks.map(k=>{
+        const pres=+store[k]||0; const real=Math.round(fijReal*(pres/totalPres));
+        const pct=pres?Math.round(real/pres*100):0;
+        const tono=pct>105?'r':pct>90?'a':'g'; const lbl=pct>105?'Excedido':pct>90?'Al límite':'En rango';
+        return `<div style="margin-bottom:11px"><div class="between" style="margin-bottom:4px"><span style="font-size:12px;color:var(--t1)">${k}</span>
+          <span style="font-size:11.5px;color:var(--t2)">${cur} ${real.toLocaleString()} / ${cur} ${pres.toLocaleString()} ${ui.bdg(lbl,tono)}</span></div>
+          <div style="height:9px;background:var(--border-2);border-radius:5px;overflow:hidden"><div style="height:100%;width:${Math.min(100,pct)}%;background:var(--${tono});border-radius:5px"></div></div></div>`;
+      }).join('') + `<div class="between" style="margin-top:10px;padding-top:9px;border-top:1px solid var(--border-2);font-weight:700"><span style="font-size:12.5px">Total ejecutado</span><span style="font-size:12.5px">${cur} ${fijReal.toLocaleString()} / ${cur} ${(totalPres).toLocaleString()}</span></div>`;
+    };
+    drawAvance();
     const ap=document.getElementById('addPres');
     if(ap)ap.addEventListener('click',()=>ui.modal('Nuevo rubro de gasto fijo',`
       <div style="margin-bottom:12px"><label class="lbl">Concepto</label><input class="inp" id="prK" placeholder="Ej. Renta oficina"></div>

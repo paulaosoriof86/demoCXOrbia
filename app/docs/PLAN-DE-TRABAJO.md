@@ -22,6 +22,20 @@ _Última actualización: sesión 26 (**Financiero completo** — movimientos glo
 
 > 🟡 Falta en Financiero: en Liquidaciones, armar lote eligiendo de **CxP/meses anteriores** (no solo del mes); tiles internos del dashboard 100% clickeables.
 
+### 🟠 Hallazgos sesión 27 (financiero/integraciones — priorizado, pre-migración)
+- ⬜ **Make por tenant**: escenarios/webhooks **personalizables por cliente** (cada consultora pega los suyos; TyA conecta sus escenarios ya creados). Webhook por automatización, no solo global.
+- ⬜ **Integraciones realmente funcionales**: hoy el demo registra/loguea; en producción quedan operativas vía Make (WhatsApp/Outlook/Sheets) — documentar el contrato y dejar el wiring listo.
+- ⬜ **Filtros de periodo/histórico** en Movimientos y **todos** los módulos financieros (selector de mes/rango; habrá datos históricos).
+- ⬜ **Liquidaciones — selección real de lote**: elegir cuáles entran; los **no incluidos del mes quedan pendientes** y al cambiar de mes pasan a **CxP** que alimentan los próximos lotes. Sincronía admin↔Beneficios del shopper.
+- ⬜ **Datos bancarios del shopper**: capturables por admin **y autoservicio** del shopper (Mi Perfil) para ejecutar pagos.
+- ⬜ **Crear meses siguientes**: Presupuesto **se replica editable**; Movimientos replica **plantilla en blanco**.
+- ✅ **Dashboard Financiero — análisis crítico inteligente** (hallazgos/estrategias por margen, cobranza, financiamientos, presupuesto) + **avance de presupuesto con semáforos** (H81). ⬜ Falta comparativo último trimestre enriquecido y control explícito de egresos por devolución de dinero.
+
+### ✅ Hecho en sesión 27
+| # | Item | Notas |
+|---|---|---|
+| H81 | **Análisis crítico inteligente** en Dashboard Financiero: motor que deriva hallazgos/estrategias (margen <20/<30/sano, CxC alta, financiamientos como CxP no-ingreso, gasto fijo sobre presupuesto) con acción sugerida; **avance de presupuesto con barras y semáforos** (en rango/al límite/excedido) | `modules/finanzas.js` |
+
 _Última actualización: sesión 25 (**módulo Automatizaciones (Make)** + escritura de vuelta a HR que cierra la doble vía; integraciones Outlook/Sheets; **IA Gemini** configurable; ejemplos anonimizados de otra industria)._
 
 ### ✅ Hecho en sesión 25
