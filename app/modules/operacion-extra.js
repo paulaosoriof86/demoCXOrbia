@@ -28,7 +28,14 @@ CX.module('miperfil', ({data,ui})=>{
         <div><label class="lbl">Edad</label><input class="inp" id="mp_edad" type="number" min="16" max="99" value="${s.edad||''}"></div>
         <div><label class="lbl">Sexo</label><select class="sel" id="mp_sexo">${['','Femenino','Masculino','Otro','Prefiero no decir'].map(o=>`<option ${o===(s.sexo||'')?'selected':''}>${o||'Selecciona…'}</option>`).join('')}</select></div>
         <div><label class="lbl">Documento (DPI / ID)</label><input class="inp" id="mp_dpi" value="${s.dpi||''}"></div>
-        <div><label class="lbl">Cuenta de pago</label><input class="inp" id="mp_cta" value="${s.cuentaPago||''}" placeholder="Banco / número / nombre"></div>
+      </div>
+      <div class="card-t" style="font-size:13px;margin:16px 0 8px">🏦 Datos bancarios para pagos</div>
+      <div class="grid g2" style="gap:12px 14px">
+        <div><label class="lbl">Banco</label><input class="inp" id="mp_banco" value="${(s.banco||'').replace(/"/g,'&quot;')}" placeholder="Nombre del banco"></div>
+        <div><label class="lbl">Tipo de cuenta</label><select class="sel" id="mp_ctaTipo">${['','Monetaria/Corriente','Ahorro','Otra'].map(o=>`<option ${o===(s.ctaTipo||'')?'selected':''}>${o||'Selecciona…'}</option>`).join('')}</select></div>
+        <div><label class="lbl">Número de cuenta</label><input class="inp" id="mp_ctaNum" value="${(s.ctaNum||'').replace(/"/g,'&quot;')}" placeholder="Número / IBAN / CLABE"></div>
+        <div><label class="lbl">Titular</label><input class="inp" id="mp_ctaTit" value="${(s.ctaTitular||'').replace(/"/g,'&quot;')}" placeholder="Nombre del titular"></div>
+        <div><label class="lbl">Moneda</label><input class="inp" id="mp_ctaMon" value="${(s.ctaMoneda||'').replace(/"/g,'&quot;')}" placeholder="Q / L / USD…"></div>
       </div>
       <div style="text-align:right;margin-top:16px"><button class="btn btn-green" id="mp_save">Guardar</button></div>
     `, {onMount:(ov,close)=>{
@@ -44,8 +51,13 @@ CX.module('miperfil', ({data,ui})=>{
           edad:(ov.querySelector('#mp_edad').value||'').trim(),
           sexo:ov.querySelector('#mp_sexo').value||'',
           dpi:(ov.querySelector('#mp_dpi').value||'').trim(),
-          cuentaPago:(ov.querySelector('#mp_cta').value||'').trim(),
+          banco:(ov.querySelector('#mp_banco').value||'').trim(),
+          ctaTipo:ov.querySelector('#mp_ctaTipo').value||'',
+          ctaNum:(ov.querySelector('#mp_ctaNum').value||'').trim(),
+          ctaTitular:(ov.querySelector('#mp_ctaTit').value||'').trim(),
+          ctaMoneda:(ov.querySelector('#mp_ctaMon').value||'').trim(),
         };
+        patch.cuentaPago=[patch.banco,patch.ctaNum,patch.ctaTitular].filter(Boolean).join(' · ');
         patch.perfilCompleto=data.shopperProfileComplete(Object.assign({},s,patch));
         data.updateShopper(s.id,patch);
         // refrescar el nombre mostrado en sesión
@@ -96,7 +108,9 @@ CX.module('miperfil', ({data,ui})=>{
     <div style="font-size:11px;color:var(--t3);text-align:right;margin-bottom:16px">↑ toca un indicador para ver el detalle</div>
     <div class="card card-p" style="margin-bottom:16px">
       <div class="card-h"><div class="card-t">Mis datos</div><button class="btn btn-soft btn-sm" id="mpEdit">✎ Editar</button></div>
-      ${dato('WhatsApp',s.whatsapp)}${dato('Correo',s.email)}${dato(CX.geo.deptLabel(s.pais),s.depto)}${dato('Edad',s.edad)}${dato('Sexo',s.sexo)}${dato('Documento',s.dpi)}${dato('Cuenta de pago',s.cuentaPago)}
+      ${dato('WhatsApp',s.whatsapp)}${dato('Correo',s.email)}${dato(CX.geo.deptLabel(s.pais),s.depto)}${dato('Edad',s.edad)}${dato('Sexo',s.sexo)}${dato('Documento',s.dpi)}
+      <div class="card-t" style="font-size:12px;margin:12px 0 4px;color:var(--t2)">🏦 Datos bancarios</div>
+      ${dato('Banco',s.banco)}${dato('Tipo de cuenta',s.ctaTipo)}${dato('Número de cuenta',s.ctaNum)}${dato('Titular',s.ctaTitular)}${dato('Moneda',s.ctaMoneda)}
     </div>
     <div class="card card-p">${ui.aiBox('Tu calificación se calcula por cumplimiento + tiempos + alertas + certificaciones. Mantén tu perfil completo para acceder a más visitas y honorarios preferentes.','Cómo subir tu rating')}</div>`;
 });

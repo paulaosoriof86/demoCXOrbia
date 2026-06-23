@@ -48,8 +48,12 @@ window.CX = window.CX || {};
     update(id, patch){ const l=this.list(); const a=l.find(x=>x.id===id); if(a){Object.assign(a,patch); this.save(l);} return a; },
     reset(){ try{ localStorage.removeItem(LS); }catch(e){} CX.bus&&CX.bus.emit('automations'); },
 
-    hook(){ try{ return localStorage.getItem(LS_HOOK)||''; }catch(e){ return ''; } },
-    setHook(url){ try{ localStorage.setItem(LS_HOOK, url||''); }catch(e){} },
+    /* tenant activo (cada consultora guarda SUS propios webhooks; p.ej. TyA usa los suyos) */
+    tenantId(){ try{ return (CX.session&&CX.session.tenant)|| (CX.theme&&CX.theme.active&&CX.theme.active())||'default'; }catch(e){ return 'default'; } },
+    _hooks(){ try{ return JSON.parse(localStorage.getItem(LS_HOOK)||'{}'); }catch(e){ return {}; } },
+    /* hook efectivo: override por automatación > webhook del tenant */
+    hook(autoId){ const h=this._hooks(); if(autoId){ const a=this.list().find(x=>x.id===autoId); if(a&&a.hook) return a.hook; } if(typeof h==='string') return h; return h[this.tenantId()]||''; },
+    setHook(url){ const h=this._hooks(); const map=(typeof h==='string')?{}:h; map[this.tenantId()]=url||''; try{ localStorage.setItem(LS_HOOK, JSON.stringify(map)); }catch(e){} },
 
     log(){ try{ return JSON.parse(localStorage.getItem(LS_LOG)||'[]'); }catch(e){ return []; } },
     _pushLog(rec){ try{ const l=this.log(); l.unshift(rec); localStorage.setItem(LS_LOG, JSON.stringify(l.slice(0,40))); }catch(e){} },
@@ -62,9 +66,9 @@ window.CX = window.CX || {};
         const txt=this._fill(a.plantilla, ctx);
         // notificación in-app siempre (centro de eventos)
         CX.notif && CX.notif.push({to:a.to, tipo:evento, icon:this._icon(evento), tono:this._tone(evento), titulo:a.titulo, txt, nav:this._nav(a.to,evento)});
-        // canal externo vía Make (demo = log)
+        // canal externo vía Make (demo = log) — usa el webhook de la automatación o el del tenant
         if(a.canal!=='push'){
-          this._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '), canal:a.canal, evento, titulo:a.titulo, txt, hook:this.hook()||'(webhook Make sin configurar)'});
+          this._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '), canal:a.canal, evento, titulo:a.titulo, txt, hook:this.hook(a.id)||'(webhook Make sin configurar)'});
         }
       });
     },

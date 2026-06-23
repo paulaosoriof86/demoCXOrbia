@@ -71,7 +71,11 @@ CX.module('shoppers', ({data,ui})=>{
       <div><label class="lbl">Edad</label><input class="inp" id="ed_edad" type="number" min="16" max="99" value="${s.edad||''}"></div>
       <div><label class="lbl">Sexo</label><select class="sel" id="ed_sexo">${['','Femenino','Masculino','Otro','Prefiero no decir'].map(o=>`<option ${o===(s.sexo||'')?'selected':''}>${o||'Selecciona…'}</option>`).join('')}</select></div>
       <div><label class="lbl">Documento (DPI / ID)</label><input class="inp" id="ed_dpi" value="${s.dpi||''}"></div>
-      <div><label class="lbl">Cuenta de pago</label><input class="inp" id="ed_cta" value="${s.cuentaPago||''}" placeholder="Banco / número / nombre"></div>
+      <div><label class="lbl">Banco</label><input class="inp" id="ed_banco" value="${(s.banco||'').replace(/"/g,'&quot;')}" placeholder="Nombre del banco"></div>
+      <div><label class="lbl">Tipo de cuenta</label><select class="sel" id="ed_ctaTipo">${['','Monetaria/Corriente','Ahorro','Otra'].map(o=>`<option ${o===(s.ctaTipo||'')?'selected':''}>${o||'Selecciona…'}</option>`).join('')}</select></div>
+      <div><label class="lbl">Número de cuenta</label><input class="inp" id="ed_ctaNum" value="${(s.ctaNum||'').replace(/"/g,'&quot;')}" placeholder="Número / IBAN / CLABE"></div>
+      <div><label class="lbl">Titular</label><input class="inp" id="ed_ctaTit" value="${(s.ctaTitular||'').replace(/"/g,'&quot;')}"></div>
+      <div><label class="lbl">Moneda</label><input class="inp" id="ed_ctaMon" value="${(s.ctaMoneda||'').replace(/"/g,'&quot;')}" placeholder="Q / L / USD…"></div>
       <div><label class="lbl">Estado</label><select class="sel" id="ed_estado">${['Pendiente','Activo','Certificado'].map(o=>`<option ${o===s.estado?'selected':''}>${o}</option>`).join('')}</select></div>
       <div><label class="lbl">Honorario</label><select class="sel" id="ed_hon">${['Estándar','Preferente'].map(o=>`<option ${o===s.honorarioPref?'selected':''}>${o}</option>`).join('')}</select></div>
     </div>
@@ -115,7 +119,7 @@ CX.module('shoppers', ({data,ui})=>{
       const host=ov.querySelector('#shFormHost');
       const readView=()=>{
         const r=(l,v)=>`<div style="padding:7px 0;border-bottom:1px solid var(--border)" class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">${l}</span><b style="font-size:13px;color:var(--t1);text-align:right">${v||'<span style=\"color:var(--t3)\">— sin dato</span>'}</b></div>`;
-        host.innerHTML=`<div>${r('WhatsApp',s.whatsapp)}${r('Correo',s.email)}${r(CX.geo.deptLabel(s.pais),s.depto)}${r('Edad',s.edad)}${r('Sexo',s.sexo)}${r('Documento',s.dpi)}${r('Cuenta de pago',s.cuentaPago)}</div>`;
+        host.innerHTML=`<div>${r('WhatsApp',s.whatsapp)}${r('Correo',s.email)}${r(CX.geo.deptLabel(s.pais),s.depto)}${r('Edad',s.edad)}${r('Sexo',s.sexo)}${r('Documento',s.dpi)}${r('Banco',s.banco)}${r('Tipo de cuenta',s.ctaTipo)}${r('Número de cuenta',s.ctaNum)}${r('Titular',s.ctaTitular)}${r('Moneda',s.ctaMoneda)}</div>`;
       };
       readView();
       ov.querySelector('#shEdit').addEventListener('click',()=>{
@@ -134,10 +138,15 @@ CX.module('shoppers', ({data,ui})=>{
             edad:(host.querySelector('#ed_edad').value||'').trim(),
             sexo:host.querySelector('#ed_sexo').value||'',
             dpi:(host.querySelector('#ed_dpi').value||'').trim(),
-            cuentaPago:(host.querySelector('#ed_cta').value||'').trim(),
+            banco:(host.querySelector('#ed_banco').value||'').trim(),
+            ctaTipo:host.querySelector('#ed_ctaTipo').value||'',
+            ctaNum:(host.querySelector('#ed_ctaNum').value||'').trim(),
+            ctaTitular:(host.querySelector('#ed_ctaTit').value||'').trim(),
+            ctaMoneda:(host.querySelector('#ed_ctaMon').value||'').trim(),
             estado:host.querySelector('#ed_estado').value,
             honorarioPref:host.querySelector('#ed_hon').value,
           };
+          patch.cuentaPago=[patch.banco,patch.ctaNum,patch.ctaTitular].filter(Boolean).join(' · ');
           patch.perfilCompleto=data.shopperProfileComplete(Object.assign({},s,patch));
           data.updateShopper(s.id,patch);
           CX.ui.toast('Perfil actualizado','ok');

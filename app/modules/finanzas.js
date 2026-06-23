@@ -176,7 +176,8 @@ CX.module('movimientos', ({data,ui})=>{
   const CAT=CX.finStore.CATEGORIAS, TI=CX.finStore.TIPOS_INGRESO, TE=CX.finStore.TIPOS_EGRESO;
   const draw=()=>{
     const isG=scope==='global';
-    const movs=[...(isG?[]:seed),...CX.finStore.mov(pid())];
+    const per=CX.finStore.curPeriod();
+    const movs=[...(isG?[]:seed),...CX.finStore.mov(pid()).filter(m=>!m.fecha||m.fecha.slice(0,7)===per)];
     const ing=movs.filter(m=>m.monto>0).reduce((a,m)=>a+m.monto,0);
     const egr=movs.filter(m=>m.monto<0).reduce((a,m)=>a+m.monto,0);
     // ingresos por tipo (separar financiamiento del resto)
@@ -193,9 +194,16 @@ CX.module('movimientos', ({data,ui})=>{
     <div class="between" style="margin-bottom:12px"><div>${ui.ph('Movimientos & Tesorería', 'Ingresos, egresos, CxC/CxP, financiamientos y remesas · por proyecto o globales')}</div>
       <div class="flex"><span class="bdg bdg-g">● En vivo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
 
-    <div class="flex" style="gap:0;border:1px solid var(--border);border-radius:9px;overflow:hidden;width:max-content;margin-bottom:14px">
-      <button class="btn btn-sm ${scope==='proyecto'?'btn-pr':'btn-ghost'}" data-scope="proyecto" style="border-radius:0">📁 ${p.name}</button>
-      <button class="btn btn-sm ${scope==='global'?'btn-pr':'btn-ghost'}" data-scope="global" style="border-radius:0">🌐 Global (administrativo)</button>
+    <div class="between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div class="flex" style="gap:0;border:1px solid var(--border);border-radius:9px;overflow:hidden;width:max-content">
+        <button class="btn btn-sm ${scope==='proyecto'?'btn-pr':'btn-ghost'}" data-scope="proyecto" style="border-radius:0">📁 ${p.name}</button>
+        <button class="btn btn-sm ${scope==='global'?'btn-pr':'btn-ghost'}" data-scope="global" style="border-radius:0">🌐 Global (administrativo)</button>
+      </div>
+      <div class="flex" style="gap:8px;align-items:center">
+        <label class="lbl" style="margin:0">Periodo</label>
+        <select class="sel" id="perSel" style="width:auto;padding:6px 10px">${CX.finStore.periods(pid()).map(pr=>`<option value="${pr}" ${pr===per?'selected':''}>${pr}</option>`).join('')}</select>
+        <button class="btn btn-soft btn-sm" id="nextMonth" title="Crear mes siguiente (replica presupuesto, movimientos en blanco)">＋ Mes siguiente</button>
+      </div>
     </div>
 
     <div class="flex wrap" style="gap:8px;margin-bottom:14px">
@@ -240,6 +248,8 @@ CX.module('movimientos', ({data,ui})=>{
     </div>`;
 
     host.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>{scope=b.dataset.scope;draw();}));
+    const ps=host.querySelector('#perSel'); if(ps)ps.addEventListener('change',()=>{CX.finStore.setPeriod(ps.value);draw();});
+    const nm=host.querySelector('#nextMonth'); if(nm)nm.addEventListener('click',()=>{const nx=CX.finStore.crearMesSiguiente(pid());draw();ui.toast('Mes '+nx+' creado · presupuesto replicado (editable) · movimientos en blanco','ok',3600);});
     host.querySelectorAll('[data-delm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.delMov(pid(),b.dataset.delm);draw();ui.toast('Movimiento eliminado','');}));
     host.querySelectorAll('[data-drill]').forEach(el=>el.addEventListener('click',()=>{
       const k=el.dataset.drill; let title,rows;
@@ -337,7 +347,7 @@ CX.module('liquidaciones', ({data,ui})=>{
         <td style="position:sticky;left:96px;background:${inD?'#eaf4fc':'var(--surface)'};z-index:1"><b>${l.shopper||'—'}</b><div style="font-size:10px;color:var(--t3)">${l.shopperCode||''}</div></td>
         <td style="font-size:12px">${l.sucursal}</td><td style="font-size:12px">${l.freal||'—'}</td>
         <td>${inD?ui.bdg('● en lote','p'):ui.bdg(lb[0],lb[1])}</td><td>${l.submit?'✅':'—'}</td>
-        <td>${ui.money(l.moneda,l.honorario)}</td><td>${l.boleto?ui.money(l.moneda,l.boleto):'—'}</td><td>${l.combo?ui.money(l.moneda,l.combo):'—'}</td>
+        <td>${ui.money(l.moneda,l.honorario)}</td><td>${l.reembolso?ui.money(l.moneda,l.reembolso):'—'}</td>
         <td style="font-weight:700;color:var(--t1)">${ui.money(l.moneda,l.total)}</td>
         <td style="font-size:12px">${l.fechaEstimadaPago||'—'}</td></tr>`;};
 
@@ -347,7 +357,8 @@ CX.module('liquidaciones', ({data,ui})=>{
     const multiMon=Object.keys(porMon).length>1;
     const cart=`<div class="card card-p" style="margin-bottom:16px;border:1px solid ${draft.length?'var(--brand)':'var(--border)'};${draft.length?'background:linear-gradient(180deg,var(--brand-light),var(--surface))':''}">
       <div class="between" style="margin-bottom:10px"><div class="card-t">📦 Lote en construcción ${draft.length?`<span class="bdg bdg-b">${draft.length}</span>`:''}</div>
-        ${draft.length?`<button class="btn btn-ghost btn-sm" id="clearDraft" style="color:var(--red)">Vaciar</button>`:''}</div>
+        <div class="flex" style="gap:8px">${CX.finStore.cxp(p.id).filter(r=>r.origen==='liquidacion').length?`<button class="btn btn-soft btn-sm" id="addCxp">➕ Incluir CxP meses anteriores (${CX.finStore.cxp(p.id).filter(r=>r.origen==='liquidacion').length})</button>`:''}
+        ${draft.length?`<button class="btn btn-ghost btn-sm" id="clearDraft" style="color:var(--red)">Vaciar</button>`:''}</div></div>
       ${draft.length?`
         <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>País</th><th style="text-align:right">Total</th><th></th></tr></thead><tbody>
         ${draftLiqs.map(l=>`<tr><td><b>${l.shopper}</b></td><td style="font-size:12px">${l.sucursal}</td><td>${l.pais}</td><td style="text-align:right;font-weight:700">${ui.money(l.moneda,l.total)}</td><td style="text-align:right"><button class="btn btn-ghost btn-sm" data-rm="${l.visitaId}" style="color:var(--red);padding:2px 7px">✕</button></td></tr>`).join('')}
@@ -381,7 +392,7 @@ CX.module('liquidaciones', ({data,ui})=>{
     <div class="card card-p">
       <div class="between" style="margin-bottom:12px"><div><div class="card-t">💸 Liquidaciones operativas</div>
         <div style="font-size:11px;color:var(--t3)">El estado avanza solo con la visita. Mueve las validadas al lote y págalas arriba.</div></div></div>
-      <div style="overflow-x:auto"><table class="tbl" style="min-width:840px"><thead><tr><th style="position:sticky;left:0;background:var(--surface);z-index:2"></th><th style="position:sticky;left:96px;background:var(--surface);z-index:2">Shopper</th><th>Sucursal</th><th>Realizada</th><th>Estado</th><th>Submit.</th><th>Honorario</th><th>Boleto</th><th>Combo</th><th>Total</th><th>Pago est.</th></tr></thead>
+      <div style="overflow-x:auto"><table class="tbl" style="min-width:760px"><thead><tr><th style="position:sticky;left:0;background:var(--surface);z-index:2"></th><th style="position:sticky;left:96px;background:var(--surface);z-index:2">Shopper</th><th>Sucursal</th><th>Realizada</th><th>Estado</th><th>Submit.</th><th>Honorario</th><th>Reembolso</th><th>Total</th><th>Pago est.</th></tr></thead>
       <tbody>${all.map(lrow).join('')}</tbody></table></div>
       <div style="margin-top:14px">${ui.aiBox('Cada liquidación nace del avance de la visita: realizada → pend. cuestionario → validada → en lote → pagada. Mueve al lote, revisa el total a pagar, retira lo que no entra (queda como CxP del mes) y paga: se generan los egresos automáticamente.','Liquidación sincronizada')}</div>
     </div>`;
@@ -389,6 +400,23 @@ CX.module('liquidaciones', ({data,ui})=>{
     host.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.add);}));
     host.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.rm);}));
     const cd=host.querySelector('#clearDraft'); if(cd)cd.addEventListener('click',()=>CX.finStore.clearDraft(p.id));
+    const ac=host.querySelector('#addCxp');
+    if(ac)ac.addEventListener('click',()=>{
+      const cxps=CX.finStore.cxp(p.id).filter(r=>r.origen==='liquidacion'&&(r.saldo||0)>0);
+      const rows=cxps.length?cxps.map((r,i)=>`<label class="between" style="padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer">
+        <span><input type="checkbox" class="cxpChk" data-id="${r.id}" checked style="margin-right:8px"><b style="font-size:12.5px">${r.concepto}</b><div style="font-size:11px;color:var(--t3)">${r.pais||''} · pendiente de meses anteriores</div></span>
+        <b style="color:var(--amber)">${ui.money(p.currency[r.pais]||p.currency[p.countries[0]],r.saldo||0)}</b></label>`).join('')
+        : ui.empty('📭','No hay liquidaciones diferidas (CxP) pendientes.');
+      ui.modal('Incluir CxP de meses anteriores',`
+        <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Estas son liquidaciones <b>diferidas</b> en cierres anteriores. Selecciona cuáles pagar ahora: se generará el egreso y se saldará la cuenta por pagar.</p>
+        ${rows}
+        <div style="text-align:right;margin-top:8px"><button class="btn btn-green btn-sm" id="payCxp" ${cxps.length?'':'disabled'}>Pagar seleccionadas</button></div>
+      `,{onMount:(ov,close)=>{const b=ov.querySelector('#payCxp'); if(b)b.addEventListener('click',()=>{
+        const ids=[...ov.querySelectorAll('.cxpChk:checked')].map(c=>c.dataset.id); let n=0;
+        ids.forEach(id=>{const r=CX.finStore.cxp(p.id).find(x=>x.id===id); if(r){CX.finStore.abonarCxp(p.id,id,r.saldo||0);n++;}});
+        close(); draw(); ui.toast(n+' CxP de meses anteriores pagada(s) · egreso(s) en Movimientos','ok',4000);
+      });}});
+    });
     const pay=host.querySelector('#payDraft');
     if(pay)pay.addEventListener('click',()=>{
       const validadas=all.filter(l=>l.estado==='validada');

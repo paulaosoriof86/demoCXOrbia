@@ -13,6 +13,7 @@ CX.module('automatizaciones', ({data,ui})=>{
         <div style="font-size:10.5px;color:var(--t3);margin-top:2px">Evento: ${A.EVENTOS[a.evento]||a.evento} → ${a.to==='shopper'?'Shopper':'Equipo'}</div></td>
       <td><select class="sel autoCanal" data-id="${a.id}" style="width:auto;padding:5px 8px">${Object.keys(A.CANALES).map(c=>`<option value="${c}" ${c===a.canal?'selected':''}>${A.CANALES[c]}</option>`).join('')}</select></td>
       <td><input class="inp autoTpl" data-id="${a.id}" value="${a.plantilla.replace(/"/g,'&quot;')}" style="padding:5px 8px;font-size:11.5px"></td>
+      <td><input class="inp autoHook" data-id="${a.id}" value="${(a.hook||'').replace(/"/g,'&quot;')}" placeholder="hook propio (opcional)" style="padding:5px 8px;font-size:11px"></td>
     </tr>`;
 
     const provOpts=Object.keys(AI.PROVIDERS).map(k=>`<option value="${k}" ${k===aic.provider?'selected':''}>${AI.PROVIDERS[k].label}</option>`).join('');
@@ -27,7 +28,7 @@ CX.module('automatizaciones', ({data,ui})=>{
     <div class="grid g2" style="gap:14px;margin-bottom:16px">
       <div class="card card-p">
         <div class="card-t" style="font-size:13px;margin-bottom:10px">🔗 Webhook de Make (escenario)</div>
-        <label class="lbl">URL del webhook del escenario Make</label>
+        <label class="lbl">URL del webhook del escenario Make (de <b>este tenant</b>: ${A.tenantId()})</label>
         <input class="inp" id="hookUrl" value="${hook}" placeholder="https://hook.eu2.make.com/xxxxx" style="margin-bottom:8px">
         <div style="font-size:11px;color:var(--t3)">Pega aquí el webhook del escenario ya creado en Make. Cada automatización activa enviará su payload (evento, datos, plantilla) a ese escenario; desde Make ramificas a WhatsApp, correo, Sheets, CRM, etc.</div>
         <button class="btn btn-soft btn-sm" id="hookSave" style="margin-top:10px">Guardar webhook</button> <button class="btn btn-ghost btn-sm" id="hookTest">Probar disparo</button>
@@ -40,7 +41,7 @@ CX.module('automatizaciones', ({data,ui})=>{
 
     <div class="card card-p" style="margin-bottom:16px">
       <div class="card-h"><div class="card-t">⚙️ Automatizaciones por evento</div><span class="muted" style="font-size:11px">activa/edita · canal y plantilla configurables</span></div>
-      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Evento → destino</th><th>Canal</th><th>Plantilla del mensaje</th></tr></thead><tbody>${list.map(autoRow).join('')}</tbody></table></div>
+      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Evento → destino</th><th>Canal</th><th>Plantilla del mensaje</th><th>Webhook propio</th></tr></thead><tbody>${list.map(autoRow).join('')}</tbody></table></div>
       <div style="font-size:11px;color:var(--t3);margin-top:8px">Variables: {shopper} {sucursal} {fecha} {estado} {score}. La <b>escritura de vuelta a HR</b> mantiene la doble vía sin duplicar.</div>
     </div>
 
@@ -79,6 +80,7 @@ CX.module('automatizaciones', ({data,ui})=>{
     host.querySelectorAll('.autoTog').forEach(c=>c.addEventListener('change',()=>{A.update(c.dataset.id,{activa:c.checked});ui.toast('Automatización '+(c.checked?'activada':'desactivada'),'ok');}));
     host.querySelectorAll('.autoCanal').forEach(s=>s.addEventListener('change',()=>A.update(s.dataset.id,{canal:s.value})));
     host.querySelectorAll('.autoTpl').forEach(i=>i.addEventListener('change',()=>A.update(i.dataset.id,{plantilla:i.value})));
+    host.querySelectorAll('.autoHook').forEach(i=>i.addEventListener('change',()=>{A.update(i.dataset.id,{hook:i.value.trim()});ui.toast('Webhook de la automatización guardado','ok');}));
     host.querySelector('#hookSave').addEventListener('click',()=>{A.setHook(host.querySelector('#hookUrl').value.trim());ui.toast('Webhook de Make guardado','ok');});
     host.querySelector('#hookTest').addEventListener('click',()=>{A._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'sheet',evento:'test',titulo:'Disparo de prueba',txt:'Payload de prueba enviado al escenario Make',hook:A.hook()||'(sin webhook)'});draw();ui.toast(A.hook()?'Disparo enviado a Make':'Configura el webhook primero','ok');});
     host.querySelectorAll('[data-int]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.int==='Outlook / M365'){AI.save({_outlook:true});ui.toast('Outlook vinculado (demo) · correo y calendario disponibles','ok');draw();}else ui.toast(b.dataset.int+': vinculación (demo)','ok');}));

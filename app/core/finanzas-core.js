@@ -10,12 +10,28 @@ window.CX = window.CX || {};
 
 /* almacén simple de movimientos/presupuesto manuales por proyecto (demo en memoria) */
 CX.finStore = {
-  _mov:{}, _pres:{},
+  _mov:{}, _pres:{}, _presM:{},
   mov(pid){ return this._mov[pid] || (this._mov[pid]=[]); },
   addMov(pid,m){ this.mov(pid).push(Object.assign({id:'m'+Date.now().toString(36)+Math.floor(Math.random()*99),fecha:new Date().toISOString().slice(0,10)},m)); CX.bus&&CX.bus.emit('fin'); },
   delMov(pid,id){ this._mov[pid]=(this._mov[pid]||[]).filter(m=>m.id!==id); CX.bus&&CX.bus.emit('fin'); },
-  pres(pid){ return this._pres[pid] || (this._pres[pid]={}); },
-  setPres(pid,k,v){ this.pres(pid)[k]=+v||0; CX.bus&&CX.bus.emit('fin'); },
+  pres(pid,period){ period=period||this.curPeriod(); const byp=this._presM[pid]||(this._presM[pid]={}); if(!byp[period]){ // hereda del periodo anterior si existe
+      const prev=Object.keys(byp).sort().filter(k=>k<period).pop(); byp[period]=prev?Object.assign({},byp[prev]):{}; } return byp[period]; },
+  setPres(pid,k,v,period){ this.pres(pid,period)[k]=+v||0; CX.bus&&CX.bus.emit('fin'); },
+  delPres(pid,k,period){ delete this.pres(pid,period)[k]; CX.bus&&CX.bus.emit('fin'); },
+
+  /* ----- periodo activo (YYYY-MM) ----- */
+  _period:null,
+  curPeriod(){ return this._period || (this._period=new Date().toISOString().slice(0,7)); },
+  setPeriod(per){ this._period=per; CX.bus&&CX.bus.emit('fin'); },
+  periods(pid){ // periodos con datos (movimientos o presupuesto) + actual
+    const s=new Set([this.curPeriod()]);
+    (this._mov[pid]||[]).forEach(m=>{ if(m.fecha)s.add(m.fecha.slice(0,7)); });
+    Object.keys(this._presM[pid]||{}).forEach(k=>s.add(k));
+    return [...s].sort().reverse();
+  },
+  nextPeriod(per){ const [y,m]=per.split('-').map(Number); const d=new Date(y,m,1); return d.toISOString().slice(0,7); },
+  /* crear mes siguiente: presupuesto se replica editable; movimientos en blanco */
+  crearMesSiguiente(pid){ const cur=this.curPeriod(), nxt=this.nextPeriod(cur); const byp=this._presM[pid]||(this._presM[pid]={}); if(!byp[nxt])byp[nxt]=Object.assign({},byp[cur]||{}); this.setPeriod(nxt); return nxt; },
 
   /* ----- movimientos GLOBALES (no atados a un proyecto) ----- */
   GLOBAL:'__global__',

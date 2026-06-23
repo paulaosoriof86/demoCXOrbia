@@ -25,13 +25,21 @@ _Última actualización: sesión 26 (**Financiero completo** — movimientos glo
 ### ✅ Hecho en sesión 28
 | # | Item | Notas |
 |---|---|---|
+| H87 | **Make por tenant**: el webhook se guarda **por tenant** (cada consultora/ TyA usa los suyos) y admite **override por automatización** (columna "Webhook propio"). `fire()` resuelve hook por automatización → hook del tenant | `core/automations.js`, `modules/automatizaciones.js` |
+| H86 | **Datos bancarios del shopper** estructurados (banco, tipo de cuenta, número/IBAN/CLABE, titular, moneda): editables por **admin** (Shoppers → perfil) y por **autoservicio** del shopper (Mi Perfil → Editar); se muestran en "Mis datos" y resumen en `cuentaPago` para pagos | `modules/operacion-extra.js`, `modules/shoppers.js` |
+| # | Item | Notas |
+|---|---|---|
+| H84 | **Reembolso genérico** en Liquidaciones (columna única "Reembolso", suma de conceptos configurables del proyecto — sin "Boleto/Combo" hardcodeados) + **incluir CxP de meses anteriores** al lote (paga y salda la cuenta por pagar, genera egreso) | `modules/finanzas.js` |
+| H85 | **Periodos financieros**: selector de **periodo (YYYY-MM)** en Movimientos (filtra histórico); **presupuesto mensual** (period-keyed, hereda del mes previo); **＋ Mes siguiente** replica presupuesto editable y deja movimientos en blanco | `finanzas-core.js`, `modules/finanzas.js` |
+| # | Item | Notas |
+|---|---|---|
 | H83 | **Lote en construcción (carrito)** en Liquidaciones: panel reactivo que muestra las liquidaciones movidas al lote con **total por moneda**, opción de **retirar** (✕) por fila o desde el carrito, validación de **una sola moneda por lote**, y pago con arrastre de no incluidas a CxP. Columna "Mover/Retirar" + Shopper **sticky** a la izquierda. Pago genera egresos en Movimientos (`payVisits`) | `finanzas-core.js` (`draft`), `modules/finanzas.js` |
 | # | Item | Notas |
 |---|---|---|
 | H82 | **Liquidaciones — lote con selección real + arrastre a CxP**: el modal "Preparar lote" permite elegir qué visitas validadas incluir; las **no seleccionadas se difieren a Cuentas por Pagar** (cierre de mes) y alimentan los próximos lotes. Pago del lote sincroniza Beneficios y Finanzas; una sola moneda por lote | `modules/finanzas.js` |
 
 ### 🟠 Hallazgos sesión 27 (financiero/integraciones — priorizado, pre-migración)
-- ⬜ **Make por tenant**: escenarios/webhooks **personalizables por cliente** (cada consultora pega los suyos; TyA conecta sus escenarios ya creados). Webhook por automatización, no solo global.
+- ✅ **Make por tenant**: webhooks por tenant + override por automatación (H87). ⏳ En producción: POST real al webhook (hoy demo loguea).
 - ⬜ **Integraciones realmente funcionales**: hoy el demo registra/loguea; en producción quedan operativas vía Make (WhatsApp/Outlook/Sheets) — documentar el contrato y dejar el wiring listo.
 - ⬜ **Filtros de periodo/histórico** en Movimientos y **todos** los módulos financieros (selector de mes/rango; habrá datos históricos).
 - ⬜ **Liquidaciones — selección real de lote**: elegir cuáles entran; los **no incluidos del mes quedan pendientes** y al cambiar de mes pasan a **CxP** que alimentan los próximos lotes. Sincronía admin↔Beneficios del shopper.
