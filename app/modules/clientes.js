@@ -34,6 +34,25 @@ window.CX = window.CX || {};
 
   D.getClient=function(id){ return this.clients.find(c=>c.id===id)||null; };
   D.projectsForClient=function(id){ return this.projects.filter(p=>p.clientId===id); };
+
+  /* estadísticas operativas agregadas de un cliente (todas sus proyectos) */
+  D.clientStats=function(id){
+    const pids=this.projectsForClient(id).map(p=>p.id);
+    const vis=this._visitas.filter(v=>pids.includes(v.projectId));
+    const real=vis.filter(v=>['realizada','cuestionario','liquidada'].includes(v.estado));
+    const liq=vis.filter(v=>v.estado==='liquidada');
+    const cumpl=vis.length?Math.round(real.length/vis.length*100):0;
+    // puntuación promedio: de los scores de cuestionario si existen, si no de rating de shoppers involucrados
+    const scored=real.filter(v=>typeof v.score==='number');
+    const score=scored.length?Math.round(scored.reduce((a,v)=>a+v.score,0)/scored.length)
+      : (()=>{ const ids=[...new Set(vis.map(v=>v.shopperId).filter(Boolean))]; const rs=ids.map(i=>{const s=this.getShopper&&this.getShopper(i);return s&&s.rating;}).filter(Boolean); return rs.length?Math.round(rs.reduce((a,b)=>a+b,0)/rs.length*20):0; })();
+    const fechas=vis.map(v=>v.realizada||v.agendada||v.disponibleDesde).filter(Boolean).sort();
+    // ranking de sucursales por cumplimiento
+    const bySuc={}; vis.forEach(v=>{const k=v.sucursal; const s=bySuc[k]=bySuc[k]||{t:0,r:0,suc:k,pais:v.pais}; s.t++; if(['realizada','cuestionario','liquidada'].includes(v.estado))s.r++;});
+    const ranking=Object.values(bySuc).map(s=>({...s,pct:s.t?Math.round(s.r/s.t*100):0})).sort((a,b)=>b.pct-a.pct);
+    return {visitas:vis.length, realizadas:real.length, liquidadas:liq.length, cumpl, score, ranking, ultima:fechas[fechas.length-1]||null, proyectos:pids.length};
+  };
+
   D.addClient=function(cfg){ const id=cfg.id||('cl-'+slug(cfg.name||'cliente')+'-'+Date.now().toString(36).slice(-3));
     const c=Object.assign({id,estado:'Prospecto',plan:'estandar',contactos:[],industry:'',pais:'GT',desde:String(new Date().getFullYear())},cfg,{id});
     this.clients.push(c); persist(); CX.bus&&CX.bus.emit('clients'); return c; };
@@ -91,6 +110,7 @@ CX.module('clientes', ({data,ui})=>{
 
   const detail=(c)=>{
     const projs=data.projectsForClient(c.id);
+    const st=data.clientStats(c.id);
     ui.modal(c.name, `
       <div class="between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px">
         <div><div class="card-t" style="font-size:16px">${c.name}</div>
@@ -98,10 +118,16 @@ CX.module('clientes', ({data,ui})=>{
           <div class="flex" style="gap:6px;margin-top:6px">${ui.bdg(c.estado,estadoTone[c.estado]||'n')} ${ui.bdg(planLabel(c.plan),'b')} <span style="font-size:11px;color:var(--t3)">cliente desde ${c.desde||'—'}</span></div></div>
         <button class="btn btn-soft btn-sm" id="cl_edit">✎ Editar</button>
       </div>
-      <div class="grid g4" style="margin-bottom:14px">
-        ${ui.kpi('Proyectos',projs.length,'b')}${ui.kpi('Contactos',(c.contactos||[]).length,'p')}
-        ${ui.kpi('Activos',projs.length,'g')}${ui.kpi('Plan',planLabel(c.plan),'n')}
+      <div class="card-t" style="font-size:13px;margin-bottom:8px">📊 Desempeño histórico (todos sus proyectos)</div>
+      <div class="grid g4" style="margin-bottom:6px">
+        ${ui.kpi('Visitas',st.visitas,'b')}${ui.kpi('Cumplimiento',st.cumpl+'%',st.cumpl>=80?'g':'a')}
+        ${ui.kpi('Puntuación',st.score?st.score+'/100':'—','p')}${ui.kpi('Proyectos',st.proyectos,'n')}
       </div>
+      <div style="font-size:11px;color:var(--t3);margin-bottom:14px">Última actividad: ${st.ultima||'—'} · ${st.realizadas} realizadas · ${st.liquidadas} liquidadas</div>
+      ${st.ranking.length?`<div class="card-t" style="font-size:13px;margin-bottom:8px">🏆 Ranking de sucursales por cumplimiento</div>
+        <div style="overflow-x:auto;margin-bottom:14px"><table class="tbl"><thead><tr><th>#</th><th>Sucursal</th><th>Realizadas/Total</th><th>Cumplimiento</th></tr></thead><tbody>
+        ${st.ranking.slice(0,8).map((s,i)=>`<tr><td style="font-family:var(--disp);color:var(--t3)">${i+1}</td><td><b>${s.suc}</b> <span class="muted">${CX.paisFlag(s.pais)}</span></td><td style="font-size:12px">${s.r}/${s.t}</td><td>${ui.bdg(s.pct+'%',s.pct>=80?'g':s.pct>=50?'a':'r')}</td></tr>`).join('')}
+        </tbody></table></div>`:''}
       <div class="card-t" style="font-size:13px;margin-bottom:8px">Proyectos del cliente</div>
       ${projs.length?projs.map(p=>`<div class="card hov between" data-goproj="${p.id}" style="padding:10px 12px;cursor:pointer;margin-bottom:8px">
         <div><b style="font-size:13px">${p.name}</b><div style="font-size:11px;color:var(--t3)">${p.industry||''}</div></div>

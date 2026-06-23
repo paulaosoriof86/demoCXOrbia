@@ -80,7 +80,7 @@ CX.module('importador', ({data,ui})=>{
       const c=host.querySelector('#impCommit');
       if(c)c.addEventListener('click',()=>{
         const res=CX.importador.commit(st.diff.nuevos, p);
-        ui.toast('Importadas '+res.creadas+' visita(s)'+(res.shoppersNuevos?' · '+res.shoppersNuevos+' shopper(s) nuevos':'')+' · sincronizado','ok',4000);
+        ui.toast('Importadas '+res.creadas+' visita(s)'+(res.shoppersNuevos?' · '+res.shoppersNuevos+' shopper(s) nuevos':'')+(res.shoppersFusionados?' · '+res.shoppersFusionados+' fusionado(s)':'')+' · sincronizado','ok',4200);
         st={step:1,parsed:null,map:{},cands:[],diff:null};
         CX.router.nav('visitas');
       });

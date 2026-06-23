@@ -97,15 +97,36 @@ window.CX = window.CX || {};
       return {nuevos, dups};
     },
 
+    /* normaliza un nombre para mostrar (Title Case, espacios colapsados) */
+    titleName(s){ return (s||'').toString().replace(/\s+/g,' ').trim().toLowerCase().replace(/(^|\s)\S/g,m=>m.toUpperCase()); },
+    /* clave de identidad de persona (primer nombre + último apellido, sin acentos) — para detectar duplicados */
+    nameKey(s){ const t=norm(s).split(' ').filter(Boolean); if(!t.length)return ''; return t.length===1?t[0]:(t[0]+'|'+t[t.length-1]); },
+    /* completitud de un shopper para decidir qué registro es "mejor" al fusionar */
+    _score(s){ return ['whatsapp','email','pais','ciudad','dpi','edad','sexo','banco','ctaNum'].reduce((a,k)=>a+(s&&s[k]?1:0),0); },
+
     /* commit: crea visitas (y shoppers faltantes) en el proyecto; sincroniza */
     commit(cands, p){
       p=p||CX.data.project();
-      let creadas=0, shoppersNuevos=0;
+      let creadas=0, shoppersNuevos=0, shoppersFusionados=0;
       const base=CX.data._visitas.filter(v=>v.projectId===p.id).length;
+      // índice de shoppers por clave de identidad (para deduplicar e integrar)
+      const idx={}; CX.data.shoppers.forEach(s=>{ const k=this.nameKey(s.nombre); if(k)(idx[k]=idx[k]||[]).push(s); });
       cands.forEach((c,i)=>{
         let sh=null;
-        if(c.shopper){ sh=CX.data.shoppers.find(s=>norm(s.nombre)===norm(c.shopper));
-          if(!sh && CX.data.addShopper){ const parts=c.shopper.split(/\s+/); sh=CX.data.addShopper({via:'importacion',firstName:parts[0]||c.shopper,lastName:parts.slice(1).join(' '),whatsapp:'',pais:c.pais,ciudad:c.ciudad}); shoppersNuevos++; } }
+        if(c.shopper){
+          const nombre=this.titleName(c.shopper); const key=this.nameKey(nombre);
+          // 1) match exacto por nombre; 2) match por clave de identidad (duplicado)
+          sh=CX.data.shoppers.find(s=>norm(s.nombre)===norm(nombre)) || (idx[key]&&idx[key][0]) || null;
+          if(sh){
+            // FUSIÓN: completar datos faltantes con lo que traiga la fila; conservar el nombre más completo
+            const patch={}; if(c.pais&&!sh.pais)patch.pais=c.pais; if(c.ciudad&&!sh.ciudad)patch.ciudad=c.ciudad;
+            if(this.titleName(nombre).length>(sh.nombre||'').length){ const parts=nombre.split(' '); patch.firstName=parts[0]; patch.lastName=parts.slice(1).join(' '); }
+            if(Object.keys(patch).length){ patch._silent=true; CX.data.updateShopper&&CX.data.updateShopper(sh.id,patch); shoppersFusionados++; }
+          } else if(CX.data.addShopper){
+            const parts=nombre.split(/\s+/); sh=CX.data.addShopper({via:'importacion',firstName:parts[0]||nombre,lastName:parts.slice(1).join(' '),whatsapp:'',pais:c.pais,ciudad:c.ciudad});
+            const k=this.nameKey(nombre); if(k)(idx[k]=idx[k]||[]).push(sh); shoppersNuevos++;
+          }
+        }
         CX.data._visitas.push({
           id:p.id+'-imp'+Date.now().toString(36).slice(-4)+i, projectId:p.id, num:base+creadas+1,
           sucursal:c.sucursal, ciudad:c.ciudad, pais:c.pais, currency:(p.currency&&p.currency[c.pais])||'$',
@@ -121,7 +142,7 @@ window.CX = window.CX || {};
         creadas++;
       });
       CX.bus && CX.bus.emit('visit-flow');
-      return {creadas, shoppersNuevos};
+      return {creadas, shoppersNuevos, shoppersFusionados};
     },
 
     /* HR de ejemplo (genérica) para demostrar el flujo */

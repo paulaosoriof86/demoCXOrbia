@@ -25,6 +25,8 @@ _Última actualización: sesión 26 (**Financiero completo** — movimientos glo
 ### ✅ Hecho en sesión 28
 | # | Item | Notas |
 |---|---|---|
+| H93 | **Perfil de cliente con desempeño histórico**: `data.clientStats` agrega todas las visitas de los proyectos del cliente → KPIs (visitas, cumplimiento, puntuación, proyectos), última actividad y **ranking de sucursales por cumplimiento**. Alimenta el Portal del Cliente. Copy ya enfocado a "consultora administra sus clientes" | `modules/clientes.js` |
+| H92 | **Dedup-merge de shoppers al importar**: nombre normalizado (Title Case) + clave de identidad (primer nombre · último apellido sin acentos) detecta duplicados y **fusiona** completando datos faltantes y conservando el nombre más completo. Las visitas históricas importadas (liquidadas/realizadas) entran al **historial del shopper** vía `visitsForShopper`. Toast reporta fusionados | `core/importador.js`, `modules/importador.js` |
 | H91 | **Mis Visitas con Historial** (shopper): toggle Activas/Historial real; el historial lista las visitas liquidadas/cerradas del shopper (sucursal, escenario, fecha, honorario, estado). Módulo reactivo host-based | `modules/misvisitas.js` |
 | H88 | **Presupuesto mensual visible** en la pantalla de Movimientos (panel propio atado al **periodo** seleccionado; agregar/eliminar rubros; total). Se replica con **＋ Mes siguiente** y alimenta el semáforo/análisis del Dashboard | `modules/finanzas.js` |
 | H89 | **Control de financiamientos** en Movimientos: registrar (entra como **flujo + CxP, NO ingreso operativo**), ver saldo/devuelto y **registrar devolución** (egreso + reduce CxP). KPI "Ingresos oper." ya excluye financiamiento | `finanzas-core.js`, `modules/finanzas.js` |
