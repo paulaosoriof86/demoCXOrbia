@@ -378,12 +378,29 @@ CX.module('liquidaciones', ({data,ui})=>{
       ui.modal('Preparar lote de pago',`
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Selecciona las visitas <b>validadas</b> a incluir. Una sola moneda por lote (GT y HN no se mezclan). Al pagar el lote se generan los movimientos de egreso de cada shopper de una sola vez.</p>
         ${rows}
+        ${validadas.length?`<label class="flex" style="gap:8px;font-size:12px;color:var(--t1);background:var(--amber-bg);padding:9px 11px;border-radius:9px;margin-top:4px;cursor:pointer"><input type="checkbox" id="difCxp" checked> Diferir las <b>no seleccionadas</b> a Cuentas por Pagar (cierre de mes) — alimentarán los próximos lotes</label>`:''}
         <div class="between" style="margin-top:14px"><div id="loteTot" style="font-size:13px;font-weight:700;color:var(--t1)"></div>
         <button class="btn btn-green btn-sm" id="loteCreate" ${validadas.length?'':'disabled'}>Crear lote</button></div>
       `,{onMount:(ov,close)=>{
         const calc=()=>{let t=0,m='';ov.querySelectorAll('.loteChk:checked').forEach(c=>{const l=all[+c.dataset.i];t+=l.total;m=l.moneda;});ov.querySelector('#loteTot').textContent=validadas.length?('Total lote: '+ui.money(m||p.currency[p.countries[0]],t)):'';};
         ov.querySelectorAll('.loteChk').forEach(c=>c.addEventListener('change',calc));calc();
-        const cr=ov.querySelector('#loteCreate'); if(cr)cr.addEventListener('click',()=>{const ids=[...ov.querySelectorAll('.loteChk:checked')].map(c=>all[+c.dataset.i].visitaId);close();const r=data.payVisits(ids);ui.toast('Lote pagado · '+r.pagadas+' visita(s) liquidada(s) · fecha de pago '+r.fechaPago+' · Beneficios y Finanzas actualizados','ok',4200);});
+        const cr=ov.querySelector('#loteCreate'); if(cr)cr.addEventListener('click',()=>{
+          const chk=[...ov.querySelectorAll('.loteChk:checked')];
+          const ids=chk.map(c=>all[+c.dataset.i].visitaId);
+          // arrastre: validadas NO seleccionadas → CxP (cierre de mes)
+          const difBox=ov.querySelector('#difCxp');
+          let diferidas=0;
+          if(difBox&&difBox.checked){
+            const sel=new Set(chk.map(c=>+c.dataset.i));
+            validadas.filter(x=>!sel.has(x.i)).forEach(x=>{
+              CX.finStore.addCxp(p.id,{concepto:'Liquidación diferida · '+x.l.shopper+' ('+x.l.sucursal+')',monto:x.l.total,pais:x.l.pais,origen:'liquidacion',visitaId:x.l.visitaId});
+              diferidas++;
+            });
+          }
+          close();
+          const r=data.payVisits(ids);
+          ui.toast('Lote pagado · '+r.pagadas+' visita(s) liquidada(s) · fecha de pago '+r.fechaPago+(diferidas?' · '+diferidas+' diferida(s) a CxP':'')+' · Beneficios y Finanzas actualizados','ok',4600);
+        });
       }});
     });
   },0);

@@ -22,6 +22,11 @@ _Última actualización: sesión 26 (**Financiero completo** — movimientos glo
 
 > 🟡 Falta en Financiero: en Liquidaciones, armar lote eligiendo de **CxP/meses anteriores** (no solo del mes); tiles internos del dashboard 100% clickeables.
 
+### ✅ Hecho en sesión 28
+| # | Item | Notas |
+|---|---|---|
+| H82 | **Liquidaciones — lote con selección real + arrastre a CxP**: el modal "Preparar lote" permite elegir qué visitas validadas incluir; las **no seleccionadas se difieren a Cuentas por Pagar** (cierre de mes) y alimentan los próximos lotes. Pago del lote sincroniza Beneficios y Finanzas; una sola moneda por lote | `modules/finanzas.js` |
+
 ### 🟠 Hallazgos sesión 27 (financiero/integraciones — priorizado, pre-migración)
 - ⬜ **Make por tenant**: escenarios/webhooks **personalizables por cliente** (cada consultora pega los suyos; TyA conecta sus escenarios ya creados). Webhook por automatización, no solo global.
 - ⬜ **Integraciones realmente funcionales**: hoy el demo registra/loguea; en producción quedan operativas vía Make (WhatsApp/Outlook/Sheets) — documentar el contrato y dejar el wiring listo.
@@ -29,6 +34,7 @@ _Última actualización: sesión 26 (**Financiero completo** — movimientos glo
 - ⬜ **Liquidaciones — selección real de lote**: elegir cuáles entran; los **no incluidos del mes quedan pendientes** y al cambiar de mes pasan a **CxP** que alimentan los próximos lotes. Sincronía admin↔Beneficios del shopper.
 - ⬜ **Datos bancarios del shopper**: capturables por admin **y autoservicio** del shopper (Mi Perfil) para ejecutar pagos.
 - ⬜ **Crear meses siguientes**: Presupuesto **se replica editable**; Movimientos replica **plantilla en blanco**.
+- ⬜ **Presupuesto como sección mensual propia** (en la pantalla de Movimientos): el presupuesto es **mensual** y de ahí salen el semáforo y el análisis del dashboard; permitir registrar el **ingreso por financiamiento sin contarlo como operativo**.
 - ✅ **Dashboard Financiero — análisis crítico inteligente** (hallazgos/estrategias por margen, cobranza, financiamientos, presupuesto) + **avance de presupuesto con semáforos** (H81). ⬜ Falta comparativo último trimestre enriquecido y control explícito de egresos por devolución de dinero.
 
 ### ✅ Hecho en sesión 27
