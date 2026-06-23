@@ -62,6 +62,22 @@ CX.finStore = {
   inDraft(pid,vid){ return this.draft(pid).includes(vid); },
   toggleDraft(pid,vid){ const d=this.draft(pid); const i=d.indexOf(vid); if(i>=0)d.splice(i,1); else d.push(vid); CX.bus&&CX.bus.emit('lote'); return i<0; },
   clearDraft(pid){ this._draft[pid]=[]; CX.bus&&CX.bus.emit('lote'); },
+
+  /* ----- control de FINANCIAMIENTOS (no son ingreso operativo; se devuelven) ----- */
+  _fin:{},
+  financiamientos(pid){ return this._fin[pid] || (this._fin[pid]=[]); },
+  addFinanciamiento(pid,f){ const rec=Object.assign({id:'f'+Date.now().toString(36),fecha:new Date().toISOString().slice(0,10),saldo:+f.monto||0,devuelto:0},f);
+    this.financiamientos(pid).push(rec);
+    // se registra como ingreso NO operativo (flujo) y como CxP
+    this.addMov(pid,{tipo:'ingreso',cat:'Financiamiento · '+(f.fuente||''),tipoIngreso:'financiamiento',pais:f.pais,monto:+f.monto||0,desc:'Entrada de financiamiento (no operativo)',estado:'Por conciliar',fecha:rec.fecha,noOperativo:true,finId:rec.id});
+    this.addCxp(pid,{concepto:'Financiamiento · '+(f.fuente||''),monto:+f.monto||0,pais:f.pais,origen:'financiamiento',finId:rec.id});
+    CX.bus&&CX.bus.emit('fin'); return rec; },
+  devolverFinanciamiento(pid,id,monto){ const r=this.financiamientos(pid).find(x=>x.id===id); if(!r)return; const m=Math.min(+monto||0,r.saldo||0);
+    r.devuelto=(r.devuelto||0)+m; r.saldo=Math.max(0,(r.saldo||0)-m);
+    this.addMov(pid,{tipo:'egreso',cat:'Devolución financiamiento · '+(r.fuente||''),tipoEgreso:'otro',pais:r.pais,monto:-m,desc:'Egreso por devolución de financiamiento',estado:'Pagado',fecha:new Date().toISOString().slice(0,10),finId:id});
+    // reduce la CxP asociada
+    const cxp=this.cxp(pid).find(x=>x.finId===id); if(cxp)cxp.saldo=Math.max(0,(cxp.saldo||0)-m);
+    CX.bus&&CX.bus.emit('fin'); return r; },
 };
 
 CX.fin = {

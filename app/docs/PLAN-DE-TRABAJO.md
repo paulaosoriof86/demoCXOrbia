@@ -25,6 +25,10 @@ _Última actualización: sesión 26 (**Financiero completo** — movimientos glo
 ### ✅ Hecho en sesión 28
 | # | Item | Notas |
 |---|---|---|
+| H91 | **Mis Visitas con Historial** (shopper): toggle Activas/Historial real; el historial lista las visitas liquidadas/cerradas del shopper (sucursal, escenario, fecha, honorario, estado). Módulo reactivo host-based | `modules/misvisitas.js` |
+| H88 | **Presupuesto mensual visible** en la pantalla de Movimientos (panel propio atado al **periodo** seleccionado; agregar/eliminar rubros; total). Se replica con **＋ Mes siguiente** y alimenta el semáforo/análisis del Dashboard | `modules/finanzas.js` |
+| H89 | **Control de financiamientos** en Movimientos: registrar (entra como **flujo + CxP, NO ingreso operativo**), ver saldo/devuelto y **registrar devolución** (egreso + reduce CxP). KPI "Ingresos oper." ya excluye financiamiento | `finanzas-core.js`, `modules/finanzas.js` |
+| H90 | **Notificación al equipo por cambios de datos del shopper** (contacto/perfil y, marcado especial, **datos bancarios**): notif al admin + evento `shopper_edit` para Make | `core/shoppers-store.js`, `core/automations.js` |
 | H87 | **Make por tenant**: el webhook se guarda **por tenant** (cada consultora/ TyA usa los suyos) y admite **override por automatización** (columna "Webhook propio"). `fire()` resuelve hook por automatización → hook del tenant | `core/automations.js`, `modules/automatizaciones.js` |
 | H86 | **Datos bancarios del shopper** estructurados (banco, tipo de cuenta, número/IBAN/CLABE, titular, moneda): editables por **admin** (Shoppers → perfil) y por **autoservicio** del shopper (Mi Perfil → Editar); se muestran en "Mis datos" y resumen en `cuentaPago` para pagos | `modules/operacion-extra.js`, `modules/shoppers.js` |
 | # | Item | Notas |

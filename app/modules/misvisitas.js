@@ -49,9 +49,16 @@ CX.module('misvisitas', ({data,ui})=>{
     </div>`;
   };
 
-  const html=`
+  const sid=(CX.session.user&&CX.session.user.shopperId)||'sh1';
+  const mine=(data.visitsForShopper?data.visitsForShopper(sid):base);
+  const histVis=mine.filter(v=>['liquidada','cancelada'].includes(v.estado));
+  const activasN=[asignada,agendada,realizada].filter(Boolean).length;
+  let view='activas';
+  const host=ui.el('div');
+
+  const activeHTML=()=>`
     ${ui.ph('Mis Visitas', p.name+' · agenda, ejecuta y da seguimiento')}
-    <div class="flex" style="margin-bottom:14px">${ui.bdg('Activas 3','b')} ${ui.bdg('Historial 12','n')}</div>
+    <div class="flex" style="margin-bottom:14px;gap:8px"><button class="btn btn-sm ${view==='activas'?'btn-pr':'btn-ghost'}" data-view="activas">Activas ${activasN}</button> <button class="btn btn-sm ${view==='historial'?'btn-pr':'btn-ghost'}" data-view="historial">Historial ${histVis.length}</button></div>
     ${visitCard(asignada,'asignada')}
     ${visitCard(agendada,'agendada')}
     ${visitCard(realizada,'realizada')}
@@ -59,14 +66,29 @@ CX.module('misvisitas', ({data,ui})=>{
       ${ui.aiBox('Cada acción que marcas (agendar, realizar, enviar cuestionario) actualiza la visita, notifica al equipo, sincroniza la hoja de ruta y mueve el estado de tu liquidación con fecha estimada de pago según las reglas de '+p.name+'.','Ejecución guiada y sincronizada')}
     </div>`;
 
-  setTimeout(()=>{
+  const histHTML=()=>`
+    ${ui.ph('Mis Visitas', p.name+' · agenda, ejecuta y da seguimiento')}
+    <div class="flex" style="margin-bottom:14px;gap:8px"><button class="btn btn-sm ${view==='activas'?'btn-pr':'btn-ghost'}" data-view="activas">Activas ${activasN}</button> <button class="btn btn-sm ${view==='historial'?'btn-pr':'btn-ghost'}" data-view="historial">Historial ${histVis.length}</button></div>
+    <div class="card card-p">
+      <div class="card-h"><div class="card-t">Historial de visitas</div><span class="muted" style="font-size:11px">visitas liquidadas y cerradas</span></div>
+      ${histVis.length?`<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Honorario</th><th>Estado</th></tr></thead><tbody>
+        ${histVis.map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.escenario}</td><td style="font-size:12px">${v.realizada||v.fechaPago||v.agendada||'—'}</td><td>${ui.money(v.currency,v.honorario)}</td><td>${ui.estadoBadge(v.estado)}</td></tr>`).join('')}
+      </tbody></table></div>`:ui.empty('🗒️','Aún no tienes visitas en tu historial. Cuando una visita se liquida o cierra, aparece aquí.')}
+    </div>`;
+
+  const draw=()=>{ host.innerHTML = view==='historial'?histHTML():activeHTML();
+    host.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;draw();}));
+    if(view==='activas') bindActive();
+  };
+
+  const bindActive=()=>{
     const find=(id)=>base.find(v=>v.id===id);
     const today=new Date().toISOString().slice(0,10);
-    document.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('documentos')));
-    document.querySelectorAll('[data-cert]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('cert')));
-    document.querySelectorAll('[data-quest]').forEach(b=>b.addEventListener('click',()=>CX.shopperQuestionnaire(data,p,find(b.dataset.quest),ui)));
+    host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('documentos')));
+    host.querySelectorAll('[data-cert]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('cert')));
+    host.querySelectorAll('[data-quest]').forEach(b=>b.addEventListener('click',()=>CX.shopperQuestionnaire(data,p,find(b.dataset.quest),ui)));
 
-    document.querySelectorAll('[data-sched]').forEach(b=>b.addEventListener('click',()=>{
+    host.querySelectorAll('[data-sched]').forEach(b=>b.addEventListener('click',()=>{
       const v=find(b.dataset.sched);
       ui.modal('Agendar visita',`
         <p style="font-size:13px;color:var(--t2);margin-bottom:10px">Elige una fecha dentro del rango y la franja <b>${(v||{}).franja||''}</b>.</p>
@@ -85,7 +107,7 @@ CX.module('misvisitas', ({data,ui})=>{
       }});
     }));
 
-    document.querySelectorAll('[data-done]').forEach(b=>b.addEventListener('click',()=>{
+    host.querySelectorAll('[data-done]').forEach(b=>b.addEventListener('click',()=>{
       const v=find(b.dataset.done);
       ui.modal('Marcar visita realizada',`
         <label class="lbl">Fecha de realización</label><input class="inp" id="doneD" type="date" value="${(v||{}).agendada||today}" style="margin-bottom:14px">
@@ -98,7 +120,7 @@ CX.module('misvisitas', ({data,ui})=>{
       }); }});
     }));
 
-    document.querySelectorAll('[data-reprog]').forEach(b=>b.addEventListener('click',()=>{
+    host.querySelectorAll('[data-reprog]').forEach(b=>b.addEventListener('click',()=>{
       const v=find(b.dataset.reprog);
       ui.modal('Solicitar reprogramación',`
         <p style="font-size:13px;color:var(--t2);margin-bottom:10px">La solicitud se autoriza desde Gestión de Postulaciones.</p>
@@ -112,11 +134,12 @@ CX.module('misvisitas', ({data,ui})=>{
       }); }});
     }));
 
-    document.querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>{
+    host.querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>{
       const v=find(b.dataset.cancel);
       CX.notif&&CX.notif.push({to:'admin',tipo:'cancel',icon:'⚠',tono:'r',titulo:'Solicitud de cancelación',txt:v.sucursal,nav:'postulaciones'});
       ui.toast('Solicitud de cancelación enviada al equipo','warn');
     }));
-  },0);
-  return html;
+  };
+  draw();
+  return host;
 });

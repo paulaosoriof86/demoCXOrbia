@@ -102,6 +102,15 @@ window.CX = window.CX || {};
     norm(s);
     if(SEED_IDS.has(id)){ patches[id]=Object.assign(patches[id]||{}, patch, {firstName:s.firstName,lastName:s.lastName,nombre:s.nombre,perfilCompleto:s.perfilCompleto}); }
     persist();
+    // notificar al equipo cualquier cambio de datos del shopper (banca/contacto/perfil)
+    if(!patch._silent){
+      const campos=Object.keys(patch).filter(k=>!['_silent','regenCreds','perfilCompleto'].includes(k));
+      const banca=campos.some(k=>['banco','ctaTipo','ctaNum','ctaTitular','ctaMoneda','cuentaPago'].includes(k));
+      if(campos.length){
+        CX.notif&&CX.notif.push({to:'admin',tipo:'shopper-edit',icon:banca?'🏦':'✏️',tono:banca?'a':'b',titulo:(banca?'Datos bancarios actualizados':'Datos de shopper actualizados'),txt:s.nombre+' · '+campos.slice(0,4).join(', '),nav:'shoppers'});
+        CX.automations&&CX.automations.fire('shopper_edit',{shopper:s.nombre,campos:campos.join(', ')});
+      }
+    }
     CX.bus && CX.bus.emit('shoppers');
     return s;
   };

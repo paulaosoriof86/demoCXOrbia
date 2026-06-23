@@ -183,6 +183,7 @@ CX.module('movimientos', ({data,ui})=>{
     // ingresos por tipo (separar financiamiento del resto)
     const porTipoIng={}; movs.filter(m=>m.monto>0).forEach(m=>{const t=m.tipoIngreso||'otro';porTipoIng[t]=(porTipoIng[t]||0)+m.monto;});
     const financiamiento=porTipoIng.financiamiento||0;
+    const ingOper=movs.filter(m=>m.monto>0&&!m.noOperativo&&m.tipoIngreso!=='financiamiento').reduce((a,m)=>a+m.monto,0);
     const remesas=movs.filter(m=>m.tipoIngreso==='remesa').reduce((a,m)=>a+m.monto,0);
     // CxC/CxP: manuales (importación) + financiamiento + liquidaciones no pagadas (solo proyecto)
     const cxpManual=CX.finStore.cxp(pid()).reduce((a,r)=>a+(r.saldo||0),0);
@@ -217,7 +218,7 @@ CX.module('movimientos', ({data,ui})=>{
     </div>
 
     <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px">
-      <div data-drill="ing" style="cursor:pointer">${ui.kpi('Ingresos',ui.money(cur,ing),'g')}</div>
+      <div data-drill="ing" style="cursor:pointer">${ui.kpi('Ingresos oper.',ui.money(cur,ingOper),'g',financiamiento?'+ fin. aparte':'')}</div>
       <div data-drill="egr" style="cursor:pointer">${ui.kpi('Egresos',ui.money(cur,Math.abs(egr)),'r')}</div>
       <div data-drill="cxc" style="cursor:pointer">${ui.kpi('Por cobrar (CxC)',ui.money(cur,cxc),'a')}</div>
       <div data-drill="cxp" style="cursor:pointer">${ui.kpi('Por pagar (CxP)',ui.money(cur,cxp),'a',financiamiento?'incl. financiamiento':'')}</div>
@@ -231,6 +232,19 @@ CX.module('movimientos', ({data,ui})=>{
       </div>
       <div class="card card-p"><div class="card-h"><div class="card-t">Cuentas por pagar (CxP)</div></div>
         ${CX.finStore.cxp(pid()).length?CX.finStore.cxp(pid()).map(r=>`<div class="between" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12px">${r.concepto}</b><div style="font-size:10px;color:var(--t3)">${r.pais||''} · saldo</div></div><div class="flex" style="gap:8px"><b style="font-size:12.5px;color:var(--amber)">${ui.money(cur,r.saldo||0)}</b><button class="btn btn-soft btn-sm" data-abono="${r.id}">Abonar</button></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:8px 0">Sin CxP registradas. Útil al importar saldos iniciales.</div>'}
+      </div>
+    </div>
+
+    <div class="grid g2" style="gap:14px;margin-bottom:16px">
+      <div class="card card-p" id="presMesCard">
+        <div class="between" style="margin-bottom:8px"><div class="card-t">📋 Presupuesto mensual <span class="bdg bdg-b">${per}</span></div><button class="btn btn-soft btn-sm" id="addPresMes">＋ Rubro</button></div>
+        <div id="presMesList"></div>
+        <div style="font-size:11px;color:var(--t3);margin-top:8px">Es <b>mensual</b>: alimenta el semáforo y el análisis del Dashboard. Con <b>＋ Mes siguiente</b> (arriba) se replica al mes nuevo y queda editable.</div>
+      </div>
+      <div class="card card-p" id="finCard">
+        <div class="between" style="margin-bottom:8px"><div class="card-t">🏦 Financiamientos</div><button class="btn btn-soft btn-sm" id="addFin">＋ Financiamiento</button></div>
+        <div id="finList"></div>
+        <div style="font-size:11px;color:var(--t3);margin-top:8px">No son ingreso operativo: entran como flujo + CxP y se controlan hasta su <b>devolución</b> (egreso).</div>
       </div>
     </div>
 
@@ -250,6 +264,37 @@ CX.module('movimientos', ({data,ui})=>{
     host.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>{scope=b.dataset.scope;draw();}));
     const ps=host.querySelector('#perSel'); if(ps)ps.addEventListener('change',()=>{CX.finStore.setPeriod(ps.value);draw();});
     const nm=host.querySelector('#nextMonth'); if(nm)nm.addEventListener('click',()=>{const nx=CX.finStore.crearMesSiguiente(pid());draw();ui.toast('Mes '+nx+' creado · presupuesto replicado (editable) · movimientos en blanco','ok',3600);});
+
+    // ---- presupuesto mensual (period-keyed) ----
+    const pml=host.querySelector('#presMesList');
+    if(pml){ const store=CX.finStore.pres(p.id,per); const ks=Object.keys(store); const tot=ks.reduce((a,k)=>a+(+store[k]||0),0);
+      pml.innerHTML=(ks.length?ks.map(k=>`<div class="between" style="padding:6px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12.5px">${k}</span><div class="flex" style="gap:8px"><b style="font-size:12.5px">${cur} ${(+store[k]).toLocaleString()}</b><button class="btn btn-ghost btn-sm" data-delpm="${k}" style="color:var(--red);padding:2px 7px">✕</button></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:6px 0">Sin rubros este mes</div>')+`<div class="between" style="padding:8px 0 0;font-weight:700"><span style="font-size:12.5px">Total presupuestado</span><b>${cur} ${tot.toLocaleString()}</b></div>`;
+      pml.querySelectorAll('[data-delpm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.delPres(p.id,b.dataset.delpm,per);draw();}));
+    }
+    const apm=host.querySelector('#addPresMes');
+    if(apm)apm.addEventListener('click',()=>ui.modal('Nuevo rubro de presupuesto · '+per,`
+      <label class="lbl">Concepto</label><input class="inp" id="pmK" placeholder="Ej. Coordinación, Transporte" style="margin-bottom:10px">
+      <label class="lbl">Monto mensual (${cur})</label><input class="inp" id="pmV" type="number" style="margin-bottom:14px">
+      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="pmSave">Agregar</button></div>
+    `,{onMount:(ov,close)=>{ov.querySelector('#pmSave').addEventListener('click',()=>{const k=(ov.querySelector('#pmK').value||'').trim();if(!k){ui.toast('Escribe el concepto','warn');return;}CX.finStore.setPres(p.id,k,+ov.querySelector('#pmV').value||0,per);close();draw();ui.toast('Rubro agregado al presupuesto de '+per,'ok');});}}));
+
+    // ---- financiamientos ----
+    const fl=host.querySelector('#finList');
+    if(fl){ const fins=CX.finStore.financiamientos(p.id);
+      fl.innerHTML=fins.length?fins.map(f=>`<div style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div class="between"><div><b style="font-size:12.5px">${f.fuente||'Financiamiento'}</b><div style="font-size:10.5px;color:var(--t3)">${f.pais||''} · ${f.fecha} · devuelto ${ui.money(p.currency[f.pais]||cur,f.devuelto||0)}</div></div>
+        <div class="flex" style="gap:8px"><b style="font-size:12.5px;color:${(f.saldo||0)>0?'var(--amber)':'var(--green)'}">saldo ${ui.money(p.currency[f.pais]||cur,f.saldo||0)}</b>${(f.saldo||0)>0?`<button class="btn btn-soft btn-sm" data-devfin="${f.id}">Devolver</button>`:ui.bdg('saldado','g')}</div></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:6px 0">Sin financiamientos registrados</div>';
+      fl.querySelectorAll('[data-devfin]').forEach(b=>b.addEventListener('click',()=>{const f=CX.finStore.financiamientos(p.id).find(x=>x.id===b.dataset.devfin);
+        ui.modal('Devolver financiamiento · '+f.fuente,`<div style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Saldo: <b>${ui.money(p.currency[f.pais]||cur,f.saldo||0)}</b></div><label class="lbl">Monto a devolver</label><input class="inp" id="dvM" type="number" value="${f.saldo||0}" style="margin-bottom:14px"><div style="text-align:right"><button class="btn btn-green btn-sm" id="dvOk">Registrar devolución</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#dvOk').addEventListener('click',()=>{CX.finStore.devolverFinanciamiento(p.id,f.id,+ov.querySelector('#dvM').value||0);close();draw();ui.toast('Devolución registrada · egreso generado · CxP reducida','ok',3600);});}});
+      }));
+    }
+    const af=host.querySelector('#addFin');
+    if(af)af.addEventListener('click',()=>ui.modal('Registrar financiamiento',`
+      <p style="font-size:12px;color:var(--t2);margin-bottom:10px">Entra como <b>flujo</b> (no ingreso operativo) y como CxP hasta devolverse.</p>
+      <div class="grid g2" style="gap:10px 12px"><div style="grid-column:1/3"><label class="lbl">Fuente</label><input class="inp" id="fnF" placeholder="Banco / socio / casa matriz"></div>
+      <div><label class="lbl">Monto (${cur})</label><input class="inp" id="fnM" type="number"></div>
+      <div><label class="lbl">País</label><select class="sel" id="fnP">${p.countries.map(c=>`<option>${c}</option>`).join('')}</select></div></div>
+      <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="fnSave">Registrar</button></div>
+    `,{onMount:(ov,close)=>{ov.querySelector('#fnSave').addEventListener('click',()=>{CX.finStore.addFinanciamiento(p.id,{fuente:(ov.querySelector('#fnF').value||'').trim(),monto:+ov.querySelector('#fnM').value||0,pais:ov.querySelector('#fnP').value});close();draw();ui.toast('Financiamiento registrado · flujo + CxP (no operativo)','ok',3600);});}}));
     host.querySelectorAll('[data-delm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.delMov(pid(),b.dataset.delm);draw();ui.toast('Movimiento eliminado','');}));
     host.querySelectorAll('[data-drill]').forEach(el=>el.addEventListener('click',()=>{
       const k=el.dataset.drill; let title,rows;
