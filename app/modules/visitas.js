@@ -54,10 +54,12 @@ CX.module('visitas', ({data,role,ui})=>{
   }
 
   /* ---------------- ADMIN: tabla operativa completa ---------------- */
-  const all=data.visitas();
+  const ALL=!!CX.session._visAll;
+  const all=ALL?data._visitas.slice():data.visitas();
+  const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
   const k=data.kpis();
   const row=(v)=>`<tr data-vid="${v.id}">
-    <td><b style="color:var(--brand)">#${v.num}</b></td>
+    <td><b style="color:var(--brand)">#${v.num}</b>${ALL?`<div style="font-size:9px;color:var(--t3)">${projName(v.projectId)}</div>`:''}</td>
     <td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${v.ciudad} · ${v.pais}</div></td>
     <td style="font-size:12px">${v.quincena}<div style="font-size:10px;color:var(--t3)">${v.escenario}</div></td>
     <td>${v.shopper?`<b style="font-size:12px">${v.shopper}</b><div style="font-size:10px;color:var(--t3)">${v.shopperCode}</div>`:'<span class="muted">— sin asignar</span>'}</td>
@@ -67,7 +69,7 @@ CX.module('visitas', ({data,role,ui})=>{
     <td style="text-align:right">${!v.shopper&&v.estado!=='fuera_rango'?`<button class="btn btn-soft btn-sm" data-assign="${v.id}">Asignar</button> `:''}<button class="btn btn-ghost btn-sm" data-edit="${v.id}">✏️</button></td>
   </tr>`;
   const html=`
-    <div class="between" style="margin-bottom:6px"><div>${ui.ph('Visitas', p.name+' · base operativa · publica, asigna y edita cada visita')}</div>
+    <div class="between" style="margin-bottom:6px"><div>${ui.ph('Visitas', (ALL?('Todos los proyectos · '+all.length+' visitas'):(p.name+' · base operativa'))+' · publica, asigna y edita cada visita')}</div>
       <div class="flex"><span class="bdg bdg-g">● En vivo</span><span class="bdg bdg-b">${all.length} visitas</span></div></div>
     <div class="flex wrap" style="gap:8px;margin-bottom:12px">
       <button class="btn btn-green btn-sm" id="addV">＋ Publicar visita</button>
@@ -75,8 +77,9 @@ CX.module('visitas', ({data,role,ui})=>{
       <button class="btn btn-ghost btn-sm">⤓ Exportar</button>
       <div class="spacer"></div>
       <input class="inp" id="vSearch" placeholder="🔎 Sucursal, shopper, ciudad…" style="max-width:240px">
+      <select class="sel" id="vProj" style="width:auto"><option value="all" ${ALL?'selected':''}>🌐 Todos los proyectos</option>${data.projects.map(pr=>`<option value="${pr.id}" ${(!ALL&&pr.id===p.id)?'selected':''}>${pr.name}</option>`).join('')}</select>
       <select class="sel" id="vEst" style="width:auto"><option value="">Todos los estados</option>${['disponible','postulada','asignada','agendada','realizada','cuestionario','liquidada','fuera_rango'].map(e=>`<option value="${e}">${e}</option>`).join('')}</select>
-      <select class="sel" id="vPais" style="width:auto"><option value="">País</option>${p.countries.map(c=>`<option>${c}</option>`).join('')}</select>
+      <select class="sel" id="vPais" style="width:auto"><option value="">País</option>${[...new Set(all.map(v=>v.pais))].map(c=>`<option>${c}</option>`).join('')}</select>
     </div>
     <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px" id="vKpis">
       <div data-k="disp" style="cursor:pointer">${ui.kpi('Disponibles',all.filter(v=>v.estado==='disponible').length,'b')}</div>
@@ -94,6 +97,8 @@ CX.module('visitas', ({data,role,ui})=>{
     const filt=()=>{const q=(document.getElementById('vSearch').value||'').toLowerCase(),fe=document.getElementById('vEst').value,fp=document.getElementById('vPais').value;
       document.querySelectorAll('#vBody tr').forEach(tr=>{const v=all.find(z=>z.id===tr.dataset.vid);const ok=(!q||(v.sucursal+(v.shopper||'')+v.ciudad).toLowerCase().includes(q))&&(!fe||v.estado===fe)&&(!fp||v.pais===fp);tr.style.display=ok?'':'none';});};
     ['vSearch','vEst','vPais'].forEach(id=>document.getElementById(id).addEventListener('input',filt));
+    const vp=document.getElementById('vProj');
+    if(vp)vp.addEventListener('change',()=>{ if(vp.value==='all'){CX.session._visAll=true;} else {CX.session._visAll=false;data.setProject(vp.value);} CX.router.nav('visitas'); });
     const vKp={disp:['Visitas disponibles',v=>v.estado==='disponible'],asig:['Visitas asignadas',v=>v.shopperId],real:['Visitas realizadas',v=>['realizada','cuestionario','liquidada'].includes(v.estado)],sinasig:['Visitas sin asignar',v=>!v.shopperId&&v.estado!=='fuera_rango'],fuera:['Fuera de rango',v=>v.estado==='fuera_rango']};
     document.querySelectorAll('#vKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{ const d=vKp[el.dataset.k]; const L=all.filter(d[1]);
       ui.modal(d[0]+' ('+L.length+')', L.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Shopper</th><th>Estado</th><th>Honorario</th></tr></thead><tbody>${L.map(v=>`<tr><td><b style="font-size:12.5px">${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.shopper||'<span class="muted">—</span>'}</td><td>${ui.estadoBadge(v.estado)}</td><td style="font-size:12px;color:var(--green)">${ui.money(v.currency,v.honorario)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🔍','Sin visitas en esta categoría.')); }));
