@@ -95,34 +95,62 @@ CX.module('costos', ({data,ui})=>{
     host.querySelector('#genProp').addEventListener('click',()=>propuesta(CX.costos.calc(cfg)));
   };
 
+  const PLANTILLAS={
+    formal:{n:'Formal corporativa',intro:(cli,r)=>`Nos complace presentar a ${cli.name||'su empresa'} nuestra propuesta para un programa de <b>${r.modalidad}</b> de <b>${r.visitas} visitas mensuales</b>, diseñado para medir y elevar la experiencia en sus puntos de servicio con rigor metodológico y evidencia verificable.`},
+    consultiva:{n:'Consultiva / valor',intro:(cli,r)=>`En ${cli.name||'su organización'} cada interacción cuenta. Proponemos un programa de <b>${r.modalidad}</b> (${r.visitas} visitas/mes) que no solo audita: identifica brechas, prioriza acciones y acompaña la mejora continua con tableros y planes de capacitación dirigidos.`},
+    directa:{n:'Directa / ejecutiva',intro:(cli,r)=>`Programa de <b>${r.modalidad}</b>: ${r.visitas} visitas/mes, evaluación ponderada, evidencia y portal de resultados. Inversión clara, ROI medible, sin sorpresas.`},
+  };
+
   const propuesta=(r)=>{
     const f=(n)=>CX.costos.fmt(cfg.moneda,n);
     const cli=data.getClient?(data.clients.find(c=>data.projectsForClient(c.id).some(x=>x.id===p.id))||{}):{};
-    ui.modal('Propuesta · '+p.name, `
+    let tpl='formal'; let intro=PLANTILLAS[tpl].intro(cli,r);
+    const beneficios=['Coordinación de campo y evaluadores certificados','Revisión de calidad (QA) de cada cuestionario','Plataforma operativa + portal de resultados para la marca','Reporte de hallazgos y ranking de sucursales','Planes de capacitación dirigidos a las áreas más débiles'];
+    const render=()=>`
+      <div class="flex" style="gap:8px;margin-bottom:12px">
+        <select class="sel" id="propTpl" style="width:auto">${Object.keys(PLANTILLAS).map(k=>`<option value="${k}" ${k===tpl?'selected':''}>Plantilla: ${PLANTILLAS[k].n}</option>`).join('')}</select>
+        <button class="btn btn-soft btn-sm" id="propIA">✨ Redactar con IA</button>
+        <button class="btn btn-ghost btn-sm" id="propWeb">🔎 Investigar cliente (web)</button>
+      </div>
       <div style="border:1px solid var(--border);border-radius:12px;padding:18px 20px">
         <div class="between" style="border-bottom:2px solid var(--brand);padding-bottom:10px;margin-bottom:12px">
-          <div><div style="font-size:17px;font-weight:800;color:var(--brand-dark)">Propuesta de servicio</div>
+          <div><div style="font-size:17px;font-weight:800;color:var(--brand-dark)" contenteditable>Propuesta de servicio</div>
           <div style="font-size:12px;color:var(--t3)">${cli.name||'Cliente'} · ${p.name} · ${r.modalidad}</div></div>
           <div style="font-size:11px;color:var(--t3);text-align:right">${new Date().toLocaleDateString('es-GT')}<br>${cfg.moneda}</div>
         </div>
-        <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Programa de <b>${r.visitas} visitas/mes</b> bajo modalidad <b>${r.modalidad}</b>, con evaluación ponderada, evidencia y portal de resultados para la marca.</div>
+        <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px" id="propIntro" contenteditable>${intro}</div>
+        <div style="font-size:12px;font-weight:700;color:var(--t1);margin-bottom:6px">Incluye</div>
+        <ul style="font-size:12px;color:var(--t2);line-height:1.7;margin:0 0 12px 18px" id="propBen" contenteditable>${beneficios.map(b=>`<li>${b}</li>`).join('')}</ul>
         <table class="tbl" style="margin-bottom:12px"><tbody>
           <tr><td>Visitas por mes</td><td style="text-align:right"><b>${r.visitas}</b></td></tr>
           <tr><td>Inversión por visita</td><td style="text-align:right"><b>${f(r.precioPorVisita)}</b></td></tr>
           <tr><td>Reembolsos (pass-through)</td><td style="text-align:right">${f(r.reembolsos)}</td></tr>
           <tr><td style="font-weight:800">Inversión mensual total</td><td style="text-align:right;font-weight:800;color:var(--brand-dark)">${f(r.precioCliente)}</td></tr>
         </tbody></table>
-        <div style="font-size:11px;color:var(--t3)">Incluye: coordinación de campo, evaluadores, revisión de calidad, plataforma operativa y portal del cliente. Vigencia 30 días.</div>
+        <div style="font-size:11px;color:var(--t3)">Vigencia 30 días · Edita cualquier texto haciendo clic sobre él.</div>
       </div>
       <div class="flex" style="justify-content:flex-end;gap:8px;margin-top:14px">
         <button class="btn btn-ghost btn-sm" data-x5>Cerrar</button>
         <button class="btn btn-soft btn-sm" id="propPdf">⤓ Exportar PDF</button>
         <button class="btn btn-pr btn-sm" id="propSend">📤 Enviar al cliente</button>
-      </div>
-    `,{onMount:(ov,close)=>{
-      ov.querySelector('[data-x5]').addEventListener('click',close);
-      ov.querySelector('#propPdf').addEventListener('click',()=>ui.toast('Propuesta exportada a PDF (demo)','ok'));
-      ov.querySelector('#propSend').addEventListener('click',()=>{close();ui.toast('Propuesta enviada al cliente (demo)','ok');});
+      </div>`;
+    ui.modal('Propuesta · '+p.name, render(),{onMount:(ov,close)=>{
+      const wire=()=>{
+        ov.querySelector('#propTpl').addEventListener('change',e=>{tpl=e.target.value;intro=PLANTILLAS[tpl].intro(cli,r);ov.querySelector('#propIntro').innerHTML=intro;});
+        ov.querySelector('#propIA').addEventListener('click',()=>{
+          const creativa=`Imagine la experiencia de sus clientes en ${cli.name||'cada sucursal'} medida con la precisión de un aliado estratégico. Nuestro programa de <b>${r.modalidad}</b> —${r.visitas} visitas/mes— convierte cada visita incógnita en inteligencia accionable: detectamos lo que su equipo no ve, priorizamos lo que mueve la aguja y lo acompañamos con capacitación dirigida. No entregamos reportes; entregamos decisiones.`;
+          ov.querySelector('#propIntro').innerHTML=creativa;
+          ui.toast(CX.ai&&CX.ai.ready()?'Redactado con '+CX.ai.cfg().model:'Borrador creativo (configura Gemini para personalización por relevamiento)','ok',3600);
+        });
+        ov.querySelector('#propWeb').addEventListener('click',()=>ui.modal('🔎 Investigar cliente en la web',`
+          <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">La IA busca información pública de <b>${cli.name||'el cliente'}</b> (sector, presencia, nº de sucursales, tono de marca) para personalizar la propuesta.</p>
+          <input class="inp" id="webQ" value="${cli.name||''}" placeholder="Nombre / sitio del cliente" style="margin-bottom:12px">
+          <div style="text-align:right"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('${CX.ai&&CX.ai.ready()?'Investigación aplicada a la propuesta':'Configura Gemini para investigación web real'}','ok');this.closest('.cx-ov').remove()">Investigar</button></div>`));
+        ov.querySelector('[data-x5]').addEventListener('click',close);
+        ov.querySelector('#propPdf').addEventListener('click',()=>ui.toast('Propuesta exportada a PDF (demo)','ok'));
+        ov.querySelector('#propSend').addEventListener('click',()=>{close();ui.toast('Propuesta enviada al cliente (demo)','ok');});
+      };
+      wire();
     }});
   };
 

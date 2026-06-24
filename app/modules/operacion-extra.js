@@ -85,6 +85,8 @@ CX.module('miperfil', ({data,ui})=>{
     const drills={all:[null,'Todas mis visitas'],done:[v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Mis visitas realizadas'],
       liq:[v=>v.estado==='liquidada','Mis visitas liquidadas'],curso:[v=>['asignada','agendada','postulada'].includes(v.estado),'Mis visitas en curso']};
     document.querySelectorAll('#mpKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=drills[el.dataset.k];drillVisits(d[0],d[1]);}));
+    const okrDrills={efect:[null,'Efectividad · todas tus visitas asignadas'],cuest:[v=>['cuestionario','liquidada'].includes(v.estado),'Cuestionarios completados'],atiempo:[v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Visitas enviadas a tiempo'],rating:[v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Visitas que cuentan para tu calificación']};
+    document.querySelectorAll('#okrKpis [data-ok]').forEach(el=>el.addEventListener('click',()=>{const d=okrDrills[el.dataset.ok];drillVisits(d[0],d[1]);}));
   },0);
 
   return `
@@ -118,11 +120,11 @@ CX.module('miperfil', ({data,ui})=>{
         <div class="bar" style="height:7px"><i style="width:${pct}%;background:var(--${val>=meta?'green':tone})"></i></div></div>`;};
       return `<div class="card card-p" style="margin-bottom:16px">
         <div class="card-h"><div class="card-t">🎯 Mi desempeño y metas (OKRs)</div><span class="muted" style="font-size:11px">para mejorar y acceder a más visitas</span></div>
-        <div class="grid g4" style="margin-bottom:14px">
-          ${ui.kpi('Efectividad',efect+'%',efect>=85?'g':'a','realizadas/asignadas')}
-          ${ui.kpi('Cuest. completos',cuestOk+'%',cuestOk>=90?'g':'a')}
-          ${ui.kpi('Envíos a tiempo',aTiempo+'%',aTiempo>=90?'g':'a')}
-          ${ui.kpi('Calificación',s.rating?('★ '+s.rating):'—','p')}
+        <div class="grid g4" style="margin-bottom:14px" id="okrKpis">
+          <div data-ok="efect" style="cursor:pointer">${ui.kpi('Efectividad',efect+'%',efect>=85?'g':'a','realizadas/asignadas')}</div>
+          <div data-ok="cuest" style="cursor:pointer">${ui.kpi('Cuest. completos',cuestOk+'%',cuestOk>=90?'g':'a')}</div>
+          <div data-ok="atiempo" style="cursor:pointer">${ui.kpi('Envíos a tiempo',aTiempo+'%',aTiempo>=90?'g':'a')}</div>
+          <div data-ok="rating" style="cursor:pointer">${ui.kpi('Calificación',s.rating?('★ '+s.rating):'—','p')}</div>
         </div>
         ${okr('Efectividad de visitas',efect,90,'amber','%')}
         ${okr('Cuestionarios completados',cuestOk,95,'amber','%')}

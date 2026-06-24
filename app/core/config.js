@@ -124,7 +124,7 @@ CX.MODULES = {
   // Comercial / consultora (CRM + marketing) — roadmap del ecosistema
   costos:        { icon:'🧮', label:'Costos & Propuestas',  roles:['admin'],           status:'ready' },
   crm:           { icon:'🤝', label:'CRM Comercial',         roles:['admin'],           status:'ready' },
-  marketing:     { icon:'📣', label:'Marketing & Contenidos',roles:['admin'],           status:'soon' },
+  marketing:     { icon:'📣', label:'Marketing & Contenidos',roles:['admin'],           status:'ready' },
   // Portal Estratégico del Cliente final (marca evaluada)
   cli_dashboard:   { icon:'📈', label:'Panorama',             roles:['cliente'], status:'ready' },
   cli_sucursales:  { icon:'🏬', label:'Sucursales & Score',   roles:['cliente'], status:'ready' },

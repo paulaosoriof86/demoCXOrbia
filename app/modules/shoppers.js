@@ -23,11 +23,11 @@ CX.module('shoppers', ({data,ui})=>{
     const L=list();
     return `
     ${ui.ph('Shoppers / Auditores', data.project().name+' · red de evaluadores y calificación')}
-    <div class="grid g4" style="margin-bottom:16px">
-      ${ui.kpi('En este proyecto',L.length,'b')}
-      ${ui.kpi('Activos',L.filter(s=>s.estado!=='Pendiente').length,'g')}
-      ${ui.kpi('Perfiles incompletos',L.filter(s=>!s.perfilCompleto).length,'a')}
-      ${ui.kpi('Preferentes',L.filter(s=>s.honorarioPref==='Preferente').length,'p')}
+    <div class="grid g4" style="margin-bottom:16px" id="shTopKpis">
+      <div data-tk="all" style="cursor:pointer">${ui.kpi('En este proyecto',L.length,'b')}</div>
+      <div data-tk="act" style="cursor:pointer">${ui.kpi('Activos',L.filter(s=>s.estado!=='Pendiente').length,'g')}</div>
+      <div data-tk="incom" style="cursor:pointer">${ui.kpi('Perfiles incompletos',L.filter(s=>!s.perfilCompleto).length,'a')}</div>
+      <div data-tk="pref" style="cursor:pointer">${ui.kpi('Preferentes',L.filter(s=>s.honorarioPref==='Preferente').length,'p')}</div>
     </div>
     <div class="card card-p">
       <div class="card-h">
@@ -206,7 +206,11 @@ CX.module('shoppers', ({data,ui})=>{
       const s=data.getShopper(tr.dataset.sid); if(s)profileModal(s);
     }));
     bindRows();
-    // abrir perfil completo si se viene de otra sección (Dashboard/Postulaciones)
+    // KPIs superiores clickeables → lista filtrada de shoppers
+    const tkMap={all:['Shoppers del proyecto',()=>true],act:['Shoppers activos',s=>s.estado!=='Pendiente'],incom:['Perfiles incompletos',s=>!s.perfilCompleto],pref:['Honorario preferente',s=>s.honorarioPref==='Preferente']};
+    document.querySelectorAll('#shTopKpis [data-tk]').forEach(el=>el.addEventListener('click',()=>{const d=tkMap[el.dataset.tk];const arr=L.filter(d[1]);
+      ui.modal(d[0]+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Ciudad</th><th>Rating</th><th>Estado</th></tr></thead><tbody>${arr.map(s=>`<tr class="hov" data-pk="${s.id}" style="cursor:pointer"><td><b>${s.nombre}</b><div style="font-size:10px;color:var(--t3)">${s.code}</div></td><td style="font-size:12px">${s.ciudad||CX.paisName(s.pais)}</td><td style="font-weight:700;color:var(--amber)">★ ${s.rating||'—'}</td><td>${ui.bdg(s.estado||'—',s.estado==='Pendiente'?'a':'g')}</td></tr>`).join('')}</tbody></table>`:ui.empty('👥','Sin shoppers en esta categoría.'),{onMount:(ov,close)=>ov.querySelectorAll('[data-pk]').forEach(tr=>tr.addEventListener('click',()=>{close();const s=data.getShopper(tr.dataset.pk);if(s)profileModal(s);}))});
+    }));
     if(CX.session._focusShopper){ const fs=data.getShopper(CX.session._focusShopper); CX.session._focusShopper=null; if(fs)setTimeout(()=>profileModal(fs),120); }
     // buscador
     const search=document.getElementById('shSearch');

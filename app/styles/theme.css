@@ -77,6 +77,30 @@ a{color:inherit;text-decoration:none}
 @media(max-width:1100px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:680px){.g2,.g3,.g4{grid-template-columns:1fr}}
 
+/* ---------- Repaso responsive móvil (vista shopper de campo + admin) ---------- */
+@media(max-width:860px){
+  .content{padding:18px 14px 70px}
+  .topbar{padding:10px 14px}
+  /* grids de 5 columnas (estado operativo, fases, avance) → 2 col en móvil */
+  .grid[style*="repeat(5"]{grid-template-columns:repeat(2,1fr)!important}
+  .grid[style*="repeat(4"]{grid-template-columns:repeat(2,1fr)!important}
+  .grid[style*="repeat(3"]{grid-template-columns:repeat(2,1fr)!important}
+  /* tablas anchas: scroll horizontal suave */
+  .tbl{display:block;overflow-x:auto;white-space:nowrap}
+  /* modales ocupan casi toda la pantalla */
+  .cx-ov .cx-modal,.cx-ov>div{max-width:96vw!important}
+  /* placeholders y títulos más compactos */
+  .ph-t,h1{font-size:22px!important}
+}
+@media(max-width:520px){
+  .grid[style*="repeat(5"],.grid[style*="repeat(4"],.grid[style*="repeat(3"]{grid-template-columns:1fr!important}
+  .kpi{padding:11px 13px}
+  .kpi .k-v{font-size:20px}
+  /* filtros y barras de acción se apilan */
+  .flex.wrap{gap:6px}
+  .btn{font-size:12px}
+}
+
 /* ---------- KPI tiles ---------- */
 .kpi{background:#fff;border:1px solid var(--border);border-left-width:3px;border-radius:12px;padding:14px 16px;cursor:default;transition:.16s;box-shadow:var(--sh-sm)}
 .kpi:hover{box-shadow:var(--sh);transform:translateY(-1px)}

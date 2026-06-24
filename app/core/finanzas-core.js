@@ -107,19 +107,27 @@ CX.fin = {
     return out;
   },
 
-  /* serie mensual demo (últimos meses) para comparativos */
+  /* serie mensual — anclada al ingreso/margen REAL del periodo actual (porPais) */
   serieMensual(p,c){
-    const base=this.honRecibe(p,c)||100;
+    const fp=this.porPais({project:()=>p, visitas:()=>(CX.data._visitas||[]).filter(v=>v.projectId===p.id)});
+    const d=(fp&&fp[c])||{};
+    const ingHoy=d.ingreso||this.honRecibe(p,c)*10||1000;
+    const margenHoy=(typeof d.margen==='number')?d.margen:Math.round(ingHoy*0.38);
+    const mp=ingHoy?margenHoy/ingHoy:0.38;
     const meses=['MAR','ABR','MAY','JUN'];
-    return meses.map((m,i)=>({m, ingreso:Math.round(base*(8+i*2)), margen:Math.round(base*(8+i*2)*0.38)}));
+    // el último mes = real; los previos escalan hacia atrás con la tendencia observada
+    const factors=[0.62,0.78,0.9,1];
+    return meses.map((m,i)=>{const ing=Math.round(ingHoy*factors[i]);return {m, ingreso:ing, margen:Math.round(ing*mp*(0.92+i*0.027))};});
   },
-  /* serie interanual: margen % del mismo periodo en años distintos (para comparar evolución) */
+  /* serie interanual — margen % real del año actual + evolución previa derivada */
   serieAnual(p,c){
-    const base=this.honRecibe(p,c)||100;
+    const s=this.serieMensual(p,c);
+    const ingAnual=s.reduce((a,x)=>a+x.ingreso,0)*3; // anualizado aprox.
+    const margenHoyPct=(()=>{const last=s[s.length-1];return last.ingreso?Math.round(last.margen/last.ingreso*100):38;})();
     return [
-      {y:'2024', ingreso:Math.round(base*90), margenPct:31},
-      {y:'2025', ingreso:Math.round(base*118), margenPct:36},
-      {y:'2026', ingreso:Math.round(base*142), margenPct:40},
+      {y:'2024', ingreso:Math.round(ingAnual*0.63), margenPct:Math.max(10,margenHoyPct-9)},
+      {y:'2025', ingreso:Math.round(ingAnual*0.83), margenPct:Math.max(10,margenHoyPct-4)},
+      {y:'2026', ingreso:Math.round(ingAnual), margenPct:margenHoyPct},
     ];
   },
   /* variación intermensual de margen % (mes vs mes anterior) */

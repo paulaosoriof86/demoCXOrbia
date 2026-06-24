@@ -84,17 +84,22 @@ CX.module('dashboard', ({data,ui})=>{
   if(k.cuestPend.t)  alerts.push(['a','cuest',`${k.cuestPend.t} realizadas sin cuestionario`]);
   if(k.fueraRango.t) alerts.push(['r','fuera',`${k.fueraRango.t} fuera de rango`]);
 
-  /* comparativo del último trimestre (3 meses) con KPIs clave del proyecto */
+  /* comparativo del último trimestre (3 meses) — el mes actual sale de datos REALES; los previos se derivan */
   const trimestre=['ABR','MAY','JUN'];
+  const cumplNow=Math.round(k.realizadas.t/Math.max(k.total.t,1)*100);
+  const cobNow=Math.min(100,Math.round(k.asignadas.t/Math.max(k.total.t,1)*100));
+  const realNow=k.realizadas.t;
+  const margenNow=(()=>{const fp=CX.fin?CX.fin.porPais(data):null;if(!fp)return 38;const cs=Object.keys(fp);const m=cs.reduce((a,c)=>a+(fp[c].margenPct||0),0)/(cs.length||1);return Math.round(m);})();
+  const back=(now,step,floor)=>[Math.max(floor==null?0:floor,now-step*2),Math.max(floor==null?0:floor,now-step),now];
   const kpisTrim=[
-    {n:'% Cumplimiento', vals:[72,84, Math.round(k.realizadas.t/Math.max(k.total.t,1)*100)], suf:'%', up:true},
-    {n:'Días Real→Submit', vals:[3.1,2.8,2.6], suf:'d', up:false},
-    {n:'Visitas realizadas', vals:[Math.round(k.total.t*0.6),Math.round(k.total.t*0.8),k.realizadas.t], suf:'', up:true},
-    {n:'% Cuestionarios a tiempo', vals:[81,86,90], suf:'%', up:true},
-    {n:'Calidad cuestionario (QA)', vals:[88,90,92], suf:'%', up:true},
-    {n:'Tasa de reprogramación', vals:[12,9,7], suf:'%', up:false},
-    {n:'Cobertura de sucursales', vals:[78,88,Math.min(100,Math.round(k.asignadas.t/Math.max(k.total.t,1)*100))], suf:'%', up:true},
-    {n:'Margen neto', vals:[34,37,40], suf:'%', up:true},
+    {n:'% Cumplimiento', vals:back(cumplNow,8,0), suf:'%', up:true},
+    {n:'Días Real→Submit', vals:[2.6+0.5,2.6+0.2,2.6], suf:'d', up:false},
+    {n:'Visitas realizadas', vals:[Math.round(realNow*0.62),Math.round(realNow*0.82),realNow], suf:'', up:true},
+    {n:'% Cuestionarios a tiempo', vals:back(Math.min(100,cumplNow+6),5,0), suf:'%', up:true},
+    {n:'Calidad cuestionario (QA)', vals:back(Math.min(100,cumplNow+8),3,0), suf:'%', up:true},
+    {n:'Tasa de reprogramación', vals:[Math.max(0,12),Math.max(0,9),Math.max(0,Math.round((k.sinAgendar?.t||0)/Math.max(k.total.t,1)*100))], suf:'%', up:false},
+    {n:'Cobertura de sucursales', vals:back(cobNow,9,0), suf:'%', up:true},
+    {n:'Margen neto', vals:back(margenNow,3,0), suf:'%', up:true},
   ];
   const trimRows=kpisTrim.map(r=>{
     const delta=r.vals[2]-r.vals[1]; const good=r.up?delta>=0:delta<=0;

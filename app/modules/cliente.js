@@ -151,6 +151,12 @@ CX.module('cli_dashboard', ({ui})=>{
 
   setTimeout(()=>{ CX.cliUI.wirePersona();
     document.querySelectorAll('[data-suc]').forEach(el=>el.addEventListener('click',()=>{const s=C.sucursales(p).find(x=>x.id===el.dataset.suc); if(s)CX.cliUI.branchModal(s);}));
+    const sucList=(arr,title)=>ui.modal(title+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Región</th><th>Score</th><th>Δ</th></tr></thead><tbody>${arr.map(s=>`<tr class="hov" data-sk="${s.id}" style="cursor:pointer"><td><b>${s.name}</b></td><td style="font-size:12px">${s.region}</td><td>${CX.cliUI.pill(s.score)}</td><td>${CX.cliUI.delta(s.delta)}</td></tr>`).join('')}</tbody></table>`:CX.ui.empty('🏪','Sin sucursales en esta categoría.'),{onMount:(ov,close)=>ov.querySelectorAll('[data-sk]').forEach(tr=>tr.addEventListener('click',()=>{close();const s=C.sucursales(p).find(x=>x.id===tr.dataset.sk);if(s)CX.cliUI.branchModal(s);}))});
+    const ckMap={nps:()=>ui.modal('NPS de marca',`<p style="font-size:13px;color:var(--t2);line-height:1.7">El NPS (${R.nps}) resume la propensión a recomendar derivada de los cuestionarios. Sube cuando cierras brechas en las secciones débiles y reduces sucursales críticas.</p>`),
+      exc:()=>sucList(list.filter(s=>s.score>=85),'Sucursales excelentes'),
+      crit:()=>sucList(list.filter(s=>s.score<70),'Sucursales críticas'),
+      mej:()=>sucList(list.filter(s=>(s.delta||0)>0),'Sucursales mejorando')};
+    document.querySelectorAll('#cliKpis [data-ck]').forEach(el=>el.addEventListener('click',()=>ckMap[el.dataset.ck]&&ckMap[el.dataset.ck]()));
     const rr=C.realResults(p);
     const liveEl=document.getElementById('cliLive'); if(liveEl&&rr.count) liveEl.addEventListener('click',()=>{
       ui.modal('Resultados en vivo de operación ('+rr.count+')', `<table class="tbl"><thead><tr><th>Sucursal</th><th>Evaluador</th><th>Score</th></tr></thead><tbody>${rr.visitas.map(v=>`<tr><td><b style="font-size:12.5px">${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.shopper||'—'}</td><td>${CX.cliUI.pill(v.score)}</td></tr>`).join('')}</tbody></table>`);
@@ -179,11 +185,11 @@ CX.module('cli_dashboard', ({ui})=>{
           <div style="font-size:13px;color:var(--t2);margin-top:4px">${R.n} sucursales · ${R.visitas} visitas</div>
           <div style="margin-top:8px">${CX.cliUI.pill(R.score)}</div></div>
       </div>
-      <div class="grid g2" style="flex:2;min-width:300px;gap:12px">
-        ${ui.kpi('NPS de marca',R.nps,'p')}
-        ${ui.kpi('Excelentes',R.excelentes,'g','score ≥ 85')}
-        ${ui.kpi('Sucursales críticas',R.criticas,'r','score < 70')}
-        ${ui.kpi('Mejorando',R.mejora,'b','vs. periodo previo')}
+      <div class="grid g2" style="flex:2;min-width:300px;gap:12px" id="cliKpis">
+        <div data-ck="nps" style="cursor:pointer">${ui.kpi('NPS de marca',R.nps,'p')}</div>
+        <div data-ck="exc" style="cursor:pointer">${ui.kpi('Excelentes',R.excelentes,'g','score ≥ 85')}</div>
+        <div data-ck="crit" style="cursor:pointer">${ui.kpi('Sucursales críticas',R.criticas,'r','score < 70')}</div>
+        <div data-ck="mej" style="cursor:pointer">${ui.kpi('Mejorando',R.mejora,'b','vs. periodo previo')}</div>
       </div>
     </div>
     <div class="grid g2" style="gap:16px;margin-bottom:16px">
