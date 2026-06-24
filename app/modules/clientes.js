@@ -91,7 +91,7 @@ CX.module('clientes', ({data,ui})=>{
     const estOpts=['Activo','Prospecto','Pausado','Inactivo'].map(e=>`<option ${e===c.estado?'selected':''}>${e}</option>`).join('');
     return `<div class="grid g2" style="gap:12px 14px">
       <div style="grid-column:1/3"><label class="lbl">Nombre del cliente</label><input class="inp" id="cl_name" value="${c.name||''}"></div>
-      <div style="grid-column:1/3"><label class="lbl">Industria / rubro</label><input class="inp" id="cl_ind" value="${c.industry||''}" placeholder="Ej. Retail · Cadena de tiendas"></div>
+      <div style="grid-column:1/3"><label class="lbl">Industria / rubro</label><select class="sel" id="cl_ind">${CX.RUBROS.map(r=>`<option ${r===c.industry?'selected':''}>${r}</option>`).join('')}${CX.RUBROS.includes(c.industry)?'':`<option selected>${c.industry||''}</option>`}</select></div>
       <div><label class="lbl">País principal</label><select class="sel" id="cl_pais">${paisOpts}</select></div>
       <div><label class="lbl">Estado</label><select class="sel" id="cl_est">${estOpts}</select></div>
       <div><label class="lbl">Plan contratado</label><select class="sel" id="cl_plan">${planOpts}</select></div>
@@ -160,7 +160,7 @@ CX.module('clientes', ({data,ui})=>{
     ui.modal('Nuevo cliente', `
       <div class="grid g2" style="gap:12px 14px">
         <div style="grid-column:1/3"><label class="lbl">Nombre del cliente <b style="color:var(--accent)">*</b></label><input class="inp" id="nc_name" placeholder="Empresa / marca"></div>
-        <div style="grid-column:1/3"><label class="lbl">Industria / rubro</label><input class="inp" id="nc_ind" placeholder="Ej. Banca · Red de agencias"></div>
+        <div style="grid-column:1/3"><label class="lbl">Industria / rubro</label><select class="sel" id="nc_ind">${CX.RUBROS.map(r=>`<option>${r}</option>`).join('')}</select></div>
         <div><label class="lbl">País principal</label><select class="sel" id="nc_pais">${paisOpts}</select></div>
         <div><label class="lbl">Plan</label><select class="sel" id="nc_plan">${planOpts}</select></div>
         <div style="grid-column:1/3"><label class="lbl">Contacto principal (opcional)</label><input class="inp" id="nc_ct" placeholder="Nombre · rol · correo"></div>

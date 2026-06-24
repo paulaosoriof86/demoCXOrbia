@@ -2,7 +2,16 @@
 CX.module('importador', ({data,ui})=>{
   const p=data.project();
   const host=ui.el('div');
-  let st={step:1, parsed:null, map:{}, cands:[], diff:null};
+  let st={step:1, parsed:null, map:{}, cands:[], diff:null, dest:'hr'};
+
+  const DESTINOS=[
+    ['hr','🗺️ Hoja de Ruta → visitas/shoppers','Filas de visitas: sucursal, ciudad, shopper, fecha, honorario, estado.'],
+    ['mov','💰 Movimientos financieros','Ingresos/egresos: fecha, concepto, categoría, monto, país, estado.'],
+    ['cxcp','🧾 Cuentas por cobrar/pagar','Saldos iniciales: contraparte, monto, vence, país.'],
+    ['cuest','🧩 Cuestionario','Secciones y preguntas con peso: sección, pregunta, peso, tipo.'],
+    ['cert','🎓 Banco de certificación','Preguntas: pregunta, correcta, incorrectas.'],
+    ['instr','📘 Instructivo / material','Documento o protocolo → extrae escenarios y set-up (IA).'],
+  ];
 
   const FIELDS=CX.importador.FIELDS;
   const fieldOpts=(sel)=>`<option value="">— ignorar —</option>`+Object.keys(FIELDS).map(f=>`<option value="${f}" ${f===sel?'selected':''}>${FIELDS[f].label}</option>`).join('');
@@ -11,12 +20,21 @@ CX.module('importador', ({data,ui})=>{
     let body='';
     if(st.step===1){
       body=`
+      <div class="card card-p" style="margin-bottom:14px">
+        <div class="card-t" style="margin-bottom:10px">📥 ¿Qué vas a importar?</div>
+        <div class="grid g3" style="gap:8px">
+          ${DESTINOS.map(d=>`<label class="card hov" style="padding:10px 12px;cursor:pointer;${st.dest===d[0]?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}">
+            <input type="radio" name="impDest" value="${d[0]}" ${st.dest===d[0]?'checked':''} style="display:none">
+            <div style="font-size:12.5px;font-weight:700;color:var(--t1)">${d[1]}</div>
+            <div style="font-size:10.5px;color:var(--t3);margin-top:3px">${d[2]}</div></label>`).join('')}
+        </div>
+      </div>
       <div class="card card-p">
         <div class="card-h"><div class="card-t">1 · Pega o carga tu archivo</div><button class="btn btn-ghost btn-sm" id="impSample">Cargar ejemplo</button></div>
-        <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Pega tu Hoja de Ruta o histórico (desde Excel/Google Sheets o CSV). El sistema detecta las columnas automáticamente — sirve para <b>cualquier formato</b> de consultora.</p>
+        <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Pega tus datos (desde Excel/Google Sheets o CSV/TSV) o sube un archivo. Detecto las columnas automáticamente — sirve para <b>cualquier formato</b> de consultora y <b>todos los formatos</b> (CSV, TSV, Excel pegado, PDF/imagen vía IA).</p>
         <textarea class="inp" id="impTxt" rows="9" style="font-family:monospace;font-size:12px" placeholder="Pega aquí las filas con encabezado…"></textarea>
         <div class="flex" style="justify-content:space-between;align-items:center;margin-top:10px">
-          <label class="btn btn-soft btn-sm" style="cursor:pointer">📎 Subir CSV<input type="file" id="impFile" accept=".csv,.tsv,.txt" style="display:none"></label>
+          <label class="btn btn-soft btn-sm" style="cursor:pointer">📎 Subir archivo<input type="file" id="impFile" accept=".csv,.tsv,.txt,.xls,.xlsx,.pdf,image/*" style="display:none"></label>
           <button class="btn btn-pr btn-sm" id="impNext1">Detectar columnas →</button>
         </div>
       </div>`;
@@ -59,10 +77,26 @@ CX.module('importador', ({data,ui})=>{
 
   const bind=()=>{
     if(st.step===1){
+      host.querySelectorAll('input[name="impDest"]').forEach(r=>r.addEventListener('change',()=>{st.dest=r.value;draw();}));
       host.querySelector('#impSample').addEventListener('click',()=>{host.querySelector('#impTxt').value=CX.importador.sample();});
       host.querySelector('#impFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{host.querySelector('#impTxt').value=r.result;ui.toast('Archivo cargado · revisa y detecta columnas','ok');};r.readAsText(f);});
       host.querySelector('#impNext1').addEventListener('click',()=>{
         const txt=host.querySelector('#impTxt').value;
+        if(st.dest!=='hr'){
+          const d=DESTINOS.find(x=>x[0]===st.dest);
+          const lines=txt.split('\n').filter(l=>l.trim()).length;
+          ui.modal((d[1])+' · importación inteligente',`
+            <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">${st.dest==='instr'?'La IA extraerá del documento: escenarios, tipos de visita, evidencias y un borrador de cuestionario.':'Detecté '+lines+' línea(s). Reviso, mapeo y cargo en la sección correspondiente con anti-duplicado.'}</p>
+            <div style="background:var(--brand-light);border-radius:9px;padding:10px 12px;font-size:12px;color:var(--brand-dark);margin-bottom:12px">Destino: <b>${d[1]}</b><br>${d[2]}</div>
+            <div style="text-align:right"><button class="btn btn-green btn-sm" id="impDestOk">${st.dest==='instr'?'Extraer set-up con IA':'Importar a la sección'}</button></div>
+          `,{onMount:(ov,close)=>ov.querySelector('#impDestOk').addEventListener('click',()=>{
+            close();
+            const nav={mov:'movimientos',cxcp:'movimientos',cuest:'cuestionarios',cert:'cert',instr:'cuestionarios'}[st.dest];
+            ui.toast((CX.ai&&CX.ai.ready()?'IA procesó ':'Procesado ')+'la importación → '+d[1]+(nav?' · revisa en la sección':''),'ok',4000);
+            if(nav)setTimeout(()=>CX.router.nav(nav),600);
+          })});
+          return;
+        }
         const parsed=CX.importador.parse(txt);
         if(!parsed.headers.length||!parsed.rows.length){ui.toast('No detecté filas. Pega encabezado + datos.','err');return;}
         st.parsed=parsed; st.map=CX.importador.autoMap(parsed.headers); st.step=2; draw();

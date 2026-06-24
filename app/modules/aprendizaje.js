@@ -96,12 +96,32 @@ CX.module('aprendizaje', ({role,ui,data})=>{
     }
   };
 
+  const RES_BODY={
+    'Manual de inducción':'# Manual de inducción\n\nBienvenido al programa. Como evaluador incógnito tu rol es vivir la experiencia como un cliente real y reportarla con objetividad.\n\n## Principios\n- Anonimato absoluto: nunca reveles que evalúas.\n- Objetividad: reporta hechos, no opiniones.\n- Evidencia: respalda cada hallazgo según el escenario.\n\n## Tu ciclo\n1. Certifícate en el proyecto.\n2. Agenda y realiza la visita.\n3. Completa el cuestionario el mismo día.',
+    'Bienvenida (4 min)':'',
+    'Protocolo paso a paso':'# Protocolo de compra incógnita\n\n## Antes\n- Memoriza el escenario y los puntos a observar.\n- Prepara medios de pago y cámara.\n\n## Durante\n- Cronometra desde que ingresas.\n- Observa saludo, asesoría, tiempos y limpieza.\n- Captura la evidencia sin ser detectado.\n\n## Después\n- Registra incidencias de inmediato.\n- Completa el cuestionario y adjunta comprobantes.',
+    'Guía de evidencias':'# Evidencia y fotografía\n\n## Tipos válidos\n- Foto normal (producto, ambiente).\n- Foto geolocalizada (cuando el escenario lo pide).\n- Audio/video solo si está autorizado en el instructivo.\n\n## Reglas\n- No expongas tu rol al capturar.\n- Conserva ticket/comprobante para el reembolso.',
+  };
+  const resViewer=(r)=>{
+    let body;
+    if(r.t==='link'&&r.url){ body=`<div style="text-align:center;padding:20px"><div style="font-size:34px">🔗</div><div style="font-size:13px;color:var(--t2);margin:10px 0">${r.n}</div><a href="${r.url}" target="_blank" class="btn btn-pr btn-sm">Abrir enlace ↗</a></div>`; }
+    else if(r.t==='info'){ body=`<div style="background:linear-gradient(135deg,var(--brand-light),#fff);border:1px solid var(--border);border-radius:12px;padding:26px;text-align:center"><div style="font-size:40px">🖼️</div><div style="font-size:14px;font-weight:700;color:var(--t1);margin-top:8px">${r.n}</div><div style="font-size:12px;color:var(--t3);margin-top:6px">Infografía del programa — vista dentro de la plataforma.</div></div>`; }
+    else { const txt=r.body||RES_BODY[r.n]||'Vista previa no disponible para este recurso; usa Descargar para obtener el archivo.';
+      body=`<div style="background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;max-height:60vh;overflow:auto">${txt.split('\n').map(l=>{
+        if(l.startsWith('## ')) return `<div style="font-size:14px;font-weight:800;color:var(--t1);margin:12px 0 4px">${l.slice(3)}</div>`;
+        if(l.startsWith('# ')) return `<div style="font-size:17px;font-weight:800;color:var(--t1);margin-bottom:8px">${l.slice(2)}</div>`;
+        if(l.startsWith('- ')||/^\d+\./.test(l)) return `<div style="font-size:13px;color:var(--t2);padding-left:14px;line-height:1.6">• ${l.replace(/^(-|\d+\.)\s*/,'')}</div>`;
+        return l.trim()?`<div style="font-size:13px;color:var(--t2);line-height:1.6;margin:3px 0">${l}</div>`:'<div style="height:6px"></div>';
+      }).join('')}</div>`; }
+    ui.modal(({doc:'📄',link:'🔗',info:'🖼️'}[r.t]||'📎')+' '+r.n, body+`<div style="text-align:right;margin-top:14px"><button class="btn btn-soft btn-sm" onclick="CX.ui.toast('Descargando ${(r.n||'').replace(/'/g,'')}…','ok')">⤓ Descargar</button></div>`);
+  };
+
   const openCourse=(c)=>{ if(!c)return; const v=CX.learnStore.prog(sid,pid)[c.id]||0;
     const resHTML=c.recursos.map((r,idx)=>{
       const ic=({doc:'📄',video:'🎬',link:'🔗',info:'🖼️',quiz:'❓'})[r.t]||'📎';
       const embed=(r.t==='video'&&r.url)?`<div style="margin-top:6px;position:relative"><iframe src="${r.url}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px" allowfullscreen></iframe><button class="btn btn-soft btn-sm vidMax" data-url="${r.url}" data-n="${(r.n||'').replace(/"/g,'&quot;')}" style="position:absolute;top:8px;right:8px">⛶</button></div>`:'';
-      const link=(r.url&&r.t!=='video')?` · <a href="${r.url}" target="_blank" style="color:var(--brand)">abrir ↗</a>`:'';
-      return `<div style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div class="between"><span style="font-size:12.5px">${ic} ${r.n}${link}</span>${isAdmin?`<button class="btn btn-ghost btn-sm" data-delres="${idx}" style="color:var(--red);padding:1px 7px">✕</button>`:''}</div>${embed}</div>`;
+      const clickable=(r.t!=='video');
+      return `<div style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div class="between"><span style="font-size:12.5px;${clickable?'cursor:pointer':''}" ${clickable?`data-openres="${idx}"`:''}>${ic} ${r.n}${clickable?' <span style="color:var(--brand);font-size:11px">abrir →</span>':''}</span>${isAdmin?`<button class="btn btn-ghost btn-sm" data-delres="${idx}" style="color:var(--red);padding:1px 7px">✕</button>`:''}</div>${embed}</div>`;
     }).join('');
     ui.modal((c.ic||'')+' '+c.titulo, `
       <div style="font-size:12.5px;color:var(--t2);margin-bottom:12px;white-space:pre-wrap">${c.desc||''}</div>
@@ -113,6 +133,8 @@ CX.module('aprendizaje', ({role,ui,data})=>{
         <div class="between" style="margin-top:6px"><span style="font-size:12px;color:var(--t3)" id="ocPct">${v}%</span>
         ${c.quiz.length?`<button class="btn btn-pr btn-sm" id="ocExam">Rendir examen (${c.quiz.length})</button>`:`<button class="btn btn-green btn-sm" id="ocDone">Marcar completado</button>`}</div>`}
     `,{onMount:(ov,close)=>{
+      // recursos clickeables (doc/info/link) — visor in-app + descarga
+      ov.querySelectorAll('[data-openres]').forEach(el=>el.addEventListener('click',()=>{ const r=c.recursos[+el.dataset.openres]; if(!r)return; resViewer(r); }));
       if(isAdmin){
         ov.querySelector('#ocRes').addEventListener('click',()=>{close();addResourceModal(c);});
         ov.querySelector('#ocQuiz').addEventListener('click',()=>{close();addQuizModal(c);});

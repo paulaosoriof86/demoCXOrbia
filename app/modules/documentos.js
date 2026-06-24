@@ -33,8 +33,14 @@ CX.module('documentos', ({data,role,ui})=>{
     ui.modal((d.ic||'📄')+' '+d.n, body+`<div class="between" style="margin-top:14px"><button class="btn btn-ghost btn-sm" id="docMax">⛶ Maximizar</button><button class="btn btn-soft btn-sm" onclick="CX.ui.toast('Descargando ${d.n}…','ok')">⤓ Descargar</button></div>`,{onMount:(ov,close)=>{
       ov.querySelector('#docMax').addEventListener('click',()=>{
         close();
-        const fs=document.createElement('div'); fs.className='cx-ov'; fs.style.cssText='position:fixed;inset:0;z-index:200;background:rgba(13,39,64,.92);display:flex;flex-direction:column;padding:24px';
-        fs.innerHTML=`<div class="between" style="margin-bottom:14px"><b style="color:#fff;font-size:15px">${(d.ic||'📄')} ${d.n}</b><button class="btn btn-soft btn-sm" id="fsClose">✕ Cerrar</button></div><div style="flex:1;background:var(--panel);border-radius:12px;padding:18px;overflow:auto">${body}</div>`;
+        const isMedia = (d.tipo==='video'&&d.url) || (d.tipo==='image'&&d.url) || (d.url&&/^data:application\/pdf|\.pdf$/i.test(d.url));
+        let fsInner;
+        if(d.tipo==='video'&&d.url) fsInner=`<iframe src="${d.url}" style="width:100%;height:100%;border:0;border-radius:12px" allowfullscreen></iframe>`;
+        else if(d.tipo==='image'&&d.url) fsInner=`<img src="${d.url}" style="max-width:100%;max-height:100%;margin:auto;display:block;border-radius:12px">`;
+        else if(d.url&&/^data:application\/pdf|\.pdf$/i.test(d.url)) fsInner=`<iframe src="${d.url}" style="width:100%;height:100%;border:0;border-radius:12px"></iframe>`;
+        else fsInner=`<div style="background:var(--panel);border-radius:12px;padding:26px 30px;max-width:900px;margin:0 auto;height:100%;overflow:auto">${body}</div>`;
+        const fs=document.createElement('div'); fs.className='cx-ov'; fs.style.cssText='position:fixed;inset:0;z-index:200;background:rgba(13,39,64,.94);display:flex;flex-direction:column;padding:24px';
+        fs.innerHTML=`<div class="between" style="margin-bottom:14px"><b style="color:#fff;font-size:15px">${(d.ic||'📄')} ${d.n}</b><button class="btn btn-soft btn-sm" id="fsClose">✕ Cerrar</button></div><div style="flex:1;min-height:0;display:flex">${fsInner}</div>`;
         document.body.appendChild(fs); fs.querySelector('#fsClose').addEventListener('click',()=>fs.remove());
         fs.addEventListener('click',e=>{if(e.target===fs)fs.remove();});
       });

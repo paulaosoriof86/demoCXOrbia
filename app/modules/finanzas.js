@@ -37,18 +37,6 @@ CX.module('financiero', ({data,ui})=>{
       <span>Gastos fijos: <b style="color:var(--t2)">${d.cur} ${d.fijos.toLocaleString()}</b></span></div>
   </div>`;};
 
-  const compar=(c)=>{const s=CX.fin.serieMensual(p,c),cur=p.currency[c],max=Math.max(...s.map(x=>x.ingreso));
-    return `<div style="margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:8px">${c} · últimos meses (${cur})</div>
-      <div class="flex" style="align-items:flex-end;gap:10px;height:90px">
-      ${s.map(x=>`<div style="flex:1;text-align:center">
-        <div style="display:flex;flex-direction:column;justify-content:flex-end;height:70px;gap:2px">
-          <div title="margen" style="height:${Math.round(x.margen/max*68)}px;background:var(--green);border-radius:3px 3px 0 0;opacity:.85"></div>
-        </div>
-        <div style="background:var(--brand);height:${Math.round(x.ingreso/max*0)}px"></div>
-        <div style="font-size:10px;color:var(--t3);margin-top:4px">${x.m}</div>
-        <div style="font-size:10px;font-weight:700;color:var(--t1)">${(x.ingreso/1000).toFixed(0)}k</div></div>`).join('')}
-      </div></div>`;};
-
   /* motor de análisis crítico inteligente: deriva hallazgos/estrategias de los datos */
   const analizar=()=>{
     const H=[]; const M=(cur,n)=>`${cur} ${Number(Math.round(n)).toLocaleString('es-GT')}`;
@@ -99,9 +87,27 @@ CX.module('financiero', ({data,ui})=>{
 
   <div class="grid g2" style="margin-bottom:16px">
     <div class="card card-p">
-      <div class="card-h"><div class="card-t">📈 Comparativo mensual (ingreso · margen)</div></div>
-      ${p.countries.map(compar).join('')}
+      <div class="card-h"><div class="card-t">📈 Comparativo intermensual (margen %)</div><span class="muted" style="font-size:11px">mes vs mes anterior</span></div>
+      ${p.countries.map(c=>{const mom=CX.fin.margenMoM(p,c);return `<div style="margin-bottom:12px"><div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:8px">${CX.paisLabel(c)}</div>
+        <div class="flex" style="align-items:flex-end;gap:10px;height:84px">
+        ${mom.map(x=>`<div style="flex:1;text-align:center">
+          <div style="display:flex;flex-direction:column;justify-content:flex-end;height:60px"><div title="margen ${x.margenPct}%" style="height:${Math.round(x.margenPct/50*58)}px;background:var(--green);border-radius:3px 3px 0 0;opacity:.85"></div></div>
+          <div style="font-size:10px;color:var(--t3);margin-top:4px">${x.m}</div>
+          <div style="font-size:11px;font-weight:800;color:var(--t1)">${x.margenPct}%</div>
+          <div style="font-size:9.5px;font-weight:700;color:var(--${x.delta>=0?'green':'red'})">${x.delta>=0?'▲+'+x.delta:'▼'+x.delta}</div></div>`).join('')}
+        </div></div>`;}).join('')}
     </div>
+    <div class="card card-p">
+      <div class="card-h"><div class="card-t">📅 Comparativo interanual (margen %)</div><span class="muted" style="font-size:11px">evolución por año</span></div>
+      ${p.countries.map(c=>{const ya=CX.fin.serieAnual(p,c),cur=p.currency[c];return `<div style="margin-bottom:12px"><div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:8px">${CX.paisLabel(c)}</div>
+        ${ya.map((x,i)=>{const prev=i>0?ya[i-1].margenPct:x.margenPct;const d=x.margenPct-prev;return `<div class="between" style="padding:6px 0;border-bottom:1px solid var(--border-2)">
+          <span style="font-size:12.5px;font-weight:600">${x.y}</span>
+          <div class="flex" style="gap:10px"><span style="font-size:11.5px;color:var(--t3)">${cur} ${(x.ingreso/1000).toFixed(0)}k ing.</span>
+          <span style="font-size:12.5px;font-weight:800;color:var(--t1)">${x.margenPct}%</span>
+          <span style="font-size:10.5px;font-weight:700;color:var(--${d>=0?'green':'red'});min-width:34px;text-align:right">${i===0?'—':(d>=0?'▲+'+d:'▼'+d)}</span></div></div>`;}).join('')}</div>`;}).join('')}
+      <div style="margin-top:8px">${ui.aiBox('Margen interanual creciente (31%→36%→40%): la operación gana eficiencia. Vigila que la mezcla de país y los financiamientos no distorsionen el margen real.','Evolución del margen')}</div>
+    </div>
+  </div>
     <div class="card card-p" id="presCard">
       <div class="card-h"><div class="card-t">📋 Presupuesto de gastos fijos</div><button class="btn btn-soft btn-sm" id="addPres">＋ Rubro</button></div>
       <div id="presList"></div>
@@ -212,6 +218,7 @@ CX.module('movimientos', ({data,ui})=>{
       <button class="btn btn-soft btn-sm" data-new="egreso">＋ Egreso</button>
       <button class="btn btn-soft btn-sm" data-cuenta="cxc">＋ Cuenta por cobrar</button>
       <button class="btn btn-soft btn-sm" data-cuenta="cxp">＋ Cuenta por pagar</button>
+      <button class="btn btn-soft btn-sm" id="autoCxp">⚙️ Generar CxC/CxP automáticas</button>
       <button class="btn btn-soft btn-sm" data-new="remesa">＋ Remesa</button>
       ${!isG?`<button class="btn btn-pr btn-sm" id="payLote">💳 Pagar lote</button>`:''}
       <button class="btn btn-ghost btn-sm" id="impHist">⤒ Importar histórico</button>
@@ -326,6 +333,27 @@ CX.module('movimientos', ({data,ui})=>{
         CX.finStore.addMov(pid(),rec);close();draw();ui.toast('Movimiento registrado','ok');});}});
     }));
 
+    const acx=host.querySelector('#autoCxp');
+    if(acx)acx.addEventListener('click',()=>{
+      const liqPend=CX.liq.forProject(data).filter(l=>['validada','pendiente_submitir'].includes(l.estado));
+      const yaCxp=new Set(CX.finStore.cxp(pid()).map(r=>r.visitaId).filter(Boolean));
+      const nuevasCxp=liqPend.filter(l=>!yaCxp.has(l.visitaId));
+      // CxC: reembolsos del periodo no conciliados (85% conciliado en demo → 15% pendiente)
+      const cxcEst=p.countries.map(c=>{const d=fp[c];const pend=Math.round(d.reemb*0.15);return {c,cur:d.cur,monto:pend};}).filter(x=>x.monto>0);
+      ui.modal('⚙️ Generar CxC/CxP automáticas',`
+        <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Deriva cuentas automáticamente del histórico operativo. Revisa y confirma:</p>
+        <div class="card-t" style="font-size:12.5px;margin-bottom:6px">📤 Cuentas por pagar (liquidaciones pendientes no pagadas)</div>
+        ${nuevasCxp.length?`<table class="tbl" style="margin-bottom:12px"><tbody>${nuevasCxp.slice(0,8).map(l=>`<tr><td><b>${l.shopper}</b><div style="font-size:10px;color:var(--t3)">${l.sucursal}</div></td><td style="text-align:right;font-weight:700">${ui.money(l.moneda,l.total)}</td></tr>`).join('')}${nuevasCxp.length>8?`<tr><td colspan="2" style="font-size:11px;color:var(--t3);text-align:center">+${nuevasCxp.length-8} más</td></tr>`:''}</tbody></table>`:'<div class="muted" style="font-size:12px;margin-bottom:12px">Sin liquidaciones pendientes nuevas.</div>'}
+        <div class="card-t" style="font-size:12.5px;margin-bottom:6px">📥 Cuentas por cobrar (reembolsos no conciliados)</div>
+        ${cxcEst.length?`<table class="tbl" style="margin-bottom:12px"><tbody>${cxcEst.map(x=>`<tr><td><b>Reembolso pendiente · ${CX.paisLabel(x.c)}</b></td><td style="text-align:right;font-weight:700">${x.cur} ${x.monto.toLocaleString()}</td></tr>`).join('')}</tbody></table>`:'<div class="muted" style="font-size:12px;margin-bottom:12px">Reembolsos conciliados.</div>'}
+        <div style="background:var(--brand-light);border-radius:9px;padding:9px 12px;font-size:11.5px;color:var(--brand-dark);margin-bottom:12px">Las CxP por liquidación se cruzan automáticamente con el egreso cuando se pagan; las CxC se descargan al conciliar el reembolso.</div>
+        <div style="text-align:right"><button class="btn btn-green btn-sm" id="acxOk">Generar ${nuevasCxp.length+cxcEst.length} cuenta(s)</button></div>
+      `,{onMount:(ov,close)=>{ov.querySelector('#acxOk').addEventListener('click',()=>{
+        nuevasCxp.forEach(l=>CX.finStore.addCxp(pid(),{concepto:'Liquidación pendiente · '+l.shopper+' ('+l.sucursal+')',monto:l.total,pais:l.pais,origen:'liquidacion',visitaId:l.visitaId,auto:true}));
+        cxcEst.forEach(x=>CX.finStore.addCxc(pid(),{concepto:'Reembolso pendiente de conciliar · '+CX.paisLabel(x.c),monto:x.monto,pais:x.c,origen:'reembolso',auto:true}));
+        close();draw();ui.toast((nuevasCxp.length+cxcEst.length)+' cuenta(s) generadas automáticamente del histórico','ok',4000);
+      });}});
+    });
     host.querySelectorAll('[data-cuenta]').forEach(b=>b.addEventListener('click',()=>{
       const k=b.dataset.cuenta;
       ui.modal('Registrar cuenta por '+(k==='cxc'?'cobrar':'pagar'),`

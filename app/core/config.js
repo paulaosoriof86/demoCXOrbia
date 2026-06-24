@@ -123,7 +123,7 @@ CX.MODULES = {
   automatizaciones:{ icon:'⚡', label:'Automatizaciones',     roles:['admin'],           status:'ready' },
   // Comercial / consultora (CRM + marketing) — roadmap del ecosistema
   costos:        { icon:'🧮', label:'Costos & Propuestas',  roles:['admin'],           status:'ready' },
-  crm:           { icon:'🤝', label:'CRM Comercial',         roles:['admin'],           status:'soon' },
+  crm:           { icon:'🤝', label:'CRM Comercial',         roles:['admin'],           status:'ready' },
   marketing:     { icon:'📣', label:'Marketing & Contenidos',roles:['admin'],           status:'soon' },
   // Portal Estratégico del Cliente final (marca evaluada)
   cli_dashboard:   { icon:'📈', label:'Panorama',             roles:['cliente'], status:'ready' },
@@ -163,6 +163,9 @@ CX.CLIENTE_ROLES = [
   { id:'regional', label:'Gerente Regional',          scope:'region',   desc:'Su región' },
   { id:'sucursal', label:'Responsable de Sucursal',   scope:'sucursal', desc:'Su sucursal' },
 ];
+
+/* ---------- Catálogo de rubros/industrias (compartido: Clientes, Proyectos, CRM) ---------- */
+CX.RUBROS = ['Retail · Cadena de tiendas','Banca · Red de agencias','Restaurantes · Multimarca','Salud · Clínicas','Telecomunicaciones','Automotriz · Concesionarios','Seguros','Combustibles · Estaciones','Hotelería','Educación','Supermercados','Farmacias','Belleza & Cuidado personal','Electrodomésticos','Moda & Calzado','Aerolíneas & Turismo','Inmobiliario','Gimnasios & Fitness','Entretenimiento','Otra'];
 
 /* ---------- Catálogo de países + moneda (lista larga, no limitar) ---------- */
 CX.COUNTRIES = [

@@ -35,6 +35,7 @@ CX.module('cert', ({role,data,ui})=>{
     <div class="flex wrap" style="gap:8px;margin-bottom:14px">
       <button class="btn btn-pr btn-sm" id="certIA">🤖 Crear certificación con IA (desde instructivo)</button>
       <button class="btn btn-soft btn-sm" id="certImp">📥 Importar banco</button>
+      <button class="btn btn-soft btn-sm" id="certRecert">🔄 Solicitar re-certificación</button>
       <button class="btn btn-ghost btn-sm" id="certGate">⚙️ Gate y % mínimo</button>
     </div>
     <div class="grid g4" style="margin-bottom:16px" id="certKpis">
@@ -74,6 +75,33 @@ CX.module('cert', ({role,data,ui})=>{
     });}}));
     const imp=document.getElementById('certImp');
     if(imp)imp.addEventListener('click',()=>ui.modal('Importar banco de preguntas',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Sube tu banco (CSV/Excel) o pégalo. Formato: pregunta | opción correcta | opciones incorrectas.</p><input type="file" class="inp" style="padding:7px;margin-bottom:10px"><textarea class="inp" rows="4" placeholder="Pega aquí…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Banco importado (demo)','ok');this.closest('.cx-ov').remove()">Importar</button></div>`));
+    const recert=document.getElementById('certRecert');
+    if(recert)recert.addEventListener('click',()=>{
+      const shoppers=(data.shoppersFor?data.shoppersFor():data.shoppers).slice(0,40);
+      ui.modal('🔄 Solicitar re-certificación · '+p.name,`
+        <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Pide a tus evaluadores volver a certificarse (cambió el instructivo, nueva ronda, o por vencimiento). Su certificación pasa a <b>pendiente</b> y se les notifica.</p>
+        <label class="lbl">Alcance</label>
+        <select class="sel" id="rcScope" style="margin-bottom:10px"><option value="all">Todos los certificados del proyecto</option><option value="one">Un shopper específico</option></select>
+        <div id="rcOneWrap" style="display:none;margin-bottom:10px"><label class="lbl">Shopper</label><select class="sel" id="rcOne">${shoppers.map(s=>`<option value="${s.id}">${s.nombre} · ${s.code}</option>`).join('')}</select></div>
+        <div class="grid g2" style="gap:10px 12px;margin-bottom:10px">
+          <div><label class="lbl">Motivo</label><select class="sel" id="rcReason"><option>Actualización del instructivo</option><option>Nueva ronda / periodo</option><option>Vencimiento de certificación</option><option>Bajo desempeño</option></select></div>
+          <div><label class="lbl">Plazo (días)</label><input class="inp" id="rcDays" type="number" value="7"></div>
+        </div>
+        <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:14px"><input type="checkbox" id="rcNotif" checked> Notificar por WhatsApp/correo (Make) y en su panel</label>
+        <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rcOk">Solicitar re-certificación</button></div>
+      `,{onMount:(ov,close)=>{
+        const sc=ov.querySelector('#rcScope'); sc.addEventListener('change',()=>{ov.querySelector('#rcOneWrap').style.display=sc.value==='one'?'':'none';});
+        ov.querySelector('#rcOk').addEventListener('click',()=>{
+          const all=sc.value==='all'; const who=all?'todos los certificados':(data.getShopper(ov.querySelector('#rcOne').value)||{}).nombre||'el shopper';
+          const reason=ov.querySelector('#rcReason').value, days=ov.querySelector('#rcDays').value;
+          if(ov.querySelector('#rcNotif').checked){
+            CX.notif&&CX.notif.push({to:'shopper',tipo:'recert',icon:'🔄',tono:'a',titulo:'Re-certificación requerida',txt:p.name+' · '+reason+' · plazo '+days+' días',nav:'cert'});
+            CX.automations&&CX.automations.fire&&CX.automations.fire('recert',{proyecto:p.name,motivo:reason,plazo:days});
+          }
+          close(); ui.toast('Re-certificación solicitada a '+who+' · '+reason+' · plazo '+days+' días'+(ov.querySelector('#rcNotif').checked?' · notificados':''),'ok',4200);
+        });
+      }});
+    });
     const gate=document.getElementById('certGate');
     if(gate)gate.addEventListener('click',()=>ui.modal('Gate de certificación',`
       <label class="lbl">% mínimo para aprobar</label><input class="inp" id="gtMin" type="number" value="80" style="margin-bottom:10px">

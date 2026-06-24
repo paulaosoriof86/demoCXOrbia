@@ -182,8 +182,9 @@ CX.module('usuarios', ({ui})=>{
     {name:'Finanzas',email:'finanzas@demo.cxorbia',rol:'admin',activo:false},
   ]};
   const st=_uState;
-  const MODS=[['Operación','op'],['Finanzas','fin'],['Configuración','cfg'],['Portal Shopper','sh']];
-  const PERM={super:['op','fin','cfg','sh'],admin:['op','fin'],ops:['op'],shopper:['sh']};
+  const MODS=[['Operación','op'],['Finanzas','fin'],['Admin Proyecto','prj'],['Capacitación','cap'],['Configuración','cfg'],['Portal Shopper','sh'],['Comercial','com']];
+  if(!st.perm) st.perm={super:['op','fin','prj','cap','cfg','sh','com'],admin:['op','fin','prj','cap','com'],ops:['op','prj','cap'],shopper:['sh','cap']};
+  const PERM=st.perm;
   const rolColor={super:'p',admin:'b',ops:'t',shopper:'g'};
 
   const host=ui.el('div');
@@ -206,16 +207,21 @@ CX.module('usuarios', ({ui})=>{
       </tbody></table>
     </div>
     <div class="card card-p">
-      <div class="card-t" style="margin-bottom:12px">Matriz de acceso por rol</div>
-      <table class="tbl"><thead><tr><th>Rol</th>${MODS.map(m=>`<th style="text-align:center">${m[0]}</th>`).join('')}</tr></thead><tbody>
-      ${CX.ROLES.map(r=>`<tr><td>${ui.bdg(r.label,rolColor[r.id])}</td>${MODS.map(m=>`<td style="text-align:center">${PERM[r.id].includes(m[1])?'<span style="color:var(--green);font-weight:800">✓</span>':'<span style="color:var(--t3)">—</span>'}</td>`).join('')}</tr>`).join('')}
-      </tbody></table>
-      <div style="margin-top:14px">${ui.aiBox('La vista se segmenta automáticamente según el rol: el equipo operativo ve operación pero no finanzas. Requisito para vender multiempresa y a clientes con cumplimiento. En producción esto se valida también en el backend.','Gobierno y seguridad')}</div>
+      <div class="between" style="margin-bottom:12px"><div class="card-t">Matriz de acceso por rol <span class="muted" style="font-weight:500;font-size:11px">· editable</span></div><span class="bdg bdg-g" id="permSaved" style="display:none">✓ Guardado</span></div>
+      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Rol</th>${MODS.map(m=>`<th style="text-align:center">${m[0]}</th>`).join('')}</tr></thead><tbody>
+      ${CX.ROLES.map(r=>`<tr><td>${ui.bdg(r.label,rolColor[r.id])}</td>${MODS.map(m=>`<td style="text-align:center"><input type="checkbox" class="permChk" data-role="${r.id}" data-mod="${m[1]}" ${PERM[r.id]&&PERM[r.id].includes(m[1])?'checked':''} ${r.id==='super'?'disabled title="Super siempre tiene acceso total"':''}></td>`).join('')}</tr>`).join('')}
+      </tbody></table></div>
+      <div style="margin-top:14px">${ui.aiBox('Marca/desmarca el acceso de cada rol a cada módulo — la vista se segmenta automáticamente. El rol Super conserva acceso total. Requisito para vender multiempresa y a clientes con cumplimiento; en producción se valida también en el backend.','Gobierno y seguridad · autoadministrable')}</div>
     </div>`;
     host.querySelectorAll('[data-ui]').forEach(tr=>{const i=+tr.dataset.ui;
       tr.querySelector('[data-rol]').addEventListener('change',e=>{st.users[i].rol=e.target.value;ui.toast('Rol actualizado','ok');draw();});
       tr.querySelector('[data-act]').addEventListener('change',e=>{st.users[i].activo=e.target.checked;draw();});});
     host.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{st.users.splice(+b.dataset.rm,1);draw();ui.toast('Usuario eliminado','');}));
+    host.querySelectorAll('.permChk').forEach(c=>c.addEventListener('change',()=>{
+      const role=c.dataset.role, mod=c.dataset.mod; PERM[role]=PERM[role]||[];
+      if(c.checked){ if(!PERM[role].includes(mod))PERM[role].push(mod); } else { PERM[role]=PERM[role].filter(m=>m!==mod); }
+      const sv=host.querySelector('#permSaved'); if(sv){sv.style.display='';setTimeout(()=>sv.style.display='none',1500);}
+    }));
     host.querySelector('#addU').addEventListener('click',()=>ui.modal('Invitar usuario',`
       <div style="margin-bottom:12px"><label class="lbl">Nombre</label><input class="inp" id="nuName" placeholder="Nombre y apellido"></div>
       <div style="margin-bottom:12px"><label class="lbl">Correo</label><input class="inp" id="nuMail" placeholder="correo@empresa.com"></div>

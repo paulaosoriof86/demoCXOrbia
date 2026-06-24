@@ -113,4 +113,18 @@ CX.fin = {
     const meses=['MAR','ABR','MAY','JUN'];
     return meses.map((m,i)=>({m, ingreso:Math.round(base*(8+i*2)), margen:Math.round(base*(8+i*2)*0.38)}));
   },
+  /* serie interanual: margen % del mismo periodo en años distintos (para comparar evolución) */
+  serieAnual(p,c){
+    const base=this.honRecibe(p,c)||100;
+    return [
+      {y:'2024', ingreso:Math.round(base*90), margenPct:31},
+      {y:'2025', ingreso:Math.round(base*118), margenPct:36},
+      {y:'2026', ingreso:Math.round(base*142), margenPct:40},
+    ];
+  },
+  /* variación intermensual de margen % (mes vs mes anterior) */
+  margenMoM(p,c){
+    const s=this.serieMensual(p,c);
+    return s.map((x,i)=>{const pct=x.ingreso?Math.round(x.margen/x.ingreso*100):0;const prev=i>0?(s[i-1].ingreso?Math.round(s[i-1].margen/s[i-1].ingreso*100):0):pct;return {m:x.m,margenPct:pct,delta:pct-prev};});
+  },
 };
