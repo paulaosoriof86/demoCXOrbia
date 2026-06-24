@@ -44,12 +44,29 @@ CX.module('cuestionarios', ({data,ui})=>{
     return base.map(([name,weight,qs])=>({id:CX.programa.uid('sec'),name,weight,questions:qs.map((qn,i)=>({id:CX.programa.uid('q'),name:qn,tipo:'Escala 1–5',weight:Math.round(100/qs.length),req:i===0,critico:false}))}));
   }
   function aiModal(){
-    ui.modal('✨ Crear cuestionario con IA', `
-      <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Describe qué quieres evaluar o pega tu protocolo/manual de servicio. La IA propone secciones y preguntas ponderadas; luego editas.</p>
-      <textarea class="inp" id="aiTxt" rows="5" placeholder="Ej. Restaurante de comida rápida: evaluar bienvenida, toma de orden, sabor, tiempos y limpieza…"></textarea>
-      <div style="text-align:right;margin-top:12px"><button class="btn btn-green btn-sm" id="aiGo">Generar</button></div>`,
-    {onMount:(ov,close)=>{ ov.querySelector('#aiGo').addEventListener('click',()=>{ const secs=aiGenerate(ov.querySelector('#aiTxt').value);
-      ver().sections=secs; close(); draw(); ui.toast('IA generó '+secs.length+' secciones · ajusta pesos si hace falta','ok',3200); }); }});
+    const CRIT=CX.programa.CRITERIOS;
+    ui.modal('🤖 Set-up inteligente desde instructivo', `
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Carga el <b>instructivo / protocolo de servicio</b> del cliente (o pégalo) y la IA propone secciones, preguntas ponderadas y evidencias. Asígnalo al <b>tipo de visita</b> que agrupa ciertas sucursales (marca, cadena, formato…).</p>
+      <input type="file" class="inp" id="aiFile" accept=".pdf,.doc,.docx,.txt,.csv,.xls,.xlsx,image/*" style="padding:7px;margin-bottom:8px">
+      <textarea class="inp" id="aiTxt" rows="4" placeholder="…o pega aquí el instructivo / protocolo / qué quieres evaluar" style="margin-bottom:10px"></textarea>
+      <div class="grid g2" style="gap:10px 12px;margin-bottom:6px">
+        <div><label class="lbl">Crear como versión</label><select class="sel" id="aiMode"><option value="new">Nueva versión (recomendado)</option><option value="replace">Reemplazar versión activa</option></select></div>
+        <div><label class="lbl">Aplica por</label><select class="sel" id="aiCrit">${CRIT.map(c=>`<option ${c==='Por tipo de tienda'?'selected':''}>${c}</option>`).join('')}</select></div>
+        <div style="grid-column:1/3"><label class="lbl">Tipo de visita / agrupador (ej. Marca X, Cadena Norte, Formato Express)</label><input class="inp" id="aiAplica" placeholder="A qué sucursales aplica este cuestionario"></div>
+      </div>
+      <div style="text-align:right;margin-top:10px"><button class="btn btn-green btn-sm" id="aiGo">Generar set-up</button></div>`,
+    {onMount:(ov,close)=>{
+      ov.querySelector('#aiFile').addEventListener('change',e=>{const f=e.target.files[0];if(f)ov.querySelector('#aiTxt').placeholder='Documento "'+f.name+'" cargado · la IA extraerá el contenido. Puedes añadir notas aquí.';});
+      ov.querySelector('#aiGo').addEventListener('click',()=>{ const file=ov.querySelector('#aiFile').files[0];
+        const secs=aiGenerate(ov.querySelector('#aiTxt').value+' '+(file?file.name:''));
+        const crit=ov.querySelector('#aiCrit').value, aplica=ov.querySelector('#aiAplica').value.trim();
+        if(ov.querySelector('#aiMode').value==='new'){
+          const v={id:CX.programa.uid('ver'),name:aplica?('Cuestionario · '+aplica):('Versión '+(_qProg.versions.length+1)),criterio:crit,aplica,sections:secs};
+          _qProg.versions.push(v); _qProg.activeId=v.id;
+        } else { const v=ver(); v.sections=secs; v.criterio=crit; if(aplica)v.aplica=aplica; }
+        close(); draw();
+        ui.toast((CX.ai&&CX.ai.ready()?'IA extrajo el set-up del instructivo':'Borrador generado (configura Gemini para extracción real)')+' · '+secs.length+' secciones'+(aplica?' · aplica a "'+aplica+'"':''),'ok',4200);
+      }); }});
   }
 
   const sync=()=>{

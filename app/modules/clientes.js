@@ -66,13 +66,15 @@ CX.module('clientes', ({data,ui})=>{
   const list=()=>data.clients;
   const planLabel=(k)=>(CX.PLANS[k]&&CX.PLANS[k].label)||k||'—';
 
-  const row=(c)=>{ const projs=data.projectsForClient(c.id);
+  const row=(c)=>{ const projs=data.projectsForClient(c.id); const st=data.clientStats?data.clientStats(c.id):{visitas:0,cumpl:0,score:0};
     return `<tr data-cid="${c.id}" style="cursor:pointer">
       <td><div class="flex"><div class="rail-av" style="width:30px;height:30px;font-size:11px;background:linear-gradient(135deg,var(--brand),var(--brand-dark))">${(c.name||'?').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase()}</div>
         <div><b>${c.name}</b><div style="font-size:11px;color:var(--t3)">${c.industry||'—'}</div></div></div></td>
       <td style="font-size:12px">${CX.paisLabel(c.pais)}</td>
       <td style="font-size:12px">${projs.length}</td>
-      <td>${ui.bdg(planLabel(c.plan),'b')}</td>
+      <td style="font-size:12px">${st.visitas||0}</td>
+      <td>${ui.bdg((st.cumpl||0)+'%',(st.cumpl||0)>=80?'g':(st.cumpl||0)>=50?'a':'r')}</td>
+      <td>${st.score?ui.bdg(st.score+'/100','p'):'<span class="muted">—</span>'}</td>
       <td>${ui.bdg(c.estado,estadoTone[c.estado]||'n')}</td>
     </tr>`; };
 
@@ -207,13 +209,13 @@ CX.module('clientes', ({data,ui})=>{
       <div data-k="total" style="cursor:pointer">${ui.kpi('Clientes',L.length,'b')}</div>
       <div data-k="activos" style="cursor:pointer">${ui.kpi('Activos',L.filter(c=>c.estado==='Activo').length,'g')}</div>
       <div data-k="prospectos" style="cursor:pointer">${ui.kpi('Prospectos',L.filter(c=>c.estado==='Prospecto').length,'a')}</div>
-      <div data-k="proyectos" style="cursor:pointer">${ui.kpi('Proyectos',data.projects.length,'p')}</div>
+      <div data-k="proyectos" style="cursor:pointer">${ui.kpi('Proyectos activos',data.projects.length,'p')}</div>
     </div>
     <div class="card card-p">
       <div class="card-h"><div class="card-t">Cartera de clientes</div>
         <div class="flex" style="gap:8px"><input class="inp" id="clSearch" placeholder="Buscar cliente, rubro, país…" style="width:230px"><button class="btn btn-pr btn-sm" id="clNew">+ Nuevo cliente</button></div></div>
-      <table class="tbl"><thead><tr><th>Cliente</th><th>País</th><th>Proyectos</th><th>Plan</th><th>Estado</th></tr></thead>
+      <table class="tbl"><thead><tr><th>Cliente</th><th>País</th><th>Proyectos</th><th>Visitas</th><th>Cumplimiento</th><th>Puntuación</th><th>Estado</th></tr></thead>
       <tbody id="clBody">${L.map(row).join('')}</tbody></table>
-      <div style="margin-top:14px">${ui.aiBox('Toca cualquier indicador o cliente para ver el detalle. Cada cliente agrupa sus proyectos, contactos y plan; abre un proyecto para activarlo en la operación.','Clientes clickeables')}</div>
+      <div style="margin-top:14px">${ui.aiBox('Cada fila es un <b>cliente de tu consultora</b> con su desempeño real (visitas, cumplimiento, puntuación). Toca un cliente para ver su historial, ranking de sucursales y contactos; abre un proyecto suyo para activarlo en la operación.','Administración de clientes, no venta de software')}</div>
     </div>`;
 });

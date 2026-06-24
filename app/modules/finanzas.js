@@ -388,13 +388,14 @@ CX.module('liquidaciones', ({data,ui})=>{
     }).join('');
 
     const lrow=(l,i)=>{const lb=CX.liq.label(l.estado); const inD=draft.includes(l.visitaId);
-      return `<tr data-li="${i}" style="${inD?'background:var(--brand-light)':''}"><td style="position:sticky;left:0;background:${inD?'#eaf4fc':'var(--surface)'};z-index:1">${l.estado==='validada'?(inD?`<button class="btn btn-soft btn-sm" data-rm="${l.visitaId}" style="padding:3px 9px;color:var(--red)">✕ Retirar</button>`:`<button class="btn btn-pr btn-sm" data-add="${l.visitaId}" style="padding:3px 10px">▶ Mover a lote</button>`):l.estado==='pendiente_cuestionario'?ui.bdg('espera shopper','n'):l.estado==='pagada'||l.estado==='liquidada'?ui.bdg('✓ pagada','g'):ui.bdg('—','n')}</td>
-        <td style="position:sticky;left:96px;background:${inD?'#eaf4fc':'var(--surface)'};z-index:1"><b>${l.shopper||'—'}</b><div style="font-size:10px;color:var(--t3)">${l.shopperCode||''}</div></td>
+      return `<tr data-li="${i}" style="${inD?'background:var(--brand-light)':''}"><td style="position:sticky;left:0;background:${inD?'#eaf4fc':'var(--panel)'};z-index:1">${l.estado==='validada'?(inD?`<button class="btn btn-soft btn-sm" data-rm="${l.visitaId}" style="padding:3px 9px;color:var(--red)">✕ Retirar</button>`:`<button class="btn btn-pr btn-sm" data-add="${l.visitaId}" style="padding:3px 10px">▶ Mover a lote</button>`):l.estado==='pendiente_cuestionario'?ui.bdg('espera shopper','n'):l.estado==='pagada'||l.estado==='liquidada'?ui.bdg('✓ pagada','g'):ui.bdg('—','n')}</td>
+        <td style="position:sticky;left:96px;background:${inD?'#eaf4fc':'var(--panel)'};z-index:1"><b>${l.shopper||'—'}</b><div style="font-size:10px;color:var(--t3)">${l.shopperCode||''}</div></td>
         <td style="font-size:12px">${l.sucursal}</td><td style="font-size:12px">${l.freal||'—'}</td>
         <td>${inD?ui.bdg('● en lote','p'):ui.bdg(lb[0],lb[1])}</td><td>${l.submit?'✅':'—'}</td>
         <td>${ui.money(l.moneda,l.honorario)}</td><td>${l.reembolso?ui.money(l.moneda,l.reembolso):'—'}</td>
         <td style="font-weight:700;color:var(--t1)">${ui.money(l.moneda,l.total)}</td>
-        <td style="font-size:12px">${l.fechaEstimadaPago||'—'}</td></tr>`;};
+        <td style="font-size:12px">${l.fechaEstimadaPago||'—'}</td>
+        <td style="text-align:right"><button class="btn btn-ghost btn-sm" data-ledit="${l.visitaId}" title="Editar liquidación" style="padding:2px 7px">✎</button></td></tr>`;};
 
     // panel del lote en construcción (carrito)
     const draftLiqs=draft.map(vid=>all.find(l=>l.visitaId===vid)).filter(Boolean);
@@ -419,11 +420,11 @@ CX.module('liquidaciones', ({data,ui})=>{
     <div class="between" style="margin-bottom:12px"><div>${ui.ph('Liquidaciones', p.name+' · sincronizadas con el avance de cada visita')}</div>
       <div class="flex"><span class="bdg bdg-g">● En vivo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
 
-    <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px">
-      ${ui.kpi('Pend. cuestionario',res.pendiente_cuestionario||0,'a')}
-      ${ui.kpi('Pend./Validadas',(res.pendiente_submitir||0)+(res.validada||0),'b')}
-      ${ui.kpi('Listas para lote',res.validada||0,'b')}
-      ${ui.kpi('Pagadas',res.pagada||0,'g')}
+    <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px" id="liqKpis">
+      <div data-lk="pc" style="cursor:pointer">${ui.kpi('Pend. cuestionario',res.pendiente_cuestionario||0,'a')}</div>
+      <div data-lk="pv" style="cursor:pointer">${ui.kpi('Pend./Validadas',(res.pendiente_submitir||0)+(res.validada||0),'b')}</div>
+      <div data-lk="val" style="cursor:pointer">${ui.kpi('Listas para lote',res.validada||0,'b')}</div>
+      <div data-lk="pag" style="cursor:pointer">${ui.kpi('Pagadas',res.pagada||0,'g')}</div>
     </div>
 
     ${cart}
@@ -437,13 +438,32 @@ CX.module('liquidaciones', ({data,ui})=>{
     <div class="card card-p">
       <div class="between" style="margin-bottom:12px"><div><div class="card-t">💸 Liquidaciones operativas</div>
         <div style="font-size:11px;color:var(--t3)">El estado avanza solo con la visita. Mueve las validadas al lote y págalas arriba.</div></div></div>
-      <div style="overflow-x:auto"><table class="tbl" style="min-width:760px"><thead><tr><th style="position:sticky;left:0;background:var(--surface);z-index:2"></th><th style="position:sticky;left:96px;background:var(--surface);z-index:2">Shopper</th><th>Sucursal</th><th>Realizada</th><th>Estado</th><th>Submit.</th><th>Honorario</th><th>Reembolso</th><th>Total</th><th>Pago est.</th></tr></thead>
+      <div style="overflow-x:auto"><table class="tbl" style="min-width:800px"><thead><tr><th style="position:sticky;left:0;background:var(--panel);z-index:2"></th><th style="position:sticky;left:96px;background:var(--panel);z-index:2">Shopper</th><th>Sucursal</th><th>Realizada</th><th>Estado</th><th>Submit.</th><th>Honorario</th><th>Reembolso</th><th>Total</th><th>Pago est.</th><th></th></tr></thead>
       <tbody>${all.map(lrow).join('')}</tbody></table></div>
       <div style="margin-top:14px">${ui.aiBox('Cada liquidación nace del avance de la visita: realizada → pend. cuestionario → validada → en lote → pagada. Mueve al lote, revisa el total a pagar, retira lo que no entra (queda como CxP del mes) y paga: se generan los egresos automáticamente.','Liquidación sincronizada')}</div>
     </div>`;
 
     host.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.add);}));
     host.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.rm);}));
+    // KPIs clickeables → listado filtrado
+    const lkMap={pc:['Pend. cuestionario',l=>l.estado==='pendiente_cuestionario'],pv:['Pendientes/Validadas',l=>['pendiente_submitir','validada'].includes(l.estado)],val:['Listas para lote',l=>l.estado==='validada'],pag:['Pagadas',l=>['pagada','liquidada'].includes(l.estado)]};
+    host.querySelectorAll('#liqKpis [data-lk]').forEach(el=>el.addEventListener('click',()=>{const m=lkMap[el.dataset.lk];const arr=all.filter(m[1]);
+      ui.modal(m[0]+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Total</th><th>Pago est.</th></tr></thead><tbody>${arr.map(l=>`<tr><td><b>${l.shopper||'—'}</b></td><td style="font-size:12px">${l.sucursal}</td><td style="font-weight:700">${ui.money(l.moneda,l.total)}</td><td style="font-size:12px">${l.fechaEstimadaPago||'—'}</td></tr>`).join('')}</tbody></table>`:ui.empty('💸','Sin liquidaciones en esta categoría.'));
+    }));
+    // editar liquidación (corregir honorario/reembolso/fecha)
+    host.querySelectorAll('[data-ledit]').forEach(b=>b.addEventListener('click',()=>{ const l=all.find(x=>x.visitaId===b.dataset.ledit); const v=data._visitas.find(x=>x.id===b.dataset.ledit); if(!l||!v)return;
+      ui.modal('Editar liquidación · '+(l.shopper||''),`
+        <div style="font-size:12px;color:var(--t2);margin-bottom:10px">📍 ${l.sucursal} · estado: ${l.estado}</div>
+        <div class="grid g2" style="gap:10px 12px">
+          <div><label class="lbl">Honorario (${l.moneda})</label><input class="inp" id="le_hon" type="number" value="${l.honorario||0}"></div>
+          <div><label class="lbl">Reembolso (${l.moneda})</label><input class="inp" id="le_re" type="number" value="${l.reembolso||0}"></div>
+          <div><label class="lbl">Fecha realizada</label><input class="inp" id="le_f" type="date" value="${v.realizada||''}"></div>
+          <div><label class="lbl">Estado</label><select class="sel" id="le_est">${['realizada','cuestionario','liquidada','pagada'].map(o=>`<option ${o===v.estado?'selected':''}>${o}</option>`).join('')}</select></div>
+        </div>
+        <div style="background:var(--amber-bg);border-radius:9px;padding:8px 11px;font-size:11px;color:#8a5b00;margin-top:12px">Corrige aquí errores de captura. El cambio se refleja en la liquidación y se sincroniza con Beneficios y Finanzas.</div>
+        <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="le_ok">Guardar corrección</button></div>
+      `,{onMount:(ov,close)=>{ov.querySelector('#le_ok').addEventListener('click',()=>{ v.honorario=+ov.querySelector('#le_hon').value||0; const re=+ov.querySelector('#le_re').value||0; v.boleto=re; v.comboAmt=0; v.realizada=ov.querySelector('#le_f').value||v.realizada; v.estado=ov.querySelector('#le_est').value; CX.bus&&CX.bus.emit('visit-flow'); close(); draw(); ui.toast('Liquidación corregida · sincronizada','ok',3200); });}});
+    }));
     const cd=host.querySelector('#clearDraft'); if(cd)cd.addEventListener('click',()=>CX.finStore.clearDraft(p.id));
     const ac=host.querySelector('#addCxp');
     if(ac)ac.addEventListener('click',()=>{
@@ -487,13 +507,31 @@ CX.module('liquidaciones', ({data,ui})=>{
 
 CX.module('lotes', ({data,ui})=>{
   const p=data.project(), cur=p.currency[p.countries[0]];
-  const rows=[['#L-204','12 visitas',_m(cur,18240),'Pagado','g'],['#L-205','8 visitas',_m(p.currency[p.countries[p.countries.length-1]],42000),'En revisión','a'],['#L-206','5 visitas',_m(cur,9300),'Borrador','n']];
-  return `
+  const curHN=p.currency[p.countries[p.countries.length-1]];
+  const lotes=[
+    {id:'#L-204',n:12,monto:18240,cur:cur,estado:'Pagado',tone:'g',fecha:'2026-06-05',visitas:[['Evaluador 03','Sucursal 01',1520],['Evaluador 07','Sucursal 04',1520],['Evaluador 12','Sucursal 09',1520]]},
+    {id:'#L-205',n:8,monto:42000,cur:curHN,estado:'En revisión',tone:'a',fecha:'2026-06-18',visitas:[['Evaluador 05','Sucursal 02',5250],['Evaluador 09','Sucursal 11',5250]]},
+    {id:'#L-206',n:5,monto:9300,cur:cur,estado:'Borrador',tone:'n',fecha:'—',visitas:[['Evaluador 01','Sucursal 03',1860],['Evaluador 14','Sucursal 07',1860]]},
+  ];
+  const html=`
   ${ui.ph('Lotes de Pago', p.name+' · agrupa liquidaciones validadas y crea el egreso')}
-  <div class="grid g3" style="margin-bottom:16px">${rows.map(r=>`<div class="card hov card-p">
-    <div class="between" style="margin-bottom:8px"><b style="font-family:var(--disp);font-size:15px;color:var(--t1)">${r[0]}</b>${ui.bdg(r[3],r[4])}</div>
-    <div style="font-size:12px;color:var(--t3)">${r[1]}</div>
-    <div style="font-size:18px;font-weight:800;color:var(--green);font-family:var(--disp);margin-top:4px">${r[2]}</div>
-    <div style="margin-top:10px"><button class="btn btn-ghost btn-sm">Ver detalle</button></div></div>`).join('')}</div>
+  <div class="grid g3" style="margin-bottom:16px">${lotes.map(r=>`<div class="card hov card-p" data-lote="${r.id}" style="cursor:pointer">
+    <div class="between" style="margin-bottom:8px"><b style="font-family:var(--disp);font-size:15px;color:var(--t1)">${r.id}</b>${ui.bdg(r.estado,r.tone)}</div>
+    <div style="font-size:12px;color:var(--t3)">${r.n} visitas · ${r.fecha}</div>
+    <div style="font-size:18px;font-weight:800;color:var(--green);font-family:var(--disp);margin-top:4px">${_m(r.cur,r.monto)}</div>
+    <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" data-lote="${r.id}">Ver detalle →</button></div></div>`).join('')}</div>
   <div class="card card-p">${ui.aiBox('Agrupo y concilio pagos automáticamente, evitando duplicidad. Cada lote crea su egreso asociado en Finanzas.','Conciliación')}</div>`;
+  setTimeout(()=>{
+    document.querySelectorAll('[data-lote]').forEach(b=>b.addEventListener('click',()=>{ const r=lotes.find(x=>x.id===b.dataset.lote); if(!r)return;
+      ui.modal('Lote '+r.id+' · '+r.estado,`
+        <div class="between" style="margin-bottom:12px"><div style="font-size:12.5px;color:var(--t2)">${r.n} visitas · ${r.fecha}</div><div style="font-size:17px;font-weight:800;color:var(--green);font-family:var(--disp)">${_m(r.cur,r.monto)}</div></div>
+        <table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th style="text-align:right">Honorario</th></tr></thead><tbody>
+        ${r.visitas.map(v=>`<tr><td><b>${v[0]}</b></td><td style="font-size:12px">${v[1]}</td><td style="text-align:right;font-weight:700">${_m(r.cur,v[2])}</td></tr>`).join('')}
+        ${r.visitas.length<r.n?`<tr><td colspan="3" style="font-size:11px;color:var(--t3);text-align:center">+ ${r.n-r.visitas.length} visita(s) más en el lote</td></tr>`:''}
+        </tbody></table>
+        <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px">${r.estado!=='Pagado'?`<button class="btn btn-green btn-sm" id="loteMark">Marcar pagado</button>`:ui.bdg('✓ Egreso generado en Finanzas','g')}<button class="btn btn-ghost btn-sm" id="loteExp">⤓ Exportar</button></div>
+      `,{onMount:(ov,close)=>{ const lm=ov.querySelector('#loteMark'); if(lm)lm.addEventListener('click',()=>{close();ui.toast('Lote '+r.id+' marcado pagado · egreso generado en Movimientos','ok',3600);}); ov.querySelector('#loteExp').addEventListener('click',()=>ui.toast('Exportando lote '+r.id+'…','ok')); }});
+    }));
+  },0);
+  return html;
 });

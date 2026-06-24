@@ -1,5 +1,5 @@
 /* CXOrbia · Mi Día (admin + shopper) */
-let _cgMonth='2026-06', _cgByDay={};
+let _cgMonth='2026-06', _cgByDay={}, _cgProj='';
 function _shiftMonth(ym,delta){let[y,m]=ym.split('-').map(Number);m+=delta;if(m<1){m=12;y--;}if(m>12){m=1;y++;}return y+'-'+String(m).padStart(2,'0');}
 CX.module('midia', ({data,role,ui})=>{
   const p=data.project();
@@ -25,19 +25,23 @@ CX.module('midia', ({data,role,ui})=>{
     }));
     const pv=document.getElementById('cgPrev'); if(pv)pv.addEventListener('click',()=>{_cgMonth=_shiftMonth(_cgMonth,-1);CX.router.nav('midia');});
     const nx=document.getElementById('cgNext'); if(nx)nx.addEventListener('click',()=>{_cgMonth=_shiftMonth(_cgMonth,1);CX.router.nav('midia');});
+    const cp=document.getElementById('cgProj'); if(cp)cp.addEventListener('change',()=>{_cgProj=cp.value;CX.router.nav('midia');});
   },0);};
 
-  /* Cronograma: visitas + tareas agrupadas por día (admin y shopper) */
+  /* Cronograma: visitas + tareas agrupadas por día (admin y shopper) — TODOS los proyectos + filtro */
   const cronograma=()=>{
     const sid=CX.session.user.shopperId;
+    const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
+    let pool=data._visitas; if(_cgProj) pool=pool.filter(v=>v.projectId===_cgProj);
     let vis;
-    if(role==='shopper') vis=data.visitas().filter(v=>v.shopperId===sid||['asignada','agendada','realizada'].includes(v.estado));
-    else vis=data.visitas().filter(v=>v.agendada||['asignada','realizada','cuestionario'].includes(v.estado));
+    if(role==='shopper') vis=pool.filter(v=>v.shopperId===sid||['asignada','agendada','realizada'].includes(v.estado));
+    else vis=pool.filter(v=>v.agendada||['asignada','realizada','cuestionario'].includes(v.estado));
     const items=[];
     vis.forEach(v=>{
       const f=(v.agendada||v.disponibleDesde||'').slice(0,10);
-      if(f) items.push({fecha:f, icon:'📍', titulo:v.sucursal, sub:(v.escenario||'')+(role==='admin'&&v.shopper?(' · '+v.shopper):(' · '+v.ciudad)), estado:v.estado, nav:role==='shopper'?'misvisitas':'visitas'});
-      if(v.estado==='realizada') items.push({fecha:(v.realizada||f||'').slice(0,10), icon:'📝', titulo:'Cuestionario pendiente', sub:v.sucursal, estado:'tarea', nav:role==='shopper'?'misvisitas':'visitas'});
+      const pn=projName(v.projectId);
+      if(f) items.push({fecha:f, icon:'📍', titulo:v.sucursal, sub:(v.escenario||'')+' · '+pn+(role==='admin'&&v.shopper?(' · '+v.shopper):(' · '+v.ciudad)), estado:v.estado, nav:role==='shopper'?'misvisitas':'visitas'});
+      if(v.estado==='realizada') items.push({fecha:(v.realizada||f||'').slice(0,10), icon:'📝', titulo:'Cuestionario pendiente', sub:v.sucursal+' · '+pn, estado:'tarea', nav:role==='shopper'?'misvisitas':'visitas'});
     });
     if(role==='admin'){ const k=data.kpis(); const hoy='2026-06-21';
       if(k.postPend) items.push({fecha:hoy,icon:'📩',titulo:k.postPend+' postulaciones por revisar',sub:'Gestión de postulaciones',estado:'tarea',nav:'postulaciones'});
@@ -45,6 +49,7 @@ CX.module('midia', ({data,role,ui})=>{
     }
     const byDay={}; items.forEach(it=>{ if(!it.fecha)return; (byDay[it.fecha]=byDay[it.fecha]||[]).push(it); });
     _cgByDay=byDay;
+    const allP=[...new Set(data._visitas.map(v=>v.projectId))].map(id=>({id,name:projName(id)}));
     const [Y,M]=_cgMonth.split('-').map(Number);
     const first=new Date(Y,M-1,1); const startDow=(first.getDay()+6)%7;
     const daysIn=new Date(Y,M,0).getDate(); const today='2026-06-21';
@@ -61,8 +66,8 @@ CX.module('midia', ({data,role,ui})=>{
       </div>`;
     }
     return `<div class="card card-p" style="margin-bottom:16px">
-      <div class="card-h"><div class="card-t">🗓️ Cronograma</div>
-        <div class="flex" style="gap:6px"><button class="btn btn-ghost btn-sm" id="cgPrev">‹</button><span style="font-size:12.5px;font-weight:800;text-transform:capitalize;min-width:130px;text-align:center">${monthLabel}</span><button class="btn btn-ghost btn-sm" id="cgNext">›</button></div></div>
+      <div class="card-h"><div class="card-t">🗓️ Cronograma <span class="muted" style="font-size:11px">· todos los proyectos</span></div>
+        <div class="flex" style="gap:6px"><select class="sel" id="cgProj" style="width:auto;padding:5px 9px;font-size:12px"><option value="">🗂️ Todos</option>${allP.map(pr=>`<option value="${pr.id}" ${pr.id===_cgProj?'selected':''}>${pr.name}</option>`).join('')}</select><button class="btn btn-ghost btn-sm" id="cgPrev">‹</button><span style="font-size:12.5px;font-weight:800;text-transform:capitalize;min-width:120px;text-align:center">${monthLabel}</span><button class="btn btn-ghost btn-sm" id="cgNext">›</button></div></div>
       <div class="cg-grid cg-head">${wd.map(w=>`<div class="cg-wd">${w}</div>`).join('')}</div>
       <div class="cg-grid">${cells}</div>
       <div style="font-size:11px;color:var(--t3);margin-top:10px"><span class="cg-dot" style="background:var(--brand)"></span> visita &nbsp; <span class="cg-dot" style="background:var(--amber)"></span> tarea &nbsp;·&nbsp; toca un día con actividad</div>

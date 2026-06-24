@@ -106,6 +106,30 @@ CX.module('miperfil', ({data,ui})=>{
       <div data-k="curso" style="cursor:pointer">${ui.kpi('En curso',st.enCurso,'a')}</div>
     </div>
     <div style="font-size:11px;color:var(--t3);text-align:right;margin-bottom:16px">↑ toca un indicador para ver el detalle</div>
+    ${(()=>{const hist=data.visitsForShopper(s.id);
+      const asign=hist.filter(v=>v.shopperId===s.id||['asignada','agendada','realizada','cuestionario','liquidada'].includes(v.estado));
+      const realiz=hist.filter(v=>['realizada','cuestionario','liquidada'].includes(v.estado));
+      const efect=asign.length?Math.round(realiz.length/asign.length*100):0;
+      const aTiempo=realiz.length?Math.round(realiz.filter(v=>v.submit!==false).length/realiz.length*100):0;
+      const cuestOk=realiz.length?Math.round(realiz.filter(v=>['cuestionario','liquidada'].includes(v.estado)).length/realiz.length*100):0;
+      const reprog=asign.length?Math.round(asign.filter(v=>v.reprog).length/asign.length*100):0;
+      const okr=(lbl,val,meta,tone,suf)=>{const pct=Math.min(100,Math.round(val/meta*100));return `<div style="margin-bottom:12px">
+        <div class="between" style="margin-bottom:4px"><span style="font-size:12.5px;font-weight:600;color:var(--t1)">${lbl}</span><span style="font-size:12px;font-weight:700;color:var(--${val>=meta?'green':tone})">${val}${suf} <span class="muted" style="font-weight:500">/ meta ${meta}${suf}</span></span></div>
+        <div class="bar" style="height:7px"><i style="width:${pct}%;background:var(--${val>=meta?'green':tone})"></i></div></div>`;};
+      return `<div class="card card-p" style="margin-bottom:16px">
+        <div class="card-h"><div class="card-t">🎯 Mi desempeño y metas (OKRs)</div><span class="muted" style="font-size:11px">para mejorar y acceder a más visitas</span></div>
+        <div class="grid g4" style="margin-bottom:14px">
+          ${ui.kpi('Efectividad',efect+'%',efect>=85?'g':'a','realizadas/asignadas')}
+          ${ui.kpi('Cuest. completos',cuestOk+'%',cuestOk>=90?'g':'a')}
+          ${ui.kpi('Envíos a tiempo',aTiempo+'%',aTiempo>=90?'g':'a')}
+          ${ui.kpi('Calificación',s.rating?('★ '+s.rating):'—','p')}
+        </div>
+        ${okr('Efectividad de visitas',efect,90,'amber','%')}
+        ${okr('Cuestionarios completados',cuestOk,95,'amber','%')}
+        ${okr('Envíos a tiempo',aTiempo,90,'amber','%')}
+        ${okr('Baja reprogramación (menos es mejor)',Math.max(0,100-reprog),90,'amber','%')}
+        <div style="margin-top:6px">${ui.aiBox('Tus metas (OKRs): efectividad, cuestionarios completos y envíos a tiempo. Cumplirlas sube tu calificación, te habilita honorarios preferentes y prioridad en nuevas visitas.','Cómo crecer como evaluador')}</div>
+      </div>`;})()}
     <div class="card card-p" style="margin-bottom:16px">
       <div class="card-h"><div class="card-t">Mis datos</div><button class="btn btn-soft btn-sm" id="mpEdit">✎ Editar</button></div>
       ${dato('WhatsApp',s.whatsapp)}${dato('Correo',s.email)}${dato(CX.geo.deptLabel(s.pais),s.depto)}${dato('Edad',s.edad)}${dato('Sexo',s.sexo)}${dato('Documento',s.dpi)}
@@ -184,15 +208,35 @@ CX.module('rutas', ({data,ui})=>{
 /* CXOrbia · Reportes & KPIs / Informes (admin) */
 CX.module('informes', ({data,ui})=>{
   const k=data.kpis(), p=data.project();
+  const vis=data.visitas();
+  // ranking de sucursales (tiendas) por cumplimiento
+  const bySuc={}; vis.forEach(v=>{const s=bySuc[v.sucursal]=bySuc[v.sucursal]||{suc:v.sucursal,pais:v.pais,t:0,r:0};s.t++;if(['realizada','cuestionario','liquidada'].includes(v.estado))s.r++;});
+  const rankSuc=Object.values(bySuc).map(s=>({...s,pct:s.t?Math.round(s.r/s.t*100):0})).sort((a,b)=>b.pct-a.pct);
+  // ranking de shoppers
+  const bySh={}; vis.filter(v=>v.shopperId).forEach(v=>{const s=bySh[v.shopperId]=bySh[v.shopperId]||{n:v.shopper,code:v.shopperCode,t:0,r:0};s.t++;if(['realizada','cuestionario','liquidada'].includes(v.estado))s.r++;});
+  const rankSh=Object.values(bySh).map(s=>({...s,pct:s.t?Math.round(s.r/s.t*100):0})).sort((a,b)=>b.r-a.r);
+  // hallazgos frecuentes (genérico, derivado de escenarios)
+  const hallazgos=[['Tiempo de espera sobre el estándar',Math.round(vis.length*0.22)],['Saludo/protocolo de bienvenida incompleto',Math.round(vis.length*0.17)],['Limpieza/orden por debajo del estándar',Math.round(vis.length*0.13)],['Oferta no comunicada',Math.round(vis.length*0.09)]].filter(h=>h[1]>0);
+
+  const reportes={
+    cumpSuc:['📊 Cumplimiento por sucursal',`<table class="tbl"><thead><tr><th>#</th><th>Sucursal</th><th>Realizadas/Total</th><th>Cumplimiento</th></tr></thead><tbody>${rankSuc.map((s,i)=>`<tr><td style="color:var(--t3)">${i+1}</td><td><b>${s.suc}</b> <span class="muted">${CX.paisFlag(s.pais)}</span></td><td>${s.r}/${s.t}</td><td>${ui.bdg(s.pct+'%',s.pct>=80?'g':s.pct>=50?'a':'r')}</td></tr>`).join('')}</tbody></table>`],
+    cobertura:['🗺️ Cobertura por país y quincena',`<table class="tbl"><thead><tr><th>País</th><th>Realizadas/Total</th><th>%</th></tr></thead><tbody>${p.countries.map(c=>`<tr><td><b>${CX.paisLabel(c)}</b></td><td>${k.realizadas[c]||0}/${k.total[c]||0}</td><td>${ui.bdg(Math.round((k.realizadas[c]||0)/Math.max(k.total[c]||1,1)*100)+'%','g')}</td></tr>`).join('')}</tbody></table>`],
+    rankSh:['🏆 Ranking de shoppers',`<table class="tbl"><thead><tr><th>#</th><th>Shopper</th><th>Realizadas/Asignadas</th><th>Efectividad</th></tr></thead><tbody>${rankSh.slice(0,15).map((s,i)=>`<tr><td style="color:var(--t3)">${i+1}</td><td><b>${s.n}</b> <span class="muted">${s.code||''}</span></td><td>${s.r}/${s.t}</td><td>${ui.bdg(s.pct+'%',s.pct>=80?'g':'a')}</td></tr>`).join('')}</tbody></table>`],
+    hallazgos:['🔎 Hallazgos más frecuentes',`<p style="font-size:12px;color:var(--t2);margin-bottom:10px">Hallazgos recurrentes del periodo — base para planes de capacitación y acción.</p><table class="tbl"><thead><tr><th>Hallazgo</th><th>Visitas afectadas</th></tr></thead><tbody>${hallazgos.map(h=>`<tr><td>${h[0]}</td><td><b>${h[1]}</b></td></tr>`).join('')}</tbody></table>`],
+    liq:['💰 Liquidaciones del periodo',`<p style="font-size:13px;color:var(--t2)">Detalle completo en Finanzas → Liquidaciones. Exporta el lote del periodo con honorarios + reembolsos por país.</p>`],
+  };
+
   setTimeout(()=>{
-    const cump=p.countries.map(c=>`<tr><td><b>${CX.paisLabel(c)}</b></td><td>${k.realizadas[c]||0}/${k.total[c]||0}</td><td>${ui.bdg(Math.round((k.realizadas[c]||0)/Math.max(k.total[c]||1,1)*100)+'%','g')}</td></tr>`).join('');
     const drills={
-      cump:['Cumplimiento por país',`<table class="tbl"><thead><tr><th>País</th><th>Realizadas/Total</th><th>%</th></tr></thead><tbody>${cump}</tbody></table>`],
+      cump:['Cumplimiento por país',reportes.cobertura[1]],
       vel:['Velocidad media','<p style="font-size:13px;color:var(--t2);line-height:1.7">Tiempo medio entre agendar y enviar el cuestionario. Calculado sobre las visitas realizadas del periodo; baja con recordatorios automáticos.</p>'],
-      cal:['Calidad del cuestionario','<p style="font-size:13px;color:var(--t2);line-height:1.7">Porcentaje de cuestionarios sin observaciones de QA (campos completos, evidencia válida, sin contradicciones). El editor con pesos y evidencia mejora este indicador.</p>'],
-      rent:['Rentabilidad','<p style="font-size:13px;color:var(--t2);line-height:1.7">Margen del proyecto según el modelo (directo: ingreso − honorarios − ISR/regalías; delegado: neto). Detalle por país en el Dashboard Financiero.</p>'],
+      cal:['Calidad del cuestionario','<p style="font-size:13px;color:var(--t2);line-height:1.7">Porcentaje de cuestionarios sin observaciones de QA (campos completos, evidencia válida, sin contradicciones).</p>'],
+      rent:['Rentabilidad','<p style="font-size:13px;color:var(--t2);line-height:1.7">Margen del proyecto según el modelo. Detalle por país en el Dashboard Financiero.</p>'],
     };
     document.querySelectorAll('#infKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=drills[el.dataset.k];ui.modal(d[0],d[1]);}));
+    document.querySelectorAll('[data-rep]').forEach(b=>b.addEventListener('click',()=>{const r=reportes[b.dataset.rep];
+      ui.modal(r[0], r[1]+`<div style="text-align:right;margin-top:14px"><button class="btn btn-soft btn-sm" id="repExp">⤓ Exportar (Excel/PDF)</button></div>`,{onMount:(ov,close)=>ov.querySelector('#repExp').addEventListener('click',()=>{close();ui.toast('Generando '+r[0]+'…','ok');})});
+    }));
   },0);
   return `
     ${ui.ph('Reportes & KPIs', p.name+' · entregables listos para dirección y cliente')}
@@ -203,10 +247,10 @@ CX.module('informes', ({data,ui})=>{
       <div data-k="rent" style="cursor:pointer">${ui.kpi('Rentabilidad','39.6%','a')}</div>
     </div>
     <div class="card card-p">
-      <div class="card-h"><div class="card-t">Exportables</div></div>
+      <div class="card-h"><div class="card-t">Reportes (toca para ver y exportar)</div></div>
       <div class="grid g2">
-        ${[['📊','Cumplimiento por sucursal'],['🗺️','Cobertura por país y quincena'],['🏆','Ranking de shoppers'],['💰','Liquidaciones del periodo']].map(r=>`<div class="card hov card-p flex" style="gap:12px"><div style="font-size:22px">${r[0]}</div><div style="flex:1;font-size:13px;font-weight:600;color:var(--t1)">${r[1]}</div><button class="btn btn-soft btn-sm">Exportar</button></div>`).join('')}
+        ${[['cumpSuc','📊','Cumplimiento por sucursal'],['cobertura','🗺️','Cobertura por país y quincena'],['rankSh','🏆','Ranking de shoppers'],['cumpSuc','🏬','Ranking de tiendas'],['hallazgos','🔎','Hallazgos más frecuentes'],['liq','💰','Liquidaciones del periodo']].map(r=>`<div class="card hov card-p flex" data-rep="${r[0]}" style="gap:12px;cursor:pointer"><div style="font-size:22px">${r[1]}</div><div style="flex:1;font-size:13px;font-weight:600;color:var(--t1)">${r[2]}</div><span class="btn btn-soft btn-sm">Ver →</span></div>`).join('')}
       </div>
-      <div style="margin-top:14px">${ui.aiBox('Genero lecturas y exportables listos por proyecto, país y sucursal, y resalto tendencias y brechas — sin armar Excel a mano.','Reportería que se arma sola')}</div>
+      <div style="margin-top:14px">${ui.aiBox('Genero lecturas y exportables listos por proyecto, país y sucursal: rankings de tiendas y shoppers, hallazgos frecuentes (base de planes de capacitación) y liquidaciones — sin armar Excel a mano.','Reportería que se arma sola')}</div>
     </div>`;
 });

@@ -1,25 +1,60 @@
 /* CXOrbia · Dashboard Operativo (admin) — KPIs clickeables, filtro de meses,
    comparativo último trimestre, notificación WhatsApp. Genérico multipaís. */
 CX.module('dashboard', ({data,ui})=>{
-  const p=data.project(), k=data.kpis();
-  const cs=p.countries;
-  const split=(o)=>cs.map(c=>c+':'+o[c]).join(' · ');
+  const p=data.project();
+  const ALL=!!CX.session._dashAll;
+  const cs=ALL?[...new Set(data._visitas.map(v=>v.pais))]:p.countries;
+  const pool=()=>ALL?data._visitas.slice():data.visitas();
+  const phaseCount=(fn)=>{const arr=pool();const o={t:arr.filter(fn).length};cs.forEach(c=>o[c]=arr.filter(x=>x.pais===c&&fn(x)).length);return o;};
+  const k=ALL?{
+    total:phaseCount(()=>true), asignadas:phaseCount(x=>x.shopperId),
+    sinAsignar:phaseCount(x=>!x.shopperId&&x.estado!=='fuera_rango'),
+    sinAgendar:phaseCount(x=>x.estado==='asignada'),
+    agendadas:phaseCount(x=>['agendada','realizada','cuestionario','liquidada'].includes(x.estado)),
+    realizadas:phaseCount(x=>['realizada','cuestionario','liquidada'].includes(x.estado)),
+    pendRealizar:phaseCount(x=>['asignada','agendada'].includes(x.estado)),
+    cuestPend:phaseCount(x=>x.estado==='realizada'),
+    sinSubmitir:phaseCount(x=>x.estado==='cuestionario'),
+    liquidadas:phaseCount(x=>x.estado==='liquidada'),
+    fueraRango:phaseCount(x=>x.estado==='fuera_rango'),
+    postPend:data._posts.filter(pp=>pp.estado==='pendiente').length,
+  }:data.kpis();
+  const phaseFlow=(c)=>{const arr=pool().filter(x=>x.pais===c);const t=arr.length||1;const n=fn=>arr.filter(fn).length;const pc=x=>Math.round(x/t*100);
+    const real=n(x=>['realizada','cuestionario','liquidada'].includes(x.estado));const agen=n(x=>['agendada','realizada','cuestionario','liquidada'].includes(x.estado));
+    return {total:arr.length,asign:[n(x=>x.shopperId),pc(n(x=>x.shopperId))],agend:[agen,pc(agen)],
+      sinAgend:[n(x=>x.estado==='asignada'),pc(n(x=>x.estado==='asignada'))],sinAsign:[n(x=>!x.shopperId&&x.estado!=='fuera_rango'),pc(n(x=>!x.shopperId&&x.estado!=='fuera_rango'))],
+      real:[real,pc(real)],cuest:[n(x=>x.estado==='realizada'),pc(n(x=>x.estado==='realizada'))],submit:[n(x=>x.estado==='cuestionario'),pc(n(x=>x.estado==='cuestionario'))],liq:[n(x=>x.estado==='liquidada'),pc(n(x=>x.estado==='liquidada'))]};};
+  const shoppersPool=ALL?data.shoppers:data.shoppersFor();
+  const split=(o)=>cs.map(c=>c+':'+(o[c]||0)).join(' · ');
   const months=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
 
-  /* drill de un KPI: muestra el listado de visitas que lo componen + WhatsApp si aplica */
+  /* drill de un KPI: listado + WA individual por fila + selección múltiple para notificar */
   const drill=(titulo, filtroFn, waMsg)=>{
-    const vis=data.visitas().filter(filtroFn);
-    const rows=vis.length?vis.slice(0,30).map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td>
-      <td style="font-size:12px">${v.shopper||'<span class="muted">—</span>'}</td><td>${ui.estadoBadge(v.estado)}</td>
-      <td style="font-size:12px">${v.agendada||v.disponibleDesde||'—'}</td></tr>`).join('')
-      : '<tr><td colspan="4">'+ui.empty('🔍','Sin visitas en este KPI')+'</td></tr>';
+    const vis=pool().filter(filtroFn);
+    const rows=vis.length?vis.slice(0,40).map(v=>`<tr data-vrow="${v.id}"><td style="width:30px;text-align:center"><input type="checkbox" class="drSel" data-vid="${v.id}" ${v.shopper?'':'disabled'}></td>
+      <td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td>
+      <td style="font-size:12px">${v.shopper||'<span class="muted">— sin asignar</span>'}</td><td>${ui.estadoBadge(v.estado)}</td>
+      <td style="font-size:12px">${v.agendada?('📅 agend. '+v.agendada):(v.disponibleDesde?('disp. desde '+v.disponibleDesde):'—')}</td>
+      <td style="text-align:right;white-space:nowrap">${v.shopper?`<button class="btn btn-soft btn-sm drWa" data-vid="${v.id}" title="WhatsApp a ${v.shopper}">📲</button> <button class="btn btn-ghost btn-sm drMail" data-vid="${v.id}" title="Correo">✉️</button>`:'<span class="muted" style="font-size:11px">—</span>'}</td></tr>`).join('')
+      : '<tr><td colspan="6">'+ui.empty('🔍','Sin visitas en este KPI')+'</td></tr>';
     ui.modal(titulo+' · '+vis.length, `
-      <table class="tbl"><thead><tr><th>Sucursal</th><th>Shopper</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>${rows}</tbody></table>
-      ${waMsg?`<div class="between" style="margin-top:14px;background:var(--green-bg);border-radius:10px;padding:11px 13px">
-        <div style="font-size:12px;color:#0a7050">${waMsg}</div>
-        <button class="btn btn-green btn-sm" id="waBtn">📲 Notificar por WhatsApp</button></div>`:''}
-      ${vis.length>30?`<div class="muted" style="font-size:11px;margin-top:8px">+${vis.length-30} más…</div>`:''}
-    `,{onMount:(ov,close)=>{const w=ov.querySelector('#waBtn');if(w)w.addEventListener('click',()=>{close();ui.toast('Notificación WhatsApp enviada a los involucrados','ok');});}});
+      ${vis.length?`<div class="between" style="margin-bottom:10px"><label class="flex" style="gap:6px;font-size:12px;color:var(--t2);cursor:pointer"><input type="checkbox" id="drAll"> Seleccionar todos</label>
+        <div class="flex" style="gap:6px"><button class="btn btn-soft btn-sm" id="drWaSel">📲 WhatsApp a seleccionados (<span id="drN">0</span>)</button><button class="btn btn-ghost btn-sm" id="drMailSel">✉️ Correo</button></div></div>`:''}
+      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th></th><th>Sucursal</th><th>Shopper</th><th>Estado</th><th>Fecha (agenda / disp.)</th><th style="text-align:right">Contacto</th></tr></thead><tbody>${rows}</tbody></table></div>
+      ${waMsg?`<div style="margin-top:12px;background:var(--green-bg);border-radius:10px;padding:10px 12px;font-size:11.5px;color:#0a7050">💡 ${waMsg} — elige a quiénes contactar arriba, o usa el botón por fila.</div>`:''}
+      ${vis.length>40?`<div class="muted" style="font-size:11px;margin-top:8px">+${vis.length-40} más…</div>`:''}
+    `,{onMount:(ov,close)=>{
+      const sel=()=>[...ov.querySelectorAll('.drSel:checked')].map(c=>c.dataset.vid);
+      const upd=()=>{const n=sel().length;const el=ov.querySelector('#drN');if(el)el.textContent=n;};
+      const all=ov.querySelector('#drAll'); if(all)all.addEventListener('change',()=>{ov.querySelectorAll('.drSel:not(:disabled)').forEach(c=>c.checked=all.checked);upd();});
+      ov.querySelectorAll('.drSel').forEach(c=>c.addEventListener('change',upd));
+      const vget=(id)=>pool().find(x=>x.id===id)||{};
+      const sendWa=(ids)=>{ if(!ids.length){ui.toast('Selecciona al menos un shopper','warn');return;} ids.forEach(id=>{const v=vget(id);CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'recordatorio',titulo:'Recordatorio: '+titulo,txt:(v.shopper||'')+' · '+v.sucursal,hook:CX.automations.hook&&CX.automations.hook()||'(Make)'});}); ui.toast('WhatsApp enviado a '+ids.length+' shopper(s) (Make)','ok',3200); };
+      ov.querySelectorAll('.drWa').forEach(b=>b.addEventListener('click',()=>sendWa([b.dataset.vid])));
+      ov.querySelectorAll('.drMail').forEach(b=>b.addEventListener('click',()=>ui.toast('Correo enviado a '+(vget(b.dataset.vid).shopper||'shopper')+' (Make/Outlook)','ok')));
+      const ws=ov.querySelector('#drWaSel'); if(ws)ws.addEventListener('click',()=>sendWa(sel()));
+      const msel=ov.querySelector('#drMailSel'); if(msel)msel.addEventListener('click',()=>{const n=sel().length;if(!n){ui.toast('Selecciona al menos uno','warn');return;}ui.toast('Correo enviado a '+n+' shopper(s) (Make/Outlook)','ok');});
+    }});
   };
 
   /* tile clickeable */
@@ -27,7 +62,7 @@ CX.module('dashboard', ({data,ui})=>{
     <div class="k-v">${o.t}</div><div class="k-s">${split(o)}</div></div>`;
 
   const fases=cs.map(c=>{
-    const f=data.phaseFlow(c);
+    const f=phaseFlow(c);
     const cell=(lbl,arr,tone,fk)=>`<div data-fase="${c}|${fk}" style="flex:1;min-width:84px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:9px 10px;cursor:pointer">
       <div style="font-family:var(--disp);font-size:19px;font-weight:800;color:var(--t1);line-height:1">${arr[0]}</div>
       <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--t3);margin:2px 0 5px">${lbl} · ${arr[1]}%</div>
@@ -41,7 +76,7 @@ CX.module('dashboard', ({data,ui})=>{
       </div></div>`;
   }).join('');
 
-  const top=[...data.shoppersFor()].sort((a,b)=>b.rating-a.rating).slice(0,4);
+  const top=[...shoppersPool].sort((a,b)=>b.rating-a.rating).slice(0,4);
 
   const alerts=[];
   if(k.sinAsignar.t) alerts.push(['r','sinasign',`${k.sinAsignar.t} sin asignar (${split(k.sinAsignar)})`]);
@@ -55,6 +90,10 @@ CX.module('dashboard', ({data,ui})=>{
     {n:'% Cumplimiento', vals:[72,84, Math.round(k.realizadas.t/Math.max(k.total.t,1)*100)], suf:'%', up:true},
     {n:'Días Real→Submit', vals:[3.1,2.8,2.6], suf:'d', up:false},
     {n:'Visitas realizadas', vals:[Math.round(k.total.t*0.6),Math.round(k.total.t*0.8),k.realizadas.t], suf:'', up:true},
+    {n:'% Cuestionarios a tiempo', vals:[81,86,90], suf:'%', up:true},
+    {n:'Calidad cuestionario (QA)', vals:[88,90,92], suf:'%', up:true},
+    {n:'Tasa de reprogramación', vals:[12,9,7], suf:'%', up:false},
+    {n:'Cobertura de sucursales', vals:[78,88,Math.min(100,Math.round(k.asignadas.t/Math.max(k.total.t,1)*100))], suf:'%', up:true},
     {n:'Margen neto', vals:[34,37,40], suf:'%', up:true},
   ];
   const trimRows=kpisTrim.map(r=>{
@@ -65,10 +104,29 @@ CX.module('dashboard', ({data,ui})=>{
 
   const host=ui.el('div');
   let selMonth=5; // JUN
+  const avanceHTML=`<div class="card card-p" style="margin-bottom:18px">
+    <div class="card-h"><div class="card-t">📊 Avance real vs ideal del mes — por país</div><span class="muted" style="font-size:11px">día ${new Date().getDate()} de ${new Date(2026,selMonth+1,0).getDate()} · ideal lineal</span></div>
+    ${cs.map(c=>{
+      const tot=k.total[c]||0, real=k.realizadas[c]||0;
+      const diaHoy=new Date().getDate(), diasMes=new Date(2026,selMonth+1,0).getDate();
+      const idealPct=Math.min(100,Math.round(diaHoy/diasMes*100));
+      const realPct=tot?Math.round(real/tot*100):0;
+      const gap=realPct-idealPct; const tone=gap>=0?'green':gap>=-15?'amber':'red';
+      return `<div style="margin-bottom:13px">
+        <div class="between" style="margin-bottom:5px"><span style="font-size:12.5px;font-weight:600;color:var(--t1)">${CX.paisLabel(c)} <span class="muted">${real}/${tot} visitas</span></span>
+          <span style="font-size:12px;font-weight:700;color:var(--${tone})">${realPct}% real · ${idealPct}% ideal · ${gap>=0?'▲ +'+gap:'▼ '+gap} pts</span></div>
+        <div style="position:relative;height:12px;background:var(--border-2);border-radius:6px;overflow:hidden">
+          <div style="position:absolute;inset:0;width:${realPct}%;background:var(--${tone});border-radius:6px"></div>
+          <div style="position:absolute;top:-2px;bottom:-2px;left:${idealPct}%;width:2px;background:var(--t1);opacity:.55" title="ideal"></div>
+        </div></div>`;
+    }).join('')}
+    <div style="margin-top:6px">${ui.aiBox('La barra es el avance real; la línea vertical es el avance ideal a hoy (lineal por día del periodo). Si el real va por debajo del ideal, hay riesgo de incumplimiento de la ronda — actúa con recordatorios o reasignaciones.','Ritmo del mes, por país')}</div>
+  </div>`;
   host.innerHTML=`
   <div class="between" style="margin-bottom:14px">
-    <div>${ui.ph('Dashboard Operativo', p.name+' · '+p.industry+' · '+cs.map(c=>CX.paisFlag(c)).join(' '))}</div>
+    <div>${ui.ph('Dashboard Operativo', (ALL?('Todos los proyectos · operación general · '+data.projects.length+' proyectos'):(p.name+' · '+p.industry))+' · '+cs.map(c=>CX.paisFlag(c)).join(' '))}</div>
     <div class="flex">
+      <select class="sel" id="dashProjSel" style="width:auto"><option value="all" ${ALL?'selected':''}>🌐 Todos los proyectos</option>${data.projects.map(pr=>`<option value="${pr.id}" ${(!ALL&&pr.id===p.id)?'selected':''}>${pr.name}</option>`).join('')}</select>
       <select class="sel" id="monthSel" style="width:auto">${months.map((m,i)=>`<option value="${i}" ${i===selMonth?'selected':''}>${m} 2026</option>`).join('')}</select>
       <span class="bdg bdg-g">● En vivo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div>
   </div>
@@ -91,6 +149,8 @@ CX.module('dashboard', ({data,ui})=>{
     ${tile('liq','Liquidadas',k.liquidadas,'g')}
     ${tile('fuera','Fuera de rango',k.fueraRango,'r')}
   </div>
+
+  ${avanceHTML}
 
   <div class="card card-p" style="margin-bottom:18px">
     <div class="card-h"><div class="card-t">Flujo por fases</div><span class="muted" style="font-size:11px">Click en una fase para ver su listado</span></div>
@@ -145,7 +205,7 @@ CX.module('dashboard', ({data,ui})=>{
         <tbody>${vis.slice(0,15).map(v=>boardRow(v,extraFn(v),extraLbl)).join('')}</tbody></table></div>
       </div>`;
     };
-    const all=data.visitas();
+    const all=pool();
     const scan=CX.automations?CX.automations.scanPendientes():{atrasadas:[]};
     const proxim=all.filter(v=>['asignada','agendada'].includes(v.estado)&&v.agendada);
     const realPend=all.filter(v=>v.estado==='realizada');
@@ -166,14 +226,20 @@ CX.module('dashboard', ({data,ui})=>{
     board.querySelectorAll('[data-bulk]').forEach(b=>b.addEventListener('click',()=>ui.toast('Recordatorio masivo enviado por WhatsApp + correo (Make)','ok',3200)));
 
     /* ---- ranking de shoppers clickeable + completo ---- */
-    const profileModal=(s)=>{ const st=data.shopperStats?data.shopperStats(s.id):{total:s.visitas||0,realizadas:0,liquidadas:0,enCurso:0};
+    const profileModal=(s)=>{ const st=data.shopperStats?data.shopperStats(s.id):{total:s.visitas||0,realizadas:0,liquidadas:0,enCurso:0}; const hist=data.visitsForShopper?data.visitsForShopper(s.id):[];
       ui.modal(s.nombre+' · '+s.code, `
         <div class="flex" style="gap:12px;margin-bottom:12px"><div class="rail-av" style="width:42px;height:42px;font-size:15px;background:linear-gradient(135deg,var(--brand),var(--brand-dark))">${s.code.slice(-2)}</div>
           <div><div class="card-t" style="font-size:15px">${s.nombre}</div><div style="font-size:12px;color:var(--t3)">${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)} · ${s.estado||''}</div>
           <div style="margin-top:4px"><span style="font-size:13px;font-weight:800;color:var(--amber)">★ ${s.rating||'—'}</span></div></div></div>
-        <div class="grid g4" style="margin-bottom:12px">${ui.kpi('Visitas',st.total,'b')}${ui.kpi('Realizadas',st.realizadas,'g')}${ui.kpi('Liquidadas',st.liquidadas,'p')}${ui.kpi('En curso',st.enCurso,'a')}</div>
-        <div class="flex" style="justify-content:flex-end;gap:8px"><button class="btn btn-soft btn-sm" id="pmWa">📲 WhatsApp</button><button class="btn btn-pr btn-sm" id="pmGo">Ver en Shoppers →</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#pmGo').addEventListener('click',()=>{close();CX.router.nav('shoppers');});ov.querySelector('#pmWa').addEventListener('click',()=>{close();ui.toast('WhatsApp a '+s.nombre+' (Make)','ok');});}});
+        <div class="grid g4" style="margin-bottom:8px"><div data-ph="all" style="cursor:pointer">${ui.kpi('Visitas',st.total,'b')}</div><div data-ph="real" style="cursor:pointer">${ui.kpi('Realizadas',st.realizadas,'g')}</div><div data-ph="liq" style="cursor:pointer">${ui.kpi('Liquidadas',st.liquidadas,'p')}</div><div data-ph="curso" style="cursor:pointer">${ui.kpi('En curso',st.enCurso,'a')}</div></div>
+        <div style="font-size:11px;color:var(--t3);margin-bottom:10px">↑ toca un indicador para ver el detalle de esas visitas</div>
+        <div class="flex" style="justify-content:flex-end;gap:8px"><button class="btn btn-soft btn-sm" id="pmWa">📲 WhatsApp</button><button class="btn btn-pr btn-sm" id="pmGo">Ver perfil completo →</button></div>
+      `,{onMount:(ov,close)=>{
+        ov.querySelector('#pmGo').addEventListener('click',()=>{close();CX.session._focusShopper=s.id;CX.router.nav('shoppers');});
+        ov.querySelector('#pmWa').addEventListener('click',()=>{close();ui.toast('WhatsApp a '+s.nombre+' (Make)','ok');});
+        const histModal=(f,t)=>{const arr=hist.filter(f);ui.modal(t+' · '+s.nombre,arr.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>${arr.map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.escenario||''}</td><td style="font-size:12px">${v.realizada||v.agendada||'—'}</td><td>${ui.estadoBadge(v.estado)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🗒️','Sin visitas en esta categoría.'));};
+        ov.querySelectorAll('[data-ph]').forEach(el=>el.addEventListener('click',()=>{const kk=el.dataset.ph;if(kk==='all')histModal(()=>true,'Todas las visitas');else if(kk==='real')histModal(v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Realizadas');else if(kk==='liq')histModal(v=>v.estado==='liquidada','Liquidadas');else histModal(v=>['asignada','agendada'].includes(v.estado),'En curso');}));
+      }});
     };
     host.querySelectorAll('[data-sh]').forEach(el=>el.addEventListener('click',()=>{const s=data.getShopper?data.getShopper(el.dataset.sh):data.shoppers.find(x=>x.id===el.dataset.sh);if(s)profileModal(s);}));
     const rf=host.querySelector('#rankFull');
@@ -196,6 +262,8 @@ CX.module('dashboard', ({data,ui})=>{
     host.querySelectorAll('[data-fase]').forEach(el=>el.addEventListener('click',()=>{const[c,fk]=el.dataset.fase.split('|');drill(CX.paisLabel(c)+' · '+fk,v=>v.pais===c&&(F[fk]||F.total)(v),WA[fk]);}));
     const ms=host.querySelector('#monthSel');
     if(ms)ms.addEventListener('change',()=>ui.toast('Mes: '+months[+ms.value]+' 2026 (demo — datos del periodo activo)',''));
+    const ps=host.querySelector('#dashProjSel');
+    if(ps)ps.addEventListener('change',()=>{ if(ps.value==='all'){CX.session._dashAll=true;} else {CX.session._dashAll=false;data.setProject(ps.value);} CX.router.nav('dashboard'); });
   },0);
   return host;
 });

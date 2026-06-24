@@ -1,6 +1,7 @@
 /* CXOrbia · Postulaciones (admin) — full fidelity */
 CX.module('postulaciones', ({data,ui})=>{
-  const p=data.project(), posts=data.posts();
+  const p=data.project(), posts=data._posts.slice();
+  const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
   const c=(s)=>posts.filter(x=>x.estado===s).length;
   const reprog=posts.filter(x=>x.reprog);
   const agendadas=data.visitas().filter(v=>v.agendada&&v.shopperId);
@@ -21,7 +22,8 @@ CX.module('postulaciones', ({data,ui})=>{
       <div class="between" style="align-items:flex-start;gap:14px;flex-wrap:wrap">
         <div style="flex:1;min-width:220px">
           <div style="font-size:14px;font-weight:700;color:var(--t1)">${x.shopper} <span class="muted" style="font-weight:500;font-size:12px">· ${x.shopperCode}</span></div>
-          <div style="font-size:12px;color:var(--t2);margin-top:2px">📍 ${x.sucursal} · ${x.ciudad}</div>
+          <div style="font-size:10px;font-weight:700;color:var(--brand);background:var(--brand-light);display:inline-block;padding:1px 7px;border-radius:6px;margin-top:3px">🗂️ ${projName(x.projectId)}</div>
+          <div style="font-size:12px;color:var(--t2);margin-top:3px">📍 ${x.sucursal} · ${x.ciudad}</div>
           <div style="font-size:11.5px;color:var(--t3);margin-top:4px">📅 ${x.fechaProp} · ⏱️ ${x.franjaCode} · 📞 ${x.phone} · desde ${x.disponibleDesde}</div>
           <div style="font-size:12px;color:var(--green);font-weight:600;margin-top:4px">💲 ${hon}</div>
           ${x.estado==='aprobada'?`<div style="font-size:11px;color:var(--t3);margin-top:5px">✅ ${x.quincena} · WA enviado al shopper · Aprobada por <b style="color:var(--t2)">${x.aprobadaPor}</b></div>`:''}
@@ -62,7 +64,8 @@ CX.module('postulaciones', ({data,ui})=>{
 
   <div class="flex wrap" style="gap:8px;margin-bottom:12px">
     <input class="inp" id="pSearch" placeholder="🔎 Buscar shopper, sucursal…" style="flex:1;min-width:200px">
-    <select class="sel" id="pPais" style="width:auto"><option value="">Todos los países</option>${p.countries.map(c=>`<option>${c}</option>`).join('')}</select>
+    <select class="sel" id="pProj" style="width:auto"><option value="">🗂️ Todos los proyectos</option>${[...new Set(posts.map(x=>x.projectId))].map(id=>`<option value="${id}">${projName(id)}</option>`).join('')}</select>
+    <select class="sel" id="pPais" style="width:auto"><option value="">Todos los países</option>${[...new Set(posts.map(x=>x.pais))].map(c=>`<option>${c}</option>`).join('')}</select>
     <select class="sel" id="pEst" style="width:auto"><option value="">Todos los estados</option><option value="pendiente">Pendiente</option><option value="aprobada">Aprobada</option><option value="standby">Standby</option></select>
     <label class="flex" style="font-size:12px;color:var(--t2);gap:6px"><input type="checkbox" id="pHist"> Ver históricas</label>
   </div>
@@ -104,24 +107,37 @@ CX.module('postulaciones', ({data,ui})=>{
       el.style.opacity=tone==='green'?'1':'.7';
       ui.toast(extra+' · gestionado por '+gestor(),'ok');};
 
-    /* perfil real del shopper (no el listado) */
+    /* perfil real del shopper (no el listado) — tarjetas clickeables + historial + requisitos */
     const profileModal=(sid)=>{ const s=data.getShopper?data.getShopper(sid):data.shoppers.find(x=>x.id===sid); if(!s){ui.toast('Shopper no encontrado','warn');return;}
       const st=data.shopperStats?data.shopperStats(s.id):{total:0,realizadas:0,liquidadas:0,enCurso:0,cumpl:0};
+      const hist=data.visitsForShopper?data.visitsForShopper(s.id):[];
+      const reqs=[['Perfil completo',s.perfilCompleto!==false],['Datos bancarios',!!(s.banco||s.ctaNum)],['WhatsApp',!!(s.whatsapp||s.phone)],['Certificado',(st.realizadas||0)>0||s.certificado]];
       ui.modal(s.nombre+' · '+s.code,`
         <div class="flex" style="gap:12px;margin-bottom:12px"><div class="rail-av" style="width:42px;height:42px;font-size:15px;background:linear-gradient(135deg,var(--brand),var(--brand-dark))">${s.code.slice(-2)}</div>
-        <div><div class="card-t" style="font-size:15px">${s.nombre}</div><div style="font-size:12px;color:var(--t3)">${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)} · ${s.whatsapp||s.phone||''}</div>
-        <div style="margin-top:4px"><span style="font-size:13px;font-weight:800;color:var(--amber)">★ ${s.rating||'—'}</span></div></div></div>
-        <div class="grid g4" style="margin-bottom:12px">${ui.kpi('Visitas',st.total,'b')}${ui.kpi('Realizadas',st.realizadas,'g')}${ui.kpi('Liquidadas',st.liquidadas,'p')}${ui.kpi('Cumpl.',(st.cumpl||0)+'%','a')}</div>
-        <div class="flex" style="justify-content:flex-end;gap:8px"><button class="btn btn-soft btn-sm" id="pmWa">📲 WhatsApp</button><button class="btn btn-pr btn-sm" id="pmGo">Ver en Shoppers →</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#pmGo').addEventListener('click',()=>{close();CX.router.nav('shoppers');});ov.querySelector('#pmWa').addEventListener('click',()=>{close();ui.toast('WhatsApp a '+s.nombre+' (Make)','ok');});}});
+        <div><div class="card-t" style="font-size:15px">${s.nombre}</div><div style="font-size:12px;color:var(--t3)">${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)} · ${s.whatsapp||s.phone||'sin WhatsApp'}</div>
+        <div style="margin-top:4px"><span style="font-size:13px;font-weight:800;color:var(--amber)">★ ${s.rating||'—'}</span> ${s.perfilCompleto===false?ui.bdg('perfil incompleto','a'):''}</div></div></div>
+        <div class="grid g4" style="margin-bottom:12px"><div data-ph="all" style="cursor:pointer">${ui.kpi('Visitas',st.total,'b')}</div><div data-ph="real" style="cursor:pointer">${ui.kpi('Realizadas',st.realizadas,'g')}</div><div data-ph="liq" style="cursor:pointer">${ui.kpi('Liquidadas',st.liquidadas,'p')}</div>${ui.kpi('Cumpl.',(st.cumpl||0)+'%','a')}</div>
+        <div class="card-t" style="font-size:12.5px;margin-bottom:6px">✔ Verificación de requisitos</div>
+        <div class="flex wrap" style="gap:6px;margin-bottom:12px">${reqs.map(r=>`<span class="bdg ${r[1]?'bdg-g':'bdg-a'}">${r[1]?'✓':'⚠'} ${r[0]}</span>`).join('')}</div>
+        <div style="font-size:11px;color:var(--t3);margin-bottom:6px">↑ toca un indicador para ver el historial de visitas</div>
+        <div class="flex" style="justify-content:flex-end;gap:8px"><button class="btn btn-soft btn-sm" id="pmWa">📲 WhatsApp</button><button class="btn btn-pr btn-sm" id="pmGo">Ver perfil completo →</button></div>
+      `,{onMount:(ov,close)=>{
+        ov.querySelector('#pmGo').addEventListener('click',()=>{close();CX.session._focusShopper=s.id;CX.router.nav('shoppers');});
+        ov.querySelector('#pmWa').addEventListener('click',()=>{close();ui.toast('WhatsApp a '+s.nombre+' (Make)','ok');});
+        const histModal=(filter,title)=>{ const arr=hist.filter(filter);
+          ui.modal(title+' · '+s.nombre, arr.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>${arr.map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.escenario||''}</td><td style="font-size:12px">${v.realizada||v.agendada||'—'}</td><td>${ui.estadoBadge(v.estado)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🗒️','Sin visitas en esta categoría.')); };
+        ov.querySelectorAll('[data-ph]').forEach(el=>el.addEventListener('click',()=>{const k=el.dataset.ph; if(k==='all')histModal(()=>true,'Historial completo'); else if(k==='real')histModal(v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Realizadas'); else histModal(v=>v.estado==='liquidada','Liquidadas');}));
+      }});
     };
     document.querySelectorAll('[data-ap]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.ap);if(x&&CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(b.dataset.ap,'✅ Aprobada','green','Aprobada · WhatsApp enviado al shopper');}));
     document.querySelectorAll('[data-sb]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.sb,'⏸ Standby','amber','Postulación en standby')));
     document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.rj,'✕ Rechazada','red','Postulación rechazada · shopper notificado')));
-    const search=()=>{const q=(document.getElementById('pSearch').value||'').toLowerCase(),fp=document.getElementById('pPais').value,fe=document.getElementById('pEst').value;
+    const search=()=>{const q=(document.getElementById('pSearch').value||'').toLowerCase(),fpr=document.getElementById('pProj').value,fp=document.getElementById('pPais').value,fe=document.getElementById('pEst').value;
       document.querySelectorAll('#pGroups [data-pid]').forEach(el=>{const x=posts.find(z=>z.id===el.dataset.pid);
-        const ok=(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});};
-    ['pSearch','pPais','pEst'].forEach(id=>document.getElementById(id).addEventListener('input',search));
+        const ok=(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});
+      // ocultar grupos sin tarjetas visibles
+      document.querySelectorAll('#pGroups .card').forEach(g=>{const any=[...g.querySelectorAll('[data-pid]')].some(el=>el.style.display!=='none');g.style.display=any?'':'none';});};
+    ['pSearch','pProj','pPais','pEst'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',search);});
     document.querySelectorAll('[data-perfil]').forEach(b=>b.addEventListener('click',()=>profileModal(b.dataset.perfil)));
 
     /* editar fecha/franja de la visita de una postulación */
@@ -153,16 +169,50 @@ CX.module('postulaciones', ({data,ui})=>{
       `,{onMount:(ov,close)=>{ov.querySelector('#cnOk').addEventListener('click',()=>{ const v=data._visitas.find(z=>z.id===x.visitaId); if(v){v.estado='disponible';v.shopperId=null;v.shopper=null;v.agendada=null;} x.estado='cancelada';x.gestionadoPor=gestor(); CX.notif&&CX.notif.push({to:'shopper',tipo:'cancel',icon:'❌',tono:'r',titulo:'Visita cancelada',txt:x.sucursal+' · puedes postularte a otras',nav:'misvisitas'}); CX.bus&&CX.bus.emit('visit-flow'); close(); act(x.id,'✕ Cancelada','red','Visita cancelada · vuelve a disponible'); });}});
     }));
 
-    /* asignar visita manual */
+    /* asignar visita manual — con búsqueda y opción de crear shopper en el momento */
     const am=document.getElementById('asignManual');
-    if(am)am.addEventListener('click',()=>{ const disp=data.visitas().filter(v=>v.estado==='disponible'||!v.shopperId);
+    if(am)am.addEventListener('click',()=>{
+      const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
+      const disp=data._visitas.filter(v=>v.estado==='disponible'||!v.shopperId);
       const cands=data.shoppersFor();
       ui.modal('Asignar visita manual',`
-        <p style="font-size:12px;color:var(--t2);margin-bottom:12px">Asigna directamente una visita disponible a un shopper (queda trazado a tu nombre).</p>
-        <label class="lbl">Visita disponible</label><select class="sel" id="amV" style="margin-bottom:10px">${disp.length?disp.slice(0,40).map(v=>`<option value="${v.id}">${v.sucursal} · ${v.ciudad} · ${v.quincena}</option>`).join(''):'<option value="">— no hay disponibles —</option>'}</select>
-        <label class="lbl">Shopper</label><select class="sel" id="amS" style="margin-bottom:14px">${cands.slice(0,40).map(s=>`<option value="${s.id}">${s.nombre} · ${s.code} · ${s.ciudad||CX.paisName(s.pais)}</option>`).join('')}</select>
-        <div style="text-align:right"><button class="btn btn-pr btn-sm" id="amOk" ${disp.length?'':'disabled'}>Asignar</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#amOk').addEventListener('click',()=>{ const vid=ov.querySelector('#amV').value, sid=ov.querySelector('#amS').value; if(!vid){close();return;} const v=data.assignVisit&&data.assignVisit(vid,sid); const s=data.getShopper(sid); CX.hr&&CX.hr.writeBack&&CX.hr.writeBack(p,v); CX.notif&&CX.notif.push({to:'admin',tipo:'asignacion',icon:'📌',tono:'g',titulo:'Visita asignada manual',txt:(v?v.sucursal:'')+' → '+(s?s.nombre:''),nav:'postulaciones'}); close(); ui.toast('Visita asignada a '+(s?s.nombre:'')+' · HR sincronizada · por '+gestor(),'ok',3800); });}});
+        <p style="font-size:12px;color:var(--t2);margin-bottom:12px">Busca la visita y el shopper (no tienes que recorrer toda la lista). Si el shopper no existe, créalo aquí mismo.</p>
+        <label class="lbl">Visita disponible</label>
+        <input class="inp" id="amVQ" placeholder="🔎 Buscar sucursal, ciudad, proyecto…" style="margin-bottom:6px">
+        <select class="sel" id="amV" size="5" style="margin-bottom:12px;height:auto">${disp.length?disp.map(v=>`<option value="${v.id}" data-t="${(v.sucursal+' '+v.ciudad+' '+projName(v.projectId)+' '+v.quincena).toLowerCase()}">${v.sucursal} · ${v.ciudad} · ${projName(v.projectId)} · ${v.quincena}</option>`).join(''):'<option value="">— no hay disponibles —</option>'}</select>
+
+        <div class="between" style="margin-bottom:6px"><label class="lbl" style="margin:0">Shopper</label><label class="flex" style="gap:6px;font-size:11.5px;color:var(--t2);cursor:pointer"><input type="checkbox" id="amNew"> ✚ Crear nuevo</label></div>
+        <div id="amExist">
+          <input class="inp" id="amSQ" placeholder="🔎 Buscar shopper o código…" style="margin-bottom:6px">
+          <select class="sel" id="amS" size="5" style="height:auto">${cands.map(s=>`<option value="${s.id}" data-t="${(s.nombre+' '+s.code+' '+(s.ciudad||'')).toLowerCase()}">${s.nombre} · ${s.code} · ${s.ciudad||CX.paisName(s.pais)}</option>`).join('')}</select>
+        </div>
+        <div id="amCreate" style="display:none">
+          <div class="grid g2" style="gap:8px 10px"><div><label class="lbl">Nombre</label><input class="inp" id="amF"></div><div><label class="lbl">Apellido</label><input class="inp" id="amL"></div></div>
+          <label class="lbl" style="margin-top:8px">WhatsApp</label><input class="inp" id="amW" placeholder="+502 ...">
+          <div style="background:var(--amber-bg);border-radius:9px;padding:8px 11px;font-size:11px;color:#8a5b00;margin-top:8px">Se crea con perfil <b>incompleto</b>; al ingresar se le pedirá (en notificaciones y Mi Día) completar sus datos.</div>
+        </div>
+        <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="amOk" ${disp.length?'':'disabled'}>Asignar</button></div>
+      `,{onMount:(ov,close)=>{
+        const filt=(q,sel)=>{const v=(q.value||'').toLowerCase();ov.querySelectorAll('#'+sel+' option').forEach(o=>{o.style.display=(!v||(o.dataset.t||'').includes(v))?'':'none';});};
+        ov.querySelector('#amVQ').addEventListener('input',e=>filt(e.target,'amV'));
+        ov.querySelector('#amSQ').addEventListener('input',e=>filt(e.target,'amS'));
+        const nw=ov.querySelector('#amNew');
+        nw.addEventListener('change',()=>{ov.querySelector('#amExist').style.display=nw.checked?'none':'';ov.querySelector('#amCreate').style.display=nw.checked?'':'none';});
+        ov.querySelector('#amOk').addEventListener('click',()=>{
+          const vid=ov.querySelector('#amV').value; if(!vid){ui.toast('Elige una visita','warn');return;}
+          let sid, s;
+          if(nw.checked){ const f=(ov.querySelector('#amF').value||'').trim(), l=(ov.querySelector('#amL').value||'').trim(), w=(ov.querySelector('#amW').value||'').trim();
+            if(!f){ui.toast('Escribe al menos el nombre','warn');return;}
+            s=data.addShopper&&data.addShopper({via:'asignacion_manual',firstName:f,lastName:l,whatsapp:w,perfilCompleto:false});
+            sid=s&&s.id;
+            if(s){ CX.notif&&CX.notif.push({to:'shopper',tipo:'completar',icon:'📝',tono:'a',titulo:'Completa tu perfil',txt:'Te asignaron una visita · actualiza tus datos para continuar',nav:'miperfil'}); }
+          } else { sid=ov.querySelector('#amS').value; s=data.getShopper(sid); }
+          const v=data.assignVisit&&data.assignVisit(vid,sid);
+          CX.hr&&CX.hr.writeBack&&CX.hr.writeBack(p,v);
+          CX.notif&&CX.notif.push({to:'admin',tipo:'asignacion',icon:'📌',tono:'g',titulo:'Visita asignada manual',txt:(v?v.sucursal:'')+' → '+(s?s.nombre:''),nav:'postulaciones'});
+          close(); ui.toast('Visita asignada a '+(s?s.nombre:'')+(nw.checked?' (nuevo · perfil incompleto)':'')+' · HR sincronizada · por '+gestor(),'ok',4200);
+        });
+      }});
     });
     const reqBtn=document.getElementById('reqShopper');
     if(reqBtn)reqBtn.addEventListener('click',()=>{

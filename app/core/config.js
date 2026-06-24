@@ -138,7 +138,7 @@ CX.MODULES = {
 /* ---------- Navigation layout per role ---------- */
 CX.NAV = {
   admin: [
-    { sec:'Operación', items:['midia','dashboard','visitas','postulaciones','shoppers','tablon','informes'] },
+    { sec:'Operación', items:['midia','dashboard','visitas','postulaciones','shoppers','informes'] },
     { sec:'Admin del Proyecto', items:['clientes','proyectos','rutas','cuestionarios','importador'] },
     { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte'] },
     { sec:'Finanzas',  items:['financiero','movimientos','liquidaciones','lotes'] },
@@ -146,7 +146,7 @@ CX.NAV = {
     { sec:'Configuración', items:['usuarios','config','automatizaciones'] },
   ],
   shopper: [
-    { sec:'Operación', items:['midia','miperfil','visitas','misvisitas','tablon'] },
+    { sec:'Operación', items:['midia','miperfil','visitas','misvisitas'] },
     { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte'] },
     { sec:'Mis Beneficios', items:['beneficios'] },
   ],

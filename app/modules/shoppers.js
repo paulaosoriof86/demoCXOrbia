@@ -206,6 +206,8 @@ CX.module('shoppers', ({data,ui})=>{
       const s=data.getShopper(tr.dataset.sid); if(s)profileModal(s);
     }));
     bindRows();
+    // abrir perfil completo si se viene de otra sección (Dashboard/Postulaciones)
+    if(CX.session._focusShopper){ const fs=data.getShopper(CX.session._focusShopper); CX.session._focusShopper=null; if(fs)setTimeout(()=>profileModal(fs),120); }
     // buscador
     const search=document.getElementById('shSearch');
     if(search)search.addEventListener('input',()=>{

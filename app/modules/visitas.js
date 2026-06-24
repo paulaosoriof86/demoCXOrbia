@@ -2,9 +2,13 @@
 CX.module('visitas', ({data,role,ui})=>{
   const p=data.project();
 
-  /* ---------------- SHOPPER: marketplace de oportunidades ---------------- */
+  /* ---------------- SHOPPER: marketplace de oportunidades (TODOS los proyectos) ---------------- */
   if(role==='shopper'){
-    const list=data.visitas().filter(v=>v.estado==='disponible');
+    const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
+    const projAccent=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.accent:p.accent;};
+    // ofertas de TODOS los proyectos (no solo el seleccionado)
+    const list=data._visitas.filter(v=>v.estado==='disponible');
+    const allProjects=[...new Set(list.map(v=>v.projectId))].map(id=>({id,name:projName(id)}));
     const escEmoji=(s)=>{const t=(s||'').toLowerCase();
       if(t.includes('fin de semana')||t.includes('estreno'))return '🎉';
       if(t.includes('incógnito')||t.includes('incognito'))return '🕵️';
@@ -13,10 +17,11 @@ CX.module('visitas', ({data,role,ui})=>{
       if(t.includes('telef'))return '📞'; return '🎯';};
     const cell=(lbl,val)=>`<div><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--t3)">${lbl}</div><div style="font-size:13px;font-weight:700;color:var(--t1)">${val}</div></div>`;
     const card=(v)=>`<div class="card hov" style="overflow:hidden;display:flex;flex-direction:column">
-      <div style="background:linear-gradient(135deg,${p.accent},var(--brand-dark));color:#fff;padding:12px 15px" class="between">
+      <div style="background:linear-gradient(135deg,${projAccent(v.projectId)},var(--brand-dark));color:#fff;padding:12px 15px" class="between">
         <div><b style="font-size:14px">${v.sucursal.split(' · ')[0]}</b><div style="font-size:11px;opacity:.9">📍 ${v.ciudad}, ${CX.paisName(v.pais)}</div></div>
         <span style="background:rgba(255,255,255,.22);border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700">Disponible</span></div>
       <div class="card-p" style="padding:13px 15px;flex:1">
+        <div style="font-size:10px;font-weight:700;color:var(--brand);background:var(--brand-light);display:inline-block;padding:2px 8px;border-radius:6px;margin-bottom:10px">🗂️ ${projName(v.projectId)}</div>
         <div class="grid g2" style="gap:11px;margin-bottom:11px">
           ${cell('Quincena',v.quincena)}${cell('Franja',(v.franja==='Fin de semana'?'🎉 ':'📅 ')+v.franja)}
           ${cell('Canal',v.canal||'—')}${cell('Escenario',escEmoji(v.escenario)+' '+v.escenario)}
@@ -31,18 +36,19 @@ CX.module('visitas', ({data,role,ui})=>{
         </div>
       </div></div>`;
     const html=`
-      ${ui.ph('Visitas Disponibles', p.name+' · '+p.ronda+' · '+list.length+' oportunidades para tu perfil')}
+      ${ui.ph('Visitas Disponibles', list.length+' oportunidades en '+allProjects.length+' proyecto(s) para tu perfil')}
       <div class="flex wrap" style="gap:8px;margin-bottom:12px">
-        <select class="sel" id="fQuin" style="width:auto"><option value="">📆 Toda quincena</option>${p.quincenas.map(q=>`<option>${q}</option>`).join('')}</select>
-        <select class="sel" id="fEsc" style="width:auto"><option value="">🎯 Todo escenario</option>${p.scenarios.map(s=>`<option>${s}</option>`).join('')}</select>
-        <select class="sel" id="fCanal" style="width:auto"><option value="">📲 Todo canal</option>${(p.canales||[]).map(s=>`<option>${s}</option>`).join('')}</select>
+        <select class="sel" id="fProj" style="width:auto"><option value="">🗂️ Todos los proyectos</option>${allProjects.map(pr=>`<option value="${pr.id}">${pr.name}</option>`).join('')}</select>
+        <select class="sel" id="fQuin" style="width:auto"><option value="">📆 Toda quincena</option>${[...new Set(list.map(v=>v.quincena))].map(q=>`<option>${q}</option>`).join('')}</select>
+        <select class="sel" id="fEsc" style="width:auto"><option value="">🎯 Todo escenario</option>${[...new Set(list.map(v=>v.escenario))].map(s=>`<option>${s}</option>`).join('')}</select>
+        <select class="sel" id="fCanal" style="width:auto"><option value="">📲 Todo canal</option>${[...new Set(list.map(v=>v.canal).filter(Boolean))].map(s=>`<option>${s}</option>`).join('')}</select>
       </div>
-      ${ui.aiBox('Filtradas y priorizadas según tu país, perfil y disponibilidad. Las visitas se derivan de la hoja de ruta del proyecto (online, importada o creada en la plataforma).','Para ti ✨')}
+      ${ui.aiBox('Ahora ves la oferta de <b>todos los proyectos</b> a la vez. Filtra por proyecto, quincena, escenario o canal. Las visitas se derivan de cada hoja de ruta (online, importada o creada en la plataforma).','Toda la oferta ✨')}
       <div id="vList" style="margin-top:14px">${list.length?`<div class="grid g3">${list.map(card).join('')}</div>`:ui.empty('🔍','Sin visitas disponibles')}</div>`;
     setTimeout(()=>{
-      const bind=()=>document.querySelectorAll('[data-detail]').forEach(b=>b.addEventListener('click',()=>CX.shopperVisitDetail(data,p,list.find(v=>v.id===b.dataset.detail),ui)));
-      const apply=()=>{const fq=document.getElementById('fQuin').value,fe=document.getElementById('fEsc').value,fc=document.getElementById('fCanal').value;const a=list.filter(v=>(!fq||v.quincena===fq)&&(!fe||v.escenario===fe)&&(!fc||v.canal===fc));document.getElementById('vList').innerHTML=a.length?`<div class="grid g3">${a.map(card).join('')}</div>`:ui.empty('🔍','Sin resultados');bind();};
-      ['fQuin','fEsc','fCanal'].forEach(id=>document.getElementById(id).addEventListener('change',apply));bind();
+      const bind=()=>document.querySelectorAll('[data-detail]').forEach(b=>b.addEventListener('click',()=>{const v=list.find(x=>x.id===b.dataset.detail);CX.shopperVisitDetail(data,data.projects.find(x=>x.id===v.projectId)||p,v,ui);}));
+      const apply=()=>{const fpr=document.getElementById('fProj').value,fq=document.getElementById('fQuin').value,fe=document.getElementById('fEsc').value,fc=document.getElementById('fCanal').value;const a=list.filter(v=>(!fpr||v.projectId===fpr)&&(!fq||v.quincena===fq)&&(!fe||v.escenario===fe)&&(!fc||v.canal===fc));document.getElementById('vList').innerHTML=a.length?`<div class="grid g3">${a.map(card).join('')}</div>`:ui.empty('🔍','Sin resultados');bind();};
+      ['fProj','fQuin','fEsc','fCanal'].forEach(id=>document.getElementById(id).addEventListener('change',apply));bind();
     },0);
     return html;
   }

@@ -29,6 +29,13 @@
       <button class="btn btn-ghost btn-icon menu-btn" onclick="document.body.classList.toggle('nav-open')">☰</button>
       <div class="tb-crumb" id="crumb"></div>
       <div class="spacer"></div>
+      <button class="tb-bell" id="tbSupport" title="Soporte" aria-label="Soporte">
+        <span style="font-size:16px">🆘</span>
+      </button>
+      <button class="tb-bell" id="tbBell" title="Novedades" aria-label="Novedades">
+        <span style="font-size:17px">🔔</span>
+        <span class="tb-bell-badge" id="tbBellBadge" style="display:none">0</span>
+      </button>
       <div class="tb-demo"><span class="d"></span> Demo comercial</div>
     </div>
     <main class="content"><div id="view"></div></main>
@@ -52,6 +59,7 @@
 <script src="core/liquidacion.js"></script>
 <script src="core/finanzas-core.js"></script>
 <script src="core/notif.js"></script>
+<script src="core/topbar.js"></script>
 <script src="core/pwa.js"></script>
 <script src="core/router.js"></script>
 
