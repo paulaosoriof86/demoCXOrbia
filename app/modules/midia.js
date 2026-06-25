@@ -1,3 +1,4 @@
+    document.querySelectorAll('#midKpis [data-mk]').forEach(el=>el.addEventListener('click',()=>{const d=kDrills[el.dataset.mk];if(!d)return;const L=d[1]();ui.modal(d[0]+' ('+L.length+')',L.length?'<table class="tbl"><tbody>'+L.slice(0,20).map(v=>'<tr><td><b>'+v.sucursal+'</b></td><td style="font-size:12px">'+(v.shopper||'—')+'</td><td>'+(v.estado||'')+'</td></tr>').join('')+'</tbody></table>':ui.empty('✅','Sin registros.'));}));
 /* CXOrbia · Mi Día (admin + shopper) */
 let _cgMonth='2026-06', _cgByDay={}, _cgProj='';
 function _shiftMonth(ym,delta){let[y,m]=ym.split('-').map(Number);m+=delta;if(m<1){m=12;y--;}if(m>12){m=1;y++;}return y+'-'+String(m).padStart(2,'0');}
@@ -26,6 +27,7 @@ CX.module('midia', ({data,role,ui})=>{
     const pv=document.getElementById('cgPrev'); if(pv)pv.addEventListener('click',()=>{_cgMonth=_shiftMonth(_cgMonth,-1);CX.router.nav('midia');});
     const nx=document.getElementById('cgNext'); if(nx)nx.addEventListener('click',()=>{_cgMonth=_shiftMonth(_cgMonth,1);CX.router.nav('midia');});
     const cp=document.getElementById('cgProj'); if(cp)cp.addEventListener('change',()=>{_cgProj=cp.value;CX.router.nav('midia');});
+    document.querySelectorAll('#midKpis [data-mk]').forEach(el=>el.addEventListener('click',()=>{const kD={agd:['Agendadas',data.visitas().filter(v=>['agendada','realizada','cuestionario','liquidada'].includes(v.estado)),'visitas'],post:['Por aprobar',data._posts.filter(p=>p.estado==='pendiente'),'postulaciones'],real:['Realizadas',data.visitas().filter(v=>['realizada','cuestionario','liquidada'].includes(v.estado)),'visitas'],sinA:['Sin asignar',data.visitas().filter(v=>!v.shopperId&&v.estado!=='fuera_rango'),'visitas']};const d=kD[el.dataset.mk];if(!d)return;const L=d[1];ui.modal(d[0]+' ('+L.length+')',L.length?'<table class="tbl"><thead><tr><th>Sucursal</th><th>Shopper</th><th>Estado</th></tr></thead><tbody>'+L.slice(0,20).map(v=>'<tr><td><b>'+v.sucursal+'</b></td><td style="font-size:12px">'+(v.shopper||'—')+'</td><td>'+(v.estado||'')+'</td></tr>').join('')+'</tbody></table>':ui.empty('✅','Sin registros.'));}));
   },0);};
 
   /* Cronograma: visitas + tareas agrupadas por día (admin y shopper) — TODOS los proyectos + filtro */
@@ -84,9 +86,11 @@ CX.module('midia', ({data,role,ui})=>{
     bindNotif();
     return `
       ${ui.ph('Mi Día', 'Buen día, '+(CX.session.user.name.split(' ')[0])+' 👋 · '+p.name)}
-      <div class="grid g4" style="margin-bottom:18px">
-        ${ui.kpi('Agendadas',k.agendadas.t,'b')}${ui.kpi('Por aprobar',k.postPend,'a')}
-        ${ui.kpi('Realizadas',k.realizadas.t,'g')}${ui.kpi('Sin asignar',k.sinAsignar.t,'r')}
+      <div class="grid g4" style="margin-bottom:18px" id="midKpis">
+        <div data-mk="agd" style="cursor:pointer">${ui.kpi('Agendadas',k.agendadas.t,'b')}</div>
+        <div data-mk="post" style="cursor:pointer">${ui.kpi('Por aprobar',k.postPend,'a')}</div>
+        <div data-mk="real" style="cursor:pointer">${ui.kpi('Realizadas',k.realizadas.t,'g')}</div>
+        <div data-mk="sinA" style="cursor:pointer">${ui.kpi('Sin asignar',k.sinAsignar.t,'r')}</div>
       </div>
       ${notifBlock()}
       ${cronograma()}

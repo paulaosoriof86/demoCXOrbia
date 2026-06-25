@@ -24,8 +24,8 @@ CX.learnStore = {
   delResource(pid,cid,idx){ const c=this.courses(pid).find(x=>x.id===cid); if(c){c.recursos.splice(idx,1);CX.bus&&CX.bus.emit('learn');} },
   /* normaliza una URL de video a embed (YouTube/Vimeo) */
   embedUrl(url){ url=(url||'').trim(); let m;
-    if((m=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/))) return 'https://www.youtube.com/embed/'+m[1];
-    if((m=url.match(/vimeo\.com\/(\d+)/))) return 'https://player.vimeo.com/video/'+m[1];
+    if((m=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/))) return 'https://www.youtube-nocookie.com/embed/'+m[1]+'?rel=0&modestbranding=1';
+    if((m=url.match(/vimeo\.com\/(\d+)/))) return 'https://player.vimeo.com/video/'+m[1]+'?dnt=1';
     return url; },
   addQuiz(pid,cid,q){ const c=this.courses(pid).find(x=>x.id===cid); if(c){c.quiz.push(q);CX.bus&&CX.bus.emit('learn');} },
   /* progreso por shopper+curso (0..100) */

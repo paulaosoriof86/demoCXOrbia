@@ -43,7 +43,7 @@ CX.module('soporte', ({data,role,ui})=>{
           <td>${ui.bdg(t.prio,prioTone[t.prio]||'n')}</td>
           <td><select class="sel spEst" data-id="${t.id}" style="width:auto;padding:4px 8px;font-size:11.5px">${Object.keys(estLbl).map(e=>`<option value="${e}" ${e===t.estado?'selected':''}>${estLbl[e]}</option>`).join('')}</select></td>
           <td style="font-size:11.5px;color:var(--t3)">${t.fecha}</td>
-          <td style="text-align:right"><button class="btn btn-soft btn-sm spWa" data-id="${t.id}" title="Responder por WhatsApp">📲</button></td></tr>`).join('')}
+          <td style="text-align:right"><button class="btn btn-soft btn-sm spDet" data-id="${t.id}" title="Ver detalle">📂 Ver</button> <button class="btn btn-soft btn-sm spWa" data-id="${t.id}" title="Responder por WhatsApp">📲</button></td></tr>`).join('')}
         </tbody></table></div>
         <div style="margin-top:12px">${ui.aiBox('Centraliza solicitudes de soporte de shoppers, clientes y equipo: plataforma, capacitación, técnica, comercial y servicio. Cada nueva solicitud te llega como notificación; cámbiale el estado y responde por WhatsApp/correo.','Soporte centralizado')}</div>
       </div>`;
@@ -90,6 +90,31 @@ CX.module('soporte', ({data,role,ui})=>{
 
   const wireBandeja=()=>{
     host.querySelectorAll('.spEst').forEach(s=>s.addEventListener('change',()=>{CX.supportStore.setEstado(s.dataset.id,s.value);ui.toast('Estado actualizado','ok');}));
+    host.querySelectorAll('.spDet').forEach(b=>b.addEventListener('click',()=>{
+      const t=CX.supportStore.list().find(x=>x.id===b.dataset.id);if(!t)return;
+      ui.modal('🎟️ '+t.asunto,`
+        <div class="grid g2" style="gap:10px 14px;margin-bottom:12px">
+          <div><label class="lbl">Remitente</label><div style="font-size:13px;font-weight:600">${t.de} <span class="muted">(${t.rol})</span></div></div>
+          <div><label class="lbl">Tipo</label><div>${t.tipo}</div></div>
+          <div><label class="lbl">Prioridad</label>${ui.bdg(t.prio,({alta:'r',media:'a',baja:'n'})[t.prio])}</div>
+          <div><label class="lbl">Fecha</label><div style="font-size:12.5px">${t.fecha}</div></div>
+        </div>
+        <label class="lbl">Nota interna / respuesta</label>
+        <textarea class="inp" id="spNota" rows="3" placeholder="Escribe una nota o la respuesta al usuario…" style="margin-bottom:12px">${t.nota||''}</textarea>
+        <div class="flex" style="justify-content:space-between">
+          <select class="sel" id="spEstDet" style="width:auto">${Object.keys({abierto:'Abierto',en_proceso:'En proceso',resuelto:'Resuelto'}).map(e=>`<option value="${e}" ${e===t.estado?'selected':''}>${({abierto:'Abierto',en_proceso:'En proceso',resuelto:'Resuelto'})[e]}</option>`).join('')}</select>
+          <div class="flex" style="gap:8px">
+            <button class="btn btn-soft btn-sm" id="spDetWa">📲 Responder WA</button>
+            <button class="btn btn-pr btn-sm" id="spDetSave">Guardar</button></div></div>`,
+        {onMount:(ov,close)=>{
+          ov.querySelector('#spDetSave').addEventListener('click',()=>{t.nota=ov.querySelector('#spNota').value;CX.supportStore.setEstado(t.id,ov.querySelector('#spEstDet').value);close();draw();ui.toast('Ticket actualizado','ok');});
+          ov.querySelector('#spDetWa').addEventListener('click',()=>{
+            const hasHook=!!(CX.automations&&CX.automations.hook&&CX.automations.hook());
+            if(hasHook){CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'soporte',titulo:'Respuesta soporte: '+t.asunto,txt:t.de,hook:CX.automations.hook()});ui.toast('Respuesta enviada vía Make','ok');}
+            else{const msg=encodeURIComponent('Hola '+t.de+', sobre tu solicitud "'+t.asunto+'": '+(ov.querySelector('#spNota').value||'nos ponemos en contacto.'));window.open('https://wa.me/?text='+msg,'_blank');}
+          });
+        }});
+    }));
     host.querySelectorAll('.spWa').forEach(b=>b.addEventListener('click',()=>ui.toast('Respondiendo por WhatsApp (Make)…','ok')));
     const km={all:['Todas',()=>true],abierto:['Abiertas',t=>t.estado==='abierto'],en_proceso:['En proceso',t=>t.estado==='en_proceso'],resuelto:['Resueltas',t=>t.estado==='resuelto']};
     host.querySelectorAll('#spKpis [data-sk]').forEach(el=>el.addEventListener('click',()=>{const d=km[el.dataset.sk];const L=CX.supportStore.list().filter(d[1]);

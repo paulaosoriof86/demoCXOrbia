@@ -100,6 +100,7 @@ CX.MODULES = {
   proyectos:     { icon:'🗂️', label:'Proyectos',            roles:['admin'],           status:'ready' },
   visitas:       { icon:'📋', label:'Visitas Disponibles',  roles:['admin','shopper'], status:'ready' },
   postulaciones: { icon:'📩', label:'Postulaciones',        roles:['admin'], badge:true, status:'ready' },
+  reservas:      { icon:'🙋', label:'Reservas & Asignación', roles:['admin','shopper'], status:'ready' },
   misvisitas:    { icon:'🧭', label:'Mis Visitas',          roles:['shopper'],         status:'ready' },
   shoppers:      { icon:'👥', label:'Shoppers',             roles:['admin'],           status:'ready' },
   miperfil:      { icon:'👤', label:'Mi Perfil',            roles:['shopper'],         status:'ready' },
@@ -120,7 +121,7 @@ CX.MODULES = {
   cuestionarios: { icon:'🧩', label:'Cuestionarios',        roles:['admin'],           status:'ready' },
   usuarios:      { icon:'🔐', label:'Usuarios & Permisos',  roles:['admin'],           status:'ready' },
   config:        { icon:'⚙️', label:'Configuración',         roles:['admin'],           status:'ready' },
-  automatizaciones:{ icon:'⚡', label:'Automatizaciones',     roles:['admin'],           status:'ready' },
+  integraciones: { icon:'🔌', label:'Integraciones & Add-ons',roles:['admin'],           status:'ready' },
   // Comercial / consultora (CRM + marketing) — roadmap del ecosistema
   costos:        { icon:'🧮', label:'Costos & Propuestas',  roles:['admin'],           status:'ready' },
   crm:           { icon:'🤝', label:'CRM Comercial',         roles:['admin'],           status:'ready' },
@@ -138,15 +139,15 @@ CX.MODULES = {
 /* ---------- Navigation layout per role ---------- */
 CX.NAV = {
   admin: [
-    { sec:'Operación', items:['midia','dashboard','visitas','postulaciones','shoppers','informes'] },
+    { sec:'Operación', items:['midia','dashboard','visitas','postulaciones','reservas','shoppers','informes'] },
     { sec:'Admin del Proyecto', items:['clientes','proyectos','rutas','cuestionarios','importador'] },
     { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte'] },
     { sec:'Finanzas',  items:['financiero','movimientos','liquidaciones','lotes'] },
     { sec:'Comercial', items:['costos','crm','marketing'] },
-    { sec:'Configuración', items:['usuarios','config','automatizaciones'] },
+    { sec:'Configuración', items:['usuarios','config','automatizaciones','integraciones'] },
   ],
   shopper: [
-    { sec:'Operación', items:['midia','miperfil','visitas','misvisitas'] },
+    { sec:'Operación', items:['midia','miperfil','visitas','reservas','misvisitas'] },
     { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte'] },
     { sec:'Mis Beneficios', items:['beneficios'] },
   ],

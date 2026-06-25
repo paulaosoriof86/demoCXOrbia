@@ -58,7 +58,7 @@ CX.module('financiero', ({data,ui})=>{
 
   const html_fin = `
   <div class="between" style="margin-bottom:12px"><div>${ui.ph('Dashboard Financiero', p.name+' · '+modelLbl+' · '+p.countries.map(c=>c+' ('+CX.moneda(p,c)+')').join(' y ')+' separados')}</div>
-    <div class="flex"><span class="bdg ${p.modelo==='directo'?'bdg-b':'bdg-p'}">${modelLbl}</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
+    <div class="flex" style="gap:8px"><select id="finDashPer" class="sel" style="width:auto">${CX.finStore.periods(p.id).map(pp=>`<option ${pp===CX.finStore.curPeriod()?'selected':''}>${pp}</option>`).join('')}</select><span class="bdg ${p.modelo==='directo'?'bdg-b':'bdg-p'}">${modelLbl}</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
 
   <div class="card card-p" style="margin-bottom:16px;background:var(--brand-light);border-color:#cfe6f7">
     <div style="font-size:12.5px;color:var(--brand-dark)">${p.modelo==='directo'
@@ -124,6 +124,7 @@ CX.module('financiero', ({data,ui})=>{
   </div>`;
 
   setTimeout(()=>{
+    document.getElementById('finDashPer')?.addEventListener('change',e=>{CX.finStore.setPeriod(e.target.value);CX.router.nav('financiero');});
     document.querySelectorAll('.finDrill').forEach(el=>el.addEventListener('click',()=>{
       const c=el.dataset.c, liqs=CX.liq.forProject(data).filter(l=>l.pais===c);
       ui.modal('Liquidaciones · '+CX.paisLabel(c)+' ('+liqs.length+')', liqs.length?`<table class="tbl"><thead><tr><th>Visita</th><th>Shopper</th><th>Honorario</th><th>Reembolso</th><th>Total</th><th>Estado</th></tr></thead><tbody>${liqs.map(l=>{const lb=CX.liq.label(l.estado);return `<tr><td><b style="font-size:12.5px">${l.sucursal}</b></td><td style="font-size:12px">${l.shopper||'—'}</td><td style="color:var(--green)">${ui.money(l.moneda,l.honorario)}</td><td style="color:var(--purple)">${l.reembolso?ui.money(l.moneda,l.reembolso):'—'}</td><td style="font-weight:700">${ui.money(l.moneda,l.total)}</td><td>${ui.bdg(lb[0],lb[1])}</td></tr>`;}).join('')}</tbody></table>`:ui.empty('💰','Sin liquidaciones en este país.'));

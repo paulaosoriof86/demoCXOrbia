@@ -58,14 +58,31 @@ CX.module('cuestionarios', ({data,ui})=>{
     {onMount:(ov,close)=>{
       ov.querySelector('#aiFile').addEventListener('change',e=>{const f=e.target.files[0];if(f)ov.querySelector('#aiTxt').placeholder='Documento "'+f.name+'" cargado · la IA extraerá el contenido. Puedes añadir notas aquí.';});
       ov.querySelector('#aiGo').addEventListener('click',()=>{ const file=ov.querySelector('#aiFile').files[0];
-        const secs=aiGenerate(ov.querySelector('#aiTxt').value+' '+(file?file.name:''));
+        let secs=aiGenerate(ov.querySelector('#aiTxt').value+' '+(file?file.name:''));
         const crit=ov.querySelector('#aiCrit').value, aplica=ov.querySelector('#aiAplica').value.trim();
-        if(ov.querySelector('#aiMode').value==='new'){
-          const v={id:CX.programa.uid('ver'),name:aplica?('Cuestionario · '+aplica):('Versión '+(_qProg.versions.length+1)),criterio:crit,aplica,sections:secs};
-          _qProg.versions.push(v); _qProg.activeId=v.id;
-        } else { const v=ver(); v.sections=secs; v.criterio=crit; if(aplica)v.aplica=aplica; }
-        close(); draw();
-        ui.toast((CX.ai&&CX.ai.ready()?'IA extrajo el set-up del instructivo':'Borrador generado (configura Gemini para extracción real)')+' · '+secs.length+' secciones'+(aplica?' · aplica a "'+aplica+'"':''),'ok',4200);
+        const aplicar=(finalSecs)=>{
+          if(ov.querySelector('#aiMode').value==='new'){
+            const v={id:CX.programa.uid('ver'),name:aplica?('Cuestionario · '+aplica):('Versión '+(_qProg.versions.length+1)),criterio:crit,aplica,sections:finalSecs};
+            _qProg.versions.push(v); _qProg.activeId=v.id;
+          } else { const v=ver(); v.sections=finalSecs; v.criterio=crit; if(aplica)v.aplica=aplica; }
+          draw();
+          ui.toast((CX.ai&&CX.ai.ready()?'IA extrajo el set-up del instructivo':'Borrador generado')+' · '+finalSecs.length+' secciones'+(aplica?' · aplica a "'+aplica+'"':''),'ok',4200);
+        };
+        close();
+        CX.aiIterate({
+          title:'🤖 Set-up generado · revisa e itera',
+          hint:'La IA propuso estas secciones con sus pesos. Ajusta con una instrucción (agregar/quitar secciones, cambiar pesos) y regenera, o úsalo tal cual.',
+          initial:secs,
+          render:(r)=>`<table class="tbl"><thead><tr><th>Sección</th><th>Peso</th><th>Preguntas</th></tr></thead><tbody>${r.map(s=>`<tr><td><b>${s.name||s[0]}</b></td><td>${(s.peso||s[1]||0)}%</td><td style="font-size:11.5px;color:var(--t3)">${((s.preguntas||s[2]||[]).length)} preg.</td></tr>`).join('')}</tbody></table>`,
+          onRegen:(instr,prev)=>{ const d=instr.toLowerCase();
+            let r=prev.slice();
+            if(/limpiez|orden|imagen/.test(d) && !r.some(s=>/limpiez|imagen/i.test(s.name||s[0]||''))) r.push({name:'Limpieza e imagen',peso:10,preguntas:['Orden y limpieza del local','Imagen del personal']});
+            if(/menos|reduc|corto/.test(d) && r.length>3) r=r.slice(0,Math.max(3,r.length-1));
+            if(/atenci|servicio|bienvenida/.test(d)) r=r.map(s=>(/atenci|bienvenida|recib/i.test(s.name||s[0]||'')?Object.assign({},s,{peso:(s.peso||s[1]||0)+10}):s));
+            return r;
+          },
+          onAccept:aplicar,
+        });
       }); }});
   }
 
@@ -238,178 +255,115 @@ let _cfgTab='marca', _cfgMode='proveedor';
 CX.module('config', ({data,ui})=>{
   const p=data.project();
   const host=ui.el('div');
+  let _cfgTab=_cfgTab||'marca', _cfgMode=_cfgMode||'proveedor';
+  const plan=CX.session.plan||p.plan||'estandar';
 
-  const TABS=[
-    {id:'marca',  ic:'🎨', label:'Marca & Tema'},
-    {id:'plan',   ic:'📦', label:'Plan & Módulos', prov:true},
-    {id:'paises', ic:'🌎', label:'Países & Monedas'},
-    {id:'integ',  ic:'🔗', label:'Integraciones'},
-    {id:'plant',  ic:'✉️', label:'Plantillas'},
-  ];
-
-  /* ----- contenido por pestaña ----- */
-  const tabMarca=()=>`
-    <div class="grid g2">
-      <div class="card card-p">
-        <div class="card-t" style="margin-bottom:12px">Identidad</div>
-        <label class="lbl">Nombre del producto (tu consultora)</label><input class="inp" id="brName" value="${CX.BRAND.name}" style="margin-bottom:10px">
-        <label class="lbl">Nombre del cliente (login)</label><input class="inp" id="brClient" value="${CX.BRAND.clientName||''}" placeholder="Ej. T&A Consultores" style="margin-bottom:4px">
-        <div style="font-size:11px;color:var(--t3);margin-bottom:10px">Login: "Plataforma desarrollada para <b>${CX.BRAND.clientName||'(cliente)'}</b> por ${CX.BRAND.name}".</div>
-        <label class="lbl">Logo del cliente</label>
-        <div class="flex" style="gap:8px"><input type="file" id="brLogo" accept="image/*" class="inp" style="padding:6px">${CX.BRAND.logoUrl?'<button class="btn btn-ghost btn-sm" id="brLogoClr">Quitar</button>':''}</div>
-        <div style="font-size:11px;color:var(--t3);margin-top:8px">También puedes extraer la paleta desde el logo (próximamente).</div>
-      </div>
-      <div class="card card-p">
-        <div class="card-t" style="margin-bottom:12px">Tema, colores y tipografía</div>
-        <label class="lbl">Plantilla</label>
-        <div class="grid g2" style="gap:8px;margin-bottom:12px">
-          ${Object.keys(CX.THEMES).map(k=>{const t=CX.THEMES[k];return `<label class="card hov" style="padding:10px;cursor:pointer;${CX.BRAND.theme===k?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}">
-            <input type="radio" name="thm" value="${k}" ${CX.BRAND.theme===k?'checked':''} style="display:none">
-            <div class="flex" style="gap:6px;margin-bottom:6px">${[t.colors.brand,t.colors.accent,t.colors.navy].map(c=>`<span style="width:18px;height:18px;border-radius:5px;background:${c};border:1px solid rgba(0,0,0,.1)"></span>`).join('')}</div>
-            <div style="font-size:11.5px;font-weight:700;color:var(--t1)">${t.label}</div>
-            <div style="font-size:10px;color:var(--t3)">${t.railStyle==='light'?'Sidebar claro':'Sidebar oscuro'}</div></label>`;}).join('')}
-        </div>
-        <label class="lbl">Tipografía</label>
-        <select class="sel" id="brFont" style="margin-bottom:14px">${CX.FONTS.map(f=>`<option value="${f.id}" ${CX.BRAND.font===f.id?'selected':''}>${f.label}</option>`).join('')}</select>
-        <button class="btn btn-pr btn-sm" id="brApply">Aplicar marca y tema</button>
-      </div>
-    </div>`;
-
-  const tabPlan=()=>{
-    const plan=CX.BRAND.plan||'pro';
-    const allMods=Object.keys(CX.MODULES);
-    return `
-    <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
-      <div style="font-size:12.5px;color:var(--brand-dark)"><b>Consola del proveedor.</b> Elige el plan contratado: preconfigura módulos, temas e integraciones — y luego puedes ajustar todo manualmente.</div>
+  const draw=()=>{
+    host.innerHTML=`${ui.ph('Configuración', 'Personaliza tu plataforma — marca, plan, países, integraciones y permisos · todo sin tocar código')}
+    <div class="flex wrap" style="gap:6px;margin-bottom:14px">
+      ${['marca','plan','paises','nda'].map(t=>`<button class="btn btn-sm ${_cfgTab===t?'btn-pr':'btn-ghost'}" data-tab="${t}">${{marca:'🎨 Marca',plan:'📦 Plan',paises:'🌍 Países',nda:'📜 NDA'}[t]}</button>`).join('')}
     </div>
-    <div class="card card-p" style="margin-bottom:14px">
-      <div class="card-t" style="margin-bottom:12px">Plan contratado</div>
+    <div id="cfgBody"></div>`;
+    host.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{_cfgTab=b.dataset.tab;drawTab();}));
+    drawTab();
+  };
+
+  const drawTab=()=>{
+    const body=host.querySelector('#cfgBody'); if(!body)return;
+    if(_cfgTab==='marca') drawMarca(body);
+    else if(_cfgTab==='plan') drawPlan(body);
+    else if(_cfgTab==='paises') drawPaises(body);
+    else if(_cfgTab==='nda') drawNDA(body);
+  };
+
+  const drawMarca=(body)=>{
+    const T=CX.theme&&CX.theme.active?CX.theme.active():'default';
+    body.innerHTML=`<div class="card card-p" style="margin-bottom:14px">
+      <div class="card-t" style="margin-bottom:10px">Identidad de marca</div>
+      <div class="grid g2" style="gap:10px 14px">
+        <div><label class="lbl">Nombre de la consultora</label><input class="inp" id="cfg_name" value="${CX.BRAND?.name||''}"></div>
+        <div><label class="lbl">Tagline</label><input class="inp" id="cfg_tag" value="${CX.BRAND?.tagline||''}"></div>
+        <div><label class="lbl">Color primario</label><input class="inp" id="cfg_color" type="color" value="${CX.BRAND?.color||'#2a6fdb'}" style="height:36px;padding:2px 5px"></div>
+        <div><label class="lbl">Color de acento</label><input class="inp" id="cfg_accent" type="color" value="${CX.BRAND?.accent||'#f59e0b'}" style="height:36px;padding:2px 5px"></div>
+      </div>
+      <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="saveMarca">Guardar marca</button></div>
+    </div>`;
+    body.querySelector('#saveMarca')?.addEventListener('click',()=>{
+      if(!CX.BRAND)CX.BRAND={};
+      CX.BRAND.name=body.querySelector('#cfg_name').value.trim();
+      CX.BRAND.tagline=body.querySelector('#cfg_tag').value.trim();
+      ui.toast('Marca actualizada · recarga para ver cambios','ok');
+    });
+  };
+
+  const drawPlan=(body)=>{
+    body.innerHTML=`<div class="card card-p">
+      <div class="card-h" style="margin-bottom:12px"><div class="card-t">Plan contratado</div><span class="muted">activa módulos automáticamente</span></div>
       <div class="grid g4" style="gap:10px">
         ${Object.keys(CX.PLANS).map(k=>`<label class="card hov" style="padding:12px;cursor:pointer;text-align:center;${plan===k?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}">
           <input type="radio" name="plan" value="${k}" ${plan===k?'checked':''} style="display:none">
           <div style="font-size:13px;font-weight:800;color:var(--t1)">${CX.PLANS[k].label}</div>
           <div style="font-size:10.5px;color:var(--t3);margin-top:3px">${CX.planModules(k).length} módulos</div></label>`).join('')}
       </div>
-      <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="applyPlan">Aplicar plan</button></div>
-    </div>
-    <div class="card card-p">
-      <div class="card-t" style="margin-bottom:6px">🧩 Módulos activos <span class="muted" style="font-weight:500">(ajuste fino)</span></div>
-      <div style="font-size:11.5px;color:var(--t3);margin-bottom:10px">Activa/desactiva sobre el plan. <b>Nunca se eliminan.</b></div>
-      <div style="max-height:260px;overflow:auto;padding-right:4px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
-        ${allMods.map(id=>{const m=CX.MODULES[id];return `<label class="between" style="padding:7px 9px;border:1px solid var(--border-2);border-radius:9px;cursor:pointer">
-          <span style="font-size:12px;color:var(--t1)">${m.icon} ${m.label}</span>
-          <input type="checkbox" data-mod="${id}" ${CX.moduleEnabled(id)?'checked':''}></label>`;}).join('')}
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+        <button class="btn btn-ghost btn-sm" id="editMods">⚙️ Personalizar módulos activos</button>
+        <button class="btn btn-pr btn-sm" id="applyPlan">Aplicar plan</button>
       </div>
     </div>`;
-  };
-
-  const tabPaises=()=>`
-    <div class="card card-p" style="margin-bottom:14px">
-      <div class="between" style="margin-bottom:12px"><div class="card-t">🌎 Países y monedas del proyecto</div><button class="btn btn-soft btn-sm" id="addPais">＋ País</button></div>
-      ${p.countries.map(c=>`<div class="between" style="padding:9px 0;border-bottom:1px solid var(--border-2)">
-        <span style="font-size:13px;font-weight:600">${CX.paisLabel(c)}</span>
-        <div class="flex" style="gap:10px"><span class="bdg bdg-b">${CX.moneda(p,c)}</span>
-        <span style="font-size:12px;color:var(--t3)">recibe ${CX.moneda(p,c)} ${CX.fin?CX.fin.honRecibe(p,c):'—'} · paga ${CX.moneda(p,c)} ${(p.honorario&&p.honorario[c])||'—'}</span></div></div>`).join('')}
-      <div style="background:var(--amber-bg);border-radius:9px;padding:9px 12px;font-size:11.5px;color:#8a5b00;margin-top:10px">Cada país mantiene su moneda; nunca se suman. El shopper solo ve proyectos de su país.</div>
-    </div>`;
-
-  const INTEGS=[
-    ['🔄','Make','Automatizaciones (HR, mensajes, estados)','pro'],
-    ['📊','Google Sheets','HR externa en vivo','estandar'],
-    ['📈','Excel Online','HR externa (Microsoft Graph)','estandar'],
-    ['📲','WhatsApp Web','Mensajes vía wa.me (sin API)','basico'],
-    ['🟢','Green API / WhatsApp API','Envío automático y masivo','pro'],
-    ['📧','Gmail / Workspace','Correo + SSO','estandar'],
-    ['📨','Outlook / M365','Correo y gestión interna','pro'],
-    ['📬','Mailchimp','Campañas masivas a shoppers','pro'],
-    ['📁','Google Docs/Drive','Documentos del proyecto','estandar'],
-    ['📘','Facebook','Difusión de convocatorias','estandar'],
-  ];
-  const tabInteg=()=>`
-    <div class="card card-p">
-      <div class="card-t" style="margin-bottom:12px">Integraciones disponibles</div>
-      <div class="grid g2" style="gap:10px">
-        ${INTEGS.map(r=>`<div class="between" style="padding:11px 13px;border:1px solid var(--border);border-radius:10px">
-          <div class="flex" style="gap:10px"><span style="font-size:20px">${r[0]}</span><div><div style="font-size:13px;font-weight:700;color:var(--t1)">${r[1]}</div><div style="font-size:11px;color:var(--t3)">${r[2]}</div></div></div>
-          <label class="flex" style="gap:6px"><span class="bdg bdg-n" style="font-size:9px">${r[3]}+</span><input type="checkbox"></label></div>`).join('')}
-      </div>
-      <div style="margin-top:12px">${ui.aiBox('Las integraciones se activan por proyecto y plan. WhatsApp tiene modo Web (sin API) y modo API para masivo. Detalle en docs/INTEGRACIONES.md.','Conectores')}</div>
-    </div>`;
-
-  const PLANTILLAS=[
-    ['Ofrecer visita','📲 WA','Hola {shopper}, hay una visita en {sucursal} ({ciudad}) por {honorario}. ¿Te interesa?'],
-    ['Recordatorio de agenda','📲 WA','{shopper}, recuerda tu visita agendada en {sucursal} el {fecha}.'],
-    ['¿Realizaste la visita?','📲 WA','{shopper}, ¿pudiste realizar la visita de {sucursal}? Avísanos.'],
-    ['Recordatorio cuestionario','📧 Correo','{shopper}, completa el cuestionario de {sucursal} para procesar tu pago.'],
-    ['Marcar completada','📲 WA','{shopper}, marca tu visita de {sucursal} como completada en la plataforma.'],
-    ['Invitación a certificarse','📧 Correo','{shopper}, certifícate para {proyecto} y desbloquea más visitas.'],
-  ];
-  const tabPlant=()=>`
-    <div class="card card-p">
-      <div class="between" style="margin-bottom:12px"><div class="card-t">Plantillas de mensajes (WhatsApp + correo)</div><button class="btn btn-soft btn-sm">＋ Plantilla</button></div>
-      ${PLANTILLAS.map(t=>`<div style="border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-bottom:9px">
-        <div class="between" style="margin-bottom:6px"><div style="font-size:13px;font-weight:700;color:var(--t1)">${t[0]} <span class="bdg bdg-n" style="font-size:9px">${t[1]}</span></div><button class="btn btn-ghost btn-sm">Editar</button></div>
-        <div style="font-size:12px;color:var(--t2);background:var(--panel-2);border-radius:8px;padding:8px 10px">${t[2]}</div></div>`).join('')}
-      <div style="margin-top:8px">${ui.aiBox('Variables dinámicas: {shopper} {sucursal} {ciudad} {fecha} {honorario} {proyecto} {link}. Se usan para ofrecer visitas, recordatorios, cuestionario, certificación y pago.','Mensajería con variables')}</div>
-    </div>`;
-
-  const draw=()=>{
-    const tabs=TABS.filter(t=>!(t.prov&&_cfgMode==='cliente'));
-    if(!tabs.some(t=>t.id===_cfgTab))_cfgTab='marca';
-    const body={marca:tabMarca,plan:tabPlan,paises:tabPaises,integ:tabInteg,plant:tabPlant}[_cfgTab]();
-    host.innerHTML=`
-      <div class="between" style="margin-bottom:8px">
-        <div>${ui.ph('Configuración', _cfgMode==='proveedor'?'Consola del proveedor — control total':'Consola del cliente — autogestión según tu plan')}</div>
-        <div class="flex" style="gap:0;border:1px solid var(--border);border-radius:9px;overflow:hidden">
-          <button class="cfgMode btn btn-sm ${_cfgMode==='proveedor'?'btn-pr':'btn-ghost'}" data-mode="proveedor" style="border-radius:0">🛠️ Proveedor</button>
-          <button class="cfgMode btn btn-sm ${_cfgMode==='cliente'?'btn-pr':'btn-ghost'}" data-mode="cliente" style="border-radius:0">👤 Cliente</button>
-        </div>
-      </div>
-      <div class="flex wrap" style="gap:6px;margin-bottom:16px">
-        ${tabs.map(t=>`<button class="cfgTab btn btn-sm ${_cfgTab===t.id?'btn-pr':'btn-ghost'}" data-tab="${t.id}">${t.ic} ${t.label}</button>`).join('')}
-      </div>
-      ${body}`;
-    bind();
-  };
-
-  const bind=()=>{
-    host.querySelectorAll('.cfgMode').forEach(b=>b.addEventListener('click',()=>{_cfgMode=b.dataset.mode;draw();}));
-    host.querySelectorAll('.cfgTab').forEach(b=>b.addEventListener('click',()=>{_cfgTab=b.dataset.tab;draw();}));
-    // marca
-    const logoInput=host.querySelector('#brLogo');
-    if(logoInput)logoInput.addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{CX.BRAND.logoUrl=rd.result;ui.toast('Logo cargado · pulsa Aplicar','ok');};rd.readAsDataURL(f);});
-    const clr=host.querySelector('#brLogoClr'); if(clr)clr.addEventListener('click',()=>{CX.BRAND.logoUrl='';draw();});
-    host.querySelectorAll('input[name="thm"]').forEach(r=>r.addEventListener('change',()=>{CX.applyTheme(r.value);CX.router.buildRail(CX.session.role);}));
-    const ap=host.querySelector('#brApply');
-    if(ap)ap.addEventListener('click',()=>{
-      CX.BRAND.name=host.querySelector('#brName').value||'CXOrbia';
-      CX.BRAND.clientName=host.querySelector('#brClient').value||'';
-      const thm=host.querySelector('input[name="thm"]:checked'); if(thm)CX.applyTheme(thm.value);
-      CX.applyFont(host.querySelector('#brFont').value);
-      try{localStorage.setItem('cx_tenant',JSON.stringify({name:CX.BRAND.name,clientName:CX.BRAND.clientName,logoUrl:CX.BRAND.logoUrl,theme:CX.BRAND.theme,font:CX.BRAND.font}));}catch(e){}
-      CX.router.buildRail(CX.session.role); ui.toast('Marca y tema aplicados a toda la plataforma','ok');
+    body.querySelector('#applyPlan')?.addEventListener('click',()=>{
+      const r=body.querySelector('input[name="plan"]:checked');
+      if(r){CX.applyPlan(r.value);CX.router.buildRail(CX.session.role);ui.toast('Plan '+CX.PLANS[r.value].label+' aplicado','ok');}
     });
-    // plan
-    const apPlan=host.querySelector('#applyPlan');
-    if(apPlan)apPlan.addEventListener('click',()=>{const r=host.querySelector('input[name="plan"]:checked');if(r){CX.applyPlan(r.value);CX.router.buildRail(CX.session.role);ui.toast('Plan '+CX.PLANS[r.value].label+' aplicado · módulos preconfigurados','ok',3500);draw();}});
-    const apPais=host.querySelector('#addPais');
-    if(apPais)apPais.addEventListener('click',()=>{
+    body.querySelector('#editMods')?.addEventListener('click',()=>{
+      const all=Object.keys(CX.MODULES).filter(k=>CX.MODULES[k].roles.includes('admin'));
+      const active=new Set(CX.planModules(plan));
+      ui.modal('⚙️ Módulos activos',
+        '<p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Activa o desactiva módulos del menú.</p><div class="grid g2" style="gap:8px">'+
+        all.map(k=>'<label class="flex" style="gap:9px;padding:9px 11px;border:1px solid var(--border);border-radius:9px;cursor:pointer"><input type="checkbox" class="modChk" data-id="'+k+'" '+(active.has(k)?'checked':'')+
+        '> <b style="font-size:12.5px">'+CX.MODULES[k].icon+' '+CX.MODULES[k].label+'</b></label>').join('')+
+        '</div><div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="modSave">Guardar</button></div>',
+        {onMount:(ov,close)=>{ov.querySelector('#modSave').addEventListener('click',()=>{
+          const sel=[...ov.querySelectorAll('.modChk:checked')].map(c=>c.dataset.id);
+          try{localStorage.setItem('cx_modules_override',JSON.stringify(sel));}catch(e){}
+          CX.router.buildRail(CX.session.role);close();ui.toast(sel.length+' módulos activos guardados','ok');
+        });}});
+    });
+  };
+
+  const drawPaises=(body)=>{
+    body.innerHTML=`<div class="card card-p">
+      <div class="card-h"><div class="card-t">Países del proyecto</div><button class="btn btn-soft btn-sm" id="addPais">＋ Agregar país</button></div>
+      <div class="flex wrap" style="gap:8px">${p.countries.map(c=>`<div class="flex" style="gap:6px;padding:6px 11px;border:1px solid var(--border);border-radius:9px">
+        <span>${CX.paisFlag(c)} ${CX.paisName(c)} (${p.currency[c]||'—'})</span>
+        <button class="btn btn-ghost btn-sm" data-rmc="${c}" style="color:var(--red);padding:1px 7px">✕</button></div>`).join('')}
+      </div>
+    </div>`;
+    body.querySelector('#addPais')?.addEventListener('click',()=>{
       const opts=CX.COUNTRIES.filter(co=>!p.countries.includes(co.c));
-      ui.modal('Agregar país al proyecto',`
-        <input class="inp" id="paisSearch" placeholder="🔎 Buscar país…" style="margin-bottom:10px">
-        <div id="paisList" style="max-height:240px;overflow:auto">
-          ${opts.map(co=>`<button class="paisOpt btn btn-ghost btn-sm" data-c="${co.c}" data-n="${co.n}" style="width:100%;justify-content:space-between;margin-bottom:6px">${CX.paisFlag(co.c)} ${co.n}<span class="bdg bdg-n">${co.cur}</span></button>`).join('')}
-        </div>`,{onMount:(ov,close)=>{
-        const filt=()=>{const q=(ov.querySelector('#paisSearch').value||'').toLowerCase();ov.querySelectorAll('.paisOpt').forEach(b=>{b.style.display=b.dataset.n.toLowerCase().includes(q)?'':'none';});};
-        ov.querySelector('#paisSearch').addEventListener('input',filt);
-        ov.querySelectorAll('.paisOpt').forEach(b=>b.addEventListener('click',()=>{
-          const c=b.dataset.c; p.countries.push(c); p.currency=p.currency||{}; p.currency[c]=CX.moneda(p,c);
-          close(); ui.toast(b.dataset.n+' agregado al proyecto','ok'); draw();
-        }));
-      }});
+      ui.modal('Agregar país',
+        '<input class="inp" id="paisSearch" placeholder="🔎 Buscar..." style="margin-bottom:8px">'+
+        '<div id="paisList" style="max-height:300px;overflow:auto">'+
+        opts.map(co=>'<button class="btn btn-ghost" data-c="'+co.c+'" data-n="'+co.n+'" style="display:block;width:100%;text-align:left;padding:8px 11px">'+
+        CX.paisFlag(co.c)+' '+co.n+' ('+co.cur+')</button>').join('')+'</div>',
+        {onMount:(ov,close)=>{
+          ov.querySelector('#paisSearch').addEventListener('input',e=>{const q=e.target.value.toLowerCase();ov.querySelectorAll('[data-c]').forEach(b=>{b.style.display=(b.dataset.n.toLowerCase().includes(q)||b.dataset.c.toLowerCase().includes(q))?'':'none';});});
+          ov.querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',()=>{p.countries.push(b.dataset.c);p.currency=p.currency||{};p.currency[b.dataset.c]=CX.moneda(b.dataset.c);close();ui.toast(b.dataset.n+' agregado','ok');draw();}));
+        }});
     });
-    host.querySelectorAll('[data-mod]').forEach(c=>c.addEventListener('change',()=>{CX.setModuleEnabled(c.dataset.mod,c.checked);CX.router.buildRail(CX.session.role);ui.toast((c.checked?'Activado: ':'Desactivado: ')+CX.MODULES[c.dataset.mod].label,c.checked?'ok':'');}));
+    body.querySelectorAll('[data-rmc]').forEach(b=>b.addEventListener('click',()=>{p.countries=p.countries.filter(c=>c!==b.dataset.rmc);draw();ui.toast('País eliminado del proyecto','');}));
   };
+
+  const drawNDA=(body)=>{
+    const nda=CX.BRAND&&CX.BRAND.nda||'Al acceder a esta plataforma, confirmas que has leído y aceptas los términos de confidencialidad y uso de datos.';
+    body.innerHTML=`<div class="card card-p">
+      <div class="card-t" style="margin-bottom:10px">NDA / Acuerdo de confidencialidad</div>
+      <textarea class="inp" id="cfg_nda" rows="6">${nda}</textarea>
+      <div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="saveNDA">Guardar NDA</button></div>
+    </div>`;
+    body.querySelector('#saveNDA')?.addEventListener('click',()=>{if(!CX.BRAND)CX.BRAND={};CX.BRAND.nda=body.querySelector('#cfg_nda').value;ui.toast('NDA actualizado','ok');});
+  };
+
   draw();
   return host;
 });
+

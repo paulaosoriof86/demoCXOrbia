@@ -121,16 +121,36 @@ CX.module('cli_programa', ({ui})=>{
 /* ============== Servicios & Add-ons (marketplace) ============== */
 CX.module('cli_market', ({ui})=>{
   const C=CX.clienteData;
-  setTimeout(()=>{ CX.cliUI.wirePersona();
-    document.querySelectorAll('[data-svc]').forEach(b=>b.addEventListener('click',()=>CX.ui.toast('Solicitud enviada a tu consultora: '+b.dataset.svc,'ok',2800)));
-  },0);
+  const DET={
+    'Investigación de mercados':{como:'Diseñamos y ejecutamos estudios ad-hoc (paneles, encuestas cuanti/cuali, focus groups) y los cruzamos con tus datos de mystery shopping para una lectura 360°.',valor:['Decisiones con evidencia, no intuición','Mismo proveedor que ya conoce tu marca','Resultados en tableros, no en PDFs sueltos']},
+    'Voz del Cliente (VoC)':{como:'Encuestas post-transacción (QR en sucursal, link, WhatsApp) que capturan al cliente REAL y calculan tu NPS/CSAT en vivo, comparable con la evaluación incógnita.',valor:['Contrastas lo que dice el cliente vs. lo que ve el evaluador','NPS por sucursal en tiempo real','Alertas automáticas ante caídas']},
+    'Mystery shopping competitivo':{como:'Medimos a tu competencia con la misma vara y escenarios, para que sepas dónde estás vs. el sector.',valor:['Benchmark objetivo por sector','Identifica tus ventajas y brechas reales','Argumento para dirección y junta']},
+    'Academia para tu personal':{como:'Cursos y certificación para TU personal, generados a partir de las brechas que detecta el programa: si falla "tiempos de espera", se crea el módulo de refuerzo.',valor:['Capacitación dirigida a lo que de verdad falla','Certifica a tu equipo, no solo lo evalúa','Mide la mejora curso → siguiente visita']},
+    'Evidencia foto/GPS/video':{como:'Validación de ubicación (geocerca), foto con timestamp y video según el escenario, para evidencia irrefutable de cada visita.',valor:['Cero dudas sobre si la visita ocurrió','Evidencia con hora y lugar verificables','Soporta auditorías y reclamos']},
+    'BI & tableros avanzados':{como:'Conectamos tus datos a Power BI / Looker para explotarlos a profundidad con tableros ejecutivos a la medida.',valor:['Tu data integrada con el resto del negocio','Tableros para dirección','Exploración sin límites']},
+    'Contenidos & campañas':{como:'Generación de piezas y campañas (con IA), publicación y medición — para reclutar shoppers o comunicar resultados de marca.',valor:['Convocatorias de evaluadores más rápidas','Comunicación de marca consistente','Medición de alcance y engagement']},
+    'Integraciones a la medida':{como:'Conectamos WhatsApp, Notion, Zoom/Meet, Mailchimp, Microsoft 365, SSO y más, según tu stack.',valor:['La plataforma vive dentro de tus herramientas','Automatizaciones de punta a punta','Single sign-on para tu equipo']},
+  };
   const tagTone={'Add-on':'b','Pro':'p','Enterprise':'a'};
-  const card=(m)=>`<div class="card card-p">
+  const detail=(m)=>{ const d=DET[m.name]||{como:m.desc,valor:[]};
+    ui.modal(m.icon+' '+m.name,`
+      <div class="flex" style="gap:8px;margin-bottom:10px">${ui.bdg(m.tag,tagTone[m.tag]||'n')}<span class="muted" style="font-size:11.5px">${m.cat}</span></div>
+      <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">${d.como}</div>
+      ${d.valor.length?`<div class="card-t" style="font-size:12.5px;margin-bottom:6px">Valor para tu marca</div>
+      <ul style="margin:0 0 14px 18px;font-size:12.5px;color:var(--t2);line-height:1.7">${d.valor.map(v=>`<li>${v}</li>`).join('')}</ul>`:''}
+      <div style="text-align:right"><button class="btn btn-pr btn-sm" data-req="${m.name}">Solicitar a mi consultora</button></div>
+    `,{onMount:(ov,close)=>ov.querySelector('[data-req]').addEventListener('click',()=>{close();ui.toast('Solicitud enviada a tu consultora: '+m.name,'ok',2800);})});
+  };
+  setTimeout(()=>{ CX.cliUI.wirePersona();
+    document.querySelectorAll('[data-svc]').forEach(b=>b.addEventListener('click',()=>detail(C.marketplace.find(x=>x.name===b.dataset.svc))));
+    document.querySelectorAll('[data-card]').forEach(b=>b.addEventListener('click',()=>detail(C.marketplace.find(x=>x.name===b.dataset.card))));
+  },0);
+  const card=(m)=>`<div class="card card-p hov" data-card="${m.name}" style="cursor:pointer">
     <div class="between"><div style="font-size:26px">${m.icon}</div>${ui.bdg(m.tag,tagTone[m.tag]||'n')}</div>
     <div class="card-t" style="font-size:14px;margin-top:10px">${m.name}</div>
     <div style="font-size:12.5px;color:var(--t2);margin-top:4px;line-height:1.5">${m.desc}</div>
     <div style="font-size:11px;color:var(--t3);margin-top:8px">${m.cat}</div>
-    <button class="btn btn-soft btn-sm" data-svc="${m.name}" style="margin-top:12px;width:100%">Solicitar información</button>
+    <button class="btn btn-soft btn-sm" data-svc="${m.name}" style="margin-top:12px;width:100%">Ver detalle y solicitar</button>
   </div>`;
   return `
     ${ui.ph('Servicios & Add-ons', 'Lleva tu programa más allá del trabajo de campo')}

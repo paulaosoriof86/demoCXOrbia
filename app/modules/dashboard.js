@@ -49,7 +49,10 @@ CX.module('dashboard', ({data,ui})=>{
       const all=ov.querySelector('#drAll'); if(all)all.addEventListener('change',()=>{ov.querySelectorAll('.drSel:not(:disabled)').forEach(c=>c.checked=all.checked);upd();});
       ov.querySelectorAll('.drSel').forEach(c=>c.addEventListener('change',upd));
       const vget=(id)=>pool().find(x=>x.id===id)||{};
-      const sendWa=(ids)=>{ if(!ids.length){ui.toast('Selecciona al menos un shopper','warn');return;} ids.forEach(id=>{const v=vget(id);CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'recordatorio',titulo:'Recordatorio: '+titulo,txt:(v.shopper||'')+' · '+v.sucursal,hook:CX.automations.hook&&CX.automations.hook()||'(Make)'});}); ui.toast('WhatsApp enviado a '+ids.length+' shopper(s) (Make)','ok',3200); };
+      const sendWa=(ids)=>{ if(!ids.length){ui.toast('Selecciona al menos un shopper','warn');return;}
+        const hasHook=!!(CX.automations&&CX.automations.hook&&CX.automations.hook());
+        ids.forEach(id=>{const v=vget(id);if(hasHook){CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'recordatorio',titulo:'Recordatorio',txt:(v.shopper||'')+' · '+v.sucursal,hook:CX.automations.hook()});}else{const wa=(v.shopperWa||v.whatsapp||'');const msg=encodeURIComponent('Hola '+(v.shopper||'Evaluador')+', recordatorio: tu visita en '+v.sucursal+'. Por favor confírmanos.');if(wa){window.open('https://wa.me/'+wa.replace(/[^0-9]/g,'')+'?text='+msg,'_blank');}else{ui.toast('Sin número WA para '+(v.shopper||'el shopper')+' — agrégalo en su perfil','warn',2500);}}});
+        ui.toast(hasHook?'WhatsApp enviado vía Make ('+ids.length+')':'WhatsApp Web abierto para '+ids.length+' shopper(s)','ok',3200); };
       ov.querySelectorAll('.drWa').forEach(b=>b.addEventListener('click',()=>sendWa([b.dataset.vid])));
       ov.querySelectorAll('.drMail').forEach(b=>b.addEventListener('click',()=>ui.toast('Correo enviado a '+(vget(b.dataset.vid).shopper||'shopper')+' (Make/Outlook)','ok')));
       const ws=ov.querySelector('#drWaSel'); if(ws)ws.addEventListener('click',()=>sendWa(sel()));
@@ -93,7 +96,7 @@ CX.module('dashboard', ({data,ui})=>{
   const back=(now,step,floor)=>[Math.max(floor==null?0:floor,now-step*2),Math.max(floor==null?0:floor,now-step),now];
   const kpisTrim=[
     {n:'% Cumplimiento', vals:back(cumplNow,8,0), suf:'%', up:true},
-    {n:'Días Real→Submit', vals:[2.6+0.5,2.6+0.2,2.6], suf:'d', up:false},
+    {n:'Días Real→Submit', vals:[3.1,2.8,2.6], suf:'d', up:false},
     {n:'Visitas realizadas', vals:[Math.round(realNow*0.62),Math.round(realNow*0.82),realNow], suf:'', up:true},
     {n:'% Cuestionarios a tiempo', vals:back(Math.min(100,cumplNow+6),5,0), suf:'%', up:true},
     {n:'Calidad cuestionario (QA)', vals:back(Math.min(100,cumplNow+8),3,0), suf:'%', up:true},
@@ -103,7 +106,8 @@ CX.module('dashboard', ({data,ui})=>{
   ];
   const trimRows=kpisTrim.map(r=>{
     const delta=r.vals[2]-r.vals[1]; const good=r.up?delta>=0:delta<=0;
-    return `<tr><td><b>${r.n}</b></td>${r.vals.map((v,i)=>`<td style="${i===2?'font-weight:800;color:var(--t1)':''}">${v}${r.suf}</td>`).join('')}
+    const fmt=(v)=>r.suf==='d'?v.toFixed(2)+'d':v+r.suf;
+    return `<tr><td><b>${r.n}</b></td>${r.vals.map((v,i)=>`<td style="${i===2?'font-weight:800;color:var(--t1)':''}">${fmt(v)}</td>`).join('')}
       <td style="color:${good?'var(--green)':'var(--red)'};font-weight:700">${delta>=0?'▲ +':'▼ '}${Math.abs(delta)}${r.suf}</td></tr>`;
   }).join('');
 
@@ -225,7 +229,11 @@ CX.module('dashboard', ({data,ui})=>{
       ${bucket('🗓️ Pendientes por programar','green',porProgramar,v=>'Desde: '+fmtD(v.disponibleDesde),'fecha','Recordatorio: agenda la fecha de tu visita asignada.')}
       ${bucket('👤 Pendientes por asignar','purple',porAsignar,v=>'Sin shopper','fecha')}
       ${bucket('⚠ Alertas — límites de tiempo excedidos','red',scan.atrasadas,v=>'Vencida · '+fmtD(v.agendada||v.disponibleDesde),'alerta','Urgente: tu visita está vencida, contáctanos.')}`;
-    board.querySelectorAll('[data-goseco]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('visitas')));
+    board.querySelectorAll('[data-goseco]').forEach(b=>b.addEventListener('click',()=>{
+      const vid=b.dataset.vid||'';
+      CX.router.nav('visitas');
+      setTimeout(()=>{ if(vid){const row=document.querySelector(`[data-vid="${vid}"]`);if(row){row.style.outline='2px solid var(--brand)';row.style.borderRadius='8px';setTimeout(()=>row.style.outline='',2000);row.scrollIntoView&&row.scrollIntoView({block:'center'});}} },300);
+    }));
     board.querySelectorAll('[data-wa]').forEach(b=>b.addEventListener('click',()=>{CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'recordatorio',titulo:'Recordatorio manual',txt:decodeURIComponent(b.dataset.wa),hook:CX.automations.hook()||'(Make sin configurar)'});ui.toast('WhatsApp enviado (Make): '+decodeURIComponent(b.dataset.wa).slice(0,40)+'…','ok');}));
     board.querySelectorAll('[data-mail]').forEach(b=>b.addEventListener('click',()=>ui.toast('Correo enviado (Make/Outlook)','ok')));
     board.querySelectorAll('[data-bulk]').forEach(b=>b.addEventListener('click',()=>ui.toast('Recordatorio masivo enviado por WhatsApp + correo (Make)','ok',3200)));

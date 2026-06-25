@@ -90,4 +90,6 @@ CX.topbar = {
   },
 };
 
-document.addEventListener('DOMContentLoaded',()=>{ setTimeout(()=>CX.topbar.init(),60); });
+function __cxTopbarBoot(){ setTimeout(()=>CX.topbar.init(),60); }
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',__cxTopbarBoot);
+else __cxTopbarBoot();

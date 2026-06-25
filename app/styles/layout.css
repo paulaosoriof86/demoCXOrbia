@@ -108,7 +108,14 @@
   .topbar{padding:10px 16px}
 }
 
-/* Shopper portal = phone-framed when admin previews; full on mobile */
+/* Sidebar colapsable */
+.rail{transition:width .22s ease}
+.rail.collapsed{width:56px!important}
+.rail.collapsed .rail-label,.rail.collapsed .rail-grp-lbl,.rail.collapsed .rail-foot .rail-user div,.rail.collapsed .rail-proj{display:none!important}
+.rail.collapsed .rail-item{justify-content:center;padding:8px}
+.rail.collapsed .rail-item .ri{margin:0}
+.collapse-btn{background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:var(--t3);font-size:16px;transition:background .12s}
+.collapse-btn:hover{background:rgba(255,255,255,.12)}
 body.role-shopper .ph-t{font-size:22px}
 
 /* ---------- Tema de sidebar CLARO (plantilla T&A corporativa) ---------- */

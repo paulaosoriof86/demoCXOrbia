@@ -83,7 +83,7 @@ CX.module('postulaciones', ({data,ui})=>{
     ${reprog.slice(0,3).map(x=>`<div class="between wrap" style="gap:12px;padding:10px 0;border-bottom:1px solid var(--border-2)">
       <div><b style="font-size:13px">${x.shopper}</b> · <span style="font-size:12px;color:var(--t2)">${x.sucursal}</span>
       <div style="font-size:11px;color:var(--t3)">Fecha vigente → propuesta · aplicación tarde 😬</div></div>
-      <div class="flex"><button class="btn btn-ghost btn-sm">👁 Revisar</button><button class="btn btn-green btn-sm">✅ Autorizar nueva fecha</button><button class="btn btn-ghost btn-sm">Conservar anterior</button></div>
+      <div class="flex" style="flex-wrap:wrap;gap:4px"><button class="btn btn-ghost btn-sm" data-revpost="${x.id}">👁 Revisar reprog.</button><button class="btn btn-green btn-sm" data-authfecha="${x.id}">✅ Nueva fecha</button><button class="btn btn-ghost btn-sm" data-keepfecha="${x.id}">Conservar anterior</button></div>
     </div>`).join('')}</div>`:''}
 
   <div id="pGroups">${groupHTML}</div>
@@ -138,7 +138,10 @@ CX.module('postulaciones', ({data,ui})=>{
       // ocultar grupos sin tarjetas visibles
       document.querySelectorAll('#pGroups .card').forEach(g=>{const any=[...g.querySelectorAll('[data-pid]')].some(el=>el.style.display!=='none');g.style.display=any?'':'none';});};
     ['pSearch','pProj','pPais','pEst'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',search);});
-    document.querySelectorAll('[data-perfil]').forEach(b=>b.addEventListener('click',()=>profileModal(b.dataset.perfil)));
+    /* botones de reprogramación (revisar / autorizar nueva fecha / conservar anterior) */
+    document.querySelectorAll('[data-revpost]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.revpost);ui.modal('Revisar solicitud de reprogramación · '+(x&&x.shopper||''),`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Fecha actual: <b>${x&&x.fechaActual||'—'}</b> · Fecha propuesta: <b>${x&&x.fechaProp||'—'}</b></p><div style="background:var(--amber-bg);border-radius:9px;padding:9px 12px;font-size:12px;color:#8a5b00">Usa "Autorizar nueva fecha" para aprobar la reprogramación o "Conservar anterior" para mantener la fecha actual.</div>`);}));
+    document.querySelectorAll('[data-authfecha]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.authfecha);if(x){const v=data._visitas.find(z=>z.id===x.visitaId);if(v&&x.fechaProp){v.agendada=x.fechaProp;x.reprog=false;}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_aprobada',icon:'✅',tono:'g',titulo:'Reprogramación aprobada',txt:'Tu visita en '+(x.sucursal||'')+' fue reprogramada a '+(x.fechaProp||'nueva fecha'),nav:'misvisitas'});CX.automations&&CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal,fecha:x.fechaProp});CX.bus&&CX.bus.emit('visit-flow');}ui.toast('Nueva fecha autorizada · shopper notificado · HR sincronizada','ok',3600);}));
+    document.querySelectorAll('[data-keepfecha]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.keepfecha);if(x){x.reprog=false;x.fechaProp=null;}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_rechazada',icon:'⚠️',tono:'a',titulo:'Reprogramación no autorizada',txt:'La visita en '+(x&&x.sucursal||'')+' conserva la fecha original',nav:'misvisitas'});CX.bus&&CX.bus.emit('visit-flow');ui.toast('Fecha original conservada · shopper notificado','ok');}));
 
     /* editar fecha/franja de la visita de una postulación */
     document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const x=posts.find(z=>z.id===b.dataset.edit); if(!x)return;

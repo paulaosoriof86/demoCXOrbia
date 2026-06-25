@@ -53,13 +53,30 @@ CX.module('documentos', ({data,role,ui})=>{
       ${ui.ph('Documentos', p.name+' · recursos operativos por proyecto · se leen dentro de la plataforma')}
       <div class="between" style="margin-bottom:14px">${ui.bdg(docs.length+' recursos','n')}${role==='admin'?'<button class="btn btn-pr btn-sm" id="docUp">＋ Subir documento</button>':''}</div>
       <div class="grid g2">
-        ${docs.map(d=>`<div class="card hov card-p flex" data-doc="${d.id}" style="gap:13px;cursor:pointer">
-          <div style="font-size:26px">${d.ic}</div>
-          <div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--t1)">${d.n}</div><div style="font-size:11.5px;color:var(--t3)">${d.meta}</div></div>
-          <button class="btn btn-soft btn-sm" data-doc="${d.id}">Abrir</button></div>`).join('')}
+        ${docs.map(d=>`<div class="card hov card-p flex" style="gap:13px">
+          <div style="flex:1;display:flex;gap:13px;cursor:pointer" data-doc="${d.id}"><div style="font-size:26px">${d.ic}</div>
+          <div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--t1)">${d.n}</div><div style="font-size:11.5px;color:var(--t3)">${d.meta}</div></div></div>
+          <div class="flex" style="gap:6px;flex-shrink:0">
+            <button class="btn btn-soft btn-sm" data-doc="${d.id}">Abrir</button>
+            ${role==='admin'?`<button class="btn btn-ghost btn-sm" data-editd="${d.id}" title="Editar">✎</button><button class="btn btn-ghost btn-sm" data-deld="${d.id}" title="Eliminar" style="color:var(--red)">✕</button>`:''}
+          </div></div>`).join('')}
       </div>
       <div class="card card-p" style="margin-top:16px">${ui.aiBox('Cada recurso se abre y se lee dentro de la plataforma (PDF, video embebido, checklist) — sin descargar ni buscar en chats. Entrego el correcto según la visita.','Lectura contextual en plataforma')}</div>`;
     host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',()=>{const d=docs.find(x=>x.id===b.dataset.doc);if(d)viewer(d);}));
+    host.querySelectorAll('[data-editd]').forEach(b=>b.addEventListener('click',()=>{const d=docs.find(x=>x.id===b.dataset.editd);if(!d)return;
+      ui.modal('✎ Editar documento · '+d.n,`
+        <div class="grid g2" style="gap:10px 12px"><div><label class="lbl">Nombre</label><input class="inp" id="edN" value="${(d.n||'').replace(/"/g,'&quot;')}"></div>
+        <div><label class="lbl">Icono</label><input class="inp" id="edIc" value="${d.ic||'📄'}" style="max-width:80px"></div>
+        <div style="grid-column:1/3"><label class="lbl">URL de video (opcional)</label><input class="inp" id="edUrl" value="${(d.url||'').replace(/"/g,'&quot;')}" placeholder="https://youtube.com/…"></div>
+        <div style="grid-column:1/3"><label class="lbl">Contenido / texto</label><textarea class="inp" id="edBody" rows="4">${d.body||''}</textarea></div></div>
+        <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="edSave">Guardar</button></div>
+      `,{onMount:(ov,close)=>{ov.querySelector('#edSave').addEventListener('click',()=>{
+        d.n=ov.querySelector('#edN').value.trim()||d.n;d.ic=ov.querySelector('#edIc').value||d.ic;
+        const u=ov.querySelector('#edUrl').value.trim();if(u)d.url=CX.learnStore?CX.learnStore.embedUrl(u):u.replace('youtube.com/watch?v=','youtube-nocookie.com/embed/');
+        d.body=ov.querySelector('#edBody').value;close();draw();ui.toast('Documento actualizado','ok');
+      });}});
+    }));
+    host.querySelectorAll('[data-deld]').forEach(b=>b.addEventListener('click',()=>{CX.docStore._d[pid]=(CX.docStore._d[pid]||[]).filter(x=>x.id!==b.dataset.deld);draw();ui.toast('Documento eliminado','');}));
     const up=host.querySelector('#docUp');
     if(up)up.addEventListener('click',()=>ui.modal('Subir documento',`
       <div style="margin-bottom:10px"><label class="lbl">Nombre</label><input class="inp" id="duN" placeholder="Ej. Protocolo de servicio 2026"></div>

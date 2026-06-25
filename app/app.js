@@ -151,5 +151,19 @@ CX.app = {
     CX.ui.toast('Sesión cerrada','');
   },
 };
+function __cxBoot(){ CX.pwa && CX.pwa.init(); CX.app.init(); }
 
-document.addEventListener('DOMContentLoaded',()=>{ CX.pwa && CX.pwa.init(); CX.app.init(); });
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',__cxBoot);
+else __cxBoot();
+    /* colapsar sidebar */
+    function __cxCollapse(){
+      const btn=document.getElementById('railCollapse'); if(!btn)return;
+      const rail=document.querySelector('.rail');
+      if(!btn._wired){btn._wired=true;
+        btn.addEventListener('click',()=>{ rail.classList.toggle('collapsed'); try{localStorage.setItem('cx_rail_collapsed',rail.classList.contains('collapsed')?'1':'0');}catch(e){} });
+        if(localStorage.getItem('cx_rail_collapsed')==='1')rail.classList.add('collapsed');
+      }
+    }
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',__cxCollapse);
+    else __cxCollapse();
+    setTimeout(__cxCollapse,200);

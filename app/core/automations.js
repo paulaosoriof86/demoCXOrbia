@@ -39,6 +39,35 @@ window.CX = window.CX || {};
     PROVIDERS:{gemini:{label:'Google Gemini', modelos:['gemini-1.5-flash','gemini-1.5-flash-8b','gemini-2.0-flash']}, openai:{label:'OpenAI', modelos:['gpt-4o-mini']}, anthropic:{label:'Anthropic', modelos:['claude-3-haiku']}, custom:{label:'Endpoint propio', modelos:['custom']}},
   };
 
+  /* ---------- Iterar/refinar lo entregado por IA (reutilizable en todo importador) ----------
+     ui.modal con una caja de "instrucción de ajuste" + botón Regenerar. onRegen(instruccion)
+     debe devolver el nuevo resultado; onAccept(resultado) lo confirma. */
+  CX.aiIterate = function(opts){
+    const ui=CX.ui; let result=opts.initial;
+    const preview=(r)=> (opts.render? opts.render(r) : '<pre style="white-space:pre-wrap;font-size:12px;color:var(--t2);max-height:34vh;overflow:auto">'+JSON.stringify(r,null,2)+'</pre>');
+    const body=()=>`
+      <div style="font-size:11.5px;color:var(--t3);margin-bottom:8px">${opts.hint||'Revisa lo que generó la IA. Si quieres ajustarlo, escribe una instrucción y regenera; repite hasta que quede bien.'}</div>
+      <div id="aiPrev" style="border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px;background:var(--panel-2)">${preview(result)}</div>
+      <label class="lbl">Instrucción de ajuste (opcional)</label>
+      <textarea class="inp" id="aiInstr" rows="2" placeholder="Ej. agrega una sección de limpieza; sube el peso de atención; menos preguntas…" style="margin-bottom:10px"></textarea>
+      <div class="between"><button class="btn btn-soft btn-sm" id="aiRegen">🔄 Regenerar con ajuste</button>
+        <button class="btn btn-green btn-sm" id="aiAccept">✓ Usar este resultado</button></div>`;
+    ui.modal(opts.title||'🤖 Resultado de la IA · iterar', body(),{onMount:(ov,close)=>{
+      const wire=()=>{
+        ov.querySelector('#aiRegen').addEventListener('click',()=>{
+          const instr=(ov.querySelector('#aiInstr').value||'').trim();
+          result = opts.onRegen ? opts.onRegen(instr, result) : result;
+          ov.querySelector('#aiPrev').innerHTML=preview(result);
+          ov.querySelector('#aiInstr').value='';
+          ui.toast(CX.ai&&CX.ai.ready()?'Regenerado con IA':'Ajustado (configura Gemini para refinamiento real)','ok');
+          wire();
+        });
+        ov.querySelector('#aiAccept').addEventListener('click',()=>{ close(); opts.onAccept&&opts.onAccept(result); });
+      };
+      wire();
+    }});
+  };
+
   CX.automations = {
     CANALES:{push:'Notificación in-app', whatsapp:'WhatsApp (Make)', correo:'Correo (Make)', sheet:'Google Sheets (Make)'},
     EVENTOS:{postulacion:'Postulación creada', agenda:'Visita agendada', realizada:'Visita realizada', cuestionario:'Cuestionario enviado', reprog:'Reprogramación', pago:'Pago/liquidación', atraso:'Visita atrasada/pendiente', aprobacion:'Postulación aprobada', hr_writeback:'Escritura de vuelta a HR', shopper_edit:'Cambio de datos del shopper'},
