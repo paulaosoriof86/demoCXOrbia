@@ -14,6 +14,9 @@ CX.learnStore = {
       {id:'c1',ic:'🎓',titulo:'Inducción del evaluador',desc:'Qué es mystery shopping, ética y confidencialidad.',mins:25,recursos:[{t:'doc',n:'Manual de inducción'},{t:'video',n:'Bienvenida (4 min)'}],quiz:[{q:'¿Puedes revelar que eres evaluador?',o:['Sí','No'],a:1}]},
       {id:'c2',ic:'🛒',titulo:'Protocolo de compra incógnita',desc:'Pasos del escenario y cómo no ser detectado.',mins:18,recursos:[{t:'doc',n:'Protocolo paso a paso'}],quiz:[]},
       {id:'c3',ic:'📸',titulo:'Evidencia y fotografía',desc:'Tipos de evidencia válida y geolocalización.',mins:12,recursos:[{t:'doc',n:'Guía de evidencias'}],quiz:[]},
+      {id:'ct1',ic:'⚙️',titulo:'[INTERNO] Configurar la plataforma',desc:'Crear clientes, proyectos y set-up con IA. Solo equipo de la consultora.',mins:20,recursos:[{t:'doc',n:'Flujo: cliente → proyecto → HR → cuestionario'},{t:'doc',n:'Checklist de adaptación a nuevo cliente'}],quiz:[],interno:true},
+      {id:'ct2',ic:'🔧',titulo:'[INTERNO] Backend y migración',desc:'Firebase, Gemini, Make, migración de datos. Solo técnicos.',mins:30,recursos:[{t:'doc',n:'HANDOFF-DESARROLLO.md'},{t:'doc',n:'Importador y deduplicación'}],quiz:[],interno:true},
+      {id:'ct3',ic:'🎬',titulo:'[INTERNO] Demo comercial y HeyGen',desc:'Guion del recorrido en vivo y producción de videos con HeyGen.',mins:15,recursos:[{t:'doc',n:'GUION-DEMO-Y-VENTAJAS.md'},{t:'doc',n:'GUION-HEYGEN-POR-MODULO.md'}],quiz:[],interno:true},
     ];
   },
   courses(pid){ pid=pid||CX.data.currentProjectId; if(!this._c[pid]) this._c[pid]=this._seed(pid); return this._c[pid]; },

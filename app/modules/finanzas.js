@@ -118,7 +118,7 @@ CX.module('financiero', ({data,ui})=>{
   <div class="card card-p" style="margin-bottom:16px">
     <div class="card-h"><div class="card-t">🎟️ Reembolsos mensuales · conciliación</div><span class="muted" style="font-size:11px">¿el cliente / casa matriz reembolsó bien?</span></div>
     <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>País</th><th>Reembolso del periodo</th><th>Reembolsado por cliente</th><th>Diferencia</th><th>Estado</th></tr></thead><tbody>
-    ${p.countries.map(c=>{const d=fp[c];const reembolsado=Math.round(d.reemb*0.85);const dif=d.reemb-reembolsado;return `<tr><td><b>${CX.paisLabel(c)}</b></td><td>${d.cur} ${d.reemb.toLocaleString()}</td><td>${d.cur} ${reembolsado.toLocaleString()}</td><td style="color:${dif>0?'var(--red)':'var(--green)'};font-weight:700">${dif>0?'falta ':''}${d.cur} ${Math.abs(dif).toLocaleString()}</td><td>${dif>0?ui.bdg('Pendiente conciliar','a'):ui.bdg('Conciliado','g')}</td></tr>`;}).join('')}
+    ${p.countries.map(c=>{const d=fp[c];const reembolsado=Math.round(d.reemb*0.85);const dif=d.reemb-reembolsado;return `<tr class="hov" data-reembc="${c}" style="cursor:pointer"><td><b>${CX.paisLabel(c)}</b></td><td>${d.cur} ${d.reemb.toLocaleString()}</td><td>${d.cur} ${reembolsado.toLocaleString()}</td><td style="color:${dif>0?'var(--red)':'var(--green)'};font-weight:700">${dif>0?'falta ':''}${d.cur} ${Math.abs(dif).toLocaleString()}</td><td>${dif>0?ui.bdg('Pendiente conciliar','a'):ui.bdg('Conciliado','g')}</td></tr>`;}).join('')}
     </tbody></table></div>
     <div style="margin-top:10px">${ui.aiBox('Los reembolsos son flujo (no utilidad): el programa cubre consumos/boletos y el cliente o casa matriz los reintegra. Aquí concilias lo gastado vs lo reembolsado para no perder dinero.','Conciliación de reembolsos')}</div>
   </div>`;
@@ -360,7 +360,7 @@ CX.module('movimientos', ({data,ui})=>{
       ui.modal('Registrar cuenta por '+(k==='cxc'?'cobrar':'pagar'),`
         <p style="font-size:12px;color:var(--t2);margin-bottom:10px">Útil para cargar saldos iniciales en la importación o registrar deudas/derechos del periodo.</p>
         <div class="grid g2" style="gap:10px 12px">
-          <div style="grid-column:1/3"><label class="lbl">Concepto / contraparte</label><input class="inp" id="ctCon" placeholder="${k==='cxc'?'Cliente / casa matriz':'Proveedor / financiamiento'}"></div>
+          <div style="grid-column:1/3"><label class="lbl">Concepto / contraparte</label><input class="inp" id="ctCon" list="ctConList" placeholder="${k==='cxc'?'Cliente / casa matriz':'Proveedor / financiamiento'}"></div><datalist id="ctConList">${(k==="cxc"?CX.finStore.cxc(pid()):CX.finStore.cxp(pid())).map(r=>`<option value="${r.concepto}">`).join("")}${CX.data._visitas.filter(v=>v.projectId===CX.data.currentProjectId).map(v=>v.shopper).filter((s,i,a)=>s&&a.indexOf(s)===i).map(s=>`<option value="${s}">`).join("")}</datalist>
           <div><label class="lbl">Monto (${cur})</label><input class="inp" id="ctMonto" type="number"></div>
           <div><label class="lbl">País</label><select class="sel" id="ctPais"><option value="">—</option>${p.countries.map(c=>`<option>${c}</option>`).join('')}</select></div>
           <div style="grid-column:1/3"><label class="lbl">Vence</label><input class="inp" id="ctVence" type="date"></div>

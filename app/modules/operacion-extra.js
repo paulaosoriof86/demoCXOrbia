@@ -211,48 +211,89 @@ CX.module('rutas', ({data,ui})=>{
 CX.module('informes', ({data,ui})=>{
   const k=data.kpis(), p=data.project();
   const vis=data.visitas();
-  // ranking de sucursales (tiendas) por cumplimiento
+  
+  /* Ranking de sucursales por cumplimiento */
   const bySuc={}; vis.forEach(v=>{const s=bySuc[v.sucursal]=bySuc[v.sucursal]||{suc:v.sucursal,pais:v.pais,t:0,r:0};s.t++;if(['realizada','cuestionario','liquidada'].includes(v.estado))s.r++;});
   const rankSuc=Object.values(bySuc).map(s=>({...s,pct:s.t?Math.round(s.r/s.t*100):0})).sort((a,b)=>b.pct-a.pct);
-  // ranking de shoppers
+  
+  /* Ranking shoppers */
   const bySh={}; vis.filter(v=>v.shopperId).forEach(v=>{const s=bySh[v.shopperId]=bySh[v.shopperId]||{n:v.shopper,code:v.shopperCode,t:0,r:0};s.t++;if(['realizada','cuestionario','liquidada'].includes(v.estado))s.r++;});
   const rankSh=Object.values(bySh).map(s=>({...s,pct:s.t?Math.round(s.r/s.t*100):0})).sort((a,b)=>b.r-a.r);
-  // hallazgos frecuentes (genérico, derivado de escenarios)
-  const hallazgos=[['Tiempo de espera sobre el estándar',Math.round(vis.length*0.22)],['Saludo/protocolo de bienvenida incompleto',Math.round(vis.length*0.17)],['Limpieza/orden por debajo del estándar',Math.round(vis.length*0.13)],['Oferta no comunicada',Math.round(vis.length*0.09)]].filter(h=>h[1]>0);
+  
+  /* Hallazgos */
+  const hallazgos=[['Tiempo de espera sobre estándar',Math.round(vis.length*0.22)],['Protocolo de bienvenida incompleto',Math.round(vis.length*0.17)],['Limpieza/orden debajo del estándar',Math.round(vis.length*0.13)],['Oferta no comunicada',Math.round(vis.length*0.09)]].filter(h=>h[1]>0);
+  
+  /* Store para reportes personalizados */
+  const CUSTOM_KEY='cx_rpts_'+p.id;
+  const customRpts=()=>{try{return JSON.parse(localStorage.getItem(CUSTOM_KEY)||'[]');}catch(e){return [];}};
+  const saveCustomRpts=(arr)=>{try{localStorage.setItem(CUSTOM_KEY,JSON.stringify(arr));}catch(e){}};
 
   const reportes={
-    cumpSuc:['📊 Cumplimiento por sucursal',`<table class="tbl"><thead><tr><th>#</th><th>Sucursal</th><th>Realizadas/Total</th><th>Cumplimiento</th></tr></thead><tbody>${rankSuc.map((s,i)=>`<tr><td style="color:var(--t3)">${i+1}</td><td><b>${s.suc}</b> <span class="muted">${CX.paisFlag(s.pais)}</span></td><td>${s.r}/${s.t}</td><td>${ui.bdg(s.pct+'%',s.pct>=80?'g':s.pct>=50?'a':'r')}</td></tr>`).join('')}</tbody></table>`],
-    cobertura:['🗺️ Cobertura por país y quincena',`<table class="tbl"><thead><tr><th>País</th><th>Realizadas/Total</th><th>%</th></tr></thead><tbody>${p.countries.map(c=>`<tr><td><b>${CX.paisLabel(c)}</b></td><td>${k.realizadas[c]||0}/${k.total[c]||0}</td><td>${ui.bdg(Math.round((k.realizadas[c]||0)/Math.max(k.total[c]||1,1)*100)+'%','g')}</td></tr>`).join('')}</tbody></table>`],
-    rankSh:['🏆 Ranking de shoppers',`<table class="tbl"><thead><tr><th>#</th><th>Shopper</th><th>Realizadas/Asignadas</th><th>Efectividad</th></tr></thead><tbody>${rankSh.slice(0,15).map((s,i)=>`<tr><td style="color:var(--t3)">${i+1}</td><td><b>${s.n}</b> <span class="muted">${s.code||''}</span></td><td>${s.r}/${s.t}</td><td>${ui.bdg(s.pct+'%',s.pct>=80?'g':'a')}</td></tr>`).join('')}</tbody></table>`],
-    hallazgos:['🔎 Hallazgos más frecuentes',`<p style="font-size:12px;color:var(--t2);margin-bottom:10px">Hallazgos recurrentes del periodo — base para planes de capacitación y acción.</p><table class="tbl"><thead><tr><th>Hallazgo</th><th>Visitas afectadas</th></tr></thead><tbody>${hallazgos.map(h=>`<tr><td>${h[0]}</td><td><b>${h[1]}</b></td></tr>`).join('')}</tbody></table>`],
-    liq:['💰 Liquidaciones del periodo',`<p style="font-size:13px;color:var(--t2)">Detalle completo en Finanzas → Liquidaciones. Exporta el lote del periodo con honorarios + reembolsos por país.</p>`],
+    cumpSuc:['📊 Cumplimiento por sucursal',()=>`<table class="tbl"><thead><tr><th>#</th><th>Sucursal</th><th>País</th><th>Realizadas/Total</th><th>Cumplimiento</th></tr></thead><tbody>${rankSuc.map((s,i)=>`<tr><td style="color:var(--t3)">${i+1}</td><td><b>${s.suc}</b></td><td>${CX.paisFlag(s.pais)}</td><td>${s.r}/${s.t}</td><td>${ui.bdg(s.pct+'%',s.pct>=80?'g':s.pct>=50?'a':'r')}</td></tr>`).join('')}</tbody></table>`],
+    cobertura:['🗺️ Cobertura por país',()=>`<table class="tbl"><thead><tr><th>País</th><th>Realizadas</th><th>Total</th><th>%</th></tr></thead><tbody>${p.countries.map(c=>`<tr><td><b>${CX.paisLabel(c)}</b></td><td>${k.realizadas[c]||0}</td><td>${k.total[c]||0}</td><td>${ui.bdg(Math.round((k.realizadas[c]||0)/Math.max(k.total[c]||1,1)*100)+'%','g')}</td></tr>`).join('')}</tbody></table>`],
+    rankSh:['🏆 Ranking de evaluadores',()=>`<table class="tbl"><thead><tr><th>#</th><th>Evaluador</th><th>Realizadas</th><th>Efectividad</th></tr></thead><tbody>${rankSh.slice(0,15).map((s,i)=>`<tr><td style="color:var(--t3)">${i+1}</td><td><b>${s.n}</b> <span class="muted">${s.code||''}</span></td><td>${s.r}/${s.t}</td><td>${ui.bdg(s.pct+'%',s.pct>=80?'g':'a')}</td></tr>`).join('')}</tbody></table>`],
+    hallazgos:['🔎 Hallazgos frecuentes',()=>`<p style="font-size:12px;color:var(--t2);margin-bottom:10px">Hallazgos recurrentes del periodo — base para planes de capacitación.</p><table class="tbl"><thead><tr><th>Hallazgo</th><th>Visitas afectadas</th><th>%</th></tr></thead><tbody>${hallazgos.map(h=>`<tr><td>${h[0]}</td><td><b>${h[1]}</b></td><td>${Math.round(h[1]/Math.max(vis.length,1)*100)}%</td></tr>`).join('')}</tbody></table>`],
+    liq:['💰 Liquidaciones del periodo',()=>`<p style="font-size:13px;color:var(--t2)">Detalle completo en Finanzas → Liquidaciones. Exporta el lote con honorarios + reembolsos por país.</p>`],
+    scoreSuc:['🎯 Score por sucursal',()=>`<table class="tbl"><thead><tr><th>Sucursal</th><th>Visitas</th><th>Score prom.</th></tr></thead><tbody>${rankSuc.map(s=>`<tr><td><b>${s.suc}</b></td><td>${s.t}</td><td>${ui.bdg(s.pct+'%',s.pct>=80?'g':s.pct>=50?'a':'r')}</td></tr>`).join('')}</tbody></table>`],
   };
 
-  setTimeout(()=>{
-    const drills={
-      cump:['Cumplimiento por país',reportes.cobertura[1]],
-      vel:['Velocidad media','<p style="font-size:13px;color:var(--t2);line-height:1.7">Tiempo medio entre agendar y enviar el cuestionario. Calculado sobre las visitas realizadas del periodo; baja con recordatorios automáticos.</p>'],
-      cal:['Calidad del cuestionario','<p style="font-size:13px;color:var(--t2);line-height:1.7">Porcentaje de cuestionarios sin observaciones de QA (campos completos, evidencia válida, sin contradicciones).</p>'],
-      rent:['Rentabilidad','<p style="font-size:13px;color:var(--t2);line-height:1.7">Margen del proyecto según el modelo. Detalle por país en el Dashboard Financiero.</p>'],
-    };
-    document.querySelectorAll('#infKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=drills[el.dataset.k];ui.modal(d[0],d[1]);}));
-    document.querySelectorAll('[data-rep]').forEach(b=>b.addEventListener('click',()=>{const r=reportes[b.dataset.rep];
-      ui.modal(r[0], r[1]+`<div style="text-align:right;margin-top:14px"><button class="btn btn-soft btn-sm" id="repExp">⤓ Exportar (Excel/PDF)</button></div>`,{onMount:(ov,close)=>ov.querySelector('#repExp').addEventListener('click',()=>{close();ui.toast('Generando '+r[0]+'…','ok');})});
-    }));
-  },0);
-  return `
-    ${ui.ph('Reportes & KPIs', p.name+' · entregables listos para dirección y cliente')}
-    <div class="grid g4" style="margin-bottom:16px" id="infKpis">
-      <div data-k="cump" style="cursor:pointer">${ui.kpi('Cumplimiento',Math.round(k.realizadas.t/Math.max(k.total.t,1)*100)+'%','g')}</div>
-      <div data-k="vel" style="cursor:pointer">${ui.kpi('Velocidad media','1.4d','b')}</div>
-      <div data-k="cal" style="cursor:pointer">${ui.kpi('Calidad cuest.','92%','p')}</div>
-      <div data-k="rent" style="cursor:pointer">${ui.kpi('Rentabilidad','39.6%','a')}</div>
-    </div>
-    <div class="card card-p">
-      <div class="card-h"><div class="card-t">Reportes (toca para ver y exportar)</div></div>
-      <div class="grid g2">
-        ${[['cumpSuc','📊','Cumplimiento por sucursal'],['cobertura','🗺️','Cobertura por país y quincena'],['rankSh','🏆','Ranking de shoppers'],['cumpSuc','🏬','Ranking de tiendas'],['hallazgos','🔎','Hallazgos más frecuentes'],['liq','💰','Liquidaciones del periodo']].map(r=>`<div class="card hov card-p flex" data-rep="${r[0]}" style="gap:12px;cursor:pointer"><div style="font-size:22px">${r[1]}</div><div style="flex:1;font-size:13px;font-weight:600;color:var(--t1)">${r[2]}</div><span class="btn btn-soft btn-sm">Ver →</span></div>`).join('')}
+  const openReport=(id,rpt)=>{
+    const content=typeof rpt[1]==='function'?rpt[1]():rpt[1];
+    ui.modal(rpt[0], content+`
+      <div class="between" style="margin-top:14px">
+        <button class="btn btn-soft btn-sm" id="rptEdit">✎ Editar / añadir columna</button>
+        <div class="flex" style="gap:8px"><button class="btn btn-ghost btn-sm" id="rptPdf">⤓ PDF</button><button class="btn btn-pr btn-sm" id="rptXls">⤓ Excel</button></div>
+      </div>`,
+    {onMount:(ov,close)=>{
+      ov.querySelector('#rptEdit')?.addEventListener('click',()=>{
+        ui.modal('✎ Editar reporte: '+rpt[0],`
+          <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Añade notas, una columna extra o ajusta el contenido de este reporte. El reporte original queda intacto.</p>
+          <label class="lbl">Notas / encabezado</label><textarea class="inp" id="rptNote" rows="2" placeholder="Ej. Datos del periodo junio 2026"></textarea>
+          <label class="lbl" style="margin-top:10px">Columna extra (opcional)</label><input class="inp" id="rptCol" placeholder="Nombre de la columna">
+          <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="rptSave">Guardar versión personalizada</button></div>
+        `,{onMount:(ov2,close2)=>{ov2.querySelector('#rptSave').addEventListener('click',()=>{const arr=customRpts();arr.push({id:'cr'+Date.now().toString(36),base:id,nota:ov2.querySelector('#rptNote').value,col:ov2.querySelector('#rptCol').value,fecha:new Date().toISOString().slice(0,10)});saveCustomRpts(arr);close2();close();ui.toast('Versión personalizada guardada','ok');});}});
+      });
+      ov.querySelector('#rptPdf')?.addEventListener('click',()=>{close();ui.toast('Generando PDF: '+rpt[0]+'…','ok');});
+      ov.querySelector('#rptXls')?.addEventListener('click',()=>{close();ui.toast('Generando Excel: '+rpt[0]+'…','ok');});
+    }});
+  };
+
+  const host=ui.el('div');
+  const draw=()=>{
+    const custom=customRpts();
+    host.innerHTML=`
+      ${ui.ph('Reportes & KPIs', p.name+' · entregables para dirección y cliente')}
+      <div class="grid g4" style="margin-bottom:16px" id="infKpis">
+        <div data-k="cump" style="cursor:pointer">${ui.kpi('Cumplimiento',Math.round(k.realizadas.t/Math.max(k.total.t,1)*100)+'%','g')}</div>
+        <div data-k="vel" style="cursor:pointer">${ui.kpi('Velocidad media','2.6d','b')}</div>
+        <div data-k="cal" style="cursor:pointer">${ui.kpi('Calidad cuest.','92%','p')}</div>
+        <div data-k="rent" style="cursor:pointer">${ui.kpi('Efectividad',rankSh.length?Math.round(rankSh.reduce((a,s)=>a+s.pct,0)/rankSh.length)+'%':'—','a')}</div>
       </div>
-      <div style="margin-top:14px">${ui.aiBox('Genero lecturas y exportables listos por proyecto, país y sucursal: rankings de tiendas y shoppers, hallazgos frecuentes (base de planes de capacitación) y liquidaciones — sin armar Excel a mano.','Reportería que se arma sola')}</div>
-    </div>`;
+      <div class="card card-p">
+        <div class="between" style="margin-bottom:14px"><div class="card-t">Reportes estándar</div><button class="btn btn-pr btn-sm" id="newCustom">＋ Nuevo reporte personalizado</button></div>
+        <div class="grid g2">
+          ${Object.entries(reportes).map(([id,rpt])=>`<div class="card hov card-p flex" data-rep="${id}" style="gap:12px;cursor:pointer">
+            <div style="font-size:22px">${rpt[0].split(' ')[0]}</div>
+            <div style="flex:1;font-size:13px;font-weight:600;color:var(--t1)">${rpt[0].slice(rpt[0].indexOf(' ')+1)}</div>
+            <div class="flex" style="gap:6px"><span class="btn btn-soft btn-sm">Ver →</span><button class="btn btn-ghost btn-sm" data-dl="${id}" title="Descargar">⤓</button></div></div>`).join('')}
+        </div>
+        ${custom.length?`<div class="card-t" style="font-size:13px;margin:16px 0 8px">Reportes personalizados</div>
+        <div class="grid g2">${custom.map(c=>`<div class="card card-p flex" style="gap:10px"><div style="flex:1"><div style="font-size:12.5px;font-weight:700">${(reportes[c.base]||['📄 Personalizado'])[0]}</div><div style="font-size:11px;color:var(--t3)">${c.nota||''} · ${c.fecha}</div></div><button class="btn btn-ghost btn-sm" data-delrpt="${c.id}" style="color:var(--red)">✕</button></div>`).join('')}</div>`:''}
+        <div style="margin-top:14px">${ui.aiBox('Reportes de cumplimiento, hallazgos, rankings y liquidaciones — con opción de crear versiones personalizadas, añadir columnas y exportar a PDF/Excel. Los hallazgos alimentan los planes de capacitación del portal del cliente.','Reportería accionable')}</div>
+      </div>`;
+    
+    host.querySelectorAll('[data-rep]').forEach(b=>b.addEventListener('click',(e)=>{if(e.target.closest('[data-dl]'))return;const rpt=reportes[b.dataset.rep];if(rpt)openReport(b.dataset.rep,rpt);}));
+    host.querySelectorAll('[data-dl]').forEach(b=>b.addEventListener('click',()=>ui.toast('Descargando: '+(reportes[b.dataset.dl]||['reporte'])[0],'ok')));
+    host.querySelectorAll('[data-delrpt]').forEach(b=>b.addEventListener('click',()=>{const arr=customRpts().filter(c=>c.id!==b.dataset.delrpt);saveCustomRpts(arr);draw();ui.toast('Reporte eliminado','');}));
+    host.querySelector('#newCustom')?.addEventListener('click',()=>ui.modal('＋ Nuevo reporte personalizado',`
+      <label class="lbl">Basado en</label><select class="sel" id="nrBase" style="margin-bottom:10px">${Object.entries(reportes).map(([id,r])=>`<option value="${id}">${r[0]}</option>`).join('')}</select>
+      <label class="lbl">Nombre / notas</label><input class="inp" id="nrNota" placeholder="Ej. Reporte dirección - Q2 2026" style="margin-bottom:10px">
+      <label class="lbl">Columna extra (opcional)</label><input class="inp" id="nrCol" placeholder="Ej. Objetivo">
+      <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="nrSave">Crear</button></div>
+    `,{onMount:(ov,close)=>{ov.querySelector('#nrSave').addEventListener('click',()=>{const arr=customRpts();arr.push({id:'cr'+Date.now().toString(36),base:ov.querySelector('#nrBase').value,nota:ov.querySelector('#nrNota').value,col:ov.querySelector('#nrCol').value,fecha:new Date().toISOString().slice(0,10)});saveCustomRpts(arr);close();draw();ui.toast('Reporte personalizado creado','ok');});}}));
+    const drills={cump:['Cumplimiento por país',reportes.cobertura[1]()],vel:['Velocidad promedio','<p style="font-size:13px;color:var(--t2)">Tiempo medio entre realizar y enviar el cuestionario: 2.6 días. Baja con recordatorios automáticos.</p>'],cal:['Calidad del cuestionario','<p style="font-size:13px;color:var(--t2)">92% de cuestionarios sin observaciones de QA.</p>'],rent:['Efectividad de evaluadores',reportes.rankSh[1]()]};
+    host.querySelectorAll('#infKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=drills[el.dataset.k];ui.modal(d[0],d[1]);}));
+  };
+  draw();
+  return host;
 });

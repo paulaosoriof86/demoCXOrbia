@@ -66,7 +66,7 @@ CX.module('visitas', ({data,role,ui})=>{
     <td>${ui.estadoBadge(v.estado)}</td>
     <td style="font-size:12px">${v.agendada||'<span class="muted">—</span>'}</td>
     <td style="font-size:12px;font-weight:600;color:var(--green)">${ui.money(v.currency,v.honorario)}</td>
-    <td style="text-align:right">${!v.shopper&&v.estado!=='fuera_rango'?`<button class="btn btn-soft btn-sm" data-assign="${v.id}">Asignar</button> `:''}<button class="btn btn-ghost btn-sm" data-edit="${v.id}">✏️</button></td>
+    <td style="text-align:right"><button class="btn btn-ghost btn-sm" data-vdetail="${v.id}" title="Ver detalle completo">🔍</button> ${!v.shopper&&v.estado!=='fuera_rango'?`<button class="btn btn-soft btn-sm" data-assign="${v.id}">Asignar</button> `:''}<button class="btn btn-ghost btn-sm" data-edit="${v.id}">✏️</button></td>
   </tr>`;
   const html=`
     <div class="between" style="margin-bottom:6px"><div>${ui.ph('Visitas', (ALL?('Todos los proyectos · '+all.length+' visitas'):(p.name+' · base operativa'))+' · publica, asigna y edita cada visita')}</div>
@@ -104,7 +104,9 @@ CX.module('visitas', ({data,role,ui})=>{
       ui.modal(d[0]+' ('+L.length+')', L.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Shopper</th><th>Estado</th><th>Honorario</th></tr></thead><tbody>${L.map(v=>`<tr><td><b style="font-size:12.5px">${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.shopper||'<span class="muted">—</span>'}</td><td>${ui.estadoBadge(v.estado)}</td><td style="font-size:12px;color:var(--green)">${ui.money(v.currency,v.honorario)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🔍','Sin visitas en esta categoría.')); }));
     const editor=(v)=>ui.modal((v?'Editar':'Publicar')+' visita',`
       <div class="grid g2" style="gap:12px">
-        <div><label class="lbl">Sucursal</label><input class="inp" value="${v?v.sucursal:''}" placeholder="Sucursal 01 · Ciudad"></div>
+        <div style="grid-column:1/3"><label class="lbl">Sucursal (elige o escribe nueva)</label>
+         <select class="sel" id="vSucSel" style="margin-bottom:5px"><option value="">— elegir existente —</option>${[...new Set(data._visitas.filter(x=>x.projectId===p.id).map(z=>z.sucursal)),(CX.hr?CX.hr.external(p).map(r=>r.sucursal).filter(Boolean):[])].flat().filter((s,i,a)=>s&&a.indexOf(s)===i).map(s=>`<option ${v&&v.sucursal===s?'selected':''}>${s}</option>`).join('')}</select>
+         <input class="inp" id="vSucFree" value="${v?v.sucursal:''}" placeholder="o escribe una nueva sucursal · Ciudad"></div>
         <div><label class="lbl">País</label><select class="sel">${p.countries.map(c=>`<option ${v&&v.pais===c?'selected':''}>${c}</option>`).join('')}</select></div>
         <div><label class="lbl">Quincena</label><select class="sel">${p.quincenas.map(q=>`<option ${v&&v.quincena===q?'selected':''}>${q}</option>`).join('')}</select></div>
         <div><label class="lbl">Escenario</label><select class="sel">${p.scenarios.map(s=>`<option ${v&&v.escenario===s?'selected':''}>${s}</option>`).join('')}</select></div>
