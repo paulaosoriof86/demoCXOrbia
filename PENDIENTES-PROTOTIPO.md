@@ -21,9 +21,9 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 
 ### P1 — Validación de reglas Firebase
 
-- Estado: validación lógica P0 documentada; pendiente Rules Playground o emulador antes de publicar.
-- Detalle: `RESULTADO-VALIDACION-REGLAS-DEV.md` registra 9 P0 evaluados y 0 fallos por revisión lógica.
-- Acción sugerida: no publicar reglas todavía; repetir validación en Rules Playground o emulador antes de cualquier publicación.
+- Estado: validación lógica P0 documentada; gate de emulador preparado.
+- Detalle: `RESULTADO-VALIDACION-REGLAS-DEV.md` registra 9 P0 evaluados y 0 fallos por revisión lógica. Existen `PLAN-EMULADOR-REGLAS-FIRESTORE.md`, `PLANTILLA-RESULTADO-EMULADOR-REGLAS-FIRESTORE.md` y `AUTORIZACION-EMULADOR-REGLAS-FIRESTORE.md`.
+- Acción sugerida: no publicar reglas todavía; validar con emulador local o Rules Playground antes de cualquier publicación.
 
 ### P1 — Auth DEV y claims
 
