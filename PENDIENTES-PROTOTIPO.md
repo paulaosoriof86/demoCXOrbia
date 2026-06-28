@@ -30,9 +30,9 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 
 ### P1 — Validación de reglas Firebase
 
-- Estado: pendiente.
-- Detalle: `firestore.rules` contiene una base multi-tenant inicial. Debe validarse con `CASOS-PRUEBA-FIRESTORE.md` antes de publicar.
-- Acción sugerida: probar escenarios por rol: `super`, `admin`, `ops`, `shopper`, `cliente`.
+- Estado: validación estática realizada; pendiente validación real en DEV.
+- Detalle: `VALIDACION-ESTATICA-REGLAS-ADAPTER.md` detectó que shoppers necesitaban leer visitas disponibles para poder postular. Se ajustó `firestore.rules` para permitir lectura controlada de visitas con `estado == disponible` solo dentro de proyectos asignados.
+- Acción sugerida: probar escenarios por rol con `CASOS-PRUEBA-FIRESTORE.md` antes de publicar reglas o activar adapter.
 
 ### P1 — Seed ficticio T&A
 
@@ -43,7 +43,7 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 ### P1 — Adapter Firestore para `CX.data`
 
 - Estado: scaffold creado, desactivado.
-- Detalle: existen `app/core/backend-config.js` y `app/core/backend-firebase.js`. `CX.BACKEND.enabled` sigue en `false`.
+- Detalle: existen `app/core/backend-config.js` y `app/core/backend-firebase.js`. `CX.BACKEND.enabled` sigue en `false`. Falta cargar Firebase SDK compat en entorno controlado cuando se autorice activar.
 - Acción sugerida: activar solo en DEV/preview controlado después de reglas, seed y autorización. Si algún módulo falla por asincronía, documentarlo aquí y no parchar `/app/modules` dentro del PR backend.
 
 ### P2 — Datos reales T&A
