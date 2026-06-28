@@ -25,7 +25,7 @@ Archivos agregados principales:
 - `app/core/backend-config.js`
 - `app/core/backend-firebase.js`
 - `firebase/seed-tya-piloto.json`
-- documentación de arquitectura, roles, Auth DEV, claims, seed, adapter, gates, migración, dictamen de main, dry-run documental, validación estática, plan de sync, mapeo `CX.data` y finanzas DEV.
+- documentación de arquitectura, roles, Auth DEV, claims, seed, adapter, gates, migración, dictamen de main, dry-run documental, validación estática, plan de sync, mapeo `CX.data`, finanzas DEV y validación de reglas.
 
 Archivo modificado:
 
@@ -101,7 +101,24 @@ Estado:
 - No se activó backend.
 - Los claims esperados siguen siendo `role`, `tenantId`, `projectIds` y `shopperId` para rol shopper.
 
-### 1.5. Dataset piloto T&A
+### 1.5. Validación de reglas DEV
+
+Se agregó documentación para la validación real futura:
+
+- `PLAN-VALIDACION-REGLAS-DEV.md`
+- `PLANTILLA-RESULTADO-VALIDACION-REGLAS-DEV.md`
+- `CAMBIOS-BACKEND-20260627-REGLAS-DEV.md`
+
+Estado:
+
+- No se publicaron reglas.
+- No se ejecutó validación real.
+- No se crearon usuarios.
+- No se asignaron claims.
+- No se cargó seed.
+- No se activó adapter.
+
+### 1.6. Dataset piloto T&A
 
 Se agregó un dataset ficticio para validar la estructura antes de cargar datos reales:
 
@@ -116,7 +133,7 @@ Se agregó un dataset ficticio para validar la estructura antes de cargar datos 
 
 Este dataset no se importó a Firebase. Se validó documentalmente con conteos: 1 tenant, 1 proyecto, 4 shoppers ficticios, 8 visitas ficticias, 3 postulaciones, 1 cuestionario demo y 3 preguntas demo.
 
-### 1.6. Reglas y roles
+### 1.7. Reglas y roles
 
 Se endureció `firestore.rules` y se agregó documentación de validación:
 
@@ -133,7 +150,7 @@ Cambios relevantes:
 - Ops opera visitas, postulaciones, documentos y cuestionarios, pero no finanzas.
 - La regla sigue dependiendo de claims coherentes: `role`, `tenantId`, `projectIds` y `shopperId` cuando aplique.
 
-### 1.7. Gate de base buena T&A
+### 1.8. Gate de base buena T&A
 
 Se agregó `MIGRACION-BASE-BUENA-TYA.md`.
 
@@ -145,7 +162,7 @@ Decisión:
 - La base anterior nunca debe conectarse como backend vivo.
 - El export bueno debe venir en JSON UTF-8, sin datos demo mezclados, con copia original intacta y transformación separada para Firestore.
 
-### 1.8. Estado de gates PR #1
+### 1.9. Estado de gates PR #1
 
 Se agregó `ESTADO-GATES-PR1.md`.
 
@@ -162,7 +179,7 @@ Estado actual:
 - No seed escrito en Firebase.
 - No adapter activo.
 
-### 1.9. Dictamen de `main` y plan de sincronización
+### 1.10. Dictamen de `main` y plan de sincronización
 
 Se agregó:
 
@@ -189,6 +206,7 @@ Dictamen:
 - No se asignaron claims todavía.
 - No se pidió ni cargó la base buena de la plataforma anterior.
 - No se creó persistencia financiera real.
+- No se ejecutó validación real de reglas.
 
 ### 3. Qué partes del frontend necesitan ajuste
 
