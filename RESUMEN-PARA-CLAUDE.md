@@ -25,7 +25,7 @@ Archivos agregados principales:
 - `app/core/backend-config.js`
 - `app/core/backend-firebase.js`
 - `firebase/seed-tya-piloto.json`
-- documentación de arquitectura, roles, Auth DEV, seed, adapter, gates, migración, dictamen de main y dry-run documental.
+- documentación de arquitectura, roles, Auth DEV, seed, adapter, gates, migración, dictamen de main, dry-run documental y validación estática.
 
 Archivo modificado:
 
@@ -56,6 +56,7 @@ Se creó un scaffold seguro:
 Documentación nueva relacionada:
 
 - `PLAN-VALIDACION-ADAPTER-DEV.md`
+- `VALIDACION-ESTATICA-REGLAS-ADAPTER.md`
 
 ### 1.3. Dataset piloto T&A
 
@@ -78,11 +79,13 @@ Se endureció `firestore.rules` y se agregó documentación de validación:
 
 - `MATRIZ-ROLES-FIRESTORE.md`
 - `CASOS-PRUEBA-FIRESTORE.md`
+- `VALIDACION-ESTATICA-REGLAS-ADAPTER.md`
 
 Cambios relevantes:
 
 - Cliente no lee finanzas, lotes, liquidaciones ni postulaciones internas.
 - Shopper queda limitado a recursos propios/asignados.
+- Se agregó lectura controlada para que shoppers con proyecto asignado puedan ver visitas disponibles y postularse.
 - Admin/super controlan finanzas.
 - Ops opera visitas, postulaciones, documentos y cuestionarios, pero no finanzas.
 - La regla sigue dependiendo de claims coherentes: `role`, `tenantId`, `projectIds` y `shopperId` cuando aplique.
