@@ -1,0 +1,68 @@
+{
+  "tenant": {
+    "id": "tya",
+    "name": "T&A Consultores",
+    "type": "clientTenant",
+    "status": "dev",
+    "countryBase": "GT",
+    "createdFrom": "cxorbia-prototype"
+  },
+  "projects": [
+    {
+      "id": "tya-piloto",
+      "tenantId": "tya",
+      "name": "Piloto T&A",
+      "client": "Cliente Demo T&A",
+      "industry": "Mystery shopping",
+      "countries": ["GT", "HN"],
+      "currency": {"GT": "Q", "HN": "L"},
+      "accent": "#2196d3",
+      "sucursales": 8,
+      "honorario": {"GT": 60, "HN": 180},
+      "boleto": {"GT": 0, "HN": 0},
+      "combo": "Reembolso demo",
+      "comboAmt": {"GT": 0, "HN": 0},
+      "scenarios": ["Escenario demo"],
+      "quincenas": ["Quincena 1", "Quincena 2"],
+      "canales": ["Tienda física"],
+      "formato": "Cliente incógnito",
+      "ronda": "Piloto DEV",
+      "status": "dev"
+    }
+  ],
+  "shoppers": [
+    {"id": "eval-01", "code": "EVL-01", "nombre": "Evaluador 01", "firstName": "Evaluador", "lastName": "01", "pais": "GT", "ciudad": "Guatemala", "estado": "Activo", "rating": 4.6, "perfilCompleto": true, "email": "evaluador01@demo.cxorbia", "phone": "+502 0000 0001"},
+    {"id": "eval-02", "code": "EVL-02", "nombre": "Evaluador 02", "firstName": "Evaluador", "lastName": "02", "pais": "GT", "ciudad": "Mixco", "estado": "Certificado", "rating": 4.8, "perfilCompleto": true, "email": "evaluador02@demo.cxorbia", "phone": "+502 0000 0002"},
+    {"id": "eval-03", "code": "EVL-03", "nombre": "Evaluador 03", "firstName": "Evaluador", "lastName": "03", "pais": "HN", "ciudad": "Tegucigalpa", "estado": "Activo", "rating": 4.4, "perfilCompleto": true, "email": "evaluador03@demo.cxorbia", "phone": "+504 0000 0003"},
+    {"id": "eval-04", "code": "EVL-04", "nombre": "Evaluador 04", "firstName": "Evaluador", "lastName": "04", "pais": "HN", "ciudad": "San Pedro Sula", "estado": "Pendiente", "rating": 3.9, "perfilCompleto": false, "email": "evaluador04@demo.cxorbia", "phone": "+504 0000 0004"}
+  ],
+  "visits": [
+    {"id": "tya-piloto-v01", "projectId": "tya-piloto", "num": 1, "sucursal": "Sucursal 01 · Guatemala", "ciudad": "Guatemala", "pais": "GT", "currency": "Q", "quincena": "Quincena 1", "escenario": "Escenario demo", "franja": "Semana", "franjaCode": "WK", "canal": "Tienda física", "formato": "Cliente incógnito", "honorario": 60, "boleto": 0, "combo": "Reembolso demo", "comboAmt": 0, "estado": "disponible", "shopperId": null, "shopper": null, "shopperCode": null, "rango": "Piloto", "disponibleDesde": "2026-06-27", "agendada": null, "realizada": null, "cuestFecha": null, "submit": false},
+    {"id": "tya-piloto-v02", "projectId": "tya-piloto", "num": 2, "sucursal": "Sucursal 02 · Mixco", "ciudad": "Mixco", "pais": "GT", "currency": "Q", "quincena": "Quincena 1", "escenario": "Escenario demo", "franja": "Fin de semana", "franjaCode": "WKND", "canal": "Tienda física", "formato": "Cliente incógnito", "honorario": 60, "boleto": 0, "combo": "Reembolso demo", "comboAmt": 0, "estado": "postulada", "shopperId": "eval-01", "shopper": "Evaluador 01", "shopperCode": "EVL-01", "rango": "Piloto", "disponibleDesde": "2026-06-27", "agendada": null, "realizada": null, "cuestFecha": null, "submit": false},
+    {"id": "tya-piloto-v03", "projectId": "tya-piloto", "num": 3, "sucursal": "Sucursal 03 · Guatemala", "ciudad": "Guatemala", "pais": "GT", "currency": "Q", "quincena": "Quincena 1", "escenario": "Escenario demo", "franja": "Semana", "franjaCode": "WK", "canal": "Tienda física", "formato": "Cliente incógnito", "honorario": 60, "boleto": 0, "combo": "Reembolso demo", "comboAmt": 0, "estado": "asignada", "shopperId": "eval-02", "shopper": "Evaluador 02", "shopperCode": "EVL-02", "rango": "Piloto", "disponibleDesde": "2026-06-27", "agendada": null, "realizada": null, "cuestFecha": null, "submit": false},
+    {"id": "tya-piloto-v04", "projectId": "tya-piloto", "num": 4, "sucursal": "Sucursal 04 · Guatemala", "ciudad": "Guatemala", "pais": "GT", "currency": "Q", "quincena": "Quincena 1", "escenario": "Escenario demo", "franja": "Semana", "franjaCode": "WK", "canal": "Tienda física", "formato": "Cliente incógnito", "honorario": 60, "boleto": 0, "combo": "Reembolso demo", "comboAmt": 0, "estado": "agendada", "shopperId": "eval-01", "shopper": "Evaluador 01", "shopperCode": "EVL-01", "rango": "Piloto", "disponibleDesde": "2026-06-27", "agendada": "2026-06-28", "realizada": null, "cuestFecha": null, "submit": false},
+    {"id": "tya-piloto-v05", "projectId": "tya-piloto", "num": 5, "sucursal": "Sucursal 05 · Tegucigalpa", "ciudad": "Tegucigalpa", "pais": "HN", "currency": "L", "quincena": "Quincena 2", "escenario": "Escenario demo", "franja": "Semana", "franjaCode": "WK", "canal": "Tienda física", "formato": "Cliente incógnito", "honorario": 180, "boleto": 0, "combo": "Reembolso demo", "comboAmt": 0, "estado": "realizada", "shopperId": "eval-03", "shopper": "Evaluador 03", "shopperCode": "EVL-03", "rango": "Piloto", "disponibleDesde": "2026-06-27", "agendada": "2026-06-28", "realizada": "2026-06-28", "cuestFecha": null, "submit": false},
+    {"id": "tya-piloto-v06", "projectId": "tya-piloto", "num": 6, "sucursal": "Sucursal 06 · San Pedro Sula", "ciudad": "San Pedro Sula", "pais": "HN", "currency": "L", "quincena": "Quincena 2", "escenario": "Escenario demo", "franja": "Fin de semana", "franjaCode": "WKND", "canal": "Tienda física", "formato": "Cliente incógnito", "honorario": 180, "boleto": 0, "combo": "Reembolso demo", "comboAmt": 0, "estado": "cuestionario", "shopperId": "eval-03", "shopper": "Evaluador 03", "shopperCode": "EVL-03", "rango": "Piloto", "disponibleDesde": "2026-06-27", "agendada": "2026-06-28", "realizada": "2026-06-28", "cuestFecha": "2026-06-29", "submit": false},
+    {"id": "tya-piloto-v07", "projectId": "tya-piloto", "num": 7, "sucursal": "Sucursal 07 · Guatemala", "ciudad": "Guatemala", "pais": "GT", "currency": "Q", "quincena": "Quincena 2", "escenario": "Escenario demo", "franja": "Semana", "franjaCode": "WK", "canal": "Tienda física", "formato": "Cliente incógnito", "honorario": 60, "boleto": 0, "combo": "Reembolso demo", "comboAmt": 0, "estado": "liquidada", "shopperId": "eval-02", "shopper": "Evaluador 02", "shopperCode": "EVL-02", "rango": "Piloto", "disponibleDesde": "2026-06-27", "agendada": "2026-06-28", "realizada": "2026-06-28", "cuestFecha": "2026-06-29", "submit": true},
+    {"id": "tya-piloto-v08", "projectId": "tya-piloto", "num": 8, "sucursal": "Sucursal 08 · Tegucigalpa", "ciudad": "Tegucigalpa", "pais": "HN", "currency": "L", "quincena": "Quincena 2", "escenario": "Escenario demo", "franja": "Semana", "franjaCode": "WK", "canal": "Tienda física", "formato": "Cliente incógnito", "honorario": 180, "boleto": 0, "combo": "Reembolso demo", "comboAmt": 0, "estado": "fuera_rango", "shopperId": "eval-04", "shopper": "Evaluador 04", "shopperCode": "EVL-04", "rango": "Piloto", "disponibleDesde": "2026-06-27", "agendada": "2026-06-28", "realizada": null, "cuestFecha": null, "submit": false}
+  ],
+  "postulations": [
+    {"id": "post-01", "visitaId": "tya-piloto-v02", "projectId": "tya-piloto", "shopperId": "eval-01", "shopper": "Evaluador 01", "shopperCode": "EVL-01", "sucursal": "Sucursal 02 · Mixco", "ciudad": "Mixco", "pais": "GT", "quincena": "Quincena 1", "franjaCode": "WKND", "honorario": 60, "boleto": 0, "comboAmt": 0, "currency": "Q", "fechaProp": "2026-06-28", "disponibleDesde": "2026-06-27", "estado": "pendiente", "aprobadaPor": null, "reprog": false},
+    {"id": "post-02", "visitaId": "tya-piloto-v03", "projectId": "tya-piloto", "shopperId": "eval-02", "shopper": "Evaluador 02", "shopperCode": "EVL-02", "sucursal": "Sucursal 03 · Guatemala", "ciudad": "Guatemala", "pais": "GT", "quincena": "Quincena 1", "franjaCode": "WK", "honorario": 60, "boleto": 0, "comboAmt": 0, "currency": "Q", "fechaProp": "2026-06-28", "disponibleDesde": "2026-06-27", "estado": "aprobada", "aprobadaPor": "Coordinación", "reprog": false},
+    {"id": "post-03", "visitaId": "tya-piloto-v04", "projectId": "tya-piloto", "shopperId": "eval-01", "shopper": "Evaluador 01", "shopperCode": "EVL-01", "sucursal": "Sucursal 04 · Guatemala", "ciudad": "Guatemala", "pais": "GT", "quincena": "Quincena 1", "franjaCode": "WK", "honorario": 60, "boleto": 0, "comboAmt": 0, "currency": "Q", "fechaProp": "2026-06-28", "disponibleDesde": "2026-06-27", "estado": "aprobada", "aprobadaPor": "Coordinación", "reprog": false}
+  ],
+  "questionnaires": [
+    {
+      "id": "q-demo-01",
+      "projectId": "tya-piloto",
+      "version": "piloto-1",
+      "escenario": "Escenario demo",
+      "status": "dev",
+      "preguntas": [
+        {"tipo": "escala", "texto": "Atención recibida", "puntaje": 10},
+        {"tipo": "escala", "texto": "Limpieza del punto", "puntaje": 10},
+        {"tipo": "texto", "texto": "Observaciones generales", "puntaje": 0}
+      ]
+    }
+  ]
+}
