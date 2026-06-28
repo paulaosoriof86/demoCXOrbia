@@ -4,7 +4,7 @@
 
 ### 1. Qué se conectó al backend y funciona
 
-Aún no se conectó lógica de frontend al backend. Esta sesión preparó infraestructura Firebase DEV en rama aislada:
+Aún no se activó lógica real contra Firestore. Esta sesión preparó infraestructura Firebase DEV en rama aislada y dejó un scaffold de adapter desactivado:
 
 - Repo usado como prototipo modular aprobado: `paulaosoriof86/demoCXOrbia`.
 - Rama creada: `feat/firebase-backend-dev-config-20260627`.
@@ -26,6 +26,12 @@ Archivos agregados:
 - `RESUMEN-PARA-CLAUDE.md`
 - `PENDIENTES-PROTOTIPO.md`
 - `ARQUITECTURA-TENANTS-TYA.md`
+- `app/core/backend-config.js`
+- `app/core/backend-firebase.js`
+
+Archivo modificado:
+
+- `app/index.html` solo para cargar `core/backend-config.js` y `core/backend-firebase.js` como punto único de conexión.
 
 ### 1.1. Decisión clave de producto vs cliente
 
@@ -39,9 +45,19 @@ Implicación técnica:
 - La migración de T&A debe cargar datos reales limpios a Firestore, no conectar la base vieja como backend vivo.
 - Producción actual de T&A sigue siendo `https://tya-plataforma.web.app/` y no se despliega sin autorización.
 
+### 1.2. Estado del adapter Firestore
+
+Se creó un scaffold seguro:
+
+- `CX.BACKEND.enabled` está en `false`.
+- `CX.backend` existe, pero no inicializa Firebase si no está habilitado.
+- Con `enabled:false`, la plataforma sigue funcionando con mock/localStorage.
+- Cuando se active, el adapter espera SDK Firebase compat cargado, lee `/tenants/{tenantId}`, subcolecciones de proyectos y aplica datos a `CX.data`.
+- También envuelve métodos como `addProject`, `setVisitState`, `assignVisit`, `payVisits`, `addShopper` y `updateShopper` para persistir cambios.
+
 ### 2. Qué NO se pudo conectar y por qué
 
-- No se conectó `CX.data` a Firestore todavía. Falta crear un adapter backend nuevo que mantenga exactamente la misma interfaz actual.
+- No se activó `CX.data` contra Firestore todavía. Falta cargar SDK en ambiente controlado, validar reglas y crear datos piloto.
 - No se activó Storage porque Firebase solicita plan Blaze para Cloud Storage. Queda pendiente decisión de pago y diseño de reglas/rutas.
 - No se publicó Hosting DEV ni producción. La usuaria indicó explícitamente: no deploy.
 - No se tocó `tya-plataforma.web.app`.
