@@ -14,6 +14,7 @@ Producción: bloqueada
 Datos reales: bloqueados
 Base buena T&A: bloqueada
 Firestore rules DEV: publicadas
+Auth DEV ficticio: autorizado, pendiente ejecución local
 Seed ficticio: preparado, no ejecutado
 Adapter: preparado, desactivado
 ```
@@ -25,8 +26,8 @@ Adapter: preparado, desactivado
 | Confirmar base `main` | pendiente | Paula / Claude | `main` trae cambios frontend amplios |
 | Mantener PR draft | activo | ChatGPT | No mergear |
 | Firestore rules | completado DEV | Paula/ChatGPT | Publicadas en `cxorbia-backend-dev` el 2026-06-28 |
-| Auth DEV | pendiente | Paula/ChatGPT | No crear usuarios sin autorización |
-| Claims DEV | pendiente | ChatGPT/DEV | No implementar desde frontend |
+| Auth DEV | autorizado, script preparado | Paula/ChatGPT | Ejecutar solo usuarios ficticios |
+| Claims DEV | autorizado, script preparado | ChatGPT/DEV | No implementar desde frontend |
 | Seed ficticio dry-run | pendiente | Paula autoriza | Solo simulación |
 | Seed ficticio escritura | bloqueado | Paula autoriza | Después de dry-run/usuarios/claims según plan |
 | Adapter DEV | bloqueado | Paula autoriza | Solo después de seed/reglas |
@@ -51,6 +52,17 @@ Documentación:
 - `RESULTADO-PUBLICACION-REGLAS-DEV.md`
 - `RESUMEN-PARA-CLAUDE-ADDENDUM-20260628-REGLAS-DEV-PUBLICADAS.md`
 
+## Gate autorizado — Auth DEV ficticio y claims
+
+Documentación/herramientas preparadas:
+
+- `PLAN-EJECUCION-USUARIOS-CLAIMS-DEV.md`
+- `firebase/auth-dev-tools/package.json`
+- `firebase/auth-dev-tools/create-dev-users-and-claims.cjs`
+- `PLANTILLA-RESULTADO-USUARIOS-CLAIMS-DEV.md`
+
+Estado: pendiente salida local de PowerShell.
+
 ## Advertencia pendiente
 
 ```text
@@ -67,8 +79,6 @@ no mergear PR #1
 no desplegar Hosting
 no activar Firestore adapter
 no cargar seed
-no crear usuarios
-no asignar claims
 no pedir base buena real
 no tocar producción
 ```
@@ -79,10 +89,4 @@ Solo documentación, revisión de archivos y preparación de planes.
 
 ## Próximo avance que sí requiere autorización
 
-Cualquier dry-run, escritura, deploy de Hosting, usuario, claim o activación del adapter.
-
-Frase del siguiente gate disponible:
-
-```text
-Autorizo crear usuarios DEV ficticios y asignar claims en Firebase DEV, sin usuarios reales, sin datos reales, sin activar adapter y sin tocar producción.
-```
+Cualquier dry-run, escritura, deploy de Hosting, seed o activación del adapter.
