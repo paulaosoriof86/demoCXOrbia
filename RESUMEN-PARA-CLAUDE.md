@@ -28,6 +28,9 @@ Archivos agregados:
 - `ARQUITECTURA-TENANTS-TYA.md`
 - `app/core/backend-config.js`
 - `app/core/backend-firebase.js`
+- `IMPORTACION-TYA-PILOTO.md`
+- `firebase/seed-tya-piloto.json`
+- `firebase/README.md`
 
 Archivo modificado:
 
@@ -54,6 +57,16 @@ Se creó un scaffold seguro:
 - Con `enabled:false`, la plataforma sigue funcionando con mock/localStorage.
 - Cuando se active, el adapter espera SDK Firebase compat cargado, lee `/tenants/{tenantId}`, subcolecciones de proyectos y aplica datos a `CX.data`.
 - También envuelve métodos como `addProject`, `setVisitState`, `assignVisit`, `payVisits`, `addShopper` y `updateShopper` para persistir cambios.
+
+### 1.3. Dataset piloto T&A
+
+Se agregó un dataset ficticio para validar la estructura antes de cargar datos reales:
+
+- `IMPORTACION-TYA-PILOTO.md`: plan de importación piloto, alcance, validaciones y estructura Firestore.
+- `firebase/seed-tya-piloto.json`: tenant `tya`, proyecto `tya-piloto`, evaluadores ficticios, visitas en varios estados, postulaciones y cuestionario demo.
+- `firebase/README.md`: restricciones de uso del seed.
+
+Este dataset no se importa automáticamente. Sirve para prueba controlada posterior.
 
 ### 2. Qué NO se pudo conectar y por qué
 
