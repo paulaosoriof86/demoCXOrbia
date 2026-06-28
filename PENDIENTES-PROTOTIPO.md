@@ -14,21 +14,16 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 - Estado: dictamen técnico emitido; plan de sync preparado; pendiente confirmación visual/funcional.
 - Acción sugerida: usar `PLAN-SINCRONIZACION-MAIN-PR1.md` y `CHECKLIST-POST-SYNC-PR1.md` solo después de confirmar la base.
 
+### P1 — Validaciones locales combinadas
+
+- Estado: bloque PowerShell combinado creado; ejecución pendiente por Paula.
+- Detalle: `run-local-dev-validations.ps1` ejecuta emulador de reglas y dry checks admin. `BLOQUE-POWERSHELL-VALIDACIONES-LOCALES.md` contiene el bloque único para PowerShell.
+- Acción sugerida: Paula ejecuta el bloque y comparte salida completa.
+
 ### P1 — Storage pendiente por Blaze
 
 - Estado: pendiente.
 - Acción sugerida: no conectar Storage viejo como backend vivo.
-
-### P1 — Validación de reglas Firebase
-
-- Estado: paquete de emulador creado; ejecución real pendiente fuera de ChatGPT.
-- Acción sugerida: ejecutar emulador localmente o con Codex antes de publicar reglas.
-
-### P1 — Auth DEV, claims y seed ficticio
-
-- Estado: admin tools dry-checks creados; no ejecutados.
-- Detalle: `firebase/admin-tools/` contiene validadores locales para seed ficticio y claims DEV sin escribir Firebase. También existen `BLOQUE-POWERSHELL-DRY-CHECKS-ADMIN.md` y `PROMPT-CODEX-DRY-CHECKS-ADMIN.md`.
-- Acción sugerida: ejecutar dry checks localmente o con Codex después/em paralelo al emulador, sin credenciales ni escritura.
 
 ### P1 — Adapter Firestore para `CX.data`
 
