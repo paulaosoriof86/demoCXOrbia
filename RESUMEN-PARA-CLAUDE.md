@@ -13,7 +13,7 @@ Aún no se activó lógica real contra Firestore. Esta sesión preparó infraest
 - Auth Email/Password: activado en Firebase Console.
 - Storage: pendiente porque requiere Blaze.
 - Hosting producción actual: `https://tya-plataforma.web.app/` se mantiene y NO se tocó.
-- Deploy: NO autorizado y NO ejecutado.
+- Deploy: NO autorizado y NO ejecutado en esta sesión inicial.
 
 Archivos agregados principales:
 
@@ -109,7 +109,7 @@ Se agregó documentación para la validación real futura:
 - `PLANTILLA-RESULTADO-VALIDACION-REGLAS-DEV.md`
 - `CAMBIOS-BACKEND-20260627-REGLAS-DEV.md`
 
-Estado:
+Estado inicial:
 
 - No se publicaron reglas.
 - No se ejecutó validación real.
@@ -170,7 +170,7 @@ Estado actual:
 
 - PR #1 sigue en draft.
 - No merge.
-- No deploy.
+- No deploy de Hosting.
 - No producción.
 - No datos reales.
 - No base buena.
@@ -178,6 +178,7 @@ Estado actual:
 - No Storage.
 - No seed escrito en Firebase.
 - No adapter activo.
+- Firestore rules publicadas en DEV el 2026-06-28.
 
 ### 1.10. Dictamen de `main` y plan de sincronización
 
@@ -195,18 +196,53 @@ Dictamen:
 - Antes se debe confirmar visual/funcionalmente si `main` es nueva base aprobada.
 - Si se sincroniza, conservar en `app/index.html` los scripts backend después de `core/notif.js` y antes de `core/topbar.js`.
 
+### 1.11. Publicación de reglas Firestore DEV — 2026-06-28
+
+Paula autorizó publicar reglas Firestore únicamente en Firebase DEV, sin crear usuarios, sin cargar seed, sin activar adapter y sin tocar producción.
+
+Resultado documentado:
+
+- `RESULTADO-PUBLICACION-REGLAS-DEV.md`
+- `RESUMEN-PARA-CLAUDE-ADDENDUM-20260628-REGLAS-DEV-PUBLICADAS.md`
+
+Salida relevante:
+
+```text
+cloud.firestore: rules file firestore.rules compiled successfully
+firestore: released rules firestore.rules to cloud.firestore
+Deploy complete!
+```
+
+Restricciones conservadas:
+
+- No se publicó Hosting.
+- No se creó Auth.
+- No se asignaron claims.
+- No se cargó seed.
+- No se cargaron datos reales.
+- No se activó `CX.BACKEND.enabled`.
+- No se tocó `/app/modules`.
+- No se tocó producción.
+
+Advertencia observada:
+
+```text
+[W] 51:14 - Unused function: canAccessProject.
+```
+
+Claude puede revisar esa función en una limpieza posterior de reglas, sin cambiar permisos funcionales sin revisar la matriz.
+
 ### 2. Qué NO se pudo conectar y por qué
 
-- No se activó `CX.data` contra Firestore todavía. Falta cargar SDK en ambiente controlado, validar reglas y crear datos piloto.
+- No se activó `CX.data` contra Firestore todavía. Falta cargar SDK en ambiente controlado, validar usuarios DEV/claims, ejecutar seed ficticio y probar adapter en DEV/preview.
 - No se activó Storage porque Firebase solicita plan Blaze para Cloud Storage. Queda pendiente decisión de pago y diseño de reglas/rutas.
-- No se publicó Hosting DEV ni producción. La usuaria indicó explícitamente: no deploy.
+- No se publicó Hosting DEV ni producción.
 - No se tocó `tya-plataforma.web.app`.
 - No se migraron datos reales.
 - No se crearon usuarios Auth DEV todavía.
 - No se asignaron claims todavía.
 - No se pidió ni cargó la base buena de la plataforma anterior.
 - No se creó persistencia financiera real.
-- No se ejecutó validación real de reglas.
 
 ### 3. Qué partes del frontend necesitan ajuste
 
@@ -227,6 +263,7 @@ Pendientes importantes:
 - Se confirmó que el repo `paulaosoriof86/cxorbia-tya-plataforma` no mostraba claramente el `/app` modular aprobado desde GitHub durante la revisión.
 - El repo `paulaosoriof86/demoCXOrbia` sí contiene `/app/index.html`, `/app/core`, `/app/modules` y `/app/docs`, y se tomó como fuente del prototipo modular aprobado por instrucción de Paula.
 - Storage queda pendiente por Blaze; no usar Storage viejo como backend vivo.
+- PowerShell mostró archivos locales no versionados generados por emulador/validación: `firebase/emulator-rules/node_modules/` y `firebase/emulator-rules/package-lock.json`; no deben commitearse.
 
 ### 5. Regla de oro vigente
 
