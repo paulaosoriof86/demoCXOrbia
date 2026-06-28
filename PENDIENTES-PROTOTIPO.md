@@ -21,14 +21,14 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 
 ### P1 — Validación de reglas Firebase
 
-- Estado: validación lógica P0 documentada; gate de emulador preparado.
-- Detalle: `RESULTADO-VALIDACION-REGLAS-DEV.md` registra 9 P0 evaluados y 0 fallos por revisión lógica. Existen `PLAN-EMULADOR-REGLAS-FIRESTORE.md`, `PLANTILLA-RESULTADO-EMULADOR-REGLAS-FIRESTORE.md` y `AUTORIZACION-EMULADOR-REGLAS-FIRESTORE.md`.
-- Acción sugerida: no publicar reglas todavía; validar con emulador local o Rules Playground antes de cualquier publicación.
+- Estado: paquete de emulador creado; ejecución real pendiente fuera de ChatGPT.
+- Detalle: `firebase/emulator-rules/` contiene package, test y README. `RESULTADO-EMULADOR-REGLAS-FIRESTORE.md` registra que no se pudo ejecutar emulador en el entorno de ChatGPT por falta de Firebase CLI/dependencias locales.
+- Acción sugerida: ejecutar emulador localmente o con Codex antes de publicar reglas.
 
 ### P1 — Auth DEV y claims
 
 - Estado: documentado, no ejecutado.
-- Acción sugerida: no crear usuarios ni asignar claims hasta autorización expresa y validación de reglas en motor Firebase.
+- Acción sugerida: no crear usuarios ni asignar claims hasta validación de reglas en motor Firebase.
 
 ### P1 — Seed ficticio T&A
 
