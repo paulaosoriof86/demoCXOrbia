@@ -116,3 +116,23 @@ Restricciones:
 - No cargar datos reales todavía.
 - No usar base anterior como backend vivo.
 - No activar Storage hasta definir Blaze y reglas privadas.
+
+## 2026-06-27 — Gate para base buena T&A
+
+Archivo creado:
+
+- `MIGRACION-BASE-BUENA-TYA.md`
+
+Cambios:
+
+- Se documentó que todavía no corresponde cargar la base buena real.
+- Se definieron condiciones para avisar a Paula cuándo pedir/cargar el export limpio.
+- Se definió estructura esperada del export JSON.
+- Se establecieron reglas de deduplicación, validación y carga piloto.
+- Se dejó claro que la base anterior nunca debe conectarse como backend vivo.
+
+Pendiente:
+
+- Completar validación con seed ficticio.
+- Activar adapter solo en DEV o preview controlado.
+- Avisar a Paula cuando ya corresponda pedir/cargar export limpio.
