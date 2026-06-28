@@ -28,6 +28,7 @@ Archivos agregados:
 - `ARQUITECTURA-TENANTS-TYA.md`
 - `MATRIZ-ROLES-FIRESTORE.md`
 - `AUTH-DEV-TYA.md`
+- `MIGRACION-BASE-BUENA-TYA.md`
 - `app/core/backend-config.js`
 - `app/core/backend-firebase.js`
 - `IMPORTACION-TYA-PILOTO.md`
@@ -94,6 +95,18 @@ Pendiente:
 - Crear usuarios DEV solo con autorización.
 - Mantener adapter desactivado hasta completar validaciones.
 
+### 1.6. Gate de base buena T&A
+
+Se agregó `MIGRACION-BASE-BUENA-TYA.md`.
+
+Decisión:
+
+- Todavía NO corresponde cargar la base buena real.
+- Se avisará a Paula cuando ya sea momento de pedir/cargar el export limpio.
+- Antes deben validarse reglas, usuarios DEV, seed ficticio, adapter en DEV/preview y render de módulos con datos piloto.
+- La base anterior nunca debe conectarse como backend vivo.
+- El export bueno debe venir en JSON UTF-8, sin datos demo mezclados, con copia original intacta y transformación separada para Firestore.
+
 ### 2. Qué NO se pudo conectar y por qué
 
 - No se activó `CX.data` contra Firestore todavía. Falta cargar SDK en ambiente controlado, validar reglas y crear datos piloto.
@@ -102,6 +115,7 @@ Pendiente:
 - No se tocó `tya-plataforma.web.app`.
 - No se migraron datos reales.
 - No se crearon usuarios Auth DEV todavía.
+- No se pidió ni cargó la base buena de la plataforma anterior.
 
 ### 3. Qué partes del frontend necesitan ajuste
 
