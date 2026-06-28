@@ -27,6 +27,7 @@ Archivos agregados:
 - `PENDIENTES-PROTOTIPO.md`
 - `ARQUITECTURA-TENANTS-TYA.md`
 - `MATRIZ-ROLES-FIRESTORE.md`
+- `AUTH-DEV-TYA.md`
 - `app/core/backend-config.js`
 - `app/core/backend-firebase.js`
 - `IMPORTACION-TYA-PILOTO.md`
@@ -83,6 +84,16 @@ Cambios relevantes:
 - Ops opera visitas, postulaciones, documentos y cuestionarios, pero no finanzas.
 - La regla sigue dependiendo de claims coherentes: `role`, `tenantId`, `projectIds` y `shopperId` cuando aplique.
 
+### 1.5. Auth DEV
+
+Se agregó `AUTH-DEV-TYA.md` con plan para usuarios DEV y claims, sin crear usuarios todavía.
+
+Pendiente:
+
+- Definir método seguro para custom claims.
+- Crear usuarios DEV solo con autorización.
+- Mantener adapter desactivado hasta completar validaciones.
+
 ### 2. Qué NO se pudo conectar y por qué
 
 - No se activó `CX.data` contra Firestore todavía. Falta cargar SDK en ambiente controlado, validar reglas y crear datos piloto.
@@ -90,6 +101,7 @@ Cambios relevantes:
 - No se publicó Hosting DEV ni producción. La usuaria indicó explícitamente: no deploy.
 - No se tocó `tya-plataforma.web.app`.
 - No se migraron datos reales.
+- No se crearon usuarios Auth DEV todavía.
 
 ### 3. Qué partes del frontend necesitan ajuste
 
