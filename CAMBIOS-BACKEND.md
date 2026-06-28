@@ -127,3 +127,44 @@ Pendiente/riesgo:
 - Firebase reportó advertencia no bloqueante: `[W] 51:14 - Unused function: canAccessProject.`
 - PowerShell reportó archivos locales no versionados: `firebase/emulator-rules/node_modules/` y `firebase/emulator-rules/package-lock.json`; no deben commitearse.
 - Siguiente gate posible: usuarios DEV ficticios y claims, solo con autorización separada.
+
+## 2026-06-28 — Preparación usuarios DEV ficticios y claims
+
+Autorización recibida:
+
+```text
+Autorizo crear usuarios DEV ficticios y asignar claims en Firebase DEV, sin usuarios reales, sin datos reales, sin activar adapter y sin tocar producción.
+```
+
+Archivos creados/preparados:
+
+- `.gitignore`: exclusión de dependencias locales, salidas DEV y artefactos de emulador.
+- `firebase/auth-dev-tools/package.json`: dependencia local de Firebase Admin SDK.
+- `firebase/auth-dev-tools/create-dev-users-and-claims.cjs`: script local para crear/actualizar usuarios DEV ficticios y asignar custom claims.
+- `PLAN-EJECUCION-USUARIOS-CLAIMS-DEV.md`: plan operativo del gate autorizado.
+- `PLANTILLA-RESULTADO-USUARIOS-CLAIMS-DEV.md`: plantilla para registrar resultado después de ejecutar PowerShell.
+
+Estado:
+
+- Script preparado.
+- Ejecución real pendiente de PowerShell local porque requiere credencial administrativa local segura.
+- No se crearon usuarios todavía desde GitHub.
+- No se asignaron claims todavía desde GitHub.
+- No se cargó seed.
+- No se activó adapter.
+- No se tocó producción.
+- No se modificó `/app/modules`.
+
+Usuarios DEV definidos:
+
+- `super.dev@cxorbia-dev.example.com`
+- `admin.tya.dev@cxorbia-dev.example.com`
+- `ops.tya.dev@cxorbia-dev.example.com`
+- `shopper.eval01.dev@cxorbia-dev.example.com`
+- `cliente.tya.dev@cxorbia-dev.example.com`
+- `externo.otro.dev@cxorbia-dev.example.com`
+
+Pendiente/riesgo:
+
+- La ejecución requiere Application Default Credentials o `GOOGLE_APPLICATION_CREDENTIALS` disponible localmente.
+- El reporte local generado contendrá password DEV temporal y no debe subirse a GitHub.
