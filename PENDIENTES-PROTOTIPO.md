@@ -22,7 +22,7 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 ### P1 — Validación de reglas Firebase
 
 - Estado: paquete de emulador creado; ejecución real pendiente fuera de ChatGPT.
-- Detalle: `firebase/emulator-rules/` contiene package, test y README. `RESULTADO-EMULADOR-REGLAS-FIRESTORE.md` registra que no se pudo ejecutar emulador en el entorno de ChatGPT por falta de Firebase CLI/dependencias locales.
+- Detalle: `firebase/emulator-rules/` contiene package, test, README y runner PowerShell. También existen `BLOQUE-POWERSHELL-EMULADOR-REGLAS.md` y `PROMPT-CODEX-EMULADOR-REGLAS.md`.
 - Acción sugerida: ejecutar emulador localmente o con Codex antes de publicar reglas.
 
 ### P1 — Auth DEV y claims
