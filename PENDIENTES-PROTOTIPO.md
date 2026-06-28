@@ -12,9 +12,9 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 
 ### P0 — Confirmar base `main` antes de sincronizar PR #1
 
-- Estado: dictamen técnico emitido; pendiente confirmación visual/funcional.
+- Estado: dictamen técnico emitido; plan de sync preparado; pendiente confirmación visual/funcional.
 - Detalle: PR #1 está detrás de `main` por 1 commit. Ese commit trae cambios amplios de prototipo frontend, core, estilos y módulos. `DICTAMEN-MAIN-BASE-PR1.md` recomienda no sincronizar automáticamente hasta confirmar que `main` es base aprobada.
-- Acción sugerida: Paula/Claude deben confirmar si `main` actual es la nueva base aprobada. Si se sincroniza, conservar scripts backend en `app/index.html` después de `core/notif.js` y antes de `core/topbar.js`.
+- Acción sugerida: usar `PLAN-SINCRONIZACION-MAIN-PR1.md` y `CHECKLIST-POST-SYNC-PR1.md` solo después de confirmar la base. Si se sincroniza, conservar scripts backend en `app/index.html` después de `core/notif.js` y antes de `core/topbar.js`.
 
 ### P0 — Confirmar repo definitivo de producción
 
