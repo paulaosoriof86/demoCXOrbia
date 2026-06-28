@@ -16,9 +16,15 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 
 ### P1 — Validaciones locales combinadas
 
-- Estado: bloque PowerShell combinado creado; ejecución pendiente por Paula.
-- Detalle: `run-local-dev-validations.ps1` ejecuta emulador de reglas y dry checks admin. `BLOQUE-POWERSHELL-VALIDACIONES-LOCALES.md` contiene el bloque único para PowerShell.
-- Acción sugerida: Paula ejecuta el bloque y comparte salida completa.
+- Estado: resultado local recibido por captura; sin fallo visible.
+- Detalle: `RESULTADO-VALIDACIONES-LOCALES-PAULA-20260628.md` documenta la salida visible: dry checks finalizados y validaciones locales finalizadas.
+- Acción sugerida: conservar bloqueo de acciones reales hasta autorización del gate siguiente.
+
+### P1 — Publicación reglas Firestore DEV
+
+- Estado: gate preparado, no ejecutado.
+- Detalle: `PLAN-PUBLICACION-REGLAS-DEV.md`, `AUTORIZACION-PUBLICACION-REGLAS-DEV.md` y `BLOQUE-POWERSHELL-PUBLICAR-REGLAS-DEV.md` preparan publicación solo de reglas en DEV.
+- Acción sugerida: no publicar hasta autorización expresa de Paula.
 
 ### P1 — Storage pendiente por Blaze
 
