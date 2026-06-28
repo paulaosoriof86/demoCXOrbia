@@ -9,7 +9,7 @@ Registro obligatorio de cambios de backend, infraestructura y migración.
 - `firestore.indexes.json`: índices iniciales vacíos.
 - `storage.rules`: Storage cerrado mientras esté pendiente Blaze.
 
-Estado: sin deploy, sin producción y sin datos reales.
+Estado: sin deploy de Hosting, sin producción y sin datos reales.
 
 ## 2026-06-27 — Reglas Firestore
 
@@ -24,7 +24,7 @@ Cambios:
 - Matriz de roles actualizada para reflejar visitas disponibles.
 - Casos de prueba actualizados para shopper con proyecto, shopper sin proyecto y visitas disponibles.
 
-Pendiente: validar reglas en DEV antes de publicar o activar adapter.
+Pendiente inicial: validar reglas en DEV antes de publicar o activar adapter.
 
 ## 2026-06-27 — Plan Auth DEV T&A
 
@@ -73,7 +73,7 @@ Estado: todavía no corresponde cargar base real.
 - `PLAN-SINCRONIZACION-MAIN-PR1.md`: plan para sincronizar con `main` sin ejecutar sync automático.
 - `CHECKLIST-POST-SYNC-PR1.md`: checklist posterior a una futura sincronización.
 
-Estado: no merge, no deploy, no datos reales.
+Estado: no merge, no deploy de Hosting, no datos reales.
 
 ## 2026-06-27 — Revisión divergencia con main
 
@@ -87,3 +87,43 @@ Decisión: no sincronizar todavía. Primero confirmar si ese commit es la nueva 
 - `GUIA-VALIDACION-PR1.md`: guía breve para revisar PR #1 antes de actualizarlo con `main`.
 
 Objetivo: dejar claro qué revisar y qué punto backend debe conservarse antes de sincronizar.
+
+## 2026-06-28 — Publicación reglas Firestore DEV
+
+- `RESULTADO-PUBLICACION-REGLAS-DEV.md`: resultado del deploy exclusivo de reglas Firestore a Firebase DEV.
+- `PENDIENTES-PROTOTIPO.md`: actualizado con gate completado, advertencia no bloqueante y archivos locales no versionados generados por emulador/validación.
+- `RESUMEN-PARA-CLAUDE.md`: actualizado con sección de publicación de reglas DEV.
+- `RESUMEN-PARA-CLAUDE-ADDENDUM-20260628-REGLAS-DEV-PUBLICADAS.md`: addendum específico para Claude.
+- `ESTADO-GATES-PR1.md`: actualizado para marcar Firestore rules como publicadas en DEV.
+
+Cambio real ejecutado fuera del repo:
+
+```text
+firebase.cmd deploy --only firestore:rules --project cxorbia-backend-dev
+```
+
+Resultado:
+
+```text
+cloud.firestore: rules file firestore.rules compiled successfully
+firestore: released rules firestore.rules to cloud.firestore
+Deploy complete!
+```
+
+Impacto:
+
+- Reglas Firestore publicadas únicamente en Firebase DEV `cxorbia-backend-dev`.
+- No se publicó Hosting.
+- No se creó ningún usuario.
+- No se asignaron claims.
+- No se cargó seed.
+- No se activó adapter.
+- No se tocaron datos reales.
+- No se tocó producción.
+- No se modificó `/app/modules`.
+
+Pendiente/riesgo:
+
+- Firebase reportó advertencia no bloqueante: `[W] 51:14 - Unused function: canAccessProject.`
+- PowerShell reportó archivos locales no versionados: `firebase/emulator-rules/node_modules/` y `firebase/emulator-rules/package-lock.json`; no deben commitearse.
+- Siguiente gate posible: usuarios DEV ficticios y claims, solo con autorización separada.
