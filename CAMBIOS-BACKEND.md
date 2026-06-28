@@ -59,3 +59,26 @@ Registro obligatorio de cambios de backend, infraestructura y migración.
 - POR QUÉ: Registrar lo que requiera ajuste de frontend o validación posterior.
 - IMPACTO EN FRONTEND: Ninguno.
 - PENDIENTE/RIESGO: Priorizar con Claude antes de modificar UI.
+
+## 2026-06-27 — Aclaración producto CXOrbia vs tenant T&A
+
+- ARCHIVO: `ARQUITECTURA-TENANTS-TYA.md`
+- TIPO: nuevo
+- QUÉ CAMBIÓ: Se documentó que `demoCXOrbia` es el prototipo/base comercializable de CXOrbia y que T&A Consultores será el primer cliente/tenant real.
+- POR QUÉ: Evitar que la migración de T&A contamine el producto genérico. T&A debe entrar como tenant, no como lógica fija.
+- IMPACTO EN FRONTEND: Ninguno. No toca `/app/modules` ni core UI.
+- PENDIENTE/RIESGO: Al crear el adapter, mantener `tenantId` y `projectId` como configuración/datos, no hardcodeados en módulos.
+
+- ARCHIVO: `RESUMEN-PARA-CLAUDE.md`
+- TIPO: modificado
+- QUÉ CAMBIÓ: Se agregó sección 1.1 con la decisión producto vs cliente.
+- POR QUÉ: Garantizar continuidad: CXOrbia sigue como plataforma comercializable; T&A es primer tenant real.
+- IMPACTO EN FRONTEND: Ninguno.
+- PENDIENTE/RIESGO: Revisar que futuras mejoras del prototipo no dependan de datos reales de T&A.
+
+- ARCHIVO: `PENDIENTES-PROTOTIPO.md`
+- TIPO: modificado
+- QUÉ CAMBIÓ: Se reemplazó la duda de repo por una decisión clara: prototipo comercializable en `demoCXOrbia`; T&A como tenant real.
+- POR QUÉ: Separar evolución comercial del producto y migración del primer cliente.
+- IMPACTO EN FRONTEND: Ninguno.
+- PENDIENTE/RIESGO: Definir después repo privado/productivo definitivo para T&A si corresponde.
