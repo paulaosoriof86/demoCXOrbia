@@ -15,26 +15,17 @@ Aún no se activó lógica real contra Firestore. Esta sesión preparó infraest
 - Hosting producción actual: `https://tya-plataforma.web.app/` se mantiene y NO se tocó.
 - Deploy: NO autorizado y NO ejecutado.
 
-Archivos agregados:
+Archivos agregados principales:
 
 - `.firebaserc`
 - `firebase.json`
 - `firestore.rules`
 - `firestore.indexes.json`
 - `storage.rules`
-- `CAMBIOS-BACKEND.md`
-- `RESUMEN-PARA-CLAUDE.md`
-- `PENDIENTES-PROTOTIPO.md`
-- `ARQUITECTURA-TENANTS-TYA.md`
-- `MATRIZ-ROLES-FIRESTORE.md`
-- `AUTH-DEV-TYA.md`
-- `MIGRACION-BASE-BUENA-TYA.md`
 - `app/core/backend-config.js`
 - `app/core/backend-firebase.js`
-- `IMPORTACION-TYA-PILOTO.md`
-- `VALIDACION-TYA-PILOTO.md`
 - `firebase/seed-tya-piloto.json`
-- `firebase/README.md`
+- documentación de arquitectura, roles, Auth DEV, seed, adapter, gates y migración.
 
 Archivo modificado:
 
@@ -62,20 +53,30 @@ Se creó un scaffold seguro:
 - Cuando se active, el adapter espera SDK Firebase compat cargado, lee `/tenants/{tenantId}`, subcolecciones de proyectos y aplica datos a `CX.data`.
 - También envuelve métodos como `addProject`, `setVisitState`, `assignVisit`, `payVisits`, `addShopper` y `updateShopper` para persistir cambios.
 
+Documentación nueva relacionada:
+
+- `PLAN-VALIDACION-ADAPTER-DEV.md`
+
 ### 1.3. Dataset piloto T&A
 
 Se agregó un dataset ficticio para validar la estructura antes de cargar datos reales:
 
-- `IMPORTACION-TYA-PILOTO.md`: plan de importación piloto, alcance, validaciones y estructura Firestore.
-- `VALIDACION-TYA-PILOTO.md`: checklist para revisar seed, roles y reglas antes de activar nada.
-- `firebase/seed-tya-piloto.json`: tenant `tya`, proyecto `tya-piloto`, evaluadores ficticios, visitas en varios estados, postulaciones y cuestionario demo.
-- `firebase/README.md`: restricciones de uso del seed.
+- `IMPORTACION-TYA-PILOTO.md`
+- `VALIDACION-TYA-PILOTO.md`
+- `firebase/seed-tya-piloto.json`
+- `firebase/README.md`
+- `PLAN-EJECUCION-SEED-TYA.md`
+- `DISENO-SCRIPT-SEED-TYA.md`
+- `AUTORIZACION-DRY-RUN-SEED.md`
 
 Este dataset no se importa automáticamente. Sirve para prueba controlada posterior.
 
 ### 1.4. Reglas y roles
 
-Se endureció `firestore.rules` y se agregó `MATRIZ-ROLES-FIRESTORE.md`.
+Se endureció `firestore.rules` y se agregó documentación de validación:
+
+- `MATRIZ-ROLES-FIRESTORE.md`
+- `CASOS-PRUEBA-FIRESTORE.md`
 
 Cambios relevantes:
 
@@ -107,6 +108,23 @@ Decisión:
 - La base anterior nunca debe conectarse como backend vivo.
 - El export bueno debe venir en JSON UTF-8, sin datos demo mezclados, con copia original intacta y transformación separada para Firestore.
 
+### 1.7. Estado de gates PR #1
+
+Se agregó `ESTADO-GATES-PR1.md`.
+
+Estado actual:
+
+- PR #1 sigue en draft.
+- No merge.
+- No deploy.
+- No producción.
+- No datos reales.
+- No base buena.
+- No usuarios reales.
+- No Storage.
+- No seed ejecutado.
+- No adapter activo.
+
 ### 2. Qué NO se pudo conectar y por qué
 
 - No se activó `CX.data` contra Firestore todavía. Falta cargar SDK en ambiente controlado, validar reglas y crear datos piloto.
@@ -119,9 +137,14 @@ Decisión:
 
 ### 3. Qué partes del frontend necesitan ajuste
 
-Ninguna por ahora. No se modificó `/app/modules` ni se detectó necesidad de cambio visual durante esta preparación.
+Ninguna por ahora. No se modificó `/app/modules` dentro del PR backend.
 
-Cuando se conecte Firestore, revisar si algún módulo asume datos síncronos inmediatos de `CX.data`; si aparece ese caso, NO parchar en el módulo. Documentarlo aquí para ajuste posterior.
+Pendiente importante:
+
+- PR #1 está detrás de `main` por 1 commit.
+- Ese commit de `main` contiene cambios amplios de frontend, core, estilos y módulos.
+- No sincronizar automáticamente hasta confirmar si `main` es la nueva base aprobada del prototipo.
+- Revisar `app/index.html` al sincronizar para conservar el punto único de conexión backend.
 
 ### 4. Errores o inconsistencias detectadas en el prototipo
 
