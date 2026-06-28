@@ -68,7 +68,8 @@ Estado: todavía no corresponde cargar base real.
 
 - `CHECKLIST-PR1-VALIDACION.md`: checklist para mantener PR #1 como draft.
 - `ESTADO-GATES-PR1.md`: matriz centralizada de gates.
-- Comentario agregado en PR #1.
+- `PLAN-SINCRONIZACION-MAIN-PR1.md`: plan para sincronizar con `main` sin ejecutar sync automático.
+- `CHECKLIST-POST-SYNC-PR1.md`: checklist posterior a una futura sincronización.
 
 Estado: no merge, no deploy, no datos reales.
 
