@@ -25,7 +25,7 @@ Archivos agregados principales:
 - `app/core/backend-config.js`
 - `app/core/backend-firebase.js`
 - `firebase/seed-tya-piloto.json`
-- documentación de arquitectura, roles, Auth DEV, seed, adapter, gates, migración, dictamen de main, dry-run documental, validación estática, plan de sync y mapeo `CX.data`.
+- documentación de arquitectura, roles, Auth DEV, seed, adapter, gates, migración, dictamen de main, dry-run documental, validación estática, plan de sync, mapeo `CX.data` y finanzas DEV.
 
 Archivo modificado:
 
@@ -67,7 +67,23 @@ Notas relevantes:
 - Finanzas generadas desde `CX.finStore` aún no quedan persistidas por el adapter.
 - Si aparece problema de asincronía en módulos, debe documentarse y no parchar `/app/modules` dentro del PR backend.
 
-### 1.3. Dataset piloto T&A
+### 1.3. Finanzas DEV
+
+Se agregó documentación para una fase posterior:
+
+- `MAPEO-FINSTORE-FIRESTORE.md`
+- `PLAN-PERSISTENCIA-FINANCIERA-DEV.md`
+- `CAMBIOS-BACKEND-20260627-FINANZAS.md`
+
+Estado:
+
+- No se creó adapter financiero.
+- No se modificó UI.
+- No se tocó `/app/modules`.
+- No se escribió Firestore.
+- La persistencia financiera queda pendiente hasta validar reglas, seed, adapter base y comportamiento de `CX.finStore`.
+
+### 1.4. Dataset piloto T&A
 
 Se agregó un dataset ficticio para validar la estructura antes de cargar datos reales:
 
@@ -82,7 +98,7 @@ Se agregó un dataset ficticio para validar la estructura antes de cargar datos 
 
 Este dataset no se importó a Firebase. Se validó documentalmente con conteos: 1 tenant, 1 proyecto, 4 shoppers ficticios, 8 visitas ficticias, 3 postulaciones, 1 cuestionario demo y 3 preguntas demo.
 
-### 1.4. Reglas y roles
+### 1.5. Reglas y roles
 
 Se endureció `firestore.rules` y se agregó documentación de validación:
 
@@ -99,7 +115,7 @@ Cambios relevantes:
 - Ops opera visitas, postulaciones, documentos y cuestionarios, pero no finanzas.
 - La regla sigue dependiendo de claims coherentes: `role`, `tenantId`, `projectIds` y `shopperId` cuando aplique.
 
-### 1.5. Auth DEV
+### 1.6. Auth DEV
 
 Se agregó `AUTH-DEV-TYA.md` con plan para usuarios DEV y claims, sin crear usuarios todavía.
 
@@ -109,7 +125,7 @@ Pendiente:
 - Crear usuarios DEV solo con autorización.
 - Mantener adapter desactivado hasta completar validaciones.
 
-### 1.6. Gate de base buena T&A
+### 1.7. Gate de base buena T&A
 
 Se agregó `MIGRACION-BASE-BUENA-TYA.md`.
 
@@ -121,7 +137,7 @@ Decisión:
 - La base anterior nunca debe conectarse como backend vivo.
 - El export bueno debe venir en JSON UTF-8, sin datos demo mezclados, con copia original intacta y transformación separada para Firestore.
 
-### 1.7. Estado de gates PR #1
+### 1.8. Estado de gates PR #1
 
 Se agregó `ESTADO-GATES-PR1.md`.
 
@@ -138,7 +154,7 @@ Estado actual:
 - No seed escrito en Firebase.
 - No adapter activo.
 
-### 1.8. Dictamen de `main` y plan de sincronización
+### 1.9. Dictamen de `main` y plan de sincronización
 
 Se agregó:
 
@@ -163,6 +179,7 @@ Dictamen:
 - No se migraron datos reales.
 - No se crearon usuarios Auth DEV todavía.
 - No se pidió ni cargó la base buena de la plataforma anterior.
+- No se creó persistencia financiera real.
 
 ### 3. Qué partes del frontend necesitan ajuste
 
@@ -176,6 +193,7 @@ Pendientes importantes:
 - Usar `PLAN-SINCRONIZACION-MAIN-PR1.md` y luego `CHECKLIST-POST-SYNC-PR1.md`.
 - Revisar `app/index.html` al sincronizar para conservar el punto único de conexión backend.
 - Revisar asincronía de módulos cuando se active Firestore en DEV.
+- Revisar si finanzas consume `CX.finStore` como interfaz estable antes de crear adapter financiero.
 
 ### 4. Errores o inconsistencias detectadas en el prototipo
 
