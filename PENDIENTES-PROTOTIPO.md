@@ -46,6 +46,12 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 - Detalle: existen `app/core/backend-config.js` y `app/core/backend-firebase.js`. `CX.BACKEND.enabled` sigue en `false`. Falta cargar Firebase SDK compat en entorno controlado cuando se autorice activar.
 - Acción sugerida: activar solo en DEV/preview controlado después de reglas, seed y autorización. Si algún módulo falla por asincronía, documentarlo aquí y no parchar `/app/modules` dentro del PR backend.
 
+### P1 — Riesgos de asincronía `CX.data`
+
+- Estado: documentado.
+- Detalle: `MAPEO-CXDATA-FIRESTORE.md` y `RIESGOS-ASINCRONIA-CXDATA.md` documentan cómo conservar la interfaz actual y qué puede fallar al reemplazar datos inmediatos por Firestore asincrónico.
+- Acción sugerida: cuando se active DEV, revisar dashboard, visitas, postulaciones, shoppers, misvisitas, beneficios y finanzas después del evento `backend-ready`.
+
 ### P2 — Datos reales T&A
 
 - Estado: bloqueado.
