@@ -26,9 +26,11 @@ Archivos agregados:
 - `RESUMEN-PARA-CLAUDE.md`
 - `PENDIENTES-PROTOTIPO.md`
 - `ARQUITECTURA-TENANTS-TYA.md`
+- `MATRIZ-ROLES-FIRESTORE.md`
 - `app/core/backend-config.js`
 - `app/core/backend-firebase.js`
 - `IMPORTACION-TYA-PILOTO.md`
+- `VALIDACION-TYA-PILOTO.md`
 - `firebase/seed-tya-piloto.json`
 - `firebase/README.md`
 
@@ -63,10 +65,23 @@ Se creó un scaffold seguro:
 Se agregó un dataset ficticio para validar la estructura antes de cargar datos reales:
 
 - `IMPORTACION-TYA-PILOTO.md`: plan de importación piloto, alcance, validaciones y estructura Firestore.
+- `VALIDACION-TYA-PILOTO.md`: checklist para revisar seed, roles y reglas antes de activar nada.
 - `firebase/seed-tya-piloto.json`: tenant `tya`, proyecto `tya-piloto`, evaluadores ficticios, visitas en varios estados, postulaciones y cuestionario demo.
 - `firebase/README.md`: restricciones de uso del seed.
 
 Este dataset no se importa automáticamente. Sirve para prueba controlada posterior.
+
+### 1.4. Reglas y roles
+
+Se endureció `firestore.rules` y se agregó `MATRIZ-ROLES-FIRESTORE.md`.
+
+Cambios relevantes:
+
+- Cliente no lee finanzas, lotes, liquidaciones ni postulaciones internas.
+- Shopper queda limitado a recursos propios/asignados.
+- Admin/super controlan finanzas.
+- Ops opera visitas, postulaciones, documentos y cuestionarios, pero no finanzas.
+- La regla sigue dependiendo de claims coherentes: `role`, `tenantId`, `projectIds` y `shopperId` cuando aplique.
 
 ### 2. Qué NO se pudo conectar y por qué
 
