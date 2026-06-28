@@ -25,7 +25,7 @@ Archivos agregados principales:
 - `app/core/backend-config.js`
 - `app/core/backend-firebase.js`
 - `firebase/seed-tya-piloto.json`
-- documentación de arquitectura, roles, Auth DEV, seed, adapter, gates, migración, dictamen de main, dry-run documental y validación estática.
+- documentación de arquitectura, roles, Auth DEV, seed, adapter, gates, migración, dictamen de main, dry-run documental, validación estática y plan de sync.
 
 Archivo modificado:
 
@@ -129,9 +129,13 @@ Estado actual:
 - No seed escrito en Firebase.
 - No adapter activo.
 
-### 1.8. Dictamen de `main`
+### 1.8. Dictamen de `main` y plan de sincronización
 
-Se agregó `DICTAMEN-MAIN-BASE-PR1.md`.
+Se agregó:
+
+- `DICTAMEN-MAIN-BASE-PR1.md`
+- `PLAN-SINCRONIZACION-MAIN-PR1.md`
+- `CHECKLIST-POST-SYNC-PR1.md`
 
 Dictamen:
 
@@ -160,6 +164,7 @@ Pendiente importante:
 - PR #1 está detrás de `main` por 1 commit.
 - Ese commit de `main` contiene cambios amplios de frontend, core, estilos y módulos.
 - No sincronizar automáticamente hasta confirmar si `main` es la nueva base aprobada del prototipo.
+- Usar `PLAN-SINCRONIZACION-MAIN-PR1.md` y luego `CHECKLIST-POST-SYNC-PR1.md`.
 - Revisar `app/index.html` al sincronizar para conservar el punto único de conexión backend.
 
 ### 4. Errores o inconsistencias detectadas en el prototipo
