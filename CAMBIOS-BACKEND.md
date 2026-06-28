@@ -82,3 +82,26 @@ Registro obligatorio de cambios de backend, infraestructura y migración.
 - POR QUÉ: Separar evolución comercial del producto y migración del primer cliente.
 - IMPACTO EN FRONTEND: Ninguno.
 - PENDIENTE/RIESGO: Definir después repo privado/productivo definitivo para T&A si corresponde.
+
+## 2026-06-27 — Fase 1 scaffold: adapter Firestore desactivado
+
+- ARCHIVO: `app/core/backend-config.js`
+- TIPO: nuevo
+- QUÉ CAMBIÓ: Se agregó configuración backend DEV con Firebase config, `tenantId: tya`, colecciones esperadas y `enabled:false`.
+- POR QUÉ: Preparar el punto único de configuración backend sin activar lectura/escritura real todavía.
+- IMPACTO EN FRONTEND: Ninguno visible. El adapter está desactivado por seguridad y el prototipo sigue usando mock/localStorage.
+- PENDIENTE/RIESGO: Cambiar `enabled:true` solo después de validar reglas, SDK y piloto de datos.
+
+- ARCHIVO: `app/core/backend-firebase.js`
+- TIPO: nuevo
+- QUÉ CAMBIÓ: Se agregó scaffold de adapter Firestore. Define `CX.backend`, carga datos de `/tenants/{tenantId}`, aplica datos a `CX.data` si existen y envuelve métodos operativos para persistir cambios cuando se active.
+- POR QUÉ: Mantener la interfaz `CX.data` sin tocar módulos UI y preparar conexión real multi-tenant.
+- IMPACTO EN FRONTEND: Ninguno mientras `enabled:false`. Cuando se active, puede requerir validar si algún módulo asume carga síncrona inmediata.
+- PENDIENTE/RIESGO: Falta cargar Firebase SDK en ambiente de prueba y crear datos piloto en Firestore. No hacer deploy todavía.
+
+- ARCHIVO: `app/index.html`
+- TIPO: modificado / punto único de conexión
+- QUÉ CAMBIÓ: Se añadieron únicamente dos scripts core: `core/backend-config.js` y `core/backend-firebase.js`, después de `core/notif.js` y antes de `core/topbar.js`.
+- POR QUÉ: Permitir que el adapter se conecte sin modificar módulos. Este es el punto único de conexión aprobado.
+- IMPACTO EN FRONTEND: Bajo. No cambia estructura visual ni módulos. Con `enabled:false`, la app sigue con mock/localStorage.
+- PENDIENTE/RIESGO: Validar que la carga no genere errores en preview antes de activar Firestore.
