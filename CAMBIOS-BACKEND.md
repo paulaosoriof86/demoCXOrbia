@@ -16,6 +16,12 @@ Estado: sin deploy, sin producción y sin datos reales.
 - `firestore.rules`: reglas multi-tenant por `tenantId`, `projectId` y rol.
 - `MATRIZ-ROLES-FIRESTORE.md`: matriz de permisos y claims esperados.
 - `CASOS-PRUEBA-FIRESTORE.md`: casos de prueba para validar permisos.
+- `VALIDACION-ESTATICA-REGLAS-ADAPTER.md`: revisión estática entre reglas, seed y adapter.
+
+Cambio aplicado:
+
+- Se agregó permiso controlado para que shoppers con `projectIds` del proyecto puedan leer visitas con `estado == disponible`.
+- Motivo: permitir el flujo de visitas disponibles/postulación sin abrir visitas de otros tenants ni proyectos.
 
 Pendiente: validar reglas en DEV antes de publicar o activar adapter.
 
