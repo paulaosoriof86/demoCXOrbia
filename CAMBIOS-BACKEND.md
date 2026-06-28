@@ -46,6 +46,7 @@ Impacto: no se modificó `/app/modules`; la app sigue usando mock/localStorage.
 - `firebase/seed-tya-piloto.json`: dataset ficticio y anonimizado.
 - `firebase/README.md`: restricciones del seed.
 - `PLAN-EJECUCION-SEED-TYA.md`: plan para ejecutar el seed ficticio cuando corresponda, sin credenciales en repo.
+- `DISENO-SCRIPT-SEED-TYA.md`: diseño del futuro script de carga con modo dry-run y validaciones previas.
 
 ## 2026-06-27 — Gate para base buena T&A
 
