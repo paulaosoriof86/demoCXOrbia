@@ -61,6 +61,17 @@ Estos casos son de validación. No implican deploy, no crean usuarios y no carga
 }
 ```
 
+### Shopper sin proyecto asignado
+
+```json
+{
+  "role": "shopper",
+  "tenantId": "tya",
+  "projectIds": [],
+  "shopperId": "eval-01"
+}
+```
+
 ## Casos esperados
 
 | Caso | Rol | Ruta | Acción | Resultado esperado |
@@ -69,23 +80,38 @@ Estos casos son de validación. No implican deploy, no crean usuarios y no carga
 | 2 | admin tya | `/tenants/tya` | read | allow |
 | 3 | otro tenant | `/tenants/tya` | read | deny |
 | 4 | admin tya | `/tenants/tya/projects/tya-piloto` | read/write | allow |
-| 5 | ops tya | `/tenants/tya/projects/tya-piloto/visits/v01` | read/write | allow |
+| 5 | ops tya | `/tenants/tya/projects/tya-piloto/visits/tya-piloto-v01` | read/write | allow |
 | 6 | ops tya | `/tenants/tya/projects/tya-piloto/finance/m01` | read/write | deny |
 | 7 | shopper eval-01 | `/tenants/tya/shoppers/eval-01` | read | allow |
 | 8 | shopper eval-01 | `/tenants/tya/shoppers/eval-02` | read | deny |
 | 9 | shopper eval-01 | visita propia con `shopperId=eval-01` | read/update | allow |
 | 10 | shopper eval-01 | visita de otro shopper | read/update | deny |
-| 11 | shopper eval-01 | postulación propia con `shopperId=eval-01` | create | allow |
-| 12 | shopper eval-01 | postulación de otro shopper | create | deny |
-| 13 | cliente tya | proyecto asignado | read | allow |
-| 14 | cliente tya | finance | read/write | deny |
-| 15 | cliente tya | postulations | read/write | deny |
-| 16 | cliente tya | responses del proyecto asignado | read | allow |
-| 17 | admin tya | automations | read/write | allow |
-| 18 | ops tya | automations | read/write | deny |
-| 19 | admin tya | auditLogs | read | allow |
-| 20 | cualquier auth tya | auditLogs | create | allow |
-| 21 | cualquier auth tya | auditLogs | update/delete | deny |
+| 11 | shopper eval-01 | visita disponible con `estado=disponible` y proyecto asignado | read | allow |
+| 12 | shopper sin proyecto | visita disponible con `estado=disponible` | read | deny |
+| 13 | shopper eval-01 | postulación propia con `shopperId=eval-01` | create | allow |
+| 14 | shopper eval-01 | postulación de otro shopper | create | deny |
+| 15 | cliente tya | proyecto asignado | read | allow |
+| 16 | cliente tya | finance | read/write | deny |
+| 17 | cliente tya | postulations | read/write | deny |
+| 18 | cliente tya | responses del proyecto asignado | read | allow |
+| 19 | admin tya | automations | read/write | allow |
+| 20 | ops tya | automations | read/write | deny |
+| 21 | admin tya | auditLogs | read | allow |
+| 22 | cualquier auth tya | auditLogs | create | allow |
+| 23 | cualquier auth tya | auditLogs | update/delete | deny |
+
+## Casos P0 obligatorios antes de publicar reglas
+
+```text
+1. sin auth no puede leer tenant
+2. otro tenant no puede leer tenant tya
+3. shopper no puede leer shopper de otro evaluador
+4. shopper sí puede leer visita disponible de proyecto asignado
+5. shopper sin proyecto no puede leer visita disponible
+6. cliente no puede leer finance ni postulations
+7. ops no puede leer finance
+8. auditLogs no permite update/delete
+```
 
 ## Validación posterior
 
@@ -98,4 +124,4 @@ Después de ejecutar estos casos:
 
 ## Criterio de avance
 
-Solo avanzar a seed ficticio si los casos P0/P1 de reglas pasan correctamente.
+Solo avanzar a escritura del seed ficticio si los casos P0/P1 de reglas pasan correctamente en DEV o Rules Playground.
