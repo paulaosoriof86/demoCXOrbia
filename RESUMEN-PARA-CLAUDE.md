@@ -25,7 +25,7 @@ Archivos agregados principales:
 - `app/core/backend-config.js`
 - `app/core/backend-firebase.js`
 - `firebase/seed-tya-piloto.json`
-- documentación de arquitectura, roles, Auth DEV, seed, adapter, gates, migración, dictamen de main, dry-run documental, validación estática, plan de sync, mapeo `CX.data` y finanzas DEV.
+- documentación de arquitectura, roles, Auth DEV, claims, seed, adapter, gates, migración, dictamen de main, dry-run documental, validación estática, plan de sync, mapeo `CX.data` y finanzas DEV.
 
 Archivo modificado:
 
@@ -83,7 +83,25 @@ Estado:
 - No se escribió Firestore.
 - La persistencia financiera queda pendiente hasta validar reglas, seed, adapter base y comportamiento de `CX.finStore`.
 
-### 1.4. Dataset piloto T&A
+### 1.4. Auth DEV y claims
+
+Se agregó documentación para la fase Auth/claims:
+
+- `AUTH-DEV-TYA.md`
+- `PLAN-AUTH-CLAIMS-DEV.md`
+- `CHECKLIST-AUTH-DEV-SIN-USUARIOS.md`
+- `CAMBIOS-BACKEND-20260627-AUTH.md`
+
+Estado:
+
+- No se crearon usuarios.
+- No se asignaron claims.
+- No se usaron credenciales.
+- No se modificó UI.
+- No se activó backend.
+- Los claims esperados siguen siendo `role`, `tenantId`, `projectIds` y `shopperId` para rol shopper.
+
+### 1.5. Dataset piloto T&A
 
 Se agregó un dataset ficticio para validar la estructura antes de cargar datos reales:
 
@@ -98,7 +116,7 @@ Se agregó un dataset ficticio para validar la estructura antes de cargar datos 
 
 Este dataset no se importó a Firebase. Se validó documentalmente con conteos: 1 tenant, 1 proyecto, 4 shoppers ficticios, 8 visitas ficticias, 3 postulaciones, 1 cuestionario demo y 3 preguntas demo.
 
-### 1.5. Reglas y roles
+### 1.6. Reglas y roles
 
 Se endureció `firestore.rules` y se agregó documentación de validación:
 
@@ -114,16 +132,6 @@ Cambios relevantes:
 - Admin/super controlan finanzas.
 - Ops opera visitas, postulaciones, documentos y cuestionarios, pero no finanzas.
 - La regla sigue dependiendo de claims coherentes: `role`, `tenantId`, `projectIds` y `shopperId` cuando aplique.
-
-### 1.6. Auth DEV
-
-Se agregó `AUTH-DEV-TYA.md` con plan para usuarios DEV y claims, sin crear usuarios todavía.
-
-Pendiente:
-
-- Definir método seguro para custom claims.
-- Crear usuarios DEV solo con autorización.
-- Mantener adapter desactivado hasta completar validaciones.
 
 ### 1.7. Gate de base buena T&A
 
@@ -178,6 +186,7 @@ Dictamen:
 - No se tocó `tya-plataforma.web.app`.
 - No se migraron datos reales.
 - No se crearon usuarios Auth DEV todavía.
+- No se asignaron claims todavía.
 - No se pidió ni cargó la base buena de la plataforma anterior.
 - No se creó persistencia financiera real.
 
