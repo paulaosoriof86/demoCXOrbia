@@ -136,3 +136,22 @@ Pendiente:
 - Completar validación con seed ficticio.
 - Activar adapter solo en DEV o preview controlado.
 - Avisar a Paula cuando ya corresponda pedir/cargar export limpio.
+
+## 2026-06-27 — Control PR #1
+
+Archivos/acciones:
+
+- `CHECKLIST-PR1-VALIDACION.md`
+- Comentario agregado en PR #1.
+
+Cambios:
+
+- Se agregó checklist de bloqueo para mantener PR #1 como draft.
+- Se documentó que no debe mergearse, desplegarse, activarse ni usarse con datos reales.
+- Se enumeraron validaciones obligatorias antes de cualquier avance.
+
+Pendiente:
+
+- Resolver rama detrás de `main` antes de merge.
+- Validar reglas/claims/seed/adapter en DEV.
+- Mantener PR como draft hasta autorización explícita de Paula.
