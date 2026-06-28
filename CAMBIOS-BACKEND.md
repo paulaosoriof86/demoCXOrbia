@@ -105,3 +105,26 @@ Registro obligatorio de cambios de backend, infraestructura y migración.
 - POR QUÉ: Permitir que el adapter se conecte sin modificar módulos. Este es el punto único de conexión aprobado.
 - IMPACTO EN FRONTEND: Bajo. No cambia estructura visual ni módulos. Con `enabled:false`, la app sigue con mock/localStorage.
 - PENDIENTE/RIESGO: Validar que la carga no genere errores en preview antes de activar Firestore.
+
+## 2026-06-27 — Dataset piloto anonimizado para T&A
+
+- ARCHIVO: `IMPORTACION-TYA-PILOTO.md`
+- TIPO: nuevo
+- QUÉ CAMBIÓ: Se creó plan de importación piloto con estructura Firestore esperada, alcance mínimo y validaciones previas.
+- POR QUÉ: Preparar la primera carga controlada de T&A como tenant real sin usar datos reales ni base anterior como backend vivo.
+- IMPACTO EN FRONTEND: Ninguno.
+- PENDIENTE/RIESGO: Ejecutar solo en DEV y validar reglas antes de activar adapter.
+
+- ARCHIVO: `firebase/seed-tya-piloto.json`
+- TIPO: nuevo
+- QUÉ CAMBIÓ: Se agregó dataset ficticio y anonimizado con tenant, proyecto piloto, evaluadores, visitas, postulaciones y cuestionario base.
+- POR QUÉ: Tener insumo de prueba compatible con `CX.data` y la estructura multi-tenant.
+- IMPACTO EN FRONTEND: Ninguno mientras no se importe a Firestore.
+- PENDIENTE/RIESGO: No usar como producción. Sirve solo para prueba controlada.
+
+- ARCHIVO: `firebase/README.md`
+- TIPO: nuevo
+- QUÉ CAMBIÓ: Se documentó el propósito del seed y restricciones de uso.
+- POR QUÉ: Evitar importaciones accidentales o uso de datos reales antes de tiempo.
+- IMPACTO EN FRONTEND: Ninguno.
+- PENDIENTE/RIESGO: Crear script de importación solo cuando se defina método seguro de credenciales.
