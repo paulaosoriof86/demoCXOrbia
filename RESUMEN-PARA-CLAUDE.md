@@ -25,6 +25,19 @@ Archivos agregados:
 - `CAMBIOS-BACKEND.md`
 - `RESUMEN-PARA-CLAUDE.md`
 - `PENDIENTES-PROTOTIPO.md`
+- `ARQUITECTURA-TENANTS-TYA.md`
+
+### 1.1. Decisión clave de producto vs cliente
+
+Paula aclaró que `demoCXOrbia` es el repo del prototipo y seguirá evolucionando como plataforma comercializable. T&A Consultores será el primer cliente/tenant real que se migra a esa plataforma.
+
+Implicación técnica:
+
+- CXOrbia debe permanecer genérico, multi-tenant y comercializable.
+- T&A no debe hardcodearse en módulos ni core de UI.
+- T&A debe entrar como `tenantId: tya` y sus campañas/clientes finales como `projectId` dentro del tenant.
+- La migración de T&A debe cargar datos reales limpios a Firestore, no conectar la base vieja como backend vivo.
+- Producción actual de T&A sigue siendo `https://tya-plataforma.web.app/` y no se despliega sin autorización.
 
 ### 2. Qué NO se pudo conectar y por qué
 
