@@ -21,9 +21,9 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 
 ### P1 — Validación de reglas Firebase
 
-- Estado: plan de validación preparado; ejecución real pendiente.
-- Detalle: existen `PLAN-VALIDACION-REGLAS-DEV.md`, `PLANTILLA-RESULTADO-VALIDACION-REGLAS-DEV.md`, `CASOS-PRUEBA-FIRESTORE.md` y `VALIDACION-ESTATICA-REGLAS-ADAPTER.md`.
-- Acción sugerida: validar en DEV o Rules Playground antes de usuarios, seed o adapter.
+- Estado: gate de autorización preparado; ejecución real pendiente.
+- Detalle: existen `PLAN-VALIDACION-REGLAS-DEV.md`, `PLANTILLA-RESULTADO-VALIDACION-REGLAS-DEV.md`, `AUTORIZACION-VALIDACION-REGLAS-DEV.md`, `CHECKLIST-PREVALIDACION-REGLAS.md`, `CASOS-PRUEBA-FIRESTORE.md` y `VALIDACION-ESTATICA-REGLAS-ADAPTER.md`.
+- Acción sugerida: no ejecutar validación real hasta recibir la frase exacta de autorización.
 
 ### P1 — Auth DEV y claims
 
