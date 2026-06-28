@@ -12,9 +12,9 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 
 ### P0 — Confirmar base `main` antes de sincronizar PR #1
 
-- Estado: pendiente.
-- Detalle: PR #1 está detrás de `main` por 1 commit. Ese commit trae cambios amplios de prototipo frontend, core, estilos y módulos.
-- Acción sugerida: confirmar si `main` actual es la nueva base aprobada del prototipo antes de sincronizar PR #1. Revisar especialmente `app/index.html` para conservar el punto único de conexión backend.
+- Estado: dictamen técnico emitido; pendiente confirmación visual/funcional.
+- Detalle: PR #1 está detrás de `main` por 1 commit. Ese commit trae cambios amplios de prototipo frontend, core, estilos y módulos. `DICTAMEN-MAIN-BASE-PR1.md` recomienda no sincronizar automáticamente hasta confirmar que `main` es base aprobada.
+- Acción sugerida: Paula/Claude deben confirmar si `main` actual es la nueva base aprobada. Si se sincroniza, conservar scripts backend en `app/index.html` después de `core/notif.js` y antes de `core/topbar.js`.
 
 ### P0 — Confirmar repo definitivo de producción
 
@@ -36,9 +36,9 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 
 ### P1 — Seed ficticio T&A
 
-- Estado: preparado, no ejecutado.
-- Detalle: existe `firebase/seed-tya-piloto.json` y planes de ejecución/dry-run. No se cargó nada a Firebase.
-- Acción sugerida: no ejecutar dry-run ni escritura sin autorización explícita de Paula.
+- Estado: dry-run documental aprobado; no ejecutado en Firebase.
+- Detalle: `RESULTADO-DRY-RUN-SEED-TYA.md` validó estructura y conteos del seed sin usar credenciales, sin conectar Firebase y sin escribir datos.
+- Acción sugerida: no ejecutar escritura real sin autorización explícita de Paula, reglas validadas y credencial local segura.
 
 ### P1 — Adapter Firestore para `CX.data`
 
