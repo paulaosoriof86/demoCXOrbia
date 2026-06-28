@@ -78,6 +78,10 @@ service cloud.firestore {
       return isShopperRole() && request.resource.data.shopperId == shopperId();
     }
 
+    function isAvailableVisitForShopper(projectId) {
+      return isShopperRole() && projectAssigned(projectId) && resource.data.estado == 'disponible';
+    }
+
     // Deny by default. Every collection below must prove tenant, project and role.
     match /{document=**} {
       allow read, write: if false;
@@ -133,7 +137,8 @@ service cloud.firestore {
           allow read: if tenantAllowed(tenantId) && (
             isOperator() ||
             isClient() && projectAssigned(projectId) ||
-            isOwnResource()
+            isOwnResource() ||
+            isAvailableVisitForShopper(projectId)
           );
           allow create, delete: if tenantAllowed(tenantId) && isOperator();
           allow update: if tenantAllowed(tenantId) && (
