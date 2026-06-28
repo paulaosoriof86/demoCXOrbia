@@ -15,6 +15,7 @@ Estado: sin deploy, sin producción y sin datos reales.
 
 - `firestore.rules`: reglas multi-tenant por `tenantId`, `projectId` y rol.
 - `MATRIZ-ROLES-FIRESTORE.md`: matriz de permisos y claims esperados.
+- `CASOS-PRUEBA-FIRESTORE.md`: casos de prueba para validar permisos.
 
 Pendiente: validar reglas en DEV antes de publicar o activar adapter.
 
@@ -44,6 +45,7 @@ Impacto: no se modificó `/app/modules`; la app sigue usando mock/localStorage.
 - `VALIDACION-TYA-PILOTO.md`: checklist de validación.
 - `firebase/seed-tya-piloto.json`: dataset ficticio y anonimizado.
 - `firebase/README.md`: restricciones del seed.
+- `PLAN-EJECUCION-SEED-TYA.md`: plan para ejecutar el seed ficticio cuando corresponda, sin credenciales en repo.
 
 ## 2026-06-27 — Gate para base buena T&A
 
