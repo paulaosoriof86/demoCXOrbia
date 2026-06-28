@@ -44,6 +44,8 @@ Pendiente: crear usuarios DEV solo con autorización expresa.
 - `app/core/backend-firebase.js`: scaffold de adapter Firestore.
 - `app/index.html`: único punto de conexión para cargar backend config y adapter.
 - `PLAN-VALIDACION-ADAPTER-DEV.md`: plan de validación del adapter solo en DEV/preview.
+- `MAPEO-CXDATA-FIRESTORE.md`: mapeo de interfaz `CX.data` hacia colecciones Firestore.
+- `RIESGOS-ASINCRONIA-CXDATA.md`: riesgos por carga asincrónica al usar Firestore.
 
 Impacto: no se modificó `/app/modules`; la app sigue usando mock/localStorage.
 
