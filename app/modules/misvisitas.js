@@ -41,7 +41,7 @@ CX.module('misvisitas', ({data,ui})=>{
         <b style="font-size:14px;color:var(--t1)">${v.sucursal}</b>
         ${kind==='agendada'?ui.bdg('Agendada '+(v.agendada||''),'g'):kind==='asignada'?ui.bdg('Asignada · por agendar','a'):ui.bdg('Realizada · pend. cuestionario','b')}
       </div>
-      <div style="font-size:12px;color:var(--t3);margin-bottom:10px">📍 ${v.ciudad} · ${v.escenario} · ${v.canal||''} · ${ui.money(v.currency,v.honorario)}${v.combo?' + combo':''}${v.boleto?' + boleto':''}</div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:10px">📍 ${v.ciudad} · ${v.escenario} · ${v.canal||''} · ${ui.money(v.currency,v.honorario)}${(v.reembolso||v.comboAmt||v.boleto)?' + reembolso incluido':''}</div>
       <div class="flex wrap" style="gap:6px;margin-bottom:12px">${actions}</div>
       <div style="display:flex;flex-wrap:wrap;gap:5px">
         ${steps.map(s=>`<span class="bdg ${s.state==='done'?'bdg-g':s.state==='now'?'bdg-b':'bdg-n'}" style="font-size:10px">${s.state==='done'?'✓':s.state==='now'?'●':'○'} ${s.label}</span>`).join('')}
@@ -102,7 +102,8 @@ CX.module('misvisitas', ({data,ui})=>{
           const f=ov.querySelector('#schD').value||today;
           data.setVisitState(v.id,'agendada','agendada',f);
           CX.automations&&CX.automations.fire('agenda',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal,fecha:f});
-          close(); ui.toast('Visita agendada · equipo notificado · HR y liquidación sincronizadas','ok',3600);
+          close(); draw(); ui.toast('Visita agendada · equipo notificado · HR y liquidación sincronizadas','ok',3600);
+          CX.notif&&CX.notif.push({to:'admin',tipo:'agenda',icon:'📅',tono:'b',titulo:'Visita agendada',txt:(v.shopper||CX.session.user.name)+' · '+v.sucursal+' · '+f,nav:'postulaciones'});
         });
       }});
     }));
@@ -116,7 +117,8 @@ CX.module('misvisitas', ({data,ui})=>{
       {onMount:(ov,close)=>{ ov.querySelector('#doneOk').addEventListener('click',()=>{
         data.setVisitState(v.id,'realizada','realizada',ov.querySelector('#doneD').value||today);
         CX.automations&&CX.automations.fire('realizada',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal});
-        close(); ui.toast('Visita realizada · cuestionario habilitado · liquidación actualizada','ok',3600);
+        close(); draw(); ui.toast('Visita realizada · cuestionario habilitado · liquidación actualizada','ok',3600);
+        CX.notif&&CX.notif.push({to:'admin',tipo:'realizada',icon:'✅',tono:'g',titulo:'Visita realizada',txt:(v.shopper||CX.session.user.name)+' · '+v.sucursal,nav:'postulaciones'});
       }); }});
     }));
 

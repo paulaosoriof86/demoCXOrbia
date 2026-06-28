@@ -31,7 +31,7 @@ CX.module('visitas', ({data,role,ui})=>{
         ${v.combo?`<div style="background:var(--amber-bg);border-radius:8px;padding:7px 10px;font-size:11.5px;color:#8a5b00;margin-bottom:11px">🍿 ${v.combo}</div>`:''}
         <div class="between">
           <div><span style="font-size:16px;font-weight:800;color:var(--green);font-family:var(--disp)">${ui.money(v.currency,v.honorario)}</span>
-          <div style="font-size:10.5px;color:var(--t3)">${[v.combo?'+ combo':'',v.boleto?'+ boleto':''].filter(Boolean).join(' ')||'honorario'}</div></div>
+          <div style="font-size:10.5px;color:var(--t3)">${v.reembolso||v.boleto||v.comboAmt?'+ reembolso':'honorario base'}</div></div>
           <button class="btn btn-pr btn-sm" data-detail="${v.id}">Ver detalle →</button>
         </div>
       </div></div>`;

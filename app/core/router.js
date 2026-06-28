@@ -34,6 +34,7 @@ CX.router = {
              <div style="font-size:13px;font-weight:700">${p.name}</div>
              <div style="font-size:10.5px;color:var(--t3)">${p.industry}</div></div>`);
 
+    const collapsed = (()=>{try{return JSON.parse(localStorage.getItem('cx_rail_col')||'{}')}catch(e){return {};}})();
     const nav=CX.NAV[role].map(group=>{
       const items=group.items.filter(id=>CX.moduleEnabled(id)).map(id=>{
         const m=CX.MODULES[id]; if(!m)return '';
@@ -44,13 +45,17 @@ CX.router = {
           <span class="n-ic">${m.icon}</span><span>${m.label}</span>${badge||soon}</div>`;
       }).join('');
       if(!items) return '';
-      return `<div class="nav-sec">${group.sec}</div>${items}`;
+      const isc = collapsed[group.sec] || false;
+      return `<div class="nav-sec-wrap${isc?' nav-sec-col':''}" data-grp="${group.sec}">
+        <div class="nav-sec" data-sec="${group.sec}" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none">
+          <span>${group.sec}</span><span style="font-size:9px;opacity:.6;margin-left:6px">${isc?'›':'⌄'}</span></div>
+        <div class="nav-sec-items">${items}</div>
+      </div>`;
     }).join('');
 
-    const logoHTML = CX.BRAND.logoUrl
-      ? `<img class="client-logo" src="${CX.BRAND.logoUrl}" alt="logo">`
-      : `<div class="logo-mark"><span class="dot"></span></div>
-         <div><div class="brand-name">${CX.BRAND.name}</div><div class="brand-sub">${CX.BRAND.clientName?('para '+CX.BRAND.clientName):CX.BRAND.tagline}</div></div>`;
+    /* CXOrbia SIEMPRE en el sidebar (no se reemplaza). El logo del cliente va en el topbar blanco. */
+    const logoHTML = `<div class="logo-mark"><span class="dot"></span></div>
+         <div><div class="brand-name">CXOrbia</div><div class="brand-sub">Field Operations Platform</div></div>`;
 
     rail.innerHTML=`
       <div class="rail-brand">
@@ -66,6 +71,28 @@ CX.router = {
       </div>`;
 
     rail.querySelectorAll('.nav-i').forEach(n=>n.addEventListener('click',()=>this.nav(n.dataset.id)));
+    /* logo del cliente en topbar blanco */
+    if(CX.topbar&&CX.topbar.renderLogo)CX.topbar.renderLogo();
+    rail.querySelectorAll('.nav-sec').forEach(sec=>sec.addEventListener('click',e=>{
+      e.stopPropagation();
+      const wrap=sec.closest('.nav-sec-wrap'); if(!wrap)return;
+      const items=wrap.querySelector('.nav-sec-items'); if(!items)return;
+      const key=sec.dataset.sec;
+      const isNowCollapsed = items.style.display!=='none';
+      items.style.display = isNowCollapsed ? 'none' : '';
+      sec.querySelector('span:last-child').textContent = isNowCollapsed ? '›' : '⌄';
+      try{const cl=JSON.parse(localStorage.getItem('cx_rail_col')||'{}');cl[key]=isNowCollapsed;localStorage.setItem('cx_rail_col',JSON.stringify(cl));}catch(e){}
+    }));
+    /* restore collapsed state */
+    rail.querySelectorAll('.nav-sec-wrap').forEach(wrap=>{
+      const key=wrap.dataset.grp;
+      if(collapsed[key]){
+        const items=wrap.querySelector('.nav-sec-items');
+        const arrow=wrap.querySelector('.nav-sec span:last-child');
+        if(items)items.style.display='none';
+        if(arrow)arrow.textContent='›';
+      }
+    });
     const sel=document.getElementById('projSel');
     if(sel)sel.addEventListener('change',()=>{d.setProject(sel.value);CX.ui.toast('Proyecto: '+d.project().name,'ok');});
     document.getElementById('logoutBtn').addEventListener('click',()=>CX.app.logout());

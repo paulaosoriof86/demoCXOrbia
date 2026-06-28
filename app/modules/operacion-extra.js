@@ -284,16 +284,18 @@ CX.module('informes', ({data,ui})=>{
     
     host.querySelectorAll('[data-rep]').forEach(b=>b.addEventListener('click',(e)=>{if(e.target.closest('[data-dl]'))return;const rpt=reportes[b.dataset.rep];if(rpt)openReport(b.dataset.rep,rpt);}));
     host.querySelectorAll('[data-dl]').forEach(b=>b.addEventListener('click',()=>ui.toast('Descargando: '+(reportes[b.dataset.dl]||['reporte'])[0],'ok')));
-    host.querySelectorAll('[data-delrpt]').forEach(b=>b.addEventListener('click',()=>{const arr=customRpts().filter(c=>c.id!==b.dataset.delrpt);saveCustomRpts(arr);draw();ui.toast('Reporte eliminado','');}));
-    host.querySelector('#newCustom')?.addEventListener('click',()=>ui.modal('＋ Nuevo reporte personalizado',`
-      <label class="lbl">Basado en</label><select class="sel" id="nrBase" style="margin-bottom:10px">${Object.entries(reportes).map(([id,r])=>`<option value="${id}">${r[0]}</option>`).join('')}</select>
-      <label class="lbl">Nombre / notas</label><input class="inp" id="nrNota" placeholder="Ej. Reporte dirección - Q2 2026" style="margin-bottom:10px">
-      <label class="lbl">Columna extra (opcional)</label><input class="inp" id="nrCol" placeholder="Ej. Objetivo">
-      <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="nrSave">Crear</button></div>
-    `,{onMount:(ov,close)=>{ov.querySelector('#nrSave').addEventListener('click',()=>{const arr=customRpts();arr.push({id:'cr'+Date.now().toString(36),base:ov.querySelector('#nrBase').value,nota:ov.querySelector('#nrNota').value,col:ov.querySelector('#nrCol').value,fecha:new Date().toISOString().slice(0,10)});saveCustomRpts(arr);close();draw();ui.toast('Reporte personalizado creado','ok');});}}));
-    const drills={cump:['Cumplimiento por país',reportes.cobertura[1]()],vel:['Velocidad promedio','<p style="font-size:13px;color:var(--t2)">Tiempo medio entre realizar y enviar el cuestionario: 2.6 días. Baja con recordatorios automáticos.</p>'],cal:['Calidad del cuestionario','<p style="font-size:13px;color:var(--t2)">92% de cuestionarios sin observaciones de QA.</p>'],rent:['Efectividad de evaluadores',reportes.rankSh[1]()]};
+    host.querySelector('#newCustom')?.addEventListener('click',()=>{
+      const b=Object.entries(reportes).map(([id,r])=>'<option value="'+id+'">'+r[0]+'</option>').join('');
+      ui.modal('＋ Nuevo reporte personalizado','<label class="lbl">Basado en</label><select class="sel" id="nrBase" style="margin-bottom:10px">'+b+'</select><label class="lbl">Nombre</label><input class="inp" id="nrNota" placeholder="Ej. Reporte dirección Q2" style="margin-bottom:12px"><div style="text-align:right"><button class="btn btn-pr btn-sm" id="nrSave">Crear</button></div>',
+        {onMount:(ov,close)=>{ov.querySelector('#nrSave').addEventListener('click',()=>{
+          const arr=customRpts();
+          arr.push({id:'cr'+Date.now().toString(36),base:ov.querySelector('#nrBase').value,nota:ov.querySelector('#nrNota').value,fecha:new Date().toISOString().slice(0,10)});
+          saveCustomRpts(arr);close();draw();ui.toast('Reporte personalizado creado','ok');
+        });}});
+    });
     host.querySelectorAll('#infKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=drills[el.dataset.k];ui.modal(d[0],d[1]);}));
   };
   draw();
   return host;
 });
+

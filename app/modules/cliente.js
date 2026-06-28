@@ -137,6 +137,72 @@ CX.cliUI = {
   },
 };
 
+/* ─── Soporte portal cliente (global helper) ─── */
+window.cliSupPort = function(){
+  const ui=CX.ui;
+  ui.modal('🎫 Solicitar soporte / servicio', `
+    <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">El equipo responderá en menos de 24 horas hábiles. Para urgencias usa WhatsApp directo.</p>
+    <div class="grid g2" style="gap:10px;margin-bottom:14px">
+      <div><label class="lbl">Tipo de solicitud</label>
+        <select class="sel" id="supTipo">
+          <option>Pregunta sobre el reporte</option>
+          <option>Aclaración de score</option>
+          <option>Error en datos</option>
+          <option>Visitas adicionales</option>
+          <option>Reporte personalizado</option>
+          <option>Capacitación del portal</option>
+          <option>Nuevo servicio / Add-on</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div><label class="lbl">Prioridad</label>
+        <select class="sel" id="supPrio"><option>Normal</option><option>Alta</option><option>Urgente</option></select>
+      </div>
+    </div>
+    <label class="lbl">Descripción detallada</label>
+    <textarea class="inp" id="supDesc" rows="4" placeholder="Describe tu solicitud con el mayor detalle posible…" style="margin-bottom:12px"></textarea>
+    <div style="background:var(--brand-light);border-radius:9px;padding:9px 13px;font-size:12px;color:var(--brand-dark);margin-bottom:14px">
+      💬 También puedes contactarnos por <b>WhatsApp</b> o <b>correo</b> para respuesta inmediata.
+    </div>
+    <div class="flex" style="justify-content:space-between">
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" id="supWA">💬 WhatsApp</button>
+        <button class="btn btn-ghost btn-sm" id="supMail">📧 Correo</button>
+      </div>
+      <button class="btn btn-pr btn-sm" id="supSend">Enviar ticket</button>
+    </div>`,
+  {onMount:(ov,close)=>{
+    ov.querySelector('#supWA').addEventListener('click',()=>window.open('https://wa.me/?text=Hola,+necesito+soporte:+','_blank'));
+    ov.querySelector('#supMail').addEventListener('click',()=>{
+      const tipo=ov.querySelector('#supTipo').value;
+      window.location.href='mailto:soporte@tuempresa.com?subject=Solicitud+de+soporte:+'+encodeURIComponent(tipo);
+    });
+    ov.querySelector('#supSend').addEventListener('click',()=>{
+      const desc=ov.querySelector('#supDesc').value.trim();
+      if(!desc){ui.toast('Describe tu solicitud','warn');return;}
+      const tipo=ov.querySelector('#supTipo').value;
+      CX.notif&&CX.notif.push({to:'admin',tipo:'soporte_cli',icon:'🎫',tono:'a',titulo:'Soporte cliente: '+tipo,txt:desc.slice(0,80),nav:'soporte'});
+      close(); ui.toast('Ticket enviado · el equipo te contactará pronto','ok',4000);
+    });
+  }});
+};
+
+/* ─── Tablón portal cliente ─── */
+window.cliTablon = function(ui){
+  const notifs=CX.notif?CX.notif.all().filter(n=>n.to==='cliente'||n.to==='all'):[];
+  ui.modal('📢 Tablón de novedades', notifs.length
+    ? `<div style="display:flex;flex-direction:column;gap:10px">${notifs.slice(0,20).map(n=>`
+        <div style="display:flex;gap:10px;padding:11px 13px;background:var(--panel-2);border-radius:10px">
+          <div style="font-size:18px;line-height:1">${n.icon||'📢'}</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:3px">${n.titulo||'Novedad'}</div>
+            <div style="font-size:12px;color:var(--t2)">${n.txt||''}</div>
+            ${n.fecha?`<div style="font-size:10.5px;color:var(--t3);margin-top:4px">${n.fecha}</div>`:''}
+          </div>
+        </div>`).join('')}</div>`
+    : `<div style="text-align:center;padding:40px;color:var(--t3)">📥 Sin novedades recientes. El equipo publicará aquí avisos, resultados y comunicaciones importantes.</div>`);
+};
+
 /* ============== Panorama ejecutivo ============== */
 CX.module('cli_dashboard', ({ui})=>{
   const C=CX.clienteData, p=CX.data.project();
@@ -150,7 +216,10 @@ CX.module('cli_dashboard', ({ui})=>{
     ${CX.cliUI.delta(s.delta)} ${CX.cliUI.pill(s.score)}</div>`;
 
   setTimeout(()=>{ CX.cliUI.wirePersona();
-    document.querySelectorAll('[data-suc]').forEach(el=>el.addEventListener('click',()=>{const s=C.sucursales(p).find(x=>x.id===el.dataset.suc); if(s)CX.cliUI.branchModal(s);}));
+    document.querySelectorAll('[data-pdl]').forEach(b=>b.addEventListener('click',()=>ui.toast('Descargando: '+b.dataset.pdl+'…','ok')));
+    const vp=document.getElementById('viewPrivacy');if(vp)vp.addEventListener('click',()=>ui.modal('📜 Acuerdo de privacidad y uso de datos',`<p style="font-size:13px;color:var(--t2);line-height:1.7">Este acuerdo regula el tratamiento de los datos obtenidos durante el programa de evaluación. La consultora garantiza la confidencialidad de cada evaluación y del personal evaluado. El cliente acepta usar los resultados exclusivamente para mejora interna de estándares de servicio. Vigente desde el inicio del programa.</p><div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Acuerdo descargado (PDF)','ok');this.closest('.cx-ov').remove()">⤓ Descargar PDF firmado</button></div>`));
+    document.getElementById('cliSopBtn')?.addEventListener('click',()=>window.cliSupPort&&window.cliSupPort());
+    document.getElementById('cliTabBtn')?.addEventListener('click',()=>window.cliTablon&&window.cliTablon(ui));
     const sucList=(arr,title)=>ui.modal(title+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Región</th><th>Score</th><th>Δ</th></tr></thead><tbody>${arr.map(s=>`<tr class="hov" data-sk="${s.id}" style="cursor:pointer"><td><b>${s.name}</b></td><td style="font-size:12px">${s.region}</td><td>${CX.cliUI.pill(s.score)}</td><td>${CX.cliUI.delta(s.delta)}</td></tr>`).join('')}</tbody></table>`:CX.ui.empty('🏪','Sin sucursales en esta categoría.'),{onMount:(ov,close)=>ov.querySelectorAll('[data-sk]').forEach(tr=>tr.addEventListener('click',()=>{close();const s=C.sucursales(p).find(x=>x.id===tr.dataset.sk);if(s)CX.cliUI.branchModal(s);}))});
     const ckMap={nps:()=>ui.modal('NPS de marca',`<p style="font-size:13px;color:var(--t2);line-height:1.7">El NPS (${R.nps}) resume la propensión a recomendar derivada de los cuestionarios. Sube cuando cierras brechas en las secciones débiles y reduces sucursales críticas.</p>`),
       exc:()=>sucList(list.filter(s=>s.score>=85),'Sucursales excelentes'),
@@ -176,6 +245,10 @@ CX.module('cli_dashboard', ({ui})=>{
 
   return `
     ${ui.ph('Panorama de '+p.name, 'Resultados de la marca · score ponderado por programa')}
+    <div class="between" style="margin-bottom:16px"><div></div><div class="flex" style="gap:8px">
+      <button class="btn btn-ghost btn-sm" id="cliTabBtn">📢 Novedades</button>
+      <button class="btn btn-soft btn-sm" id="cliSopBtn">🎫 Solicitar soporte</button>
+    </div></div>
     ${CX.cliUI.personaBarHTML()}
     ${liveBlock}
     <div class="flex" style="gap:16px;align-items:stretch;margin-bottom:16px;flex-wrap:wrap">

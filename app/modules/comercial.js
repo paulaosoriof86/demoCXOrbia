@@ -99,7 +99,20 @@ CX.module('costos', ({data,ui})=>{
     formal:{n:'Formal corporativa',intro:(cli,r)=>`Nos complace presentar a ${cli.name||'su empresa'} nuestra propuesta para un programa de <b>${r.modalidad}</b> de <b>${r.visitas} visitas mensuales</b>, diseñado para medir y elevar la experiencia en sus puntos de servicio con rigor metodológico y evidencia verificable.`},
     consultiva:{n:'Consultiva / valor',intro:(cli,r)=>`En ${cli.name||'su organización'} cada interacción cuenta. Proponemos un programa de <b>${r.modalidad}</b> (${r.visitas} visitas/mes) que no solo audita: identifica brechas, prioriza acciones y acompaña la mejora continua con tableros y planes de capacitación dirigidos.`},
     directa:{n:'Directa / ejecutiva',intro:(cli,r)=>`Programa de <b>${r.modalidad}</b>: ${r.visitas} visitas/mes, evaluación ponderada, evidencia y portal de resultados. Inversión clara, ROI medible, sin sorpresas.`},
+    corporativa:{n:'Mi plantilla corporativa',intro:(cli,r)=>`${cli.name||'Estimado cliente'}: ${r.visitas} visitas · ${r.modalidad} · <span style="color:var(--t3);font-size:11px">[Completa con el formato de tu plantilla]</span>`},
   };
+
+  /* plantilla corporativa: carga y parseo */
+  let _tplContent='';
+  const loadTpl=()=>ui.modal('📋 Cargar plantilla corporativa',`
+    <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Sube tu plantilla (Word/PDF/HTML) o pega el texto. La IA la usa como formato base para la propuesta, insertando los datos del programa automáticamente.</p>
+    <input type="file" class="inp" accept=".docx,.pdf,.html,.txt" style="padding:7px;margin-bottom:8px" id="tplFile">
+    <textarea class="inp" id="tplTxt" rows="5" placeholder="o pega aquí el contenido de tu plantilla con [NOMBRE_CLIENTE], [VISITAS], [PRECIO], [MODALIDAD] como variables…" style="margin-bottom:10px"></textarea>
+    <div style="text-align:right"><button class="btn btn-pr btn-sm" id="tplSave">Usar como plantilla base</button></div>
+  `,{onMount:(ov,close)=>{
+    ov.querySelector('#tplFile').addEventListener('change',e=>{const f=e.target.files[0];if(f){const rd=new FileReader();rd.onload=ev=>{_tplContent=ev.target.result.substring(0,5000);ov.querySelector('#tplTxt').value='Plantilla cargada: '+f.name+' ('+Math.round(f.size/1024)+'KB). La IA usará su formato.';};rd.readAsText(f);}});
+    ov.querySelector('#tplSave').addEventListener('click',()=>{_tplContent=ov.querySelector('#tplTxt').value.trim();close();ui.toast('Plantilla corporativa cargada · se usará en la próxima propuesta','ok',3200);});
+  }});
 
   const propuesta=(r)=>{
     const f=(n)=>CX.costos.fmt(cfg.moneda,n);
@@ -109,6 +122,7 @@ CX.module('costos', ({data,ui})=>{
     const render=()=>`
       <div class="flex" style="gap:8px;margin-bottom:12px">
         <select class="sel" id="propTpl" style="width:auto">${Object.keys(PLANTILLAS).map(k=>`<option value="${k}" ${k===tpl?'selected':''}>Plantilla: ${PLANTILLAS[k].n}</option>`).join('')}</select>
+        <button class="btn btn-soft btn-sm" id="loadTplBtn">📋 Cargar mi plantilla</button>
         <button class="btn btn-soft btn-sm" id="propIA">✨ Redactar con IA</button>
         <button class="btn btn-ghost btn-sm" id="propWeb">🔎 Investigar cliente (web)</button>
       </div>
@@ -136,6 +150,7 @@ CX.module('costos', ({data,ui})=>{
       </div>`;
     ui.modal('Propuesta · '+p.name, render(),{onMount:(ov,close)=>{
       const wire=()=>{
+        ov.querySelector('#loadTplBtn').addEventListener('click',loadTpl);
         ov.querySelector('#propTpl').addEventListener('change',e=>{tpl=e.target.value;intro=PLANTILLAS[tpl].intro(cli,r);ov.querySelector('#propIntro').innerHTML=intro;});
         ov.querySelector('#propIA').addEventListener('click',()=>{
           const creativa=`Imagine la experiencia de sus clientes en ${cli.name||'cada sucursal'} medida con la precisión de un aliado estratégico. Nuestro programa de <b>${r.modalidad}</b> —${r.visitas} visitas/mes— convierte cada visita incógnita en inteligencia accionable: detectamos lo que su equipo no ve, priorizamos lo que mueve la aguja y lo acompañamos con capacitación dirigida. No entregamos reportes; entregamos decisiones.`;

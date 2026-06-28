@@ -16,8 +16,8 @@ CX.app = {
     const lg=document.getElementById('login');
     lg.classList.remove('hidden');
     const b=CX.BRAND;
-    const brandBlock = b.logoUrl
-      ? `<img class="client-logo" src="${b.logoUrl}" alt="logo" style="max-height:54px">`
+    const brandBlock = (b.logoUrl||b.logo)
+      ? `<img class="client-logo" src="${b.logoUrl||b.logo}" alt="logo" style="max-height:60px;max-width:180px;object-fit:contain">`
       : `<div class="logo-mark"><span class="dot"></span></div>
          <div><div class="brand-name">${b.clientName||b.name}</div><div class="brand-sub">${b.tagline}</div></div>`;
     lg.innerHTML=`

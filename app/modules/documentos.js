@@ -20,10 +20,13 @@ CX.module('documentos', ({data,role,ui})=>{
 
   const viewer=(d)=>{
     let body;
+    const isPdf = d.url && (/^data:application\/pdf/i.test(d.url) || /\.pdf($|\?)/i.test(d.url));
+    const isImg = (d.tipo==='image'&&d.url) || (d.url&&/^data:image\//i.test(d.url));
     if(d.tipo==='video'&&d.url) body=`<div><iframe src="${d.url}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px" allowfullscreen></iframe></div>`;
     else if(d.tipo==='check') body=`<div>${(d.items||[]).map(it=>`<label class="flex" style="gap:9px;padding:9px 11px;border:1px solid var(--border);border-radius:9px;margin-bottom:7px;cursor:pointer;font-size:13px"><input type="checkbox"> ${it}</label>`).join('')}</div>`;
-    else if(d.tipo==='image'&&d.url) body=`<img src="${d.url}" style="width:100%;border-radius:10px">`;
-    else if(d.url&&/^data:application\/pdf|\.pdf$/i.test(d.url)) body=`<iframe src="${d.url}" style="width:100%;height:62vh;border:0;border-radius:10px"></iframe>`;
+    else if(isImg) body=`<img src="${d.url}" style="width:100%;border-radius:10px">`;
+    else if(isPdf) body=`<iframe src="${d.url}" style="width:100%;height:62vh;border:0;border-radius:10px"></iframe>`;
+    else if(d.url&&!d.body) body=`<div style="text-align:center;padding:30px"><div style="font-size:32px;margin-bottom:10px">${d.ic||'📄'}</div><div style="font-size:13px;color:var(--t2);margin-bottom:14px">Documento <b>${d.n}</b> cargado.</div><a href="${d.url}" target="_blank" class="btn btn-pr btn-sm" style="text-decoration:none">Abrir en pestaña nueva ↗</a></div>`;
     else body=`<div style="background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;max-height:60vh;overflow:auto">${(d.body||'Vista previa no disponible para este formato; usa Descargar.').split('\n').map(l=>{
       if(l.startsWith('## ')) return `<div style="font-size:14px;font-weight:800;color:var(--t1);margin:12px 0 4px">${l.slice(3)}</div>`;
       if(l.startsWith('# ')) return `<div style="font-size:17px;font-weight:800;color:var(--t1);margin-bottom:8px">${l.slice(2)}</div>`;
@@ -33,11 +36,10 @@ CX.module('documentos', ({data,role,ui})=>{
     ui.modal((d.ic||'📄')+' '+d.n, body+`<div class="between" style="margin-top:14px"><button class="btn btn-ghost btn-sm" id="docMax">⛶ Maximizar</button><button class="btn btn-soft btn-sm" onclick="CX.ui.toast('Descargando ${d.n}…','ok')">⤓ Descargar</button></div>`,{onMount:(ov,close)=>{
       ov.querySelector('#docMax').addEventListener('click',()=>{
         close();
-        const isMedia = (d.tipo==='video'&&d.url) || (d.tipo==='image'&&d.url) || (d.url&&/^data:application\/pdf|\.pdf$/i.test(d.url));
         let fsInner;
         if(d.tipo==='video'&&d.url) fsInner=`<iframe src="${d.url}" style="width:100%;height:100%;border:0;border-radius:12px" allowfullscreen></iframe>`;
-        else if(d.tipo==='image'&&d.url) fsInner=`<img src="${d.url}" style="max-width:100%;max-height:100%;margin:auto;display:block;border-radius:12px">`;
-        else if(d.url&&/^data:application\/pdf|\.pdf$/i.test(d.url)) fsInner=`<iframe src="${d.url}" style="width:100%;height:100%;border:0;border-radius:12px"></iframe>`;
+        else if(isImg) fsInner=`<img src="${d.url}" style="max-width:100%;max-height:100%;margin:auto;display:block;border-radius:12px">`;
+        else if(isPdf) fsInner=`<iframe src="${d.url}" style="width:100%;height:100%;border:0;border-radius:12px"></iframe>`;
         else fsInner=`<div style="background:var(--panel);border-radius:12px;padding:26px 30px;max-width:900px;margin:0 auto;height:100%;overflow:auto">${body}</div>`;
         const fs=document.createElement('div'); fs.className='cx-ov'; fs.style.cssText='position:fixed;inset:0;z-index:200;background:rgba(13,39,64,.94);display:flex;flex-direction:column;padding:24px';
         fs.innerHTML=`<div class="between" style="margin-bottom:14px"><b style="color:#fff;font-size:15px">${(d.ic||'📄')} ${d.n}</b><button class="btn btn-soft btn-sm" id="fsClose">✕ Cerrar</button></div><div style="flex:1;min-height:0;display:flex">${fsInner}</div>`;
@@ -67,13 +69,17 @@ CX.module('documentos', ({data,role,ui})=>{
       ui.modal('✎ Editar documento · '+d.n,`
         <div class="grid g2" style="gap:10px 12px"><div><label class="lbl">Nombre</label><input class="inp" id="edN" value="${(d.n||'').replace(/"/g,'&quot;')}"></div>
         <div><label class="lbl">Icono</label><input class="inp" id="edIc" value="${d.ic||'📄'}" style="max-width:80px"></div>
-        <div style="grid-column:1/3"><label class="lbl">URL de video (opcional)</label><input class="inp" id="edUrl" value="${(d.url||'').replace(/"/g,'&quot;')}" placeholder="https://youtube.com/…"></div>
-        <div style="grid-column:1/3"><label class="lbl">Contenido / texto</label><textarea class="inp" id="edBody" rows="4">${d.body||''}</textarea></div></div>
+        <div style="grid-column:1/3"><label class="lbl">Reemplazar archivo (PDF/imagen/video)</label><input type="file" class="inp" id="edFile" accept="application/pdf,image/*,video/*" style="padding:7px">${d.url&&/^data:/.test(d.url)?'<div style="font-size:11px;color:var(--t3);margin-top:3px">📎 Archivo actual cargado · sube uno nuevo para reemplazar</div>':''}</div>
+        <div style="grid-column:1/3"><label class="lbl">URL de video (YouTube/Vimeo, opcional)</label><input class="inp" id="edUrl" value="${(d.url&&/^https?:/.test(d.url))?d.url.replace(/"/g,'&quot;'):''}" placeholder="https://youtube.com/…"></div>
+        <div style="grid-column:1/3"><label class="lbl">Contenido / texto (Markdown)</label><textarea class="inp" id="edBody" rows="4">${d.body||''}</textarea></div></div>
         <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="edSave">Guardar</button></div>
       `,{onMount:(ov,close)=>{ov.querySelector('#edSave').addEventListener('click',()=>{
         d.n=ov.querySelector('#edN').value.trim()||d.n;d.ic=ov.querySelector('#edIc').value||d.ic;
-        const u=ov.querySelector('#edUrl').value.trim();if(u)d.url=CX.learnStore?CX.learnStore.embedUrl(u):u.replace('youtube.com/watch?v=','youtube-nocookie.com/embed/');
-        d.body=ov.querySelector('#edBody').value;close();draw();ui.toast('Documento actualizado','ok');
+        const u=ov.querySelector('#edUrl').value.trim();if(u){d.url=CX.learnStore?CX.learnStore.embedUrl(u):u.replace('youtube.com/watch?v=','youtube-nocookie.com/embed/');d.tipo='video';d.ic=d.ic||'🎬';}
+        d.body=ov.querySelector('#edBody').value;
+        const nf=ov.querySelector('#edFile').files[0];
+        if(nf){const rd=new FileReader();rd.onload=()=>{d.url=rd.result;d.meta=nf.name;if(nf.type==='application/pdf')d.tipo='pdf';else if(/^image\//.test(nf.type)){d.tipo='image';}else if(/^video\//.test(nf.type)){d.tipo='video';}close();draw();ui.toast('Documento actualizado','ok');};rd.readAsDataURL(nf);}
+        else{close();draw();ui.toast('Documento actualizado','ok');}
       });}});
     }));
     host.querySelectorAll('[data-deld]').forEach(b=>b.addEventListener('click',()=>{CX.docStore._d[pid]=(CX.docStore._d[pid]||[]).filter(x=>x.id!==b.dataset.deld);draw();ui.toast('Documento eliminado','');}));

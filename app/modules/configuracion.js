@@ -59,31 +59,38 @@ CX.module('cuestionarios', ({data,ui})=>{
       ov.querySelector('#aiFile').addEventListener('change',e=>{const f=e.target.files[0];if(f)ov.querySelector('#aiTxt').placeholder='Documento "'+f.name+'" cargado · la IA extraerá el contenido. Puedes añadir notas aquí.';});
       ov.querySelector('#aiGo').addEventListener('click',()=>{ const file=ov.querySelector('#aiFile').files[0];
         let secs=aiGenerate(ov.querySelector('#aiTxt').value+' '+(file?file.name:''));
-        const crit=ov.querySelector('#aiCrit').value, aplica=ov.querySelector('#aiAplica').value.trim();
-        const aplicar=(finalSecs)=>{
-          if(ov.querySelector('#aiMode').value==='new'){
-            const v={id:CX.programa.uid('ver'),name:aplica?('Cuestionario · '+aplica):('Versión '+(_qProg.versions.length+1)),criterio:crit,aplica,sections:finalSecs};
-            _qProg.versions.push(v); _qProg.activeId=v.id;
-          } else { const v=ver(); v.sections=finalSecs; v.criterio=crit; if(aplica)v.aplica=aplica; }
-          draw();
-          ui.toast((CX.ai&&CX.ai.ready()?'IA extrajo el set-up del instructivo':'Borrador generado')+' · '+finalSecs.length+' secciones'+(aplica?' · aplica a "'+aplica+'"':''),'ok',4200);
-        };
-        close();
-        CX.aiIterate({
-          title:'🤖 Set-up generado · revisa e itera',
-          hint:'La IA propuso estas secciones con sus pesos. Ajusta con una instrucción (agregar/quitar secciones, cambiar pesos) y regenera, o úsalo tal cual.',
-          initial:secs,
-          render:(r)=>`<table class="tbl"><thead><tr><th>Sección</th><th>Peso</th><th>Preguntas</th></tr></thead><tbody>${r.map(s=>`<tr><td><b>${s.name||s[0]}</b></td><td>${(s.peso||s[1]||0)}%</td><td style="font-size:11.5px;color:var(--t3)">${((s.preguntas||s[2]||[]).length)} preg.</td></tr>`).join('')}</tbody></table>`,
-          onRegen:(instr,prev)=>{ const d=instr.toLowerCase();
-            let r=prev.slice();
-            if(/limpiez|orden|imagen/.test(d) && !r.some(s=>/limpiez|imagen/i.test(s.name||s[0]||''))) r.push({name:'Limpieza e imagen',peso:10,preguntas:['Orden y limpieza del local','Imagen del personal']});
-            if(/menos|reduc|corto/.test(d) && r.length>3) r=r.slice(0,Math.max(3,r.length-1));
-            if(/atenci|servicio|bienvenida/.test(d)) r=r.map(s=>(/atenci|bienvenida|recib/i.test(s.name||s[0]||'')?Object.assign({},s,{peso:(s.peso||s[1]||0)+10}):s));
-            return r;
-          },
-          onAccept:aplicar,
-        });
-      }); }});
+        const aplica=ov.querySelector('#aiAplica').value.trim();
+        const mode=ov.querySelector('#aiMode').value;
+        const crit=ov.querySelector('#aiCrit').value;
+        if(mode==='replace') ver().sections=secs;
+        else { const nv={id:CX.programa.uid('v'),name:(aplica||'Versión IA'),criteria:crit,aplica,sections:secs}; _qProg.versions.push(nv); _qProg.activeId=nv.id; }
+        CX.programa.set(p.id,_qProg); close(); draw();
+        ui.modal('✅ Set-up generado', `
+          <p style="font-size:13px;color:var(--t2);margin-bottom:14px">La IA propuso <b>${secs.length} secciones</b> para <b>${aplica||'todas las sucursales'}</b>. Revisa y ajusta en el editor.</p>
+          <div style="margin-bottom:12px"><b style="font-size:12.5px">Resumen:</b>
+            <ul style="margin:6px 0 0 16px;font-size:12.5px;color:var(--t2)">${secs.map(s=>`<li><b>${s.name}</b> (${s.weight}%) · ${s.questions.length} preguntas</li>`).join('')}</ul>
+          </div>
+          <div style="text-align:right;display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn btn-ghost btn-sm" id="aiRefine">🔄 Refinar con IA</button>
+            <button class="btn btn-pr btn-sm" id="aiOk">Ver en el editor</button>
+          </div>`,
+        {onMount:(ov2,cl2)=>{
+          ov2.querySelector('#aiOk').addEventListener('click',cl2);
+          ov2.querySelector('#aiRefine').addEventListener('click',()=>{cl2();
+            ui.modal('🔄 Refinar set-up con IA',`
+              <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Describe qué cambiar: agregar/quitar secciones, ajustar pesos, enfocar en algo específico.</p>
+              <textarea class="inp" id="refTxt" rows="3" placeholder="Ej: agrega sección de Protocolo de caja con 20%, reduce Limpieza a 5%…"></textarea>
+              <div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="refGo">Regenerar</button></div>`,
+            {onMount:(ov3,cl3)=>ov3.querySelector('#refGo').addEventListener('click',()=>{
+              const instr=ov3.querySelector('#refTxt').value||'';
+              const newSecs=aiGenerate(instr+' '+secs.map(s=>s.name).join(' '));
+              ver().sections=newSecs; CX.programa.set(p.id,_qProg); cl3(); draw();
+              ui.toast('Set-up refinado y aplicado','ok');
+            })});
+          });
+        }});
+      });
+    }});
   }
 
   const sync=()=>{
@@ -202,15 +209,22 @@ CX.module('usuarios', ({ui})=>{
   const MODS=[['Operación','op'],['Finanzas','fin'],['Admin Proyecto','prj'],['Capacitación','cap'],['Configuración','cfg'],['Portal Shopper','sh'],['Comercial','com']];
   if(!st.perm) st.perm={super:['op','fin','prj','cap','cfg','sh','com'],admin:['op','fin','prj','cap','com'],ops:['op','prj','cap'],shopper:['sh','cap']};
   const PERM=st.perm;
-  const rolColor={super:'p',admin:'b',ops:'t',shopper:'g'};
 
   const host=ui.el('div');
+  if(!st.customRoles) st.customRoles=[];
+  const allRoles=()=>[...CX.ROLES,...st.customRoles];
+  const rolColor={super:'p',admin:'b',ops:'t',shopper:'g'};
+  const getColor=(id)=>rolColor[id]||'n';
+
   const draw=()=>{
+    const roles=allRoles();
     host.innerHTML=`
-    <div class="between" style="margin-bottom:6px"><div>${ui.ph('Usuarios & Permisos', 'Cuatro roles con acceso por módulo · todo editable desde aquí')}</div>
-      <button class="btn btn-pr btn-sm" id="addU">＋ Invitar usuario</button></div>
+    <div class="between" style="margin-bottom:6px"><div>${ui.ph('Usuarios & Permisos', 'Roles con acceso por módulo · configurable y autoadministrable')}</div>
+      <div class="flex" style="gap:8px"><button class="btn btn-ghost btn-sm" id="addRol">🎨 Nuevo rol</button><button class="btn btn-pr btn-sm" id="addU">＋ Invitar usuario</button></div></div>
     <div class="grid g4" style="margin-bottom:16px">
-      ${CX.ROLES.map(r=>`<div class="card card-p"><div class="flex" style="gap:8px;margin-bottom:6px">${ui.bdg(r.label,rolColor[r.id])}</div>
+      ${roles.map(r=>`<div class="card card-p">
+        <div class="flex between" style="margin-bottom:6px">${ui.bdg(r.label,getColor(r.id))}
+          ${r.custom?`<button class="btn btn-ghost btn-sm" data-delrole="${r.id}" style="color:var(--red);padding:2px 7px;font-size:11px">✕</button>`:''}</div>
         <div style="font-size:11.5px;color:var(--t3)">${r.desc}</div>
         <div style="font-size:10px;color:var(--t3);margin-top:6px">${st.users.filter(u=>u.rol===r.id).length} usuario(s)</div></div>`).join('')}
     </div>
@@ -218,22 +232,43 @@ CX.module('usuarios', ({ui})=>{
       <div class="card-t" style="margin-bottom:12px">Usuarios</div>
       <table class="tbl"><thead><tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Estado</th><th></th></tr></thead><tbody>
       ${st.users.map((u,i)=>`<tr data-ui="${i}"><td><b>${u.name}</b></td><td style="font-size:12px">${u.email}</td>
-        <td><select class="sel" data-rol style="width:auto;padding:5px 8px">${CX.ROLES.map(r=>`<option value="${r.id}" ${r.id===u.rol?'selected':''}>${r.label}</option>`).join('')}</select></td>
+        <td><select class="sel" data-rol style="width:auto;padding:5px 8px">${roles.map(r=>`<option value="${r.id}" ${r.id===u.rol?'selected':''}>${r.label}</option>`).join('')}</select></td>
         <td><label class="flex" style="gap:6px;font-size:12px"><input type="checkbox" data-act ${u.activo?'checked':''}> ${u.activo?'Activo':'Inactivo'}</label></td>
-        <td style="text-align:right"><button class="btn btn-ghost btn-sm" data-rm="${i}" style="color:var(--red)">✕</button></td></tr>`).join('')}
+        <td style="text-align:right"><button class="btn btn-ghost btn-sm" data-ed="${i}" style="padding:2px 8px;font-size:11px">✎ Editar</button> <button class="btn btn-ghost btn-sm" data-rm="${i}" style="color:var(--red)">✕</button></td></tr>`).join('')}
       </tbody></table>
     </div>
     <div class="card card-p">
       <div class="between" style="margin-bottom:12px"><div class="card-t">Matriz de acceso por rol <span class="muted" style="font-weight:500;font-size:11px">· editable</span></div><span class="bdg bdg-g" id="permSaved" style="display:none">✓ Guardado</span></div>
       <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Rol</th>${MODS.map(m=>`<th style="text-align:center">${m[0]}</th>`).join('')}</tr></thead><tbody>
-      ${CX.ROLES.map(r=>`<tr><td>${ui.bdg(r.label,rolColor[r.id])}</td>${MODS.map(m=>`<td style="text-align:center"><input type="checkbox" class="permChk" data-role="${r.id}" data-mod="${m[1]}" ${PERM[r.id]&&PERM[r.id].includes(m[1])?'checked':''} ${r.id==='super'?'disabled title="Super siempre tiene acceso total"':''}></td>`).join('')}</tr>`).join('')}
+      ${roles.map(r=>`<tr><td>${ui.bdg(r.label,getColor(r.id))}</td>${MODS.map(m=>`<td style="text-align:center"><input type="checkbox" class="permChk" data-role="${r.id}" data-mod="${m[1]}" ${PERM[r.id]&&PERM[r.id].includes(m[1])?'checked':''} ${r.id==='super'?'disabled title="Super siempre tiene acceso total"':''}></td>`).join('')}</tr>`).join('')}
       </tbody></table></div>
-      <div style="margin-top:14px">${ui.aiBox('Marca/desmarca el acceso de cada rol a cada módulo — la vista se segmenta automáticamente. El rol Super conserva acceso total. Requisito para vender multiempresa y a clientes con cumplimiento; en producción se valida también en el backend.','Gobierno y seguridad · autoadministrable')}</div>
+      <div style="margin-top:14px">${ui.aiBox('Marca/desmarca el acceso de cada rol a cada módulo. Los roles personalizados permiten segmentar por área: Coordinador, Comercial, Revisor, etc. En producción también se valida en el backend.','Gobierno · autoadministrable')}</div>
     </div>`;
     host.querySelectorAll('[data-ui]').forEach(tr=>{const i=+tr.dataset.ui;
       tr.querySelector('[data-rol]').addEventListener('change',e=>{st.users[i].rol=e.target.value;ui.toast('Rol actualizado','ok');draw();});
       tr.querySelector('[data-act]').addEventListener('change',e=>{st.users[i].activo=e.target.checked;draw();});});
     host.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{st.users.splice(+b.dataset.rm,1);draw();ui.toast('Usuario eliminado','');}));
+    host.querySelectorAll('[data-ed]').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.ed,u=st.users[i];
+      ui.modal('✎ Editar usuario',`
+        <div style="margin-bottom:10px"><label class="lbl">Nombre</label><input class="inp" id="euName" value="${(u.name||'').replace(/"/g,'&quot;')}"></div>
+        <div style="margin-bottom:10px"><label class="lbl">Correo (cualquier dominio)</label><input class="inp" id="euMail" value="${(u.email||'').replace(/"/g,'&quot;')}" placeholder="correo@empresa.com"></div>
+        <div style="margin-bottom:10px"><label class="lbl">Rol</label><select class="sel" id="euRol">${allRoles().map(r=>`<option value="${r.id}" ${r.id===u.rol?'selected':''}>${r.label}</option>`).join('')}</select></div>
+        <div style="margin-bottom:14px"><label class="flex" style="gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="euAct" ${u.activo?'checked':''}> Usuario activo</label></div>
+        <div class="between"><button class="btn btn-ghost btn-sm" id="euInvite">📨 Reenviar invitación</button><button class="btn btn-pr btn-sm" id="euSave">Guardar cambios</button></div>
+      `,{onMount:(ov,close)=>{
+        ov.querySelector('#euSave').addEventListener('click',()=>{
+          const mail=(ov.querySelector('#euMail').value||'').trim();
+          if(mail&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)){ui.toast('Correo inválido','warn');return;}
+          u.name=(ov.querySelector('#euName').value||'').trim()||u.name;
+          u.email=mail||u.email;u.rol=ov.querySelector('#euRol').value;u.activo=ov.querySelector('#euAct').checked;
+          close();draw();ui.toast('Usuario actualizado','ok');
+        });
+        ov.querySelector('#euInvite').addEventListener('click',()=>{
+          if(CX.automations&&CX.automations.fire)CX.automations.fire('invitacion_usuario',{nombre:u.name,email:u.email,rol:u.rol});
+          ui.toast('Invitación reenviada a '+(u.email||u.name)+' (correo/WA según automatización)','ok',4000);
+        });
+      }});
+    }));
     host.querySelectorAll('.permChk').forEach(c=>c.addEventListener('change',()=>{
       const role=c.dataset.role, mod=c.dataset.mod; PERM[role]=PERM[role]||[];
       if(c.checked){ if(!PERM[role].includes(mod))PERM[role].push(mod); } else { PERM[role]=PERM[role].filter(m=>m!==mod); }
@@ -242,26 +277,54 @@ CX.module('usuarios', ({ui})=>{
     host.querySelector('#addU').addEventListener('click',()=>ui.modal('Invitar usuario',`
       <div style="margin-bottom:12px"><label class="lbl">Nombre</label><input class="inp" id="nuName" placeholder="Nombre y apellido"></div>
       <div style="margin-bottom:12px"><label class="lbl">Correo</label><input class="inp" id="nuMail" placeholder="correo@empresa.com"></div>
-      <div style="margin-bottom:16px"><label class="lbl">Rol</label><select class="sel" id="nuRol">${CX.ROLES.map(r=>`<option value="${r.id}">${r.label}</option>`).join('')}</select></div>
+      <div style="margin-bottom:16px"><label class="lbl">Rol</label><select class="sel" id="nuRol">${allRoles().map(r=>`<option value="${r.id}">${r.label}</option>`).join('')}</select></div>
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="nuSave">Enviar invitación</button></div>`,{onMount:(ov,close)=>{
         ov.querySelector('#nuSave').addEventListener('click',()=>{const n=ov.querySelector('#nuName').value||'Usuario nuevo';st.users.push({name:n,email:ov.querySelector('#nuMail').value||'nuevo@demo.cxorbia',rol:ov.querySelector('#nuRol').value,activo:true});close();draw();ui.toast('Invitación enviada','ok');});}}));
+    /* Nuevo rol personalizado */
+    host.querySelector('#addRol')?.addEventListener('click',()=>ui.modal('🎨 Crear rol personalizado',`
+      <div class="grid g2" style="gap:10px;margin-bottom:12px">
+        <div><label class="lbl">Nombre del rol</label><input class="inp" id="rnName" placeholder="Ej. Coordinador Regional"></div>
+        <div><label class="lbl">ID interno (sin espacios)</label><input class="inp" id="rnId" placeholder="coordinador"></div>
+      </div>
+      <div style="margin-bottom:12px"><label class="lbl">Descripción</label><input class="inp" id="rnDesc" placeholder="Qué puede hacer este rol"></div>
+      <div style="margin-bottom:14px"><label class="lbl">Módulos con acceso</label>
+        <div class="flex wrap" style="gap:8px;margin-top:6px">${MODS.map(m=>`<label class="flex" style="gap:5px;font-size:12.5px;cursor:pointer"><input type="checkbox" data-rm="${m[1]}"> ${m[0]}</label>`).join('')}</div>
+      </div>
+      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rnSave">Crear rol</button></div>`,
+    {onMount:(ov,close)=>ov.querySelector('#rnSave').addEventListener('click',()=>{
+      const name=(ov.querySelector('#rnName').value||'').trim();
+      if(!name){ui.toast('Pon un nombre al rol','warn');return;}
+      let id=(ov.querySelector('#rnId').value||name).toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+      if(!id)id='rol_'+Date.now().toString(36);
+      const mods=[...ov.querySelectorAll('[data-rm]:checked')].map(c=>c.dataset.rm);
+      st.customRoles=st.customRoles||[];
+      st.customRoles.push({id,label:name,desc:ov.querySelector('#rnDesc').value||'Rol personalizado',custom:true});
+      PERM[id]=mods;
+      close();draw();ui.toast('Rol "'+name+'" creado','ok');
+    })}));
+    /* Eliminar rol personalizado */
+    host.querySelectorAll('[data-delrole]').forEach(b=>b.addEventListener('click',()=>{
+      const rid=b.dataset.delrole;
+      st.customRoles=(st.customRoles||[]).filter(r=>r.id!==rid);
+      st.users.forEach(u=>{if(u.rol===rid)u.rol='admin';});
+      delete PERM[rid]; draw(); ui.toast('Rol eliminado','');
+    }));
   };
   draw();
   return host;
 });
 
 /* ---------- Configuración general (submenús + consola cliente/proveedor) ---------- */
-let _cfgTab='marca', _cfgMode='proveedor';
+let _cfgTab='centro', _cfgMode='proveedor';
 CX.module('config', ({data,ui})=>{
   const p=data.project();
   const host=ui.el('div');
-  let _cfgTab=_cfgTab||'marca', _cfgMode=_cfgMode||'proveedor';
   const plan=CX.session.plan||p.plan||'estandar';
 
   const draw=()=>{
-    host.innerHTML=`${ui.ph('Configuración', 'Personaliza tu plataforma — marca, plan, países, integraciones y permisos · todo sin tocar código')}
+    host.innerHTML=`${ui.ph('Configuración', 'Centro de autoadministración · personaliza TODA la plataforma sin tocar código')}
     <div class="flex wrap" style="gap:6px;margin-bottom:14px">
-      ${['marca','plan','paises','nda'].map(t=>`<button class="btn btn-sm ${_cfgTab===t?'btn-pr':'btn-ghost'}" data-tab="${t}">${{marca:'🎨 Marca',plan:'📦 Plan',paises:'🌍 Países',nda:'📜 NDA'}[t]}</button>`).join('')}
+      ${['centro','marca','plan','paises','nda'].map(t=>`<button class="btn btn-sm ${_cfgTab===t?'btn-pr':'btn-ghost'}" data-tab="${t}">${{centro:'🎛️ Centro',marca:'🎨 Marca',plan:'📦 Plan',paises:'🌍 Países',nda:'📜 NDA'}[t]}</button>`).join('')}
     </div>
     <div id="cfgBody"></div>`;
     host.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{_cfgTab=b.dataset.tab;drawTab();}));
@@ -270,50 +333,135 @@ CX.module('config', ({data,ui})=>{
 
   const drawTab=()=>{
     const body=host.querySelector('#cfgBody'); if(!body)return;
-    if(_cfgTab==='marca') drawMarca(body);
+    if(_cfgTab==='centro') drawCentro(body);
+    else if(_cfgTab==='marca') drawMarca(body);
     else if(_cfgTab==='plan') drawPlan(body);
     else if(_cfgTab==='paises') drawPaises(body);
     else if(_cfgTab==='nda') drawNDA(body);
   };
 
+  /* Centro de autoadministración: mapa completo de TODO lo editable */
+  const drawCentro=(body)=>{
+    const areas=[
+      {ic:'🎨',t:'Identidad de Marca',d:'Logo, colores, tipografía, tema visual. Se aplica a toda la plataforma, documentos y correos.',nav:'marca',tag:'Branding'},
+      {ic:'📦',t:'Plan y Módulos',d:'Activa/desactiva módulos por plan. Personaliza qué ve cada tenant.',tab:'plan',tag:'Acceso'},
+      {ic:'🌍',t:'Países y Monedas',d:'Agrega países de operación con su moneda. Las finanzas se separan automáticamente.',tab:'paises',tag:'Operación'},
+      {ic:'🔐',t:'Usuarios y Permisos',d:'Invita usuarios, asigna roles y define la matriz de acceso por módulo. Crea roles personalizados.',nav:'usuarios',tag:'Seguridad'},
+      {ic:'🧩',t:'Cuestionarios',d:'Editor de secciones, preguntas, pesos, criterios y versiones. Genera con IA desde un instructivo.',nav:'cuestionarios',tag:'Set-up'},
+      {ic:'⚡',t:'Automatizaciones',d:'Conecta eventos con Make, WhatsApp, correo y Sheets. Toggles y plantillas por evento.',nav:'automatizaciones',tag:'Flujos'},
+      {ic:'🔌',t:'Integraciones & Add-ons',d:'Correo, WhatsApp, Google, IA (Gemini), Canva, redes, facturación. Vincula y configura.',nav:'integraciones',tag:'Conexiones'},
+      {ic:'✉️',t:'Correo integrado',d:'Bandeja con trazabilidad a clientes y proyectos. Outlook/Gmail. Plantillas.',nav:'correo',tag:'Comunicación'},
+      {ic:'📁',t:'Proyectos',d:'Crea programas, define periodicidad de rondas, escenarios, periodo de cumplimiento y set-up.',nav:'proyectos',tag:'Set-up'},
+      {ic:'🎓',t:'Academia',d:'Crea y edita cursos y lecciones (texto, video, quiz) con IA. Por rol: consultora, shopper, cliente.',nav:'aprendizaje',tag:'Capacitación'},
+      {ic:'📄',t:'Documentos',d:'Genera documentos con IA y branding del cliente. Edita los existentes.',nav:'documentos',tag:'Contenido'},
+      {ic:'📜',t:'NDA / Confidencialidad',d:'Edita el acuerdo de confidencialidad que firman los usuarios por rol.',tab:'nda',tag:'Legal'},
+    ];
+    body.innerHTML=`
+    <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
+      <div style="font-size:13px;color:var(--brand-dark)"><b>✅ Toda la plataforma es autoadministrable.</b> Cada área de abajo se edita desde la interfaz, sin tocar código. Haz clic para abrir cada gestor.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+      ${areas.map(a=>`<button class="card hov centro-area" ${a.nav?`data-nav="${a.nav}"`:''} ${a.tab?`data-tab2="${a.tab}"`:''} style="padding:16px;cursor:pointer;text-align:left;border:1px solid var(--border);background:#fff;display:flex;flex-direction:column;gap:6px">
+        <div class="between"><div style="font-size:24px">${a.ic}</div><span class="bdg bdg-n" style="font-size:9.5px">${a.tag}</span></div>
+        <div style="font-size:13.5px;font-weight:700;color:var(--t1)">${a.t}</div>
+        <div style="font-size:11.5px;color:var(--t2);line-height:1.5">${a.d}</div>
+        <div style="font-size:11px;color:var(--brand);font-weight:600;margin-top:2px">Abrir →</div>
+      </button>`).join('')}
+    </div>`;
+    body.querySelectorAll('.centro-area').forEach(b=>b.addEventListener('click',()=>{
+      if(b.dataset.nav)CX.router.nav(b.dataset.nav);
+      else if(b.dataset.tab2){_cfgTab=b.dataset.tab2;drawTab();}
+    }));
+  };
+
   const drawMarca=(body)=>{
-    const T=CX.theme&&CX.theme.active?CX.theme.active():'default';
-    body.innerHTML=`<div class="card card-p" style="margin-bottom:14px">
-      <div class="card-t" style="margin-bottom:10px">Identidad de marca</div>
-      <div class="grid g2" style="gap:10px 14px">
+    const brandStored=(()=>{try{return JSON.parse(localStorage.getItem('cx_brand_identity')||'null');}catch(e){return null;}})();
+    const logoUrl=brandStored&&brandStored.logo||CX.BRAND.logoUrl||'';
+    const nombre=brandStored&&brandStored.name||CX.BRAND.name||'CXOrbia';
+    const curTheme=CX.BRAND.theme||'cxorbia';
+    body.innerHTML=`
+    <div class="card card-p" style="margin-bottom:14px">
+      <div class="between" style="margin-bottom:12px">
+        <div class="card-t">Identidad de marca activa</div>
+        <div class="flex" style="gap:8px">
+          <button class="btn btn-ghost btn-sm" id="goMarca">🎨 Personalizar completo (logo, colores, tipografía) →</button>
+          <button class="btn btn-ghost btn-sm" id="resetMarca" style="color:var(--red)">🔄 Restablecer CXOrbia</button>
+        </div>
+      </div>
+      ${logoUrl
+        ?`<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+            <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px 14px">
+              <img src="${logoUrl}" style="max-height:44px;max-width:140px;object-fit:contain;display:block">
+            </div>
+            <div><div style="font-size:14px;font-weight:700">${nombre}</div><div style="font-size:12px;color:var(--t3)">Logo personalizado activo</div></div>
+          </div>`
+        :`<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+            <div style="width:44px;height:44px;border-radius:11px;background:linear-gradient(135deg,var(--brand-mid),var(--brand-dark));display:flex;align-items:center;justify-content:center">
+              <div style="width:12px;height:12px;border:2px solid #fff;border-radius:50%;border-right-color:transparent"></div>
+            </div>
+            <div><div style="font-size:14px;font-weight:700">CXOrbia</div><div style="font-size:12px;color:var(--t3)">Logo predeterminado</div></div>
+          </div>`
+      }
+      <div class="grid g2" style="gap:10px 14px;margin-bottom:14px">
         <div><label class="lbl">Nombre de la consultora</label><input class="inp" id="cfg_name" value="${CX.BRAND?.name||''}"></div>
         <div><label class="lbl">Tagline</label><input class="inp" id="cfg_tag" value="${CX.BRAND?.tagline||''}"></div>
-        <div><label class="lbl">Color primario</label><input class="inp" id="cfg_color" type="color" value="${CX.BRAND?.color||'#2a6fdb'}" style="height:36px;padding:2px 5px"></div>
-        <div><label class="lbl">Color de acento</label><input class="inp" id="cfg_accent" type="color" value="${CX.BRAND?.accent||'#f59e0b'}" style="height:36px;padding:2px 5px"></div>
       </div>
-      <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="saveMarca">Guardar marca</button></div>
+    </div>
+    <div class="card card-p" style="margin-bottom:14px">
+      <div class="card-t" style="margin-bottom:4px">🎨 Paleta de colores y tema visual</div>
+      <div style="font-size:11.5px;color:var(--t3);margin-bottom:12px">Haz clic en una paleta para aplicarla al instante</div>
+      <div class="grid g2" style="gap:10px">
+        ${Object.entries(CX.THEMES).map(([id,t])=>`
+          <button class="card hov tema-pick" data-tema="${id}" style="padding:14px;cursor:pointer;transition:.12s;text-align:left;border:1px solid var(--border);background:#fff;${curTheme===id?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}">
+            <div class="flex" style="gap:8px;margin-bottom:8px">
+              ${(['brand','accent','navy'].map(k=>`<div style="width:22px;height:22px;border-radius:6px;border:1px solid rgba(0,0,0,.08);background:${t.colors[k]||t.colors.brand}"></div>`)).join('')}
+            </div>
+            <div style="font-size:13px;font-weight:700;color:var(--t1)">${t.label} ${curTheme===id?'<span style="color:var(--brand);font-size:11px">● activo</span>':''}</div>
+            <div style="font-size:10.5px;color:var(--t3);margin-top:2px">${t.railStyle==='light'?'Sidebar claro':'Sidebar oscuro'}</div>
+          </button>`).join('')}
+      </div>
     </div>`;
-    body.querySelector('#saveMarca')?.addEventListener('click',()=>{
-      if(!CX.BRAND)CX.BRAND={};
-      CX.BRAND.name=body.querySelector('#cfg_name').value.trim();
-      CX.BRAND.tagline=body.querySelector('#cfg_tag').value.trim();
-      ui.toast('Marca actualizada · recarga para ver cambios','ok');
+    body.querySelector('#goMarca')?.addEventListener('click',()=>CX.router.nav('marca'));
+    body.querySelectorAll('.tema-pick').forEach(btn=>btn.addEventListener('click',()=>{
+      const id=btn.dataset.tema;
+      CX.applyTheme(id);
+      try{localStorage.setItem('cx_theme',id);}catch(e){}
+      if(CX.router&&CX.session.role)CX.router.buildRail(CX.session.role);
+      ui.toast('✓ Tema aplicado: '+CX.THEMES[id].label,'ok');
+      drawMarca(body);
+    }));
+    body.querySelector('#resetMarca')?.addEventListener('click',()=>{
+      try{localStorage.removeItem('cx_brand_identity');}catch(e){}
+      Object.assign(CX.BRAND,{logo:'',logoUrl:'',name:'CXOrbia',tagline:'Field Operations Platform',clientName:'',theme:'cxorbia'});
+      CX.applyTheme('cxorbia');
+      if(CX.router&&CX.session.role)CX.router.buildRail(CX.session.role);
+      ui.toast('✅ Identidad restablecida a CXOrbia','ok',3000); drawMarca(body);
     });
+    body.querySelector('#cfg_name')?.addEventListener('change',e=>{if(!CX.BRAND)CX.BRAND={};CX.BRAND.name=e.target.value;});
+    body.querySelector('#cfg_tag')?.addEventListener('change',e=>{if(!CX.BRAND)CX.BRAND={};CX.BRAND.tagline=e.target.value;});
   };
 
   const drawPlan=(body)=>{
+    const curPlan=CX.BRAND.plan||(localStorage.getItem('cx_plan'))||plan;
     body.innerHTML=`<div class="card card-p">
-      <div class="card-h" style="margin-bottom:12px"><div class="card-t">Plan contratado</div><span class="muted">activa módulos automáticamente</span></div>
+      <div class="card-h" style="margin-bottom:4px"><div class="card-t">Plan contratado</div><span class="muted">activa módulos automáticamente</span></div>
+      <div style="font-size:11.5px;color:var(--t3);margin-bottom:12px">Haz clic en un plan para aplicarlo al instante. Los módulos de administración siempre quedan disponibles.</div>
       <div class="grid g4" style="gap:10px">
-        ${Object.keys(CX.PLANS).map(k=>`<label class="card hov" style="padding:12px;cursor:pointer;text-align:center;${plan===k?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}">
-          <input type="radio" name="plan" value="${k}" ${plan===k?'checked':''} style="display:none">
-          <div style="font-size:13px;font-weight:800;color:var(--t1)">${CX.PLANS[k].label}</div>
-          <div style="font-size:10.5px;color:var(--t3);margin-top:3px">${CX.planModules(k).length} módulos</div></label>`).join('')}
+        ${Object.keys(CX.PLANS).map(k=>`<button class="card hov plan-pick" data-plan="${k}" style="padding:14px;cursor:pointer;text-align:center;border:1px solid var(--border);background:#fff;${curPlan===k?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}">
+          <div style="font-size:13px;font-weight:800;color:var(--t1)">${CX.PLANS[k].label}${curPlan===k?' <span style="color:var(--brand);font-size:10px">● activo</span>':''}</div>
+          <div style="font-size:10.5px;color:var(--t3);margin-top:3px">${CX.planModules(k).length} módulos</div></button>`).join('')}
       </div>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
         <button class="btn btn-ghost btn-sm" id="editMods">⚙️ Personalizar módulos activos</button>
-        <button class="btn btn-pr btn-sm" id="applyPlan">Aplicar plan</button>
       </div>
     </div>`;
-    body.querySelector('#applyPlan')?.addEventListener('click',()=>{
-      const r=body.querySelector('input[name="plan"]:checked');
-      if(r){CX.applyPlan(r.value);CX.router.buildRail(CX.session.role);ui.toast('Plan '+CX.PLANS[r.value].label+' aplicado','ok');}
-    });
+    body.querySelectorAll('.plan-pick').forEach(btn=>btn.addEventListener('click',()=>{
+      const k=btn.dataset.plan;
+      CX.applyPlan(k);
+      if(CX.router&&CX.session.role)CX.router.buildRail(CX.session.role);
+      ui.toast('✓ Plan '+CX.PLANS[k].label+' aplicado · '+CX.planModules(k).length+' módulos','ok',3000);
+      drawPlan(body);
+    }));
     body.querySelector('#editMods')?.addEventListener('click',()=>{
       const all=Object.keys(CX.MODULES).filter(k=>CX.MODULES[k].roles.includes('admin'));
       const active=new Set(CX.planModules(plan));

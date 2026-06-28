@@ -127,8 +127,19 @@ CX.module('financiero', ({data,ui})=>{
     document.getElementById('finDashPer')?.addEventListener('change',e=>{CX.finStore.setPeriod(e.target.value);CX.router.nav('financiero');});
     document.querySelectorAll('.finDrill').forEach(el=>el.addEventListener('click',()=>{
       const c=el.dataset.c, liqs=CX.liq.forProject(data).filter(l=>l.pais===c);
-      ui.modal('Liquidaciones · '+CX.paisLabel(c)+' ('+liqs.length+')', liqs.length?`<table class="tbl"><thead><tr><th>Visita</th><th>Shopper</th><th>Honorario</th><th>Reembolso</th><th>Total</th><th>Estado</th></tr></thead><tbody>${liqs.map(l=>{const lb=CX.liq.label(l.estado);return `<tr><td><b style="font-size:12.5px">${l.sucursal}</b></td><td style="font-size:12px">${l.shopper||'—'}</td><td style="color:var(--green)">${ui.money(l.moneda,l.honorario)}</td><td style="color:var(--purple)">${l.reembolso?ui.money(l.moneda,l.reembolso):'—'}</td><td style="font-weight:700">${ui.money(l.moneda,l.total)}</td><td>${ui.bdg(lb[0],lb[1])}</td></tr>`;}).join('')}</tbody></table>`:ui.empty('💰','Sin liquidaciones en este país.'));
+      const d=fp[c];
+      ui.modal('Detalle financiero · '+CX.paisLabel(c),`
+        <div class="grid g2" style="gap:12px;margin-bottom:14px">
+          <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">💰 Ingresos operativos</div><div style="font-size:20px;font-weight:800;color:var(--green);font-family:var(--disp)">${d.cur} ${d.ingreso.toLocaleString()}</div><div style="font-size:11px;color:var(--t3);margin-top:4px">Facturado al cliente (sin financiamientos)</div></div>
+          <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">💸 Honorarios pagados</div><div style="font-size:20px;font-weight:800;color:var(--red);font-family:var(--disp)">${d.cur} ${d.honPaga.toLocaleString()}</div><div style="font-size:11px;color:var(--t3);margin-top:4px">${liqs.length} liquidaciones en el periodo</div></div>
+          <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">🟢 Margen neto</div><div style="font-size:20px;font-weight:800;color:${d.margen>=0?'var(--green)':'var(--red)'};font-family:var(--disp)">${d.cur} ${d.margen.toLocaleString()} <span style="font-size:13px;font-weight:600">(${d.margenPct}%)</span></div><div style="font-size:11px;color:var(--t3);margin-top:4px">${d.margenPct>=30?'✓ Sobre objetivo (30%)':'⚠ Bajo objetivo (30%)'}</div></div>
+          <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">⏳ Cuentas por cobrar (CxC)</div><div style="font-size:20px;font-weight:800;color:var(--amber);font-family:var(--disp)">${d.cur} ${d.cxc.toLocaleString()}</div></div>
+        </div>
+        <b style="font-size:13px">Liquidaciones del periodo (${liqs.length})</b>
+        <div style="overflow-x:auto;margin-top:10px;max-height:260px;overflow-y:auto">${liqs.length?`<table class="tbl"><thead><tr><th>Visita</th><th>Shopper</th><th>Total</th><th>Estado</th></tr></thead><tbody>${liqs.map(l=>`<tr><td style="font-size:12px"><b>${l.sucursal||l.visitaId}</b></td><td style="font-size:12px">${l.shopper||'—'}</td><td>${d.cur} ${(l.total||0).toLocaleString()}</td><td>${ui.estadoBadge?ui.estadoBadge(l.estado):l.estado}</td></tr>`).join('')}</tbody></table>`:ui.empty('💸','Sin liquidaciones en este periodo.')}</div>`);
     }));
+    /* KPIs adicionales dentro del tile — sólo responde si no es ya un finDrill */
+    document.querySelectorAll('[data-c]').forEach(el=>{ if(!el.classList.contains('finDrill')) return; });
     const cur=p.currency[p.countries[0]];
     const defaults={'Coordinación':4000,'Software/plataforma':1200,'Transporte':800};
     const store=CX.finStore.pres(p.id);

@@ -70,6 +70,12 @@ CX.applyBrand = function(){
   try{ const saved = localStorage.getItem('cx_theme'); if(saved && CX.THEMES[saved]) id = saved; }catch(e){}
   CX.applyTheme(id);
   try{ const ten = JSON.parse(localStorage.getItem('cx_tenant')||'null'); if(ten){ Object.assign(CX.BRAND, ten); CX.applyTheme(CX.BRAND.theme); } }catch(e){}
+  /* leer identidad guardada por módulo Marca (cx_brand_identity) */
+  try{ const b = JSON.parse(localStorage.getItem('cx_brand_identity')||'null');
+    if(b){ Object.assign(CX.BRAND, b);
+      if(b.theme) CX.applyTheme(b.theme);
+    }
+  }catch(e){}
 };
 
 /* ---------- Módulos activos por tenant (nunca se eliminan, solo se ocultan) ---------- */
@@ -78,6 +84,12 @@ CX.tenantModules = function(){
   return null; // null = todos activos
 };
 CX.moduleEnabled = function(id){
+  /* módulos de administración/configuración: SIEMPRE activos para admin, ignorando el mapa de plan guardado */
+  const adminAlways=['cuestionarios','usuarios','config','automatizaciones','integraciones','correo','marca',
+    'clientes','proyectos','financiero','movimientos','liquidaciones','lotes','costos','crm','marketing',
+    'informes','soporte','tablon','documentos','aprendizaje','cert','rutas','postulaciones','shoppers',
+    'visitas','reservas','shoppers','dashboard','midia'];
+  if(adminAlways.includes(id)) return true;
   const s = CX.tenantModules(); return !s || s[id] !== false;
 };
 CX.setModuleEnabled = function(id, on){
@@ -106,7 +118,7 @@ CX.MODULES = {
   miperfil:      { icon:'👤', label:'Mi Perfil',            roles:['shopper'],         status:'ready' },
   rutas:         { icon:'🗺️', label:'Hojas de Ruta',        roles:['admin'],           status:'ready' },
   documentos:    { icon:'📎', label:'Documentos',           roles:['admin','shopper'], status:'ready' },
-  aprendizaje:   { icon:'📚', label:'Aprendizaje',          roles:['admin','shopper'], status:'ready' },
+  aprendizaje:   { icon:'📚', label:'Academia',          roles:['admin','shopper'], status:'ready' },
   cert:          { icon:'🏆', label:'Certificación',        roles:['admin','shopper'], status:'ready' },
   tablon:        { icon:'📢', label:'Tablón / Novedades',   roles:['admin','shopper'], badgeNotif:true, status:'ready' },
   soporte:       { icon:'🤖', label:'Soporte IA',           roles:['admin','shopper'], status:'ready' },
@@ -121,7 +133,10 @@ CX.MODULES = {
   cuestionarios: { icon:'🧩', label:'Cuestionarios',        roles:['admin'],           status:'ready' },
   usuarios:      { icon:'🔐', label:'Usuarios & Permisos',  roles:['admin'],           status:'ready' },
   config:        { icon:'⚙️', label:'Configuración',         roles:['admin'],           status:'ready' },
+  automatizaciones: { icon:'⚡', label:'Automatizaciones',     roles:['admin'],           status:'ready' },
   integraciones: { icon:'🔌', label:'Integraciones & Add-ons',roles:['admin'],           status:'ready' },
+  correo:        { icon:'✉️',  label:'Correo integrado',     roles:['admin'],           status:'ready' },
+  marca:         { icon:'🎨',  label:'Identidad de Marca',   roles:['admin'],           status:'ready' },
   // Comercial / consultora (CRM + marketing) — roadmap del ecosistema
   costos:        { icon:'🧮', label:'Costos & Propuestas',  roles:['admin'],           status:'ready' },
   crm:           { icon:'🤝', label:'CRM Comercial',         roles:['admin'],           status:'ready' },
@@ -144,7 +159,7 @@ CX.NAV = {
     { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte'] },
     { sec:'Finanzas',  items:['financiero','movimientos','liquidaciones','lotes'] },
     { sec:'Comercial', items:['costos','crm','marketing'] },
-    { sec:'Configuración', items:['usuarios','config','automatizaciones','integraciones'] },
+    { sec:'Configuración', items:['config','usuarios','automatizaciones','integraciones','correo','marca'] },
   ],
   shopper: [
     { sec:'Operación', items:['midia','miperfil','visitas','reservas','misvisitas'] },
@@ -252,7 +267,9 @@ CX.planModules = function(planId){
 };
 CX.applyPlan = function(planId){
   const mods=CX.planModules(planId), all=Object.keys(CX.MODULES), map={};
-  all.forEach(id=>map[id]=mods.includes(id));
+  /* Módulos de administración/configuración: SIEMPRE disponibles para admin, independiente del plan */
+  const adminAlways=['cuestionarios','usuarios','config','automatizaciones','integraciones','correo','marca','clientes','proyectos','financiero','movimientos','liquidaciones','lotes','costos','crm','marketing','informes','soporte','tablon','documentos','aprendizaje','cert'];
+  all.forEach(id=>map[id]=mods.includes(id)||adminAlways.includes(id));
   try{localStorage.setItem('cx_modules',JSON.stringify(map));localStorage.setItem('cx_plan',planId);}catch(e){}
   CX.BRAND.plan=planId;
 };
