@@ -63,3 +63,9 @@ Estado: no merge, no deploy, no datos reales.
 - `REVISION-DIVERGENCIA-PR1.md`: se documentó que PR #1 está detrás de `main` por 1 commit y que ese commit trae cambios amplios de prototipo frontend, core, estilos y módulos.
 
 Decisión: no sincronizar todavía. Primero confirmar si ese commit es la nueva base aprobada del prototipo y revisar `app/index.html` para conservar el punto único de conexión backend.
+
+## 2026-06-27 — Guía de validación PR #1
+
+- `GUIA-VALIDACION-PR1.md`: guía breve para revisar PR #1 antes de actualizarlo con `main`.
+
+Objetivo: dejar claro qué revisar y qué punto backend debe conservarse antes de sincronizar.
