@@ -49,6 +49,7 @@ Impacto: no se modificó `/app/modules`; la app sigue usando mock/localStorage.
 - `PLAN-EJECUCION-SEED-TYA.md`: plan para ejecutar el seed ficticio cuando corresponda, sin credenciales en repo.
 - `DISENO-SCRIPT-SEED-TYA.md`: diseño del futuro script de carga con modo dry-run y validaciones previas.
 - `AUTORIZACION-DRY-RUN-SEED.md`: frase exacta requerida para permitir dry-run.
+- `RESULTADO-DRY-RUN-SEED-TYA.md`: validación documental del seed sin conectar Firebase ni escribir datos.
 
 ## 2026-06-27 — Gate para base buena T&A
 
@@ -67,6 +68,7 @@ Estado: no merge, no deploy, no datos reales.
 ## 2026-06-27 — Revisión divergencia con main
 
 - `REVISION-DIVERGENCIA-PR1.md`: se documentó que PR #1 está detrás de `main` por 1 commit y que ese commit trae cambios amplios de prototipo frontend, core, estilos y módulos.
+- `DICTAMEN-MAIN-BASE-PR1.md`: dictamen técnico; `main` parece nueva evolución del frontend, pero requiere confirmación visual/funcional antes de sincronizar PR #1.
 
 Decisión: no sincronizar todavía. Primero confirmar si ese commit es la nueva base aprobada del prototipo y revisar `app/index.html` para conservar el punto único de conexión backend.
 
