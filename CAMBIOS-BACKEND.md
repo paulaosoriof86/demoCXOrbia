@@ -40,6 +40,25 @@ Pendiente:
 - Crear usuarios DEV con claims coherentes.
 - Probar escenarios por rol antes de activar el adapter.
 
+## 2026-06-27 — Plan Auth DEV T&A
+
+Archivo creado:
+
+- `AUTH-DEV-TYA.md`
+
+Cambios:
+
+- Se documentó la estrategia de usuarios DEV para probar roles sin crear usuarios reales todavía.
+- Se definieron claims esperados: `role`, `tenantId`, `projectIds` y `shopperId` cuando aplique.
+- Se agregó documento espejo recomendado en `/tenants/tya/users/{uid}`.
+- Se dejó prohibido implementar claims desde frontend o subir credenciales al repo.
+
+Pendiente:
+
+- Definir método seguro para asignar custom claims.
+- Crear usuarios DEV únicamente cuando Paula autorice.
+- No activar adapter ni deploy todavía.
+
 ## 2026-06-27 — Producto CXOrbia vs tenant T&A
 
 Archivos creados/modificados:
