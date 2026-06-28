@@ -22,9 +22,22 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 
 ### P1 — Publicación reglas Firestore DEV
 
-- Estado: gate preparado, no ejecutado.
-- Detalle: `PLAN-PUBLICACION-REGLAS-DEV.md`, `AUTORIZACION-PUBLICACION-REGLAS-DEV.md` y `BLOQUE-POWERSHELL-PUBLICAR-REGLAS-DEV.md` preparan publicación solo de reglas en DEV.
-- Acción sugerida: no publicar hasta autorización expresa de Paula.
+- Estado: completado en Firebase DEV.
+- Detalle: `RESULTADO-PUBLICACION-REGLAS-DEV.md` documenta salida visible con `Deploy complete!` para `firebase.cmd deploy --only firestore:rules --project cxorbia-backend-dev`.
+- Restricciones vigentes: no se creó Auth, no se asignaron claims, no se cargó seed, no se activó adapter, no se publicó Hosting y no se tocó producción.
+- Acción sugerida: preparar el gate de usuarios DEV ficticios y claims, pero no ejecutarlo sin autorización separada de Paula.
+
+### P1 — Advertencia reglas Firestore DEV
+
+- Estado: detectada, no bloqueante.
+- Detalle: Firebase reportó `[W] 51:14 - Unused function: canAccessProject.` durante la compilación de `firestore.rules`.
+- Acción sugerida: revisar en fase de limpieza de reglas sin modificar permisos funcionales todavía.
+
+### P1 — Archivos locales generados por emulador/validación
+
+- Estado: pendiente de limpieza local.
+- Detalle: PowerShell mostró `?? firebase/emulator-rules/node_modules/` y `?? firebase/emulator-rules/package-lock.json` después del deploy.
+- Acción sugerida: no commitear esos archivos; limpiarlos o excluirlos localmente antes de nuevos commits desde PowerShell.
 
 ### P1 — Storage pendiente por Blaze
 
