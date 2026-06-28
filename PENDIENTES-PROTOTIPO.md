@@ -52,6 +52,12 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 - Detalle: `MAPEO-CXDATA-FIRESTORE.md` y `RIESGOS-ASINCRONIA-CXDATA.md` documentan cómo conservar la interfaz actual y qué puede fallar al reemplazar datos inmediatos por Firestore asincrónico.
 - Acción sugerida: cuando se active DEV, revisar dashboard, visitas, postulaciones, shoppers, misvisitas, beneficios y finanzas después del evento `backend-ready`.
 
+### P1 — Persistencia financiera DEV
+
+- Estado: documentado, no implementado.
+- Detalle: `MAPEO-FINSTORE-FIRESTORE.md` y `PLAN-PERSISTENCIA-FINANCIERA-DEV.md` documentan la fase futura para movimientos, lotes y liquidaciones.
+- Acción sugerida: no crear adapter financiero hasta validar reglas, seed, adapter base y comportamiento de `CX.finStore`.
+
 ### P2 — Datos reales T&A
 
 - Estado: bloqueado.
