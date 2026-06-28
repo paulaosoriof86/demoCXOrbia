@@ -18,10 +18,11 @@ Estado: sin deploy, sin producción y sin datos reales.
 - `CASOS-PRUEBA-FIRESTORE.md`: casos de prueba para validar permisos.
 - `VALIDACION-ESTATICA-REGLAS-ADAPTER.md`: revisión estática entre reglas, seed y adapter.
 
-Cambio aplicado:
+Cambios:
 
-- Se agregó permiso controlado para que shoppers con `projectIds` del proyecto puedan leer visitas con `estado == disponible`.
-- Motivo: permitir el flujo de visitas disponibles/postulación sin abrir visitas de otros tenants ni proyectos.
+- Lectura controlada para shoppers sobre visitas disponibles del proyecto asignado.
+- Matriz de roles actualizada para reflejar visitas disponibles.
+- Casos de prueba actualizados para shopper con proyecto, shopper sin proyecto y visitas disponibles.
 
 Pendiente: validar reglas en DEV antes de publicar o activar adapter.
 
