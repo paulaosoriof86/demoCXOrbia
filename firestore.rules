@@ -1,0 +1,142 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function role() {
+      return signedIn() && request.auth.token.role is string
+        ? request.auth.token.role
+        : '';
+    }
+
+    function isSuper() {
+      return role() == 'super';
+    }
+
+    function isAdmin() {
+      return role() in ['super', 'admin'];
+    }
+
+    function isOperator() {
+      return role() in ['super', 'admin', 'ops'];
+    }
+
+    function tenantAllowed(tenantId) {
+      return signedIn() && (
+        isSuper() ||
+        request.auth.token.tenantId == tenantId ||
+        (request.auth.token.tenants is list && tenantId in request.auth.token.tenants)
+      );
+    }
+
+    function projectAllowed(projectId) {
+      return isSuper() ||
+        role() in ['admin', 'ops'] ||
+        (request.auth.token.projectIds is list && projectId in request.auth.token.projectIds);
+    }
+
+    function isShopper(shopperId) {
+      return signedIn() && role() == 'shopper' && request.auth.token.shopperId == shopperId;
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Deny by default. Every collection below must prove tenant/project/role.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /tenants/{tenantId} {
+      allow read: if tenantAllowed(tenantId);
+      allow create, update, delete: if tenantAllowed(tenantId) && isSuper();
+
+      match /users/{uid} {
+        allow read: if tenantAllowed(tenantId) && (isSelf(uid) || isAdmin());
+        allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+      }
+
+      match /clients/{clientId} {
+        allow read: if tenantAllowed(tenantId) && isOperator();
+        allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+      }
+
+      match /shoppers/{shopperId} {
+        allow read: if tenantAllowed(tenantId) && (isOperator() || isShopper(shopperId));
+        allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
+      }
+
+      match /notifications/{notificationId} {
+        allow read: if tenantAllowed(tenantId);
+        allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
+      }
+
+      match /automations/{automationId} {
+        allow read: if tenantAllowed(tenantId) && isAdmin();
+        allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+      }
+
+      match /auditLogs/{logId} {
+        allow read: if tenantAllowed(tenantId) && isAdmin();
+        allow create: if tenantAllowed(tenantId) && signedIn();
+        allow update, delete: if false;
+      }
+
+      match /projects/{projectId} {
+        allow read: if tenantAllowed(tenantId) && projectAllowed(projectId);
+        allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+
+        match /visits/{visitId} {
+          allow read: if tenantAllowed(tenantId) && projectAllowed(projectId);
+          allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
+        }
+
+        match /postulations/{postulationId} {
+          allow read: if tenantAllowed(tenantId) && projectAllowed(projectId);
+          allow create: if tenantAllowed(tenantId) && signedIn() && projectAllowed(projectId);
+          allow update, delete: if tenantAllowed(tenantId) && isOperator();
+        }
+
+        match /questionnaires/{questionnaireId} {
+          allow read: if tenantAllowed(tenantId) && projectAllowed(projectId);
+          allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
+        }
+
+        match /responses/{responseId} {
+          allow read: if tenantAllowed(tenantId) && projectAllowed(projectId);
+          allow create: if tenantAllowed(tenantId) && signedIn() && projectAllowed(projectId);
+          allow update, delete: if tenantAllowed(tenantId) && isOperator();
+        }
+
+        match /liquidations/{liquidationId} {
+          allow read: if tenantAllowed(tenantId) && projectAllowed(projectId);
+          allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+        }
+
+        match /lots/{lotId} {
+          allow read: if tenantAllowed(tenantId) && projectAllowed(projectId);
+          allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+        }
+
+        match /finance/{movementId} {
+          allow read: if tenantAllowed(tenantId) && projectAllowed(projectId) && isOperator();
+          allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+        }
+
+        match /documents/{documentId} {
+          allow read: if tenantAllowed(tenantId) && projectAllowed(projectId);
+          allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
+        }
+
+        match /certifications/{certificationId} {
+          allow read: if tenantAllowed(tenantId) && projectAllowed(projectId);
+          allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
+        }
+      }
+    }
+  }
+}
