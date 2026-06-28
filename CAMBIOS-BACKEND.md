@@ -4,154 +4,62 @@ Registro obligatorio de cambios de backend, infraestructura y migración.
 
 ## 2026-06-27 — Infraestructura Firebase DEV
 
-Archivos creados:
+- `.firebaserc`: alias DEV para `cxorbia-backend-dev`.
+- `firebase.json`: Hosting DEV con `public: app`, rewrite SPA y headers UTF-8.
+- `firestore.indexes.json`: índices iniciales vacíos.
+- `storage.rules`: Storage cerrado mientras esté pendiente Blaze.
 
-- `.firebaserc`: alias `default` y `dev` apuntando a `cxorbia-backend-dev`; target Hosting DEV `cxorbia-dev`.
-- `firebase.json`: Hosting con `public: app`, rewrite a `/index.html`, headers UTF-8 y referencias a reglas Firestore/Storage.
-- `firestore.indexes.json`: archivo inicial vacío de índices.
-- `storage.rules`: Storage cerrado por completo mientras esté pendiente Blaze.
-
-Estado:
-
-- Producción `tya-plataforma.web.app` no fue tocada.
-- No hubo deploy.
-- No se cargaron datos reales.
+Estado: sin deploy, sin producción y sin datos reales.
 
 ## 2026-06-27 — Reglas Firestore
 
-Archivos creados/modificados:
+- `firestore.rules`: reglas multi-tenant por `tenantId`, `projectId` y rol.
+- `MATRIZ-ROLES-FIRESTORE.md`: matriz de permisos y claims esperados.
 
-- `firestore.rules`
-- `MATRIZ-ROLES-FIRESTORE.md`
-
-Cambios:
-
-- Se reforzó el modelo multi-tenant por `tenantId`, `projectId` y rol.
-- Se mantuvo deny-by-default.
-- Se separaron permisos para `super`, `admin`, `ops`, `shopper` y `cliente/client`.
-- Se limitó al cliente para que no lea finanzas, lotes, liquidaciones ni postulaciones internas.
-- Se limitó al shopper para que lea/actualice solo recursos propios o asignados.
-- Finanzas quedó reservado para `admin/super`.
-- Se agregó matriz documental de roles y claims esperados.
-
-Pendiente:
-
-- Validar reglas en DEV antes de publicarlas.
-- Crear usuarios DEV con claims coherentes.
-- Probar escenarios por rol antes de activar el adapter.
+Pendiente: validar reglas en DEV antes de publicar o activar adapter.
 
 ## 2026-06-27 — Plan Auth DEV T&A
 
-Archivo creado:
+- `AUTH-DEV-TYA.md`: plan de usuarios DEV, roles y claims.
 
-- `AUTH-DEV-TYA.md`
-
-Cambios:
-
-- Se documentó la estrategia de usuarios DEV para probar roles sin crear usuarios reales todavía.
-- Se definieron claims esperados: `role`, `tenantId`, `projectIds` y `shopperId` cuando aplique.
-- Se agregó documento espejo recomendado en `/tenants/tya/users/{uid}`.
-- Se dejó prohibido implementar claims desde frontend o subir credenciales al repo.
-
-Pendiente:
-
-- Definir método seguro para asignar custom claims.
-- Crear usuarios DEV únicamente cuando Paula autorice.
-- No activar adapter ni deploy todavía.
+Pendiente: crear usuarios DEV solo con autorización expresa.
 
 ## 2026-06-27 — Producto CXOrbia vs tenant T&A
 
-Archivos creados/modificados:
-
-- `ARQUITECTURA-TENANTS-TYA.md`
-- `RESUMEN-PARA-CLAUDE.md`
-- `PENDIENTES-PROTOTIPO.md`
-
-Cambios:
-
-- Se documentó que `demoCXOrbia` es el prototipo/base comercializable de CXOrbia.
-- T&A Consultores será el primer cliente/tenant real bajo `tenantId: tya`.
-- T&A no debe hardcodearse en módulos ni core UI.
-- Las campañas/clientes finales de T&A deben vivir como proyectos bajo el tenant.
+- `ARQUITECTURA-TENANTS-TYA.md`: CXOrbia sigue como producto comercializable; T&A será tenant `tya`.
+- `RESUMEN-PARA-CLAUDE.md`: resumen de continuidad.
+- `PENDIENTES-PROTOTIPO.md`: pendientes vivos.
 
 ## 2026-06-27 — Adapter Firestore desactivado
 
-Archivos creados/modificados:
+- `app/core/backend-config.js`: configuración Firebase DEV con `CX.BACKEND.enabled = false`.
+- `app/core/backend-firebase.js`: scaffold de adapter Firestore.
+- `app/index.html`: único punto de conexión para cargar backend config y adapter.
 
-- `app/core/backend-config.js`
-- `app/core/backend-firebase.js`
-- `app/index.html`
-
-Cambios:
-
-- Se agregó configuración Firebase DEV con `CX.BACKEND.enabled = false`.
-- Se creó `CX.backend` como scaffold de adapter Firestore.
-- Se preparó lectura de `/tenants/{tenantId}` y subcolecciones por proyecto.
-- Se preparó aplicación de datos a `CX.data` manteniendo la interfaz estable.
-- Se agregó un único punto de conexión en `app/index.html` para cargar los dos archivos nuevos.
-
-Impacto:
-
-- No se modificó `/app/modules`.
-- Con `enabled:false`, la app sigue usando mock/localStorage.
+Impacto: no se modificó `/app/modules`; la app sigue usando mock/localStorage.
 
 ## 2026-06-27 — Dataset piloto T&A
 
-Archivos creados:
-
-- `IMPORTACION-TYA-PILOTO.md`
-- `VALIDACION-TYA-PILOTO.md`
-- `firebase/seed-tya-piloto.json`
-- `firebase/README.md`
-
-Cambios:
-
-- Se agregó plan de importación piloto.
-- Se agregó dataset ficticio y anonimizado para tenant `tya` y proyecto `tya-piloto`.
-- Se agregó checklist de validación manual antes de cargar datos o activar adapter.
-
-Restricciones:
-
-- No usar como producción.
-- No cargar datos reales todavía.
-- No usar base anterior como backend vivo.
-- No activar Storage hasta definir Blaze y reglas privadas.
+- `IMPORTACION-TYA-PILOTO.md`: plan de importación piloto.
+- `VALIDACION-TYA-PILOTO.md`: checklist de validación.
+- `firebase/seed-tya-piloto.json`: dataset ficticio y anonimizado.
+- `firebase/README.md`: restricciones del seed.
 
 ## 2026-06-27 — Gate para base buena T&A
 
-Archivo creado:
+- `MIGRACION-BASE-BUENA-TYA.md`: condiciones para pedir/cargar el export limpio de la plataforma anterior.
 
-- `MIGRACION-BASE-BUENA-TYA.md`
-
-Cambios:
-
-- Se documentó que todavía no corresponde cargar la base buena real.
-- Se definieron condiciones para avisar a Paula cuándo pedir/cargar el export limpio.
-- Se definió estructura esperada del export JSON.
-- Se establecieron reglas de deduplicación, validación y carga piloto.
-- Se dejó claro que la base anterior nunca debe conectarse como backend vivo.
-
-Pendiente:
-
-- Completar validación con seed ficticio.
-- Activar adapter solo en DEV o preview controlado.
-- Avisar a Paula cuando ya corresponda pedir/cargar export limpio.
+Estado: todavía no corresponde cargar base real.
 
 ## 2026-06-27 — Control PR #1
 
-Archivos/acciones:
-
-- `CHECKLIST-PR1-VALIDACION.md`
+- `CHECKLIST-PR1-VALIDACION.md`: checklist para mantener PR #1 como draft.
 - Comentario agregado en PR #1.
 
-Cambios:
+Estado: no merge, no deploy, no datos reales.
 
-- Se agregó checklist de bloqueo para mantener PR #1 como draft.
-- Se documentó que no debe mergearse, desplegarse, activarse ni usarse con datos reales.
-- Se enumeraron validaciones obligatorias antes de cualquier avance.
+## 2026-06-27 — Revisión divergencia con main
 
-Pendiente:
+- `REVISION-DIVERGENCIA-PR1.md`: se documentó que PR #1 está detrás de `main` por 1 commit y que ese commit trae cambios amplios de prototipo frontend, core, estilos y módulos.
 
-- Resolver rama detrás de `main` antes de merge.
-- Validar reglas/claims/seed/adapter en DEV.
-- Mantener PR como draft hasta autorización explícita de Paula.
+Decisión: no sincronizar todavía. Primero confirmar si ese commit es la nueva base aprobada del prototipo y revisar `app/index.html` para conservar el punto único de conexión backend.
