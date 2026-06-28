@@ -22,18 +22,13 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 ### P1 — Validación de reglas Firebase
 
 - Estado: paquete de emulador creado; ejecución real pendiente fuera de ChatGPT.
-- Detalle: `firebase/emulator-rules/` contiene package, test, README y runner PowerShell. También existen `BLOQUE-POWERSHELL-EMULADOR-REGLAS.md` y `PROMPT-CODEX-EMULADOR-REGLAS.md`.
 - Acción sugerida: ejecutar emulador localmente o con Codex antes de publicar reglas.
 
-### P1 — Auth DEV y claims
+### P1 — Auth DEV, claims y seed ficticio
 
-- Estado: documentado, no ejecutado.
-- Acción sugerida: no crear usuarios ni asignar claims hasta validación de reglas en motor Firebase.
-
-### P1 — Seed ficticio T&A
-
-- Estado: dry-run documental aprobado; no ejecutado en Firebase.
-- Acción sugerida: no ejecutar escritura real sin autorización expresa.
+- Estado: admin tools dry-checks creados; no ejecutados.
+- Detalle: `firebase/admin-tools/` contiene validadores locales para seed ficticio y claims DEV sin escribir Firebase. También existen `BLOQUE-POWERSHELL-DRY-CHECKS-ADMIN.md` y `PROMPT-CODEX-DRY-CHECKS-ADMIN.md`.
+- Acción sugerida: ejecutar dry checks localmente o con Codex después/em paralelo al emulador, sin credenciales ni escritura.
 
 ### P1 — Adapter Firestore para `CX.data`
 
