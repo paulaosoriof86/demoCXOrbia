@@ -25,7 +25,7 @@ Archivos agregados principales:
 - `app/core/backend-config.js`
 - `app/core/backend-firebase.js`
 - `firebase/seed-tya-piloto.json`
-- documentación de arquitectura, roles, Auth DEV, seed, adapter, gates, migración, dictamen de main, dry-run documental, validación estática y plan de sync.
+- documentación de arquitectura, roles, Auth DEV, seed, adapter, gates, migración, dictamen de main, dry-run documental, validación estática, plan de sync y mapeo `CX.data`.
 
 Archivo modificado:
 
@@ -57,6 +57,15 @@ Documentación nueva relacionada:
 
 - `PLAN-VALIDACION-ADAPTER-DEV.md`
 - `VALIDACION-ESTATICA-REGLAS-ADAPTER.md`
+- `MAPEO-CXDATA-FIRESTORE.md`
+- `RIESGOS-ASINCRONIA-CXDATA.md`
+
+Notas relevantes:
+
+- `CX.data` actual expone `projects`, `shoppers`, `_visitas`, `_posts`, `currentProjectId` y métodos como `visitas()`, `posts()`, `setVisitState()`, `assignVisit()`, `payVisits()`, `kpis()` y `phaseFlow()`.
+- El adapter inicial solo lee `projects`, `shoppers`, `visits` y `postulations`.
+- Finanzas generadas desde `CX.finStore` aún no quedan persistidas por el adapter.
+- Si aparece problema de asincronía en módulos, debe documentarse y no parchar `/app/modules` dentro del PR backend.
 
 ### 1.3. Dataset piloto T&A
 
@@ -159,13 +168,14 @@ Dictamen:
 
 Ninguna por ahora dentro del PR backend. No se modificó `/app/modules` desde backend.
 
-Pendiente importante:
+Pendientes importantes:
 
 - PR #1 está detrás de `main` por 1 commit.
 - Ese commit de `main` contiene cambios amplios de frontend, core, estilos y módulos.
 - No sincronizar automáticamente hasta confirmar si `main` es la nueva base aprobada del prototipo.
 - Usar `PLAN-SINCRONIZACION-MAIN-PR1.md` y luego `CHECKLIST-POST-SYNC-PR1.md`.
 - Revisar `app/index.html` al sincronizar para conservar el punto único de conexión backend.
+- Revisar asincronía de módulos cuando se active Firestore en DEV.
 
 ### 4. Errores o inconsistencias detectadas en el prototipo
 
