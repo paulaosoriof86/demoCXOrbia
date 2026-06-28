@@ -11,7 +11,7 @@ Documentar la matriz de permisos esperada para Firestore antes de publicar regla
 | `super` | Administración global de tenants y configuración base. |
 | `admin` | Administración operativa y financiera del tenant. |
 | `ops` | Operación diaria: visitas, shoppers, postulaciones, cuestionarios, documentos y certificaciones. |
-| `shopper` | Portal de evaluador. Solo datos propios y visitas asignadas/postuladas. |
+| `shopper` | Portal de evaluador. Lee datos propios, visitas asignadas/postuladas y visitas disponibles de proyectos asignados. |
 | `cliente` / `client` | Portal cliente. Solo proyectos autorizados y resultados operativos permitidos. |
 
 ## Claims esperados
@@ -37,7 +37,7 @@ shopperId: eval-01   // solo para shopper
 | `/automations/{id}` | leer/escribir | no | no | no |
 | `/auditLogs/{id}` | leer; crear log | crear log | crear log | crear log |
 | `/projects/{projectId}` | leer/escribir | leer | leer si asignado | leer si asignado |
-| `/visits/{visitId}` | leer/escribir | leer/escribir | solo propias | leer proyecto asignado |
+| `/visits/{visitId}` | leer/escribir | leer/escribir | propias o disponibles del proyecto asignado | leer proyecto asignado |
 | `/postulations/{id}` | leer/escribir | leer/escribir | solo propias | no |
 | `/questionnaires/{id}` | leer/escribir | leer/escribir | leer proyecto asignado | leer proyecto asignado |
 | `/responses/{id}` | leer/escribir | leer/escribir | propias | leer proyecto asignado |
@@ -47,10 +47,22 @@ shopperId: eval-01   // solo para shopper
 | `/documents/{id}` | leer/escribir | leer/escribir | leer proyecto asignado | leer proyecto asignado |
 | `/certifications/{id}` | leer/escribir | leer/escribir | propias | no |
 
+## Regla especial de visitas disponibles
+
+Para que el shopper pueda postularse, puede leer visitas con:
+
+```text
+estado == disponible
+projectId incluido en request.auth.token.projectIds
+tenantId autorizado
+```
+
+Esto no le permite leer visitas asignadas a otros shoppers.
+
 ## Riesgos controlados
 
 1. El cliente no debe leer finanzas, lotes, liquidaciones ni postulaciones internas.
-2. El shopper no debe leer visitas de otros evaluadores.
+2. El shopper no debe leer visitas de otros evaluadores, salvo visitas disponibles del proyecto asignado.
 3. Operaciones financieras quedan reservadas para `admin` o `super`.
 4. Storage sigue cerrado hasta activar Blaze y diseñar rutas privadas.
 5. Estas reglas deben probarse en DEV antes de publicar.
