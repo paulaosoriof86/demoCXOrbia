@@ -36,6 +36,7 @@ Pendiente: crear usuarios DEV solo con autorización expresa.
 - `app/core/backend-config.js`: configuración Firebase DEV con `CX.BACKEND.enabled = false`.
 - `app/core/backend-firebase.js`: scaffold de adapter Firestore.
 - `app/index.html`: único punto de conexión para cargar backend config y adapter.
+- `PLAN-VALIDACION-ADAPTER-DEV.md`: plan de validación del adapter solo en DEV/preview.
 
 Impacto: no se modificó `/app/modules`; la app sigue usando mock/localStorage.
 
@@ -47,6 +48,7 @@ Impacto: no se modificó `/app/modules`; la app sigue usando mock/localStorage.
 - `firebase/README.md`: restricciones del seed.
 - `PLAN-EJECUCION-SEED-TYA.md`: plan para ejecutar el seed ficticio cuando corresponda, sin credenciales en repo.
 - `DISENO-SCRIPT-SEED-TYA.md`: diseño del futuro script de carga con modo dry-run y validaciones previas.
+- `AUTORIZACION-DRY-RUN-SEED.md`: frase exacta requerida para permitir dry-run.
 
 ## 2026-06-27 — Gate para base buena T&A
 
@@ -57,6 +59,7 @@ Estado: todavía no corresponde cargar base real.
 ## 2026-06-27 — Control PR #1
 
 - `CHECKLIST-PR1-VALIDACION.md`: checklist para mantener PR #1 como draft.
+- `ESTADO-GATES-PR1.md`: matriz centralizada de gates.
 - Comentario agregado en PR #1.
 
 Estado: no merge, no deploy, no datos reales.
