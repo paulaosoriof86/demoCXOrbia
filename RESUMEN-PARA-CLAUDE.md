@@ -25,7 +25,7 @@ Archivos agregados principales:
 - `app/core/backend-config.js`
 - `app/core/backend-firebase.js`
 - `firebase/seed-tya-piloto.json`
-- documentación de arquitectura, roles, Auth DEV, seed, adapter, gates y migración.
+- documentación de arquitectura, roles, Auth DEV, seed, adapter, gates, migración, dictamen de main y dry-run documental.
 
 Archivo modificado:
 
@@ -68,8 +68,9 @@ Se agregó un dataset ficticio para validar la estructura antes de cargar datos 
 - `PLAN-EJECUCION-SEED-TYA.md`
 - `DISENO-SCRIPT-SEED-TYA.md`
 - `AUTORIZACION-DRY-RUN-SEED.md`
+- `RESULTADO-DRY-RUN-SEED-TYA.md`
 
-Este dataset no se importa automáticamente. Sirve para prueba controlada posterior.
+Este dataset no se importó a Firebase. Se validó documentalmente con conteos: 1 tenant, 1 proyecto, 4 shoppers ficticios, 8 visitas ficticias, 3 postulaciones, 1 cuestionario demo y 3 preguntas demo.
 
 ### 1.4. Reglas y roles
 
@@ -122,8 +123,20 @@ Estado actual:
 - No base buena.
 - No usuarios reales.
 - No Storage.
-- No seed ejecutado.
+- No seed escrito en Firebase.
 - No adapter activo.
+
+### 1.8. Dictamen de `main`
+
+Se agregó `DICTAMEN-MAIN-BASE-PR1.md`.
+
+Dictamen:
+
+- `main` parece una evolución relevante del prototipo frontend.
+- Contiene cambios amplios en core, estilos, index y módulos.
+- PR #1 no debe sincronizarse automáticamente todavía.
+- Antes se debe confirmar visual/funcionalmente si `main` es nueva base aprobada.
+- Si se sincroniza, conservar en `app/index.html` los scripts backend después de `core/notif.js` y antes de `core/topbar.js`.
 
 ### 2. Qué NO se pudo conectar y por qué
 
@@ -137,7 +150,7 @@ Estado actual:
 
 ### 3. Qué partes del frontend necesitan ajuste
 
-Ninguna por ahora. No se modificó `/app/modules` dentro del PR backend.
+Ninguna por ahora dentro del PR backend. No se modificó `/app/modules` desde backend.
 
 Pendiente importante:
 
