@@ -16,7 +16,8 @@ Base buena T&A: bloqueada
 Firestore rules DEV: publicadas
 Auth DEV ficticio: completado por Firebase CLI Auth Import
 Jerarquía tenant/cuenta/proyecto: aclarada y documentada
-Seed ficticio: preparado, no ejecutado
+Seed ficticio dry-run: completado
+Seed ficticio carga Firestore: bloqueada
 Adapter: preparado, desactivado
 ```
 
@@ -30,9 +31,9 @@ Adapter: preparado, desactivado
 | Auth DEV | completado DEV | Paula/ChatGPT | 6 usuarios ficticios importados |
 | Claims/customAttributes DEV | completado DEV | ChatGPT/DEV | Importados con Firebase CLI Auth Import |
 | Jerarquía tenant/cuenta/proyecto | completado documental | ChatGPT | Tenant=consultora, cuenta=cliente final, proyecto=campaña/ronda de plataforma |
-| Seed ficticio dry-run | pendiente | Paula autoriza | Solo simulación |
-| Seed ficticio escritura | bloqueado | Paula autoriza | Después de dry-run/validación del seed actualizado |
-| Adapter DEV | bloqueado | Paula autoriza | Solo después de seed/reglas |
+| Seed ficticio dry-run | completado | Paula/ChatGPT | Validaciones OK; 19 rutas simuladas |
+| Seed ficticio carga Firestore | bloqueado | Paula autoriza | Requiere autorización separada |
+| Adapter DEV | bloqueado | Paula autoriza | Solo después de seed validado/cargado y revisión |
 | Storage | bloqueado | Paula | Pendiente Blaze y reglas |
 | Base buena T&A | bloqueado | Paula autoriza | Después de adapter validado |
 | Producción T&A | bloqueado | Paula autoriza | No tocar |
@@ -92,6 +93,30 @@ Documentación:
 - `MAPEO-CXDATA-FIRESTORE.md`
 - `firebase/seed-tya-piloto.json`
 
+## Gate completado — dry-run seed ficticio actualizado
+
+Resultado reportado:
+
+```text
+Validaciones: OK
+== Dry-run seed TYA actualizado finalizado ==
+```
+
+Resumen:
+
+```text
+Visitas: 8
+Postulaciones: 3
+Cuestionarios: 1
+Escrituras simuladas: 19
+```
+
+Documentación:
+
+- `RESULTADO-DRY-RUN-SEED-TYA-ACTUALIZADO.md`
+- `PLAN-DRY-RUN-SEED-TYA-ACTUALIZADO.md`
+- `firebase/validate-seed-dry-run.cjs`
+
 ## Advertencia pendiente
 
 ```text
@@ -118,4 +143,4 @@ Solo documentación, revisión de archivos y preparación de planes.
 
 ## Próximo avance que sí requiere autorización
 
-Cualquier dry-run, escritura en Firestore, deploy de Hosting, seed o activación del adapter.
+Cualquier escritura en Firestore, deploy de Hosting, seed o activación del adapter.
