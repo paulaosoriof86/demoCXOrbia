@@ -12,6 +12,11 @@ firebase/auth-dev-tools/output/
 firebase/emulator-rules/node_modules/
 firebase/emulator-rules/package-lock.json
 firebase/emulator-rules/package.json
+firebase/client-write-tools/output/
+
+# Entradas/salidas privadas de migracion real
+firebase/private-input/
+firebase/private-output/
 
 # Logs
 *.log
