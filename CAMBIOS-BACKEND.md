@@ -227,3 +227,27 @@ Estado:
 
 - La migración inicial sigue siendo T&A como primer tenant real.
 - La arquitectura queda habilitada para más consultoras/tenants futuros, cada una con sus propias cuentas y proyectos.
+
+## 2026-06-28 — Preparación dry-run seed ficticio actualizado
+
+Autorización recibida:
+
+```text
+Autorizo validar en dry-run el seed ficticio actualizado en Firebase DEV, sin escribir datos, sin activar adapter, sin deploy de Hosting y sin tocar producción.
+```
+
+Archivos creados/documentados:
+
+- `firebase/validate-seed-dry-run.cjs`: script local de validación del seed actualizado, sin conexión de escritura y sin escribir Firestore.
+- `PLAN-DRY-RUN-SEED-TYA-ACTUALIZADO.md`: plan del dry-run autorizado.
+
+Alcance:
+
+- Validar estructura tenant > cuenta > proyecto > visita.
+- Validar referencias internas de cuentas, proyectos, shoppers, visitas, postulaciones y cuestionarios.
+- Mostrar rutas Firestore simuladas.
+- No escribir datos.
+- No activar adapter.
+- No publicar Hosting.
+- No tocar producción.
+- No modificar `/app/modules`.
