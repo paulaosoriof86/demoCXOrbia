@@ -10,6 +10,42 @@ Este documento no activa el backend, no escribe datos y no cambia la interfaz p�
 
 Los módulos deben seguir usando `CX.data` igual que hoy. Firestore debe ser un adapter interno y no una dependencia directa del frontend.
 
+## Aclaración de jerarquía comercial
+
+En CXOrbia, `projectId` se refiere a un proyecto operativo configurado dentro de la plataforma, no a un proyecto Firebase ni a un cliente/tenant.
+
+La jerarquía canónica es:
+
+```text
+Tenant = consultora cliente de CXOrbia
+Cuenta / cliente final = marca, cuenta comercial o cliente administrado por la consultora
+Proyecto = campaña, ronda o programa operativo configurado en la plataforma
+Visita = unidad operativa dentro de un proyecto
+```
+
+Ejemplo T&A:
+
+```text
+Tenant: T&A Consultores
+Cuenta: Cinépolis
+Proyecto: Cinépolis Guatemala Junio 2026 Q1
+Visitas: sucursales/escenarios de esa ronda
+```
+
+Para no romper el prototipo ni el adapter inicial, los proyectos siguen viviendo en:
+
+```text
+/tenants/{tenantId}/projects/{projectId}
+```
+
+Cada proyecto debe llevar `accountId`/`clientId` como campo para agruparlo bajo una cuenta. Las cuentas se documentan en la colección compatible ya existente:
+
+```text
+/tenants/{tenantId}/clients/{accountId}
+```
+
+En la UI y en negocio se puede llamar "Cuenta"; técnicamente se conserva `clients` porque ya existe en reglas y evita publicar reglas nuevas solo por nomenclatura.
+
 ## Estado actual de `CX.data`
 
 `CX.data` expone datos principales:
@@ -41,9 +77,11 @@ phaseFlow(c)
 
 ## Mapeo de colecciones
 
-| CX.data | Firestore previsto |
+| CX.data / negocio | Firestore previsto |
 |---|---|
-| `projects` | `/tenants/{tenantId}/projects/{projectId}` |
+| tenant / consultora | `/tenants/{tenantId}` |
+| cuenta / cliente final | `/tenants/{tenantId}/clients/{accountId}` |
+| `projects` / proyectos de plataforma | `/tenants/{tenantId}/projects/{projectId}` |
 | `shoppers` | `/tenants/{tenantId}/shoppers/{shopperId}` |
 | `_visitas` | `/tenants/{tenantId}/projects/{projectId}/visits/{visitId}` |
 | `_posts` | `/tenants/{tenantId}/projects/{projectId}/postulations/{postulationId}` |
@@ -54,6 +92,31 @@ phaseFlow(c)
 | finanzas | `/tenants/{tenantId}/projects/{projectId}/finance/{movementId}` |
 | documentos | `/tenants/{tenantId}/projects/{projectId}/documents/{documentId}` |
 | certificaciones | `/tenants/{tenantId}/projects/{projectId}/certifications/{certificationId}` |
+
+## Campos mínimos de agrupación
+
+Cada proyecto debe incluir, como mínimo:
+
+```text
+tenantId
+accountId o clientId
+accountName o clientName
+projectId / id
+name
+countries
+status
+```
+
+Cada visita, postulación, respuesta o movimiento derivado debe conservar:
+
+```text
+tenantId
+projectId
+accountId o clientId cuando aplique
+shopperId cuando aplique
+```
+
+Esto permite que una consultora tenga varias cuentas y que cada cuenta tenga uno o más proyectos, sin cambiar la interfaz actual de `CX.data`.
 
 ## Lectura inicial del adapter
 
@@ -123,6 +186,7 @@ Pendiente: definir adapter separado para `CX.finStore` o persistencia financiera
 El adapter inicial no lee todavía:
 
 ```text
+clients/accounts
 questionnaires
 responses
 liquidations
@@ -160,4 +224,5 @@ CX.BACKEND.enabled: false
 Firestore escrito: no
 Datos reales: no
 Producción: no tocada
+Jerarquía comercial aclarada: tenant > cuenta/cliente final > proyecto > visita
 ```
