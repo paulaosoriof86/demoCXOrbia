@@ -144,18 +144,35 @@ Archivos creados/preparados:
 - `PLAN-EJECUCION-USUARIOS-CLAIMS-DEV.md`: plan operativo del gate autorizado.
 - `PLANTILLA-RESULTADO-USUARIOS-CLAIMS-DEV.md`: plantilla para registrar resultado después de ejecutar PowerShell.
 
-Estado:
+Estado previo:
 
 - Script preparado.
-- Ejecución real pendiente de PowerShell local porque requiere credencial administrativa local segura.
-- No se crearon usuarios todavía desde GitHub.
-- No se asignaron claims todavía desde GitHub.
-- No se cargó seed.
-- No se activó adapter.
-- No se tocó producción.
+- Se intentaron rutas con Firebase Admin SDK y ADC, pero se abandonaron por complejidad operativa local.
 - No se modificó `/app/modules`.
 
-Usuarios DEV definidos:
+## 2026-06-28 — Usuarios DEV ficticios y claims/customAttributes importados
+
+Archivos creados/documentados:
+
+- `PLAN-ALTERNATIVO-AUTH-IMPORT-CLI-DEV.md`: plan alternativo sin `gcloud`, sin service account y sin mover archivos.
+- `firebase/auth-dev-tools/auth-import-dev-users.cjs`: script local que genera archivo de importación Auth DEV con hash SHA256 y `customAttributes`.
+- `RESULTADO-USUARIOS-CLAIMS-DEV.md`: resultado final del gate.
+- `RESUMEN-PARA-CLAUDE-ADDENDUM-20260628-AUTH-DEV-COMPLETADO.md`: addendum de continuidad para Claude.
+
+Cambio real ejecutado fuera del repo:
+
+```text
+firebase.cmd auth:import <archivo-local-output> --hash-algo=SHA256 --rounds=1 --project cxorbia-backend-dev
+```
+
+Resultado observado:
+
+```text
+Starting importing 6 account(s).
+Imported successfully.
+```
+
+Usuarios DEV ficticios importados:
 
 - `super.dev@cxorbia-dev.example.com`
 - `admin.tya.dev@cxorbia-dev.example.com`
@@ -164,7 +181,18 @@ Usuarios DEV definidos:
 - `cliente.tya.dev@cxorbia-dev.example.com`
 - `externo.otro.dev@cxorbia-dev.example.com`
 
+Impacto:
+
+- Se importaron 6 usuarios ficticios en Firebase Auth DEV `cxorbia-backend-dev`.
+- Se incluyeron `customAttributes` equivalentes a claims DEV.
+- No se cargó seed Firestore.
+- No se activó adapter.
+- No se publicó Hosting.
+- No se tocó producción.
+- No se hizo merge.
+- No se modificó `/app/modules`.
+
 Pendiente/riesgo:
 
-- La ejecución requiere Application Default Credentials o `GOOGLE_APPLICATION_CREDENTIALS` disponible localmente.
-- El reporte local generado contendrá password DEV temporal y no debe subirse a GitHub.
+- La carpeta local `firebase/auth-dev-tools/output/` puede contener password DEV temporal y no debe subirse, pegarse ni adjuntarse.
+- Siguiente gate posible: seed ficticio Firestore DEV, solo con autorización separada.
