@@ -64,3 +64,24 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 
 - Estado: bloqueado.
 - Acción sugerida: pedir/cargar export limpio solo cuando se cumpla `MIGRACION-BASE-BUENA-TYA.md`.
+
+## 2026-06-28
+
+### P1 — Preview visual controlado del adapter DEV
+
+- Estado: completado como validación visual local controlada.
+- Detalle: `RESULTADO-PREVIEW-CONTROLADO-ADAPTER-DEV.md` documenta que el preview abrió correctamente con insignia `Preview backend DEV`, sin pantalla en blanco y sin datos reales reportados.
+- Observación importante: Paula observó los 3 proyectos ficticios del prototipo (`Proyecto Retail`, `Proyecto Banca`, `Proyecto Restaurantes`), no solamente el seed Firestore DEV de 1 proyecto. Por eso este gate valida que el preview no rompe la UI, pero no debe tomarse aún como validación final de render exclusivo desde Firestore DEV.
+- Acción sugerida: repetir validación visual con datos Firestore DEV después de que Claude actualice/corrija la base del prototipo y se confirme el punto único de conexión.
+
+### P1 — Configuración del prototipo
+
+- Estado: pendiente para Claude/frontend.
+- Detalle: Paula reportó que `Configuración` no funciona correctamente durante la revisión visual del preview.
+- Acción sugerida: Claude debe corregirlo en el prototipo/frontend. ChatGPT backend no debe parchar `/app/modules`.
+
+### P1 — Módulos incompletos del prototipo
+
+- Estado: pendiente para Claude/frontend.
+- Detalle: Paula reportó que hay módulos todavía incompletos o pendientes de desarrollo, atribuibles al estado actual del prototipo y a trabajo pendiente de Claude.
+- Acción sugerida: documentar para continuidad y no mezclar estas mejoras con el PR backend.
