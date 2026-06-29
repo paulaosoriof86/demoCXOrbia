@@ -196,3 +196,34 @@ Pendiente/riesgo:
 
 - La carpeta local `firebase/auth-dev-tools/output/` puede contener password DEV temporal y no debe subirse, pegarse ni adjuntarse.
 - Siguiente gate posible: seed ficticio Firestore DEV, solo con autorización separada.
+
+## 2026-06-28 — Aclaración tenant > cuenta > proyecto
+
+Motivo: Paula aclaró que cada consultora puede tener varias cuentas y cada cuenta uno o más proyectos configurados dentro de la plataforma.
+
+Archivos creados/actualizados:
+
+- `ARQUITECTURA-JERARQUIA-TENANT-CUENTA-PROYECTO.md`: definición canónica de tenant, cuenta/cliente final, proyecto operativo y visita.
+- `MAPEO-CXDATA-FIRESTORE.md`: actualizado para aclarar que `projectId` es proyecto de plataforma, no Firebase project, y que los proyectos deben llevar `accountId`/`clientId`.
+- `firebase/seed-tya-piloto.json`: actualizado para incluir `clients`, `accountId`, `clientId`, `accountName` y `client` en el seed ficticio.
+
+Decisión técnica:
+
+- `tenant` = consultora cliente de CXOrbia.
+- `clients` = cuentas/clientes finales/marcas dentro de la consultora.
+- `projects` = proyectos/rondas/campañas operativas configuradas en CXOrbia.
+- Las visitas siguen debajo de proyectos para respetar `CX.data.currentProjectId` y no romper módulos.
+
+Impacto:
+
+- No se cambió UI.
+- No se tocó `/app/modules`.
+- No se activó adapter.
+- No se cargó seed en Firestore.
+- No se tocaron datos reales.
+- No se tocó producción.
+
+Estado:
+
+- La migración inicial sigue siendo T&A como primer tenant real.
+- La arquitectura queda habilitada para más consultoras/tenants futuros, cada una con sus propias cuentas y proyectos.
