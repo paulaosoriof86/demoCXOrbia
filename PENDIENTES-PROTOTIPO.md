@@ -62,8 +62,8 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 
 ### P2 — Datos reales T&A
 
-- Estado: bloqueado.
-- Acción sugerida: pedir/cargar export limpio solo cuando se cumpla `MIGRACION-BASE-BUENA-TYA.md`.
+- Estado: pasó de bloqueado a pipeline preparado para validación local y piloto DEV.
+- Acción sugerida: usar `PLAN-MIGRACION-TYA-REAL-DEV.md`. No cargar toda la base ni tocar producción.
 
 ## 2026-06-28
 
@@ -85,3 +85,9 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 - Estado: pendiente para Claude/frontend.
 - Detalle: Paula reportó que hay módulos todavía incompletos o pendientes de desarrollo, atribuibles al estado actual del prototipo y a trabajo pendiente de Claude.
 - Acción sugerida: documentar para continuidad y no mezclar estas mejoras con el PR backend.
+
+### P0 — Migración real T&A por piloto DEV
+
+- Estado: pipeline preparado; falta export limpio local.
+- Detalle: se crearon herramientas para validar, transformar y cargar un piloto DEV desde `firebase/private-input/tya-export-real.json` hacia `firebase/private-output/` y Firestore DEV.
+- Acción sugerida: ejecutar primero validación local. La carga piloto DEV requiere autorización expresa separada. La carga total sigue bloqueada hasta validar piloto.
