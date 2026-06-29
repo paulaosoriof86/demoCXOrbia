@@ -14,7 +14,8 @@ Producción: bloqueada
 Datos reales: bloqueados
 Base buena T&A: bloqueada
 Firestore rules DEV: publicadas
-Auth DEV ficticio: autorizado, pendiente ejecución local
+Auth DEV ficticio: completado por Firebase CLI Auth Import
+Jerarquía tenant/cuenta/proyecto: aclarada y documentada
 Seed ficticio: preparado, no ejecutado
 Adapter: preparado, desactivado
 ```
@@ -26,10 +27,11 @@ Adapter: preparado, desactivado
 | Confirmar base `main` | pendiente | Paula / Claude | `main` trae cambios frontend amplios |
 | Mantener PR draft | activo | ChatGPT | No mergear |
 | Firestore rules | completado DEV | Paula/ChatGPT | Publicadas en `cxorbia-backend-dev` el 2026-06-28 |
-| Auth DEV | autorizado, script preparado | Paula/ChatGPT | Ejecutar solo usuarios ficticios |
-| Claims DEV | autorizado, script preparado | ChatGPT/DEV | No implementar desde frontend |
+| Auth DEV | completado DEV | Paula/ChatGPT | 6 usuarios ficticios importados |
+| Claims/customAttributes DEV | completado DEV | ChatGPT/DEV | Importados con Firebase CLI Auth Import |
+| Jerarquía tenant/cuenta/proyecto | completado documental | ChatGPT | Tenant=consultora, cuenta=cliente final, proyecto=campaña/ronda de plataforma |
 | Seed ficticio dry-run | pendiente | Paula autoriza | Solo simulación |
-| Seed ficticio escritura | bloqueado | Paula autoriza | Después de dry-run/usuarios/claims según plan |
+| Seed ficticio escritura | bloqueado | Paula autoriza | Después de dry-run/validación del seed actualizado |
 | Adapter DEV | bloqueado | Paula autoriza | Solo después de seed/reglas |
 | Storage | bloqueado | Paula | Pendiente Blaze y reglas |
 | Base buena T&A | bloqueado | Paula autoriza | Después de adapter validado |
@@ -52,16 +54,43 @@ Documentación:
 - `RESULTADO-PUBLICACION-REGLAS-DEV.md`
 - `RESUMEN-PARA-CLAUDE-ADDENDUM-20260628-REGLAS-DEV-PUBLICADAS.md`
 
-## Gate autorizado — Auth DEV ficticio y claims
+## Gate completado — Auth DEV ficticio y claims/customAttributes
 
-Documentación/herramientas preparadas:
+Método final:
 
-- `PLAN-EJECUCION-USUARIOS-CLAIMS-DEV.md`
-- `firebase/auth-dev-tools/package.json`
-- `firebase/auth-dev-tools/create-dev-users-and-claims.cjs`
-- `PLANTILLA-RESULTADO-USUARIOS-CLAIMS-DEV.md`
+```text
+firebase.cmd auth:import <archivo-local-output> --hash-algo=SHA256 --rounds=1 --project cxorbia-backend-dev
+```
 
-Estado: pendiente salida local de PowerShell.
+Resultado reportado:
+
+```text
+Starting importing 6 account(s).
+Imported successfully.
+```
+
+Documentación:
+
+- `RESULTADO-USUARIOS-CLAIMS-DEV.md`
+- `RESUMEN-PARA-CLAUDE-ADDENDUM-20260628-AUTH-DEV-COMPLETADO.md`
+- `PLAN-ALTERNATIVO-AUTH-IMPORT-CLI-DEV.md`
+
+## Gate documental completado — jerarquía tenant/cuenta/proyecto
+
+Decisión:
+
+```text
+Tenant = consultora cliente de CXOrbia
+Cuenta = cliente final / marca / cuenta comercial de la consultora
+Proyecto = campaña, ronda o programa operativo configurado en CXOrbia
+Visita = unidad operativa dentro del proyecto
+```
+
+Documentación:
+
+- `ARQUITECTURA-JERARQUIA-TENANT-CUENTA-PROYECTO.md`
+- `MAPEO-CXDATA-FIRESTORE.md`
+- `firebase/seed-tya-piloto.json`
 
 ## Advertencia pendiente
 
@@ -78,7 +107,7 @@ no sincronizar automáticamente con main
 no mergear PR #1
 no desplegar Hosting
 no activar Firestore adapter
-no cargar seed
+no cargar seed sin autorización específica
 no pedir base buena real
 no tocar producción
 ```
@@ -89,4 +118,4 @@ Solo documentación, revisión de archivos y preparación de planes.
 
 ## Próximo avance que sí requiere autorización
 
-Cualquier dry-run, escritura, deploy de Hosting, seed o activación del adapter.
+Cualquier dry-run, escritura en Firestore, deploy de Hosting, seed o activación del adapter.
