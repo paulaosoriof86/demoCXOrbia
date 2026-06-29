@@ -4,6 +4,8 @@
    Mantiene CX.data como interfaz estable.
    No toca módulos UI.
    No se activa si CX.BACKEND.enabled !== true.
+   Preview DEV: puede autenticarse solo si se habilita por config
+   separada y token de preview, sin guardar claves en repo.
    ============================================================ */
 window.CX = window.CX || {};
 
@@ -46,6 +48,42 @@ window.CX = window.CX || {};
     if(!cfg.firebaseConfig) throw new Error('Falta CX.BACKEND.firebaseConfig');
     app = firebase.apps.length ? firebase.app() : firebase.initializeApp(cfg.firebaseConfig);
     db = firebase.firestore(app);
+  }
+
+  function readStoredPreviewPassword(key){
+    if(!key) return null;
+    try{ return sessionStorage.getItem(key) || localStorage.getItem(key); }
+    catch(_){ return null; }
+  }
+
+  function writeStoredPreviewPassword(key, password){
+    if(!key || !password) return;
+    try{ sessionStorage.setItem(key, password); }catch(_){ /* no-op */ }
+  }
+
+  async function ensurePreviewAuth(){
+    const authCfg = cfg.devPreviewAuth || {};
+    if(authCfg.enabled !== true) return;
+    if(!window.firebase || !firebase.auth) throw new Error('Firebase Auth SDK no cargado para preview DEV');
+
+    const auth = app && typeof app.auth === 'function' ? app.auth() : firebase.auth();
+    if(auth.currentUser) return;
+
+    const email = authCfg.email;
+    const key = authCfg.passwordStorageKey || 'CXORBIA_DEV_PASSWORD';
+    let password = readStoredPreviewPassword(key);
+
+    if(!password && authCfg.allowPrompt === true && window.prompt){
+      password = window.prompt('Clave temporal DEV para preview CXOrbia');
+      if(password) writeStoredPreviewPassword(key, password);
+    }
+
+    if(!email || !password){
+      throw new Error('Falta usuario o clave temporal DEV para iniciar preview autenticado');
+    }
+
+    await auth.signInWithEmailAndPassword(email, password);
+    emit('backend-auth-ready', {provider:'firebase', tenantId:tenantId(), preview:true});
   }
 
   async function loadTenantData(){
@@ -179,6 +217,7 @@ window.CX = window.CX || {};
 
     try{
       initFirebase();
+      await ensurePreviewAuth();
       wrapDataMethods();
       await refresh();
     }catch(e){
