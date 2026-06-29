@@ -62,7 +62,7 @@ Documentación nueva relacionada:
 
 Notas relevantes:
 
-- `CX.data` actual expone `projects`, `shoppers`, `_visitas`, `_posts`, `currentProjectId` y métodos como `visitas()`, `posts()`, `setVisitState()`, `assignVisit()`, `payVisits()`, `kpis()` y `phaseFlow()`.
+- `CX.data` actual expone `projects`, `shoppers`, `_visitas`, `_posts`, `currentProjectId` y métodos como `visitas()`, `posts()`, `setVisitState()`, `assignVisit()`, `payVisits()`, `addShopper` y `updateShopper` para persistir cambios.
 - El adapter inicial solo lee `projects`, `shoppers`, `visits` y `postulations`.
 - Finanzas generadas desde `CX.finStore` aún no quedan persistidas por el adapter.
 - Si aparece problema de asincronía en módulos, debe documentarse y no parchar `/app/modules` dentro del PR backend.
@@ -232,21 +232,68 @@ Advertencia observada:
 
 Claude puede revisar esa función en una limpieza posterior de reglas, sin cambiar permisos funcionales sin revisar la matriz.
 
+### 1.12. Preview local controlado adapter Firebase DEV — 2026-06-28
+
+Paula autorizó y ejecutó preview local controlado del adapter Firebase DEV con:
+
+```text
+http://127.0.0.1:5177/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV
+```
+
+Resultado documentado:
+
+- `RESULTADO-PREVIEW-CONTROLADO-ADAPTER-DEV.md`
+- `RESUMEN-PARA-CLAUDE-ADDENDUM-20260628-PREVIEW-CONTROLADO-ADAPTER-DEV.md`
+- `PENDIENTES-PROTOTIPO.md`
+- `ESTADO-GATES-PR1.md`
+
+Resultado visible reportado:
+
+- El preview abrió correctamente.
+- Se mostró la insignia `Preview backend DEV`.
+- Administración / Coordinación cargó.
+- Portal del Cliente cargó.
+- Shopper / Evaluador cargó.
+- No se reportó pantalla en blanco.
+- No se reportaron datos reales.
+- Paula confirmó que todo funciona según prototipo y con datos ficticios del prototipo.
+
+Observación clave para Claude:
+
+- Paula observó los 3 proyectos ficticios del prototipo: `Proyecto Retail`, `Proyecto Banca` y `Proyecto Restaurantes`.
+- El seed Firestore DEV cargado tiene 1 cuenta, 1 proyecto, 4 shoppers, 8 visitas, 3 postulaciones y 1 cuestionario.
+- Por lo tanto, este gate valida que el preview no rompe la UI y no mezcla producción, pero todavía no debe interpretarse como validación final de render exclusivo desde Firestore DEV.
+- La validación headless del adapter contra Firestore DEV sí fue correcta antes de este gate.
+
+Pendientes reportados por Paula:
+
+- `Configuración` no funciona correctamente.
+- Hay módulos incompletos o pendientes de desarrollo.
+- Esos puntos pertenecen a Claude/prototipo/frontend; no deben parcharse desde el PR backend.
+
+Restricciones conservadas:
+
+- No se hizo deploy de Hosting.
+- No se hizo merge.
+- No se tocaron datos reales.
+- No se tocó producción.
+- No se modificó `/app/modules`.
+- No se activó `CX.BACKEND.enabled` principal.
+- Adapter global sigue desactivado.
+
 ### 2. Qué NO se pudo conectar y por qué
 
-- No se activó `CX.data` contra Firestore todavía. Falta cargar SDK en ambiente controlado, validar usuarios DEV/claims, ejecutar seed ficticio y probar adapter en DEV/preview.
+- No se activó `CX.data` global contra Firestore todavía. El preview local controlado abrió y no rompió la UI, pero la validación visual mostró datos ficticios del prototipo; falta repetir validación visual con datos Firestore DEV después de que Claude actualice/corrija la base del prototipo y confirme el punto único de conexión.
 - No se activó Storage porque Firebase solicita plan Blaze para Cloud Storage. Queda pendiente decisión de pago y diseño de reglas/rutas.
 - No se publicó Hosting DEV ni producción.
 - No se tocó `tya-plataforma.web.app`.
 - No se migraron datos reales.
-- No se crearon usuarios Auth DEV todavía.
-- No se asignaron claims todavía.
 - No se pidió ni cargó la base buena de la plataforma anterior.
 - No se creó persistencia financiera real.
 
 ### 3. Qué partes del frontend necesitan ajuste
 
-Ninguna por ahora dentro del PR backend. No se modificó `/app/modules` desde backend.
+No se modificó `/app/modules` desde backend.
 
 Pendientes importantes:
 
@@ -257,6 +304,9 @@ Pendientes importantes:
 - Revisar `app/index.html` al sincronizar para conservar el punto único de conexión backend.
 - Revisar asincronía de módulos cuando se active Firestore en DEV.
 - Revisar si finanzas consume `CX.finStore` como interfaz estable antes de crear adapter financiero.
+- Corregir `Configuración`, que Paula reportó como no funcional en el preview visual.
+- Completar módulos pendientes del prototipo/frontend, sin mezclar esa corrección con el PR backend.
+- Repetir validación visual del adapter DEV cuando la base frontend esté actualizada/corregida.
 
 ### 4. Errores o inconsistencias detectadas en el prototipo
 
@@ -264,6 +314,9 @@ Pendientes importantes:
 - El repo `paulaosoriof86/demoCXOrbia` sí contiene `/app/index.html`, `/app/core`, `/app/modules` y `/app/docs`, y se tomó como fuente del prototipo modular aprobado por instrucción de Paula.
 - Storage queda pendiente por Blaze; no usar Storage viejo como backend vivo.
 - PowerShell mostró archivos locales no versionados generados por emulador/validación: `firebase/emulator-rules/node_modules/` y `firebase/emulator-rules/package-lock.json`; no deben commitearse.
+- Durante preview visual del adapter DEV se observaron los 3 proyectos ficticios del prototipo, aunque el seed Firestore DEV cargado tiene 1 proyecto. Esto debe revisarse al reconciliar la base frontend y el punto único de conexión.
+- Paula reportó que `Configuración` no funciona correctamente.
+- Hay módulos incompletos pendientes de desarrollo por Claude/frontend.
 
 ### 5. Regla de oro vigente
 
