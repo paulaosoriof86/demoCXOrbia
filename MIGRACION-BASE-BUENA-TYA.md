@@ -2,36 +2,46 @@
 
 ## Objetivo
 
-Definir cuándo y cómo cargar la base de datos buena que viene de la plataforma anterior de T&A, sin conectar esa base como backend vivo y sin contaminar el producto comercializable CXOrbia.
+Definir cuándo y cómo cargar la base buena que viene de la plataforma anterior de T&A, sin conectar esa base como backend vivo y sin contaminar el producto comercializable CXOrbia.
 
 ## Estado actual
 
-Todavía NO corresponde cargar la base buena real.
+Ya corresponde preparar y validar localmente el export limpio de T&A.
 
-Razón:
+La carga operativa debe entrar por etapas:
 
-- El adapter Firestore está creado pero desactivado.
-- Las reglas Firestore deben validarse primero.
-- Falta crear usuarios DEV y claims de prueba.
-- Falta probar el seed piloto ficticio.
-- Storage está pendiente por Blaze.
-- Producción `tya-plataforma.web.app` no se toca.
+1. Validación local del export.
+2. Transformación local al modelo Firestore.
+3. Carga piloto DEV limitada.
+4. Validación headless y visual.
+5. Carga ampliada por lotes solo si el piloto queda correcto.
 
-## Cuándo avisar a Paula para cargar la base buena
+No corresponde todavía:
 
-Avisar cuando se cumplan todos estos puntos:
+- Cargar toda la base completa sin piloto.
+- Activar adapter global.
+- Publicar Hosting.
+- Hacer merge.
+- Tocar producción.
+- Cargar archivos/evidencias.
 
-1. `firestore.rules` validadas en DEV por rol.
-2. Usuarios DEV creados con claims correctos.
-3. Tenant `tya` validado.
-4. Proyecto piloto `tya-piloto` cargado con datos ficticios.
-5. Adapter probado con `CX.BACKEND.enabled = true` solo en DEV o preview controlado.
-6. Dashboard, visitas, shoppers, postulaciones y beneficios renderizan con datos piloto.
-7. No hay errores de asincronía en módulos.
-8. Se documentaron pendientes en `PENDIENTES-PROTOTIPO.md`.
-9. Paula autoriza explícitamente iniciar export limpio de la plataforma anterior.
+## Gates ya completados
 
-Hasta que esos puntos estén cumplidos, NO cargar base real.
+- `firestore.rules` publicadas en Firebase DEV.
+- Usuarios DEV ficticios importados.
+- Claims/customAttributes DEV validados.
+- Tenant `tya` validado con estructura tenant > cuenta > proyecto > visita.
+- Seed ficticio T&A validado en dry-run.
+- Seed ficticio T&A cargado en Firestore DEV.
+- Lectura del seed validada.
+- Adapter headless validado contra Firestore DEV.
+- Preview local controlado abrió sin romper UI ni mezclar producción.
+
+## Advertencia antes de carga operativa
+
+El preview visual controlado mostró los 3 proyectos ficticios del prototipo, no exclusivamente el seed Firestore DEV de 1 proyecto.
+
+Por eso la carga debe iniciar con piloto DEV controlado y validación de conteos, no con carga total.
 
 ## Qué debe traer el export limpio
 
@@ -53,7 +63,7 @@ notificaciones
 usuarios
 ```
 
-Además debe incluir:
+Además debe incluir, si existen:
 
 ```text
 PROBLEMAS_DETECTADOS
@@ -65,7 +75,7 @@ METADATA_EXPORT
 
 1. No inventar datos.
 2. No corregir manualmente dentro del export original.
-3. No mezclar datos demo con datos reales.
+3. No mezclar datos demo con datos operativos.
 4. No conectar directo a la base anterior.
 5. Mantener una copia intacta del JSON original.
 6. Crear una copia transformada para Firestore.
@@ -78,13 +88,13 @@ METADATA_EXPORT
 
 | Entidad | Llave sugerida |
 |---|---|
-| Shopper | email normalizado o teléfono normalizado + país |
+| Shopper | identificador normalizado |
 | Visita | proyecto + sucursal + país + quincena + escenario + fecha/rango |
 | Postulación | visitaId + shopperId |
 | Cuestionario marcado | visitaId + shopperId + fecha |
 | Certificación | shopperId + proyectoId + versión |
 | Liquidación | visitaId + shopperId + loteId |
-| Usuario | email normalizado |
+| Usuario | identificador normalizado |
 
 ## Orden de migración recomendado
 
@@ -99,36 +109,54 @@ METADATA_EXPORT
 9. Carga ampliada por lotes.
 10. Validación final contra totales de origen.
 
-## Primer piloto con base buena
+## Herramientas locales preparadas
 
-Cuando llegue el momento, el primer piloto real debe limitarse a:
+Las herramientas quedan en `firebase/client-write-tools/` y operan con archivos locales ignorados por Git.
 
-- 1 proyecto real de T&A.
-- 10 shoppers reales o anonimizados según autorización.
+Validador local:
+
+```text
+validate-tya-real-export.mjs
+```
+
+Transformador local:
+
+```text
+transform-tya-real-export.mjs
+```
+
+Cargador piloto DEV:
+
+```text
+load-tya-real-pilot-firestore-dev-sdk.mjs
+```
+
+El archivo de entrada no debe subirse al repo. Debe guardarse localmente en:
+
+```text
+firebase/private-input/tya-export-real.json
+```
+
+Los reportes y transformaciones quedan localmente en:
+
+```text
+firebase/private-output/
+```
+
+## Primer piloto
+
+El primer piloto debe limitarse a:
+
+- 1 proyecto de T&A.
 - 20 visitas máximo.
-- Sin evidencias pesadas.
-- Sin datos bancarios reales, salvo que ya esté definido cifrado.
-- Sin NDA ni documentos privados hasta activar Storage y reglas privadas.
-
-## Datos sensibles
-
-No cargar en claro:
-
-- datos bancarios
-- documentos personales
-- NDA
-- evidencias privadas
-- teléfonos/correos si el entorno no está asegurado
-
-Estos campos deben cifrarse, omitirse o mantenerse fuera del piloto hasta tener la capa segura.
+- Shoppers asociados a esas visitas.
+- Sin archivos/evidencias.
+- Sin campos privados no necesarios para la validación operativa.
 
 ## Señal para Paula
 
-Cuando estemos listos, el aviso debe decir:
+La señal actual es:
 
 ```text
-Paula, ya estamos listas para pedir/cargar el export limpio de la base buena de T&A.
-Debe venir en JSON UTF-8, sin datos demo mezclados, y primero lo cargaremos como piloto controlado.
+Paula, ya podemos pedir/usar el export limpio de T&A para validación local y piloto DEV. Debe venir en JSON UTF-8 sin BOM, sin datos demo mezclados. Primero se validará localmente y luego se cargará solo un piloto controlado si lo autorizas expresamente.
 ```
-
-Antes de esa señal, continuar solo con preparación, validación y documentación.
