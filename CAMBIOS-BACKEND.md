@@ -251,3 +251,51 @@ Alcance:
 - No publicar Hosting.
 - No tocar producción.
 - No modificar `/app/modules`.
+
+## 2026-06-28 — Preview local controlado adapter Firebase DEV
+
+Autorización ejecutada:
+
+```text
+Paula autorizó probar el preview local controlado del adapter Firebase DEV, sin deploy de Hosting, sin merge, sin datos reales, sin modificar /app/modules y sin tocar producción.
+```
+
+Archivos creados/documentados:
+
+- `RESULTADO-PREVIEW-CONTROLADO-ADAPTER-DEV.md`: resultado de la revisión visual local del preview.
+- `RESUMEN-PARA-CLAUDE-ADDENDUM-20260628-PREVIEW-CONTROLADO-ADAPTER-DEV.md`: addendum de continuidad para Claude.
+- `PENDIENTES-PROTOTIPO.md`: actualizado con pendientes detectados en `Configuración`, módulos incompletos y observación de datos ficticios del prototipo.
+- `ESTADO-GATES-PR1.md`: actualizado para marcar preview local adapter DEV como completado visual controlado, manteniendo adapter global bloqueado.
+
+Resultado observado por Paula:
+
+- El preview local abrió correctamente en `http://127.0.0.1:5177/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV`.
+- Se mostró la insignia `Preview backend DEV`.
+- Administración / Coordinación cargó.
+- Portal del Cliente cargó.
+- Shopper / Evaluador cargó.
+- No se reportó pantalla en blanco.
+- No se reportaron datos reales.
+- Se visualizaron los 3 proyectos ficticios del prototipo: `Proyecto Retail`, `Proyecto Banca` y `Proyecto Restaurantes`.
+
+Observación técnica:
+
+- El seed Firestore DEV validado/cargado contiene 1 cuenta, 1 proyecto, 4 shoppers, 8 visitas, 3 postulaciones y 1 cuestionario.
+- En la revisión visual se observaron datos ficticios del prototipo, no exclusivamente el seed Firestore DEV.
+- Este gate confirma que el preview controlado no rompe la UI ni mezcla producción, pero todavía no valida render visual exclusivo desde Firestore DEV.
+
+Impacto:
+
+- No se hizo deploy de Hosting.
+- No se hizo merge.
+- No se tocaron datos reales.
+- No se tocó producción.
+- No se modificó `/app/modules`.
+- No se activó `CX.BACKEND.enabled` principal.
+- Adapter global sigue desactivado.
+
+Pendiente/riesgo:
+
+- `Configuración` no funciona correctamente según reporte visual de Paula.
+- Hay módulos incompletos pendientes de desarrollo por Claude/frontend.
+- Antes de pedir/cargar base buena T&A, se debe actualizar/corregir prototipo, confirmar base frontend y repetir validación visual con datos Firestore DEV.
