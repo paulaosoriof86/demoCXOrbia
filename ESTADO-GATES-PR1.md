@@ -18,7 +18,9 @@ Auth DEV ficticio: completado
 Jerarquía tenant/cuenta/proyecto: aclarada y documentada
 Seed ficticio dry-run: completado
 Seed ficticio carga Firestore: completado DEV
-Adapter: preparado, desactivado
+Adapter headless DEV: validado
+Preview local adapter DEV: completado visual controlado
+Adapter global: desactivado
 ```
 
 ## Matriz de gates
@@ -33,9 +35,11 @@ Adapter: preparado, desactivado
 | Jerarquía tenant/cuenta/proyecto | completado documental | ChatGPT | Tenant=consultora, cuenta=cliente final, proyecto=campaña/ronda |
 | Seed ficticio dry-run | completado | Paula/ChatGPT | Validaciones OK; 19 rutas simuladas |
 | Seed ficticio carga Firestore | completado DEV | Paula/ChatGPT | 19 escrituras completadas por Firebase Web SDK |
-| Adapter DEV | bloqueado | Paula autoriza | Sigue desactivado |
+| Adapter headless DEV | completado DEV | Paula/ChatGPT | Validado contra Firestore DEV |
+| Preview local adapter DEV | completado visual controlado | Paula/ChatGPT | UI no se rompió; mostró datos ficticios del prototipo |
+| Adapter global | bloqueado | Paula autoriza | `CX.BACKEND.enabled` principal sigue en `false` |
 | Storage | bloqueado | Paula | Pendiente Blaze y reglas |
-| Base buena T&A | bloqueado | Paula autoriza | Después de adapter validado |
+| Base buena T&A | bloqueado | Paula autoriza | Después de adapter validado visualmente con base frontend actualizada |
 | Producción T&A | bloqueado | Paula autoriza | No tocar |
 
 ## Gate completado — Firestore rules DEV
@@ -136,6 +140,48 @@ No se hizo merge.
 No se tocó producción.
 ```
 
+## Gate completado — preview local controlado adapter DEV
+
+Resultado reportado por Paula:
+
+```text
+Preview local abrió correctamente.
+Insignia visible: Preview backend DEV.
+Administración / Coordinación carga.
+Portal del Cliente carga.
+Shopper / Evaluador carga.
+No se reportaron datos reales.
+No se reportó pantalla en blanco.
+```
+
+Observación clave:
+
+```text
+La UI mostró los 3 proyectos ficticios del prototipo, no únicamente el seed Firestore DEV de 1 proyecto.
+```
+
+Interpretación:
+
+- Gate visual completado para confirmar que el preview controlado no rompe la UI.
+- No es todavía validación final de render exclusivo desde seed Firestore DEV.
+- Repetir validación visual después de que Claude actualice/corrija la base del prototipo y se confirme el punto único de conexión.
+
+Documentación:
+
+- `RESULTADO-PREVIEW-CONTROLADO-ADAPTER-DEV.md`
+- `RESUMEN-PARA-CLAUDE-ADDENDUM-20260628-PREVIEW-CONTROLADO-ADAPTER-DEV.md`
+
+Confirmaciones:
+
+```text
+No se hizo deploy de Hosting.
+No se hizo merge.
+No se tocaron datos reales.
+No se tocó producción.
+No se modificó /app/modules.
+CX.BACKEND.enabled principal sigue en false.
+```
+
 ## Advertencia pendiente
 
 ```text
@@ -150,7 +196,7 @@ No bloqueó la publicación. Revisar luego sin cambiar permisos funcionales.
 no sincronizar automáticamente con main
 no mergear PR #1
 no desplegar Hosting
-no activar Firestore adapter
+no activar Firestore adapter global
 no pedir base buena real
 no tocar producción
 ```
@@ -161,4 +207,4 @@ Solo documentación, revisión de archivos y preparación de planes.
 
 ## Próximo avance que sí requiere autorización
 
-Cualquier deploy de Hosting, activación del adapter, Storage, base real o producción.
+Cualquier deploy de Hosting, activación global del adapter, Storage, base real o producción.
