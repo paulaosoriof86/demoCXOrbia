@@ -23,15 +23,25 @@ window.CX = window.CX || {};
     return;
   }
 
+  function safePreviewEmail(){
+    const raw = (params.get('cxPreviewEmail') || '').trim();
+    if(!raw) return 'admin.tya.dev@cxorbia-dev.example.com';
+    if(!/^[^@\s]+@cxorbia-dev\.example\.com$/.test(raw)){
+      console.warn('[CX.backend-preview] Email preview ignorado por dominio no permitido.');
+      return 'admin.tya.dev@cxorbia-dev.example.com';
+    }
+    return raw;
+  }
+
   CX.BACKEND = Object.assign(CX.BACKEND || {}, {
     enabled: true,
     previewMode: true,
-    defaultProjectId: (new URLSearchParams(window.location.search || '')).get('cxProjectId') || 'r1',
+    defaultProjectId: params.get('cxProjectId') || null,
     devPreviewAuth: {
       enabled: true,
-      email: 'preview.r1.20260629081716@cxorbia-dev.example.com',
+      email: safePreviewEmail(),
       passwordStorageKey: 'CXORBIA_DEV_PASSWORD',
-      allowPrompt: false,
+      allowPrompt: true,
     },
   });
 
