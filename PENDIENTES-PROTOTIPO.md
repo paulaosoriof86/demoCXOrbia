@@ -91,3 +91,53 @@ Lista viva de pendientes detectados durante backend/migración. No modificar UI 
 - Estado: pipeline preparado; falta export limpio local.
 - Detalle: se crearon herramientas para validar, transformar y cargar un piloto DEV desde `firebase/private-input/tya-export-real.json` hacia `firebase/private-output/` y Firestore DEV.
 - Acción sugerida: ejecutar primero validación local. La carga piloto DEV requiere autorización expresa separada. La carga total sigue bloqueada hasta validar piloto.
+
+## 2026-06-30 — Revisión prototipo V55
+
+### P0 — Acciones operativas persistibles
+
+- Estado: pendiente frontend/backend por contrato.
+- Detalle: V55 refuerza que aprobar, rechazar, reprogramar, reasignar, pagar lote, marcar realizada, marcar cuestionario, asignar responsable y cerrar soporte no deben quedar como toasts o cambios locales dispersos.
+- Acción sugerida: Claude debe preparar UI con punto central futuro `CX.data.performOperationAction(...)`; ChatGPT backend ya tiene scaffold `app/core/backend-operational-actions.js` y debe conectarlo solo en preview DEV cuando corresponda.
+
+### P0 — IA real no hardcodeada
+
+- Estado: parcialmente preparado en frontend V55; pendiente backend seguro.
+- Detalle: V55 usa `CX.ai.ask(prompt, opts)` y proveedores Gemini/OpenAI/Anthropic/custom. El backend debe evitar exponer keys privadas en frontend.
+- Acción sugerida: mantener estados honestos si no hay key/backend. No prometer análisis real si solo hay heurística local.
+
+### P0 — Mis Visitas / Mis Beneficios por `shopperId`
+
+- Estado: resuelto en prototipo V55, pendiente de validación con Firestore DEV.
+- Detalle: V55 filtra por shopper autenticado. La migración debe garantizar `shopperId` canónico en visitas, beneficios y liquidaciones.
+- Acción sugerida: después de cargar `shopperBenefits`, validar lectura por shopper y confirmar que no hay fallback global.
+
+### P0 — Finanzas profundo
+
+- Estado: parcialmente preparado; pendiente backend por fases.
+- Detalle: V55 exige CxC/CxP editables, beneficios separados de lotes, movimientos reales, conciliación y reembolsos cliente/franquicia.
+- Acción sugerida: no mezclar pago real con beneficio calculado. Cargar primero `shopperBenefits` calculados y luego validar lotes/movimientos en un gate separado.
+
+### P0 — Clientes vs Cuentas CRM
+
+- Estado: pendiente de consolidación.
+- Detalle: V55 enlaza propuestas, proyectos y tareas a la ficha CRM, pero backend debe evitar duplicar cliente/cuenta/proyecto.
+- Acción sugerida: modelar `accounts/clients`, `contacts`, `proposals`, `crmTasks` y timeline por tenant antes de activar persistencia real.
+
+### P1 — Academia, manuales y recursos
+
+- Estado: V55 agrega `manuales-data.js`, manuales pantalla completa y recursos del proyecto.
+- Detalle: requiere Storage para archivos pesados y Firestore para manuales, cursos, progreso y evidencia de lectura.
+- Acción sugerida: no conectar archivos a Storage viejo; esperar diseño de Storage DEV.
+
+### P1 — White-label / PWA
+
+- Estado: V55 mejora logo, favicon, banderas, `sw.js` y PWA.
+- Detalle: para producción real, logo/favicon deben persistir en Storage o en una URL segura por tenant.
+- Acción sugerida: backend debe persistir `brand.logo`, `brand.countries[]`, tema y assets por tenant.
+
+### P1 — Scope por país para coordinador/aliado
+
+- Estado: roles existen en V55; filtrado real pendiente.
+- Detalle: coordinador/aliado deben ver solo país(es) autorizados.
+- Acción sugerida: preparar claims/campos `countryScope[]` y reglas Firestore antes de crear estos usuarios reales.
