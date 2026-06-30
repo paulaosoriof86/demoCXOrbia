@@ -129,6 +129,16 @@ service cloud.firestore {
         allow update, delete: if false;
       }
 
+      match /shopperBenefits/{benefitId} {
+        allow read: if tenantAllowed(tenantId) && (
+          isAdmin() ||
+          isOps() ||
+          isOwnResource()
+        );
+        allow create, update: if tenantAllowed(tenantId) && isAdmin();
+        allow delete: if tenantAllowed(tenantId) && isAdmin();
+      }
+
       match /projects/{projectId} {
         allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
         allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
