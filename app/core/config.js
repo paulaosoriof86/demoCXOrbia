@@ -44,6 +44,26 @@ CX.THEMES = {
     colors:{ brand:'#7c3aed', brandDark:'#5b21b6', brandMid:'#a78bfa', brandLight:'#f3eeff',
              navy:'#1e1530', navy2:'#2a1f42', accent:'#ec4899' },
   },
+  grisOscuro: {
+    label: 'Corporativo gris oscuro', font: "'Manrope', system-ui, sans-serif", railStyle:'graydark',
+    colors:{ brand:'#2196d3', brandDark:'#1565a8', brandMid:'#4ab4e6', brandLight:'#e8f4fd',
+             navy:'#2b2f36', navy2:'#363b44', accent:'#c8232c' },
+  },
+  grisClaro: {
+    label: 'Corporativo gris claro', font: "'Manrope', system-ui, sans-serif", railStyle:'graylight',
+    colors:{ brand:'#2196d3', brandDark:'#1565a8', brandMid:'#4ab4e6', brandLight:'#e8f4fd',
+             navy:'#e4e7ec', navy2:'#d8dce3', accent:'#c8232c' },
+  },
+  indigo: {
+    label: 'Índigo (consultoría)', font: "'Manrope', system-ui, sans-serif", railStyle:'dark',
+    colors:{ brand:'#4f46e5', brandDark:'#3730a3', brandMid:'#818cf8', brandLight:'#eef0ff',
+             navy:'#161a36', navy2:'#1f244a', accent:'#f59e0b' },
+  },
+  teal: {
+    label: 'Teal (salud/servicios)', font: "'Manrope', system-ui, sans-serif", railStyle:'dark',
+    colors:{ brand:'#0d9488', brandDark:'#0a6e66', brandMid:'#2dd4bf', brandLight:'#e0f5f2',
+             navy:'#0c2522', navy2:'#123733', accent:'#f97316' },
+  },
 };
 
 /* Aplica un tema completo (colores + tipografía + estilo de sidebar) */
@@ -117,7 +137,7 @@ CX.MODULES = {
   shoppers:      { icon:'👥', label:'Shoppers',             roles:['admin'],           status:'ready' },
   miperfil:      { icon:'👤', label:'Mi Perfil',            roles:['shopper'],         status:'ready' },
   rutas:         { icon:'🗺️', label:'Hojas de Ruta',        roles:['admin'],           status:'ready' },
-  documentos:    { icon:'📎', label:'Documentos',           roles:['admin','shopper'], status:'ready' },
+  documentos:    { icon:'📎', label:'Recursos del proyecto', roles:['admin','shopper'], status:'ready' },
   aprendizaje:   { icon:'📚', label:'Academia',          roles:['admin','shopper'], status:'ready' },
   cert:          { icon:'🏆', label:'Certificación',        roles:['admin','shopper'], status:'ready' },
   tablon:        { icon:'📢', label:'Tablón / Novedades',   roles:['admin','shopper'], badgeNotif:true, status:'ready' },

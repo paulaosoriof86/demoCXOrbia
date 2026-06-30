@@ -796,10 +796,16 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           <button class="btn btn-sm btn-pr" data-lt="texto">Texto</button>
           <button class="btn btn-sm btn-ghost" data-lt="video">🎥 Video</button>
           <button class="btn btn-sm btn-ghost" data-lt="imagen">🖼 Imagen</button>
+          <button class="btn btn-sm btn-ghost" data-lt="doc">📄 Documento</button>
           <button class="btn btn-sm btn-ghost" data-lt="quiz">❓ Quiz</button>
         </div>
         <label class="lbl">Título</label><input class="inp" id="nlT" placeholder="Título" style="margin-bottom:8px">
         <label class="lbl">Icono</label><input class="inp" id="nlI" value="📘" style="max-width:80px;margin-bottom:10px">
+        <div id="lt-doc" style="display:none">
+          <label class="lbl">Documento (PDF/imagen) — se embebe inline para lectura</label>
+          <input type="file" class="inp" id="nlDF" accept="application/pdf,image/*" style="padding:7px;margin-bottom:6px">
+          <div id="nlDP" style="font-size:11px;color:var(--t3)"></div>
+        </div>
         <div id="lt-texto">
           <div class="flex" style="justify-content:space-between;margin-bottom:5px">
             <label class="lbl" style="margin:0">Contenido</label>
@@ -832,8 +838,9 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         ov.querySelectorAll('[data-lt]').forEach(b=>b.addEventListener('click',()=>{
           lsnType=b.dataset.lt;
           ov.querySelectorAll('[data-lt]').forEach(x=>x.className='btn btn-sm '+(x===b?'btn-pr':'btn-ghost'));
-          ['texto','video','imagen','quiz'].forEach(t=>{const el=ov.querySelector('#lt-'+t);if(el)el.style.display=t===lsnType?'block':'none';});
+          ['texto','video','imagen','doc','quiz'].forEach(t=>{const el=ov.querySelector('#lt-'+t);if(el)el.style.display=t===lsnType?'block':'none';});
         }));
+        ov.querySelector('#nlDF')?.addEventListener('change',e=>{const f=e.target.files[0];if(f){const r=new FileReader();r.onload=ev=>{ov.querySelector('#nlDP').dataset.src=ev.target.result;ov.querySelector('#nlDP').dataset.pdf=(f.type==='application/pdf')?'1':'';ov.querySelector('#nlDP').textContent='📎 '+f.name+' · se embeberá inline';};r.readAsDataURL(f);}});
         ov.querySelector('#nlAI')?.addEventListener('click',()=>{
           const box=ov.querySelector('#nlC'),title=ov.querySelector('#nlT').value||'lección';
           box.placeholder='Generando…';
@@ -854,6 +861,10 @@ CX.module('aprendizaje', ({data,role,ui})=>{
             if(upl)content='<div class="acad-video"><video src="'+upl+'" controls style="width:100%;aspect-ratio:16/9;border-radius:10px"></video></div>';
             else{const src=u?u.includes('embed')?u:u.replace('watch?v=','embed/').replace('youtu.be/','www.youtube-nocookie.com/embed/'):u;content=src?'<div class="acad-video"><iframe src="'+src+'" style="width:100%;aspect-ratio:16/9;border:none;border-radius:10px" allowfullscreen></iframe></div>':'';}}
           else if(lsnType==='imagen'){const upl=ov.querySelector('#nlIP')?.dataset.src;const u=ov.querySelector('#nlIU').value;content=(upl||u)?'<img src="'+(upl||u)+'" style="max-width:100%;border-radius:10px">':'';}
+          else if(lsnType==='doc'){const src=ov.querySelector('#nlDP')?.dataset.src;const isPdf=ov.querySelector('#nlDP')?.dataset.pdf;tipo='texto';
+            if(src&&isPdf)content='<iframe src="'+src+'" style="width:100%;height:70vh;border:0;border-radius:10px"></iframe>';
+            else if(src)content='<img src="'+src+'" style="max-width:100%;border-radius:10px">';
+            else content='<p>Documento por adjuntar.</p>';}
           else if(lsnType==='quiz'){tipo='quiz';content=ov.querySelector('#nlQD').value;}
           CX.acadData.addLesson(rr,course.id,{n:t,ic:ov.querySelector('#nlI').value||'📘',tipo,content});
           close();lessonPlayer(course);ui.toast('Lección añadida','ok');
@@ -966,6 +977,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
   };
 
   const readManual=(mid)=>{
+    const m=(CX.manualesData.all()).find(x=>x.id===mid); if(!m)return;
     let secIdx=0;
     const render=()=>{
       const sec=m.secciones[secIdx]||{t:'',html:''};

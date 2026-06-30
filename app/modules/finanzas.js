@@ -310,10 +310,11 @@ CX.module('movimientos', ({data,ui})=>{
     if(af)af.addEventListener('click',()=>ui.modal('Registrar financiamiento',`
       <p style="font-size:12px;color:var(--t2);margin-bottom:10px">Entra como <b>flujo</b> (no ingreso operativo) y como CxP hasta devolverse.</p>
       <div class="grid g2" style="gap:10px 12px"><div style="grid-column:1/3"><label class="lbl">Fuente</label><input class="inp" id="fnF" placeholder="Banco / socio / casa matriz"></div>
+      <div style="grid-column:1/3"><label class="lbl">Concepto / destino</label><input class="inp" id="fnC" placeholder="Ej. capital de trabajo, anticipo de nómina"></div>
       <div><label class="lbl">Monto (${cur})</label><input class="inp" id="fnM" type="number"></div>
       <div><label class="lbl">País</label><select class="sel" id="fnP">${p.countries.map(c=>`<option>${c}</option>`).join('')}</select></div></div>
       <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="fnSave">Registrar</button></div>
-    `,{onMount:(ov,close)=>{ov.querySelector('#fnSave').addEventListener('click',()=>{CX.finStore.addFinanciamiento(p.id,{fuente:(ov.querySelector('#fnF').value||'').trim(),monto:+ov.querySelector('#fnM').value||0,pais:ov.querySelector('#fnP').value});close();draw();ui.toast('Financiamiento registrado · flujo + CxP (no operativo)','ok',3600);});}}));
+    `,{onMount:(ov,close)=>{ov.querySelector('#fnSave').addEventListener('click',()=>{CX.finStore.addFinanciamiento(p.id,{fuente:(ov.querySelector('#fnF').value||'').trim(),concepto:(ov.querySelector('#fnC').value||'').trim(),monto:+ov.querySelector('#fnM').value||0,pais:ov.querySelector('#fnP').value});close();draw();ui.toast('Financiamiento registrado · flujo + CxP (no operativo)','ok',3600);});}}));
     host.querySelectorAll('[data-delm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.delMov(pid(),b.dataset.delm);draw();ui.toast('Movimiento eliminado','');}));
     host.querySelectorAll('[data-cxdet]').forEach(el=>el.addEventListener('click',()=>{
       const [kind,id]=el.dataset.cxdet.split(':');

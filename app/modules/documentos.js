@@ -70,8 +70,20 @@ CX.module('documentos', ({data,role,ui})=>{
         <div style="grid-column:1/3"><label class="lbl">Reemplazar archivo (PDF/imagen/video)</label><input type="file" class="inp" id="edFile" accept="application/pdf,image/*,video/*" style="padding:7px">${d.url&&/^data:/.test(d.url)?'<div style="font-size:11px;color:var(--t3);margin-top:3px">📎 Archivo actual cargado · sube uno nuevo para reemplazar</div>':''}</div>
         <div style="grid-column:1/3"><label class="lbl">URL de video (YouTube/Vimeo, opcional)</label><input class="inp" id="edUrl" value="${(d.url&&/^https?:/.test(d.url))?d.url.replace(/"/g,'&quot;'):''}" placeholder="https://youtube.com/…"></div>
         <div style="grid-column:1/3"><label class="lbl">Contenido / texto (Markdown)</label><textarea class="inp" id="edBody" rows="4">${d.body||''}</textarea></div></div>
-        <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="edSave">Guardar</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#edSave').addEventListener('click',()=>{
+        <div class="between" style="margin-top:12px"><button class="btn btn-soft btn-sm" id="edIA">✨ Mejorar/generar con IA</button><button class="btn btn-pr btn-sm" id="edSave">Guardar</button></div>
+      `,{onMount:(ov,close)=>{
+        ov.querySelector('#edIA').addEventListener('click',()=>{
+          const base=ov.querySelector('#edBody').value.trim();
+          if(!(CX.ai&&CX.ai.ready())){ui.toast('Configura un proveedor de IA en Integraciones','warn',3500);return;}
+          ui.modal('✨ Generar/mejorar con IA',`<label class="lbl">Instrucción (qué generar o cómo mejorar)</label><textarea class="inp" id="iaInstr" rows="3" placeholder="Ej. amplía con ejemplos / redacta un instructivo a partir de estos puntos / resume"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-green btn-sm" id="iaGo">Generar</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#iaGo').addEventListener('click',()=>{
+            const instr=(o2.querySelector('#iaInstr').value||'').trim();if(!instr){ui.toast('Escribe la instrucción','warn');return;}
+            ui.toast('Generando con '+CX.ai.cfg().model+'…','',2500);
+            CX.ai.ask('Eres editor de documentos de mystery shopping. '+instr+'. Devuelve en Markdown.\n\nContenido base:\n'+(base||'(vacío)'))
+              .then(res=>{ov.querySelector('#edBody').value=res;c2();ui.toast('Contenido generado · revisa, itera o guarda','ok',3500);})
+              .catch(e=>{c2();ui.toast('Error IA: '+e.message,'warn');});
+          })});
+        });
+        ov.querySelector('#edSave').addEventListener('click',()=>{
         d.n=ov.querySelector('#edN').value.trim()||d.n;d.ic=ov.querySelector('#edIc').value||d.ic;
         const u=ov.querySelector('#edUrl').value.trim();if(u){d.url=CX.learnStore?CX.learnStore.embedUrl(u):u.replace('youtube.com/watch?v=','youtube-nocookie.com/embed/');d.tipo='video';d.ic=d.ic||'🎬';}
         d.body=ov.querySelector('#edBody').value;

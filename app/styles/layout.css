@@ -161,6 +161,23 @@ body.role-shopper .ph-t{font-size:22px}
 [data-rail="light"] .rail-logout{background:var(--red-bg);border-color:rgba(200,35,44,.2);color:var(--red)}
 [data-rail="light"] .rail-logout:hover{background:#fbd0d2}
 
+/* ---------- Tema sidebar GRIS OSCURO (letras blancas) ---------- */
+[data-rail="graydark"] .rail{background:#2b2f36;color:#fff;border-right:1px solid #3a4049}
+[data-rail="graydark"] .brand-name{color:#fff}
+[data-rail="graydark"] .nav-sec{color:rgba(255,255,255,.5)}
+[data-rail="graydark"] .nav-i{color:rgba(255,255,255,.85)}
+[data-rail="graydark"] .nav-i:hover{background:rgba(255,255,255,.08);color:#fff}
+[data-rail="graydark"] .nav-i.active{background:var(--brand);color:#fff;font-weight:700}
+
+/* ---------- Tema sidebar GRIS CLARO (letras negras) ---------- */
+[data-rail="graylight"] .rail{background:#e4e7ec;color:var(--t1);border-right:1px solid #cfd4dc}
+[data-rail="graylight"] .brand-name{color:var(--t1)}
+[data-rail="graylight"] .nav-sec{color:var(--t3)}
+[data-rail="graylight"] .nav-i{color:var(--t2)}
+[data-rail="graylight"] .nav-i:hover{background:rgba(0,0,0,.05);color:var(--t1)}
+[data-rail="graylight"] .nav-i.active{background:#fff;color:var(--brand-dark);border-left:3px solid var(--brand);font-weight:700}
+[data-rail="graylight"] .rail-brand,[data-rail="graylight"] .rail-proj,[data-rail="graylight"] .rail-foot{border-color:#cfd4dc}
+
 /* Logo del cliente (imagen) en login y rail */
 .client-logo{max-height:46px;max-width:150px;object-fit:contain}
 .login-devfor{text-align:center;font-size:10.5px;color:var(--t3);margin-top:2px;letter-spacing:.2px}

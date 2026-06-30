@@ -292,11 +292,20 @@ CX.module('informes', ({data,ui})=>{
     host.querySelectorAll('[data-dl]').forEach(b=>b.addEventListener('click',()=>ui.toast('Descargando: '+(reportes[b.dataset.dl]||['reporte'])[0],'ok')));
     host.querySelector('#newCustom')?.addEventListener('click',()=>{
       const b=Object.entries(reportes).map(([id,r])=>'<option value="'+id+'">'+r[0]+'</option>').join('');
-      ui.modal('＋ Nuevo reporte personalizado','<label class="lbl">Basado en</label><select class="sel" id="nrBase" style="margin-bottom:10px">'+b+'</select><label class="lbl">Nombre</label><input class="inp" id="nrNota" placeholder="Ej. Reporte dirección Q2" style="margin-bottom:12px"><div style="text-align:right"><button class="btn btn-pr btn-sm" id="nrSave">Crear</button></div>',
+      ui.modal('＋ Nuevo reporte personalizado','<label class="lbl">Basado en</label><select class="sel" id="nrBase" style="margin-bottom:10px">'+b+'</select><label class="lbl">Nombre</label><input class="inp" id="nrNota" placeholder="Ej. Reporte dirección Q2" style="margin-bottom:10px"><label class="lbl">O genera con IA (describe qué reporte necesitas)</label><textarea class="inp" id="nrIA" rows="2" placeholder="Ej. compara cumplimiento por país y destaca las 3 sucursales más débiles con recomendaciones" style="margin-bottom:12px"><\/textarea><div style="text-align:right"><button class="btn btn-pr btn-sm" id="nrSave">Crear</button></div>',
         {onMount:(ov,close)=>{ov.querySelector('#nrSave').addEventListener('click',()=>{
-          const arr=customRpts();
-          arr.push({id:'cr'+Date.now().toString(36),base:ov.querySelector('#nrBase').value,nota:ov.querySelector('#nrNota').value,fecha:new Date().toISOString().slice(0,10)});
-          saveCustomRpts(arr);close();draw();ui.toast('Reporte personalizado creado','ok');
+          const instr=(ov.querySelector('#nrIA').value||'').trim();
+          if(instr && CX.ai && CX.ai.ready()){
+            ui.toast('Generando reporte con '+CX.ai.cfg().model+'…','',2500);
+            const ctx='Datos del proyecto '+p.name+': cumplimiento '+Math.round(k.realizadas.t/Math.max(k.total.t,1)*100)+'%, '+rankSuc.length+' sucursales, ranking: '+rankSuc.slice(0,5).map(s=>s.suc+' '+s.pct+'%').join(', ')+'. Hallazgos: '+hallazgos.map(h=>h[0]).join(', ');
+            CX.ai.ask('Genera un reporte ejecutivo de mystery shopping en HTML (usa <h3>, <p>, <ul>, <table class="tbl"> si aplica). '+instr+'\n\n'+ctx)
+              .then(res=>{const arr=customRpts();arr.push({id:'cr'+Date.now().toString(36),base:ov.querySelector('#nrBase').value,nota:ov.querySelector('#nrNota').value||'Reporte IA',iaHtml:res,fecha:new Date().toISOString().slice(0,10)});saveCustomRpts(arr);close();draw();ui.toast('Reporte IA creado · revísalo e itera','ok',3500);})
+              .catch(e=>{close();ui.toast('Error IA: '+e.message,'warn');});
+          } else {
+            const arr=customRpts();
+            arr.push({id:'cr'+Date.now().toString(36),base:ov.querySelector('#nrBase').value,nota:ov.querySelector('#nrNota').value,fecha:new Date().toISOString().slice(0,10)});
+            saveCustomRpts(arr);close();draw();ui.toast(instr?'Configura IA en Integraciones para generar · creado base':'Reporte personalizado creado','ok');
+          }
         });}});
     });
     host.querySelectorAll('#infKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=drills[el.dataset.k];ui.modal(d[0],d[1]);}));

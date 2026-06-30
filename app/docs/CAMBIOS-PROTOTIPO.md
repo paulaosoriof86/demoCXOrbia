@@ -179,6 +179,41 @@
 
 ---
 
+### 22. FIX crítico manuales + temas grises + más paletas
+- **ARCHIVOS:** `app/modules/academia.js` (bug `const m=`), `app/core/config.js` (label menú + 4 temas nuevos), `app/styles/layout.css` (rail gris)
+- **QUÉ CAMBIÓ:**
+  - 🔴 FIX CRÍTICO: los manuales no abrían porque al insertar `crearManual` se borró la línea `const m=(CX.manualesData.all()).find(...)` de `readManual` → `m` quedaba indefinido. Restaurada. Verificado con clic real: el Manual Maestro abre a pantalla completa.
+  - Menú "Documentos" → "Recursos del proyecto".
+  - 4 temas nuevos: Corporativo gris oscuro (letras blancas), Corporativo gris claro (letras negras), Índigo, Teal. Tipografía ya seleccionable en Identidad de Marca (10 fuentes).
+- **CÓMO APLICARLO A TyA:** Reemplazar `readManual` en academia.js, `CX.THEMES`+label en config.js, y agregar los bloques `[data-rail="graydark"]`/`[data-rail="graylight"]` en layout.css.
+
+---
+
+### 23. Recursos + Academia: embebido inline completo
+- **ARCHIVOS:** `app/modules/documentos.js` (IA en edición), `app/modules/academia.js` (tipo lección "documento")
+- **QUÉ CAMBIÓ:**
+  - #195: editar un recurso ahora permite "✨ Mejorar/generar con IA" dentro de la ficha (instrucción + CX.ai.ask, iterable). Los recursos subidos ya se embeben inline (PDF/imagen/video) en el visor a pantalla completa.
+  - #196: nueva lección tipo "📄 Documento" — sube PDF/imagen y se embebe inline en la lección (iframe PDF / img), igual que en Recursos.
+- **CÓMO APLICARLO A TyA:** Añadir el botón edIA en documentos.js y el tipo "doc" en el modal de nueva lección de academia.js.
+
+---
+
+### 24. Importador: iterar/refinar el análisis con IA
+- **ARCHIVO:** `app/modules/importador.js`
+- **QUÉ CAMBIÓ:** #192 — en el preview del análisis IA, botón "✏️ Iterar/refinar": el usuario da una instrucción (corregir mapeo de columnas, separar entidades, normalizar fechas, excluir filas) y reanaliza con CX.ai.ask respetando el ajuste. Antes el análisis era un solo paso sin corrección.
+- **CÓMO APLICARLO A TyA:** Añadir el botón aiIter en el step 2 de drawAI en importador.js.
+
+---
+
+### 25. Finanzas pago por shopper + cuestionario interno sincroniza estado
+- **ARCHIVOS:** `app/core/data.js` (payVisits), `app/modules/cuestionario-shopper.js`
+- **QUÉ CAMBIÓ:**
+  - #168 (parte): pago de lote genera un movimiento de egreso POR SHOPPER ("Honorario · Nombre" con su lote y visita), no un consolidado "Pago lote".
+  - #198: el cuestionario INTERNO (en plataforma), al enviarse, actualiza automáticamente el estado de la visita a "cuestionario" + submit, sin acción manual — distinto del cuestionario externo/hoja colaborativa que sí requiere marcar manual.
+- **CÓMO APLICARLO A TyA:** Reemplazar payVisits en data.js y el handler #qSubmit en cuestionario-shopper.js.
+
+---
+
 ## Cómo aplicar estos cambios a TyA (proceso general)
 
 1. **Si TyA corre desde el repo de GitHub:** haz pull de los archivos listados arriba (o reemplázalos manualmente). El backend (Firebase) NO se toca — estos cambios son solo de frontend.

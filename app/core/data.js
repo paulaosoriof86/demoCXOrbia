@@ -194,22 +194,24 @@ CX.data = {
      Cierra la cadena visita → liquidación → beneficios → finanzas (CxP + Movimientos). */
   payVisits(ids, fechaPago){
     const f=fechaPago||new Date().toISOString().slice(0,10);
-    const porPais={}; let n=0;
+    const porPais={}; let n=0; const detalle=[];
     (ids||[]).forEach(id=>{ const v=this._visitas.find(x=>x.id===id); if(v){
       v.estado='liquidada'; v.fechaPago=f; v.realizada=v.realizada||f;
       const tot=(v.honorario||0)+(v.boleto||0)+(v.comboAmt||0);
       porPais[v.pais]=porPais[v.pais]||{monto:0,n:0,cur:v.currency}; porPais[v.pais].monto+=tot; porPais[v.pais].n++;
+      detalle.push({shopper:v.shopper||'Evaluador',sucursal:v.sucursal||'',pais:v.pais,monto:tot,cur:v.currency,visitaId:v.id});
       n++;
     }});
-    // egreso consolidado por país (automatización financiera)
+    // un movimiento de egreso POR SHOPPER (detalle real, no consolidado) — #168
     if(n && CX.finStore){
-      Object.keys(porPais).forEach(c=>{ const d=porPais[c];
-        CX.finStore.addMov(this.currentProjectId,{tipo:'egreso',cat:'Pago de lote ('+d.n+' visitas · '+c+')',pais:c,monto:-d.monto,desc:'Egreso consolidado · pago a evaluadores',estado:'Pagado',origen:'lote',fecha:f});
+      const lote='L-'+Date.now().toString(36).slice(-4).toUpperCase();
+      detalle.forEach(d=>{
+        CX.finStore.addMov(this.currentProjectId,{tipo:'egreso',cat:'Honorario · '+d.shopper,pais:d.pais,monto:-d.monto,desc:d.sucursal+' · lote '+lote,estado:'Pagado',origen:'lote',lote,shopper:d.shopper,visitaId:d.visitaId,fecha:f});
       });
     }
     if(n) CX.bus && CX.bus.emit('visit-flow');
     (ids||[]).forEach(id=>{ const v=this._visitas.find(x=>x.id===id); if(v&&CX.automations) CX.automations.fire('pago',{shopper:v.shopper||'',sucursal:v.sucursal}); });
-    return {pagadas:n, fechaPago:f, porPais};
+    return {pagadas:n, fechaPago:f, porPais, detalle};
   },
 
   /* conteo por fase con desglose por país */

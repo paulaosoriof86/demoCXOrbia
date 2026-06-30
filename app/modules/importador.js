@@ -180,8 +180,17 @@ Responde SOLO con JSON válido con este formato exacto:
       </div>
       <div class="flex" style="justify-content:space-between">
         <button class="btn btn-ghost btn-sm" id="aiBack">← Volver</button>
-        <button class="btn btn-green btn-sm" id="aiCommit" ${ai.confirmed.length?'':'disabled'}>✓ Importar ${ai.confirmed.length>0?'('+ai.confirmed.map(i=>r.entidades[i].cantidad).reduce((a,b)=>a+b,0)+' registros)':''}</button>
+        <div class="flex" style="gap:8px"><button class="btn btn-soft btn-sm" id="aiIter">✏️ Iterar/refinar</button>
+        <button class="btn btn-green btn-sm" id="aiCommit" ${ai.confirmed.length?'':'disabled'}>✓ Importar ${ai.confirmed.length>0?'('+ai.confirmed.map(i=>r.entidades[i].cantidad).reduce((a,b)=>a+b,0)+' registros)':''}</button></div>
       </div>`;
+      body.querySelector('#aiIter')?.addEventListener('click',()=>{
+        if(!(CX.ai&&CX.ai.ready())){ui.toast('Configura un proveedor de IA en Integraciones para iterar','warn',3500);return;}
+        ui.modal('✏️ Iterar la importación con IA',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Indica cómo ajustar el análisis: corregir mapeo de columnas, separar/unir entidades, normalizar fechas, excluir filas, etc.</p><textarea class="inp" id="itInstr" rows="3" placeholder="Ej. la columna 'asesor' es el shopper / separa visitas por país / ignora filas sin fecha"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-green btn-sm" id="itGo">Reanalizar</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#itGo').addEventListener('click',()=>{
+          const instr=(o2.querySelector('#itInstr').value||'').trim();if(!instr){ui.toast('Escribe el ajuste','warn');return;}
+          c2();body.innerHTML='<div style="text-align:center;padding:60px 20px;color:var(--t3)"><div style="font-size:32px;margin-bottom:12px">🤖</div><div style="font-size:14px;font-weight:600">Reanalizando con tu ajuste…</div></div>';
+          analyzeText(ai.raw+'\n\nAJUSTE DEL USUARIO (respétalo): '+instr).then(result=>{ai.result=result;ai.confirmed=[];drawAI(body);ui.toast('Reanalizado · revisa el resultado','ok');});
+        })});
+      });
       body.querySelectorAll('[data-sel]').forEach(btn=>btn.addEventListener('click',()=>{
         const i=+btn.dataset.sel;const idx=ai.confirmed.indexOf(i);
         if(idx>=0)ai.confirmed.splice(idx,1);else ai.confirmed.push(i);

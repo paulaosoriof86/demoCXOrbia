@@ -68,7 +68,11 @@ CX.shopperQuestionnaire = function(data, p, visita, ui){
         else answers[qid]=(el.querySelector('[data-txt]')||el).value;
       });
       const res=CX.programa.score(sections, answers);
-      if(visita){ visita.score=res.total; visita.scoreBySection=res.bySection; visita.evaluada=true; visita.koFail=res.koFail; }
+      if(visita){ visita.score=res.total; visita.scoreBySection=res.bySection; visita.evaluada=true; visita.koFail=res.koFail;
+        /* #198 — cuestionario INTERNO: actualiza estado automáticamente (no requiere acción manual como el externo) */
+        if(data.setVisitState) data.setVisitState(visita.id,'cuestionario','cuestFecha',new Date().toISOString().slice(0,10));
+        visita.submit=true;
+      }
       close(); CX.bus.emit('visit-flow');
       CX.automations&&CX.automations.fire('cuestionario',{shopper:visita&&visita.shopper||CX.session.user.name,sucursal:visita?visita.sucursal:p.name,score:res.total});
       ui.modal('Cuestionario enviado', `
