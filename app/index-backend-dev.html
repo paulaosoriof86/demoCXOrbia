@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CXOrbia · Preview Backend DEV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/theme.css">
+<link rel="stylesheet" href="styles/layout.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2196d3">
+</head>
+<body>
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#0d2740"></rect><circle cx="50" cy="50" r="20" fill="none" stroke="#4ab4e6" stroke-width="5" stroke-dasharray="80 30"></circle><circle cx="66" cy="36" r="4.5" fill="#fff"></circle></svg>
+</template>
+
+<!-- LOGIN -->
+<div id="login"></div>
+
+<!-- APP SHELL -->
+<div id="app">
+  <aside class="rail" id="rail"></aside>
+  <div class="scrim" onclick="document.body.classList.remove('nav-open')"></div>
+  <div class="canvas">
+    <div class="topbar">
+      <button class="btn btn-ghost btn-icon menu-btn" onclick="document.body.classList.toggle('nav-open')">☰</button>
+      <div class="tb-crumb" id="crumb"></div>
+      <div class="spacer"></div>
+      <button class="tb-bell" id="tbSupport" title="Soporte" aria-label="Soporte">
+        <span style="font-size:16px">🆘</span>
+      </button>
+      <button class="tb-bell" id="tbBell" title="Novedades" aria-label="Novedades">
+        <span style="font-size:17px">🔔</span>
+        <span class="tb-bell-badge" id="tbBellBadge" style="display:none">0</span>
+      </button>
+      <div class="tb-demo"><span class="d"></span> Preview backend DEV</div>
+    </div>
+    <main class="content"><div id="view"></div></main>
+  </div>
+</div>
+
+<!-- FIREBASE SDK COMPAT SOLO PARA PREVIEW DEV -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<!-- CORE -->
+<script src="core/config.js"></script>
+<script src="core/geo.js"></script>
+<script src="core/store.js"></script>
+<script src="core/data.js"></script>
+<script src="core/dedupe.js"></script>
+<script src="core/shoppers-store.js"></script>
+<script src="core/programa.js"></script>
+<script src="core/cliente-data.js"></script>
+<script src="core/hr.js"></script>
+<script src="core/costos.js"></script>
+<script src="core/automations.js"></script>
+<script src="core/importador.js"></script>
+<script src="core/ui.js"></script>
+<script src="core/liquidacion.js"></script>
+<script src="core/finanzas-core.js"></script>
+<script src="core/notif.js"></script>
+<script src="core/backend-config.js"></script>
+<script src="core/backend-config-preview-dev.js"></script>
+<script src="core/backend-firebase.js"></script>
+<script src="core/topbar.js"></script>
+<script src="core/pwa.js"></script>
+<script src="core/router.js"></script>
+
+<!-- MODULES -->
+<script src="modules/midia.js"></script>
+<script src="modules/dashboard.js"></script>
+<script src="modules/proyectos.js"></script>
+<script src="modules/proyecto-wizard.js"></script>
+<script src="modules/visitas.js"></script>
+<script src="modules/visita-detalle.js"></script>
+<script src="modules/cuestionario-shopper.js"></script>
+<script src="modules/postulaciones.js"></script>
+<script src="modules/shoppers.js"></script>
+<script src="modules/misvisitas.js"></script>
+<script src="modules/beneficios.js"></script>
+<script src="modules/tablon.js"></script>
+<script src="modules/cert.js"></script>
+<script src="modules/documentos.js"></script>
+<script src="modules/aprendizaje.js"></script>
+<script src="modules/soporte.js"></script>
+<script src="modules/operacion-extra.js"></script>
+<script src="modules/finanzas.js"></script>
+<script src="modules/configuracion.js"></script>
+<script src="modules/cliente.js"></script>
+<script src="modules/cliente-extra.js"></script>
+<script src="modules/clientes.js"></script>
+<script src="modules/importador.js"></script>
+<script src="modules/comercial.js"></script>
+<script src="modules/crm.js"></script>
+<script src="modules/marketing.js"></script>
+<script src="modules/reservas.js"></script>
+<script src="modules/integraciones.js"></script>
+<script src="modules/rutas.js"></script>
+<script src="modules/automatizaciones.js"></script>
+
+<!-- BOOT -->
+<script src="app.js"></script>
+</body>
+</html>

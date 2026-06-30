@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "cxorbia-storage-evidence-documents-v1",
+  "status": "draft-no-write",
+  "purpose": "Modelo backend para evidencias, logos, documentos, NDA, manuales e instructivos sin guardar archivos pesados en Firestore.",
+  "principles": [
+    "Los archivos viven en Storage; Firestore guarda metadata y permisos.",
+    "Todo archivo se segmenta por tenantId y, cuando aplique, projectId, visitId y shopperId.",
+    "No guardar base64 pesado en Firestore.",
+    "Validar contentType, sizeBytes, owner y scope antes de aceptar upload.",
+    "Logos y documentos white-label deben usar Storage para persistir en producción.",
+    "Evidencias de visitas deben poder revisarse por admin/ops y verse solo por dueño/autorizado."
+  ],
+  "storagePaths": {
+    "tenantLogo": "tenants/{tenantId}/brand/logo/{fileId}",
+    "tenantDocuments": "tenants/{tenantId}/documents/{documentType}/{fileId}",
+    "projectDocuments": "tenants/{tenantId}/projects/{projectId}/documents/{documentType}/{fileId}",
+    "visitEvidence": "tenants/{tenantId}/projects/{projectId}/visits/{visitId}/evidence/{fileId}",
+    "shopperDocuments": "tenants/{tenantId}/shoppers/{shopperId}/documents/{documentType}/{fileId}",
+    "manualAssets": "tenants/{tenantId}/manuals/{manualId}/assets/{fileId}"
+  },
+  "firestoreCollections": {
+    "fileAssets": {
+      "path": "tenants/{tenantId}/fileAssets/{fileId}",
+      "purpose": "Metadata universal de archivos Storage.",
+      "requiredFields": ["tenantId", "fileId", "storagePath", "contentType", "sizeBytes", "scope", "status", "createdAt", "createdBy"],
+      "statusValues": ["draft", "uploaded", "linked", "reviewPending", "approved", "rejected", "archived", "deleted"],
+      "scopeValues": ["tenant", "project", "visit", "shopper", "manual", "nda", "brand", "finance", "hr"]
+    },
+    "visitEvidence": {
+      "path": "tenants/{tenantId}/projects/{projectId}/visits/{visitId}/evidence/{evidenceId}",
+      "purpose": "Evidencias operativas por visita.",
+      "requiredFields": ["tenantId", "projectId", "visitId", "evidenceId", "fileAssetId", "type", "status", "createdAt"],
+      "typeValues": ["photo", "video", "audio", "document", "receipt", "screen", "other"],
+      "statusValues": ["uploaded", "reviewPending", "approved", "rejected", "needsReplacement", "archived"]
+    },
+    "documentVersions": {
+      "path": "tenants/{tenantId}/documentVersions/{documentId}",
+      "purpose": "Versiones de NDA, instructivos, manuales, propuestas y documentos comerciales.",
+      "requiredFields": ["tenantId", "documentId", "documentType", "version", "status", "fileAssetId", "createdAt", "createdBy"],
+      "documentTypeValues": ["nda", "manual", "instructivo", "propuesta", "contrato", "plantilla", "reporte", "factura", "otro"],
+      "statusValues": ["draft", "published", "archived", "replaced"]
+    },
+    "fileReviewLogs": {
+      "path": "tenants/{tenantId}/fileReviewLogs/{reviewId}",
+      "purpose": "Auditoría de revisión/aprobación/rechazo de evidencias y documentos.",
+      "requiredFields": ["tenantId", "reviewId", "fileAssetId", "action", "createdAt", "createdBy"],
+      "actionValues": ["uploaded", "linked", "approved", "rejected", "requestedReplacement", "archived", "deleted"]
+    }
+  },
+  "sizeLimitsMb": {
+    "logo": 5,
+    "photo": 15,
+    "audio": 50,
+    "video": 250,
+    "document": 25,
+    "manualAsset": 50
+  },
+  "allowedContentTypes": {
+    "logo": ["image/png", "image/jpeg", "image/webp", "image/svg+xml"],
+    "photo": ["image/png", "image/jpeg", "image/webp"],
+    "audio": ["audio/mpeg", "audio/mp4", "audio/wav", "audio/webm"],
+    "video": ["video/mp4", "video/webm", "video/quicktime"],
+    "document": ["application/pdf", "image/png", "image/jpeg", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]
+  },
+  "writeGates": [
+    "storageBillingReady",
+    "storageRulesReviewed",
+    "metadataRulesReviewed",
+    "uploadPreviewTested",
+    "noBase64InFirestore",
+    "explicitDevAuthorization"
+  ]
+}

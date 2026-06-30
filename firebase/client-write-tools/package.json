@@ -1,0 +1,9 @@
+{
+  "name": "cxorbia-client-write-tools",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "firebase": "^10.12.5",
+    "xlsx": "^0.18.5"
+  }
+}
