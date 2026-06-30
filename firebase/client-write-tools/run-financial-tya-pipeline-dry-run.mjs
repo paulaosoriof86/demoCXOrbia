@@ -59,6 +59,22 @@ const steps = [
     skipIf: !hasHr,
     skipReason: 'Write-plan requiere crosscheck HR V4.',
   },
+  {
+    id: 'write-plan-validate',
+    label: 'Validación write-plan dry-run',
+    command: 'node',
+    args: ['firebase/client-write-tools/validate-financial-tya-write-plan.mjs'],
+    reviewExitCodes: [0, 1],
+    skipIf: !hasHr,
+    skipReason: 'Validación write-plan requiere write-plan.',
+  },
+  {
+    id: 'review-pack',
+    label: 'Paquete de revisión financiero TyA',
+    command: 'node',
+    args: ['firebase/client-write-tools/export-financial-tya-review-pack.mjs'],
+    reviewExitCodes: [0, 1],
+  },
 ];
 
 const runStartedAt = new Date().toISOString();
@@ -99,6 +115,8 @@ const strict = readJsonIfExists('financial-tya-strict-dry-run.json');
 const validation = readJsonIfExists('financial-tya-strict-dry-run-validation.json');
 const crosscheck = readJsonIfExists('financial-tya-strict-vs-hr-v4-crosscheck.json');
 const writePlan = readJsonIfExists('financial-tya-write-plan-dry-run.json');
+const writePlanValidation = readJsonIfExists('financial-tya-write-plan-validation.json');
+const reviewPack = readJsonIfExists('financial-tya-review-pack.json');
 
 const summary = {
   generatedAt: new Date().toISOString(),
@@ -113,6 +131,8 @@ const summary = {
     validation: validation?.counts || null,
     crosscheck: crosscheck?.crosscheckCounts || null,
     writePlan: writePlan?.counts || null,
+    writePlanValidation: writePlanValidation?.counts || null,
+    reviewPack: reviewPack?.counts || null,
   },
   outputFiles: [
     'financial-tya-strict-dry-run.json',
@@ -125,6 +145,12 @@ const summary = {
     'financial-tya-strict-vs-hr-v4-crosscheck-issues.csv',
     'financial-tya-write-plan-dry-run.json',
     'financial-tya-write-plan-dry-run-summary.md',
+    'financial-tya-write-plan-validation.json',
+    'financial-tya-write-plan-validation-summary.md',
+    'financial-tya-review-pack.json',
+    'financial-tya-review-pack.md',
+    'financial-tya-review-aliases.csv',
+    'financial-tya-review-unmatched-benefits.csv',
   ].filter((f) => fs.existsSync(path.join(outDir, f))).map((f) => path.join(outDir, f)),
 };
 
@@ -148,24 +174,10 @@ for (const r of summary.results) md.push(`| ${r.label} | ${r.status}${r.reason ?
 md.push('');
 md.push('## Conteos principales');
 md.push('');
-if (summary.counts.strict) {
-  md.push('### Strict transform');
-  Object.entries(summary.counts.strict).forEach(([k, v]) => md.push(`- ${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`));
-  md.push('');
-}
-if (summary.counts.validation) {
-  md.push('### Validación');
-  Object.entries(summary.counts.validation).forEach(([k, v]) => md.push(`- ${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`));
-  md.push('');
-}
-if (summary.counts.crosscheck) {
-  md.push('### Crosscheck HR V4');
-  Object.entries(summary.counts.crosscheck).forEach(([k, v]) => md.push(`- ${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`));
-  md.push('');
-}
-if (summary.counts.writePlan) {
-  md.push('### Write-plan');
-  Object.entries(summary.counts.writePlan).forEach(([k, v]) => md.push(`- ${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`));
+for (const [section, counts] of Object.entries(summary.counts)) {
+  if (!counts) continue;
+  md.push(`### ${section}`);
+  Object.entries(counts).forEach(([k, v]) => md.push(`- ${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`));
   md.push('');
 }
 md.push('## Archivos generados');
