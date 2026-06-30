@@ -156,6 +156,29 @@
 
 ---
 
+### 19. Manuales: visor a pantalla completa (Orbit360 style)
+- **ARCHIVO:** `app/modules/academia.js` (`readManual`)
+- **QUÉ CAMBIÓ:** El manual ya NO abre en modal — se abre a pantalla completa en el área del módulo, estilo Orbit360: barra superior oscura con título + progreso, sidebar de secciones navegable, contenido amplio, botón Imprimir/PDF. Admin puede agregar y editar secciones (WYSIWYG) o eliminarlas.
+- **CÓMO APLICARLO A TyA:** Reemplazar la función `readManual` en `academia.js`.
+
+---
+
+### 20. Academia: Crear manual completo + Crear curso con IA real
+- **ARCHIVO:** `app/modules/academia.js` (`crearManual`, handler `aiGo`)
+- **QUÉ CAMBIÓ:**
+  - #189/#190: "Crear manual" ahora abre ficha completa: título, icono, visibilidad por rol (quién lo ve), descripción, contenido inicial desde idea/texto o recurso subido, y opción de estructurar con IA en secciones.
+  - #191: botón "Crear con IA" de cursos ahora genera un curso real con `CX.ai.ask` (4-6 lecciones + quiz), editable e iterable. Sin key avisa que configure IA.
+- **CÓMO APLICARLO A TyA:** Añadir `crearManual` y reemplazar el handler `aiGo` en `academia.js`.
+
+---
+
+### 21. Documentos → "Recursos del proyecto": visor pantalla completa + generación IA
+- **ARCHIVO:** `app/modules/documentos.js`
+- **QUÉ CAMBIÓ:** Renombrado a "Recursos del proyecto" (incluye documentos, videos, imágenes, checklists). El visor abre a PANTALLA COMPLETA en el área del módulo (no modal): barra superior, descargar, imprimir. Botón "✨ Generar con IA" crea instructivo, checklist de visita, escenario o protocolo desde idea/texto/documento base (con CX.ai.ask). El upload ya tiene selector de tipo.
+- **CÓMO APLICARLO A TyA:** Reemplazar `viewer`, el header y añadir handler `docIA` en `documentos.js`.
+
+---
+
 ## Cómo aplicar estos cambios a TyA (proceso general)
 
 1. **Si TyA corre desde el repo de GitHub:** haz pull de los archivos listados arriba (o reemplázalos manualmente). El backend (Firebase) NO se toca — estos cambios son solo de frontend.

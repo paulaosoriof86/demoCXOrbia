@@ -915,32 +915,103 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           <div style="font-size:10.5px;color:var(--brand);font-weight:600;margin-top:4px">${(m.secciones||[]).length} secciones · Leer →</div></div>
         </button>`).join('')}
       </div>
-      ${role==='admin'?`<div style="text-align:right;margin-top:12px"><button class="btn btn-ghost btn-sm" id="manualNew">＋ Crear manual</button></div>`:''}
+      ${role==='admin'?`<div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="manualNew">＋ Crear manual</button></div>`:''}
     `,{onMount:(ov,close)=>{
       ov.querySelectorAll('.manualPick').forEach(b=>b.addEventListener('click',()=>{close();readManual(b.dataset.mid);}));
-      ov.querySelector('#manualNew')?.addEventListener('click',()=>{close();CX.manualesData.add({rol:'admin',ic:'📘',titulo:'Manual nuevo',desc:'Descripción',secciones:[{t:'Sección 1',html:'<p>Contenido…</p>'}]});ui.toast('Manual creado · edítalo','ok');openManuales();});
+      ov.querySelector('#manualNew')?.addEventListener('click',()=>{close();crearManual();});
     }});
   };
-  const readManual=(mid)=>{
-    const m=(CX.manualesData.all()).find(x=>x.id===mid); if(!m)return;
-    let secIdx=0;
-    const render=(ov)=>{
-      const sec=m.secciones[secIdx]||{t:'',html:''};
-      ov.querySelector('#manualBody').innerHTML=`
-        <div class="flex wrap" style="gap:5px;margin-bottom:14px">
-          ${m.secciones.map((s,i)=>`<button class="btn btn-sm ${i===secIdx?'btn-pr':'btn-ghost'} mSecBtn" data-si="${i}" style="font-size:11px">${i+1}. ${s.t.replace(/^\d+\s*·\s*/,'')}</button>`).join('')}
+  /* ── Crear manual: desde idea/texto/recurso, visibilidad por rol, con IA ── */
+  const crearManual=()=>{
+    let lsnType='texto';
+    ui.modal('📘 Crear manual', `
+      <label class="lbl">Título del manual</label><input class="inp" id="cmT" placeholder="Ej. Manual operativo del programa" style="margin-bottom:8px">
+      <div class="grid g2" style="gap:8px;margin-bottom:8px">
+        <div><label class="lbl">Icono</label><input class="inp" id="cmI" value="📘" style="max-width:80px"></div>
+        <div><label class="lbl">¿Quién lo ve?</label><select class="sel" id="cmRol"><option value="superadmin">Super Admin</option><option value="admin">Equipo administrativo</option><option value="ops">Operativo</option><option value="coordinador">Coordinador/Aliado</option><option value="shopper">Shopper</option><option value="cliente">Cliente (portal)</option></select></div>
+      </div>
+      <label class="lbl">Descripción</label><input class="inp" id="cmD" placeholder="De qué trata" style="margin-bottom:10px">
+      <div style="border-top:1px solid var(--border-2);padding-top:10px;margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px">Contenido inicial</div>
+        <div class="flex" style="gap:5px;margin-bottom:8px;flex-wrap:wrap">
+          <button class="btn btn-sm btn-pr cmSrc" data-s="texto">✍️ Desde idea/texto</button>
+          <button class="btn btn-sm btn-ghost cmSrc" data-s="recurso">📎 Desde recurso</button>
+          <button class="btn btn-sm btn-ghost cmSrc" data-s="vacio">Vacío</button>
         </div>
-        <div class="acad-content" style="font-size:13.5px;line-height:1.7;color:var(--t1)">${sec.html}</div>
-        <div class="between" style="margin-top:18px;border-top:1px solid var(--border-2);padding-top:12px">
-          <button class="btn btn-ghost btn-sm" id="mPrev" ${secIdx===0?'disabled':''}>← Anterior</button>
-          <span style="font-size:11.5px;color:var(--t3)">${secIdx+1} de ${m.secciones.length}</span>
-          <button class="btn btn-pr btn-sm" id="mNext" ${secIdx===m.secciones.length-1?'disabled':''}>Siguiente →</button>
+        <div id="cmTextoWrap"><textarea class="inp" id="cmTexto" rows="4" placeholder="Pega el texto, describe la idea o el temario… la IA lo estructura en secciones" style="margin-bottom:6px"></textarea></div>
+        <div id="cmRecWrap" style="display:none"><label class="btn btn-soft btn-sm" style="cursor:pointer">📎 Subir documento/recurso<input type="file" id="cmRecF" accept=".pdf,.doc,.docx,.txt,image/*" style="display:none"></label><div id="cmRecName" style="font-size:11px;color:var(--t3);margin-top:5px"></div></div>
+        <label class="flex" style="gap:8px;font-size:12px;margin-top:8px"><input type="checkbox" id="cmIA" ${CX.ai&&CX.ai.ready()?'checked':''}> Estructurar con IA (${CX.ai&&CX.ai.ready()?CX.ai.cfg().model:'configura IA en Integraciones'})</label>
+      </div>
+      <div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="cmOk">Crear manual</button></div>
+    `,{onMount:(ov,close)=>{
+      ov.querySelectorAll('.cmSrc').forEach(b=>b.addEventListener('click',()=>{lsnType=b.dataset.s;ov.querySelectorAll('.cmSrc').forEach(x=>x.className='btn btn-sm '+(x===b?'btn-pr':'btn-ghost'));ov.querySelector('#cmTextoWrap').style.display=lsnType==='texto'?'block':'none';ov.querySelector('#cmRecWrap').style.display=lsnType==='recurso'?'block':'none';}));
+      let recTxt='';
+      ov.querySelector('#cmRecF')?.addEventListener('change',e=>{const f=e.target.files[0];if(f){ov.querySelector('#cmRecName').textContent='📎 '+f.name;if(/\.(txt|csv)$/i.test(f.name)){const r=new FileReader();r.onload=ev=>recTxt=ev.target.result;r.readAsText(f);}else recTxt='[Documento: '+f.name+']';}});
+      ov.querySelector('#cmOk').addEventListener('click',()=>{
+        const t=(ov.querySelector('#cmT').value||'').trim();if(!t){ui.toast('Pon un título','warn');return;}
+        const rol=ov.querySelector('#cmRol').value, ic=ov.querySelector('#cmI').value||'📘', desc=ov.querySelector('#cmD').value||'Manual';
+        const fuente=(lsnType==='recurso'?recTxt:(ov.querySelector('#cmTexto').value||'')).trim();
+        const usarIA=ov.querySelector('#cmIA').checked && CX.ai && CX.ai.ready() && fuente;
+        const finalizar=(secciones)=>{const m=CX.manualesData.add({rol,ic,titulo:t,desc,secciones});close();ui.toast('Manual creado','ok');openManuales();};
+        if(usarIA){
+          ui.toast('Estructurando manual con IA…','',2500);
+          CX.ai.ask('Estructura este contenido como un manual profesional en secciones. Devuelve cada sección como "## Título" seguido del contenido en HTML simple (<p>, <ul>, <li>, <h3>). Contenido:\n\n'+fuente)
+            .then(res=>{const parts=res.split(/##\s+/).filter(Boolean);const secs=parts.map(p=>{const nl=p.indexOf('\n');return {t:p.slice(0,nl).trim()||'Sección',html:p.slice(nl+1).trim()};});finalizar(secs.length?secs:[{t:'Contenido',html:'<p>'+res+'</p>'}]);})
+            .catch(e=>{ui.toast('Error IA: '+e.message+' · creado manual editable','warn');finalizar([{t:'Sección 1',html:'<p>'+(fuente||'Contenido por completar.')+'</p>'}]);});
+        } else {
+          finalizar([{t:'Sección 1',html:fuente?'<p>'+fuente.replace(/\n/g,'</p><p>')+'</p>':'<p>Contenido por completar. Usa ✎ Editar sección.</p>'}]);
+        }
+      });
+    }});
+  };
+
+  const readManual=(mid)=>{
+    let secIdx=0;
+    const render=()=>{
+      const sec=m.secciones[secIdx]||{t:'',html:''};
+      const pct=Math.round((secIdx+1)/m.secciones.length*100);
+      host.innerHTML=`
+        <div style="background:linear-gradient(135deg,#1a2740,#0d1b2e);border-radius:14px;padding:16px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
+          <div class="flex" style="gap:12px;align-items:center">
+            <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)" id="manBack">← Volver</button>
+            <div><div style="font-size:15px;font-weight:800;color:#fff">${m.ic} ${m.titulo}</div><div style="font-size:11px;color:#94a3b8">${m.desc||''}</div></div>
+          </div>
+          <div style="text-align:right"><div style="font-size:12px;color:#fff">${secIdx+1}/${m.secciones.length}</div>
+            <div style="width:120px;height:4px;background:rgba(255,255,255,.2);border-radius:4px;margin-top:5px"><div style="height:4px;border-radius:4px;background:var(--brand);width:${pct}%"></div></div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:230px 1fr;gap:18px;align-items:flex-start">
+          <div class="card card-p" style="position:sticky;top:10px">
+            <div style="font-size:10px;font-weight:800;color:var(--t3);letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px">CONTENIDO</div>
+            ${m.secciones.map((s,i)=>`<div class="manSec" data-si="${i}" style="padding:9px 11px;border-radius:9px;cursor:pointer;margin-bottom:4px;font-size:12px;background:${i===secIdx?'var(--brand)':'transparent'};color:${i===secIdx?'#fff':'var(--t1)'};font-weight:${i===secIdx?'700':'400'}">${i+1}. ${s.t.replace(/^\d+\s*·\s*/,'')}</div>`).join('')}
+            ${role==='admin'?`<button class="btn btn-ghost btn-sm" id="manAddSec" style="width:100%;margin-top:8px;border-style:dashed">＋ Sección</button>`:''}
+          </div>
+          <div class="card card-p">
+            <div class="between" style="margin-bottom:12px"><h2 style="font-size:19px;font-weight:800;margin:0">${sec.t}</h2>${role==='admin'?`<button class="btn btn-ghost btn-sm" id="manEditSec">✎ Editar sección</button>`:''}</div>
+            <div class="acad-content" style="font-size:14px;line-height:1.75;color:var(--t1)">${sec.html}</div>
+            <div class="between" style="margin-top:22px;border-top:1px solid var(--border-2);padding-top:14px">
+              <button class="btn btn-ghost btn-sm" id="mPrev" ${secIdx===0?'disabled':''}>← Anterior</button>
+              <button class="btn btn-soft btn-sm" id="manPrint">🖨 Imprimir / PDF</button>
+              <button class="btn btn-pr btn-sm" id="mNext" ${secIdx===m.secciones.length-1?'disabled':''}>Siguiente →</button>
+            </div>
+          </div>
         </div>`;
-      ov.querySelectorAll('.mSecBtn').forEach(b=>b.addEventListener('click',()=>{secIdx=+b.dataset.si;render(ov);}));
-      ov.querySelector('#mPrev')?.addEventListener('click',()=>{if(secIdx>0){secIdx--;render(ov);}});
-      ov.querySelector('#mNext')?.addEventListener('click',()=>{if(secIdx<m.secciones.length-1){secIdx++;render(ov);}});
+      host.querySelector('#manBack').addEventListener('click',()=>{openManuales();});
+      host.querySelectorAll('.manSec').forEach(b=>b.addEventListener('click',()=>{secIdx=+b.dataset.si;render();}));
+      host.querySelector('#mPrev')?.addEventListener('click',()=>{if(secIdx>0){secIdx--;render();}});
+      host.querySelector('#mNext')?.addEventListener('click',()=>{if(secIdx<m.secciones.length-1){secIdx++;render();}});
+      host.querySelector('#manPrint')?.addEventListener('click',()=>window.print());
+      host.querySelector('#manAddSec')?.addEventListener('click',()=>{m.secciones.push({t:'Nueva sección',html:'<p>Contenido…</p>'});CX.manualesData.saveCustom(CX.manualesData.getCustom());secIdx=m.secciones.length-1;render();});
+      host.querySelector('#manEditSec')?.addEventListener('click',()=>ui.modal('✎ Editar sección',`
+        <label class="lbl">Título</label><input class="inp" id="msT" value="${(sec.t||'').replace(/"/g,'&quot;')}" style="margin-bottom:10px">
+        <label class="lbl">Contenido</label>
+        <div id="msEd" contenteditable="true" class="acad-content" style="min-height:220px;max-height:50vh;overflow:auto;border:1px solid var(--border);border-radius:9px;padding:12px;outline:none;line-height:1.7">${sec.html}</div>
+        <div class="between" style="margin-top:10px"><button class="btn btn-ghost btn-sm" id="msDel" style="color:var(--red)">🗑 Eliminar sección</button><button class="btn btn-pr btn-sm" id="msSave">Guardar</button></div>
+      `,{onMount:(ov,close)=>{
+        ov.querySelector('#msSave').addEventListener('click',()=>{sec.t=ov.querySelector('#msT').value||sec.t;sec.html=ov.querySelector('#msEd').innerHTML;if(m.custom)CX.manualesData.saveCustom(CX.manualesData.getCustom());close();render();ui.toast('Sección actualizada','ok');});
+        ov.querySelector('#msDel').addEventListener('click',()=>{if(m.secciones.length>1){m.secciones.splice(secIdx,1);secIdx=Math.max(0,secIdx-1);if(m.custom)CX.manualesData.saveCustom(CX.manualesData.getCustom());close();render();ui.toast('Sección eliminada','');}});
+      }}));
     };
-    ui.modal(m.ic+' '+m.titulo, `<div id="manualBody"></div>`, {wide:true, onMount:(ov)=>render(ov)});
+    render();
   };
 
   /* ── lista de cursos ── */
@@ -1006,7 +1077,24 @@ CX.module('aprendizaje', ({data,role,ui})=>{
       <input type="file" class="inp" accept=".pdf,.doc,.docx,.txt,image/*" style="padding:7px;margin-bottom:8px">
       <textarea class="inp" id="aiT" rows="3" placeholder="o describe el tema que quieres desarrollar…" style="margin-bottom:10px"></textarea>
       <div style="text-align:right"><button class="btn btn-green btn-sm" id="aiGo">Generar curso</button></div>
-    `,{onMount:(ov,close)=>ov.querySelector('#aiGo').addEventListener('click',()=>{close();ui.toast('Generando curso con '+(CX.ai&&CX.ai.ready()?CX.ai.cfg().model:'IA')+'…','ok');draw();})});
+    `,{onMount:(ov,close)=>ov.querySelector('#aiGo').addEventListener('click',()=>{
+      const tema=(ov.querySelector('#aiT').value||'').trim();
+      if(!tema){ui.toast('Describe el tema o pega el material','warn');return;}
+      if(CX.ai&&CX.ai.ready()){
+        ui.toast('Generando curso con '+CX.ai.cfg().model+'…','',2500);
+        CX.ai.ask('Crea un curso de capacitación sobre: "'+tema+'". Devuelve 4-6 lecciones. Cada lección como "## Título" seguido de contenido en HTML (<p>,<h3>,<ul>,<li>). La última lección debe ser un quiz con 3 preguntas.')
+          .then(res=>{
+            const parts=res.split(/##\s+/).filter(Boolean);
+            const lessons=parts.map((p,i)=>{const nl=p.indexOf('\n');const n=p.slice(0,nl).trim()||'Lección '+(i+1);const html=p.slice(nl+1).trim();return {id:'l'+Date.now().toString(36)+i,n,ic:/quiz|evalua/i.test(n)?'❓':'📘',tipo:/quiz|evalua/i.test(n)?'quiz':'texto',content:'<div class="acad-content">'+html+'</div>'};});
+            const rr=role==='shopper'?'shopper':role==='cliente'?'cliente':'admin';
+            CX.acadData.addCourse(rr,{cat:activeCat==='Todos'?'IA':activeCat,ic:'✨',color:'#7c3aed',n:tema.slice(0,60),desc:'Generado con IA',lessons});
+            close();draw();ui.toast('Curso generado · revisa, itera y publica','ok',4000);
+          })
+          .catch(e=>{close();ui.toast('Error IA: '+e.message,'warn');});
+      } else {
+        close();ui.toast('Configura un proveedor de IA en Integraciones para generar el curso','warn',4000);
+      }
+    })});
     host.querySelector('#acadLoad')?.addEventListener('click',()=>CX.router.nav('importador'));
   };
 
