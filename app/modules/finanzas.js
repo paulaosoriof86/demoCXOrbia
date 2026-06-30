@@ -250,7 +250,7 @@ CX.module('movimientos', ({data,ui})=>{
         <div style="font-size:11px;color:var(--t3);margin-top:8px">Los <b>financiamientos</b> no son utilidad: se suman a CxP hasta devolverse.</div>
       </div>
       <div class="card card-p"><div class="card-h"><div class="card-t">Cuentas por pagar (CxP)</div></div>
-        ${CX.finStore.cxp(pid()).length?CX.finStore.cxp(pid()).map(r=>`<div class="between" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12px">${r.concepto}</b><div style="font-size:10px;color:var(--t3)">${r.pais||''} · saldo</div></div><div class="flex" style="gap:8px"><b style="font-size:12.5px;color:var(--amber)">${ui.money(cur,r.saldo||0)}</b><button class="btn btn-soft btn-sm" data-abono="${r.id}">Abonar</button></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:8px 0">Sin CxP registradas. Útil al importar saldos iniciales.</div>'}
+        ${CX.finStore.cxp(pid()).length?CX.finStore.cxp(pid()).map(r=>`<div class="between" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div style="cursor:pointer" data-cxdet="cxp:${r.id}"><b style="font-size:12px">${r.concepto}</b><div style="font-size:10px;color:var(--t3)">${r.pais||''} · ${r.estado||'pendiente'} · saldo ↗ ver detalle</div></div><div class="flex" style="gap:8px"><b style="font-size:12.5px;color:var(--amber)">${ui.money(cur,r.saldo||0)}</b><button class="btn btn-soft btn-sm" data-abono="${r.id}">Abonar</button></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:8px 0">Sin CxP registradas. Útil al importar saldos iniciales.</div>'}
       </div>
     </div>
 
@@ -315,6 +315,36 @@ CX.module('movimientos', ({data,ui})=>{
       <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="fnSave">Registrar</button></div>
     `,{onMount:(ov,close)=>{ov.querySelector('#fnSave').addEventListener('click',()=>{CX.finStore.addFinanciamiento(p.id,{fuente:(ov.querySelector('#fnF').value||'').trim(),monto:+ov.querySelector('#fnM').value||0,pais:ov.querySelector('#fnP').value});close();draw();ui.toast('Financiamiento registrado · flujo + CxP (no operativo)','ok',3600);});}}));
     host.querySelectorAll('[data-delm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.delMov(pid(),b.dataset.delm);draw();ui.toast('Movimiento eliminado','');}));
+    host.querySelectorAll('[data-cxdet]').forEach(el=>el.addEventListener('click',()=>{
+      const [kind,id]=el.dataset.cxdet.split(':');
+      const arr=kind==='cxc'?CX.finStore.cxc(pid()):CX.finStore.cxp(pid());
+      const r=arr.find(x=>x.id===id); if(!r)return;
+      const estados=kind==='cxc'?['pendiente','parcial','cobrada','incobrable']:['pendiente','parcial','pagada','programada'];
+      ui.modal((kind==='cxc'?'⏳ Cuenta por cobrar':'💸 Cuenta por pagar')+' · '+r.concepto,`
+        <div style="font-size:12.5px;line-height:1.9;color:var(--t2);margin-bottom:12px">
+          <div><b>Concepto:</b> ${r.concepto}</div>
+          <div><b>País:</b> ${r.pais||'—'} · <b>Origen:</b> ${r.origen||'manual'}</div>
+          ${r.shopper?`<div><b>Shopper/Acreedor:</b> ${r.shopper}</div>`:''}
+          ${r.visitaId?`<div><b>Visita vinculada:</b> ${r.visitaId}</div>`:''}
+        </div>
+        <div class="grid g2" style="gap:10px 12px">
+          <div><label class="lbl">Saldo (${cur})</label><input class="inp" id="cxSaldo" type="number" value="${r.saldo||0}"></div>
+          <div><label class="lbl">Estado</label><select class="sel" id="cxEst">${estados.map(s=>`<option ${(r.estado||'pendiente')===s?'selected':''}>${s}</option>`).join('')}</select></div>
+          <div style="grid-column:1/3"><label class="lbl">Nota</label><input class="inp" id="cxNota" value="${(r.nota||'').replace(/"/g,'&quot;')}" placeholder="Observación"></div>
+        </div>
+        <div class="between" style="margin-top:14px">
+          <button class="btn btn-ghost btn-sm" id="cxDel" style="color:var(--red)">🗑 Eliminar</button>
+          <button class="btn btn-pr btn-sm" id="cxSave">Guardar cambios</button>
+        </div>
+      `,{onMount:(ov,close)=>{
+        ov.querySelector('#cxSave').addEventListener('click',()=>{
+          CX.finStore.editCx(pid(),kind,id,{saldo:+ov.querySelector('#cxSaldo').value||0,estado:ov.querySelector('#cxEst').value,nota:ov.querySelector('#cxNota').value});
+          close();draw();ui.toast('Cuenta actualizada','ok');
+        });
+        ov.querySelector('#cxDel').addEventListener('click',()=>{CX.finStore.delCx(pid(),kind,id);close();draw();ui.toast('Cuenta eliminada','');});
+      }});
+    }));
+
     host.querySelectorAll('[data-drill]').forEach(el=>el.addEventListener('click',()=>{
       const k=el.dataset.drill; let title,rows;
       if(k==='ing'||k==='egr'){const f=movs.filter(m=>k==='ing'?m.monto>0:m.monto<0);title=k==='ing'?'Ingresos':'Egresos';rows=f.map(m=>`<tr><td>${m.fecha}</td><td><b>${m.cat}</b></td><td>${TI[m.tipoIngreso]||TE[m.tipoEgreso]||m.tipo}</td><td style="text-align:right">${ui.money(cur,Math.abs(m.monto))}</td></tr>`).join('');}

@@ -3,10 +3,12 @@
    Cada acción sincroniza estado de visita y liquidación. */
 CX.module('misvisitas', ({data,ui})=>{
   const p=data.project();
-  const base=data.visitas();
-  const asignada = base.find(v=>v.estado==='asignada')||base[0];
-  const agendada = base.find(v=>v.estado==='agendada')||base[1];
-  const realizada= base.find(v=>['realizada','cuestionario'].includes(v.estado))||base[2];
+  /* P0: SIEMPRE filtrar por el shopper autenticado (shopperId, no nombre) */
+  const sid=(CX.session.user&&CX.session.user.shopperId)||'sh1';
+  const base=(data.visitsForShopper?data.visitsForShopper(sid):data.visitas());
+  const asignada = base.find(v=>v.estado==='asignada');
+  const agendada = base.find(v=>v.estado==='agendada');
+  const realizada= base.find(v=>['realizada','cuestionario'].includes(v.estado));
 
   /* pasos del flujo, dependientes del proyecto (certificación una vez por proyecto) */
   const flowSteps=(estado)=>{
@@ -49,7 +51,6 @@ CX.module('misvisitas', ({data,ui})=>{
     </div>`;
   };
 
-  const sid=(CX.session.user&&CX.session.user.shopperId)||'sh1';
   const mine=(data.visitsForShopper?data.visitsForShopper(sid):base);
   const histVis=mine.filter(v=>['liquidada','cancelada'].includes(v.estado));
   const activasN=[asignada,agendada,realizada].filter(Boolean).length;

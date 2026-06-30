@@ -3,9 +3,58 @@
    ============================================================ */
 window.CX = window.CX || {};
 
+/* ---------- Favicon dinámico = logo de la consultora ---------- */
+CX.setFavicon = function(){
+  try{
+    const b=CX.BRAND||{}; const logo=b.logo||b.logoUrl;
+    let href=logo;
+    if(!href){
+      /* genera un favicon SVG con el color de marca si no hay logo */
+      const c=(b.colors&&b.colors.brand)||'#2196d3';
+      const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="${c}"/><circle cx="32" cy="32" r="15" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="60 24"/><circle cx="44" cy="22" r="4" fill="#fff"/></svg>`;
+      href='data:image/svg+xml,'+encodeURIComponent(svg);
+    }
+    let link=document.querySelector('link[rel="icon"]');
+    if(!link){ link=document.createElement('link'); link.rel='icon'; document.head.appendChild(link); }
+    link.href=href;
+    /* apple-touch-icon para instalación en iOS */
+    let at=document.querySelector('link[rel="apple-touch-icon"]');
+    if(!at){ at=document.createElement('link'); at.rel='apple-touch-icon'; document.head.appendChild(at); }
+    at.href=href;
+  }catch(e){}
+};
+
+/* ---------- PWA: instalación automática según dispositivo + navegador ---------- */
+CX._deferredPrompt=null;
+CX.setupPWA = function(){
+  /* registra el service worker para que sea instalable */
+  if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+  const ua=navigator.userAgent||'';
+  const isIOS=/iPad|iPhone|iPod/.test(ua)&&!window.MSStream;
+  const isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
+  if(isStandalone) return; /* ya está instalada */
+
+  /* Chrome/Edge/Android: capturar el evento y disparar el prompt automáticamente */
+  window.addEventListener('beforeinstallprompt',(e)=>{
+    e.preventDefault(); CX._deferredPrompt=e;
+    /* lanza el prompt apenas el usuario interactúe (requisito de los navegadores) */
+    const fire=()=>{ if(CX._deferredPrompt){ CX._deferredPrompt.prompt(); CX._deferredPrompt=null; }
+      document.removeEventListener('click',fire); document.removeEventListener('keydown',fire); };
+    if(!sessionStorage.getItem('cx_pwa_shown')){ sessionStorage.setItem('cx_pwa_shown','1');
+      document.addEventListener('click',fire,{once:false}); document.addEventListener('keydown',fire,{once:false}); }
+  });
+  /* iOS Safari no soporta prompt programático: mostrar una sola guía discreta */
+  if(isIOS && !sessionStorage.getItem('cx_pwa_ios')){
+    sessionStorage.setItem('cx_pwa_ios','1');
+    setTimeout(()=>{ if(CX.ui&&CX.ui.toast) CX.ui.toast('📲 Para instalar la app: Compartir → “Agregar a inicio”','',6000); },2500);
+  }
+};
+
 CX.app = {
   init(){
     CX.applyBrand();
+    CX.setFavicon();
+    CX.setupPWA();
     CX.session.load();
     if(CX.session.role){ this.enter(); }
     else { this.showLogin(); }
@@ -16,10 +65,23 @@ CX.app = {
     const lg=document.getElementById('login');
     lg.classList.remove('hidden');
     const b=CX.BRAND;
-    const brandBlock = (b.logoUrl||b.logo)
-      ? `<img class="client-logo" src="${b.logoUrl||b.logo}" alt="logo" style="max-height:60px;max-width:180px;object-fit:contain">`
+    const hasClientLogo = !!(b.logoUrl||b.logo);
+    const brandBlock = hasClientLogo
+      ? `<img class="client-logo" src="${b.logoUrl||b.logo}" alt="logo" style="max-height:64px;max-width:200px;object-fit:contain">`
       : `<div class="logo-mark"><span class="dot"></span></div>
          <div><div class="brand-name">${b.clientName||b.name}</div><div class="brand-sub">${b.tagline}</div></div>`;
+    /* banderitas SOLO de los países configurados para el tenant/franquicia.
+       Si no hay países elegidos, no se muestran (no listar todos). */
+    let paises = (b.countries && b.countries.length) ? b.countries : [];
+    if(!paises.length){ /* derivar de los proyectos reales del tenant, si existen */
+      try{ const prj=(CX.data&&CX.data.projects)||[]; const set=new Set(); prj.forEach(p=>(p.countries||[]).forEach(c=>set.add(c))); paises=[...set]; }catch(e){}
+    }
+    const flagsRow = paises.length
+      ? `<div class="login-flags">${paises.slice(0,8).map(c=>`<span class="cflag" title="${CX.paisName?CX.paisName(c):c}">${c}</span>`).join('')}${paises.length>8?`<span style="font-size:11px;color:var(--t3);align-self:center">+${paises.length-8}</span>`:''}</div>`
+      : '';
+    /* logo pequeño de CXOrbia como "desarrollado por" (siempre visible en el pie del login) */
+    const cxLogo = `<svg width="16" height="16" viewBox="0 0 64 64" style="vertical-align:middle"><rect width="64" height="64" rx="14" fill="#0d2740"/><circle cx="32" cy="32" r="15" fill="none" stroke="#4ab4e6" stroke-width="6" stroke-dasharray="58 26"/><circle cx="44" cy="22" r="4.5" fill="#fff"/></svg>`;
+    const devForFooter = `<div class="login-poweredby">${cxLogo} <span>Desarrollado por <b>CXOrbia</b></span></div>`;
     lg.innerHTML=`
       <div class="login-card">
         <div class="login-brand">
@@ -28,6 +90,7 @@ CX.app = {
         <div class="login-divider"></div>
         <div class="login-title">${b.clientName?b.clientName:'Plataforma operativa de campo'}</div>
         <div class="login-sub">Selecciona un perfil para entrar al ${b.demoMode?'demo':'sistema'}</div>
+        ${flagsRow}
         <button class="role-btn role-admin" data-role="admin">
           <div class="r-ic">🖥️</div>
           <div><div class="r-t">Administración / Coordinación</div>
@@ -44,7 +107,8 @@ CX.app = {
           <div class="r-d">Portal móvil: visitas, certificación y pagos</div></div>
         </button>
         <div style="text-align:center;margin-top:6px"><a id="goReg" style="font-size:12.5px;color:var(--brand);font-weight:600;cursor:pointer">¿Eres evaluador nuevo? Regístrate aquí →</a></div>
-        ${b.clientName?`<div class="login-devfor">Plataforma operativa desarrollada para <b>${b.clientName}</b> por <b>${b.name}</b></div>`:''}
+        ${b.clientName?`<div class="login-devfor">Plataforma operativa para <b>${b.clientName}</b></div>`:''}
+        ${devForFooter}
         <div style="text-align:center;margin-top:14px"><button class="btn btn-ghost btn-sm" id="pwaBtn">📲 Instalar como app</button></div>
         ${b.demoMode?`<div style="text-align:center;margin-top:10px;font-size:11px;color:var(--t3)">
           <span class="bdg bdg-a">● Demo comercial · datos ficticios</span></div>`:''}

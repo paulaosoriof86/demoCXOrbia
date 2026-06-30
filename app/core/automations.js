@@ -32,11 +32,45 @@ window.CX = window.CX || {};
   /* ---------- Proveedor de IA (configurable · por defecto Gemini económico) ---------- */
   CX.ai = {
     _cfg:null,
-    defaults(){ return {provider:'gemini', model:'gemini-1.5-flash', apiKey:'', endpoint:'', activa:false, cacheTpl:true}; },
+    defaults(){ return {provider:'', model:'', apiKey:'', endpoint:'', activa:false, cacheTpl:true}; },
     cfg(){ if(this._cfg)return this._cfg; try{ this._cfg=Object.assign(this.defaults(), JSON.parse(localStorage.getItem('cx_ai')||'{}')); }catch(e){ this._cfg=this.defaults(); } return this._cfg; },
     save(patch){ this._cfg=Object.assign(this.cfg(), patch||{}); try{ localStorage.setItem('cx_ai', JSON.stringify(this._cfg)); }catch(e){} },
-    ready(){ const c=this.cfg(); return c.activa && (c.apiKey||c.endpoint); },
-    PROVIDERS:{gemini:{label:'Google Gemini', modelos:['gemini-1.5-flash','gemini-1.5-flash-8b','gemini-2.0-flash']}, openai:{label:'OpenAI', modelos:['gpt-4o-mini']}, anthropic:{label:'Anthropic', modelos:['claude-3-haiku']}, custom:{label:'Endpoint propio', modelos:['custom']}},
+    ready(){ const c=this.cfg(); return c.activa && c.provider && (c.apiKey||c.endpoint); },
+    /* Llamada REAL al proveedor configurado. Enruta a Gemini/OpenAI/Anthropic según provider.
+       Devuelve Promise<string>. Si no hay key, rechaza (los módulos caen a su heurística). */
+    ask(prompt, opts){
+      const c=this.cfg(); opts=opts||{};
+      if(!c.activa || !c.provider || !(c.apiKey||c.endpoint)) return Promise.reject(new Error('IA no configurada'));
+      const model=c.model||(this.PROVIDERS[c.provider]&&this.PROVIDERS[c.provider].modelos[0]);
+      try{
+        if(c.provider==='gemini'){
+          const url='https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+encodeURIComponent(c.apiKey);
+          return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})})
+            .then(r=>r.json()).then(j=>{const t=j&&j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts[0].text; if(!t)throw new Error('Sin respuesta'); return t;});
+        }
+        if(c.provider==='openai'){
+          return fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+c.apiKey},body:JSON.stringify({model:model,messages:[{role:'user',content:prompt}]})})
+            .then(r=>r.json()).then(j=>{const t=j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content; if(!t)throw new Error('Sin respuesta'); return t;});
+        }
+        if(c.provider==='anthropic'){
+          return fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':c.apiKey,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:model,max_tokens:opts.maxTokens||1500,messages:[{role:'user',content:prompt}]})})
+            .then(r=>r.json()).then(j=>{const t=j&&j.content&&j.content[0]&&j.content[0].text; if(!t)throw new Error('Sin respuesta'); return t;});
+        }
+        if(c.provider==='custom' && c.endpoint){
+          return fetch(c.endpoint,{method:'POST',headers:{'Content-Type':'application/json',...(c.apiKey?{'Authorization':'Bearer '+c.apiKey}:{})},body:JSON.stringify({prompt:prompt,model:model})})
+            .then(r=>r.json()).then(j=>j.text||j.output||j.response||JSON.stringify(j));
+        }
+      }catch(e){ return Promise.reject(e); }
+      return Promise.reject(new Error('Proveedor no soportado'));
+    },
+    /* Catálogo SIN sesgo: cada consultora elige el modelo por costo/beneficio.
+       costo = índice relativo de costo por 1M tokens (1=más barato). */
+    PROVIDERS:{
+      gemini:{label:'Google Gemini', modelos:['gemini-2.0-flash','gemini-1.5-flash','gemini-1.5-flash-8b','gemini-1.5-pro'], costo:1, fuerte:'Costo bajo + multimodal + tokens largos', ideal:'Operación diaria, importadores, alto volumen'},
+      openai:{label:'OpenAI (ChatGPT)', modelos:['gpt-4o-mini','gpt-4o','o1-mini'], costo:2, fuerte:'Ecosistema maduro, razonamiento sólido', ideal:'Set-up complejo, propuestas, análisis'},
+      anthropic:{label:'Anthropic (Claude)', modelos:['claude-3-5-haiku','claude-3-5-sonnet','claude-3-opus'], costo:3, fuerte:'Mejor redacción y documentos largos', ideal:'Instructivos, manuales, copy de marca'},
+      custom:{label:'Endpoint propio / otro', modelos:['custom'], costo:0, fuerte:'Modelo local o proveedor propio', ideal:'Cumplimiento/privacidad estricta'}
+    },
   };
 
   /* ---------- Iterar/refinar lo entregado por IA (reutilizable en todo importador) ----------

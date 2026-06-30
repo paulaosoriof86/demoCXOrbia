@@ -53,6 +53,8 @@ CX.finStore = {
   cxc(pid){ return this._cxc[pid] || (this._cxc[pid]=[]); },
   addCxp(pid,r){ this.cxp(pid).push(Object.assign({id:'p'+Date.now().toString(36),saldo:+r.monto||0},r)); CX.bus&&CX.bus.emit('fin'); },
   addCxc(pid,r){ this.cxc(pid).push(Object.assign({id:'c'+Date.now().toString(36),saldo:+r.monto||0},r)); CX.bus&&CX.bus.emit('fin'); },
+  editCx(pid,kind,id,patch){ const arr=kind==='cxc'?this.cxc(pid):this.cxp(pid); const r=arr.find(x=>x.id===id); if(r){Object.assign(r,patch); if(patch.saldo!=null)r.saldo=+patch.saldo||0;} CX.bus&&CX.bus.emit('fin'); return r; },
+  delCx(pid,kind,id){ if(kind==='cxc')this._cxc[pid]=this.cxc(pid).filter(x=>x.id!==id); else this._cxp[pid]=this.cxp(pid).filter(x=>x.id!==id); CX.bus&&CX.bus.emit('fin'); },
   /* abono a una CxP: reduce saldo y registra egreso vinculado */
   abonarCxp(pid,id,monto){ const r=this.cxp(pid).find(x=>x.id===id); if(!r)return; r.saldo=Math.max(0,(r.saldo||0)-(+monto||0)); this.addMov(pid,{tipo:'egreso',cat:'Abono CxP · '+(r.concepto||''),tipoEgreso:'abono_cxp',pais:r.pais,monto:-(+monto||0),desc:'Abono a cuenta por pagar',estado:'Pagado',origen:'cxp',cxpId:id}); },
 

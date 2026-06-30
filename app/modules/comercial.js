@@ -128,9 +128,12 @@ CX.module('costos', ({data,ui})=>{
       </div>
       <div style="border:1px solid var(--border);border-radius:12px;padding:18px 20px">
         <div class="between" style="border-bottom:2px solid var(--brand);padding-bottom:10px;margin-bottom:12px">
-          <div><div style="font-size:17px;font-weight:800;color:var(--brand-dark)" contenteditable>Propuesta de servicio</div>
-          <div style="font-size:12px;color:var(--t3)">${cli.name||'Cliente'} · ${p.name} · ${r.modalidad}</div></div>
-          <div style="font-size:11px;color:var(--t3);text-align:right">${new Date().toLocaleDateString('es-GT')}<br>${cfg.moneda}</div>
+          <div class="flex" style="gap:12px;align-items:center">
+            ${(CX.BRAND.logo||CX.BRAND.logoUrl)?`<img src="${CX.BRAND.logo||CX.BRAND.logoUrl}" style="max-height:42px;max-width:130px;object-fit:contain">`:''}
+            <div><div style="font-size:17px;font-weight:800;color:var(--brand-dark)" contenteditable>Propuesta de servicio</div>
+            <div style="font-size:12px;color:var(--t3)">${cli.name||'Cliente'} · ${p.name} · ${r.modalidad}</div></div>
+          </div>
+          <div style="font-size:11px;color:var(--t3);text-align:right">${CX.BRAND.name||'CXOrbia'}<br>${new Date().toLocaleDateString('es-GT')}<br>${cfg.moneda}</div>
         </div>
         <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px" id="propIntro" contenteditable>${intro}</div>
         <div style="font-size:12px;font-weight:700;color:var(--t1);margin-bottom:6px">Incluye</div>

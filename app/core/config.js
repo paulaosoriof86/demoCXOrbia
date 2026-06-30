@@ -279,6 +279,8 @@ CX.ROLES = [
   { id:'super',  label:'Super Admin',     desc:'Acceso total a toda la plataforma' },
   { id:'admin',  label:'Equipo administrativo', desc:'Operación + finanzas' },
   { id:'ops',    label:'Equipo operativo', desc:'Solo operación' },
+  { id:'coordinador', label:'Coordinador / Representante', desc:'Administra proyectos y HR de su(s) país(es) asignado(s)', scopeCountry:true },
+  { id:'aliado', label:'Aliado / Franquiciado', desc:'Opera proyectos regionales delegados · su país y sus shoppers', scopeCountry:true },
   { id:'shopper',label:'Shopper / Evaluador', desc:'Portal móvil' },
 ];
 

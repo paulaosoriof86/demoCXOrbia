@@ -1,0 +1,121 @@
+# CAMBIOS-PROTOTIPO.md — Bitácora de mejoras para aplicar a TyA
+
+> Cada entrada describe un cambio hecho en el prototipo CXOrbia DESPUÉS de la migración inicial.
+> Úsalo para replicar las mejoras en tu plataforma de TyA ya migrada.
+> Formato: archivo · qué cambió · por qué · cómo aplicarlo · cómo probarlo.
+
+---
+
+## Sesión 50 — 2026-06-29
+
+### 1. IA multi-proveedor SIN sesgo (Gemini/ChatGPT/Claude/Endpoint propio)
+- **ARCHIVO:** `app/core/automations.js` (objeto `CX.ai`)
+- **QUÉ CAMBIÓ:** Se quitó el sesgo a Gemini. `defaults()` ahora arranca sin proveedor preseleccionado (`provider:''`). `PROVIDERS` ahora incluye metadatos de costo/beneficio (`costo`, `fuerte`, `ideal`) y más modelos por proveedor: Gemini (2.0-flash, 1.5-flash, 1.5-flash-8b, 1.5-pro), OpenAI (gpt-4o-mini, gpt-4o, o1-mini), Anthropic (claude-3-5-haiku, claude-3-5-sonnet, claude-3-opus), custom.
+- **POR QUÉ:** Cada consultora debe elegir su IA por costo/beneficio, no quedar forzada a Gemini.
+- **CÓMO APLICARLO A TyA:** Reemplazar el bloque `CX.ai = {...}` en `core/automations.js` con la versión nueva (incluye `PROVIDERS` enriquecido y `ready()` que valida `provider`).
+- **CÓMO PROBARLO:** Configuración → Integraciones → IA: deben aparecer los 4 proveedores con sus modelos. Ninguno preseleccionado por defecto.
+
+### 2. PWA — instalación automática como app + favicon = logo de la consultora
+- **ARCHIVOS:** `app/app.js` (funciones nuevas `CX.setFavicon`, `CX.setupPWA`, llamadas en `init()`), `app/sw.js` (nuevo, service worker).
+- **QUÉ CAMBIÓ:**
+  - `CX.setFavicon()`: pone el logo de la marca como favicon y apple-touch-icon. Si no hay logo, genera un favicon SVG con el color de marca.
+  - `CX.setupPWA()`: registra `sw.js`, detecta dispositivo/navegador. En Chrome/Edge/Android captura `beforeinstallprompt` y lo dispara automáticamente al primer gesto del usuario. En iOS Safari muestra una guía discreta (no soporta prompt programático).
+- **POR QUÉ:** El usuario pidió descarga/instalación automática como app, sin instrucciones manuales, con el favicon de la consultora.
+- **CÓMO APLICARLO A TyA:** Copiar `sw.js` a la raíz de `/app`. Agregar las funciones `CX.setFavicon` y `CX.setupPWA` al inicio de `app.js` y llamarlas en `init()` (después de `CX.applyBrand()`).
+- **CÓMO PROBARLO:** Abrir en Chrome → debe aparecer el prompt de instalación al hacer clic. El favicon de la pestaña debe ser el logo cargado en Identidad de Marca.
+- **NOTA BACKEND:** Para que el favicon del logo persista en producción, el logo debe servirse desde Storage (no solo localStorage). Anotar para ChatGPT.
+
+### 3. Roles de franquicia: Coordinador/Representante y Aliado/Franquiciado
+- **ARCHIVO:** `app/core/config.js` (`CX.ROLES`)
+- **QUÉ CAMBIÓ:** Se agregaron 2 roles entre `ops` y `shopper`:
+  - `coordinador` (Coordinador / Representante): administra proyectos y HR de su(s) país(es) asignado(s). `scopeCountry:true`.
+  - `aliado` (Aliado / Franquiciado): opera proyectos regionales delegados, su país y sus shoppers. `scopeCountry:true`.
+- **POR QUÉ:** Modelo de franquicia: la consultora da acceso a representantes/coordinadores de otros países para administrar proyectos/HR de un país específico.
+- **CÓMO APLICARLO A TyA:** Agregar los 2 objetos al array `CX.ROLES` en `core/config.js`.
+- **PENDIENTE (próxima sesión):** Implementar el filtrado real por `scopeCountry` (que el coordinador solo vea su país), la asignación de país por usuario en Usuarios & Permisos, y la auditoría de quién gestionó cada acción.
+- **CÓMO PROBARLO:** Usuarios & Permisos → al crear/editar usuario, los 2 roles nuevos aparecen en el selector.
+
+### 4. Documentos enviables a TyA (no son código — son guías)
+- `CXOrbia - Comparativo de Modelos de IA.html` — cuadro comparativo costo/beneficio de Gemini/ChatGPT/Claude/Endpoint propio, en formato Orbia. Imprimible a PDF.
+- `CXOrbia - Guía Maestra de Migración a TyA.html` — actualizada con creación de base de datos NUEVA + documentación obligatoria.
+
+---
+
+### 5. Login white-label: logo del cliente + banderitas + "Desarrollado por CXOrbia"
+- **ARCHIVOS:** `app/app.js` (`showLogin`), `app/styles/layout.css`
+- **QUÉ CAMBIÓ:** El login ahora muestra el logo del cliente (reemplaza el de CXOrbia SOLO en el login, NO en el sidebar). Si el cliente es franquicia/representante, muestra banderitas de sus países (`CX.BRAND.countries` o los países configurados). Footer "Desarrollado por CXOrbia" con logo pequeño cuando hay marca de cliente.
+- **POR QUÉ:** Que el login se sienta del cliente (franquicia), conservando crédito a CXOrbia abajo.
+- **CÓMO APLICARLO A TyA:** Reemplazar `showLogin()` en `app.js` y agregar las clases `.login-flags` y `.login-poweredby` en `layout.css`.
+- **NOTA:** Para las banderitas por país de la franquicia, setear `CX.BRAND.countries = ['GT','HN']` en la config del tenant.
+
+### 6. P0 — Mis Visitas y Mis Beneficios filtran SOLO por shopper autenticado
+- **ARCHIVOS:** `app/modules/misvisitas.js`, `app/modules/beneficios.js`
+- **QUÉ CAMBIÓ:** Las tarjetas activas de Mis Visitas (asignada/agendada/realizada) ahora salen de `visitsForShopper(shopperId)`, no de todo el proyecto. Mis Beneficios filtra las liquidaciones por las visitas del shopper autenticado.
+- **POR QUÉ:** Bug crítico del resumen de ChatGPT (P0.1, P0.2): un shopper podía ver/actuar sobre visitas y beneficios que no eran suyos.
+- **CÓMO APLICARLO A TyA:** Reemplazar el encabezado de ambos módulos (las primeras ~8 líneas donde se define `base`/`all`).
+- **NOTA BACKEND:** El filtro usa `shopperId`. Confirmar que cada visita/liquidación migrada tenga el `shopperId` correcto (no solo nombre). Los aliases de nombre son solo para histórico, no para permisos.
+
+---
+
+### 7. Login: banderitas + "Desarrollado por CXOrbia" siempre visibles
+- **ARCHIVO:** `app/app.js` (`showLogin`)
+- **QUÉ CAMBIÓ:** Las banderitas de países y el footer "Desarrollado por CXOrbia" ahora se muestran siempre (antes solo con logo de cliente cargado).
+- **CÓMO APLICARLO A TyA:** Ya incluido en el `showLogin` reemplazado.
+
+### 8. Logo del cliente en topbar y propuestas (white-label)
+- **ARCHIVOS:** `app/core/topbar.js` (`renderLogo`, ya existía), `app/modules/comercial.js` (encabezado de propuesta)
+- **QUÉ CAMBIÓ:** La propuesta generada ahora muestra el logo del cliente en el membrete. El topbar ya tiene slot de logo (`#tbClientLogo`) que se llena con `CX.BRAND.logo`.
+- **DÓNDE SE CONFIGURA EL WHITE-LABEL:** Configuración → 🎨 Marca (Identidad de Marca) → subir logo. Aplica a: topbar, login, propuestas y documentos.
+- **CÓMO APLICARLO A TyA:** Reemplazar el encabezado de propuesta en `comercial.js`.
+
+### 9. Finanzas: CxC/CxP clickeables con detalle, editar y cambiar estado
+- **ARCHIVOS:** `app/core/finanzas-core.js` (`editCx`, `delCx`), `app/modules/finanzas.js` (modal detalle CxP)
+- **QUÉ CAMBIÓ:** Cada cuenta por pagar/cobrar es clickeable → modal con saldo editable, estado (pendiente/parcial/pagada/programada), nota, eliminar. Muestra shopper/acreedor y visita vinculada.
+- **POR QUÉ:** La usuaria reportó que CxC/CxP no tenían detalle ni opción de editar/cambiar estado.
+- **CÓMO APLICARLO A TyA:** Agregar `editCx`/`delCx` a `finanzas-core.js` y el bloque `data-cxdet` en `finanzas.js`.
+
+---
+
+### 10. IA real (CX.ai.ask) + docs entregables ChatGPT
+- **ARCHIVO:** `app/core/automations.js` (`CX.ai.ask`)
+- **QUÉ CAMBIÓ:** Se implementó `CX.ai.ask(prompt)` con fetch REAL a Gemini/OpenAI/Anthropic/custom según el proveedor configurado. Antes el método se invocaba en 6 módulos (importador, marca, academia, correo, crm, set-up) pero NO existía → al conectar una key, fallaba. Ahora es funcional: con key conectada usa IA real con el documento/prompt; sin key, los módulos caen a su heurística.
+- **POR QUÉ:** Raíz de #163 (IA no hardcodeada). El análisis IA, set-up, importador y generación ahora son reales al conectar el proveedor.
+- **CÓMO APLICARLO A TyA:** Reemplazar el bloque `CX.ai = {...}` en `core/automations.js` (ya incluye `ask`).
+- **DOCS NUEVOS:** `RESUMEN-PARA-CHATGPT-BACKEND.md`, `PENDIENTES-PROTOTIPO.md`, `CHECKLIST-VALIDACION-PROTOTIPO.md` en `app/docs/` (los 4 entregables que exige el resumen de ChatGPT).
+
+---
+
+### 11. Login: banderitas solo de países configurados + Manuales completos en Academia
+- **ARCHIVOS:** `app/app.js` (banderitas), `app/core/manuales-data.js` (nuevo), `app/modules/academia.js` (botón + lector), `app/index.html` (cargar script)
+- **QUÉ CAMBIÓ:**
+  - Login: las banderitas ahora muestran SOLO los países configurados del tenant (`CX.BRAND.countries`) o los de los proyectos reales — no todos los de LatAm.
+  - Academia → botón **📖 Manuales**: biblioteca de manuales completos legibles in-app, navegables por secciones. Manual Maestro (Super Admin, todo el sistema) + manuales por rol (admin, ops, coordinador, shopper, cliente). Autoadministrable (crear/editar).
+- **CÓMO APLICARLO A TyA:** Copiar `core/manuales-data.js`, cargarlo en `index.html` antes de academia, y aplicar los cambios de `academia.js` (botón acadManuales + openManuales/readManual) y `app.js` (banderitas).
+- **NOTA:** Para que el login muestre solo TUS países: Configuración → Países, o setear `CX.BRAND.countries`.
+
+---
+
+### 12. Login: banderitas como chips (Windows no renderiza emoji de bandera)
+- **ARCHIVOS:** `app/app.js` (flagsRow), `app/styles/layout.css` (.cflag)
+- **QUÉ CAMBIÓ:** Las banderitas emoji (🇬🇹) no se renderizan en Windows (muestran "GT"). Se reemplazaron por chips estilizados con el código de país y tooltip con el nombre — se ven igual en todo dispositivo.
+- **CÓMO APLICARLO A TyA:** Reemplazar flagsRow en `app.js` y agregar `.login-flags .cflag` en `layout.css`.
+
+---
+
+## Cómo aplicar estos cambios a TyA (proceso general)
+
+1. **Si TyA corre desde el repo de GitHub:** haz pull de los archivos listados arriba (o reemplázalos manualmente). El backend (Firebase) NO se toca — estos cambios son solo de frontend.
+2. **Archivos tocados esta sesión:** `core/automations.js`, `core/config.js`, `app.js`, `sw.js` (nuevo).
+3. **Verifica** que la app cargue sin errores de consola tras reemplazar.
+4. **Avísale a ChatGPT** (backend) los puntos marcados como NOTA BACKEND para que ajuste lo necesario (ej. servir el logo desde Storage).
+
+---
+
+## Pendientes 🔴 priorizados (próximas sesiones)
+
+Ver `PENDIENTES-PROTOTIPO.md` para la lista completa. Top de impacto para TyA:
+1. **IA real no hardcodeada** — que análisis/set-up/hoja de ruta usen el modelo conectado con el documento adjunto (no respuestas simuladas).
+2. **Finanzas profundo** — CxC/CxP editables con detalle por shopper, impuestos por país, importador inteligente de movimientos.
+3. **Postulaciones** — todos los botones + sincronía bidireccional sin duplicación.
+4. **P0 shopper** — Mis Beneficios / Mis Visitas filtran solo por shopper autenticado.
+5. **Academia** — cursos profundos + manuales visibles + recursos que se embeben.

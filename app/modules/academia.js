@@ -879,6 +879,51 @@ CX.module('aprendizaje', ({data,role,ui})=>{
     host.querySelector('#finQuiz')?.addEventListener('click',()=>{setProg(lesson.id,100);setProg(course.id,100);ui.toast('🏆 Curso completado','ok');openLesson=null;openCourse=null;draw();});
   };
 
+  /* ── Manuales: biblioteca por rol, lector in-app ── */
+  const openManuales=()=>{
+    const list=(CX.manualesData?CX.manualesData.all():[]);
+    const roleVisible=role==='admin'?list:list.filter(m=>m.rol===role||m.rol==='superadmin'&&role==='admin');
+    const visibles=role==='admin'?list:list.filter(m=>m.rol===role);
+    const shown=visibles.length?visibles:list.filter(m=>m.rol==='m_'+role)||list;
+    const finalList=role==='admin'?list:(visibles.length?visibles:list);
+    ui.modal('📖 Manuales CXOrbia', `
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">Manuales completos y legibles aquí mismo. ${role==='admin'?'Como administrador ves todos los manuales por rol.':'Ves el manual de tu rol.'}</p>
+      <div style="display:grid;gap:10px">
+        ${finalList.map(m=>`<button class="card hov manualPick" data-mid="${m.id}" style="padding:14px 16px;cursor:pointer;text-align:left;border:1px solid var(--border);background:#fff;display:flex;gap:12px;align-items:flex-start">
+          <div style="font-size:24px">${m.ic}</div>
+          <div><div style="font-size:13.5px;font-weight:700;color:var(--t1)">${m.titulo}</div>
+          <div style="font-size:11.5px;color:var(--t3);margin-top:2px">${m.desc}</div>
+          <div style="font-size:10.5px;color:var(--brand);font-weight:600;margin-top:4px">${(m.secciones||[]).length} secciones · Leer →</div></div>
+        </button>`).join('')}
+      </div>
+      ${role==='admin'?`<div style="text-align:right;margin-top:12px"><button class="btn btn-ghost btn-sm" id="manualNew">＋ Crear manual</button></div>`:''}
+    `,{onMount:(ov,close)=>{
+      ov.querySelectorAll('.manualPick').forEach(b=>b.addEventListener('click',()=>{close();readManual(b.dataset.mid);}));
+      ov.querySelector('#manualNew')?.addEventListener('click',()=>{close();CX.manualesData.add({rol:'admin',ic:'📘',titulo:'Manual nuevo',desc:'Descripción',secciones:[{t:'Sección 1',html:'<p>Contenido…</p>'}]});ui.toast('Manual creado · edítalo','ok');openManuales();});
+    }});
+  };
+  const readManual=(mid)=>{
+    const m=(CX.manualesData.all()).find(x=>x.id===mid); if(!m)return;
+    let secIdx=0;
+    const render=(ov)=>{
+      const sec=m.secciones[secIdx]||{t:'',html:''};
+      ov.querySelector('#manualBody').innerHTML=`
+        <div class="flex wrap" style="gap:5px;margin-bottom:14px">
+          ${m.secciones.map((s,i)=>`<button class="btn btn-sm ${i===secIdx?'btn-pr':'btn-ghost'} mSecBtn" data-si="${i}" style="font-size:11px">${i+1}. ${s.t.replace(/^\d+\s*·\s*/,'')}</button>`).join('')}
+        </div>
+        <div class="acad-content" style="font-size:13.5px;line-height:1.7;color:var(--t1)">${sec.html}</div>
+        <div class="between" style="margin-top:18px;border-top:1px solid var(--border-2);padding-top:12px">
+          <button class="btn btn-ghost btn-sm" id="mPrev" ${secIdx===0?'disabled':''}>← Anterior</button>
+          <span style="font-size:11.5px;color:var(--t3)">${secIdx+1} de ${m.secciones.length}</span>
+          <button class="btn btn-pr btn-sm" id="mNext" ${secIdx===m.secciones.length-1?'disabled':''}>Siguiente →</button>
+        </div>`;
+      ov.querySelectorAll('.mSecBtn').forEach(b=>b.addEventListener('click',()=>{secIdx=+b.dataset.si;render(ov);}));
+      ov.querySelector('#mPrev')?.addEventListener('click',()=>{if(secIdx>0){secIdx--;render(ov);}});
+      ov.querySelector('#mNext')?.addEventListener('click',()=>{if(secIdx<m.secciones.length-1){secIdx++;render(ov);}});
+    };
+    ui.modal(m.ic+' '+m.titulo, `<div id="manualBody"></div>`, {wide:true, onMount:(ov)=>render(ov)});
+  };
+
   /* ── lista de cursos ── */
   const draw=()=>{
     if(openLesson){const c=getCourses().find(x=>x.id===openCourse);if(c)return lessonPlayer(c);}
@@ -896,6 +941,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         <div class="between" style="margin-bottom:14px">
           <div><div style="font-size:18px;font-weight:900;color:#fff">🎓 Academia CXOrbia <span style="font-size:13px;font-weight:400;color:#94a3b8">Capacitación, certificaciones y recursos</span></div></div>
           <div class="flex" style="gap:8px">
+            <button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.3)" id="acadManuales">📖 Manuales</button>
             ${role==='admin'?`<button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)" id="acadNew">✨ Crear con IA</button><button class="btn btn-sm" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)" id="acadLoad">⤒ Cargar recurso</button>`:''}
           </div>
         </div>
@@ -926,6 +972,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           </div>`;}).join('')}
       </div>`;
 
+    host.querySelector('#acadManuales')?.addEventListener('click',()=>openManuales());
     host.querySelectorAll('[data-course]').forEach(c=>c.addEventListener('click',()=>{openCourse=c.dataset.course;const course=getCourses().find(x=>x.id===openCourse);if(course){openLesson=course.lessons[0].id;lessonPlayer(course);}}));
     host.querySelectorAll('.acad-cat').forEach(b=>b.addEventListener('click',()=>{activeCat=b.dataset.cat;draw();}));
     host.querySelectorAll('.acad-edit').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='shopper'?'shopper':role==='cliente'?'cliente':'admin';const cc=getCourses().find(x=>x.id===b.dataset.cid);if(!cc)return;

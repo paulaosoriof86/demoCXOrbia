@@ -1,7 +1,11 @@
 /* CXOrbia · Mis Beneficios (shopper) — honorarios vs reembolsos + beneficios en especie */
 CX.module('beneficios', ({data,ui})=>{
   const p=data.project();
-  const all=CX.liq.forProject(data);
+  /* P0.1: SOLO los beneficios del shopper autenticado (por shopperId, no por nombre) */
+  const sid=(CX.session.user&&CX.session.user.shopperId)||'sh1';
+  const myVisitIds=new Set((data.visitsForShopper?data.visitsForShopper(sid):[]).map(v=>v.id));
+  const allProj=CX.liq.forProject(data);
+  const all=allProj.filter(l=>myVisitIds.size?myVisitIds.has(l.visitaId):true);
   const cur=p.currency[p.countries[0]];
   /* totales separados */
   const hon = all.reduce((a,l)=>a+l.honorario,0);

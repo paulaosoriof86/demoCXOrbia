@@ -54,15 +54,22 @@ CX.module('automatizaciones', ({data,ui})=>{
         <div style="font-size:11px;color:var(--t3);margin-top:8px">Programa recordatorios automáticos (Make) o dispáralos manualmente.</div>
       </div>
       <div class="card card-p">
-        <div class="card-t" style="font-size:13px;margin-bottom:10px">🤖 Asistente de IA (importadores, extracción, generación)</div>
-        <div class="grid g2" style="gap:8px 12px">
-          <div><label class="lbl">Proveedor</label><select class="sel" id="aiProv">${provOpts}</select></div>
-          <div><label class="lbl">Modelo (económico)</label><select class="sel" id="aiModel">${modelOpts}</select></div>
-          <div style="grid-column:1/3"><label class="lbl">API key / endpoint</label><input class="inp" id="aiKey" value="${aic.apiKey||''}" placeholder="Pega tu API key de ${(AI.PROVIDERS[aic.provider]||{}).label||''}"></div>
+        <div class="between" style="margin-bottom:10px"><div class="card-t" style="font-size:13px">🤖 Asistente de IA (importadores, extracción, generación)</div>
+          <button class="btn btn-ghost btn-sm" id="aiCompare" style="font-size:11px">📊 Comparar modelos</button></div>
+        <div style="font-size:11.5px;color:var(--t3);margin-bottom:10px">CXOrbia es <b>agnóstica</b>: elige el modelo que prefieras por costo/beneficio. Ninguno viene preseleccionado.</div>
+        <div class="grid g4" style="gap:8px;margin-bottom:12px">
+          ${Object.entries(AI.PROVIDERS).map(([k,p])=>`<button class="card hov aiPick" data-aip="${k}" style="padding:11px;cursor:pointer;text-align:left;border:1px solid ${aic.provider===k?'var(--brand)':'var(--border)'};background:#fff;${aic.provider===k?'box-shadow:0 0 0 2px var(--brand-light)':''}">
+            <div style="font-size:12.5px;font-weight:700;color:var(--t1)">${p.label}${aic.provider===k?' <span style="color:var(--brand);font-size:10px">●</span>':''}</div>
+            <div style="font-size:10px;color:var(--t3);margin-top:2px">${'💲'.repeat(p.costo||1)} · ${p.ideal||''}</div></button>`).join('')}
         </div>
-        <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-top:10px"><input type="checkbox" id="aiOn" ${aic.activa?'checked':''}> Activar IA como asistente (mapeo de columnas, extracción de documentos, generación de cuestionarios/propuestas)</label>
-        <div style="font-size:11px;color:var(--t3);margin-top:6px">Recomendado <b>Gemini Flash</b> por costo/token; con caché de plantillas. La IA es <b>opcional</b>: sin ella, los importadores usan heurística (sin costo).</div>
+        <div class="grid g2" style="gap:8px 12px">
+          <div><label class="lbl">Modelo</label><select class="sel" id="aiModel">${modelOpts}</select></div>
+          <div><label class="lbl">API key / endpoint</label><input class="inp" id="aiKey" value="${aic.apiKey||''}" placeholder="Pega tu API key de ${(AI.PROVIDERS[aic.provider]||{}).label||'tu proveedor'}"></div>
+        </div>
+        <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-top:10px"><input type="checkbox" id="aiOn" ${aic.activa?'checked':''}> Activar IA como asistente (mapeo, extracción de documentos, generación de cuestionarios/propuestas)</label>
+        <div style="font-size:11px;color:var(--t3);margin-top:6px">La IA es <b>opcional</b>: sin ella, los importadores usan heurística (sin costo). El modelo que elijas aplica a TODAS las funciones inteligentes.</div>
         <button class="btn btn-soft btn-sm" id="aiSave" style="margin-top:10px">Guardar IA</button>
+        <select class="sel" id="aiProv" style="display:none">${provOpts}</select>
       </div>
     </div>
 
@@ -86,6 +93,16 @@ CX.module('automatizaciones', ({data,ui})=>{
     host.querySelectorAll('[data-int]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.int==='Outlook / M365'){AI.save({_outlook:true});ui.toast('Outlook vinculado (demo) · correo y calendario disponibles','ok');draw();}else ui.toast(b.dataset.int+': vinculación (demo)','ok');}));
     host.querySelector('#scanBtn').addEventListener('click',()=>{const r=A.notifyPendientes();ui.toast(r.alertas+' alerta(s) de visitas atrasadas enviadas','ok',3200);draw();});
     host.querySelector('#aiProv').addEventListener('change',e=>{AI.save({provider:e.target.value, model:(AI.PROVIDERS[e.target.value]||{}).modelos[0]});draw();});
+    host.querySelectorAll('.aiPick').forEach(b=>b.addEventListener('click',()=>{AI.save({provider:b.dataset.aip, model:(AI.PROVIDERS[b.dataset.aip]||{}).modelos[0]});draw();}));
+    host.querySelector('#aiCompare')?.addEventListener('click',()=>{
+      ui.modal('📊 Comparativo de modelos de IA',`
+        <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Elige por costo/beneficio según tu operación. CXOrbia funciona con cualquiera.</p>
+        <table class="tbl"><thead><tr><th>Proveedor</th><th>Costo</th><th>Fuerte en</th><th>Ideal para</th></tr></thead><tbody>
+        ${Object.values(AI.PROVIDERS).map(p=>`<tr><td><b>${p.label}</b></td><td>${'💲'.repeat(p.costo||1)}</td><td style="font-size:12px">${p.fuerte||''}</td><td style="font-size:12px">${p.ideal||''}</td></tr>`).join('')}
+        </tbody></table>
+        <div style="margin-top:12px">${ui.aiBox('Recomendación general: empieza con el más económico para volumen (importadores, operación) y agrega uno premium solo para documentos de marca. Puedes cambiar el proveedor cuando quieras.','Sin dependencia de un solo proveedor')}</div>
+      `);
+    });
     host.querySelector('#aiSave').addEventListener('click',()=>{AI.save({model:host.querySelector('#aiModel').value, apiKey:host.querySelector('#aiKey').value.trim(), activa:host.querySelector('#aiOn').checked});ui.toast('Configuración de IA guardada'+(host.querySelector('#aiOn').checked?' · IA activa':''),'ok');});
   };
 

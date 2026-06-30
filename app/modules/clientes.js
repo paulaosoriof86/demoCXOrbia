@@ -55,7 +55,14 @@ window.CX = window.CX || {};
 
   D.addClient=function(cfg){ const id=cfg.id||('cl-'+slug(cfg.name||'cliente')+'-'+Date.now().toString(36).slice(-3));
     const c=Object.assign({id,estado:'Prospecto',plan:'estandar',contactos:[],industry:'',pais:'GT',desde:String(new Date().getFullYear())},cfg,{id});
-    this.clients.push(c); persist(); CX.bus&&CX.bus.emit('clients'); return c; };
+    this.clients.push(c); persist();
+    /* #174 — sincronizar con CRM: crear/vincular la Cuenta si no existe (misma entidad, una sola fuente) */
+    try{ if(CX.crmStore){ const cuentas=CX.crmStore.cuentas();
+      let cu=cuentas.find(x=>x.clientId===id || (x.nombre||'').toLowerCase()===(c.name||'').toLowerCase());
+      if(!cu){ CX.crmStore.addCuenta({nombre:c.name,rubro:c.industry||'',pais:c.pais,estado:c.estado==='Activo'?'Cliente':'Prospecto',clientId:id}); }
+      else { cu.clientId=id; cu.estado=c.estado==='Activo'?'Cliente':cu.estado; CX.crmStore.saveCuentas(); }
+    }}catch(e){}
+    CX.bus&&CX.bus.emit('clients'); return c; };
   D.updateClient=function(id,patch){ const c=this.getClient(id); if(!c)return null; Object.assign(c,patch);
     if(SEED_IDS.has(id)) patches[id]=Object.assign(patches[id]||{},patch); persist(); CX.bus&&CX.bus.emit('clients'); return c; };
 })();
