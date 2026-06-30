@@ -2,6 +2,44 @@
 
 Registro obligatorio de cambios de backend, infraestructura y migración.
 
+## 2026-06-30 — Corrección documental de continuidad RC/backend
+
+Motivo:
+
+- Se corrigió la continuidad documental para que los pendientes y el estado del backend no queden solo en la conversación.
+- Paula solicitó que los pendientes se mantengan en los archivos documentales vivos y se entreguen también como descargable.
+- Se mantiene la regla: si no está documentado, no se hizo.
+
+Archivos creados/actualizados:
+
+- `CAMBIOS-BACKEND.md`: se agrega esta entrada de control documental.
+- `RESUMEN-PARA-CLAUDE.md`: se consolida el estado real de la RC, backend DEV, gates, riesgos y próximos pasos.
+- `PENDIENTES-PROTOTIPO.md`: se consolidan y priorizan los pendientes reales del prototipo detectados en la RC visual correcta.
+- `INCIDENCIAS-INTEGRACION-BACKEND.md`: se separan errores de integración/backend/local de los pendientes que sí corresponden a Claude/prototipo.
+
+Estado real registrado:
+
+- Base visual correcta: `release/cxorbia-tya-rc-20260630`, no la rama backend vieja.
+- Firebase DEV validado técnicamente en `cxorbia-backend-dev`.
+- HR histórico V4 y `shopperBenefits` cargados/validados técnicamente.
+- Preview backend abre, pero el diagnóstico observado aún muestra datos demo/localStorage y Auth pendiente.
+- No se debe considerar producción hasta que el preview muestre Auth OK, fuente Firestore, tenant TyA y conteos TyA reales.
+
+Impacto:
+
+- No se modificó `/app/modules`.
+- No se modificó `/app/index.html`.
+- No se activó backend global.
+- No se hizo deploy de Hosting.
+- No se tocó producción.
+- No se subieron credenciales ni claves.
+
+Pendiente/riesgo:
+
+- Siguiente gate técnico: corregir/verificar diagnóstico del preview backend para distinguir claramente Firestore real vs localStorage/demo.
+- Resolver Auth DEV sin pedir claves a Paula y sin pegar contraseñas en ChatGPT.
+- No publicar como producción operativa hasta cumplir el gate mínimo documentado.
+
 ## 2026-06-30 - Preparacion release candidate desde prototipo bueno
 
 - Se separo la rama backend de la base visual del prototipo.
