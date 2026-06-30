@@ -41,7 +41,7 @@ window.CX = window.CX || {};
       enabled: true,
       email: safePreviewEmail(),
       passwordStorageKey: 'CXORBIA_DEV_PASSWORD',
-      allowPrompt: true,
+      allowPrompt: false,
     },
   });
 
