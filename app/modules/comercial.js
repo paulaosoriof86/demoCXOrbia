@@ -1,4 +1,17 @@
 /* CXOrbia · Comercial — Calculadora de costos & Propuestas (consultora) */
+/* CXOrbia · Comercial — Calculadora de costos & Propuestas (consultora)
+   #159: las propuestas quedan vinculadas al cliente con estado y trazabilidad. */
+CX.propStore = CX.propStore || {
+  _k:'cx_propuestas',
+  all(){ try{return JSON.parse(localStorage.getItem(this._k)||'[]');}catch(e){return [];} },
+  save(a){ try{localStorage.setItem(this._k,JSON.stringify(a));}catch(e){} CX.bus&&CX.bus.emit('crm'); },
+  forClient(name){ if(!name)return []; return this.all().filter(p=>(p.cliente||'').toLowerCase()===(''+name).toLowerCase()); },
+  add(prop){ const a=this.all(); a.unshift(Object.assign({id:'prop'+Date.now().toString(36),fecha:new Date().toISOString().slice(0,10),estado:'borrador'},prop)); this.save(a); return a[0]; },
+  setEstado(id,estado){ const a=this.all(); const p=a.find(x=>x.id===id); if(p){p.estado=estado;p.histStatus=(p.histStatus||[]);p.histStatus.push({estado,fecha:new Date().toISOString().slice(0,10)});} this.save(a); },
+  update(id,patch){ const a=this.all(); const p=a.find(x=>x.id===id); if(p)Object.assign(p,patch); this.save(a); },
+  del(id){ this.save(this.all().filter(x=>x.id!==id)); },
+};
+
 CX.module('costos', ({data,ui})=>{
   const p=data.project();
   const cur=(p.currency&&p.currency[p.countries[0]])||'$';
@@ -165,8 +178,14 @@ CX.module('costos', ({data,ui})=>{
           <input class="inp" id="webQ" value="${cli.name||''}" placeholder="Nombre / sitio del cliente" style="margin-bottom:12px">
           <div style="text-align:right"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('${CX.ai&&CX.ai.ready()?'Investigación aplicada a la propuesta':'Configura Gemini para investigación web real'}','ok');this.closest('.cx-ov').remove()">Investigar</button></div>`));
         ov.querySelector('[data-x5]').addEventListener('click',close);
-        ov.querySelector('#propPdf').addEventListener('click',()=>ui.toast('Propuesta exportada a PDF (demo)','ok'));
-        ov.querySelector('#propSend').addEventListener('click',()=>{close();ui.toast('Propuesta enviada al cliente (demo)','ok');});
+        ov.querySelector('#propPdf').addEventListener('click',()=>{
+          CX.propStore.add({cliente:cli.name||p.name,proyecto:p.name,modalidad:r.modalidad,visitas:r.visitas,total:r.precioCliente,moneda:cfg.moneda,intro:ov.querySelector('#propIntro').innerHTML,estado:'borrador'});
+          ui.toast('Propuesta guardada (borrador) · queda en la ficha del cliente','ok',3600);
+        });
+        ov.querySelector('#propSend').addEventListener('click',()=>{
+          CX.propStore.add({cliente:cli.name||p.name,proyecto:p.name,modalidad:r.modalidad,visitas:r.visitas,total:r.precioCliente,moneda:cfg.moneda,intro:ov.querySelector('#propIntro').innerHTML,estado:'enviada'});
+          close();ui.toast('📤 Propuesta enviada · registrada en la ficha del cliente con trazabilidad','ok',4000);
+        });
       };
       wire();
     }});

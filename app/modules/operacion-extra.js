@@ -253,8 +253,14 @@ CX.module('informes', ({data,ui})=>{
           <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="rptSave">Guardar versión personalizada</button></div>
         `,{onMount:(ov2,close2)=>{ov2.querySelector('#rptSave').addEventListener('click',()=>{const arr=customRpts();arr.push({id:'cr'+Date.now().toString(36),base:id,nota:ov2.querySelector('#rptNote').value,col:ov2.querySelector('#rptCol').value,fecha:new Date().toISOString().slice(0,10)});saveCustomRpts(arr);close2();close();ui.toast('Versión personalizada guardada','ok');});}});
       });
-      ov.querySelector('#rptPdf')?.addEventListener('click',()=>{close();ui.toast('Generando PDF: '+rpt[0]+'…','ok');});
-      ov.querySelector('#rptXls')?.addEventListener('click',()=>{close();ui.toast('Generando Excel: '+rpt[0]+'…','ok');});
+      ov.querySelector('#rptPdf')?.addEventListener('click',()=>{close();window.print();});
+      ov.querySelector('#rptXls')?.addEventListener('click',()=>{
+        /* exporta el contenido de la tabla del reporte a CSV real */
+        const tmp=document.createElement('div');tmp.innerHTML=content;const tbl=tmp.querySelector('table');
+        if(tbl){const rows=[...tbl.querySelectorAll('tr')].map(tr=>[...tr.querySelectorAll('th,td')].map(c=>'"'+(c.textContent||'').replace(/"/g,'""').trim()+'"').join(','));
+          const csv=rows.join('\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=rpt[0].replace(/[^\w]/g,'_')+'.csv';a.click();close();ui.toast('Reporte exportado a CSV','ok');}
+        else{close();ui.toast('Este reporte no tiene tabla exportable','warn');}
+      });
     }});
   };
 

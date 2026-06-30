@@ -12,7 +12,12 @@ CX.supportStore = CX.supportStore || {
   add(t){ this.list().unshift(Object.assign({id:'t'+Date.now().toString(36),estado:'abierto',prio:'media',fecha:new Date().toISOString().slice(0,10)},t));
     CX.notif&&CX.notif.push({to:'admin',tipo:'soporte',icon:'🆘',tono:'a',titulo:'Nueva solicitud de soporte',txt:(t.de||'')+' · '+(t.asunto||''),nav:'soporte'});
     CX.bus&&CX.bus.emit('support'); },
-  setEstado(id,e){ const t=this.list().find(x=>x.id===id); if(t){t.estado=e;CX.bus&&CX.bus.emit('support');} },
+  setEstado(id,e){ const t=this.list().find(x=>x.id===id); if(t){const prev=t.estado;t.estado=e;
+    /* #173 — notificar al solicitante el cambio de estado (datos vivos, sincronía real) */
+    if(prev!==e && t.rol){ const lbl={abierto:'Abierto',en_proceso:'En proceso',resuelto:'Resuelto'}[e]||e;
+      CX.notif&&CX.notif.push({to:t.rol,tipo:'soporte',icon:'🆘',tono:e==='resuelto'?'g':'b',titulo:'Tu solicitud de soporte: '+lbl,txt:(t.asunto||'')+(t.nota?' · '+t.nota:''),nav:'soporte'});
+      if(CX.automations&&CX.automations.fire)CX.automations.fire('soporte_estado',{de:t.de,rol:t.rol,asunto:t.asunto,estado:e}); }
+    CX.bus&&CX.bus.emit('support');} },
 };
 
 CX.module('soporte', ({data,role,ui})=>{
@@ -105,9 +110,22 @@ CX.module('soporte', ({data,role,ui})=>{
           <select class="sel" id="spEstDet" style="width:auto">${Object.keys({abierto:'Abierto',en_proceso:'En proceso',resuelto:'Resuelto'}).map(e=>`<option value="${e}" ${e===t.estado?'selected':''}>${({abierto:'Abierto',en_proceso:'En proceso',resuelto:'Resuelto'})[e]}</option>`).join('')}</select>
           <div class="flex" style="gap:8px">
             <button class="btn btn-soft btn-sm" id="spDetWa">📲 Responder WA</button>
+            <button class="btn btn-soft btn-sm" id="spDetResp">📌 Asignar responsable</button>
             <button class="btn btn-pr btn-sm" id="spDetSave">Guardar</button></div></div>`,
         {onMount:(ov,close)=>{
           ov.querySelector('#spDetSave').addEventListener('click',()=>{t.nota=ov.querySelector('#spNota').value;CX.supportStore.setEstado(t.id,ov.querySelector('#spEstDet').value);close();draw();ui.toast('Ticket actualizado','ok');});
+          ov.querySelector('#spDetResp')?.addEventListener('click',()=>{
+            ui.modal('📌 Asignar responsable',`
+              <label class="lbl">Responsable (rol)</label>
+              <select class="sel" id="rspRol" style="margin-bottom:8px"><option value="admin">Equipo administrativo</option><option value="ops">Equipo operativo</option><option value="coordinador">Coordinador</option></select>
+              <label class="lbl">Nombre del responsable</label><input class="inp" id="rspName" placeholder="Nombre" style="margin-bottom:8px">
+              <label class="lbl">Nota</label><input class="inp" id="rspNota" placeholder="Qué debe gestionar" style="margin-bottom:12px">
+              <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rspSave">Asignar</button></div>
+            `,{onMount:(o3,c3)=>o3.querySelector('#rspSave').addEventListener('click',()=>{
+              CX.automations.asignar({titulo:'Soporte: '+t.asunto,detalle:o3.querySelector('#rspNota').value||t.asunto,responsable:o3.querySelector('#rspName').value||'—',responsableRol:o3.querySelector('#rspRol').value,nav:'soporte'});
+              c3();ui.toast('Responsable asignado · notificado y visible en Mi Día','ok',3500);
+            })});
+          });
           ov.querySelector('#spDetWa').addEventListener('click',()=>{
             const hasHook=!!(CX.automations&&CX.automations.hook&&CX.automations.hook());
             if(hasHook){CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'soporte',titulo:'Respuesta soporte: '+t.asunto,txt:t.de,hook:CX.automations.hook()});ui.toast('Respuesta enviada vía Make','ok');}

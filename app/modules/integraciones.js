@@ -79,13 +79,14 @@ CX.module('integraciones', ({ui,data})=>{
       <div style="display:flex;flex-direction:column;gap:10px">
         ${item.cfg.map(k=>`<div><label class="lbl">${LABELS[k]||k}</label><input class="inp cfg-fld" data-k="${k}" value="${(cfg[k]||'').replace(/"/g,'&quot;')}" type="${k==='pass'?'password':'text'}" placeholder="${LABELS[k]||k}…"></div>`).join('')}
       </div>
-      <div class="between" style="margin-top:14px"><button class="btn btn-ghost btn-sm" id="cfTest">🔌 Probar conexión</button><button class="btn btn-pr btn-sm" id="cfSave">Guardar y activar</button></div>
+      <div class="between" style="margin-top:14px"><button class="btn btn-ghost btn-sm" id="cfTest">🔌 Probar conexión</button><button class="btn btn-pr btn-sm" id="cfSave">Guardar configuración</button></div>
+      <div style="font-size:10.5px;color:var(--t3);margin-top:8px">🔒 En producción, las credenciales se guardan de forma segura en el backend (no en el navegador). Aquí se guardan localmente solo para configurar el flujo.</div>
     `,{onMount:(ov,close)=>{
-      ov.querySelector('#cfTest').addEventListener('click',()=>ui.toast('Conexión probada (demo) — en producción verifica las credenciales reales.','ok',3200));
+      ov.querySelector('#cfTest').addEventListener('click',()=>ui.toast('⚠️ Prueba simulada · la validación real de credenciales ocurre en el backend de producción.','',3600));
       ov.querySelector('#cfSave').addEventListener('click',()=>{
         const patch={};ov.querySelectorAll('.cfg-fld').forEach(i=>{patch[i.dataset.k]=i.value.trim();});
         CX.intStore.setConfig(item.id,patch);if(!CX.intStore.isOn(item.id))CX.intStore.toggle(item.id);
-        close();draw();ui.toast(item.n+' configurado y activado','ok',3200);
+        close();draw();ui.toast(item.n+' configurado · pendiente de validación en backend','ok',3200);
       });
     }});
   };

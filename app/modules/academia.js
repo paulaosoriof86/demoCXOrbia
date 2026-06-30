@@ -7,7 +7,7 @@ window.CX=window.CX||{};
 
 /* ─ Catálogo de cursos ─ */
 CX.acadData={
-  CATS:['Todos','Inducción','Operación','Set-up','Finanzas','Comercial','Técnico','IA','Industria MS'],
+  CATS:(()=>{try{const s=JSON.parse(localStorage.getItem('cx_acad_cats')||'null');if(s&&Array.isArray(s)&&s.length)return s;}catch(e){}return ['Todos','Inducción','Operación','Set-up','Finanzas','Comercial','Técnico','IA','Industria MS'];})(),
   /* ── Persistencia de cursos personalizados ── */
   _ck:'cx_acad_cust',
   getCustom(r){ try{return JSON.parse(localStorage.getItem(this._ck+'_'+r)||'[]');}catch(e){return[];} },
@@ -752,8 +752,23 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         </div>
         <div id="elEditor" contenteditable="true" class="acad-content" style="min-height:200px;max-height:340px;overflow-y:auto;padding:14px 16px;outline:none;line-height:1.7">${lesson.content||'<p>Contenido de la lección…</p>'}</div>
       </div>
+      <div style="background:var(--panel-2);border-radius:9px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px">📎 Cambiar / añadir recurso embebido</div>
+        <input class="inp" id="elVU" placeholder="URL de video (YouTube/Vimeo/HeyGen)" style="margin-bottom:6px">
+        <div class="flex" style="gap:6px;flex-wrap:wrap">
+          <label class="btn btn-soft btn-sm" style="cursor:pointer">🎥 Subir video<input type="file" id="elVF" accept="video/*" style="display:none"></label>
+          <label class="btn btn-soft btn-sm" style="cursor:pointer">🖼 Subir imagen<input type="file" id="elIF" accept="image/*" style="display:none"></label>
+          <label class="btn btn-soft btn-sm" style="cursor:pointer">📄 Adjuntar documento<input type="file" id="elDF" accept=".pdf,.doc,.docx" style="display:none"></label>
+        </div>
+        <div id="elResPrev" style="margin-top:8px"></div>
+      </div>
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="elSave">Guardar</button></div>
     `,{onMount:(ov,close)=>{
+      let newRes='';
+      ov.querySelector('#elVU')?.addEventListener('blur',e=>{const u=e.target.value;if(u){const src=u.includes('embed')?u:u.replace('watch?v=','embed/').replace('youtu.be/','www.youtube-nocookie.com/embed/');newRes='<div class="acad-video"><iframe src="'+src+'" style="width:100%;aspect-ratio:16/9;border:none;border-radius:10px" allowfullscreen></iframe></div>';ov.querySelector('#elResPrev').innerHTML='<iframe src="'+src+'" style="width:100%;height:140px;border:0;border-radius:8px"></iframe>';}});
+      ov.querySelector('#elVF')?.addEventListener('change',e=>{const f=e.target.files[0];if(f){const r=new FileReader();r.onload=ev=>{newRes='<div class="acad-video"><video src="'+ev.target.result+'" controls style="width:100%;aspect-ratio:16/9;border-radius:10px"></video></div>';ov.querySelector('#elResPrev').innerHTML='<video src="'+ev.target.result+'" controls style="width:100%;max-height:160px;border-radius:8px"></video>';};r.readAsDataURL(f);}});
+      ov.querySelector('#elIF')?.addEventListener('change',e=>{const f=e.target.files[0];if(f){const r=new FileReader();r.onload=ev=>{newRes='<img src="'+ev.target.result+'" style="max-width:100%;border-radius:10px">';ov.querySelector('#elResPrev').innerHTML='<img src="'+ev.target.result+'" style="max-height:140px;border-radius:8px">';};r.readAsDataURL(f);}});
+      ov.querySelector('#elDF')?.addEventListener('change',e=>{const f=e.target.files[0];if(f){const r=new FileReader();r.onload=ev=>{newRes='<div style="padding:12px;border:1px solid var(--border);border-radius:8px"><a href="'+ev.target.result+'" target="_blank">📄 '+f.name+'</a><iframe src="'+ev.target.result+'" style="width:100%;height:50vh;border:0;border-radius:8px;margin-top:6px"></iframe></div>';ov.querySelector('#elResPrev').innerHTML='📄 '+f.name+' adjuntado';};r.readAsDataURL(f);}});
       ov.querySelector('#wys-tb').addEventListener('click',e=>{
         const btn=e.target.closest('[data-cmd]');if(!btn)return;
         const ed=ov.querySelector('#elEditor');ed.focus();
@@ -768,7 +783,8 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         else if(cmd==='clr')document.execCommand('removeFormat');
       });
       ov.querySelector('#elSave').addEventListener('click',()=>{
-        const content=ov.querySelector('#elEditor').innerHTML;
+        let content=ov.querySelector('#elEditor').innerHTML;
+        if(newRes)content=newRes+content;
         CX.acadData.editLesson(rr,course.id,lesson.id,{n:ov.querySelector('#elT').value.trim()||lesson.n,ic:ov.querySelector('#elI').value||lesson.ic,content});
         close();lessonPlayer(course);ui.toast('Lección actualizada','ok');
       });
@@ -828,13 +844,16 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         ov.querySelector('#nlRef')?.addEventListener('click',()=>{const b=ov.querySelector('#nlC');b.value+='\n<p><em>Refinado: detalle añadido.</em></p>';ui.toast('Refinado','ok');});
         ov.querySelector('#nlExp')?.addEventListener('click',()=>{const b=ov.querySelector('#nlC');b.value+='\n<h3>Profundizando</h3>\n<p>Contenido ampliado.</p>';ui.toast('Ampliado','ok');});
         ov.querySelector('#nlVU')?.addEventListener('blur',e=>{const u=e.target.value;if(u){const src=u.includes('embed')?u:u.replace('watch?v=','embed/').replace('youtu.be/','www.youtube-nocookie.com/embed/');ov.querySelector('#nlVP').innerHTML='<iframe src="'+src+'" style="width:100%;height:180px;border:none;border-radius:8px" allowfullscreen></iframe>';}});
-        ov.querySelector('#nlIF')?.addEventListener('change',e=>{const f=e.target.files[0];if(f){const r=new FileReader();r.onload=ev=>ov.querySelector('#nlIP').innerHTML='<img src="'+ev.target.result+'" style="max-width:100%;max-height:160px;border-radius:8px;object-fit:contain">';r.readAsDataURL(f);}});
+        ov.querySelector('#nlIF')?.addEventListener('change',e=>{const f=e.target.files[0];if(f){const r=new FileReader();r.onload=ev=>{ov.querySelector('#nlIP').innerHTML='<img src="'+ev.target.result+'" style="max-width:100%;max-height:160px;border-radius:8px;object-fit:contain">';ov.querySelector('#nlIP').dataset.src=ev.target.result;};r.readAsDataURL(f);}});
+        ov.querySelector('#nlVF')?.addEventListener('change',e=>{const f=e.target.files[0];if(f){const r=new FileReader();r.onload=ev=>{ov.querySelector('#nlVP').innerHTML='<video src="'+ev.target.result+'" controls style="width:100%;max-height:180px;border-radius:8px"></video>';ov.querySelector('#nlVP').dataset.src=ev.target.result;};r.readAsDataURL(f);}});
         ov.querySelector('#nlSave')?.addEventListener('click',()=>{
           const t=(ov.querySelector('#nlT').value||'').trim();if(!t){ui.toast('Pon un título','warn');return;}
           let content='',tipo=lsnType;
           if(lsnType==='texto')content=ov.querySelector('#nlC').value||'<p>Contenido por completar.</p>';
-          else if(lsnType==='video'){const u=ov.querySelector('#nlVU').value;const src=u?u.includes('embed')?u:u.replace('watch?v=','embed/').replace('youtu.be/','www.youtube-nocookie.com/embed/'):u;content=src?'<div class="acad-video"><iframe src="'+src+'" style="width:100%;aspect-ratio:16/9;border:none;border-radius:10px" allowfullscreen></iframe></div>':'';}
-          else if(lsnType==='imagen'){const u=ov.querySelector('#nlIU').value;content=u?'<img src="'+u+'" style="max-width:100%;border-radius:10px">':'';}
+          else if(lsnType==='video'){const upl=ov.querySelector('#nlVP')?.dataset.src;const u=ov.querySelector('#nlVU').value;
+            if(upl)content='<div class="acad-video"><video src="'+upl+'" controls style="width:100%;aspect-ratio:16/9;border-radius:10px"></video></div>';
+            else{const src=u?u.includes('embed')?u:u.replace('watch?v=','embed/').replace('youtu.be/','www.youtube-nocookie.com/embed/'):u;content=src?'<div class="acad-video"><iframe src="'+src+'" style="width:100%;aspect-ratio:16/9;border:none;border-radius:10px" allowfullscreen></iframe></div>':'';}}
+          else if(lsnType==='imagen'){const upl=ov.querySelector('#nlIP')?.dataset.src;const u=ov.querySelector('#nlIU').value;content=(upl||u)?'<img src="'+(upl||u)+'" style="max-width:100%;border-radius:10px">':'';}
           else if(lsnType==='quiz'){tipo='quiz';content=ov.querySelector('#nlQD').value;}
           CX.acadData.addLesson(rr,course.id,{n:t,ic:ov.querySelector('#nlI').value||'📘',tipo,content});
           close();lessonPlayer(course);ui.toast('Lección añadida','ok');
@@ -954,6 +973,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
       </div>
       <div class="flex wrap" style="gap:6px;margin-bottom:16px">
         ${CX.acadData.CATS.filter(c=>c==='Todos'||courses.some(x=>x.cat===c)).map(c=>`<button class="btn btn-sm acad-cat ${activeCat===c?'btn-pr':'btn-ghost'}" data-cat="${c}">${c}</button>`).join('')}
+        ${role==='admin'?`<button class="btn btn-sm btn-ghost" id="acadNewCat" style="border-style:dashed">＋ Categoría</button>`:''}
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
         ${filtered.map(c=>{
@@ -975,6 +995,10 @@ CX.module('aprendizaje', ({data,role,ui})=>{
     host.querySelector('#acadManuales')?.addEventListener('click',()=>openManuales());
     host.querySelectorAll('[data-course]').forEach(c=>c.addEventListener('click',()=>{openCourse=c.dataset.course;const course=getCourses().find(x=>x.id===openCourse);if(course){openLesson=course.lessons[0].id;lessonPlayer(course);}}));
     host.querySelectorAll('.acad-cat').forEach(b=>b.addEventListener('click',()=>{activeCat=b.dataset.cat;draw();}));
+    host.querySelector('#acadNewCat')?.addEventListener('click',()=>ui.modal('＋ Nueva categoría',`
+      <label class="lbl">Nombre de la categoría</label><input class="inp" id="ncatN" placeholder="Ej. Investigación de mercados" style="margin-bottom:12px">
+      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="ncatSave">Crear</button></div>
+    `,{onMount:(ov,close)=>ov.querySelector('#ncatSave').addEventListener('click',()=>{const n=(ov.querySelector('#ncatN').value||'').trim();if(!n){ui.toast('Pon un nombre','warn');return;}if(!CX.acadData.CATS.includes(n))CX.acadData.CATS.push(n);try{localStorage.setItem('cx_acad_cats',JSON.stringify(CX.acadData.CATS));}catch(e){}close();draw();ui.toast('Categoría "'+n+'" creada','ok');})}));
     host.querySelectorAll('.acad-edit').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='shopper'?'shopper':role==='cliente'?'cliente':'admin';const cc=getCourses().find(x=>x.id===b.dataset.cid);if(!cc)return;
       ui.modal('✎ Editar curso',`<div class="grid g2" style="gap:8px 12px"><div><label class="lbl">Nombre</label><input class="inp" id="ecN" value="${(cc.n||'').replace(/"/g,'&quot;')}"></div><div><label class="lbl">Categoría</label><select class="sel" id="ecC">${CX.acadData.CATS.filter(c=>c!=='Todos').map(c=>`<option ${c===cc.cat?'selected':''}>${c}</option>`).join('')}</select></div><div style="grid-column:1/3"><label class="lbl">Descripción</label><textarea class="inp" id="ecD" rows="2">${cc.desc||''}</textarea></div></div><div style="text-align:right;margin-top:10px;display:flex;justify-content:space-between"><button class="btn btn-ghost btn-sm" id="ecDel" style="color:var(--red)">🗑 Eliminar</button><button class="btn btn-pr btn-sm" id="ecSave">Guardar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#ecSave').addEventListener('click',()=>{CX.acadData.editCourse(rr,cc.id,{n:ov.querySelector('#ecN').value.trim(),cat:ov.querySelector('#ecC').value,desc:ov.querySelector('#ecD').value.trim()});close();draw();ui.toast('Curso actualizado','ok');});ov.querySelector('#ecDel').addEventListener('click',()=>{CX.acadData.delCourse(rr,cc.id);close();draw();ui.toast('Curso eliminado','');});}});
     }));()=>ui.modal('✨ Crear módulo con IA',`

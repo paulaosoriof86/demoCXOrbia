@@ -141,8 +141,10 @@ Responde SOLO con JSON válido con este formato exacto:
       </div>`;
       body.querySelector('#aiFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;
         const isXls=/\.(xlsx|xls)$/i.test(f.name);
-        if(isXls){ui.toast('Archivo Excel detectado · ábrelo y usa "Guardar como CSV", luego pega o sube el CSV','warn',6000);
-          body.querySelector('#aiTxt').value='⚠️ Excel (.xlsx) es un formato binario comprimido. Para importarlo:\n1. Abre el archivo en Excel o Google Sheets\n2. Archivo → Descargar/Guardar como → CSV (.csv)\n3. Sube o pega ese CSV aquí.\n\n(El CSV preserva tus datos y la IA lo lee perfectamente.)';return;}
+        if(isXls){
+          if(window.XLSX){const r=new FileReader();r.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];const csv=XLSX.utils.sheet_to_csv(ws);body.querySelector('#aiTxt').value=csv;ui.toast('Excel "'+f.name+'" leído ('+wb.SheetNames.length+' hoja(s)) · usando "'+wb.SheetNames[0]+'"','ok',4000);}catch(err){ui.toast('No se pudo leer el Excel: '+err.message,'warn');}};r.readAsArrayBuffer(f);return;}
+          ui.toast('Conversor Excel no disponible · guárdalo como CSV','warn',5000);return;
+        }
         const r=new FileReader();r.onload=ev=>{body.querySelector('#aiTxt').value=ev.target.result;ui.toast('Archivo "'+f.name+'" cargado','ok');};f.name.endsWith('.json')||f.type.includes('text')||/\.(csv|tsv|txt)$/i.test(f.name)?r.readAsText(f):r.readAsDataURL(f);});
       body.querySelector('#aiSample').addEventListener('click',()=>{body.querySelector('#aiTxt').value='nombre,dpi,telefono,correo,pais,ciudad,banco\nMaría García,2345678-9,+502 5555-1234,mgarcia@gmail.com,GT,Guatemala,Banrural\nJuan Pérez,3456789-0,+502 6666-2345,jperez@gmail.com,GT,Quetzaltenango,Industrial\nAna López,,+502 7777-3456,alopez@hotmail.com,HN,Tegucigalpa,Atlántida\nCarlos Fuentes,5678901-2,+502 8888-4567,,GT,Guatemala,BAC';});
       body.querySelector('#aiGo').addEventListener('click',()=>{
@@ -275,8 +277,10 @@ Responde SOLO con JSON válido con este formato exacto:
         </div>
       </div>`;
       body.querySelector('#hrFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;
-        if(/\.(xlsx|xls)$/i.test(f.name)){ui.toast('Excel detectado · guárdalo como CSV y vuelve a subirlo','warn',6000);
-          body.querySelector('#hrTxt').value='⚠️ La Hoja de Ruta está en Excel (.xlsx), un formato binario.\nPara importarla:\n1. Abre el archivo en Excel o Google Sheets\n2. Archivo → Descargar/Guardar como → CSV\n3. Sube ese CSV aquí (o cópialo y pégalo).\n\nSi la HR es colaborativa en Google Sheets: Archivo → Compartir → publicar como CSV, o copia el rango y pégalo directo.';return;}
+        if(/\.(xlsx|xls)$/i.test(f.name)){
+          if(window.XLSX){const r=new FileReader();r.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];body.querySelector('#hrTxt').value=XLSX.utils.sheet_to_csv(ws);ui.toast('HR Excel "'+f.name+'" leída ('+wb.SheetNames.length+' hoja(s))','ok',4000);}catch(err){ui.toast('No se pudo leer: '+err.message,'warn');}};r.readAsArrayBuffer(f);return;}
+          ui.toast('Conversor Excel no disponible · guárdalo como CSV','warn',5000);return;
+        }
         const r=new FileReader();r.onload=ev=>body.querySelector('#hrTxt').value=ev.target.result;r.readAsText(f);});
       body.querySelector('#hrSample').addEventListener('click',()=>{body.querySelector('#hrTxt').value=CX.importador&&CX.importador.sample?CX.importador.sample():'sucursal,ciudad,pais,shopper,escenario,fecha,honorario,reembolso,estado\nSUC-089,Guatemala,GT,María García,Básico,2026-06-22,250,0,programada\nSUC-092,Mixco,GT,,Premium,2026-06-23,300,50,disponible';});
       body.querySelector('#hrDetect').addEventListener('click',()=>{

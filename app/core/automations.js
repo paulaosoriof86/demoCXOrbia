@@ -103,6 +103,15 @@ window.CX = window.CX || {};
   };
 
   CX.automations = {
+    /* #167 — asignación de responsables a ítems que requieren gestión interna */
+    _akey:'cx_asignaciones',
+    asignaciones(){ try{return JSON.parse(localStorage.getItem(this._akey)||'[]');}catch(e){return [];} },
+    asignar(item){ const a=this.asignaciones(); a.unshift(Object.assign({id:'asg'+Date.now().toString(36),fecha:new Date().toISOString().slice(0,10),estado:'pendiente'},item));
+      try{localStorage.setItem(this._akey,JSON.stringify(a));}catch(e){}
+      CX.notif&&CX.notif.push({to:item.responsableRol||'admin',tipo:'asignacion',icon:'📌',tono:'a',titulo:'Tarea asignada: '+(item.titulo||''),txt:(item.detalle||'')+' · responsable: '+(item.responsable||''),nav:item.nav||'midia'});
+      CX.bus&&CX.bus.emit('asignaciones'); return a[0]; },
+    resolverAsignacion(id){ const a=this.asignaciones(); const x=a.find(i=>i.id===id); if(x){x.estado='resuelta';x.resueltaFecha=new Date().toISOString().slice(0,10);} try{localStorage.setItem(this._akey,JSON.stringify(a));}catch(e){} CX.bus&&CX.bus.emit('asignaciones'); },
+    pendientesPara(rol){ return this.asignaciones().filter(a=>a.estado==='pendiente'&&(!rol||a.responsableRol===rol||a.responsableRol==='admin')); },
     CANALES:{push:'Notificación in-app', whatsapp:'WhatsApp (Make)', correo:'Correo (Make)', sheet:'Google Sheets (Make)'},
     EVENTOS:{postulacion:'Postulación creada', agenda:'Visita agendada', realizada:'Visita realizada', cuestionario:'Cuestionario enviado', reprog:'Reprogramación', pago:'Pago/liquidación', atraso:'Visita atrasada/pendiente', aprobacion:'Postulación aprobada', hr_writeback:'Escritura de vuelta a HR', shopper_edit:'Cambio de datos del shopper'},
 

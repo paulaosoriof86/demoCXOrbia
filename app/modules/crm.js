@@ -143,12 +143,14 @@ CX.module('crm', ({data,ui})=>{
           <textarea class="inp" id="actTxt" rows="2" placeholder="${isMeet?'Agenda de la reunión…':isMail?'Asunto del correo…':'Descripción…'}" style="margin-bottom:10px"></textarea>
           ${isMeet?`<div class="grid g2" style="gap:8px;margin-bottom:10px"><div><label class="lbl">Fecha</label><input class="inp" id="actF" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div><label class="lbl">Hora</label><input class="inp" id="actH" type="time" value="10:00"></div></div>
             <input class="inp" id="actLink" placeholder="Link de Meet/Zoom (opcional)" style="margin-bottom:10px">`:
-          tipo==='tarea'?`<input class="inp" id="actVence" type="date" style="margin-bottom:10px">`:''}
+          tipo==='tarea'?`<input class="inp" id="actVence" type="date" style="margin-bottom:10px">
+            <label class="lbl">Vincular a módulo (navegación cruzada)</label>
+            <select class="sel" id="actLink2" style="margin-bottom:10px"><option value="">— Sin vínculo —</option><option value="proyectos">📁 Proyecto</option><option value="costos">📄 Propuesta / Costos</option><option value="visitas">📍 Visita</option><option value="postulaciones">📋 Postulación</option></select>`:''}
           <div style="text-align:right"><button class="btn btn-pr btn-sm" id="actSave">Guardar</button></div>
         `,{onMount:(o2,close2)=>{o2.querySelector('#actSave').addEventListener('click',()=>{
           const txt=(o2.querySelector('#actTxt').value||'').trim();if(!txt){ui.toast('Describe la actividad','warn');return;}
           if(isMail){o.correos=o.correos||[];o.correos.unshift({de:o.contactoEmail||'',asunto:txt,fecha:new Date().toISOString().slice(0,10),preview:'Registrado manualmente'});CX.bus&&CX.bus.emit('crm');}
-          else{const act={tipo,texto:txt};if(isMeet){act.fecha=(o2.querySelector('#actF').value||'')+' '+(o2.querySelector('#actH').value||'');act.link=(o2.querySelector('#actLink')?.value||'').trim();}else if(tipo==='tarea'){act.vence=(o2.querySelector('#actVence')?.value||'');}CX.crmStore.addAct(o.id,act);}
+          else{const act={tipo,texto:txt};if(isMeet){act.fecha=(o2.querySelector('#actF').value||'')+' '+(o2.querySelector('#actH').value||'');act.link=(o2.querySelector('#actLink')?.value||'').trim();}else if(tipo==='tarea'){act.vence=(o2.querySelector('#actVence')?.value||'');act.modulo=(o2.querySelector('#actLink2')?.value||'');}CX.crmStore.addAct(o.id,act);}
           close2();close();ficha360(CX.crmStore.list().find(x=>x.id===o.id)||o);
           ui.toast('Registrado','ok');
         });}});
@@ -217,7 +219,7 @@ CX.module('crm', ({data,ui})=>{
     <div class="card card-p">
       <div class="card-t" style="margin-bottom:10px">⏰ Próximas acciones y tareas</div>
       ${tareas.length?`<table class="tbl"><thead><tr><th>Empresa</th><th>Tarea</th><th>Vence</th><th></th></tr></thead><tbody>
-        ${tareas.slice(0,8).map(t=>{const venc=t.vence&&t.vence<new Date().toISOString().slice(0,10);return `<tr><td><b>${t.op}</b></td><td style="font-size:12px">${t.texto}</td><td style="font-size:11.5px;color:${venc?'var(--red)':'var(--t3)'}">${t.vence||''} ${venc?'⚠':''}</td><td style="text-align:right"><button class="btn btn-ghost btn-sm crm-done" data-op="${t.opId}" data-act="${t.id}" style="padding:2px 8px;font-size:11px">✓ Hecho</button></td></tr>`;}).join('')}
+        ${tareas.slice(0,8).map(t=>{const venc=t.vence&&t.vence<new Date().toISOString().slice(0,10);return `<tr><td><b>${t.op}</b></td><td style="font-size:12px">${t.texto}${t.modulo?` <span class="bdg bdg-b crm-goto" data-mod="${t.modulo}" style="cursor:pointer;font-size:9px">${({proyectos:'📁 Proyecto',costos:'📄 Propuesta',visitas:'📍 Visita',postulaciones:'📋 Postulación'})[t.modulo]||'→'}</span>`:''}</td><td style="font-size:11.5px;color:${venc?'var(--red)':'var(--t3)'}">${t.vence||''} ${venc?'⚠':''}</td><td style="text-align:right"><button class="btn btn-ghost btn-sm crm-done" data-op="${t.opId}" data-act="${t.id}" style="padding:2px 8px;font-size:11px">✓ Hecho</button></td></tr>`;}).join('')}
       </tbody></table>`:'<div style="font-size:12.5px;color:var(--t3);padding:14px 0">Sin tareas pendientes. ¡Buen trabajo!</div>'}
     </div>`;
   };
@@ -339,6 +341,91 @@ CX.module('crm', ({data,ui})=>{
     </div>`;
   };
 
+  /* ─── Ficha 360 hub con pestañas navegables (Orbit360 style) ─── */
+  const fichaHub=(cu)=>{
+    let tab='resumen';
+    const ops2=()=>CX.crmStore.list().filter(o=>o.cuentaId===cu.id);
+    const cts=()=>CX.crmStore.contactos().filter(x=>x.cuentaId===cu.id);
+    const correos=()=>{const a=[];ops2().forEach(o=>(o.correos||[]).forEach(c=>a.push({...c,op:o.empresa})));return a.sort((x,y)=>(''+y.fecha).localeCompare(''+x.fecha));};
+    const acts=()=>{const a=[];ops2().forEach(o=>(o.acts||[]).forEach(x=>a.push({...x,op:o.empresa,opId:o.id})));return a;};
+    const docs=()=>{const a=[];ops2().forEach(o=>(o.docs||[]).forEach(d=>a.push({...d,op:o.empresa})));return a;};
+    const proyectos=()=>((data.projects&&typeof data.projects==='function'?data.projects():data.projects)||[]).filter(p=>p&&((p.client&&p.client.toLowerCase&&p.client.toLowerCase()===cu.nombre.toLowerCase())||(cu.proyectos&&cu.proyectos.includes(p.id))));
+    const props=()=>CX.propStore?CX.propStore.forClient(cu.nombre):[];
+    const esCliente=()=>data.clients&&data.clients.find&&data.clients.find(c=>c.name&&c.name.toLowerCase()===cu.nombre.toLowerCase());
+    const tone=cu.salud>=70?'g':cu.salud>=50?'a':'r';
+    const estC={borrador:'n',enviada:'b',aceptada:'g',rechazada:'r'};
+
+    const TABS=[['resumen','📋 Resumen'],['oportunidades','📊 Oportunidades'],['proyectos','📁 Proyectos'],['propuestas','📄 Propuestas'],['contactos','👥 Contactos'],['correos','📨 Correos'],['docs','📎 Documentos'],['timeline','🕐 Timeline']];
+
+    const body=()=>{
+      if(tab==='resumen')return `
+        <div class="grid g2" style="gap:12px">
+          <div class="card card-p">
+            <div class="card-t" style="font-size:12.5px;margin-bottom:8px">🏢 Datos de la cuenta</div>
+            <div style="font-size:12.5px;line-height:1.9;color:var(--t2)">
+              <div><b>Rubro:</b> ${cu.rubro}</div><div><b>País:</b> ${cu.pais}</div>
+              <div><b>Sucursales:</b> ${cu.sucursales||0} · <b>Empleados:</b> ${cu.empleados||'—'}</div>
+              <div><b>Owner:</b> ${cu.owner||'—'}</div>
+              ${cu.sitio?`<div><b>Sitio:</b> <a href="https://${cu.sitio}" target="_blank" style="color:var(--brand)">${cu.sitio}</a></div>`:''}
+            </div>
+            <div style="margin-top:10px"><span class="bdg bdg-${tone}">salud ${cu.salud}%</span> ${esCliente()?'<span class="bdg bdg-g">✓ Cliente activo</span>':'<span class="bdg bdg-n">Prospecto</span>'}</div>
+            <button class="btn btn-ghost btn-sm" id="hubEditCu" style="margin-top:10px">✎ Editar datos</button>
+          </div>
+          <div class="card card-p">
+            <div class="card-t" style="font-size:12.5px;margin-bottom:8px">📈 Resumen 360</div>
+            <div class="grid g2" style="gap:8px">
+              <div class="hubStat" data-go="oportunidades" style="cursor:pointer;text-align:center;padding:10px;background:var(--panel-2);border-radius:9px"><div style="font-size:20px;font-weight:800;color:var(--brand)">${ops2().length}</div><div style="font-size:10px;color:var(--t3)">Oportunidades</div></div>
+              <div class="hubStat" data-go="proyectos" style="cursor:pointer;text-align:center;padding:10px;background:var(--panel-2);border-radius:9px"><div style="font-size:20px;font-weight:800;color:var(--green)">${proyectos().length}</div><div style="font-size:10px;color:var(--t3)">Proyectos</div></div>
+              <div class="hubStat" data-go="propuestas" style="cursor:pointer;text-align:center;padding:10px;background:var(--panel-2);border-radius:9px"><div style="font-size:20px;font-weight:800;color:var(--amber)">${props().length}</div><div style="font-size:10px;color:var(--t3)">Propuestas</div></div>
+              <div class="hubStat" data-go="correos" style="cursor:pointer;text-align:center;padding:10px;background:var(--panel-2);border-radius:9px"><div style="font-size:20px;font-weight:800;color:var(--t1)">${correos().length}</div><div style="font-size:10px;color:var(--t3)">Correos</div></div>
+            </div>
+            <div style="margin-top:10px;font-size:11.5px;color:var(--t3)">Haz clic en cualquier indicador para abrir su pestaña.</div>
+          </div>
+        </div>`;
+      if(tab==='oportunidades'){const L=ops2();return L.length?`<table class="tbl"><thead><tr><th>Oportunidad</th><th>Etapa</th><th>Valor</th><th>Prob.</th></tr></thead><tbody>${L.map(o=>`<tr class="hubOp" data-id="${o.id}" style="cursor:pointer"><td><b>${o.empresa}</b></td><td>${(CX.crmStore.cols().find(c=>c.id===o.etapa)||{}).n||o.etapa}</td><td>${k(o.valor)}</td><td>${o.prob}%</td></tr>`).join('')}</tbody></table>`:ui.empty('📊','Sin oportunidades.');}
+      if(tab==='proyectos'){const L=proyectos();return `<div class="between" style="margin-bottom:10px"><span class="muted" style="font-size:12px">Proyectos/programas del cliente</span><button class="btn btn-pr btn-sm" id="hubNewProj">＋ Crear proyecto</button></div>${L.length?L.map(p=>`<div class="between hubProj" data-pid="${p.id}" style="padding:9px 11px;border:1px solid var(--border);border-radius:9px;margin-bottom:8px;cursor:pointer"><div><b style="font-size:13px">📁 ${p.name||p.nombre}</b><div style="font-size:11px;color:var(--t3)">${(p.countries||[]).join('/')} · ${p.sucursales||0} sucursales</div></div><span class="btn btn-ghost btn-sm">Abrir →</span></div>`).join(''):ui.empty('📁','Sin proyectos. Crea el programa y quedará vinculado con su HR, set-up y trazabilidad.')}`;}
+      if(tab==='propuestas'){const L=props();return `<div class="between" style="margin-bottom:10px"><span class="muted" style="font-size:12px">Propuestas y cálculos del cliente</span><button class="btn btn-pr btn-sm" id="hubNewProp">＋ Nueva propuesta</button></div>${L.length?L.map(pr=>`<div class="between hubProp" data-pid="${pr.id}" style="padding:9px 11px;border:1px solid var(--border);border-radius:9px;margin-bottom:8px;cursor:pointer"><div><b style="font-size:13px">${pr.proyecto||pr.modalidad||'Propuesta'}</b><div style="font-size:11px;color:var(--t3)">${pr.moneda||''} ${(pr.total||0).toLocaleString()} · ${pr.fecha}</div></div><span class="bdg bdg-${estC[pr.estado]||'n'}">${pr.estado}</span></div>`).join(''):ui.empty('📄','Sin propuestas. Genérala desde Costos & Propuestas.')}`;}
+      if(tab==='contactos'){const L=cts();return `<div class="between" style="margin-bottom:10px"><span class="muted" style="font-size:12px">Contactos del cliente</span><button class="btn btn-pr btn-sm" id="hubNewCt">＋ Contacto</button></div>${L.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Cargo</th><th>Rol</th><th>Correo</th><th></th></tr></thead><tbody>${L.map(ct=>`<tr><td><b>${ct.nombre}</b></td><td style="font-size:12px">${ct.cargo}</td><td><span class="bdg ${ct.rol==='Decisor'?'bdg-g':'bdg-n'}">${ct.rol}</span></td><td style="font-size:12px"><a href="mailto:${ct.email}" style="color:var(--brand)">${ct.email}</a></td><td style="text-align:right"><button class="btn btn-ghost btn-sm hubCtMail" data-em="${ct.email}">✉️</button></td></tr>`).join('')}</tbody></table>`:ui.empty('👥','Sin contactos.')}`;}
+      if(tab==='correos'){const L=correos();return `<div class="between" style="margin-bottom:10px"><span class="muted" style="font-size:12px">Trazabilidad de correos vinculados</span><button class="btn btn-pr btn-sm" id="hubNewMail">＋ Registrar correo</button></div>${L.length?L.map(c=>`<div class="hubMail" style="padding:10px 12px;background:var(--panel-2);border-radius:9px;margin-bottom:8px;cursor:pointer"><div class="between"><b style="font-size:12.5px">✉️ ${c.asunto}</b><span style="font-size:10.5px;color:var(--t3)">${c.fecha||''}</span></div><div style="font-size:11px;color:var(--t3)">${c.de||''}</div>${c.preview?`<div style="font-size:11.5px;color:var(--t2);margin-top:3px">${c.preview}</div>`:''}</div>`).join(''):ui.empty('📨','Sin correos. Conecta el correo (Integraciones) o registra uno manual; queda con trazabilidad por cliente.')}`;}
+      if(tab==='docs'){const L=docs();return `<div class="between" style="margin-bottom:10px"><span class="muted" style="font-size:12px">Documentos del cliente (briefs, protocolos, set-up)</span><label class="btn btn-pr btn-sm" style="cursor:pointer">＋ Subir<input type="file" id="hubDocF" style="display:none"></label></div>${L.length?L.map(d=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 11px;border:1px solid var(--border);border-radius:9px;margin-bottom:7px"><span style="font-size:18px">📄</span><span style="font-size:12.5px;flex:1">${d.n}</span><span style="font-size:10.5px;color:var(--t3)">${d.op||''}</span></div>`).join(''):ui.empty('📎','Sin documentos. Sube briefs, protocolos o el set-up; alimentan el modelo de IA del cliente.')}`;}
+      if(tab==='timeline'){const tl=[...acts().map(a=>({i:emojis[a.tipo]||'•',t:a.texto,d:a.fecha||a.vence||'',done:a.hecho})),...correos().map(c=>({i:'✉️',t:c.asunto,s:c.preview,d:c.fecha}))].sort((a,b)=>(''+b.d).localeCompare(''+a.d));return tl.length?`<div style="border-left:2px solid var(--border-2);padding-left:14px">${tl.map(a=>`<div style="position:relative;padding:8px 0"><div style="position:absolute;left:-20px;top:11px;width:9px;height:9px;border-radius:50%;background:var(--brand);border:2px solid #fff"></div><div style="font-size:12.5px;font-weight:600${a.done?';text-decoration:line-through;opacity:.6':''}">${a.i} ${a.t}</div>${a.s?`<div style="font-size:11px;color:var(--t3)">${a.s}</div>`:''}<div style="font-size:10.5px;color:var(--t3)">${a.d||''}</div></div>`).join('')}</div>`:ui.empty('🕐','Sin actividad registrada.');}
+      return '';
+    };
+
+    const draw360=(ov)=>{
+      ov.querySelector('#hubTabs').innerHTML=TABS.map(([t,l])=>`<button class="btn btn-sm ${tab===t?'btn-pr':'btn-ghost'} hubTab" data-t="${t}" style="font-size:11px">${l}</button>`).join('');
+      ov.querySelector('#hubBody').innerHTML=body();
+      ov.querySelectorAll('.hubTab').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.t;draw360(ov);}));
+      ov.querySelectorAll('.hubStat,[data-go]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.go){tab=b.dataset.go;draw360(ov);}}));
+      ov.querySelectorAll('.hubProj,.hubProj *').forEach(b=>{}); 
+      ov.querySelectorAll('.hubProj').forEach(b=>b.addEventListener('click',()=>{const pid=b.dataset.pid;ov.__close();data.setProject&&data.setProject(pid);CX.router.nav('proyectos');}));
+      ov.querySelectorAll('.hubOp').forEach(b=>b.addEventListener('click',()=>{const o=CX.crmStore.list().find(x=>x.id===b.dataset.id);if(o)ficha360(o);}));
+      ov.querySelectorAll('.hubCtMail,[data-em]').forEach(b=>b.addEventListener('click',()=>window.open('mailto:'+b.dataset.em,'_blank')));
+      ov.querySelector('#hubNewProj')?.addEventListener('click',()=>{ov.__close();CX.router.nav('proyectos');ui.toast('Crea el programa para '+cu.nombre,'ok');});
+      ov.querySelector('#hubNewProp')?.addEventListener('click',()=>{ov.__close();CX.router.nav('costos');ui.toast('Genera la propuesta para '+cu.nombre,'ok');});
+      ov.querySelector('#hubNewMail')?.addEventListener('click',()=>ui.modal('＋ Registrar correo',`<label class="lbl">Asunto</label><input class="inp" id="hmA" style="margin-bottom:8px"><label class="lbl">De</label><input class="inp" id="hmD" placeholder="correo@cliente.com" style="margin-bottom:8px"><label class="lbl">Resumen</label><textarea class="inp" id="hmP" rows="2" style="margin-bottom:10px"></textarea><div style="text-align:right"><button class="btn btn-pr btn-sm" id="hmOk">Vincular</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#hmOk').addEventListener('click',()=>{const o=ops2()[0];if(o){o.correos=o.correos||[];o.correos.unshift({asunto:o2.querySelector('#hmA').value||'(sin asunto)',de:o2.querySelector('#hmD').value||'',fecha:new Date().toISOString().slice(0,10),preview:o2.querySelector('#hmP').value||''});CX.bus&&CX.bus.emit('crm');}c2();draw360(ov);ui.toast('Correo vinculado a la ficha','ok');})}));
+      ov.querySelector('#hubNewCt')?.addEventListener('click',()=>ui.modal('＋ Contacto',`<label class="lbl">Nombre</label><input class="inp" id="hcN" style="margin-bottom:8px"><label class="lbl">Cargo</label><input class="inp" id="hcC" style="margin-bottom:8px"><div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Correo</label><input class="inp" id="hcE"></div><div><label class="lbl">Rol</label><select class="sel" id="hcR"><option>Decisor</option><option>Influenciador</option><option>Contacto</option></select></div></div><div style="text-align:right"><button class="btn btn-pr btn-sm" id="hcOk">Crear</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#hcOk').addEventListener('click',()=>{const n=(o2.querySelector('#hcN').value||'').trim();if(!n){ui.toast('Nombre requerido','warn');return;}CX.crmStore.addContacto({nombre:n,cargo:o2.querySelector('#hcC').value,cuentaId:cu.id,email:o2.querySelector('#hcE').value,rol:o2.querySelector('#hcR').value});c2();draw360(ov);ui.toast('Contacto creado','ok');})}));
+      ov.querySelector('#hubDocF')?.addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const o=ops2()[0];if(o){o.docs=o.docs||[];o.docs.push({n:f.name,tipo:'doc'});CX.bus&&CX.bus.emit('crm');}draw360(ov);ui.toast('Documento "'+f.name+'" vinculado','ok');});
+      ov.querySelector('#hubEditCu')?.addEventListener('click',()=>ui.modal('✎ Editar cuenta',`<label class="lbl">Nombre</label><input class="inp" id="heN" value="${(cu.nombre||'').replace(/"/g,'&quot;')}" style="margin-bottom:8px"><div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Sucursales</label><input class="inp" id="heS" type="number" value="${cu.sucursales||0}"></div><div><label class="lbl">Salud %</label><input class="inp" id="heH" type="number" value="${cu.salud||50}"></div></div><label class="lbl">Owner</label><input class="inp" id="heO" value="${cu.owner||''}" style="margin-bottom:10px"><div style="text-align:right"><button class="btn btn-pr btn-sm" id="heOk">Guardar</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#heOk').addEventListener('click',()=>{cu.nombre=o2.querySelector('#heN').value||cu.nombre;cu.sucursales=+o2.querySelector('#heS').value||cu.sucursales;cu.salud=+o2.querySelector('#heH').value||cu.salud;cu.owner=o2.querySelector('#heO').value;CX.crmStore.saveCuentas();c2();draw360(ov);ui.toast('Cuenta actualizada','ok');})}));
+      ov.querySelectorAll('.hubProp').forEach(b=>b.addEventListener('click',()=>{const pr=(CX.propStore.all()).find(x=>x.id===b.dataset.pid);if(!pr)return;const introHtml=pr.intro?'<div style="font-size:12px;background:var(--panel-2);border-radius:8px;padding:10px;max-height:140px;overflow:auto">'+pr.intro+'</div>':'';ui.modal('📄 '+(pr.proyecto||'Propuesta'),'<div style="font-size:12.5px;line-height:1.8;color:var(--t2);margin-bottom:10px"><div><b>Total:</b> '+(pr.moneda||'')+' '+(pr.total||0).toLocaleString()+'</div><div><b>Estado:</b> '+pr.estado+' · <b>Creada:</b> '+pr.fecha+'</div></div>'+introHtml+'<div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="hprEdit">✎ Retomar en Costos</button></div>',{onMount:(o2,c2)=>o2.querySelector('#hprEdit').addEventListener('click',()=>{c2();ov.__close();CX.router.nav('costos');})});}));
+    };
+
+    ui.modal('🗂️ Ficha 360 · '+cu.nombre, `
+      <div id="hubTabs" class="flex wrap" style="gap:5px;margin-bottom:14px;position:sticky;top:0"></div>
+      <div id="hubBody"></div>
+      <div class="between" style="margin-top:14px;border-top:1px solid var(--border-2);padding-top:12px">
+        <div class="flex" style="gap:8px"><button class="btn btn-soft btn-sm" id="hubMail">✉️ Enviar correo</button></div>
+        ${esCliente()?`<button class="btn btn-pr btn-sm" id="hubVerCli">Ver en Clientes →</button>`:`<button class="btn btn-green btn-sm" id="hubCrearCli">＋ Convertir en Cliente</button>`}
+      </div>`,
+    {wide:true,onMount:(ov,close)=>{
+      ov.__close=close;
+      draw360(ov);
+      ov.querySelector('#hubMail')?.addEventListener('click',()=>{const ct=cts()[0];window.open('mailto:'+(ct?ct.email:''),'_blank');});
+      ov.querySelector('#hubVerCli')?.addEventListener('click',()=>{close();CX.router.nav('clientes');});
+      ov.querySelector('#hubCrearCli')?.addEventListener('click',()=>{if(data.addClient)data.addClient({name:cu.nombre,industry:cu.rubro,pais:cu.pais,estado:'Activo',plan:'estandar'});cu.estado='Cliente';CX.crmStore.saveCuentas();close();draw();ui.toast('🏆 '+cu.nombre+' ahora es Cliente activo · ficha sincronizada','ok',4000);});
+    }});
+  };
+
   const draw=()=>{
     const ops=CX.crmStore.list();
     const tabs=[['dashboard','📊 Dashboard'],['pipeline','📋 Pipeline'],['leads','🆕 Leads'],['cuentas','🏢 Cuentas'],['contactos','👥 Contactos'],['actividades','⏰ Actividades'],['reportes','📈 Reportes']];
@@ -358,72 +445,12 @@ CX.module('crm', ({data,ui})=>{
     host.querySelectorAll('[data-op]').forEach(c=>c.addEventListener('click',()=>ficha360(CX.crmStore.list().find(x=>x.id===c.dataset.op))));
     host.querySelectorAll('[data-fic]').forEach(c=>c.addEventListener('click',()=>ficha360(CX.crmStore.list().find(x=>x.id===c.dataset.fic))));
     host.querySelectorAll('.crm-done').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();CX.crmStore.toggleTarea(b.dataset.op,b.dataset.act);draw();ui.toast('Tarea completada','ok');}));
+    host.querySelectorAll('.crm-goto').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();if(b.dataset.mod)CX.router.nav(b.dataset.mod);}));
 
-    /* Cuenta → ver oportunidades */
+    /* Cuenta → Ficha 360 hub con pestañas (Orbit360 style) */
     host.querySelectorAll('[data-cuenta]').forEach(c=>c.addEventListener('click',()=>{
       const cu=CX.crmStore.cuentas().find(x=>x.id===c.dataset.cuenta);if(!cu)return;
-      const ops2=CX.crmStore.list().filter(o=>o.cuentaId===cu.id);
-      const cts=CX.crmStore.contactos().filter(x=>x.cuentaId===cu.id);
-      /* Ficha 360 completa: agrega correos, proyectos vinculados, actividades, timeline */
-      const correos=[]; ops2.forEach(o=>(o.correos||[]).forEach(c=>correos.push({...c,op:o.empresa})));
-      const acts=[]; ops2.forEach(o=>(o.acts||[]).forEach(a=>acts.push({...a,op:o.empresa})));
-      const tareas=acts.filter(a=>a.tipo==='tarea'&&!a.hecho);
-      const docs=[]; ops2.forEach(o=>(o.docs||[]).forEach(d=>docs.push(d)));
-      /* proyectos vinculados: busca en data.projects por nombre de cliente */
-      const proyectos=((data.projects&&typeof data.projects==='function'?data.projects():data.projects)||[]).filter(p=>p&&((p.client&&p.client.toLowerCase&&p.client.toLowerCase()===cu.nombre.toLowerCase())||(p.cliente&&(''+p.cliente).toLowerCase()===cu.nombre.toLowerCase())));
-      const esCliente=data.clients&&data.clients.find&&data.clients.find(c=>c.name&&c.name.toLowerCase()===cu.nombre.toLowerCase());
-      const timeline=[...acts.map(a=>({i:emojis[a.tipo]||'•',t:a.texto,d:a.fecha||a.vence||'',done:a.hecho})),
-        ...correos.map(c=>({i:'✉️',t:c.asunto,s:c.preview,d:c.fecha}))].sort((a,b)=>(''+b.d).localeCompare(''+a.d));
-      const tone=cu.salud>=70?'g':cu.salud>=50?'a':'r';
-      ui.modal('🗂️ Ficha 360 · '+cu.nombre,`
-        <div style="display:grid;grid-template-columns:1fr 1.25fr;gap:16px">
-          <div>
-            <div class="card-t" style="font-size:12.5px;margin-bottom:8px">🏢 Cuenta</div>
-            <div style="font-size:12.5px;line-height:1.95;color:var(--t2)">
-              <div><b>Rubro:</b> ${cu.rubro}</div>
-              <div><b>País:</b> ${cu.pais}</div>
-              <div><b>Sucursales:</b> ${cu.sucursales||0}</div>
-              <div><b>Empleados:</b> ${cu.empleados||'—'}</div>
-              <div><b>Estado:</b> ${cu.estado}</div>
-              <div><b>Owner:</b> ${cu.owner||'—'}</div>
-            </div>
-            <div style="margin-top:8px"><span class="bdg bdg-${tone}">salud ${cu.salud}%</span> ${esCliente?'<span class="bdg bdg-g">✓ Cliente activo</span>':'<span class="bdg bdg-n">Prospecto</span>'}</div>
-            <div class="card-t" style="font-size:12.5px;margin:14px 0 8px">📊 Oportunidades (${ops2.length})</div>
-            ${ops2.length?ops2.map(o=>`<div class="between" style="padding:5px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12px">${(CX.crmStore.cols().find(c=>c.id===o.etapa)||{}).ic||''} ${o.empresa}</span><b style="font-size:12px">${k(o.valor)}</b></div>`).join(''):'<div style="font-size:12px;color:var(--t3)">Sin oportunidades.</div>'}
-            <div class="card-t" style="font-size:12.5px;margin:14px 0 8px">📁 Proyectos vinculados (${proyectos.length})</div>
-            ${proyectos.length?proyectos.map(p=>`<div class="between" style="padding:5px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12px">📁 ${p.name||p.nombre}</span><button class="btn btn-ghost btn-sm proj-go" data-pid="${p.id||''}" style="padding:1px 8px;font-size:10px">Abrir →</button></div>`).join(''):'<div style="font-size:12px;color:var(--t3)">Sin proyectos. Al ganar la oportunidad y crear el programa, se vincula aquí con su carpeta y trazabilidad.</div>'}
-            <div class="card-t" style="font-size:12.5px;margin:14px 0 8px">👥 Contactos (${cts.length})</div>
-            ${cts.length?cts.map(ct=>`<div style="font-size:12px;padding:4px 0">${ct.nombre} · ${ct.cargo} · <a href="mailto:${ct.email}" style="color:var(--brand)">${ct.email}</a></div>`).join(''):'<div style="font-size:12px;color:var(--t3)">Sin contactos.</div>'}
-            <div class="card-t" style="font-size:12.5px;margin:14px 0 8px">📎 Documentos (${docs.length})</div>
-            ${docs.length?docs.map(d=>`<div style="font-size:12px;padding:3px 0">📄 ${d.n}</div>`).join(''):'<div style="font-size:12px;color:var(--t3)">Sin documentos.</div>'}
-          </div>
-          <div>
-            <div class="card-t" style="font-size:12.5px;margin-bottom:8px">📨 Trazabilidad de correos (${correos.length})</div>
-            <div style="max-height:140px;overflow:auto;margin-bottom:12px">
-              ${correos.length?correos.map(c=>`<div style="padding:7px 10px;background:var(--panel-2);border-radius:8px;margin-bottom:6px"><div style="font-size:12px;font-weight:700">✉️ ${c.asunto}</div><div style="font-size:11px;color:var(--t3)">${c.de||''} · ${c.fecha||''}</div>${c.preview?`<div style="font-size:11px;color:var(--t2);margin-top:2px">${c.preview}</div>`:''}</div>`).join(''):'<div style="font-size:12px;color:var(--t3)">Sin correos vinculados. Los correos registrados en las oportunidades aparecen aquí con trazabilidad completa.</div>'}
-            </div>
-            <div class="card-t" style="font-size:12.5px;margin-bottom:8px">⏰ Tareas pendientes (${tareas.length})</div>
-            ${tareas.length?tareas.map(t=>`<div class="between" style="padding:4px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12px">${t.texto}</span><span style="font-size:10.5px;color:var(--t3)">${t.vence||''}</span></div>`).join(''):'<div style="font-size:12px;color:var(--t3);margin-bottom:8px">Sin tareas pendientes.</div>'}
-            <div class="card-t" style="font-size:12.5px;margin:14px 0 8px">🕐 Timeline (${timeline.length})</div>
-            <div style="max-height:160px;overflow:auto;border-left:2px solid var(--border-2);padding-left:12px">
-              ${timeline.length?timeline.map(a=>`<div style="position:relative;padding:6px 0 6px 4px"><div style="position:absolute;left:-18px;top:8px;width:9px;height:9px;border-radius:50%;background:var(--brand);border:2px solid #fff"></div><div style="font-size:12px;font-weight:600${a.done?';text-decoration:line-through;opacity:.6':''}">${a.i} ${a.t}</div>${a.s?`<div style="font-size:11px;color:var(--t3)">${a.s}</div>`:''}<div style="font-size:10.5px;color:var(--t3)">${a.d||''}</div></div>`).join(''):'<div style="font-size:12px;color:var(--t3)">Sin actividad registrada.</div>'}
-            </div>
-          </div>
-        </div>
-        <div class="between" style="margin-top:14px;border-top:1px solid var(--border-2);padding-top:12px">
-          <div class="flex" style="gap:8px">
-            <button class="btn btn-soft btn-sm" id="cuMail">✉️ Correo</button>
-            <button class="btn btn-soft btn-sm" id="cuProy">📁 Crear proyecto</button>
-          </div>
-          ${esCliente?`<button class="btn btn-pr btn-sm" id="cuVerCli">Ver en Clientes →</button>`:`<button class="btn btn-green btn-sm" id="cuCrearCli">＋ Convertir en Cliente</button>`}
-        </div>
-      `,{onMount:(ov,close)=>{
-        ov.querySelectorAll('.proj-go').forEach(b=>b.addEventListener('click',()=>{close();CX.router.nav('proyectos');}));
-        ov.querySelector('#cuMail')?.addEventListener('click',()=>{const ct=cts[0];window.open('mailto:'+(ct?ct.email:''),'_blank');});
-        ov.querySelector('#cuProy')?.addEventListener('click',()=>{close();CX.router.nav('proyectos');ui.toast('Crea el programa para '+cu.nombre+' · quedará vinculado a su ficha','ok',4000);});
-        ov.querySelector('#cuVerCli')?.addEventListener('click',()=>{close();CX.router.nav('clientes');});
-        ov.querySelector('#cuCrearCli')?.addEventListener('click',()=>{if(data.addClient)data.addClient({name:cu.nombre,industry:cu.rubro,pais:cu.pais,estado:'Activo',plan:'estandar'});cu.estado='Cliente';CX.crmStore.saveCuentas();close();draw();ui.toast('🏆 '+cu.nombre+' convertido en Cliente · trazabilidad vinculada','ok',4000);});
-      }});
+      fichaHub(cu);
     }));
 
     /* nueva oportunidad / por columna */

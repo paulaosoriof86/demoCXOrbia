@@ -141,18 +141,29 @@ CX.module('marketing', ({data,ui})=>{
   };
 
   const genMonth=()=>ui.modal('✨ Generar mes con IA',`
-    <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">La IA (Gemini) arma un calendario del mes balanceando enfoques (convocatoria, caso de éxito, tips, promoción) por canal, listo para revisar y programar.</p>
-    <div class="grid g2" style="gap:10px 12px;margin-bottom:6px">
+    <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">La IA arma un calendario del mes con criterios estratégicos: objetivo del embudo, temáticas, CTA, hashtags y herramienta de generación.</p>
+    <div class="grid g2" style="gap:10px 12px;margin-bottom:8px">
       <div><label class="lbl">Nº de piezas</label><input class="inp" id="gm_n" type="number" value="8"></div>
+      <div><label class="lbl">Periodicidad</label><select class="sel" id="gm_per"><option>Diaria</option><option selected>Cada 2-3 días</option><option>Semanal</option></select></div>
+      <div><label class="lbl">Objetivo del embudo</label><select class="sel" id="gm_fun"><option>Reconocimiento (TOFU)</option><option>Consideración (MOFU)</option><option>Conversión (BOFU)</option><option>Reclutamiento de shoppers</option></select></div>
       <div><label class="lbl">Tono</label><select class="sel" id="gm_t"><option>Profesional cercano</option><option>Inspirador</option><option>Directo/ejecutivo</option></select></div>
+      <div><label class="lbl">Herramienta de generación</label><select class="sel" id="gm_tool"><option>Gemini</option><option>ChatGPT</option><option>Canva</option><option>HeyGen (video)</option></select></div>
+      <div><label class="lbl">CTA principal</label><input class="inp" id="gm_cta" placeholder="Ej. Agenda una demo / Postúlate"></div>
     </div>
+    <label class="lbl">Temáticas / campañas del mes (separa por coma)</label><input class="inp" id="gm_tema" placeholder="Ej. casos de éxito, tips de servicio, reclutamiento" style="margin-bottom:8px">
+    <label class="lbl">Hashtags base</label><input class="inp" id="gm_hash" value="#ExperienciaCliente #MysteryShopping #CX" style="margin-bottom:8px">
+    <label class="flex" style="gap:8px;font-size:12px;margin-bottom:6px"><input type="checkbox" id="gm_wa" checked> Incluir enlace/CTA a WhatsApp en piezas de conversión</label>
     <div style="text-align:right;margin-top:10px"><button class="btn btn-green btn-sm" id="gm_ok">Generar calendario</button></div>
   `,{onMount:(ov,close)=>ov.querySelector('#gm_ok').addEventListener('click',()=>{
     const n=Math.max(1,Math.min(20,+ov.querySelector('#gm_n').value||8));
+    const fun=ov.querySelector('#gm_fun').value, tool=ov.querySelector('#gm_tool').value, cta=ov.querySelector('#gm_cta').value||'Conoce más', hash=ov.querySelector('#gm_hash').value||'';
+    const temas=(ov.querySelector('#gm_tema').value||'').split(',').map(s=>s.trim()).filter(Boolean);
+    const wa=ov.querySelector('#gm_wa').checked;
     const[y,m]=S._month.split('-').map(Number);const days=new Date(y,m,0).getDate();
-    for(let i=0;i<n;i++){const enf=S.ENFOQUES[i%S.ENFOQUES.length];const canal=S.CANALES[i%S.CANALES.length];const d=Math.floor((i+1)*days/(n+1));
-      S.add({titulo:enf+' · idea '+(i+1),enfoque:enf,canal,tipo:S.TIPOS[i%S.TIPOS.length],estado:'borrador',fecha:S._month+'-'+String(d).padStart(2,'0'),hora:'09:00',copy:iaCopy(enf,canal)});}
-    close();draw();ui.toast(n+' piezas generadas con IA · revisa y programa'+(CX.ai&&CX.ai.ready()?'':' (configura Gemini para contenido a medida)'),'ok',4000);
+    for(let i=0;i<n;i++){const enf=temas.length?{titulo:temas[i%temas.length]}:null;const ef=enf?enf.titulo:S.ENFOQUES[i%S.ENFOQUES.length];const canal=S.CANALES[i%S.CANALES.length];const d=Math.floor((i+1)*days/(n+1));
+      let copy=iaCopy(S.ENFOQUES[i%S.ENFOQUES.length],canal)+'\n\n👉 '+cta+(wa&&i%3===0?' · WhatsApp: wa.me/':'')+'\n'+hash;
+      S.add({titulo:(ef.charAt(0).toUpperCase()+ef.slice(1))+' · '+fun.split(' ')[0],enfoque:S.ENFOQUES[i%S.ENFOQUES.length],canal,tipo:S.TIPOS[i%S.TIPOS.length],estado:'borrador',fecha:S._month+'-'+String(d).padStart(2,'0'),hora:'09:00',copy,tool,cta,embudo:fun});}
+    close();draw();ui.toast(n+' piezas generadas ('+tool+' · '+fun.split(' ')[0]+') · revisa y programa'+(CX.ai&&CX.ai.ready()?'':' (conecta IA para contenido a medida)'),'ok',4500);
   })});
 
   const importCal=()=>ui.modal('⤒ Importar calendario de contenidos',`

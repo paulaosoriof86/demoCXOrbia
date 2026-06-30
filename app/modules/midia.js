@@ -17,6 +17,7 @@ CX.module('midia', ({data,role,ui})=>{
   const bindNotif=()=>{setTimeout(()=>{
     document.querySelectorAll('[data-ngo]').forEach(b=>b.addEventListener('click',()=>{const n=CX.notif.for(role).find(x=>x.id===b.dataset.ngo);CX.notif.markRead(n.id);CX.router.nav(n.nav||'tablon');}));
     document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.nav)));
+    document.querySelectorAll('.asgDone').forEach(b=>b.addEventListener('click',()=>{CX.automations.resolverAsignacion(b.dataset.id);CX.router.nav('midia');CX.ui&&CX.ui.toast('Asignación resuelta','ok');}));
     document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.go)));
     document.querySelectorAll('[data-cgo]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.cgo)));
     document.querySelectorAll('[data-day]').forEach(c=>c.addEventListener('click',()=>{
@@ -93,6 +94,11 @@ CX.module('midia', ({data,role,ui})=>{
         <div data-mk="sinA" style="cursor:pointer">${ui.kpi('Sin asignar',k.sinAsignar.t,'r')}</div>
       </div>
       ${notifBlock()}
+      ${(()=>{const asg=CX.automations&&CX.automations.pendientesPara?CX.automations.pendientesPara('admin'):[];return asg.length?`
+      <div class="card card-p" style="margin-bottom:16px;border-left:3px solid var(--amber)">
+        <div class="card-h"><div class="card-t">📌 Asignaciones internas pendientes (${asg.length})</div></div>
+        ${asg.slice(0,6).map(a=>`<div class="between" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12.5px">${a.titulo}</b><div style="font-size:11px;color:var(--t3)">${a.detalle||''} · 👤 ${a.responsable||'—'}</div></div><button class="btn btn-soft btn-sm asgDone" data-id="${a.id}">✓ Resuelto</button></div>`).join('')}
+      </div>`:'';})()}
       ${cronograma()}
       <div class="card card-p">
         <div class="card-h"><div class="card-t">Lo que requiere tu acción</div></div>

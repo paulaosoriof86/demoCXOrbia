@@ -247,7 +247,7 @@ CX.module('postulaciones', ({data,ui})=>{
     document.getElementById('openAgenda').addEventListener('click',()=>{
       const rows=agendadas.slice(0,4).map(v=>`<div class="between" style="padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
         <div><b style="font-size:13px">${v.shopper}</b> · ${v.sucursal}<div style="font-size:11px;color:var(--t3)">📅 ${v.agendada} · ${v.franjaCode} · autorizada por Coordinación</div></div>
-        <button class="btn btn-ghost btn-sm">🗓️ Solicitar ajuste</button></div>`).join('');
+        <button class="btn btn-ghost btn-sm aprAdjust" data-vid="${v.id}" data-sh="${v.shopper}">🗓️ Solicitar ajuste</button></div>`).join('');
       ui.modal('Gestión de agendamientos',`
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">Separa las fechas enviadas por shoppers de las referencias HR y de las propuestas al postularse.</p>
         <div style="background:var(--green-bg);border-radius:10px;padding:12px 14px;margin-bottom:14px">
@@ -255,7 +255,13 @@ CX.module('postulaciones', ({data,ui})=>{
           <div style="font-size:12px;color:var(--t3);margin-top:4px">No hay fechas nuevas pendientes de autorización.</div></div>
         <div style="font-size:12px;font-weight:700;color:var(--t1);margin-bottom:9px">✅ Agendas autorizadas desde la plataforma <span class="bdg bdg-g">${agendadas.length}</span></div>
         ${rows||ui.empty('🗓️','Sin agendas')}
-        <div style="margin-top:8px">${ui.aiBox('Estas fechas provienen de HR o de una postulación aprobada; se reflejan para coordinación y shopper sin contarse como pendientes.','Referencias')}</div>`);
+        <div style="margin-top:8px">${ui.aiBox('Estas fechas provienen de HR o de una postulación aprobada; se reflejan para coordinación y shopper sin contarse como pendientes.','Referencias')}</div>`,
+      {onMount:(ov,close)=>ov.querySelectorAll('.aprAdjust').forEach(b=>b.addEventListener('click',()=>{
+        const sh=b.dataset.sh;
+        CX.notif&&CX.notif.push({to:'shopper',tipo:'ajuste',icon:'🗓️',tono:'a',titulo:'El equipo solicita ajustar tu agenda',txt:sh+' · revisa la fecha de tu visita en Mis Visitas',nav:'misvisitas'});
+        if(CX.automations&&CX.automations.fire)CX.automations.fire('reprog',{shopper:sh});
+        close();ui.toast('Ajuste solicitado a '+sh+' · notificado (Mi Día + WhatsApp)','ok',3500);
+      }))});
     });
   },0);
   return html;

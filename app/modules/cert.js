@@ -71,7 +71,13 @@ CX.module('cert', ({role,data,ui})=>{
       <div style="text-align:right;margin-top:10px"><button class="btn btn-green btn-sm" id="ciGo">Generar banco</button></div>
     `,{onMount:(ov,close)=>{ov.querySelector('#ciGo').addEventListener('click',()=>{
       const n=+ov.querySelector('#ciN').value||10, g=+ov.querySelector('#ciG').value||80;
-      close();ui.toast((CX.ai&&CX.ai.ready()?'IA generó ':'Borrador de ')+n+' preguntas de certificación · gate '+g+'% · revisa y publica'+(CX.ai&&CX.ai.ready()?'':' (configura Gemini para extracción real)'),'ok',4200);
+      const txt=(ov.querySelector('#ciT').value||'').trim();
+      if(CX.ai&&CX.ai.ready()&&txt){
+        ui.toast('Generando banco con '+CX.ai.cfg().model+'…','',2500);
+        CX.ai.ask('A partir de este instructivo de mystery shopping, genera '+n+' preguntas de certificación de opción múltiple (4 opciones, marca la correcta y explica por qué). Lista numerada legible.\n\nINSTRUCTIVO:\n'+txt)
+          .then(res=>{close();ui.modal('🤖 Banco generado ('+n+' preguntas · gate '+g+'%)',`<div class="acad-content" style="font-size:13px;line-height:1.6;max-height:60vh;overflow:auto;white-space:pre-wrap">${res.replace(/</g,'&lt;')}</div><div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Banco publicado','ok');this.closest('.cx-ov').remove()">Publicar banco</button></div>`);})
+          .catch(e=>{close();ui.toast('Error IA: '+e.message,'warn');});
+      } else { close();ui.toast((txt?'':'Pega el instructivo. ')+'Configura un proveedor de IA (Integraciones) para generar el banco real.','warn',4500); }
     });}}));
     const imp=document.getElementById('certImp');
     if(imp)imp.addEventListener('click',()=>ui.modal('Importar banco de preguntas',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Sube tu banco (CSV/Excel) o pégalo. Formato: pregunta | opción correcta | opciones incorrectas.</p><input type="file" class="inp" style="padding:7px;margin-bottom:10px"><textarea class="inp" rows="4" placeholder="Pega aquí…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Banco importado (demo)','ok');this.closest('.cx-ov').remove()">Importar</button></div>`));

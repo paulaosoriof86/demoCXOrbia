@@ -102,6 +102,60 @@
 
 ---
 
+### 13. Banderitas reales + estados honestos en Integraciones + Manual de Integraciones
+- **ARCHIVOS:** `app/app.js` (flagsRow con `<img>` flagcdn), `app/styles/layout.css` (.cflag con img), `app/modules/integraciones.js` (estados honestos)
+- **QUÉ CAMBIÓ:**
+  - Banderitas del login: ahora usan imágenes reales de banderas (flagcdn.com) con fallback a código de país — antes eran emoji que Windows no renderiza.
+  - Integraciones: "Probar conexión" ahora dice "Prueba simulada · validación real en backend"; guardar dice "configurado · pendiente de validación en backend" (honestidad de estados que exige el resumen V53 de ChatGPT — no prometer conexión real sin backend).
+- **DOC NUEVO:** `CXOrbia - Manual de Integraciones.html` — qué hace cada integración, cómo configurarla y su valor agregado, con estados (funciona/requiere backend/según plan).
+- **CÓMO APLICARLO A TyA:** Reemplazar flagsRow en app.js, .cflag en layout.css, y el configModal de integraciones.js.
+
+---
+
+### 14. CRM↔Propuestas: propuestas vinculadas a la ficha del cliente
+- **ARCHIVOS:** `app/modules/comercial.js` (CX.propStore + guardar al exportar/enviar), `app/modules/crm.js` (sección Propuestas en Ficha 360)
+- **QUÉ CAMBIÓ:** Al exportar/enviar una propuesta queda guardada y vinculada al cliente con estado (borrador/enviada/aceptada/rechazada) e historial. En la Ficha 360 de la Cuenta aparece la sección 📄 Propuestas: clic para ver detalle, cambiar estado, retomar en Costos o eliminar.
+- **POR QUÉ:** #159 — trazabilidad comercial completa: las propuestas no se pierden, son retomables y editables desde la ficha.
+- **CÓMO APLICARLO A TyA:** Agregar `CX.propStore` al inicio de `comercial.js`, hookear propPdf/propSend, y la sección Propuestas + handler propRow en `crm.js`.
+
+---
+
+### 15. CRM↔Proyectos vinculado + tareas con navegación cruzada
+- **ARCHIVOS:** `app/modules/proyectos.js` (vínculo a cuenta CRM al guardar), `app/modules/crm.js` (tareas con campo "vincular a módulo" + navegación)
+- **QUÉ CAMBIÓ:**
+  - #157: al guardar un proyecto con cliente, se vincula a la Cuenta del CRM (`cu.proyectos[]`) — trazabilidad bidireccional.
+  - #158: al crear una tarea en el CRM puedes vincularla a un módulo (Proyecto/Propuesta/Visita/Postulación); en el dashboard la tarea muestra un chip clickeable que navega a ese módulo.
+- **CÓMO APLICARLO A TyA:** Aplicar el bloque de vínculo en el save de `proyectos.js` y el campo `actLink2`/chip `crm-goto` en `crm.js`.
+- **BLOQUE CRM COMPLETO:** #155 (Ficha 360), #156 (clientes desde CRM), #157 (proyectos), #158 (tareas), #159 (propuestas) — todo cerrado.
+
+---
+
+### 16. Asignar responsable + Soporte notifica + Importador Excel real (SheetJS)
+- **ARCHIVOS:** `app/core/automations.js` (store de asignaciones #167), `app/modules/midia.js` (bloque pendientes), `app/modules/soporte.js` (botón asignar + notifica solicitante), `app/index.html` + `app/modules/importador.js` (SheetJS)
+- **QUÉ CAMBIÓ:**
+  - #167: `CX.automations.asignar()` — asigna un responsable a cualquier ítem de gestión interna; notifica al responsable y aparece en Mi Día hasta resolverse. Botón "📌 Asignar responsable" en el detalle de soporte.
+  - #173: al cambiar el estado de un ticket, se notifica al solicitante (datos vivos).
+  - #160: los importadores AI y HR ahora leen Excel real (.xlsx) con SheetJS — convierte a CSV automáticamente.
+- **CÓMO APLICARLO A TyA:** Copiar el store de asignaciones a `automations.js`, el bloque en `midia.js`, los handlers en `soporte.js`, el `<script>` de SheetJS en `index.html` y los handlers de archivo en `importador.js`.
+
+---
+
+### 17. Reportes: exportación CSV real
+- **ARCHIVO:** `app/modules/operacion-extra.js` (módulo informes)
+- **QUÉ CAMBIÓ:** "⤓ Excel" ahora exporta un CSV real (descarga del archivo con BOM UTF-8) extrayendo la tabla del reporte; "⤓ PDF" usa window.print. Antes solo mostraban un toast.
+- **CÓMO APLICARLO A TyA:** Reemplazar los handlers rptPdf/rptXls en el openReport de `operacion-extra.js`.
+
+---
+
+### 18. Ficha 360 hub Orbit360 + Marketing IA con criterios
+- **ARCHIVOS:** `app/modules/crm.js` (fichaHub con pestañas), `app/modules/marketing.js` (genMonth)
+- **QUÉ CAMBIÓ:**
+  - #155+: la Ficha 360 de la cuenta es ahora un hub con pestañas navegables (Resumen, Oportunidades, Proyectos, Propuestas, Contactos, Correos, Documentos, Timeline); cada dato es clickeable; registrar/vincular correos, subir documentos, editar cuenta, crear contactos. "Convertir en Cliente" solo aparece si aún no es cliente.
+  - #177: "Generar mes con IA" del Marketing ahora pide criterios estratégicos: nº piezas, periodicidad, objetivo del embudo (TOFU/MOFU/BOFU/reclutamiento), tono, herramienta (Gemini/ChatGPT/Canva/HeyGen), CTA, temáticas, hashtags y enlace WhatsApp.
+- **CÓMO APLICARLO A TyA:** Reemplazar la función `fichaHub` y el handler `[data-cuenta]` en `crm.js`; reemplazar `genMonth` en `marketing.js`.
+
+---
+
 ## Cómo aplicar estos cambios a TyA (proceso general)
 
 1. **Si TyA corre desde el repo de GitHub:** haz pull de los archivos listados arriba (o reemplázalos manualmente). El backend (Firebase) NO se toca — estos cambios son solo de frontend.
