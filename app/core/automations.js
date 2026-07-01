@@ -36,6 +36,28 @@ window.CX = window.CX || {};
     cfg(){ if(this._cfg)return this._cfg; try{ this._cfg=Object.assign(this.defaults(), JSON.parse(localStorage.getItem('cx_ai')||'{}')); }catch(e){ this._cfg=this.defaults(); } return this._cfg; },
     save(patch){ this._cfg=Object.assign(this.cfg(), patch||{}); try{ localStorage.setItem('cx_ai', JSON.stringify(this._cfg)); }catch(e){} },
     ready(){ const c=this.cfg(); return c.activa && c.provider && (c.apiKey||c.endpoint); },
+    /* Lee un <input type=file> y devuelve Promise<string> con el texto para alimentar la IA.
+       txt/csv/json → texto directo; PDF/imagen/doc → best-effort + nota del archivo. Reutilizable en TODA la plataforma. */
+    readAttachment(inputEl){
+      return new Promise((resolve)=>{
+        const f=inputEl&&inputEl.files&&inputEl.files[0];
+        if(!f){ resolve(''); return; }
+        const name=f.name||'archivo';
+        if(/\.(txt|csv|tsv|md|json)$/i.test(name)||(f.type||'').startsWith('text/')){
+          const r=new FileReader(); r.onload=e=>resolve('\n\n[Contenido de "'+name+'"]:\n'+e.target.result); r.onerror=()=>resolve('\n\n[Adjunto: '+name+']'); r.readAsText(f); return;
+        }
+        if(/\.pdf$/i.test(name)){
+          /* extrae texto plano legible del PDF (text layer) sin librerías externas */
+          const r=new FileReader(); r.onload=e=>{ try{ const raw=new TextDecoder('latin1').decode(e.target.result);
+            const chunks=[...raw.matchAll(/\(([^()\\]{2,})\)/g)].map(m=>m[1]).filter(t=>/[a-zA-ZáéíóúñÁÉÍÓÚÑ]{2,}/.test(t));
+            const txt=chunks.join(' ').replace(/\s+/g,' ').trim();
+            resolve(txt.length>40?'\n\n[Texto extraído de "'+name+'"]:\n'+txt.slice(0,12000):'\n\n[PDF "'+name+'" adjunto — sin capa de texto legible; usa el texto pegado o un .txt]');
+          }catch(err){ resolve('\n\n[Adjunto PDF: '+name+']'); } };
+          r.onerror=()=>resolve('\n\n[Adjunto PDF: '+name+']'); r.readAsArrayBuffer(f); return;
+        }
+        resolve('\n\n[Documento adjunto: '+name+' — formato '+(f.type||'desconocido')+']');
+      });
+    },
     /* Llamada REAL al proveedor configurado. Enruta a Gemini/OpenAI/Anthropic según provider.
        Devuelve Promise<string>. Si no hay key, rechaza (los módulos caen a su heurística). */
     ask(prompt, opts){

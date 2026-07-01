@@ -6,6 +6,59 @@
 
 ---
 
+## Sesión V63 / V63b / V63c — 2026-07-01 (P0/P1 auditoría V62)
+
+**Archivos tocados:** `app/app.js`, `app/core/router.js`, `app/core/config.js`, `app/core/data.js`, `app/modules/configuracion.js`, `app/styles/layout.css`. **NO se tocó backend protegido** (`index-backend-dev.html`, `core/backend*.js` no existen en este ZIP de frontend).
+
+### Roles no estándar probables desde el login (V63)
+- **ARCHIVOS:** `app/app.js` (selectRole + botones role-alt), `app/core/router.js` (roleCanAccess con `testRole`)
+- **QUÉ CAMBIÓ:** Login con botones "Operativo / Coordinador / Aliado" que entran con ese rol bajo prueba (`CX.session.testRole`). El router aplica `roleCanAccess(testRole||role)` en sidebar, módulo inicial y navegación → la matriz de permisos se prueba de verdad.
+- **PROBADO:** ops sin Finanzas → no ve/abre financiero; coordinador solo Operación → visitas sí, financiero no; admin/super → pleno.
+
+### Modo demo vs piloto/cliente (V63b)
+- **ARCHIVOS:** `app/core/config.js` (applyBrand lee `cx_demo_mode`), `app/modules/configuracion.js` (toggle)
+- **QUÉ CAMBIÓ:** Configuración → Marca → toggle "Modo demo comercial". Off → oculta el sello "Demo comercial · datos ficticios" del login. Persiste en `cx_demo_mode`.
+
+### Proyecto inicial configurable (V63b)
+- **ARCHIVOS:** `app/core/data.js` (`currentProjectId` lee `cx_start_project`), `app/modules/configuracion.js` (selector)
+- **QUÉ CAMBIÓ:** Selector "Proyecto inicial al entrar"; la plataforma arranca en el programa elegido (ej. el del cliente/TyA). Persiste en `cx_start_project`. Así TyA/Cinépolis arranca en su proyecto sin tocar código.
+
+### Responsive móvil (V63c)
+- **ARCHIVO:** `app/styles/layout.css` (@media 860px)
+- **QUÉ CAMBIÓ:** Grids de KPIs apilan (g4→2, g3→2, g2→1), tablas con scroll horizontal, modales casi full-width, Ficha 360 full a pantalla completa en móvil.
+
+---
+
+## Sesión V62 / V62b — 2026-07-01 (fixes auditoría V61)
+
+### Módulo `rutas` duplicado
+- **ARCHIVO:** `app/index.html` (quitada carga de `modules/rutas.js`)
+- **QUÉ CAMBIÓ:** `rutas.js` (versión simple) se cargaba DESPUÉS de `operacion-extra.js` (versión completa) y la sobrescribía. Se quitó la línea `<script src="modules/rutas.js">` para que gane la versión completa de HR inteligente.
+- **CÓMO PROBARLO:** Hojas de Ruta → debe mostrar la HR inteligente completa (online/importada/interna), no la simple.
+
+### `aprendizaje.js` huérfano eliminado
+- **ARCHIVO:** `app/modules/aprendizaje.js` (ELIMINADO)
+- **QUÉ CAMBIÓ:** Archivo no cargado, con mojibake y un `CX.module('aprendizaje')` duplicado que competía con `academia.js`. Se eliminó; la Academia real vive en `academia.js`.
+
+### Liquidación: `cuestionario enviado` ≠ `submitido`
+- **ARCHIVO:** `app/core/liquidacion.js` (`estadoFromVisita`)
+- **QUÉ CAMBIÓ:** `estado==='cuestionario'` ahora devuelve `pendiente_submitir` (no directo a `validada`); solo pasa a `validada` cuando `v.submit===true`. Respeta el flujo real T&A.
+- **CÓMO PROBARLO:** Una visita con cuestionario enviado pero sin submit debe aparecer "Pend. submitir"; al marcar submit → "Validada · lista para lote".
+
+### Confirmación antes de borrar visita
+- **ARCHIVO:** `app/modules/dashboard.js` (bdDel)
+- **QUÉ CAMBIÓ:** El borrado de visita desde el detalle del tablero ahora pide `confirm()`.
+
+### Matriz de permisos gobierna la navegación real
+- **ARCHIVOS:** `app/core/config.js` (`CX.MOD_CAT`, `CX.roleCanAccess`), `app/core/router.js` (nav + first + nav()), `app/modules/configuracion.js` (persistencia `cx_perm`)
+- **QUÉ CAMBIÓ:** Cada módulo se mapea a su categoría (op/fin/prj/cap/cfg/sh/com). Para roles no-admin (ops, coordinador, aliado, personalizados), el sidebar, el módulo inicial y la navegación directa respetan la matriz de permisos, que ahora persiste en `cx_perm`. Super/admin conservan acceso pleno.
+- **CÓMO PROBARLO:** Usuarios & Permisos → quita "Finanzas" a un rol → ese rol no ve ni abre módulos financieros.
+
+### Financiamientos/CxP — verificado (sin cambio)
+- Sin doble conteo: la CxP `origen:'financiamiento'` es la fuente única de deuda; `_fin` solo rastrea devolución, sincronizados.
+
+---
+
 ## Sesión 50 — 2026-06-29
 
 ### 1. IA multi-proveedor SIN sesgo (Gemini/ChatGPT/Claude/Endpoint propio)

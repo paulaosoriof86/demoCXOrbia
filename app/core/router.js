@@ -9,7 +9,8 @@ CX.router = {
     document.body.classList.toggle('role-shopper',role==='shopper');
     if(role==='shopper'){ const ok=CX.data.projectsFor(role); if(ok.length && !ok.some(p=>p.id===CX.data.currentProjectId)) CX.data.currentProjectId=ok[0].id; }
     this.buildRail(role);
-    const first=CX.NAV[role].flatMap(g=>g.items).find(id=>CX.moduleEnabled(id));
+    const gRole=CX.session.testRole||role;
+    const first=CX.NAV[role].flatMap(g=>g.items).find(id=>CX.moduleEnabled(id)&&CX.roleCanAccess(gRole,id));
     const start = (CX.session.view && CX.MODULES[CX.session.view] && CX.MODULES[CX.session.view].roles.includes(role) && CX.moduleEnabled(CX.session.view))
       ? CX.session.view : first;
     this.nav(start);
@@ -36,7 +37,7 @@ CX.router = {
 
     const collapsed = (()=>{try{return JSON.parse(localStorage.getItem('cx_rail_col')||'{}')}catch(e){return {};}})();
     const nav=CX.NAV[role].map(group=>{
-      const items=group.items.filter(id=>CX.moduleEnabled(id)).map(id=>{
+      const items=group.items.filter(id=>CX.moduleEnabled(id)&&CX.roleCanAccess(CX.session.testRole||role,id)).map(id=>{
         const m=CX.MODULES[id]; if(!m)return '';
         const badge = (m.badge && role==='admin') ? `<span class="n-badge">${d.kpis().postPend||''}</span>`
           : (m.badgeNotif && CX.notif && CX.notif.unread(role)) ? `<span class="n-badge">${CX.notif.unread(role)}</span>` : '';
@@ -100,7 +101,7 @@ CX.router = {
 
   nav(id){
     const role=CX.session.role, m=CX.MODULES[id];
-    if(!m||!m.roles.includes(role)||!CX.moduleEnabled(id)) return;
+    if(!m||!m.roles.includes(role)||!CX.moduleEnabled(id)||!CX.roleCanAccess(CX.session.testRole||role,id)) return;
     CX.session.view=id; CX.session.save();
     document.querySelectorAll('.nav-i').forEach(n=>n.classList.toggle('active',n.dataset.id===id));
     document.body.classList.remove('nav-open');

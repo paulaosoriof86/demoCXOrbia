@@ -1,7 +1,61 @@
 /* CXOrbia · Certificación (admin + shopper) */
+/* Banco de preguntas persistente por proyecto — el banco que publica el admin es el que toma el shopper */
+CX.certStore = CX.certStore || {
+  key(pid){ return 'cx_certbank_'+pid; },
+  bank(pid){ try{ return JSON.parse(localStorage.getItem(this.key(pid))||'null'); }catch(e){ return null; } },
+  save(pid, data){ try{ localStorage.setItem(this.key(pid), JSON.stringify(data)); }catch(e){} CX.bus&&CX.bus.emit('cert'); },
+  clear(pid){ try{ localStorage.removeItem(this.key(pid)); }catch(e){} },
+  /* parsea el texto/JSON de la IA a preguntas estructuradas [{q,ops:[],correcta,exp}] */
+  parse(raw){
+    try{ const j=JSON.parse(raw.replace(/```json|```/g,'').trim()); if(Array.isArray(j))return j; if(j.preguntas)return j.preguntas; }catch(e){}
+    /* fallback: parse lista numerada "1. pregunta ... a) ... (correcta: X)" */
+    const out=[]; const blocks=raw.split(/\n(?=\d+[.\)])/);
+    blocks.forEach(b=>{ const q=(b.match(/^\d+[.\)]\s*(.+)/)||[])[1]; if(!q)return;
+      const ops=[...b.matchAll(/[a-d]\)\s*([^\n]+)/gi)].map(m=>m[1].trim());
+      const corr=(b.match(/correct[ao]:?\s*([^\n]+)/i)||[])[1];
+      const exp=(b.match(/(?:explicaci[oó]n|porque)[:\s]+([^\n]+)/i)||[])[1]||'';
+      out.push({q:q.trim(),ops:ops.length?ops:['Verdadero','Falso'],correcta:(corr||ops[0]||'').trim(),exp:exp.trim()});
+    });
+    return out.length?out:null;
+  },
+};
 CX.module('cert', ({role,data,ui})=>{
   const p=data.project();
   if(role==='shopper'){
+    /* si el admin publicó un banco para este proyecto, el shopper lo toma como examen interactivo real */
+    const bank=CX.certStore.bank(p.id);
+    if(bank && bank.preguntas && bank.preguntas.length){
+      const host=ui.el('div'); const answers={};
+      const draw=()=>{
+        host.innerHTML=`
+          ${ui.ph('Certificación', p.name+' · '+bank.preguntas.length+' preguntas · gate '+(bank.gate||80)+'%')}
+          <div class="card card-p" id="examBox">
+            ${bank.preguntas.map((q,i)=>`<div style="border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:10px">
+              <b style="font-size:13px;color:var(--t1)">${i+1}. ${q.q}</b>
+              <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
+                ${(q.ops||[]).map(o=>`<label class="flex" style="gap:8px;font-size:12.5px;cursor:pointer;padding:6px 9px;border:1px solid var(--border);border-radius:7px"><input type="radio" name="q${i}" value="${o.replace(/"/g,'&quot;')}"> ${o}</label>`).join('')}
+              </div>
+              <div class="examFb" data-i="${i}" style="display:none;margin-top:8px;font-size:11.5px;line-height:1.5"></div>
+            </div>`).join('')}
+            <div class="between" style="margin-top:8px"><span class="muted" style="font-size:11.5px">Responde y verifica; el feedback explica cada respuesta.</span><button class="btn btn-pr btn-sm" id="examGo">Verificar y certificar</button></div>
+          </div>`;
+        host.querySelectorAll('input[type=radio]').forEach(r=>r.addEventListener('change',e=>{answers[e.target.name]=e.target.value;}));
+        host.querySelector('#examGo').addEventListener('click',()=>{
+          let ok=0; bank.preguntas.forEach((q,i)=>{
+            const mine=answers['q'+i], correct=(mine||'').trim().toLowerCase()===(q.correcta||'').trim().toLowerCase();
+            if(correct)ok++;
+            const fb=host.querySelector('.examFb[data-i="'+i+'"]'); if(fb){fb.style.display='block';
+              fb.innerHTML=(correct?'<b style="color:var(--green)">✓ Correcta</b>':'<b style="color:var(--amber)">↻ A reforzar</b> · correcta: <b style="color:var(--green)">'+(q.correcta||'—')+'</b>')+(q.exp?'<div style="color:var(--t2);margin-top:3px">'+q.exp+'</div>':'');}
+          });
+          const score=Math.round(ok/bank.preguntas.length*100); const pass=score>=(bank.gate||80);
+          const box=host.querySelector('#examBox');
+          box.insertAdjacentHTML('afterbegin',`<div class="flex" style="gap:14px;background:var(--${pass?'green':'amber'}-bg);border-radius:11px;padding:13px 16px;margin-bottom:12px"><div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--${pass?'green':'amber'})">${score}%</div><div><b style="color:var(--t1)">${pass?'Aprobado':'No alcanzado'}</b> · ${ok}/${bank.preguntas.length} correctas · gate ${bank.gate||80}%<div style="font-size:12px;color:var(--t3)">${pass?'Ya puedes ejecutar tus visitas de este proyecto.':'Repasa el feedback y vuelve a intentarlo.'}</div></div></div>`);
+          CX.automations&&CX.automations.fire&&CX.automations.fire('certificacion',{shopper:(CX.session.user&&CX.session.user.name)||'',score,pass});
+          ui.toast(pass?'✓ Certificación aprobada ('+score+'%)':'Puntaje '+score+'% · no alcanzó el gate','ok',4000);
+        });
+      };
+      draw(); return host;
+    }
     const fb=[
       {ok:true, q:'¿Puedes revelar que eres evaluador?', tu:'No', correcta:'No', exp:'El anonimato es la base del mystery shopping: si te identificas, el comportamiento del personal se altera y la medición pierde validez. Nunca reveles tu rol, ni siquiera al salir.'},
       {ok:true, q:'¿Qué incluye un combo en el reembolso?', tu:'Boleto + alimentos del escenario', correcta:'Boleto + alimentos del escenario', exp:'El combo cubre los consumos definidos en el instructivo del proyecto; conserva siempre el comprobante para el reembolso.'},
@@ -71,13 +125,25 @@ CX.module('cert', ({role,data,ui})=>{
       <div style="text-align:right;margin-top:10px"><button class="btn btn-green btn-sm" id="ciGo">Generar banco</button></div>
     `,{onMount:(ov,close)=>{ov.querySelector('#ciGo').addEventListener('click',()=>{
       const n=+ov.querySelector('#ciN').value||10, g=+ov.querySelector('#ciG').value||80;
-      const txt=(ov.querySelector('#ciT').value||'').trim();
-      if(CX.ai&&CX.ai.ready()&&txt){
-        ui.toast('Generando banco con '+CX.ai.cfg().model+'…','',2500);
-        CX.ai.ask('A partir de este instructivo de mystery shopping, genera '+n+' preguntas de certificación de opción múltiple (4 opciones, marca la correcta y explica por qué). Lista numerada legible.\n\nINSTRUCTIVO:\n'+txt)
-          .then(res=>{close();ui.modal('🤖 Banco generado ('+n+' preguntas · gate '+g+'%)',`<div class="acad-content" style="font-size:13px;line-height:1.6;max-height:60vh;overflow:auto;white-space:pre-wrap">${res.replace(/</g,'&lt;')}</div><div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Banco publicado','ok');this.closest('.cx-ov').remove()">Publicar banco</button></div>`);})
-          .catch(e=>{close();ui.toast('Error IA: '+e.message,'warn');});
-      } else { close();ui.toast((txt?'':'Pega el instructivo. ')+'Configura un proveedor de IA (Integraciones) para generar el banco real.','warn',4500); }
+      const pasted=(ov.querySelector('#ciT').value||'').trim();
+      if(CX.ai&&CX.ai.ready()){
+        ui.toast('Leyendo instructivo y generando con '+CX.ai.cfg().model+'…','',2500);
+        CX.ai.readAttachment(ov.querySelector('#ciF')).then(fileTxt=>{
+          const txt=(pasted+fileTxt).trim();
+          if(!txt){ ui.toast('Pega el instructivo o adjunta un archivo con texto','warn',4000); return; }
+          return CX.ai.ask('A partir de este instructivo de mystery shopping, genera '+n+' preguntas de certificación de opción múltiple. Devuelve SOLO JSON: un array de objetos {"q":"pregunta","ops":["a","b","c","d"],"correcta":"texto exacto de la opción correcta","exp":"explicación breve"}. Sin texto adicional.\n\nINSTRUCTIVO:\n'+txt)
+          .then(res=>{close();
+            const preguntas=CX.certStore.parse(res)||[];
+            ui.modal('🤖 Banco generado ('+preguntas.length+' preguntas · gate '+g+'%)',
+              `<div class="acad-content" style="font-size:12.5px;line-height:1.55;max-height:52vh;overflow:auto">${preguntas.length?preguntas.map((q,i)=>`<div style="border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-bottom:7px"><b>${i+1}. ${q.q}</b><div style="color:var(--t3);margin-top:3px">${(q.ops||[]).join(' · ')}</div><div style="color:var(--green);margin-top:2px">✓ ${q.correcta}</div></div>`).join(''):'<pre style="white-space:pre-wrap">'+res.replace(/</g,'&lt;')+'</pre>'}</div>
+              <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="pubBank">Publicar banco (lo tomará el shopper)</button></div>`,
+              {onMount:(o2,c2)=>o2.querySelector('#pubBank').addEventListener('click',()=>{
+                CX.certStore.save(p.id,{preguntas,gate:g,fecha:new Date().toISOString().slice(0,10)});
+                c2();draw();ui.toast('✅ Banco publicado · '+preguntas.length+' preguntas · ya disponible para los shoppers','ok',4200);
+              })});
+          });
+        }).catch(e=>{close();ui.toast('Error IA: '+e.message,'warn');});
+      } else { close();ui.toast('Configura un proveedor de IA (Integraciones) para generar el banco real.','warn',4500); }
     });}}));
     const imp=document.getElementById('certImp');
     if(imp)imp.addEventListener('click',()=>ui.modal('Importar banco de preguntas',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Sube tu banco (CSV/Excel) o pégalo. Formato: pregunta | opción correcta | opciones incorrectas.</p><input type="file" class="inp" style="padding:7px;margin-bottom:10px"><textarea class="inp" rows="4" placeholder="Pega aquí…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Banco importado (demo)','ok');this.closest('.cx-ov').remove()">Importar</button></div>`));

@@ -120,7 +120,7 @@ CX.module('documentos', ({data,role,ui})=>{
       <div id="giFN" style="font-size:11px;color:var(--t3);margin-top:5px"></div>
       <div style="text-align:right;margin-top:12px"><button class="btn btn-green btn-sm" id="giGo">Generar</button></div>
     `,{onMount:(ov,close)=>{
-      let src='';ov.querySelector('#giF').addEventListener('change',e=>{const f=e.target.files[0];if(f){ov.querySelector('#giFN').textContent='📎 '+f.name;if(/\.(txt|csv)$/i.test(f.name)){const r=new FileReader();r.onload=ev=>src=ev.target.result;r.readAsText(f);}else src='[Documento: '+f.name+']';}});
+      let src='';ov.querySelector('#giF').addEventListener('change',e=>{const f=e.target.files[0];if(f){ov.querySelector('#giFN').textContent='📎 '+f.name+' · leyendo…';if(CX.ai&&CX.ai.readAttachment){CX.ai.readAttachment(e.target).then(txt=>{src=txt||('[Documento: '+f.name+']');ov.querySelector('#giFN').textContent='📎 '+f.name+' · listo';});}else{const r=new FileReader();r.onload=ev=>src=ev.target.result;r.readAsText(f);}}});
       ov.querySelector('#giGo').addEventListener('click',()=>{
         const tipo=ov.querySelector('#giT').value, fuente=((ov.querySelector('#giTxt').value||'')+' '+src).trim();
         if(!fuente){ui.toast('Describe o carga la fuente','warn');return;}

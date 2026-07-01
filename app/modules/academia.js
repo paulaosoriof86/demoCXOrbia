@@ -15,8 +15,8 @@ CX.acadData={
   addCourse(r,c){ const arr=this.getCustom(r); arr.unshift(Object.assign({id:'cu'+Date.now().toString(36),lessons:[]},c)); this.saveCustom(r,arr); },
   editCourse(r,cid,patch){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c)Object.assign(c,patch); const custom=this.getCustom(r); const cu=custom.find(x=>x.id===cid); if(cu)Object.assign(cu,patch); this.saveCustom(r,custom); },
   addLesson(r,cid,lesson){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){c.lessons=c.lessons||[];c.lessons.push(Object.assign({id:'ls'+Date.now().toString(36)},lesson));} CX.bus&&CX.bus.emit('acad'); },
-  editLesson(r,cid,lid,patch){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){const l=(c.lessons||[]).find(x=>x.id===lid);if(l)Object.assign(l,patch);} CX.bus&&CX.bus.emit('acad'); },
-  delLesson(r,cid,lid){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){c.lessons=(c.lessons||[]).filter(x=>x.id!==lid);} CX.bus&&CX.bus.emit('acad'); },
+  editLesson(r,cid,lid,patch){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){const l=(c.lessons||[]).find(x=>x.id===lid);if(l)Object.assign(l,patch);} const custom=this.getCustom(r); if(custom.find(x=>x.id===cid))this.saveCustom(r,custom); CX.bus&&CX.bus.emit('acad'); },
+  delLesson(r,cid,lid){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){c.lessons=(c.lessons||[]).filter(x=>x.id!==lid);} const custom=this.getCustom(r); if(custom.find(x=>x.id===cid))this.saveCustom(r,custom); CX.bus&&CX.bus.emit('acad'); },
   delCourse(r,cid){ this.saveCustom(r,this.getCustom(r).filter(x=>x.id!==cid)); },
   COURSES:{
     admin:[
@@ -1128,7 +1128,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
     `,{onMount:(ov,close)=>{
       ov.querySelectorAll('.cmSrc').forEach(b=>b.addEventListener('click',()=>{lsnType=b.dataset.s;ov.querySelectorAll('.cmSrc').forEach(x=>x.className='btn btn-sm '+(x===b?'btn-pr':'btn-ghost'));ov.querySelector('#cmTextoWrap').style.display=lsnType==='texto'?'block':'none';ov.querySelector('#cmRecWrap').style.display=lsnType==='recurso'?'block':'none';}));
       let recTxt='';
-      ov.querySelector('#cmRecF')?.addEventListener('change',e=>{const f=e.target.files[0];if(f){ov.querySelector('#cmRecName').textContent='📎 '+f.name;if(/\.(txt|csv)$/i.test(f.name)){const r=new FileReader();r.onload=ev=>recTxt=ev.target.result;r.readAsText(f);}else recTxt='[Documento: '+f.name+']';}});
+      ov.querySelector('#cmRecF')?.addEventListener('change',e=>{const f=e.target.files[0];if(f){ov.querySelector('#cmRecName').textContent='📎 '+f.name+' · leyendo…';if(CX.ai&&CX.ai.readAttachment){CX.ai.readAttachment(e.target).then(txt=>{recTxt=txt||('[Documento: '+f.name+']');ov.querySelector('#cmRecName').textContent='📎 '+f.name+' · listo';});}else{const r=new FileReader();r.onload=ev=>recTxt=ev.target.result;r.readAsText(f);}}});
       ov.querySelector('#cmOk').addEventListener('click',()=>{
         const t=(ov.querySelector('#cmT').value||'').trim();if(!t){ui.toast('Pon un título','warn');return;}
         const rol=ov.querySelector('#cmRol').value, ic=ov.querySelector('#cmI').value||'📘', desc=ov.querySelector('#cmD').value||'Manual';
@@ -1258,15 +1258,17 @@ CX.module('aprendizaje', ({data,role,ui})=>{
       ui.modal('✎ Editar curso',`<div class="grid g2" style="gap:8px 12px"><div><label class="lbl">Nombre</label><input class="inp" id="ecN" value="${(cc.n||'').replace(/"/g,'&quot;')}"></div><div><label class="lbl">Categoría</label><select class="sel" id="ecC">${CX.acadData.CATS.filter(c=>c!=='Todos').map(c=>`<option ${c===cc.cat?'selected':''}>${c}</option>`).join('')}</select></div><div style="grid-column:1/3"><label class="lbl">Descripción</label><textarea class="inp" id="ecD" rows="2">${cc.desc||''}</textarea></div></div><div style="text-align:right;margin-top:10px;display:flex;justify-content:space-between"><button class="btn btn-ghost btn-sm" id="ecDel" style="color:var(--red)">🗑 Eliminar</button><button class="btn btn-pr btn-sm" id="ecSave">Guardar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#ecSave').addEventListener('click',()=>{CX.acadData.editCourse(rr,cc.id,{n:ov.querySelector('#ecN').value.trim(),cat:ov.querySelector('#ecC').value,desc:ov.querySelector('#ecD').value.trim()});close();draw();ui.toast('Curso actualizado','ok');});ov.querySelector('#ecDel').addEventListener('click',()=>{CX.acadData.delCourse(rr,cc.id);close();draw();ui.toast('Curso eliminado','');});}});
     }));()=>ui.modal('✨ Crear módulo con IA',`
       <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Carga material (PDF, video, texto) y la IA genera un curso completo con lecciones profundas y evaluación.</p>
-      <input type="file" class="inp" accept=".pdf,.doc,.docx,.txt,image/*" style="padding:7px;margin-bottom:8px">
+      <input type="file" id="aiCourseF" class="inp" accept=".pdf,.doc,.docx,.txt,image/*" style="padding:7px;margin-bottom:8px">
       <textarea class="inp" id="aiT" rows="3" placeholder="o describe el tema que quieres desarrollar…" style="margin-bottom:10px"></textarea>
       <div style="text-align:right"><button class="btn btn-green btn-sm" id="aiGo">Generar curso</button></div>
     `,{onMount:(ov,close)=>ov.querySelector('#aiGo').addEventListener('click',()=>{
-      const tema=(ov.querySelector('#aiT').value||'').trim();
-      if(!tema){ui.toast('Describe el tema o pega el material','warn');return;}
+      const pasted=(ov.querySelector('#aiT').value||'').trim();
       if(CX.ai&&CX.ai.ready()){
-        ui.toast('Generando curso con '+CX.ai.cfg().model+'…','',2500);
-        CX.ai.ask('Crea un curso de capacitación sobre: "'+tema+'". Devuelve 4-6 lecciones. Cada lección como "## Título" seguido de contenido en HTML (<p>,<h3>,<ul>,<li>). La última lección debe ser un quiz con 3 preguntas.')
+        ui.toast('Leyendo material y generando con '+CX.ai.cfg().model+'…','',2500);
+        CX.ai.readAttachment(ov.querySelector('#aiCourseF')).then(fileTxt=>{
+          const tema=(pasted+fileTxt).trim();
+          if(!tema){ui.toast('Describe el tema o adjunta material','warn');return;}
+          return CX.ai.ask('Crea un curso de capacitación sobre: "'+tema+'". Devuelve 4-6 lecciones. Cada lección como "## Título" seguido de contenido en HTML (<p>,<h3>,<ul>,<li>). La última lección debe ser un quiz con 3 preguntas.')
           .then(res=>{
             const parts=res.split(/##\s+/).filter(Boolean);
             const lessons=parts.map((p,i)=>{const nl=p.indexOf('\n');const n=p.slice(0,nl).trim()||'Lección '+(i+1);const html=p.slice(nl+1).trim();return {id:'l'+Date.now().toString(36)+i,n,ic:/quiz|evalua/i.test(n)?'❓':'📘',tipo:/quiz|evalua/i.test(n)?'quiz':'texto',content:'<div class="acad-content">'+html+'</div>'};});
@@ -1275,6 +1277,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
             close();draw();ui.toast('Curso generado · revisa, itera y publica','ok',4000);
           })
           .catch(e=>{close();ui.toast('Error IA: '+e.message,'warn');});
+        });
       } else {
         close();ui.toast('Configura un proveedor de IA en Integraciones para generar el curso','warn',4000);
       }

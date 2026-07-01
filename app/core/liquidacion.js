@@ -16,7 +16,7 @@ CX.liq = {
   estadoFromVisita(v){
     switch(v.estado){
       case 'liquidada':     return 'pagada';
-      case 'cuestionario':  return 'validada';      // cuestionario hecho, lista para lote
+      case 'cuestionario':  return v.submit ? 'validada' : 'pendiente_submitir'; // enviado≠submitido
       case 'realizada':     return 'pendiente_cuestionario';
       default:              return null;            // aún no genera liquidación
     }
