@@ -34,7 +34,7 @@ window.CX = window.CX || {};
   }
 
   function inferSource(status, eventName){
-    if(status === 'ready' || eventName === 'backend-ready') return 'firestore';
+    if(status === 'ready' || eventName === 'backend-ready' || eventName === 'backend-read-guard-ready') return 'firestore';
     if(status === 'error' || eventName === 'backend-error') return 'localStorage/demo';
     if(eventName === 'backend-disabled') return 'localStorage/demo';
     if(window.CX_BACKEND_DATA_SOURCE) return window.CX_BACKEND_DATA_SOURCE;
@@ -46,9 +46,20 @@ window.CX = window.CX || {};
     if(pill) return pill;
     pill = document.createElement('div');
     pill.id = 'cxBackendPreviewStatus';
-    pill.style.cssText = 'position:fixed;right:18px;bottom:18px;z-index:99999;padding:10px 13px;border-radius:12px;font:600 12px system-ui,-apple-system,Segoe UI,sans-serif;background:#0d2740;color:#fff;box-shadow:0 8px 30px rgba(13,39,64,.22);max-width:420px;line-height:1.35;border:1px solid rgba(255,255,255,.18)';
+    pill.style.cssText = 'position:fixed;right:18px;bottom:18px;z-index:99999;padding:10px 13px;border-radius:12px;font:600 12px system-ui,-apple-system,Segoe UI,sans-serif;background:#0d2740;color:#fff;box-shadow:0 8px 30px rgba(13,39,64,.22);max-width:470px;line-height:1.35;border:1px solid rgba(255,255,255,.18)';
     document.body.appendChild(pill);
     return pill;
+  }
+
+  function guardLine(){
+    const g = window.CX_BACKEND_READ_GUARD || (CX.data && CX.data.__backendReadGuard);
+    if(!g || g.status !== 'ok') return '';
+    const cur = g.current || {};
+    const totals = g.totals || {};
+    const anomalies = Array.isArray(g.anomalies) ? g.anomalies.length : 0;
+    const countries = Array.isArray(cur.countries) && cur.countries.length ? cur.countries.join('/') : 's/pais';
+    return '<div>Guard CX.data: <b>ok</b> · Proyecto visitas: '+(cur.visits || 0)+' · Posts proyecto: '+(cur.posts || 0)+' · Países: '+countries+' · Alertas: '+anomalies+'</div>'+
+      '<div style="opacity:.78">Totales normalizados: P '+(totals.projects || 0)+' · V '+(totals.visits || 0)+' · S '+(totals.shoppers || 0)+' · Post '+(totals.posts || 0)+'</div>';
   }
 
   function render(status, payload, eventName){
@@ -72,12 +83,13 @@ window.CX = window.CX || {};
     STATE.at = new Date().toISOString();
 
     const pill = ensurePill();
-    pill.innerHTML = '<div style="display:flex;gap:8px;align-items:center;margin-bottom:3px"><span style="width:8px;height:8px;border-radius:99px;background:'+tone+';display:inline-block"></span><b>Backend DEV · '+label+'</b></div>'+
-      '<div>Fuente: <b>'+source+'</b> · Tenant: <b>'+tenant+'</b> · Auth: <b>'+authLabel+'</b></div>'+
-      '<div>Proyecto: <b>'+(c.projectId || 'pendiente')+'</b> · Proyectos: '+c.projects+' · Visitas: '+c.visits+' · Shoppers: '+c.shoppers+' · Postulaciones: '+c.posts+'</div>'+
+    pill.innerHTML = '<div style="display:flex;gap:8px;align-items:center;margin-bottom:3px"><span style="width:8px;height:8px;border-radius:99px;background:'+tone+';display:inline-block"></span><b>Backend DEV · '+label+'</b></div>'+ 
+      '<div>Fuente: <b>'+source+'</b> · Tenant: <b>'+tenant+'</b> · Auth: <b>'+authLabel+'</b></div>'+ 
+      '<div>Proyecto: <b>'+(c.projectId || 'pendiente')+'</b> · Proyectos: '+c.projects+' · Visitas: '+c.visits+' · Shoppers: '+c.shoppers+' · Postulaciones: '+c.posts+'</div>'+ 
+      guardLine()+
       (STATE.lastError ? '<div style="opacity:.78;margin-top:2px">Último error: '+STATE.lastError+'</div>' : '');
 
-    window.CX_BACKEND_PREVIEW_STATUS = {status:STATE.status, source, counts:c, firebase:f, tenantId:tenant, event:STATE.lastEvent, error:STATE.lastError, at:STATE.at};
+    window.CX_BACKEND_PREVIEW_STATUS = {status:STATE.status, source, counts:c, firebase:f, tenantId:tenant, event:STATE.lastEvent, error:STATE.lastError, at:STATE.at, guard:window.CX_BACKEND_READ_GUARD || null};
   }
 
   function bindBus(){
@@ -86,6 +98,7 @@ window.CX = window.CX || {};
     const map = {
       'backend-auth-ready': 'starting',
       'backend-ready': 'ready',
+      'backend-read-guard-ready': 'ready',
       'backend-error': 'error',
       'backend-disabled': 'disabled',
       'finance-read-bridge-ready': 'starting',
