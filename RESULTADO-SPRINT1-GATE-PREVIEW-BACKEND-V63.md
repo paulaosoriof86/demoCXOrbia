@@ -5,7 +5,7 @@ Rama: release/cxorbia-tya-rc-20260630
 
 ## Objetivo
 
-Iniciar Sprint 1 para validar preview backend V63 sobre la ultima base visual aplicada.
+Validar preview backend V63 sobre la ultima base visual aplicada.
 
 ## Hallazgo inmediato
 
@@ -32,21 +32,37 @@ Commit: 5f61c71d18899f17dd64cd7bffd0e78251198c70
 - No se toco Orbit.
 - No se tocaron secretos.
 
+## Validacion local recibida de Paula
+
+Bloque Node corregido ejecutado localmente el 2026-07-01 16:05:58.
+
+Resultado tecnico:
+
+- Repo fijo correcto.
+- Rama correcta: `release/cxorbia-tya-rc-20260630`.
+- Repo limpio antes del preview.
+- HEAD local: `ef443e86ebd4a00e4fab323692595d54b1cc8919`.
+- `index-backend-dev.html` OK.
+- Credencial local ignorada detectada: SI, sin imprimir contenido.
+- `node --check` OK en `app/*.js`.
+- Puerto seleccionado: 5178.
+- Servidor Node temporal iniciado.
+- HTTP status para preview backend: 200.
+- Microsoft Edge abierto con URL de preview backend V63.
+
 ## Estado Sprint 1
 
-Pendiente de validacion local controlada con servidor Node y preview backend DEV.
+Parcialmente aprobado: infraestructura local del preview backend V63 abre correctamente con HTTP 200 y sin errores de sintaxis.
 
-Criterios a validar localmente:
+Pendiente para cerrar Sprint 1:
 
-1. HTTP 200 para `app/index-backend-dev.html`.
-2. Carga de scripts sin error fatal.
-3. Badge `Backend DEV` visible.
-4. Auth DEV OK o error claro.
-5. Fuente `firestore` cuando haya credencial local disponible.
-6. Tenant `tya`.
-7. Conteos Firestore del seed piloto V58.
-8. Confirmar que no se muestra localStorage/demo como si fuera backend real.
+1. Leer o capturar badge inferior del preview.
+2. Confirmar fuente: `firestore` o `localStorage/demo`.
+3. Confirmar tenant: `tya`.
+4. Confirmar Auth.
+5. Confirmar proyecto.
+6. Confirmar conteos de proyectos, visitas, shoppers y postulaciones.
 
-## Siguiente paso
+## Proximo paso
 
-Ejecutar bloque local unico para gate preview backend V63. No usar Python. Usar Node.
+Paula debe compartir captura o texto del badge inferior. Si el badge dice `firestore`, se cierra Sprint 1 y se pasa a Sprint 2. Si dice `localStorage/demo`, se documenta bloqueo exacto y se corrige el adapter/backend sin tocar modulos UI.
