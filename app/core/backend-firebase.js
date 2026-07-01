@@ -47,6 +47,109 @@ window.CX = window.CX || {};
   function docData(d){ return Object.assign({id:d.id}, d.data() || {}); }
   async function getAll(q){ const snap = await q.get(); return snap.docs.map(docData); }
 
+  function firstArrayValue(value, fallback){
+    return Array.isArray(value) && value.length ? value[0] : fallback;
+  }
+
+  function normalizeProject(p){
+    if(!p || typeof p !== 'object') return p;
+    const id = p.id || p.projectId;
+    return Object.assign({}, p, {
+      id,
+      projectId: p.projectId || id,
+      tenantId: p.tenantId || tenantId(),
+      name: p.name || id || 'Proyecto',
+      client: p.client || p.clientId || 'Cliente',
+      currency: p.currency || p.currencies || {},
+      countries: Array.isArray(p.countries) ? p.countries : [],
+      quincenas: p.quincenas || ['Quincena 1','Quincena 2'],
+      honorario: p.honorario || {},
+      boleto: p.boleto || {},
+      comboAmt: p.comboAmt || {},
+    });
+  }
+
+  function normalizeShopper(s){
+    if(!s || typeof s !== 'object') return s;
+    const id = s.id || s.shopperId;
+    const country = s.pais || firstArrayValue(s.countries, 'GT');
+    return Object.assign({}, s, {
+      id,
+      shopperId: s.shopperId || id,
+      nombre: s.nombre || s.name || id || 'Shopper',
+      pais: country,
+      ciudad: s.ciudad || firstArrayValue(s.cities, ''),
+      code: s.code || id,
+      estado: s.estado || s.status || 'Activo',
+      rating: s.rating || (s.score ? +(s.score / 20).toFixed(1) : 0),
+      visitas: s.visitas || (s.stats && s.stats.completedVisits) || 0,
+      promCuest: s.promCuest || 0,
+      certs: s.certs || 0,
+    });
+  }
+
+  function normalizeVisit(v, projectId){
+    if(!v || typeof v !== 'object') return v;
+    const id = v.id || v.visitId;
+    const fee = v.fee || {};
+    const country = v.pais || v.country || 'GT';
+    const franjaCode = v.franjaCode || (v.franja === 'WKND' ? 'WKND' : v.franja === 'WK' ? 'WK' : v.franja);
+    return Object.assign({}, v, {
+      id,
+      visitId: v.visitId || id,
+      projectId: v.projectId || projectId,
+      estado: v.estado || v.status || 'disponible',
+      status: v.status || v.estado || 'disponible',
+      pais: country,
+      country,
+      sucursal: v.sucursal || v.branchName || v.branchId || id,
+      branchId: v.branchId || v.sucursal || '',
+      quincena: v.quincena || 1,
+      franja: v.franja || franjaCode || 'WK',
+      franjaCode: franjaCode || 'WK',
+      escenario: v.escenario || v.scenario || '',
+      scenario: v.scenario || v.escenario || '',
+      disponibleDesde: v.disponibleDesde || v.availableFrom || '',
+      availableFrom: v.availableFrom || v.disponibleDesde || '',
+      honorario: v.honorario || fee.amount || 0,
+      currency: v.currency || fee.currency || '',
+      reimbursements: Array.isArray(v.reimbursements) ? v.reimbursements : [],
+    });
+  }
+
+  function normalizeApplication(a, projectId, visitsById, shoppersById){
+    if(!a || typeof a !== 'object') return a;
+    const id = a.id || a.applicationId || a.postulationId;
+    const visitId = a.visitaId || a.visitId;
+    const visit = visitsById[visitId] || {};
+    const shopperId = a.shopperId;
+    const shopper = shoppersById[shopperId] || {};
+    return Object.assign({}, a, {
+      id,
+      applicationId: a.applicationId || id,
+      postulationId: a.postulationId || id,
+      visitaId: visitId,
+      visitId,
+      projectId: a.projectId || projectId,
+      estado: a.estado || a.status || 'pendiente',
+      status: a.status || a.estado || 'pendiente',
+      fechaProp: a.fechaProp || a.proposedDate || '',
+      proposedDate: a.proposedDate || a.fechaProp || '',
+      franjaCode: a.franjaCode || visit.franjaCode || a.proposedTimeBand || '',
+      shopper: a.shopper || shopper.nombre || shopper.name || shopperId || '',
+      shopperCode: a.shopperCode || shopper.code || shopperId || '',
+      sucursal: a.sucursal || visit.sucursal || '',
+      ciudad: a.ciudad || visit.ciudad || '',
+      pais: a.pais || visit.pais || visit.country || '',
+      quincena: a.quincena || visit.quincena || '',
+      disponibleDesde: a.disponibleDesde || visit.disponibleDesde || visit.availableFrom || '',
+      honorario: a.honorario || visit.honorario || 0,
+      boleto: a.boleto || visit.boleto || 0,
+      comboAmt: a.comboAmt || visit.comboAmt || 0,
+      currency: a.currency || visit.currency || '',
+    });
+  }
+
   function initFirebase(){
     if(!window.firebase || !firebase.apps) throw new Error('Firebase SDK no cargado');
     if(!cfg.firebaseConfig) throw new Error('Falta CX.BACKEND.firebaseConfig');
@@ -85,17 +188,27 @@ window.CX = window.CX || {};
   }
 
   async function loadTenantData(){
-    const projects = await getAll(projectsCol());
-    const shoppers = await getAll(shoppersCol());
+    const projectsRaw = await getAll(projectsCol());
+    const shoppersRaw = await getAll(shoppersCol());
+    const projects = projectsRaw.map(normalizeProject);
+    const shoppers = shoppersRaw.map(normalizeShopper);
+    const shoppersById = {};
+    shoppers.forEach(s=>{ shoppersById[s.id] = s; });
     const visits = [];
     const posts = [];
 
     for(const p of projects){
       const projectId = p.id;
-      const vs = await getAll(subCol(projectId, 'visits'));
-      const ps = await getAll(subCol(projectId, 'postulations'));
-      vs.forEach(v=>{ v.projectId = v.projectId || projectId; visits.push(v); });
-      ps.forEach(x=>{ x.projectId = x.projectId || projectId; posts.push(x); });
+      const vs = (await getAll(subCol(projectId, 'visits'))).map(v=>normalizeVisit(v, projectId));
+      const visitsById = {};
+      vs.forEach(v=>{ v.projectId = v.projectId || projectId; visitsById[v.id] = v; visitsById[v.visitId] = v; visits.push(v); });
+
+      const postulations = await getAll(subCol(projectId, 'postulations'));
+      const applications = await getAll(subCol(projectId, 'applications'));
+      postulations.concat(applications).forEach(x=>{
+        const item = normalizeApplication(x, projectId, visitsById, shoppersById);
+        if(item) posts.push(item);
+      });
     }
 
     return {projects, shoppers, visits, posts};
