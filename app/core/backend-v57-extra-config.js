@@ -6,6 +6,7 @@ window.CX = window.CX || {};
     automationLogs: 'automationLogs',
     integrationSettings: 'integrationSettings',
     aiSettings: 'aiSettings',
+    aiLogs: 'aiLogs',
     resources: 'resources'
   });
 
@@ -19,5 +20,6 @@ window.CX = window.CX || {};
 
   if(CX.BACKEND.previewMode){
     loadScript('core/backend-resources.js');
+    loadScript('core/backend-ai.js');
   }
 })();
