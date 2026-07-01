@@ -362,3 +362,78 @@ Pendiente/riesgo:
 - `Configuración` no funciona correctamente según reporte visual de Paula.
 - Hay módulos incompletos pendientes de desarrollo por Claude/frontend.
 - Antes de pedir/cargar base buena T&A, se debe actualizar/corregir prototipo, confirmar base frontend y repetir validación visual con datos Firestore DEV.
+
+## 2026-06-30 22:20:17 - Fix definitivo rules V57 desde HEAD limpio
+- ARCHIVO: firestore.rules
+- TIPO: modificado
+- QUE CAMBIO: restaurado desde HEAD limpio e insertadas reglas faltantes despues de automations: integrationSettings, automationLogs, aiSettings, aiLogs, resources.
+- POR QUE: el reporte real mostro que despues de automations pasaba directo a auditLogs y faltaban reglas requeridas para Backend V57.
+- IMPACTO EN FRONTEND: ninguno directo. No se tocaron /app/modules ni logica visual.
+- PENDIENTE/RIESGO: backend preview aun no se considera conectado hasta que el badge indique Fuente: firestore y Tenant: tya.
+
+- ARCHIVO: firebase/client-write-tools/check-firestore-rules-v57-coverage.mjs
+- TIPO: modificado
+- QUE CAMBIO: validador reescrito para devolver exit code 1 y "ok": false si falta una regla o si el bloque no quedo insertado entre automations y auditLogs.
+- POR QUE: evitar falsos OK metodologicos.
+- IMPACTO EN FRONTEND: ninguno.
+- PENDIENTE/RIESGO: cualquier fallo futuro debe detener commit/push.
+
+## 2026-06-30 22:26:21 - Continuacion fix rules V57 y bloqueo CRLF
+- ARCHIVO: firestore.rules
+- TIPO: modificado
+- QUE CAMBIO: verificadas reglas V57 faltantes entre automations y auditLogs.
+- POR QUE: cerrar cobertura backend V57 sin falso OK.
+- IMPACTO EN FRONTEND: ninguno; no se tocaron /app/modules.
+- PENDIENTE/RIESGO: avanzar a Auth local preview y luego tenant isolation.
+
+- ARCHIVO: firebase/client-write-tools/check-firestore-rules-v57-coverage.mjs
+- TIPO: modificado
+- QUE CAMBIO: validador reescrito para fallar con exit code real cuando falta cobertura.
+- POR QUE: evitar reportes de exito falso.
+- IMPACTO EN FRONTEND: ninguno.
+- PENDIENTE/RIESGO: ningun bloque futuro debe continuar si ok:false.
+
+- ARCHIVO: PAQUETE-PARA-CLAUDE-PENDIENTES-PROTOTIPO-V57.md
+- TIPO: nuevo/modificado
+- QUE CAMBIO: documento de continuidad para Claude con errores acumulados, pendientes del prototipo y reglas de separacion frontend/backend.
+- POR QUE: permitir que Claude mejore el prototipo mas reciente sin perder avances backend.
+- IMPACTO EN FRONTEND: guia para correcciones futuras por Claude.
+- PENDIENTE/RIESGO: Claude debe trabajar siempre sobre el prototipo mas reciente.
+
+## 2026-06-30 22:29:01 - Correccion final del bloque Git para commit/push rules V57
+- ARCHIVO: firestore.rules
+- TIPO: validado/modificado
+- QUE CAMBIO: se conserva cobertura V57 completa: integrationSettings, automationLogs, aiSettings, aiLogs, resources.
+- POR QUE: cerrar bloqueo de rules V57 antes de Auth local preview.
+- IMPACTO EN FRONTEND: ninguno; no se tocaron /app/modules.
+- PENDIENTE/RIESGO: continuar con Auth local preview y luego smoke/tenant isolation.
+
+- ARCHIVO: documentacion backend V57
+- TIPO: modificado
+- QUE CAMBIO: se documenta que el fallo anterior fue del wrapper PowerShell para git diff --check, no de las reglas.
+- POR QUE: evitar repetir metodologia de falso fallo o falso OK.
+- IMPACTO EN FRONTEND: ninguno.
+- PENDIENTE/RIESGO: los proximos bloques deben ejecutar Git directo y validar exit code real.
+
+## 2026-06-30 22:36:46 - Limpieza whitespace para cerrar commit rules V57
+- ARCHIVO: firestore.rules
+- TIPO: validado/modificado
+- QUE CAMBIO: se limpia trailing whitespace y se mantiene cobertura V57 completa.
+- POR QUE: git diff --check bloqueo el commit por espacios finales, no por fallo de reglas.
+- IMPACTO EN FRONTEND: ninguno; no se tocaron /app/modules.
+- PENDIENTE/RIESGO: avanzar a Auth local preview y luego smoke/tenant isolation.
+
+- ARCHIVO: documentacion V57
+- TIPO: modificado
+- QUE CAMBIO: normalizacion UTF-8 sin BOM y limpieza de espacios finales en documentos tocados por el bloque.
+- POR QUE: evitar bloqueos de git diff --check y mantener repo limpio.
+- IMPACTO EN FRONTEND: ninguno.
+- PENDIENTE/RIESGO: si aparecen simbolos raros en UI, corregir codificacion real desde el origen y documentarlo para Claude.
+
+## 2026-06-30 22:40:01 - Correccion falso fallo de validacion staged
+- ARCHIVO: bloque PowerShell local
+- TIPO: incidencia metodologica corregida
+- QUE CAMBIO: se reemplaza validacion por regex de staged por comparacion exacta con trim.
+- POR QUE: el reporte anterior mostro irestore.rules staged, pero el bloque fallo falsamente al evaluarlo.
+- IMPACTO EN FRONTEND: ninguno; no se tocaron /app/modules.
+- PENDIENTE/RIESGO: continuar a Auth local preview cuando commit/push quede confirmado.

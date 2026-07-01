@@ -102,3 +102,46 @@ Antes de pedir/cargar base buena completa TyA:
 ## Nota operativa
 
 No publicar producción operativa hasta cerrar este gate. Se puede publicar una RC/demo solo si se etiqueta como demo y no se presenta como backend real.
+
+## 2026-06-30 22:20:17 - Rules V57 corregidas
+- Se corrigio irestore.rules desde HEAD limpio.
+- Se agregaron reglas faltantes: integrationSettings, utomationLogs, iSettings, iLogs,
+esources.
+- Se corrigio el validador check-firestore-rules-v57-coverage.mjs para fallar con exit code real si falta cobertura.
+- Validaciones requeridas:
+  -
+ode firebase/client-write-tools/check-firestore-rules-v57-coverage.mjs
+  -
+ode firebase/client-write-tools/validate-preview-v57-static-v2.mjs
+- No se toco /app/modules.
+- No se hizo deploy.
+- No se hizo merge.
+- No se tocaron datos reales.
+- Siguiente bloqueo: Auth local preview. No considerar backend conectado mientras el badge diga localStorage/demo.
+
+## 2026-06-30 22:26:21 - Fix rules V57 listo para commit/push
+- Se corrigio bloqueo local por CRLF configurando Git local con core.autocrlf=false.
+- Se preserva el parche de rules V57.
+- Se valida cobertura con ok:true.
+- Se valida preview estatico V57.
+- Se agrega paquete para Claude: PAQUETE-PARA-CLAUDE-PENDIENTES-PROTOTIPO-V57.md.
+- Siguiente bloqueo: Auth local preview.
+- Luego: smoke test Firestore y tenant isolation similar a Orbit, sin datos reales.
+
+## 2026-06-30 22:29:01 - Continuidad despues de wrapper Git corregido
+- El bloqueo anterior no fue de reglas sino de ejecucion del comando Git en PowerShell.
+- Se reintenta commit/push con Git directo.
+- Validaciones obligatorias se mantienen: coverage ok:true, preview static sin ok:false, firestore.rules staged, diff checks correctos.
+- Siguiente fase: Auth local preview.
+
+## 2026-06-30 22:36:46 - Continuidad final rules V57
+- Rules V57 ya validaba ok:true.
+- El bloqueo era trailing whitespace en docs/firestore.rules.
+- Se normaliza UTF-8 sin BOM y LF.
+- Se mantiene gate: siguiente paso Auth local preview; despues smoke Firestore y tenant isolation CXOrbia.
+
+## 2026-06-30 22:40:01 - Commit/push final rules V57
+- El bloqueo anterior fue falso negativo de validacion staged.
+- irestore.rules si estaba staged.
+- Se corrige validacion y se repiten gates antes de commit/push.
+- Siguiente fase: Auth local preview.

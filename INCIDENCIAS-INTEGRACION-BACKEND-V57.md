@@ -60,3 +60,39 @@ Archivo: `app/modules/aprendizaje.js`.
 Hallazgo: fallback de icono contiene posible carácter roto.
 
 Acción: revisar con Claude si el archivo se usa. Si se usa, corregir en prototipo V58.
+
+## 2026-06-30 22:20:17 - Incidencia corregida: falso OK y reglas faltantes
+- Incidencia: bloques anteriores reportaron exito aunque el validador imprimia "ok": false.
+- Causa: el flujo PowerShell no estaba deteniendo correctamente por contenido "ok": false y/o exit code.
+- Correccion: el bloque actual valida exit code, busca "ok": true, bloquea "ok": false y exige que irestore.rules aparezca modificado antes del commit.
+- Incidencia funcional: irestore.rules tenia ulletins, ulletinReads, utomations, pero faltaban utomationLogs, integrationSettings, iSettings, iLogs,
+esources.
+- Estado: corregido en rama
+elease/cxorbia-tya-rc-20260630, sujeto a commit/push si todas las validaciones pasan.
+
+## 2026-06-30 22:26:21 - Incidencia: git diff --check bloqueado por CRLF
+- Sintoma: git diff --check detuvo el flujo por warning de LF/CRLF en CAMBIOS-BACKEND.md.
+- Causa: configuracion local de Git con autocrlf/safecrlf generaba warning de conversion, no un error real de reglas.
+- Correccion: configurar Git local en este repo con core.autocrlf=false, core.safecrlf=false, core.eol=lf y repetir validaciones.
+- Prevencion: los bloques deben capturar exit code real, no tratar warnings de saltos de linea como exito ni como fallo ambiguo.
+- Estado esperado: commit/push solo si rules coverage ok:true, preview static ok:true, firestore.rules staged y git diff checks pasan.
+
+## 2026-06-30 22:29:01 - Incidencia corregida: wrapper PowerShell llamo Git sin comando
+- Sintoma: git mostro pantalla de ayuda durante git diff --check.
+- Causa: funcion wrapper PowerShell uso argumento reservado/conflictivo y llamo Git sin pasar correctamente el subcomando.
+- Correccion: ejecutar Git directo, sin wrapper intermedio.
+- Estado: pendiente commit/push en este mismo bloque si validadores pasan.
+- Prevencion: no usar wrappers genericos con variable Args para comandos criticos.
+
+## 2026-06-30 22:36:46 - Incidencia corregida: trailing whitespace en documentos
+- Sintoma: git diff --check fallo por trailing whitespace en documentos y firestore.rules.
+- Causa: documentos acumulados con espacios finales y cambios de line ending durante bloques previos.
+- Correccion: normalizar archivos tocados a UTF-8 sin BOM, LF y sin espacios finales.
+- Prevencion: todo bloque futuro debe limpiar whitespace antes de stage/commit.
+- Estado: se revalida coverage ok:true y preview static antes de commit/push.
+
+## 2026-06-30 22:40:01 - Incidencia corregida: falso negativo staged firestore.rules
+- Sintoma: el reporte mostro irestore.rules en staged, pero el bloque concluyo que no estaba staged.
+- Causa: validacion por regex demasiado fragil sobre texto convertido con Out-String.
+- Correccion: validar git diff --cached --name-only como arreglo, aplicando Trim() y comparacion exacta.
+- Estado: se reintenta commit/push sin modificar frontend ni reglas de negocio.

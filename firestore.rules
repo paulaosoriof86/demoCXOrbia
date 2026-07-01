@@ -173,6 +173,33 @@ service cloud.firestore {
         allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
       }
 
+      match /integrationSettings/{settingId} {
+        allow read: if isSignedIn() && isProjectMember(projectId);
+        allow create, update, delete: if isSignedIn() && hasProjectRole(projectId, ["super", "admin"]);
+      }
+
+      match /automationLogs/{logId} {
+        allow read: if isSignedIn() && isProjectMember(projectId);
+        allow create: if isSignedIn() && hasProjectRole(projectId, ["super", "admin", "ops"]);
+        allow update, delete: if false;
+      }
+
+      match /aiSettings/{settingId} {
+        allow read: if isSignedIn() && isProjectMember(projectId);
+        allow create, update, delete: if isSignedIn() && hasProjectRole(projectId, ["super", "admin"]);
+      }
+
+      match /aiLogs/{logId} {
+        allow read: if isSignedIn() && isProjectMember(projectId);
+        allow create: if isSignedIn() && hasProjectRole(projectId, ["super", "admin", "ops"]);
+        allow update, delete: if false;
+      }
+
+      match /resources/{resourceId} {
+        allow read: if isSignedIn() && isProjectMember(projectId);
+        allow create, update, delete: if isSignedIn() && hasProjectRole(projectId, ["super", "admin", "ops"]);
+      }
+
       match /auditLogs/{logId} {
         allow read: if tenantAllowed(tenantId) && isAdmin();
         allow create: if tenantAllowed(tenantId) && signedIn();

@@ -108,3 +108,33 @@ Interpretación:
 Publicable solo como RC visual/demo controlada si no se cierra el gate backend.
 
 No publicar producción operativa real hasta cerrar Auth + Firestore + tenant TyA visible.
+
+## 2026-06-30 22:20:17 - Backend V57 rules, sin tocar prototipo
+- Backend: se corrigio irestore.rules agregando las colecciones V57 faltantes despues de utomations.
+- Validador: check-firestore-rules-v57-coverage.mjs ahora falla realmente si falta una regla.
+- No tocar desde frontend: no se modificaron /app/modules ni logica visual.
+- Pendiente para Claude: cuando trabaje el prototipo, usar el prototipo mas reciente y no reintroducir el estado localStorage/demo como si fuera backend conectado.
+- Separacion obligatoria: Claude debe corregir frontend/prototipo, sin romper ni revertir avances backend V57.
+
+## 2026-06-30 22:26:21 - Backend V57 + paquete de pendientes
+- No se tocaron /app/modules.
+- No se hizo deploy, merge ni carga real.
+- Se completo cobertura rules V57.
+- Se genero PAQUETE-PARA-CLAUDE-PENDIENTES-PROTOTIPO-V57.md.
+- Claude debe trabajar sobre el prototipo mas reciente, no sobre versiones viejas.
+- Claude no debe revertir avances backend V57 ni reintroducir errores ya documentados.
+- Pendiente frontend/prototipo: eliminar avisos tecnicos visibles, corregir codificacion real si aparecen simbolos rotos, evitar datos demo y mantener separacion frontend/backend.
+
+## 2026-06-30 22:29:01 - Nota de continuidad Backend V57
+- Rules V57 queda con cobertura requerida.
+- El fallo previo fue del bloque PowerShell/Git, no del frontend ni del prototipo.
+- Claude debe trabajar sobre el prototipo mas reciente sin revertir backend V57.
+- Mantener separacion frontend/backend y no tocar avances de reglas, validadores ni preview backend.
+
+## 2026-06-30 22:36:46 - Paquete Claude y continuidad Backend V57
+- Se genero/actualizo PAQUETE-PARA-CLAUDE-PENDIENTES-PROTOTIPO-V57.md.
+- Claude debe trabajar sobre el prototipo mas reciente.
+- No debe revertir backend V57.
+- No debe reintroducir datos demo/localStorage como si fueran Firestore real.
+- No debe tocar ni romper el punto de preview backend app/index-backend-dev.html.
+- Pendientes principales: codificacion UTF-8, eliminar avisos tecnicos visibles, quitar datos demo/banca en TyA, corregir KPIs, HR dinamico, postulaciones, certificaciones, ranking, liquidaciones y beneficios.
