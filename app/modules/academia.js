@@ -15,8 +15,8 @@ CX.acadData={
   addCourse(r,c){ const arr=this.getCustom(r); arr.unshift(Object.assign({id:'cu'+Date.now().toString(36),lessons:[]},c)); this.saveCustom(r,arr); },
   editCourse(r,cid,patch){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c)Object.assign(c,patch); const custom=this.getCustom(r); const cu=custom.find(x=>x.id===cid); if(cu)Object.assign(cu,patch); this.saveCustom(r,custom); },
   addLesson(r,cid,lesson){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){c.lessons=c.lessons||[];c.lessons.push(Object.assign({id:'ls'+Date.now().toString(36)},lesson));} CX.bus&&CX.bus.emit('acad'); },
-  editLesson(r,cid,lid,patch){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){const l=(c.lessons||[]).find(x=>x.id===lid);if(l)Object.assign(l,patch);} CX.bus&&CX.bus.emit('acad'); },
-  delLesson(r,cid,lid){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){c.lessons=(c.lessons||[]).filter(x=>x.id!==lid);} CX.bus&&CX.bus.emit('acad'); },
+  editLesson(r,cid,lid,patch){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){const l=(c.lessons||[]).find(x=>x.id===lid);if(l)Object.assign(l,patch);} const custom=this.getCustom(r); if(custom.find(x=>x.id===cid))this.saveCustom(r,custom); CX.bus&&CX.bus.emit('acad'); },
+  delLesson(r,cid,lid){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){c.lessons=(c.lessons||[]).filter(x=>x.id!==lid);} const custom=this.getCustom(r); if(custom.find(x=>x.id===cid))this.saveCustom(r,custom); CX.bus&&CX.bus.emit('acad'); },
   delCourse(r,cid){ this.saveCustom(r,this.getCustom(r).filter(x=>x.id!==cid)); },
   COURSES:{
     admin:[

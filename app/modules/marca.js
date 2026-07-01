@@ -156,20 +156,18 @@ CX.module('marca',({data,ui})=>{
 
     host.querySelector('#brandDoc').addEventListener('change',e=>{
       const f=e.target.files[0];if(!f)return;
-      host.querySelector('#docStatus').innerHTML='⏳ Analizando documento con IA…';
-      const reader=new FileReader();
-      reader.onload=ev=>{
-        setTimeout(()=>{
-          if(CX.ai&&CX.ai.ready()){
-            CX.ai.ask('Analiza este documento de identidad de marca y extrae en JSON: {"nombre":"...","colores":["#hex","#hex"],"tipografia":"...","tono":"..."}\n\nDocumento: '+ev.target.result.slice(0,3000))
-              .then(r=>{const m=r.match(/\{[\s\S]*\}/);if(m){const bd=JSON.parse(m[0]);host.querySelector('#bName').value=bd.nombre||'';if(bd.tipografia)host.querySelector('#bFont').value=bd.tipografia;if(bd.tono)host.querySelector('#bTone').value=bd.tono;if(bd.colores&&bd.colores.length)host.querySelector('#bPalette').value=bd.colores.join(', ');}host.querySelector('#docStatus').innerHTML='✅ Identidad extraída · revisa y ajusta los campos.';})
-              .catch(()=>host.querySelector('#docStatus').innerHTML='⚠️ No se pudo analizar automáticamente. Completa los campos manualmente.');
-          } else {
-            host.querySelector('#docStatus').innerHTML='✅ Documento "'+f.name+'" cargado · completa los campos a continuación o conecta la IA para extracción automática.';
-          }
-        },1500);
+      host.querySelector('#docStatus').innerHTML='⏳ Leyendo y analizando documento con IA…';
+      const useAttach=(txt)=>{
+        if(CX.ai&&CX.ai.ready()){
+          CX.ai.ask('Analiza este documento de identidad de marca y extrae en JSON: {"nombre":"...","colores":["#hex","#hex"],"tipografia":"...","tono":"..."}\n\nDocumento: '+txt.slice(0,8000))
+            .then(r=>{const m=r.match(/\{[\s\S]*\}/);if(m){const bd=JSON.parse(m[0]);host.querySelector('#bName').value=bd.nombre||'';if(bd.tipografia)host.querySelector('#bFont').value=bd.tipografia;if(bd.tono)host.querySelector('#bTone').value=bd.tono;if(bd.colores&&bd.colores.length)host.querySelector('#bPalette').value=bd.colores.join(', ');}host.querySelector('#docStatus').innerHTML='✅ Identidad extraída · revisa y ajusta los campos.';})
+            .catch(()=>host.querySelector('#docStatus').innerHTML='⚠️ No se pudo analizar automáticamente. Completa los campos manualmente.');
+        } else {
+          host.querySelector('#docStatus').innerHTML='✅ Documento "'+f.name+'" cargado · completa los campos o conecta la IA (Integraciones) para extracción automática.';
+        }
       };
-      reader.readAsText(f);
+      if(CX.ai&&CX.ai.readAttachment){ CX.ai.readAttachment(e.target).then(txt=>useAttach(txt||('['+f.name+']'))); }
+      else { const reader=new FileReader(); reader.onload=ev=>useAttach(ev.target.result); reader.readAsText(f); }
     });
 
     host.querySelector('#bAI').addEventListener('click',()=>{

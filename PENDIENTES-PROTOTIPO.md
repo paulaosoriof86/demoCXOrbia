@@ -1,33 +1,40 @@
 # PENDIENTES-PROTOTIPO.md
 
-Pendientes reales del prototipo/frontend para Claude. No incluir aqui tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales ni errores de integracion local.
+Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests ni Hosting.
 
-## Vigente desde V59
+## Vigente desde V60
 
 La lista vigente esta en:
 
-- PENDIENTES-PROTOTIPO-V59.md
-- AUDITORIA-PROTOTIPO-V59.md
+- PENDIENTES-PROTOTIPO-V60.md
+- AUDITORIA-PROTOTIPO-V60.md
 
-Claude debe trabajar sobre V59 o sobre el prototipo mas reciente entregado por Paula, sin usar versiones viejas y sin revertir avances existentes.
+Claude debe trabajar sobre V60 o sobre el prototipo mas reciente entregado por Paula, sin usar versiones viejas y sin revertir avances.
 
-## Pendientes bajo verificacion
+## Pendientes maximos acumulados
 
-1. TyA/Cinepolis sin Banca/Restaurantes visibles en experiencia final.
+1. TyA/Cinepolis sin Banca, Restaurantes ni demos ajenos visibles.
 2. UTF-8 real sin caracteres corruptos.
-3. Configuracion autoadministrable.
-4. NDA por rol y version.
-5. Periodo dinamico.
-6. HR viva.
-7. Dashboard/KPIs y drill.
-8. Postulaciones y asignaciones.
-9. Flujo shopper.
-10. Perfil shopper.
-11. Responsables, Mi Dia y notificaciones.
-12. Filtros reales.
-13. Importador generico.
-14. Proyectos autoadministrables.
+3. Ocultar avisos tecnicos visibles.
+4. Configuracion autoadministrable.
+5. NDA por rol/version.
+6. Periodo dinamico.
+7. HR viva y reglas Q1/Q2.
+8. Dashboard/KPIs/drill.
+9. Postulaciones, reservas y asignaciones.
+10. Flujo shopper.
+11. Perfil shopper.
+12. Beneficios/finanzas/liquidaciones.
+13. Certificaciones/Academia/manuales.
+14. Responsables/Mi Dia/notificaciones.
+15. Filtros reales.
+16. Importador generico.
+17. Proyectos autoadministrables.
+18. Portal cliente.
+19. Soporte.
+20. Reportes.
+21. Integraciones, automatizaciones y marketing.
 
 ## Entrega esperada de Claude
 
-Claude debe devolver prototipo corregido con lista de archivos tocados, cambios por modulo, confirmacion de que uso la version mas reciente y confirmacion de que no toco backend protegido.
+Prototipo corregido, archivos tocados, cambios por modulo, pendientes cerrados, pendientes restantes, confirmacion de version base, confirmacion de que no toco backend protegido, sin datos reales y evidencia de pruebas.

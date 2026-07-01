@@ -22,11 +22,11 @@ CX.module('financiero', ({data,ui})=>{
 
   const tile=(c)=>{const d=fp[c];return `<div class="card card-p">
     <div class="between" style="margin-bottom:10px"><div class="card-t finDrill" data-c="${c}" style="cursor:pointer">${CX.paisLabel(c)} <span class="muted" style="font-weight:500">(${d.cur})</span> <span style="font-size:11px;color:var(--brand)">ver visitas →</span></div>${ui.bdg(d.margenPct+'% margen',d.margenPct>=30?'g':'a')}</div>
-    <div class="grid g2" style="gap:8px">
-      ${ui.kpi('Ingresos',d.cur+' '+d.ingreso.toLocaleString(),'g')}
-      ${ui.kpi('Honorarios',d.cur+' '+d.honPaga.toLocaleString(),'r')}
-      ${p.modelo==='directo'?ui.kpi('ISR ('+(p.isr||0)+'%)',d.cur+' '+d.isr.toLocaleString(),'a'):ui.kpi('Reembolsos',d.cur+' '+d.reemb.toLocaleString(),'n')}
-      ${p.modelo==='directo'?ui.kpi('Regalías ('+(p.regalias||0)+'%)',d.cur+' '+d.regal.toLocaleString(),'p'):ui.kpi('Por pagar (CxP)',d.cur+' '+d.cxp.toLocaleString(),'a')}
+    <div class="grid g2" style="gap:8px" class="finTileK" data-c="${c}" style="cursor:pointer">
+      <div class="finDrill" data-c="${c}" style="cursor:pointer">${ui.kpi('Ingresos',d.cur+' '+d.ingreso.toLocaleString(),'g')}</div>
+      <div class="finDrill" data-c="${c}" style="cursor:pointer">${ui.kpi('Honorarios',d.cur+' '+d.honPaga.toLocaleString(),'r')}</div>
+      <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('ISR ('+(p.isr||0)+'%)',d.cur+' '+d.isr.toLocaleString(),'a'):ui.kpi('Reembolsos',d.cur+' '+d.reemb.toLocaleString(),'n')}</div>
+      <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('Regalías ('+(p.regalias||0)+'%)',d.cur+' '+d.regal.toLocaleString(),'p'):ui.kpi('Por pagar (CxP)',d.cur+' '+d.cxp.toLocaleString(),'a')}</div>
     </div>
     <div class="between" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-2)">
       <span style="font-size:12px;color:var(--t2)">Margen neto</span>

@@ -90,7 +90,8 @@ CX.module('postulaciones', ({data,ui})=>{
   <div class="card card-p">${ui.aiBox('Sugiero el mejor shopper por historial y certificación, detecto reprogramaciones tardías y disparo WhatsApp y notificaciones automáticamente al aprobar. Cada decisión queda firmada y trazada.','Asistente de asignación')}</div>`;
 
   setTimeout(()=>{
-    const poList=(title,arr,render)=>ui.modal(title+' ('+arr.length+')', arr.length?(render?arr.map(render).join(''):`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Estado</th><th>Honorario</th></tr></thead><tbody>${arr.map(x=>`<tr><td><b style="font-size:12.5px">${x.shopper}</b><div style="font-size:10px;color:var(--t3)">${x.shopperCode}</div></td><td style="font-size:12px">${x.sucursal}<div style="font-size:10px;color:var(--t3)">${CX.paisFlag(x.pais)} ${x.ciudad}</div></td><td>${estTag(x.estado)}</td><td style="font-size:12px;color:var(--green)">${x.currency} ${x.honorario}</td></tr>`).join('')}</tbody></table>`):ui.empty('📭','Sin elementos en esta categoría.'));
+    const poList=(title,arr)=>ui.modal(title+' ('+arr.length+')', arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Estado</th><th>Honorario</th><th></th></tr></thead><tbody>${arr.map(x=>`<tr><td><b style="font-size:12.5px">${x.shopper}</b><div style="font-size:10px;color:var(--t3)">${x.shopperCode}</div></td><td style="font-size:12px">${x.sucursal}<div style="font-size:10px;color:var(--t3)">${CX.paisFlag(x.pais)} ${x.ciudad}</div></td><td>${estTag(x.estado)}</td><td style="font-size:12px;color:var(--green)">${x.currency} ${x.honorario}</td><td style="text-align:right">${x.id?`<button class="btn btn-ghost btn-sm poRowGest" data-pid="${x.id}" style="padding:2px 9px;font-size:11px">Gestionar →</button>`:''}</td></tr>`).join('')}</tbody></table>`:ui.empty('📭','Sin elementos en esta categoría.'),
+      {onMount:(ov,close)=>ov.querySelectorAll('.poRowGest').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.pid);if(x){close();postDetalle(x);}}))});
     const poKp={
       pend:['Postulaciones pendientes',posts.filter(x=>x.estado==='pendiente')],
       reprog:['Reprogramaciones',reprog],
@@ -131,6 +132,36 @@ CX.module('postulaciones', ({data,ui})=>{
       }});
     };
     document.querySelectorAll('[data-ap]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.ap);if(x&&CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(b.dataset.ap,'✅ Aprobada','green','Aprobada · WhatsApp enviado al shopper');}));
+    /* FIX: el botón Perfil ahora abre el perfil real del shopper */
+    document.querySelectorAll('[data-perfil]').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();profileModal(b.dataset.perfil);}));
+    /* detalle de la postulación/visita al hacer clic en la tarjeta */
+    const postDetalle=(x)=>{ const v=data._visitas?data._visitas.find(z=>z.id===x.visitaId):null;
+      ui.modal('📋 '+x.sucursal+' · '+x.shopper,`
+        <div style="font-size:12.5px;line-height:1.95;color:var(--t2)">
+          <div><b>Shopper:</b> ${x.shopper} (${x.shopperCode}) · 📞 ${x.phone||'—'}</div>
+          <div><b>Proyecto:</b> ${projName(x.projectId)} · <b>Quincena:</b> ${x.quincena}</div>
+          <div><b>Sucursal:</b> ${x.sucursal} · ${CX.paisFlag(x.pais)} ${x.ciudad}</div>
+          <div><b>Escenario:</b> ${(v&&v.escenario)||x.escenario||'—'}</div>
+          <div><b>Fecha propuesta:</b> ${x.fechaProp||'—'} · <b>Franja:</b> ${x.franjaCode||'—'}</div>
+          <div><b>Honorario:</b> ${x.currency} ${x.honorario}${x.boleto?' + boleto':''}${x.comboAmt?' + reembolso':''}</div>
+          <div><b>Estado:</b> ${x.estado}${x.gestionadoPor?' · gestionado por '+x.gestionadoPor:''}</div>
+        </div>
+        <div class="flex wrap" style="gap:8px;margin-top:14px;justify-content:flex-end">
+          ${x.estado==='pendiente'?`<button class="btn btn-green btn-sm" id="pdAp">✅ Aprobar</button><button class="btn btn-ghost btn-sm" id="pdRj" style="color:var(--red)">Rechazar</button>`:''}
+          <button class="btn btn-soft btn-sm" id="pdPerfil">👤 Perfil del shopper</button>
+          <button class="btn btn-soft btn-sm" id="pdWa">📲 WhatsApp</button>
+        </div>
+      `,{onMount:(ov,close)=>{
+        ov.querySelector('#pdPerfil')&&ov.querySelector('#pdPerfil').addEventListener('click',()=>{close();profileModal(x.shopperId);});
+        ov.querySelector('#pdWa')&&ov.querySelector('#pdWa').addEventListener('click',()=>{const msg=encodeURIComponent('Hola '+(x.shopper||'')+', sobre tu visita en '+x.sucursal);window.open('https://wa.me/'+(x.phone||'').replace(/[^0-9]/g,'')+'?text='+msg,'_blank');});
+        ov.querySelector('#pdAp')&&ov.querySelector('#pdAp').addEventListener('click',()=>{if(CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(x.id,'✅ Aprobada','green','Aprobada · WhatsApp enviado');close();});
+        ov.querySelector('#pdRj')&&ov.querySelector('#pdRj').addEventListener('click',()=>{act(x.id,'✕ Rechazada','red','Rechazada · shopper notificado');close();});
+      }});
+    };
+    document.querySelectorAll('#pGroups [data-pid]').forEach(el=>el.addEventListener('click',(e)=>{
+      if(e.target.closest('button'))return; /* no interferir con los botones de acción */
+      const x=posts.find(z=>z.id===el.dataset.pid); if(x)postDetalle(x);
+    }));
     document.querySelectorAll('[data-sb]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.sb,'⏸ Standby','amber','Postulación en standby')));
     document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.rj,'✕ Rechazada','red','Postulación rechazada · shopper notificado')));
     const search=()=>{const q=(document.getElementById('pSearch').value||'').toLowerCase(),fpr=document.getElementById('pProj').value,fp=document.getElementById('pPais').value,fe=document.getElementById('pEst').value;

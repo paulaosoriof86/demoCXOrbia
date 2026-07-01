@@ -538,3 +538,12 @@ Pendiente/riesgo:
 - IMPACTO EN FRONTEND: ninguno. No se tocaron /app/modules ni UI.
 - RESTRICCIONES: solo lectura, no Hosting, no produccion, no Orbit, no datos reales, no secretos impresos.
 - PENDIENTE: smoke preview/backend V59 con servidor Node y badge/fuente Firestore.
+## 2026-07-01 04:43:49 - V60 aplicado preservando backend
+- ARCHIVO: app/*
+- TIPO: aplicacion de prototipo frontend V60 autorizado por Paula.
+- QUE CAMBIO: se aplico V60 como base visual mas reciente y se preservo backend protegido.
+- POR QUE: Paula entrego V60 indicando que Claude atendio pendientes; se integra sin perder backend ya validado.
+- IMPACTO EN FRONTEND: V60 queda como base visual vigente.
+- IMPACTO EN BACKEND: se preservo adapter Firestore, preview backend y configuracion protegida.
+- VALIDACION: adapter backend validado despues de aplicar V60.
+- PENDIENTE/RIESGO: validar visualmente hallazgos de AUDITORIA-PROTOTIPO-V60.md.
