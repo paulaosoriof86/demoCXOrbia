@@ -116,3 +116,13 @@ elease/cxorbia-tya-rc-20260630, sujeto a commit/push si todas las validaciones p
 - Correccion: servidor estatico local con Node fuera del repo.
 - Restricciones respetadas: no deploy, no merge, no produccion, no datos reales, no /app/modules.
 - Siguiente: smoke Firestore, tenant isolation y module render smoke CXOrbia.
+
+## 2026-07-01 00:45:35 - Smoke Backend V58 Node
+- Se sincronizaron commits documentales V58 desde GitHub.
+- Se parcheo localmente firestore.rules para eliminar helpers indefinidos en bloques V57 y agregar list explicito en projects para operadores.
+- Validadores V57 OK.
+- Auth DEV OK sin imprimir secretos.
+- Tenant isolation ejecutado.
+- Preview Node robusto con HTTP 200: True.
+- Module render smoke ejecutado: True.
+- No deploy, no produccion, no datos reales, no /app/modules.

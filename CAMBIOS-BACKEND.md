@@ -468,3 +468,13 @@ Pendiente/riesgo:
 - POR QUE: Windows devolvio codigo 9009 al intentar ejecutar Python; Node si esta disponible porque ejecuta los validadores.
 - IMPACTO EN FRONTEND: ninguno; no se tocaron /app/modules ni pp/index.html.
 - PENDIENTE/RIESGO: revisar badge visual. Si aun dice localStorage/demo, continuar con smoke Firestore y tenant isolation sin considerar backend conectado.
+
+## 2026-07-01 00:45:35 - Smoke Backend V58 Node
+- Se sincronizaron commits documentales V58 desde GitHub.
+- Se parcheo localmente firestore.rules para eliminar helpers indefinidos en bloques V57 y agregar list explicito en projects para operadores.
+- Validadores V57 OK.
+- Auth DEV OK sin imprimir secretos.
+- Tenant isolation ejecutado.
+- Preview Node robusto con HTTP 200: True.
+- Module render smoke ejecutado: True.
+- No deploy, no produccion, no datos reales, no /app/modules.

@@ -174,30 +174,30 @@ service cloud.firestore {
       }
 
       match /integrationSettings/{settingId} {
-        allow read: if isSignedIn() && isProjectMember(projectId);
-        allow create, update, delete: if isSignedIn() && hasProjectRole(projectId, ["super", "admin"]);
+        allow read: if tenantAllowed(tenantId) && isAdmin();
+        allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
       }
 
       match /automationLogs/{logId} {
-        allow read: if isSignedIn() && isProjectMember(projectId);
-        allow create: if isSignedIn() && hasProjectRole(projectId, ["super", "admin", "ops"]);
+        allow read: if tenantAllowed(tenantId) && isAdmin();
+        allow create: if tenantAllowed(tenantId) && isOperator();
         allow update, delete: if false;
       }
 
       match /aiSettings/{settingId} {
-        allow read: if isSignedIn() && isProjectMember(projectId);
-        allow create, update, delete: if isSignedIn() && hasProjectRole(projectId, ["super", "admin"]);
+        allow read: if tenantAllowed(tenantId) && isAdmin();
+        allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
       }
 
       match /aiLogs/{logId} {
-        allow read: if isSignedIn() && isProjectMember(projectId);
-        allow create: if isSignedIn() && hasProjectRole(projectId, ["super", "admin", "ops"]);
+        allow read: if tenantAllowed(tenantId) && isAdmin();
+        allow create: if tenantAllowed(tenantId) && isOperator();
         allow update, delete: if false;
       }
 
       match /resources/{resourceId} {
-        allow read: if isSignedIn() && isProjectMember(projectId);
-        allow create, update, delete: if isSignedIn() && hasProjectRole(projectId, ["super", "admin", "ops"]);
+        allow read: if tenantAllowed(tenantId) && isOperator();
+        allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
       }
 
       match /auditLogs/{logId} {
@@ -218,6 +218,7 @@ service cloud.firestore {
 
       match /projects/{projectId} {
         allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
+        allow list: if tenantAllowed(tenantId) && isOperator();
         allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
 
         match /visits/{visitId} {
@@ -248,6 +249,7 @@ service cloud.firestore {
 
         match /questionnaires/{questionnaireId} {
           allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
+        allow list: if tenantAllowed(tenantId) && isOperator();
           allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
         }
 
@@ -285,6 +287,7 @@ service cloud.firestore {
 
         match /documents/{documentId} {
           allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
+        allow list: if tenantAllowed(tenantId) && isOperator();
           allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
         }
 

@@ -77,3 +77,13 @@ No debe tocar backend V57, reglas Firestore, scripts Firebase, helpers locales i
 - PENDIENTES-PROTOTIPO.md actualizado.
 - Lista de archivos tocados.
 - Confirmacion de que no toco backend V57 ni helpers locales.
+
+## 2026-07-01 00:45:35 - Estado backend observado desde smoke V58
+- Admin lee tenants/tya: True.
+- Admin projects access OK: True.
+- Admin denegado en tenants/otro: True.
+- Externo denegado en tenants/tya: True.
+- Preview Node HTTP 200: True.
+- DOM localStorage/demo: True.
+- DOM banca: False.
+- Si DOM muestra localStorage/demo o banca, sigue pendiente para Claude/prototipo, no para reglas.

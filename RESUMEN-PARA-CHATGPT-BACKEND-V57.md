@@ -169,3 +169,13 @@ ode firebase/client-write-tools/validate-preview-v57-static-v2.mjs
 - Preview local abre con servidor Node en puerto 5191.
 - URL: http://127.0.0.1:5191/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260630_NODE_SERVER_V57
 - Siguiente gate: revisar badge y ejecutar smoke Firestore / tenant isolation / module render smoke.
+
+## 2026-07-01 00:45:35 - Smoke Backend V58 Node
+- Se sincronizaron commits documentales V58 desde GitHub.
+- Se parcheo localmente firestore.rules para eliminar helpers indefinidos en bloques V57 y agregar list explicito en projects para operadores.
+- Validadores V57 OK.
+- Auth DEV OK sin imprimir secretos.
+- Tenant isolation ejecutado.
+- Preview Node robusto con HTTP 200: True.
+- Module render smoke ejecutado: True.
+- No deploy, no produccion, no datos reales, no /app/modules.
