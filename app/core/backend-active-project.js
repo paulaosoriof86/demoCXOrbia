@@ -1,0 +1,1 @@
+window.CX=window.CX||{};(function(){if(!CX.BACKEND||CX.BACKEND.previewMode!==true)return;CX.BACKEND.defaultProjectId='cinepolis-abril-26';CX.BACKEND.previewProjectIds=['cinepolis-abril-26'];CX.BACKEND.projectScopeMode='active-preview';})();
