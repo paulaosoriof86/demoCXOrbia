@@ -5,7 +5,7 @@
    No toca módulos UI.
    No se activa si CX.BACKEND.enabled !== true.
    Preview DEV: puede autenticarse solo si se habilita por config
-   separada y token de preview, sin guardar claves en repo.
+   separada y token de preview, sin guardar datos sensibles en repo.
    ============================================================ */
 window.CX = window.CX || {};
 
@@ -19,6 +19,10 @@ window.CX = window.CX || {};
 
   function emit(name, payload){ if(CX.bus) CX.bus.emit(name, payload || {}); }
   function warn(){ console.warn.apply(console, ['[CX.backend]'].concat([].slice.call(arguments))); }
+  function markSource(source, extra){
+    window.CX_BACKEND_DATA_SOURCE = source;
+    window.CX_BACKEND_LAST_STATE = Object.assign({source, at:new Date().toISOString(), tenantId:tenantId()}, extra || {});
+  }
 
   function clean(obj){
     if(Array.isArray(obj)) return obj.map(clean);
@@ -67,23 +71,27 @@ window.CX = window.CX || {};
     if(!window.firebase || !firebase.auth) throw new Error('Firebase Auth SDK no cargado para preview DEV');
 
     const auth = app && typeof app.auth === 'function' ? app.auth() : firebase.auth();
-    if(auth.currentUser) return;
+    if(auth.currentUser){
+      emit('backend-auth-ready', {provider:'firebase', tenantId:tenantId(), preview:true, email:auth.currentUser.email || ''});
+      return;
+    }
 
     const email = authCfg.email;
     const key = authCfg.passwordStorageKey || 'CXORBIA_DEV_PASSWORD';
     let password = readStoredPreviewPassword(key);
 
     if(!password && authCfg.allowPrompt === true && window.prompt){
-      password = window.prompt('Clave temporal DEV para preview CXOrbia');
+      password = window.prompt('Credencial temporal DEV para preview CXOrbia');
       if(password) writeStoredPreviewPassword(key, password);
     }
 
     if(!email || !password){
-      throw new Error('Falta usuario o clave temporal DEV para iniciar preview autenticado');
+      markSource('localStorage/demo', {auth:'pending'});
+      throw new Error('Falta usuario o credencial temporal DEV para iniciar preview autenticado');
     }
 
     await auth.signInWithEmailAndPassword(email, password);
-    emit('backend-auth-ready', {provider:'firebase', tenantId:tenantId(), preview:true});
+    emit('backend-auth-ready', {provider:'firebase', tenantId:tenantId(), preview:true, email});
   }
 
   async function loadTenantData(){
@@ -104,9 +112,13 @@ window.CX = window.CX || {};
   }
 
   function applyData(state){
-    if(!CX.data) return false;
+    if(!CX.data){
+      markSource('localStorage/demo', {reason:'missing-cx-data'});
+      return false;
+    }
     if(!state || !state.projects || !state.projects.length){
-      emit('backend-ready', {provider:'firebase', empty:true, tenantId:tenantId()});
+      markSource('firestore', {empty:true, counts:{projects:0, visits:0, shoppers:0, posts:0}});
+      emit('backend-ready', {provider:'firebase', empty:true, tenantId:tenantId(), source:'firestore'});
       return false;
     }
 
@@ -119,10 +131,19 @@ window.CX = window.CX || {};
     const exists = CX.data.projects.some(p=>p.id===keep);
     CX.data.currentProjectId = exists ? keep : (cfg.defaultProjectId || CX.data.projects[0].id);
 
+    const counts = {
+      projects: CX.data.projects.length,
+      visits: CX.data._visitas.length,
+      shoppers: CX.data.shoppers.length,
+      posts: CX.data._posts.length,
+      projectId: CX.data.currentProjectId,
+    };
+    markSource('firestore', {empty:false, counts});
+
     emit('project', {source:'firebase'});
     emit('shoppers', {source:'firebase'});
     emit('visit-flow', {source:'firebase'});
-    emit('backend-ready', {provider:'firebase', empty:false, tenantId:tenantId()});
+    emit('backend-ready', {provider:'firebase', empty:false, tenantId:tenantId(), source:'firestore', counts});
     return true;
   }
 
@@ -144,7 +165,7 @@ window.CX = window.CX || {};
   function safePersist(promise, label){
     Promise.resolve(promise).catch(e=>{
       warn('No se pudo persistir '+label, e);
-      emit('backend-error', {label, message:e.message || String(e)});
+      emit('backend-error', {label, message:e.message || String(e), source:'localStorage/demo', tenantId:tenantId()});
     });
   }
 
@@ -211,7 +232,8 @@ window.CX = window.CX || {};
     started = true;
 
     if(cfg.enabled !== true){
-      emit('backend-disabled', {provider:'firebase', tenantId:tenantId()});
+      markSource('localStorage/demo', {reason:'backend-disabled'});
+      emit('backend-disabled', {provider:'firebase', tenantId:tenantId(), source:'localStorage/demo'});
       return CX.backend;
     }
 
@@ -221,8 +243,9 @@ window.CX = window.CX || {};
       wrapDataMethods();
       await refresh();
     }catch(e){
+      markSource('localStorage/demo', {error:e.message || String(e)});
       warn('No se pudo iniciar adapter. La UI sigue con mock/localStorage.', e);
-      emit('backend-error', {label:'start', message:e.message || String(e)});
+      emit('backend-error', {label:'start', message:e.message || String(e), source:'localStorage/demo', tenantId:tenantId()});
     }
 
     return CX.backend;
