@@ -92,6 +92,12 @@ service cloud.firestore {
       return role() in ['super', 'admin', 'ops', 'coordinador'];
     }
 
+    function operationDocForTenant(tenantId) {
+      return tenantAllowed(tenantId) &&
+        isOperator() &&
+        request.resource.data.tenantId == tenantId;
+    }
+
     function listHasValue(fieldName, value) {
       return resource.data[fieldName] is list && value != '' && value in resource.data[fieldName];
     }
@@ -138,6 +144,7 @@ service cloud.firestore {
         allow update: if tenantAllowed(tenantId) && (isOperator() || isOwnShopper(shopperIdParam));
         allow delete: if tenantAllowed(tenantId) && isAdmin();
       }
+
       match /shopperStats/{shopperIdParam} {
         allow read: if tenantAllowed(tenantId) && (isOperator() || isOwnShopper(shopperIdParam));
         allow create, update: if tenantAllowed(tenantId) && isOperator();
@@ -212,6 +219,30 @@ service cloud.firestore {
         allow update, delete: if false;
       }
 
+      match /operationActions/{actionId} {
+        allow read: if tenantAllowed(tenantId) && isOperator();
+        allow create: if operationDocForTenant(tenantId);
+        allow update, delete: if false;
+      }
+
+      match /operationEvents/{eventId} {
+        allow read: if tenantAllowed(tenantId) && isOperator();
+        allow create: if operationDocForTenant(tenantId);
+        allow update, delete: if false;
+      }
+
+      match /entityAuditTrail/{auditId} {
+        allow read: if tenantAllowed(tenantId) && isOperator();
+        allow create: if operationDocForTenant(tenantId);
+        allow update, delete: if false;
+      }
+
+      match /operationActionLocks/{lockId} {
+        allow read: if tenantAllowed(tenantId) && isOperator();
+        allow create: if operationDocForTenant(tenantId);
+        allow update, delete: if false;
+      }
+
       match /shopperBenefits/{benefitId} {
         allow read: if tenantAllowed(tenantId) && (
           isAdmin() ||
@@ -226,6 +257,7 @@ service cloud.firestore {
         allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
         allow list: if tenantAllowed(tenantId) && isOperator();
         allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+
         match /periods/{periodId} {
           allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
           allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
@@ -266,6 +298,7 @@ service cloud.firestore {
           );
           allow update, delete: if tenantAllowed(tenantId) && isOperator();
         }
+
         match /postulations/{postulationId} {
           allow read: if tenantAllowed(tenantId) && (
             isOperator() ||
@@ -290,12 +323,15 @@ service cloud.firestore {
 
         match /responsibilityLog/{logId} {
           allow read: if tenantAllowed(tenantId) && isOperator();
-          allow create: if tenantAllowed(tenantId) && isOperator();
+          allow create: if tenantAllowed(tenantId) && isOperator() &&
+            request.resource.data.tenantId == tenantId &&
+            request.resource.data.projectId == projectId;
           allow update, delete: if false;
         }
+
         match /questionnaires/{questionnaireId} {
           allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
-        allow list: if tenantAllowed(tenantId) && isOperator();
+          allow list: if tenantAllowed(tenantId) && isOperator();
           allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
         }
 
@@ -333,7 +369,7 @@ service cloud.firestore {
 
         match /documents/{documentId} {
           allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
-        allow list: if tenantAllowed(tenantId) && isOperator();
+          allow list: if tenantAllowed(tenantId) && isOperator();
           allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
         }
 
