@@ -1,0 +1,13 @@
+{
+  "tenantId": "tya",
+  "files": {
+    "shoppers": {"path": "01_shoppers.csv", "format": "csv", "encoding": "utf-8"},
+    "projects": {"path": "02_projects.csv", "format": "csv", "encoding": "utf-8"},
+    "visits": {"path": "03_visits.csv", "format": "csv", "encoding": "utf-8"},
+    "postulations": {"path": "04_postulations.csv", "format": "csv", "encoding": "utf-8"},
+    "questionnaires": {"path": "05_questionnaires.csv", "format": "csv", "encoding": "utf-8"},
+    "benefits": {"path": "06_benefits_liquidations.csv", "format": "csv", "encoding": "utf-8"},
+    "certifications": {"path": "07_certifications.csv", "format": "csv", "encoding": "utf-8"},
+    "resources": {"path": "08_resources_index.csv", "format": "csv", "encoding": "utf-8"}
+  }
+}
