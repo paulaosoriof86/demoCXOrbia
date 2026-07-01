@@ -43,6 +43,8 @@ window.CX = window.CX || {};
       documents: 'documents',
       certifications: 'certifications',
       notifications: 'notifications',
+      bulletins: 'bulletins',
+      bulletinReads: 'bulletinReads',
       automations: 'automations',
       auditLogs: 'auditLogs',
     },
