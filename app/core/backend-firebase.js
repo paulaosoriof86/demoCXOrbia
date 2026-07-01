@@ -1,11 +1,10 @@
 /* ============================================================
-   CXOrbia · Firebase backend adapter (scaffold seguro)
+   CXOrbia · Firebase backend adapter (DEV seguro)
    ------------------------------------------------------------
    Mantiene CX.data como interfaz estable.
-   No toca módulos UI.
+   No toca modulos UI.
    No se activa si CX.BACKEND.enabled !== true.
-   Preview DEV: puede autenticarse solo si se habilita por config
-   separada y token de preview, sin guardar datos sensibles en repo.
+   El alcance de proyecto/periodo se resuelve antes del primer render.
    ============================================================ */
 window.CX = window.CX || {};
 
@@ -17,18 +16,21 @@ window.CX = window.CX || {};
   let started = false;
   let original = null;
 
-  function emit(name, payload){ if(CX.bus) CX.bus.emit(name, payload || {}); }
+  function emit(name, payload){ if(CX.bus && typeof CX.bus.emit === 'function') CX.bus.emit(name, payload || {}); }
   function warn(){ console.warn.apply(console, ['[CX.backend]'].concat([].slice.call(arguments))); }
+  function now(){ return new Date().toISOString(); }
+  function tenantId(){ return cfg.tenantId || 'tya'; }
+
   function markSource(source, extra){
     window.CX_BACKEND_DATA_SOURCE = source;
-    window.CX_BACKEND_LAST_STATE = Object.assign({source, at:new Date().toISOString(), tenantId:tenantId()}, extra || {});
+    window.CX_BACKEND_LAST_STATE = Object.assign({source, at:now(), tenantId:tenantId()}, extra || {});
   }
 
   function clean(obj){
     if(Array.isArray(obj)) return obj.map(clean);
     if(!obj || typeof obj !== 'object') return obj;
     const out = {};
-    Object.keys(obj).forEach(k=>{
+    Object.keys(obj).forEach(function(k){
       const v = obj[k];
       if(v === undefined || typeof v === 'function') return;
       out[k] = clean(v);
@@ -36,30 +38,52 @@ window.CX = window.CX || {};
     return out;
   }
 
-  function tenantId(){ return cfg.tenantId || 'tya'; }
   function tenantsCol(){ return db.collection(col.tenants || 'tenants'); }
   function tenantRef(){ return tenantsCol().doc(tenantId()); }
   function projectsCol(){ return tenantRef().collection(col.projects || 'projects'); }
   function projectRef(projectId){ return projectsCol().doc(projectId); }
   function subCol(projectId, name){ return projectRef(projectId).collection(col[name] || name); }
   function shoppersCol(){ return tenantRef().collection(col.shoppers || 'shoppers'); }
-
   function docData(d){ return Object.assign({id:d.id}, d.data() || {}); }
   async function getAll(q){ const snap = await q.get(); return snap.docs.map(docData); }
 
-  function firstArrayValue(value, fallback){
-    return Array.isArray(value) && value.length ? value[0] : fallback;
+  function firstArrayValue(value, fallback){ return Array.isArray(value) && value.length ? value[0] : fallback; }
+  function toList(value){
+    if(Array.isArray(value)) return value.map(String).map(function(x){return x.trim();}).filter(Boolean);
+    if(typeof value === 'string') return value.split(',').map(function(x){return x.trim();}).filter(Boolean);
+    return [];
+  }
+  function lower(value){ return String(value || '').trim().toLowerCase(); }
+
+  function projectDisplayName(p){ return p.name || p.nombre || p.client || p.clientName || p.id || 'Proyecto'; }
+
+  function inferPeriod(p){
+    const id = String(p.id || p.projectId || '');
+    const name = String(p.name || p.nombre || id);
+    const source = [id, name, p.periodId, p.periodName, p.ronda, p.round].filter(Boolean).join(' ');
+    const monthMap = {
+      enero:'01', febrero:'02', marzo:'03', abril:'04', mayo:'05', junio:'06', julio:'07', agosto:'08', septiembre:'09', setiembre:'09', octubre:'10', noviembre:'11', diciembre:'12'
+    };
+    const sourceLower = lower(source);
+    let month = '';
+    Object.keys(monthMap).some(function(m){ if(sourceLower.indexOf(m) >= 0){ month = monthMap[m]; return true; } return false; });
+    const yearMatch = source.match(/(?:20)?(25|26|27|28|29|30)\b/);
+    const year = yearMatch ? ('20' + yearMatch[1]) : '';
+    const country = /\bHN\b/i.test(source) ? 'HN' : (/\bGT\b/i.test(source) ? 'GT' : '');
+    const periodId = p.periodId || [year, month, country].filter(Boolean).join('-') || id;
+    const periodName = p.periodName || p.ronda || p.round || name;
+    return {id:periodId, name:periodName, year:year, month:month, country:country, sourceProjectId:id, status:p.periodStatus || p.status || 'historico'};
   }
 
   function normalizeProject(p){
     if(!p || typeof p !== 'object') return p;
     const id = p.id || p.projectId;
     return Object.assign({}, p, {
-      id,
+      id:id,
       projectId: p.projectId || id,
       tenantId: p.tenantId || tenantId(),
-      name: p.name || id || 'Proyecto',
-      client: p.client || p.clientId || 'Cliente',
+      name: projectDisplayName(p),
+      client: p.client || p.clientId || p.clientName || 'Cliente',
       currency: p.currency || p.currencies || {},
       countries: Array.isArray(p.countries) ? p.countries : [],
       quincenas: p.quincenas || ['Quincena 1','Quincena 2'],
@@ -74,12 +98,12 @@ window.CX = window.CX || {};
     const id = s.id || s.shopperId;
     const country = s.pais || firstArrayValue(s.countries, 'GT');
     return Object.assign({}, s, {
-      id,
+      id:id,
       shopperId: s.shopperId || id,
-      nombre: s.nombre || s.name || id || 'Shopper',
+      nombre: s.nombre || s.name || s.fullName || id || 'Shopper',
       pais: country,
-      ciudad: s.ciudad || firstArrayValue(s.cities, ''),
-      code: s.code || id,
+      ciudad: s.ciudad || firstArrayValue(s.cities, '') || s.city || '',
+      code: s.code || s.codigo || id,
       estado: s.estado || s.status || 'Activo',
       rating: s.rating || (s.score ? +(s.score / 20).toFixed(1) : 0),
       visitas: s.visitas || (s.stats && s.stats.completedVisits) || 0,
@@ -88,49 +112,58 @@ window.CX = window.CX || {};
     });
   }
 
-  function normalizeVisit(v, projectId){
+  function normalizeVisit(v, projectId, periodId){
     if(!v || typeof v !== 'object') return v;
     const id = v.id || v.visitId;
     const fee = v.fee || {};
-    const country = v.pais || v.country || 'GT';
-    const franjaCode = v.franjaCode || (v.franja === 'WKND' ? 'WKND' : v.franja === 'WK' ? 'WK' : v.franja);
+    const country = v.pais || v.country || v.countryCode || 'GT';
+    const franjaCode = v.franjaCode || v.timeBand || (v.franja === 'WKND' ? 'WKND' : v.franja === 'WK' ? 'WK' : v.franja);
     return Object.assign({}, v, {
-      id,
+      id:id,
       visitId: v.visitId || id,
       projectId: v.projectId || projectId,
+      periodId: v.periodId || periodId || projectId,
       estado: v.estado || v.status || 'disponible',
       status: v.status || v.estado || 'disponible',
       pais: country,
-      country,
+      country: country,
       sucursal: v.sucursal || v.branchName || v.branchId || id,
       branchId: v.branchId || v.sucursal || '',
-      quincena: v.quincena || 1,
+      ciudad: v.ciudad || v.city || '',
+      quincena: v.quincena || v.periodName || 1,
       franja: v.franja || franjaCode || 'WK',
       franjaCode: franjaCode || 'WK',
       escenario: v.escenario || v.scenario || '',
       scenario: v.scenario || v.escenario || '',
       disponibleDesde: v.disponibleDesde || v.availableFrom || '',
       availableFrom: v.availableFrom || v.disponibleDesde || '',
-      honorario: v.honorario || fee.amount || 0,
-      currency: v.currency || fee.currency || '',
+      agendada: v.agendada || v.scheduledDate || '',
+      realizada: v.realizada || v.completedDate || '',
+      cuestFecha: v.cuestFecha || v.questionnaireDate || v.submittedAt || '',
+      submit: v.submit === true || v.submitted === true || !!v.submittedAt,
+      honorario: v.honorario || fee.amount || v.honorariumAmount || 0,
+      currency: v.currency || fee.currency || v.moneda || '',
+      boleto: v.boleto || v.ticketReimbursementAmount || 0,
+      comboAmt: v.comboAmt || v.comboReimbursementAmount || 0,
       reimbursements: Array.isArray(v.reimbursements) ? v.reimbursements : [],
     });
   }
 
-  function normalizeApplication(a, projectId, visitsById, shoppersById){
+  function normalizeApplication(a, projectId, periodId, visitsById, shoppersById){
     if(!a || typeof a !== 'object') return a;
-    const id = a.id || a.applicationId || a.postulationId;
+    const id = a.id || a.applicationId || a.postulationId || [a.visitId || a.visitaId, a.shopperId].filter(Boolean).join('-');
     const visitId = a.visitaId || a.visitId;
     const visit = visitsById[visitId] || {};
     const shopperId = a.shopperId;
     const shopper = shoppersById[shopperId] || {};
     return Object.assign({}, a, {
-      id,
+      id:id,
       applicationId: a.applicationId || id,
       postulationId: a.postulationId || id,
       visitaId: visitId,
-      visitId,
+      visitId: visitId,
       projectId: a.projectId || projectId,
+      periodId: a.periodId || periodId || projectId,
       estado: a.estado || a.status || 'pendiente',
       status: a.status || a.estado || 'pendiente',
       fechaProp: a.fechaProp || a.proposedDate || '',
@@ -167,234 +200,134 @@ window.CX = window.CX || {};
     const authCfg = cfg.devPreviewAuth || {};
     if(authCfg.enabled !== true) return;
     if(!window.firebase || !firebase.auth) throw new Error('Firebase Auth SDK no cargado para preview DEV');
-
     const auth = app && typeof app.auth === 'function' ? app.auth() : firebase.auth();
-    if(auth.currentUser){
-      emit('backend-auth-ready', {provider:'firebase', tenantId:tenantId(), preview:true, email:auth.currentUser.email || ''});
-      return;
-    }
-
+    if(auth.currentUser){ emit('backend-auth-ready', {provider:'firebase', tenantId:tenantId(), preview:true, email:auth.currentUser.email || ''}); return; }
     const email = authCfg.email;
     const key = authCfg.passwordStorageKey || 'CXORBIA_DEV_PASSWORD';
     const password = readStoredPreviewPassword(key);
-
-    if(!email || !password){
-      markSource('localStorage/demo', {auth:'pending'});
-      throw new Error('Falta usuario o credencial temporal DEV para iniciar preview autenticado');
-    }
-
+    if(!email || !password){ markSource('localStorage/demo', {auth:'pending'}); throw new Error('Falta usuario o credencial temporal DEV para iniciar preview autenticado'); }
     await auth.signInWithEmailAndPassword(email, password);
-    emit('backend-auth-ready', {provider:'firebase', tenantId:tenantId(), preview:true, email});
+    emit('backend-auth-ready', {provider:'firebase', tenantId:tenantId(), preview:true, email:email});
+  }
+
+  function resolveActiveProjects(projects){
+    const requested = toList(cfg.previewProjectIds).concat(toList(cfg.defaultProjectId));
+    const ids = new Set(requested.filter(Boolean));
+    let active = ids.size ? projects.filter(function(p){ return ids.has(p.id); }) : [];
+    if(!active.length && cfg.defaultProjectId){ active = projects.filter(function(p){ return p.id === cfg.defaultProjectId; }); }
+    if(!active.length && projects.length){
+      const preferred = projects.find(function(p){ return /cinepolis.*abril.*26/i.test([p.id, p.name].join(' ')); });
+      active = preferred ? [preferred] : [projects[0]];
+    }
+    return active;
+  }
+
+  function buildPeriods(allProjects, activeProjects){
+    const activeIds = new Set(activeProjects.map(function(p){return p.id;}));
+    return allProjects.map(function(p){
+      const period = inferPeriod(p);
+      period.active = activeIds.has(p.id);
+      period.projectId = p.id;
+      period.projectName = p.name;
+      return period;
+    });
   }
 
   async function loadProjectData(project, shoppersById){
     const projectId = project.id;
+    const periodId = project.periodId || projectId;
     const visitsRaw = await getAll(subCol(projectId, 'visits'));
     const visitsById = {};
-    const visits = visitsRaw.map(v=>normalizeVisit(v, projectId));
-    visits.forEach(v=>{ v.projectId = v.projectId || projectId; visitsById[v.id] = v; visitsById[v.visitId] = v; });
-
-    const postulationsPromise = getAll(subCol(projectId, 'postulations')).catch(function(e){
-      warn('No se pudieron leer postulations de '+projectId, e);
-      return [];
-    });
-    const applicationsPromise = getAll(subCol(projectId, 'applications')).catch(function(e){
-      warn('No se pudieron leer applications de '+projectId, e);
-      return [];
-    });
-
+    const visits = visitsRaw.map(function(v){ return normalizeVisit(v, projectId, periodId); });
+    visits.forEach(function(v){ v.projectId = v.projectId || projectId; visitsById[v.id] = v; visitsById[v.visitId] = v; });
+    const postulationsPromise = getAll(subCol(projectId, 'postulations')).catch(function(e){ warn('No se pudieron leer postulations de '+projectId, e); return []; });
+    const applicationsPromise = getAll(subCol(projectId, 'applications')).catch(function(e){ warn('No se pudieron leer applications de '+projectId, e); return []; });
     const result = await Promise.all([postulationsPromise, applicationsPromise]);
     const posts = [];
-    result[0].concat(result[1]).forEach(x=>{
-      const item = normalizeApplication(x, projectId, visitsById, shoppersById);
+    result[0].concat(result[1]).forEach(function(x){
+      const item = normalizeApplication(x, projectId, periodId, visitsById, shoppersById);
       if(item) posts.push(item);
     });
-
-    return {visits, posts};
+    return {visits:visits, posts:posts};
   }
 
   async function loadTenantData(){
     const loadStartedAt = Date.now();
     emit('backend-loading', {provider:'firebase', tenantId:tenantId(), source:'firestore'});
-
     const result = await Promise.all([getAll(projectsCol()), getAll(shoppersCol())]);
-    const projectsRaw = result[0];
-    const shoppersRaw = result[1];
-    const projects = projectsRaw.map(normalizeProject);
-    const shoppers = shoppersRaw.map(normalizeShopper);
+    const allProjects = result[0].map(normalizeProject);
+    const activeProjects = resolveActiveProjects(allProjects);
+    const periods = buildPeriods(allProjects, activeProjects);
+    const shoppers = result[1].map(normalizeShopper);
     const shoppersById = {};
-    shoppers.forEach(s=>{ shoppersById[s.id] = s; shoppersById[s.shopperId] = s; });
-
-    const perProject = await Promise.all(projects.map(function(p){ return loadProjectData(p, shoppersById); }));
+    shoppers.forEach(function(s){ shoppersById[s.id] = s; shoppersById[s.shopperId] = s; });
+    const perProject = await Promise.all(activeProjects.map(function(p){ return loadProjectData(p, shoppersById); }));
     const visits = [];
     const posts = [];
     perProject.forEach(function(bucket){
-      (bucket.visits || []).forEach(v=>visits.push(v));
-      (bucket.posts || []).forEach(p=>posts.push(p));
+      (bucket.visits || []).forEach(function(v){ visits.push(v); });
+      (bucket.posts || []).forEach(function(p){ posts.push(p); });
     });
-
-    emit('backend-loaded', {
-      provider:'firebase',
-      tenantId:tenantId(),
-      source:'firestore',
-      ms:Date.now()-loadStartedAt,
-      counts:{projects:projects.length, shoppers:shoppers.length, visits:visits.length, posts:posts.length}
-    });
-
-    return {projects, shoppers, visits, posts};
+    const counts = {projects:activeProjects.length, projectRecords:allProjects.length, periods:periods.length, shoppers:shoppers.length, visits:visits.length, posts:posts.length};
+    window.CX_BACKEND_PERIODS = periods;
+    window.CX_BACKEND_PROJECT_SCOPE = {mode:'adapter-pre-render', activeProjectIds:activeProjects.map(function(p){return p.id;}), totalProjectRecords:allProjects.length, at:now()};
+    emit('backend-loaded', {provider:'firebase', tenantId:tenantId(), source:'firestore', ms:Date.now()-loadStartedAt, counts:counts});
+    return {projects:activeProjects, allProjects:allProjects, periods:periods, shoppers:shoppers, visits:visits, posts:posts};
   }
 
   function applyData(state){
-    if(!CX.data){
-      markSource('localStorage/demo', {reason:'missing-cx-data'});
-      return false;
-    }
-    if(!state || !state.projects || !state.projects.length){
-      markSource('firestore', {empty:true, counts:{projects:0, visits:0, shoppers:0, posts:0}});
-      emit('backend-ready', {provider:'firebase', empty:true, tenantId:tenantId(), source:'firestore'});
-      return false;
-    }
-
+    if(!CX.data){ markSource('localStorage/demo', {reason:'missing-cx-data'}); return false; }
+    if(!state || !state.projects || !state.projects.length){ markSource('firestore', {empty:true, counts:{projects:0, visits:0, shoppers:0, posts:0}}); emit('backend-ready', {provider:'firebase', empty:true, tenantId:tenantId(), source:'firestore'}); return false; }
     CX.data.projects = state.projects;
+    CX.data.periods = state.periods || [];
+    CX.data.__backendAllProjectRecords = state.allProjects || [];
+    CX.data.__backendPeriods = state.periods || [];
     CX.data.shoppers = state.shoppers || [];
     CX.data._visitas = state.visits || [];
     CX.data._posts = state.posts || [];
-
     const keep = CX.data.currentProjectId;
-    const exists = CX.data.projects.some(p=>p.id===keep);
-    CX.data.currentProjectId = exists ? keep : (cfg.defaultProjectId || CX.data.projects[0].id);
-
-    const counts = {
-      projects: CX.data.projects.length,
-      visits: CX.data._visitas.length,
-      shoppers: CX.data.shoppers.length,
-      posts: CX.data._posts.length,
-      projectId: CX.data.currentProjectId,
-    };
-    markSource('firestore', {empty:false, counts});
-
+    const exists = CX.data.projects.some(function(p){ return p.id === keep; });
+    CX.data.currentProjectId = exists ? keep : (cfg.defaultProjectId && CX.data.projects.some(function(p){return p.id === cfg.defaultProjectId;}) ? cfg.defaultProjectId : CX.data.projects[0].id);
+    CX.data.currentPeriodId = CX.data.currentPeriodId || ((CX.data.periods.find(function(p){return p.active;}) || {}).id || '');
+    const counts = {projects:CX.data.projects.length, projectRecords:state.allProjects ? state.allProjects.length : CX.data.projects.length, periods:CX.data.periods.length, visits:CX.data._visitas.length, shoppers:CX.data.shoppers.length, posts:CX.data._posts.length, projectId:CX.data.currentProjectId, periodId:CX.data.currentPeriodId};
+    markSource('firestore', {empty:false, counts:counts, scope:'adapter-pre-render'});
     emit('project', {source:'firebase'});
     emit('shoppers', {source:'firebase'});
     emit('visit-flow', {source:'firebase'});
-    emit('backend-ready', {provider:'firebase', empty:false, tenantId:tenantId(), source:'firestore', counts});
+    emit('backend-ready', {provider:'firebase', empty:false, tenantId:tenantId(), source:'firestore', counts:counts, scope:'adapter-pre-render'});
     return true;
   }
 
-  async function writeProject(project){
-    if(!project || !project.id) return;
-    await projectRef(project.id).set(clean(project), {merge:true});
-  }
-
-  async function writeShopper(shopper){
-    if(!shopper || !shopper.id) return;
-    await shoppersCol().doc(shopper.id).set(clean(shopper), {merge:true});
-  }
-
-  async function writeVisit(visit){
-    if(!visit || !visit.id || !visit.projectId) return;
-    await subCol(visit.projectId, 'visits').doc(visit.id).set(clean(visit), {merge:true});
-  }
-
-  function safePersist(promise, label){
-    Promise.resolve(promise).catch(e=>{
-      warn('No se pudo persistir '+label, e);
-      emit('backend-error', {label, message:e.message || String(e), source:'localStorage/demo', tenantId:tenantId()});
-    });
-  }
+  async function writeProject(project){ if(!project || !project.id) return; await projectRef(project.id).set(clean(project), {merge:true}); }
+  async function writeShopper(shopper){ if(!shopper || !shopper.id) return; await shoppersCol().doc(shopper.id).set(clean(shopper), {merge:true}); }
+  async function writeVisit(visit){ if(!visit || !visit.id || !visit.projectId) return; await subCol(visit.projectId, 'visits').doc(visit.id).set(clean(visit), {merge:true}); }
+  function safePersist(promise, label){ Promise.resolve(promise).catch(function(e){ warn('No se pudo persistir '+label, e); emit('backend-error', {label:label, message:e.message || String(e), source:'localStorage/demo', tenantId:tenantId()}); }); }
 
   function wrapDataMethods(){
     const D = CX.data;
     if(!D || D.__firebaseWrapped) return;
-    original = {
-      addProject: D.addProject,
-      setVisitState: D.setVisitState,
-      assignVisit: D.assignVisit,
-      payVisits: D.payVisits,
-      addShopper: D.addShopper,
-      updateShopper: D.updateShopper,
-    };
-
-    if(typeof D.addProject === 'function') D.addProject = function(cfg){
-      const p = original.addProject.call(this, cfg);
-      if(p) safePersist(writeProject(p), 'project');
-      return p;
-    };
-
-    if(typeof D.setVisitState === 'function') D.setVisitState = function(id, estado, dateField, dateVal){
-      const v = original.setVisitState.call(this, id, estado, dateField, dateVal);
-      if(v) safePersist(writeVisit(v), 'visit-state');
-      return v;
-    };
-
-    if(typeof D.assignVisit === 'function') D.assignVisit = function(visitId, shopperId){
-      const v = original.assignVisit.call(this, visitId, shopperId);
-      if(v) safePersist(writeVisit(v), 'visit-assign');
-      return v;
-    };
-
-    if(typeof D.payVisits === 'function') D.payVisits = function(ids, fechaPago){
-      const res = original.payVisits.call(this, ids, fechaPago);
-      (ids || []).forEach(id=>{ const v = this._visitas.find(x=>x.id===id); if(v) safePersist(writeVisit(v), 'visit-payment'); });
-      return res;
-    };
-
-    if(typeof D.addShopper === 'function') D.addShopper = function(cfg){
-      const s = original.addShopper.call(this, cfg);
-      if(s) safePersist(writeShopper(s), 'shopper-add');
-      return s;
-    };
-
-    if(typeof D.updateShopper === 'function') D.updateShopper = function(id, patch){
-      const s = original.updateShopper.call(this, id, patch);
-      if(s) safePersist(writeShopper(s), 'shopper-update');
-      return s;
-    };
-
+    original = {addProject:D.addProject, setVisitState:D.setVisitState, assignVisit:D.assignVisit, payVisits:D.payVisits, addShopper:D.addShopper, updateShopper:D.updateShopper};
+    if(typeof D.addProject === 'function') D.addProject = function(cfgInput){ const p = original.addProject.call(this, cfgInput); if(p) safePersist(writeProject(p), 'project'); return p; };
+    if(typeof D.setVisitState === 'function') D.setVisitState = function(id, estado, dateField, dateVal){ const v = original.setVisitState.call(this, id, estado, dateField, dateVal); if(v) safePersist(writeVisit(v), 'visit-state'); return v; };
+    if(typeof D.assignVisit === 'function') D.assignVisit = function(visitId, shopperId){ const v = original.assignVisit.call(this, visitId, shopperId); if(v) safePersist(writeVisit(v), 'visit-assign'); return v; };
+    if(typeof D.payVisits === 'function') D.payVisits = function(ids, fechaPago){ const res = original.payVisits.call(this, ids, fechaPago); (ids || []).forEach(function(id){ const v = this._visitas.find(function(x){return x.id===id;}); if(v) safePersist(writeVisit(v), 'visit-payment'); }, this); return res; };
+    if(typeof D.addShopper === 'function') D.addShopper = function(cfgInput){ const s = original.addShopper.call(this, cfgInput); if(s) safePersist(writeShopper(s), 'shopper-add'); return s; };
+    if(typeof D.updateShopper === 'function') D.updateShopper = function(id, patch){ const s = original.updateShopper.call(this, id, patch); if(s) safePersist(writeShopper(s), 'shopper-update'); return s; };
     D.__firebaseWrapped = true;
   }
 
-  async function refresh(){
-    if(!db) throw new Error('Firebase backend no inicializado');
-    const state = await loadTenantData();
-    applyData(state);
-    return state;
-  }
+  async function refresh(){ if(!db) throw new Error('Firebase backend no inicializado'); const state = await loadTenantData(); applyData(state); return state; }
 
   async function start(){
     if(started) return CX.backend;
     started = true;
-
-    if(cfg.enabled !== true){
-      markSource('localStorage/demo', {reason:'backend-disabled'});
-      emit('backend-disabled', {provider:'firebase', tenantId:tenantId(), source:'localStorage/demo'});
-      return CX.backend;
-    }
-
-    try{
-      initFirebase();
-      await ensurePreviewAuth();
-      wrapDataMethods();
-      await refresh();
-    }catch(e){
-      markSource('localStorage/demo', {error:e.message || String(e)});
-      warn('No se pudo iniciar adapter. La UI sigue con mock/localStorage.', e);
-      emit('backend-error', {label:'start', message:e.message || String(e), source:'localStorage/demo', tenantId:tenantId()});
-    }
-
+    if(cfg.enabled !== true){ markSource('localStorage/demo', {reason:'backend-disabled'}); emit('backend-disabled', {provider:'firebase', tenantId:tenantId(), source:'localStorage/demo'}); return CX.backend; }
+    try{ initFirebase(); await ensurePreviewAuth(); wrapDataMethods(); await refresh(); }
+    catch(e){ markSource('localStorage/demo', {error:e.message || String(e)}); warn('No se pudo iniciar adapter. La UI sigue con mock/localStorage.', e); emit('backend-error', {label:'start', message:e.message || String(e), source:'localStorage/demo', tenantId:tenantId()}); }
     return CX.backend;
   }
 
-  CX.backend = {
-    config: cfg,
-    start,
-    refresh,
-    writeProject,
-    writeShopper,
-    writeVisit,
-    isEnabled(){ return cfg.enabled === true; },
-    tenantId,
-  };
-
+  CX.backend = {config:cfg, start:start, refresh:refresh, writeProject:writeProject, writeShopper:writeShopper, writeVisit:writeVisit, isEnabled:function(){ return cfg.enabled === true; }, tenantId:tenantId};
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
 })();
