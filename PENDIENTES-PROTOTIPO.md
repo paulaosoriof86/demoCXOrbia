@@ -1,30 +1,38 @@
 # PENDIENTES-PROTOTIPO.md
 
-Pendientes reales del prototipo detectados sobre la RC visual correcta `release/cxorbia-tya-rc-20260630`.
+Pendientes reales del prototipo. Desde la recepción de `Prototype development request CXOrbia V57.zip`, la lista vigente y más actualizada está en `PENDIENTES-PROTOTIPO-V57.md`.
 
-No incluir aquí errores de integración backend/local, Auth DEV, PowerShell ni datos demo/localStorage del preview. Esos van en `INCIDENCIAS-INTEGRACION-BACKEND.md`.
+No incluir aquí errores de integración backend/local, Auth DEV ni datos demo/localStorage del preview. Esos van en `INCIDENCIAS-INTEGRACION-BACKEND.md` e `INCIDENCIAS-INTEGRACION-BACKEND-V57.md`.
 
-## Prioridad 1 — Críticos
+## Vigente desde V57
 
-1. Configuración / planes: abrir detalle, crear, editar, eliminar, ajustar planes, indicar qué plan se personaliza, evitar que Configuración desaparezca del menú y corregir contraste de paletas.
-2. KPIs y dashboards: todos los KPIs deben ser clicables y abrir drill-down con detalle, filtros y acciones.
-3. Finanzas: dashboard analítico, presupuesto separado, conexión entre movimientos, presupuesto, desviaciones, CxC, CxP, liquidaciones, lotes de pago, pagos por shopper, conciliación, país y reportes.
-4. Adaptación TyA visible: cuando backend esté activo debe verse tenant TyA, proyectos, lógica TyA y datos autorizados; no debe quedarse como demo genérico.
+Ver detalle completo en `PENDIENTES-PROTOTIPO-V57.md`.
 
-## Prioridad 2 — Operación y roles
+Prioridad P0:
 
-5. Legal / NDA / confidencialidad: módulo multi-rol con aceptación digital, vigencia, historial, versionado, trazabilidad y auditoría.
-6. Certificación / banco de preguntas: administración por proyecto/escenario, intentos, aprobación, retroalimentación, vigencia y ruta clara para shopper.
-7. Portal cliente: planes de acción con responsables, fechas, acciones, estado, evidencia, comentarios, seguimiento, trazabilidad y exportación.
-8. Academia: manuales y cursos profundos por rol, proyecto y operación real.
+1. Acciones operativas persistibles: botones que solo hacen toast deben ejecutar acción real o decir pendiente backend honestamente.
+2. Postulaciones: solicitar ajuste, gestión de visitas aprobadas, reasignar con buscador, sincronía shopper sin duplicación y notificaciones bidireccionales.
+3. Reservas/asignación: detectar visitas disponibles sin shopper en HR, cargar escenarios por periodo y cruzar reserva con postulación.
+4. Academia profunda: cursos con lecciones extensas, quiz por lección, crear/editar/eliminar categorías y lecciones, manuales por rol/proyecto.
+5. Finanzas profunda: movimiento por shopper, proyecto y país; impuestos por país; remesas a CxC; financiamientos con concepto; importador de movimientos; históricos reales al cambiar de mes.
+6. Clientes vs Cuentas CRM: unificar/vincular la misma ficha y sincronizar con proyectos/propuestas.
+7. IA real no hardcodeada: revisar que análisis, set-up, hoja de ruta, documentos e importador usen `CX.ai.ask` y no simulaciones fijas.
 
-## Prioridad 3 — Valor agregado
+## Historial RC V56
 
-9. Recursos/documentos: adjuntos embebidos, PDF, imagen, video, instructivos, manuales, visor completo y flujos con IA.
-10. Importador: carga, lectura, dedupe, validación, preview, mapeo, errores, bitácora, escritura segura y conexión backend.
-11. Add-ons, integraciones y benchmarking: oferta comercial, activación, configuración, beneficios, funcionamiento y casos de uso.
-12. Impresión/PDF: eliminar topbar y generar PDFs limpios en reportes, academia, recursos, cliente, certificaciones y planes de acción.
+La lista anterior de RC V56 queda superada parcialmente por V57. Mantener como referencia histórica únicamente:
 
-## Nota para Claude
+- Configuración/planes.
+- KPIs y dashboards.
+- Finanzas profunda.
+- Adaptación TyA visible.
+- Legal/NDA.
+- Certificación/banco de preguntas.
+- Portal cliente.
+- Academia.
+- Recursos/documentos.
+- Importador.
+- Add-ons/integraciones.
+- Impresión/PDF.
 
-Estos pendientes sí corresponden a frontend/prototipo porque fueron observados en la RC visual correcta. No mezclar con fallas del preview backend DEV ni con errores locales de integración.
+Claude debe trabajar con la lista V57 vigente y no reabrir pendientes que V57 ya resolvió salvo que fallen visualmente.
