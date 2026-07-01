@@ -64,7 +64,8 @@ CX.ui = {
   /* modal */
   modal(title, bodyHTML, opts={}){
     const ov=document.createElement('div');ov.className='cx-ov';
-    ov.innerHTML=`<div class="cx-modal"><div class="cx-modal-h"><div class="card-t" style="font-size:16px">${title}</div>
+    const cls='cx-modal'+(opts.full?' cx-modal-full':opts.wide?' cx-modal-wide':'');
+    ov.innerHTML=`<div class="${cls}"><div class="cx-modal-h"><div class="card-t" style="font-size:16px">${title}</div>
       <button class="btn btn-ghost btn-icon" data-x>✕</button></div><div class="cx-modal-b">${bodyHTML}</div></div>`;
     document.body.appendChild(ov);
     const close=()=>ov.remove();

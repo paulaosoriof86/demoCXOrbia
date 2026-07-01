@@ -49,7 +49,17 @@ CX.pwa = {
 CX.confidencialidad = {
   key(role){ const u=(CX.session.user&&CX.session.user.name)||'demo'; return 'cx_nda_'+role+'_'+u.replace(/\s+/g,'_'); },
   pending(role){ try{ return !localStorage.getItem(this.key(role)); }catch(e){ return false; } },
-  accept(role){ try{ localStorage.setItem(this.key(role), new Date().toISOString()); }catch(e){} },
+  accept(role){ try{ localStorage.setItem(this.key(role), new Date().toISOString());
+    /* #201 — registro de auditoría: quién, rol, versión y fecha */
+    const u=(CX.session.user&&CX.session.user.name)||'demo';
+    let log=[]; try{log=JSON.parse(localStorage.getItem('cx_nda_log')||'[]');}catch(e){}
+    log.unshift({usuario:u,rol:role,version:this.version(role),fecha:new Date().toISOString()});
+    localStorage.setItem('cx_nda_log',JSON.stringify(log.slice(0,500)));
+  }catch(e){} },
+  /* #201 — versionado: al editar el texto sube la versión y se re-pide aceptación */
+  version(role){ try{const v=JSON.parse(localStorage.getItem('cx_nda_ver')||'{}');return v[role]||1;}catch(e){return 1;} },
+  bumpVersion(role){ let v={}; try{v=JSON.parse(localStorage.getItem('cx_nda_ver')||'{}');}catch(e){} v[role]=(v[role]||1)+1; try{localStorage.setItem('cx_nda_ver',JSON.stringify(v));}catch(e){} },
+  auditLog(){ try{return JSON.parse(localStorage.getItem('cx_nda_log')||'[]');}catch(e){return [];} },
   /* textos EDITABLES por la consultora (persistentes) */
   _defaults(){ return {
     shopper:'Como evaluador, me comprometo a mantener absoluta <b>confidencialidad</b> sobre los proyectos, clientes, sucursales evaluadas y resultados. No divulgaré mi condición de evaluador durante las visitas ni compartiré información de las evaluaciones con terceros.',
@@ -57,7 +67,7 @@ CX.confidencialidad = {
     cliente:'Como usuario del portal del cliente, me comprometo a tratar con <b>confidencialidad</b> los resultados, evaluaciones y datos de mis sucursales y personal, conforme al acuerdo con la consultora.'};
   },
   text(role){ try{ const s=JSON.parse(localStorage.getItem('cx_nda_text')||'null'); if(s&&s[role])return s[role]; }catch(e){} return this._defaults()[role]||this._defaults().admin; },
-  setText(role, txt){ let s={}; try{ s=JSON.parse(localStorage.getItem('cx_nda_text')||'{}'); }catch(e){} s[role]=txt; try{ localStorage.setItem('cx_nda_text',JSON.stringify(s)); }catch(e){} },
+  setText(role, txt){ let s={}; try{ s=JSON.parse(localStorage.getItem('cx_nda_text')||'{}'); }catch(e){} s[role]=txt; try{ localStorage.setItem('cx_nda_text',JSON.stringify(s)); }catch(e){} this.bumpVersion(role); },
   show(role, onDone){
     const texto = this.text(role);
     const ov=document.createElement('div'); ov.className='cx-ov'; ov.style.zIndex='9500';

@@ -417,7 +417,7 @@ CX.module('crm', ({data,ui})=>{
         <div class="flex" style="gap:8px"><button class="btn btn-soft btn-sm" id="hubMail">✉️ Enviar correo</button></div>
         ${esCliente()?`<button class="btn btn-pr btn-sm" id="hubVerCli">Ver en Clientes →</button>`:`<button class="btn btn-green btn-sm" id="hubCrearCli">＋ Convertir en Cliente</button>`}
       </div>`,
-    {wide:true,onMount:(ov,close)=>{
+    {full:true,onMount:(ov,close)=>{
       ov.__close=close;
       draw360(ov);
       ov.querySelector('#hubMail')?.addEventListener('click',()=>{const ct=cts()[0];window.open('mailto:'+(ct?ct.email:''),'_blank');});

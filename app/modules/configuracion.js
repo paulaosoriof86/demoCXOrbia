@@ -324,7 +324,7 @@ CX.module('config', ({data,ui})=>{
   const draw=()=>{
     host.innerHTML=`${ui.ph('Configuración', 'Centro de autoadministración · personaliza TODA la plataforma sin tocar código')}
     <div class="flex wrap" style="gap:6px;margin-bottom:14px">
-      ${['centro','marca','plan','paises','nda'].map(t=>`<button class="btn btn-sm ${_cfgTab===t?'btn-pr':'btn-ghost'}" data-tab="${t}">${{centro:'🎛️ Centro',marca:'🎨 Marca',plan:'📦 Plan',paises:'🌍 Países',nda:'📜 NDA'}[t]}</button>`).join('')}
+      ${['centro','marca','plan','paises','listas','nda'].map(t=>`<button class="btn btn-sm ${_cfgTab===t?'btn-pr':'btn-ghost'}" data-tab="${t}">${{centro:'🎛️ Centro',marca:'🎨 Marca',plan:'📦 Plan',paises:'🌍 Países',listas:'📋 Listas',nda:'📜 NDA'}[t]}</button>`).join('')}
     </div>
     <div id="cfgBody"></div>`;
     host.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{_cfgTab=b.dataset.tab;drawTab();}));
@@ -334,10 +334,31 @@ CX.module('config', ({data,ui})=>{
   const drawTab=()=>{
     const body=host.querySelector('#cfgBody'); if(!body)return;
     if(_cfgTab==='centro') drawCentro(body);
+    else if(_cfgTab==='listas') drawListas(body);
     else if(_cfgTab==='marca') drawMarca(body);
     else if(_cfgTab==='plan') drawPlan(body);
     else if(_cfgTab==='paises') drawPaises(body);
     else if(_cfgTab==='nda') drawNDA(body);
+  };
+
+  /* #175 — Listas/catálogos administrables (alimentan dropdowns de toda la plataforma) */
+  const drawListas=(body)=>{
+    const K='cx_listas';
+    const defs={rubros:['Retail','Banca','Restaurantes','Salud','Telecom','Automotriz','Seguros','Combustibles'],tiposVisita:['Mystery presencial','Mystery Calling','Auditoría de imagen','Experiencia digital'],canales:['Tienda física','App móvil','Teléfono','Web','Delivery'],conceptosFin:['Anticipo','Honorario shopper','Comisión','Facturación','Remesa','Reembolso','Financiamiento'],estadosAccion:['Abierto','En curso','Cerrado']};
+    const get=()=>{try{return Object.assign({},defs,JSON.parse(localStorage.getItem(K)||'{}'));}catch(e){return defs;}};
+    const save=(o)=>{try{localStorage.setItem(K,JSON.stringify(o));}catch(e){}};
+    const titles={rubros:'🏢 Rubros / Industrias',tiposVisita:'🎯 Tipos de visita',canales:'📡 Canales',conceptosFin:'💰 Conceptos financieros',estadosAccion:'🎬 Estados de acción'};
+    const render=()=>{const data=get();
+      body.innerHTML=`<div class="card card-p" style="margin-bottom:12px;background:var(--brand-light);border-color:#cfe6f7"><div style="font-size:13px;color:var(--brand-dark)">📋 Estas listas alimentan los menús desplegables de toda la plataforma. Edítalas sin tocar código.</div></div>
+        <div class="grid g2" style="gap:14px">${Object.keys(titles).map(key=>`
+          <div class="card card-p"><div class="card-t" style="margin-bottom:10px">${titles[key]}</div>
+            <div>${data[key].map((v,i)=>`<div class="between" style="padding:5px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12.5px">${v}</span><button class="btn btn-ghost btn-sm" data-del="${key}:${i}" style="color:var(--red);padding:1px 7px">✕</button></div>`).join('')}</div>
+            <div class="flex" style="gap:6px;margin-top:8px"><input class="inp" id="add-${key}" placeholder="Agregar…" style="flex:1;padding:5px 9px"><button class="btn btn-soft btn-sm" data-add="${key}">＋</button></div>
+          </div>`).join('')}</div>`;
+      body.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{const key=b.dataset.add;const inp=body.querySelector('#add-'+key);const val=(inp.value||'').trim();if(!val)return;const o=get();o[key]=[...o[key],val];save(o);render();ui.toast('Agregado a '+titles[key],'ok');}));
+      body.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{const [key,i]=b.dataset.del.split(':');const o=get();o[key]=o[key].filter((_,x)=>x!=+i);save(o);render();ui.toast('Eliminado','');}));
+    };
+    render();
   };
 
   /* Centro de autoadministración: mapa completo de TODO lo editable */

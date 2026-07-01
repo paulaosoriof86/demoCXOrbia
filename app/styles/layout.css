@@ -178,6 +178,22 @@ body.role-shopper .ph-t{font-size:22px}
 [data-rail="graylight"] .nav-i.active{background:#fff;color:var(--brand-dark);border-left:3px solid var(--brand);font-weight:700}
 [data-rail="graylight"] .rail-brand,[data-rail="graylight"] .rail-proj,[data-rail="graylight"] .rail-foot{border-color:#cfd4dc}
 
+/* ---------- Impresión / PDF limpio (#203): oculta chrome, deja solo el contenido ---------- */
+@media print {
+  .rail, .topbar, .scrim, .collapse-btn, .menu-btn,
+  .tb-bell, .tb-noti, .tb-client-logo, .rail-logout,
+  [data-no-print], .cx-ov-actions, .btn { display: none !important; }
+  .canvas { margin-left: 0 !important; }
+  .content { padding: 0 !important; max-width: none !important; }
+  .view { animation: none !important; }
+  body, .canvas, .content { background: #fff !important; }
+  .card, .card-p { box-shadow: none !important; border: 1px solid #e2e8f0 !important; break-inside: avoid; }
+  .cx-ov { position: static !important; background: #fff !important; }
+  .cx-ov .cx-modal, .cx-ov .modal { box-shadow: none !important; max-height: none !important; width: 100% !important; }
+  a[href]:after { content: ""; }
+  @page { margin: 14mm; }
+}
+
 /* Logo del cliente (imagen) en login y rail */
 .client-logo{max-height:46px;max-width:150px;object-fit:contain}
 .login-devfor{text-align:center;font-size:10.5px;color:var(--t3);margin-top:2px;letter-spacing:.2px}
