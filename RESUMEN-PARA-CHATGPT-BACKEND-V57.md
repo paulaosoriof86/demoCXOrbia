@@ -7,14 +7,17 @@
 - Backend DEV preservado: config, preview, Firebase adapter, finance benefits, finance read bridge, operational actions, preview status, bulletins, `firebase/**`.
 - `app/index.html` no activa backend global.
 - `app/index-backend-dev.html` carga backend DEV y debe usarse solo para preview.
-- Badge preview: muestra fuente honesta (`firestore`, `localStorage/demo` o `pending`), Auth, tenant, proyecto, conteos y ultimo error.
+- Preview soporta helper local no versionado `app/core/backend-dev-auth.local.js`; está ignorado por git y sirve para resolver Auth DEV sin prompt de navegador.
+- `firebase/auth-dev-tools/create-preview-auth-local.cjs` genera el helper local desde variables locales, sin subir credenciales al repo.
+- `firebase/client-write-tools/validate-preview-v57-static.mjs` valida separación entre index normal y preview backend.
+- Badge preview: muestra fuente honesta (`firestore`, `localStorage/demo` o `pending`), Auth, tenant, proyecto, conteos y último error.
 - `backend-bulletins` lee Firestore y alimenta `CX.notif` sin tocar `modules/tablon.js`.
-- `bulletinReads` persiste leido/no leido por usuario.
-- Creacion de novedades disponible en preview DEV mediante `CX.backendBulletins.createBulletin`.
+- `bulletinReads` persiste leído/no leído por usuario.
+- Creación de novedades disponible en preview DEV mediante `CX.backendBulletins.createBulletin`.
 - Reglas Firestore preparadas localmente para `bulletins` y `bulletinReads`; no publicadas.
 - Dry-run/validator bulletins: OK.
-- Validacion de reglas via emulador: pendiente por falta de Java en PATH.
-- No deploy, no Hosting, no merge, no produccion.
+- Validación de reglas vía emulador: pendiente por falta de Java en PATH.
+- No deploy, no Hosting, no merge, no producción.
 
 Resumen técnico de backend requerido por el prototipo V57.
 
@@ -80,6 +83,8 @@ Stores/áreas a mapear:
 /tenants/{tenantId}/automationTemplates/{templateId}
 /tenants/{tenantId}/integrationSettings/{integrationId}
 /tenants/{tenantId}/auditLog/{eventId}
+/tenants/{tenantId}/bulletins/{bulletinId}
+/tenants/{tenantId}/bulletinReads/{readId}
 ```
 
 ## Gate de la siguiente fase
