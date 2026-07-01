@@ -363,6 +363,10 @@ Responde SOLO con JSON válido con este formato exacto:
         <div><label class="lbl">Aplica a</label><input class="inp" id="setupAplica" placeholder="Ej: Marca Premium, Cadena Norte, Todas las sucursales"></div>
         <div><label class="lbl">Tipo de visita</label><select class="sel" id="setupTipo"><option>Mystery Shopping presencial</option><option>Mystery Calling</option><option>Auditoría de imagen</option><option>Mystery Online / Digital</option></select></div>
       </div>
+      <label class="lbl">¿Qué ítems del set-up generar?</label>
+      <div class="flex wrap" style="gap:10px;margin:6px 0 12px">
+        ${[['instructivo','📄 Instructivo'],['cuestionario','🧩 Cuestionario'],['certificacion','🏅 Certificación'],['ruta','🗺️ Hoja de ruta'],['evidencias','📸 Evidencias']].map(([v,l])=>`<label class="flex" style="gap:6px;font-size:12.5px;cursor:pointer;border:1px solid var(--border);border-radius:8px;padding:5px 10px"><input type="checkbox" class="setupItem" value="${v}" ${v==='cuestionario'?'checked':''}> ${l}</label>`).join('')}
+      </div>
       <div style="text-align:right"><button class="btn btn-green btn-sm" id="setupGo">✨ Generar set-up con IA</button></div>
     </div>
     <div id="setupResult"></div>`;
@@ -375,7 +379,8 @@ Responde SOLO con JSON válido con este formato exacto:
         body.querySelector('#setupResult').innerHTML=`
         <div class="card card-p">
           <div class="card-h"><div class="card-t">✅ Set-up generado${aplica?' · '+aplica:''}</div><span style="font-size:11.5px;color:var(--t3)">${tipo}</span></div>
-          <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">La IA propuso ${secs.length} secciones con pesos. Revisa, ajusta y aplica al proyecto.</p>
+          <div style="margin-bottom:10px">Ítems: ${[...body.querySelectorAll('.setupItem:checked')].map(c=>'<span class="bdg bdg-g">'+c.parentElement.textContent.trim()+'</span>').join(' ')||'<span class="bdg bdg-n">Cuestionario</span>'}</div>
+          <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">La IA propuso ${secs.length} secciones con pesos. Cada ítem es editable a profundidad en su módulo.</p>
           <table class="tbl" style="margin-bottom:14px"><thead><tr><th>Sección</th><th>Peso</th><th>Preguntas propuestas</th></tr></thead>
           <tbody>${secs.map(([n,w,qs])=>`<tr><td><b>${n}</b></td><td>${w}%</td><td style="font-size:11.5px;color:var(--t3)">${qs.join(' · ')}</td></tr>`).join('')}</tbody></table>
           <div style="text-align:right;display:flex;gap:8px;justify-content:flex-end">

@@ -333,13 +333,42 @@ CX.module('cli_acciones', ({ui})=>{
     const f=window.__cliAccFilter||'';
     const L=f?acc.filter(a=>a.tipo===f):acc;
     const card=(a)=>{ const m=M[a.tipo]||{label:a.tipo,icon:'•',tone:'n'};
-      return `<div class="card card-p" style="border-left:4px solid var(--${m.tone==='n'?'border':m.tone==='g'?'green':m.tone==='b'?'brand':m.tone==='a'?'amber':'red'})">
+      return `<div class="card card-p accCard" data-acc="${a.id}" style="cursor:pointer;border-left:4px solid var(--${m.tone==='n'?'border':m.tone==='g'?'green':m.tone==='b'?'brand':m.tone==='a'?'amber':'red'})">
         <div class="between" style="gap:10px;flex-wrap:wrap">
           <div style="flex:1;min-width:0"><div class="flex" style="gap:8px"><span>${m.icon}</span><b style="font-size:13.5px">${a.titulo}</b></div>
             <div style="font-size:12px;color:var(--t2);margin-top:4px">${a.detalle||''}</div>
-            <div class="flex" style="gap:8px;margin-top:8px;flex-wrap:wrap">${ui.bdg(m.label,m.tone)} ${ui.bdg(a.sucursal||'—','n')} <span style="font-size:11px;color:var(--t3)">${a.responsable||''} · ${a.fecha||''}</span></div>
+            <div class="flex" style="gap:8px;margin-top:8px;flex-wrap:wrap">${ui.bdg(m.label,m.tone)} ${ui.bdg(a.sucursal||'—','n')} <span style="font-size:11px;color:var(--t3)">${a.responsable||''} · ${a.limite||a.fecha||''}</span>${(a.coment&&a.coment.length)?`<span style="font-size:11px;color:var(--t3)">💬 ${a.coment.length}</span>`:''}</div>
           </div>${ui.bdg(a.estado||'Abierto', a.estado==='En curso'?'a':a.estado==='Cerrado'?'g':'b')}</div></div>`; };
-    document.getElementById('accList').innerHTML=L.length?L.map(card).join(''):CX.ui.empty('🎯','Sin acciones en esta categoría.');
+    const host=document.getElementById('accList');
+    host.innerHTML=L.length?L.map(card).join(''):CX.ui.empty('🎯','Sin acciones en esta categoría.');
+    host.querySelectorAll('.accCard').forEach(c=>c.addEventListener('click',()=>{
+      const a=C.acciones(p).find(x=>x.id===c.dataset.acc); if(!a)return; const m=M[a.tipo]||{label:a.tipo,icon:'•'};
+      CX.ui.modal(m.icon+' '+a.titulo,`
+        <div style="font-size:12.5px;line-height:1.9;color:var(--t2);margin-bottom:10px">
+          <div><b>Tipo:</b> ${m.label} · <b>Sucursal:</b> ${a.sucursal||'—'}</div>
+          <div><b>Responsable:</b> ${a.responsable||'—'} · <b>Límite:</b> ${a.limite||a.fecha||'—'}</div>
+        </div>
+        <div style="font-size:13px;color:var(--t1);background:var(--panel-2);border-radius:9px;padding:10px 12px;margin-bottom:12px">${a.detalle||'Sin detalle.'}</div>
+        <div class="grid g2" style="gap:10px;margin-bottom:12px">
+          <div><label class="lbl">Estado</label><select class="sel" id="acEst">${['Abierto','En curso','Cerrado'].map(s=>`<option ${(a.estado||'Abierto')===s?'selected':''}>${s}</option>`).join('')}</select></div>
+          <div><label class="lbl">Evidencia</label><input type="file" class="inp" id="acEvi" style="padding:6px"></div>
+        </div>
+        <div class="card-t" style="font-size:12px;margin-bottom:6px">💬 Seguimiento (${(a.coment||[]).length})</div>
+        <div style="max-height:120px;overflow:auto;margin-bottom:8px">${(a.coment||[]).length?a.coment.map(co=>`<div style="font-size:12px;padding:5px 0;border-bottom:1px solid var(--border-2)"><b>${co.por||'—'}</b> <span style="color:var(--t3);font-size:10.5px">${co.fecha||''}</span><div style="color:var(--t2)">${co.txt}</div></div>`).join(''):'<div style="font-size:12px;color:var(--t3)">Sin comentarios.</div>'}</div>
+        <textarea class="inp" id="acCom" rows="2" placeholder="Agregar comentario de seguimiento…" style="margin-bottom:10px"></textarea>
+        <div class="between"><button class="btn btn-soft btn-sm" id="acExp">🖨 Exportar PDF</button><button class="btn btn-pr btn-sm" id="acSave">Guardar</button></div>
+      `,{onMount:(ov,close)=>{
+        ov.querySelector('#acExp').addEventListener('click',()=>window.print());
+        ov.querySelector('#acSave').addEventListener('click',()=>{
+          a.estado=ov.querySelector('#acEst').value;
+          const evi=ov.querySelector('#acEvi').files[0]; if(evi)a.evidencia=evi.name;
+          const com=(ov.querySelector('#acCom').value||'').trim();
+          if(com){a.coment=a.coment||[];a.coment.unshift({txt:com,por:(CX.session.user&&CX.session.user.name)||'Cliente',fecha:new Date().toISOString().slice(0,10)});}
+          if(C.saveAcciones)C.saveAcciones(p); else if(CX.bus)CX.bus.emit('cli');
+          close();render();CX.ui.toast('Acción actualizada','ok');
+        });
+      }});
+    }));
   };
   setTimeout(()=>{ CX.cliUI.wirePersona();
     document.getElementById('accNew').addEventListener('click',()=>CX.cliUI.accionModal({}));

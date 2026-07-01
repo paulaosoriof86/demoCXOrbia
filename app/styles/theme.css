@@ -170,6 +170,8 @@ a{color:inherit;text-decoration:none}
 /* ---------- Modal ---------- */
 .cx-ov{position:fixed;inset:0;background:rgba(13,39,64,.5);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:8000;padding:24px;animation:tin .2s ease}
 .cx-modal{background:#fff;border-radius:18px;box-shadow:var(--sh-lg);width:min(560px,96vw);max-height:90vh;overflow:auto}
+.cx-modal-wide{width:min(920px,96vw)}
+.cx-modal-full{width:96vw;height:92vh;max-height:92vh}
 .cx-modal-h{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;z-index:2}
 .cx-modal-b{padding:20px 22px}
 

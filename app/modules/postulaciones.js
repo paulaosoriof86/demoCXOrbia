@@ -101,7 +101,8 @@ CX.module('postulaciones', ({data,ui})=>{
     document.querySelectorAll('#poKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=poKp[el.dataset.k];poList(d[0],d[1]);}));
     const gestor=()=>(CX.session.user&&CX.session.user.name)||'Equipo';
     const act=(id,label,tone,extra)=>{const el=document.querySelector(`[data-pid="${id}"]`);if(!el)return;
-      const x=posts.find(z=>z.id===id); if(x){x.estado=(tone==='green'?'aprobada':tone==='amber'?'standby':'rechazada');x.gestionadoPor=gestor();}
+      const x=posts.find(z=>z.id===id); if(x){x.estado=(tone==='green'?'aprobada':tone==='amber'?'standby':'rechazada');x.gestionadoPor=gestor();
+        CX.automations&&CX.automations.logAction(label.replace(/[^\wáéíóúñ ]/gi,'').trim(),x.visitaId||x.id,(x.shopper||'')+' · '+(x.sucursal||''));}
       el.querySelector('div[style*="flex-direction:column"]').innerHTML=`<div style="background:var(--${tone}-bg);border-radius:9px;padding:8px 14px;text-align:center"><div style="font-size:12px;font-weight:700;color:var(--${tone})">${label}</div><div style="font-size:10px;color:var(--t3)">por ${gestor()}</div></div>`;
       // marca trazabilidad en el cuerpo y "saca de pendientes" visualmente
       el.style.opacity=tone==='green'?'1':'.7';

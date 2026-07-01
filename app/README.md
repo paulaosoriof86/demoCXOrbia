@@ -28,9 +28,9 @@ No requiere build ni instalación. Es HTML/CSS/JS plano.
 # opción 1 — abrir directo
 abre app/index.html en el navegador
 
-# opción 2 — servidor local (recomendado, evita restricciones de file://)
+# opción 2 — servidor local con Node (recomendado, evita restricciones de file://)
 cd cxorbia
-python3 -m http.server 8080
+node ../firebase/client-write-tools/local-static-server.mjs
 # luego abre http://localhost:8080/
 ```
 

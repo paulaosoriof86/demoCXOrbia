@@ -178,5 +178,41 @@ CX.manualesData = {
         {t:'4 · Capacitación y reportes', html:`<h2>Mejorar continuamente</h2><p>Solicita capacitación dirigida a tus áreas débiles. Genera y exporta reportes. Pide soporte directamente desde el portal.</p>`},
       ]
     },
+    {
+      id:'m_automatizaciones', rol:'admin', ic:'⚡', titulo:'Manual de Automatizaciones',
+      desc:'Motor de eventos, catálogo completo, configuración con Make, plantillas y variables, canales y escenarios recomendados.',
+      secciones:[
+        {t:'1 · Qué es una automatización', html:`<h2>Trabajo que ocurre solo</h2><p>Una automatización es una regla que dispara una acción cuando pasa algo, sin ejecutarla manualmente. Cuando un evento del flujo ocurre (visita asignada, pago procesado, visita atrasada), la plataforma notifica, registra o dispara un proceso externo automáticamente.</p>`},
+        {t:'2 · El modelo de eventos', html:`<h2>Cómo funciona por dentro</h2><p>CXOrbia no envía mensajes directamente: cada acción <b>emite un evento</b> (<code>CX.automations.fire</code>) que hace un POST al webhook de Make del tenant con un payload JSON completo. Desde Make decides destino y contenido. Así cambias la lógica sin tocar la plataforma.</p>`},
+        {t:'3 · Catálogo de eventos', html:`<h2>Eventos disponibles</h2><ul><li><b>postulacion</b> → equipo</li><li><b>aprobacion</b> → shopper</li><li><b>agenda</b> → equipo</li><li><b>realizada</b> → equipo</li><li><b>cuestionario</b> → equipo/QA</li><li><b>reprog</b> → shopper</li><li><b>pago</b> → shopper</li><li><b>atraso</b> → shopper + equipo</li><li><b>recert</b> → shopper</li><li><b>soporte_estado</b> → solicitante</li></ul>`},
+        {t:'4 · Configurar paso a paso', html:`<h2>Ruta: Configuración → Automatizaciones</h2><ol><li>Crea el escenario en Make (Custom webhook) y copia la URL.</li><li>Pega el webhook en CXOrbia y guarda.</li><li>Activa los eventos, elige canal y edita la plantilla.</li><li>Prueba el disparo y mapea los campos en Make.</li><li>Ramifica a WhatsApp/correo/Sheets.</li></ol><p>Todo autoadministrable, sin código.</p>`},
+        {t:'5 · Plantillas y variables', html:`<h2>Mensajes con datos reales</h2><p>Usa variables entre llaves: <code>{shopper}</code>, <code>{sucursal}</code>, <code>{fecha}</code>, <code>{estado}</code>, <code>{score}</code>, <code>{monto}</code>. Ejemplo: "Hola {shopper}, tu visita a {sucursal} fue aprobada. Agenda tu fecha en la app."</p>`},
+        {t:'6 · Canales y escenarios', html:`<h2>A dónde va cada evento</h2><p>Canales: in-app (siempre), WhatsApp (vía Make, mayor apertura), correo (formal), Google Sheets (auditoría). Escenarios recomendados: visita asignada → WhatsApp; recordatorio de agenda → WhatsApp+push; atraso → alerta equipo + shopper; lote pagado → notificación con monto.</p>`},
+      ]
+    },
+    {
+      id:'m_addons', rol:'admin', ic:'🧩', titulo:'Manual de Add-ons y valor agregado',
+      desc:'Cada módulo opcional a fondo: qué resuelve, cómo se activa, cómo se factura, qué valor entrega y cómo venderlo.',
+      secciones:[
+        {t:'1 · Cómo funcionan', html:`<h2>Modelo comercial</h2><p>Los add-ons son capacidades opcionales que la consultora activa por cliente o plan. No están en el precio base — se cotizan aparte. El cliente los solicita desde su portal → llega como lead al CRM → se cotiza → se activa. Niveles: Core (todos los planes), Pro (cotizable), Enterprise (infraestructura dedicada).</p>`},
+        {t:'2 · Evidencia geolocalizada', html:`<h2>📍 Foto + GPS + timestamp</h2><p>Elimina el fraude de visitas fantasma. Se activa por proyecto; el shopper captura foto con coordenadas y hora dentro del cuestionario. Se factura por volumen. Valor: confianza total y auditable.</p>`},
+        {t:'3 · Evidencia multimedia', html:`<h2>🎥 Video / audio</h2><p>Captura tono y detalle imposible de transcribir. Requiere Storage conectado. Solo donde la ley lo permite y sin revelar identidad. Ideal para experiencia al cliente.</p>`},
+        {t:'4 · NPS y benchmarking', html:`<h2>📊 Voz del cliente y comparación</h2><p><b>NPS:</b> complementa el mystery shopping con la percepción del cliente real. <b>Benchmarking:</b> compara el score vs. el promedio anónimo del sector — fuerte diferenciador de venta (Enterprise).</p>`},
+        {t:'5 · Capacitación y marketing', html:`<h2>🎓 Cerrar el ciclo</h2><p><b>Capacitación del personal:</b> el programa detecta la brecha, la consultora capacita justo ahí. <b>Marketing:</b> genera piezas con IA (Canva/Gamma/HeyGen) sin equipo de diseño.</p>`},
+        {t:'6 · Cómo vender un add-on', html:`<h2>Flujo comercial</h2><ol><li>El cliente lo solicita desde su portal.</li><li>Llega como lead al CRM con contexto.</li><li>Se cotiza con la calculadora de costos.</li><li>Se activa en Configuración → Add-ons.</li><li>Se factura en el siguiente ciclo y alimenta KPIs y la ficha 360.</li></ol>`},
+      ]
+    },
+    {
+      id:'m_integraciones', rol:'admin', ic:'🔌', titulo:'Manual de Integraciones',
+      desc:'Cada integración a fondo: qué hace, cómo se configura, qué módulos alimenta, su estado y su valor.',
+      secciones:[
+        {t:'1 · Patrón de configuración', html:`<h2>Cómo se configura cualquiera</h2><p>Configuración → Integraciones → busca la integración → ⚙️ Config → pega credenciales → Probar conexión → Guardar y activar. Estados: 🟢 funciona en prototipo · 🟡 requiere backend · 🔵 según plan.</p>`},
+        {t:'2 · Comunicación', html:`<h2>💬 WhatsApp y ✉️ Correo</h2><p><b>WhatsApp:</b> vía Make (Twilio/360dialog/Meta) o wa.me manual. Alimenta automatizaciones, KPIs, soporte. Apertura ~98% en LatAm. <b>Correo:</b> OAuth Outlook/Gmail. Alimenta el módulo Correo (bandeja + trazabilidad) y el CRM.</p>`},
+        {t:'3 · Automatización y datos', html:`<h2>🔗 Make/Zapier/n8n · 📗 Sheets · 🗂️ Storage</h2><p><b>Make:</b> orquestador central de eventos. <b>Google Sheets:</b> HR viva con lectura/escritura sin duplicar. <b>Storage:</b> evidencias, logos y documentos segmentados por proyecto.</p>`},
+        {t:'4 · Inteligencia artificial', html:`<h2>✨ Gemini / ChatGPT / Claude / propio</h2><p>Configuración → Asistente de IA → elige proveedor → pega API key → activa. Alimenta importadores, set-up, cuestionarios, certificaciones, documentos, análisis y marketing. Funciona ya con tu API key. Eliges el modelo por costo/beneficio, sin quedar atada.</p>`},
+        {t:'5 · Marketing y facturación', html:`<h2>🎨 Contenido · 🧾 Facturación</h2><p><b>Canva/Gamma/HeyGen y Metricool:</b> alimentan el módulo Marketing. <b>Facturación electrónica (FEL/DIAN) y banca:</b> Enterprise, requieren backend seguro; alimentan Finanzas.</p>`},
+        {t:'6 · Seguridad en producción', html:`<h2>🔒 Nota crítica</h2><p>Las API keys y secretos NUNCA se guardan en el navegador. En producción van en el backend. En el prototipo se guardan localmente solo para demostrar el flujo; "Probar conexión" es simulación hasta conectar el backend.</p>`},
+      ]
+    },
   ],
 };

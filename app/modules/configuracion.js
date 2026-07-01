@@ -324,7 +324,7 @@ CX.module('config', ({data,ui})=>{
   const draw=()=>{
     host.innerHTML=`${ui.ph('Configuración', 'Centro de autoadministración · personaliza TODA la plataforma sin tocar código')}
     <div class="flex wrap" style="gap:6px;margin-bottom:14px">
-      ${['centro','marca','plan','paises','nda'].map(t=>`<button class="btn btn-sm ${_cfgTab===t?'btn-pr':'btn-ghost'}" data-tab="${t}">${{centro:'🎛️ Centro',marca:'🎨 Marca',plan:'📦 Plan',paises:'🌍 Países',nda:'📜 NDA'}[t]}</button>`).join('')}
+      ${['centro','marca','plan','paises','listas','nda'].map(t=>`<button class="btn btn-sm ${_cfgTab===t?'btn-pr':'btn-ghost'}" data-tab="${t}">${{centro:'🎛️ Centro',marca:'🎨 Marca',plan:'📦 Plan',paises:'🌍 Países',listas:'📋 Listas',nda:'📜 NDA'}[t]}</button>`).join('')}
     </div>
     <div id="cfgBody"></div>`;
     host.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{_cfgTab=b.dataset.tab;drawTab();}));
@@ -334,10 +334,31 @@ CX.module('config', ({data,ui})=>{
   const drawTab=()=>{
     const body=host.querySelector('#cfgBody'); if(!body)return;
     if(_cfgTab==='centro') drawCentro(body);
+    else if(_cfgTab==='listas') drawListas(body);
     else if(_cfgTab==='marca') drawMarca(body);
     else if(_cfgTab==='plan') drawPlan(body);
     else if(_cfgTab==='paises') drawPaises(body);
     else if(_cfgTab==='nda') drawNDA(body);
+  };
+
+  /* #175 — Listas/catálogos administrables (alimentan dropdowns de toda la plataforma) */
+  const drawListas=(body)=>{
+    const K='cx_listas';
+    const defs={rubros:['Retail','Banca','Restaurantes','Salud','Telecom','Automotriz','Seguros','Combustibles'],tiposVisita:['Mystery presencial','Mystery Calling','Auditoría de imagen','Experiencia digital'],canales:['Tienda física','App móvil','Teléfono','Web','Delivery'],conceptosFin:['Anticipo','Honorario shopper','Comisión','Facturación','Remesa','Reembolso','Financiamiento'],estadosAccion:['Abierto','En curso','Cerrado']};
+    const get=()=>{try{return Object.assign({},defs,JSON.parse(localStorage.getItem(K)||'{}'));}catch(e){return defs;}};
+    const save=(o)=>{try{localStorage.setItem(K,JSON.stringify(o));}catch(e){}};
+    const titles={rubros:'🏢 Rubros / Industrias',tiposVisita:'🎯 Tipos de visita',canales:'📡 Canales',conceptosFin:'💰 Conceptos financieros',estadosAccion:'🎬 Estados de acción'};
+    const render=()=>{const data=get();
+      body.innerHTML=`<div class="card card-p" style="margin-bottom:12px;background:var(--brand-light);border-color:#cfe6f7"><div style="font-size:13px;color:var(--brand-dark)">📋 Estas listas alimentan los menús desplegables de toda la plataforma. Edítalas sin tocar código.</div></div>
+        <div class="grid g2" style="gap:14px">${Object.keys(titles).map(key=>`
+          <div class="card card-p"><div class="card-t" style="margin-bottom:10px">${titles[key]}</div>
+            <div>${data[key].map((v,i)=>`<div class="between" style="padding:5px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12.5px">${v}</span><button class="btn btn-ghost btn-sm" data-del="${key}:${i}" style="color:var(--red);padding:1px 7px">✕</button></div>`).join('')}</div>
+            <div class="flex" style="gap:6px;margin-top:8px"><input class="inp" id="add-${key}" placeholder="Agregar…" style="flex:1;padding:5px 9px"><button class="btn btn-soft btn-sm" data-add="${key}">＋</button></div>
+          </div>`).join('')}</div>`;
+      body.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{const key=b.dataset.add;const inp=body.querySelector('#add-'+key);const val=(inp.value||'').trim();if(!val)return;const o=get();o[key]=[...o[key],val];save(o);render();ui.toast('Agregado a '+titles[key],'ok');}));
+      body.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{const [key,i]=b.dataset.del.split(':');const o=get();o[key]=o[key].filter((_,x)=>x!=+i);save(o);render();ui.toast('Eliminado','');}));
+    };
+    render();
   };
 
   /* Centro de autoadministración: mapa completo de TODO lo editable */
@@ -502,13 +523,103 @@ CX.module('config', ({data,ui})=>{
   };
 
   const drawNDA=(body)=>{
-    const nda=CX.BRAND&&CX.BRAND.nda||'Al acceder a esta plataforma, confirmas que has leído y aceptas los términos de confidencialidad y uso de datos.';
-    body.innerHTML=`<div class="card card-p">
-      <div class="card-t" style="margin-bottom:10px">NDA / Acuerdo de confidencialidad</div>
-      <textarea class="inp" id="cfg_nda" rows="6">${nda}</textarea>
-      <div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="saveNDA">Guardar NDA</button></div>
-    </div>`;
-    body.querySelector('#saveNDA')?.addEventListener('click',()=>{if(!CX.BRAND)CX.BRAND={};CX.BRAND.nda=body.querySelector('#cfg_nda').value;ui.toast('NDA actualizado','ok');});
+    const roles=[
+      ['super','Super / administrador principal'],
+      ['admin','Admin del proyecto'],
+      ['ops','Operaciones'],
+      ['coordinador','Coordinador / representante regional'],
+      ['aliado','Aliado / franquiciado'],
+      ['representante','Representante comercial'],
+      ['socio','Socio'],
+      ['cliente','Cliente'],
+      ['shopper','Shopper / evaluador']
+    ];
+    const api=CX.confidencialidad;
+    const esc=(v)=>String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    const version=(r)=>api&&api.version?api.version(r):1;
+    const text=(r)=>api&&api.text?api.text(r):'Al acceder a esta plataforma, confirmas que has leido y aceptas los terminos de confidencialidad y uso de datos.';
+    const audit=()=>api&&api.auditLog?api.auditLog():[];
+
+    body.innerHTML=`
+      <div class="card card-p">
+        <div class="between" style="margin-bottom:10px">
+          <div>
+            <div class="card-t">NDA / Confidencialidad por rol</div>
+            <div class="muted" style="font-size:12px;margin-top:4px">Cada rol puede tener texto, version y aceptacion propia. Al guardar, se sube la version y se vuelve a pedir aceptacion.</div>
+          </div>
+          <span class="bdg bdg-b">Legal · por rol</span>
+        </div>
+
+        <div class="grid g2" style="gap:12px;margin-bottom:12px">
+          <div>
+            <label class="lbl">Rol</label>
+            <select class="sel" id="cfg_nda_role">
+              ${roles.map(r=>`<option value="${r[0]}">${r[1]} · v${version(r[0])}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="lbl">Version actual</label>
+            <input class="inp" id="cfg_nda_ver" disabled>
+          </div>
+        </div>
+
+        <label class="lbl">Texto del acuerdo para el rol seleccionado</label>
+        <textarea class="inp" id="cfg_nda_text" rows="9"></textarea>
+
+        <div class="flex wrap" style="gap:8px;justify-content:flex-end;margin-top:10px">
+          <button class="btn btn-ghost btn-sm" id="previewNDA">Vista previa</button>
+          <button class="btn btn-pr btn-sm" id="saveNDA">Guardar NDA por rol</button>
+        </div>
+
+        <div class="card card-p" style="margin-top:14px;background:var(--panel-2)">
+          <div class="card-t" style="font-size:13px;margin-bottom:8px">Historial de aceptaciones</div>
+          <div id="ndaAudit" style="max-height:180px;overflow:auto;font-size:12px;color:var(--t2)"></div>
+        </div>
+      </div>`;
+
+    const roleSel=body.querySelector('#cfg_nda_role');
+    const ta=body.querySelector('#cfg_nda_text');
+    const ver=body.querySelector('#cfg_nda_ver');
+    const aud=body.querySelector('#ndaAudit');
+
+    const drawAudit=()=>{
+      const rows=audit().slice(0,20);
+      aud.innerHTML=rows.length
+        ? rows.map(x=>`<div style="padding:6px 0;border-bottom:1px solid var(--border)"><b>${esc(x.usuario)}</b> · ${esc(x.rol)} · v${esc(x.version)} · ${esc(x.fecha)}</div>`).join('')
+        : '<span class="muted">Sin aceptaciones registradas todavia en este navegador.</span>';
+    };
+
+    const load=()=>{
+      const r=roleSel.value;
+      ta.value=String(text(r)||'').replace(/<br\s*\/?>/gi,'\n');
+      ver.value='Version '+version(r);
+      drawAudit();
+    };
+
+    roleSel.addEventListener('change',load);
+
+    body.querySelector('#saveNDA')?.addEventListener('click',()=>{
+      const r=roleSel.value;
+      if(api&&api.setText){
+        api.setText(r, ta.value);
+      } else {
+        let s={}; try{s=JSON.parse(localStorage.getItem('cx_nda_text')||'{}');}catch(e){}
+        s[r]=ta.value;
+        localStorage.setItem('cx_nda_text',JSON.stringify(s));
+      }
+      ui.toast('NDA actualizado para '+r+' · nueva version','ok');
+      draw();
+    });
+
+    body.querySelector('#previewNDA')?.addEventListener('click',()=>{
+      const r=roleSel.value;
+      ui.modal('Vista previa NDA · '+r, `
+        <div style="font-size:13.5px;line-height:1.7;color:var(--t2)">${ta.value.replace(/\n/g,'<br>')}</div>
+        <div style="margin-top:14px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--panel-2);font-size:12px;color:var(--t3)">Version ${version(r)} · al guardar se incrementa la version y se repide aceptacion.</div>
+      `);
+    });
+
+    load();
   };
 
   draw();

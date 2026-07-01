@@ -97,7 +97,7 @@ CX.module('aprendizaje', ({role,ui,data})=>{
 
     const courseCard=(c)=>{ const v=prog[c.id]||0;
       return `<div class="card hov card-p" data-open="${c.id}" style="cursor:pointer">
-        <div class="flex" style="gap:12px;margin-bottom:10px"><div style="font-size:24px">${c.ic||'�’'}</div>
+        <div class="flex" style="gap:12px;margin-bottom:10px"><div style="font-size:24px">${c.ic||'📘'}</div>
         <div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--t1)">${c.titulo}</div><div style="font-size:11px;color:var(--t3)">${c.recursos.length} recurso(s) · ${c.mins} min${c.quiz.length?' · examen':''}</div></div></div>
         ${ui.bar(v,'Avance',v+'%')}
         <div class="between" style="margin-top:8px"><span style="font-size:11px;color:var(--t3)">${c.desc||''}</span>
