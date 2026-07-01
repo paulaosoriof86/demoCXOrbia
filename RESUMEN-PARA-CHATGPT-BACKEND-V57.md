@@ -1,5 +1,21 @@
 # RESUMEN-PARA-CHATGPT-BACKEND-V57.md
 
+## Estado actual B2/B3
+
+- Rama: `release/cxorbia-tya-rc-20260630`.
+- Base visual: ZIP local `Prototype development request CXOrbia V57.zip` aplicado/comparado sobre `/app`.
+- Backend DEV preservado: config, preview, Firebase adapter, finance benefits, finance read bridge, operational actions, preview status, bulletins, `firebase/**`.
+- `app/index.html` no activa backend global.
+- `app/index-backend-dev.html` carga backend DEV y debe usarse solo para preview.
+- Badge preview: muestra fuente honesta (`firestore`, `localStorage/demo` o `pending`), Auth, tenant, proyecto, conteos y ultimo error.
+- `backend-bulletins` lee Firestore y alimenta `CX.notif` sin tocar `modules/tablon.js`.
+- `bulletinReads` persiste leido/no leido por usuario.
+- Creacion de novedades disponible en preview DEV mediante `CX.backendBulletins.createBulletin`.
+- Reglas Firestore preparadas localmente para `bulletins` y `bulletinReads`; no publicadas.
+- Dry-run/validator bulletins: OK.
+- Validacion de reglas via emulador: pendiente por falta de Java en PATH.
+- No deploy, no Hosting, no merge, no produccion.
+
 Resumen técnico de backend requerido por el prototipo V57.
 
 ## Cambios V57 que impactan backend

@@ -60,11 +60,6 @@ window.CX = window.CX || {};
     catch(_){ return null; }
   }
 
-  function writeStoredPreviewPassword(key, password){
-    if(!key || !password) return;
-    try{ sessionStorage.setItem(key, password); }catch(_){ /* no-op */ }
-  }
-
   async function ensurePreviewAuth(){
     const authCfg = cfg.devPreviewAuth || {};
     if(authCfg.enabled !== true) return;
@@ -78,12 +73,7 @@ window.CX = window.CX || {};
 
     const email = authCfg.email;
     const key = authCfg.passwordStorageKey || 'CXORBIA_DEV_PASSWORD';
-    let password = readStoredPreviewPassword(key);
-
-    if(!password && authCfg.allowPrompt === true && window.prompt){
-      password = window.prompt('Credencial temporal DEV para preview CXOrbia');
-      if(password) writeStoredPreviewPassword(key, password);
-    }
+    const password = readStoredPreviewPassword(key);
 
     if(!email || !password){
       markSource('localStorage/demo', {auth:'pending'});

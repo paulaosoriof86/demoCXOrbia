@@ -24,8 +24,12 @@ service cloud.firestore {
       return role() == 'ops';
     }
 
+    function isCoordinator() {
+      return role() == 'coordinador';
+    }
+
     function isOperator() {
-      return role() in ['super', 'admin', 'ops'];
+      return role() in ['super', 'admin', 'ops', 'coordinador'];
     }
 
     function isClient() {
@@ -66,6 +70,12 @@ service cloud.firestore {
         : '';
     }
 
+    function country() {
+      return signedIn() && request.auth.token.country is string
+        ? request.auth.token.country
+        : '';
+    }
+
     function isOwnShopper(shopperIdParam) {
       return isShopperRole() && shopperId() == shopperIdParam;
     }
@@ -76,6 +86,26 @@ service cloud.firestore {
 
     function isOwnIncomingResource() {
       return isShopperRole() && request.resource.data.shopperId == shopperId();
+    }
+
+    function canWriteBulletins() {
+      return role() in ['super', 'admin', 'ops', 'coordinador'];
+    }
+
+    function listHasValue(fieldName, value) {
+      return resource.data[fieldName] is list && value != '' && value in resource.data[fieldName];
+    }
+
+    function bulletinTargetsCurrentUser(tenantId) {
+      return tenantAllowed(tenantId) && resource.data.status == 'active' && (
+        resource.data.targetAll == true ||
+        listHasValue('targetTenants', tenantId) ||
+        listHasValue('targetRoles', role()) ||
+        listHasValue('targetUserIds', request.auth.uid) ||
+        listHasValue('targetShopperIds', shopperId()) ||
+        (resource.data.targetProjectIds is list && request.auth.token.projectIds is list && resource.data.targetProjectIds.hasAny(request.auth.token.projectIds)) ||
+        listHasValue('targetCountries', country())
+      );
     }
 
     function isAvailableVisitForShopper(projectId) {
@@ -116,6 +146,26 @@ service cloud.firestore {
           resource.data.toRole == role()
         );
         allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
+      }
+
+      match /bulletins/{bulletinId} {
+        allow read: if tenantAllowed(tenantId) && (
+          canWriteBulletins() ||
+          bulletinTargetsCurrentUser(tenantId)
+        );
+        allow create, update: if tenantAllowed(tenantId) && canWriteBulletins() && request.resource.data.tenantId == tenantId;
+        allow delete: if tenantAllowed(tenantId) && isAdmin();
+      }
+
+      match /bulletinReads/{readId} {
+        allow read: if tenantAllowed(tenantId) && (
+          canWriteBulletins() ||
+          resource.data.userId == request.auth.uid
+        );
+        allow create, update: if tenantAllowed(tenantId) &&
+          request.resource.data.tenantId == tenantId &&
+          request.resource.data.userId == request.auth.uid;
+        allow delete: if false;
       }
 
       match /automations/{automationId} {

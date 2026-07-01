@@ -1,5 +1,19 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-06-30 - Fase B2/B3 V57 bulletins
+
+- Se localizo `Prototype development request CXOrbia V57.zip` en `C:\Users\paula\Downloads`.
+- Se copio `/app` desde V57 sobre la RC y se restauraron archivos backend protegidos.
+- La copia visual V57 no genero diferencias adicionales en `app/index.html` ni `/app/modules`, por lo que la RC ya estaba alineada con la base V57 disponible.
+- Se conservo `app/index.html` como demo normal, sin carga backend global.
+- Se mantuvo `app/index-backend-dev.html` como preview backend DEV.
+- Se preparo soporte Firestore local para `bulletins` y `bulletinReads` en `firestore.rules`, sin publicar reglas.
+- Se actualizo `app/core/backend-bulletins.js` para leer novedades por tenant, rol, uid, shopperId, proyecto y pais, y para persistir leidos en `bulletinReads`.
+- Se elimino el camino de `window.prompt` para credenciales DEV en `app/core/backend-firebase.js`.
+- Validaciones locales: dry-run bulletins OK, validador bulletins OK, `node --check` OK en archivos tocados.
+- Validacion de reglas con emulador Firestore no pudo completarse porque Java no esta disponible en PATH.
+- No deploy, no Hosting, no merge, no produccion, no datos reales.
+
 Registro obligatorio de cambios de backend, infraestructura y migración.
 
 ## 2026-06-30 — Corrección documental de continuidad RC/backend

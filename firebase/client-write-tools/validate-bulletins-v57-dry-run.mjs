@@ -45,12 +45,15 @@ for (const [index, item] of plan.entries()) {
   if (!allowedStatus.has(d.status)) errors.push(`Item ${index}: status inválido ${d.status}`);
   if (d.type && !allowedTypes.has(d.type)) errors.push(`Item ${index}: type inválido ${d.type}`);
   if (d.priority && !allowedPriorities.has(d.priority)) errors.push(`Item ${index}: priority inválido ${d.priority}`);
-  if (!d.targetAll && !Array.isArray(d.targetRoles) && !Array.isArray(d.targetUserIds) && !Array.isArray(d.targetShopperIds)) {
+  if (!d.targetAll && !Array.isArray(d.targetTenants) && !Array.isArray(d.targetRoles) && !Array.isArray(d.targetUserIds) && !Array.isArray(d.targetShopperIds) && !Array.isArray(d.targetProjectIds) && !Array.isArray(d.targetCountries)) {
     warnings.push(`Item ${index}: no tiene target claro`);
   }
+  if (d.targetTenants && !Array.isArray(d.targetTenants)) errors.push(`Item ${index}: targetTenants debe ser array`);
   if (d.targetRoles && !Array.isArray(d.targetRoles)) errors.push(`Item ${index}: targetRoles debe ser array`);
   if (d.targetUserIds && !Array.isArray(d.targetUserIds)) errors.push(`Item ${index}: targetUserIds debe ser array`);
   if (d.targetShopperIds && !Array.isArray(d.targetShopperIds)) errors.push(`Item ${index}: targetShopperIds debe ser array`);
+  if (d.targetProjectIds && !Array.isArray(d.targetProjectIds)) errors.push(`Item ${index}: targetProjectIds debe ser array`);
+  if (d.targetCountries && !Array.isArray(d.targetCountries)) errors.push(`Item ${index}: targetCountries debe ser array`);
 }
 
 const result = {

@@ -1,5 +1,17 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-06-30 - Estado B2/B3 backend V57
+
+- La RC `release/cxorbia-tya-rc-20260630` fue actualizada contra el ZIP local `Prototype development request CXOrbia V57.zip`.
+- La base visual V57 no debe mezclarse con la rama vieja `feat/firebase-backend-dev-config-20260627`.
+- `app/index.html` queda como demo/prototipo normal sin backend global.
+- `app/index-backend-dev.html` queda como preview backend DEV.
+- El backend de novedades/tablón se resolvio sin tocar `modules/tablon.js`.
+- Claude solo debe recibir pendientes visuales reales del prototipo V57, no fallas del preview backend DEV.
+- Issue #4 sigue siendo frontend/Claude: incorporar tablón/modal de novedades si el prototipo visual lo requiere.
+- Issue #5 queda cubierto a nivel backend local con modelo `bulletins`/`bulletinReads`, pendiente validacion con emulador/reglas cuando haya Java.
+- Issue #6 queda avanzado: V57 + backend DEV preservado, sin deploy ni produccion.
+
 Resumen vivo para entregar a Claude/frontend sin mezclar incidencias de integración backend con mejoras reales del prototipo.
 
 ## 2026-06-30 — Actualización V57 recibida

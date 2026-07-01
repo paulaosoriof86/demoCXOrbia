@@ -16,6 +16,9 @@ window.CX = window.CX || {};
   function role(){ return (CX.session && CX.session.role) || 'admin'; }
   function uid(){ try{ return firebase.auth().currentUser && firebase.auth().currentUser.uid || ''; }catch(_){ return ''; } }
   function currentEmail(){ try{ return firebase.auth().currentUser && firebase.auth().currentUser.email || ''; }catch(_){ return ''; } }
+  function currentProjectId(){ return (CX.data && CX.data.currentProjectId) || cfg.defaultProjectId || ''; }
+  function shopperId(){ return (CX.session && (CX.session.shopperId || CX.session.id)) || ''; }
+  function country(){ return (CX.session && (CX.session.country || CX.session.pais || CX.session.scopeCountry)) || ''; }
   function db(){ return window.firebase && firebase.apps && firebase.apps.length ? firebase.firestore() : null; }
   function tenantRef(){ const d = db(); return d ? d.collection(col.tenants || 'tenants').doc(tenantId()) : null; }
   function bulletinsCol(){ const t = tenantRef(); return t ? t.collection(col.bulletins || 'bulletins') : null; }
@@ -74,21 +77,31 @@ window.CX = window.CX || {};
     if(!c) return [];
     const r = role();
     const userId = uid();
+    const sid = shopperId();
+    const projectId = currentProjectId();
+    const scopeCountry = country();
     const seen = new Map();
     const queries = [];
 
-    if(['super','admin','ops'].includes(r)){
+    if(['super','admin','ops','coordinador'].includes(r)){
       queries.push(c.where('status','==','active'));
     }else{
       queries.push(c.where('targetAll','==',true));
+      queries.push(c.where('targetTenants','array-contains',tenantId()));
       queries.push(c.where('targetRoles','array-contains',r));
       if(userId) queries.push(c.where('targetUserIds','array-contains',userId));
+      if(sid) queries.push(c.where('targetShopperIds','array-contains',sid));
+      if(projectId) queries.push(c.where('targetProjectIds','array-contains',projectId));
+      if(scopeCountry) queries.push(c.where('targetCountries','array-contains',scopeCountry));
     }
 
     for(const q of queries){
       try{
         const snap = await q.get();
-        snap.forEach(doc=>seen.set(doc.id, doc));
+        snap.forEach(doc=>{
+          const d = doc.data ? doc.data() : {};
+          if((d.status || 'active') === 'active') seen.set(doc.id, doc);
+        });
       }catch(e){ console.warn('[CX.backend-bulletins] Consulta omitida', e); }
     }
     return Array.from(seen.values());
@@ -131,6 +144,7 @@ window.CX = window.CX || {};
       type: 'news',
       priority: 'normal',
       createdAt: new Date().toISOString(),
+      createdBy: uid(),
       createdByEmail: currentEmail(),
     }, data || {});
     const ref = payload.id ? c.doc(payload.id) : c.doc();

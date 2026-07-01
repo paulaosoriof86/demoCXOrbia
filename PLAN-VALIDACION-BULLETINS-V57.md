@@ -1,5 +1,16 @@
 # PLAN-VALIDACION-BULLETINS-V57.md
 
+## Estado local B2/B3
+
+- `build-bulletins-v57-dry-run.mjs`: ejecutado, resultado OK.
+- `validate-bulletins-v57-dry-run.mjs`: ejecutado, resultado OK.
+- `firestore.rules`: preparado para `bulletins` y `bulletinReads`, no publicado.
+- Validacion con emulador Firestore: pendiente; `firebase emulators:exec` fallo porque Java no esta en PATH.
+- `app/index.html`: demo normal, sin backend global.
+- `app/index-backend-dev.html`: preview backend DEV.
+- Badge esperado: `firestore`, `localStorage/demo` o `pending`, sin decir conectado si no hay Firestore.
+- No deploy, no Hosting, no merge, no produccion.
+
 Plan de validación para el tablón/novedades V57 con backend Firestore.
 
 ## Alcance

@@ -1,5 +1,20 @@
 # CAMBIOS-BACKEND-V57.md
 
+## 2026-06-30 - Fase B2/B3 backend bulletins sobre V57
+
+- Se uso el ZIP local `C:\Users\paula\Downloads\Prototype development request CXOrbia V57.zip` para confirmar/portar la base visual vigente.
+- Se copio `/app` desde V57 y se preservaron los archivos backend ya construidos: `app/core/backend-config.js`, `app/core/backend-config-preview-dev.js`, `app/core/backend-firebase.js`, `app/core/backend-finance-benefits.js`, `app/core/backend-cxdata-finance-read.js`, `app/core/backend-operational-actions.js`, `app/core/backend-preview-status.js`, `app/core/backend-bulletins.js`, `app/index-backend-dev.html` y `firebase/**`.
+- `app/index.html` se mantiene como demo normal y no carga backend global.
+- `app/index-backend-dev.html` queda como preview backend DEV.
+- `backend-preview-status` reporta fuente `firestore`, `localStorage/demo` o `pending`; Auth; tenant; proyecto; conteos; y ultimo error.
+- `backend-bulletins` alimenta `CX.notif` desde Firestore sin tocar `modules/tablon.js`.
+- `backend-bulletins` persiste leidos/no leidos en `tenants/{tenantId}/bulletinReads/{readId}`.
+- `backend-bulletins` expone `CX.backendBulletins.createBulletin(...)` para crear novedades en preview DEV.
+- `firestore.rules` queda preparado localmente para `bulletins` y `bulletinReads`, sin publicar.
+- Se elimino cualquier prompt de navegador para credenciales DEV.
+- Validaciones: dry-run bulletins OK, validator OK, `node --check` OK; emulador Firestore pendiente por falta de Java en PATH.
+- No deploy, no Hosting, no merge, no produccion.
+
 Registro de cambios específico para continuidad V57/backend.
 
 ## 2026-06-30 — Bridge backend para tablón/novedades
