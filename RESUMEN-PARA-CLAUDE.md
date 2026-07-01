@@ -2,34 +2,58 @@
 
 Resumen vivo para entregar a Claude/frontend sin mezclar incidencias de integración backend con mejoras reales del prototipo.
 
+## 2026-06-30 — Actualización V57 recibida
+
+Paula entregó `Prototype development request CXOrbia V57.zip` como nueva base visual más reciente de Claude. Desde este punto, el backend debe trabajarse sobre V57 sin perder Firebase DEV, reglas, Auth DEV, HR histórico, beneficios y documentación previa.
+
+Documentos específicos creados:
+
+- `PLAN-TRABAJO-BACKEND-V57.md`
+- `PENDIENTES-PROTOTIPO-V57.md`
+- `RESUMEN-PARA-CHATGPT-BACKEND-V57.md`
+- `RESUMEN-PARA-CLAUDE-V57.md`
+- `INCIDENCIAS-INTEGRACION-BACKEND-V57.md`
+- `CAMBIOS-BACKEND-V57.md`
+
+Reglas de continuidad:
+
+- V57 es la nueva referencia visual/funcional.
+- No usar la rama backend vieja como base visual.
+- No tocar `/app/modules` para resolver backend.
+- Mantener `app/index.html` como prototipo normal.
+- Mantener `app/index-backend-dev.html` como único preview backend DEV.
+- Cada nueva entrega de Claude debe revisarse antes de seguir para no perder backend ni documentación.
+
+Pendientes Claude actualizados:
+
+- Ver `PENDIENTES-PROTOTIPO-V57.md`.
+
+Incidencias backend separadas:
+
+- Ver `INCIDENCIAS-INTEGRACION-BACKEND-V57.md`.
+
+Siguiente gate backend:
+
+1. Portar preview backend sobre V57.
+2. Mostrar fuente real: Firestore o localStorage/demo.
+3. Mostrar Auth OK o error claro.
+4. Mostrar tenant `tya`.
+5. Mostrar conteos Firestore TyA.
+6. Validar admin y shopper sin mezclar datos demo.
+
 ## 2026-06-30 — Continuidad RC V56 + backend DEV
 
 ### 1. Regla de trabajo
 
-- La base visual correcta es `release/cxorbia-tya-rc-20260630`.
-- Esta RC viene del prototipo V56 completo y correcto.
+- La base visual correcta previa fue `release/cxorbia-tya-rc-20260630`.
+- Esa RC venía del prototipo V56 completo y correcto.
 - No usar como base visual la rama `feat/firebase-backend-dev-config-20260627` porque está divergida.
 - No modificar `/app/modules` ni reescribir lógica del frontend desde backend.
 - No modificar `app/index.html` para activar backend global sin autorización final.
 - El único preview backend debe ser `app/index-backend-dev.html`.
 - Todo cambio debe quedar documentado en `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` e incidencias backend separadas.
 
-### 2. Estado visual de la RC correcta
-
-Validado por Paula en `http://127.0.0.1:4173`:
-
-- Configuración abre.
-- Planes aparecen.
-- Identidad de marca abre.
-- Academia abre.
-- Recursos abre.
-- Finanzas / Movimientos abre.
-- Certificación shopper abre.
-- Sidebar completo y módulos presentes.
-
-Conclusión: la RC correcta conserva el prototipo V56 completo. Claude debe corregir sobre esta base visual, no sobre la rama backend vieja.
-
-### 3. Estado backend DEV real
+### 2. Estado backend DEV real
 
 Firebase DEV:
 
@@ -53,13 +77,7 @@ Resultado validado de beneficios:
 - HN: 131 beneficios, total 26,200.00.
 - Shopper positivo validado: `shp-b2e3d7bef69b`, 25 registros propios.
 
-### 4. Estado del preview backend
-
-URL usada:
-
-```text
-http://127.0.0.1:4173/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV
-```
+### 3. Estado del preview backend anterior
 
 Resultado observado:
 
@@ -73,60 +91,8 @@ Interpretación:
 - La insignia no debe considerarse evidencia suficiente de conexión real.
 - Para pasar gate debe mostrar Auth OK, fuente Firestore, tenant TyA y conteos TyA reales.
 
-### 5. Qué NO corresponde a Claude
+### 4. Ruta de producción realista
 
-No documentar como pendiente de prototipo lo que sea falla de integración backend/local:
+Publicable solo como RC visual/demo controlada si no se cierra el gate backend.
 
-- Auth pendiente en preview.
-- Datos `banca` o conteos demo/localStorage durante preview backend.
-- Problemas por clave DEV o archivo local no versionado.
-- Errores de PowerShell causados por bloques largos/frágiles.
-- Diagnóstico insuficiente del badge backend.
-
-Eso corresponde al backend y queda separado en `INCIDENCIAS-INTEGRACION-BACKEND.md`.
-
-### 6. Qué sí corresponde a Claude/prototipo
-
-Claude debe corregir y profundizar los puntos de `PENDIENTES-PROTOTIPO.md`, detectados en la RC visual correcta:
-
-1. Configuración / planes.
-2. KPIs y dashboards con drill-down.
-3. Finanzas profundas.
-4. Adaptación TyA visible cuando backend esté activo.
-5. Legal / NDA / confidencialidad.
-6. Certificación / banco de preguntas.
-7. Portal cliente y planes de acción.
-8. Academia, manuales y cursos.
-9. Recursos/documentos.
-10. Importador inteligente.
-11. Add-ons, integraciones y benchmarking.
-12. Impresión/PDF limpia.
-
-### 7. Próximo gate técnico antes de producción
-
-Antes de publicar como producción operativa debe cumplirse:
-
-1. Preview backend muestra Auth OK.
-2. Fuente de datos visible: Firestore, no localStorage.
-3. Tenant visible: TyA.
-4. Conteos Firestore TyA correctos.
-5. Admin lee datos TyA.
-6. Shopper lee solo sus datos propios.
-7. No aparece `banca` ni conteos demo en preview backend.
-8. `app/index.html` sigue intacto hasta autorización final.
-9. Documentación actualizada.
-10. Validación visual final en RC correcta.
-
-### 8. Ruta de producción realista
-
-Publicable hoy solo como RC visual/demo controlada:
-
-- Sí: preview visual del prototipo V56 si se etiqueta como RC/demo.
-- No: producción operativa real con backend TyA hasta cerrar Auth + Firestore + tenant TyA visible.
-
-Riesgo si se publica antes:
-
-- La UI puede verse completa pero seguir leyendo demo/localStorage.
-- Se puede confundir `Backend DEV conectado` con datos Firestore reales.
-- TyA no verá aún su lógica/datos reales en pantalla.
-- Se puede requerir reversa posterior.
+No publicar producción operativa real hasta cerrar Auth + Firestore + tenant TyA visible.
