@@ -190,3 +190,12 @@ No publicar producción operativa real hasta cerrar Auth + Firestore + tenant Ty
 - No produccion.
 - No Orbit.
 - No datos reales.
+## 2026-07-01 13:30:03 - V62 aplicado como base vigente preservando backend
+
+- Se documento la ruta local canonica en RUTA-LOCAL-CXORBIA.md para evitar busquedas repetidas de repositorios.
+- Se integro Prototype development request CXOrbia V62.zip como base visual mas reciente.
+- Se aplico app/ completa desde V62 y se restauro backend protegido.
+- V62 corrige avances relevantes: aprendizaje huerfano, rutas duplicadas, liquidacion pendiente_submitir, permisos/router y confirmacion al eliminar visita.
+- Se mantiene separacion correcta: Firestore real, Make/WhatsApp/correo real, Gemini backend, importacion persistente, Storage, Auth/roles y backend protegido son tareas ChatGPT/backend.
+- Claude debe concentrarse en frontend/prototipo: modo demo vs TyA, textos visibles, UTF-8, configuracion, dashboard/KPIs, HR, postulaciones, shopper, beneficios, liquidaciones UI, academia/documentos, reportes, portal cliente y soporte.
+- Ver PENDIENTES-PROTOTIPO-V62.md e INCIDENCIAS-INTEGRACION-BACKEND-V62.md.

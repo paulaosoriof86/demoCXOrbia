@@ -547,3 +547,12 @@ Pendiente/riesgo:
 - IMPACTO EN BACKEND: se preservo adapter Firestore, preview backend y configuracion protegida.
 - VALIDACION: adapter backend validado despues de aplicar V60.
 - PENDIENTE/RIESGO: validar visualmente hallazgos de AUDITORIA-PROTOTIPO-V60.md.
+## 2026-07-01 13:30:03 - Continuidad backend sobre V62 con repo canonico fijo
+
+- Se documento RUTA-LOCAL-CXORBIA.md para fijar el repo local correcto y no volver a buscar repositorios alternos.
+- Repo canonico: C:\Users\paula\OneDrive\Documentos\GitHub\demoCXOrbia-rc-20260630.
+- Se aplico V62 como ultima base visual preservando backend protegido.
+- No se modificaron reglas Firestore, firebase.json, .firebaserc, seeds ni helpers backend salvo restauracion exacta desde respaldo local.
+- Se preservo app/index-backend-dev.html y archivos app/core/*backend*.js.
+- Siguiente gate: preview backend V62 con servidor Node, badge Firestore DEV, Auth/tenant/conteos Firestore.
+- No deploy, no Hosting, no produccion, no Orbit, no datos reales.

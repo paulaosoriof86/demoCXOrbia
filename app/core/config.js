@@ -112,6 +112,25 @@ CX.moduleEnabled = function(id){
   if(adminAlways.includes(id)) return true;
   const s = CX.tenantModules(); return !s || s[id] !== false;
 };
+/* ---------- Gobierno de acceso por rol (matriz de permisos) ---------- */
+/* mapea cada módulo a su categoría de permiso (op/fin/prj/cap/cfg/sh/com) */
+CX.MOD_CAT = {
+  midia:'op', dashboard:'op', visitas:'op', postulaciones:'op', reservas:'op', shoppers:'op', tablon:'op',
+  financiero:'fin', movimientos:'fin', liquidaciones:'fin', lotes:'fin',
+  proyectos:'prj', clientes:'prj', cuestionarios:'prj', rutas:'prj', importador:'prj',
+  aprendizaje:'cap', cert:'cap', documentos:'cap', soporte:'cap',
+  config:'cfg', usuarios:'cfg', marca:'cfg', automatizaciones:'cfg', integraciones:'cfg', correo:'cfg',
+  costos:'com', crm:'com', marketing:'com', informes:'com',
+  miperfil:'sh', misvisitas:'sh', beneficios:'sh',
+};
+/* super y admin: acceso pleno. Otros roles: gobernados por la matriz guardada (cx_perm). */
+CX.roleCanAccess = function(role, id){
+  if(role==='super'||role==='admin'||role==='shopper'||role==='cliente') return true;
+  let perm=null; try{ perm=JSON.parse(localStorage.getItem('cx_perm')||'null'); }catch(e){}
+  if(!perm||!perm[role]) return true; /* sin matriz definida → no bloquear */
+  const cat=CX.MOD_CAT[id]; if(!cat) return true;
+  return perm[role].includes(cat);
+};
 CX.setModuleEnabled = function(id, on){
   const s = CX.tenantModules() || {}; s[id] = on;
   try{ localStorage.setItem('cx_modules', JSON.stringify(s)); }catch(e){}

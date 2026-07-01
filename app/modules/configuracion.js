@@ -207,8 +207,9 @@ CX.module('usuarios', ({ui})=>{
   ]};
   const st=_uState;
   const MODS=[['Operación','op'],['Finanzas','fin'],['Admin Proyecto','prj'],['Capacitación','cap'],['Configuración','cfg'],['Portal Shopper','sh'],['Comercial','com']];
-  if(!st.perm) st.perm={super:['op','fin','prj','cap','cfg','sh','com'],admin:['op','fin','prj','cap','com'],ops:['op','prj','cap'],shopper:['sh','cap']};
+  if(!st.perm){ let saved=null; try{saved=JSON.parse(localStorage.getItem('cx_perm')||'null');}catch(e){} st.perm=saved||{super:['op','fin','prj','cap','cfg','sh','com'],admin:['op','fin','prj','cap','com'],ops:['op','prj','cap'],shopper:['sh','cap']}; }
   const PERM=st.perm;
+  const savePerm=()=>{try{localStorage.setItem('cx_perm',JSON.stringify(PERM));}catch(e){}};
 
   const host=ui.el('div');
   if(!st.customRoles) st.customRoles=[];
@@ -272,6 +273,7 @@ CX.module('usuarios', ({ui})=>{
     host.querySelectorAll('.permChk').forEach(c=>c.addEventListener('change',()=>{
       const role=c.dataset.role, mod=c.dataset.mod; PERM[role]=PERM[role]||[];
       if(c.checked){ if(!PERM[role].includes(mod))PERM[role].push(mod); } else { PERM[role]=PERM[role].filter(m=>m!==mod); }
+      savePerm();
       const sv=host.querySelector('#permSaved'); if(sv){sv.style.display='';setTimeout(()=>sv.style.display='none',1500);}
     }));
     host.querySelector('#addU').addEventListener('click',()=>ui.modal('Invitar usuario',`
@@ -300,6 +302,7 @@ CX.module('usuarios', ({ui})=>{
       st.customRoles=st.customRoles||[];
       st.customRoles.push({id,label:name,desc:ov.querySelector('#rnDesc').value||'Rol personalizado',custom:true});
       PERM[id]=mods;
+      savePerm();
       close();draw();ui.toast('Rol "'+name+'" creado','ok');
     })}));
     /* Eliminar rol personalizado */

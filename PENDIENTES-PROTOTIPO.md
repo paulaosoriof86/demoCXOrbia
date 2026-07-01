@@ -1,40 +1,21 @@
 # PENDIENTES-PROTOTIPO.md
 
-Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests ni Hosting.
+Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
-## Vigente desde V60
+## Vigente desde V62
 
 La lista vigente esta en:
 
-- PENDIENTES-PROTOTIPO-V60.md
-- AUDITORIA-PROTOTIPO-V60.md
+- PENDIENTES-PROTOTIPO-V62.md
+- AUDITORIA-PROTOTIPO-V62-DETALLADA.md
+- PAQUETE-PARA-CLAUDE-V62.md
 
-Claude debe trabajar sobre V60 o sobre el prototipo mas reciente entregado por Paula, sin usar versiones viejas y sin revertir avances.
+## Separacion corregida
 
-## Pendientes maximos acumulados
+PENDIENTES-PROTOTIPO-V62.md incluye los pendientes de Claude/prototipo y conserva los acumulados previos que siguen siendo frontend.
 
-1. TyA/Cinepolis sin Banca, Restaurantes ni demos ajenos visibles.
-2. UTF-8 real sin caracteres corruptos.
-3. Ocultar avisos tecnicos visibles.
-4. Configuracion autoadministrable.
-5. NDA por rol/version.
-6. Periodo dinamico.
-7. HR viva y reglas Q1/Q2.
-8. Dashboard/KPIs/drill.
-9. Postulaciones, reservas y asignaciones.
-10. Flujo shopper.
-11. Perfil shopper.
-12. Beneficios/finanzas/liquidaciones.
-13. Certificaciones/Academia/manuales.
-14. Responsables/Mi Dia/notificaciones.
-15. Filtros reales.
-16. Importador generico.
-17. Proyectos autoadministrables.
-18. Portal cliente.
-19. Soporte.
-20. Reportes.
-21. Integraciones, automatizaciones y marketing.
+Los pendientes de backend/integracion fueron separados en:
 
-## Entrega esperada de Claude
+- INCIDENCIAS-INTEGRACION-BACKEND-V62.md
 
-Prototipo corregido, archivos tocados, cambios por modulo, pendientes cerrados, pendientes restantes, confirmacion de version base, confirmacion de que no toco backend protegido, sin datos reales y evidencia de pruebas.
+Claude debe trabajar sobre V62 o sobre el prototipo mas reciente entregado por Paula, sin usar versiones viejas y sin revertir avances backend.
