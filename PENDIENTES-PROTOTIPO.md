@@ -36,3 +36,10 @@ La lista anterior de RC V56 queda superada parcialmente por V57. Mantener como r
 - Impresión/PDF.
 
 Claude debe trabajar con la lista V57 vigente y no reabrir pendientes que V57 ya resolvió salvo que fallen visualmente.
+
+## 2026-06-30 23:38:12 - Pendientes prototipo detectados durante backend V57
+- Confirmar que el prototipo mas reciente soporte pruebas de render por modulo sin bloquear overlays o modales.
+- Corregir cualquier caso donde el preview muestre tenant/proyecto demo como anca en lugar de 	ya.
+- Ocultar avisos tecnicos en UI final: demo, Firebase, backend, beta, nucleo o diagnosticos internos.
+- Mantener UTF-8 real; si aparecen simbolos rotos, corregir codificacion desde origen.
+- Validar que las mejoras de Claude no rompan pp/index-backend-dev.html ni archivos backend V57.

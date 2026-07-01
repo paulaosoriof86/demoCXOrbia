@@ -153,3 +153,13 @@ ode firebase/client-write-tools/validate-preview-v57-static-v2.mjs
 - Se creo helper local pp/core/backend-dev-auth.local.js, ignorado por Git.
 - Validadores V57 pasaron.
 - Siguiente: smoke Firestore y tenant isolation CXOrbia.
+
+## 2026-06-30 23:38:12 - Preview local robusto
+- Auth local preview ya quedo creado sin pedir claves.
+- El intento visual fallo por servidor local no levantado en puerto 5184.
+- Se corrige el metodo: iniciar servidor en puerto libre, validar HTTP 200 y luego abrir navegador.
+- Siguiente secuencia requerida:
+  1. smoke Firestore CXOrbia;
+  2. tenant isolation CXOrbia;
+  3. module render smoke CXOrbia;
+  4. badge final con Fuente: firestore y Tenant: tya.

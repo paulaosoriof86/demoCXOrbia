@@ -452,3 +452,11 @@ Pendiente/riesgo:
 - POR QUE: permitir preview Auth DEV sin prompt manual.
 - IMPACTO EN FRONTEND: ninguno.
 - PENDIENTE/RIESGO: no subir ni pegar archivos locales de output.
+
+## 2026-06-30 23:38:12 - Preview backend V57 servidor robusto
+- ARCHIVO: proceso local preview
+- TIPO: validacion local/no versionada
+- QUE CAMBIO: se levanta servidor local con verificacion HTTP antes de abrir navegador.
+- POR QUE: el intento anterior abrio URL en puerto 5184 pero Chrome mostro ERR_CONNECTION_REFUSED.
+- IMPACTO EN FRONTEND: ninguno; no se tocaron /app/modules ni app/index.html.
+- PENDIENTE/RIESGO: despues del badge, ejecutar smoke Firestore, tenant isolation y module render smoke CXOrbia como se hizo en Orbit.

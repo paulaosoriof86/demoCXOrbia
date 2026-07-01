@@ -102,3 +102,10 @@ elease/cxorbia-tya-rc-20260630, sujeto a commit/push si todas las validaciones p
 - Decision: no pedir claves a Paula ni pegarlas en chat.
 - Correccion: generar credencial DEV ficticia local, actualizar usuarios ficticios DEV y crear helper local ignorado.
 - Restricciones respetadas: no deploy, no merge, no produccion, no datos reales, no /app/modules.
+
+## 2026-06-30 23:38:12 - Incidencia local: preview abierto sin servidor
+- Sintoma: Chrome mostro ERR_CONNECTION_REFUSED en 127.0.0.1:5184.
+- Causa probable: el proceso servidor local no quedo escuchando en el puerto indicado.
+- Correccion: iniciar servidor por proceso controlado, validar HTTP 200 y solo despues abrir navegador.
+- Estado: se ejecuta en este bloque.
+- Restricciones: no deploy, no merge, no produccion, no datos reales, no /app/modules.

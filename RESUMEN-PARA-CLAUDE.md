@@ -138,3 +138,14 @@ No publicar producción operativa real hasta cerrar Auth + Firestore + tenant Ty
 - No debe reintroducir datos demo/localStorage como si fueran Firestore real.
 - No debe tocar ni romper el punto de preview backend app/index-backend-dev.html.
 - Pendientes principales: codificacion UTF-8, eliminar avisos tecnicos visibles, quitar datos demo/banca en TyA, corregir KPIs, HR dinamico, postulaciones, certificaciones, ranking, liquidaciones y beneficios.
+
+## 2026-06-30 23:38:12 - Pendientes para Claude desde pruebas tipo Orbit
+- Se debe mantener documentado que CXOrbia necesita pruebas equivalentes a Orbit: smoke Firestore, tenant isolation y module render smoke.
+- Claude debe trabajar sobre el prototipo mas reciente, sin revertir backend V57 ni tocar helper local.
+- Pendientes prototipo a no reintroducir:
+  - no mostrar datos demo/banca en tenant TyA;
+  - no mostrar avisos tecnicos en UI final;
+  - no romper UTF-8;
+  - no duplicar secciones/titulos;
+  - no perder modulos existentes al mejorar frontend;
+  - no tocar app/index-backend-dev.html como punto de preview backend.
