@@ -145,3 +145,11 @@ ode firebase/client-write-tools/validate-preview-v57-static-v2.mjs
 - irestore.rules si estaba staged.
 - Se corrige validacion y se repiten gates antes de commit/push.
 - Siguiente fase: Auth local preview.
+
+## 2026-06-30 23:13:34 - Auth preview sin pedir claves
+- No se pidieron claves a Paula.
+- Se genero credencial DEV ficticia local y se guardo solo en output ignorado.
+- Se importaron/actualizaron usuarios ficticios DEV en cxorbia-backend-dev.
+- Se creo helper local pp/core/backend-dev-auth.local.js, ignorado por Git.
+- Validadores V57 pasaron.
+- Siguiente: smoke Firestore y tenant isolation CXOrbia.

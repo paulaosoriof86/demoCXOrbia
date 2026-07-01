@@ -96,3 +96,9 @@ elease/cxorbia-tya-rc-20260630, sujeto a commit/push si todas las validaciones p
 - Causa: validacion por regex demasiado fragil sobre texto convertido con Out-String.
 - Correccion: validar git diff --cached --name-only como arreglo, aplicando Trim() y comparacion exacta.
 - Estado: se reintenta commit/push sin modificar frontend ni reglas de negocio.
+
+## 2026-06-30 23:13:34 - Resuelto: no pedir claves para Auth preview
+- Incidencia: el script existente pedia CXORBIA_DEV_SECRET/CXORBIA_DEV_PASSWORD.
+- Decision: no pedir claves a Paula ni pegarlas en chat.
+- Correccion: generar credencial DEV ficticia local, actualizar usuarios ficticios DEV y crear helper local ignorado.
+- Restricciones respetadas: no deploy, no merge, no produccion, no datos reales, no /app/modules.

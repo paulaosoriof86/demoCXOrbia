@@ -437,3 +437,18 @@ Pendiente/riesgo:
 - POR QUE: el reporte anterior mostro irestore.rules staged, pero el bloque fallo falsamente al evaluarlo.
 - IMPACTO EN FRONTEND: ninguno; no se tocaron /app/modules.
 - PENDIENTE/RIESGO: continuar a Auth local preview cuando commit/push quede confirmado.
+
+## 2026-06-30 23:13:34 - Auth preview V57 sin pedir claves
+- ARCHIVO: firebase/auth-dev-tools/output/*
+- TIPO: local/no versionado
+- QUE CAMBIO: se genero credencial DEV ficticia local automaticamente y se uso para actualizar usuarios ficticios DEV.
+- POR QUE: evitar pedir o pegar claves y desbloquear Auth preview.
+- IMPACTO EN FRONTEND: ninguno; no se tocaron /app/modules ni app/index.html.
+- PENDIENTE/RIESGO: confirmar badge visual y ejecutar smoke Firestore / tenant isolation CXOrbia.
+
+- ARCHIVO: app/core/backend-dev-auth.local.js
+- TIPO: local/no versionado
+- QUE CAMBIO: helper local Auth preview creado desde credencial local ignorada.
+- POR QUE: permitir preview Auth DEV sin prompt manual.
+- IMPACTO EN FRONTEND: ninguno.
+- PENDIENTE/RIESGO: no subir ni pegar archivos locales de output.
