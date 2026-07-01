@@ -2,6 +2,43 @@
 
 Registro de cambios específico para continuidad V57/backend.
 
+## 2026-06-30 — Bridge backend para tablón/novedades
+
+Motivo:
+
+- Paula compartió referencia visual de Orbit con tablón/modal de novedades y pidió considerarlo para Orbia/CXOrbia.
+- Se documentó para Claude como mejora visual y para backend como modelo de datos vivo.
+
+Archivos creados/modificados:
+
+- `app/core/backend-bulletins.js`: bridge Firestore para alimentar `CX.notif` sin modificar módulos UI.
+- `app/index-backend-dev.html`: carga `backend-bulletins.js` solo en preview backend DEV.
+- `firebase/schema/cxorbia-bulletins-v1.json`: schema inicial para novedades/tablón.
+- Issue #4: requerimiento Claude/frontend del tablón modal.
+- Issue #5: modelo backend Firestore para tablón.
+- Issue #6: port V57 completo manteniendo backend DEV.
+
+Qué hace el bridge:
+
+- Lee novedades Firestore desde el tenant activo.
+- Convierte documentos Firestore al formato actual de `CX.notif`.
+- Persiste leído/no leído en `bulletinReads`.
+- Permite crear novedades desde el store actual sin tocar `modules/tablon.js`.
+
+Impacto:
+
+- No se modificó `/app/modules`.
+- No se modificó `app/index.html`.
+- No se hizo deploy.
+- No se tocó producción.
+- El bridge solo se carga en `app/index-backend-dev.html`.
+
+Pendiente/riesgo:
+
+- Falta publicar/validar reglas Firestore específicas para `bulletins` y `bulletinReads` en DEV.
+- Falta validar visualmente con Auth OK.
+- Falta que Claude implemente el modal de novedades al inicio si no queda cubierto por `modules/tablon.js`.
+
 ## 2026-06-30 — Diagnóstico honesto preview backend
 
 Archivos modificados:
