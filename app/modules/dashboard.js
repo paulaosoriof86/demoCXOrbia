@@ -79,7 +79,7 @@ CX.module('dashboard', ({data,ui})=>{
       </div></div>`;
   }).join('');
 
-  const top=[...shoppersPool].sort((a,b)=>b.rating-a.rating).slice(0,4);
+  const top=[...shoppersPool].sort((a,b)=>b.rating-a.rating).slice(0,5);
 
   const alerts=[];
   if(k.sinAsignar.t) alerts.push(['r','sinasign',`${k.sinAsignar.t} sin asignar (${split(k.sinAsignar)})`]);

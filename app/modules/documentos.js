@@ -22,8 +22,11 @@ CX.module('documentos', ({data,role,ui})=>{
   const viewer=(d)=>{
     const isPdf = d.url && (/^data:application\/pdf/i.test(d.url) || /\.pdf($|\?)/i.test(d.url));
     const isImg = (d.tipo==='image'&&d.url) || (d.url&&/^data:image\//i.test(d.url));
+    const isXls = d.url && (/^data:application\/(vnd\.openxmlformats-officedocument\.spreadsheetml|vnd\.ms-excel)/i.test(d.url) || /\.(xlsx|xls)$/i.test(d.meta||''));
+    const isDocx = d.url && (/^data:application\/vnd\.openxmlformats-officedocument\.wordprocessingml/i.test(d.url) || /\.docx$/i.test(d.meta||''));
     let body;
-    if(d.tipo==='video'&&d.url) body=`<iframe src="${d.url}" style="width:100%;height:68vh;border:0;border-radius:12px" allowfullscreen></iframe>`;
+    if(isXls||isDocx) body=`<div id="docEmbed" class="acad-content" style="max-width:900px;font-size:14px;line-height:1.7"><div style="color:var(--t3);padding:20px">Cargando vista del documento…</div></div>`;
+    else if(d.tipo==='video'&&d.url) body=`<iframe src="${d.url}" style="width:100%;height:68vh;border:0;border-radius:12px" allowfullscreen></iframe>`;
     else if(d.tipo==='check') body=`<div style="max-width:760px">${(d.items||[]).map(it=>`<label class="flex" style="gap:10px;padding:11px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;font-size:14px"><input type="checkbox"> ${it}</label>`).join('')}</div>`;
     else if(isImg) body=`<img src="${d.url}" style="max-width:100%;border-radius:12px">`;
     else if(isPdf) body=`<iframe src="${d.url}" style="width:100%;height:72vh;border:0;border-radius:12px"></iframe>`;
@@ -45,6 +48,20 @@ CX.module('documentos', ({data,role,ui})=>{
       <div class="card card-p">${body}</div>`;
     host.querySelector('#docBack').addEventListener('click',()=>draw());
     host.querySelector('#docPrint')?.addEventListener('click',()=>window.print());
+    /* render inline de Excel (SheetJS) y Word (Mammoth) — no descarga */
+    if(isXls||isDocx){
+      const slot=host.querySelector('#docEmbed');
+      const toBuf=(url)=>{const b64=url.split(',')[1]||'';const bin=atob(b64);const len=bin.length;const bytes=new Uint8Array(len);for(let i=0;i<len;i++)bytes[i]=bin.charCodeAt(i);return bytes;};
+      try{
+        if(isXls && window.XLSX){
+          const wb=XLSX.read(toBuf(d.url),{type:'array'});
+          slot.innerHTML=wb.SheetNames.map(sn=>`<h3 style="margin:14px 0 6px">${sn}</h3>`+XLSX.utils.sheet_to_html(wb.Sheets[sn])).join('');
+          slot.querySelectorAll('table').forEach(t=>{t.className='tbl';t.style.cssText='width:100%;border-collapse:collapse;margin-bottom:14px;font-size:13px';});
+        } else if(isDocx && window.mammoth){
+          mammoth.convertToHtml({arrayBuffer:toBuf(d.url).buffer}).then(r=>{slot.innerHTML=r.value||'<p>Documento vacío.</p>';}).catch(err=>{slot.innerHTML='<p style="color:var(--red)">No se pudo renderizar: '+err.message+'</p>';});
+        } else { slot.innerHTML='<p style="color:var(--t3)">Visor no disponible.</p>'; }
+      }catch(e){ slot.innerHTML='<p style="color:var(--red)">Error al leer el documento: '+e.message+'</p>'; }
+    }
   };
 
   const draw=()=>{
@@ -67,7 +84,7 @@ CX.module('documentos', ({data,role,ui})=>{
       ui.modal('✎ Editar documento · '+d.n,`
         <div class="grid g2" style="gap:10px 12px"><div><label class="lbl">Nombre</label><input class="inp" id="edN" value="${(d.n||'').replace(/"/g,'&quot;')}"></div>
         <div><label class="lbl">Icono</label><input class="inp" id="edIc" value="${d.ic||'📄'}" style="max-width:80px"></div>
-        <div style="grid-column:1/3"><label class="lbl">Reemplazar archivo (PDF/imagen/video)</label><input type="file" class="inp" id="edFile" accept="application/pdf,image/*,video/*" style="padding:7px">${d.url&&/^data:/.test(d.url)?'<div style="font-size:11px;color:var(--t3);margin-top:3px">📎 Archivo actual cargado · sube uno nuevo para reemplazar</div>':''}</div>
+        <div style="grid-column:1/3"><label class="lbl">Reemplazar archivo (PDF/imagen/video/Excel/Word)</label><input type="file" class="inp" id="edFile" accept="application/pdf,image/*,video/*,.xlsx,.xls,.docx" style="padding:7px">${d.url&&/^data:/.test(d.url)?'<div style="font-size:11px;color:var(--t3);margin-top:3px">📎 Archivo actual cargado · sube uno nuevo para reemplazar</div>':''}</div>
         <div style="grid-column:1/3"><label class="lbl">URL de video (YouTube/Vimeo, opcional)</label><input class="inp" id="edUrl" value="${(d.url&&/^https?:/.test(d.url))?d.url.replace(/"/g,'&quot;'):''}" placeholder="https://youtube.com/…"></div>
         <div style="grid-column:1/3"><label class="lbl">Contenido / texto (Markdown)</label><textarea class="inp" id="edBody" rows="4">${d.body||''}</textarea></div></div>
         <div class="between" style="margin-top:12px"><button class="btn btn-soft btn-sm" id="edIA">✨ Mejorar/generar con IA</button><button class="btn btn-pr btn-sm" id="edSave">Guardar</button></div>

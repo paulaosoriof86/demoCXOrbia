@@ -73,6 +73,28 @@ CX.acadData={
   <div class="acad-step"><span>7</span><b>Validar y Pagar</b><p>El equipo valida la liquidación y la incluye en un lote de pago. Se generan los egresos automáticamente.</p></div>
 </div>
 <p><b>Sincronía automática</b>: cada cambio de estado notifica al equipo, actualiza el dashboard, sincroniza la HR externa (Google Sheets) y mueve la liquidación.</p>`},
+         {id:'l4b',ic:'🔗',n:'Sincronía entre módulos: cómo todo se conecta',content:`
+<h2>La sincronía es el corazón de CXOrbia</h2>
+<p>Ninguna acción vive aislada. Un solo evento dispara una cadena de actualizaciones automáticas en toda la plataforma. Entender esto te evita el trabajo manual duplicado y los errores de datos.</p>
+<h3>Ejemplo real: un shopper envía su cuestionario</h3>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Visita</b><p>La visita pasa de "realizada" a "cuestionario enviado". Su estado cambia en Visitas y en Mi Día.</p></div>
+  <div class="acad-step"><span>2</span><b>Score</b><p>El cuestionario calcula el score ponderado por sección y lo guarda. El Portal del Cliente lo muestra en vivo.</p></div>
+  <div class="acad-step"><span>3</span><b>Liquidación</b><p>Nace la liquidación con honorario + reembolso y su fecha estimada de pago (viernes + días configurados).</p></div>
+  <div class="acad-step"><span>4</span><b>Beneficios</b><p>El shopper ve la liquidación en Mis Beneficios con estado y fecha.</p></div>
+  <div class="acad-step"><span>5</span><b>Dashboard</b><p>Los KPIs de realizadas, cuestionarios y avance vs ideal se recalculan al instante.</p></div>
+  <div class="acad-step"><span>6</span><b>Notificación</b><p>El equipo recibe aviso; si Make está activo, dispara WhatsApp/correo.</p></div>
+</div>
+<h3>El bus de eventos</h3>
+<p>Internamente, cada cambio emite un evento (<code>visit-flow</code>, <code>fin</code>, <code>crm</code>) al que se suscriben todas las vistas abiertas. Por eso no necesitas refrescar: si tienes el Dashboard abierto y en otra pestaña se paga un lote, el Dashboard se actualiza solo.</p>
+<h3>Anti-duplicación con HR externa</h3>
+<p>Cuando la HR vive en Google Sheets y también gestionas desde la plataforma, el sistema usa una <b>llave natural inmutable</b> (documento del shopper + id de visita) para reconciliar. Aunque asignes en ambos lados, nunca se duplica el registro.</p>
+<h3>Por qué te importa como consultora</h3>
+<ul>
+<li>No capturas nada dos veces: una acción propaga a todos los módulos.</li>
+<li>Los números siempre cuadran: finanzas, operación y portal del cliente leen la misma fuente.</li>
+<li>La trazabilidad es total: cada gestión queda registrada con quién y cuándo.</li>
+</ul>`},
          {id:'l5',ic:'❓',n:'Evaluación de inducción',tipo:'quiz',quiz:[
            {q:'¿Cuál es el flujo correcto para que una visita pase de disponible a pagada?',o:['Disponible → Asignada → Realizada → Cuestionario → Pagada','Publicada → Postulación → Asignación → Agenda → Realización → Cuestionario → Liquidada/Pagada','Solo hay que marcarla como realizada y automáticamente se paga','El shopper la marca como pagada desde su app'],a:1,exp:'El ciclo completo es: Publicar → Postular/Reservar → Asignar → Agendar → Realizar → Cuestionario → Validar → Pagar. Cada etapa tiene responsables y genera notificaciones automáticas. Saltarse una etapa rompe la sincronía de la liquidación.'},
            {q:'¿Qué sección del menú contiene el Dashboard, Visitas y Postulaciones?',o:['Admin del Proyecto','Configuración','Operación','Finanzas'],a:2,exp:'El menú de Operación contiene todo lo que se usa a diario: Mi Día, Dashboard, Visitas, Postulaciones, Reservas, Shoppers e Informes. Admin del Proyecto contiene el set-up (Clientes, Proyectos, HR, Cuestionarios).'},
@@ -381,6 +403,57 @@ CX.acadData={
            {q:'¿Qué información debe incluir el payload JSON que CXOrbia envía a Make al aprobar una postulación?',o:['Solo el ID del shopper','Solo el nombre de la visita','Un objeto completo con event.type, shopperNombre, shopperTelefono, sucursal, fecha, honorario y proyectoNombre','Solo el teléfono del shopper'],a:2,exp:'El payload debe ser completo para que Make no necesite hacer una segunda llamada a Firestore. Si solo mandas el ID de la visita, Make tiene que ir a buscar los datos de Firestore — eso agrega latencia, dependencia y complejidad. La regla de oro: el evento debe contener todo lo que el mensaje final (WhatsApp al shopper) necesita.'},
          ]}
        ]},
+      /* ─── FRANQUICIA / COORDINACIÓN ─── */
+      {id:'a_coord',cat:'Franquicia',ic:'🌎',color:'#0891b2',n:'Coordinador, Representante y Aliado: administra tu región',
+       desc:'La herramienta que la consultora te da para gestionar proyectos, HR, shoppers y liquidaciones de tu territorio.',cert:true,mins:70,
+       lessons:[
+         {id:'co1',ic:'🧭',n:'Tu rol en el ecosistema',content:`
+<h2>Coordinador / Representante / Aliado: qué eres y qué no</h2>
+<p>Eres el brazo operativo de la consultora en tu territorio. Antes, gestionar proyectos regionales significaba hojas de cálculo sueltas y correos; ahora tienes una plataforma que centraliza tu operación local con la misma potencia que usa la casa matriz — pero con alcance limitado a lo tuyo.</p>
+<h3>Diferencias entre los tres roles</h3>
+<div class="acad-cards">
+  <div class="acad-card"><div>🧭</div><b>Coordinador</b><p>Gestiona la operación de un país o región asignada: HR, asignaciones, seguimiento. Empleado o contratado de la consultora.</p></div>
+  <div class="acad-card"><div>🤝</div><b>Representante</b><p>Enfocado en lo comercial: prospecta, presenta propuestas y representa la marca en su zona.</p></div>
+  <div class="acad-card"><div>🏢</div><b>Aliado / Franquiciado</b><p>Opera proyectos delegados de forma semi-autónoma, factura localmente y liquida a sus propios shoppers bajo la metodología de la consultora.</p></div>
+</div>
+<h3>Alcance por país (scope)</h3>
+<p>Tu acceso está limitado por país: solo ves y gestionas las visitas, HR, shoppers y clientes de tu(s) territorio(s) asignado(s). No ves la operación de otras regiones. Toda tu gestión queda registrada con tu nombre para trazabilidad (bitácora de auditoría).</p>`},
+         {id:'co2',ic:'🗺️',n:'Administrar tu HR y asignaciones',content:`
+<h2>La hoja de ruta de tu territorio</h2>
+<p>Tu día a día gira en torno a la Hoja de Ruta (HR) de tu región. Puede vivir en la plataforma o en un Google Sheet colaborativo — en ambos casos, la ves y la gestionas desde CXOrbia.</p>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Recibes o cargas la HR</b><p>La casa matriz te asigna las visitas de tu país, o tú cargas la HR de tu programa local vía importador inteligente.</p></div>
+  <div class="acad-step"><span>2</span><b>Publicas visitas</b><p>Las visitas quedan disponibles para que tus shoppers se postulen o reserven.</p></div>
+  <div class="acad-step"><span>3</span><b>Asignas</b><p>Apruebas postulaciones o asignas manualmente. El shopper recibe notificación automática.</p></div>
+  <div class="acad-step"><span>4</span><b>Das seguimiento</b><p>Vigilas atrasos, cuestionarios pendientes y avance vs meta de TU región desde el dashboard filtrado.</p></div>
+</div>
+<div class="acad-section">⚠️ <b>Anti-duplicación:</b> si trabajas la HR en Google Sheets y también en la plataforma, el sistema reconcilia por llave natural — no se duplica aunque asignes en ambos lados.</div>`},
+         {id:'co3',ic:'💵',n:'Liquidar honorarios y cruzar cuentas',content:`
+<h2>Control financiero de tu operación local</h2>
+<p>Si tu modelo es de aliado/franquiciado, gestionas el dinero de tu territorio: pagas a tus shoppers y cruzas cuentas con la casa matriz.</p>
+<h3>Liquidación a tus shoppers</h3>
+<ul>
+<li>Cada visita realizada y con cuestionario aprobado genera una liquidación (honorario + reembolso).</li>
+<li>Agrupas las liquidaciones validadas en un <b>lote de pago</b> y pagas por quincena.</li>
+<li>La fecha estimada de pago se calcula automáticamente (viernes + días configurados tras el submit).</li>
+</ul>
+<h3>Cruce con la casa matriz</h3>
+<p>Cuando facturas localmente un programa, registras el ingreso; cuando recibes o envías remesas a la casa matriz, las concilias. El módulo financiero mantiene separadas tus comisiones/honorarios de los financiamientos, para que sepas exactamente tu margen real por proyecto.</p>`},
+         {id:'co4',ic:'🤝',n:'Prospectar y presentar propuestas (Representante)',content:`
+<h2>Vender en tu territorio con respaldo de la consultora</h2>
+<p>Como representante, usas el CRM y la calculadora de costos para convertir prospectos en clientes, con la metodología y la marca de la consultora.</p>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Registra el prospecto</b><p>En el CRM, como lead, con sus datos y la fuente.</p></div>
+  <div class="acad-step"><span>2</span><b>Releva la necesidad</b><p>Reúnete, entiende qué quiere medir, cuántas sucursales, qué frecuencia.</p></div>
+  <div class="acad-step"><span>3</span><b>Calcula y propón</b><p>Usa la calculadora de costos y genera la propuesta desde plantilla o con IA. Queda vinculada a la ficha del cliente.</p></div>
+  <div class="acad-step"><span>4</span><b>Da seguimiento con cadencia</b><p>Registra actividades y recordatorios. No dejes enfriar la oportunidad.</p></div>
+</div>
+<p>Todo lo que produces (propuestas, actividades, correos) queda en la ficha 360 del cliente, visible para ti y para la casa matriz según los permisos.</p>`},
+         {id:'co5',ic:'❓',n:'Evaluación de coordinación',tipo:'quiz',quiz:[
+           {q:'Como coordinador de Honduras, ¿qué operación puedes ver y gestionar en la plataforma?',o:['Toda la operación de todos los países de la consultora','Solo las visitas, HR, shoppers y clientes de Honduras (tu territorio asignado)','Solo las visitas que tú creaste','Solo el módulo financiero'],a:1,exp:'Tu rol tiene scope por país: ves y gestionas únicamente la operación de tu(s) territorio(s) asignado(s) — en este caso Honduras. No accedes a la operación de otras regiones. Esto permite a la consultora delegar la gestión regional sin exponer toda la base de datos, y mantiene la trazabilidad de quién gestionó cada acción en tu zona.'},
+           {q:'Trabajas la HR de tu región en un Google Sheet compartido, pero también apruebas postulaciones en la plataforma. ¿Qué pasa con los datos?',o:['Se duplican y tienes que borrar manualmente','El sistema reconcilia por llave natural (documento del shopper + id de visita) y no duplica, aunque gestiones en ambos lados','Debes elegir solo uno de los dos','La plataforma bloquea el Google Sheet'],a:1,exp:'CXOrbia usa una llave natural inmutable para reconciliar la HR externa con la plataforma. Aunque asignes una visita en el Google Sheet y la apruebes también en la plataforma, el sistema reconoce que es el mismo registro y no lo duplica. Esto te permite mantener tu forma de trabajo colaborativa en Sheets mientras aprovechas la inteligencia y los KPIs de la plataforma.'},
+         ]}
+       ]},
     ],
     shopper:[
       {id:'s_ind',cat:'Inducción',ic:'🕵️',color:'#10b981',n:'Inducción del evaluador incógnito',
@@ -542,6 +615,61 @@ CX.acadData={
            {q:'Tu cuestionario fue aprobado y aparece en tu sección de Mis Beneficios pero no ves la fecha de pago. ¿Qué significa?',o:['El pago fue cancelado','El coordinador rechazó tu visita','Tu liquidación está aprobada pero el lote de pago de esta quincena aún no ha sido procesado — recibirás notificación cuando se cierre el lote','Hay un error en tus datos bancarios'],a:2,exp:'El flujo es: visita realizada → cuestionario aprobado → liquidación generada → lote de pago formado → pago procesado. Si ya ves la liquidación en Mis Beneficios pero sin fecha de pago, significa que está en la fase "lote formado". El lote se cierra y paga en fechas de quincena definidas (por ejemplo, el 15 y el último día del mes). Recibirás una notificación automática cuando tu lote sea pagado.'},
          ]}
        ]},
+      /* ── Shopper: Introducción a la profesión ── */
+      {id:'s_prof',cat:'Inducción',ic:'🎓',color:'#8b5cf6',n:'Ser mystery shopper: la profesión',
+       desc:'Qué es realmente el mystery shopping, tipos de programa, ética, y cómo convertirlo en un ingreso serio.',cert:false,mins:35,
+       lessons:[
+         {id:'sp1',ic:'🕵️',n:'¿Qué es el mystery shopping de verdad?',content:`
+<h2>Más que "comprar y opinar"</h2>
+<p>El mystery shopping (o cliente incógnito) es una herramienta profesional de <b>investigación de mercado y control de calidad</b>. Las empresas contratan a una consultora para medir, de forma objetiva y anónima, si sus estándares de servicio se cumplen en el punto de venta. Tú, como evaluador, eres el instrumento de medición: tus observaciones se convierten en datos que mueven decisiones reales (capacitación, incentivos, cambios de proceso).</p>
+<h3>Qué NO es</h3>
+<ul>
+<li>❌ No es dar tu opinión personal ("me gustó" / "no me gustó").</li>
+<li>❌ No es una compra gratis — es un trabajo con criterios y evidencias.</li>
+<li>❌ No es delatar personas — es medir procesos y comportamientos contra un estándar.</li>
+</ul>
+<h3>Qué SÍ es</h3>
+<ul>
+<li>✅ Observación estructurada y objetiva contra un instructivo definido.</li>
+<li>✅ Documentación con evidencia (fotos, tiempos, tickets).</li>
+<li>✅ Reporte fiel y a tiempo que la empresa usará para mejorar.</li>
+</ul>`},
+         {id:'sp2',ic:'🎯',n:'Tipos de programa y modalidades',content:`
+<h2>No todas las visitas son iguales</h2>
+<div class="acad-cards">
+  <div class="acad-card"><div>🏪</div><b>Presencial</b><p>Visitas la sucursal como cliente normal, evalúas atención, tiempos, limpieza, protocolo.</p></div>
+  <div class="acad-card"><div>📞</div><b>Mystery calling</b><p>Llamas al call center o sucursal y evalúas la atención telefónica.</p></div>
+  <div class="acad-card"><div>💻</div><b>Digital / e-commerce</b><p>Evalúas la web, app o compra en línea, tiempos de entrega y postventa.</p></div>
+  <div class="acad-card"><div>🏆</div><b>Competitivo</b><p>Evalúas a la competencia del cliente para comparar (benchmarking).</p></div>
+</div>
+<h3>Franjas y escenarios</h3>
+<p>Cada visita tiene un <b>escenario</b> (el rol que debes representar: "cliente interesado en un crédito", "familia buscando promoción") y una <b>franja</b> (entre semana / fin de semana). Respeta ambos: si el escenario pide preguntar por un producto específico, hazlo con naturalidad. El escenario existe para provocar el comportamiento que se quiere medir.</p>`},
+         {id:'sp3',ic:'⚖️',n:'Ética profesional del evaluador',content:`
+<h2>Las 6 reglas de oro de la ética</h2>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Objetividad</b><p>Reporta hechos observables, no interpretaciones ni emociones. Tu simpatía o antipatía con el personal no cambia el dato.</p></div>
+  <div class="acad-step"><span>2</span><b>Honestidad total</b><p>Nunca inventes una visita ni respondas de memoria días después. Un dato falso daña a la empresa evaluada y destruye tu reputación.</p></div>
+  <div class="acad-step"><span>3</span><b>Anonimato</b><p>Jamás revelas que eres evaluador. Si te descubren, la medición se invalida.</p></div>
+  <div class="acad-step"><span>4</span><b>Confidencialidad</b><p>No compartes instructivos, escenarios, cuestionarios ni resultados con nadie.</p></div>
+  <div class="acad-step"><span>5</span><b>No represalias</b><p>No usas tu rol para perjudicar a un empleado por motivos personales. Mides el proceso, no a la persona.</p></div>
+  <div class="acad-step"><span>6</span><b>Cumplimiento</b><p>Respetas fechas, franjas y escenarios. Una visita fuera de las reglas no sirve.</p></div>
+</div>`},
+         {id:'sp4',ic:'📈',n:'Convertirlo en un ingreso serio',content:`
+<h2>De ocasional a evaluador top</h2>
+<p>Los evaluadores con mejor rating reciben más visitas, mejores honorarios y acceso a programas premium. Así se construye:</p>
+<ul>
+<li><b>Rating alto</b>: cuestionarios completos, a tiempo, con evidencias correctas. Cada visita bien hecha sube tu calificación.</li>
+<li><b>Confiabilidad</b>: nunca dejas una visita a medias ni cancelas a última hora. La consultora prioriza a quien cumple.</li>
+<li><b>Certificación vigente</b>: mantén tus certificaciones al día para no perder acceso a proyectos.</li>
+<li><b>Perfil completo</b>: datos bancarios, ubicación y disponibilidad actualizados agilizan tus pagos y asignaciones.</li>
+<li><b>Cobertura</b>: si puedes cubrir varias zonas o franjas, recibes más oferta de visitas.</li>
+</ul>
+<div class="acad-section">💡 <b>Tip:</b> revisa "Visitas disponibles" de todos los proyectos, no solo del que tienes activo. La oferta se cruza entre programas.</div>`},
+         {id:'sp5',ic:'❓',n:'Evaluación de la profesión',tipo:'quiz',quiz:[
+           {q:'Durante una visita, el asesor te atendió mal y sentiste que fue grosero contigo personalmente. ¿Cómo lo reportas?',o:['Le pongo la peor nota en todo para que aprenda','Reporto objetivamente los comportamientos observables contra cada criterio del cuestionario, sin dejar que mi molestia personal infle o distorsione las notas','No reporto nada porque me incomodó','Escribo una queja larga sobre lo mal que me sentí'],a:1,exp:'La ética profesional exige objetividad. Reportas los hechos observables (¿saludó? ¿escuchó? ¿ofreció solución?) contra cada criterio, con la nota que corresponde a cada uno. Tu incomodidad personal no debe inflar artificialmente las notas negativas ni distorsionar la medición. El cuestionario mide el cumplimiento del protocolo, no tu experiencia emocional.'},
+           {q:'¿Por qué el anonimato es la regla más importante del mystery shopping?',o:['Para que el evaluador no se sienta observado','Porque si el personal sabe que es evaluado, altera su comportamiento y la medición deja de reflejar la realidad','Por seguridad del evaluador únicamente','Porque lo exige la ley'],a:1,exp:'El valor del mystery shopping está en medir el comportamiento REAL del personal en condiciones normales. Si el empleado sabe que lo evalúan, se comporta distinto (efecto observador) y el dato deja de ser útil. Por eso jamás revelas tu condición: la medición solo es válida si el personal actúa como lo haría con cualquier cliente.'},
+         ]}
+       ]},
     ],
     /* ─── CLIENTE ─── */
     cliente:[
@@ -662,6 +790,49 @@ CX.acadData={
            {q:'¿Cuál es la diferencia entre un ticket de soporte y una solicitud de servicio adicional?',o:['Son lo mismo, no hay diferencia','El ticket de soporte es para preguntas o problemas con el servicio contratado; la solicitud de servicio adicional es para pedir algo fuera del alcance del programa actual (cotización, nueva campaña, etc.)','El ticket de soporte cuesta dinero, la solicitud no','Solo el admin puede abrir tickets'],a:1,exp:'Los tickets de soporte están dentro del servicio contratado — son gratuitos y el equipo responde sin cargo. Las solicitudes de servicios adicionales implican un nuevo alcance que requiere cotización y acuerdo. Esta distinción ayuda al equipo de la consultora a priorizarlos correctamente: soporte operativo vs. desarrollo comercial.'},
          ]}
        ]},
+      /* ── Cliente: ROI y decisiones estratégicas ── */
+      {id:'cl_roi',cat:'Portal',ic:'💡',color:'#0e9c6e',n:'Del score al ROI: decisiones estratégicas',
+       desc:'Cómo convertir los resultados de tu programa en incentivos, capacitación y retorno medible.',cert:false,mins:35,
+       lessons:[
+         {id:'cr1',ic:'🎁',n:'Incentivos y reconocimiento basados en datos',content:`
+<h2>Premiar lo que se mide</h2>
+<p>El ranking de sucursales no es solo información — es la base de un sistema de incentivos justo y objetivo. Cuando el reconocimiento se basa en el score de mystery shopping, el equipo entiende exactamente qué se espera de ellos.</p>
+<h3>Modelos de incentivo que funcionan</h3>
+<ul>
+<li><b>Bono por umbral</b>: toda sucursal que supere 85% recibe un bono. Simple y claro.</li>
+<li><b>Ranking competitivo</b>: el top 3 de la red recibe reconocimiento mensual (público, no solo económico).</li>
+<li><b>Mejora sostenida</b>: premia a quien más suba su score respecto al mes anterior — motiva a las sucursales rezagadas, no solo a las que ya están arriba.</li>
+<li><b>Criterio específico</b>: bono ligado al criterio más crítico del negocio (ej. tiempo de espera).</li>
+</ul>
+<div class="acad-section">⚠️ <b>Cuidado:</b> un incentivo mal diseñado genera trampa. Si premias solo el número, el personal puede intentar identificar al evaluador. Por eso el anonimato y la rotación de evaluadores son clave.</div>`},
+         {id:'cr2',ic:'🎓',n:'Planes de capacitación dirigidos',content:`
+<h2>Capacitar donde duele, no en general</h2>
+<p>El error más común es capacitar en "servicio al cliente" de forma genérica. El portal te dice exactamente en qué criterio falla tu red — capacita ahí.</p>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Identifica el hallazgo #1</b><p>El criterio con más puntuación negativa en toda la red. Ej: "no ofrece productos complementarios".</p></div>
+  <div class="acad-step"><span>2</span><b>Diseña capacitación específica</b><p>Una sesión de 30 min sobre venta cruzada es más efectiva que un curso genérico de 8 horas.</p></div>
+  <div class="acad-step"><span>3</span><b>Mide el impacto</b><p>Compara el score de ese criterio antes y después. Si subió, la capacitación funcionó.</p></div>
+  <div class="acad-step"><span>4</span><b>Itera</b><p>Ataca el siguiente hallazgo. Mejora continua criterio por criterio.</p></div>
+</div>
+<p>Tu consultora puede ofrecerte capacitación del personal como add-on, dirigida precisamente a tus áreas débiles detectadas por el programa.</p>`},
+         {id:'cr3',ic:'💰',n:'Calcular el ROI del programa',content:`
+<h2>¿Vale la pena el mystery shopping?</h2>
+<p>Un programa de evaluación cuesta, pero el retorno es medible. Así se calcula:</p>
+<h3>Fórmula simple de ROI</h3>
+<div class="acad-section" style="font-family:monospace">ROI = (Beneficio generado − Costo del programa) / Costo del programa × 100</div>
+<h3>De dónde sale el beneficio</h3>
+<ul>
+<li><b>Mayor conversión</b>: si el score de "cierre de venta" sube 10pp y eso mueve la tasa de conversión, calcula el ingreso adicional.</li>
+<li><b>Retención de clientes</b>: mejor servicio = menos fuga. Un cliente retenido vale su ticket promedio × frecuencia × años.</li>
+<li><b>Reducción de quejas</b>: menos reclamos = menos costo de gestión y compensaciones.</li>
+<li><b>Consistencia de marca</b>: una red uniforme protege el valor de la marca — difícil de cuantificar pero real.</li>
+</ul>
+<div class="acad-section">💡 <b>Tip:</b> pide a tu consultora un dashboard de correlación entre score y tus KPIs de negocio (ventas, NPS, quejas). Ahí ves el ROI en vivo.</div>`},
+         {id:'cr4',ic:'❓',n:'Evaluación estratégica',tipo:'quiz',quiz:[
+           {q:'Tu red tiene un score general de 82%, pero el criterio "tiempo de espera" está en 58% en 8 de 20 sucursales. ¿Cuál es la mejor decisión?',o:['Capacitar a toda la red en servicio al cliente general','Diseñar una intervención específica sobre gestión de filas y tiempos en esas 8 sucursales, y medir el impacto el mes siguiente','Cambiar de consultora porque el score es bajo','Ignorarlo porque el score general es bueno'],a:1,exp:'La decisión correcta es dirigida y medible: el problema está localizado (tiempo de espera en 8 sucursales específicas), así que la intervención debe serlo también. Capacitar a toda la red en algo genérico desperdicia recursos y no ataca la causa. Una intervención específica sobre gestión de filas en esas 8 sucursales, con medición antes/después, genera mejora demostrable y ROI claro.'},
+           {q:'¿Por qué premiar "la mejora sostenida" además del "top del ranking" es una buena estrategia de incentivos?',o:['Porque es más barato','Porque motiva también a las sucursales rezagadas a mejorar, no solo a las que ya están arriba','Porque el ranking no importa','Porque evita que el personal identifique al evaluador'],a:1,exp:'Premiar solo el top del ranking motiva a las mejores sucursales pero desmotiva a las de abajo (sienten que nunca ganarán). Premiar la mejora sostenida (quién más subió respecto al mes anterior) da a TODAS las sucursales una meta alcanzable y motiva especialmente a las rezagadas, que son justamente donde hay más margen de mejora y mayor impacto en el score general de la red.'},
+         ]}
+       ]},
     ]
   }
 };
@@ -678,7 +849,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
   let openLesson=null;
 
   const getCourses=()=>{
-    const r=role==='shopper'?'shopper':role==='cliente'?'cliente':'admin';
+    const r=role==='admin'?(CX._acadAud||'admin'):(role==='shopper'?'shopper':role==='cliente'?'cliente':'admin');
     const base=CX.acadData.COURSES[r]||CX.acadData.COURSES.admin;
     const custom=CX.acadData.getCustom(r);
     return [...custom,...base];
@@ -1044,7 +1215,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           <div><div style="font-size:18px;font-weight:900;color:#fff">🎓 Academia CXOrbia <span style="font-size:13px;font-weight:400;color:#94a3b8">Capacitación, certificaciones y recursos</span></div></div>
           <div class="flex" style="gap:8px">
             <button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.3)" id="acadManuales">📖 Manuales</button>
-            ${role==='admin'?`<button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)" id="acadNew">✨ Crear con IA</button><button class="btn btn-sm" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)" id="acadLoad">⤒ Cargar recurso</button>`:''}
+            ${role==='admin'?`<select class="sel" id="acadAud" style="width:auto" title="A quién se dirigen los cursos"><option value="admin" ${(CX._acadAud||'admin')==='admin'?'selected':''}>🏢 Consultora</option><option value="shopper" ${CX._acadAud==='shopper'?'selected':''}>🕵️ Shopper</option><option value="cliente" ${CX._acadAud==='cliente'?'selected':''}>🏬 Cliente</option></select><button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)" id="acadNew">✨ Crear con IA</button><button class="btn btn-sm" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)" id="acadLoad">⤒ Cargar recurso</button>`:''}
           </div>
         </div>
         <div class="grid g4">
@@ -1076,6 +1247,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
       </div>`;
 
     host.querySelector('#acadManuales')?.addEventListener('click',()=>openManuales());
+    host.querySelector('#acadAud')?.addEventListener('change',e=>{CX._acadAud=e.target.value;activeCat='Todos';openCourse=null;openLesson=null;draw();});
     host.querySelectorAll('[data-course]').forEach(c=>c.addEventListener('click',()=>{openCourse=c.dataset.course;const course=getCourses().find(x=>x.id===openCourse);if(course){openLesson=course.lessons[0].id;lessonPlayer(course);}}));
     host.querySelectorAll('.acad-cat').forEach(b=>b.addEventListener('click',()=>{activeCat=b.dataset.cat;draw();}));
     host.querySelector('#acadNewCat')?.addEventListener('click',()=>ui.modal('＋ Nueva categoría',`

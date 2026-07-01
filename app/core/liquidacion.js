@@ -42,9 +42,22 @@ CX.liq = {
     return d.toISOString().slice(0,10);
   },
 
-  /* fecha estimada de pago a partir de la fecha de submit/realización */
+  /* día de la semana de pago configurable por proyecto (5 = viernes por defecto) */
+  diaPago(p){ const d=(p && p.pago && p.pago.diaSemana); return Number.isFinite(d) ? d : 5; },
+
+  /* avanza una fecha al próximo día-de-semana indicado (incluye el mismo día) */
+  snapToWeekday(iso, weekday){
+    if(!iso) return '';
+    const d=new Date(iso+'T12:00:00'); if(isNaN(d)) return '';
+    const delta=((+weekday - d.getDay())+7)%7;
+    d.setDate(d.getDate()+delta);
+    return d.toISOString().slice(0,10);
+  },
+
+  /* fecha estimada de pago = submit + diasPago, ajustada al día de pago (viernes por defecto) */
   fechaEstimadaPago(p, baseISO){
-    return this.addDays(baseISO || '', this.diasPago(p));
+    if(!baseISO) return '';
+    return this.snapToWeekday(this.addDays(baseISO, this.diasPago(p)), this.diaPago(p));
   },
 
   /* construye el objeto liquidación derivado de una visita */
