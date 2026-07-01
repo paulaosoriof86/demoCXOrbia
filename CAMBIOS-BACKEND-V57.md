@@ -2,6 +2,34 @@
 
 Registro de cambios específico para continuidad V57/backend.
 
+## 2026-06-30 — Diagnóstico honesto preview backend
+
+Archivos modificados:
+
+- `app/core/backend-preview-status.js`
+- `app/core/backend-firebase.js`
+
+Qué cambió:
+
+- El badge de preview ya no debe decir “conectado” solo porque cargó el script.
+- Ahora distingue fuente: `firestore`, `localStorage/demo` o `pending`.
+- Muestra tenant, Auth, proyecto y conteos.
+- El adapter marca `window.CX_BACKEND_DATA_SOURCE` y `window.CX_BACKEND_LAST_STATE`.
+- Si el backend falla, el preview debe declarar que sigue usando localStorage/demo.
+
+Impacto:
+
+- No se modificó `/app/modules`.
+- No se modificó `app/index.html`.
+- No se hizo deploy.
+- No se tocó producción.
+- No se cargaron datos nuevos.
+
+Pendiente/riesgo:
+
+- Falta validar visualmente en navegador sobre la base V57 una vez que el ZIP V57 quede portado al repo o al worktree local.
+- Falta cerrar Auth DEV con flujo seguro y sin pedir información privada a Paula.
+
 ## 2026-06-30 — Inicio fase B2 sobre prototipo V57
 
 Motivo:
