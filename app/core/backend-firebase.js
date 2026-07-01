@@ -187,29 +187,59 @@ window.CX = window.CX || {};
     emit('backend-auth-ready', {provider:'firebase', tenantId:tenantId(), preview:true, email});
   }
 
+  async function loadProjectData(project, shoppersById){
+    const projectId = project.id;
+    const visitsRaw = await getAll(subCol(projectId, 'visits'));
+    const visitsById = {};
+    const visits = visitsRaw.map(v=>normalizeVisit(v, projectId));
+    visits.forEach(v=>{ v.projectId = v.projectId || projectId; visitsById[v.id] = v; visitsById[v.visitId] = v; });
+
+    const postulationsPromise = getAll(subCol(projectId, 'postulations')).catch(function(e){
+      warn('No se pudieron leer postulations de '+projectId, e);
+      return [];
+    });
+    const applicationsPromise = getAll(subCol(projectId, 'applications')).catch(function(e){
+      warn('No se pudieron leer applications de '+projectId, e);
+      return [];
+    });
+
+    const result = await Promise.all([postulationsPromise, applicationsPromise]);
+    const posts = [];
+    result[0].concat(result[1]).forEach(x=>{
+      const item = normalizeApplication(x, projectId, visitsById, shoppersById);
+      if(item) posts.push(item);
+    });
+
+    return {visits, posts};
+  }
+
   async function loadTenantData(){
-    const projectsRaw = await getAll(projectsCol());
-    const shoppersRaw = await getAll(shoppersCol());
+    const loadStartedAt = Date.now();
+    emit('backend-loading', {provider:'firebase', tenantId:tenantId(), source:'firestore'});
+
+    const result = await Promise.all([getAll(projectsCol()), getAll(shoppersCol())]);
+    const projectsRaw = result[0];
+    const shoppersRaw = result[1];
     const projects = projectsRaw.map(normalizeProject);
     const shoppers = shoppersRaw.map(normalizeShopper);
     const shoppersById = {};
-    shoppers.forEach(s=>{ shoppersById[s.id] = s; });
+    shoppers.forEach(s=>{ shoppersById[s.id] = s; shoppersById[s.shopperId] = s; });
+
+    const perProject = await Promise.all(projects.map(function(p){ return loadProjectData(p, shoppersById); }));
     const visits = [];
     const posts = [];
+    perProject.forEach(function(bucket){
+      (bucket.visits || []).forEach(v=>visits.push(v));
+      (bucket.posts || []).forEach(p=>posts.push(p));
+    });
 
-    for(const p of projects){
-      const projectId = p.id;
-      const vs = (await getAll(subCol(projectId, 'visits'))).map(v=>normalizeVisit(v, projectId));
-      const visitsById = {};
-      vs.forEach(v=>{ v.projectId = v.projectId || projectId; visitsById[v.id] = v; visitsById[v.visitId] = v; visits.push(v); });
-
-      const postulations = await getAll(subCol(projectId, 'postulations'));
-      const applications = await getAll(subCol(projectId, 'applications'));
-      postulations.concat(applications).forEach(x=>{
-        const item = normalizeApplication(x, projectId, visitsById, shoppersById);
-        if(item) posts.push(item);
-      });
-    }
+    emit('backend-loaded', {
+      provider:'firebase',
+      tenantId:tenantId(),
+      source:'firestore',
+      ms:Date.now()-loadStartedAt,
+      counts:{projects:projects.length, shoppers:shoppers.length, visits:visits.length, posts:posts.length}
+    });
 
     return {projects, shoppers, visits, posts};
   }
