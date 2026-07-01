@@ -19,6 +19,10 @@ window.CX = window.CX || {};
   }
 
   if(CX.BACKEND.previewMode){
+    CX.BACKEND.defaultProjectId = CX.BACKEND.defaultProjectId || 'cinepolis-abril-26';
+    CX.BACKEND.previewProjectIds = CX.BACKEND.previewProjectIds || ['cinepolis-abril-26'];
+    CX.BACKEND.projectScopeMode = 'active-preview';
+    loadScript('core/backend-active-project.js');
     loadScript('core/backend-resources.js');
     loadScript('core/backend-ai.js');
   }
