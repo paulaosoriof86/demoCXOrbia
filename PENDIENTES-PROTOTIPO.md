@@ -1,45 +1,58 @@
 # PENDIENTES-PROTOTIPO.md
 
-Pendientes reales del prototipo. Desde la recepción de `Prototype development request CXOrbia V57.zip`, la lista vigente y más actualizada está en `PENDIENTES-PROTOTIPO-V57.md`.
+Pendientes reales del prototipo/frontend para Claude. No incluir aquí tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales ni errores de integración local.
 
-No incluir aquí errores de integración backend/local, Auth DEV ni datos demo/localStorage del preview. Esos van en `INCIDENCIAS-INTEGRACION-BACKEND.md` e `INCIDENCIAS-INTEGRACION-BACKEND-V57.md`.
+## Vigente desde V58
 
-## Vigente desde V57
+La lista vigente y más completa está en:
 
-Ver detalle completo en `PENDIENTES-PROTOTIPO-V57.md`.
+- `PENDIENTES-PROTOTIPO-V58.md`
+- `PAQUETE-PARA-CLAUDE-PENDIENTES-PROTOTIPO-V58.md`
 
-Prioridad P0:
+Claude debe trabajar sobre `Prototype development request CXOrbia V58.zip` o sobre el prototipo más reciente entregado por Paula, sin usar versiones viejas y sin revertir avances existentes.
 
-1. Acciones operativas persistibles: botones que solo hacen toast deben ejecutar acción real o decir pendiente backend honestamente.
-2. Postulaciones: solicitar ajuste, gestión de visitas aprobadas, reasignar con buscador, sincronía shopper sin duplicación y notificaciones bidireccionales.
-3. Reservas/asignación: detectar visitas disponibles sin shopper en HR, cargar escenarios por periodo y cruzar reserva con postulación.
-4. Academia profunda: cursos con lecciones extensas, quiz por lección, crear/editar/eliminar categorías y lecciones, manuales por rol/proyecto.
-5. Finanzas profunda: movimiento por shopper, proyecto y país; impuestos por país; remesas a CxC; financiamientos con concepto; importador de movimientos; históricos reales al cambiar de mes.
-6. Clientes vs Cuentas CRM: unificar/vincular la misma ficha y sincronizar con proyectos/propuestas.
-7. IA real no hardcodeada: revisar que análisis, set-up, hoja de ruta, documentos e importador usen `CX.ai.ask` y no simulaciones fijas.
+## Prioridad P0 resumida
 
-## Historial RC V56
+1. Limpiar TyA/Cinépolis de proyectos demo ajenos como Banca o Restaurantes.
+2. Quitar avisos técnicos visibles en UI final: demo, Firebase, backend, beta, núcleo, diagnóstico, localStorage o similares.
+3. Corregir UTF-8 real y eliminar caracteres corruptos desde origen.
+4. Corregir README/preview local para no recomendar Python.
+5. Consolidar NDA/confidencialidad por rol y versión, no textarea único.
+6. Hacer Configuración autoadministrable.
+7. Periodo dinámico, sin julio fijo.
+8. HR viva por proyecto, país, periodo, quincena y franja.
+9. Dashboard/KPIs con lógica correcta y drill accionable debajo de KPIs o en modal amplio.
+10. Postulaciones completas, agrupables y con acciones reales.
+11. Flujo shopper estable de asignación a cuestionario/beneficios.
+12. Perfil shopper funcional con visitas, certificaciones, beneficios e historial.
+13. Responsables, Mi Día y notificaciones bidireccionales.
+14. Filtros y búsquedas funcionales en todos los módulos principales.
+15. Importador genérico CXOrbia, con TyA como plantilla específica.
+16. Proyectos autoadministrables, no lógica fija por cliente.
 
-La lista anterior de RC V56 queda superada parcialmente por V57. Mantener como referencia histórica únicamente:
+## Reglas de exclusión
 
-- Configuración/planes.
-- KPIs y dashboards.
-- Finanzas profunda.
-- Adaptación TyA visible.
-- Legal/NDA.
-- Certificación/banco de preguntas.
-- Portal cliente.
-- Academia.
-- Recursos/documentos.
-- Importador.
-- Add-ons/integraciones.
-- Impresión/PDF.
+No documentar aquí:
 
-Claude debe trabajar con la lista V57 vigente y no reabrir pendientes que V57 ya resolvió salvo que fallen visualmente.
+- Errores de Auth DEV.
+- Fallas de carga seed.
+- Reglas Firestore.
+- Validadores, loaders, scripts Firebase.
+- Helper local ignorado.
+- Smoke tests backend.
+- Preview backend DEV.
 
-## 2026-06-30 23:38:12 - Pendientes prototipo detectados durante backend V57
-- Confirmar que el prototipo mas reciente soporte pruebas de render por modulo sin bloquear overlays o modales.
-- Corregir cualquier caso donde el preview muestre tenant/proyecto demo como anca en lugar de 	ya.
-- Ocultar avisos tecnicos en UI final: demo, Firebase, backend, beta, nucleo o diagnosticos internos.
-- Mantener UTF-8 real; si aparecen simbolos rotos, corregir codificacion desde origen.
-- Validar que las mejoras de Claude no rompan pp/index-backend-dev.html ni archivos backend V57.
+Esos temas pertenecen a documentación técnica separada del backend y no son parte del paquete que Claude debe corregir en frontend/prototipo.
+
+## Entrega esperada de Claude
+
+Claude debe devolver prototipo corregido con:
+
+- Lista de archivos tocados.
+- Cambios por módulo.
+- Confirmación de que usó V58 o la versión más reciente.
+- Confirmación de que no revirtió avances.
+- Confirmación de que no tocó backend protegido.
+- `CAMBIOS-PROTOTIPO.md` actualizado o creado.
+- `PENDIENTES-PROTOTIPO.md` actualizado.
+- Dependencias de backend claramente señaladas, sin simulaciones engañosas.
