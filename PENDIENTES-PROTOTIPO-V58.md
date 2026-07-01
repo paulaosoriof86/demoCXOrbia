@@ -92,3 +92,8 @@ No debe tocar backend V57, reglas Firestore, scripts Firebase, helpers locales i
 - Debe mostrar editor por rol y version.
 - Debe usar CX.confidencialidad.text/setText/version/auditLog.
 - Revisar visualmente en Configuracion > NDA.
+## 2026-07-01 01:16:36 - NDA V58 corregido en prototipo aplicado
+- Configuracion ya no debe mostrar un textarea unico basico de NDA.
+- Debe mostrar editor por rol y version.
+- Debe usar CX.confidencialidad.text/setText/version/auditLog.
+- Revisar visualmente en Configuracion > NDA.

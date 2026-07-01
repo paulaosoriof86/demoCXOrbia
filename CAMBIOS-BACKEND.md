@@ -486,3 +486,11 @@ Pendiente/riesgo:
 - Se corrigio caracter UTF-8 roto conocido en aprendizaje.
 - Se ajusto el proyecto inicial visible a TyA/Cinepolis preview para evitar ver Proyecto Retail como base activa.
 - No deploy, no merge, no produccion, no datos reales.
+## 2026-07-01 01:16:36 - Aplicacion prototipo V58 preservando backend V57
+- Se aplico ZIP V58 como nueva base visual/prototipo.
+- Se preservaron backend V57, preview backend, reglas, helpers locales ignorados y configuraciones backend.
+- Se corrigio Configuracion > NDA para editar textos por rol usando CX.confidencialidad.
+- Se corrigio README para no recomendar Python.
+- Se corrigio caracter UTF-8 roto conocido en aprendizaje.
+- Se ajusto el proyecto inicial visible a TyA/Cinepolis preview para evitar ver Proyecto Retail como base activa.
+- No deploy, no merge, no produccion, no datos reales.
