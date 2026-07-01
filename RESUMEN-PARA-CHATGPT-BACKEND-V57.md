@@ -163,3 +163,9 @@ ode firebase/client-write-tools/validate-preview-v57-static-v2.mjs
   2. tenant isolation CXOrbia;
   3. module render smoke CXOrbia;
   4. badge final con Fuente: firestore y Tenant: tya.
+
+## 2026-06-30 23:44:28 - Preview backend V57 abierto con Node
+- Auth local preview ya existe.
+- Preview local abre con servidor Node en puerto 5191.
+- URL: http://127.0.0.1:5191/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260630_NODE_SERVER_V57
+- Siguiente gate: revisar badge y ejecutar smoke Firestore / tenant isolation / module render smoke.

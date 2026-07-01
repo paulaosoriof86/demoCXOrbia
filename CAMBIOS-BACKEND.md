@@ -460,3 +460,11 @@ Pendiente/riesgo:
 - POR QUE: el intento anterior abrio URL en puerto 5184 pero Chrome mostro ERR_CONNECTION_REFUSED.
 - IMPACTO EN FRONTEND: ninguno; no se tocaron /app/modules ni app/index.html.
 - PENDIENTE/RIESGO: despues del badge, ejecutar smoke Firestore, tenant isolation y module render smoke CXOrbia como se hizo en Orbit.
+
+## 2026-06-30 23:44:28 - Preview backend V57 servido con Node
+- ARCHIVO: proceso local preview
+- TIPO: validacion local/no versionada
+- QUE CAMBIO: se reemplazo Python por servidor local Node para abrir pp/index-backend-dev.html.
+- POR QUE: Windows devolvio codigo 9009 al intentar ejecutar Python; Node si esta disponible porque ejecuta los validadores.
+- IMPACTO EN FRONTEND: ninguno; no se tocaron /app/modules ni pp/index.html.
+- PENDIENTE/RIESGO: revisar badge visual. Si aun dice localStorage/demo, continuar con smoke Firestore y tenant isolation sin considerar backend conectado.

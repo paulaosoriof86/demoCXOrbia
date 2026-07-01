@@ -109,3 +109,10 @@ elease/cxorbia-tya-rc-20260630, sujeto a commit/push si todas las validaciones p
 - Correccion: iniciar servidor por proceso controlado, validar HTTP 200 y solo despues abrir navegador.
 - Estado: se ejecuta en este bloque.
 - Restricciones: no deploy, no merge, no produccion, no datos reales, no /app/modules.
+
+## 2026-06-30 23:44:28 - Incidencia corregida: Python no disponible para preview local
+- Sintoma: servidor local anterior cerro con codigo 9009 y Chrome mostro ERR_CONNECTION_REFUSED.
+- Causa: python -m http.server no estaba disponible correctamente en PATH.
+- Correccion: servidor estatico local con Node fuera del repo.
+- Restricciones respetadas: no deploy, no merge, no produccion, no datos reales, no /app/modules.
+- Siguiente: smoke Firestore, tenant isolation y module render smoke CXOrbia.
