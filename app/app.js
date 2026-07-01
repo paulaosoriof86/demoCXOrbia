@@ -107,6 +107,14 @@ CX.app = {
           <div class="r-d">Portal móvil: visitas, certificación y pagos</div></div>
         </button>
         <div style="text-align:center;margin-top:6px"><a id="goReg" style="font-size:12.5px;color:var(--brand);font-weight:600;cursor:pointer">¿Eres evaluador nuevo? Regístrate aquí →</a></div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div style="font-size:11px;color:var(--t3);text-align:center;margin-bottom:6px">Probar acceso por rol (matriz de permisos)</div>
+          <div class="flex" style="gap:6px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm role-alt" data-role="ops">👥 Operativo</button>
+            <button class="btn btn-ghost btn-sm role-alt" data-role="coordinador">🌎 Coordinador</button>
+            <button class="btn btn-ghost btn-sm role-alt" data-role="aliado">🤝 Aliado</button>
+          </div>
+        </div>
         ${b.clientName?`<div class="login-devfor">Plataforma operativa para <b>${b.clientName}</b></div>`:''}
         ${devForFooter}
         <div style="text-align:center;margin-top:14px"><button class="btn btn-ghost btn-sm" id="pwaBtn">📲 Instalar como app</button></div>
@@ -114,6 +122,7 @@ CX.app = {
           <span class="bdg bdg-a">● Demo comercial · datos ficticios</span></div>`:''}
       </div>`;
     lg.querySelectorAll('.role-btn').forEach(b=>b.addEventListener('click',()=>this.selectRole(b.dataset.role)));
+    lg.querySelectorAll('.role-alt').forEach(b=>b.addEventListener('click',()=>this.selectRole(b.dataset.role)));
     const gr=lg.querySelector('#goReg'); if(gr)gr.addEventListener('click',()=>this.showRegister());
     const pw=lg.querySelector('#pwaBtn'); if(pw)pw.addEventListener('click',()=>CX.pwa.openInstall(CX.ui));
   },
@@ -186,14 +195,22 @@ CX.app = {
 
   selectRole(role, shopperId){
     CX.session.role=role;
+    CX.session.testRole=null;
     if(role==='admin'){
       CX.session.user={name:'Admin Demo', role:'super', org:'Tu Consultora'};
     } else if(role==='cliente'){
       CX.session.user={name:'Cliente Demo', role:'cliente', clienteRole:'director', org:'Marca Cliente'};
-    } else {
+    } else if(role==='shopper'){
       const sid=shopperId||'sh1';
       const s=CX.data.getShopper ? CX.data.getShopper(sid) : null;
       CX.session.user={name:(s&&s.nombre)||'Evaluador 01', role:'shopper', shopperId:sid, code:(s&&s.code)||'EVL-01'};
+    } else {
+      /* roles no estándar (ops, coordinador, aliado, personalizados) — para probar la matriz de permisos.
+         Navegan como el rol elegido; el router aplica roleCanAccess. Usan la vista de admin (roles:['admin']). */
+      const lbl={ops:'Equipo Operativo',coordinador:'Coordinador / Representante',aliado:'Aliado / Franquiciado'}[role]||role;
+      CX.session.role='admin'; /* la vista admin es la base; el scope real se aplica por matriz */
+      CX.session.testRole=role; /* rol bajo prueba */
+      CX.session.user={name:lbl+' (prueba)', role:role, org:'Tu Consultora', scopeRole:role};
     }
     CX.session.view=null;
     CX.session.save();

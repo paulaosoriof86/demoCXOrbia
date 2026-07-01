@@ -88,7 +88,8 @@ CX.module('dashboard', ({data,ui})=>{
   if(k.fueraRango.t) alerts.push(['r','fuera',`${k.fueraRango.t} fuera de rango`]);
 
   /* comparativo del último trimestre (3 meses) — el mes actual sale de datos REALES; los previos se derivan */
-  const trimestre=['ABR','MAY','JUN'];
+  const _mNow=new Date().getMonth();
+  const trimestre=[months[(_mNow+10)%12],months[(_mNow+11)%12],months[_mNow]];
   const cumplNow=Math.round(k.realizadas.t/Math.max(k.total.t,1)*100);
   const cobNow=Math.min(100,Math.round(k.asignadas.t/Math.max(k.total.t,1)*100));
   const realNow=k.realizadas.t;
@@ -112,12 +113,12 @@ CX.module('dashboard', ({data,ui})=>{
   }).join('');
 
   const host=ui.el('div');
-  let selMonth=5; // JUN
+  let selMonth=new Date().getMonth(); // mes actual dinámico
   const avanceHTML=`<div class="card card-p" style="margin-bottom:18px">
-    <div class="card-h"><div class="card-t">📊 Avance real vs ideal del mes — por país</div><span class="muted" style="font-size:11px">día ${new Date().getDate()} de ${new Date(2026,selMonth+1,0).getDate()} · ideal lineal</span></div>
+    <div class="card-h"><div class="card-t">📊 Avance real vs ideal del mes — por país</div><span class="muted" style="font-size:11px">día ${new Date().getDate()} de ${new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate()} · ideal lineal</span></div>
     ${cs.map(c=>{
       const tot=k.total[c]||0, real=k.realizadas[c]||0;
-      const diaHoy=new Date().getDate(), diasMes=new Date(2026,selMonth+1,0).getDate();
+      const diaHoy=new Date().getDate(), diasMes=new Date(new Date().getFullYear(),selMonth+1,0).getDate();
       const idealPct=Math.min(100,Math.round(diaHoy/diasMes*100));
       const realPct=tot?Math.round(real/tot*100):0;
       const gap=realPct-idealPct; const tone=gap>=0?'green':gap>=-15?'amber':'red';
@@ -136,12 +137,12 @@ CX.module('dashboard', ({data,ui})=>{
     <div>${ui.ph('Dashboard Operativo', (ALL?('Todos los proyectos · operación general · '+data.projects.length+' proyectos'):(p.name+' · '+p.industry))+' · '+cs.map(c=>CX.paisFlag(c)).join(' '))}</div>
     <div class="flex">
       <select class="sel" id="dashProjSel" style="width:auto"><option value="all" ${ALL?'selected':''}>🌐 Todos los proyectos</option>${data.projects.map(pr=>`<option value="${pr.id}" ${(!ALL&&pr.id===p.id)?'selected':''}>${pr.name}</option>`).join('')}</select>
-      <select class="sel" id="monthSel" style="width:auto">${months.map((m,i)=>`<option value="${i}" ${i===selMonth?'selected':''}>${m} 2026</option>`).join('')}</select>
+      <select class="sel" id="monthSel" style="width:auto">${months.map((m,i)=>`<option value="${i}" ${i===selMonth?'selected':''}>${m} ${new Date().getFullYear()}</option>`).join('')}</select>
       <span class="bdg bdg-g">● En vivo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div>
   </div>
 
   <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
-    <div style="font-size:12.5px;color:var(--brand-dark)"><b>${months[selMonth]} 2026 ·</b> ${k.total.t} visitas · ${split(k.total)}. Las tarjetas y fases son <b>clickeables</b> para ver su detalle. Multipaís: cada país mantiene su moneda.</div>
+    <div style="font-size:12.5px;color:var(--brand-dark)"><b>${months[selMonth]} ${new Date().getFullYear()} ·</b> ${k.total.t} visitas · ${split(k.total)}. Las tarjetas y fases son <b>clickeables</b> para ver su detalle. Multipaís: cada país mantiene su moneda.</div>
   </div>
 
   <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:12px">
@@ -183,7 +184,7 @@ CX.module('dashboard', ({data,ui})=>{
   <div class="card card-p" id="estadoBoard" style="margin-bottom:18px"></div>
 
   <div class="card card-p">
-    <div class="card-h"><div class="card-t">📈 Comparativo último trimestre — KPIs clave</div><span class="muted" style="font-size:11px">${trimestre.join(' · ')} 2026</span></div>
+    <div class="card-h"><div class="card-t">📈 Comparativo último trimestre — KPIs clave</div><span class="muted" style="font-size:11px">${trimestre.join(' · ')} ${new Date().getFullYear()}</span></div>
     <table class="tbl"><thead><tr><th>KPI</th>${trimestre.map(m=>`<th>${m}</th>`).join('')}<th>Δ vs mes ant.</th></tr></thead><tbody>${trimRows}</tbody></table>
     <div style="margin-top:14px">${ui.aiBox('Comparo el último trimestre de los KPIs que importan a este proyecto (cumplimiento, velocidad, volumen, margen) y resalto la tendencia. Cada tarjeta y fase abre su detalle; donde hay gestión externa, ofrezco notificar por WhatsApp.','Lectura inteligente · trimestre')}</div>
   </div>`;
@@ -306,7 +307,7 @@ CX.module('dashboard', ({data,ui})=>{
     host.querySelectorAll('[data-alert]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.alert;drill('Gestión: '+id,F[id]||F.total,WA[id]||'Gestionar con los involucrados.');}));
     host.querySelectorAll('[data-fase]').forEach(el=>el.addEventListener('click',()=>{const[c,fk]=el.dataset.fase.split('|');drill(CX.paisLabel(c)+' · '+fk,v=>v.pais===c&&(F[fk]||F.total)(v),WA[fk]);}));
     const ms=host.querySelector('#monthSel');
-    if(ms)ms.addEventListener('change',()=>ui.toast('Mes: '+months[+ms.value]+' 2026 (demo — datos del periodo activo)',''));
+    if(ms)ms.addEventListener('change',()=>ui.toast('Mes: '+months[+ms.value]+' '+new Date().getFullYear()+' · datos del periodo activo',''));
     const ps=host.querySelector('#dashProjSel');
     if(ps)ps.addEventListener('change',()=>{ if(ps.value==='all'){CX.session._dashAll=true;} else {CX.session._dashAll=false;data.setProject(ps.value);} CX.router.nav('dashboard'); });
   },0);

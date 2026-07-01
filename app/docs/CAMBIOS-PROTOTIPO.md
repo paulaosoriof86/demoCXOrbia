@@ -6,6 +6,29 @@
 
 ---
 
+## Sesión V63 / V63b / V63c — 2026-07-01 (P0/P1 auditoría V62)
+
+**Archivos tocados:** `app/app.js`, `app/core/router.js`, `app/core/config.js`, `app/core/data.js`, `app/modules/configuracion.js`, `app/styles/layout.css`. **NO se tocó backend protegido** (`index-backend-dev.html`, `core/backend*.js` no existen en este ZIP de frontend).
+
+### Roles no estándar probables desde el login (V63)
+- **ARCHIVOS:** `app/app.js` (selectRole + botones role-alt), `app/core/router.js` (roleCanAccess con `testRole`)
+- **QUÉ CAMBIÓ:** Login con botones "Operativo / Coordinador / Aliado" que entran con ese rol bajo prueba (`CX.session.testRole`). El router aplica `roleCanAccess(testRole||role)` en sidebar, módulo inicial y navegación → la matriz de permisos se prueba de verdad.
+- **PROBADO:** ops sin Finanzas → no ve/abre financiero; coordinador solo Operación → visitas sí, financiero no; admin/super → pleno.
+
+### Modo demo vs piloto/cliente (V63b)
+- **ARCHIVOS:** `app/core/config.js` (applyBrand lee `cx_demo_mode`), `app/modules/configuracion.js` (toggle)
+- **QUÉ CAMBIÓ:** Configuración → Marca → toggle "Modo demo comercial". Off → oculta el sello "Demo comercial · datos ficticios" del login. Persiste en `cx_demo_mode`.
+
+### Proyecto inicial configurable (V63b)
+- **ARCHIVOS:** `app/core/data.js` (`currentProjectId` lee `cx_start_project`), `app/modules/configuracion.js` (selector)
+- **QUÉ CAMBIÓ:** Selector "Proyecto inicial al entrar"; la plataforma arranca en el programa elegido (ej. el del cliente/TyA). Persiste en `cx_start_project`. Así TyA/Cinépolis arranca en su proyecto sin tocar código.
+
+### Responsive móvil (V63c)
+- **ARCHIVO:** `app/styles/layout.css` (@media 860px)
+- **QUÉ CAMBIÓ:** Grids de KPIs apilan (g4→2, g3→2, g2→1), tablas con scroll horizontal, modales casi full-width, Ficha 360 full a pantalla completa en móvil.
+
+---
+
 ## Sesión V62 / V62b — 2026-07-01 (fixes auditoría V61)
 
 ### Módulo `rutas` duplicado

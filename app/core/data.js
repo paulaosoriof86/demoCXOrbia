@@ -138,7 +138,7 @@ const _postsAll   = genPosts(_visitasAll);
 /* ---------- Exposición ---------- */
 CX.data = {
   projects:PROJECTS, shoppers:SHOPPERS, _visitas:_visitasAll, _posts:_postsAll,
-  currentProjectId:PROJECTS[0].id,
+  currentProjectId:(()=>{try{const s=localStorage.getItem('cx_start_project');if(s&&PROJECTS.some(p=>p.id===s))return s;}catch(e){}return PROJECTS[0].id;})(),
 
   project(){return this.projects.find(p=>p.id===this.currentProjectId);},
   setProject(id){this.currentProjectId=id;CX.bus&&CX.bus.emit('project');},

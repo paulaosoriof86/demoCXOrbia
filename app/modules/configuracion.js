@@ -403,7 +403,17 @@ CX.module('config', ({data,ui})=>{
     const logoUrl=brandStored&&brandStored.logo||CX.BRAND.logoUrl||'';
     const nombre=brandStored&&brandStored.name||CX.BRAND.name||'CXOrbia';
     const curTheme=CX.BRAND.theme||'cxorbia';
+    const demoOn=CX.BRAND.demoMode!==false;
+    const projOpts=(CX.data.projects||[]).map(p=>`<option value="${p.id}" ${p.id===CX.data.currentProjectId?'selected':''}>${p.name}</option>`).join('');
     body.innerHTML=`
+    <div class="card card-p" style="margin-bottom:14px">
+      <div class="card-t" style="margin-bottom:10px">🎚️ Modo de operación</div>
+      <div class="grid g2" style="gap:12px">
+        <label class="flex" style="gap:8px;font-size:12.5px;cursor:pointer;align-items:center"><input type="checkbox" id="cfgDemo" ${demoOn?'checked':''}> Modo demo comercial <span class="muted" style="font-size:11px">(muestra "datos ficticios"; desactívalo para piloto/cliente real)</span></label>
+        <div><label class="lbl">Proyecto inicial al entrar</label><select class="sel" id="cfgStartProj">${projOpts}</select></div>
+      </div>
+      <div style="font-size:11px;color:var(--t3);margin-top:8px">En modo piloto/cliente se oculta el sello "Demo comercial · datos ficticios". El proyecto inicial define en qué programa arranca la plataforma (ej. el del cliente, no un demo).</div>
+    </div>
     <div class="card card-p" style="margin-bottom:14px">
       <div class="between" style="margin-bottom:12px">
         <div class="card-t">Identidad de marca activa</div>
@@ -446,6 +456,8 @@ CX.module('config', ({data,ui})=>{
       </div>
     </div>`;
     body.querySelector('#goMarca')?.addEventListener('click',()=>CX.router.nav('marca'));
+    body.querySelector('#cfgDemo')?.addEventListener('change',e=>{try{localStorage.setItem('cx_demo_mode',e.target.checked?'on':'off');}catch(x){}CX.BRAND.demoMode=e.target.checked;ui.toast(e.target.checked?'Modo demo activado':'Modo piloto/cliente · sello demo oculto','ok',3000);});
+    body.querySelector('#cfgStartProj')?.addEventListener('change',e=>{try{localStorage.setItem('cx_start_project',e.target.value);}catch(x){}CX.data.setProject(e.target.value);ui.toast('Proyecto inicial: '+(CX.data.project()?CX.data.project().name:e.target.value),'ok',3000);});
     body.querySelectorAll('.tema-pick').forEach(btn=>btn.addEventListener('click',()=>{
       const id=btn.dataset.tema;
       CX.applyTheme(id);

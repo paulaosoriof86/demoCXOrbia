@@ -109,6 +109,15 @@
   .menu-btn{display:flex}
   .content{padding:20px 16px 80px}
   .topbar{padding:10px 16px}
+  /* responsive: grids de KPIs apilan, tablas con scroll, modales casi full */
+  .grid.g4{grid-template-columns:repeat(2,1fr)!important}
+  .grid.g3{grid-template-columns:1fr 1fr!important}
+  .grid.g2{grid-template-columns:1fr!important}
+  .cx-modal,.cx-modal-wide{width:calc(100vw - 20px)!important}
+  .cx-modal-full{width:100vw!important;height:100vh!important;max-height:100vh!important;border-radius:0!important}
+  table.tbl{display:block;overflow-x:auto;white-space:nowrap}
+  .card-p{padding:14px 15px}
+  .ph-title{font-size:20px!important}
 }
 
 /* Sidebar colapsable */

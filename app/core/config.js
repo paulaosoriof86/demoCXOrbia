@@ -90,6 +90,8 @@ CX.applyBrand = function(){
   try{ const saved = localStorage.getItem('cx_theme'); if(saved && CX.THEMES[saved]) id = saved; }catch(e){}
   CX.applyTheme(id);
   try{ const ten = JSON.parse(localStorage.getItem('cx_tenant')||'null'); if(ten){ Object.assign(CX.BRAND, ten); CX.applyTheme(CX.BRAND.theme); } }catch(e){}
+  /* modo demo configurable (cx_demo_mode: 'off' → modo cliente/piloto, sin banner de datos ficticios) */
+  try{ const dm = localStorage.getItem('cx_demo_mode'); if(dm==='off') CX.BRAND.demoMode=false; else if(dm==='on') CX.BRAND.demoMode=true; }catch(e){}
   /* leer identidad guardada por módulo Marca (cx_brand_identity) */
   try{ const b = JSON.parse(localStorage.getItem('cx_brand_identity')||'null');
     if(b){ Object.assign(CX.BRAND, b);
