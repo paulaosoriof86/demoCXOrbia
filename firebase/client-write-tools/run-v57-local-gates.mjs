@@ -31,6 +31,8 @@ checks.push(run('bulletins validate', ['firebase/client-write-tools/validate-bul
 checks.push(run('resources dry-run', ['firebase/client-write-tools/build-resources-v57-dry-run.mjs'], 'resources-v57-write-plan.json'));
 checks.push(run('resources validate', ['firebase/client-write-tools/validate-resources-write-plan.mjs', 'firebase/client-write-tools/output/resources-v57-write-plan.json']));
 checks.push(run('resources manifest validate', ['firebase/client-write-tools/validate-resources-v57-manifest.mjs', 'firebase/client-write-tools/resources-v57-manifest.example.json']));
+checks.push(run('ai settings dry-run', ['firebase/client-write-tools/build-ai-settings-v57-dry-run.mjs'], 'ai-settings-v57-write-plan.json'));
+checks.push(run('ai settings validate', ['firebase/client-write-tools/validate-ai-settings-write-plan.mjs', 'firebase/client-write-tools/output/ai-settings-v57-write-plan.json']));
 checks.push(run('migration manifest validate', ['firebase/client-write-tools/validate-migration-tya-package.mjs', 'firebase/client-write-tools/migration-tya-manifest.example.json']));
 
 const result = {ok: checks.every(x=>x.ok), generatedAt: new Date().toISOString(), mode: 'local-no-firebase-no-real-data', checks};
