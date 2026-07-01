@@ -119,7 +119,8 @@ service cloud.firestore {
 
     match /tenants/{tenantId} {
       allow read: if tenantAllowed(tenantId) && (isOperator() || isClient() || isShopperRole());
-      allow create, update, delete: if tenantAllowed(tenantId) && isSuper();
+      allow create, update: if tenantAllowed(tenantId) && isAdmin();
+      allow delete: if tenantAllowed(tenantId) && isSuper();
 
       match /users/{uid} {
         allow read: if tenantAllowed(tenantId) && (isSelf(uid) || isAdmin());
@@ -135,6 +136,11 @@ service cloud.firestore {
         allow read: if tenantAllowed(tenantId) && (isOperator() || isOwnShopper(shopperIdParam));
         allow create: if tenantAllowed(tenantId) && isOperator();
         allow update: if tenantAllowed(tenantId) && (isOperator() || isOwnShopper(shopperIdParam));
+        allow delete: if tenantAllowed(tenantId) && isAdmin();
+      }
+      match /shopperStats/{shopperIdParam} {
+        allow read: if tenantAllowed(tenantId) && (isOperator() || isOwnShopper(shopperIdParam));
+        allow create, update: if tenantAllowed(tenantId) && isOperator();
         allow delete: if tenantAllowed(tenantId) && isAdmin();
       }
 
@@ -220,6 +226,20 @@ service cloud.firestore {
         allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
         allow list: if tenantAllowed(tenantId) && isOperator();
         allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+        match /periods/{periodId} {
+          allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
+          allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+        }
+
+        match /hrImports/{importId} {
+          allow read: if tenantAllowed(tenantId) && isOperator();
+          allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+        }
+
+        match /branches/{branchId} {
+          allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
+          allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
+        }
 
         match /visits/{visitId} {
           allow read: if tenantAllowed(tenantId) && (
@@ -235,6 +255,17 @@ service cloud.firestore {
           );
         }
 
+        match /applications/{applicationId} {
+          allow read: if tenantAllowed(tenantId) && (
+            isOperator() ||
+            isOwnResource()
+          );
+          allow create: if tenantAllowed(tenantId) && (
+            isOperator() ||
+            isOwnIncomingResource()
+          );
+          allow update, delete: if tenantAllowed(tenantId) && isOperator();
+        }
         match /postulations/{postulationId} {
           allow read: if tenantAllowed(tenantId) && (
             isOperator() ||
@@ -247,6 +278,21 @@ service cloud.firestore {
           allow update, delete: if tenantAllowed(tenantId) && isOperator();
         }
 
+        match /notifications/{notificationId} {
+          allow read: if tenantAllowed(tenantId) && (
+            isOperator() ||
+            resource.data.uid == request.auth.uid ||
+            resource.data.userId == request.auth.uid ||
+            resource.data.toRole == role()
+          );
+          allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
+        }
+
+        match /responsibilityLog/{logId} {
+          allow read: if tenantAllowed(tenantId) && isOperator();
+          allow create: if tenantAllowed(tenantId) && isOperator();
+          allow update, delete: if false;
+        }
         match /questionnaires/{questionnaireId} {
           allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
         allow list: if tenantAllowed(tenantId) && isOperator();
