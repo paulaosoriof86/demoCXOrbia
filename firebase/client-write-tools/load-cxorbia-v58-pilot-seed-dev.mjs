@@ -19,6 +19,17 @@ function fail(message, extra = {}) {
   process.exit(1);
 }
 
+function safeFirebaseAuthError(body) {
+  const message = String(body?.error?.message || "");
+  const code = String(body?.error?.code || "");
+  const status = String(body?.error?.status || "");
+  return {
+    code: code || undefined,
+    status: status || undefined,
+    message: message || undefined
+  };
+}
+
 function readText(filePath) {
   return fs.readFileSync(filePath, "utf8");
 }
@@ -75,7 +86,14 @@ async function signIn(apiKey, email, password) {
     body: JSON.stringify({ email, password, returnSecureToken: true })
   });
   const body = await res.json().catch(() => ({}));
-  if (!res.ok || !body.idToken) fail("Auth DEV fallo para cargar seed", { status: res.status, email });
+  if (!res.ok || !body.idToken) {
+    fail("Auth DEV fallo para cargar seed", {
+      status: res.status,
+      email,
+      firebaseAuthError: safeFirebaseAuthError(body),
+      secretPrinted: false
+    });
+  }
   return body.idToken;
 }
 
