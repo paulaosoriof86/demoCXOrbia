@@ -523,103 +523,13 @@ CX.module('config', ({data,ui})=>{
   };
 
   const drawNDA=(body)=>{
-    const roles=[
-      ['super','Super / administrador principal'],
-      ['admin','Admin del proyecto'],
-      ['ops','Operaciones'],
-      ['coordinador','Coordinador / representante regional'],
-      ['aliado','Aliado / franquiciado'],
-      ['representante','Representante comercial'],
-      ['socio','Socio'],
-      ['cliente','Cliente'],
-      ['shopper','Shopper / evaluador']
-    ];
-    const api=CX.confidencialidad;
-    const esc=(v)=>String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    const version=(r)=>api&&api.version?api.version(r):1;
-    const text=(r)=>api&&api.text?api.text(r):'Al acceder a esta plataforma, confirmas que has leido y aceptas los terminos de confidencialidad y uso de datos.';
-    const audit=()=>api&&api.auditLog?api.auditLog():[];
-
-    body.innerHTML=`
-      <div class="card card-p">
-        <div class="between" style="margin-bottom:10px">
-          <div>
-            <div class="card-t">NDA / Confidencialidad por rol</div>
-            <div class="muted" style="font-size:12px;margin-top:4px">Cada rol puede tener texto, version y aceptacion propia. Al guardar, se sube la version y se vuelve a pedir aceptacion.</div>
-          </div>
-          <span class="bdg bdg-b">Legal · por rol</span>
-        </div>
-
-        <div class="grid g2" style="gap:12px;margin-bottom:12px">
-          <div>
-            <label class="lbl">Rol</label>
-            <select class="sel" id="cfg_nda_role">
-              ${roles.map(r=>`<option value="${r[0]}">${r[1]} · v${version(r[0])}</option>`).join('')}
-            </select>
-          </div>
-          <div>
-            <label class="lbl">Version actual</label>
-            <input class="inp" id="cfg_nda_ver" disabled>
-          </div>
-        </div>
-
-        <label class="lbl">Texto del acuerdo para el rol seleccionado</label>
-        <textarea class="inp" id="cfg_nda_text" rows="9"></textarea>
-
-        <div class="flex wrap" style="gap:8px;justify-content:flex-end;margin-top:10px">
-          <button class="btn btn-ghost btn-sm" id="previewNDA">Vista previa</button>
-          <button class="btn btn-pr btn-sm" id="saveNDA">Guardar NDA por rol</button>
-        </div>
-
-        <div class="card card-p" style="margin-top:14px;background:var(--panel-2)">
-          <div class="card-t" style="font-size:13px;margin-bottom:8px">Historial de aceptaciones</div>
-          <div id="ndaAudit" style="max-height:180px;overflow:auto;font-size:12px;color:var(--t2)"></div>
-        </div>
-      </div>`;
-
-    const roleSel=body.querySelector('#cfg_nda_role');
-    const ta=body.querySelector('#cfg_nda_text');
-    const ver=body.querySelector('#cfg_nda_ver');
-    const aud=body.querySelector('#ndaAudit');
-
-    const drawAudit=()=>{
-      const rows=audit().slice(0,20);
-      aud.innerHTML=rows.length
-        ? rows.map(x=>`<div style="padding:6px 0;border-bottom:1px solid var(--border)"><b>${esc(x.usuario)}</b> · ${esc(x.rol)} · v${esc(x.version)} · ${esc(x.fecha)}</div>`).join('')
-        : '<span class="muted">Sin aceptaciones registradas todavia en este navegador.</span>';
-    };
-
-    const load=()=>{
-      const r=roleSel.value;
-      ta.value=String(text(r)||'').replace(/<br\s*\/?>/gi,'\n');
-      ver.value='Version '+version(r);
-      drawAudit();
-    };
-
-    roleSel.addEventListener('change',load);
-
-    body.querySelector('#saveNDA')?.addEventListener('click',()=>{
-      const r=roleSel.value;
-      if(api&&api.setText){
-        api.setText(r, ta.value);
-      } else {
-        let s={}; try{s=JSON.parse(localStorage.getItem('cx_nda_text')||'{}');}catch(e){}
-        s[r]=ta.value;
-        localStorage.setItem('cx_nda_text',JSON.stringify(s));
-      }
-      ui.toast('NDA actualizado para '+r+' · nueva version','ok');
-      draw();
-    });
-
-    body.querySelector('#previewNDA')?.addEventListener('click',()=>{
-      const r=roleSel.value;
-      ui.modal('Vista previa NDA · '+r, `
-        <div style="font-size:13.5px;line-height:1.7;color:var(--t2)">${ta.value.replace(/\n/g,'<br>')}</div>
-        <div style="margin-top:14px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--panel-2);font-size:12px;color:var(--t3)">Version ${version(r)} · al guardar se incrementa la version y se repide aceptacion.</div>
-      `);
-    });
-
-    load();
+    const nda=CX.BRAND&&CX.BRAND.nda||'Al acceder a esta plataforma, confirmas que has leído y aceptas los términos de confidencialidad y uso de datos.';
+    body.innerHTML=`<div class="card card-p">
+      <div class="card-t" style="margin-bottom:10px">NDA / Acuerdo de confidencialidad</div>
+      <textarea class="inp" id="cfg_nda" rows="6">${nda}</textarea>
+      <div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="saveNDA">Guardar NDA</button></div>
+    </div>`;
+    body.querySelector('#saveNDA')?.addEventListener('click',()=>{if(!CX.BRAND)CX.BRAND={};CX.BRAND.nda=body.querySelector('#cfg_nda').value;ui.toast('NDA actualizado','ok');});
   };
 
   draw();

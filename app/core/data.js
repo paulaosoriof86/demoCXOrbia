@@ -17,18 +17,18 @@ const HN_CITIES = ['Tegucigalpa','San Pedro Sula','La Ceiba','Choloma','Comayagu
 /* ---------- Proyectos genéricos (rubros distintos → la IA adapta) ---------- */
 const PROJECTS = [
   {
-    id:'tya', name:'TyA · Cinépolis GT/HN', client:'TyA Consultores (preview)', industry:'Mystery shopping · Cines',
+    id:'retail', name:'Proyecto Retail', client:'Cliente Retail (demo)', industry:'Retail · Cadena de tiendas',
     countries:['GT','HN'], currency:{GT:'Q',HN:'L'}, accent:'#2196d3',
-    sucursales:24, honorario:{GT:60,HN:200}, honRecibe:{GT:170,HN:520}, modelo:'directo', isr:5, regalias:10, boleto:{GT:33,HN:127}, combo:'Combo JUMBO', comboAmt:{GT:121,HN:291},
-    scenarios:['Visita estándar','Fin de semana','Combo JUMBO','Sala VIP'],
+    sucursales:24, honorario:{GT:60,HN:200}, honRecibe:{GT:170,HN:520}, modelo:'directo', isr:5, regalias:10, boleto:{GT:33,HN:127}, combo:'Reembolso de compra', comboAmt:{GT:121,HN:291},
+    scenarios:['Compra estándar','Fin de semana','Cliente incógnito'],
     quincenas:['Quincena 1','Quincena 2'], nVisitas:44,
-    canales:['App móvil','Tienda física','Teléfono'], formato:'Mystery guest', ronda:'JUN 26',
+    canales:['App móvil','Tienda física','Teléfono'], formato:'Compra incógnita', ronda:'JUN 26',
     restriccion:'No haber visitado esta sucursal en los últimos 2 meses.',
     cuestionario:{modo:'externa', url:'https://forms.example.com/retail', label:'Formulario web del cliente'},
     pago:{logica:'Pago 30 días después de submitir el cuestionario.', diasPago:30, moneda:'local'},
     hrMap:{fuente:'Google Sheets', cols:['Sucursal','Ciudad','País','Quincena','Escenario','Franja','Honorario']},
     geoloc:true,
-    conocimiento:'Programa TyA/Cinépolis preview. Se evalua atención, tiempos, limpieza, combo y experiencia de visita.',
+    conocimiento:'Cadena de retail. Se evalúa atención, tiempos, limpieza y proceso de compra.',
   },
   {
     id:'banca', name:'Proyecto Banca', client:'Cliente Banca (demo)', industry:'Banca · Red de agencias',

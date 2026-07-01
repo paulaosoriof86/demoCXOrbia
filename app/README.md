@@ -28,10 +28,11 @@ No requiere build ni instalación. Es HTML/CSS/JS plano.
 # opción 1 — abrir directo
 abre app/index.html en el navegador
 
-# opción 2 — servidor local con Node (recomendado, evita restricciones de file://)
-cd cxorbia
-node ../firebase/client-write-tools/local-static-server.mjs
-# luego abre http://localhost:8080/
+# opción 2 — servidor local (recomendado, evita restricciones de file://)
+cd app
+npx serve .            # Node: sirve en http://localhost:3000
+# o:  npx http-server . -p 8080
+# luego abre la URL que muestre la consola
 ```
 
 Corre **100% con datos locales** (mock). Para conectar un backend real, completa las llaves en `core/config.js → CX.FIREBASE` (ver [SECURITY.md](docs/SECURITY.md)).

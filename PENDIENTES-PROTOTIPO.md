@@ -1,58 +1,33 @@
 # PENDIENTES-PROTOTIPO.md
 
-Pendientes reales del prototipo/frontend para Claude. No incluir aquí tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales ni errores de integración local.
+Pendientes reales del prototipo/frontend para Claude. No incluir aqui tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales ni errores de integracion local.
 
-## Vigente desde V58
+## Vigente desde V59
 
-La lista vigente y más completa está en:
+La lista vigente esta en:
 
-- `PENDIENTES-PROTOTIPO-V58.md`
-- `PAQUETE-PARA-CLAUDE-PENDIENTES-PROTOTIPO-V58.md`
+- PENDIENTES-PROTOTIPO-V59.md
+- AUDITORIA-PROTOTIPO-V59.md
 
-Claude debe trabajar sobre `Prototype development request CXOrbia V58.zip` o sobre el prototipo más reciente entregado por Paula, sin usar versiones viejas y sin revertir avances existentes.
+Claude debe trabajar sobre V59 o sobre el prototipo mas reciente entregado por Paula, sin usar versiones viejas y sin revertir avances existentes.
 
-## Prioridad P0 resumida
+## Pendientes bajo verificacion
 
-1. Limpiar TyA/Cinépolis de proyectos demo ajenos como Banca o Restaurantes.
-2. Quitar avisos técnicos visibles en UI final: demo, Firebase, backend, beta, núcleo, diagnóstico, localStorage o similares.
-3. Corregir UTF-8 real y eliminar caracteres corruptos desde origen.
-4. Corregir README/preview local para no recomendar Python.
-5. Consolidar NDA/confidencialidad por rol y versión, no textarea único.
-6. Hacer Configuración autoadministrable.
-7. Periodo dinámico, sin julio fijo.
-8. HR viva por proyecto, país, periodo, quincena y franja.
-9. Dashboard/KPIs con lógica correcta y drill accionable debajo de KPIs o en modal amplio.
-10. Postulaciones completas, agrupables y con acciones reales.
-11. Flujo shopper estable de asignación a cuestionario/beneficios.
-12. Perfil shopper funcional con visitas, certificaciones, beneficios e historial.
-13. Responsables, Mi Día y notificaciones bidireccionales.
-14. Filtros y búsquedas funcionales en todos los módulos principales.
-15. Importador genérico CXOrbia, con TyA como plantilla específica.
-16. Proyectos autoadministrables, no lógica fija por cliente.
-
-## Reglas de exclusión
-
-No documentar aquí:
-
-- Errores de Auth DEV.
-- Fallas de carga seed.
-- Reglas Firestore.
-- Validadores, loaders, scripts Firebase.
-- Helper local ignorado.
-- Smoke tests backend.
-- Preview backend DEV.
-
-Esos temas pertenecen a documentación técnica separada del backend y no son parte del paquete que Claude debe corregir en frontend/prototipo.
+1. TyA/Cinepolis sin Banca/Restaurantes visibles en experiencia final.
+2. UTF-8 real sin caracteres corruptos.
+3. Configuracion autoadministrable.
+4. NDA por rol y version.
+5. Periodo dinamico.
+6. HR viva.
+7. Dashboard/KPIs y drill.
+8. Postulaciones y asignaciones.
+9. Flujo shopper.
+10. Perfil shopper.
+11. Responsables, Mi Dia y notificaciones.
+12. Filtros reales.
+13. Importador generico.
+14. Proyectos autoadministrables.
 
 ## Entrega esperada de Claude
 
-Claude debe devolver prototipo corregido con:
-
-- Lista de archivos tocados.
-- Cambios por módulo.
-- Confirmación de que usó V58 o la versión más reciente.
-- Confirmación de que no revirtió avances.
-- Confirmación de que no tocó backend protegido.
-- `CAMBIOS-PROTOTIPO.md` actualizado o creado.
-- `PENDIENTES-PROTOTIPO.md` actualizado.
-- Dependencias de backend claramente señaladas, sin simulaciones engañosas.
+Claude debe devolver prototipo corregido con lista de archivos tocados, cambios por modulo, confirmacion de que uso la version mas reciente y confirmacion de que no toco backend protegido.
