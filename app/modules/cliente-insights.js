@@ -54,6 +54,28 @@ CX.module('cli_insights', ({data,ui})=>{
         </div>
       </div>
 
+      ${(()=>{
+        /* datos vivos: agrupa visitas del proyecto por sucursal para score y alertas */
+        const vs=data.visitas().filter(v=>v.score!=null);
+        const bySuc={}; vs.forEach(v=>{const k=v.sucursal||'—';(bySuc[k]=bySuc[k]||[]).push(v.score);});
+        const sucs=Object.entries(bySuc).map(([n,arr])=>({n,score:Math.round(arr.reduce((a,b)=>a+b,0)/arr.length),visitas:arr.length})).sort((a,b)=>a.score-b.score);
+        const alerta=sucs.filter(s=>s.score<refInd).slice(0,6);
+        const top=sucs.slice().reverse().slice(0,3);
+        return `<div class="grid g2" style="gap:14px;margin-bottom:16px">
+          <div class="card card-p"><div class="card-t" style="margin-bottom:10px">🚨 Sucursales con alerta (bajo el promedio ${refInd})</div>
+            ${alerta.length?alerta.map(s=>`<div class="between" style="padding:6px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12.5px">${s.n} <span style="color:var(--t3);font-size:11px">· ${s.visitas} visita(s)</span></span><b style="color:var(--${s.score<refInd-10?'red':'amber'})">${s.score}</b></div>`).join(''):'<div style="font-size:12.5px;color:var(--t3)">Ninguna sucursal bajo el promedio del sector. 👏</div>'}
+          </div>
+          <div class="card card-p"><div class="card-t" style="margin-bottom:10px">💡 Oportunidades de mejora</div>
+            ${alerta.length?`<ul style="margin:0;padding-left:18px;font-size:12.5px;color:var(--t2);line-height:1.7">
+              <li>Plan de acción dirigido a <b>${alerta[0].n}</b> (score ${alerta[0].score}), la más rezagada.</li>
+              <li>Capacitación al personal de las ${alerta.length} sucursales bajo promedio.</li>
+              <li>Meta: subir el promedio del programa de ${mio} a ${Math.min(85,refInd+5)} el próximo periodo.</li>
+              ${top.length?`<li>Replicar buenas prácticas de <b>${top[0].n}</b> (score ${top[0].score}).</li>`:''}
+            </ul>`:'<div style="font-size:12.5px;color:var(--t3)">Programa saludable. Mantén la cadencia y apunta al top performer (85).</div>'}
+          </div>
+        </div>`;
+      })()}
+
       <div class="card card-p" style="margin-bottom:16px">
         <div class="between" style="margin-bottom:12px"><div class="card-t">💬 Anotaciones colaborativas</div><button class="btn btn-soft btn-sm" id="notaBtn">＋ Anotar sobre un resultado</button></div>
         ${notas.length?notas.map((n,i)=>`<div class="between" style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12.5px">${n.tema}</b><div style="font-size:12px;color:var(--t2)">${n.txt}</div><div style="font-size:10.5px;color:var(--t3)">${n.por} · ${n.fecha}</div></div>${n.estado?`<span class="bdg bdg-${n.estado==='resuelto'?'g':'a'}">${n.estado}</span>`:''}</div>`).join(''):'<div style="font-size:12.5px;color:var(--t3);padding:10px 0">Sin anotaciones. Comenta sobre un hallazgo o resultado; la consultora lo verá y responderá.</div>'}
