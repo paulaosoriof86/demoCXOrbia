@@ -2,19 +2,19 @@
 
 Registro especifico de cambios Sprint 4.
 
-## 2026-07-01 - Preparacion Sprint 4
+## 2026-07-01 - Resultado final Sprint 4 requestAssignVisit
 
-- Se creo `SPRINT-4-PRIMERA-ACCION-DEV-CONTROLADA-20260701.md`.
-- Se creo `firebase/client-write-tools/smoke-cxorbia-sprint4-request-assign-dev.mjs`.
-- La accion preparada es `assignVisit`.
-- La entidad usada sera una visita ficticia de control.
-- El smoke escribira solo documentos de control y auditoria.
-- No debe modificar visitas reales ni entidades operativas finales.
-- No se tocaron modulos visuales.
+- El smoke Sprint 4 fue ejecutado correctamente.
+- La accion validada fue assignVisit.
+- Se crearon y leyeron 5 documentos de control/log.
+- El modo fue request-assign-write-log-only.
+- No se mutaron entidades operativas finales.
+- No se modificaron modulos visuales.
 - No hubo Hosting.
 - No hubo produccion.
 - No hubo Orbit ni Orbia.
+- El documento principal actualizado es RESULTADO-SPRINT4-REQUEST-ASSIGN-DEV.md.
 
-## Estado
+## Siguiente paso
 
-Sprint 4 queda preparado y pendiente de ejecucion con autorizacion separada.
+Preparar la primera mutacion DEV real reversible sobre dato ficticio y con autorizacion separada.
