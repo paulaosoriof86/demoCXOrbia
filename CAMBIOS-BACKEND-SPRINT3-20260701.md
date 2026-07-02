@@ -57,3 +57,12 @@ Registro especifico de cambios Sprint 3. Mantener junto con CAMBIOS-BACKEND.md.
 - No Orbia.
 - No app/modules.
 - UTF-8 sin BOM.
+## 2026-07-01 - Resultado reglas DEV y smoke Sprint 3
+
+- ARCHIVO: RESULTADO-SPRINT3-REGLAS-SMOKE-DEV.md
+- TIPO: nuevo
+- QUE CAMBIO: se documento la publicacion exclusiva de irestore.rules en Firebase DEV y la ejecucion exitosa del smoke Sprint 3.
+- RESULTADO: smoke OK, modo write-log-only, 5 documentos de control/log creados, sin mutar entidades operativas finales.
+- IMPACTO EN FRONTEND: ninguno. No se tocaron pp/modules ni se activaron acciones finales en UI.
+- RESTRICCIONES: no Hosting, no produccion, no datos reales nuevos, no Orbit, no Orbia.
+- SIGUIENTE GATE: preparar la primera mutacion DEV real de forma reversible y accion por accion, solo con autorizacion separada.
