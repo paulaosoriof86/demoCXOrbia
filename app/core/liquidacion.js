@@ -66,7 +66,7 @@ CX.liq = {
     if(!estado) return null;
     const reembolso=(v.boleto||0)+(v.comboAmt||0);
     const total=v.honorario+reembolso;
-    const baseISO = v.realizada || v.agendada || v.cuestFecha || '';
+    const baseISO = (v.submit&&v.cuestFecha) || v.cuestFecha || v.realizada || v.agendada || '';
     return {
       visitaId:v.id, projectId:p.id, shopper:v.shopper, shopperCode:v.shopperCode,
       sucursal:v.sucursal, pais:v.pais, moneda:v.currency,
