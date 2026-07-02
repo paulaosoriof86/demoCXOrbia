@@ -119,7 +119,7 @@ CX.moduleEnabled = function(id){
 CX.MOD_CAT = {
   midia:'op', dashboard:'op', visitas:'op', postulaciones:'op', reservas:'op', shoppers:'op', tablon:'op',
   financiero:'fin', movimientos:'fin', liquidaciones:'fin', lotes:'fin',
-  proyectos:'prj', clientes:'prj', cuestionarios:'prj', rutas:'prj', importador:'prj',
+  proyectos:'prj', periodos:'prj', clientes:'prj', cuestionarios:'prj', rutas:'prj', importador:'prj',
   aprendizaje:'cap', cert:'cap', documentos:'cap', soporte:'cap',
   config:'cfg', usuarios:'cfg', marca:'cfg', automatizaciones:'cfg', integraciones:'cfg', correo:'cfg',
   costos:'com', crm:'com', marketing:'com', informes:'com',
@@ -151,6 +151,7 @@ CX.MODULES = {
   clientes:      { icon:'🏢', label:'Clientes',             roles:['admin'],           status:'ready' },
   importador:    { icon:'📥', label:'Importador',           roles:['admin'],           status:'ready' },
   proyectos:     { icon:'🗂️', label:'Proyectos',            roles:['admin'],           status:'ready' },
+  periodos:      { icon:'🗓️', label:'Periodos',             roles:['admin'],           status:'ready' },
   visitas:       { icon:'📋', label:'Visitas Disponibles',  roles:['admin','shopper'], status:'ready' },
   postulaciones: { icon:'📩', label:'Postulaciones',        roles:['admin'], badge:true, status:'ready' },
   reservas:      { icon:'🙋', label:'Reservas & Asignación', roles:['admin','shopper'], status:'ready' },
@@ -190,27 +191,29 @@ CX.MODULES = {
   cli_reportes:    { icon:'📤', label:'Reportes',             roles:['cliente'], status:'ready' },
   cli_programa:    { icon:'🧮', label:'Mi Programa',          roles:['cliente'], status:'ready' },
   cli_market:      { icon:'✨', label:'Servicios & Add-ons',  roles:['cliente'], status:'ready' },
+  cli_insights:    { icon:'📊', label:'Insights & Benchmark', roles:['cliente'], status:'ready' },
+  novedades:       { icon:'📣', label:'Novedades',            roles:['admin','shopper','cliente'], status:'ready' },
 };
 
 /* ---------- Navigation layout per role ---------- */
 CX.NAV = {
   admin: [
     { sec:'Operación', items:['midia','dashboard','visitas','postulaciones','reservas','shoppers','informes'] },
-    { sec:'Admin del Proyecto', items:['clientes','proyectos','rutas','cuestionarios','importador'] },
-    { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte'] },
+    { sec:'Admin del Proyecto', items:['clientes','proyectos','periodos','rutas','cuestionarios','importador'] },
+    { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte','novedades'] },
     { sec:'Finanzas',  items:['financiero','movimientos','liquidaciones','lotes'] },
     { sec:'Comercial', items:['costos','crm','marketing'] },
     { sec:'Configuración', items:['config','usuarios','automatizaciones','integraciones','correo','marca'] },
   ],
   shopper: [
     { sec:'Operación', items:['midia','miperfil','visitas','reservas','misvisitas'] },
-    { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte'] },
+    { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte','novedades'] },
     { sec:'Mis Beneficios', items:['beneficios'] },
   ],
   cliente: [
-    { sec:'Estrategia',  items:['cli_dashboard','cli_sucursales','cli_acciones'] },
+    { sec:'Estrategia',  items:['cli_dashboard','cli_sucursales','cli_acciones','cli_insights'] },
     { sec:'Desarrollo',  items:['cli_capacitacion','cli_reportes','cli_programa'] },
-    { sec:'Crecimiento', items:['cli_market'] },
+    { sec:'Crecimiento', items:['cli_market','novedades'] },
   ],
 };
 

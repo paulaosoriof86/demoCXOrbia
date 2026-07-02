@@ -93,17 +93,20 @@ CX.module('integraciones', ({ui,data})=>{
 
   const card=(item)=>{
     const on=CX.intStore.isOn(item.id); const ok=canUse(item.plan);
+    const cfg=CX.intStore.state()[item.id+'_cfg'];
+    const hasCfg=cfg&&Object.values(cfg).some(v=>v);
+    /* estado honesto: sin backend real, una integración configurada queda "pendiente de validación" */
+    const estado = on ? (hasCfg?{t:'Configurado · pendiente backend',c:'a'}:{t:'Activo · simulado',c:'b'}) : {t:'Inactivo',c:'n'};
     const planBadge=!ok?ui.bdg(item.plan.toUpperCase(),'r'):(item.recommended?ui.bdg('recomendado','g'):'');
-    return `<div class="card ${on?'':''}" style="padding:14px 16px;background:${on?'var(--brand-light)':'var(--panel)'};border:1px solid ${on?'var(--brand)':'var(--border)'};border-radius:12px;display:flex;align-items:center;gap:14px">
-      <div style="font-size:26px">${item.icon}</div>
-      <div style="flex:1;min-width:0">
-        <div class="between"><div><b style="font-size:13px;color:var(--t1)">${item.n}</b> ${planBadge}</div></div>
-        <div style="font-size:11.5px;color:var(--t2);margin-top:3px;line-height:1.4">${item.desc}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0">
+    return `<div class="card ${on?'':''}" style="padding:14px 16px;background:${on?'var(--brand-light)':'var(--panel)'};border:1px solid ${on?'var(--brand)':'var(--border)'};border-radius:12px;display:flex;flex-direction:column;gap:8px">
+      <div class="flex" style="gap:10px;align-items:flex-start"><div style="font-size:22px">${item.icon}</div>
+        <div style="flex:1"><div class="flex" style="gap:6px;align-items:center;flex-wrap:wrap"><b style="font-size:13px">${item.n}</b>${planBadge}</div>
+          <div style="font-size:11.5px;color:var(--t3);margin-top:2px">${item.desc}</div>
+          <div style="margin-top:5px">${ui.bdg(estado.t,estado.c)}</div></div></div>
+      <div class="between" style="margin-top:2px">
         <label class="flex" style="cursor:${ok?'pointer':'not-allowed'};gap:6px;align-items:center">
           <input type="checkbox" class="intTog" data-id="${item.id}" ${on?'checked':''} ${!ok?'disabled':''} style="width:18px;height:18px;cursor:${ok?'pointer':'not-allowed'}">
-          <span style="font-size:11px;color:${on?'var(--brand)':'var(--t3)'};font-weight:700">${on?'Activo':'Inactivo'}</span></label>
+          <span style="font-size:11px;color:${on?'var(--brand)':'var(--t3)'};font-weight:700">${on?'Activar en backend':'Inactivo'}</span></label>
         ${ok?`<button class="btn btn-ghost btn-sm intCfg" data-id="${item.id}" style="padding:2px 8px;font-size:10.5px">⚙️ Config.</button>`:'<span style="font-size:10px;color:var(--t3)">Plan '+item.plan+'</span>'}
       </div></div>`;
   };

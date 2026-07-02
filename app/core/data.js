@@ -184,6 +184,22 @@ CX.data = {
   /* periodos (los "proyectos" internos) de un programa */
   periodsForProgram(key){ return this.projects.filter(p=>this.programKey(p)===key); },
   currentProgramKey(){ const p=this.project(); return p?this.programKey(p):(this.programs()[0]&&this.programs()[0].key); },
+  /* ---- #230 Gestión de Periodos (estado por periodo, persistente) ---- */
+  _periodMeta(){ try{ return JSON.parse(localStorage.getItem('cx_period_meta')||'{}'); }catch(e){ return {}; } },
+  _savePeriodMeta(m){ try{ localStorage.setItem('cx_period_meta', JSON.stringify(m)); }catch(e){} CX.bus&&CX.bus.emit('project'); },
+  periodState(id){ return this._periodMeta()[id] || 'activo'; },
+  periodStats(id){ const vs=this._visitas.filter(v=>v.projectId===id); const done=vs.filter(v=>['realizada','cuestionario','validada','liquidada'].includes(v.estado)).length;
+    return { total:vs.length, done, pct: vs.length? Math.round(done/vs.length*100):0 }; },
+  setPeriodState(id, st){ const m=this._periodMeta(); m[id]=st; this._savePeriodMeta(m); },
+  closePeriod(id){ this.setPeriodState(id,'cerrado'); },
+  archivePeriod(id){ this.setPeriodState(id,'archivado'); },
+  reopenPeriod(id){ this.setPeriodState(id,'activo'); },
+  duplicatePeriod(id, nombre){ const src=this.projects.find(p=>p.id===id); if(!src)return null;
+    const nid='proj-'+Date.now().toString(36);
+    const dup=Object.assign({}, src, {id:nid, name:nombre||(src.name+' (copia)'), periodo:nombre||'Nuevo periodo', program:this.programKey(src), nVisitas:0});
+    this.projects.push(dup);
+    /* clona la estructura (sucursales/escenarios) pero NO las visitas ejecutadas — periodo nuevo arranca limpio */
+    CX.bus&&CX.bus.emit('project'); return dup; },
   /* al elegir un programa, activa su periodo más reciente (o el ya activo si pertenece) */
   setProgram(key){ const periods=this.periodsForProgram(key); if(!periods.length)return; if(periods.some(p=>p.id===this.currentProjectId))return; this.setProject(periods[periods.length-1].id); },
 
