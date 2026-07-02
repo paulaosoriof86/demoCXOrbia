@@ -119,7 +119,7 @@ CX.moduleEnabled = function(id){
 CX.MOD_CAT = {
   midia:'op', dashboard:'op', visitas:'op', postulaciones:'op', reservas:'op', shoppers:'op', tablon:'op',
   financiero:'fin', movimientos:'fin', liquidaciones:'fin', lotes:'fin',
-  proyectos:'prj', periodos:'prj', clientes:'prj', cuestionarios:'prj', rutas:'prj', importador:'prj',
+  proyectos:'prj', periodos:'prj', historico:'prj', clientes:'prj', cuestionarios:'prj', rutas:'prj', importador:'prj',
   aprendizaje:'cap', cert:'cap', documentos:'cap', soporte:'cap',
   config:'cfg', usuarios:'cfg', marca:'cfg', automatizaciones:'cfg', integraciones:'cfg', correo:'cfg',
   costos:'com', crm:'com', marketing:'com', informes:'com',
@@ -152,6 +152,7 @@ CX.MODULES = {
   importador:    { icon:'📥', label:'Importador',           roles:['admin'],           status:'ready' },
   proyectos:     { icon:'🗂️', label:'Proyectos',            roles:['admin'],           status:'ready' },
   periodos:      { icon:'🗓️', label:'Periodos',             roles:['admin'],           status:'ready' },
+  historico:     { icon:'📜', label:'Histórico',            roles:['admin'],           status:'ready' },
   visitas:       { icon:'📋', label:'Visitas Disponibles',  roles:['admin','shopper'], status:'ready' },
   postulaciones: { icon:'📩', label:'Postulaciones',        roles:['admin'], badge:true, status:'ready' },
   reservas:      { icon:'🙋', label:'Reservas & Asignación', roles:['admin','shopper'], status:'ready' },
@@ -199,7 +200,7 @@ CX.MODULES = {
 CX.NAV = {
   admin: [
     { sec:'Operación', items:['midia','dashboard','visitas','postulaciones','reservas','shoppers','informes'] },
-    { sec:'Admin del Proyecto', items:['clientes','proyectos','periodos','rutas','cuestionarios','importador'] },
+    { sec:'Admin del Proyecto', items:['clientes','proyectos','periodos','historico','rutas','cuestionarios','importador'] },
     { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte','novedades'] },
     { sec:'Finanzas',  items:['financiero','movimientos','liquidaciones','lotes'] },
     { sec:'Comercial', items:['costos','crm','marketing'] },

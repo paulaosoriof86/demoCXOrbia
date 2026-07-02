@@ -1,39 +1,5 @@
 # CAMBIOS-PROTOTIPO.md — Bitácora de mejoras para aplicar a TyA
 
-## Sesión V65 auditada por ChatGPT — 2026-07-02
-
-**Estado:** V65 revisado como prototipo visual reciente. Claude no alcanzo a cerrar todo el paquete, pero si dejo avances concretos.
-
-**Archivos relevantes detectados:** `app/core/data.js`, `app/core/config.js`, `app/modules/periodos.js`, `app/modules/novedades.js`, `app/modules/importador.js`, `app/index.html`, `app/docs/PENDIENTES-PROTOTIPO.md`.
-
-### Periodos del programa
-- **QUE CAMBIO:** Se agrego modulo `periodos` para administrar rondas/periodos de un programa.
-- **FUNCIONES VISUALES:** crear, cerrar, archivar, reabrir, duplicar y comparar periodos.
-- **ALCANCE:** localStorage/datos mock; no backend real.
-- **COMO PROBAR:** entrar como admin > Admin del Proyecto > Periodos.
-
-### Modelo programa / periodo
-- **QUE CAMBIO:** `app/core/data.js` ahora incluye funciones para agrupar proyectos como programas y manejar periodos internos.
-- **FUNCIONES:** `programs`, `currentProgramKey`, `periodsForProgram`, `periodState`, `periodStats`, `duplicatePeriod`.
-- **PENDIENTE:** convertirlo a scope Firestore real por tenant/proyecto/periodo desde backend.
-
-### Importador HR con deteccion de periodo
-- **QUE CAMBIO:** El flujo de importacion HR detecta rango de fechas, periodo nuevo/existente, paises y multi-periodo.
-- **ALCANCE:** aviso visual + confirmacion; persistencia real queda para backend.
-- **COMO PROBAR:** Admin > Importador > HR > cargar muestra con fechas.
-
-### Novedades / Centro de Actualizaciones
-- **QUE CAMBIO:** Se agrego modulo `novedades` para publicar/ver releases y confirmar lectura.
-- **ROLES:** admin, shopper y cliente.
-- **ALCANCE:** localStorage; pendiente backend multi-tenant y sincronizacion con topbar/bell global.
-- **COMO PROBAR:** entrar como admin > Novedades; publicar una novedad y revisar como otro rol.
-
-### Seguridad de carga
-- **VALIDADO:** `app/index.html` no carga `modules/rutas.js`, no carga `modules/aprendizaje.js` y no carga backend protegido.
-- **VALIDADO:** el ZIP no contiene `app/index-backend-dev.html` ni `app/core/backend*.js`.
-
----
-
 > Cada entrada describe un cambio hecho en el prototipo CXOrbia DESPUÉS de la migración inicial.
 > Úsalo para replicar las mejoras en tu plataforma de TyA ya migrada.
 > Formato: archivo · qué cambió · por qué · cómo aplicarlo · cómo probarlo.
@@ -318,3 +284,15 @@ Ver `PENDIENTES-PROTOTIPO.md` para la lista completa. Top de impacto para TyA:
 3. **Postulaciones** — todos los botones + sincronía bidireccional sin duplicación.
 4. **P0 shopper** — Mis Beneficios / Mis Visitas filtran solo por shopper autenticado.
 5. **Academia** — cursos profundos + manuales visibles + recursos que se embeben.
+
+---
+
+## Aplicacion ChatGPT V66 â€” 2026-07-02
+
+**ARCHIVOS:** overlay controlado desde ZIP V66 sobre `app/*`, preservando backend protegido.
+
+**QUE CAMBIO:** V66 queda como version visual vigente para continuar backend. Se aplica como mejora completa, no como parche parcial. Se conserva la logica SaaS multi-tenant y se aclara que TyA/Cinepolis es tenant/proyecto DEV, no una adaptacion exclusiva del producto.
+
+**PROTECCION:** no se tocaron `app/index-backend-dev.html`, `app/core/backend-*.js`, `firestore.rules`, `firebase.json`, `.firebaserc`, seeds ni credenciales. No hubo deploy.
+
+**PENDIENTE:** validacion visual humana y continuar Sprint 9 backend separado del prototipo.

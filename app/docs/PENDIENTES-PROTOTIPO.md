@@ -1,37 +1,5 @@
 # PENDIENTES-PROTOTIPO.md
 
-> Lista viva de mejoras del prototipo CXOrbia, priorizada.
-> Actualizacion ChatGPT 2026-07-02 sobre ZIP V65 recibido de Claude.
-> Clasificacion: CERRADO / PARCIAL / PENDIENTE / BACKEND.
-
-## Estado V65 auditado
-
-### CERRADO O AVANCE VISUAL IMPORTANTE EN V65
-- **PARCIAL — Submodulo Periodos:** V65 ya incluye `app/modules/periodos.js` con crear/cerrar/archivar/reabrir/duplicar/comparar periodos. Pendiente: persistencia Firestore y analitica historica profunda.
-- **PARCIAL — Deteccion de periodo en importador HR:** V65 detecta rango de fechas, periodo nuevo/existente, paises y HR multi-periodo. Pendiente: separacion/persistencia real por periodo en backend.
-- **PARCIAL — Centro de Actualizaciones/Novedades:** V65 incluye `app/modules/novedades.js` con publicacion admin, historial por rol y lectura local. Pendiente: persistencia multi-tenant, lectura backend y sincronizar badge topbar.
-- **CERRADO — Seguridad de carga frontend:** `app/index.html` no carga `modules/rutas.js`, no carga `modules/aprendizaje.js` y no carga backend protegido.
-- **PARCIAL — Estados honestos:** `integraciones.js` ya usa estados como pendiente backend/simulado. Pendiente extender a correo, automatizaciones, IA y acciones operativas.
-
-### PENDIENTE PRIORITARIO PARA PROTOTIPO
-- **P0 — Historico profundo:** vista historica consultable por programa/periodo/pais/sucursal, con scores, hallazgos, comparativos y sin mezclar operacion activa.
-- **P0 — Sincronia global de filtros:** un solo estado visual para proyecto/programa, periodo, pais y quincena en todos los modulos.
-- **P0 — Acciones operativas visibles pero bloqueadas:** botones/modales pueden existir, pero deben mostrar claramente `pendiente de activacion backend`; no deben llamar backend real.
-- **P1 — Novedades + topbar:** alinear modulo Novedades con campanita/global notifications, sin backend real.
-- **P1 — Correo/Automatizaciones/IA:** mostrar estados honestos: simulado, borrador, pendiente backend, error, conectado.
-- **P1 — Fichas ampliadas:** Ficha de Periodo, Ficha de Visita ampliada y Ficha de Sucursal con historico/scores/hallazgos/comparativo.
-- **P1 — Dashboard operativo:** confirmar KPIs, drill-downs, flujo por etapas por pais, ranking shoppers y certificaciones con detalle.
-- **P1 — Liquidaciones/beneficios:** historico por pais/periodo, lotes y estados visuales completos.
-
-### BACKEND — NO TOCAR DESDE CLAUDE
-- Sprint 9 esta pendiente/fallido: se detuvo con `Sprint 9 no devolvio ok=true`.
-- No documentar Sprint 9 como completado.
-- No conectar botones reales.
-- No tocar `app/index-backend-dev.html`, `app/core/backend*.js`, Firebase rules, seeds ni client-write-tools.
-- ChatGPT/backend debe diagnosticar Sprint 9 aparte.
-
----
-
 > Lista viva de mejoras del prototipo CXOrbia, priorizada. Actualizada 2026-07-01.
 > Clasificación: P0 crítico · P1 importante · P2 posterior · [TyA] específico · [CX] generalizable
 > El detalle de CÓMO se resolvió cada ítem está en CAMBIOS-PROTOTIPO.md (entradas 1–25+).
@@ -115,3 +83,13 @@
 
 ## 🟡 PROFUNDIDAD DE CONTENIDO (ampliable, no bloqueante)
 - Más cursos extensos en Academia por industria; más analítica en Finanzas/portal cliente
+
+---
+
+## Pendientes despues de aplicar V66 â€” ChatGPT/backend 2026-07-02
+
+- [CX] Mantener el prototipo comercializable y generalizable. TyA/Cinepolis es tenant DEV; no endurecer reglas como si fueran el unico cliente.
+- [Backend] Implementar segmentacion real por tenant, projectId, programId, periodId, pais, rol, permisos y feature flags.
+- [Backend] Sprint 9 sigue pendiente: no marcar como cerrado hasta validar Firebase DEV real.
+- [Claude] Revisar textos de acciones operativas, WhatsApp, correo, Make e IA para que digan claramente `simulado`, `preview` o `pendiente backend` cuando no haya conexion real.
+- [Claude] Validar visualmente reglas operativas por periodo/pais/quincena sin convertirlas en logica exclusiva de TyA.

@@ -14,8 +14,9 @@ CX.novedades = CX.novedades || {
   ];},
   list(){ try{const s=JSON.parse(localStorage.getItem(this._k)||'null'); return s||this.seed();}catch(e){return this.seed();} },
   save(a){ try{localStorage.setItem(this._k,JSON.stringify(a));}catch(e){} CX.bus&&CX.bus.emit('novedades'); },
-  add(n){ const a=this.list(); a.unshift(Object.assign({id:'r'+Date.now().toString(36),fecha:new Date().toISOString().slice(0,10),tipo:'Nuevo'},n)); this.save(a); },
-  forRole(role){ return this.list().filter(n=>!n.roles||n.roles.includes(role)); },
+  add(n){ const a=this.list(); a.unshift(Object.assign({id:'r'+Date.now().toString(36),fecha:new Date().toISOString().slice(0,10),tipo:'Nuevo',estado:'publicado',modulo:''},n)); this.save(a); },
+  forRole(role){ return this.list().filter(n=>(n.estado!=='archivado')&&(n.estado!=='borrador')&&(!n.roles||n.roles.includes(role))); },
+  setEstado(id,e){ const a=this.list(); const n=a.find(x=>x.id===id); if(n)n.estado=e; this.save(a); },
   readMap(){ try{return JSON.parse(localStorage.getItem(this._rk)||'{}');}catch(e){return {};} },
   isRead(id){ const u=(CX.session.user&&CX.session.user.name)||'anon'; const m=this.readMap(); return !!(m[u]&&m[u][id]); },
   markRead(id){ const u=(CX.session.user&&CX.session.user.name)||'anon'; const m=this.readMap(); m[u]=m[u]||{}; m[u][id]=new Date().toISOString(); try{localStorage.setItem(this._rk,JSON.stringify(m));}catch(e){} CX.bus&&CX.bus.emit('novedades'); },
@@ -44,11 +45,12 @@ CX.module('novedades', ({role,ui})=>{
               <span style="font-size:11px;color:var(--t3)">${(n.roles||['todos']).join(' · ')}</span>
               ${leido?'<span class="bdg bdg-g">✓ Leído</span>':`<button class="btn btn-soft btn-sm novRead" data-id="${n.id}">Marcar como leído</button>`}
             </div>
-            ${isAdmin?`<div style="margin-top:8px;border-top:1px solid var(--border-2);padding-top:6px;font-size:11px;color:var(--t3)">📊 Lecturas registradas: ${Object.values(CX.novedades.readMap()).filter(u=>u[n.id]).length}</div>`:''}
+            ${isAdmin?`<div style="margin-top:8px;border-top:1px solid var(--border-2);padding-top:6px" class="between"><span style="font-size:11px;color:var(--t3)">📊 Lecturas: ${Object.values(CX.novedades.readMap()).filter(u=>u[n.id]).length} · estado: ${n.estado||'publicado'} · ${n.modulo||'general'}</span><button class="btn btn-ghost btn-sm novArch" data-id="${n.id}" style="font-size:10.5px">${n.estado==='archivado'?'Republicar':'Archivar'}</button></div>`:''}
           </div>`;}).join('')||ui.empty('📣','Sin novedades por ahora.')}
       </div>`;
 
     host.querySelectorAll('.novRead').forEach(b=>b.addEventListener('click',()=>{CX.novedades.markRead(b.dataset.id);draw();ui.toast('Marcado como leído','ok');}));
+    host.querySelectorAll('.novArch').forEach(b=>b.addEventListener('click',()=>{const n=CX.novedades.list().find(x=>x.id===b.dataset.id);CX.novedades.setEstado(b.dataset.id,n&&n.estado==='archivado'?'publicado':'archivado');draw();ui.toast('Estado actualizado','ok');}));
     host.querySelector('#novNew')?.addEventListener('click',()=>ui.modal('＋ Publicar novedad',`
       <div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Tipo</label><select class="sel" id="nvT"><option>Nuevo</option><option>Mejora</option><option>Aviso</option><option>Corrección</option></select></div><div><label class="lbl">Versión</label><input class="inp" id="nvV" placeholder="v6.7"></div></div>
       <label class="lbl">Título</label><input class="inp" id="nvTit" placeholder="Qué cambió" style="margin-bottom:8px">
