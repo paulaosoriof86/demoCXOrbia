@@ -24,16 +24,29 @@ CX.router = {
 
     /* project switcher: admin ve todos; shopper solo los de su país */
     const visibleProjects = d.projectsFor(role);
-    const projOpts=visibleProjects.map(pr=>`<option value="${pr.id}" ${pr.id===d.currentProjectId?'selected':''}>${pr.name}</option>`).join('');
-    const projBlock = role==='admin'
-      ? `<div class="rail-proj"><div class="rail-proj-l">Proyecto activo</div>
-           <select id="projSel">${projOpts}</select></div>`
-      : (visibleProjects.length>1
-        ? `<div class="rail-proj"><div class="rail-proj-l">Proyecto · ${u.code||''}</div>
-             <select id="projSel">${projOpts}</select></div>`
+    /* P0 V63/V64 — selector de Proyecto muestra PROGRAMAS (no meses); el periodo se elige aparte */
+    const progs = d.programs ? d.programs().filter(pg=>visibleProjects.some(vp=>d.programKey(vp)===pg.key)) : null;
+    const curKey = d.currentProgramKey ? d.currentProgramKey() : null;
+    let projBlock;
+    if(progs && progs.length){
+      const progOpts=progs.map(pg=>`<option value="${pg.key}" ${pg.key===curKey?'selected':''}>${pg.name}</option>`).join('');
+      const periods=d.periodsForProgram?d.periodsForProgram(curKey):[];
+      const periodSel = periods.length>1
+        ? `<div class="rail-proj-l" style="margin-top:9px">Periodo</div>
+           <select id="periodSel">${periods.map(pr=>`<option value="${pr.id}" ${pr.id===d.currentProjectId?'selected':''}>${pr.periodo||pr.name}</option>`).join('')}</select>`
+        : '';
+      projBlock = (role==='admin' || progs.length>1)
+        ? `<div class="rail-proj"><div class="rail-proj-l">Proyecto${role!=='admin'&&u.code?(' · '+u.code):''}</div>
+             <select id="projSel">${progOpts}</select>${periodSel}</div>`
         : `<div class="rail-proj"><div class="rail-proj-l">Proyecto</div>
              <div style="font-size:13px;font-weight:700">${p.name}</div>
-             <div style="font-size:10.5px;color:var(--t3)">${p.industry}</div></div>`);
+             <div style="font-size:10.5px;color:var(--t3)">${p.industry}</div>${periodSel}</div>`;
+    } else {
+      const projOpts=visibleProjects.map(pr=>`<option value="${pr.id}" ${pr.id===d.currentProjectId?'selected':''}>${pr.name}</option>`).join('');
+      projBlock = role==='admin'
+        ? `<div class="rail-proj"><div class="rail-proj-l">Proyecto activo</div><select id="projSel">${projOpts}</select></div>`
+        : `<div class="rail-proj"><div class="rail-proj-l">Proyecto</div><div style="font-size:13px;font-weight:700">${p.name}</div><div style="font-size:10.5px;color:var(--t3)">${p.industry}</div></div>`;
+    }
 
     const collapsed = (()=>{try{return JSON.parse(localStorage.getItem('cx_rail_col')||'{}')}catch(e){return {};}})();
     const nav=CX.NAV[role].map(group=>{
@@ -95,7 +108,12 @@ CX.router = {
       }
     });
     const sel=document.getElementById('projSel');
-    if(sel)sel.addEventListener('change',()=>{d.setProject(sel.value);CX.ui.toast('Proyecto: '+d.project().name,'ok');});
+    if(sel)sel.addEventListener('change',()=>{
+      if(d.setProgram && d.programs){ d.setProgram(sel.value); CX.ui.toast('Proyecto: '+(d.project()?d.programBase(d.project()):sel.value),'ok'); this.buildRail(CX.session.role); }
+      else { d.setProject(sel.value); CX.ui.toast('Proyecto: '+d.project().name,'ok'); }
+    });
+    const psel=document.getElementById('periodSel');
+    if(psel)psel.addEventListener('change',()=>{ d.setProject(psel.value); CX.ui.toast('Periodo: '+(d.project().periodo||d.project().name),'ok'); });
     document.getElementById('logoutBtn').addEventListener('click',()=>CX.app.logout());
   },
 

@@ -163,6 +163,30 @@ CX.data = {
     return pais ? this.projects.filter(p=>p.countries.includes(pais)) : this.projects;
   },
 
+  /* ---- Separación Proyecto(programa) vs Periodo (P0 V63/V64) ----
+     Deriva el programa base quitando tokens de mes/quincena/país del nombre.
+     Así el selector muestra "Cinepolis" (no "Cinepolis ABRIL 26 HN"). */
+  _MESES:['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','setiembre','octubre','noviembre','diciembre'],
+  programBase(p){
+    let n=(p.name||'').trim();
+    const re=new RegExp('\\b('+this._MESES.join('|')+')\\b\\.?\\s*\\d{0,4}','ig');
+    n=n.replace(re,'').replace(/\b20\d{2}\b|\b\d{2}\b(?!\d)/g,'').replace(/\b(HN|GT|SV|CR|PA|MX|CO|Q1|Q2|quincena\s*\d)\b/ig,'')
+       .replace(/[\-–·|]+/g,' ').replace(/\s{2,}/g,' ').trim();
+    return n||p.name;
+  },
+  programKey(p){ return (p.program||this.programBase(p)).toLowerCase(); },
+  /* lista de programas únicos (lo que el selector de Proyecto debe mostrar) */
+  programs(){
+    const seen={}, out=[];
+    this.projects.forEach(p=>{const k=this.programKey(p);if(!seen[k]){seen[k]={key:k,name:this.programBase(p),sample:p,periods:[]};out.push(seen[k]);}seen[k].periods.push(p);});
+    return out;
+  },
+  /* periodos (los "proyectos" internos) de un programa */
+  periodsForProgram(key){ return this.projects.filter(p=>this.programKey(p)===key); },
+  currentProgramKey(){ const p=this.project(); return p?this.programKey(p):(this.programs()[0]&&this.programs()[0].key); },
+  /* al elegir un programa, activa su periodo más reciente (o el ya activo si pertenece) */
+  setProgram(key){ const periods=this.periodsForProgram(key); if(!periods.length)return; if(periods.some(p=>p.id===this.currentProjectId))return; this.setProject(periods[periods.length-1].id); },
+
   visitas(){return this._visitas.filter(v=>v.projectId===this.currentProjectId);},
   posts(){return this._posts.filter(p=>p.projectId===this.currentProjectId);},
   shoppersFor(){const cs=this.project().countries;return this.shoppers.filter(s=>cs.includes(s.pais));},
