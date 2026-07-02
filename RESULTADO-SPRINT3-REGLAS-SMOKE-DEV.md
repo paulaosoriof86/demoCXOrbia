@@ -1,10 +1,10 @@
 # RESULTADO-SPRINT3-REGLAS-SMOKE-DEV.md
 
-Fecha: 2026-07-01 19:04:54
+Fecha: 2026-07-01
 
 ## Alcance autorizado
 
-Paula autorizo publicar unicamente irestore.rules en Firebase DEV cxorbia-backend-dev y ejecutar smoke Sprint 3 de acciones operativas controladas.
+Paula autorizo publicar unicamente `firestore.rules` en Firebase DEV `cxorbia-backend-dev` y ejecutar smoke Sprint 3 de acciones operativas controladas.
 
 ## Restricciones respetadas
 
@@ -17,31 +17,30 @@ Paula autorizo publicar unicamente irestore.rules en Firebase DEV cxorbia-backe
 - No mutacion de visitas, postulaciones, cuestionarios ni liquidaciones.
 - No impresion de secretos.
 
-## Resultado
+## Resultado real
 
 - Reglas Firestore DEV publicadas correctamente.
-- Smoke Sprint 3 ejecutado correctamente.
-- Modo: write-log-only.
-- Documentos de control/log creados: .
-- Tenant: $tenantId.
-- Proyecto CXOrbia: $cxProjectId.
-- Firebase project: $firebaseProject.
+- Smoke Sprint 3 no se completo.
+- Motivo del bloqueo: no se encontro `CXORBIA_DEV_PASSWORD` en variable de entorno ni en archivo local ignorado.
+- No se crearon documentos de control/log del smoke Sprint 3.
+- No se mutaron entidades operativas finales.
 
-## Colecciones validadas
+## Advertencias de Firebase CLI
 
-- operationActionLocks
-- operationActions
-- operationEvents
-- entityAuditTrail
-- projects/{projectId}/responsibilityLog
+Firebase compilo y publico reglas con advertencias no bloqueantes:
 
-## Siguiente gate
+- `Unused function: isCoordinator`.
+- `Unused function: canAccessProject`.
 
-Antes de conectar botones reales del prototipo, debe definirse accion por accion:
+## Incidencia de script local
 
-1. Mutacion DEV permitida.
-2. Regla de validacion.
-3. Reversibilidad.
-4. Registro de auditoria.
-5. Validacion visual.
-6. Documentacion.
+El bloque PowerShell usado para este gate no detuvo la ejecucion despues del error de credencial y documento incorrectamente el smoke como exitoso. Este documento corrige el estado real y deja pendiente el smoke.
+
+## Estado del gate
+
+- Gate reglas Firestore DEV: COMPLETADO.
+- Gate smoke Sprint 3: PENDIENTE por credencial DEV local.
+
+## Siguiente accion
+
+Ejecutar solo el smoke Sprint 3 cuando exista credencial DEV local, sin volver a publicar reglas y sin pegar secretos en ChatGPT.
