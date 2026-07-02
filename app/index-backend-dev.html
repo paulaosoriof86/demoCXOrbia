@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CXOrbia · Plataforma Operativa de Campo</title>
+<title>CXOrbia · Preview Backend DEV</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,24 +29,23 @@
       <button class="btn btn-ghost btn-icon menu-btn" onclick="document.body.classList.toggle('nav-open')">☰</button>
       <div class="tb-crumb" id="crumb"></div>
       <div class="spacer"></div>
-      <div class="tb-client-logo" id="tbClientLogo" style="display:none"></div>
       <button class="tb-bell" id="tbSupport" title="Soporte" aria-label="Soporte">
         <span style="font-size:16px">🆘</span>
-      </button>
-      <button class="tb-bell" id="tbMail" title="Correo" aria-label="Correo">
-        <span style="font-size:16px">✉️</span>
-        <span class="tb-bell-badge" id="tbMailBadge" style="display:none">0</span>
       </button>
       <button class="tb-bell" id="tbBell" title="Novedades" aria-label="Novedades">
         <span style="font-size:17px">🔔</span>
         <span class="tb-bell-badge" id="tbBellBadge" style="display:none">0</span>
       </button>
-      <div class="tb-demo"><span class="d"></span> Demo comercial</div>
+      <div class="tb-demo"><span class="d"></span> Preview backend DEV</div>
     </div>
     <main class="content"><div id="view"></div></main>
   </div>
 </div>
 
+<!-- FIREBASE SDK COMPAT SOLO PARA PREVIEW DEV -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <!-- CORE -->
 <script src="core/config.js"></script>
 <script src="core/geo.js"></script>
@@ -59,9 +58,6 @@
 <script src="core/hr.js"></script>
 <script src="core/costos.js"></script>
 <script src="core/automations.js"></script>
-<script src="core/manuales-data.js"></script>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script src="core/importador.js"></script>
 <script src="core/ui.js"></script>
 <script src="core/liquidacion.js"></script>
@@ -69,6 +65,9 @@
 <script src="core/notif.js"></script>
 <script src="core/backend-config.js"></script>
 <script src="core/backend-firebase.js"></script>
+<script src="core/backend-finance-benefits.js"></script>
+<script src="core/backend-operational-actions.js"></script>
+<script src="core/backend-cxdata-finance-read.js"></script>
 <script src="core/topbar.js"></script>
 <script src="core/pwa.js"></script>
 <script src="core/router.js"></script>
@@ -88,7 +87,7 @@
 <script src="modules/tablon.js"></script>
 <script src="modules/cert.js"></script>
 <script src="modules/documentos.js"></script>
-<script src="modules/academia.js"></script>
+<script src="modules/aprendizaje.js"></script>
 <script src="modules/soporte.js"></script>
 <script src="modules/operacion-extra.js"></script>
 <script src="modules/finanzas.js"></script>
@@ -102,9 +101,8 @@
 <script src="modules/marketing.js"></script>
 <script src="modules/reservas.js"></script>
 <script src="modules/integraciones.js"></script>
+<script src="modules/rutas.js"></script>
 <script src="modules/automatizaciones.js"></script>
-<script src="modules/correo.js"></script>
-<script src="modules/marca.js"></script>
 
 <!-- BOOT -->
 <script src="app.js"></script>

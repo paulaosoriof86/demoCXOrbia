@@ -1,0 +1,128 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // DRAFT ONLY — no publicar sin validación explícita.
+    // Extensión para Configuración, Integraciones y Automatizaciones.
+    // No reemplaza firestore.rules actual.
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function tokenTenant() {
+      return request.auth.token.tenantId;
+    }
+
+    function sameTenant(tenantId) {
+      return signedIn() && tokenTenant() == tenantId;
+    }
+
+    function role() {
+      return request.auth.token.role;
+    }
+
+    function isOwnerAdmin() {
+      return role() in ['superAdmin', 'owner', 'admin'];
+    }
+
+    function isOps() {
+      return role() in ['superAdmin', 'owner', 'admin', 'ops', 'coordinator', 'coordinador', 'aliado'];
+    }
+
+    function isFinance() {
+      return role() in ['superAdmin', 'owner', 'admin', 'finance'];
+    }
+
+    function canManageConfig(tenantId) {
+      return sameTenant(tenantId) && isOwnerAdmin();
+    }
+
+    function canReadConfig(tenantId) {
+      return sameTenant(tenantId) && (isOwnerAdmin() || isOps() || isFinance());
+    }
+
+    function allowedIntegrationStatus(status) {
+      return status in ['draft', 'configured', 'validated', 'active', 'failed', 'revoked', 'disabled'];
+    }
+
+    function allowedAutomationStatus(status) {
+      return status in ['queued', 'sent', 'ok', 'failed', 'skipped', 'retrying'];
+    }
+
+    function noSecretFields(data) {
+      return !('apiKey' in data) &&
+             !('password' in data) &&
+             !('token' in data) &&
+             !('secret' in data) &&
+             !('clientSecret' in data) &&
+             !('refreshToken' in data) &&
+             !('accessToken' in data);
+    }
+
+    match /globalCatalog/integrations/items/{integrationId} {
+      allow read: if signedIn();
+      allow create, update, delete: if false;
+    }
+
+    match /tenants/{tenantId}/config/{configId} {
+      allow read: if canReadConfig(tenantId);
+      allow create, update: if canManageConfig(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && noSecretFields(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/projects/{projectId}/config/{configId} {
+      allow read: if canReadConfig(tenantId);
+      allow create, update: if canManageConfig(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.projectId == projectId
+        && noSecretFields(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/integrations/{integrationId} {
+      allow read: if canReadConfig(tenantId);
+      allow create, update: if canManageConfig(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && allowedIntegrationStatus(request.resource.data.status)
+        && noSecretFields(request.resource.data)
+        && (!('configPublic' in request.resource.data) || noSecretFields(request.resource.data.configPublic));
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/automationRules/{ruleId} {
+      allow read: if canReadConfig(tenantId);
+      allow create, update: if canManageConfig(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && noSecretFields(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/automationRuns/{runId} {
+      allow read: if canReadConfig(tenantId);
+      allow create: if sameTenant(tenantId)
+        && (isOwnerAdmin() || isOps() || isFinance())
+        && request.resource.data.tenantId == tenantId
+        && allowedAutomationStatus(request.resource.data.status)
+        && noSecretFields(request.resource.data)
+        && (!('payloadSanitized' in request.resource.data) || noSecretFields(request.resource.data.payloadSanitized));
+      allow update: if canManageConfig(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && allowedAutomationStatus(request.resource.data.status)
+        && noSecretFields(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/configAuditLogs/{auditId} {
+      allow read: if canManageConfig(tenantId);
+      allow create: if sameTenant(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && noSecretFields(request.resource.data)
+        && (!('beforeSanitized' in request.resource.data) || noSecretFields(request.resource.data.beforeSanitized))
+        && (!('afterSanitized' in request.resource.data) || noSecretFields(request.resource.data.afterSanitized));
+      allow update, delete: if false;
+    }
+  }
+}
