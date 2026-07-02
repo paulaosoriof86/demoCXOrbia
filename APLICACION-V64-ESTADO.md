@@ -1,4 +1,4 @@
-﻿# APLICACION-V64-ESTADO.md
+# APLICACION-V64-ESTADO.md
 
 Fecha: 2026-07-01
 
@@ -8,9 +8,9 @@ V64 fue auditado, aplicado localmente y subido a la rama canonica preservando ba
 
 ## Correccion posterior
 
-El reporte local mostro que tres archivos pp/core/backend*.js fueron eliminados por una lista protegida incompleta. Se restauraron desde el commit sano anterior y se documento la incidencia en:
+El reporte local mostro que tres archivos `app/core/backend*.js` fueron eliminados por una lista protegida incompleta. Se restauraron desde el commit sano anterior y se documento la incidencia en:
 
-- INCIDENCIA-V64-BACKEND-RESTORE.md
+- `INCIDENCIA-V64-BACKEND-RESTORE.md`
 
 ## Backend
 
