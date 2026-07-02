@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cxorbia-bulletins-v1",
+  "title": "CXOrbia Bulletins / Novedades",
+  "type": "object",
+  "required": ["tenantId", "title", "body", "status", "createdAt"],
+  "properties": {
+    "id": {"type": "string"},
+    "tenantId": {"type": "string"},
+    "title": {"type": "string"},
+    "body": {"type": "string"},
+    "type": {"type": "string", "enum": ["news", "task", "alert", "request", "training", "finance", "certification"]},
+    "priority": {"type": "string", "enum": ["low", "normal", "high", "urgent"]},
+    "status": {"type": "string", "enum": ["active", "draft", "archived", "disabled"]},
+    "icon": {"type": "string"},
+    "tone": {"type": "string"},
+    "createdAt": {"type": "string"},
+    "createdByUid": {"type": "string"},
+    "createdByEmail": {"type": "string"},
+    "activeFrom": {"type": "string"},
+    "activeUntil": {"type": "string"},
+    "targetAll": {"type": "boolean"},
+    "targetRoles": {"type": "array", "items": {"type": "string"}},
+    "targetUserIds": {"type": "array", "items": {"type": "string"}},
+    "targetShopperIds": {"type": "array", "items": {"type": "string"}},
+    "targetProjectIds": {"type": "array", "items": {"type": "string"}},
+    "targetCountries": {"type": "array", "items": {"type": "string"}},
+    "actionRoute": {"type": "string"},
+    "actionLabel": {"type": "string"},
+    "isDismissible": {"type": "boolean"}
+  },
+  "additionalProperties": true
+}

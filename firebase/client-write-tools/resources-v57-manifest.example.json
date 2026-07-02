@@ -1,0 +1,22 @@
+{
+  "tenantId": "tya",
+  "resources": [
+    {
+      "id": "res-tya-logo",
+      "kind": "brand",
+      "title": "Logo TyA",
+      "fileName": "logo-tya.png",
+      "storagePath": "tenants/tya/brand/logo-tya.png",
+      "visibleRoles": ["admin", "ops", "coordinador"]
+    },
+    {
+      "id": "res-tya-manual-cinepolis",
+      "projectId": "tya-cinepolis",
+      "kind": "manual",
+      "title": "Manual operativo Cinépolis",
+      "fileName": "manual-cinepolis.pdf",
+      "storagePath": "tenants/tya/projects/tya-cinepolis/manuals/manual-cinepolis.pdf",
+      "visibleRoles": ["admin", "ops", "coordinador", "shopper"]
+    }
+  ]
+}
