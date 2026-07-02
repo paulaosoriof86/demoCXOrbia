@@ -2,45 +2,44 @@
 
 Fecha: 2026-07-01
 
-## Alcance autorizado
-
-Paula autorizo publicar unicamente `firestore.rules` en Firebase DEV `cxorbia-backend-dev` y ejecutar smoke Sprint 3 de acciones operativas controladas.
-
-## Restricciones respetadas
-
-- No Hosting.
-- No produccion.
-- No datos reales nuevos.
-- No Orbit.
-- No Orbia.
-- No acciones finales en UI.
-- No mutacion de visitas, postulaciones, cuestionarios ni liquidaciones.
-- No impresion de secretos.
-
 ## Resultado real
 
-- Reglas Firestore DEV publicadas correctamente.
-- Smoke Sprint 3 no se completo.
-- Motivo del bloqueo: no se encontro `CXORBIA_DEV_PASSWORD` en variable de entorno ni en archivo local ignorado.
-- No se crearon documentos de control/log del smoke Sprint 3.
-- No se mutaron entidades operativas finales.
+Reglas Firestore DEV publicadas correctamente en `cxorbia-backend-dev`.
 
-## Advertencias de Firebase CLI
+Smoke Sprint 3 ejecutado correctamente.
 
-Firebase compilo y publico reglas con advertencias no bloqueantes:
+## Validaciones
 
-- `Unused function: isCoordinator`.
-- `Unused function: canAccessProject`.
+- Smoke ok: true.
+- Modo: write-log-only.
+- Documentos de control/log creados: 5.
+- Tenant: tya.
+- Proyecto CXOrbia: cinepolis-abril-26.
+- Firebase project: cxorbia-backend-dev.
+- Config source: app/core/backend-config.js.
+- No se mutaron visitas.
+- No se mutaron postulaciones.
+- No se mutaron cuestionarios.
+- No se mutaron liquidaciones.
+- No se imprimieron secretos.
+- No Hosting.
+- No produccion.
+- No Orbit.
+- No Orbia.
 
-## Incidencia de script local
+## Documentos creados y leidos por smoke
 
-El bloque PowerShell usado para este gate no detuvo la ejecucion despues del error de credencial y documento incorrectamente el smoke como exitoso. Este documento corrige el estado real y deja pendiente el smoke.
+- tenants/tya/operationActionLocks/lock-act-smoke-sprint3-20260702012204.
+- tenants/tya/operationActions/act-smoke-sprint3-20260702012204.
+- tenants/tya/operationEvents/evt-act-smoke-sprint3-20260702012204.
+- tenants/tya/entityAuditTrail/audit-act-smoke-sprint3-20260702012204.
+- tenants/tya/projects/cinepolis-abril-26/responsibilityLog/resp-act-smoke-sprint3-20260702012204.
 
 ## Estado del gate
 
 - Gate reglas Firestore DEV: COMPLETADO.
-- Gate smoke Sprint 3: PENDIENTE por credencial DEV local.
+- Gate smoke Sprint 3: COMPLETADO.
 
-## Siguiente accion
+## Siguiente paso
 
-Ejecutar solo el smoke Sprint 3 cuando exista credencial DEV local, sin volver a publicar reglas y sin pegar secretos en ChatGPT.
+Preparar la primera accion DEV real accion por accion, reversible, auditable y con autorizacion separada.
