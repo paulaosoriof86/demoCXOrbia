@@ -58,7 +58,19 @@ CX.shopperQuestionnaire = function(data, p, visita, ui){
       b.parentElement.querySelectorAll('.qopt').forEach(x=>x.classList.replace('btn-pr','btn-ghost'));
       b.classList.replace('btn-ghost','btn-pr'); b.parentElement.dataset.val=b.dataset.v;
     }));
-    ov.querySelectorAll('.geoBtn').forEach(b=>b.addEventListener('click',()=>{b.textContent='✅ Ubicación capturada';b.disabled=true;ui.toast('Ubicación y hora registradas (demo)','ok');}));
+    ov.querySelectorAll('.geoBtn').forEach(b=>b.addEventListener('click',()=>{
+      b.textContent='📍 Obteniendo GPS…'; b.disabled=true;
+      const stamp=(lat,lon)=>{ const ts=new Date().toLocaleString('es-GT');
+        b.innerHTML='✅ '+(lat!=null?lat.toFixed(5)+', '+lon.toFixed(5):'ubicación')+' · '+ts;
+        b.dataset.geo=JSON.stringify({lat,lon,ts}); };
+      if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(
+          pos=>{ stamp(pos.coords.latitude,pos.coords.longitude); ui.toast('📍 Foto sellada con GPS + hora','ok',3500); },
+          err=>{ stamp(null,null); ui.toast('GPS no disponible ('+err.code+') · se registró la hora','warn',3500); },
+          {enableHighAccuracy:true,timeout:8000}
+        );
+      } else { stamp(null,null); ui.toast('Este dispositivo no expone GPS · se registró la hora','warn'); }
+    }));
     ov.querySelector('#qSubmit').addEventListener('click',()=>{
       const answers={};
       ov.querySelectorAll('.qans').forEach(el=>{

@@ -325,9 +325,34 @@ Responde SOLO con JSON válido con este formato exacto:
       });
     } else {
       const d=hr.diff||{nuevos:[],dups:[]};
+      /* #232 — detección de periodo: deriva mes/año del rango de fechas de la HR */
+      const MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      const fechas=[...d.nuevos,...d.dups].map(c=>c.fecha).filter(Boolean).sort();
+      let periodInfo='';
+      if(fechas.length){
+        const f0=fechas[0], f1=fechas[fechas.length-1];
+        const mk=(iso)=>{const[y,m]=iso.split('-');return m?MES[+m-1]+' '+y:iso;};
+        const per0=mk(f0), per1=mk(f1);
+        const rango = per0===per1 ? per0 : per0+' → '+per1;
+        const multi = per0!==per1;
+        /* ¿el proyecto ya tiene visitas en este periodo? (existente vs nuevo) */
+        const existentes=CX.data.visitas().some(v=>v.fecha&&fechas.includes(v.fecha));
+        const paises=[...new Set([...d.nuevos,...d.dups].map(c=>c.pais).filter(Boolean))];
+        periodInfo=`<div class="card card-p" style="margin:12px 0;border-left:3px solid var(--brand)">
+          <div class="card-t" style="font-size:12.5px;margin-bottom:8px">🗓️ Periodo detectado</div>
+          <div class="grid g3" style="gap:8px">
+            <div>${ui.bdg('Periodo: '+rango, multi?'a':'b')}</div>
+            <div>${ui.bdg('Proyecto: '+p.name,'n')}</div>
+            <div>${ui.bdg(existentes?'Periodo EXISTENTE (agrega)':'Periodo NUEVO','g')}</div>
+          </div>
+          ${paises.length?`<div style="margin-top:6px;font-size:11.5px;color:var(--t3)">Países en la HR: ${paises.join(' · ')}</div>`:''}
+          ${multi?`<div style="margin-top:8px;background:#fef3c7;border-radius:8px;padding:8px 11px;font-size:11.5px;color:#92400e">⚠️ La HR abarca <b>varios periodos</b>. Se importarán todos; en producción se separan por periodo automáticamente para no mezclar la operación.</div>`:''}
+        </div>`;
+      }
       body.innerHTML=`
       <div class="card card-p">
         <div class="card-h"><div class="card-t">Vista previa y confirmación</div><div class="flex" style="gap:6px">${ui.bdg(d.nuevos.length+' nuevos','g')} ${ui.bdg(d.dups.length+' duplicados (omitidos)','a')}</div></div>
+        ${periodInfo}
         <div style="background:var(--brand-light);border-radius:9px;padding:9px 12px;font-size:12px;color:var(--brand-dark);margin:12px 0">Anti-duplicado por <b>sucursal + fecha</b>. Los duplicados no se importan. Al confirmar se crean las visitas y se sincroniza todo.</div>
         <div style="overflow-x:auto;max-height:320px;overflow-y:auto">
           <table class="tbl" style="min-width:700px"><thead><tr><th>Ref</th><th>Sucursal</th><th>Shopper</th><th>Escenario</th><th>Fecha</th><th>Honorario</th><th>Estado</th><th></th></tr></thead>

@@ -234,7 +234,7 @@ CX.module('correo',({data,role,ui})=>{
         body:`<p>${body.replace(/\n/g,'<br>')}</p>`,
         date:new Date().toISOString().slice(0,10),time:new Date().toTimeString().slice(0,5),
         tags:a?a.tags:[],attachments:[]});
-      ui.toast('Correo enviado','ok');folder='sent';draw();
+      ui.toast(conn?'Correo enviado':'Correo guardado en Enviados · se despachará al conectar tu cuenta','ok',3500);folder='sent';draw();
     });
     host.querySelector('#replyWA')?.addEventListener('click',()=>{
       const a=DEMO.find(e=>e.id===activeId);if(!a)return;
@@ -263,7 +263,7 @@ CX.module('correo',({data,role,ui})=>{
         body:host.querySelector('#composeBody').innerHTML,
         date:new Date().toISOString().slice(0,10),time:new Date().toTimeString().slice(0,5),tags:[],attachments:[]});
       host.querySelector('#composeOverlay').style.display='none';
-      ui.toast('Correo enviado','ok');folder='sent';draw();
+      ui.toast(conn?'Correo enviado':'Correo guardado en Enviados · se despachará al conectar tu cuenta','ok',3500);folder='sent';draw();
     });
     host.querySelector('#composeDraft')?.addEventListener('click',()=>{host.querySelector('#composeOverlay').style.display='none';ui.toast('Guardado como borrador','ok');});
     host.querySelector('#composeAI')?.addEventListener('click',()=>{
