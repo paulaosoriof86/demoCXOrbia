@@ -37,7 +37,8 @@ try {
     "tools\hr-source\tya-hr-source-multitab-preview.mjs",
     "tools\migration\tya-dev-import-contract.mjs",
     "tools\migration\tya-dev-import-contract-validator.mjs",
-    "tools\migration\tya-production-gates-matrix.mjs"
+    "tools\migration\tya-production-gates-matrix.mjs",
+    "tools\migration\tya-dev-readiness-report.mjs"
   )
   foreach ($File in $Required) {
     if (!(Test-Path $File)) { throw "Falta archivo requerido: $File" }
@@ -69,12 +70,17 @@ try {
   node .\tools\migration\tya-production-gates-matrix.mjs
   if ($LASTEXITCODE -ne 0) { throw "Matriz gates fallo" }
 
+  Step "Readiness report"
+  node .\tools\migration\tya-dev-readiness-report.mjs
+  if ($LASTEXITCODE -ne 0) { throw "Readiness report fallo" }
+
   Step "Reportes"
   Write-Host "tmp\hr-source-private-flow-check"
   Write-Host "tmp\hr-source-private\multitab-preview"
   Write-Host "tmp\tya-dev-import-contract"
   Write-Host "tmp\tya-dev-import-contract-validation"
   Write-Host "tmp\tya-production-gates-matrix"
+  Write-Host "tmp\tya-dev-readiness-report"
 
   Write-Host "Firestore writes: 0"
   Write-Host "Imports executed: 0"
