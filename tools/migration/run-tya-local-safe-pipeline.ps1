@@ -33,6 +33,8 @@ try {
 
   Step "Archivos requeridos"
   $Required = @(
+    "tools\backend\cx-data-contract-scan.mjs",
+    "tools\backend\cx-backend-contract-check.mjs",
     "tools\hr-source\tya-hr-source-private-flow-check.mjs",
     "tools\hr-source\tya-hr-source-multitab-preview.mjs",
     "tools\migration\tya-dev-import-contract.mjs",
@@ -44,6 +46,14 @@ try {
     if (!(Test-Path $File)) { throw "Falta archivo requerido: $File" }
     Write-Host "OK: $File"
   }
+
+  Step "CX.data contract scan"
+  node .\tools\backend\cx-data-contract-scan.mjs
+  if ($LASTEXITCODE -ne 0) { throw "CX.data contract scan fallo" }
+
+  Step "Backend contract check"
+  node .\tools\backend\cx-backend-contract-check.mjs
+  if ($LASTEXITCODE -ne 0) { throw "Backend contract check fallo" }
 
   Step "Staging preview"
   $PreviewDir = Join-Path $Repo "tmp\tya-staging-preview"
@@ -75,6 +85,8 @@ try {
   if ($LASTEXITCODE -ne 0) { throw "Readiness report fallo" }
 
   Step "Reportes"
+  Write-Host "tmp\cx-data-contract-scan"
+  Write-Host "tmp\cx-backend-contract-check"
   Write-Host "tmp\hr-source-private-flow-check"
   Write-Host "tmp\hr-source-private\multitab-preview"
   Write-Host "tmp\tya-dev-import-contract"
