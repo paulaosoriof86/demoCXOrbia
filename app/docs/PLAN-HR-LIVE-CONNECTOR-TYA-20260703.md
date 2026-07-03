@@ -1,121 +1,96 @@
 # Plan HR Live Connector TyA / Cinépolis
 
-Fecha: 2026-07-03  
-Estado: diseño para implementar después de auditoría V6 + V7.1.  
-Restricción: no ejecutar conexión viva sin autorización y credenciales seguras.
+Fecha: 2026-07-03
+Estado: diseño backend. Fuente viva Google Sheets ya confirmada por Paula y verificada con Google Drive Connector.
 
-## 1. Objetivo
+## Fuente viva confirmada
 
-Evitar nuevas iteraciones fallidas leyendo la hoja de ruta como datos sueltos. El objetivo es crear una capa backend que lea la HR viva, genere preview validado y solo después permita sincronizar datos hacia Firestore DEV.
+Paula compartió la HR viva como Google Sheets. Metadatos verificados: título `HR Guatemala - Sincronizacion Google Sheets`, creada el 2025-05-29 y modificada el 2026-07-03.
 
-## 2. Principio técnico
+La hoja contiene 28 tabs operativos por periodo/país y 2 dashboards. El conteo operativo detectado es 617 filas, consistente con V6:
+
+- GT: 34 filas por periodo.
+- HN: 10 filas por periodo.
+- Excepción: `JUNIO 26 HN` tiene 11 filas.
+- `JULIO 26` y `JULIO 26 HN` existen y deben quedar como preparación.
+
+Por seguridad no se versiona la URL completa ni datos crudos en este repo público. El enlace debe guardarse como configuración privada del proyecto/tenant, no como literal en código ni documentación pública.
+
+## Principio técnico
 
 La HR viva no debe conectarse directamente a módulos UI. Debe entrar por una capa backend/controlada:
 
 ```text
-HR externa -> HR Live Connector -> Migration Preview -> Validation Gates -> Firestore DEV -> CX.data adapter -> UI
+Proyecto normal CXOrbia
+→ configuración privada de fuente HR
+→ HR externa
+→ HR Live Connector
+→ preview validado
+→ migrationBatch/hrReadBatch
+→ Firestore DEV
+→ CX.data adapter
+→ UI
 ```
 
-## 3. Lo que NO debe pasar
+## Contrato de proyecto
 
-- No leer HR directamente desde `/app/modules`.
-- No convertir errores en conteo 0.
-- No mezclar 403/404/hoja vacía/columna cambiada como si fueran lo mismo.
-- No escribir Firestore si el preview tiene errores críticos.
-- No sobrescribir datos activos sin rollback.
-- No hardcodear Cinépolis como regla global.
-- No reescribir frontend para resolver lectura backend.
+Cada proyecto CXOrbia debe poder registrar una fuente HR:
 
-## 4. Entradas requeridas
+```json
+{
+  "hrSource": {
+    "type": "google_sheets",
+    "storage": "private_config",
+    "spreadsheetTitle": "HR Guatemala - Sincronizacion Google Sheets",
+    "tabsPattern": "{MES} {YY} / {MES} {YY} HN",
+    "mode": "read_preview_first",
+    "writeBackEnabled": false
+  }
+}
+```
 
-Para construir el conector vivo se necesita definir una fuente:
+## Columnas canónicas
 
-### Opción A — Excel Online / OneDrive
-- Tenant/cuenta autorizada.
-- Drive item ID o ruta del archivo.
-- Workbook/table/range.
-- Método de autenticación server-side.
+El conector debe mapear variaciones de encabezados hacia estos campos:
 
-### Opción B — Google Sheets
-- Spreadsheet ID.
-- Ranges por periodo o tab.
-- Service account o OAuth seguro.
-- Permisos mínimos de lectura y, si aplica, escritura.
+- `sourceTab`, `sourceRow`, `periodRaw`, `periodId`, `periodStatus`
+- `country`, `cinemaId`, `city`, `address`, `branchName`
+- `timeBand`, `cinemaFormat`, `comboType`, `purchaseType`, `paymentMethod`
+- `quincena`, `shopperNameRaw`, `phoneRaw`, `emailRaw`
+- `availableFromRaw`, `scheduledDateRaw`, `completedDateRaw`, `questionnaireDateRaw`, `submittedAtRaw`
+- `ticketAmountRaw`, `comboAmountRaw`, `surveyIdRaw`, `honorariumRaw`
+- `reviewerRaw`, `liquidatedRaw`, `statusRaw`, `observationsRaw`, `scenarioSentRaw`
 
-### Opción C — Archivo subido/manual temporal
-- XLSX cargado por admin.
-- Útil como transición, pero no es lectura viva.
+## Variaciones de encabezado detectadas
 
-## 5. Contrato de columnas HR
+- `DIRECCIÓN` / `DIRECCIÓN `.
+- `Shopping` / `Shopping `.
+- `Fecha  programada` / `Fecha programada`.
+- `Fecha  submitido` / `Fecha submitido`.
+- `Ccuestionario completado` con salto de línea.
+- `Observaciones de revisión` con salto de línea.
+- `Disponible a partir de` aparece en tabs 2026, no en todos los tabs 2025.
+- `Envío de escenario` aparece en tabs recientes.
 
-El conector debe aceptar variaciones de encabezados, pero mapear a un contrato canónico.
+Regla: normalizar encabezados con trim, minúsculas, eliminación de saltos/doble espacio y alias por columna.
 
-Campos canónicos:
-- `sourceTab`
-- `sourceRow`
-- `periodRaw`
-- `periodId`
-- `periodStatus`
-- `country`
-- `cinemaId`
-- `city`
-- `address`
-- `branchName`
-- `timeBand`
-- `cinemaFormat`
-- `comboType`
-- `purchaseType`
-- `paymentMethod`
-- `quincena`
-- `shopperNameRaw`
-- `phoneRaw`
-- `emailRaw`
-- `availableFromRaw`
-- `scheduledDateRaw`
-- `completedDateRaw`
-- `questionnaireDateRaw`
-- `submittedAtRaw`
-- `ticketAmountRaw`
-- `comboAmountRaw`
-- `surveyIdRaw`
-- `honorariumRaw`
-- `reviewerRaw`
-- `liquidatedRaw`
-- `statusRaw`
-- `observationsRaw`
+## Validadores obligatorios
 
-## 6. Validadores obligatorios
-
-### Seguridad
-- No secrets en logs.
-- No PII cruda en repo.
-- No datos bancarios en preview público.
-
-### Estructura
+- No secrets ni PII en logs públicos.
 - Encabezados presentes.
 - Tabs detectados.
 - Filas parseables.
 - Fechas interpretables.
 - País válido.
 - Periodo con año explícito.
-
-### Conteo TyA/Cinépolis
-- Guatemala normalmente 34 por periodo.
-- Honduras normalmente 10 por periodo.
-- Total normal 44.
-- Estos conteos son QA del programa, no regla global de plataforma.
-
-### Casos especiales
-- Julio 2026 = preparación.
-- `JUNIO_26_HN/source_row=12` = revisar/descarte.
-- Fechas futuras en cuestionario/realizada = issue.
+- Conteo esperado por programa: GT 34, HN 10, total 44.
+- Julio 2026 como preparación.
+- `JUNIO 26 HN` con 11 filas como revisión.
 - Submitido sin visita = issue crítico.
 - Liquidación sin visita = issue crítico.
-- Duplicado `visitKey` = issue crítico.
+- Duplicado de `visitKey` = issue crítico.
 
-## 7. Estados de lectura
-
-El conector debe reportar estados honestos:
+## Estados honestos de lectura
 
 | Estado | Significado |
 |---|---|
@@ -129,88 +104,24 @@ El conector debe reportar estados honestos:
 | `ready_for_preview` | Puede mostrarse preview. |
 | `ready_for_import` | Puede pedirse autorización de importación. |
 
-## 8. Flujo operativo recomendado
+## Flujo recomendado
 
-1. Admin selecciona programa y periodo.
-2. Backend lee HR viva.
-3. Backend genera fingerprint de fuente.
-4. Backend parsea filas a preview.
-5. Backend valida conteos y reglas.
-6. Admin revisa preview con issues.
-7. Admin autoriza importación piloto o sincronización.
-8. Backend escribe en staging/import batch.
-9. Backend promueve a colecciones operativas solo con gate aprobado.
-10. Backend conserva rollback.
+1. Admin crea proyecto normal CXOrbia.
+2. Admin registra fuente HR viva.
+3. Backend lee HR viva.
+4. Backend genera fingerprint de fuente.
+5. Backend parsea filas a preview.
+6. Backend valida conteos y reglas.
+7. Admin revisa preview con issues.
+8. Admin autoriza importación piloto o sincronización.
+9. Backend escribe en staging/import batch.
+10. Backend promueve a colecciones operativas solo con gate aprobado.
+11. Backend conserva rollback.
 
-## 9. Write-back controlado
+## Write-back controlado
 
-No debe escribirse a HR sin diseño separado.
+No escribir a HR sin diseño separado. Write-back futuro posible para asignación, fecha programada, realizada, cuestionario, observaciones y estado, siempre con auditoría before/after y control de conflicto.
 
-Write-back posible en el futuro:
-- asignación shopper;
-- fecha programada;
-- realizada;
-- cuestionario marcado;
-- observaciones;
-- estado.
+## Pendiente para Claude/prototipo
 
-Condiciones:
-- Solo campos permitidos.
-- Lock o revisión de última versión/fingerprint.
-- Auditoría `before/after`.
-- Manejo de conflicto si la HR cambió desde la lectura.
-
-## 10. Colecciones de apoyo
-
-```text
-tenants/{tenantId}/hrConnections/{connectionId}
-tenants/{tenantId}/hrReadBatches/{batchId}
-tenants/{tenantId}/hrReadBatches/{batchId}/rows/{rowId}
-tenants/{tenantId}/hrReadBatches/{batchId}/issues/{issueId}
-tenants/{tenantId}/hrMappings/{mappingId}
-tenants/{tenantId}/programRules/{programId}
-```
-
-## 11. Reglas configurables de programa
-
-Para Cinépolis:
-
-```json
-{
-  "programId": "cinepolis",
-  "expectedMonthlyVisits": {"GT": 34, "HN": 10},
-  "periodsRequireExplicitYear": true,
-  "july2026Status": "preparation",
-  "quincenaDependency": {
-    "enabled": true,
-    "q2RequiresQ1Submitted": true
-  },
-  "availability": {
-    "source": "hr_and_computed",
-    "requiresSubmittedPreviousVisit": true
-  },
-  "liquidation": {
-    "requiresSubmitted": true,
-    "requiresExternalFinanceCrosscheck": true
-  }
-}
-```
-
-## 12. Primer bloque implementable sin riesgo
-
-Crear script dry-run local/CI que:
-- reciba ZIP V6 y V7.1 o XLSX HR futura;
-- no escriba Firestore;
-- genere JSON/MD de preview;
-- falle si encuentra issue crítico;
-- distinga errores de permisos, archivo faltante, vacío y schema cambiado;
-- no suba PII al repo.
-
-## 13. Pregunta abierta para Paula
-
-Para construir lectura viva real falta decidir la fuente técnica de HR:
-- Excel Online/OneDrive;
-- Google Sheets;
-- carga manual XLSX temporal.
-
-Mientras no se defina esa fuente, se puede avanzar con el pipeline de preview/importación usando V6 + V7.1 como contrato y datos de prueba sanitizados.
+El formulario de proyecto debe permitir configurar `Fuente de Hoja de Ruta` con tipo de fuente, campo URL visible solo a roles autorizados, botón `Probar conexión`, estados honestos y preview de tabs/periodos antes de importar.
