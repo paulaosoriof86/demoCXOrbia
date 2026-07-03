@@ -17,6 +17,9 @@ Sin merge, sin deploy, sin escrituras y sin importacion.
 - FRONTEND-VNEXT-TYA-20260703.md
 - HANDOFF-FRONTEND-RUNNER-TYA-20260703.md
 - CHECKLIST-AUDITORIA-NUEVO-ZIP-FRONTEND-TYA-20260703.md
+- AUDITORIA-RC-V74-CLOUD-FRONTEND-20260703.md
+- PENDIENTES-PROTOTIPO-ADDENDUM-RC-V74-20260703.md
+- RESUMEN-PARA-CLAUDE-RC-V74-20260703.md
 - GATE-EJECUCION-LOCAL-PIPELINE-TYA-20260703.md
 - TYA-PRODUCTION-GATES-MATRIX-20260703.md
 - TYA-LOCAL-SAFE-PIPELINE-20260703.md
@@ -47,3 +50,7 @@ Sin merge, sin deploy, sin escrituras y sin importacion.
 ## Siguiente uso
 
 Usar este indice para ubicar documentos y scripts del tramo TyA / HR Source antes de preparar paquete visual o auditar un nuevo ZIP.
+
+## Nota RC V74
+
+La auditoria V74 confirma que el ZIP debe empalmarse de forma incremental y selectiva, conservando backend, docs y herramientas del PR #7.
