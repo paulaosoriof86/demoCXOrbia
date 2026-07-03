@@ -1,5 +1,14 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - DEV import dry-run package TyA
+
+- Se agrego `tools/migration/tya-build-dev-import-dry-run-package.mjs`.
+- Se agrego `app/docs/DEV-IMPORT-DRY-RUN-PACKAGE-TYA-20260703.md`.
+- Objetivo: consolidar readiness, conteos, gates, bloqueantes y autorizacion requerida antes de cualquier escritura DEV.
+- Entradas esperadas: plan canonico, write plan manifest e import gate.
+- Salidas locales: `tmp/tya-dev-import-dry-run-package/tyaDevImportDryRunPackage.json` y `.md`.
+- Estado seguro: sin escritura, sin importacion, sin deploy y sin produccion.
+
 ## 2026-07-03 - Plan staging canonico TyA
 
 - Se agrego `tools/migration/tya-build-canonical-staging-plan.mjs`.
