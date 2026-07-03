@@ -84,3 +84,13 @@ Cuando el plan esté revisado:
 3. Validar que las rutas correspondan al tenant/proyecto correcto.
 4. Crear importador DEV con escritura deshabilitada por defecto.
 5. Activar escritura solo con autorización explícita y rollback.
+
+## Continuidad 2026-07-03
+
+Después de este plan se agregó el puente backend HR Source:
+
+- `app/core/backend-hr-source-bridge.js`
+- `app/docs/BACKEND-HR-SOURCE-BRIDGE-20260703.md`
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-HR-SOURCE-BRIDGE-20260703.md`
+
+El puente escucha acciones HR del frontend y mantiene respuesta honesta si el endpoint backend aún no está configurado.
