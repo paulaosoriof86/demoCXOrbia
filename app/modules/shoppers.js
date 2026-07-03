@@ -107,6 +107,23 @@ CX.module('shoppers', ({data,ui})=>{
         <div data-k="curso" style="cursor:pointer">${ui.kpi('En curso',st.enCurso,'a')}</div>
       </div>
       <div style="font-size:11px;color:var(--t3);text-align:right;margin-bottom:14px">↑ toca un indicador para ver el detalle</div>
+      <div class="card card-p" style="margin-bottom:14px;background:var(--panel-2)">
+        <div class="card-t" style="font-size:12.5px;margin-bottom:8px">📊 Criterio de puntuación (score ${(s.rating||0).toFixed?s.rating.toFixed(1):(s.rating||'—')}/5)</div>
+        <div style="font-size:11.5px;color:var(--t2);line-height:1.85">
+          El score pondera la calidad y confiabilidad del evaluador. Solo penaliza cuando la responsabilidad es del shopper:
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 14px;margin-top:6px">
+            <span>• Cancelación por shopper</span><b style="color:var(--red)">−0.3</b>
+            <span>• Cancelación por TyA/cliente/local cerrado</span><b style="color:var(--t3)">0 (no penaliza)</b>
+            <span>• Reprogramación justificada</span><b style="color:var(--t3)">0</b>
+            <span>• Cuestionario enviado tarde</span><b style="color:var(--amber)">−0.15</b>
+            <span>• Evidencia incompleta/deficiente</span><b style="color:var(--amber)">−0.2</b>
+            <span>• Fuera de rango autorizado (no shopper)</span><b style="color:var(--t3)">0</b>
+            <span>• Calidad narrativa alta</span><b style="color:var(--green)">+0.1</b>
+            <span>• Reincidencia de faltas</span><b style="color:var(--red)">−0.25 acum.</b>
+          </div>
+          <div style="font-size:10.5px;color:var(--t3);margin-top:6px">Config por tenant/proyecto. Cada penalización queda en la auditoría con motivo y responsable.</div>
+        </div>
+      </div>
       <div class="card-h" style="margin-bottom:10px"><div class="card-t">Datos del shopper</div><button class="btn btn-soft btn-sm" id="shEdit">✎ Editar perfil</button></div>
       <div id="shFormHost"></div>
     `;

@@ -1002,6 +1002,12 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         </div>
         <div id="lt-quiz" style="display:none">
           <div style="background:var(--brand-light);border-radius:9px;padding:9px 12px;font-size:12.5px;color:var(--brand-dark);margin-bottom:8px">✨ La evaluación se genera con IA a partir del contenido del curso. Puedes editarla después.</div>
+          <div class="grid g2" style="gap:8px;margin-bottom:8px">
+            <div><label class="lbl">Nº de preguntas</label><input class="inp" id="nlQn" type="number" value="5" min="1" max="30"></div>
+            <div><label class="lbl">Nivel</label><select class="sel" id="nlQlvl"><option>Básico</option><option selected>Intermedio</option><option>Avanzado</option></select></div>
+            <div><label class="lbl">Puntaje mínimo (%)</label><input class="inp" id="nlQgate" type="number" value="80" min="0" max="100"></div>
+            <div><label class="lbl">Intentos permitidos</label><input class="inp" id="nlQtry" type="number" value="3" min="1" max="10"></div>
+          </div>
           <textarea class="inp" id="nlQD" rows="3" placeholder="Qué debe evaluar o deja vacío para auto-generar…"></textarea>
         </div>
         <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="nlSave">Agregar</button></div>`,

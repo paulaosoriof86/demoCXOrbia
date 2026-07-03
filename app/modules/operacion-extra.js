@@ -202,7 +202,21 @@ CX.module('rutas', ({data,ui})=>{
       <input type="file" accept=".csv,.xlsx,.xls" class="inp" style="padding:7px;margin-bottom:12px">
       <div style="background:var(--panel-2);border:1px solid var(--border);border-radius:9px;padding:10px;font-size:11.5px;color:var(--t3)">Vista previa de mapeo: Columna A→Sucursal · B→Ciudad · C→Fecha · D→Escenario · E→Honorario (editable en demo).</div>
       <div style="text-align:right;margin-top:14px"><button class="btn btn-green btn-sm" onclick="CX.ui.toast('HR importada y mapeada (demo)','ok');this.closest('.cx-ov').remove()">Importar y mapear</button></div>`));
-    host.querySelector('#hrNew').addEventListener('click',()=>CX.ui.toast('Agrega paradas internas o impórtalas; en HR online se crean en la hoja','ok',3200));
+    host.querySelector('#hrNew').addEventListener('click',()=>ui.modal('＋ Nueva parada (HR)',`
+      <div class="grid g2" style="gap:8px 10px">
+        <div style="grid-column:1/3"><label class="lbl">Sucursal</label><input class="inp" id="hnSuc" placeholder="Nombre de la sucursal"></div>
+        <div><label class="lbl">Ciudad</label><input class="inp" id="hnCiu"></div>
+        <div><label class="lbl">Fecha disponible</label><input class="inp" id="hnFec" type="date"></div>
+        <div><label class="lbl">Reembolso</label><input class="inp" id="hnRe" type="number" value="0"></div>
+        <div><label class="lbl">Escenario</label><input class="inp" id="hnEsc" placeholder="Escenario"></div>
+      </div>
+      <div style="text-align:right;margin-top:12px"><button class="btn btn-green btn-sm" id="hnOk">Agregar parada</button></div>
+    `,{onMount:(ov,close)=>ov.querySelector('#hnOk').addEventListener('click',()=>{
+      const suc=(ov.querySelector('#hnSuc').value||'').trim();if(!suc){ui.toast('Sucursal requerida','warn');return;}
+      if(CX.hr&&CX.hr.addParada)CX.hr.addParada(p,{sucursal:suc,ciudad:ov.querySelector('#hnCiu').value,fecha:ov.querySelector('#hnFec').value,reembolso:+ov.querySelector('#hnRe').value||0,escenario:ov.querySelector('#hnEsc').value});
+      else{p._hrExtra=p._hrExtra||[];p._hrExtra.push({sucursal:suc,ciudad:ov.querySelector('#hnCiu').value,fecha:ov.querySelector('#hnFec').value});}
+      CX.bus&&CX.bus.emit('visit-flow');close();CX.router.nav('rutas');ui.toast('Parada "'+suc+'" agregada'+(online?' · se refleja en la HR online':''),'ok',3200);
+    })}));
   },0);
   return host;
 });
@@ -292,7 +306,7 @@ CX.module('informes', ({data,ui})=>{
     host.querySelectorAll('[data-dl]').forEach(b=>b.addEventListener('click',()=>ui.toast('Descargando: '+(reportes[b.dataset.dl]||['reporte'])[0],'ok')));
     host.querySelector('#newCustom')?.addEventListener('click',()=>{
       const b=Object.entries(reportes).map(([id,r])=>'<option value="'+id+'">'+r[0]+'</option>').join('');
-      ui.modal('＋ Nuevo reporte personalizado','<label class="lbl">Basado en</label><select class="sel" id="nrBase" style="margin-bottom:10px">'+b+'</select><label class="lbl">Nombre</label><input class="inp" id="nrNota" placeholder="Ej. Reporte dirección Q2" style="margin-bottom:10px"><label class="lbl">O genera con IA (describe qué reporte necesitas)</label><textarea class="inp" id="nrIA" rows="2" placeholder="Ej. compara cumplimiento por país y destaca las 3 sucursales más débiles con recomendaciones" style="margin-bottom:12px"><\/textarea><div style="text-align:right"><button class="btn btn-pr btn-sm" id="nrSave">Crear</button></div>',
+      ui.modal('＋ Nuevo reporte personalizado','<label class="lbl">Basado en</label><select class="sel" id="nrBase" style="margin-bottom:10px">'+b+'</select><label class="lbl">Nombre</label><input class="inp" id="nrNota" placeholder="Ej. Reporte dirección Q2" style="margin-bottom:10px"><label class="lbl">Columnas a incluir</label><div class="flex wrap" style="gap:8px;margin-bottom:10px">'+['Sucursal','Ciudad/País','Shopper','Estado','Score','Fecha','Honorario','Hallazgos'].map(c=>'<label class="flex" style="gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" class="nrCol" value="'+c+'" checked> '+c+'</label>').join('')+'</div><label class="lbl">O genera con IA (describe qué reporte necesitas)</label><textarea class="inp" id="nrIA" rows="2" placeholder="Ej. compara cumplimiento por país y destaca las 3 sucursales más débiles con recomendaciones" style="margin-bottom:12px"><\/textarea><div style="text-align:right"><button class="btn btn-pr btn-sm" id="nrSave">Crear</button></div>',
         {onMount:(ov,close)=>{ov.querySelector('#nrSave').addEventListener('click',()=>{
           const instr=(ov.querySelector('#nrIA').value||'').trim();
           if(instr && CX.ai && CX.ai.ready()){

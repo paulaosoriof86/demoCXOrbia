@@ -47,6 +47,13 @@ CX.router = {
         ? `<div class="rail-proj"><div class="rail-proj-l">Proyecto activo</div><select id="projSel">${projOpts}</select></div>`
         : `<div class="rail-proj"><div class="rail-proj-l">Proyecto</div><div style="font-size:13px;font-weight:700">${p.name}</div><div style="font-size:10.5px;color:var(--t3)">${p.industry}</div></div>`;
     }
+    /* V66-2 — indicador de fuente de datos (honesto): demo/localStorage/importado/backend DEV */
+    const _src = (function(){ try{
+      if(window.CX_BACKEND_DEV) return {t:'Backend DEV', c:'#0e9c6e'};
+      if(localStorage.getItem('cx_imported')) return {t:'Importado', c:'#2a6fdb'};
+      return {t:'Demo · localStorage', c:'#d97706'};
+    }catch(e){ return {t:'Demo', c:'#d97706'}; } })();
+    projBlock += `<div class="rail-src" title="Fuente de datos del prototipo" style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--t3)"><span style="width:7px;height:7px;border-radius:50%;background:${_src.c}"></span>Datos: ${_src.t}</div>`;
 
     const collapsed = (()=>{try{return JSON.parse(localStorage.getItem('cx_rail_col')||'{}')}catch(e){return {};}})();
     const nav=CX.NAV[role].map(group=>{
@@ -170,6 +177,8 @@ CX.bus.on('project',()=>{
     try{ CX.router.buildRail(CX.session.role); CX.router.nav(CX.session.view); }
     finally{ _busy=false; }
   }
-  ['visit-flow','shoppers','clients','programa'].forEach(ev=>CX.bus.on(ev, reRender));
+  /* #239 — 'project' (cambio de programa/periodo) también re-renderiza el módulo activo,
+     para que TODOS los módulos reflejen consistentemente el periodo/país seleccionado */
+  ['visit-flow','shoppers','clients','programa','project'].forEach(ev=>CX.bus.on(ev, reRender));
   CX.router._reRender = reRender;
 })();

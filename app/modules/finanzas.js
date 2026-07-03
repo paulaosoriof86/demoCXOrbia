@@ -211,7 +211,7 @@ CX.module('movimientos', ({data,ui})=>{
 
     host.innerHTML=`
     <div class="between" style="margin-bottom:12px"><div>${ui.ph('Movimientos & Tesorería', 'Ingresos, egresos, CxC/CxP, financiamientos y remesas · por proyecto o globales')}</div>
-      <div class="flex"><span class="bdg bdg-g">● En vivo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
+      <div class="flex"><span class="bdg bdg-a">◐ Preview operativo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
 
     <div class="between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px">
       <div class="flex" style="gap:0;border:1px solid var(--border);border-radius:9px;overflow:hidden;width:max-content">
@@ -494,14 +494,14 @@ CX.module('liquidaciones', ({data,ui})=>{
 
     host.innerHTML=`
     <div class="between" style="margin-bottom:12px"><div>${ui.ph('Liquidaciones', p.name+' · sincronizadas con el avance de cada visita')}</div>
-      <div class="flex"><span class="bdg bdg-g">● En vivo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
+      <div class="flex"><span class="bdg bdg-a">◐ Candidatas · pend. cruce</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
     <div class="card card-p" style="margin-bottom:12px;border-left:4px solid var(--amber);background:var(--amber-bg,#fffbeb)"><div style="font-size:11.5px;color:#92400e;line-height:1.6">📌 Las liquidaciones son <b>candidatas</b> derivadas del avance operativo. El <b>monto final a pagar</b> se confirma al cruzar con el Excel financiero externo del cierre. No se muestra “deuda final” ni “pagos listos” solo desde la HR.</div></div>
 
     <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px" id="liqKpis">
       <div data-lk="pc" style="cursor:pointer">${ui.kpi('Pend. cuestionario',res.pendiente_cuestionario||0,'a')}</div>
       <div data-lk="pv" style="cursor:pointer">${ui.kpi('Pend./Validadas',(res.pendiente_submitir||0)+(res.validada||0),'b')}</div>
-      <div data-lk="val" style="cursor:pointer">${ui.kpi('Listas para lote',res.validada||0,'b')}</div>
-      <div data-lk="pag" style="cursor:pointer">${ui.kpi('Pagadas',res.pagada||0,'g')}</div>
+      <div data-lk="val" style="cursor:pointer">${ui.kpi('Candidatas para lote',res.validada||0,'b')}</div>
+      <div data-lk="pag" style="cursor:pointer">${ui.kpi('Pagadas (pend. cruce)',res.pagada||0,'g')}</div>
     </div>
 
     ${cart}
@@ -523,7 +523,7 @@ CX.module('liquidaciones', ({data,ui})=>{
     host.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.add);}));
     host.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.rm);}));
     // KPIs clickeables → listado filtrado
-    const lkMap={pc:['Pend. cuestionario',l=>l.estado==='pendiente_cuestionario'],pv:['Pendientes/Validadas',l=>['pendiente_submitir','validada'].includes(l.estado)],val:['Listas para lote',l=>l.estado==='validada'],pag:['Pagadas',l=>['pagada','liquidada'].includes(l.estado)]};
+    const lkMap={pc:['Pend. cuestionario',l=>l.estado==='pendiente_cuestionario'],pv:['Pendientes/Validadas',l=>['pendiente_submitir','validada'].includes(l.estado)],val:['Candidatas para lote',l=>l.estado==='validada'],pag:['Pagadas',l=>['pagada','liquidada'].includes(l.estado)]};
     host.querySelectorAll('#liqKpis [data-lk]').forEach(el=>el.addEventListener('click',()=>{const m=lkMap[el.dataset.lk];const arr=all.filter(m[1]);
       ui.modal(m[0]+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Total</th><th>Pago est.</th></tr></thead><tbody>${arr.map(l=>`<tr><td><b>${l.shopper||'—'}</b></td><td style="font-size:12px">${l.sucursal}</td><td style="font-weight:700">${ui.money(l.moneda,l.total)}</td><td style="font-size:12px">${l.fechaEstimadaPago||'—'}</td></tr>`).join('')}</tbody></table>`:ui.empty('💸','Sin liquidaciones en esta categoría.'));
     }));
