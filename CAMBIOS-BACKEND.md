@@ -1,5 +1,14 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Firestore write plan TyA sin escritura
+
+- Se agregó `tools/migration/tya-build-firestore-write-plan.ps1` para convertir el staging preview local en un plan explícito de rutas/operaciones Firestore.
+- El script genera `firestoreWritePlan.jsonl`, `importGate.json`, `writePlanManifest.json`, `writePlanSample.json` y `writePlanReport.md`.
+- El plan mantiene `canWriteToFirestore=false`, `executeAllowed=false`, `Firestore writes=0` e `importsExecuted=0`.
+- Si el preview contiene PII local, el plan se bloquea salvo flag local explícito.
+- Se documentó en `app/docs/FIRESTORE-WRITE-PLAN-TYA-20260703.md`.
+- Siguiente gate: revisar plan, resolver críticos y crear un importador DEV separado con autorización explícita y rollback.
+
 ## 2026-07-03 - MigrationBatch staging preview TyA
 
 - Se agregó `tools/migration/tya-build-staging-preview.ps1` para construir preview local con forma de staging Firestore, sin escribir Firestore.
