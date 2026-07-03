@@ -1,5 +1,13 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Estado de uso de fuentes reales TyA
+
+- Se agrego `app/docs/ESTADO-USO-FUENTES-BASE-REAL-TYA-20260703.md`.
+- El documento aclara que HR/RTDB y logicas utiles ya fueron analizadas, mapeadas y convertidas en plan/preview/contrato seguro.
+- La base real todavia NO fue importada a Firestore ni convertida en datos operativos finales.
+- Siguen pendientes de calidad, privacidad, deduplicacion, destinatarios, cruce financiero, reglas, runner, rollback y autorizacion.
+- Estado operativo: Firestore writes 0, imports executed 0, deploy 0, produccion 0.
+
 ## 2026-07-03 - Auditoria y preparacion empalme RC V75 Cloud frontend
 
 - Se agrego `app/docs/AUDITORIA-RC-V75-CLOUD-FRONTEND-20260703.md`.
