@@ -1,5 +1,15 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Pipeline local seguro TyA y contrato DEV
+
+- Se agrego `tools/migration/tya-dev-import-contract.mjs` para generar contrato formal de importacion DEV en modo `PLAN_ONLY_LOCKED`.
+- Se agrego `tools/migration/tya-dev-import-contract-validator.mjs` para validar que ningun contrato permita escritura accidental.
+- Se agrego `tools/migration/run-tya-dev-import-contract-check.ps1` para generar y validar contrato DEV en una sola ejecucion local.
+- Se agrego `tools/migration/run-tya-local-safe-pipeline.ps1` para encadenar HR Source private flow, preview multitab, contrato DEV y validacion.
+- Documentos agregados: `app/docs/TYA-DEV-IMPORT-CONTRACT-20260703.md`, `app/docs/TYA-DEV-IMPORT-CONTRACT-VALIDATOR-20260703.md`, `app/docs/TYA-DEV-IMPORT-CONTRACT-RUNNER-20260703.md`, `app/docs/TYA-LOCAL-SAFE-PIPELINE-20260703.md`.
+- Seguridad: Firestore writes 0, imports executed 0, deploy 0, `canWriteToFirestore=false`, `executeAllowed=false`, `canImport=false`.
+- Mejora para Claude documentada: los estados de sincronizacion/importacion deben ser honestos y mostrar `bloqueado`, `preview`, `warning` o `pendiente backend`; no deben presentarse como importacion ejecutada hasta autorizacion real.
+
 ## 2026-07-03 - HR Source backend DEV, fuente privada y preview local
 
 - Se agrego `app/core/backend-hr-source-bridge.js` para escuchar eventos del modulo HR Source y llamar un endpoint backend DEV sin tocar la logica de UI.
@@ -63,68 +73,3 @@
 - Validaciones locales: dry-run bulletins OK, validador bulletins OK, `node --check` OK en archivos tocados.
 - Validacion de reglas con emulador Firestore no pudo completarse porque Java no esta disponible en PATH.
 - No deploy, no Hosting, no merge, no produccion, no datos reales.
-
-Registro obligatorio de cambios de backend, infraestructura y migración.
-
-## 2026-06-30 — Corrección documental de continuidad RC/backend
-
-Motivo:
-
-- Se corrigió la continuidad documental para que los pendientes y el estado del backend no queden solo en la conversación.
-- Paula solicitó que los pendientes se mantengan en los archivos documentales vivos y se entreguen también como descargable.
-- Se mantiene la regla: si no está documentado, no se hizo.
-
-Archivos creados/actualizados:
-
-- `CAMBIOS-BACKEND.md`: se agrega esta entrada de control documental.
-- `RESUMEN-PARA-CLAUDE.md`: se consolida el estado real de la RC, backend DEV, gates, riesgos y próximos pasos.
-- `PENDIENTES-PROTOTIPO.md`: se consolidan y priorizan los pendientes reales del prototipo detectados en la RC visual correcta.
-- `INCIDENCIAS-INTEGRACION-BACKEND.md`: se separan errores de integración/backend/local de los pendientes que sí corresponden a Claude/prototipo.
-
-Estado real registrado:
-
-- Base visual correcta: `release/cxorbia-tya-rc-20260630`, no la rama backend vieja.
-- Firebase DEV validado técnicamente en `cxorbia-backend-dev`.
-- HR histórico V4 y `shopperBenefits` cargados/validados técnicamente.
-- Preview backend abre, pero el diagnóstico observado aún muestra datos demo/localStorage y Auth pendiente.
-- No se debe considerar producción hasta que el preview muestre Auth OK, fuente Firestore, tenant TyA y conteos TyA reales.
-
-Impacto:
-
-- No se modificó `/app/modules`.
-- No se modificó `/app/index.html`.
-- No se activó backend global.
-- No se hizo deploy de Hosting.
-- No se tocó producción.
-- No se subieron credenciales ni claves.
-
-Pendiente/riesgo:
-
-- Siguiente gate técnico: corregir/verificar diagnóstico del preview backend para distinguir claramente Firestore real vs localStorage/demo.
-- Resolver Auth DEV sin pedir claves a Paula y sin pegar contraseñas en ChatGPT.
-- No publicar como producción operativa hasta cumplir el gate mínimo documentado.
-
-## 2026-06-30 - Preparacion release candidate desde prototipo bueno
-
-- Se separo la rama backend de la base visual del prototipo.
-- La release candidate se preparo desde `origin/main`, que contiene el prototipo CXOrbia V56 descomprimido.
-- El backend validado se integrara solo como archivos seguros y controlados.
-- No se hizo deploy.
-- No se publico Hosting.
-- No se toco produccion.
-- No se reemplazo `/app/modules`.
-- Siguiente gate: validacion visual RC desde `app/index.html`.
-
-## 2026-06-27 — Infraestructura Firebase DEV
-
-- `.firebaserc`: alias DEV para `cxorbia-backend-dev`.
-- `firebase.json`: Hosting DEV con `public: app`, rewrite SPA y headers UTF-8.
-- `firestore.indexes.json`: índices iniciales vacíos.
-- `storage.rules`: Storage cerrado mientras esté pendiente Blaze.
-
-Estado: sin deploy de Hosting, sin producción y sin datos reales.
-
-## 2026-06-27 — Reglas Firestore
-
-- `firestore.rules`: reglas multi-tenant por `tenantId`, `projectId` y rol.
-- `MATRIZ-ROLES-FIRESTORE.md`: matriz de permisos y claims esperados.
