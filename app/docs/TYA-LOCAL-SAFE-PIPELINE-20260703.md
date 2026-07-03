@@ -8,7 +8,7 @@ Archivo agregado:
 
 Objetivo:
 
-- Encadenar HR Source preview, preview multitab, contrato DEV y validacion.
+- Encadenar HR Source preview, preview multitab, contrato DEV, validacion y matriz de gates.
 - Reducir pasos manuales.
 - Mantener todo bloqueado y sin escrituras.
 
@@ -22,7 +22,16 @@ Flujo:
 - Ejecuta HR Source multitab preview.
 - Genera contrato DEV bloqueado.
 - Valida contrato DEV.
+- Genera matriz de gates DEV/Staging/Produccion.
 - Genera reporte local en Descargas.
+
+Salidas principales:
+
+- `tmp/hr-source-private-flow-check/`
+- `tmp/hr-source-private/multitab-preview/`
+- `tmp/tya-dev-import-contract/`
+- `tmp/tya-dev-import-contract-validation/`
+- `tmp/tya-production-gates-matrix/`
 
 Seguridad:
 
@@ -30,6 +39,11 @@ Seguridad:
 - Imports executed: 0.
 - Deploy: 0.
 - canImport permanece false.
+
+Mejora para Claude:
+
+- El prototipo debe reflejar la matriz de gates de forma visual, separando preview, importacion DEV, staging y produccion.
+- No debe permitir que una vista de preview se interprete como importacion real.
 
 Uso local:
 
