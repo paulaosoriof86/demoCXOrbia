@@ -14,17 +14,18 @@ Sin merge, sin deploy, sin escrituras y sin importacion.
 - RESUMEN-EJECUTIVO-PIPELINE-SEGURO-TYA-20260703.md
 - INSTRUCCION-LOCAL-PIPELINE-SEGURO-TYA-20260703.md
 - CHECKLIST-REVISION-VISUAL-POST-PIPELINE-TYA-20260703.md
-- PAQUETE-INSTRUCCIONES-CLAUDE-DESDE-BACKEND-20260703.md
-- MEJORAS-PARA-CLAUDE-DESDE-BACKEND-20260703.md
+- FRONTEND-VNEXT-TYA-20260703.md
+- HANDOFF-FRONTEND-RUNNER-TYA-20260703.md
+- CHECKLIST-AUDITORIA-NUEVO-ZIP-FRONTEND-TYA-20260703.md
+- GATE-EJECUCION-LOCAL-PIPELINE-TYA-20260703.md
 - TYA-PRODUCTION-GATES-MATRIX-20260703.md
 - TYA-LOCAL-SAFE-PIPELINE-20260703.md
 - TYA-DEV-IMPORT-CONTRACT-20260703.md
-- TYA-DEV-IMPORT-CONTRACT-VALIDATOR-20260703.md
-- AUDITORIA-TYA-MIGRACION-V6-V7_1-20260703.md
-- MAPEO-PLAN-IMPORTACION-TYA-V6-V7_1-20260703.md
-- PLAN-HR-LIVE-CONNECTOR-TYA-20260703.md
-- BACKEND-HR-SOURCE-BRIDGE-20260703.md
-- HR-SOURCE-LOCAL-PREVIEW-20260703.md
+- POLITICA-DATOS-SENSIBLES-SHOPPERS-TYA-20260703.md
+- REGLA-UNIFICACION-FUENTES-TYA-20260703.md
+- PLAN-ROLLBACK-DEV-SIN-ESCRITURA-TYA-20260703.md
+- CHECKLIST-REGLAS-MULTITENANT-TYA-20260703.md
+- PLANTILLA-DECISION-AUTORIZACION-DEV-TYA-20260703.md
 
 ## Documentos vivos
 
@@ -35,13 +36,14 @@ Sin merge, sin deploy, sin escrituras y sin importacion.
 ## Scripts principales
 
 - run-tya-local-safe-pipeline.ps1
+- run-tya-dev-import-contract-check.ps1
 - tya-dev-import-contract.mjs
 - tya-dev-import-contract-validator.mjs
 - tya-production-gates-matrix.mjs
-- tya-hr-source-dev-server.mjs
-- tya-hr-source-private-flow-check.mjs
-- tya-hr-source-multitab-preview.mjs
+- tya-dev-readiness-report.mjs
+- build-tya-frontend-handoff.mjs
+- run-tya-frontend-handoff.ps1
 
 ## Siguiente uso
 
-Usar este indice para ubicar rapidamente documentos del tramo TyA / HR Source antes de abrir una nueva conversacion o entregar instrucciones a Claude.
+Usar este indice para ubicar documentos y scripts del tramo TyA / HR Source antes de preparar paquete visual o auditar un nuevo ZIP.
