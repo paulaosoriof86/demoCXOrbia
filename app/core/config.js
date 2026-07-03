@@ -177,6 +177,7 @@ CX.MODULES = {
   cuestionarios: { icon:'🧩', label:'Cuestionarios',        roles:['admin'],           status:'ready' },
   usuarios:      { icon:'🔐', label:'Usuarios & Permisos',  roles:['admin'],           status:'ready' },
   config:        { icon:'⚙️', label:'Configuración',         roles:['admin'],           status:'ready' },
+  saas:          { icon:'🌐', label:'Consola SaaS',         roles:['admin'],           status:'ready' },
   automatizaciones: { icon:'⚡', label:'Automatizaciones',     roles:['admin'],           status:'ready' },
   integraciones: { icon:'🔌', label:'Integraciones & Add-ons',roles:['admin'],           status:'ready' },
   correo:        { icon:'✉️',  label:'Correo integrado',     roles:['admin'],           status:'ready' },
@@ -205,7 +206,7 @@ CX.NAV = {
     { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte','novedades'] },
     { sec:'Finanzas',  items:['financiero','movimientos','liquidaciones','lotes'] },
     { sec:'Comercial', items:['costos','crm','marketing'] },
-    { sec:'Configuración', items:['config','usuarios','automatizaciones','integraciones','correo','marca'] },
+    { sec:'Configuración', items:['config','saas','usuarios','automatizaciones','integraciones','correo','marca'] },
   ],
   shopper: [
     { sec:'Operación', items:['midia','miperfil','visitas','reservas','misvisitas'] },

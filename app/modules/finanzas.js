@@ -500,8 +500,8 @@ CX.module('liquidaciones', ({data,ui})=>{
     <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px" id="liqKpis">
       <div data-lk="pc" style="cursor:pointer">${ui.kpi('Pend. cuestionario',res.pendiente_cuestionario||0,'a')}</div>
       <div data-lk="pv" style="cursor:pointer">${ui.kpi('Pend./Validadas',(res.pendiente_submitir||0)+(res.validada||0),'b')}</div>
-      <div data-lk="val" style="cursor:pointer">${ui.kpi('Listas para lote',res.validada||0,'b')}</div>
-      <div data-lk="pag" style="cursor:pointer">${ui.kpi('Pagadas',res.pagada||0,'g')}</div>
+      <div data-lk="val" style="cursor:pointer">${ui.kpi('Candidatas para lote',res.validada||0,'b')}</div>
+      <div data-lk="pag" style="cursor:pointer">${ui.kpi('Pagadas (pend. cruce)',res.pagada||0,'g')}</div>
     </div>
 
     ${cart}
@@ -523,7 +523,7 @@ CX.module('liquidaciones', ({data,ui})=>{
     host.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.add);}));
     host.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.rm);}));
     // KPIs clickeables → listado filtrado
-    const lkMap={pc:['Pend. cuestionario',l=>l.estado==='pendiente_cuestionario'],pv:['Pendientes/Validadas',l=>['pendiente_submitir','validada'].includes(l.estado)],val:['Listas para lote',l=>l.estado==='validada'],pag:['Pagadas',l=>['pagada','liquidada'].includes(l.estado)]};
+    const lkMap={pc:['Pend. cuestionario',l=>l.estado==='pendiente_cuestionario'],pv:['Pendientes/Validadas',l=>['pendiente_submitir','validada'].includes(l.estado)],val:['Candidatas para lote',l=>l.estado==='validada'],pag:['Pagadas',l=>['pagada','liquidada'].includes(l.estado)]};
     host.querySelectorAll('#liqKpis [data-lk]').forEach(el=>el.addEventListener('click',()=>{const m=lkMap[el.dataset.lk];const arr=all.filter(m[1]);
       ui.modal(m[0]+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Total</th><th>Pago est.</th></tr></thead><tbody>${arr.map(l=>`<tr><td><b>${l.shopper||'—'}</b></td><td style="font-size:12px">${l.sucursal}</td><td style="font-weight:700">${ui.money(l.moneda,l.total)}</td><td style="font-size:12px">${l.fechaEstimadaPago||'—'}</td></tr>`).join('')}</tbody></table>`:ui.empty('💸','Sin liquidaciones en esta categoría.'));
     }));

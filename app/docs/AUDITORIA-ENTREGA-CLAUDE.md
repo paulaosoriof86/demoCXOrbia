@@ -1,5 +1,19 @@
 # AUDITORÍA DE ENTREGA — CLAUDE (prototipo CXOrbia)
 
+Fecha: 2026-07-03 · Versión: V72
+
+## Correcciones V72 (auditoría profunda V71)
+- HR Source: `parsed_with_warnings.canImport=false`; sync solo avanza si `estado==='ready_for_import' && canImport===true`
+- HR Source: eliminado `sourceRefFrom(url)` — el frontend NO deriva sourceRef; al pegar URL → `pendiente_backend`; sourceRef solo si backend lo devuelve
+- HR Source: copy honesto ("La URL no se almacena en el navegador. El backend debe registrar esta fuente por canal seguro y devolver un sourceRef opaco.")
+- HR Source: contrato DEV → tarjeta informativa con blockers (PII/DPI, duplicados, encoding RTDB, notif sin destinatario, fila HN junio, cruce financiero) · "Vista informativa. La importación real depende del backend."
+- Finanzas: "● En vivo" → "◐ Preview operativo"; KPI "Listas para lote" → "Candidatas para lote"; "Pagadas" → "Pagadas (pend. cruce)"; banner de candidatas conservado
+- CRM: pestañas Reuniones/Finanzas/Add-ons marcadas 🔒 pendiente backend
+- Archivos modificados V72: `app/modules/hr-source.js`, `app/modules/finanzas.js`, `app/docs/*`
+- Seguridad V72: sin backend tocado, sin deploy, sin importación, sin credenciales, sin URL completa persistida, sin escritura real
+
+---
+
 Fecha: 2026-07-02 · Versión: V67
 
 ## Checklist de seguridad backend (respetado)
