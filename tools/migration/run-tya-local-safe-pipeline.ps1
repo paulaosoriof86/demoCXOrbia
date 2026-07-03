@@ -42,6 +42,7 @@ try {
     "tools\hr-source\tya-hr-source-multitab-preview.mjs",
     "tools\migration\tya-dev-import-contract.mjs",
     "tools\migration\tya-dev-import-contract-validator.mjs",
+    "tools\migration\tya-production-gates-matrix.mjs",
     "tools\migration\run-tya-dev-import-contract-check.ps1"
   )
   foreach ($File in $Required) {
@@ -87,12 +88,19 @@ try {
   Write-Host "Salida validador contrato: $ValidatorExit"
   if ($ValidatorExit -ne 0) { throw "Validador del contrato DEV fallo. Revisar reporte." }
 
+  Step "Matriz de gates DEV/Staging/Produccion"
+  node .\tools\migration\tya-production-gates-matrix.mjs
+  $GatesExit = $LASTEXITCODE
+  Write-Host "Salida matriz gates: $GatesExit"
+  if ($GatesExit -ne 0) { throw "Matriz de gates fallo. Revisar reporte." }
+
   Step "Resumen de reportes"
   $ReportDirs = @(
     "tmp\hr-source-private-flow-check",
     "tmp\hr-source-private\multitab-preview",
     "tmp\tya-dev-import-contract",
-    "tmp\tya-dev-import-contract-validation"
+    "tmp\tya-dev-import-contract-validation",
+    "tmp\tya-production-gates-matrix"
   )
   foreach ($Dir in $ReportDirs) {
     $Full = Join-Path $Repo $Dir
