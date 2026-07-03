@@ -1,5 +1,14 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Sanitized DEV candidate TyA
+
+- Se agrego `tools/migration/tya-build-sanitized-dev-candidate.mjs`.
+- Se agrego `app/docs/SANITIZED-DEV-CANDIDATE-TYA-20260703.md`.
+- Objetivo: preparar candidato DEV sanitizado sin escribir datos.
+- Aplica politicas: no importar `questionnaire_marks` como fuente independiente, sanitizar shoppers, dejar notificaciones como historial y liquidaciones como candidatas.
+- Salidas locales esperadas bajo `tmp/tya-sanitized-dev-candidate`.
+- Estado seguro: sin escritura, sin importacion, sin deploy y sin produccion.
+
 ## 2026-07-03 - DEV import dry-run package TyA
 
 - Se agrego `tools/migration/tya-build-dev-import-dry-run-package.mjs`.
