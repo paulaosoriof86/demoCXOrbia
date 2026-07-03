@@ -65,6 +65,15 @@ Endpoint local esperado:
 http://127.0.0.1:8787/api/hr-source
 ```
 
+## Smoke test
+
+Se agrego:
+
+- `tools/hr-source/tya-hr-source-dev-smoke.mjs`
+- `app/docs/HR-SOURCE-ENDPOINT-SMOKE-20260703.md`
+
+El smoke valida `test`, `preview` y `sync-request`; confirma que `canImport=false` y que `sync-request` queda bloqueado.
+
 ## Pendiente siguiente
 
 Crear el conector real Google Sheets / Excel Online y registrar la fuente como configuracion privada. Este endpoint local solo valida el contrato UI-backend con datos de preview ya sanitizados.
