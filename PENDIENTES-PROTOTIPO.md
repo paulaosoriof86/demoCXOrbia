@@ -2,6 +2,23 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Addendum RC V74 - Cloud frontend
+
+Ver documento especifico:
+
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-RC-V74-20260703.md`
+
+Resumen vigente RC V74:
+
+- Conservar HR Source V74: `canImport=false`, sin derivar `sourceRef` desde URL, gates visuales y contrato DEV informativo.
+- Corregir versionado interno: el ZIP se recibio como V74, pero docs y releases visibles aun dicen V72.
+- Corregir estados honestos en Finanzas: no usar `En vivo` si no hay backend/cruce real.
+- Corregir Make/automatizaciones: no aparentar POST real; sigue pendiente backend por tenant.
+- Corregir IA: para produccion debe ser server-side, no API key en localStorage.
+- Profundizar SaaS: tenants, planes, proyectos, permisos, feature flags, releases, targeting, confirmacion y rollback.
+- Profundizar propuestas: wizard comercial, plantillas requeridas, estados completos y conversion a proyecto.
+- Mantener el ZIP como RC incremental; no reemplazar backend ni documentacion del PR #7.
+
 ## Mejoras desde backend para implementar en Claude
 
 Ver documento especifico:
