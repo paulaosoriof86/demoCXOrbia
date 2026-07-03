@@ -1,5 +1,29 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Resultado shopper reference field audit TyA
+
+- Se agrego `app/docs/RESULTADO-SHOPPER-REFERENCE-FIELD-AUDIT-TYA-20260703.md`.
+- Resultado local reportado por Paula: visits con solo banderas de presencia de identidad, postulations con solo llaves genericas de evento/origen y shoppers con 276 filas canonicas.
+- Decision tecnica: las 661 referencias no deben tratarse como 661 identidades shopper no reconocidas.
+- Lectura tecnica: el bloqueo anterior de SHOPPER_REVIEW es probablemente un falso bloqueo estricto por usar llaves genericas de evento/origen como identidad shopper.
+- Estado seguro: sin valores crudos, sin deploy, sin produccion, sin escritura Firestore y sin importacion.
+
+## 2026-07-03 - Shopper review DEV policy decision TyA
+
+- Se agrego `tools/migration/tya-shopper-review-dev-policy-decision.mjs`.
+- Se agrego `app/docs/SHOPPER-REVIEW-DEV-POLICY-DECISION-TYA-20260703.md`.
+- Objetivo: separar identidad shopper provisional DEV de referencias de visitas/postulaciones no enlazadas por el candidato sanitizado.
+- Salidas locales esperadas bajo `tmp/tya-shopper-review-dev-policy-decision`.
+- Estado seguro: decision local, sin deploy, sin produccion, sin escritura Firestore y sin importacion.
+
+## 2026-07-03 - Readiness consolidated V3 TyA
+
+- Se agrego `tools/migration/tya-build-readiness-consolidated-v3.mjs`.
+- Se agrego `app/docs/READINESS-CONSOLIDATED-V3-TYA-20260703.md`.
+- Objetivo: incorporar la decision SHOPPER_REVIEW_DEV_POLICY_DECISION para que SHOPPER_REVIEW pase a nota tecnica provisional si aplica, sin aprobar escritura ni produccion.
+- Salidas locales esperadas bajo `tmp/tya-readiness-consolidated-v3`.
+- Estado seguro: sin deploy, sin produccion, sin escritura Firestore, sin importacion, sin Auth real y sin cambios frontend.
+
 ## 2026-07-03 - Resultado shopper reference review summary TyA
 
 - Se agrego `app/docs/RESULTADO-SHOPPER-REFERENCE-REVIEW-SUMMARY-TYA-20260703.md`.
