@@ -1,5 +1,13 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Checklist visual post-pipeline TyA
+
+- Se agrego app/docs/CHECKLIST-REVISION-VISUAL-POST-PIPELINE-TYA-20260703.md.
+- El checklist define que revisar despues de ejecutar el pipeline local seguro.
+- Incluye revision de HR Source, contrato, matriz de gates, modulos relacionados y seguridad visual.
+- Seguridad: Firestore writes 0, imports executed 0, deploy 0.
+- Mejora para Claude: el prototipo debe mostrar estados honestos, gates por fase y no exponer URL completa ni datos sensibles.
+
 ## 2026-07-03 - Instruccion local pipeline seguro TyA
 
 - Se agrego app/docs/INSTRUCCION-LOCAL-PIPELINE-SEGURO-TYA-20260703.md.
@@ -18,11 +26,3 @@
 ## 2026-07-03 - Pipeline seguro actualizado con matriz de gates
 
 - Se actualizo tools/migration/run-tya-local-safe-pipeline.ps1 para ejecutar tambien tools/migration/tya-production-gates-matrix.mjs.
-- Se actualizo app/docs/TYA-LOCAL-SAFE-PIPELINE-20260703.md con la nueva salida tmp/tya-production-gates-matrix.
-- El pipeline unico ahora encadena HR Source private flow, preview multitab, contrato DEV, validador de contrato y matriz de gates.
-- Seguridad: Firestore writes 0, imports executed 0, deploy 0.
-- Mejora para Claude: el prototipo debe reflejar visualmente gates por fase y no confundir preview con importacion real.
-
-## 2026-07-03 - Matriz de gates TyA
-
-- Archivo agregado: tools/migration/tya-production-gates-matrix.mjs.
