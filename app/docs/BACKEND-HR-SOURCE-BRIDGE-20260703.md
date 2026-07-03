@@ -10,6 +10,7 @@ Estado: implementado en preview backend DEV.
 ## Archivo actualizado
 
 - `app/index-backend-dev.html`
+- `app/core/backend-config-preview-dev.js`
 
 ## Proposito
 
@@ -35,11 +36,17 @@ Eventos soportados:
 
 Si no existe endpoint backend configurado, responde de forma honesta con estado `pendiente_backend` y una incidencia `backend_endpoint_missing`.
 
-Esto permite que el frontend muestre estado real sin fingir conexion.
+Si se abre el preview con `cxHrSourceLocal=1`, el bridge usa el endpoint local:
 
-## Contrato de endpoint futuro
+```text
+http://127.0.0.1:8787/api/hr-source
+```
 
-Cuando exista endpoint backend, el bridge enviara:
+Esto permite probar el contrato UI-backend sin Firestore y sin conexion real a Google Sheets.
+
+## Contrato de endpoint
+
+El bridge envia:
 
 ```json
 {
@@ -48,6 +55,8 @@ Cuando exista endpoint backend, el bridge enviara:
   "projectId": "cinepolis",
   "sourceType": "google_sheets",
   "sourceRef": "ref_opaco",
+  "maskedUrl": "***",
+  "urlPending": "solo_en_memoria_dev",
   "requestedAt": "ISO_DATE",
   "env": "dev"
 }
@@ -82,7 +91,7 @@ Respuesta esperada:
 
 ## Siguiente paso
 
-Crear la capa backend real para:
+Crear el conector real para:
 
 1. Registrar la fuente HR de forma privada.
 2. Probar acceso a Google Sheets / Excel Online.
@@ -91,4 +100,4 @@ Crear la capa backend real para:
 
 ## Relacion con pendientes V70
 
-El pendiente de listener HR queda cubierto por el bridge inicial. Siguen pendientes la conexion real, el registro privado y el preview real.
+El pendiente de listener HR queda cubierto por el bridge inicial. El endpoint local cubre prueba de contrato con staging preview. Siguen pendientes la conexion real, el registro privado y el preview vivo.
