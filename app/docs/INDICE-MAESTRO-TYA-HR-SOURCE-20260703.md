@@ -20,6 +20,11 @@ Sin merge, sin deploy, sin escrituras y sin importacion.
 - AUDITORIA-RC-V74-CLOUD-FRONTEND-20260703.md
 - PENDIENTES-PROTOTIPO-ADDENDUM-RC-V74-20260703.md
 - RESUMEN-PARA-CLAUDE-RC-V74-20260703.md
+- PAQUETE-CLAUDE-PENDIENTES-RC-V74-20260703.md
+- AUDITORIA-RC-V75-CLOUD-FRONTEND-20260703.md
+- PENDIENTES-PROTOTIPO-ADDENDUM-RC-V75-20260703.md
+- EMPALME-RC-V75-BACKEND-20260703.md
+- RESUMEN-PARA-CLAUDE-ACUMULADO-RC-V75-20260703.md
 - GATE-EJECUCION-LOCAL-PIPELINE-TYA-20260703.md
 - TYA-PRODUCTION-GATES-MATRIX-20260703.md
 - TYA-LOCAL-SAFE-PIPELINE-20260703.md
@@ -51,6 +56,6 @@ Sin merge, sin deploy, sin escrituras y sin importacion.
 
 Usar este indice para ubicar documentos y scripts del tramo TyA / HR Source antes de preparar paquete visual o auditar un nuevo ZIP.
 
-## Nota RC V74
+## Nota RC V75
 
-La auditoria V74 confirma que el ZIP debe empalmarse de forma incremental y selectiva, conservando backend, docs y herramientas del PR #7.
+La auditoria V75 confirma que el ZIP corrige tres puntos sobre V74: Automatizaciones/IA server-side, Finanzas con estados honestos y HR Source con flujo `sourceRef` opaco. El empalme debe conservar backend y docs del PR #7.
