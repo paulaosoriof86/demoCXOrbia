@@ -149,6 +149,14 @@ CX.module('costos', ({data,ui})=>{
           <div style="font-size:11px;color:var(--t3);text-align:right">${CX.BRAND.name||'CXOrbia'}<br>${new Date().toLocaleDateString('es-GT')}<br>${cfg.moneda}</div>
         </div>
         <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px" id="propIntro" contenteditable>${intro}</div>
+        <div id="propSecs">${[
+          ['Nuestro entendimiento', 'Comprendemos que '+(cli.name||'su organización')+' busca elevar y estandarizar la experiencia en cada punto de contacto. Nuestro programa entrega una medición objetiva, comparable y accionable.'],
+          ['Alcance del programa', r.visitas+' visitas/mes · '+r.modalidad+' · cobertura por sucursal/ciudad/país según su red. Escenarios y canales configurables por ronda.'],
+          ['Metodología', 'Kick-off y calibración → diseño de cuestionario ponderado e instructivo → selección y certificación de evaluadores → trabajo de campo con evidencia → QA de cada cuestionario → reporte y reuniones de mejora.'],
+          ['Control de calidad (QA)', 'Cada cuestionario pasa revisión de calidad antes de validarse: coherencia, evidencia completa, comentario narrativo y cumplimiento de escenario.'],
+          ['Plataforma y reportes', 'Portal de resultados CXOrbia: score ponderado, ranking de sucursales, hallazgos, evidencia, alertas y descarga de datos. Acceso por rol para su equipo.'],
+          ['Confidencialidad', 'Toda la información del programa y sus resultados se maneja bajo acuerdo de confidencialidad. Los evaluadores firman NDA por proyecto.']
+        ].map(([t,c])=>`<div style="margin-bottom:10px"><div style="font-size:12.5px;font-weight:700;color:var(--brand-dark)" contenteditable>${t}</div><div style="font-size:12px;color:var(--t2);line-height:1.6" contenteditable>${c}</div></div>`).join('')}</div>
         <div style="font-size:12px;font-weight:700;color:var(--t1);margin-bottom:6px">Incluye</div>
         <ul style="font-size:12px;color:var(--t2);line-height:1.7;margin:0 0 12px 18px" id="propBen" contenteditable>${beneficios.map(b=>`<li>${b}</li>`).join('')}</ul>
         <table class="tbl" style="margin-bottom:12px"><tbody>

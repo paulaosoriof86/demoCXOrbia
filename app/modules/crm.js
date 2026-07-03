@@ -135,7 +135,7 @@ CX.module('crm', ({data,ui})=>{
         <button class="btn btn-green btn-sm" id="fGanar">🏆 Marcar ganado</button>
       </div>
     `,{onMount:(ov,close)=>{
-      ov.querySelector('#addDoc')?.addEventListener('click',()=>{o.docs=o.docs||[];o.docs.push({n:'Documento_'+Date.now().toString(36)+'.pdf',tipo:'pdf'});CX.bus&&CX.bus.emit('crm');close();ficha360(o);});
+      ov.querySelector('#addDoc')?.addEventListener('click',()=>{const inp=document.createElement('input');inp.type='file';inp.accept='.pdf,.doc,.docx,.txt,image/*';inp.onchange=e=>{const f=e.target.files[0];if(!f)return;o.docs=o.docs||[];o.docs.push({n:f.name,tipo:(f.type||'archivo')});CX.bus&&CX.bus.emit('crm');close();ficha360(CX.crmStore.list().find(x=>x.id===o.id)||o);ui.toast('📎 '+f.name+' vinculado a la ficha','ok');};inp.click();});
       ov.querySelectorAll('[data-newact]').forEach(b=>b.addEventListener('click',()=>{
         const tipo=b.dataset.newact;
         const isMeet=(tipo==='meet'), isMail=(tipo==='correo');

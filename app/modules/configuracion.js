@@ -255,6 +255,7 @@ CX.module('usuarios', ({ui})=>{
         <div style="margin-bottom:10px"><label class="lbl">Correo (cualquier dominio)</label><input class="inp" id="euMail" value="${(u.email||'').replace(/"/g,'&quot;')}" placeholder="correo@empresa.com"></div>
         <div style="margin-bottom:10px"><label class="lbl">Rol</label><select class="sel" id="euRol">${allRoles().map(r=>`<option value="${r.id}" ${r.id===u.rol?'selected':''}>${r.label}</option>`).join('')}</select></div>
         <div style="margin-bottom:14px"><label class="flex" style="gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="euAct" ${u.activo?'checked':''}> Usuario activo</label></div>
+        <div style="margin-bottom:10px"><label class="lbl">Alcance por país (coordinador/aliado — separa por coma; vacío = todos)</label><input class="inp" id="euPais" value="${(u.paises||[]).join(', ')}" placeholder="GT, HN"></div>
         <div class="between"><button class="btn btn-ghost btn-sm" id="euInvite">📨 Reenviar invitación</button><button class="btn btn-pr btn-sm" id="euSave">Guardar cambios</button></div>
       `,{onMount:(ov,close)=>{
         ov.querySelector('#euSave').addEventListener('click',()=>{
@@ -262,6 +263,7 @@ CX.module('usuarios', ({ui})=>{
           if(mail&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)){ui.toast('Correo inválido','warn');return;}
           u.name=(ov.querySelector('#euName').value||'').trim()||u.name;
           u.email=mail||u.email;u.rol=ov.querySelector('#euRol').value;u.activo=ov.querySelector('#euAct').checked;
+          u.paises=(ov.querySelector('#euPais').value||'').split(',').map(s=>s.trim().toUpperCase()).filter(Boolean);
           close();draw();ui.toast('Usuario actualizado','ok');
         });
         ov.querySelector('#euInvite').addEventListener('click',()=>{

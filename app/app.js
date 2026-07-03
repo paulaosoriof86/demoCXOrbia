@@ -220,7 +220,7 @@ CX.app = {
   enter(){
     document.getElementById('login').classList.add('hidden');
     document.getElementById('app').classList.add('on');
-    const go=()=>CX.router.mount();
+    const go=()=>{CX.router.mount();try{CX.app.showBanners&&CX.app.showBanners();}catch(e){}};
     if(CX.confidencialidad && CX.confidencialidad.pending(CX.session.role)){
       CX.confidencialidad.show(CX.session.role, go);
     } else { go(); }
@@ -230,6 +230,25 @@ CX.app = {
     CX.session.clear();
     this.showLogin();
     CX.ui.toast('Sesión cerrada','');
+  },
+
+  showBanners(){
+    let b=[]; try{b=JSON.parse(localStorage.getItem('cx_banners')||'[]');}catch(e){}
+    const rol=CX.session.role;
+    const mine=b.filter(x=>!x.roles||x.roles.includes(rol));
+    if(!mine.length)return;
+    const bn=mine[0];
+    const ov=document.createElement('div');ov.className='cx-ov';
+    ov.innerHTML=`<div class="cx-modal" style="width:min(520px,94vw)"><div style="background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;border-radius:14px 14px 0 0;padding:20px 24px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;opacity:.85">📢 RECORDATORIO</div>
+      <div style="font-size:19px;font-weight:800;margin-top:4px">${bn.titulo}</div></div>
+      <div style="padding:20px 24px"><div style="font-size:14px;color:var(--t2);line-height:1.6">${bn.cuerpo||''}</div>
+      <div style="text-align:right;margin-top:18px"><button class="btn btn-pr btn-sm" id="bnOk">Entendido</button></div></div></div>`;
+    document.body.appendChild(ov);
+    ov.querySelector('#bnOk').addEventListener('click',()=>{
+      try{const all=JSON.parse(localStorage.getItem('cx_banners')||'[]').filter(x=>x.id!==bn.id);localStorage.setItem('cx_banners',JSON.stringify(all));}catch(e){}
+      ov.remove();
+    });
   },
 };
 function __cxBoot(){ CX.pwa && CX.pwa.init(); CX.app.init(); }
