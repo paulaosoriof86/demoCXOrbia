@@ -2,7 +2,8 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { getSecretSource, googleCsvExportUrl, detectSource, maskUrl as privateMaskUrl } from './tya-hr-source-private-registry.mjs';
+import { getSecretSource, googleCsvExportUrl, extractGoogleSheetId, detectSource, maskUrl as privateMaskUrl } from './tya-hr-source-private-registry.mjs';
+import { previewWorkbook } from './tya-hr-source-xlsx-lite.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -110,6 +111,20 @@ function periodsDetected(visits){
   return [...map.values()].sort((a,b)=>String(a.period).localeCompare(String(b.period)) || String(a.country).localeCompare(String(b.country)));
 }
 
+function mergeLivePeriods(stagingPeriods, liveTabs){
+  const out = [...(stagingPeriods || [])];
+  for(const tab of liveTabs || []){
+    out.push({
+      period: tab.name,
+      country: 'live_hr',
+      visits: tab.rows,
+      status: 'live_xlsx_tab',
+      columns: tab.columns
+    });
+  }
+  return out;
+}
+
 async function privateLiveCheck(payload){
   const requestedRef = String(payload.sourceRef || '').trim();
   if(!requestedRef || !requestedRef.startsWith('hrsrc_')) return null;
@@ -122,6 +137,7 @@ async function privateLiveCheck(payload){
       sourceType: payload.sourceType || 'google_sheets',
       maskedUrl: payload.maskedUrl || maskRef(requestedRef),
       counts: { liveSourceMatched: false, firestoreWrites: 0, importsExecuted: 0 },
+      tabs: [],
       issues: [issue({ code: 'private_source_not_registered', severity: 'warning', message: 'sourceRef no existe en registro privado local.', expected: 'registered private sourceRef', detected: requestedRef, delta: 1 })]
     };
   }
@@ -134,11 +150,43 @@ async function privateLiveCheck(payload){
     sourceType: detected.type || selected.safe.type || 'unknown',
     maskedUrl,
     counts: { liveSourceMatched: true, firestoreWrites: 0, importsExecuted: 0 },
+    tabs: [],
     issues: []
   };
 
   try{
     if(detected.type === 'google_sheets'){
+      const sheetId = extractGoogleSheetId(selected.rawUrl);
+      const xlsxUrl = sheetId ? `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=xlsx` : '';
+      if(xlsxUrl){
+        const xlsxRes = await fetch(xlsxUrl, { headers: { 'Cache-Control': 'no-cache' } });
+        result.counts.liveXlsxHttpStatus = xlsxRes.status;
+        result.counts.liveXlsxContentType = xlsxRes.headers.get('content-type') || '';
+        if(xlsxRes.ok){
+          const workbook = previewWorkbook(Buffer.from(await xlsxRes.arrayBuffer()));
+          result.counts.liveWorkbookFiles = workbook.workbookFiles;
+          result.counts.liveSheets = workbook.sheets;
+          result.counts.liveRows = workbook.rows;
+          result.tabs = workbook.tabs.map(t => ({
+            name: t.name,
+            sheetId: t.sheetId,
+            rows: t.rows,
+            columns: t.columns,
+            headers: t.headers,
+            issue: t.issue || ''
+          }));
+          if(workbook.sheets === 0){
+            result.issues.push(issue({ code: 'xlsx_no_sheets', severity: 'critical', message: 'Workbook no expone hojas.', expected: 'sheets > 0', detected: 0, delta: 1, period: 'live_source' }));
+          }
+          const emptyTabs = result.tabs.filter(t => t.rows === 0).length;
+          if(emptyTabs){
+            result.issues.push(issue({ code: 'xlsx_empty_tabs', severity: 'warning', message: `${emptyTabs} tabs sin filas.`, expected: 'tabs with rows', detected: emptyTabs, delta: emptyTabs, period: 'live_source' }));
+          }
+          return result;
+        }
+        result.issues.push(issue({ code: 'google_xlsx_http_error', severity: xlsxRes.status === 401 || xlsxRes.status === 403 ? 'critical' : 'warning', message: `Google XLSX export returned HTTP ${xlsxRes.status}`, expected: 'HTTP 200', detected: `HTTP ${xlsxRes.status}`, delta: 1, period: 'live_source' }));
+      }
+
       const csvUrl = googleCsvExportUrl(selected.rawUrl);
       const res = await fetch(csvUrl, { headers: { 'Cache-Control': 'no-cache' } });
       result.counts.liveHttpStatus = res.status;
@@ -151,10 +199,11 @@ async function privateLiveCheck(payload){
         result.counts.liveRows = Math.max(0, rows.length - 1);
         result.counts.liveColumns = headers.length;
         result.counts.liveHeadersPreview = headers.slice(0, 25).length;
+        result.tabs = [{ name: 'gid_csv_fallback', sheetId: 'gid', rows: Math.max(0, rows.length - 1), columns: headers.length, headers }];
         if(rows.length <= 1){
           result.issues.push(issue({ code: 'empty_google_csv_export', severity: 'warning', message: 'CSV export no contiene filas de datos.', expected: 'rows > 0', detected: String(Math.max(0, rows.length - 1)), delta: 1, period: 'live_source' }));
         }
-        result.issues.push(issue({ code: 'single_gid_check_only', severity: 'warning', message: 'Live check valida un solo gid; HR multi-tab requiere Sheets API/export XLSX.', expected: 'all HR tabs', detected: 'single gid CSV', delta: 'multi_tab_pending', period: 'live_source' }));
+        result.issues.push(issue({ code: 'single_gid_fallback', severity: 'warning', message: 'Fallback CSV valida un solo gid; XLSX multi-tab no estuvo disponible.', expected: 'XLSX multitab', detected: 'single gid CSV', delta: 'fallback', period: 'live_source' }));
       }
     } else if(detected.type === 'excel_online'){
       const res = await fetch(selected.rawUrl, { method: 'GET' });
@@ -180,6 +229,8 @@ async function responseFor(action, payload){
   const sourceRef = live?.sourceRef || payload.sourceRef || (payload.urlPending ? maskRef(payload.urlPending) : 'local-preview');
   const sourceType = live?.sourceType || payload.sourceType || 'google_sheets';
   const maskedUrl = live?.maskedUrl || payload.maskedUrl || maskRef(sourceRef);
+  const stagingPeriods = periodsDetected(loaded.visits);
+  const combinedPeriods = mergeLivePeriods(stagingPeriods, live?.tabs || []);
   const sourceIssue = payload.urlPending
     ? issue({ code: 'url_received_not_persisted', severity: 'info', message: 'URL recibida solo en memoria para DEV; no se persiste en este endpoint local.', expected: 'private_backend_storage', detected: 'memory_only', delta: 0 })
     : null;
@@ -190,7 +241,7 @@ async function responseFor(action, payload){
       sourceType,
       sourceRef,
       maskedUrl,
-      periodsDetected: [],
+      periodsDetected: mergeLivePeriods([], live?.tabs || []),
       counts: live?.counts || {},
       issues: [
         issue({ code: 'staging_preview_missing', severity: 'critical', message: `No existe staging preview local: ${previewDir}`, expected: 'tmp/tya-staging-preview', detected: 'missing', delta: 1 }),
@@ -226,6 +277,8 @@ async function responseFor(action, payload){
     notifications: loaded.notifications.length,
     validationIssues: loaded.validationIssues.length,
     liveSourceMatched: !!live?.matched,
+    liveTabs: Array.isArray(live?.tabs) ? live.tabs.length : 0,
+    periodsDetected: combinedPeriods.length,
     criticalIssues: criticalCount,
     warningIssues: warningCount,
     firestoreWrites: 0,
@@ -239,8 +292,8 @@ async function responseFor(action, payload){
       sourceType,
       sourceRef,
       maskedUrl,
-      periodsDetected: [],
-      counts: { validationIssues: loaded.validationIssues.length, liveSourceMatched: !!live?.matched, firestoreWrites: 0, importsExecuted: 0, ...(live?.counts || {}) },
+      periodsDetected: live?.tabs?.length ? mergeLivePeriods([], live.tabs) : [],
+      counts: { validationIssues: loaded.validationIssues.length, liveSourceMatched: !!live?.matched, liveTabs: Array.isArray(live?.tabs) ? live.tabs.length : 0, firestoreWrites: 0, importsExecuted: 0, ...(live?.counts || {}) },
       issues: [ ...(sourceIssue ? [sourceIssue] : []), ...(live?.issues || []) ],
       canImport: false,
       message: live?.matched ? 'Endpoint DEV HR conectado y fuente privada revisada. Importacion sigue bloqueada.' : 'Endpoint DEV HR conectado. Importacion sigue bloqueada.'
@@ -253,7 +306,7 @@ async function responseFor(action, payload){
       sourceType,
       sourceRef,
       maskedUrl,
-      periodsDetected: periodsDetected(loaded.visits),
+      periodsDetected: combinedPeriods,
       counts,
       issues: [
         issue({ code: 'sync_blocked_until_authorization', severity: 'critical', message: 'Sincronizacion bloqueada hasta autorizacion explicita y rollback.', expected: 'PAULA_AUTORIZA_DEV_STAGING_WRITE', detected: 'not_authorized', delta: 1 }),
@@ -270,7 +323,7 @@ async function responseFor(action, payload){
     sourceType,
     sourceRef,
     maskedUrl,
-    periodsDetected: periodsDetected(loaded.visits),
+    periodsDetected: combinedPeriods,
     counts,
     issues,
     canImport: false,
@@ -326,6 +379,7 @@ server.listen(port, '127.0.0.1', ()=>{
   console.log(`URL: http://127.0.0.1:${port}/api/hr-source`);
   console.log(`Preview dir: ${previewDir}`);
   console.log('Private source support: enabled when sourceRef starts with hrsrc_');
+  console.log('Multitab XLSX preview: enabled for Google Sheets private sources');
   console.log('Firestore writes: 0');
   console.log('Imports executed: 0');
 });
