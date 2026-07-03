@@ -1,5 +1,13 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Shopper review counts TyA
+
+- Se agrego `tools/migration/tya-shopper-review-counts.mjs`.
+- Se agrego `app/docs/SHOPPER-REVIEW-COUNTS-TYA-20260703.md`.
+- Objetivo: generar conteos locales del bloque SHOPPER_REVIEW sin pegar datos crudos.
+- Salidas locales esperadas bajo `tmp/tya-shopper-review-counts`.
+- Estado seguro: revision local, sin deploy y sin produccion.
+
 ## 2026-07-03 - Resultado readiness V2 TyA
 
 - Se agrego `app/docs/RESULTADO-READINESS-V2-TYA-20260703.md`.
@@ -14,12 +22,4 @@
 - Se agrego `app/docs/COMANDO-UNICO-READINESS-LOCAL-TYA-20260703.md`.
 - Objetivo: reducir operacion manual a un solo comando local para generar reportes de readiness.
 - Indica que debe pegarse solo `tmp/tya-readiness-consolidated/readinessConsolidated.md`.
-- Estado seguro: sin escritura, sin importacion, sin deploy y sin produccion.
-
-## 2026-07-03 - Safe local readiness sequence TyA
-
-- Se agrego `tools/migration/tya-run-safe-local-readiness-sequence.mjs`.
-- Se agrego `app/docs/SAFE-LOCAL-READINESS-SEQUENCE-TYA-20260703.md`.
-- Objetivo: ejecutar en local la secuencia de reportes seguros sin correr cada script manualmente.
-- Salidas locales esperadas bajo `tmp/tya-safe-local-readiness-sequence`.
 - Estado seguro: sin escritura, sin importacion, sin deploy y sin produccion.
