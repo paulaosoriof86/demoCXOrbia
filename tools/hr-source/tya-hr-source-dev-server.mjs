@@ -2,6 +2,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { getSecretSource, googleCsvExportUrl, detectSource, maskUrl as privateMaskUrl } from './tya-hr-source-private-registry.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,6 +26,30 @@ function readJsonl(file){
   } catch {
     return [];
   }
+}
+
+function parseCsv(text){
+  const rows = [];
+  let row = [];
+  let cell = '';
+  let quoted = false;
+  for(let i = 0; i < text.length; i++){
+    const ch = text[i];
+    const next = text[i + 1];
+    if(quoted){
+      if(ch === '"' && next === '"') { cell += '"'; i++; }
+      else if(ch === '"') quoted = false;
+      else cell += ch;
+    } else {
+      if(ch === '"') quoted = true;
+      else if(ch === ',') { row.push(cell); cell = ''; }
+      else if(ch === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
+      else if(ch !== '\r') cell += ch;
+    }
+  }
+  row.push(cell);
+  rows.push(row);
+  return rows.filter(r => r.some(c => String(c || '').trim() !== ''));
 }
 
 function send(res, statusCode, body, origin = '*'){
@@ -85,10 +110,76 @@ function periodsDetected(visits){
   return [...map.values()].sort((a,b)=>String(a.period).localeCompare(String(b.period)) || String(a.country).localeCompare(String(b.country)));
 }
 
-function responseFor(action, payload){
+async function privateLiveCheck(payload){
+  const requestedRef = String(payload.sourceRef || '').trim();
+  if(!requestedRef || !requestedRef.startsWith('hrsrc_')) return null;
+
+  const selected = getSecretSource(requestedRef);
+  if(!selected || !selected.rawUrl || selected.safe?.sourceRef !== requestedRef){
+    return {
+      matched: false,
+      sourceRef: requestedRef,
+      sourceType: payload.sourceType || 'google_sheets',
+      maskedUrl: payload.maskedUrl || maskRef(requestedRef),
+      counts: { liveSourceMatched: false, firestoreWrites: 0, importsExecuted: 0 },
+      issues: [issue({ code: 'private_source_not_registered', severity: 'warning', message: 'sourceRef no existe en registro privado local.', expected: 'registered private sourceRef', detected: requestedRef, delta: 1 })]
+    };
+  }
+
+  const detected = detectSource(selected.rawUrl);
+  const maskedUrl = selected.safe?.maskedUrl || privateMaskUrl(selected.rawUrl);
+  const result = {
+    matched: true,
+    sourceRef: selected.safe.sourceRef,
+    sourceType: detected.type || selected.safe.type || 'unknown',
+    maskedUrl,
+    counts: { liveSourceMatched: true, firestoreWrites: 0, importsExecuted: 0 },
+    issues: []
+  };
+
+  try{
+    if(detected.type === 'google_sheets'){
+      const csvUrl = googleCsvExportUrl(selected.rawUrl);
+      const res = await fetch(csvUrl, { headers: { 'Cache-Control': 'no-cache' } });
+      result.counts.liveHttpStatus = res.status;
+      result.counts.liveContentType = res.headers.get('content-type') || '';
+      if(!res.ok){
+        result.issues.push(issue({ code: 'google_csv_http_error', severity: 'critical', message: `Google CSV export returned HTTP ${res.status}`, expected: 'HTTP 200', detected: `HTTP ${res.status}`, delta: 1, period: 'live_source' }));
+      } else {
+        const rows = parseCsv(await res.text());
+        const headers = rows[0] || [];
+        result.counts.liveRows = Math.max(0, rows.length - 1);
+        result.counts.liveColumns = headers.length;
+        result.counts.liveHeadersPreview = headers.slice(0, 25).length;
+        if(rows.length <= 1){
+          result.issues.push(issue({ code: 'empty_google_csv_export', severity: 'warning', message: 'CSV export no contiene filas de datos.', expected: 'rows > 0', detected: String(Math.max(0, rows.length - 1)), delta: 1, period: 'live_source' }));
+        }
+        result.issues.push(issue({ code: 'single_gid_check_only', severity: 'warning', message: 'Live check valida un solo gid; HR multi-tab requiere Sheets API/export XLSX.', expected: 'all HR tabs', detected: 'single gid CSV', delta: 'multi_tab_pending', period: 'live_source' }));
+      }
+    } else if(detected.type === 'excel_online'){
+      const res = await fetch(selected.rawUrl, { method: 'GET' });
+      result.counts.liveHttpStatus = res.status;
+      result.counts.liveContentType = res.headers.get('content-type') || '';
+      if(!res.ok){
+        result.issues.push(issue({ code: 'excel_online_http_error', severity: res.status === 401 || res.status === 403 ? 'critical' : 'warning', message: `Excel Online returned HTTP ${res.status}`, expected: 'HTTP 200', detected: `HTTP ${res.status}`, delta: 1, period: 'live_source' }));
+      }
+      result.issues.push(issue({ code: 'excel_online_parser_pending', severity: 'warning', message: 'Excel Online parsing requiere Microsoft Graph/export connector.', expected: 'workbook parsed', detected: 'access check only', delta: 'parser_pending', period: 'live_source' }));
+    } else {
+      result.issues.push(issue({ code: 'unsupported_source_type', severity: 'critical', message: 'Fuente no reconocida como Google Sheets ni Excel Online.', expected: 'google_sheets|excel_online', detected: detected.type, delta: 1, period: 'live_source' }));
+    }
+  }catch(err){
+    result.issues.push(issue({ code: 'private_live_check_exception', severity: 'critical', message: err.message || String(err), expected: 'live check ok', detected: 'exception', delta: 1, period: 'live_source' }));
+  }
+
+  return result;
+}
+
+async function responseFor(action, payload){
   const loaded = loadPreview();
-  const sourceRef = payload.sourceRef || (payload.urlPending ? maskRef(payload.urlPending) : 'local-preview');
-  const sourceType = payload.sourceType || 'google_sheets';
+  const live = await privateLiveCheck(payload);
+  const sourceRef = live?.sourceRef || payload.sourceRef || (payload.urlPending ? maskRef(payload.urlPending) : 'local-preview');
+  const sourceType = live?.sourceType || payload.sourceType || 'google_sheets';
+  const maskedUrl = live?.maskedUrl || payload.maskedUrl || maskRef(sourceRef);
   const sourceIssue = payload.urlPending
     ? issue({ code: 'url_received_not_persisted', severity: 'info', message: 'URL recibida solo en memoria para DEV; no se persiste en este endpoint local.', expected: 'private_backend_storage', detected: 'memory_only', delta: 0 })
     : null;
@@ -98,30 +189,18 @@ function responseFor(action, payload){
       status: 'not_found',
       sourceType,
       sourceRef,
-      maskedUrl: payload.maskedUrl || maskRef(sourceRef),
+      maskedUrl,
       periodsDetected: [],
-      counts: {},
-      issues: [issue({ code: 'staging_preview_missing', severity: 'critical', message: `No existe staging preview local: ${previewDir}`, expected: 'tmp/tya-staging-preview', detected: 'missing', delta: 1 })],
+      counts: live?.counts || {},
+      issues: [
+        issue({ code: 'staging_preview_missing', severity: 'critical', message: `No existe staging preview local: ${previewDir}`, expected: 'tmp/tya-staging-preview', detected: 'missing', delta: 1 }),
+        ...(live?.issues || [])
+      ],
       canImport: false,
       message: 'No existe staging preview local. Ejecuta primero tya-build-staging-preview.ps1.'
     };
   }
 
-  const criticalCount = loaded.validationIssues.filter(i => i.severity === 'critical').length;
-  const warningCount = loaded.validationIssues.filter(i => i.severity === 'warning').length;
-  const counts = {
-    visits: loaded.visits.length,
-    submitidos: loaded.submitidos.length,
-    liquidationCandidates: loaded.liquidations.length,
-    shoppers: loaded.shoppers.length,
-    postulations: loaded.postulations.length,
-    notifications: loaded.notifications.length,
-    validationIssues: loaded.validationIssues.length,
-    criticalIssues: criticalCount,
-    warningIssues: warningCount,
-    firestoreWrites: 0,
-    importsExecuted: 0
-  };
   const issues = loaded.validationIssues.map(i => issue({
     code: i.code || 'validation_issue',
     severity: i.severity || 'warning',
@@ -134,18 +213,37 @@ function responseFor(action, payload){
     action: i.message || ''
   }));
   if(sourceIssue) issues.unshift(sourceIssue);
+  if(live?.issues?.length) issues.unshift(...live.issues);
+
+  const criticalCount = issues.filter(i => i.severity === 'critical').length;
+  const warningCount = issues.filter(i => i.severity === 'warning').length;
+  const counts = {
+    visits: loaded.visits.length,
+    submitidos: loaded.submitidos.length,
+    liquidationCandidates: loaded.liquidations.length,
+    shoppers: loaded.shoppers.length,
+    postulations: loaded.postulations.length,
+    notifications: loaded.notifications.length,
+    validationIssues: loaded.validationIssues.length,
+    liveSourceMatched: !!live?.matched,
+    criticalIssues: criticalCount,
+    warningIssues: warningCount,
+    firestoreWrites: 0,
+    importsExecuted: 0,
+    ...(live?.counts || {})
+  };
 
   if(action === 'test'){
     return {
-      status: 'connected',
+      status: live?.issues?.some(i => i.severity === 'critical') ? 'auth_error' : 'connected',
       sourceType,
       sourceRef,
-      maskedUrl: payload.maskedUrl || maskRef(sourceRef),
+      maskedUrl,
       periodsDetected: [],
-      counts: { validationIssues: loaded.validationIssues.length, firestoreWrites: 0, importsExecuted: 0 },
-      issues: sourceIssue ? [sourceIssue] : [],
+      counts: { validationIssues: loaded.validationIssues.length, liveSourceMatched: !!live?.matched, firestoreWrites: 0, importsExecuted: 0, ...(live?.counts || {}) },
+      issues: [ ...(sourceIssue ? [sourceIssue] : []), ...(live?.issues || []) ],
       canImport: false,
-      message: 'Endpoint DEV HR conectado. Importacion sigue bloqueada.'
+      message: live?.matched ? 'Endpoint DEV HR conectado y fuente privada revisada. Importacion sigue bloqueada.' : 'Endpoint DEV HR conectado. Importacion sigue bloqueada.'
     };
   }
 
@@ -154,7 +252,7 @@ function responseFor(action, payload){
       status: 'blocked',
       sourceType,
       sourceRef,
-      maskedUrl: payload.maskedUrl || maskRef(sourceRef),
+      maskedUrl,
       periodsDetected: periodsDetected(loaded.visits),
       counts,
       issues: [
@@ -171,7 +269,7 @@ function responseFor(action, payload){
     status,
     sourceType,
     sourceRef,
-    maskedUrl: payload.maskedUrl || maskRef(sourceRef),
+    maskedUrl,
     periodsDetected: periodsDetected(loaded.visits),
     counts,
     issues,
@@ -212,7 +310,7 @@ const server = http.createServer(async (req, res)=>{
         message: 'Accion no soportada.'
       }, origin);
     }
-    return send(res, 200, responseFor(action, payload), origin);
+    return send(res, 200, await responseFor(action, payload), origin);
   }catch(err){
     return send(res, 500, {
       status: 'blocked',
@@ -227,6 +325,7 @@ server.listen(port, '127.0.0.1', ()=>{
   console.log('CXOrbia HR Source DEV endpoint listening');
   console.log(`URL: http://127.0.0.1:${port}/api/hr-source`);
   console.log(`Preview dir: ${previewDir}`);
+  console.log('Private source support: enabled when sourceRef starts with hrsrc_');
   console.log('Firestore writes: 0');
   console.log('Imports executed: 0');
 });
