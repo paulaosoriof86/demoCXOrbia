@@ -1,5 +1,16 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Auditoria y preparacion empalme RC V75 Cloud frontend
+
+- Se agrego `app/docs/AUDITORIA-RC-V75-CLOUD-FRONTEND-20260703.md`.
+- Se agrego `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-RC-V75-20260703.md`.
+- Se agrego `app/docs/EMPALME-RC-V75-BACKEND-20260703.md`.
+- Se agrego `app/docs/RESUMEN-PARA-CLAUDE-ACUMULADO-RC-V75-20260703.md`.
+- La auditoria confirma que V75 cambia 3 archivos frente a V74: `app/modules/automatizaciones.js`, `app/modules/finanzas.js` y `app/modules/hr-source.js`.
+- Avances V75: estados honestos para Make/IA, Finanzas sin `En vivo` en movimientos/liquidaciones y flujo visible de `sourceRef` opaco en HR Source.
+- Pendientes vigentes: versionado V72 residual, SaaS profundo, propuestas comerciales tipo wizard, CRM Reuniones y limpieza de rutas duplicadas.
+- Estado operativo: sin importacion, sin despliegue y sin cambios productivos.
+
 ## 2026-07-03 - Auditoria RC V74 Cloud frontend
 
 - Se agrego `app/docs/AUDITORIA-RC-V74-CLOUD-FRONTEND-20260703.md`.
