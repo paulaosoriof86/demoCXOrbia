@@ -1,5 +1,18 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-03 - Addendum RC V75 / Claude pausado
+
+Ver addendum acumulado vigente en `app/docs/RESUMEN-PARA-CLAUDE-ACUMULADO-RC-V75-20260703.md`.
+
+Resumen ejecutivo actualizado:
+
+- Claude queda pausado temporalmente por capacidad.
+- La base visual nueva es V75, tratada como release candidate incremental.
+- ChatGPT/Codex documenta y empalma V75 preservando backend/documentacion del PR #7.
+- V75 resolvio tres puntos: avisos Make/IA server-side, Finanzas con estados honestos y HR Source con flujo de `sourceRef` opaco.
+- Sigue pendiente para Claude futuro: versionado V75 coherente, SaaS Console profundo, wizard de propuestas, CRM Reuniones y limpieza de rutas duplicadas.
+- Claude futuro debe incluir tanto lo hecho por backend/ChatGPT como pendientes exclusivos de prototipo; no debe partir de docs viejos ni borrar avances.
+
 ## 2026-07-03 - Addendum RC V74 Cloud frontend
 
 Ver addendum vigente en `app/docs/RESUMEN-PARA-CLAUDE-RC-V74-20260703.md`.
