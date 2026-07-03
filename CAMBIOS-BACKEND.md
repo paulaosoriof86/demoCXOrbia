@@ -1,5 +1,14 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - MigrationBatch staging preview TyA
+
+- Se agregó `tools/migration/tya-build-staging-preview.ps1` para construir preview local con forma de staging Firestore, sin escribir Firestore.
+- El script genera `migrationBatch.json`, `firestorePathsPlan.json`, `rollbackPlan.json`, previews JSONL de visitas, submitidos, liquidaciones candidatas, shoppers, postulaciones, notificaciones y validationIssues.
+- Por defecto omite PII y excluye DPI; el flag local `-IncludePiiLocal` queda solo para entorno controlado, nunca para repo.
+- Se documentó en `app/docs/MIGRATION-BATCH-STAGING-TYA-20260703.md`.
+- No importa datos, no escribe Firestore, no hace deploy, no toca frontend ni `/app/modules`.
+- Siguiente gate: revisar preview local y luego crear importador DEV con escritura bloqueada por defecto hasta autorización explícita.
+
 ## 2026-07-03 - Validador dry-run migración TyA V6 + V7.1
 
 - Se fijó regla metodológica: un ZIP nuevo de Claude no reinicia el proyecto; se procesa como release candidate incremental, se audita delta, se empalma sobre rama backend estable y se documenta qué resolvió, qué queda pendiente y qué aplica al backend.
