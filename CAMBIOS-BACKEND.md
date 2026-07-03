@@ -1,5 +1,13 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Safe local readiness sequence TyA
+
+- Se agrego `tools/migration/tya-run-safe-local-readiness-sequence.mjs`.
+- Se agrego `app/docs/SAFE-LOCAL-READINESS-SEQUENCE-TYA-20260703.md`.
+- Objetivo: ejecutar en local la secuencia de reportes seguros sin correr cada script manualmente.
+- Salidas locales esperadas bajo `tmp/tya-safe-local-readiness-sequence`.
+- Estado seguro: sin escritura, sin importacion, sin deploy y sin produccion.
+
 ## 2026-07-03 - Readiness TyA
 
 - Se agrego `tools/migration/tya-build-readiness-consolidated.mjs`.
@@ -31,12 +39,4 @@
 - Objetivo: preparar politica de identidad y deduplicacion de shoppers antes de escritura DEV.
 - El script genera `canonicalShopperId` candidato, mapa canonico, duplicados/revision e inconsistencias de referencia.
 - Reportes sin PII plana: usa fingerprints hash para email/telefono/nombre/sourceId.
-- Estado seguro: sin escritura, sin importacion, sin deploy y sin produccion.
-
-## 2026-07-03 - Sanitized DEV candidate TyA
-
-- Se agrego `tools/migration/tya-build-sanitized-dev-candidate.mjs`.
-- Se agrego `app/docs/SANITIZED-DEV-CANDIDATE-TYA-20260703.md`.
-- Objetivo: preparar candidato DEV sanitizado sin escribir datos.
-- Salidas locales esperadas bajo `tmp/tya-sanitized-dev-candidate`.
 - Estado seguro: sin escritura, sin importacion, sin deploy y sin produccion.
