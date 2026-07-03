@@ -1,5 +1,14 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Shopper identity review TyA
+
+- Se agrego `tools/migration/tya-build-shopper-identity-review.mjs`.
+- Se agrego `app/docs/SHOPPER-IDENTITY-REVIEW-TYA-20260703.md`.
+- Objetivo: preparar politica de identidad y deduplicacion de shoppers antes de escritura DEV.
+- El script genera `canonicalShopperId` candidato, mapa canonico, duplicados/revision e inconsistencias de referencia.
+- Reportes sin PII plana: usa fingerprints hash para email/telefono/nombre/sourceId.
+- Estado seguro: sin escritura, sin importacion, sin deploy y sin produccion.
+
 ## 2026-07-03 - Sanitized DEV candidate TyA
 
 - Se agrego `tools/migration/tya-build-sanitized-dev-candidate.mjs`.
