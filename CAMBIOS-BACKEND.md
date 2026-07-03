@@ -1,5 +1,13 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Pipeline seguro actualizado con matriz de gates
+
+- Se actualizo tools/migration/run-tya-local-safe-pipeline.ps1 para ejecutar tambien tools/migration/tya-production-gates-matrix.mjs.
+- Se actualizo app/docs/TYA-LOCAL-SAFE-PIPELINE-20260703.md con la nueva salida tmp/tya-production-gates-matrix.
+- El pipeline unico ahora encadena HR Source private flow, preview multitab, contrato DEV, validador de contrato y matriz de gates.
+- Seguridad: Firestore writes 0, imports executed 0, deploy 0.
+- Mejora para Claude: el prototipo debe reflejar visualmente gates por fase y no confundir preview con importacion real.
+
 ## 2026-07-03 - Matriz de gates TyA
 
 - Archivo agregado: tools/migration/tya-production-gates-matrix.mjs.
@@ -27,11 +35,3 @@
 - Se agrego tools/hr-source/tya-hr-source-dev-server.mjs como endpoint local para test, preview y sync-request.
 - Se agregaron validadores locales, registro privado local, live check, preview multi-tab XLSX, endpoint con tabs vivos, servidor static preview y runners locales.
 - Seguridad: Firestore writes 0, imports executed 0, deploy 0, canImport=false.
-
-## 2026-07-03 - Empalme incremental RC V70
-
-- Se empalmo el delta del prototipo V70 sobre la rama backend estable.
-- Archivos actualizados desde V70: app/core/config.js, app/index.html, app/modules/crm.js, app/modules/finanzas.js y app/modules/hr-source.js.
-- Se alineo app/index-backend-dev.html con V70 conservando Firebase/backend DEV y core/backend-hr-source-bridge.js.
-- No se hizo deploy, no se escribio Firestore y no se importaron datos.
-- Se agrego app/docs/EMPALME-RC-V70-BACKEND-20260703.md.
