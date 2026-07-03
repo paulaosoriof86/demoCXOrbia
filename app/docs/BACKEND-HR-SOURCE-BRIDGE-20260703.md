@@ -88,3 +88,7 @@ Crear la capa backend real para:
 2. Probar acceso a Google Sheets / Excel Online.
 3. Generar preview real de tabs, conteos e incidencias.
 4. Mantener importacion bloqueada hasta autorizacion explicita.
+
+## Relacion con pendientes V70
+
+El pendiente de listener HR queda cubierto por el bridge inicial. Siguen pendientes la conexion real, el registro privado y el preview real.
