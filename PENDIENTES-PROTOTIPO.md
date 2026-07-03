@@ -2,6 +2,12 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Mejoras desde backend para implementar en Claude
+
+Ver documento especifico:
+
+- `app/docs/MEJORAS-PARA-CLAUDE-DESDE-BACKEND-20260703.md`
+
 ## Addendum V70 - HR Source
 
 - Mantener el modulo HR Source visual aprobado.
@@ -9,6 +15,7 @@ Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backe
 - En produccion, la referencia de fuente debe ser opaca y entregada por backend.
 - La UI debe poder mostrar conteos/tabs devueltos por backend sin asumir que todo viene de datos demo o staging local.
 - El flujo de sincronizacion debe mantenerse como solicitud bloqueada hasta autorizacion backend; no mostrarlo como importacion ejecutada.
+- Mostrar estados honestos de contrato/preview/importacion: bloqueado, warning, pendiente backend o preview; nunca importado si `canImport=false`.
 
 ## Vigente desde V64
 
