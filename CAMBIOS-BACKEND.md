@@ -1,5 +1,15 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Resultado HR Source private full flow TyA
+
+- Se agrego `app/docs/RESULTADO-HR-SOURCE-PRIVATE-FULL-FLOW-20260703.md`.
+- Resultado: la HR viva fue leida en modo XLSX multi-tab (`live_xlsx_tab`), no como fallback CSV de un solo `gid`.
+- El reporte visible detecto tabs desde `SEPTIEMBRE 25` hasta `JULIO 26`, incluyendo HN y tabs `DASHBOARD`/`DASHBOARD HN`.
+- `Errors`: none.
+- Issues vigentes: `questionnaire_marks` duplicado, DPI en shoppers, liquidaciones pendientes de cruce financiero y destinatarios de notificaciones no canonicales.
+- Dictamen: lectura HR/historico desbloqueada en preview multi-tab; siguiente paso es staging canonico, no importacion.
+- Seguridad: Firestore writes 0, imports executed 0, deploy 0, produccion 0, `canImport=false`.
+
 ## 2026-07-03 - HR Source private full flow TyA
 
 - Se agrego `tools/hr-source/tya-hr-source-private-full-flow.mjs`.
