@@ -1,5 +1,14 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - HR Source private full flow TyA
+
+- Se agrego `tools/hr-source/tya-hr-source-private-full-flow.mjs`.
+- Se agrego `tools/hr-source/run-tya-hr-source-private-full-flow.ps1`.
+- Se agrego `app/docs/HR-SOURCE-PRIVATE-FULL-FLOW-20260703.md`.
+- Objetivo: validar lectura HR privada multi-tab/historico con `sourceRef` opaco, sin pegar URL en ChatGPT y sin subir crudos al repo.
+- El flujo registra URL solo localmente, ejecuta `test`, `preview` y `sync-request`, reporta tabs/periodos, filas por pais/periodo e issues.
+- Seguridad: Firestore writes 0, imports executed 0, deploy 0, produccion 0, `canImport=false`.
+
 ## 2026-07-03 - Estado de uso de fuentes reales TyA
 
 - Se agrego `app/docs/ESTADO-USO-FUENTES-BASE-REAL-TYA-20260703.md`.
