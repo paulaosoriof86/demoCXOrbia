@@ -33,10 +33,18 @@ window.CX = window.CX || {};
     return raw;
   }
 
+  function safeHrSourceEndpoint(){
+    const explicit = (params.get('cxHrSourceEndpoint') || '').trim();
+    if(explicit) return explicit;
+    if(params.get('cxHrSourceLocal') === '1') return 'http://127.0.0.1:8787/api/hr-source';
+    return '';
+  }
+
   CX.BACKEND = Object.assign(CX.BACKEND || {}, {
     enabled: true,
     previewMode: true,
     defaultProjectId: params.get('cxProjectId') || null,
+    hrSourceEndpoint: safeHrSourceEndpoint(),
     devPreviewAuth: {
       enabled: true,
       email: safePreviewEmail(),
