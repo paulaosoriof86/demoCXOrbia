@@ -60,7 +60,7 @@
       status,
       sourceType: r.sourceType || payload.sourceType || 'google_sheets',
       sourceRef: r.sourceRef || payload.sourceRef || '',
-      maskedUrl: r.maskedUrl || '',
+      maskedUrl: r.maskedUrl || payload.maskedUrl || '',
       periodsDetected: Array.isArray(r.periodsDetected) ? r.periodsDetected : (Array.isArray(r.periodos) ? r.periodos : []),
       counts: r.counts || {},
       issues: Array.isArray(r.issues) ? r.issues.map(normalizeIssue) : [],
@@ -78,6 +78,7 @@
       status: 'pendiente_backend',
       sourceType: payload.sourceType,
       sourceRef: payload.sourceRef,
+      maskedUrl: payload.maskedUrl,
       counts: {},
       periodsDetected: [],
       canImport: false,
@@ -95,6 +96,8 @@
       projectId: payload.projectId || cfg.projectId,
       sourceType: payload.sourceType,
       sourceRef: payload.sourceRef,
+      maskedUrl: payload.maskedUrl || '',
+      urlPending: payload.urlPending || '',
       requestedAt: payload.requestedAt || now(),
       env: cfg.env
     };
