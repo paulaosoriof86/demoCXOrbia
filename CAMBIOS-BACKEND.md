@@ -1,5 +1,14 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Legacy communications review TyA
+
+- Se agrego `tools/migration/tya-build-legacy-communications-review.mjs`.
+- Se agrego `app/docs/LEGACY-COMMUNICATIONS-REVIEW-TYA-20260703.md`.
+- Objetivo: revisar comunicaciones heredadas solo como historial y trazabilidad.
+- El script cruza historial con identidad shopper canonica candidata usando fingerprints hash, sin PII plana.
+- Salidas locales esperadas bajo `tmp/tya-legacy-communications-review`.
+- Estado seguro: sin escritura, sin importacion, sin deploy, sin produccion y sin flujos activos.
+
 ## 2026-07-03 - Shopper identity review TyA
 
 - Se agrego `tools/migration/tya-build-shopper-identity-review.mjs`.
@@ -72,28 +81,3 @@
 - Avances V75: estados honestos para Make/IA, Finanzas sin `En vivo` en movimientos/liquidaciones y flujo visible de `sourceRef` opaco en HR Source.
 - Pendientes vigentes: versionado V72 residual, SaaS profundo, propuestas comerciales tipo wizard, CRM Reuniones y limpieza de rutas duplicadas.
 - Estado operativo: sin importacion, sin despliegue y sin cambios productivos.
-
-## 2026-07-03 - Auditoria RC V74 Cloud frontend
-
-- Se agrego `app/docs/AUDITORIA-RC-V74-CLOUD-FRONTEND-20260703.md`.
-- Se agrego `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-RC-V74-20260703.md`.
-- Se agrego `app/docs/RESUMEN-PARA-CLAUDE-RC-V74-20260703.md`.
-- La auditoria trato `Prototype development request CXOrbia V74.zip` como release candidate incremental.
-- No se reemplazo la rama, no se aplico el ZIP completo y no se tocaron archivos de integracion backend.
-- Hallazgos principales: HR Source mejora seguridad, SaaS/propuestas avanzan parcialmente, falta versionado V74 y faltan estados honestos en Finanzas/Make/IA.
-- Estado operativo: sin importacion, sin despliegue y sin cambios productivos.
-
-## 2026-07-03 - Matriz pendientes bloqueantes DEV TyA
-
-- Se agrego app/docs/MATRIZ-PENDIENTES-BLOQUEANTES-DEV-IMPORT-TYA-20260703.md.
-- La matriz identifica que falta antes de una futura escritura DEV autorizada.
-- Incluye bloqueantes de datos, validacion, reglas, rollback y autorizacion.
-- Incluye pendientes frontend para Claude sobre HR Source, estados honestos, contrato informativo, gates y liquidaciones candidatas.
-- Seguridad: Firestore writes 0, imports executed 0, deploy 0.
-
-## 2026-07-03 - Indice maestro TyA HR Source
-
-- Se agrego app/docs/INDICE-MAESTRO-TYA-HR-SOURCE-20260703.md.
-- El indice centraliza documentos principales, documentos vivos, scripts clave y archivos backend core del tramo TyA / HR Source.
-- Se dejo una version compacta y segura del indice maestro.
-- Seguridad: Firestore writes 0, imports executed 0, deploy 0.
