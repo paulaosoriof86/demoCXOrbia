@@ -2,6 +2,14 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Addendum V70 - HR Source
+
+- Mantener el modulo HR Source visual aprobado.
+- No volver a guardar enlaces completos de HR en almacenamiento del navegador.
+- En produccion, la referencia de fuente debe ser opaca y entregada por backend.
+- La UI debe poder mostrar conteos/tabs devueltos por backend sin asumir que todo viene de datos demo o staging local.
+- El flujo de sincronizacion debe mantenerse como solicitud bloqueada hasta autorizacion backend; no mostrarlo como importacion ejecutada.
+
 ## Vigente desde V64
 
 La lista vigente actualizada esta en:
