@@ -1,5 +1,14 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Resultado readiness V2 TyA
+
+- Se agrego `app/docs/RESULTADO-READINESS-V2-TYA-20260703.md`.
+- Resultado local: `review_required`.
+- Checks OK: HR multi-tab, plan canonico, candidato sanitizado, identidad shopper, comunicaciones heredadas, candidatos operativos y dry-run package.
+- Conteos: 58 HR tabs, 617 visitas sanitizadas, 276 shoppers sanitizados, 276 shopper candidates, 216 legacy communications y 558 operative candidates.
+- Pendiente antes de cualquier gate DEV: revisar shoppers, comunicaciones heredadas y candidatos operativos.
+- Estado seguro: Firestore writes 0, imports executed 0, deploy 0, production 0, executeAllowed false.
+
 ## 2026-07-03 - Comando unico readiness local TyA
 
 - Se agrego `app/docs/COMANDO-UNICO-READINESS-LOCAL-TYA-20260703.md`.
@@ -13,19 +22,4 @@
 - Se agrego `app/docs/SAFE-LOCAL-READINESS-SEQUENCE-TYA-20260703.md`.
 - Objetivo: ejecutar en local la secuencia de reportes seguros sin correr cada script manualmente.
 - Salidas locales esperadas bajo `tmp/tya-safe-local-readiness-sequence`.
-- Estado seguro: sin escritura, sin importacion, sin deploy y sin produccion.
-
-## 2026-07-03 - Readiness TyA
-
-- Se agrego `tools/migration/tya-build-readiness-consolidated.mjs`.
-- Se agrego `app/docs/READINESS-TYA-20260703.md`.
-- Objetivo: generar reporte unico de avance y faltantes antes de una revision DEV controlada.
-- Salidas locales esperadas bajo `tmp/tya-readiness-consolidated`.
-- Estado seguro: sin escritura, sin importacion, sin deploy y sin produccion.
-
-## 2026-07-03 - Candidatos operativos TyA
-
-- Se agrego `tools/migration/tya-build-liq-candidate-review.mjs`.
-- Se agrego `app/docs/CANDIDATOS-OPERATIVOS-TYA-20260703.md`.
-- Objetivo: preparar revision local de candidatos operativos.
 - Estado seguro: sin escritura, sin importacion, sin deploy y sin produccion.
