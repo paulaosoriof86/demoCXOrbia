@@ -1,5 +1,20 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-03 - Addendum RC V74 Cloud frontend
+
+Ver addendum vigente en `app/docs/RESUMEN-PARA-CLAUDE-RC-V74-20260703.md`.
+
+Resumen ejecutivo para Claude:
+
+- Conservar HR Source V74: no derivar `sourceRef` desde URL, `parsed_with_warnings.canImport=false`, sync bloqueado salvo `ready_for_import && canImport===true`, gates visuales y contrato DEV informativo.
+- Corregir versionado: el ZIP fue recibido como V74, pero docs y releases internos aun dicen V72.
+- Corregir Finanzas: reemplazar `En vivo` por estado honesto mientras no haya backend/cruce real.
+- Corregir Automatizaciones/Make: no presentar POST real; el prototipo solo loguea/notifica localmente.
+- Corregir IA: API keys y llamadas reales deben ser backend server-side antes de produccion.
+- Profundizar SaaS multi-tenant: permisos por rol, feature flags por tenant/plan/pais/modulo, releases con targeting, confirmacion y rollback.
+- Profundizar propuestas: wizard comercial completo, plantillas requeridas, estados completos y conversion futura a proyecto.
+- No reemplazar la rama backend ni borrar `app/index-backend-dev.html`, `app/core/backend-*.js`, `tools/` o docs del PR #7.
+
 ## 2026-07-03 - Addendum HR Source V70
 
 Ver addendum vigente en `app/docs/RESUMEN-PARA-CLAUDE-HR-SOURCE-V70-20260703.md`.
