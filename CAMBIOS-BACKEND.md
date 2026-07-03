@@ -1,5 +1,13 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Plan staging canonico TyA
+
+- Se agrego `tools/migration/tya-build-canonical-staging-plan.mjs`.
+- Se agrego `app/docs/PLAN-STAGING-CANONICO-TYA-20260703.md`.
+- Objetivo: convertir el resultado exitoso HR multi-tab en clasificacion canonica de tabs, periodos, paises, filas, columnas y estados.
+- Salidas locales esperadas: `tmp/tya-canonical-staging/tyaCanonicalStagingPlan.json` y `.md`.
+- El script no escribe Firestore, no importa datos, no hace deploy y mantiene `canImport=false`.
+
 ## 2026-07-03 - Resultado HR Source private full flow TyA
 
 - Se agrego `app/docs/RESULTADO-HR-SOURCE-PRIVATE-FULL-FLOW-20260703.md`.
