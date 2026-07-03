@@ -79,6 +79,14 @@ El check local de Google Sheets valida un solo `gid`. Para HR completo multi-tab
 - No se suben CSV crudos.
 - `canImport` permanece false.
 
+## Integracion posterior
+
+El endpoint DEV local ya puede usar un `sourceRef` privado con formato `hrsrc_...` para combinar señales live con staging preview.
+
+Documento relacionado:
+
+- `app/docs/HR-SOURCE-ENDPOINT-PRIVATE-INTEGRATION-20260703.md`
+
 ## Siguiente paso
 
-Conectar este live check al endpoint DEV para que `preview` pueda usar fuente viva cuando exista `sourceRef` privado, manteniendo bloqueada la importacion.
+Preparar prueba local guiada del flujo completo y luego avanzar hacia conector multi-tab real.
