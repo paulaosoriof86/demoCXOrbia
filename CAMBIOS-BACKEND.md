@@ -1,5 +1,14 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Shopper reference review summary TyA
+
+- Se agrego `tools/migration/tya-shopper-reference-review-summary.mjs`.
+- Se agrego `app/docs/SHOPPER-REFERENCE-REVIEW-SUMMARY-TYA-20260703.md`.
+- Objetivo: entender las filas de `shopperReferenceReview` sin pegar datos crudos y decidir si SHOPPER_REVIEW puede bajar a politica provisional solo para DEV staging.
+- Salidas locales esperadas bajo `tmp/tya-shopper-reference-review-summary`.
+- Estado seguro: Firestore writes 0, imports executed 0, deploy 0, production 0, executeAllowed false.
+- Pendiente: Paula debe ejecutar el comando local y pegar solo `tmp/tya-shopper-reference-review-summary/shopperReferenceReviewSummary.md`.
+
 ## 2026-07-03 - Shopper review counts TyA
 
 - Se agrego `tools/migration/tya-shopper-review-counts.mjs`.
