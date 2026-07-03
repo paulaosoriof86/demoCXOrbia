@@ -1,5 +1,21 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - HR Source backend DEV, fuente privada y preview local
+
+- Se agrego `app/core/backend-hr-source-bridge.js` para escuchar eventos del modulo HR Source y llamar un endpoint backend DEV sin tocar la logica de UI.
+- Se actualizo `app/index-backend-dev.html` para cargar HR Source y el bridge en preview backend DEV.
+- Se actualizo `app/core/backend-config-preview-dev.js` para permitir endpoint HR Source local con parametros DEV.
+- Se agrego `tools/hr-source/tya-hr-source-dev-server.mjs` como endpoint local `POST /api/hr-source` para acciones `test`, `preview` y `sync-request`.
+- Se agregaron validadores locales: `tya-hr-source-dev-smoke.mjs`, `tya-hr-source-dev-full-check.mjs`, `tya-hr-source-private-flow-check.mjs`.
+- Se agrego registro privado local de fuente HR: `tya-hr-source-private-registry.mjs` y `tya-hr-source-register-private.mjs`; la URL completa queda solo bajo `tmp/hr-source-private`, fuera del repo.
+- Se agrego live check de fuente privada: `tya-hr-source-live-check.mjs`.
+- Se agrego preview multi-tab XLSX sin dependencias externas: `tya-hr-source-xlsx-lite.mjs` y `tya-hr-source-multitab-preview.mjs`.
+- Se conecto el endpoint HR Source DEV para devolver tabs vivos en `periodsDetected` cuando existe `sourceRef` privado.
+- Se agrego servidor static preview local `tools/dev/cxorbia-static-preview-server.mjs`.
+- Se agregaron runners PowerShell locales: `run-tya-hr-source-private-flow-check.ps1` y `run-tya-hr-source-open-preview.ps1`.
+- Documentos agregados: `app/docs/HR-SOURCE-ENDPOINT-DEV-LOCAL-20260703.md`, `app/docs/HR-SOURCE-ENDPOINT-SMOKE-20260703.md`, `app/docs/HR-SOURCE-DEV-FULL-CHECK-20260703.md`, `app/docs/HR-SOURCE-PRIVATE-LIVE-CHECK-20260703.md`, `app/docs/HR-SOURCE-ENDPOINT-PRIVATE-INTEGRATION-20260703.md`, `app/docs/HR-SOURCE-FLOW-CHECK-20260703.md`, `app/docs/HR-SOURCE-MULTITAB-PREVIEW-20260703.md`, `app/docs/HR-SOURCE-ENDPOINT-MULTITAB-INTEGRATION-20260703.md`, `app/docs/HR-SOURCE-RUNNER-20260703.md`, `app/docs/HR-SOURCE-LOCAL-PREVIEW-20260703.md`.
+- Seguridad: Firestore writes 0, imports executed 0, deploy 0, `canImport=false`; `sync-request` queda bloqueado hasta autorizacion explicita.
+
 ## 2026-07-03 - Empalme incremental RC V70
 
 - Se empalmo el delta del prototipo V70 sobre la rama backend estable.
