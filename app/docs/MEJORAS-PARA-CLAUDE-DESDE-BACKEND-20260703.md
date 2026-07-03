@@ -29,6 +29,13 @@ Este documento separa las mejoras detectadas o implementadas desde backend que C
 - No debe habilitar botones de escritura real hasta que backend entregue autorizacion explicita.
 - Si hay blockers, debe mostrar mensaje claro y no permitir accion destructiva.
 
+## Matriz de gates
+
+- Agregar una vista o estado visual que separe DEV preview, DEV import, staging y produccion.
+- Mostrar gates cumplidos, pendientes y bloqueados sin permitir saltos de fase.
+- Mostrar que produccion requiere base nueva limpia, permisos validados, autorizacion y smoke multi-tenant.
+- El usuario no debe interpretar un preview como una carga real.
+
 ## Seguridad y SaaS
 
 - Mantener enfoque multi-tenant por `tenantId` y `projectId`.
