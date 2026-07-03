@@ -132,6 +132,10 @@ CX.module('hrsource', ({data, ui})=>{
           <li>Liquidaciones pendientes de cruce financiero</li>
         </ul>
         <div style="margin-top:8px;font-size:11px;color:var(--t3)">Vista informativa. La importación real depende del backend.</div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border-2)">
+          <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:4px">🔐 Flujo de registro seguro del sourceRef</div>
+          <div style="font-size:10.5px;color:var(--t3);line-height:1.7">1) El frontend solicita registro seguro · 2) El backend recibe la URL por canal seguro · 3) El backend guarda el secreto · 4) El backend devuelve un <code>sourceRef</code> opaco · 5) El preview usa el <code>sourceRef</code>, nunca la URL. Mientras no exista sourceRef, el preview queda en <code>pendiente_backend</code>.</div>
+        </div>
       </div>`;
 
     const setEstado=(estado, patch)=>{

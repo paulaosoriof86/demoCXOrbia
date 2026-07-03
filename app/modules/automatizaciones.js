@@ -23,6 +23,7 @@ CX.module('automatizaciones', ({data,ui})=>{
     ${ui.ph('Automatizaciones & Integraciones', 'Conecta eventos de la operación con Make, WhatsApp, correo/Outlook y Sheets · IA opcional')}
     <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
       <div style="font-size:12.5px;color:var(--brand-dark)">Cada evento del flujo puede disparar un <b>escenario de Make</b> (webhook), un WhatsApp, un correo (Outlook/Gmail) o una fila en Sheets. Ejemplos mostrados con datos <b>anonimizados</b> (industria: red de farmacias).</div>
+      <div style="font-size:11px;color:#92400e;margin-top:8px">🔒 <b>Pendiente backend por tenant.</b> En el prototipo, los eventos solo se registran en el log local (simulación). El POST real a Make, los envíos de WhatsApp/correo y las llamadas de IA se ejecutan desde el backend server-side, no desde el navegador.</div>
     </div>
 
     <div class="grid g2" style="gap:14px;margin-bottom:16px">
@@ -67,6 +68,7 @@ CX.module('automatizaciones', ({data,ui})=>{
           <div><label class="lbl">API key / endpoint</label><input class="inp" id="aiKey" value="${aic.apiKey||''}" placeholder="Pega tu API key de ${(AI.PROVIDERS[aic.provider]||{}).label||'tu proveedor'}"></div>
         </div>
         <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-top:10px"><input type="checkbox" id="aiOn" ${aic.activa?'checked':''}> Activar IA como asistente (mapeo, extracción de documentos, generación de cuestionarios/propuestas)</label>
+        <div style="font-size:11px;color:var(--amber);margin-top:6px">🔒 Demo: la API key NO se envía ni se guarda de forma segura aquí. En producción se almacena server-side (Secret Manager) y las llamadas al proveedor las hace el backend, nunca el navegador.</div>
         <div style="font-size:11px;color:var(--t3);margin-top:6px">La IA es <b>opcional</b>: sin ella, los importadores usan heurística (sin costo). El modelo que elijas aplica a TODAS las funciones inteligentes.</div>
         <button class="btn btn-soft btn-sm" id="aiSave" style="margin-top:10px">Guardar IA</button>
         <select class="sel" id="aiProv" style="display:none">${provOpts}</select>
