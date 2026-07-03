@@ -495,6 +495,7 @@ CX.module('liquidaciones', ({data,ui})=>{
     host.innerHTML=`
     <div class="between" style="margin-bottom:12px"><div>${ui.ph('Liquidaciones', p.name+' · sincronizadas con el avance de cada visita')}</div>
       <div class="flex"><span class="bdg bdg-g">● En vivo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
+    <div class="card card-p" style="margin-bottom:12px;border-left:4px solid var(--amber);background:var(--amber-bg,#fffbeb)"><div style="font-size:11.5px;color:#92400e;line-height:1.6">📌 Las liquidaciones son <b>candidatas</b> derivadas del avance operativo. El <b>monto final a pagar</b> se confirma al cruzar con el Excel financiero externo del cierre. No se muestra “deuda final” ni “pagos listos” solo desde la HR.</div></div>
 
     <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px" id="liqKpis">
       <div data-lk="pc" style="cursor:pointer">${ui.kpi('Pend. cuestionario',res.pendiente_cuestionario||0,'a')}</div>
