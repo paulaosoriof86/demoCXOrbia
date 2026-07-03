@@ -149,6 +149,7 @@ CX.MODULES = {
   midia:         { icon:'☀️', label:'Mi Día',              roles:['admin','shopper'], status:'ready' },
   dashboard:     { icon:'📊', label:'Dashboard Operativo',  roles:['admin'],           status:'ready' },
   clientes:      { icon:'🏢', label:'Clientes',             roles:['admin'],           status:'ready' },
+  hrsource:      { icon:'🔗', label:'Fuente de HR',         roles:['admin'],           status:'ready' },
   importador:    { icon:'📥', label:'Importador',           roles:['admin'],           status:'ready' },
   proyectos:     { icon:'🗂️', label:'Proyectos',            roles:['admin'],           status:'ready' },
   periodos:      { icon:'🗓️', label:'Periodos',             roles:['admin'],           status:'ready' },
@@ -200,7 +201,7 @@ CX.MODULES = {
 CX.NAV = {
   admin: [
     { sec:'Operación', items:['midia','dashboard','visitas','postulaciones','reservas','shoppers','informes'] },
-    { sec:'Admin del Proyecto', items:['clientes','proyectos','periodos','historico','rutas','cuestionarios','importador'] },
+    { sec:'Admin del Proyecto', items:['clientes','proyectos','periodos','historico','rutas','hrsource','cuestionarios','importador'] },
     { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte','novedades'] },
     { sec:'Finanzas',  items:['financiero','movimientos','liquidaciones','lotes'] },
     { sec:'Comercial', items:['costos','crm','marketing'] },

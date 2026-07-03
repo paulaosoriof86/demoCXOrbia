@@ -1,5 +1,12 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Empalme incremental RC V70
+
+- Se empalmo el delta del prototipo V70 sobre la rama backend estable.
+- Archivos actualizados desde V70: app/core/config.js, app/index.html, app/modules/crm.js, app/modules/finanzas.js y app/modules/hr-source.js.
+- Se alineo app/index-backend-dev.html con V70 conservando Firebase/backend DEV y core/backend-hr-source-bridge.js.
+- No se hizo deploy, no se escribio Firestore y no se importaron datos.
+- Se agrego app/docs/EMPALME-RC-V70-BACKEND-20260703.md.
 ## 2026-07-03 - Firestore write plan TyA sin escritura
 
 - Se agregó `tools/migration/tya-build-firestore-write-plan.ps1` para convertir el staging preview local en un plan explícito de rutas/operaciones Firestore.

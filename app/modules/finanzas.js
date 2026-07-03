@@ -250,7 +250,8 @@ CX.module('movimientos', ({data,ui})=>{
         <div style="font-size:11px;color:var(--t3);margin-top:8px">Los <b>financiamientos</b> no son utilidad: se suman a CxP hasta devolverse.</div>
       </div>
       <div class="card card-p"><div class="card-h"><div class="card-t">Cuentas por pagar (CxP)</div></div>
-        ${CX.finStore.cxp(pid()).length?CX.finStore.cxp(pid()).map(r=>`<div class="between" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div style="cursor:pointer" data-cxdet="cxp:${r.id}"><b style="font-size:12px">${r.concepto}</b><div style="font-size:10px;color:var(--t3)">${r.pais||''} · ${r.estado||'pendiente'} · saldo ↗ ver detalle</div></div><div class="flex" style="gap:8px"><b style="font-size:12.5px;color:var(--amber)">${ui.money(cur,r.saldo||0)}</b><button class="btn btn-soft btn-sm" data-abono="${r.id}">Abonar</button></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:8px 0">Sin CxP registradas. Útil al importar saldos iniciales.</div>'}
+        ${CX.finStore.cxp(pid()).length?`<input class="inp" id="cxpFind" placeholder="🔍 Buscar concepto/beneficiario…" style="margin-bottom:8px;padding:5px 9px;font-size:12px">`:''}
+        <div id="cxpBody">${CX.finStore.cxp(pid()).length?CX.finStore.cxp(pid()).map(r=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div style="cursor:pointer" data-cxdet="cxp:${r.id}"><b style="font-size:12px">${r.concepto}</b><div style="font-size:10px;color:var(--t3)">${r.pais||''} · ${r.estado||'pendiente'} · saldo ↗ ver detalle</div></div><div class="flex" style="gap:8px"><b style="font-size:12.5px;color:var(--amber)">${ui.money(cur,r.saldo||0)}</b><button class="btn btn-soft btn-sm" data-abono="${r.id}">Abonar</button></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:8px 0">Sin CxP registradas. Útil al importar saldos iniciales.</div>'}</div>
       </div>
     </div>
 
@@ -315,6 +316,8 @@ CX.module('movimientos', ({data,ui})=>{
       <div><label class="lbl">País</label><select class="sel" id="fnP">${p.countries.map(c=>`<option>${c}</option>`).join('')}</select></div></div>
       <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="fnSave">Registrar</button></div>
     `,{onMount:(ov,close)=>{ov.querySelector('#fnSave').addEventListener('click',()=>{CX.finStore.addFinanciamiento(p.id,{fuente:(ov.querySelector('#fnF').value||'').trim(),concepto:(ov.querySelector('#fnC').value||'').trim(),monto:+ov.querySelector('#fnM').value||0,pais:ov.querySelector('#fnP').value});close();draw();ui.toast('Financiamiento registrado · flujo + CxP (no operativo)','ok',3600);});}}));
+    const cxpF=host.querySelector('#cxpFind');
+    if(cxpF)cxpF.addEventListener('input',()=>{const q=cxpF.value.toLowerCase();host.querySelectorAll('#cxpBody .cxpRow').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?'':'none';});});
     host.querySelectorAll('[data-delm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.delMov(pid(),b.dataset.delm);draw();ui.toast('Movimiento eliminado','');}));
     host.querySelectorAll('[data-cxdet]').forEach(el=>el.addEventListener('click',()=>{
       const [kind,id]=el.dataset.cxdet.split(':');
@@ -366,12 +369,14 @@ CX.module('movimientos', ({data,ui})=>{
           <div><label class="lbl">País</label><select class="sel" id="mvPais"><option value="">— global —</option>${p.countries.map(c=>`<option ${scope!=='global'?'selected':''}>${c}</option>`).join('')}</select></div>
           <div><label class="lbl">Fecha (admite histórico)</label><input class="inp" id="mvFecha" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
           <div><label class="lbl">Estado</label><select class="sel" id="mvEstado">${(esIng?['Conciliado','Pendiente (CxC)','Por conciliar']:['Pagado','Programado']).map(s=>`<option>${s}</option>`).join('')}</select></div>
+          <div><label class="lbl">${esIng?'Pagador / fuente':'Beneficiario'}</label><input class="inp" id="mvBenef" placeholder="${esIng?'Quién paga (cliente/casa matriz)':'A quién se paga (shopper/proveedor)'}"></div>
+          <div><label class="lbl">Proyecto destino</label><select class="sel" id="mvProy"><option value="">— sin proyecto —</option>${(data.projects||[]).map(pr=>`<option value="${pr.id}" ${pr.id===pid()?'selected':''}>${pr.name}</option>`).join('')}</select></div>
           <div style="grid-column:1/3"><label class="lbl">Descripción</label><input class="inp" id="mvDesc" placeholder="Opcional"></div>
         </div>
         <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="mvSave">Registrar</button></div>
       `,{onMount:(ov,close)=>{ov.querySelector('#mvSave').addEventListener('click',()=>{
         const monto=Math.abs(+ov.querySelector('#mvMonto').value||0)*(esIng?1:-1);
-        const rec={tipo:esIng?'ingreso':'egreso',cat:ov.querySelector('#mvCat').value||t,categoria:ov.querySelector('#mvCateg').value,pais:ov.querySelector('#mvPais').value,monto,fecha:ov.querySelector('#mvFecha').value,desc:ov.querySelector('#mvDesc').value,estado:ov.querySelector('#mvEstado').value};
+        const rec={tipo:esIng?'ingreso':'egreso',cat:ov.querySelector('#mvCat').value||t,categoria:ov.querySelector('#mvCateg').value,pais:ov.querySelector('#mvPais').value,monto,fecha:ov.querySelector('#mvFecha').value,desc:ov.querySelector('#mvDesc').value,estado:ov.querySelector('#mvEstado').value,beneficiario:(ov.querySelector('#mvBenef').value||'').trim(),proyectoId:ov.querySelector('#mvProy').value};
         if(esIng)rec.tipoIngreso=ov.querySelector('#mvTipo').value; else rec.tipoEgreso=ov.querySelector('#mvTipo').value;
         CX.finStore.addMov(pid(),rec);close();draw();ui.toast('Movimiento registrado','ok');});}});
     }));
@@ -490,6 +495,7 @@ CX.module('liquidaciones', ({data,ui})=>{
     host.innerHTML=`
     <div class="between" style="margin-bottom:12px"><div>${ui.ph('Liquidaciones', p.name+' · sincronizadas con el avance de cada visita')}</div>
       <div class="flex"><span class="bdg bdg-g">● En vivo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
+    <div class="card card-p" style="margin-bottom:12px;border-left:4px solid var(--amber);background:var(--amber-bg,#fffbeb)"><div style="font-size:11.5px;color:#92400e;line-height:1.6">📌 Las liquidaciones son <b>candidatas</b> derivadas del avance operativo. El <b>monto final a pagar</b> se confirma al cruzar con el Excel financiero externo del cierre. No se muestra “deuda final” ni “pagos listos” solo desde la HR.</div></div>
 
     <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px" id="liqKpis">
       <div data-lk="pc" style="cursor:pointer">${ui.kpi('Pend. cuestionario',res.pendiente_cuestionario||0,'a')}</div>
