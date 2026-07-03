@@ -1,5 +1,28 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Resultado readiness consolidated V3 TyA
+
+- Se agrego `app/docs/RESULTADO-READINESS-CONSOLIDATED-V3-TYA-20260703.md`.
+- Resultado local reportado por Paula: readiness `review_required`, todos los checks OK, SHOPPER_REVIEW paso a nota tecnica provisional.
+- Blockers vigentes: COMM_REVIEW y CANDIDATE_REVIEW.
+- Estado seguro: Firestore writes 0, imports executed 0, deploy 0, production 0, executeAllowed false.
+
+## 2026-07-03 - Legacy communications DEV policy decision TyA
+
+- Se agrego `tools/migration/tya-legacy-communications-dev-policy-decision.mjs`.
+- Se agrego `app/docs/LEGACY-COMMUNICATIONS-DEV-POLICY-DECISION-TYA-20260703.md`.
+- Objetivo: decidir si las 216 comunicaciones heredadas pueden quedar como historico inactivo para analisis DEV.
+- Salidas locales esperadas bajo `tmp/tya-legacy-communications-dev-policy-decision`.
+- Estado seguro: sin deploy, sin produccion, sin escritura Firestore y sin importacion.
+
+## 2026-07-03 - Readiness consolidated V4 TyA
+
+- Se agrego `tools/migration/tya-build-readiness-consolidated-v4.mjs`.
+- Se agrego `app/docs/READINESS-CONSOLIDATED-V4-TYA-20260703.md`.
+- Objetivo: incorporar la decision COMM_DEV_POLICY para que COMM_REVIEW pase a nota tecnica si aplica.
+- Salidas locales esperadas bajo `tmp/tya-readiness-consolidated-v4`.
+- Estado seguro: sin deploy, sin produccion, sin escritura Firestore, sin importacion, sin Auth real y sin cambios frontend.
+
 ## 2026-07-03 - Resultado shopper reference field audit TyA
 
 - Se agrego `app/docs/RESULTADO-SHOPPER-REFERENCE-FIELD-AUDIT-TYA-20260703.md`.
