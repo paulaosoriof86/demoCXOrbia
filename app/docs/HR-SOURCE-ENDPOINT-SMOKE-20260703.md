@@ -63,3 +63,12 @@ CXOrbia HR Source DEV smoke OK
 ```
 
 Y un JSON con resultados por accion.
+
+## Full check integrado
+
+Para evitar pasos manuales separados, tambien se agrego:
+
+- `tools/hr-source/tya-hr-source-dev-full-check.mjs`
+- `app/docs/HR-SOURCE-DEV-FULL-CHECK-20260703.md`
+
+Ese script levanta temporalmente el endpoint, ejecuta smoke, genera reporte y detiene el servidor.
