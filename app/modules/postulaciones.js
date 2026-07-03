@@ -189,10 +189,20 @@ CX.module('postulaciones', ({data,ui})=>{
     document.querySelectorAll('[data-reasig]').forEach(b=>b.addEventListener('click',()=>{ const x=posts.find(z=>z.id===b.dataset.reasig); if(!x)return;
       const cands=data.shoppersFor().filter(s=>s.id!==x.shopperId);
       ui.modal('Reasignar visita · '+x.sucursal,`
-        <p style="font-size:12px;color:var(--t2);margin-bottom:10px">Actualmente: <b>${x.shopper}</b>. Elige el nuevo evaluador.</p>
-        <select class="sel" id="rsSh" style="margin-bottom:14px">${cands.slice(0,30).map(s=>`<option value="${s.id}">${s.nombre} · ${s.code} · ${s.ciudad||CX.paisName(s.pais)}</option>`).join('')}</select>
-        <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rsOk">Reasignar</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#rsOk').addEventListener('click',()=>{ const nid=ov.querySelector('#rsSh').value; data.assignVisit&&data.assignVisit(x.visitaId,nid); const ns=data.getShopper(nid); if(ns){x.shopperId=ns.id;x.shopper=ns.nombre;x.shopperCode=ns.code;x.gestionadoPor=gestor();} close(); CX.notif&&CX.notif.push({to:'admin',tipo:'reasig',icon:'🔁',tono:'a',titulo:'Visita reasignada',txt:x.sucursal+' → '+(ns?ns.nombre:''),nav:'postulaciones'}); ui.toast('Reasignada a '+(ns?ns.nombre:'')+' · por '+gestor(),'ok',3600); });}});
+        <p style="font-size:12px;color:var(--t2);margin-bottom:8px">Actualmente: <b>${x.shopper}</b>. Busca y elige el nuevo evaluador.</p>
+        <input class="inp" id="rsFind" placeholder="🔍 Buscar por nombre, código o ciudad…" style="margin-bottom:6px">
+        <div class="flex" style="gap:6px;margin-bottom:8px"><select class="sel" id="rsPais" style="flex:1"><option value="">País: todos</option>${[...new Set(cands.map(s=>s.pais))].map(p=>`<option value="${p}">${CX.paisName(p)}</option>`).join('')}</select><select class="sel" id="rsCert" style="flex:1"><option value="">Certificación: todas</option><option value="1">Solo certificados</option></select></div>
+        <div id="rsList" style="max-height:220px;overflow:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:12px"></div>
+        <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rsOk" disabled>Reasignar</button></div>
+      `,{onMount:(ov,close)=>{
+        let sel=null;
+        const draw=()=>{ const q=(ov.querySelector('#rsFind').value||'').toLowerCase(); const fp=ov.querySelector('#rsPais').value; const fc=ov.querySelector('#rsCert').value;
+          const list=cands.filter(s=>(!q||(s.nombre+' '+s.code+' '+(s.ciudad||'')).toLowerCase().includes(q))&&(!fp||s.pais===fp)&&(!fc||s.certificado));
+          ov.querySelector('#rsList').innerHTML=list.length?list.slice(0,50).map(s=>`<div class="rsRow" data-id="${s.id}" style="padding:8px 11px;border-bottom:1px solid var(--border-2);cursor:pointer;${sel===s.id?'background:var(--brand-light)':''}"><b style="font-size:12.5px">${s.nombre}</b> <span style="font-size:11px;color:var(--t3)">· ${s.code} · ${s.ciudad||CX.paisName(s.pais)} · ⭐${(s.rating||0).toFixed?s.rating.toFixed(1):s.rating||'—'}</span></div>`).join(''):'<div style="padding:14px;font-size:12px;color:var(--t3)">Sin coincidencias.</div>';
+          ov.querySelectorAll('.rsRow').forEach(r=>r.addEventListener('click',()=>{sel=r.dataset.id;ov.querySelector('#rsOk').disabled=false;draw();}));
+        };
+        ov.querySelector('#rsFind').addEventListener('input',draw); ov.querySelector('#rsPais').addEventListener('change',draw); ov.querySelector('#rsCert').addEventListener('change',draw); draw();
+        ov.querySelector('#rsOk').addEventListener('click',()=>{ if(!sel)return; data.assignVisit&&data.assignVisit(x.visitaId,sel); const ns=data.getShopper&&data.getShopper(sel); x.shopper=ns?ns.nombre:x.shopper; x.shopperId=sel; x.gestionadoPor=gestor(); CX.automations&&CX.automations.logAction&&CX.automations.logAction('Reasignada',x.visitaId||x.id,(x.shopper||'')+' · '+(x.sucursal||'')); CX.bus&&CX.bus.emit('visit-flow'); close(); CX.notif&&CX.notif.push({to:'admin',tipo:'reasig',icon:'🔁',tono:'a',titulo:'Visita reasignada',txt:x.sucursal+' → '+(x.shopper||''),nav:'postulaciones'}); ui.toast('Visita reasignada a '+x.shopper,'ok'); }); }});
     }));
 
     /* cancelar: la visita vuelve a disponible */

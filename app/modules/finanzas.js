@@ -366,12 +366,14 @@ CX.module('movimientos', ({data,ui})=>{
           <div><label class="lbl">País</label><select class="sel" id="mvPais"><option value="">— global —</option>${p.countries.map(c=>`<option ${scope!=='global'?'selected':''}>${c}</option>`).join('')}</select></div>
           <div><label class="lbl">Fecha (admite histórico)</label><input class="inp" id="mvFecha" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
           <div><label class="lbl">Estado</label><select class="sel" id="mvEstado">${(esIng?['Conciliado','Pendiente (CxC)','Por conciliar']:['Pagado','Programado']).map(s=>`<option>${s}</option>`).join('')}</select></div>
+          <div><label class="lbl">${esIng?'Pagador / fuente':'Beneficiario'}</label><input class="inp" id="mvBenef" placeholder="${esIng?'Quién paga (cliente/casa matriz)':'A quién se paga (shopper/proveedor)'}"></div>
+          <div><label class="lbl">Proyecto destino</label><select class="sel" id="mvProy"><option value="">— sin proyecto —</option>${(data.projects||[]).map(pr=>`<option value="${pr.id}" ${pr.id===pid()?'selected':''}>${pr.name}</option>`).join('')}</select></div>
           <div style="grid-column:1/3"><label class="lbl">Descripción</label><input class="inp" id="mvDesc" placeholder="Opcional"></div>
         </div>
         <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="mvSave">Registrar</button></div>
       `,{onMount:(ov,close)=>{ov.querySelector('#mvSave').addEventListener('click',()=>{
         const monto=Math.abs(+ov.querySelector('#mvMonto').value||0)*(esIng?1:-1);
-        const rec={tipo:esIng?'ingreso':'egreso',cat:ov.querySelector('#mvCat').value||t,categoria:ov.querySelector('#mvCateg').value,pais:ov.querySelector('#mvPais').value,monto,fecha:ov.querySelector('#mvFecha').value,desc:ov.querySelector('#mvDesc').value,estado:ov.querySelector('#mvEstado').value};
+        const rec={tipo:esIng?'ingreso':'egreso',cat:ov.querySelector('#mvCat').value||t,categoria:ov.querySelector('#mvCateg').value,pais:ov.querySelector('#mvPais').value,monto,fecha:ov.querySelector('#mvFecha').value,desc:ov.querySelector('#mvDesc').value,estado:ov.querySelector('#mvEstado').value,beneficiario:(ov.querySelector('#mvBenef').value||'').trim(),proyectoId:ov.querySelector('#mvProy').value};
         if(esIng)rec.tipoIngreso=ov.querySelector('#mvTipo').value; else rec.tipoEgreso=ov.querySelector('#mvTipo').value;
         CX.finStore.addMov(pid(),rec);close();draw();ui.toast('Movimiento registrado','ok');});}});
     }));
