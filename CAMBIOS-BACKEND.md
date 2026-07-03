@@ -1,5 +1,21 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-03 - Resultado shopper reference review summary TyA
+
+- Se agrego `app/docs/RESULTADO-SHOPPER-REFERENCE-REVIEW-SUMMARY-TYA-20260703.md`.
+- Resultado local reportado por Paula: 661 reference review rows, 661 con `canonicalShopperId`, 0 coincidencias contra canonico conocido, 661 canonical no reconocidos y 661 bloqueos tecnicos.
+- Decision actual: `review_required`.
+- Lectura tecnica: no son 661 shoppers adicionales; el resultado apunta a referencias de visitas/postulaciones que necesitan auditoria de relacion con shopper canonico.
+- Estado seguro: Firestore writes 0, imports executed 0, deploy 0, production 0, executeAllowed false.
+
+## 2026-07-03 - Shopper reference field audit TyA
+
+- Se agrego `tools/migration/tya-shopper-reference-field-audit.mjs`.
+- Se agrego `app/docs/SHOPPER-REFERENCE-FIELD-AUDIT-TYA-20260703.md`.
+- Objetivo: diagnosticar disponibilidad de campos para relacion shopper-evento sin imprimir valores.
+- Salidas locales esperadas bajo `tmp/tya-shopper-reference-field-audit`.
+- Estado seguro: solo nombres de campos y conteos, sin deploy, sin produccion, sin escritura Firestore y sin importacion.
+
 ## 2026-07-03 - Shopper reference review summary TyA
 
 - Se agrego `tools/migration/tya-shopper-reference-review-summary.mjs`.
