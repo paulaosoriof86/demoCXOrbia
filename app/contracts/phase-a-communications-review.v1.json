@@ -1,0 +1,86 @@
+{
+  "contractName": "phase-a-communications-review",
+  "version": "1.0.0",
+  "status": "draft_no_runtime_no_sends_no_writes",
+  "scope": "Historical communications and Phase A notification gates",
+  "safety": {
+    "frontendChanges": false,
+    "runtimeConnected": false,
+    "firestoreWrites": false,
+    "deploy": false,
+    "production": false,
+    "realNotifications": false,
+    "messageReplay": false
+  },
+  "knownInputs": {
+    "legacyCommunicationRows": 216,
+    "source": "historical migration review",
+    "policy": "history_only_until_gate"
+  },
+  "classifications": {
+    "historyOnly": [
+      "previous_notification_trace",
+      "legacy_message_context",
+      "audit_reference",
+      "shopper_contact_history"
+    ],
+    "phaseATemplates": [
+      "postulation_received",
+      "postulation_approved",
+      "assignment_confirmed",
+      "schedule_required",
+      "visit_reminder",
+      "reschedule_requested",
+      "cancel_requested",
+      "visit_completed_evidence_request",
+      "questionnaire_pending",
+      "questionnaire_completed",
+      "review_pending",
+      "payment_status_available"
+    ],
+    "neverReplayAutomatically": [
+      "legacy_whatsapp_sent",
+      "legacy_email_sent",
+      "legacy_make_sent",
+      "historic_reminder"
+    ]
+  },
+  "notificationModes": [
+    "off",
+    "in_app",
+    "whatsapp_web_template",
+    "whatsapp_api",
+    "make"
+  ],
+  "requiredGateFields": [
+    "tenantId",
+    "projectId",
+    "eventType",
+    "mode",
+    "enabled",
+    "templateId",
+    "requiresHumanConfirmation",
+    "providerStatus",
+    "lastTestedAt"
+  ],
+  "providerPolicy": {
+    "greenApi": "optional_evaluate_not_required",
+    "whatsappWeb": "manual_or_template_fallback_allowed",
+    "whatsappApi": "allowed_when_provider_approved",
+    "make": "allowed_when_webhook_gate_approved",
+    "inApp": "safe_default_when_backend_available",
+    "off": "default_until_authorized"
+  },
+  "honestyRules": [
+    "Do not show sent if message was only prepared.",
+    "Do not show synced if Make webhook was not executed.",
+    "Do not show live if provider is not connected.",
+    "Use prepared, preview, template ready or pending authorization while gated."
+  ],
+  "writeTargetsFuture": {
+    "templates": "tenants/{tenantId}/projects/{projectId}/notificationTemplates/{templateId}",
+    "events": "tenants/{tenantId}/projects/{projectId}/notificationEvents/{eventId}",
+    "history": "tenants/{tenantId}/projects/{projectId}/communicationsHistory/{historyId}",
+    "audit": "tenants/{tenantId}/projects/{projectId}/syncEvents/{syncEventId}"
+  }
+}
