@@ -16,6 +16,9 @@ CX.projectWizard = function(data, ui){
   };
   const wrap=ui.el('div');
 
+  const qMode=(m)=>m==='externa'?'externo_general':m==='link'?'externo_visita':(m||'interna');
+  const qLabel=(m)=>({interna:'Cuestionario en plataforma',externo_general:'Plataforma externa · link general',externo_visita:'Link por visita desde HR'})[qMode(m)]||'Cuestionario configurable';
+
   const head=()=>`<div class="between" style="margin-bottom:14px">
     <div class="card-t" style="font-size:16px">🧩 Nuevo proyecto — paso ${st.step} de ${st.total}</div>
     <div class="flex" style="gap:4px">${[1,2,3,4,5].map(n=>`<span style="width:26px;height:5px;border-radius:3px;background:${n<=st.step?'var(--brand)':'var(--border)'}"></span>`).join('')}</div></div>`;
@@ -67,14 +70,14 @@ CX.projectWizard = function(data, ui){
       </div>
       ${ui.aiBox('Según el modelo, el Dashboard Financiero calcula distinto: directo descuenta ISR y regalías; delegado solo netea honorario recibido − pagado.','Finanzas según el modelo')}`;
 
-    if(st.step===4) return `
+    if(st.step===4){ const qm=qMode(st.cuestModo); return `
       <label class="lbl">Modo del cuestionario</label>
       <select class="sel" id="f_cmodo" style="margin-bottom:10px">
-        <option value="interna" ${st.cuestModo==='interna'?'selected':''}>En la plataforma (se llena dentro)</option>
-        <option value="externa" ${st.cuestModo==='externa'?'selected':''}>Plataforma externa (con credenciales)</option>
-        <option value="link" ${st.cuestModo==='link'?'selected':''}>Link distinto por cada visita</option>
+        <option value="interna" ${qm==='interna'?'selected':''}>En la plataforma (se llena dentro)</option>
+        <option value="externo_general" ${qm==='externo_general'?'selected':''}>Plataforma externa / link general</option>
+        <option value="externo_visita" ${qm==='externo_visita'?'selected':''}>Link específico por visita desde HR</option>
       </select>
-      <div id="cUrlWrap" style="${st.cuestModo==='interna'?'display:none':''};margin-bottom:12px"><label class="lbl">URL base / plataforma externa</label><input class="inp" id="f_curl" value="${st.cuestUrl}" placeholder="https://..."></div>
+      <div id="cUrlWrap" style="${qm==='interna'||qm==='externo_visita'?'display:none':''};margin-bottom:12px"><label class="lbl">URL general / plataforma externa</label><input class="inp" id="f_curl" value="${st.cuestUrl}" placeholder="https://..."></div>
       <label class="lbl">Origen de la Hoja de Ruta</label>
       <select class="sel" id="f_hr" style="margin-bottom:12px">
         <option ${st.hrFuente==='Hoja creada en plataforma'?'selected':''}>Hoja creada en plataforma</option>
@@ -83,9 +86,9 @@ CX.projectWizard = function(data, ui){
       </select>
       <div style="margin-bottom:6px"><label class="lbl">Escenarios (separados por coma)</label><input class="inp" id="f_scn" value="${st.scenarios}" placeholder="Compra estándar, Fin de semana, Incógnito"></div>
       <div class="flex" style="gap:8px;margin:8px 0"><button class="btn btn-soft btn-sm" id="f_import" type="button">📥 Importar instructivo / HR (IA)</button></div>
-      <div style="font-size:11.5px;color:var(--t3)">Los cuestionarios pueden tener versiones por escenario, marca o tipo de establecimiento (editables luego en el módulo Cuestionarios).</div>`;
+      <div style="font-size:11.5px;color:var(--t3)">Los cuestionarios pueden ser internos, externos con link general o específicos por visita desde HR. Las URLs privadas se validan desde backend/fuente segura cuando aplique.</div>`;
+    }
 
-    // step 5
     const recOK=st.countries.every(c=>st.honRecibe[c]!=null);
     return `
       <div style="margin-bottom:12px"><label class="lbl">Restricción del proyecto</label><input class="inp" id="f_res" value="${st.restriccion}" placeholder="Ej. No visitar la misma sucursal en 2 meses"></div>
@@ -96,7 +99,7 @@ CX.projectWizard = function(data, ui){
         <div style="font-size:12px;color:var(--t2);line-height:1.7">
           <b>${st.name||'(sin nombre)'}</b> · ${st.industry||'—'}<br>
           Países: ${st.countries.join(', ')||'—'} · Modelo: <b>${st.modelo}</b>${st.modelo==='directo'?` (ISR ${st.isr}% · regalías ${st.regalias}%)`:''}<br>
-          Cuestionario: ${st.cuestModo} · HR: ${st.hrFuente} · pago ≈ ${st.diasPago} días
+          Cuestionario: ${qLabel(st.cuestModo)} · HR: ${st.hrFuente} · pago ≈ ${st.diasPago} días
         </div>
       </div>
       ${ui.aiBox('Al crear, se genera un proyecto AISLADO con su propio dashboard, KPIs, reglas y finanzas. No afecta a los proyectos existentes.','Proyecto aislado e inteligente')}`;
@@ -105,7 +108,6 @@ CX.projectWizard = function(data, ui){
   const render=()=>{ wrap.innerHTML = head()+`<div>${stepHTML()}</div>`+ctrlFooter(); bind(); };
 
   const persist=()=>{
-    // sincroniza inputs visibles del paso actual hacia el estado
     const g=(id)=>{const e=wrap.querySelector('#'+id);return e?e.value:undefined;};
     if(st.step===1){ if(g('f_name')!=null)st.name=g('f_name'); if(g('f_ind')!=null)st.industry=g('f_ind');
       st.countries=[...wrap.querySelectorAll('.wCountry:checked')].map(c=>c.dataset.c);
@@ -117,7 +119,7 @@ CX.projectWizard = function(data, ui){
       if(g('f_combo')!=null)st.combo=g('f_combo'); }
     if(st.step===3){ const r=wrap.querySelector('input[name="wmod"]:checked'); if(r)st.modelo=r.value;
       if(g('f_isr')!=null)st.isr=+g('f_isr')||0; if(g('f_reg')!=null)st.regalias=+g('f_reg')||0; }
-    if(st.step===4){ if(g('f_cmodo')!=null)st.cuestModo=g('f_cmodo'); if(g('f_curl')!=null)st.cuestUrl=g('f_curl');
+    if(st.step===4){ if(g('f_cmodo')!=null)st.cuestModo=qMode(g('f_cmodo')); if(g('f_curl')!=null)st.cuestUrl=g('f_curl');
       if(g('f_hr')!=null)st.hrFuente=g('f_hr'); if(g('f_scn')!=null)st.scenarios=g('f_scn'); }
     if(st.step===5){ if(g('f_res')!=null)st.restriccion=g('f_res'); if(g('f_dias')!=null)st.diasPago=+g('f_dias')||30; if(g('f_con')!=null)st.conocimiento=g('f_con'); }
   };
@@ -126,6 +128,7 @@ CX.projectWizard = function(data, ui){
     persist();
     if(!st.name){ui.toast('Ponle nombre al proyecto','warn');st.step=1;render();return;}
     if(!st.countries.length){ui.toast('Selecciona al menos un país','warn');st.step=1;render();return;}
+    const modo=qMode(st.cuestModo);
     const cfg={
       name:st.name, client:st.name, industry:st.industry||'Proyecto', countries:st.countries,
       currency:st.currency, honorario:st.honPaga, honRecibe:st.honRecibe, boleto:st.boleto, comboAmt:st.comboAmt, combo:st.combo||null,
@@ -133,9 +136,13 @@ CX.projectWizard = function(data, ui){
       scenarios:(st.scenarios||'General').split(',').map(s=>s.trim()).filter(Boolean),
       canales:['Presencial','Online'], formato:'Evaluación', ronda:'JUN 26',
       restriccion:st.restriccion, conocimiento:st.conocimiento,
-      cuestionario:{modo:st.cuestModo,url:st.cuestUrl,label:st.cuestModo==='interna'?'Cuestionario en plataforma':st.cuestModo==='link'?'Link por visita':'Plataforma externa'},
+      cuestionario:{modo,url:st.cuestUrl,label:qLabel(modo),etiqueta:qLabel(modo),visitLinkField:modo==='externo_visita'?'questionnaireLink':''},
       pago:{diasPago:st.diasPago,logica:'Pago ~'+st.diasPago+' días tras submitir',moneda:'local'},
       hrMap:{fuente:st.hrFuente,cols:['Sucursal','Ciudad','País','Escenario']},
+      hrFuente:{origen:st.hrFuente==='Hoja creada en plataforma'?'nativa':'externa',etiqueta:st.hrFuente},
+      revision:{consultora:false,cliente:false},
+      submitido:{quien:'consultora',rol:'hr'},
+      contactos:{evidencias:'',soporte:'',cuestionario:'',reprog:'',pagos:'',coordinacion:''},
       geoloc:false, accent:'#2196d3', quincenas:['Quincena 1','Quincena 2'], nVisitas:0,
     };
     const p=data.addProject(cfg);
@@ -148,7 +155,7 @@ CX.projectWizard = function(data, ui){
     const back=wrap.querySelector('#wBack'); if(back)back.addEventListener('click',()=>{persist();st.step=Math.max(1,st.step-1);render();});
     wrap.querySelector('#wNext').addEventListener('click',()=>{persist();if(st.step===st.total){create();}else{st.step++;render();}});
     const modR=wrap.querySelectorAll('input[name="wmod"]'); modR.forEach(r=>r.addEventListener('change',()=>{st.modelo=r.value;const d=wrap.querySelector('#directoCosts');if(d)d.style.display=st.modelo==='directo'?'':'none';}));
-    const cm=wrap.querySelector('#f_cmodo'); if(cm)cm.addEventListener('change',()=>{const w=wrap.querySelector('#cUrlWrap');if(w)w.style.display=cm.value==='interna'?'none':'';});
+    const cm=wrap.querySelector('#f_cmodo'); if(cm)cm.addEventListener('change',()=>{const w=wrap.querySelector('#cUrlWrap');if(w)w.style.display=(cm.value==='interna'||cm.value==='externo_visita')?'none':'';});
     const ps=wrap.querySelector('#f_paisSearch'); if(ps)ps.addEventListener('input',()=>{const q=ps.value.toLowerCase();wrap.querySelectorAll('.wPaisRow').forEach(l=>{l.style.display=l.dataset.n.includes(q)?'':'none';});});
     const imp=wrap.querySelector('#f_import'); if(imp)imp.addEventListener('click',()=>importWizard());
   };
