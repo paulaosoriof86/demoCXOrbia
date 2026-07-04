@@ -1,5 +1,14 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-04 - Addendum auditoria V82 Claude candidate
+
+- Paula entrego `Prototype development request CXOrbia V82.zip` como version mas reciente de Claude.
+- Documento creado: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V82-CLAUDE-20260704.md`.
+- V82 corrige buena parte de V81: wizard con enum canonico/defaults Phase A/URL oculta por visita, cuestionario con 5 campos de link, revision admin con estados canonicos y estructura backend-ready parcial, duplicado `plantilla lista` eliminado y documentacion interna en `app/docs`.
+- Sintaxis V82 validada localmente: `node --check` sobre 61 archivos JS con `OK=61 FAIL=0`.
+- V82 queda muy cerca, pero no se recomienda source lock aun. Pendientes puntuales: texto externo `cuestionario enviado` en `cuestionario-shopper.js`, `Cuestionario: enviado` en `revision-admin.js`, textos de HR sync real en `misvisitas.js` y `postulaciones.js`, y ajuste fino `status/projectId/hrRowId` en revision admin.
+- Claude puede entregar una V83 ultra-corta solo con esos ajustes, o Paula puede autorizar a ChatGPT/Codex a aplicar esos parches menores antes de source lock.
+
 ## 2026-07-04 - Addendum auditoria V81 Claude candidate corregido
 
 - Paula entrego `Prototype development request CXOrbia V81.zip`. Claude lo describe internamente como V80 corregido; no se toma como incoherencia porque Paula versiona cada entrega.
