@@ -2,6 +2,18 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Addendum V81 - auditoria Claude candidate corregido
+
+- V81 fue auditado como candidato nuevo de Claude. Claude lo llama internamente V80 corregido; la diferencia de numeracion no es incoherencia porque Paula versiona internamente cada entrega.
+- Ver auditoria: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V81-CLAUDE-20260704.md`.
+- V81 mejora V80 y corrige parcialmente los 5 puntos: `proyecto-wizard.js` usa valores canonicos, `cuestionario-shopper.js` busca los 5 campos de link, `revision-admin.js` usa estados canonicos y fallback `CX.data.revisiones`, `misvisitas.js` corrige el duplicado, y la sintaxis JS valida.
+- No empalmar V81 completo todavia: quedan ajustes puntuales antes de source lock.
+- P0/P1 pendiente: `proyecto-wizard.js` no conserva todos los defaults Phase A ya aplicados en repo (`hrFuente`, `revision`, `submitido`, `contactos`) y muestra URL general para `externo_visita`.
+- P0/P1 pendiente: `cuestionario-shopper.js` todavia tiene textos `cuestionario enviado`; deben quedar como `cuestionario realizado` o `cuestionario completado`.
+- P0/P1 pendiente: `revision-admin.js` usa estados canonicos, pero debe guardar estructura compatible con contrato (`tenantId`, `projectId`, `reviewId`, `visitId`, `assignmentId`, `shopperId`, `source`, `createdAt`, `updatedAt`, `auditTrail`) y bloquear/exigir nota HR para `submitido_registered` si el proyecto es HR-driven.
+- P0/P1 pendiente: `misvisitas.js` aun dice que sincroniza la hoja de ruta; debe decir pendiente backend/preparado.
+- V81 no trae documentacion interna del prototipo; Claude debe actualizar `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` y addendum en `app/docs` cuando entregue la siguiente correccion.
+
 ## Addendum V80 - auditoria Claude candidate
 
 - V80 fue auditado como candidato nuevo de Claude, pero no queda empalmado ni aprobado como baseline.
@@ -121,7 +133,7 @@ La auditoria V64 encontro que muchos pendientes acumulados en documentos V62/V63
 12. Revision admin visible/funcional separada de submitido y liquidacion.
 13. Submitido configurable por proyecto y separado de cuestionario realizado.
 14. Wizard de proyecto con configuracion Phase A completa y gates honestos.
-15. Correcciones V80 antes de empalme: no regresion del wizard/cuestionario, revision admin canonica, textos honestos y documentacion.
+15. Correcciones V81 antes de empalme: defaults Phase A del wizard, textos cuestionario realizado, revision admin compatible con contrato, HR sync honesta y documentacion.
 
 ## Separacion corregida
 
