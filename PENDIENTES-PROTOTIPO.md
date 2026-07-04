@@ -2,6 +2,14 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Addendum V77 - paquete forense Claude
+
+- Usar el paquete `PAQUETE_CLAUDE_CXORBIA_V77_AUDITORIA_FORENSE_20260704.zip` como fuente de pendientes frontend mas reciente.
+- La numeracion V77 es consecutiva del registro de Paula y no debe tratarse como error por si sola.
+- Claude debe corregir los pendientes visuales/UX/documentales del prototipo sin tocar backend.
+- Mantener separados los avances backend de readiness V5, autorizacion DEV controlada, runner disabled, reglas, rollback y contrato de datos.
+- No modificar `tools/migration` ni convertir runners backend en flujos activos.
+
 ## Addendum RC V75 - base visual actual
 
 Ver documentos especificos:
@@ -87,4 +95,4 @@ La auditoria V64 encontro que muchos pendientes acumulados en documentos V62/V63
 
 Los pendientes de backend/integracion permanecen separados. ChatGPT/backend continua con Sprint 3 sobre Firestore DEV, acciones operativas controladas y `responsibilityLog` sin tocar `app/modules` para resolver backend.
 
-Claude debe trabajar sobre V75 o sobre el prototipo mas reciente empalmado por Paula/ChatGPT, sin usar versiones viejas y sin revertir avances backend.
+Claude debe trabajar sobre V77 o sobre el prototipo mas reciente empalmado por Paula/ChatGPT, sin usar versiones viejas y sin revertir avances backend.
