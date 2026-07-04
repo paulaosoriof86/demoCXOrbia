@@ -1,0 +1,178 @@
+{
+  "contract": "visit-lifecycle-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "hrWriteAllowed": false,
+  "authRealAllowed": false,
+  "purpose": "Define the safe visit lifecycle for available visits, scheduling, rescheduling, cancellation, performed visit and questionnaire completed states without activating runtime.",
+  "collections": {
+    "visits": "tenants/{tenantId}/projects/{projectId}/visits/{visitId}",
+    "assignments": "tenants/{tenantId}/projects/{projectId}/assignments/{assignmentId}",
+    "visitEvents": "tenants/{tenantId}/projects/{projectId}/visitEvents/{eventId}",
+    "scheduleRequests": "tenants/{tenantId}/projects/{projectId}/scheduleRequests/{requestId}",
+    "syncConflicts": "tenants/{tenantId}/projects/{projectId}/syncConflicts/{conflictId}",
+    "reviews": "tenants/{tenantId}/projects/{projectId}/reviews/{reviewId}",
+    "liquidations": "tenants/{tenantId}/projects/{projectId}/liquidations/{liquidationId}"
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "visitId",
+    "hrRowId",
+    "assignmentId",
+    "shopperId",
+    "periodId",
+    "country",
+    "currency",
+    "franja",
+    "quincena",
+    "visitLifecycleStatus",
+    "scheduleSyncStatus",
+    "questionnaireStatus",
+    "reviewStatus",
+    "submitidoStatus",
+    "liquidationEligibility",
+    "lastSyncedAt"
+  ],
+  "visitLifecycleStatuses": [
+    "available",
+    "postulation_pending",
+    "assigned_pending_schedule",
+    "scheduled",
+    "reschedule_requested",
+    "rescheduled",
+    "cancellation_requested",
+    "cancelled",
+    "performed_pending_questionnaire",
+    "questionnaire_completed_pending_review",
+    "review_in_progress",
+    "approved_for_submitido",
+    "submitido_registered",
+    "liquidation_candidate",
+    "liquidated",
+    "payment_scheduled",
+    "paid",
+    "conflict_review_required"
+  ],
+  "scheduleSyncStatuses": [
+    "not_synced",
+    "pending_make_sync",
+    "synced_from_platform",
+    "synced_from_hr",
+    "sync_disabled_preview_only",
+    "conflict_review_required"
+  ],
+  "questionnaireStatuses": [
+    "not_started",
+    "external_link_missing",
+    "redirected_external",
+    "internal_in_progress",
+    "completed_pending_review",
+    "correction_required",
+    "cancelled"
+  ],
+  "actions": {
+    "scheduleVisit": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "assignmentId", "shopperId", "scheduledAt"],
+      "sets": {
+        "visitLifecycleStatus": "scheduled",
+        "scheduleSyncStatus": "pending_make_sync"
+      }
+    },
+    "requestReschedule": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "assignmentId", "shopperId", "requestedAt", "reason"],
+      "sets": {
+        "visitLifecycleStatus": "reschedule_requested",
+        "scheduleSyncStatus": "pending_make_sync"
+      }
+    },
+    "cancelVisit": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "assignmentId", "shopperId", "reason"],
+      "sets": {
+        "visitLifecycleStatus": "cancelled",
+        "scheduleSyncStatus": "pending_make_sync"
+      }
+    },
+    "markPerformed": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "assignmentId", "shopperId", "performedAt"],
+      "sets": {
+        "visitLifecycleStatus": "performed_pending_questionnaire"
+      }
+    },
+    "markQuestionnaireCompleted": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "assignmentId", "shopperId", "questionnaireCompletedAt"],
+      "sets": {
+        "visitLifecycleStatus": "questionnaire_completed_pending_review",
+        "questionnaireStatus": "completed_pending_review"
+      }
+    },
+    "openReview": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "assignmentId", "reviewId"],
+      "sets": {
+        "visitLifecycleStatus": "review_in_progress"
+      }
+    }
+  },
+  "dateRules": [
+    "scheduledAt must respect project scheduling rules and HR availableFrom when available.",
+    "performedAt must not be in the future.",
+    "questionnaireCompletedAt must not be in the future.",
+    "questionnaireCompletedAt must not be before performedAt unless marked conflict_review_required with note.",
+    "reschedule must preserve auditTrail and previous scheduledAt.",
+    "cancelled visits must not remain available unless explicitly released by admin/project rules."
+  ],
+  "questionnaireRules": [
+    "Questionnaire completed is not submitido.",
+    "External questionnaire without URL must not fall back to internal form.",
+    "externo_general uses project-level URL.",
+    "externo_visita uses visit-level questionnaireLink or mapped HR link field.",
+    "After questionnaire completed, admin review or HR-driven submitido flow must continue before liquidation eligibility."
+  ],
+  "liquidationRules": [
+    "A performed visit is not automatically liquidable.",
+    "Questionnaire completed is not automatically liquidable.",
+    "Liquidation candidate status requires review/submitido policy to be satisfied.",
+    "Payment status is separate from visit execution status."
+  ],
+  "rules": [
+    "No silent overwrite between HR and platform visit lifecycle states.",
+    "No real Make/HR sync from this contract.",
+    "No Firestore writes from this contract.",
+    "Every lifecycle action must preserve auditTrail when runtime is authorized later.",
+    "Frontend labels may be Spanish, but internal statuses must remain canonical."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "client", "consultant_partner"],
+    "manualsToUpdate": ["Visit lifecycle", "Scheduling", "Rescheduling", "Cancellation", "Questionnaire completed", "Review and liquidation handoff"],
+    "coursesToUpdate": ["Shopper visit execution", "Ops visit follow-up", "Admin visit control", "Client status reading"],
+    "newLessons": [
+      "What each visit status means",
+      "How a shopper schedules a visit",
+      "How rescheduling works",
+      "How cancellation works",
+      "What performed visit means",
+      "Why questionnaire completed is not submitido",
+      "When a visit becomes liquidation candidate"
+    ]
+  },
+  "hardStops": [
+    "Do not call Make from this contract.",
+    "Do not write HR from this contract.",
+    "Do not write Firestore from this contract.",
+    "Do not mark performed visits as paid.",
+    "Do not treat questionnaire completed as submitido.",
+    "Do not allow future performedAt or questionnaireCompletedAt as valid without conflict review."
+  ]
+}
