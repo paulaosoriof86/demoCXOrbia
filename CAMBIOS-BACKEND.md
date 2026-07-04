@@ -1,5 +1,14 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - Auditoria frontend candidate V80 Claude
+
+- Se agrego `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V80-CLAUDE-20260704.md`.
+- Se actualizo `RESUMEN-PARA-CLAUDE.md` con el addendum V80.
+- Se actualizo `PENDIENTES-PROTOTIPO.md` con pendientes y no regresiones V80.
+- Objetivo: auditar el nuevo ZIP de Claude sin empalmarlo y sin cambiar baseline/source lock.
+- Decision: V80 trae avances utiles, pero no debe empalmarse completo todavia por regresiones en `proyecto-wizard.js`, `cuestionario-shopper.js` y `misvisitas.js`, y porque `revision-admin.js` necesita mapear estados canonicos y no quedar aislado en localStorage.
+- Estado seguro: sin empalme V80, sin source lock V80, sin runtime, sin deploy, sin produccion, sin Auth real, sin escritura Firestore, sin HR writes, sin Make/Gemini/WhatsApp real y sin cambios frontend aplicados.
+
 ## 2026-07-04 - Wizard Phase A complete contract TyA
 
 - Se agrego `app/contracts/project-wizard-phase-a.tya.contract.json`.
