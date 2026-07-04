@@ -130,7 +130,7 @@ CX.module('misvisitas', ({data,ui})=>{
             <button class="btn btn-pr btn-sm" id="pqQuest">📝 ${cfg.modo==='interna'?'Llenar cuestionario':'Abrir cuestionario'}</button>
             ${waLink?`<a class="btn btn-green btn-sm" href="${waLink}" target="_blank" style="text-decoration:none">📲 Enviar evidencias (WhatsApp)</a>`:`<button class="btn btn-ghost btn-sm" id="pqNoWa">📲 Configurar contacto de evidencias</button>`}
           </div>
-          <div style="font-size:10.5px;color:var(--t3);margin-top:10px">El contacto de evidencias se configura por proyecto. Sin backend de mensajería, WhatsApp Web abre con la plantilla lista (plantilla lista).</div>`,
+          <div style="font-size:10.5px;color:var(--t3);margin-top:10px">El contacto de evidencias se configura por proyecto. Sin backend de mensajería, WhatsApp Web abre con la plantilla lista.</div>`,
         {onMount:(o2,c2)=>{
           o2.querySelector('#pqQuest')&&o2.querySelector('#pqQuest').addEventListener('click',()=>{c2();draw();const qb=host.querySelector('[data-quest]');qb&&qb.click();});
           o2.querySelector('#pqNoWa')&&o2.querySelector('#pqNoWa').addEventListener('click',()=>{c2();CX.router.nav('proyectos');});
