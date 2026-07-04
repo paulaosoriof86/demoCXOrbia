@@ -1,5 +1,12 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - DEV staging authorization decision lock TyA
+
+- Se agrego `tools/migration/tya-dev-staging-authorization-decision-lock.mjs`.
+- Se agrego `app/docs/DEV-STAGING-AUTHORIZATION-DECISION-LOCK-TYA-20260704.md`.
+- Objetivo: cerrar el bloque previo a autorizacion DEV staging dejando claro que no existe runner habilitado y que V78 sigue como baseline.
+- Estado seguro: sin runtime, sin deploy, sin produccion, sin escritura Firestore, sin importacion real y sin cambios frontend.
+
 ## 2026-07-04 - DEV staging preauthorization consolidated report TyA
 
 - Se agrego `tools/migration/tya-dev-staging-preauthorization-consolidated-report.mjs`.
@@ -15,13 +22,3 @@
 - Estado seguro: sin runtime, sin deploy, sin produccion, sin escritura Firestore, sin importacion real y sin cambios frontend.
 
 ## 2026-07-04 - V78 backend continuity baseline TyA
-
-- Se agrego `tools/migration/tya-v78-backend-continuity-baseline.mjs`.
-- Se agrego `app/docs/V78-BACKEND-CONTINUITY-BASELINE-TYA-20260704.md`.
-- Se actualizo `RESUMEN-PARA-CLAUDE.md`.
-- Objetivo: fijar V78 como baseline visual actual y continuar backend avanzado sin copiar frontend ni tocar modulos/core.
-- Estado seguro: sin runtime, sin deploy, sin produccion, sin escritura Firestore, sin importacion real y sin cambios frontend.
-
-## 2026-07-04 - Route count manifest y prewrite validator TyA
-
-- Se agrego `tools/migration/tya-dev-staging-route-count-manifest.mjs`.
