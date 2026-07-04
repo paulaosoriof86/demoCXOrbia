@@ -62,6 +62,25 @@ CX.module('proyectos', ({data,ui})=>{
         <div id="cf_escChips" class="flex wrap" style="gap:6px;margin:6px 0"></div>
         <div class="flex" style="gap:6px"><input class="inp" id="cf_escNew" placeholder="Agregar escenario…" style="flex:1"><button class="btn btn-soft btn-sm" id="cf_escAdd">＋</button></div>
 
+        <div style="border-top:1px solid var(--border-2);margin:16px 0 10px;padding-top:12px"><b style="font-size:12.5px">⚙️ Revisión, submitido y fuentes (Phase A)</b></div>
+        <div class="grid g2" style="gap:8px 12px">
+          <label class="flex" style="gap:7px;font-size:12px"><input type="checkbox" id="cf_revCons" ${(pr.revision&&pr.revision.consultora)?'checked':''}> La consultora revisa cuestionario/evidencias</label>
+          <label class="flex" style="gap:7px;font-size:12px"><input type="checkbox" id="cf_revCli" ${(pr.revision&&pr.revision.cliente)?'checked':''}> El cliente revisa cuestionario/evidencias</label>
+          <div><label class="lbl">¿Quién submite/cierra ante el externo?</label><select class="sel" id="cf_submQuien"><option value="plataforma" ${((pr.submitido||{}).quien)==='plataforma'?'selected':''}>Plataforma</option><option value="consultora" ${((pr.submitido||{}).quien)==='consultora'?'selected':''}>Consultora (fuera de plataforma)</option><option value="cliente" ${((pr.submitido||{}).quien)==='cliente'?'selected':''}>Cliente</option></select></div>
+          <div><label class="lbl">Rol de la plataforma en submitido</label><select class="sel" id="cf_submRol"><option value="submite" ${((pr.submitido||{}).rol)==='submite'?'selected':''}>Submite</option><option value="monitorea" ${((pr.submitido||{}).rol)==='monitorea'?'selected':''}>Solo monitorea</option><option value="hr" ${((pr.submitido||{}).rol||'hr')==='hr'?'selected':''}>Toma fecha desde HR</option></select></div>
+        </div>
+        <div class="grid g2" style="gap:8px 12px;margin-top:8px">
+          <div><label class="lbl">Origen de HR</label><select class="sel" id="cf_hrOrigen"><option value="externa" ${((pr.hrFuente||{}).origen||'externa')==='externa'?'selected':''}>Externa (hoja en línea)</option><option value="nativa" ${((pr.hrFuente||{}).origen)==='nativa'?'selected':''}>Nativa (plataforma)</option></select></div>
+          <div><label class="lbl">Etiqueta de plataforma externa (visible)</label><input class="inp" id="cf_hrEtiq" value="${((pr.hrFuente||{}).etiqueta||'').replace(/"/g,'&quot;')}" placeholder="Ej. Hoja compartida del cliente"></div>
+          <div><label class="lbl">Origen del cuestionario</label><select class="sel" id="cf_cueOrigen"><option value="interna" ${((pr.cuestionario||{}).modo||'interna')==='interna'?'selected':''}>Interno (plataforma)</option><option value="externo_general" ${((pr.cuestionario||{}).modo)==='externo_general'?'selected':''}>Externo · link general</option><option value="externo_visita" ${((pr.cuestionario||{}).modo)==='externo_visita'?'selected':''}>Externo · link por visita (desde HR)</option></select></div>
+          <div><label class="lbl">Etiqueta cuestionario externo</label><input class="inp" id="cf_cueEtiq" value="${((pr.cuestionario||{}).etiqueta||'').replace(/"/g,'&quot;')}" placeholder="Ej. Formulario del cliente"></div>
+        </div>
+        <div style="font-size:10.5px;color:var(--t3);margin-top:5px">Las URLs privadas de HR/cuestionario se registran de forma segura por backend (Fuente de HR); aquí solo etiqueta y origen.</div>
+        <div style="margin-top:12px"><b style="font-size:12px">📲 Contactos WhatsApp por tipo de gestión</b></div>
+        <div class="grid g2" style="gap:8px 12px;margin-top:6px">
+          ${[['evidencias','Evidencias'],['soporte','Soporte'],['cuestionario','Cuestionario'],['reprog','Reprogramación/cancelación'],['pagos','Pagos/liquidaciones'],['coordinacion','Coordinación general']].map(([k,l])=>`<div><label class="lbl">${l}</label><input class="inp cf_contacto" data-ck="${k}" value="${((pr.contactos||{})[k]||'').replace(/"/g,'&quot;')}" placeholder="+502…"></div>`).join('')}
+        </div>
+
         <label class="lbl" style="margin-top:12px">Quincenas / periodos</label>
         <input class="inp" id="cf_quin" value="${(pr.quincenas||[]).join(' · ').replace(/"/g,'&quot;')}">
 
@@ -80,6 +99,12 @@ CX.module('proyectos', ({data,ui})=>{
         ov.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>{close();data.setProject(pr.id);CX.router.nav(b.dataset.goto);}));
         ov.querySelector('#cf_open').addEventListener('click',()=>{close();data.setProject(pr.id);ui.toast('Proyecto activo: '+pr.name,'ok');});
         ov.querySelector('#cf_save').addEventListener('click',()=>{ pr.name=ov.querySelector('#cf_name').value.trim()||pr.name; pr.industry=ov.querySelector('#cf_ind').value; pr.client=ov.querySelector('#cf_cli').value.trim(); pr.sucursales=+ov.querySelector('#cf_suc').value||pr.sucursales; pr.periodicidad=ov.querySelector('#cf_ronda').value; pr.ronda=ov.querySelector('#cf_ronda').value+' '+(pr.ronda||'').replace(/^[A-Za-zÁ-úñ]+\s?/,''); pr.periodoCumpl=ov.querySelector('#cf_cumpl').value; const ps=[...ov.querySelectorAll('.cf_pais:checked')].map(c=>c.value); if(ps.length){pr.countries=ps; pr.currency=pr.currency||{}; ps.forEach(c=>{if(!pr.currency[c])pr.currency[c]=(CX.COUNTRIES.find(x=>x.c===c)||{}).cur||'$';});} pr.scenarios=esc; pr.quincenas=ov.querySelector('#cf_quin').value.split('·').map(s=>s.trim()).filter(Boolean);
+        /* PhaseA-2/3/4: revisión, submitido, fuentes y contactos por proyecto */
+        if(ov.querySelector('#cf_revCons')){pr.revision={consultora:ov.querySelector('#cf_revCons').checked, cliente:ov.querySelector('#cf_revCli').checked};
+        pr.submitido={quien:ov.querySelector('#cf_submQuien').value, rol:ov.querySelector('#cf_submRol').value};
+        pr.hrFuente=Object.assign(pr.hrFuente||{},{origen:ov.querySelector('#cf_hrOrigen').value, etiqueta:ov.querySelector('#cf_hrEtiq').value.trim()});
+        pr.cuestionario=Object.assign(pr.cuestionario||{},{modo:ov.querySelector('#cf_cueOrigen').value, etiqueta:ov.querySelector('#cf_cueEtiq').value.trim()});
+        pr.contactos=pr.contactos||{}; ov.querySelectorAll('.cf_contacto').forEach(i=>{pr.contactos[i.dataset.ck]=i.value.trim();});}
         /* #157 — vincular el proyecto con la Cuenta/Cliente del CRM (trazabilidad bidireccional) */
         try{ if(pr.client && CX.crmStore){ const cuentas=CX.crmStore.cuentas(); let cu=cuentas.find(x=>(x.nombre||'').toLowerCase()===pr.client.toLowerCase());
           if(cu){ cu.proyectos=cu.proyectos||[]; if(!cu.proyectos.includes(pr.id))cu.proyectos.push(pr.id); CX.crmStore.saveCuentas(); } } }catch(e){}
