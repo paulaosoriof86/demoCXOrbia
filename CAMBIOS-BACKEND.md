@@ -1,5 +1,14 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - Route count manifest y prewrite validator TyA
+
+- Se agrego `tools/migration/tya-dev-staging-route-count-manifest.mjs`.
+- Se agrego `app/docs/DEV-STAGING-ROUTE-COUNT-MANIFEST-TYA-20260704.md`.
+- Se agrego `tools/migration/tya-dev-staging-prewrite-validator.mjs`.
+- Se agrego `app/docs/DEV-STAGING-PREWRITE-VALIDATOR-TYA-20260704.md`.
+- Objetivo: preparar manifest de rutas/conteos y validador prewrite sin runtime.
+- Estado seguro: sin deploy, sin produccion, sin escritura Firestore, sin importacion real y sin cambios frontend.
+
 ## 2026-07-04 - Auditoria forense y empalme V78 TyA
 
 - Se agrego `app/docs/AUDITORIA-FORENSE-V78-CXORBIA-20260704.md`.
