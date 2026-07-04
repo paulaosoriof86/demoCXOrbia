@@ -1,5 +1,12 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - Empalme controlado V78 TyA
+
+- Se agrego `tools/migration/tya-v78-frontend-backend-merge-guard.mjs`.
+- Se agrego `app/docs/EMPALME-CONTROLADO-V78-FRONTEND-BACKEND-TYA-20260704.md`.
+- Objetivo: documentar y validar el empalme V78/backend sin sobrescribir frontend desde backend.
+- Estado seguro: sin runtime, sin deploy, sin produccion, sin escritura Firestore, sin importacion real y sin cambios frontend.
+
 ## 2026-07-04 - V78 backend continuity baseline TyA
 
 - Se agrego `tools/migration/tya-v78-backend-continuity-baseline.mjs`.
@@ -22,16 +29,3 @@
 - Se agrego `app/docs/AUDITORIA-FORENSE-V78-CXORBIA-20260704.md`.
 - Se agrego `app/docs/EMPALME-BACKEND-V78-TYA-20260704.md`.
 - Se agrego `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V78-20260704.md`.
-- Se actualizo `RESUMEN-PARA-CLAUDE.md`.
-- Decision: V78 queda aceptado como candidato visual reciente para continuar empalme backend sin copiar frontend al PR backend.
-- Estado seguro: sin runtime, sin deploy, sin produccion, sin escritura Firestore y sin cambios frontend.
-
-## 2026-07-04 - Future runner contract TyA
-
-- Se agrego `tools/migration/tya-future-enabled-runner-contract.mjs`.
-- Se agrego `app/docs/FUTURE-ENABLED-RUNNER-CONTRACT-TYA-20260704.md`.
-- Se agrego `tools/migration/tya-dev-staging-target-validator.mjs`.
-- Se agrego `app/docs/DEV-STAGING-TARGET-VALIDATOR-TYA-20260704.md`.
-- Se agrego `app/docs/SECURITY-HARD-STOPS-DEV-RUNNER-TYA-20260704.md`.
-- Objetivo: definir contrato, variables, validaciones y abort conditions para un runner habilitado futuro sin crearlo ni ejecutarlo.
-- Estado seguro: sin runtime, sin deploy, sin produccion, sin escritura Firestore y sin cambios frontend.
