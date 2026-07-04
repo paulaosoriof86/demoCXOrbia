@@ -1,5 +1,14 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - Auditoria frontend candidate V82 Claude
+
+- Se agrego `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V82-CLAUDE-20260704.md`.
+- Se actualizo `RESUMEN-PARA-CLAUDE.md` con el addendum V82.
+- Se actualizo `PENDIENTES-PROTOTIPO.md` con pendientes V82.
+- Objetivo: auditar el nuevo ZIP de Claude sin empalmarlo y sin cambiar baseline/source lock.
+- Decision: V82 corrige la mayoria de pendientes V81, pero todavia no se recomienda source lock porque quedan textos `cuestionario enviado`, textos de HR sync real en `misvisitas.js` y `postulaciones.js`, y ajuste fino de `revision-admin.js` para `status`, `projectId` y `hrRowId`.
+- Estado seguro: sin empalme V82, sin source lock V82, sin runtime, sin deploy, sin produccion, sin Auth real, sin escritura Firestore, sin HR writes, sin Make/Gemini/WhatsApp real y sin cambios frontend aplicados.
+
 ## 2026-07-04 - Auditoria frontend candidate V81 Claude
 
 - Se agrego `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V81-CLAUDE-20260704.md`.
