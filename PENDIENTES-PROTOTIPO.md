@@ -2,6 +2,21 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Addendum V80 - auditoria Claude candidate
+
+- V80 fue auditado como candidato nuevo de Claude, pero no queda empalmado ni aprobado como baseline.
+- Ver auditoria: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V80-CLAUDE-20260704.md`.
+- Avances utiles de V80: agrega `app/modules/revision-admin.js`, carga el modulo en `app/index.html`, agrega boton de revision en `app/modules/dashboard.js`, mejora textos de automatizaciones, conserva `nvBanner` y sube SaaS Console a V79.
+- No empalmar V80 completo todavia: debe corregirse antes con Claude.
+- P0 de no regresion: `app/modules/proyecto-wizard.js` debe partir del archivo actual del repo, no del ZIP V80, porque V80 vuelve a usar valores legacy `externa` y `link` en el selector/guardado.
+- P0 de no regresion: `app/modules/cuestionario-shopper.js` debe conservar busqueda de links en `questionnaireLink`, `cuestionarioUrl`, `linkCuestionario`, `urlCuestionario`, `hrQuestionnaireLink`; V80 no trae todos.
+- P0 de texto/flujo: usar `cuestionario realizado`, no `cuestionario enviado`, para no confundir con submitido.
+- Revision admin V80 debe corregirse: puede conservar labels visibles en espanol, pero debe mapear internamente a estados canonicos `pending_review`, `in_review`, `needs_correction`, `approved_for_submitido`, `submitido_registered`, `rejected`, `hr_conflict`, `cancelled`.
+- Revision admin V80 no debe quedar aislada en `localStorage` como solucion final; debe quedar preparada para `CX.data`/backend y no prometer writes reales.
+- Reaparece `plantilla lista (plantilla lista)` en `app/modules/misvisitas.js`; Claude debe volver a `plantilla lista`.
+- Siguen textos de integracion real en modulos como Dashboard, Visitas, Postulaciones, Marketing y Soporte; Claude debe convertirlos a estados honestos si toca esos archivos.
+- V80 no actualizo documentacion interna del prototipo; Claude debe documentar archivos tocados, motivo, impacto, riesgo y validacion.
+
 ## Addendum V79 - revision admin, submitido, wizard y prototipo comercializable
 
 - V79 sigue como candidata viva de trabajo segun source lock vigente.
@@ -25,7 +40,7 @@ Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backe
 
 ## Addendum RC V75 - base visual actual
 
-Ver documentos especificicos:
+Ver documentos especificos:
 
 - `app/docs/AUDITORIA-RC-V75-CLOUD-FRONTEND-20260703.md`
 - `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-RC-V75-20260703.md`
@@ -56,7 +71,7 @@ Resumen vigente RC V74:
 - Corregir estados honestos en Finanzas: no usar `En vivo` si no hay backend/cruce real.
 - Corregir Make/automatizaciones: no aparentar POST real; sigue pendiente backend por tenant.
 - Corregir IA: para produccion debe ser server-side, no API key en localStorage.
-- Profundizar SaaS: tenants, planes, proyectos, permisos, feature flags, releases, targeting, confirmacion y rollback.
+- Profundizar SaaS: tenants, planes, proyectos, permisos, feature flags, targeting, confirmacion y rollback.
 - Profundizar propuestas: wizard comercial, plantillas requeridas, estados completos y conversion a proyecto.
 - Mantener el ZIP como RC incremental; no reemplazar backend ni documentacion del PR #7.
 
@@ -106,9 +121,10 @@ La auditoria V64 encontro que muchos pendientes acumulados en documentos V62/V63
 12. Revision admin visible/funcional separada de submitido y liquidacion.
 13. Submitido configurable por proyecto y separado de cuestionario realizado.
 14. Wizard de proyecto con configuracion Phase A completa y gates honestos.
+15. Correcciones V80 antes de empalme: no regresion del wizard/cuestionario, revision admin canonica, textos honestos y documentacion.
 
 ## Separacion corregida
 
 Los pendientes de backend/integracion permanecen separados. ChatGPT/backend continua con Sprint 3 sobre Firestore DEV, acciones operativas controladas y `responsibilityLog` sin tocar `app/modules` para resolver backend.
 
-Claude debe trabajar sobre V77 o sobre el prototipo mas reciente empalmado por Paula/ChatGPT, sin usar versiones viejas y sin revertir avances backend.
+Claude debe trabajar sobre el prototipo mas reciente empalmado por Paula/ChatGPT, sin usar versiones viejas y sin revertir avances backend/frontend ya documentados.
