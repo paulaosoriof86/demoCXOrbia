@@ -25,7 +25,7 @@ CX.novedades = CX.novedades || {
 
 CX.module('novedades', ({role,ui})=>{
   const host=ui.el('div');
-  const tipoTone={Nuevo:'g',Mejora:'b',Aviso:'a',Correcci\u00f3n:'n'};
+  const tipoTone={Nuevo:'g',Mejora:'b',Aviso:'a',Corrección:'n'};
 
   const draw=()=>{
     const isAdmin=(role==='admin'||role==='super');
@@ -57,6 +57,7 @@ CX.module('novedades', ({role,ui})=>{
       <label class="lbl">Descripción</label><textarea class="inp" id="nvC" rows="3" placeholder="Detalle de la novedad" style="margin-bottom:8px"></textarea>
       <label class="lbl">Dirigida a</label>
       <div class="flex wrap" style="gap:8px;margin:4px 0 12px">${[['admin','Consultora'],['shopper','Shopper'],['cliente','Cliente']].map(([v,l])=>`<label class="flex" style="gap:5px;font-size:12.5px;cursor:pointer"><input type="checkbox" class="nvR" value="${v}" checked> ${l}</label>`).join('')}</div>
+      <label class="flex" style="gap:6px;font-size:12.5px;cursor:pointer;margin:2px 0 12px"><input type="checkbox" id="nvBanner" checked> Mostrar también como banner destacado</label>
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="nvOk">Publicar</button></div>
     `,{onMount:(ov,close)=>ov.querySelector('#nvOk').addEventListener('click',()=>{
       const tit=(ov.querySelector('#nvTit').value||'').trim(); if(!tit){ui.toast('Pon un título','warn');return;}
