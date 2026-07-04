@@ -2,16 +2,17 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
-## Addendum V79 - revision admin y prototipo comercializable
+## Addendum V79 - revision admin, submitido y prototipo comercializable
 
 - V79 sigue como candidata viva de trabajo segun source lock vigente.
 - Pendiente visual/funcional para Claude: separar claramente en UI los pasos `cuestionario realizado`, `revision admin`, `submitido` y `liquidacion`.
 - No tratar `cuestionario realizado` como sinonimo de `submitido`.
 - La revision admin debe mostrar estados equivalentes a: pendiente de revision, en revision, requiere correccion, aprobada para submitido, submitido registrado, rechazada, conflicto HR y cancelada.
 - El origen de submitido debe ser configurable por proyecto: HR, plataforma, sistema externo o confirmacion manual admin basada en HR.
+- Para TyA/Cinepolis el origen default documentado es HR-driven, pero el prototipo comercializable no debe hard-codear TyA ni Cinepolis.
 - Si Make/HR sync sigue apagado, la UI no debe mostrarlo como ejecutado; debe mostrar pendiente, preparado, bloqueado o requiere autorizacion.
 - Esta mejora aplica al prototipo comercializable, no solo a TyA/Cinepolis. Los textos pueden cambiar por tenant/proyecto, pero el flujo debe mantenerse configurable y multi-proyecto.
-- Referencia backend/documental: `app/docs/ADMIN-REVIEW-FUNCTIONAL-CONTRACT-PHASE-A-TYA-20260704.md`.
+- Referencias backend/documentales: `app/docs/ADMIN-REVIEW-FUNCTIONAL-CONTRACT-PHASE-A-TYA-20260704.md` y `app/docs/SUBMITIDO-HR-DRIVEN-CONFIGURABLE-PHASE-A-TYA-20260704.md`.
 
 ## Addendum V77 - paquete forense Claude
 
@@ -102,6 +103,7 @@ La auditoria V64 encontro que muchos pendientes acumulados en documentos V62/V63
 10. SaaS Console con permisos, releases, feature flags, targeting, confirmacion y rollback.
 11. Wizard de propuestas comerciales completo.
 12. Revision admin visible/funcional separada de submitido y liquidacion.
+13. Submitido configurable por proyecto y separado de cuestionario realizado.
 
 ## Separacion corregida
 
