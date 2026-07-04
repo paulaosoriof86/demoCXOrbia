@@ -1,5 +1,12 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - DEV staging runbook y matriz de decision TyA
+
+- Se agrego `app/docs/DEV-STAGING-NEXT-RUNBOOK-DISABLED-TYA-20260704.md`.
+- Se agrego `app/docs/DEV-STAGING-READINESS-TO-AUTHORIZATION-MATRIX-TYA-20260704.md`.
+- Objetivo: preparar la secuencia futura de revision y matriz de autorizacion sin codigo ejecutable.
+- Estado seguro: sin runtime, sin deploy, sin produccion, sin escritura Firestore, sin importacion real y sin cambios frontend.
+
 ## 2026-07-04 - DEV staging authorization decision lock TyA
 
 - Se agrego `tools/migration/tya-dev-staging-authorization-decision-lock.mjs`.
