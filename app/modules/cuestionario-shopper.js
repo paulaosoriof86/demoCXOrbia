@@ -1,24 +1,36 @@
 /* CXOrbia · Cuestionario del shopper (interno / externo / link)
-   El modo lo define el proyecto: p.cuestionario.modo = interna|externa|link */
+   El modo lo define el proyecto: p.cuestionario.modo = interna|externo_general|externo_visita
+   Compatibilidad legacy: externa => externo_general, link => externo_visita. */
 window.CX = window.CX || {};
 
 CX.shopperQuestionnaire = function(data, p, visita, ui){
   const cfg=p.cuestionario||{modo:'interna'};
-  /* ----- Cuestionario EXTERNO o por LINK ----- */
-  if(cfg.modo==='externa' || cfg.modo==='link'){
+  const rawMode=cfg.modo||'interna';
+  const modo=rawMode==='externa'?'externo_general':rawMode==='link'?'externo_visita':rawMode;
+  const isExternal=modo==='externo_general'||modo==='externo_visita';
+  const visitUrl=visita&&(visita.questionnaireLink||visita.cuestionarioUrl||visita.linkCuestionario||visita.urlCuestionario||visita.hrQuestionnaireLink);
+  const targetUrl=modo==='externo_visita'?(visitUrl||cfg.url||''):(cfg.url||'');
+
+  /* ----- Cuestionario EXTERNO general o LINK por visita desde HR ----- */
+  if(isExternal){
     const cred = (CX.session.user.name||'evaluador').toLowerCase().replace(/\s+/g,'.').replace(/[^a-z.]/g,'');
+    const hasUrl=!!targetUrl;
+    const modeLabel=modo==='externo_visita'?'link específico por visita desde HR':'link general / plataforma externa';
     ui.modal('Cuestionario del proyecto', `
       <div style="background:var(--brand-light);border-radius:11px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:var(--brand-dark)">
-        Este proyecto usa un <b>cuestionario ${cfg.modo==='link'?'con link propio por visita':'en plataforma externa'}</b> (${cfg.label||'externo'}). Complétalo y luego marca la visita como cuestionario enviado.</div>
-      ${cfg.modo==='externa'?`<div class="card-p" style="border:1px solid var(--border);border-radius:11px;margin-bottom:12px">
-        <div class="lbl">Tus credenciales (autogeneradas)</div>
+        Este proyecto usa un <b>cuestionario externo con ${modeLabel}</b> (${cfg.etiqueta||cfg.label||'externo'}). Complétalo y luego marca el cuestionario como realizado.</div>
+      ${modo==='externo_general'?`<div class="card-p" style="border:1px solid var(--border);border-radius:11px;margin-bottom:12px">
+        <div class="lbl">Tus credenciales (si aplica)</div>
         <div class="between" style="padding:6px 0"><span style="font-size:12px;color:var(--t2)">Usuario</span><b class="mono">${cred}</b></div>
         <div class="between" style="padding:6px 0;border-top:1px solid var(--border-2)"><span style="font-size:12px;color:var(--t2)">Contraseña</span><b class="mono">••••••</b></div>
       </div>`:''}
-      <a href="${cfg.url||'#'}" target="_blank" class="btn btn-pr" style="width:100%;justify-content:center;margin-bottom:10px">🌐 Abrir cuestionario ${cfg.modo==='link'?'(link de esta visita)':'externo'}</a>
-      <button class="btn btn-green" id="markDone" style="width:100%;justify-content:center">✅ Marcar cuestionario como enviado</button>
+      ${hasUrl?`<a href="${targetUrl}" target="_blank" class="btn btn-pr" style="width:100%;justify-content:center;margin-bottom:10px">🌐 Abrir cuestionario ${modo==='externo_visita'?'de esta visita':'externo'}</a>`:`<div style="border:1px dashed var(--amber);background:var(--amber-bg);border-radius:10px;padding:10px 12px;font-size:12px;color:#8a5b00;margin-bottom:10px">Falta configurar el link del cuestionario${modo==='externo_visita'?' en la HR para esta visita':' general del proyecto'}.</div>`}
+      <button class="btn btn-green" id="markDone" style="width:100%;justify-content:center">✅ Marcar cuestionario como realizado</button>
     `, {onMount:(ov,close)=>{
-      ov.querySelector('#markDone').addEventListener('click',()=>{close();ui.toast('Cuestionario marcado como enviado · liquidación pasa a "pend. validar"','ok');CX.bus.emit('visit-flow');});
+      ov.querySelector('#markDone').addEventListener('click',()=>{
+        if(visita && data.setVisitState) data.setVisitState(visita.id,'cuestionario','cuestFecha',new Date().toISOString().slice(0,10));
+        close();ui.toast('Cuestionario marcado como realizado · liquidación pasa a pendiente de validación','ok');CX.bus.emit('visit-flow');
+      });
     }});
     return;
   }
@@ -81,7 +93,6 @@ CX.shopperQuestionnaire = function(data, p, visita, ui){
       });
       const res=CX.programa.score(sections, answers);
       if(visita){ visita.score=res.total; visita.scoreBySection=res.bySection; visita.evaluada=true; visita.koFail=res.koFail;
-        /* #198 — cuestionario INTERNO: actualiza estado automáticamente (no requiere acción manual como el externo) */
         if(data.setVisitState) data.setVisitState(visita.id,'cuestionario','cuestFecha',new Date().toISOString().slice(0,10));
         visita.submit=true;
       }
