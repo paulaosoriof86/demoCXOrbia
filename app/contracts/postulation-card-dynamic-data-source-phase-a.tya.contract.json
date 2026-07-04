@@ -1,0 +1,172 @@
+{
+  "contract": "postulation-card-dynamic-data-source-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "purpose": "Define how postulation card data is sourced dynamically from HR, project config, manual config or computed rules, and what is visible to shoppers vs internal roles.",
+  "principle": "All operational information must be live/dynamic and configurable. Nothing should be hard-coded. HR-derived fields may change and must reflect the current source of truth or latest safe preview.",
+  "dataSourceTypes": [
+    "hr_mapped_dynamic",
+    "project_config_manual",
+    "project_config_default",
+    "computed_from_rules",
+    "admin_override",
+    "backend_preview",
+    "not_applicable"
+  ],
+  "fieldSourceMap": {
+    "scenarioSummary": {
+      "defaultSource": "hr_mapped_dynamic",
+      "fallback": "project_config_manual",
+      "shopperVisible": true,
+      "notes": "Scenario often comes from HR and may vary by visit."
+    },
+    "availableFrom": {
+      "defaultSource": "hr_mapped_dynamic",
+      "fallback": "computed_from_rules",
+      "shopperVisible": true,
+      "notes": "For Cinepolis this may depend on prior visit timing and can change dynamically."
+    },
+    "allowedScheduleWindow": {
+      "defaultSource": "computed_from_rules",
+      "fallback": "project_config_manual",
+      "shopperVisible": true,
+      "notes": "Derived from availableFrom, franja, quincena, days and time rules when configured."
+    },
+    "franjaOrDays": {
+      "defaultSource": "hr_mapped_dynamic",
+      "fallback": "project_config_manual",
+      "shopperVisible": true,
+      "notes": "Visible as user-friendly restriction only when it affects shopper scheduling."
+    },
+    "measurementPeriod": {
+      "defaultSource": "project_config_manual",
+      "fallback": "hr_mapped_dynamic",
+      "shopperVisible": "only_if_operationally_relevant",
+      "notes": "Do not show internal measurement labels unless needed for shopper action, such as Q1/Q2 selection."
+    },
+    "restrictionSourceType": {
+      "defaultSource": "project_config_manual",
+      "shopperVisible": false,
+      "notes": "Client requirement vs internal measurement is internal metadata. Shopper should see clear instruction, not internal taxonomy."
+    },
+    "honorarium": {
+      "defaultSource": "hr_mapped_dynamic",
+      "fallback": "project_config_manual",
+      "shopperVisible": true
+    },
+    "reimbursement": {
+      "defaultSource": "hr_mapped_dynamic",
+      "fallback": "project_config_manual",
+      "shopperVisible": true
+    },
+    "certificationRequirementSummary": {
+      "defaultSource": "project_config_manual",
+      "shopperVisible": true,
+      "notes": "Show summary and link/CTA to certification when required."
+    },
+    "documentsRequirementSummary": {
+      "defaultSource": "project_config_manual",
+      "shopperVisible": "summary_only_before_approval",
+      "notes": "Full resources/instructive may unlock after approval depending on project."
+    },
+    "questionnaireMode": {
+      "defaultSource": "project_config_manual",
+      "shopperVisible": false,
+      "notes": "Shopper only needs the correct action/button when questionnaire is available."
+    }
+  },
+  "postulationCardFront": {
+    "shopperVisibleRecommended": [
+      "projectName",
+      "branchName",
+      "location",
+      "scenarioSummary",
+      "format",
+      "channel",
+      "quincenaOrOperationalWindowIfRelevant",
+      "franjaOrScheduleRestrictionIfRelevant",
+      "comboOrRequiredPurchaseIfRelevant",
+      "honorarium",
+      "reimbursement",
+      "eligibilityOrRestrictionSummary",
+      "certificationSummaryIfRequired",
+      "resourceAvailabilitySummary",
+      "viewDetailButton"
+    ],
+    "avoidShowingToShopper": [
+      "restrictionSourceType_internalLabel",
+      "questionnaireInternalMode",
+      "backendMappingDetails",
+      "hrRawColumnNames",
+      "internalMeasurementOnlyNotes"
+    ]
+  },
+  "postulationCardBackOrDetail": {
+    "shopperVisibleRecommended": [
+      "expandedScenario",
+      "availableFromExplanation",
+      "allowedDateExplanation",
+      "proposedDateInput",
+      "eligibilityConfirmation",
+      "restrictionAcknowledgement",
+      "termsAcceptance",
+      "submitPostulationButton",
+      "whatHappensNext"
+    ],
+    "workflowAfterSubmit": [
+      "notify_ops_admin",
+      "create_postulation_pending_review",
+      "send_shopper_confirmation_in_app_or_whatsapp_web_preview",
+      "remove_duplicate_action_for_other_ops_when_approved_later"
+    ]
+  },
+  "approvalWorkflow": {
+    "adminOpsApproval": [
+      "review_postulation",
+      "validate_proposed_date_and_restrictions",
+      "approve_or_reject",
+      "record_approvedBy",
+      "record_approvedAt",
+      "record_approvalReason_if_needed",
+      "notify_shopper",
+      "move_visit_out_of_available_when_assignment_active",
+      "avoid_duplicate_approval_by_other_ops"
+    ],
+    "shopperAfterApproval": [
+      "receive_assignment_notification",
+      "schedule_or_confirm_date_based_on_project_flow",
+      "access_instructive_and_project_resources",
+      "access_reschedule_cancel_actions_if_allowed"
+    ]
+  },
+  "dynamicMappingRules": [
+    "Every visible card field must declare whether it comes from HR mapping, project config, computed rule, admin override or fallback.",
+    "If HR source changes, card preview must use latest safe mapped value when backend/runtime is enabled later.",
+    "If mapping confidence is low, route to admin review/manual mapping, not hard-coded fallback.",
+    "Project creation wizard must allow manual configuration and later mapping/iteration.",
+    "Fields not relevant to shopper action must remain internal even if used for validation."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "client", "consultant_partner"],
+    "manualsToUpdate": ["Postulation card", "Dynamic HR fields", "Project configuration", "Manual vs HR mapping", "Postulation approval workflow"],
+    "coursesToUpdate": ["Shopper postulation", "Ops postulation approval", "Admin project setup", "Consultant configurable projects"],
+    "newLessons": [
+      "Which card fields come from HR",
+      "Which card fields come from project configuration",
+      "How proposed date approval works",
+      "Why internal restriction source is not shown to shopper",
+      "How postulation approval removes duplicate work"
+    ]
+  },
+  "hardStops": [
+    "Do not hard-code HR-derived values into code.",
+    "Do not show internal restriction source labels to shoppers unless intentionally configured for user-facing explanation.",
+    "Do not expose raw HR column names to shoppers.",
+    "Do not promise HR sync when sync gate is off.",
+    "Do not write Firestore from this contract."
+  ]
+}
