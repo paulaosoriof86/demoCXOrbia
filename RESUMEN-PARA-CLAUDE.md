@@ -1,5 +1,14 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-04 - Addendum submitido HR-driven configurable Phase A
+
+- ChatGPT/backend preparo el contrato de submitido HR-driven/configurable sin tocar frontend.
+- Archivos agregados: `app/contracts/submitido-hr-driven-phase-a.tya.contract.json`, `tools/migration/tya-submitido-hr-driven-validator.mjs` y `app/docs/SUBMITIDO-HR-DRIVEN-CONFIGURABLE-PHASE-A-TYA-20260704.md`.
+- No se activo runtime, no se escribio Firestore, no se escribio HR, no se llamo Make y no hubo cambios en `/app/modules` ni `/app/core`.
+- Regla clave para el prototipo comercializable: el origen de submitido debe ser configurable por proyecto: HR, sistema externo, revision interna o confirmacion manual admin basada en HR.
+- Para TyA/Cinepolis el modo default queda documentado como `hr_driven`.
+- Claude debe mostrar submitido como estado/origen separado de cuestionario realizado, revision y liquidacion; tampoco debe mostrar HR/Make como ejecutado si el gate esta apagado.
+
 ## 2026-07-04 - Addendum admin review funcional Phase A
 
 - ChatGPT/backend preparo el contrato funcional de revision admin Phase A sin tocar frontend.
