@@ -1,5 +1,15 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - Submitido HR-driven configurable Phase A TyA
+
+- Se agrego `app/contracts/submitido-hr-driven-phase-a.tya.contract.json`.
+- Se agrego `tools/migration/tya-submitido-hr-driven-validator.mjs`.
+- Se agrego `app/docs/SUBMITIDO-HR-DRIVEN-CONFIGURABLE-PHASE-A-TYA-20260704.md`.
+- Objetivo: avanzar el pendiente vivo de submitido HR-driven/configurable sin tocar frontend ni activar runtime.
+- Decision tecnica: submitido queda configurable por proyecto con modos canonicos `hr_driven`, `external_system`, `platform_review` y `manual_admin_hr_confirmed`; TyA/Cinepolis usa `hr_driven` por defecto.
+- Impacto Claude/comercializable: Claude debe mostrar origen y estado de submitido como configuracion por proyecto, separado de cuestionario realizado, revision y liquidacion.
+- Estado seguro: sin runtime, sin deploy, sin produccion, sin Auth real, sin escritura Firestore, sin HR writes, sin Make/Gemini/WhatsApp real y sin cambios frontend.
+
 ## 2026-07-04 - Admin review functional contract Phase A TyA
 
 - Se agrego `app/contracts/admin-review-phase-a.tya.contract.json`.
