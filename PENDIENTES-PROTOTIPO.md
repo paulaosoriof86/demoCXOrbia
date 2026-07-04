@@ -2,7 +2,7 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
-## Addendum V79 - revision admin, submitido y prototipo comercializable
+## Addendum V79 - revision admin, submitido, wizard y prototipo comercializable
 
 - V79 sigue como candidata viva de trabajo segun source lock vigente.
 - Pendiente visual/funcional para Claude: separar claramente en UI los pasos `cuestionario realizado`, `revision admin`, `submitido` y `liquidacion`.
@@ -10,9 +10,10 @@ Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backe
 - La revision admin debe mostrar estados equivalentes a: pendiente de revision, en revision, requiere correccion, aprobada para submitido, submitido registrado, rechazada, conflicto HR y cancelada.
 - El origen de submitido debe ser configurable por proyecto: HR, plataforma, sistema externo o confirmacion manual admin basada en HR.
 - Para TyA/Cinepolis el origen default documentado es HR-driven, pero el prototipo comercializable no debe hard-codear TyA ni Cinepolis.
+- El wizard de proyecto debe exponer configuracion Phase A completa: identidad, pais/moneda, HR, cuestionario, revision, submitido, certificacion, documentos/evidencias, agenda, pagos/liquidaciones e integraciones apagadas/preparadas.
 - Si Make/HR sync sigue apagado, la UI no debe mostrarlo como ejecutado; debe mostrar pendiente, preparado, bloqueado o requiere autorizacion.
 - Esta mejora aplica al prototipo comercializable, no solo a TyA/Cinepolis. Los textos pueden cambiar por tenant/proyecto, pero el flujo debe mantenerse configurable y multi-proyecto.
-- Referencias backend/documentales: `app/docs/ADMIN-REVIEW-FUNCTIONAL-CONTRACT-PHASE-A-TYA-20260704.md` y `app/docs/SUBMITIDO-HR-DRIVEN-CONFIGURABLE-PHASE-A-TYA-20260704.md`.
+- Referencias backend/documentales: `app/docs/ADMIN-REVIEW-FUNCTIONAL-CONTRACT-PHASE-A-TYA-20260704.md`, `app/docs/SUBMITIDO-HR-DRIVEN-CONFIGURABLE-PHASE-A-TYA-20260704.md` y `app/docs/WIZARD-PHASE-A-COMPLETE-CONTRACT-TYA-20260704.md`.
 
 ## Addendum V77 - paquete forense Claude
 
@@ -24,7 +25,7 @@ Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backe
 
 ## Addendum RC V75 - base visual actual
 
-Ver documentos especificos:
+Ver documentos especificicos:
 
 - `app/docs/AUDITORIA-RC-V75-CLOUD-FRONTEND-20260703.md`
 - `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-RC-V75-20260703.md`
@@ -104,6 +105,7 @@ La auditoria V64 encontro que muchos pendientes acumulados en documentos V62/V63
 11. Wizard de propuestas comerciales completo.
 12. Revision admin visible/funcional separada de submitido y liquidacion.
 13. Submitido configurable por proyecto y separado de cuestionario realizado.
+14. Wizard de proyecto con configuracion Phase A completa y gates honestos.
 
 ## Separacion corregida
 
