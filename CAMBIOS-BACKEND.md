@@ -1,5 +1,14 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - Auditoria frontend candidate V81 Claude
+
+- Se agrego `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V81-CLAUDE-20260704.md`.
+- Se actualizo `RESUMEN-PARA-CLAUDE.md` con el addendum V81.
+- Se actualizo `PENDIENTES-PROTOTIPO.md` con pendientes V81.
+- Objetivo: auditar el nuevo ZIP de Claude sin empalmarlo y sin cambiar baseline/source lock.
+- Decision: V81 mejora V80, pero no debe empalmarse completo todavia porque faltan defaults Phase A en `proyecto-wizard.js`, quedan textos `cuestionario enviado`, `revision-admin.js` aun no cumple estructura contractual/auditTrail completa, y `misvisitas.js` aun promete sincronizacion HR.
+- Estado seguro: sin empalme V81, sin source lock V81, sin runtime, sin deploy, sin produccion, sin Auth real, sin escritura Firestore, sin HR writes, sin Make/Gemini/WhatsApp real y sin cambios frontend aplicados.
+
 ## 2026-07-04 - Auditoria frontend candidate V80 Claude
 
 - Se agrego `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V80-CLAUDE-20260704.md`.
