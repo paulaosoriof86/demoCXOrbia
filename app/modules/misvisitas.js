@@ -12,9 +12,9 @@ CX.module('misvisitas', ({data,ui})=>{
 
   /* pasos del flujo, dependientes del proyecto (certificación una vez por proyecto) */
   const flowSteps=(estado)=>{
-    const order=['asignada','instructivo','certificacion','agendada','realizada','cuestionario','submit','liquidada'];
-    const labels={asignada:'Asignada',instructivo:'Instructivo y documentos',certificacion:'Certificación del proyecto',agendada:'Visita agendada',realizada:'Visita realizada',cuestionario:'Cuestionario',submit:'Submitida',liquidada:'Liquidada'};
-    const idx={asignada:0,agendada:3,realizada:4,cuestionario:5,liquidada:7}[estado]??0;
+    const order=['asignada','instructivo','certificacion','agendada','realizada','cuestionario','revision','submit','liquidada'];
+    const labels={asignada:'Asignada',instructivo:'Instructivo y documentos',certificacion:'Certificación del proyecto',agendada:'Visita agendada',realizada:'Visita realizada',cuestionario:'Cuestionario',revision:'Revisión',submit:'Submitida',liquidada:'Liquidada'};
+    const idx={asignada:0,agendada:3,realizada:4,cuestionario:5,revision:6,submit:7,liquidada:8}[estado]??0;
     return order.map((s,i)=>({label:labels[s],state:i<idx?'done':i===idx?'now':'todo'}));
   };
 
@@ -118,8 +118,24 @@ CX.module('misvisitas', ({data,ui})=>{
       {onMount:(ov,close)=>{ ov.querySelector('#doneOk').addEventListener('click',()=>{
         data.setVisitState(v.id,'realizada','realizada',ov.querySelector('#doneD').value||today);
         CX.automations&&CX.automations.fire('realizada',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal});
-        close(); draw(); ui.toast('Visita realizada · cuestionario habilitado · liquidación actualizada','ok',3600);
         CX.notif&&CX.notif.push({to:'admin',tipo:'realizada',icon:'✅',tono:'g',titulo:'Visita realizada',txt:(v.shopper||CX.session.user.name)+' · '+v.sucursal,nav:'postulaciones'});
+        close();
+        /* PhaseA-5: ventana posterior con cuestionario + contacto de evidencias */
+        const cfg=p.cuestionario||{modo:'interna'};
+        const wa=(p.contactos&&(p.contactos.evidencias||p.contactos.coordinacion))||'';
+        const waLink=wa?('https://wa.me/'+(''+wa).replace(/[^0-9]/g,'')+'?text='+encodeURIComponent('Evidencias de visita · '+v.sucursal+' · '+(v.escenario||''))):'';
+        ui.modal('✅ Visita realizada · '+v.sucursal,`
+          <div style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Fecha registrada. Ahora completa el cuestionario y envía tus evidencias.</div>
+          <div class="flex" style="gap:8px;flex-wrap:wrap">
+            <button class="btn btn-pr btn-sm" id="pqQuest">📝 ${cfg.modo==='interna'?'Llenar cuestionario':'Abrir cuestionario'}</button>
+            ${waLink?`<a class="btn btn-green btn-sm" href="${waLink}" target="_blank" style="text-decoration:none">📲 Enviar evidencias (WhatsApp)</a>`:`<button class="btn btn-ghost btn-sm" id="pqNoWa">📲 Configurar contacto de evidencias</button>`}
+          </div>
+          <div style="font-size:10.5px;color:var(--t3);margin-top:10px">El contacto de evidencias se configura por proyecto. Sin backend de mensajería, WhatsApp Web abre con la plantilla lista (plantilla lista).</div>`,
+        {onMount:(o2,c2)=>{
+          o2.querySelector('#pqQuest')&&o2.querySelector('#pqQuest').addEventListener('click',()=>{c2();draw();const qb=host.querySelector('[data-quest]');qb&&qb.click();});
+          o2.querySelector('#pqNoWa')&&o2.querySelector('#pqNoWa').addEventListener('click',()=>{c2();CX.router.nav('proyectos');});
+        }});
+        draw(); ui.toast('Visita realizada · fecha guardada','ok',2600);
       }); }});
     }));
 
