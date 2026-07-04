@@ -1,5 +1,15 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - Controlled DEV planning TyA
+
+- Se agrego `tools/migration/tya-controlled-dev-write-plan.mjs`.
+- Se agrego `app/docs/CONTROLLED-DEV-WRITE-PLAN-TYA-20260704.md`.
+- Se agrego `app/docs/DEV-STAGING-DATA-CONTRACT-TYA-20260704.md`.
+- Se agrego `app/docs/DEV-STAGING-GATES-TYA-20260704.md`.
+- Se actualizo `RESUMEN-PARA-CLAUDE.md`.
+- Se actualizo `PENDIENTES-PROTOTIPO.md`.
+- Objetivo: preparar el plan DEV controlado sin runtime y mantener separado el paquete forense V77 de Claude.
+
 ## 2026-07-03 - Resultado readiness consolidated V3 TyA
 
 - Se agrego `app/docs/RESULTADO-READINESS-CONSOLIDATED-V3-TYA-20260703.md`.
