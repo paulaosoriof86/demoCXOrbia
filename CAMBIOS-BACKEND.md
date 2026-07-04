@@ -1,5 +1,15 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - Wizard Phase A complete contract TyA
+
+- Se agrego `app/contracts/project-wizard-phase-a.tya.contract.json`.
+- Se agrego `tools/migration/tya-project-wizard-phase-a-validator.mjs`.
+- Se agrego `app/docs/WIZARD-PHASE-A-COMPLETE-CONTRACT-TYA-20260704.md`.
+- Objetivo: avanzar el pendiente vivo de Wizard Phase A completo sin tocar frontend ni activar runtime.
+- Decision tecnica: el wizard debe configurar identidad, pais/moneda, HR, cuestionario, revision, submitido, certificacion, documentos/evidencias, agenda, pagos/liquidaciones e integraciones como gates apagados/preparados.
+- Impacto Claude/comercializable: Claude debe mapear esta configuracion al wizard visible sin hard-codear TyA/Cinepolis y sin mostrar integraciones como reales.
+- Estado seguro: sin runtime, sin deploy, sin produccion, sin Auth real, sin escritura Firestore, sin HR writes, sin Make/Gemini/WhatsApp real y sin cambios frontend.
+
 ## 2026-07-04 - Submitido HR-driven configurable Phase A TyA
 
 - Se agrego `app/contracts/submitido-hr-driven-phase-a.tya.contract.json`.
