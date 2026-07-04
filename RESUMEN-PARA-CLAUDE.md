@@ -1,5 +1,14 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-04 - Addendum auditoria V81 Claude candidate corregido
+
+- Paula entrego `Prototype development request CXOrbia V81.zip`. Claude lo describe internamente como V80 corregido; no se toma como incoherencia porque Paula versiona cada entrega.
+- Documento creado: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V81-CLAUDE-20260704.md`.
+- V81 mejora V80: `proyecto-wizard.js` usa valores canonicos, `cuestionario-shopper.js` busca los 5 campos de link, `revision-admin.js` usa estados canonicos y fallback `CX.data.revisiones`, y `misvisitas.js` corrige el duplicado.
+- Sintaxis V81 validada localmente: `node --check` sobre 61 archivos JS con `OK=61 FAIL=0`.
+- V81 no queda aprobado ni como source lock todavia. Pendientes antes de empalme: restaurar defaults Phase A del wizard (`hrFuente`, `revision`, `submitido`, `contactos`), ocultar URL para `externo_visita`, eliminar textos `cuestionario enviado`, hacer `revision-admin.js` compatible con contrato/auditTrail y limpiar textos de HR sync real en `misvisitas.js`.
+- Claude debe entregar una V82 corta/focalizada con esos ajustes y documentacion interna del prototipo.
+
 ## 2026-07-04 - Addendum auditoria V80 Claude candidate
 
 - Paula entrego `Prototype development request CXOrbia V80.zip` y ChatGPT/backend hizo auditoria forense sin empalmarlo.
