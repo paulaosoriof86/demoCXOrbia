@@ -1,5 +1,13 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-04 - Addendum Auth claims readiness Phase A
+
+- ChatGPT/backend preparo readiness documental de claims Auth contra el borrador de reglas Firestore DEV/staging.
+- Archivos agregados: `app/contracts/auth-claims-phase-a.tya.contract.json`, `tools/migration/tya-auth-claims-readiness-validator.mjs` y `app/docs/AUTH-CLAIMS-READINESS-FIRESTORE-RULES-PHASE-A-TYA-20260704.md`.
+- No se activo Auth real, no se publicaron reglas, no se conecto runtime y no hubo cambios frontend.
+- Hallazgo para conservar: el draft de reglas usa `coordinador`, mientras el contrato Phase A deja `ops` como rol canonico y `coordinador` como alias transicional pendiente de decision.
+- Claude no debe resolver este punto desde UI ni inventar un nuevo rol. Si toca pantallas de roles/permisos, debe esperar la decision canonica o dejarlo documentado como pendiente.
+
 ## 2026-07-04 - Addendum V78 baseline backend
 
 - V78 queda fijado como baseline visual actual para continuar backend TyA.
