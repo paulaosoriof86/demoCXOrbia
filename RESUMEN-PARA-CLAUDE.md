@@ -1,5 +1,14 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-04 - Addendum V77 / backend DEV controlado
+
+- Claude debe usar el paquete forense V77 para continuar prototipo, UX y documentacion frontend.
+- ChatGPT/Codex continua backend en la rama `docs-tya-v6-v71-audit`, PR #7, sin mezclar cambios visuales.
+- Backend TyA llego a readiness V5: listo para revision DEV controlada, sin blockers vigentes.
+- SHOPPER_REVIEW queda como politica provisional DEV; COMM_REVIEW como historico inactivo; CANDIDATE_REVIEW como candidatos no finales.
+- Se preparo paquete de autorizacion DEV controlada, runner disabled, checklist de rollback, checklist de reglas, contrato de datos DEV y gates.
+- Claude no debe tocar `tools/migration`, runners, gates backend, Firestore/Auth/Storage reales, Make real, importacion ni produccion.
+
 ## 2026-07-03 - Addendum RC V75 / Claude pausado
 
 Ver addendum acumulado vigente en `app/docs/RESUMEN-PARA-CLAUDE-ACUMULADO-RC-V75-20260703.md`.
