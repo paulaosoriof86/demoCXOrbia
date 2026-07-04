@@ -1,5 +1,15 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - Future runner contract TyA
+
+- Se agrego `tools/migration/tya-future-enabled-runner-contract.mjs`.
+- Se agrego `app/docs/FUTURE-ENABLED-RUNNER-CONTRACT-TYA-20260704.md`.
+- Se agrego `tools/migration/tya-dev-staging-target-validator.mjs`.
+- Se agrego `app/docs/DEV-STAGING-TARGET-VALIDATOR-TYA-20260704.md`.
+- Se agrego `app/docs/SECURITY-HARD-STOPS-DEV-RUNNER-TYA-20260704.md`.
+- Objetivo: definir contrato, variables, validaciones y abort conditions para un runner habilitado futuro sin crearlo ni ejecutarlo.
+- Estado seguro: sin runtime, sin deploy, sin produccion, sin escritura Firestore y sin cambios frontend.
+
 ## 2026-07-04 - Controlled DEV planning TyA
 
 - Se agrego `tools/migration/tya-controlled-dev-write-plan.mjs`.
