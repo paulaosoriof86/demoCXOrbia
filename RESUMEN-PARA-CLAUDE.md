@@ -1,5 +1,15 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-04 - Addendum auditoria V80 Claude candidate
+
+- Paula entrego `Prototype development request CXOrbia V80.zip` y ChatGPT/backend hizo auditoria forense sin empalmarlo.
+- Documento creado: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V80-CLAUDE-20260704.md`.
+- V80 trae avance util: nuevo `app/modules/revision-admin.js`, carga en `app/index.html`, boton de revision en `app/modules/dashboard.js`, mejoras de textos honestos en automatizaciones, `nvBanner` y SaaS Console V79.
+- V80 no queda aprobado ni como source lock porque trae regresiones: `proyecto-wizard.js` vuelve a usar `externa`/`link`, `cuestionario-shopper.js` no conserva todos los campos de link del fix P0, y `misvisitas.js` reintroduce `plantilla lista (plantilla lista)`.
+- Claude debe corregir sobre la rama actual del repo, no empalmar el ZIP completo. Debe conservar los fixes actuales del repo para `proyecto-wizard.js` y `cuestionario-shopper.js`.
+- `revision-admin.js` puede servir, pero debe mapear labels visibles a estados canonicos backend y no marcar submitido real si el proyecto es HR-driven.
+- Sigue pendiente limpiar textos que prometen Make/HR/Gemini/WhatsApp real en modulos tocados.
+
 ## 2026-07-04 - Addendum Wizard Phase A completo
 
 - ChatGPT/backend preparo el contrato de configuracion completa para Wizard Phase A sin tocar frontend.
