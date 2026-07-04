@@ -1,5 +1,13 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-04 - Addendum Wizard Phase A completo
+
+- ChatGPT/backend preparo el contrato de configuracion completa para Wizard Phase A sin tocar frontend.
+- Archivos agregados: `app/contracts/project-wizard-phase-a.tya.contract.json`, `tools/migration/tya-project-wizard-phase-a-validator.mjs` y `app/docs/WIZARD-PHASE-A-COMPLETE-CONTRACT-TYA-20260704.md`.
+- No se activo runtime, no se escribio Firestore, no se escribio HR, no se llamo Make/Gemini/WhatsApp y no hubo cambios en `/app/modules` ni `/app/core`.
+- Regla clave para el prototipo comercializable: el wizard debe configurar identidad, pais/moneda, HR, cuestionario, revision, submitido, certificacion, documentos/evidencias, agenda, pagos/liquidaciones e integraciones apagadas/preparadas.
+- Claude debe mapear esto al wizard visible sin hard-codear TyA/Cinepolis, sin mostrar integraciones como reales y conservando los modos de cuestionario `interna`, `externo_general`, `externo_visita`.
+
 ## 2026-07-04 - Addendum submitido HR-driven configurable Phase A
 
 - ChatGPT/backend preparo el contrato de submitido HR-driven/configurable sin tocar frontend.
