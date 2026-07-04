@@ -1,5 +1,13 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - V78 backend continuity baseline TyA
+
+- Se agrego `tools/migration/tya-v78-backend-continuity-baseline.mjs`.
+- Se agrego `app/docs/V78-BACKEND-CONTINUITY-BASELINE-TYA-20260704.md`.
+- Se actualizo `RESUMEN-PARA-CLAUDE.md`.
+- Objetivo: fijar V78 como baseline visual actual y continuar backend avanzado sin copiar frontend ni tocar modulos/core.
+- Estado seguro: sin runtime, sin deploy, sin produccion, sin escritura Firestore, sin importacion real y sin cambios frontend.
+
 ## 2026-07-04 - Route count manifest y prewrite validator TyA
 
 - Se agrego `tools/migration/tya-dev-staging-route-count-manifest.mjs`.
@@ -27,13 +35,3 @@
 - Se agrego `app/docs/SECURITY-HARD-STOPS-DEV-RUNNER-TYA-20260704.md`.
 - Objetivo: definir contrato, variables, validaciones y abort conditions para un runner habilitado futuro sin crearlo ni ejecutarlo.
 - Estado seguro: sin runtime, sin deploy, sin produccion, sin escritura Firestore y sin cambios frontend.
-
-## 2026-07-04 - Controlled DEV planning TyA
-
-- Se agrego `tools/migration/tya-controlled-dev-write-plan.mjs`.
-- Se agrego `app/docs/CONTROLLED-DEV-WRITE-PLAN-TYA-20260704.md`.
-- Se agrego `app/docs/DEV-STAGING-DATA-CONTRACT-TYA-20260704.md`.
-- Se agrego `app/docs/DEV-STAGING-GATES-TYA-20260704.md`.
-- Se actualizo `RESUMEN-PARA-CLAUDE.md`.
-- Se actualizo `PENDIENTES-PROTOTIPO.md`.
-- Objetivo: preparar el plan DEV controlado sin runtime y mantener separado el paquete forense V77 de Claude.
