@@ -1,0 +1,180 @@
+{
+  "contract": "admin-review-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "authRealAllowed": false,
+  "purpose": "Define the functional contract for admin review after a shopper marks the questionnaire as completed and before submitido, liquidation or HR sync are treated as final.",
+  "scope": {
+    "included": [
+      "admin review state machine",
+      "links between visit, assignment, shopper and HR row",
+      "manual admin decisions",
+      "HR-driven submitido gate",
+      "Make sync gate prepared but disabled",
+      "audit trail requirements"
+    ],
+    "excluded": [
+      "frontend redesign",
+      "real Firestore writes",
+      "real HR writes",
+      "real Make webhook calls",
+      "real Auth users or claims",
+      "automatic final submitido without HR/admin validation"
+    ]
+  },
+  "canonicalCollections": {
+    "reviews": "tenants/{tenantId}/projects/{projectId}/reviews/{reviewId}",
+    "visits": "tenants/{tenantId}/projects/{projectId}/visits/{visitId}",
+    "assignments": "tenants/{tenantId}/projects/{projectId}/assignments/{assignmentId}",
+    "syncEvents": "tenants/{tenantId}/projects/{projectId}/syncEvents/{syncEventId}",
+    "liquidations": "tenants/{tenantId}/projects/{projectId}/liquidations/{liquidationId}"
+  },
+  "reviewRecordRequiredFields": [
+    "tenantId",
+    "projectId",
+    "reviewId",
+    "visitId",
+    "assignmentId",
+    "shopperId",
+    "status",
+    "source",
+    "createdAt",
+    "updatedAt"
+  ],
+  "reviewRecordRecommendedFields": [
+    "hrRowId",
+    "hrSourceId",
+    "questionnaireMode",
+    "questionnaireCompletedAt",
+    "questionnaireLink",
+    "evidenceStatus",
+    "adminReviewerId",
+    "adminReviewedAt",
+    "reviewNotes",
+    "correctionReason",
+    "submitidoSource",
+    "submitidoAt",
+    "hrSubmitidoAt",
+    "assignmentSyncStatus",
+    "syncConflict",
+    "liquidationEligibility",
+    "lastSyncedAt",
+    "auditTrail"
+  ],
+  "allowedStatuses": [
+    "pending_review",
+    "in_review",
+    "needs_correction",
+    "approved_for_submitido",
+    "submitido_registered",
+    "rejected",
+    "hr_conflict",
+    "cancelled"
+  ],
+  "terminalStatuses": [
+    "submitido_registered",
+    "rejected",
+    "cancelled"
+  ],
+  "actions": [
+    {
+      "action": "open_review",
+      "from": ["pending_review"],
+      "to": "in_review",
+      "actorRoles": ["admin", "ops", "coordinador", "super"],
+      "requiredFields": ["adminReviewerId"],
+      "writesAllowedNow": false
+    },
+    {
+      "action": "request_correction",
+      "from": ["pending_review", "in_review"],
+      "to": "needs_correction",
+      "actorRoles": ["admin", "ops", "coordinador", "super"],
+      "requiredFields": ["correctionReason"],
+      "writesAllowedNow": false
+    },
+    {
+      "action": "approve_for_submitido",
+      "from": ["pending_review", "in_review"],
+      "to": "approved_for_submitido",
+      "actorRoles": ["admin", "ops", "coordinador", "super"],
+      "requiredFields": ["adminReviewerId", "adminReviewedAt"],
+      "writesAllowedNow": false
+    },
+    {
+      "action": "register_submitido_from_hr",
+      "from": ["approved_for_submitido", "in_review", "pending_review"],
+      "to": "submitido_registered",
+      "actorRoles": ["admin", "ops", "coordinador", "super"],
+      "requiredFields": ["submitidoSource", "submitidoAt", "hrRowId"],
+      "rules": [
+        "submitidoSource must be hr or admin_confirmed_hr",
+        "submitidoAt must come from HR or an admin-confirmed HR value",
+        "questionnaireCompletedAt must exist before submitidoAt unless a human conflict note is attached"
+      ],
+      "writesAllowedNow": false
+    },
+    {
+      "action": "mark_hr_conflict",
+      "from": ["pending_review", "in_review", "approved_for_submitido"],
+      "to": "hr_conflict",
+      "actorRoles": ["admin", "ops", "coordinador", "super"],
+      "requiredFields": ["reviewNotes", "syncConflict"],
+      "writesAllowedNow": false
+    },
+    {
+      "action": "reject_review",
+      "from": ["pending_review", "in_review", "needs_correction", "hr_conflict"],
+      "to": "rejected",
+      "actorRoles": ["admin", "ops", "coordinador", "super"],
+      "requiredFields": ["reviewNotes"],
+      "writesAllowedNow": false
+    },
+    {
+      "action": "reopen_review",
+      "from": ["needs_correction", "hr_conflict", "rejected"],
+      "to": "in_review",
+      "actorRoles": ["admin", "ops", "coordinador", "super"],
+      "requiredFields": ["reviewNotes"],
+      "writesAllowedNow": false
+    }
+  ],
+  "phaseARules": [
+    "A shopper marking questionnaire completed does not equal submitido.",
+    "Submitido must be HR-driven or admin-confirmed from HR before liquidation eligibility is final.",
+    "A review must keep tenantId and projectId stable from the visit and assignment.",
+    "A review must not overwrite HR/platform conflicts silently.",
+    "A review action must append auditTrail entries rather than replacing prior decisions.",
+    "Make sync events are prepared as gates but not called in this phase without authorization.",
+    "Liquidation eligibility starts only after submitido_registered or an explicit admin policy exception documented in auditTrail."
+  ],
+  "conflictTriggers": [
+    "visitId or hrRowId belongs to another project",
+    "assignment shopperId differs from HR shopper",
+    "questionnaireCompletedAt is after submitidoAt without human note",
+    "HR has submitido but platform lacks questionnaire completion",
+    "platform has completed questionnaire but HR row is missing or not readable",
+    "visit was cancelled but has review or submitido activity",
+    "duplicate review record for the same visitId without superseded flag"
+  ],
+  "commercializablePrototypeNotes": [
+    "Admin review should be a generic configurable workflow, not hard-coded only to TyA or Cinepolis.",
+    "Project settings should define whether submitido comes from HR, platform review, external system or manual admin confirmation.",
+    "The UI should show questionnaire completed, review status, submitido status and liquidation eligibility as separate steps.",
+    "The UI should not present Make/HR sync as executed while gates are disabled.",
+    "The review action labels can be tenant-specific, but the underlying statuses should remain canonical."
+  ],
+  "hardStops": [
+    "Do not write Firestore from this contract.",
+    "Do not call Make from this contract.",
+    "Do not update HR from this contract.",
+    "Do not mark liquidation as payable only from questionnaireCompletedAt.",
+    "Do not treat UI review buttons as production actions until backend gates are authorized."
+  ]
+}
