@@ -1,5 +1,14 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-04 - Addendum admin review funcional Phase A
+
+- ChatGPT/backend preparo el contrato funcional de revision admin Phase A sin tocar frontend.
+- Archivos agregados: `app/contracts/admin-review-phase-a.tya.contract.json`, `tools/migration/tya-admin-review-contract-validator.mjs` y `app/docs/ADMIN-REVIEW-FUNCTIONAL-CONTRACT-PHASE-A-TYA-20260704.md`.
+- No se activo runtime, no se escribio Firestore, no se llamo Make y no hubo cambios en `/app/modules` ni `/app/core`.
+- Regla clave para el prototipo comercializable: cuestionario realizado, revision admin, submitido y liquidacion deben verse como pasos separados.
+- Claude debe implementar esta separacion cuando trabaje UI: no tratar cuestionario realizado como submitido; no mostrar Make/HR como ejecutado si el gate esta apagado; permitir configuracion por proyecto del origen de submitido.
+- Los labels visibles pueden variar por tenant/proyecto, pero los estados internos deben mantenerse canonicos.
+
 ## 2026-07-04 - Addendum Auth claims readiness Phase A
 
 - ChatGPT/backend preparo readiness documental de claims Auth contra el borrador de reglas Firestore DEV/staging.
