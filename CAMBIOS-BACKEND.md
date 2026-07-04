@@ -1,5 +1,15 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - Admin review functional contract Phase A TyA
+
+- Se agrego `app/contracts/admin-review-phase-a.tya.contract.json`.
+- Se agrego `tools/migration/tya-admin-review-contract-validator.mjs`.
+- Se agrego `app/docs/ADMIN-REVIEW-FUNCTIONAL-CONTRACT-PHASE-A-TYA-20260704.md`.
+- Objetivo: avanzar el pendiente vivo de revision admin funcional sin tocar frontend ni activar runtime.
+- Decision tecnica: cuestionario realizado, revision, submitido y liquidacion quedan como pasos separados; submitido debe ser HR-driven o admin-confirmado desde HR.
+- Impacto Claude/comercializable: Claude debe trasladar esta separacion conceptual al prototipo comercializable cuando toque UI, sin tratar cuestionario realizado como submitido.
+- Estado seguro: sin runtime, sin deploy, sin produccion, sin Auth real, sin escritura Firestore, sin Make/Gemini/WhatsApp real y sin cambios frontend.
+
 ## 2026-07-04 - Auth claims readiness Firestore rules Phase A TyA
 
 - Se agrego `app/contracts/auth-claims-phase-a.tya.contract.json`.
