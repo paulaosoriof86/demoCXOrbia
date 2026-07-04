@@ -2,6 +2,20 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Addendum V82 - auditoria Claude candidate
+
+- V82 fue auditado como candidato nuevo de Claude. Mejora V81 y esta muy cerca de empalme, pero aun no queda como source lock.
+- Ver auditoria: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V82-CLAUDE-20260704.md`.
+- Resuelto en V82: wizard conserva enum canonico, `qMode()`, `visitLinkField:'questionnaireLink'`, defaults Phase A (`hrFuente`, `revision`, `submitido`, `contactos`) y oculta URL para `externo_visita`.
+- Resuelto en V82: cuestionario busca los 5 campos de link y no cae a interno si falta link.
+- Resuelto en V82: revision admin usa estados canonicos, fallback `CX.data.revisiones`/`localStorage`, estructura backend-ready parcial y bloqueo de `submitido_registered` sin nota en HR-driven.
+- Resuelto en V82: `plantilla lista (plantilla lista)` no aparece.
+- Pendiente puntual V82: `cuestionario-shopper.js` aun conserva el texto externo `marca la visita como cuestionario enviado`; cambiar a cuestionario realizado/completado.
+- Pendiente puntual V82: `revision-admin.js` muestra `Cuestionario: enviado`; cambiar a realizado/completado, agregar `status=estado`, pasar `projectId:p.id` y `hrRowId` cuando exista.
+- Pendiente puntual V82: `misvisitas.js` aun dice que sincroniza estado/hoja de ruta; cambiar a pendiente backend/preparado.
+- Pendiente puntual V82: `postulaciones.js` aun tiene dos toasts `HR sincronizada`; cambiar a `se reflejara en HR cuando el sync este activo (pendiente backend)`.
+- Documentacion V82 existe dentro de `app/docs`; mantener tambien actualizados los documentos raiz del PR.
+
 ## Addendum V81 - auditoria Claude candidate corregido
 
 - V81 fue auditado como candidato nuevo de Claude. Claude lo llama internamente V80 corregido; la diferencia de numeracion no es incoherencia porque Paula versiona internamente cada entrega.
@@ -133,7 +147,7 @@ La auditoria V64 encontro que muchos pendientes acumulados en documentos V62/V63
 12. Revision admin visible/funcional separada de submitido y liquidacion.
 13. Submitido configurable por proyecto y separado de cuestionario realizado.
 14. Wizard de proyecto con configuracion Phase A completa y gates honestos.
-15. Correcciones V81 antes de empalme: defaults Phase A del wizard, textos cuestionario realizado, revision admin compatible con contrato, HR sync honesta y documentacion.
+15. Correcciones V82 antes de source lock: textos cuestionario realizado, HR sync honesta en Mis Visitas/Postulaciones y ajuste fino de revision admin para `status`, `projectId` y `hrRowId`.
 
 ## Separacion corregida
 
