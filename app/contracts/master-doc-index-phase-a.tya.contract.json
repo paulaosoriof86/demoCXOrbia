@@ -1,0 +1,30 @@
+{
+  "contract": "master-doc-index-phase-a-tya",
+  "date": "2026-07-05",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "groups": [
+    "auditoria",
+    "claude",
+    "backend_preview",
+    "runbook_local",
+    "readiness",
+    "decision",
+    "academia",
+    "continuidad",
+    "tracking"
+  ],
+  "purpose": "Index the Phase A documents created during the post V87 continuity/readiness stage without changing runtime or production gates."
+}
