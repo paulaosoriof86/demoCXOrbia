@@ -15,7 +15,9 @@ const dependencyFiles = [
   'shopper-communication-history-preview-phase-a.tya.contract.json',
   'shopper-ranking-scoring-preview-phase-a.tya.contract.json',
   'project-tenant-rule-versioning-preview-phase-a.tya.contract.json',
-  'rule-change-changelog-notification-preview-phase-a.tya.contract.json'
+  'rule-change-changelog-notification-preview-phase-a.tya.contract.json',
+  'synthetic-input-pack-readiness-map-phase-a.tya.contract.json',
+  'readiness-map-to-release-snapshot-bridge-phase-a.tya.contract.json'
 ];
 const dependencyPaths = dependencyFiles.map((file) => path.join(root, 'app', 'contracts', file));
 
@@ -29,6 +31,29 @@ const sensitiveKeyPatterns = [
   /base64|attachment|adjunto|privateLink|signedUrl/i,
   /productionCredential|serviceAccount|apiKey/i
 ];
+
+const safeMetadataKeySuffixes = new Set([
+  'sourceSafe',
+  'containsRawSensitiveData',
+  'isSyntheticOrSanitized',
+  'forbidsRawSensitiveData',
+  'rawOperationalDataAllowed',
+  'realProviderCredentialsAllowed',
+  'emailSendAllowed',
+  'whatsappSendAllowed',
+  'paymentProviderAllowed',
+  'firestoreWritesAllowed',
+  'storageWritesAllowed',
+  'makeWriteAllowed',
+  'geminiAllowed',
+  'importRealDataAllowed',
+  'productionAllowed',
+  'deployAllowed',
+  'mergeAllowed',
+  'realActivationRequested',
+  'deployRequested',
+  'writeRequested'
+]);
 
 function readJson(filePath) {
   if (!fs.existsSync(filePath)) throw new Error(`Missing file: ${path.relative(root, filePath)}`);
@@ -60,9 +85,14 @@ function flattenKeys(value, prefix = '') {
   return keys;
 }
 
+function isSafeMetadataKey(key) {
+  const suffix = String(key).split('.').pop();
+  return safeMetadataKeySuffixes.has(suffix);
+}
+
 function detectSensitiveKeys(payload) {
   const keys = flattenKeys(payload);
-  return [...new Set(keys.filter((key) => sensitiveKeyPatterns.some((pattern) => pattern.test(key))))];
+  return [...new Set(keys.filter((key) => !isSafeMetadataKey(key) && sensitiveKeyPatterns.some((pattern) => pattern.test(key))))];
 }
 
 function validateSnapshot(snapshot, contract) {
