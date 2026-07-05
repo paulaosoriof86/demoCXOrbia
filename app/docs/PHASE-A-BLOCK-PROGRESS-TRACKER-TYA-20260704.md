@@ -53,6 +53,7 @@ Fecha: 2026-07-04
 - Academia impact de liquidaciones/Cinepolis source-safe preview.
 - Academia impact de politica de datos sensibles.
 - Academia impact de assignment sync/conflicts.
+- Academia impact de visit lifecycle/reservas.
 
 ### Operacion Phase A
 
@@ -74,6 +75,7 @@ Fecha: 2026-07-04
 - Preview validator/source-safe mapping para liquidaciones/corte junio y Cinepolis Boleto/Combo.
 - Politica consolidada de datos sensibles para fuentes, pagos, correo, adjuntos y evidencias.
 - Preview validator de assignment sync/conflicts con gate de datos sensibles.
+- Preview validator de visit lifecycle/reservas con gates de assignment sync y datos sensibles.
 
 ## Bloques agregados durante revision
 
@@ -94,20 +96,21 @@ Estos bloques no estaban suficientemente explicitados al inicio y se agregaron p
 13. Source-safe preview para corte junio/liquidaciones antes de fuentes reales.
 14. Politica sensible previa a fuentes reales: banco, documentos, NDA, correo, adjuntos y evidencias.
 15. Assignment sync conflict preview antes de Make/HR real.
+16. Visit lifecycle/reservation preview antes de agenda/HR real.
 
 ## Bloque recien completado
 
-### Assignment sync conflict preview Phase A
+### Visit lifecycle reservation preview Phase A
 
 Archivos:
 
-- `app/contracts/assignment-sync-conflict-preview-phase-a.tya.contract.json`
-- `tools/migration/tya-assignment-sync-conflict-preview-validator.mjs`
-- `app/docs/ASSIGNMENT-SYNC-CONFLICT-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
-- `app/docs/ACADEMIA-IMPACT-ASSIGNMENT-SYNC-CONFLICT-PREVIEW-TYA-20260704.md`
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-ASSIGNMENT-SYNC-CONFLICT-PREVIEW-20260704.md`
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-ASSIGNMENT-SYNC-CONFLICT-PREVIEW-20260704.md`
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-ASSIGNMENT-SYNC-CONFLICT-PREVIEW-20260704.md`
+- `app/contracts/visit-lifecycle-reservation-preview-phase-a.tya.contract.json`
+- `tools/migration/tya-visit-lifecycle-reservation-preview-validator.mjs`
+- `app/docs/VISIT-LIFECYCLE-RESERVATION-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
+- `app/docs/ACADEMIA-IMPACT-VISIT-LIFECYCLE-RESERVATION-PREVIEW-TYA-20260704.md`
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-VISIT-LIFECYCLE-RESERVATION-PREVIEW-20260704.md`
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-VISIT-LIFECYCLE-RESERVATION-PREVIEW-20260704.md`
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-VISIT-LIFECYCLE-RESERVATION-PREVIEW-20260704.md`
 
 Estado:
 
@@ -115,21 +118,21 @@ Estado:
 - No lee fuentes reales si no se le pasa input.
 - El input permitido debe ser sintetico/sanitizado y traer `sourceSafe=true`.
 - No escribe archivos por defecto.
-- No activa runtime, produccion, Firestore, HR, Make ni import real.
-- Usa la politica de datos sensibles como gate transversal.
+- No activa runtime, produccion, Firestore, Storage, HR, Make, Gemini, correo ni import real.
+- Usa la politica de datos sensibles y assignment sync/conflicts como gates previos.
 
 ## Pendientes backend inmediatos
 
-1. Preview validator de visit lifecycle/reservas.
-2. Preview validator de ficha postulacion dinamica.
-3. Preview validator de notification outbox.
-4. Preview validator de email/user mailbox sin conexion real.
-5. Preview validator de CRM external folder refs.
-6. Preview validator de shopper communication history.
-7. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
-8. Contrato ranking/scoring shopper.
-9. Integrar politica de datos sensibles como gate transversal de validators restantes.
-10. Preparar input sintetico/sanitizado para assignment sync conflict preview.
+1. Preview validator de ficha postulacion dinamica.
+2. Preview validator de notification outbox.
+3. Preview validator de email/user mailbox sin conexion real.
+4. Preview validator de CRM external folder refs.
+5. Preview validator de shopper communication history.
+6. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
+7. Contrato ranking/scoring shopper.
+8. Integrar politica de datos sensibles como gate transversal de validators restantes.
+9. Preparar input sintetico/sanitizado para assignment sync conflict preview.
+10. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
 11. Make payloads futuros sin activar.
 
 ## Pendientes prototipo / Claude
@@ -152,6 +155,8 @@ Estado:
 16. Datos sensibles: no exponer banco, documentos, NDA, cuerpos crudos ni adjuntos privados; usar estados protegido/pendiente backend/requiere autorizacion.
 17. Assignment sync: Postulaciones no debe mostrar `HR sincronizada` si gate esta apagado; debe mostrar pendiente HR sync, preview, conflicto o revision manual.
 18. Visitas asignadas desde plataforma o HR preview deben salir de disponibles sin duplicarse.
+19. Visit lifecycle/reservas: agenda/reprogramacion no debe prometer HR sync real; fuera de rango debe mostrar regla fallida y pedir override.
+20. Separar disponible, reservada, agendada, realizada, cuestionario completado, revision, submitido, liquidacion y pago.
 
 ## Pendientes Academia
 
@@ -166,10 +171,11 @@ Estado:
 9. Profundizar liquidaciones/Cinepolis source-safe preview, Boleto/Combo, corte junio, revision manual, lotes y movimientos individuales.
 10. Profundizar datos sensibles: sourceSafe, datos protegidos, referencias opacas, privacidad shopper, import seguro e integraciones apagadas.
 11. Profundizar assignment sync/conflicts: postulacion a asignacion, HR detected, no duplicar, conflicto, revision manual y visual dedupe prohibido.
+12. Profundizar visit lifecycle/reservas: agenda, reprogramacion, cancelacion, availableFrom, franja, quincena, override, realizada y cuestionario completado.
 
 ## Siguiente bloque recomendado
 
-Preview validator de visit lifecycle/reservas usando la politica de datos sensibles y los outcomes de assignment sync/conflicts como gates previos.
+Preview validator de ficha postulacion dinamica, usando los gates de datos sensibles, assignment sync/conflicts y visit lifecycle/reservas.
 
 ## Regla de cierre por bloque
 
