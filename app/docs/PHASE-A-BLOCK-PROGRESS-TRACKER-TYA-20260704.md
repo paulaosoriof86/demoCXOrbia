@@ -7,7 +7,7 @@ Fecha: 2026-07-04
 - Repo: `paulaosoriof86/demoCXOrbia`
 - Rama: `docs-tya-v6-v71-audit`
 - PR: #7 draft/open/no merge
-- Source lock actual: V82 como baseline viva; V83/V84/V85 auditadas como candidatas parciales no aceptadas como source lock final; V86 queda como candidata auditada de continuidad backend, no source lock final ni produccion
+- Ultima version entregada y auditada: baseline auditada de continuidad backend, no source lock final ni produccion
 - Estado: documentacion, contratos y validadores seguros
 - Sin deploy
 - Sin produccion
@@ -23,20 +23,12 @@ Fecha: 2026-07-04
 ### Base / continuidad
 
 - Documento maestro y continuidad.
-- V82 source lock.
-- Auditorias V80/V81/V82.
-- Auditoria integral candidata actual V82 para Claude.
-- Auditoria forense V83 y paquete Claude V84 correctiva.
-- Auditoria V84 y paquete Claude V85 correctiva.
-- Auditoria V85: contenido identico a V84 y paquete Claude V86 correctiva real.
-- Auditoria V86: cambios reales parciales y paquete Claude V87 correctiva; empalme como candidata auditada de continuidad backend.
-- Auditoria complementaria V86 delta vs acumulado Codex para reforzar profundidad y evitar confusion entre cambios acumulados y nuevos.
-- Paquete descargable Claude V82 auditoria integral.
-- Paquete descargable Claude V83 auditoria integral.
-- Paquete descargable Claude V84 auditoria integral.
-- Paquete descargable Claude V85 auditoria identica V84.
-- Paquete descargable Claude V86 auditoria integral.
+- Auditorias forenses de prototipos previos.
+- Paquetes descargables Claude de auditorias previas.
+- Auditoria complementaria delta vs acumulado Codex para reforzar profundidad y evitar confusion entre cambios acumulados y nuevos.
+- Empalme de ultima version auditada como baseline de continuidad backend.
 - Regla de no reiniciar por cada ZIP.
+- Regla de trabajar sobre la ultima version auditada usable, salvo bloqueo critico.
 - Addenda de cambios, Claude y pendientes.
 
 ### Backend foundation
@@ -68,6 +60,7 @@ Fecha: 2026-07-04
 - Academia impact de email/user mailbox.
 - Academia impact de CRM external folder refs.
 - Academia impact de shopper communication history.
+- Academia impact de shopper ranking/scoring.
 
 ### Operacion Phase A
 
@@ -84,6 +77,7 @@ Fecha: 2026-07-04
 - Email provider-agnostic por usuario.
 - CRM, OneDrive, documentos y pipeline.
 - Shopper communication history.
+- Shopper ranking/scoring.
 - Liquidaciones y pagos.
 - Cinepolis Boleto/Combo, lotes y movimientos individuales.
 - Preview validator/source-safe mapping para liquidaciones/corte junio y Cinepolis Boleto/Combo.
@@ -95,6 +89,7 @@ Fecha: 2026-07-04
 - Preview validator de email/user mailbox sin conexion real, con notification outbox como gate previo.
 - Preview validator de CRM external folder refs con gates de email/mailbox, notification outbox y datos sensibles.
 - Preview validator de shopper communication history con gates de CRM folder refs, email/mailbox, notification outbox y datos sensibles.
+- Preview validator de shopper ranking/scoring con gates de datos sensibles, assignment sync, visit lifecycle y communication history.
 
 ## Bloques agregados durante revision
 
@@ -117,26 +112,27 @@ Estos bloques no estaban suficientemente explicitados al inicio y se agregaron p
 15. Assignment sync conflict preview antes de Make/HR real.
 16. Visit lifecycle/reservation preview antes de agenda/HR real.
 17. Dynamic postulation form preview antes de ficha real/storage real.
-18. Auditorias V83/V84/V85/V86 como candidatas parciales; V86 queda continuidad backend, no source lock final.
+18. Auditorias de prototipos como candidatas parciales y empalme de ultima baseline auditada de continuidad backend.
 19. Notification outbox preview antes de proveedores reales.
 20. Email user mailbox preview antes de OAuth/SMTP/email real.
 21. CRM external folder refs preview antes de OAuth/API/proveedor documental real.
 22. Shopper communication history preview antes de lectura/envio/import real de comunicaciones.
 23. Auditoria profunda reforzada: cada paquete debe distinguir delta vs acumulado y responder punto por punto a reportes Claude/Codex.
+24. Shopper ranking/scoring preview antes de decisiones automaticas, Gemini real o autoasignacion.
 
 ## Bloque recien completado
 
-### Shopper communication history preview Phase A
+### Shopper ranking/scoring preview Phase A
 
 Archivos:
 
-- `app/contracts/shopper-communication-history-preview-phase-a.tya.contract.json`
-- `tools/migration/tya-shopper-communication-history-preview-validator.mjs`
-- `app/docs/SHOPPER-COMMUNICATION-HISTORY-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
-- `app/docs/ACADEMIA-IMPACT-SHOPPER-COMMUNICATION-HISTORY-PREVIEW-TYA-20260704.md`
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-SHOPPER-COMMUNICATION-HISTORY-PREVIEW-20260704.md`
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-SHOPPER-COMMUNICATION-HISTORY-PREVIEW-20260704.md`
-- `app/docs/PENDIENTES-CLAUDE-ADDENDUM-SHOPPER-COMMUNICATION-HISTORY-PREVIEW-20260704.md`
+- `app/contracts/shopper-ranking-scoring-preview-phase-a.tya.contract.json`
+- `tools/migration/tya-shopper-ranking-scoring-preview-validator.mjs`
+- `app/docs/SHOPPER-RANKING-SCORING-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
+- `app/docs/ACADEMIA-IMPACT-SHOPPER-RANKING-SCORING-PREVIEW-TYA-20260704.md`
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-SHOPPER-RANKING-SCORING-PREVIEW-20260704.md`
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-SHOPPER-RANKING-SCORING-PREVIEW-20260704.md`
+- `app/docs/PENDIENTES-CLAUDE-ADDENDUM-SHOPPER-RANKING-SCORING-PREVIEW-20260704.md`
 
 Estado:
 
@@ -144,42 +140,39 @@ Estado:
 - No lee fuentes reales si no se le pasa input.
 - El input permitido debe ser sintetico/sanitizado y traer `sourceSafe=true`.
 - No escribe archivos por defecto.
-- No activa runtime, produccion, Firestore, Storage, Make, Gemini, email, WhatsApp, proveedor externo ni import real.
-- Usa CRM folder refs, email/mailbox, notification outbox y politica de datos sensibles como gates previos.
+- No activa runtime, produccion, Firestore, Make, Gemini, autoasignacion ni import real.
+- Usa datos sensibles, assignment sync, visit lifecycle y shopper communication history como gates previos.
 
 ## Ultima auditoria de prototipo
 
-### V86
+Decision vigente:
 
-Archivos de auditoria:
-
-- `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V86-CLAUDE-20260704.md`
-- `app/docs/AUDITORIA-COMPLEMENTARIA-V86-DELTA-VS-ACUMULADO-CODEX-20260704.md`
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V86-AUDITORIA-20260704.md`
-- `app/docs/PENDIENTES-CLAUDE-ADDENDUM-V86-AUDITORIA-20260704.md`
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V86-CLAUDE-20260704.md`
-
-Decision:
-
-- V86 trae cambios reales: `modules/academia.js`, `modules/dashboard.js`, `modules/misvisitas.js`.
-- V86 no es source lock final ni produccion.
-- V86 queda como candidata auditada de continuidad backend.
+- La ultima version entregada y auditada queda como baseline auditada de continuidad backend.
+- No es source lock final ni produccion.
 - La auditoria profunda debe distinguir siempre delta vs acumulado.
-- Claude debe generar V87 correctiva cuando recupere capacidad.
+- Claude debe generar la siguiente correctiva sobre la ultima baseline auditada valida cuando recupere capacidad.
+
+Documentos clave:
+
+- `app/docs/EMPALME-ULTIMA-VERSION-AUDITADA-CONTINUIDAD-BACKEND-TYA-20260704.md`
+- `app/docs/ADDENDUM-MAESTRO-METODOLOGIA-AUDITORIA-EMPALME-ULTIMA-VERSION-20260704.md`
+- ultima auditoria forense de prototipo en `app/docs/`
+- ultimo resumen y pendientes para Claude en `app/docs/`
 
 ## Pendientes backend inmediatos
 
-1. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
-2. Contrato ranking/scoring shopper.
-3. Integrar politica de datos sensibles como gate transversal de validators restantes.
-4. Preparar input sintetico/sanitizado para assignment sync conflict preview.
-5. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
+1. Preparar input sintetico/sanitizado para shopper ranking/scoring preview.
+2. Preparar input sintetico/sanitizado para shopper communication history preview.
+3. Preparar input sintetico/sanitizado para CRM external folder refs preview.
+4. Preparar input sintetico/sanitizado para email/user mailbox preview.
+5. Preparar input sintetico/sanitizado para notification outbox preview.
 6. Preparar input sintetico/sanitizado para postulation dynamic form preview.
-7. Preparar input sintetico/sanitizado para notification outbox preview.
-8. Preparar input sintetico/sanitizado para email/user mailbox preview.
-9. Preparar input sintetico/sanitizado para CRM external folder refs preview.
-10. Preparar input sintetico/sanitizado para shopper communication history preview.
-11. Make/email/provider payloads futuros sin activar.
+7. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
+8. Preparar input sintetico/sanitizado para assignment sync conflict preview.
+9. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
+10. Integrar politica de datos sensibles como gate transversal de validators restantes.
+11. Preparar payload futuro para ranking UI sin activar runtime.
+12. Make/email/provider/Gemini payloads futuros sin activar.
 
 ## Pendientes prototipo / Claude
 
@@ -192,23 +185,24 @@ Decision:
 7. Email por usuario/provider agnostic.
 8. CRM con carpeta externa/documentos/pipeline.
 9. Shopper history completo.
-10. Mis beneficios con honorario/reembolso/estado.
-11. Lotes y movimientos individuales.
-12. Academia interactiva profunda con backfill completo.
-13. Liquidaciones/Cinepolis: Mis beneficios debe separar honorario, Boleto, Combo, reembolso total, total y estado.
-14. Admin/Liquidaciones debe mostrar revision manual/conflicto si faltan llaves estables o referencias de pago.
-15. Movimientos debe conservar pago individual aunque venga de lote.
-16. Datos sensibles: no exponer banco, documentos, NDA, cuerpos crudos ni adjuntos privados; usar estados protegido/pendiente backend/requiere autorizacion.
-17. Assignment sync: Postulaciones no debe mostrar `HR sincronizada` si gate esta apagado; debe mostrar pendiente HR sync, preview, conflicto o revision manual.
-18. Visitas asignadas desde plataforma o HR preview deben salir de disponibles sin duplicarse.
-19. Visit lifecycle/reservas: agenda/reprogramacion no debe prometer HR sync real; fuera de rango debe mostrar regla fallida y pedir override.
-20. Separar disponible, reservada, agendada, realizada, cuestionario completado, revision, submitido, liquidacion y pago.
-21. Ficha postulacion dinamica: configurable por proyecto/version, campos requeridos/opcionales, referencias privadas, sin archivos raw y sin tratar postulacion como asignacion.
-22. Notification outbox: toasters no deben decir enviado/sincronizado si solo hay preview; WhatsApp/email deben quedar como fallback/draft/provider pendiente.
-23. Email/user mailbox: UI no debe decir conectado/leido/enviado si gate esta apagado; separar draft, log manual, provider pending y enviado real.
-24. CRM/documentos: no decir carpeta creada/conectada/sincronizada; usar ref preview, provider pending, permission review, blocked private link y manual review.
-25. Shopper history: no mostrar cuerpos crudos, telefonos/correos crudos ni adjuntos; usar timeline con estados honestos y llaves estables.
-26. V87 correctiva debe corregir P0 de V86 y mantener sus mejoras reales.
+10. Shopper ranking/scoring preview honesto, sin autoasignacion ni datos sensibles.
+11. Mis beneficios con honorario/reembolso/estado.
+12. Lotes y movimientos individuales.
+13. Academia interactiva profunda con backfill completo.
+14. Liquidaciones/Cinepolis: Mis beneficios debe separar honorario, Boleto, Combo, reembolso total, total y estado.
+15. Admin/Liquidaciones debe mostrar revision manual/conflicto si faltan llaves estables o referencias de pago.
+16. Movimientos debe conservar pago individual aunque venga de lote.
+17. Datos sensibles: no exponer banco, documentos, NDA, cuerpos crudos ni adjuntos privados; usar estados protegido/pendiente backend/requiere autorizacion.
+18. Assignment sync: Postulaciones no debe mostrar `HR sincronizada` si gate esta apagado; debe mostrar pendiente HR sync, preview, conflicto o revision manual.
+19. Visitas asignadas desde plataforma o HR preview deben salir de disponibles sin duplicarse.
+20. Visit lifecycle/reservas: agenda/reprogramacion no debe prometer HR sync real; fuera de rango debe mostrar regla fallida y pedir override.
+21. Separar disponible, reservada, agendada, realizada, cuestionario completado, revision, submitido, liquidacion y pago.
+22. Ficha postulacion dinamica: configurable por proyecto/version, campos requeridos/opcionales, referencias privadas, sin archivos raw y sin tratar postulacion como asignacion.
+23. Notification outbox: toasters no deben decir enviado/sincronizado si solo hay preview; WhatsApp/email deben quedar como fallback/draft/provider pendiente.
+24. Email/user mailbox: UI no debe decir conectado/leido/enviado si gate esta apagado; separar draft, log manual, provider pending y enviado real.
+25. CRM/documentos: no decir carpeta creada/conectada/sincronizada; usar ref preview, provider pending, permission review, blocked private link y manual review.
+26. Shopper history: no mostrar cuerpos crudos, telefonos/correos crudos ni adjuntos; usar timeline con estados honestos y llaves estables.
+27. Ranking: mostrar desglose de metricas, muestra insuficiente, conflicto, revision manual y no usarlo como decision final.
 
 ## Pendientes Academia
 
@@ -220,19 +214,19 @@ Decision:
 6. Contenido retroactivo de todos los bloques backend.
 7. Profundizar liquidaciones/pagos.
 8. Profundizar correo/CRM/Shopper history.
-9. Profundizar liquidaciones/Cinepolis source-safe preview, Boleto/Combo, corte junio, revision manual, lotes y movimientos individuales.
-10. Profundizar datos sensibles: sourceSafe, datos protegidos, referencias opacas, privacidad shopper, import seguro e integraciones apagadas.
-11. Profundizar assignment sync/conflicts: postulacion a asignacion, HR detected, no duplicar, conflicto, revision manual y visual dedupe prohibido.
-12. Profundizar visit lifecycle/reservas: agenda, reprogramacion, cancelacion, availableFrom, franja, quincena, override, realizada y cuestionario completado.
-13. Profundizar ficha postulacion dinamica: formId, formVersion, fieldId, sensibilidad, revision ops/admin y versionado.
-14. Profundizar notification outbox: templateId, templateVersion, recipientRef, outboxStatus, manualFallbackStatus, fallback manual y estados honestos.
-15. Profundizar email/user mailbox: mailboxId, providerType, connectionStatus, canDraft, canLogManual, draft_ready_preview y manual_log_only.
-16. Profundizar CRM external folder refs: crmEntityId, externalFolderRefId, externalProviderType, visibilityScope, accessStatus, provider pending y permission review.
-17. Profundizar shopper communication history: communicationId, threadId, participantRef, manualConfirmationStatus, communicationStatus, privacy, manual log y draft preview.
+9. Profundizar datos sensibles: sourceSafe, datos protegidos, referencias opacas, privacidad shopper, import seguro e integraciones apagadas.
+10. Profundizar assignment sync/conflicts: postulacion a asignacion, HR detected, no duplicar, conflicto, revision manual y visual dedupe prohibido.
+11. Profundizar visit lifecycle/reservas: agenda, reprogramacion, cancelacion, availableFrom, franja, quincena, override, realizada y cuestionario completado.
+12. Profundizar ficha postulacion dinamica: formId, formVersion, fieldId, sensibilidad, revision ops/admin y versionado.
+13. Profundizar notification outbox: templateId, templateVersion, recipientRef, outboxStatus, manualFallbackStatus, fallback manual y estados honestos.
+14. Profundizar email/user mailbox: mailboxId, providerType, connectionStatus, canDraft, canLogManual, draft_ready_preview y manual_log_only.
+15. Profundizar CRM external folder refs: crmEntityId, externalFolderRefId, externalProviderType, visibilityScope, accessStatus, provider pending y permission review.
+16. Profundizar shopper communication history: communicationId, threadId, participantRef, manualConfirmationStatus, communicationStatus, privacy, manual log y draft preview.
+17. Profundizar shopper ranking/scoring: rankingRunId, rankingPeriodId, scoreVersion, metricId, metricWeight, scoreStatus, fairness, manual review y limites de uso.
 
 ## Siguiente bloque recomendado
 
-Contrato ranking/scoring shopper, salvo que exista ya un input local sintetico/sanitizado para ejecutar validators previos sin fuente real.
+Preparar input sintetico/sanitizado para ejecutar validators previos o crear contrato transversal de versionamiento de reglas/configuraciones por proyecto/tenant si no hay input seguro todavia.
 
 ## Regla de cierre por bloque
 
