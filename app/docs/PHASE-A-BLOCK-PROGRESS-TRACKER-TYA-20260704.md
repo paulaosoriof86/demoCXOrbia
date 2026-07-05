@@ -7,7 +7,7 @@ Fecha: 2026-07-04
 - Repo: `paulaosoriof86/demoCXOrbia`
 - Rama: `docs-tya-v6-v71-audit`
 - PR: #7 draft/open/no merge
-- Source lock actual: V82 como baseline viva; V83/V84/V85 auditadas como candidatas parciales no aceptadas como source lock final
+- Source lock actual: V82 como baseline viva; V83/V84/V85 auditadas como candidatas parciales no aceptadas como source lock final; V86 queda como candidata auditada de continuidad backend, no source lock final ni produccion
 - Estado: documentacion, contratos y validadores seguros
 - Sin deploy
 - Sin produccion
@@ -29,10 +29,12 @@ Fecha: 2026-07-04
 - Auditoria forense V83 y paquete Claude V84 correctiva.
 - Auditoria V84 y paquete Claude V85 correctiva.
 - Auditoria V85: contenido identico a V84 y paquete Claude V86 correctiva real.
+- Auditoria V86: cambios reales parciales y paquete Claude V87 correctiva; empalme como candidata auditada de continuidad backend.
 - Paquete descargable Claude V82 auditoria integral.
 - Paquete descargable Claude V83 auditoria integral.
 - Paquete descargable Claude V84 auditoria integral.
 - Paquete descargable Claude V85 auditoria identica V84.
+- Paquete descargable Claude V86 auditoria integral.
 - Regla de no reiniciar por cada ZIP.
 - Addenda de cambios, Claude y pendientes.
 
@@ -112,7 +114,7 @@ Estos bloques no estaban suficientemente explicitados al inicio y se agregaron p
 15. Assignment sync conflict preview antes de Make/HR real.
 16. Visit lifecycle/reservation preview antes de agenda/HR real.
 17. Dynamic postulation form preview antes de ficha real/storage real.
-18. Auditorias V83/V84/V85 como candidatas parciales, no source lock final.
+18. Auditorias V83/V84/V85/V86 como candidatas parciales; V86 queda continuidad backend, no source lock final.
 19. Notification outbox preview antes de proveedores reales.
 20. Email user mailbox preview antes de OAuth/SMTP/email real.
 21. CRM external folder refs preview antes de OAuth/API/proveedor documental real.
@@ -139,6 +141,24 @@ Estado:
 - No escribe archivos por defecto.
 - No activa runtime, produccion, Firestore, Storage, proveedor externo, OAuth, Make, Gemini, lectura documental ni import real.
 - Usa email/mailbox, notification outbox y politica de datos sensibles como gates previos.
+
+## Ultima auditoria de prototipo
+
+### V86
+
+Archivos de auditoria:
+
+- `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V86-CLAUDE-20260704.md`
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V86-AUDITORIA-20260704.md`
+- `app/docs/PENDIENTES-CLAUDE-ADDENDUM-V86-AUDITORIA-20260704.md`
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V86-CLAUDE-20260704.md`
+
+Decision:
+
+- V86 trae cambios reales: `modules/academia.js`, `modules/dashboard.js`, `modules/misvisitas.js`.
+- V86 no es source lock final ni produccion.
+- V86 queda como candidata auditada de continuidad backend.
+- Claude debe generar V87 correctiva cuando recupere capacidad.
 
 ## Pendientes backend inmediatos
 
@@ -180,7 +200,7 @@ Estado:
 22. Notification outbox: toasters no deben decir enviado/sincronizado si solo hay preview; WhatsApp/email deben quedar como fallback/draft/provider pendiente.
 23. Email/user mailbox: UI no debe decir conectado/leido/enviado si gate esta apagado; separar draft, log manual, provider pending y enviado real.
 24. CRM/documentos: no decir carpeta creada/conectada/sincronizada; usar ref preview, provider pending, permission review, blocked private link y manual review.
-25. V86 correctiva debe traer cambios reales verificables sobre V85/V84.
+25. V87 correctiva debe corregir P0 de V86 y mantener sus mejoras reales.
 
 ## Pendientes Academia
 
