@@ -1,5 +1,19 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - Liquidaciones/Cinepolis source-safe preview validator Phase A
+
+- Se agrego `app/contracts/liquidation-cinepolis-source-safe-preview-phase-a.tya.contract.json`.
+- Se agrego `tools/migration/tya-liquidation-cinepolis-source-safe-preview-validator.mjs`.
+- Se agrego `app/docs/LIQUIDATIONS-CINEPOLIS-SOURCE-SAFE-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`.
+- Se agrego `app/docs/ACADEMIA-IMPACT-LIQUIDACIONES-CINEPOLIS-SOURCE-SAFE-PREVIEW-TYA-20260704.md`.
+- Se agrego `app/docs/CAMBIOS-BACKEND-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md`.
+- Se agrego `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md`.
+- Se agrego `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md`.
+- Objetivo: cerrar el siguiente bloque del tracker con preview validator y source-safe mapping para liquidaciones/corte junio y Cinepolis Boleto/Combo sin leer archivos reales ni datos sensibles.
+- Decision tecnica: el validador solo acepta entrada sintetica o sanitizada con `sourceSafe=true`, `containsRawSensitiveData=false` e `isSyntheticOrSanitized=true`; si faltan llaves estables, referencia de pago o aparecen campos sensibles, pasa a `manual_review_required`/conflicto.
+- Impacto Claude/comercializable: Mis beneficios, Admin/Liquidaciones y Movimientos deben separar honorario, Boleto, Combo, total, lote/item y estados honestos sin prometer pagos reales ni exponer banco/DPI/NDA.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin lectura de fuentes reales, sin Firestore writes, sin HR writes, sin pagos reales, sin Make/Gemini/correo real y sin datos sensibles.
+
 ## 2026-07-04 - Auditoria frontend candidate V82 Claude
 
 - Se agrego `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V82-CLAUDE-20260704.md`.
