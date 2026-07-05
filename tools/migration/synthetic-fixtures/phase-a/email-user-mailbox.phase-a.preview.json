@@ -1,0 +1,35 @@
+{
+  "sourceSafe": true,
+  "containsRawSensitiveData": false,
+  "isSyntheticOrSanitized": true,
+  "mailboxes": [
+    {
+      "tenantId": "tya",
+      "userId": "user-preview-ops-001",
+      "mailboxId": "mailbox-preview-manual-001",
+      "emailAddressRef": "mailbox-alias-ref-preview-001",
+      "mailboxOwnershipType": "manual_contact_only",
+      "providerType": "manual_log_only",
+      "connectionStatus": "manual_only",
+      "canRead": false,
+      "canSend": false,
+      "canDraft": false,
+      "canLogManual": true,
+      "privacyScope": "ops_manual_traceability_preview"
+    }
+  ],
+  "mailActions": [
+    {
+      "tenantId": "tya",
+      "userId": "user-preview-ops-001",
+      "mailboxId": "mailbox-preview-manual-001",
+      "mailActionId": "mail-action-preview-001",
+      "mailActionType": "manual_log_only",
+      "recipientRef": "shopper-ref-preview-001",
+      "entityType": "postulation",
+      "entityRef": "postulation-preview-001",
+      "templateId": "template-manual-followup-preview",
+      "templateVersion": "v1-preview"
+    }
+  ]
+}
