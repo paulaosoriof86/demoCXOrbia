@@ -1,10 +1,12 @@
-# Addendum maestro - Metodologia reforzada de auditoria, empalme y ultima version
+# Addendum maestro - Metodologia generica reforzada de auditoria, empalme y ultima version
 
 Fecha: 2026-07-04
 
 ## Motivo
 
-Paula aclaro que la metodologia acordada no es dejar la ultima candidata solo como auditada, sino trabajar siempre sobre la ultima version entregada y auditada, salvo bloqueo critico. Este addendum actualiza el documento maestro y corrige la ambiguedad detectada entre source lock final, baseline auditada de continuidad y candidata parcial.
+Paula aclaro que la metodologia acordada no es dejar la ultima candidata solo como auditada, sino trabajar siempre sobre la ultima version entregada y auditada, salvo bloqueo critico.
+
+Este addendum no debe fijar numeros de version particulares. Las versiones especificas pertenecen a auditorias forenses, paquetes puntuales y tracker vivo, no a reglas maestras.
 
 ## Regla corregida: siempre se trabaja sobre la ultima version auditada
 
@@ -23,14 +25,6 @@ Paula aclaro que la metodologia acordada no es dejar la ultima candidata solo co
 | Baseline auditada de continuidad | Ultima version auditada usable para contratos/docs/validators aunque tenga pendientes Claude | Si |
 | Candidata parcial con bloqueo critico | Version con error estructural, scripts rotos, perdida de modulos, conflicto de fuente o riesgo de contaminacion | No |
 | ZIP duplicado/sin cambios | Reempaque o reupload sin delta real | No cambia baseline |
-
-## Estado V86
-
-- V86 trae cambios reales.
-- V86 no es source lock final.
-- V86 si queda como baseline auditada de continuidad backend.
-- Backend seguro continua sobre V86 en contratos, docs, validators, gates y metodologia segura.
-- Claude debe generar V87 correctiva sobre V86 cuando recupere capacidad.
 
 ## Auditoria profunda reforzada obligatoria
 
@@ -86,7 +80,7 @@ No empalmar si hay scripts rotos, faltantes criticos en `index.html`, perdida de
 
 ## Paquete Claude reforzado
 
-Cada paquete para Claude debe incluir decision, tabla delta vs acumulado, que resolvio, que sigue pendiente, que empeoro, hallazgos nuevos, P0/P1/P2 por modulo, validacion tecnica esperada, prompt completo, lista de archivos que Claude no debe tocar e instruccion explicita de trabajar sobre la ultima version auditada.
+Cada paquete para Claude debe incluir decision, tabla delta vs acumulado, que resolvio, que sigue pendiente, que empeoro, hallazgos nuevos, pendientes por prioridad y modulo, validacion tecnica esperada, prompt completo, lista de archivos que Claude no debe tocar e instruccion explicita de trabajar sobre la ultima version auditada.
 
 ## Checklist antes de cerrar auditoria
 
@@ -109,10 +103,10 @@ Si falta alguno, la auditoria no esta cerrada.
 
 Evitar frases ambiguas como solo candidata auditada, no queda aceptada sin explicar empalme, se conserva como referencia sin indicar continuidad, o source lock cuando se habla de continuidad backend.
 
-Usar frases explicitas:
+Usar frases explicitas sin fijar numeros de version en este addendum:
 
-- Vxx queda como baseline auditada de continuidad backend, no source lock final.
-- Backend seguro continua sobre Vxx.
-- Claude debe generar Vxy correctiva sobre Vxx.
+- La ultima candidata queda como baseline auditada de continuidad backend, no source lock final.
+- Backend seguro continua sobre la ultima baseline auditada valida.
+- Claude debe generar la siguiente correctiva sobre la ultima baseline auditada valida.
 - No se toca frontend desde backend.
 - No hay produccion, deploy, merge ni escrituras reales.
