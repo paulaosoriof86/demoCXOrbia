@@ -7,7 +7,7 @@ Fecha: 2026-07-04
 - Repo: `paulaosoriof86/demoCXOrbia`
 - Rama: `docs-tya-v6-v71-audit`
 - PR: #7 draft/open/no merge
-- Source lock actual: V82 como baseline viva; V83 auditada como candidata parcial no aceptada como source lock final
+- Source lock actual: V82 como baseline viva; V83/V84/V85 auditadas como candidatas parciales no aceptadas como source lock final
 - Estado: documentacion, contratos y validadores seguros
 - Sin deploy
 - Sin produccion
@@ -27,8 +27,12 @@ Fecha: 2026-07-04
 - Auditorias V80/V81/V82.
 - Auditoria integral candidata actual V82 para Claude.
 - Auditoria forense V83 y paquete Claude V84 correctiva.
+- Auditoria V84 y paquete Claude V85 correctiva.
+- Auditoria V85: contenido identico a V84 y paquete Claude V86 correctiva real.
 - Paquete descargable Claude V82 auditoria integral.
 - Paquete descargable Claude V83 auditoria integral.
+- Paquete descargable Claude V84 auditoria integral.
+- Paquete descargable Claude V85 auditoria identica V84.
 - Regla de no reiniciar por cada ZIP.
 - Addenda de cambios, Claude y pendientes.
 
@@ -59,6 +63,7 @@ Fecha: 2026-07-04
 - Academia impact de ficha postulacion dinamica.
 - Academia impact de notification outbox.
 - Academia impact de email/user mailbox.
+- Academia impact de CRM external folder refs.
 
 ### Operacion Phase A
 
@@ -84,6 +89,7 @@ Fecha: 2026-07-04
 - Preview validator de ficha postulacion dinamica con gates de datos sensibles, assignment sync y visit lifecycle/reservas.
 - Preview validator de notification outbox con gates de datos sensibles, postulaciones, assignment sync y visit lifecycle/reservas.
 - Preview validator de email/user mailbox sin conexion real, con notification outbox como gate previo.
+- Preview validator de CRM external folder refs con gates de email/mailbox, notification outbox y datos sensibles.
 
 ## Bloques agregados durante revision
 
@@ -106,23 +112,24 @@ Estos bloques no estaban suficientemente explicitados al inicio y se agregaron p
 15. Assignment sync conflict preview antes de Make/HR real.
 16. Visit lifecycle/reservation preview antes de agenda/HR real.
 17. Dynamic postulation form preview antes de ficha real/storage real.
-18. Auditoria V83 como candidata parcial, no source lock final.
+18. Auditorias V83/V84/V85 como candidatas parciales, no source lock final.
 19. Notification outbox preview antes de proveedores reales.
 20. Email user mailbox preview antes de OAuth/SMTP/email real.
+21. CRM external folder refs preview antes de OAuth/API/proveedor documental real.
 
 ## Bloque recien completado
 
-### Email user mailbox preview Phase A
+### CRM external folder refs preview Phase A
 
 Archivos:
 
-- `app/contracts/email-user-mailbox-preview-phase-a.tya.contract.json`
-- `tools/migration/tya-email-user-mailbox-preview-validator.mjs`
-- `app/docs/EMAIL-USER-MAILBOX-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
-- `app/docs/ACADEMIA-IMPACT-EMAIL-USER-MAILBOX-PREVIEW-TYA-20260704.md`
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-EMAIL-USER-MAILBOX-PREVIEW-20260704.md`
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-EMAIL-USER-MAILBOX-PREVIEW-20260704.md`
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-EMAIL-USER-MAILBOX-PREVIEW-20260704.md`
+- `app/contracts/crm-external-folder-refs-preview-phase-a.tya.contract.json`
+- `tools/migration/tya-crm-external-folder-refs-preview-validator.mjs`
+- `app/docs/CRM-EXTERNAL-FOLDER-REFS-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
+- `app/docs/ACADEMIA-IMPACT-CRM-EXTERNAL-FOLDER-REFS-PREVIEW-TYA-20260704.md`
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-CRM-EXTERNAL-FOLDER-REFS-PREVIEW-20260704.md`
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CRM-EXTERNAL-FOLDER-REFS-PREVIEW-20260704.md`
+- `app/docs/PENDIENTES-CLAUDE-ADDENDUM-CRM-EXTERNAL-FOLDER-REFS-PREVIEW-20260704.md`
 
 Estado:
 
@@ -130,22 +137,22 @@ Estado:
 - No lee fuentes reales si no se le pasa input.
 - El input permitido debe ser sintetico/sanitizado y traer `sourceSafe=true`.
 - No escribe archivos por defecto.
-- No activa runtime, produccion, Firestore, HR, Make, Gemini, OAuth, SMTP, lectura de correo, envio de correo ni import real.
-- Usa notification outbox, email provider-agnostic y politica de datos sensibles como gates previos.
+- No activa runtime, produccion, Firestore, Storage, proveedor externo, OAuth, Make, Gemini, lectura documental ni import real.
+- Usa email/mailbox, notification outbox y politica de datos sensibles como gates previos.
 
 ## Pendientes backend inmediatos
 
-1. Preview validator de CRM external folder refs.
-2. Preview validator de shopper communication history.
-3. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
-4. Contrato ranking/scoring shopper.
-5. Integrar politica de datos sensibles como gate transversal de validators restantes.
-6. Preparar input sintetico/sanitizado para assignment sync conflict preview.
-7. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
-8. Preparar input sintetico/sanitizado para postulation dynamic form preview.
-9. Preparar input sintetico/sanitizado para notification outbox preview.
-10. Preparar input sintetico/sanitizado para email/user mailbox preview.
-11. Make/email payloads futuros sin activar.
+1. Preview validator de shopper communication history.
+2. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
+3. Contrato ranking/scoring shopper.
+4. Integrar politica de datos sensibles como gate transversal de validators restantes.
+5. Preparar input sintetico/sanitizado para assignment sync conflict preview.
+6. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
+7. Preparar input sintetico/sanitizado para postulation dynamic form preview.
+8. Preparar input sintetico/sanitizado para notification outbox preview.
+9. Preparar input sintetico/sanitizado para email/user mailbox preview.
+10. Preparar input sintetico/sanitizado para CRM external folder refs preview.
+11. Make/email/provider payloads futuros sin activar.
 
 ## Pendientes prototipo / Claude
 
@@ -172,7 +179,8 @@ Estado:
 21. Ficha postulacion dinamica: configurable por proyecto/version, campos requeridos/opcionales, referencias privadas, sin archivos raw y sin tratar postulacion como asignacion.
 22. Notification outbox: toasters no deben decir enviado/sincronizado si solo hay preview; WhatsApp/email deben quedar como fallback/draft/provider pendiente.
 23. Email/user mailbox: UI no debe decir conectado/leido/enviado si gate esta apagado; separar draft, log manual, provider pending y enviado real.
-24. V84 correctiva debe corregir P0 de V83 y preservar mejoras de Academia/CSS.
+24. CRM/documentos: no decir carpeta creada/conectada/sincronizada; usar ref preview, provider pending, permission review, blocked private link y manual review.
+25. V86 correctiva debe traer cambios reales verificables sobre V85/V84.
 
 ## Pendientes Academia
 
@@ -191,10 +199,11 @@ Estado:
 13. Profundizar ficha postulacion dinamica: formId, formVersion, fieldId, sensibilidad, revision ops/admin y versionado.
 14. Profundizar notification outbox: templateId, templateVersion, recipientRef, outboxStatus, manualFallbackStatus, fallback manual y estados honestos.
 15. Profundizar email/user mailbox: mailboxId, providerType, connectionStatus, canDraft, canLogManual, draft_ready_preview y manual_log_only.
+16. Profundizar CRM external folder refs: crmEntityId, externalFolderRefId, externalProviderType, visibilityScope, accessStatus, provider pending y permission review.
 
 ## Siguiente bloque recomendado
 
-Preview validator de CRM external folder refs, usando email/mailbox, notification outbox y politica de datos sensibles como gates previos.
+Preview validator de shopper communication history, usando CRM folder refs, email/mailbox, notification outbox y politica de datos sensibles como gates previos.
 
 ## Regla de cierre por bloque
 
