@@ -1,0 +1,26 @@
+{
+  "contract": "local-command-pack-phase-a-tya",
+  "date": "2026-07-05",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "commands": [
+    "git status --short",
+    "git branch --show-current",
+    "node tools/migration/tya-local-readiness-consistency-check.mjs",
+    "node tools/migration/tya-local-readiness-preflight.mjs",
+    "node tools/migration/tya-phase-a-local-readiness-runbook.mjs"
+  ],
+  "purpose": "Small local command pack for future readiness execution when Paula or Codex is asked to run commands."
+}
