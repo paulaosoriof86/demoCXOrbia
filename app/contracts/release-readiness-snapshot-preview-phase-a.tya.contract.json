@@ -1,0 +1,191 @@
+{
+  "contract": "release-readiness-snapshot-preview-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "dependsOn": [
+    "sensitive-data-policy-phase-a-tya",
+    "assignment-sync-conflict-preview-phase-a-tya",
+    "visit-lifecycle-reservation-preview-phase-a-tya",
+    "postulation-dynamic-form-preview-phase-a-tya",
+    "notification-outbox-preview-phase-a-tya",
+    "email-user-mailbox-preview-phase-a-tya",
+    "crm-external-folder-refs-preview-phase-a-tya",
+    "shopper-communication-history-preview-phase-a-tya",
+    "shopper-ranking-scoring-preview-phase-a-tya",
+    "project-tenant-rule-versioning-preview-phase-a-tya",
+    "rule-change-changelog-notification-preview-phase-a-tya"
+  ],
+  "purpose": "Define a source-safe release/readiness snapshot that aggregates preview validators, gates, prototype audit status and Phase A operational readiness before any real activation, deploy, merge, import or provider connection.",
+  "sourceSafety": {
+    "requiresSyntheticOrSanitizedInput": true,
+    "forbidsRawSensitiveData": true,
+    "requiredInputMetadata": [
+      "sourceSafe=true",
+      "containsRawSensitiveData=false",
+      "isSyntheticOrSanitized=true"
+    ],
+    "rawOperationalDataAllowed": false,
+    "realProviderCredentialsAllowed": false,
+    "humanApprovalRequiredForActivation": true
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "snapshotId",
+    "snapshotPeriodId",
+    "baselineRef",
+    "prototypeAuditRef",
+    "backendBranchRef",
+    "pullRequestRef",
+    "validatorId",
+    "validatorStatus",
+    "gateId",
+    "gateStatus",
+    "readinessArea",
+    "readinessStatus",
+    "blockingReason",
+    "manualReviewReason",
+    "createdByRef",
+    "reviewedByRef",
+    "approvedByRef",
+    "createdAt",
+    "updatedAt"
+  ],
+  "readinessAreas": [
+    "prototype_audit",
+    "cx_data_adapter",
+    "auth_claims",
+    "hr_source_preview",
+    "assignment_sync",
+    "visit_lifecycle",
+    "postulation_form",
+    "notification_outbox",
+    "email_mailbox",
+    "crm_folder_refs",
+    "shopper_communication_history",
+    "shopper_ranking_scoring",
+    "project_rule_versioning",
+    "rule_change_changelog",
+    "liquidation_payment_preview",
+    "sensitive_data_policy",
+    "academy_readiness",
+    "make_payload_preview",
+    "gemini_payload_preview",
+    "storage_evidence_policy",
+    "firestore_write_plan",
+    "release_governance"
+  ],
+  "readinessStatuses": [
+    "not_started",
+    "preview_ready",
+    "ready_for_review",
+    "manual_review_required",
+    "blocked_missing_input",
+    "blocked_sensitive_data",
+    "blocked_real_gate_off",
+    "blocked_prototype_pending",
+    "blocked_conflict",
+    "approved_preview_only",
+    "not_applicable_phase_a"
+  ],
+  "gateStatuses": [
+    "off_required",
+    "off_verified",
+    "pending_configuration",
+    "manual_review_required",
+    "blocked",
+    "future_activation_requires_approval"
+  ],
+  "previewInputShape": {
+    "sourceSafe": true,
+    "containsRawSensitiveData": false,
+    "isSyntheticOrSanitized": true,
+    "snapshot": {},
+    "readinessItems": []
+  },
+  "requiredSnapshotFields": [
+    "tenantId",
+    "snapshotId",
+    "snapshotPeriodId",
+    "baselineRef",
+    "backendBranchRef",
+    "pullRequestRef",
+    "createdByRef",
+    "status"
+  ],
+  "requiredReadinessItemFields": [
+    "tenantId",
+    "snapshotId",
+    "readinessArea",
+    "readinessStatus",
+    "gateStatus",
+    "validatorId"
+  ],
+  "readinessRules": [
+    "Release readiness snapshot is preview only and cannot trigger deploy, merge, import or writes.",
+    "Every readiness item must state its area, validator, status, gate and blocking reason when blocked.",
+    "Any real activation request must remain blocked until explicit future approval and production plan exist.",
+    "Sensitive data policy must be preview-ready or approved preview before any source input is considered.",
+    "Prototype audit must be aligned with latest audited baseline before release readiness is reported.",
+    "Readiness can be approved preview-only even when production gates stay off.",
+    "Missing sanitized input blocks validator execution but does not block continued document/backend contract work.",
+    "Academia readiness must be tracked as a first-class area, not an afterthought.",
+    "Any conflict in assignment, lifecycle, payments, communication or rules forces manual_review_required or blocked_conflict."
+  ],
+  "previewOutcomes": [
+    "release_snapshot_preview_ready",
+    "release_snapshot_ready_for_review",
+    "release_snapshot_blocked_missing_input",
+    "release_snapshot_blocked_sensitive_data",
+    "release_snapshot_blocked_real_gate_off",
+    "release_snapshot_blocked_prototype_pending",
+    "release_snapshot_manual_review_required",
+    "release_snapshot_conflict_review_required"
+  ],
+  "claudePrototypeImpact": [
+    "Prototype should eventually show readiness/gate status honestly: preview ready, pending backend, missing input, review required or blocked.",
+    "Do not show production ready, connected, deployed, sent, synced or imported unless future gates are explicitly active.",
+    "Academia must explain release readiness, gates and why preview-ready is not production-ready.",
+    "Readiness dashboard should separate prototype pending from backend pending and data/source pending."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "finance", "shopper", "client", "consultant_partner", "support"],
+    "manualsToUpdate": ["Release readiness", "Gate statuses", "Preview vs production", "Manual review", "Missing input", "Blocking reasons"],
+    "coursesToUpdate": ["Admin release readiness", "Superadmin release governance", "Ops readiness impact", "Finance readiness impact", "Academia release training"],
+    "newLessons": [
+      "What preview-ready means",
+      "Why gates remain off",
+      "How to read blockers",
+      "How missing input differs from a defect",
+      "How release readiness protects production"
+    ],
+    "interactiveChecklists": [
+      "Before marking a release area ready",
+      "Before asking for production activation",
+      "Before closing a blocker",
+      "Before telling users a feature is connected"
+    ]
+  },
+  "hardStops": [
+    "Do not deploy from this snapshot.",
+    "Do not merge from this snapshot.",
+    "Do not import real data from this snapshot.",
+    "Do not write Firestore, Storage, HR or providers from this snapshot.",
+    "Do not send email, WhatsApp or Make from this snapshot.",
+    "Do not call Gemini from this snapshot.",
+    "Do not mark production ready while any real gate remains off or approval is missing."
+  ]
+}
