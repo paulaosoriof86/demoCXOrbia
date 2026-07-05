@@ -16,6 +16,30 @@ const sensitiveKeyPatterns = [
   /base64|attachment|adjunto|privateLink|signedUrl/i
 ];
 
+const safeMetadataKeySuffixes = new Set([
+  'sourceSafe',
+  'containsRawSensitiveData',
+  'isSyntheticOrSanitized',
+  'forbidsRawSensitiveData',
+  'rawOperationalDataAllowed',
+  'realProviderCredentialsAllowed',
+  'realDataProhibited',
+  'emailSendAllowed',
+  'whatsappSendAllowed',
+  'paymentProviderAllowed',
+  'firestoreWritesAllowed',
+  'storageWritesAllowed',
+  'makeWriteAllowed',
+  'geminiAllowed',
+  'importRealDataAllowed',
+  'productionAllowed',
+  'deployAllowed',
+  'mergeAllowed',
+  'executeRealAction',
+  'writeAllowed',
+  'importAllowed'
+]);
+
 const allowedFixtureRootParts = [
   ['tools', 'migration', 'fixtures'],
   ['tools', 'migration', 'synthetic-fixtures'],
@@ -54,8 +78,13 @@ function flattenKeys(value, prefix = '') {
   return keys;
 }
 
+function isSafeMetadataKey(key) {
+  const suffix = String(key).split('.').pop();
+  return safeMetadataKeySuffixes.has(suffix);
+}
+
 function detectSensitiveKeys(payload) {
-  return [...new Set(flattenKeys(payload).filter((key) => sensitiveKeyPatterns.some((pattern) => pattern.test(key))))];
+  return [...new Set(flattenKeys(payload).filter((key) => !isSafeMetadataKey(key) && sensitiveKeyPatterns.some((pattern) => pattern.test(key))))];
 }
 
 function isAllowedFixturePath(filePath) {
