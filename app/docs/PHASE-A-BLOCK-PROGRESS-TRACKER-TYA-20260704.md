@@ -7,7 +7,7 @@ Fecha: 2026-07-04
 - Repo: `paulaosoriof86/demoCXOrbia`
 - Rama: `docs-tya-v6-v71-audit`
 - PR: #7 draft/open/no merge
-- Source lock actual: V82 como baseline viva
+- Source lock actual: V82 como baseline viva; V83 auditada como candidata parcial no aceptada como source lock final
 - Estado: documentacion, contratos y validadores seguros
 - Sin deploy
 - Sin produccion
@@ -26,7 +26,9 @@ Fecha: 2026-07-04
 - V82 source lock.
 - Auditorias V80/V81/V82.
 - Auditoria integral candidata actual V82 para Claude.
+- Auditoria forense V83 y paquete Claude V84 correctiva.
 - Paquete descargable Claude V82 auditoria integral.
+- Paquete descargable Claude V83 auditoria integral.
 - Regla de no reiniciar por cada ZIP.
 - Addenda de cambios, Claude y pendientes.
 
@@ -54,6 +56,7 @@ Fecha: 2026-07-04
 - Academia impact de politica de datos sensibles.
 - Academia impact de assignment sync/conflicts.
 - Academia impact de visit lifecycle/reservas.
+- Academia impact de ficha postulacion dinamica.
 
 ### Operacion Phase A
 
@@ -76,6 +79,7 @@ Fecha: 2026-07-04
 - Politica consolidada de datos sensibles para fuentes, pagos, correo, adjuntos y evidencias.
 - Preview validator de assignment sync/conflicts con gate de datos sensibles.
 - Preview validator de visit lifecycle/reservas con gates de assignment sync y datos sensibles.
+- Preview validator de ficha postulacion dinamica con gates de datos sensibles, assignment sync y visit lifecycle/reservas.
 
 ## Bloques agregados durante revision
 
@@ -97,20 +101,22 @@ Estos bloques no estaban suficientemente explicitados al inicio y se agregaron p
 14. Politica sensible previa a fuentes reales: banco, documentos, NDA, correo, adjuntos y evidencias.
 15. Assignment sync conflict preview antes de Make/HR real.
 16. Visit lifecycle/reservation preview antes de agenda/HR real.
+17. Dynamic postulation form preview antes de ficha real/storage real.
+18. Auditoria V83 como candidata parcial, no source lock final.
 
 ## Bloque recien completado
 
-### Visit lifecycle reservation preview Phase A
+### Postulation dynamic form preview Phase A
 
 Archivos:
 
-- `app/contracts/visit-lifecycle-reservation-preview-phase-a.tya.contract.json`
-- `tools/migration/tya-visit-lifecycle-reservation-preview-validator.mjs`
-- `app/docs/VISIT-LIFECYCLE-RESERVATION-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
-- `app/docs/ACADEMIA-IMPACT-VISIT-LIFECYCLE-RESERVATION-PREVIEW-TYA-20260704.md`
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-VISIT-LIFECYCLE-RESERVATION-PREVIEW-20260704.md`
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-VISIT-LIFECYCLE-RESERVATION-PREVIEW-20260704.md`
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-VISIT-LIFECYCLE-RESERVATION-PREVIEW-20260704.md`
+- `app/contracts/postulation-dynamic-form-preview-phase-a.tya.contract.json`
+- `tools/migration/tya-postulation-dynamic-form-preview-validator.mjs`
+- `app/docs/POSTULATION-DYNAMIC-FORM-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
+- `app/docs/ACADEMIA-IMPACT-POSTULATION-DYNAMIC-FORM-PREVIEW-TYA-20260704.md`
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-POSTULATION-DYNAMIC-FORM-PREVIEW-20260704.md`
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-POSTULATION-DYNAMIC-FORM-PREVIEW-20260704.md`
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-POSTULATION-DYNAMIC-FORM-PREVIEW-20260704.md`
 
 Estado:
 
@@ -119,20 +125,20 @@ Estado:
 - El input permitido debe ser sintetico/sanitizado y traer `sourceSafe=true`.
 - No escribe archivos por defecto.
 - No activa runtime, produccion, Firestore, Storage, HR, Make, Gemini, correo ni import real.
-- Usa la politica de datos sensibles y assignment sync/conflicts como gates previos.
+- Usa politica de datos sensibles, assignment sync/conflicts y visit lifecycle/reservas como gates previos.
 
 ## Pendientes backend inmediatos
 
-1. Preview validator de ficha postulacion dinamica.
-2. Preview validator de notification outbox.
-3. Preview validator de email/user mailbox sin conexion real.
-4. Preview validator de CRM external folder refs.
-5. Preview validator de shopper communication history.
-6. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
-7. Contrato ranking/scoring shopper.
-8. Integrar politica de datos sensibles como gate transversal de validators restantes.
-9. Preparar input sintetico/sanitizado para assignment sync conflict preview.
-10. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
+1. Preview validator de notification outbox.
+2. Preview validator de email/user mailbox sin conexion real.
+3. Preview validator de CRM external folder refs.
+4. Preview validator de shopper communication history.
+5. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
+6. Contrato ranking/scoring shopper.
+7. Integrar politica de datos sensibles como gate transversal de validators restantes.
+8. Preparar input sintetico/sanitizado para assignment sync conflict preview.
+9. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
+10. Preparar input sintetico/sanitizado para postulation dynamic form preview.
 11. Make payloads futuros sin activar.
 
 ## Pendientes prototipo / Claude
@@ -157,6 +163,8 @@ Estado:
 18. Visitas asignadas desde plataforma o HR preview deben salir de disponibles sin duplicarse.
 19. Visit lifecycle/reservas: agenda/reprogramacion no debe prometer HR sync real; fuera de rango debe mostrar regla fallida y pedir override.
 20. Separar disponible, reservada, agendada, realizada, cuestionario completado, revision, submitido, liquidacion y pago.
+21. Ficha postulacion dinamica: configurable por proyecto/version, campos requeridos/opcionales, referencias privadas, sin archivos raw y sin tratar postulacion como asignacion.
+22. V84 correctiva debe corregir P0 de V83 y preservar mejoras de Academia/CSS.
 
 ## Pendientes Academia
 
@@ -172,10 +180,11 @@ Estado:
 10. Profundizar datos sensibles: sourceSafe, datos protegidos, referencias opacas, privacidad shopper, import seguro e integraciones apagadas.
 11. Profundizar assignment sync/conflicts: postulacion a asignacion, HR detected, no duplicar, conflicto, revision manual y visual dedupe prohibido.
 12. Profundizar visit lifecycle/reservas: agenda, reprogramacion, cancelacion, availableFrom, franja, quincena, override, realizada y cuestionario completado.
+13. Profundizar ficha postulacion dinamica: formId, formVersion, fieldId, sensibilidad, revision ops/admin y versionado.
 
 ## Siguiente bloque recomendado
 
-Preview validator de ficha postulacion dinamica, usando los gates de datos sensibles, assignment sync/conflicts y visit lifecycle/reservas.
+Preview validator de notification outbox, usando los gates de datos sensibles, ficha postulacion dinamica, assignment sync/conflicts y visit lifecycle/reservas.
 
 ## Regla de cierre por bloque
 
