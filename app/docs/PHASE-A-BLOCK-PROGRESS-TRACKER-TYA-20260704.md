@@ -57,6 +57,7 @@ Fecha: 2026-07-04
 - Academia impact de assignment sync/conflicts.
 - Academia impact de visit lifecycle/reservas.
 - Academia impact de ficha postulacion dinamica.
+- Academia impact de notification outbox.
 
 ### Operacion Phase A
 
@@ -80,6 +81,7 @@ Fecha: 2026-07-04
 - Preview validator de assignment sync/conflicts con gate de datos sensibles.
 - Preview validator de visit lifecycle/reservas con gates de assignment sync y datos sensibles.
 - Preview validator de ficha postulacion dinamica con gates de datos sensibles, assignment sync y visit lifecycle/reservas.
+- Preview validator de notification outbox con gates de datos sensibles, postulaciones, assignment sync y visit lifecycle/reservas.
 
 ## Bloques agregados durante revision
 
@@ -103,20 +105,21 @@ Estos bloques no estaban suficientemente explicitados al inicio y se agregaron p
 16. Visit lifecycle/reservation preview antes de agenda/HR real.
 17. Dynamic postulation form preview antes de ficha real/storage real.
 18. Auditoria V83 como candidata parcial, no source lock final.
+19. Notification outbox preview antes de proveedores reales.
 
 ## Bloque recien completado
 
-### Postulation dynamic form preview Phase A
+### Notification outbox preview Phase A
 
 Archivos:
 
-- `app/contracts/postulation-dynamic-form-preview-phase-a.tya.contract.json`
-- `tools/migration/tya-postulation-dynamic-form-preview-validator.mjs`
-- `app/docs/POSTULATION-DYNAMIC-FORM-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
-- `app/docs/ACADEMIA-IMPACT-POSTULATION-DYNAMIC-FORM-PREVIEW-TYA-20260704.md`
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-POSTULATION-DYNAMIC-FORM-PREVIEW-20260704.md`
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-POSTULATION-DYNAMIC-FORM-PREVIEW-20260704.md`
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-POSTULATION-DYNAMIC-FORM-PREVIEW-20260704.md`
+- `app/contracts/notification-outbox-preview-phase-a.tya.contract.json`
+- `tools/migration/tya-notification-outbox-preview-validator.mjs`
+- `app/docs/NOTIFICATION-OUTBOX-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
+- `app/docs/ACADEMIA-IMPACT-NOTIFICATION-OUTBOX-PREVIEW-TYA-20260704.md`
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-NOTIFICATION-OUTBOX-PREVIEW-20260704.md`
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-NOTIFICATION-OUTBOX-PREVIEW-20260704.md`
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-NOTIFICATION-OUTBOX-PREVIEW-20260704.md`
 
 Estado:
 
@@ -124,22 +127,22 @@ Estado:
 - No lee fuentes reales si no se le pasa input.
 - El input permitido debe ser sintetico/sanitizado y traer `sourceSafe=true`.
 - No escribe archivos por defecto.
-- No activa runtime, produccion, Firestore, Storage, HR, Make, Gemini, correo ni import real.
-- Usa politica de datos sensibles, assignment sync/conflicts y visit lifecycle/reservas como gates previos.
+- No activa runtime, produccion, Firestore, Storage, HR, Make, Gemini, email, WhatsApp, push ni import real.
+- Usa politica de datos sensibles, ficha postulacion dinamica, assignment sync/conflicts y visit lifecycle/reservas como gates previos.
 
 ## Pendientes backend inmediatos
 
-1. Preview validator de notification outbox.
-2. Preview validator de email/user mailbox sin conexion real.
-3. Preview validator de CRM external folder refs.
-4. Preview validator de shopper communication history.
-5. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
-6. Contrato ranking/scoring shopper.
-7. Integrar politica de datos sensibles como gate transversal de validators restantes.
-8. Preparar input sintetico/sanitizado para assignment sync conflict preview.
-9. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
-10. Preparar input sintetico/sanitizado para postulation dynamic form preview.
-11. Make payloads futuros sin activar.
+1. Preview validator de email/user mailbox sin conexion real.
+2. Preview validator de CRM external folder refs.
+3. Preview validator de shopper communication history.
+4. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
+5. Contrato ranking/scoring shopper.
+6. Integrar politica de datos sensibles como gate transversal de validators restantes.
+7. Preparar input sintetico/sanitizado para assignment sync conflict preview.
+8. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
+9. Preparar input sintetico/sanitizado para postulation dynamic form preview.
+10. Preparar input sintetico/sanitizado para notification outbox preview.
+11. Make/email payloads futuros sin activar.
 
 ## Pendientes prototipo / Claude
 
@@ -164,7 +167,8 @@ Estado:
 19. Visit lifecycle/reservas: agenda/reprogramacion no debe prometer HR sync real; fuera de rango debe mostrar regla fallida y pedir override.
 20. Separar disponible, reservada, agendada, realizada, cuestionario completado, revision, submitido, liquidacion y pago.
 21. Ficha postulacion dinamica: configurable por proyecto/version, campos requeridos/opcionales, referencias privadas, sin archivos raw y sin tratar postulacion como asignacion.
-22. V84 correctiva debe corregir P0 de V83 y preservar mejoras de Academia/CSS.
+22. Notification outbox: toasters no deben decir enviado/sincronizado si solo hay preview; WhatsApp/email deben quedar como fallback/draft/provider pendiente.
+23. V84 correctiva debe corregir P0 de V83 y preservar mejoras de Academia/CSS.
 
 ## Pendientes Academia
 
@@ -181,10 +185,11 @@ Estado:
 11. Profundizar assignment sync/conflicts: postulacion a asignacion, HR detected, no duplicar, conflicto, revision manual y visual dedupe prohibido.
 12. Profundizar visit lifecycle/reservas: agenda, reprogramacion, cancelacion, availableFrom, franja, quincena, override, realizada y cuestionario completado.
 13. Profundizar ficha postulacion dinamica: formId, formVersion, fieldId, sensibilidad, revision ops/admin y versionado.
+14. Profundizar notification outbox: templateId, templateVersion, recipientRef, outboxStatus, manualFallbackStatus, fallback manual y estados honestos.
 
 ## Siguiente bloque recomendado
 
-Preview validator de notification outbox, usando los gates de datos sensibles, ficha postulacion dinamica, assignment sync/conflicts y visit lifecycle/reservas.
+Preview validator de email/user mailbox sin conexion real, usando notification outbox como gate previo.
 
 ## Regla de cierre por bloque
 
