@@ -1,0 +1,174 @@
+{
+  "contract": "project-tenant-rule-versioning-preview-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "dependsOn": [
+    "sensitive-data-policy-phase-a-tya",
+    "assignment-sync-conflict-preview-phase-a-tya",
+    "visit-lifecycle-reservation-preview-phase-a-tya",
+    "postulation-dynamic-form-preview-phase-a-tya",
+    "notification-outbox-preview-phase-a-tya",
+    "email-user-mailbox-preview-phase-a-tya",
+    "crm-external-folder-refs-preview-phase-a-tya",
+    "shopper-communication-history-preview-phase-a-tya",
+    "shopper-ranking-scoring-preview-phase-a-tya"
+  ],
+  "purpose": "Define source-safe preview validation for tenant/project rule versioning so operational rules can evolve by project without hard-coding, silent overwrites, broken historical records or real production writes.",
+  "sourceSafety": {
+    "requiresSyntheticOrSanitizedInput": true,
+    "forbidsRawSensitiveData": true,
+    "requiredInputMetadata": [
+      "sourceSafe=true",
+      "containsRawSensitiveData=false",
+      "isSyntheticOrSanitized=true"
+    ],
+    "rawSensitiveRulePayloadAllowed": false,
+    "realSecretsAllowed": false,
+    "productionActivationAllowed": false,
+    "manualReviewForBreakingRuleChange": true
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "ruleSetId",
+    "ruleSetVersion",
+    "ruleSetType",
+    "effectiveFrom",
+    "effectiveTo",
+    "status",
+    "createdByRef",
+    "reviewedByRef",
+    "approvedByRef",
+    "sourceRuleRef",
+    "previousRuleSetId",
+    "previousRuleSetVersion",
+    "migrationPlanId",
+    "rollbackPlanId",
+    "createdAt",
+    "updatedAt"
+  ],
+  "ruleSetTypes": [
+    "project_config",
+    "hr_source_mapping",
+    "questionnaire_source",
+    "postulation_form",
+    "certification_rules",
+    "visit_lifecycle_rules",
+    "assignment_sync_rules",
+    "notification_templates",
+    "email_mailbox_policy",
+    "crm_folder_refs_policy",
+    "shopper_communication_policy",
+    "liquidation_payment_rules",
+    "reimbursement_rules",
+    "ranking_scoring_rules",
+    "academy_content_policy",
+    "sensitive_data_policy"
+  ],
+  "statuses": [
+    "draft_preview",
+    "human_review_required",
+    "ready_for_review",
+    "approved_preview",
+    "active_future_only",
+    "deprecated_preview",
+    "blocked_breaking_change",
+    "blocked_sensitive_payload",
+    "rollback_required",
+    "archived_preview"
+  ],
+  "changeTypes": [
+    "non_breaking_addition",
+    "non_breaking_copy_update",
+    "breaking_field_change",
+    "breaking_status_change",
+    "sensitive_policy_change",
+    "integration_gate_change",
+    "currency_country_change",
+    "payment_rule_change",
+    "hr_mapping_change",
+    "questionnaire_routing_change",
+    "academy_content_change"
+  ],
+  "previewInputShape": {
+    "sourceSafe": true,
+    "containsRawSensitiveData": false,
+    "isSyntheticOrSanitized": true,
+    "ruleSets": []
+  },
+  "requiredRuleSetFields": [
+    "tenantId",
+    "projectId",
+    "ruleSetId",
+    "ruleSetVersion",
+    "ruleSetType",
+    "status",
+    "effectiveFrom",
+    "createdByRef",
+    "sourceRuleRef"
+  ],
+  "versioningRules": [
+    "Every project-level operational rule must be versioned by tenantId, projectId, ruleSetType and ruleSetVersion.",
+    "Do not overwrite an active rule silently; create a new version.",
+    "Rules with historical impact must keep previousRuleSetId and previousRuleSetVersion.",
+    "Breaking changes require migrationPlanId and rollbackPlanId before future activation.",
+    "Integration gate changes cannot activate real providers from preview.",
+    "Currency, country and payment rule changes require explicit human review.",
+    "HR mapping and questionnaire routing changes require preview validation before activation.",
+    "Sensitive data policy changes require sensitive data gate review.",
+    "Academia content policy changes must notify impacted roles in future UI, but preview only records intended impact.",
+    "Rule versioning must never hard-code a single project as global platform logic."
+  ],
+  "previewOutcomes": [
+    "rule_version_preview_ready",
+    "human_review_required",
+    "breaking_change_review_required",
+    "blocked_sensitive_payload",
+    "blocked_real_activation",
+    "rollback_plan_required",
+    "migration_plan_required",
+    "conflict_review_required"
+  ],
+  "claudePrototypeImpact": [
+    "Project settings UI should show version/draft/review/active-future states, not silently overwrite rules.",
+    "Admin should see when a rule change affects visits, questionnaire routing, payments, notifications, CRM, ranking or Academia.",
+    "UI must not say a provider/integration is active just because a rule version exists.",
+    "Show migration/rollback required for breaking changes.",
+    "Academia must explain project rule versioning, impact review and rollback."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "finance", "shopper", "client", "consultant_partner"],
+    "manualsToUpdate": ["Project rule versioning", "Rule impact review", "Migration and rollback", "Provider gate changes", "Payment and country rule changes"],
+    "coursesToUpdate": ["Admin project configuration", "Ops rule changes", "Finance payment rule review", "Superadmin tenant configuration", "Academia content governance"],
+    "newLessons": [
+      "Why rules are versioned",
+      "When a rule change is breaking",
+      "How to review impact before activation",
+      "How rollback protects historical operations",
+      "Why provider gates remain off until explicitly authorized"
+    ],
+    "interactiveChecklists": [
+      "Before changing a project rule",
+      "Before changing HR mapping",
+      "Before changing questionnaire routing",
+      "Before changing payment or currency rules",
+      "Before marking a rule active"
+    ]
+  },
+  "hardStops": [
+    "Do not activate production rules from preview.",
+    "Do not overwrite active rules silently.",
+    "Do not enable Make, Gemini, email, WhatsApp, Storage, Firestore or HR writes from this preview.",
+    "Do not change historical records to match new rules.",
+    "Do not use one project rule as global SaaS default without explicit tenant/platform review.",
+    "Do not store secrets or sensitive payloads inside rule versions."
+  ]
+}
