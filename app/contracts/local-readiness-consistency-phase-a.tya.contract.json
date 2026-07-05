@@ -1,0 +1,42 @@
+{
+  "contract": "local-readiness-consistency-phase-a-tya",
+  "date": "2026-07-05",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "filesToCheck": [
+    "app/contracts/local-readiness-preflight-phase-a.tya.contract.json",
+    "tools/migration/tya-local-readiness-preflight.mjs",
+    "app/docs/PREFLIGHT-LOCAL-READINESS-PHASE-A-TYA-20260705.md",
+    "app/contracts/phase-a-local-readiness-runbook.tya.contract.json",
+    "tools/migration/tya-phase-a-local-readiness-runbook.mjs",
+    "app/docs/RUNBOOK-LOCAL-READINESS-PHASE-A-TYA-20260705.md"
+  ],
+  "expectedCommands": [
+    "node tools/migration/tya-local-readiness-preflight.mjs",
+    "node tools/migration/tya-phase-a-local-readiness-runbook.mjs"
+  ],
+  "expectedOutputPrefixes": [
+    "00-phase-a-local-readiness-runbook-index",
+    "01-synthetic-pack-runner",
+    "02-synthetic-pack-readiness-map",
+    "03-release-readiness-snapshot-input",
+    "04-release-readiness-snapshot-report",
+    "05-release-readiness-sanitized-report",
+    "05b-release-readiness-sanitized-summary",
+    "06-controlled-production-matrix",
+    "06b-controlled-production-matrix"
+  ],
+  "purpose": "Check documentation and script consistency for the local preflight and runbook before any local execution."
+}
