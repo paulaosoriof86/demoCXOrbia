@@ -13,6 +13,7 @@ Fecha: 2026-07-04
 - Sin produccion
 - Sin Firestore writes reales
 - Sin HR writes reales
+- Sin Storage writes reales
 - Sin pagos reales
 - Sin correo real conectado
 - Sin Make real
@@ -24,6 +25,8 @@ Fecha: 2026-07-04
 - Documento maestro y continuidad.
 - V82 source lock.
 - Auditorias V80/V81/V82.
+- Auditoria integral candidata actual V82 para Claude.
+- Paquete descargable Claude V82 auditoria integral.
 - Regla de no reiniciar por cada ZIP.
 - Addenda de cambios, Claude y pendientes.
 
@@ -37,6 +40,7 @@ Fecha: 2026-07-04
 - Admin review contract.
 - Submitido HR-driven configurable.
 - Project wizard Phase A.
+- Sensitive data policy Phase A.
 
 ### Academia
 
@@ -47,6 +51,7 @@ Fecha: 2026-07-04
 - Academia coverage audit backend to date.
 - Academia implementation backlog.
 - Academia impact de liquidaciones/Cinepolis source-safe preview.
+- Academia impact de politica de datos sensibles.
 
 ### Operacion Phase A
 
@@ -66,6 +71,7 @@ Fecha: 2026-07-04
 - Liquidaciones y pagos.
 - Cinepolis Boleto/Combo, lotes y movimientos individuales.
 - Preview validator/source-safe mapping para liquidaciones/corte junio y Cinepolis Boleto/Combo.
+- Politica consolidada de datos sensibles para fuentes, pagos, correo, adjuntos y evidencias.
 
 ## Bloques agregados durante revision
 
@@ -84,20 +90,21 @@ Estos bloques no estaban suficientemente explicitados al inicio y se agregaron p
 11. Movimientos individuales asociados a lotes.
 12. Tracker de avance por bloque.
 13. Source-safe preview para corte junio/liquidaciones antes de fuentes reales.
+14. Politica sensible previa a fuentes reales: banco, documentos, NDA, correo, adjuntos y evidencias.
 
 ## Bloque recien completado
 
-### Liquidaciones/Cinepolis source-safe preview validator
+### Sensitive data policy Phase A
 
 Archivos:
 
-- `app/contracts/liquidation-cinepolis-source-safe-preview-phase-a.tya.contract.json`
-- `tools/migration/tya-liquidation-cinepolis-source-safe-preview-validator.mjs`
-- `app/docs/LIQUIDATIONS-CINEPOLIS-SOURCE-SAFE-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
-- `app/docs/ACADEMIA-IMPACT-LIQUIDACIONES-CINEPOLIS-SOURCE-SAFE-PREVIEW-TYA-20260704.md`
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md`
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md`
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md`
+- `app/contracts/sensitive-data-policy-phase-a.tya.contract.json`
+- `tools/migration/tya-sensitive-data-policy-validator.mjs`
+- `app/docs/SENSITIVE-DATA-POLICY-PHASE-A-TYA-20260704.md`
+- `app/docs/ACADEMIA-IMPACT-SENSITIVE-DATA-POLICY-TYA-20260704.md`
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-SENSITIVE-DATA-POLICY-20260704.md`
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-SENSITIVE-DATA-POLICY-20260704.md`
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-SENSITIVE-DATA-POLICY-20260704.md`
 
 Estado:
 
@@ -105,7 +112,7 @@ Estado:
 - No lee fuentes reales si no se le pasa input.
 - El input permitido debe ser sintetico/sanitizado y traer `sourceSafe=true`.
 - No escribe archivos por defecto.
-- No activa runtime, produccion, Firestore, HR, pagos, Make, Gemini ni correo real.
+- No activa runtime, produccion, Firestore, Storage, HR, pagos, Make, Gemini ni correo real.
 
 ## Pendientes backend inmediatos
 
@@ -118,7 +125,7 @@ Estado:
 7. Preview validator de shopper communication history.
 8. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
 9. Contrato ranking/scoring shopper.
-10. Politica de datos sensibles: banco, DPI, NDA, correo, adjuntos.
+10. Integrar politica de datos sensibles como gate transversal de validators.
 11. Make payloads futuros sin activar.
 
 ## Pendientes prototipo / Claude
@@ -138,6 +145,7 @@ Estado:
 13. Liquidaciones/Cinepolis: Mis beneficios debe separar honorario, Boleto, Combo, reembolso total, total y estado.
 14. Admin/Liquidaciones debe mostrar revision manual/conflicto si faltan llaves estables o referencias de pago.
 15. Movimientos debe conservar pago individual aunque venga de lote.
+16. Datos sensibles: no exponer banco, documentos, NDA, cuerpos crudos ni adjuntos privados; usar estados protegido/pendiente backend/requiere autorizacion.
 
 ## Pendientes Academia
 
@@ -150,10 +158,11 @@ Estado:
 7. Profundizar liquidaciones/pagos.
 8. Profundizar correo/CRM/Shopper history.
 9. Profundizar liquidaciones/Cinepolis source-safe preview, Boleto/Combo, corte junio, revision manual, lotes y movimientos individuales.
+10. Profundizar datos sensibles: sourceSafe, datos protegidos, referencias opacas, privacidad shopper, import seguro e integraciones apagadas.
 
 ## Siguiente bloque recomendado
 
-Crear politica consolidada de datos sensibles para banco, DPI, NDA, correo y adjuntos antes de cualquier lectura local de fuentes reales. Si Paula prioriza operacion, alternativa inmediata: preview validator de assignment sync/conflicts.
+Preview validator de assignment sync/conflicts usando la politica de datos sensibles como gate transversal.
 
 ## Regla de cierre por bloque
 
