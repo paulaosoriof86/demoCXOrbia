@@ -1,5 +1,12 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-04 - Paquete Claude V82 source lock actualizado
+
+- Se agrego `app/docs/PAQUETE-CLAUDE-V82-SOURCE-LOCK-PHASE-A-ACTUALIZADO-20260704.md`.
+- Objetivo: entregar a Claude un paquete completo y acumulado sobre V82 source lock, incorporando pendientes V82, cambios backend recientes de liquidaciones/Cinepolis source-safe preview, pendientes de prototipo, Academia y reglas de no tocar backend.
+- Decision: no pedir un candidato nuevo libre. Si Claude tiene capacidad, pedir V83 ultra-controlada sobre V82 y luego auditarla antes de aceptarla.
+- Estado seguro: solo documento; sin cambios frontend, sin runtime, sin deploy, sin produccion, sin escrituras reales y sin datos sensibles.
+
 ## 2026-07-04 - Liquidaciones/Cinepolis source-safe preview validator Phase A
 
 - Se agrego `app/contracts/liquidation-cinepolis-source-safe-preview-phase-a.tya.contract.json`.
