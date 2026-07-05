@@ -55,9 +55,9 @@ CX.module('dashboard', ({data,ui})=>{
       const sendWa=(ids)=>{ if(!ids.length){ui.toast('Selecciona al menos un shopper','warn');return;}
         const hasHook=!!(CX.automations&&CX.automations.hook&&CX.automations.hook());
         ids.forEach(id=>{const v=vget(id);if(hasHook){CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'recordatorio',titulo:'Recordatorio',txt:(v.shopper||'')+' · '+v.sucursal,hook:CX.automations.hook()});}else{const wa=(v.shopperWa||v.whatsapp||'');const msg=encodeURIComponent('Hola '+(v.shopper||'Evaluador')+', recordatorio: tu visita en '+v.sucursal+'. Por favor confírmanos.');if(wa){window.open('https://wa.me/'+wa.replace(/[^0-9]/g,'')+'?text='+msg,'_blank');}else{ui.toast('Sin número WA para '+(v.shopper||'el shopper')+' — agrégalo en su perfil','warn',2500);}}});
-        ui.toast(hasHook?'WhatsApp enviado vía Make ('+ids.length+')':'WhatsApp Web abierto para '+ids.length+' shopper(s)','ok',3200); };
+        ui.toast(hasHook?'WhatsApp preparado vía Make ('+ids.length+') · se envía cuando el gate esté activo':'WhatsApp Web abierto para '+ids.length+' shopper(s)','ok',3200); };
       ov.querySelectorAll('.drWa').forEach(b=>b.addEventListener('click',()=>sendWa([b.dataset.vid])));
-      ov.querySelectorAll('.drMail').forEach(b=>b.addEventListener('click',()=>ui.toast('Correo enviado a '+(vget(b.dataset.vid).shopper||'shopper')+' (Make/Outlook)','ok')));
+      ov.querySelectorAll('.drMail').forEach(b=>b.addEventListener('click',()=>ui.toast('Borrador de correo preparado para '+(vget(b.dataset.vid).shopper||'shopper')+' (envío por backend/Outlook pendiente)','ok')));
       const ws=ov.querySelector('#drWaSel'); if(ws)ws.addEventListener('click',()=>sendWa(sel()));
       const msel=ov.querySelector('#drMailSel'); if(msel)msel.addEventListener('click',()=>{const n=sel().length;if(!n){ui.toast('Selecciona al menos uno','warn');return;}ui.toast('Correo enviado a '+n+' shopper(s) (Make/Outlook)','ok');});
     }});
@@ -240,8 +240,8 @@ CX.module('dashboard', ({data,ui})=>{
       setTimeout(()=>{ if(vid){const row=document.querySelector(`[data-vid="${vid}"]`);if(row){row.style.outline='2px solid var(--brand)';row.style.borderRadius='8px';setTimeout(()=>row.style.outline='',2000);row.scrollIntoView&&row.scrollIntoView({block:'center'});}} },300);
     }));
     board.querySelectorAll('[data-wa]').forEach(b=>b.addEventListener('click',()=>{CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'recordatorio',titulo:'Recordatorio manual',txt:decodeURIComponent(b.dataset.wa),hook:CX.automations.hook()||'(Make sin configurar)'});ui.toast('WhatsApp enviado (Make): '+decodeURIComponent(b.dataset.wa).slice(0,40)+'…','ok');}));
-    board.querySelectorAll('[data-mail]').forEach(b=>b.addEventListener('click',()=>ui.toast('Correo enviado (Make/Outlook)','ok')));
-    board.querySelectorAll('[data-bulk]').forEach(b=>b.addEventListener('click',()=>ui.toast('Recordatorio masivo enviado por WhatsApp + correo (Make)','ok',3200)));
+    board.querySelectorAll('[data-mail]').forEach(b=>b.addEventListener('click',()=>ui.toast('Borrador de correo preparado (envío por backend/Outlook pendiente)','ok')));
+    board.querySelectorAll('[data-bulk]').forEach(b=>b.addEventListener('click',()=>ui.toast('Recordatorio masivo preparado (WhatsApp + correo) · se envía cuando el gate esté activo (pendiente backend)','ok',3200)));
     /* #226 — subsecciones contraíbles */
     board.querySelectorAll('.bd-toggle').forEach(h=>h.addEventListener('click',(e)=>{
       if(e.target.closest('[data-bulk]'))return;
@@ -265,9 +265,10 @@ CX.module('dashboard', ({data,ui})=>{
         </div>
         <div class="between" style="margin-top:14px">
           <button class="btn btn-ghost btn-sm" id="bdDel" style="color:var(--red)">🗑 Eliminar visita</button>
-          <div class="flex" style="gap:8px">${v.shopper?'<button class="btn btn-soft btn-sm" id="bdWa">📲 WhatsApp</button>':''}<button class="btn btn-pr btn-sm" id="bdSave">Guardar</button></div>
+          <div class="flex" style="gap:8px">${['realizada','cuestionario','liquidada'].includes(v.estado)?'<button class="btn btn-soft btn-sm" id="bdRev">🔎 Revisar</button>':''}${v.shopper?'<button class="btn btn-soft btn-sm" id="bdWa">📲 WhatsApp</button>':''}<button class="btn btn-pr btn-sm" id="bdSave">Guardar</button></div>
         </div>
       `,{onMount:(ov,close)=>{
+        const rev=ov.querySelector('#bdRev');if(rev)rev.addEventListener('click',()=>{close();CX.revisionAdmin&&CX.revisionAdmin(data,p,v,ui);});
         ov.querySelector('#bdSave').addEventListener('click',()=>{v.estado=ov.querySelector('#bdEst').value;const f=ov.querySelector('#bdFec').value;if(f)v.agendada=f;CX.bus&&CX.bus.emit('visit-flow');CX.automations&&CX.automations.logAction&&CX.automations.logAction('Editó visita',v.id,v.sucursal+' → '+v.estado);close();CX.router.nav('dashboard');ui.toast('Visita actualizada','ok');});
         ov.querySelector('#bdDel').addEventListener('click',()=>{if(!confirm('¿Eliminar la visita de '+v.sucursal+'? Esta acción no se puede deshacer.'))return;if(data._visitas){const i=data._visitas.findIndex(z=>z.id===v.id);if(i>=0)data._visitas.splice(i,1);}CX.bus&&CX.bus.emit('visit-flow');CX.automations&&CX.automations.logAction&&CX.automations.logAction('Eliminó visita',v.id,v.sucursal);close();CX.router.nav('dashboard');ui.toast('Visita eliminada','');});
         const wa=ov.querySelector('#bdWa');if(wa)wa.addEventListener('click',()=>{const msg=encodeURIComponent('Hola '+(v.shopper||'')+', sobre tu visita en '+v.sucursal);window.open('https://wa.me/?text='+msg,'_blank');});

@@ -1,8 +1,9 @@
 # PENDIENTES-PROTOTIPO.md
 
-> Lista viva de mejoras del prototipo CXOrbia, priorizada. Actualizada 2026-07-01.
+> Lista viva de mejoras del prototipo CXOrbia, priorizada. Actualizada 2026-07-04 (V82).
 > Clasificación: P0 crítico · P1 importante · P2 posterior · [TyA] específico · [CX] generalizable
-> El detalle de CÓMO se resolvió cada ítem está en CAMBIOS-PROTOTIPO.md (entradas 1–25+).
+> El detalle de CÓMO se resolvió cada ítem está en CAMBIOS-PROTOTIPO.md (entradas 1–25+) y ADDENDUM-V82-PHASE-A.md.
+> V82 cerrado: enum canónico wizard/cuestionario, revisión admin backend-ready (estructura de contrato), textos HR honestos.
 
 ## ✅ RESUELTOS Y VERIFICADOS (sesiones 50–63)
 

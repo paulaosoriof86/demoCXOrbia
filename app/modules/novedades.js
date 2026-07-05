@@ -57,7 +57,8 @@ CX.module('novedades', ({role,ui})=>{
       <label class="lbl">Descripción</label><textarea class="inp" id="nvC" rows="3" placeholder="Detalle de la novedad" style="margin-bottom:8px"></textarea>
       <label class="lbl">Dirigida a</label>
       <div class="flex wrap" style="gap:8px;margin:4px 0 12px">${[['admin','Consultora'],['shopper','Shopper'],['cliente','Cliente']].map(([v,l])=>`<label class="flex" style="gap:5px;font-size:12.5px;cursor:pointer"><input type="checkbox" class="nvR" value="${v}" checked> ${l}</label>`).join('')}</div>
-      <label class="flex" style="gap:7px;font-size:12.5px;cursor:pointer;margin-bottom:12px"><input type="checkbox" id="nvBanner"> Mostrar como recordatorio destacado al entrar</label>
+      <div class="grid g2" style="gap:8px;margin-bottom:10px"><div><label class="lbl">Versión (opcional)</label><input class="inp" id="nvV" placeholder="Ej. V79"></div>
+      <label class="flex" style="gap:7px;font-size:12.5px;cursor:pointer;align-self:end;padding-bottom:8px"><input type="checkbox" id="nvBanner"> Mostrar como recordatorio destacado al ingresar</label></div>
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="nvOk">Publicar</button></div>
     `,{onMount:(ov,close)=>ov.querySelector('#nvOk').addEventListener('click',()=>{
       const tit=(ov.querySelector('#nvTit').value||'').trim(); if(!tit){ui.toast('Pon un título','warn');return;}

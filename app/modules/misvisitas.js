@@ -64,7 +64,7 @@ CX.module('misvisitas', ({data,ui})=>{
     ${visitCard(agendada,'agendada')}
     ${visitCard(realizada,'realizada')}
     <div class="card card-p">
-      ${ui.aiBox('Cada acción que marcas (agendar, realizar, enviar cuestionario) actualiza la visita, notifica al equipo, sincroniza la hoja de ruta y mueve el estado de tu liquidación con fecha estimada de pago según las reglas de '+p.name+'.','Ejecución guiada y sincronizada')}
+      ${ui.aiBox('Cada acción que marcas (agendar, realizar, completar cuestionario) actualiza tu visita y prepara la notificación al equipo. La sincronía con la hoja de ruta y el movimiento de tu liquidación se reflejan cuando el sync/backend esté activo (pendiente backend); mientras tanto verás preview con fecha estimada según las reglas de '+p.name+'.','Ejecución guiada · preview')}
     </div>`;
 
   const histHTML=()=>`
@@ -103,7 +103,7 @@ CX.module('misvisitas', ({data,ui})=>{
           const f=ov.querySelector('#schD').value||today;
           data.setVisitState(v.id,'agendada','agendada',f);
           CX.automations&&CX.automations.fire('agenda',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal,fecha:f});
-          close(); draw(); ui.toast('Visita agendada · equipo notificado · HR y liquidación sincronizadas','ok',3600);
+          close(); draw(); ui.toast('Visita agendada · equipo notificado (in-app) · liquidación actualizada','ok',3400);
           CX.notif&&CX.notif.push({to:'admin',tipo:'agenda',icon:'📅',tono:'b',titulo:'Visita agendada',txt:(v.shopper||CX.session.user.name)+' · '+v.sucursal+' · '+f,nav:'postulaciones'});
         });
       }});

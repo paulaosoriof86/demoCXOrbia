@@ -24,7 +24,7 @@ CX.setFavicon = function(){
   }catch(e){}
 };
 
-/* ---------- PWA: instalación automática según dispositivo + navegador ---------- */
+/* ---------- PWA: instalación asistida según dispositivo + navegador (sin prometer descarga automática) ---------- */
 CX._deferredPrompt=null;
 CX.setupPWA = function(){
   /* registra el service worker para que sea instalable */

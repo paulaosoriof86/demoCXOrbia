@@ -216,6 +216,8 @@ CX.module('postulaciones', ({data,ui})=>{
 
     /* asignar visita manual — con búsqueda y opción de crear shopper en el momento */
     const am=document.getElementById('asignManual');
+    const shr=document.getElementById('syncHR');
+    if(shr)shr.addEventListener('click',()=>ui.toast('Lectura de HR preparada · el sync real (lectura/escritura) se ejecuta por backend cuando el gate esté activo (pendiente backend)','',4200));
     if(am)am.addEventListener('click',()=>{
       const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
       const disp=data._visitas.filter(v=>v.estado==='disponible'||!v.shopperId);
@@ -255,7 +257,7 @@ CX.module('postulaciones', ({data,ui})=>{
           const v=data.assignVisit&&data.assignVisit(vid,sid);
           CX.hr&&CX.hr.writeBack&&CX.hr.writeBack(p,v);
           CX.notif&&CX.notif.push({to:'admin',tipo:'asignacion',icon:'📌',tono:'g',titulo:'Visita asignada manual',txt:(v?v.sucursal:'')+' → '+(s?s.nombre:''),nav:'postulaciones'});
-          close(); ui.toast('Visita asignada a '+(s?s.nombre:'')+(nw.checked?' (nuevo · perfil incompleto)':'')+' · HR sincronizada · por '+gestor(),'ok',4200);
+          close(); ui.toast('Visita asignada a '+(s?s.nombre:'')+(nw.checked?' (nuevo · perfil incompleto)':'')+' · se reflejará en HR cuando el sync esté activo (pendiente backend) · por '+gestor(),'ok',4400);
         });
       }});
     });

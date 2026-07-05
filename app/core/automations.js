@@ -145,7 +145,7 @@ window.CX = window.CX || {};
       CX.bus&&CX.bus.emit('audit'); return a[0];
     },
     auditFor(ref){ return this.audit().filter(x=>x.ref===ref); },
-    CANALES:{push:'Notificación in-app', whatsapp:'WhatsApp (Make)', correo:'Correo (Make)', sheet:'Google Sheets (Make)'},
+    CANALES:{push:'Notificación in-app', whatsapp_web:'WhatsApp Web (plantilla lista)', whatsapp_api:'WhatsApp API (pendiente backend)', make:'Make webhook (pendiente backend)', correo:'Correo (pendiente backend)', sheet:'Google Sheets (pendiente backend)', off:'Apagado'},
     EVENTOS:{postulacion:'Postulación creada', agenda:'Visita agendada', realizada:'Visita realizada', cuestionario:'Cuestionario enviado', reprog:'Reprogramación', pago:'Pago/liquidación', atraso:'Visita atrasada/pendiente', aprobacion:'Postulación aprobada', hr_writeback:'Escritura de vuelta a HR', shopper_edit:'Cambio de datos del shopper'},
 
     list(){ try{ const s=JSON.parse(localStorage.getItem(LS)||'null'); if(s&&s.length) return s; }catch(e){} return defaults(); },
@@ -168,13 +168,14 @@ window.CX = window.CX || {};
 
     /* dispara las automatizaciones activas para un evento de negocio */
     fire(evento, ctx={}){
-      this.list().filter(a=>a.activa && a.evento===evento).forEach(a=>{
+      this.list().filter(a=>a.activa && a.evento===evento && a.canal!=='off').forEach(a=>{
         const txt=this._fill(a.plantilla, ctx);
         // notificación in-app siempre (centro de eventos)
         CX.notif && CX.notif.push({to:a.to, tipo:evento, icon:this._icon(evento), tono:this._tone(evento), titulo:a.titulo, txt, nav:this._nav(a.to,evento)});
-        // canal externo vía Make (demo = log) — usa el webhook de la automatación o el del tenant
-        if(a.canal!=='push'){
-          this._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '), canal:a.canal, evento, titulo:a.titulo, txt, hook:this.hook(a.id)||'(webhook Make sin configurar)'});
+        // canal externo: modo honesto según configuración (sin envíos reales sin backend)
+        if(a.canal && a.canal!=='push'){
+          const estado = a.canal==='whatsapp_web' ? 'plantilla lista (abrir WhatsApp Web manualmente)' : 'preparado · pendiente de activación backend';
+          this._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '), canal:(this.CANALES[a.canal]||a.canal), evento, titulo:a.titulo, txt, estado, hook:this.hook(a.id)||'(sin webhook · se registra al conectar backend)'});
         }
       });
     },
