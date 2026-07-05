@@ -2,6 +2,18 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Addendum Liquidaciones/Cinepolis source-safe preview validator
+
+- Backend agrego contrato y validador source-safe para liquidaciones/corte junio y Cinepolis Boleto/Combo.
+- Ver documentos: `app/docs/LIQUIDATIONS-CINEPOLIS-SOURCE-SAFE-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`, `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md` y `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md`.
+- Mis beneficios debe mostrar honorario, Boleto, Combo, reembolso total, total y estado, sin banco/DPI/NDA/notas internas.
+- Admin/Liquidaciones debe tratar junio como pagos/liquidaciones pendientes, no visitas pendientes; separar realizada, cuestionario, revision, submitido, liquidacion y pago.
+- Lotes de pago deben ser seleccionables por admin y no incluir automaticamente todos los elegibles.
+- Movimientos debe mostrar cada pago individual aunque venga de lote, con lote/item asociado.
+- Si falta llave estable o referencia de pago, la UI debe mostrar revision manual/conflicto, no auto-dedupe ni pagado.
+- Textos honestos: no prometer pago real, HR sync real, correo real, Make real ni automatizaciones reales mientras los gates esten apagados.
+- Academia debe profundizar Mis beneficios, corte junio, Boleto/Combo, lotes, movimientos, source-safe preview, datos sensibles y revision manual.
+
 ## Addendum V82 - auditoria Claude candidate
 
 - V82 fue auditado como candidato nuevo de Claude. Mejora V81 y esta muy cerca de empalme, pero aun no queda como source lock.
@@ -148,6 +160,7 @@ La auditoria V64 encontro que muchos pendientes acumulados en documentos V62/V63
 13. Submitido configurable por proyecto y separado de cuestionario realizado.
 14. Wizard de proyecto con configuracion Phase A completa y gates honestos.
 15. Correcciones V82 antes de source lock: textos cuestionario realizado, HR sync honesta en Mis Visitas/Postulaciones y ajuste fino de revision admin para `status`, `projectId` y `hrRowId`.
+16. Liquidaciones/Cinepolis: Mis beneficios, lote seleccionable, movimientos individuales, estados de revision manual/conflicto y Boleto/Combo separados de honorario.
 
 ## Separacion corregida
 
