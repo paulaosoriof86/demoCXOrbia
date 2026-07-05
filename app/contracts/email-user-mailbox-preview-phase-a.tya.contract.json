@@ -1,0 +1,202 @@
+{
+  "contract": "email-user-mailbox-preview-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "emailReadAllowed": false,
+  "emailSendAllowed": false,
+  "emailDraftAllowed": false,
+  "oauthAllowed": false,
+  "smtpAllowed": false,
+  "makeWriteAllowed": false,
+  "importRealDataAllowed": false,
+  "dependsOn": [
+    "email-provider-agnostic-user-mailbox-phase-a-tya",
+    "notification-outbox-preview-phase-a-tya",
+    "sensitive-data-policy-phase-a-tya"
+  ],
+  "purpose": "Define source-safe preview validation for per-user mailbox configuration, email drafts and manual email traceability without reading, sending or connecting a real provider.",
+  "sourceSafety": {
+    "requiresSyntheticOrSanitizedInput": true,
+    "forbidsRawSensitiveData": true,
+    "requiredInputMetadata": [
+      "sourceSafe=true",
+      "containsRawSensitiveData=false",
+      "isSyntheticOrSanitized=true"
+    ],
+    "rawEmailBodiesAllowed": false,
+    "rawAttachmentsAllowed": false,
+    "providerSecretsAllowed": false,
+    "oauthTokensAllowed": false,
+    "manualReviewForAmbiguousMailbox": true
+  },
+  "stableKeys": [
+    "tenantId",
+    "userId",
+    "mailboxId",
+    "mailboxOwnershipType",
+    "providerType",
+    "connectionStatus",
+    "mailActionId",
+    "notificationId",
+    "templateId",
+    "templateVersion",
+    "entityType",
+    "entityRef",
+    "recipientRef",
+    "draftRef",
+    "manualLogRef",
+    "sourceSafeRef",
+    "createdAt",
+    "updatedAt"
+  ],
+  "mailboxOwnershipTypes": [
+    "tenant_assigned_email",
+    "consultora_assigned_email",
+    "cxorbia_created_email_future",
+    "personal_email",
+    "role_alias_email",
+    "fictitious_placeholder_no_send",
+    "manual_contact_only"
+  ],
+  "providerTypes": [
+    "gmail_google_workspace",
+    "microsoft_365_outlook",
+    "imap_smtp_generic",
+    "custom_smtp",
+    "provider_api_custom_future",
+    "manual_log_only",
+    "unknown_to_be_configured"
+  ],
+  "connectionStatuses": [
+    "not_configured",
+    "manual_only",
+    "placeholder_no_send",
+    "connection_requested",
+    "oauth_pending_future",
+    "smtp_config_pending_future",
+    "connected_future",
+    "connection_error_future",
+    "revoked",
+    "disabled"
+  ],
+  "mailActionTypes": [
+    "draft_preview",
+    "reply_draft_preview",
+    "forward_draft_preview",
+    "manual_log_only",
+    "link_message_ref_preview",
+    "provider_setup_request_preview"
+  ],
+  "mailActionStatuses": [
+    "draft_ready_preview",
+    "manual_action_required",
+    "provider_configuration_required",
+    "blocked_placeholder_no_send",
+    "blocked_no_permission",
+    "blocked_sensitive_payload",
+    "blocked_missing_recipient",
+    "manual_external_sent_confirmed",
+    "review_required"
+  ],
+  "previewInputShape": {
+    "sourceSafe": true,
+    "containsRawSensitiveData": false,
+    "isSyntheticOrSanitized": true,
+    "mailboxes": [],
+    "mailActions": []
+  },
+  "requiredMailboxFields": [
+    "tenantId",
+    "userId",
+    "mailboxId",
+    "emailAddressRef",
+    "mailboxOwnershipType",
+    "providerType",
+    "connectionStatus",
+    "canRead",
+    "canSend",
+    "canDraft",
+    "canLogManual",
+    "privacyScope"
+  ],
+  "requiredMailActionFields": [
+    "tenantId",
+    "userId",
+    "mailboxId",
+    "mailActionId",
+    "mailActionType",
+    "recipientRef",
+    "entityType",
+    "entityRef",
+    "templateId",
+    "templateVersion"
+  ],
+  "mailboxRules": [
+    "Mailbox is configured per user, not globally for the tenant only.",
+    "emailAddressRef must be an alias or opaque reference in preview; raw personal emails are not required and should be avoided.",
+    "placeholder_no_send and fictitious_placeholder_no_send cannot send or read real mail.",
+    "manual_only and manual_contact_only can log manual traceability but cannot read or send provider email.",
+    "connected_future is a future state only and does not enable runtime in Phase A preview.",
+    "Provider secrets, OAuth tokens and SMTP credentials must never be present in repo or preview input."
+  ],
+  "mailActionRules": [
+    "Draft preview is not email sent.",
+    "Manual log only is not provider proof.",
+    "External sent confirmation must be explicit and manual.",
+    "Mail actions must link to a safe entityRef such as postulation, visit, assignment, liquidation or academy item.",
+    "Raw bodies and raw attachments are blocked in Phase A preview.",
+    "Template variables must use safe operational values and opaque refs."
+  ],
+  "previewOutcomes": [
+    "mailbox_config_preview_ready",
+    "mailbox_provider_configuration_required",
+    "mailbox_manual_only_ready",
+    "mailbox_placeholder_blocked",
+    "mail_action_draft_preview_ready",
+    "mail_action_manual_log_ready",
+    "mail_action_blocked_sensitive_payload",
+    "mail_action_blocked_missing_recipient",
+    "mail_action_blocked_no_permission",
+    "manual_confirmation_required",
+    "review_required"
+  ],
+  "claudePrototypeImpact": [
+    "Email UI must not say connected/sent/read while gates are off.",
+    "Show mailbox states: not configured, manual only, placeholder no send, connection requested, provider pending.",
+    "Drafts and manual logs must be visually separate from sent email.",
+    "Do not expose raw personal email, message body or attachments in shopper-visible views.",
+    "Email actions should link to entities without implying real provider sync."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "consultant_partner"],
+    "manualsToUpdate": ["User mailbox setup", "Provider agnostic email", "Manual-only traceability", "Email drafts", "Email privacy", "Provider gates"],
+    "coursesToUpdate": ["Superadmin email configuration", "Admin user setup", "Ops communication traceability", "Shopper communication privacy"],
+    "newLessons": [
+      "Difference between mailbox configured and provider connected",
+      "Why a draft is not sent",
+      "How manual email traceability works",
+      "What placeholder_no_send means",
+      "Which email data must not be stored in preview"
+    ],
+    "interactiveChecklists": [
+      "Before assigning a mailbox to a user",
+      "Before creating an email draft",
+      "Before logging manual email contact",
+      "Before enabling a provider in the future"
+    ]
+  },
+  "hardStops": [
+    "Do not read real email from this preview.",
+    "Do not send real email from this preview.",
+    "Do not connect OAuth or SMTP from this preview.",
+    "Do not store provider secrets or tokens.",
+    "Do not process raw email bodies or raw attachments.",
+    "Do not treat placeholder email as deliverable.",
+    "Do not mark sent unless manual external confirmation exists."
+  ]
+}
