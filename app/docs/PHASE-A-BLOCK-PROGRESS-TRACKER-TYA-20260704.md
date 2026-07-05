@@ -30,6 +30,7 @@ Fecha: 2026-07-04
 - Auditoria V84 y paquete Claude V85 correctiva.
 - Auditoria V85: contenido identico a V84 y paquete Claude V86 correctiva real.
 - Auditoria V86: cambios reales parciales y paquete Claude V87 correctiva; empalme como candidata auditada de continuidad backend.
+- Auditoria complementaria V86 delta vs acumulado Codex para reforzar profundidad y evitar confusion entre cambios acumulados y nuevos.
 - Paquete descargable Claude V82 auditoria integral.
 - Paquete descargable Claude V83 auditoria integral.
 - Paquete descargable Claude V84 auditoria integral.
@@ -66,6 +67,7 @@ Fecha: 2026-07-04
 - Academia impact de notification outbox.
 - Academia impact de email/user mailbox.
 - Academia impact de CRM external folder refs.
+- Academia impact de shopper communication history.
 
 ### Operacion Phase A
 
@@ -92,6 +94,7 @@ Fecha: 2026-07-04
 - Preview validator de notification outbox con gates de datos sensibles, postulaciones, assignment sync y visit lifecycle/reservas.
 - Preview validator de email/user mailbox sin conexion real, con notification outbox como gate previo.
 - Preview validator de CRM external folder refs con gates de email/mailbox, notification outbox y datos sensibles.
+- Preview validator de shopper communication history con gates de CRM folder refs, email/mailbox, notification outbox y datos sensibles.
 
 ## Bloques agregados durante revision
 
@@ -118,20 +121,22 @@ Estos bloques no estaban suficientemente explicitados al inicio y se agregaron p
 19. Notification outbox preview antes de proveedores reales.
 20. Email user mailbox preview antes de OAuth/SMTP/email real.
 21. CRM external folder refs preview antes de OAuth/API/proveedor documental real.
+22. Shopper communication history preview antes de lectura/envio/import real de comunicaciones.
+23. Auditoria profunda reforzada: cada paquete debe distinguir delta vs acumulado y responder punto por punto a reportes Claude/Codex.
 
 ## Bloque recien completado
 
-### CRM external folder refs preview Phase A
+### Shopper communication history preview Phase A
 
 Archivos:
 
-- `app/contracts/crm-external-folder-refs-preview-phase-a.tya.contract.json`
-- `tools/migration/tya-crm-external-folder-refs-preview-validator.mjs`
-- `app/docs/CRM-EXTERNAL-FOLDER-REFS-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
-- `app/docs/ACADEMIA-IMPACT-CRM-EXTERNAL-FOLDER-REFS-PREVIEW-TYA-20260704.md`
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-CRM-EXTERNAL-FOLDER-REFS-PREVIEW-20260704.md`
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CRM-EXTERNAL-FOLDER-REFS-PREVIEW-20260704.md`
-- `app/docs/PENDIENTES-CLAUDE-ADDENDUM-CRM-EXTERNAL-FOLDER-REFS-PREVIEW-20260704.md`
+- `app/contracts/shopper-communication-history-preview-phase-a.tya.contract.json`
+- `tools/migration/tya-shopper-communication-history-preview-validator.mjs`
+- `app/docs/SHOPPER-COMMUNICATION-HISTORY-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
+- `app/docs/ACADEMIA-IMPACT-SHOPPER-COMMUNICATION-HISTORY-PREVIEW-TYA-20260704.md`
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-SHOPPER-COMMUNICATION-HISTORY-PREVIEW-20260704.md`
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-SHOPPER-COMMUNICATION-HISTORY-PREVIEW-20260704.md`
+- `app/docs/PENDIENTES-CLAUDE-ADDENDUM-SHOPPER-COMMUNICATION-HISTORY-PREVIEW-20260704.md`
 
 Estado:
 
@@ -139,8 +144,8 @@ Estado:
 - No lee fuentes reales si no se le pasa input.
 - El input permitido debe ser sintetico/sanitizado y traer `sourceSafe=true`.
 - No escribe archivos por defecto.
-- No activa runtime, produccion, Firestore, Storage, proveedor externo, OAuth, Make, Gemini, lectura documental ni import real.
-- Usa email/mailbox, notification outbox y politica de datos sensibles como gates previos.
+- No activa runtime, produccion, Firestore, Storage, Make, Gemini, email, WhatsApp, proveedor externo ni import real.
+- Usa CRM folder refs, email/mailbox, notification outbox y politica de datos sensibles como gates previos.
 
 ## Ultima auditoria de prototipo
 
@@ -149,6 +154,7 @@ Estado:
 Archivos de auditoria:
 
 - `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V86-CLAUDE-20260704.md`
+- `app/docs/AUDITORIA-COMPLEMENTARIA-V86-DELTA-VS-ACUMULADO-CODEX-20260704.md`
 - `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V86-AUDITORIA-20260704.md`
 - `app/docs/PENDIENTES-CLAUDE-ADDENDUM-V86-AUDITORIA-20260704.md`
 - `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V86-CLAUDE-20260704.md`
@@ -158,20 +164,21 @@ Decision:
 - V86 trae cambios reales: `modules/academia.js`, `modules/dashboard.js`, `modules/misvisitas.js`.
 - V86 no es source lock final ni produccion.
 - V86 queda como candidata auditada de continuidad backend.
+- La auditoria profunda debe distinguir siempre delta vs acumulado.
 - Claude debe generar V87 correctiva cuando recupere capacidad.
 
 ## Pendientes backend inmediatos
 
-1. Preview validator de shopper communication history.
-2. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
-3. Contrato ranking/scoring shopper.
-4. Integrar politica de datos sensibles como gate transversal de validators restantes.
-5. Preparar input sintetico/sanitizado para assignment sync conflict preview.
-6. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
-7. Preparar input sintetico/sanitizado para postulation dynamic form preview.
-8. Preparar input sintetico/sanitizado para notification outbox preview.
-9. Preparar input sintetico/sanitizado para email/user mailbox preview.
-10. Preparar input sintetico/sanitizado para CRM external folder refs preview.
+1. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
+2. Contrato ranking/scoring shopper.
+3. Integrar politica de datos sensibles como gate transversal de validators restantes.
+4. Preparar input sintetico/sanitizado para assignment sync conflict preview.
+5. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
+6. Preparar input sintetico/sanitizado para postulation dynamic form preview.
+7. Preparar input sintetico/sanitizado para notification outbox preview.
+8. Preparar input sintetico/sanitizado para email/user mailbox preview.
+9. Preparar input sintetico/sanitizado para CRM external folder refs preview.
+10. Preparar input sintetico/sanitizado para shopper communication history preview.
 11. Make/email/provider payloads futuros sin activar.
 
 ## Pendientes prototipo / Claude
@@ -200,7 +207,8 @@ Decision:
 22. Notification outbox: toasters no deben decir enviado/sincronizado si solo hay preview; WhatsApp/email deben quedar como fallback/draft/provider pendiente.
 23. Email/user mailbox: UI no debe decir conectado/leido/enviado si gate esta apagado; separar draft, log manual, provider pending y enviado real.
 24. CRM/documentos: no decir carpeta creada/conectada/sincronizada; usar ref preview, provider pending, permission review, blocked private link y manual review.
-25. V87 correctiva debe corregir P0 de V86 y mantener sus mejoras reales.
+25. Shopper history: no mostrar cuerpos crudos, telefonos/correos crudos ni adjuntos; usar timeline con estados honestos y llaves estables.
+26. V87 correctiva debe corregir P0 de V86 y mantener sus mejoras reales.
 
 ## Pendientes Academia
 
@@ -220,10 +228,11 @@ Decision:
 14. Profundizar notification outbox: templateId, templateVersion, recipientRef, outboxStatus, manualFallbackStatus, fallback manual y estados honestos.
 15. Profundizar email/user mailbox: mailboxId, providerType, connectionStatus, canDraft, canLogManual, draft_ready_preview y manual_log_only.
 16. Profundizar CRM external folder refs: crmEntityId, externalFolderRefId, externalProviderType, visibilityScope, accessStatus, provider pending y permission review.
+17. Profundizar shopper communication history: communicationId, threadId, participantRef, manualConfirmationStatus, communicationStatus, privacy, manual log y draft preview.
 
 ## Siguiente bloque recomendado
 
-Preview validator de shopper communication history, usando CRM folder refs, email/mailbox, notification outbox y politica de datos sensibles como gates previos.
+Contrato ranking/scoring shopper, salvo que exista ya un input local sintetico/sanitizado para ejecutar validators previos sin fuente real.
 
 ## Regla de cierre por bloque
 
