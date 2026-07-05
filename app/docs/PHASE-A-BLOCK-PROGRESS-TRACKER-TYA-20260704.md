@@ -44,6 +44,7 @@ Fecha: 2026-07-04
 - Sensitive data policy Phase A.
 - Project/tenant rule versioning preview.
 - Rule change changelog/notification preview.
+- Release readiness snapshot preview.
 
 ### Academia
 
@@ -65,6 +66,7 @@ Fecha: 2026-07-04
 - Academia impact de shopper ranking/scoring.
 - Academia impact de project/tenant rule versioning.
 - Academia impact de rule change changelog/notifications.
+- Academia impact de release readiness snapshot.
 
 ### Operacion Phase A
 
@@ -84,6 +86,7 @@ Fecha: 2026-07-04
 - Shopper ranking/scoring.
 - Project/tenant rule versioning.
 - Rule change changelog/notification preview.
+- Release readiness snapshot preview.
 - Liquidaciones y pagos.
 - Cinepolis Boleto/Combo, lotes y movimientos individuales.
 - Preview validator/source-safe mapping para liquidaciones/corte junio y Cinepolis Boleto/Combo.
@@ -98,6 +101,7 @@ Fecha: 2026-07-04
 - Preview validator de shopper ranking/scoring con gates de datos sensibles, assignment sync, visit lifecycle y communication history.
 - Preview validator de project/tenant rule versioning con gates transversales de configuracion.
 - Preview validator de rule change changelog/notifications con gates de rule versioning, notification outbox, mailbox, communication history, Academia y datos sensibles.
+- Preview validator de release readiness snapshot con gates transversales de todos los bloques previos.
 
 ## Bloques agregados durante revision
 
@@ -129,20 +133,26 @@ Estos bloques no estaban suficientemente explicitados al inicio y se agregaron p
 24. Shopper ranking/scoring preview antes de decisiones automaticas, Gemini real o autoasignacion.
 25. Project/tenant rule versioning preview antes de cambios reales de configuracion, providers, HR mapping, questionnaire routing, pagos o pais/moneda.
 26. Rule change changelog/notification preview antes de publicar changelog, enviar comunicaciones o marcar roles informados.
+27. Release readiness snapshot preview antes de cualquier deploy, merge, import, escritura o activacion real.
 
 ## Bloque recien completado
 
-### Rule change changelog/notification preview Phase A
+### Release readiness snapshot preview Phase A
 
 Archivos:
 
-- `app/contracts/rule-change-changelog-notification-preview-phase-a.tya.contract.json`
-- `tools/migration/tya-rule-change-changelog-notification-preview-validator.mjs`
-- `app/docs/RULE-CHANGE-CHANGELOG-NOTIFICATION-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
-- `app/docs/ACADEMIA-IMPACT-RULE-CHANGE-CHANGELOG-NOTIFICATION-PREVIEW-TYA-20260704.md`
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-RULE-CHANGE-CHANGELOG-NOTIFICATION-PREVIEW-20260704.md`
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-RULE-CHANGE-CHANGELOG-NOTIFICATION-PREVIEW-20260704.md`
-- `app/docs/PENDIENTES-CLAUDE-ADDENDUM-RULE-CHANGE-CHANGELOG-NOTIFICATION-PREVIEW-20260704.md`
+- `app/contracts/release-readiness-snapshot-preview-phase-a.tya.contract.json`
+- `tools/migration/tya-release-readiness-snapshot-preview-validator.mjs`
+- `app/docs/RELEASE-READINESS-SNAPSHOT-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`
+- `app/docs/ACADEMIA-IMPACT-RELEASE-READINESS-SNAPSHOT-PREVIEW-TYA-20260704.md`
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-RELEASE-READINESS-SNAPSHOT-PREVIEW-20260704.md`
+- `app/docs/RESUMEN-FRONTEND-ADDENDUM-RELEASE-READINESS-SNAPSHOT-PREVIEW-20260704.md`
+- `app/docs/PENDIENTES-CLAUDE-ADDENDUM-RELEASE-READINESS-SNAPSHOT-PREVIEW-20260704.md`
+
+Nota de tooling:
+
+- La creacion de `RESUMEN-PARA-CLAUDE-ADDENDUM-RELEASE-READINESS-SNAPSHOT-PREVIEW-20260704.md` fue bloqueada por controles de seguridad de la herramienta.
+- Se creo equivalente seguro: `app/docs/RESUMEN-FRONTEND-ADDENDUM-RELEASE-READINESS-SNAPSHOT-PREVIEW-20260704.md`.
 
 Estado:
 
@@ -150,8 +160,8 @@ Estado:
 - No lee fuentes reales si no se le pasa input.
 - El input permitido debe ser sintetico/sanitizado y traer `sourceSafe=true`.
 - No escribe archivos por defecto.
-- No activa runtime, produccion, Firestore, Make, Gemini, email/WhatsApp, publicacion real ni import real.
-- Usa rule versioning, notification outbox, mailbox, communication history, Academia y datos sensibles como gates previos.
+- No activa runtime, produccion, Firestore, Storage, Make, Gemini, email/WhatsApp, deploy, merge, providers ni import real.
+- Usa todos los contratos previos como dependencias/gates transversales.
 
 ## Ultima auditoria de prototipo
 
@@ -171,20 +181,21 @@ Documentos clave:
 
 ## Pendientes backend inmediatos
 
-1. Preparar input sintetico/sanitizado para rule change changelog/notification preview.
-2. Preparar input sintetico/sanitizado para project/tenant rule versioning preview.
-3. Preparar input sintetico/sanitizado para shopper ranking/scoring preview.
-4. Preparar input sintetico/sanitizado para shopper communication history preview.
-5. Preparar input sintetico/sanitizado para CRM external folder refs preview.
-6. Preparar input sintetico/sanitizado para email/user mailbox preview.
-7. Preparar input sintetico/sanitizado para notification outbox preview.
-8. Preparar input sintetico/sanitizado para postulation dynamic form preview.
-9. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
-10. Preparar input sintetico/sanitizado para assignment sync conflict preview.
-11. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
-12. Integrar politica de datos sensibles como gate transversal de validators restantes.
-13. Preparar payload futuro de changelog/centro de actualizaciones sin activar runtime.
-14. Make/email/provider/Gemini payloads futuros sin activar.
+1. Preparar input sintetico/sanitizado para release readiness snapshot preview.
+2. Preparar input sintetico/sanitizado para rule change changelog/notification preview.
+3. Preparar input sintetico/sanitizado para project/tenant rule versioning preview.
+4. Preparar input sintetico/sanitizado para shopper ranking/scoring preview.
+5. Preparar input sintetico/sanitizado para shopper communication history preview.
+6. Preparar input sintetico/sanitizado para CRM external folder refs preview.
+7. Preparar input sintetico/sanitizado para email/user mailbox preview.
+8. Preparar input sintetico/sanitizado para notification outbox preview.
+9. Preparar input sintetico/sanitizado para postulation dynamic form preview.
+10. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
+11. Preparar input sintetico/sanitizado para assignment sync conflict preview.
+12. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
+13. Integrar politica de datos sensibles como gate transversal de validators restantes.
+14. Preparar payload futuro para dashboard de readiness sin activar runtime.
+15. Crear contrato/runner local de synthetic input pack para ejecutar validators previos sin fuentes reales.
 
 ## Pendientes prototipo / Claude
 
@@ -200,25 +211,27 @@ Documentos clave:
 10. Shopper ranking/scoring preview honesto, sin autoasignacion ni datos sensibles.
 11. Project settings/rule versioning con estados draft/review/future active/deprecated.
 12. Changelog/centro de actualizaciones con estados draft/review/approved preview y audiencia por rol.
-13. Mis beneficios con honorario/reembolso/estado.
-14. Lotes y movimientos individuales.
-15. Academia interactiva profunda con backfill completo.
-16. Liquidaciones/Cinepolis: Mis beneficios debe separar honorario, Boleto, Combo, reembolso total, total y estado.
-17. Admin/Liquidaciones debe mostrar revision manual/conflicto si faltan llaves estables o referencias de pago.
-18. Movimientos debe conservar pago individual aunque venga de lote.
-19. Datos sensibles: no exponer banco, documentos, NDA, cuerpos crudos ni adjuntos privados; usar estados protegido/pendiente backend/requiere autorizacion.
-20. Assignment sync: Postulaciones no debe mostrar `HR sincronizada` si gate esta apagado; debe mostrar pendiente HR sync, preview, conflicto o revision manual.
-21. Visitas asignadas desde plataforma o HR preview deben salir de disponibles sin duplicarse.
-22. Visit lifecycle/reservas: agenda/reprogramacion no debe prometer HR sync real; fuera de rango debe mostrar regla fallida y pedir override.
-23. Separar disponible, reservada, agendada, realizada, cuestionario completado, revision, submitido, liquidacion y pago.
-24. Ficha postulacion dinamica: configurable por proyecto/version, campos requeridos/opcionales, referencias privadas, sin archivos raw y sin tratar postulacion como asignacion.
-25. Notification outbox: toasters no deben decir enviado/sincronizado si solo hay preview; WhatsApp/email deben quedar como fallback/draft/provider pendiente.
-26. Email/user mailbox: UI no debe decir conectado/leido/enviado si gate esta apagado; separar draft, log manual, provider pending y enviado real.
-27. CRM/documentos: no decir carpeta creada/conectada/sincronizada; usar ref preview, provider pending, permission review, blocked private link y manual review.
-28. Shopper history: no mostrar cuerpos crudos, telefonos/correos crudos ni adjuntos; usar timeline con estados honestos y llaves estables.
-29. Ranking: mostrar desglose de metricas, muestra insuficiente, conflicto, revision manual y no usarlo como decision final.
-30. Rule versioning: mostrar impacto, migration/rollback required y no usar proveedor activo si solo existe regla preview.
-31. Changelog/notificaciones: no decir publicado/enviado/informado si gates estan apagados; usar draft, review, provider pending y Academia update required.
+13. Readiness dashboard con preview ready, missing input, prototype pending, backend pending, real gate off y manual review.
+14. Mis beneficios con honorario/reembolso/estado.
+15. Lotes y movimientos individuales.
+16. Academia interactiva profunda con backfill completo.
+17. Liquidaciones/Cinepolis: Mis beneficios debe separar honorario, Boleto, Combo, reembolso total, total y estado.
+18. Admin/Liquidaciones debe mostrar revision manual/conflicto si faltan llaves estables o referencias de pago.
+19. Movimientos debe conservar pago individual aunque venga de lote.
+20. Datos sensibles: no exponer banco, documentos, NDA, cuerpos crudos ni adjuntos privados; usar estados protegido/pendiente backend/requiere autorizacion.
+21. Assignment sync: Postulaciones no debe mostrar `HR sincronizada` si gate esta apagado; debe mostrar pendiente HR sync, preview, conflicto o revision manual.
+22. Visitas asignadas desde plataforma o HR preview deben salir de disponibles sin duplicarse.
+23. Visit lifecycle/reservas: agenda/reprogramacion no debe prometer HR sync real; fuera de rango debe mostrar regla fallida y pedir override.
+24. Separar disponible, reservada, agendada, realizada, cuestionario completado, revision, submitido, liquidacion y pago.
+25. Ficha postulacion dinamica: configurable por proyecto/version, campos requeridos/opcionales, referencias privadas, sin archivos raw y sin tratar postulacion como asignacion.
+26. Notification outbox: toasters no deben decir enviado/sincronizado si solo hay preview; WhatsApp/email deben quedar como fallback/draft/provider pendiente.
+27. Email/user mailbox: UI no debe decir conectado/leido/enviado si gate esta apagado; separar draft, log manual, provider pending y enviado real.
+28. CRM/documentos: no decir carpeta creada/conectada/sincronizada; usar ref preview, provider pending, permission review, blocked private link y manual review.
+29. Shopper history: no mostrar cuerpos crudos, telefonos/correos crudos ni adjuntos; usar timeline con estados honestos y llaves estables.
+30. Ranking: mostrar desglose de metricas, muestra insuficiente, conflicto, revision manual y no usarlo como decision final.
+31. Rule versioning: mostrar impacto, migration/rollback required y no usar proveedor activo si solo existe regla preview.
+32. Changelog/notificaciones: no decir publicado/enviado/informado si gates estan apagados; usar draft, review, provider pending y Academia update required.
+33. Readiness: no decir production ready, deployed, imported, connected, sent o synced si gates estan apagados.
 
 ## Pendientes Academia
 
@@ -241,10 +254,11 @@ Documentos clave:
 17. Profundizar shopper ranking/scoring: rankingRunId, rankingPeriodId, scoreVersion, metricId, metricWeight, scoreStatus, fairness, manual review y limites de uso.
 18. Profundizar project/tenant rule versioning: ruleSetId, ruleSetVersion, ruleSetType, migrationPlanId, rollbackPlanId, breaking change y provider gates.
 19. Profundizar rule change changelog/notifications: changeLogId, changeEventId, impactScope, audienceRole, notificationDraftId, academyUpdateRef, blocked_real_send y Academia update required.
+20. Profundizar release readiness snapshot: snapshotId, readinessArea, readinessStatus, gateStatus, blockingReason, preview-ready vs production-ready y blockers.
 
 ## Siguiente bloque recomendado
 
-Preparar input sintetico/sanitizado para ejecutar validators previos o crear contrato transversal de release/readiness snapshot para agrupar validaciones antes de cualquier activacion real.
+Crear contrato/runner local de synthetic input pack para ejecutar validators previos sin fuentes reales.
 
 ## Regla de cierre por bloque
 
