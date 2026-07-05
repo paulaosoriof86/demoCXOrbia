@@ -1,5 +1,16 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-04 - Addendum liquidaciones/Cinepolis source-safe preview validator
+
+- ChatGPT/backend preparo un bloque seguro de preview/source-safe mapping para liquidaciones, corte junio y Cinepolis Boleto/Combo.
+- Archivos agregados: `app/contracts/liquidation-cinepolis-source-safe-preview-phase-a.tya.contract.json`, `tools/migration/tya-liquidation-cinepolis-source-safe-preview-validator.mjs`, `app/docs/LIQUIDATIONS-CINEPOLIS-SOURCE-SAFE-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`, `app/docs/ACADEMIA-IMPACT-LIQUIDACIONES-CINEPOLIS-SOURCE-SAFE-PREVIEW-TYA-20260704.md`, `app/docs/CAMBIOS-BACKEND-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md`, `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md` y `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md`.
+- Regla funcional que Claude debe reflejar: junio es corte de pagos/liquidaciones pendientes, no visitas pendientes; visita realizada no equivale a pago; cuestionario realizado no equivale a submitido ni pago.
+- Para Cinepolis, Boleto y Combo son reembolsos especificos de proyecto; `reimbursementTotal = boletoAmount + comboAmount`; honorario queda separado.
+- Mis beneficios debe mostrar honorario, Boleto, Combo, total y estado sin exponer banco/DPI/NDA/notas internas.
+- Admin/Liquidaciones debe permitir lotes seleccionables, movimientos individuales con lote/item asociado y estados de revision manual/conflicto cuando falten llaves estables.
+- Academia debe profundizar corte junio, Boleto/Combo, lotes, movimientos, source-safe preview, datos sensibles y revision manual por rol.
+- Estado seguro: no se tocaron `/app/modules` ni `/app/core`, no se activo runtime, no se leyeron fuentes reales, no se escribio Firestore/HR, no se ejecutaron pagos y no se conecto Make/Gemini/correo real.
+
 ## 2026-07-04 - Addendum auditoria V82 Claude candidate
 
 - Paula entrego `Prototype development request CXOrbia V82.zip` como version mas reciente de Claude.
