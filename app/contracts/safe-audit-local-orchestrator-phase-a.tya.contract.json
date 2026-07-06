@@ -1,0 +1,37 @@
+{
+  "contract": "safe-audit-local-orchestrator-phase-a-tya",
+  "date": "2026-07-06",
+  "status": "draft_tool_no_remote_write",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "realDataAllowed": false,
+  "providerActionsAllowed": false,
+  "purpose": "Define the future local-only order: safe audit bundle, result normalizer, and output packager after explicit GO.",
+  "requiresExplicitGo": true,
+  "goEnvironmentVariable": "CXORBIA_LOCAL_GO=YES",
+  "steps": [
+    {
+      "order": 1,
+      "name": "safe_audit_bundle",
+      "command": "node tools/quality/tya-safe-audit-bundle.mjs"
+    },
+    {
+      "order": 2,
+      "name": "safe_audit_result_normalizer",
+      "command": "node tools/quality/tya-safe-audit-result-normalizer.mjs"
+    },
+    {
+      "order": 3,
+      "name": "local_output_packager",
+      "command": "node tools/quality/tya-local-output-packager.mjs"
+    }
+  ],
+  "outputFolder": "_diagnosticos/tya-safe-audit-local-orchestrator",
+  "notes": [
+    "Does not deploy, merge, import real data, or call providers.",
+    "If GO variable is missing, the tool exits blocked."
+  ]
+}
