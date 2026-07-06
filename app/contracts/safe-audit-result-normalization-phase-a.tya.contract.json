@@ -1,0 +1,27 @@
+{
+  "contract": "safe-audit-result-normalization-phase-a-tya",
+  "date": "2026-07-06",
+  "status": "draft_tool_no_remote_write",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "realDataAllowed": false,
+  "providerActionsAllowed": false,
+  "purpose": "Normalize local safe audit bundle outputs into a readable decision summary after explicit GO execution.",
+  "input": "_diagnosticos/tya-safe-audit-bundle/safe-audit-bundle.json",
+  "outputs": [
+    "_diagnosticos/tya-safe-audit-normalized/safe-audit-normalized.json",
+    "_diagnosticos/tya-safe-audit-normalized/safe-audit-normalized.md"
+  ],
+  "decisions": [
+    "ok_to_continue_documental",
+    "review_required",
+    "blocked"
+  ],
+  "notes": [
+    "Does not execute the audit bundle.",
+    "Does not deploy, merge, import real data, or call providers."
+  ]
+}
