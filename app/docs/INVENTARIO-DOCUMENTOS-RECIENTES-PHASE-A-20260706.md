@@ -34,11 +34,20 @@ Registrar los documentos recientes creados para continuar sin depender del histo
 - `SAFE-AUDIT-BUNDLE-PHASE-A-20260705.md`
 - `TEMPLATE-REPORTE-AUDITORIA-SEGURA-20260705.md`
 - `GUIA-LECTURA-AUDITORIA-SEGURA-20260705.md`
+- `NORMALIZADOR-RESULTADOS-AUDITORIA-SEGURA-20260706.md`
+- `EMPAQUETADOR-SALIDAS-LOCALES-PHASE-A-20260706.md`
+- `ORQUESTADOR-LOCAL-AUDITORIA-SEGURA-PHASE-A-20260706.md`
 
 ## Contratos y herramientas
 
 - `app/contracts/safe-audit-bundle-phase-a.tya.contract.json`
 - `tools/quality/tya-safe-audit-bundle.mjs`
+- `app/contracts/safe-audit-result-normalization-phase-a.tya.contract.json`
+- `tools/quality/tya-safe-audit-result-normalizer.mjs`
+- `app/contracts/local-output-packaging-phase-a.tya.contract.json`
+- `tools/quality/tya-local-output-packager.mjs`
+- `app/contracts/safe-audit-local-orchestrator-phase-a.tya.contract.json`
+- `tools/quality/tya-safe-audit-local-orchestrator.mjs`
 
 ## Addenda de cambios recientes
 
@@ -48,6 +57,9 @@ Registrar los documentos recientes creados para continuar sin depender del histo
 - `CAMBIOS-INDICE-AUDITORIA-SEGURA-20260705.md`
 - `CAMBIOS-BACKEND-ADDENDUM-SALIDA-SEGURA-FUTURA-20260705.md`
 - `CAMBIOS-BACKEND-ADDENDUM-MAPA-DEPENDENCIAS-PHASE-A-20260705.md`
+- `CAMBIOS-NORMALIZADOR-AUDITORIA-SEGURA-20260706.md`
+- `CAMBIOS-EMPAQUETADOR-SALIDAS-LOCALES-20260706.md`
+- `CAMBIOS-ORQUESTADOR-LOCAL-AUDITORIA-SEGURA-20260706.md`
 
 ## Estado
 
