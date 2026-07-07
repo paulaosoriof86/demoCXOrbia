@@ -1,0 +1,69 @@
+name: CXOrbia Phase A Remote Smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'URL HTTPS del preview/staging a validar'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cxorbia-phase-a-remote-smoke-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  remote-smoke:
+    name: Phase A remote smoke post-staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate input URL
+        run: |
+          URL='${{ inputs.base_url }}'
+          if [[ ! "$URL" =~ ^https:// ]]; then
+            echo "base_url must start with https://"
+            exit 1
+          fi
+          if [[ "$URL" =~ localhost|127\.0\.0\.1 ]]; then
+            echo "base_url must be remote, not localhost"
+            exit 1
+          fi
+          echo "CXORBIA_SMOKE_BASE_URL=$URL" >> "$GITHUB_ENV"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm i -D playwright@latest
+          npx playwright install --with-deps chromium
+
+      - name: Run remote smoke
+        run: |
+          node tools/qa/tya-phase-a-remote-smoke.mjs \
+            --url "$CXORBIA_SMOKE_BASE_URL" \
+            --out .tmp/phase-a-remote-smoke
+
+      - name: Upload remote smoke report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-remote-smoke-report
+          path: .tmp/phase-a-remote-smoke
+          if-no-files-found: error
+          retention-days: 14
