@@ -24,7 +24,7 @@ CX.setFavicon = function(){
   }catch(e){}
 };
 
-/* ---------- PWA: instalación automática según dispositivo + navegador ---------- */
+/* ---------- PWA: instalación asistida según dispositivo + navegador (sin prometer descarga automática) ---------- */
 CX._deferredPrompt=null;
 CX.setupPWA = function(){
   /* registra el service worker para que sea instalable */
@@ -117,7 +117,7 @@ CX.app = {
         </div>
         ${b.clientName?`<div class="login-devfor">Plataforma operativa para <b>${b.clientName}</b></div>`:''}
         ${devForFooter}
-        <div style="text-align:center;margin-top:14px"><button class="btn btn-ghost btn-sm" id="pwaBtn">📲 Instalar como app</button></div>
+        ${(()=>{const std=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;const iOS=/iPad|iPhone|iPod/.test(navigator.userAgent);if(std)return '<div style="text-align:center;margin-top:14px;font-size:11px;color:var(--green)">✓ App instalada</div>';return `<div style="text-align:center;margin-top:14px"><button class="btn btn-ghost btn-sm" id="pwaBtn">📲 ${iOS?'Instalar (guía iOS)':'Instalar como app'}</button></div>`;})()}
         ${b.demoMode?`<div style="text-align:center;margin-top:10px;font-size:11px;color:var(--t3)">
           <span class="bdg bdg-a">● Demo comercial · datos ficticios</span></div>`:''}
       </div>`;

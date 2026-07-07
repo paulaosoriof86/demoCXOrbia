@@ -19,12 +19,12 @@ window.CX = window.CX || {};
       {id:'a_postulacion', evento:'postulacion', activa:true,  canal:'whatsapp', to:'admin', titulo:'Nueva postulación', plantilla:'{shopper} se postuló a {sucursal}'},
       {id:'a_agenda',      evento:'agenda',      activa:true,  canal:'push',     to:'admin', titulo:'Visita agendada', plantilla:'{shopper} agendó {sucursal} para {fecha}'},
       {id:'a_realizada',   evento:'realizada',   activa:true,  canal:'push',     to:'admin', titulo:'Visita realizada', plantilla:'{shopper} realizó {sucursal} · validar cuestionario'},
-      {id:'a_cuestionario',evento:'cuestionario',activa:true,  canal:'push',     to:'admin', titulo:'Cuestionario enviado', plantilla:'{shopper} envió el cuestionario de {sucursal} (score {score})'},
+      {id:'a_cuestionario',evento:'cuestionario',activa:true,  canal:'push',     to:'admin', titulo:'Cuestionario realizado', plantilla:'{shopper} completó el cuestionario de {sucursal} · pendiente revisión (score {score})'},
       {id:'a_reprog',      evento:'reprog',      activa:true,  canal:'whatsapp', to:'admin', titulo:'Reprogramación solicitada', plantilla:'{shopper} pide reprogramar {sucursal}'},
       {id:'a_pago',        evento:'pago',        activa:true,  canal:'whatsapp', to:'shopper', titulo:'Pago realizado', plantilla:'Tu liquidación de {sucursal} pasó a pagada'},
       {id:'a_atraso',      evento:'atraso',      activa:true,  canal:'whatsapp', to:'admin', titulo:'Visita atrasada', plantilla:'{sucursal} sin avance · vence {fecha}'},
       {id:'a_aprobacion',  evento:'aprobacion',  activa:true,  canal:'whatsapp', to:'shopper', titulo:'Postulación aprobada', plantilla:'Tu visita a {sucursal} fue aprobada'},
-      {id:'a_hr_writeback',evento:'hr_writeback', activa:true,  canal:'sheet',    to:'admin', titulo:'HR actualizada', plantilla:'{sucursal}: {shopper} · {fecha} · {estado} (sincronizado a la HR)'},
+      {id:'a_hr_writeback',evento:'hr_writeback', activa:true,  canal:'sheet',    to:'admin', titulo:'HR: escritura preparada', plantilla:'{sucursal}: {shopper} · {fecha} · {estado} (se reflejará cuando el sync backend esté activo)'},
       {id:'a_shopper_edit',evento:'shopper_edit', activa:true,  canal:'push',     to:'admin', titulo:'Datos de shopper actualizados', plantilla:'{shopper} actualizó: {campos}'},
     ];
   }
@@ -145,8 +145,8 @@ window.CX = window.CX || {};
       CX.bus&&CX.bus.emit('audit'); return a[0];
     },
     auditFor(ref){ return this.audit().filter(x=>x.ref===ref); },
-    CANALES:{push:'Notificación in-app', whatsapp:'WhatsApp (Make)', correo:'Correo (Make)', sheet:'Google Sheets (Make)'},
-    EVENTOS:{postulacion:'Postulación creada', agenda:'Visita agendada', realizada:'Visita realizada', cuestionario:'Cuestionario enviado', reprog:'Reprogramación', pago:'Pago/liquidación', atraso:'Visita atrasada/pendiente', aprobacion:'Postulación aprobada', hr_writeback:'Escritura de vuelta a HR', shopper_edit:'Cambio de datos del shopper'},
+    CANALES:{push:'Notificación in-app', whatsapp_web:'WhatsApp Web (plantilla lista)', whatsapp_api:'WhatsApp API (pendiente backend)', make:'Make webhook (pendiente backend)', correo:'Correo (pendiente backend)', sheet:'Google Sheets (pendiente backend)', off:'Apagado'},
+    EVENTOS:{postulacion:'Postulación creada', agenda:'Visita agendada', realizada:'Visita realizada', cuestionario:'Cuestionario realizado', reprog:'Reprogramación', pago:'Pago/liquidación', atraso:'Visita atrasada/pendiente', aprobacion:'Postulación aprobada', hr_writeback:'Escritura de vuelta a HR', shopper_edit:'Cambio de datos del shopper'},
 
     list(){ try{ const s=JSON.parse(localStorage.getItem(LS)||'null'); if(s&&s.length) return s; }catch(e){} return defaults(); },
     save(list){ try{ localStorage.setItem(LS, JSON.stringify(list)); }catch(e){} CX.bus&&CX.bus.emit('automations'); },
@@ -168,13 +168,14 @@ window.CX = window.CX || {};
 
     /* dispara las automatizaciones activas para un evento de negocio */
     fire(evento, ctx={}){
-      this.list().filter(a=>a.activa && a.evento===evento).forEach(a=>{
+      this.list().filter(a=>a.activa && a.evento===evento && a.canal!=='off').forEach(a=>{
         const txt=this._fill(a.plantilla, ctx);
         // notificación in-app siempre (centro de eventos)
         CX.notif && CX.notif.push({to:a.to, tipo:evento, icon:this._icon(evento), tono:this._tone(evento), titulo:a.titulo, txt, nav:this._nav(a.to,evento)});
-        // canal externo vía Make (demo = log) — usa el webhook de la automatación o el del tenant
-        if(a.canal!=='push'){
-          this._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '), canal:a.canal, evento, titulo:a.titulo, txt, hook:this.hook(a.id)||'(webhook Make sin configurar)'});
+        // canal externo: modo honesto según configuración (sin envíos reales sin backend)
+        if(a.canal && a.canal!=='push'){
+          const estado = a.canal==='whatsapp_web' ? 'plantilla lista (abrir WhatsApp Web manualmente)' : 'preparado · pendiente de activación backend';
+          this._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '), canal:(this.CANALES[a.canal]||a.canal), evento, titulo:a.titulo, txt, estado, hook:this.hook(a.id)||'(sin webhook · se registra al conectar backend)'});
         }
       });
     },

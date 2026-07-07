@@ -20,6 +20,117 @@ CX.acadData={
   delCourse(r,cid){ this.saveCustom(r,this.getCustom(r).filter(x=>x.id!==cid)); },
   COURSES:{
     admin:[
+      /* ─── FINANZAS & LIQUIDACIONES (profundo) ─── */
+      {id:'a_fin_op',cat:'Finanzas',ic:'💵',color:'#0e9c6e',n:'Finanzas: liquidaciones, movimientos y beneficios',
+       desc:'Cómo se liquida, se paga y se concilia — pantalla por pantalla, con estados honestos.',
+       lessons:[
+         {id:'af1',ic:'🧾',n:'De la visita al pago: el flujo',content:`
+<h2>El recorrido del dinero</h2>
+<p>Una visita recorre varias etapas antes del pago. La liquidación candidata nace <b>después</b> de la revisión y el submitido, no al marcar realizada:</p>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Cuestionario realizado</b><p>El shopper completó y entregó el cuestionario. Aún no genera liquidación.</p></div>
+  <div class="acad-step"><span>2</span><b>Revisión admin</b><p>Apruebas, pides corrección o marcas conflicto (held_for_conflict).</p></div>
+  <div class="acad-step"><span>3</span><b>Submitido</b><p>Confirmado manual o desde HR según config del proyecto.</p></div>
+  <div class="acad-step"><span>4</span><b>Candidata para lote</b><p>Verificas y mueves a un lote de pago (batchId).</p></div>
+  <div class="acad-step"><span>5</span><b>Pago (backend)</b><p>El cruce financiero real lo hace el backend. En el prototipo queda "preview".</p></div>
+</div>
+<blockquote>Ningún estado dice "pagado" sin cruce financiero real del backend. En el prototipo verás "candidata / preview operativo".</blockquote>`},
+         {id:'af2',ic:'💳',n:'Movimientos: ingresos, egresos y CxC/CxP',content:`
+<h2>Movimientos & Tesorería</h2>
+<p>Registra el dinero que entra y sale, con su origen y destino.</p>
+<div class="acad-section"><b>Ingreso</b><p>Define la <b>fuente/pagador</b> (cliente, casa matriz) y el <b>proyecto destino</b>. Estados: conciliado, pendiente (CxC), por conciliar.</p></div>
+<div class="acad-section"><b>Egreso</b><p>Define el <b>beneficiario</b> (shopper, proveedor) y el proyecto. Un pago de lote genera un egreso por beneficiario con su número de lote.</p></div>
+<div class="acad-section"><b>CxC / CxP</b><p>Cuentas por cobrar y por pagar con buscador. Un egreso programado crea una CxP; al liquidarse, se concilia.</p></div>
+<h3>Datos sensibles</h3>
+<p>Los datos bancarios del shopper y montos de pago son sensibles: en producción se protegen por backend y solo se referencian con <code>sourcePaymentRef</code> opaco. El prototipo no expone datos reales.</p>`},
+         {id:'af3',ic:'🎟️',n:'Conceptos configurables (Boleto, Combo, etc.)',content:`
+<h2>Conceptos de reembolso por proyecto</h2>
+<p>Algunos programas reembolsan consumos al shopper (ej. entrada, combo). Estos conceptos son <b>configuración del tenant/proyecto</b>, no lógica global.</p>
+<div class="acad-section"><b>Ejemplo (configurable)</b><p>Un programa de cine puede definir "Boleto" y "Combo" como conceptos reembolsables. Otro programa define los suyos. La plataforma no los trae fijos.</p></div>
+<ul class="acad-check">
+<li>Conceptos de reembolso definidos por proyecto</li>
+<li>Monto tope por concepto (si aplica)</li>
+<li>Evidencia requerida para reembolsar (foto del ticket)</li>
+<li>Corte del periodo: reembolsos pendientes quedan como liquidación/pago pendiente hasta el cruce</li>
+</ul>
+<blockquote>Lo específico de un cliente (conceptos, montos) es configuración por tenant/proyecto/periodo, para mantener la plataforma comercializable y multi-proyecto.</blockquote>`},
+         {id:'af4',ic:'❓',n:'Evaluación de finanzas',tipo:'quiz',quiz:[
+           {q:'Un egreso por pago de lote, ¿qué genera?',o:['Un ingreso','Un egreso por beneficiario con número de lote','Una CxC'],a:1,fb:'Genera un egreso por beneficiario (shopper/proveedor) asociado a su número de lote (batchId).'},
+           {q:'¿Los conceptos "Boleto" y "Combo" son fijos de la plataforma?',o:['Sí, siempre están','No: son configuración por tenant/proyecto','Solo en cine'],a:1,fb:'Son configuración por proyecto. La plataforma es genérica y comercializable; cada cliente define sus conceptos.'},
+           {q:'¿Cuándo un movimiento dice "pagado"?',o:['Al moverlo a lote','Solo cuando el backend hace el cruce financiero real','Al crear la liquidación'],a:1,fb:'En el prototipo se muestra "candidata/preview". El estado real de pago depende del cruce del backend.'},
+         ]},
+       ]},
+      /* ─── BLOQUES BACKEND (transparencia de estado) ─── */
+      {id:'a_backend_prepared',cat:'Inducción',ic:'🔌',color:'#7c3aed',n:'Capacidades de backend: qué está preparado',
+       desc:'Qué funciones dependen del backend y cómo se ven mientras el gate no está activo.',
+       lessons:[
+         {id:'ab1',ic:'🔌',n:'Preparado vs. activo',content:`
+<h2>Cómo leer los estados del backend</h2>
+<p>Varias capacidades ya tienen su interfaz lista pero su ejecución real ocurre en el backend. Mientras el gate no esté autorizado, verás el badge <b>"preparado / pendiente backend"</b> — nunca "enviado" o "en vivo" falsos.</p>
+<div class="acad-cards">
+  <div class="acad-card"><div>🕐</div><b>Historial de comunicación</b><p>Timeline seguro por shopper. Se poblará cuando el backend registre los envíos reales.</p></div>
+  <div class="acad-card"><div>⭐</div><b>Ranking / scoring</b><p>Ayuda al admin a decidir. No autoasigna: la decisión sigue siendo humana.</p></div>
+  <div class="acad-card"><div>📐</div><b>Versionado de reglas</b><p>Cada proyecto/tenant versiona sus reglas; los cambios quedan con changelog draft→review→approved.</p></div>
+  <div class="acad-card"><div>🚦</div><b>Release readiness</b><p>Snapshot con blockers antes de habilitar producción.</p></div>
+  <div class="acad-card"><div>🧪</div><b>Synthetic pack</b><p>Fixtures de prueba — NO son la fuente real de datos del cliente.</p></div>
+</div>
+<blockquote>Regla de oro: si un dato no dice explícitamente que proviene de una fuente confirmada, trátalo como preview. El indicador de fuente de datos en el sidebar te lo aclara.</blockquote>`},
+         {id:'ab2',ic:'❓',n:'Evaluación',tipo:'quiz',quiz:[
+           {q:'El ranking de shoppers, ¿asigna visitas solo?',o:['Sí, automático','No: es ayuda para el admin; la decisión es humana','Solo en HN'],a:1,fb:'El ranking es apoyo a la decisión. La asignación la confirma una persona.'},
+           {q:'Ves "preparado / pendiente backend" en una acción. ¿Ya se ejecutó?',o:['Sí','No: la interfaz está lista, la ejecución real depende del gate de backend','Depende del plan'],a:1,fb:'"Preparado" = UI lista; la ejecución real ocurre cuando el gate de backend está activo.'},
+         ]},
+       ]},
+      /* ─── GLOSARIO & CHECKLISTS (referencia rápida) ─── */
+      {id:'a_glos',cat:'Inducción',ic:'📖',color:'#0891b2',n:'Glosario y checklists operativos',
+       desc:'Referencia de términos clave y listas de verificación reales para el día a día.',
+       lessons:[
+         {id:'ag1',ic:'📖',n:'Glosario CXOrbia',content:`
+<h2>Términos que usarás a diario</h2>
+<p>Referencia rápida. Estos conceptos aparecen en la plataforma y en los manuales técnicos.</p>
+<h3>Operación</h3>
+<dl class="acad-gloss">
+<dt>HR / Hoja de Ruta</dt><dd>El plan de visitas del periodo: qué sucursales, con qué escenario, en qué quincena y con qué honorario.</dd>
+<dt>Escenario</dt><dd>El guion de la visita (qué debe evaluar el shopper). Configurable por proyecto.</dd>
+<dt>Submitido</dt><dd>El momento en que el cuestionario se considera formalmente entregado. Configurable por proyecto; puede tomarse desde la HR.</dd>
+<dt>Revisión</dt><dd>Etapa formal del admin entre "cuestionario realizado" y "liquidación": aprobar, pedir corrección o marcar conflicto.</dd>
+<dt>Candidata (liquidación)</dt><dd>Una liquidación en preview operativo, aún sin cruce financiero real. No es un pago confirmado.</dd>
+</dl>
+<h3>Conceptos técnicos (backend)</h3>
+<dl class="acad-gloss">
+<dt>sourceSafe</dt><dd>Registro seguro de la fuente de HR: el backend guarda la conexión y devuelve un <code>sourceRef</code> opaco. La URL real nunca se guarda en el navegador.</dd>
+<dt>sourceVisitRef</dt><dd>Referencia opaca que vincula una visita con su fila de origen en la HR, sin exponer datos sensibles.</dd>
+<dt>sourcePaymentRef</dt><dd>Referencia opaca que vincula un pago con su origen, para trazabilidad sin exponer datos bancarios.</dd>
+<dt>manual_review_required</dt><dd>Estado que exige revisión humana del admin antes de avanzar (p. ej. inconsistencia detectada).</dd>
+<dt>held_for_conflict</dt><dd>Retenido por conflicto entre la plataforma y la HR; requiere reconciliación antes de liquidar.</dd>
+<dt>batchId / paymentItemId / movementId</dt><dd>Identificadores del backend para el lote de pago, cada ítem de pago y cada movimiento financiero. Aparecen cuando el backend está activo.</dd>
+</dl>
+<blockquote>Los conceptos técnicos son visibles pero su ejecución real depende del backend. En el prototipo se muestran como preparados/pendientes.</blockquote>`},
+         {id:'ag2',ic:'✅',n:'Checklist: publicar una ronda',content:`
+<h2>Antes de publicar visitas</h2>
+<p>Verifica cada punto. La lista es una guía real, no un párrafo.</p>
+<ul class="acad-check">
+<li class="done">Proyecto configurado (país, moneda, periodicidad de rondas)</li>
+<li class="done">Fuente de HR definida (interna, importada o registro seguro por backend)</li>
+<li>Cuestionario asignado al tipo de visita correcto</li>
+<li>Escenarios cargados para la quincena</li>
+<li>Honorarios por país configurados</li>
+<li>Certificación del proyecto lista (los shoppers no se postulan sin ella)</li>
+<li>Contactos de gestión (WhatsApp por tipo) configurados</li>
+</ul>
+<h3>Al cerrar el periodo</h3>
+<ul class="acad-check">
+<li>Cuestionarios en estado "realizado" revisados por el admin</li>
+<li>Revisión: aprobar / pedir corrección / marcar conflicto</li>
+<li>Submitido confirmado (manual o desde HR según config)</li>
+<li>Liquidaciones candidatas verificadas antes de mover a lote</li>
+</ul>
+<blockquote>Marca mental cada punto. Los estados reales de pago dependen del cruce financiero del backend.</blockquote>`},
+         {id:'ag3',ic:'❓',n:'Evaluación de referencia',tipo:'quiz',quiz:[
+           {q:'¿Qué significa que una liquidación esté como "candidata"?',o:['Que ya se pagó','Que está en preview operativo, sin cruce financiero real','Que fue rechazada'],a:1,fb:'Candidata = preview operativo. El pago real depende del cruce financiero del backend.'},
+           {q:'¿Dónde se guarda la URL real de una HR externa?',o:['En el navegador (localStorage)','En ningún lado del frontend; el backend la registra y devuelve un sourceRef opaco','En el cuestionario'],a:1,fb:'Nunca en el navegador. El backend hace el registro seguro (sourceSafe) y devuelve un sourceRef opaco.'},
+           {q:'¿Qué es la etapa de "Revisión"?',o:['Un paso opcional','La etapa formal del admin entre cuestionario realizado y liquidación','Lo mismo que el submitido'],a:1,fb:'Revisión es una etapa formal: aprobar, pedir corrección o marcar conflicto antes de liquidar.'},
+         ]},
+       ]},
       /* ─── INDUCCIÓN ─── */
       {id:'a_ind',cat:'Inducción',ic:'🚀',color:'#e0004d',n:'Inducción CXOrbia 360',
        desc:'Conoce la plataforma, el ciclo operativo y tu día a día como consultora.',
@@ -66,7 +177,7 @@ CX.acadData={
 <div class="acad-flow">
   <div class="acad-step"><span>1</span><b>Publicar</b><p>El equipo carga la HR o publica visitas manualmente. Nacen en estado "disponible".</p></div>
   <div class="acad-step"><span>2</span><b>Reservar/Postular</b><p>El shopper reserva sucursales o se postula. El equipo recibe notificación.</p></div>
-  <div class="acad-step"><span>3</span><b>Asignar</b><p>El equipo aprueba la postulación o asigna manualmente. La visita pasa a "asignada" y el shopper recibe WhatsApp automático.</p></div>
+  <div class="acad-step"><span>3</span><b>Asignar</b><p>El equipo aprueba la postulación o asigna manualmente. La visita pasa a "asignada" y se prepara la notificación al shopper (WhatsApp/in-app según configuración · pendiente backend).</p></div>
   <div class="acad-step"><span>4</span><b>Agendar</b><p>El shopper elige fecha y franja. El equipo recibe notificación.</p></div>
   <div class="acad-step"><span>5</span><b>Realizar</b><p>El shopper ejecuta la visita y la marca como realizada. Se habilita el cuestionario.</p></div>
   <div class="acad-step"><span>6</span><b>Cuestionario</b><p>El shopper llena el cuestionario el mismo día con evidencias. El score se calcula automáticamente.</p></div>
@@ -78,7 +189,7 @@ CX.acadData={
 <p>Ninguna acción vive aislada. Un solo evento dispara una cadena de actualizaciones automáticas en toda la plataforma. Entender esto te evita el trabajo manual duplicado y los errores de datos.</p>
 <h3>Ejemplo real: un shopper envía su cuestionario</h3>
 <div class="acad-flow">
-  <div class="acad-step"><span>1</span><b>Visita</b><p>La visita pasa de "realizada" a "cuestionario enviado". Su estado cambia en Visitas y en Mi Día.</p></div>
+  <div class="acad-step"><span>1</span><b>Visita</b><p>La visita pasa de "realizada" a "cuestionario realizado/completado". Su estado cambia en Visitas y en Mi Día.</p></div>
   <div class="acad-step"><span>2</span><b>Score</b><p>El cuestionario calcula el score ponderado por sección y lo guarda. El Portal del Cliente lo muestra en vivo.</p></div>
   <div class="acad-step"><span>3</span><b>Liquidación</b><p>Nace la liquidación con honorario + reembolso y su fecha estimada de pago (viernes + días configurados).</p></div>
   <div class="acad-step"><span>4</span><b>Beneficios</b><p>El shopper ve la liquidación en Mis Beneficios con estado y fecha.</p></div>
@@ -243,9 +354,9 @@ CX.acadData={
 <p>Cada visita que se realiza y cuyo cuestionario se envía, genera automáticamente una liquidación. No hay captura manual.</p>
 <h3>Estados de la liquidación</h3>
 <ol>
-<li><b>Pend. cuestionario</b>: la visita fue realizada pero el shopper no ha enviado el cuestionario.</li>
-<li><b>Pend. submitir</b>: el cuestionario está lleno pero no enviado.</li>
-<li><b>Validada</b>: cuestionario enviado y aprobado por QA. Lista para incluir en un lote.</li>
+<li><b>Pend. cuestionario</b>: la visita fue realizada pero el shopper no ha completado el cuestionario.</li>
+<li><b>Pend. submitir</b>: el cuestionario está completo pero no submitido.</li>
+<li><b>Validada</b>: cuestionario realizado y aprobado en revisión. Lista para incluir en un lote.</li>
 <li><b>En lote</b>: fue movida al lote de pago en construcción.</li>
 <li><b>Pagada</b>: el lote fue pagado. Se generó el egreso en Movimientos.</li>
 </ol>
@@ -403,6 +514,37 @@ CX.acadData={
            {q:'¿Qué información debe incluir el payload JSON que CXOrbia envía a Make al aprobar una postulación?',o:['Solo el ID del shopper','Solo el nombre de la visita','Un objeto completo con event.type, shopperNombre, shopperTelefono, sucursal, fecha, honorario y proyectoNombre','Solo el teléfono del shopper'],a:2,exp:'El payload debe ser completo para que Make no necesite hacer una segunda llamada a Firestore. Si solo mandas el ID de la visita, Make tiene que ir a buscar los datos de Firestore — eso agrega latencia, dependencia y complejidad. La regla de oro: el evento debe contener todo lo que el mensaje final (WhatsApp al shopper) necesita.'},
          ]}
        ]},
+      /* ─── RUTA OPERATIVA (equipo ops) ─── */
+      {id:'a_ops_conflicts_route',cat:'Operación',ic:'🎧',color:'#2a6fdb',n:'Equipo operativo: asignación, conflictos y fuera de rango',
+       desc:'Tu ruta diaria: aprobar postulaciones, reasignar, resolver conflictos de HR y autorizar visitas fuera de rango — con estados honestos.',
+       lessons:[
+         {id:'ao1',ic:'🧩',n:'Gestión de postulaciones',content:`
+<h2>De postulación a asignación</h2>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Revisar</b><p>Filtra por proyecto, país o estado. Cada postulación muestra quién la gestionó.</p></div>
+  <div class="acad-step"><span>2</span><b>Aprobar / standby / rechazar</b><p>Al aprobar, la visita pasa a "asignada" y se prepara la notificación (pendiente confirmación).</p></div>
+  <div class="acad-step"><span>3</span><b>Reasignar</b><p>Usa el buscador (país, certificación) para elegir otro shopper. Queda auditado.</p></div>
+</div>
+<div class="acad-section"><b>Sin duplicar</b><p>Si gestionas desde la plataforma y desde la HR, verifica que la visita quede con un solo gestor. El sync real lo resuelve el backend por llave natural.</p></div>`},
+         {id:'ao2',ic:'⚠️',n:'Conflictos y sincronía de HR',content:`
+<h2>Cuando la HR y la plataforma no coinciden</h2>
+<p>La sincronía con hoja de ruta externa (Google Sheets/Excel) queda <b>pendiente de backend</b>. Mientras tanto:</p>
+<ul class="acad-check">
+<li>Revisa el panel de incidencias de la Fuente de HR</li>
+<li>Un conflicto (held_for_conflict) se retiene hasta reconciliar</li>
+<li>No fuerces liquidación de una visita en conflicto</li>
+<li>Deja nota del criterio con que resolviste</li>
+</ul>
+<blockquote>Los estados "sincronizada / actualizada" reales dependen del gate de backend. En preview verás "preparado · pendiente backend".</blockquote>`},
+         {id:'ao3',ic:'📍',n:'Visitas fuera de rango',content:`
+<h2>Autorizar (o no) una visita fuera de rango</h2>
+<p>Una visita agendada fuera del rango permitido requiere autorización explícita del equipo.</p>
+<div class="acad-section"><b>Regla de puntaje</b><p>Solo penaliza al shopper si la causa es suya. Si la causa es del cliente, local cerrado o fuerza mayor, se autoriza sin penalización, con motivo y responsable registrados.</p></div>`},
+         {id:'ao4',ic:'❓',n:'Evaluación operativa',tipo:'quiz',quiz:[
+           {q:'Una visita está en conflicto (HR vs plataforma). ¿La liquidas?',o:['Sí, de inmediato','No: se retiene hasta reconciliar','Solo si el shopper insiste'],a:1,fb:'Un conflicto se retiene (held_for_conflict) hasta reconciliar. No se liquida forzado.'},
+           {q:'Apruebas una postulación. ¿El shopper ya recibió WhatsApp?',o:['Sí, automático','No: la notificación queda preparada, pendiente de confirmación/gate','Depende del país'],a:1,fb:'La notificación se prepara; el envío real depende del gate de backend.'},
+         ]},
+       ]},
       /* ─── FRANQUICIA / COORDINACIÓN ─── */
       {id:'a_coord',cat:'Franquicia',ic:'🌎',color:'#0891b2',n:'Coordinador, Representante y Aliado: administra tu región',
        desc:'La herramienta que la consultora te da para gestionar proyectos, HR, shoppers y liquidaciones de tu territorio.',cert:true,mins:70,
@@ -456,6 +598,55 @@ CX.acadData={
        ]},
     ],
     shopper:[
+      /* ─── RUTA OPERATIVA DEL SHOPPER (paso a paso) ─── */
+      {id:'s_ruta',cat:'Inducción',ic:'🧭',color:'#10b981',n:'Tu ruta operativa: de la oferta al pago',
+       desc:'Cada pantalla que usarás, en orden: agendar, reprogramar, realizar, cuestionario, beneficios y privacidad.',
+       lessons:[
+         {id:'sr1',ic:'📅',n:'Agendar y reprogramar',content:`
+<h2>De visita disponible a agendada</h2>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Visitas disponibles</b><p>Ves ofertas de TODOS los proyectos. Filtra por país, quincena o escenario.</p></div>
+  <div class="acad-step"><span>2</span><b>Postularte / reservar</b><p>Te postulas a la sucursal que quieras. Queda "pendiente" hasta que el equipo apruebe.</p></div>
+  <div class="acad-step"><span>3</span><b>Agendar</b><p>Cuando te aprueban, eliges fecha y franja dentro del rango permitido.</p></div>
+</div>
+<h3>Reprogramar</h3>
+<p>Si necesitas cambiar la fecha, solicita reprogramación desde la visita. El equipo autoriza la nueva fecha o conserva la anterior. <b>Una reprogramación justificada no afecta tu puntaje.</b></p>
+<div class="acad-section">⚠️ <b>Fuera de rango:</b> si agendas fuera del rango autorizado, requiere aprobación. Solo penaliza si la causa es tuya.</div>`},
+         {id:'sr2',ic:'✅',n:'Realizar la visita y evidencias',content:`
+<h2>El día de la visita</h2>
+<ul class="acad-check">
+<li>Marca la visita como <b>realizada</b> cuando termines</li>
+<li>Adjunta las evidencias que pida el escenario (foto, foto geolocalizada, audio o video)</li>
+<li>Si el add-on de geolocalización está activo, la foto lleva GPS + fecha/hora automáticos</li>
+<li>Completa el cuestionario</li>
+</ul>
+<div class="acad-section"><b>Modal al marcar realizada</b><p>Al marcar realizada aparece el botón del cuestionario y el contacto de evidencias. No cierres sin completar el cuestionario.</p></div>`},
+         {id:'sr3',ic:'📝',n:'Cuestionario: realizado/completado',content:`
+<h2>Completar el cuestionario</h2>
+<p>Según el proyecto, el cuestionario puede ser <b>interno</b> (formulario en la plataforma) o <b>externo por link</b> (general o propio de cada visita, desde la hoja de ruta).</p>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Abrir</b><p>Si es externo, abre el link de ESTA visita. Si falta el link, avisa a soporte; no uses otro formulario.</p></div>
+  <div class="acad-step"><span>2</span><b>Completar</b><p>Responde con evidencia y narrativa objetiva.</p></div>
+  <div class="acad-step"><span>3</span><b>Marcar realizado/completado</b><p>El cuestionario queda "realizado/completado". Luego pasa a revisión del equipo.</p></div>
+</div>
+<blockquote>El texto correcto es "realizado/completado", no "enviado". Después de tu cuestionario viene la revisión del admin antes de cualquier liquidación.</blockquote>`},
+         {id:'sr4',ic:'💰',n:'Mis Beneficios y privacidad',content:`
+<h2>Cobrar y proteger tus datos</h2>
+<p>En <b>Mis Beneficios</b> ves tus honorarios, reembolsos y el estado de cada pago con su fecha estimada.</p>
+<div class="acad-section"><b>Estados honestos</b><p>Un pago no dice "pagado" hasta el cruce financiero real. Antes verás "candidata / preview / pendiente".</p></div>
+<h3>Tus datos bancarios</h3>
+<p>Registra tus datos bancarios en tu perfil para agilizar pagos. <b>Son datos sensibles:</b> se protegen y solo se referencian de forma opaca. La plataforma nunca los expone públicamente.</p>
+<ul class="acad-check">
+<li>Perfil completo (nombre, documento, WhatsApp)</li>
+<li>Datos bancarios registrados</li>
+<li>Certificación del proyecto aprobada</li>
+</ul>`},
+         {id:'sr5',ic:'❓',n:'Evaluación de tu ruta',tipo:'quiz',quiz:[
+           {q:'Reprogramas una visita con causa justificada. ¿Afecta tu puntaje?',o:['Sí, siempre','No, una reprogramación justificada no penaliza','Solo si es fin de semana'],a:1,fb:'Una reprogramación justificada no penaliza. Solo penaliza lo que es responsabilidad del shopper.'},
+           {q:'El proyecto usa cuestionario externo por link y falta el link de tu visita. ¿Qué haces?',o:['Uso cualquier formulario interno','Aviso a soporte y espero el link de esa visita','Invento las respuestas'],a:1,fb:'Nunca uses otro formulario. Avisa a soporte; el link correcto es el de esa visita, desde la hoja de ruta.'},
+           {q:'En Mis Beneficios, un pago aparece como "candidata". ¿Ya te pagaron?',o:['Sí','No: es preview, el pago real depende del cruce financiero','Depende del país'],a:1,fb:'"Candidata/preview" no es pago confirmado. El pago real ocurre con el cruce financiero del backend.'},
+         ]},
+       ]},
       {id:'s_ind',cat:'Inducción',ic:'🕵️',color:'#10b981',n:'Inducción del evaluador incógnito',
        desc:'Tu rol, las reglas de oro, el anonimato y cómo crecer profesionalmente.',
        cert:true,mins:60,
@@ -589,10 +780,10 @@ CX.acadData={
          {id:'ss1',ic:'💰',n:'Cómo se calcula y cuándo recibes tu pago',content:`
 <h2>El ciclo de pago</h2>
 <div class="acad-flow">
-  <div class="acad-step"><span>1</span><b>Realizas y envías el cuestionario</b><p>Al hacer submit, tu visita pasa a estado "enviada" y se genera automáticamente una liquidación pendiente con tu honorario.</p></div>
-  <div class="acad-step"><span>2</span><b>Revisión del equipo</b><p>El coordinador revisa tu cuestionario y evidencias. Si hay observaciones, te notificarán por la plataforma.</p></div>
-  <div class="acad-step"><span>3</span><b>Aprobación y lote de pago</b><p>Tu liquidación se incluye en el lote de pago de la quincena correspondiente. Recibirás notificación cuando el lote sea aprobado.</p></div>
-  <div class="acad-step"><span>4</span><b>Transferencia a tu cuenta</b><p>El pago se procesa a los datos bancarios que registraste en Mi Perfil. Verifica que estén correctos y actualizados.</p></div>
+  <div class="acad-step"><span>1</span><b>Realizas y completas el cuestionario</b><p>Tu visita pasa a "cuestionario realizado/completado". Aún no genera liquidación: primero va a revisión.</p></div>
+  <div class="acad-step"><span>2</span><b>Revisión del equipo</b><p>El coordinador revisa tu cuestionario y evidencias. Si hay observaciones, te notifican por la plataforma.</p></div>
+  <div class="acad-step"><span>3</span><b>Submitido y lote de pago</b><p>Tras la revisión y el submitido, tu liquidación candidata puede incluirse en el lote de la quincena.</p></div>
+  <div class="acad-step"><span>4</span><b>Transferencia (backend)</b><p>El pago real se procesa por backend a tus datos bancarios. Verifica que estén correctos en Mi Perfil.</p></div>
 </div>
 <h3>¿Qué hacer si hay un error en tu pago?</h3>
 <p>Abre un ticket de soporte con: visita afectada, monto esperado vs. monto recibido, y captura de la liquidación. El equipo responderá en máx. 48 horas hábiles.</p>`},
@@ -673,6 +864,40 @@ CX.acadData={
     ],
     /* ─── CLIENTE ─── */
     cliente:[
+      /* ─── RUTA DEL CLIENTE (lectura estratégica, sin operar) ─── */
+      {id:'cl_ruta',cat:'Portal',ic:'🧭',color:'#f59e0b',n:'Tu ruta en el portal: leer y decidir',
+       desc:'Cómo interpretar estados y resultados sin operar la plataforma — tu rol es estratégico.',
+       lessons:[
+         {id:'clr1',ic:'📊',n:'Qué ves y qué NO operas',content:`
+<h2>Tu portal es de lectura estratégica</h2>
+<p>Como cliente ves resultados y tomas decisiones. La operación (asignar, agendar, pagar) la hace la consultora.</p>
+<div class="acad-cards">
+  <div class="acad-card"><div>📈</div><b>Panorama</b><p>Score ponderado, ranking de sucursales, evolución.</p></div>
+  <div class="acad-card"><div>🏬</div><b>Sucursales & Score</b><p>Detalle por sucursal, hallazgos, evidencias.</p></div>
+  <div class="acad-card"><div>🎯</div><b>Planes de acción</b><p>Incentivos, mejora, seguimiento.</p></div>
+  <div class="acad-card"><div>📊</div><b>Insights & Benchmark</b><p>NPS, comparativo vs industria, anotaciones.</p></div>
+</div>`},
+         {id:'clr2',ic:'🚦',n:'Leer los estados correctamente',content:`
+<h2>Estados honestos: qué significan</h2>
+<div class="acad-section"><b>Preview / candidata</b><p>Dato operativo aún sin confirmación final del backend. No es cifra cerrada.</p></div>
+<div class="acad-section"><b>Pendiente backend</b><p>La integración (correo, WhatsApp, sincronía) está preparada pero aún no ejecuta en vivo.</p></div>
+<div class="acad-section"><b>En vivo</b><p>Solo cuando el dato proviene de una fuente confirmada. Si no lo dice, trátalo como preview.</p></div>
+<blockquote>No interpretes un "preview" como resultado final. Pregunta a tu consultora cuándo el dato queda confirmado.</blockquote>`},
+         {id:'clr3',ic:'🤝',n:'Solicitar acciones y soporte',content:`
+<h2>Cómo pedir sin operar</h2>
+<ul class="acad-check">
+<li>Solicitar un reporte personalizado</li>
+<li>Pedir una reunión de revisión de resultados</li>
+<li>Abrir soporte desde tu portal</li>
+<li>Solicitar capacitación dirigida a tus áreas débiles</li>
+<li>Cargar documentos (protocolos, imagen de marca) para el set-up</li>
+</ul>
+<div class="acad-section"><b>Datos sensibles</b><p>Los documentos que cargas se referencian de forma segura. La consultora los usa para el set-up; no se exponen públicamente.</p></div>`},
+         {id:'clr4',ic:'❓',n:'Evaluación del portal',tipo:'quiz',quiz:[
+           {q:'Ves un margen en estado "preview". ¿Es cifra final?',o:['Sí','No: es dato operativo sin confirmación final del backend','Solo si es de este mes'],a:1,fb:'Preview = dato operativo sin confirmar. La cifra final la confirma el backend/consultora.'},
+           {q:'Quieres cambiar la asignación de un shopper. ¿Puedes?',o:['Sí, desde mi portal','No: la operación la hace la consultora; yo decido y solicito','Solo los viernes'],a:1,fb:'Tu rol es estratégico: lees y decides. La operación la ejecuta la consultora.'},
+         ]},
+       ]},
       {id:'cl_por',cat:'Portal',ic:'🏬',color:'#f59e0b',n:'Tu portal de resultados estratégicos',
        desc:'Lee tu score, el ranking de sucursales y toma decisiones basadas en evidencia.',
        cert:false,mins:45,
@@ -1297,23 +1522,46 @@ CX.module('aprendizaje', ({data,role,ui})=>{
 
 /* ── CSS de la Academia ── */
 (()=>{const s=document.createElement('style');s.textContent=`
-.acad-content{font-size:13.5px;color:var(--t2);line-height:1.7}
-.acad-content h2{font-size:17px;font-weight:800;color:var(--t1);margin:0 0 12px}
-.acad-content h3{font-size:14px;font-weight:700;color:var(--t1);margin:16px 0 8px}
-.acad-content ul,.acad-content ol{margin:0 0 12px 20px;line-height:1.9}
-.acad-content p{margin:0 0 10px}
-.acad-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:14px 0}
-.acad-card{background:var(--brand-light);border-radius:10px;padding:13px;text-align:center}
-.acad-card div{font-size:24px;margin-bottom:6px}
-.acad-card b{font-size:12.5px;color:var(--t1);display:block;margin-bottom:4px}
-.acad-card p{font-size:11.5px;color:var(--t3);margin:0}
-.acad-section{background:var(--panel-2,#f8f9fa);border-left:3px solid var(--brand);border-radius:0 9px 9px 0;padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--t2)}
-.acad-section b{color:var(--t1);display:block;margin-bottom:4px;font-size:13.5px}
-.acad-flow{display:flex;flex-direction:column;gap:8px;margin:14px 0}
-.acad-step{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;border:1px solid var(--border);border-radius:10px}
-.acad-step span{width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-.acad-step b{font-size:13px;color:var(--t1);display:block;margin-bottom:3px}
-.acad-step p{font-size:12px;color:var(--t3);margin:0}
+/* ── Formato de marca CXOrbia para lecciones y manuales (estilo Orbit) ── */
+.acad-content{font-size:14px;color:var(--t2);line-height:1.75;counter-reset:acadsec}
+.acad-content h2{font-size:19px;font-weight:800;color:var(--t1);margin:24px 0 12px;padding-left:42px;position:relative;min-height:32px;display:flex;align-items:center}
+.acad-content h2::before{counter-increment:acadsec;content:counter(acadsec);position:absolute;left:0;top:0;width:32px;height:32px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;box-shadow:0 3px 8px rgba(33,150,211,.28)}
+.acad-content h2:first-child{margin-top:0}
+.acad-content h3{font-size:15px;font-weight:800;color:var(--brand-dark);margin:20px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--brand-light)}
+.acad-content ul,.acad-content ol{margin:0 0 12px 4px;padding-left:22px;line-height:1.85}
+.acad-content li{margin:4px 0}
+.acad-content li::marker{color:var(--brand)}
+.acad-content p{margin:0 0 10px;color:var(--t2)}
+.acad-content b{color:var(--t1)}
+.acad-content code{background:#eef4fb;padding:2px 7px;border-radius:5px;font-size:12.5px;font-family:'SF Mono',Menlo,monospace;color:var(--brand-dark)}
+.acad-content blockquote{border-left:4px solid var(--brand);background:var(--brand-light);border-radius:0 10px 10px 0;padding:11px 16px;margin:12px 0;color:var(--brand-dark);font-size:13.5px}
+/* tarjetas con ícono (grid) */
+.acad-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:16px 0}
+.acad-card{background:#fff;border:1px solid var(--border);border-top:3px solid var(--brand);border-radius:13px;padding:16px;box-shadow:0 2px 10px rgba(13,39,64,.05);transition:transform .12s}
+.acad-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(13,39,64,.1)}
+.acad-card>div:first-child,.acad-card div:first-child{font-size:26px;margin-bottom:8px}
+.acad-card b{font-size:13px;color:var(--t1);display:block;margin-bottom:5px}
+.acad-card p{font-size:12px;color:var(--t3);margin:0;line-height:1.55}
+/* caja de sección (acento de marca, elevada) */
+.acad-section{background:linear-gradient(180deg,#fff,var(--panel-2,#f8fafc));border:1px solid var(--border);border-left:4px solid var(--brand);border-radius:0 12px 12px 0;padding:13px 16px;margin:0 0 12px;font-size:13.5px;color:var(--t2);box-shadow:0 2px 8px rgba(13,39,64,.04)}
+.acad-section b{color:var(--t1);font-weight:800}
+.acad-section b:first-child{display:block;margin-bottom:4px;font-size:14px;color:var(--brand-dark)}
+.acad-section p{margin:4px 0 0}
+/* flujo numerado en tarjetas (grid horizontal, estilo Orbit) */
+.acad-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0}
+.acad-step{background:#fff;border:1px solid var(--border);border-radius:13px;padding:15px 15px 14px;position:relative;box-shadow:0 2px 10px rgba(13,39,64,.05)}
+.acad-step span{display:inline-flex;width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;font-weight:800;font-size:13px;align-items:center;justify-content:center;margin-bottom:9px;box-shadow:0 3px 8px rgba(33,150,211,.28)}
+.acad-step b{font-size:13.5px;color:var(--t1);display:block;margin-bottom:4px}
+.acad-step p{font-size:12px;color:var(--t3);margin:0;line-height:1.55}
+/* checklist real (marca) */
+.acad-check{list-style:none;margin:12px 0;padding:0}
+.acad-check li{position:relative;padding:8px 8px 8px 34px;border:1px solid var(--border);border-radius:10px;margin-bottom:7px;background:#fff;font-size:13px;color:var(--t2)}
+.acad-check li::before{content:'';position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;border:2px solid var(--brand);border-radius:5px}
+.acad-check li.done::before{background:var(--brand);box-shadow:inset 0 0 0 2px #fff}
+/* glosario / definición */
+.acad-gloss{display:grid;gap:8px;margin:12px 0}
+.acad-gloss dt{font-weight:800;color:var(--brand-dark);font-size:13.5px}
+.acad-gloss dd{margin:0 0 6px;font-size:13px;color:var(--t2);padding-left:12px;border-left:2px solid var(--brand-light)}
 .acad-opt:hover{background:var(--brand-light);border-color:var(--brand)}
 @media(max-width:680px){[style*="grid-template-columns:220px"]{grid-template-columns:1fr!important}}
 `;document.head.appendChild(s);})();
