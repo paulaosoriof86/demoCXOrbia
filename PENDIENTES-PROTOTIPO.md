@@ -16,6 +16,15 @@ Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backe
 - Pendiente P0/P1 V89: `manuales-data.js`, `reservas.js`, `correo.js`, `topbar.js`, `finanzas.js`, `importador.js`, `operacion-extra.js` y `academia.js` conservan residuos de enviado/notificado/sincronizado/en vivo que deben pasar a estados honestos cuando no exista proveedor/gate real.
 - Claude debe entregar una candidata ultra-corta corrigiendo solo residuos de textos honestos y coherencia Academia/manuales, sin redisenar ni tocar backend.
 
+## Addendum V88 - auditoria Claude candidate
+
+- V88 fue auditada como candidata correctiva P0/P1/P2, pero NO quedo como source lock final ni backlog 100% cerrado.
+- Ver auditoria: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V88-CLAUDE-20260706.md`.
+- V88 resolvio parcialmente textos honestos en `app/core/automations.js` y algunos textos de `app/modules/postulaciones.js`.
+- V88 agrego el curso `Capacidades de backend: que esta preparado`, pero con ID duplicado `a_backend`.
+- V88 agrego la ruta `Equipo operativo: asignacion, conflictos y fuera de rango`, pero con ID duplicado `a_ops`.
+- Pendiente V88 para Claude: generar V89 ultra-corta con IDs unicos y correcciones puntuales de textos honestos, sin tocar backend ni integraciones reales.
+
 ## Addendum Liquidaciones/Cinepolis source-safe preview validator
 
 - Backend agrego contrato y validador source-safe para liquidaciones/corte junio y Cinepolis Boleto/Combo.
@@ -58,7 +67,7 @@ Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backe
 
 - V80 fue auditado como candidato nuevo de Claude, pero no queda empalmado ni aprobado como baseline.
 - Ver auditoria: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V80-CLAUDE-20260704.md`.
-- Avances utiles de V80: agrega `app/modules/revision-admin.js`, carga el modulo en `app/index.html`, agrega boton de revision en `app/modules/dashboard.js`, mejora textos de automatizaciones, conserva `nvBanner` y sube SaaS Console a V79.
+- Avances utiles de V80: agrega `app/modules/revision-admin.js`, carga el modulo en `app/index.html`, agrega boton de revision en `app/modules/dashboard.js`, mejora textos de automatizaciones, conserva `nvBanner` y sube SaaS Console V79.
 - No empalmar V80 completo todavia: debe corregirse antes con Claude.
 - P0 de no regresion: `app/modules/proyecto-wizard.js` debe partir del archivo actual del repo, no del ZIP V80, porque V80 vuelve a usar valores legacy `externa` y `link` en el selector/guardado.
 - P0 de no regresion: `app/modules/cuestionario-shopper.js` debe conservar busqueda de links en `questionnaireLink`, `cuestionarioUrl`, `linkCuestionario`, `urlCuestionario`, `hrQuestionnaireLink`; V80 no trae todos.
