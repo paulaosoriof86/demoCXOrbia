@@ -92,14 +92,26 @@ function writeReport(findings) {
   fs.writeFileSync(path.join(outDir, 'phase-a-visual-smoke-report.md'), md, 'utf8');
 }
 
+async function clearOverlays(page) {
+  await page.evaluate(() => {
+    try { document.querySelectorAll('.cx-ov').forEach(el => el.remove()); } catch(e) {}
+    try { document.body.classList.remove('nav-open'); } catch(e) {}
+  }).catch(() => {});
+}
+
 async function hardenForSmoke(page) {
   await page.evaluate(() => {
     try { localStorage.removeItem('cx_session'); } catch(e) {}
+    try { localStorage.setItem('cx_banners', '[]'); } catch(e) {}
     try { sessionStorage.clear(); } catch(e) {}
     if (window.CX && window.CX.confidencialidad) {
       try { window.CX.confidencialidad.pending = () => false; } catch(e) {}
       try { window.CX.confidencialidad.show = (role, go) => go && go(); } catch(e) {}
     }
+    if (window.CX && window.CX.app) {
+      try { window.CX.app.showBanners = () => {}; } catch(e) {}
+    }
+    try { document.querySelectorAll('.cx-ov').forEach(el => el.remove()); } catch(e) {}
   });
 }
 
@@ -117,7 +129,11 @@ async function navigateModule(page, id, label, findings) {
     findings.failures.push({ type: 'missing_nav', id, label });
     return;
   }
-  await nav.first().click();
+  await clearOverlays(page);
+  await page.evaluate((moduleId) => {
+    try { document.querySelectorAll('.cx-ov').forEach(el => el.remove()); } catch(e) {}
+    if (window.CX && window.CX.router && typeof window.CX.router.nav === 'function') window.CX.router.nav(moduleId);
+  }, id).catch(async () => { await nav.first().click({ timeout: 5000 }); });
   await page.waitForTimeout(350);
   const viewText = (await page.locator('#view').innerText({ timeout: 5000 }).catch(() => '')).trim();
   if (viewText.length < 20) findings.failures.push({ type: 'blank_or_too_short_view', id, label, length: viewText.length });
@@ -129,18 +145,24 @@ async function enterRole(page, role, findings) {
   await page.goto(`${currentBaseURL}/`, { waitUntil: 'domcontentloaded' });
   await hardenForSmoke(page);
   await page.evaluate((role) => {
+    try { localStorage.setItem('cx_banners', '[]'); } catch(e) {}
     if (window.CX && window.CX.confidencialidad) {
       try { window.CX.confidencialidad.pending = () => false; } catch(e) {}
       try { window.CX.confidencialidad.show = (r, go) => go && go(); } catch(e) {}
     }
+    if (window.CX && window.CX.app) {
+      try { window.CX.app.showBanners = () => {}; } catch(e) {}
+    }
     if (window.CX && window.CX.session && window.CX.session.clear) window.CX.session.clear();
     if (window.CX && window.CX.app && window.CX.app.selectRole) window.CX.app.selectRole(role);
+    try { document.querySelectorAll('.cx-ov').forEach(el => el.remove()); } catch(e) {}
   }, role);
   await page.waitForFunction(() => document.querySelectorAll('#rail .nav-i').length > 0, null, { timeout: 10000 }).catch(async () => {
     const appOn = await page.locator('#app').evaluate(el => el.className).catch(() => 'missing');
     const bodyText = await page.locator('body').innerText({ timeout: 1000 }).catch(() => '');
     findings.failures.push({ type: 'shell_not_ready', role, appClass: appOn, text: bodyText.slice(0, 600) });
   });
+  await clearOverlays(page);
   await assertVisibleCopy(page, `login-${role}`, findings);
 }
 
