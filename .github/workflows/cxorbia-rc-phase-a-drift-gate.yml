@@ -1,0 +1,67 @@
+name: CXOrbia RC Phase A Drift Gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'app/index.html'
+      - 'app/app.js'
+      - 'app/core/**'
+      - 'app/modules/**'
+      - 'app/styles/**'
+      - 'app/manifest.webmanifest'
+      - 'tools/release/tya-rc-phase-a-drift-gate.mjs'
+      - '.github/workflows/cxorbia-rc-phase-a-drift-gate.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'app/index.html'
+      - 'app/app.js'
+      - 'app/core/**'
+      - 'app/modules/**'
+      - 'app/styles/**'
+      - 'app/manifest.webmanifest'
+      - 'tools/release/tya-rc-phase-a-drift-gate.mjs'
+      - '.github/workflows/cxorbia-rc-phase-a-drift-gate.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  rc-phase-a-drift:
+    name: RC Phase A drift gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run drift gate
+        run: |
+          node tools/release/tya-rc-phase-a-drift-gate.mjs \
+            --validated a7fb4f00cf1adf1e6e92ee7b1de897cfdbacd374 \
+            --out .tmp/rc-phase-a-drift
+
+      - name: Upload drift report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rc-phase-a-drift-report
+          path: .tmp/rc-phase-a-drift
+          if-no-files-found: ignore
+          retention-days: 14
