@@ -1,0 +1,53 @@
+name: CXOrbia Phase A RC Smoke Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'app/**'
+      - 'tools/migration/**'
+      - '.github/workflows/cxorbia-phase-a-rc-smoke.yml'
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'app/**'
+      - 'tools/migration/**'
+      - '.github/workflows/cxorbia-phase-a-rc-smoke.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  phase-a-rc-smoke:
+    name: Phase A RC smoke gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run Phase A RC smoke gate
+        run: |
+          node tools/migration/tya-phase-a-rc-smoke-gate.mjs --out .tmp/phase-a-rc-smoke
+
+      - name: Upload smoke report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-rc-smoke-report
+          path: .tmp/phase-a-rc-smoke
+          if-no-files-found: ignore
+          retention-days: 14
