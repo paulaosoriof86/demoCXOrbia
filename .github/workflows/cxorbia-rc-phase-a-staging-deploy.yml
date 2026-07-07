@@ -1,5 +1,6 @@
 name: CXOrbia RC Phase A Staging Deploy
 
+# Controlled Hosting preview only. No Firestore/Storage rules, Functions, imports or providers.
 on:
   workflow_dispatch:
   push:
