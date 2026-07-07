@@ -4,9 +4,9 @@ Fecha: 2026-07-07
 
 ## Bloque completado
 
-Se agrego validador estatico de readiness para identificar que falta para cerrar el bloque de hoy sin depender de la conversacion.
+Se agrego y actualizo validador estatico de readiness para identificar que falta para cerrar el bloque de hoy sin depender de la conversacion.
 
-Archivo creado:
+Archivo base:
 
 - `tools/release/tya-phase-a-today-finish-readiness.mjs`
 
@@ -16,7 +16,7 @@ Verificar rapidamente si los documentos, gates, contratos y scripts necesarios p
 
 Este validador no ejecuta deploy, no lee secrets, no llama proveedores, no escribe base y no importa datos.
 
-## Que revisa
+## Que revisa el validador base
 
 El validador confirma presencia de:
 
@@ -36,6 +36,16 @@ El validador confirma presencia de:
 - preview sync asignaciones;
 - outbox sync asignaciones.
 
+## Actualizacion de cierre acumulado
+
+Despues de crear el validador base, tambien quedaron confirmados en repo:
+
+- workflow manual de remote smoke post-staging;
+- indice Claude actualizado de patrones backend/producto reutilizables;
+- contrato de sync Academia / reglas de proyecto;
+- contrato de estados de beneficios/liquidaciones;
+- matriz de autorizacion por niveles de cutover.
+
 ## Bloqueos externos identificados
 
 Para terminar hoy con staging validado falta confirmar desde GitHub/Firebase:
@@ -47,32 +57,38 @@ Para terminar hoy con staging validado falta confirmar desde GitHub/Firebase:
 
 ## Que necesito de Paula
 
-Por ahora no necesito nueva revision de logica.
+Ahora no necesito nueva revision de logica.
 
-Solo necesito intervencion de Paula si aparece alguno de estos casos:
+Necesito accion de Paula solo si aparece alguno de estos casos:
 
 - GitHub Actions muestra fallo en `CXOrbia RC Phase A Staging Deploy`;
 - falta el secret `FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV`;
 - el workflow entrega URL de staging para validar;
-- Paula decide autorizar produccion real o merge final, lo cual es una autorizacion distinta.
+- Paula decide autorizar produccion real, merge final, integraciones reales o import real.
+
+## Siguiente paso recomendado
+
+Mientras no exista URL de staging, el avance debe seguir cerrando contratos seguros de Phase A y manteniendo actualizado el paquete Claude.
+
+Cuando exista URL de staging, el siguiente paso exacto sera ejecutar el workflow `CXOrbia Phase A Remote Smoke` con `base_url` y documentar el artifact generado.
 
 ## Clasificacion del bloque
 
 ### Reusable CXOrbia
 
-El validador es reusable como patron de cierre para futuros clientes: confirma artefactos de gates, contratos, staging y paquete Claude antes de mover a validacion real.
+El validador y esta matriz de readiness son reusables como patron de cierre para futuros clientes: confirman artefactos de gates, contratos, staging y paquete Claude antes de mover a validacion real.
 
 ### Exclusivo cliente
 
-El nombre del script es TyA porque corresponde al cierre actual, pero el patron es reusable.
+El cierre actual corresponde a TyA, pero el patron de readiness es reusable.
 
 ### Claude/prototipo
 
-No cambia UI, pero ayuda a garantizar que el paquete Claude tenga los patrones reutilizables y el addendum actualizado.
+No cambia UI, pero ayuda a garantizar que el paquete Claude tenga patrones reutilizables, addendum actualizado y pendientes vivos.
 
 ### Academia
 
-Sin cambio funcional directo. Mantiene control de que los impactos Academia se clasifiquen por bloque y lleguen a Claude cuando correspondan.
+Mantiene control de que los impactos Academia se clasifiquen por bloque y lleguen a Claude cuando correspondan.
 
 ### Sin impacto Claude
 
