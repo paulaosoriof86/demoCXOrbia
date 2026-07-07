@@ -1,0 +1,69 @@
+name: CXOrbia RC Phase A Predeploy Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'firebase.json'
+      - '.firebaserc'
+      - 'app/index.html'
+      - 'app/app.js'
+      - 'app/core/**'
+      - 'app/modules/**'
+      - 'app/styles/**'
+      - 'app/manifest.webmanifest'
+      - 'tools/release/tya-rc-phase-a-predeploy-gate.mjs'
+      - '.github/workflows/cxorbia-rc-phase-a-predeploy-gate.yml'
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'firebase.json'
+      - '.firebaserc'
+      - 'app/index.html'
+      - 'app/app.js'
+      - 'app/core/**'
+      - 'app/modules/**'
+      - 'app/styles/**'
+      - 'app/manifest.webmanifest'
+      - 'tools/release/tya-rc-phase-a-predeploy-gate.mjs'
+      - '.github/workflows/cxorbia-rc-phase-a-predeploy-gate.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  rc-phase-a-predeploy:
+    name: RC Phase A predeploy gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run predeploy gate
+        run: |
+          node tools/release/tya-rc-phase-a-predeploy-gate.mjs --out .tmp/rc-phase-a-predeploy
+
+      - name: Upload predeploy report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rc-phase-a-predeploy-report
+          path: .tmp/rc-phase-a-predeploy
+          if-no-files-found: ignore
+          retention-days: 14
