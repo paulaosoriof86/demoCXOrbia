@@ -26,7 +26,10 @@ const allowedPrefixes = [
   'docs/',
   'README',
   '.github/workflows/cxorbia-rc-phase-a-drift-gate.yml',
-  'tools/release/tya-rc-phase-a-drift-gate.mjs'
+  '.github/workflows/cxorbia-rc-phase-a-predeploy-gate.yml',
+  '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml',
+  'tools/release/tya-rc-phase-a-drift-gate.mjs',
+  'tools/release/tya-rc-phase-a-predeploy-gate.mjs'
 ];
 const allowedExact = [
   '.gitignore'
@@ -59,7 +62,7 @@ const report = {
   generatedAt: new Date().toISOString(),
   validatedRuntimeSha: validated,
   head: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
-  verdict: blocked.length ? 'NO_GO_DRIFT' : 'GO_DOCS_ONLY_AFTER_VALIDATION',
+  verdict: blocked.length ? 'NO_GO_DRIFT' : 'GO_DOCS_RELEASE_ONLY_AFTER_VALIDATION',
   changedCount: files.length,
   blockedCount: blocked.length,
   changedFiles: files,
