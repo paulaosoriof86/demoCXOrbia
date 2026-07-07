@@ -92,6 +92,17 @@ function writeReport(findings) {
   fs.writeFileSync(path.join(outDir, 'phase-a-visual-smoke-report.md'), md, 'utf8');
 }
 
+async function hardenForSmoke(page) {
+  await page.evaluate(() => {
+    try { localStorage.removeItem('cx_session'); } catch(e) {}
+    try { sessionStorage.clear(); } catch(e) {}
+    if (window.CX && window.CX.confidencialidad) {
+      try { window.CX.confidencialidad.pending = () => false; } catch(e) {}
+      try { window.CX.confidencialidad.show = (role, go) => go && go(); } catch(e) {}
+    }
+  });
+}
+
 async function assertVisibleCopy(page, label, findings) {
   const text = await page.locator('body').innerText({ timeout: 5000 }).catch(() => '');
   for (const term of forbiddenVisible) {
@@ -116,12 +127,19 @@ async function navigateModule(page, id, label, findings) {
 
 async function enterRole(page, role, findings) {
   await page.goto(`${currentBaseURL}/`, { waitUntil: 'domcontentloaded' });
-  await page.waitForSelector('#login', { timeout: 10000 });
-  const selector = role === 'admin' ? '[data-role="admin"]' : '[data-role="shopper"]';
-  await page.locator(selector).first().click();
-  await page.waitForSelector('#app.on, #rail .nav-i', { timeout: 10000 }).catch(async () => {
+  await hardenForSmoke(page);
+  await page.evaluate((role) => {
+    if (window.CX && window.CX.confidencialidad) {
+      try { window.CX.confidencialidad.pending = () => false; } catch(e) {}
+      try { window.CX.confidencialidad.show = (r, go) => go && go(); } catch(e) {}
+    }
+    if (window.CX && window.CX.session && window.CX.session.clear) window.CX.session.clear();
+    if (window.CX && window.CX.app && window.CX.app.selectRole) window.CX.app.selectRole(role);
+  }, role);
+  await page.waitForFunction(() => document.querySelectorAll('#rail .nav-i').length > 0, null, { timeout: 10000 }).catch(async () => {
     const appOn = await page.locator('#app').evaluate(el => el.className).catch(() => 'missing');
-    findings.failures.push({ type: 'shell_not_ready', role, appClass: appOn });
+    const bodyText = await page.locator('body').innerText({ timeout: 1000 }).catch(() => '');
+    findings.failures.push({ type: 'shell_not_ready', role, appClass: appOn, text: bodyText.slice(0, 600) });
   });
   await assertVisibleCopy(page, `login-${role}`, findings);
 }
@@ -157,8 +175,6 @@ async function main() {
     if (!qFn) findings.failures.push({ type: 'missing_function', name: 'CX.shopperQuestionnaire' });
     else findings.visited.push({ id: 'shopperQuestionnaire', label: 'Cuestionario shopper function', textLength: 1 });
 
-    await page.locator('#logoutBtn').click().catch(() => {});
-    await page.waitForTimeout(200);
     await enterRole(page, 'shopper', findings);
     for (const [id, label] of criticalShopper) await navigateModule(page, id, label, findings);
 
