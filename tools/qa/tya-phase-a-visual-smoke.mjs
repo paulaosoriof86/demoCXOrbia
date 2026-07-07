@@ -22,6 +22,7 @@ const args = process.argv.slice(2);
 const outIndex = args.indexOf('--out');
 const outDir = outIndex >= 0 ? path.resolve(root, args[outIndex + 1]) : path.resolve(root, '.tmp/phase-a-visual-smoke');
 const headless = !args.includes('--headed');
+let currentBaseURL = '';
 
 const mime = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -74,6 +75,23 @@ const forbiddenVisible = [
   'Google Sheets en vivo', 'portal en vivo', 'pago automático', 'egreso automático'
 ];
 
+function writeReport(findings) {
+  fs.mkdirSync(outDir, { recursive: true });
+  findings.verdict = findings.failures.length ? 'NO_GO_VISUAL' : 'GO_VISUAL_CONDICIONADO_RC_PHASE_A';
+  fs.writeFileSync(path.join(outDir, 'phase-a-visual-smoke-report.json'), JSON.stringify(findings, null, 2), 'utf8');
+  const md = [
+    '# CXOrbia TyA Phase A visual smoke report', '',
+    `Generated: ${findings.generatedAt}`,
+    `Verdict: ${findings.verdict}`,
+    `Visited: ${findings.visited.length}`,
+    `Failures: ${findings.failures.length}`, '',
+    '## Visited', ...(findings.visited.length ? findings.visited.map(v => `- ${v.label} (${v.id}) · textLength=${v.textLength}`) : ['- none']), '',
+    '## Failures', ...(findings.failures.length ? findings.failures.map(f => `- ${f.type}${f.id ? ` · ${f.id}` : ''}${f.term ? ` · ${f.term}` : ''}${f.text ? ` · ${f.text}` : ''}`) : ['- none']), '',
+    '## Safe state', '- No deploy', '- No production', '- No provider calls', '- No database writes', '- No real imports', ''
+  ].join('\n');
+  fs.writeFileSync(path.join(outDir, 'phase-a-visual-smoke-report.md'), md, 'utf8');
+}
+
 async function assertVisibleCopy(page, label, findings) {
   const text = await page.locator('body').innerText({ timeout: 5000 }).catch(() => '');
   for (const term of forbiddenVisible) {
@@ -97,7 +115,7 @@ async function navigateModule(page, id, label, findings) {
 }
 
 async function enterRole(page, role, findings) {
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.goto(`${currentBaseURL}/`, { waitUntil: 'domcontentloaded' });
   await page.waitForSelector('#login', { timeout: 10000 });
   const selector = role === 'admin' ? '[data-role="admin"]' : '[data-role="shopper"]';
   await page.locator(selector).first().click();
@@ -112,26 +130,27 @@ async function main() {
   fs.mkdirSync(outDir, { recursive: true });
   const server = await startServer();
   const port = server.address().port;
-  const baseURL = `http://127.0.0.1:${port}`;
+  currentBaseURL = `http://127.0.0.1:${port}`;
   const findings = {
     gate: 'cxorbia-tya-phase-a-visual-smoke',
     generatedAt: new Date().toISOString(),
-    baseURL,
+    baseURL: currentBaseURL,
     safeState: { deploy: false, production: false, providers: false, databaseWrites: false, imports: false },
     visited: [], failures: [], warnings: [], console: [], pageErrors: []
   };
 
-  const browser = await chromium.launch({ headless });
-  const context = await browser.newContext({ viewport: { width: 1440, height: 1100 }, ignoreHTTPSErrors: true });
-  const page = await context.newPage();
-  page.on('console', msg => {
-    const text = msg.text();
-    findings.console.push({ type: msg.type(), text: text.slice(0, 500) });
-    if (msg.type() === 'error' && !/favicon|Failed to load resource/i.test(text)) findings.failures.push({ type: 'console_error', text: text.slice(0, 500) });
-  });
-  page.on('pageerror', err => findings.failures.push({ type: 'page_error', text: String(err.message || err).slice(0, 800) }));
-
+  let browser;
   try {
+    browser = await chromium.launch({ headless });
+    const context = await browser.newContext({ viewport: { width: 1440, height: 1100 }, ignoreHTTPSErrors: true, baseURL: currentBaseURL });
+    const page = await context.newPage();
+    page.on('console', msg => {
+      const text = msg.text();
+      findings.console.push({ type: msg.type(), text: text.slice(0, 500) });
+      if (msg.type() === 'error' && !/favicon|Failed to load resource/i.test(text)) findings.failures.push({ type: 'console_error', text: text.slice(0, 500) });
+    });
+    page.on('pageerror', err => findings.failures.push({ type: 'page_error', text: String(err.message || err).slice(0, 800) }));
+
     await enterRole(page, 'admin', findings);
     for (const [id, label] of criticalAdmin) await navigateModule(page, id, label, findings);
     const qFn = await page.evaluate(() => typeof window.CX?.shopperQuestionnaire === 'function').catch(() => false);
@@ -142,25 +161,16 @@ async function main() {
     await page.waitForTimeout(200);
     await enterRole(page, 'shopper', findings);
     for (const [id, label] of criticalShopper) await navigateModule(page, id, label, findings);
-  } finally {
+
     await page.screenshot({ path: path.join(outDir, 'phase-a-visual-smoke-last-page.png'), fullPage: true }).catch(() => {});
-    await browser.close().catch(() => {});
+  } catch (err) {
+    findings.failures.push({ type: 'fatal_smoke_error', text: String(err.stack || err.message || err).slice(0, 1200) });
+  } finally {
+    if (browser) await browser.close().catch(() => {});
     server.close();
   }
 
-  findings.verdict = findings.failures.length ? 'NO_GO_VISUAL' : 'GO_VISUAL_CONDICIONADO_RC_PHASE_A';
-  fs.writeFileSync(path.join(outDir, 'phase-a-visual-smoke-report.json'), JSON.stringify(findings, null, 2), 'utf8');
-  const md = [
-    '# CXOrbia TyA Phase A visual smoke report', '',
-    `Generated: ${findings.generatedAt}`,
-    `Verdict: ${findings.verdict}`,
-    `Visited: ${findings.visited.length}`,
-    `Failures: ${findings.failures.length}`, '',
-    '## Visited', ...findings.visited.map(v => `- ${v.label} (${v.id}) · textLength=${v.textLength}`), '',
-    '## Failures', ...(findings.failures.length ? findings.failures.map(f => `- ${f.type}${f.id ? ` · ${f.id}` : ''}${f.term ? ` · ${f.term}` : ''}${f.text ? ` · ${f.text}` : ''}`) : ['- none']), '',
-    '## Safe state', '- No deploy', '- No production', '- No provider calls', '- No database writes', '- No real imports', ''
-  ].join('\n');
-  fs.writeFileSync(path.join(outDir, 'phase-a-visual-smoke-report.md'), md, 'utf8');
+  writeReport(findings);
   console.log(JSON.stringify(findings, null, 2));
   process.exitCode = findings.failures.length ? 1 : 0;
 }
