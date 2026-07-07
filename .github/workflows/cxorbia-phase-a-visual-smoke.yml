@@ -1,0 +1,69 @@
+name: CXOrbia Phase A Visual Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'app/index.html'
+      - 'app/app.js'
+      - 'app/core/**'
+      - 'app/modules/**'
+      - 'app/styles/**'
+      - 'app/manifest.webmanifest'
+      - 'tools/qa/tya-phase-a-visual-smoke.mjs'
+      - '.github/workflows/cxorbia-phase-a-visual-smoke.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'app/index.html'
+      - 'app/app.js'
+      - 'app/core/**'
+      - 'app/modules/**'
+      - 'app/styles/**'
+      - 'app/manifest.webmanifest'
+      - 'tools/qa/tya-phase-a-visual-smoke.mjs'
+      - '.github/workflows/cxorbia-phase-a-visual-smoke.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  visual-smoke:
+    name: Phase A visual and console smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npm i -D playwright@1.47.2
+          npx playwright install --with-deps chromium
+
+      - name: Run visual smoke
+        run: |
+          node tools/qa/tya-phase-a-visual-smoke.mjs --out .tmp/phase-a-visual-smoke
+
+      - name: Upload visual smoke report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-visual-smoke-report
+          path: .tmp/phase-a-visual-smoke
+          if-no-files-found: ignore
+          retention-days: 14
