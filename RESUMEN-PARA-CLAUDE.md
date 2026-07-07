@@ -11,6 +11,15 @@
 - Decision: no source lock final, no production ready, no backlog cerrado. Claude debe entregar una candidata ultra-corta corrigiendo solo residuos de textos honestos y coherencia Academia/manuales, sin tocar backend, contracts, tools, Firestore/Auth/Storage, Make, Gemini, WhatsApp, correo real, deploy ni produccion.
 - Estado seguro: solo auditoria/documentacion; sin empalme frontend, sin runtime, sin deploy, sin produccion, sin escritura real y sin datos sensibles.
 
+## 2026-07-06 - Addendum auditoria V88 Claude candidate
+
+- Paula entrego `Prototype development request CXOrbia V88.zip` como candidata correctiva P0/P1/P2.
+- Documentos creados: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V88-CLAUDE-20260706.md`, `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V88-CLAUDE-20260706.md`, `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V88-20260706.md` y `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V88-CLAUDE-20260706.md`.
+- Validacion estatica V88: 97 archivos, delta real frente a V86/V87 equivalente de 4 archivos, `node --check` OK=61 FAIL=0, `index.html` sin scripts locales faltantes.
+- V88 no quedo como source lock final ni backlog 100% cerrado: #299 quedo parcial, #300 agrego curso pero con ID duplicado `a_backend`, #301 agrego ruta ops pero con ID duplicado `a_ops`.
+- Claude debia entregar V89 ultra-corta con IDs unicos y textos honestos residuales, sin tocar backend ni integraciones reales.
+- Estado seguro: solo auditoria/documentacion; sin empalme frontend, sin runtime, sin deploy, sin produccion, sin escritura real y sin datos sensibles.
+
 ## 2026-07-04 - Addendum liquidaciones/Cinepolis source-safe preview validator
 
 - ChatGPT/backend preparo un bloque seguro de preview/source-safe mapping para liquidaciones, corte junio y Cinepolis Boleto/Combo.
