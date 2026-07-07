@@ -26,7 +26,7 @@ CX.module('postulaciones', ({data,ui})=>{
           <div style="font-size:12px;color:var(--t2);margin-top:3px">📍 ${x.sucursal} · ${x.ciudad}</div>
           <div style="font-size:11.5px;color:var(--t3);margin-top:4px">📅 ${x.fechaProp} · ⏱️ ${x.franjaCode} · 📞 ${x.phone} · desde ${x.disponibleDesde}</div>
           <div style="font-size:12px;color:var(--green);font-weight:600;margin-top:4px">💲 ${hon}</div>
-          ${x.estado==='aprobada'?`<div style="font-size:11px;color:var(--t3);margin-top:5px">✅ ${x.quincena} · WA enviado al shopper · Aprobada por <b style="color:var(--t2)">${x.aprobadaPor}</b></div>`:''}
+          ${x.estado==='aprobada'?`<div style="font-size:11px;color:var(--t3);margin-top:5px">✅ ${x.quincena} · WA fallback/manual preparado · pendiente confirmación · Aprobada por <b style="color:var(--t2)">${x.aprobadaPor}</b></div>`:''}
         </div>
         <div style="display:flex;flex-direction:column;gap:7px;align-items:flex-end">
           ${x.estado==='pendiente'
@@ -155,7 +155,7 @@ CX.module('postulaciones', ({data,ui})=>{
         ov.querySelector('#pdPerfil')&&ov.querySelector('#pdPerfil').addEventListener('click',()=>{close();profileModal(x.shopperId);});
         ov.querySelector('#pdWa')&&ov.querySelector('#pdWa').addEventListener('click',()=>{const msg=encodeURIComponent('Hola '+(x.shopper||'')+', sobre tu visita en '+x.sucursal);window.open('https://wa.me/'+(x.phone||'').replace(/[^0-9]/g,'')+'?text='+msg,'_blank');});
         ov.querySelector('#pdAp')&&ov.querySelector('#pdAp').addEventListener('click',()=>{if(CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(x.id,'✅ Aprobada','green','Aprobada · WhatsApp enviado');close();});
-        ov.querySelector('#pdRj')&&ov.querySelector('#pdRj').addEventListener('click',()=>{act(x.id,'✕ Rechazada','red','Rechazada · shopper notificado');close();});
+        ov.querySelector('#pdRj')&&ov.querySelector('#pdRj').addEventListener('click',()=>{act(x.id,'✕ Rechazada','red','Rechazada · notificación preparada · pendiente confirmación');close();});
       }});
     };
     document.querySelectorAll('#pGroups [data-pid]').forEach(el=>el.addEventListener('click',(e)=>{
@@ -163,7 +163,7 @@ CX.module('postulaciones', ({data,ui})=>{
       const x=posts.find(z=>z.id===el.dataset.pid); if(x)postDetalle(x);
     }));
     document.querySelectorAll('[data-sb]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.sb,'⏸ Standby','amber','Postulación en standby')));
-    document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.rj,'✕ Rechazada','red','Postulación rechazada · shopper notificado')));
+    document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.rj,'✕ Rechazada','red','Postulación rechazada · notificación preparada · pendiente confirmación')));
     const search=()=>{const q=(document.getElementById('pSearch').value||'').toLowerCase(),fpr=document.getElementById('pProj').value,fp=document.getElementById('pPais').value,fe=document.getElementById('pEst').value;
       document.querySelectorAll('#pGroups [data-pid]').forEach(el=>{const x=posts.find(z=>z.id===el.dataset.pid);
         const ok=(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});
@@ -172,8 +172,8 @@ CX.module('postulaciones', ({data,ui})=>{
     ['pSearch','pProj','pPais','pEst'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',search);});
     /* botones de reprogramación (revisar / autorizar nueva fecha / conservar anterior) */
     document.querySelectorAll('[data-revpost]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.revpost);ui.modal('Revisar solicitud de reprogramación · '+(x&&x.shopper||''),`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Fecha actual: <b>${x&&x.fechaActual||'—'}</b> · Fecha propuesta: <b>${x&&x.fechaProp||'—'}</b></p><div style="background:var(--amber-bg);border-radius:9px;padding:9px 12px;font-size:12px;color:#8a5b00">Usa "Autorizar nueva fecha" para aprobar la reprogramación o "Conservar anterior" para mantener la fecha actual.</div>`);}));
-    document.querySelectorAll('[data-authfecha]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.authfecha);if(x){const v=data._visitas.find(z=>z.id===x.visitaId);if(v&&x.fechaProp){v.agendada=x.fechaProp;x.reprog=false;}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_aprobada',icon:'✅',tono:'g',titulo:'Reprogramación aprobada',txt:'Tu visita en '+(x.sucursal||'')+' fue reprogramada a '+(x.fechaProp||'nueva fecha'),nav:'misvisitas'});CX.automations&&CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal,fecha:x.fechaProp});CX.bus&&CX.bus.emit('visit-flow');}ui.toast('Nueva fecha autorizada · shopper notificado · HR sincronizada','ok',3600);}));
-    document.querySelectorAll('[data-keepfecha]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.keepfecha);if(x){x.reprog=false;x.fechaProp=null;}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_rechazada',icon:'⚠️',tono:'a',titulo:'Reprogramación no autorizada',txt:'La visita en '+(x&&x.sucursal||'')+' conserva la fecha original',nav:'misvisitas'});CX.bus&&CX.bus.emit('visit-flow');ui.toast('Fecha original conservada · shopper notificado','ok');}));
+    document.querySelectorAll('[data-authfecha]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.authfecha);if(x){const v=data._visitas.find(z=>z.id===x.visitaId);if(v&&x.fechaProp){v.agendada=x.fechaProp;x.reprog=false;}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_aprobada',icon:'✅',tono:'g',titulo:'Reprogramación aprobada',txt:'Tu visita en '+(x.sucursal||'')+' fue reprogramada a '+(x.fechaProp||'nueva fecha'),nav:'misvisitas'});CX.automations&&CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal,fecha:x.fechaProp});CX.bus&&CX.bus.emit('visit-flow');}ui.toast('Nueva fecha autorizada · notificación preparada · HR sync pendiente backend','ok',3600);}));
+    document.querySelectorAll('[data-keepfecha]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.keepfecha);if(x){x.reprog=false;x.fechaProp=null;}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_rechazada',icon:'⚠️',tono:'a',titulo:'Reprogramación no autorizada',txt:'La visita en '+(x&&x.sucursal||'')+' conserva la fecha original',nav:'misvisitas'});CX.bus&&CX.bus.emit('visit-flow');ui.toast('Fecha original conservada · notificación preparada · pendiente confirmación','ok');}));
 
     /* editar fecha/franja de la visita de una postulación */
     document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const x=posts.find(z=>z.id===b.dataset.edit); if(!x)return;
@@ -304,7 +304,7 @@ CX.module('postulaciones', ({data,ui})=>{
         const sh=b.dataset.sh;
         CX.notif&&CX.notif.push({to:'shopper',tipo:'ajuste',icon:'🗓️',tono:'a',titulo:'El equipo solicita ajustar tu agenda',txt:sh+' · revisa la fecha de tu visita en Mis Visitas',nav:'misvisitas'});
         if(CX.automations&&CX.automations.fire)CX.automations.fire('reprog',{shopper:sh});
-        close();ui.toast('Ajuste solicitado a '+sh+' · notificado (Mi Día + WhatsApp)','ok',3500);
+        close();ui.toast('Ajuste solicitado a '+sh+' · notificación preparada (Mi Día + WhatsApp fallback) · pendiente confirmación','ok',3500);
       }))});
     });
   },0);

@@ -60,6 +60,26 @@ CX.acadData={
            {q:'¿Cuándo un movimiento dice "pagado"?',o:['Al moverlo a lote','Solo cuando el backend hace el cruce financiero real','Al crear la liquidación'],a:1,fb:'En el prototipo se muestra "candidata/preview". El estado real de pago depende del cruce del backend.'},
          ]},
        ]},
+      /* ─── BLOQUES BACKEND (transparencia de estado) ─── */
+      {id:'a_backend_prepared',cat:'Inducción',ic:'🔌',color:'#7c3aed',n:'Capacidades de backend: qué está preparado',
+       desc:'Qué funciones dependen del backend y cómo se ven mientras el gate no está activo.',
+       lessons:[
+         {id:'ab1',ic:'🔌',n:'Preparado vs. activo',content:`
+<h2>Cómo leer los estados del backend</h2>
+<p>Varias capacidades ya tienen su interfaz lista pero su ejecución real ocurre en el backend. Mientras el gate no esté autorizado, verás el badge <b>"preparado / pendiente backend"</b> — nunca "enviado" o "en vivo" falsos.</p>
+<div class="acad-cards">
+  <div class="acad-card"><div>🕐</div><b>Historial de comunicación</b><p>Timeline seguro por shopper. Se poblará cuando el backend registre los envíos reales.</p></div>
+  <div class="acad-card"><div>⭐</div><b>Ranking / scoring</b><p>Ayuda al admin a decidir. No autoasigna: la decisión sigue siendo humana.</p></div>
+  <div class="acad-card"><div>📐</div><b>Versionado de reglas</b><p>Cada proyecto/tenant versiona sus reglas; los cambios quedan con changelog draft→review→approved.</p></div>
+  <div class="acad-card"><div>🚦</div><b>Release readiness</b><p>Snapshot con blockers antes de habilitar producción.</p></div>
+  <div class="acad-card"><div>🧪</div><b>Synthetic pack</b><p>Fixtures de prueba — NO son la fuente real de datos del cliente.</p></div>
+</div>
+<blockquote>Regla de oro: si un dato no dice explícitamente que proviene de una fuente confirmada, trátalo como preview. El indicador de fuente de datos en el sidebar te lo aclara.</blockquote>`},
+         {id:'ab2',ic:'❓',n:'Evaluación',tipo:'quiz',quiz:[
+           {q:'El ranking de shoppers, ¿asigna visitas solo?',o:['Sí, automático','No: es ayuda para el admin; la decisión es humana','Solo en HN'],a:1,fb:'El ranking es apoyo a la decisión. La asignación la confirma una persona.'},
+           {q:'Ves "preparado / pendiente backend" en una acción. ¿Ya se ejecutó?',o:['Sí','No: la interfaz está lista, la ejecución real depende del gate de backend','Depende del plan'],a:1,fb:'"Preparado" = UI lista; la ejecución real ocurre cuando el gate de backend está activo.'},
+         ]},
+       ]},
       /* ─── GLOSARIO & CHECKLISTS (referencia rápida) ─── */
       {id:'a_glos',cat:'Inducción',ic:'📖',color:'#0891b2',n:'Glosario y checklists operativos',
        desc:'Referencia de términos clave y listas de verificación reales para el día a día.',
@@ -493,6 +513,37 @@ CX.acadData={
            {q:'¿Por qué se debe usar Firestore en modo producción desde el inicio y no en modo prueba?',o:['Porque el modo prueba es de pago','Porque el modo prueba permite acceso público sin autenticación — cualquier persona con la URL del proyecto puede leer y escribir todos los datos','Porque el modo prueba no soporta autenticación','Porque Gemini no funciona con el modo prueba'],a:1,exp:'El modo prueba de Firestore abre acceso total sin autenticación. Para datos operativos (shoppers, visitas, finanzas, clientes), esto es un riesgo de seguridad crítico. Siempre arranca en modo producción con reglas granulares desde el día 1.'},
            {q:'¿Qué información debe incluir el payload JSON que CXOrbia envía a Make al aprobar una postulación?',o:['Solo el ID del shopper','Solo el nombre de la visita','Un objeto completo con event.type, shopperNombre, shopperTelefono, sucursal, fecha, honorario y proyectoNombre','Solo el teléfono del shopper'],a:2,exp:'El payload debe ser completo para que Make no necesite hacer una segunda llamada a Firestore. Si solo mandas el ID de la visita, Make tiene que ir a buscar los datos de Firestore — eso agrega latencia, dependencia y complejidad. La regla de oro: el evento debe contener todo lo que el mensaje final (WhatsApp al shopper) necesita.'},
          ]}
+       ]},
+      /* ─── RUTA OPERATIVA (equipo ops) ─── */
+      {id:'a_ops_conflicts_route',cat:'Operación',ic:'🎧',color:'#2a6fdb',n:'Equipo operativo: asignación, conflictos y fuera de rango',
+       desc:'Tu ruta diaria: aprobar postulaciones, reasignar, resolver conflictos de HR y autorizar visitas fuera de rango — con estados honestos.',
+       lessons:[
+         {id:'ao1',ic:'🧩',n:'Gestión de postulaciones',content:`
+<h2>De postulación a asignación</h2>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Revisar</b><p>Filtra por proyecto, país o estado. Cada postulación muestra quién la gestionó.</p></div>
+  <div class="acad-step"><span>2</span><b>Aprobar / standby / rechazar</b><p>Al aprobar, la visita pasa a "asignada" y se prepara la notificación (pendiente confirmación).</p></div>
+  <div class="acad-step"><span>3</span><b>Reasignar</b><p>Usa el buscador (país, certificación) para elegir otro shopper. Queda auditado.</p></div>
+</div>
+<div class="acad-section"><b>Sin duplicar</b><p>Si gestionas desde la plataforma y desde la HR, verifica que la visita quede con un solo gestor. El sync real lo resuelve el backend por llave natural.</p></div>`},
+         {id:'ao2',ic:'⚠️',n:'Conflictos y sincronía de HR',content:`
+<h2>Cuando la HR y la plataforma no coinciden</h2>
+<p>La sincronía con hoja de ruta externa (Google Sheets/Excel) queda <b>pendiente de backend</b>. Mientras tanto:</p>
+<ul class="acad-check">
+<li>Revisa el panel de incidencias de la Fuente de HR</li>
+<li>Un conflicto (held_for_conflict) se retiene hasta reconciliar</li>
+<li>No fuerces liquidación de una visita en conflicto</li>
+<li>Deja nota del criterio con que resolviste</li>
+</ul>
+<blockquote>Los estados "sincronizada / actualizada" reales dependen del gate de backend. En preview verás "preparado · pendiente backend".</blockquote>`},
+         {id:'ao3',ic:'📍',n:'Visitas fuera de rango',content:`
+<h2>Autorizar (o no) una visita fuera de rango</h2>
+<p>Una visita agendada fuera del rango permitido requiere autorización explícita del equipo.</p>
+<div class="acad-section"><b>Regla de puntaje</b><p>Solo penaliza al shopper si la causa es suya. Si la causa es del cliente, local cerrado o fuerza mayor, se autoriza sin penalización, con motivo y responsable registrados.</p></div>`},
+         {id:'ao4',ic:'❓',n:'Evaluación operativa',tipo:'quiz',quiz:[
+           {q:'Una visita está en conflicto (HR vs plataforma). ¿La liquidas?',o:['Sí, de inmediato','No: se retiene hasta reconciliar','Solo si el shopper insiste'],a:1,fb:'Un conflicto se retiene (held_for_conflict) hasta reconciliar. No se liquida forzado.'},
+           {q:'Apruebas una postulación. ¿El shopper ya recibió WhatsApp?',o:['Sí, automático','No: la notificación queda preparada, pendiente de confirmación/gate','Depende del país'],a:1,fb:'La notificación se prepara; el envío real depende del gate de backend.'},
+         ]},
        ]},
       /* ─── FRANQUICIA / COORDINACIÓN ─── */
       {id:'a_coord',cat:'Franquicia',ic:'🌎',color:'#0891b2',n:'Coordinador, Representante y Aliado: administra tu región',

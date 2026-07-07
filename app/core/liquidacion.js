@@ -4,7 +4,7 @@
    tanto en Beneficios (shopper) como en Liquidaciones (admin).
    Estados (alineados con el export real de T&A):
      realizada            -> pendiente_cuestionario
-     cuestionario enviado -> pendiente_submitir
+     cuestionario realizado/completado -> pendiente_submitir
      submitida/validada   -> validada (lista para lote)
      en lote pagado       -> pagada
    Fecha estimada de pago = fecha submit + project.pago.diasPago
