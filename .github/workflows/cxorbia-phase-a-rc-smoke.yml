@@ -6,15 +6,25 @@ on:
     branches:
       - release/cxorbia-tya-rc-20260630
     paths:
-      - 'app/**'
-      - 'tools/migration/**'
+      - 'app/index.html'
+      - 'app/app.js'
+      - 'app/core/**'
+      - 'app/modules/**'
+      - 'app/styles/**'
+      - 'app/manifest.webmanifest'
+      - 'tools/migration/tya-phase-a-rc-smoke-gate.mjs'
       - '.github/workflows/cxorbia-phase-a-rc-smoke.yml'
   push:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - 'app/**'
-      - 'tools/migration/**'
+      - 'app/index.html'
+      - 'app/app.js'
+      - 'app/core/**'
+      - 'app/modules/**'
+      - 'app/styles/**'
+      - 'app/manifest.webmanifest'
+      - 'tools/migration/tya-phase-a-rc-smoke-gate.mjs'
       - '.github/workflows/cxorbia-phase-a-rc-smoke.yml'
 
 permissions:
