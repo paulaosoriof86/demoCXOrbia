@@ -2,6 +2,20 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Addendum V89 - auditoria Claude candidate
+
+- V89 fue auditada como correctiva sobre V88. Mejora V88, pero NO queda como source lock final, NO production ready y NO backlog 100% cerrado.
+- Ver auditoria: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V89-CLAUDE-20260706.md`.
+- Resuelto en V89: Academia ya no tiene IDs duplicados en los dos cursos nuevos; se usan `a_backend_prepared` y `a_ops_conflicts_route`.
+- Resuelto en V89: `app/core/automations.js` ya muestra HR writeback como escritura preparada/sync backend pendiente.
+- Resuelto en V89: `app/modules/postulaciones.js` corrige dos textos de reprogramacion a notificacion preparada/pendiente confirmacion.
+- Pendiente P0 V89: `postulaciones.js` conserva `Aprobada · WhatsApp enviado al shopper`, `Aprobada · WhatsApp enviado` y `Asignacion actualizada · HR sincronizada`.
+- Pendiente P0 V89: `dashboard.js` conserva `Correo enviado a ... (Make/Outlook)` y `WhatsApp enviado (Make)`.
+- Pendiente P0 V89: `automatizaciones.js` conserva `Registro de disparos (Make)`, `ultimos eventos enviados` y `Payload de prueba enviado al escenario Make`.
+- Pendiente P0 V89: `cuestionario-shopper.js` conserva `marca la visita como cuestionario enviado`.
+- Pendiente P0/P1 V89: `manuales-data.js`, `reservas.js`, `correo.js`, `topbar.js`, `finanzas.js`, `importador.js`, `operacion-extra.js` y `academia.js` conservan residuos de enviado/notificado/sincronizado/en vivo que deben pasar a estados honestos cuando no exista proveedor/gate real.
+- Claude debe entregar una candidata ultra-corta corrigiendo solo residuos de textos honestos y coherencia Academia/manuales, sin redisenar ni tocar backend.
+
 ## Addendum Liquidaciones/Cinepolis source-safe preview validator
 
 - Backend agrego contrato y validador source-safe para liquidaciones/corte junio y Cinepolis Boleto/Combo.
@@ -159,7 +173,7 @@ La auditoria V64 encontro que muchos pendientes acumulados en documentos V62/V63
 12. Revision admin visible/funcional separada de submitido y liquidacion.
 13. Submitido configurable por proyecto y separado de cuestionario realizado.
 14. Wizard de proyecto con configuracion Phase A completa y gates honestos.
-15. Correcciones V82 antes de source lock: textos cuestionario realizado, HR sync honesta en Mis Visitas/Postulaciones y ajuste fino de revision admin para `status`, `projectId` y `hrRowId`.
+15. Correcciones V89 antes de source lock: residuos de textos honestos en Postulaciones, Dashboard, Automatizaciones, Cuestionario Shopper, Reservas, Correo, Manuales, Finanzas, Importador, Operacion Extra y Academia.
 16. Liquidaciones/Cinepolis: Mis beneficios, lote seleccionable, movimientos individuales, estados de revision manual/conflicto y Boleto/Combo separados de honorario.
 
 ## Separacion corregida
