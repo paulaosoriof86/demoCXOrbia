@@ -1,22 +1,23 @@
 /* ============================================================
-   CXOrbia · Backend config (Firebase DEV)
+   CXOrbia · Backend config placeholder (Firebase DEV)
    ------------------------------------------------------------
    Regla de oro:
    - No hardcodear T&A en módulos UI.
    - T&A entra como tenant inicial: tenantId = 'tya'.
    - El adapter permanece desactivado hasta validar reglas/importación.
+   - No guardar API keys, secretos ni credenciales reales en repo.
    ============================================================ */
 window.CX = window.CX || {};
 
 (function(){
   const firebaseConfig = {
-    apiKey: 'AIzaSyC4TUtiDuCkJCMzPukwknImUzwzRmV0tSY',
+    apiKey: null,
     authDomain: 'cxorbia-backend-dev.firebaseapp.com',
     projectId: 'cxorbia-backend-dev',
     storageBucket: 'cxorbia-backend-dev.firebasestorage.app',
-    messagingSenderId: '87461567267',
-    appId: '1:87461567267:web:9f0d340b35b9d2038a8a96',
-    measurementId: 'G-KL44S2KWLD',
+    messagingSenderId: null,
+    appId: null,
+    measurementId: null,
   };
 
   CX.BACKEND = Object.assign({
@@ -26,6 +27,7 @@ window.CX = window.CX || {};
     tenantId: 'tya',
     defaultProjectId: null,
     firebaseConfig,
+    configSource: 'repo-placeholder',
     sdkVersion: '10.12.5',
     collections: {
       tenants: 'tenants',
