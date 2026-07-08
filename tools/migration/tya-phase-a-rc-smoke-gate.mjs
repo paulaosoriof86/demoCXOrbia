@@ -24,6 +24,7 @@ const info = [];
 function exists(rel){ return fs.existsSync(path.join(root, rel)); }
 function read(rel){ return fs.readFileSync(path.join(root, rel), 'utf8'); }
 function push(type, message, extra={}){ (type === 'fail' ? hardFails : type === 'warn' ? warnings : info).push({ message, ...extra }); }
+function lineHas(text, term){ return text.includes(term); }
 
 const requiredDocs = [
   'app/docs/EMPALME-COMPLETO-STATUS-POST-V89-20260706.md',
@@ -31,7 +32,15 @@ const requiredDocs = [
   'app/docs/CAMBIOS-BACKEND-ADDENDUM-GUARD-PRODUCCION-POST-V89-20260706.md',
   'app/docs/ACADEMIA-IMPACT-TRACKER-POST-V89-20260706.md',
   'app/docs/ACADEMIA-GATE-POST-V89-20260706.md',
-  'app/docs/HANDOFF-ACADEMIA-POST-V89-20260706.md'
+  'app/docs/HANDOFF-ACADEMIA-POST-V89-20260706.md',
+  'app/docs/BASELINE-AUDITADA-CONTINUIDAD-V91-INCREMENTAL-CXORBIA-20260708.md',
+  'app/docs/AUDITORIA-FORENSE-CANDIDATA-V91-CXORBIA-20260708.md',
+  'app/docs/SOURCE-LOCK-CANDIDATA-V91-CONTROLADA-CXORBIA-20260708.md',
+  'app/docs/EMPALME-CONTROLADO-V91-BATCH1-CXORBIA-20260708.md',
+  'app/docs/EMPALME-CONTROLADO-V91-BATCH2-PWA-CACHE-CXORBIA-20260708.md',
+  'app/docs/EMPALME-CONTROLADO-V91-BATCH3-P0-COPY-GUARD-CXORBIA-20260708.md',
+  'app/docs/EMPALME-CONTROLADO-V91-BATCH4-ACADEMIA-ADMIN-ACTIONS-CXORBIA-20260708.md',
+  'app/docs/EMPALME-CONTROLADO-V91-BATCH5-ACADEMIA-CREAR-IA-STABLE-CXORBIA-20260708.md'
 ];
 
 for (const rel of requiredDocs) {
@@ -40,11 +49,12 @@ for (const rel of requiredDocs) {
 }
 
 const indexPath = 'app/index.html';
+let scripts = [];
 if (!exists(indexPath)) {
   push('fail', 'index_missing', { file: indexPath });
 } else {
   const html = read(indexPath);
-  const scripts = [...html.matchAll(/<script\s+src=["']([^"']+)["']\s*>\s*<\/script>/g)].map(m => m[1]);
+  scripts = [...html.matchAll(/<script\s+src=["']([^"']+)["']\s*>\s*<\/script>/g)].map(m => m[1]);
   const localScripts = scripts.filter(src => !/^https?:\/\//.test(src));
   const externals = scripts.filter(src => /^https?:\/\//.test(src));
   push('info', 'script_inventory', { total: scripts.length, local: localScripts.length, external: externals.length });
@@ -64,6 +74,23 @@ if (!exists(indexPath)) {
     if (uiIdx >= 0 && guardIdx <= uiIdx) push('fail', 'guard_must_load_after_core_ui', { uiPosition: uiIdx + 1, guardPosition: guardIdx + 1 });
     if (firstModuleIdx >= 0 && guardIdx >= firstModuleIdx) push('fail', 'guard_must_load_before_modules', { guardPosition: guardIdx + 1, firstModulePosition: firstModuleIdx + 1 });
   }
+
+  const requiredV91Scripts = [
+    'core/v91-modules.js',
+    'modules/diagnostico.js',
+    'modules/administrabilidad.js',
+    'modules/academia-admin-actions.js',
+    'modules/academia-create-ai-stable.js'
+  ];
+  for (const src of requiredV91Scripts) {
+    if (!scripts.includes(src)) push('fail', 'v91_required_script_missing', { script: src });
+    else push('info', 'v91_required_script_loaded', { script: src, position: scripts.indexOf(src) + 1 });
+  }
+  const academiaIdx = scripts.indexOf('modules/academia.js');
+  const acadActionsIdx = scripts.indexOf('modules/academia-admin-actions.js');
+  const acadAiIdx = scripts.indexOf('modules/academia-create-ai-stable.js');
+  if (academiaIdx >= 0 && acadActionsIdx >= 0 && acadActionsIdx <= academiaIdx) push('fail', 'academia_admin_actions_must_load_after_academia');
+  if (acadActionsIdx >= 0 && acadAiIdx >= 0 && acadAiIdx <= acadActionsIdx) push('fail', 'academia_ai_stable_must_load_after_admin_actions');
 
   if (!html.includes('<meta charset="UTF-8">')) push('fail', 'utf8_meta_missing');
 }
@@ -96,7 +123,8 @@ if (exists(guardPath)) {
   const requiredTerms = [
     'WhatsApp enviado', 'WA enviado al shopper', 'Correo enviado a', 'HR sincronizada',
     'shopper notificado', 'Payload de prueba enviado', 'Disparo enviado',
-    'cuestionario enviado', 'egreso(s) automáticos', 'Make activo', 'Google Sheets en vivo', 'portal en vivo'
+    'cuestionario enviado', 'egreso(s) automáticos', 'Make activo', 'Google Sheets en vivo', 'portal en vivo',
+    'Cuestionario enviado tarde', 'Conectado como', 'sincronizando correos reales'
   ];
   for (const term of requiredTerms) {
     if (!guard.includes(term)) push('warn', 'guard_missing_expected_term', { term });
@@ -137,9 +165,64 @@ if (exists(academyPath)) {
   }
 }
 
+const v91ModulePath = 'app/core/v91-modules.js';
+if (exists(v91ModulePath)) {
+  const text = read(v91ModulePath);
+  for (const term of ['diagnostico', 'administrabilidad', 'CX.MODULES', 'CX.MOD_CAT', 'moduleEnabled']) {
+    if (!lineHas(text, term)) push('fail', 'v91_modules_patch_missing_term', { file: v91ModulePath, term });
+  }
+}
+
+const academiaAdminPath = 'app/modules/academia-admin-actions.js';
+if (exists(academiaAdminPath)) {
+  const text = read(academiaAdminPath);
+  const terms = ['Editar', 'Duplicar', 'Versionar', 'Archivar', 'Motivo obligatorio', 'auditRef', 'localStorage', 'CX.modules.aprendizaje'];
+  for (const term of terms) {
+    if (!lineHas(text, term)) push('fail', 'academia_admin_actions_missing_term', { file: academiaAdminPath, term });
+  }
+} else {
+  push('fail', 'academia_admin_actions_file_missing', { file: academiaAdminPath });
+}
+
+const academiaAiPath = 'app/modules/academia-create-ai-stable.js';
+if (exists(academiaAiPath)) {
+  const text = read(academiaAiPath);
+  const terms = ['#acadNew', 'Gemini real no esta activo', 'in_review', 'ai_draft_preview', 'Motivo', 'auditRef', 'localStorage', 'CX.modules.aprendizaje'];
+  for (const term of terms) {
+    if (!lineHas(text, term)) push('fail', 'academia_ai_stable_missing_term', { file: academiaAiPath, term });
+  }
+} else {
+  push('fail', 'academia_ai_stable_file_missing', { file: academiaAiPath });
+}
+
+const diagPath = 'app/modules/diagnostico.js';
+if (exists(diagPath)) {
+  const text = read(diagPath);
+  for (const term of ['Synthetic input packs', 'Readiness', 'Bandeja de conflictos', 'Contratos backend', 'PREVIEW']) {
+    if (!lineHas(text, term)) push('fail', 'diagnostico_missing_term', { file: diagPath, term });
+  }
+}
+
+const adminPath = 'app/modules/administrabilidad.js';
+if (exists(adminPath)) {
+  const text = read(adminPath);
+  for (const term of ['Matriz de administrabilidad', 'NDA por rol', 'Planes comerciales', 'Reglas versionadas', 'PREVIEW']) {
+    if (!lineHas(text, term)) push('fail', 'administrabilidad_missing_term', { file: adminPath, term });
+  }
+}
+
+const swPath = 'app/sw.js';
+if (exists(swPath)) {
+  const text = read(swPath);
+  if (!lineHas(text, "cxorbia-v2")) push('fail', 'service_worker_cache_version_not_v2');
+  if (!lineHas(text, 'caches.delete')) push('fail', 'service_worker_missing_cache_purge');
+  if (!lineHas(text, 'fetch(e.request)')) push('fail', 'service_worker_missing_network_first_fetch');
+}
+
 const report = {
   gate: 'cxorbia-tya-phase-a-rc-smoke',
   generatedAt: new Date().toISOString(),
+  baseline: 'V91 incremental',
   safeState: {
     deploy: false,
     production: false,
@@ -165,12 +248,13 @@ if (outDir) {
     '# CXOrbia TyA Phase A RC smoke report',
     '',
     `Generated: ${report.generatedAt}`,
+    `Baseline: ${report.baseline}`,
     `Verdict: ${report.verdict}`,
     `Hard fails: ${hardFails.length}`,
     `Warnings: ${warnings.length}`,
     '',
     '## Hard fails',
-    ...hardFails.map(x => `- ${x.message}${x.file ? ` · ${x.file}` : ''}`),
+    ...hardFails.map(x => `- ${x.message}${x.file ? ` · ${x.file}` : ''}${x.script ? ` · ${x.script}` : ''}`),
     '',
     '## Warnings',
     ...warnings.map(x => `- ${x.message}${x.count ? ` · count=${x.count}` : ''}`),
