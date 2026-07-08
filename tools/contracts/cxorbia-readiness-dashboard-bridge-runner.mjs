@@ -20,7 +20,7 @@ import { runSyntheticInputPack } from './cxorbia-synthetic-input-pack-runner.mjs
 import { validateReadinessDashboardSourceSafe } from './cxorbia-readiness-dashboard-source-safe-contract.mjs';
 
 export const BRIDGE_NAME = 'cxorbia-readiness-dashboard-bridge-runner';
-export const BRIDGE_VERSION = '2026-07-08.preview-only';
+export const BRIDGE_VERSION = '2026-07-08.expanded-conflict-readiness-preview-only';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,6 +38,7 @@ const projectId = 'project_demo';
 const contractAreaMap = new Map([
   ['admin-configurability', 'admin_configurability'],
   ['conflict-review-import-readiness', 'conflict_review_import_readiness'],
+  ['conflict-review-import-readiness-expanded', 'conflict_review_import_readiness'],
   ['questionnaire-routing', 'questionnaire_routing'],
   ['visit-lifecycle', 'visit_lifecycle'],
   ['settlement-eligibility', 'settlement_eligibility'],
@@ -87,6 +88,7 @@ function statusFor(item) {
   const result = item?.result || {};
   const warnings = Array.isArray(result.warnings) ? result.warnings : [];
   if (contractId === 'conflict-review-import-readiness') return 'human_review_required';
+  if (contractId === 'conflict-review-import-readiness-expanded') return 'human_review_required';
   if (contractId === 'release-readiness-snapshot-preview') return 'production_not_authorized';
   if (!item?.ok) return 'fail';
   if (warnings.length) return 'warning';
@@ -119,6 +121,7 @@ function gateStateFor(status, contractId) {
 
 function humanReviewStateFor(status, contractId) {
   if (contractId === 'conflict-review-import-readiness') return 'required';
+  if (contractId === 'conflict-review-import-readiness-expanded') return 'required';
   if (status === 'fail' || status === 'human_review_required') return 'required';
   if (status === 'production_not_authorized') return 'pending';
   return 'not_required_preview';
@@ -229,15 +232,18 @@ export function runReadinessDashboardBridge(report = null) {
       reusableCxorbia: [
         'source-safe bridge from contract runner reports to readiness dashboard manifests',
         'honest status mapping for any tenant/project',
+        'expanded conflict/readiness mapping before real imports',
       ],
       exclusivoCliente: [
         'TyA Phase A can use the bridge without hardcoding TyA data or real HR payloads',
       ],
       claudePrototipo: [
         'dashboard UI can consume the manifest as preview-only state contract',
+        'expanded conflict/readiness item must be shown as human review required, not import ready',
       ],
       academia: [
         'teach how runner diagnostics become dashboard statuses without activating providers',
+        'teach why conflict/readiness expanded coverage remains preview-only',
       ],
       sinImpactoClaude: [
         'no UI mutation by itself; only contract/report bridge',
