@@ -49,6 +49,7 @@ Ultima actualizacion: 2026-07-08
 - Admin configurability contract preview-only.
 - Conflict review queue + import readiness contract preview-only.
 - Synthetic input pack runner preview-only.
+- Synthetic input pack expanded coverage preview-only.
 
 ### Academia
 
@@ -58,22 +59,11 @@ Ultima actualizacion: 2026-07-08
 - Academia backfill backend blocks.
 - Academia coverage audit backend to date.
 - Academia implementation backlog.
-- Academia impact de liquidaciones/Cinepolis source-safe preview.
-- Academia impact de politica de datos sensibles.
-- Academia impact de assignment sync/conflicts.
-- Academia impact de visit lifecycle/reservas.
-- Academia impact de ficha postulacion dinamica.
-- Academia impact de notification outbox.
-- Academia impact de email/user mailbox.
-- Academia impact de CRM external folder refs.
-- Academia impact de shopper communication history.
-- Academia impact de shopper ranking/scoring.
-- Academia impact de project/tenant rule versioning.
-- Academia impact de rule change changelog/notifications.
 - Academia impact de release readiness snapshot.
-- Academia impact de admin configurability: NDA, planes, gates, auditRef, revision humana y estados honestos.
-- Academia impact de conflict review/import readiness: export limpio vs preview vs import real, blockers, llaves estables, dedupe prohibido, revision humana y datos sensibles excluidos.
-- Academia impact de synthetic input pack runner: fixtures sinteticos, inputs sanitizados, pruebas de contrato, source-safe report, limites y revision humana.
+- Academia impact de admin configurability.
+- Academia impact de conflict review/import readiness.
+- Academia impact de synthetic input pack runner.
+- Academia impact de synthetic input pack expanded coverage: coverage, fixtures, inputs sanitizados, preflight contractual, pass/fail/warnings, gates apagados y revision humana.
 
 ### Operacion Phase A
 
@@ -94,9 +84,10 @@ Ultima actualizacion: 2026-07-08
 - Project/tenant rule versioning.
 - Rule change changelog/notification preview.
 - Release readiness snapshot preview.
-- Admin configurability: NDAs, planes, reglas, HR, cuestionarios, documentos, evidencias, certificaciones, Academia, notificaciones, imports, pagos, integraciones, roles y gates.
-- Conflict review/import readiness: cola de conflictos y readiness por area antes de cualquier import real.
-- Synthetic input pack runner: ejecucion local de validadores con fixtures sinteticos/sanitizados y reporte agregado source-safe.
+- Admin configurability.
+- Conflict review/import readiness.
+- Synthetic input pack runner.
+- Synthetic input pack expanded coverage para assignment sync, notification outbox, rule versioning, changelog/notifications y release readiness.
 - Liquidaciones y pagos.
 - Cinepolis Boleto/Combo, lotes y movimientos individuales.
 - Preview validator/source-safe mapping para liquidaciones/corte junio y Cinepolis Boleto/Combo.
@@ -134,16 +125,17 @@ Ultima actualizacion: 2026-07-08
 28. Admin configurability preview antes de administrar desde UI real NDAs, planes, reglas, evidencias, cuestionarios, pagos, certificaciones, Academia, notificaciones, imports, Make/Gemini, roles y gates.
 29. Conflict review/import readiness preview antes de cualquier import real o resolucion de conflictos HR/plataforma/historico.
 30. Synthetic input pack runner preview antes de correr validadores con fuentes reales o inputs sanitizados ampliados.
+31. Synthetic input pack expanded coverage antes de diagnosticar readiness agregado por areas criticas.
 
 ## Bloque recien completado
 
-### Synthetic input pack runner preview-only
+### Synthetic input pack expanded coverage preview-only
 
 Archivos:
 
 - `tools/contracts/cxorbia-synthetic-input-pack-runner.mjs`
-- `app/docs/SYNTHETIC-INPUT-PACK-RUNNER-CXORBIA-20260708.md`
-- `app/docs/CAMBIOS-SYNTHETIC-INPUT-PACK-RUNNER-CXORBIA-20260708.md`
+- `app/docs/SYNTHETIC-INPUT-PACK-EXPANDED-COVERAGE-CXORBIA-20260708.md`
+- `app/docs/CAMBIOS-SYNTHETIC-INPUT-PACK-EXPANDED-COVERAGE-CXORBIA-20260708.md`
 - `CAMBIOS-BACKEND.md`
 - `RESUMEN-PARA-CLAUDE.md`
 - `PENDIENTES-PROTOTIPO.md`
@@ -151,12 +143,11 @@ Archivos:
 
 Estado:
 
-- Solo runner local y documentacion segura.
+- Solo ampliacion de runner y documentacion segura.
 - No cambia `/app/modules` ni `/app/core`.
 - No activa runtime, produccion, Firestore, Storage, Auth, Make, Gemini, email/WhatsApp, pagos, deploy, merge, providers ni import real.
-- Ejecuta fixtures sinteticos/sanitizados para contratos preview-only.
-- Produce JSON por consola y opcionalmente reporte local JSON/MD con `--out`.
-- No sube outputs ni datos reales al repo.
+- Suma validadores con fixtures existentes para assignment sync conflict, notification outbox, project/tenant rule versioning, rule change changelog notification y release readiness snapshot.
+- Mantiene salida local opcional con `--out` y sin outputs por defecto en repo.
 
 ## Ultima auditoria de prototipo
 
@@ -167,32 +158,14 @@ Decision vigente:
 - La auditoria profunda debe distinguir siempre delta vs acumulado.
 - Claude debe generar la siguiente correctiva sobre la ultima baseline auditada valida cuando recupere capacidad.
 
-Documentos clave:
-
-- `app/docs/EMPALME-ULTIMA-VERSION-AUDITADA-CONTINUIDAD-BACKEND-TYA-20260704.md`
-- `app/docs/ADDENDUM-MAESTRO-METODOLOGIA-AUDITORIA-EMPALME-ULTIMA-VERSION-20260704.md`
-- ultima auditoria forense de prototipo en `app/docs/`
-- ultimo resumen y pendientes para Claude en `app/docs/`
-
 ## Pendientes backend inmediatos
 
 1. Ejecutar synthetic input pack runner cuando se requiera validacion local, sin fuentes reales.
-2. Preparar input sintetico/sanitizado ampliado para conflict review/import readiness contract.
-3. Preparar input sintetico/sanitizado ampliado para admin configurability contract.
-4. Preparar input sintetico/sanitizado para release readiness snapshot preview.
-5. Preparar input sintetico/sanitizado para rule change changelog/notification preview.
-6. Preparar input sintetico/sanitizado para project/tenant rule versioning preview.
-7. Preparar input sintetico/sanitizado para shopper ranking/scoring preview.
-8. Preparar input sintetico/sanitizado para shopper communication history preview.
-9. Preparar input sintetico/sanitizado para CRM external folder refs preview.
-10. Preparar input sintetico/sanitizado para email/user mailbox preview.
-11. Preparar input sintetico/sanitizado para notification outbox preview.
-12. Preparar input sintetico/sanitizado para postulation dynamic form preview.
-13. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
-14. Preparar input sintetico/sanitizado para assignment sync conflict preview.
-15. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
-16. Integrar politica de datos sensibles como gate transversal de validators restantes.
-17. Preparar payload futuro para dashboard de readiness sin activar runtime.
+2. Revisar resultados del runner ampliado si GitHub/CI o ejecucion local los produce.
+3. Preparar input sintetico/sanitizado ampliado para conflict review/import readiness contract.
+4. Preparar input sintetico/sanitizado ampliado para admin configurability contract.
+5. Preparar contrato/manifest para readiness dashboard agregado sin activar runtime.
+6. Mantener politica de datos sensibles como gate transversal de validators restantes.
 
 ## Pendientes prototipo / Claude
 
@@ -209,21 +182,11 @@ Documentos clave:
 11. Project settings/rule versioning con estados draft/review/future active/deprecated.
 12. Changelog/centro de actualizaciones con estados draft/review/approved preview y audiencia por rol.
 13. Readiness dashboard con preview ready, missing input, prototype pending, backend pending, real gate off y manual review.
-14. Admin configurability UI: fichas administrables para tenant/proyecto, reglas, HR, cuestionarios, documentos, NDAs, planes, evidencias, certificaciones, Academia, notificaciones, imports, pagos, integraciones, roles y gates.
-15. Conflict review/import readiness UI: bandeja de conflictos, severidad, estado, sourceRefs opacas, readiness por area, razon obligatoria y bloqueo de import con blockers.
+14. Admin configurability UI.
+15. Conflict review/import readiness UI.
 16. Synthetic input pack UI opcional: mostrar diagnostico preview/pass-fail/warnings sin prometer produccion, import, sync, provider activo ni deploy.
-17. NDA UI: plantilla/version/vigencia/estado/creador/aprobador/auditRef/gate/reaceptacion, sin modificar aceptaciones ya presentadas.
-18. Planes UI: tipo/version/vigencia/estado/roles/historial/auditRef con borrador, en revision, aprobado, activo, pausado, reemplazado y archivado.
-19. Mis beneficios con honorario/reembolso/estado.
-20. Lotes y movimientos individuales.
-21. Academia interactiva profunda con backfill completo.
-22. Liquidaciones/Cinepolis: Mis beneficios debe separar honorario, Boleto, Combo, reembolso total, total y estado.
-23. Admin/Liquidaciones debe mostrar revision manual/conflicto si faltan llaves estables o referencias de pago.
-24. Movimientos debe conservar pago individual aunque venga de lote.
-25. Datos sensibles: no exponer banco, documentos, NDA, cuerpos crudos ni adjuntos privados; usar estados protegido/pendiente backend/requiere autorizacion.
-26. Assignment sync: Postulaciones no debe mostrar `HR sincronizada` si gate esta apagado; debe mostrar pendiente HR sync, preview, conflicto o revision manual.
-27. Separar disponible, reservada, agendada, realizada, cuestionario completado, revision, submitido, liquidacion y pago.
-28. Readiness: no decir production ready, deployed, imported, connected, sent o synced si gates estan apagados.
+17. Synthetic expanded coverage UI opcional: mostrar areas cubiertas, fixtures, validators, pass/fail/warnings y gates apagados.
+18. Readiness: no decir production ready, deployed, imported, connected, sent o synced si gates estan apagados.
 
 ## Pendientes Academia
 
@@ -233,22 +196,11 @@ Documentos clave:
 4. Rutas obligatorias por rol.
 5. Notificaciones de cursos/manuales.
 6. Contenido retroactivo de todos los bloques backend.
-7. Profundizar liquidaciones/pagos.
-8. Profundizar datos sensibles: sourceSafe, datos protegidos, referencias opacas, privacidad shopper, import seguro e integraciones apagadas.
-9. Profundizar assignment sync/conflicts.
-10. Profundizar visit lifecycle/reservas.
-11. Profundizar notification outbox y email/user mailbox.
-12. Profundizar shopper ranking/scoring.
-13. Profundizar project/tenant rule versioning.
-14. Profundizar rule change changelog/notifications.
-15. Profundizar release readiness snapshot.
-16. Profundizar admin configurability.
-17. Profundizar conflict review/import readiness.
-18. Profundizar synthetic input pack runner: fixture sintetico, input sanitizado, pruebas de contrato, source-safe report, pass/fail/warnings, limites y revision humana.
+7. Profundizar synthetic input pack expanded coverage: coverage, fixtures, validators, pass/fail/warnings, preflight contractual, gates apagados y revision humana.
 
 ## Siguiente bloque recomendado
 
-Preparar un synthetic pack agregado mas amplio para cubrir inputs sinteticos de readiness/release, rule versioning, notification outbox y assignment sync, sin fuentes reales.
+Preparar contrato/manifest para un readiness dashboard agregado source-safe que consuma resultados preview y los exponga como estados honestos sin runtime real.
 
 ## Regla de cierre por bloque
 
