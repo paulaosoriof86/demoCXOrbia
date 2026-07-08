@@ -42,7 +42,7 @@ jobs:
       - name: Drift gate
         run: |
           node tools/release/tya-rc-phase-a-drift-gate.mjs \
-            --validated 009c5958fed878a739b129916d1958ef22d4267b \
+            --validated d6abab620589abf9be26e0a3884f92c4b342fb9b \
             --out .tmp/rc-phase-a-staging-drift
 
       - name: Secret availability check
