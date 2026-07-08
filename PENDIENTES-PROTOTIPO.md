@@ -2,6 +2,14 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Addendum readiness dashboard source-safe - 2026-07-08
+
+- Backend agrego `tools/contracts/cxorbia-readiness-dashboard-source-safe-contract.mjs` y documentos `app/docs/READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md` / `app/docs/CAMBIOS-READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md`.
+- Claude debe usar este patron si agrega dashboard/panel de readiness: area, estado preview, sourceRef opaca, gate apagado, revision humana, motivo y blocker/warning si aplica.
+- Estados permitidos: preview listo, diagnostico ejecutado, fixture sintetico, input sanitizado, warning, fail, pendiente fuente real, pendiente gate real, pendiente revision humana, produccion no autorizada, proveedor no activo, bloqueado por datos sensibles, bloqueado por conflicto, solo documental.
+- No mostrar readiness como produccion lista, import real, sync real, envio real, pago real, provider activo, Storage activo, Firestore conectado, HR sincronizada, Make/Gemini activo o deploy realizado.
+- Academia debe tener manuales/cursos sobre readiness dashboard, preview vs real, fixture sintetico, input sanitizado, source-safe report, gates apagados, errores, warnings, blockers y revision humana.
+
 ## Addendum synthetic input pack expanded coverage - 2026-07-08
 
 - Backend actualizo `tools/contracts/cxorbia-synthetic-input-pack-runner.mjs` y agrego `app/docs/SYNTHETIC-INPUT-PACK-EXPANDED-COVERAGE-CXORBIA-20260708.md` / `app/docs/CAMBIOS-SYNTHETIC-INPUT-PACK-EXPANDED-COVERAGE-CXORBIA-20260708.md`.
@@ -19,15 +27,3 @@ Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backe
 - Copy honesto: synthetic input pack ejecutado no significa importado, sincronizado, conectado, enviado, pagado, deployado ni provider activo.
 - Readiness/dashboard debe separar: contrato probado, preview listo, pendiente gate, pendiente fuente real, pendiente revision humana y produccion no autorizada.
 - Academia debe tener manuales/cursos sobre fixture sintetico, input sanitizado, prueba de contrato, source-safe report, limites del runner y revision humana.
-
-## Addendum conflict review queue + import readiness - 2026-07-08
-
-- Backend agrego `tools/contracts/cxorbia-conflict-review-import-readiness-contract.mjs` y documentos `app/docs/CONFLICT-REVIEW-IMPORT-READINESS-CONTRACT-CXORBIA-20260708.md` / `app/docs/CAMBIOS-CONFLICT-REVIEW-IMPORT-READINESS-CONTRACT-CXORBIA-20260708.md`.
-- Claude debe convertir esto en UX visible, sin tocar backend: bandeja de conflictos y readiness de importacion por area.
-- Bandeja de conflictos: mostrar conflicto, entidad afectada, severidad `info/warning/blocker`, sourceRefs opacas, estado `abierto/en revision/resuelto/rechazado/archivado`, auditRef y razon obligatoria para resolver/rechazar.
-- Readiness por area: proyectos, visitas, shoppers, asignaciones, certificaciones, liquidaciones, pagos y rutas de cuestionario.
-- Si hay `blocker`, la UI debe bloquear import/activacion y mostrar revision humana requerida.
-- Copy honesto: `ready_preview` no significa importado; `resolved` preview no significa aplicado real; sourceRef opaca no significa que la fuente real este conectada.
-- No deduplicar por nombre, sucursal o coincidencia visual. Si falta llave estable suficiente, mostrar revision humana.
-- No mostrar datos sensibles crudos: DPI, banco, NDA firmado, tokens, webhooks, adjuntos, cuerpos crudos, telefonos/correos crudos.
-- Academia debe tener manuales/cursos por rol sobre export limpio, preview, import real, cola de conflictos, blockers, llaves estables, dedupe prohibido y revision humana.
