@@ -25,7 +25,7 @@ import {
 } from './cxorbia-conflict-review-import-readiness-contract.mjs';
 
 export const RUNNER_NAME = 'cxorbia-synthetic-input-pack-runner';
-export const RUNNER_VERSION = '2026-07-08.preview-only';
+export const RUNNER_VERSION = '2026-07-08.expanded-preview-only';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -153,11 +153,46 @@ const legacyCliContracts = [
   },
 ];
 
+const fixtureCliContracts = [
+  {
+    contractId: 'assignment-sync-conflict-preview',
+    file: 'tools/migration/tya-assignment-sync-conflict-preview-validator.mjs',
+    args: ['--input', 'tools/migration/synthetic-fixtures/phase-a/assignment-sync-conflict.phase-a.preview.json'],
+  },
+  {
+    contractId: 'notification-outbox-preview',
+    file: 'tools/migration/tya-notification-outbox-preview-validator.mjs',
+    args: ['--input', 'tools/migration/synthetic-fixtures/phase-a/notification-outbox.phase-a.preview.json'],
+  },
+  {
+    contractId: 'project-tenant-rule-versioning-preview',
+    file: 'tools/migration/tya-project-tenant-rule-versioning-preview-validator.mjs',
+    args: ['--input', 'tools/migration/synthetic-fixtures/phase-a/project-tenant-rule-versioning.phase-a.preview.json'],
+  },
+  {
+    contractId: 'rule-change-changelog-notification-preview',
+    file: 'tools/migration/tya-rule-change-changelog-notification-preview-validator.mjs',
+    args: ['--input', 'tools/migration/synthetic-fixtures/phase-a/rule-change-changelog-notification.phase-a.preview.json'],
+  },
+  {
+    contractId: 'release-readiness-snapshot-preview',
+    file: 'tools/migration/tya-release-readiness-snapshot-preview-validator.mjs',
+    args: ['--input', 'tools/migration/synthetic-fixtures/phase-a/release-readiness-snapshot.phase-a.preview.json'],
+  },
+];
+
 function verdictOk(result) {
   if (!result || typeof result !== 'object') return false;
   if (result.ok === true) return true;
   if (result.verdict === 'GO_PREVIEW_ONLY') return true;
   if (result.verdict === 'GO_DOCS_RELEASE_CONTRACTS_ONLY_AFTER_VALIDATION') return true;
+  const errors = Array.isArray(result.errors) ? result.errors : [];
+  const issues = Array.isArray(result.issues) ? result.issues : [];
+  const status = String(result.status || result.verdict || '').toLowerCase();
+  if (errors.length || issues.length) return false;
+  if (!status) return false;
+  if (status.includes('error') || status.includes('no_go') || status.includes('blocked') || status.includes('review_required')) return false;
+  if (status.includes('preview_ready') || status.includes('ready') || status.includes('report_ready')) return true;
   return false;
 }
 
@@ -184,7 +219,7 @@ function runCliContract(entry) {
   if (!fs.existsSync(abs)) {
     return {
       contractId: entry.contractId,
-      runner: 'cli_stdin',
+      runner: entry.args ? 'cli_args' : 'cli_stdin',
       ok: false,
       result: {
         verdict: 'NO_GO_CONTRACT',
@@ -193,9 +228,10 @@ function runCliContract(entry) {
     };
   }
   try {
-    const stdout = execFileSync(process.execPath, [abs], {
-      input: JSON.stringify(entry.payload),
+    const stdout = execFileSync(process.execPath, [abs, ...(entry.args || [])], {
+      input: entry.payload ? JSON.stringify(entry.payload) : undefined,
       encoding: 'utf8',
+      cwd: repoRoot,
       maxBuffer: 1024 * 1024,
     });
     const result = safeJsonParse(stdout.trim(), {
@@ -205,20 +241,22 @@ function runCliContract(entry) {
     });
     return {
       contractId: entry.contractId,
-      runner: 'cli_stdin',
+      runner: entry.args ? 'cli_args' : 'cli_stdin',
       ok: verdictOk(result),
       result,
     };
   } catch (error) {
     const stdout = String(error.stdout || '').trim();
+    const stderr = String(error.stderr || '').trim();
     const parsed = stdout ? safeJsonParse(stdout, null) : null;
     return {
       contractId: entry.contractId,
-      runner: 'cli_stdin',
+      runner: entry.args ? 'cli_args' : 'cli_stdin',
       ok: parsed ? verdictOk(parsed) : false,
       result: parsed || {
         verdict: 'NO_GO_CONTRACT',
         errors: [String(error.message || error)],
+        stderr: stderr.slice(0, 500),
       },
     };
   }
@@ -229,6 +267,7 @@ export function runSyntheticInputPack() {
     runModuleContract('admin-configurability', validateAdminConfigurabilityContract, adminConfigurabilitySample),
     runModuleContract('conflict-review-import-readiness', validateConflictReviewImportReadiness, conflictReviewSample),
     ...legacyCliContracts.map(runCliContract),
+    ...fixtureCliContracts.map(runCliContract),
   ];
 
   const failed = results.filter((item) => !item.ok);
@@ -249,6 +288,18 @@ export function runSyntheticInputPack() {
     passedContracts: results.length - failed.length,
     failedContracts: failed.length,
     warningCount: warnings.length,
+    coverage: {
+      embeddedContractSamples: ['admin-configurability', 'conflict-review-import-readiness'],
+      stdinContractSamples: legacyCliContracts.map((item) => item.contractId),
+      fixtureValidators: fixtureCliContracts.map((item) => item.contractId),
+      expandedAreas: [
+        'assignment_sync_conflicts',
+        'notification_outbox',
+        'project_tenant_rule_versioning',
+        'rule_change_changelog_notifications',
+        'release_readiness_snapshot',
+      ],
+    },
     results,
     warnings,
     classification: {
@@ -256,6 +307,7 @@ export function runSyntheticInputPack() {
         'synthetic fixtures for preview-only contracts',
         'aggregate source-safe report before real data inputs',
         'runner pattern for future contract validators',
+        'expanded fixture coverage for assignment sync, notifications, rules and release readiness',
       ],
       exclusivoCliente: [
         'TyA/Cinepolis data must remain outside runner fixtures unless sanitized and external',
@@ -263,9 +315,11 @@ export function runSyntheticInputPack() {
       claudePrototipo: [
         'show aggregate readiness as preview, not production-ready',
         'surface missing/failed contracts without implying provider execution',
+        'separate synthetic diagnostic pass from real operational activation',
       ],
       academia: [
         'explain synthetic fixtures, source-safe tests and why this is not real import',
+        'explain expanded coverage by contract area and gate state',
       ],
       sinImpactoClaude: [
         'runner has no UI changes and no provider calls',
@@ -300,6 +354,9 @@ function writeReport(report, directory) {
     `Passed contracts: ${report.passedContracts}`,
     `Failed contracts: ${report.failedContracts}`,
     `Warnings: ${report.warningCount}`,
+    '',
+    '## Coverage',
+    ...report.coverage.expandedAreas.map((area) => `- ${area}`),
     '',
     '## Contracts',
     ...report.results.map((item) => `- ${item.contractId}: ${item.ok ? 'GO' : 'NO_GO'} (${item.runner})`),
