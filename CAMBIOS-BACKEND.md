@@ -1,5 +1,13 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-08 - Drift gate root required docs allowlist
+
+- Se actualizo `tools/release/tya-rc-phase-a-drift-gate.mjs`.
+- Se agrego `app/docs/CAMBIOS-DRIFT-GATE-ROOT-DOCS-ALLOWLIST-20260708.md`.
+- Objetivo: corregir el fallo puntual del `CXOrbia RC Phase A Drift Gate`, que marcaba como bloqueados los documentos raiz obligatorios `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md` y `PENDIENTES-PROTOTIPO.md`.
+- Decision tecnica: esos tres documentos raiz quedan permitidos en `allowedExact`, porque son parte de la documentacion obligatoria del proyecto y no son runtime.
+- Estado seguro: no se abre permiso para `/app/modules`, `/app/core`, runtime, proveedores, base de datos, HR, Storage, Make, Gemini, correo, WhatsApp, pagos, imports, deploy ni produccion.
+
 ## 2026-07-08 - Admin configurability contract preview-only
 
 - Se agrego `tools/contracts/cxorbia-admin-configurability-contract.mjs`.
