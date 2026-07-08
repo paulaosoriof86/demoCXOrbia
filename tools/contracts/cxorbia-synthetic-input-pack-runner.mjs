@@ -29,9 +29,13 @@ import {
 import {
   expandedConflictReviewImportReadinessManifest,
 } from './cxorbia-conflict-review-import-readiness-expanded-fixture.mjs';
+import {
+  sampleManifest as reusableBackendToClaudeCoverageSample,
+  validateReusableBackendToClaudeCoverage,
+} from './cxorbia-reusable-backend-to-claude-coverage-contract.mjs';
 
 export const RUNNER_NAME = 'cxorbia-synthetic-input-pack-runner';
-export const RUNNER_VERSION = '2026-07-08.expanded-admin-conflict-readiness-preview-only';
+export const RUNNER_VERSION = '2026-07-08.reusable-backend-to-claude-coverage-preview-only';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -275,6 +279,7 @@ export function runSyntheticInputPack() {
     runModuleContract('admin-configurability-expanded', validateAdminConfigurabilityContract, expandedAdminConfigurabilityManifest),
     runModuleContract('conflict-review-import-readiness', validateConflictReviewImportReadiness, conflictReviewSample),
     runModuleContract('conflict-review-import-readiness-expanded', validateConflictReviewImportReadiness, expandedConflictReviewImportReadinessManifest),
+    runModuleContract('reusable-backend-to-claude-coverage', validateReusableBackendToClaudeCoverage, reusableBackendToClaudeCoverageSample),
     ...legacyCliContracts.map(runCliContract),
     ...fixtureCliContracts.map(runCliContract),
   ];
@@ -303,11 +308,13 @@ export function runSyntheticInputPack() {
         'admin-configurability-expanded',
         'conflict-review-import-readiness',
         'conflict-review-import-readiness-expanded',
+        'reusable-backend-to-claude-coverage',
       ],
       stdinContractSamples: legacyCliContracts.map((item) => item.contractId),
       fixtureValidators: fixtureCliContracts.map((item) => item.contractId),
       expandedAreas: [
         'admin_configurability_expanded',
+        'backend_to_claude_reusable_coverage',
         'assignment_sync_conflicts',
         'notification_outbox',
         'project_tenant_rule_versioning',
@@ -325,6 +332,7 @@ export function runSyntheticInputPack() {
         'runner pattern for future contract validators',
         'expanded fixture coverage for admin configurability, assignment sync, notifications, rules and release readiness',
         'expanded conflict/readiness fixture for multi-conflict preview before real imports',
+        'coverage contract that ensures reusable backend patterns are handed to Claude/prototype and Academia for new clients',
       ],
       exclusivoCliente: [
         'TyA/Cinepolis data must remain outside runner fixtures unless sanitized and external',
@@ -335,11 +343,13 @@ export function runSyntheticInputPack() {
         'separate synthetic diagnostic pass from real operational activation',
         'show admin configurability expanded scenarios without implying real provider activation',
         'show conflict/readiness expanded scenarios without implying real HR sync/import/payment',
+        'include every reusable backend pattern in Claude candidate audit and UI/Academia backlog',
       ],
       academia: [
         'explain synthetic fixtures, source-safe tests and why this is not real import',
         'explain expanded coverage by contract area and gate state',
         'explain admin domain configuration, Academy administration, assignment conflict, identity ambiguity and payment review as preview-only scenarios',
+        'explain reusable backend patterns so future client prototypes inherit the same product logic',
       ],
       sinImpactoClaude: [
         'runner has no UI changes and no provider calls',
