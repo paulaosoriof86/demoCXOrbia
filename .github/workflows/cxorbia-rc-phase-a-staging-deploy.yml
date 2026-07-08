@@ -8,6 +8,11 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml'
 
 permissions:
   contents: read
@@ -17,6 +22,9 @@ permissions:
 defaults:
   run:
     shell: bash
+
+env:
+  CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
 
 jobs:
   dev-root-deploy:
@@ -49,11 +57,16 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
+          mkdir -p .tmp/rc-phase-a-dev-root-deploy
           if [ -z "$FIREBASE_SERVICE_ACCOUNT_JSON" ]; then
+            echo "status=blocked_missing_secret" | tee .tmp/rc-phase-a-dev-root-deploy/deploy-status.txt
+            echo "url=$CXORBIA_DEV_ROOT_URL" | tee -a .tmp/rc-phase-a-dev-root-deploy/deploy-status.txt
             echo "Missing FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV secret."
             echo "Deployment was intentionally blocked before any Firebase call."
             exit 1
           fi
+          echo "status=secret_present" | tee .tmp/rc-phase-a-dev-root-deploy/deploy-status.txt
+          echo "url=$CXORBIA_DEV_ROOT_URL" | tee -a .tmp/rc-phase-a-dev-root-deploy/deploy-status.txt
           echo "Firebase service account secret is present."
 
       - name: Deploy Hosting DEV root
@@ -64,6 +77,16 @@ jobs:
           projectId: cxorbia-backend-dev
           target: cxorbia-dev
           channelId: live
+
+      - name: Verify DEV root URL
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/rc-phase-a-dev-root-deploy
+          echo "status=deploy_step_completed" > .tmp/rc-phase-a-dev-root-deploy/dev-root-url.txt
+          echo "url=$CXORBIA_DEV_ROOT_URL" >> .tmp/rc-phase-a-dev-root-deploy/dev-root-url.txt
+          curl -fsSIL "$CXORBIA_DEV_ROOT_URL" | tee .tmp/rc-phase-a-dev-root-deploy/dev-root-headers.txt
+          curl -fsSL "$CXORBIA_DEV_ROOT_URL" | tee .tmp/rc-phase-a-dev-root-deploy/dev-root-index.html | grep -E "CXOrbia|Plataforma Operativa de Campo" >/dev/null
+          echo "verification=ok" >> .tmp/rc-phase-a-dev-root-deploy/dev-root-url.txt
 
       - name: Upload DEV root deploy reports
         if: always()
