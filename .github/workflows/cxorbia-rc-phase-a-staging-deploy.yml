@@ -1,6 +1,6 @@
-name: CXOrbia RC Phase A Staging Deploy
+name: CXOrbia RC Phase A DEV Root Deploy
 
-# Controlled Hosting preview only. No Firestore/Storage rules, Functions, imports or providers.
+# Controlled DEV Hosting root only. No Firestore/Storage rules, Functions, imports or providers.
 on:
   workflow_dispatch:
   push:
@@ -19,8 +19,8 @@ defaults:
     shell: bash
 
 jobs:
-  staging-deploy:
-    name: RC Phase A staging deploy hosting only
+  dev-root-deploy:
+    name: RC Phase A DEV root deploy hosting only
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -37,13 +37,13 @@ jobs:
 
       - name: Predeploy gate
         run: |
-          node tools/release/tya-rc-phase-a-predeploy-gate.mjs --out .tmp/rc-phase-a-staging-predeploy
+          node tools/release/tya-rc-phase-a-predeploy-gate.mjs --out .tmp/rc-phase-a-dev-root-predeploy
 
       - name: Drift gate
         run: |
           node tools/release/tya-rc-phase-a-drift-gate.mjs \
             --validated d6abab620589abf9be26e0a3884f92c4b342fb9b \
-            --out .tmp/rc-phase-a-staging-drift
+            --out .tmp/rc-phase-a-dev-root-drift
 
       - name: Secret availability check
         env:
@@ -56,21 +56,20 @@ jobs:
           fi
           echo "Firebase service account secret is present."
 
-      - name: Deploy Hosting preview channel
+      - name: Deploy Hosting DEV root
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
           projectId: cxorbia-backend-dev
           target: cxorbia-dev
-          channelId: rc-phase-a
-          expires: 7d
+          channelId: live
 
-      - name: Upload staging deploy reports
+      - name: Upload DEV root deploy reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: rc-phase-a-staging-deploy-report
+          name: rc-phase-a-dev-root-deploy-report
           path: .tmp
           if-no-files-found: ignore
           retention-days: 14
