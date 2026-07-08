@@ -1,4 +1,4 @@
-/* CXOrbia · Production safety copy guard post V89
+/* CXOrbia · Production safety copy guard post V91
    Purpose: prevent visible UI from promising real integrations while backend gates remain closed.
    No network calls, no writes, no external providers. */
 (function(){
@@ -9,20 +9,35 @@
     ['WhatsApp enviado (Make)','WhatsApp/fallback manual preparado · Make pendiente backend'],
     ['WhatsApp enviado','WhatsApp/fallback manual preparado'],
     ['WA enviado al shopper','WA fallback/manual preparado · pendiente confirmación'],
+    ['Notificación enviada por WhatsApp al shopper','Notificación preparada para WhatsApp · envío real pendiente'],
+    ['Notificación enviada por WhatsApp','Notificación preparada para WhatsApp · envío real pendiente'],
     ['Correo enviado a','Correo preparado para'],
+    ['Correo guardado en Enviados · se despachará al conectar tu cuenta','Correo preparado en carpeta Enviados · despacho real pendiente de backend/gate'],
     ['HR sincronizada','HR sync pendiente backend'],
     ['HR actualizada','HR preparada · sync pendiente backend'],
     ['shopper notificado','notificación preparada'],
+    ['Payload de prueba enviado al escenario Make','Payload de prueba preparado para escenario Make · envío real pendiente de gate'],
     ['Payload de prueba enviado','Payload de prueba preparado'],
+    ['Disparo enviado a Make','Evento preparado · Make real pendiente de gate'],
     ['Disparo enviado','Evento preparado'],
     ['eventos enviados','eventos preparados'],
+    ['últimos eventos enviados','últimos eventos preparados'],
+    ['Cuestionario enviado tarde','Cuestionario completado tarde'],
+    ['Cuestionario enviado ·','Cuestionario completado ·'],
     ['cuestionario enviado','cuestionario realizado/completado'],
+    ['El cuestionario fue enviado desde la plataforma.','El cuestionario fue completado y queda pendiente de revisión/submitido según backend.'],
+    ['marca la visita como cuestionario enviado','marca la visita como cuestionario realizado/completado'],
+    ['sincronizando correos reales','sincronización real pendiente de backend/gate'],
+    ['Conectado como','Cuenta preparada como'],
+    ['Conectado','Preparado'],
+    ['conectado','preparado'],
     ['egreso(s) automáticos','egresos pendientes confirmación backend'],
     ['se generan los egresos automáticamente','los egresos quedan preparados y requieren confirmación/backend'],
     ['Make activo','Make pendiente backend'],
     ['Google Sheets en vivo','Google Sheets preview · backend pendiente'],
     ['portal en vivo','portal preview · backend pendiente'],
-    ['● En vivo','Preview · backend pendiente']
+    ['● En vivo','Preview · backend pendiente'],
+    ['HR viva + export','HR source preview + export pendiente backend']
   ];
 
   function safeCopy(value){
