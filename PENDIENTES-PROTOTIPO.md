@@ -2,6 +2,22 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Hallazgo visual Academia - acciones administrativas faltantes - 2026-07-08
+
+- Captura compartida por Paula: en Academia se observan Manuales, selector de rol, Crear con IA, Cargar recurso y + Categoria, pero no se ve opcion visible para borrar, archivar, duplicar o versionar cursos.
+- Claude debe auditar `app/modules/academia.js` y datos/manuales relacionados para implementar o documentar administracion completa de cursos/manuales/checklists/glosario.
+- Acciones esperadas: crear, editar, borrar controlado o archivar, duplicar, versionar, cambiar estado borrador/en revision/publicado/archivado, asignar rol/proyecto/modulo, y registrar revision humana.
+- Borrar no debe eliminar contenido historico critico sin confirmacion; preferir archivar/bloquear/soft-delete con auditRef, motivo y permisos.
+- Si no puede implementarse sin tocar backend, Claude debe dejar UI pendiente honesta y documentarlo, no simular que el borrado real existe.
+- Academia debe explicar en manuales como administrar cursos y que diferencias hay entre borrar, archivar, duplicar y versionar.
+
+## Addendum readiness dashboard bridge runner - 2026-07-08
+
+- Backend agrego `tools/contracts/cxorbia-readiness-dashboard-bridge-runner.mjs` y documentos `app/docs/READINESS-DASHBOARD-BRIDGE-RUNNER-CXORBIA-20260708.md` / `app/docs/CAMBIOS-READINESS-DASHBOARD-BRIDGE-RUNNER-CXORBIA-20260708.md`.
+- Claude debe usar este patron si agrega dashboard/panel de readiness: convertir resultados de validadores en filas visuales con area, estado honesto, sourceRef opaca, gate apagado, revision humana y motivo.
+- El bridge no significa runtime real: no mostrar produccion lista, import real, sync real, envio real, pago real, provider activo, Firestore conectado, HR sincronizada, Make/Gemini activo o deploy.
+- Academia debe explicar como un reporte de validadores se convierte en dashboard, source-safe, fixture sintetico, input sanitizado, gates apagados, warnings/fails/blockers y revision humana.
+
 ## Addendum readiness dashboard source-safe - 2026-07-08
 
 - Backend agrego `tools/contracts/cxorbia-readiness-dashboard-source-safe-contract.mjs` y documentos `app/docs/READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md` / `app/docs/CAMBIOS-READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md`.
@@ -18,12 +34,3 @@ Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backe
 - No mostrar esto como produccion lista ni como import real, sync real, envio real, pago real, provider activo, Storage activo o deploy.
 - Readiness/dashboard debe separar: contrato probado, fixture sintetico validado, preview listo, warning, fail, pendiente gate real, pendiente fuente real, pendiente revision humana y produccion no autorizada.
 - Academia debe tener manuales/cursos sobre coverage del runner, fixtures sinteticos, inputs sanitizados, preflight contractual, pass/fail/warnings, gates apagados y revision humana.
-
-## Addendum synthetic input pack runner - 2026-07-08
-
-- Backend agrego `tools/contracts/cxorbia-synthetic-input-pack-runner.mjs` y documentos `app/docs/SYNTHETIC-INPUT-PACK-RUNNER-CXORBIA-20260708.md` / `app/docs/CAMBIOS-SYNTHETIC-INPUT-PACK-RUNNER-CXORBIA-20260708.md`.
-- Claude debe mostrarlo solo como diagnostico preview si se decide reflejarlo en UI: runner sintetico, contratos cubiertos, pass/fail, warnings y estado source-safe.
-- No mostrar esto como produccion lista ni como import real.
-- Copy honesto: synthetic input pack ejecutado no significa importado, sincronizado, conectado, enviado, pagado, deployado ni provider activo.
-- Readiness/dashboard debe separar: contrato probado, preview listo, pendiente gate, pendiente fuente real, pendiente revision humana y produccion no autorizada.
-- Academia debe tener manuales/cursos sobre fixture sintetico, input sanitizado, prueba de contrato, source-safe report, limites del runner y revision humana.
