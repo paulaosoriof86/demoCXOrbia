@@ -23,9 +23,12 @@ import {
   sampleManifest as conflictReviewSample,
   validateConflictReviewImportReadiness,
 } from './cxorbia-conflict-review-import-readiness-contract.mjs';
+import {
+  expandedConflictReviewImportReadinessManifest,
+} from './cxorbia-conflict-review-import-readiness-expanded-fixture.mjs';
 
 export const RUNNER_NAME = 'cxorbia-synthetic-input-pack-runner';
-export const RUNNER_VERSION = '2026-07-08.expanded-preview-only';
+export const RUNNER_VERSION = '2026-07-08.expanded-conflict-readiness-preview-only';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -188,8 +191,9 @@ function verdictOk(result) {
   if (result.verdict === 'GO_DOCS_RELEASE_CONTRACTS_ONLY_AFTER_VALIDATION') return true;
   const errors = Array.isArray(result.errors) ? result.errors : [];
   const issues = Array.isArray(result.issues) ? result.issues : [];
+  const hardBlocks = Array.isArray(result.hardBlocks) ? result.hardBlocks : [];
   const status = String(result.status || result.verdict || '').toLowerCase();
-  if (errors.length || issues.length) return false;
+  if (errors.length || issues.length || hardBlocks.length) return false;
   if (!status) return false;
   if (status.includes('error') || status.includes('no_go') || status.includes('blocked') || status.includes('review_required')) return false;
   if (status.includes('preview_ready') || status.includes('ready') || status.includes('report_ready')) return true;
@@ -266,6 +270,7 @@ export function runSyntheticInputPack() {
   const results = [
     runModuleContract('admin-configurability', validateAdminConfigurabilityContract, adminConfigurabilitySample),
     runModuleContract('conflict-review-import-readiness', validateConflictReviewImportReadiness, conflictReviewSample),
+    runModuleContract('conflict-review-import-readiness-expanded', validateConflictReviewImportReadiness, expandedConflictReviewImportReadinessManifest),
     ...legacyCliContracts.map(runCliContract),
     ...fixtureCliContracts.map(runCliContract),
   ];
@@ -289,7 +294,11 @@ export function runSyntheticInputPack() {
     failedContracts: failed.length,
     warningCount: warnings.length,
     coverage: {
-      embeddedContractSamples: ['admin-configurability', 'conflict-review-import-readiness'],
+      embeddedContractSamples: [
+        'admin-configurability',
+        'conflict-review-import-readiness',
+        'conflict-review-import-readiness-expanded',
+      ],
       stdinContractSamples: legacyCliContracts.map((item) => item.contractId),
       fixtureValidators: fixtureCliContracts.map((item) => item.contractId),
       expandedAreas: [
@@ -298,6 +307,7 @@ export function runSyntheticInputPack() {
         'project_tenant_rule_versioning',
         'rule_change_changelog_notifications',
         'release_readiness_snapshot',
+        'conflict_review_import_readiness_expanded',
       ],
     },
     results,
@@ -308,6 +318,7 @@ export function runSyntheticInputPack() {
         'aggregate source-safe report before real data inputs',
         'runner pattern for future contract validators',
         'expanded fixture coverage for assignment sync, notifications, rules and release readiness',
+        'expanded conflict/readiness fixture for multi-conflict preview before real imports',
       ],
       exclusivoCliente: [
         'TyA/Cinepolis data must remain outside runner fixtures unless sanitized and external',
@@ -316,10 +327,12 @@ export function runSyntheticInputPack() {
         'show aggregate readiness as preview, not production-ready',
         'surface missing/failed contracts without implying provider execution',
         'separate synthetic diagnostic pass from real operational activation',
+        'show conflict/readiness expanded scenarios without implying real HR sync/import/payment',
       ],
       academia: [
         'explain synthetic fixtures, source-safe tests and why this is not real import',
         'explain expanded coverage by contract area and gate state',
+        'explain assignment conflict, identity ambiguity and payment review as preview-only scenarios',
       ],
       sinImpactoClaude: [
         'runner has no UI changes and no provider calls',
