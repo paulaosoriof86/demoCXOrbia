@@ -1,5 +1,17 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-08 - Conflict review/import readiness expanded fixture preview-only
+
+- Se agrego `tools/contracts/cxorbia-conflict-review-import-readiness-expanded-fixture.mjs`.
+- Se agrego `app/docs/CONFLICT-REVIEW-IMPORT-READINESS-EXPANDED-FIXTURE-CXORBIA-20260708.md`.
+- Se agrego `app/docs/CAMBIOS-CONFLICT-REVIEW-IMPORT-READINESS-EXPANDED-FIXTURE-CXORBIA-20260708.md`.
+- Se agrego `app/docs/NEXT-CANDIDATE-AUDIT-ACADEMIA-ADMIN-ACTIONS-20260708.md` para auditar la proxima candidata Claude con foco en acciones administrativas de Academia.
+- Objetivo: preparar un input sintetico/sanitizado ampliado para validar conflict review/import readiness con conflictos de asignacion, identidad shopper y pago, sin fuentes reales ni datos sensibles.
+- Decision tecnica: fixture/runner preview-only que exporta `expandedConflictReviewImportReadinessManifest()` y `runExpandedConflictReviewImportReadinessFixture()`; imprime JSON por consola y no escribe outputs por defecto.
+- Impacto Claude/comercializable: UI futura debe mostrar severidad, estado de cola, sourceRefs opacas, stable keys no sensibles, razon de revision y bloqueo de import si hay blocker; no debe deduplicar visualmente ni resolver automaticamente.
+- Impacto Academia: explicar cola de conflictos, blocker vs warning, sourceRefs opacas, stable keys, revision humana, pago en revision vs pago real y administracion completa de Academia.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
+
 ## 2026-07-08 - Readiness dashboard bridge runner preview-only
 
 - Se agrego `tools/contracts/cxorbia-readiness-dashboard-bridge-runner.mjs`.
@@ -24,14 +36,3 @@
 - Impacto Claude/comercializable: UI futura de readiness debe mostrar area, estado preview, sourceRef opaca, gate apagado, revision humana y motivo; no debe prometer produccion ni integraciones reales.
 - Impacto Academia: explicar readiness dashboard, preview vs real, fixture sintetico, input sanitizado, source-safe report, gates apagados, errores, warnings, blockers y revision humana.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
-
-## 2026-07-08 - Paquete Claude completo acumulado post synthetic coverage
-
-- Se agrego `app/docs/PAQUETE-CLAUDE-COMPLETO-ACUMULADO-POST-SYNTHETIC-COVERAGE-CXORBIA-20260708.md`.
-- Se agrego `app/docs/CAMBIOS-PAQUETE-CLAUDE-COMPLETO-ACUMULADO-POST-SYNTHETIC-COVERAGE-20260708.md`.
-- Objetivo: entregar a Claude un paquete acumulado completo que incluya contexto, pendientes, modificaciones backend recientes, patrones reutilizables, Academia profunda, Phase A, restricciones, validaciones y prompt pegable.
-- Alcance: copy honesto P0, UX diagnostica preview/readiness/gates, administrabilidad por tenant/proyecto, NDA y planes editables/versionados, conflict review/import readiness, Phase A operativo, HR/plataforma sync, liquidaciones/pagos, cuestionarios/certificaciones, evidencias/Storage, datos sensibles, Academia profunda y patrones reutilizables CXOrbia.
-- Decision tecnica: solo documentacion para handoff Claude; no toca runtime, modules, core, tools, contracts ni workflows.
-- Impacto Claude/comercializable: Claude debe trabajar sobre prototipo/UX/Academia con el paquete completo, no con prompt corto, y documentar archivos modificados, textos corregidos, cambios de Academia, pendientes, riesgos y validaciones.
-- Impacto Academia: incluye backfill profundo acumulado por rol, cursos/manuales/checklists/glosario y explicacion de synthetic runner, expanded coverage, source-safe, gates, conflict queue, import readiness, admin configurability, liquidaciones/pagos, cuestionarios, evidencias y datos sensibles.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin cambios en `tools/`, `app/contracts/` o workflows, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
