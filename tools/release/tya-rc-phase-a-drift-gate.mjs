@@ -4,8 +4,9 @@
   Safe local validator. No deploy, no provider calls, no DB writes.
 
   Purpose: after a runtime commit passes smoke gates, ensure later commits before
-  cutover are documentation/release notes only. If runtime changes appear, the
-  visual/technical smoke must be run again and the validated runtime SHA updated.
+  cutover are documentation, release notes, workflow gates, and preview-only
+  backend contract validators. If runtime app files change, the visual/technical
+  smoke must be run again and the validated runtime SHA updated.
 
   Usage:
     node tools/release/tya-rc-phase-a-drift-gate.mjs --validated a7fb4f00cf1adf1e6e92ee7b1de897cfdbacd374
@@ -25,6 +26,8 @@ const allowedPrefixes = [
   'app/docs/',
   'docs/',
   'README',
+  'tools/contracts/',
+  '.github/workflows/cxorbia-phase-a-remote-smoke.yml',
   '.github/workflows/cxorbia-rc-phase-a-drift-gate.yml',
   '.github/workflows/cxorbia-rc-phase-a-predeploy-gate.yml',
   '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml',
@@ -32,7 +35,10 @@ const allowedPrefixes = [
   'tools/release/tya-rc-phase-a-predeploy-gate.mjs'
 ];
 const allowedExact = [
-  '.gitignore'
+  '.gitignore',
+  'tools/migration/tya-assignment-sync-conflict-preview.mjs',
+  'tools/migration/tya-assignment-sync-outbox-contract.mjs',
+  'tools/release/tya-phase-a-today-finish-readiness.mjs'
 ];
 
 function fail(message) {
@@ -62,7 +68,7 @@ const report = {
   generatedAt: new Date().toISOString(),
   validatedRuntimeSha: validated,
   head: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
-  verdict: blocked.length ? 'NO_GO_DRIFT' : 'GO_DOCS_RELEASE_ONLY_AFTER_VALIDATION',
+  verdict: blocked.length ? 'NO_GO_DRIFT' : 'GO_DOCS_RELEASE_CONTRACTS_ONLY_AFTER_VALIDATION',
   changedCount: files.length,
   blockedCount: blocked.length,
   changedFiles: files,
@@ -71,6 +77,15 @@ const report = {
     deploy: false,
     production: false,
     providers: false,
+    databaseWrites: false,
+    imports: false
+  },
+  allowedPolicy: {
+    docs: true,
+    releaseGateWorkflows: true,
+    previewOnlyContracts: true,
+    runtimeAppChanges: false,
+    providerActivation: false,
     databaseWrites: false,
     imports: false
   }
@@ -94,6 +109,15 @@ if (outDir) {
     '',
     '## Changed files',
     ...(files.length ? files.map(file => `- ${file}`) : ['- none']),
+    '',
+    '## Allowed policy',
+    '- Docs: yes',
+    '- Release gate workflows: yes',
+    '- Preview-only contracts: yes',
+    '- Runtime app changes: no',
+    '- Provider activation: no',
+    '- Database writes: no',
+    '- Imports: no',
     '',
     '## Safe state',
     '- No deploy',
