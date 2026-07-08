@@ -1,5 +1,17 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-08 - Readiness dashboard source-safe contract preview-only
+
+- Se agrego `tools/contracts/cxorbia-readiness-dashboard-source-safe-contract.mjs`.
+- Se agrego `app/docs/READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md`.
+- Se agrego `app/docs/CAMBIOS-READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md`.
+- Objetivo: preparar un contrato reusable para representar resultados de contratos/runners/readiness como estados honestos de dashboard sin activar runtime real.
+- Decision tecnica: contrato preview-only con `sampleManifest()` y `validateReadinessDashboardSourceSafe()`; valida `mode=preview_only`, source-safe, input sintetico/sanitizado, sourceRefs opacas, gates reales apagados y ausencia de claims prohibidos.
+- Bloquea: production ready, import real, sync real, envio real, pago real, provider activo, deploy realizado, Firestore conectado, HR sincronizada, Make/Gemini/Storage activo y campos sensibles/raw.
+- Impacto Claude/comercializable: UI futura de readiness debe mostrar area, estado preview, sourceRef opaca, gate apagado, revision humana y motivo; no debe prometer produccion ni integraciones reales.
+- Impacto Academia: explicar readiness dashboard, preview vs real, fixture sintetico, input sanitizado, source-safe report, gates apagados, errores, warnings, blockers y revision humana.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
+
 ## 2026-07-08 - Paquete Claude completo acumulado post synthetic coverage
 
 - Se agrego `app/docs/PAQUETE-CLAUDE-COMPLETO-ACUMULADO-POST-SYNTHETIC-COVERAGE-CXORBIA-20260708.md`.
@@ -20,16 +32,4 @@
 - Decision tecnica: el runner ejecuta validadores `tools/migration` con `--input` sobre fixtures source-safe de `tools/migration/synthetic-fixtures/phase-a/`, desde la raiz del repo, sin fuentes reales ni outputs por defecto.
 - Impacto Claude/comercializable: si se refleja en UI, debe mostrarse como diagnostico preview por area/pass-fail/warnings, nunca como produccion lista, import real, sync aplicado, envio real, pago real, provider activo o deploy.
 - Impacto Academia: explicar cobertura del runner, fixtures sinteticos, input sanitizado, pass/fail/warnings, preflight contractual, diferencia entre validacion preview y operacion real, gates apagados y revision humana.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
-
-## 2026-07-08 - Synthetic input pack runner preview-only
-
-- Se agrego `tools/contracts/cxorbia-synthetic-input-pack-runner.mjs`.
-- Se agrego `app/docs/SYNTHETIC-INPUT-PACK-RUNNER-CXORBIA-20260708.md`.
-- Se agrego `app/docs/CAMBIOS-SYNTHETIC-INPUT-PACK-RUNNER-CXORBIA-20260708.md`.
-- Objetivo: ejecutar validadores preview-only con fixtures sinteticos/sanitizados y producir un reporte agregado source-safe sin fuentes reales.
-- Contratos cubiertos: admin configurability, conflict review/import readiness, questionnaire routing, visit lifecycle, settlement eligibility, evidence storage e historical import clean.
-- Decision tecnica: runner local reusable CXOrbia; imprime JSON por consola y opcionalmente escribe reporte JSON/MD local con `--out`, sin subir datos reales ni generar outputs por defecto en repo.
-- Impacto Claude/comercializable: UI futura solo debe mostrarlo como diagnostico preview/pass-fail/warnings, sin decir production-ready, importado, sincronizado, enviado, pagado, conectado o deployado.
-- Impacto Academia: explicar fixtures sinteticos, input sanitizado, prueba de contrato vs operacion real, source-safe report vs import real, limites del runner y revision humana.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
