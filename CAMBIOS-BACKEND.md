@@ -1,5 +1,17 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-08 - Conflict review queue + import readiness contract preview-only
+
+- Se agrego `tools/contracts/cxorbia-conflict-review-import-readiness-contract.mjs`.
+- Se agrego `app/docs/CONFLICT-REVIEW-IMPORT-READINESS-CONTRACT-CXORBIA-20260708.md`.
+- Se agrego `app/docs/CAMBIOS-CONFLICT-REVIEW-IMPORT-READINESS-CONTRACT-CXORBIA-20260708.md`.
+- Objetivo: preparar una cola de revision de conflictos y readiness report de importacion para HR/plataforma/import historico/shoppers/certificaciones/rutas de cuestionario/liquidaciones/pagos, sin import real ni escrituras reales.
+- Decision tecnica: contrato preview-only reusable CXOrbia; exige `sourceSafe=true`, input sintetico/sanitizado, sourceRefs opacas, llaves estables, severidad, estado de cola, auditRef y revision humana.
+- Bloquea: import real, escrituras Firestore/HR/Storage, base vieja/dump viejo, proveedores activos, Make/Gemini real, pagos reales, notificaciones reales, auto-merge/auto-resolve de conflictos, dedupe visual/por nombre, overwrite sin revision, DPI, banco, NDA firmado, secretos/tokens/webhooks, adjuntos/base64/cuerpos crudos.
+- Impacto Claude/comercializable: UI futura debe mostrar bandeja de conflictos, severidad, entidad, source refs opacas, estados abierto/en revision/resuelto/rechazado/archivado, readiness por area y bloqueo de import si hay blockers, sin decir importado/sincronizado/pagado/notificado si solo existe preview.
+- Impacto Academia: explicar export limpio vs preview vs import real, cola de conflictos, severidades, blockers, llaves estables, prohibicion de dedupe visual, revision humana, resolved preview vs aplicado real y datos sensibles excluidos.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
+
 ## 2026-07-08 - Drift gate root required docs allowlist
 
 - Se actualizo `tools/release/tya-rc-phase-a-drift-gate.mjs`.
