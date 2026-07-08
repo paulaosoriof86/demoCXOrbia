@@ -47,6 +47,7 @@ Ultima actualizacion: 2026-07-08
 - Rule change changelog/notification preview.
 - Release readiness snapshot preview.
 - Admin configurability contract preview-only.
+- Conflict review queue + import readiness contract preview-only.
 
 ### Academia
 
@@ -70,6 +71,7 @@ Ultima actualizacion: 2026-07-08
 - Academia impact de rule change changelog/notifications.
 - Academia impact de release readiness snapshot.
 - Academia impact de admin configurability: NDA, planes, gates, auditRef, revision humana y estados honestos.
+- Academia impact de conflict review/import readiness: export limpio vs preview vs import real, blockers, llaves estables, dedupe prohibido, revision humana y datos sensibles excluidos.
 
 ### Operacion Phase A
 
@@ -91,6 +93,7 @@ Ultima actualizacion: 2026-07-08
 - Rule change changelog/notification preview.
 - Release readiness snapshot preview.
 - Admin configurability: NDAs, planes, reglas, HR, cuestionarios, documentos, evidencias, certificaciones, Academia, notificaciones, imports, pagos, integraciones, roles y gates.
+- Conflict review/import readiness: cola de conflictos y readiness por area antes de cualquier import real.
 - Liquidaciones y pagos.
 - Cinepolis Boleto/Combo, lotes y movimientos individuales.
 - Preview validator/source-safe mapping para liquidaciones/corte junio y Cinepolis Boleto/Combo.
@@ -139,16 +142,17 @@ Estos bloques no estaban suficientemente explicitados al inicio y se agregaron p
 26. Rule change changelog/notification preview antes de publicar changelog, enviar comunicaciones o marcar roles informados.
 27. Release readiness snapshot preview antes de cualquier deploy, merge, import, escritura o activacion real.
 28. Admin configurability preview antes de administrar desde UI real NDAs, planes, reglas, evidencias, cuestionarios, pagos, certificaciones, Academia, notificaciones, imports, Make/Gemini, roles y gates.
+29. Conflict review/import readiness preview antes de cualquier import real o resolucion de conflictos HR/plataforma/historico.
 
 ## Bloque recien completado
 
-### Admin configurability contract preview-only
+### Conflict review queue + import readiness contract preview-only
 
 Archivos:
 
-- `tools/contracts/cxorbia-admin-configurability-contract.mjs`
-- `app/docs/ADMIN-CONFIGURABILITY-CONTRACT-CXORBIA-20260708.md`
-- `app/docs/CAMBIOS-ADMIN-CONFIGURABILITY-CONTRACT-CXORBIA-20260708.md`
+- `tools/contracts/cxorbia-conflict-review-import-readiness-contract.mjs`
+- `app/docs/CONFLICT-REVIEW-IMPORT-READINESS-CONTRACT-CXORBIA-20260708.md`
+- `app/docs/CAMBIOS-CONFLICT-REVIEW-IMPORT-READINESS-CONTRACT-CXORBIA-20260708.md`
 - `CAMBIOS-BACKEND.md`
 - `RESUMEN-PARA-CLAUDE.md`
 - `PENDIENTES-PROTOTIPO.md`
@@ -159,8 +163,8 @@ Estado:
 - Solo contrato y documentacion segura.
 - No cambia `/app/modules` ni `/app/core`.
 - No activa runtime, produccion, Firestore, Storage, Auth, Make, Gemini, email/WhatsApp, pagos, deploy, merge, providers ni import real.
-- Valida administrabilidad por `tenantId` y `projectId`.
-- Bloquea ejecucion real, escrituras reales, proveedores activos, import real, notificaciones reales, pagos reales, publicacion sin revision, sobrescritura silenciosa, NDA aceptado modificado silenciosamente, DPI, banco, NDA firmado, secretos/tokens/webhooks.
+- Valida conflictos por entidad, sourceRefs opacas, llaves estables, severidad, estado de cola, auditRef, readiness por area y revision humana.
+- Bloquea import real, escrituras reales, base vieja/dump viejo, auto-merge/auto-resolve de conflictos, dedupe visual/por nombre, overwrite sin revision, DPI, banco, NDA firmado, secretos/tokens/webhooks, adjuntos/base64/cuerpos crudos.
 
 ## Ultima auditoria de prototipo
 
@@ -180,7 +184,7 @@ Documentos clave:
 
 ## Pendientes backend inmediatos
 
-1. Crear contrato preview-only de conflict review queue + import readiness report.
+1. Preparar input sintetico/sanitizado para conflict review/import readiness contract.
 2. Preparar input sintetico/sanitizado para admin configurability contract.
 3. Preparar input sintetico/sanitizado para release readiness snapshot preview.
 4. Preparar input sintetico/sanitizado para rule change changelog/notification preview.
@@ -214,28 +218,29 @@ Documentos clave:
 12. Changelog/centro de actualizaciones con estados draft/review/approved preview y audiencia por rol.
 13. Readiness dashboard con preview ready, missing input, prototype pending, backend pending, real gate off y manual review.
 14. Admin configurability UI: fichas administrables para tenant/proyecto, reglas, HR, cuestionarios, documentos, NDAs, planes, evidencias, certificaciones, Academia, notificaciones, imports, pagos, integraciones, roles y gates.
-15. NDA UI: plantilla/version/vigencia/estado/creador/aprobador/auditRef/gate/reaceptacion, sin modificar aceptaciones ya presentadas.
-16. Planes UI: tipo/version/vigencia/estado/roles/historial/auditRef con borrador, en revision, aprobado, activo, pausado, reemplazado y archivado.
-17. Mis beneficios con honorario/reembolso/estado.
-18. Lotes y movimientos individuales.
-19. Academia interactiva profunda con backfill completo.
-20. Liquidaciones/Cinepolis: Mis beneficios debe separar honorario, Boleto, Combo, reembolso total, total y estado.
-21. Admin/Liquidaciones debe mostrar revision manual/conflicto si faltan llaves estables o referencias de pago.
-22. Movimientos debe conservar pago individual aunque venga de lote.
-23. Datos sensibles: no exponer banco, documentos, NDA, cuerpos crudos ni adjuntos privados; usar estados protegido/pendiente backend/requiere autorizacion.
-24. Assignment sync: Postulaciones no debe mostrar `HR sincronizada` si gate esta apagado; debe mostrar pendiente HR sync, preview, conflicto o revision manual.
-25. Visitas asignadas desde plataforma o HR preview deben salir de disponibles sin duplicarse.
-26. Visit lifecycle/reservas: agenda/reprogramacion no debe prometer HR sync real; fuera de rango debe mostrar regla fallida y pedir override.
-27. Separar disponible, reservada, agendada, realizada, cuestionario completado, revision, submitido, liquidacion y pago.
-28. Ficha postulacion dinamica: configurable por proyecto/version, campos requeridos/opcionales, referencias privadas, sin archivos raw y sin tratar postulacion como asignacion.
-29. Notification outbox: toasters no deben decir enviado/sincronizado si solo hay preview; WhatsApp/email deben quedar como fallback/draft/provider pendiente.
-30. Email/user mailbox: UI no debe decir conectado/leido/enviado si gate esta apagado; separar draft, log manual, provider pending y enviado real.
-31. CRM/documentos: no decir carpeta creada/conectada/sincronizada; usar ref preview, provider pending, permission review, blocked private link y manual review.
-32. Shopper history: no mostrar cuerpos crudos, telefonos/correos crudos ni adjuntos; usar timeline con estados honestos y llaves estables.
-33. Ranking: mostrar desglose de metricas, muestra insuficiente, conflicto, revision manual y no usarlo como decision final.
-34. Rule versioning: mostrar impacto, migration/rollback required y no usar proveedor activo si solo existe regla preview.
-35. Changelog/notificaciones: no decir publicado/enviado/informado si gates estan apagados; usar draft, review, provider pending y Academia update required.
-36. Readiness: no decir production ready, deployed, imported, connected, sent o synced si gates estan apagados.
+15. Conflict review/import readiness UI: bandeja de conflictos, severidad, estado, sourceRefs opacas, readiness por area, razon obligatoria y bloqueo de import con blockers.
+16. NDA UI: plantilla/version/vigencia/estado/creador/aprobador/auditRef/gate/reaceptacion, sin modificar aceptaciones ya presentadas.
+17. Planes UI: tipo/version/vigencia/estado/roles/historial/auditRef con borrador, en revision, aprobado, activo, pausado, reemplazado y archivado.
+18. Mis beneficios con honorario/reembolso/estado.
+19. Lotes y movimientos individuales.
+20. Academia interactiva profunda con backfill completo.
+21. Liquidaciones/Cinepolis: Mis beneficios debe separar honorario, Boleto, Combo, reembolso total, total y estado.
+22. Admin/Liquidaciones debe mostrar revision manual/conflicto si faltan llaves estables o referencias de pago.
+23. Movimientos debe conservar pago individual aunque venga de lote.
+24. Datos sensibles: no exponer banco, documentos, NDA, cuerpos crudos ni adjuntos privados; usar estados protegido/pendiente backend/requiere autorizacion.
+25. Assignment sync: Postulaciones no debe mostrar `HR sincronizada` si gate esta apagado; debe mostrar pendiente HR sync, preview, conflicto o revision manual.
+26. Visitas asignadas desde plataforma o HR preview deben salir de disponibles sin duplicarse.
+27. Visit lifecycle/reservas: agenda/reprogramacion no debe prometer HR sync real; fuera de rango debe mostrar regla fallida y pedir override.
+28. Separar disponible, reservada, agendada, realizada, cuestionario completado, revision, submitido, liquidacion y pago.
+29. Ficha postulacion dinamica: configurable por proyecto/version, campos requeridos/opcionales, referencias privadas, sin archivos raw y sin tratar postulacion como asignacion.
+30. Notification outbox: toasters no deben decir enviado/sincronizado si solo hay preview; WhatsApp/email deben quedar como fallback/draft/provider pendiente.
+31. Email/user mailbox: UI no debe decir conectado/leido/enviado si gate esta apagado; separar draft, log manual, provider pending y enviado real.
+32. CRM/documentos: no decir carpeta creada/conectada/sincronizada; usar ref preview, provider pending, permission review, blocked private link y manual review.
+33. Shopper history: no mostrar cuerpos crudos, telefonos/correos crudos ni adjuntos; usar timeline con estados honestos y llaves estables.
+34. Ranking: mostrar desglose de metricas, muestra insuficiente, conflicto, revision manual y no usarlo como decision final.
+35. Rule versioning: mostrar impacto, migration/rollback required y no usar proveedor activo si solo existe regla preview.
+36. Changelog/notificaciones: no decir publicado/enviado/informado si gates estan apagados; usar draft, review, provider pending y Academia update required.
+37. Readiness: no decir production ready, deployed, imported, connected, sent o synced si gates estan apagados.
 
 ## Pendientes Academia
 
@@ -260,10 +265,11 @@ Documentos clave:
 19. Profundizar rule change changelog/notifications: changeLogId, changeEventId, impactScope, audienceRole, notificationDraftId, academyUpdateRef, blocked_real_send y Academia update required.
 20. Profundizar release readiness snapshot: snapshotId, readinessArea, readinessStatus, gateStatus, blockingReason, preview-ready vs production-ready y blockers.
 21. Profundizar admin configurability: tenant/project config, roles, permissions, auditRef, gate, template/version/acceptance/reacceptance NDA, tipos/estados de planes, revision humana y provider preparado vs activo.
+22. Profundizar conflict review/import readiness: conflictId, entityType, conflictType, severity, queueStatus, sourceRef opaca, stableKey, blocker, readiness area, clean/rejected/conflict counts, resolved preview vs aplicado real.
 
 ## Siguiente bloque recomendado
 
-Crear contrato preview-only de conflict review queue + import readiness report para consolidar conflictos de HR/plataforma/import historico/shoppers/certificaciones/liquidaciones, sin escritura real y sin datos sensibles.
+Crear contrato/runner local de synthetic input pack para ejecutar validators previos sin fuentes reales y producir un reporte agregado source-safe.
 
 ## Regla de cierre por bloque
 
