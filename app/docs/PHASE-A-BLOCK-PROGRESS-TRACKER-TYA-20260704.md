@@ -31,6 +31,7 @@ Ultima actualizacion: 2026-07-08
 - Regla de no reiniciar por cada ZIP.
 - Regla de trabajar sobre la ultima version auditada usable, salvo bloqueo critico.
 - Addenda de cambios, Claude y pendientes.
+- Paquete Claude completo acumulado post synthetic coverage.
 
 ### Backend foundation
 
@@ -50,6 +51,7 @@ Ultima actualizacion: 2026-07-08
 - Conflict review queue + import readiness contract preview-only.
 - Synthetic input pack runner preview-only.
 - Synthetic input pack expanded coverage preview-only.
+- Readiness dashboard source-safe contract preview-only.
 
 ### Academia
 
@@ -63,7 +65,8 @@ Ultima actualizacion: 2026-07-08
 - Academia impact de admin configurability.
 - Academia impact de conflict review/import readiness.
 - Academia impact de synthetic input pack runner.
-- Academia impact de synthetic input pack expanded coverage: coverage, fixtures, inputs sanitizados, preflight contractual, pass/fail/warnings, gates apagados y revision humana.
+- Academia impact de synthetic input pack expanded coverage.
+- Academia impact de readiness dashboard source-safe: preview vs real, fixtures, inputs sanitizados, source-safe report, gates apagados, errores, warnings, blockers y revision humana.
 
 ### Operacion Phase A
 
@@ -88,6 +91,7 @@ Ultima actualizacion: 2026-07-08
 - Conflict review/import readiness.
 - Synthetic input pack runner.
 - Synthetic input pack expanded coverage para assignment sync, notification outbox, rule versioning, changelog/notifications y release readiness.
+- Readiness dashboard source-safe para estados honestos agregados sin runtime real.
 - Liquidaciones y pagos.
 - Cinepolis Boleto/Combo, lotes y movimientos individuales.
 - Preview validator/source-safe mapping para liquidaciones/corte junio y Cinepolis Boleto/Combo.
@@ -126,16 +130,17 @@ Ultima actualizacion: 2026-07-08
 29. Conflict review/import readiness preview antes de cualquier import real o resolucion de conflictos HR/plataforma/historico.
 30. Synthetic input pack runner preview antes de correr validadores con fuentes reales o inputs sanitizados ampliados.
 31. Synthetic input pack expanded coverage antes de diagnosticar readiness agregado por areas criticas.
+32. Readiness dashboard source-safe antes de exponer estados agregados en UI o declarar readiness operacional.
 
 ## Bloque recien completado
 
-### Synthetic input pack expanded coverage preview-only
+### Readiness dashboard source-safe contract preview-only
 
 Archivos:
 
-- `tools/contracts/cxorbia-synthetic-input-pack-runner.mjs`
-- `app/docs/SYNTHETIC-INPUT-PACK-EXPANDED-COVERAGE-CXORBIA-20260708.md`
-- `app/docs/CAMBIOS-SYNTHETIC-INPUT-PACK-EXPANDED-COVERAGE-CXORBIA-20260708.md`
+- `tools/contracts/cxorbia-readiness-dashboard-source-safe-contract.mjs`
+- `app/docs/READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md`
+- `app/docs/CAMBIOS-READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md`
 - `CAMBIOS-BACKEND.md`
 - `RESUMEN-PARA-CLAUDE.md`
 - `PENDIENTES-PROTOTIPO.md`
@@ -143,11 +148,10 @@ Archivos:
 
 Estado:
 
-- Solo ampliacion de runner y documentacion segura.
+- Contrato preview-only para manifest agregado de readiness.
 - No cambia `/app/modules` ni `/app/core`.
 - No activa runtime, produccion, Firestore, Storage, Auth, Make, Gemini, email/WhatsApp, pagos, deploy, merge, providers ni import real.
-- Suma validadores con fixtures existentes para assignment sync conflict, notification outbox, project/tenant rule versioning, rule change changelog notification y release readiness snapshot.
-- Mantiene salida local opcional con `--out` y sin outputs por defecto en repo.
+- Valida source-safe, input sintetico/sanitizado, sourceRefs opacas, gates apagados, estados honestos y absence de claims prohibidos.
 
 ## Ultima auditoria de prototipo
 
@@ -160,12 +164,11 @@ Decision vigente:
 
 ## Pendientes backend inmediatos
 
-1. Ejecutar synthetic input pack runner cuando se requiera validacion local, sin fuentes reales.
-2. Revisar resultados del runner ampliado si GitHub/CI o ejecucion local los produce.
-3. Preparar input sintetico/sanitizado ampliado para conflict review/import readiness contract.
-4. Preparar input sintetico/sanitizado ampliado para admin configurability contract.
-5. Preparar contrato/manifest para readiness dashboard agregado sin activar runtime.
-6. Mantener politica de datos sensibles como gate transversal de validators restantes.
+1. Revisar gates del nuevo head despues de este bloque.
+2. Preparar input sintetico/sanitizado ampliado para conflict review/import readiness contract.
+3. Preparar input sintetico/sanitizado ampliado para admin configurability contract.
+4. Preparar puente opcional entre synthetic runner report y readiness dashboard manifest, sin outputs reales por defecto.
+5. Mantener politica de datos sensibles como gate transversal de validators restantes.
 
 ## Pendientes prototipo / Claude
 
@@ -181,7 +184,7 @@ Decision vigente:
 10. Shopper ranking/scoring preview honesto, sin autoasignacion ni datos sensibles.
 11. Project settings/rule versioning con estados draft/review/future active/deprecated.
 12. Changelog/centro de actualizaciones con estados draft/review/approved preview y audiencia por rol.
-13. Readiness dashboard con preview ready, missing input, prototype pending, backend pending, real gate off y manual review.
+13. Readiness dashboard con preview ready, warnings, fail, pending real source, pending real gate, human review, production not authorized, provider not active y blockers.
 14. Admin configurability UI.
 15. Conflict review/import readiness UI.
 16. Synthetic input pack UI opcional: mostrar diagnostico preview/pass-fail/warnings sin prometer produccion, import, sync, provider activo ni deploy.
@@ -196,11 +199,11 @@ Decision vigente:
 4. Rutas obligatorias por rol.
 5. Notificaciones de cursos/manuales.
 6. Contenido retroactivo de todos los bloques backend.
-7. Profundizar synthetic input pack expanded coverage: coverage, fixtures, validators, pass/fail/warnings, preflight contractual, gates apagados y revision humana.
+7. Profundizar readiness dashboard source-safe: preview vs real, fixture sintetico, input sanitizado, source-safe report, gates apagados, errores, warnings, blockers y revision humana.
 
 ## Siguiente bloque recomendado
 
-Preparar contrato/manifest para un readiness dashboard agregado source-safe que consuma resultados preview y los exponga como estados honestos sin runtime real.
+Preparar puente opcional entre resultados del synthetic input pack runner y un manifest de readiness dashboard source-safe, sin runtime real ni outputs por defecto.
 
 ## Regla de cierre por bloque
 
