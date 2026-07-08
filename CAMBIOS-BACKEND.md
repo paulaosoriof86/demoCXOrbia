@@ -1,5 +1,16 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-08 - Paquete Claude completo acumulado post synthetic coverage
+
+- Se agrego `app/docs/PAQUETE-CLAUDE-COMPLETO-ACUMULADO-POST-SYNTHETIC-COVERAGE-CXORBIA-20260708.md`.
+- Se agrego `app/docs/CAMBIOS-PAQUETE-CLAUDE-COMPLETO-ACUMULADO-POST-SYNTHETIC-COVERAGE-20260708.md`.
+- Objetivo: entregar a Claude un paquete acumulado completo que incluya contexto, pendientes, modificaciones backend recientes, patrones reutilizables, Academia profunda, Phase A, restricciones, validaciones y prompt pegable.
+- Alcance: copy honesto P0, UX diagnostica preview/readiness/gates, administrabilidad por tenant/proyecto, NDA y planes editables/versionados, conflict review/import readiness, Phase A operativo, HR/plataforma sync, liquidaciones/pagos, cuestionarios/certificaciones, evidencias/Storage, datos sensibles, Academia profunda y patrones reutilizables CXOrbia.
+- Decision tecnica: solo documentacion para handoff Claude; no toca runtime, modules, core, tools, contracts ni workflows.
+- Impacto Claude/comercializable: Claude debe trabajar sobre prototipo/UX/Academia con el paquete completo, no con prompt corto, y documentar archivos modificados, textos corregidos, cambios de Academia, pendientes, riesgos y validaciones.
+- Impacto Academia: incluye backfill profundo acumulado por rol, cursos/manuales/checklists/glosario y explicacion de synthetic runner, expanded coverage, source-safe, gates, conflict queue, import readiness, admin configurability, liquidaciones/pagos, cuestionarios, evidencias y datos sensibles.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin cambios en `tools/`, `app/contracts/` o workflows, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
+
 ## 2026-07-08 - Synthetic input pack expanded coverage preview-only
 
 - Se actualizo `tools/contracts/cxorbia-synthetic-input-pack-runner.mjs`.
@@ -21,16 +32,4 @@
 - Decision tecnica: runner local reusable CXOrbia; imprime JSON por consola y opcionalmente escribe reporte JSON/MD local con `--out`, sin subir datos reales ni generar outputs por defecto en repo.
 - Impacto Claude/comercializable: UI futura solo debe mostrarlo como diagnostico preview/pass-fail/warnings, sin decir production-ready, importado, sincronizado, enviado, pagado, conectado o deployado.
 - Impacto Academia: explicar fixtures sinteticos, input sanitizado, prueba de contrato vs operacion real, source-safe report vs import real, limites del runner y revision humana.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
-
-## 2026-07-08 - Conflict review queue + import readiness contract preview-only
-
-- Se agrego `tools/contracts/cxorbia-conflict-review-import-readiness-contract.mjs`.
-- Se agrego `app/docs/CONFLICT-REVIEW-IMPORT-READINESS-CONTRACT-CXORBIA-20260708.md`.
-- Se agrego `app/docs/CAMBIOS-CONFLICT-REVIEW-IMPORT-READINESS-CONTRACT-CXORBIA-20260708.md`.
-- Objetivo: preparar una cola de revision de conflictos y readiness report de importacion para HR/plataforma/import historico/shoppers/certificaciones/rutas de cuestionario/liquidaciones/pagos, sin import real ni escrituras reales.
-- Decision tecnica: contrato preview-only reusable CXOrbia; exige `sourceSafe=true`, input sintetico/sanitizado, sourceRefs opacas, llaves estables, severidad, estado de cola, auditRef y revision humana.
-- Bloquea: import real, escrituras Firestore/HR/Storage, base vieja/dump viejo, proveedores activos, Make/Gemini real, pagos reales, notificaciones reales, auto-merge/auto-resolve de conflictos, dedupe visual/por nombre, overwrite sin revision, DPI, banco, NDA firmado, secretos/tokens/webhooks, adjuntos/base64/cuerpos crudos.
-- Impacto Claude/comercializable: UI futura debe mostrar bandeja de conflictos, severidad, entidad, source refs opacas, estados abierto/en revision/resuelto/rechazado/archivado, readiness por area y bloqueo de import si hay blockers, sin decir importado/sincronizado/pagado/notificado si solo existe preview.
-- Impacto Academia: explicar export limpio vs preview vs import real, cola de conflictos, severidades, blockers, llaves estables, prohibicion de dedupe visual, revision humana, resolved preview vs aplicado real y datos sensibles excluidos.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
