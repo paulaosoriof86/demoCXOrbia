@@ -1,5 +1,18 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-08 - Readiness dashboard bridge runner preview-only
+
+- Se agrego `tools/contracts/cxorbia-readiness-dashboard-bridge-runner.mjs`.
+- Se agrego `app/docs/READINESS-DASHBOARD-BRIDGE-RUNNER-CXORBIA-20260708.md`.
+- Se agrego `app/docs/CAMBIOS-READINESS-DASHBOARD-BRIDGE-RUNNER-CXORBIA-20260708.md`.
+- Objetivo: preparar un puente source-safe entre el synthetic input pack runner y el manifest de readiness dashboard, sin runtime real ni outputs por defecto.
+- Decision tecnica: el bridge usa `runSyntheticInputPack()` por defecto o lee un reporte JSON con `--input`, mapea cada resultado a un item de readiness y valida el manifest con `validateReadinessDashboardSourceSafe()`.
+- Outputs: imprime JSON por consola; solo escribe reportes locales si se usa `--out`, sin subir reportes generados al repo.
+- Impacto Claude/comercializable: dashboard futuro puede consumir el patron para mostrar area, estado honesto, sourceRef opaca, gate apagado, revision humana y motivo; nunca production ready, import real, sync real, envio real, pago real, provider activo, Firestore conectado, HR sincronizada o deploy realizado.
+- Impacto Academia: explicar como un reporte de validadores se convierte en dashboard, source-safe, fixture sintetico, input sanitizado, gates apagados, warnings/fails/blockers y revision humana.
+- Hallazgo Claude/prototipo: captura de Academia muestra que no existe accion visible de borrar/archivar/duplicar/versionar cursos; queda documentado como pendiente UI, no backend.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
+
 ## 2026-07-08 - Readiness dashboard source-safe contract preview-only
 
 - Se agrego `tools/contracts/cxorbia-readiness-dashboard-source-safe-contract.mjs`.
@@ -22,14 +35,3 @@
 - Impacto Claude/comercializable: Claude debe trabajar sobre prototipo/UX/Academia con el paquete completo, no con prompt corto, y documentar archivos modificados, textos corregidos, cambios de Academia, pendientes, riesgos y validaciones.
 - Impacto Academia: incluye backfill profundo acumulado por rol, cursos/manuales/checklists/glosario y explicacion de synthetic runner, expanded coverage, source-safe, gates, conflict queue, import readiness, admin configurability, liquidaciones/pagos, cuestionarios, evidencias y datos sensibles.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin cambios en `tools/`, `app/contracts/` o workflows, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
-
-## 2026-07-08 - Synthetic input pack expanded coverage preview-only
-
-- Se actualizo `tools/contracts/cxorbia-synthetic-input-pack-runner.mjs`.
-- Se agrego `app/docs/SYNTHETIC-INPUT-PACK-EXPANDED-COVERAGE-CXORBIA-20260708.md`.
-- Se agrego `app/docs/CAMBIOS-SYNTHETIC-INPUT-PACK-EXPANDED-COVERAGE-CXORBIA-20260708.md`.
-- Objetivo: ampliar el runner local para cubrir validadores con fixtures sinteticos existentes de assignment sync, notification outbox, rule versioning, rule change changelog/notifications y release readiness snapshot.
-- Decision tecnica: el runner ejecuta validadores `tools/migration` con `--input` sobre fixtures source-safe de `tools/migration/synthetic-fixtures/phase-a/`, desde la raiz del repo, sin fuentes reales ni outputs por defecto.
-- Impacto Claude/comercializable: si se refleja en UI, debe mostrarse como diagnostico preview por area/pass-fail/warnings, nunca como produccion lista, import real, sync aplicado, envio real, pago real, provider activo o deploy.
-- Impacto Academia: explicar cobertura del runner, fixtures sinteticos, input sanitizado, pass/fail/warnings, preflight contractual, diferencia entre validacion preview y operacion real, gates apagados y revision humana.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
