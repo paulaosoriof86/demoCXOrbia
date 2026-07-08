@@ -26,6 +26,8 @@ const allowedPrefixes = [
   'app/docs/',
   'docs/',
   'README',
+  'backend/contracts/',
+  'backend/adapters/',
   'tools/contracts/',
   '.github/workflows/cxorbia-phase-a-remote-smoke.yml',
   '.github/workflows/cxorbia-rc-phase-a-drift-gate.yml',
@@ -42,6 +44,8 @@ const allowedExact = [
   'tools/migration/tya-assignment-sync-conflict-preview.mjs',
   'tools/migration/tya-assignment-sync-outbox-contract.mjs',
   'tools/migration/tya-phase-a-rc-smoke-gate.mjs',
+  'tools/release/tya-cxdata-firestore-contract-validate.mjs',
+  'tools/release/tya-hosting-deploy-readiness.mjs',
   'tools/release/tya-phase-a-today-finish-readiness.mjs'
 ];
 
@@ -87,6 +91,8 @@ const report = {
   allowedPolicy: {
     docs: true,
     rootRequiredDocs: true,
+    backendContracts: true,
+    backendAdaptersPreviewOnly: true,
     releaseGateWorkflows: true,
     previewOnlyContracts: true,
     smokeGateValidators: true,
@@ -119,6 +125,8 @@ if (outDir) {
     '## Allowed policy',
     '- Docs: yes',
     '- Root required docs: yes',
+    '- Backend contracts: yes',
+    '- Backend adapters preview-only: yes',
     '- Release gate workflows: yes',
     '- Preview-only contracts: yes',
     '- Smoke gate validators: yes',
