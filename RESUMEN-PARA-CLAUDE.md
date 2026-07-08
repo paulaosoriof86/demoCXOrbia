@@ -1,5 +1,16 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-08 - Addendum admin configurability contract
+
+- ChatGPT/backend agrego el contrato preview-only `tools/contracts/cxorbia-admin-configurability-contract.mjs` y documentos `app/docs/ADMIN-CONFIGURABILITY-CONTRACT-CXORBIA-20260708.md` y `app/docs/CAMBIOS-ADMIN-CONFIGURABILITY-CONTRACT-CXORBIA-20260708.md`.
+- El contrato no toca `/app/modules` ni `/app/core`, no conecta runtime, no activa Firestore/Auth/Storage/HR/Make/Gemini/correo/WhatsApp/import/pagos y no incluye datos sensibles.
+- Regla clave para prototipo comercializable: todos los modulos/opciones operativas deben tender a ser administrables por tenant/proyecto desde plataforma, con roles, versionado, estado, auditRef, gate y revision humana.
+- NDA debe mostrarse como plantilla/version/aceptacion/reaceptacion. Una aceptacion ya presentada o firmada no se modifica silenciosamente. Estados esperados: pendiente, aceptado, version vencida, requiere nueva aceptacion, bloqueado por gate.
+- Planes deben ser configurables y versionados, no hardcodeados. Tipos: operativo, proyecto, certificacion, pagos, evidencias, automatizaciones y Academia. Estados esperados: borrador, en revision, aprobado, activo, pausado, reemplazado, archivado.
+- Claude debe reflejar UI/UX administrable para configuracion por tenant/proyecto, NDA, planes, roles, gates, auditRef y estados honestos, sin prometer proveedor activo si solo esta preparado o bloqueado por gate.
+- Academia debe explicar diferencia entre configuracion, plantilla, version, aceptacion, reaceptacion, plan, estado, gate, auditRef, preview/preparado y ejecutado/activo.
+- No tocar backend, contracts, tools, workflows, Firestore/Auth/Storage, Make, Gemini, imports, pagos reales ni datos reales.
+
 ## 2026-07-06 - Addendum auditoria V89 Claude candidate
 
 - Paula entrego `Prototype development request CXOrbia V89.zip` como correctiva sobre V88.
@@ -77,45 +88,3 @@
 - Claude debe mostrar submitido como estado/origen separado de cuestionario realizado, revision y liquidacion; tampoco debe mostrar HR/Make como ejecutado si el gate esta apagado.
 
 ## 2026-07-04 - Addendum admin review funcional Phase A
-
-- ChatGPT/backend preparo el contrato funcional de revision admin Phase A sin tocar frontend.
-- Archivos agregados: `app/contracts/admin-review-phase-a.tya.contract.json`, `tools/migration/tya-admin-review-contract-validator.mjs` y `app/docs/ADMIN-REVIEW-FUNCTIONAL-CONTRACT-PHASE-A-TYA-20260704.md`.
-- No se activo runtime, no se escribio Firestore, no se llamo Make y no hubo cambios en `/app/modules` ni `/app/core`.
-- Regla clave para el prototipo comercializable: cuestionario realizado, revision admin, submitido y liquidacion deben verse como pasos separados.
-- Claude debe implementar esta separacion cuando trabaje UI: no tratar cuestionario realizado como submitido; no mostrar Make/HR como ejecutado si el gate esta apagado; permitir configuracion por proyecto del origen de submitido.
-- Los labels visibles pueden variar por tenant/proyecto, pero los estados internos deben mantenerse canonicos.
-
-## 2026-07-04 - Addendum Auth claims readiness Phase A
-
-- ChatGPT/backend preparo readiness documental de claims Auth contra el borrador de reglas Firestore DEV/staging.
-- Archivos agregados: `app/contracts/auth-claims-phase-a.tya.contract.json`, `tools/migration/tya-auth-claims-readiness-validator.mjs` y `app/docs/AUTH-CLAIMS-READINESS-FIRESTORE-RULES-PHASE-A-TYA-20260704.md`.
-- No se activo Auth real, no se publicaron reglas, no se conecto runtime y no hubo cambios frontend.
-- Hallazgo para conservar: el draft de reglas usa `coordinador`, mientras el contrato Phase A deja `ops` como rol canonico y `coordinador` como alias transicional pendiente de decision.
-- Claude no debe resolver este punto desde UI ni inventar un nuevo rol. Si toca pantallas de roles/permisos, debe esperar la decision canonica o dejarlo documentado como pendiente.
-
-## 2026-07-04 - Addendum V78 baseline backend
-
-- V78 queda fijado como baseline visual actual para continuar backend TyA.
-- Backend no copia archivos frontend ni toca `/app/modules` o `/app/core` desde este bloque.
-- Se conserva todo lo avanzado: readiness V5, DEV controlled package, runner disabled, target validator, future runner contract, route count manifest y prewrite validator.
-- Pendientes frontend concretos para Claude: `nvBanner` en Novedades y version default al crear tenant SaaS.
-- Siguiente bloque backend: reporte consolidado de preautorizacion DEV staging sobre V78.
-- Claude no debe tocar `tools/migration`, runners, gates backend, Firestore/Auth/Storage reales, Make real, importacion ni produccion.
-
-## 2026-07-04 - Addendum V78 / auditoria forense y empalme backend
-
-- V78 fue auditado contra V77.
-- V78 queda aceptado como candidato visual reciente para continuar empalme backend sin copiar ni tocar frontend desde este bloque.
-- Cambios V78 detectados: elimina `app/modules/rutas.js`, modifica `app/app.js` y `app/modules/saas-console.js`.
-- V78 atiende PWA install-aware, releases como internos sin deploy y reduce duplicidad de Hojas de Ruta.
-- Backend continua con readiness V5, DEV controlled package, runner disabled, gates y contratos.
-- Claude no debe tocar `tools/migration`, runners, gates backend, Firestore/Auth/Storage reales, Make real, importacion ni produccion.
-
-## 2026-07-04 - Addendum V77 / backend DEV controlado
-
-- Claude debe usar el paquete forense V77 para continuar prototipo, UX y documentacion frontend.
-- ChatGPT/Codex continua backend en la rama `docs-tya-v6-v71-audit`, PR #7, sin mezclar cambios visuales.
-- Backend TyA llego a readiness V5: listo para revision DEV controlada, sin blockers vigentes.
-- SHOPPER_REVIEW queda como politica provisional DEV; COMM_REVIEW como historico inactivo; CANDIDATE_REVIEW como candidatos no finales.
-- Se preparo paquete de autorizacion DEV controlada, runner disabled, checklist de rollback, checklist de reglas, contrato de datos DEV y gates.
-- Claude no debe tocar `tools/migration`, runners, gates backend, Firestore/Auth/Storage reales, Make real, importacion ni produccion.
