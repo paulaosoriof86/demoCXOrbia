@@ -2,6 +2,15 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Addendum synthetic input pack expanded coverage - 2026-07-08
+
+- Backend actualizo `tools/contracts/cxorbia-synthetic-input-pack-runner.mjs` y agrego `app/docs/SYNTHETIC-INPUT-PACK-EXPANDED-COVERAGE-CXORBIA-20260708.md` / `app/docs/CAMBIOS-SYNTHETIC-INPUT-PACK-EXPANDED-COVERAGE-CXORBIA-20260708.md`.
+- Claude debe mostrar la cobertura expandida solo como diagnostico preview si se refleja en UI: area, validator, fixture sintetico/sanitizado, pass/fail/warning y gate real apagado.
+- Areas agregadas al diagnostico: assignment sync conflict, notification outbox, project/tenant rule versioning, rule change changelog notification y release readiness snapshot.
+- No mostrar esto como produccion lista ni como import real, sync real, envio real, pago real, provider activo, Storage activo o deploy.
+- Readiness/dashboard debe separar: contrato probado, fixture sintetico validado, preview listo, warning, fail, pendiente gate real, pendiente fuente real, pendiente revision humana y produccion no autorizada.
+- Academia debe tener manuales/cursos sobre coverage del runner, fixtures sinteticos, inputs sanitizados, preflight contractual, pass/fail/warnings, gates apagados y revision humana.
+
 ## Addendum synthetic input pack runner - 2026-07-08
 
 - Backend agrego `tools/contracts/cxorbia-synthetic-input-pack-runner.mjs` y documentos `app/docs/SYNTHETIC-INPUT-PACK-RUNNER-CXORBIA-20260708.md` / `app/docs/CAMBIOS-SYNTHETIC-INPUT-PACK-RUNNER-CXORBIA-20260708.md`.
@@ -22,29 +31,3 @@ Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backe
 - No deduplicar por nombre, sucursal o coincidencia visual. Si falta llave estable suficiente, mostrar revision humana.
 - No mostrar datos sensibles crudos: DPI, banco, NDA firmado, tokens, webhooks, adjuntos, cuerpos crudos, telefonos/correos crudos.
 - Academia debe tener manuales/cursos por rol sobre export limpio, preview, import real, cola de conflictos, blockers, llaves estables, dedupe prohibido y revision humana.
-
-## Addendum admin configurability contract - 2026-07-08
-
-- Backend agrego `tools/contracts/cxorbia-admin-configurability-contract.mjs` y documentos `app/docs/ADMIN-CONFIGURABILITY-CONTRACT-CXORBIA-20260708.md` / `app/docs/CAMBIOS-ADMIN-CONFIGURABILITY-CONTRACT-CXORBIA-20260708.md`.
-- Claude debe convertir la administrabilidad en UX visible, sin tocar backend: configuraciones por tenant/proyecto, reglas, HR/origen, cuestionarios, documentos, NDAs, planes, evidencias, certificaciones, Academia, notificaciones, postulaciones, shoppers, visitas, reservas, asignaciones, reprogramaciones, cancelaciones, liquidaciones, pagos, integraciones, Make/Gemini, imports, reportes, roles/permisos y gates.
-- NDA: crear/mostrar ficha de plantilla/version/vigencia/estado/creador/aprobador/auditRef/gate/reaceptacion. No modificar silenciosamente una aceptacion ya presentada o firmada.
-- NDA: mostrar estados honestos `pendiente`, `aceptado`, `version vencida`, `requiere nueva aceptacion`, `bloqueado por gate`.
-- Planes: crear/mostrar ficha de plan por tipo (`operativo`, `proyecto`, `certificacion`, `pagos`, `evidencias`, `automatizaciones`, `Academia`), version, vigencia, estado, roles autorizados, historial y auditRef.
-- Planes: mostrar estados `borrador`, `en revision`, `aprobado`, `activo`, `pausado`, `reemplazado`, `archivado`.
-- Configuraciones criticas deben pedir razon y mostrar gate/revision humana antes de activar o reemplazar versiones.
-- Make/Gemini/import/pagos/notificaciones deben mostrarse como preparados, pendientes de gate o no ejecutados mientras no exista backend/proveedor real activo.
-- Academia debe tener manuales/cursos por rol sobre administrabilidad, NDA, planes, gates, revision humana, auditRef y diferencia entre preview/preparado/proveedor configurado vs ejecutado/proveedor activo.
-
-## Addendum V89 - auditoria Claude candidate
-
-- V89 fue auditada como correctiva sobre V88. Mejora V88, pero NO queda como source lock final, NO production ready y NO backlog 100% cerrado.
-- Ver auditoria: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V89-CLAUDE-20260706.md`.
-- Resuelto en V89: Academia ya no tiene IDs duplicados en los dos cursos nuevos; se usan `a_backend_prepared` y `a_ops_conflicts_route`.
-- Resuelto en V89: `app/core/automations.js` ya muestra HR writeback como escritura preparada/sync backend pendiente.
-- Resuelto en V89: `app/modules/postulaciones.js` corrige dos textos de reprogramacion a notificacion preparada/pendiente confirmacion.
-- Pendiente P0 V89: `postulaciones.js` conserva `Aprobada · WhatsApp enviado al shopper`, `Aprobada · WhatsApp enviado` y `Asignacion actualizada · HR sincronizada`.
-- Pendiente P0 V89: `dashboard.js` conserva `Correo enviado a ... (Make/Outlook)` y `WhatsApp enviado (Make)`.
-- Pendiente P0 V89: `automatizaciones.js` conserva `Registro de disparos (Make)`, `ultimos eventos enviados` y `Payload de prueba enviado al escenario Make`.
-- Pendiente P0 V89: `cuestionario-shopper.js` conserva `marca la visita como cuestionario enviado`.
-- Pendiente P0/P1 V89: `manuales-data.js`, `reservas.js`, `correo.js`, `topbar.js`, `finanzas.js`, `importador.js`, `operacion-extra.js` y `academia.js` conservan residuos de enviado/notificado/sincronizado/en vivo que deben pasar a estados honestos cuando no exista proveedor/gate real.
-- Claude debe entregar una candidata ultra-corta corrigiendo solo residuos de textos honestos y coherencia Academia/manuales, sin redisenar ni tocar backend.
