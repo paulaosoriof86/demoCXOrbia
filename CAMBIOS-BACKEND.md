@@ -1,5 +1,17 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-08 - Synthetic input pack runner preview-only
+
+- Se agrego `tools/contracts/cxorbia-synthetic-input-pack-runner.mjs`.
+- Se agrego `app/docs/SYNTHETIC-INPUT-PACK-RUNNER-CXORBIA-20260708.md`.
+- Se agrego `app/docs/CAMBIOS-SYNTHETIC-INPUT-PACK-RUNNER-CXORBIA-20260708.md`.
+- Objetivo: ejecutar validadores preview-only con fixtures sinteticos/sanitizados y producir un reporte agregado source-safe sin fuentes reales.
+- Contratos cubiertos: admin configurability, conflict review/import readiness, questionnaire routing, visit lifecycle, settlement eligibility, evidence storage e historical import clean.
+- Decision tecnica: runner local reusable CXOrbia; imprime JSON por consola y opcionalmente escribe reporte JSON/MD local con `--out`, sin subir datos reales ni generar outputs por defecto en repo.
+- Impacto Claude/comercializable: UI futura solo debe mostrarlo como diagnostico preview/pass-fail/warnings, sin decir production-ready, importado, sincronizado, enviado, pagado, conectado o deployado.
+- Impacto Academia: explicar fixtures sinteticos, input sanitizado, prueba de contrato vs operacion real, source-safe report vs import real, limites del runner y revision humana.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
+
 ## 2026-07-08 - Conflict review queue + import readiness contract preview-only
 
 - Se agrego `tools/contracts/cxorbia-conflict-review-import-readiness-contract.mjs`.
@@ -57,35 +69,3 @@
 - Objetivo: entregar a Claude un paquete completo y acumulado sobre V82 source lock, incorporando pendientes V82, cambios backend recientes de liquidaciones/Cinepolis source-safe preview, pendientes de prototipo, Academia y reglas de no tocar backend.
 - Decision: no pedir un candidato nuevo libre. Si Claude tiene capacidad, pedir V83 ultra-controlada sobre V82 y luego auditarla antes de aceptarla.
 - Estado seguro: solo documento; sin cambios frontend, sin runtime, sin deploy, sin produccion, sin escrituras reales y sin datos sensibles.
-
-## 2026-07-04 - Liquidaciones/Cinepolis source-safe preview validator Phase A
-
-- Se agrego `app/contracts/liquidation-cinepolis-source-safe-preview-phase-a.tya.contract.json`.
-- Se agrego `tools/migration/tya-liquidation-cinepolis-source-safe-preview-validator.mjs`.
-- Se agrego `app/docs/LIQUIDATIONS-CINEPOLIS-SOURCE-SAFE-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`.
-- Se agrego `app/docs/ACADEMIA-IMPACT-LIQUIDACIONES-CINEPOLIS-SOURCE-SAFE-PREVIEW-TYA-20260704.md`.
-- Se agrego `app/docs/CAMBIOS-BACKEND-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md`.
-- Se agrego `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md`.
-- Se agrego `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md`.
-- Objetivo: cerrar el siguiente bloque del tracker con preview validator y source-safe mapping para liquidaciones/corte junio y Cinepolis Boleto/Combo sin leer archivos reales ni datos sensibles.
-- Decision tecnica: el validador solo acepta entrada sintetica o sanitizada con `sourceSafe=true`, `containsRawSensitiveData=false` e `isSyntheticOrSanitized=true`; si faltan llaves estables, referencia de pago o aparecen campos sensibles, pasa a `manual_review_required`/conflicto.
-- Impacto Claude/comercializable: Mis beneficios, Admin/Liquidaciones y Movimientos deben separar honorario, Boleto, Combo, total, lote/item y estados honestos sin prometer pagos reales ni exponer banco/DPI/NDA.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin lectura de fuentes reales, sin Firestore writes, sin HR writes, sin pagos reales, sin Make/Gemini/correo real y sin datos sensibles.
-
-## 2026-07-04 - Auditoria frontend candidate V82 Claude
-
-- Se agrego `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V82-CLAUDE-20260704.md`.
-- Se actualizo `RESUMEN-PARA-CLAUDE.md` con el addendum V82.
-- Se actualizo `PENDIENTES-PROTOTIPO.md` con pendientes V82.
-- Objetivo: auditar el nuevo ZIP de Claude sin empalmarlo y sin cambiar baseline/source lock.
-- Decision: V82 corrige la mayoria de pendientes V81, pero todavia no se recomienda source lock porque quedan textos `cuestionario enviado`, textos de HR sync real en `misvisitas.js` y `postulaciones.js`, y ajuste fino de `revision-admin.js` para `status`, `projectId` y `hrRowId`.
-- Estado seguro: sin empalme V82, sin source lock V82, sin runtime, sin deploy, sin produccion, sin Auth real, sin escritura Firestore, sin HR writes, sin Make/Gemini/WhatsApp real y sin cambios frontend aplicados.
-
-## 2026-07-04 - Auditoria frontend candidate V81 Claude
-
-- Se agrego `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V81-CLAUDE-20260704.md`.
-- Se actualizo `RESUMEN-PARA-CLAUDE.md` con el addendum V81.
-- Se actualizo `PENDIENTES-PROTOTIPO.md` con pendientes V81.
-- Objetivo: auditar el nuevo ZIP de Claude sin empalmarlo y sin cambiar baseline/source lock.
-- Decision: V81 mejora V80, pero no debe empalmarse completo todavia porque faltan defaults Phase A en `proyecto-wizard.js`, quedan textos `cuestionario enviado`, `revision-admin.js` aun no cumple estructura contractual/auditTrail completa, y `misvisitas.js` aun promete sincronizacion HR.
-- Estado seguro: sin empalme V81, sin source lock V81, sin runtime, sin deploy, sin produccion, sin Auth real, sin escritura Firestore, sin HR writes, sin Make/Gemini/WhatsApp real y sin cambios frontend aplicados.
