@@ -2,6 +2,18 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Addendum conflict review queue + import readiness - 2026-07-08
+
+- Backend agrego `tools/contracts/cxorbia-conflict-review-import-readiness-contract.mjs` y documentos `app/docs/CONFLICT-REVIEW-IMPORT-READINESS-CONTRACT-CXORBIA-20260708.md` / `app/docs/CAMBIOS-CONFLICT-REVIEW-IMPORT-READINESS-CONTRACT-CXORBIA-20260708.md`.
+- Claude debe convertir esto en UX visible, sin tocar backend: bandeja de conflictos y readiness de importacion por area.
+- Bandeja de conflictos: mostrar conflicto, entidad afectada, severidad `info/warning/blocker`, sourceRefs opacas, estado `abierto/en revision/resuelto/rechazado/archivado`, auditRef y razon obligatoria para resolver/rechazar.
+- Readiness por area: proyectos, visitas, shoppers, asignaciones, certificaciones, liquidaciones, pagos y rutas de cuestionario.
+- Si hay `blocker`, la UI debe bloquear import/activacion y mostrar revision humana requerida.
+- Copy honesto: `ready_preview` no significa importado; `resolved` preview no significa aplicado real; sourceRef opaca no significa que la fuente real este conectada.
+- No deduplicar por nombre, sucursal o coincidencia visual. Si falta llave estable suficiente, mostrar revision humana.
+- No mostrar datos sensibles crudos: DPI, banco, NDA firmado, tokens, webhooks, adjuntos, cuerpos crudos, telefonos/correos crudos.
+- Academia debe tener manuales/cursos por rol sobre export limpio, preview, import real, cola de conflictos, blockers, llaves estables, dedupe prohibido y revision humana.
+
 ## Addendum admin configurability contract - 2026-07-08
 
 - Backend agrego `tools/contracts/cxorbia-admin-configurability-contract.mjs` y documentos `app/docs/ADMIN-CONFIGURABILITY-CONTRACT-CXORBIA-20260708.md` / `app/docs/CAMBIOS-ADMIN-CONFIGURABILITY-CONTRACT-CXORBIA-20260708.md`.
@@ -48,35 +60,3 @@ Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backe
 - Si falta llave estable o referencia de pago, la UI debe mostrar revision manual/conflicto, no auto-dedupe ni pagado.
 - Textos honestos: no prometer pago real, HR sync real, correo real, Make real ni automatizaciones reales mientras los gates esten apagados.
 - Academia debe profundizar Mis beneficios, corte junio, Boleto/Combo, lotes, movimientos, source-safe preview, datos sensibles y revision manual.
-
-## Addendum V82 - auditoria Claude candidate
-
-- V82 fue auditado como candidato nuevo de Claude. Mejora V81 y esta muy cerca de empalme, pero aun no queda como source lock.
-- Ver auditoria: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V82-CLAUDE-20260704.md`.
-- Resuelto en V82: wizard conserva enum canonico, `qMode()`, `visitLinkField:'questionnaireLink'`, defaults Phase A (`hrFuente`, `revision`, `submitido`, `contactos`) y oculta URL para `externo_visita`.
-- Resuelto en V82: cuestionario busca los 5 campos de link y no cae a interno si falta link.
-- Resuelto en V82: revision admin usa estados canonicos, fallback `CX.data.revisiones`/`localStorage`, estructura backend-ready parcial y bloqueo de `submitido_registered` sin nota en HR-driven.
-- Resuelto en V82: `plantilla lista (plantilla lista)` no aparece.
-- Pendiente puntual V82: `cuestionario-shopper.js` aun conserva el texto externo `marca la visita como cuestionario enviado`; cambiar a cuestionario realizado/completado.
-- Pendiente puntual V82: `revision-admin.js` muestra `Cuestionario: enviado`; cambiar a realizado/completado, agregar `status=estado`, pasar `projectId:p.id` y `hrRowId` cuando exista.
-- Pendiente puntual V82: `misvisitas.js` aun dice que sincroniza estado/hoja de ruta; cambiar a pendiente backend/preparado.
-- Pendiente puntual V82: `postulaciones.js` aun tiene dos toasts `HR sincronizada`; cambiar a `se reflejara en HR cuando el sync este activo (pendiente backend)`.
-- Documentacion V82 existe dentro de `app/docs`; mantener tambien actualizados los documentos raiz del PR.
-
-## Addendum V81 - auditoria Claude candidate corregido
-
-- V81 fue auditado como candidato nuevo de Claude. Claude lo llama internamente V80 corregido; la diferencia de numeracion no es incoherencia porque Paula versiona internamente cada entrega.
-- Ver auditoria: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V81-CLAUDE-20260704.md`.
-- V81 mejora V80 y corrige parcialmente los 5 puntos: `proyecto-wizard.js` usa valores canonicos, `cuestionario-shopper.js` busca los 5 campos de link, `revision-admin.js` usa estados canonicos y fallback `CX.data.revisiones`, `misvisitas.js` corrige el duplicado, y la sintaxis JS valida.
-- No empalmar V81 completo todavia: quedan ajustes puntuales antes de source lock.
-- P0/P1 pendiente: `proyecto-wizard.js` no conserva todos los defaults Phase A ya aplicados en repo (`hrFuente`, `revision`, `submitido`, `contactos`) y muestra URL general para `externo_visita`.
-- P0/P1 pendiente: `cuestionario-shopper.js` todavia tiene textos `cuestionario enviado`; deben quedar como `cuestionario realizado` o `cuestionario completado`.
-- P0/P1 pendiente: `revision-admin.js` usa estados canonicos, pero debe guardar estructura compatible con contrato (`tenantId`, `projectId`, `reviewId`, `visitId`, `assignmentId`, `shopperId`, `source`, `createdAt`, `updatedAt`, `auditTrail`) y bloquear/exigir nota HR para `submitido_registered` si el proyecto es HR-driven.
-- P0/P1 pendiente: `misvisitas.js` aun dice que sincroniza la hoja de ruta; debe decir pendiente backend/preparado.
-- V81 no trae documentacion interna del prototipo; Claude debe actualizar `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` y addendum en `app/docs` cuando entregue la siguiente correccion.
-
-## Addendum V80 - auditoria Claude candidate
-
-- V80 fue auditado como candidato nuevo de Claude, pero no queda empalmado ni aprobado como baseline.
-- Ver auditoria: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V80-CLAUDE-20260704.md`.
-- Avances utiles de V80: agrega `app/modules/revision-admin.js`, carga el modulo en `app/index.html`, agrega boton de revision en `app/modules/dashboard.js`, mejora textos de automatizaciones, conserva `nvBanner` y sube SaaS Console V79.
