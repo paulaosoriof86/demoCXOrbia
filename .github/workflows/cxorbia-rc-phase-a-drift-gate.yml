@@ -54,7 +54,7 @@ jobs:
       - name: Run drift gate
         run: |
           node tools/release/tya-rc-phase-a-drift-gate.mjs \
-            --validated 4e8088e9f57a9d0f7bb7c67a0549490f61b0f75a \
+            --validated 489b0420a820b390f4307db93fe8280959f3867c \
             --out .tmp/rc-phase-a-drift
 
       - name: Upload drift report
