@@ -41,6 +41,7 @@ const allowedExact = [
   'PENDIENTES-PROTOTIPO.md',
   'tools/migration/tya-assignment-sync-conflict-preview.mjs',
   'tools/migration/tya-assignment-sync-outbox-contract.mjs',
+  'tools/migration/tya-phase-a-rc-smoke-gate.mjs',
   'tools/release/tya-phase-a-today-finish-readiness.mjs'
 ];
 
@@ -88,6 +89,7 @@ const report = {
     rootRequiredDocs: true,
     releaseGateWorkflows: true,
     previewOnlyContracts: true,
+    smokeGateValidators: true,
     runtimeAppChanges: false,
     providerActivation: false,
     databaseWrites: false,
@@ -119,6 +121,7 @@ if (outDir) {
     '- Root required docs: yes',
     '- Release gate workflows: yes',
     '- Preview-only contracts: yes',
+    '- Smoke gate validators: yes',
     '- Runtime app changes: no',
     '- Provider activation: no',
     '- Database writes: no',
