@@ -2,6 +2,15 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Addendum synthetic input pack runner - 2026-07-08
+
+- Backend agrego `tools/contracts/cxorbia-synthetic-input-pack-runner.mjs` y documentos `app/docs/SYNTHETIC-INPUT-PACK-RUNNER-CXORBIA-20260708.md` / `app/docs/CAMBIOS-SYNTHETIC-INPUT-PACK-RUNNER-CXORBIA-20260708.md`.
+- Claude debe mostrarlo solo como diagnostico preview si se decide reflejarlo en UI: runner sintetico, contratos cubiertos, pass/fail, warnings y estado source-safe.
+- No mostrar esto como produccion lista ni como import real.
+- Copy honesto: synthetic input pack ejecutado no significa importado, sincronizado, conectado, enviado, pagado, deployado ni provider activo.
+- Readiness/dashboard debe separar: contrato probado, preview listo, pendiente gate, pendiente fuente real, pendiente revision humana y produccion no autorizada.
+- Academia debe tener manuales/cursos sobre fixture sintetico, input sanitizado, prueba de contrato, source-safe report, limites del runner y revision humana.
+
 ## Addendum conflict review queue + import readiness - 2026-07-08
 
 - Backend agrego `tools/contracts/cxorbia-conflict-review-import-readiness-contract.mjs` y documentos `app/docs/CONFLICT-REVIEW-IMPORT-READINESS-CONTRACT-CXORBIA-20260708.md` / `app/docs/CAMBIOS-CONFLICT-REVIEW-IMPORT-READINESS-CONTRACT-CXORBIA-20260708.md`.
@@ -39,24 +48,3 @@ Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backe
 - Pendiente P0 V89: `cuestionario-shopper.js` conserva `marca la visita como cuestionario enviado`.
 - Pendiente P0/P1 V89: `manuales-data.js`, `reservas.js`, `correo.js`, `topbar.js`, `finanzas.js`, `importador.js`, `operacion-extra.js` y `academia.js` conservan residuos de enviado/notificado/sincronizado/en vivo que deben pasar a estados honestos cuando no exista proveedor/gate real.
 - Claude debe entregar una candidata ultra-corta corrigiendo solo residuos de textos honestos y coherencia Academia/manuales, sin redisenar ni tocar backend.
-
-## Addendum V88 - auditoria Claude candidate
-
-- V88 fue auditada como candidata correctiva P0/P1/P2, pero NO quedo como source lock final ni backlog 100% cerrado.
-- Ver auditoria: `app/docs/AUDITORIA-FRONTEND-CANDIDATE-V88-CLAUDE-20260706.md`.
-- V88 resolvio parcialmente textos honestos en `app/core/automations.js` y algunos textos de `app/modules/postulaciones.js`.
-- V88 agrego el curso `Capacidades de backend: que esta preparado`, pero con ID duplicado `a_backend`.
-- V88 agrego la ruta `Equipo operativo: asignacion, conflictos y fuera de rango`, pero con ID duplicado `a_ops`.
-- Pendiente V88 para Claude: generar V89 ultra-corta con IDs unicos y correcciones puntuales de textos honestos, sin tocar backend ni integraciones reales.
-
-## Addendum Liquidaciones/Cinepolis source-safe preview validator
-
-- Backend agrego contrato y validador source-safe para liquidaciones/corte junio y Cinepolis Boleto/Combo.
-- Ver documentos: `app/docs/LIQUIDATIONS-CINEPOLIS-SOURCE-SAFE-PREVIEW-VALIDATOR-PHASE-A-TYA-20260704.md`, `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md` y `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-LIQUIDACIONES-CINEPOLIS-PREVIEW-VALIDATOR-20260704.md`.
-- Mis beneficios debe mostrar honorario, Boleto, Combo, reembolso total, total y estado, sin banco/DPI/NDA/notas internas.
-- Admin/Liquidaciones debe tratar junio como pagos/liquidaciones pendientes, no visitas pendientes; separar realizada, cuestionario, revision, submitido, liquidacion y pago.
-- Lotes de pago deben ser seleccionables por admin y no incluir automaticamente todos los elegibles.
-- Movimientos debe mostrar cada pago individual aunque venga de lote, con lote/item asociado.
-- Si falta llave estable o referencia de pago, la UI debe mostrar revision manual/conflicto, no auto-dedupe ni pagado.
-- Textos honestos: no prometer pago real, HR sync real, correo real, Make real ni automatizaciones reales mientras los gates esten apagados.
-- Academia debe profundizar Mis beneficios, corte junio, Boleto/Combo, lotes, movimientos, source-safe preview, datos sensibles y revision manual.
