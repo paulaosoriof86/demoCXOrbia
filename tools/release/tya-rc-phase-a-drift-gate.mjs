@@ -36,6 +36,9 @@ const allowedPrefixes = [
 ];
 const allowedExact = [
   '.gitignore',
+  'CAMBIOS-BACKEND.md',
+  'RESUMEN-PARA-CLAUDE.md',
+  'PENDIENTES-PROTOTIPO.md',
   'tools/migration/tya-assignment-sync-conflict-preview.mjs',
   'tools/migration/tya-assignment-sync-outbox-contract.mjs',
   'tools/release/tya-phase-a-today-finish-readiness.mjs'
@@ -82,6 +85,7 @@ const report = {
   },
   allowedPolicy: {
     docs: true,
+    rootRequiredDocs: true,
     releaseGateWorkflows: true,
     previewOnlyContracts: true,
     runtimeAppChanges: false,
@@ -112,6 +116,7 @@ if (outDir) {
     '',
     '## Allowed policy',
     '- Docs: yes',
+    '- Root required docs: yes',
     '- Release gate workflows: yes',
     '- Preview-only contracts: yes',
     '- Runtime app changes: no',
