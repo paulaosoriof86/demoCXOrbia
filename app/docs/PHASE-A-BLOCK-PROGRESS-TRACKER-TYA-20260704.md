@@ -25,8 +25,8 @@ Ultima actualizacion: 2026-07-08
 
 - Documento maestro y continuidad.
 - Auditorias forenses de prototipos previos.
-- Paquetes descargables Claude de auditorias previas.
-- Auditoria complementaria delta vs acumulado Codex para reforzar profundidad y evitar confusion entre cambios acumulados y nuevos.
+- Paquetes Claude de auditorias previas.
+- Auditoria complementaria delta vs acumulado Codex/Claude.
 - Empalme de ultima version auditada como baseline de continuidad backend.
 - Regla de no reiniciar por cada ZIP.
 - Regla de trabajar sobre la ultima version auditada usable, salvo bloqueo critico.
@@ -48,6 +48,7 @@ Ultima actualizacion: 2026-07-08
 - Release readiness snapshot preview.
 - Admin configurability contract preview-only.
 - Conflict review queue + import readiness contract preview-only.
+- Synthetic input pack runner preview-only.
 
 ### Academia
 
@@ -72,6 +73,7 @@ Ultima actualizacion: 2026-07-08
 - Academia impact de release readiness snapshot.
 - Academia impact de admin configurability: NDA, planes, gates, auditRef, revision humana y estados honestos.
 - Academia impact de conflict review/import readiness: export limpio vs preview vs import real, blockers, llaves estables, dedupe prohibido, revision humana y datos sensibles excluidos.
+- Academia impact de synthetic input pack runner: fixtures sinteticos, inputs sanitizados, pruebas de contrato, source-safe report, limites y revision humana.
 
 ### Operacion Phase A
 
@@ -94,25 +96,13 @@ Ultima actualizacion: 2026-07-08
 - Release readiness snapshot preview.
 - Admin configurability: NDAs, planes, reglas, HR, cuestionarios, documentos, evidencias, certificaciones, Academia, notificaciones, imports, pagos, integraciones, roles y gates.
 - Conflict review/import readiness: cola de conflictos y readiness por area antes de cualquier import real.
+- Synthetic input pack runner: ejecucion local de validadores con fixtures sinteticos/sanitizados y reporte agregado source-safe.
 - Liquidaciones y pagos.
 - Cinepolis Boleto/Combo, lotes y movimientos individuales.
 - Preview validator/source-safe mapping para liquidaciones/corte junio y Cinepolis Boleto/Combo.
 - Politica consolidada de datos sensibles para fuentes, pagos, correo, adjuntos y evidencias.
-- Preview validator de assignment sync/conflicts con gate de datos sensibles.
-- Preview validator de visit lifecycle/reservas con gates de assignment sync y datos sensibles.
-- Preview validator de ficha postulacion dinamica con gates de datos sensibles, assignment sync y visit lifecycle/reservas.
-- Preview validator de notification outbox con gates de datos sensibles, postulaciones, assignment sync y visit lifecycle/reservas.
-- Preview validator de email/user mailbox sin conexion real, con notification outbox como gate previo.
-- Preview validator de CRM external folder refs con gates de email/mailbox, notification outbox y datos sensibles.
-- Preview validator de shopper communication history con gates de CRM folder refs, email/mailbox, notification outbox y datos sensibles.
-- Preview validator de shopper ranking/scoring con gates de datos sensibles, assignment sync, visit lifecycle y communication history.
-- Preview validator de project/tenant rule versioning con gates transversales de configuracion.
-- Preview validator de rule change changelog/notifications con gates de rule versioning, notification outbox, mailbox, communication history, Academia y datos sensibles.
-- Preview validator de release readiness snapshot con gates transversales de todos los bloques previos.
 
 ## Bloques agregados durante revision
-
-Estos bloques no estaban suficientemente explicitados al inicio y se agregaron por hallazgos de Paula:
 
 1. Reservas y control de franja/quincena.
 2. Restricciones configurables por proyecto.
@@ -143,16 +133,17 @@ Estos bloques no estaban suficientemente explicitados al inicio y se agregaron p
 27. Release readiness snapshot preview antes de cualquier deploy, merge, import, escritura o activacion real.
 28. Admin configurability preview antes de administrar desde UI real NDAs, planes, reglas, evidencias, cuestionarios, pagos, certificaciones, Academia, notificaciones, imports, Make/Gemini, roles y gates.
 29. Conflict review/import readiness preview antes de cualquier import real o resolucion de conflictos HR/plataforma/historico.
+30. Synthetic input pack runner preview antes de correr validadores con fuentes reales o inputs sanitizados ampliados.
 
 ## Bloque recien completado
 
-### Conflict review queue + import readiness contract preview-only
+### Synthetic input pack runner preview-only
 
 Archivos:
 
-- `tools/contracts/cxorbia-conflict-review-import-readiness-contract.mjs`
-- `app/docs/CONFLICT-REVIEW-IMPORT-READINESS-CONTRACT-CXORBIA-20260708.md`
-- `app/docs/CAMBIOS-CONFLICT-REVIEW-IMPORT-READINESS-CONTRACT-CXORBIA-20260708.md`
+- `tools/contracts/cxorbia-synthetic-input-pack-runner.mjs`
+- `app/docs/SYNTHETIC-INPUT-PACK-RUNNER-CXORBIA-20260708.md`
+- `app/docs/CAMBIOS-SYNTHETIC-INPUT-PACK-RUNNER-CXORBIA-20260708.md`
 - `CAMBIOS-BACKEND.md`
 - `RESUMEN-PARA-CLAUDE.md`
 - `PENDIENTES-PROTOTIPO.md`
@@ -160,11 +151,12 @@ Archivos:
 
 Estado:
 
-- Solo contrato y documentacion segura.
+- Solo runner local y documentacion segura.
 - No cambia `/app/modules` ni `/app/core`.
 - No activa runtime, produccion, Firestore, Storage, Auth, Make, Gemini, email/WhatsApp, pagos, deploy, merge, providers ni import real.
-- Valida conflictos por entidad, sourceRefs opacas, llaves estables, severidad, estado de cola, auditRef, readiness por area y revision humana.
-- Bloquea import real, escrituras reales, base vieja/dump viejo, auto-merge/auto-resolve de conflictos, dedupe visual/por nombre, overwrite sin revision, DPI, banco, NDA firmado, secretos/tokens/webhooks, adjuntos/base64/cuerpos crudos.
+- Ejecuta fixtures sinteticos/sanitizados para contratos preview-only.
+- Produce JSON por consola y opcionalmente reporte local JSON/MD con `--out`.
+- No sube outputs ni datos reales al repo.
 
 ## Ultima auditoria de prototipo
 
@@ -184,23 +176,23 @@ Documentos clave:
 
 ## Pendientes backend inmediatos
 
-1. Preparar input sintetico/sanitizado para conflict review/import readiness contract.
-2. Preparar input sintetico/sanitizado para admin configurability contract.
-3. Preparar input sintetico/sanitizado para release readiness snapshot preview.
-4. Preparar input sintetico/sanitizado para rule change changelog/notification preview.
-5. Preparar input sintetico/sanitizado para project/tenant rule versioning preview.
-6. Preparar input sintetico/sanitizado para shopper ranking/scoring preview.
-7. Preparar input sintetico/sanitizado para shopper communication history preview.
-8. Preparar input sintetico/sanitizado para CRM external folder refs preview.
-9. Preparar input sintetico/sanitizado para email/user mailbox preview.
-10. Preparar input sintetico/sanitizado para notification outbox preview.
-11. Preparar input sintetico/sanitizado para postulation dynamic form preview.
-12. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
-13. Preparar input sintetico/sanitizado para assignment sync conflict preview.
-14. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
-15. Integrar politica de datos sensibles como gate transversal de validators restantes.
-16. Preparar payload futuro para dashboard de readiness sin activar runtime.
-17. Crear contrato/runner local de synthetic input pack para ejecutar validators previos sin fuentes reales.
+1. Ejecutar synthetic input pack runner cuando se requiera validacion local, sin fuentes reales.
+2. Preparar input sintetico/sanitizado ampliado para conflict review/import readiness contract.
+3. Preparar input sintetico/sanitizado ampliado para admin configurability contract.
+4. Preparar input sintetico/sanitizado para release readiness snapshot preview.
+5. Preparar input sintetico/sanitizado para rule change changelog/notification preview.
+6. Preparar input sintetico/sanitizado para project/tenant rule versioning preview.
+7. Preparar input sintetico/sanitizado para shopper ranking/scoring preview.
+8. Preparar input sintetico/sanitizado para shopper communication history preview.
+9. Preparar input sintetico/sanitizado para CRM external folder refs preview.
+10. Preparar input sintetico/sanitizado para email/user mailbox preview.
+11. Preparar input sintetico/sanitizado para notification outbox preview.
+12. Preparar input sintetico/sanitizado para postulation dynamic form preview.
+13. Preparar input sintetico/sanitizado para visit lifecycle/reservation preview.
+14. Preparar input sintetico/sanitizado para assignment sync conflict preview.
+15. Ejecutar validator de liquidaciones/corte junio contra input local sintetico/sanitizado cuando exista fuente segura.
+16. Integrar politica de datos sensibles como gate transversal de validators restantes.
+17. Preparar payload futuro para dashboard de readiness sin activar runtime.
 
 ## Pendientes prototipo / Claude
 
@@ -219,28 +211,19 @@ Documentos clave:
 13. Readiness dashboard con preview ready, missing input, prototype pending, backend pending, real gate off y manual review.
 14. Admin configurability UI: fichas administrables para tenant/proyecto, reglas, HR, cuestionarios, documentos, NDAs, planes, evidencias, certificaciones, Academia, notificaciones, imports, pagos, integraciones, roles y gates.
 15. Conflict review/import readiness UI: bandeja de conflictos, severidad, estado, sourceRefs opacas, readiness por area, razon obligatoria y bloqueo de import con blockers.
-16. NDA UI: plantilla/version/vigencia/estado/creador/aprobador/auditRef/gate/reaceptacion, sin modificar aceptaciones ya presentadas.
-17. Planes UI: tipo/version/vigencia/estado/roles/historial/auditRef con borrador, en revision, aprobado, activo, pausado, reemplazado y archivado.
-18. Mis beneficios con honorario/reembolso/estado.
-19. Lotes y movimientos individuales.
-20. Academia interactiva profunda con backfill completo.
-21. Liquidaciones/Cinepolis: Mis beneficios debe separar honorario, Boleto, Combo, reembolso total, total y estado.
-22. Admin/Liquidaciones debe mostrar revision manual/conflicto si faltan llaves estables o referencias de pago.
-23. Movimientos debe conservar pago individual aunque venga de lote.
-24. Datos sensibles: no exponer banco, documentos, NDA, cuerpos crudos ni adjuntos privados; usar estados protegido/pendiente backend/requiere autorizacion.
-25. Assignment sync: Postulaciones no debe mostrar `HR sincronizada` si gate esta apagado; debe mostrar pendiente HR sync, preview, conflicto o revision manual.
-26. Visitas asignadas desde plataforma o HR preview deben salir de disponibles sin duplicarse.
-27. Visit lifecycle/reservas: agenda/reprogramacion no debe prometer HR sync real; fuera de rango debe mostrar regla fallida y pedir override.
-28. Separar disponible, reservada, agendada, realizada, cuestionario completado, revision, submitido, liquidacion y pago.
-29. Ficha postulacion dinamica: configurable por proyecto/version, campos requeridos/opcionales, referencias privadas, sin archivos raw y sin tratar postulacion como asignacion.
-30. Notification outbox: toasters no deben decir enviado/sincronizado si solo hay preview; WhatsApp/email deben quedar como fallback/draft/provider pendiente.
-31. Email/user mailbox: UI no debe decir conectado/leido/enviado si gate esta apagado; separar draft, log manual, provider pending y enviado real.
-32. CRM/documentos: no decir carpeta creada/conectada/sincronizada; usar ref preview, provider pending, permission review, blocked private link y manual review.
-33. Shopper history: no mostrar cuerpos crudos, telefonos/correos crudos ni adjuntos; usar timeline con estados honestos y llaves estables.
-34. Ranking: mostrar desglose de metricas, muestra insuficiente, conflicto, revision manual y no usarlo como decision final.
-35. Rule versioning: mostrar impacto, migration/rollback required y no usar proveedor activo si solo existe regla preview.
-36. Changelog/notificaciones: no decir publicado/enviado/informado si gates estan apagados; usar draft, review, provider pending y Academia update required.
-37. Readiness: no decir production ready, deployed, imported, connected, sent o synced si gates estan apagados.
+16. Synthetic input pack UI opcional: mostrar diagnostico preview/pass-fail/warnings sin prometer produccion, import, sync, provider activo ni deploy.
+17. NDA UI: plantilla/version/vigencia/estado/creador/aprobador/auditRef/gate/reaceptacion, sin modificar aceptaciones ya presentadas.
+18. Planes UI: tipo/version/vigencia/estado/roles/historial/auditRef con borrador, en revision, aprobado, activo, pausado, reemplazado y archivado.
+19. Mis beneficios con honorario/reembolso/estado.
+20. Lotes y movimientos individuales.
+21. Academia interactiva profunda con backfill completo.
+22. Liquidaciones/Cinepolis: Mis beneficios debe separar honorario, Boleto, Combo, reembolso total, total y estado.
+23. Admin/Liquidaciones debe mostrar revision manual/conflicto si faltan llaves estables o referencias de pago.
+24. Movimientos debe conservar pago individual aunque venga de lote.
+25. Datos sensibles: no exponer banco, documentos, NDA, cuerpos crudos ni adjuntos privados; usar estados protegido/pendiente backend/requiere autorizacion.
+26. Assignment sync: Postulaciones no debe mostrar `HR sincronizada` si gate esta apagado; debe mostrar pendiente HR sync, preview, conflicto o revision manual.
+27. Separar disponible, reservada, agendada, realizada, cuestionario completado, revision, submitido, liquidacion y pago.
+28. Readiness: no decir production ready, deployed, imported, connected, sent o synced si gates estan apagados.
 
 ## Pendientes Academia
 
@@ -251,25 +234,21 @@ Documentos clave:
 5. Notificaciones de cursos/manuales.
 6. Contenido retroactivo de todos los bloques backend.
 7. Profundizar liquidaciones/pagos.
-8. Profundizar correo/CRM/Shopper history.
-9. Profundizar datos sensibles: sourceSafe, datos protegidos, referencias opacas, privacidad shopper, import seguro e integraciones apagadas.
-10. Profundizar assignment sync/conflicts: postulacion a asignacion, HR detected, no duplicar, conflicto, revision manual y visual dedupe prohibido.
-11. Profundizar visit lifecycle/reservas: agenda, reprogramacion, cancelacion, availableFrom, franja, quincena, override, realizada y cuestionario completado.
-12. Profundizar ficha postulacion dinamica: formId, formVersion, fieldId, sensibilidad, revision ops/admin y versionado.
-13. Profundizar notification outbox: templateId, templateVersion, recipientRef, outboxStatus, manualFallbackStatus, fallback manual y estados honestos.
-14. Profundizar email/user mailbox: mailboxId, providerType, connectionStatus, canDraft, canLogManual, draft_ready_preview y manual_log_only.
-15. Profundizar CRM external folder refs: crmEntityId, externalFolderRefId, externalProviderType, visibilityScope, accessStatus, provider pending y permission review.
-16. Profundizar shopper communication history: communicationId, threadId, participantRef, manualConfirmationStatus, communicationStatus, privacy, manual log y draft preview.
-17. Profundizar shopper ranking/scoring: rankingRunId, rankingPeriodId, scoreVersion, metricId, metricWeight, scoreStatus, fairness, manual review y limites de uso.
-18. Profundizar project/tenant rule versioning: ruleSetId, ruleSetVersion, ruleSetType, migrationPlanId, rollbackPlanId, breaking change y provider gates.
-19. Profundizar rule change changelog/notifications: changeLogId, changeEventId, impactScope, audienceRole, notificationDraftId, academyUpdateRef, blocked_real_send y Academia update required.
-20. Profundizar release readiness snapshot: snapshotId, readinessArea, readinessStatus, gateStatus, blockingReason, preview-ready vs production-ready y blockers.
-21. Profundizar admin configurability: tenant/project config, roles, permissions, auditRef, gate, template/version/acceptance/reacceptance NDA, tipos/estados de planes, revision humana y provider preparado vs activo.
-22. Profundizar conflict review/import readiness: conflictId, entityType, conflictType, severity, queueStatus, sourceRef opaca, stableKey, blocker, readiness area, clean/rejected/conflict counts, resolved preview vs aplicado real.
+8. Profundizar datos sensibles: sourceSafe, datos protegidos, referencias opacas, privacidad shopper, import seguro e integraciones apagadas.
+9. Profundizar assignment sync/conflicts.
+10. Profundizar visit lifecycle/reservas.
+11. Profundizar notification outbox y email/user mailbox.
+12. Profundizar shopper ranking/scoring.
+13. Profundizar project/tenant rule versioning.
+14. Profundizar rule change changelog/notifications.
+15. Profundizar release readiness snapshot.
+16. Profundizar admin configurability.
+17. Profundizar conflict review/import readiness.
+18. Profundizar synthetic input pack runner: fixture sintetico, input sanitizado, pruebas de contrato, source-safe report, pass/fail/warnings, limites y revision humana.
 
 ## Siguiente bloque recomendado
 
-Crear contrato/runner local de synthetic input pack para ejecutar validators previos sin fuentes reales y producir un reporte agregado source-safe.
+Preparar un synthetic pack agregado mas amplio para cubrir inputs sinteticos de readiness/release, rule versioning, notification outbox y assignment sync, sin fuentes reales.
 
 ## Regla de cierre por bloque
 
