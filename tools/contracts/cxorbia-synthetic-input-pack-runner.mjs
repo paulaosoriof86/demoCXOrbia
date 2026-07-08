@@ -20,6 +20,9 @@ import {
   validateAdminConfigurabilityContract,
 } from './cxorbia-admin-configurability-contract.mjs';
 import {
+  expandedAdminConfigurabilityManifest,
+} from './cxorbia-admin-configurability-expanded-fixture.mjs';
+import {
   sampleManifest as conflictReviewSample,
   validateConflictReviewImportReadiness,
 } from './cxorbia-conflict-review-import-readiness-contract.mjs';
@@ -28,7 +31,7 @@ import {
 } from './cxorbia-conflict-review-import-readiness-expanded-fixture.mjs';
 
 export const RUNNER_NAME = 'cxorbia-synthetic-input-pack-runner';
-export const RUNNER_VERSION = '2026-07-08.expanded-conflict-readiness-preview-only';
+export const RUNNER_VERSION = '2026-07-08.expanded-admin-conflict-readiness-preview-only';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -269,6 +272,7 @@ function runCliContract(entry) {
 export function runSyntheticInputPack() {
   const results = [
     runModuleContract('admin-configurability', validateAdminConfigurabilityContract, adminConfigurabilitySample),
+    runModuleContract('admin-configurability-expanded', validateAdminConfigurabilityContract, expandedAdminConfigurabilityManifest),
     runModuleContract('conflict-review-import-readiness', validateConflictReviewImportReadiness, conflictReviewSample),
     runModuleContract('conflict-review-import-readiness-expanded', validateConflictReviewImportReadiness, expandedConflictReviewImportReadinessManifest),
     ...legacyCliContracts.map(runCliContract),
@@ -296,12 +300,14 @@ export function runSyntheticInputPack() {
     coverage: {
       embeddedContractSamples: [
         'admin-configurability',
+        'admin-configurability-expanded',
         'conflict-review-import-readiness',
         'conflict-review-import-readiness-expanded',
       ],
       stdinContractSamples: legacyCliContracts.map((item) => item.contractId),
       fixtureValidators: fixtureCliContracts.map((item) => item.contractId),
       expandedAreas: [
+        'admin_configurability_expanded',
         'assignment_sync_conflicts',
         'notification_outbox',
         'project_tenant_rule_versioning',
@@ -317,7 +323,7 @@ export function runSyntheticInputPack() {
         'synthetic fixtures for preview-only contracts',
         'aggregate source-safe report before real data inputs',
         'runner pattern for future contract validators',
-        'expanded fixture coverage for assignment sync, notifications, rules and release readiness',
+        'expanded fixture coverage for admin configurability, assignment sync, notifications, rules and release readiness',
         'expanded conflict/readiness fixture for multi-conflict preview before real imports',
       ],
       exclusivoCliente: [
@@ -327,12 +333,13 @@ export function runSyntheticInputPack() {
         'show aggregate readiness as preview, not production-ready',
         'surface missing/failed contracts without implying provider execution',
         'separate synthetic diagnostic pass from real operational activation',
+        'show admin configurability expanded scenarios without implying real provider activation',
         'show conflict/readiness expanded scenarios without implying real HR sync/import/payment',
       ],
       academia: [
         'explain synthetic fixtures, source-safe tests and why this is not real import',
         'explain expanded coverage by contract area and gate state',
-        'explain assignment conflict, identity ambiguity and payment review as preview-only scenarios',
+        'explain admin domain configuration, Academy administration, assignment conflict, identity ambiguity and payment review as preview-only scenarios',
       ],
       sinImpactoClaude: [
         'runner has no UI changes and no provider calls',
