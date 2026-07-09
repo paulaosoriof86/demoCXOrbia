@@ -16,16 +16,23 @@ Antes de listar pendientes, proponer siguiente bloque, pedir informacion o ejecu
 1. Documento maestro y addenda vigentes del proyecto.
 2. `app/docs/PHASE-A-ACCUMULATED-CONTINUITY-CHECKPOINT-TYA-20260709.md`.
 3. `app/docs/PHASE-A-PLAN-AUDIT-EFFECTED-PENDING-TYA-20260709.md`.
-4. `CAMBIOS-BACKEND.md`.
-5. `RESUMEN-PARA-CLAUDE.md`.
-6. PR #7 estado actual.
+4. `app/docs/PHASE-A-RUTA-CARRILES-TYA-20260709.md`.
+5. `CAMBIOS-BACKEND.md`.
+6. `RESUMEN-PARA-CLAUDE.md`.
+7. PR #7 estado actual.
+
+## Regla sobre computador y pasos manuales
+
+No se debe asumir que Paula tiene o no tiene computador.
+
+Los pasos manuales solo se piden si son necesarios para avanzar un bloqueo que no pueda resolverse desde GitHub, contratos o documentacion. Cuando se pidan, deben ser un unico bloque claro, minimo y sin rutas alternativas.
 
 ## Semaforo para clasificar cualquier actividad
 
 Toda actividad debe clasificarse en una de estas categorias antes de llamarla pendiente:
 
 - Hecho/documentado: ya existe como contrato, doc, gate, script, checkpoint o empalme.
-- Preparado pero no ejecutado: existe el plan o herramienta, falta correrlo con GO o computador.
+- Preparado pero no ejecutado: existe el plan o herramienta, falta correrlo con GO o validacion local.
 - Pendiente de autorizacion: requiere GO explicito de Paula.
 - Pendiente Claude/prototipo: requiere UI/prototipo y no debe tocarse desde backend.
 - Pendiente backend real: requiere base limpia, adapter, import, writes o proveedor real.
@@ -39,7 +46,7 @@ Toda actividad debe clasificarse en una de estas categorias antes de llamarla pe
 - No marcar builder local/comando unico como pendiente desde cero: ya esta preparado; falta ejecucion local si aplica.
 - No marcar reviewQueue/conflictos como pendiente desde cero: ya esta documentado; falta implementacion real posterior.
 - No marcar rollback/auditoria como pendiente desde cero: ya esta documentado; falta implementacion real posterior.
-- No marcar smoke/GO como no preparado: ya esta preparado; falta ejecucion humana/consola y decision explicita.
+- No marcar smoke/GO como no preparado: ya esta preparado; falta validacion humana/consola y decision explicita.
 - No reiniciar Level 0/1 sin causa nueva, verificable y documentada.
 - No volver a versiones anteriores si V91 sigue siendo baseline viva.
 
@@ -67,13 +74,13 @@ Cada bloque debe cerrar con:
 6. Estado seguro.
 7. Bloqueos o fallos de herramienta, si los hubo.
 
-## Siguiente bloque por defecto mientras Paula esta sin computador
+## Ruta por carriles
 
-Preparar ruta de ejecucion Phase A por carriles:
+Usar `app/docs/PHASE-A-RUTA-CARRILES-TYA-20260709.md` para separar:
 
 - Carril A: ya hecho/documentado.
 - Carril B: Claude/prototipo.
-- Carril C: computador/smoke humano.
+- Carril C: validacion local solo si es imprescindible.
 - Carril D: GO DEV/base limpia/adapter/import dry-run.
 - Carril E: produccion/merge/deploy.
 
