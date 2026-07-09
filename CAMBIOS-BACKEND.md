@@ -1,5 +1,23 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Real-data domain readiness pack Phase A TyA
+
+- Se agrego `backend/contracts/phase-a-realdata-domain-readiness-pack-v1.json`.
+- Se agrego `tools/contracts/tya-phase-a-realdata-domain-readiness-pack-validate.mjs`.
+- Se agrego `app/docs/PHASE-A-REALDATA-DOMAIN-READINESS-PACK-TYA-20260709.md`.
+- Se agrego `app/docs/CAMBIOS-PHASE-A-REALDATA-DOMAIN-READINESS-PACK-TYA-20260709.md`.
+- Objetivo: preparar el paquete de readiness dry-run para evaluar si una fuente TyA real/sanitizada original cumple el mapping source-safe de dominios antes de habilitar cualquier lectura DEV por `CX.data` adapter.
+- Validacion futura: contrato solamente si no hay input; con `--input` local valida top-level shape, sourceSafety, dominios minimos, campos requeridos, stable keys, ausencia de marcadores sensibles, `canImport=false`, `canWrite=false` y reglas Phase A.
+- Dominios evaluables: tenant/project config, HR source status, visits, shoppers, applications/assignments, certifications, liquidations/payments june, questionnaire routes, operational queues y audit preview.
+- Reglas Phase A: junio pendiente es pago/liquidacion, certificaciones preservadas antes de repetir, asignaciones HR/plataforma sin duplicar, cuestionario configurable o bloqueo honesto y Cinépolis como proyecto configurable.
+- Guardrails: no input privado en chat, no import, no writes, no runtime, no fixture como real, no `.tmp` derivado como fuente original, no base vieja, pagos como control y no ejecucion.
+- Impacto Phase A: permite evaluar fuente real/sanitizada original TyA antes de adapter DEV sin activar runtime ni repetir Level 0/1.
+- Impacto backend reusable: patron reusable de dry-run de dominios reales/sanitizados antes de adapter/runtime por tenant/proyecto.
+- Impacto Claude/prototipo: mostrar bloqueo honesto si falta dominio, campo, ruta o fuente; no inventar datos ni prometer runtime.
+- Impacto Academia: explicar dry-run, dominios, fuente source-safe, GO dry-run vs runtime, datos sensibles prohibidos y diferencia entre fixture y fuente real/sanitizada.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, adapter no habilitado, sin runtime, sin import de dominios, dry-run only, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
+- Commits: `3bb358172365a1ee6db9cbb65dd7ab2db0b8bf95`, `cb96a486f8043381729ecba82f4fd35938883881`, `0a136f7d02813eeda6509080ff0e601acf4409fa`, `7dbd24fee48b54caf3e66d0bd9f34a7a87bd21fb`.
+
 ## 2026-07-09 - Source-safe domain mapping Phase A TyA
 
 - Se agrego `backend/contracts/phase-a-source-safe-domain-mapping-v1.json`.
@@ -53,20 +71,3 @@
 - Impacto Academia: explicar GO request vs runtime switch, DEV preview vs produccion, smoke, rollback y estabilidad de `CX.data`.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin switch ejecutado, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
 - Commits: `f31a650c7c58144a7fe083d1dddfac552482c49d`, `891524edf4d7dc33a6c52c6e5375ff2b9247e693`, `fe0cef808aafc5f0fb6e266bab31a7e05468a105`, `8fb1271fb865aa2ebaa9ae8fc2b7806c424d17fe`.
-
-## 2026-07-09 - Gate solicitud GO runtime DEV Phase A TyA
-
-- Se agrego `backend/contracts/phase-a-runtime-dev-go-request-gate-v1.json`.
-- Se agrego `tools/contracts/tya-phase-a-runtime-dev-go-request-gate.mjs`.
-- Se agrego `app/docs/PHASE-A-RUNTIME-DEV-GO-REQUEST-GATE-TYA-20260709.md`.
-- Se agrego `app/docs/CAMBIOS-PHASE-A-RUNTIME-DEV-GO-REQUEST-GATE-TYA-20260709.md`.
-- Objetivo: preparar el gate previo para determinar si corresponde pedir GO explicito de Paula para runtime DEV preview, sin activar runtime ni writes.
-- Decision: un gate verde no equivale a autorizacion. El GO debe ser explicito y exacto; este gate no cambia runtime, no escribe base, no importa, no despliega, no activa Make/Gemini y no ejecuta pagos.
-- Frase requerida: `Autorizo GO runtime DEV preview Phase A TyA`.
-- Hard stops: falta readiness acumulado, falta runtime GO/NO-GO validator, reabrir Level 0/1 sin causa, usar fixture o `.tmp` como evidencia real, datos sensibles, cambio UI/core desde backend, runtime/writes ya activos, falta rollback/smoke o GO ambiguo.
-- Impacto Phase A: deja una separacion clara entre readiness acumulado, solicitud de autorizacion, runtime switch separado y produccion.
-- Impacto backend reusable: patron reusable de request gate por tenant/proyecto.
-- Impacto Claude/prototipo: mostrar como estado de preparacion/autorizacion pendiente, no integracion activa.
-- Impacto Academia: explicar readiness vs GO vs runtime DEV vs runtime switch vs produccion.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
-- Commits: `6b2c36a803586478afbd6dd413b043225ed9f4e7`, `311d364053e01ea9b20b1a0987b691639e8522c2`, `560a214be6ed67dab9d6750f4e17d85868e8269d`, `32e8337cfdc62c7a119c05f53057fd04a9665876`.
