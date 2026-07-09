@@ -1,5 +1,23 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Source-safe input builder contract Phase A TyA
+
+- Se agrego `backend/contracts/phase-a-source-safe-input-builder-contract-v1.json`.
+- Se agrego `tools/contracts/tya-phase-a-source-safe-input-builder-contract-validate.mjs`.
+- Se agrego `app/docs/PHASE-A-SOURCE-SAFE-INPUT-BUILDER-CONTRACT-TYA-20260709.md`.
+- Se agrego `app/docs/CAMBIOS-PHASE-A-SOURCE-SAFE-INPUT-BUILDER-CONTRACT-TYA-20260709.md`.
+- Objetivo: definir como construir localmente el JSON source-safe que alimenta el real-data domain readiness pack desde HR/export original sanitizado TyA, sin subir datos privados al repo y sin activar runtime, imports ni writes.
+- Inputs permitidos: HR source-safe/full-flow report, export original TyA sanitizado y project config source-safe.
+- Output futuro: `tya-phase-a-domains.source-safe.local.json`, solo local, no commiteado, con flags de seguridad en false y dominios Phase A completos.
+- Reglas de derivacion: ids estables opacos, no deduplicacion por nombre, `paymentControlOnly=true`, certificaciones preservadas, rutas configuradas o bloqueo honesto.
+- Guardrails: no subir output local al repo, no copiar filas HR crudas, no copiar datos sensibles, no usar fixture/`.tmp` derivado/base vieja, no pago real, no pedir certificacion preservada sin revision y no inventar links.
+- Impacto Phase A: prepara el siguiente paso para evaluar datos reales/sanitizados TyA sin pedirlos en chat, manteniendo HR fuente operacional, junio como pagos/liquidaciones, certificaciones preservadas, shoppers historicos y cuestionarios configurables.
+- Impacto backend reusable: patron reusable de builder local source-safe para generar inputs de readiness antes de adapter/runtime.
+- Impacto Claude/prototipo: Claude debe mostrar estados honestos si fuente/build/dry-run no esta listo; no debe presentar runtime ni datos reales si solo existe contrato.
+- Impacto Academia: explicar builder local, output no commiteado, derivacion de ids estables, no deduplicar por nombre, junio como pago/liquidacion y que builder no importa ni escribe.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, builder no ejecutado, output local no commiteado, adapter no habilitado, sin runtime, sin import de dominios, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
+- Commits: `26856f268f0d374531dbc20e435ddd57b0c191a0`, `6b25777198e16c6d97fe0e2b822070224b3a278c`, `85096345227a0e96a8f916ef05c3141084244448`, `d36e0b6822be7533b7505268968260cbdc837c71`.
+
 ## 2026-07-09 - Real-data domain readiness pack Phase A TyA
 
 - Se agrego `backend/contracts/phase-a-realdata-domain-readiness-pack-v1.json`.
@@ -54,20 +72,3 @@
 - Impacto Academia: explicar `CX.data`, adapter, fallback localStorage, lectura source-safe, writes bloqueados, gates, datos reales/sanitizados vs demo y preservacion de certificaciones.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, adapter no habilitado, sin runtime, sin switch ejecutado, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
 - Commits: `d4518d90d45a87bc7bfee4e3469784729344d718`, `7bfa6dd34f9eea1c7225de22e58bffbb0d5fd1c3`, `d690a9a44bfc6a046ae9b7683d623a5f95f05480`, `d39a5647549aaadf703c71f5212fe185ffeb8428`, `14382dc2d880aa1cd1b591a9602b034375bb020a`.
-
-## 2026-07-09 - Plan runtime DEV switch Phase A TyA
-
-- Se agrego `backend/contracts/phase-a-runtime-dev-switch-plan-v1.json`.
-- Se agrego `tools/contracts/tya-phase-a-runtime-dev-switch-plan-validate.mjs`.
-- Se agrego `app/docs/PHASE-A-RUNTIME-DEV-SWITCH-PLAN-TYA-20260709.md`.
-- Se agrego `app/docs/CAMBIOS-PHASE-A-RUNTIME-DEV-SWITCH-PLAN-TYA-20260709.md`.
-- Objetivo: separar solicitud GO de cambio tecnico runtime DEV, dejando un plan futuro que no ejecuta runtime ni writes.
-- Decision: este bloque es plan only; no cambia runtime, no escribe base, no importa, no despliega, no activa Make/Gemini, no ejecuta pagos y no toca UI/core.
-- Requisitos futuros: GO exacto Paula registrado, readiness acumulado limpio, GO/NO-GO runtime DEV limpio, rollback/smoke listo, punto unico `CX.data` confirmado, adapter DEV apagado por defecto e input source-safe no fixture/no `.tmp` derivado.
-- Smoke futuro: login/roles, navegacion sin regresion, interfaz `CX.data` estable, HR source-safe bajo gate, asignaciones sin duplicar, colas de conflictos, certificaciones preservadas, liquidaciones junio como control, cuestionarios configurables, no Make/Gemini/pagos reales y rollback disponible.
-- Impacto Phase A: evita mezclar autorizacion con ejecucion tecnica; runtime DEV sera un paso separado con su propio gate/PR/smoke/rollback.
-- Impacto backend reusable: patron reusable para separar request gate, switch plan, switch execution, smoke, rollback y produccion.
-- Impacto Claude/prototipo: representar como arquitectura futura bajo gate, no como integracion activa; conservar copy honesto.
-- Impacto Academia: explicar GO request vs runtime switch, DEV preview vs produccion, smoke, rollback y estabilidad de `CX.data`.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin switch ejecutado, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
-- Commits: `f31a650c7c58144a7fe083d1dddfac552482c49d`, `891524edf4d7dc33a6c52c6e5375ff2b9247e693`, `fe0cef808aafc5f0fb6e266bab31a7e05468a105`, `8fb1271fb865aa2ebaa9ae8fc2b7806c424d17fe`.
