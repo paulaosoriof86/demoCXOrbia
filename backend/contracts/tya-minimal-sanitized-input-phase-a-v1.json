@@ -1,0 +1,255 @@
+{
+  "contractId": "tya-minimal-sanitized-input-phase-a-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-09",
+  "purpose": "Define the minimum sanitized TyA/Cinepolis input required to render a DEV real-data preview through CX.data without raw PII, real imports, Firestore writes or UI module rewrites.",
+  "sourcePrinciple": "Use already documented HR live/staging work; do not request HR again unless no sanitized local input can be recovered.",
+  "safeState": {
+    "runtimeConnected": false,
+    "frontendModified": false,
+    "modulesModified": false,
+    "firestoreWrites": false,
+    "importsExecuted": false,
+    "hrWrites": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsRawPii": false,
+    "containsRawHrRows": false,
+    "containsRawWorkbook": false,
+    "containsOldDatabaseDump": false
+  },
+  "tenantProject": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "projectMustBeNormalConfigurable": true,
+    "projectMustNotBeHardcoded": true,
+    "futureProjectsMustUseSamePattern": true
+  },
+  "minimumPreviewPayload": {
+    "projectConfig": {
+      "required": true,
+      "requiredFields": [
+        "tenantId",
+        "projectId",
+        "projectName",
+        "clientName",
+        "countries",
+        "currencies",
+        "periods",
+        "hrSourceRef",
+        "questionnaireRouting",
+        "paymentRulesRef",
+        "certificationRulesRef"
+      ],
+      "notes": "Defines Cinepolis as a normal configurable project and future reusable project pattern."
+    },
+    "periods": {
+      "required": true,
+      "requiredFields": [
+        "periodId",
+        "sourceTab",
+        "country",
+        "periodKey",
+        "quincenas",
+        "status",
+        "expectedVisitCount",
+        "reviewRequired"
+      ],
+      "notes": "Derived from source-safe HR manifest; dashboard tabs excluded."
+    },
+    "visits": {
+      "required": true,
+      "minimumForVisualPreview": true,
+      "requiredFields": [
+        "visitId",
+        "hrRowId",
+        "projectId",
+        "periodId",
+        "country",
+        "cityRef",
+        "branchRef",
+        "quincena",
+        "timeBand",
+        "availableFrom",
+        "scheduledDate",
+        "completedDate",
+        "questionnaireCompletedDate",
+        "submittedAt",
+        "status",
+        "shopperRef",
+        "assignmentSource",
+        "assignmentSyncStatus",
+        "reviewRequired"
+      ],
+      "allowedStatusValues": [
+        "pending_assignment",
+        "pending_schedule",
+        "scheduled",
+        "completed_pending_questionnaire",
+        "questionnaire_pending_submit",
+        "submitted_liquidation_candidate",
+        "liquidation_payment_control",
+        "review_required",
+        "preparation_not_closed"
+      ],
+      "notes": "Source-safe visit rows only; no raw shopper names/phones/emails."
+    },
+    "shoppers": {
+      "required": false,
+      "minimumForVisualPreview": false,
+      "requiredIfIncludedFields": [
+        "shopperId",
+        "shopperCode",
+        "country",
+        "cityRef",
+        "status",
+        "certificationStatus",
+        "sourceConfidence",
+        "reviewRequired"
+      ],
+      "notes": "Shoppers can remain as refs until canonical mismatch is resolved; no DPI, bank, phone or raw email."
+    },
+    "certificationPreservation": {
+      "required": true,
+      "requiredFields": [
+        "shopperRef",
+        "projectId",
+        "certificationId",
+        "status",
+        "presentedAtRef",
+        "sourceRef",
+        "reviewRequired"
+      ],
+      "notes": "Already-presented certifications must not be requested again without explicit rule."
+    },
+    "liquidationCandidates": {
+      "required": true,
+      "requiredFields": [
+        "liquidationCandidateId",
+        "visitId",
+        "shopperRef",
+        "projectId",
+        "periodId",
+        "country",
+        "currency",
+        "honorariumAmount",
+        "reimbursementAmount",
+        "totalAmount",
+        "status",
+        "requiresFinanceCrosscheck"
+      ],
+      "notes": "June must be payment/liquidation control, not pending visits; paid requires audit/evidence later."
+    },
+    "issues": {
+      "required": true,
+      "requiredFields": [
+        "issueId",
+        "severity",
+        "scope",
+        "code",
+        "messageSafe",
+        "blocksRuntime",
+        "blocksImport",
+        "blocksProduction"
+      ],
+      "notes": "Must include DPI policy, questionnaire duplicate, shopper mismatch, JUNIO 26 HN, liquidation crosscheck."
+    }
+  },
+  "forbiddenFieldsAnywhere": [
+    "rawDpi",
+    "dpi",
+    "rawBankAccount",
+    "bankAccount",
+    "rawPhone",
+    "phone",
+    "telefono",
+    "rawEmail",
+    "email",
+    "mail",
+    "rawShopperName",
+    "shopperName",
+    "nombreShopper",
+    "rawHrWorkbook",
+    "rawCsv",
+    "privateHrUrl",
+    "spreadsheetFileId",
+    "serviceAccountJson",
+    "signedNdaFile",
+    "rawEvidence",
+    "base64Evidence",
+    "paymentReceiptBinary",
+    "paymentProviderToken",
+    "makeWebhookUrl",
+    "geminiApiKey"
+  ],
+  "requiredIssuesBeforeRuntimePreview": [
+    {
+      "code": "sensitive_shopper_data_policy",
+      "severity": "critical",
+      "expectedStatus": "present_and_block_import_until_resolved"
+    },
+    {
+      "code": "questionnaire_marks_duplicate_postulations",
+      "severity": "critical",
+      "expectedStatus": "excluded_as_independent_source"
+    },
+    {
+      "code": "shopper_canonical_mismatch",
+      "severity": "critical",
+      "expectedStatus": "review_required_no_silent_promotion"
+    },
+    {
+      "code": "junio_26_hn_review_required",
+      "severity": "warning_or_critical",
+      "expectedStatus": "review_required_no_auto_import"
+    },
+    {
+      "code": "liquidations_require_finance_crosscheck",
+      "severity": "warning",
+      "expectedStatus": "payment_control_only_not_paid"
+    }
+  ],
+  "previewLevels": {
+    "level0_manifestOnly": {
+      "canRenderProject": true,
+      "canRenderPeriods": true,
+      "canRenderVisits": false,
+      "canRenderShoppers": false,
+      "productionAllowed": false
+    },
+    "level1_sanitizedVisits": {
+      "canRenderProject": true,
+      "canRenderPeriods": true,
+      "canRenderVisits": true,
+      "canRenderShoppers": false,
+      "productionAllowed": false
+    },
+    "level2_sanitizedOperationalPreview": {
+      "canRenderProject": true,
+      "canRenderPeriods": true,
+      "canRenderVisits": true,
+      "canRenderShoppers": true,
+      "canRenderCertifications": true,
+      "canRenderLiquidationCandidates": true,
+      "productionAllowed": false
+    }
+  },
+  "gates": {
+    "manifestOnlyPreview": {
+      "status": "allowed",
+      "requirements": ["sourceSafeManifest", "noRawPii", "noRuntimeSwitch"]
+    },
+    "devSanitizedPreview": {
+      "status": "blocked_until_payload_validates",
+      "requirements": ["minimumPayload", "forbiddenFieldsAbsent", "issuesPresent", "runtimeSwitchGate", "rollback", "smoke"]
+    },
+    "runtimeDevSwitch": {
+      "status": "blocked_until_paula_go",
+      "requirements": ["validatedPayload", "singleConnectionPoint", "rollback", "smokeChecklist", "PaulaGO"]
+    },
+    "production": {
+      "status": "blocked",
+      "requirements": ["devSmokeGO", "verifiedUrl", "noDemoFinalSource", "noCriticalNO_GO", "PaulaProductionGO"]
+    }
+  }
+}
