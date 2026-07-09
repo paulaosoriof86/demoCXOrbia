@@ -1,0 +1,93 @@
+{
+  "contractId": "auth-rbac-phase-a-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-08",
+  "purpose": "Define Phase A authentication and role-based access control for a clean Firebase/Supabase backend without activating real Auth yet.",
+  "safeState": {
+    "authProviderConnected": false,
+    "frontendConnected": false,
+    "writesEnabled": false,
+    "customClaimsWritten": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false
+  },
+  "identityModel": {
+    "requiredKeys": ["tenantId", "projectId", "userId", "role"],
+    "optionalKeys": ["shopperId", "clientId", "staffId", "country", "status"],
+    "forbiddenInRepo": ["password", "idDocumentRaw", "bankAccountRaw", "signedNdaRaw", "providerToken", "refreshToken", "privateWebhookUrl"]
+  },
+  "roles": {
+    "superAdmin": {
+      "scope": "platform",
+      "phaseA": false,
+      "notes": "Reserved for SaaS operations. Not needed for TyA Phase A cutover."
+    },
+    "tenantAdmin": {
+      "scope": "tenant",
+      "phaseA": true,
+      "permissions": ["manageProjects", "manageUsers", "viewAudit", "reviewConflicts", "manageConfiguration"]
+    },
+    "projectAdmin": {
+      "scope": "tenantProject",
+      "phaseA": true,
+      "permissions": ["manageVisits", "manageAssignments", "manageApplications", "reviewCertifications", "manageLiquidations", "prepareNotifications"]
+    },
+    "financeAdmin": {
+      "scope": "tenantProject",
+      "phaseA": true,
+      "permissions": ["viewLiquidations", "preparePaymentBatches", "markPaymentStateWithAudit"]
+    },
+    "certificationAdmin": {
+      "scope": "tenantProject",
+      "phaseA": true,
+      "permissions": ["manageQuestionBanks", "reviewAiDrafts", "publishCertifications", "viewCertificationAttempts"]
+    },
+    "shopper": {
+      "scope": "tenantProjectOrTenant",
+      "phaseA": true,
+      "permissions": ["viewAssignedVisits", "applyToVisits", "scheduleVisit", "rescheduleVisit", "markVisitDone", "markQuestionnaireDone", "viewBenefits", "viewOwnCertifications"]
+    },
+    "clientViewer": {
+      "scope": "tenantProject",
+      "phaseA": false,
+      "permissions": ["viewApprovedReports"]
+    }
+  },
+  "gates": {
+    "devAuthConfig": {
+      "status": "pending",
+      "requirements": ["clean project", "no production users", "no legacy auth import", "rollback doc"]
+    },
+    "devClaimsWrite": {
+      "status": "blocked",
+      "requirements": ["explicitApproval", "testUsersOnly", "auditLog", "rollback"]
+    },
+    "stagingAuth": {
+      "status": "blocked",
+      "requirements": ["rulesReview", "roleMatrixReview", "sampleUsersSanitized"]
+    },
+    "productionAuthCutover": {
+      "status": "blocked",
+      "requirements": ["PaulaGO", "smokeGO", "rollback", "noCriticalNO_GO"]
+    }
+  },
+  "routeAccessMatrix": {
+    "dashboard": ["tenantAdmin", "projectAdmin"],
+    "postulaciones": ["tenantAdmin", "projectAdmin"],
+    "reservas": ["tenantAdmin", "projectAdmin", "shopper"],
+    "automatizaciones": ["tenantAdmin", "projectAdmin"],
+    "cuestionarioShopper": ["shopper", "tenantAdmin", "projectAdmin"],
+    "finanzas": ["tenantAdmin", "projectAdmin", "financeAdmin", "shopper"],
+    "academia": ["tenantAdmin", "projectAdmin", "certificationAdmin", "shopper"],
+    "diagnostico": ["tenantAdmin", "projectAdmin"],
+    "administrabilidad": ["tenantAdmin"]
+  },
+  "auditRequirements": [
+    "all role changes require actorId, reason, timestamp and source",
+    "critical admin actions require motive",
+    "payment state changes require auditRef",
+    "conflicts are not overwritten silently",
+    "provider actions stay prepared until provider gates are active"
+  ]
+}
