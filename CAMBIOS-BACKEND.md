@@ -1,5 +1,21 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Acciones administrativas auditables Phase A TyA
+
+- Se agrego `backend/contracts/phase-a-admin-actions-audit-contract-v1.json`.
+- Se agrego `tools/contracts/tya-phase-a-admin-actions-audit-validate.mjs`.
+- Se agrego `app/docs/PHASE-A-ADMIN-ACTIONS-AUDIT-TYA-20260709.md`.
+- Objetivo: formalizar acciones administrativas operables desde plataforma con auditoria, gates y alcance tenant/proyecto, sin activar writes reales, runtime, imports, HR writes, Make/Gemini ni pagos reales.
+- Acciones cubiertas: aprobar/rechazar postulacion, reflejar asignaciones plataforma->HR y HR->plataforma, resolver conflictos, solicitar/aprobar reprogramacion, marcar realizada, marcar cuestionario, marcar submitido TyA, preservar certificacion, marcar revision de certificacion, crear liquidacion candidata, mover pago a revision, programar control de pago, confirmar pago externo y anular/corregir estado administrativamente.
+- Auditoria obligatoria: `auditId`, `tenantId`, `projectId`, actor, accion, entidad, before/after, razon, source/sourceRef, idempotencyKey, correlationId, createdAt y gateStatus.
+- Guardrails: `writesAllowedNow=false`, no hard delete, no deduplicacion visual, no datos sensibles en auditoria, no pagos reales, no Make/Gemini live, no runtime switch sin GO de Paula.
+- Impacto Phase A: deja lista la base contractual para que administracion opere casos reales con auditoria cuando se habiliten writes, sin improvisar parches ni tocar UI ahora.
+- Impacto backend reusable: contrato reusable de acciones auditables por tenant/proyecto para futuros clientes CXOrbia.
+- Impacto Claude/prototipo: Claude debe representar estas acciones como operaciones administrables futuras con estados honestos, cola de conflictos, razon requerida y bitacora/auditoria visible; no debe prometer envio, pago, sync o import real mientras el gate este apagado.
+- Impacto Academia: explicar accion administrativa auditable, diferencia entre preparar accion y ejecutar write real, no hard delete, razon obligatoria, pagos como control y datos sensibles fuera de auditoria.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
+- Commits: `b7b6eeb31e48fb551b7b9d6f3ebdab51673f7e5f`, `667af06cd2fea69261cace013596d8ef4e54f543`, `86622886ef685b30c5cfde8de046a925d7584bc6`.
+
 ## 2026-07-09 - State machine operacional Phase A TyA
 
 - Se agrego `backend/contracts/phase-a-operational-state-machine-v1.json`.
@@ -74,28 +90,3 @@
 - Impacto Academia: agregar explicacion de fixture sintetico vs output sanitizado real, y por que un gate tecnico verde no autoriza produccion si la fuente es sintetica.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
 - Commit: `f25d6d5edb6052e9d6e13d74aa4198fba07fdbab`.
-
-## 2026-07-09 - Recovery local Level 1 real-data preview ampliado
-
-- Se agrego `tools/contracts/tya-local-level1-recovery-preflight.mjs`.
-- Objetivo: eliminar reprocesos manuales buscando outputs sanitizados ya generados fuera del worktree actual, especialmente en carpetas locales de documentos, descargas y reportes CXOrbia/TyA.
-- Funcion: escanea rutas locales probables, ignora `.git`, `node_modules` y carpetas tecnicas, inspecciona JSON source-safe, detecta candidatos Level 1 con filas de visita sanitizadas, y si encuentra candidato ejecuta automaticamente el preflight existente contra ese input.
-- Estado seguro: sin llamadas HR, sin Firestore writes, sin imports, sin deploy, sin runtime switch, sin HR writes, sin base vieja y sin subir outputs locales al repo.
-- Impacto Phase A: siguiente paso operativo despues de Level 0 GO; permite recuperar Level 1/Level 2 si el output sanitizado existe localmente sin pedir HR otra vez.
-- Impacto backend reusable: patron de recovery local source-safe para tenants con outputs sanitizados previos, manteniendo gates y revision humana.
-- Impacto Claude/prototipo: ninguno visual directo; mantener estados honestos y no prometer datos reales si solo existe Level 0.
-- Impacto Academia: documentar diferencia entre Level 0 manifesto, Level 1 visitas sanitizadas, Level 2 operacional, y por que no se deben usar datos crudos ni resolver conflictos por coincidencia visual.
-- Nota: se intento agregar wrapper PowerShell, pero la llamada de escritura fue bloqueada por controles de herramienta; no se afirmo como creado. Se continua con comando `node` directo desde copia temporal actualizada.
-- Commit: `07dfbcaefd3e3fd39947521f7f6507cbfac5105c`.
-
-## 2026-07-09 - Fix Level 0 preflight real-data preview sin marcador prohibido
-
-- Se modifico `tools/contracts/tya-minimal-sanitized-input-from-manifest.mjs`.
-- Motivo: el preflight local de Paula genero Level 0, pero marco `NO_GO_LOCAL_REALDATA_PREFLIGHT` porque el payload/documentacion interna incluia texto seguro que contenia un marcador prohibido de datos sensibles. No era dato real ni PII cruda; era una palabra dentro del mensaje de issue seguro.
-- Cambio aplicado: se reemplazo el mensaje seguro del issue `sensitive_shopper_data_policy` para evitar el marcador prohibido literal y mantener el bloqueo conceptual de datos restringidos de shopper/pago.
-- Impacto Phase A: debe permitir que Level 0 valide correctamente proyecto/periodos/readiness sin desbloquear produccion ni runtime. Level 1/Level 2 siguen dependiendo de recuperar output local sanitizado.
-- Impacto backend reusable: refuerza la regla de que los validadores no deben fallar por copy interno seguro que contenga marcadores prohibidos, sin relajar la politica de datos sensibles.
-- Impacto Claude/prototipo: ninguno visual directo; mantener copy honesto sobre preview, datos restringidos, no import, no pago real y no runtime.
-- Impacto Academia: explicar que los gates pueden bloquear por marcadores sensibles incluso cuando no hay dato real; la solucion correcta es conservar la politica y ajustar mensajes seguros, no relajar protecciones.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
-- Commit: `72e00496e5e6197528259970a3fb0b35daec3501`.
