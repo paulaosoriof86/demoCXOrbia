@@ -1,5 +1,21 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Accumulated continuity checkpoint Phase A TyA
+
+- Se agrego `backend/contracts/phase-a-accumulated-continuity-checkpoint-v1.json`.
+- Se agrego `app/docs/PHASE-A-ACCUMULATED-CONTINUITY-CHECKPOINT-TYA-20260709.md`.
+- Se agrego `app/docs/CAMBIOS-PHASE-A-ACCUMULATED-CONTINUITY-CHECKPOINT-TYA-20260709.md`.
+- Objetivo: conservar continuidad completa de Phase A backend TyA para evitar perdida de contexto, metodologia, estado, fuente viva, guardrails, avances, pendientes y siguiente bloque exacto.
+- Estado repo/PR: `paulaosoriof86/demoCXOrbia`, rama `docs-tya-v6-v71-audit`, base `release/cxorbia-tya-rc-20260630`, PR #7 draft abierto, sin merge, sin deploy, sin produccion, sin runtime.
+- Foco Phase A: datos reales/sanitizados TyA, HR fuente operacional, junio como pagos/liquidaciones, shoppers historicos, certificaciones preservadas, Cinépolis configurable y multi-proyecto.
+- Bloques protegidos: no-reversion Level 0/1, real-data preview, continuidad operacional, state machine, acciones auditables, colas, readiness, GO request, runtime switch plan, `CX.data` adapter, domain mapping, readiness pack, builder, ejecucion local y comando unico futuro.
+- Guardrails: no tocar `/app/modules` ni `/app/core`, no pedir datos privados por chat, no conectar base vieja, no usar fixture/`.tmp` como real, no repetir Level 0/1 y no activar runtime/write/import/deploy sin GO explicito.
+- Impacto Claude/prototipo: Claude debe usar este checkpoint para no reiniciar pendientes ni asumir runtime activo. Todo cambio UI futuro requiere source lock/candidata vigente y copy honesto.
+- Impacto Academia: explicar continuidad, no-reversion, gates, source-safe, dry-run, builder local, comando unico futuro y diferencia entre preparado/ejecutado/runtime/import/produccion.
+- Siguiente bloque exacto: preparar `PHASE-A-CONTINUITY-PROMPT-AND-PR-SUMMARY-TYA-20260709.md`.
+- Estado seguro: checkpoint documentado solamente. Sin cambios UI/core, sin runtime, sin imports, sin writes, sin deploy, sin produccion y sin datos sensibles.
+- Commits: `a91f172bf0587dc18255ff9a01b47da38645f71a`, `afecf7c5051d1ba434fd79e6f7850809b53aa9a9`, `581c30002ebe16d8269bae9fd3faf5ce5012d547`.
+
 ## 2026-07-09 - Future single-command pack Phase A TyA
 
 - Se agrego `backend/contracts/phase-a-future-single-command-pack-v1.json`.
@@ -52,21 +68,3 @@
 - Impacto Academia: explicar builder local, output no commiteado, derivacion de ids estables, no deduplicar por nombre, junio como pago/liquidacion y que builder no importa ni escribe.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, builder no ejecutado, output local no commiteado, adapter no habilitado, sin runtime, sin import de dominios, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
 - Commits: `26856f268f0d374531dbc20e435ddd57b0c191a0`, `6b25777198e16c6d97fe0e2b822070224b3a278c`, `85096345227a0e96a8f916ef05c3141084244448`, `d36e0b6822be7533b7505268968260cbdc837c71`.
-
-## 2026-07-09 - Real-data domain readiness pack Phase A TyA
-
-- Se agrego `backend/contracts/phase-a-realdata-domain-readiness-pack-v1.json`.
-- Se agrego `tools/contracts/tya-phase-a-realdata-domain-readiness-pack-validate.mjs`.
-- Se agrego `app/docs/PHASE-A-REALDATA-DOMAIN-READINESS-PACK-TYA-20260709.md`.
-- Se agrego `app/docs/CAMBIOS-PHASE-A-REALDATA-DOMAIN-READINESS-PACK-TYA-20260709.md`.
-- Objetivo: preparar el paquete de readiness dry-run para evaluar si una fuente TyA real/sanitizada original cumple el mapping source-safe de dominios antes de habilitar cualquier lectura DEV por `CX.data` adapter.
-- Validacion futura: contrato solamente si no hay input; con `--input` local valida top-level shape, sourceSafety, dominios minimos, campos requeridos, stable keys, ausencia de marcadores sensibles, `canImport=false`, `canWrite=false` y reglas Phase A.
-- Dominios evaluables: tenant/project config, HR source status, visits, shoppers, applications/assignments, certifications, liquidations/payments june, questionnaire routes, operational queues y audit preview.
-- Reglas Phase A: junio pendiente es pago/liquidacion, certificaciones preservadas antes de repetir, asignaciones HR/plataforma sin duplicar, cuestionario configurable o bloqueo honesto y Cinépolis como proyecto configurable.
-- Guardrails: no input privado en chat, no import, no writes, no runtime, no fixture como real, no `.tmp` derivado como fuente original, no base vieja, pagos como control y no ejecucion.
-- Impacto Phase A: permite evaluar fuente real/sanitizada original TyA antes de adapter DEV sin activar runtime ni repetir Level 0/1.
-- Impacto backend reusable: patron reusable de dry-run de dominios reales/sanitizados antes de adapter/runtime por tenant/proyecto.
-- Impacto Claude/prototipo: mostrar bloqueo honesto si falta dominio, campo, ruta o fuente; no inventar datos ni prometer runtime.
-- Impacto Academia: explicar dry-run, dominios, fuente source-safe, GO dry-run vs runtime, datos sensibles prohibidos y diferencia entre fixture y fuente real/sanitizada.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, adapter no habilitado, sin runtime, sin import de dominios, dry-run only, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
-- Commits: `3bb358172365a1ee6db9cbb65dd7ab2db0b8bf95`, `cb96a486f8043381729ecba82f4fd35938883881`, `0a136f7d02813eeda6509080ff0e601acf4409fa`, `7dbd24fee48b54caf3e66d0bd9f34a7a87bd21fb`.
