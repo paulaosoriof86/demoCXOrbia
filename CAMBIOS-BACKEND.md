@@ -1,5 +1,17 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Fix Level 0 preflight real-data preview sin marcador prohibido
+
+- Se modifico `tools/contracts/tya-minimal-sanitized-input-from-manifest.mjs`.
+- Motivo: el preflight local de Paula genero Level 0, pero marco `NO_GO_LOCAL_REALDATA_PREFLIGHT` porque el payload/documentacion interna incluia texto seguro que contenia un marcador prohibido de datos sensibles. No era dato real ni PII cruda; era una palabra dentro del mensaje de issue seguro.
+- Cambio aplicado: se reemplazo el mensaje seguro del issue `sensitive_shopper_data_policy` para evitar el marcador prohibido literal y mantener el bloqueo conceptual de datos restringidos de shopper/pago.
+- Impacto Phase A: debe permitir que Level 0 valide correctamente proyecto/periodos/readiness sin desbloquear produccion ni runtime. Level 1/Level 2 siguen dependiendo de recuperar output local sanitizado.
+- Impacto backend reusable: refuerza la regla de que los validadores no deben fallar por copy interno seguro que contenga marcadores prohibidos, sin relajar la politica de datos sensibles.
+- Impacto Claude/prototipo: ninguno visual directo; mantener copy honesto sobre preview, datos restringidos, no import, no pago real y no runtime.
+- Impacto Academia: explicar que los gates pueden bloquear por marcadores sensibles incluso cuando no hay dato real; la solucion correcta es conservar la politica y ajustar mensajes seguros, no relajar protecciones.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
+- Commit: `72e00496e5e6197528259970a3fb0b35daec3501`.
+
 ## 2026-07-08 - Conflict review/import readiness expanded fixture preview-only
 
 - Se agrego `tools/contracts/cxorbia-conflict-review-import-readiness-expanded-fixture.mjs`.
