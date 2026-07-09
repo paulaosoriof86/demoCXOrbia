@@ -1,5 +1,14 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-09 - Condiciones DEV Phase A TyA
+
+- ChatGPT/backend agrego `backend/contracts/phase-a-dev-conditions-v1.json` y `app/docs/PHASE-A-DEV-CONDITIONS-TYA-20260709.md`.
+- Estado: documento/contrato solamente; no hay conexion DEV activa, runtime activo, import real, writes, proveedores live, deploy, produccion ni pagos reales.
+- Claude debe mantener el foco Phase A TyA: HR como fuente operacional, informacion real/source-safe, Cinépolis como primer proyecto configurable, junio como liquidaciones/pagos y certificaciones presentadas preservadas.
+- Representacion esperada en UI: DEV pendiente hasta autorizacion explicita, Firestore/Auth/Storage pendientes, HR preparada pero no sincronizada live, Make/Gemini pendientes, datos TyA source-safe o pendientes y warnings/blockers visibles.
+- No tocar desde Claude: backend/contracts, tools, workflows, secrets, reglas reales, `.tmp`, datos sensibles ni proveedores reales.
+- Academia debe cubrir DEV vs staging vs produccion, base nueva limpia, `CX.data`, gates, fuente source-safe, certificaciones preservadas, conflictos, liquidaciones/pagos y no exponer datos privados.
+
 ## 2026-07-09 - Paquete acumulado Phase A TyA para Claude/Pendientes/Academia
 
 - ChatGPT/backend agrego `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
