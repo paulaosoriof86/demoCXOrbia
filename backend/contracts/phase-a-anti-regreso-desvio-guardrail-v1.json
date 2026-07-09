@@ -6,14 +6,22 @@
   "branch": "docs-tya-v6-v71-audit",
   "pr": 7,
   "status": "documented_only",
-  "purpose": "Prevent future blocks from reverting, restarting Phase A, or marking completed/documented work as pending from zero.",
+  "purpose": "Prevent future blocks from reverting, restarting Phase A, assuming computer availability, or marking completed/documented work as pending from zero.",
   "mustReviewBeforePlanning": [
     "master_context_and_addenda",
     "app/docs/PHASE-A-ACCUMULATED-CONTINUITY-CHECKPOINT-TYA-20260709.md",
     "app/docs/PHASE-A-PLAN-AUDIT-EFFECTED-PENDING-TYA-20260709.md",
+    "app/docs/PHASE-A-RUTA-CARRILES-TYA-20260709.md",
     "CAMBIOS-BACKEND.md",
     "RESUMEN-PARA-CLAUDE.md",
     "current_PR_7_state"
+  ],
+  "manualRequestPolicy": [
+    "do_not_assume_computer_availability_or_absence",
+    "do_not_request_manual_steps_by_default",
+    "first_advance_with_github_docs_contracts_when_possible",
+    "request_manual_validation_only_when_blocking_and_necessary",
+    "manual_request_must_be_single_clear_minimal_block"
   ],
   "activityClassificationRequired": [
     "done_or_documented",
@@ -57,6 +65,6 @@
     "safe_state",
     "tool_blocks_or_failures"
   ],
-  "defaultNextWhenNoComputer": "phase_a_execution_lanes_route",
-  "defaultNextWhenComputerAvailable": "focused_human_smoke_console_on_pr_7"
+  "executionLaneDoc": "app/docs/PHASE-A-RUTA-CARRILES-TYA-20260709.md",
+  "manualExecution": "only_when_necessary_not_assumed"
 }
