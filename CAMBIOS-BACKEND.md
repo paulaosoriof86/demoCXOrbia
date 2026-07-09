@@ -1,5 +1,17 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Fix recovery Level 1 excluye fixtures sinteticos por defecto
+
+- Se modifico `tools/contracts/tya-local-level1-recovery-preflight.mjs`.
+- Motivo: el recovery local encontro archivos bajo `tools/migration/synthetic-fixtures/phase-a/` y los valido como candidatos Level 1/Level 2. Eso sirve para pruebas de contrato, pero no puede contarse como real-data preview de TyA.
+- Cambio aplicado: el recovery ahora excluye fixtures sinteticos por defecto y solo los considera si se ejecuta explicitamente con `--allow-synthetic`, reservado para contract testing, no para evidencia real-data.
+- Impacto Phase A: evita falso avance a DEV runtime preview usando datos sinteticos. El estado correcto queda: Level 0 real/source-safe GO; Level 1/Level 2 reales siguen bloqueados hasta recuperar/generar output HR source-safe local no sintetico.
+- Impacto backend reusable: diferencia formal entre `realdata_only_default` y `allow_synthetic_contract_test`.
+- Impacto Claude/prototipo: el prototipo no debe mostrar datos sinteticos como TyA real; copy debe distinguir fixture/preview/demo vs fuente real/sanitizada.
+- Impacto Academia: agregar explicacion de fixture sintetico vs output sanitizado real, y por que un gate tecnico verde no autoriza produccion si la fuente es sintetica.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
+- Commit: `f25d6d5edb6052e9d6e13d74aa4198fba07fdbab`.
+
 ## 2026-07-09 - Recovery local Level 1 real-data preview ampliado
 
 - Se agrego `tools/contracts/tya-local-level1-recovery-preflight.mjs`.
