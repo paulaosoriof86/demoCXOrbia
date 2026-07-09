@@ -1,0 +1,162 @@
+{
+  "contractId": "phase-a-accumulated-readiness-gate-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "mode": "source_safe_contract_only_no_writes",
+  "createdAt": "2026-07-09",
+  "purpose": "Consolidar readiness acumulado Phase A para saber que esta contratado, que sigue bloqueado y que falta antes de pedir GO de runtime DEV, sin repetir Level 0/1.",
+  "readinessPrinciples": {
+    "doNotRepeatLevel0Level1": true,
+    "level0RecognizedAsReadyForProjectPeriodReadiness": true,
+    "level1PreviouslyWorkedNoRestart": true,
+    "phaseARealControlledOperation": true,
+    "hrAsOperationalSource": true,
+    "multiProjectRequired": true,
+    "cinepolisAsConfigurableProject": true,
+    "noSyntheticFixtureAsRealEvidence": true,
+    "noDerivedTmpOutputAsOriginalEvidence": true,
+    "runtimeRequiresExplicitPaulaGo": true,
+    "noWritesBeforeFinalGates": true,
+    "documentClaudeAcademiaPending": true
+  },
+  "requiredContractBlocks": [
+    {
+      "blockId": "operational_continuity",
+      "contractFile": "backend/contracts/phase-a-operational-continuity-gate-v1.json",
+      "validatorFile": "tools/contracts/tya-phase-a-operational-continuity-gate.mjs",
+      "docFile": "app/docs/PHASE-A-OPERATIONAL-CONTINUITY-GATE-TYA-20260709.md",
+      "statusExpected": "contracted_no_runtime"
+    },
+    {
+      "blockId": "operational_state_machine",
+      "contractFile": "backend/contracts/phase-a-operational-state-machine-v1.json",
+      "validatorFile": "tools/contracts/tya-phase-a-operational-state-machine-validate.mjs",
+      "docFile": "app/docs/PHASE-A-OPERATIONAL-STATE-MACHINE-TYA-20260709.md",
+      "statusExpected": "contracted_no_runtime"
+    },
+    {
+      "blockId": "admin_actions_audit",
+      "contractFile": "backend/contracts/phase-a-admin-actions-audit-contract-v1.json",
+      "validatorFile": "tools/contracts/tya-phase-a-admin-actions-audit-validate.mjs",
+      "docFile": "app/docs/PHASE-A-ADMIN-ACTIONS-AUDIT-TYA-20260709.md",
+      "statusExpected": "contracted_no_writes"
+    },
+    {
+      "blockId": "operational_queues",
+      "contractFile": "backend/contracts/phase-a-operational-queues-contract-v1.json",
+      "validatorFile": "tools/contracts/tya-phase-a-operational-queues-validate.mjs",
+      "docFile": "app/docs/PHASE-A-OPERATIONAL-QUEUES-TYA-20260709.md",
+      "statusExpected": "contracted_no_writes"
+    },
+    {
+      "blockId": "realdata_preview_checkpoint",
+      "contractFile": null,
+      "validatorFile": "tools/contracts/tya-local-realdata-preview-preflight.mjs",
+      "docFile": "app/docs/CHECKPOINT-OPERATIVO-REALDATA-PREVIEW-TYA-20260709.md",
+      "statusExpected": "checkpoint_no_reprocess"
+    },
+    {
+      "blockId": "no_reversion_checkpoint",
+      "contractFile": null,
+      "validatorFile": null,
+      "docFile": "app/docs/CHECKPOINT-NO-REVERSION-LEVEL0-LEVEL1-PHASE-A-TYA-20260709.md",
+      "statusExpected": "level0_level1_no_reversion_registered"
+    },
+    {
+      "blockId": "claude_operational_addendum",
+      "contractFile": null,
+      "validatorFile": null,
+      "docFile": "app/docs/CLAUDE-PROTOTIPO-ADDENDUM-PHASE-A-OPERATIVO-AUDITABLE-TYA-20260709.md",
+      "statusExpected": "claude_documented"
+    },
+    {
+      "blockId": "prototype_pending_queues",
+      "contractFile": null,
+      "validatorFile": null,
+      "docFile": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-PHASE-A-COLAS-AUDITABLES-TYA-20260709.md",
+      "statusExpected": "prototype_pending_documented"
+    }
+  ],
+  "phaseAReadinessAreas": [
+    {
+      "area": "HR source-safe/full-flow",
+      "status": "prepared_no_runtime",
+      "nextBeforeRuntimeGo": "validar fuente original segura y no derivada si se va a ejecutar preview DEV"
+    },
+    {
+      "area": "sync HR/plataforma",
+      "status": "contracted_no_writes",
+      "nextBeforeRuntimeGo": "validar colas/conflictos y stable keys"
+    },
+    {
+      "area": "certificaciones preservadas",
+      "status": "contracted_no_writes",
+      "nextBeforeRuntimeGo": "confirmar que no se pediran nuevamente certificaciones ya presentadas sin revision"
+    },
+    {
+      "area": "liquidaciones/pagos junio",
+      "status": "contracted_as_control_no_real_payment",
+      "nextBeforeRuntimeGo": "confirmar que pagos son control administrativo y no ejecucion financiera"
+    },
+    {
+      "area": "acciones administrativas",
+      "status": "contracted_auditable_no_writes",
+      "nextBeforeRuntimeGo": "habilitar solo despues de gate final y GO explicito"
+    },
+    {
+      "area": "colas operativas",
+      "status": "contracted_no_autoresolve_no_writes",
+      "nextBeforeRuntimeGo": "mapear tablero futuro en prototipo con copy honesto"
+    },
+    {
+      "area": "Claude/prototipo",
+      "status": "documented_pending_ui",
+      "nextBeforeRuntimeGo": "no parchar UI desde backend; Claude debe implementar cuando haya capacidad/source lock"
+    },
+    {
+      "area": "Academia",
+      "status": "documented_required",
+      "nextBeforeRuntimeGo": "manuales/rutas deben explicar gates, colas, auditoria, preview vs produccion"
+    }
+  ],
+  "hardStopsBeforeRuntimeDevGo": [
+    "missingRequiredContractBlock",
+    "runtimeSwitchWithoutPaulaGo",
+    "firestoreWritesBeforeGate",
+    "hrWritesBeforeGate",
+    "importsBeforeGate",
+    "makeGeminiLiveBeforeGate",
+    "realPaymentBeforeGate",
+    "syntheticFixtureUsedAsRealEvidence",
+    "derivedTmpOutputUsedAsOriginalEvidence",
+    "rawSensitiveDataInRepo",
+    "uiModulePatchedFromBackend",
+    "level0Level1RestartedWithoutCause"
+  ],
+  "goCriteriaBeforeRuntimeDevRequest": [
+    "requiredContractBlocksPresent",
+    "noReversionCheckpointPresent",
+    "operationalContinuityGatePresent",
+    "stateMachinePresent",
+    "adminActionsAuditPresent",
+    "operationalQueuesPresent",
+    "claudeAndPrototypePendingDocumented",
+    "academiaImpactDocumented",
+    "noRuntimeWritesImportsDeployPayments",
+    "explicitPaulaGoRequestedOnlyAfterCleanGate"
+  ],
+  "safeStateExpected": {
+    "runtimeConnected": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "importsExecuted": false,
+    "deploy": false,
+    "production": false,
+    "makeWebhookLive": false,
+    "geminiLive": false,
+    "paymentProviderLive": false,
+    "rawSensitiveDataInRepo": false,
+    "uiModulesModified": false,
+    "appCoreModified": false
+  }
+}
