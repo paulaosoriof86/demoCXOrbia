@@ -1,5 +1,14 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-09 - Guardrail anti-regreso y anti-desvio Phase A TyA
+
+- ChatGPT/backend agrego `app/docs/PHASE-A-ANTI-REGRESO-DESVIO-GUARDRAIL-TYA-20260709.md` y `backend/contracts/phase-a-anti-regreso-desvio-guardrail-v1.json`.
+- Objetivo: evitar que Claude, ChatGPT o cualquier bloque futuro marque como pendiente desde cero algo ya trabajado, reinicie Phase A, regrese a versiones anteriores o se desvie de TyA.
+- Antes de listar pendientes o proponer siguiente bloque se debe revisar: documento maestro/addenda, checkpoint acumulado, auditoria de efectuado/pendiente, CAMBIOS-BACKEND, RESUMEN-PARA-CLAUDE y PR #7 actual.
+- Toda actividad debe clasificarse como: hecho/documentado, preparado/no ejecutado, pendiente autorizacion, pendiente Claude/prototipo, pendiente backend real, bloqueado por gate o no corresponde a Phase A.
+- No reabrir desde cero: `CX.data` adapter, source-safe domain mapping, readiness pack, builder local, single-command pack, smoke precheck, GO/NO GO, DEV conditions, rollback/auditoria, reviewQueue/conflictos y checkpoints.
+- Reporte obligatorio por bloque: que hice, que ya estaba hecho y no se reabrio, avance Phase A, pendiente real por carril, siguiente bloque exacto, estado seguro y bloqueos/fallos.
+
 ## 2026-07-09 - Cola de revision humana y conflictos Phase A TyA
 
 - ChatGPT/backend agrego `backend/contracts/phase-a-human-review-conflict-queue-plan-v1.json` y `app/docs/PHASE-A-HUMAN-REVIEW-CONFLICT-QUEUE-TYA-20260709.md`.
