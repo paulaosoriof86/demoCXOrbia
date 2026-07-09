@@ -1,5 +1,18 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Recovery local Level 1 real-data preview ampliado
+
+- Se agrego `tools/contracts/tya-local-level1-recovery-preflight.mjs`.
+- Objetivo: eliminar reprocesos manuales buscando outputs sanitizados ya generados fuera del worktree actual, especialmente en carpetas locales de documentos, descargas y reportes CXOrbia/TyA.
+- Funcion: escanea rutas locales probables, ignora `.git`, `node_modules` y carpetas tecnicas, inspecciona JSON source-safe, detecta candidatos Level 1 con filas de visita sanitizadas, y si encuentra candidato ejecuta automaticamente el preflight existente contra ese input.
+- Estado seguro: sin llamadas HR, sin Firestore writes, sin imports, sin deploy, sin runtime switch, sin HR writes, sin base vieja y sin subir outputs locales al repo.
+- Impacto Phase A: siguiente paso operativo despues de Level 0 GO; permite recuperar Level 1/Level 2 si el output sanitizado existe localmente sin pedir HR otra vez.
+- Impacto backend reusable: patron de recovery local source-safe para tenants con outputs sanitizados previos, manteniendo gates y revision humana.
+- Impacto Claude/prototipo: ninguno visual directo; mantener estados honestos y no prometer datos reales si solo existe Level 0.
+- Impacto Academia: documentar diferencia entre Level 0 manifesto, Level 1 visitas sanitizadas, Level 2 operacional, y por que no se deben usar datos crudos ni resolver conflictos por coincidencia visual.
+- Nota: se intento agregar wrapper PowerShell, pero la llamada de escritura fue bloqueada por controles de herramienta; no se afirmo como creado. Se continua con comando `node` directo desde copia temporal actualizada.
+- Commit: `07dfbcaefd3e3fd39947521f7f6507cbfac5105c`.
+
 ## 2026-07-09 - Fix Level 0 preflight real-data preview sin marcador prohibido
 
 - Se modifico `tools/contracts/tya-minimal-sanitized-input-from-manifest.mjs`.
