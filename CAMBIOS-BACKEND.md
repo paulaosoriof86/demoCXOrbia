@@ -1,5 +1,20 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Gate continuidad operacional Phase A TyA
+
+- Se agrego `backend/contracts/phase-a-operational-continuity-gate-v1.json`.
+- Se agrego `tools/contracts/tya-phase-a-operational-continuity-gate.mjs`.
+- Se agrego `app/docs/PHASE-A-OPERATIONAL-CONTINUITY-GATE-TYA-20260709.md`.
+- Objetivo: avanzar en Phase A real controlada con un gate source-safe que consolida no-reversion Level 0/1, HR source-safe/full-flow, sync HR/plataforma, certificaciones preservadas, liquidaciones/pagos de junio, cuestionario configurable, proyecto configurable y bloqueo de runtime/import/deploy.
+- Decision: el gate no ejecuta proveedores, no escribe base, no importa, no despliega y no cambia runtime; solo valida presencia documental/contractual y hard-stops para continuar sin repetir procesos.
+- Guardrail: no permite interpretar fixtures sinteticos ni outputs derivados de `.tmp` como evidencia real TyA. Level 2 solo puede usarse para siguiente gate si proviene de fuente original real/sanitizada.
+- Impacto Phase A: permite continuar bloque largo de produccion real controlada sin volver a pedir datos ya documentados ni reiniciar Level 0/1.
+- Impacto backend reusable: patron de continuidad operacional por tenant/proyecto reusable para futuros clientes CXOrbia.
+- Impacto Claude/prototipo: mantener copy honesto, no mostrar demo/fixture/preview tecnico como real, y preservar configurabilidad multi-proyecto.
+- Impacto Academia: explicar no-reversion, fixture vs fuente original, outputs derivados, HR source-safe, sync con conflictos, certificaciones preservadas y pagos como control.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
+- Commits: `de10aa67a3ad1ed369f16005185025047f297ce9`, `4718163a05b0c0136f751e1a9aaacd70fab17464`, `bdccc61640015703c48205d448a97adf0457afa3`.
+
 ## 2026-07-09 - Checkpoint real-data preview alineado con no-reproceso
 
 - Se actualizo `app/docs/CHECKPOINT-OPERATIVO-REALDATA-PREVIEW-TYA-20260709.md`.
