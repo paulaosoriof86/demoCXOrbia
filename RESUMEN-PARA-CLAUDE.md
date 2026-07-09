@@ -1,5 +1,15 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-09 - Cola de revision humana y conflictos Phase A TyA
+
+- ChatGPT/backend agrego `backend/contracts/phase-a-human-review-conflict-queue-plan-v1.json` y `app/docs/PHASE-A-HUMAN-REVIEW-CONFLICT-QUEUE-TYA-20260709.md`.
+- Estado: documento/contrato solamente; no crea registros, no importa, no escribe HR, no activa proveedores, no ejecuta pagos, no deploy y no produccion.
+- Claude debe representar conflictos como visibles, accionables y pendientes de revision humana; no debe ocultarlos ni resolverlos por nombre visual.
+- Casos clave: shopper asignado en HR y ausente en plataforma, identidad ambigua, asignacion plataforma vs HR, visita duplicada, certificacion ya presentada, liquidacion/pago con estado conflictivo, cuestionario/origen y configuracion de proyecto.
+- Foco Phase A: HR fuente operacional, informacion real/source-safe, Cinépolis proyecto configurable, junio liquidaciones/pagos, certificaciones preservadas, shoppers historicos conservados y conflictos a revision humana.
+- No tocar desde Claude: backend/contracts, tools, workflows, secrets, reglas reales, `.tmp`, datos sensibles, proveedores reales, imports reales ni pagos reales.
+- Academia debe explicar cola de revision, conflictos, llaves estables, asignaciones HR/plataforma, preservacion de certificaciones, junio como liquidaciones/pagos y no datos privados en logs/manuales.
+
 ## 2026-07-09 - Rollback y auditoria DEV Phase A TyA
 
 - ChatGPT/backend agrego `backend/contracts/phase-a-dev-rollback-audit-plan-v1.json` y `app/docs/PHASE-A-DEV-ROLLBACK-AUDIT-PLAN-TYA-20260709.md`.
