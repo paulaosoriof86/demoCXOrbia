@@ -1,5 +1,19 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Checkpoint real-data preview alineado con no-reproceso
+
+- Se actualizo `app/docs/CHECKPOINT-OPERATIVO-REALDATA-PREVIEW-TYA-20260709.md`.
+- Objetivo: alinear el checkpoint operativo con la decision no-reversion/no-reproceso para que no vuelva a interpretarse Level 0/1 como trabajo pendiente por repetir.
+- Cambio documental: se agrego seccion no-reproceso/no-reversion, se ajustaron bloqueos actuales y se aclaro que ejecucion local solo aplica para validacion puntual de fuentes que existen unicamente en la computadora de Paula.
+- Decision: Level 0 queda superado para readiness de proyecto/periodos. Level 1 ya fue trabajado previamente y solo debe validarse puntualmente contra fuente original segura, sin reiniciar metodologia.
+- Guardrail: Level 2 solo habilita siguiente gate si proviene de fuente original real/sanitizada, no de fixture ni output derivado de `.tmp`.
+- Impacto Phase A: mantiene avance hacia produccion real controlada sin repetir procesos y sin desbloquear runtime/produccion.
+- Impacto backend reusable: consolida patron no-reversion aplicado a checkpoints operativos.
+- Impacto Claude/prototipo: refuerza copy honesto y evita presentar demo/fixture/preview tecnico como TyA real.
+- Impacto Academia: agregar criterio de no-reversion y diferencia entre fuente original, fixture y output derivado.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
+- Commit: `146396495d02e469947d6c977c0b8078d423451d`.
+
 ## 2026-07-09 - Checkpoint no reversion Level 0 / Level 1 Phase A TyA
 
 - Se agrego `app/docs/CHECKPOINT-NO-REVERSION-LEVEL0-LEVEL1-PHASE-A-TYA-20260709.md`.
