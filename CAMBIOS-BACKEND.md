@@ -1,5 +1,23 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Colas operativas Phase A y documentacion Claude/Academia
+
+- Se agrego `backend/contracts/phase-a-operational-queues-contract-v1.json`.
+- Se agrego `tools/contracts/tya-phase-a-operational-queues-validate.mjs`.
+- Se agrego `app/docs/PHASE-A-OPERATIONAL-QUEUES-TYA-20260709.md`.
+- Se agrego `app/docs/CLAUDE-PROTOTIPO-ADDENDUM-PHASE-A-OPERATIVO-AUDITABLE-TYA-20260709.md`.
+- Se agrego `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-PHASE-A-COLAS-AUDITABLES-TYA-20260709.md`.
+- Objetivo: formalizar colas operativas para conflictos, HR/plataforma, certificaciones, liquidaciones/pagos junio, cuestionario y correcciones; ademas dejar documentado para Claude/prototipo, backend replicable, pendientes, mejoras locales y Academia.
+- Colas cubiertas: `sync_conflicts`, `hr_platform_sync_pending`, `certification_preservation_review`, `june_liquidation_payment_control`, `questionnaire_route_review`, `admin_corrections_review`.
+- Priorizacion: blockers primero, conflictos de asignacion antes de pagos, certificaciones preservadas antes de repetir, pagos junio solo tras submitido/candidato valido, y no crear cola sin stable keys.
+- Guardrails: colas source-safe, tenant/project scoped, sin datos sensibles, sin auto-resolucion, sin writes, sin fixtures como real, sin `.tmp` derivado como fuente original.
+- Impacto Phase A: prepara tablero y flujo operativo para resolver casos reales de forma administrable cuando gates se habiliten, sin tocar UI ahora ni repetir Level 0/1.
+- Impacto backend reusable: patron de colas operativas reusable para cualquier tenant/proyecto CXOrbia.
+- Impacto Claude/prototipo: queda addendum para tablero de colas, drills, botones preparados/deshabilitados, copy honesto, bitacora y pendientes UI.
+- Impacto Academia: queda documentado que debe explicar colas, severidad, sourceRef opaca, stable keys, revision humana, auditoria, pagos como control y preview vs produccion.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
+- Commits: `4b10637281c1deafbf42135452ee36579ab7d399`, `7ba44cf765aaad7310e7f78dc714ad6915c694e5`, `3afeeb48e14f3fbbbfcf327c29355f743112fdac`, `4ef07ae028cfd0841c5910712dc8b91a54fdc292`, `57c900a5fc7f58cb577ca6bc3ef7f7fb956a36f8`.
+
 ## 2026-07-09 - Acciones administrativas auditables Phase A TyA
 
 - Se agrego `backend/contracts/phase-a-admin-actions-audit-contract-v1.json`.
@@ -49,44 +67,3 @@
 - Impacto Academia: explicar no-reversion, fixture vs fuente original, outputs derivados, HR source-safe, sync con conflictos, certificaciones preservadas y pagos como control.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
 - Commits: `de10aa67a3ad1ed369f16005185025047f297ce9`, `4718163a05b0c0136f751e1a9aaacd70fab17464`, `bdccc61640015703c48205d448a97adf0457afa3`.
-
-## 2026-07-09 - Checkpoint real-data preview alineado con no-reproceso
-
-- Se actualizo `app/docs/CHECKPOINT-OPERATIVO-REALDATA-PREVIEW-TYA-20260709.md`.
-- Objetivo: alinear el checkpoint operativo con la decision no-reversion/no-reproceso para que no vuelva a interpretarse Level 0/1 como trabajo pendiente por repetir.
-- Cambio documental: se agrego seccion no-reproceso/no-reversion, se ajustaron bloqueos actuales y se aclaro que ejecucion local solo aplica para validacion puntual de fuentes que existen unicamente en la computadora de Paula.
-- Decision: Level 0 queda superado para readiness de proyecto/periodos. Level 1 ya fue trabajado previamente y solo debe validarse puntualmente contra fuente original segura, sin reiniciar metodologia.
-- Guardrail: Level 2 solo habilita siguiente gate si proviene de fuente original real/sanitizada, no de fixture ni output derivado de `.tmp`.
-- Impacto Phase A: mantiene avance hacia produccion real controlada sin repetir procesos y sin desbloquear runtime/produccion.
-- Impacto backend reusable: consolida patron no-reversion aplicado a checkpoints operativos.
-- Impacto Claude/prototipo: refuerza copy honesto y evita presentar demo/fixture/preview tecnico como TyA real.
-- Impacto Academia: agregar criterio de no-reversion y diferencia entre fuente original, fixture y output derivado.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
-- Commit: `146396495d02e469947d6c977c0b8078d423451d`.
-
-## 2026-07-09 - Checkpoint no reversion Level 0 / Level 1 Phase A TyA
-
-- Se agrego `app/docs/CHECKPOINT-NO-REVERSION-LEVEL0-LEVEL1-PHASE-A-TYA-20260709.md`.
-- Objetivo: registrar que no se deben revertir ni repetir procesos ya superados de Level 0 / Level 1, y que el plan debe continuar encaminado a Phase A real controlada sin reiniciar metodologia.
-- Decision: Level 0 manifesto/source-safe queda reconocido como superado para readiness de proyecto/periodos. Level 1 ya habia sido trabajado previamente dentro del pipeline y no debe repetirse desde cero salvo validacion puntual de no regresion.
-- Aclaracion: las correcciones recientes no fueron una reversion funcional de Level 0/1; fueron hardening de gates para impedir falsos positivos con fixtures sinteticos u outputs derivados de `.tmp`.
-- Guardrail: no usar `tools/migration/synthetic-fixtures/phase-a/*` ni `.tmp` generado por preflights/recoveries anteriores como evidencia real-data original.
-- Siguiente linea: continuar desde HR source-safe/full-flow y outputs originales seguros, sin volver a pedir HR/reglas/shoppers/certificaciones/liquidaciones ya documentadas salvo que falte una fuente local concreta y segura.
-- Impacto Phase A: continuidad de produccion real controlada, sin repetir Level 0/1 ni avanzar a runtime DEV con evidencia no original.
-- Impacto backend reusable: patron no-reversion de gates y separacion formal entre fixture, output derivado y fuente real sanitizada.
-- Impacto Claude/prototipo: mantener copy honesto; no presentar fixtures, demo ni preview tecnico como TyA real.
-- Impacto Academia: explicar diferencia entre Level 0, Level 1, Level 2, fixtures, outputs derivados y fuente real sanitizada.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
-- Commit: `47121f64c64798f4a8c41c768c0e9cfe478f926d`.
-
-## 2026-07-09 - Fix recovery Level 1 excluye fixtures sinteticos por defecto
-
-- Se modifico `tools/contracts/tya-local-level1-recovery-preflight.mjs`.
-- Motivo: el recovery local encontro archivos bajo `tools/migration/synthetic-fixtures/phase-a/` y los valido como candidatos Level 1/Level 2. Eso sirve para pruebas de contrato, pero no puede contarse como real-data preview de TyA.
-- Cambio aplicado: el recovery ahora excluye fixtures sinteticos por defecto y solo los considera si se ejecuta explicitamente con `--allow-synthetic`, reservado para contract testing, no para evidencia real-data.
-- Impacto Phase A: evita falso avance a DEV runtime preview usando datos sinteticos. El estado correcto queda: Level 0 real/source-safe GO; Level 1/Level 2 reales siguen bloqueados hasta recuperar/generar output HR source-safe local no sintetico.
-- Impacto backend reusable: diferencia formal entre `realdata_only_default` y `allow_synthetic_contract_test`.
-- Impacto Claude/prototipo: el prototipo no debe mostrar datos sinteticos como TyA real; copy debe distinguir fixture/preview/demo vs fuente real/sanitizada.
-- Impacto Academia: agregar explicacion de fixture sintetico vs output sanitizado real, y por que un gate tecnico verde no autoriza produccion si la fuente es sintetica.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
-- Commit: `f25d6d5edb6052e9d6e13d74aa4198fba07fdbab`.
