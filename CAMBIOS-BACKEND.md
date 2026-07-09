@@ -1,5 +1,21 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Phase A human smoke precheck pack TyA
+
+- Se agrego `backend/contracts/phase-a-human-smoke-precheck-pack-v1.json`.
+- Se agrego `app/docs/PHASE-A-HUMAN-SMOKE-PRECHECK-PACK-TYA-20260709.md`.
+- Se agrego `app/docs/CAMBIOS-PHASE-A-HUMAN-SMOKE-PRECHECK-PACK-TYA-20260709.md`.
+- Objetivo: preparar el precheck para smoke humano/consola de RC Phase A controlada, sin pedir ejecucion todavia, sin activar runtime y sin repetir Level 0/1.
+- Rutas criticas definidas: login/admin shell, navegacion base, dashboard, postulaciones/asignaciones, reservas/visitas, cuestionario shopper, finanzas/liquidaciones/pagos, Academia, Diagnostico/Readiness y Administrabilidad.
+- Criterios GO: rutas criticas abren, sin pantalla blanca, sin errores JS criticos, copy honesto, Academia administrable o pendiente honesto, readiness preview/source-safe/gate-off, pagos como control administrativo, Cinépolis no hardcode global.
+- Criterios NO GO: pantalla blanca, errores JS criticos, rutas criticas bloqueadas, guard rompiendo render, copy de envio/sync/import/pago real sin gate, datos sensibles visibles, activacion de proveedores reales sin GO, junio tratado como visitas pendientes o Cinépolis como producto global.
+- Impacto Phase A: deja listo el filtro humano minimo antes de decidir RC controlada, enfocado en operacion real TyA y no en infraestructura abstracta.
+- Impacto backend reusable: patron reusable de smoke humano, GO/NO GO estructurado, copy honesto, gates apagados y verificacion multi-tenant.
+- Impacto Claude/prototipo: rutas smokeables, estados visibles honestos, Academia administrable, readiness no productivo y no hardcode Cinépolis.
+- Impacto Academia: manual/checklist de smoke humano, GO/NO GO, errores de consola, preview/gate/runtime/import/produccion, revision humana y liquidaciones/pagos como control.
+- Estado seguro: documentacion/contrato solamente. Sin cambios en `/app/modules`, sin cambios en `/app/core`, smoke no ejecutado, no se pidio PowerShell/computador, sin runtime, sin builder, sin imports, sin writes, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin deploy, sin produccion, sin pagos reales y sin datos sensibles.
+- Commits: `4c7f3b95960ecd9798e237f29ea5dd8ff888586b`, `0c785345e20464cf78b7f6935aa790acf073ddce`, `05093e714ff2e14f8d4ff9ccd6df8ab625aa59b8`.
+
 ## 2026-07-09 - Paquete acumulado Claude/Pendientes/Academia Phase A TyA
 
 - Se agrego `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
