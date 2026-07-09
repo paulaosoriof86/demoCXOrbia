@@ -1,5 +1,23 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Local builder execution control Phase A TyA
+
+- Se agrego `backend/contracts/phase-a-local-builder-execution-control-v1.json`.
+- Se agrego `tools/contracts/tya-phase-a-local-builder-execution-control-validate.mjs`.
+- Se agrego `app/docs/PHASE-A-LOCAL-BUILDER-EXECUTION-CONTROL-TYA-20260709.md`.
+- Se agrego `app/docs/CAMBIOS-PHASE-A-LOCAL-BUILDER-EXECUTION-CONTROL-TYA-20260709.md`.
+- Objetivo: definir el control de ejecucion local futura del builder source-safe Phase A para que, cuando se necesite computador, exista un solo flujo seguro y sin reprocesos.
+- Flujo futuro: un solo bloque/comando debe confirmar repo/rama, validar contratos, ejecutar builder solo con inputs source-safe, validar readiness pack con `--input`, escribir reportes solo bajo `.tmp` e imprimir verdict.
+- Inputs locales: HR source-safe/full-flow report, export TyA original sanitizado si aplica y project config source-safe.
+- Outputs locales: `.tmp/source-safe/tya-phase-a-domains.source-safe.local.json` y reportes `.tmp/tya-phase-a-realdata-domain-readiness-pack/*`, no commiteados.
+- Guardrails: no pedir datos privados en chat, no commitear `.tmp`, no raw HR, no datos sensibles, no fixture como real, no `.tmp` como original, no base vieja, no runtime, no writes, no imports, no deploy, no Make/Gemini, no pagos y no reproceso Level 0/1.
+- Impacto Phase A: prepara una corrida local segura para evaluar fuente real/sanitizada TyA sin pedir datos privados por chat, sin subir output al repo y sin activar runtime/imports/writes.
+- Impacto backend reusable: patron reusable para ejecucion local controlada de builders source-safe por tenant/proyecto.
+- Impacto Claude/prototipo: Claude debe mostrar estados honestos si el flujo local aun no se ejecuto o si el dry-run no paso. No debe representar datos como cargados.
+- Impacto Academia: explicar flujo local source-safe, no compartir datos privados, `.tmp` no commiteado, dry-run vs import/runtime/produccion.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, no se pidio comando a Paula, builder no ejecutado, output local no commiteado, adapter no habilitado, sin runtime, sin import de dominios, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
+- Commits: `79d95c6d850dc0e48f8bcba6f6ac6d47ef62643e`, `63509895c99045739ed1f7c1328040a0597bdbec`, `db0cd24495be3b5bc01104a3e23e7a1874b2a79f`, `a9661875e8c09cf2ba6f8870cbb6ab9a6af45eb8`.
+
 ## 2026-07-09 - Source-safe input builder contract Phase A TyA
 
 - Se agrego `backend/contracts/phase-a-source-safe-input-builder-contract-v1.json`.
@@ -52,23 +70,3 @@
 - Impacto Academia: explicar dominios, stable keys, sourceRef opaca, datos sensibles prohibidos, junio como control de pago y certificaciones preservadas.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, adapter no habilitado, sin runtime, sin import de dominios, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
 - Commits: `67c4f827e5cce4e54c1c693be69e7e15f0e04e68`, `526020f228b6ee7de21cc3843b3f9d49c1da8b85`, `aabe5e2a1d23a20eac3b9830f619d3060c3d89fc`, `f4604571e61d49386d4f8d5367e8b10f8b6b847d`.
-
-## 2026-07-09 - CX.data DEV adapter contract Phase A TyA
-
-- Se agrego `backend/contracts/phase-a-cxdata-dev-adapter-contract-v1.json`.
-- Se agrego `tools/contracts/tya-phase-a-cxdata-dev-adapter-contract-validate.mjs`.
-- Se agrego `app/docs/PHASE-A-CXDATA-DEV-ADAPTER-CONTRACT-TYA-20260709.md`.
-- Se agrego `app/docs/CLAUDE-PROTOTIPO-ADDENDUM-CXDATA-DEV-ADAPTER-TYA-20260709.md`.
-- Se agrego `app/docs/CAMBIOS-PHASE-A-CXDATA-DEV-ADAPTER-CONTRACT-TYA-20260709.md`.
-- Objetivo: definir el contrato del futuro adapter DEV de `CX.data` para Phase A TyA/Cinepolis con foco directo en datos reales/sanitizados de TyA, sin activar runtime ni writes.
-- Fuente real/sanitizada requerida: HR source-safe/full-flow u output sanitizado original TyA. Bloquea demo como fuente final, fixture sintetico como evidencia real y `.tmp` derivado como fuente original.
-- Dominios Phase A cubiertos: configuracion tenant/proyecto, HR status, visitas, shoppers, postulaciones/asignaciones, certificaciones, liquidaciones/pagos junio, cuestionarios, colas operativas y auditoria.
-- Guardrail interfaz: `CX.data` debe conservar exactamente la interfaz actual, con un solo switch futuro, fallback localStorage, adapter apagado por defecto y writes bloqueados hasta gate.
-- Trabajo previo recuperado: lectura HR, mapeo columnas, shoppers historicos, certificaciones preservadas, junio pagos/liquidaciones, sync HR/plataforma, colas y no-reversion Level 0/1.
-- Descartado: arquitectura/base vieja, parches UI desde backend, demo/fixture/`.tmp` como fuente real y tratar junio como visitas pendientes de ejecutar.
-- Impacto Phase A: alinea el futuro switch de `CX.data` con operacion real/sanitizada TyA y evita desviarse hacia infraestructura abstracta.
-- Impacto backend reusable: patron de adapter DEV por tenant/proyecto con fuente source-safe, interfaz estable, fallback y writes bloqueados.
-- Impacto Claude/prototipo: se agrego addendum para estados honestos: adapter apagado, source-safe pendiente, no write, no sync real, no pago real y no demo/fixture como dato real.
-- Impacto Academia: explicar `CX.data`, adapter, fallback localStorage, lectura source-safe, writes bloqueados, gates, datos reales/sanitizados vs demo y preservacion de certificaciones.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, adapter no habilitado, sin runtime, sin switch ejecutado, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
-- Commits: `d4518d90d45a87bc7bfee4e3469784729344d718`, `7bfa6dd34f9eea1c7225de22e58bffbb0d5fd1c3`, `d690a9a44bfc6a046ae9b7683d623a5f95f05480`, `d39a5647549aaadf703c71f5212fe185ffeb8428`, `14382dc2d880aa1cd1b591a9602b034375bb020a`.
