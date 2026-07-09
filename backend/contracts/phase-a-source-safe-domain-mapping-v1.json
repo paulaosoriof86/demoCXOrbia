@@ -1,0 +1,181 @@
+{
+  "contractId": "phase-a-source-safe-domain-mapping-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "mode": "source_safe_domain_mapping_contract_only_no_import",
+  "createdAt": "2026-07-09",
+  "purpose": "Definir el mapeo minimo source-safe de dominios reales/sanitizados TyA antes de que el adapter CX.data DEV pueda leer datos Phase A, sin importar ni escribir.",
+  "sourcePrinciples": {
+    "hrOperationalSource": true,
+    "originalSanitizedSourceRequired": true,
+    "sourceRefsOpaque": true,
+    "noRawHrRowsInRepo": true,
+    "noRawSensitiveFields": true,
+    "noSyntheticFixtureAsReal": true,
+    "noDerivedTmpAsOriginal": true,
+    "noOldDatabaseConnection": true,
+    "noLevel0Level1Reprocess": true,
+    "projectConfigDrivesBehavior": true,
+    "manualReviewForConflicts": true
+  },
+  "stableKeysRequiredEverywhere": [
+    "tenantId",
+    "projectId"
+  ],
+  "domainMappings": [
+    {
+      "domain": "tenant_project_config",
+      "required": true,
+      "source": "project_config_contract_or_source_safe_manifest",
+      "sourceAllowed": ["source_safe_manifest", "project_config_contract", "manual_config_reviewed"],
+      "minimumFields": ["tenantId", "projectId", "projectName", "countries", "currencies", "periods", "hrOriginRef", "questionnaireOrigin", "paymentRulesRef", "certificationRulesRef"],
+      "stableKeys": ["tenantId", "projectId"],
+      "forbiddenFields": ["rawHrUrl", "makeWebhookUrl", "geminiApiKey", "serviceAccountJson"],
+      "phaseARule": "Cinepolis es proyecto configurable dentro de TyA, no logica global hardcoded."
+    },
+    {
+      "domain": "hr_source_status",
+      "required": true,
+      "source": "HR source-safe/full-flow report",
+      "sourceAllowed": ["hr_source_private_full_flow_report", "source_safe_preview_report"],
+      "minimumFields": ["tenantId", "projectId", "sourceRef", "readiness", "lastReadAt", "tabsRead", "rowsReadSafeCount", "warnings", "canImport"],
+      "stableKeys": ["tenantId", "projectId", "sourceRef"],
+      "forbiddenFields": ["rawUrl", "rawHrRow", "rawWorkbook", "rawCsv", "serviceAccountJson"],
+      "phaseARule": "HR es fuente operacional; canImport debe permanecer false hasta gates finales."
+    },
+    {
+      "domain": "visits",
+      "required": true,
+      "source": "original HR source-safe Level 1/Level 2 or validated dry-run",
+      "sourceAllowed": ["original_source_safe_level1", "original_source_safe_level2", "validated_hr_dry_run"],
+      "minimumFields": ["tenantId", "projectId", "visitId", "hrRowId", "country", "periodId", "quincena", "franja", "status", "availableFrom", "shopperId", "assignmentSource", "assignmentSyncStatus", "lastSyncedAt"],
+      "stableKeys": ["tenantId", "projectId", "visitId", "hrRowId"],
+      "forbiddenFields": ["rawShopperName", "rawPhone", "rawEmail", "rawHrRow", "rawNotes"],
+      "phaseARule": "Visitas hasta junio se consideran ejecutadas cuando HR lo indique; no tratarlas como pendientes de ejecutar si lo pendiente es pago."
+    },
+    {
+      "domain": "shoppers",
+      "required": true,
+      "source": "historical HR source-safe shopper mapping",
+      "sourceAllowed": ["source_safe_shopper_mapping", "historical_import_preview_sanitized"],
+      "minimumFields": ["tenantId", "shopperId", "projectIds", "status", "countries", "certificationStatus", "paymentControlStatus", "sourceRef", "reviewStatus"],
+      "stableKeys": ["tenantId", "shopperId"],
+      "forbiddenFields": ["dpi", "rawDpi", "bankAccount", "rawBankAccount", "phone", "rawPhone", "email", "rawEmail", "rawName"],
+      "phaseARule": "Shoppers historicos completos deben mapearse source-safe sin exponer DPI/banco/email/telefono crudos."
+    },
+    {
+      "domain": "applications_assignments",
+      "required": true,
+      "source": "platform preview plus HR assignment source-safe sync contract",
+      "sourceAllowed": ["platform_preview", "hr_assignment_source_safe", "sync_contract_preview"],
+      "minimumFields": ["tenantId", "projectId", "applicationId", "visitId", "hrRowId", "shopperId", "applicationStatus", "assignmentSource", "assignmentSyncStatus", "syncConflict", "reviewStatus"],
+      "stableKeys": ["tenantId", "projectId", "visitId", "hrRowId", "shopperId"],
+      "forbiddenFields": ["rawShopperName", "rawPhone", "rawEmail", "rawWhatsapp"],
+      "phaseARule": "Asignacion HR->plataforma o plataforma->HR debe sacar visita de disponibles y no duplicar; conflictos a revision."
+    },
+    {
+      "domain": "certifications",
+      "required": true,
+      "source": "certification preservation contract plus historical source-safe evidence refs",
+      "sourceAllowed": ["certification_preservation_contract", "source_safe_certification_history"],
+      "minimumFields": ["tenantId", "projectId", "shopperId", "certificationId", "status", "preservedAlreadyPresented", "reviewRequired", "sourceRef", "lastKnownResult"],
+      "stableKeys": ["tenantId", "projectId", "shopperId", "certificationId"],
+      "forbiddenFields": ["rawEvidence", "base64Evidence", "rawAnswerText", "rawDpi", "rawEmail"],
+      "phaseARule": "Certificaciones ya presentadas se conservan; no pedir de nuevo sin revision."
+    },
+    {
+      "domain": "liquidations_payments_june",
+      "required": true,
+      "source": "HR submitido/control plus finance source-safe mapping",
+      "sourceAllowed": ["source_safe_liquidation_preview", "hr_submitted_control", "payment_control_contract"],
+      "minimumFields": ["tenantId", "projectId", "liquidationId", "visitId", "hrRowId", "shopperId", "periodId", "country", "currency", "honorarium", "boleto", "combo", "paymentStatus", "paymentControlOnly", "sourceRef"],
+      "stableKeys": ["tenantId", "projectId", "visitId", "hrRowId", "shopperId", "liquidationId"],
+      "forbiddenFields": ["bankAccount", "rawBankAccount", "paymentProviderToken", "transactionToken", "rawReceipt"],
+      "phaseARule": "Junio pendiente es liquidacion/pago; CXOrbia controla estado pero no ejecuta pagos reales."
+    },
+    {
+      "domain": "questionnaire_routes",
+      "required": true,
+      "source": "project/visit configuration and HR link refs",
+      "sourceAllowed": ["project_config", "visit_config", "hr_visit_link_ref"],
+      "minimumFields": ["tenantId", "projectId", "visitId", "routeMode", "projectQuestionnaireOrigin", "generalLinkRef", "visitLinkRef", "tyaOnlineConfigured", "routeStatus"],
+      "stableKeys": ["tenantId", "projectId", "visitId"],
+      "forbiddenFields": ["rawUrlWithToken", "privateCredentials", "rawExternalSession"],
+      "phaseARule": "Cuestionario configurable por proyecto/visita: CXOrbia, TyAOnline, externa, link general o link HR por visita."
+    },
+    {
+      "domain": "operational_queues",
+      "required": true,
+      "source": "phase-a-operational-queues-contract-v1",
+      "sourceAllowed": ["operational_queue_contract", "source_safe_queue_report"],
+      "minimumFields": ["tenantId", "projectId", "queueItemId", "queueType", "severity", "status", "entityType", "entityId", "stableKeys", "reasonCode", "sourceRef", "gateStatus"],
+      "stableKeys": ["tenantId", "projectId", "queueItemId"],
+      "forbiddenFields": ["rawDpi", "rawBankAccount", "rawPhone", "rawEmail", "rawHrRow"],
+      "phaseARule": "Colas priorizan conflictos, sync, certificaciones, pagos junio, cuestionarios y correcciones sin auto-resolver."
+    },
+    {
+      "domain": "audit_preview",
+      "required": true,
+      "source": "phase-a-admin-actions-audit-contract-v1",
+      "sourceAllowed": ["audit_contract", "audit_preview_report"],
+      "minimumFields": ["tenantId", "projectId", "auditId", "actorRole", "action", "entityType", "entityId", "beforeState", "afterState", "reasonCode", "sourceRef", "gateStatus"],
+      "stableKeys": ["tenantId", "projectId", "auditId"],
+      "forbiddenFields": ["rawDpi", "rawBankAccount", "rawPhone", "rawEmail", "rawEvidence", "makeWebhookUrl", "geminiApiKey"],
+      "phaseARule": "Auditoria preview requiere before/after y razon; no guarda datos sensibles ni ejecuta write real."
+    }
+  ],
+  "crossDomainRules": [
+    {
+      "ruleId": "visit_assignment_stable_key_consistency",
+      "description": "visits, applications_assignments, queues and liquidations must share tenantId/projectId/visitId/hrRowId consistently."
+    },
+    {
+      "ruleId": "shopper_certification_payment_consistency",
+      "description": "shoppers, certifications and liquidations must use the same shopperId without exposing sensitive identity fields."
+    },
+    {
+      "ruleId": "june_payment_not_visit_execution",
+      "description": "June pending items are liquidation/payment control when visits are already executed/submitted."
+    },
+    {
+      "ruleId": "certification_preservation_before_re_request",
+      "description": "Preserved certifications must be reviewed before any new request is generated."
+    },
+    {
+      "ruleId": "questionnaire_route_required_or_blocked_honestly",
+      "description": "Each visit needs a configured questionnaire route or an honest blocked state."
+    }
+  ],
+  "hardStops": [
+    "missingRequiredDomain",
+    "missingStableKey",
+    "rawSensitiveFieldPresent",
+    "rawHrRowPresent",
+    "rawUrlOrSecretPresent",
+    "syntheticFixtureMarkedReal",
+    "derivedTmpMarkedOriginal",
+    "oldDatabaseSourceRef",
+    "visualNameOnlyDeduplication",
+    "juneVisitMarkedPendingExecutionWhenPaymentOnly",
+    "certificationReRequestedWithoutReview",
+    "paymentMarkedExecutedByCXOrbia",
+    "questionnaireRouteMissingWithoutBlockedStatus"
+  ],
+  "safeStateExpectedNow": {
+    "adapterEnabled": false,
+    "runtimeConnected": false,
+    "domainImportExecuted": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "importsExecuted": false,
+    "deploy": false,
+    "production": false,
+    "makeWebhookLive": false,
+    "geminiLive": false,
+    "paymentProviderLive": false,
+    "realPayments": false,
+    "rawSensitiveDataInRepo": false,
+    "uiModulesModified": false,
+    "appCoreModified": false
+  }
+}
