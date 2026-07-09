@@ -1,0 +1,123 @@
+{
+  "contractId": "cxdata-runtime-switch-gate-phase-a-v1",
+  "status": "draft_gate_not_authorized",
+  "generatedAt": "2026-07-09",
+  "purpose": "Define the exact GO/NO-GO conditions to switch CX.data from demo/mock data to TyA/Cinepolis real-data preview or staging through one controlled connection point.",
+  "safeState": {
+    "runtimeSwitchAuthorized": false,
+    "frontendModified": false,
+    "modulesModified": false,
+    "firestoreWrites": false,
+    "importsExecuted": false,
+    "hrWrites": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsRawPii": false
+  },
+  "singleConnectionPointPolicy": {
+    "allowedTargets": [
+      "app/core/data.js",
+      "one preloaded adapter before modules if explicitly approved"
+    ],
+    "forbiddenTargets": [
+      "app/modules/** direct patches",
+      "module-specific data hacks",
+      "hardcoded Cinepolis data inside UI modules",
+      "provider calls from UI modules"
+    ],
+    "mustPreserveCxDataInterface": true,
+    "mustHaveRollback": true,
+    "mustHaveSmokeBeforeProduction": true
+  },
+  "runtimeSwitchModes": {
+    "demo_only": {
+      "status": "current_observed_state",
+      "productionAllowed": false,
+      "description": "Current app/core/data.js declares Mock data layer and generic demo projects."
+    },
+    "manifest_preview_only": {
+      "status": "allowed_for_docs_and_reports",
+      "productionAllowed": false,
+      "description": "Manifest-only preview can show source-safe project/period readiness, but cannot claim visits/shoppers are live."
+    },
+    "sanitized_preview_readonly": {
+      "status": "eligible_after_input_and_gate",
+      "productionAllowed": false,
+      "description": "In-memory or DEV preview from sanitized visits/shoppers/certifications/liquidations. No writes."
+    },
+    "dev_runtime_preview": {
+      "status": "blocked_until_paula_go_and_rollback",
+      "productionAllowed": false,
+      "description": "Runtime can be switched in DEV only after source-safe input, rollback, smoke plan and explicit GO."
+    },
+    "production_runtime": {
+      "status": "blocked_until_verified_dev_smoke_and_cutover_go",
+      "productionAllowed": true,
+      "description": "Final cutover only after DEV verified, smoke GO, rollback and no demo final source."
+    }
+  },
+  "requiredBeforeDevRuntimePreview": [
+    "source-safe HR manifest generated",
+    "sanitized visits preview available or manifest-only UI explicitly accepted",
+    "Cinepolis represented as normal configurable project",
+    "demo data not used as final source",
+    "DPI/raw sensitive policy enforced",
+    "questionnaire_marks duplicate excluded",
+    "JUNIO 26 HN marked review_required",
+    "shopper canonical mismatch not silently promoted",
+    "certifications already presented preserved or explicitly mapped",
+    "liquidations June kept as payment control, not pending visits",
+    "rollback plan documented",
+    "smoke checklist documented",
+    "Paula explicit GO"
+  ],
+  "requiredBeforeProductionRuntime": [
+    "DEV or preview URL verified",
+    "runtime shows TyA/Cinepolis real-data preview or staging, not generic demo final source",
+    "human smoke GO",
+    "critical console errors absent",
+    "no provider calls without gates",
+    "no Firestore writes unless explicitly authorized",
+    "no HR writeback unless Make/outbox gate is active",
+    "no payment paid state without audit/evidence",
+    "rollback tested or executable",
+    "Paula production GO"
+  ],
+  "noGoConditions": [
+    "app/core/data.js still demo as final production source",
+    "Cinepolis hardcoded in UI modules",
+    "raw PII in repo or logs",
+    "HR URL or fileId committed",
+    "Shopper DPI imported without policy",
+    "questionnaire_marks imported as independent source while duplicate",
+    "JUNIO 26 HN imported automatically despite review_required",
+    "payments marked paid without audit/evidence",
+    "certified shoppers asked to repeat preserved certification without rule",
+    "runtime switch touches multiple UI modules",
+    "no rollback",
+    "no smoke"
+  ],
+  "rollbackRequirements": {
+    "minimum": [
+      "commitBeforeSwitch",
+      "fileListTouched",
+      "restorePath",
+      "smokeFailureCriteria",
+      "ownerDecisionLog"
+    ],
+    "mustRestoreDemoIfNoGo": true,
+    "mustNotDeleteStagingEvidence": true
+  },
+  "claudeRequirements": [
+    "If UI changes are needed, document for Claude before editing modules.",
+    "Claude package must stay small: 3-5 critical tasks.",
+    "Claude must keep Cinepolis configurable and not hardcoded.",
+    "Claude must keep honest states: demo, preview, staging, imported, production."
+  ],
+  "academiaRequirements": [
+    "Manuals must explain HR source configuration.",
+    "Academia must explain preview vs staging vs production.",
+    "Certification preservation must be reflected in admin training.",
+    "Review-required conflicts must have human review guidance."
+  ]
+}
