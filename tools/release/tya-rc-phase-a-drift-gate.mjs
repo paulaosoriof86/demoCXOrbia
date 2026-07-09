@@ -44,6 +44,7 @@ const allowedExact = [
   'tools/migration/tya-assignment-sync-conflict-preview.mjs',
   'tools/migration/tya-assignment-sync-outbox-contract.mjs',
   'tools/migration/tya-phase-a-rc-smoke-gate.mjs',
+  'tools/release/tya-auth-rbac-contract-validate.mjs',
   'tools/release/tya-cxdata-firestore-contract-validate.mjs',
   'tools/release/tya-hosting-deploy-readiness.mjs',
   'tools/release/tya-phase-a-today-finish-readiness.mjs'
