@@ -1,0 +1,165 @@
+{
+  "contractId": "phase-a-cxdata-dev-adapter-contract-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "mode": "dev_adapter_contract_only_disabled_by_default",
+  "createdAt": "2026-07-09",
+  "purpose": "Definir el contrato del adapter DEV de CX.data para Phase A TyA/Cinepolis con datos reales/sanitizados, manteniendo exactamente la interfaz del prototipo y sin activar runtime ni writes.",
+  "phaseAFocus": {
+    "realDataPriority": true,
+    "sourceOfTruth": "HR source-safe/full-flow or original sanitized TyA export",
+    "doNotUseDemoAsFinalSource": true,
+    "doNotUseSyntheticFixturesAsRealEvidence": true,
+    "doNotUseDerivedTmpOutputsAsOriginalEvidence": true,
+    "doNotRepeatLevel0Level1": true,
+    "juneVisitsExecutedPaymentsOnlyPending": true,
+    "preserveHistoricalShoppers": true,
+    "preserveAlreadyPresentedCertifications": true,
+    "cinepolisProjectConfigurableNotHardcoded": true
+  },
+  "interfaceRules": {
+    "cxDataInterfaceMustRemainExact": true,
+    "singleFutureSwitchPointOnly": true,
+    "localStorageFallbackRequired": true,
+    "adapterDisabledByDefault": true,
+    "noAppModulesRewrite": true,
+    "noAppCoreRewriteExceptFutureDocumentedConnectionPoint": true,
+    "noUiLogicPatchesFromBackend": true,
+    "readShapeCompatibleWithPrototype": true,
+    "writeMethodsReturnBlockedUntilGate": true
+  },
+  "domainsRequiredForPhaseA": [
+    {
+      "domain": "tenant_project_config",
+      "source": "project_config_contract_or_source_safe_manifest",
+      "mustSupport": ["tenantId", "projectId", "country", "currency", "periods", "hrOrigin", "questionnaireOrigin", "paymentRules"],
+      "writeEnabledNow": false
+    },
+    {
+      "domain": "hr_source_status",
+      "source": "tools/hr-source/tya-hr-source-private-full-flow.mjs outputs or source-safe report",
+      "mustSupport": ["sourceRef", "readiness", "lastReadAt", "tabsRead", "warnings", "noRawHrRows"],
+      "writeEnabledNow": false
+    },
+    {
+      "domain": "visits",
+      "source": "original HR source-safe Level 1/Level 2 or validated dry-run",
+      "mustSupport": ["visitId", "hrRowId", "country", "periodId", "quincena", "status", "availableFrom", "shopperId", "assignmentSource", "assignmentSyncStatus"],
+      "writeEnabledNow": false
+    },
+    {
+      "domain": "shoppers",
+      "source": "historical HR source-safe shopper mapping",
+      "mustSupport": ["shopperId", "tenantId", "projectIds", "status", "certificationStatus", "paymentControlStatus", "noSensitiveIdentityFields"],
+      "writeEnabledNow": false
+    },
+    {
+      "domain": "applications_assignments",
+      "source": "platform preview + HR assignment source-safe sync contract",
+      "mustSupport": ["applicationId", "visitId", "hrRowId", "shopperId", "assignmentSource", "assignmentSyncStatus", "syncConflict"],
+      "writeEnabledNow": false
+    },
+    {
+      "domain": "certifications",
+      "source": "preservation contract + historical source-safe evidence refs",
+      "mustSupport": ["certificationId", "shopperId", "projectId", "status", "preservedAlreadyPresented", "reviewRequired", "sourceRef"],
+      "writeEnabledNow": false
+    },
+    {
+      "domain": "liquidations_payments_june",
+      "source": "HR submitido/control + movement/payment source-safe mapping",
+      "mustSupport": ["liquidationId", "visitId", "hrRowId", "shopperId", "honorarium", "boleto", "combo", "currency", "paymentStatus", "paymentControlOnly"],
+      "writeEnabledNow": false
+    },
+    {
+      "domain": "questionnaire_routes",
+      "source": "project/visit configuration and HR link if available",
+      "mustSupport": ["routeMode", "projectQuestionnaireOrigin", "generalLinkRef", "visitLinkRef", "tyaOnlineConfigured"],
+      "writeEnabledNow": false
+    },
+    {
+      "domain": "operational_queues",
+      "source": "phase-a-operational-queues-contract-v1",
+      "mustSupport": ["queueItemId", "queueType", "severity", "status", "stableKeys", "sourceRef", "gateStatus"],
+      "writeEnabledNow": false
+    },
+    {
+      "domain": "audit_preview",
+      "source": "phase-a-admin-actions-audit-contract-v1",
+      "mustSupport": ["auditId", "action", "entityType", "beforeState", "afterState", "reasonCode", "sourceRef", "gateStatus"],
+      "writeEnabledNow": false
+    }
+  ],
+  "methodCompatibilityExpectations": {
+    "reads": {
+      "list": "must preserve existing prototype list semantics",
+      "get": "must preserve existing object lookup semantics",
+      "query": "must return arrays or empty arrays, never throw for missing optional source",
+      "summary": "must return source-safe counts and status flags"
+    },
+    "writes": {
+      "create": "blocked_until_runtime_write_gate",
+      "update": "blocked_until_runtime_write_gate",
+      "delete": "blocked_no_hard_delete",
+      "sync": "blocked_until_make_hr_gate",
+      "payment": "blocked_never_executes_real_payment"
+    }
+  },
+  "blockedWriteResponseShape": {
+    "ok": false,
+    "status": "blocked_by_gate",
+    "runtimeConnected": false,
+    "writeExecuted": false,
+    "messageKey": "ACTION_PREPARED_PENDING_BACKEND_GATE",
+    "auditPreviewRequired": true
+  },
+  "realDataGateRequirementsBeforeAdapterCanRead": [
+    "originalHrSourceSafeOutputOrDryRunPresent",
+    "notSyntheticFixture",
+    "notDerivedTmpOutput",
+    "noRawSensitiveFields",
+    "tenantProjectConfigPresent",
+    "cinepolisConfiguredAsProject",
+    "periodsCountriesCurrenciesPresent",
+    "visitsStableKeysPresent",
+    "historicalShoppersMappedSourceSafe",
+    "certificationsPreservedSourceSafe",
+    "juneLiquidationPaymentControlMapped",
+    "questionnaireRoutesConfiguredOrBlockedHonestly"
+  ],
+  "hardStops": [
+    "cxDataInterfaceChanged",
+    "multipleSwitchPoints",
+    "adapterEnabledByDefault",
+    "appModulesModifiedByAdapter",
+    "appCoreModifiedOutsideDocumentedConnectionPoint",
+    "demoDataUsedAsProductionSource",
+    "syntheticFixtureUsedAsRealData",
+    "derivedTmpUsedAsOriginalSource",
+    "rawSensitiveDataExposed",
+    "firestoreWritesEnabled",
+    "hrWritesEnabled",
+    "makeGeminiLiveEnabled",
+    "realPaymentAttempt",
+    "oldDatabaseConnectionAttempt",
+    "certificationReRequestedWithoutReview",
+    "juneVisitsTreatedAsPendingVisits"
+  ],
+  "safeStateExpectedNow": {
+    "adapterEnabled": false,
+    "runtimeConnected": false,
+    "switchExecuted": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "importsExecuted": false,
+    "deploy": false,
+    "production": false,
+    "makeWebhookLive": false,
+    "geminiLive": false,
+    "paymentProviderLive": false,
+    "realPayments": false,
+    "rawSensitiveDataInRepo": false,
+    "uiModulesModified": false,
+    "appCoreModified": false
+  }
+}
