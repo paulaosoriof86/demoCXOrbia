@@ -1,0 +1,83 @@
+{
+  "contractId": "phase-a-dev-conditions-v1",
+  "project": "CXOrbia TyA",
+  "date": "2026-07-09",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pr": 7,
+  "status": "documented_only",
+  "purpose": "Conditions required before a future DEV connection step for Phase A TyA, starting with Cinépolis as a configurable project.",
+  "scope": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "phase": "Phase A",
+    "mode": "future_DEV_only_after_explicit_GO"
+  },
+  "currentSafeState": {
+    "devConnectionActive": false,
+    "deploy": false,
+    "production": false,
+    "imports": false,
+    "providerWrites": false,
+    "hrWrites": false,
+    "makeLive": false,
+    "geminiLive": false,
+    "payments": false,
+    "sensitiveDataInRepo": false
+  },
+  "requiredBeforeFutureDEV": [
+    "human_smoke_decision_ready",
+    "explicit_paula_go_for_dev_connection",
+    "new_clean_database_confirmed",
+    "secrets_out_of_repo",
+    "single_cx_data_switch_point_documented",
+    "no_backend_rewrite_of_app_modules_or_core",
+    "tya_source_safe_input_available_or_pending",
+    "cinepolis_project_config_not_global_logic",
+    "hr_source_contract_respected",
+    "june_liquidaciones_pagos_mode_confirmed",
+    "certifications_preservation_rule_documented",
+    "make_gemini_keep_gate_off",
+    "rollback_plan_documented",
+    "audit_plan_documented",
+    "claude_impact_documented",
+    "academia_impact_documented"
+  ],
+  "notAuthorizedHere": [
+    "merge_final",
+    "deploy",
+    "production",
+    "import_run",
+    "bulk_write",
+    "hr_write",
+    "provider_live",
+    "payment_run",
+    "copy_old_database",
+    "raw_sensitive_data_commit",
+    "rewrite_app_modules_or_core"
+  ],
+  "futureDecisionShape": {
+    "decision": "AUTHORIZE_DEV | HOLD | BLOCKED",
+    "authorizedBy": "Paula explicit GO required",
+    "environment": "DEV",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "allowedActions": [],
+    "blockedActions": [],
+    "rollbackPlanRef": "string",
+    "auditPlanRef": "string"
+  },
+  "claudeImpact": [
+    "show_dev_connection_as_pending_until_go",
+    "do_not_claim_live_providers",
+    "show_cinepolis_as_project_config",
+    "show_source_safe_or_pending_not_imported"
+  ],
+  "academiaImpact": [
+    "dev_vs_production",
+    "clean_database",
+    "cx_data_switch_point",
+    "gates_and_pending_states",
+    "june_liquidaciones_pagos_control"
+  ]
+}
