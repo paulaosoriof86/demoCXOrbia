@@ -1,0 +1,132 @@
+{
+  "contractId": "phase-a-future-single-command-pack-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "mode": "future_command_pack_documentation_only_do_not_execute",
+  "createdAt": "2026-07-09",
+  "purpose": "Dejar preparado un paquete de comando unico futuro para Paula, marcado como NO EJECUTAR TODAVIA, que reduzca pasos manuales cuando se necesite computador para validar source-safe builder/readiness Phase A.",
+  "status": {
+    "readyForFutureUse": true,
+    "executeNow": false,
+    "requiresPaulaComputer": true,
+    "requiresLocalSourceSafeInputs": true,
+    "requiresExplicitAssistantInstructionAtThatMoment": true,
+    "privateDataMustNotBePastedInChat": true
+  },
+  "preconditionsBeforeGivingCommandToPaula": [
+    "conversation_not_lost_or_continuity_prompt_available",
+    "repo_path_confirmed_or_detectable",
+    "branch_docs_tya_v6_v71_audit_confirmed",
+    "source_safe_input_builder_contract_present",
+    "local_builder_execution_control_contract_present",
+    "realdata_domain_readiness_pack_present",
+    "local_source_safe_report_exists_or_need_is_explicit",
+    "no_private_data_requested_in_chat"
+  ],
+  "commandMustValidate": [
+    "git_branch",
+    "required_contract_files",
+    "source_safe_input_builder_contract",
+    "local_builder_execution_control_contract",
+    "realdata_domain_readiness_pack_contract",
+    "source_safe_domain_mapping_contract",
+    "cxdata_dev_adapter_contract",
+    "accumulated_readiness_contract"
+  ],
+  "futurePowerShellTemplateRules": {
+    "singleBlockOnly": true,
+    "noAlternativeRoutes": true,
+    "noManualEditing": true,
+    "noRawDataEcho": true,
+    "noClipboardPrivateData": true,
+    "writesReportsOnlyToTmp": true,
+    "doesNotGitAddTmp": true,
+    "doesNotCommitTmp": true,
+    "doesNotDeploy": true,
+    "doesNotEnableRuntime": true,
+    "doesNotImport": true,
+    "doesNotWriteFirestore": true,
+    "doesNotWriteHr": true,
+    "doesNotCallMakeGemini": true,
+    "doesNotExecutePayments": true
+  },
+  "futureCommandOutline": [
+    "set strict error handling",
+    "resolve repo path",
+    "cd repo path",
+    "confirm git branch docs-tya-v6-v71-audit",
+    "create .tmp output dirs",
+    "run node --check for validators",
+    "run source-safe input builder contract validator",
+    "run local builder execution control validator",
+    "run realdata domain readiness pack validator contract-only",
+    "if local source-safe input exists, run readiness pack with --input",
+    "print clear verdict summary",
+    "print what remains blocked",
+    "never git add .tmp"
+  ],
+  "futureCommandInputs": [
+    {
+      "name": "RepoPath",
+      "requiredWhenExecuting": true,
+      "description": "Ruta local del repo demoCXOrbia/tya worktree."
+    },
+    {
+      "name": "SourceSafeInputPath",
+      "requiredWhenExecuting": false,
+      "description": "Ruta local opcional del JSON source-safe ya construido. Si no existe, el comando valida contratos solamente."
+    }
+  ],
+  "futureCommandExpectedOutputs": [
+    ".tmp/tya-phase-a-source-safe-input-builder-contract/phase-a-source-safe-input-builder-contract-report.json",
+    ".tmp/tya-phase-a-local-builder-execution-control/phase-a-local-builder-execution-control-report.json",
+    ".tmp/tya-phase-a-realdata-domain-readiness-pack/phase-a-realdata-domain-readiness-pack-report.json",
+    ".tmp/tya-phase-a-single-command-summary.txt"
+  ],
+  "blockedUntilExplicitNeed": [
+    "do_not_send_command_now",
+    "do_not_ask_paula_to_run_now",
+    "do_not_request_private_data",
+    "do_not_execute_builder_without_source_safe_inputs",
+    "do_not_use_this_as_runtime_go",
+    "do_not_use_this_as_import_go"
+  ],
+  "hardStops": [
+    "commandSentBeforeNeeded",
+    "privateDataRequestedInChat",
+    "rawHrRequested",
+    "branchMismatch",
+    "repoMismatch",
+    "nodeValidatorsMissing",
+    "tmpOutputCommitted",
+    "runtimeEnabled",
+    "adapterEnabled",
+    "importAttempt",
+    "firestoreWriteAttempt",
+    "hrWriteAttempt",
+    "deployAttempt",
+    "makeGeminiAttempt",
+    "paymentAttempt"
+  ],
+  "safeStateExpectedNow": {
+    "commandSentToPaula": false,
+    "commandExecuted": false,
+    "builderExecuted": false,
+    "localOutputCommitted": false,
+    "adapterEnabled": false,
+    "runtimeConnected": false,
+    "domainImportExecuted": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "importsExecuted": false,
+    "deploy": false,
+    "production": false,
+    "makeWebhookLive": false,
+    "geminiLive": false,
+    "paymentProviderLive": false,
+    "realPayments": false,
+    "rawSensitiveDataInRepo": false,
+    "uiModulesModified": false,
+    "appCoreModified": false
+  }
+}
