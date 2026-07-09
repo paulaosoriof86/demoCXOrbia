@@ -1,5 +1,25 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - CX.data DEV adapter contract Phase A TyA
+
+- Se agrego `backend/contracts/phase-a-cxdata-dev-adapter-contract-v1.json`.
+- Se agrego `tools/contracts/tya-phase-a-cxdata-dev-adapter-contract-validate.mjs`.
+- Se agrego `app/docs/PHASE-A-CXDATA-DEV-ADAPTER-CONTRACT-TYA-20260709.md`.
+- Se agrego `app/docs/CLAUDE-PROTOTIPO-ADDENDUM-CXDATA-DEV-ADAPTER-TYA-20260709.md`.
+- Se agrego `app/docs/CAMBIOS-PHASE-A-CXDATA-DEV-ADAPTER-CONTRACT-TYA-20260709.md`.
+- Objetivo: definir el contrato del futuro adapter DEV de `CX.data` para Phase A TyA/Cinepolis con foco directo en datos reales/sanitizados de TyA, sin activar runtime ni writes.
+- Fuente real/sanitizada requerida: HR source-safe/full-flow u output sanitizado original TyA. Bloquea demo como fuente final, fixture sintetico como evidencia real y `.tmp` derivado como fuente original.
+- Dominios Phase A cubiertos: configuracion tenant/proyecto, HR status, visitas, shoppers, postulaciones/asignaciones, certificaciones, liquidaciones/pagos junio, cuestionarios, colas operativas y auditoria.
+- Guardrail interfaz: `CX.data` debe conservar exactamente la interfaz actual, con un solo switch futuro, fallback localStorage, adapter apagado por defecto y writes bloqueados hasta gate.
+- Trabajo previo recuperado: lectura HR, mapeo columnas, shoppers historicos, certificaciones preservadas, junio pagos/liquidaciones, sync HR/plataforma, colas y no-reversion Level 0/1.
+- Descartado: arquitectura/base vieja, parches UI desde backend, demo/fixture/`.tmp` como fuente real y tratar junio como visitas pendientes de ejecutar.
+- Impacto Phase A: alinea el futuro switch de `CX.data` con operacion real/sanitizada TyA y evita desviarse hacia infraestructura abstracta.
+- Impacto backend reusable: patron de adapter DEV por tenant/proyecto con fuente source-safe, interfaz estable, fallback y writes bloqueados.
+- Impacto Claude/prototipo: se agrego addendum para estados honestos: adapter apagado, source-safe pendiente, no write, no sync real, no pago real y no demo/fixture como dato real.
+- Impacto Academia: explicar `CX.data`, adapter, fallback localStorage, lectura source-safe, writes bloqueados, gates, datos reales/sanitizados vs demo y preservacion de certificaciones.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, adapter no habilitado, sin runtime, sin switch ejecutado, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
+- Commits: `d4518d90d45a87bc7bfee4e3469784729344d718`, `7bfa6dd34f9eea1c7225de22e58bffbb0d5fd1c3`, `d690a9a44bfc6a046ae9b7683d623a5f95f05480`, `d39a5647549aaadf703c71f5212fe185ffeb8428`, `14382dc2d880aa1cd1b591a9602b034375bb020a`.
+
 ## 2026-07-09 - Plan runtime DEV switch Phase A TyA
 
 - Se agrego `backend/contracts/phase-a-runtime-dev-switch-plan-v1.json`.
@@ -51,19 +71,3 @@
 - Impacto Academia: queda documentado que debe explicar colas, severidad, sourceRef opaca, stable keys, revision humana, auditoria, pagos como control y preview vs produccion.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
 - Commits: `4b10637281c1deafbf42135452ee36579ab7d399`, `7ba44cf765aaad7310e7f78dc714ad6915c694e5`, `3afeeb48e14f3fbbbfcf327c29355f743112fdac`, `4ef07ae028cfd0841c5910712dc8b91a54fdc292`, `57c900a5fc7f58cb577ca6bc3ef7f7fb956a36f8`.
-
-## 2026-07-09 - Acciones administrativas auditables Phase A TyA
-
-- Se agrego `backend/contracts/phase-a-admin-actions-audit-contract-v1.json`.
-- Se agrego `tools/contracts/tya-phase-a-admin-actions-audit-validate.mjs`.
-- Se agrego `app/docs/PHASE-A-ADMIN-ACTIONS-AUDIT-TYA-20260709.md`.
-- Objetivo: formalizar acciones administrativas operables desde plataforma con auditoria, gates y alcance tenant/proyecto, sin activar writes reales, runtime, imports, HR writes, Make/Gemini ni pagos reales.
-- Acciones cubiertas: aprobar/rechazar postulacion, reflejar asignaciones plataforma->HR y HR->plataforma, resolver conflictos, solicitar/aprobar reprogramacion, marcar realizada, marcar cuestionario, marcar submitido TyA, preservar certificacion, marcar revision de certificacion, crear liquidacion candidata, mover pago a revision, programar control de pago, confirmar pago externo y anular/corregir estado administrativamente.
-- Auditoria obligatoria: `auditId`, `tenantId`, `projectId`, actor, accion, entidad, before/after, razon, source/sourceRef, idempotencyKey, correlationId, createdAt y gateStatus.
-- Guardrails: `writesAllowedNow=false`, no hard delete, no deduplicacion visual, no datos sensibles en auditoria, no pagos reales, no Make/Gemini live, no runtime switch sin GO de Paula.
-- Impacto Phase A: deja lista la base contractual para que administracion opere casos reales con auditoria cuando se habiliten writes, sin improvisar parches ni tocar UI ahora.
-- Impacto backend reusable: contrato reusable de acciones auditables por tenant/proyecto para futuros clientes CXOrbia.
-- Impacto Claude/prototipo: Claude debe representar estas acciones como operaciones administrables futuras con estados honestos, cola de conflictos, razon requerida y bitacora/auditoria visible; no debe prometer envio, pago, sync o import real mientras el gate este apagado.
-- Impacto Academia: explicar accion administrativa auditable, diferencia entre preparar accion y ejecutar write real, no hard delete, razon obligatoria, pagos como control y datos sensibles fuera de auditoria.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
-- Commits: `b7b6eeb31e48fb551b7b9d6f3ebdab51673f7e5f`, `667af06cd2fea69261cace013596d8ef4e54f543`, `86622886ef685b30c5cfde8de046a925d7584bc6`.
