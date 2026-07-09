@@ -1,5 +1,22 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Gate solicitud GO runtime DEV Phase A TyA
+
+- Se agrego `backend/contracts/phase-a-runtime-dev-go-request-gate-v1.json`.
+- Se agrego `tools/contracts/tya-phase-a-runtime-dev-go-request-gate.mjs`.
+- Se agrego `app/docs/PHASE-A-RUNTIME-DEV-GO-REQUEST-GATE-TYA-20260709.md`.
+- Se agrego `app/docs/CAMBIOS-PHASE-A-RUNTIME-DEV-GO-REQUEST-GATE-TYA-20260709.md`.
+- Objetivo: preparar el gate previo para determinar si corresponde pedir GO explicito de Paula para runtime DEV preview, sin activar runtime ni writes.
+- Decision: un gate verde no equivale a autorizacion. El GO debe ser explicito y exacto; este gate no cambia runtime, no escribe base, no importa, no despliega, no activa Make/Gemini y no ejecuta pagos.
+- Frase requerida: `Autorizo GO runtime DEV preview Phase A TyA`.
+- Hard stops: falta readiness acumulado, falta runtime GO/NO-GO validator, reabrir Level 0/1 sin causa, usar fixture o `.tmp` como evidencia real, datos sensibles, cambio UI/core desde backend, runtime/writes ya activos, falta rollback/smoke o GO ambiguo.
+- Impacto Phase A: deja una separacion clara entre readiness acumulado, solicitud de autorizacion, runtime switch separado y produccion.
+- Impacto backend reusable: patron reusable de request gate por tenant/proyecto.
+- Impacto Claude/prototipo: mostrar como estado de preparacion/autorizacion pendiente, no integracion activa.
+- Impacto Academia: explicar readiness vs GO vs runtime DEV vs runtime switch vs produccion.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
+- Commits: `6b2c36a803586478afbd6dd413b043225ed9f4e7`, `311d364053e01ea9b20b1a0987b691639e8522c2`, `560a214be6ed67dab9d6750f4e17d85868e8269d`, `32e8337cfdc62c7a119c05f53057fd04a9665876`.
+
 ## 2026-07-09 - Colas operativas Phase A y documentacion Claude/Academia
 
 - Se agrego `backend/contracts/phase-a-operational-queues-contract-v1.json`.
@@ -33,37 +50,3 @@
 - Impacto Academia: explicar accion administrativa auditable, diferencia entre preparar accion y ejecutar write real, no hard delete, razon obligatoria, pagos como control y datos sensibles fuera de auditoria.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
 - Commits: `b7b6eeb31e48fb551b7b9d6f3ebdab51673f7e5f`, `667af06cd2fea69261cace013596d8ef4e54f543`, `86622886ef685b30c5cfde8de046a925d7584bc6`.
-
-## 2026-07-09 - State machine operacional Phase A TyA
-
-- Se agrego `backend/contracts/phase-a-operational-state-machine-v1.json`.
-- Se agrego `tools/contracts/tya-phase-a-operational-state-machine-validate.mjs`.
-- Se agrego `app/docs/PHASE-A-OPERATIONAL-STATE-MACHINE-TYA-20260709.md`.
-- Objetivo: formalizar la maquina de estados operacional Phase A para asignaciones, sincronizacion HR/plataforma, certificaciones preservadas, cuestionario configurable y liquidaciones/pagos como control, sin tocar UI ni runtime.
-- Estados cubiertos: disponible, postulacion pendiente/rechazada, asignacion desde plataforma pendiente HR, asignacion desde HR pendiente plataforma, asignacion sincronizada, conflicto en revision, agendada, reprogramacion, realizada, cuestionario completado, submitido TyA, liquidacion candidata, pago en revision, pago programado y pago confirmado externamente.
-- Llaves obligatorias: `tenantId`, `projectId`, `visitId`, `hrRowId`, `shopperId`, `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`.
-- Guardrail: no deduplicar por coincidencia visual/nombre; conflicto siempre va a revision humana; no sobrescribir silenciosamente.
-- Certificaciones: `preserved_already_presented` no debe pedirse nuevamente sin revision.
-- Pagos: junio queda como control de liquidacion/pago, no pago real ejecutado por CXOrbia.
-- Cuestionario: ruta configurable por proyecto/visita con modos `cxorbia`, `tya_online`, `external_platform`, `general_link`, `hr_visit_link`.
-- Impacto Phase A: permite avanzar operacion real controlada con un contrato claro de estados sin repetir Level 0/1.
-- Impacto backend reusable: state machine reusable por tenant/proyecto para futuros clientes CXOrbia.
-- Impacto Claude/prototipo: Claude debe representar estados honestos, conflictos visibles, certificaciones preservadas, pagos como control y Cinépolis como proyecto configurable, no como logica unica.
-- Impacto Academia: explicar flujo de estados, sync HR/plataforma, conflictos, certificaciones preservadas, pagos como control y diferencia entre accion preparada, preview, write real y produccion.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
-- Commits: `47da58c7219ec7aa6f0aa409f42e6aac6e421354`, `77b0a7e1f127947fe9beb15c308c5f51dc742e54`, `f68b082e9cd06c7ae89dc0f3dbe4aba71489c97f`.
-
-## 2026-07-09 - Gate continuidad operacional Phase A TyA
-
-- Se agrego `backend/contracts/phase-a-operational-continuity-gate-v1.json`.
-- Se agrego `tools/contracts/tya-phase-a-operational-continuity-gate.mjs`.
-- Se agrego `app/docs/PHASE-A-OPERATIONAL-CONTINUITY-GATE-TYA-20260709.md`.
-- Objetivo: avanzar en Phase A real controlada con un gate source-safe que consolida no-reversion Level 0/1, HR source-safe/full-flow, sync HR/plataforma, certificaciones preservadas, liquidaciones/pagos de junio, cuestionario configurable, proyecto configurable y bloqueo de runtime/import/deploy.
-- Decision: el gate no ejecuta proveedores, no escribe base, no importa, no despliega y no cambia runtime; solo valida presencia documental/contractual y hard-stops para continuar sin repetir procesos.
-- Guardrail: no permite interpretar fixtures sinteticos ni outputs derivados de `.tmp` como evidencia real TyA. Level 2 solo puede usarse para siguiente gate si proviene de fuente original real/sanitizada.
-- Impacto Phase A: permite continuar bloque largo de produccion real controlada sin volver a pedir datos ya documentados ni reiniciar Level 0/1.
-- Impacto backend reusable: patron de continuidad operacional por tenant/proyecto reusable para futuros clientes CXOrbia.
-- Impacto Claude/prototipo: mantener copy honesto, no mostrar demo/fixture/preview tecnico como real, y preservar configurabilidad multi-proyecto.
-- Impacto Academia: explicar no-reversion, fixture vs fuente original, outputs derivados, HR source-safe, sync con conflictos, certificaciones preservadas y pagos como control.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
-- Commits: `de10aa67a3ad1ed369f16005185025047f297ce9`, `4718163a05b0c0136f751e1a9aaacd70fab17464`, `bdccc61640015703c48205d448a97adf0457afa3`.
