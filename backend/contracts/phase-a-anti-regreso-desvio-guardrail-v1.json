@@ -1,0 +1,62 @@
+{
+  "contractId": "phase-a-anti-regreso-desvio-guardrail-v1",
+  "project": "CXOrbia TyA",
+  "date": "2026-07-09",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pr": 7,
+  "status": "documented_only",
+  "purpose": "Prevent future blocks from reverting, restarting Phase A, or marking completed/documented work as pending from zero.",
+  "mustReviewBeforePlanning": [
+    "master_context_and_addenda",
+    "app/docs/PHASE-A-ACCUMULATED-CONTINUITY-CHECKPOINT-TYA-20260709.md",
+    "app/docs/PHASE-A-PLAN-AUDIT-EFFECTED-PENDING-TYA-20260709.md",
+    "CAMBIOS-BACKEND.md",
+    "RESUMEN-PARA-CLAUDE.md",
+    "current_PR_7_state"
+  ],
+  "activityClassificationRequired": [
+    "done_or_documented",
+    "prepared_not_executed",
+    "pending_authorization",
+    "pending_claude_prototype",
+    "pending_backend_real",
+    "blocked_by_security_gate",
+    "not_phase_a"
+  ],
+  "doNotReopenFromZero": [
+    "cx_data_adapter_contract_or_plan",
+    "source_safe_domain_mapping",
+    "real_data_domain_readiness_pack",
+    "builder_local_execution_control",
+    "future_single_command_pack",
+    "human_smoke_precheck",
+    "go_nogo_decision_pack",
+    "dev_conditions",
+    "rollback_audit_plan",
+    "human_review_conflict_queue",
+    "continuity_checkpoints"
+  ],
+  "antiDeviationRules": [
+    "keep_phase_a_tya_first",
+    "keep_hr_as_operational_source",
+    "keep_cinepolis_as_configurable_project",
+    "keep_june_as_liquidations_payments",
+    "preserve_submitted_certifications",
+    "preserve_historical_shoppers",
+    "resolve_conflicts_by_review_queue_not_visual_name",
+    "do_not_touch_app_modules_or_core_from_backend",
+    "do_not_activate_runtime_import_write_provider_payment_or_deploy_without_go"
+  ],
+  "requiredUserReportShape": [
+    "what_was_done",
+    "what_was_already_done_and_not_reopened",
+    "phase_a_progress_value",
+    "remaining_real_pending_by_lane",
+    "exact_next_block",
+    "safe_state",
+    "tool_blocks_or_failures"
+  ],
+  "defaultNextWhenNoComputer": "phase_a_execution_lanes_route",
+  "defaultNextWhenComputerAvailable": "focused_human_smoke_console_on_pr_7"
+}
