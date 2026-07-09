@@ -1,5 +1,20 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Phase A human review and conflict queue TyA
+
+- Se agrego `backend/contracts/phase-a-human-review-conflict-queue-plan-v1.json`.
+- Se agrego `app/docs/PHASE-A-HUMAN-REVIEW-CONFLICT-QUEUE-TYA-20260709.md`.
+- Se agrego `app/docs/HUMAN-REVIEW-CONFLICT-NOTE-TYA-20260709.md`.
+- Objetivo: preparar el plan documental de cola de revision humana y conflictos para Phase A TyA antes de cualquier DEV, import, escritura o sincronizacion real.
+- Confirmacion de foco: seguimos en Phase A TyA con HR como fuente operacional, informacion real/source-safe, Cinépolis como primer proyecto configurable, junio como liquidaciones/pagos, certificaciones preservadas, shoppers historicos conservados y conflictos a revision humana.
+- Conflictos cubiertos: shopper asignado en HR y ausente en plataforma, identidad ambigua, plataforma vs HR, duplicados, certificaciones ya presentadas, liquidaciones/pagos, cuestionario/origen y configuracion de proyecto.
+- Llaves estables: tenantId, projectId, visitId/hrRowId, shopperId/referencia provisional, assignmentSource, assignmentSyncStatus y lastSyncedAt/sourceSnapshotAt.
+- Impacto backend reusable: patron por tenant/proyecto de reviewQueue, tipos de conflicto, acciones permitidas/bloqueadas, referencias opacas, auditoria y no resolucion silenciosa.
+- Impacto Claude/prototipo: mostrar conflicto visible, revision humana requerida, shopper HR asignado como pendiente de creacion/revision, certificacion preservada y liquidacion/pago como control, no pago real.
+- Impacto Academia: explicar cola de revision, conflictos, llaves estables, asignaciones HR/plataforma, certificaciones preservadas, junio liquidaciones/pagos y no datos privados en logs/manuales.
+- Estado seguro: documentacion/contrato solamente. Sin cambios en `/app/modules`, sin cambios en `/app/core`, sin DEV activo, sin runtime, sin builder, sin imports, sin writes, sin Firestore/Auth/Storage/HR, sin Make/Gemini, sin deploy, sin produccion, sin pagos reales y sin datos sensibles.
+- Commits: `5da0d027669bfb246c66e96d48719932ceb33286`, `a7db9f8ccea68b44e1b4be26dd638208473d069c`, `c4ba8d435f4f0d4d5f550db5db4dae31dfd4b4eb`.
+
 ## 2026-07-09 - Phase A DEV rollback and audit plan TyA
 
 - Se agrego `backend/contracts/phase-a-dev-rollback-audit-plan-v1.json`.
