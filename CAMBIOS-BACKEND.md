@@ -1,5 +1,22 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Future single-command pack Phase A TyA
+
+- Se agrego `backend/contracts/phase-a-future-single-command-pack-v1.json`.
+- Se agrego `tools/contracts/tya-phase-a-future-single-command-pack-validate.mjs`.
+- Se agrego `app/docs/PHASE-A-FUTURE-SINGLE-COMMAND-PACK-TYA-20260709.md`.
+- Se agrego `app/docs/POWERSHELL-NO-EJECUTAR-PHASE-A-BUILDER-READINESS-TYA-20260709.md`.
+- Se agrego `app/docs/CAMBIOS-PHASE-A-FUTURE-SINGLE-COMMAND-PACK-TYA-20260709.md`.
+- Objetivo: dejar preparado el paquete de comando unico futuro para Paula, marcado como NO EJECUTAR TODAVIA, para reducir pasos manuales cuando se necesite computador y fuente local source-safe.
+- Flujo futuro: confirmar repo/rama, validar contratos, crear salidas `.tmp`, validar readiness pack contract-only y, si existe input local source-safe, validarlo con `--input`.
+- Guardrails: no ejecutar ahora, no pedir datos privados en chat, no HR cruda, no fixture como real, no `.tmp` como fuente original, no `git add .tmp`, no commit de reportes locales, no adapter/runtime/import/write/deploy, no Make/Gemini y no pagos.
+- Impacto Phase A: mantiene preparado el flujo local futuro para validar fuente real/sanitizada TyA sin activar runtime/imports/writes ni repetir Level 0/1.
+- Impacto backend reusable: patron reusable de paquete de comando unico futuro para validaciones locales source-safe por tenant/proyecto.
+- Impacto Claude/prototipo: Claude debe mostrar esto, si aplica, como estado tecnico pendiente: `comando local preparado · no ejecutado`.
+- Impacto Academia: explicar por que se prepara un comando unico, por que no se ejecuta hasta necesidad real, por que no se comparten datos privados y por que `.tmp` no se commitea.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, no se envio comando a Paula, comando no ejecutado, builder no ejecutado, output local no commiteado, adapter no habilitado, sin runtime, sin import de dominios, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
+- Commits: `86e554ae4d201f7fa1864d230acb1fefb845b116`, `a32067fc6375c55cee601a2007cfc5b8c1a7b4f3`, `1da72b5ea6ac92e85c98130b113b5a14e5d0063f`, `e1bb012257a7539099d9c0e2d148c5f265c01d1c`, `2b9c85be49031a0345b6b0c7d653f7153566e961`.
+
 ## 2026-07-09 - Local builder execution control Phase A TyA
 
 - Se agrego `backend/contracts/phase-a-local-builder-execution-control-v1.json`.
@@ -53,20 +70,3 @@
 - Impacto Academia: explicar dry-run, dominios, fuente source-safe, GO dry-run vs runtime, datos sensibles prohibidos y diferencia entre fixture y fuente real/sanitizada.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, adapter no habilitado, sin runtime, sin import de dominios, dry-run only, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
 - Commits: `3bb358172365a1ee6db9cbb65dd7ab2db0b8bf95`, `cb96a486f8043381729ecba82f4fd35938883881`, `0a136f7d02813eeda6509080ff0e601acf4409fa`, `7dbd24fee48b54caf3e66d0bd9f34a7a87bd21fb`.
-
-## 2026-07-09 - Source-safe domain mapping Phase A TyA
-
-- Se agrego `backend/contracts/phase-a-source-safe-domain-mapping-v1.json`.
-- Se agrego `tools/contracts/tya-phase-a-source-safe-domain-mapping-validate.mjs`.
-- Se agrego `app/docs/PHASE-A-SOURCE-SAFE-DOMAIN-MAPPING-TYA-20260709.md`.
-- Se agrego `app/docs/CAMBIOS-PHASE-A-SOURCE-SAFE-DOMAIN-MAPPING-TYA-20260709.md`.
-- Objetivo: definir el mapeo minimo source-safe de dominios reales/sanitizados TyA antes de que el adapter `CX.data` DEV pueda leer datos Phase A, sin import ni writes.
-- Dominios cubiertos: configuracion tenant/proyecto, HR source status, visitas, shoppers, postulaciones/asignaciones, certificaciones, liquidaciones/pagos junio, rutas de cuestionario, colas operativas y auditoria preview.
-- Trabajo previo recuperado: HR source-safe/full-flow, reglas de Cinépolis, shoppers historicos, certificaciones ya presentadas, liquidaciones/pagos junio, sync HR/plataforma, colas operativas, auditoria y no-reversion Level 0/1.
-- Guardrails: no datos sensibles, no raw HR rows, no raw URLs/secretos, no fixtures como reales, no `.tmp` derivado como fuente original, no base vieja, no deduplicacion visual, no pagos reales, no repetir certificacion preservada sin revision y no tratar junio como visitas pendientes si lo pendiente es pago.
-- Impacto Phase A: aterriza el adapter `CX.data` a dominios operativos reales/sanitizados TyA antes de cualquier lectura DEV y mantiene foco en produccion real controlada.
-- Impacto backend reusable: patron reusable de mapping source-safe por tenant/proyecto antes de activar adapter/runtime.
-- Impacto Claude/prototipo: Claude debe diseñar pantallas usando dominios y campos seguros, con copy honesto y bloqueos visibles cuando falte fuente/ruta/gate.
-- Impacto Academia: explicar dominios, stable keys, sourceRef opaca, datos sensibles prohibidos, junio como control de pago y certificaciones preservadas.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, adapter no habilitado, sin runtime, sin import de dominios, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
-- Commits: `67c4f827e5cce4e54c1c693be69e7e15f0e04e68`, `526020f228b6ee7de21cc3843b3f9d49c1da8b85`, `aabe5e2a1d23a20eac3b9830f619d3060c3d89fc`, `f4604571e61d49386d4f8d5367e8b10f8b6b847d`.
