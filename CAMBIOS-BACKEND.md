@@ -1,5 +1,20 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Checkpoint no reversion Level 0 / Level 1 Phase A TyA
+
+- Se agrego `app/docs/CHECKPOINT-NO-REVERSION-LEVEL0-LEVEL1-PHASE-A-TYA-20260709.md`.
+- Objetivo: registrar que no se deben revertir ni repetir procesos ya superados de Level 0 / Level 1, y que el plan debe continuar encaminado a Phase A real controlada sin reiniciar metodologia.
+- Decision: Level 0 manifesto/source-safe queda reconocido como superado para readiness de proyecto/periodos. Level 1 ya habia sido trabajado previamente dentro del pipeline y no debe repetirse desde cero salvo validacion puntual de no regresion.
+- Aclaracion: las correcciones recientes no fueron una reversion funcional de Level 0/1; fueron hardening de gates para impedir falsos positivos con fixtures sinteticos u outputs derivados de `.tmp`.
+- Guardrail: no usar `tools/migration/synthetic-fixtures/phase-a/*` ni `.tmp` generado por preflights/recoveries anteriores como evidencia real-data original.
+- Siguiente linea: continuar desde HR source-safe/full-flow y outputs originales seguros, sin volver a pedir HR/reglas/shoppers/certificaciones/liquidaciones ya documentadas salvo que falte una fuente local concreta y segura.
+- Impacto Phase A: continuidad de produccion real controlada, sin repetir Level 0/1 ni avanzar a runtime DEV con evidencia no original.
+- Impacto backend reusable: patron no-reversion de gates y separacion formal entre fixture, output derivado y fuente real sanitizada.
+- Impacto Claude/prototipo: mantener copy honesto; no presentar fixtures, demo ni preview tecnico como TyA real.
+- Impacto Academia: explicar diferencia entre Level 0, Level 1, Level 2, fixtures, outputs derivados y fuente real sanitizada.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
+- Commit: `47121f64c64798f4a8c41c768c0e9cfe478f926d`.
+
 ## 2026-07-09 - Fix recovery Level 1 excluye fixtures sinteticos por defecto
 
 - Se modifico `tools/contracts/tya-local-level1-recovery-preflight.mjs`.
@@ -66,7 +81,6 @@
 
 - Se agrego `tools/contracts/cxorbia-readiness-dashboard-source-safe-contract.mjs`.
 - Se agrego `app/docs/READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md`.
-- Se agrego `app/docs/CAMBIOS-READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md`.
 - Objetivo: preparar un contrato reusable para representar resultados de contratos/runners/readiness como estados honestos de dashboard sin activar runtime real.
 - Decision tecnica: contrato preview-only con `sampleManifest()` y `validateReadinessDashboardSourceSafe()`; valida `mode=preview_only`, source-safe, input sintetico/sanitizado, sourceRefs opacas, gates reales apagados y ausencia de claims prohibidos.
 - Bloquea: production ready, import real, sync real, envio real, pago real, provider activo, deploy realizado, Firestore conectado, HR sincronizada, Make/Gemini/Storage activo y campos sensibles/raw.
