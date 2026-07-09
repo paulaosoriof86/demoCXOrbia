@@ -1,5 +1,20 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Phase A DEV conditions TyA
+
+- Se agrego `backend/contracts/phase-a-dev-conditions-v1.json`.
+- Se agrego `app/docs/PHASE-A-DEV-CONDITIONS-TYA-20260709.md`.
+- Se agrego `app/docs/DEV-CONDITIONS-NOTE-TYA-20260709.md`.
+- Objetivo: preparar condiciones documentales para un paso DEV futuro de Phase A TyA, empezando por Cinépolis como proyecto configurable, sin activar conexion, runtime, imports, writes, proveedores, deploy ni produccion.
+- Confirmacion de foco: seguimos en Phase A TyA, con HR como fuente operacional, informacion real/source-safe para implementacion controlada, junio como liquidaciones/pagos y certificaciones ya presentadas preservadas.
+- Condiciones antes de futuro DEV: decision de smoke aceptable, autorizacion explicita de Paula, base nueva limpia, secrets fuera del repo, punto unico `CX.data`, no reescritura de UI/core desde backend, fuente TyA source-safe, Cinépolis configurado por proyecto, rollback, auditoria, impacto Claude y Academia documentados.
+- Impacto backend reusable: patron por tenant/proyecto para separar smoke, DEV, runtime, import, proveedores y produccion; mantiene gates, rollback, auditoria y estados honestos.
+- Impacto Claude/prototipo: mostrar DEV como pendiente hasta autorizacion; no afirmar Firestore/Auth/Storage/Make/Gemini/HR sync/pagos activos; mantener Cinépolis como proyecto configurable y datos TyA como source-safe o pendiente.
+- Impacto Academia: cubrir DEV vs staging vs produccion, base nueva limpia, `CX.data`, gates, fuente source-safe, preservacion de certificaciones, revision de conflictos, liquidaciones/pagos y no exponer datos privados.
+- Estado seguro: documentacion/contrato solamente. Sin cambios en `/app/modules`, sin cambios en `/app/core`, sin DEV activo, sin runtime, sin builder, sin imports, sin writes, sin Firestore/Auth/Storage/HR, sin Make/Gemini, sin deploy, sin produccion, sin pagos reales y sin datos sensibles.
+- Nota de herramienta: la creacion del changelog detallado fue bloqueada por controles de herramienta; se creo una nota breve segura `DEV-CONDITIONS-NOTE-TYA-20260709.md` y este `CAMBIOS-BACKEND.md` conserva el registro completo.
+- Commits: `3388e27dced620bc73567f9874da7a0d0e032808`, `5eb6db9b7cac703c241666c3dba44a32691c8a2c`, `711ad166211555bcaabaed46a919c778bb1f36e0`.
+
 ## 2026-07-09 - Phase A GO/NO GO decision pack TyA
 
 - Se agrego `backend/contracts/phase-a-go-nogo-decision-pack-v1.json`.
