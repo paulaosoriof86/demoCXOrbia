@@ -1,5 +1,19 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Phase A DEV rollback and audit plan TyA
+
+- Se agrego `backend/contracts/phase-a-dev-rollback-audit-plan-v1.json`.
+- Se agrego `app/docs/PHASE-A-DEV-ROLLBACK-AUDIT-PLAN-TYA-20260709.md`.
+- Se agrego `app/docs/ROLLBACK-AUDIT-NOTE-TYA-20260709.md`.
+- Objetivo: preparar plan documental de rollback y auditoria antes de cualquier paso DEV futuro de Phase A TyA, sin activar DEV, sin ejecutar rollback y sin escribir datos.
+- Confirmacion de foco: seguimos en Phase A TyA, con HR como fuente operacional, informacion real/source-safe, Cinépolis como primer proyecto configurable, junio como liquidaciones/pagos, certificaciones preservadas y conflictos a revision humana.
+- Requisitos antes de futuro DEV: flag unico de desactivacion, retorno a fuente local o estado previo de `CX.data`, gates apagados, dry-run antes de import, lotes detenibles antes de commit, evento de auditoria, cola de revision humana, logs sin datos privados, recuperacion manual para admins, copy honesto y manual Academia.
+- Impacto backend reusable: patron por tenant/proyecto para rollback antes de activacion, auditoria antes de escritura, referencias opacas, cola de revision humana, gates apagados, dry-run y estado degradado honesto.
+- Impacto Claude/prototipo: mostrar rollback preparado/no ejecutado, auditoria requerida, estados bloqueado/degradado/pendiente y revision humana; no afirmar sync/import/pago/proveedor real sin gate.
+- Impacto Academia: explicar rollback, auditoria, referencias opacas, datos que no van en logs, revision de conflictos, DEV/runtime/produccion y actuacion ante gate bloqueado.
+- Estado seguro: documentacion/contrato solamente. Sin cambios en `/app/modules`, sin cambios en `/app/core`, sin DEV activo, sin runtime, sin builder, sin imports, sin writes, sin Firestore/Auth/Storage/HR, sin Make/Gemini, sin deploy, sin produccion, sin pagos reales y sin datos sensibles.
+- Commits: `8e9cba435b8e4051be258eed6d01b1101fd3c36c`, `6de2292c8918bbcb6a060c4ffb2bbcaa89a3c01d`, `57a5f52c326a129a658ca071b5584caee5056c1d`.
+
 ## 2026-07-09 - Phase A DEV conditions TyA
 
 - Se agrego `backend/contracts/phase-a-dev-conditions-v1.json`.
