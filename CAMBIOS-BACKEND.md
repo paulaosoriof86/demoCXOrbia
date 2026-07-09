@@ -1,5 +1,19 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Continuity prompt and PR summary Phase A TyA
+
+- Se agrego `app/docs/PHASE-A-CONTINUITY-PROMPT-AND-PR-SUMMARY-TYA-20260709.md`.
+- Se agrego `app/docs/CAMBIOS-PHASE-A-CONTINUITY-PROMPT-AND-PR-SUMMARY-TYA-20260709.md`.
+- Objetivo: crear un prompt de continuidad completo y un resumen PR acumulado para abrir una nueva conversacion sin perder contexto, metodologia ni plan de trabajo.
+- Corrige errores previos: pedir pasos manuales innecesarios, repetir Level 0/1, reiniciar plan, pedir HR/reglas/shoppers/certificaciones ya documentadas, desviarse de Phase A real TyA, tratar infraestructura abstracta como avance operativo y asumir runtime activo.
+- Contenido protegido: repo/rama/base/PR, estado seguro, reglas de oro, foco Phase A, errores a no repetir, bloques completados, documentacion obligatoria, metodologia esperada y siguiente bloque exacto.
+- Impacto Phase A: permite continuar con HR fuente operacional, datos reales/sanitizados, junio como pagos/liquidaciones, shoppers historicos, certificaciones preservadas, Cinépolis configurable y multi-proyecto, sin pedir informacion ya documentada.
+- Impacto backend reusable: patron reusable de prompt/checkpoint para continuidad en proyectos largos multi-tenant sin perdida de metodologia.
+- Impacto Claude/prototipo: obliga a documentar para Claude y no tocar UI/core desde backend; evita asumir runtime, import, pagos o integraciones activas.
+- Impacto Academia: explicar continuidad operativa, no-reversion, metodologia por bloques, gates, source-safe y diferencia entre preparado/ejecutado/runtime/import/produccion.
+- Estado seguro: documento de continuidad solamente. Sin cambios UI/core, sin runtime, sin imports, sin writes, sin deploy, sin produccion y sin datos sensibles.
+- Commits: `25440b90046a4322b9a7e71b258c69dec4f1255a`, `081c2dbae104f05d5d73d8b9645008e212f2b429`.
+
 ## 2026-07-09 - Accumulated continuity checkpoint Phase A TyA
 
 - Se agrego `backend/contracts/phase-a-accumulated-continuity-checkpoint-v1.json`.
@@ -50,21 +64,3 @@
 - Impacto Academia: explicar flujo local source-safe, no compartir datos privados, `.tmp` no commiteado, dry-run vs import/runtime/produccion.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, no se pidio comando a Paula, builder no ejecutado, output local no commiteado, adapter no habilitado, sin runtime, sin import de dominios, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
 - Commits: `79d95c6d850dc0e48f8bcba6f6ac6d47ef62643e`, `63509895c99045739ed1f7c1328040a0597bdbec`, `db0cd24495be3b5bc01104a3e23e7a1874b2a79f`, `a9661875e8c09cf2ba6f8870cbb6ab9a6af45eb8`.
-
-## 2026-07-09 - Source-safe input builder contract Phase A TyA
-
-- Se agrego `backend/contracts/phase-a-source-safe-input-builder-contract-v1.json`.
-- Se agrego `tools/contracts/tya-phase-a-source-safe-input-builder-contract-validate.mjs`.
-- Se agrego `app/docs/PHASE-A-SOURCE-SAFE-INPUT-BUILDER-CONTRACT-TYA-20260709.md`.
-- Se agrego `app/docs/CAMBIOS-PHASE-A-SOURCE-SAFE-INPUT-BUILDER-CONTRACT-TYA-20260709.md`.
-- Objetivo: definir como construir localmente el JSON source-safe que alimenta el real-data domain readiness pack desde HR/export original sanitizado TyA, sin subir datos privados al repo y sin activar runtime, imports ni writes.
-- Inputs permitidos: HR source-safe/full-flow report, export original TyA sanitizado y project config source-safe.
-- Output futuro: `tya-phase-a-domains.source-safe.local.json`, solo local, no commiteado, con flags de seguridad en false y dominios Phase A completos.
-- Reglas de derivacion: ids estables opacos, no deduplicacion por nombre, `paymentControlOnly=true`, certificaciones preservadas, rutas configuradas o bloqueo honesto.
-- Guardrails: no subir output local al repo, no copiar filas HR crudas, no copiar datos sensibles, no usar fixture/`.tmp` derivado/base vieja, no pago real, no pedir certificacion preservada sin revision y no inventar links.
-- Impacto Phase A: prepara el siguiente paso para evaluar datos reales/sanitizados TyA sin pedirlos en chat, manteniendo HR fuente operacional, junio como pagos/liquidaciones, certificaciones preservadas, shoppers historicos y cuestionarios configurables.
-- Impacto backend reusable: patron reusable de builder local source-safe para generar inputs de readiness antes de adapter/runtime.
-- Impacto Claude/prototipo: Claude debe mostrar estados honestos si fuente/build/dry-run no esta listo; no debe presentar runtime ni datos reales si solo existe contrato.
-- Impacto Academia: explicar builder local, output no commiteado, derivacion de ids estables, no deduplicar por nombre, junio como pago/liquidacion y que builder no importa ni escribe.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, builder no ejecutado, output local no commiteado, adapter no habilitado, sin runtime, sin import de dominios, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
-- Commits: `26856f268f0d374531dbc20e435ddd57b0c191a0`, `6b25777198e16c6d97fe0e2b822070224b3a278c`, `85096345227a0e96a8f916ef05c3141084244448`, `d36e0b6822be7533b7505268968260cbdc837c71`.
