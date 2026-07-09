@@ -167,7 +167,7 @@ const payload = {
       severity: 'critical',
       scope: 'shoppers',
       code: 'sensitive_shopper_data_policy',
-      messageSafe: 'DPI or sensitive shopper fields must be dropped, encrypted or staged under restricted policy before import.',
+      messageSafe: 'Restricted shopper identity/payment fields must be dropped, encrypted or staged under restricted policy before import.',
       blocksRuntime: false,
       blocksImport: true,
       blocksProduction: true
