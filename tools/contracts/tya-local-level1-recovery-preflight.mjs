@@ -5,9 +5,10 @@
    Purpose: find already-generated sanitized/source-safe local outputs outside the current
    repo worktree and run the existing Level 1/2 preflight automatically when possible.
 
-   Important: by default this helper EXCLUDES synthetic fixtures because Phase A real-data
-   preview must not be advanced using demo/synthetic files. Use --allow-synthetic only for
-   contract testing, never as real-data preview evidence.
+   Important: by default this helper EXCLUDES synthetic fixtures and derived outputs from
+   previous recovery/preflight runs. Phase A real-data preview must not be advanced using
+   demo/synthetic files or payloads generated from them. Use --allow-synthetic or
+   --allow-derived only for contract testing, never as real-data preview evidence.
 */
 
 import fs from 'node:fs';
@@ -25,6 +26,7 @@ const maxFiles = Number(arg('--max-files') || 8000);
 const extraRoots = args.flatMap((value, index) => value === '--root' ? [args[index + 1]] : []).filter(Boolean);
 const runPreflight = !has('--no-run');
 const allowSynthetic = has('--allow-synthetic');
+const allowDerived = has('--allow-derived');
 
 const forbiddenMarkers = [
   'rawDpi', 'rawBankAccount', 'rawPhone', 'rawEmail', 'rawShopperName',
@@ -42,20 +44,29 @@ let filesSeen = 0;
 
 function add(list, message, extra = {}) { list.push({ message, ...extra }); }
 function abs(relOrAbs) { return path.isAbsolute(relOrAbs) ? relOrAbs : path.join(root, relOrAbs); }
-function exists(relOrAbs) { return fs.existsSync(abs(relOrAbs)); }
 function ensureDir(relOrAbs) { fs.mkdirSync(abs(relOrAbs), { recursive: true }); }
 function writeJson(relOrAbs, name, value) { ensureDir(relOrAbs); fs.writeFileSync(path.join(abs(relOrAbs), name), JSON.stringify(value, null, 2), 'utf8'); }
 function rel(file) {
   try { return path.relative(root, file) || file; } catch { return file; }
 }
 function normalize(value) { return String(value || '').toLowerCase(); }
+function asSlashPath(full) { return normalize(full).replaceAll('\\', '/'); }
 function isProbablyCxorbiaPath(full) {
   const l = normalize(full);
   return l.includes('cxorbia') || l.includes('democxorbia') || l.includes('tya') || l.includes('hr-source') || l.includes('realdata') || l.includes('source-safe');
 }
 function isSyntheticFixturePath(full) {
-  const l = normalize(full).replaceAll('\\', '/');
+  const l = asSlashPath(full);
   return l.includes('/synthetic-fixtures/') || l.includes('/fixtures/') || l.includes('.fixture.') || l.includes('synthetic') || l.includes('preview-fixture');
+}
+function isDerivedPreflightOutputPath(full) {
+  const l = asSlashPath(full);
+  return l.includes('/.tmp/tya-local-level1-recovery')
+    || l.includes('/preflight-from-recovered-level1/')
+    || l.includes('/.tmp/tya-local-realdata-preview-preflight/')
+    || l.includes('/.tmp/tya-local-level1-recovery-real-only/')
+    || l.includes('/tya-minimal-sanitized-input-level1.json')
+    || l.includes('/tya-minimal-sanitized-input-level2.json');
 }
 function shouldSkipDir(full) {
   const l = normalize(full);
@@ -93,6 +104,8 @@ function inspectJson(file) {
   }).length;
   const hasManifestTabs = Array.isArray(parsed.manifestTabs) || Array.isArray(parsed?.report?.manifestTabs);
   const syntheticFixture = isSyntheticFixturePath(file);
+  const derivedPreflightOutput = isDerivedPreflightOutputPath(file);
+  const allowedByOrigin = (!syntheticFixture || allowSynthetic) && (!derivedPreflightOutput || allowDerived);
   return {
     file,
     fileSafe: rel(file),
@@ -102,10 +115,12 @@ function inspectJson(file) {
     possibleVisitRows,
     hasManifestTabs,
     syntheticFixture,
-    level1Candidate: forbiddenHits.length === 0 && possibleVisitRows > 0 && (!syntheticFixture || allowSynthetic),
-    realLevel1Candidate: forbiddenHits.length === 0 && possibleVisitRows > 0 && !syntheticFixture,
+    derivedPreflightOutput,
+    level1Candidate: forbiddenHits.length === 0 && possibleVisitRows > 0 && allowedByOrigin,
+    realLevel1Candidate: forbiddenHits.length === 0 && possibleVisitRows > 0 && !syntheticFixture && !derivedPreflightOutput,
     syntheticLevel1Candidate: forbiddenHits.length === 0 && possibleVisitRows > 0 && syntheticFixture,
-    manifestCandidate: forbiddenHits.length === 0 && hasManifestTabs && (!syntheticFixture || allowSynthetic)
+    derivedLevel1Candidate: forbiddenHits.length === 0 && possibleVisitRows > 0 && derivedPreflightOutput,
+    manifestCandidate: forbiddenHits.length === 0 && hasManifestTabs && allowedByOrigin
   };
 }
 function scanDir(dir) {
@@ -158,11 +173,15 @@ for (const scanRoot of uniqueRoots) {
 const level1Candidates = inspections.filter(x => x.level1Candidate).sort((a, b) => b.possibleVisitRows - a.possibleVisitRows || b.bytes - a.bytes);
 const realLevel1Candidates = inspections.filter(x => x.realLevel1Candidate).sort((a, b) => b.possibleVisitRows - a.possibleVisitRows || b.bytes - a.bytes);
 const syntheticLevel1Candidates = inspections.filter(x => x.syntheticLevel1Candidate).sort((a, b) => b.possibleVisitRows - a.possibleVisitRows || b.bytes - a.bytes);
+const derivedLevel1Candidates = inspections.filter(x => x.derivedLevel1Candidate).sort((a, b) => b.possibleVisitRows - a.possibleVisitRows || b.bytes - a.bytes);
 const manifestCandidates = inspections.filter(x => x.manifestCandidate);
 const selectedLevel1 = level1Candidates[0] || null;
 
 if (syntheticLevel1Candidates.length && !allowSynthetic) {
   add(info, 'synthetic_level1_candidates_excluded_from_realdata_preview', { count: syntheticLevel1Candidates.length });
+}
+if (derivedLevel1Candidates.length && !allowDerived) {
+  add(info, 'derived_level1_candidates_excluded_from_realdata_preview', { count: derivedLevel1Candidates.length });
 }
 
 let preflightStep = null;
@@ -192,13 +211,14 @@ const report = {
     ? 'GO_REAL_LEVEL1_LOCAL_CANDIDATE_FOUND_NO_RUNTIME'
     : 'NO_GO_REAL_LEVEL1_LOCAL_CANDIDATE_NOT_FOUND',
   productionDecision: 'BLOCK_PRODUCTION_UNTIL_REAL_LEVEL2_VALIDATED_RUNTIME_SWITCH_SMOKE_AND_PAULA_GO',
-  mode: allowSynthetic ? 'allow_synthetic_contract_test' : 'realdata_only_default',
+  mode: allowSynthetic || allowDerived ? 'contract_test_explicit_exceptions' : 'realdata_only_default',
   counts: {
     rootsChecked: uniqueRoots.length,
     dirsVisited: visitedDirs.size,
     jsonFilesInspected: inspections.length,
     realLevel1Candidates: realLevel1Candidates.length,
     syntheticLevel1Candidates: syntheticLevel1Candidates.length,
+    derivedLevel1Candidates: derivedLevel1Candidates.length,
     selectedLevel1Candidates: level1Candidates.length,
     manifestCandidates: manifestCandidates.length,
     warnings: warnings.length,
@@ -209,11 +229,12 @@ const report = {
     fileSafe: selectedLevel1.fileSafe,
     possibleVisitRows: selectedLevel1.possibleVisitRows,
     bytes: selectedLevel1.bytes,
-    syntheticFixture: selectedLevel1.syntheticFixture
+    syntheticFixture: selectedLevel1.syntheticFixture,
+    derivedPreflightOutput: selectedLevel1.derivedPreflightOutput
   } : null,
   nextStep: selectedLevel1
-    ? 'Review generated preflight-from-recovered-level1 report. If Level 2 validates cleanly and candidate is not synthetic, run final GO/NO-GO; do not switch runtime automatically.'
-    : 'No real local sanitized row-level output was found. Generate or recover the documented HR source-safe/full-flow output locally; do not request HR again and do not use raw HR in repo.',
+    ? 'Review generated preflight-from-recovered-level1 report. If Level 2 validates cleanly and candidate is not synthetic or derived, run final GO/NO-GO; do not switch runtime automatically.'
+    : 'No original real local sanitized row-level output was found. Generate or recover the documented HR source-safe/full-flow output locally; do not request HR again and do not use raw HR in repo.',
   safeState: {
     runtimeConnected: false,
     frontendModified: false,
@@ -231,6 +252,7 @@ const report = {
   info,
   realLevel1Candidates: realLevel1Candidates.slice(0, 20).map(x => ({ file: x.file, fileSafe: x.fileSafe, possibleVisitRows: x.possibleVisitRows, bytes: x.bytes })),
   syntheticLevel1Candidates: syntheticLevel1Candidates.slice(0, 20).map(x => ({ file: x.file, fileSafe: x.fileSafe, possibleVisitRows: x.possibleVisitRows, bytes: x.bytes })),
+  derivedLevel1Candidates: derivedLevel1Candidates.slice(0, 20).map(x => ({ file: x.file, fileSafe: x.fileSafe, possibleVisitRows: x.possibleVisitRows, bytes: x.bytes })),
   manifestCandidates: manifestCandidates.slice(0, 20).map(x => ({ file: x.file, fileSafe: x.fileSafe, bytes: x.bytes })),
   preflightStep
 };
@@ -250,13 +272,14 @@ const md = [
   `- JSON files inspected: ${report.counts.jsonFilesInspected}`,
   `- Real Level 1 candidates: ${report.counts.realLevel1Candidates}`,
   `- Synthetic Level 1 candidates excluded unless explicitly allowed: ${report.counts.syntheticLevel1Candidates}`,
+  `- Derived Level 1 candidates excluded unless explicitly allowed: ${report.counts.derivedLevel1Candidates}`,
   `- Selected Level 1 candidates: ${report.counts.selectedLevel1Candidates}`,
   `- Manifest candidates: ${report.counts.manifestCandidates}`,
   `- Warnings: ${report.counts.warnings}`,
   `- Hard fails: ${report.counts.hardFails}`,
   '',
   '## Selected Level 1 candidate',
-  report.selectedLevel1 ? `- ${report.selectedLevel1.fileSafe} · possibleVisitRows=${report.selectedLevel1.possibleVisitRows} · synthetic=${report.selectedLevel1.syntheticFixture}` : '- none',
+  report.selectedLevel1 ? `- ${report.selectedLevel1.fileSafe} · possibleVisitRows=${report.selectedLevel1.possibleVisitRows} · synthetic=${report.selectedLevel1.syntheticFixture} · derived=${report.selectedLevel1.derivedPreflightOutput}` : '- none',
   '',
   '## Real Level 1 candidates',
   ...(report.realLevel1Candidates.length ? report.realLevel1Candidates.map(x => `- ${x.fileSafe} · possibleVisitRows=${x.possibleVisitRows}`) : ['- none found']),
@@ -264,11 +287,14 @@ const md = [
   '## Synthetic Level 1 candidates excluded',
   ...(report.syntheticLevel1Candidates.length ? report.syntheticLevel1Candidates.map(x => `- ${x.fileSafe} · possibleVisitRows=${x.possibleVisitRows}`) : ['- none found']),
   '',
+  '## Derived Level 1 candidates excluded',
+  ...(report.derivedLevel1Candidates.length ? report.derivedLevel1Candidates.map(x => `- ${x.fileSafe} · possibleVisitRows=${x.possibleVisitRows}`) : ['- none found']),
+  '',
   '## Manifest candidates',
   ...(report.manifestCandidates.length ? report.manifestCandidates.map(x => `- ${x.fileSafe}`) : ['- none found']),
   '',
   '## Preflight from recovered candidate',
-  preflightStep ? `- status=${preflightStep.status} ok=${preflightStep.ok}` : '- not run because no real Level 1 candidate was found',
+  preflightStep ? `- status=${preflightStep.status} ok=${preflightStep.ok}` : '- not run because no original real Level 1 candidate was found',
   '',
   '## Next step',
   `- ${report.nextStep}`,
