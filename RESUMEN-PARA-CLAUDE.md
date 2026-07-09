@@ -1,5 +1,17 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-09 - Paquete acumulado Phase A TyA para Claude/Pendientes/Academia
+
+- ChatGPT/backend agrego `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
+- Objetivo: consolidar el paquete acumulado para Claude/prototipo despues de los checkpoints Phase A, sin reiniciar metodologia, sin pedir HR/reglas/shoppers/certificaciones ya documentadas y sin asumir runtime activo.
+- Claude debe tomar como estado base: PR #7 draft/open/no merge; sin deploy; sin produccion; sin runtime; sin import real; sin Firestore/Auth/Storage writes; sin HR writes; sin Make/Gemini live; sin pagos reales; sin output local source-safe commiteado.
+- Foco Phase A que debe respetar: HR fuente operacional, datos reales/sanitizados TyA, shoppers historicos, certificaciones ya presentadas, junio como liquidacion/pago, Cinépolis proyecto configurable, multi-proyecto, cuestionario configurable y conflictos a revision humana con llaves estables.
+- Pendientes P0 para Claude: copy honesto de gates, Academia profunda/administrable, representacion de Phase A real TyA sin prometer imports/runtime/integraciones reales.
+- Pendientes P1 para Claude: readiness dashboard source-safe, proyecto configurable sin hardcode Cinépolis, Mis beneficios/liquidaciones/pagos con honorario-boleto-combo-lote-movimientos, postulaciones/asignaciones con conflictos a revision.
+- Academia debe cubrir: Phase A vs produccion, preview/dry-run/gate/runtime/import, HR fuente operacional, shoppers/certificaciones preservadas, asignaciones/conflictos, liquidaciones/pagos, administracion de Academia, Gemini con revision humana, Make/HR preparado y readiness dashboard.
+- No tocar: `tools/`, `tools/migration/`, `tools/contracts/`, `backend/contracts/`, `.github/workflows/`, reglas reales, secrets, datos sensibles, `.tmp/` ni integraciones reales.
+- Estado seguro: documento puente solamente. No toca `/app/modules` ni `/app/core`, no activa runtime, no ejecuta builder, no importa datos, no escribe Firestore/Auth/Storage/HR, no activa Make/Gemini, no hace deploy, no hace pagos reales y no agrega datos sensibles.
+
 ## 2026-07-08 - Addendum readiness dashboard bridge runner
 
 - ChatGPT/backend agrego `tools/contracts/cxorbia-readiness-dashboard-bridge-runner.mjs` y documentos `app/docs/READINESS-DASHBOARD-BRIDGE-RUNNER-CXORBIA-20260708.md` / `app/docs/CAMBIOS-READINESS-DASHBOARD-BRIDGE-RUNNER-CXORBIA-20260708.md`.
