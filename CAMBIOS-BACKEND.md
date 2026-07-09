@@ -1,5 +1,22 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Source-safe domain mapping Phase A TyA
+
+- Se agrego `backend/contracts/phase-a-source-safe-domain-mapping-v1.json`.
+- Se agrego `tools/contracts/tya-phase-a-source-safe-domain-mapping-validate.mjs`.
+- Se agrego `app/docs/PHASE-A-SOURCE-SAFE-DOMAIN-MAPPING-TYA-20260709.md`.
+- Se agrego `app/docs/CAMBIOS-PHASE-A-SOURCE-SAFE-DOMAIN-MAPPING-TYA-20260709.md`.
+- Objetivo: definir el mapeo minimo source-safe de dominios reales/sanitizados TyA antes de que el adapter `CX.data` DEV pueda leer datos Phase A, sin import ni writes.
+- Dominios cubiertos: configuracion tenant/proyecto, HR source status, visitas, shoppers, postulaciones/asignaciones, certificaciones, liquidaciones/pagos junio, rutas de cuestionario, colas operativas y auditoria preview.
+- Trabajo previo recuperado: HR source-safe/full-flow, reglas de Cinépolis, shoppers historicos, certificaciones ya presentadas, liquidaciones/pagos junio, sync HR/plataforma, colas operativas, auditoria y no-reversion Level 0/1.
+- Guardrails: no datos sensibles, no raw HR rows, no raw URLs/secretos, no fixtures como reales, no `.tmp` derivado como fuente original, no base vieja, no deduplicacion visual, no pagos reales, no repetir certificacion preservada sin revision y no tratar junio como visitas pendientes si lo pendiente es pago.
+- Impacto Phase A: aterriza el adapter `CX.data` a dominios operativos reales/sanitizados TyA antes de cualquier lectura DEV y mantiene foco en produccion real controlada.
+- Impacto backend reusable: patron reusable de mapping source-safe por tenant/proyecto antes de activar adapter/runtime.
+- Impacto Claude/prototipo: Claude debe diseñar pantallas usando dominios y campos seguros, con copy honesto y bloqueos visibles cuando falte fuente/ruta/gate.
+- Impacto Academia: explicar dominios, stable keys, sourceRef opaca, datos sensibles prohibidos, junio como control de pago y certificaciones preservadas.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, adapter no habilitado, sin runtime, sin import de dominios, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
+- Commits: `67c4f827e5cce4e54c1c693be69e7e15f0e04e68`, `526020f228b6ee7de21cc3843b3f9d49c1da8b85`, `aabe5e2a1d23a20eac3b9830f619d3060c3d89fc`, `f4604571e61d49386d4f8d5367e8b10f8b6b847d`.
+
 ## 2026-07-09 - CX.data DEV adapter contract Phase A TyA
 
 - Se agrego `backend/contracts/phase-a-cxdata-dev-adapter-contract-v1.json`.
@@ -53,21 +70,3 @@
 - Impacto Academia: explicar readiness vs GO vs runtime DEV vs runtime switch vs produccion.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
 - Commits: `6b2c36a803586478afbd6dd413b043225ed9f4e7`, `311d364053e01ea9b20b1a0987b691639e8522c2`, `560a214be6ed67dab9d6750f4e17d85868e8269d`, `32e8337cfdc62c7a119c05f53057fd04a9665876`.
-
-## 2026-07-09 - Colas operativas Phase A y documentacion Claude/Academia
-
-- Se agrego `backend/contracts/phase-a-operational-queues-contract-v1.json`.
-- Se agrego `tools/contracts/tya-phase-a-operational-queues-validate.mjs`.
-- Se agrego `app/docs/PHASE-A-OPERATIONAL-QUEUES-TYA-20260709.md`.
-- Se agrego `app/docs/CLAUDE-PROTOTIPO-ADDENDUM-PHASE-A-OPERATIVO-AUDITABLE-TYA-20260709.md`.
-- Se agrego `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-PHASE-A-COLAS-AUDITABLES-TYA-20260709.md`.
-- Objetivo: formalizar colas operativas para conflictos, HR/plataforma, certificaciones, liquidaciones/pagos junio, cuestionario y correcciones; ademas dejar documentado para Claude/prototipo, backend replicable, pendientes, mejoras locales y Academia.
-- Colas cubiertas: `sync_conflicts`, `hr_platform_sync_pending`, `certification_preservation_review`, `june_liquidation_payment_control`, `questionnaire_route_review`, `admin_corrections_review`.
-- Priorizacion: blockers primero, conflictos de asignacion antes de pagos, certificaciones preservadas antes de repetir, pagos junio solo tras submitido/candidato valido, y no crear cola sin stable keys.
-- Guardrails: colas source-safe, tenant/project scoped, sin datos sensibles, sin auto-resolucion, sin writes, sin fixtures como real, sin `.tmp` derivado como fuente original.
-- Impacto Phase A: prepara tablero y flujo operativo para resolver casos reales de forma administrable cuando gates se habiliten, sin tocar UI ahora ni repetir Level 0/1.
-- Impacto backend reusable: patron de colas operativas reusable para cualquier tenant/proyecto CXOrbia.
-- Impacto Claude/prototipo: queda addendum para tablero de colas, drills, botones preparados/deshabilitados, copy honesto, bitacora y pendientes UI.
-- Impacto Academia: queda documentado que debe explicar colas, severidad, sourceRef opaca, stable keys, revision humana, auditoria, pagos como control y preview vs produccion.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp, sin pagos reales, sin import real y sin datos sensibles.
-- Commits: `4b10637281c1deafbf42135452ee36579ab7d399`, `7ba44cf765aaad7310e7f78dc714ad6915c694e5`, `3afeeb48e14f3fbbbfcf327c29355f743112fdac`, `4ef07ae028cfd0841c5910712dc8b91a54fdc292`, `57c900a5fc7f58cb577ca6bc3ef7f7fb956a36f8`.
