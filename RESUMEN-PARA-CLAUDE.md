@@ -1,5 +1,15 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-09 - Rollback y auditoria DEV Phase A TyA
+
+- ChatGPT/backend agrego `backend/contracts/phase-a-dev-rollback-audit-plan-v1.json` y `app/docs/PHASE-A-DEV-ROLLBACK-AUDIT-PLAN-TYA-20260709.md`.
+- Estado: documento/contrato solamente; no hay DEV activo, runtime activo, import real, writes, proveedores live, deploy, produccion ni pagos reales.
+- Claude debe representar rollback como preparado/no ejecutado y auditoria como requisito previo, no como produccion lista.
+- Claude debe mantener estados honestos: bloqueado, degradado, pendiente, revision humana, source-safe o gate apagado cuando aplique.
+- Foco Phase A: HR fuente operacional, informacion real/source-safe, Cinépolis proyecto configurable, junio liquidaciones/pagos, certificaciones preservadas y conflictos a revision humana.
+- No tocar desde Claude: backend/contracts, tools, workflows, secrets, reglas reales, `.tmp`, datos sensibles, proveedores reales, imports reales ni pagos reales.
+- Academia debe cubrir rollback, auditoria, referencias opacas, datos que no van en logs, revision de conflictos, DEV/runtime/produccion y accion ante gate bloqueado.
+
 ## 2026-07-09 - Condiciones DEV Phase A TyA
 
 - ChatGPT/backend agrego `backend/contracts/phase-a-dev-conditions-v1.json` y `app/docs/PHASE-A-DEV-CONDITIONS-TYA-20260709.md`.
