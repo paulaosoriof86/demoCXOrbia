@@ -1,0 +1,144 @@
+{
+  "contractId": "cxdata-realdata-preview-bridge-phase-a-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-09",
+  "purpose": "Define a one-point bridge from source-safe TyA/Cinepolis real-data preview into the existing CX.data shape without rewriting UI modules or importing raw data.",
+  "safeState": {
+    "frontendConnected": false,
+    "runtimePatched": false,
+    "firestoreWrites": false,
+    "importsExecuted": false,
+    "hrWrites": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsRawPii": false,
+    "containsRawHrRows": false,
+    "containsRawWorkbook": false
+  },
+  "sourceInputs": {
+    "required": [
+      "hrCanonicalStagingSourceSafeManifest"
+    ],
+    "optional": [
+      "sanitizedHrRowsPreview",
+      "sanitizedShopperMapPreview",
+      "certificationPreservationPreview",
+      "liquidationCandidatesPreview"
+    ],
+    "forbidden": [
+      "rawHrWorkbook",
+      "rawCsv",
+      "rawDpi",
+      "rawBankAccount",
+      "rawPhone",
+      "rawEmail",
+      "signedNdaFile",
+      "privateHrUrl",
+      "spreadsheetFileId",
+      "serviceAccountJson"
+    ]
+  },
+  "targetFacade": {
+    "name": "CX.data",
+    "mustRemainSameInterface": true,
+    "mustNotRewriteModules": true,
+    "singleFutureConnectionPoint": "app/core/data.js or a single preloaded adapter chosen under explicit gate",
+    "currentRuntimeObservation": "app/core/data.js still declares Mock data layer and generic demo projects; this bridge is not connected yet."
+  },
+  "cxDataShapeToPopulate": {
+    "projects": {
+      "source": "tenant/project config + HR source manifest",
+      "requiredFields": ["id", "name", "client", "countries", "currency", "quincenas", "nVisitas", "cuestionario", "pago", "hrMap"],
+      "rules": [
+        "Cinepolis must be a normal configurable project",
+        "Cinepolis must not be global hardcoded logic",
+        "HR source URL must be private config only",
+        "questionnaire source must be project/visit configurable"
+      ]
+    },
+    "visits": {
+      "source": "sanitized HR row preview after canonical staging",
+      "requiredFields": ["id", "projectId", "hrRowId", "sourceTab", "periodKey", "pais", "quincena", "estado", "disponibleDesde"],
+      "rules": [
+        "No visit from dashboard tabs",
+        "JUNIO 26 HN review_required until resolved",
+        "JULIO 26 preparation_not_closed_historical",
+        "No raw shopper names, phones or emails in source-safe preview"
+      ]
+    },
+    "shoppers": {
+      "source": "sanitized shopper map preview after duplicate review",
+      "requiredFields": ["id", "code", "pais", "estado", "certificationStatus"],
+      "rules": [
+        "No DPI raw",
+        "No bank raw",
+        "SHOPPER_REVIEW remains review_required until canonical mismatch resolved"
+      ]
+    },
+    "certifications": {
+      "source": "certification preservation preview",
+      "requiredFields": ["shopperId", "projectId", "certificationId", "status", "sourceRef"],
+      "rules": [
+        "Already-presented certifications must not be requested again unless project rule says so",
+        "Gemini drafts require human review"
+      ]
+    },
+    "liquidations": {
+      "source": "liquidation candidates preview + external finance crosscheck",
+      "requiredFields": ["shopperId", "visitId", "projectId", "periodKey", "status", "honorariumAmount", "reimbursementAmount", "totalAmount"],
+      "rules": [
+        "June pending is payment/liquidation control, not pending visits",
+        "Paid requires audited evidence or external payment reference"
+      ]
+    }
+  },
+  "bridgeModes": {
+    "manifest_only": {
+      "allowed": true,
+      "description": "Create source-safe project/period metadata only. No visits/shoppers imported."
+    },
+    "preview_readonly": {
+      "allowed": true,
+      "description": "Build an in-memory CX.data-compatible preview from sanitized inputs. No writes."
+    },
+    "local_seed_preview": {
+      "allowed": false,
+      "description": "Blocked until explicit approval because it can affect visible local runtime."
+    },
+    "firestore_readonly": {
+      "allowed": false,
+      "description": "Blocked until clean backend and rules are reviewed."
+    },
+    "firestore_write": {
+      "allowed": false,
+      "description": "Blocked until explicit GO, rollback and validated staging."
+    }
+  },
+  "gates": {
+    "devManifestOnly": {
+      "status": "allowed",
+      "requirements": ["sourceSafeManifest", "noPII", "noRuntimePatch", "noWrites"]
+    },
+    "devPreviewReadOnly": {
+      "status": "blocked_until_sanitized_input",
+      "requirements": ["sanitizedRows", "shopperReviewPolicy", "certificationPreservation", "liquidationCandidates", "noPII"]
+    },
+    "devRuntimeBridge": {
+      "status": "blocked",
+      "requirements": ["PaulaGO", "singleConnectionPoint", "smoke", "rollback", "noModuleRewrite"]
+    },
+    "productionCutover": {
+      "status": "blocked",
+      "requirements": ["realDataProven", "verifiedUrl", "smokeGO", "rollback", "noDemoFinalSource"]
+    }
+  },
+  "blockingIssuesBeforeRuntime": [
+    "Runtime still uses generic demo data in app/core/data.js",
+    "Need sanitized HR row preview or local source-safe input to populate visits",
+    "DPI/sensitive shopper policy must be enforced",
+    "questionnaire_marks duplicate must not be used independently",
+    "shopper canonical mismatch remains review_required",
+    "JUNIO 26 HN remains review_required",
+    "liquidations require finance crosscheck before paid state"
+  ]
+}
