@@ -1,5 +1,22 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Plan runtime DEV switch Phase A TyA
+
+- Se agrego `backend/contracts/phase-a-runtime-dev-switch-plan-v1.json`.
+- Se agrego `tools/contracts/tya-phase-a-runtime-dev-switch-plan-validate.mjs`.
+- Se agrego `app/docs/PHASE-A-RUNTIME-DEV-SWITCH-PLAN-TYA-20260709.md`.
+- Se agrego `app/docs/CAMBIOS-PHASE-A-RUNTIME-DEV-SWITCH-PLAN-TYA-20260709.md`.
+- Objetivo: separar solicitud GO de cambio tecnico runtime DEV, dejando un plan futuro que no ejecuta runtime ni writes.
+- Decision: este bloque es plan only; no cambia runtime, no escribe base, no importa, no despliega, no activa Make/Gemini, no ejecuta pagos y no toca UI/core.
+- Requisitos futuros: GO exacto Paula registrado, readiness acumulado limpio, GO/NO-GO runtime DEV limpio, rollback/smoke listo, punto unico `CX.data` confirmado, adapter DEV apagado por defecto e input source-safe no fixture/no `.tmp` derivado.
+- Smoke futuro: login/roles, navegacion sin regresion, interfaz `CX.data` estable, HR source-safe bajo gate, asignaciones sin duplicar, colas de conflictos, certificaciones preservadas, liquidaciones junio como control, cuestionarios configurables, no Make/Gemini/pagos reales y rollback disponible.
+- Impacto Phase A: evita mezclar autorizacion con ejecucion tecnica; runtime DEV sera un paso separado con su propio gate/PR/smoke/rollback.
+- Impacto backend reusable: patron reusable para separar request gate, switch plan, switch execution, smoke, rollback y produccion.
+- Impacto Claude/prototipo: representar como arquitectura futura bajo gate, no como integracion activa; conservar copy honesto.
+- Impacto Academia: explicar GO request vs runtime switch, DEV preview vs produccion, smoke, rollback y estabilidad de `CX.data`.
+- Estado seguro: sin cambios en `/app/modules` o `/app/core`, sin runtime, sin switch ejecutado, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
+- Commits: `f31a650c7c58144a7fe083d1dddfac552482c49d`, `891524edf4d7dc33a6c52c6e5375ff2b9247e693`, `fe0cef808aafc5f0fb6e266bab31a7e05468a105`, `8fb1271fb865aa2ebaa9ae8fc2b7806c424d17fe`.
+
 ## 2026-07-09 - Gate solicitud GO runtime DEV Phase A TyA
 
 - Se agrego `backend/contracts/phase-a-runtime-dev-go-request-gate-v1.json`.
