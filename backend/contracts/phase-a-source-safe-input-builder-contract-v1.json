@@ -1,0 +1,206 @@
+{
+  "contractId": "phase-a-source-safe-input-builder-contract-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "mode": "builder_contract_only_local_source_safe_no_output_in_repo",
+  "createdAt": "2026-07-09",
+  "purpose": "Definir como construir localmente el JSON source-safe que alimenta el real-data domain readiness pack desde HR/export original sanitizado TyA, sin subir datos privados al repo y sin activar runtime/imports/writes.",
+  "builderPrinciples": {
+    "localOnly": true,
+    "outputNotCommitted": true,
+    "sourceSafeOnly": true,
+    "noRawSensitiveData": true,
+    "noRawHrRows": true,
+    "noOldDatabaseConnection": true,
+    "noSyntheticFixtureAsReal": true,
+    "noDerivedTmpAsOriginal": true,
+    "noRuntime": true,
+    "noWrites": true,
+    "noImports": true,
+    "doNotAskAgainForDocumentedInputs": true,
+    "phaseARealTyAOnly": true
+  },
+  "allowedInputs": [
+    {
+      "inputType": "hr_source_safe_full_flow_report",
+      "description": "Reporte local generado por HR source-safe/full-flow, sin raw URL ni filas crudas.",
+      "required": true,
+      "allowedLocation": "local_tmp_only",
+      "mustNotContain": ["rawUrl", "rawHrRow", "rawWorkbook", "rawCsv", "serviceAccountJson"]
+    },
+    {
+      "inputType": "original_sanitized_tya_export",
+      "description": "Export original TyA sanitizado por Paula/herramienta local, sin DPI/banco/email/telefono/nombre crudo.",
+      "required": false,
+      "allowedLocation": "local_private_only",
+      "mustNotContain": ["rawDpi", "dpi", "rawBankAccount", "bankAccount", "rawPhone", "phone", "rawEmail", "email", "rawShopperName"]
+    },
+    {
+      "inputType": "project_config_source_safe",
+      "description": "Configuracion de proyecto/periodos/paises/monedas/cuestionario/pagos/certificacion.",
+      "required": true,
+      "allowedLocation": "repo_contract_or_local_source_safe",
+      "mustNotContain": ["makeWebhookUrl", "geminiApiKey", "serviceAccountJson"]
+    }
+  ],
+  "outputShape": {
+    "fileNameRecommended": "tya-phase-a-domains.source-safe.local.json",
+    "mustStayLocal": true,
+    "topLevelFields": ["tenantId", "projectId", "sourceType", "sourceRef", "sourceSafety", "domains", "generatedAt"],
+    "sourceSafety": {
+      "rawSensitiveData": false,
+      "rawHrRows": false,
+      "syntheticFixture": false,
+      "derivedTmpOutput": false,
+      "oldDatabaseSource": false,
+      "canImport": false,
+      "canWrite": false
+    },
+    "domainsRequired": [
+      "tenant_project_config",
+      "hr_source_status",
+      "visits",
+      "shoppers",
+      "applications_assignments",
+      "certifications",
+      "liquidations_payments_june",
+      "questionnaire_routes",
+      "operational_queues",
+      "audit_preview"
+    ]
+  },
+  "buildStepsPreparedOnly": [
+    {
+      "step": "load_source_safe_hr_status",
+      "description": "Leer reporte HR source-safe local y extraer sourceRef, readiness, tabs y conteos seguros.",
+      "executesNow": false
+    },
+    {
+      "step": "map_project_config",
+      "description": "Construir tenant_project_config con TyA/Cinepolis/GT/HN/periodos/monedas/cuestionario/pagos/certificacion.",
+      "executesNow": false
+    },
+    {
+      "step": "map_visits_from_hr_rows_sanitized",
+      "description": "Mapear visitas sanitizadas con visitId/hrRowId/quincena/franja/status/asignacion/sync.",
+      "executesNow": false
+    },
+    {
+      "step": "map_historical_shoppers_source_safe",
+      "description": "Mapear shoppers historicos con shopperId opaco y sin DPI/banco/email/telefono/nombre crudo.",
+      "executesNow": false
+    },
+    {
+      "step": "map_certifications_preserved",
+      "description": "Mapear certificaciones ya presentadas como preservedAlreadyPresented o reviewRequired.",
+      "executesNow": false
+    },
+    {
+      "step": "map_june_liquidations_payment_control",
+      "description": "Mapear liquidaciones/pagos de junio como paymentControlOnly, no pago real.",
+      "executesNow": false
+    },
+    {
+      "step": "map_questionnaire_routes",
+      "description": "Resolver ruta por proyecto/visita o dejar bloqueo honesto.",
+      "executesNow": false
+    },
+    {
+      "step": "derive_operational_queues_preview",
+      "description": "Derivar colas source-safe para conflictos/sync/certificaciones/pagos/cuestionarios/correcciones.",
+      "executesNow": false
+    },
+    {
+      "step": "derive_audit_preview_empty_or_safe",
+      "description": "Crear audit_preview vacio o source-safe sin writes reales.",
+      "executesNow": false
+    },
+    {
+      "step": "validate_with_realdata_domain_readiness_pack",
+      "description": "Pasar output local al validador de readiness pack con --input.",
+      "executesNow": false
+    }
+  ],
+  "fieldDerivationRules": [
+    {
+      "field": "visitId",
+      "rule": "stable opaque id derived from tenant/project/hrRowId or existing source-safe visit id; no visual name matching"
+    },
+    {
+      "field": "shopperId",
+      "rule": "stable opaque id from source-safe shopper mapping; do not derive from raw name alone"
+    },
+    {
+      "field": "assignmentSource",
+      "rule": "platform, hr, hr_platform_reconciled or conflict_review; never infer silently"
+    },
+    {
+      "field": "paymentControlOnly",
+      "rule": "must be true for June payment/liquidation control; CXOrbia does not execute payments"
+    },
+    {
+      "field": "preservedAlreadyPresented",
+      "rule": "true when historical/source-safe certification evidence exists; do not request again without review"
+    },
+    {
+      "field": "routeStatus",
+      "rule": "configured or blocked_honestly; do not invent questionnaire links"
+    }
+  ],
+  "forbiddenTransformations": [
+    "copyRawHrRowsToOutput",
+    "copyRawSensitiveFieldsToOutput",
+    "useSyntheticFixtureAsRealInput",
+    "useDerivedTmpOutputAsOriginalInput",
+    "connectOldDatabase",
+    "deduplicateByVisualNameOnly",
+    "markJuneVisitsPendingExecutionWhenPaymentOnly",
+    "requestCertificationAgainWithoutReview",
+    "markPaymentAsExecutedByCXOrbia",
+    "inventQuestionnaireLink",
+    "commitLocalOutputToRepo"
+  ],
+  "expectedPostBuildValidation": {
+    "validator": "tools/contracts/tya-phase-a-realdata-domain-readiness-pack-validate.mjs",
+    "requiredVerdictBeforeAdapterReadRequest": "GO_REALDATA_DOMAIN_READINESS_DRY_RUN_ONLY",
+    "doesNotEnableRuntime": true,
+    "doesNotImport": true,
+    "doesNotWrite": true
+  },
+  "hardStops": [
+    "builderOutputCommittedToRepo",
+    "rawSensitiveMarkerFound",
+    "rawHrRowsFound",
+    "sourceIsSyntheticFixture",
+    "sourceIsDerivedTmpOutput",
+    "sourceIsOldDatabase",
+    "missingProjectConfig",
+    "missingHrSourceStatus",
+    "missingVisits",
+    "missingShoppers",
+    "missingCertificationPreservation",
+    "missingJunePaymentControl",
+    "missingQuestionnaireRouteStatus",
+    "invalidCanImportTrue",
+    "invalidCanWriteTrue"
+  ],
+  "safeStateExpectedNow": {
+    "builderExecuted": false,
+    "localOutputCommitted": false,
+    "adapterEnabled": false,
+    "runtimeConnected": false,
+    "domainImportExecuted": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "importsExecuted": false,
+    "deploy": false,
+    "production": false,
+    "makeWebhookLive": false,
+    "geminiLive": false,
+    "paymentProviderLive": false,
+    "realPayments": false,
+    "rawSensitiveDataInRepo": false,
+    "uiModulesModified": false,
+    "appCoreModified": false
+  }
+}
