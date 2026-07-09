@@ -1,5 +1,20 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-09 - Paquete acumulado Claude/Pendientes/Academia Phase A TyA
+
+- Se agrego `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
+- Se actualizo `RESUMEN-PARA-CLAUDE.md`.
+- Se actualizo `PENDIENTES-PROTOTIPO.md`.
+- Objetivo: completar el puente acumulado para Claude/prototipo/Academia desde los documentos recientes, sin tocar UI, sin pedir ejecucion local y sin reiniciar pendientes ni metodologia.
+- Contenido protegido para Claude: PR #7 draft/open/no merge, sin deploy, sin produccion, sin runtime, sin imports, sin Firestore/Auth/Storage writes, sin HR writes, sin Make/Gemini live, sin pagos reales y sin output local commiteado.
+- Foco Phase A: HR fuente operacional, datos reales/sanitizados TyA, shoppers historicos, certificaciones ya presentadas, junio como liquidacion/pago, Cinépolis configurable y multi-proyecto, cuestionario configurable, conflictos a revision humana con llaves estables.
+- Pendientes P0 documentados para Claude: copy honesto de gates/integraciones, Academia profunda/administrable y Phase A real TyA sin promesas falsas de runtime/import/sync/pago.
+- Pendientes P1 documentados para Claude: readiness/dashboard source-safe, proyecto configurable sin hardcode Cinépolis, Mis beneficios/liquidaciones/pagos con honorario-boleto-combo-lote-movimientos y postulaciones/asignaciones con conflictos a revision.
+- Impacto backend reusable: consolida patrones reutilizables de gates, readiness, source-safe, `CX.data`, multi-tenant, proyecto configurable, outbox/sync, review humana, copy honesto y Academia transversal.
+- Impacto Academia: define cobertura obligatoria sobre Phase A vs produccion, preview/dry-run/gate/runtime/import, HR fuente operacional, shoppers/certificaciones preservadas, asignaciones/conflictos, liquidaciones/pagos, Gemini con revision humana, Make/HR preparado y readiness dashboard.
+- Estado seguro: documentacion solamente. Sin cambios en `/app/modules`, sin cambios en `/app/core`, sin runtime, sin builder, sin imports, sin writes, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin deploy, sin produccion, sin pagos reales y sin datos sensibles.
+- Commits: `de0d535ea58d67bc51ac2100ab1ce9feca09b1e5`, `1db6091eacbdd178ca622808016d82ea568c94de`, `b28642ee81c383beb68c85ed7647612bce186829`.
+
 ## 2026-07-09 - Continuity prompt and PR summary Phase A TyA
 
 - Se agrego `app/docs/PHASE-A-CONTINUITY-PROMPT-AND-PR-SUMMARY-TYA-20260709.md`.
