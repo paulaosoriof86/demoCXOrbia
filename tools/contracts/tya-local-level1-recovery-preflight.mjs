@@ -4,6 +4,10 @@
 
    Purpose: find already-generated sanitized/source-safe local outputs outside the current
    repo worktree and run the existing Level 1/2 preflight automatically when possible.
+
+   Important: by default this helper EXCLUDES synthetic fixtures because Phase A real-data
+   preview must not be advanced using demo/synthetic files. Use --allow-synthetic only for
+   contract testing, never as real-data preview evidence.
 */
 
 import fs from 'node:fs';
@@ -20,6 +24,7 @@ const outDir = arg('--out') || '.tmp/tya-local-level1-recovery-preflight';
 const maxFiles = Number(arg('--max-files') || 8000);
 const extraRoots = args.flatMap((value, index) => value === '--root' ? [args[index + 1]] : []).filter(Boolean);
 const runPreflight = !has('--no-run');
+const allowSynthetic = has('--allow-synthetic');
 
 const forbiddenMarkers = [
   'rawDpi', 'rawBankAccount', 'rawPhone', 'rawEmail', 'rawShopperName',
@@ -47,6 +52,10 @@ function normalize(value) { return String(value || '').toLowerCase(); }
 function isProbablyCxorbiaPath(full) {
   const l = normalize(full);
   return l.includes('cxorbia') || l.includes('democxorbia') || l.includes('tya') || l.includes('hr-source') || l.includes('realdata') || l.includes('source-safe');
+}
+function isSyntheticFixturePath(full) {
+  const l = normalize(full).replaceAll('\\', '/');
+  return l.includes('/synthetic-fixtures/') || l.includes('/fixtures/') || l.includes('.fixture.') || l.includes('synthetic') || l.includes('preview-fixture');
 }
 function shouldSkipDir(full) {
   const l = normalize(full);
@@ -83,6 +92,7 @@ function inspectJson(file) {
     return keys.includes('hrRowId') || keys.includes('visitId') || keys.includes('sourceTab') || keys.includes('quincena') || keys.includes('franja') || keys.includes('branchRef');
   }).length;
   const hasManifestTabs = Array.isArray(parsed.manifestTabs) || Array.isArray(parsed?.report?.manifestTabs);
+  const syntheticFixture = isSyntheticFixturePath(file);
   return {
     file,
     fileSafe: rel(file),
@@ -91,8 +101,11 @@ function inspectJson(file) {
     topLevelKeys: Object.keys(parsed || {}).slice(0, 30),
     possibleVisitRows,
     hasManifestTabs,
-    level1Candidate: forbiddenHits.length === 0 && possibleVisitRows > 0,
-    manifestCandidate: forbiddenHits.length === 0 && hasManifestTabs
+    syntheticFixture,
+    level1Candidate: forbiddenHits.length === 0 && possibleVisitRows > 0 && (!syntheticFixture || allowSynthetic),
+    realLevel1Candidate: forbiddenHits.length === 0 && possibleVisitRows > 0 && !syntheticFixture,
+    syntheticLevel1Candidate: forbiddenHits.length === 0 && possibleVisitRows > 0 && syntheticFixture,
+    manifestCandidate: forbiddenHits.length === 0 && hasManifestTabs && (!syntheticFixture || allowSynthetic)
   };
 }
 function scanDir(dir) {
@@ -143,8 +156,14 @@ for (const scanRoot of uniqueRoots) {
 }
 
 const level1Candidates = inspections.filter(x => x.level1Candidate).sort((a, b) => b.possibleVisitRows - a.possibleVisitRows || b.bytes - a.bytes);
+const realLevel1Candidates = inspections.filter(x => x.realLevel1Candidate).sort((a, b) => b.possibleVisitRows - a.possibleVisitRows || b.bytes - a.bytes);
+const syntheticLevel1Candidates = inspections.filter(x => x.syntheticLevel1Candidate).sort((a, b) => b.possibleVisitRows - a.possibleVisitRows || b.bytes - a.bytes);
 const manifestCandidates = inspections.filter(x => x.manifestCandidate);
 const selectedLevel1 = level1Candidates[0] || null;
+
+if (syntheticLevel1Candidates.length && !allowSynthetic) {
+  add(info, 'synthetic_level1_candidates_excluded_from_realdata_preview', { count: syntheticLevel1Candidates.length });
+}
 
 let preflightStep = null;
 if (runPreflight && selectedLevel1) {
@@ -164,18 +183,23 @@ if (runPreflight && selectedLevel1) {
   if (result.status !== 0) add(warnings, 'preflight_from_recovered_level1_nonzero', { status: result.status });
 }
 
-if (!level1Candidates.length) add(warnings, 'no_level1_sanitized_visit_output_found_in_expanded_local_scan');
+if (!realLevel1Candidates.length) add(warnings, 'no_real_level1_sanitized_visit_output_found_in_expanded_local_scan');
 
 const report = {
   gate: 'cxorbia-tya-local-level1-recovery-preflight',
   generatedAt: new Date().toISOString(),
-  verdict: level1Candidates.length ? 'GO_LEVEL1_LOCAL_CANDIDATE_FOUND_NO_RUNTIME' : 'NO_GO_LEVEL1_LOCAL_CANDIDATE_NOT_FOUND',
-  productionDecision: 'BLOCK_PRODUCTION_UNTIL_LEVEL2_VALIDATED_RUNTIME_SWITCH_SMOKE_AND_PAULA_GO',
+  verdict: realLevel1Candidates.length
+    ? 'GO_REAL_LEVEL1_LOCAL_CANDIDATE_FOUND_NO_RUNTIME'
+    : 'NO_GO_REAL_LEVEL1_LOCAL_CANDIDATE_NOT_FOUND',
+  productionDecision: 'BLOCK_PRODUCTION_UNTIL_REAL_LEVEL2_VALIDATED_RUNTIME_SWITCH_SMOKE_AND_PAULA_GO',
+  mode: allowSynthetic ? 'allow_synthetic_contract_test' : 'realdata_only_default',
   counts: {
     rootsChecked: uniqueRoots.length,
     dirsVisited: visitedDirs.size,
     jsonFilesInspected: inspections.length,
-    level1Candidates: level1Candidates.length,
+    realLevel1Candidates: realLevel1Candidates.length,
+    syntheticLevel1Candidates: syntheticLevel1Candidates.length,
+    selectedLevel1Candidates: level1Candidates.length,
     manifestCandidates: manifestCandidates.length,
     warnings: warnings.length,
     hardFails: hardFails.length
@@ -184,11 +208,12 @@ const report = {
     file: selectedLevel1.file,
     fileSafe: selectedLevel1.fileSafe,
     possibleVisitRows: selectedLevel1.possibleVisitRows,
-    bytes: selectedLevel1.bytes
+    bytes: selectedLevel1.bytes,
+    syntheticFixture: selectedLevel1.syntheticFixture
   } : null,
   nextStep: selectedLevel1
-    ? 'Review generated preflight-from-recovered-level1 report. If Level 2 validates cleanly, run final GO/NO-GO; do not switch runtime automatically.'
-    : 'No local sanitized row-level output was found. Generate the documented HR source-safe/full-flow output locally; do not request HR again and do not use raw HR in repo.',
+    ? 'Review generated preflight-from-recovered-level1 report. If Level 2 validates cleanly and candidate is not synthetic, run final GO/NO-GO; do not switch runtime automatically.'
+    : 'No real local sanitized row-level output was found. Generate or recover the documented HR source-safe/full-flow output locally; do not request HR again and do not use raw HR in repo.',
   safeState: {
     runtimeConnected: false,
     frontendModified: false,
@@ -204,7 +229,8 @@ const report = {
   hardFails,
   warnings,
   info,
-  level1Candidates: level1Candidates.slice(0, 20).map(x => ({ file: x.file, fileSafe: x.fileSafe, possibleVisitRows: x.possibleVisitRows, bytes: x.bytes })),
+  realLevel1Candidates: realLevel1Candidates.slice(0, 20).map(x => ({ file: x.file, fileSafe: x.fileSafe, possibleVisitRows: x.possibleVisitRows, bytes: x.bytes })),
+  syntheticLevel1Candidates: syntheticLevel1Candidates.slice(0, 20).map(x => ({ file: x.file, fileSafe: x.fileSafe, possibleVisitRows: x.possibleVisitRows, bytes: x.bytes })),
   manifestCandidates: manifestCandidates.slice(0, 20).map(x => ({ file: x.file, fileSafe: x.fileSafe, bytes: x.bytes })),
   preflightStep
 };
@@ -216,27 +242,33 @@ const md = [
   `Generated: ${report.generatedAt}`,
   `Verdict: ${report.verdict}`,
   `Production decision: ${report.productionDecision}`,
+  `Mode: ${report.mode}`,
   '',
   '## Counts',
   `- Roots checked: ${report.counts.rootsChecked}`,
   `- Directories visited: ${report.counts.dirsVisited}`,
   `- JSON files inspected: ${report.counts.jsonFilesInspected}`,
-  `- Level 1 candidates: ${report.counts.level1Candidates}`,
+  `- Real Level 1 candidates: ${report.counts.realLevel1Candidates}`,
+  `- Synthetic Level 1 candidates excluded unless explicitly allowed: ${report.counts.syntheticLevel1Candidates}`,
+  `- Selected Level 1 candidates: ${report.counts.selectedLevel1Candidates}`,
   `- Manifest candidates: ${report.counts.manifestCandidates}`,
   `- Warnings: ${report.counts.warnings}`,
   `- Hard fails: ${report.counts.hardFails}`,
   '',
   '## Selected Level 1 candidate',
-  report.selectedLevel1 ? `- ${report.selectedLevel1.fileSafe} · possibleVisitRows=${report.selectedLevel1.possibleVisitRows}` : '- none',
+  report.selectedLevel1 ? `- ${report.selectedLevel1.fileSafe} · possibleVisitRows=${report.selectedLevel1.possibleVisitRows} · synthetic=${report.selectedLevel1.syntheticFixture}` : '- none',
   '',
-  '## Level 1 candidates',
-  ...(report.level1Candidates.length ? report.level1Candidates.map(x => `- ${x.fileSafe} · possibleVisitRows=${x.possibleVisitRows}`) : ['- none found']),
+  '## Real Level 1 candidates',
+  ...(report.realLevel1Candidates.length ? report.realLevel1Candidates.map(x => `- ${x.fileSafe} · possibleVisitRows=${x.possibleVisitRows}`) : ['- none found']),
+  '',
+  '## Synthetic Level 1 candidates excluded',
+  ...(report.syntheticLevel1Candidates.length ? report.syntheticLevel1Candidates.map(x => `- ${x.fileSafe} · possibleVisitRows=${x.possibleVisitRows}`) : ['- none found']),
   '',
   '## Manifest candidates',
   ...(report.manifestCandidates.length ? report.manifestCandidates.map(x => `- ${x.fileSafe}`) : ['- none found']),
   '',
   '## Preflight from recovered candidate',
-  preflightStep ? `- status=${preflightStep.status} ok=${preflightStep.ok}` : '- not run because no Level 1 candidate was found',
+  preflightStep ? `- status=${preflightStep.status} ok=${preflightStep.ok}` : '- not run because no real Level 1 candidate was found',
   '',
   '## Next step',
   `- ${report.nextStep}`,
