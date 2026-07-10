@@ -1,167 +1,182 @@
 #!/usr/bin/env node
 /*
-  CXOrbia TyA - RC Phase A predeploy gate
-  Safe validator. No deploy, no provider calls, no DB writes.
-
-  Purpose: confirm the repo is configured only for a controlled Hosting preview/staging
-  movement with gates closed before Paula authorizes any deploy step.
+  CXOrbia TyA - predeploy validation aligned to source lock post-V96.
+  Validation success is not deploy authorization.
+  No provider calls, imports, database writes or deploys.
 */
-
+import crypto from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
 
 const root = process.cwd();
 const args = process.argv.slice(2);
 const outIdx = args.indexOf('--out');
-const outDir = outIdx >= 0 ? args[outIdx + 1] : null;
+const outDir = outIdx >= 0 && args[outIdx + 1] ? path.resolve(root, args[outIdx + 1]) : null;
+const exists = rel => fs.existsSync(path.join(root, rel));
+const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
+const sha256 = rel => crypto.createHash('sha256').update(fs.readFileSync(path.join(root, rel))).digest('hex');
 
-const failures = [];
-const warnings = [];
-const info = [];
-
-function exists(rel){ return fs.existsSync(path.join(root, rel)); }
-function readJson(rel){ return JSON.parse(fs.readFileSync(path.join(root, rel), 'utf8')); }
-function push(kind, message, extra={}){ (kind === 'fail' ? failures : kind === 'warn' ? warnings : info).push({ message, ...extra }); }
-function fileContains(rel, pattern){ if(!exists(rel)) return false; return pattern.test(fs.readFileSync(path.join(root, rel), 'utf8')); }
-
-const requiredFiles = [
-  'firebase.json',
-  '.firebaserc',
-  'app/index.html',
-  'app/core/production-copy-guard.js',
-  'tools/migration/tya-phase-a-rc-smoke-gate.mjs',
-  'tools/qa/tya-phase-a-visual-smoke.mjs',
-  'tools/release/tya-rc-phase-a-drift-gate.mjs',
-  'app/docs/RC-PHASE-A-CONTROLLED-DECISION-20260706.md',
-  'app/docs/PREDEPLOY-CONTROLADO-RC-PHASE-A-20260706.md'
-];
-for (const rel of requiredFiles) {
-  if (exists(rel)) push('info', 'required_file_present', { file: rel });
-  else push('fail', 'required_file_missing', { file: rel });
-}
-
-if (exists('firebase.json')) {
-  try {
-    const firebase = readJson('firebase.json');
-    const hosting = firebase.hosting || {};
-    if (hosting.public !== 'app') push('fail', 'hosting_public_must_be_app', { value: hosting.public });
-    else push('info', 'hosting_public_ok', { value: hosting.public });
-    if (hosting.target !== 'cxorbia-dev') push('warn', 'hosting_target_not_expected_dev', { value: hosting.target });
-    else push('info', 'hosting_target_dev_ok', { value: hosting.target });
-    const rewrites = JSON.stringify(hosting.rewrites || []);
-    if (!rewrites.includes('/index.html')) push('fail', 'spa_rewrite_missing');
-    const headers = JSON.stringify(hosting.headers || []);
-    for (const term of ['text/html; charset=utf-8','application/javascript; charset=utf-8','text/css; charset=utf-8','application/json; charset=utf-8','application/manifest+json; charset=utf-8']) {
-      if (!headers.includes(term)) push('fail', 'utf8_header_missing', { term });
+function listFiles(dir) {
+  const abs = path.join(root, dir);
+  if (!fs.existsSync(abs)) return [];
+  const out = [];
+  const stack = [abs];
+  while (stack.length) {
+    const current = stack.pop();
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const full = path.join(current, entry.name);
+      if (entry.isDirectory()) stack.push(full);
+      else if (entry.isFile()) out.push(path.relative(root, full).split(path.sep).join('/'));
     }
-    if (firebase.firestore || firebase.storage) push('warn', 'rules_config_present_do_not_deploy_rules_in_rc', { firestore: !!firebase.firestore, storage: !!firebase.storage });
-  } catch (err) {
-    push('fail', 'firebase_json_invalid', { error: String(err.message || err) });
   }
+  return out.sort();
 }
 
-if (exists('.firebaserc')) {
-  try {
-    const rc = readJson('.firebaserc');
-    const projects = rc.projects || {};
-    if (projects.default && /prod|production/i.test(projects.default)) push('fail', 'firebase_default_points_to_production_like_project', { value: projects.default });
-    if (projects.default !== 'cxorbia-backend-dev') push('warn', 'firebase_default_not_expected_dev', { value: projects.default });
-    else push('info', 'firebase_default_dev_ok', { value: projects.default });
-    const raw = JSON.stringify(rc);
-    if (/prod|production/i.test(raw)) push('warn', 'firebaserc_contains_production_like_text');
-  } catch (err) {
-    push('fail', 'firebaserc_invalid', { error: String(err.message || err) });
-  }
+function localScripts(html) {
+  return [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)]
+    .map(match => match[1])
+    .filter(src => !/^(?:https?:)?\/\//i.test(src) && !/^data:/i.test(src))
+    .map(src => src.split(/[?#]/, 1)[0].replace(/^\.\//, '').replace(/^\//, ''));
 }
 
-if (exists('app/index.html')) {
-  const html = fs.readFileSync(path.join(root, 'app/index.html'), 'utf8');
-  if (!html.includes('<meta charset="UTF-8">')) push('fail', 'index_utf8_meta_missing');
-  if (!html.includes('core/production-copy-guard.js')) push('fail', 'production_copy_guard_not_loaded');
-  const guardPos = html.indexOf('core/production-copy-guard.js');
-  const uiPos = html.indexOf('core/ui.js');
-  const modulesPos = html.indexOf('modules/');
-  if (uiPos >= 0 && guardPos >= 0 && guardPos <= uiPos) push('fail', 'guard_must_load_after_ui');
-  if (modulesPos >= 0 && guardPos >= 0 && guardPos >= modulesPos) push('fail', 'guard_must_load_before_modules');
-}
+const hardFails = [];
+const warnings = [];
+const checks = {};
 
-const sensitivePatterns = [
-  { name: 'private_key', pattern: /-----BEGIN (RSA |EC |OPENSSH |)PRIVATE KEY-----/ },
-  { name: 'service_account_private_key', pattern: /"private_key"\s*:/ },
-  { name: 'google_api_key_literal', pattern: /AIza[0-9A-Za-z\-_]{20,}/ },
-  { name: 'firebase_token_literal', pattern: /FIREBASE_TOKEN\s*=/ },
-  { name: 'make_webhook_literal', pattern: /hook\.(make|integromat)\.com\//i }
+let sourceManifest = null;
+try {
+  sourceManifest = JSON.parse(read('backend/config/phase-a-source-lock-post-v96-runtime-manifest.source-safe.json'));
+  if (sourceManifest.kind !== 'cxorbia.sourceLockRuntimeManifest') hardFails.push('source_lock_manifest_kind_invalid');
+  if (!Array.isArray(sourceManifest.runtimeFiles) || sourceManifest.runtimeFiles.length !== 67) hardFails.push('source_lock_runtime_count_not_67');
+} catch (error) {
+  hardFails.push(`source_lock_manifest_unreadable:${error.message}`);
+}
+const runtimeMissing = [];
+const runtimeMismatched = [];
+for (const item of sourceManifest?.runtimeFiles || []) {
+  if (!exists(item.path)) runtimeMissing.push(item.path);
+  else if (sha256(item.path) !== item.sha256) runtimeMismatched.push(item.path);
+}
+if (runtimeMissing.length) hardFails.push(`source_lock_runtime_missing:${runtimeMissing.join(',')}`);
+if (runtimeMismatched.length) hardFails.push(`source_lock_runtime_mismatched:${runtimeMismatched.join(',')}`);
+checks.sourceLock = {
+  expected: sourceManifest?.runtimeFiles?.length || 0,
+  matched: Math.max(0, (sourceManifest?.runtimeFiles?.length || 0) - runtimeMissing.length - runtimeMismatched.length),
+  missing: runtimeMissing,
+  mismatched: runtimeMismatched
+};
+
+let firebase = null;
+try { firebase = JSON.parse(read('firebase.json')); } catch (error) { hardFails.push(`firebase_json_invalid:${error.message}`); }
+let firebaserc = null;
+try { firebaserc = JSON.parse(read('.firebaserc')); } catch (error) { hardFails.push(`firebaserc_invalid:${error.message}`); }
+const hostingPublic = firebase?.hosting?.public || null;
+const defaultProject = firebaserc?.projects?.default || null;
+const hostingTarget = firebaserc?.targets?.[defaultProject]?.hosting || {};
+if (hostingPublic !== 'app') hardFails.push(`firebase_hosting_public_not_app:${hostingPublic || 'missing'}`);
+if (defaultProject !== 'cxorbia-backend-dev') hardFails.push(`firebase_default_project_unexpected:${defaultProject || 'missing'}`);
+if (!Object.values(hostingTarget).flat().includes('cxorbia-backend-dev')) hardFails.push('firebase_hosting_target_missing_dev_site');
+checks.firebase = { hostingPublic, defaultProject, hostingTarget };
+
+let html = '';
+try { html = read('app/index.html'); } catch (error) { hardFails.push(`index_unreadable:${error.message}`); }
+const scripts = localScripts(html);
+const duplicateScripts = [...new Set(scripts.filter((src, index) => scripts.indexOf(src) !== index))];
+const missingScripts = scripts.filter(src => !exists(`app/${src}`));
+if (duplicateScripts.length) hardFails.push(`duplicate_local_scripts:${duplicateScripts.join(',')}`);
+if (missingScripts.length) hardFails.push(`missing_local_scripts:${missingScripts.join(',')}`);
+if (!/<meta\s+charset=["']?UTF-8["']?\s*\/?>/i.test(html)) hardFails.push('index_charset_not_utf8');
+const activeBackendScripts = scripts.filter(src => /(?:^|\/)(?:backend-|cx-data-bridge|backend-connection-point)/i.test(src));
+if (activeBackendScripts.length) hardFails.push(`backend_runtime_scripts_active_before_authorization:${activeBackendScripts.join(',')}`);
+checks.index = { localScripts: scripts.length, duplicateScripts, missingScripts, activeBackendScripts };
+
+const requiredDocs = [
+  'app/docs/SOURCE-LOCK-EMPALME-PROTOTIPO-POST-V96-20260710.md',
+  'app/docs/REAUDITORIA-EMPALME-PROTOTIPO-POST-V96-20260710.md',
+  'app/docs/PHASE-A-DEV-AUTH-FIRESTORE-ACTIVATION-READINESS-POST-V96-20260710.md',
+  'app/docs/EMPALME-CONTROLADO-RUNTIME-POST-V96-20260710.md'
 ];
-const scanDirs = ['app', 'tools', '.github'];
-function walk(dir, out=[]) {
-  if (!fs.existsSync(dir)) return out;
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (entry.name === 'node_modules' || entry.name === '.git') continue;
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) walk(full, out);
-    else if (/\.(js|json|html|css|md|yml|yaml|webmanifest|rules)$/.test(entry.name)) out.push(full);
-  }
-  return out;
-}
-for (const abs of scanDirs.flatMap(d => walk(path.join(root, d)))) {
-  const rel = path.relative(root, abs).replace(/\\/g, '/');
-  const text = fs.readFileSync(abs, 'utf8');
-  for (const item of sensitivePatterns) {
-    if (item.pattern.test(text)) push('fail', 'sensitive_or_secret_pattern_found', { file: rel, pattern: item.name });
-  }
-}
+const missingDocs = requiredDocs.filter(file => !exists(file));
+if (missingDocs.length) hardFails.push(`required_docs_missing:${missingDocs.join(',')}`);
+checks.docs = { required: requiredDocs.length, missing: missingDocs };
+
+const deployWorkflowPath = '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml';
+let deployWorkflow = '';
+try { deployWorkflow = read(deployWorkflowPath); } catch (error) { hardFails.push(`deploy_workflow_unreadable:${error.message}`); }
+const manualDispatch = /^\s{2}workflow_dispatch:/m.test(deployWorkflow);
+const automaticTriggers = [...deployWorkflow.matchAll(/^\s{2}(push|pull_request|schedule):/gm)].map(match => match[1]);
+const confirmationGate = deployWorkflow.includes('DEPLOY_DEV_ROOT');
+const sourceLockGateBeforeFirebase = deployWorkflow.indexOf('Source lock post-V96 runtime gate') >= 0 && deployWorkflow.indexOf('Source lock post-V96 runtime gate') < deployWorkflow.indexOf('Firebase CLI access check');
+if (!manualDispatch) hardFails.push('deploy_workflow_not_manual_dispatch');
+if (automaticTriggers.length) hardFails.push(`deploy_workflow_has_automatic_triggers:${automaticTriggers.join(',')}`);
+if (!confirmationGate) hardFails.push('deploy_workflow_missing_exact_confirmation');
+if (!sourceLockGateBeforeFirebase) hardFails.push('deploy_workflow_source_lock_gate_not_before_firebase');
+checks.deployWorkflow = { manualDispatch, automaticTriggers, confirmationGate, sourceLockGateBeforeFirebase };
 
 try {
-  const status = execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim();
-  if (status) push('warn', 'working_tree_not_clean_in_local_context');
-  else push('info', 'working_tree_clean');
-} catch (err) {
-  push('warn', 'git_status_unavailable');
+  const webManifest = JSON.parse(read('app/manifest.webmanifest'));
+  if (!webManifest.name || !webManifest.start_url || !webManifest.display) hardFails.push('web_manifest_identity_incomplete');
+  checks.webManifest = { valid: true, name: webManifest.name, startUrl: webManifest.start_url, display: webManifest.display };
+} catch (error) {
+  hardFails.push(`web_manifest_invalid:${error.message}`);
+  checks.webManifest = { valid: false };
 }
+if (!exists('app/sw.js') || !read('app/sw.js').includes('self.addEventListener')) hardFails.push('service_worker_invalid');
+
+const envFiles = listFiles('.').filter(file => /(^|\/)\.env(?:\.|$)/i.test(file) && !file.endsWith('.example'));
+if (envFiles.length) hardFails.push(`environment_files_present:${envFiles.join(',')}`);
+checks.sensitiveData = { envFiles };
+
+let copyReport = null;
+const copyOut = outDir ? path.join(outDir, 'copy') : path.join(root, '.tmp/rc-phase-a-predeploy-copy');
+if (exists('tools/quality/tya-p0-operational-copy-scanner.mjs')) {
+  try { execFileSync(process.execPath, ['tools/quality/tya-p0-operational-copy-scanner.mjs', '--out', copyOut], { cwd: root, stdio: 'pipe' }); } catch {}
+  const copyPath = path.join(copyOut, 'p0-operational-copy-report.json');
+  if (fs.existsSync(copyPath)) {
+    try { copyReport = JSON.parse(fs.readFileSync(copyPath, 'utf8')); } catch { copyReport = null; }
+  }
+}
+const copyResidues = copyReport?.sourceHitCount || copyReport?.hitCount || 0;
+if (copyResidues) warnings.push(`source_lock_copy_items_for_p1_review:${copyResidues}`);
+checks.copy = { scannerExecuted: Boolean(copyReport), sourceResidues: copyResidues };
 
 const report = {
-  gate: 'cxorbia-tya-rc-phase-a-predeploy',
+  gate: 'cxorbia-tya-rc-phase-a-predeploy-post-v96',
   generatedAt: new Date().toISOString(),
-  verdict: failures.length ? 'NO_GO_PREDEPLOY' : 'GO_PREDEPLOY_CONTROLLED_WITH_GATES_CLOSED',
-  failureCount: failures.length,
-  warningCount: warnings.length,
-  infoCount: info.length,
-  failures,
+  verdict: hardFails.length ? 'NO_GO_PREDEPLOY_POST_V96' : (warnings.length ? 'GO_WITH_WARNINGS_PREDEPLOY_NOT_DEPLOY_AUTHORIZATION' : 'GO_PREDEPLOY_NOT_DEPLOY_AUTHORIZATION'),
+  hardFails,
   warnings,
-  info,
+  checks,
+  deploymentAuthorization: false,
   safeState: {
-    deployExecuted: false,
+    deploy: false,
     production: false,
-    firestoreWrites: false,
-    authWrites: false,
-    storageWrites: false,
-    hrWrites: false,
     providers: false,
-    imports: false
+    databaseWrites: false,
+    imports: false,
+    authActivation: false,
+    firestoreActivation: false
   }
 };
 
 if (outDir) {
-  const absOut = path.join(root, outDir);
-  fs.mkdirSync(absOut, { recursive: true });
-  fs.writeFileSync(path.join(absOut, 'rc-phase-a-predeploy-report.json'), JSON.stringify(report, null, 2), 'utf8');
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(path.join(outDir, 'rc-phase-a-predeploy-report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
   const md = [
-    '# CXOrbia TyA RC Phase A predeploy report', '',
+    '# CXOrbia TyA RC Phase A predeploy — source lock post-V96', '',
     `Generated: ${report.generatedAt}`,
     `Verdict: ${report.verdict}`,
-    `Failures: ${report.failureCount}`,
-    `Warnings: ${report.warningCount}`,
-    '',
-    '## Failures', ...(failures.length ? failures.map(x => `- ${x.message}${x.file ? ` · ${x.file}` : ''}`) : ['- none']),
-    '',
-    '## Warnings', ...(warnings.length ? warnings.map(x => `- ${x.message}${x.file ? ` · ${x.file}` : ''}`) : ['- none']),
-    '',
-    '## Safe state',
-    '- No deploy executed', '- No production', '- No provider calls', '- No database writes', '- No real imports', ''
+    `Hard fails: ${hardFails.length}`,
+    `Warnings: ${warnings.length}`,
+    `Runtime matched: ${checks.sourceLock.matched}/${checks.sourceLock.expected}`,
+    `Deployment authorization: no`,
+    '', '## Hard fails', ...(hardFails.length ? hardFails.map(x => `- ${x}`) : ['- none']),
+    '', '## Warnings', ...(warnings.length ? warnings.map(x => `- ${x}`) : ['- none']),
+    '', '## Safe state', '- No deploy', '- No production', '- No provider calls', '- No database writes', '- No imports', '- No Auth/Firestore activation', ''
   ].join('\n');
-  fs.writeFileSync(path.join(absOut, 'rc-phase-a-predeploy-report.md'), md, 'utf8');
+  fs.writeFileSync(path.join(outDir, 'rc-phase-a-predeploy-report.md'), md, 'utf8');
 }
 
 console.log(JSON.stringify(report, null, 2));
-process.exitCode = failures.length ? 1 : 0;
+process.exitCode = hardFails.length ? 1 : 0;

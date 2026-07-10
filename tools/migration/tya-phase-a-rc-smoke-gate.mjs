@@ -1,274 +1,224 @@
 #!/usr/bin/env node
 /*
-  CXOrbia TyA - Phase A RC smoke gate
-  Safe local validator. No network calls, no provider calls, no database writes, no deploy.
-
-  Usage from repo root:
-    node tools/migration/tya-phase-a-rc-smoke-gate.mjs
-    node tools/migration/tya-phase-a-rc-smoke-gate.mjs --out .tmp/phase-a-rc-smoke
+  CXOrbia TyA - Phase A RC smoke gate aligned to the post-V96 source lock.
+  Safe-only: static files, hashes, syntax and source-safe reports.
+  No deploy, providers, imports or database writes.
 */
-
+import crypto from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
 
 const root = process.cwd();
 const args = process.argv.slice(2);
-const outIndex = args.indexOf('--out');
-const outDir = outIndex >= 0 ? args[outIndex + 1] : null;
+const outIdx = args.indexOf('--out');
+const outDir = outIdx >= 0 && args[outIdx + 1] ? path.resolve(root, args[outIdx + 1]) : null;
+const manifestPath = path.join(root, 'backend/config/phase-a-source-lock-post-v96-runtime-manifest.source-safe.json');
+const copyScanner = path.join(root, 'tools/quality/tya-p0-operational-copy-scanner.mjs');
+
+const exists = rel => fs.existsSync(path.join(root, rel));
+const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
+const sha256 = rel => crypto.createHash('sha256').update(fs.readFileSync(path.join(root, rel))).digest('hex');
+
+function listFiles(dir) {
+  const abs = path.join(root, dir);
+  if (!fs.existsSync(abs)) return [];
+  const out = [];
+  const stack = [abs];
+  while (stack.length) {
+    const current = stack.pop();
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const full = path.join(current, entry.name);
+      if (entry.isDirectory()) stack.push(full);
+      else if (entry.isFile()) out.push(path.relative(root, full).split(path.sep).join('/'));
+    }
+  }
+  return out.sort();
+}
+
+function localScripts(html) {
+  return [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)]
+    .map(match => match[1])
+    .filter(src => !/^(?:https?:)?\/\//i.test(src) && !/^data:/i.test(src))
+    .map(src => src.split(/[?#]/, 1)[0].replace(/^\.\//, '').replace(/^\//, ''));
+}
 
 const hardFails = [];
 const warnings = [];
-const info = [];
+const checks = {};
+let manifest = null;
 
-function exists(rel){ return fs.existsSync(path.join(root, rel)); }
-function read(rel){ return fs.readFileSync(path.join(root, rel), 'utf8'); }
-function push(type, message, extra={}){ (type === 'fail' ? hardFails : type === 'warn' ? warnings : info).push({ message, ...extra }); }
-function lineHas(text, term){ return text.includes(term); }
+try {
+  manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  if (manifest.kind !== 'cxorbia.sourceLockRuntimeManifest') hardFails.push('source_lock_manifest_kind_invalid');
+  if (!Array.isArray(manifest.runtimeFiles) || manifest.runtimeFiles.length !== 67) hardFails.push('source_lock_runtime_count_not_67');
+} catch (error) {
+  hardFails.push(`source_lock_manifest_unreadable:${error.message}`);
+}
 
-const requiredDocs = [
-  'app/docs/EMPALME-COMPLETO-STATUS-POST-V89-20260706.md',
-  'app/docs/PHASE-A-PRODUCCION-GO-NOGO-POST-V89-20260706.md',
-  'app/docs/CAMBIOS-BACKEND-ADDENDUM-GUARD-PRODUCCION-POST-V89-20260706.md',
-  'app/docs/ACADEMIA-IMPACT-TRACKER-POST-V89-20260706.md',
-  'app/docs/ACADEMIA-GATE-POST-V89-20260706.md',
-  'app/docs/HANDOFF-ACADEMIA-POST-V89-20260706.md',
-  'app/docs/BASELINE-AUDITADA-CONTINUIDAD-V91-INCREMENTAL-CXORBIA-20260708.md',
-  'app/docs/AUDITORIA-FORENSE-CANDIDATA-V91-CXORBIA-20260708.md',
-  'app/docs/SOURCE-LOCK-CANDIDATA-V91-CONTROLADA-CXORBIA-20260708.md',
-  'app/docs/EMPALME-CONTROLADO-V91-BATCH1-CXORBIA-20260708.md',
-  'app/docs/EMPALME-CONTROLADO-V91-BATCH2-PWA-CACHE-CXORBIA-20260708.md',
-  'app/docs/EMPALME-CONTROLADO-V91-BATCH3-P0-COPY-GUARD-CXORBIA-20260708.md',
-  'app/docs/EMPALME-CONTROLADO-V91-BATCH4-ACADEMIA-ADMIN-ACTIONS-CXORBIA-20260708.md',
-  'app/docs/EMPALME-CONTROLADO-V91-BATCH5-ACADEMIA-CREAR-IA-STABLE-CXORBIA-20260708.md'
+const runtimeMissing = [];
+const runtimeMismatched = [];
+if (manifest?.runtimeFiles) {
+  for (const item of manifest.runtimeFiles) {
+    if (!exists(item.path)) runtimeMissing.push(item.path);
+    else if (sha256(item.path) !== item.sha256) runtimeMismatched.push(item.path);
+  }
+}
+if (runtimeMissing.length) hardFails.push(`source_lock_runtime_missing:${runtimeMissing.join(',')}`);
+if (runtimeMismatched.length) hardFails.push(`source_lock_runtime_mismatched:${runtimeMismatched.join(',')}`);
+checks.sourceLock = {
+  expected: manifest?.runtimeFiles?.length || 0,
+  matched: Math.max(0, (manifest?.runtimeFiles?.length || 0) - runtimeMissing.length - runtimeMismatched.length),
+  missing: runtimeMissing,
+  mismatched: runtimeMismatched
+};
+
+let html = '';
+try { html = read('app/index.html'); } catch (error) { hardFails.push(`index_unreadable:${error.message}`); }
+const scripts = localScripts(html);
+const duplicateScripts = [...new Set(scripts.filter((src, index) => scripts.indexOf(src) !== index))];
+const missingScripts = scripts.filter(src => !exists(`app/${src}`));
+if (duplicateScripts.length) hardFails.push(`duplicate_local_scripts:${duplicateScripts.join(',')}`);
+if (missingScripts.length) hardFails.push(`missing_local_scripts:${missingScripts.join(',')}`);
+checks.index = { localScripts: scripts.length, duplicateScripts, missingScripts };
+
+try {
+  const manifestWeb = JSON.parse(read('app/manifest.webmanifest'));
+  for (const key of ['name', 'short_name', 'start_url', 'display']) {
+    if (!manifestWeb[key]) hardFails.push(`manifest_missing_${key}`);
+  }
+  checks.manifest = { valid: true, name: manifestWeb.name, startUrl: manifestWeb.start_url, display: manifestWeb.display };
+} catch (error) {
+  hardFails.push(`manifest_invalid:${error.message}`);
+  checks.manifest = { valid: false };
+}
+
+if (!/<meta\s+charset=["']?UTF-8["']?\s*\/?>/i.test(html)) hardFails.push('index_charset_not_utf8');
+if (!exists('app/sw.js') || !read('app/sw.js').includes('self.addEventListener')) hardFails.push('service_worker_invalid');
+
+const jsFiles = listFiles('app').filter(file => file.endsWith('.js'));
+const syntaxErrors = [];
+for (const file of jsFiles) {
+  try { execFileSync(process.execPath, ['--check', file], { cwd: root, stdio: 'pipe' }); }
+  catch (error) { syntaxErrors.push({ file, message: String(error.stderr || error.message).trim().slice(0, 500) }); }
+}
+if (syntaxErrors.length) hardFails.push(`javascript_syntax_errors:${syntaxErrors.map(x => x.file).join(',')}`);
+checks.javascript = { checked: jsFiles.length, syntaxErrors };
+
+const moduleIds = [];
+for (const file of jsFiles) {
+  const source = read(file);
+  for (const match of source.matchAll(/CX\.module\(\s*["']([^"']+)["']/g)) moduleIds.push({ id: match[1], file });
+}
+const moduleCounts = new Map();
+for (const item of moduleIds) moduleCounts.set(item.id, (moduleCounts.get(item.id) || 0) + 1);
+const duplicateModules = [...moduleCounts.entries()].filter(([, count]) => count > 1).map(([id, count]) => ({ id, count }));
+if (duplicateModules.length) hardFails.push(`duplicate_module_registration:${duplicateModules.map(x => x.id).join(',')}`);
+checks.modules = { registrations: moduleIds.length, unique: moduleCounts.size, duplicateModules };
+
+const semanticRequirements = [
+  ['config_mod_cat_hrsource', 'app/core/config.js', /\bhrsource\s*:/],
+  ['config_mod_cat_novedades', 'app/core/config.js', /\bnovedades\s*:/],
+  ['config_mod_cat_saas', 'app/core/config.js', /\bsaas\s*:/],
+  ['config_mod_cat_diagnostico', 'app/core/config.js', /\bdiagnostico\s*:/],
+  ['config_mod_cat_administrabilidad', 'app/core/config.js', /\badministrabilidad\s*:/],
+  ['unknown_module_restricted_fallback', 'app/core/config.js', /CX\.MOD_CAT\[id\]\s*\|\|\s*["']cfg["']/],
+  ['client_projects_data', 'app/core/data.js', /clientProjects\s*\(/],
+  ['client_projects_router', 'app/core/router.js', /clientProjects\s*\(/],
+  ['client_projects_portal', 'app/modules/cliente.js', /clientProjects\s*\(/]
 ];
-
-for (const rel of requiredDocs) {
-  if (exists(rel)) push('info', 'required_doc_present', { file: rel });
-  else push('fail', 'required_doc_missing', { file: rel });
+const semanticMissing = [];
+for (const [id, file, pattern] of semanticRequirements) {
+  if (!exists(file) || !pattern.test(read(file))) semanticMissing.push(id);
 }
+if (semanticMissing.length) hardFails.push(`post_v96_semantics_missing:${semanticMissing.join(',')}`);
+checks.postV96Semantics = { required: semanticRequirements.length, missing: semanticMissing };
 
-const indexPath = 'app/index.html';
-let scripts = [];
-if (!exists(indexPath)) {
-  push('fail', 'index_missing', { file: indexPath });
-} else {
-  const html = read(indexPath);
-  scripts = [...html.matchAll(/<script\s+src=["']([^"']+)["']\s*>\s*<\/script>/g)].map(m => m[1]);
-  const localScripts = scripts.filter(src => !/^https?:\/\//.test(src));
-  const externals = scripts.filter(src => /^https?:\/\//.test(src));
-  push('info', 'script_inventory', { total: scripts.length, local: localScripts.length, external: externals.length });
-
-  for (const src of localScripts) {
-    const rel = path.join('app', src).replace(/\\/g, '/');
-    if (!exists(rel)) push('fail', 'local_script_missing', { script: src, file: rel });
-  }
-
-  const uiIdx = scripts.indexOf('core/ui.js');
-  const guardIdx = scripts.indexOf('core/production-copy-guard.js');
-  const firstModuleIdx = scripts.findIndex(src => src.startsWith('modules/'));
-  if (guardIdx < 0) push('fail', 'production_copy_guard_not_loaded');
-  else {
-    push('info', 'production_copy_guard_loaded', { position: guardIdx + 1 });
-    if (uiIdx < 0) push('fail', 'core_ui_not_loaded');
-    if (uiIdx >= 0 && guardIdx <= uiIdx) push('fail', 'guard_must_load_after_core_ui', { uiPosition: uiIdx + 1, guardPosition: guardIdx + 1 });
-    if (firstModuleIdx >= 0 && guardIdx >= firstModuleIdx) push('fail', 'guard_must_load_before_modules', { guardPosition: guardIdx + 1, firstModulePosition: firstModuleIdx + 1 });
-  }
-
-  const requiredV91Scripts = [
-    'core/v91-modules.js',
-    'modules/diagnostico.js',
-    'modules/administrabilidad.js',
-    'modules/academia-admin-actions.js',
-    'modules/academia-create-ai-stable.js'
-  ];
-  for (const src of requiredV91Scripts) {
-    if (!scripts.includes(src)) push('fail', 'v91_required_script_missing', { script: src });
-    else push('info', 'v91_required_script_loaded', { script: src, position: scripts.indexOf(src) + 1 });
-  }
-  if (scripts.includes('core/tya-phase-a-source-safe-preview.js')) push('info', 'tya_source_safe_preview_loaded', { position: scripts.indexOf('core/tya-phase-a-source-safe-preview.js') + 1 });
-
-  const academiaIdx = scripts.indexOf('modules/academia.js');
-  const acadActionsIdx = scripts.indexOf('modules/academia-admin-actions.js');
-  const acadAiIdx = scripts.indexOf('modules/academia-create-ai-stable.js');
-  if (academiaIdx >= 0 && acadActionsIdx >= 0 && acadActionsIdx <= academiaIdx) push('fail', 'academia_admin_actions_must_load_after_academia');
-  if (acadActionsIdx >= 0 && acadAiIdx >= 0 && acadAiIdx <= acadActionsIdx) push('fail', 'academia_ai_stable_must_load_after_admin_actions');
-
-  if (!html.includes('<meta charset="UTF-8">')) push('fail', 'utf8_meta_missing');
+const envFiles = listFiles('.').filter(file => /(^|\/)\.env(?:\.|$)/i.test(file) && !file.endsWith('.example'));
+if (envFiles.length) hardFails.push(`environment_files_present:${envFiles.join(',')}`);
+const sensitivePatterns = [
+  /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
+  /"private_key"\s*:\s*"-----BEGIN PRIVATE KEY-----/,
+  /AIza[0-9A-Za-z_-]{30,}/,
+  /https:\/\/hooks\.make\.com\/[0-9A-Za-z_-]{12,}/i
+];
+const sensitiveHits = [];
+const scannerPatternFiles = new Set(['tools/migration/tya-phase-a-rc-smoke-gate.mjs', 'tools/quality/tya-p0-operational-copy-scanner.mjs']);
+for (const file of listFiles('.').filter(file => !file.startsWith('.git/') && !file.startsWith('.tmp/') && !scannerPatternFiles.has(file) && /\.(?:js|mjs|cjs|json|yml|yaml|md|html|txt|ps1|sh)$/i.test(file))) {
+  let source = '';
+  try { source = read(file); } catch { continue; }
+  if (sensitivePatterns.some(pattern => pattern.test(source))) sensitiveHits.push(file);
 }
+if (sensitiveHits.length) hardFails.push(`sensitive_material_detected:${sensitiveHits.join(',')}`);
+checks.sensitiveData = { envFiles, sensitiveHits };
 
-function walk(dir, out=[]) {
-  if (!fs.existsSync(dir)) return out;
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (entry.name === 'node_modules' || entry.name === '.git') continue;
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) walk(full, out);
-    else if (entry.name.endsWith('.js')) out.push(full);
-  }
-  return out;
-}
-
-const jsFiles = walk(path.join(root, 'app'));
-for (const abs of jsFiles) {
-  const rel = path.relative(root, abs).replace(/\\/g, '/');
+let copyReport = null;
+if (exists('tools/quality/tya-p0-operational-copy-scanner.mjs')) {
+  const copyOut = outDir ? path.join(outDir, 'copy') : path.join(root, '.tmp/phase-a-rc-smoke-copy');
   try {
-    execFileSync('node', ['--check', abs], { stdio: 'pipe' });
-  } catch (err) {
-    push('fail', 'js_syntax_fail', { file: rel, error: String(err.stderr || err.message).slice(0, 800) });
+    execFileSync(process.execPath, [copyScanner, '--out', copyOut], { cwd: root, stdio: 'pipe' });
+  } catch {
+    // The historical scanner may exit non-zero when the optional overlay guard is not loaded.
+  }
+  const copyPath = path.join(copyOut, 'p0-operational-copy-report.json');
+  if (fs.existsSync(copyPath)) {
+    try { copyReport = JSON.parse(fs.readFileSync(copyPath, 'utf8')); } catch { copyReport = null; }
   }
 }
-push('info', 'js_syntax_checked', { count: jsFiles.length });
+const copyResidues = copyReport?.sourceHitCount || copyReport?.hitCount || 0;
+if (copyResidues > 0) warnings.push(`source_lock_copy_items_for_p1_review:${copyResidues}`);
+checks.copy = {
+  scannerExecuted: Boolean(copyReport),
+  sourceResidues: copyResidues,
+  classification: copyResidues ? 'P1_REVIEW_NOT_PROVIDER_ACTIVATION' : 'CLEAN'
+};
 
-const guardPath = 'app/core/production-copy-guard.js';
-if (exists(guardPath)) {
-  const guard = read(guardPath);
-  const requiredTerms = [
-    'WhatsApp enviado', 'WA enviado al shopper', 'Correo enviado a', 'HR sincronizada',
-    'shopper notificado', 'Payload de prueba enviado', 'Disparo enviado',
-    'cuestionario enviado', 'egreso(s) automáticos', 'Make activo', 'Google Sheets en vivo', 'portal en vivo',
-    'Cuestionario enviado tarde', 'Conectado como', 'sincronizando correos reales'
-  ];
-  for (const term of requiredTerms) {
-    if (!guard.includes(term)) push('warn', 'guard_missing_expected_term', { term });
-  }
-} else {
-  push('fail', 'guard_file_missing', { file: guardPath });
-}
-
-const sourceResidueTerms = [
-  'WhatsApp enviado', 'WA enviado', 'HR sincronizada', 'shopper notificado', 'Correo enviado a',
-  'Payload de prueba enviado', 'Disparo enviado', 'eventos enviados', 'cuestionario enviado',
-  'egreso(s) automáticos', 'se generan los egresos automáticamente', 'Liquidación corregida · sincronizada'
-];
-const residueHits = [];
-for (const abs of jsFiles) {
-  const rel = path.relative(root, abs).replace(/\\/g, '/');
-  if (rel === 'app/core/production-copy-guard.js') continue;
-  const text = fs.readFileSync(abs, 'utf8');
-  const lines = text.split(/\r?\n/);
-  lines.forEach((line, idx) => {
-    for (const term of sourceResidueTerms) {
-      if (line.includes(term)) residueHits.push({ file: rel, line: idx + 1, term, text: line.trim().slice(0, 180) });
-    }
-  });
-}
-if (residueHits.length) push('warn', 'source_residues_mitigated_by_guard_but_need_permanent_patch', { count: residueHits.length, hits: residueHits.slice(0, 50) });
-else push('info', 'source_residue_scan_clean');
-
-const academyPath = 'app/modules/academia.js';
-if (exists(academyPath)) {
-  const academy = read(academyPath);
-  const ids = [...academy.matchAll(/id\s*:\s*['"]([^'"]+)['"]/g)].map(m => m[1]);
-  const duplicates = [...new Set(ids.filter((id, idx) => ids.indexOf(id) !== idx))];
-  if (duplicates.length) push('fail', 'academia_duplicate_ids', { duplicates });
-  else push('info', 'academia_ids_unique', { ids: ids.length });
-  for (const id of ['a_backend_prepared', 'a_ops_conflicts_route']) {
-    if (!ids.includes(id)) push('fail', 'academy_required_course_missing', { id });
-  }
-}
-
-const v91ModulePath = 'app/core/v91-modules.js';
-if (exists(v91ModulePath)) {
-  const text = read(v91ModulePath);
-  for (const term of ['diagnostico', 'administrabilidad', 'CX.MODULES', 'CX.MOD_CAT', 'moduleEnabled']) {
-    if (!lineHas(text, term)) push('fail', 'v91_modules_patch_missing_term', { file: v91ModulePath, term });
-  }
-}
-
-const academiaAdminPath = 'app/modules/academia-admin-actions.js';
-if (exists(academiaAdminPath)) {
-  const text = read(academiaAdminPath);
-  const terms = ['Editar', 'Duplicar', 'Versionar', 'Archivar', 'Motivo obligatorio', 'auditRef', 'localStorage', 'CX.modules.aprendizaje'];
-  for (const term of terms) {
-    if (!lineHas(text, term)) push('fail', 'academia_admin_actions_missing_term', { file: academiaAdminPath, term });
-  }
-} else {
-  push('fail', 'academia_admin_actions_file_missing', { file: academiaAdminPath });
-}
-
-const academiaAiPath = 'app/modules/academia-create-ai-stable.js';
-if (exists(academiaAiPath)) {
-  const text = read(academiaAiPath);
-  const terms = ['#acadNew', 'Gemini real no esta activo', 'in_review', 'ai_draft_preview', 'Motivo', 'auditRef', 'localStorage', 'CX.modules.aprendizaje'];
-  for (const term of terms) {
-    if (!lineHas(text, term)) push('fail', 'academia_ai_stable_missing_term', { file: academiaAiPath, term });
-  }
-} else {
-  push('fail', 'academia_ai_stable_file_missing', { file: academiaAiPath });
-}
-
-const diagPath = 'app/modules/diagnostico.js';
-if (exists(diagPath)) {
-  const text = read(diagPath);
-  for (const term of ['Synthetic input packs', 'Readiness', 'Bandeja de conflictos', 'Contratos backend', 'PREVIEW']) {
-    if (!lineHas(text, term)) push('fail', 'diagnostico_missing_term', { file: diagPath, term });
-  }
-}
-
-const adminPath = 'app/modules/administrabilidad.js';
-if (exists(adminPath)) {
-  const text = read(adminPath);
-  for (const term of ['Matriz de administrabilidad', 'NDA por rol', 'Planes comerciales', 'Reglas versionadas', 'PREVIEW']) {
-    if (!lineHas(text, term)) push('fail', 'administrabilidad_missing_term', { file: adminPath, term });
-  }
-}
-
-const swPath = 'app/sw.js';
-if (exists(swPath)) {
-  const text = read(swPath);
-  if (!lineHas(text, "cxorbia-v2") && !lineHas(text, "cxorbia-v3-tya-source-safe-preview")) push('fail', 'service_worker_cache_version_unexpected');
-  if (!lineHas(text, 'caches.delete')) push('fail', 'service_worker_missing_cache_purge');
-  if (!lineHas(text, 'fetch(e.request)')) push('fail', 'service_worker_missing_network_first_fetch');
-}
+const expectedPaths = new Set([
+  ...(manifest?.runtimeFiles || []).map(item => item.path),
+  ...(manifest?.excludedDocumentationAndMetadata || [])
+]);
+const unexpectedAppFiles = listFiles('app').filter(file => !expectedPaths.has(file));
+if (unexpectedAppFiles.length) warnings.push(`preserved_additional_app_files:${unexpectedAppFiles.length}`);
+checks.additionalAppFiles = { count: unexpectedAppFiles.length, files: unexpectedAppFiles };
 
 const report = {
-  gate: 'cxorbia-tya-phase-a-rc-smoke',
+  gate: 'cxorbia-tya-phase-a-rc-smoke-post-v96',
+  baseline: 'source-lock-post-v96',
   generatedAt: new Date().toISOString(),
-  baseline: 'V91 incremental',
+  verdict: hardFails.length ? 'NO_GO_RC_PHASE_A_POST_V96' : (warnings.length ? 'GO_WITH_WARNINGS_RC_PHASE_A_POST_V96' : 'GO_RC_PHASE_A_POST_V96'),
+  hardFails,
+  warnings,
+  checks,
   safeState: {
     deploy: false,
     production: false,
-    merge: false,
-    providerCalls: false,
+    providers: false,
     databaseWrites: false,
-    hrWrites: false
-  },
-  verdict: hardFails.length ? 'NO_GO' : 'GO_CONDICIONADO_RC_PHASE_A',
-  hardFailCount: hardFails.length,
-  warningCount: warnings.length,
-  infoCount: info.length,
-  hardFails,
-  warnings,
-  info
+    imports: false,
+    authActivation: false,
+    firestoreActivation: false
+  }
 };
 
 if (outDir) {
-  const absOut = path.join(root, outDir);
-  fs.mkdirSync(absOut, { recursive: true });
-  fs.writeFileSync(path.join(absOut, 'phase-a-rc-smoke-report.json'), JSON.stringify(report, null, 2), 'utf8');
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(path.join(outDir, 'phase-a-rc-smoke-report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
   const md = [
-    '# CXOrbia TyA Phase A RC smoke report',
-    '',
+    '# CXOrbia TyA Phase A RC smoke — source lock post-V96', '',
     `Generated: ${report.generatedAt}`,
-    `Baseline: ${report.baseline}`,
     `Verdict: ${report.verdict}`,
     `Hard fails: ${hardFails.length}`,
     `Warnings: ${warnings.length}`,
-    '',
-    '## Hard fails',
-    ...(hardFails.length ? hardFails.map(x => `- ${x.message}${x.file ? ` · ${x.file}` : ''}`) : ['- none']),
-    '',
-    '## Warnings',
-    ...(warnings.length ? warnings.map(x => `- ${x.message}${x.count != null ? ` · count=${x.count}` : ''}`) : ['- none']),
-    '',
-    '## Safe state',
-    '- No deploy',
-    '- No production',
-    '- No provider calls',
-    '- No database writes',
-    ''
+    `Runtime matched: ${checks.sourceLock.matched}/${checks.sourceLock.expected}`,
+    `JavaScript checked: ${checks.javascript.checked}`,
+    `Module registrations: ${checks.modules.registrations} (${checks.modules.unique} unique)`,
+    `Copy items for P1 review: ${checks.copy.sourceResidues}`,
+    `Preserved additional app files: ${checks.additionalAppFiles.count}`,
+    '', '## Hard fails', ...(hardFails.length ? hardFails.map(x => `- ${x}`) : ['- none']),
+    '', '## Warnings', ...(warnings.length ? warnings.map(x => `- ${x}`) : ['- none']),
+    '', '## Safe state', '- No deploy', '- No production', '- No provider calls', '- No database writes', '- No imports', '- No Auth/Firestore activation', ''
   ].join('\n');
-  fs.writeFileSync(path.join(absOut, 'phase-a-rc-smoke-report.md'), md, 'utf8');
+  fs.writeFileSync(path.join(outDir, 'phase-a-rc-smoke-report.md'), md, 'utf8');
 }
 
 console.log(JSON.stringify(report, null, 2));

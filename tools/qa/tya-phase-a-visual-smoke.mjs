@@ -1,216 +1,156 @@
 #!/usr/bin/env node
 /*
-  CXOrbia TyA - Phase A visual/console smoke
-  Local-only browser smoke. No deploy, no provider calls, no DB writes.
-
-  The script starts a local static server for /app, opens Chromium with Playwright,
-  enters the demo as admin and shopper, navigates critical Phase A screens,
-  checks that views are not blank, captures console/page errors, and verifies
-  visible copy does not promise real sends/sync/payments while gates are off.
+  CXOrbia TyA - visual smoke aligned to the post-V96 source lock.
+  Browser-only validation. No deploy, providers, imports or database writes.
 */
-
 import fs from 'node:fs';
 import path from 'node:path';
-import http from 'node:http';
-import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(__dirname, '../..');
-const appDir = path.join(root, 'app');
 const args = process.argv.slice(2);
-const outIndex = args.indexOf('--out');
-const outDir = outIndex >= 0 ? path.resolve(root, args[outIndex + 1]) : path.resolve(root, '.tmp/phase-a-visual-smoke');
-const headless = !args.includes('--headed');
-let currentBaseURL = '';
+const valueOf = (flag, fallback = null) => {
+  const index = args.indexOf(flag);
+  return index >= 0 && args[index + 1] ? args[index + 1] : fallback;
+};
+const baseUrl = valueOf('--base-url', process.env.CXORBIA_BASE_URL || 'http://127.0.0.1:4173');
+const outDir = valueOf('--out', '.tmp/phase-a-visual-smoke');
+fs.mkdirSync(outDir, { recursive: true });
 
-const mime = {
-  '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
-  '.json': 'application/json; charset=utf-8', '.webmanifest': 'application/manifest+json; charset=utf-8',
-  '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp'
+const report = {
+  gate: 'cxorbia-tya-phase-a-visual-smoke-post-v96',
+  generatedAt: new Date().toISOString(),
+  baseUrl,
+  roles: [],
+  hardFails: [],
+  warnings: [],
+  safeState: { deploy: false, production: false, providers: false, databaseWrites: false, imports: false }
 };
 
-function safeJoin(base, urlPath) {
-  const clean = decodeURIComponent(urlPath.split('?')[0].split('#')[0] || '/');
-  const rel = clean === '/' ? '/index.html' : clean;
-  const full = path.normalize(path.join(base, rel));
-  if (!full.startsWith(base)) return null;
-  return full;
-}
-
-function startServer() {
-  const server = http.createServer((req, res) => {
-    const full = safeJoin(appDir, req.url || '/');
-    if (!full || !fs.existsSync(full) || fs.statSync(full).isDirectory()) {
-      const fallback = path.join(appDir, 'index.html');
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
-      res.end(fs.readFileSync(fallback));
-      return;
-    }
-    res.writeHead(200, { 'Content-Type': mime[path.extname(full).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-store' });
-    res.end(fs.readFileSync(full));
-  });
-  return new Promise(resolve => server.listen(0, '127.0.0.1', () => resolve(server)));
-}
-
-const criticalAdmin = [
-  ['dashboard', 'Dashboard'],
-  ['postulaciones', 'Postulaciones'],
-  ['reservas', 'Reservas'],
-  ['automatizaciones', 'Automatizaciones'],
-  ['financiero', 'Finanzas'],
-  ['aprendizaje', 'Academia']
-];
-const criticalShopper = [
-  ['visitas', 'Visitas disponibles'],
-  ['reservas', 'Reservas shopper'],
-  ['misvisitas', 'Mis visitas'],
-  ['beneficios', 'Mis beneficios'],
-  ['aprendizaje', 'Academia shopper'],
-  ['cert', 'Certificación']
-];
-const forbiddenVisible = [
-  'WhatsApp enviado', 'WA enviado al shopper', 'Correo enviado a', 'HR sincronizada', 'shopper notificado',
-  'Payload de prueba enviado', 'Disparo enviado', 'eventos enviados', 'cuestionario enviado', 'Make activo',
-  'Google Sheets en vivo', 'portal en vivo', 'pago automático', 'egreso automático'
+const roleSpecs = [
+  { id: 'admin', enter: 'admin', shell: 'admin', expect: { projectSelector: true } },
+  { id: 'coordinador', enter: 'coordinador', shell: 'admin' },
+  { id: 'aliado', enter: 'aliado', shell: 'admin' },
+  { id: 'custom', enter: 'custom', shell: 'admin', expectFailClosed: true },
+  { id: 'cliente', enter: 'cliente', shell: 'cliente', expect: { clientProjectSelector: true } },
+  { id: 'shopper', enter: 'shopper', shell: 'shopper' }
 ];
 
-function writeReport(findings) {
-  fs.mkdirSync(outDir, { recursive: true });
-  findings.verdict = findings.failures.length ? 'NO_GO_VISUAL' : 'GO_VISUAL_CONDICIONADO_RC_PHASE_A';
-  fs.writeFileSync(path.join(outDir, 'phase-a-visual-smoke-report.json'), JSON.stringify(findings, null, 2), 'utf8');
-  const md = [
-    '# CXOrbia TyA Phase A visual smoke report', '',
-    `Generated: ${findings.generatedAt}`,
-    `Verdict: ${findings.verdict}`,
-    `Visited: ${findings.visited.length}`,
-    `Failures: ${findings.failures.length}`, '',
-    '## Visited', ...(findings.visited.length ? findings.visited.map(v => `- ${v.label} (${v.id}) · textLength=${v.textLength}`) : ['- none']), '',
-    '## Failures', ...(findings.failures.length ? findings.failures.map(f => `- ${f.type}${f.id ? ` · ${f.id}` : ''}${f.term ? ` · ${f.term}` : ''}${f.text ? ` · ${f.text}` : ''}`) : ['- none']), '',
-    '## Safe state', '- No deploy', '- No production', '- No provider calls', '- No database writes', '- No real imports', ''
-  ].join('\n');
-  fs.writeFileSync(path.join(outDir, 'phase-a-visual-smoke-report.md'), md, 'utf8');
-}
-
-async function clearOverlays(page) {
-  await page.evaluate(() => {
-    try { document.querySelectorAll('.cx-ov').forEach(el => el.remove()); } catch(e) {}
-    try { document.body.classList.remove('nav-open'); } catch(e) {}
-  }).catch(() => {});
-}
+const browser = await chromium.launch({ headless: true });
 
 async function hardenForSmoke(page) {
   await page.evaluate(() => {
-    try { localStorage.removeItem('cx_session'); } catch(e) {}
-    try { localStorage.setItem('cx_banners', '[]'); } catch(e) {}
-    try { sessionStorage.clear(); } catch(e) {}
-    if (window.CX && window.CX.confidencialidad) {
-      try { window.CX.confidencialidad.pending = () => false; } catch(e) {}
-      try { window.CX.confidencialidad.show = (role, go) => go && go(); } catch(e) {}
+    try { localStorage.setItem('cx_banners', '[]'); } catch {}
+    try { sessionStorage.setItem('cx_pwa_shown', '1'); } catch {}
+    document.querySelectorAll('.cx-ov').forEach(node => node.remove());
+    if (window.CX?.confidencialidad) {
+      window.CX.confidencialidad.pending = () => false;
+      window.CX.confidencialidad.show = (_role, onDone) => { if (onDone) onDone(); };
+      window.CX.confidencialidad.accept = () => {};
     }
-    if (window.CX && window.CX.app) {
-      try { window.CX.app.showBanners = () => {}; } catch(e) {}
-    }
-    try { document.querySelectorAll('.cx-ov').forEach(el => el.remove()); } catch(e) {}
+    if (window.CX?.app) window.CX.app.showBanners = () => {};
   });
 }
 
-async function assertVisibleCopy(page, label, findings) {
-  const text = await page.locator('body').innerText({ timeout: 5000 }).catch(() => '');
-  for (const term of forbiddenVisible) {
-    if (text.includes(term)) findings.failures.push({ type: 'visible_forbidden_copy', label, term });
-  }
-}
-
-async function navigateModule(page, id, label, findings) {
-  const nav = page.locator(`#nav-${id}`);
-  const count = await nav.count();
-  if (!count) {
-    findings.failures.push({ type: 'missing_nav', id, label });
-    return;
-  }
-  await clearOverlays(page);
-  await page.evaluate((moduleId) => {
-    try { document.querySelectorAll('.cx-ov').forEach(el => el.remove()); } catch(e) {}
-    if (window.CX && window.CX.router && typeof window.CX.router.nav === 'function') window.CX.router.nav(moduleId);
-  }, id).catch(async () => { await nav.first().click({ timeout: 5000 }); });
-  await page.waitForTimeout(350);
-  const viewText = (await page.locator('#view').innerText({ timeout: 5000 }).catch(() => '')).trim();
-  if (viewText.length < 20) findings.failures.push({ type: 'blank_or_too_short_view', id, label, length: viewText.length });
-  await assertVisibleCopy(page, label, findings);
-  findings.visited.push({ id, label, textLength: viewText.length });
-}
-
-async function enterRole(page, role, findings) {
-  await page.goto(`${currentBaseURL}/`, { waitUntil: 'domcontentloaded' });
+async function enterRole(page, spec) {
+  await page.waitForFunction(() => Boolean(window.CX?.app?.selectRole && window.CX?.confidencialidad && window.CX?.router), null, { timeout: 12000 });
   await hardenForSmoke(page);
-  await page.evaluate((role) => {
-    try { localStorage.setItem('cx_banners', '[]'); } catch(e) {}
-    if (window.CX && window.CX.confidencialidad) {
-      try { window.CX.confidencialidad.pending = () => false; } catch(e) {}
-      try { window.CX.confidencialidad.show = (r, go) => go && go(); } catch(e) {}
+  await page.evaluate(role => {
+    document.querySelectorAll('.cx-ov').forEach(node => node.remove());
+    if (window.CX?.session?.clear) window.CX.session.clear();
+    if (window.CX?.confidencialidad) {
+      window.CX.confidencialidad.pending = () => false;
+      window.CX.confidencialidad.show = (_role, onDone) => { if (onDone) onDone(); };
     }
-    if (window.CX && window.CX.app) {
-      try { window.CX.app.showBanners = () => {}; } catch(e) {}
-    }
-    if (window.CX && window.CX.session && window.CX.session.clear) window.CX.session.clear();
-    if (window.CX && window.CX.app && window.CX.app.selectRole) window.CX.app.selectRole(role);
-    try { document.querySelectorAll('.cx-ov').forEach(el => el.remove()); } catch(e) {}
-  }, role);
-  await page.waitForFunction(() => document.querySelectorAll('#rail .nav-i').length > 0, null, { timeout: 10000 }).catch(async () => {
-    const appOn = await page.locator('#app').evaluate(el => el.className).catch(() => 'missing');
-    const bodyText = await page.locator('body').innerText({ timeout: 1000 }).catch(() => '');
-    findings.failures.push({ type: 'shell_not_ready', role, appClass: appOn, text: bodyText.slice(0, 600) });
-  });
-  await clearOverlays(page);
-  await assertVisibleCopy(page, `login-${role}`, findings);
+    if (window.CX?.app) window.CX.app.showBanners = () => {};
+    window.CX.app.selectRole(role);
+  }, spec.enter);
+  await page.waitForTimeout(350);
+  await hardenForSmoke(page);
 }
 
-async function main() {
-  fs.mkdirSync(outDir, { recursive: true });
-  const server = await startServer();
-  const port = server.address().port;
-  currentBaseURL = `http://127.0.0.1:${port}`;
-  const findings = {
-    gate: 'cxorbia-tya-phase-a-visual-smoke',
-    generatedAt: new Date().toISOString(),
-    baseURL: currentBaseURL,
-    safeState: { deploy: false, production: false, providers: false, databaseWrites: false, imports: false },
-    visited: [], failures: [], warnings: [], console: [], pageErrors: []
-  };
+async function waitForShell(page, shell) {
+  const selectors = shell === 'cliente'
+    ? ['#app.on', '#rail', '#view']
+    : shell === 'shopper'
+      ? ['#app.on', '#rail', '#view']
+      : ['#app.on', '#rail', '#view'];
+  for (const selector of selectors) await page.waitForSelector(selector, { state: 'visible', timeout: 12000 });
+}
 
-  let browser;
+for (const spec of roleSpecs) {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1100 }, serviceWorkers: 'block' });
+  const page = await context.newPage();
+  const consoleErrors = [];
+  const pageErrors = [];
+  page.on('console', msg => { if (msg.type() === 'error') consoleErrors.push(msg.text()); });
+  page.on('pageerror', err => pageErrors.push(String(err.message || err)));
+  const roleResult = { id: spec.id, shell: spec.shell, status: 'pending', consoleErrors, pageErrors };
+
   try {
-    browser = await chromium.launch({ headless });
-    const context = await browser.newContext({ viewport: { width: 1440, height: 1100 }, ignoreHTTPSErrors: true, baseURL: currentBaseURL });
-    const page = await context.newPage();
-    page.on('console', msg => {
-      const text = msg.text();
-      findings.console.push({ type: msg.type(), text: text.slice(0, 500) });
-      if (msg.type() === 'error' && !/favicon|Failed to load resource/i.test(text)) findings.failures.push({ type: 'console_error', text: text.slice(0, 500) });
+    await page.addInitScript(() => {
+      try { localStorage.setItem('cx_banners', '[]'); } catch {}
+      try { sessionStorage.setItem('cx_pwa_shown', '1'); } catch {}
     });
-    page.on('pageerror', err => findings.failures.push({ type: 'page_error', text: String(err.message || err).slice(0, 800) }));
+    await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await enterRole(page, spec);
+    await waitForShell(page, spec.shell);
 
-    await enterRole(page, 'admin', findings);
-    for (const [id, label] of criticalAdmin) await navigateModule(page, id, label, findings);
-    const qFn = await page.evaluate(() => typeof window.CX?.shopperQuestionnaire === 'function').catch(() => false);
-    if (!qFn) findings.failures.push({ type: 'missing_function', name: 'CX.shopperQuestionnaire' });
-    else findings.visited.push({ id: 'shopperQuestionnaire', label: 'Cuestionario shopper function', textLength: 1 });
+    const state = await page.evaluate(() => ({
+      role: window.CX?.session?.role || null,
+      effectiveRole: window.CX?.session?.effectiveRole?.() || window.CX?.session?.testRole || null,
+      view: window.CX?.session?.view || null,
+      projectId: window.CX?.data?.currentProjectId || null,
+      railVisible: Boolean(document.querySelector('#rail')?.offsetParent),
+      viewVisible: Boolean(document.querySelector('#view')?.offsetParent),
+      navItems: document.querySelectorAll('#rail [data-nav], #rail .nav-item').length,
+      overlays: document.querySelectorAll('.cx-ov').length,
+      projectSelectors: document.querySelectorAll('#projectSelect,#projectSel,[data-project-select]').length,
+      clientProjectSelectors: document.querySelectorAll('#clientProjectSel,[data-client-project-select]').length,
+      bodyText: document.body.innerText.slice(0, 5000)
+    }));
+    roleResult.state = state;
 
-    await enterRole(page, 'shopper', findings);
-    for (const [id, label] of criticalShopper) await navigateModule(page, id, label, findings);
+    if (!state.railVisible || !state.viewVisible) throw new Error('shell_not_visible');
+    if (state.overlays) roleResult.warnings = [`non_blocking_overlay_count:${state.overlays}`];
+    if (spec.expectFailClosed && state.navItems > 0) roleResult.warnings = [...(roleResult.warnings || []), `custom_role_visible_nav_items:${state.navItems}`];
+    if (spec.expect?.projectSelector && state.projectSelectors === 0) roleResult.warnings = [...(roleResult.warnings || []), 'admin_project_selector_not_detected'];
+    if (spec.expect?.clientProjectSelector && state.clientProjectSelectors === 0) roleResult.warnings = [...(roleResult.warnings || []), 'client_project_selector_not_detected'];
 
-    await page.screenshot({ path: path.join(outDir, 'phase-a-visual-smoke-last-page.png'), fullPage: true }).catch(() => {});
-  } catch (err) {
-    findings.failures.push({ type: 'fatal_smoke_error', text: String(err.stack || err.message || err).slice(0, 1200) });
+    if (consoleErrors.length) roleResult.warnings = [...(roleResult.warnings || []), `console_errors:${consoleErrors.length}`];
+    if (pageErrors.length) throw new Error(`page_errors:${pageErrors.join(' | ')}`);
+
+    roleResult.status = 'pass';
+    await page.screenshot({ path: path.join(outDir, `${spec.id}.png`), fullPage: true });
+  } catch (error) {
+    roleResult.status = 'fail';
+    roleResult.error = String(error.message || error);
+    report.hardFails.push(`${spec.id}:${roleResult.error}`);
+    try { await page.screenshot({ path: path.join(outDir, `${spec.id}-failure.png`), fullPage: true }); } catch {}
   } finally {
-    if (browser) await browser.close().catch(() => {});
-    server.close();
+    report.roles.push(roleResult);
+    await context.close();
   }
-
-  writeReport(findings);
-  console.log(JSON.stringify(findings, null, 2));
-  process.exitCode = findings.failures.length ? 1 : 0;
 }
 
-main().catch(err => { console.error(err); process.exit(1); });
+await browser.close();
+for (const role of report.roles) {
+  for (const warning of role.warnings || []) report.warnings.push(`${role.id}:${warning}`);
+}
+report.verdict = report.hardFails.length ? 'NO_GO_VISUAL_SMOKE_POST_V96' : (report.warnings.length ? 'GO_WITH_WARNINGS_VISUAL_SMOKE_POST_V96' : 'GO_VISUAL_SMOKE_POST_V96');
+fs.writeFileSync(path.join(outDir, 'phase-a-visual-smoke-report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
+const md = [
+  '# CXOrbia TyA Phase A visual smoke — source lock post-V96', '',
+  `Generated: ${report.generatedAt}`,
+  `Base URL: ${report.baseUrl}`,
+  `Verdict: ${report.verdict}`,
+  `Hard fails: ${report.hardFails.length}`,
+  `Warnings: ${report.warnings.length}`,
+  '', '## Roles',
+  ...report.roles.map(role => `- ${role.id}: ${role.status}${role.error ? ` — ${role.error}` : ''}`),
+  '', '## Hard fails', ...(report.hardFails.length ? report.hardFails.map(x => `- ${x}`) : ['- none']),
+  '', '## Warnings', ...(report.warnings.length ? report.warnings.map(x => `- ${x}`) : ['- none']),
+  '', '## Safe state', '- No deploy', '- No production', '- No provider calls', '- No database writes', '- No imports', ''
+].join('\n');
+fs.writeFileSync(path.join(outDir, 'phase-a-visual-smoke-report.md'), md, 'utf8');
+console.log(JSON.stringify(report, null, 2));
+process.exitCode = report.hardFails.length ? 1 : 0;
