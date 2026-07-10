@@ -13,6 +13,7 @@ on:
       - 'app/index.html'
       - 'app/sw.js'
       - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
+      - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
   pull_request:
     branches:
       - release/cxorbia-tya-rc-20260630
@@ -23,6 +24,7 @@ on:
       - 'app/index.html'
       - 'app/sw.js'
       - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
+      - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
 
 permissions:
   contents: read
@@ -37,7 +39,7 @@ env:
   CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
   FIREBASE_PROJECT_ID: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
-  CXORBIA_DEV_BUILD_LABEL: tya-hr-viva-multitab-source-safe-20260709d
+  CXORBIA_DEV_BUILD_LABEL: tya-hr-viva-multitab-source-safe-20260709e
   CXORBIA_HR_LIVE_SHEET_ID: 1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4
 
 jobs:
