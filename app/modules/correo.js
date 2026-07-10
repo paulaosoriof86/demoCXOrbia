@@ -9,47 +9,47 @@ CX.module('correo',({data,role,ui})=>{
 
   /* ── Datos demo ── */
   const DEMO=[
-    {id:'em1',folder:'inbox',read:false,from:'Carlos Méndez',email:'cmendes@cinepolis.com.gt',
+    {id:'em1',folder:'inbox',read:false,from:'Contacto Cliente Demo',email:'cmendez@clienteretail.demo',
      subject:'Revisión reporte junio — comentarios y 3 sucursales críticas',
      preview:'Estimado equipo, adjunto mis comentarios sobre el reporte de junio. En general positivos — el promedio subió a 81%…',
-     body:`<p>Estimado equipo,</p><p>El reporte de junio muestra resultados positivos en general — el promedio subió de 74% a 81%. Sin embargo, tenemos tres sucursales con score por debajo del 65%: <b>Plaza Fontabella, Miraflores y Pradera Xela</b>. Necesitamos un plan de acción para estas antes del próximo reporte.</p><p>¿Podemos agendar una llamada esta semana?</p><p>Saludos,<br><b>Carlos Méndez</b><br>Coordinador de Operaciones · Cinépolis Guatemala</p>`,
+     body:`<p>Estimado equipo,</p><p>El reporte de junio muestra resultados positivos en general — el promedio subió de 74% a 81%. Sin embargo, tenemos tres sucursales con score por debajo del 65%: <b>Plaza Fontabella, Miraflores y Pradera Xela</b>. Necesitamos un plan de acción para estas antes del próximo reporte.</p><p>¿Podemos agendar una llamada esta semana?</p><p>Saludos,<br><b>Contacto Cliente Demo</b><br>Coordinador de Operaciones · Cliente Retail Guatemala</p>`,
      date:'2026-06-20',time:'10:32',
-     tags:[{label:'Cinépolis GT',type:'cliente'},{label:'Ronda Junio',type:'proyecto'}],
+     tags:[{label:'Cliente Retail GT',type:'cliente'},{label:'Ronda Junio',type:'proyecto'}],
      attachments:[{name:'Reporte_Junio_2026.pdf',size:'1.2 MB'}]},
-    {id:'em2',folder:'inbox',read:false,from:'María García',email:'mgarcia@gmail.com',
+    {id:'em2',folder:'inbox',read:false,from:'Evaluador Demo 02',email:'evaluador02@demo.local',
      subject:'Cuestionario enviado · Sucursal Z12 — Miraflores',
      preview:'Buenas tardes, les confirmo que completé la visita en sucursal Miraflores (Z12). El asesor tardó 14 min…',
-     body:`<p>Buenas tardes,</p><p>Les confirmo que completé la visita en la sucursal <b>Miraflores (Z12)</b> el día de hoy. El cuestionario fue enviado desde la plataforma.</p><p>Puntos a destacar: el servicio en sala fue lento (14 min de espera), y la limpieza del baño no cumplió el protocolo. Las evidencias fotográficas están adjuntas en el sistema.</p><p>Saludos,<br><b>María García</b> · Shopper #SH-0023</p>`,
+     body:`<p>Buenas tardes,</p><p>Les confirmo que completé la visita en la sucursal <b>Miraflores (Z12)</b> el día de hoy. El cuestionario fue enviado desde la plataforma.</p><p>Puntos a destacar: el servicio en sala fue lento (14 min de espera), y la limpieza del baño no cumplió el protocolo. Las evidencias fotográficas están adjuntas en el sistema.</p><p>Saludos,<br><b>Evaluador Demo 02</b> · Shopper #SH-0023</p>`,
      date:'2026-06-20',time:'15:47',
-     tags:[{label:'María García',type:'shopper'},{label:'Cinépolis GT',type:'cliente'}],
+     tags:[{label:'Evaluador Demo 02',type:'shopper'},{label:'Cliente Retail GT',type:'cliente'}],
      attachments:[]},
-    {id:'em3',folder:'inbox',read:true,from:'Roberto Castillo',email:'rcastillo@tya.com.gt',
+    {id:'em3',folder:'inbox',read:true,from:'Contacto Cliente Demo 2',email:'contacto2@clienteretail.demo',
      subject:'Consulta — interpretación del score mayo vs. junio',
      preview:'Hola, quiero entender si el aumento de 68% a 71% es estadísticamente significativo con 2 sucursales nuevas…',
-     body:`<p>Hola equipo,</p><p>Quiero entender si el incremento de score mayo (68%) vs. junio (71%) es estadísticamente significativo, considerando que tuvimos 2 sucursales nuevas. También: ¿los hallazgos de "tiempo de espera en caja" siguen siendo el top 1? Si es así, ya tomamos acciones internas y quiero ver si hay mejora.</p><p>Gracias,<br><b>Roberto Castillo</b><br>Gerente de Experiencia · TyA Research</p>`,
+     body:`<p>Hola equipo,</p><p>Quiero entender si el incremento de score mayo (68%) vs. junio (71%) es estadísticamente significativo, considerando que tuvimos 2 sucursales nuevas. También: ¿los hallazgos de "tiempo de espera en caja" siguen siendo el top 1? Si es así, ya tomamos acciones internas y quiero ver si hay mejora.</p><p>Gracias,<br><b>Contacto Cliente Demo 2</b><br>Gerente de Experiencia · Cliente Retail</p>`,
      date:'2026-06-19',time:'09:15',
-     tags:[{label:'TyA Research',type:'cliente'}],
+     tags:[{label:'Cliente Retail',type:'cliente'}],
      attachments:[]},
-    {id:'em4',folder:'inbox',read:true,from:'Ana López',email:'alopez@grupo-vantage.com',
+    {id:'em4',folder:'inbox',read:true,from:'Prospecto Demo',email:'prospecto@empresa-demo.com',
      subject:'Interés en plataforma de mystery shopping — Honduras (45 sucursales)',
      preview:'Buenos días, buscamos un proveedor de MS para nuestra red de 45 sucursales en HN, sector retail (ropa y calzado)…',
-     body:`<p>Buenos días,</p><p>Les escribo porque buscamos un proveedor de mystery shopping para nuestra red de <b>45 sucursales en Honduras</b> (sector retail, ropa y calzado). Nos interesa: evaluación mensual de servicio, protocolo de caja, reporte ejecutivo con hallazgos y planes de acción.</p><p>¿Podemos agendar una llamada esta semana?</p><p><b>Ana López</b><br>Directora de Operaciones · Grupo Vantage HN</p>`,
+     body:`<p>Buenos días,</p><p>Les escribo porque buscamos un proveedor de mystery shopping para nuestra red de <b>45 sucursales en Honduras</b> (sector retail, ropa y calzado). Nos interesa: evaluación mensual de servicio, protocolo de caja, reporte ejecutivo con hallazgos y planes de acción.</p><p>¿Podemos agendar una llamada esta semana?</p><p><b>Prospecto Demo</b><br>Directora de Operaciones · Empresa Demo HN</p>`,
      date:'2026-06-19',time:'08:02',
      tags:[{label:'Prospecto CRM',type:'lead'}],
      attachments:[]},
     {id:'em5',folder:'inbox',read:true,from:'Make · Sistema',email:'noreply@make.com',
      subject:'[Automatización] Visita aprobada — Juan Pérez asignado a SUC-089',
-     preview:'Se aprobó la postulación de Juan Pérez para la visita SUC-089 · Oakland. Notificación enviada por WhatsApp.',
-     body:`<p><b>Automatización disparada: Visita aprobada</b></p><p>Shopper: <b>Juan Pérez</b><br>Sucursal: SUC-089 · Centro Comercial Oakland<br>Proyecto: Cinépolis GT · Ronda Junio 2026<br>Fecha asignada: 22/06/2026<br>Honorario: Q 250.00</p><p>Notificación enviada por WhatsApp al shopper. <a href="#" style="color:var(--brand)">Ver en plataforma →</a></p>`,
+     preview:'Se aprobó la postulación de Juan Pérez para la visita SUC-089 · Oakland. Notificación preparada por WhatsApp (ejemplo demo).',
+     body:`<p><b>Automatización disparada: Visita aprobada</b></p><p>Shopper: <b>Juan Pérez</b><br>Sucursal: SUC-089 · Centro Comercial Oakland<br>Proyecto: Cliente Retail GT · Ronda Junio 2026<br>Fecha asignada: 22/06/2026<br>Honorario: Q 250.00</p><p>Notificación preparada por WhatsApp al shopper (ejemplo demo · envío real pendiente backend/Make). <a href="#" style="color:var(--brand)">Ver en plataforma →</a></p>`,
      date:'2026-06-18',time:'16:22',
-     tags:[{label:'Sistema Make',type:'sistema'},{label:'Cinépolis GT',type:'cliente'}],
+     tags:[{label:'Sistema Make',type:'sistema'},{label:'Cliente Retail GT',type:'cliente'}],
      attachments:[]},
     {id:'em6',folder:'sent',read:true,from:'Tú',email:'admin@cxorbia.com',
      subject:'Re: Revisión reporte junio — comentarios',
-     preview:'Hola Carlos, con gusto agendamos una llamada el miércoles a las 10am. Los hallazgos de las 3 sucursales…',
-     body:`<p>Hola Carlos,</p><p>Con gusto agendamos la llamada. ¿El miércoles a las 10am te funciona? Llevaremos el detalle de las 3 sucursales y un borrador de plan de acción.</p><p>Saludos.</p>`,
+     preview:'Hola, con gusto agendamos una llamada el miércoles a las 10am. Los hallazgos de las 3 sucursales…',
+     body:`<p>Hola,</p><p>Con gusto agendamos la llamada. ¿El miércoles a las 10am te funciona? Llevaremos el detalle de las 3 sucursales y un borrador de plan de acción.</p><p>Saludos.</p>`,
      date:'2026-06-20',time:'11:05',
-     tags:[{label:'Cinépolis GT',type:'cliente'}],attachments:[]},
+     tags:[{label:'Cliente Retail GT',type:'cliente'}],attachments:[]},
   ];
 
   let folder='inbox', activeId=null;
@@ -65,7 +65,7 @@ CX.module('correo',({data,role,ui})=>{
   const unread=()=>DEMO.filter(e=>e.folder==='inbox'&&!e.read).length;
 
   const AI_REPLIES={
-    em1:'Hola Carlos,\n\nGracias por tus comentarios. Agendemos el miércoles a las 10am. Llevaremos el detalle de las 3 sucursales con score crítico y un borrador de plan de acción para cada una.\n\nSaludos.',
+    em1:'Hola,\n\nGracias por tus comentarios. Agendemos el miércoles a las 10am. Llevaremos el detalle de las 3 sucursales con score crítico y un borrador de plan de acción para cada una.\n\nSaludos.',
     em2:'Hola María,\n\nMuchas gracias por confirmar la visita. Los datos y evidencias quedaron registrados correctamente. El pago de Q 250.00 será procesado en la próxima quincena.\n\nSaludos.',
     em3:'Hola Roberto,\n\nEl incremento de 68% a 71% (+3pp) es estadísticamente relevante con tu muestra. Las 2 sucursales nuevas tienen efecto acotado dado el promedio ponderado.\n\nRespecto a "tiempo de espera en caja": sigue en el top 1 pero bajó de 43% de fallas a 38% — mejora visible. Julio confirmará si las acciones internas tienen mayor impacto.\n\nSaludos.',
     em4:'Buenos días Ana,\n\nMuchas gracias por su interés. Con gusto agendamos una llamada para presentarles nuestra propuesta para Honduras. ¿Le funciona el jueves a las 3pm?\n\nSaludos.',
@@ -86,8 +86,8 @@ CX.module('correo',({data,role,ui})=>{
   <!-- Banner modo demo / conectado -->
   <div style="background:${conn?'#f0faf4':'#fffbeb'};border:1px solid ${conn?'#bbf7d0':'#fde68a'};border-radius:10px;padding:9px 14px;margin-bottom:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
     <span style="font-size:13px;color:var(--t2);flex:1">${conn
-      ?`✅ Conectado como <b>${conn.email}</b> (${conn.provider}) · sincronizando correos reales`
-      :`📬 Bandeja en <b>modo demo</b>. Conecta tu cuenta para sincronizar correos reales. <span style="font-size:11px;color:var(--t3)">Compatible con Outlook / Hotmail, Gmail y cualquier dominio corporativo (IMAP).</span>`}
+      ?`✅ Conectado como <b>${conn.email}</b> (${conn.provider}) · conexión preparada (preview) · sincronización real pendiente backend`
+      :`📬 Bandeja en <b>modo demo</b>. Conecta tu cuenta para sincronizar tu bandeja (requiere backend). <span style="font-size:11px;color:var(--t3)">Compatible con Outlook / Hotmail, Gmail y cualquier dominio corporativo (IMAP).</span>`}
     </span>
     ${conn?`<button class="btn btn-ghost btn-sm" id="mailDisconn" style="color:var(--red)">Desconectar</button>`:
            `<button class="btn btn-pr btn-sm" id="mailConn" style="background:#dc2626;border-color:#dc2626">Conectar Outlook / Gmail</button>`}
@@ -154,7 +154,7 @@ CX.module('correo',({data,role,ui})=>{
         <div contenteditable="true" id="replyBox" style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;min-height:64px;background:var(--bg);font-size:13px;color:var(--t1);outline:none;margin-bottom:8px" placeholder="Escribe tu respuesta…"></div>
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div style="display:flex;gap:6px">
-            <button class="btn btn-ghost btn-sm" id="replyWA" title="Responder por WhatsApp">💬 WA</button>
+            <button class="btn btn-ghost btn-sm" id="replyWA" title="Abre WhatsApp Web con un borrador manual — no es envío automático">💬 WA (borrador manual)</button>
             <button class="btn btn-ghost btn-sm" id="replyAI" title="Generar respuesta con IA">✨ IA</button>
           </div>
           <button class="btn btn-pr btn-sm" id="replySend">Enviar ↩</button>
@@ -234,7 +234,7 @@ CX.module('correo',({data,role,ui})=>{
         body:`<p>${body.replace(/\n/g,'<br>')}</p>`,
         date:new Date().toISOString().slice(0,10),time:new Date().toTimeString().slice(0,5),
         tags:a?a.tags:[],attachments:[]});
-      ui.toast(conn?'Correo enviado':'Correo guardado en Enviados · se despachará al conectar tu cuenta','ok',3500);folder='sent';draw();
+      ui.toast(conn?'Correo preparado · proveedor conectado (demo) · despacho real por backend':'Correo guardado en Enviados · se despachará al conectar tu cuenta','ok',3500);folder='sent';draw();
     });
     host.querySelector('#replyWA')?.addEventListener('click',()=>{
       const a=DEMO.find(e=>e.id===activeId);if(!a)return;
@@ -263,7 +263,7 @@ CX.module('correo',({data,role,ui})=>{
         body:host.querySelector('#composeBody').innerHTML,
         date:new Date().toISOString().slice(0,10),time:new Date().toTimeString().slice(0,5),tags:[],attachments:[]});
       host.querySelector('#composeOverlay').style.display='none';
-      ui.toast(conn?'Correo enviado':'Correo guardado en Enviados · se despachará al conectar tu cuenta','ok',3500);folder='sent';draw();
+      ui.toast(conn?'Correo preparado · proveedor conectado (demo) · despacho real por backend':'Correo guardado en Enviados · se despachará al conectar tu cuenta','ok',3500);folder='sent';draw();
     });
     host.querySelector('#composeDraft')?.addEventListener('click',()=>{host.querySelector('#composeOverlay').style.display='none';ui.toast('Guardado como borrador','ok');});
     host.querySelector('#composeAI')?.addEventListener('click',()=>{
@@ -296,7 +296,7 @@ CX.module('correo',({data,role,ui})=>{
       🔒 La conexión ocurre directamente desde tu dispositivo. CXOrbia no almacena contraseñas — solo el token de sesión OAuth o la cookie IMAP cifrada.
     </div>
   `,{onMount:(ov,close)=>{
-    const connect=(provider,email)=>{setConn({provider,email});close();ui.toast('Conectado a '+provider+' · sincronizando…','ok');draw();};
+    const connect=(provider,email)=>{setConn({provider,email});close();ui.toast(provider+' preparado (preview) · conexión y sincronización reales pendientes de backend/gate','ok');draw();};
     ov.querySelector('#connOL').addEventListener('click',()=>connect('Outlook','admin@tuempresa.com'));
     ov.querySelector('#connGM').addEventListener('click',()=>connect('Gmail','admin@tuempresa.com'));
     ov.querySelector('#connIMAP').addEventListener('click',()=>{const em=ov.querySelector('#imapEmail').value.trim();if(!em){ui.toast('Escribe tu correo','warn');return;}connect('IMAP ('+em.split('@')[1]+')',em);});

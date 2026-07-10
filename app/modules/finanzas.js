@@ -572,7 +572,7 @@ CX.module('liquidaciones', ({data,ui})=>{
         if(difBox&&difBox.checked){restantes.forEach(l=>{CX.finStore.addCxp(p.id,{concepto:'Liquidación diferida · '+l.shopper+' ('+l.sucursal+')',monto:l.total,pais:l.pais,origen:'liquidacion',visitaId:l.visitaId});diferidas++;});}
         const ids=[...draft]; close(); CX.finStore.clearDraft(p.id);
         const r=data.payVisits(ids);
-        ui.toast('Lote pagado · '+r.pagadas+' visita(s) · fecha de pago '+r.fechaPago+(diferidas?' · '+diferidas+' diferida(s) a CxP':'')+' · egresos en Movimientos · Beneficios actualizado','ok',4600);
+        ui.toast('Lote registrado como pagado (preview) · '+r.pagadas+' visita(s) · fecha de pago '+r.fechaPago+(diferidas?' · '+diferidas+' diferida(s) a CxP':'')+' · egresos reflejados en Movimientos · pendiente cruce financiero real','ok',4600);
       });}});
     });
   };
@@ -593,7 +593,7 @@ CX.module('lotes', ({data,ui})=>{
   const html=`
   ${ui.ph('Lotes de Pago', p.name+' · agrupa liquidaciones validadas y crea el egreso')}
   <div class="grid g3" style="margin-bottom:16px">${lotes.map(r=>`<div class="card hov card-p" data-lote="${r.id}" style="cursor:pointer">
-    <div class="between" style="margin-bottom:8px"><b style="font-family:var(--disp);font-size:15px;color:var(--t1)">${r.id}</b>${ui.bdg(r.estado,r.tone)}</div>
+    <div class="between" style="margin-bottom:8px"><b style="font-family:var(--disp);font-size:15px;color:var(--t1)">${r.id}</b>${ui.bdg(r.estado==='Pagado'?'Pagado (preview)':r.estado,r.tone)}</div>
     <div style="font-size:12px;color:var(--t3)">${r.n} visitas · ${r.fecha}</div>
     <div style="font-size:18px;font-weight:800;color:var(--green);font-family:var(--disp);margin-top:4px">${_m(r.cur,r.monto)}</div>
     <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" data-lote="${r.id}">Ver detalle →</button></div></div>`).join('')}</div>
@@ -606,8 +606,8 @@ CX.module('lotes', ({data,ui})=>{
         ${r.visitas.map(v=>`<tr><td><b>${v[0]}</b></td><td style="font-size:12px">${v[1]}</td><td style="text-align:right;font-weight:700">${_m(r.cur,v[2])}</td></tr>`).join('')}
         ${r.visitas.length<r.n?`<tr><td colspan="3" style="font-size:11px;color:var(--t3);text-align:center">+ ${r.n-r.visitas.length} visita(s) más en el lote</td></tr>`:''}
         </tbody></table>
-        <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px">${r.estado!=='Pagado'?`<button class="btn btn-green btn-sm" id="loteMark">Marcar pagado</button>`:ui.bdg('✓ Egreso generado en Finanzas','g')}<button class="btn btn-ghost btn-sm" id="loteExp">⤓ Exportar</button></div>
-      `,{onMount:(ov,close)=>{ const lm=ov.querySelector('#loteMark'); if(lm)lm.addEventListener('click',()=>{close();ui.toast('Lote '+r.id+' marcado pagado · egreso generado en Movimientos','ok',3600);}); ov.querySelector('#loteExp').addEventListener('click',()=>ui.toast('Exportando lote '+r.id+'…','ok')); }});
+        <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px">${r.estado!=='Pagado'?`<button class="btn btn-green btn-sm" id="loteMark">Marcar pagado (preview)</button>`:ui.bdg('✓ Egreso preparado · cruce real pendiente backend','g')}<button class="btn btn-ghost btn-sm" id="loteExp">⤓ Exportar</button></div>
+      `,{onMount:(ov,close)=>{ const lm=ov.querySelector('#loteMark'); if(lm)lm.addEventListener('click',()=>{close();ui.toast('Lote '+r.id+' marcado pagado (preview) · egreso reflejado en Movimientos · pendiente cruce financiero real','ok',36000);}); ov.querySelector('#loteExp').addEventListener('click',()=>ui.toast('Exportando lote '+r.id+'…','ok')); }});
     }));
   },0);
   return html;

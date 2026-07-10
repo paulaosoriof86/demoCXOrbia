@@ -8,7 +8,7 @@ CX.docStore = CX.docStore || {
       body:'# Escenario: Compra estándar\n\nActúa como un cliente habitual. Realiza una compra del producto definido y evalúa la atención, los tiempos y la limpieza.\n\n## Puntos clave a observar\n1. Saludo y bienvenida (¿te saludaron en los primeros 30s?).\n2. Conocimiento del asesor sobre el producto.\n3. Tiempo total en caja.\n4. Estado de limpieza y orden del local.\n5. Despedida e invitación a volver.'},
     {id:'d3',ic:'🎬',n:'Video de inducción',meta:'YouTube · 5 min',tipo:'video',url:'https://www.youtube.com/embed/aqz-KE-bpKQ'},
     {id:'d4',ic:'📋',n:'Checklist de visita',meta:'Lista · 8 ítems',tipo:'check',
-      items:['Certificación vigente','Escenario memorizado','Fecha confirmada','Evidencia lista (cámara)','Efectivo/medios de pago','Cronómetro a mano','Comprobantes guardados','Cuestionario enviado el mismo día']},
+      items:['Certificación vigente','Escenario memorizado','Fecha confirmada','Evidencia lista (cámara)','Efectivo/medios de pago','Cronómetro a mano','Comprobantes guardados','Cuestionario completado el mismo día']},
   ];},
   list(pid){ pid=pid||CX.data.currentProjectId; if(!this._d[pid]) this._d[pid]=this.seed(pid); return this._d[pid]; },
   add(pid,d){ this.list(pid).unshift(Object.assign({id:'d'+Date.now().toString(36),ic:'📎',meta:'subido ahora'},d)); CX.bus&&CX.bus.emit('docs'); },

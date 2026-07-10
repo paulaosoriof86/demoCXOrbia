@@ -154,7 +154,7 @@ window.CX = window.CX || {};
     update(id, patch){ const l=this.list(); const a=l.find(x=>x.id===id); if(a){Object.assign(a,patch); this.save(l);} return a; },
     reset(){ try{ localStorage.removeItem(LS); }catch(e){} CX.bus&&CX.bus.emit('automations'); },
 
-    /* tenant activo (cada consultora guarda SUS propios webhooks; p.ej. TyA usa los suyos) */
+    /* tenant activo (cada consultora guarda SUS propios webhooks) */
     tenantId(){ try{ return (CX.session&&CX.session.tenant)|| (CX.theme&&CX.theme.active&&CX.theme.active())||'default'; }catch(e){ return 'default'; } },
     _hooks(){ try{ return JSON.parse(localStorage.getItem(LS_HOOK)||'{}'); }catch(e){ return {}; } },
     /* hook efectivo: override por automatación > webhook del tenant */

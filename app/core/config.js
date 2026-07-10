@@ -7,6 +7,8 @@ window.CX = window.CX || {};
 
 /* ---------- Brand / white-label ---------- */
 CX.BRAND = {
+  // id único del tenant (consultora/instancia). Persistente; no se regenera si ya existe.
+  id: (function(){ try{ let v=localStorage.getItem('cx_tenant_id'); if(!v){ v='tenant-'+Date.now().toString(36); localStorage.setItem('cx_tenant_id', v); } return v; }catch(e){ return 'tenant-demo'; } })(),
   name: 'CXOrbia',
   tagline: 'Field Operations Platform',
   // "Plataforma desarrollada para <client>" en el login. Vacío = marca propia.
@@ -16,20 +18,22 @@ CX.BRAND = {
   theme: 'cxorbia',   // id de CX.THEMES
   demoMode: true,
   showAITag: true,
+  // países explícitos del tenant/franquicia (vacío = se derivan de los proyectos reales, ver app.js)
+  countries: [],
   // colors se sincroniza desde el tema activo (no editar a mano)
   colors: {},
 };
 
 /* ---------- Temas (plantillas de marca seleccionables) ----------
-   Cada cliente puede partir de una plantilla y ajustarla. La de T&A
-   reproduce exactamente la plataforma actual (Segoe UI, azul/rojo, sidebar claro). */
+   Cada cliente puede partir de una plantilla y ajustarla. "Corporativo claro"
+   reproduce un estilo corporativo clásico (Segoe UI, azul/rojo, sidebar claro). */
 CX.THEMES = {
   cxorbia: {
     label: 'CXOrbia (oscuro)', font: "'Manrope', system-ui, sans-serif", railStyle:'dark',
     colors:{ brand:'#2196d3', brandDark:'#1565a8', brandMid:'#4ab4e6', brandLight:'#e8f4fd',
              navy:'#0d2740', navy2:'#123553', accent:'#c8232c' },
   },
-  tya: {
+  corporate_light: {
     label: 'Corporativo claro (Segoe UI)', font: "'Segoe UI', Tahoma, system-ui, sans-serif", railStyle:'light',
     colors:{ brand:'#2196d3', brandDark:'#1565a8', brandMid:'#4ab4e6', brandLight:'#e8f4fd',
              navy:'#ffffff', navy2:'#fafbfd', accent:'#c8232c' },
@@ -98,9 +102,34 @@ CX.applyBrand = function(){
       if(b.theme) CX.applyTheme(b.theme);
     }
   }catch(e){}
+  /* Manifest PWA dinámico: name/short_name/theme_color/background_color/icons según marca (Fase 4) */
+  try{ CX.applyManifest(); }catch(e){}
 };
 
-/* ---------- Módulos activos por tenant (nunca se eliminan, solo se ocultan) ---------- */
+/* genera y aplica un manifest.webmanifest en memoria a partir de CX.BRAND — nunca usa el estático fijo */
+CX.applyManifest = function(){
+  const b = CX.BRAND||{};
+  const name = b.appName || b.name || 'CXOrbia';
+  const short = (b.shortName || name).slice(0,12);
+  const theme = (b.colors&&b.colors.brand) || '#2196d3';
+  const bg = (b.colors&&b.colors.bg) || '#ffffff';
+  const iconHref = document.querySelector('link[rel="icon"]');
+  const icon = (iconHref && iconHref.href) || '';
+  const manifest = {
+    name, short_name: short, start_url: '.', display: 'standalone',
+    theme_color: theme, background_color: bg,
+    icons: icon ? [{ src: icon, sizes: '192x192', type: icon.startsWith('data:image/svg')?'image/svg+xml':'image/png', purpose:'any' }] : [],
+  };
+  const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+  const url = URL.createObjectURL(blob);
+  let link = document.querySelector('link[rel="manifest"]');
+  if(!link){ link = document.createElement('link'); link.rel='manifest'; document.head.appendChild(link); }
+  if(link._cxManifestUrl) try{ URL.revokeObjectURL(link._cxManifestUrl); }catch(e){}
+  link.href = url; link._cxManifestUrl = url;
+  let themeMeta = document.querySelector('meta[name="theme-color"]');
+  if(!themeMeta){ themeMeta=document.createElement('meta'); themeMeta.name='theme-color'; document.head.appendChild(themeMeta); }
+  themeMeta.content = theme;
+};
 CX.tenantModules = function(){
   try{ const s = JSON.parse(localStorage.getItem('cx_modules')||'null'); if(s) return s; }catch(e){}
   return null; // null = todos activos
@@ -119,18 +148,25 @@ CX.moduleEnabled = function(id){
 CX.MOD_CAT = {
   midia:'op', dashboard:'op', visitas:'op', postulaciones:'op', reservas:'op', shoppers:'op', tablon:'op',
   financiero:'fin', movimientos:'fin', liquidaciones:'fin', lotes:'fin',
-  proyectos:'prj', periodos:'prj', historico:'prj', clientes:'prj', cuestionarios:'prj', rutas:'prj', importador:'prj',
-  aprendizaje:'cap', cert:'cap', documentos:'cap', soporte:'cap',
-  config:'cfg', usuarios:'cfg', marca:'cfg', automatizaciones:'cfg', integraciones:'cfg', correo:'cfg',
+  proyectos:'prj', periodos:'prj', historico:'prj', clientes:'prj', cuestionarios:'prj', rutas:'prj', importador:'prj', hrsource:'prj',
+  aprendizaje:'cap', cert:'cap', documentos:'cap', soporte:'cap', novedades:'cap',
+  config:'cfg', usuarios:'cfg', marca:'cfg', automatizaciones:'cfg', integraciones:'cfg', correo:'cfg', saas:'cfg', diagnostico:'cfg', administrabilidad:'cfg',
   costos:'com', crm:'com', marketing:'com', informes:'com',
   miperfil:'sh', misvisitas:'sh', beneficios:'sh',
 };
-/* super y admin: acceso pleno. Otros roles: gobernados por la matriz guardada (cx_perm). */
+/* super y admin: acceso pleno. Otros roles: gobernados por la matriz guardada (cx_perm).
+   Fail-closed (V95/V96 reauditoría): un rol sin matriz configurada NO obtiene acceso total —
+   solo un set mínimo seguro (Capacitación/Academia) hasta que un admin defina su matriz
+   explícitamente en Usuarios & Permisos. Un módulo sin categoría en MOD_CAT tampoco obtiene
+   acceso total — se trata como categoría 'cfg' (la más restringida), nunca como `true` abierto. */
 CX.roleCanAccess = function(role, id){
   if(role==='super'||role==='admin'||role==='shopper'||role==='cliente') return true;
   let perm=null; try{ perm=JSON.parse(localStorage.getItem('cx_perm')||'null'); }catch(e){}
-  if(!perm||!perm[role]) return true; /* sin matriz definida → no bloquear */
-  const cat=CX.MOD_CAT[id]; if(!cat) return true;
+  const cat=CX.MOD_CAT[id] || 'cfg'; /* módulo desconocido → categoría más restringida, no acceso abierto */
+  if(!perm||!perm[role]){
+    /* sin matriz definida para este rol → set mínimo seguro, no acceso total */
+    return cat==='cap';
+  }
   return perm[role].includes(cat);
 };
 CX.setModuleEnabled = function(id, on){
@@ -178,6 +214,8 @@ CX.MODULES = {
   usuarios:      { icon:'🔐', label:'Usuarios & Permisos',  roles:['admin'],           status:'ready' },
   config:        { icon:'⚙️', label:'Configuración',         roles:['admin'],           status:'ready' },
   saas:          { icon:'🌐', label:'Consola SaaS',         roles:['admin'],           status:'ready' },
+  diagnostico:   { icon:'🧪', label:'Diagnóstico & Readiness',roles:['admin'],          status:'ready' },
+  administrabilidad: { icon:'⚙️', label:'Administrabilidad',   roles:['admin'],           status:'ready' },
   automatizaciones: { icon:'⚡', label:'Automatizaciones',     roles:['admin'],           status:'ready' },
   integraciones: { icon:'🔌', label:'Integraciones & Add-ons',roles:['admin'],           status:'ready' },
   correo:        { icon:'✉️',  label:'Correo integrado',     roles:['admin'],           status:'ready' },
@@ -206,7 +244,7 @@ CX.NAV = {
     { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte','novedades'] },
     { sec:'Finanzas',  items:['financiero','movimientos','liquidaciones','lotes'] },
     { sec:'Comercial', items:['costos','crm','marketing'] },
-    { sec:'Configuración', items:['config','saas','usuarios','automatizaciones','integraciones','correo','marca'] },
+    { sec:'Configuración', items:['config','saas','diagnostico','administrabilidad','usuarios','automatizaciones','integraciones','correo','marca'] },
   ],
   shopper: [
     { sec:'Operación', items:['midia','miperfil','visitas','reservas','misvisitas'] },
@@ -293,9 +331,9 @@ try{ CX.CREDS.load(); }catch(e){}
 
 /* ---------- Planes comerciales (preconfiguran el tenant) ---------- */
 CX.PLANS = {
-  basico:    { label:'Básico',     temas:['cxorbia','tya'], integraciones:['whatsapp_web','sheets_import'],
+  basico:    { label:'Básico',     temas:['cxorbia','corporate_light'], integraciones:['whatsapp_web','sheets_import'],
                modulos:['midia','dashboard','proyectos','visitas','postulaciones','shoppers','misvisitas','miperfil','documentos','tablon','soporte','beneficios'] },
-  estandar:  { label:'Estándar',   temas:['cxorbia','tya','esmeralda','violeta'], integraciones:['whatsapp_web','sheets','excel_online','gmail'],
+  estandar:  { label:'Estándar',   temas:['cxorbia','corporate_light','esmeralda','violeta'], integraciones:['whatsapp_web','sheets','excel_online','gmail'],
                modulos:'+aprendizaje,cert,rutas,informes' },
   pro:       { label:'Pro',        temas:'all', integraciones:['make','whatsapp_api','sheets','excel_online','gmail','outlook','mailchimp'],
                modulos:'+financiero,movimientos,liquidaciones,lotes,cuestionarios' },
@@ -329,6 +367,53 @@ CX.ROLES = [
   { id:'coordinador', label:'Coordinador / Representante', desc:'Administra proyectos y HR de su(s) país(es) asignado(s)', scopeCountry:true },
   { id:'aliado', label:'Aliado / Franquiciado', desc:'Opera proyectos regionales delegados · su país y sus shoppers', scopeCountry:true },
   { id:'shopper',label:'Shopper / Evaluador', desc:'Portal móvil' },
+];
+
+/* Semilla de matriz de permisos (V95 reauditoría): roleCanAccess es fail-closed sin matriz,
+   así que los roles estándar (ops/coordinador/aliado) necesitan un default explícito desde
+   el arranque — no solo al visitar Usuarios & Permisos. Roles personalizados NO se siembran
+   aquí: exigen configuración explícita del admin (comportamiento fail-closed intencional).
+   BACKFILL, no skip-if-exists: si ya hay un cx_perm guardado (de una sesión anterior a que
+   existieran coordinador/aliado, por ejemplo), se completan SOLO las llaves de rol que falten
+   — nunca se sobre-escribe una personalización ya hecha por el admin en super/admin/ops/shopper. */
+(function _seedDefaultPerm(){
+  try{
+    const DEFAULTS = {
+      super:['op','fin','prj','cap','cfg','sh','com'], admin:['op','fin','prj','cap','com'],
+      ops:['op','prj','cap'], coordinador:['op','prj','cap'], aliado:['op','prj','cap'], shopper:['sh','cap'],
+    };
+    let stored=null; try{ stored=JSON.parse(localStorage.getItem('cx_perm')||'null'); }catch(e){}
+    if(!stored){ localStorage.setItem('cx_perm', JSON.stringify(DEFAULTS)); }
+    else {
+      let changed=false;
+      Object.keys(DEFAULTS).forEach(role=>{ if(!stored[role]){ stored[role]=DEFAULTS[role]; changed=true; } });
+      if(changed) localStorage.setItem('cx_perm', JSON.stringify(stored));
+    }
+  }catch(e){}
+})();
+
+/* ---------- P0-3 (20260710): Personas operativas ----------
+   Taxonomía de PERSONA visible, separada del rol técnico (CX.ROLES) y del
+   scope. No son custom claims nuevos — cada persona se mapea a un rol
+   técnico + tipo de scope ya existentes; solo da un nombre de negocio
+   más preciso que el rol genérico al invitar/mostrar usuarios.
+   Modelo conceptual (referencia, no todo vive en localStorage):
+     persona (esta lista) · rolTecnico (CX.ROLES) · scope (paisIds/proyectoIds)
+     · tenantId (CX.BRAND.id) · projectIds · countryIds · permissionsVersion
+     · IDs opacos (u.id, no nombre) para todo cruce entre módulos.
+   ---------------------------------------------------------------- */
+CX.PERSONAS = [
+  { id:'tenantOwner',           label:'Dueño de tenant',            rol:'super', scope:'ninguno',  desc:'Dueño de la instancia/consultora completa' },
+  { id:'franchiseOwner',        label:'Dueño de franquicia',        rol:'aliado', scope:'pais',     desc:'Dueño de la operación delegada en su país' },
+  { id:'countryRepresentative', label:'Representante de país',      rol:'coordinador', scope:'pais', desc:'Representa y administra un país específico' },
+  { id:'operationsCoordinator', label:'Coordinador de operaciones', rol:'ops',   scope:'proyecto',   desc:'Coordina operación diaria a nivel proyecto' },
+  { id:'projectCoordinator',    label:'Coordinador de proyecto',    rol:'admin', scope:'proyecto',   desc:'Responsable de un proyecto/periodo específico' },
+  { id:'fieldRepresentative',   label:'Representante de campo',     rol:'ops',   scope:'pais',       desc:'Presencia operativa local · sucursales/visitas' },
+  { id:'financeOperator',       label:'Operador de finanzas',       rol:'admin', scope:'proyecto',   desc:'Liquidaciones, pagos, CxC/CxP — sin banco crudo' },
+  { id:'certificationOperator', label:'Operador de certificación',  rol:'admin', scope:'proyecto',   desc:'Gestiona certificaciones y carryover de shoppers' },
+  { id:'clientBrandAdmin',      label:'Admin de marca (cliente)',   rol:'cliente', scope:'proyecto', desc:'Portal del cliente con permisos de administración' },
+  { id:'clientBrandViewer',     label:'Visor de marca (cliente)',   rol:'cliente', scope:'proyecto', desc:'Portal del cliente solo lectura' },
+  { id:'shopperEvaluator',      label:'Shopper evaluador',          rol:'shopper', scope:'ninguno',  desc:'Evaluador de campo · solo su propio perfil/visitas' },
 ];
 
 /* ---------- Firebase (optional) ----------

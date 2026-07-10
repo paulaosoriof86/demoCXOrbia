@@ -43,7 +43,7 @@ Responde SOLO con JSON válido con este formato exacto:
     /* Detectar shoppers */
     if(/nombre|shopper|evaluador|dpi|telefon|celular|correo|email/.test(lower)&&!/sucursal|visita/.test(lower)){
       const n=Math.max(1,lines-1);const bad=Math.floor(n*.1);
-      ents.push({tipo:'shopper',cantidad:n,campos:['nombre','DPI/CC','teléfono','correo','país','ciudad','banco'],muestra:{nombre:'María García',dpi:'2345678-9',telefono:'+502 5555-1234',correo:'mgarcia@gmail.com'},problemas:bad>0?[bad+' registros sin correo o sin teléfono']:[]});
+      ents.push({tipo:'shopper',cantidad:n,campos:['nombre','DPI/CC','teléfono','correo','país','ciudad','banco'],muestra:{nombre:'Evaluador Demo 01',dpi:'••••••••',telefono:'••• ••••',correo:'evaluador01@demo.local'},problemas:bad>0?[bad+' registros sin correo o sin teléfono']:[]});
       buenos+=n-bad;malos+=bad;
     }
     /* Detectar visitas / HR */
@@ -61,7 +61,7 @@ Responde SOLO con JSON válido con este formato exacto:
     /* Detectar clientes */
     if(/cliente|empresa|rfc|nit|contacto|rubro|industria/.test(lower)&&!/(shopper|evaluador)/.test(lower)){
       const n=Math.max(1,lines-1);
-      ents.push({tipo:'cliente',cantidad:n,campos:['empresa','contacto','correo','teléfono','rubro','país'],muestra:{empresa:'Cinépolis',contacto:'Carlos Méndez',rubro:'Entretenimiento'},problemas:[]});
+      ents.push({tipo:'cliente',cantidad:n,campos:['empresa','contacto','correo','teléfono','rubro','país'],muestra:{empresa:'Marca Cliente Demo',contacto:'Contacto Demo',rubro:'Retail'},problemas:[]});
       buenos+=n;
     }
     /* Detectar JSON TyA */
@@ -79,18 +79,25 @@ Responde SOLO con JSON válido con este formato exacto:
   };
 
   const commitEntity=(ent)=>{
+    const push=(ref)=>{ try{ const q=JSON.parse(localStorage.getItem('cx_review_queue')||'[]'); q.push(ref); localStorage.setItem('cx_review_queue', JSON.stringify(q)); }catch(e){} };
+    const stage='reviewQueue'; // dry-run → source-safe → protected candidates → reviewQueue (aquí) → auditEvents → no escrito
     if(ent.tipo==='shopper'){
-      const r=ent.cantidad;ui.toast('Importados '+r+' shopper(s) al sistema','ok',4000);
+      const r=ent.cantidad;push({tipo:'shopper',cantidad:r,fecha:new Date().toISOString(),stage});
+      ui.toast(r+' candidato(s) de shopper en '+stage+' (source-safe, sin PII en claro) · no escrito hasta gate+backend','ok',4200);
       CX.bus&&CX.bus.emit('shoppers');
     } else if(ent.tipo==='visita'){
-      ui.toast('Importadas '+ent.cantidad+' visita(s) · sincronizado con liquidaciones y dashboard','ok',4000);
+      push({tipo:'visita',cantidad:ent.cantidad,fecha:new Date().toISOString(),stage});
+      ui.toast(ent.cantidad+' candidato(s) de visita en '+stage+' · sincronía real con liquidaciones/dashboard no escrita hasta backend','ok',4400);
       CX.bus&&CX.bus.emit('visitas');
     } else if(ent.tipo==='cuestionario'){
-      ui.toast('Importadas '+ent.cantidad+' preguntas al cuestionario del proyecto','ok');
+      push({tipo:'cuestionario',cantidad:ent.cantidad,fecha:new Date().toISOString(),stage});
+      ui.toast(ent.cantidad+' pregunta(s) candidatas en '+stage+' · alta real no escrita hasta backend','ok');
     } else if(ent.tipo==='cliente'){
-      ui.toast('Importados '+ent.cantidad+' cliente(s) al CRM','ok');
+      push({tipo:'cliente',cantidad:ent.cantidad,fecha:new Date().toISOString(),stage});
+      ui.toast(ent.cantidad+' cliente(s) candidato(s) en '+stage+' · alta real en CRM no escrita hasta backend','ok');
     } else {
-      ui.toast('Importados '+ent.cantidad+' registros','ok');
+      push({tipo:ent.tipo,cantidad:ent.cantidad,fecha:new Date().toISOString(),stage});
+      ui.toast(ent.cantidad+' registro(s) candidatos en '+stage+' · import real no escrito hasta backend','ok');
     }
   };
 
@@ -146,7 +153,7 @@ Responde SOLO con JSON válido con este formato exacto:
           ui.toast('Conversor Excel no disponible · guárdalo como CSV','warn',5000);return;
         }
         const r=new FileReader();r.onload=ev=>{body.querySelector('#aiTxt').value=ev.target.result;ui.toast('Archivo "'+f.name+'" cargado','ok');};f.name.endsWith('.json')||f.type.includes('text')||/\.(csv|tsv|txt)$/i.test(f.name)?r.readAsText(f):r.readAsDataURL(f);});
-      body.querySelector('#aiSample').addEventListener('click',()=>{body.querySelector('#aiTxt').value='nombre,dpi,telefono,correo,pais,ciudad,banco\nMaría García,2345678-9,+502 5555-1234,mgarcia@gmail.com,GT,Guatemala,Banrural\nJuan Pérez,3456789-0,+502 6666-2345,jperez@gmail.com,GT,Quetzaltenango,Industrial\nAna López,,+502 7777-3456,alopez@hotmail.com,HN,Tegucigalpa,Atlántida\nCarlos Fuentes,5678901-2,+502 8888-4567,,GT,Guatemala,BAC';});
+      body.querySelector('#aiSample').addEventListener('click',()=>{body.querySelector('#aiTxt').value='nombre,dpi,telefono,correo,pais,ciudad,banco\nEvaluador Demo 01,••••••••,••• ••••,eval01@demo.local,GT,Guatemala,•••••\nEvaluador Demo 02,••••••••,••• ••••,eval02@demo.local,GT,Quetzaltenango,•••••\nEvaluador Demo 03,,••• ••••,eval03@demo.local,HN,Tegucigalpa,•••••\nEvaluador Demo 04,••••••••,••• ••••,,GT,Guatemala,•••••';});
       body.querySelector('#aiGo').addEventListener('click',()=>{
         const txt=body.querySelector('#aiTxt').value.trim();
         if(!txt){ui.toast('Pega o sube datos primero','warn');return;}
@@ -158,6 +165,13 @@ Responde SOLO con JSON válido con este formato exacto:
       const r=ai.result;
       const typeLabel={shopper:'👤 Shoppers',visita:'🗺️ Visitas',cuestionario:'🧩 Cuestionario',cliente:'🏢 Clientes',certificacion:'🏅 Certificaciones',registro:'📄 Registros'};
       body.innerHTML=`
+      <div class="card card-p" style="margin-bottom:14px;background:var(--panel-2)">
+        <div style="font-size:10.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">Pipeline (preview · genérico HR/source)</div>
+        <div class="flex wrap" style="gap:6px;font-size:11px;font-family:var(--disp,monospace)">
+          ${ui.bdg('dry-run','g')}→${ui.bdg('source-safe','b')}→${ui.bdg('protected candidates','n')}→${ui.bdg('reviewQueue','a')}→${ui.bdg('auditEvents','n')}→${ui.bdg('no escrito','r')}
+        </div>
+        <div style="font-size:10.5px;color:var(--t3);margin-top:6px">Ningún dato pasa a producción aquí: solo llega a <b>candidato revisable</b>. La escritura real (backend) exige reviewQueue resuelto + auditEvent + gate activo.</div>
+      </div>
       <div class="card card-p" style="margin-bottom:14px">
         <div class="card-h"><div class="card-t">🤖 Análisis completo</div>${ui.bdg(r.buenos+' buenos','g')} ${r.malos>0?ui.bdg(r.malos+' problemas','a'):''}</div>
         <div style="background:var(--brand-light);border-radius:9px;padding:10px 14px;font-size:12.5px;color:var(--brand-dark);margin-top:10px;margin-bottom:14px">💡 ${r.accion}</div>
@@ -199,7 +213,7 @@ Responde SOLO con JSON válido con este formato exacto:
       body.querySelector('#aiBack')?.addEventListener('click',()=>{ai.step=1;ai.confirmed=[];drawAI(body);});
       body.querySelector('#aiCommit')?.addEventListener('click',()=>{
         ai.confirmed.forEach(i=>commitEntity(r.entidades[i]));
-        ui.toast('Importación completada · revisando en las secciones…','ok',4200);
+        ui.toast('Importación preparada (preview) · pendiente de gate backend para ejecución real','ok',4200);
         ai={step:1,raw:'',result:null,confirmed:[]};
         setTimeout(()=>draw(),2000);
       });
@@ -211,7 +225,7 @@ Responde SOLO con JSON válido con este formato exacto:
     if(tya.step===1){
       body.innerHTML=`
       <div class="card card-p" style="margin-bottom:14px">
-        <div class="card-t" style="margin-bottom:8px">🔄 Migración desde versión anterior de TyA</div>
+        <div class="card-t" style="margin-bottom:8px">🔄 Migración desde plataforma anterior</div>
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Pega el resultado del <b>prompt de exportación de OpenAI</b> (JSON con shoppers, visitas, certificaciones, historial). El importador separa automáticamente lo bueno de lo problemático y deduplica por llave natural.</p>
         <div style="background:#fef3c7;border-radius:9px;padding:10px 14px;font-size:12.5px;color:#92400e;margin-bottom:12px">
           ⚠️ <b>Antes de importar:</b> revisa la lista de "NO migrar" que entregó OpenAI. Importa SOLO los registros limpios que OpenAI marcó como buenos.
@@ -259,7 +273,7 @@ Responde SOLO con JSON válido con este formato exacto:
       body.querySelector('#tyaBack')?.addEventListener('click',()=>{tya.step=1;drawTyA(body);});
       body.querySelector('#tyaCommit')?.addEventListener('click',()=>{
         const total=keys.reduce((a,k)=>a+(sec[k]||[]).length,0);
-        ui.toast('Migración completada: '+total+' registros importados · sin duplicados','ok',5000);
+        ui.toast('Migración preparada (preview) · '+total+' registros · import real y anti-duplicado los ejecuta el backend cuando el gate esté activo','ok',5000);
         CX.bus&&CX.bus.emit('shoppers');CX.bus&&CX.bus.emit('visitas');
         tya={step:1,raw:'',parsed:null,section:'shoppers'};
         setTimeout(()=>draw(),2500);
@@ -368,7 +382,7 @@ Responde SOLO con JSON válido con este formato exacto:
       if(cb)cb.addEventListener('click',()=>{
         if(!CX.importador)return;
         const res=CX.importador.commit(d.nuevos,p);
-        ui.toast('Importadas '+res.creadas+' visita(s)'+(res.shoppersNuevos?' · '+res.shoppersNuevos+' shopper(s) nuevos':''),'ok',4000);
+        ui.toast(res.creadas+' visita(s) preparadas (preview)'+(res.shoppersNuevos?' · '+res.shoppersNuevos+' shopper(s) nuevos':'')+' · import real pendiente de backend','ok',4000);
         hr={step:1,parsed:null,map:{},cands:[],diff:null};
         CX.router.nav('visitas');
       });

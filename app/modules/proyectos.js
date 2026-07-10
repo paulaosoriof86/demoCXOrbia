@@ -1,40 +1,51 @@
 /* CXOrbia · Proyectos (admin) — the IA-adaptive core.
    Selecting/creating a project reconfigures the whole platform. */
 CX.module('proyectos', ({data,ui})=>{
-  const cards=data.projects.map(p=>{
-    const active=p.id===data.currentProjectId;
-    const v=data._visitas.filter(x=>x.projectId===p.id);
-    return `<div class="card hov card-p" data-pid="${p.id}" style="cursor:pointer;${active?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}">
+  const groups = data.scopedProyectos().map(pg=>{
+    const periods = data.periodosDe(pg.key);
+    const rep = pg.sample;
+    const totalV = periods.reduce((a,p)=>a+data._visitas.filter(x=>x.projectId===p.id).length,0);
+    const activePeriod = periods.find(p=>p.id===data.currentProjectId);
+    const isActiveGroup = !!activePeriod;
+    return `<div class="card hov card-p" data-pgkey="${pg.key}" style="cursor:pointer;${isActiveGroup?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}">
       <div class="between" style="margin-bottom:10px">
-        <div class="flex" style="gap:10px"><div style="width:34px;height:34px;border-radius:9px;background:${p.accent}1a;display:flex;align-items:center;justify-content:center;color:${p.accent};font-weight:800;font-family:var(--disp)">${p.name[0]}</div>
-        <div><div class="card-t" style="font-size:15px">${p.name}</div><div style="font-size:11px;color:var(--t3)">${p.industry}</div></div></div>
-        <div class="flex" style="gap:6px">${active?ui.bdg('Activo','g'):ui.bdg('Cambiar','n')}<button class="btn btn-ghost btn-sm" data-cfg="${p.id}" title="Ver/editar configuración">⚙️</button></div>
+        <div class="flex" style="gap:10px"><div style="width:34px;height:34px;border-radius:9px;background:${rep.accent}1a;display:flex;align-items:center;justify-content:center;color:${rep.accent};font-weight:800;font-family:var(--disp)">${pg.name[0]}</div>
+        <div><div class="card-t" style="font-size:15px">${pg.name}</div><div style="font-size:11px;color:var(--t3)">${rep.industry}</div></div></div>
+        <div class="flex" style="gap:6px">${isActiveGroup?ui.bdg('Activo','g'):ui.bdg('Cambiar','n')}<button class="btn btn-ghost btn-sm" data-cfg="${rep.id}" title="Ver/editar configuración">⚙️</button></div>
       </div>
       <div class="flex wrap" style="gap:6px;margin-bottom:10px">
-        ${p.countries.map(c=>ui.bdg(CX.paisFlag(c)+' '+c,'b')).join('')}
-        ${ui.bdg(p.sucursales+' sucursales','n')}
-        ${ui.bdg(v.length+' visitas','n')}
+        ${rep.countries.map(c=>ui.bdg(CX.paisFlag(c)+' '+c,'b')).join('')}
+        ${ui.bdg(rep.sucursales+' sucursales','n')}
+        ${ui.bdg(totalV+' visitas','n')}
       </div>
-      <div style="font-size:11.5px;color:var(--t2)">Escenarios: ${p.scenarios.join(' · ')}</div>
+      <div style="font-size:11.5px;color:var(--t2);margin-bottom:${periods.length>1?'8px':'0'}">Escenarios: ${rep.scenarios.join(' · ')}</div>
+      ${periods.length>1?`<div style="border-top:1px solid var(--border-2);padding-top:8px;margin-top:2px">
+        <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px">${periods.length} periodos</div>
+        <div class="flex wrap" style="gap:6px">${periods.map(pr=>`<span data-pid="${pr.id}" class="bdg ${pr.id===data.currentProjectId?'bdg-g':'bdg-n'}" style="cursor:pointer">${pr.periodo||pr.name}${data.periodState(pr.id)!=='activo'?' · '+data.periodState(pr.id):''}</span>`).join('')}</div>
+      </div>`:`<div data-pid="${periods[0].id}" style="display:none"></div>`}
     </div>`;
   }).join('');
 
   const p=data.project();
   const html=`
-  ${ui.ph('Proyectos', 'Cada proyecto reconfigura dashboard, KPIs, reglas y cuestionarios — sin tocar código')}
+  ${ui.ph('Proyectos', 'Cada proyecto reconfigura dashboard, KPIs, reglas y cuestionarios — sin tocar código. Los periodos (rondas) viven dentro de su proyecto.')}
   <div class="between" style="margin-bottom:14px">
-    <div class="flex">${ui.bdg(data.projects.length+' proyectos','n')} ${ui.bdg('Activo: '+p.name,'b')}</div>
+    <div class="flex">${ui.bdg(data.programs().length+' proyectos','n')} ${ui.bdg((data.programs().length!==data.projects.length?data.projects.length+' periodos totales · ':'')+'Activo: '+p.name,'b')}</div>
     <button class="btn btn-pr" id="newProj">+ Nuevo proyecto</button>
   </div>
-  <div class="grid g3" style="margin-bottom:18px">${cards}</div>
+  <div class="grid g3" style="margin-bottom:18px">${groups}</div>
   <div class="card card-p">
-    ${ui.aiBox('Al cambiar o crear un proyecto, la plataforma se adapta sola: el dashboard, el mapeo, las reglas de quincena/franja, los honorarios por país y los cuestionarios por escenario se reconfiguran para ese cliente. Es el corazón de la escalabilidad del negocio.','Proyectos adaptativos')}
+    ${ui.aiBox('Al cambiar o crear un proyecto, la plataforma se adapta sola: el dashboard, el mapeo, las reglas de quincena/franja, los honorarios por país y los cuestionarios por escenario se reconfiguran para ese cliente. El periodo (ronda) es un filtro/estado DENTRO del proyecto — nunca un proyecto nuevo.','Proyectos adaptativos')}
   </div>`;
 
   // attach interactions after render via microtask
   setTimeout(()=>{
-    document.querySelectorAll('[data-pid]').forEach(c=>c.addEventListener('click',()=>{
-      data.setProject(c.dataset.pid); ui.toast('Plataforma adaptada a: '+data.project().name,'ok');
+    document.querySelectorAll('[data-pid]').forEach(c=>c.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      data.setProject(c.dataset.pid); ui.toast('Plataforma adaptada a: '+data.project().name+(data.project().periodo?' · '+data.project().periodo:''),'ok');
+    }));
+    document.querySelectorAll('[data-pgkey]').forEach(c=>c.addEventListener('click',()=>{
+      if(!data.setProgram) return; data.setProgram(c.dataset.pgkey); ui.toast('Plataforma adaptada a: '+data.project().name,'ok');
     }));
     /* ver/editar configuración del proyecto */
     document.querySelectorAll('[data-cfg]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); const pr=data.projects.find(x=>x.id===b.dataset.cfg); if(!pr)return; projConfig(pr); }));
@@ -108,7 +119,11 @@ CX.module('proyectos', ({data,ui})=>{
         /* #157 — vincular el proyecto con la Cuenta/Cliente del CRM (trazabilidad bidireccional) */
         try{ if(pr.client && CX.crmStore){ const cuentas=CX.crmStore.cuentas(); let cu=cuentas.find(x=>(x.nombre||'').toLowerCase()===pr.client.toLowerCase());
           if(cu){ cu.proyectos=cu.proyectos||[]; if(!cu.proyectos.includes(pr.id))cu.proyectos.push(pr.id); CX.crmStore.saveCuentas(); } } }catch(e){}
-        CX.bus&&CX.bus.emit('visit-flow'); close(); CX.router.nav('proyectos'); ui.toast('Configuración de '+pr.name+' actualizada','ok'); });
+        /* P0-2 (V94 reauditoría): si el proyecto/periodo fue creado desde la UI (no es seed),
+           persiste el cambio para que sobreviva un reload — nunca reescribe los 3 seeds de ejemplo. */
+        data._saveCustomProjects&&data._saveCustomProjects();
+        CX.bus&&CX.bus.emit('visit-flow'); close(); CX.router.nav('proyectos');
+        ui.toast('Configuración de '+pr.name+' actualizada'+(['retail','banca','food'].includes(pr.id)?' (seed de ejemplo · no persiste tras recargar)':' · guardado local preview · backend pendiente'),'ok',3600); });
       }});
     };
     const nb=document.getElementById('newProj');

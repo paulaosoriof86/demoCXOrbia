@@ -50,7 +50,7 @@ CX.module('administrabilidad', ({data, ui, role})=>{
       Gates apagados · aplicación real pendiente de backend · producción NO autorizada.
     </div>`;
 
-  const tabs = [['matriz','🧭 Matriz de configuración'],['nda','🔒 NDA (versionado)'],['planes','📦 Planes (versionado)'],['reglas','📜 Reglas & gates']];
+  const tabs = [['matriz','🧭 Matriz de configuración'],['nda','🔒 NDA (versionado)'],['planes','📦 Planes (versionado)'],['reglas','📜 Reglas & gates'],['fasea','🏗️ Fase A & dominios profundos']];
 
   const matrizView = ()=>{
     const rows = CX.adminCfg.matrix();
@@ -145,8 +145,54 @@ CX.module('administrabilidad', ({data, ui, role})=>{
       </div>`;
   };
 
+  const faseAView = ()=>{
+    const blocks = [
+      { t:'Bloque 5 · Fase A operativa', items:[
+        ['Alcance actual','Proyecto piloto (multi-cliente) + módulos multi-cliente existentes conviven en un solo tenant demo'],
+        ['Multi-proyecto','Cada proyecto conserva su propio HR, cuestionario y liquidación — sin mezclar datos entre proyectos'],
+        ['Estado honesto','"Fase A" se muestra explícito en dashboard/reportes cuando el dato es piloto, no histórico consolidado'],
+      ]},
+      { t:'Bloque 6 · HR ↔ plataforma (sync)', items:[
+        ['Llaves de sincronía','tenantId · projectId · visitId/hrRowId · shopperId · assignmentSource · assignmentSyncStatus · lastSyncedAt'],
+        ['Origen de asignación','assignmentSource ∈ {plataforma, hr, mixto} — nunca se sobre-escribe sin dejar rastro'],
+        ['Conflicto de sync','diferencias entre HR y plataforma van a la bandeja de conflictos (Diagnóstico → Conflictos), nunca autoresueltas'],
+      ]},
+      { t:'Bloque 7 · Liquidaciones / Mis beneficios', items:[
+        ['Campos elegibles','honorario · boleto · combo · reembolso · total · estado · lote — sin número de cuenta ni datos bancarios'],
+        ['Ciclo honesto','visita realizada → cuestionario submitido → elegible → liquidado → lote → pago (cada etapa con estado propio, no colapsadas en una)'],
+        ['Qué NO hace esta demo','no calcula pagos reales ni genera lotes reales; son estados ilustrativos de UI'],
+      ]},
+      { t:'Bloque 8 · Cuestionarios / certificaciones', items:[
+        ['Fuentes de ruteo','CXOrbia · TyAOnline · externo · general · HR-por-visita — configurable por proyecto'],
+        ['Certificaciones','presentadas se conservan siempre; no hay auto-aprobación — revisión humana antes de certificar'],
+        ['Gemini (IA)','solo sugiere/asiste evaluación; la decisión final la marca una persona'],
+      ]},
+      { t:'Bloque 9 · Evidencias', items:[
+        ['Tipos requeridos','foto de fachada, ticket/factura, evidencia de producto — configurable por cuestionario'],
+        ['Storage','sin adjuntos crudos ni base64 en esta demo; el guardado real de archivos depende de Storage + su gate'],
+        ['Estado honesto','"evidencia preparada (preview)" en vez de "evidencia guardada" mientras el gate esté apagado'],
+      ]},
+      { t:'Bloque 10 · Datos sensibles (política)', items:[
+        ['Prohibido en preview','DPI, número de cuenta bancaria, NDA firmado con firma real, tokens de API, webhooks o URLs privadas'],
+        ['Referencias opacas','todo cruce de datos usa IDs cortos (p.ej. hr#a4f2) en vez de nombres o documentos reales'],
+        ['Aplicable a todo el prototipo','esta política rige todos los módulos nuevos — Diagnóstico, Administrabilidad y futuros'],
+      ]},
+    ];
+    return `
+      <div class="card card-p">
+        <div class="card-t" style="margin-bottom:4px">Fase A & dominios profundos (preview)</div>
+        <p style="font-size:12px;color:var(--t3);margin-bottom:14px">Detalle honesto de los bloques 5–10 del paquete: qué existe hoy, qué es solo preview, y qué política de datos aplica. Sin datos reales ni activación de backend.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px">
+        ${blocks.map(b=>`<div class="card" style="padding:14px 16px">
+          <div style="font-weight:700;font-size:13.5px;margin-bottom:10px">${b.t}</div>
+          ${b.items.map(([k,v])=>`<div style="margin-bottom:8px"><div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.03em;margin-bottom:2px">${k}</div><div style="font-size:12px;color:var(--t2);line-height:1.5">${v}</div></div>`).join('')}
+        </div>`).join('')}
+        </div>
+      </div>`;
+  };
+
   const draw = ()=>{
-    const body = tab==='matriz'?matrizView():tab==='nda'?ndaView():tab==='planes'?planesView():reglasView();
+    const body = tab==='matriz'?matrizView():tab==='nda'?ndaView():tab==='planes'?planesView():tab==='reglas'?reglasView():faseAView();
     host.innerHTML = `
       ${ui.ph('Administrabilidad', 'Configuración versionada por dominio — preview, sin aplicar en producción')}
       ${banner}

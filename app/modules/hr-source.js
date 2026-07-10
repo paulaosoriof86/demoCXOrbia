@@ -75,6 +75,22 @@ CX.module('hrsource', ({data, ui})=>{
         <div style="margin-top:10px;font-size:10.5px;color:var(--t3)">Solo el backend abre los gates de import/staging/producción. El prototipo nunca escribe datos reales.</div>
       </div>
 
+      <div class="card card-p" style="margin-bottom:14px;background:var(--panel-2)">
+        <div class="card-t" style="font-size:12.5px;margin-bottom:8px">🔗 De la fuente viva a candidatos protegidos (patrón genérico)</div>
+        <div class="flex wrap" style="gap:6px;font-size:11px;font-family:var(--disp,monospace);margin-bottom:8px">
+          ${ui.bdg('source viva','n')}→${ui.bdg('payload source-safe','b')}→${ui.bdg('protected candidates','n')}→${ui.bdg('reviewQueue','a')}→${ui.bdg('auditEvents','n')}→${ui.bdg('no escrito','r')}
+        </div>
+        <div class="grid g2" style="gap:8px">
+          <div style="font-size:11px;color:var(--t2)"><b>Identity link candidates</b> — vincula una fila de HR con un shopper existente, nunca por coincidencia visual.</div>
+          <div style="font-size:11px;color:var(--t2)"><b>Certification carryover candidates</b> — propone si una certificación previa sigue vigente para el nuevo periodo.</div>
+          <div style="font-size:11px;color:var(--t2)"><b>Liquidation candidates</b> — visitas elegibles a liquidar, aún sin cruce financiero real.</div>
+          <div style="font-size:11px;color:var(--t2)"><b>Payment batch candidates</b> — agrupación propuesta para un lote, sin pago real ejecutado.</div>
+        </div>
+        <div style="font-size:10.5px;color:var(--t3);margin-top:8px">Cada candidato pasa por <b>reviewQueue</b> (revisión humana obligatoria) y queda registrado en <b>auditEvents</b> antes de cualquier decisión — ver Diagnóstico → Conflictos.</div>
+        <div style="margin-top:10px"><button class="btn btn-pr btn-sm" id="hsGenCand">🧬 Generar candidatos source-safe (preview)</button></div>
+        <div id="hsCandOut" style="margin-top:10px"></div>
+      </div>
+
       <div class="card card-p" style="margin-bottom:14px">
         <div class="card-t" style="font-size:12.5px;margin-bottom:8px">🏷️ Estados posibles</div>
         <div class="flex wrap" style="gap:6px">
@@ -165,6 +181,45 @@ CX.module('hrsource', ({data, ui})=>{
       if(!(cfg.estado==='ready_for_import' && cfg.canImport===true)){ui.toast('⛔ Importación bloqueada: solo avanza si el backend responde ready_for_import con canImport=true','warn',4600);return;}
       CX.hrSource.emitBackend('sync-request', pid());
       ui.toast('🔄 Evento hr-source:sync-request encolado al backend','ok');
+    });
+    host.querySelector('#hsGenCand')?.addEventListener('click',()=>{
+      /* P0-3 (V94/V95 reauditoría): genera candidatos source-safe reales (preview) a partir del estado
+         actual del proyecto — no lee la fuente externa (eso lo hace el backend), solo prepara los
+         4 tipos de candidato sobre datos ya presentes en el prototipo, siempre "no escrito".
+         Llave estable (projectId+tipo+origen): al volver a generar, ACTUALIZA el candidato existente
+         en vez de duplicarlo — evita que reviewQueue se infle con cada click. */
+      const proj = data.project();
+      const visitasProj = data._visitas.filter(v=>v.projectId===pid());
+      const identity = visitasProj.filter(v=>v.shopperId).length;
+      const carryover = data.shoppers.filter(s=>proj.countries.includes(s.pais) && (s.certs||0)>0).length;
+      const liquidacion = visitasProj.filter(v=>['realizada','cuestionario'].includes(v.estado)).length;
+      const lote = Math.ceil(liquidacion/8);
+      const stamp=new Date().toISOString();
+      const upsert=(tipo,cantidad)=>{
+        try{
+          const q=JSON.parse(localStorage.getItem('cx_review_queue')||'[]');
+          const key='hrsrc-'+pid()+'-'+tipo;
+          const auditRef='aud_'+Math.abs((key+stamp).split('').reduce((a,c)=>((a<<5)-a+c.charCodeAt(0))|0,0)).toString(16).slice(0,6);
+          const rec={key,tipo,cantidad,fecha:stamp,stage:'reviewQueue',origen:'hr-source',projectId:pid(),sourceRef:'src:hrsrc#'+key.slice(-6),auditRef};
+          const i=q.findIndex(x=>x.key===key);
+          if(i>=0) q[i]=rec; else q.push(rec);
+          localStorage.setItem('cx_review_queue', JSON.stringify(q));
+        }catch(e){}
+      };
+      upsert('identity_link', identity); upsert('certification_carryover', carryover); upsert('liquidation', liquidacion); upsert('payment_batch', lote);
+      CX.hrSource.emitBackend('candidates-preview', pid());
+      const out = host.querySelector('#hsCandOut');
+      if(out) out.innerHTML = `<div class="card" style="padding:10px 12px;font-size:11.5px;color:var(--t2)">
+        <b>Candidatos generados (preview · no escrito):</b>
+        identity link: ${identity} · certification carryover: ${carryover} · liquidation: ${liquidacion} · payment batch: ${lote}
+        <div style="font-size:10.5px;color:var(--t3);margin-top:4px">Actualizado por llave estable (proyecto+tipo) — no duplica al volver a generar. Revísalos en Diagnóstico → Conflictos → "Candidatos desde HR/Source". <button class="btn btn-ghost btn-sm" id="hsCandClear" style="padding:2px 8px;font-size:10.5px;margin-left:6px">🗑 Limpiar candidatos de este proyecto</button></div>
+      </div>`;
+      host.querySelector('#hsCandClear')?.addEventListener('click',()=>{
+        try{ const q=JSON.parse(localStorage.getItem('cx_review_queue')||'[]').filter(x=>!(x.origen==='hr-source'&&x.projectId===pid())); localStorage.setItem('cx_review_queue', JSON.stringify(q)); }catch(e){}
+        if(out) out.innerHTML='';
+        ui.toast('Candidatos de este proyecto eliminados de reviewQueue (preview)','',2800);
+      });
+      ui.toast('Candidatos source-safe preparados (preview) · reviewQueue actualizado · no escrito','ok',4200);
     });
   };
 

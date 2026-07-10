@@ -113,7 +113,7 @@ CX.module('shoppers', ({data,ui})=>{
           El score pondera la calidad y confiabilidad del evaluador. Solo penaliza cuando la responsabilidad es del shopper:
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 14px;margin-top:6px">
             <span>• Cancelación por shopper</span><b style="color:var(--red)">−0.3</b>
-            <span>• Cancelación por TyA/cliente/local cerrado</span><b style="color:var(--t3)">0 (no penaliza)</b>
+            <span>• Cancelación por cliente/local cerrado</span><b style="color:var(--t3)">0 (no penaliza)</b>
             <span>• Reprogramación justificada</span><b style="color:var(--t3)">0</b>
             <span>• Cuestionario enviado tarde</span><b style="color:var(--amber)">−0.15</b>
             <span>• Evidencia incompleta/deficiente</span><b style="color:var(--amber)">−0.2</b>
@@ -124,7 +124,7 @@ CX.module('shoppers', ({data,ui})=>{
           <div style="font-size:10.5px;color:var(--t3);margin-top:6px">Config por tenant/proyecto. Cada penalización queda en la auditoría con motivo y responsable.</div>
         </div>
       </div>
-      <div class="card-h" style="margin-bottom:10px"><div class="card-t">Datos del shopper</div><button class="btn btn-soft btn-sm" id="shEdit">✎ Editar perfil</button></div>
+      <div class="card-h" style="margin-bottom:10px"><div class="card-t">Datos del shopper</div>${(CX.session&&CX.session.canSeeProtectedData&&CX.session.canSeeProtectedData())?'<button class="btn btn-soft btn-sm" id="shEdit">✎ Editar perfil</button>':'<span class="muted" style="font-size:11px">🔒 Edición de datos protegidos requiere acceso completo (Auth pendiente)</span>'}</div>
       <div id="shFormHost"></div>
     `;
     ui.modal(s.nombre, body, {onMount:(ov,close)=>{
@@ -135,11 +135,16 @@ CX.module('shoppers', ({data,ui})=>{
       // ver datos en modo lectura
       const host=ov.querySelector('#shFormHost');
       const readView=()=>{
+        const canSeeSensitive = CX.session && CX.session.canSeeProtectedData ? CX.session.canSeeProtectedData() : (CX.session&&CX.session.role==='super');
+        const mask=(v)=>v?('•'.repeat(Math.min(8,String(v).length))):null;
+        const rSens=(l,v)=>{ const shown = canSeeSensitive ? v : mask(v);
+          return `<div style="padding:7px 0;border-bottom:1px solid var(--border)" class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">${l}${canSeeSensitive?'':' 🔒'}</span><b style="font-size:13px;color:var(--t1);text-align:right">${shown||'<span style=\"color:var(--t3)\">— sin dato</span>'}</b></div>`; };
         const r=(l,v)=>`<div style="padding:7px 0;border-bottom:1px solid var(--border)" class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">${l}</span><b style="font-size:13px;color:var(--t1);text-align:right">${v||'<span style=\"color:var(--t3)\">— sin dato</span>'}</b></div>`;
-        host.innerHTML=`<div>${r('WhatsApp',s.whatsapp)}${r('Correo',s.email)}${r(CX.geo.deptLabel(s.pais),s.depto)}${r('Edad',s.edad)}${r('Sexo',s.sexo)}${r('Documento',s.dpi)}${r('Banco',s.banco)}${r('Tipo de cuenta',s.ctaTipo)}${r('Número de cuenta',s.ctaNum)}${r('Titular',s.ctaTitular)}${r('Moneda',s.ctaMoneda)}</div>`;
+        host.innerHTML=`<div>${rSens('WhatsApp',s.whatsapp)}${rSens('Correo',s.email)}${r(CX.geo.deptLabel(s.pais),s.depto)}${r('Edad',s.edad)}${r('Sexo',s.sexo)}${rSens('Documento',s.dpi)}${rSens('Banco',s.banco)}${rSens('Tipo de cuenta',s.ctaTipo)}${rSens('Número de cuenta',s.ctaNum)}${rSens('Titular',s.ctaTitular)}${rSens('Moneda',s.ctaMoneda)}
+        ${canSeeSensitive?'':'<div style="margin-top:8px;font-size:10.5px;color:var(--t3)">🔒 Datos protegidos · acceso completo pendiente Auth por rol (backend)</div>'}</div>`;
       };
       readView();
-      ov.querySelector('#shEdit').addEventListener('click',()=>{
+      ov.querySelector('#shEdit')?.addEventListener('click',()=>{
         host.innerHTML=editFields(s);
         const ids={pais:'ed_pais',depto:'ed_depto',ciudad:'ed_ciudad'};
         CX.geo.wire(host,ids,{pais:s.pais,depto:s.depto,ciudad:s.ciudad});

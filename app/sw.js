@@ -2,7 +2,7 @@
    network-first para SIEMPRE preferir la versión más reciente de cada archivo;
    la caché es solo respaldo offline. Al subir CX_CACHE se purga la caché anterior
    (evita servir módulos viejos/rotos — p.ej. una Academia cacheada corrupta). */
-const CX_CACHE = 'cxorbia-v3-tya-source-safe-preview';
+const CX_CACHE = 'cxorbia-v2';
 self.addEventListener('install', e => { self.skipWaiting(); });
 self.addEventListener('activate', e => {
   e.waitUntil((async () => {

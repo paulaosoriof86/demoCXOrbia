@@ -8,8 +8,8 @@ CX.saasConsole = {
   KEY:'cx_saas_tenants',
   seed(){
     return [
-      {id:'tya', nombre:'TyA Consultores', plan:'Enterprise', pais:['GT','HN'], estado:'Activo', proyectos:3, usuarios:14, version:'V76', modulos:{dashboard:true,visitas:true,finanzas:true,crm:true,marketing:true,academia:true,portal:true}, flags:{iaGemini:true,evidenciaGeo:true,benchmark:false,facturacionFEL:false}},
-      {id:'demo', nombre:'Consultora Demo', plan:'Estándar', pais:['GT'], estado:'Trial', proyectos:1, usuarios:3, version:'V76', modulos:{dashboard:true,visitas:true,finanzas:true,crm:true,marketing:false,academia:true,portal:true}, flags:{iaGemini:false,evidenciaGeo:false,benchmark:false,facturacionFEL:false}},
+      {id:'consultora-a', nombre:'Consultora A', plan:'Enterprise', pais:['GT','HN'], estado:'Activo', proyectos:3, usuarios:14, version:'V79', modulos:{dashboard:true,visitas:true,finanzas:true,crm:true,marketing:true,academia:true,portal:true}, flags:{iaGemini:true,evidenciaGeo:true,benchmark:false,facturacionFEL:false}},
+      {id:'demo', nombre:'Consultora Demo', plan:'Estándar', pais:['GT'], estado:'Trial', proyectos:1, usuarios:3, version:'V79', modulos:{dashboard:true,visitas:true,finanzas:true,crm:true,marketing:false,academia:true,portal:true}, flags:{iaGemini:false,evidenciaGeo:false,benchmark:false,facturacionFEL:false}},
     ];
   },
   all(){ try{const s=JSON.parse(localStorage.getItem(this.KEY)||'null'); return (s&&s.length)?s:this.seed();}catch(e){return this.seed();} },
@@ -32,7 +32,7 @@ CX.module('saas', ({data, ui})=>{
         ${ui.kpi('Tenants',tenants.length,'b')}
         ${ui.kpi('Activos',tenants.filter(t=>t.estado==='Activo').length,'g')}
         ${ui.kpi('En trial',tenants.filter(t=>t.estado==='Trial').length,'a')}
-        ${ui.kpi('Versión actual','V76','p')}
+        ${ui.kpi('Versión actual','V79','p')}
       </div>
       <div class="card card-p" style="margin-bottom:16px">
         <div class="between" style="margin-bottom:12px"><div class="card-t">🏢 Tenants (clientes de la plataforma)</div><button class="btn btn-pr btn-sm" id="saasNew">＋ Nuevo tenant</button></div>
@@ -47,11 +47,14 @@ CX.module('saas', ({data, ui})=>{
       <div class="card card-p">
         <div class="card-t" style="margin-bottom:10px">🚀 Releases centralizados</div>
         <table class="tbl"><thead><tr><th>Versión</th><th>Fecha</th><th>Alcance</th><th>Estado</th></tr></thead><tbody>
-          <tr><td><b>V76</b></td><td>2026-07-03</td><td>HR Source gates · liquidaciones candidatas · consola SaaS</td><td><span class="bdg bdg-g">Publicado</span></td></tr>
-          <tr><td><b>V71</b></td><td>2026-07-03</td><td>Auditoría profunda · fichas ampliadas</td><td><span class="bdg bdg-g">Publicado</span></td></tr>
-          <tr><td><b>V66</b></td><td>2026-07-02</td><td>Roles/alcance · finanzas · report builder</td><td><span class="bdg bdg-g">Publicado</span></td></tr>
+          <tr><td><b>V79</b></td><td>2026-07-04</td><td>Phase A · enum cuestionario unificado · revisión · config por proyecto · nvBanner · versión coherente</td><td><span class="bdg bdg-a">Interno (sin deploy)</span></td></tr>
+          <tr><td><b>V76</b></td><td>2026-07-04</td><td>Coherencia de versión · estados honestos globales · PWA install-aware</td><td><span class="bdg bdg-a">Interno (sin deploy)</span></td></tr>
+          <tr><td><b>V74</b></td><td>2026-07-03</td><td>Estados honestos (finanzas preview · Make/IA pendiente backend) · HR Source registro seguro</td><td><span class="bdg bdg-a">Interno (sin deploy)</span></td></tr>
+          <tr><td><b>V72</b></td><td>2026-07-03</td><td>HR Source gates · liquidaciones candidatas · consola SaaS</td><td><span class="bdg bdg-a">Interno (sin deploy)</span></td></tr>
+          <tr><td><b>V71</b></td><td>2026-07-03</td><td>Auditoría profunda · fichas ampliadas</td><td><span class="bdg bdg-a">Interno (sin deploy)</span></td></tr>
+          <tr><td><b>V66</b></td><td>2026-07-02</td><td>Roles/alcance · finanzas · report builder</td><td><span class="bdg bdg-a">Interno (sin deploy)</span></td></tr>
         </tbody></table>
-        <div style="margin-top:8px;font-size:10.5px;color:var(--t3)">Las actualizaciones se despliegan centralizadas a todos los tenants según su plan. Trazabilidad por versión en app/docs/CAMBIOS-PROTOTIPO.md.</div>
+        <div style="margin-top:8px;font-size:10.5px;color:var(--t3)">Prototipo interno sin deploy a producción. El despliegue centralizado real por tenant lo ejecuta el backend. Trazabilidad por versión en app/docs/CAMBIOS-PROTOTIPO.md.</div>
       </div>`;
 
     host.querySelector('#saasNew').addEventListener('click',()=>ui.modal('＋ Nuevo tenant',`
@@ -61,7 +64,7 @@ CX.module('saas', ({data, ui})=>{
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="ntOk">Crear tenant</button></div>
     `,{onMount:(ov,close)=>ov.querySelector('#ntOk').addEventListener('click',()=>{
       const n=(ov.querySelector('#ntN').value||'').trim();if(!n){ui.toast('Nombre requerido','warn');return;}
-      const a=CX.saasConsole.all();a.push({id:'t'+Date.now().toString(36),nombre:n,plan:ov.querySelector('#ntP').value,pais:ov.querySelector('#ntC').value.split(',').map(s=>s.trim()).filter(Boolean),estado:ov.querySelector('#ntE').value,proyectos:0,usuarios:1,version:'V76',modulos:{dashboard:true,visitas:true,finanzas:true,crm:true,marketing:false,academia:true,portal:true},flags:{iaGemini:false,evidenciaGeo:false,benchmark:false,facturacionFEL:false}});
+      const a=CX.saasConsole.all();a.push({id:'t'+Date.now().toString(36),nombre:n,plan:ov.querySelector('#ntP').value,pais:ov.querySelector('#ntC').value.split(',').map(s=>s.trim()).filter(Boolean),estado:ov.querySelector('#ntE').value,proyectos:0,usuarios:1,version:'V79',modulos:{dashboard:true,visitas:true,finanzas:true,crm:true,marketing:false,academia:true,portal:true},flags:{iaGemini:false,evidenciaGeo:false,benchmark:false,facturacionFEL:false}});
       CX.saasConsole.save(a);close();draw();ui.toast('Tenant creado (prototipo)','ok');
     })}));
 

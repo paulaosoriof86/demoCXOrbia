@@ -22,7 +22,32 @@ CX.diagStore = CX.diagStore || {
       { id:'PACK-IMPORT',   n:'Import histórico limpio',    casos:37, pass:33, warn:2, fail:2 },
     ];
   },
-  /* ---- Readiness por dominio (preview) ---- */
+  /* ---- P0-2 (20260710): Module readiness matrix — patrón genérico ----
+     Refleja la matriz que backend preparó DESPUÉS del paquete: un módulo no puede
+     mostrarse como "conectado/importado/producción" si no tiene readiness.
+     status: GO_READY | WARNING_READY | NO_GO_BLOCKER (nunca "producción"/"conectado" real). */
+  moduleReadiness(){
+    const mk=(mod,ready,blockers,warn,nota)=>({mod,ready,blockers,warn,
+      status: blockers>0?'NO_GO_BLOCKER':(warn>0?'WARNING_READY':'GO_READY'), nota});
+    return [
+      mk('Tenant / Proyecto / Periodo', 8,0,1,'separación funcional lista (preview) · falta persistencia real multi-tenant en backend'),
+      mk('HR / Source',                 5,1,2,'lectura preview de hoja/import · escritura real y gate de fuente pendiente backend'),
+      mk('Usuarios / Personas / Roles / Scopes', 6,0,2,'persistencia local (preview) · Auth real y claims pendiente backend'),
+      mk('Shoppers / Perfiles protegidos', 9,1,3,'campos sensibles enmascarados en UI · acceso real detrás de Auth pendiente'),
+      mk('Visitas / Asignaciones',      12,2,4,'flujo completo en preview · sincronía real con HR pendiente backend'),
+      mk('Postulaciones / Agendamiento / Reprogramación / Cancelación', 7,1,2,'flujo completo en preview · notificación real pendiente backend'),
+      mk('Academia / Cursos / Manuales', 10,0,0,'contenido y edición completos — no depende de backend para operar'),
+      mk('Certificaciones / Carryover', 6,1,2,'regla de vigencia en preview · fuente de verdad real pendiente backend'),
+      mk('Liquidaciones / Pagos',       5,2,3,'cálculo y lotes en preview · pago real (bancario) pendiente gate + backend'),
+      mk('Notificaciones / Outbox',     4,1,2,'preparación de mensaje (WA/correo) real · envío real pendiente backend/Make'),
+      mk('reviewQueue / Conflictos',    5,0,1,'bandeja accionable en preview · aplicación real de la decisión pendiente backend'),
+      mk('auditEvents',                 4,0,1,'registro local de decisiones (preview) · almacenamiento inmutable pendiente backend'),
+      mk('Gates de integraciones (Make/Gemini/pagos)', 3,1,1,'configuración y prueba simulada · conexión real pendiente backend'),
+      mk('Branding / PWA',              7,0,0,'white-label + manifest/favicon dinámicos — ya operativo sin backend'),
+      mk('Switch CX.data ↔ backend real', 1,1,0,'un solo mock layer — adapter real (Firestore u otro) no conectado'),
+    ];
+  },
+  /* ---- Readiness por dominio (preview) — heredado, complementa la matriz por módulo ---- */
   readiness(){
     return [
       { dom:'Proyectos',            ready:6, blockers:0, warn:1 },
@@ -75,7 +100,7 @@ CX.diagStore = CX.diagStore || {
       { id:'rule-version',    n:'Rule versioning',             gate:'human', nota:'cambios de regla con versión y motivo' },
       { id:'notif-outbox',    n:'Notification outbox',         gate:'off',   nota:'WhatsApp/correo preparados — envío real pendiente' },
       { id:'assign-sync',     n:'Assignment sync',             gate:'human', nota:'conflictos plataforma↔HR a revisión humana' },
-      { id:'phase-a',         n:'Phase A operativa',           gate:'preview',nota:'HR fuente operacional · histórico control · Cinépolis proyecto TyA · multi-proyecto' },
+      { id:'phase-a',         n:'Phase A operativa',           gate:'preview',nota:'HR fuente operacional · histórico control · seed configurable por tenant/proyecto · multi-proyecto' },
       { id:'hr-keys',         n:'HR ↔ plataforma (llaves)',    gate:'off',   nota:'tenantId·projectId·visitId/hrRowId·shopperId·assignmentSource·assignmentSyncStatus·lastSyncedAt' },
       { id:'settle-fields',   n:'Liquidación / Mis beneficios',gate:'off',   nota:'honorario·boleto·combo·reembolso·total·estado·lote — sin banco/DPI/NDA' },
       { id:'q-sources',       n:'Cuestionarios / certif.',     gate:'off',   nota:'CXOrbia/TyAOnline/externo/general/HR por visita · certificaciones presentadas conservadas · no autoaprobar' },
@@ -83,6 +108,37 @@ CX.diagStore = CX.diagStore || {
       { id:'sensitive',       n:'Datos sensibles (política)',  gate:'human', nota:'sin DPI/banco/NDA firmado/tokens/webhooks/URLs privadas — solo referencias opacas' },
     ];
   },
+};
+
+CX.diagStore.goNoGo = function(){
+  return [
+    {ok:true,  n:'No hay nombres reales de tenant/cliente/proyecto hardcodeados en app/core o app/modules'},
+    {ok:true,  n:'Tenant / Proyecto / Periodo separados (periodo = ronda dentro del proyecto, nunca un proyecto nuevo)'},
+    {ok:true,  n:'Proyecto no mezcla periodos (UI agrupa periodos bajo su proyecto en Proyectos)'},
+    {ok:true,  n:'KPIs (Dashboard/Visitas/Finanzas) filtran por periodo activo, no acumulan sin opción explícita'},
+    {ok:true,  n:'Fuente de HR configurable y enmascarada (sourceRef opaco, URL nunca en localStorage)'},
+    {ok:true,  n:'Alta de nuevos tenants/proyectos es manual (wizard) — sin datos de una migración real copiados'},
+    {ok:true,  n:'Marca/PWA/favicon/manifest configurables desde Identidad de Marca — sin fallback fijo salvo CXOrbia'},
+    {ok:true,  n:'Banderas/países/monedas configurables por tenant y por proyecto — no hardcodeadas'},
+    {ok:true,  n:'Datos completos (DPI/banco/cuenta) requieren rol admin/super — enmascarados 🔒 para el resto'},
+    {ok:true,  n:'Integraciones (Make/Gemini/pagos/WhatsApp/correo) muestran estados honestos — nunca "enviado" sin gate activo'},
+    {ok:true,  n:'Academia refleja el pipeline de readiness, candidatos protegidos y reviewQueue introducidos en este paquete'},
+  ];
+};
+
+/* ---- Checklist separado: qué falta para PRODUCCIÓN/CONEXIÓN REAL (nunca todo OK aquí) ----
+   Esto es honesto a propósito: el prototipo puede estar "GO" y aun así la conexión real
+   sigue "NO_GO" mientras backend/Auth/gates no estén activos. No confundir ambos. */
+CX.diagStore.goNoGoProduccion = function(){
+  return [
+    {ok:false, n:'Auth real (Firebase u otro) conectado y validando roles/claims — hoy es solo sesión local de demo'},
+    {ok:false, n:'Switch CX.data → backend real (Firestore u otro) activado — hoy es un único mock layer en memoria/localStorage'},
+    {ok:false, n:'Import real de HR/source (escritura) — hoy todo queda en dry-run/source-safe, nunca se escribe'},
+    {ok:false, n:'Gates de Make/Gemini/pagos activados — hoy todos están apagados o en preview'},
+    {ok:false, n:'Acceso de lectura protegido (protected read) servido por backend — hoy el enmascarado es solo de UI'},
+    {ok:false, n:'Writeback real hacia la fuente de HR (Google Sheets u otra) — hoy no existe ese canal'},
+    {ok:false, n:'Liquidaciones/pagos reales con cruce bancario — hoy toda liquidación queda como candidata/preview'},
+  ];
 };
 
 CX.module('diagnostico', ({data, ui})=>{
@@ -99,7 +155,7 @@ CX.module('diagnostico', ({data, ui})=>{
       No ejecuta import/sync/pago/envío real y no expone datos sensibles (referencias opacas).
     </div>`;
 
-  const tabs = [['runner','🧪 Synthetic runner'],['readiness','📊 Readiness'],['conflictos','⚖️ Conflictos'],['contratos','🔌 Contratos & gates']];
+  const tabs = [['runner','🧪 Synthetic runner'],['readiness','📊 Readiness'],['conflictos','⚖️ Conflictos'],['contratos','🔌 Contratos & gates'],['gonogo','✅ GO/NO-GO']];
 
   const runnerView = ()=>{
     const packs = CX.diagStore.runnerPacks();
@@ -126,9 +182,18 @@ CX.module('diagnostico', ({data, ui})=>{
 
   const readinessView = ()=>{
     const rows = CX.diagStore.readiness();
+    const mrows = CX.diagStore.moduleReadiness();
+    const ST = { GO_READY:['GO_READY','g'], WARNING_READY:['WARNING_READY','a'], NO_GO_BLOCKER:['NO_GO_BLOCKER','r'] };
     return `
+      <div class="card card-p" style="margin-bottom:16px">
+        <div class="card-t" style="margin-bottom:4px">Matriz de readiness por módulo (preview)</div>
+        <p style="font-size:12px;color:var(--t3);margin-bottom:12px">Ningún módulo se muestra como "conectado/importado/producción" sin este readiness. <b>NO_GO_BLOCKER</b> = no avanza; <b>WARNING_READY</b> = avanza con revisión humana; <b>GO_READY</b> = sin blockers conocidos en preview (la confirmación real la da el backend).</p>
+        <table class="tbl"><thead><tr><th>Módulo</th><th>Listos</th><th>Blockers</th><th>Warnings</th><th>Estado</th></tr></thead><tbody>
+        ${mrows.map(r=>`<tr><td><b>${r.mod}</b><div style="font-size:10.5px;color:var(--t3);margin-top:2px">${r.nota}</div></td><td>${r.ready}</td><td>${r.blockers?ui.bdg(r.blockers,'r'):'—'}</td><td>${r.warn?ui.bdg(r.warn,'a'):'—'}</td><td>${ui.bdg(ST[r.status][0],ST[r.status][1])}</td></tr>`).join('')}
+        </tbody></table>
+      </div>
       <div class="card card-p">
-        <div class="card-t" style="margin-bottom:4px">Readiness por dominio (preview)</div>
+        <div class="card-t" style="margin-bottom:4px">Readiness por dominio de datos (preview)</div>
         <p style="font-size:12px;color:var(--t3);margin-bottom:12px">Un dominio con <b>blockers</b> no avanza a producción. La confirmación real depende del backend y de la revisión humana.</p>
         <table class="tbl"><thead><tr><th>Dominio</th><th>Listos</th><th>Blockers</th><th>Warnings</th><th>Estado</th></tr></thead><tbody>
         ${rows.map(r=>{const st=r.blockers>0?['Bloqueado','r']:(r.warn>0?['Con warnings','a']:['Listo (preview)','g']);
@@ -142,7 +207,17 @@ CX.module('diagnostico', ({data, ui})=>{
     const res = CX.diagStore.resolutions();
     const DEC = { mantener:['Mantener ambos (sin fusionar)','b'], escalar:['Escalado a supervisor','a'], revisado:['Revisado · sin acción de dedupe','g'] };
     const pend = c.filter(x=>!res[x.id]).length;
+    let importCandidates=[]; try{ importCandidates=JSON.parse(localStorage.getItem('cx_review_queue')||'[]'); }catch(e){}
+    const importBlock = importCandidates.length? `
+      <div class="card card-p" style="margin-bottom:14px">
+        <div class="between" style="margin-bottom:6px"><div class="card-t">Candidatos desde HR/Source (Importador)</div>${ui.bdg(importCandidates.length+' en reviewQueue','a')}</div>
+        <p style="font-size:12px;color:var(--t3);margin-bottom:10px">Pipeline: dry-run → source-safe → protected candidates → <b>reviewQueue</b> (aquí) → auditEvents → no escrito. Ninguno se escribió aún.</p>
+        <table class="tbl"><thead><tr><th>Tipo</th><th>Cantidad</th><th>Origen</th><th>Referencia</th><th>Cuándo</th><th>Estado</th></tr></thead><tbody>
+        ${importCandidates.slice(-15).reverse().map(x=>`<tr><td>${x.tipo}</td><td>${x.cantidad}</td><td style="font-size:11px;color:var(--t3)">${x.origen||'importador'}</td><td style="font-size:10px;color:var(--t3);font-family:var(--disp,monospace)">${x.sourceRef?x.sourceRef+' · ':''}${x.auditRef?'audit:'+x.auditRef:''}</td><td style="font-size:11px;color:var(--t3)">${(x.fecha||'').slice(0,16).replace('T',' ')}</td><td>${ui.bdg('pendiente review','a')}</td></tr>`).join('')}
+        </tbody></table>
+      </div>`:'';
     return `
+      ${importBlock}
       <div class="card card-p">
         <div class="between" style="margin-bottom:4px">
           <div class="card-t">Bandeja de conflictos (preview · accionable)</div>
@@ -187,8 +262,26 @@ CX.module('diagnostico', ({data, ui})=>{
       </div>`;
   };
 
+  const gonogoView = ()=>{
+    const items = CX.diagStore.goNoGo();
+    const prod = CX.diagStore.goNoGoProduccion();
+    const allOk = items.every(i=>i.ok);
+    const prodOk = prod.every(i=>i.ok);
+    return `
+      <div class="card card-p" style="margin-bottom:14px">
+        <div class="between" style="margin-bottom:4px"><div class="card-t">Checklist GO / NO-GO del prototipo</div>${ui.bdg(allOk?'GO':'NO GO',allOk?'g':'r')}</div>
+        <p style="font-size:12px;color:var(--t3);margin-bottom:12px">Criterios de la auditoría del paquete genérico, sobre lo que el <b>frontend/prototipo</b> debe cumplir.</p>
+        ${items.map(i=>`<div class="flex" style="gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border)"><span style="font-size:14px">${i.ok?'✅':'⛔'}</span><span style="font-size:12.5px;color:var(--t2)">${i.n}</span></div>`).join('')}
+      </div>
+      <div class="card card-p">
+        <div class="between" style="margin-bottom:4px"><div class="card-t">Checklist GO / NO-GO de producción / conexión real</div>${ui.bdg(prodOk?'GO':'NO GO — backend pendiente',prodOk?'g':'r')}</div>
+        <p style="font-size:12px;color:var(--t3);margin-bottom:12px">Este bloque <b>nunca</b> debe salir todo en verde mientras no haya backend real conectado — "GO del prototipo" ≠ "listo para producción".</p>
+        ${prod.map(i=>`<div class="flex" style="gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border)"><span style="font-size:14px">${i.ok?'✅':'⛔'}</span><span style="font-size:12.5px;color:var(--t2)">${i.n}</span></div>`).join('')}
+      </div>`;
+  };
+
   const draw = ()=>{
-    const body = tab==='runner'?runnerView():tab==='readiness'?readinessView():tab==='conflictos'?conflictosView():contratosView();
+    const body = tab==='runner'?runnerView():tab==='readiness'?readinessView():tab==='conflictos'?conflictosView():tab==='gonogo'?gonogoView():contratosView();
     host.innerHTML = `
       ${ui.ph('Diagnóstico & Readiness', 'Vista preview de runners, readiness, conflictos y gates — sin ejecución real')}
       ${banner}

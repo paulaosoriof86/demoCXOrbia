@@ -3,8 +3,8 @@
 CX.module('dashboard', ({data,ui})=>{
   const p=data.project();
   const ALL=!!CX.session._dashAll;
-  const cs=ALL?[...new Set(data._visitas.map(v=>v.pais))]:p.countries;
-  const pool=()=>ALL?data._visitas.slice():data.visitas();
+  const cs=ALL?[...new Set(data._visitas.filter(v=>data.inScope(v.pais)).map(v=>v.pais))]:p.countries;
+  const pool=()=>ALL?data._visitas.filter(v=>data.inScope(v.pais)):data.visitas();
   const phaseCount=(fn)=>{const arr=pool();const o={t:arr.filter(fn).length};cs.forEach(c=>o[c]=arr.filter(x=>x.pais===c&&fn(x)).length);return o;};
   const k=ALL?{
     total:phaseCount(()=>true), asignadas:phaseCount(x=>x.shopperId),
@@ -17,14 +17,14 @@ CX.module('dashboard', ({data,ui})=>{
     sinSubmitir:phaseCount(x=>x.estado==='cuestionario'),
     liquidadas:phaseCount(x=>x.estado==='liquidada'),
     fueraRango:phaseCount(x=>x.estado==='fuera_rango'),
-    postPend:data._posts.filter(pp=>pp.estado==='pendiente').length,
+    postPend:data._posts.filter(pp=>pp.estado==='pendiente'&&data.inScope(pp.pais)).length,
   }:data.kpis();
   const phaseFlow=(c)=>{const arr=pool().filter(x=>x.pais===c);const t=arr.length||1;const n=fn=>arr.filter(fn).length;const pc=x=>Math.round(x/t*100);
     const real=n(x=>['realizada','cuestionario','liquidada'].includes(x.estado));const agen=n(x=>['agendada','realizada','cuestionario','liquidada'].includes(x.estado));
     return {total:arr.length,asign:[n(x=>x.shopperId),pc(n(x=>x.shopperId))],agend:[agen,pc(agen)],
       sinAgend:[n(x=>x.estado==='asignada'),pc(n(x=>x.estado==='asignada'))],sinAsign:[n(x=>!x.shopperId&&x.estado!=='fuera_rango'),pc(n(x=>!x.shopperId&&x.estado!=='fuera_rango'))],
       real:[real,pc(real)],cuest:[n(x=>x.estado==='realizada'),pc(n(x=>x.estado==='realizada'))],submit:[n(x=>x.estado==='cuestionario'),pc(n(x=>x.estado==='cuestionario'))],liq:[n(x=>x.estado==='liquidada'),pc(n(x=>x.estado==='liquidada'))]};};
-  const shoppersPool=ALL?data.shoppers:data.shoppersFor();
+  const shoppersPool=ALL?data.shoppers.filter(s=>data.inScope(s.pais)):data.shoppersFor();
   const split=(o)=>cs.map(c=>c+':'+(o[c]||0)).join(' · ');
   const months=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
 
@@ -35,12 +35,12 @@ CX.module('dashboard', ({data,ui})=>{
       <td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td>
       <td style="font-size:12px">${v.shopper||'<span class="muted">— sin asignar</span>'}</td><td>${ui.estadoBadge(v.estado)}</td>
       <td style="font-size:12px">${v.agendada?('📅 agend. '+v.agendada):(v.disponibleDesde?('disp. desde '+v.disponibleDesde):'—')}</td>
-      <td style="text-align:right;white-space:nowrap">${v.shopper?`<button class="btn btn-soft btn-sm drWa" data-vid="${v.id}" title="WhatsApp a ${v.shopper}">📲</button> <button class="btn btn-ghost btn-sm drMail" data-vid="${v.id}" title="Correo">✉️</button>`:'<span class="muted" style="font-size:11px">—</span>'}</td></tr>`).join('')
+      <td style="text-align:right;white-space:nowrap">${v.shopper?`<button class="btn btn-soft btn-sm drWa" data-vid="${v.id}" title="WhatsApp a ${v.shopper} — borrador manual, no envío automático salvo Make activo">📲</button> <button class="btn btn-ghost btn-sm drMail" data-vid="${v.id}" title="Correo">✉️</button>`:'<span class="muted" style="font-size:11px">—</span>'}</td></tr>`).join('')
       : '<tr><td colspan="6">'+ui.empty('🔍','Sin visitas en este KPI')+'</td></tr>';
     ui.modal(titulo+' · '+vis.length, `
       ${vis.length?`<input class="inp" id="drFind" placeholder="🔍 Buscar sucursal, shopper o ciudad…" style="margin-bottom:10px">
         <div class="between" style="margin-bottom:10px"><label class="flex" style="gap:6px;font-size:12px;color:var(--t2);cursor:pointer"><input type="checkbox" id="drAll"> Seleccionar todos</label>
-        <div class="flex" style="gap:6px"><button class="btn btn-soft btn-sm" id="drWaSel">📲 WhatsApp a seleccionados (<span id="drN">0</span>)</button><button class="btn btn-ghost btn-sm" id="drMailSel">✉️ Correo</button></div></div>`:''}
+        <div class="flex" style="gap:6px"><button class="btn btn-soft btn-sm" id="drWaSel" title="Borrador manual salvo que el gate de Make esté activo">📲 WhatsApp a seleccionados (<span id="drN">0</span>)</button><button class="btn btn-ghost btn-sm" id="drMailSel">✉️ Correo</button></div></div>`:''}
       <div style="overflow-x:auto"><table class="tbl"><thead><tr><th></th><th>Sucursal</th><th>Shopper</th><th>Estado</th><th>Fecha (agenda / disp.)</th><th style="text-align:right">Contacto</th></tr></thead><tbody id="drBody">${rows}</tbody></table></div>
       ${waMsg?`<div style="margin-top:12px;background:var(--green-bg);border-radius:10px;padding:10px 12px;font-size:11.5px;color:#0a7050">💡 ${waMsg} — elige a quiénes contactar arriba, o usa el botón por fila.</div>`:''}
       ${vis.length>40?`<div class="muted" style="font-size:11px;margin-top:8px">+${vis.length-40} más…</div>`:''}
@@ -59,7 +59,7 @@ CX.module('dashboard', ({data,ui})=>{
       ov.querySelectorAll('.drWa').forEach(b=>b.addEventListener('click',()=>sendWa([b.dataset.vid])));
       ov.querySelectorAll('.drMail').forEach(b=>b.addEventListener('click',()=>ui.toast('Borrador de correo preparado para '+(vget(b.dataset.vid).shopper||'shopper')+' (envío por backend/Outlook pendiente)','ok')));
       const ws=ov.querySelector('#drWaSel'); if(ws)ws.addEventListener('click',()=>sendWa(sel()));
-      const msel=ov.querySelector('#drMailSel'); if(msel)msel.addEventListener('click',()=>{const n=sel().length;if(!n){ui.toast('Selecciona al menos uno','warn');return;}ui.toast('Correo enviado a '+n+' shopper(s) (Make/Outlook)','ok');});
+      const msel=ov.querySelector('#drMailSel'); if(msel)msel.addEventListener('click',()=>{const n=sel().length;if(!n){ui.toast('Selecciona al menos uno','warn');return;}ui.toast('Correo preparado para '+n+' shopper(s) · envío por backend/Outlook pendiente','ok');});
     }});
   };
 
@@ -139,9 +139,9 @@ CX.module('dashboard', ({data,ui})=>{
   <div class="between" style="margin-bottom:14px">
     <div>${ui.ph('Dashboard Operativo', (ALL?('Todos los proyectos · operación general · '+data.projects.length+' proyectos'):(p.name+' · '+p.industry))+' · '+cs.map(c=>CX.paisFlag(c)).join(' '))}</div>
     <div class="flex">
-      <select class="sel" id="dashProjSel" style="width:auto"><option value="all" ${ALL?'selected':''}>🌐 Todos los proyectos</option>${data.projects.map(pr=>`<option value="${pr.id}" ${(!ALL&&pr.id===p.id)?'selected':''}>${pr.name}</option>`).join('')}</select>
+      <select class="sel" id="dashProjSel" style="width:auto"><option value="all" ${ALL?'selected':''}>🌐 Todos los proyectos</option>${data.scopedProyectos().map(pg=>`<option value="${pg.key}" ${(!ALL&&pg.key===data.currentProgramKey())?'selected':''}>${pg.name}</option>`).join('')}</select>
       <select class="sel" id="monthSel" style="width:auto">${months.map((m,i)=>`<option value="${i}" ${i===selMonth?'selected':''}>${m} ${new Date().getFullYear()}</option>`).join('')}</select>
-      <span class="bdg bdg-g">● En vivo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div>
+      <span class="bdg bdg-b">● Preview operativo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div>
   </div>
 
   <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
@@ -239,7 +239,7 @@ CX.module('dashboard', ({data,ui})=>{
       CX.router.nav('visitas');
       setTimeout(()=>{ if(vid){const row=document.querySelector(`[data-vid="${vid}"]`);if(row){row.style.outline='2px solid var(--brand)';row.style.borderRadius='8px';setTimeout(()=>row.style.outline='',2000);row.scrollIntoView&&row.scrollIntoView({block:'center'});}} },300);
     }));
-    board.querySelectorAll('[data-wa]').forEach(b=>b.addEventListener('click',()=>{CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'recordatorio',titulo:'Recordatorio manual',txt:decodeURIComponent(b.dataset.wa),hook:CX.automations.hook()||'(Make sin configurar)'});ui.toast('WhatsApp enviado (Make): '+decodeURIComponent(b.dataset.wa).slice(0,40)+'…','ok');}));
+    board.querySelectorAll('[data-wa]').forEach(b=>b.addEventListener('click',()=>{CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'recordatorio',titulo:'Recordatorio manual',txt:decodeURIComponent(b.dataset.wa),hook:CX.automations.hook()||'(Make sin configurar)'});ui.toast('WhatsApp preparado · envío real pendiente backend/Make: '+decodeURIComponent(b.dataset.wa).slice(0,40)+'…','ok');}));
     board.querySelectorAll('[data-mail]').forEach(b=>b.addEventListener('click',()=>ui.toast('Borrador de correo preparado (envío por backend/Outlook pendiente)','ok')));
     board.querySelectorAll('[data-bulk]').forEach(b=>b.addEventListener('click',()=>ui.toast('Recordatorio masivo preparado (WhatsApp + correo) · se envía cuando el gate esté activo (pendiente backend)','ok',3200)));
     /* #226 — subsecciones contraíbles */
@@ -265,7 +265,7 @@ CX.module('dashboard', ({data,ui})=>{
         </div>
         <div class="between" style="margin-top:14px">
           <button class="btn btn-ghost btn-sm" id="bdDel" style="color:var(--red)">🗑 Eliminar visita</button>
-          <div class="flex" style="gap:8px">${['realizada','cuestionario','liquidada'].includes(v.estado)?'<button class="btn btn-soft btn-sm" id="bdRev">🔎 Revisar</button>':''}${v.shopper?'<button class="btn btn-soft btn-sm" id="bdWa">📲 WhatsApp</button>':''}<button class="btn btn-pr btn-sm" id="bdSave">Guardar</button></div>
+          <div class="flex" style="gap:8px">${['realizada','cuestionario','liquidada'].includes(v.estado)?'<button class="btn btn-soft btn-sm" id="bdRev">🔎 Revisar</button>':''}${v.shopper?'<button class="btn btn-soft btn-sm" id="bdWa" title="Abre WhatsApp Web con un borrador manual — no es envío automático">📲 WhatsApp (borrador manual)</button>':''}<button class="btn btn-pr btn-sm" id="bdSave">Guardar</button></div>
         </div>
       `,{onMount:(ov,close)=>{
         const rev=ov.querySelector('#bdRev');if(rev)rev.addEventListener('click',()=>{close();CX.revisionAdmin&&CX.revisionAdmin(data,p,v,ui);});
@@ -313,7 +313,7 @@ CX.module('dashboard', ({data,ui})=>{
     const ms=host.querySelector('#monthSel');
     if(ms)ms.addEventListener('change',()=>ui.toast('Mes: '+months[+ms.value]+' '+new Date().getFullYear()+' · datos del periodo activo',''));
     const ps=host.querySelector('#dashProjSel');
-    if(ps)ps.addEventListener('change',()=>{ if(ps.value==='all'){CX.session._dashAll=true;} else {CX.session._dashAll=false;data.setProject(ps.value);} CX.router.nav('dashboard'); });
+    if(ps)ps.addEventListener('change',()=>{ if(ps.value==='all'){CX.session._dashAll=true;} else {CX.session._dashAll=false;data.setProgram?data.setProgram(ps.value):data.setProject(ps.value);} CX.router.nav('dashboard'); });
   },0);
   return host;
 });
