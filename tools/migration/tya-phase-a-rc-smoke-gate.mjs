@@ -86,6 +86,8 @@ if (!exists(indexPath)) {
     if (!scripts.includes(src)) push('fail', 'v91_required_script_missing', { script: src });
     else push('info', 'v91_required_script_loaded', { script: src, position: scripts.indexOf(src) + 1 });
   }
+  if (scripts.includes('core/tya-phase-a-source-safe-preview.js')) push('info', 'tya_source_safe_preview_loaded', { position: scripts.indexOf('core/tya-phase-a-source-safe-preview.js') + 1 });
+
   const academiaIdx = scripts.indexOf('modules/academia.js');
   const acadActionsIdx = scripts.indexOf('modules/academia-admin-actions.js');
   const acadAiIdx = scripts.indexOf('modules/academia-create-ai-stable.js');
@@ -214,7 +216,7 @@ if (exists(adminPath)) {
 const swPath = 'app/sw.js';
 if (exists(swPath)) {
   const text = read(swPath);
-  if (!lineHas(text, "cxorbia-v2")) push('fail', 'service_worker_cache_version_not_v2');
+  if (!lineHas(text, "cxorbia-v2") && !lineHas(text, "cxorbia-v3-tya-source-safe-preview")) push('fail', 'service_worker_cache_version_unexpected');
   if (!lineHas(text, 'caches.delete')) push('fail', 'service_worker_missing_cache_purge');
   if (!lineHas(text, 'fetch(e.request)')) push('fail', 'service_worker_missing_network_first_fetch');
 }
@@ -254,10 +256,10 @@ if (outDir) {
     `Warnings: ${warnings.length}`,
     '',
     '## Hard fails',
-    ...hardFails.map(x => `- ${x.message}${x.file ? ` · ${x.file}` : ''}${x.script ? ` · ${x.script}` : ''}`),
+    ...(hardFails.length ? hardFails.map(x => `- ${x.message}${x.file ? ` · ${x.file}` : ''}`) : ['- none']),
     '',
     '## Warnings',
-    ...warnings.map(x => `- ${x.message}${x.count ? ` · count=${x.count}` : ''}`),
+    ...(warnings.length ? warnings.map(x => `- ${x.message}${x.count != null ? ` · count=${x.count}` : ''}`) : ['- none']),
     '',
     '## Safe state',
     '- No deploy',
