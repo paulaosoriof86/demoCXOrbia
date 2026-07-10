@@ -20,7 +20,7 @@ const files = {
   data: 'app/core/data.js',
   firebaseRc: '.firebaserc',
   firebaseJson: 'firebase.json',
-  deployWorkflow: '.github/workflows/cxorbia-rc-phase-a-dev-root-deploy.yml'
+  deployWorkflow: '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml'
 };
 
 const hardFails = [];
