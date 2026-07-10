@@ -2,6 +2,7 @@ name: CXOrbia TyA HR Live Source-Safe One-Shot
 
 # Read-only HR build authorized by the active Phase A plan.
 # Produces a sanitized artifact only. No Firestore, Auth, Storage, HR writes, deploy or production.
+# Rerun after exact ID Cinema row-filter correction.
 on:
   push:
     branches:
