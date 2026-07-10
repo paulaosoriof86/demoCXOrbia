@@ -1,0 +1,122 @@
+{
+  "contractId": "phase-a-protected-firestore-rules-dev-draft-v1",
+  "status": "draft_safe_not_deployed",
+  "generatedAt": "2026-07-09",
+  "purpose": "Define a strict DEV draft for Firestore security rules aligned to protected shopper profile, certifications, liquidations, reviewQueue and auditEvents without deploying or enabling writes.",
+  "safeState": {
+    "rulesDeployed": false,
+    "authEnabled": false,
+    "frontendConnected": false,
+    "writesEnabled": false,
+    "importsEnabled": false,
+    "paymentStateWritesEnabled": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false
+  },
+  "extends": [
+    "cxdata-firestore-phase-a-v1",
+    "auth-rbac-phase-a-v1",
+    "phase-a-protected-shopper-profile-dev-readiness-v1",
+    "phase-a-protected-firestore-schema-dev-readiness-v1",
+    "liquidations-payments-phase-a-v1"
+  ],
+  "roleModel": {
+    "tenantScopedRoles": ["tenantAdmin"],
+    "projectScopedRoles": ["projectAdmin", "financeAdmin", "certificationAdmin"],
+    "selfScopedRoles": ["shopper"],
+    "notPhaseAInitial": ["superAdmin", "clientViewer"]
+  },
+  "publicSourceSafeCollections": {
+    "shopperPublicRefs": {
+      "path": "tenants/{tenantId}/shopperPublicRefs/{shopperRefId}",
+      "read": "allowed_only_if_publicSourceSafe_true_and_allowed_keys_only",
+      "write": "blocked",
+      "allowedKeys": [
+        "tenantId",
+        "shopperRefId",
+        "country",
+        "projectCounts",
+        "periodCounts",
+        "statusBucket",
+        "certificationBucket",
+        "paymentEligibilityBucket",
+        "publicSourceSafe",
+        "updatedAt"
+      ]
+    }
+  },
+  "protectedCollections": {
+    "shopperProtectedProfile": {
+      "path": "tenants/{tenantId}/shoppers/{shopperId}/protected/{docId}",
+      "read": "tenantAdmin_or_authorized_project_role_or_self",
+      "write": "blocked_until_explicit_GO_and_rollback"
+    },
+    "shopperIdentityLinks": {
+      "path": "tenants/{tenantId}/shopperIdentityLinks/{identityLinkId}",
+      "read": "tenantAdmin_or_projectAdmin",
+      "write": "blocked_until_import_review_GO"
+    },
+    "certificationAttempts": {
+      "path": "tenants/{tenantId}/projects/{projectId}/certificationAttempts/{attemptId}",
+      "read": "tenantAdmin_projectAdmin_certificationAdmin_or_self_shopper",
+      "write": "blocked_until_certification_gate"
+    },
+    "certificationCarryovers": {
+      "path": "tenants/{tenantId}/projects/{projectId}/certificationCarryovers/{carryoverId}",
+      "read": "tenantAdmin_projectAdmin_certificationAdmin_or_self_shopper",
+      "write": "blocked_until_import_review_GO"
+    },
+    "protectedLiquidations": {
+      "path": "tenants/{tenantId}/projects/{projectId}/protectedLiquidations/{liquidationId}",
+      "read": "tenantAdmin_projectAdmin_financeAdmin_or_self_shopper",
+      "write": "blocked_until_finance_GO"
+    },
+    "protectedPaymentBatches": {
+      "path": "tenants/{tenantId}/projects/{projectId}/protectedPaymentBatches/{paymentBatchId}",
+      "read": "tenantAdmin_projectAdmin_financeAdmin",
+      "write": "blocked_until_finance_GO"
+    },
+    "protectedReadsAudit": {
+      "path": "tenants/{tenantId}/audit/protectedReads/{auditId}",
+      "read": "tenantAdmin_only",
+      "write": "service_or_admin_gate_only_future"
+    },
+    "reviewQueue": {
+      "path": "tenants/{tenantId}/reviewQueue/{reviewId}",
+      "read": "tenantAdmin_or_authorized_project_role",
+      "write": "blocked_until_reviewQueue_GO"
+    }
+  },
+  "forbiddenKeysAnywhere": [
+    "password",
+    "privateKey",
+    "providerToken",
+    "refreshToken",
+    "privateWebhookUrl",
+    "rawIdDocument",
+    "idDocumentRaw",
+    "dpiRaw",
+    "rawBankAccount",
+    "bankAccountRaw",
+    "rawAccountNumber",
+    "signedNdaRaw",
+    "workbookRaw",
+    "privateSourceUrl",
+    "paymentReceiptBase64"
+  ],
+  "gates": {
+    "devProtectedReads": "blocked_until_Auth_DEV_configured_and_reviewed",
+    "devProtectedWrites": "blocked_until_explicit_GO_rollback_and_audit",
+    "importWrites": "blocked_until_dry_run_reviewQueue_and_GO",
+    "paymentStateWrites": "blocked_until_finance_GO_audit_and_no_sensitive_bank_data",
+    "productionRulesDeploy": "blocked_until_separate_explicit_GO"
+  },
+  "claudePrototypeImpact": [
+    "Represent public source-safe references separately from protected profile.",
+    "Use honest gate labels for protected data.",
+    "Do not show personal data in public preview.",
+    "Keep role-based visibility generic by tenant/project.",
+    "Do not imply rules are deployed or Auth is active."
+  ]
+}
