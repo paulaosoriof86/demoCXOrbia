@@ -9,16 +9,20 @@ on:
     paths:
       - '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml'
       - 'app/core/tya-phase-a-source-safe-preview.js'
+      - 'app/data/tya-hr-source-safe-periods.js'
       - 'app/index.html'
       - 'app/sw.js'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
   pull_request:
     branches:
       - release/cxorbia-tya-rc-20260630
     paths:
       - '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml'
       - 'app/core/tya-phase-a-source-safe-preview.js'
+      - 'app/data/tya-hr-source-safe-periods.js'
       - 'app/index.html'
       - 'app/sw.js'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
 
 permissions:
   contents: read
@@ -33,7 +37,8 @@ env:
   CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
   FIREBASE_PROJECT_ID: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
-  CXORBIA_DEV_BUILD_LABEL: tya-hr-source-safe-preview-20260709c
+  CXORBIA_DEV_BUILD_LABEL: tya-hr-viva-multitab-source-safe-20260709d
+  CXORBIA_HR_LIVE_SHEET_ID: 1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4
 
 jobs:
   dev-root-deploy:
@@ -59,7 +64,7 @@ jobs:
       - name: Drift gate
         run: |
           node tools/release/tya-rc-phase-a-drift-gate.mjs \
-            --validated b2b1d25109b8d1c3eb10169334d0919d3e43495b \
+            --validated cf7b07e593b95d11fd97a398434297e20ed72ae7 \
             --out .tmp/rc-phase-a-dev-root-drift
 
       - name: Secret availability and JSON sanity check
@@ -116,6 +121,13 @@ jobs:
           echo "status=secret_present" | tee .tmp/rc-phase-a-dev-root-deploy/deploy-status.txt
           echo "url=$CXORBIA_DEV_ROOT_URL" | tee -a .tmp/rc-phase-a-dev-root-deploy/deploy-status.txt
           echo "Firebase service account secret is present and project-scoped sanity checks passed."
+
+      - name: Build live HR source-safe payload
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
 
       - name: Firebase CLI access check
         env:
