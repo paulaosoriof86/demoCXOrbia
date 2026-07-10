@@ -1,0 +1,104 @@
+{
+  "configId": "phase-a-protected-firestore-collections-source-safe",
+  "status": "source_safe_contract_only",
+  "generatedAt": "2026-07-09",
+  "purpose": "Document the protected Firestore collections that will be needed for Phase A full shopper profile, certifications and payment-state access without including real records.",
+  "safeState": {
+    "containsRealRecords": false,
+    "containsSensitiveData": false,
+    "containsPrivateUrls": false,
+    "writesEnabled": false,
+    "frontendConnected": false,
+    "productionEnabled": false
+  },
+  "tenantProjectPattern": {
+    "tenantRoot": "tenants/{tenantId}",
+    "projectRoot": "tenants/{tenantId}/projects/{projectId}",
+    "projectScoped": true,
+    "multiTenantReusable": true,
+    "multiProjectReusable": true
+  },
+  "publicCollections": [
+    {
+      "name": "shopperPublicRefs",
+      "path": "tenants/{tenantId}/shopperPublicRefs/{shopperRefId}",
+      "allowedPurpose": "public/source-safe preview only",
+      "allowedData": ["opaque shopper ref", "country", "period/project counts", "status buckets"]
+    }
+  ],
+  "protectedCollections": [
+    {
+      "name": "shopperProtectedProfiles",
+      "path": "tenants/{tenantId}/shoppers/{shopperId}/protected/profile",
+      "requiresAuth": true,
+      "requiresRole": true,
+      "notes": "Full profile stays protected and role-scoped."
+    },
+    {
+      "name": "shopperIdentityLinks",
+      "path": "tenants/{tenantId}/shopperIdentityLinks/{identityLinkId}",
+      "requiresAuth": true,
+      "requiresRole": true,
+      "notes": "Stable identity linkage without visual dedupe."
+    },
+    {
+      "name": "certificationAttempts",
+      "path": "tenants/{tenantId}/projects/{projectId}/certificationAttempts/{attemptId}",
+      "requiresAuth": true,
+      "requiresRole": true,
+      "notes": "Historical and future certification attempts."
+    },
+    {
+      "name": "certificationCarryovers",
+      "path": "tenants/{tenantId}/projects/{projectId}/certificationCarryovers/{carryoverId}",
+      "requiresAuth": true,
+      "requiresRole": true,
+      "notes": "Preserves already completed certifications."
+    },
+    {
+      "name": "protectedLiquidations",
+      "path": "tenants/{tenantId}/projects/{projectId}/protectedLiquidations/{liquidationId}",
+      "requiresAuth": true,
+      "requiresRole": true,
+      "notes": "Liquidations and shopper-visible payment state, no raw bank data."
+    },
+    {
+      "name": "protectedPaymentBatches",
+      "path": "tenants/{tenantId}/projects/{projectId}/protectedPaymentBatches/{paymentBatchId}",
+      "requiresAuth": true,
+      "requiresRole": true,
+      "notes": "Prepared payment batches only; no real execution."
+    }
+  ],
+  "auditCollections": [
+    {
+      "name": "protectedReadAudit",
+      "path": "tenants/{tenantId}/audit/protectedReads/{auditId}",
+      "required": true
+    },
+    {
+      "name": "reviewQueue",
+      "path": "tenants/{tenantId}/reviewQueue/{reviewId}",
+      "required": true
+    }
+  ],
+  "forbiddenPublicFields": [
+    "fullName",
+    "email",
+    "phone",
+    "rawIdDocument",
+    "rawBankAccount",
+    "signedNdaRaw",
+    "privateSourceUrl",
+    "workbookRaw",
+    "providerToken",
+    "refreshToken"
+  ],
+  "gateSummary": {
+    "devAuthConfig": "pending",
+    "devProtectedReads": "blocked_until_auth_config",
+    "devProtectedWrites": "blocked_until_explicit_GO",
+    "importWrites": "blocked_until_dry_run_review",
+    "productionCutover": "blocked"
+  }
+}
