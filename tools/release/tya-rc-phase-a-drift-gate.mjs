@@ -9,7 +9,7 @@
   smoke must be run again and the validated runtime SHA updated.
 
   Usage:
-    node tools/release/tya-rc-phase-a-drift-gate.mjs --validated a7fb4f00cf1adf1e6e92ee7b1de897cfdbacd374
+    node tools/release/tya-rc-phase-a-drift-gate.mjs --validated <validated-runtime-sha>
 */
 
 import { execFileSync } from 'node:child_process';
@@ -37,22 +37,43 @@ const allowedPrefixes = [
   'tools/release/tya-rc-phase-a-drift-gate.mjs',
   'tools/release/tya-rc-phase-a-predeploy-gate.mjs'
 ];
+
 const allowedExact = [
   '.gitignore',
   'CAMBIOS-BACKEND.md',
   'RESUMEN-PARA-CLAUDE.md',
   'PENDIENTES-PROTOTIPO.md',
+  '.github/workflows/cxorbia-dev-auth-firestore-readiness-post-v96.yml',
+  '.github/workflows/cxorbia-source-lock-post-v96-runtime-verify.yml',
   'tools/migration/tya-assignment-sync-conflict-preview.mjs',
   'tools/migration/tya-assignment-sync-outbox-contract.mjs',
   'tools/migration/tya-phase-a-rc-smoke-gate.mjs',
+  'tools/release/tya-auth-dev-claims-seed-plan-validate.mjs',
+  'tools/release/tya-auth-dev-claims-taxonomy-seed-validate.mjs',
   'tools/release/tya-auth-rbac-contract-validate.mjs',
+  'tools/release/tya-claude-candidate-forensic-audit-prepare.mjs',
   'tools/release/tya-cxdata-firestore-contract-validate.mjs',
+  'tools/release/tya-dev-auth-firestore-activation-readiness-post-v96-validate.mjs',
   'tools/release/tya-hosting-deploy-readiness.mjs',
-  'tools/release/tya-phase-a-today-finish-readiness.mjs'
+  'tools/release/tya-hr-source-safe-protected-candidates-validate.mjs',
+  'tools/release/tya-module-readiness-matrix-validate.mjs',
+  'tools/release/tya-phase-a-today-finish-readiness.mjs',
+  'tools/release/tya-post-claude-immediate-audit-pack.mjs',
+  'tools/release/tya-protected-read-access-adapter-validate.mjs',
+  'tools/release/tya-readiness-bucket-evaluator.mjs',
+  'tools/release/tya-real-connection-readiness-gate-validate.mjs',
+  'tools/release/tya-role-taxonomy-org-scope-validate.mjs',
+  'tools/release/tya-source-lock-post-v96-runtime-verify.mjs'
 ];
 
 function fail(message) {
-  const report = { gate: 'cxorbia-tya-rc-phase-a-drift', verdict: 'NO_GO_DRIFT', message, validated, generatedAt: new Date().toISOString() };
+  const report = {
+    gate: 'cxorbia-tya-rc-phase-a-drift',
+    verdict: 'NO_GO_DRIFT',
+    message,
+    validated,
+    generatedAt: new Date().toISOString()
+  };
   console.log(JSON.stringify(report, null, 2));
   process.exit(1);
 }
@@ -67,8 +88,18 @@ try {
   fail('git_diff_failed: ' + String(err.message || err));
 }
 
+function isSourceSafeConfig(file) {
+  return file.startsWith('backend/config/') && file.endsWith('.source-safe.json');
+}
+
+function isDraftRules(file) {
+  return file.startsWith('backend/rules/') && file.endsWith('.rules.draft');
+}
+
 function isAllowed(file) {
   if (allowedExact.includes(file)) return true;
+  if (isSourceSafeConfig(file)) return true;
+  if (isDraftRules(file)) return true;
   return allowedPrefixes.some(prefix => file === prefix || file.startsWith(prefix));
 }
 
@@ -95,8 +126,11 @@ const report = {
     rootRequiredDocs: true,
     backendContracts: true,
     backendAdaptersPreviewOnly: true,
+    backendSourceSafeConfigOnly: true,
+    backendDraftRulesOnly: true,
     hrSourceSafeTools: true,
-    releaseGateWorkflows: true,
+    releaseGateWorkflowsExplicitOnly: true,
+    releaseValidatorsExplicitOnly: true,
     previewOnlyContracts: true,
     smokeGateValidators: true,
     runtimeAppChanges: false,
@@ -130,8 +164,11 @@ if (outDir) {
     '- Root required docs: yes',
     '- Backend contracts: yes',
     '- Backend adapters preview-only: yes',
+    '- Backend source-safe config ending in .source-safe.json: yes',
+    '- Backend draft rules ending in .rules.draft: yes',
     '- HR source-safe tools: yes',
-    '- Release gate workflows: yes',
+    '- Release workflows: explicit allowlist only',
+    '- Release validators: explicit allowlist only',
     '- Preview-only contracts: yes',
     '- Smoke gate validators: yes',
     '- Runtime app changes: no',
