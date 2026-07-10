@@ -1,12 +1,17 @@
 name: CXOrbia Firebase DEV Clean-State Read-Only One-Shot
 
 # One-shot provider read authorized by Paula on 2026-07-10.
-# Runs only when this exact workflow file is created or changed on the dedicated ops branch.
+# Runs only on the dedicated same-repository ops branch/PR.
 # No deploy, no writes, no deletes, no imports, no production.
 on:
   push:
     branches:
       - ops/firebase-dev-readonly-20260710
+    paths:
+      - '.github/workflows/cxorbia-firebase-dev-clean-state-read-only-one-shot.yml'
+  pull_request:
+    branches:
+      - main
     paths:
       - '.github/workflows/cxorbia-firebase-dev-clean-state-read-only-one-shot.yml'
 
@@ -25,7 +30,7 @@ env:
 jobs:
   verify-clean-state-read-only:
     name: Firebase DEV clean-state read-only verification
-    if: ${{ github.ref == 'refs/heads/ops/firebase-dev-readonly-20260710' }}
+    if: ${{ github.ref == 'refs/heads/ops/firebase-dev-readonly-20260710' || (github.event_name == 'pull_request' && github.head_ref == 'ops/firebase-dev-readonly-20260710') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
