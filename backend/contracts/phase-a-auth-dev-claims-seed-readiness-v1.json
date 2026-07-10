@@ -1,0 +1,119 @@
+{
+  "contractId": "phase-a-auth-dev-claims-seed-readiness-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-09",
+  "purpose": "Prepare a functional, source-safe custom claims seed plan for DEV Auth without activating Auth, writing claims, importing users, exposing emails, or touching production.",
+  "safeState": {
+    "authProviderConnected": false,
+    "customClaimsWritten": false,
+    "frontendConnected": false,
+    "databaseWritesEnabled": false,
+    "importsEnabled": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false,
+    "containsRawEmails": false,
+    "containsPasswords": false
+  },
+  "extends": [
+    "auth-rbac-phase-a-v1",
+    "phase-a-protected-shopper-profile-dev-readiness-v1",
+    "phase-a-protected-firestore-schema-dev-readiness-v1",
+    "phase-a-protected-firestore-rules-dev-draft-v1"
+  ],
+  "claimModel": {
+    "requiredClaimKeys": ["tenantId", "role", "authScopeVersion"],
+    "optionalClaimKeys": ["projectId", "projectIds", "shopperId", "country", "roleContext", "permissionsPreview"],
+    "allowedRoles": ["tenantAdmin", "projectAdmin", "financeAdmin", "certificationAdmin", "shopper"],
+    "reservedRoles": ["superAdmin", "clientViewer"],
+    "forbiddenClaimKeys": [
+      "email",
+      "phone",
+      "password",
+      "rawName",
+      "dpi",
+      "idDocumentRaw",
+      "bankAccountRaw",
+      "signedNdaRaw",
+      "providerToken",
+      "refreshToken",
+      "privateWebhookUrl",
+      "privateSourceUrl",
+      "workbookRaw"
+    ],
+    "constraints": {
+      "tenantAdmin": {
+        "scope": "tenant",
+        "requiresProject": false,
+        "requiresShopperId": false
+      },
+      "projectAdmin": {
+        "scope": "tenantProject",
+        "requiresProject": true,
+        "requiresShopperId": false
+      },
+      "financeAdmin": {
+        "scope": "tenantProject",
+        "requiresProject": true,
+        "requiresShopperId": false,
+        "bankDataAccess": "neverRaw"
+      },
+      "certificationAdmin": {
+        "scope": "tenantProject",
+        "requiresProject": true,
+        "requiresShopperId": false
+      },
+      "shopper": {
+        "scope": "ownProfileOnly",
+        "requiresProject": false,
+        "requiresShopperId": true
+      }
+    }
+  },
+  "devSeedPolicy": {
+    "inputKind": "source_safe_user_refs_only",
+    "realEmailAllowedInRepo": false,
+    "passwordAllowedInRepo": false,
+    "uidAllowedIfOpaque": true,
+    "writeClaimsByScript": false,
+    "generateReviewPlanOnly": true,
+    "manualApprovalRequiredBeforeClaims": true,
+    "rollbackRequiredBeforeClaims": true
+  },
+  "activationGates": {
+    "devAuthProjectConfigured": {
+      "status": "pending",
+      "requirements": ["clean backend project", "no legacy auth import", "provider config reviewed", "local sign-in smoke plan"]
+    },
+    "devTestUsersPrepared": {
+      "status": "pending",
+      "requirements": ["source-safe refs mapped outside repo", "no passwords in repo", "no raw emails in repo", "role matrix reviewed"]
+    },
+    "devClaimsDryRun": {
+      "status": "allowed_validator_only",
+      "requirements": ["no provider calls", "no writes", "report generated", "no forbidden claims"]
+    },
+    "devClaimsWrite": {
+      "status": "blocked",
+      "requirements": ["Paula explicit GO", "test users only", "audit event", "rollback plan", "rules draft reviewed"]
+    },
+    "productionClaims": {
+      "status": "blocked",
+      "requirements": ["separate GO", "security review", "smoke GO", "rollback", "no NO_GO critical"]
+    }
+  },
+  "auditRequirements": [
+    "claims write requires actorId, reason, timestamp and targetUserRef",
+    "role grant or revoke requires auditEvent",
+    "shopper link requires shopperId and sourceRef",
+    "financeAdmin cannot receive raw bank data claim",
+    "tenant/project scope must be explicit",
+    "claims changes are not implicit side effects of import"
+  ],
+  "claudePrototypeImpact": [
+    "Show Auth/roles as configurable gate, not active if backend says blocked.",
+    "Represent users/roles without real emails or passwords in prototype fixtures.",
+    "Use messages like pending Auth, requires access, gate off, role required.",
+    "Do not expose full shopper profile in public preview."
+  ]
+}
