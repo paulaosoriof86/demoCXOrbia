@@ -1,8 +1,8 @@
 {
   "contractId": "auth-rbac-phase-a-v1",
   "status": "draft_safe_not_connected",
-  "generatedAt": "2026-07-08",
-  "purpose": "Define Phase A authentication and role-based access control for a clean Firebase/Supabase backend without activating real Auth yet.",
+  "generatedAt": "2026-07-10",
+  "purpose": "Define Phase A authentication and role-based access control for a new clean Firebase DEV backend, aligned with the post-V96 fail-closed role/persona/scope model, without activating real Auth, creating users, writing claims or touching production.",
   "safeState": {
     "authProviderConnected": false,
     "frontendConnected": false,
@@ -13,9 +13,13 @@
     "containsSensitiveData": false
   },
   "identityModel": {
-    "requiredKeys": ["tenantId", "projectId", "userId", "role"],
-    "optionalKeys": ["shopperId", "clientId", "staffId", "country", "status"],
-    "forbiddenInRepo": ["password", "idDocumentRaw", "bankAccountRaw", "signedNdaRaw", "providerToken", "refreshToken", "privateWebhookUrl"]
+    "requiredKeys": ["tenantId", "userId", "role", "personaType", "scope", "permissionsVersion"],
+    "optionalKeys": ["projectId", "projectIds", "countryIds", "shopperId", "clientId", "staffId", "franchiseId", "representativeId", "status"],
+    "forbiddenInRepo": ["password", "email", "phone", "rawName", "idDocumentRaw", "bankAccountRaw", "signedNdaRaw", "providerToken", "refreshToken", "privateWebhookUrl", "privateSourceUrl", "workbookRaw"],
+    "unknownRolePolicy": "deny",
+    "unknownPersonaPolicy": "deny",
+    "missingScopePolicy": "deny",
+    "scopeExpansionPolicy": "explicit_review_and_audit"
   },
   "roles": {
     "superAdmin": {
@@ -24,70 +28,107 @@
       "notes": "Reserved for SaaS operations. Not needed for TyA Phase A cutover."
     },
     "tenantAdmin": {
-      "scope": "tenant",
+      "scope": "tenantOrCountry",
       "phaseA": true,
       "permissions": ["manageProjects", "manageUsers", "viewAudit", "reviewConflicts", "manageConfiguration"]
     },
     "projectAdmin": {
-      "scope": "tenantProject",
+      "scope": "tenantProjectOrCountry",
       "phaseA": true,
       "permissions": ["manageVisits", "manageAssignments", "manageApplications", "reviewCertifications", "manageLiquidations", "prepareNotifications"]
     },
     "financeAdmin": {
-      "scope": "tenantProject",
+      "scope": "tenantProjectOrCountry",
       "phaseA": true,
       "permissions": ["viewLiquidations", "preparePaymentBatches", "markPaymentStateWithAudit"]
     },
     "certificationAdmin": {
       "scope": "tenantProject",
       "phaseA": true,
-      "permissions": ["manageQuestionBanks", "reviewAiDrafts", "publishCertifications", "viewCertificationAttempts"]
+      "permissions": ["manageQuestionBanks", "reviewAiDrafts", "publishCertifications", "viewCertificationAttempts", "applyCertificationCarryover"]
     },
-    "shopper": {
-      "scope": "tenantProjectOrTenant",
+    "clientAdmin": {
+      "scope": "tenantProject",
       "phaseA": true,
-      "permissions": ["viewAssignedVisits", "applyToVisits", "scheduleVisit", "rescheduleVisit", "markVisitDone", "markQuestionnaireDone", "viewBenefits", "viewOwnCertifications"]
+      "permissions": ["viewApprovedReports", "viewProjectDashboard", "viewProjectKpis", "manageClientProjectPreferences"]
     },
     "clientViewer": {
       "scope": "tenantProject",
-      "phaseA": false,
-      "permissions": ["viewApprovedReports"]
+      "phaseA": true,
+      "permissions": ["viewApprovedReports", "viewProjectDashboard", "viewProjectKpis"]
+    },
+    "shopper": {
+      "scope": "ownTenantOrProject",
+      "phaseA": true,
+      "permissions": ["viewAssignedVisits", "applyToVisits", "scheduleVisit", "rescheduleVisit", "markVisitDone", "markQuestionnaireDone", "viewBenefits", "viewOwnCertifications"]
     }
+  },
+  "personaRolePolicy": {
+    "tenantOwner": "tenantAdmin",
+    "franchiseOwner": "tenantAdmin",
+    "countryRepresentative": "projectAdmin",
+    "operationsCoordinator": "projectAdmin",
+    "projectCoordinator": "projectAdmin",
+    "fieldRepresentative": "projectAdmin",
+    "financeOperator": "financeAdmin",
+    "certificationOperator": "certificationAdmin",
+    "clientBrandAdmin": "clientAdmin",
+    "clientBrandViewer": "clientViewer",
+    "shopperEvaluator": "shopper",
+    "custom": "explicit_mapping_required_default_deny"
   },
   "gates": {
     "devAuthConfig": {
       "status": "pending",
-      "requirements": ["clean project", "no production users", "no legacy auth import", "rollback doc"]
+      "requirements": ["new clean DEV project", "no production users", "no legacy auth import", "rollback doc", "source-safe test refs"]
+    },
+    "devClaimsDryRun": {
+      "status": "allowed_validator_only",
+      "requirements": ["v2 claim shape", "opaque refs only", "no provider calls", "no writes"]
     },
     "devClaimsWrite": {
       "status": "blocked",
-      "requirements": ["explicitApproval", "testUsersOnly", "auditLog", "rollback"]
+      "requirements": ["explicitApproval", "testUsersOnly", "auditLog", "rollback", "rulesReview"]
+    },
+    "devProtectedReads": {
+      "status": "blocked",
+      "requirements": ["Auth DEV configured", "rules reviewed", "test documents authorized", "protected read smoke by role"]
     },
     "stagingAuth": {
       "status": "blocked",
-      "requirements": ["rulesReview", "roleMatrixReview", "sampleUsersSanitized"]
+      "requirements": ["rulesReview", "roleMatrixReview", "sampleUsersSanitized", "visualSmoke"]
     },
     "productionAuthCutover": {
       "status": "blocked",
-      "requirements": ["PaulaGO", "smokeGO", "rollback", "noCriticalNO_GO"]
+      "requirements": ["PaulaGO", "smokeGO", "rollback", "noCriticalNO_GO", "separateProductionDecision"]
     }
   },
   "routeAccessMatrix": {
-    "dashboard": ["tenantAdmin", "projectAdmin"],
+    "dashboard": ["tenantAdmin", "projectAdmin", "clientAdmin", "clientViewer"],
     "postulaciones": ["tenantAdmin", "projectAdmin"],
     "reservas": ["tenantAdmin", "projectAdmin", "shopper"],
     "automatizaciones": ["tenantAdmin", "projectAdmin"],
     "cuestionarioShopper": ["shopper", "tenantAdmin", "projectAdmin"],
     "finanzas": ["tenantAdmin", "projectAdmin", "financeAdmin", "shopper"],
-    "academia": ["tenantAdmin", "projectAdmin", "certificationAdmin", "shopper"],
+    "academia": ["tenantAdmin", "projectAdmin", "financeAdmin", "certificationAdmin", "clientAdmin", "clientViewer", "shopper"],
     "diagnostico": ["tenantAdmin", "projectAdmin"],
-    "administrabilidad": ["tenantAdmin"]
+    "administrabilidad": ["tenantAdmin"],
+    "clientPortal": ["clientAdmin", "clientViewer"]
+  },
+  "protectedDataPolicy": {
+    "clientRoles": "approved_reports_and_project_summaries_only",
+    "shopper": "own_profile_visits_certifications_liquidations_only",
+    "financeAdmin": "no_raw_bank_data",
+    "unknownRoute": "deny",
+    "unknownModule": "deny_unless_explicit_allowlist"
   },
   "auditRequirements": [
     "all role changes require actorId, reason, timestamp and source",
     "critical admin actions require motive",
     "payment state changes require auditRef",
     "conflicts are not overwritten silently",
-    "provider actions stay prepared until provider gates are active"
+    "provider actions stay prepared until provider gates are active",
+    "persona or scope changes cannot silently expand tenant, country or project access",
+    "client and shopper access remains limited to explicit protected or approved-report routes"
   ]
 }
