@@ -27,6 +27,18 @@ function sha256File(filePath) {
 
 function writeReports(report) {
   if (!outDir) return;
+  const summary = report.summary || {
+    runtimeExpected: 0,
+    runtimeMatched: 0,
+    runtimeMissing: 0,
+    runtimeMismatched: 0,
+    documentationWarnings: 0,
+    unexpectedAppFiles: 0
+  };
+  const runtimeMissing = report.runtimeMissing || [];
+  const runtimeMismatched = report.runtimeMismatched || [];
+  const documentationWarnings = report.documentationWarnings || [];
+  const unexpectedAppFiles = report.unexpectedAppFiles || [];
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(
     path.join(outDir, 'source-lock-post-v96-runtime-report.json'),
@@ -40,28 +52,28 @@ function writeReports(report) {
     `Source lock: ${report.sourceLockId}`,
     `Manifest: ${report.manifestPath}`,
     `Verdict: ${report.verdict}`,
-    `Runtime expected: ${report.summary.runtimeExpected}`,
-    `Runtime matched: ${report.summary.runtimeMatched}`,
-    `Runtime missing: ${report.summary.runtimeMissing}`,
-    `Runtime mismatched: ${report.summary.runtimeMismatched}`,
-    `Candidate docs/meta warnings: ${report.summary.documentationWarnings}`,
-    `Unexpected app files (report only): ${report.summary.unexpectedAppFiles}`,
+    `Runtime expected: ${summary.runtimeExpected}`,
+    `Runtime matched: ${summary.runtimeMatched}`,
+    `Runtime missing: ${summary.runtimeMissing}`,
+    `Runtime mismatched: ${summary.runtimeMismatched}`,
+    `Candidate docs/meta warnings: ${summary.documentationWarnings}`,
+    `Unexpected runtime-scope files (report only): ${summary.unexpectedAppFiles}`,
     '',
     '## Runtime missing',
-    ...(report.runtimeMissing.length ? report.runtimeMissing.map(item => `- ${item.path}`) : ['- none']),
+    ...(runtimeMissing.length ? runtimeMissing.map(item => `- ${item.path}`) : ['- none']),
     '',
     '## Runtime hash mismatches',
-    ...(report.runtimeMismatched.length
-      ? report.runtimeMismatched.map(item => `- ${item.path}: expected ${item.expectedSha256}, actual ${item.actualSha256}`)
+    ...(runtimeMismatched.length
+      ? runtimeMismatched.map(item => `- ${item.path}: expected ${item.expectedSha256}, actual ${item.actualSha256}`)
       : ['- none']),
     '',
     '## Candidate documentation/meta warnings',
-    ...(report.documentationWarnings.length
-      ? report.documentationWarnings.map(item => `- ${item.path}: ${item.reason}`)
+    ...(documentationWarnings.length
+      ? documentationWarnings.map(item => `- ${item.path}: ${item.reason}`)
       : ['- none']),
     '',
-    '## Unexpected repository app files (report only)',
-    ...(report.unexpectedAppFiles.length ? report.unexpectedAppFiles.map(item => `- ${item}`) : ['- none']),
+    '## Unexpected repository runtime-scope files (report only)',
+    ...(unexpectedAppFiles.length ? unexpectedAppFiles.map(item => `- ${item}`) : ['- none']),
     '',
     '## Safe state',
     '- No deploy',
@@ -104,7 +116,14 @@ try {
     manifestPath,
     verdict: 'NO_GO_MANIFEST_UNREADABLE',
     error: String(error?.message || error),
-    safeState: { deploy: false, production: false, providers: false, databaseWrites: false, imports: false, runtimeMutation: false }
+    safeState: {
+      deploy: false,
+      production: false,
+      providers: false,
+      databaseWrites: false,
+      imports: false,
+      runtimeMutation: false
+    }
   };
   writeReports(report);
   console.log(JSON.stringify(report, null, 2));
@@ -136,7 +155,14 @@ if (manifestErrors.length) {
     manifestPath,
     verdict: 'NO_GO_MANIFEST_INVALID',
     manifestErrors,
-    safeState: { deploy: false, production: false, providers: false, databaseWrites: false, imports: false, runtimeMutation: false }
+    safeState: {
+      deploy: false,
+      production: false,
+      providers: false,
+      databaseWrites: false,
+      imports: false,
+      runtimeMutation: false
+    }
   };
   writeReports(report);
   console.log(JSON.stringify(report, null, 2));
@@ -146,8 +172,6 @@ if (manifestErrors.length) {
 const runtimeMissing = [];
 const runtimeMismatched = [];
 const runtimeMatched = [];
-const documentationWarnings = [];
-
 for (const item of manifest.runtimeFiles) {
   const exists = fs.existsSync(item.path) && fs.statSync(item.path).isFile();
   if (!exists) {
@@ -158,15 +182,31 @@ for (const item of manifest.runtimeFiles) {
   if (actualSha256 === item.sha256) {
     runtimeMatched.push({ path: item.path, sha256: actualSha256 });
   } else {
-    runtimeMismatched.push({ path: item.path, expectedSha256: item.sha256, actualSha256 });
+    runtimeMismatched.push({
+      path: item.path,
+      expectedSha256: item.sha256,
+      actualSha256
+    });
   }
 }
 
-const manifestPaths = new Set([
-  ...(manifest.runtimeFiles || []).map(item => item.path),
-  ...(manifest.excludedDocumentationAndMetadata || [])
-]);
-const unexpectedAppFiles = listFilesRecursively('app').filter(file => !manifestPaths.has(file));
+const manifestPaths = new Set((manifest.runtimeFiles || []).map(item => item.path));
+function isRuntimeScope(file) {
+  return [
+    'app/app.js',
+    'app/index.html',
+    'app/manifest.webmanifest',
+    'app/sw.js'
+  ].includes(file) || [
+    'app/core/',
+    'app/modules/',
+    'app/styles/',
+    'app/demo/'
+  ].some(prefix => file.startsWith(prefix));
+}
+const unexpectedAppFiles = listFilesRecursively('app')
+  .filter(isRuntimeScope)
+  .filter(file => !manifestPaths.has(file));
 const verdict = runtimeMissing.length || runtimeMismatched.length
   ? 'NO_GO_SOURCE_LOCK_RUNTIME_NOT_EMPLOYED'
   : 'GO_SOURCE_LOCK_RUNTIME_MATCH_NOT_PRODUCTION_GO';
