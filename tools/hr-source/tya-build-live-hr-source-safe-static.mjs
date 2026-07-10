@@ -1,18 +1,20 @@
 #!/usr/bin/env node
 /*
   CXOrbia TyA Phase A - live HR source-safe static builder
-  - Reads the live multi-tab Google Sheet with a service account.
+  - Reads the live multi-tab Google Sheet with a service account when Sheets API is available.
+  - Falls back to public XLSX export when the HR is shared by link and Sheets API is not available to the service project.
   - Writes a public-safe JS payload for DEV Hosting preview.
   - Does not write Firestore, Storage, HR, Make, Gemini, payments or production.
 */
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { unzipXlsx, sharedStrings, workbookSheets, worksheetRows } from './tya-hr-source-xlsx-lite.mjs';
 
 const SHEET_ID = process.env.CXORBIA_HR_LIVE_SHEET_ID || '1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4';
 const OUT_FILE = process.env.CXORBIA_HR_SOURCE_SAFE_OUT || 'app/data/tya-hr-source-safe-periods.js';
 const SERVICE_ACCOUNT_JSON = process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '';
-const RANGE_MAX_ROW = Number(process.env.CXORBIA_HR_LIVE_MAX_ROW || 120);
+const RANGE_MAX_ROW = Number(process.env.CXORBIA_HR_LIVE_MAX_ROW || 140);
 const RANGE_MAX_COL = process.env.CXORBIA_HR_LIVE_MAX_COL || 'AI';
 const NOW = new Date().toISOString();
 
@@ -34,6 +36,19 @@ const MONTHS = {
 
 function b64url(input){
   return Buffer.from(input).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+}
+
+function safeServiceAccountInfo(){
+  try {
+    const sa = SERVICE_ACCOUNT_JSON ? JSON.parse(SERVICE_ACCOUNT_JSON) : {};
+    return {
+      type: sa.type || '',
+      clientEmail: sa.client_email || '',
+      projectId: sa.project_id || ''
+    };
+  } catch {
+    return { type: '', clientEmail: '', projectId: '' };
+  }
 }
 
 function signJwt(sa){
@@ -69,7 +84,7 @@ async function tokenFromServiceAccount(){
 async function sheetsGet(pathAndQuery, token){
   const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}${pathAndQuery}`, { headers: { Authorization: `Bearer ${token}` } });
   const json = await res.json();
-  if(!res.ok) throw new Error(`Sheets API failed: HTTP ${res.status} ${JSON.stringify(json).slice(0, 300)}`);
+  if(!res.ok) throw new Error(`Sheets API failed: HTTP ${res.status} ${JSON.stringify(json).slice(0, 500)}`);
   return json;
 }
 
@@ -100,7 +115,7 @@ function norm(value){
 }
 
 function findHeader(values){
-  for(let i = 0; i < Math.min(values.length, 12); i++){
+  for(let i = 0; i < Math.min(values.length, 14); i++){
     const row = values[i] || [];
     const normalized = row.map(norm);
     if(normalized.includes('pais') && normalized.some(v => v.includes('shopping'))){
@@ -171,7 +186,7 @@ function visitFrom(row, c, meta, rowNumber){
     sourceTab: meta.tabTitle,
     sourceRow: rowNumber,
     tenantId: 'tya',
-    projectId: `cinepolis-${meta.key}`,
+    projectId: 'cinepolis',
     program: 'cinepolis',
     periodKey: meta.key,
     periodLabel: meta.label,
@@ -223,15 +238,15 @@ function buildFromRange(meta, values){
     metodoPago: col(header, ['Método de Pago']),
     quincena: col(header, ['Quincena']),
     shopper: col(header, ['Shopper Asignado']),
-    disponibleDesde: col(header, ['Disponible a partir de']),
+    disponibleDesde: col(header, ['Disponible a partir de', 'Disponible desde']),
     fechaProgramada: col(header, ['Fecha programada']),
-    controlDia: col(header, ['Control día s/ franja horaria']),
+    controlDia: col(header, ['Control día s/ franja horaria', 'Control dia s/ franja horaria']),
     fechaRealizada: col(header, ['Fecha realizada']),
     fechaCuestionario: col(header, ['Fecha Cuestionario completado', 'Ccuestionario completado', 'Cuestionario completado']),
     precioBoleto: col(header, ['Precio de boleto']),
     precioCombo: col(header, ['Precio de combo']),
     honorarios: col(header, ['Honorarios']),
-    fechaSubmitido: col(header, ['Fecha submitido'])
+    fechaSubmitido: col(header, ['Fecha submitido', 'Submitido'])
   };
   const issues = [];
   for(const [name, idx] of Object.entries(c)){
@@ -260,7 +275,7 @@ function summarizePeriods(visits, tabs){
         month: tab.month,
         monthName: tab.monthName,
         year: tab.year,
-        projectId: `cinepolis-${k}`,
+        projectId: 'cinepolis',
         projectName: 'Cinépolis',
         internalName: `Cinépolis ${tab.fullLabel}`,
         countries: { GT: 0, HN: 0 },
@@ -311,12 +326,11 @@ function countsByStatus(visits){
   return out;
 }
 
-async function main(){
+async function readFromSheetsApi(){
   const { token, clientEmail } = await tokenFromServiceAccount();
   const meta = await sheetsGet('?fields=properties(title,timeZone,locale),sheets(properties(title,index,gridProperties(rowCount,columnCount)))', token);
   const tabs = (meta.sheets || []).map(s => parseTabName(s.properties?.title)).filter(Boolean);
   if(!tabs.length) throw new Error('No valid HR month tabs detected.');
-
   const ranges = tabs.map(t => `'${t.tabTitle.replace(/'/g, "''")}'!A1:${RANGE_MAX_COL}${RANGE_MAX_ROW}`);
   const valueRanges = [];
   for(let i = 0; i < ranges.length; i += 8){
@@ -324,19 +338,69 @@ async function main(){
     const json = await sheetsGet(`/values:batchGet?majorDimension=ROWS&valueRenderOption=FORMATTED_VALUE&${chunk}`, token);
     valueRanges.push(...(json.valueRanges || []));
   }
+  return {
+    accessMode: 'sheets_api_service_account',
+    clientEmail,
+    title: meta.properties?.title || 'HR Guatemala - Sincronizacion Google Sheets',
+    tabs,
+    valueRanges
+  };
+}
 
+async function readFromPublicXlsxExport(apiError){
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=xlsx`;
+  const res = await fetch(url, { redirect: 'follow' });
+  const buf = Buffer.from(await res.arrayBuffer());
+  const contentType = res.headers.get('content-type') || '';
+  if(!res.ok) throw new Error(`XLSX export failed: HTTP ${res.status} ${contentType}`);
+  if(buf.length < 4 || buf[0] !== 0x50 || buf[1] !== 0x4b){
+    const preview = buf.toString('utf8', 0, Math.min(buf.length, 300));
+    throw new Error(`XLSX export did not return a ZIP workbook. contentType=${contentType}; preview=${preview}`);
+  }
+  const files = unzipXlsx(buf);
+  const shared = sharedStrings(files);
+  const sheets = workbookSheets(files);
+  const tabs = sheets.map(s => parseTabName(s.name)).filter(Boolean);
+  if(!tabs.length) throw new Error('No valid HR month tabs detected in XLSX export.');
+  const valueRanges = tabs.map(tab => {
+    const sheet = sheets.find(s => s.name === tab.tabTitle);
+    return { range: tab.tabTitle, values: worksheetRows(files, sheet, shared).slice(0, RANGE_MAX_ROW) };
+  });
+  const info = safeServiceAccountInfo();
+  return {
+    accessMode: 'public_xlsx_export_fallback',
+    fallbackReason: String(apiError?.message || apiError || '').slice(0, 500),
+    clientEmail: info.clientEmail || '',
+    title: 'HR Guatemala - Sincronizacion Google Sheets',
+    tabs,
+    valueRanges
+  };
+}
+
+async function readLiveHr(){
+  try {
+    return await readFromSheetsApi();
+  } catch (apiError) {
+    console.warn('[HR live] Sheets API path failed; trying public XLSX export fallback.');
+    console.warn(String(apiError?.message || apiError).slice(0, 800));
+    return await readFromPublicXlsxExport(apiError);
+  }
+}
+
+async function main(){
+  const live = await readLiveHr();
   const allVisits = [];
   const allIssues = [];
   const tabsRead = [];
-  valueRanges.forEach((vr, i) => {
-    const tab = tabs[i];
+  live.valueRanges.forEach((vr, i) => {
+    const tab = live.tabs[i];
     const parsed = buildFromRange(tab, vr.values || []);
     allVisits.push(...parsed.visits);
     allIssues.push(...parsed.issues);
     tabsRead.push({ title: tab.tabTitle, country: tab.country, periodKey: tab.key, rows: parsed.visits.length, headerRow: parsed.headerRow || null });
   });
 
-  const periods = summarizePeriods(allVisits, tabs);
+  const periods = summarizePeriods(allVisits, live.tabs);
   const shoppers = summarizeShoppers(allVisits);
   const snapshot = {
     generatedAt: NOW,
@@ -347,19 +411,35 @@ async function main(){
     projectName: 'Cinépolis',
     source: {
       type: 'google_sheets_live_multitab',
-      title: meta.properties?.title || 'HR Guatemala - Sincronizacion Google Sheets',
+      accessMode: live.accessMode,
+      fallbackReason: live.fallbackReason || null,
+      title: live.title || 'HR Guatemala - Sincronizacion Google Sheets',
       spreadsheetIdMasked: `${SHEET_ID.slice(0, 6)}...${SHEET_ID.slice(-4)}`,
-      serviceAccountProject: 'cxorbia-backend-dev',
-      serviceAccountEmailMasked: clientEmail.replace(/^[^@]+/, '***'),
+      serviceAccountProject: safeServiceAccountInfo().projectId || 'cxorbia-backend-dev',
+      serviceAccountEmailMasked: (live.clientEmail || '').replace(/^[^@]+/, '***'),
       sourceSafe: true,
       piiExcluded: ['telefono', 'mail', 'dpi', 'banco', 'direccion_shopper', 'hr_url_privada', 'workbook_crudo']
+    },
+    tenantConfig: {
+      tenantId: 'tya',
+      tenantName: 'TyA',
+      configurable: true
+    },
+    projectConfig: {
+      projectId: 'cinepolis',
+      projectName: 'Cinépolis',
+      configurable: true,
+      hrSourceId: 'hr-live-multitab',
+      questionnaireMode: 'configurable_by_project_or_visit',
+      countries: ['GT', 'HN'],
+      currency: { GT: 'Q', HN: 'L' }
     },
     periods,
     visits: allVisits,
     shoppers,
     counts: {
       periods: periods.length,
-      tabs: tabs.length,
+      tabs: live.tabs.length,
       visits: allVisits.length,
       shoppers: shoppers.length,
       byStatus: countsByStatus(allVisits),
@@ -372,6 +452,10 @@ async function main(){
     firestoreWrites: 0,
     sourceSafe: true
   };
+
+  if(!snapshot.counts.periods || !snapshot.counts.visits){
+    throw new Error(`HR live source-safe build produced empty result: ${JSON.stringify(snapshot.counts)}`);
+  }
 
   fs.mkdirSync(path.dirname(OUT_FILE), { recursive: true });
   const js = [
@@ -387,6 +471,7 @@ async function main(){
     '# TyA HR live source-safe build',
     '',
     `Generated: ${snapshot.generatedAt}`,
+    `Access mode: ${snapshot.source.accessMode}`,
     `Periods: ${snapshot.counts.periods}`,
     `Tabs: ${snapshot.counts.tabs}`,
     `Visits: ${snapshot.counts.visits}`,
@@ -401,6 +486,8 @@ async function main(){
 }
 
 main().catch(err => {
+  fs.mkdirSync('.tmp/rc-phase-a-dev-root-deploy', { recursive: true });
+  fs.writeFileSync('.tmp/rc-phase-a-dev-root-deploy/hr-live-source-safe-error.txt', String(err.stack || err.message || err), 'utf8');
   console.error(err.stack || err.message || String(err));
   process.exit(1);
 });
