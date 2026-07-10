@@ -1,0 +1,60 @@
+name: CXOrbia Firebase DEV Clean-State Read-Only Gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/contracts/phase-a-firebase-dev-clean-state-read-only-gate-v1.json'
+      - 'backend/config/phase-a-firebase-dev-clean-state-read-only.source-safe.json'
+      - 'tools/release/tya-firebase-dev-clean-state-read-only.mjs'
+      - 'tools/release/tya-firebase-dev-clean-state-read-only-gate-validate.mjs'
+      - '.github/workflows/cxorbia-firebase-dev-clean-state-read-only-run.yml'
+      - '.github/workflows/cxorbia-firebase-dev-clean-state-read-only-gate.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'backend/contracts/phase-a-firebase-dev-clean-state-read-only-gate-v1.json'
+      - 'backend/config/phase-a-firebase-dev-clean-state-read-only.source-safe.json'
+      - 'tools/release/tya-firebase-dev-clean-state-read-only.mjs'
+      - 'tools/release/tya-firebase-dev-clean-state-read-only-gate-validate.mjs'
+      - '.github/workflows/cxorbia-firebase-dev-clean-state-read-only-run.yml'
+      - '.github/workflows/cxorbia-firebase-dev-clean-state-read-only-gate.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  validate-read-only-gate:
+    name: Firebase DEV read-only gate static validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate manual read-only gate without provider calls
+        run: |
+          node tools/release/tya-firebase-dev-clean-state-read-only-gate-validate.mjs \
+            --out .tmp/firebase-dev-clean-state-read-only-static-gate
+
+      - name: Upload static gate report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: firebase-dev-clean-state-read-only-static-gate-report
+          path: .tmp/firebase-dev-clean-state-read-only-static-gate
+          if-no-files-found: ignore
+          retention-days: 14
