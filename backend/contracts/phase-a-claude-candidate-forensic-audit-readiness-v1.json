@@ -1,0 +1,50 @@
+{
+  "contractId": "phase-a-claude-candidate-forensic-audit-readiness-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-09",
+  "purpose": "Prepare a functional forensic audit gate for the next Claude candidate against the current candidate, accumulated packages and Phase A TyA backend readiness requirements.",
+  "safeState": {
+    "candidateReceived": false,
+    "candidateApproved": false,
+    "frontendModifiedByBackend": false,
+    "productionEnabled": false,
+    "deployEnabled": false,
+    "containsSensitiveData": false
+  },
+  "auditAxes": [
+    "sourceLockAndBaseline",
+    "projectPeriodSeparation",
+    "tenantProjectConfigurability",
+    "hrSourceMaskedAndGeneric",
+    "rolesPersonasScopes",
+    "protectedDataAndAuthGates",
+    "academiaCoursesManualsRoutes",
+    "certificationCarryover",
+    "shopperProtectedProfiles",
+    "visitsAssignmentsScheduling",
+    "liquidationsPaymentsPreview",
+    "reviewQueueAuditEvents",
+    "makeGeminiPaymentProviderGates",
+    "pwaBrandingInstallability",
+    "cxDataBackendSwitch",
+    "regressionsAndSyntax",
+    "tyaSpecificVsReusableCxorbia"
+  ],
+  "requiredOutputs": [
+    "whatClaudeDid",
+    "whatClaudeMissed",
+    "whatRegressed",
+    "whatIsTyASpecific",
+    "whatIsReusableCxorbia",
+    "whatNeedsClaudeFollowupWhileCapacityExists",
+    "goNoGoVerdict"
+  ],
+  "forbiddenAssumptions": [
+    "doNotTreatPeriodAsProject",
+    "doNotHardcodeTyAAsGenericProduct",
+    "doNotExposePIIInPreview",
+    "doNotClaimIntegrationsAreLiveWithoutGate",
+    "doNotIgnoreAcademiaImpact",
+    "doNotSkipCurrentCandidateComparison"
+  ]
+}
