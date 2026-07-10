@@ -27,6 +27,7 @@ env:
   CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
   FIREBASE_PROJECT_ID: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
+  CXORBIA_DEV_BUILD_LABEL: tya-source-safe-preview-20260709
 
 jobs:
   dev-root-deploy:
