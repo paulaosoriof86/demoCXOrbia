@@ -25,6 +25,8 @@ defaults:
 
 env:
   CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+  FIREBASE_PROJECT_ID: cxorbia-backend-dev
+  FIREBASE_HOSTING_TARGET: cxorbia-dev
 
 jobs:
   dev-root-deploy:
@@ -53,10 +55,11 @@ jobs:
             --validated d6abab620589abf9be26e0a3884f92c4b342fb9b \
             --out .tmp/rc-phase-a-dev-root-drift
 
-      - name: Secret availability check
+      - name: Secret availability and JSON sanity check
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
+          set -euo pipefail
           mkdir -p .tmp/rc-phase-a-dev-root-deploy
           if [ -z "$FIREBASE_SERVICE_ACCOUNT_JSON" ]; then
             echo "status=blocked_missing_secret" | tee .tmp/rc-phase-a-dev-root-deploy/deploy-status.txt
@@ -65,18 +68,80 @@ jobs:
             echo "Deployment was intentionally blocked before any Firebase call."
             exit 1
           fi
+          echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > .tmp/rc-phase-a-dev-root-deploy/firebase-service-account.json
+          node <<'NODE'
+          const fs = require('fs');
+          const path = '.tmp/rc-phase-a-dev-root-deploy/firebase-service-account.json';
+          const out = '.tmp/rc-phase-a-dev-root-deploy/credential-sanity.txt';
+          let parsed;
+          try {
+            parsed = JSON.parse(fs.readFileSync(path, 'utf8'));
+          } catch (error) {
+            fs.writeFileSync(out, 'status=invalid_json\n');
+            console.error('Firebase service account secret is not valid JSON.');
+            process.exit(1);
+          }
+          const projectId = parsed.project_id || '';
+          const clientEmail = parsed.client_email || '';
+          const type = parsed.type || '';
+          const emailDomain = clientEmail.includes('@') ? clientEmail.replace(/^[^@]+/, '***') : 'missing';
+          const lines = [
+            `status=secret_present`,
+            `type=${type}`,
+            `project_id=${projectId}`,
+            `client_email_domain=${emailDomain}`
+          ];
+          fs.writeFileSync(out, lines.join('\n') + '\n');
+          if (type !== 'service_account') {
+            console.error('Firebase secret JSON is not a service_account.');
+            process.exit(1);
+          }
+          if (projectId !== 'cxorbia-backend-dev') {
+            console.error(`Firebase secret project_id mismatch. Expected cxorbia-backend-dev, got ${projectId || 'missing'}.`);
+            process.exit(1);
+          }
+          if (!clientEmail.endsWith('@cxorbia-backend-dev.iam.gserviceaccount.com')) {
+            console.error('Firebase secret client_email does not belong to cxorbia-backend-dev service account domain.');
+            process.exit(1);
+          }
+          console.log('Firebase service account JSON sanity check passed.');
+          NODE
           echo "status=secret_present" | tee .tmp/rc-phase-a-dev-root-deploy/deploy-status.txt
           echo "url=$CXORBIA_DEV_ROOT_URL" | tee -a .tmp/rc-phase-a-dev-root-deploy/deploy-status.txt
-          echo "Firebase service account secret is present."
+          echo "Firebase service account secret is present and project-scoped sanity checks passed."
+
+      - name: Firebase CLI access check
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/rc-phase-a-dev-root-deploy/firebase-service-account.json
+        run: |
+          set -euo pipefail
+          npx --yes firebase-tools@latest --version | tee .tmp/rc-phase-a-dev-root-deploy/firebase-tools-version.txt
+          npx --yes firebase-tools@latest hosting:sites:list \
+            --project "$FIREBASE_PROJECT_ID" \
+            --json \
+            > .tmp/rc-phase-a-dev-root-deploy/hosting-sites.json
+          node <<'NODE'
+          const fs = require('fs');
+          const payload = JSON.parse(fs.readFileSync('.tmp/rc-phase-a-dev-root-deploy/hosting-sites.json', 'utf8'));
+          const text = JSON.stringify(payload);
+          if (!text.includes('cxorbia-backend-dev')) {
+            console.error('Hosting sites list did not include expected DEV site/project marker.');
+            process.exit(1);
+          }
+          console.log('Firebase Hosting access check passed.');
+          NODE
 
       - name: Deploy Hosting DEV root
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-          projectId: cxorbia-backend-dev
-          target: cxorbia-dev
-          channelId: live
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/rc-phase-a-dev-root-deploy/firebase-service-account.json
+        run: |
+          set -euo pipefail
+          npx --yes firebase-tools@latest deploy \
+            --only "hosting:$FIREBASE_HOSTING_TARGET" \
+            --project "$FIREBASE_PROJECT_ID" \
+            --non-interactive \
+            --json \
+            2>&1 | tee .tmp/rc-phase-a-dev-root-deploy/firebase-deploy-output.txt
 
       - name: Verify DEV root URL
         run: |
