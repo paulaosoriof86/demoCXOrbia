@@ -13,7 +13,12 @@ CX.router = {
          deben aterrizar en SU proyecto, no en el que haya quedado activo de otra sesión. */
       const u=CX.session.user||{};
       if(u.scopeProjectId && CX.data.projects.some(p=>p.id===u.scopeProjectId)) CX.data.currentProjectId=u.scopeProjectId;
-      else if(u.scopeCliente){ const m=CX.data.projects.find(p=>(p.client||'').toLowerCase()===u.scopeCliente.toLowerCase()); if(m) CX.data.currentProjectId=m.id; }
+      else if(u.scopeCliente){
+        /* P1 (V96 reauditoría): con varios proyectos para el mismo cliente, conserva el ya activo
+           si sigue siendo del cliente; si no, aterriza en el primero — el portal ofrece selector. */
+        const matches=CX.data.clientProjects(u.scopeCliente);
+        if(matches.length && !matches.some(p=>p.id===CX.data.currentProjectId)) CX.data.currentProjectId=matches[0].id;
+      }
     }
     else if(CX.data.scopePaises()||((CX.session.user||{}).scopeProjectId)){
       const u=CX.session.user||{};

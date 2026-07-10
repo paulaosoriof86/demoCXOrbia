@@ -128,7 +128,7 @@ CX.module('crm', ({data,ui})=>{
       </div>
       <div class="between" style="margin-top:14px;border-top:1px solid var(--border-2);padding-top:12px">
         <div class="flex" style="gap:8px">
-          <button class="btn btn-soft btn-sm" id="fWa">📲 WhatsApp</button>
+          <button class="btn btn-soft btn-sm" id="fWa" title="Abre WhatsApp Web con un borrador manual — no es envío automático">📲 WhatsApp (borrador manual)</button>
           <button class="btn btn-soft btn-sm" id="fMail">✉️ Correo</button>
           <button class="btn btn-pr btn-sm" id="fProp">📄 Generar propuesta</button>
         </div>

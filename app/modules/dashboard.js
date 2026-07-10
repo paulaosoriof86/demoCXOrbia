@@ -35,12 +35,12 @@ CX.module('dashboard', ({data,ui})=>{
       <td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td>
       <td style="font-size:12px">${v.shopper||'<span class="muted">— sin asignar</span>'}</td><td>${ui.estadoBadge(v.estado)}</td>
       <td style="font-size:12px">${v.agendada?('📅 agend. '+v.agendada):(v.disponibleDesde?('disp. desde '+v.disponibleDesde):'—')}</td>
-      <td style="text-align:right;white-space:nowrap">${v.shopper?`<button class="btn btn-soft btn-sm drWa" data-vid="${v.id}" title="WhatsApp a ${v.shopper}">📲</button> <button class="btn btn-ghost btn-sm drMail" data-vid="${v.id}" title="Correo">✉️</button>`:'<span class="muted" style="font-size:11px">—</span>'}</td></tr>`).join('')
+      <td style="text-align:right;white-space:nowrap">${v.shopper?`<button class="btn btn-soft btn-sm drWa" data-vid="${v.id}" title="WhatsApp a ${v.shopper} — borrador manual, no envío automático salvo Make activo">📲</button> <button class="btn btn-ghost btn-sm drMail" data-vid="${v.id}" title="Correo">✉️</button>`:'<span class="muted" style="font-size:11px">—</span>'}</td></tr>`).join('')
       : '<tr><td colspan="6">'+ui.empty('🔍','Sin visitas en este KPI')+'</td></tr>';
     ui.modal(titulo+' · '+vis.length, `
       ${vis.length?`<input class="inp" id="drFind" placeholder="🔍 Buscar sucursal, shopper o ciudad…" style="margin-bottom:10px">
         <div class="between" style="margin-bottom:10px"><label class="flex" style="gap:6px;font-size:12px;color:var(--t2);cursor:pointer"><input type="checkbox" id="drAll"> Seleccionar todos</label>
-        <div class="flex" style="gap:6px"><button class="btn btn-soft btn-sm" id="drWaSel">📲 WhatsApp a seleccionados (<span id="drN">0</span>)</button><button class="btn btn-ghost btn-sm" id="drMailSel">✉️ Correo</button></div></div>`:''}
+        <div class="flex" style="gap:6px"><button class="btn btn-soft btn-sm" id="drWaSel" title="Borrador manual salvo que el gate de Make esté activo">📲 WhatsApp a seleccionados (<span id="drN">0</span>)</button><button class="btn btn-ghost btn-sm" id="drMailSel">✉️ Correo</button></div></div>`:''}
       <div style="overflow-x:auto"><table class="tbl"><thead><tr><th></th><th>Sucursal</th><th>Shopper</th><th>Estado</th><th>Fecha (agenda / disp.)</th><th style="text-align:right">Contacto</th></tr></thead><tbody id="drBody">${rows}</tbody></table></div>
       ${waMsg?`<div style="margin-top:12px;background:var(--green-bg);border-radius:10px;padding:10px 12px;font-size:11.5px;color:#0a7050">💡 ${waMsg} — elige a quiénes contactar arriba, o usa el botón por fila.</div>`:''}
       ${vis.length>40?`<div class="muted" style="font-size:11px;margin-top:8px">+${vis.length-40} más…</div>`:''}
@@ -265,7 +265,7 @@ CX.module('dashboard', ({data,ui})=>{
         </div>
         <div class="between" style="margin-top:14px">
           <button class="btn btn-ghost btn-sm" id="bdDel" style="color:var(--red)">🗑 Eliminar visita</button>
-          <div class="flex" style="gap:8px">${['realizada','cuestionario','liquidada'].includes(v.estado)?'<button class="btn btn-soft btn-sm" id="bdRev">🔎 Revisar</button>':''}${v.shopper?'<button class="btn btn-soft btn-sm" id="bdWa">📲 WhatsApp</button>':''}<button class="btn btn-pr btn-sm" id="bdSave">Guardar</button></div>
+          <div class="flex" style="gap:8px">${['realizada','cuestionario','liquidada'].includes(v.estado)?'<button class="btn btn-soft btn-sm" id="bdRev">🔎 Revisar</button>':''}${v.shopper?'<button class="btn btn-soft btn-sm" id="bdWa" title="Abre WhatsApp Web con un borrador manual — no es envío automático">📲 WhatsApp (borrador manual)</button>':''}<button class="btn btn-pr btn-sm" id="bdSave">Guardar</button></div>
         </div>
       `,{onMount:(ov,close)=>{
         const rev=ov.querySelector('#bdRev');if(rev)rev.addEventListener('click',()=>{close();CX.revisionAdmin&&CX.revisionAdmin(data,p,v,ui);});

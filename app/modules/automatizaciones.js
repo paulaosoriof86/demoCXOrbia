@@ -48,7 +48,7 @@ CX.module('automatizaciones', ({data,ui})=>{
 
     <div class="grid g2" style="gap:14px;margin-bottom:16px">
       <div class="card card-p">
-        <div class="card-h"><div class="card-t">⏰ Alertas de pendientes</div><button class="btn btn-soft btn-sm" id="scanBtn">Escanear y notificar</button></div>
+        <div class="card-h"><div class="card-t">⏰ Alertas de pendientes</div><button class="btn btn-soft btn-sm" id="scanBtn" title="Detecta pendientes y prepara notificaciones in-app — no envía correo/WhatsApp real">Escanear y preparar notificaciones (in-app)</button></div>
         <div class="grid g3" style="gap:8px">
           ${ui.kpi('Atrasadas',scan.atrasadas.length,'r')}${ui.kpi('Pend. cuestionario',scan.pendientes.length,'a')}${ui.kpi('Sin agendar',scan.desactualizadas.length,'a')}
         </div>

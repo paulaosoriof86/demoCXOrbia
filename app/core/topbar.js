@@ -93,7 +93,7 @@ CX.topbar = {
           <div style="font-size:12px;color:var(--t3);margin-bottom:10px">De: ${m.de} · ${m.fecha}${m.proyecto?' · '+m.proyecto:''}</div>
           <div style="font-size:13.5px;color:var(--t2);line-height:1.7;padding:14px;background:var(--panel-2,#f8f9fa);border-radius:10px;margin-bottom:12px">${m.cuerpo}</div>
           <div class="flex" style="gap:8px;justify-content:flex-end">
-            <button class="btn btn-ghost btn-sm" id="replyWa">📲 Responder WA</button>
+            <button class="btn btn-ghost btn-sm" id="replyWa" title="Abre WhatsApp Web con un borrador manual — no es envío automático">📲 Responder WA (borrador manual)</button>
             <button class="btn btn-pr btn-sm" id="replyMail">↩ Responder correo</button>
           </div>
         `,{onMount:(ov2,close2)=>{
@@ -105,7 +105,7 @@ CX.topbar = {
         <label class="lbl">Para</label><input class="inp" id="mcTo" placeholder="correo@destinatario.com" style="margin-bottom:8px">
         <label class="lbl">Asunto</label><input class="inp" id="mcSub" style="margin-bottom:8px">
         <label class="lbl">Mensaje</label><textarea class="inp" id="mcBody" rows="5" style="margin-bottom:12px"></textarea>
-        <div class="between"><button class="btn btn-soft btn-sm" id="mcWa">📲 Enviar por WA</button><button class="btn btn-pr btn-sm" id="mcSend">Enviar correo</button></div>
+        <div class="between"><button class="btn btn-soft btn-sm" id="mcWa" title="Abre WhatsApp Web con un borrador manual — no es envío automático">📲 WA (borrador manual)</button><button class="btn btn-pr btn-sm" id="mcSend">Enviar correo</button></div>
       `,{onMount:(ov3,close3)=>{
         ov3.querySelector('#mcWa').addEventListener('click',()=>{const msg=encodeURIComponent(ov3.querySelector('#mcBody').value||'');window.open('https://wa.me/?text='+msg,'_blank');close3();});
         ov3.querySelector('#mcSend').addEventListener('click',()=>{const to=(ov3.querySelector('#mcTo').value||'').trim();if(!to){CX.ui.toast('Ingresa el destinatario','warn');return;}const newMail={id:'ms'+Date.now().toString(36),de:'equipo@consultora.com',para:to,asunto:ov3.querySelector('#mcSub').value||'(sin asunto)',cuerpo:ov3.querySelector('#mcBody').value||'',fecha:new Date().toISOString().slice(0,16).replace('T',' '),leido:true};mails.unshift(newMail);try{localStorage.setItem('cx_mails',JSON.stringify(mails));}catch(e){}close3();CX.ui.toast('Correo preparado · envío real pendiente backend ('+to+')','ok');});

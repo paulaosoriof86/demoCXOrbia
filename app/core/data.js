@@ -249,10 +249,16 @@ CX.data = {
      y en Academia (evita el anti-patrón "periodo tratado como proyecto"):
      ============================================================ */
   proyectos(){ return this.programs(); },
+  /* P1 (V96 reauditoría): todos los proyectos que calzan con un scopeCliente (nombre de marca) —
+     un cliente puede tener varios proyectos/programas activos; el router elige uno para aterrizar
+     pero el portal cliente expone un selector si hay más de uno. */
+  clientProjects(clienteName){
+    if(!clienteName) return [];
+    return this.projects.filter(p=>(p.client||'').toLowerCase()===clienteName.toLowerCase());
+  },
   /* variante que respeta el alcance por país (coordinador/aliado/usuario invitado con scopePaises)
      y por proyecto único (projectCoordinator/operationsCoordinator con scopeProjectId) */
-  scopedProyectos(){
-    const spid=(CX.session&&CX.session.user&&CX.session.user.scopeProjectId)||null;
+  scopedProyectos(){    const spid=(CX.session&&CX.session.user&&CX.session.user.scopeProjectId)||null;
     if(spid){
       const seen={}, out=[];
       this.projects.filter(p=>p.id===spid).forEach(p=>{const k=this.programKey(p);if(!seen[k]){seen[k]={key:k,name:this.programBase(p),sample:p,periods:[]};out.push(seen[k]);}seen[k].periods.push(p);});

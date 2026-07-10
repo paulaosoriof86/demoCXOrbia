@@ -24,16 +24,22 @@ CX.cliUI = {
     if(role==='regional') scope='Región: '+(u.scopeRegion||C.topRegion(p));
     if(role==='sucursal'){ const s=C.sucursales(p).find(x=>x.id===u.scopeSucursal)||C.sucursales(p).slice(-1)[0]; scope='Sucursal: '+(s?s.name:'—'); }
     const opts=CX.CLIENTE_ROLES.map(r=>`<option value="${r.id}" ${r.id===role?'selected':''}>${r.label}</option>`).join('');
+    /* P1 (V96 reauditoría): si el cliente tiene más de un proyecto/programa asignado (scopeCliente),
+       ofrece selector — antes quedaba fijo en el primero encontrado sin forma de cambiar. */
+    const clientMatches = u.scopeCliente ? CX.data.clientProjects(u.scopeCliente) : [];
+    const projSel = clientMatches.length>1 ? `<select class="sel" id="cliProjSel" style="width:auto;min-width:160px">${clientMatches.map(pr=>`<option value="${pr.id}" ${pr.id===p.id?'selected':''}>${pr.name}</option>`).join('')}</select>` : '';
     return `<div class="card" style="padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
       <span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Ver como</span>
       <select class="sel" id="cliPersonaSel" style="width:auto;min-width:200px">${opts}</select>
       <span class="bdg bdg-b">${scope}</span>
+      ${projSel}
       <span style="flex:1"></span>
       <span style="font-size:11.5px;color:var(--t3)">Programa: <b style="color:var(--t1)">${p.name}</b> · permisos y datos acotados por rol</span>
     </div>`;
   },
   wirePersona(){
     const sel=document.getElementById('cliPersonaSel'); if(!sel) return;
+    document.getElementById('cliProjSel')?.addEventListener('change',(e)=>{ CX.data.currentProjectId=e.target.value; CX.bus&&CX.bus.emit('project'); CX.router.enter(); });
     sel.addEventListener('change',()=>{
       const role=sel.value, u=CX.session.user, p=CX.data.project(), C=CX.clienteData;
       u.clienteRole=role;
@@ -166,7 +172,7 @@ window.cliSupPort = function(){
     </div>
     <div class="flex" style="justify-content:space-between">
       <div style="display:flex;gap:6px">
-        <button class="btn btn-ghost btn-sm" id="supWA">💬 WhatsApp</button>
+        <button class="btn btn-ghost btn-sm" id="supWA" title="Abre WhatsApp Web con un borrador manual — no es envío automático">💬 WhatsApp (borrador manual)</button>
         <button class="btn btn-ghost btn-sm" id="supMail">📧 Correo</button>
       </div>
       <button class="btn btn-pr btn-sm" id="supSend">Enviar ticket</button>

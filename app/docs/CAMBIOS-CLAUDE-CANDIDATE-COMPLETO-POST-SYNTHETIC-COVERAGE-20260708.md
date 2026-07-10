@@ -393,6 +393,31 @@ configurada (tal como pide la regla del paquete).
 Verificado en vivo: el `<link rel="manifest">` ahora apunta a una blob URL generada dinámicamente en vez
 del archivo estático; sintaxis OK; sin errores de consola.
 
+## V96 empalme ágil (20260710) — fail-closed completo, scope multi-proyecto, borrador manual explícito
+
+**Preservado de V95:** login invitado con scope, permisos efectivos, persistencia de proyectos, candidates de
+HR Source, copy honesto acumulado — todo confirmado y no reescrito.
+
+**P0 cerrado — fuga de fail-closed:** `roleCanAccess()` quedaba abierto (`return true`) para cualquier módulo
+sin categoría en `CX.MOD_CAT` (`administrabilidad`, `diagnóstico`, `hrsource`, `novedades`, `saas` no estaban
+mapeados). Un coordinador/aliado/rol custom sin matriz podía terminar viendo Consola SaaS o Administrabilidad.
+Corregido en dos frentes: (1) se completó `CX.MOD_CAT` con los 5 módulos faltantes; (2) un módulo *aún* sin
+categoría ahora cae en `'cfg'` (la categoría más restringida) en vez de `true` — no hay más rutas abiertas por
+default.
+
+**P1 cerrados:**
+- **Cliente con varios proyectos:** `scopeCliente` sin `scopeProjectId` podía tener más de un proyecto/programa
+  asociado y quedaba fijo en el primero sin forma de cambiar. Nuevo `data.clientProjects()`; el router conserva
+  el proyecto activo si sigue siendo del cliente, y el portal cliente (`personaBarHTML`) muestra un selector de
+  proyecto cuando hay más de uno.
+- **Copy residual de WhatsApp manual:** todos los botones que abren `wa.me` (Correo, CRM, Postulaciones, Cliente,
+  Dashboard, Soporte, Mis Visitas, Topbar) ahora dicen explícitamente "(borrador manual)" con `title` aclaratorio
+  — nunca prometen envío automático. "Escanear y notificar" (Automatizaciones) → "Escanear y preparar
+  notificaciones (in-app)".
+
+**No se tocó** backend/Auth/Firestore/Make/Gemini/pagos reales, HR Source candidates, ni scope proyecto/cliente
+ya resuelto en V95. No se agregó PII. Carga verificada sin errores.
+
 ## V95 reauditoría profunda (20260710) — scope real, fail-closed y último barrido de copy
 
 **Preservado de V94/V95:** login invitado, permisos efectivos, persistencia de proyectos, candidates de HR

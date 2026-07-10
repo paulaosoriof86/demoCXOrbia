@@ -148,20 +148,21 @@ CX.moduleEnabled = function(id){
 CX.MOD_CAT = {
   midia:'op', dashboard:'op', visitas:'op', postulaciones:'op', reservas:'op', shoppers:'op', tablon:'op',
   financiero:'fin', movimientos:'fin', liquidaciones:'fin', lotes:'fin',
-  proyectos:'prj', periodos:'prj', historico:'prj', clientes:'prj', cuestionarios:'prj', rutas:'prj', importador:'prj',
-  aprendizaje:'cap', cert:'cap', documentos:'cap', soporte:'cap',
-  config:'cfg', usuarios:'cfg', marca:'cfg', automatizaciones:'cfg', integraciones:'cfg', correo:'cfg',
+  proyectos:'prj', periodos:'prj', historico:'prj', clientes:'prj', cuestionarios:'prj', rutas:'prj', importador:'prj', hrsource:'prj',
+  aprendizaje:'cap', cert:'cap', documentos:'cap', soporte:'cap', novedades:'cap',
+  config:'cfg', usuarios:'cfg', marca:'cfg', automatizaciones:'cfg', integraciones:'cfg', correo:'cfg', saas:'cfg', diagnostico:'cfg', administrabilidad:'cfg',
   costos:'com', crm:'com', marketing:'com', informes:'com',
   miperfil:'sh', misvisitas:'sh', beneficios:'sh',
 };
 /* super y admin: acceso pleno. Otros roles: gobernados por la matriz guardada (cx_perm).
-   Fail-closed (V95 reauditoría): un rol sin matriz configurada NO obtiene acceso total —
+   Fail-closed (V95/V96 reauditoría): un rol sin matriz configurada NO obtiene acceso total —
    solo un set mínimo seguro (Capacitación/Academia) hasta que un admin defina su matriz
-   explícitamente en Usuarios & Permisos. Antes devolvía `true` sin matriz (fail-open). */
+   explícitamente en Usuarios & Permisos. Un módulo sin categoría en MOD_CAT tampoco obtiene
+   acceso total — se trata como categoría 'cfg' (la más restringida), nunca como `true` abierto. */
 CX.roleCanAccess = function(role, id){
   if(role==='super'||role==='admin'||role==='shopper'||role==='cliente') return true;
   let perm=null; try{ perm=JSON.parse(localStorage.getItem('cx_perm')||'null'); }catch(e){}
-  const cat=CX.MOD_CAT[id]; if(!cat) return true;
+  const cat=CX.MOD_CAT[id] || 'cfg'; /* módulo desconocido → categoría más restringida, no acceso abierto */
   if(!perm||!perm[role]){
     /* sin matriz definida para este rol → set mínimo seguro, no acceso total */
     return cat==='cap';

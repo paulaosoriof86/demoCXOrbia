@@ -154,7 +154,7 @@ CX.module('correo',({data,role,ui})=>{
         <div contenteditable="true" id="replyBox" style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;min-height:64px;background:var(--bg);font-size:13px;color:var(--t1);outline:none;margin-bottom:8px" placeholder="Escribe tu respuesta…"></div>
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div style="display:flex;gap:6px">
-            <button class="btn btn-ghost btn-sm" id="replyWA" title="Responder por WhatsApp">💬 WA</button>
+            <button class="btn btn-ghost btn-sm" id="replyWA" title="Abre WhatsApp Web con un borrador manual — no es envío automático">💬 WA (borrador manual)</button>
             <button class="btn btn-ghost btn-sm" id="replyAI" title="Generar respuesta con IA">✨ IA</button>
           </div>
           <button class="btn btn-pr btn-sm" id="replySend">Enviar ↩</button>

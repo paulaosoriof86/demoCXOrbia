@@ -149,7 +149,7 @@ CX.module('postulaciones', ({data,ui})=>{
         <div class="flex wrap" style="gap:8px;margin-top:14px;justify-content:flex-end">
           ${x.estado==='pendiente'?`<button class="btn btn-green btn-sm" id="pdAp">✅ Aprobar</button><button class="btn btn-ghost btn-sm" id="pdRj" style="color:var(--red)">Rechazar</button>`:''}
           <button class="btn btn-soft btn-sm" id="pdPerfil">👤 Perfil del shopper</button>
-          <button class="btn btn-soft btn-sm" id="pdWa">📲 WhatsApp</button>
+          <button class="btn btn-soft btn-sm" id="pdWa" title="Abre WhatsApp Web con un borrador manual — no es envío automático">📲 WhatsApp (borrador manual)</button>
         </div>
       `,{onMount:(ov,close)=>{
         ov.querySelector('#pdPerfil')&&ov.querySelector('#pdPerfil').addEventListener('click',()=>{close();profileModal(x.shopperId);});
