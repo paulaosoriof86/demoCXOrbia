@@ -1,30 +1,16 @@
 name: CXOrbia RC Phase A DEV Root Deploy
 
-# Controlled DEV Hosting root only. No Firestore/Storage rules, Functions, imports or providers.
+# Manual-only DEV Hosting workflow.
+# It must never deploy from push or pull_request events.
+# No Firestore/Storage rules, Functions, imports or providers.
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml'
-      - 'app/core/tya-phase-a-source-safe-preview.js'
-      - 'app/data/tya-hr-source-safe-periods.js'
-      - 'app/index.html'
-      - 'app/sw.js'
-      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
-      - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
-  pull_request:
-    branches:
-      - release/cxorbia-tya-rc-20260630
-    paths:
-      - '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml'
-      - 'app/core/tya-phase-a-source-safe-preview.js'
-      - 'app/data/tya-hr-source-safe-periods.js'
-      - 'app/index.html'
-      - 'app/sw.js'
-      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
-      - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
+    inputs:
+      confirm_dev_deploy:
+        description: 'Type DEPLOY_DEV_ROOT only after explicit Paula authorization and source-lock GO.'
+        required: true
+        default: 'HOLD'
+        type: string
 
 permissions:
   contents: read
@@ -45,6 +31,7 @@ env:
 jobs:
   dev-root-deploy:
     name: RC Phase A DEV root deploy hosting only
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_dev_deploy == 'DEPLOY_DEV_ROOT' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -59,6 +46,11 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Source lock post-V96 runtime gate
+        run: |
+          node tools/release/tya-source-lock-post-v96-runtime-verify.mjs \
+            --out .tmp/source-lock-post-v96-runtime
+
       - name: Predeploy gate
         run: |
           node tools/release/tya-rc-phase-a-predeploy-gate.mjs --out .tmp/rc-phase-a-dev-root-predeploy
@@ -66,7 +58,7 @@ jobs:
       - name: Drift gate
         run: |
           node tools/release/tya-rc-phase-a-drift-gate.mjs \
-            --validated f7dc604f06adb03fbe5597163e3bca2f3ab4a583 \
+            --validated 489b0420a820b390f4307db93fe8280959f3867c \
             --out .tmp/rc-phase-a-dev-root-drift
 
       - name: Secret availability and JSON sanity check
