@@ -1,5 +1,11 @@
 # CAMBIOS-PROTOTIPO.md — Bitácora de mejoras para aplicar a TyA
 
+> ⚠️ **Documento interno/cliente-específico** (menciona TyA/Cinépolis como cliente real de referencia). No es
+> parte del prototipo genérico ni de Academia/UI comercial — el código de `app/` (seeds, ejemplos, Academia) usa
+> nombres neutros/configurables (Proyecto Retail/Banca/Restaurantes). Confirmado en la reauditoría P0-7 (20260710):
+> ningún dato de TyA/Cinépolis está hardcodeado en `app/core` o `app/modules` — solo aparece en esta bitácora y en
+> archivos de `uploads/`, que son material de comunicación con el cliente, no del prototipo.
+>
 > Cada entrada describe un cambio hecho en el prototipo CXOrbia DESPUÉS de la migración inicial.
 > Úsalo para replicar las mejoras en tu plataforma de TyA ya migrada.
 > Formato: archivo · qué cambió · por qué · cómo aplicarlo · cómo probarlo.

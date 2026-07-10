@@ -173,7 +173,7 @@ CX.module('reservas', ({data,role,ui})=>{
         CX.notif&&CX.notif.push({to:'shopper',tipo:'reserva_aprobada',icon:'✅',tono:'g',titulo:'¡Tu reserva fue aprobada!',txt:'Sucursal: '+r.sucursal+' · '+r.periodo+'. Ya puedes ver la visita en Mis Visitas.',nav:'misvisitas'});
         CX.automations&&CX.automations.fire('aprobacion',{shopper:r.shopper,sucursal:r.sucursal,periodo:r.periodo});
         if(!hasHook){const wa=(data.getShopper&&data.getShopper(r.shopperId)||{}).whatsapp||'';if(wa){const msg=encodeURIComponent('¡Hola '+r.shopper+'! Tu reserva para '+r.sucursal+' ('+r.periodo+') fue aprobada. Revisa tu visita en la plataforma.');window.open('https://wa.me/'+wa.replace(/[^0-9]/g,'')+'?text='+msg,'_blank');}}
-        ui.toast('Reserva aprobada · visita asignada · shopper notificado','ok',3600);
+        ui.toast('Reserva aprobada · visita asignada · notificación al shopper preparada (in-app) · envío real (WhatsApp/correo) pendiente de backend','ok',3600);
       } else ui.toast('Estado actualizado','ok');
       draw();
     }));

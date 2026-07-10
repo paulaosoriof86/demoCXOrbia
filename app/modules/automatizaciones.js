@@ -36,7 +36,7 @@ CX.module('automatizaciones', ({data,ui})=>{
       </div>
       <div class="card card-p">
         <div class="card-t" style="font-size:13px;margin-bottom:10px">🧩 Integraciones</div>
-        ${[['Make','Orquestador de escenarios',hook?'Conectado':'Configurar'],['Outlook / M365','Correo y calendario',aic._outlook?'Conectado':'Vincular'],['Gmail / Workspace','Correo',''],['Google Sheets','HR viva + export','Vinculado'],['WhatsApp Cloud','Mensajería',hook?'vía Make':'vía Make']].map(r=>`<div class="between" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12.5px">${r[0]}</b><div style="font-size:10.5px;color:var(--t3)">${r[1]}</div></div><button class="btn btn-ghost btn-sm" data-int="${r[0]}">${r[2]||'Vincular'}</button></div>`).join('')}
+        ${[['Make','Orquestador de escenarios',hook?'Webhook configurado':'Configurar'],['Outlook / M365','Correo y calendario',aic._outlook?'Preparado (demo)':'Vincular'],['Gmail / Workspace','Correo',''],['Google Sheets','HR viva + export','Preparado (demo)'],['WhatsApp Cloud','Mensajería',hook?'vía Make (gate pendiente)':'vía Make (gate pendiente)']].map(r=>`<div class="between" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12.5px">${r[0]}</b><div style="font-size:10.5px;color:var(--t3)">${r[1]}</div></div><button class="btn btn-ghost btn-sm" data-int="${r[0]}">${r[2]||'Vincular'}</button></div>`).join('')}
       </div>
     </div>
 
@@ -76,7 +76,7 @@ CX.module('automatizaciones', ({data,ui})=>{
     </div>
 
     <div class="card card-p">
-      <div class="card-h"><div class="card-t">📜 Registro de disparos (Make)</div><span class="muted" style="font-size:11px">últimos eventos enviados</span></div>
+      <div class="card-h"><div class="card-t">📜 Outbox preparado (envío real vía Make pendiente backend)</div><span class="muted" style="font-size:11px">últimos eventos encolados</span></div>
       ${log.length?`<table class="tbl"><thead><tr><th>Fecha</th><th>Canal</th><th>Evento</th><th>Mensaje</th></tr></thead><tbody>
         ${log.slice(0,12).map(l=>`<tr><td style="font-size:11px">${l.fecha}</td><td>${ui.bdg(A.CANALES[l.canal]||l.canal,'b')}</td><td style="font-size:11.5px">${l.titulo}</td><td style="font-size:11px;color:var(--t2)">${l.txt}</td></tr>`).join('')}
       </tbody></table>`:ui.empty('📭','Aún no hay disparos. Activa automatizaciones y ejecuta acciones del flujo.')}
@@ -91,9 +91,9 @@ CX.module('automatizaciones', ({data,ui})=>{
     host.querySelectorAll('.autoTpl').forEach(i=>i.addEventListener('change',()=>A.update(i.dataset.id,{plantilla:i.value})));
     host.querySelectorAll('.autoHook').forEach(i=>i.addEventListener('change',()=>{A.update(i.dataset.id,{hook:i.value.trim()});ui.toast('Webhook de la automatización guardado','ok');}));
     host.querySelector('#hookSave').addEventListener('click',()=>{A.setHook(host.querySelector('#hookUrl').value.trim());ui.toast('Webhook de Make guardado','ok');});
-    host.querySelector('#hookTest').addEventListener('click',()=>{A._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'sheet',evento:'test',titulo:'Disparo de prueba',txt:'Payload de prueba enviado al escenario Make',hook:A.hook()||'(sin webhook)'});draw();ui.toast(A.hook()?'Disparo enviado a Make':'Configura el webhook primero','ok');});
-    host.querySelectorAll('[data-int]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.int==='Outlook / M365'){AI.save({_outlook:true});ui.toast('Outlook vinculado (demo) · correo y calendario disponibles','ok');draw();}else ui.toast(b.dataset.int+': vinculación (demo)','ok');}));
-    host.querySelector('#scanBtn').addEventListener('click',()=>{const r=A.notifyPendientes();ui.toast(r.alertas+' alerta(s) de visitas atrasadas enviadas','ok',3200);draw();});
+    host.querySelector('#hookTest').addEventListener('click',()=>{A._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'sheet',evento:'test',titulo:'Disparo de prueba',txt:'Payload de prueba preparado para el escenario Make · envío real pendiente backend',hook:A.hook()||'(sin webhook)'});draw();ui.toast(A.hook()?'Disparo preparado (preview) · envío real pendiente backend/Make':'Configura el webhook primero','ok');});
+    host.querySelectorAll('[data-int]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.int==='Outlook / M365'){AI.save({_outlook:true});ui.toast('Outlook preparado (demo) · conexión real de correo y calendario pendiente backend','ok');draw();}else ui.toast(b.dataset.int+': preparado (demo) · conexión real pendiente backend','ok');}));
+    host.querySelector('#scanBtn').addEventListener('click',()=>{const r=A.notifyPendientes();ui.toast(r.alertas+' alerta(s) de visitas atrasadas preparadas · pendiente confirmación/gate','ok',3200);draw();});
     host.querySelector('#aiProv').addEventListener('change',e=>{AI.save({provider:e.target.value, model:(AI.PROVIDERS[e.target.value]||{}).modelos[0]});draw();});
     host.querySelectorAll('.aiPick').forEach(b=>b.addEventListener('click',()=>{AI.save({provider:b.dataset.aip, model:(AI.PROVIDERS[b.dataset.aip]||{}).modelos[0]});draw();}));
     host.querySelector('#aiCompare')?.addEventListener('click',()=>{

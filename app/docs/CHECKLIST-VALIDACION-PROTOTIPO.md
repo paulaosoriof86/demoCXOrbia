@@ -65,4 +65,4 @@
 ## Multi-tenant / permisos
 - [ ] Datos segmentados por proyecto
 - [ ] Vista por rol correcta (shopper no ve admin)
-- [ ] Coordinador/aliado ve solo su país (scopeCountry) — pendiente backend
+- [ ] Coordinador/aliado ve solo su país (scopeCountry) ✅ filtrado real en frontend (proyectos, shoppers, visitas, postulaciones, dashboard) desde el paquete 20260709 Fase 5 — persistencia de asignación de país por usuario real sigue pendiente de backend

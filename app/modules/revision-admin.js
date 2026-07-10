@@ -21,7 +21,7 @@ CX.revisionStore = CX.revisionStore || {
     const r=a[visitaId]||{estado:'pending_review', hist:[], reviewId:'rev_'+Date.now().toString(36), createdAt:now};
     r.estado=estado; r.status=estado; r.hist=r.hist||[];
     /* estructura compatible con el contrato backend */
-    r.tenantId=ctx.tenantId||(CX.BRAND&&CX.BRAND.tenantId)||'tya';
+    r.tenantId=ctx.tenantId||(CX.BRAND&&CX.BRAND.id)||'default';
     r.projectId=ctx.projectId||(CX.data&&CX.data.currentProjectId)||'';
     r.visitId=visitaId; r.assignmentId=ctx.assignmentId||''; r.shopperId=ctx.shopperId||''; r.hrRowId=ctx.hrRowId||r.hrRowId||'';
     r.source=ctx.source||'admin_ui'; r.updatedAt=now;

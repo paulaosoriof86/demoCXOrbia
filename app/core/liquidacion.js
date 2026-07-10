@@ -2,7 +2,7 @@
    CXOrbia · Liquidación derivada de la visita (sync)
    El estado de la visita determina el estado de la liquidación,
    tanto en Beneficios (shopper) como en Liquidaciones (admin).
-   Estados (alineados con el export real de T&A):
+   Estados (alineados con un export histórico real de referencia):
      realizada            -> pendiente_cuestionario
      cuestionario realizado/completado -> pendiente_submitir
      submitida/validada   -> validada (lista para lote)

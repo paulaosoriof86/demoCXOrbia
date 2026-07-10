@@ -1,6 +1,6 @@
 /* CXOrbia · Postulaciones (admin) — full fidelity */
 CX.module('postulaciones', ({data,ui})=>{
-  const p=data.project(), posts=data._posts.slice();
+  const p=data.project(), posts=data._posts.filter(x=>data.inScope(x.pais));
   const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
   const c=(s)=>posts.filter(x=>x.estado===s).length;
   const reprog=posts.filter(x=>x.reprog);
@@ -50,7 +50,7 @@ CX.module('postulaciones', ({data,ui})=>{
   const html=`
   <div class="between" style="margin-bottom:6px">
     <div>${ui.ph('Gestión de Postulaciones', `${c('pendiente')} pendientes · ${c('aprobada')} aprobadas · ${reprog.length} reprogramación(es) · ${agendadas.length} agendamientos`)}</div>
-    <div class="flex"><span class="bdg bdg-g">● En vivo</span><span class="bdg bdg-b">${p.name}</span></div>
+    <div class="flex"><span class="bdg bdg-b">● Preview operativo</span><span class="bdg bdg-b">${p.name}</span></div>
   </div>
 
   <div class="flex wrap" style="gap:8px;margin-bottom:12px">
@@ -125,13 +125,13 @@ CX.module('postulaciones', ({data,ui})=>{
         <div class="flex" style="justify-content:flex-end;gap:8px"><button class="btn btn-soft btn-sm" id="pmWa">📲 WhatsApp</button><button class="btn btn-pr btn-sm" id="pmGo">Ver perfil completo →</button></div>
       `,{onMount:(ov,close)=>{
         ov.querySelector('#pmGo').addEventListener('click',()=>{close();CX.session._focusShopper=s.id;CX.router.nav('shoppers');});
-        ov.querySelector('#pmWa').addEventListener('click',()=>{close();ui.toast('WhatsApp a '+s.nombre+' (Make)','ok');});
+        ov.querySelector('#pmWa').addEventListener('click',()=>{close();ui.toast('WhatsApp a '+s.nombre+' preparado (preview) · envío real pendiente backend/Make','ok');});
         const histModal=(filter,title)=>{ const arr=hist.filter(filter);
           ui.modal(title+' · '+s.nombre, arr.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>${arr.map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.escenario||''}</td><td style="font-size:12px">${v.realizada||v.agendada||'—'}</td><td>${ui.estadoBadge(v.estado)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🗒️','Sin visitas en esta categoría.')); };
         ov.querySelectorAll('[data-ph]').forEach(el=>el.addEventListener('click',()=>{const k=el.dataset.ph; if(k==='all')histModal(()=>true,'Historial completo'); else if(k==='real')histModal(v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Realizadas'); else histModal(v=>v.estado==='liquidada','Liquidadas');}));
       }});
     };
-    document.querySelectorAll('[data-ap]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.ap);if(x&&CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(b.dataset.ap,'✅ Aprobada','green','Aprobada · WhatsApp enviado al shopper');}));
+    document.querySelectorAll('[data-ap]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.ap);if(x&&CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(b.dataset.ap,'✅ Aprobada','green','Aprobada · WhatsApp preparado (preview) · envío real pendiente backend/Make');}));
     /* FIX: el botón Perfil ahora abre el perfil real del shopper */
     document.querySelectorAll('[data-perfil]').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();profileModal(b.dataset.perfil);}));
     /* detalle de la postulación/visita al hacer clic en la tarjeta */
@@ -154,7 +154,7 @@ CX.module('postulaciones', ({data,ui})=>{
       `,{onMount:(ov,close)=>{
         ov.querySelector('#pdPerfil')&&ov.querySelector('#pdPerfil').addEventListener('click',()=>{close();profileModal(x.shopperId);});
         ov.querySelector('#pdWa')&&ov.querySelector('#pdWa').addEventListener('click',()=>{const msg=encodeURIComponent('Hola '+(x.shopper||'')+', sobre tu visita en '+x.sucursal);window.open('https://wa.me/'+(x.phone||'').replace(/[^0-9]/g,'')+'?text='+msg,'_blank');});
-        ov.querySelector('#pdAp')&&ov.querySelector('#pdAp').addEventListener('click',()=>{if(CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(x.id,'✅ Aprobada','green','Aprobada · WhatsApp enviado');close();});
+        ov.querySelector('#pdAp')&&ov.querySelector('#pdAp').addEventListener('click',()=>{if(CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(x.id,'✅ Aprobada','green','Aprobada · WhatsApp preparado (preview) · envío real pendiente backend/Make');close();});
         ov.querySelector('#pdRj')&&ov.querySelector('#pdRj').addEventListener('click',()=>{act(x.id,'✕ Rechazada','red','Rechazada · notificación preparada · pendiente confirmación');close();});
       }});
     };
@@ -284,7 +284,7 @@ CX.module('postulaciones', ({data,ui})=>{
           const map={confirmar:['📅','El equipo pide confirmar fecha','confirmar_fecha'],cambio:['📅','El equipo pide cambio de fecha','confirmar_fecha'],reprog:['🔄','El equipo solicita reprogramación',''],agendar:['📅','Recordatorio: agenda tu visita','']};
           const m=map[tipo];
           CX.notif.push({to:'shopper',tipo,icon:m[0],tono:'a',titulo:m[1],txt:sh+' · responde desde Mis Visitas',nav:'misvisitas',accion:m[2]||undefined});
-          close();ui.toast('Solicitud enviada a '+sh+' · Mi Día + Tablón + WhatsApp','ok',3500);
+          close();ui.toast('Solicitud preparada para '+sh+' · visible en Mi Día + Tablón · WhatsApp pendiente de envío real (backend)','ok',3500);
         });
       }});
     });

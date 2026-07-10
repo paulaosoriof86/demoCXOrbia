@@ -8,7 +8,7 @@ CX.saasConsole = {
   KEY:'cx_saas_tenants',
   seed(){
     return [
-      {id:'tya', nombre:'TyA Consultores', plan:'Enterprise', pais:['GT','HN'], estado:'Activo', proyectos:3, usuarios:14, version:'V79', modulos:{dashboard:true,visitas:true,finanzas:true,crm:true,marketing:true,academia:true,portal:true}, flags:{iaGemini:true,evidenciaGeo:true,benchmark:false,facturacionFEL:false}},
+      {id:'consultora-a', nombre:'Consultora A', plan:'Enterprise', pais:['GT','HN'], estado:'Activo', proyectos:3, usuarios:14, version:'V79', modulos:{dashboard:true,visitas:true,finanzas:true,crm:true,marketing:true,academia:true,portal:true}, flags:{iaGemini:true,evidenciaGeo:true,benchmark:false,facturacionFEL:false}},
       {id:'demo', nombre:'Consultora Demo', plan:'Estándar', pais:['GT'], estado:'Trial', proyectos:1, usuarios:3, version:'V79', modulos:{dashboard:true,visitas:true,finanzas:true,crm:true,marketing:false,academia:true,portal:true}, flags:{iaGemini:false,evidenciaGeo:false,benchmark:false,facturacionFEL:false}},
     ];
   },

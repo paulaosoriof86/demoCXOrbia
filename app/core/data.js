@@ -15,9 +15,10 @@ const GT_CITIES = ['Guatemala','Villa Nueva','Mixco','Quetzaltenango','Mazatenan
 const HN_CITIES = ['Tegucigalpa','San Pedro Sula','La Ceiba','Choloma','Comayagua'];
 
 /* ---------- Proyectos genéricos (rubros distintos → la IA adapta) ---------- */
+const _TENANT_ID = (window.CX && CX.BRAND && CX.BRAND.id) || 'tenant-demo';
 const PROJECTS = [
   {
-    id:'retail', name:'Proyecto Retail', client:'Cliente Retail (demo)', industry:'Retail · Cadena de tiendas',
+    id:'retail', tenantId:_TENANT_ID, name:'Proyecto Retail', client:'Cliente Retail (demo)', industry:'Retail · Cadena de tiendas',
     countries:['GT','HN'], currency:{GT:'Q',HN:'L'}, accent:'#2196d3',
     sucursales:24, honorario:{GT:60,HN:200}, honRecibe:{GT:170,HN:520}, modelo:'directo', isr:5, regalias:10, boleto:{GT:33,HN:127}, combo:'Reembolso de compra', comboAmt:{GT:121,HN:291},
     scenarios:['Compra estándar','Fin de semana','Cliente incógnito'],
@@ -31,7 +32,7 @@ const PROJECTS = [
     conocimiento:'Cadena de retail. Se evalúa atención, tiempos, limpieza y proceso de compra.',
   },
   {
-    id:'banca', name:'Proyecto Banca', client:'Cliente Banca (demo)', industry:'Banca · Red de agencias',
+    id:'banca', tenantId:_TENANT_ID, name:'Proyecto Banca', client:'Cliente Banca (demo)', industry:'Banca · Red de agencias',
     countries:['GT','HN'], currency:{GT:'Q',HN:'L'}, accent:'#0e9c6e',
     sucursales:18, honorario:{GT:90,HN:240}, honRecibe:{GT:230,HN:600}, modelo:'directo', isr:5, regalias:0, boleto:{GT:0,HN:0}, combo:null, comboAmt:{GT:0,HN:0},
     scenarios:['Apertura de cuenta','Solicitud de préstamo','Atención telefónica'],
@@ -45,7 +46,7 @@ const PROJECTS = [
     conocimiento:'Banca. Se evalúa asesoría, tiempos de espera y cumplimiento de protocolo.',
   },
   {
-    id:'food', name:'Proyecto Restaurantes', client:'Cliente Restaurantes (demo)', industry:'Restaurantes · Multimarca',
+    id:'food', tenantId:_TENANT_ID, name:'Proyecto Restaurantes', client:'Cliente Restaurantes (demo)', industry:'Restaurantes · Multimarca',
     countries:['GT'], currency:{GT:'Q'}, accent:'#7c3aed',
     sucursales:30, honorario:{GT:75}, honRecibe:{GT:190}, modelo:'delegado', isr:0, regalias:0, boleto:{GT:0}, combo:'Combo + bebida', comboAmt:{GT:90},
     scenarios:['Almuerzo','Cena fin de semana','Drive-thru'],
@@ -135,6 +136,21 @@ function genPosts(visitas){
 const _visitasAll = PROJECTS.flatMap(genVisitas);
 const _postsAll   = genPosts(_visitasAll);
 
+/* P0-2 (20260710): reintegra proyectos/periodos creados en el prototipo (persistidos en localStorage)
+   para que sobrevivan un reload. Sus visitas se generan igual que cualquier proyecto (arrancan vacías
+   si nVisitas=0, que es el default de addProject). */
+(function _restoreCustomProjects(){
+  try{
+    const saved = JSON.parse(localStorage.getItem('cx_custom_projects')||'[]');
+    saved.forEach(p=>{
+      if(!PROJECTS.some(x=>x.id===p.id)){
+        PROJECTS.push(p);
+        if(p.nVisitas){ genVisitas(p).forEach(v=>_visitasAll.push(v)); }
+      }
+    });
+  }catch(e){}
+})();
+
 /* ---------- Exposición ---------- */
 CX.data = {
   projects:PROJECTS, shoppers:SHOPPERS, _visitas:_visitasAll, _posts:_postsAll,
@@ -143,25 +159,62 @@ CX.data = {
   project(){return this.projects.find(p=>p.id===this.currentProjectId);},
   setProject(id){this.currentProjectId=id;CX.bus&&CX.bus.emit('project');},
 
+  /* ---- P0-6 (V94 reauditoría): alias inequívocos periodo↔proyecto ----
+     `currentProjectId` sigue siendo, por compat, el ID del PERIODO activo (cada
+     entrada de this.projects es un periodo). Estos alias existen para que ningún
+     módulo nuevo vuelva a confundir "periodo" con "proyecto real" (=programa). */
+  get currentPeriodId(){ return this.currentProjectId; },
+  set currentPeriodId(id){ this.currentProjectId = id; },
+  period(){ return this.project(); },
+  setPeriod(id){ this.setProject(id); },
+  /* proyecto real = programa (agrupa periodos); alias de currentProgramKey()/proyectoActual() */
+  program(){ return this.proyectoActual(); },
+  projectGroup(){ return this.proyectoActual(); },
+
   /* alta de proyecto nuevo (persistente, aislado: id propio, sin tocar los demás) */
   addProject(cfg){
     const id = cfg.id || ('proj-'+Date.now().toString(36));
+    const tenantId = (window.CX && CX.BRAND && CX.BRAND.id) || 'tenant-demo';
     const proj = Object.assign({
-      id, accent:'#2196d3', quincenas:['Quincena 1','Quincena 2'], nVisitas:0,
-    }, cfg, {id});
+      id, tenantId, accent:'#2196d3', quincenas:['Quincena 1','Quincena 2'], nVisitas:0,
+    }, cfg, {id, tenantId: cfg.tenantId || tenantId});
     this.projects.push(proj);
+    this._saveCustomProjects();
     this.currentProjectId = id;
     CX.bus && CX.bus.emit('project');
     return proj;
   },
+  /* P0-2 (20260710): proyectos/periodos creados en el prototipo deben sobrevivir un reload —
+     se persisten aparte de los seeds (nunca se tocan/duplican los 3 proyectos de ejemplo). */
+  _CUSTOM_KEY:'cx_custom_projects',
+  _saveCustomProjects(){
+    try{
+      const seedIds=new Set(['retail','banca','food']);
+      const custom=this.projects.filter(p=>!seedIds.has(p.id));
+      localStorage.setItem(this._CUSTOM_KEY, JSON.stringify(custom));
+    }catch(e){}
+  },
+  _loadCustomProjects(){
+    try{ return JSON.parse(localStorage.getItem(this._CUSTOM_KEY)||'[]'); }catch(e){ return []; }
+  },
 
-  /* proyectos visibles por rol: el shopper solo ve los de su país */
+  /* proyectos visibles por rol: el shopper solo ve los de su país; coordinador/aliado con
+     scopePaises solo ven proyectos que tengan al menos un país dentro de su alcance;
+     con scopeProjectId (projectCoordinator/operationsCoordinator) solo ven ESE proyecto */
   projectsFor(role){
-    if(role!=='shopper') return this.projects;
+    const spid=(CX.session&&CX.session.user&&CX.session.user.scopeProjectId)||null;
+    if(role!=='shopper') {
+      if(spid) return this.projects.filter(p=>p.id===spid);
+      const sc=this.scopePaises();
+      if(sc) return this.projects.filter(p=>(p.countries||[]).some(c=>sc.includes(c)));
+      return this.projects;
+    }
     const u=CX.session&&CX.session.user; const sh=u&&this.shoppers.find(s=>s.id===u.shopperId);
     const pais=sh?sh.pais:null;
     return pais ? this.projects.filter(p=>p.countries.includes(pais)) : this.projects;
   },
+  /* atajo usado por selectores de proyecto en Proyectos/Dashboard/Visitas — respeta el alcance por país */
+  scopedProjects(){ return this.projectsFor(CX.session&&CX.session.role); },
 
   /* ---- Separación Proyecto(programa) vs Periodo (P0 V63/V64) ----
      Deriva el programa base quitando tokens de mes/quincena/país del nombre.
@@ -184,6 +237,35 @@ CX.data = {
   /* periodos (los "proyectos" internos) de un programa */
   periodsForProgram(key){ return this.projects.filter(p=>this.programKey(p)===key); },
   currentProgramKey(){ const p=this.project(); return p?this.programKey(p):(this.programs()[0]&&this.programs()[0].key); },
+  /* ============================================================
+     ARQUITECTURA REAL (genérica, no específica de un tenant):
+       Proyecto  = "programa" (this.programs()) → entidad configurable
+                   real: países, monedas, marca, roles, módulos, fuente.
+       Periodo   = cada entrada de this.projects es en realidad un PERIODO
+                   dentro de un proyecto (agrupado por programKey). Un
+                   periodo NUNCA debe tratarse ni crearse como si fuera un
+                   proyecto nuevo — solo hereda config de su proyecto padre.
+     Alias explícitos para dejar esto inequívoco en el resto del código
+     y en Academia (evita el anti-patrón "periodo tratado como proyecto"):
+     ============================================================ */
+  proyectos(){ return this.programs(); },
+  /* variante que respeta el alcance por país (coordinador/aliado/usuario invitado con scopePaises)
+     y por proyecto único (projectCoordinator/operationsCoordinator con scopeProjectId) */
+  scopedProyectos(){
+    const spid=(CX.session&&CX.session.user&&CX.session.user.scopeProjectId)||null;
+    if(spid){
+      const seen={}, out=[];
+      this.projects.filter(p=>p.id===spid).forEach(p=>{const k=this.programKey(p);if(!seen[k]){seen[k]={key:k,name:this.programBase(p),sample:p,periods:[]};out.push(seen[k]);}seen[k].periods.push(p);});
+      return out;
+    }
+    const sc=this.scopePaises();
+    if(!sc) return this.programs();
+    const seen={}, out=[];
+    this.projects.filter(p=>(p.countries||[]).some(c=>sc.includes(c))).forEach(p=>{const k=this.programKey(p);if(!seen[k]){seen[k]={key:k,name:this.programBase(p),sample:p,periods:[]};out.push(seen[k]);}seen[k].periods.push(p);});
+    return out;
+  },
+  periodosDe(proyectoKey){ return this.periodsForProgram(proyectoKey); },
+  proyectoActual(){ return this.programs().find(pg=>pg.key===this.currentProgramKey()); },
   /* ---- #230 Gestión de Periodos (estado por periodo, persistente) ---- */
   _periodMeta(){ try{ return JSON.parse(localStorage.getItem('cx_period_meta')||'{}'); }catch(e){ return {}; } },
   _savePeriodMeta(m){ try{ localStorage.setItem('cx_period_meta', JSON.stringify(m)); }catch(e){} CX.bus&&CX.bus.emit('project'); },
@@ -194,18 +276,30 @@ CX.data = {
   closePeriod(id){ this.setPeriodState(id,'cerrado'); },
   archivePeriod(id){ this.setPeriodState(id,'archivado'); },
   reopenPeriod(id){ this.setPeriodState(id,'activo'); },
-  duplicatePeriod(id, nombre){ const src=this.projects.find(p=>p.id===id); if(!src)return null;
+  duplicatePeriod(id, nombre){ /* crea un PERIODO NUEVO dentro del mismo proyecto (programKey) — nunca un proyecto nuevo */
+    const src=this.projects.find(p=>p.id===id); if(!src)return null;
     const nid='proj-'+Date.now().toString(36);
     const dup=Object.assign({}, src, {id:nid, name:nombre||(src.name+' (copia)'), periodo:nombre||'Nuevo periodo', program:this.programKey(src), nVisitas:0});
     this.projects.push(dup);
+    this._saveCustomProjects();
     /* clona la estructura (sucursales/escenarios) pero NO las visitas ejecutadas — periodo nuevo arranca limpio */
     CX.bus&&CX.bus.emit('project'); return dup; },
   /* al elegir un programa, activa su periodo más reciente (o el ya activo si pertenece) */
   setProgram(key){ const periods=this.periodsForProgram(key); if(!periods.length)return; if(periods.some(p=>p.id===this.currentProjectId))return; this.setProject(periods[periods.length-1].id); },
 
-  visitas(){return this._visitas.filter(v=>v.projectId===this.currentProjectId);},
-  posts(){return this._posts.filter(p=>p.projectId===this.currentProjectId);},
-  shoppersFor(){const cs=this.project().countries;return this.shoppers.filter(s=>cs.includes(s.pais));},
+  visitas(){const arr=this._visitas.filter(v=>v.projectId===this.currentProjectId);return this.scopePaises()?arr.filter(v=>this.inScope(v.pais)):arr;},
+  posts(){const arr=this._posts.filter(p=>p.projectId===this.currentProjectId);return this.scopePaises()?arr.filter(p=>this.inScope(p.pais)):arr;},
+  shoppersFor(){const cs=this.project().countries;const sc=this.scopePaises();return this.shoppers.filter(s=>cs.includes(s.pais)&&this.inScope(s.pais));},
+
+  /* ---- Fase 5: alcance por país (roles coordinador/aliado, scopeCountry:true) ----
+     Restringe SOLO cuando el usuario en sesión trae países asignados (u.scopePaises).
+     Sin asignación → sin restricción (super/admin ven todo, como hoy). */
+  scopePaises(){
+    const u=CX.session&&CX.session.user;
+    if(!u||!u.scopePaises||!u.scopePaises.length) return null;
+    return u.scopePaises;
+  },
+  inScope(pais){ const sc=this.scopePaises(); return !sc||!pais||sc.includes(pais); },
 
   /* cambio de estado de una visita (flujo del shopper) + sincronía */
   setVisitState(id, estado, dateField, dateVal){

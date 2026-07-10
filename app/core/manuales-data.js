@@ -26,7 +26,7 @@ CX.manualesData = {
 </ul>
 <h3>Jerarquía de datos</h3>
 <div class="acad-flow">
-  <div class="acad-step"><span>1</span><b>Tenant / Consultora</b><p>Ej. TyA. Tiene su marca, plan y usuarios.</p></div>
+  <div class="acad-step"><span>1</span><b>Tenant / Consultora</b><p>Ej. tu consultora. Tiene su marca, plan y usuarios.</p></div>
   <div class="acad-step"><span>2</span><b>Cuenta / Cliente final</b><p>Ej. una cadena. Vive en CRM y en Clientes.</p></div>
   <div class="acad-step"><span>3</span><b>Proyecto / Programa</b><p>Ej. programa mensual GT/HN. Tiene sus reglas.</p></div>
   <div class="acad-step"><span>4</span><b>Visitas / Sucursales</b><p>Las unidades operativas del periodo.</p></div>
@@ -44,7 +44,7 @@ CX.manualesData = {
         {t:'2 · Configuración inicial (white-label)', html:`
 <h2>Personalizar la plataforma sin tocar código</h2>
 <h3>Identidad de marca</h3>
-<p>Configuración → 🎨 Marca. Sube el logo (se aplica a login, topbar, propuestas y documentos). Elige la paleta (CXOrbia, Corporativa/TyA, Esmeralda, Violeta) o personaliza colores. El logo se usa también como favicon e ícono de la app instalada.</p>
+<p>Configuración → 🎨 Marca. Sube el logo (se aplica a login, topbar, propuestas y documentos). Elige la paleta (CXOrbia, Corporativo claro, Esmeralda, Violeta) o personaliza colores. El logo se usa también como favicon e ícono de la app instalada.</p>
 <h3>Plan y módulos</h3>
 <p>Configuración → 📦 Plan. Elige el plan contratado (activa módulos automáticamente) o personaliza qué módulos están activos. Los módulos de administración están siempre disponibles.</p>
 <h3>Países y monedas</h3>
@@ -132,52 +132,358 @@ CX.manualesData = {
       id:'m_admin', rol:'admin', ic:'🖥️', titulo:'Manual del Equipo Administrativo',
       desc:'Operación diaria, proyectos, finanzas, comercial y configuración para coordinadores y administradores.',
       secciones:[
-        {t:'1 · Tu rol y acceso', html:`<h2>Equipo administrativo</h2><p>Ves toda la operación, finanzas y comercial. No tienes acceso a la configuración técnica avanzada del Super Admin. Tu día se centra en gestionar proyectos, visitas, postulaciones y el seguimiento financiero.</p>`},
-        {t:'2 · Crear y configurar un proyecto', html:`<h2>Set-up de un programa</h2><ol><li>Admin del Proyecto → Proyectos → Crear.</li><li>Define países, monedas, honorarios por país, reembolsos, modelo (directo/delegado), periodicidad de rondas y periodo de cumplimiento.</li><li>Carga el instructivo → la IA propone escenarios y cuestionario.</li><li>Configura la certificación.</li><li>Carga la HR (importador) o conéctala en vivo (Google Sheets).</li></ol>`},
-        {t:'3 · Gestión operativa diaria', html:`<h2>Tu rutina</h2><ul><li><b>Mi Día</b>: revisa visitas y tareas del día.</li><li><b>Dashboard</b>: vigila avance vs meta, atrasos, ranking.</li><li><b>Postulaciones</b>: aprueba/rechaza, reasigna, reprograma. Todo queda con tu nombre como gestor.</li><li><b>Estado operativo de visitas</b>: gestiona masiva o individualmente; notifica por WhatsApp/correo.</li></ul>`},
-        {t:'4 · Finanzas para administradores', html:`<h2>Control financiero</h2><p>Registra movimientos, controla CxC/CxP, genera lotes de pago, concilia remesas. Crea el presupuesto mensual y vigila su avance con semáforos en el dashboard.</p>`},
-        {t:'5 · Comercial', html:`<h2>Gestión de clientes</h2><p>Usa el CRM para leads y cuentas, genera propuestas con la calculadora de costos, y da seguimiento con actividades y recordatorios.</p>`},
+        {t:'1 · Tu rol y acceso', html:`
+<h2>Equipo administrativo</h2>
+<p>Ves toda la operación, las finanzas y el comercial de tu tenant. No tienes acceso a la configuración técnica avanzada del Super Admin (backend, multi-tenant, IA transversal) — esa queda reservada al manual maestro.</p>
+<div class="acad-cards">
+  <div class="acad-card"><div>📋</div><b>Operación</b><p>Proyectos, visitas, postulaciones, reservas, shoppers.</p></div>
+  <div class="acad-card"><div>💰</div><b>Finanzas</b><p>Movimientos, liquidaciones, lotes de pago, presupuesto.</p></div>
+  <div class="acad-card"><div>📈</div><b>Comercial</b><p>CRM, costos y propuestas, marketing.</p></div>
+  <div class="acad-card"><div>🎓</div><b>Academia</b><p>Cursos, manuales y certificaciones — puedes crear y editar contenido.</p></div>
+</div>
+<blockquote>Tu día se centra en tres preguntas: ¿el programa avanza a tiempo?, ¿las cuentas cuadran?, ¿el cliente está contento? El Dashboard operativo, el Dashboard financiero y el Portal del Cliente te responden cada una.</blockquote>`},
+        {t:'2 · Crear y configurar un proyecto completo', html:`
+<h2>Set-up de un programa, paso a paso</h2>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Crear</b><p>Admin del Proyecto → Proyectos → Crear. Define nombre, cliente y modelo (directo/delegado).</p></div>
+  <div class="acad-step"><span>2</span><b>Países y dinero</b><p>Países, monedas, honorarios por país, reembolsos y periodicidad de rondas.</p></div>
+  <div class="acad-step"><span>3</span><b>Instructivo → IA</b><p>Carga el instructivo del cliente; la IA propone escenarios y cuestionario ponderado.</p></div>
+  <div class="acad-step"><span>4</span><b>Certificación</b><p>Genera el banco de preguntas de certificación desde el mismo instructivo.</p></div>
+  <div class="acad-step"><span>5</span><b>Cargar HR</b><p>Importador inteligente o conexión en vivo a Google Sheets.</p></div>
+  <div class="acad-step"><span>6</span><b>Publicar</b><p>Las visitas nacen "disponibles" y el ciclo operativo arranca.</p></div>
+</div>
+<h3>Qué revisar antes de publicar</h3>
+<ul>
+<li>El cuestionario ponderado suma 100% entre secciones y cada pregunta tiene su peso correcto.</li>
+<li>Los honorarios y reembolsos están cargados por país (nunca se mezclan monedas).</li>
+<li>El periodo de cumplimiento (quincena/mes) coincide con lo pactado con el cliente.</li>
+<li>La certificación está lista si el proyecto la requiere antes de la primera visita.</li>
+</ul>
+<blockquote>Un proyecto mal configurado se nota semanas después, en liquidaciones que no cuadran o en shoppers que no pueden postularse. Revisa esta lista antes de publicar, no después.</blockquote>`},
+        {t:'3 · Gestión operativa diaria', html:`
+<h2>Tu rutina</h2>
+<div class="acad-cards">
+  <div class="acad-card"><div>☀️</div><b>Mi Día</b><p>Cronograma de hoy: visitas propias y tareas pendientes de gestión.</p></div>
+  <div class="acad-card"><div>📊</div><b>Dashboard operativo</b><p>Avance real vs. ideal por país, ranking de shoppers, atrasos, comparativo trimestral.</p></div>
+  <div class="acad-card"><div>📝</div><b>Postulaciones</b><p>Aprobar, rechazar, poner en espera, reasignar, reprogramar o cancelar — todo con trazabilidad de quién lo gestionó.</p></div>
+  <div class="acad-card"><div>📅</div><b>Reservas & asignación</b><p>Para programas mensuales: cruce entre lo reservado y lo postulado.</p></div>
+</div>
+<h3>Cuándo intervenir</h3>
+<ul>
+<li>Un proyecto por debajo del avance ideal en el Dashboard — revisa si faltan shoppers certificados o visitas sin publicar.</li>
+<li>Postulaciones acumuladas sin gestionar más de 24-48h — el shopper está esperando una respuesta.</li>
+<li>Visitas "realizada" sin cuestionario después de varios días — pueden quedar fuera del periodo de liquidación.</li>
+</ul>`},
+        {t:'4 · Finanzas para administradores', html:`
+<h2>Control financiero completo</h2>
+<div class="acad-cards">
+  <div class="acad-card"><div>📊</div><b>Dashboard financiero</b><p>Márgenes por país, CxC/CxP, financiamientos, análisis crítico con IA, comparativo intermensual/interanual.</p></div>
+  <div class="acad-card"><div>💵</div><b>Movimientos & Tesorería</b><p>Ingresos (comisiones, honorarios, anticipos, facturación, remesas), egresos, CxC/CxP clickeables y editables.</p></div>
+  <div class="acad-card"><div>🧾</div><b>Liquidaciones</b><p>Se generan automáticamente de las visitas elegibles; eliges cuáles van al lote de pago.</p></div>
+  <div class="acad-card"><div>📦</div><b>Lotes de pago</b><p>Al pagar un lote, se reflejan como egresos por shopper de forma automática.</p></div>
+</div>
+<h3>El ciclo de una liquidación</h3>
+<p>Una visita no se convierte en pago de un solo paso. Sigue etapas separadas y honestas: <b>realizada</b> → <b>cuestionario submitido</b> → <b>elegible</b> (cumple reglas del proyecto) → <b>liquidada</b> (candidata a pago) → <b>en lote</b> → <b>pagada</b>. Si una visita no tiene cuestionario submitido, no es elegible aunque se haya realizado.</p>
+<blockquote><b>Regla de oro:</b> nunca se suman monedas entre países. GT (Q) y HN (L) se ven siempre separados, en KPIs y en reportes.</blockquote>
+<h3>Las no pagadas no desaparecen</h3>
+<p>Las liquidaciones que no entraron a un lote de pago este mes pasan automáticamente a Cuentas por Pagar (CxP) del mes siguiente — nada se pierde ni se oculta.</p>`},
+        {t:'5 · Comercial (CRM, costos, marketing)', html:`
+<h2>La cara comercial</h2>
+<div class="acad-cards">
+  <div class="acad-card"><div>🧭</div><b>CRM</b><p>Dashboard/Insights, Pipeline (kanban), Leads, Cuentas, Contactos, Actividades con recordatorios.</p></div>
+  <div class="acad-card"><div>👤</div><b>Ficha 360</b><p>Timeline del cliente + trazabilidad de correos + proyectos vinculados, todo en un solo lugar.</p></div>
+  <div class="acad-card"><div>🧮</div><b>Costos & Propuestas</b><p>Calculadora de estructura de costos; genera propuestas desde plantilla + investigación del cliente, con su logo.</p></div>
+  <div class="acad-card"><div>📣</div><b>Marketing</b><p>Calendario de contenidos, generación de piezas con IA, métricas de alcance.</p></div>
+</div>
+<h3>Del lead al proyecto activo</h3>
+<ol>
+<li>El lead entra al CRM (manual, portal o solicitud de add-on de un cliente existente).</li>
+<li>Se cotiza con la calculadora de costos y se genera la propuesta.</li>
+<li>Al cerrarse, se crea la cuenta (o se vincula a una existente) y nace el proyecto.</li>
+<li>El proyecto queda enlazado a la Ficha 360 del cliente para todo seguimiento futuro.</li>
+</ol>`},
+        {t:'6 · Reportes y decisiones basadas en datos', html:`
+<h2>De KPI a decisión</h2>
+<p>Cada tarjeta de KPI en Dashboard operativo, Dashboard financiero y Reportes es <b>clickeable</b>: te lleva al detalle (visitas, movimientos, shoppers) que explica el número, no solo lo muestra.</p>
+<ul>
+<li><b>Ranking de shoppers</b>: ayuda a decidir a quién asignar primero, pero la asignación final siempre la confirma una persona.</li>
+<li><b>Hallazgos frecuentes</b>: los criterios del cuestionario que más bajan el score — úsalos para priorizar capacitación con el cliente.</li>
+<li><b>Comparativo trimestral/interanual</b>: te dice si el programa mejora o se estanca, país por país.</li>
+</ul>
+<blockquote>El reporte que el cliente ve en su portal se genera de la misma data que tú ves aquí — no hay un PDF aparte que se pueda desalinear.</blockquote>`},
+        {t:'7 · Buenas prácticas y errores comunes', html:`
+<h2>Checklist del administrador</h2>
+<ul class="acad-check">
+<li>Revisé que cada proyecto activo tenga honorarios y reembolsos cargados por país.</li>
+<li>No dejé postulaciones sin gestionar más de 48 horas.</li>
+<li>Verifiqué que las visitas "realizadas" tengan su cuestionario submitido antes del cierre del periodo.</li>
+<li>Concilié los lotes de pago contra el estado de CxP antes de cerrar el mes.</li>
+<li>Actualicé la Ficha 360 de cuentas con actividad reciente antes de la siguiente reunión comercial.</li>
+</ul>
+<h3>Errores comunes</h3>
+<ul>
+<li>Mezclar honorarios de dos países en un mismo reporte — siempre se ven separados por moneda.</li>
+<li>Asignar shoppers sin certificación vigente al proyecto — bloquea la elegibilidad de la visita.</li>
+<li>Publicar un proyecto sin revisar que el cuestionario ponderado sume 100%.</li>
+</ul>`},
       ]
     },
     {
       id:'m_ops', rol:'ops', ic:'📋', titulo:'Manual del Equipo Operativo',
       desc:'Operación de visitas, postulaciones y seguimiento — sin acceso a finanzas.',
       secciones:[
-        {t:'1 · Tu rol', html:`<h2>Equipo operativo</h2><p>Te enfocas en la operación: visitas, postulaciones, certificación y capacitación. No ves finanzas.</p>`},
-        {t:'2 · Gestionar visitas y postulaciones', html:`<h2>El día a día operativo</h2><ul><li>Publica visitas o carga la HR.</li><li>Aprueba postulaciones y asigna shoppers (manual o por postulación).</li><li>Da seguimiento al estado de cada visita hasta el cuestionario enviado.</li><li>Notifica a los shoppers atrasados.</li></ul>`},
-        {t:'3 · Sin duplicar', html:`<h2>Cuidado con la HR en vivo</h2><p>Si gestionas desde la plataforma y desde la HR, el sistema no duplica. Siempre verifica que la visita aparezca con el gestor correcto.</p>`},
+        {t:'1 · Tu rol y alcance', html:`
+<h2>Equipo operativo</h2>
+<p>Te enfocas en la operación: visitas, postulaciones, certificación y capacitación. No ves finanzas ni comercial — eso es de administración.</p>
+<div class="acad-cards">
+  <div class="acad-card"><div>📋</div><b>Visitas</b><p>Publicar, dar seguimiento y cerrar el ciclo de cada visita.</p></div>
+  <div class="acad-card"><div>📝</div><b>Postulaciones</b><p>Aprobar, reasignar, reprogramar y cancelar con trazabilidad.</p></div>
+  <div class="acad-card"><div>🎓</div><b>Certificación</b><p>Verificar que los shoppers estén certificados antes de asignarles visitas.</p></div>
+</div>`},
+        {t:'2 · El ciclo operativo completo', html:`
+<h2>De publicar a liquidar</h2>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Publicar</b><p>Carga la HR o publica visitas sueltas. Nacen "disponible".</p></div>
+  <div class="acad-step"><span>2</span><b>Reservar/Postular</b><p>El shopper reserva un cupo o se postula a una sucursal.</p></div>
+  <div class="acad-step"><span>3</span><b>Asignar</b><p>Apruebas la postulación o asignas manualmente → notificación al shopper.</p></div>
+  <div class="acad-step"><span>4</span><b>Agendar</b><p>El shopper elige fecha y franja horaria.</p></div>
+  <div class="acad-step"><span>5</span><b>Realizar</b><p>Se marca realizada → se habilita el cuestionario.</p></div>
+  <div class="acad-step"><span>6</span><b>Cuestionario</b><p>El shopper lo llena, adjunta evidencias y lo envía.</p></div>
+</div>
+<p>Tu trabajo termina cuando el cuestionario queda submitido — de ahí en adelante, finanzas toma el relevo con la liquidación.</p>`},
+        {t:'3 · Gestionar postulaciones a fondo', html:`
+<h2>Las seis acciones sobre una postulación</h2>
+<div class="acad-cards">
+  <div class="acad-card"><div>✅</div><b>Aprobar</b><p>El shopper queda asignado y notificado.</p></div>
+  <div class="acad-card"><div>❌</div><b>Rechazar</b><p>Libera el cupo para otro shopper.</p></div>
+  <div class="acad-card"><div>⏸️</div><b>Standby</b><p>La dejas en espera sin decidir todavía (cupo limitado, evaluando candidatos).</p></div>
+  <div class="acad-card"><div>🔄</div><b>Reasignar</b><p>Cambias el shopper asignado a esa visita.</p></div>
+  <div class="acad-card"><div>📅</div><b>Reprogramar</b><p>Cambias fecha/franja manteniendo al mismo shopper.</p></div>
+  <div class="acad-card"><div>🚫</div><b>Cancelar</b><p>La visita deja de estar disponible.</p></div>
+</div>
+<blockquote>Toda acción queda registrada con tu nombre como gestor — es la trazabilidad que te protege a ti y le da seguimiento claro al cliente si pregunta qué pasó con una sucursal.</blockquote>`},
+        {t:'4 · Evitar duplicados con HR en vivo', html:`
+<h2>Cuidado con la HR conectada a Sheets</h2>
+<p>Cuando la HR es un Google Sheet en vivo, el sistema lee y escribe de vuelta usando una <b>llave natural inmutable</b> (no un número de fila, que puede cambiar). Por eso nunca duplica una visita, sin importar si la gestionas desde la plataforma o directamente en la hoja.</p>
+<ul>
+<li>Si editas una fila en la Sheet, el cambio se refleja en la plataforma sin crear un registro nuevo.</li>
+<li>Si asignas desde la plataforma, el sistema escribe de vuelta a la fila correspondiente, no agrega una fila nueva.</li>
+<li>Siempre verifica que la visita muestre el gestor correcto después de una edición cruzada (plataforma y Sheet el mismo día).</li>
+</ul>`},
+        {t:'5 · Seguimiento y atrasos', html:`
+<h2>Detectar y actuar sobre atrasos</h2>
+<p>El Dashboard operativo resalta visitas con agenda vencida sin marcar "realizada", y cuestionarios sin submitir pasado cierto número de días.</p>
+<ol>
+<li>Revisa el semáforo de atrasos en Mi Día o el Dashboard al iniciar tu turno.</li>
+<li>Contacta al shopper (la notificación automática ya salió; un mensaje directo ayuda si el atraso persiste).</li>
+<li>Si el shopper no responde, evalúa reasignar la visita a tiempo para no perder el periodo de cumplimiento.</li>
+</ol>`},
+        {t:'6 · Checklist diario', html:`
+<h2>Antes de cerrar tu turno</h2>
+<ul class="acad-check">
+<li>No quedan postulaciones sin gestionar de más de 24 horas.</li>
+<li>Revisé las visitas con agenda vencida y contacté a los shoppers atrasados.</li>
+<li>Verifiqué que las visitas realizadas hoy tengan su cuestionario en curso o submitido.</li>
+<li>Confirmé que no haya conflictos de duplicado entre la HR y la plataforma.</li>
+</ul>`},
       ]
     },
     {
       id:'m_coord', rol:'coordinador', ic:'🌎', titulo:'Manual del Coordinador / Representante',
       desc:'Administración de proyectos y HR de tu(s) país(es) asignado(s).',
       secciones:[
-        {t:'1 · Tu rol de coordinador', html:`<h2>Coordinador regional</h2><p>Administras los proyectos y la hoja de ruta de tu país. Es la herramienta que la consultora te da para gestionar tu operación local — algo que antes no tenías.</p>`},
-        {t:'2 · Tu alcance', html:`<h2>Qué puedes ver y hacer</h2><ul><li>Ver y gestionar solo las visitas/HR de tu país asignado.</li><li>Asignar shoppers de tu país.</li><li>Dar seguimiento operativo local.</li><li>Toda tu gestión queda auditada con tu nombre.</li></ul>`},
-        {t:'3 · Liquidaciones y honorarios', html:`<h2>Control local</h2><p>Según el modelo, puedes ver la liquidación de honorarios de tus shoppers y el cruce de cuentas cuando facturas localmente.</p>`},
+        {t:'1 · Tu rol de coordinador', html:`
+<h2>Coordinador o Representante regional</h2>
+<p>Administras los proyectos y la hoja de ruta (HR) de tu país. Es la herramienta que la consultora te da para gestionar tu operación local — algo que antes probablemente hacías en hojas de cálculo sueltas y correos.</p>
+<blockquote>Como Aliado/Franquiciado, tu alcance es similar pero operas proyectos regionales delegados por la consultora, bajo su marca y sus reglas.</blockquote>`},
+        {t:'2 · Tu alcance exacto', html:`
+<h2>Qué puedes ver y hacer</h2>
+<div class="acad-cards">
+  <div class="acad-card"><div>🌎</div><b>Solo tu país</b><p>Ves y gestionas únicamente las visitas/HR del país que tienes asignado.</p></div>
+  <div class="acad-card"><div>👥</div><b>Tus shoppers</b><p>Asignas y das seguimiento a los evaluadores de tu país.</p></div>
+  <div class="acad-card"><div>📝</div><b>Trazabilidad</b><p>Toda tu gestión queda auditada con tu nombre, igual que el equipo operativo central.</p></div>
+</div>
+<p>No ves la operación de otros países ni la configuración global del tenant — esas quedan en el equipo administrativo central y el Super Admin.</p>`},
+        {t:'3 · Gestionar tu HR y tus shoppers', html:`
+<h2>El día a día regional</h2>
+<ol>
+<li>Recibes o cargas la HR de tu país para el periodo.</li>
+<li>Publicas las visitas disponibles para tus shoppers certificados.</li>
+<li>Apruebas postulaciones y resuelves conflictos de agenda localmente.</li>
+<li>Escalas al equipo administrativo central cualquier tema que exceda tu alcance (nuevo proyecto, cambio de honorarios, disputa con el cliente).</li>
+</ol>`},
+        {t:'4 · Liquidaciones y honorarios locales', html:`
+<h2>Control local del dinero de tus shoppers</h2>
+<p>Según el modelo del proyecto (directo o delegado), puedes ver la liquidación de honorarios de tus shoppers y el cruce de cuentas cuando facturas localmente a la consultora.</p>
+<blockquote>Aunque veas montos, las reglas de elegibilidad (visita realizada + cuestionario submitido + dentro de periodo) son las mismas para todo el tenant — no las defines tú a nivel local.</blockquote>`},
+        {t:'5 · Buenas prácticas de coordinación regional', html:`
+<h2>Checklist del coordinador</h2>
+<ul class="acad-check">
+<li>Confirmé que la HR de mi país esté cargada antes de iniciar el periodo.</li>
+<li>Verifiqué que mis shoppers activos tengan certificación vigente para el proyecto.</li>
+<li>Escalé a tiempo cualquier tema fuera de mi alcance (nuevo cliente, cambio de tarifa).</li>
+<li>Revisé la liquidación local antes de reportarla al equipo central.</li>
+</ul>`},
       ]
     },
+    {
+      id:'m_aliado', rol:'aliado', ic:'🏢', titulo:'Manual del Aliado / Franquiciado',
+      desc:'Operas proyectos regionales delegados de forma semi-autónoma: tu HR, tus shoppers, tu facturación local.',
+      secciones:[
+        {t:'1 · Tu rol: distinto de un coordinador', html:`
+<h2>Aliado / Franquiciado</h2>
+<p>A diferencia de un Coordinador (que es parte del equipo directo de la consultora), tú operas de forma <b>semi-autónoma</b>: gestionas proyectos delegados en tu territorio bajo la marca y metodología de la consultora, pero facturas localmente y liquidas a tus propios shoppers.</p>
+<div class="acad-cards">
+  <div class="acad-card"><div>🧭</div><b>Coordinador</b><p>Parte del equipo de la consultora; administra HR y asignaciones de su país.</p></div>
+  <div class="acad-card"><div>🏢</div><b>Aliado / Franquiciado (tú)</b><p>Opera de forma semi-independiente: su propia facturación local y su propia red de shoppers.</p></div>
+</div>
+<blockquote>Usas la misma plataforma y las mismas reglas de calidad que toda la red de la consultora — lo que cambia es el modelo comercial y financiero de tu territorio, no el estándar del servicio.</blockquote>`},
+        {t:'2 · Tu alcance', html:`
+<h2>Qué ves y qué gestionas</h2>
+<ul>
+<li>Los proyectos delegados a tu territorio — no ves la operación de otros países o franquicias.</li>
+<li>Tu propia red de shoppers: reclutamiento, certificación y asignación.</li>
+<li>Tu HR local, con las mismas reglas anti-duplicado que el resto de la plataforma.</li>
+<li>Tu facturación y liquidación local hacia tus shoppers.</li>
+</ul>
+<p>La casa matriz (la consultora) define el instructivo, el cuestionario y el estándar de calidad del programa; tú operas la ejecución en tu territorio.</p>`},
+        {t:'3 · Operar tu territorio', html:`
+<h2>El ciclo, con tu propia red</h2>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Reclutar</b><p>Certificas a tus propios shoppers en el proyecto de la casa matriz.</p></div>
+  <div class="acad-step"><span>2</span><b>Publicar</b><p>Publicas las visitas de tu territorio para tu red.</p></div>
+  <div class="acad-step"><span>3</span><b>Operar</b><p>Apruebas postulaciones, das seguimiento y resuelves conflictos localmente.</p></div>
+  <div class="acad-step"><span>4</span><b>Liquidar</b><p>Facturas a la casa matriz y liquidas a tus shoppers con tus propias condiciones.</p></div>
+</div>`},
+        {t:'4 · Facturación y cruce de cuentas', html:`
+<h2>El dinero de tu territorio</h2>
+<p>Ves la liquidación de honorarios de tus shoppers según tus propias reglas locales, y el cruce de cuentas con la casa matriz cuando facturas tu operación del periodo.</p>
+<blockquote>Las reglas de <b>elegibilidad</b> de una visita (realizada + cuestionario submitido + dentro del periodo) las define la casa matriz para todo el programa — no las cambias tú a nivel local, aunque sí gestiones el pago final a tus shoppers.</blockquote>`},
+        {t:'5 · Buenas prácticas', html:`
+<h2>Checklist del aliado</h2>
+<ul class="acad-check">
+<li>Verifiqué que mi red de shoppers esté certificada antes de asignarles visitas.</li>
+<li>Mantuve mi facturación local al día con el periodo de cumplimiento de la casa matriz.</li>
+<li>Reporté a tiempo cualquier incidente de calidad detectado en mi territorio.</li>
+<li>Escalé a la casa matriz cualquier cambio de instructivo o cuestionario que necesite mi programa.</li>
+</ul>`},
+      ]
+    },
+
     {
       id:'m_shopper', rol:'shopper', ic:'📱', titulo:'Manual del Shopper / Evaluador',
       desc:'Todo lo que el evaluador necesita: certificarse, postularse, ejecutar visitas, cobrar.',
       secciones:[
-        {t:'1 · Tu portal', html:`<h2>Bienvenido, evaluador</h2><p>Tu portal móvil tiene todo lo que necesitas: visitas disponibles, mis visitas, certificación, beneficios y soporte.</p>`},
-        {t:'2 · Certificarte', html:`<h2>Antes de tu primera visita</h2><p>Debes aprobar la certificación del proyecto. Estudia el instructivo y los recursos en Capacitación, luego presenta el examen. Recibirás feedback detallado de cada respuesta.</p>`},
-        {t:'3 · Postularte y agendar', html:`<h2>Conseguir visitas</h2><ol><li>En Visitas Disponibles ves la oferta de todos los proyectos (filtra por país/proyecto).</li><li>Reserva o postúlate a las sucursales que quieras.</li><li>Cuando te aprueban, agenda fecha y franja.</li></ol>`},
-        {t:'4 · Ejecutar la visita', html:`<h2>El día de la visita</h2><ol><li>Marca la visita como realizada.</li><li>Se habilita el cuestionario: llénalo y adjunta las evidencias requeridas (foto, foto geolocalizada, audio o video según el escenario).</li><li>Envía el cuestionario.</li></ol>`},
-        {t:'5 · Tus beneficios', html:`<h2>Cobrar</h2><p>En Mis Beneficios ves tus honorarios, reembolsos y el estado de cada pago con fecha estimada. Registra tus datos bancarios en tu perfil para agilizar los pagos.</p>`},
+        {t:'1 · Tu portal', html:`
+<h2>Bienvenido, evaluador</h2>
+<p>Tu portal móvil tiene todo lo que necesitas para trabajar como mystery shopper de forma profesional.</p>
+<div class="acad-cards">
+  <div class="acad-card"><div>🛍️</div><b>Visitas disponibles</b><p>El marketplace de visitas de todos los proyectos donde estás habilitado.</p></div>
+  <div class="acad-card"><div>📅</div><b>Mis visitas</b><p>Tu agenda: reservadas, agendadas, realizadas y su estado de cuestionario.</p></div>
+  <div class="acad-card"><div>🎓</div><b>Certificación</b><p>El examen que te habilita para postularte a un proyecto.</p></div>
+  <div class="acad-card"><div>💰</div><b>Mis beneficios</b><p>Honorarios, reembolsos y el estado de cada pago.</p></div>
+  <div class="acad-card"><div>💬</div><b>Soporte</b><p>Pide ayuda o reporta un problema directamente desde la app.</p></div>
+</div>`},
+        {t:'2 · Certificarte antes de tu primera visita', html:`
+<h2>El examen de certificación</h2>
+<p>Debes aprobar la certificación del proyecto antes de poder postularte a sus visitas. El banco de preguntas sale directamente del instructivo del cliente, así que estudiarlo bien es la mejor preparación.</p>
+<ol>
+<li>Estudia el instructivo y los recursos de Capacitación asignados al proyecto.</li>
+<li>Presenta el examen — verás cuántas preguntas y el puntaje mínimo para aprobar.</li>
+<li>Recibes feedback detallado de cada respuesta, correcta o incorrecta.</li>
+<li>Si no apruebas, puedes volver a estudiar y recertificarte; recibirás una notificación cuando puedas reintentar.</li>
+</ol>
+<blockquote>La certificación protege tu reputación como evaluador: un shopper certificado es un shopper que la consultora y el cliente pueden confiar en asignar sin supervisión directa.</blockquote>`},
+        {t:'3 · Postularte y agendar', html:`
+<h2>Conseguir visitas</h2>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Explora</b><p>En Visitas Disponibles filtra por país/proyecto y revisa honorario y fecha límite.</p></div>
+  <div class="acad-step"><span>2</span><b>Reserva o postúlate</b><p>Algunas visitas se reservan directo; otras requieren postulación y aprobación.</p></div>
+  <div class="acad-step"><span>3</span><b>Espera aprobación</b><p>Si postulaste, te notifican cuando te aprueban (o rechazan/reasignan).</p></div>
+  <div class="acad-step"><span>4</span><b>Agenda</b><p>Elige la fecha y franja horaria que te convenga dentro de la ventana disponible.</p></div>
+</div>`},
+        {t:'4 · Ejecutar la visita', html:`
+<h2>El día de la visita</h2>
+<ol>
+<li>Llega en la franja acordada y marca la visita como <b>realizada</b> — esto habilita el cuestionario.</li>
+<li>Llena el cuestionario con atención: cada sección tiene un peso en tu score final.</li>
+<li>Adjunta las evidencias exactamente como pide el escenario (foto simple, foto geolocalizada, audio o video, según el proyecto).</li>
+<li>Revisa tus respuestas y <b>envía</b> el cuestionario — este es el paso que lo hace "submitido" y elegible para pago.</li>
+</ol>
+<blockquote>Una visita "realizada" sin cuestionario submitido NO es una visita pagable. Envía siempre el cuestionario el mismo día si es posible.</blockquote>`},
+        {t:'5 · Reglas de oro del evaluador', html:`
+<h2>Lo que nunca debes hacer</h2>
+<ul class="acad-check">
+<li>Nunca reveles tu identidad como evaluador durante la visita.</li>
+<li>Nunca inventes o alteres una respuesta — la honestidad es la base de tu reputación y de tu recertificación.</li>
+<li>Nunca compartas el instructivo o el cuestionario con el personal evaluado.</li>
+<li>Nunca dejes pasar la fecha límite de envío del cuestionario sin avisar a soporte.</li>
+</ul>`},
+        {t:'6 · Tus beneficios y el ciclo de pago', html:`
+<h2>Cómo y cuándo cobras</h2>
+<p>En Mis Beneficios ves el detalle de cada visita: honorario, reembolso (si aplica) y el estado actual.</p>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Realizada</b><p>Marcaste la visita en sitio.</p></div>
+  <div class="acad-step"><span>2</span><b>Submitido</b><p>Enviaste el cuestionario completo.</p></div>
+  <div class="acad-step"><span>3</span><b>Elegible</b><p>Cumple las reglas del proyecto para pasar a liquidación.</p></div>
+  <div class="acad-step"><span>4</span><b>Liquidada</b><p>Candidata a pago, a la espera de entrar a un lote.</p></div>
+  <div class="acad-step"><span>5</span><b>Pagada</b><p>El lote se procesó y el pago está confirmado.</p></div>
+</div>
+<p>Registra tus datos bancarios en tu perfil para agilizar los pagos cuando el lote se procese.</p>`},
+        {t:'7 · Soporte', html:`
+<h2>Cuándo y cómo pedir ayuda</h2>
+<p>Usa el botón de Soporte para reportar problemas de acceso, dudas sobre una visita específica, o inconsistencias en tus beneficios. Indica el proyecto y la visita afectada para una respuesta más rápida.</p>`},
       ]
     },
     {
       id:'m_cliente', rol:'cliente', ic:'📈', titulo:'Manual del Cliente (Portal)',
       desc:'Cómo el cliente de la consultora usa el portal: resultados, score, acciones, reportes.',
       secciones:[
-        {t:'1 · Tu portal de resultados', html:`<h2>Bienvenido</h2><p>Aquí ves los resultados de tu programa de evaluación en tiempo real, sin esperar PDFs.</p>`},
-        {t:'2 · Leer el dashboard', html:`<h2>Panorama</h2><p>Score ponderado por sucursal, ranking, áreas más débiles, evolución. Todas las tarjetas son clickeables para ver el detalle por sucursal, responsable o visita.</p>`},
-        {t:'3 · Sucursales y acciones', html:`<h2>De resultado a acción</h2><p>Por cada sucursal puedes ver su score y crear planes de acción: incentivos, planes de mejora, sanciones. La IA sugiere acciones según los hallazgos.</p>`},
-        {t:'4 · Capacitación y reportes', html:`<h2>Mejorar continuamente</h2><p>Solicita capacitación dirigida a tus áreas débiles. Genera y exporta reportes. Pide soporte directamente desde el portal.</p>`},
+        {t:'1 · Tu portal de resultados', html:`
+<h2>Bienvenido</h2>
+<p>Aquí ves los resultados de tu programa de evaluación en tiempo real, sin esperar a que alguien te envíe un PDF por correo.</p>
+<div class="acad-cards">
+  <div class="acad-card"><div>📊</div><b>Dashboard</b><p>Score general, ranking de sucursales y tendencia del periodo.</p></div>
+  <div class="acad-card"><div>🏬</div><b>Sucursales</b><p>Detalle por sucursal con historial y planes de acción.</p></div>
+  <div class="acad-card"><div>🔍</div><b>Hallazgos</b><p>Los criterios que más impactan tu score, para priorizar mejoras.</p></div>
+  <div class="acad-card"><div>🎓</div><b>Capacitación</b><p>Solicita entrenamiento dirigido a tus áreas más débiles.</p></div>
+</div>`},
+        {t:'2 · Leer el dashboard a fondo', html:`
+<h2>Del número al panorama</h2>
+<ul>
+<li><b>Score ponderado</b>: el promedio de tu programa según el peso de cada sección del cuestionario — no todas las preguntas valen lo mismo.</li>
+<li><b>Ranking de sucursales</b>: te muestra quién lidera y quién necesita atención, comparando peras con peras (mismo cuestionario, mismo periodo).</li>
+<li><b>Evolución</b>: la tendencia periodo a periodo te dice si las acciones que tomaste están funcionando.</li>
+</ul>
+<blockquote>Todas las tarjetas son clickeables: puedes bajar del score general hasta la visita individual y su evidencia.</blockquote>`},
+        {t:'3 · Sucursales y planes de acción', html:`
+<h2>De resultado a acción</h2>
+<p>Por cada sucursal puedes ver su score histórico y crear un plan de acción concreto.</p>
+<div class="acad-cards">
+  <div class="acad-card"><div>🏆</div><b>Incentivos</b><p>Reconoce a las sucursales que lideran el ranking.</p></div>
+  <div class="acad-card"><div>📈</div><b>Plan de mejora</b><p>Para sucursales por debajo de la meta, con seguimiento en el siguiente periodo.</p></div>
+  <div class="acad-card"><div>⚠️</div><b>Sanciones</b><p>Para incumplimientos reiterados, según tu política interna.</p></div>
+</div>
+<p>La IA puede sugerir qué tipo de acción tiene sentido según los hallazgos, pero la decisión final siempre es tuya.</p>`},
+        {t:'4 · Hallazgos: del dato a la decisión', html:`
+<h2>Priorizar lo que más importa</h2>
+<p>Los "hallazgos frecuentes" son los criterios del cuestionario que más seguido bajan el score en tu programa — no son errores técnicos, son patrones reales de tu operación.</p>
+<ol>
+<li>Identifica el hallazgo con mayor frecuencia e impacto en el score.</li>
+<li>Revisa si es un tema de un punto específico o transversal a toda la red.</li>
+<li>Solicita capacitación dirigida (sección siguiente) o ajusta tu propio proceso interno.</li>
+<li>Da seguimiento al próximo periodo para confirmar si el hallazgo bajó de frecuencia.</li>
+</ol>`},
+        {t:'5 · Capacitación y reportes', html:`
+<h2>Mejorar continuamente</h2>
+<p>Desde el portal puedes solicitar capacitación dirigida a tus áreas débiles — la consultora la diseña con base en tus hallazgos reales, no un temario genérico.</p>
+<p>También puedes generar y exportar reportes de tu programa cuando los necesites para tu propia gerencia o directorio.</p>`},
+        {t:'6 · Soporte y solicitar servicios adicionales', html:`
+<h2>Pide ayuda o crece tu programa</h2>
+<p>Usa el botón de soporte para dudas o problemas de acceso. También puedes solicitar servicios adicionales (más visitas, nuevos add-ons como evidencia geolocalizada o NPS) directamente desde el portal — la solicitud llega como oportunidad al equipo comercial de la consultora.</p>`},
       ]
     },
+
     {
       id:'m_automatizaciones', rol:'admin', ic:'⚡', titulo:'Manual de Automatizaciones',
       desc:'Motor de eventos, catálogo completo, configuración con Make, plantillas y variables, canales y escenarios recomendados.',

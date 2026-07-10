@@ -55,7 +55,7 @@ CX.module('visitas', ({data,role,ui})=>{
 
   /* ---------------- ADMIN: tabla operativa completa ---------------- */
   const ALL=!!CX.session._visAll;
-  const all=ALL?data._visitas.slice():data.visitas();
+  const all=ALL?data._visitas.filter(v=>data.inScope(v.pais)):data.visitas();
   const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
   const k=data.kpis();
   const row=(v)=>`<tr data-vid="${v.id}">
@@ -70,14 +70,14 @@ CX.module('visitas', ({data,role,ui})=>{
   </tr>`;
   const html=`
     <div class="between" style="margin-bottom:6px"><div>${ui.ph('Visitas', (ALL?('Todos los proyectos · '+all.length+' visitas'):(p.name+' · base operativa'))+' · publica, asigna y edita cada visita')}</div>
-      <div class="flex"><span class="bdg bdg-g">● En vivo</span><span class="bdg bdg-b">${all.length} visitas</span></div></div>
+      <div class="flex"><span class="bdg bdg-b">● Preview operativo</span><span class="bdg bdg-b">${all.length} visitas</span></div></div>
     <div class="flex wrap" style="gap:8px;margin-bottom:12px">
       <button class="btn btn-green btn-sm" id="addV">＋ Publicar visita</button>
       <button class="btn btn-soft btn-sm">⤒ Importar HR</button>
       <button class="btn btn-ghost btn-sm">⤓ Exportar</button>
       <div class="spacer"></div>
       <input class="inp" id="vSearch" placeholder="🔎 Sucursal, shopper, ciudad…" style="max-width:240px">
-      <select class="sel" id="vProj" style="width:auto"><option value="all" ${ALL?'selected':''}>🌐 Todos los proyectos</option>${data.projects.map(pr=>`<option value="${pr.id}" ${(!ALL&&pr.id===p.id)?'selected':''}>${pr.name}</option>`).join('')}</select>
+      <select class="sel" id="vProj" style="width:auto"><option value="all" ${ALL?'selected':''}>🌐 Todos los proyectos</option>${data.scopedProyectos().map(pg=>`<option value="${pg.key}" ${(!ALL&&pg.key===data.currentProgramKey())?'selected':''}>${pg.name}</option>`).join('')}</select>
       <select class="sel" id="vEst" style="width:auto"><option value="">Todos los estados</option>${['disponible','postulada','asignada','agendada','realizada','cuestionario','liquidada','fuera_rango'].map(e=>`<option value="${e}">${e}</option>`).join('')}</select>
       <select class="sel" id="vPais" style="width:auto"><option value="">País</option>${[...new Set(all.map(v=>v.pais))].map(c=>`<option>${c}</option>`).join('')}</select>
     </div>
@@ -98,7 +98,7 @@ CX.module('visitas', ({data,role,ui})=>{
       document.querySelectorAll('#vBody tr').forEach(tr=>{const v=all.find(z=>z.id===tr.dataset.vid);const ok=(!q||(v.sucursal+(v.shopper||'')+v.ciudad).toLowerCase().includes(q))&&(!fe||v.estado===fe)&&(!fp||v.pais===fp);tr.style.display=ok?'':'none';});};
     ['vSearch','vEst','vPais'].forEach(id=>document.getElementById(id).addEventListener('input',filt));
     const vp=document.getElementById('vProj');
-    if(vp)vp.addEventListener('change',()=>{ if(vp.value==='all'){CX.session._visAll=true;} else {CX.session._visAll=false;data.setProject(vp.value);} CX.router.nav('visitas'); });
+    if(vp)vp.addEventListener('change',()=>{ if(vp.value==='all'){CX.session._visAll=true;} else {CX.session._visAll=false;data.setProgram?data.setProgram(vp.value):data.setProject(vp.value);} CX.router.nav('visitas'); });
     const vKp={disp:['Visitas disponibles',v=>v.estado==='disponible'],asig:['Visitas asignadas',v=>v.shopperId],real:['Visitas realizadas',v=>['realizada','cuestionario','liquidada'].includes(v.estado)],sinasig:['Visitas sin asignar',v=>!v.shopperId&&v.estado!=='fuera_rango'],fuera:['Fuera de rango',v=>v.estado==='fuera_rango']};
     document.querySelectorAll('#vKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{ const d=vKp[el.dataset.k]; const L=all.filter(d[1]);
       ui.modal(d[0]+' ('+L.length+')', L.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Shopper</th><th>Estado</th><th>Honorario</th></tr></thead><tbody>${L.map(v=>`<tr><td><b style="font-size:12.5px">${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.shopper||'<span class="muted">—</span>'}</td><td>${ui.estadoBadge(v.estado)}</td><td style="font-size:12px;color:var(--green)">${ui.money(v.currency,v.honorario)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🔍','Sin visitas en esta categoría.')); }));
