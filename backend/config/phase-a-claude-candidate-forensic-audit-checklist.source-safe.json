@@ -1,0 +1,46 @@
+{
+  "checklistId": "phase-a-claude-candidate-forensic-audit-checklist-source-safe",
+  "status": "source_safe_no_candidate_attached",
+  "inputExpected": {
+    "currentCandidatePath": "path to current approved/audited candidate directory or extracted zip",
+    "newClaudeCandidatePath": "path to new Claude candidate directory or extracted zip",
+    "packageNotes": "accumulated package instructions already sent to Claude"
+  },
+  "mustPass": {
+    "projectPeriod": [
+      "project is an entity",
+      "period is a filter/state",
+      "period is not duplicated as project"
+    ],
+    "tenantProject": [
+      "tenant configurable",
+      "project configurable",
+      "country and currency configurable",
+      "brand configurable",
+      "source configurable"
+    ],
+    "phaseATyA": [
+      "HR/source route represented",
+      "shoppers protected profile represented",
+      "certification carryover represented",
+      "liquidations/payment status represented",
+      "reviewQueue represented",
+      "auditEvents represented"
+    ],
+    "genericProduct": [
+      "no TyA hardcoding as product default",
+      "roles/personas/scopes configurable",
+      "Academia routes configurable",
+      "integration gates honest",
+      "PWA branding dynamic"
+    ]
+  },
+  "priorityFollowupBuckets": [
+    "P0BlockerAskClaudeNow",
+    "P1ShouldFixWhileCapacityExists",
+    "BackendAlreadyPreparedNoClaudeChange",
+    "PrototypeOnlyClaudeRequired",
+    "TyASpecificConfig",
+    "ReusableCxorbiaPattern"
+  ]
+}
