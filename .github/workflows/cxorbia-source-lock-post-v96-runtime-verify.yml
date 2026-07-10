@@ -1,0 +1,70 @@
+name: CXOrbia Source Lock Post-V96 Runtime Verify
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'app/app.js'
+      - 'app/index.html'
+      - 'app/manifest.webmanifest'
+      - 'app/sw.js'
+      - 'app/core/**'
+      - 'app/modules/**'
+      - 'app/styles/**'
+      - 'app/demo/**'
+      - 'backend/config/phase-a-source-lock-post-v96-runtime-manifest.source-safe.json'
+      - 'tools/release/tya-source-lock-post-v96-runtime-verify.mjs'
+      - '.github/workflows/cxorbia-source-lock-post-v96-runtime-verify.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'app/app.js'
+      - 'app/index.html'
+      - 'app/manifest.webmanifest'
+      - 'app/sw.js'
+      - 'app/core/**'
+      - 'app/modules/**'
+      - 'app/styles/**'
+      - 'app/demo/**'
+      - 'backend/config/phase-a-source-lock-post-v96-runtime-manifest.source-safe.json'
+      - 'tools/release/tya-source-lock-post-v96-runtime-verify.mjs'
+      - '.github/workflows/cxorbia-source-lock-post-v96-runtime-verify.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  source-lock-runtime-verify:
+    name: Source lock post-V96 runtime verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify source lock runtime hashes
+        run: |
+          node tools/release/tya-source-lock-post-v96-runtime-verify.mjs \
+            --out .tmp/source-lock-post-v96-runtime
+
+      - name: Upload source lock verification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-lock-post-v96-runtime-report
+          path: .tmp/source-lock-post-v96-runtime
+          if-no-files-found: ignore
+          retention-days: 14
