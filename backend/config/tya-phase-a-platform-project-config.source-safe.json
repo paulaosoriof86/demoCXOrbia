@@ -1,0 +1,88 @@
+{
+  "configId": "tya-phase-a-platform-project-config-source-safe",
+  "status": "source_safe_config_ready_ui_pending",
+  "generatedFor": "CXOrbia Phase A DEV",
+  "tenant": {
+    "tenantId": "tya",
+    "displayName": "TyA",
+    "status": "active_dev",
+    "countries": [
+      { "code": "GT", "name": "Guatemala", "flag": "🇬🇹", "currency": "Q" },
+      { "code": "HN", "name": "Honduras", "flag": "🇭🇳", "currency": "L" }
+    ],
+    "brand": {
+      "logoRef": "protected_tenant_logo_ref_pending_storage",
+      "logoVisibleIn": ["login", "topbar", "sidebar", "client_portal"],
+      "primaryColor": "tenant_configured_primary_color",
+      "notes": "In DEV public preview, brand logo must not be treated as hardcoded. UI must use tenant brand config."
+    },
+    "roles": ["admin", "coordinador", "cliente", "shopper"]
+  },
+  "projects": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "displayName": "Cinépolis",
+      "status": "active_dev",
+      "countries": ["GT", "HN"],
+      "currenciesByCountry": { "GT": "Q", "HN": "L" },
+      "hrSource": {
+        "hrSourceId": "tya-cinepolis-hr-live-multitab",
+        "type": "google_sheets_live_multitab",
+        "name": "HR Guatemala - Sincronizacion Google Sheets",
+        "urlVisibility": "protected_masked_visible_reference",
+        "urlRef": "protected_project_config_value_not_committed",
+        "spreadsheetIdMasked": "1h307t...vU4",
+        "spreadsheetIdEnv": "CXORBIA_HR_LIVE_SHEET_ID",
+        "tabPattern": "<MES> <YY> and <MES> <YY> HN",
+        "periodsFromTabs": true,
+        "countriesFromTabs": true,
+        "serviceAccountEmailMasked": "***@cxorbia-backend-dev.iam.gserviceaccount.com",
+        "publicXlsxFallbackAllowedForSourceSafePreview": true
+      },
+      "periods": {
+        "source": "derived_from_hr_live_tabs",
+        "defaultStrategy": "latest_non_empty_period",
+        "selectorOwner": "period_selector_only",
+        "projectSelectorMustNotContainPeriod": true
+      },
+      "questionnaire": {
+        "mode": "configurable_by_project_or_visit",
+        "origins": ["CXOrbia", "TyAOnline", "external", "general_link", "hr_per_visit_link"]
+      },
+      "certification": {
+        "mode": "preserve_existing_presented_certifications",
+        "gemini": "gate_off_human_review_required"
+      },
+      "payments": {
+        "mode": "control_only_until_payment_gate",
+        "juneIsPaymentControlNotVisitsToRepeat": true,
+        "countriesKeepSeparateCurrencies": true
+      },
+      "integrations": {
+        "make": "gate_off",
+        "gemini": "gate_off",
+        "hrWriteback": "gate_off_review_queue_required"
+      }
+    }
+  ],
+  "uiBindingRequirements": {
+    "tenantFlagsFromTenantCountries": true,
+    "tenantLogoFromTenantBrand": true,
+    "projectSelectorFromProjectsOnly": true,
+    "periodSelectorFromSelectedProjectPeriodsOnly": true,
+    "dashboardKpisFilterBySelectedPeriod": true,
+    "sidebarPeriodAndDashboardPeriodMustShareSameState": true,
+    "shopperFullDataRequiresProtectedAuthView": true
+  },
+  "safety": {
+    "sourceSafe": true,
+    "noRawHrWorkbook": true,
+    "noPhones": true,
+    "noEmails": true,
+    "noBankData": true,
+    "noDpi": true,
+    "noProduction": true,
+    "noWrites": true
+  }
+}
