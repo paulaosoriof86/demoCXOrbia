@@ -55,7 +55,25 @@ jobs:
           npm i -D playwright@1.47.2
           npx playwright install --with-deps chromium
 
+      - name: Start local static server
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp-visual-server.log 2>&1 &
+          echo $! > .tmp-visual-server.pid
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/index.html >/dev/null; then
+              echo 'Visual smoke server ready.'
+              exit 0
+            fi
+            sleep 1
+          done
+          cat .tmp-visual-server.log || true
+          echo 'Visual smoke server did not become ready.' >&2
+          exit 1
+
       - name: Run visual smoke
+        env:
+          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html
         run: |
           node tools/qa/tya-phase-a-visual-smoke.mjs --out .tmp/phase-a-visual-smoke
 
