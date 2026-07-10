@@ -140,7 +140,9 @@ function col(header, aliases){
 
 function cell(row, idx){ return idx >= 0 ? String(row[idx] ?? '').trim() : ''; }
 function isBlank(row){ return !row || row.every(v => String(v ?? '').trim() === ''); }
-function isVisitRow(row, c){ return !!(cell(row, c.pais) && cell(row, c.shopping)); }
+function isVisitRow(row, c){
+  return !!(cell(row, c.pais) && cell(row, c.shopping) && cell(row, c.idCinema));
+}
 
 function safeHash(value, prefix){
   const raw = String(value || '').trim();
