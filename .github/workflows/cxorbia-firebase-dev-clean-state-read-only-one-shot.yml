@@ -1,0 +1,92 @@
+name: CXOrbia Firebase DEV Clean-State Read-Only One-Shot
+
+# One-shot provider read authorized by Paula on 2026-07-10.
+# Runs only when this exact workflow file is created or changed on the dedicated ops branch.
+# No deploy, no writes, no deletes, no imports, no production.
+on:
+  push:
+    branches:
+      - ops/firebase-dev-readonly-20260710
+    paths:
+      - '.github/workflows/cxorbia-firebase-dev-clean-state-read-only-one-shot.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  FIREBASE_PROJECT_ID: cxorbia-backend-dev
+  FIREBASE_STORAGE_BUCKET: cxorbia-backend-dev.firebasestorage.app
+  CXORBIA_CONFIRM: VERIFY_FIREBASE_DEV_READ_ONLY
+
+jobs:
+  verify-clean-state-read-only:
+    name: Firebase DEV clean-state read-only verification
+    if: ${{ github.ref == 'refs/heads/ops/firebase-dev-readonly-20260710' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout authorized ops branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Prepare temporary DEV credential
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          private_dir='.tmp/firebase-dev-clean-state-read-only-private'
+          mkdir -p "$private_dir"
+          credential_path="$private_dir/credentials.json"
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT_JSON" ]; then
+            echo 'Blocked: missing FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV.'
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$credential_path"
+          chmod 600 "$credential_path"
+          node <<'NODE'
+          const fs = require('fs');
+          const file = '.tmp/firebase-dev-clean-state-read-only-private/credentials.json';
+          const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+          if (parsed.type !== 'service_account') throw new Error('Credential type mismatch.');
+          if (parsed.project_id !== 'cxorbia-backend-dev') throw new Error('Credential project mismatch.');
+          if (!String(parsed.client_email || '').endsWith('@cxorbia-backend-dev.iam.gserviceaccount.com')) throw new Error('Credential service-account domain mismatch.');
+          console.log('DEV credential sanity checks passed without outputting identifiers.');
+          NODE
+
+      - name: Install read-only verifier dependencies
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts firebase-admin@13 google-auth-library@9
+
+      - name: Run sanitized provider reads
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/firebase-dev-clean-state-read-only-private/credentials.json
+        run: |
+          set -euo pipefail
+          node tools/release/tya-firebase-dev-clean-state-read-only.mjs \
+            --config backend/config/phase-a-firebase-dev-clean-state-read-only.source-safe.json \
+            --out .tmp/firebase-dev-clean-state-read-only-report
+
+      - name: Cleanup temporary credential
+        if: always()
+        run: |
+          rm -f .tmp/firebase-dev-clean-state-read-only-private/credentials.json
+          rmdir .tmp/firebase-dev-clean-state-read-only-private 2>/dev/null || true
+
+      - name: Upload sanitized read-only report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: firebase-dev-clean-state-read-only-report
+          path: .tmp/firebase-dev-clean-state-read-only-report
+          if-no-files-found: ignore
+          retention-days: 14
