@@ -1,0 +1,327 @@
+{
+  "schemaVersion": "1.0.0",
+  "kind": "cxorbia.sourceLockRuntimeManifest",
+  "sourceLockId": "cxorbia-tya-post-v96-20260710",
+  "candidateFileName": "Prototype development request.zip",
+  "candidateSha256": "80feb7c7809d28657b5eec243aa187f678c023ecd471a9f9404e52d285bd2663",
+  "candidateTotalFileCount": 100,
+  "generatedAt": "2026-07-10T00:00:00Z",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "targetBranch": "docs-tya-v6-v71-audit",
+  "decision": "SOURCE_LOCK_OPERATIVO_POST_V96_NOT_PRODUCTION_GO",
+  "verificationPolicy": {
+    "runtimeRequiredCount": 67,
+    "excludedDocumentationAndMetadataCount": 33,
+    "unexpectedRepositoryFiles": "report_only",
+    "runtimeMissingOrHashMismatch": "hard_fail",
+    "providerActivation": false,
+    "databaseWrites": false,
+    "imports": false,
+    "deploy": false
+  },
+  "runtimeFiles": [
+    {
+      "path": "app/app.js",
+      "sha256": "471b001904245c8a75637719f38d3b5670b076a10a8c26f5ed72d64a88106706"
+    },
+    {
+      "path": "app/core/automations.js",
+      "sha256": "5e9bc687ffe06f4c00ccf08e605e1b0b203af2798e71e7c7a4f41c491b91c712"
+    },
+    {
+      "path": "app/core/cliente-data.js",
+      "sha256": "e37193bb831cdd61511fa131e2e83fb403262327db2d76dabda9cdc347469c06"
+    },
+    {
+      "path": "app/core/config.js",
+      "sha256": "16e57576f09b720d7a65954a9c9be28cced31e4a5d37e970b7e39033e98af2dc"
+    },
+    {
+      "path": "app/core/costos.js",
+      "sha256": "93533d54cc16a71ff76cc462daf54a1a3fdf720eaaf8cc13a9bd186d8b3de3a8"
+    },
+    {
+      "path": "app/core/data.js",
+      "sha256": "94bf0b8f6701be3678fae5a2dc8ee249b882eb9d32bc48037db5405956182d27"
+    },
+    {
+      "path": "app/core/dedupe.js",
+      "sha256": "ca4c8edbf57a4a33d6f49fda8d02a0e3fff3b1827cc6c2b4e8d5ff374d0da0bc"
+    },
+    {
+      "path": "app/core/finanzas-core.js",
+      "sha256": "97a38f96602ca50d126c35a46adb616531c6578aaec82d1cfb25d22b49ea928d"
+    },
+    {
+      "path": "app/core/geo.js",
+      "sha256": "51115e4d47baf849daebb4cb1a9097fe0c9e6bca3eba620fe9ad0a44ac25bcbc"
+    },
+    {
+      "path": "app/core/hr.js",
+      "sha256": "4a9bb1d2c1c166e818de3884bf9080b78ee84161832310daedbfc5c874a88d6f"
+    },
+    {
+      "path": "app/core/importador.js",
+      "sha256": "86616404ee47ae4ad813dff2b0295e5403b7343571b6ec4d2654c76131c58699"
+    },
+    {
+      "path": "app/core/liquidacion.js",
+      "sha256": "f72737bbe9d2b3a528fe51c4b7626ecf0705fa28395d4ba6fd5153187445990e"
+    },
+    {
+      "path": "app/core/manuales-data.js",
+      "sha256": "308a9c240181c78be02f0fc004af8c968f0dd2d6d19bab747016b2815ea0b9e1"
+    },
+    {
+      "path": "app/core/notif.js",
+      "sha256": "07b5102eefe787987753fa21edf4f7ed53d6571872156cf28f8db8ad3b3df768"
+    },
+    {
+      "path": "app/core/programa.js",
+      "sha256": "bca3dc6e7ddc5ace05d29d13232d1abcc8ebc82a2f794494926e58afe8791fae"
+    },
+    {
+      "path": "app/core/pwa.js",
+      "sha256": "68caab966f043462c54cecffbe23aa41ff890bda0e44fedbe71bfb99cbb048b4"
+    },
+    {
+      "path": "app/core/router.js",
+      "sha256": "0c3821a9c256dfa1e6d1802b2964ecb8c46e03faf3a2b2f902905ac75e7a817d"
+    },
+    {
+      "path": "app/core/shoppers-store.js",
+      "sha256": "153f73f9e54ff9b336e5ecdf4b4902689934ce3eff23c2930f1d49ffab4f6cf3"
+    },
+    {
+      "path": "app/core/store.js",
+      "sha256": "b7f2c04fcbe18c90f3c71c74b41856127d780573888850d6d1c888e9ba12a866"
+    },
+    {
+      "path": "app/core/topbar.js",
+      "sha256": "b35a92af26b57939aef83562347ef9e02aec1966da95b43f078d66a0387f6d51"
+    },
+    {
+      "path": "app/core/ui.js",
+      "sha256": "c0cee6ae6a4a4f4e542986b236f5d8629659375bf67a038166e15bdc12775792"
+    },
+    {
+      "path": "app/demo/index.html",
+      "sha256": "feb3dbc4c33bc97a2b432216387964c28254f882883d5cbece078f45580070cd"
+    },
+    {
+      "path": "app/index.html",
+      "sha256": "52bbc43cddbb5ff3567c052ad62012b9fbb156031b53ec85a7db0388170cd634"
+    },
+    {
+      "path": "app/manifest.webmanifest",
+      "sha256": "cb3196c4c901360f35010172610f1b30b449ecc3a78230747b8606bd840de4ee"
+    },
+    {
+      "path": "app/modules/academia.js",
+      "sha256": "73c87720fc0cbfb0d6e70ec35b137038167a1507ab1a3c67fb273241ef8d1c1e"
+    },
+    {
+      "path": "app/modules/administrabilidad.js",
+      "sha256": "fd1041761907aeffe05962e1a6f241470c3981a368a9944add2c50e1b7bae8b4"
+    },
+    {
+      "path": "app/modules/automatizaciones.js",
+      "sha256": "7a40fe86b4cbe0c1d648f155a6204c00faa243be910e92903078fec3daf55a95"
+    },
+    {
+      "path": "app/modules/beneficios.js",
+      "sha256": "3a0495c16d194a48b70db0a62fad0ae7c500b295d2427d56725573826e3b45c1"
+    },
+    {
+      "path": "app/modules/cert.js",
+      "sha256": "0ee7167c7c5d611c52ff553baceb6eea5489d0d6a55a90fec4bbfdab36243d11"
+    },
+    {
+      "path": "app/modules/cliente-extra.js",
+      "sha256": "f175692ff7f08e25a7afa57715b683868295c414e013718f714d39ecd08b1f71"
+    },
+    {
+      "path": "app/modules/cliente-insights.js",
+      "sha256": "b03d5f115fd7918f74539c544fc2a7efe411155e56ba1e3ea83b4c788021a768"
+    },
+    {
+      "path": "app/modules/cliente.js",
+      "sha256": "c04f35ded4dba7059aa81ad402a88a2354658078294207811ec243cfb123bcc8"
+    },
+    {
+      "path": "app/modules/clientes.js",
+      "sha256": "b23c5480c2ee1e93ffeb49098942eeab58ec6867df378479559a771df2fb378d"
+    },
+    {
+      "path": "app/modules/comercial.js",
+      "sha256": "aecde3f762095b30e215338c94be235efd50214b58996138b5257be7171a5a35"
+    },
+    {
+      "path": "app/modules/configuracion.js",
+      "sha256": "c99cc4e2e0aeb25e88b9d8c74a6e0e4705d45cc23b9f776a272b277e3753c40f"
+    },
+    {
+      "path": "app/modules/correo.js",
+      "sha256": "d152abcc509a075be499d84e0f78eb9132e10a72b58214b154773e4557e7d6c5"
+    },
+    {
+      "path": "app/modules/crm.js",
+      "sha256": "6ad5b2cc7fa46b6a84f8bf4144137cc2a0f96267b04b458b7da7c9781dcd611a"
+    },
+    {
+      "path": "app/modules/cuestionario-shopper.js",
+      "sha256": "335e012df4c7755bd997a98c50b3a2589c4b426625cae876b967002e2f816a9e"
+    },
+    {
+      "path": "app/modules/dashboard.js",
+      "sha256": "d290c8d190592571084935c73783592189d60ae854481c40f5e0d3c276204aa5"
+    },
+    {
+      "path": "app/modules/diagnostico.js",
+      "sha256": "be25773c2b795acd43389661b361d58752fa47ea558b3c13c60dd5e9da92b97d"
+    },
+    {
+      "path": "app/modules/documentos.js",
+      "sha256": "f29fbff0b7e33ccc3965db76abe0a7ff5d9f618e555d73e52a91633f06514e56"
+    },
+    {
+      "path": "app/modules/finanzas.js",
+      "sha256": "669c6c927f427cae22ef8b23bb007b2feff9f8290bf4bc3b4ce144211be677d4"
+    },
+    {
+      "path": "app/modules/historico.js",
+      "sha256": "eb3aabf5d574e64548af2e7ebfb1750529ed3d494c3dea1ce90b8e07c93ec8dc"
+    },
+    {
+      "path": "app/modules/hr-source.js",
+      "sha256": "e1a5e0ff68bdb4020a91c4ba11b80ff08abd89c329a4fe670cc3837f8baae71a"
+    },
+    {
+      "path": "app/modules/importador.js",
+      "sha256": "ed8da980be8529096dbc997a5a385f9771ebf7035999b4c26c2c0438941407f9"
+    },
+    {
+      "path": "app/modules/integraciones.js",
+      "sha256": "ee6f283b7cf21c6fbafa2c3fa3610262e5eae4cc494d34d7cec7f6c503a3335e"
+    },
+    {
+      "path": "app/modules/marca.js",
+      "sha256": "552610c7fea98277ef0725dd46cf1ee1218c637bfab79597169c2832cebe61ee"
+    },
+    {
+      "path": "app/modules/marketing.js",
+      "sha256": "d094eddc25733f955f457d239895c2805b0abe5f2ef059afddcbe034596238ac"
+    },
+    {
+      "path": "app/modules/midia.js",
+      "sha256": "bba8ed98aec605cdb0222c292fd9c54a017cfa03b645db2d3b79c1e649799e1e"
+    },
+    {
+      "path": "app/modules/misvisitas.js",
+      "sha256": "4e41461a3a00157ae49cea8f9e975fab62b07c6778abf8cd25cd0f1758b98966"
+    },
+    {
+      "path": "app/modules/novedades.js",
+      "sha256": "b95d27d83ae6010ebe5da2ede91f0bf820d64ff26c583b21dc1d44d0140a9ff6"
+    },
+    {
+      "path": "app/modules/operacion-extra.js",
+      "sha256": "f65ab40e28313ea6cbca4c6d5f4288cf35e0194a905426d334189f2951e54baf"
+    },
+    {
+      "path": "app/modules/periodos.js",
+      "sha256": "eecec91e65d954b6032b6b78b31894e1293993fb02daa33215a24e31ed98216d"
+    },
+    {
+      "path": "app/modules/postulaciones.js",
+      "sha256": "043167fff653f1d83475d3e8169db7d51f8f645d742dcd63535becbf38949595"
+    },
+    {
+      "path": "app/modules/proyecto-wizard.js",
+      "sha256": "f97d10d4b28fb1076ab9b435a303f12e613e3561fb05172b3b37aef75b6d4236"
+    },
+    {
+      "path": "app/modules/proyectos.js",
+      "sha256": "5afd7549c66101ca6b8b159968f9f8a01b06b06af2196c19abbfd8641e09fda7"
+    },
+    {
+      "path": "app/modules/reservas.js",
+      "sha256": "63f353baba8cfbedd3e066de4625f5c7470364b719ede4fe058064f9fa462e8a"
+    },
+    {
+      "path": "app/modules/revision-admin.js",
+      "sha256": "efdca7ae77d923e796588452e94edae73c9af1df8b757bdae6ae69e4073281f0"
+    },
+    {
+      "path": "app/modules/saas-console.js",
+      "sha256": "35cf1d78a581dac061d4ccac7246bdf475faf49bed0c13c66610d09b3226c397"
+    },
+    {
+      "path": "app/modules/shoppers.js",
+      "sha256": "6b9dff790369bdc612fb01296164fad5328f640ad94c33e39be6200740f02658"
+    },
+    {
+      "path": "app/modules/soporte.js",
+      "sha256": "d0db03b3d0f7e7cfa592ac3eefa96788f4bef34ded5799e02431c5f8ed1cff95"
+    },
+    {
+      "path": "app/modules/tablon.js",
+      "sha256": "ee32633748298ca3c7a76be87a50ac36ac2e9640e368595ee56446a504aed144"
+    },
+    {
+      "path": "app/modules/visita-detalle.js",
+      "sha256": "fa6bdf589e0ee8a000604bce376b8ae1fcb9fafc9845b8c10a5055414564242c"
+    },
+    {
+      "path": "app/modules/visitas.js",
+      "sha256": "e50cb43bfeabd12725c6e8426fd60b11e24f6a4e04e5a99b2180c686754078de"
+    },
+    {
+      "path": "app/styles/layout.css",
+      "sha256": "f4cccad50990f89fe534251e8c9f69098b5cffbb68981da447b48366764a924d"
+    },
+    {
+      "path": "app/styles/theme.css",
+      "sha256": "d835011d53963cacb630195366b4f1618294eb7e982917044e127b9c9f3480d6"
+    },
+    {
+      "path": "app/sw.js",
+      "sha256": "8bef415619891021c735eb9b09636b8e592c14496a01f4eca51e49d2da6af66f"
+    }
+  ],
+  "excludedDocumentationAndMetadata": [
+    "app/.gitignore",
+    "app/README.md",
+    "app/docs/ADDENDUM-V82-PHASE-A.md",
+    "app/docs/ADDENDUM-V87-PHASE-A.md",
+    "app/docs/ARCHITECTURE.md",
+    "app/docs/AUDITORIA-ENTREGA-CLAUDE.md",
+    "app/docs/AUDITORIA-SINCRONIAS-FLUJOS.md",
+    "app/docs/AUDITORIA-Y-CONFIG-TENANT-V58.md",
+    "app/docs/CAMBIOS-CLAUDE-CANDIDATE-COMPLETO-POST-SYNTHETIC-COVERAGE-20260708.md",
+    "app/docs/CAMBIOS-PROTOTIPO.md",
+    "app/docs/CAPACITACION-TECNICA-INTERNA.md",
+    "app/docs/CHECKLIST-VALIDACION-PROTOTIPO.md",
+    "app/docs/DATA-MODEL.md",
+    "app/docs/ECOSISTEMA.md",
+    "app/docs/GUION-DEMO-Y-VENTAJAS.md",
+    "app/docs/GUION-HEYGEN-POR-MODULO.md",
+    "app/docs/HANDOFF-DESARROLLO.md",
+    "app/docs/INSTRUCCIONES-FIJAS-PROYECTO.md",
+    "app/docs/INSTRUCCIONES-MIGRACION-TYA.md",
+    "app/docs/INTEGRACIONES.md",
+    "app/docs/LOGICA-NEGOCIO.md",
+    "app/docs/MIGRACION.md",
+    "app/docs/MODULES.md",
+    "app/docs/NOTAS-V66-PARA-PAULA.md",
+    "app/docs/PENDIENTES-PROTOTIPO.md",
+    "app/docs/PLAN-DE-TRABAJO.md",
+    "app/docs/PROMPT-HEYGEN.md",
+    "app/docs/RESUMEN-PARA-CHATGPT-BACKEND.md",
+    "app/docs/RESUMEN-PARA-CLAUDE.md",
+    "app/docs/ROADMAP.md",
+    "app/docs/SECURITY.md",
+    "app/docs/SINCRONIA.md",
+    "app/docs/migration/sample-fields.js"
+  ]
+}
