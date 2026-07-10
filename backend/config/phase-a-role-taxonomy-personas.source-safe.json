@@ -1,7 +1,7 @@
 {
   "configId": "phase-a-role-taxonomy-personas-source-safe",
   "status": "source_safe_template_not_connected",
-  "generatedAt": "2026-07-09",
+  "generatedAt": "2026-07-10",
   "purpose": "Source-safe template showing how a tenant can configure operational personas, roles and scopes without using real names, emails or tenant-specific data.",
   "tenantTemplate": {
     "tenantId": "tenant_demo",
@@ -20,7 +20,7 @@
     ],
     "countries": ["COUNTRY_A", "COUNTRY_B"],
     "projects": ["project_alpha", "project_beta"],
-    "permissionsVersion": "phase-a-v1"
+    "permissionsVersion": "phase-a-v2-taxonomy"
   },
   "personaTemplates": [
     {
@@ -29,7 +29,7 @@
       "role": "tenantAdmin",
       "scope": "tenant",
       "tenantId": "tenant_demo",
-      "permissionsVersion": "phase-a-v1"
+      "permissionsVersion": "phase-a-v2-taxonomy"
     },
     {
       "templateId": "franchise-owner-template",
@@ -39,17 +39,18 @@
       "tenantId": "tenant_demo",
       "countryIds": ["COUNTRY_A", "COUNTRY_B"],
       "franchiseId": "franchise_ref_demo",
-      "permissionsVersion": "phase-a-v1"
+      "permissionsVersion": "phase-a-v2-taxonomy"
     },
     {
       "templateId": "country-representative-template",
       "personaType": "countryRepresentative",
-      "role": "tenantAdmin",
-      "scope": "country",
+      "role": "projectAdmin",
+      "scope": "tenantProjectOrCountry",
       "tenantId": "tenant_demo",
       "countryIds": ["COUNTRY_A"],
+      "projectIds": ["project_alpha", "project_beta"],
       "representativeId": "representative_ref_demo",
-      "permissionsVersion": "phase-a-v1"
+      "permissionsVersion": "phase-a-v2-taxonomy"
     },
     {
       "templateId": "operations-coordinator-template",
@@ -60,7 +61,7 @@
       "countryIds": ["COUNTRY_A"],
       "projectIds": ["project_alpha", "project_beta"],
       "staffId": "staff_ref_operations_demo",
-      "permissionsVersion": "phase-a-v1"
+      "permissionsVersion": "phase-a-v2-taxonomy"
     },
     {
       "templateId": "project-coordinator-template",
@@ -70,7 +71,7 @@
       "tenantId": "tenant_demo",
       "projectIds": ["project_alpha"],
       "staffId": "staff_ref_project_demo",
-      "permissionsVersion": "phase-a-v1"
+      "permissionsVersion": "phase-a-v2-taxonomy"
     },
     {
       "templateId": "field-representative-template",
@@ -81,7 +82,7 @@
       "countryIds": ["COUNTRY_A"],
       "projectIds": ["project_alpha"],
       "staffId": "staff_ref_field_demo",
-      "permissionsVersion": "phase-a-v1"
+      "permissionsVersion": "phase-a-v2-taxonomy"
     },
     {
       "templateId": "finance-operator-template",
@@ -92,7 +93,7 @@
       "countryIds": ["COUNTRY_A"],
       "projectIds": ["project_alpha"],
       "staffId": "staff_ref_finance_demo",
-      "permissionsVersion": "phase-a-v1"
+      "permissionsVersion": "phase-a-v2-taxonomy"
     },
     {
       "templateId": "certification-operator-template",
@@ -102,7 +103,7 @@
       "tenantId": "tenant_demo",
       "projectIds": ["project_alpha"],
       "staffId": "staff_ref_certification_demo",
-      "permissionsVersion": "phase-a-v1"
+      "permissionsVersion": "phase-a-v2-taxonomy"
     },
     {
       "templateId": "client-brand-admin-template",
@@ -112,7 +113,7 @@
       "tenantId": "tenant_demo",
       "projectIds": ["project_alpha"],
       "clientId": "client_ref_admin_demo",
-      "permissionsVersion": "phase-a-v1"
+      "permissionsVersion": "phase-a-v2-taxonomy"
     },
     {
       "templateId": "client-brand-viewer-template",
@@ -122,7 +123,7 @@
       "tenantId": "tenant_demo",
       "projectIds": ["project_alpha"],
       "clientId": "client_ref_viewer_demo",
-      "permissionsVersion": "phase-a-v1"
+      "permissionsVersion": "phase-a-v2-taxonomy"
     },
     {
       "templateId": "shopper-evaluator-template",
@@ -132,9 +133,15 @@
       "tenantId": "tenant_demo",
       "projectIds": ["project_alpha"],
       "shopperId": "shopper_ref_demo",
-      "permissionsVersion": "phase-a-v1"
+      "permissionsVersion": "phase-a-v2-taxonomy"
     }
   ],
+  "failClosed": {
+    "unknownRole": "deny",
+    "unknownPersona": "deny",
+    "missingScope": "deny",
+    "customPersona": "explicit_mapping_required"
+  },
   "forbiddenExamples": [
     "real email address",
     "real phone number",
@@ -147,6 +154,7 @@
   "notes": [
     "This file is a source-safe template only.",
     "It intentionally does not include real names, emails, phone numbers, documents, bank data or private source URLs.",
-    "Use personaType for UI/Academia language and technical role for RBAC enforcement."
+    "Use personaType for UI/Academia language and technical role for RBAC enforcement.",
+    "Country representatives use projectAdmin with country/project scope to avoid tenant-wide privilege expansion."
   ]
 }
