@@ -1,0 +1,66 @@
+name: CXOrbia Auth Pre-activation Route Action Gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/contracts/phase-a-auth-preactivation-route-action-v1.json'
+      - 'backend/config/phase-a-auth-preactivation-identity.source-safe.json'
+      - 'backend/contracts/auth-rbac-phase-a-v1.json'
+      - 'backend/contracts/phase-a-role-taxonomy-org-scope-v1.json'
+      - 'app/core/config.js'
+      - 'app/core/router.js'
+      - 'app/core/data.js'
+      - 'tools/release/tya-auth-preactivation-route-action-validate.mjs'
+      - '.github/workflows/cxorbia-auth-preactivation-route-action.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'backend/contracts/phase-a-auth-preactivation-route-action-v1.json'
+      - 'backend/config/phase-a-auth-preactivation-identity.source-safe.json'
+      - 'backend/contracts/auth-rbac-phase-a-v1.json'
+      - 'backend/contracts/phase-a-role-taxonomy-org-scope-v1.json'
+      - 'app/core/config.js'
+      - 'app/core/router.js'
+      - 'app/core/data.js'
+      - 'tools/release/tya-auth-preactivation-route-action-validate.mjs'
+      - '.github/workflows/cxorbia-auth-preactivation-route-action.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  validate:
+    name: Auth pre-activation route/action matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate source-safe pre-activation matrix
+        run: |
+          node tools/release/tya-auth-preactivation-route-action-validate.mjs \
+            --out .tmp/auth-preactivation-route-action
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auth-preactivation-route-action-report
+          path: .tmp/auth-preactivation-route-action
+          if-no-files-found: ignore
+          retention-days: 14
