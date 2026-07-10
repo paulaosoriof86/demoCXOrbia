@@ -1,0 +1,152 @@
+{
+  "configId": "phase-a-role-taxonomy-personas-source-safe",
+  "status": "source_safe_template_not_connected",
+  "generatedAt": "2026-07-09",
+  "purpose": "Source-safe template showing how a tenant can configure operational personas, roles and scopes without using real names, emails or tenant-specific data.",
+  "tenantTemplate": {
+    "tenantId": "tenant_demo",
+    "enabledPersonas": [
+      "tenantOwner",
+      "franchiseOwner",
+      "countryRepresentative",
+      "operationsCoordinator",
+      "projectCoordinator",
+      "fieldRepresentative",
+      "financeOperator",
+      "certificationOperator",
+      "clientBrandAdmin",
+      "clientBrandViewer",
+      "shopperEvaluator"
+    ],
+    "countries": ["COUNTRY_A", "COUNTRY_B"],
+    "projects": ["project_alpha", "project_beta"],
+    "permissionsVersion": "phase-a-v1"
+  },
+  "personaTemplates": [
+    {
+      "templateId": "tenant-owner-template",
+      "personaType": "tenantOwner",
+      "role": "tenantAdmin",
+      "scope": "tenant",
+      "tenantId": "tenant_demo",
+      "permissionsVersion": "phase-a-v1"
+    },
+    {
+      "templateId": "franchise-owner-template",
+      "personaType": "franchiseOwner",
+      "role": "tenantAdmin",
+      "scope": "tenantOrCountry",
+      "tenantId": "tenant_demo",
+      "countryIds": ["COUNTRY_A", "COUNTRY_B"],
+      "franchiseId": "franchise_ref_demo",
+      "permissionsVersion": "phase-a-v1"
+    },
+    {
+      "templateId": "country-representative-template",
+      "personaType": "countryRepresentative",
+      "role": "tenantAdmin",
+      "scope": "country",
+      "tenantId": "tenant_demo",
+      "countryIds": ["COUNTRY_A"],
+      "representativeId": "representative_ref_demo",
+      "permissionsVersion": "phase-a-v1"
+    },
+    {
+      "templateId": "operations-coordinator-template",
+      "personaType": "operationsCoordinator",
+      "role": "projectAdmin",
+      "scope": "tenantProjectOrCountry",
+      "tenantId": "tenant_demo",
+      "countryIds": ["COUNTRY_A"],
+      "projectIds": ["project_alpha", "project_beta"],
+      "staffId": "staff_ref_operations_demo",
+      "permissionsVersion": "phase-a-v1"
+    },
+    {
+      "templateId": "project-coordinator-template",
+      "personaType": "projectCoordinator",
+      "role": "projectAdmin",
+      "scope": "tenantProject",
+      "tenantId": "tenant_demo",
+      "projectIds": ["project_alpha"],
+      "staffId": "staff_ref_project_demo",
+      "permissionsVersion": "phase-a-v1"
+    },
+    {
+      "templateId": "field-representative-template",
+      "personaType": "fieldRepresentative",
+      "role": "projectAdmin",
+      "scope": "tenantProjectOrCountry",
+      "tenantId": "tenant_demo",
+      "countryIds": ["COUNTRY_A"],
+      "projectIds": ["project_alpha"],
+      "staffId": "staff_ref_field_demo",
+      "permissionsVersion": "phase-a-v1"
+    },
+    {
+      "templateId": "finance-operator-template",
+      "personaType": "financeOperator",
+      "role": "financeAdmin",
+      "scope": "tenantProjectOrCountry",
+      "tenantId": "tenant_demo",
+      "countryIds": ["COUNTRY_A"],
+      "projectIds": ["project_alpha"],
+      "staffId": "staff_ref_finance_demo",
+      "permissionsVersion": "phase-a-v1"
+    },
+    {
+      "templateId": "certification-operator-template",
+      "personaType": "certificationOperator",
+      "role": "certificationAdmin",
+      "scope": "tenantProject",
+      "tenantId": "tenant_demo",
+      "projectIds": ["project_alpha"],
+      "staffId": "staff_ref_certification_demo",
+      "permissionsVersion": "phase-a-v1"
+    },
+    {
+      "templateId": "client-brand-admin-template",
+      "personaType": "clientBrandAdmin",
+      "role": "clientAdmin",
+      "scope": "tenantProject",
+      "tenantId": "tenant_demo",
+      "projectIds": ["project_alpha"],
+      "clientId": "client_ref_admin_demo",
+      "permissionsVersion": "phase-a-v1"
+    },
+    {
+      "templateId": "client-brand-viewer-template",
+      "personaType": "clientBrandViewer",
+      "role": "clientViewer",
+      "scope": "tenantProject",
+      "tenantId": "tenant_demo",
+      "projectIds": ["project_alpha"],
+      "clientId": "client_ref_viewer_demo",
+      "permissionsVersion": "phase-a-v1"
+    },
+    {
+      "templateId": "shopper-evaluator-template",
+      "personaType": "shopperEvaluator",
+      "role": "shopper",
+      "scope": "ownTenantOrProject",
+      "tenantId": "tenant_demo",
+      "projectIds": ["project_alpha"],
+      "shopperId": "shopper_ref_demo",
+      "permissionsVersion": "phase-a-v1"
+    }
+  ],
+  "forbiddenExamples": [
+    "real email address",
+    "real phone number",
+    "raw document id",
+    "raw bank data",
+    "private HR/source URL",
+    "provider token",
+    "password or temporary password"
+  ],
+  "notes": [
+    "This file is a source-safe template only.",
+    "It intentionally does not include real names, emails, phone numbers, documents, bank data or private source URLs.",
+    "Use personaType for UI/Academia language and technical role for RBAC enforcement."
+  ]
+}
