@@ -121,11 +121,17 @@ function cellValue(cellXml, shared){
   return raw;
 }
 
-export function worksheetPreview(files, sheet, shared, sampleRows = 5){
+function colIndexFromRef(ref){
+  const letters = String(ref || '').match(/^[A-Z]+/i)?.[0] || '';
+  if(!letters) return -1;
+  let n = 0;
+  for(const ch of letters.toUpperCase()) n = n * 26 + (ch.charCodeAt(0) - 64);
+  return n - 1;
+}
+
+export function worksheetRows(files, sheet, shared){
   const raw = xml(files, sheet.path);
-  if(!raw){
-    return { name: sheet.name, path: sheet.path, rows: 0, columns: 0, headers: [], sample: [], issue: 'worksheet_missing' };
-  }
+  if(!raw) return [];
   const rows = [];
   const rowRe = /<row\b[\s\S]*?<\/row>/g;
   let rm;
@@ -134,9 +140,27 @@ export function worksheetPreview(files, sheet, shared, sampleRows = 5){
     const values = [];
     const cRe = /<c\b[\s\S]*?<\/c>/g;
     let cm;
-    while((cm = cRe.exec(rowXml))) values.push(cellValue(cm[0], shared));
-    if(values.some(v => String(v || '').trim() !== '')) rows.push(values);
+    let sequential = 0;
+    while((cm = cRe.exec(rowXml))){
+      const cellXml = cm[0];
+      const tag = (cellXml.match(/<c\b[^>]*>/) || [''])[0];
+      const a = attrs(tag);
+      const idx = colIndexFromRef(a.r) >= 0 ? colIndexFromRef(a.r) : sequential;
+      values[idx] = cellValue(cellXml, shared);
+      sequential = idx + 1;
+    }
+    const normalized = values.map(v => v ?? '');
+    if(normalized.some(v => String(v || '').trim() !== '')) rows.push(normalized);
   }
+  return rows;
+}
+
+export function worksheetPreview(files, sheet, shared, sampleRows = 5){
+  const raw = xml(files, sheet.path);
+  if(!raw){
+    return { name: sheet.name, path: sheet.path, rows: 0, columns: 0, headers: [], sample: [], issue: 'worksheet_missing' };
+  }
+  const rows = worksheetRows(files, sheet, shared);
   const maxCols = rows.reduce((m, r) => Math.max(m, r.length), 0);
   return {
     name: sheet.name,
