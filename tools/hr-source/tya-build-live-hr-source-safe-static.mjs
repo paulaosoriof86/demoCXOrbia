@@ -74,8 +74,7 @@ async function tokenFromServiceAccount(){
   const sa = JSON.parse(SERVICE_ACCOUNT_JSON);
   if(sa.type !== 'service_account') throw new Error('Secret is not a service_account JSON.');
   const jwt = signJwt(sa);
-  const body = new URLSearchParams({ grant_type: 'urn:ietf:params:oauth-type:jwt-bearer', assertion: jwt });
-  body.set('grant_type', 'urn:ietf:params:oauth:grant-type:jwt-bearer');
+  const body = new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion: jwt });
   const res = await fetch('https://oauth2.googleapis.com/token', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
   const json = await res.json();
   if(!res.ok) throw new Error(`Google OAuth failed: HTTP ${res.status} ${JSON.stringify(json).slice(0, 200)}`);
