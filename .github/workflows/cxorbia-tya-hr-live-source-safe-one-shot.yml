@@ -1,0 +1,124 @@
+name: CXOrbia TyA HR Live Source-Safe One-Shot
+
+# Read-only HR build authorized by the active Phase A plan.
+# Produces a sanitized artifact only. No Firestore, Auth, Storage, HR writes, deploy or production.
+on:
+  push:
+    branches:
+      - ops/firebase-dev-readonly-20260710
+    paths:
+      - '.github/workflows/cxorbia-tya-hr-live-source-safe-one-shot.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/cxorbia-tya-hr-live-source-safe-one-shot.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CXORBIA_HR_LIVE_SHEET_ID: 1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4
+  CXORBIA_HR_SOURCE_SAFE_OUT: .tmp/tya-hr-live-source-safe/tya-hr-source-safe-periods.js
+  CXORBIA_DEV_BUILD_LABEL: tya-live-hr-source-safe-readonly-20260710
+
+jobs:
+  build-source-safe-hr:
+    name: Build TyA HR live source-safe payload
+    if: ${{ github.ref == 'refs/heads/ops/firebase-dev-readonly-20260710' || (github.event_name == 'pull_request' && github.head_ref == 'ops/firebase-dev-readonly-20260710') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout authorized ops branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Build sanitized HR payload
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/tya-hr-live-source-safe
+          node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
+
+      - name: Validate sanitized payload
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const file = '.tmp/tya-hr-live-source-safe/tya-hr-source-safe-periods.js';
+          const raw = fs.readFileSync(file, 'utf8');
+          const prefix = 'window.CX_TYA_HR_SOURCE_SAFE = ';
+          if (!raw.includes(prefix)) throw new Error('Source-safe payload prefix missing.');
+          const jsonText = raw.slice(raw.indexOf(prefix) + prefix.length).replace(/;\s*$/, '');
+          const data = JSON.parse(jsonText);
+          if (!data.sourceSafe || data.production || data.imported || data.firestoreWrites !== 0) throw new Error('Unsafe payload state.');
+          if (!data.counts || data.counts.visits < 1 || data.counts.periods < 1) throw new Error('Empty HR source-safe payload.');
+          if ((data.shoppers || []).some(s => s.nombre !== 'Shopper protegido' || !s.piiProtected)) throw new Error('Shopper sanitization failed.');
+          if ((data.visits || []).some(v => v.shopper && v.shopper !== 'Shopper protegido')) throw new Error('Raw shopper name detected.');
+          const forbiddenKeys = new Set(['telefono','phone','email','mail','dpi','bank','banco','direccion','address','password','token','private_key']);
+          const violations = [];
+          const walk = (value, trail = []) => {
+            if (Array.isArray(value)) return value.forEach((item, i) => walk(item, trail.concat(i)));
+            if (value && typeof value === 'object') {
+              for (const [key, item] of Object.entries(value)) {
+                if (forbiddenKeys.has(String(key).toLowerCase())) violations.push(trail.concat(key).join('.'));
+                walk(item, trail.concat(key));
+              }
+            }
+          };
+          walk(data);
+          if (violations.length) throw new Error(`Forbidden sensitive keys detected: ${violations.slice(0, 10).join(', ')}`);
+          const report = {
+            verdict: 'GO_HR_LIVE_SOURCE_SAFE_READONLY',
+            generatedAt: data.generatedAt,
+            accessMode: data.source?.accessMode || null,
+            counts: data.counts,
+            issueCount: (data.issues || []).length,
+            sourceSafe: true,
+            piiOutput: false,
+            firestoreWrites: 0,
+            hrWrites: 0,
+            deploy: false,
+            production: false
+          };
+          fs.writeFileSync('.tmp/tya-hr-live-source-safe/validation-report.json', JSON.stringify(report, null, 2));
+          fs.writeFileSync('.tmp/tya-hr-live-source-safe/validation-report.md', [
+            '# TyA HR live source-safe validation',
+            '',
+            `Verdict: ${report.verdict}`,
+            `Access mode: ${report.accessMode}`,
+            `Periods: ${report.counts.periods}`,
+            `Tabs: ${report.counts.tabs}`,
+            `Visits: ${report.counts.visits}`,
+            `Protected shopper refs: ${report.counts.shoppers}`,
+            `By country: ${JSON.stringify(report.counts.byCountry)}`,
+            `By status: ${JSON.stringify(report.counts.byStatus)}`,
+            `Issues: ${report.issueCount}`,
+            '',
+            'No PII output, no Firestore/HR writes, no deploy, no production.'
+          ].join('\n'));
+          console.log(JSON.stringify(report, null, 2));
+          NODE
+
+      - name: Upload sanitized HR artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tya-hr-live-source-safe-readonly-report
+          path: |
+            .tmp/tya-hr-live-source-safe
+            .tmp/rc-phase-a-dev-root-deploy/hr-live-source-safe-summary.json
+            .tmp/rc-phase-a-dev-root-deploy/hr-live-source-safe-summary.md
+            .tmp/rc-phase-a-dev-root-deploy/hr-live-source-safe-error.txt
+          if-no-files-found: ignore
+          retention-days: 14
