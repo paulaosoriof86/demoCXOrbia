@@ -1,7 +1,7 @@
 {
   "contractId": "phase-a-role-taxonomy-org-scope-v1",
   "status": "draft_safe_not_connected",
-  "generatedAt": "2026-07-09",
+  "generatedAt": "2026-07-10",
   "purpose": "Define a reusable role/persona/scope taxonomy for CXOrbia Phase A so operational roles such as representatives, coordinators, franchise owners, client users, finance, certification, shoppers and SaaS admins are represented without hardcoding a specific tenant.",
   "safeState": {
     "authProviderConnected": false,
@@ -39,8 +39,8 @@
     "countryRepresentative": {
       "scope": "country",
       "phaseA": true,
-      "mapsToRole": "tenantAdmin",
-      "notes": "Representative by country or territory. Can coordinate multiple projects in assigned countries without platform-wide access."
+      "mapsToRole": "projectAdmin",
+      "notes": "Representative by country or territory. Coordinates configured projects in assigned countries with project/country scope, without tenant-wide administration."
     },
     "operationsCoordinator": {
       "scope": "tenantProjectOrCountry",
@@ -128,7 +128,7 @@
   },
   "routeIntentMap": {
     "saasConsole": ["platformAdmin", "tenantOwner"],
-    "tenantConfiguration": ["tenantOwner", "franchiseOwner", "countryRepresentative"],
+    "tenantConfiguration": ["tenantOwner", "franchiseOwner"],
     "projectConfiguration": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator"],
     "dashboard": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "clientBrandAdmin", "clientBrandViewer"],
     "visits": ["operationsCoordinator", "projectCoordinator", "fieldRepresentative", "shopperEvaluator"],
@@ -139,13 +139,20 @@
     "certifications": ["tenantOwner", "operationsCoordinator", "projectCoordinator", "certificationOperator", "shopperEvaluator"],
     "academia": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "financeOperator", "certificationOperator", "clientBrandAdmin", "clientBrandViewer", "shopperEvaluator"],
     "diagnostico": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator"],
-    "administrabilidad": ["tenantOwner", "franchiseOwner", "countryRepresentative"]
+    "administrabilidad": ["tenantOwner", "franchiseOwner"]
+  },
+  "failClosedPolicy": {
+    "unknownTechnicalRole": "deny",
+    "unknownPersonaType": "deny",
+    "missingScope": "deny",
+    "customPersona": "explicit_mapping_required",
+    "unknownModule": "deny_unless_explicit_allowlist"
   },
   "gates": {
     "roleTaxonomyReview": "allowed_documented",
     "claimsDryRun": "allowed_validator_only",
     "claimsWrite": "blocked_until_explicit_go",
-    "frontendRoleBinding": "blocked_until_claude_or_frontend_alignment",
+    "frontendRoleBinding": "blocked_until_controlled_dev_alignment",
     "productionCutover": "blocked"
   }
 }
