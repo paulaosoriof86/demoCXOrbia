@@ -129,15 +129,14 @@ if (envFiles.length) hardFails.push(`environment_files_present:${envFiles.join('
 checks.sensitiveData = { envFiles };
 
 let copyReport = null;
-const copyOut = outDir ? path.join(outDir, 'copy') : path.join(root, '.tmp/rc-phase-a-predeploy-copy');
 if (exists('tools/quality/tya-p0-operational-copy-scanner.mjs')) {
-  try { execFileSync(process.execPath, ['tools/quality/tya-p0-operational-copy-scanner.mjs', '--out', copyOut], { cwd: root, stdio: 'pipe' }); } catch {}
-  const copyPath = path.join(copyOut, 'p0-operational-copy-report.json');
+  try { execFileSync(process.execPath, ['tools/quality/tya-p0-operational-copy-scanner.mjs'], { cwd: root, stdio: 'pipe' }); } catch {}
+  const copyPath = path.join(root, '_diagnosticos/tya-p0-operational-copy-scan/p0-operational-copy-scan.json');
   if (fs.existsSync(copyPath)) {
     try { copyReport = JSON.parse(fs.readFileSync(copyPath, 'utf8')); } catch { copyReport = null; }
   }
 }
-const copyResidues = copyReport?.sourceHitCount || copyReport?.hitCount || 0;
+const copyResidues = copyReport?.findingsCount || copyReport?.sourceHitCount || copyReport?.hitCount || 0;
 if (copyResidues) warnings.push(`source_lock_copy_items_for_p1_review:${copyResidues}`);
 checks.copy = { scannerExecuted: Boolean(copyReport), sourceResidues: copyResidues };
 

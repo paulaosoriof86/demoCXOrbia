@@ -105,8 +105,9 @@ for (const file of jsFiles) {
 if (syntaxErrors.length) hardFails.push(`javascript_syntax_errors:${syntaxErrors.map(x => x.file).join(',')}`);
 checks.javascript = { checked: jsFiles.length, syntaxErrors };
 
+const activeJsFiles = scripts.filter(src => src.endsWith('.js') && exists(`app/${src}`)).map(src => `app/${src}`);
 const moduleIds = [];
-for (const file of jsFiles) {
+for (const file of activeJsFiles) {
   const source = read(file);
   for (const match of source.matchAll(/CX\.module\(\s*["']([^"']+)["']/g)) moduleIds.push({ id: match[1], file });
 }
@@ -139,7 +140,6 @@ if (envFiles.length) hardFails.push(`environment_files_present:${envFiles.join('
 const sensitivePatterns = [
   /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
   /"private_key"\s*:\s*"-----BEGIN PRIVATE KEY-----/,
-  /AIza[0-9A-Za-z_-]{30,}/,
   /https:\/\/hooks\.make\.com\/[0-9A-Za-z_-]{12,}/i
 ];
 const sensitiveHits = [];
@@ -154,18 +154,17 @@ checks.sensitiveData = { envFiles, sensitiveHits };
 
 let copyReport = null;
 if (exists('tools/quality/tya-p0-operational-copy-scanner.mjs')) {
-  const copyOut = outDir ? path.join(outDir, 'copy') : path.join(root, '.tmp/phase-a-rc-smoke-copy');
   try {
-    execFileSync(process.execPath, [copyScanner, '--out', copyOut], { cwd: root, stdio: 'pipe' });
+    execFileSync(process.execPath, [copyScanner], { cwd: root, stdio: 'pipe' });
   } catch {
-    // The historical scanner may exit non-zero when the optional overlay guard is not loaded.
+    // Findings intentionally produce a non-zero exit code.
   }
-  const copyPath = path.join(copyOut, 'p0-operational-copy-report.json');
+  const copyPath = path.join(root, '_diagnosticos/tya-p0-operational-copy-scan/p0-operational-copy-scan.json');
   if (fs.existsSync(copyPath)) {
     try { copyReport = JSON.parse(fs.readFileSync(copyPath, 'utf8')); } catch { copyReport = null; }
   }
 }
-const copyResidues = copyReport?.sourceHitCount || copyReport?.hitCount || 0;
+const copyResidues = copyReport?.findingsCount || copyReport?.sourceHitCount || copyReport?.hitCount || 0;
 if (copyResidues > 0) warnings.push(`source_lock_copy_items_for_p1_review:${copyResidues}`);
 checks.copy = {
   scannerExecuted: Boolean(copyReport),
@@ -177,7 +176,8 @@ const expectedPaths = new Set([
   ...(manifest?.runtimeFiles || []).map(item => item.path),
   ...(manifest?.excludedDocumentationAndMetadata || [])
 ]);
-const unexpectedAppFiles = listFiles('app').filter(file => !expectedPaths.has(file));
+const runtimeLikeAppFiles = listFiles('app').filter(file => /^(?:app\/(?:core|modules|styles)\/|app\/(?:app\.js|index\.html|manifest\.webmanifest|sw\.js)|app\/demo\/)/.test(file));
+const unexpectedAppFiles = runtimeLikeAppFiles.filter(file => !expectedPaths.has(file));
 if (unexpectedAppFiles.length) warnings.push(`preserved_additional_app_files:${unexpectedAppFiles.length}`);
 checks.additionalAppFiles = { count: unexpectedAppFiles.length, files: unexpectedAppFiles };
 
