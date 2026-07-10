@@ -100,17 +100,30 @@ for (const spec of roleSpecs) {
       effectiveRole: window.CX?.session?.effectiveRole?.() || window.CX?.session?.testRole || null,
       view: window.CX?.session?.view || null,
       projectId: window.CX?.data?.currentProjectId || null,
-      railVisible: Boolean(document.querySelector('#rail')?.offsetParent),
-      viewVisible: Boolean(document.querySelector('#view')?.offsetParent),
-      navItems: document.querySelectorAll('#rail [data-nav], #rail .nav-item').length,
+      appOn: document.querySelector('#app')?.classList.contains('on') || false,
+      railRendered: (() => {
+        const el = document.querySelector('#rail');
+        if (!el) return false;
+        const style = getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
+        return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+      })(),
+      viewRendered: (() => {
+        const el = document.querySelector('#view');
+        if (!el) return false;
+        const style = getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
+        return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+      })(),
+      navItems: document.querySelectorAll('#rail button, #rail [data-nav], #rail [data-go], #rail .nav-item').length,
       overlays: document.querySelectorAll('.cx-ov').length,
-      projectSelectors: document.querySelectorAll('#projectSelect,#projectSel,[data-project-select]').length,
-      clientProjectSelectors: document.querySelectorAll('#clientProjectSel,[data-client-project-select]').length,
+      projectSelectors: document.querySelectorAll('#rail select,#projectSelect,#projectSel,[data-project-select]').length,
+      clientProjectSelectors: document.querySelectorAll('#rail select,#clientProjectSel,[data-client-project-select]').length,
       bodyText: document.body.innerText.slice(0, 5000)
     }));
     roleResult.state = state;
 
-    if (!state.railVisible || !state.viewVisible) throw new Error('shell_not_visible');
+    if (!state.appOn || !state.railRendered || !state.viewRendered) throw new Error('shell_not_visible');
     if (state.overlays) roleResult.warnings = [`non_blocking_overlay_count:${state.overlays}`];
     if (spec.expectFailClosed && state.navItems > 0) roleResult.warnings = [...(roleResult.warnings || []), `custom_role_visible_nav_items:${state.navItems}`];
     if (spec.expect?.projectSelector && state.projectSelectors === 0) roleResult.warnings = [...(roleResult.warnings || []), 'admin_project_selector_not_detected'];
