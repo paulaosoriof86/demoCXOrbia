@@ -1,0 +1,49 @@
+name: CXOrbia Phase A Firestore Materialization Plan
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/contracts/phase-a-firestore-materialization-plan-v1.json'
+      - 'backend/config/phase-a-firestore-collection-map-v1.json'
+      - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
+      - 'tools/migration/tya-phase-a-firestore-materialization-plan-validate.mjs'
+      - 'tools/migration/tya-phase-a-firestore-materialization-fixture-validate.mjs'
+      - 'tools/migration/fixtures/phase-a-materialization-*.js'
+      - '.github/workflows/cxorbia-phase-a-firestore-materialization-plan.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'backend/contracts/phase-a-firestore-materialization-plan-v1.json'
+      - 'backend/config/phase-a-firestore-collection-map-v1.json'
+      - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
+      - 'tools/migration/tya-phase-a-firestore-materialization-plan-validate.mjs'
+      - 'tools/migration/tya-phase-a-firestore-materialization-fixture-validate.mjs'
+      - 'tools/migration/fixtures/phase-a-materialization-*.js'
+      - '.github/workflows/cxorbia-phase-a-firestore-materialization-plan.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate zero-write materialization fixture
+        run: node tools/migration/tya-phase-a-firestore-materialization-fixture-validate.mjs
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-firestore-materialization-plan-report
+          path: .tmp/firestore-materialization-fixture
+          if-no-files-found: error
+          retention-days: 14
