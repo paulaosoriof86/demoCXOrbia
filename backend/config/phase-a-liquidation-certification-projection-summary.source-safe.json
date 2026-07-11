@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0.0",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "cutPeriod": "2026-06",
+  "liquidation": {
+    "records": 572,
+    "historicalThroughMay": 528,
+    "june": 44,
+    "juneGT": 34,
+    "juneHN": 10,
+    "juneQ1": 18,
+    "juneQ2": 22,
+    "juneUnknownQuincena": 4,
+    "paidConfirmed": 0,
+    "pendingHistoricalPaymentMatch": 528,
+    "junePendingFinancialSource": 40,
+    "juneConflicts": 4,
+    "amountComplete": 315,
+    "amountPartial": 257,
+    "loteEligible": 0
+  },
+  "certification": {"shoppers": 213,"sourceRecords": 0,"eligibleConfirmed": 0,"pendingSource": 213},
+  "reviewQueue": {"liquidation": 572,"payment": 572,"certification": 213,"total": 1357},
+  "sourceStatus": {"financial": "pending_financial_source","certification": "pending_certification_source"},
+  "sourceSafe": true,
+  "imported": false,
+  "production": false,
+  "writes": false,
+  "providers": false
+}
