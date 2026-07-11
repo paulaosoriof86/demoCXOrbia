@@ -14,15 +14,17 @@
 - Exclusión de campos protegidos.
 - Validación JSON y XLSX: PASS.
 - Dry-run sintético contra índice HR real: PASS.
+- Búsqueda de fuentes limpias en repo/Fuentes documentada; no se encontró archivo utilizable todavía y la búsqueda adicional en File Library falló por error técnico.
 
 ## En progreso
 
-- Ubicar las fuentes limpias de pagos y certificaciones previamente trabajadas.
-- Ejecutar dry-run real cuando estén disponibles.
+- Recuperar el export limpio de pagos/movimientos ya trabajado.
+- Recuperar el export limpio de certificaciones presentadas.
 - Smoke visual source-safe R4.
 
 ## Pendiente backend
 
+- Ejecutar dry-run real cuando las dos fuentes estén disponibles.
 - Revisión humana de candidatos reales.
 - Materialización en Firebase nueva y limpia.
 - Switch único de `CX.data`.
@@ -40,7 +42,7 @@ Predeploy HOLD. Import real HOLD. Materialización HOLD.
 
 ## Siguiente bloque exacto
 
-1. Buscar y recuperar las fuentes limpias ya trabajadas de pagos y certificaciones presentadas.
-2. Ejecutar los importadores en dry-run sin pedir nuevamente la lógica.
-3. Si las fuentes no están en repo/Fuentes, pedir únicamente los archivos puntuales faltantes.
-4. Paralelamente preparar smoke visual source-safe R4.
+1. Preparar el smoke visual source-safe R4 por rol y módulo mientras se recuperan los archivos limpios.
+2. Ejecutar los importadores en dry-run al recibir únicamente los dos archivos puntuales faltantes.
+3. No pedir nuevamente lógica HR, Q1/Q2, shoppers, montos o carryover.
+4. Después del smoke y dry-run real, preparar materialización en base nueva limpia.
