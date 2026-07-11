@@ -1,0 +1,9 @@
+{
+  "certifications": [
+    {"shopperId":"shopper_gt_001","projectId":"cinepolis","certificationId":"cinepolis-main","score":90,"presentedAt":"2025-05-10","state":"approved","sourceRef":"sanitized:legacy-certifications:2025","sourceRecordId":"cert-gt-001","reviewedBy":"user:admin-001","reviewedAt":"2026-07-11","reviewDecision":"accepted","email":"hidden@example.com"},
+    {"shopperId":"shopper_gt_001","projectId":"cinepolis","certificationId":"cinepolis-main","score":90,"presentedAt":"2025-05-10","state":"approved","sourceRef":"sanitized:legacy-certifications:2025","sourceRecordId":"cert-gt-001","reviewedBy":"user:admin-001","reviewedAt":"2026-07-11","reviewDecision":"accepted"},
+    {"shopperCode":"TYA_HN_001","projectId":"cinepolis","certificationId":"cinepolis-main","score":85,"presentedAt":"2025-05-11","state":"approved","sourceRef":"sanitized:legacy-certifications:2025","sourceRecordId":"cert-hn-001"},
+    {"shopperName":"Shopper Example","projectId":"cinepolis","certificationId":"cinepolis-main","score":82,"presentedAt":"2025-05-12","state":"approved","sourceRef":"sanitized:legacy-certifications:2025","sourceRecordId":"cert-name-only"},
+    {"shopperId":"shopper_unknown","projectId":"cinepolis","certificationId":"cinepolis-main","score":88,"presentedAt":"2025-05-13","state":"approved","sourceRef":"sanitized:legacy-certifications:2025","sourceRecordId":"cert-unknown","reviewedBy":"user:admin-001","reviewedAt":"2026-07-11","reviewDecision":"accepted"}
+  ]
+}
