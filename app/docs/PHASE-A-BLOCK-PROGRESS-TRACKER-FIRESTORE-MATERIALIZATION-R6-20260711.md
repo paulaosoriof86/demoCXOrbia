@@ -10,6 +10,7 @@
 - Pagos, lotes financieros y certificaciones bloqueados por falta de fuente separada.
 - Validación de paths, seguridad, relaciones y estados: PASS.
 - Fixture y workflow CI preparados.
+- Workflow `CXOrbia Phase A Firestore Materialization Plan`: SUCCESS.
 
 ## Avance del plan de trabajo
 
@@ -19,7 +20,6 @@ Este bloque adelanta la creación de la base nueva y limpia sin tocar todavía F
 
 - Claude corrige V104.
 - Recuperación de exports limpios de pagos y certificaciones.
-- Ejecución del workflow CI del bloque R6.
 
 ## Pendiente backend
 
@@ -31,7 +31,8 @@ Este bloque adelanta la creación de la base nueva y limpia sin tocar todavía F
 ## Gate
 
 Plan local: PASS.  
-Workflow CI: pendiente de conclusión.  
+Workflow CI: PASS.  
+Drift/predeploy visual: HOLD controlado.  
 Materialización: HOLD.  
 Firebase writes: 0.  
 Deploy/producción: HOLD.
