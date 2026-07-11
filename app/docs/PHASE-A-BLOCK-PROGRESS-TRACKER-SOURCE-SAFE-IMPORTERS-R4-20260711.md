@@ -14,12 +14,12 @@
 - Exclusión de campos protegidos.
 - Validación JSON y XLSX: PASS.
 - Dry-run sintético contra índice HR real: PASS.
-- Búsqueda de fuentes limpias en repo/Fuentes documentada; no se encontró archivo utilizable todavía y la búsqueda adicional en File Library falló por error técnico.
+- Búsqueda de fuentes limpias documentada; no se encontró archivo utilizable y File Library falló técnicamente.
 
 ## En progreso
 
-- Recuperar el export limpio de pagos/movimientos ya trabajado.
-- Recuperar el export limpio de certificaciones presentadas.
+- Recuperar export limpio de pagos/movimientos.
+- Recuperar export limpio de certificaciones presentadas.
 - Smoke visual source-safe R4.
 
 ## Pendiente backend
@@ -42,7 +42,7 @@ Predeploy HOLD. Import real HOLD. Materialización HOLD.
 
 ## Siguiente bloque exacto
 
-1. Preparar el smoke visual source-safe R4 por rol y módulo mientras se recuperan los archivos limpios.
-2. Ejecutar los importadores en dry-run al recibir únicamente los dos archivos puntuales faltantes.
+1. Preparar smoke visual source-safe R4 por rol y módulo.
+2. Ejecutar dry-run al recibir únicamente los dos archivos puntuales faltantes.
 3. No pedir nuevamente lógica HR, Q1/Q2, shoppers, montos o carryover.
 4. Después del smoke y dry-run real, preparar materialización en base nueva limpia.
