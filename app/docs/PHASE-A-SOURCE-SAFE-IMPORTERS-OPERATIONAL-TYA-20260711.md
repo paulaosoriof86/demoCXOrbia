@@ -45,6 +45,12 @@ Un carryover solo queda aceptado en dry-run cuando tiene match exacto de shopper
 
 Los registros de prueba son sintéticos contra IDs source-safe reales. No representan pagos o certificaciones reales importados.
 
+## Estado de las fuentes reales
+
+Se revisaron maestro/addenda, repo, herramientas y Fuentes disponibles. Se recuperaron reglas e histórico, pero no se localizó todavía un archivo limpio utilizable de pagos/movimientos ni de certificaciones presentadas. La búsqueda adicional en File Library falló por error técnico del servicio. El estado exacto queda en `app/docs/SOURCE-SEARCH-STATUS-PAYMENTS-CERTIFICATIONS-R4-20260711.md`.
+
+No se volverán a pedir reglas ya documentadas. Cuando corresponda, solo harán falta los dos exports puntuales sanitizados.
+
 ## Estado seguro
 
 Sin deploy, merge, import real, Firestore/Auth/Storage writes, HR writeback, Make, Gemini, pagos ni producción.
