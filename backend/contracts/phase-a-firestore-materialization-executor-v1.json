@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-firestore-materialization-executor-v1",
+  "purpose": "Fail-closed executor for a previously validated create-only Phase A materialization plan.",
+  "defaultMode": "preflight",
+  "allowedTargets": ["emulator", "dev_clean"],
+  "executionPolicy": {
+    "emulator": "allowed_only_with_explicit_environment_gates",
+    "dev_clean": "blocked_in_v1_pending_separate_authorization_and_clean_state_evidence",
+    "production": "forbidden"
+  },
+  "requiredPlan": {
+    "mode": "dry_run",
+    "operation": "create",
+    "precondition": "exists_false",
+    "uniquePaths": true,
+    "safeState": {"writes": false, "imported": false, "production": false}
+  },
+  "requiredAttestation": [
+    "targetType",
+    "targetProjectId",
+    "cleanState",
+    "checkedAt",
+    "checkedBy",
+    "allowedPlanId",
+    "allowedPlanSha256",
+    "writesAuthorized",
+    "expiresAt"
+  ],
+  "emulatorExecutionEnvironment": {
+    "FIRESTORE_EMULATOR_HOST": "required",
+    "GCLOUD_PROJECT": "must_match_attestation",
+    "CXORBIA_ALLOW_EMULATOR_WRITES": "true",
+    "CXORBIA_FIRESTORE_EXECUTION_APPROVAL": "planId:planSha256"
+  },
+  "writeRules": {
+    "maxOperationsPerBatch": 400,
+    "existingDocumentPolicy": "block_all",
+    "operation": "create",
+    "automaticRollback": false,
+    "reportDataPolicy": "paths_and_counts_only"
+  },
+  "safeState": {
+    "enabledByDefault": false,
+    "writesByDefault": false,
+    "devWrites": false,
+    "productionWrites": false,
+    "providers": false
+  }
+}
