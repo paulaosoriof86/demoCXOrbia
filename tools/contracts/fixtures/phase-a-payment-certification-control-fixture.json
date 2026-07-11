@@ -1,0 +1,36 @@
+{
+  "paymentCases": [
+    {
+      "id": "liquidated-not-paid",
+      "record": {"tenantId":"tya","projectId":"cinepolis","visitId":"visit-safe-1","liquidationId":"liq-safe-1","visitState":"liquidated","paymentState":"pending_confirmation","realizedAt":"2026-06-20"},
+      "expected": {"valid": true, "paid": false}
+    },
+    {
+      "id": "confirmed-paid",
+      "record": {"tenantId":"tya","projectId":"cinepolis","liquidationId":"liq-safe-2","paymentBatchId":"batch-opaque-1","paymentState":"paid","paidAt":"2026-07-04","realizedAt":"2026-06-20","paymentSource":"finance_control","confirmedBy":"user-ref-1","auditRef":"audit-ref-1"},
+      "expected": {"valid": true, "paid": true}
+    },
+    {
+      "id": "invalid-realized-as-paid",
+      "record": {"tenantId":"tya","projectId":"cinepolis","liquidationId":"liq-safe-3","paymentBatchId":"batch-opaque-2","paymentState":"paid","paidAt":"2026-06-20","realizedAt":"2026-06-20","paymentSource":"finance_control","confirmedBy":"user-ref-2","auditRef":"audit-ref-2"},
+      "expected": {"valid": false, "paid": false}
+    }
+  ],
+  "certificationCases": [
+    {
+      "id": "evidence-pending-review",
+      "record": {"tenantId":"tya","projectId":"cinepolis","shopperId":"shopper-safe-1","certificationId":"cert-safe-1","sourceRef":"source-safe-ref-1","state":"evidence_present"},
+      "expected": {"valid": true, "eligible": false}
+    },
+    {
+      "id": "valid-carryover",
+      "record": {"tenantId":"tya","projectId":"cinepolis","shopperId":"shopper-safe-2","certificationId":"cert-safe-2","sourceRef":"source-safe-ref-2","state":"carried_over","presentedAt":"2026-05-10","reviewedBy":"user-ref-3","reviewedAt":"2026-07-11","auditRef":"audit-ref-3"},
+      "expected": {"valid": true, "eligible": true}
+    },
+    {
+      "id": "invalid-preview-eligibility",
+      "record": {"tenantId":"tya","projectId":"cinepolis","shopperId":"shopper-safe-3","certificationId":"cert-safe-3","sourceRef":"source-safe-ref-3","state":"approved_preview"},
+      "expected": {"valid": false, "eligible": false}
+    }
+  ]
+}
