@@ -58,11 +58,75 @@ CX.intStore = {
     {id:'openbanking', cat:'DATOS Y FACTURACIÓN', icon:'🏦', n:'Banca / Open Banking', desc:'Importar movimientos y conciliar estados de cuenta automáticamente.', cfg:['api_key'], plan:'enterprise'},
   ],
   state(){ if(this._state)return this._state;try{this._state=JSON.parse(localStorage.getItem(this._key)||'{}');}catch(e){this._state={};} return this._state; },
+  /* Bloque 2 (auditoría V100 — corrección exacta): "activar el toggle" es una SOLICITUD del
+     tenant, nunca una conexión real. `isOn()` se conserva por compatibilidad de nombre (el toggle
+     visual sigue funcionando igual), pero ya no se usa para decidir el copy "activa"/"conectada" —
+     eso ahora depende exclusivamente de `connectionRef()`, que este prototipo nunca emite. */
   isOn(id){ return !!this.state()[id]; },
+  /* connectionRef: SOLO un backend real podría emitirlo tras confirmar la integración. Este
+     prototipo nunca llama a un proveedor real, así que SIEMPRE es null — no se fabrica. */
+  connectionRef(id){ return null; },
+  /* Estados canónicos separados — nunca se cuenta una solicitud como "activa"/"configurada":
+     - not_requested: toggle apagado.
+     - requested: toggle encendido, sin campos sensibles que requieran valor (o sin cfg definido).
+     - pending_backend: toggle encendido Y al menos un campo sensible marcado "listo" (`_set`).
+     - configured / connected: solo alcanzables si `connectionRef(id)` no es null — nunca ocurre aquí. */
+  status(id){
+    if(this.connectionRef(id)) return 'configured';
+    if(!this.isOn(id)) return 'not_requested';
+    const item=this.ITEMS.find(i=>i.id===id);
+    const cfg=this.state()[id+'_cfg'];
+    const hasSensitiveReady = cfg && (item&&item.cfg||[]).some(k=>this._isSensitive(k) && cfg[k+'_set']);
+    return hasSensitiveReady ? 'pending_backend' : 'requested';
+  },
   toggle(id){ const s=this.state(); s[id]=!s[id]; try{localStorage.setItem(this._key,JSON.stringify(s));}catch(e){} CX.bus&&CX.bus.emit('integraciones'); },
-  setConfig(id,cfg){ const s=this.state(); if(!s[id+'_cfg'])s[id+'_cfg']={}; Object.assign(s[id+'_cfg'],cfg); try{localStorage.setItem(this._key,JSON.stringify(s));}catch(e){} },
+  /* P0-3 (paquete genérico 20260711 — "integraciones/automatizaciones honestas"): eliminado
+     `_opaqueRef()` — ya no se fabrica ningún `ref_...` local para simular que un campo sensible
+     quedó "conectado". Para campos sensibles (api_key, token, pass, webhook_url, client_id,
+     bot_token, host, port, oauth) solo se persiste la INTENCIÓN (`<campo>_set:true/false`) de que
+     el tenant quiere activar esa integración — nunca un valor ni una referencia que aparente una
+     credencial o conexión real. Un `connectionRef` real solo puede emitirlo un backend autorizado;
+     este prototipo no tiene uno, así que ninguna integración con campos sensibles puede reportar
+     "configurado" — siempre queda en estado `pending_backend`. */
+  SENSITIVE:['api_key','token','pass','webhook_url','client_id','bot_token','host','port','oauth'],
+  _isSensitive(k){ return this.SENSITIVE.includes(k); },
+  setConfig(id,cfg){
+    const s=this.state(); if(!s[id+'_cfg'])s[id+'_cfg']={};
+    Object.entries(cfg).forEach(([k,v])=>{
+      if(this._isSensitive(k)){
+        /* nunca se guarda el valor real ni una referencia fabricada — solo la intención */
+        s[id+'_cfg'][k+'_set']=!!(v&&String(v).trim());
+      } else {
+        s[id+'_cfg'][k]=v;
+      }
+    });
+    try{localStorage.setItem(this._key,JSON.stringify(s));}catch(e){}
+  },
   getConfig(id){ return this.state()[id+'_cfg']||{}; },
+  /* P0.2 (V98 instrucciones exactas): purga irreversible de secretos heredados guardados en claro
+     por versiones anteriores a esta corrección. Corre una vez por carga; idempotente (no hace nada
+     si ya no quedan valores en claro). Nunca convierte el secreto heredado en una referencia — lo
+     descarta y deja el campo como "pendiente backend", nunca como "configurado". */
+  _purgeLegacySecrets(){
+    try{
+      const s=this.state(); let changed=false;
+      this.ITEMS.forEach(item=>{
+        const cfgKey=item.id+'_cfg'; const cfg=s[cfgKey]; if(!cfg) return;
+        (item.cfg||[]).forEach(k=>{
+          if(this._isSensitive(k) && Object.prototype.hasOwnProperty.call(cfg,k)){
+            delete cfg[k]; cfg[k+'_set']=false; delete cfg[k+'_ref']; cfg.legacySecretPurged=true; changed=true;
+          }
+          /* purga también cualquier `_ref` fabricado por una versión anterior, aunque el valor
+             crudo ya no exista (setConfig ya no los genera, pero pudieron quedar guardados) */
+          if(cfg[k+'_ref']){ delete cfg[k+'_ref']; changed=true; }
+        });
+        if(cfg.legacySecretPurged){ s[item.id]=false; /* nunca "configurada" solo por un secreto heredado descartado */ }
+      });
+      if(changed) localStorage.setItem(this._key, JSON.stringify(s));
+    }catch(e){}
+  },
 };
+CX.intStore._purgeLegacySecrets();
 
 CX.module('integraciones', ({ui,data})=>{
   const host=ui.el('div');
@@ -71,52 +135,73 @@ CX.module('integraciones', ({ui,data})=>{
   const canUse=(p)=> (planLevel[p]||0) <= (planLevel[PLAN]||0);
 
   const configModal=(item)=>{
-    if(!item.cfg||!item.cfg.length){ui.toast(item.n+' activado','ok');return;}
+    if(!item.cfg||!item.cfg.length){
+      /* Bloque B (auditoría V101 — 20260711): una integración sin campos de configuración
+         NO tiene conexión real solo por activar el toggle — antes decía "activado" sin más.
+         Se mantiene el mismo estado canónico (requested/pending_backend) que las demás. */
+      if(!CX.intStore.isOn(item.id))CX.intStore.toggle(item.id);
+      draw();ui.toast(item.n+': solicitud registrada · pendiente de conexión real por backend','ok',3200);
+      return;
+    }
     const cfg=CX.intStore.getConfig(item.id);
     const LABELS={api_key:'API Key',webhook_url:'Webhook URL',email:'Correo',token:'Token de acceso',host:'Host / servidor',port:'Puerto',pass:'Contraseña',client_id:'Client ID',model:'Modelo',phone:'Número de teléfono',calendar_id:'Calendar ID',folder_id:'Folder ID',sheet_url:'URL de Hoja',form_id:'Form ID',report_url:'Report URL',oauth:'OAuth',nit:'NIT / RUT',page_id:'Page ID',notebook_url:'URL Notebook',bot_token:'Bot Token',channel_id:'Channel ID'};
     ui.modal('⚙️ Configurar · '+item.n,`
       <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">${item.desc}</p>
       <div style="display:flex;flex-direction:column;gap:10px">
-        ${item.cfg.map(k=>`<div><label class="lbl">${LABELS[k]||k}</label><input class="inp cfg-fld" data-k="${k}" value="${(cfg[k]||'').replace(/"/g,'&quot;')}" type="${k==='pass'?'password':'text'}" placeholder="${LABELS[k]||k}…"></div>`).join('')}
+        ${item.cfg.map(k=>{
+          const sens=CX.intStore._isSensitive(k);
+          if(sens){
+            const isSet=cfg[k+'_set'];
+            /* P0.4 (auditoría V99): ya no se invita a pegar un secreto real — no hay input de texto
+               para campos sensibles. Solo una casilla para marcar "listo para que el backend lo
+               conecte" (una preferencia/checklist, nunca una credencial). */
+            return `<div><label class="flex" style="gap:8px;font-size:12.5px;color:var(--t1)"><input type="checkbox" class="cfg-fld-check" data-k="${k}" ${isSet?'checked':''}> ${LABELS[k]||k} — marcar como listo para conectar (el backend pedirá el valor real por su propio canal seguro)</label>
+              <div style="font-size:10px;color:var(--t3);margin-top:2px;margin-left:24px">🔒 Este prototipo nunca solicita ni guarda el valor real — no hay campo para pegarlo aquí.</div></div>`;
+          }
+          return `<div><label class="lbl">${LABELS[k]||k}</label><input class="inp cfg-fld" data-k="${k}" value="${(cfg[k]||'').replace(/"/g,'&quot;')}" type="text" placeholder="${LABELS[k]||k}…"></div>`;
+        }).join('')}
       </div>
       <div class="between" style="margin-top:14px"><button class="btn btn-ghost btn-sm" id="cfTest">🔌 Probar conexión</button><button class="btn btn-pr btn-sm" id="cfSave">Guardar configuración</button></div>
-      <div style="font-size:10.5px;color:var(--t3);margin-top:8px">🔒 En producción, las credenciales se guardan de forma segura en el backend (no en el navegador). Aquí se guardan localmente solo para configurar el flujo.</div>
+      <div style="font-size:10.5px;color:var(--t3);margin-top:8px">🔒 Las credenciales y endpoints reales las gestiona el backend en producción — este prototipo nunca las pide, las envía a ningún proveedor, ni las conserva en el navegador.</div>
     `,{onMount:(ov,close)=>{
-      ov.querySelector('#cfTest').addEventListener('click',()=>ui.toast('⚠️ Prueba simulada · la validación real de credenciales ocurre en el backend de producción.','',3600));
+      ov.querySelector('#cfTest').addEventListener('click',()=>{if(!CX.permissions.gate('integration.test',CX.permissions.ctx(),ui))return;ui.toast('⚠️ Prueba simulada · la validación real de credenciales ocurre en el backend de producción.','',3600);});
       ov.querySelector('#cfSave').addEventListener('click',()=>{
-        const patch={};ov.querySelectorAll('.cfg-fld').forEach(i=>{patch[i.dataset.k]=i.value.trim();});
+        if(!CX.permissions.gate('integration.configure',CX.permissions.ctx(),ui)) return;
+        const patch={};
+        ov.querySelectorAll('.cfg-fld').forEach(i=>{patch[i.dataset.k]=i.value.trim();});
+        ov.querySelectorAll('.cfg-fld-check').forEach(i=>{patch[i.dataset.k]=i.checked?'__CHECKED__':'';});
         CX.intStore.setConfig(item.id,patch);if(!CX.intStore.isOn(item.id))CX.intStore.toggle(item.id);
-        close();draw();ui.toast(item.n+' configurado · pendiente de validación en backend','ok',3200);
+        close();draw();ui.toast(item.n+': preferencia guardada · pendiente de conexión real por backend','ok',3200);
       });
     }});
   };
 
   const card=(item)=>{
     const on=CX.intStore.isOn(item.id); const ok=canUse(item.plan);
-    const cfg=CX.intStore.state()[item.id+'_cfg'];
-    const hasCfg=cfg&&Object.values(cfg).some(v=>v);
-    /* estado honesto: sin backend real, una integración configurada queda "pendiente de validación" */
-    const estado = on ? (hasCfg?{t:'Configurado · pendiente backend',c:'a'}:{t:'Activo · simulado',c:'b'}) : {t:'Inactivo',c:'n'};
+    const status=CX.intStore.status(item.id);
+    /* estado honesto (Bloque 2 — corrección exacta): 'requested' ≠ 'pending_backend' ≠
+       'configured'/'connected' — nunca se etiqueta una solicitud como si fuera una conexión real. */
+    const estado = status==='not_requested' ? ui.bdg('Inactivo','n') : ui.statusBdg(status);
     const planBadge=!ok?ui.bdg(item.plan.toUpperCase(),'r'):(item.recommended?ui.bdg('recomendado','g'):'');
     return `<div class="card ${on?'':''}" style="padding:14px 16px;background:${on?'var(--brand-light)':'var(--panel)'};border:1px solid ${on?'var(--brand)':'var(--border)'};border-radius:12px;display:flex;flex-direction:column;gap:8px">
       <div class="flex" style="gap:10px;align-items:flex-start"><div style="font-size:22px">${item.icon}</div>
         <div style="flex:1"><div class="flex" style="gap:6px;align-items:center;flex-wrap:wrap"><b style="font-size:13px">${item.n}</b>${planBadge}</div>
           <div style="font-size:11.5px;color:var(--t3);margin-top:2px">${item.desc}</div>
-          <div style="margin-top:5px">${ui.bdg(estado.t,estado.c)}</div></div></div>
+          <div style="margin-top:5px">${estado}</div></div></div>
       <div class="between" style="margin-top:2px">
         <label class="flex" style="cursor:${ok?'pointer':'not-allowed'};gap:6px;align-items:center">
           <input type="checkbox" class="intTog" data-id="${item.id}" ${on?'checked':''} ${!ok?'disabled':''} style="width:18px;height:18px;cursor:${ok?'pointer':'not-allowed'}">
-          <span style="font-size:11px;color:${on?'var(--brand)':'var(--t3)'};font-weight:700">${on?'Activar en backend':'Inactivo'}</span></label>
+          <span style="font-size:11px;color:${on?'var(--brand)':'var(--t3)'};font-weight:700">${on?'Solicitud registrada':'Inactivo'}</span></label>
         ${ok?`<button class="btn btn-ghost btn-sm intCfg" data-id="${item.id}" style="padding:2px 8px;font-size:10.5px">⚙️ Config.</button>`:'<span style="font-size:10px;color:var(--t3)">Plan '+item.plan+'</span>'}
       </div></div>`;
   };
 
   const draw=()=>{
     const items=CX.intStore.ITEMS;
-    const activeCount=items.filter(i=>CX.intStore.isOn(i.id)).length;
+    const activeCount=items.filter(i=>CX.intStore.status(i.id)!=='not_requested').length;
     host.innerHTML=`
       <div class="between" style="margin-bottom:6px"><div>${ui.ph('Integraciones & Add-ons','Conecta tu ecosistema — activables por plan · configura una vez, funciona en toda la plataforma')}</div>
-        <div class="flex" style="gap:8px"><span class="bdg bdg-g">${activeCount} activas</span></div></div>
+        <div class="flex" style="gap:8px"><span class="bdg bdg-a">${activeCount} solicitada(s) · pendiente(s) de backend</span></div></div>
       <div style="background:var(--brand-light);border-radius:10px;padding:11px 14px;font-size:12.5px;color:var(--brand-dark);margin-bottom:16px">
         ⚡ <b>Receta de automatización inteligente:</b> IA (Gemini/Claude) redacta → Canva/Gamma crean piezas → Metricool programa y publica → Make/Zapier orquesta → NotebookLM alimenta el conocimiento del cliente y la Academia.
       </div>
@@ -126,11 +211,11 @@ CX.module('integraciones', ({ui,data})=>{
         return `<div style="margin-bottom:20px"><div style="font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--border-2);padding-bottom:6px;margin-bottom:10px">${cat}</div>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px">${catItems.map(card).join('')}</div></div>`;
       }).join('')}
-      <div style="margin-top:8px">${ui.aiBox('Cada integración activa alimenta los módulos correspondientes: WhatsApp para notificaciones y recordatorios, Sheets para HR viva, Gemini para toda la IA de la plataforma, Metricool para publicar contenido de Marketing, Make para automatizar flujos. Configura una vez, funciona en todo.','Ecosistema conectado')}</div>`;
+      <div style="margin-top:8px">${ui.aiBox('Cada integración solicitada queda pendiente de conexión real por backend antes de operar de extremo a extremo (WhatsApp, Sheets, Gemini, Metricool, Make, etc.). El prototipo registra la intención y el estado; el backend de producción confirma la conexión.','Ecosistema — estado honesto por integración')}</div>`;
     host.querySelectorAll('.intTog').forEach(c=>c.addEventListener('change',()=>{
       const item=CX.intStore.ITEMS.find(i=>i.id===c.dataset.id);
       if(c.checked&&item&&item.cfg&&item.cfg.length){c.checked=false;configModal(item);}
-      else{CX.intStore.toggle(c.dataset.id);draw();ui.toast(c.checked?item.n+' activado':item.n+' desactivado','ok');}
+      else{CX.intStore.toggle(c.dataset.id);draw();ui.toast(c.checked?item.n+': solicitud registrada · pendiente de conexión real por backend':item.n+': solicitud retirada','ok');}
     }));
     host.querySelectorAll('.intCfg').forEach(b=>b.addEventListener('click',()=>{
       const item=CX.intStore.ITEMS.find(i=>i.id===b.dataset.id);if(item)configModal(item);

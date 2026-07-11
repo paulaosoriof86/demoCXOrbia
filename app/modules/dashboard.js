@@ -97,22 +97,29 @@ CX.module('dashboard', ({data,ui})=>{
   const cobNow=Math.min(100,Math.round(k.asignadas.t/Math.max(k.total.t,1)*100));
   const realNow=k.realizadas.t;
   const margenNow=(()=>{const fp=CX.fin?CX.fin.porPais(data):null;if(!fp)return 38;const cs=Object.keys(fp);const m=cs.reduce((a,c)=>a+(fp[c].margenPct||0),0)/(cs.length||1);return Math.round(m);})();
-  const back=(now,step,floor)=>[Math.max(floor==null?0:floor,now-step*2),Math.max(floor==null?0:floor,now-step),now];
+  /* Bloque A (auditoría V101 — 20260711): el comparativo trimestral fabricaba SIEMPRE valores
+     históricos (Días Real→Submit fijo [3.1,2.8,2.6]; visitas previas como 62%/82% del mes actual)
+     sin ningún guard de modo — presentándolos como si fueran periodos reales. Fuera de demo se
+     muestra únicamente el periodo actual (real) y los dos meses previos se marcan explícitamente
+     "sin fuente" en vez de calcularse con una fórmula sintética. */
+  const _showFixturesDash = CX.dataSource ? CX.dataSource.showFixtures() : true;
+  const back=(now,step,floor)=>_showFixturesDash?[Math.max(floor==null?0:floor,now-step*2),Math.max(floor==null?0:floor,now-step),now]:[null,null,now];
   const kpisTrim=[
     {n:'% Cumplimiento', vals:back(cumplNow,8,0), suf:'%', up:true},
-    {n:'Días Real→Submit', vals:[3.1,2.8,2.6], suf:'d', up:false},
-    {n:'Visitas realizadas', vals:[Math.round(realNow*0.62),Math.round(realNow*0.82),realNow], suf:'', up:true},
+    {n:'Días Real→Submit', vals:_showFixturesDash?[3.1,2.8,2.6]:[null,null,null], suf:'d', up:false},
+    {n:'Visitas realizadas', vals:_showFixturesDash?[Math.round(realNow*0.62),Math.round(realNow*0.82),realNow]:[null,null,realNow], suf:'', up:true},
     {n:'% Cuestionarios a tiempo', vals:back(Math.min(100,cumplNow+6),5,0), suf:'%', up:true},
     {n:'Calidad cuestionario (QA)', vals:back(Math.min(100,cumplNow+8),3,0), suf:'%', up:true},
-    {n:'Tasa de reprogramación', vals:[Math.max(0,12),Math.max(0,9),Math.max(0,Math.round((k.sinAgendar?.t||0)/Math.max(k.total.t,1)*100))], suf:'%', up:false},
+    {n:'Tasa de reprogramación', vals:_showFixturesDash?[Math.max(0,12),Math.max(0,9),Math.max(0,Math.round((k.sinAgendar?.t||0)/Math.max(k.total.t,1)*100))]:[null,null,Math.max(0,Math.round((k.sinAgendar?.t||0)/Math.max(k.total.t,1)*100))], suf:'%', up:false},
     {n:'Cobertura de sucursales', vals:back(cobNow,9,0), suf:'%', up:true},
     {n:'Margen neto', vals:back(margenNow,3,0), suf:'%', up:true},
   ];
   const trimRows=kpisTrim.map(r=>{
-    const delta=r.vals[2]-r.vals[1]; const good=r.up?delta>=0:delta<=0;
-    const fmt=(v)=>r.suf==='d'?v.toFixed(2)+'d':v+r.suf;
+    const hasPrev=r.vals[0]!=null && r.vals[1]!=null;
+    const delta=hasPrev?r.vals[2]-r.vals[1]:null; const good=hasPrev?(r.up?delta>=0:delta<=0):null;
+    const fmt=(v)=>v==null?'—':(r.suf==='d'?v.toFixed(2)+'d':v+r.suf);
     return `<tr><td><b>${r.n}</b></td>${r.vals.map((v,i)=>`<td style="${i===2?'font-weight:800;color:var(--t1)':''}">${fmt(v)}</td>`).join('')}
-      <td style="color:${good?'var(--green)':'var(--red)'};font-weight:700">${delta>=0?'▲ +':'▼ '}${Math.abs(delta)}${r.suf}</td></tr>`;
+      <td style="color:${hasPrev?(good?'var(--green)':'var(--red)'):'var(--t3)'};font-weight:700">${hasPrev?(delta>=0?'▲ +':'▼ ')+Math.abs(delta)+r.suf:'sin fuente'}</td></tr>`;
   }).join('');
 
   const host=ui.el('div');

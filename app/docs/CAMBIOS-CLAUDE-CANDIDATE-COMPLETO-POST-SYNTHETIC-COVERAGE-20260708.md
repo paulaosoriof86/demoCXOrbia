@@ -393,6 +393,155 @@ configurada (tal como pide la regla del paquete).
 Verificado en vivo: el `<link rel="manifest">` ahora apunta a una blob URL generada dinámicamente en vez
 del archivo estático; sintaxis OK; sin errores de consola.
 
+## Auditoría forense V97 (20260710) — bloqueadores reales corregidos, sin reabrir avances previos
+
+**Contexto:** la auditoría forense externa confirmó que V97 preservaba 96/100 archivos idénticos (0 agregados/
+eliminados fuera de los 4 tocados, 0 errores de sintaxis, 0 scripts duplicados/faltantes) y validó los avances de
+la ronda anterior (fetch de IA retirado, purga de apiKey, Academia con ciclo de vida parcial, guía de módulos
+profunda). También encontró bloqueadores reales, corregidos en esta ronda sin reabrir nada de lo ya validado:
+
+1. **`CX.ai.ready()`/`ask()` sin fallback garantizado:** `ready()` solo indica preferencia guardada, pero `ask()`
+   siempre rechaza — 4 de los ~13 consumidores (documentos.js ×2, academia.js creación de curso con IA, cert.js
+   banco de preguntas) solo mostraban un toast de error sin producir ningún resultado utilizable. Corregido: los
+   4 ahora tienen heurística local real (extrae texto fuente, arma checklist/instructivo/curso/banco de preguntas
+   básico) igual que ya hacían correctamente marca.js/crm.js/importador.js/correo.js. Se agregó `CX.ai.available()`
+   (siempre `false`) y `CX.ai.preferred()` como alias explícito de `ready()`, para que ningún módulo futuro
+   confunda "hay preferencia guardada" con "hay conexión real".
+2. **Secretos/webhooks en claro en `localStorage`:** `modules/integraciones.js` guardaba api_key/token/webhook_url/
+   pass/client_id/bot_token/host/port/oauth tal cual los tecleaba el usuario. Ahora `CX.intStore.setConfig()`
+   distingue campos sensibles (nunca se guarda el valor, solo `campo_set:true` + una referencia opaca no
+   reversible) de campos identificadores no sensibles (email, calendar_id, sheet_url, etc., que sí se conservan
+   porque no son credenciales). Mismo tratamiento para el webhook de Make/por-automatización en
+   `core/automations.js` (`setHook`/`hook`/`hookConfigured`) y su UI en `modules/automatizaciones.js` — los inputs
+   nunca re-muestran el valor guardado, solo un placeholder "ya configurado".
+3. **`_purgeTestArtifacts()` con ID/título de prueba hardcodeado en código de producto:** eliminado por completo
+   de `modules/academia.js` — no debía existir ahí, fue un parche de sesión anterior que no correspondía dejar en
+   el código entregable.
+4. **Academia con hard-delete:** `delCourse()` ahora es soft-delete (estado `eliminado`, motivo obligatorio,
+   auditado, recuperable con "Ver archivados" + restaurar) — igual patrón que `archiveCourse()`/`restoreCourse()`
+   ya existentes. El botón "Eliminar" solo aparece para cursos personalizados (nunca para contenido seed) y pide
+   motivo antes de confirmar.
+
+**No se tocó:** arquitectura modular, navegación, branding, proyectos/periodos, personas/scopes/usuarios
+invitados, permisos por ruta fail-closed, PWA base, contenido de cursos y manuales ya profundos, Diagnóstico/
+Administrabilidad, conflictos/revisión preview — todo confirmado intacto por la auditoría forense.
+
+**Pendientes netos que siguen sin resolver (arquitectura grande, documentados explícitamente, no de contenido):**
+máquina única `demo/source_safe_preview/connected` con bridge genérico de `CX.data`; permisos por acción sensible
+más allá del fail-closed por ruta/módulo; versionado de caché PWA por build/source lock; separación completa de
+seeds demo fuera de modo demo en Finanzas/Certificaciones/Correo/Soporte/Portales. Su alcance transversal a ~48
+módulos sigue requiriendo una sesión dedicada de refactor, no un parche puntual.
+
+**No se tocó** backend/tools/workflows/secrets/datos reales. Sin PII nueva. Carga verificada sin errores de
+consola; probado en vivo que `setConfig()`/`setHook()` ya no persisten el valor real de un secreto de prueba.
+
+## Paquete INTEGRAL 20260710 — cierre completo de "Academia superficial" (mg3, mg4, guía del portal shopper)
+
+**Continuación directa del hallazgo de la ronda anterior:** tras cerrar mg1/mg2 (Operación + Admin del Proyecto,
+15 módulos), se completó el resto de la guía de módulos con el mismo nivel de profundidad exigido por
+`06-ACADEMIA-INTEGRAL...md` (qué es, por qué importa, flujo con botones reales, cómo validar, errores frecuentes):
+- **mg3 — Capacitación & IA + Finanzas (8 módulos):** Academia, Certificación, Recursos, Soporte IA, Dashboard
+  Financiero, Movimientos, Liquidaciones, Lotes de Pago.
+- **mg4 — Comercial + Configuración (12 módulos):** Costos & Propuestas, CRM, Marketing, Configuración, Consola
+  SaaS, Diagnóstico & Readiness, Administrabilidad, Usuarios & Permisos, Automatizaciones, Integraciones, Correo,
+  Identidad de Marca.
+- **Guía del portal shopper (`s_modguide`, 11 módulos, cursos `smg1`/`smg2`):** mismo nivel de detalle para Mi Día,
+  Mi Perfil, Visitas Disponibles, Reservas & Asignación, Mis Visitas, Academia, Certificación, Recursos, Soporte
+  IA, Mis Beneficios, Tablón — con foco en qué le impide a un shopper recibir más ofertas o cobrar más rápido.
+
+**Auditado y confirmado ya suficientemente profundo (no se tocó):** la guía del portal Cliente (`cl_ruta`,
+lecciones `clr1`-`clr4`) ya tenía prosa extensa con objetivo, contexto y ejemplos — no calificaba como
+superficial, se dejó intacta.
+
+**Con esto queda cerrada la "Guía de módulos" completa de Academia** (admin: 30 módulos en mg1-mg4; shopper: 11
+módulos en smg1-smg2) al nivel de profundidad pedido. El resto de contenido de Academia (cursos temáticos de
+Operación/Finanzas/Inducción por rol, manuales, quizzes) ya tenía la profundidad correcta desde antes — no se
+tocó, no era el hallazgo reportado.
+
+**Pendientes netos que siguen sin ejecutar (arquitectura grande, no contenido — documentado en `01-MATRIZ...md` y
+`02-PENDIENTES-NETOS...md` de este mismo paquete):** máquina única de modo de datos demo/source-safe/connected con
+bridge genérico de `CX.data`; permisos por acción sensible (más allá del fail-closed por ruta/módulo ya
+existente); versionado de caché PWA por build; componentes compartidos de gate/conflicto/vacío-honesto
+reutilizables. Su alcance transversal a ~48 módulos sigue requiriendo una sesión dedicada — no son de contenido
+sino de refactor estructural, y tocar todos a la vez arriesga regresión sin una pasada cuidadosa módulo por módulo.
+
+**No se tocó** backend/tools/workflows/secrets/datos reales. Carga verificada sin errores de consola.
+
+## Paquete INTEGRAL 20260710 — Academia profunda real (mg1/mg2) + confirmación de lo ya atendido
+
+**Sobre este paquete vs. el anterior (mismo día):** el paquete integral sustituye/amplía al acumulado anterior —
+mismo contrato anti-reproceso, más detalle en Academia y catálogo backend replicable. Se auditó contra la matriz
+(`01-MATRIZ...md`) y NO se reabrió nada de la sección A (arquitectura, branding, persistencia, proyecto/periodo,
+fail-closed, personas/scopes, PWA base, revisión, diagnóstico/administrabilidad) — todo confirmado intacto.
+
+**Hallazgo real confirmado por el usuario y corregido — Academia superficial:** la "Guía de módulos" de Academia
+(curso `a_modguide`, lecciones `mg1`/`mg2`) tenía solo 2-3 líneas por módulo ("Beneficio" + "Cómo usar" genéricos)
+— no explicaba flujo completo, botones exactos, datos a ingresar, cómo validar el resultado, errores frecuentes
+ni qué hacer si falla, tal como exige `06-ACADEMIA-INTEGRAL...md` sección 2. Reescritas a fondo con la estructura
+completa pedida:
+- **mg1 — Operación (7 módulos: Mi Día, Dashboard, Visitas Disponibles, Postulaciones, Reservas & Asignación,
+  Shoppers, Reportes & KPIs):** cada uno con qué es/por qué importa, flujo con los botones y selectores reales
+  del código (verificado contra `midia.js`, `dashboard.js`, `postulaciones.js`, `shoppers.js`), cómo validar que
+  funcionó, y errores frecuentes con la causa raíz real (ej. país mal cargado, filtro de proyecto activo, pesos
+  de cuestionario que no suman 100%).
+- **mg2 — Admin del Proyecto (8 módulos: Clientes, Proyectos, Periodos, Histórico, Hojas de Ruta, Fuente de HR,
+  Cuestionarios, Importador):** mismo nivel de profundidad, con foco en cómo un error de set-up aquí se propaga
+  en cascada a Postulaciones/Finanzas/Reportes más adelante.
+
+**Pendiente netamente identificado y NO ejecutado aún (alcance grande, requiere sesión dedicada de contenido):**
+`mg3` (Capacitación & IA + Finanzas, 8 módulos), `mg4` (Comercial + Configuración, 12 módulos), y la guía
+equivalente del portal shopper (`s_modguide`, 11 módulos) siguen en el nivel de profundidad anterior (superficial).
+No se tocaron para evitar entregar una reescritura apurada/de menor calidad que las dos ya hechas — quedan como
+tarea explícita de la próxima sesión, priorizadas en ese orden por volumen de módulos.
+
+**Confirmación de lo ya atendido en rondas anteriores del mismo día (no se repite trabajo):** eliminación de
+fetch directo a proveedores de IA + API key en localStorage; ciclo de vida de cursos personalizados
+(duplicar/archivar/restaurar/versión/auditoría); scope proyecto/cliente en login+router; fail-closed completo de
+`roleCanAccess` (rutas y módulos sin categoría); dedupe de candidatos HR Source; barrido de copy honesto en
+Postulaciones/Automatizaciones/Finanzas/Correo/CRM/Soporte/Dashboard/Topbar — todo eso permanece intacto y no se
+reabrió.
+
+**No se tocó** `backend/`, `tools/`, workflows, contratos, secrets ni datos reales. Sin PII nueva. Carga
+verificada sin errores de consola.
+
+## Paquete 20260710 (acumulado anti-reproceso) — auditoría de preservación + P0 real de seguridad
+
+**Auditoría de preservación (matriz del paquete, resumen):** se contrastó cada capacidad listada como
+`HECHA_EN_CANDIDATA` contra el código actual — arquitectura modular, branding por tenant, persistencia de
+proyectos, agrupación proyecto/periodo con alias, matriz fail-closed, personas/scopes, usuarios invitados, PWA
+base, Academia profunda, flujo de revisión, Diagnóstico/Administrabilidad preview — todas presentes y NO se
+tocaron. Los "patches locales" del punto B de la matriz (copy honesto, indicador de fuente, scope pre-render)
+ya están consolidados en los módulos canónicos de rondas anteriores (V93-V96), no como capas paralelas.
+
+**P0 real encontrado y corregido (sección E/D del paquete — "proveedores fuera del navegador"):**
+`core/automations.js` `CX.ai.ask()` hacía **fetch directo desde el navegador** a
+`generativelanguage.googleapis.com` (Gemini), `api.openai.com` y `api.anthropic.com`, adjuntando la API key
+pegada por el usuario en el header/URL — y esa key se guardaba en claro en `localStorage` (`cx_ai`). Esto es
+exactamente el riesgo que el paquete pide eliminar: una key real tecleada en este prototipo quedaba expuesta a
+cualquiera con acceso al dispositivo/DevTools, y el navegador terminaba actuando como cliente directo de un
+proveedor de pago.
+
+Corregido sin romper la interfaz pública que consumen los módulos (`CX.ai.ask/ready/cfg/save/PROVIDERS` se
+preservan):
+- `ask()` ya **nunca** hace `fetch` a un proveedor real; siempre rechaza con un motivo estructurado y cada
+  módulo cae a su heurística local (comportamiento que ya tenían implementado como fallback).
+- `cfg()`/`save()` ya no aceptan ni persisten `apiKey`/`endpoint`; si un `cx_ai` de una sesión anterior los
+  traía, se purgan automáticamente al leerlo.
+- `ready()` pasa a significar "hay preferencia de proveedor + toggle activo", nunca "hay conexión real".
+- UI (`modules/automatizaciones.js`): se retiró el input de API key; ahora dice explícitamente que el navegador
+  no llama proveedores ni guarda su key, y que el modelo elegido es solo una preferencia para cuando el backend
+  real exista.
+
+**No se tocó** `backend/`, `tools/`, workflows, contratos, secrets ni datos reales — cambio 100% dentro de
+`app/`. No se reabrió ninguna capacidad marcada `HECHA_EN_CANDIDATA`. No se agregó PII.
+
+**Pendientes netos que quedan fuera de esta sesión** (documentados, no implementados — requieren una pasada
+dedicada por su alcance transversal a ~48 módulos): máquina única de modo de datos
+demo/source-safe-preview/connected con bridge genérico de `CX.data`; exclusión mutua de seeds demo fuera de modo
+demo; matriz de permisos por acción sensible (más allá de por ruta, ya fail-closed); PWA cache versionado por
+build. Se priorizó el hallazgo de seguridad real (P0) sobre estas reestructuraciones grandes para evitar
+regresión en una sola pasada.
+
 ## V96 empalme ágil (20260710) — fail-closed completo, scope multi-proyecto, borrador manual explícito
 
 **Preservado de V95:** login invitado con scope, permisos efectivos, persistencia de proyectos, candidates de
@@ -445,6 +594,36 @@ Source, copy honesto acumulado — todo confirmado y no reescrito.
 - Editar usuario ya permite modificar `proyectoId` y `cliente` (antes solo se fijaban al invitar).
 
 **No se tocó** backend/Auth/Firestore/Make/Gemini/pagos reales. No se agregó PII. Carga verificada sin errores.
+
+## Paquete 20260710 — cierre P0/P1 pendientes netos: ciclo de vida Academia + bug de audiencia
+
+**P0/P1 cerrado — "Academia transversal: ciclo de vida completo" (sección B/P0-6 del paquete):** al auditar contra
+`01-MATRIZ-NO-REABRIR-Y-PENDIENTES-NETOS.md`, se confirmó que el contenido profundo (cursos, lecciones, quizzes,
+manuales) y el CRUD básico (crear/editar/eliminar curso, agregar/editar/eliminar lección, categorías) SÍ existían
+— pero duplicar, archivar, restaurar, versión (v) y auditoría (auditRef/log) de cursos personalizados NO
+existían en código, solo estaban documentados como si ya existieran. Implementado en `CX.acadData`
+(`modules/academia.js`), aditivo, sin tocar el contenido seed/base ni el CRUD existente:
+- `duplicateCourse(r,cid)`: clona cualquier curso (seed o personalizado) a uno nuevo personalizado en estado
+  `borrador`, con `auditRef` y `v:1`.
+- `archiveCourse(r,cid,motivo)` / `restoreCourse(r,cid,motivo)`: solo operan sobre cursos personalizados (el
+  contenido seed no se archiva desde el prototipo); motivo obligatorio para archivar; cada operación sube `v` y
+  queda en `auditLog(r)`.
+- `addCourse`/`editCourse` ahora también registran auditoría (`_logAudit`) con motivo, y los cursos nuevos nacen
+  en estado `borrador` (nunca "publicados" directamente, tal como pide el paquete).
+- UI: botones 🧬 Duplicar / 🗄 Archivar / ♻️ Restaurar en cada tarjeta de curso; toggle "Ver archivados" (admin);
+  pill de estado + versión visible en la tarjeta y en el modal de edición.
+
+**Bug funcional real encontrado de paso (no solo el gap de arriba):** los manejadores de "Editar curso/lección"
+y "Crear módulo con IA" calculaban el balde de datos (`rr`) a partir de `role` crudo, ignorando el selector
+"Ver como" (`CX._acadAud`) que el propio admin usa para editar contenido de Shopper/Cliente. Un admin editando
+mientras veía la audiencia "Shopper" en realidad editaba/creaba en el balde de "Consultora". Corregido para que
+los tres flujos respeten `CX._acadAud` igual que ya lo hacía `getCourses()`.
+
+**No se tocó** contenido seed de Academia, CRUD existente, backend/tools/workflows/secrets. Auditoría de
+preservación de los documentos 00-09 del paquete: capacidades de la sección A confirmadas intactas; sección B ya
+consolidada en rondas anteriores salvo este gap de Academia, ahora cerrado; sección D (modo de datos, bridge
+CX.data, permisos por acción, PWA cache por build) sigue como pendiente neto documentado — su alcance
+transversal a ~48 módulos requiere una pasada dedicada para no arriesgar regresión.
 
 ## V94 reauditoría profunda (20260710) — P0 reales cerrados, bug funcional corregido
 

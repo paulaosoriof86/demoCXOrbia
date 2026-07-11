@@ -306,19 +306,19 @@ CX.module('informes', ({data,ui})=>{
     host.querySelectorAll('[data-dl]').forEach(b=>b.addEventListener('click',()=>ui.toast('Descargando: '+(reportes[b.dataset.dl]||['reporte'])[0],'ok')));
     host.querySelector('#newCustom')?.addEventListener('click',()=>{
       const b=Object.entries(reportes).map(([id,r])=>'<option value="'+id+'">'+r[0]+'</option>').join('');
-      ui.modal('＋ Nuevo reporte personalizado','<label class="lbl">Basado en</label><select class="sel" id="nrBase" style="margin-bottom:10px">'+b+'</select><label class="lbl">Nombre</label><input class="inp" id="nrNota" placeholder="Ej. Reporte dirección Q2" style="margin-bottom:10px"><label class="lbl">Columnas a incluir</label><div class="flex wrap" style="gap:8px;margin-bottom:10px">'+['Sucursal','Ciudad/País','Shopper','Estado','Score','Fecha','Honorario','Hallazgos'].map(c=>'<label class="flex" style="gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" class="nrCol" value="'+c+'" checked> '+c+'</label>').join('')+'</div><label class="lbl">O genera con IA (describe qué reporte necesitas)</label><textarea class="inp" id="nrIA" rows="2" placeholder="Ej. compara cumplimiento por país y destaca las 3 sucursales más débiles con recomendaciones" style="margin-bottom:12px"><\/textarea><div style="text-align:right"><button class="btn btn-pr btn-sm" id="nrSave">Crear</button></div>',
+      ui.modal('＋ Nuevo reporte personalizado','<label class="lbl">Basado en</label><select class="sel" id="nrBase" style="margin-bottom:10px">'+b+'</select><label class="lbl">Nombre</label><input class="inp" id="nrNota" placeholder="Ej. Reporte dirección Q2" style="margin-bottom:10px"><label class="lbl">Columnas a incluir</label><div class="flex wrap" style="gap:8px;margin-bottom:10px">'+['Sucursal','Ciudad/País','Shopper','Estado','Score','Fecha','Honorario','Hallazgos'].map(c=>'<label class="flex" style="gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" class="nrCol" value="'+c+'" checked> '+c+'</label>').join('')+'</div><label class="lbl">O describe qué reporte necesitas (se genera con heurística local, sin IA real)</label><textarea class="inp" id="nrIA" rows="2" placeholder="Ej. compara cumplimiento por país y destaca las 3 sucursales más débiles con recomendaciones" style="margin-bottom:12px"><\/textarea><div style="text-align:right"><button class="btn btn-pr btn-sm" id="nrSave">Crear</button></div>',
         {onMount:(ov,close)=>{ov.querySelector('#nrSave').addEventListener('click',()=>{
           const instr=(ov.querySelector('#nrIA').value||'').trim();
-          if(instr && CX.ai && CX.ai.ready()){
-            ui.toast('Generando reporte con '+CX.ai.cfg().model+'…','',2500);
-            const ctx='Datos del proyecto '+p.name+': cumplimiento '+Math.round(k.realizadas.t/Math.max(k.total.t,1)*100)+'%, '+rankSuc.length+' sucursales, ranking: '+rankSuc.slice(0,5).map(s=>s.suc+' '+s.pct+'%').join(', ')+'. Hallazgos: '+hallazgos.map(h=>h[0]).join(', ');
-            CX.ai.ask('Genera un reporte ejecutivo de mystery shopping en HTML (usa <h3>, <p>, <ul>, <table class="tbl"> si aplica). '+instr+'\n\n'+ctx)
-              .then(res=>{const arr=customRpts();arr.push({id:'cr'+Date.now().toString(36),base:ov.querySelector('#nrBase').value,nota:ov.querySelector('#nrNota').value||'Reporte IA',iaHtml:res,fecha:new Date().toISOString().slice(0,10)});saveCustomRpts(arr);close();draw();ui.toast('Reporte IA creado · revísalo e itera','ok',3500);})
-              .catch(e=>{close();ui.toast('Error IA: '+e.message,'warn');});
+          /* P0.1 (V98): heurística local directa — nunca se llama CX.ai.ask() (available() es
+             siempre false en el navegador); nunca bloquea por falta de proveedor configurado. */
+          if(instr){
+            const ctx='Cumplimiento '+Math.round(k.realizadas.t/Math.max(k.total.t,1)*100)+'%, '+rankSuc.length+' sucursales. Ranking: '+rankSuc.slice(0,5).map(s=>s.suc+' '+s.pct+'%').join(', ')+'. Hallazgos: '+hallazgos.map(h=>h[0]).join(', ')+'.';
+            const iaHtml='<h3>Reporte: '+instr+'</h3><p>'+ctx+'</p><p style="color:var(--t3);font-size:11px">Generado con heurística local (sin proveedor de IA real conectado) a partir de la instrucción — completa manualmente el análisis fino.</p>';
+            const arr=customRpts();arr.push({id:'cr'+Date.now().toString(36),base:ov.querySelector('#nrBase').value,nota:ov.querySelector('#nrNota').value||'Reporte (borrador local)',iaHtml,fecha:new Date().toISOString().slice(0,10)});saveCustomRpts(arr);close();draw();ui.toast('Reporte (borrador local) creado · revísalo e itera','ok',3500);
           } else {
             const arr=customRpts();
             arr.push({id:'cr'+Date.now().toString(36),base:ov.querySelector('#nrBase').value,nota:ov.querySelector('#nrNota').value,fecha:new Date().toISOString().slice(0,10)});
-            saveCustomRpts(arr);close();draw();ui.toast(instr?'Configura IA en Integraciones para generar · creado base':'Reporte personalizado creado','ok');
+            saveCustomRpts(arr);close();draw();ui.toast('Reporte personalizado creado','ok');
           }
         });}});
     });

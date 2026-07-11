@@ -69,7 +69,7 @@ CX.module('proyectos', ({data,ui})=>{
         <label class="lbl" style="margin-top:12px">Países / moneda</label>
         <div class="flex wrap" style="gap:6px">${paisChecks}</div>
 
-        <div class="between" style="margin-top:12px"><label class="lbl" style="margin:0">Escenarios evaluados</label><button class="btn btn-soft btn-sm" id="cf_iaEsc">🤖 Extraer del instructivo (IA)</button></div>
+        <div class="between" style="margin-top:12px"><label class="lbl" style="margin:0">Escenarios evaluados</label><button class="btn btn-soft btn-sm" id="cf_iaEsc">🤖 Sugerir (heurística local)</button></div>
         <div id="cf_escChips" class="flex wrap" style="gap:6px;margin:6px 0"></div>
         <div class="flex" style="gap:6px"><input class="inp" id="cf_escNew" placeholder="Agregar escenario…" style="flex:1"><button class="btn btn-soft btn-sm" id="cf_escAdd">＋</button></div>
 

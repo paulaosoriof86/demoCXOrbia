@@ -1,0 +1,570 @@
+{
+  "package": "CORRECCION-V101-CXORBIA-20260711-c",
+  "project": "CXOrbia — Backend y migración a producción TyA",
+  "repoRef": "paulaosoriof86/demoCXOrbia",
+  "namespaceCheck": {
+    "root": "app/",
+    "globalNamespace": "window.CX",
+    "moduleFn": "CX.module(...)",
+    "orbit360Present": false
+  },
+  "baseCandidate": "Prototype development request CXOrbia V101.zip",
+  "generatedAt": "2026-07-11T14:07:27.824Z",
+  "fileCount": 104,
+  "aggregateSha256": "20740dc2f921095c7f3bd5ef086c8876d36f5d3f7a1155d13c1e252530fc3461",
+  "hashAlgorithm": "SHA-256 por archivo; agregado = SHA-256 de la concatenación \"ruta:hash\\n\" (con salto de línea final entre entradas, SIN salto final tras la última) en orden alfabético de ruta, relativa a app/.",
+  "regeneradoTrasSegundaPasada": "Tercera generación de este manifest en la misma entrega V101: (1) inicial, (2) tras cerrar pendientes de botones/entry-points de Academia, (3) esta, tras auditar y gatear las 3 acciones sin permiso en modules/automatizaciones.js (aiProv, aiPick, aiSave) que quedaron fuera del barrido original del Bloque C. Los aggregateSha256 anteriores (711f28f0..., 0cdc3a28...) quedan obsoletos.",
+  "exclusionesDeclaradas": [
+    {
+      "path": "core/build-lock.js",
+      "razon": "declara su propio BUILD_ID derivado de este manifest — incluirlo crearía una referencia circular (el hash cambiaría al escribir el hash)."
+    },
+    {
+      "path": "sw.js",
+      "razon": "service worker con su propio cache-busting; misma razón de exclusión que build-lock.js."
+    },
+    {
+      "path": "docs/MANIFEST-V101-CORRECCION.json",
+      "razon": "es este mismo archivo — no puede incluirse a sí mismo."
+    },
+    {
+      "path": "docs/REPORTE-CORRECCION-V101-20260711.md",
+      "razon": "reporte de esta entrega, generado después del hash — no es código fuente de la app."
+    },
+    {
+      "path": "docs/smoke-v101/*.png",
+      "razon": "evidencia de smoke de ESTA entrega, generada después de calcular el hash — imágenes, no código fuente."
+    },
+    {
+      "path": "docs/smoke-v100/*.png",
+      "razon": "evidencia de la entrega V100 anterior — se conserva en el ZIP como histórico, no se rehashea en este manifest V101."
+    },
+    {
+      "path": "docs/smoke/*.png",
+      "razon": "evidencia de una entrega anterior a V100 — se conserva como histórico, no se rehashea en este manifest V101."
+    }
+  ],
+  "nota": "Este manifest cubre TODOS los archivos fuente de app/ (104) salvo las 2 exclusiones circulares (build-lock.js, sw.js) y evidencia/artefactos generados (manifest propio, reporte, capturas de smoke de esta y anteriores entregas). No se afirma \"cobertura total del ZIP\" — el conteo total de archivos del ZIP entregado es mayor porque incluye esa evidencia histórica y nueva, listada explícitamente arriba, no oculta.",
+  "files": [
+    {
+      "path": ".gitignore",
+      "size": 301,
+      "sha256": "6004b8acd375deead28b62d7fed0db3e38283689d571039a3aaf0a94b21cb5af"
+    },
+    {
+      "path": "app.js",
+      "size": 23999,
+      "sha256": "220e097cd5959411e9633b553f0952e69ef5d08972205f3b09ebab6a0f902262"
+    },
+    {
+      "path": "core/automations.js",
+      "size": 20845,
+      "sha256": "ffd77ab131b5a7a978cfa3b1e941917ec0c881e3045bdf2ee586f04fc948e0ba"
+    },
+    {
+      "path": "core/build-lock.js",
+      "size": 2744,
+      "sha256": "0e4fd717fd4644ae8747c3367a9a4f247b7c229f5749e98b3a4cb12f716d87f1"
+    },
+    {
+      "path": "core/cliente-data.js",
+      "size": 15134,
+      "sha256": "7ddb303a4eda5f84517c8dbba041b4092c9fd04b5965517510adfb622572ba17"
+    },
+    {
+      "path": "core/config.js",
+      "size": 28295,
+      "sha256": "16e57576f09b720d7a65954a9c9be28cced31e4a5d37e970b7e39033e98af2dc"
+    },
+    {
+      "path": "core/costos.js",
+      "size": 4953,
+      "sha256": "93533d54cc16a71ff76cc462daf54a1a3fdf720eaaf8cc13a9bd186d8b3de3a8"
+    },
+    {
+      "path": "core/data-source.js",
+      "size": 5948,
+      "sha256": "c012b9bfa9a0c5076cf1e1f363a94393077f83a70442dfebb2c520098ee32c50"
+    },
+    {
+      "path": "core/data.js",
+      "size": 22984,
+      "sha256": "e1fc2a1318dfb7fd5ba53da83ea5f7e32c9d6d96d80002c876b8ed915d6b47b7"
+    },
+    {
+      "path": "core/dedupe.js",
+      "size": 1608,
+      "sha256": "ca4c8edbf57a4a33d6f49fda8d02a0e3fff3b1827cc6c2b4e8d5ff374d0da0bc"
+    },
+    {
+      "path": "core/finanzas-core.js",
+      "size": 9987,
+      "sha256": "97a38f96602ca50d126c35a46adb616531c6578aaec82d1cfb25d22b49ea928d"
+    },
+    {
+      "path": "core/geo.js",
+      "size": 7650,
+      "sha256": "51115e4d47baf849daebb4cb1a9097fe0c9e6bca3eba620fe9ad0a44ac25bcbc"
+    },
+    {
+      "path": "core/hr.js",
+      "size": 7005,
+      "sha256": "4a9bb1d2c1c166e818de3884bf9080b78ee84161832310daedbfc5c874a88d6f"
+    },
+    {
+      "path": "core/importador.js",
+      "size": 9315,
+      "sha256": "86616404ee47ae4ad813dff2b0295e5403b7343571b6ec4d2654c76131c58699"
+    },
+    {
+      "path": "core/liquidacion.js",
+      "size": 3888,
+      "sha256": "f72737bbe9d2b3a528fe51c4b7626ecf0705fa28395d4ba6fd5153187445990e"
+    },
+    {
+      "path": "core/manuales-data.js",
+      "size": 47900,
+      "sha256": "aba4f03ab9a6611f85495711ad7d062d9693b34784c4af8e0df546ac2049ab6c"
+    },
+    {
+      "path": "core/notif.js",
+      "size": 2264,
+      "sha256": "07b5102eefe787987753fa21edf4f7ed53d6571872156cf28f8db8ad3b3df768"
+    },
+    {
+      "path": "core/permissions.js",
+      "size": 9427,
+      "sha256": "01f11fde81bc1b2462fdc7aa7e5d6988c87393a4f91905b253679eddcf683d93"
+    },
+    {
+      "path": "core/programa.js",
+      "size": 8361,
+      "sha256": "bca3dc6e7ddc5ace05d29d13232d1abcc8ebc82a2f794494926e58afe8791fae"
+    },
+    {
+      "path": "core/pwa.js",
+      "size": 12721,
+      "sha256": "68caab966f043462c54cecffbe23aa41ff890bda0e44fedbe71bfb99cbb048b4"
+    },
+    {
+      "path": "core/router.js",
+      "size": 13390,
+      "sha256": "185f717f09e972d5c94ce51ecc8bd671d2bb275c999f563fdc0713c63f4ee9a5"
+    },
+    {
+      "path": "core/shoppers-store.js",
+      "size": 6744,
+      "sha256": "153f73f9e54ff9b336e5ecdf4b4902689934ce3eff23c2930f1d49ffab4f6cf3"
+    },
+    {
+      "path": "core/store.js",
+      "size": 2487,
+      "sha256": "b7f2c04fcbe18c90f3c71c74b41856127d780573888850d6d1c888e9ba12a866"
+    },
+    {
+      "path": "core/topbar.js",
+      "size": 11718,
+      "sha256": "b35a92af26b57939aef83562347ef9e02aec1966da95b43f078d66a0387f6d51"
+    },
+    {
+      "path": "core/ui.js",
+      "size": 9819,
+      "sha256": "0aa51fedfe203b30222cb4bc2d522efe33dc2743498d80cbe24ae82a20753c2e"
+    },
+    {
+      "path": "demo/index.html",
+      "size": 254293,
+      "sha256": "feb3dbc4c33bc97a2b432216387964c28254f882883d5cbece078f45580070cd"
+    },
+    {
+      "path": "docs/ADDENDUM-V82-PHASE-A.md",
+      "size": 2880,
+      "sha256": "ab1b05e3ad6bcbf0b02cd8a45968f3bff7c4bdff4fddc20c3df27ee0615a6ee7"
+    },
+    {
+      "path": "docs/ADDENDUM-V87-PHASE-A.md",
+      "size": 2882,
+      "sha256": "73563b122a5397f93ea70452294e1aba6b9e8bf0038d9a7d62cccfac31b2e110"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "size": 4133,
+      "sha256": "8188e999e85fa970f4d36e90d43605a1b1e6a56c44140438d8854a104531373c"
+    },
+    {
+      "path": "docs/AUDITORIA-ENTREGA-CLAUDE.md",
+      "size": 3441,
+      "sha256": "5e905ca96a8f758af98d71bec040040f4ab954982668de53c6479340ad888dfb"
+    },
+    {
+      "path": "docs/AUDITORIA-SINCRONIAS-FLUJOS.md",
+      "size": 1556,
+      "sha256": "43fbbf7c2da596b7a0a11b7a3a961d53c26627cfcc581cd715a1fce88d3bb7ab"
+    },
+    {
+      "path": "docs/AUDITORIA-Y-CONFIG-TENANT-V58.md",
+      "size": 3820,
+      "sha256": "7d198aca8e3b3d4d1dc437e80b00f0b7d790e9cb2a98f48c27a6268f18827d07"
+    },
+    {
+      "path": "docs/CAMBIOS-CLAUDE-CANDIDATE-COMPLETO-POST-SYNTHETIC-COVERAGE-20260708.md",
+      "size": 79635,
+      "sha256": "3832ed9acd2d089aebdbaa6846521a0956d50df6c01e83f5af0db60c8c384917"
+    },
+    {
+      "path": "docs/CAMBIOS-PROTOTIPO.md",
+      "size": 25405,
+      "sha256": "d1655bb5b24566483f038e43e32dcbd0d91ec953bd96f0bd58a939100a19dbee"
+    },
+    {
+      "path": "docs/CAPACITACION-TECNICA-INTERNA.md",
+      "size": 7420,
+      "sha256": "0c2a30bf0e7799ce008cc8a89c5beee68c3663e6d7f239053c8903e8b550aeb9"
+    },
+    {
+      "path": "docs/CHECKLIST-VALIDACION-PROTOTIPO.md",
+      "size": 3417,
+      "sha256": "934442a7fb621ab5ffac7224ec28ecf01bfd4e851b0edd1ed46ac39b8b8ef8c5"
+    },
+    {
+      "path": "docs/DATA-MODEL.md",
+      "size": 4078,
+      "sha256": "7ed64ada4c60ba3c6c7a03ab0fb5930aaf6012c71cfbd737e286a5e734df5859"
+    },
+    {
+      "path": "docs/ECOSISTEMA.md",
+      "size": 9014,
+      "sha256": "b730eb2d52d9d369b3ef5ecd8f435e1834c46cd8b583396e81703056bda6879f"
+    },
+    {
+      "path": "docs/GUION-DEMO-Y-VENTAJAS.md",
+      "size": 6078,
+      "sha256": "936d65593f95bf1a9de062a14366e410bad01a8e88346eca374bffc5eccae94b"
+    },
+    {
+      "path": "docs/GUION-HEYGEN-POR-MODULO.md",
+      "size": 7490,
+      "sha256": "22aef8a8ef3976bac347097fb5231ec2363745a5f8c2e571300b7382839c7479"
+    },
+    {
+      "path": "docs/HANDOFF-DESARROLLO.md",
+      "size": 9461,
+      "sha256": "8a4e06f93d3727b7b390d6cbde6c37d6ab2700d20dcefccb45c2e99bb834a9b6"
+    },
+    {
+      "path": "docs/INSTRUCCIONES-FIJAS-PROYECTO.md",
+      "size": 1502,
+      "sha256": "679187b7b62a0083106e7d243bdcbfd5b2941391cd690805fb76736bdc2f7d94"
+    },
+    {
+      "path": "docs/INSTRUCCIONES-MIGRACION-TYA.md",
+      "size": 9036,
+      "sha256": "f44b90639f16d3bb529c91bf4c93755176ec5fcb78d4bdd7dd9e997751996720"
+    },
+    {
+      "path": "docs/INTEGRACIONES.md",
+      "size": 3301,
+      "sha256": "81d0fc859e07c61da070a5bb20a0cc07bb05640099b0d8b04cd207ab0ba43a68"
+    },
+    {
+      "path": "docs/LOGICA-NEGOCIO.md",
+      "size": 7800,
+      "sha256": "dc641436f711b38a4e73a6630c4a3363ea5f546061184fcc279fca95c2d0f9fc"
+    },
+    {
+      "path": "docs/MIGRACION.md",
+      "size": 3080,
+      "sha256": "eadb161ebec66883354fdfa9dbb16463808cad5c5099e320aa100914b3373493"
+    },
+    {
+      "path": "docs/migration/sample-fields.js",
+      "size": 1909,
+      "sha256": "aef74cc9f9492bd2e0b239207972ba3341ab92190fb7f8e7d153094117f91b78"
+    },
+    {
+      "path": "docs/MODULES.md",
+      "size": 4441,
+      "sha256": "db1b35d57a2f6739cbf59f6e5d558ece1054451f1f374e805b44846c45d97902"
+    },
+    {
+      "path": "docs/NOTAS-V66-PARA-PAULA.md",
+      "size": 1717,
+      "sha256": "1229bf30ffe138f6fc62d89b6708687ad20cabc6eb8e5befa7992f6cc79644f7"
+    },
+    {
+      "path": "docs/PENDIENTES-PROTOTIPO.md",
+      "size": 5950,
+      "sha256": "7a8c4712e7c702f3550905bf3fd4d74b45bc6d7f9281e92c9f0825860eafc6d5"
+    },
+    {
+      "path": "docs/PLAN-DE-TRABAJO.md",
+      "size": 73825,
+      "sha256": "538281fafed71a04e6806f39a713cf4ef434b4bd22a9a5b7a8245341108c568f"
+    },
+    {
+      "path": "docs/PROMPT-HEYGEN.md",
+      "size": 3021,
+      "sha256": "08b66aff597084ce02a3b9ecfec6f62ae497be0aeac63623cb7c3ff9b95b5227"
+    },
+    {
+      "path": "docs/REPORTE-FORENSE-PAQUETE-GENERICO-20260711.md",
+      "size": 15803,
+      "sha256": "558e45bc45554fcc8e0ac53987f15b66cd12623b11c9b5265c4c4278aabd0e67"
+    },
+    {
+      "path": "docs/REPORTE-V98-CORRECCION-20260710.md",
+      "size": 17251,
+      "sha256": "8338073c2012c7e74af425e27ed2af48bbd2392a10b0ccc10e440f3410f73337"
+    },
+    {
+      "path": "docs/RESUMEN-PARA-CHATGPT-BACKEND.md",
+      "size": 3081,
+      "sha256": "f21a742534e4dd97ebb3c9d77576b48fdcf6917c3398132911feea4ca21db96f"
+    },
+    {
+      "path": "docs/RESUMEN-PARA-CLAUDE.md",
+      "size": 1899,
+      "sha256": "864c6e31e52f7e4c8efdd814b65b4857a3564861c094c25666d4525437b9ba71"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "size": 2855,
+      "sha256": "0ac96bfe65f5b363e1cf5bd47555c15383f4a56ce0b85b6a7f2eef8e7c6ab160"
+    },
+    {
+      "path": "docs/SECURITY.md",
+      "size": 3090,
+      "sha256": "f94d70620a8c77a1f1e4e5e7c5d78634327a0977cdc3978bb468488bc2ba9037"
+    },
+    {
+      "path": "docs/SINCRONIA.md",
+      "size": 3726,
+      "sha256": "b51b6c2b12ca9e8fec8be54989176b59f74f3c3e76e715d10c8a5578f53fd04d"
+    },
+    {
+      "path": "index.html",
+      "size": 5378,
+      "sha256": "1579aea2ab174a6643ec11cddfbea8ef6c5b52bb641e87440606e25f570d3c70"
+    },
+    {
+      "path": "manifest.webmanifest",
+      "size": 510,
+      "sha256": "cb3196c4c901360f35010172610f1b30b449ecc3a78230747b8606bd840de4ee"
+    },
+    {
+      "path": "modules/academia.js",
+      "size": 269784,
+      "sha256": "19daa766ebf77cf1ef949c76ce3ae4c113a69185d6ce28b239559f5c1f56e2df"
+    },
+    {
+      "path": "modules/administrabilidad.js",
+      "size": 16938,
+      "sha256": "92e0108afa8ca36e25e5654edd67d030e7322cb3c53859c3fafb0cc865248b9c"
+    },
+    {
+      "path": "modules/automatizaciones.js",
+      "size": 14552,
+      "sha256": "1fccb5b6d5b44cf081356bb2493192355291af5fe6e73f81b4083f3c413aee3c"
+    },
+    {
+      "path": "modules/beneficios.js",
+      "size": 6855,
+      "sha256": "fbcfd15a220f8be77865f901091f46f7926cf2f7d6c7709a54441cd0b56292ef"
+    },
+    {
+      "path": "modules/cert.js",
+      "size": 24637,
+      "sha256": "beea97aa38bd7ff5b880335428ab512ff9e242822e7c337a6c4f4efabd4082e2"
+    },
+    {
+      "path": "modules/cliente-extra.js",
+      "size": 14006,
+      "sha256": "f175692ff7f08e25a7afa57715b683868295c414e013718f714d39ecd08b1f71"
+    },
+    {
+      "path": "modules/cliente-insights.js",
+      "size": 13937,
+      "sha256": "e4da9baec91444efb5a0c5d97456e95f465fdd070c865633fec446eb35068da2"
+    },
+    {
+      "path": "modules/cliente.js",
+      "size": 31995,
+      "sha256": "291a46dc6280c687382d58f0177f6a6b4c46e623635530fbba90b06b3054ba80"
+    },
+    {
+      "path": "modules/clientes.js",
+      "size": 18257,
+      "sha256": "b23c5480c2ee1e93ffeb49098942eeab58ec6867df378479559a771df2fb378d"
+    },
+    {
+      "path": "modules/comercial.js",
+      "size": 19118,
+      "sha256": "aecde3f762095b30e215338c94be235efd50214b58996138b5257be7171a5a35"
+    },
+    {
+      "path": "modules/configuracion.js",
+      "size": 56018,
+      "sha256": "26cb14c47263c56ca59dffd8d7f64c5856e1673445630f7eca9ef9addbde4f3c"
+    },
+    {
+      "path": "modules/correo.js",
+      "size": 27652,
+      "sha256": "d047313e2a0e0a150c376761b3dd9a1217fd5ff7da40a03c7d1de82395af0eff"
+    },
+    {
+      "path": "modules/crm.js",
+      "size": 69997,
+      "sha256": "6ad5b2cc7fa46b6a84f8bf4144137cc2a0f96267b04b458b7da7c9781dcd611a"
+    },
+    {
+      "path": "modules/cuestionario-shopper.js",
+      "size": 9217,
+      "sha256": "335e012df4c7755bd997a98c50b3a2589c4b426625cae876b967002e2f816a9e"
+    },
+    {
+      "path": "modules/dashboard.js",
+      "size": 34712,
+      "sha256": "30c535186e9afa462452cc475ca1e51e83f08c823b73d683fd9b58194dab740b"
+    },
+    {
+      "path": "modules/diagnostico.js",
+      "size": 30133,
+      "sha256": "c0582680e76018b2c936643de364d89c26b14d1c5dd506ac45cd5283ac375f36"
+    },
+    {
+      "path": "modules/documentos.js",
+      "size": 18745,
+      "sha256": "6e664055ccb85c592104b11bbc1fc38260b1875932abb42f9a95640671f83e87"
+    },
+    {
+      "path": "modules/finanzas.js",
+      "size": 68526,
+      "sha256": "56b6545a3618f86bcdb93d34a5c88d8c8d6aaa14c11c72fdd4dcf59535e7e7a0"
+    },
+    {
+      "path": "modules/historico.js",
+      "size": 6903,
+      "sha256": "eb3aabf5d574e64548af2e7ebfb1750529ed3d494c3dea1ce90b8e07c93ec8dc"
+    },
+    {
+      "path": "modules/hr-source.js",
+      "size": 19396,
+      "sha256": "e1a5e0ff68bdb4020a91c4ba11b80ff08abd89c329a4fe670cc3837f8baae71a"
+    },
+    {
+      "path": "modules/importador.js",
+      "size": 36616,
+      "sha256": "61c375c97eee82b05da02db93eecdec48e6735b8b59a36fdd8038239639f9dfb"
+    },
+    {
+      "path": "modules/integraciones.js",
+      "size": 21223,
+      "sha256": "2ea95968a941d137f75fcd6dd779cd5ad739b8e6e49a753a6f12d8a3d48a6378"
+    },
+    {
+      "path": "modules/marca.js",
+      "size": 14900,
+      "sha256": "552610c7fea98277ef0725dd46cf1ee1218c637bfab79597169c2832cebe61ee"
+    },
+    {
+      "path": "modules/marketing.js",
+      "size": 19639,
+      "sha256": "1ebc814e7943c07d88613657cee47a5a2682cafa6a393c93f7c68916687c52d0"
+    },
+    {
+      "path": "modules/midia.js",
+      "size": 13027,
+      "sha256": "bba8ed98aec605cdb0222c292fd9c54a017cfa03b645db2d3b79c1e649799e1e"
+    },
+    {
+      "path": "modules/misvisitas.js",
+      "size": 13244,
+      "sha256": "4e41461a3a00157ae49cea8f9e975fab62b07c6778abf8cd25cd0f1758b98966"
+    },
+    {
+      "path": "modules/novedades.js",
+      "size": 7856,
+      "sha256": "b95d27d83ae6010ebe5da2ede91f0bf820d64ff26c583b21dc1d44d0140a9ff6"
+    },
+    {
+      "path": "modules/operacion-extra.js",
+      "size": 31853,
+      "sha256": "64384875d824474ab874d0ab707af807e26d4e533e29cfd4ced291f546897c74"
+    },
+    {
+      "path": "modules/periodos.js",
+      "size": 6785,
+      "sha256": "eecec91e65d954b6032b6b78b31894e1293993fb02daa33215a24e31ed98216d"
+    },
+    {
+      "path": "modules/postulaciones.js",
+      "size": 36708,
+      "sha256": "0c43b1dbf6f13c78a711481baa12d4775fa5518fac69470edc2d387d77396737"
+    },
+    {
+      "path": "modules/proyecto-wizard.js",
+      "size": 16150,
+      "sha256": "f97d10d4b28fb1076ab9b435a303f12e613e3561fb05172b3b37aef75b6d4236"
+    },
+    {
+      "path": "modules/proyectos.js",
+      "size": 16719,
+      "sha256": "c6b2fd3ba26e44fe9ebda04c303297510193fcdabfc138b68e434c8735253e23"
+    },
+    {
+      "path": "modules/reservas.js",
+      "size": 18317,
+      "sha256": "63f353baba8cfbedd3e066de4625f5c7470364b719ede4fe058064f9fa462e8a"
+    },
+    {
+      "path": "modules/revision-admin.js",
+      "size": 6773,
+      "sha256": "efdca7ae77d923e796588452e94edae73c9af1df8b757bdae6ae69e4073281f0"
+    },
+    {
+      "path": "modules/saas-console.js",
+      "size": 9006,
+      "sha256": "35cf1d78a581dac061d4ccac7246bdf475faf49bed0c13c66610d09b3226c397"
+    },
+    {
+      "path": "modules/shoppers.js",
+      "size": 20503,
+      "sha256": "6b9dff790369bdc612fb01296164fad5328f640ad94c33e39be6200740f02658"
+    },
+    {
+      "path": "modules/soporte.js",
+      "size": 15574,
+      "sha256": "2427eae1366812ae52ae0738f950cca9b18b1e28d77b1dc0c20225288890e4e1"
+    },
+    {
+      "path": "modules/tablon.js",
+      "size": 7965,
+      "sha256": "ee32633748298ca3c7a76be87a50ac36ac2e9640e368595ee56446a504aed144"
+    },
+    {
+      "path": "modules/visita-detalle.js",
+      "size": 8558,
+      "sha256": "fa6bdf589e0ee8a000604bce376b8ae1fcb9fafc9845b8c10a5055414564242c"
+    },
+    {
+      "path": "modules/visitas.js",
+      "size": 17311,
+      "sha256": "e50cb43bfeabd12725c6e8426fd60b11e24f6a4e04e5a99b2180c686754078de"
+    },
+    {
+      "path": "README.md",
+      "size": 5022,
+      "sha256": "46a31f5075e6d3ae4d7394ed1bb47cc07944e7b6f8a1e723cd7d53b43142a422"
+    },
+    {
+      "path": "styles/layout.css",
+      "size": 20163,
+      "sha256": "3e6dcc2352a83eb67bcacf61f569f54168a5416ce9d17e0820018701aab73152"
+    },
+    {
+      "path": "styles/theme.css",
+      "size": 11273,
+      "sha256": "9ff569467fcb562312cc50d25f140ef149f6580aa6adccd62de2126ec798e3c4"
+    }
+  ]
+}

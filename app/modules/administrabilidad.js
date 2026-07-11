@@ -17,7 +17,7 @@ CX.adminCfg = CX.adminCfg || {
       { dom:'Tenant / Proyecto',      versionado:true,  motivo:true,  gate:'human', nota:'multi-tenant · project config con llaves estables' },
       { dom:'Reglas de negocio',      versionado:true,  motivo:true,  gate:'human', nota:'cambios con versión + motivo · sin overwrite silencioso' },
       { dom:'Fuente HR / origen',     versionado:true,  motivo:true,  gate:'off',   nota:'assignmentSource · sync a revisión humana' },
-      { dom:'Cuestionarios',          versionado:true,  motivo:true,  gate:'off',   nota:'CXOrbia/TyAOnline/externo/general/HR por visita' },
+      { dom:'Cuestionarios',          versionado:true,  motivo:true,  gate:'off',   nota:'CXOrbia/plataforma externa/externo/general/HR por visita' },
       { dom:'Documentos / Recursos',  versionado:true,  motivo:false, gate:'off',   nota:'versionado de material · sin adjuntos crudos' },
       { dom:'NDA / Confidencialidad', versionado:true,  motivo:true,  gate:'human', nota:'editable/versionado · NO altera aceptaciones presentadas' },
       { dom:'Planes comerciales',     versionado:true,  motivo:true,  gate:'human', nota:'define módulos/temas/integraciones del tenant' },
@@ -163,7 +163,7 @@ CX.module('administrabilidad', ({data, ui, role})=>{
         ['Qué NO hace esta demo','no calcula pagos reales ni genera lotes reales; son estados ilustrativos de UI'],
       ]},
       { t:'Bloque 8 · Cuestionarios / certificaciones', items:[
-        ['Fuentes de ruteo','CXOrbia · TyAOnline · externo · general · HR-por-visita — configurable por proyecto'],
+        ['Fuentes de ruteo','CXOrbia · plataforma externa · externo · general · HR-por-visita — configurable por proyecto'],
         ['Certificaciones','presentadas se conservan siempre; no hay auto-aprobación — revisión humana antes de certificar'],
         ['Gemini (IA)','solo sugiere/asiste evaluación; la decisión final la marca una persona'],
       ]},

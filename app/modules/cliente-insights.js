@@ -9,8 +9,10 @@ CX.module('cli_insights', ({data,ui})=>{
   const load=()=>{try{return JSON.parse(localStorage.getItem(K)||'{}');}catch(e){return {};}};
   const save=(o)=>{try{localStorage.setItem(K,JSON.stringify(o));}catch(e){} };
 
-  /* score vivo del programa para el benchmark */
-  const scoreProg=()=>{ const vs=data.visitas().filter(v=>v.score!=null); return vs.length? Math.round(vs.reduce((a,v)=>a+v.score,0)/vs.length):74; };
+  /* score vivo del programa para el benchmark — Bloque 1 (auditoría V100): sin visitas evaluadas
+     reales, NUNCA se fabrica un promedio (antes caía a 74 fijo) — se devuelve null y la UI muestra
+     "pendiente de fuente" en vez de un número inventado. */
+  const scoreProg=()=>{ const vs=data.visitas().filter(v=>v.score!=null); return vs.length? Math.round(vs.reduce((a,v)=>a+v.score,0)/vs.length):null; };
   /* benchmark por industria (promedios de referencia del sector) */
   const BENCH={ 'Retail':71,'Banca':68,'Restaurantes':74,'Salud':70,'Telecom':66,'Automotriz':72,'Seguros':69,'Combustibles':73 };
   const industria=(p.industry||'Retail').split(/[·\-]/)[0].trim();
@@ -19,7 +21,7 @@ CX.module('cli_insights', ({data,ui})=>{
   const draw=()=>{
     const st=load();
     const mio=scoreProg();
-    const delta=mio-refInd;
+    const delta=mio==null?null:mio-refInd;
     const nps=st.nps||{promotores:0,neutros:0,detractores:0,respuestas:0};
     const npsScore=nps.respuestas? Math.round(((nps.promotores-nps.detractores)/nps.respuestas)*100):null;
     const notas=st.notas||[];
@@ -28,16 +30,16 @@ CX.module('cli_insights', ({data,ui})=>{
     host.innerHTML=`
       ${ui.ph('Insights & Benchmark', p.name+' · cómo te comparas con tu industria y qué opinas del programa')}
       <div class="grid g4" style="margin-bottom:16px">
-        <div class="card card-p"><div class="card-t" style="font-size:12px">Tu score</div><div style="font-size:30px;font-weight:800;color:var(--brand)">${mio}</div><div style="font-size:11px;color:var(--t3)">promedio del programa</div></div>
+        <div class="card card-p"><div class="card-t" style="font-size:12px">Tu score</div><div style="font-size:30px;font-weight:800;color:var(--brand)">${mio==null?ui.statusBdg('pending_source'):mio}</div><div style="font-size:11px;color:var(--t3)">promedio del programa</div></div>
         <div class="card card-p"><div class="card-t" style="font-size:12px">Promedio ${industria}</div><div style="font-size:30px;font-weight:800;color:var(--t2)">${refInd}</div><div style="font-size:11px;color:var(--t3)">referencia del sector</div></div>
-        <div class="card card-p" style="border-left:3px solid var(--${delta>=0?'green':'red'})"><div class="card-t" style="font-size:12px">Diferencia</div><div style="font-size:30px;font-weight:800;color:var(--${delta>=0?'green':'red'})">${delta>=0?'+':''}${delta}</div><div style="font-size:11px;color:var(--t3)">${delta>=0?'por encima del sector':'bajo el sector'}</div></div>
+        <div class="card card-p" style="border-left:3px solid var(--${(delta==null||delta>=0)?'green':'red'})"><div class="card-t" style="font-size:12px">Diferencia</div><div style="font-size:30px;font-weight:800;color:var(--${(delta==null||delta>=0)?'green':'red'})">${delta==null?'—':(delta>=0?'+':'')+delta}</div><div style="font-size:11px;color:var(--t3)">${delta==null?'sin score propio todavía':(delta>=0?'por encima del sector':'bajo el sector')}</div></div>
         <div class="card card-p"><div class="card-t" style="font-size:12px">NPS del programa</div><div style="font-size:30px;font-weight:800;color:${npsScore==null?'var(--t3)':npsScore>=50?'var(--green)':npsScore>=0?'var(--amber)':'var(--red)'}">${npsScore==null?'—':npsScore}</div><div style="font-size:11px;color:var(--t3)">${nps.respuestas} respuesta(s)</div></div>
       </div>
 
       <div class="grid g2" style="gap:14px;margin-bottom:16px">
         <div class="card card-p">
           <div class="card-t" style="margin-bottom:12px">📊 Benchmark vs industria (${industria})</div>
-          <div style="margin-bottom:10px"><div class="between" style="margin-bottom:3px"><span style="font-size:12px">Tu programa</span><b>${mio}</b></div><div class="bar" style="height:9px"><i style="width:${mio}%;background:var(--brand)"></i></div></div>
+          <div style="margin-bottom:10px"><div class="between" style="margin-bottom:3px"><span style="font-size:12px">Tu programa</span><b>${mio==null?'—':mio}</b></div><div class="bar" style="height:9px"><i style="width:${mio||0}%;background:var(--brand)"></i></div></div>
           <div style="margin-bottom:10px"><div class="between" style="margin-bottom:3px"><span style="font-size:12px">Promedio industria</span><b>${refInd}</b></div><div class="bar" style="height:9px"><i style="width:${refInd}%;background:var(--t3)"></i></div></div>
           <div style="margin-bottom:6px"><div class="between" style="margin-bottom:3px"><span style="font-size:12px">Top performers del sector</span><b>85</b></div><div class="bar" style="height:9px"><i style="width:85%;background:var(--green)"></i></div></div>
           <div style="margin-top:10px">${ui.aiBox(delta>=0?'Estás por encima del promedio de tu industria. El siguiente objetivo es acercarte al top performer (85).':'Estás por debajo del promedio del sector. Prioriza los planes de acción en las sucursales más débiles para cerrar la brecha.','Análisis competitivo')}</div>

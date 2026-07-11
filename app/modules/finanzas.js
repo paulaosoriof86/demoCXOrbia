@@ -188,6 +188,8 @@ CX.module('movimientos', ({data,ui})=>{
     {tipo:'egreso',cat:'Pago lote #L-204',pais:p.countries[0],monto:-18240,fecha:'2026-06-12',desc:'Pago a evaluadores',estado:'Pagado',origen:'lote'},
     {tipo:'ingreso',cat:'Factura final cliente',pais:p.countries[0],monto:46400,fecha:'2026-06-20',desc:'Factura de cierre',estado:'Pendiente (CxC)'},
   ];
+  /* P0-2 (paquete genérico 20260711): fixtures visibles solo en modo demo (guard de segunda capa) */
+  const _showFixtures = CX.dataSource ? CX.dataSource.showFixtures() : true;
   const host=ui.el('div');
   let scope='proyecto'; // 'proyecto' | 'global'
   const pid=()=>scope==='global'?CX.finStore.GLOBAL:p.id;
@@ -195,7 +197,7 @@ CX.module('movimientos', ({data,ui})=>{
   const draw=()=>{
     const isG=scope==='global';
     const per=CX.finStore.curPeriod();
-    const movs=[...(isG?[]:seed),...CX.finStore.mov(pid()).filter(m=>!m.fecha||m.fecha.slice(0,7)===per)];
+    const movs=[...(isG||!_showFixtures?[]:seed),...CX.finStore.mov(pid()).filter(m=>!m.fecha||m.fecha.slice(0,7)===per)];
     const ing=movs.filter(m=>m.monto>0).reduce((a,m)=>a+m.monto,0);
     const egr=movs.filter(m=>m.monto<0).reduce((a,m)=>a+m.monto,0);
     // ingresos por tipo (separar financiamiento del resto)
@@ -432,7 +434,7 @@ CX.module('movimientos', ({data,ui})=>{
       const val=CX.liq.forProject(data).filter(l=>l.estado==='validada');
       if(!val.length){ui.toast('No hay liquidaciones validadas para pagar','warn');return;}
       const r=data.payVisits(val.map(l=>l.visitaId));
-      ui.toast(r.pagadas+' liquidaciones pagadas · egreso(s) automáticos · Beneficios y Finanzas sincronizados','ok',4200);
+      ui.toast(r.pagadas+' liquidaciones marcadas pagadas (preview) · egreso(s) preparados en Movimientos · cruce bancario real pendiente backend','ok',4200);
     });
     const ih=host.querySelector('#impHist');
     if(ih)ih.addEventListener('click',()=>ui.modal('Importar histórico de movimientos',`
@@ -585,18 +587,31 @@ CX.module('liquidaciones', ({data,ui})=>{
 CX.module('lotes', ({data,ui})=>{
   const p=data.project(), cur=p.currency[p.countries[0]];
   const curHN=p.currency[p.countries[p.countries.length-1]];
-  const lotes=[
+  /* Bloque A (auditoría V101 — 20260711): este módulo mostraba SIEMPRE 3 lotes fabricados
+     (#L-204/#L-205/#L-206 con evaluadores, sucursales, montos y estados fijos) sin ningún guard
+     de modo demo. Fuera de demo, los lotes deben derivarse de liquidaciones/pagos reales
+     (CX.liq/CX.finStore) — si no hay ninguno registrado, se muestra vacío honesto en vez de
+     datos ficticios. */
+  const _showFixturesLotes = CX.dataSource ? CX.dataSource.showFixtures() : true;
+  const lotesDemo=[
     {id:'#L-204',n:12,monto:18240,cur:cur,estado:'Pagado',tone:'g',fecha:'2026-06-05',visitas:[['Evaluador 03','Sucursal 01',1520],['Evaluador 07','Sucursal 04',1520],['Evaluador 12','Sucursal 09',1520]]},
     {id:'#L-205',n:8,monto:42000,cur:curHN,estado:'En revisión',tone:'a',fecha:'2026-06-18',visitas:[['Evaluador 05','Sucursal 02',5250],['Evaluador 09','Sucursal 11',5250]]},
     {id:'#L-206',n:5,monto:9300,cur:cur,estado:'Borrador',tone:'n',fecha:'—',visitas:[['Evaluador 01','Sucursal 03',1860],['Evaluador 14','Sucursal 07',1860]]},
   ];
+  /* lotes reales: liquidaciones ya marcadas pagadas, agrupadas por fecha de pago (una fila por fecha) */
+  const liqsPagadas=(CX.liq&&CX.liq.forProject?CX.liq.forProject(data):[]).filter(l=>['pagada','liquidada'].includes(l.estado));
+  const porFecha={}; liqsPagadas.forEach(l=>{const f=l.fechaEstimadaPago||l.fechaPago||'—';(porFecha[f]=porFecha[f]||[]).push(l);});
+  const lotesReales=Object.keys(porFecha).map((f,i)=>{const ls=porFecha[f];const monto=ls.reduce((a,l)=>a+(l.total||0),0);
+    return {id:'#LOTE-'+(i+1),n:ls.length,monto,cur:ls[0].moneda||cur,estado:'Pagado',tone:'g',fecha:f,visitas:ls.slice(0,10).map(l=>[l.shopper||'—',l.sucursal||'—',l.total||0])}; });
+  const lotes = _showFixturesLotes ? lotesDemo : lotesReales;
   const html=`
   ${ui.ph('Lotes de Pago', p.name+' · agrupa liquidaciones validadas y crea el egreso')}
-  <div class="grid g3" style="margin-bottom:16px">${lotes.map(r=>`<div class="card hov card-p" data-lote="${r.id}" style="cursor:pointer">
+  ${lotes.length?`<div class="grid g3" style="margin-bottom:16px">${lotes.map(r=>`<div class="card hov card-p" data-lote="${r.id}" style="cursor:pointer">
     <div class="between" style="margin-bottom:8px"><b style="font-family:var(--disp);font-size:15px;color:var(--t1)">${r.id}</b>${ui.bdg(r.estado==='Pagado'?'Pagado (preview)':r.estado,r.tone)}</div>
     <div style="font-size:12px;color:var(--t3)">${r.n} visitas · ${r.fecha}</div>
     <div style="font-size:18px;font-weight:800;color:var(--green);font-family:var(--disp);margin-top:4px">${_m(r.cur,r.monto)}</div>
-    <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" data-lote="${r.id}">Ver detalle →</button></div></div>`).join('')}</div>
+    <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" data-lote="${r.id}">Ver detalle →</button></div></div>`).join('')}</div>`
+    : `<div class="card card-p" style="margin-bottom:16px">${ui.degraded('Todavía no hay liquidaciones pagadas en este proyecto — los lotes se listan aquí cuando en Liquidaciones se paga un lote real.',{title:'Lotes de pago · pendiente de fuente'})}</div>`}
   <div class="card card-p">${ui.aiBox('Agrupo y concilio pagos automáticamente, evitando duplicidad. Cada lote crea su egreso asociado en Finanzas.','Conciliación')}</div>`;
   setTimeout(()=>{
     document.querySelectorAll('[data-lote]').forEach(b=>b.addEventListener('click',()=>{ const r=lotes.find(x=>x.id===b.dataset.lote); if(!r)return;
@@ -607,7 +622,9 @@ CX.module('lotes', ({data,ui})=>{
         ${r.visitas.length<r.n?`<tr><td colspan="3" style="font-size:11px;color:var(--t3);text-align:center">+ ${r.n-r.visitas.length} visita(s) más en el lote</td></tr>`:''}
         </tbody></table>
         <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px">${r.estado!=='Pagado'?`<button class="btn btn-green btn-sm" id="loteMark">Marcar pagado (preview)</button>`:ui.bdg('✓ Egreso preparado · cruce real pendiente backend','g')}<button class="btn btn-ghost btn-sm" id="loteExp">⤓ Exportar</button></div>
-      `,{onMount:(ov,close)=>{ const lm=ov.querySelector('#loteMark'); if(lm)lm.addEventListener('click',()=>{close();ui.toast('Lote '+r.id+' marcado pagado (preview) · egreso reflejado en Movimientos · pendiente cruce financiero real','ok',36000);}); ov.querySelector('#loteExp').addEventListener('click',()=>ui.toast('Exportando lote '+r.id+'…','ok')); }});
+      `,{onMount:(ov,close)=>{ const lm=ov.querySelector('#loteMark'); if(lm)lm.addEventListener('click',()=>{
+        if(!CX.permissions.gate('finance.markPaid',{projectId:p.id,pais:p.countries&&p.countries[0]},ui)) return;
+        close();ui.toast('Lote '+r.id+' marcado pagado (preview) · egreso reflejado en Movimientos · pendiente cruce financiero real','ok',36000);}); ov.querySelector('#loteExp').addEventListener('click',()=>ui.toast('Exportando lote '+r.id+'…','ok')); }});
     }));
   },0);
   return html;

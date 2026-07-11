@@ -128,9 +128,9 @@ CX.module('marketing', ({data,ui})=>{
         <button class="btn btn-pr btn-sm" id="ed_save">Guardar</button>
       </div>
     `,{onMount:(ov,close)=>{
-      ov.querySelector('#ed_ia').addEventListener('click',()=>{ov.querySelector('#ed_copy').value=iaCopy(ov.querySelector('#ed_enf').value,ov.querySelector('#ed_canal').value);ui.toast(CX.ai&&CX.ai.ready()?'Copy generado con '+CX.ai.cfg().model:'Borrador (configura Gemini para copy a medida)','ok',3200);});
-      ov.querySelector('#ed_pieza').addEventListener('click',()=>ui.toast(CX.ai&&CX.ai.ready()?'Pieza visual generada con IA':'Conecta Gemini/Canva para generar la pieza','ok',3200));
-      ov.querySelector('#ed_prog').addEventListener('click',()=>{ov.querySelector('#ed_est').value='programado';ui.toast('Programado vía Make a '+ov.querySelector('#ed_canal').value,'ok');});
+      ov.querySelector('#ed_ia').addEventListener('click',()=>{ov.querySelector('#ed_copy').value=iaCopy(ov.querySelector('#ed_enf').value,ov.querySelector('#ed_canal').value);ui.toast('Copy generado (heurística local, sin proveedor de IA real conectado)','ok',3200);});
+      ov.querySelector('#ed_pieza').addEventListener('click',()=>ui.toast('Pieza visual: placeholder listo · generación real pendiente backend/Canva','ok',3200));
+      ov.querySelector('#ed_prog').addEventListener('click',()=>{ov.querySelector('#ed_est').value='programado';ui.toast('Programación preparada (preview) para '+ov.querySelector('#ed_canal').value+' · publicación real pendiente backend/Make','ok');});
       const del=ov.querySelector('#ed_del'); if(del)del.addEventListener('click',()=>{S.del(x.id);close();draw();ui.toast('Contenido eliminado','');});
       ov.querySelector('#ed_save').addEventListener('click',()=>{
         const patch={fecha:ov.querySelector('#ed_f').value,hora:ov.querySelector('#ed_h').value,canal:ov.querySelector('#ed_canal').value,tipo:ov.querySelector('#ed_tipo').value,enfoque:ov.querySelector('#ed_enf').value,estado:ov.querySelector('#ed_est').value,titulo:ov.querySelector('#ed_tit').value.trim()||'(sin título)',copy:ov.querySelector('#ed_copy').value,cta:ov.querySelector('#ed_cta').value,tags:ov.querySelector('#ed_tags').value};
@@ -174,12 +174,12 @@ CX.module('marketing', ({data,ui})=>{
   `);
 
   const automatizar=()=>ui.modal('🔗 Automatizar publicación (Make)',`
-    <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Conecta tus redes vía Make: cuando una pieza pasa a <b>Programado</b>, se publica automáticamente en su canal en la fecha/hora indicada.</p>
+    <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Prepara la automatización de publicación: cuando una pieza pasa a <b>Programado</b>, queda lista para publicarse en su canal en la fecha/hora indicada una vez que el backend conecte el escenario de Make.</p>
     <div style="display:flex;flex-direction:column;gap:8px">
       ${S.CANALES.map(c=>`<label class="between" style="padding:9px 12px;border:1px solid var(--border);border-radius:9px;cursor:pointer"><span style="font-size:13px">${S.canalIcon(c)} ${c}</span><input type="checkbox" ${['Instagram','Facebook','LinkedIn'].includes(c)?'checked':''}></label>`).join('')}
     </div>
-    <div style="background:var(--brand-light);border-radius:9px;padding:9px 12px;font-size:11.5px;color:var(--brand-dark);margin-top:10px">Usa el webhook de Make del tenant (Configuración → Automatizaciones). También integra Metricool/Canva si el plan lo incluye.</div>
-    <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Automatización de publicación activada (Make)','ok');this.closest('.cx-ov').remove()">Activar</button></div>
+    <div style="background:var(--brand-light);border-radius:9px;padding:9px 12px;font-size:11.5px;color:var(--brand-dark);margin-top:10px">🔒 Este prototipo no pide ni guarda la URL del webhook de Make — solo registra qué canales quieres automatizar. La conexión real la confirma el backend en Configuración → Automatizaciones.</div>
+    <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Preferencia de automatización registrada · pendiente de conexión real por backend (Make)','ok',3600);this.closest('.cx-ov').remove()">Registrar preferencia</button></div>
   `);
 
   draw();

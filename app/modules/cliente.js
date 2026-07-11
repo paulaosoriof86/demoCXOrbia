@@ -4,15 +4,17 @@
 CX.cliUI = {
   TONE_VAR:{g:'var(--green)',b:'var(--brand)',a:'var(--amber)',r:'var(--red)'},
 
-  /* anillo de score con conic-gradient */
+  /* anillo de score con conic-gradient — Bloque 1 (auditoría V100): si v es null (sin score real
+     fuera de demo), NUNCA se dibuja un anillo con un número fabricado — se muestra "sin fuente". */
   donut(v,size=72){
+    if(v==null){ return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--panel-2);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:${size*0.14}px;color:var(--t3);text-align:center;line-height:1.1">Sin<br>fuente</span></div>`; }
     const C=CX.clienteData, col=this.TONE_VAR[C.tone(v)];
     return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:conic-gradient(${col} ${v*3.6}deg,var(--panel-2) 0);display:flex;align-items:center;justify-content:center;flex-shrink:0">
       <div style="width:${size-14}px;height:${size-14}px;border-radius:50%;background:var(--panel);display:flex;align-items:center;justify-content:center;flex-direction:column">
         <b style="font-size:${size*0.28}px;font-family:var(--disp);color:${col};line-height:1">${v}</b>
         <span style="font-size:${size*0.12}px;color:var(--t3)">/100</span></div></div>`;
   },
-  pill(v){ const C=CX.clienteData; return `<span class="bdg bdg-${C.tone(v)}">${C.label(v)} · ${v}</span>`; },
+  pill(v){ if(v==null) return CX.ui.statusBdg('pending_source'); const C=CX.clienteData; return `<span class="bdg bdg-${C.tone(v)}">${C.label(v)} · ${v}</span>`; },
   delta(d){ if(!d) return `<span style="color:var(--t3);font-size:12px">—</span>`;
     const up=d>0; return `<span style="font-size:12px;font-weight:700;color:${up?'var(--green)':'var(--red)'}">${up?'▲':'▼'} ${Math.abs(d)} pts</span>`; },
 
@@ -49,8 +51,19 @@ CX.cliUI = {
     });
   },
 
-  /* visitas sintéticas de una sucursal (determinísticas) para histórico/evidencia */
+  /* Bloque A (auditoría V101 — 20260711): fuera de modo demo, esta función fabricaba SIEMPRE un
+     histórico de visitas (fecha/escenario/score/shopper determinísticos) sin ningún guard —
+     incluso para sucursales con datos reales (real:true). Ahora: si hay visitas reales del
+     proyecto/sucursal, se derivan de CX.data._visitas; si no hay y estamos fuera de demo, se
+     devuelve un array vacío (la UI debe mostrar "sin histórico", nunca inventar filas). */
   branchVisits(suc){
+    const real=(CX.data._visitas||[]).filter(v=>v.projectId===CX.data.project().id && v.sucursal===suc.name && (v.realizada||v.agendada));
+    if(real.length){
+      return real.map(v=>({fecha:v.realizada||v.agendada||'', escenario:v.escenario||'—', score:typeof v.score==='number'?v.score:null, shopper:v.shopper||'—'}))
+        .sort((a,b)=>b.fecha.localeCompare(a.fecha));
+    }
+    const allowSynthetic = CX.dataSource ? CX.dataSource.showFixtures() : true;
+    if(!allowSynthetic) return [];
     let s=0; for(let i=0;i<suc.id.length;i++)s=(s*31+suc.id.charCodeAt(i))|0; s=Math.abs(s)+3;
     const rnd=()=>(s=s*16807%2147483647)/2147483647;
     const esc=(CX.data.project().scenarios)||['Visita estándar'];
@@ -85,7 +98,7 @@ CX.cliUI = {
       </div>
       <div class="grid g4" style="margin-bottom:16px">
         ${ui.kpi('Visitas',suc.visitas,'b')}${ui.kpi('NPS',suc.nps,'p')}
-        ${ui.kpi('vs. periodo previo',(suc.delta>0?'+':'')+suc.delta,suc.delta>=0?'g':'r','pts')}${ui.kpi('Última visita',suc.lastVisit.slice(5),'n')}
+        ${ui.kpi('vs. periodo previo',(suc.delta>0?'+':'')+suc.delta,suc.delta>=0?'g':'r','pts')}${ui.kpi('Última visita',suc.lastVisit?suc.lastVisit.slice(5):ui.statusBdg('pending_source'),'n')}
       </div>
       <div class="card-t" style="font-size:13px;margin-bottom:10px">Score por sección (ponderado)</div>
       ${secRows}
@@ -312,7 +325,7 @@ CX.module('cli_sucursales', ({ui})=>{
     const apply=()=>{ let L=all.slice();
       const t=(q.value||'').toLowerCase().trim(); if(t)L=L.filter(s=>(s.name+s.ciudad+s.region+s.responsable).toLowerCase().includes(t));
       if(reg.value)L=L.filter(s=>s.region===reg.value);
-      if(ord.value==='peor')L.sort((a,b)=>a.score-b.score); else if(ord.value==='mejor')L.sort((a,b)=>b.score-a.score);
+      if(ord.value==='peor')L.sort((a,b)=>(a.score??999)-(b.score??999)); else if(ord.value==='mejor')L.sort((a,b)=>(b.score??-1)-(a.score??-1));
       render(L); bind(); };
     [q,reg,ord].forEach(e=>e&&e.addEventListener('input',apply));
   },0);

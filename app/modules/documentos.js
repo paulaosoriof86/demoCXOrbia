@@ -68,7 +68,7 @@ CX.module('documentos', ({data,role,ui})=>{
     const docs=CX.docStore.list(pid);
     host.innerHTML=`
       ${ui.ph('Recursos del proyecto', p.name+' · documentos, videos, imágenes y checklists · se abren a pantalla completa')}
-      <div class="between" style="margin-bottom:14px">${ui.bdg(docs.length+' recursos','n')}${role==='admin'?'<div class="flex" style="gap:8px"><button class="btn btn-soft btn-sm" id="docIA">✨ Generar con IA</button><button class="btn btn-pr btn-sm" id="docUp">＋ Subir recurso</button></div>':''}</div>
+      <div class="between" style="margin-bottom:14px">${ui.bdg(docs.length+' recursos','n')}${role==='admin'?'<div class="flex" style="gap:8px"><button class="btn btn-soft btn-sm" id="docIA">📝 Generar borrador (heurística local)</button><button class="btn btn-pr btn-sm" id="docUp">＋ Subir recurso</button></div>':''}</div>
       <div class="grid g2">
         ${docs.map(d=>`<div class="card hov card-p flex" style="gap:13px">
           <div style="flex:1;display:flex;gap:13px;cursor:pointer" data-doc="${d.id}"><div style="font-size:26px">${d.ic}</div>
@@ -87,17 +87,17 @@ CX.module('documentos', ({data,role,ui})=>{
         <div style="grid-column:1/3"><label class="lbl">Reemplazar archivo (PDF/imagen/video/Excel/Word)</label><input type="file" class="inp" id="edFile" accept="application/pdf,image/*,video/*,.xlsx,.xls,.docx" style="padding:7px">${d.url&&/^data:/.test(d.url)?'<div style="font-size:11px;color:var(--t3);margin-top:3px">📎 Archivo actual cargado · sube uno nuevo para reemplazar</div>':''}</div>
         <div style="grid-column:1/3"><label class="lbl">URL de video (YouTube/Vimeo, opcional)</label><input class="inp" id="edUrl" value="${(d.url&&/^https?:/.test(d.url))?d.url.replace(/"/g,'&quot;'):''}" placeholder="https://youtube.com/…"></div>
         <div style="grid-column:1/3"><label class="lbl">Contenido / texto (Markdown)</label><textarea class="inp" id="edBody" rows="4">${d.body||''}</textarea></div></div>
-        <div class="between" style="margin-top:12px"><button class="btn btn-soft btn-sm" id="edIA">✨ Mejorar/generar con IA</button><button class="btn btn-pr btn-sm" id="edSave">Guardar</button></div>
+        <div class="between" style="margin-top:12px"><button class="btn btn-soft btn-sm" id="edIA">📝 Mejorar/generar (heurística local)</button><button class="btn btn-pr btn-sm" id="edSave">Guardar</button></div>
       `,{onMount:(ov,close)=>{
         ov.querySelector('#edIA').addEventListener('click',()=>{
           const base=ov.querySelector('#edBody').value.trim();
-          if(!(CX.ai&&CX.ai.ready())){ui.toast('Configura un proveedor de IA en Integraciones','warn',3500);return;}
-          ui.modal('✨ Generar/mejorar con IA',`<label class="lbl">Instrucción (qué generar o cómo mejorar)</label><textarea class="inp" id="iaInstr" rows="3" placeholder="Ej. amplía con ejemplos / redacta un instructivo a partir de estos puntos / resume"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-green btn-sm" id="iaGo">Generar</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#iaGo').addEventListener('click',()=>{
+          /* P0.1 (V98): nunca se llama CX.ai.ask() (available() siempre false en el navegador) —
+             se ejecuta heurística local directamente, sin intentar ni bloquear por falta de proveedor. */
+          ui.modal('✨ Generar/mejorar (heurística local)',`<label class="lbl">Instrucción (qué generar o cómo mejorar)</label><textarea class="inp" id="iaInstr" rows="3" placeholder="Ej. amplía con ejemplos / redacta un instructivo a partir de estos puntos / resume"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-green btn-sm" id="iaGo">Generar</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#iaGo').addEventListener('click',()=>{
             const instr=(o2.querySelector('#iaInstr').value||'').trim();if(!instr){ui.toast('Escribe la instrucción','warn');return;}
-            ui.toast('Generando con '+CX.ai.cfg().model+'…','',2500);
-            CX.ai.ask('Eres editor de documentos de mystery shopping. '+instr+'. Devuelve en Markdown.\n\nContenido base:\n'+(base||'(vacío)'))
-              .then(res=>{ov.querySelector('#edBody').value=res;c2();ui.toast('Contenido generado · revisa, itera o guarda','ok',3500);})
-              .catch(e=>{c2();ui.toast('Error IA: '+e.message,'warn');});
+            const nota='\n\n---\n**Nota (heurística local, sin proveedor de IA real conectado):** instrucción recibida — "'+instr+'". Ajusta manualmente el contenido según esta instrucción.';
+            const res=(base||'# '+instr+'\n\n(Contenido por completar según la instrucción.)')+nota;
+            ov.querySelector('#edBody').value=res;c2();ui.toast('Borrador local generado · revisa, itera o guarda','ok',3500);
           })});
         });
         ov.querySelector('#edSave').addEventListener('click',()=>{
@@ -111,7 +111,7 @@ CX.module('documentos', ({data,role,ui})=>{
     }));
     host.querySelectorAll('[data-deld]').forEach(b=>b.addEventListener('click',()=>{CX.docStore._d[pid]=(CX.docStore._d[pid]||[]).filter(x=>x.id!==b.dataset.deld);draw();ui.toast('Documento eliminado','');}));
     const up=host.querySelector('#docUp');
-    host.querySelector('#docIA')?.addEventListener('click',()=>ui.modal('✨ Generar recurso con IA',`
+    host.querySelector('#docIA')?.addEventListener('click',()=>ui.modal('📝 Generar recurso (heurística local)',`
       <label class="lbl">Tipo de recurso a generar</label>
       <select class="sel" id="giT" style="margin-bottom:8px"><option value="instructivo">📄 Instructivo</option><option value="checklist">📋 Checklist de visita</option><option value="escenario">🎯 Escenario de evaluación</option><option value="protocolo">📘 Protocolo / material</option></select>
       <label class="lbl">Fuente: idea, temario o pega el material</label>
@@ -126,18 +126,20 @@ CX.module('documentos', ({data,role,ui})=>{
         if(!fuente){ui.toast('Describe o carga la fuente','warn');return;}
         const nombres={instructivo:'Instructivo',checklist:'Checklist de visita',escenario:'Escenario de evaluación',protocolo:'Protocolo'};
         const ics={instructivo:'📄',checklist:'📋',escenario:'🎯',protocolo:'📘'};
-        if(CX.ai&&CX.ai.ready()){
-          ui.toast('Generando con '+CX.ai.cfg().model+'…','',2500);
-          const prompt=tipo==='checklist'
-            ? 'Genera un checklist de visita de mystery shopping (lista de 8-12 ítems verificables, una línea cada uno empezando con "- ") a partir de:\n\n'+fuente
-            : 'Genera un '+nombres[tipo]+' profesional de mystery shopping en Markdown (# título, ## secciones, viñetas) a partir de:\n\n'+fuente;
-          CX.ai.ask(prompt).then(res=>{
-            const rec={n:nombres[tipo]+' (IA)',ic:ics[tipo],meta:'generado con IA',tipo:tipo==='checklist'?'check':'text'};
-            if(tipo==='checklist')rec.items=res.split('\n').filter(l=>/^[-•\d]/.test(l.trim())).map(l=>l.replace(/^[-•\d.\s]+/,'').trim()).filter(Boolean);
-            else rec.body=res;
-            CX.docStore.add(pid,rec);close();draw();ui.toast('Recurso generado · revísalo, edítalo o itera','ok',4000);
-          }).catch(e=>{close();ui.toast('Error IA: '+e.message,'warn');});
-        } else { close();ui.toast('Configura un proveedor de IA en Integraciones para generar el recurso','warn',4000); }
+        /* P0.1 (V98): heurística local directa — nunca se llama CX.ai.ask() (available() es
+           siempre false en el navegador); nunca bloquea por falta de proveedor configurado. */
+        const heuristic=()=>{
+          if(tipo==='checklist'){
+            const items=fuente.split(/\n|\.(?=\s|$)/).map(s=>s.trim()).filter(s=>s.length>8).slice(0,10);
+            return (items.length?items:['Punto por verificar 1','Punto por verificar 2','Punto por verificar 3']).join('\n- ').replace(/^/,'- ');
+          }
+          return '# '+nombres[tipo]+' (borrador local)\n\n## Contexto\n'+(fuente||'(completar)')+'\n\n## Puntos clave\n- Punto 1\n- Punto 2\n- Punto 3\n\n*Generado con heurística local — sin proveedor de IA real conectado; revisa y completa.*';
+        };
+        const res=heuristic();
+        const rec={n:nombres[tipo]+' (borrador local)',ic:ics[tipo],meta:'heurística local · sin IA real',tipo:tipo==='checklist'?'check':'text'};
+        if(tipo==='checklist')rec.items=res.split('\n').filter(l=>/^[-•\d]/.test(l.trim())).map(l=>l.replace(/^[-•\d.\s]+/,'').trim()).filter(Boolean);
+        else rec.body=res;
+        CX.docStore.add(pid,rec);close();draw();ui.toast('Borrador local generado · revísalo, edítalo o itera','ok',4000);
       });
     }}));
     if(up)up.addEventListener('click',()=>ui.modal('Subir recurso',`

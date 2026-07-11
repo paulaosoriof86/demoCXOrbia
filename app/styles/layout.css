@@ -133,7 +133,7 @@
 .collapse-btn:hover{background:rgba(255,255,255,.12)}
 body.role-shopper .ph-t{font-size:22px}
 
-/* ---------- Tema de sidebar CLARO (plantilla T&A corporativa) ---------- */
+/* ---------- Tema de sidebar CLARO (plantilla corporativa) ---------- */
 [data-rail="light"] .rail{background:#fff;color:var(--t1);box-shadow:2px 0 14px rgba(33,150,211,.08);border-right:1px solid var(--border)}
 [data-rail="light"] .rail-brand{border-bottom:1px solid var(--border)}
 [data-rail="light"] .brand-name{color:var(--t1)}

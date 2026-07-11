@@ -218,7 +218,7 @@ CX.data = {
 
   /* ---- Separación Proyecto(programa) vs Periodo (P0 V63/V64) ----
      Deriva el programa base quitando tokens de mes/quincena/país del nombre.
-     Así el selector muestra "Cinepolis" (no "Cinepolis ABRIL 26 HN"). */
+     Así el selector muestra "Proyecto ejemplo" (no "Proyecto ejemplo ABRIL 26 HN"). */
   _MESES:['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','setiembre','octubre','noviembre','diciembre'],
   programBase(p){
     let n=(p.name||'').trim();

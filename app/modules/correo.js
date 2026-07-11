@@ -7,8 +7,12 @@ CX.module('correo',({data,role,ui})=>{
   const getStarred=()=>{try{return JSON.parse(localStorage.getItem(STAR_KEY)||'[]');}catch(e){return[];}};
   const toggleStar=(id)=>{const s=getStarred(),i=s.indexOf(id);i>=0?s.splice(i,1):s.push(id);localStorage.setItem(STAR_KEY,JSON.stringify(s));};
 
-  /* ── Datos demo ── */
-  const DEMO=[
+  /* ── Datos demo ──
+     P0-2 (paquete genérico 20260711): estos fixtures solo deben poder mostrarse en modo 'demo'.
+     El shell ya bloquea el 100% del render fuera de demo (ver app.js renderDataSourceBlock), pero
+     este guard es una segunda capa: si por cualquier razón este módulo se invocara fuera de ese
+     flujo, _DEMO_RAW nunca se expone como si fuera correo real. */
+  const _DEMO_RAW=[
     {id:'em1',folder:'inbox',read:false,from:'Contacto Cliente Demo',email:'cmendez@clienteretail.demo',
      subject:'Revisión reporte junio — comentarios y 3 sucursales críticas',
      preview:'Estimado equipo, adjunto mis comentarios sobre el reporte de junio. En general positivos — el promedio subió a 81%…',
@@ -51,6 +55,8 @@ CX.module('correo',({data,role,ui})=>{
      date:'2026-06-20',time:'11:05',
      tags:[{label:'Cliente Retail GT',type:'cliente'}],attachments:[]},
   ];
+  /* DEMO expuesto al resto del módulo: vacío fuera de modo demo (guard P0-2) */
+  const DEMO = (CX.dataSource && CX.dataSource.showFixtures ? CX.dataSource.showFixtures() : true) ? _DEMO_RAW : [];
 
   let folder='inbox', activeId=null;
 
@@ -86,7 +92,7 @@ CX.module('correo',({data,role,ui})=>{
   <!-- Banner modo demo / conectado -->
   <div style="background:${conn?'#f0faf4':'#fffbeb'};border:1px solid ${conn?'#bbf7d0':'#fde68a'};border-radius:10px;padding:9px 14px;margin-bottom:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
     <span style="font-size:13px;color:var(--t2);flex:1">${conn
-      ?`✅ Conectado como <b>${conn.email}</b> (${conn.provider}) · conexión preparada (preview) · sincronización real pendiente backend`
+      ?`🟡 Preparado como <b>${conn.email}</b> (${conn.provider}) · conexión y sincronización reales pendientes de backend/gate`
       :`📬 Bandeja en <b>modo demo</b>. Conecta tu cuenta para sincronizar tu bandeja (requiere backend). <span style="font-size:11px;color:var(--t3)">Compatible con Outlook / Hotmail, Gmail y cualquier dominio corporativo (IMAP).</span>`}
     </span>
     ${conn?`<button class="btn btn-ghost btn-sm" id="mailDisconn" style="color:var(--red)">Desconectar</button>`:
@@ -269,31 +275,30 @@ CX.module('correo',({data,role,ui})=>{
     host.querySelector('#composeAI')?.addEventListener('click',()=>{
       const subj=host.querySelector('#composeSubj').value||'su consulta';
       host.querySelector('#composeBody').innerHTML=`<p>Estimado/a,</p><p>Me comunico en relación a ${subj}.</p><p>Quedo a sus órdenes para cualquier duda o comentario.</p><p>Saludos cordiales,</p>`;
-      ui.toast('Borrador generado por IA','ok');
+      ui.toast('Borrador generado (plantilla local)','ok');
     });
     host.querySelector('#mailConn')?.addEventListener('click',()=>showConnModal());
     host.querySelector('#mailDisconn')?.addEventListener('click',()=>{localStorage.removeItem(CONN_KEY);ui.toast('Cuenta desconectada','ok');draw();});
   };
 
   const showConnModal=()=>ui.modal('Conectar cuenta de correo',`
-    <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">Sincroniza tu bandeja real. Compatible con Outlook/Hotmail (OAuth), Gmail (OAuth) e IMAP para cualquier dominio corporativo.</p>
+    <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">Prepara la conexión de tu bandeja real (Outlook/Hotmail, Gmail o IMAP genérico) — la autenticación y sincronización real las gestiona el backend/adapter, nunca este prototipo en el navegador.</p>
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
       <button class="btn btn-pr btn-sm" id="connOL" style="text-align:left;padding:12px 16px;font-size:13px;background:#0078d4;border-color:#0078d4">
-        <b>📧 Conectar Outlook / Hotmail / Microsoft 365</b><br><span style="font-size:11px;font-weight:400;opacity:.85">empresa@outlook.com · hotmail.com · tudominio.com (Microsoft 365)</span>
+        <b>📧 Preparar Outlook / Hotmail / Microsoft 365</b><br><span style="font-size:11px;font-weight:400;opacity:.85">empresa@outlook.com · hotmail.com · tudominio.com (Microsoft 365)</span>
       </button>
       <button class="btn btn-soft btn-sm" id="connGM" style="text-align:left;padding:12px 16px;font-size:13px">
-        <b>📬 Conectar Gmail / Google Workspace</b><br><span style="font-size:11px;font-weight:400;opacity:.75">empresa@gmail.com · tudominio.com (Workspace)</span>
+        <b>📬 Preparar Gmail / Google Workspace</b><br><span style="font-size:11px;font-weight:400;opacity:.75">empresa@gmail.com · tudominio.com (Workspace)</span>
       </button>
     </div>
     <div style="border-top:1px solid var(--border);padding-top:12px">
       <div style="font-size:11.5px;font-weight:700;color:var(--t2);margin-bottom:8px">IMAP genérico — cualquier dominio corporativo</div>
       <input class="inp" id="imapEmail" placeholder="correo@tuempresa.com" style="margin-bottom:6px">
-      <input class="inp" id="imapPass" type="password" placeholder="Contraseña de aplicación (no tu contraseña principal)" style="margin-bottom:6px">
       <input class="inp" id="imapHost" placeholder="Servidor IMAP (ej: imap.tuempresa.com)" style="margin-bottom:10px">
-      <button class="btn btn-soft btn-sm" id="connIMAP" style="width:100%">Conectar por IMAP</button>
+      <button class="btn btn-soft btn-sm" id="connIMAP" style="width:100%">Preparar conexión IMAP</button>
     </div>
     <div style="margin-top:12px;padding:8px 12px;background:var(--brand-light);border-radius:8px;font-size:11.5px;color:var(--brand-dark)">
-      🔒 La conexión ocurre directamente desde tu dispositivo. CXOrbia no almacena contraseñas — solo el token de sesión OAuth o la cookie IMAP cifrada.
+      🔒 Este prototipo nunca pide ni guarda tu contraseña real. El OAuth/IMAP real lo autoriza y custodia el backend cuando esté conectado — aquí solo dejas listo el proveedor/correo para esa conexión.
     </div>
   `,{onMount:(ov,close)=>{
     const connect=(provider,email)=>{setConn({provider,email});close();ui.toast(provider+' preparado (preview) · conexión y sincronización reales pendientes de backend/gate','ok');draw();};

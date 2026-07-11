@@ -22,9 +22,17 @@ CX.certStore = CX.certStore || {
 CX.module('cert', ({role,data,ui})=>{
   const p=data.project();
   if(role==='shopper'){
-    /* si el admin publicó un banco para este proyecto, el shopper lo toma como examen interactivo real */
+    /* Bloque A (auditoría V101 — 20260711): un banco en estado draft/pending_review NO habilita
+       certificación para el shopper — solo approved_preview (práctica, en este prototipo) o un
+       estado confirmado por backend habilitan tomar el examen. Antes cualquier banco con
+       preguntas se ofrecía sin mirar su estado. */
     const bank=CX.certStore.bank(p.id);
-    if(bank && bank.preguntas && bank.preguntas.length){
+    const bankTakeable = bank && bank.preguntas && bank.preguntas.length && ['approved_preview','pending_backend','confirmed','published'].includes(bank.estado);
+    if(bank && bank.preguntas && bank.preguntas.length && !bankTakeable){
+      return `${ui.ph('Certificación', p.name+' · banco en revisión')}
+        <div class="card card-p">${ui.degraded('Hay un banco de preguntas en preparación ('+(bank.estado||'borrador')+') todavía no revisado/aprobado — no está disponible para certificarte. Vuelve a intentarlo cuando el equipo lo publique.',{title:'Certificación · banco no publicado'})}</div>`;
+    }
+    if(bankTakeable){
       const host=ui.el('div'); const answers={};
       const draw=()=>{
         host.innerHTML=`
@@ -48,13 +56,23 @@ CX.module('cert', ({role,data,ui})=>{
               fb.innerHTML=(correct?'<b style="color:var(--green)">✓ Correcta</b>':'<b style="color:var(--amber)">↻ A reforzar</b> · correcta: <b style="color:var(--green)">'+(q.correcta||'—')+'</b>')+(q.exp?'<div style="color:var(--t2);margin-top:3px">'+q.exp+'</div>':'');}
           });
           const score=Math.round(ok/bank.preguntas.length*100); const pass=score>=(bank.gate||80);
+          const isPreviewOnly = bank.estado==='approved_preview';
           const box=host.querySelector('#examBox');
-          box.insertAdjacentHTML('afterbegin',`<div class="flex" style="gap:14px;background:var(--${pass?'green':'amber'}-bg);border-radius:11px;padding:13px 16px;margin-bottom:12px"><div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--${pass?'green':'amber'})">${score}%</div><div><b style="color:var(--t1)">${pass?'Aprobado':'No alcanzado'}</b> · ${ok}/${bank.preguntas.length} correctas · gate ${bank.gate||80}%<div style="font-size:12px;color:var(--t3)">${pass?'Ya puedes ejecutar tus visitas de este proyecto.':'Repasa el feedback y vuelve a intentarlo.'}</div></div></div>`);
+          box.insertAdjacentHTML('afterbegin',`<div class="flex" style="gap:14px;background:var(--${pass?'green':'amber'}-bg);border-radius:11px;padding:13px 16px;margin-bottom:12px"><div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--${pass?'green':'amber'})">${score}%</div><div><b style="color:var(--t1)">${pass?'Aprobado':'No alcanzado'}</b> · ${ok}/${bank.preguntas.length} correctas · gate ${bank.gate||80}%<div style="font-size:12px;color:var(--t3)">${pass?(isPreviewOnly?'Práctica en preview aprobada — la habilitación real para ejecutar visitas queda pendiente de confirmación backend.':'Ya puedes ejecutar tus visitas de este proyecto.'):'Repasa el feedback y vuelve a intentarlo.'}</div></div></div>`);
           CX.automations&&CX.automations.fire&&CX.automations.fire('certificacion',{shopper:(CX.session.user&&CX.session.user.name)||'',score,pass});
           ui.toast(pass?'✓ Certificación aprobada ('+score+'%)':'Puntaje '+score+'% · no alcanzó el gate','ok',4000);
         });
       };
       draw(); return host;
+    }
+    /* Bloque A (auditoría V101 — 20260711): sin un banco publicado/tomable, este bloque mostraba
+       SIEMPRE un examen y score fijos (88%, "Aprobado", "1 intento") como si fueran resultado real
+       del shopper — incluso fuera de modo demo. Ahora solo se muestra fuera de demo si es
+       explícitamente demo; fuera de demo se rotula "pendiente de fuente", sin inventar aprobación. */
+    const _showFixturesShopper = CX.dataSource ? CX.dataSource.showFixtures() : true;
+    if(!_showFixturesShopper){
+      return `${ui.ph('Certificación', p.name+' · aprueba el escenario antes de ejecutar')}
+        <div class="card card-p">${ui.degraded('Todavía no hay un banco de certificación publicado para este proyecto ni un resultado de certificación real registrado — no se muestra un score ni una aprobación fabricados.',{title:'Certificación · pendiente de fuente'})}</div>`;
     }
     const fb=[
       {ok:true, q:'¿Puedes revelar que eres evaluador?', tu:'No', correcta:'No', exp:'El anonimato es la base del mystery shopping: si te identificas, el comportamiento del personal se altera y la medición pierde validez. Nunca reveles tu rol, ni siquiera al salir.'},
@@ -65,10 +83,11 @@ CX.module('cert', ({role,data,ui})=>{
     const aciertos=fb.filter(x=>x.ok).length, score=Math.round(aciertos/fb.length*100*1.1);
     return `
       ${ui.ph('Certificación', p.name+' · aprueba el escenario antes de ejecutar')}
-      <div class="card card-p" style="margin-bottom:14px">
+      <div class="card card-p" style="margin-bottom:14px;border-left:3px solid var(--brand)">
+        <div style="font-size:11px;color:var(--t3);margin-bottom:8px">🎓 Ejemplo ilustrativo (modo demo) — no es un resultado de certificación real de este shopper.</div>
         <div class="flex" style="gap:14px;background:var(--green-bg);border-radius:11px;padding:13px 16px">
-          <div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--green)">88%</div>
-          <div><b style="color:var(--t1)">Aprobado</b> · 1 intento · gate superado<div style="font-size:12px;color:var(--t3)">Ya puedes ejecutar tus visitas de este proyecto. Revisa abajo el detalle para mejorar.</div></div>
+          <div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--green)">${score}%</div>
+          <div><b style="color:var(--t1)">Aprobado (demo)</b> · 1 intento de ejemplo · gate superado<div style="font-size:12px;color:var(--t3)">Ejemplo del feedback dirigido que verá el shopper. Revisa abajo el detalle.</div></div>
         </div>
       </div>
       <div class="card card-p">
@@ -84,33 +103,44 @@ CX.module('cert', ({role,data,ui})=>{
       </div>
       <script></script>`.replace('<script></script>','')+(()=>{setTimeout(()=>{document.querySelectorAll('[data-mat]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('aprendizaje')));},0);return '';})();
   }
+  const _showFixtures = CX.dataSource ? CX.dataSource.showFixtures() : true;
+  const bank = CX.certStore.bank(p.id);
   const html=`
     ${ui.ph('Certificación', p.name+' · banco de preguntas, gate y reporte de vacíos')}
-    <div class="flex wrap" style="gap:8px;margin-bottom:14px">
       <button class="btn btn-pr btn-sm" id="certIA">🤖 Crear certificación con IA (desde instructivo)</button>
       <button class="btn btn-soft btn-sm" id="certImp">📥 Importar banco</button>
       <button class="btn btn-soft btn-sm" id="certRecert">🔄 Solicitar re-certificación</button>
       <button class="btn btn-ghost btn-sm" id="certGate">⚙️ Gate y % mínimo</button>
     </div>
+    ${_showFixtures ? `
     <div class="grid g4" style="margin-bottom:16px" id="certKpis">
-      <div data-ck="cert" style="cursor:pointer">${ui.kpi('Certificados',18,'g')}</div>
-      <div data-ck="prog" style="cursor:pointer">${ui.kpi('En progreso',6,'a')}</div>
-      <div data-ck="avg" style="cursor:pointer">${ui.kpi('Aprob. promedio','84%','b')}</div>
+      <div data-ck="cert" style="cursor:pointer">${ui.kpi('Certificados (demo)',18,'g')}</div>
+      <div data-ck="prog" style="cursor:pointer">${ui.kpi('En progreso (demo)',6,'a')}</div>
+      <div data-ck="avg" style="cursor:pointer">${ui.kpi('Aprob. promedio (demo)','84%','b')}</div>
       <div data-ck="gate" style="cursor:pointer">${ui.kpi('Gate activo','Sí','p')}</div>
     </div>
     <div class="card card-p">
-      <div class="card-h"><div class="card-t">📊 Vacíos detectados · para el equipo</div></div>
+      <div class="card-h"><div class="card-t">📊 Vacíos detectados · para el equipo (demo)</div></div>
       ${ui.bar(40,'Tiempos de espera','40%')}
       ${ui.bar(18,'Proceso de pago','18%')}
       ${ui.bar(9,'Registro incidencia','9%')}
-      <div style="margin-top:12px">${ui.aiBox('El 40% falla la misma pregunta sobre tiempos de espera — conviene reforzar ese material. Genero el reporte de vacíos automáticamente.','Mejora continua')}</div>
-    </div>`;
+      <div style="margin-top:12px">${ui.aiBox('El 40% falla la misma pregunta sobre tiempos de espera — conviene reforzar ese material. Genero el reporte de vacíos automáticamente. (datos de ejemplo)','Mejora continua')}</div>
+    </div>` : `
+    <div class="grid g4" style="margin-bottom:16px" id="certKpis">
+      <div>${ui.kpi('Certificados',ui.statusBdg('pending_source'),'n')}</div>
+      <div>${ui.kpi('En progreso',ui.statusBdg('pending_source'),'n')}</div>
+      <div>${ui.kpi('Aprob. promedio',ui.statusBdg('pending_source'),'n')}</div>
+      <div data-ck="gate" style="cursor:pointer">${ui.kpi('Gate activo',bank&&bank.gate?'Sí':'No','p')}</div>
+    </div>
+    <div class="card card-p">
+      ${bank&&bank.estado==='approved_preview'?ui.degraded('Banco aprobado en preview (revisado por '+(bank.revisadoPor||'—')+') — disponible para practicar en este prototipo, pero la publicación real hacia producción queda pendiente de confirmación del backend.',{title:'Certificación · aprobado (preview) · pendiente de backend'}):ui.degraded('Sin una fuente de intentos/resultados de certificación conectada todavía, no se muestran KPIs de certificación fuera de modo demo — evita presentar aprobación/progreso ficticios como reales.', {title:'Certificación · pendiente de fuente'})}
+    </div>`}`;
   setTimeout(()=>{
     const ckData={
       cert:['Shoppers certificados (18)','<table class="tbl"><thead><tr><th>Shopper</th><th>Score</th><th>Fecha</th></tr></thead><tbody>'+['Evaluador 01|92|2026-05-12','Evaluador 03|88|2026-05-14','Evaluador 05|85|2026-05-20','Evaluador 07|90|2026-06-02'].map(r=>{const[n,s,f]=r.split('|');return `<tr><td><b>${n}</b></td><td>${CX.ui.bdg(s+'%','g')}</td><td style="font-size:12px">${f}</td></tr>`;}).join('')+'<tr><td colspan="3" style="font-size:11px;color:var(--t3);text-align:center">+ 14 más</td></tr></tbody></table>'],
       prog:['En progreso (6)','<table class="tbl"><thead><tr><th>Shopper</th><th>Avance</th><th>Intentos</th></tr></thead><tbody>'+['Evaluador 09|60|1','Evaluador 12|40|1','Evaluador 14|75|2'].map(r=>{const[n,a,i]=r.split('|');return `<tr><td><b>${n}</b></td><td>${CX.ui.bdg(a+'%','a')}</td><td>${i}</td></tr>`;}).join('')+'</tbody></table>'],
-      avg:['Aprobación promedio · 84%','<p style="font-size:13px;color:var(--t2);line-height:1.7">Promedio del último intento de cada shopper certificado. El gate exige 80%; el banco generado con IA y el feedback dirigido suben este indicador con el tiempo.</p>'],
-      gate:['Gate de certificación','<p style="font-size:13px;color:var(--t2);line-height:1.7">El gate está <b>activo</b>: un shopper no puede ejecutar visitas del proyecto hasta aprobar (≥80%). Una vez por proyecto, con reintentos. Configúralo en ⚙️ Gate y % mínimo.</p>'],
+      avg:['Aprobación promedio · 84%','<p style="font-size:13px;color:var(--t2);line-height:1.7">Promedio del último intento de cada shopper certificado. El gate exige 80%; el banco de preguntas (borrador local, revisado por un humano) y el feedback dirigido suben este indicador con el tiempo.</p>'],
+      gate:['Gate de certificación','<p style="font-size:13px;color:var(--t2);line-height:1.7">El gate está <b>'+((bank&&bank.gate)?'activo':'inactivo')+'</b>: '+((bank&&bank.gate)?('un shopper no puede ejecutar visitas del proyecto hasta aprobar (≥'+bank.gate+'%). Una vez por proyecto, con reintentos.'):'no hay un banco de preguntas publicado todavía para este proyecto.')+' Configúralo en ⚙️ Gate y % mínimo.</p>'],
     };
     document.querySelectorAll('#certKpis [data-ck]').forEach(el=>el.addEventListener('click',()=>{const d=ckData[el.dataset.ck];ui.modal(d[0],d[1]);}));
     const ia=document.getElementById('certIA');
@@ -126,24 +156,35 @@ CX.module('cert', ({role,data,ui})=>{
     `,{onMount:(ov,close)=>{ov.querySelector('#ciGo').addEventListener('click',()=>{
       const n=+ov.querySelector('#ciN').value||10, g=+ov.querySelector('#ciG').value||80;
       const pasted=(ov.querySelector('#ciT').value||'').trim();
-      if(CX.ai&&CX.ai.ready()){
-        ui.toast('Leyendo instructivo y generando con '+CX.ai.cfg().model+'…','',2500);
-        CX.ai.readAttachment(ov.querySelector('#ciF')).then(fileTxt=>{
-          const txt=(pasted+fileTxt).trim();
-          if(!txt){ ui.toast('Pega el instructivo o adjunta un archivo con texto','warn',4000); return; }
-          return CX.ai.ask('A partir de este instructivo de mystery shopping, genera '+n+' preguntas de certificación de opción múltiple. Devuelve SOLO JSON: un array de objetos {"q":"pregunta","ops":["a","b","c","d"],"correcta":"texto exacto de la opción correcta","exp":"explicación breve"}. Sin texto adicional.\n\nINSTRUCTIVO:\n'+txt)
-          .then(res=>{close();
-            const preguntas=CX.certStore.parse(res)||[];
-            ui.modal('🤖 Banco generado ('+preguntas.length+' preguntas · gate '+g+'%)',
-              `<div class="acad-content" style="font-size:12.5px;line-height:1.55;max-height:52vh;overflow:auto">${preguntas.length?preguntas.map((q,i)=>`<div style="border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-bottom:7px"><b>${i+1}. ${q.q}</b><div style="color:var(--t3);margin-top:3px">${(q.ops||[]).join(' · ')}</div><div style="color:var(--green);margin-top:2px">✓ ${q.correcta}</div></div>`).join(''):'<pre style="white-space:pre-wrap">'+res.replace(/</g,'&lt;')+'</pre>'}</div>
-              <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="pubBank">Publicar banco (lo tomará el shopper)</button></div>`,
-              {onMount:(o2,c2)=>o2.querySelector('#pubBank').addEventListener('click',()=>{
-                CX.certStore.save(p.id,{preguntas,gate:g,fecha:new Date().toISOString().slice(0,10)});
-                c2();draw();ui.toast('✅ Banco publicado · '+preguntas.length+' preguntas · ya disponible para los shoppers','ok',4200);
-              })});
-          });
-        }).catch(e=>{close();ui.toast('Error IA: '+e.message,'warn');});
-      } else { close();ui.toast('Configura un proveedor de IA (Integraciones) para generar el banco real.','warn',4500); }
+      /* P0.1 (V98): heurística local directa — nunca se llama CX.ai.ask() (available() es
+         siempre false en el navegador); nunca bloquea por falta de proveedor configurado. */
+      CX.ai.readAttachment(ov.querySelector('#ciF')).then(fileTxt=>{
+        const txt=(pasted+fileTxt).trim();
+        if(!txt){ ui.toast('Pega el instructivo o adjunta un archivo con texto','warn',4000); return; }
+        /* extrae oraciones del instructivo y arma preguntas simples de opción múltiple */
+        const oraciones=txt.replace(/\s+/g,' ').split(/(?<=[.!?])\s+/).map(s=>s.trim()).filter(s=>s.length>25).slice(0,n);
+        const preguntas=oraciones.map((s,i)=>{
+          const frag=s.length>90?s.slice(0,90)+'…':s;
+          return {q:'Según el instructivo, ¿cuál afirmación es correcta? (fragmento '+(i+1)+')',ops:[frag,'Lo opuesto a lo indicado en el instructivo','No se menciona en el instructivo','Aplica solo si el cliente lo autoriza'],correcta:frag,exp:'Extraído directamente del instructivo — revisa y ajusta el redactado antes de publicar.'};
+        });
+        close();
+        const creador=(CX.session&&CX.session.user&&CX.session.user.name)||'—';
+        ui.modal('🤖 Banco generado ('+preguntas.length+' preguntas · gate '+g+'%) — borrador local',
+          `<div style="font-size:10.5px;color:var(--t3);margin-bottom:8px">Generado con heurística local (sin proveedor de IA real conectado) — <b>revisión humana obligatoria por una persona distinta a quien lo generó</b> antes de publicar; ajusta el redactado de cada pregunta.</div>
+          <div class="acad-content" style="font-size:12.5px;line-height:1.55;max-height:52vh;overflow:auto">${preguntas.length?preguntas.map((q,i)=>`<div style="border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-bottom:7px"><b>${i+1}. ${q.q}</b><div style="color:var(--t3);margin-top:3px">${(q.ops||[]).join(' · ')}</div><div style="color:var(--green);margin-top:2px">✓ ${q.correcta}</div></div>`).join(''):'<p style="color:var(--t3)">No se pudieron extraer preguntas de este texto — intenta con un instructivo más largo.</p>'}</div>
+          <div style="font-size:11px;color:var(--t3);margin:10px 0 4px">Generado por: <b>${creador}</b></div>
+          <label class="lbl">Nombre de quien revisa y aprueba (debe ser distinto al generador)</label>
+          <input class="inp" id="pubRevisor" placeholder="Nombre del revisor" style="margin-bottom:10px">
+          <div style="text-align:right;margin-top:2px"><button class="btn btn-pr btn-sm" id="pubBank" ${preguntas.length?'':'disabled'}>Confirmar revisión · publicar banco</button></div>`,
+          {onMount:(o2,c2)=>o2.querySelector('#pubBank').addEventListener('click',()=>{
+            if(!CX.permissions.gate('certification.publish',{projectId:p.id,pais:p.countries&&p.countries[0]},ui)) return;
+            const revisor=(o2.querySelector('#pubRevisor').value||'').trim();
+            if(!revisor){ ui.toast('Escribe el nombre de quien revisa','warn',3200); return; }
+            if(revisor.toLowerCase()===creador.toLowerCase()){ ui.toast('El revisor debe ser una persona distinta a quien generó el banco (segundo actor obligatorio)','warn',4500); return; }
+            CX.certStore.save(p.id,{preguntas,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,revisadoPor:revisor,estado:'approved_preview'});
+            c2();draw();ui.toast('✅ Banco aprobado (preview) · '+preguntas.length+' preguntas · revisado por '+revisor+' · disponible en ESTE prototipo — publicación real en producción pendiente de confirmación backend','ok',5200);
+          })});
+      });
     });}}));
     const imp=document.getElementById('certImp');
     if(imp)imp.addEventListener('click',()=>ui.modal('Importar banco de preguntas',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Sube tu banco (CSV/Excel) o pégalo. Formato: pregunta | opción correcta | opciones incorrectas.</p><input type="file" class="inp" style="padding:7px;margin-bottom:10px"><textarea class="inp" rows="4" placeholder="Pega aquí…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Banco importado (demo)','ok');this.closest('.cx-ov').remove()">Importar</button></div>`));

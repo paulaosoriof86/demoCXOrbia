@@ -7,6 +7,18 @@ CX.router = {
   mount(){
     const role=CX.session.role;
     document.body.classList.toggle('role-shopper',role==='shopper');
+    /* P0-1 (paquete genérico 20260711): único indicador de origen de datos en el topbar —
+       antes existía un "Demo comercial" fijo (siempre visible, sin importar el modo real) MÁS un
+       segundo div oculto que solo aparecía si el modo no era demo. Ambos podían mostrar información
+       contradictoria (ej. "Demo comercial" fijo mientras el otro decía "Bloqueado"). Ahora un único
+       elemento se pinta enteramente desde CX.dataSource.badge(). */
+    try{
+      const db=document.getElementById('tbDataBadge');
+      if(db && CX.dataSource){
+        const b=CX.dataSource.badge();
+        db.innerHTML='<span class="d" style="background:'+b.c+'"></span> '+b.t;
+      }
+    }catch(e){}
     if(role==='shopper'){ const ok=CX.data.projectsFor(role); if(ok.length && !ok.some(p=>p.id===CX.data.currentProjectId)) CX.data.currentProjectId=ok[0].id; }
     else if(role==='cliente'){
       /* P0 (V95 reauditoría): clientBrandAdmin/clientBrandViewer con scopeCliente/scopeProjectId
@@ -68,13 +80,13 @@ CX.router = {
         ? `<div class="rail-proj"><div class="rail-proj-l">Proyecto activo</div><select id="projSel">${projOpts}</select></div>`
         : `<div class="rail-proj"><div class="rail-proj-l">Proyecto</div><div style="font-size:13px;font-weight:700">${p.name}</div><div style="font-size:10.5px;color:var(--t3)">${p.industry}</div></div>`;
     }
-    /* V66-2 — indicador de fuente de datos (honesto): demo/localStorage/importado/backend DEV */
-    const _src = (function(){ try{
-      if(window.CX_BACKEND_DEV) return {t:'Backend DEV', c:'#0e9c6e'};
-      if(localStorage.getItem('cx_imported')) return {t:'Importado', c:'#2a6fdb'};
-      return {t:'Demo · localStorage', c:'#d97706'};
-    }catch(e){ return {t:'Demo', c:'#d97706'}; } })();
-    projBlock += `<div class="rail-src" title="Fuente de datos del prototipo" style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--t3)"><span style="width:7px;height:7px;border-radius:50%;background:${_src.c}"></span>Datos: ${_src.t}</div>`;
+    /* P0-1 (paquete genérico 20260711): indicador único de origen de datos — una sola función
+       (CX.dataSource.badge()) resuelve modo/etiqueta/estado/color para TODA la UI. Ya no existe
+       una lógica propia leyendo window.CX_BACKEND_DEV/cx_imported de forma aislada aquí — esas
+       banderas ahora son solo una nota de compatibilidad dentro de CX.dataSource, nunca una
+       fuente de verdad independiente que pudiera contradecir el badge del topbar. */
+    const _src = (CX.dataSource ? CX.dataSource.badge() : {t:'Demo · localStorage',c:'#d97706'});
+    projBlock += `<div class="rail-src" title="Fuente de datos del prototipo${_src.mode?(' · modo: '+_src.mode):''}" style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--t3)"><span style="width:7px;height:7px;border-radius:50%;background:${_src.c}"></span>Datos: ${_src.t}</div>`;
 
     const collapsed = (()=>{try{return JSON.parse(localStorage.getItem('cx_rail_col')||'{}')}catch(e){return {};}})();
     const nav=CX.NAV[role].map(group=>{
@@ -83,8 +95,8 @@ CX.router = {
         const badge = (m.badge && role==='admin') ? `<span class="n-badge">${d.kpis().postPend||''}</span>`
           : (m.badgeNotif && CX.notif && CX.notif.unread(role)) ? `<span class="n-badge">${CX.notif.unread(role)}</span>` : '';
         const soon  = m.status==='soon' ? `<span class="n-soon">pronto</span>` : '';
-        return `<div class="nav-i" id="nav-${id}" data-id="${id}">
-          <span class="n-ic">${m.icon}</span><span>${m.label}</span>${badge||soon}</div>`;
+        return `<div class="nav-i" id="nav-${id}" data-id="${id}" role="button" tabindex="0" aria-label="${m.label}">
+          <span class="n-ic" aria-hidden="true">${m.icon}</span><span>${m.label}</span>${badge||soon}</div>`;
       }).join('');
       if(!items) return '';
       const isc = collapsed[group.sec] || false;
@@ -112,7 +124,10 @@ CX.router = {
         <button class="rail-logout" id="logoutBtn">Cerrar sesión</button>
       </div>`;
 
-    rail.querySelectorAll('.nav-i').forEach(n=>n.addEventListener('click',()=>this.nav(n.dataset.id)));
+    rail.querySelectorAll('.nav-i').forEach(n=>{
+      n.addEventListener('click',()=>this.nav(n.dataset.id));
+      n.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); this.nav(n.dataset.id); } });
+    });
     /* logo del cliente en topbar blanco */
     if(CX.topbar&&CX.topbar.renderLogo)CX.topbar.renderLogo();
     rail.querySelectorAll('.nav-sec').forEach(sec=>sec.addEventListener('click',e=>{
