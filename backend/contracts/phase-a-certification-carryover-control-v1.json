@@ -1,0 +1,85 @@
+{
+  "contract": "cxorbia.phase-a.certification-carryover-control",
+  "version": "1.0.0",
+  "createdAt": "2026-07-11",
+  "status": "prepared_not_executed",
+  "scope": {
+    "multiTenant": true,
+    "multiProject": true,
+    "initialTenantId": "tya",
+    "initialProjectId": "cinepolis"
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "shopperId",
+    "certificationId",
+    "sourceRef"
+  ],
+  "states": [
+    "unknown",
+    "evidence_present",
+    "pending_review",
+    "carried_over",
+    "rejected",
+    "expired",
+    "conflict"
+  ],
+  "hardRules": [
+    "A certification already presented must be preserved and must not be requested again without an explicit project rule.",
+    "approved_preview or pending_backend does not enable real visits.",
+    "Real visit eligibility requires carried_over or backend-confirmed certification.",
+    "A typed reviewer name is not an authenticated second actor.",
+    "Gemini may draft questions or suggest evaluation, but a human review is mandatory.",
+    "Conflicting evidence is sent to human review and is never resolved by visual name matching."
+  ],
+  "requiredForCarryover": [
+    "tenantId",
+    "projectId",
+    "shopperId",
+    "certificationId",
+    "sourceRef",
+    "presentedAt",
+    "reviewedBy",
+    "reviewedAt",
+    "auditRef"
+  ],
+  "forbiddenFallbacks": [
+    "fixed demo score",
+    "synthetic attempt count",
+    "typed reviewer as authenticated actor",
+    "preview as operational certification",
+    "raw evidence committed to repo"
+  ],
+  "gate": {
+    "enabled": false,
+    "requires": [
+      "new_clean_backend",
+      "source_safe_certification_input",
+      "authenticated_reviewer",
+      "human_review",
+      "audit_log"
+    ]
+  },
+  "eligibility": {
+    "practiceStates": [
+      "evidence_present",
+      "pending_review"
+    ],
+    "eligibleStates": [
+      "carried_over"
+    ],
+    "blockedStates": [
+      "unknown",
+      "rejected",
+      "expired",
+      "conflict"
+    ]
+  },
+  "security": {
+    "rawEvidenceInRepo": false,
+    "rawIdentityDataInLogs": false,
+    "providerWrites": false,
+    "production": false
+  }
+}
