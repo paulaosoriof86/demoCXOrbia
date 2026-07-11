@@ -1,0 +1,53 @@
+{
+  "contractId": "phase-a-operational-readiness-r9-v1",
+  "schemaVersion": "1.0.0",
+  "status": "operational_fail_closed",
+  "purpose": "Reconcile the empalmed frontend baseline, source-safe TyA materialization plan, Firebase DEV clean-state evidence, clean payment/certification dry-run and post-empalme smoke into one executable GO/HOLD report without authorizing writes.",
+  "lanes": {
+    "baseline": "Continuity checkpoint plus verified source-safe materialization summary.",
+    "firebaseDevCleanState": "Sanitized read-only provider report proving the target is new and empty.",
+    "sourceSafePaymentsAndCertifications": "Existing dry-run importer report with stable-key payment matches and authenticated-review certification carryover.",
+    "postEmpalmeSmoke": "Source-safe runtime smoke preserving period, visit and shopper counts."
+  },
+  "decisions": {
+    "HOLD_REQUIRED_INPUTS_OR_EVIDENCE": "One or more lanes are missing, partial, blocked or inconsistent.",
+    "READY_FOR_HUMAN_AUTHORIZATION_REVIEW": "All four lanes are ready. This is still not permission to write or materialize."
+  },
+  "hardStops": [
+    "baseline mismatch",
+    "unsafe or non-source-safe import report",
+    "non-empty or inconclusive Firebase DEV target",
+    "post-empalme smoke mismatch",
+    "any report claiming writes, import or production",
+    "missing clean payment source",
+    "missing certification carryover source"
+  ],
+  "invariants": {
+    "materializationAuthorized": false,
+    "writes": false,
+    "imported": false,
+    "production": false,
+    "providersInvokedByR9": false,
+    "paymentsExecuted": false,
+    "rawSensitiveDataOutput": false
+  },
+  "classification": {
+    "reusableCxorbia": [
+      "four-lane operational readiness gate",
+      "missing evidence is HOLD, never inferred GO",
+      "human authorization review is separate from execution authorization"
+    ],
+    "exclusiveClient": [
+      "TyA/Cinepolis expected counts and source status live in source-safe configuration, not this reusable contract"
+    ],
+    "claudePrototype": [
+      "render each lane and blocker honestly; never label READY_FOR_HUMAN_AUTHORIZATION_REVIEW as imported, connected or live"
+    ],
+    "academia": [
+      "teach the difference between baseline ready, clean target, source dry-run, smoke and write authorization"
+    ],
+    "sinImpactoClaude": [
+      "hashing, filesystem checks, CI artifact paths and report serialization"
+    ]
+  }
+}
