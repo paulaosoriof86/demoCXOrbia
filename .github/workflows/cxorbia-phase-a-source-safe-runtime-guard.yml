@@ -1,0 +1,43 @@
+name: CXOrbia Phase A Source Safe Runtime Guard
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'app/core/tya-phase-a-source-safe-runtime-guard.js'
+      - 'backend/contracts/phase-a-source-safe-runtime-guard-v1.json'
+      - 'tools/release/tya-phase-a-source-safe-runtime-guard-validate.mjs'
+      - '.github/workflows/cxorbia-phase-a-source-safe-runtime-guard.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'app/core/tya-phase-a-source-safe-runtime-guard.js'
+      - 'backend/contracts/phase-a-source-safe-runtime-guard-v1.json'
+      - 'tools/release/tya-phase-a-source-safe-runtime-guard-validate.mjs'
+      - '.github/workflows/cxorbia-phase-a-source-safe-runtime-guard.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate source-safe runtime guard
+        run: node tools/release/tya-phase-a-source-safe-runtime-guard-validate.mjs --out .tmp/source-safe-runtime-guard
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-source-safe-runtime-guard-report
+          path: .tmp/source-safe-runtime-guard
+          if-no-files-found: error
+          retention-days: 14
