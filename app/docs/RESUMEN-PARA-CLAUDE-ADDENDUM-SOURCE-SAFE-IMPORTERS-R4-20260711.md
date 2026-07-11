@@ -13,3 +13,5 @@ Pendiente frontend:
 - abrir conflictos por llave estable y motivo.
 
 Estados sugeridos: `dry_run_accepted`, `pending_review`, `conflict`, `pending_materialization`, `confirmed`.
+
+Fuentes reales pendientes: no se localizó todavía un export limpio de pagos/movimientos ni de certificaciones presentadas. La búsqueda adicional en File Library falló técnicamente. No pedir nuevamente lógica o reglas; solo los dos archivos sanitizados puntuales cuando se necesite ejecutar el dry-run real.
