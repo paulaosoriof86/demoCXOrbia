@@ -1,0 +1,15 @@
+{
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "sourceSafe": true,
+  "visits": [
+    {"id":"hr_2025-05_gt_1","hrRowId":"MAYO 25!2","periodKey":"2025-05","pais":"GT","currency":"Q","shopperId":"shopper_gt_001","shopperCode":"TYA_GT_001","honorario":100,"boleto":50,"comboAmt":75},
+    {"id":"hr_2025-05_hn_1","hrRowId":"MAYO 25 HN!2","periodKey":"2025-05","pais":"HN","currency":"L","shopperId":"shopper_hn_001","shopperCode":"TYA_HN_001","honorario":200,"boleto":80,"comboAmt":120},
+    {"id":"hr_2026-06_gt_1","hrRowId":"JUNIO 26!2","periodKey":"2026-06","pais":"GT","currency":"Q","shopperId":"shopper_gt_002","shopperCode":"TYA_GT_002","honorario":110,"boleto":45,"comboAmt":90}
+  ],
+  "shoppers": [
+    {"id":"shopper_gt_001","code":"TYA_GT_001"},
+    {"id":"shopper_hn_001","code":"TYA_HN_001"},
+    {"id":"shopper_gt_002","code":"TYA_GT_002"}
+  ]
+}
