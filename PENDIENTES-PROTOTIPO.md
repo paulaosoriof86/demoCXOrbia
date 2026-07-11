@@ -2,6 +2,19 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Addendum R4 — importadores source-safe — 2026-07-11
+
+- Agregar vista de dry-run separada para pagos y certificaciones.
+- Mostrar archivo, formato, fuente, aceptados, duplicados, conflictos y blockers.
+- No mostrar fila cruda ni campos protegidos.
+- Materialización desactivada mientras el gate esté HOLD.
+- Finanzas debe usar `paymentState`; `liquidada` no equivale a `pagada`.
+- Certificación solo habilita visitas con `confirmed/published` o carryover materializado.
+- Dry-run ejecutado no significa datos importados.
+- Mantener pendientes acumulados V103 y smoke visual por rol sobre source-safe R4.
+
+Fuente detallada: `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-SOURCE-SAFE-IMPORTERS-R4-20260711.md`.
+
 ## Paquete acumulado Phase A TyA - 2026-07-09
 
 Fuente puente: `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
