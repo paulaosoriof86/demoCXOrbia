@@ -2,7 +2,8 @@
   "schemaVersion": "1.0.0",
   "tenantId": "tya",
   "projectId": "cinepolis",
-  "sourceFile": "app/data/tya-hr-source-safe-periods.js",
+  "runtimeSourceFile": "app/data/tya-hr-source-safe-periods.js",
+  "ciSnapshotFile": "backend/config/phase-a-period-history-integrity-snapshot.source-safe.json",
   "expected": {
     "firstPeriod": "2025-06",
     "lastPeriod": "2026-07",
