@@ -19,10 +19,10 @@ Este bloque adelanta la creación de la base nueva y limpia sin tocar todavía F
 
 - Claude corrige V104.
 - Recuperación de exports limpios de pagos y certificaciones.
+- Ejecución del workflow CI del bloque R6.
 
 ## Pendiente backend
 
-- ejecutar CI del nuevo bloque;
 - preparar executor Emulator/DEV limpio con gate explícito;
 - inspeccionar/crear una base realmente nueva y vacía;
 - materializar solo después de smoke y autorización;
@@ -30,7 +30,8 @@ Este bloque adelanta la creación de la base nueva y limpia sin tocar todavía F
 
 ## Gate
 
-Plan: PASS.  
+Plan local: PASS.  
+Workflow CI: pendiente de conclusión.  
 Materialización: HOLD.  
 Firebase writes: 0.  
 Deploy/producción: HOLD.
