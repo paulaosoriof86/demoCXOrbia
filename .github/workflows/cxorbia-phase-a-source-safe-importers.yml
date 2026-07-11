@@ -1,0 +1,61 @@
+name: CXOrbia Phase A Source Safe Importers
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/contracts/phase-a-financial-payment-import-source-safe-v1.json'
+      - 'backend/contracts/phase-a-certification-carryover-import-source-safe-v1.json'
+      - 'backend/templates/phase-a-financial-payment-import-template.source-safe.csv'
+      - 'backend/templates/phase-a-certification-carryover-import-template.source-safe.csv'
+      - 'tools/migration/tya_phase_a_source_safe_import.py'
+      - 'tools/migration/source_safe_import/**'
+      - 'tools/migration/tya_phase_a_source_safe_import_validate.py'
+      - 'tools/migration/requirements-source-safe-import.txt'
+      - 'tools/migration/fixtures/phase-a-import-hr-index.source-safe.json'
+      - 'tools/migration/fixtures/phase-a-financial-import.source-safe.json'
+      - 'tools/migration/fixtures/phase-a-certification-import.source-safe.json'
+      - '.github/workflows/cxorbia-phase-a-source-safe-importers.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'backend/contracts/phase-a-financial-payment-import-source-safe-v1.json'
+      - 'backend/contracts/phase-a-certification-carryover-import-source-safe-v1.json'
+      - 'backend/templates/phase-a-financial-payment-import-template.source-safe.csv'
+      - 'backend/templates/phase-a-certification-carryover-import-template.source-safe.csv'
+      - 'tools/migration/tya_phase_a_source_safe_import.py'
+      - 'tools/migration/source_safe_import/**'
+      - 'tools/migration/tya_phase_a_source_safe_import_validate.py'
+      - 'tools/migration/requirements-source-safe-import.txt'
+      - 'tools/migration/fixtures/phase-a-import-hr-index.source-safe.json'
+      - 'tools/migration/fixtures/phase-a-financial-import.source-safe.json'
+      - 'tools/migration/fixtures/phase-a-certification-import.source-safe.json'
+      - '.github/workflows/cxorbia-phase-a-source-safe-importers.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install XLSX reader
+        run: python -m pip install -r tools/migration/requirements-source-safe-import.txt
+      - name: Run JSON and XLSX source-safe importer validation
+        run: python tools/migration/tya_phase_a_source_safe_import_validate.py --out .tmp/phase-a-source-safe-importers
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-source-safe-importers-report
+          path: .tmp/phase-a-source-safe-importers
+          if-no-files-found: error
+          retention-days: 14
