@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0.0",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "sourceFile": "app/data/tya-hr-source-safe-periods.js",
+  "expected": {
+    "firstPeriod": "2025-06",
+    "lastPeriod": "2026-07",
+    "periods": 14,
+    "countriesPerPeriod": {
+      "GT": 34,
+      "HN": 10
+    },
+    "visitsPerPeriod": 44,
+    "totalVisits": 616,
+    "activePeriods": 1,
+    "historicalPeriods": 13,
+    "activePeriod": "2026-07"
+  },
+  "allowedStatuses": [
+    "disponible",
+    "postulada",
+    "asignada",
+    "agendada",
+    "realizada",
+    "cuestionario",
+    "validada",
+    "liquidada",
+    "fuera_rango"
+  ],
+  "warningsAllowed": [
+    "column_missing",
+    "date_requires_review"
+  ],
+  "production": false,
+  "imported": false,
+  "sourceSafe": true
+}
