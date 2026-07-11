@@ -4,131 +4,78 @@ Fecha: 2026-07-11
 Proyecto: CXOrbia TyA
 Prioridad: P0/P1 acotada
 
-## Baseline obligatoria
+## Corrección metodológica vigente
 
-Trabajar únicamente sobre la última candidata comercializable y devolverla incrementalmente corregida. La referencia de empalme es V103 Phase A R5, source lock externo:
+Claude **no debe trabajar sobre el runtime R5 empalmado ni importar sus archivos backend-only**. R5 pertenece al mismo proyecto, pero es la baseline operativa de ChatGPT/Codex/backend. La baseline de edición de Claude sigue siendo la candidata frontend genérica V103 que ya tiene abierta.
 
-`dbe7d7278a7e67a08822a90a9b971b6311dfef38e470a62ed845b0688783aeb5`
+No crear ni modificar:
 
-No trabajar sobre candidatas rechazadas ni sobre una versión anterior. No modificar contratos, adapters, importadores, datos source-safe, tools o workflows. No rediseñar módulos completos.
+- `core/tya-phase-a-*`;
+- `data/tya-*`;
+- `index-tya-phase-a-source-safe.html`;
+- `backend/`;
+- `tools/`;
+- `.github/workflows/`;
+- snapshot HR, adapters, importadores, Firebase, Make, Gemini o datos TyA.
+
+No hardcodear 14 periodos, 616 visitas, 213 shoppers ni nombres TyA. ChatGPT/Codex harán el empalme posterior contra R5.
+
+## Baseline obligatoria para Claude
+
+Trabajar únicamente sobre la última candidata frontend genérica V103 abierta en su entorno. Continuar los Bloques 1–10 pendientes solamente cuando correspondan al prototipo `app/`, preservando todo bloque ya cerrado.
 
 ## Corrección 1 — P0 Portal Cliente sin resultados
 
 Archivo principal: `app/modules/cliente.js`
 Módulo: `cli_dashboard`
 
-Hallazgo: cuando la fuente source-safe todavía no contiene sucursales puntuadas o secciones evaluadas, `R.mejorSeccion` y `R.peorSeccion` son nulos. Las referencias directas a `.sec.name` y `.val` rompen la vista.
+Hallazgo genérico: cuando la fuente no contiene sucursales puntuadas o secciones evaluadas, `R.mejorSeccion` y `R.peorSeccion` pueden ser nulos. Las referencias directas a `.sec.name` y `.val` rompen la vista.
 
 Resultado requerido:
 
-- Portal Cliente debe abrir aunque todavía no existan resultados;
-- mostrar empty state honesto: resultados pendientes / sin secciones evaluadas;
+- Portal Cliente abre con arreglo vacío, resultados parciales o completos;
+- empty state honesto: resultados pendientes / sin secciones evaluadas;
 - no generar score, NPS, brecha, recomendación IA, ranking o sucursales ficticias;
-- conservar comportamiento actual cuando sí existan resultados;
-- revisar también `app/modules/cliente-extra.js` por el mismo patrón nulo.
+- conservar el comportamiento cuando sí existan resultados;
+- revisar `app/modules/cliente-extra.js` por el mismo patrón.
 
-Aceptación:
+## Corrección 2 — P0 fixtures fuera de demo
 
-- `cli_dashboard` renderiza con arreglo vacío;
-- renderiza con resultados parciales;
-- renderiza con resultados completos;
-- cero excepción por `mejorSeccion/peorSeccion`;
-- sin datos inventados.
-
-## Corrección 2 — P0 usuarios demo fuera de demo
-
-Archivo principal: `app/modules/configuracion.js`
-Módulo: `usuarios`
-
-Hallazgo: si no hay usuarios persistidos, inicializa `Admin Demo`, `Coordinación`, `Operaciones`, `Evaluador 01` y `Finanzas` con correos demo. En la entrada TyA/source-safe esos usuarios aparentan ser reales.
+Revisar `app/modules/configuracion.js`, topbar, notificaciones, reservas y otros seeds visibles.
 
 Resultado requerido:
 
-- seeds demo solamente cuando `CX.isDemo === true` o equivalente explícito;
-- fuera de demo, lista vacía o estado `pendiente Auth/backend`;
-- no mostrar ni persistir `Admin Demo`, `Evaluador 01` o correos `@demo.cxorbia`;
-- no crear Auth ni simular invitaciones reales;
-- conservar matriz de permisos y capacidad administrativa del prototipo.
+- usuarios, correos, notificaciones, reservas y demás fixtures solo existen cuando la fuente está en modo demo;
+- fuera de demo, mostrar vacío honesto o estado de fuente pendiente;
+- no inventar reemplazos.
 
-Auditar también semillas visibles en Certificaciones, Finanzas, Correo y topbar. No resolverlas con un parche global que oculte datos reales; usar gate de modo demo por fuente.
+## Corrección 3 — P1 Histórico
 
-Aceptación:
-
-- modo demo conserva sus fixtures;
-- TyA/source-safe no contiene nombres/correos demo;
-- usuarios vacíos muestran estado honesto;
-- cero persistencia local de seeds demo al entrar en source-safe.
-
-## Corrección 3 — P1 Histórico excluye activo por defecto
-
-Archivo: `app/modules/historico.js`
-
-Hallazgo: el comentario y copy dicen que Histórico no mezcla operación activa, pero `rows` se construye desde todos los periodos y el filtro inicial es `all`. Julio 2026 activo aparece en la vista inicial.
+Archivo principal: `app/modules/historico.js`.
 
 Resultado requerido:
 
-- usar `data.historicalPeriodsForProgram(key)` cuando exista;
-- fallback: filtrar `data.periodState(p.id) !== 'activo'`;
-- filtro inicial muestra cerrados/archivados;
-- agregar opción explícita `Incluir activo` o estado `Activo` sin activarla por defecto;
-- no reconstruir periodos por nombre o tab;
-- no cambiar IDs ni estados definidos por backend.
+- excluir por defecto cualquier periodo cuyo estado sea `activo`;
+- permitir incluirlo de forma explícita;
+- no hardcodear cantidad de periodos, fechas, país o proyecto;
+- consumir el estado que entregue `CX.data`/data source.
 
-Aceptación TyA:
-
-- vista inicial: 13 periodos / 572 visitas;
-- julio 2026 no aparece inicialmente;
-- al incluir activo: 14 periodos / 616 visitas;
-- país y export respetan el filtro visible.
-
-## Corrección 4 — P1 overflow móvil Shopper
-
-Cobertura: layout/estilos y rutas del portal shopper.
-
-Hallazgo: viewport 390 px produce `scrollWidth=516`.
+## Corrección 4 — P1 Portal Shopper móvil
 
 Resultado requerido:
 
-- identificar el elemento exacto que fuerza el ancho;
-- corregir en la fuente del componente/estilo, no con `overflow-x:hidden` global;
-- preservar scroll horizontal únicamente dentro de tablas anchas;
-- tarjetas, KPIs, filtros, botones y modales deben caber en 360/390/412 px;
-- no romper desktop ni Admin.
+- corregir la causa del overflow horizontal;
+- validar 360, 390 y 412 px;
+- no usar `overflow-x:hidden` global para ocultarlo;
+- conservar desktop.
 
-Aceptación:
+## Entrega
 
-- `document.documentElement.scrollWidth <= window.innerWidth` en 360, 390 y 412 px;
-- todas las 11 rutas shopper abren;
-- tablas anchas conservan scroll interno;
-- sin recortes de botones o contenido.
+- ZIP frontend completo incremental sobre V103;
+- reporte único;
+- archivos modificados/agregados/eliminados;
+- manifest verificable;
+- smoke del prototipo genérico;
+- pendientes honestos.
 
-## Comportamiento R5 que debe preservarse
-
-La entrada TyA source-safe ya:
-
-- retira 6 notificaciones demo;
-- desactiva seed automático de reservas;
-- marca notificaciones `pending_backend_event_source`;
-- marca reservas `pending_backend_reservation_source`;
-- mantiene 44 liquidaciones de junio, 0 pagos y 0 elegibles para lote;
-- conserva 14 periodos, 616 visitas y 213 shoppers;
-- mantiene 13 históricos + julio activo.
-
-No reintroducir seeds demo ni reemplazarlos por datos ficticios.
-
-## Documentación obligatoria de Claude
-
-Actualizar en la candidata:
-
-- changelog único;
-- manifest SHA-256;
-- resumen de archivos modificados;
-- qué resolvió cada punto;
-- qué quedó pendiente;
-- impacto en Academia/manuales/rutas por rol;
-- resultado de sintaxis y smoke por rol;
-- evidencia de 360/390/412 px.
-
-## Salida esperada
-
-Entregar una única candidata incremental completa. No entregar parches sueltos. No hacer deploy, merge, Firebase, Make, Gemini, import ni producción.
+ChatGPT/Codex harán auditoría forense, empalme de tres vías contra R5 y nuevo smoke. Claude no realiza ese empalme.
