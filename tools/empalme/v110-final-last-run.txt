@@ -219,3 +219,79 @@ rm '.github/workflows/cxorbia-export-current-11.yml'
 rm '.github/workflows/cxorbia-v105-baseline-diagnostic.yml'
 rm '.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'
 rm 'tools/empalme/run-v110-deterministic-final.sh'
+[docs-tya-v6-v71-audit 2a2e67a] feat(frontend): empalme determinístico V110 preservando backend
+ 115 files changed, 9503 insertions(+), 4513 deletions(-)
+ delete mode 100644 .github/workflows/cxorbia-export-current-11.yml
+ delete mode 100644 .github/workflows/cxorbia-v105-baseline-diagnostic.yml
+ delete mode 100644 .github/workflows/cxorbia-v105-v106-runtime-empalme.yml
+ delete mode 100644 .github/workflows/cxorbia-v110-runtime-empalme.yml
+ delete mode 100644 .github/workflows/cxorbia-v110-selective-empalme.yml
+ create mode 100644 app/core/build-lock.js
+ create mode 100644 app/core/data-source.js
+ create mode 100644 app/core/permissions.js
+ create mode 100644 app/docs/ACADEMIA-IMPACT-EMPALME-DETERMINISTICO-V110-20260712.md
+ create mode 100644 app/docs/CAMBIOS-BACKEND-ADDENDUM-EMPALME-DETERMINISTICO-V110-20260712.md
+ create mode 100644 app/docs/MANIFEST-V110-UNION-EMPALME-R1.json
+ create mode 100644 app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-EMPALME-DETERMINISTICO-V110-20260712.md
+ create mode 100644 app/docs/verify-manifest-v110-union-empalme.mjs
+ delete mode 100644 tools/empalme/export-current-11/READY
+ delete mode 100644 tools/empalme/export-current-11/output/MANIFEST.txt
+ delete mode 100644 tools/empalme/export-current-11/output/archive.sha256
+ delete mode 100644 tools/empalme/export-current-11/output/chunk-00
+ delete mode 100644 tools/empalme/export-current-11/output/chunk-01
+ delete mode 100644 tools/empalme/export-current-11/output/chunk-02
+ delete mode 100644 tools/empalme/export-current-11/output/chunk-03
+ delete mode 100644 tools/empalme/export-current-11/output/chunk-04
+ delete mode 100644 tools/empalme/export-current-11/output/chunk-05
+ delete mode 100644 tools/empalme/export-current-11/output/chunk-06
+ delete mode 100644 tools/empalme/export-current-11/output/chunk-07
+ delete mode 100644 tools/empalme/export-current-11/output/chunk-08
+ delete mode 100644 tools/empalme/export-current-11/output/problem/academia.js.gz.b64
+ delete mode 100644 tools/empalme/export-current-11/output/problem/academia.sha256
+ delete mode 100644 tools/empalme/export-current-11/output/problem/cliente-data.js.gz.b64
+ delete mode 100644 tools/empalme/export-current-11/output/problem/cliente-data.sha256
+ delete mode 100644 tools/empalme/export-current-11/output/problem/cliente.js.gz.b64
+ delete mode 100644 tools/empalme/export-current-11/output/problem/cliente.sha256
+ delete mode 100644 tools/empalme/export-current-11/output/problem/finanzas.js.gz.b64
+ delete mode 100644 tools/empalme/export-current-11/output/problem/finanzas.sha256
+ delete mode 100644 tools/empalme/run-v110-deterministic-final.sh
+ delete mode 100644 tools/empalme/v110-exact/liquidacion.js.b64
+ delete mode 100644 tools/empalme/v110-exact/liquidacion.js.exact
+ delete mode 100644 tools/empalme/v110-exact/runtime-checksums.sha256
+ delete mode 100644 tools/empalme/v110-selective/LAST-FAILURE.txt
+ delete mode 100644 tools/empalme/v110-selective/READY
+ delete mode 100644 tools/empalme/v110-selective/RESOLVER-TRACE.txt
+ delete mode 100644 tools/empalme/v110-selective/TRANSPORT-MODE.txt
+ delete mode 100644 tools/empalme/v110-selective/base-bundle/MANIFEST.txt
+ delete mode 100644 tools/empalme/v110-selective/base-bundle/README.md
+ delete mode 100644 tools/empalme/v110-selective/base-bundle/STATUS
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-00.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-01.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-02a.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-02b.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-02c.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-02d.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-03a0.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-03a1.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-03a2.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-03a3.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-03b0.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-03b1.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-03b2.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-03b3.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-03c0.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-03c1.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-03c2.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-03c3.b64
+ delete mode 100644 tools/empalme/v110-selective/exact/runtime-exact-03d.b64
+ delete mode 100644 tools/empalme/v110-selective/parts/academia-part-00.patchpart
+ delete mode 100644 tools/empalme/v110-selective/parts/academia-part-01.patchpart
+ delete mode 100644 tools/empalme/v110-selective/parts/academia-part-02.patchpart
+ delete mode 100644 tools/empalme/v110-selective/parts/academia-part-03.patchpart
+ delete mode 100644 tools/empalme/v110-selective/parts/runtime-part-00.patchpart
+ delete mode 100644 tools/empalme/v110-selective/parts/runtime-part-01.patchpart
+ delete mode 100644 tools/empalme/v110-selective/parts/runtime-part-02.patchpart
+ delete mode 100644 tools/empalme/v110-selective/parts/runtime-part-03.patchpart
+ delete mode 100644 tools/empalme/v110-selective/run-empalme.py
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
