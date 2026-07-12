@@ -3,7 +3,7 @@
   "package": "CXORBIA-V110-UNION-EMPALME-R1",
   "project": "CXOrbia",
   "baseline": "V110 empalmada de forma determinística sobre rama viva",
-  "generatedAt": "2026-07-12T21:39:47.213Z",
+  "generatedAt": "2026-07-12T21:42:11.747Z",
   "sourceZipSha256": "1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227",
   "basePackageSha256": "582a8c98cdac7b46028bb720d1304657c6d678e99e4bc23a49e80ab440bc8206",
   "runtimePatchSha256": "d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd",
@@ -24,8 +24,8 @@
     ],
     "generatedUnionLock": "core/build-lock.js"
   },
-  "fileCount": 1397,
-  "aggregateSha256": "d709668cc84886774ee3eb5b2ad3d14514e30ee791b90145f649f2b4f5510744",
+  "fileCount": 1401,
+  "aggregateSha256": "458d14aa7dfa8cdeab21e6b8dc3ed419ff20de50400500c5ccecb9d97f704089",
   "exclusionsDeclared": [
     {
       "path": "core/build-lock.js",
@@ -805,6 +805,11 @@
       "path": "docs/ACADEMIA-IMPACT-FIREBASE-DEV-CLEAN-STATE-READONLY-GATE-20260710.md",
       "size": 4418,
       "sha256": "095eaa798b80cb3daca0d25b2594a89cb786b3dbea8d82717881bfb88f5a3efe"
+    },
+    {
+      "path": "docs/ACADEMIA-IMPACT-FIREBASE-DEV-READONLY-R12-20260712.md",
+      "size": 258,
+      "sha256": "a59389612aa34c063452fb993a836fdd23804611cc152067fda7110c5c54993d"
     },
     {
       "path": "docs/ACADEMIA-IMPACT-FIREBASE-READONLY-HR-VIVA-TYA-20260710.md",
@@ -1865,6 +1870,11 @@
       "path": "docs/CAMBIOS-BACKEND-ADDENDUM-EMPALME-V106-R8-20260711.md",
       "size": 1060,
       "sha256": "4d19732c34fd1dd1c32aa61a9e0a7b7ab820ee9e81f13850f8fd3a9c5918a566"
+    },
+    {
+      "path": "docs/CAMBIOS-BACKEND-ADDENDUM-FIREBASE-DEV-READONLY-R12-20260712.md",
+      "size": 305,
+      "sha256": "9e5f69fc36272c9e5e1479b9fb01d3df58a8e3481b69b84649b4c9821eb69506"
     },
     {
       "path": "docs/CAMBIOS-BACKEND-ADDENDUM-FIREBASE-READONLY-GATE-20260710.md",
@@ -5062,6 +5072,11 @@
       "sha256": "008c801dad855eb87130281489e03335d9aa3683028b976b6e9f0e27471fafe8"
     },
     {
+      "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-R12-FIREBASE-READONLY-20260712.md",
+      "size": 577,
+      "sha256": "bd3b88c5cd5150db76e3ed4e7be2cd91875c6f0f702e7398ffad52907a4550fa"
+    },
+    {
       "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-RECHAZO-V102-CONTAMINACION-ORBIT-20260711.md",
       "size": 643,
       "sha256": "e0aef3df58611e3b40c93a96a7d226d39f02ae38940a846849bd07996a25b560"
@@ -5135,6 +5150,11 @@
       "path": "docs/PHASE-A-EXPANDED-MUST-HAVES-TYA-20260704.md",
       "size": 3439,
       "sha256": "458790b07ee483ba0c4737075f9cac97cc71424faa4b80dae2e9232f2c80a32f"
+    },
+    {
+      "path": "docs/PHASE-A-FIREBASE-DEV-READONLY-READINESS-POST-V110-R12-20260712.md",
+      "size": 1363,
+      "sha256": "29189c50124ac4fc5f3fee318729789351d69e8be6e5476ea08d58323c39e222"
     },
     {
       "path": "docs/PHASE-A-FIRESTORE-MATERIALIZATION-EXECUTOR-OPERATIONAL-R8-20260711.md",
@@ -7062,5 +7082,11 @@
     "report": "docs/PHASE-A-SHOPPER-SOURCE-SNAPSHOT-GAP-REVIEW-R11D-20260712.md",
     "reviewItems": 1,
     "placeholderShoppers": 0
+  },
+  "r12": {
+    "decision": "READY_FOR_EXPLICIT_AUTHORIZATION_NOT_EXECUTED",
+    "staticGate": "GO_SAFE_FIREBASE_DEV_READ_ONLY_GATE_PREPARED_NOT_EXECUTED",
+    "providerRunAuthorized": false,
+    "report": "docs/PHASE-A-FIREBASE-DEV-READONLY-READINESS-POST-V110-R12-20260712.md"
   }
 }

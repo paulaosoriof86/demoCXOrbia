@@ -132,3 +132,10 @@
 
 - Brecha 210/213 encapsulada en reviewQueue backend a nivel de fuente.
 - No es tarea Claude y no reabre V110/R10.
+
+
+## R12 Firebase DEV read-only readiness — 2026-07-12
+
+- Estado: `READY_FOR_EXPLICIT_AUTHORIZATION_NOT_EXECUTED`.
+- No mostrar Firebase conectado o base limpia verificada; solo readiness estático.
+- No corresponde paquete Claude inmediato.

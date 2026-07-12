@@ -215,3 +215,10 @@
 - Se creó un único ítem source-level; no tres shoppers ficticios.
 - Materialización shopper/carryover de certificaciones queda HOLD hasta evidencia o decisión humana auditada.
 - Sin imports, writes, deploy ni producción.
+
+
+## R12 Firebase DEV read-only readiness — 2026-07-12
+
+- Gate estático post-V110: `GO_SAFE_FIREBASE_DEV_READ_ONLY_GATE_PREPARED_NOT_EXECUTED`.
+- Autorización provider: FALSE; lecturas reales: NOT_EXECUTED.
+- Sin credenciales, writes, imports, deploy ni producción.
