@@ -1,0 +1,141 @@
+-        CX.finStore.addMov(this.currentProjectId,{tipo:'egreso',cat:'Honorario · '+d.shopper,pais:d.pais,monto:-d.monto,desc:d.sucursal+' · lote '+lote,estado:'Pagado',origen:'lote',lote,shopper:d.shopper,visitaId:d.visitaId,fecha:f});
++        CX.finStore.addMov(this.currentProjectId,{tipo:'egreso',cat:'Honorario · '+d.shopper,pais:d.pais,monto:-d.monto,desc:d.sucursal+' · lote '+d.loteId,estado:'Pagado',origen:'lote',lote:d.loteId,shopper:d.shopper,visitaId:d.visitaId,fecha:f});
+       });
+     }
+     if(n) CX.bus && CX.bus.emit('visit-flow');
+-    (ids||[]).forEach(id=>{ const v=this._visitas.find(x=>x.id===id); if(v&&CX.automations) CX.automations.fire('pago',{shopper:v.shopper||'',sucursal:v.sucursal}); });
+-    return {pagadas:n, fechaPago:f, porPais, detalle};
++    // automatización solo para las procesadas realmente (no para reviewRequired)
++    visitasValidas.forEach(v=>{ if(CX.automations) CX.automations.fire('pago',{shopper:v.shopper||'',sucursal:v.sucursal}); });
++    return {pagadas:n, fechaPago:f, porPais, detalle, reviewRequired};
+   },
+ 
+   /* conteo por fase con desglose por país */
+diff --git a/app/core/liquidacion.js b/app/core/liquidacion.js
+index 35348e3ce671910c67ff4740b74e4605a44fc1a6..2de749c7623ec40641ce473beded9fc518a972aa 100644
+--- a/app/core/liquidacion.js
++++ b/app/core/liquidacion.js
+@@ -76,7 +76,7 @@ CX.liq = {
+     const baseISO = (v.submit&&v.cuestFecha) || v.cuestFecha || v.realizada || v.agendada || '';
+     return {
+       visitaId:v.id, projectId:p.id, shopper:v.shopper, shopperCode:v.shopperCode,
+-      sucursal:v.sucursal, pais:v.pais, moneda:v.currency,
++      sucursal:v.sucursal, pais:v.pais, moneda:v.currency, loteId:v.loteId||null,
+       honorario:v.honorario, boleto:v.boleto||0, combo:v.comboAmt||0, reembolso, total,
+       estado, freal:v.realizada||'', cuest:v.cuestFecha||'', submit:v.submit?(v.cuestFecha||''):'',
+       fechaEstimadaPago: (estado==='pagada'||estado==='pagada_preview') ? (v.fechaPago||'') : this.fechaEstimadaPago(p, baseISO),
+diff --git a/app/modules/beneficios.js b/app/modules/beneficios.js
+index 3696176eea56c76e6ab19fa78762276c2ed7e637..07ba569ee5bc5ca09e687f9952eab75c1ce0d1c5 100644
+--- a/app/modules/beneficios.js
++++ b/app/modules/beneficios.js
+@@ -1,11 +1,17 @@
+ /* CXOrbia · Mis Beneficios (shopper) — honorarios vs reembolsos + beneficios en especie */
+ CX.module('beneficios', ({data,ui})=>{
+   const p=data.project();
+-  /* P0.1: SOLO los beneficios del shopper autenticado (por shopperId, no por nombre) */
+-  const sid=(CX.session.user&&CX.session.user.shopperId)||'sh1';
++  /* P0-D (paquete 20260711): shopper obligatorio — el fallback previo a 'sh1' hacía que
++     cualquier sesión sin shopperId (ej. un rol mal mapeado) heredara los beneficios de un
++     shopper fijo. Sin identidad de shopper autenticada, la vista se muestra vacía/pending,
++     nunca con datos de otro shopper. */
++  const sid = CX.session.user && CX.session.user.shopperId;
++  if(!sid){
++    return `<div class="card card-p">${ui.empty('👤','No hay un shopper autenticado en esta sesión — no se muestran beneficios de otra identidad.')}</div>`;
++  }
+   const myVisitIds=new Set((data.visitsForShopper?data.visitsForShopper(sid):[]).map(v=>v.id));
+   const allProj=CX.liq.forProject(data);
+-  const all=allProj.filter(l=>myVisitIds.size?myVisitIds.has(l.visitaId):true);
++  const all=allProj.filter(l=>myVisitIds.has(l.visitaId));
+   const cur=p.currency[p.countries[0]];
+   /* totales separados */
+   const hon = all.reduce((a,l)=>a+l.honorario,0);
+diff --git a/app/modules/cert.js b/app/modules/cert.js
+index 9f92db4fc1287dbb58b7a18045eef4f144e17364..16b2cf439ff0f90deb56cd2ea3b283346da66b72 100644
+--- a/app/modules/cert.js
++++ b/app/modules/cert.js
+@@ -216,7 +216,8 @@ CX.module('cert', ({role,data,ui})=>{
+           <div><label class="lbl">Motivo</label><select class="sel" id="rcReason"><option>Actualización del instructivo</option><option>Nueva ronda / periodo</option><option>Vencimiento de certificación</option><option>Bajo desempeño</option></select></div>
+           <div><label class="lbl">Plazo (días)</label><input class="inp" id="rcDays" type="number" value="7"></div>
+         </div>
+-        <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:14px"><input type="checkbox" id="rcNotif" checked> Notificar por WhatsApp/correo (Make) y en su panel</label>
++        <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:6px"><input type="checkbox" id="rcNotif" checked> Notificar en su panel (in-app)</label>
++        <div style="font-size:10.5px;color:var(--t3);margin-bottom:14px">🔒 El envío real por WhatsApp/correo vía Make está pendiente de conexión backend por tenant — este prototipo solo registra el evento en el log local de automatizaciones y en el panel in-app del shopper, nunca envía un mensaje real.</div>
+         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rcOk">Solicitar re-certificación</button></div>
+       `,{onMount:(ov,close)=>{
+         const sc=ov.querySelector('#rcScope'); sc.addEventListener('change',()=>{ov.querySelector('#rcOneWrap').style.display=sc.value==='one'?'':'none';});
+@@ -227,7 +228,7 @@ CX.module('cert', ({role,data,ui})=>{
+             CX.notif&&CX.notif.push({to:'shopper',tipo:'recert',icon:'🔄',tono:'a',titulo:'Re-certificación requerida',txt:p.name+' · '+reason+' · plazo '+days+' días',nav:'cert'});
+             CX.automations&&CX.automations.fire&&CX.automations.fire('recert',{proyecto:p.name,motivo:reason,plazo:days});
+           }
+-          close(); ui.toast('Re-certificación solicitada a '+who+' · '+reason+' · plazo '+days+' días'+(ov.querySelector('#rcNotif').checked?' · notificados':''),'ok',4200);
++          close(); ui.toast('Re-certificación solicitada a '+who+' · '+reason+' · plazo '+days+' días'+(ov.querySelector('#rcNotif').checked?' · notificado in-app (envío real por WhatsApp/correo pendiente de backend)':''),'ok',4200);
+         });
+       }});
+     });
+diff --git a/app/modules/cliente-extra.js b/app/modules/cliente-extra.js
+index 6246f47aa0c5f0f2d59f6a5ea9b0478d627bac72..71f76c7dc40277e95d76a6c8c3bef8e1be8a04c6 100644
+--- a/app/modules/cliente-extra.js
++++ b/app/modules/cliente-extra.js
+@@ -13,7 +13,10 @@ CX.module('cli_capacitacion', ({ui})=>{
+     cierre:['Cierre y fidelización','Venta cruzada efectiva'],
+   };
+   const gaps=R.secAvg.slice(0,3); // 3 secciones más débiles
+-  const needTraining=list.filter(s=>s.score<70);
++  /* T3 (paquete V109): mismo helper CX.clienteData.band()/validScore() que el resto del
++     Portal Cliente — crítico es SIEMPRE <70 en toda la app, y NaN/Infinity nunca cuentan
++     como score válido. */
++  const needTraining=list.filter(s=>s.hasScore!==false && C.validScore(s.score) && C.band(s.score).key==='critico');
+   const hasGaps = R.peorSeccion!=null;
+ 
+   setTimeout(()=>{ CX.cliUI.wirePersona();
+diff --git a/app/modules/cliente.js b/app/modules/cliente.js
+index 9f625585474d6b209f821058ca1b3dabce2d6816..82bf9409b8eafad62971270d521669e46259bfe6 100644
+--- a/app/modules/cliente.js
++++ b/app/modules/cliente.js
+@@ -93,12 +93,12 @@ CX.cliUI = {
+         <div class="flex" style="gap:14px">${this.donut(suc.score,76)}
+           <div><div class="card-t" style="font-size:16px">${suc.name}</div>
+           <div style="font-size:12px;color:var(--t3)">${CX.paisFlag(suc.pais)} ${suc.ciudad} · ${suc.region}</div>
+-          <div style="font-size:12px;color:var(--t2);margin-top:3px">Responsable: <b>${suc.responsable}</b></div>
++          <div style="font-size:12px;color:var(--t2);margin-top:3px">Responsable: <b>${suc.responsable||'—'}</b></div>
+           <div style="margin-top:6px">${this.pill(suc.score)} ${this.delta(suc.delta)}</div></div></div>
+       </div>
+       <div class="grid g4" style="margin-bottom:16px">
+-        ${ui.kpi('Visitas',suc.visitas,'b')}${ui.kpi('NPS',suc.nps,'p')}
+-        ${ui.kpi('vs. periodo previo',(suc.delta>0?'+':'')+suc.delta,suc.delta>=0?'g':'r','pts')}${ui.kpi('Última visita',suc.lastVisit?suc.lastVisit.slice(5):ui.statusBdg('pending_source'),'n')}
++        ${ui.kpi('Visitas',suc.visitas,'b')}${ui.kpi('NPS',suc.nps!=null?suc.nps:CX.ui.statusBdg('pending_source'),'p')}
++        ${ui.kpi('vs. periodo previo',suc.delta!=null?(suc.delta>0?'+':'')+suc.delta:CX.ui.statusBdg('pending_source'),suc.delta>=0?'g':'r','pts')}${ui.kpi('Última visita',suc.lastVisit?suc.lastVisit.slice(5):ui.statusBdg('pending_source'),'n')}
+       </div>
+       <div class="card-t" style="font-size:13px;margin-bottom:10px">Score por sección (ponderado)</div>
+       ${secRows}
+@@ -227,10 +227,17 @@ CX.module('cli_dashboard', ({ui})=>{
+   const C=CX.clienteData, p=CX.data.project();
+   const list=C.scoped(p), R=C.resumen(list);
+   const hasBranches = list.length>0;
+-  const hasScored = R.n>0;
+-  const distrib=[['Excelente','g',list.filter(s=>s.score>=85).length],['Bueno','b',list.filter(s=>s.score>=75&&s.score<85).length],
+-    ['En atención','a',list.filter(s=>s.score>=65&&s.score<75).length],['Crítico','r',list.filter(s=>s.score<65).length]];
+-  const tot=list.length||1;
++  /* T3 (paquete V109 — 20260712, corrección P0): un solo helper decide qué es un score válido
++     y en qué banda cae — CX.clienteData.band()/validScore(). V108 usaba `typeof==='number'`
++     (acepta NaN/Infinity) y DOS umbrales de "crítico" distintos entre la distribución (<65) y
++     el KPI/drill (<70). Ahora withScore/pending y las 4 bandas salen de la MISMA fuente en
++     TODAS las vistas (distribución, KPI, drill, capacitación). */
++  const withScore=list.filter(s=>s.hasScore!==false && C.validScore(s.score));
++  const pending=list.filter(s=>s.hasScore===false || !C.validScore(s.score));
++  const hasScored = withScore.length>0;
++  const distrib=[['Excelente','g',withScore.filter(s=>C.band(s.score).key==='excelente').length],['Bueno','b',withScore.filter(s=>C.band(s.score).key==='bueno').length],
++    ['En atención','a',withScore.filter(s=>C.band(s.score).key==='atencion').length],['Crítico','r',withScore.filter(s=>C.band(s.score).key==='critico').length]];
++  const tot=withScore.length||1;
+   const rankRow=(s,i)=>`<div class="card hov flex" data-suc="${s.id}" style="padding:10px 12px;gap:10px;cursor:pointer">
+     <b style="width:18px;color:var(--t3);font-family:var(--disp)">${i+1}</b>
+     <div style="flex:1;min-width:0"><b style="font-size:13px">${s.name}</b><div style="font-size:11px;color:var(--t3)">${s.region}</div></div>
+@@ -243,9 +250,12 @@ CX.module('cli_dashboard', ({ui})=>{
+     document.getElementById('cliTabBtn')?.addEventListener('click',()=>window.cliTablon&&window.cliTablon(ui));
+     const sucList=(arr,title)=>ui.modal(title+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Región</th><th>Score</th><th>Δ</th></tr></thead><tbody>${arr.map(s=>`<tr class="hov" data-sk="${s.id}" style="cursor:pointer"><td><b>${s.name}</b></td><td style="font-size:12px">${s.region}</td><td>${CX.cliUI.pill(s.score)}</td><td>${CX.cliUI.delta(s.delta)}</td></tr>`).join('')}</tbody></table>`:CX.ui.empty('🏪','Sin sucursales en esta categoría.'),{onMount:(ov,close)=>ov.querySelectorAll('[data-sk]').forEach(tr=>tr.addEventListener('click',()=>{close();const s=C.sucursales(p).find(x=>x.id===tr.dataset.sk);if(s)CX.cliUI.branchModal(s);}))});
+     const ckMap={nps:()=>ui.modal('NPS de marca',R.nps!=null?`<p style="font-size:13px;color:var(--t2);line-height:1.7">El NPS (${R.nps}) resume la propensión a recomendar derivada de los cuestionarios. Sube cuando cierras brechas en las secciones débiles y reduces sucursales críticas.</p>`:CX.ui.empty('📊','Todavía no hay cuestionarios reales suficientes para calcular el NPS de marca.')),
+-      exc:()=>sucList(list.filter(s=>s.score>=85),'Sucursales excelentes'),
+-      crit:()=>sucList(list.filter(s=>s.score<70),'Sucursales críticas'),
++      exc:()=>sucList(withScore.filter(s=>C.band(s.score).key==='excelente'),'Sucursales excelentes'),
++      crit:()=>sucList(withScore.filter(s=>C.band(s.score).key==='critico'),'Sucursales críticas'),
++      pending:()=>sucList(pending,'Pendientes de evaluación'),
