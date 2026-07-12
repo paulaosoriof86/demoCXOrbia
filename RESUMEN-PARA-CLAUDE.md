@@ -102,7 +102,8 @@
 
 ## R10 source-safe post-V110 — 2026-07-12
 
-- Primer intento bloqueado por harness, no por regresión del prototipo.
-- Decisión final retry: `HOLD_SOURCE_SAFE_VISUAL_SMOKE`.
-- No reabrir los P0 cerrados de Academia/país ni Finanzas fail-closed.
-- Los blockers finales quedan documentados y se clasifican antes de cualquier paquete Claude.
+- Decisión final: `PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE`.
+- Admin, Cliente y Shopper: 13/13 rutas renderizadas, 0 errores de página/consola y sin copy de integración real.
+- No reabrir P0 Academia/país ni Finanzas fail-closed.
+- No surge paquete crítico nuevo para Claude.
+- Diferencia shopper 210/213 pertenece a reconciliación backend/operativa, sin match por nombre.

@@ -179,8 +179,10 @@
 
 ## R10 source-safe post-V110 — 2026-07-12
 
-- Primer intento: `HARNESS_BLOCKED_NOT_RUNTIME_REGRESSION`; el HTML temporal no cargaba payload/bridge.
-- Decisión final retry: `HOLD_SOURCE_SAFE_VISUAL_SMOKE`.
-- Fuente TyA source-safe: 14 periodos, 616 visitas, 210 shoppers.
-- V110 física y source lock unión permanecen verificados.
+- Empalme V110 y source lock unión verificados.
+- Harness corregido: payload/bridge source-safe solo en CI, rutas canónicas y `CX.router.nav()`.
+- Decisión final: `PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE`.
+- Cobertura: 3 roles y 13 rutas; 0 errores de página/consola; 0 blockers.
+- HR source-safe actual: 14 periodos, 616 visitas y 210 shoppers.
+- Diferencia 210/213: revisión backend/operativa con llaves estables; no dedupe por nombre y no tarea Claude.
 - Sin deploy, producción, imports, writes, providers ni pagos reales.

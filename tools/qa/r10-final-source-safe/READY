@@ -1,6 +1,0 @@
-CXORBIA_R10_FINAL_SOURCE_SAFE_READY
-baseline=V110_COMPLETED_VERIFIED
-firstAttempt=HARNESS_BLOCKED
-secondAttempt=HARNESS_ROUTE_API_FIXED
-noDeploy=true
-noProduction=true

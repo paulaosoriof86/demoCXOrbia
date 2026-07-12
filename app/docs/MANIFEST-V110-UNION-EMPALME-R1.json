@@ -3,7 +3,7 @@
   "package": "CXORBIA-V110-UNION-EMPALME-R1",
   "project": "CXOrbia",
   "baseline": "V110 empalmada de forma determinística sobre rama viva",
-  "generatedAt": "2026-07-12T21:15:19.144Z",
+  "generatedAt": "2026-07-12T21:26:17.068Z",
   "sourceZipSha256": "1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227",
   "basePackageSha256": "582a8c98cdac7b46028bb720d1304657c6d678e99e4bc23a49e80ab440bc8206",
   "runtimePatchSha256": "d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd",
@@ -24,8 +24,8 @@
     ],
     "generatedUnionLock": "core/build-lock.js"
   },
-  "fileCount": 1376,
-  "aggregateSha256": "86f5448022e52661f651799e4e04476f55022758b56d11b34befb4bf1a315b66",
+  "fileCount": 1380,
+  "aggregateSha256": "49f04c99e18db14b574d40c6a7f0a995682f2ddfc9487face33d74835cf320b1",
   "exclusionsDeclared": [
     {
       "path": "core/build-lock.js",
@@ -995,6 +995,11 @@
       "path": "docs/ACADEMIA-IMPACT-SMOKE-SOURCE-SAFE-R10-20260711.md",
       "size": 2108,
       "sha256": "c5fb8998fcc22b7d7109082e3ec97727b06c3be62552da4da3fc187317577290"
+    },
+    {
+      "path": "docs/ACADEMIA-IMPACT-SMOKE-SOURCE-SAFE-R10-FINAL-20260712.md",
+      "size": 593,
+      "sha256": "af773df067f45cdb6dcaf9273b0e173aa0eeb7ad3fdf9c088886b8aab35fadb8"
     },
     {
       "path": "docs/ACADEMIA-IMPACT-SMOKE-SOURCE-SAFE-R10-POST-V110-20260712.md",
@@ -2110,6 +2115,11 @@
       "path": "docs/CAMBIOS-BACKEND-ADDENDUM-SMOKE-SOURCE-SAFE-R10-20260711.md",
       "size": 3250,
       "sha256": "c537e7588ca5ad35d4498edad317b400e75f2202e0f7b2526cface0a5c864360"
+    },
+    {
+      "path": "docs/CAMBIOS-BACKEND-ADDENDUM-SMOKE-SOURCE-SAFE-R10-FINAL-20260712.md",
+      "size": 568,
+      "sha256": "077f382628075e8f4a15f5463120842f35943d543971bd53d48d8e7ce5b1ddb8"
     },
     {
       "path": "docs/CAMBIOS-BACKEND-ADDENDUM-SMOKE-SOURCE-SAFE-R10-POST-V110-20260712.md",
@@ -4977,6 +4987,11 @@
       "sha256": "b864aa2886561fba89cae4703ec1fd78720a86642859f375c896a4f0ec96c2a3"
     },
     {
+      "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-R10-FINAL-20260712.md",
+      "size": 804,
+      "sha256": "368bb3e72c7e9ecb5418b41501aa9fafc52e082d7b6cc2bbfd582d489a2a5a44"
+    },
+    {
       "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-R10-POST-V110-20260712.md",
       "size": 420,
       "sha256": "a58d3bc73e11a20ffce465045765131ea9572a55ca43156be74fe037158521d6"
@@ -5298,8 +5313,8 @@
     },
     {
       "path": "docs/PHASE-A-SOURCE-SAFE-VISUAL-SMOKE-R10-POST-V110-RESULT-20260712.md",
-      "size": 2276,
-      "sha256": "cb76ef40550cb87248b757a82706045e3438ee533cc64004fc5e166908785785"
+      "size": 2586,
+      "sha256": "3cc424006b5eb7c4654b2106a2d21dc88dc93a7addcc7ced59cf003011b3feda"
     },
     {
       "path": "docs/PHASE-A-SOURCE-SAFE-VISUAL-SMOKE-R5-20260711.md",
@@ -5605,6 +5620,11 @@
       "path": "docs/R10-FIRST-ATTEMPT-HARNESS-BLOCKED-20260712.md",
       "size": 471,
       "sha256": "d9c5569848f3758eed0c81187b9a7ce23047579a21385d3b822ec9d91c4d0042"
+    },
+    {
+      "path": "docs/R10-HARNESS-RECONCILIATION-20260712.md",
+      "size": 622,
+      "sha256": "333a99507985faf8bfa40c7a49c07ad361aeff31747bdb688763bffcb07f61a3"
     },
     {
       "path": "docs/RC-PHASE-A-CONTROLLED-DECISION-20260706.md",
@@ -6923,10 +6943,14 @@
     }
   ],
   "r10": {
-    "decision": "HOLD_SOURCE_SAFE_VISUAL_SMOKE",
+    "decision": "PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE",
     "report": "docs/PHASE-A-SOURCE-SAFE-VISUAL-SMOKE-R10-POST-V110-RESULT-20260712.md",
-    "firstAttempt": "HARNESS_BLOCKED_NOT_RUNTIME_REGRESSION",
-    "blockers": 11,
-    "warnings": 3
+    "blockers": 0,
+    "warnings": 1,
+    "roles": 3,
+    "routes": 13,
+    "shopperCurrent": 210,
+    "shopperR5Reference": 213,
+    "shopperReconciliation": "REVIEW_REQUIRED"
   }
 }
