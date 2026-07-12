@@ -1,10 +1,10 @@
-block=Reconstruir y verificar parches V110
-returncode=1
+block=Precheck fail-closed de empalme 3-way
+returncode=128
+runtimePatchSha256=d0c9e28b1204007f023b7bd6756a906c3a679756e891551d168639b23888a944
 
 STDOUT
-/tmp/v110-runtime.patch: FAILED
 
 
 STDERR
-sha256sum: WARNING: 1 computed checksum did NOT match
+error: corrupt patch at /tmp/v110-runtime.patch:192
 
