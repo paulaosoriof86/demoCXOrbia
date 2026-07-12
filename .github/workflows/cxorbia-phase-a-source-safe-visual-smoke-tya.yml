@@ -1,0 +1,98 @@
+name: CXOrbia Phase A TyA Source-Safe Visual Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
+      - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
+      - 'app/data/tya-hr-source-safe-periods.js'
+      - '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
+      - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
+      - 'app/data/tya-hr-source-safe-periods.js'
+      - '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  source-safe-operational-visual-smoke:
+    name: TyA source-safe operational visual smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout latest empalmed baseline
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Build sanitized live TyA HR payload
+        env:
+          CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
+          test -s app/data/tya-hr-source-safe-periods.js
+          grep -q 'sourceSafe' app/data/tya-hr-source-safe-periods.js
+
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npm i -D playwright@1.47.2
+          npx playwright install --with-deps chromium
+
+      - name: Start local app
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp-source-safe-server.log 2>&1 &
+          echo $! > .tmp-source-safe-server.pid
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/index.html >/dev/null; then
+              echo 'Source-safe smoke server ready.'
+              exit 0
+            fi
+            sleep 1
+          done
+          cat .tmp-source-safe-server.log || true
+          echo 'Source-safe smoke server did not become ready.' >&2
+          exit 1
+
+      - name: Run source-safe operational visual smoke
+        env:
+          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html
+          CXORBIA_EXPECT_TENANT_ID: tya
+          CXORBIA_EXPECT_PROJECT_ID: cinepolis
+          CXORBIA_EXPECT_PERIODS: '14'
+          CXORBIA_EXPECT_VISITS: '616'
+          CXORBIA_EXPECT_SHOPPERS: '213'
+        run: |
+          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs \
+            --out .tmp/phase-a-source-safe-visual-smoke
+
+      - name: Upload sanitized report and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-tya-source-safe-visual-smoke
+          path: .tmp/phase-a-source-safe-visual-smoke
+          if-no-files-found: error
+          retention-days: 14
