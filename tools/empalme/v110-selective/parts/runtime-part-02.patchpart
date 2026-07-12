@@ -1,0 +1,134 @@
+-      mej:()=>sucList(list.filter(s=>(s.delta||0)>0),'Sucursales mejorando')};
++      exc:()=>sucList(withScore.filter(s=>C.band(s.score).key==='excelente'),'Sucursales excelentes'),
++      /* T3: el drill de "críticas" usa la MISMA banda (<70) que el KPI y la distribución —
++         ya no puede haber un total distinto entre vistas. */
++      crit:()=>sucList(withScore.filter(s=>C.band(s.score).key==='critico'),'Sucursales críticas'),
++      mej:()=>sucList(withScore.filter(s=>(s.delta||0)>0),'Sucursales mejorando'),
++      pend:()=>sucList(pending,'Pendientes de evaluación')};
+     document.querySelectorAll('#cliKpis [data-ck]').forEach(el=>el.addEventListener('click',()=>ckMap[el.dataset.ck]&&ckMap[el.dataset.ck]()));
+     const rr=C.realResults(p);
+     const liveEl=document.getElementById('cliLive'); if(liveEl&&rr.count) liveEl.addEventListener('click',()=>{
+@@ -297,6 +307,7 @@ CX.module('cli_dashboard', ({ui})=>{
+         <div data-ck="exc" style="cursor:pointer">${ui.kpi('Excelentes',R.excelentes,'g','score ≥ 85')}</div>
+         <div data-ck="crit" style="cursor:pointer">${ui.kpi('Sucursales críticas',R.criticas,'r','score < 70')}</div>
+         <div data-ck="mej" style="cursor:pointer">${ui.kpi('Mejorando',R.mejora,'b','vs. periodo previo')}</div>
++        ${pending.length?`<div data-ck="pend" style="cursor:pointer;grid-column:1/3">${ui.kpi('Pendientes de evaluación',pending.length,'n','sin cuestionario confirmado — no cuentan en niveles')}</div>`:''}
+       </div>
+     </div>
+     <div class="grid g2" style="gap:16px;margin-bottom:16px">
+@@ -323,7 +334,7 @@ CX.module('cli_sucursales', ({ui})=>{
+     <div class="flex" style="gap:12px">${CX.cliUI.donut(s.score,58)}
+       <div style="flex:1;min-width:0"><b style="font-size:13.5px">${s.name}</b>
+         <div style="font-size:11px;color:var(--t3)">${CX.paisFlag(s.pais)} ${s.ciudad} · ${s.region}</div>
+-        <div style="font-size:11px;color:var(--t2);margin-top:3px">${s.responsable} · ${s.visitas} visitas</div>
++        <div style="font-size:11px;color:var(--t2);margin-top:3px">${s.responsable||'—'} · ${s.visitas} visitas</div>
+         <div style="margin-top:6px">${CX.cliUI.delta(s.delta)}</div></div></div></div>`;
+ 
+   const regions=C.regions(p);
+@@ -334,7 +345,7 @@ CX.module('cli_sucursales', ({ui})=>{
+     bind();
+     const q=document.getElementById('cliSearch'), reg=document.getElementById('cliReg'), ord=document.getElementById('cliOrd');
+     const apply=()=>{ let L=all.slice();
+-      const t=(q.value||'').toLowerCase().trim(); if(t)L=L.filter(s=>(s.name+s.ciudad+s.region+s.responsable).toLowerCase().includes(t));
++      const t=(q.value||'').toLowerCase().trim(); if(t)L=L.filter(s=>(s.name+s.ciudad+s.region+(s.responsable||'')).toLowerCase().includes(t));
+       if(reg.value)L=L.filter(s=>s.region===reg.value);
+       if(ord.value==='peor')L.sort((a,b)=>(a.score??999)-(b.score??999)); else if(ord.value==='mejor')L.sort((a,b)=>(b.score??-1)-(a.score??-1));
+       render(L); bind(); };
+diff --git a/app/modules/dashboard.js b/app/modules/dashboard.js
+index 93d56f73ae5c59534e2c13d04b2aaaf7b1dd9b31..8452e94ec7832299b755d796f368af37043d0dd6 100644
+--- a/app/modules/dashboard.js
++++ b/app/modules/dashboard.js
+@@ -158,9 +158,9 @@ CX.module('dashboard', ({data,ui})=>{
+     <div style="margin-top:6px">${ui.aiBox('La barra es el avance real; la línea vertical es el avance ideal a hoy (lineal por día del periodo). Si el real va por debajo del ideal, hay riesgo de incumplimiento de la ronda — actúa con recordatorios o reasignaciones.','Ritmo del mes, por país')}</div>
+   </div>`;
+   host.innerHTML=`
+-  <div class="between" style="margin-bottom:14px">
++  <div class="between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px">
+     <div>${ui.ph('Dashboard Operativo', (ALL?('Todos los proyectos · operación general · '+data.projects.length+' proyectos'):(p.name+' · '+p.industry))+' · '+cs.map(c=>CX.paisFlag(c)).join(' '))}</div>
+-    <div class="flex">
++    <div class="flex" style="flex-wrap:wrap;gap:8px">
+       <select class="sel" id="dashProjSel" style="width:auto"><option value="all" ${ALL?'selected':''}>🌐 Todos los proyectos</option>${data.scopedProyectos().map(pg=>`<option value="${pg.key}" ${(!ALL&&pg.key===data.currentProgramKey())?'selected':''}>${pg.name}</option>`).join('')}</select>
+       <select class="sel" id="monthSel" style="width:auto">${months.map((m,i)=>`<option value="${i}" ${i===selMonth?'selected':''}>${m} ${new Date().getFullYear()}</option>`).join('')}</select>
+       <span class="bdg bdg-b">● Preview operativo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div>
+diff --git a/app/modules/finanzas.js b/app/modules/finanzas.js
+index 8338c9811fb59cfd29d92e9dcfc2922357c290c1..1982c42da7ff5eb852f46dae3b2712e75fef4293 100644
+--- a/app/modules/finanzas.js
++++ b/app/modules/finanzas.js
+@@ -434,7 +434,11 @@ CX.module('movimientos', ({data,ui})=>{
+       const val=CX.liq.forProject(data).filter(l=>l.estado==='validada');
+       if(!val.length){ui.toast('No hay liquidaciones validadas para pagar','warn');return;}
+       const r=data.payVisits(val.map(l=>l.visitaId));
+-      ui.toast(r.pagadas+' liquidaciones marcadas pagadas (preview) · egreso(s) preparados en Movimientos · cruce bancario real pendiente backend','ok',4200);
++      /* P0-2 (V110): el toast ya no asume que todo lo enviado se pagó — si payVisits() devolvió
++         reviewRequired, esas visitas NO cambiaron de estado ni generaron movimiento; se informa
++         aparte y honesto, nunca mezclado con "pagadas". */
++      const revMsg=(r.reviewRequired&&r.reviewRequired.length)?(' · '+r.reviewRequired.length+' en revisión requerida (dato incompleto, no pagada(s))'):'';
++      ui.toast(r.pagadas+' liquidaciones marcadas pagadas (preview) · egreso(s) preparados en Movimientos'+revMsg+' · cruce bancario real pendiente backend', r.reviewRequired&&r.reviewRequired.length?'warn':'ok',4800);
+     });
+     const ih=host.querySelector('#impHist');
+     if(ih)ih.addEventListener('click',()=>ui.modal('Importar histórico de movimientos',`
+@@ -574,7 +578,8 @@ CX.module('liquidaciones', ({data,ui})=>{
+         if(difBox&&difBox.checked){restantes.forEach(l=>{CX.finStore.addCxp(p.id,{concepto:'Liquidación diferida · '+l.shopper+' ('+l.sucursal+')',monto:l.total,pais:l.pais,origen:'liquidacion',visitaId:l.visitaId});diferidas++;});}
+         const ids=[...draft]; close(); CX.finStore.clearDraft(p.id);
+         const r=data.payVisits(ids);
+-        ui.toast('Lote registrado como pagado (preview) · '+r.pagadas+' visita(s) · fecha de pago '+r.fechaPago+(diferidas?' · '+diferidas+' diferida(s) a CxP':'')+' · egresos reflejados en Movimientos · pendiente cruce financiero real','ok',4600);
++        const revMsg2=(r.reviewRequired&&r.reviewRequired.length)?(' · '+r.reviewRequired.length+' en revisión requerida (dato incompleto, no pagada(s))'):'';
++        ui.toast('Lote registrado como pagado (preview) · '+r.pagadas+' visita(s) · fecha de pago '+r.fechaPago+(diferidas?' · '+diferidas+' diferida(s) a CxP':'')+revMsg2+' · egresos reflejados en Movimientos · pendiente cruce financiero real', r.reviewRequired&&r.reviewRequired.length?'warn':'ok', 5200);
+       });}});
+     });
+   };
+@@ -605,12 +610,53 @@ CX.module('lotes', ({data,ui})=>{
+      para lotes genuinamente confirmados, mezclando las dos etiquetas. Ahora cada lote declara
+      `confirmado` (todas sus liquidaciones son 'pagada' con paymentSourceRef) y el estado/tono/label
+      salen de ese booleano, no de un texto fijo. */
++  /* lotes reales: se agrupan por identidad real de lote. P0-6 (paquete acumulado 20260711):
++     un lote con AL MENOS una liquidación en `pagada_preview` (sin paymentSourceRef real) no
++     puede rotularse "Pagado" igual que uno 100% confirmado.
++     T3 (paquete V108 — 20260712, corrección de fondo): antes se agrupaba SOLO por
++     `fechaEstimadaPago||fechaPago` — dos lotes de países/monedas distintos pagados el mismo
++     día colisionaban en una sola fila, sumando montos de monedas distintas bajo la moneda del
++     primer registro. Ahora la llave de agrupación es, en orden de prioridad: (1) `loteId` real
++     persistido por payVisits (identidad estable de backend/preview); si una liquidación no trae
++     loteId (dato legado), (2) una llave compuesta tenantId+projectId+país+moneda+periodo+fecha
++     — NUNCA solo la fecha — así país/moneda jamás se mezclan y dos lotes del mismo proyecto,
++     país, moneda y fecha con orígenes distintos no colisionan. */
++  const tenantId=(CX.BRAND&&CX.BRAND.id)||'tenant-demo';
+   const liqsPagadas=(CX.liq&&CX.liq.forProject?CX.liq.forProject(data):[]).filter(l=>['pagada','pagada_preview'].includes(l.estado));
+-  const porFecha={}; liqsPagadas.forEach(l=>{const f=l.fechaEstimadaPago||l.fechaPago||'—';(porFecha[f]=porFecha[f]||[]).push(l);});
+-  const lotesReales=Object.keys(porFecha).map((f,i)=>{const ls=porFecha[f];const monto=ls.reduce((a,l)=>a+(l.total||0),0);
++  /* T2.C (paquete V109 — defensa en la vista): aunque exista un loteId real, la vista SIEMPRE
++     valida país+moneda antes de sumar — un loteId legado que mezcle países/monedas (dato de una
++     versión anterior a la corrección) se divide en sub-filas por país+moneda y cada una se marca
++     "Revisión requerida" en vez de sumarse a ciegas bajo una sola moneda. */
++  const loteIdCombos={};
++  liqsPagadas.forEach(l=>{ if(l.loteId){ const combo=(l.pais||'—')+'::'+(l.moneda||'—'); (loteIdCombos[l.loteId]=loteIdCombos[l.loteId]||new Set()).add(combo); } });
++  const groupKey=(l)=>{
++    if(l.loteId) return 'id::'+l.loteId+'::'+(l.pais||'—')+'::'+(l.moneda||'—');
++    /* si falta país o moneda, el registro no se agrupa silenciosamente con otros — cae en su
++       propia llave de revisión, nunca se suma "a ciegas" a un lote con país/moneda distintos. */
++    if(!l.pais || !l.moneda){
++      /* T2 (paquete V109 — corrección P0): eliminado Math.random() del fallback de revisión —
++         ya no era reproducible. La llave ahora es estable: visitaId real si existe, o un hash
++         determinístico de los campos disponibles del registro (nunca aleatorio). */
++      const seed=l.visitaId || [l.shopper||'',l.sucursal||'',l.total||0,l.fechaEstimadaPago||l.fechaPago||''].join('|');
++      let h=0; for(let i=0;i<String(seed).length;i++) h=(h*31+String(seed).charCodeAt(i))|0;
++      return 'revision::'+Math.abs(h).toString(36);
++    }
++    const f=l.fechaEstimadaPago||l.fechaPago||'—';
++    const periodo=(f&&f!=='—')?f.slice(0,7):'—';
++    return ['legacy',tenantId,p.id,l.pais,l.moneda,periodo,f].join('::');
++  };
++  const porLote={}; liqsPagadas.forEach(l=>{const k=groupKey(l);(porLote[k]=porLote[k]||[]).push(l);});
++  const lotesReales=Object.keys(porLote).map((k,i)=>{const ls=porLote[k];const monto=ls.reduce((a,l)=>a+(l.total||0),0);
+     const confirmado=ls.every(l=>l.estado==='pagada');
+-    return {id:'#LOTE-'+(i+1),n:ls.length,monto,cur:ls[0].moneda||cur,
+-      estado: confirmado?'Pagado':'Pagado (preview)', tone: confirmado?'g':'a', confirmado,
++    const f=ls[0].fechaEstimadaPago||ls[0].fechaPago||'—';
++    /* id estable derivado de la llave real de agrupación (loteId+país+moneda o compuesta) — no
++       del índice de iteración ni de solo la fecha. */
++    let h=0; for(let c=0;c<k.length;c++)h=(h*31+k.charCodeAt(c))|0;
++    const conflict = ls[0].loteId && loteIdCombos[ls[0].loteId] && loteIdCombos[ls[0].loteId].size>1;
++    const baseId = ls[0].loteId?('#'+ls[0].loteId):('#LOTE-'+Math.abs(h).toString(36).toUpperCase().slice(0,6));
++    return {id: conflict?(baseId+' · '+(ls[0].pais||'—')+'/'+(ls[0].moneda||'—')):baseId,
++      n:ls.length,monto,cur:ls[0].moneda||cur,pais:ls[0].pais,
++      estado: conflict?'Revisión requerida':(confirmado?'Pagado':'Pagado (preview)'), tone: conflict?'r':(confirmado?'g':'a'), confirmado, conflict,
