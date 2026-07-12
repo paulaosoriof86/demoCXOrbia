@@ -45,12 +45,13 @@ jobs:
           tar -czf .tmp/cxorbia-current-11.tar.gz -C .tmp/current-11 .
           sha256sum .tmp/cxorbia-current-11.tar.gz | tee tools/empalme/export-current-11/output/archive.sha256
           base64 -w0 .tmp/cxorbia-current-11.tar.gz > .tmp/cxorbia-current-11.b64
-          split -b 50000 -d -a 2 .tmp/cxorbia-current-11.b64 tools/empalme/export-current-11/output/chunk-
+          split -b 20000 -d -a 2 .tmp/cxorbia-current-11.b64 tools/empalme/export-current-11/output/chunk-
           {
             echo 'source=branch:docs-tya-v6-v71-audit'
             echo 'files=11'
             echo "chunks=$(find tools/empalme/export-current-11/output -maxdepth 1 -name 'chunk-*' | wc -l)"
             echo "head=$(git rev-parse HEAD)"
+            echo 'chunkBytes=20000'
             echo 'noDeploy=true'
             echo 'noProduction=true'
           } > tools/empalme/export-current-11/output/MANIFEST.txt
