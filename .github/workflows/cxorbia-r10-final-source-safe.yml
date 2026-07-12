@@ -6,6 +6,7 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - tools/qa/r10-final-source-safe/READY
+      - .github/workflows/cxorbia-r10-final-source-safe.yml
 
 permissions:
   contents: write
@@ -27,7 +28,7 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Corregir harness source-safe y workflow permanente
+      - name: Corregir harness source-safe
         shell: bash
         run: |
           set -euo pipefail
@@ -36,39 +37,21 @@ jobs:
           p=Path('tools/qa/tya-phase-a-source-safe-visual-smoke.mjs')
           s=p.read_text(encoding='utf-8')
           replacements={
-          "expectedModules: ['dashboard', 'proyectos', 'visitas', 'postulaciones', 'certificaciones', 'finanzas', 'academia']":"expectedModules: ['dashboard', 'proyectos', 'visitas', 'postulaciones', 'cert', 'financiero', 'aprendizaje']",
-          "expectedModules: ['dashboard', 'visitas']":"expectedModules: ['cli_dashboard', 'cli_sucursales']",
-          "expectedModules: ['visitas', 'certificaciones', 'beneficios', 'academia']":"expectedModules: ['visitas', 'cert', 'beneficios', 'aprendizaje']",
-          "if (window.CX?.router?.go) window.CX.router.go(target);\n      else if (window.CX?.router?.navigate) window.CX.router.navigate(target);":"if (window.CX?.router?.nav) window.CX.router.nav(target);\n      else if (window.CX?.router?.go) window.CX.router.go(target);\n      else if (window.CX?.router?.navigate) window.CX.router.navigate(target);",
-          "if (countOf({ counts: report.source.counts }, 'shoppers') !== expected.shoppers) addBlocker('shopper_count_mismatch', `${report.source.counts.shoppers}/${expected.shoppers}`);":"if (countOf({ counts: report.source.counts }, 'shoppers') !== expected.shoppers) addWarning('shopper_count_drift_review', `${report.source.counts.shoppers}/${expected.shoppers}`);"
+            "expectedModules: ['dashboard', 'proyectos', 'visitas', 'postulaciones', 'certificaciones', 'finanzas', 'academia']":"expectedModules: ['dashboard', 'proyectos', 'visitas', 'postulaciones', 'cert', 'financiero', 'aprendizaje']",
+            "expectedModules: ['dashboard', 'visitas']":"expectedModules: ['cli_dashboard', 'cli_sucursales']",
+            "expectedModules: ['visitas', 'certificaciones', 'beneficios', 'academia']":"expectedModules: ['visitas', 'cert', 'beneficios', 'aprendizaje']",
+            "if (window.CX?.router?.go) window.CX.router.go(target);\n      else if (window.CX?.router?.navigate) window.CX.router.navigate(target);":"if (window.CX?.router?.nav) window.CX.router.nav(target);\n      else if (window.CX?.router?.go) window.CX.router.go(target);\n      else if (window.CX?.router?.navigate) window.CX.router.navigate(target);",
+            "if (countOf({ counts: report.source.counts }, 'shoppers') !== expected.shoppers) addBlocker('shopper_count_mismatch', `${report.source.counts.shoppers}/${expected.shoppers}`);":"if (countOf({ counts: report.source.counts }, 'shoppers') !== expected.shoppers) addWarning('shopper_count_drift_review', `${report.source.counts.shoppers}/${expected.shoppers}`);"
           }
           for old,new in replacements.items():
-              if old not in s: raise SystemExit('qa_patch_anchor_missing:'+old[:60])
+              if old not in s:
+                  raise SystemExit('qa_patch_anchor_missing:'+old[:60])
               s=s.replace(old,new,1)
           p.write_text(s,encoding='utf-8')
-
-          w=Path('.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml')
-          t=w.read_text(encoding='utf-8')
-          anchor="          grep -q 'sourceSafe' app/data/tya-hr-source-safe-periods.js\n"
-          injection="""          grep -q 'sourceSafe' app/data/tya-hr-source-safe-periods.js
-          python3 - <<'PY2'
-          from pathlib import Path
-          p=Path('app/index.html'); s=p.read_text(encoding='utf-8')
-          s=s.replace('<script src=\"core/build-lock.js\"></script>','<script src=\"data/tya-hr-source-safe-periods.js\"></script>\\n<script src=\"core/build-lock.js\"></script>',1)
-          s=s.replace('<script src=\"core/data.js\"></script>','<script src=\"core/data.js\"></script>\\n<script src=\"core/tya-phase-a-source-safe-preview.js\"></script>',1)
-          p.write_text(s,encoding='utf-8')
-          PY2
-"""
-          if 'data/tya-hr-source-safe-periods.js' not in t:
-              if anchor not in t: raise SystemExit('workflow_injection_anchor_missing')
-              t=t.replace(anchor,injection,1)
-          t=t.replace('CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html','CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1')
-          w.write_text(t,encoding='utf-8')
           PY
           node --check tools/qa/tya-phase-a-source-safe-visual-smoke.mjs
           grep -Fq 'window.CX?.router?.nav' tools/qa/tya-phase-a-source-safe-visual-smoke.mjs
           grep -Fq 'shopper_count_drift_review' tools/qa/tya-phase-a-source-safe-visual-smoke.mjs
-          grep -Fq 'data/tya-hr-source-safe-periods.js' .github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml
 
       - name: Verificar source lock y construir HR source-safe
         shell: bash
@@ -83,7 +66,8 @@ jobs:
           grep -q 'sourceSafe' app/data/tya-hr-source-safe-periods.js
           python3 - <<'PY'
           from pathlib import Path
-          p=Path('app/index.html'); s=p.read_text(encoding='utf-8')
+          p=Path('app/index.html')
+          s=p.read_text(encoding='utf-8')
           s=s.replace('<script src="core/build-lock.js"></script>','<script src="data/tya-hr-source-safe-periods.js"></script>\n<script src="core/build-lock.js"></script>',1)
           s=s.replace('<script src="core/data.js"></script>','<script src="core/data.js"></script>\n<script src="core/tya-phase-a-source-safe-preview.js"></script>',1)
           p.write_text(s,encoding='utf-8')
@@ -97,7 +81,10 @@ jobs:
           npm i -D playwright@1.47.2 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null
           python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp-r10-final-server.log 2>&1 &
-          for attempt in $(seq 1 30); do curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' >/dev/null && exit 0; sleep 1; done
+          for attempt in $(seq 1 30); do
+            if curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' >/dev/null; then exit 0; fi
+            sleep 1
+          done
           cat .tmp-r10-final-server.log || true
           exit 1
 
@@ -120,38 +107,17 @@ jobs:
           cat .tmp/phase-a-r10-final/phase-a-source-safe-visual-smoke-report.json
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
 
-      - name: Restaurar runtime y documentar R10 final
+      - name: Restaurar runtime y guardar reporte sanitizado
         shell: bash
         run: |
           set -euo pipefail
           git restore app/index.html app/data/tya-hr-source-safe-periods.js
           rm -rf node_modules package.json package-lock.json
-          node <<'NODE'
-          const fs=require('fs');
-          const R=JSON.parse(fs.readFileSync('.tmp/phase-a-r10-final/phase-a-source-safe-visual-smoke-report.json','utf8'));
-          const B=R.blockers||[], W=R.warnings||[];
-          const list=a=>a.length?a.map(x=>`- ${x}`).join('\n'):'- none';
-          const roles=(R.roles||[]).map(r=>`- ${r.id}: ${r.status}; source-safe=${r.sourceSafeMode}; project=${r.projectId}; rutas=${r.routes?.length||0}; pageErrors=${r.pageErrorCount||0}; consoleErrors=${r.consoleErrorCount||0}`).join('\n')||'- none';
-          const mods=(R.modules||[]).map(m=>`- ${m.role}/${m.token}: target=${m.target||'none'}; attempted=${Boolean(m.attempted)}; rendered=${Boolean(m.rendered)}; honestCopy=${!m.hasTechnicalPromise}`).join('\n')||'- none';
-          fs.writeFileSync('app/docs/PHASE-A-SOURCE-SAFE-VISUAL-SMOKE-R10-POST-V110-RESULT-20260712.md',`# PHASE A — R10 SOURCE-SAFE POST-V110\n\nFecha: 2026-07-12\n\n## Decisión final\n\n\`${R.decision}\`\n\n## Fuente operacional comprobada\n\n- tenantId: \`${R.source?.tenantId||'n/a'}\`;\n- projectId: \`${R.source?.projectId||'n/a'}\`;\n- periodos: ${R.source?.counts?.periods||0};\n- visitas: ${R.source?.counts?.visits||0};\n- shoppers actuales HR source-safe: ${R.source?.counts?.shoppers||0};\n- referencia R5: 213 shoppers; diferencia actual: ${(R.source?.counts?.shoppers||0)-213};\n- países: \`${JSON.stringify(R.source?.countryCounts||{})}\`;\n- monedas: \`${JSON.stringify(R.source?.currencyCounts||{})}\`;\n- junio con evidencia de ejecución: ${R.source?.june?.withExecutionEvidence||0}/${R.source?.june?.visits||0}.\n\n## Roles\n\n${roles}\n\n## Rutas verificadas\n\n${mods}\n\n## Blockers\n\n${list(B)}\n\n## Warnings\n\n${list(W)}\n\n## Interpretación shopper 210/213\n\nLa diferencia de 3 identidades se conserva como revisión operativa source-safe. No se rellena con fixtures, no se deduplica por nombre y no bloquea el smoke visual; sí mantiene HOLD sobre materialización/import de identidades hasta reconciliar referencias estables.\n\n## Estado seguro\n\nSin datos crudos, import real, writes, deploy, producción, Make/Gemini live ni pagos reales.\n`,'utf8');
-          fs.writeFileSync('app/docs/CAMBIOS-BACKEND-ADDENDUM-SMOKE-SOURCE-SAFE-R10-FINAL-20260712.md',`# CAMBIOS BACKEND — R10 FINAL POST-V110\n\n- Corregido el harness: usa \`CX.router.nav()\` y rutas canónicas por rol.\n- Corregido el workflow permanente para cargar payload y bridge source-safe solo en workspace CI.\n- Decisión: \`${R.decision}\`.\n- Datos actuales: ${R.source?.counts?.periods||0} periodos, ${R.source?.counts?.visits||0} visitas, ${R.source?.counts?.shoppers||0} shoppers.\n- Drift shopper 210/213 queda en revisión backend/operativa, no como bug Claude.\n- Blockers: ${B.length}; warnings: ${W.length}.\n- Sin deploy, producción, imports, writes, providers ni pagos reales.\n`,'utf8');
-          fs.writeFileSync('app/docs/ACADEMIA-IMPACT-SMOKE-SOURCE-SAFE-R10-FINAL-20260712.md',`# ACADEMIA — IMPACTO R10 FINAL\n\n- Ruta canónica \`aprendizaje\` validada para Admin y Shopper.\n- Segregación por país del shopper permanece fail-closed.\n- Decisión R10: \`${R.decision}\`.\n- Blockers Academia/shopper: ${B.filter(x=>/aprendizaje|academia|shopper_module/i.test(x)).length}.\n- Warnings Academia/shopper: ${W.filter(x=>/aprendizaje|academia|shopper/i.test(x)).length}.\n- Gemini/publicación automática siguen apagados; revisión humana obligatoria.\n`,'utf8');
-          fs.writeFileSync('app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-R10-FINAL-20260712.md',`# TRACKER PHASE A — R10 FINAL\n\n- V110 física: COMPLETED_VERIFIED.\n- Source lock unión: VERIFIED.\n- R10 final: ${R.decision}.\n- HR source-safe: ${R.source?.counts?.periods||0} periodos / ${R.source?.counts?.visits||0} visitas / ${R.source?.counts?.shoppers||0} shoppers actuales.\n- Reconciliación identidades 210/213: REVIEW_REQUIRED, sin match por nombre.\n- Firebase DEV read-only: pendiente autorización específica.\n- Pagos/certificaciones: pendientes fuentes sanitizadas.\n- Producción: HOLD.\n`,'utf8');
-          const marker='## R10 source-safe post-V110 — 2026-07-12';
-          let cb=fs.readFileSync('CAMBIOS-BACKEND.md','utf8');cb=cb.replace(new RegExp(marker+'[\\s\\S]*$'),`${marker}\n\n- Empalme V110 y source lock unión verificados.\n- Harness corregido a rutas canónicas y \`CX.router.nav()\`.\n- Decisión final: \`${R.decision}\`.\n- HR source-safe: ${R.source?.counts?.periods||0} periodos, ${R.source?.counts?.visits||0} visitas, ${R.source?.counts?.shoppers||0} shoppers actuales.\n- Diferencia 210/213 queda en revisión backend/operativa, sin dedupe por nombre.\n- Sin deploy, producción, imports, writes, providers ni pagos reales.\n`);fs.writeFileSync('CAMBIOS-BACKEND.md',cb,'utf8');
-          let rs=fs.readFileSync('RESUMEN-PARA-CLAUDE.md','utf8');rs=rs.replace(new RegExp(marker+'[\\s\\S]*$'),`${marker}\n\n- Decisión final: \`${R.decision}\`.\n- Rutas canónicas por rol verificadas con el harness corregido.\n- No reabrir P0 Academia/país ni Finanzas fail-closed.\n- ${B.length?'Persisten blockers reales listados en el reporte; clasificar antes de paquete Claude.':'No surgió paquete crítico nuevo para Claude; drift shopper 210/213 pertenece a backend/operación.'}\n`);fs.writeFileSync('RESUMEN-PARA-CLAUDE.md',rs,'utf8');
-          let pp=fs.readFileSync('PENDIENTES-PROTOTIPO.md','utf8');pp=pp.replace(/\n## R10 source-safe post-V110 — 2026-07-12[\s\S]*$/,'');if(B.length)pp+=`\n\n${marker}\n\n${B.map(x=>`- ${x}`).join('\n')}\n`;fs.writeFileSync('PENDIENTES-PROTOTIPO.md',pp,'utf8');
-          NODE
-
-      - name: Refrescar source lock unión
-        shell: bash
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const fs=require('fs'),path=require('path'),crypto=require('crypto');const root=path.resolve('app'),manifestRel='docs/MANIFEST-V110-UNION-EMPALME-R1.json',verifierRel='docs/verify-manifest-v110-union-empalme.mjs';const M=JSON.parse(fs.readFileSync(path.join(root,manifestRel),'utf8'));const excluded=new Set(['core/build-lock.js',manifestRel,verifierRel]),rels=[];function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,e.name);if(e.isDirectory())walk(p);else if(e.isFile())rels.push(path.relative(root,p).split(path.sep).join('/'));}}walk(root);const sha=b=>crypto.createHash('sha256').update(b).digest('hex');const files=rels.filter(r=>!excluded.has(r)).sort().map(r=>{const b=fs.readFileSync(path.join(root,r));return{path:r,size:b.length,sha256:sha(b)};});const aggregateSha256=sha(Buffer.from(files.map(f=>`${f.path}:${f.sha256}`).join('\n'),'utf8'));const R=JSON.parse(fs.readFileSync('.tmp/phase-a-r10-final/phase-a-source-safe-visual-smoke-report.json','utf8'));M.generatedAt=new Date().toISOString();M.fileCount=files.length;M.aggregateSha256=aggregateSha256;M.files=files;M.r10={decision:R.decision,report:'docs/PHASE-A-SOURCE-SAFE-VISUAL-SMOKE-R10-POST-V110-RESULT-20260712.md',blockers:(R.blockers||[]).length,warnings:(R.warnings||[]).length,shopperCurrent:R.source?.counts?.shoppers||0,shopperR5Reference:213,shopperReconciliation:'REVIEW_REQUIRED'};fs.writeFileSync(path.join(root,manifestRel),JSON.stringify(M,null,2)+'\n','utf8');fs.writeFileSync(path.join(root,'core','build-lock.js'),`/* CXOrbia · Source lock unión V110 · R10 final */\nvar CX_SOURCE_LOCK={manifestFile:'${manifestRel}',aggregateSha256:'${aggregateSha256}',fileCount:${files.length},runtimeIdentity:'67 exactos V110 + 2 overrides locales protegidos + lock unión',r10Decision:'${R.decision}',generatedAt:'${M.generatedAt.slice(0,10)}',sourceZipSha256:'${M.sourceZipSha256}',note:'V110 empalmada; R10 final documentado; backend preservado.'};\nvar CX_BUILD_ID=CX_SOURCE_LOCK.aggregateSha256.slice(0,16);\nif(typeof window!=='undefined'){window.CX=window.CX||{};window.CX.BUILD_ID=CX_BUILD_ID;window.CX.SOURCE_LOCK=CX_SOURCE_LOCK;}\n`,'utf8');
-          NODE
-          node --check app/core/build-lock.js
-          (cd app && node docs/verify-manifest-v110-union-empalme.mjs)
+          rm -rf tools/qa/r10-final-result
+          mkdir -p tools/qa/r10-final-result
+          cp .tmp/phase-a-r10-final/phase-a-source-safe-visual-smoke-report.json tools/qa/r10-final-result/report.source-safe.json
+          cp .tmp/phase-a-r10-final/phase-a-source-safe-visual-smoke-report.md tools/qa/r10-final-result/report.source-safe.md
+          printf 'decision=%s\nnoDeploy=true\nnoProduction=true\n' "$(node -p "require('./tools/qa/r10-final-result/report.source-safe.json').decision")" > tools/qa/r10-final-result/STATUS
 
       - name: Subir evidencia sanitizada
         if: always()
@@ -162,16 +128,14 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Commit R10 final y limpiar runner
+      - name: Commit harness y resultado R10
         shell: bash
         run: |
           set -euo pipefail
-          git rm -f .github/workflows/cxorbia-r10-final-source-safe.yml
-          git rm -rf tools/qa/r10-final-source-safe
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add app tools/qa/tya-phase-a-source-safe-visual-smoke.mjs .github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml CAMBIOS-BACKEND.md RESUMEN-PARA-CLAUDE.md PENDIENTES-PROTOTIPO.md .github/workflows tools/qa || true
-          git commit -m "test(phase-a): finalize R10 source-safe post-V110"
+          git add tools/qa/tya-phase-a-source-safe-visual-smoke.mjs tools/qa/r10-final-result
+          git commit -m "test(phase-a): correct source-safe R10 route harness"
           git push origin HEAD:docs-tya-v6-v71-audit
 
       - name: Aplicar decisión final
