@@ -131,7 +131,7 @@ CX.module('postulaciones', ({data,ui})=>{
         ov.querySelectorAll('[data-ph]').forEach(el=>el.addEventListener('click',()=>{const k=el.dataset.ph; if(k==='all')histModal(()=>true,'Historial completo'); else if(k==='real')histModal(v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Realizadas'); else histModal(v=>v.estado==='liquidada','Liquidadas');}));
       }});
     };
-    document.querySelectorAll('[data-ap]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.ap);if(x&&CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(b.dataset.ap,'✅ Aprobada','green','Aprobada · WhatsApp preparado (preview) · envío real pendiente backend/Make');}));
+    document.querySelectorAll('[data-ap]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.ap);if(!CX.permissions.gate('postulacion.approve',{projectId:x&&x.projectId,pais:x&&x.pais},ui))return;if(x&&CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(b.dataset.ap,'✅ Aprobada','green','Aprobada · WhatsApp preparado (preview) · envío real pendiente backend/Make');}));
     /* FIX: el botón Perfil ahora abre el perfil real del shopper */
     document.querySelectorAll('[data-perfil]').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();profileModal(b.dataset.perfil);}));
     /* detalle de la postulación/visita al hacer clic en la tarjeta */
@@ -154,8 +154,8 @@ CX.module('postulaciones', ({data,ui})=>{
       `,{onMount:(ov,close)=>{
         ov.querySelector('#pdPerfil')&&ov.querySelector('#pdPerfil').addEventListener('click',()=>{close();profileModal(x.shopperId);});
         ov.querySelector('#pdWa')&&ov.querySelector('#pdWa').addEventListener('click',()=>{const msg=encodeURIComponent('Hola '+(x.shopper||'')+', sobre tu visita en '+x.sucursal);window.open('https://wa.me/'+(x.phone||'').replace(/[^0-9]/g,'')+'?text='+msg,'_blank');});
-        ov.querySelector('#pdAp')&&ov.querySelector('#pdAp').addEventListener('click',()=>{if(CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(x.id,'✅ Aprobada','green','Aprobada · WhatsApp preparado (preview) · envío real pendiente backend/Make');close();});
-        ov.querySelector('#pdRj')&&ov.querySelector('#pdRj').addEventListener('click',()=>{act(x.id,'✕ Rechazada','red','Rechazada · notificación preparada · pendiente confirmación');close();});
+        ov.querySelector('#pdAp')&&ov.querySelector('#pdAp').addEventListener('click',()=>{if(!CX.permissions.gate('postulacion.approve',{projectId:x.projectId,pais:x.pais},ui))return;if(CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(x.id,'✅ Aprobada','green','Aprobada · WhatsApp preparado (preview) · envío real pendiente backend/Make');close();});
+        ov.querySelector('#pdRj')&&ov.querySelector('#pdRj').addEventListener('click',()=>{if(!CX.permissions.gate('postulacion.reject',{projectId:x.projectId,pais:x.pais},ui))return;act(x.id,'✕ Rechazada','red','Rechazada · notificación preparada · pendiente confirmación');close();});
       }});
     };
     document.querySelectorAll('#pGroups [data-pid]').forEach(el=>el.addEventListener('click',(e)=>{
@@ -163,7 +163,7 @@ CX.module('postulaciones', ({data,ui})=>{
       const x=posts.find(z=>z.id===el.dataset.pid); if(x)postDetalle(x);
     }));
     document.querySelectorAll('[data-sb]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.sb,'⏸ Standby','amber','Postulación en standby')));
-    document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.rj,'✕ Rechazada','red','Postulación rechazada · notificación preparada · pendiente confirmación')));
+    document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.rj);if(!CX.permissions.gate('postulacion.reject',{projectId:x&&x.projectId,pais:x&&x.pais},ui))return;act(b.dataset.rj,'✕ Rechazada','red','Postulación rechazada · notificación preparada · pendiente confirmación');}));
     const search=()=>{const q=(document.getElementById('pSearch').value||'').toLowerCase(),fpr=document.getElementById('pProj').value,fp=document.getElementById('pPais').value,fe=document.getElementById('pEst').value;
       document.querySelectorAll('#pGroups [data-pid]').forEach(el=>{const x=posts.find(z=>z.id===el.dataset.pid);
         const ok=(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});
@@ -202,7 +202,7 @@ CX.module('postulaciones', ({data,ui})=>{
           ov.querySelectorAll('.rsRow').forEach(r=>r.addEventListener('click',()=>{sel=r.dataset.id;ov.querySelector('#rsOk').disabled=false;draw();}));
         };
         ov.querySelector('#rsFind').addEventListener('input',draw); ov.querySelector('#rsPais').addEventListener('change',draw); ov.querySelector('#rsCert').addEventListener('change',draw); draw();
-        ov.querySelector('#rsOk').addEventListener('click',()=>{ if(!sel)return; data.assignVisit&&data.assignVisit(x.visitaId,sel); const ns=data.getShopper&&data.getShopper(sel); x.shopper=ns?ns.nombre:x.shopper; x.shopperId=sel; x.gestionadoPor=gestor(); CX.automations&&CX.automations.logAction&&CX.automations.logAction('Reasignada',x.visitaId||x.id,(x.shopper||'')+' · '+(x.sucursal||'')); CX.bus&&CX.bus.emit('visit-flow'); close(); CX.notif&&CX.notif.push({to:'admin',tipo:'reasig',icon:'🔁',tono:'a',titulo:'Visita reasignada',txt:x.sucursal+' → '+(x.shopper||''),nav:'postulaciones'}); ui.toast('Visita reasignada a '+x.shopper,'ok'); }); }});
+        ov.querySelector('#rsOk').addEventListener('click',()=>{ if(!sel)return; if(!CX.permissions.gate('visit.reassign',{projectId:x.projectId,pais:x.pais},ui))return; data.assignVisit&&data.assignVisit(x.visitaId,sel); const ns=data.getShopper&&data.getShopper(sel); x.shopper=ns?ns.nombre:x.shopper; x.shopperId=sel; x.gestionadoPor=gestor(); CX.automations&&CX.automations.logAction&&CX.automations.logAction('Reasignada',x.visitaId||x.id,(x.shopper||'')+' · '+(x.sucursal||'')); CX.bus&&CX.bus.emit('visit-flow'); close(); CX.notif&&CX.notif.push({to:'admin',tipo:'reasig',icon:'🔁',tono:'a',titulo:'Visita reasignada',txt:x.sucursal+' → '+(x.shopper||''),nav:'postulaciones'}); ui.toast('Visita reasignada a '+x.shopper,'ok'); }); }});
     }));
 
     /* cancelar: la visita vuelve a disponible */
@@ -211,7 +211,7 @@ CX.module('postulaciones', ({data,ui})=>{
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">La visita de <b>${x.shopper}</b> volverá a <b>disponible</b> y el shopper será notificado.</p>
         <label class="lbl">Motivo</label><textarea class="inp" id="cnM" rows="2" placeholder="Motivo de la cancelación…" style="margin-bottom:14px"></textarea>
         <div style="text-align:right"><button class="btn btn-sm" style="background:var(--red-bg);color:var(--red)" id="cnOk">Confirmar cancelación</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#cnOk').addEventListener('click',()=>{ const v=data._visitas.find(z=>z.id===x.visitaId); if(v){v.estado='disponible';v.shopperId=null;v.shopper=null;v.agendada=null;} x.estado='cancelada';x.gestionadoPor=gestor(); CX.notif&&CX.notif.push({to:'shopper',tipo:'cancel',icon:'❌',tono:'r',titulo:'Visita cancelada',txt:x.sucursal+' · puedes postularte a otras',nav:'misvisitas'}); CX.bus&&CX.bus.emit('visit-flow'); close(); act(x.id,'✕ Cancelada','red','Visita cancelada · vuelve a disponible'); });}});
+      `,{onMount:(ov,close)=>{ov.querySelector('#cnOk').addEventListener('click',()=>{ if(!CX.permissions.gate('visit.cancel',{projectId:x.projectId,pais:x.pais},ui))return; const v=data._visitas.find(z=>z.id===x.visitaId); if(v){v.estado='disponible';v.shopperId=null;v.shopper=null;v.agendada=null;} x.estado='cancelada';x.gestionadoPor=gestor(); CX.notif&&CX.notif.push({to:'shopper',tipo:'cancel',icon:'❌',tono:'r',titulo:'Visita cancelada',txt:x.sucursal+' · puedes postularte a otras',nav:'misvisitas'}); CX.bus&&CX.bus.emit('visit-flow'); close(); act(x.id,'✕ Cancelada','red','Visita cancelada · vuelve a disponible'); });}});
     }));
 
     /* asignar visita manual — con búsqueda y opción de crear shopper en el momento */

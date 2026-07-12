@@ -7,17 +7,296 @@ window.CX=window.CX||{};
 
 /* ─ Catálogo de cursos ─ */
 CX.acadData={
+  /* T2.B (paquete V108): catálogos con IDs estables para el scope de Academia — reemplaza
+     el CSV libre. Nivel/paquete no tienen una fuente formal en el prototipo todavía, así que
+     se curan aquí como lista cerrada (misma idea que los planes ya usados en Consola SaaS). */
+  NIVELES:[{id:'basico',label:'Básico'},{id:'intermedio',label:'Intermedio'},{id:'avanzado',label:'Avanzado'}],
+  PAQUETES:[{id:'starter',label:'Starter'},{id:'estandar',label:'Estándar'},{id:'pro',label:'Pro'},{id:'enterprise',label:'Enterprise'}],
   CATS:(()=>{try{const s=JSON.parse(localStorage.getItem('cx_acad_cats')||'null');if(s&&Array.isArray(s)&&s.length)return s;}catch(e){}return ['Todos','Inducción','Operación','Set-up','Finanzas','Comercial','Técnico','IA','Industria MS'];})(),
   /* ── Persistencia de cursos personalizados ── */
   _ck:'cx_acad_cust',
   getCustom(r){ try{return JSON.parse(localStorage.getItem(this._ck+'_'+r)||'[]');}catch(e){return[];} },
   saveCustom(r,arr){ try{localStorage.setItem(this._ck+'_'+r,JSON.stringify(arr));}catch(e){} CX.bus&&CX.bus.emit('acad'); },
-  addCourse(r,c){ const arr=this.getCustom(r); const lessons=c.lessons||[]; const mins=(typeof c.mins==='number')?c.mins:Math.max(10,lessons.length*12); arr.unshift(Object.assign({id:'cu'+Date.now().toString(36),lessons:[],mins,cert:false},c,{mins})); this.saveCustom(r,arr); },
-  editCourse(r,cid,patch){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c)Object.assign(c,patch); const custom=this.getCustom(r); const cu=custom.find(x=>x.id===cid); if(cu)Object.assign(cu,patch); this.saveCustom(r,custom); },
-  addLesson(r,cid,lesson){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){c.lessons=c.lessons||[];c.lessons.push(Object.assign({id:'ls'+Date.now().toString(36)},lesson));} CX.bus&&CX.bus.emit('acad'); },
-  editLesson(r,cid,lid,patch){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){const l=(c.lessons||[]).find(x=>x.id===lid);if(l)Object.assign(l,patch);} const custom=this.getCustom(r); if(custom.find(x=>x.id===cid))this.saveCustom(r,custom); CX.bus&&CX.bus.emit('acad'); },
-  delLesson(r,cid,lid){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){c.lessons=(c.lessons||[]).filter(x=>x.id!==lid);} const custom=this.getCustom(r); if(custom.find(x=>x.id===cid))this.saveCustom(r,custom); CX.bus&&CX.bus.emit('acad'); },
-  delCourse(r,cid){ this.saveCustom(r,this.getCustom(r).filter(x=>x.id!==cid)); },
+  /* Bloque 4 (auditoría V100 — corrección exacta): addCourse()/editCourse() ahora EXIGEN permiso
+     de acción (academy.create/academy.edit) — antes solo duplicateCourse() lo validaba. Devuelven
+     {ok:false,error} en vez de ejecutar en silencio cuando el rol no tiene el permiso. */
+  addCourse(r,c,ctx){
+    if(CX.permissions && !CX.permissions.can('academy.create', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.create".'};
+    const arr=this.getCustom(r); const lessons=c.lessons||[]; const mins=(typeof c.mins==='number')?c.mins:Math.max(10,lessons.length*12);
+    const auditRef='aud_'+Math.random().toString(36).slice(2,8);
+    /* Contrato Academia (paquete 20260711): creator identificado explícitamente y separado de
+       revisor/aprobador (setCourseState). scope opcional (vacío = global) — ver visibleFor(). */
+    const creador=(CX.session&&CX.session.user&&CX.session.user.name)||'—';
+    /* T1b (paquete V109): identidad ESTABLE del creador por id (cx_users o sesión sintética) —
+       creador (nombre) se conserva solo para presentación; la separación de funciones en
+       setCourseState se valida contra createdByUserId, nunca contra el nombre. */
+    const createdByUserId=this.actorId();
+    /* T2.D (paquete V108, sin cambios en V109): todo curso queda vinculado a un tenantId real
+       desde su creación — el eje tenantId del scope se fuerza al tenant activo aunque el resto
+       de ejes queden vacíos (regla documentada: sin scope explícito = global DENTRO del tenant,
+       nunca global cruzando tenants). Con el bug de T1 corregido, CX.acadData.ctx().tenantId
+       ahora SIEMPRE resuelve a este mismo CX.BRAND.id, así que el eje coincide. */
+    const scope=Object.assign({}, c.scope||{}, {tenantId:[CX.BRAND.id]});
+    arr.unshift(Object.assign({id:'cu'+Date.now().toString(36),lessons:[],mins,cert:false,estado:'borrador',contentVersion:1,workflowVersion:1,auditRef,
+      creador, createdByUserId, revisadoPor:null, reviewedByUserId:null, aprobadoPor:null, approvedByUserId:null, scope},c,{mins,scope}));
+    this.saveCustom(r,arr);
+    this._logAudit(r,{accion:'crear',cid:arr[0].id,titulo:arr[0].n,motivo:c.motivo||'(creación)'});
+    return {ok:true, course:arr[0]};
+  },
+
+  /* T1 (paquete V109 — 20260712, corrección P0 real): contexto académico CANÓNICO, propio de
+     Academia — independiente de CX.permissions.ctx() (que sirve a otro propósito: simular un
+     tenant/proyecto distinto para el gate de permisos, no el tenant/país reales del usuario).
+     Bug confirmado en V108: CX.permissions.ctx().tenantId lee CX.session.user.tenantId, campo
+     que NINGÚN flujo de login (admin/cliente/shopper/invitado) asigna jamás — así que un curso
+     creado con scope.tenantId=[CX.BRAND.id] quedaba invisible para TODOS los roles, incluido el
+     shopper correcto, porque ctx.tenantId llegaba `undefined`. Este helper resuelve tenantId al
+     tenant real de la instancia (CX.BRAND.id — un solo tenant por despliegue en este prototipo),
+     projectId al proyecto activo, país como LISTA (scope de países del usuario invitado si existe,
+     si no los países del proyecto activo) para que multipaís no rompa el filtro, y rol al rol
+     efectivo de sesión (scopeRole para roles de prueba, o el rol real). */
+  ctx(){
+    const u=(CX.session&&CX.session.user)||{};
+    const p=CX.data&&CX.data.project&&CX.data.project();
+    const rol = u.scopeRole || u.role || (CX.session&&CX.session.role) || undefined;
+    const projectId = p && p.id;
+    let paises;
+    /* T1-V110 (corrección P0 real, 20260712): para rol SHOPPER, el país de acceso debe ser el
+       país REAL del shopper autenticado (data.getShopper(shopperId).pais) — nunca
+       project.countries. V109 usaba project.countries como fallback cuando el shopper no traía
+       scopePaises propio: en un proyecto multipaís (GT/HN) eso le daba al shopper GT acceso
+       equivalente a [GT,HN], filtrando contenido HN que no le correspondía. Ahora:
+       - si el usuario es un invitado/rol de prueba con scopePaises explícito, se respeta (sirve
+         para simular un revisor multipaís, no es el caso de un shopper real);
+       - si es shopper real, se resuelve su país desde el catálogo canónico de shoppers;
+       - si el país del shopper no puede resolverse, paises queda `[]` (fail-closed): un curso
+         restringido por país no será visible (axisOkMulti trata lista vacía/ausente como "sin
+         país conocido" → no confirmable), pero el contenido GLOBAL (sin restricción de país en
+         su scope) sigue visible sin problema. */
+    if(rol==='shopper'){
+      const sid=u.shopperId;
+      const shopper=sid && CX.data && CX.data.getShopper && CX.data.getShopper(sid);
+      if(shopper && shopper.pais) paises=[shopper.pais];
+      else paises=[]; // fail-closed: sin país real conocido, no se asume el del proyecto
+    } else if(u.scopePaises && u.scopePaises.length){
+      paises=u.scopePaises; // invitados/roles de prueba explícitos (no shopper real)
+    } else if(p && p.countries && p.countries.length){
+      paises=p.countries; // admin/super viendo catálogo administrable general
+    }
+    return { tenantId: CX.BRAND.id, projectId, paises, rol };
+  },
+
+  /* Visibilidad efectiva por scope opcional. Separa dos familias de ejes (paquete V109 —
+     corrección P0): ACCESO (tenantId/projectId/pais/rol) decide si el curso es visible;
+     CLASIFICACIÓN (modulo/nivel/paquete) es taxonomía de contenido — se usa para FILTRAR el
+     catálogo desde la UI (ver matchesClassification), nunca para ocultar un curso solo porque
+     la sesión actual no tenga esos campos (bug V108: un shopper sin "módulo" en su contexto
+     perdía cursos con scope.modulo definido, aunque el eje de acceso fuera correcto). Un eje de
+     acceso vacío/ausente en el scope significa "global" para ese eje (no restringe). País acepta
+     una lista de países del usuario (multipaís): basta con que UNO se solape con el scope. */
+  visibleFor(course, ctx){
+    const sc=course&&course.scope; if(!sc || !Object.keys(sc).length) return true;
+    ctx=ctx||{};
+    const axisOk=(vals,current)=>!vals || !vals.length || (current!=null && vals.includes(current));
+    const axisOkMulti=(vals,currentArr)=>{
+      if(!vals || !vals.length) return true; // eje global, no restringe
+      if(!currentArr || !currentArr.length) return false; // curso restringido por país, sesión sin país conocido → no confirmable
+      return currentArr.some(c=>vals.includes(c));
+    };
+    return axisOk(sc.tenantId, ctx.tenantId) && axisOk(sc.projectId, ctx.projectId) && axisOkMulti(sc.pais, ctx.paises)
+      && axisOk(sc.rol, ctx.rol);
+  },
+
+  /* Filtros de CLASIFICACIÓN (no de acceso): módulo/nivel/paquete son metadatos del contenido.
+     `filters` trae los valores elegidos por el usuario en la UI (opcional cada uno); si el curso
+     no declara ese eje en su scope, no se excluye por esa clasificación (coincide con "cualquiera"). */
+  matchesClassification(course, filters){
+    filters=filters||{};
+    const sc=(course&&course.scope)||{};
+    const axisPick=(vals,chosen)=>!chosen || (Array.isArray(vals)&&vals.includes(chosen));
+    if(filters.modulo && !(Array.isArray(sc.modulo)&&sc.modulo.length)) return true; // sin taxonomía declarada, no se excluye
+    if(filters.modulo && Array.isArray(sc.modulo) && sc.modulo.length && !axisPick(sc.modulo, filters.modulo)) return false;
+    if(filters.nivel && Array.isArray(sc.nivel) && sc.nivel.length && !axisPick(sc.nivel, filters.nivel)) return false;
+    if(filters.paquete && Array.isArray(sc.paquete) && sc.paquete.length && !axisPick(sc.paquete, filters.paquete)) return false;
+    return true;
+  },
+
+  /* T1b — actores con identidad estable (paquete V109). El prototipo SÍ tiene un catálogo real
+     de usuarios invitados (cx_users, editable en Configuración → Usuarios & Permisos) además de
+     la sesión activa — V108 afirmaba erróneamente que no existía ninguno. actorId() resuelve un
+     id ESTABLE y persistido: si el usuario de sesión viene de cx_users (tiene email), se busca/crea
+     su id ahí; si es una sesión sintética de demo (Admin Demo/Cliente Demo/Evaluador 01, sin
+     registro propio), el id es estable por rol+shopperId dentro de este navegador. Nunca se compara
+     por nombre visible — el nombre es solo presentación. */
+  actorId(){
+    const u=(CX.session&&CX.session.user)||{};
+    if(u.email){
+      try{
+        const list=JSON.parse(localStorage.getItem('cx_users')||'[]');
+        const idx=list.findIndex(x=>x.email===u.email);
+        if(idx>=0){
+          if(!list[idx].id){ list[idx].id='usr_'+Math.random().toString(36).slice(2,10); try{localStorage.setItem('cx_users',JSON.stringify(list));}catch(e){} }
+          return list[idx].id;
+        }
+      }catch(e){}
+    }
+    return 'session_'+(u.role||(CX.session&&CX.session.role)||'anon')+(u.shopperId?'_'+u.shopperId:'');
+  },
+  /* compat: cursos legados que solo tienen el NOMBRE (creador/revisadoPor/aprobadoPor) sin id —
+     se les asigna un id determinístico derivado del nombre (hash estable), para que la
+     comparación de separación de funciones siga funcionando sin perder el dato existente. */
+  _idFromName(name){
+    name=String(name||'');
+    let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))|0;
+    return 'legacy_'+Math.abs(h).toString(36);
+  },
+  editCourse(r,cid,patch,ctx){
+    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c)Object.assign(c,patch); const custom=this.getCustom(r); const cu=custom.find(x=>x.id===cid); if(cu){Object.assign(cu,patch); cu.contentVersion=(cu.contentVersion||1)+1;} this.saveCustom(r,custom);
+    this._logAudit(r,{accion:'editar',cid,titulo:(cu&&cu.n)||(c&&c.n)||cid,motivo:patch.motivo||'(edición de campos)'});
+    return {ok:true};
+  },
+  /* ---- Ciclo de vida de cursos personalizados (paquete 20260710 — Academia transversal) ----
+     Solo aplica a cursos CUSTOM (creados/editados desde la UI); el contenido seed/base de
+     Academia es material de referencia de la plataforma y no se archiva ni versiona desde aquí. */
+  _audKey(r){ return 'cx_acad_audit_'+r; },
+  auditLog(r){ try{return JSON.parse(localStorage.getItem(this._audKey(r))||'[]');}catch(e){return [];} },
+  /* P0-5 (paquete genérico 20260711): CADA entrada de auditoría lleva su PROPIO auditRef —
+     antes solo el curso tenía un auditRef fijo desde su creación, y todos los eventos
+     posteriores (editar, transicionar, duplicar…) se registraban sin una referencia propia. */
+  _logAudit(r,entry){ const l=this.auditLog(r); const auditRef='aud_'+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
+    l.unshift(Object.assign({fecha:new Date().toISOString(),por:(CX.session&&CX.session.user&&CX.session.user.name)||'—',auditRef},entry)); try{localStorage.setItem(this._audKey(r),JSON.stringify(l.slice(0,300)));}catch(e){} },
+  isCustom(r,cid){ return this.getCustom(r).some(x=>x.id===cid); },
+
+  /* P0.6 (V98 instrucciones exactas): transición ÚNICA y centralizada de estado de curso.
+     Estados: borrador → en_revision → aprobado → publicado_preview → archivado / eliminado.
+     Reglas: motivo obligatorio en archivar/eliminar/restaurar/aprobar/publicar; restaurar
+     SIEMPRE vuelve a 'borrador' (nunca directo a publicado); publicar exige permiso
+     'academy.publish'; cada transición queda en auditLog con estado anterior/nuevo, actor,
+     motivo y auditRef; y dispara una notificación local de cambio de estado/versión. */
+  ALLOWED_TRANSITIONS:{
+    borrador:['en_revision','archivado','eliminado'],
+    en_revision:['aprobado','borrador','archivado','eliminado'],
+    aprobado:['publicado_preview','en_revision','archivado','eliminado'],
+    publicado_preview:['archivado','en_revision'],
+    archivado:['borrador'],
+    eliminado:['borrador'],
+  },
+  ACTION_FOR_STATE:{ en_revision:'academy.review', aprobado:'academy.approve', archivado:'academy.archive', eliminado:'academy.delete', publicado_preview:'academy.publish', borrador:'academy.restore' },
+  setCourseState(r, cid, nextState, opts){
+    opts=opts||{};
+    const reason=(opts.reason||'').trim();
+    if(!this.isCustom(r,cid)) return {ok:false, error:'El contenido seed no cambia de estado desde el prototipo.'};
+    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid); if(!c) return {ok:false, error:'Curso no encontrado.'};
+    const prev=c.estado||'borrador';
+    const allowedNext=this.ALLOWED_TRANSITIONS[prev]||[];
+    if(prev!==nextState && !allowedNext.includes(nextState)) return {ok:false, error:'Transición no permitida: '+prev+' → '+nextState+'.'};
+    /* motivo obligatorio en archivar, eliminar, restaurar (→borrador), aprobar, publicar */
+    const needsReason = ['archivado','eliminado','publicado_preview','aprobado'].includes(nextState) || (nextState==='borrador' && (prev==='archivado'||prev==='eliminado'));
+    if(needsReason && !reason) return {ok:false, error:'El motivo es obligatorio para pasar a "'+nextState+'".'};
+    /* permiso de acción — no basta con ocultar el botón, se valida también aquí */
+    const action=this.ACTION_FOR_STATE[nextState];
+    if(action && CX.permissions && !CX.permissions.can(action, opts.ctx)){
+      return {ok:false, error:'Tu rol no tiene el permiso de acción "'+action+'".'};
+    }
+    /* Contrato Academia (paquete 20260711): revisión y aprobación exigen una identidad
+       autenticada DISTINTA de quien creó el curso (separación de funciones configurable —
+       mismo patrón que el segundo actor de certificación en modules/cert.js). Sin backend real
+       de auth, el "autenticado" es la sesión activa del prototipo (session.user.name); nunca
+       texto libre. */
+    /* T1b (paquete V109 — corrección P0): la separación de funciones se valida por ID ESTABLE
+       (createdByUserId/reviewedByUserId/approvedByUserId), no por nombre visible. opts.revisorId /
+       opts.aprobadorId llegan de CX.acadData.actorId() en el módulo; opts.revisor/opts.aprobador
+       (nombre) se conservan solo para mostrarlos en la UI/auditoría. Para cursos legados sin id
+       persistido, c.createdByUserId/c.reviewedByUserId se retro-completan con _idFromName() la
+       primera vez que se necesitan, para no perder la garantía con datos antiguos. */
+    if(nextState==='en_revision'){
+      const revisor=(opts.revisor||'').trim();
+      const revisorId=opts.revisorId||(revisor?this._idFromName(revisor):'');
+      if(!revisor || !revisorId) return {ok:false, error:'Selecciona quién revisa (identidad distinta al creador).'};
+      const creadorId=c.createdByUserId||(c.creador?this._idFromName(c.creador):null);
+      if(creadorId && revisorId===creadorId) return {ok:false, error:'El revisor debe ser distinto de quien creó el curso ('+c.creador+').'};
+      c.revisadoPor=revisor; c.reviewedByUserId=revisorId;
+    }
+    if(nextState==='aprobado'){
+      const aprobador=(opts.aprobador||'').trim();
+      const aprobadorId=opts.aprobadorId||(aprobador?this._idFromName(aprobador):'');
+      if(!aprobador || !aprobadorId) return {ok:false, error:'Selecciona quién aprueba (identidad distinta al creador y, si aplica, al revisor).'};
+      const creadorId=c.createdByUserId||(c.creador?this._idFromName(c.creador):null);
+      const revisorId=c.reviewedByUserId||(c.revisadoPor?this._idFromName(c.revisadoPor):null);
+      if(creadorId && aprobadorId===creadorId) return {ok:false, error:'El aprobador debe ser distinto de quien creó el curso ('+c.creador+').'};
+      if(revisorId && aprobadorId===revisorId) return {ok:false, error:'El aprobador debe ser distinto de quien revisó ('+c.revisadoPor+') — separación de funciones.'};
+      c.aprobadoPor=aprobador; c.approvedByUserId=aprobadorId;
+    }
+    c.estado=nextState; c.workflowVersion=(c.workflowVersion||1)+1; this.saveCustom(r,custom);
+    const accionLbl={en_revision:'enviar a revisión',aprobado:'aprobar',publicado_preview:'publicar (preview)',archivado:'archivar',eliminado:'eliminar',borrador:'restaurar a borrador'}[nextState]||nextState;
+    this._logAudit(r,{accion:accionLbl, cid, titulo:c.n, motivo:reason||'(sin motivo — transición sin exigencia)', estadoAnterior:prev, estadoNuevo:nextState, source:opts.source||'ui_admin', revisadoPor:c.revisadoPor, aprobadoPor:c.aprobadoPor});
+    /* notificación local del cambio (in-app; nunca canal externo) */
+    CX.notif && CX.notif.push({to:'admin', tipo:'academia_estado', icon:'📚', tono:'b', titulo:'Academia: "'+c.n+'" → '+nextState, txt:'workflow v'+c.workflowVersion+' · '+(reason||'sin motivo adicional')+' (auditoría preview local, no de backend)', nav:'aprendizaje'});
+    return {ok:true, course:c};
+  },
+
+  duplicateCourse(r,cid,ctx){
+    const src=[...this.COURSES[r]||[],...this.getCustom(r)].find(x=>x.id===cid); if(!src) return null;
+    if(CX.permissions && !CX.permissions.can('academy.duplicate', ctx)) return null;
+    const arr=this.getCustom(r); const auditRef='aud_'+Math.random().toString(36).slice(2,8);
+    const copy=Object.assign({},JSON.parse(JSON.stringify(src)),{id:'cu'+Date.now().toString(36),n:(src.n||'Curso')+' (copia)',estado:'borrador',contentVersion:1,workflowVersion:1,auditRef});
+    arr.unshift(copy); this.saveCustom(r,arr);
+    this._logAudit(r,{accion:'duplicar',cid:copy.id,titulo:copy.n,motivo:'Duplicado desde "'+(src.n||'')+'"'});
+    return copy;
+  },
+  archiveCourse(r,cid,motivo,ctx){ return this.setCourseState(r,cid,'archivado',{reason:motivo,ctx}).ok; },
+  /* restaurar SIEMPRE vuelve a 'borrador' (nunca directo a publicado_preview) — desde ahí
+     el flujo normal es enviar a revisión → aprobar → publicar, cada paso con su propio motivo. */
+  restoreCourse(r,cid,motivo,ctx){ return this.setCourseState(r,cid,'borrador',{reason:motivo,ctx}).ok; },
+  /* Bloque 4 (auditoría V100 — corrección exacta): crear/editar lecciones ahora exige permiso
+     de acción (academy.edit) — antes ninguna de las dos se validaba. Además se corrigió un bug
+     real encontrado durante la auditoría: addLesson() nunca llamaba saveCustom(), así que una
+     lección agregada se perdía al recargar (mutaba un objeto efímero de getCustom() y solo
+     emitía el evento del bus, sin persistir nada). */
+  addLesson(r,cid,lesson,ctx){
+    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid);
+    if(!c) return {ok:false, error:'Solo se pueden agregar lecciones a cursos personalizados.'};
+    c.lessons=c.lessons||[]; c.lessons.push(Object.assign({id:'ls'+Date.now().toString(36)},lesson)); c.contentVersion=(c.contentVersion||1)+1;
+    this.saveCustom(r,custom); CX.bus&&CX.bus.emit('acad');
+    this._logAudit(r,{accion:'agregar_leccion',cid,titulo:c.n,motivo:(lesson&&lesson.motivo)||'(lección nueva)'});
+    return {ok:true};
+  },
+  editLesson(r,cid,lid,patch,ctx){
+    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid);
+    if(!c) return {ok:false, error:'Solo se pueden editar lecciones de cursos personalizados.'};
+    const l=(c.lessons||[]).find(x=>x.id===lid); if(l){Object.assign(l,patch); c.contentVersion=(c.contentVersion||1)+1;}
+    this.saveCustom(r,custom); CX.bus&&CX.bus.emit('acad');
+    this._logAudit(r,{accion:'editar_leccion',cid,titulo:c.n,motivo:(patch&&patch.motivo)||'(edición de lección)'});
+    return {ok:true};
+  },
+  /* soft-delete de lección (P0.8 — auditoría V99): igual patrón que los cursos — nunca
+     hard-delete, exige motivo, y queda auditada. La lección oculta no aparece en el reproductor
+     normal (se filtra por _deleted) pero es recuperable llamando restoreLesson(). */
+  delLesson(r,cid,lid,motivo,ctx){
+    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false,error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    if(!motivo||!motivo.trim()) return {ok:false,error:'El motivo es obligatorio para eliminar una lección.'};
+    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid); if(!c) return {ok:false,error:'Curso no encontrado.'};
+    const l=(c.lessons||[]).find(x=>x.id===lid); if(!l) return {ok:false,error:'Lección no encontrada.'};
+    l._deleted=true; c.contentVersion=(c.contentVersion||1)+1; this.saveCustom(r,custom);
+    this._logAudit(r,{accion:'eliminar_leccion',cid,titulo:c.n+' → '+l.n,motivo});
+    return {ok:true};
+  },
+  restoreLesson(r,cid,lid,motivo,ctx){
+    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false,error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    /* Bloque D (auditoría V101 — 20260711): restaurar una lección eliminada permitía motivo vacío
+       ("sin motivo registrado") — ahora es obligatorio, igual que al eliminar (delLesson). */
+    if(!motivo||!motivo.trim()) return {ok:false,error:'El motivo es obligatorio para restaurar una lección.'};
+    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid); if(!c) return {ok:false,error:'Curso no encontrado.'};
+    const l=(c.lessons||[]).find(x=>x.id===lid); if(!l) return {ok:false,error:'Lección no encontrada.'};
+    delete l._deleted; c.contentVersion=(c.contentVersion||1)+1; this.saveCustom(r,custom);
+    this._logAudit(r,{accion:'restaurar_leccion',cid,titulo:c.n+' → '+l.n,motivo:motivo.trim()});
+    return {ok:true};
+  },
+  delCourse(r,cid,motivo,ctx){ return this.setCourseState(r,cid,'eliminado',{reason:motivo,ctx}).ok;
+  },
   COURSES:{
     admin:[
       /* ─── FINANZAS & LIQUIDACIONES (profundo) ─── */
@@ -222,100 +501,382 @@ CX.acadData={
 /* ─── GUÍA COMPLETA DE MÓDULOS (por módulo: beneficio, flujo, cómo usar) ─── */
       {id:'a_modguide',cat:'Inducción',ic:'🗺️',color:'#0e9c6e',n:'Guía de módulos: beneficio, flujo y cómo usar — Operación y Administración',
        desc:'Cada módulo del menú, uno por uno: para qué existe, qué pasa si no lo usas, y los pasos exactos para operarlo.',
-       cert:false,mins:95,
+       cert:false,mins:170,
        lessons:[
          {id:'mg1',ic:'📋',n:'Operación (7 módulos)',content:`
 <h2>Sección "Operación" del menú</h2>
-<p>Es la sección que usas todos los días. Cada módulo aquí existe para eliminar una fricción operativa concreta.</p>
+<p>Es la sección que usas todos los días. Cada módulo aquí existe para eliminar una fricción operativa concreta.
+Esta lección va más a fondo que un resumen: para cada módulo verás qué es, qué problema resuelve, quién lo usa, el
+flujo completo con los botones exactos, cómo saber que funcionó, los errores más comunes y qué hacer cuando algo
+falla.</p>
+
 <div class="acad-section">☀️ <b>Mi Día</b>
-<p><b>Beneficio:</b> sin esto, empiezas el día sin saber qué visitas o tareas te tocan — pierdes tiempo buscando en varias pantallas. Mi Día junta todo en un cronograma único.</p>
-<p><b>Flujo:</b> abres la app → ves tu agenda del día → das seguimiento a cada ítem.</p>
-<p><b>Cómo usar:</b> entra cada mañana; los ítems vencidos aparecen resaltados arriba. Click en cualquier ítem te lleva directo a su pantalla de gestión (visita, postulación, etc.).</p></div>
+<p><b>Qué es y qué problema resuelve:</b> es tu pantalla de aterrizaje al entrar — junta en un solo cronograma lo que
+te toca hoy (visitas agendadas, postulaciones por aprobar, asignaciones internas pendientes) para que no tengas que
+recorrer 5 módulos distintos para saber qué hacer primero. Sin ella, cada coordinador arma su propio checklist mental
+y las tareas atrasadas se descubren tarde.</p>
+<p><b>Quién lo usa:</b> admin/coordinador (vista de equipo) y shopper (vista de sus propias visitas).</p>
+<p><b>Flujo completo y botones:</b> entras a la app → el bloque superior de KPIs (Agendadas / Por aprobar / etc.) es
+clickeable — un click en cualquier tarjeta te lleva a la lista filtrada detrás del número. Debajo, el <b>Cronograma</b>
+muestra el mes con un selector de proyecto ("🗂️ Todos" agrega, o elige uno) y flechas ◀ ▶ para cambiar de mes. Click
+en cualquier día abre un modal con los ítems de esa fecha; click en un ítem del modal te lleva directo a su pantalla
+de gestión (la visita, la postulación). Si hay asignaciones internas pendientes (tarea manual asignada por otro
+admin), aparecen en una tarjeta ámbar aparte con botón "Resuelta" para cerrarlas.</p>
+<p><b>Cómo validar que funcionó:</b> el ítem desaparece de "pendientes" y el contador de la tarjeta KPI baja en uno;
+si resolviste una asignación, deja de aparecer en la tarjeta ámbar.</p>
+<p><b>Errores frecuentes / qué hacer si falla:</b> si un ítem "vencido" no aparece resaltado, revisa que el filtro de
+proyecto arriba del cronograma no esté limitando la vista a un proyecto distinto al de esa visita. Si clickeas un
+KPI y la lista sale vacía, es porque no hay ningún registro en ese estado para el proyecto/periodo activo — no es un
+error, es el estado real.</p></div>
+
 <div class="acad-section">📊 <b>Dashboard Operativo</b>
-<p><b>Beneficio:</b> sin él, no sabrías si el programa va a tiempo hasta que sea tarde para corregir. Es tu alerta temprana.</p>
-<p><b>Flujo:</b> filtras por país/proyecto → lees el semáforo de avance real vs. ideal → entras al detalle del bucket que necesita atención.</p>
-<p><b>Cómo usar:</b> el selector de "Todos los proyectos" arriba agrega KPIs globales; cambia a un proyecto específico para ver su detalle. Cada tarjeta de KPI es clickeable y te lleva a la lista de visitas detrás del número. El comparativo trimestral (abajo) muestra 8 KPIs de los últimos 3 meses.</p></div>
+<p><b>Qué es y qué problema resuelve:</b> es tu alerta temprana de todo el programa — sin él, un atraso solo se nota
+cuando ya es tarde para corregirlo (ej. faltando 2 días para cerrar el periodo). Convierte filas de datos en un
+semáforo de avance real vs. ideal.</p>
+<p><b>Quién lo usa:</b> admin/coordinador. Ops/coordinador con scope de país solo ven sus países asignados.</p>
+<p><b>Flujo completo y botones:</b> arriba eliges país/proyecto — "Todos los proyectos" agrega KPIs globales; un
+proyecto específico muestra su detalle. Cada tarjeta de KPI (agendadas, realizadas, pendientes de revisión, atrasadas,
+etc.) es clickeable y abre la tabla de visitas detrás de ese número — desde ahí puedes entrar a cada visita
+individual. El bloque de comparativo trimestral (abajo) grafica 8 KPIs de los últimos 3 meses para ver tendencia, no
+solo la foto de hoy. Los botones 📲 junto a cada shopper en la tabla abren un borrador de WhatsApp (manual, no
+automático) para dar seguimiento.</p>
+<p><b>Cómo validar que funcionó:</b> el número de la tarjeta baja/sube según las acciones que tomes en Postulaciones/
+Visitas — el dashboard no se actualiza "en vivo backend", se recalcula sobre los mismos datos del prototipo cada vez
+que entras o cambias de proyecto.</p>
+<p><b>Errores frecuentes / qué hacer si falla:</b> si los KPIs parecen "congelados" tras aprobar algo, vuelve a entrar
+al módulo (o cambia de proyecto y regresa) para forzar el recálculo. Si un país/proyecto no aparece en el selector,
+revisa el scope del usuario en Configuración → Usuarios — puede estar limitado a otros países.</p></div>
+
 <div class="acad-section">📋 <b>Visitas Disponibles</b>
-<p><b>Beneficio:</b> es el marketplace donde el shopper ve la oferta; sin publicar aquí, nadie puede reservar ni postularse.</p>
-<p><b>Flujo:</b> publicas (manual o vía HR) → el shopper reserva/postula → tú apruebas.</p>
-<p><b>Cómo usar:</b> la tabla admin lista todas las visitas con su estado; usa los filtros de país/proyecto/estado para encontrar una específica. El botón "+ Publicar" abre el formulario de alta manual.</p></div>
+<p><b>Qué es y qué problema resuelve:</b> es el "marketplace" donde el shopper ve qué visitas hay para tomar. Sin
+publicar aquí, ningún shopper puede reservar ni postularse — es el primer eslabón de toda la cadena operativa.</p>
+<p><b>Quién lo usa:</b> admin publica/gestiona; shopper reserva/postula desde su propia vista.</p>
+<p><b>Flujo completo y botones:</b> publicas una visita (botón <b>"+ Publicar"</b>, formulario manual) o la traes vía
+Hojas de Ruta/Importador → aparece en la tabla admin con su estado (disponible, reservada, asignada…) → usa los
+filtros de país/proyecto/estado arriba de la tabla para encontrarla → el shopper la ve en su propia lista y pulsa
+Reservar/Postular → tú la apruebas desde Postulaciones o Reservas & Asignación según el modo del proyecto.</p>
+<p><b>Datos a ingresar al publicar:</b> sucursal, rango de fechas disponible, honorario/combo, instructivo asociado
+— sin instructivo, el shopper no tiene contexto de qué evaluar.</p>
+<p><b>Cómo validar que funcionó:</b> la visita nueva aparece en la tabla con estado "disponible" y, si el proyecto
+tiene shoppers activos en ese país, empieza a mostrarse en su lista de disponibles.</p>
+<p><b>Errores frecuentes / qué hacer si falla:</b> si publicaste pero ningún shopper la ve, revisa que el país de la
+sucursal coincida exactamente con el país de certificación del shopper — el cruce es por país, no por texto libre.
+Una visita "huérfana" (sin instructivo) genera cuestionarios pobres — complétalo antes de publicar en volumen.</p></div>
+
 <div class="acad-section">📩 <b>Postulaciones</b>
-<p><b>Beneficio:</b> sin este módulo, aprobar o reasignar shoppers sería un proceso manual por WhatsApp sin registro ni trazabilidad.</p>
-<p><b>Flujo:</b> el shopper se postula → aparece en tu bandeja → aprobar/rechazar/standby/reasignar/reprogramar/cancelar.</p>
-<p><b>Cómo usar:</b> cada fila tiene botones de acción directos. El badge numérico en el menú te dice cuántas están pendientes de gestionar. Toda acción queda con tu nombre como gestor (trazabilidad).</p></div>
+<p><b>Qué es y qué problema resuelve:</b> reemplaza el proceso manual de aprobar/reasignar shoppers por WhatsApp sin
+registro — aquí cada decisión queda con nombre de quien la tomó y fecha, evitando disputas de "yo nunca aprobé eso".</p>
+<p><b>Quién lo usa:</b> admin/coordinador/ops según permiso de acción de aprobar.</p>
+<p><b>Flujo completo y botones:</b> el shopper se postula desde Visitas Disponibles → aparece en tu bandeja agrupada
+por sucursal → cada fila tiene botones directos: <b>✅ Aprobar</b>, <b>✕ Rechazar</b>, y desde el detalle también
+Standby/Reasignar/Reprogramar/Cancelar. El badge numérico rojo en el menú lateral te dice cuántas hay pendientes de
+gestionar sin tener que entrar a contar.</p>
+<p><b>Cómo validar que funcionó:</b> al aprobar, el badge baja en uno, la visita pasa a "asignada" y se prepara un
+borrador de WhatsApp de notificación al shopper (manual, no envío automático salvo Make activo) — revisa el toast de
+confirmación para saber si quedó registrado.</p>
+<p><b>Errores frecuentes / qué hacer si falla:</b> si dos shoppers se postulan a la misma sucursal, la Academia →
+"Priorizar candidatos" te da el criterio (certificación vigente, rating, cercanía) — no hay una regla automática que
+decida por ti, es una decisión humana con motivo. Rechazar sin dejar motivo dificulta auditar después por qué se
+descartó a alguien — siempre completa el campo de motivo cuando el modal lo pida.</p></div>
+
 <div class="acad-section">🙋 <b>Reservas & Asignación</b>
-<p><b>Beneficio:</b> para programas mensuales con muchos cupos, cruza automáticamente lo que se reservó contra lo que se postuló, evitando choques de agenda.</p>
-<p><b>Flujo:</b> el shopper reserva un cupo del periodo → tú confirmas la asignación final.</p>
-<p><b>Cómo usar:</b> revisa la vista de cruce antes de confirmar; si hay dos shoppers en el mismo cupo, el sistema te lo marca para decidir manualmente.</p></div>
+<p><b>Qué es y qué problema resuelve:</b> para programas con muchos cupos por periodo (ej. mensual, alto volumen),
+cruza automáticamente lo que el shopper reservó contra lo que se postuló, para que no se dupliquen dos personas en
+el mismo cupo sin que nadie se dé cuenta hasta el día de la visita.</p>
+<p><b>Quién lo usa:</b> admin/coordinador de proyectos por reservas (no todos los proyectos usan este modo).</p>
+<p><b>Flujo completo y botones:</b> el shopper reserva un cupo del periodo desde su portal → tú revisas la vista de
+cruce (reserva vs. postulación) en este módulo → si coinciden, pulsas <b>Confirmar asignación</b>; si hay dos
+shoppers en el mismo cupo, el sistema los marca en conflicto para que decidas manualmente cuál se queda.</p>
+<p><b>Cómo validar que funcionó:</b> el cupo pasa de "reservado" a "asignado" y ya no acepta más reservas de otros
+shoppers para esa misma fecha/sucursal.</p>
+<p><b>Errores frecuentes / qué hacer si falla:</b> confirmar sin revisar el cruce puede duplicar el gasto (dos
+honorarios por el mismo cupo) — siempre revisa la marca de conflicto antes de confirmar en lote.</p></div>
+
 <div class="acad-section">👥 <b>Shoppers</b>
-<p><b>Beneficio:</b> es tu base de datos de evaluadores — sin datos bancarios completos, un shopper no puede entrar a un lote de pago.</p>
-<p><b>Flujo:</b> alta del shopper → certificación → asignación de visitas → historial de desempeño.</p>
-<p><b>Cómo usar:</b> busca por nombre/país; la ficha de cada shopper muestra su rating, certificaciones vigentes y datos bancarios. El shopper también puede autoactualizar sus propios datos desde Mi Perfil.</p></div>
+<p><b>Qué es y qué problema resuelve:</b> es tu base de datos de evaluadores — sin datos bancarios completos y
+certificación vigente, un shopper no puede entrar a un lote de pago ni postularse a un proyecto que lo exija.</p>
+<p><b>Quién lo usa:</b> admin da de alta/gestiona; el propio shopper autoactualiza sus datos desde Mi Perfil.</p>
+<p><b>Flujo completo y botones:</b> alta del shopper (nombre, país, contacto) → certificación por proyecto (ver
+módulo Certificación) → queda disponible para postularse/reservarse → su historial de desempeño (rating, visitas
+completas y a tiempo) se acumula automáticamente visita a visita. En la ficha, el botón <b>✎ Editar perfil</b> solo
+aparece para roles con acceso a datos protegidos (super/admin real, no un rol de prueba/scope) — de lo contrario
+verás "🔒 Edición de datos protegidos requiere acceso completo".</p>
+<p><b>Datos a ingresar:</b> nombre, país, teléfono/WhatsApp, correo, y — cuando el rol lo permite — datos bancarios
+(banco, tipo de cuenta, número). El número de cuenta/DPI se enmascara para roles sin ese permiso.</p>
+<p><b>Cómo validar que funcionó:</b> el shopper editado refleja el cambio inmediatamente en su ficha y en cualquier
+lista que lo referencie (Postulaciones, Dashboard).</p>
+<p><b>Errores frecuentes / qué hacer si falla:</b> un shopper "invisible" en la lista de candidatos para un proyecto
+casi siempre es un país mal cargado o una certificación vencida para ese proyecto específico — revisa ambos antes de
+asumir que es un bug.</p></div>
+
 <div class="acad-section">📑 <b>Reportes & KPIs</b>
-<p><b>Beneficio:</b> convierte datos operativos en reportes que puedes compartir con el cliente o la dirección, sin armar un Excel manual.</p>
-<p><b>Flujo:</b> eliges el reporte (cumplimiento, ranking, hallazgos) → filtras por periodo/proyecto → exportas o lo dejas visible en el portal del cliente.</p>
-<p><b>Cómo usar:</b> los reportes de cumplimiento y ranking se reflejan automáticamente en el Portal del Cliente — no necesitas reenviarlos.</p></div>`},
+<p><b>Qué es y qué problema resuelve:</b> convierte datos operativos en reportes presentables (cumplimiento, ranking,
+hallazgos) sin armar un Excel a mano cada vez que el cliente o la dirección los pide.</p>
+<p><b>Quién lo usa:</b> admin/coordinador; el resultado también alimenta el Portal del Cliente.</p>
+<p><b>Flujo completo y botones:</b> eliges el tipo de reporte → filtras por periodo/proyecto/país con los selectores
+de arriba → el reporte se arma en pantalla; el botón <b>⤓ Exportar</b> lo descarga. Los reportes de cumplimiento y
+ranking se reflejan automáticamente en el Portal del Cliente — no hace falta reenviarlos por correo.</p>
+<p><b>Valor comercial:</b> "Reportes & KPIs" avanzados y comparativos trimestrales suelen ser parte de planes
+Estándar/Pro — es un argumento de venta cuando un cliente pide visibilidad ejecutiva sin pedirte trabajo manual extra.</p>
+<p><b>Errores frecuentes / qué hacer si falla:</b> un reporte "vacío" casi siempre es un filtro de periodo que no
+tiene datos todavía (ej. el periodo actual recién empezó) — cambia al periodo anterior para confirmar que el reporte
+sí funciona con datos históricos.</p></div>`},
          {id:'mg2',ic:'🗂️',n:'Admin del Proyecto (8 módulos)',content:`
 <h2>Sección "Admin del Proyecto" del menú</h2>
-<p>Aquí configuras el programa antes (y durante) su operación — el set-up correcto aquí evita errores en cascada más adelante.</p>
+<p>Aquí configuras el programa antes (y durante) su operación — el set-up correcto aquí evita errores en cascada más
+adelante: un país mal cargado en Proyectos, una fuente de HR mal elegida, o un cuestionario mal ponderado se sienten
+después en Postulaciones, Finanzas y Reportes sin que sea obvio de dónde vino el problema.</p>
+
 <div class="acad-section">🏢 <b>Clientes</b>
-<p><b>Beneficio:</b> sin una ficha de cliente centralizada, cada proyecto quedaría aislado y perderías el histórico de la relación comercial.</p>
-<p><b>Cómo usar:</b> crea el cliente antes que el proyecto; su ficha se conecta automáticamente al CRM y a todos sus proyectos.</p></div>
+<p><b>Qué es y por qué importa:</b> es la ficha centralizada de la marca/empresa que te contrata — sin ella, cada
+proyecto queda aislado y pierdes el histórico de la relación comercial (propuestas anteriores, contactos, notas).</p>
+<p><b>Flujo y botones:</b> creas el cliente ANTES que su primer proyecto (nombre, contactos, notas comerciales) → la
+ficha se conecta automáticamente al CRM y a todos los proyectos que declares con ese cliente.</p>
+<p><b>Cómo validar / errores frecuentes:</b> si un proyecto no aparece bajo su cliente en el CRM, revisa que el campo
+"Cliente" del proyecto coincida EXACTAMENTE con el nombre de la ficha (no es una búsqueda difusa).</p></div>
+
 <div class="acad-section">🗂️ <b>Proyectos</b>
-<p><b>Beneficio:</b> es la unidad que agrupa reglas (países, honorarios, periodicidad) — sin un proyecto bien configurado, las visitas no tienen contexto ni reglas de liquidación.</p>
-<p><b>Cómo usar:</b> Crear → define países/monedas/honorarios → carga el instructivo (la IA sugiere escenarios y cuestionario) → publica.</p></div>
+<p><b>Qué es y por qué importa:</b> es la unidad que agrupa reglas de negocio — países, monedas, honorarios,
+periodicidad. Sin un proyecto bien configurado, las visitas que publiques no tienen contexto ni reglas de
+liquidación, y el sistema no sabrá cuánto pagarle a un shopper.</p>
+<p><b>Flujo completo:</b> <b>Crear proyecto</b> → defines países/monedas/honorarios → cargas el instructivo (la IA
+sugiere escenarios y estructura de cuestionario a partir de él, pero tú revisas y ajustas) → publicas. Ya publicado,
+puedes reabrir su configuración desde la ficha del proyecto para ajustar países/reglas — el cambio se guarda de
+inmediato para proyectos propios (no para los 3 proyectos de ejemplo/seed, que no persisten tras recargar).</p>
+<p><b>Cómo validar que funcionó:</b> el proyecto aparece en el selector de "Proyecto" de la barra lateral y en
+Dashboard/Mi Día; sus países filtran correctamente qué shoppers pueden postularse.</p>
+<p><b>Errores frecuentes:</b> mezclar "proyecto" (la configuración estable) con "periodo" (la ventana de tiempo
+operativa) — son cosas distintas aunque compartan pantalla; ver el módulo Periodos abajo.</p></div>
+
 <div class="acad-section">🗓️ <b>Periodos</b>
-<p><b>Beneficio:</b> define la ventana de cumplimiento (quincena/mes); sin esto, no habría un corte claro para saber qué visitas entran a liquidar.</p>
-<p><b>Cómo usar:</b> configura la periodicidad al crear el proyecto; cada periodo cierra y abre el siguiente automáticamente.</p></div>
+<p><b>Qué es y por qué importa:</b> define la ventana de cumplimiento (quincena/mes) dentro de un proyecto — sin un
+corte claro, no hay un momento definido para saber qué visitas entran a liquidar en ese ciclo de pago.</p>
+<p><b>Flujo completo:</b> se configura la periodicidad al crear el proyecto; cada periodo cierra y el siguiente se
+abre automáticamente (o se duplica manualmente desde la ficha del proyecto con "Duplicar periodo" si necesitas
+reabrir uno similar). El estado del periodo (abierto/cerrado) determina si acepta nuevas visitas.</p>
+<p><b>Cómo validar que funcionó:</b> el periodo activo se refleja en el selector superior y todas las visitas nuevas
+quedan ligadas a él automáticamente.</p>
+<p><b>Errores frecuentes:</b> publicar visitas nuevas contra un periodo ya cerrado las deja "fuera de ciclo" —
+verifica el periodo activo antes de publicar en volumen al cierre de mes.</p></div>
+
 <div class="acad-section">📜 <b>Histórico</b>
-<p><b>Beneficio:</b> preserva periodos cerrados como referencia y control — nunca se sobre-escribe un periodo anterior.</p>
-<p><b>Cómo usar:</b> consulta cualquier periodo pasado para comparar, auditar o resolver una disputa.</p></div>
+<p><b>Qué es y por qué importa:</b> preserva periodos ya cerrados como referencia y control de auditoría — un
+periodo cerrado NUNCA se sobre-escribe, ni siquiera por accidente, porque es la prueba de lo que realmente pasó.</p>
+<p><b>Flujo:</b> entras al histórico → eliges el periodo pasado → consultas sus visitas, liquidaciones y reportes tal
+como quedaron al cierre.</p>
+<p><b>Cuándo usarlo:</b> para comparar mes contra mes, auditar una disputa de pago, o justificar un reporte ante el
+cliente con datos de un ciclo ya cerrado.</p></div>
+
 <div class="acad-section">🗺️ <b>Hojas de Ruta (HR)</b>
-<p><b>Beneficio:</b> es el plan de visitas del periodo — sin ella, no hay qué publicar.</p>
-<p><b>Cómo usar:</b> súbela por importador o conéctala en vivo (Google Sheets) desde Fuente de HR.</p></div>
+<p><b>Qué es y por qué importa:</b> es el plan de visitas del periodo (qué sucursal, cuándo, con qué honorario) —
+sin ella no hay nada que publicar en Visitas Disponibles.</p>
+<p><b>Flujo:</b> la subes por Importador (archivo puntual) o la conectas en vivo desde Fuente de HR (Google Sheets) →
+cada fila se convierte en una visita publicable.</p>
+<p><b>Cómo validar que funcionó:</b> las filas de la HR aparecen como visitas en estado "disponible" en el módulo
+Visitas Disponibles, con su sucursal y honorario correctos.</p>
+<p><b>Errores frecuentes:</b> filas con sucursal duplicada o país mal escrito no calzan contra los shoppers
+certificados de ese país — revisa el preview de importación antes de confirmar, no después.</p></div>
+
 <div class="acad-section">🔗 <b>Fuente de HR</b>
-<p><b>Beneficio:</b> define si tu HR es un archivo estático o una conexión viva — esto determina si los cambios en la hoja se reflejan automáticamente.</p>
-<p><b>Cómo usar:</b> elige "en vivo" para Google Sheets con lectura/escritura sin duplicar (llave natural inmutable), o "importación" para cargas puntuales.</p></div>
+<p><b>Qué es y por qué importa:</b> define SI tu Hoja de Ruta es un archivo estático (importación puntual) o una
+conexión viva (Google Sheets con lectura/escritura) — esto determina si un cambio en la hoja del cliente se refleja
+solo o si necesitas volver a importar cada vez.</p>
+<p><b>Flujo:</b> eliges "en vivo" (pegas la URL de un Sheet; el sistema usa una llave natural inmutable para nunca
+duplicar una fila ya importada) o "importación" para cargas puntuales sin conexión persistente.</p>
+<p><b>Botón clave:</b> "🧬 Generar candidatos source-safe (preview)" prepara los candidatos de sincronización
+(identity link, certification carryover, liquidation, payment batch) para revisión humana en Diagnóstico →
+Conflictos — nunca escribe nada directamente, es siempre preview.</p>
+<p><b>Errores frecuentes:</b> pensar que "en vivo" sincroniza en tiempo real automáticamente — en el prototipo,
+"en vivo" prepara los candidatos para revisión; el sync real a producción lo ejecuta el backend con su gate.</p></div>
+
 <div class="acad-section">🧩 <b>Cuestionarios</b>
-<p><b>Beneficio:</b> sin un cuestionario bien ponderado, el score no refleja lo que realmente importa para el cliente.</p>
-<p><b>Cómo usar:</b> "Set-up desde instructivo" deja que la IA proponga secciones y preguntas; ajusta los pesos hasta que sumen 100% entre secciones.</p></div>
+<p><b>Qué es y por qué importa:</b> sin un cuestionario bien ponderado, el score final no refleja lo que realmente le
+importa al cliente — un cuestionario mal armado produce datos que parecen objetivos pero no lo son.</p>
+<p><b>Flujo completo:</b> "Set-up desde instructivo" deja que la IA (heurística local en este prototipo) proponga
+secciones y preguntas a partir del documento del cliente → ajustas los pesos de cada sección hasta que sumen 100% →
+publicas la versión activa para el proyecto.</p>
+<p><b>Cómo validar que funcionó:</b> al abrir una visita nueva de ese proyecto, el shopper ve exactamente esas
+secciones y preguntas en su cuestionario.</p>
+<p><b>Errores frecuentes:</b> pesos que no suman 100% distorsionan el score sin que sea evidente a simple vista — el
+editor te avisa si la suma no cuadra, no publiques hasta corregirlo.</p></div>
+
 <div class="acad-section">📥 <b>Importador</b>
-<p><b>Beneficio:</b> migra datos masivos (shoppers, visitas, clientes) sin captura manual fila por fila.</p>
-<p><b>Cómo usar:</b> sube el archivo → el sistema detecta el tipo de entidad → revisa el preview antes de confirmar → confirma la importación.</p></div>`},
+<p><b>Qué es y por qué importa:</b> migra datos masivos (shoppers, visitas, clientes) sin captura manual fila por
+fila — el error humano más caro en set-up suele ser digitar mal un dato al copiarlo a mano.</p>
+<p><b>Flujo completo:</b> subes el archivo (CSV/Excel/Sheet) → el sistema detecta el tipo de entidad por sus
+columnas → te muestra un preview con lo que va a crear/actualizar ANTES de tocar nada → confirmas la importación.</p>
+<p><b>Cómo validar que funcionó:</b> los registros nuevos aparecen en su módulo correspondiente (Shoppers, Visitas,
+Clientes) con los datos exactos del preview que confirmaste.</p>
+<p><b>Errores frecuentes:</b> confirmar sin revisar el preview es la causa #1 de datos mal cargados — siempre revisa
+cuántas filas se van a crear vs. actualizar antes de confirmar, especialmente en la primera carga de un proyecto
+nuevo.</p></div>`},
          {id:'mg3',ic:'🎓',n:'Capacitación & IA, Finanzas (8 módulos)',content:`
 <h2>Capacitación & IA</h2>
-<div class="acad-section">📚 <b>Academia</b> (donde estás ahora) <p><b>Beneficio:</b> autocapacitación sin depender de una sesión en vivo — cursos, manuales y certificación en un solo lugar.</p></div>
-<div class="acad-section">🏆 <b>Certificación</b> <p><b>Beneficio:</b> filtra quién puede postularse a un proyecto según si domina su instructivo — protege la calidad del dato.</p><p><b>Cómo usar:</b> el shopper presenta el examen generado desde el instructivo del proyecto; si no aprueba, puede recertificarse tras repasar.</p></div>
-<div class="acad-section">📎 <b>Recursos del proyecto (Documentos)</b> <p><b>Beneficio:</b> centraliza instructivos, guías y material de referencia con lector in-app, sin depender de PDFs sueltos por correo.</p></div>
-<div class="acad-section">🤖 <b>Soporte IA</b> <p><b>Beneficio:</b> resuelve dudas comunes al instante sin saturar al equipo humano con preguntas repetitivas.</p></div>
+<div class="acad-section">📚 <b>Academia</b> (donde estás ahora)
+<p><b>Qué es y por qué importa:</b> autocapacitación sin depender de una sesión en vivo con un formador — cursos,
+manuales, certificación y evaluación en un solo lugar, disponible cuando el usuario lo necesita (no solo el día del
+onboarding).</p>
+<p><b>Flujo y botones:</b> el selector "Ver como" (arriba, solo admin) cambia entre el contenido de Consultora/
+Shopper/Cliente. <b>✨ Crear con IA</b> abre un modal para generar un curso desde un archivo o tema (heurística
+local en este prototipo, siempre como borrador). <b>🧬</b> duplica un curso, <b>🗄/♻️</b> archiva/restaura uno
+personalizado, <b>✎</b> edita nombre/categoría/descripción. "Ver archivados" muestra lo archivado sin mezclarlo con
+el catálogo activo.</p>
+<p><b>Errores frecuentes:</b> un curso "no aparece" tras crearlo casi siempre es porque nace en estado
+<b>borrador</b> — sigue visible para el admin que lo creó, pero conviene revisarlo antes de considerarlo listo.</p></div>
+
+<div class="acad-section">🏆 <b>Certificación</b>
+<p><b>Qué es y por qué importa:</b> filtra quién puede postularse a un proyecto según si domina su instructivo —
+protege la calidad del dato que finalmente le entregas al cliente. Sin certificación, cualquiera podría evaluar sin
+saber qué mirar.</p>
+<p><b>Flujo completo:</b> el shopper presenta el examen generado a partir del instructivo del proyecto (banco de
+preguntas por proyecto) → si aprueba, queda certificado para ese proyecto específico (la certificación NO es
+genérica, es por proyecto) → si no aprueba, puede repasar y volver a presentar.</p>
+<p><b>Cómo validar que funcionó:</b> el shopper certificado aparece elegible en la lista de candidatos de ese
+proyecto en Postulaciones/Visitas Disponibles.</p>
+<p><b>Errores frecuentes:</b> confundir "certificado en general" con "certificado para ESTE proyecto" — un shopper
+con muchas certificaciones previas puede seguir bloqueado si no tiene la de este proyecto puntual.</p></div>
+
+<div class="acad-section">📎 <b>Recursos del proyecto (Documentos)</b>
+<p><b>Qué es y por qué importa:</b> centraliza instructivos, guías y material de referencia con lector in-app, para
+no depender de PDFs sueltos perdidos en un correo o chat.</p>
+<p><b>Flujo:</b> subes el documento al proyecto → queda accesible desde Academia y desde la ficha del proyecto → el
+shopper lo consulta antes/durante su visita sin salir de la app.</p></div>
+
+<div class="acad-section">🤖 <b>Soporte IA</b>
+<p><b>Qué es y por qué importa:</b> resuelve dudas comunes al instante (heurística local en este prototipo) sin
+saturar al equipo humano con preguntas repetitivas de "cómo hago X".</p>
+<p><b>Flujo:</b> el usuario escribe su duda → recibe una respuesta sugerida → si no resuelve, puede escalar a un
+ticket real para que un humano lo atienda — el escalamiento queda registrado, la respuesta automática no reemplaza
+al soporte humano cuando hace falta.</p></div>
+
 <h2>Finanzas</h2>
 <div class="acad-section">💹 <b>Dashboard Financiero</b>
-<p><b>Beneficio:</b> te dice si el negocio es rentable país por país, no solo si opera bien.</p>
-<p><b>Cómo usar:</b> revisa márgenes, CxC/CxP y el comparativo intermensual; el análisis crítico con IA resalta desviaciones fuera de lo normal.</p></div>
+<p><b>Qué es y por qué importa:</b> te dice si el negocio es rentable país por país y proyecto por proyecto — no
+solo si la operación "funciona", sino si conviene seguir operándola así.</p>
+<p><b>Flujo y botones:</b> revisas márgenes, cuentas por cobrar/pagar (CxC/CxP) y el comparativo intermensual; el
+bloque de análisis crítico resalta desviaciones fuera de lo normal para que no tengas que leer cada número a mano.</p>
+<p><b>Errores frecuentes:</b> un margen que "no cuadra" casi siempre viene de un movimiento mal clasificado en el
+módulo Movimientos (ver abajo) — revisa ahí antes de dudar del cálculo del dashboard.</p></div>
+
 <div class="acad-section">🧾 <b>Movimientos</b>
-<p><b>Beneficio:</b> registra cada ingreso y egreso con trazabilidad — sin esto no puedes conciliar ni auditar.</p>
-<p><b>Cómo usar:</b> cada CxC/CxP es clickeable y editable; los financiamientos se marcan aparte (no cuentan como ingreso operativo).</p></div>
+<p><b>Qué es y por qué importa:</b> registra cada ingreso y egreso con trazabilidad — sin esto no puedes conciliar
+cuentas ni auditar de dónde salió o entró cada monto.</p>
+<p><b>Flujo y botones:</b> cada CxC/CxP es clickeable y editable directamente en la tabla; los financiamientos
+(préstamos, aportes) se marcan con su propia categoría — NO cuentan como ingreso operativo, para no inflar
+artificialmente el margen del negocio.</p>
+<p><b>Cómo validar que funcionó:</b> el movimiento aparece en la tabla y se refleja en el Dashboard Financiero al
+recalcular.</p></div>
+
 <div class="acad-section">💸 <b>Liquidaciones</b>
-<p><b>Beneficio:</b> automatiza el cálculo de lo que se debe a cada shopper según reglas de elegibilidad, sin hacerlo a mano visita por visita.</p>
-<p><b>Cómo usar:</b> se generan solas de las visitas elegibles; tú eliges cuáles entran al siguiente lote de pago.</p></div>
+<p><b>Qué es y por qué importa:</b> automatiza el cálculo de lo que se le debe a cada shopper según reglas de
+elegibilidad, sin captura manual visita por visita — el error humano más caro en finanzas operativas es calcular
+mal un monto a pagar.</p>
+<p><b>Flujo completo:</b> una visita realizada con cuestionario completo genera su liquidación sola → pasa por los
+estados de revisión (pending_review → in_review → needs_correction/aprobada) → tú eliges cuáles entran al siguiente
+lote de pago.</p>
+<p><b>Cómo validar que funcionó:</b> la liquidación nueva aparece en la tabla con el monto correcto (honorario +
+combo si aplica) y el estado "pendiente de revisión".</p>
+<p><b>Errores frecuentes:</b> liquidar una visita que está en conflicto de sincronía HR↔plataforma es un error
+grave — se retiene hasta reconciliar, nunca se liquida "para no atrasar" mientras el conflicto siga abierto.</p></div>
+
 <div class="acad-section">📦 <b>Lotes de Pago</b>
-<p><b>Beneficio:</b> agrupa liquidaciones para procesarlas juntas (ej. quincenal) en vez de pago por pago.</p>
-<p><b>Cómo usar:</b> arma el lote con las liquidaciones candidatas → al marcarlo pagado, se reflejan como egresos automáticamente.</p></div>`},
+<p><b>Qué es y por qué importa:</b> agrupa liquidaciones para procesarlas juntas (ej. quincenal) en vez de pago por
+pago — reduce el trabajo operativo y da un corte claro de cuándo se paga.</p>
+<p><b>Flujo y botones:</b> armas el lote seleccionando las liquidaciones candidatas (deben estar aprobadas, no en
+conflicto) → el botón <b>Marcar pagado (preview)</b> lo cierra y prepara el egreso correspondiente en Movimientos —
+"preview" porque el pago real y su evidencia bancaria los confirma el backend, no el navegador.</p>
+<p><b>Errores frecuentes:</b> incluir en un lote a un shopper con datos bancarios incompletos deja ese pago
+bloqueado — revisa su ficha en Shoppers antes de armar el lote, no después de intentar pagar.</p></div>`},
          {id:'mg4',ic:'📈',n:'Comercial y Configuración (12 módulos)',content:`
 <h2>Comercial</h2>
-<div class="acad-section">🧮 <b>Costos & Propuestas</b> <p><b>Beneficio:</b> cotiza con una calculadora en vez de estimar a ojo — reduce el riesgo de vender por debajo de costo.</p></div>
-<div class="acad-section">🤝 <b>CRM Comercial</b> <p><b>Beneficio:</b> sin un CRM, los leads y el seguimiento comercial viven en la memoria de una persona — se pierden con la rotación.</p><p><b>Cómo usar:</b> Pipeline (kanban) para ver el embudo, Ficha 360 para el historial completo de cada cuenta.</p></div>
-<div class="acad-section">📣 <b>Marketing & Contenidos</b> <p><b>Beneficio:</b> genera piezas y calendario de contenido con IA sin depender de un equipo de diseño dedicado.</p></div>
+<div class="acad-section">🧮 <b>Costos & Propuestas</b>
+<p><b>Qué es y por qué importa:</b> cotiza con una calculadora que cruza honorarios, número de visitas y overhead
+en vez de estimar a ojo — reduce el riesgo de vender un proyecto por debajo de costo sin darte cuenta.</p>
+<p><b>Flujo:</b> defines volumen de visitas, honorario por visita y márgenes deseados → la calculadora arma el
+precio de venta → generas la propuesta con ese cálculo como base, no un número inventado.</p>
+<p><b>Errores frecuentes:</b> cotizar sin incluir el overhead de coordinación (tiempo del equipo, no solo el pago al
+shopper) es la causa más común de un proyecto que "opera bien pero no deja margen".</p></div>
+
+<div class="acad-section">🤝 <b>CRM Comercial</b>
+<p><b>Qué es y por qué importa:</b> sin un CRM, los leads y el seguimiento comercial viven en la memoria de una
+persona — se pierden por completo si esa persona rota o está de vacaciones.</p>
+<p><b>Flujo y botones:</b> <b>Pipeline</b> (vista kanban) para ver el embudo por etapa; <b>Ficha 360</b> de cada
+cuenta con el historial completo de interacciones, propuestas y proyectos asociados. El botón 📲 WhatsApp abre un
+borrador manual de seguimiento — no envía nada solo.</p>
+<p><b>Cómo validar que funcionó:</b> mover una cuenta de etapa en el pipeline se refleja de inmediato en su Ficha
+360 con la fecha del cambio.</p></div>
+
+<div class="acad-section">📣 <b>Marketing & Contenidos</b>
+<p><b>Qué es y por qué importa:</b> genera piezas y calendario de contenido con IA (heurística local en este
+prototipo) sin depender de un equipo de diseño dedicado para cada pieza pequeña.</p>
+<p><b>Flujo:</b> eliges el tipo de pieza/tema → se genera un borrador → lo ajustas y lo dejas listo para publicar
+manualmente (la publicación real a redes la ejecuta el proveedor conectado por el backend, no este módulo).</p></div>
+
 <h2>Configuración</h2>
-<div class="acad-section">⚙️ <b>Configuración</b> <p><b>Beneficio:</b> el panel central de ajustes del tenant (identidad, países, patrón de usuarios).</p></div>
-<div class="acad-section">🌐 <b>Consola SaaS</b> <p><b>Beneficio:</b> vista de super-administración multi-tenant, para gestionar varias consultoras si operas la plataforma como proveedor.</p></div>
-<div class="acad-section">🧪 <b>Diagnóstico & Readiness</b> <p><b>Beneficio:</b> te dice qué tan lista está la operación antes de confiar en ella — sin esto, un problema se descubre en producción, no antes.</p><p><b>Cómo usar:</b> revisa la pestaña Conflictos regularmente; cualquier "pendiente de revisión" necesita tu decisión con motivo.</p></div>
-<div class="acad-section">⚙️ <b>Administrabilidad</b> <p><b>Beneficio:</b> te deja versionar reglas y NDA sin miedo a romper lo ya aceptado por los usuarios — todo cambio queda registrado con motivo.</p></div>
-<div class="acad-section">🔐 <b>Usuarios & Permisos</b> <p><b>Beneficio:</b> define quién ve qué módulo — sin esto, todos verían todo, incluyendo finanzas sensibles.</p></div>
-<div class="acad-section">⚡ <b>Automatizaciones</b> <p><b>Beneficio:</b> dispara WhatsApp/correo automáticamente en eventos clave, sin que alguien tenga que enviarlos uno por uno.</p></div>
-<div class="acad-section">🔌 <b>Integraciones & Add-ons</b> <p><b>Beneficio:</b> conecta el ecosistema (WhatsApp, Sheets, IA, facturación) sin depender de desarrollo a medida.</p></div>
-<div class="acad-section">✉️ <b>Correo integrado</b> <p><b>Beneficio:</b> trazabilidad de comunicación con clientes sin salir de la plataforma ni perder el hilo en bandejas personales.</p></div>
-<div class="acad-section">🎨 <b>Identidad de Marca</b> <p><b>Beneficio:</b> tu logo y colores aparecen en login, documentos y propuestas — sin configurarlo, todo sale con marca genérica.</p></div>`},
+<div class="acad-section">⚙️ <b>Configuración</b>
+<p><b>Qué es y por qué importa:</b> es el panel central de ajustes del tenant (identidad, países operativos, patrón
+de nombres de usuario) — cambiarlo aquí afecta a toda la plataforma, no a un módulo aislado.</p>
+<p><b>Errores frecuentes:</b> agregar un país aquí no crea proyectos automáticamente en ese país — solo lo habilita
+como opción disponible al crear/editar un proyecto.</p></div>
+
+<div class="acad-section">🌐 <b>Consola SaaS</b>
+<p><b>Qué es y por qué importa:</b> vista de super-administración multi-tenant, para gestionar varias consultoras si
+operas la plataforma como proveedor (no como una sola consultora usándola para sí misma).</p>
+<p><b>Quién lo usa:</b> exclusivamente rol <b>super</b> — no aparece para admin/ops ni siquiera con permisos altos,
+porque afecta a otros tenants, no solo al propio.</p></div>
+
+<div class="acad-section">🧪 <b>Diagnóstico & Readiness</b>
+<p><b>Qué es y por qué importa:</b> te dice qué tan lista está la operación antes de confiar en ella — sin esto, un
+problema (ej. una fuente de HR mal sincronizada) se descubre en producción, no antes de que impacte a un shopper o
+al cliente.</p>
+<p><b>Flujo y botones:</b> revisa la pestaña <b>Conflictos</b> regularmente — cualquier tarjeta en estado "pendiente
+de revisión" necesita que TÚ tomes una decisión (mantener ambos, escalar, marcar revisado) con motivo obligatorio;
+nunca se resuelve solo, ni por coincidencia de nombres.</p>
+<p><b>Errores frecuentes:</b> ignorar conflictos acumulados "porque no urgen" es la causa más común de que una
+liquidación se calcule mal semanas después — resuélvelos en el momento, no en lote al final del periodo.</p></div>
+
+<div class="acad-section">⚙️ <b>Administrabilidad</b>
+<p><b>Qué es y por qué importa:</b> te deja versionar reglas y el texto del NDA sin miedo a romper lo que los
+usuarios ya aceptaron — todo cambio sensible queda registrado con motivo y versión, nunca se sobre-escribe en
+silencio.</p>
+<p><b>Flujo:</b> editas el texto del NDA por rol → se crea una nueva versión con tu motivo → las aceptaciones ya
+firmadas por usuarios anteriores se conservan intactas, solo aplica a nuevas aceptaciones desde ahora.</p></div>
+
+<div class="acad-section">🔐 <b>Usuarios & Permisos</b>
+<p><b>Qué es y por qué importa:</b> define quién ve qué módulo — sin esto, todos los roles verían todo, incluyendo
+finanzas sensibles y datos protegidos de shoppers.</p>
+<p><b>Flujo completo:</b> <b>Invitar usuario</b> → asignas rol técnico, persona operativa (opcional), país(es)/scope,
+proyecto y cliente (opcionales) → el usuario invitado entra ya con ese alcance aplicado desde el login. Un rol
+personalizado sin matriz de permisos configurada queda bloqueado por defecto (fail-closed) — solo ve Capacitación
+hasta que un admin le defina explícitamente qué categorías puede ver.</p>
+<p><b>Errores frecuentes:</b> crear un rol nuevo y esperar que "vea todo" por default es exactamente lo contrario
+del comportamiento real — hay que ir a la matriz de permisos y asignarle categorías explícitamente.</p></div>
+
+<div class="acad-section">⚡ <b>Automatizaciones</b>
+<p><b>Qué es y por qué importa:</b> dispara notificaciones (WhatsApp/correo) automáticamente en eventos clave, sin
+que alguien tenga que enviarlas una por una manualmente.</p>
+<p><b>Flujo y botones:</b> activas/desactivas cada automatización con su switch → eliges canal y plantilla → el
+botón <b>Escanear y preparar notificaciones (in-app)</b> detecta visitas atrasadas/pendientes y prepara sus alertas.
+El navegador NUNCA llama directo a un proveedor real de IA ni guarda su API key — solo guarda tu preferencia de
+modelo para cuando el backend/adapter esté conectado.</p></div>
+
+<div class="acad-section">🔌 <b>Integraciones & Add-ons</b>
+<p><b>Qué es y por qué importa:</b> muestra el catálogo del ecosistema (WhatsApp, Sheets, IA, facturación) que la
+plataforma puede conectar sin depender de desarrollo a medida por cada cliente nuevo.</p>
+<p><b>Errores frecuentes:</b> "Configurar" una integración en este prototipo guarda tu preferencia/preview — no
+activa una conexión real; el estado siempre lo aclara la etiqueta junto al botón.</p></div>
+
+<div class="acad-section">✉️ <b>Correo integrado</b>
+<p><b>Qué es y por qué importa:</b> da trazabilidad de comunicación con clientes sin salir de la plataforma ni
+perder el hilo en bandejas personales de cada persona del equipo.</p>
+<p><b>Flujo:</b> respondes desde el hilo del correo → el botón WA (borrador manual) abre WhatsApp Web si prefieres
+ese canal para ese contacto — ningún envío sale solo del navegador.</p></div>
+
+<div class="acad-section">🎨 <b>Identidad de Marca</b>
+<p><b>Qué es y por qué importa:</b> tu logo y colores aparecen en login, documentos y propuestas — sin configurarlo,
+todo sale con la marca genérica de CXOrbia, lo cual no transmite profesionalismo ante un cliente final.</p>
+<p><b>Cómo validar que funcionó:</b> cierra sesión y vuelve a entrar — el login y el manifest (ícono de instalación
+PWA) deben reflejar ya la marca configurada.</p></div>`},
          {id:'mg5',ic:'❓',n:'Evaluación de la guía de módulos',tipo:'quiz',quiz:[
            {q:'Un shopper no puede entrar a un lote de pago aunque tenga liquidaciones elegibles. ¿Qué módulo revisas primero?',o:['Marca','Shoppers — probablemente falten sus datos bancarios completos','Marketing','Automatizaciones'],a:1,fb:'El módulo Shoppers requiere banco, tipo de cuenta, número y titular completos para poder incluir a alguien en un lote de pago.'},
            {q:'¿Cuál es la diferencia entre Fuente de HR y Hojas de Ruta?',o:['Son el mismo módulo con dos nombres','Fuente de HR define CÓMO se conecta la HR (archivo o en vivo); Hojas de Ruta ES el plan de visitas en sí','Hojas de Ruta es solo para shoppers','Fuente de HR es exclusivo de Finanzas'],a:1,fb:'Fuente de HR configura el mecanismo de conexión (importación vs. Google Sheets en vivo); Hojas de Ruta es el contenido — el plan de visitas del periodo.'},
@@ -403,7 +964,7 @@ CX.acadData={
            {q:'¿Cuál es el flujo correcto para que una visita pase de disponible a pagada?',o:['Disponible → Asignada → Realizada → Cuestionario → Pagada','Publicada → Postulación → Asignación → Agenda → Realización → Cuestionario → Liquidada/Pagada','Solo hay que marcarla como realizada y automáticamente se paga','El shopper la marca como pagada desde su app'],a:1,exp:'El ciclo completo es: Publicar → Postular/Reservar → Asignar → Agendar → Realizar → Cuestionario → Validar → Pagar. Cada etapa tiene responsables y genera notificaciones automáticas. Saltarse una etapa rompe la sincronía de la liquidación.'},
            {q:'¿Qué sección del menú contiene el Dashboard, Visitas y Postulaciones?',o:['Admin del Proyecto','Configuración','Operación','Finanzas'],a:2,exp:'El menú de Operación contiene todo lo que se usa a diario: Mi Día, Dashboard, Visitas, Postulaciones, Reservas, Shoppers e Informes. Admin del Proyecto contiene el set-up (Clientes, Proyectos, HR, Cuestionarios).'},
            {q:'¿Qué herramienta de IA usa CXOrbia por defecto y por qué?',o:['ChatGPT, porque es la más conocida','Gemini Flash, por su relación costo-beneficio para operaciones de alto volumen','No usa IA — todo es manual','Claude, porque es el más preciso'],a:1,exp:'CXOrbia usa Gemini Flash de Google por su excelente relación costo-beneficio con tokens económicos. Es configurable por tenant desde Configuración → Automatizaciones → Asistente de IA. Sin configurar, los generadores usan heurística local sin costo.'},
-           {q:'¿Qué ocurre cuando el equipo aprueba una postulación?',o:['Solo cambia el estado en la plataforma, nada más','La visita pasa a "asignada", el shopper recibe notificación automática (WhatsApp/push) y la HR externa se actualiza','El shopper debe verificar manualmente si fue aprobado','Se genera automáticamente la liquidación'],a:1,exp:'Al aprobar una postulación, la plataforma: (1) mueve la visita a "asignada", (2) notifica al shopper por WhatsApp/push vía Make, (3) escribe de vuelta a la HR externa (Google Sheets) si está activa, y (4) registra quién gestionó la aprobación para trazabilidad.'},
+           {q:'¿Qué ocurre cuando el equipo aprueba una postulación?',o:['Solo cambia el estado en la plataforma, nada más','La visita pasa a "asignada" y se emite un evento local (pendiente de backend) para notificar al shopper y, si aplica, reflejarse en la HR externa','El shopper debe verificar manualmente si fue aprobado','Se genera automáticamente la liquidación'],a:1,exp:'Al aprobar una postulación, la plataforma: (1) mueve la visita a "asignada", (2) emite un evento local que queda en estado pendiente de backend para notificar al shopper (WhatsApp/push vía Make, una vez que el backend confirme la conexión), (3) prepara la escritura de vuelta a la HR externa (Google Sheets) si esa integración está conectada, y (4) registra quién gestionó la aprobación para trazabilidad. Ninguna notificación ni escritura externa ocurre realmente hasta que el backend conecta la integración.'},
          ]}
        ]},
       /* ─── OPERACIÓN ─── */
@@ -672,25 +1233,29 @@ CX.acadData={
          {id:'bt1',ic:'🔥',n:'Firebase: Auth, Firestore y Realtime DB',content:`
 <h2>Firebase: el backend de CXOrbia en producción</h2>
 <div class="acad-section">🎯 <b>Objetivo</b><p>Conectar autenticación, base de datos y hosting reales para pasar de prototipo a producción.</p></div>
+<div class="acad-section" style="background:#fff7e6;border-color:#f5c344">⚠️ <b>Importante — esto NO se hace desde el navegador del prototipo</b><p>Esta guía es para el <b>equipo de desarrollo del backend</b>, no para un usuario del prototipo. <code>firebaseConfig</code> identifica el proyecto de Firebase (no es un secreto por sí solo, pero igual vive en el código del backend, nunca pegado en un formulario de la app), y las reglas de seguridad reales las define y despliega ese equipo — el prototipo nunca pide ni guarda estas credenciales.</p></div>
 <p>Firebase (Google) es el backend recomendado. Ofrece autenticación, base de datos en tiempo real y almacenamiento sin servidor que escala automáticamente. La ventaja frente a montar tu propio servidor: no necesitas contratar infraestructura ni preocuparte por escalar cuando crece el número de tenants — Firebase escala solo, y pagas por uso real.</p>
-<h3>Pasos de configuración</h3>
+<h3>Pasos de configuración (equipo de backend)</h3>
 <div class="acad-flow">
   <div class="acad-step"><span>1</span><b>console.firebase.google.com → Crear proyecto</b><p>Activa Google Analytics si lo deseas.</p></div>
   <div class="acad-step"><span>2</span><b>Authentication → Sign-in method → Email/Password</b><p>Habilita y agrega los correos de los primeros usuarios.</p></div>
   <div class="acad-step"><span>3</span><b>Firestore Database → Crear en modo producción</b><p>Elige región us-central1 para América Latina.</p></div>
-  <div class="acad-step"><span>4</span><b>Configuración → Apps web → Copiar firebaseConfig</b><p>Es el objeto con apiKey, projectId, etc. que va en config.js de CXOrbia.</p></div>
+  <div class="acad-step"><span>4</span><b>Configuración → Apps web → Copiar firebaseConfig al código del backend</b><p>Es el objeto con apiKey, projectId, etc. — se agrega al código fuente del backend/adapter, nunca a un formulario de la interfaz.</p></div>
 </div>
 <h3>Reglas de Firestore (producción)</h3>
 <p>Nunca dejes el modo prueba en producción — permite acceso público sin autenticación. Define reglas que permitan lectura/escritura solo a usuarios autenticados con el rol correcto. El HANDOFF-DESARROLLO.md incluye las reglas por colección.</p>`},
          {id:'bt2',ic:'🤖',n:'Gemini: IA generativa en la plataforma',content:`
-<h2>Conectar Gemini (Google AI) a CXOrbia</h2>
-<div class="acad-section">🎯 <b>Objetivo</b><p>Activar generación de contenido e IA real en los módulos que hoy usan heurística.</p></div>
+<h2>Conectar Gemini (Google AI) a CXOrbia — en el backend de producción</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Activar generación de contenido e IA real en los módulos que hoy usan heurística local.</p></div>
 <p>Gemini impulsa: análisis crítico, generación de cuestionarios desde instructivos, propuestas, documentos con branding, clasificación de hallazgos e importador inteligente.</p>
-<h3>Obtener API Key</h3>
+<div class="acad-section" style="background:#fff7e6;border-color:#f5c344">⚠️ <b>Importante — esto NO se hace en el navegador del prototipo</b><p>Este prototipo <b>nunca</b> pide ni guarda una API key real de IA en su interfaz — cualquier campo de "proveedor preferido" que veas en Configuración solo guarda una preferencia local, no una conexión. Los pasos de abajo son para el <b>equipo de desarrollo del backend</b>, cuando construya el adapter real: la API key vive en el servidor (Secret Manager u equivalente), nunca en localStorage ni en un formulario que el usuario final pueda ver.</p></div>
+<h3>Obtener API Key (para el backend, no para pegar aquí)</h3>
 <div class="acad-flow">
   <div class="acad-step"><span>1</span><b>aistudio.google.com → Get API Key → Create API key</b><p>La key tiene formato AIza...</p></div>
-  <div class="acad-step"><span>2</span><b>CXOrbia → Configuración → IA y Automatización → Pegar API Key</b><p>El sistema valida la key y activa el indicador “IA activa” en el topbar.</p></div>
+  <div class="acad-step"><span>2</span><b>El equipo de backend la guarda en el servidor (Secret Manager)</b><p>Nunca se pega en el navegador ni en un input de esta plataforma — el backend expone un endpoint propio que el frontend consume sin ver la key.</p></div>
 </div>
+<h3>Indicador "preferencia de IA" del prototipo</h3>
+<p>El selector de proveedor en Configuración → Automatizaciones solo guarda qué proveedor prefiere la consultora para cuando exista el backend — es información de enrutamiento, no una conexión activa. El estado real (disponible/no disponible) lo determina exclusivamente el adapter del backend, nunca un checkbox en el navegador.</p>
 <h3>Modelos recomendados</h3>
 <ul>
 <li><b>gemini-2.0-flash</b>: ultra rápido, ideal para análisis de cuestionarios, generación de contenido, clasificación. Usar por defecto.</li>
@@ -1135,37 +1700,98 @@ CX.acadData={
 /* ─── GUÍA DE MÓDULOS DEL PORTAL (beneficio, flujo, cómo usar) ─── */
       {id:'s_modguide',cat:'Inducción',ic:'🗺️',color:'#10b981',n:'Guía de tu portal: cada módulo, beneficio y cómo usarlo',
        desc:'Los 11 módulos de tu app, uno por uno: para qué existe, qué pasa si no lo usas, y cómo se usa paso a paso.',
-       cert:false,mins:40,
+       cert:false,mins:75,
        lessons:[
          {id:'smg1',ic:'📱',n:'Tu día a día operativo (5 módulos)',content:`
 <h2>Sección "Operación" de tu portal</h2>
 <div class="acad-section">☀️ <b>Mi Día</b>
-<p><b>Beneficio:</b> sin esto, tendrías que revisar varias pantallas para saber qué te toca hoy. Aquí lo ves todo junto.</p>
-<p><b>Cómo usar:</b> ábrela cada mañana; muestra tus visitas agendadas y cualquier alerta pendiente (cuestionario sin enviar, recertificación próxima).</p></div>
+<p><b>Qué es y por qué importa:</b> sin esto, tendrías que revisar varias pantallas por separado para saber qué te
+toca hoy — aquí lo ves todo junto: visitas agendadas, alertas de cuestionario sin enviar, recertificación próxima.</p>
+<p><b>Flujo:</b> ábrela al empezar el día → revisa lo resaltado arriba (lo urgente) → toca cualquier ítem para ir
+directo a esa visita o tarea.</p>
+<p><b>Cómo validar que funcionó:</b> al completar una acción (enviar cuestionario, confirmar agenda), el ítem
+desaparece de la lista de pendientes de Mi Día.</p></div>
+
 <div class="acad-section">👤 <b>Mi Perfil</b>
-<p><b>Beneficio:</b> tus datos bancarios, ubicación y disponibilidad determinan qué visitas te ofrecen y qué tan rápido te pagan. Un perfil incompleto = menos oferta y pagos más lentos.</p>
-<p><b>Cómo usar:</b> completa banco, tipo de cuenta, número y titular exactamente como aparecen en tu cuenta — un error aquí retrasa tu pago.</p></div>
+<p><b>Qué es y por qué importa:</b> tus datos bancarios, ubicación y disponibilidad determinan qué visitas te
+ofrecen y qué tan rápido te pagan — un perfil incompleto significa menos oferta de visitas y pagos más lentos, no
+un simple detalle administrativo.</p>
+<p><b>Datos a ingresar:</b> banco, tipo de cuenta, número de cuenta y titular <b>exactamente</b> como aparecen en tu
+cuenta bancaria real — una letra o dígito distinto retrasa tu pago porque no concilia contra el banco.</p>
+<p><b>Cómo validar que funcionó:</b> el resumen de tu perfil ya no muestra advertencias de "datos incompletos"; sigues
+apareciendo elegible en las listas de candidatos de tus proyectos certificados.</p>
+<p><b>Errores frecuentes:</b> copiar el número de cuenta con espacios o guiones que el banco no usa — pégalo tal
+cual aparece en tu estado de cuenta, sin formatear.</p></div>
+
 <div class="acad-section">📋 <b>Visitas Disponibles</b>
-<p><b>Beneficio:</b> es tu marketplace — sin revisarlo seguido, se te adelantan otros evaluadores en las mejores sucursales.</p>
-<p><b>Flujo:</b> filtras por país/proyecto → revisas honorario y fecha límite → reservas o te postulas.</p>
-<p><b>Cómo usar:</b> revisa TODOS los proyectos donde estás habilitado, no solo el que tienes activo — la oferta se cruza entre programas.</p></div>
+<p><b>Qué es y por qué importa:</b> es tu "marketplace" de trabajo — si no lo revisas seguido, otros evaluadores se
+adelantan en las mejores sucursales (mejor honorario, ubicación más cómoda).</p>
+<p><b>Flujo completo:</b> filtras por país/proyecto → revisas honorario, combo y fecha límite de cada visita → pulsas
+<b>Reservar</b> (si el proyecto usa cupos) o <b>Postularme</b> (si usa aprobación) → esperas confirmación del equipo.</p>
+<p><b>Cómo validar que funcionó:</b> la visita pasa de "disponible" a "reservada"/"postulada" en tu lista, y luego a
+"asignada" cuando el equipo la confirma — revisa Mis Visitas para ver en qué etapa quedó.</p>
+<p><b>Errores frecuentes:</b> revisar solo el proyecto que tienes "activo" y no ver que hay oferta en otro proyecto
+donde también estás certificado — la oferta se cruza entre programas, revisa todos los que te habiliten.</p></div>
+
 <div class="acad-section">🙋 <b>Reservas & Asignación</b>
-<p><b>Beneficio:</b> en programas mensuales, te deja apartar cupos por adelantado en vez de competir visita por visita.</p>
-<p><b>Cómo usar:</b> reserva el cupo del periodo; el equipo confirma la asignación final.</p></div>
+<p><b>Qué es y por qué importa:</b> en programas mensuales de alto volumen, te deja apartar cupos por adelantado en
+vez de competir visita por visita cada vez que se publica algo nuevo.</p>
+<p><b>Flujo:</b> reservas el cupo del periodo que te interesa → el equipo confirma la asignación final (puede haber
+más de un shopper interesado en el mismo cupo, por eso no es automático).</p>
+<p><b>Cómo validar que funcionó:</b> el cupo pasa de "reservado" a "confirmado" en tu vista — hasta ese momento no
+des la visita por segura.</p></div>
+
 <div class="acad-section">🧭 <b>Mis Visitas</b>
-<p><b>Beneficio:</b> tu agenda personal — sin esto, perderías el rastro de qué visita está en qué etapa (agendada, realizada, cuestionario pendiente).</p>
-<p><b>Cómo usar:</b> revisa el estado de cada visita; una en "cuestionario pendiente" necesita tu acción hoy, no mañana.</p></div>`},
+<p><b>Qué es y por qué importa:</b> es tu agenda personal completa — sin esto, perderías el rastro de en qué etapa
+está cada visita (agendada, realizada, cuestionario pendiente, liquidada).</p>
+<p><b>Flujo y botones:</b> cada visita muestra su estado actual; el botón <b>🔄 Reprogramar</b> abre el formulario
+para pedir nueva fecha (requiere motivo); una visita en "cuestionario pendiente" tiene un botón directo para
+completarlo.</p>
+<p><b>Cómo validar que funcionó:</b> tras enviar el cuestionario, la visita cambia de estado a "realizada/completada"
+— nunca dice "enviado", porque después viene la revisión del admin antes de cualquier liquidación.</p>
+<p><b>Errores frecuentes:</b> dejar una visita en "cuestionario pendiente" varios días afecta tu rating — complétalo
+el mismo día de la visita mientras los detalles están frescos.</p></div>`},
+
          {id:'smg2',ic:'🎓',n:'Capacitación y tus beneficios (6 módulos)',content:`
 <h2>Capacitación & IA</h2>
-<div class="acad-section">📚 <b>Academia</b> (donde estás ahora) <p><b>Beneficio:</b> te prepara para certificarte y entender la plataforma sin depender de que alguien te explique todo en vivo.</p></div>
-<div class="acad-section">🏆 <b>Certificación</b> <p><b>Beneficio:</b> sin aprobarla, no puedes postularte al proyecto — es tu llave de entrada.</p><p><b>Cómo usar:</b> estudia el instructivo en Recursos antes de presentar el examen; si no apruebas, puedes recertificarte tras repasar.</p></div>
-<div class="acad-section">📎 <b>Recursos del proyecto</b> <p><b>Beneficio:</b> el instructivo y material de referencia en un lector in-app — no necesitas buscar PDFs sueltos.</p></div>
-<div class="acad-section">🤖 <b>Soporte IA</b> <p><b>Beneficio:</b> respuesta inmediata 24/7 para dudas del cuestionario o la plataforma, sin esperar a que alguien del equipo te conteste.</p></div>
+<div class="acad-section">📚 <b>Academia</b> (donde estás ahora)
+<p><b>Qué es y por qué importa:</b> te prepara para certificarte y entender la plataforma sin depender de que
+alguien te explique todo en una llamada — puedes repasar cuando quieras, a tu ritmo.</p></div>
+
+<div class="acad-section">🏆 <b>Certificación</b>
+<p><b>Qué es y por qué importa:</b> sin aprobarla, no puedes postularte a ese proyecto — es tu llave de entrada,
+específica de cada programa (no genérica).</p>
+<p><b>Flujo:</b> estudias el instructivo en Recursos del proyecto → presentas el examen → si apruebas, quedas
+habilitado para postularte a ese proyecto; si no, puedes repasar y volver a presentar.</p>
+<p><b>Cómo validar que funcionó:</b> el proyecto deja de mostrarte "certificación requerida" y puedes postularte a
+sus visitas normalmente.</p></div>
+
+<div class="acad-section">📎 <b>Recursos del proyecto</b>
+<p><b>Qué es y por qué importa:</b> el instructivo y material de referencia en un lector dentro de la misma app —
+no necesitas buscar PDFs sueltos en tu correo justo antes de una visita.</p></div>
+
+<div class="acad-section">🤖 <b>Soporte IA</b>
+<p><b>Qué es y por qué importa:</b> respuesta inmediata para dudas comunes del cuestionario o la plataforma, sin
+esperar a que alguien del equipo te conteste por WhatsApp.</p>
+<p><b>Flujo:</b> escribes tu duda → recibes una respuesta sugerida; si no resuelve tu caso, puedes escalar a un
+ticket real para que un humano lo revise.</p></div>
+
 <h2>Mis Beneficios</h2>
 <div class="acad-section">💰 <b>Mis Beneficios</b>
-<p><b>Beneficio:</b> ves exactamente en qué etapa está tu pago (realizada → submitido → elegible → liquidada → lote → pagada) — sin esto, no sabrías si "ya te toca cobrar" o no.</p>
-<p><b>Cómo usar:</b> si una visita muestra liquidación sin fecha de pago, significa que está formada pero el lote de la quincena aún no se procesa — no es un error.</p></div>
-<div class="acad-section">📢 <b>Tablón / Novedades</b> <p><b>Beneficio:</b> anuncios y avisos importantes en un solo lugar, sin que se pierdan entre mensajes de WhatsApp.</p></div>`},
+<p><b>Qué es y por qué importa:</b> ves exactamente en qué etapa está tu pago — sin esto, no sabrías si "ya te toca
+cobrar" o si falta un paso.</p>
+<p><b>Flujo completo (etapas del ciclo):</b> visita realizada → cuestionario completado → revisión del admin →
+liquidación generada (elegible) → incluida en un lote de pago → lote marcado pagado.</p>
+<p><b>Cómo validar que funcionó:</b> tu visita muestra el estado correcto en cada etapa; cuando dice "pagada", el
+egreso correspondiente ya quedó registrado del lado de Finanzas.</p>
+<p><b>Errores frecuentes / qué significa cuando algo "no avanza":</b> si una visita muestra liquidación pero sin
+fecha de pago, significa que está formada pero el lote de la quincena todavía no se procesa — no es un error, es
+una etapa intermedia normal del ciclo.</p></div>
+
+<div class="acad-section">📢 <b>Tablón / Novedades</b>
+<p><b>Qué es y por qué importa:</b> anuncios y avisos importantes centralizados en un solo lugar, para que no se
+pierdan entre mensajes de WhatsApp de distintos chats y personas.</p></div>`},
+
          {id:'smg3',ic:'❓',n:'Evaluación de la guía de tu portal',tipo:'quiz',quiz:[
            {q:'Llevas dos semanas sin recibir ofertas de visitas nuevas. ¿Qué revisas primero?',o:['Tablón de Novedades','Mi Perfil — puede que falte disponibilidad, ubicación o certificación vigente','Soporte IA','Mis Beneficios'],a:1,fb:'Un perfil incompleto (disponibilidad, ubicación, certificación vencida) reduce directamente la oferta de visitas que te llega.'},
            {q:'Tu liquidación aparece en Mis Beneficios pero sin fecha de pago. ¿Qué significa?',o:['Que hubo un error','Que está liquidada pero el lote de pago de esta quincena aún no se ha procesado','Que te rechazaron la visita','Que debes volver a enviar el cuestionario'],a:1,fb:'El ciclo tiene etapas separadas: liquidada (candidata) → en lote → pagada. Sin fecha de pago solo significa que el lote aún no cierra.'},
@@ -1397,19 +2023,24 @@ CX.module('aprendizaje', ({data,role,ui})=>{
   const setProg=(id,v)=>{const s=prog();s[id]=v;try{localStorage.setItem(PK,JSON.stringify(s));}catch(e){}};
 
   let activeCat='Todos';
+  let clsModulo='', clsNivel='', clsPaquete='';
   let openCourse=null;
   let openLesson=null;
+  let showArchived=false;
 
   const getCourses=()=>{
     const r=role==='admin'?(CX._acadAud||'admin'):(role==='shopper'?'shopper':role==='cliente'?'cliente':'admin');
     const base=CX.acadData.COURSES[r]||CX.acadData.COURSES.admin;
     const custom=CX.acadData.getCustom(r);
-    return [...custom,...base];
+    const all=[...custom,...base];
+    /* los archivados solo se listan si el admin activa "ver archivados" — nunca para shopper/cliente */
+    if(role==='admin' && showArchived) return all;
+    return all.filter(c=>c.estado!=='archivado' && c.estado!=='eliminado');
   };
 
   /* ── player de lección ── */
   const lessonPlayer=(course)=>{
-    const lessons=course.lessons;
+    const lessons=(course.lessons||[]).filter(l=>!l._deleted); /* respeta soft-delete de lección */
     const li=Math.max(0,lessons.findIndex(l=>l.id===openLesson));
     const lesson=lessons[li];
     if(!lesson)return;
@@ -1445,7 +2076,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
 
   const contentView=(lesson,course,li,lessons)=>`
     <div class="card card-p">
-      ${role==='admin'?`<div class="between" style="margin-bottom:10px"><span style="font-size:11px;color:var(--t3)">${lesson.ic} ${lesson.n}</span><div class="flex" style="gap:6px"><button class="btn btn-ghost btn-sm" id="editLsn">✎ Editar lección</button><button class="btn btn-ghost btn-sm" id="addLsn">＋ Añadir lección</button></div></div>`:''}
+      ${(role==='admin'&&CX.permissions&&CX.permissions.can('academy.edit',CX.permissions.ctx()))?`<div class="between" style="margin-bottom:10px"><span style="font-size:11px;color:var(--t3)">${lesson.ic} ${lesson.n}</span><div class="flex" style="gap:6px"><button class="btn btn-ghost btn-sm" id="editLsn">✎ Editar lección</button><button class="btn btn-ghost btn-sm" id="addLsn">＋ Añadir lección</button>${CX.acadData.isCustom(role==='admin'?(CX._acadAud||'admin'):role,course.id)?`<button class="btn btn-ghost btn-sm" id="delLsn" style="color:var(--red)" ${lessons.length<2?'disabled title="No se puede eliminar la única lección"':''}>🗑 Eliminar lección</button><button class="btn btn-ghost btn-sm" id="viewDelLsn">♻️ Lecciones eliminadas</button>`:''}</div></div>`:''}
       <div class="acad-content">${lesson.content}</div>
       <div class="between" style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border-2)">
         ${li>0?`<button class="btn btn-ghost btn-sm" id="prevL">← Anterior</button>`:'<div></div>'}
@@ -1457,7 +2088,35 @@ CX.module('aprendizaje', ({data,role,ui})=>{
     setProg(lesson.id,100);
     host.querySelector('#nextL')?.addEventListener('click',()=>{if(li<lessons.length-1){openLesson=lessons[li+1].id;lessonPlayer(course);}});
     host.querySelector('#prevL')?.addEventListener('click',()=>{if(li>0){openLesson=lessons[li-1].id;lessonPlayer(course);}});
-    const rr=role==='shopper'?'shopper':role==='cliente'?'cliente':'admin';
+    const rr=role==='admin'?(CX._acadAud||'admin'):(role==='cliente'?'cliente':'shopper');
+    host.querySelector('#delLsn')?.addEventListener('click',()=>ui.modal('🗑 Eliminar lección',`
+      <p style="font-size:12px;color:var(--t2);margin-bottom:8px">"${lesson.n.replace(/"/g,'&quot;')}" se marcará como eliminada (recuperable desde "♻️ Lecciones eliminadas") — no se borra de forma irreversible.</p>
+      <label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="dlMot" rows="2" placeholder="Ej. contenido duplicado, ya no aplica…"></textarea>
+      <div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="dlOk" style="background:var(--red);border-color:var(--red)">Eliminar</button></div>
+    `,{onMount:(ov,close)=>{ov.querySelector('#dlOk').addEventListener('click',()=>{
+      const m=(ov.querySelector('#dlMot').value||'').trim();
+      if(!m){ ui.toast('El motivo es obligatorio','warn'); return; }
+      const r=CX.acadData.delLesson(rr,course.id,lesson.id,m,CX.permissions.ctx());
+      if(!r.ok){ ui.toast('🔒 '+r.error,'warn',4200); return; }
+      close();openLesson=null;draw();ui.toast('Lección eliminada (recuperable) · auditado','');
+    });}}));
+    host.querySelector('#viewDelLsn')?.addEventListener('click',()=>{
+      const custom=CX.acadData.getCustom(rr); const c=custom.find(x=>x.id===course.id);
+      const deleted=(c&&c.lessons||[]).filter(l=>l._deleted);
+      ui.modal('♻️ Lecciones eliminadas',`
+        ${deleted.length?`<div style="display:flex;flex-direction:column;gap:8px">${deleted.map(l=>`<div class="between" style="padding:8px 10px;border:1px solid var(--border);border-radius:8px"><span style="font-size:12.5px">${l.ic||'📄'} ${l.n}</span><button class="btn btn-ghost btn-sm restLsn" data-lid="${l.id}">♻️ Restaurar</button></div>`).join('')}</div>`
+        :'<p style="font-size:12.5px;color:var(--t3)">No hay lecciones eliminadas en este curso.</p>'}
+      `,{onMount:(ov,close)=>{ov.querySelectorAll('.restLsn').forEach(b=>b.addEventListener('click',()=>{
+        close();
+        ui.modal('♻️ Restaurar lección',`<label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="rlMot" rows="2" placeholder="Ej. vuelve a ser vigente…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="rlOk">Restaurar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#rlOk').addEventListener('click',()=>{
+          const m=(o2.querySelector('#rlMot').value||'').trim();
+          if(!m){ ui.toast('El motivo es obligatorio','warn'); return; }
+          const r=CX.acadData.restoreLesson(rr,course.id,b.dataset.lid,m,CX.permissions.ctx());
+          if(!r.ok){ ui.toast('🔒 '+r.error,'warn',4200); return; }
+          c2();draw();ui.toast('Lección restaurada · auditado','ok');
+        });}});
+      }));}});
+    });
     host.querySelector('#editLsn')?.addEventListener('click',()=>ui.modal('✎ Editar lección',`
       <label class="lbl">Título</label><input class="inp" id="elT" value="${lesson.n.replace(/"/g,'&quot;')}" style="margin-bottom:8px">
       <label class="lbl">Icono</label><input class="inp" id="elI" value="${lesson.ic||''}" style="max-width:80px;margin-bottom:8px">
@@ -1508,7 +2167,8 @@ CX.module('aprendizaje', ({data,role,ui})=>{
       ov.querySelector('#elSave').addEventListener('click',()=>{
         let content=ov.querySelector('#elEditor').innerHTML;
         if(newRes)content=newRes+content;
-        CX.acadData.editLesson(rr,course.id,lesson.id,{n:ov.querySelector('#elT').value.trim()||lesson.n,ic:ov.querySelector('#elI').value||lesson.ic,content});
+        const rEd=CX.acadData.editLesson(rr,course.id,lesson.id,{n:ov.querySelector('#elT').value.trim()||lesson.n,ic:ov.querySelector('#elI').value||lesson.ic,content});
+        if(!rEd.ok){ ui.toast('🔒 '+rEd.error,'warn',4200); return; }
         close();lessonPlayer(course);ui.toast('Lección actualizada','ok');
       });
     }}));
@@ -1573,9 +2233,10 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         ov.querySelector('#nlAI')?.addEventListener('click',()=>{
           const box=ov.querySelector('#nlC'),title=ov.querySelector('#nlT').value||'lección';
           box.placeholder='Generando…';
-          const gen=()=>{box.value='<h2>'+title+'</h2>\n<p>Contenido generado (conecta Gemini para IA real).</p>\n<ul><li>Punto clave 1</li><li>Punto clave 2</li><li>Punto clave 3</li></ul>';['#nlRef','#nlExp'].forEach(s=>ov.querySelector(s)&&(ov.querySelector(s).style.display=''));ui.toast('Contenido generado','ok');};
-          if(CX.ai&&CX.ai.ready())CX.ai.ask('Genera contenido HTML educativo rico (h2,p,ul) para una lección de mystery shopping llamada "'+title+'". Max 400 palabras. Solo HTML.').then(r=>{box.value=r;['#nlRef','#nlExp'].forEach(s=>ov.querySelector(s)&&(ov.querySelector(s).style.display=''));ui.toast('Generado con Gemini','ok');}).catch(gen);
-          else setTimeout(gen,600);
+          /* P0.1 (V98): heurística local directa — nunca se llama CX.ai.ask() (available() es
+             siempre false en el navegador). */
+          const gen=()=>{box.value='<h2>'+title+'</h2>\n<p>Contenido generado con heurística local (sin proveedor de IA real conectado).</p>\n<ul><li>Punto clave 1</li><li>Punto clave 2</li><li>Punto clave 3</li></ul>';['#nlRef','#nlExp'].forEach(s=>ov.querySelector(s)&&(ov.querySelector(s).style.display=''));ui.toast('Borrador local generado','ok');};
+          setTimeout(gen,600);
         });
         ov.querySelector('#nlRef')?.addEventListener('click',()=>{const b=ov.querySelector('#nlC');b.value+='\n<p><em>Refinado: detalle añadido.</em></p>';ui.toast('Refinado','ok');});
         ov.querySelector('#nlExp')?.addEventListener('click',()=>{const b=ov.querySelector('#nlC');b.value+='\n<h3>Profundizando</h3>\n<p>Contenido ampliado.</p>';ui.toast('Ampliado','ok');});
@@ -1595,7 +2256,8 @@ CX.module('aprendizaje', ({data,role,ui})=>{
             else if(src)content='<img src="'+src+'" style="max-width:100%;border-radius:10px">';
             else content='<p>Documento por adjuntar.</p>';}
           else if(lsnType==='quiz'){tipo='quiz';content=ov.querySelector('#nlQD').value;}
-          CX.acadData.addLesson(rr,course.id,{n:t,ic:ov.querySelector('#nlI').value||'📘',tipo,content});
+          const rAddL=CX.acadData.addLesson(rr,course.id,{n:t,ic:ov.querySelector('#nlI').value||'📘',tipo,content});
+          if(!rAddL.ok){ ui.toast('🔒 '+rAddL.error,'warn',4200); return; }
           close();lessonPlayer(course);ui.toast('Lección añadida','ok');
         });
       }});
@@ -1655,7 +2317,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           <div style="font-size:10.5px;color:var(--brand);font-weight:600;margin-top:4px">${(m.secciones||[]).length} secciones · Leer →</div></div>
         </button>`).join('')}
       </div>
-      ${role==='admin'?`<div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="manualNew">＋ Crear manual</button></div>`:''}
+      ${(CX.permissions&&CX.permissions.can('academy.edit',CX.permissions.ctx()))?`<div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="manualNew">＋ Crear manual</button></div>`:''}
     `,{onMount:(ov,close)=>{
       ov.querySelectorAll('.manualPick').forEach(b=>b.addEventListener('click',()=>{close();readManual(b.dataset.mid);}));
       ov.querySelector('#manualNew')?.addEventListener('click',()=>{close();crearManual();});
@@ -1680,7 +2342,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         </div>
         <div id="cmTextoWrap"><textarea class="inp" id="cmTexto" rows="4" placeholder="Pega el texto, describe la idea o el temario… la IA lo estructura en secciones" style="margin-bottom:6px"></textarea></div>
         <div id="cmRecWrap" style="display:none"><label class="btn btn-soft btn-sm" style="cursor:pointer">📎 Subir documento/recurso<input type="file" id="cmRecF" accept=".pdf,.doc,.docx,.txt,image/*" style="display:none"></label><div id="cmRecName" style="font-size:11px;color:var(--t3);margin-top:5px"></div></div>
-        <label class="flex" style="gap:8px;font-size:12px;margin-top:8px"><input type="checkbox" id="cmIA" ${CX.ai&&CX.ai.ready()?'checked':''}> Estructurar con IA (${CX.ai&&CX.ai.ready()?CX.ai.cfg().model:'configura IA en Integraciones'})</label>
+        <label class="flex" style="gap:8px;font-size:12px;margin-top:8px"><input type="checkbox" id="cmIA"> Estructurar en secciones (heurística local, sin proveedor de IA real)</label>
       </div>
       <div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="cmOk">Crear manual</button></div>
     `,{onMount:(ov,close)=>{
@@ -1691,13 +2353,15 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         const t=(ov.querySelector('#cmT').value||'').trim();if(!t){ui.toast('Pon un título','warn');return;}
         const rol=ov.querySelector('#cmRol').value, ic=ov.querySelector('#cmI').value||'📘', desc=ov.querySelector('#cmD').value||'Manual';
         const fuente=(lsnType==='recurso'?recTxt:(ov.querySelector('#cmTexto').value||'')).trim();
-        const usarIA=ov.querySelector('#cmIA').checked && CX.ai && CX.ai.ready() && fuente;
+        /* P0.1 (V98): "Estructurar" ya no depende de una preferencia de proveedor — la heurística
+           local (partir por líneas en blanco/oraciones) siempre está disponible. */
+        const usarIA=ov.querySelector('#cmIA').checked && fuente;
         const finalizar=(secciones)=>{const m=CX.manualesData.add({rol,ic,titulo:t,desc,secciones});close();ui.toast('Manual creado','ok');openManuales();};
         if(usarIA){
-          ui.toast('Estructurando manual con IA…','',2500);
-          CX.ai.ask('Estructura este contenido como un manual profesional en secciones. Devuelve cada sección como "## Título" seguido del contenido en HTML simple (<p>, <ul>, <li>, <h3>). Contenido:\n\n'+fuente)
-            .then(res=>{const parts=res.split(/##\s+/).filter(Boolean);const secs=parts.map(p=>{const nl=p.indexOf('\n');return {t:p.slice(0,nl).trim()||'Sección',html:p.slice(nl+1).trim()};});finalizar(secs.length?secs:[{t:'Contenido',html:'<p>'+res+'</p>'}]);})
-            .catch(e=>{ui.toast('Error IA: '+e.message+' · creado manual editable','warn');finalizar([{t:'Sección 1',html:'<p>'+(fuente||'Contenido por completar.')+'</p>'}]);});
+          const parts=fuente.split(/\n{2,}/).filter(Boolean);
+          const secs=parts.map((p,i)=>({t:'Sección '+(i+1),html:'<p>'+p.trim()+'</p>'}));
+          ui.toast('Estructurado con heurística local (sin proveedor de IA real conectado)','',3000);
+          finalizar(secs.length?secs:[{t:'Sección 1',html:'<p>'+(fuente||'Contenido por completar.')+'</p>'}]);
         } else {
           finalizar([{t:'Sección 1',html:fuente?'<p>'+fuente.replace(/\n/g,'</p><p>')+'</p>':'<p>Contenido por completar. Usa ✎ Editar sección.</p>'}]);
         }
@@ -1724,10 +2388,10 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           <div class="card card-p" style="position:sticky;top:10px">
             <div style="font-size:10px;font-weight:800;color:var(--t3);letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px">CONTENIDO</div>
             ${m.secciones.map((s,i)=>`<div class="manSec" data-si="${i}" style="padding:9px 11px;border-radius:9px;cursor:pointer;margin-bottom:4px;font-size:12px;background:${i===secIdx?'var(--brand)':'transparent'};color:${i===secIdx?'#fff':'var(--t1)'};font-weight:${i===secIdx?'700':'400'}">${i+1}. ${s.t.replace(/^\d+\s*·\s*/,'')}</div>`).join('')}
-            ${role==='admin'?`<button class="btn btn-ghost btn-sm" id="manAddSec" style="width:100%;margin-top:8px;border-style:dashed">＋ Sección</button>`:''}
+            ${(CX.permissions&&CX.permissions.can('academy.edit',CX.permissions.ctx()))?`<button class="btn btn-ghost btn-sm" id="manAddSec" style="width:100%;margin-top:8px;border-style:dashed">＋ Sección</button>`:''}
           </div>
           <div class="card card-p">
-            <div class="between" style="margin-bottom:12px"><h2 style="font-size:19px;font-weight:800;margin:0">${sec.t}</h2>${role==='admin'?`<button class="btn btn-ghost btn-sm" id="manEditSec">✎ Editar sección</button>`:''}</div>
+            <div class="between" style="margin-bottom:12px"><h2 style="font-size:19px;font-weight:800;margin:0">${sec.t}</h2>${(CX.permissions&&CX.permissions.can('academy.edit',CX.permissions.ctx()))?`<button class="btn btn-ghost btn-sm" id="manEditSec">✎ Editar sección</button>`:''}</div>
             <div class="acad-content" style="font-size:14px;line-height:1.75;color:var(--t1)">${sec.html}</div>
             <div class="between" style="margin-top:22px;border-top:1px solid var(--border-2);padding-top:14px">
               <button class="btn btn-ghost btn-sm" id="mPrev" ${secIdx===0?'disabled':''}>← Anterior</button>
@@ -1760,44 +2424,80 @@ CX.module('aprendizaje', ({data,role,ui})=>{
     if(openLesson){const c=getCourses().find(x=>x.id===openCourse);if(c)return lessonPlayer(c);}
     if(openCourse){const c=getCourses().find(x=>x.id===openCourse);if(c)return lessonPlayer(c);}
     const courses=getCourses();
-    const filtered=activeCat==='Todos'?courses:courses.filter(c=>c.cat===activeCat);
-    const totalLessons=courses.reduce((a,c)=>a+(c.lessons||[]).length,0);
-    const completedCourses=courses.filter(c=>prog()[c.id]>=100).length;
-    const completedLessons=courses.reduce((a,c)=>a+(c.lessons||[]).filter(l=>prog()[l.id]>=100).length,0);
-    const avgProg=courses.length?Math.round(courses.reduce((a,c)=>{const ls=c.lessons||[];const done=ls.filter(l=>prog()[l.id]>=100).length;return a+(ls.length?done/ls.length*100:0);},0)/courses.length):0;
-    const certs=courses.filter(c=>c.cert&&prog()[c.id]>=100).length;
+    /* visibilidad de gestión a nivel de módulo (crear categoría, crear manual, etc.) — mismo
+       criterio que canManage por tarjeta: deriva del permiso real, no de role==='admin' crudo. */
+    const canManageTop = role==='admin' && CX.permissions && CX.permissions.can('academy.edit', CX.permissions.ctx());
+    /* T2.A (paquete V108 — 20260712): UNA sola colección visible ("visibleCourses") alimenta
+       TODOS los KPIs, conteos, categorías y modales. Antes las tarjetas se filtraban por scope
+       (`filtered`) pero los totales de arriba (cursos, lecciones, certificados, avance) se
+       calculaban sobre `courses` SIN filtrar — un curso fuera de scope (p.ej. solo-admin) no
+       aparecía como tarjeta pero sí sumaba en los KPIs de un shopper. Ahora los KPIs SIEMPRE
+       usan la misma colección que las tarjetas. Un administrador con permiso de gestión
+       (canManageTop) sí ve/cuenta el catálogo completo, porque gestiona todo el contenido. */
+    const visibleCourses = canManageTop ? courses : courses.filter(c=>CX.acadData.visibleFor(c, CX.acadData.ctx()));
+    const filtered=(activeCat==='Todos'?visibleCourses:visibleCourses.filter(c=>c.cat===activeCat))
+      .filter(c=>CX.acadData.matchesClassification(c, {modulo:clsModulo||null, nivel:clsNivel||null, paquete:clsPaquete||null}));
+    const totalLessons=visibleCourses.reduce((a,c)=>a+(c.lessons||[]).length,0);
+    const completedCourses=visibleCourses.filter(c=>prog()[c.id]>=100).length;
+    const completedLessons=visibleCourses.reduce((a,c)=>a+(c.lessons||[]).filter(l=>prog()[l.id]>=100).length,0);
+    const avgProg=visibleCourses.length?Math.round(visibleCourses.reduce((a,c)=>{const ls=c.lessons||[];const done=ls.filter(l=>prog()[l.id]>=100).length;return a+(ls.length?done/ls.length*100:0);},0)/visibleCourses.length):0;
+    const certs=visibleCourses.filter(c=>c.cert&&prog()[c.id]>=100).length;
 
     host.innerHTML=`
       <div style="background:linear-gradient(135deg,#1a2740,#0d1b2e);border-radius:14px;padding:20px 24px;margin-bottom:16px">
-        <div class="between" style="margin-bottom:14px">
+        <div class="between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px">
           <div><div style="font-size:18px;font-weight:900;color:#fff">🎓 Academia CXOrbia <span style="font-size:13px;font-weight:400;color:#94a3b8">Capacitación, certificaciones y recursos</span></div></div>
-          <div class="flex" style="gap:8px">
+          <div class="flex" style="gap:8px;flex-wrap:wrap">
             <button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.3)" id="acadManuales">📖 Manuales</button>
-            ${role==='admin'?`<select class="sel" id="acadAud" style="width:auto" title="A quién se dirigen los cursos"><option value="admin" ${(CX._acadAud||'admin')==='admin'?'selected':''}>🏢 Consultora</option><option value="shopper" ${CX._acadAud==='shopper'?'selected':''}>🕵️ Shopper</option><option value="cliente" ${CX._acadAud==='cliente'?'selected':''}>🏬 Cliente</option></select><button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)" id="acadNew">✨ Crear con IA</button><button class="btn btn-sm" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)" id="acadLoad">⤒ Cargar recurso</button>`:''}
+            ${role==='admin'?`<select class="sel" id="acadAud" style="width:auto" title="A quién se dirigen los cursos"><option value="admin" ${(CX._acadAud||'admin')==='admin'?'selected':''}>🏢 Consultora</option><option value="shopper" ${CX._acadAud==='shopper'?'selected':''}>🕵️ Shopper</option><option value="cliente" ${CX._acadAud==='cliente'?'selected':''}>🏬 Cliente</option></select><button class="btn btn-sm ${showArchived?'':''}" style="background:rgba(255,255,255,${showArchived?'.3':'.1'});color:#fff;border-color:rgba(255,255,255,.25)" id="acadShowArch" title="Cursos personalizados archivados">🗄 ${showArchived?'Ocultar':'Ver'} archivados</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.3)" id="acadNew">✨ Crear con IA</button><button class="btn btn-sm" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)" id="acadLoad">⤒ Cargar recurso</button>`:''}
           </div>
         </div>
         <div class="grid g4">
-          <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#fff">${courses.length}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Cursos</div><div style="font-size:11px;color:#64748b">${completedCourses} completados</div></div>
+          <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#fff">${visibleCourses.length}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Cursos</div><div style="font-size:11px;color:#64748b">${completedCourses} completados</div></div>
           <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:${avgProg>=80?'#34d399':'#fbbf24'}">${avgProg}%</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Avance promedio</div><div style="font-size:11px;color:#64748b">del equipo</div></div>
           <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#a78bfa">${certs}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Certificaciones</div><div style="font-size:11px;color:#64748b">obtenidas</div></div>
           <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#fff">${totalLessons}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Lecciones</div><div style="font-size:11px;color:#64748b">${completedLessons} completadas</div></div>
         </div>
       </div>
       <div class="flex wrap" style="gap:6px;margin-bottom:16px">
-        ${CX.acadData.CATS.filter(c=>c==='Todos'||courses.some(x=>x.cat===c)).map(c=>`<button class="btn btn-sm acad-cat ${activeCat===c?'btn-pr':'btn-ghost'}" data-cat="${c}">${c}</button>`).join('')}
-        ${role==='admin'?`<button class="btn btn-sm btn-ghost" id="acadNewCat" style="border-style:dashed">＋ Categoría</button>`:''}
+        ${CX.acadData.CATS.filter(c=>c==='Todos'||visibleCourses.some(x=>x.cat===c)).map(c=>`<button class="btn btn-sm acad-cat ${activeCat===c?'btn-pr':'btn-ghost'}" data-cat="${c}">${c}</button>`).join('')}
+        ${canManageTop?`<button class="btn btn-sm btn-ghost" id="acadNewCat" style="border-style:dashed">＋ Categoría</button>`:''}
       </div>
+      ${(()=>{
+        /* Filtros de CLASIFICACIÓN (paquete V109) — módulo/nivel/paquete son taxonomía de contenido,
+           no ejes de acceso: solo aparecen si al menos un curso visible los declara, y filtran el
+           catálogo sin ocultar nada por ausencia de esos campos en la sesión. */
+        const anyModulo=visibleCourses.some(c=>c.scope&&c.scope.modulo&&c.scope.modulo.length);
+        const anyNivel=visibleCourses.some(c=>c.scope&&c.scope.nivel&&c.scope.nivel.length);
+        const anyPaquete=visibleCourses.some(c=>c.scope&&c.scope.paquete&&c.scope.paquete.length);
+        if(!anyModulo && !anyNivel && !anyPaquete) return '';
+        return `<div class="flex wrap" style="gap:8px;margin-bottom:14px;align-items:center">
+          <span style="font-size:11px;color:var(--t3)">Filtrar por:</span>
+          ${anyModulo?`<select class="sel" id="clsModulo" style="width:auto"><option value="">Módulo (todos)</option>${Object.keys(CX.MODULES||{}).map(mid=>`<option value="${mid}" ${clsModulo===mid?'selected':''}>${(CX.MODULES[mid]&&CX.MODULES[mid].name)||mid}</option>`).join('')}</select>`:''}
+          ${anyNivel?`<select class="sel" id="clsNivel" style="width:auto"><option value="">Nivel (todos)</option>${CX.acadData.NIVELES.map(n=>`<option value="${n.id}" ${clsNivel===n.id?'selected':''}>${n.label}</option>`).join('')}</select>`:''}
+          ${anyPaquete?`<select class="sel" id="clsPaquete" style="width:auto"><option value="">Paquete (todos)</option>${CX.acadData.PAQUETES.map(pk=>`<option value="${pk.id}" ${clsPaquete===pk.id?'selected':''}>${pk.label}</option>`).join('')}</select>`:''}
+        </div>`;
+      })()}
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
         ${filtered.map(c=>{
           const ls=c.lessons||[];const done=ls.filter(l=>prog()[l.id]>=100).length;const pct=ls.length?Math.round(done/ls.length*100):0;
-          return `<div class="card hov" data-course="${c.id}" style="cursor:pointer;overflow:hidden">
+          /* visibilidad de acciones de gestión (Academia — cierre de pendiente auditoría V101):
+             antes se mostraban por role==='admin' crudo, que sigue siendo 'admin' incluso cuando
+             un coordinador/aliado/ops navega en modo prueba sobre el shell admin (session.role
+             no cambia, solo session.testRole). Ahora se deriva del permiso real de acción —
+             el mismo chequeo que ya hacía el handler — para que el botón coincida con lo que
+             realmente va a pasar al hacer clic. */
+          const canManage = role==='admin' && CX.permissions && CX.permissions.can('academy.edit', CX.permissions.ctx());
+          const isCustom=canManage&&CX.acadData.isCustom(CX._acadAud||'admin',c.id);
+          const estadoLbl={borrador:'📝 Borrador',en_revision:'👀 En revisión',aprobado:'✅ Aprobado',archivado:'🗄 Archivado',eliminado:'🗑 Eliminado',publicado_preview:'✓ Publicado (preview)'}[c.estado]||'';
+          return `<div class="card hov" data-course="${c.id}" style="cursor:pointer;overflow:hidden;${c.estado==='archivado'||c.estado==='eliminado'?'opacity:.6':''}">
             <div style="background:linear-gradient(135deg,${c.color},${c.color}99);padding:18px 18px 14px;position:relative">
-              <div class="between" style="margin-bottom:8px"><span style="background:rgba(255,255,255,.22);color:#fff;border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700">${c.ic} ${c.cat}</span><div class="flex" style="gap:6px;align-items:center">${c.cert&&pct>=100?'<span style="font-size:18px">🏅</span>':''}${role==='admin'?`<button class="acad-edit" data-cid="${c.id}" title="Editar / eliminar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:13px;line-height:1">✎</button>`:''}</div></div>
+              <div class="between" style="margin-bottom:8px"><span style="background:rgba(255,255,255,.22);color:#fff;border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700">${c.ic} ${c.cat}</span><div class="flex" style="gap:6px;align-items:center">${c.cert&&pct>=100?'<span style="font-size:18px">🏅</span>':''}${canManage?`<button class="acad-dup" data-cid="${c.id}" title="Duplicar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">🧬</button>`:''}${isCustom?((c.estado==='archivado'||c.estado==='eliminado')?`<button class="acad-restore" data-cid="${c.id}" title="Restaurar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">♻️</button>`:`<button class="acad-arch" data-cid="${c.id}" title="Archivar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">🗄</button>`):''}${canManage?`<button class="acad-edit" data-cid="${c.id}" title="Editar / eliminar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:13px;line-height:1">✎</button>`:''}</div></div>
               <div style="font-size:16px;font-weight:800;color:#fff">${c.n}</div>
               <div style="font-size:12px;color:rgba(255,255,255,.8);margin-top:4px">${c.desc}</div>
             </div>
             <div class="card-p" style="padding:14px 16px">
-              <div style="font-size:11.5px;color:var(--t3);margin-bottom:10px">${ls.length} lecciones · ${typeof c.mins==='number'?c.mins:Math.max(10,ls.length*12)} min ${c.cert?'· 🏅 certifica':''}</div>
+              <div style="font-size:11.5px;color:var(--t3);margin-bottom:10px">${ls.length} lecciones · ${typeof c.mins==='number'?c.mins:Math.max(10,ls.length*12)} min ${c.cert?'· 🏅 certifica':''} ${estadoLbl?'· '+estadoLbl+((c.contentVersion>1||c.workflowVersion>1)?' · contenido v'+(c.contentVersion||1)+' · flujo v'+(c.workflowVersion||1):''):''}</div>
               <div style="background:var(--border-2);border-radius:4px;height:6px;margin-bottom:6px"><div style="height:6px;border-radius:4px;background:${pct>=100?'var(--green)':c.color};width:${pct}%;transition:width .4s"></div></div>
               <div style="font-size:11.5px;color:var(--t3)">${pct>=100?'✅ Completado':pct>0?pct+'% completado':'Comenzar'}</div>
             </div>
@@ -1805,15 +2505,96 @@ CX.module('aprendizaje', ({data,role,ui})=>{
       </div>`;
 
     host.querySelector('#acadManuales')?.addEventListener('click',()=>openManuales());
+    host.querySelector('#acadShowArch')?.addEventListener('click',()=>{showArchived=!showArchived;draw();});
+    host.querySelectorAll('.acad-dup').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='admin'?(CX._acadAud||'admin'):role;const copy=CX.acadData.duplicateCourse(rr,b.dataset.cid,CX.permissions.ctx());draw();ui.toast(copy?'Curso duplicado como borrador: "'+copy.n+'"':'No se pudo duplicar','ok');}));
+    host.querySelectorAll('.acad-arch').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='admin'?(CX._acadAud||'admin'):role;
+      ui.modal('🗄 Archivar curso',`<label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="archMot" rows="2" placeholder="Ej. contenido desactualizado, se reemplaza por otro curso…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="archOk">Archivar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#archOk').addEventListener('click',()=>{const m=(ov.querySelector('#archMot').value||'').trim();if(!m){ui.toast('El motivo es obligatorio','warn');return;}const r=CX.acadData.archiveCourse(rr,b.dataset.cid,m,CX.permissions.ctx());if(!r){ui.toast('🔒 No se pudo archivar (permiso o transición no válida)','warn',4200);return;}close();draw();ui.toast('Curso archivado · auditado','ok');});}});
+    }));
+    host.querySelectorAll('.acad-restore').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='admin'?(CX._acadAud||'admin'):role;
+      ui.modal('♻️ Restaurar curso',`<p style="font-size:12px;color:var(--t2);margin-bottom:6px">El curso vuelve a estado <b>Borrador</b> — desde ahí sigue el flujo normal (enviar a revisión → aprobar → publicar).</p><label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="resMot" rows="2" placeholder="Ej. vuelve a ser vigente…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="resOk">Restaurar a borrador</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#resOk').addEventListener('click',()=>{
+        const m=(ov.querySelector('#resMot').value||'').trim();
+        if(!m){ ui.toast('El motivo es obligatorio','warn'); return; }
+        const r=CX.acadData.setCourseState(rr,b.dataset.cid,'borrador',{reason:m,ctx:CX.permissions.ctx()});
+        if(!r.ok){ ui.toast('🔒 '+r.error,'warn',4200); return; }
+        close();draw();ui.toast('Curso restaurado a Borrador · auditado','ok');
+      });}});
+    }));
     host.querySelector('#acadAud')?.addEventListener('change',e=>{CX._acadAud=e.target.value;activeCat='Todos';openCourse=null;openLesson=null;draw();});
     host.querySelectorAll('[data-course]').forEach(c=>c.addEventListener('click',()=>{openCourse=c.dataset.course;const course=getCourses().find(x=>x.id===openCourse);if(course){openLesson=course.lessons[0].id;lessonPlayer(course);}}));
     host.querySelectorAll('.acad-cat').forEach(b=>b.addEventListener('click',()=>{activeCat=b.dataset.cat;draw();}));
+    host.querySelector('#clsModulo')?.addEventListener('change',e=>{clsModulo=e.target.value;draw();});
+    host.querySelector('#clsNivel')?.addEventListener('change',e=>{clsNivel=e.target.value;draw();});
+    host.querySelector('#clsPaquete')?.addEventListener('change',e=>{clsPaquete=e.target.value;draw();});
     host.querySelector('#acadNewCat')?.addEventListener('click',()=>ui.modal('＋ Nueva categoría',`
       <label class="lbl">Nombre de la categoría</label><input class="inp" id="ncatN" placeholder="Ej. Investigación de mercados" style="margin-bottom:12px">
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="ncatSave">Crear</button></div>
     `,{onMount:(ov,close)=>ov.querySelector('#ncatSave').addEventListener('click',()=>{const n=(ov.querySelector('#ncatN').value||'').trim();if(!n){ui.toast('Pon un nombre','warn');return;}if(!CX.acadData.CATS.includes(n))CX.acadData.CATS.push(n);try{localStorage.setItem('cx_acad_cats',JSON.stringify(CX.acadData.CATS));}catch(e){}close();draw();ui.toast('Categoría "'+n+'" creada','ok');})}));
-    host.querySelectorAll('.acad-edit').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='shopper'?'shopper':role==='cliente'?'cliente':'admin';const cc=getCourses().find(x=>x.id===b.dataset.cid);if(!cc)return;
-      ui.modal('✎ Editar curso',`<div class="grid g2" style="gap:8px 12px"><div><label class="lbl">Nombre</label><input class="inp" id="ecN" value="${(cc.n||'').replace(/"/g,'&quot;')}"></div><div><label class="lbl">Categoría</label><select class="sel" id="ecC">${CX.acadData.CATS.filter(c=>c!=='Todos').map(c=>`<option ${c===cc.cat?'selected':''}>${c}</option>`).join('')}</select></div><div style="grid-column:1/3"><label class="lbl">Descripción</label><textarea class="inp" id="ecD" rows="2">${cc.desc||''}</textarea></div></div><div style="text-align:right;margin-top:10px;display:flex;justify-content:space-between"><button class="btn btn-ghost btn-sm" id="ecDel" style="color:var(--red)">🗑 Eliminar</button><button class="btn btn-pr btn-sm" id="ecSave">Guardar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#ecSave').addEventListener('click',()=>{CX.acadData.editCourse(rr,cc.id,{n:ov.querySelector('#ecN').value.trim(),cat:ov.querySelector('#ecC').value,desc:ov.querySelector('#ecD').value.trim()});close();draw();ui.toast('Curso actualizado','ok');});ov.querySelector('#ecDel').addEventListener('click',()=>{CX.acadData.delCourse(rr,cc.id);close();draw();ui.toast('Curso eliminado','');});}});
+    host.querySelectorAll('.acad-edit').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='admin'?(CX._acadAud||'admin'):(role==='cliente'?'cliente':'shopper');const cc=getCourses().find(x=>x.id===b.dataset.cid);if(!cc)return;
+      ui.modal('✎ Editar curso',`<div class="grid g2" style="gap:8px 12px"><div><label class="lbl">Nombre</label><input class="inp" id="ecN" value="${(cc.n||'').replace(/"/g,'&quot;')}"></div><div><label class="lbl">Categoría</label><select class="sel" id="ecC">${CX.acadData.CATS.filter(c=>c!=='Todos').map(c=>`<option ${c===cc.cat?'selected':''}>${c}</option>`).join('')}</select></div><div style="grid-column:1/3"><label class="lbl">Descripción</label><textarea class="inp" id="ecD" rows="2">${cc.desc||''}</textarea></div>
+        ${CX.acadData.isCustom(rr,cc.id)?`<div style="grid-column:1/3;border-top:1px solid var(--border-2);margin-top:4px;padding-top:10px"><label class="lbl">Alcance (opcional — vacío en un eje = visible para todos en ese eje)</label>
+          <div class="grid g2" style="gap:6px 10px">
+            <div><span style="font-size:10px;color:var(--t3)">Tenant</span><div class="inp" style="background:var(--panel-2);color:var(--t2);cursor:default">${CX.BRAND.id} <span style="color:var(--t3);font-size:10px">(heredado, no editable)</span></div></div>
+            <div><span style="font-size:10px;color:var(--t3)">Proyecto(s)</span><select class="sel" id="ecScProj" multiple size="3">${(CX.data.projects||[]).map(pr=>`<option value="${pr.id}" ${(cc.scope&&cc.scope.projectId||[]).includes(pr.id)?'selected':''}>${pr.name}</option>`).join('')}</select></div>
+            <div><span style="font-size:10px;color:var(--t3)">País(es)</span><select class="sel" id="ecScPais" multiple size="3">${Object.keys(CX.GEO||{}).map(g=>`<option value="${g}" ${(cc.scope&&cc.scope.pais||[]).includes(g)?'selected':''}>${CX.paisFlag?CX.paisFlag(g)+' ':''}${g}</option>`).join('')}</select></div>
+            <div><span style="font-size:10px;color:var(--t3)">Rol(es)</span><select class="sel" id="ecScRol" multiple size="3">${(CX.ROLES||[]).map(rl=>`<option value="${rl.id}" ${(cc.scope&&cc.scope.rol||[]).includes(rl.id)?'selected':''}>${rl.label}</option>`).join('')}</select></div>
+            <div><span style="font-size:10px;color:var(--t3)">Nivel(es)</span><select class="sel" id="ecScNivel" multiple size="3">${CX.acadData.NIVELES.map(n=>`<option value="${n.id}" ${(cc.scope&&cc.scope.nivel||[]).includes(n.id)?'selected':''}>${n.label}</option>`).join('')}</select></div>
+            <div><span style="font-size:10px;color:var(--t3)">Módulo(s)</span><select class="sel" id="ecScModulo" multiple size="3">${Object.keys(CX.MODULES||{}).map(mid=>`<option value="${mid}" ${(cc.scope&&cc.scope.modulo||[]).includes(mid)?'selected':''}>${(CX.MODULES[mid]&&CX.MODULES[mid].name)||mid}</option>`).join('')}</select></div>
+            <div><span style="font-size:10px;color:var(--t3)">Paquete(s)</span><select class="sel" id="ecScPaquete" multiple size="3">${CX.acadData.PAQUETES.map(pk=>`<option value="${pk.id}" ${(cc.scope&&cc.scope.paquete||[]).includes(pk.id)?'selected':''}>${pk.label}</option>`).join('')}</select></div>
+          </div>
+          <div style="font-size:10.5px;color:var(--t3);margin-top:6px">Creador: <b>${cc.creador||'—'}</b>${cc.revisadoPor?' · Revisado por: <b>'+cc.revisadoPor+'</b>':''}${cc.aprobadoPor?' · Aprobado por: <b>'+cc.aprobadoPor+'</b>':''}</div>
+        </div>`:''}
+        ${CX.acadData.isCustom(rr,cc.id)?`<div style="grid-column:1/3;font-size:10.5px;color:var(--t3)">Estado: <b>${({borrador:'📝 Borrador',en_revision:'👀 En revisión',aprobado:'✅ Aprobado',archivado:'🗄 Archivado',eliminado:'🗑 Eliminado',publicado_preview:'✓ Publicado (preview)'}[cc.estado]||'—')}</b> · contenido v${cc.contentVersion||1} · flujo v${cc.workflowVersion||1}${cc.auditRef?' · '+cc.auditRef:''}</div>
+        <div style="grid-column:1/3;display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">${(CX.acadData.ALLOWED_TRANSITIONS[cc.estado||'borrador']||[]).filter(s=>s!=='archivado'&&s!=='eliminado').map(s=>`<button class="btn btn-soft btn-sm acadTrans" data-to="${s}" style="font-size:10.5px;padding:4px 9px">→ ${({borrador:'Borrador',en_revision:'Enviar a revisión',aprobado:'Aprobar',publicado_preview:'Publicar (preview)'}[s]||s)}</button>`).join('')}</div>`:''}</div><div style="text-align:right;margin-top:10px;display:flex;justify-content:space-between">${CX.acadData.isCustom(rr,cc.id)?'<button class="btn btn-ghost btn-sm" id="ecDel" style="color:var(--red)">🗑 Eliminar</button>':'<span></span>'}<button class="btn btn-pr btn-sm" id="ecSave">Guardar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#ecSave').addEventListener('click',()=>{
+        /* T2.B (paquete V108): scope ya no es CSV libre — se lee de <select multiple> con IDs
+           estables de catálogos reales (proyectos, CX.GEO, CX.ROLES, CX.MODULES, niveles y
+           paquetes curados). tenantId siempre se fija al tenant activo (CX.BRAND.id), heredado
+           y no editable — todo curso queda vinculado a un tenant real. */
+        const multi=(sel)=>{const el=ov.querySelector(sel); if(!el) return undefined; return [...el.selectedOptions].map(o=>o.value).filter(Boolean);};
+        const scope=ov.querySelector('#ecScProj')?{tenantId:[CX.BRAND.id],projectId:multi('#ecScProj'),pais:multi('#ecScPais'),rol:multi('#ecScRol'),nivel:multi('#ecScNivel'),modulo:multi('#ecScModulo'),paquete:multi('#ecScPaquete')}:cc.scope;
+        const r=CX.acadData.editCourse(rr,cc.id,{n:ov.querySelector('#ecN').value.trim(),cat:ov.querySelector('#ecC').value,desc:ov.querySelector('#ecD').value.trim(),scope});if(!r.ok){ui.toast('🔒 '+r.error,'warn',4200);return;}close();draw();ui.toast('Curso actualizado · auditado','ok');});
+      ov.querySelectorAll('.acadTrans').forEach(b=>b.addEventListener('click',()=>{
+        const to=b.dataset.to;
+        close();
+        const needsActor = to==='en_revision' || to==='aprobado';
+        /* T2 (paquete V108 — 20260712): el prototipo NO tiene un catálogo real de usuarios/Auth
+           con múltiples identidades — solo la sesión activa (CX.session.user). Antes se ofrecía
+           un "roster" armado con ETIQUETAS DE ROL (super/admin/coordinador) como si fueran personas
+           reales seleccionables: eso simulaba una separación de funciones que no existía. Ahora el
+           único actor posible es la identidad de sesión autenticada; si coincide con quien creó (o
+           revisó, para aprobar), no hay una segunda identidad real disponible y el flujo queda
+           bloqueado como preview — nunca se inventa una persona distinta. */
+        /* T1b (paquete V109 — corrección P0): el prototipo SÍ tiene un catálogo real de usuarios
+           invitados (cx_users, Configuración → Usuarios & Permisos) además de la sesión activa —
+           V108 afirmaba erróneamente que no existía ninguno. El actor se resuelve por ID ESTABLE
+           (CX.acadData.actorId(), persistido en cx_users cuando la sesión viene de un usuario
+           invitado con email, o derivado de rol+shopperId para sesiones demo sintéticas). Si el
+           id del actor de sesión coincide con quien creó (o revisó, para aprobar) el curso, no
+           hay una segunda identidad real disponible en ESTA sesión y el flujo queda bloqueado
+           como preview — nunca se inventa una persona ni un roster de etiquetas de rol. */
+        const sessionActor=(CX.session&&CX.session.user&&CX.session.user.name)||null;
+        const sessionActorId=CX.acadData.actorId();
+        const creadorId=cc.createdByUserId||(cc.creador?CX.acadData._idFromName(cc.creador):null);
+        const revisorId=cc.reviewedByUserId||(cc.revisadoPor?CX.acadData._idFromName(cc.revisadoPor):null);
+        const blockedReason = to==='aprobado' && revisorId && sessionActorId===revisorId
+          ? 'quien revisó ('+cc.revisadoPor+')'
+          : (creadorId && sessionActorId===creadorId ? 'quien creó ('+cc.creador+')' : null);
+        const actorAvailable = needsActor ? (sessionActor && !blockedReason) : true;
+        ui.modal('Cambiar estado → '+to,`<p style="font-size:12px;color:var(--t2);margin-bottom:8px">"${(cc.n||'').replace(/"/g,'&quot;')}" pasará a estado <b>${to}</b>.</p>${needsActor?(actorAvailable?`<div style="font-size:12px;color:var(--t2);margin-bottom:10px">${to==='en_revision'?'Revisa':'Aprueba'}: <b>${sessionActor}</b> (identidad de la sesión activa)</div>`:`<div class="bdg bdg-a" style="margin-bottom:10px;display:inline-block">Preview · requiere usuarios/Auth</div><div style="font-size:11.5px;color:var(--t3);margin-bottom:8px">Este prototipo no tiene un catálogo de usuarios/Auth con una segunda identidad distinta de ${blockedReason||'quien creó el curso'}. En producción, Auth real permite iniciar sesión como el revisor/aprobador correspondiente; aquí el flujo queda pendiente para no simular una separación de funciones inexistente.</div>`):''}<label class="lbl">Motivo</label><textarea class="inp" id="trMot" rows="2" placeholder="Explica el cambio de estado…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="trOk" ${actorAvailable?'':'disabled style="opacity:.5;cursor:not-allowed"'}>Confirmar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#trOk').addEventListener('click',()=>{
+          if(!actorAvailable){ ui.toast('Preview · requiere usuarios/Auth para esta transición','warn',3600); return; }
+          const m=(o2.querySelector('#trMot').value||'').trim();
+          const actor=needsActor?sessionActor:'';
+          const opts={reason:m,ctx:CX.permissions.ctx()};
+          if(to==='en_revision'){ opts.revisor=actor; opts.revisorId=sessionActorId; }
+          if(to==='aprobado'){ opts.aprobador=actor; opts.aprobadorId=sessionActorId; }
+          const r=CX.acadData.setCourseState(rr,cc.id,to,opts);
+          if(!r.ok){ ui.toast('🔒 '+r.error,'warn',4200); return; }
+          c2();draw();ui.toast('Curso → '+to+' · auditado','ok');
+        });}});
+      }));
+      ov.querySelector('#ecDel')?.addEventListener('click',()=>{
+        close();
+        ui.modal('🗑 Eliminar curso',`<p style="font-size:12px;color:var(--t2);margin-bottom:8px">"${(cc.n||'').replace(/"/g,'&quot;')}" se marcará como eliminado (recuperable desde "Ver archivados") — no se borra de forma irreversible.</p><label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="delMot" rows="2" placeholder="Ej. duplicado por error, contenido incorrecto…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="delOk" style="background:var(--red);border-color:var(--red)">Eliminar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#delOk').addEventListener('click',()=>{const m=(o2.querySelector('#delMot').value||'').trim();if(!m){ui.toast('El motivo es obligatorio','warn');return;}const rDel=CX.acadData.delCourse(rr,cc.id,m,CX.permissions.ctx());if(!rDel){ui.toast('🔒 No se pudo eliminar (permiso o transición no válida)','warn',4200);return;}c2();draw();ui.toast('Curso eliminado (recuperable) · auditado','');});}});
+      });}});
     }));
     host.querySelector('#acadNew')?.addEventListener('click',()=>ui.modal('✨ Crear módulo con IA',`
       <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Carga material (PDF, video, texto) y la IA genera un curso completo con lecciones profundas y evaluación.</p>
@@ -1822,24 +2603,25 @@ CX.module('aprendizaje', ({data,role,ui})=>{
       <div style="text-align:right"><button class="btn btn-green btn-sm" id="aiGo">Generar curso</button></div>
     `,{onMount:(ov,close)=>ov.querySelector('#aiGo').addEventListener('click',()=>{
       const pasted=(ov.querySelector('#aiT').value||'').trim();
-      if(CX.ai&&CX.ai.ready()){
-        ui.toast('Leyendo material y generando con '+CX.ai.cfg().model+'…','',2500);
-        CX.ai.readAttachment(ov.querySelector('#aiCourseF')).then(fileTxt=>{
-          const tema=(pasted+fileTxt).trim();
-          if(!tema){ui.toast('Describe el tema o adjunta material','warn');return;}
-          return CX.ai.ask('Crea un curso de capacitación sobre: "'+tema+'". Devuelve 4-6 lecciones. Cada lección como "## Título" seguido de contenido en HTML (<p>,<h3>,<ul>,<li>). La última lección debe ser un quiz con 3 preguntas.')
-          .then(res=>{
-            const parts=res.split(/##\s+/).filter(Boolean);
-            const lessons=parts.map((p,i)=>{const nl=p.indexOf('\n');const n=p.slice(0,nl).trim()||'Lección '+(i+1);const html=p.slice(nl+1).trim();return {id:'l'+Date.now().toString(36)+i,n,ic:/quiz|evalua/i.test(n)?'❓':'📘',tipo:/quiz|evalua/i.test(n)?'quiz':'texto',content:'<div class="acad-content">'+html+'</div>'};});
-            const rr=role==='shopper'?'shopper':role==='cliente'?'cliente':'admin';
-            CX.acadData.addCourse(rr,{cat:activeCat==='Todos'?'IA':activeCat,ic:'✨',color:'#7c3aed',n:tema.slice(0,60),desc:'Generado con IA',lessons});
-            close();draw();ui.toast('Curso generado · revisa, itera y publica','ok',4000);
-          })
-          .catch(e=>{close();ui.toast('Error IA: '+e.message,'warn');});
-        });
-      } else {
-        close();ui.toast('Configura un proveedor de IA en Integraciones para generar el curso','warn',4000);
-      }
+      /* P0.1 (V98): heurística local directa — nunca se llama CX.ai.ask() (available() es
+         siempre false en el navegador); nunca bloquea por falta de proveedor configurado. */
+      ui.toast('Leyendo material y generando borrador local…','',2000);
+      CX.ai.readAttachment(ov.querySelector('#aiCourseF')).then(fileTxt=>{
+        const tema=(pasted+fileTxt).trim();
+        if(!tema){ui.toast('Describe el tema o adjunta material','warn');return;}
+        /* parte el tema/material en 3-4 bloques y arma lecciones + un quiz genérico */
+        const chunks=tema.split(/\n{2,}|(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ])/).map(s=>s.trim()).filter(s=>s.length>20);
+        const per=Math.max(1,Math.ceil(chunks.length/3));
+        const bloques=[]; for(let i=0;i<chunks.length;i+=per) bloques.push(chunks.slice(i,i+per).join(' '));
+        let res=(bloques.length?bloques:[tema]).map((b,i)=>'## Parte '+(i+1)+'\n<p>'+b+'</p>').join('\n\n');
+        res+='\n\n## Evaluación\n<p>Repasa los puntos anteriores antes de continuar.</p>';
+        const parts=res.split(/##\s+/).filter(Boolean);
+        const lessons=parts.map((p,i)=>{const nl=p.indexOf('\n');const n=p.slice(0,nl).trim()||'Lección '+(i+1);const html=p.slice(nl+1).trim();return {id:'l'+Date.now().toString(36)+i,n,ic:/quiz|evalua/i.test(n)?'❓':'📘',tipo:/quiz|evalua/i.test(n)?'quiz':'texto',content:'<div class="acad-content">'+html+'</div>'};});
+        const rr=role==='admin'?(CX._acadAud||'admin'):(role==='cliente'?'cliente':'shopper');
+        const rAdd=CX.acadData.addCourse(rr,{cat:activeCat==='Todos'?'IA':activeCat,ic:'✨',color:'#7c3aed',n:tema.slice(0,60),desc:'Borrador local (heurística, sin IA real)',lessons});
+        if(!rAdd.ok){ ui.toast('🔒 '+rAdd.error,'warn',4200); return; }
+        close();draw();ui.toast('Curso generado (borrador local) · revisa, itera y publica','ok',4000);
+      });
     })}));
     host.querySelector('#acadLoad')?.addEventListener('click',()=>CX.router.nav('importador'));
   };

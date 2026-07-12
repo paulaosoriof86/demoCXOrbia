@@ -92,3 +92,10 @@
 - Readiness visual debe separar: contrato probado, fixture sintetico validado, preview listo, warning, fail, pendiente gate real, pendiente fuente real, pendiente revision humana y produccion no autorizada.
 - Academia debe explicar cobertura del runner, fixtures sinteticos, inputs sanitizados, pass/fail/warnings, preflight contractual, gates apagados y revision humana.
 - No tocar backend, contracts, tools, workflows, Firestore/Auth/Storage, Make, Gemini, imports, pagos reales ni datos reales.
+
+## Cierre V110 empalmada — 2026-07-12
+
+- Los dos P0 de Academia por país y Finanzas fail-closed quedaron cerrados, verificados y empalmados físicamente.
+- No se genera otro paquete Claude.
+- No reabrir scores finitos, bandas unificadas, lotes multipaís/multimoneda, IDs determinísticos, responsive, Beneficios, certificaciones, cache demo/real ni shell.
+- P1/P2 restantes quedan acumulados para un futuro paquete y no bloquean R10.

@@ -282,10 +282,34 @@ CX.app = {
   enter(){
     document.getElementById('login').classList.add('hidden');
     document.getElementById('app').classList.add('on');
-    const go=()=>{CX.router.mount();try{CX.app.showBanners&&CX.app.showBanners();}catch(e){}};
+    const go=()=>{
+      /* P0.3 (V98): si el modo de datos activo no es 'demo' y no hay fuente/adapter real disponible,
+         el shell se bloquea con un estado honesto en vez de dejar pasar silenciosamente a los seeds
+         de demo. Solo perfiles con permiso ven el detalle técnico (diagnostics.viewSensitive). */
+      if(CX.dataSource && CX.dataSource.isBlocked() && CX.dataSource.mode!=='demo'){ return CX.app.renderDataSourceBlock(); }
+      CX.router.mount();try{CX.app.showBanners&&CX.app.showBanners();}catch(e){}};
     if(CX.confidencialidad && CX.confidencialidad.pending(CX.session.role)){
       CX.confidencialidad.show(CX.session.role, go);
     } else { go(); }
+  },
+
+  /* Pantalla de bloqueo honesta para source_safe_preview/connected sin fuente/adapter real —
+     nunca se sustituye en silencio por los datos de demo. */
+  renderDataSourceBlock(){
+    const ds=CX.dataSource; const canSeeDetail = CX.session.canSeeProtectedData ? CX.session.canSeeProtectedData() : (CX.session.role==='super');
+    const root=document.getElementById('app');
+    root.innerHTML=`<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0d1b2e;padding:24px">
+      <div style="max-width:520px;background:#fff;border-radius:16px;padding:32px 28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)">
+        <div style="font-size:40px;margin-bottom:10px">⛔</div>
+        <div style="font-size:18px;font-weight:800;color:#1a2740;margin-bottom:6px">Fuente de datos no disponible</div>
+        <div style="font-size:13px;color:#64748b;margin-bottom:16px">Modo activo: <b>${ds.label()}</b> · ${ds.statusLabel()}</div>
+        ${canSeeDetail?`<div style="text-align:left;background:#f8fafc;border-radius:10px;padding:12px 14px;font-size:12px;color:#475569;margin-bottom:18px">${ds.blockers.map(b=>'• '+b).join('<br>')}</div>`:`<div style="font-size:12.5px;color:#94a3b8;margin-bottom:18px">Contacta a un administrador para más detalle.</div>`}
+        <button class="btn btn-pr btn-sm" id="dsBackDemo" style="margin-right:8px">Volver a modo Demo</button>
+        <button class="btn btn-ghost btn-sm" id="dsLogout">Cerrar sesión</button>
+      </div>
+    </div>`;
+    document.getElementById('dsBackDemo').addEventListener('click',()=>{ CX.dataSource.setMode('demo'); location.reload(); });
+    document.getElementById('dsLogout').addEventListener('click',()=>this.logout());
   },
 
   logout(){

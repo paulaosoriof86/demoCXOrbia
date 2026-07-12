@@ -4,7 +4,12 @@ CX.module('dashboard', ({data,ui})=>{
   const p=data.project();
   const ALL=!!CX.session._dashAll;
   const cs=ALL?[...new Set(data._visitas.filter(v=>data.inScope(v.pais)).map(v=>v.pais))]:p.countries;
-  const pool=()=>ALL?data._visitas.filter(v=>data.inScope(v.pais)):data.visitas();
+  /* Bloque 9 (corrección V103, 20260711): el archivado (soft-delete) marca v._archived=true pero
+     nunca elimina el registro — este pool() es la fuente única del dashboard, así que excluir
+     _archived aquí basta para que una visita archivada no vuelva a aparecer en KPIs/listados
+     activos, sin haber desaparecido físicamente de data._visitas (sigue accesible por su id/
+     sourceRef para auditoría). */
+  const pool=()=>(ALL?data._visitas.filter(v=>data.inScope(v.pais)):data.visitas()).filter(v=>!v._archived);
   const phaseCount=(fn)=>{const arr=pool();const o={t:arr.filter(fn).length};cs.forEach(c=>o[c]=arr.filter(x=>x.pais===c&&fn(x)).length);return o;};
   const k=ALL?{
     total:phaseCount(()=>true), asignadas:phaseCount(x=>x.shopperId),
@@ -96,23 +101,40 @@ CX.module('dashboard', ({data,ui})=>{
   const cumplNow=Math.round(k.realizadas.t/Math.max(k.total.t,1)*100);
   const cobNow=Math.min(100,Math.round(k.asignadas.t/Math.max(k.total.t,1)*100));
   const realNow=k.realizadas.t;
-  const margenNow=(()=>{const fp=CX.fin?CX.fin.porPais(data):null;if(!fp)return 38;const cs=Object.keys(fp);const m=cs.reduce((a,c)=>a+(fp[c].margenPct||0),0)/(cs.length||1);return Math.round(m);})();
-  const back=(now,step,floor)=>[Math.max(floor==null?0:floor,now-step*2),Math.max(floor==null?0:floor,now-step),now];
+  /* Bloque 4 (corrección V103, 20260711): bug real — margenNow caía a un fallback fijo `38`
+     cuando CX.fin.porPais no devolvía datos, SIN ningún gate de modo. Ahora el fallback fijo
+     solo aplica en demo; fuera de demo sin fuente financiera real, margenNow es null y el KPI
+     de "Margen neto" se muestra como pending_source en vez de un 38% inventado. */
+  const _showFixturesDashEarly = CX.dataSource ? CX.dataSource.showFixtures() : true;
+  const margenNow=(()=>{const fp=CX.fin?CX.fin.porPais(data):null;if(!fp)return _showFixturesDashEarly?38:null;const cs=Object.keys(fp);const m=cs.reduce((a,c)=>a+(fp[c].margenPct||0),0)/(cs.length||1);return Math.round(m);})();
+  /* Bloque A (auditoría V101 — 20260711): el comparativo trimestral fabricaba SIEMPRE valores
+     históricos (Días Real→Submit fijo [3.1,2.8,2.6]; visitas previas como 62%/82% del mes actual)
+     sin ningún guard de modo — presentándolos como si fueran periodos reales. Fuera de demo se
+     muestra únicamente el periodo actual (real) y los dos meses previos se marcan explícitamente
+     "sin fuente" en vez de calcularse con una fórmula sintética. */
+  const _showFixturesDash = CX.dataSource ? CX.dataSource.showFixtures() : true;
+  const back=(now,step,floor)=>_showFixturesDash?[Math.max(floor==null?0:floor,now-step*2),Math.max(floor==null?0:floor,now-step),now]:[null,null,now];
   const kpisTrim=[
     {n:'% Cumplimiento', vals:back(cumplNow,8,0), suf:'%', up:true},
-    {n:'Días Real→Submit', vals:[3.1,2.8,2.6], suf:'d', up:false},
-    {n:'Visitas realizadas', vals:[Math.round(realNow*0.62),Math.round(realNow*0.82),realNow], suf:'', up:true},
-    {n:'% Cuestionarios a tiempo', vals:back(Math.min(100,cumplNow+6),5,0), suf:'%', up:true},
-    {n:'Calidad cuestionario (QA)', vals:back(Math.min(100,cumplNow+8),3,0), suf:'%', up:true},
-    {n:'Tasa de reprogramación', vals:[Math.max(0,12),Math.max(0,9),Math.max(0,Math.round((k.sinAgendar?.t||0)/Math.max(k.total.t,1)*100))], suf:'%', up:false},
+    {n:'Días Real→Submit', vals:_showFixturesDash?[3.1,2.8,2.6]:[null,null,null], suf:'d', up:false},
+    {n:'Visitas realizadas', vals:_showFixturesDash?[Math.round(realNow*0.62),Math.round(realNow*0.82),realNow]:[null,null,realNow], suf:'', up:true},
+    /* P0-9 (paquete acumulado 20260711): estos dos KPIs fabricaban "cumplimiento+6" y
+       "cumplimiento+8" como si fueran una métrica real e independiente — incluso fuera de demo,
+       donde el valor "actual" seguía siendo esa fórmula sintética (solo el histórico se anulaba).
+       Fuera de demo no existe fuente para "a tiempo"/"calidad" de cuestionario en este prototipo:
+       se muestra pending_source (null) en las tres columnas, no solo en las dos históricas. */
+    {n:'% Cuestionarios a tiempo', vals:_showFixturesDash?back(Math.min(100,cumplNow+6),5,0):[null,null,null], suf:'%', up:true},
+    {n:'Calidad cuestionario (QA)', vals:_showFixturesDash?back(Math.min(100,cumplNow+8),3,0):[null,null,null], suf:'%', up:true},
+    {n:'Tasa de reprogramación', vals:_showFixturesDash?[Math.max(0,12),Math.max(0,9),Math.max(0,Math.round((k.sinAgendar?.t||0)/Math.max(k.total.t,1)*100))]:[null,null,Math.max(0,Math.round((k.sinAgendar?.t||0)/Math.max(k.total.t,1)*100))], suf:'%', up:false},
     {n:'Cobertura de sucursales', vals:back(cobNow,9,0), suf:'%', up:true},
-    {n:'Margen neto', vals:back(margenNow,3,0), suf:'%', up:true},
+    {n:'Margen neto', vals:margenNow==null?[null,null,null]:back(margenNow,3,0), suf:'%', up:true},
   ];
   const trimRows=kpisTrim.map(r=>{
-    const delta=r.vals[2]-r.vals[1]; const good=r.up?delta>=0:delta<=0;
-    const fmt=(v)=>r.suf==='d'?v.toFixed(2)+'d':v+r.suf;
+    const hasPrev=r.vals[0]!=null && r.vals[1]!=null;
+    const delta=hasPrev?r.vals[2]-r.vals[1]:null; const good=hasPrev?(r.up?delta>=0:delta<=0):null;
+    const fmt=(v)=>v==null?'—':(r.suf==='d'?v.toFixed(2)+'d':v+r.suf);
     return `<tr><td><b>${r.n}</b></td>${r.vals.map((v,i)=>`<td style="${i===2?'font-weight:800;color:var(--t1)':''}">${fmt(v)}</td>`).join('')}
-      <td style="color:${good?'var(--green)':'var(--red)'};font-weight:700">${delta>=0?'▲ +':'▼ '}${Math.abs(delta)}${r.suf}</td></tr>`;
+      <td style="color:${hasPrev?(good?'var(--green)':'var(--red)'):'var(--t3)'};font-weight:700">${hasPrev?(delta>=0?'▲ +':'▼ ')+Math.abs(delta)+r.suf:'sin fuente'}</td></tr>`;
   }).join('');
 
   const host=ui.el('div');
@@ -136,9 +158,9 @@ CX.module('dashboard', ({data,ui})=>{
     <div style="margin-top:6px">${ui.aiBox('La barra es el avance real; la línea vertical es el avance ideal a hoy (lineal por día del periodo). Si el real va por debajo del ideal, hay riesgo de incumplimiento de la ronda — actúa con recordatorios o reasignaciones.','Ritmo del mes, por país')}</div>
   </div>`;
   host.innerHTML=`
-  <div class="between" style="margin-bottom:14px">
+  <div class="between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px">
     <div>${ui.ph('Dashboard Operativo', (ALL?('Todos los proyectos · operación general · '+data.projects.length+' proyectos'):(p.name+' · '+p.industry))+' · '+cs.map(c=>CX.paisFlag(c)).join(' '))}</div>
-    <div class="flex">
+    <div class="flex" style="flex-wrap:wrap;gap:8px">
       <select class="sel" id="dashProjSel" style="width:auto"><option value="all" ${ALL?'selected':''}>🌐 Todos los proyectos</option>${data.scopedProyectos().map(pg=>`<option value="${pg.key}" ${(!ALL&&pg.key===data.currentProgramKey())?'selected':''}>${pg.name}</option>`).join('')}</select>
       <select class="sel" id="monthSel" style="width:auto">${months.map((m,i)=>`<option value="${i}" ${i===selMonth?'selected':''}>${m} ${new Date().getFullYear()}</option>`).join('')}</select>
       <span class="bdg bdg-b">● Preview operativo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div>
@@ -264,13 +286,38 @@ CX.module('dashboard', ({data,ui})=>{
           <div><label class="lbl">Fecha agendada</label><input class="inp" id="bdFec" type="date" value="${v.agendada||''}"></div>
         </div>
         <div class="between" style="margin-top:14px">
-          <button class="btn btn-ghost btn-sm" id="bdDel" style="color:var(--red)">🗑 Eliminar visita</button>
+          <button class="btn btn-ghost btn-sm" id="bdDel" style="color:var(--red)">🗄 Archivar visita</button>
           <div class="flex" style="gap:8px">${['realizada','cuestionario','liquidada'].includes(v.estado)?'<button class="btn btn-soft btn-sm" id="bdRev">🔎 Revisar</button>':''}${v.shopper?'<button class="btn btn-soft btn-sm" id="bdWa" title="Abre WhatsApp Web con un borrador manual — no es envío automático">📲 WhatsApp (borrador manual)</button>':''}<button class="btn btn-pr btn-sm" id="bdSave">Guardar</button></div>
         </div>
       `,{onMount:(ov,close)=>{
         const rev=ov.querySelector('#bdRev');if(rev)rev.addEventListener('click',()=>{close();CX.revisionAdmin&&CX.revisionAdmin(data,p,v,ui);});
         ov.querySelector('#bdSave').addEventListener('click',()=>{v.estado=ov.querySelector('#bdEst').value;const f=ov.querySelector('#bdFec').value;if(f)v.agendada=f;CX.bus&&CX.bus.emit('visit-flow');CX.automations&&CX.automations.logAction&&CX.automations.logAction('Editó visita',v.id,v.sucursal+' → '+v.estado);close();CX.router.nav('dashboard');ui.toast('Visita actualizada','ok');});
-        ov.querySelector('#bdDel').addEventListener('click',()=>{if(!confirm('¿Eliminar la visita de '+v.sucursal+'? Esta acción no se puede deshacer.'))return;if(data._visitas){const i=data._visitas.findIndex(z=>z.id===v.id);if(i>=0)data._visitas.splice(i,1);}CX.bus&&CX.bus.emit('visit-flow');CX.automations&&CX.automations.logAction&&CX.automations.logAction('Eliminó visita',v.id,v.sucursal);close();CX.router.nav('dashboard');ui.toast('Visita eliminada','');});
+        /* Bloque 9 (corrección V103, 20260711): bug real — este botón hacía hard-delete real
+           (splice() sobre data._visitas, desaparición física, solo un confirm() del navegador,
+           sin permiso, sin motivo, sin auditRef, sin conservar sourceRef). Una visita con origen
+           HR (sourceRef) NUNCA debe poder desaparecer así desde la UI. Ahora: exige el permiso
+           'visit.archive', exige motivo, y en vez de splice() marca soft-delete
+           (_archived:true, _archivedMotivo, _archivedPor, _archivedFecha, _archivedAuditRef) —
+           la visita sigue existiendo en data._visitas (nunca se pierde su sourceRef) y queda
+           auditada; el dashboard la excluye de las vistas activas por el flag, no por ausencia física. */
+        ov.querySelector('#bdDel').addEventListener('click',()=>{
+          if(!CX.permissions.gate('visit.archive',CX.permissions.ctx({entityType:'visita',entityId:v.id,pais:v.pais}),ui)) return;
+          ui.modal('🗄 Archivar visita',`
+            <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">La visita de <b>${v.sucursal}</b> se archivará — no se borra físicamente, queda excluida de las vistas activas y recuperable con su historial completo (incluida su referencia de fuente HR, si la tiene).</p>
+            ${v.sourceRef?`<div style="font-size:11px;color:var(--t3);margin-bottom:10px">Referencia de fuente: <code>${v.sourceRef}</code> — se conserva.</div>`:''}
+            <label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="arMot" rows="2" placeholder="Ej. duplicada, cancelada por el cliente, error de captura…" style="margin-bottom:12px"></textarea>
+            <div style="text-align:right"><button class="btn btn-sm" style="background:var(--red-bg);color:var(--red)" id="arOk">Confirmar archivado</button></div>
+          `,{onMount:(o2,c2)=>{o2.querySelector('#arOk').addEventListener('click',()=>{
+            const motivo=(o2.querySelector('#arMot').value||'').trim();
+            if(!motivo){ ui.toast('El motivo es obligatorio','warn'); return; }
+            const auditRef='aud_'+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
+            v._archived=true; v._archivedMotivo=motivo; v._archivedPor=(CX.session&&CX.session.user&&CX.session.user.name)||'—';
+            v._archivedFecha=new Date().toISOString(); v._archivedAuditRef=auditRef;
+            CX.bus&&CX.bus.emit('visit-flow');
+            CX.automations&&CX.automations.logAction&&CX.automations.logAction('Archivó visita (soft-delete, auditado)',v.id,v.sucursal+' · motivo: '+motivo+' · auditRef '+auditRef);
+            c2();close();CX.router.nav('dashboard');ui.toast('Visita archivada (recuperable) · auditado','');
+          });}});
+        });
         const wa=ov.querySelector('#bdWa');if(wa)wa.addEventListener('click',()=>{const msg=encodeURIComponent('Hola '+(v.shopper||'')+', sobre tu visita en '+v.sucursal);window.open('https://wa.me/?text='+msg,'_blank');});
       }});
     }));
@@ -286,7 +333,11 @@ CX.module('dashboard', ({data,ui})=>{
         <div class="flex" style="justify-content:flex-end;gap:8px"><button class="btn btn-soft btn-sm" id="pmWa">📲 WhatsApp</button><button class="btn btn-pr btn-sm" id="pmGo">Ver perfil completo →</button></div>
       `,{onMount:(ov,close)=>{
         ov.querySelector('#pmGo').addEventListener('click',()=>{close();CX.session._focusShopper=s.id;CX.router.nav('shoppers');});
-        ov.querySelector('#pmWa').addEventListener('click',()=>{close();ui.toast('WhatsApp a '+s.nombre+' (Make)','ok');});
+        /* P0-11 (paquete acumulado 20260711): este toast afirmaba "(Make)" sin comprobar el gate
+           — a diferencia de los demás botones de WhatsApp del dashboard (que sí revisan
+           CX.automations.hook() antes de mencionar Make), este quedaba residual claim
+           incondicional de envío automatizado. Ahora usa el mismo criterio que el resto. */
+        ov.querySelector('#pmWa').addEventListener('click',()=>{close();const hasHook=!!(CX.automations&&CX.automations.hook&&CX.automations.hook());ui.toast(hasHook?('WhatsApp a '+s.nombre+' preparado vía Make · se envía cuando el gate esté activo'):('WhatsApp Web abierto para '+s.nombre),'ok');});
         const histModal=(f,t)=>{const arr=hist.filter(f);ui.modal(t+' · '+s.nombre,arr.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>${arr.map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.escenario||''}</td><td style="font-size:12px">${v.realizada||v.agendada||'—'}</td><td>${ui.estadoBadge(v.estado)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🗒️','Sin visitas en esta categoría.'));};
         ov.querySelectorAll('[data-ph]').forEach(el=>el.addEventListener('click',()=>{const kk=el.dataset.ph;if(kk==='all')histModal(()=>true,'Todas las visitas');else if(kk==='real')histModal(v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Realizadas');else if(kk==='liq')histModal(v=>v.estado==='liquidada','Liquidadas');else histModal(v=>['asignada','agendada'].includes(v.estado),'En curso');}));
       }});

@@ -2,7 +2,11 @@
 CX.supportStore = CX.supportStore || {
   _t:null,
   TIPOS:['Plataforma','Capacitación plataforma','Capacitación personal','Técnica','Comercial','Servicio','Otra'],
-  seed(){ return [
+  /* P0-2 (paquete genérico 20260711): fixtures de ejemplo — solo visibles en modo demo (guard de
+     segunda capa; el shell ya bloquea el render 100% fuera de demo). */
+  seed(){
+    if(!(CX.dataSource ? CX.dataSource.showFixtures() : true)) return [];
+    return [
     {id:'t1',de:'Evaluador 03',rol:'shopper',tipo:'Plataforma',asunto:'No puedo subir evidencia',estado:'abierto',prio:'alta',fecha:'2026-06-22'},
     {id:'t2',de:'Cliente Retail',rol:'cliente',tipo:'Comercial',asunto:'Solicito propuesta para 2 marcas más',estado:'abierto',prio:'media',fecha:'2026-06-21'},
     {id:'t3',de:'Evaluador 07',rol:'shopper',tipo:'Capacitación personal',asunto:'Dudas sobre el protocolo de tiempos',estado:'en_proceso',prio:'media',fecha:'2026-06-20'},

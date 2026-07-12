@@ -1,11 +1,11 @@
-/* CXOrbia · Importador Inteligente v2 — IA real, migración TyA, HR clásica, instructivos */
+/* CXOrbia · Importador Inteligente v2 — IA real, migración de cliente, HR clásica, instructivos */
 CX.module('importador',({data,ui})=>{
   const p=data.project();
   const host=ui.el('div');
-  let tab='ai'; // 'ai' | 'tya' | 'hr' | 'setup'
+  let tab='ai'; // 'ai' | 'legacy' | 'hr' | 'setup'
   let ai={step:1,raw:'',result:null,confirmed:[]};
   let hr={step:1,parsed:null,map:{},cands:[],diff:null,dest:'hr'};
-  let tya={step:1,raw:'',parsed:null,section:'shoppers'};
+  let legacy={step:1,raw:'',parsed:null,section:'shoppers'};
 
   /* ─ Análisis IA ─ */
   const analyzeText=(text)=>{
@@ -64,7 +64,7 @@ Responde SOLO con JSON válido con este formato exacto:
       ents.push({tipo:'cliente',cantidad:n,campos:['empresa','contacto','correo','teléfono','rubro','país'],muestra:{empresa:'Marca Cliente Demo',contacto:'Contacto Demo',rubro:'Retail'},problemas:[]});
       buenos+=n;
     }
-    /* Detectar JSON TyA */
+    /* Detectar JSON de cliente */
     if((text.trim().startsWith('{')||text.trim().startsWith('['))){
       try{const obj=JSON.parse(text.slice(0,6000));
         const arr=Array.isArray(obj)?obj:(obj.shoppers||obj.visitas||obj.registros||[]);
@@ -101,12 +101,12 @@ Responde SOLO con JSON válido con este formato exacto:
     }
   };
 
-  const tyaParse=(raw)=>{
+  const legacyParse=(raw)=>{
     try{
       const obj=JSON.parse(raw);
       const sections={};
       ['shoppers','visitas','certificaciones','historial','cuestionarios'].forEach(k=>{if(obj[k]&&Array.isArray(obj[k]))sections[k]=obj[k];});
-      if(!Object.keys(sections).length&&Array.isArray(obj))sections[tya.section]=obj;
+      if(!Object.keys(sections).length&&Array.isArray(obj))sections[legacy.section]=obj;
       return{ok:true,sections,keys:Object.keys(sections)};
     }catch(e){return{ok:false,error:e.message};}
   };
@@ -116,14 +116,14 @@ Responde SOLO con JSON válido con este formato exacto:
     host.innerHTML=`
     ${ui.ph('Importador Inteligente',p.name+' · IA analiza cualquier formato y extrae datos estructurados')}
     <div class="flex" style="gap:6px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:10px">
-      ${[['ai','🤖 Análisis IA'],['tya','🔄 Migración de cliente'],['hr','🗺️ HR clásica'],['setup','📘 Instructivo / Set-up']].map(([t,l])=>`
+      ${[['ai','🤖 Análisis IA'],['legacy','🔄 Migración de cliente'],['hr','🗺️ HR clásica'],['setup','📘 Instructivo / Set-up']].map(([t,l])=>`
       <button class="btn btn-sm ${tab===t?'btn-pr':'btn-ghost'}" data-tab="${t}">${l}</button>`).join('')}
     </div>
     <div id="tab-body"></div>`;
     host.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;draw();}));
     const body=host.querySelector('#tab-body');
     if(tab==='ai')drawAI(body);
-    else if(tab==='tya')drawTyA(body);
+    else if(tab==='legacy')drawLegacy(body);
     else if(tab==='hr')drawHR(body);
     else drawSetup(body);
   };
@@ -198,8 +198,7 @@ Responde SOLO con JSON válido con este formato exacto:
         <button class="btn btn-green btn-sm" id="aiCommit" ${ai.confirmed.length?'':'disabled'}>✓ Importar ${ai.confirmed.length>0?'('+ai.confirmed.map(i=>r.entidades[i].cantidad).reduce((a,b)=>a+b,0)+' registros)':''}</button></div>
       </div>`;
       body.querySelector('#aiIter')?.addEventListener('click',()=>{
-        if(!(CX.ai&&CX.ai.ready())){ui.toast('Configura un proveedor de IA en Integraciones para iterar','warn',3500);return;}
-        ui.modal('✏️ Iterar la importación con IA',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Indica cómo ajustar el análisis: corregir mapeo de columnas, separar/unir entidades, normalizar fechas, excluir filas, etc.</p><textarea class="inp" id="itInstr" rows="3" placeholder="Ej. la columna 'asesor' es el shopper / separa visitas por país / ignora filas sin fecha"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-green btn-sm" id="itGo">Reanalizar</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#itGo').addEventListener('click',()=>{
+        ui.modal('✏️ Iterar la importación',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Indica cómo ajustar el análisis: corregir mapeo de columnas, separar/unir entidades, normalizar fechas, excluir filas, etc.</p><textarea class="inp" id="itInstr" rows="3" placeholder="Ej. la columna 'asesor' es el shopper / separa visitas por país / ignora filas sin fecha"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-green btn-sm" id="itGo">Reanalizar</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#itGo').addEventListener('click',()=>{
           const instr=(o2.querySelector('#itInstr').value||'').trim();if(!instr){ui.toast('Escribe el ajuste','warn');return;}
           c2();body.innerHTML='<div style="text-align:center;padding:60px 20px;color:var(--t3)"><div style="font-size:32px;margin-bottom:12px">🤖</div><div style="font-size:14px;font-weight:600">Reanalizando con tu ajuste…</div></div>';
           analyzeText(ai.raw+'\n\nAJUSTE DEL USUARIO (respétalo): '+instr).then(result=>{ai.result=result;ai.confirmed=[];drawAI(body);ui.toast('Reanalizado · revisa el resultado','ok');});
@@ -220,9 +219,9 @@ Responde SOLO con JSON válido con este formato exacto:
     }
   };
 
-  /* ── Tab: Migración TyA ── */
-  const drawTyA=(body)=>{
-    if(tya.step===1){
+  /* ── Tab: Migración de cliente ── */
+  const drawLegacy=(body)=>{
+    if(legacy.step===1){
       body.innerHTML=`
       <div class="card card-p" style="margin-bottom:14px">
         <div class="card-t" style="margin-bottom:8px">🔄 Migración desde plataforma anterior</div>
@@ -230,52 +229,52 @@ Responde SOLO con JSON válido con este formato exacto:
         <div style="background:#fef3c7;border-radius:9px;padding:10px 14px;font-size:12.5px;color:#92400e;margin-bottom:12px">
           ⚠️ <b>Antes de importar:</b> revisa la lista de "NO migrar" que entregó OpenAI. Importa SOLO los registros limpios que OpenAI marcó como buenos.
         </div>
-        <textarea class="inp" id="tyaTxt" rows="9" style="font-family:monospace;font-size:12px" placeholder='Pega aquí el JSON de OpenAI:\n{\n  "shoppers": [...],\n  "visitas": [...],\n  "certificaciones": [...],\n  "historial": [...]\n}'></textarea>
-        <div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="tyaGo">Analizar migración →</button></div>
+        <textarea class="inp" id="legacyTxt" rows="9" style="font-family:monospace;font-size:12px" placeholder='Pega aquí el JSON estructurado:\n{\n  "shoppers": [...],\n  "visitas": [...],\n  "certificaciones": [...],\n  "historial": [...]\n}'></textarea>
+        <div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="legacyGo">Analizar migración →</button></div>
       </div>`;
-      body.querySelector('#tyaGo').addEventListener('click',()=>{
-        const raw=body.querySelector('#tyaTxt').value.trim();if(!raw){ui.toast('Pega el JSON de OpenAI','warn');return;}
-        const parsed=tyaParse(raw);
+      body.querySelector('#legacyGo').addEventListener('click',()=>{
+        const raw=body.querySelector('#legacyTxt').value.trim();if(!raw){ui.toast('Pega el JSON estructurado','warn');return;}
+        const parsed=legacyParse(raw);
         if(!parsed.ok){ui.toast('JSON inválido: '+parsed.error,'err');return;}
-        tya.raw=raw;tya.parsed=parsed;tya.step=2;drawTyA(body);
+        legacy.raw=raw;legacy.parsed=parsed;legacy.step=2;drawLegacy(body);
       });
-    } else if(tya.step===2&&tya.parsed){
-      const sec=tya.parsed.sections;const keys=tya.parsed.keys;
+    } else if(legacy.step===2&&legacy.parsed){
+      const sec=legacy.parsed.sections;const keys=legacy.parsed.keys;
       const secLabel={shoppers:'👤 Shoppers',visitas:'🗺️ Visitas',certificaciones:'🏅 Certificaciones',historial:'📂 Historial',cuestionarios:'🧩 Cuestionarios'};
       body.innerHTML=`
       <div class="card card-p" style="margin-bottom:14px">
         <div class="card-h">
           <div class="card-t">🔄 Vista previa de migración</div>
-          <div class="flex" style="gap:6px">${keys.map(k=>`<button class="btn btn-sm ${tya.section===k?'btn-pr':'btn-ghost'}" data-tyasec="${k}">${secLabel[k]||k} (${(sec[k]||[]).length})</button>`).join('')}</div>
+          <div class="flex" style="gap:6px">${keys.map(k=>`<button class="btn btn-sm ${legacy.section===k?'btn-pr':'btn-ghost'}" data-legacysec="${k}">${secLabel[k]||k} (${(sec[k]||[]).length})</button>`).join('')}</div>
         </div>
       </div>
-      <div id="tyaSecBody"></div>
+      <div id="legacySecBody"></div>
       <div class="flex" style="justify-content:space-between;margin-top:14px">
-        <button class="btn btn-ghost btn-sm" id="tyaBack">← Volver</button>
-        <button class="btn btn-green btn-sm" id="tyaCommit">✓ Importar todo (${keys.reduce((a,k)=>a+(sec[k]||[]).length,0)} registros)</button>
+        <button class="btn btn-ghost btn-sm" id="legacyBack">← Volver</button>
+        <button class="btn btn-green btn-sm" id="legacyCommit">✓ Importar todo (${keys.reduce((a,k)=>a+(sec[k]||[]).length,0)} registros)</button>
       </div>`;
       const renderSection=()=>{
-        const rows=(sec[tya.section]||[]).slice(0,20);
+        const rows=(sec[legacy.section]||[]).slice(0,20);
         const cols=rows.length?Object.keys(rows[0]).slice(0,6):[];
-        const secBody=body.querySelector('#tyaSecBody');
+        const secBody=body.querySelector('#legacySecBody');
         secBody.innerHTML=`
         <div class="card card-p" style="margin-bottom:12px">
           <div class="between" style="margin-bottom:10px">
-            <span style="font-size:12.5px;font-weight:700">${secLabel[tya.section]||tya.section} — ${(sec[tya.section]||[]).length} registros${(sec[tya.section]||[]).length>20?' (mostrando primeros 20)':''}</span>
-            ${ui.bdg((sec[tya.section]||[]).length+' registros','g')}
+            <span style="font-size:12.5px;font-weight:700">${secLabel[legacy.section]||legacy.section} — ${(sec[legacy.section]||[]).length} registros${(sec[legacy.section]||[]).length>20?' (mostrando primeros 20)':''}</span>
+            ${ui.bdg((sec[legacy.section]||[]).length+' registros','g')}
           </div>
           <div style="overflow-x:auto"><table class="tbl" style="min-width:500px"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
           <tbody>${rows.map(row=>`<tr>${cols.map(c=>`<td style="font-size:11.5px">${String(row[c]||'—').slice(0,40)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
         </div>`;
       };
       renderSection();
-      body.querySelectorAll('[data-tyasec]').forEach(b=>b.addEventListener('click',()=>{tya.section=b.dataset.tyasec;renderSection();body.querySelectorAll('[data-tyasec]').forEach(x=>x.className='btn btn-sm '+(x.dataset.tyasec===tya.section?'btn-pr':'btn-ghost'));}));
-      body.querySelector('#tyaBack')?.addEventListener('click',()=>{tya.step=1;drawTyA(body);});
-      body.querySelector('#tyaCommit')?.addEventListener('click',()=>{
+      body.querySelectorAll('[data-legacysec]').forEach(b=>b.addEventListener('click',()=>{legacy.section=b.dataset.legacysec;renderSection();body.querySelectorAll('[data-legacysec]').forEach(x=>x.className='btn btn-sm '+(x.dataset.legacysec===legacy.section?'btn-pr':'btn-ghost'));}));
+      body.querySelector('#legacyBack')?.addEventListener('click',()=>{legacy.step=1;drawLegacy(body);});
+      body.querySelector('#legacyCommit')?.addEventListener('click',()=>{
         const total=keys.reduce((a,k)=>a+(sec[k]||[]).length,0);
         ui.toast('Migración preparada (preview) · '+total+' registros · import real y anti-duplicado los ejecuta el backend cuando el gate esté activo','ok',5000);
         CX.bus&&CX.bus.emit('shoppers');CX.bus&&CX.bus.emit('visitas');
-        tya={step:1,raw:'',parsed:null,section:'shoppers'};
+        legacy={step:1,raw:'',parsed:null,section:'shoppers'};
         setTimeout(()=>draw(),2500);
       });
     }

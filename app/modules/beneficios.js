@@ -1,11 +1,17 @@
 /* CXOrbia · Mis Beneficios (shopper) — honorarios vs reembolsos + beneficios en especie */
 CX.module('beneficios', ({data,ui})=>{
   const p=data.project();
-  /* P0.1: SOLO los beneficios del shopper autenticado (por shopperId, no por nombre) */
-  const sid=(CX.session.user&&CX.session.user.shopperId)||'sh1';
+  /* P0-D (paquete 20260711): shopper obligatorio — el fallback previo a 'sh1' hacía que
+     cualquier sesión sin shopperId (ej. un rol mal mapeado) heredara los beneficios de un
+     shopper fijo. Sin identidad de shopper autenticada, la vista se muestra vacía/pending,
+     nunca con datos de otro shopper. */
+  const sid = CX.session.user && CX.session.user.shopperId;
+  if(!sid){
+    return `<div class="card card-p">${ui.empty('👤','No hay un shopper autenticado en esta sesión — no se muestran beneficios de otra identidad.')}</div>`;
+  }
   const myVisitIds=new Set((data.visitsForShopper?data.visitsForShopper(sid):[]).map(v=>v.id));
   const allProj=CX.liq.forProject(data);
-  const all=allProj.filter(l=>myVisitIds.size?myVisitIds.has(l.visitaId):true);
+  const all=allProj.filter(l=>myVisitIds.has(l.visitaId));
   const cur=p.currency[p.countries[0]];
   /* totales separados */
   const hon = all.reduce((a,l)=>a+l.honorario,0);
@@ -49,6 +55,7 @@ CX.module('beneficios', ({data,ui})=>{
       <div data-k="cobrar" style="cursor:pointer">${ui.kpi('⏳ Por cobrar',ui.money(cur,porCobrar),'a')}</div>
       <div data-k="pagado" style="cursor:pointer">${ui.kpi('✅ Pagado',ui.money(cur,pagado),'b')}</div>
     </div>
+    <div style="font-size:10.5px;color:var(--t3);margin-top:6px">"Pagado" se confirma una vez procesado el depósito; el monto puede ajustarse hasta entonces.</div>
 
     <div class="grid g2" style="margin-bottom:16px">
       <div class="card card-p" style="background:linear-gradient(135deg,#eafaf1,#f3eeff);border-color:#d7ead9">

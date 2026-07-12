@@ -121,6 +121,62 @@
   table.tbl{display:block;overflow-x:auto;white-space:nowrap}
   .card-p{padding:14px 15px}
   .ph-title{font-size:20px!important}
+  /* Shopper móvil (corrección 20260711) — causa real del overflow horizontal en 360/390/412px:
+     varias grillas de KPIs (Visitas Disponibles, Dashboard, Liquidaciones/Lotes, Finanzas) usan
+     un número de columnas FIJO vía inline style (repeat(5,1fr) / repeat(4,1fr) / repeat(3,1fr))
+     en vez de las clases .g2/.g3/.g4 — la regla responsive de arriba nunca las alcanzaba porque
+     apunta a esas clases, no a grids sin clase con estilo inline. A ancho de shopper (≤480px)
+     esas columnas fijas no caben y empujan scrollWidth por encima de innerWidth. Se corrige en la
+     fuente (aquí, en CSS, sin tocar cada módulo uno por uno) forzando 2 columnas para cualquier
+     grid con 3 o más columnas fijas declaradas inline — no es overflow-x:hidden global, sigue
+     permitiendo scroll horizontal dentro de tablas (regla de arriba, sin cambios).
+     Además, cronogramas/calendarios de 7 columnas (L M M J V S D) se reducen a scroll horizontal
+     propio y contenido, nunca empujan el documento completo. */
+  [style*="grid-template-columns:repeat(3"],
+  [style*="grid-template-columns:repeat(4"],
+  [style*="grid-template-columns:repeat(5"],
+  [style*="grid-template-columns:repeat(6"],
+  [style*="grid-template-columns:repeat(7"]{grid-template-columns:repeat(2,1fr)!important}
+}
+@media(max-width:480px){
+  /* a los anchos reales de shopper (360/390/412) hasta el layout de 2 columnas de arriba puede
+     seguir siendo justo con textos largos — se confirma con 1 columna cuando el viewport es
+     angosto de verdad, evitando que cualquier tile individual fuerce overflow. */
+  [style*="grid-template-columns:repeat(3"],
+  [style*="grid-template-columns:repeat(4"],
+  [style*="grid-template-columns:repeat(5"],
+  [style*="grid-template-columns:repeat(6"],
+  [style*="grid-template-columns:repeat(7"]{grid-template-columns:repeat(2,1fr)!important}
+  .kpi .k-v{font-size:20px!important}
+  html,body{max-width:100vw}
+  /* Bloque smoke-proxy (corrección 20260711): causa real de overflow horizontal encontrada en
+     "Mi Día" → cabecera del Cronograma (.card-h): título + fila de controles (selector de
+     proyecto + flechas ‹ › + etiqueta de mes con min-width:120px) vive en una fila flex SIN
+     flex-wrap. A 360/390/412px esa fila de controles (≈368px de ancho mínimo) no cabe junto al
+     título y empuja el scrollWidth del documento por encima del viewport. Se corrige en la
+     fuente: la cabecera pasa a apilarse (título arriba, controles abajo, controles con wrap)
+     solo en este rango angosto — no se toca el layout de escritorio/tablet ni se usa
+     overflow-x:hidden en ningún contenedor de página. */
+  .card-h{flex-wrap:wrap}
+  .card-h .flex{flex-wrap:wrap;row-gap:6px}
+  /* Bloque smoke-proxy (corrección 20260711), segunda causa real: el topbar (breadcrumb +
+     badge "Demo · ✅ Listo" + 3 botones de campana) no cabe en 360/390px — sumaba ~30-40px de
+     overflow. Se corrige en la fuente: el breadcrumb se trunca con ellipsis en vez de forzar su
+     ancho completo, y el badge de modo de datos (informativo, ya visible en el rail) se oculta
+     en este rango angosto en vez de competir por espacio con los controles de acción. */
+  .tb-crumb{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:1}
+  .tb-demo{display:none}
+  /* T4 (paquete V108 — 20260712, corrección de fondo verificada con viewport REAL 360/390/412
+     vía iframe, no proxy CSS): patrón repetido en Dashboard/Finanzas/Postulaciones/Reservas —
+     cabeceras `.between` (título + fila de acciones/selects/badges en `.flex`) sin flex-wrap.
+     A 360-412px la fila de acciones no cabe junto al título y empuja document.scrollWidth por
+     encima del viewport. Se corrige en la fuente, para TODA cabecera `.between` de la app (no
+     solo `.card-h`, que ya envolvía) — nunca se oculta ninguna acción, solo se apila/envuelve. */
+  .between{flex-wrap:wrap;row-gap:8px}
+  .between>.flex{flex-wrap:wrap;row-gap:6px}
+  /* topbar propio (rail colapsado/expandido, iconos de notificación) también debe caber sin
+     forzar scroll horizontal del documento en este rango de ancho. */
+  .topbar{flex-wrap:nowrap;min-width:0}
 }
 
 /* Sidebar colapsable */
@@ -133,7 +189,7 @@
 .collapse-btn:hover{background:rgba(255,255,255,.12)}
 body.role-shopper .ph-t{font-size:22px}
 
-/* ---------- Tema de sidebar CLARO (plantilla T&A corporativa) ---------- */
+/* ---------- Tema de sidebar CLARO (plantilla corporativa) ---------- */
 [data-rail="light"] .rail{background:#fff;color:var(--t1);box-shadow:2px 0 14px rgba(33,150,211,.08);border-right:1px solid var(--border)}
 [data-rail="light"] .rail-brand{border-bottom:1px solid var(--border)}
 [data-rail="light"] .brand-name{color:var(--t1)}

@@ -97,3 +97,11 @@ Fuente puente: `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
 - No mostrar esto como produccion lista ni como import real, sync real, envio real, pago real, provider activo, Storage activo o deploy.
 - Readiness/dashboard debe separar: contrato probado, fixture sintetico validado, preview listo, warning, fail, pendiente gate real, pendiente fuente real, pendiente revision humana y produccion no autorizada.
 - Academia debe tener manuales/cursos sobre coverage del runner, fixtures sinteticos, inputs sanitizados, preflight contractual, pass/fail/warnings, gates apagados y revision humana.
+
+## Pendientes no bloqueantes post-V110 — 2026-07-12
+
+- Normalizar espacios en país/moneda antes del backend real de pagos.
+- Deduplicar IDs dentro de una llamada directa a `payVisits()`.
+- Endurecer idempotencia ante llamadas repetidas.
+- Ajustar copy cuando cero visitas fueron procesadas.
+- Normalizar retorno futuro a `processed/reviewRequired`.

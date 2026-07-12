@@ -141,18 +141,81 @@ app/sw.js: OK
 app/core/finanzas-core.js: OK
 app/core/topbar.js: OK
 utf8_no_bom_no_mojibake:PASS:70
-[stdin]:15
-const unique=new Set(regs);const duplicates=[...unique].filter(id=>regs.filter(x=>x===id).length>1);if(unique.size!==48) throw new Error(`module_graph_invalid registrations=${regs.length} unique=${unique.size}`);console.log('moduleDuplicateExtensions',duplicates);
-                                 ^
-
-SyntaxError: Identifier 'duplicates' has already been declared
-    at makeContextifyScript (node:internal/vm:185:14)
-    at compileScript (node:internal/process/execution:383:10)
-    at evalTypeScript (node:internal/process/execution:266:24)
-    at node:internal/main/eval_stdin:53:5
-    at Socket.<anonymous> (node:internal/process/execution:201:5)
-    at Socket.emit (node:events:531:35)
-    at endReadableNT (node:internal/streams/readable:1698:12)
-    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
-
-Node.js v22.23.1
+moduleDuplicateExtensions [ 'rutas' ]
+{
+  "scriptsTotal": 66,
+  "scriptsLocal": 64,
+  "moduleRegistrations": 49
+}
+{
+  "fileCount": 1371,
+  "aggregateSha256": "20043c869715d3ff8d5309c104ab90c7a637c3d62a2f1152e80f8ae43e38311e"
+}
+Archivos verificados: 1371
+Aggregate recalculado: 20043c869715d3ff8d5309c104ab90c7a637c3d62a2f1152e80f8ae43e38311e
+0 diferencias
+rm 'tools/empalme/v110-selective/LAST-FAILURE.txt'
+rm 'tools/empalme/v110-selective/READY'
+rm 'tools/empalme/v110-selective/RESOLVER-TRACE.txt'
+rm 'tools/empalme/v110-selective/TRANSPORT-MODE.txt'
+rm 'tools/empalme/v110-selective/base-bundle/MANIFEST.txt'
+rm 'tools/empalme/v110-selective/base-bundle/README.md'
+rm 'tools/empalme/v110-selective/base-bundle/STATUS'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-00.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-01.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-02a.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-02b.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-02c.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-02d.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-03a0.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-03a1.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-03a2.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-03a3.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-03b0.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-03b1.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-03b2.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-03b3.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-03c0.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-03c1.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-03c2.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-03c3.b64'
+rm 'tools/empalme/v110-selective/exact/runtime-exact-03d.b64'
+rm 'tools/empalme/v110-selective/parts/academia-part-00.patchpart'
+rm 'tools/empalme/v110-selective/parts/academia-part-01.patchpart'
+rm 'tools/empalme/v110-selective/parts/academia-part-02.patchpart'
+rm 'tools/empalme/v110-selective/parts/academia-part-03.patchpart'
+rm 'tools/empalme/v110-selective/parts/runtime-part-00.patchpart'
+rm 'tools/empalme/v110-selective/parts/runtime-part-01.patchpart'
+rm 'tools/empalme/v110-selective/parts/runtime-part-02.patchpart'
+rm 'tools/empalme/v110-selective/parts/runtime-part-03.patchpart'
+rm 'tools/empalme/v110-selective/run-empalme.py'
+rm 'tools/empalme/v110-exact/liquidacion.js.b64'
+rm 'tools/empalme/v110-exact/liquidacion.js.exact'
+rm 'tools/empalme/v110-exact/runtime-checksums.sha256'
+rm 'tools/empalme/export-current-11/READY'
+rm 'tools/empalme/export-current-11/output/MANIFEST.txt'
+rm 'tools/empalme/export-current-11/output/archive.sha256'
+rm 'tools/empalme/export-current-11/output/chunk-00'
+rm 'tools/empalme/export-current-11/output/chunk-01'
+rm 'tools/empalme/export-current-11/output/chunk-02'
+rm 'tools/empalme/export-current-11/output/chunk-03'
+rm 'tools/empalme/export-current-11/output/chunk-04'
+rm 'tools/empalme/export-current-11/output/chunk-05'
+rm 'tools/empalme/export-current-11/output/chunk-06'
+rm 'tools/empalme/export-current-11/output/chunk-07'
+rm 'tools/empalme/export-current-11/output/chunk-08'
+rm 'tools/empalme/export-current-11/output/problem/academia.js.gz.b64'
+rm 'tools/empalme/export-current-11/output/problem/academia.sha256'
+rm 'tools/empalme/export-current-11/output/problem/cliente-data.js.gz.b64'
+rm 'tools/empalme/export-current-11/output/problem/cliente-data.sha256'
+rm 'tools/empalme/export-current-11/output/problem/cliente.js.gz.b64'
+rm 'tools/empalme/export-current-11/output/problem/cliente.sha256'
+rm 'tools/empalme/export-current-11/output/problem/finanzas.js.gz.b64'
+rm 'tools/empalme/export-current-11/output/problem/finanzas.sha256'
+fatal: pathspec 'tools/empalme/v105-baseline-diagnostic.txt' did not match any files
+rm '.github/workflows/cxorbia-v110-selective-empalme.yml'
+rm '.github/workflows/cxorbia-v110-runtime-empalme.yml'
+rm '.github/workflows/cxorbia-export-current-11.yml'
+rm '.github/workflows/cxorbia-v105-baseline-diagnostic.yml'
+rm '.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'
+rm 'tools/empalme/run-v110-deterministic-final.sh'

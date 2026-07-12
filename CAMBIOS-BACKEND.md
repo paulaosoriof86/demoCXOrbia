@@ -169,3 +169,10 @@
 - Impacto Academia: explicar flujo local source-safe, no compartir datos privados, `.tmp` no commiteado, dry-run vs import/runtime/produccion.
 - Estado seguro: sin cambios en `/app/modules` o `/app/core`, no se pidio comando a Paula, builder no ejecutado, output local no commiteado, adapter no habilitado, sin runtime, sin import de dominios, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
 - Commits: `79d95c6d850dc0e48f8bcba6f6ac6d47ef62643e`, `63509895c99045739ed1f7c1328040a0597bdbec`, `db0cd24495be3b5bc01104a3e23e7a1874b2a79f`, `a9661875e8c09cf2ba6f8870cbb6ab9a6af45eb8`.
+
+## Empalme determinístico V110 — 2026-07-12
+
+- Baseline V105/build interno V106 reconstruida y delta V105→V110 aplicado sin heurísticas.
+- Identidad final: 67 archivos V110 exactos, 2 overrides locales protegidos y source lock unión regenerado.
+- Backend, source-safe, HR, importadores, R5/R6/R8/R9 y gates preservados.
+- Sin deploy, producción, imports, writes, providers ni pagos reales.

@@ -204,13 +204,19 @@ CX.module('usuarios', ({ui})=>{
     let savedUsers=null, savedRoles=null;
     try{ savedUsers=JSON.parse(localStorage.getItem(_U_KEY)||'null'); }catch(e){}
     try{ savedRoles=JSON.parse(localStorage.getItem(_UR_KEY)||'null'); }catch(e){}
-    _uState={users: savedUsers || [
+    /* Frontend gen\u00e9rico (correcci\u00f3n 20260711): bug real \u2014 estos 5 usuarios "demo" (incl. Admin
+       Demo, Evaluador 01, correos @demo.cxorbia) se sembraban SIN ning\u00fan gate de modo \u2014 aparec\u00edan
+       tambi\u00e9n fuera de demo. Ahora solo se siembran si CX.dataSource.showFixtures() es true; fuera
+       de demo, sin usuarios persistidos, la lista empieza vac\u00eda (estado honesto "pendiente
+       Auth/backend" en vez de fixtures con nombre y correo inventados). */
+    const _allowUserSeed = CX.dataSource ? CX.dataSource.showFixtures() : true;
+    _uState={users: savedUsers || (_allowUserSeed ? [
       {name:'Admin Demo',email:'admin@demo.cxorbia',rol:'super',activo:true},
       {name:'Coordinación',email:'coord@demo.cxorbia',rol:'admin',activo:true},
       {name:'Operaciones',email:'ops@demo.cxorbia',rol:'ops',activo:true},
       {name:'Evaluador 01',email:'evaluador01@demo.cxorbia',rol:'shopper',activo:true},
       {name:'Finanzas',email:'finanzas@demo.cxorbia',rol:'admin',activo:false},
-    ], customRoles: savedRoles || []};
+    ] : []), customRoles: savedRoles || []};
   }
   const st=_uState;
   const MODS=[['Operación','op'],['Finanzas','fin'],['Admin Proyecto','prj'],['Capacitación','cap'],['Configuración','cfg'],['Portal Shopper','sh'],['Comercial','com']];
@@ -258,6 +264,14 @@ CX.module('usuarios', ({ui})=>{
       <div style="margin-top:14px">${ui.aiBox('Marca/desmarca el acceso de cada rol a cada módulo. Los roles personalizados permiten segmentar por área: Coordinador, Comercial, Revisor, etc. En producción también se valida en el backend.','Gobierno · autoadministrable')}</div>
     </div>
     <div class="card card-p" style="margin-top:16px">
+      <div class="between" style="margin-bottom:12px"><div class="card-t">Acciones sensibles <span class="muted" style="font-weight:500;font-size:11px">· quién puede ejecutar cada acción</span></div><span class="bdg bdg-g" id="actSaved" style="display:none">✓ Guardado</span></div>
+      <p style="font-size:12px;color:var(--t3);margin-bottom:10px">Esto es distinto de la matriz de módulos de arriba: un rol puede VER un módulo pero no tener permiso para ejecutar una acción sensible dentro de él (marcar pagado, publicar un banco de certificación, aprobar una postulación…). Una acción no listada aquí queda bloqueada para todos salvo Super.</p>
+      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Acción</th>${roles.filter(r=>r.id!=='super').map(r=>`<th style="text-align:center">${r.label}</th>`).join('')}</tr></thead><tbody>
+      ${CX.permissions.ACTIONS.map(a=>{const cur=CX.permissions.matrix()[a]||[];return `<tr><td style="font-size:11.5px"><code>${a}</code></td>${roles.filter(r=>r.id!=='super').map(r=>`<td style="text-align:center"><input type="checkbox" class="actChk" data-action="${a}" data-role="${r.id}" ${cur.includes(r.id)?'checked':''}></td>`).join('')}</tr>`;}).join('')}
+      </tbody></table></div>
+      <div style="font-size:10.5px;color:var(--t3);margin-top:8px">Super siempre tiene todas las acciones registradas — no aparece en la tabla porque no se puede restringir. El contexto (proyecto/país asignado a un usuario) se valida ADEMÁS de esta matriz — un rol con la acción marcada aquí solo puede ejecutarla dentro de su propio scope si tiene uno asignado.</div>
+    </div>
+    <div class="card card-p" style="margin-top:16px">
       <div class="card-t" style="margin-bottom:4px">Personas operativas (taxonomía de negocio)</div>
       <p style="font-size:12px;color:var(--t3);margin-bottom:12px">La <b>persona</b> es el nombre visible de negocio (ej. "Representante de país"); el <b>rol técnico</b> y el <b>scope</b> son lo que realmente controla accesos. Referencia — asígnala al editar un usuario.</p>
       <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Persona</th><th>Rol técnico</th><th>Scope</th><th>Descripción</th></tr></thead><tbody>
@@ -301,6 +315,13 @@ CX.module('usuarios', ({ui})=>{
       if(c.checked){ if(!PERM[role].includes(mod))PERM[role].push(mod); } else { PERM[role]=PERM[role].filter(m=>m!==mod); }
       savePerm();
       const sv=host.querySelector('#permSaved'); if(sv){sv.style.display='';setTimeout(()=>sv.style.display='none',1500);}
+    }));
+    host.querySelectorAll('.actChk').forEach(c=>c.addEventListener('change',()=>{
+      const action=c.dataset.action, role=c.dataset.role;
+      const cur=CX.permissions.matrix()[action]||[];
+      const next = c.checked ? [...new Set([...cur,role])] : cur.filter(r=>r!==role);
+      CX.permissions.setActionRoles(action, next);
+      const sv=host.querySelector('#actSaved'); if(sv){sv.style.display='';setTimeout(()=>sv.style.display='none',1500);}
     }));
     host.querySelector('#addU').addEventListener('click',()=>ui.modal('Invitar usuario',`
       <div style="margin-bottom:12px"><label class="lbl">Nombre</label><input class="inp" id="nuName" placeholder="Nombre y apellido"></div>

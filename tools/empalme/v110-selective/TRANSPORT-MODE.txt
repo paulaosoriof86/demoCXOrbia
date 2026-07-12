@@ -1,1 +1,0 @@
-Exact patch transport verified; base bundle transport follows.

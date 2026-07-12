@@ -21,7 +21,7 @@ window.CX = window.CX || {};
       {id:'a_realizada',   evento:'realizada',   activa:true,  canal:'push',     to:'admin', titulo:'Visita realizada', plantilla:'{shopper} realizó {sucursal} · validar cuestionario'},
       {id:'a_cuestionario',evento:'cuestionario',activa:true,  canal:'push',     to:'admin', titulo:'Cuestionario realizado', plantilla:'{shopper} completó el cuestionario de {sucursal} · pendiente revisión (score {score})'},
       {id:'a_reprog',      evento:'reprog',      activa:true,  canal:'whatsapp', to:'admin', titulo:'Reprogramación solicitada', plantilla:'{shopper} pide reprogramar {sucursal}'},
-      {id:'a_pago',        evento:'pago',        activa:true,  canal:'whatsapp', to:'shopper', titulo:'Pago realizado', plantilla:'Tu liquidación de {sucursal} pasó a pagada'},
+      {id:'a_pago',        evento:'pago',        activa:true,  canal:'whatsapp', to:'shopper', titulo:'Pago registrado (preview)', plantilla:'Tu liquidación de {sucursal} quedó marcada como pagada en el sistema (preview) · confirmación bancaria real pendiente backend'},
       {id:'a_atraso',      evento:'atraso',      activa:true,  canal:'whatsapp', to:'admin', titulo:'Visita atrasada', plantilla:'{sucursal} sin avance · vence {fecha}'},
       {id:'a_aprobacion',  evento:'aprobacion',  activa:true,  canal:'whatsapp', to:'shopper', titulo:'Postulación aprobada', plantilla:'Tu visita a {sucursal} fue aprobada'},
       {id:'a_hr_writeback',evento:'hr_writeback', activa:true,  canal:'sheet',    to:'admin', titulo:'HR: escritura preparada', plantilla:'{sucursal}: {shopper} · {fecha} · {estado} (se reflejará cuando el sync backend esté activo)'},
@@ -29,13 +29,34 @@ window.CX = window.CX || {};
     ];
   }
 
-  /* ---------- Proveedor de IA (configurable · por defecto Gemini económico) ---------- */
+  /* ---------- Proveedor de IA (configurable · por defecto Gemini económico) ----------
+     P0 (paquete 20260710 — "proveedores fuera del navegador"): el prototipo NUNCA debe
+     llamar directo a un proveedor real de IA desde el navegador ni guardar su API key en
+     localStorage — eso expone la key a cualquiera con acceso al dispositivo/DevTools y es
+     exactamente lo que un backend/adapter autorizado debe intermediar. `ask()` por tanto
+     ya NO hace fetch a Gemini/OpenAI/Anthropic; siempre resuelve con un estado estructurado
+     y dispara la heurística local que cada módulo ya implementaba como fallback. La UI solo
+     registra "qué proveedor preferirías" (preferencia, no secreto) para que el backend real
+     sepa a quién enrutar cuando exista. */
   CX.ai = {
     _cfg:null,
-    defaults(){ return {provider:'', model:'', apiKey:'', endpoint:'', activa:false, cacheTpl:true}; },
-    cfg(){ if(this._cfg)return this._cfg; try{ this._cfg=Object.assign(this.defaults(), JSON.parse(localStorage.getItem('cx_ai')||'{}')); }catch(e){ this._cfg=this.defaults(); } return this._cfg; },
-    save(patch){ this._cfg=Object.assign(this.cfg(), patch||{}); try{ localStorage.setItem('cx_ai', JSON.stringify(this._cfg)); }catch(e){} },
-    ready(){ const c=this.cfg(); return c.activa && c.provider && (c.apiKey||c.endpoint); },
+    defaults(){ return {provider:'', model:'', activa:false, cacheTpl:true}; },
+    cfg(){ if(this._cfg)return this._cfg; try{ this._cfg=Object.assign(this.defaults(), JSON.parse(localStorage.getItem('cx_ai')||'{}')); }catch(e){ this._cfg=this.defaults(); }
+      /* migración: si un cx_ai de una versión anterior traía apiKey/endpoint guardados, se purgan al leer */
+      if(this._cfg.apiKey||this._cfg.endpoint){ delete this._cfg.apiKey; delete this._cfg.endpoint; try{localStorage.setItem('cx_ai',JSON.stringify(this._cfg));}catch(e){} }
+      return this._cfg; },
+    save(patch){ patch=Object.assign({},patch); delete patch.apiKey; delete patch.endpoint; /* nunca persistir secretos/endpoints desde el navegador */
+      this._cfg=Object.assign(this.cfg(), patch); try{ localStorage.setItem('cx_ai', JSON.stringify(this._cfg)); }catch(e){} },
+    /* P0.1 (V98 instrucciones exactas): separación real de significado —
+       - preferred(): el usuario ELIGIÓ un proveedor/modelo (preferencia guardada, nunca conexión).
+       - available(): existe un adapter backend CONFIRMADO y autorizado. Mientras no exista un
+         backend real, esto es SIEMPRE false — no hay excepción ni modo que lo cambie.
+       - ready(): alias de available() (no de preferred()) — así ningún módulo puede confundir
+         "el usuario tiene una preferencia" con "hay IA real conectada". Todo consumidor debe
+         ejecutar su heurística local directamente sin intentar ask() ni gatear en preferred(). */
+    preferred(){ const c=this.cfg(); return !!(c.activa && c.provider); },
+    available(){ return false; },
+    ready(){ return this.available(); },
     /* Lee un <input type=file> y devuelve Promise<string> con el texto para alimentar la IA.
        txt/csv/json → texto directo; PDF/imagen/doc → best-effort + nota del archivo. Reutilizable en TODA la plataforma. */
     readAttachment(inputEl){
@@ -58,34 +79,16 @@ window.CX = window.CX || {};
         resolve('\n\n[Documento adjunto: '+name+' — formato '+(f.type||'desconocido')+']');
       });
     },
-    /* Llamada REAL al proveedor configurado. Enruta a Gemini/OpenAI/Anthropic según provider.
-       Devuelve Promise<string>. Si no hay key, rechaza (los módulos caen a su heurística). */
+    /* ask() NUNCA se invoca por ningún módulo consumidor (todos ejecutan heurística local
+       directamente) — se conserva solo por compatibilidad de interfaz. Rechaza siempre con un
+       código estructurado, nunca hace fetch a un proveedor real desde el navegador. */
     ask(prompt, opts){
-      const c=this.cfg(); opts=opts||{};
-      if(!c.activa || !c.provider || !(c.apiKey||c.endpoint)) return Promise.reject(new Error('IA no configurada'));
-      const model=c.model||(this.PROVIDERS[c.provider]&&this.PROVIDERS[c.provider].modelos[0]);
-      try{
-        if(c.provider==='gemini'){
-          const url='https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+encodeURIComponent(c.apiKey);
-          return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})})
-            .then(r=>r.json()).then(j=>{const t=j&&j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts[0].text; if(!t)throw new Error('Sin respuesta'); return t;});
-        }
-        if(c.provider==='openai'){
-          return fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+c.apiKey},body:JSON.stringify({model:model,messages:[{role:'user',content:prompt}]})})
-            .then(r=>r.json()).then(j=>{const t=j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content; if(!t)throw new Error('Sin respuesta'); return t;});
-        }
-        if(c.provider==='anthropic'){
-          return fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':c.apiKey,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:model,max_tokens:opts.maxTokens||1500,messages:[{role:'user',content:prompt}]})})
-            .then(r=>r.json()).then(j=>{const t=j&&j.content&&j.content[0]&&j.content[0].text; if(!t)throw new Error('Sin respuesta'); return t;});
-        }
-        if(c.provider==='custom' && c.endpoint){
-          return fetch(c.endpoint,{method:'POST',headers:{'Content-Type':'application/json',...(c.apiKey?{'Authorization':'Bearer '+c.apiKey}:{})},body:JSON.stringify({prompt:prompt,model:model})})
-            .then(r=>r.json()).then(j=>j.text||j.output||j.response||JSON.stringify(j));
-        }
-      }catch(e){ return Promise.reject(e); }
-      return Promise.reject(new Error('Proveedor no soportado'));
+      const err=new Error('IA real gestionada solo por el backend/adapter autorizado — el navegador no llama proveedores directamente.');
+      err.code='AI_BACKEND_UNAVAILABLE';
+      return Promise.reject(err);
     },
-    /* Catálogo SIN sesgo: cada consultora elige el modelo por costo/beneficio.
+    /* Catálogo SIN sesgo: cada consultora elige el modelo por costo/beneficio (solo referencia
+       informativa para el backend — el navegador no la usa para conectarse a nada).
        costo = índice relativo de costo por 1M tokens (1=más barato). */
     PROVIDERS:{
       gemini:{label:'Google Gemini', modelos:['gemini-2.0-flash','gemini-1.5-flash','gemini-1.5-flash-8b','gemini-1.5-pro'], costo:1, fuerte:'Costo bajo + multimodal + tokens largos', ideal:'Operación diaria, importadores, alto volumen'},
@@ -115,7 +118,7 @@ window.CX = window.CX || {};
           result = opts.onRegen ? opts.onRegen(instr, result) : result;
           ov.querySelector('#aiPrev').innerHTML=preview(result);
           ov.querySelector('#aiInstr').value='';
-          ui.toast(CX.ai&&CX.ai.ready()?'Regenerado con IA':'Ajustado (configura Gemini para refinamiento real)','ok');
+          ui.toast('Ajustado (heurística local · sin proveedor de IA real conectado)','ok');
           wire();
         });
         ov.querySelector('#aiAccept').addEventListener('click',()=>{ close(); opts.onAccept&&opts.onAccept(result); });
@@ -156,10 +159,66 @@ window.CX = window.CX || {};
 
     /* tenant activo (cada consultora guarda SUS propios webhooks) */
     tenantId(){ try{ return (CX.session&&CX.session.tenant)|| (CX.theme&&CX.theme.active&&CX.theme.active())||'default'; }catch(e){ return 'default'; } },
+    /* P0-3 (paquete genérico 20260711 — "integraciones/automatizaciones honestas"):
+       ELIMINADO el input de webhook por automatización y cualquier generador local de
+       `ref_...` usado para aparentar una conexión. Un webhook real es un endpoint privado que
+       SOLO el backend puede emitir y validar — el navegador no fabrica ninguna referencia que
+       simule "ya está conectado". Lo único que este prototipo puede registrar es la INTENCIÓN
+       del tenant de conectar Make ("quiero conectar esto cuando exista backend"), como un
+       booleano simple sin ningún valor que parezca una credencial o referencia de conexión.
+       `connectionRef` solo existiría si un backend real lo emitiera — aquí siempre es null. */
     _hooks(){ try{ return JSON.parse(localStorage.getItem(LS_HOOK)||'{}'); }catch(e){ return {}; } },
-    /* hook efectivo: override por automatación > webhook del tenant */
-    hook(autoId){ const h=this._hooks(); if(autoId){ const a=this.list().find(x=>x.id===autoId); if(a&&a.hook) return a.hook; } if(typeof h==='string') return h; return h[this.tenantId()]||''; },
-    setHook(url){ const h=this._hooks(); const map=(typeof h==='string')?{}:h; map[this.tenantId()]=url||''; try{ localStorage.setItem(LS_HOOK, JSON.stringify(map)); }catch(e){} },
+    /* true si el tenant marcó la intención de conectar Make — NUNCA implica que hay conexión real */
+    hookRequested(){ const h=this._hooks(); const map=(typeof h==='string')?{}:h; return !!(map[this.tenantId()]&&map[this.tenantId()].requested); },
+    /* connectionRef: SOLO un backend real puede emitirlo. Aquí siempre null — no se fabrica. */
+    connectionRef(){ return null; },
+    /* Bloque 2 (auditoría V100 — corrección exacta): antes hookConfigured() era un alias de
+       hookRequested(), mezclando "el tenant pidió conectar" con "está configurado" — dos cosas
+       distintas. Ahora hookConfigured() depende EXCLUSIVAMENTE de connectionRef(), que en este
+       prototipo siempre es null → hookConfigured() siempre es false, sin excepción, hasta que
+       exista un backend real que emita una referencia de conexión. */
+    hookConfigured(){ return Boolean(this.connectionRef()); },
+    /* estados canónicos separados (Bloque 2): requested → pending_backend; sin solicitud →
+       not_requested; configurado real (con connectionRef) → configured; nunca 'connected' sin
+       confirmación explícita de un adapter, que este prototipo no tiene. */
+    hookStatus(){
+      if(this.connectionRef()) return 'configured';
+      return this.hookRequested() ? 'pending_backend' : 'not_requested';
+    },
+    setHookRequested(wantsConnect){
+      const h=this._hooks(); const map=(typeof h==='string')?{}:h;
+      map[this.tenantId()]={ requested: !!wantsConnect };
+      try{ localStorage.setItem(LS_HOOK, JSON.stringify(map)); }catch(e){}
+    },
+    /* P0.2 (V98) + P0-3 (20260711): purga irreversible de CUALQUIER secreto o referencia local
+       heredada — incluye el formato antiguo `{set,ref}` (que fabricaba un `ref_...` local) y
+       cualquier webhook por automatización (`a.hook`/`a.hookSet`/`a.hookRef`). Nunca conserva ni
+       transforma el valor previo en una nueva referencia — lo descarta y dejar solo la intención
+       (`requested`) en `false` por defecto tras la purga. Idempotente. */
+    _purgeLegacySecrets(){
+      try{
+        const raw=localStorage.getItem(LS_HOOK);
+        if(raw){
+          const h=JSON.parse(raw);
+          let migrated={};
+          if(typeof h==='string'){ migrated[this.tenantId()]={requested:false}; }
+          else if(h && typeof h==='object'){
+            Object.keys(h).forEach(tid=>{
+              const v=h[tid];
+              /* formato legado string, o {set,ref}/{set:...,ref:'ref_...'} → nunca conservar el ref, solo la intención si estaba marcada */
+              if(typeof v==='string'){ migrated[tid]={requested:false}; }
+              else if(v && typeof v==='object'){ migrated[tid]={requested: !!(v.requested||v.set)}; }
+            });
+          }
+          localStorage.setItem(LS_HOOK, JSON.stringify(migrated));
+        }
+      }catch(e){}
+      try{
+        const list=this.list(); let changed=false;
+        list.forEach(a=>{ if(a.hook||a.hookSet||a.hookRef){ delete a.hook; delete a.hookSet; delete a.hookRef; changed=true; } });
+        if(changed) this.save(list);
+      }catch(e){}
+    },
 
     log(){ try{ return JSON.parse(localStorage.getItem(LS_LOG)||'[]'); }catch(e){ return []; } },
     _pushLog(rec){ try{ const l=this.log(); l.unshift(rec); localStorage.setItem(LS_LOG, JSON.stringify(l.slice(0,40))); }catch(e){} },
@@ -175,7 +234,7 @@ window.CX = window.CX || {};
         // canal externo: modo honesto según configuración (sin envíos reales sin backend)
         if(a.canal && a.canal!=='push'){
           const estado = a.canal==='whatsapp_web' ? 'plantilla lista (abrir WhatsApp Web manualmente)' : 'preparado · pendiente de activación backend';
-          this._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '), canal:(this.CANALES[a.canal]||a.canal), evento, titulo:a.titulo, txt, estado, hook:this.hook(a.id)||'(sin webhook · se registra al conectar backend)'});
+          this._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '), canal:(this.CANALES[a.canal]||a.canal), evento, titulo:a.titulo, txt, estado, hookStatus:this.hookStatus()});
         }
       });
     },
@@ -201,4 +260,5 @@ window.CX = window.CX || {};
       return {alertas:n, ...s};
     },
   };
+  CX.automations._purgeLegacySecrets();
 })();

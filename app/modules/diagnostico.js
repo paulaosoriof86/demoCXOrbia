@@ -92,7 +92,7 @@ CX.diagStore = CX.diagStore || {
       { id:'admin-config',    n:'Admin configurability',      gate:'off',   nota:'reglas/NDA/planes/roles versionables — sin sobre-escritura silenciosa' },
       { id:'conflict-review', n:'Conflict review / readiness', gate:'preview',nota:'bandeja accionable (preview) con severidad, auditRef y motivo obligatorio · aplicación real pendiente de backend' },
       { id:'synthetic-run',   n:'Synthetic input pack runner', gate:'preview',nota:'fixtures sintéticas — no datos reales' },
-      { id:'q-routing',       n:'Questionnaire routing',       gate:'off',   nota:'CXOrbia / TyAOnline / externo / general / HR por visita' },
+      { id:'q-routing',       n:'Questionnaire routing',       gate:'off',   nota:'CXOrbia / plataforma externa / externo / general / HR por visita' },
       { id:'visit-lifecycle', n:'Visit lifecycle',             gate:'off',   nota:'realizada ≠ cuestionario ≠ submitido ≠ pago' },
       { id:'settle-elig',     n:'Settlement eligibility',      gate:'off',   nota:'elegibilidad → liquidación → lote → pago (pendiente)' },
       { id:'evidence-store',  n:'Evidence storage',            gate:'off',   nota:'sin adjuntos crudos/base64 — Storage pendiente de gate' },
@@ -103,7 +103,7 @@ CX.diagStore = CX.diagStore || {
       { id:'phase-a',         n:'Phase A operativa',           gate:'preview',nota:'HR fuente operacional · histórico control · seed configurable por tenant/proyecto · multi-proyecto' },
       { id:'hr-keys',         n:'HR ↔ plataforma (llaves)',    gate:'off',   nota:'tenantId·projectId·visitId/hrRowId·shopperId·assignmentSource·assignmentSyncStatus·lastSyncedAt' },
       { id:'settle-fields',   n:'Liquidación / Mis beneficios',gate:'off',   nota:'honorario·boleto·combo·reembolso·total·estado·lote — sin banco/DPI/NDA' },
-      { id:'q-sources',       n:'Cuestionarios / certif.',     gate:'off',   nota:'CXOrbia/TyAOnline/externo/general/HR por visita · certificaciones presentadas conservadas · no autoaprobar' },
+      { id:'q-sources',       n:'Cuestionarios / certif.',     gate:'off',   nota:'CXOrbia/plataforma externa/externo/general/HR por visita · certificaciones presentadas conservadas · no autoaprobar' },
       { id:'evidence-types',  n:'Evidencias / tipos',          gate:'off',   nota:'tipos requeridos · estados honestos · sin base64/adjuntos crudos' },
       { id:'sensitive',       n:'Datos sensibles (política)',  gate:'human', nota:'sin DPI/banco/NDA firmado/tokens/webhooks/URLs privadas — solo referencias opacas' },
     ];
@@ -155,7 +155,29 @@ CX.module('diagnostico', ({data, ui})=>{
       No ejecuta import/sync/pago/envío real y no expone datos sensibles (referencias opacas).
     </div>`;
 
-  const tabs = [['runner','🧪 Synthetic runner'],['readiness','📊 Readiness'],['conflictos','⚖️ Conflictos'],['contratos','🔌 Contratos & gates'],['gonogo','✅ GO/NO-GO']];
+  const tabs = [['runner','🧪 Synthetic runner'],['readiness','📊 Readiness'],['conflictos','⚖️ Conflictos'],['contratos','🔌 Contratos & gates'],['gonogo','✅ GO/NO-GO'],['fuente','🔗 Modo de datos']];
+
+  const fuenteView = ()=>{
+    const ds=CX.dataSource||{mode:'demo',status:'ready',warnings:[],blockers:[],updatedAt:''};
+    const canSee = CX.session.canSeeProtectedData ? CX.session.canSeeProtectedData() : (CX.session.role==='super');
+    const st={ready:'g',blocked:'r',degraded:'a',loading:'b',error:'r'}[ds.status]||'n';
+    return `
+      <div class="card card-p" style="margin-bottom:14px">
+        <div class="between" style="margin-bottom:10px"><div class="card-t">Modo de datos activo</div>${ui.bdg(ds.label?ds.label():ds.mode,'b')} ${ui.bdg(ds.statusLabel?ds.statusLabel():ds.status,st)}</div>
+        <p style="font-size:12px;color:var(--t3);margin-bottom:10px">Máquina única de modo de datos (demo / source-safe preview / connected). Solo un modo puede estar activo. Fuera de demo, sin fuente/adapter real conectado, la app se bloquea en vez de mostrar seeds de demo en silencio.</p>
+        ${canSee?`
+          <div style="font-size:11.5px;color:var(--t3);margin-bottom:8px">sourceRef: <b>${ds.sourceRef||'(ninguno)'}</b> · última resolución: ${ds.updatedAt?ds.updatedAt.slice(0,19).replace('T',' '):'—'} · BUILD_ID: <b>${(window.CX&&CX.BUILD_ID)||'—'}</b></div>
+          ${ds.warnings&&ds.warnings.length?`<div style="background:var(--amber-bg,#fff7e6);border-radius:8px;padding:8px 11px;font-size:11.5px;color:#8a5b00;margin-bottom:8px">${ds.warnings.map(w=>'⚠️ '+w).join('<br>')}</div>`:''}
+          ${ds.blockers&&ds.blockers.length?`<div style="background:#fee2e2;border-radius:8px;padding:8px 11px;font-size:11.5px;color:#991b1b;margin-bottom:8px">${ds.blockers.map(b=>'⛔ '+b).join('<br>')}</div>`:''}
+          <div class="flex" style="gap:8px;margin-top:10px">
+            <button class="btn btn-sm ${ds.mode==='demo'?'btn-pr':'btn-ghost'}" data-mode="demo">Demo</button>
+            <button class="btn btn-sm ${ds.mode==='source_safe_preview'?'btn-pr':'btn-ghost'}" data-mode="source_safe_preview">Source-safe (preview)</button>
+            <button class="btn btn-sm ${ds.mode==='connected'?'btn-pr':'btn-ghost'}" data-mode="connected">Conectado</button>
+          </div>
+          <div style="font-size:10.5px;color:var(--t3);margin-top:8px">Cambiar de modo recarga la app. Source-safe/Conectado mostrarán la pantalla de bloqueo honesta hasta que exista un bridge/adapter backend real.</div>
+        `:`<div style="font-size:11.5px;color:var(--t3)">Detalle técnico visible solo para roles con acceso a diagnóstico sensible.</div>`}
+      </div>`;
+  };
 
   const runnerView = ()=>{
     const packs = CX.diagStore.runnerPacks();
@@ -281,7 +303,7 @@ CX.module('diagnostico', ({data, ui})=>{
   };
 
   const draw = ()=>{
-    const body = tab==='runner'?runnerView():tab==='readiness'?readinessView():tab==='conflictos'?conflictosView():tab==='gonogo'?gonogoView():contratosView();
+    const body = tab==='runner'?runnerView():tab==='readiness'?readinessView():tab==='conflictos'?conflictosView():tab==='gonogo'?gonogoView():tab==='fuente'?fuenteView():contratosView();
     host.innerHTML = `
       ${ui.ph('Diagnóstico & Readiness', 'Vista preview de runners, readiness, conflictos y gates — sin ejecución real')}
       ${banner}
@@ -290,6 +312,12 @@ CX.module('diagnostico', ({data, ui})=>{
       </div>
       ${body}`;
     host.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;draw();}));
+    host.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{
+      if(!CX.permissions.gate('diagnostics.viewSensitive',CX.permissions.ctx(),ui)) return;
+      CX.dataSource.setMode(b.dataset.mode);
+      ui.toast('Modo de datos → '+CX.dataSource.label()+' · recargando…','ok',1800);
+      setTimeout(()=>location.reload(),400);
+    }));
     const run=host.querySelector('#dgRun'); if(run)run.addEventListener('click',()=>ui.toast('Ejecución preview · los resultados reales los escribe el backend cuando el gate esté activo','',3800));
     host.querySelectorAll('[data-cfl]').forEach(b=>b.addEventListener('click',()=>{
       const id=b.dataset.cfl;
@@ -311,6 +339,7 @@ CX.module('diagnostico', ({data, ui})=>{
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="cflOk">Registrar decisión</button></div>
       `,{onMount:(ov,close)=>{
         ov.querySelector('#cflOk').addEventListener('click',()=>{
+          if(!CX.permissions.gate('conflict.resolve',CX.permissions.ctx(),ui)) return;
           const motivo=(ov.querySelector('#cflMot').value||'').trim();
           if(!motivo){ ui.toast('El motivo es obligatorio','warn'); return; }
           const dec=ov.querySelector('#cflDec').value;

@@ -4,15 +4,17 @@
 CX.cliUI = {
   TONE_VAR:{g:'var(--green)',b:'var(--brand)',a:'var(--amber)',r:'var(--red)'},
 
-  /* anillo de score con conic-gradient */
+  /* anillo de score con conic-gradient — Bloque 1 (auditoría V100): si v es null (sin score real
+     fuera de demo), NUNCA se dibuja un anillo con un número fabricado — se muestra "sin fuente". */
   donut(v,size=72){
+    if(v==null){ return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--panel-2);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:${size*0.14}px;color:var(--t3);text-align:center;line-height:1.1">Sin<br>fuente</span></div>`; }
     const C=CX.clienteData, col=this.TONE_VAR[C.tone(v)];
     return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:conic-gradient(${col} ${v*3.6}deg,var(--panel-2) 0);display:flex;align-items:center;justify-content:center;flex-shrink:0">
       <div style="width:${size-14}px;height:${size-14}px;border-radius:50%;background:var(--panel);display:flex;align-items:center;justify-content:center;flex-direction:column">
         <b style="font-size:${size*0.28}px;font-family:var(--disp);color:${col};line-height:1">${v}</b>
         <span style="font-size:${size*0.12}px;color:var(--t3)">/100</span></div></div>`;
   },
-  pill(v){ const C=CX.clienteData; return `<span class="bdg bdg-${C.tone(v)}">${C.label(v)} · ${v}</span>`; },
+  pill(v){ if(v==null) return CX.ui.statusBdg('pending_source'); const C=CX.clienteData; return `<span class="bdg bdg-${C.tone(v)}">${C.label(v)} · ${v}</span>`; },
   delta(d){ if(!d) return `<span style="color:var(--t3);font-size:12px">—</span>`;
     const up=d>0; return `<span style="font-size:12px;font-weight:700;color:${up?'var(--green)':'var(--red)'}">${up?'▲':'▼'} ${Math.abs(d)} pts</span>`; },
 
@@ -49,8 +51,19 @@ CX.cliUI = {
     });
   },
 
-  /* visitas sintéticas de una sucursal (determinísticas) para histórico/evidencia */
+  /* Bloque A (auditoría V101 — 20260711): fuera de modo demo, esta función fabricaba SIEMPRE un
+     histórico de visitas (fecha/escenario/score/shopper determinísticos) sin ningún guard —
+     incluso para sucursales con datos reales (real:true). Ahora: si hay visitas reales del
+     proyecto/sucursal, se derivan de CX.data._visitas; si no hay y estamos fuera de demo, se
+     devuelve un array vacío (la UI debe mostrar "sin histórico", nunca inventar filas). */
   branchVisits(suc){
+    const real=(CX.data._visitas||[]).filter(v=>v.projectId===CX.data.project().id && v.sucursal===suc.name && (v.realizada||v.agendada));
+    if(real.length){
+      return real.map(v=>({fecha:v.realizada||v.agendada||'', escenario:v.escenario||'—', score:typeof v.score==='number'?v.score:null, shopper:v.shopper||'—'}))
+        .sort((a,b)=>b.fecha.localeCompare(a.fecha));
+    }
+    const allowSynthetic = CX.dataSource ? CX.dataSource.showFixtures() : true;
+    if(!allowSynthetic) return [];
     let s=0; for(let i=0;i<suc.id.length;i++)s=(s*31+suc.id.charCodeAt(i))|0; s=Math.abs(s)+3;
     const rnd=()=>(s=s*16807%2147483647)/2147483647;
     const esc=(CX.data.project().scenarios)||['Visita estándar'];
@@ -80,12 +93,12 @@ CX.cliUI = {
         <div class="flex" style="gap:14px">${this.donut(suc.score,76)}
           <div><div class="card-t" style="font-size:16px">${suc.name}</div>
           <div style="font-size:12px;color:var(--t3)">${CX.paisFlag(suc.pais)} ${suc.ciudad} · ${suc.region}</div>
-          <div style="font-size:12px;color:var(--t2);margin-top:3px">Responsable: <b>${suc.responsable}</b></div>
+          <div style="font-size:12px;color:var(--t2);margin-top:3px">Responsable: <b>${suc.responsable||'—'}</b></div>
           <div style="margin-top:6px">${this.pill(suc.score)} ${this.delta(suc.delta)}</div></div></div>
       </div>
       <div class="grid g4" style="margin-bottom:16px">
-        ${ui.kpi('Visitas',suc.visitas,'b')}${ui.kpi('NPS',suc.nps,'p')}
-        ${ui.kpi('vs. periodo previo',(suc.delta>0?'+':'')+suc.delta,suc.delta>=0?'g':'r','pts')}${ui.kpi('Última visita',suc.lastVisit.slice(5),'n')}
+        ${ui.kpi('Visitas',suc.visitas,'b')}${ui.kpi('NPS',suc.nps!=null?suc.nps:CX.ui.statusBdg('pending_source'),'p')}
+        ${ui.kpi('vs. periodo previo',suc.delta!=null?(suc.delta>0?'+':'')+suc.delta:CX.ui.statusBdg('pending_source'),suc.delta>=0?'g':'r','pts')}${ui.kpi('Última visita',suc.lastVisit?suc.lastVisit.slice(5):ui.statusBdg('pending_source'),'n')}
       </div>
       <div class="card-t" style="font-size:13px;margin-bottom:10px">Score por sección (ponderado)</div>
       ${secRows}
@@ -213,9 +226,18 @@ window.cliTablon = function(ui){
 CX.module('cli_dashboard', ({ui})=>{
   const C=CX.clienteData, p=CX.data.project();
   const list=C.scoped(p), R=C.resumen(list);
-  const distrib=[['Excelente','g',list.filter(s=>s.score>=85).length],['Bueno','b',list.filter(s=>s.score>=75&&s.score<85).length],
-    ['En atención','a',list.filter(s=>s.score>=65&&s.score<75).length],['Crítico','r',list.filter(s=>s.score<65).length]];
-  const tot=list.length||1;
+  const hasBranches = list.length>0;
+  /* T3 (paquete V109 — 20260712, corrección P0): un solo helper decide qué es un score válido
+     y en qué banda cae — CX.clienteData.band()/validScore(). V108 usaba `typeof==='number'`
+     (acepta NaN/Infinity) y DOS umbrales de "crítico" distintos entre la distribución (<65) y
+     el KPI/drill (<70). Ahora withScore/pending y las 4 bandas salen de la MISMA fuente en
+     TODAS las vistas (distribución, KPI, drill, capacitación). */
+  const withScore=list.filter(s=>s.hasScore!==false && C.validScore(s.score));
+  const pending=list.filter(s=>s.hasScore===false || !C.validScore(s.score));
+  const hasScored = withScore.length>0;
+  const distrib=[['Excelente','g',withScore.filter(s=>C.band(s.score).key==='excelente').length],['Bueno','b',withScore.filter(s=>C.band(s.score).key==='bueno').length],
+    ['En atención','a',withScore.filter(s=>C.band(s.score).key==='atencion').length],['Crítico','r',withScore.filter(s=>C.band(s.score).key==='critico').length]];
+  const tot=withScore.length||1;
   const rankRow=(s,i)=>`<div class="card hov flex" data-suc="${s.id}" style="padding:10px 12px;gap:10px;cursor:pointer">
     <b style="width:18px;color:var(--t3);font-family:var(--disp)">${i+1}</b>
     <div style="flex:1;min-width:0"><b style="font-size:13px">${s.name}</b><div style="font-size:11px;color:var(--t3)">${s.region}</div></div>
@@ -227,10 +249,13 @@ CX.module('cli_dashboard', ({ui})=>{
     document.getElementById('cliSopBtn')?.addEventListener('click',()=>window.cliSupPort&&window.cliSupPort());
     document.getElementById('cliTabBtn')?.addEventListener('click',()=>window.cliTablon&&window.cliTablon(ui));
     const sucList=(arr,title)=>ui.modal(title+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Región</th><th>Score</th><th>Δ</th></tr></thead><tbody>${arr.map(s=>`<tr class="hov" data-sk="${s.id}" style="cursor:pointer"><td><b>${s.name}</b></td><td style="font-size:12px">${s.region}</td><td>${CX.cliUI.pill(s.score)}</td><td>${CX.cliUI.delta(s.delta)}</td></tr>`).join('')}</tbody></table>`:CX.ui.empty('🏪','Sin sucursales en esta categoría.'),{onMount:(ov,close)=>ov.querySelectorAll('[data-sk]').forEach(tr=>tr.addEventListener('click',()=>{close();const s=C.sucursales(p).find(x=>x.id===tr.dataset.sk);if(s)CX.cliUI.branchModal(s);}))});
-    const ckMap={nps:()=>ui.modal('NPS de marca',`<p style="font-size:13px;color:var(--t2);line-height:1.7">El NPS (${R.nps}) resume la propensión a recomendar derivada de los cuestionarios. Sube cuando cierras brechas en las secciones débiles y reduces sucursales críticas.</p>`),
-      exc:()=>sucList(list.filter(s=>s.score>=85),'Sucursales excelentes'),
-      crit:()=>sucList(list.filter(s=>s.score<70),'Sucursales críticas'),
-      mej:()=>sucList(list.filter(s=>(s.delta||0)>0),'Sucursales mejorando')};
+    const ckMap={nps:()=>ui.modal('NPS de marca',R.nps!=null?`<p style="font-size:13px;color:var(--t2);line-height:1.7">El NPS (${R.nps}) resume la propensión a recomendar derivada de los cuestionarios. Sube cuando cierras brechas en las secciones débiles y reduces sucursales críticas.</p>`:CX.ui.empty('📊','Todavía no hay cuestionarios reales suficientes para calcular el NPS de marca.')),
+      exc:()=>sucList(withScore.filter(s=>C.band(s.score).key==='excelente'),'Sucursales excelentes'),
+      /* T3: el drill de "críticas" usa la MISMA banda (<70) que el KPI y la distribución —
+         ya no puede haber un total distinto entre vistas. */
+      crit:()=>sucList(withScore.filter(s=>C.band(s.score).key==='critico'),'Sucursales críticas'),
+      mej:()=>sucList(withScore.filter(s=>(s.delta||0)>0),'Sucursales mejorando'),
+      pend:()=>sucList(pending,'Pendientes de evaluación')};
     document.querySelectorAll('#cliKpis [data-ck]').forEach(el=>el.addEventListener('click',()=>ckMap[el.dataset.ck]&&ckMap[el.dataset.ck]()));
     const rr=C.realResults(p);
     const liveEl=document.getElementById('cliLive'); if(liveEl&&rr.count) liveEl.addEventListener('click',()=>{
@@ -249,6 +274,19 @@ CX.module('cli_dashboard', ({ui})=>{
       </div>
     </div>` : '';
 
+  if(!hasBranches){
+    return `
+      ${ui.ph('Panorama de '+p.name, 'Resultados de la marca · score ponderado por programa')}
+      ${CX.cliUI.personaBarHTML()}
+      <div class="card card-p">${CX.ui.empty('🏬','Todavía no hay sucursales ni visitas registradas para este proyecto. En cuanto haya datos de operación (o carga de fuente), el panorama se completa aquí — sin cifras inventadas mientras tanto.')}</div>`;
+  }
+  const fortalezaBrechaBlock = (R.mejorSeccion && R.peorSeccion) ? `
+        <div class="flex" style="gap:10px;margin-bottom:12px">
+          <div class="kpi g" style="flex:1"><div class="k-l">Más fuerte</div><div class="k-v" style="font-size:16px">${R.mejorSeccion.sec.name}</div><div class="k-s">${R.mejorSeccion.val}/100</div></div>
+          <div class="kpi r" style="flex:1"><div class="k-l">Mayor brecha</div><div class="k-v" style="font-size:16px">${R.peorSeccion.sec.name}</div><div class="k-s">${R.peorSeccion.val}/100</div></div>
+        </div>
+        ${ui.aiBox('La brecha en "'+R.peorSeccion.sec.name+'" arrastra el score. Sugiero un plan de acción + capacitación dirigida y reevaluar en 30 días.','Recomendación')}
+      ` : CX.ui.empty('📊','Todavía no hay suficientes cuestionarios reales para calcular fortalezas y brechas por sección.');
   return `
     ${ui.ph('Panorama de '+p.name, 'Resultados de la marca · score ponderado por programa')}
     <div class="between" style="margin-bottom:16px"><div></div><div class="flex" style="gap:8px">
@@ -265,28 +303,25 @@ CX.module('cli_dashboard', ({ui})=>{
           <div style="margin-top:8px">${CX.cliUI.pill(R.score)}</div></div>
       </div>
       <div class="grid g2" style="flex:2;min-width:300px;gap:12px" id="cliKpis">
-        <div data-ck="nps" style="cursor:pointer">${ui.kpi('NPS de marca',R.nps,'p')}</div>
+        <div data-ck="nps" style="cursor:pointer">${ui.kpi('NPS de marca',R.nps!=null?R.nps:CX.ui.statusBdg('pending_source'),'p')}</div>
         <div data-ck="exc" style="cursor:pointer">${ui.kpi('Excelentes',R.excelentes,'g','score ≥ 85')}</div>
         <div data-ck="crit" style="cursor:pointer">${ui.kpi('Sucursales críticas',R.criticas,'r','score < 70')}</div>
         <div data-ck="mej" style="cursor:pointer">${ui.kpi('Mejorando',R.mejora,'b','vs. periodo previo')}</div>
+        ${pending.length?`<div data-ck="pend" style="cursor:pointer;grid-column:1/3">${ui.kpi('Pendientes de evaluación',pending.length,'n','sin cuestionario confirmado — no cuentan en niveles')}</div>`:''}
       </div>
     </div>
     <div class="grid g2" style="gap:16px;margin-bottom:16px">
       <div class="card card-p"><div class="card-h"><div class="card-t">🏆 Mejores sucursales</div></div>
-        <div class="grid" style="gap:8px">${R.top.map(rankRow).join('')}</div></div>
+        <div class="grid" style="gap:8px">${R.top.length?R.top.map(rankRow).join(''):CX.ui.empty('🏆','Sin sucursales con score real todavía.')}</div></div>
       <div class="card card-p"><div class="card-h"><div class="card-t">⚠ Requieren atención</div></div>
-        <div class="grid" style="gap:8px">${R.bottom.map(rankRow).join('')}</div></div>
+        <div class="grid" style="gap:8px">${R.bottom.length?R.bottom.map(rankRow).join(''):CX.ui.empty('✅','Sin sucursales con score real todavía.')}</div></div>
     </div>
     <div class="grid g2" style="gap:16px">
       <div class="card card-p"><div class="card-h"><div class="card-t">Distribución por nivel</div></div>
-        ${distrib.map(d=>ui.bar(Math.round(d[2]/tot*100),d[0],d[2])).join('')}
+        ${hasScored?distrib.map(d=>ui.bar(Math.round(d[2]/tot*100),d[0],d[2])).join(''):CX.ui.empty('📊','Sin scores reales todavía para distribuir por nivel.')}
       </div>
       <div class="card card-p"><div class="card-h"><div class="card-t">Fortalezas y brechas (por sección)</div></div>
-        <div class="flex" style="gap:10px;margin-bottom:12px">
-          <div class="kpi g" style="flex:1"><div class="k-l">Más fuerte</div><div class="k-v" style="font-size:16px">${R.mejorSeccion.sec.name}</div><div class="k-s">${R.mejorSeccion.val}/100</div></div>
-          <div class="kpi r" style="flex:1"><div class="k-l">Mayor brecha</div><div class="k-v" style="font-size:16px">${R.peorSeccion.sec.name}</div><div class="k-s">${R.peorSeccion.val}/100</div></div>
-        </div>
-        ${ui.aiBox('La brecha en "'+R.peorSeccion.sec.name+'" arrastra el score. Sugiero un plan de acción + capacitación dirigida y reevaluar en 30 días.','Recomendación')}
+        ${fortalezaBrechaBlock}
       </div>
     </div>`;
 });
@@ -299,7 +334,7 @@ CX.module('cli_sucursales', ({ui})=>{
     <div class="flex" style="gap:12px">${CX.cliUI.donut(s.score,58)}
       <div style="flex:1;min-width:0"><b style="font-size:13.5px">${s.name}</b>
         <div style="font-size:11px;color:var(--t3)">${CX.paisFlag(s.pais)} ${s.ciudad} · ${s.region}</div>
-        <div style="font-size:11px;color:var(--t2);margin-top:3px">${s.responsable} · ${s.visitas} visitas</div>
+        <div style="font-size:11px;color:var(--t2);margin-top:3px">${s.responsable||'—'} · ${s.visitas} visitas</div>
         <div style="margin-top:6px">${CX.cliUI.delta(s.delta)}</div></div></div></div>`;
 
   const regions=C.regions(p);
@@ -310,9 +345,9 @@ CX.module('cli_sucursales', ({ui})=>{
     bind();
     const q=document.getElementById('cliSearch'), reg=document.getElementById('cliReg'), ord=document.getElementById('cliOrd');
     const apply=()=>{ let L=all.slice();
-      const t=(q.value||'').toLowerCase().trim(); if(t)L=L.filter(s=>(s.name+s.ciudad+s.region+s.responsable).toLowerCase().includes(t));
+      const t=(q.value||'').toLowerCase().trim(); if(t)L=L.filter(s=>(s.name+s.ciudad+s.region+(s.responsable||'')).toLowerCase().includes(t));
       if(reg.value)L=L.filter(s=>s.region===reg.value);
-      if(ord.value==='peor')L.sort((a,b)=>a.score-b.score); else if(ord.value==='mejor')L.sort((a,b)=>b.score-a.score);
+      if(ord.value==='peor')L.sort((a,b)=>(a.score??999)-(b.score??999)); else if(ord.value==='mejor')L.sort((a,b)=>(b.score??-1)-(a.score??-1));
       render(L); bind(); };
     [q,reg,ord].forEach(e=>e&&e.addEventListener('input',apply));
   },0);

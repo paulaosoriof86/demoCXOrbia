@@ -13,7 +13,11 @@ CX.module('cli_capacitacion', ({ui})=>{
     cierre:['Cierre y fidelización','Venta cruzada efectiva'],
   };
   const gaps=R.secAvg.slice(0,3); // 3 secciones más débiles
-  const needTraining=list.filter(s=>s.score<70);
+  /* T3 (paquete V109): mismo helper CX.clienteData.band()/validScore() que el resto del
+     Portal Cliente — crítico es SIEMPRE <70 en toda la app, y NaN/Infinity nunca cuentan
+     como score válido. */
+  const needTraining=list.filter(s=>s.hasScore!==false && C.validScore(s.score) && C.band(s.score).key==='critico');
+  const hasGaps = R.peorSeccion!=null;
 
   setTimeout(()=>{ CX.cliUI.wirePersona();
     document.querySelectorAll('[data-asig]').forEach(b=>b.addEventListener('click',()=>CX.ui.toast('Capacitación asignada: '+b.dataset.asig,'ok')));
@@ -33,12 +37,12 @@ CX.module('cli_capacitacion', ({ui})=>{
     ${CX.cliUI.personaBarHTML()}
     <div class="grid g4" style="margin-bottom:16px">
       ${ui.kpi('Sucursales a reforzar',needTraining.length,'a','score < 70')}
-      ${ui.kpi('Brecha principal',R.peorSeccion.sec.name,'r')}
-      ${ui.kpi('Score más bajo',R.peorSeccion.val,'r','/100')}
+      ${ui.kpi('Brecha principal',hasGaps?R.peorSeccion.sec.name:CX.ui.statusBdg('pending_source'),'r')}
+      ${ui.kpi('Score más bajo',hasGaps?R.peorSeccion.val:CX.ui.statusBdg('pending_source'),'r',hasGaps?'/100':'')}
       ${ui.kpi('Cursos sugeridos',gaps.reduce((a,g)=>a+((CURSOS[g.sec.id]||[1]).length),0),'b')}
     </div>
     <div class="card-t" style="font-size:13px;margin-bottom:12px">Brechas prioritarias y cursos recomendados</div>
-    <div class="grid g3" style="gap:14px;margin-bottom:18px">${gaps.map(gapCard).join('')}</div>
+    <div class="grid g3" style="gap:14px;margin-bottom:18px">${gaps.length?gaps.map(gapCard).join(''):`<div class="card card-p" style="grid-column:1/-1">${ui.empty('📊','Todavía no hay suficientes cuestionarios reales para calcular brechas por sección.')}</div>`}</div>
     <div class="card card-p">
       <div class="card-h"><div class="card-t">Sucursales que requieren capacitación</div></div>
       ${needTraining.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Región</th><th>Responsable</th><th>Score</th><th></th></tr></thead><tbody>
@@ -68,7 +72,7 @@ CX.module('cli_reportes', ({ui})=>{
     ${CX.cliUI.personaBarHTML()}
     <div class="grid g4" style="margin-bottom:16px">
       ${ui.kpi('Sucursales en alcance',R.n,'b')}${ui.kpi('Visitas del periodo',R.visitas,'p')}
-      ${ui.kpi('Score global',R.score,C.tone(R.score),'/100')}${ui.kpi('NPS',R.nps,'g')}
+      ${ui.kpi('Score global',R.score!=null?R.score:CX.ui.statusBdg('pending_source'),R.score!=null?C.tone(R.score):'n','/100')}${ui.kpi('NPS',R.nps!=null?R.nps:CX.ui.statusBdg('pending_source'),'g')}
     </div>
     <div class="grid g2" style="gap:14px">
       ${reps.map(r=>`<div class="card card-p flex" style="gap:14px">
