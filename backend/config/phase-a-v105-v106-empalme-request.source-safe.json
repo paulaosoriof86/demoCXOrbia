@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0.0",
+  "requestId": "cxorbia-v105-internal-v106-runtime-empalme",
+  "requestedAt": "2026-07-11T00:00:00Z",
+  "packageName": "Prototype development request CXOrbia V105(1).zip",
+  "packageSha256": "582a8c98cdac7b46028bb720d1304657c6d678e99e4bc23a49e80ab440bc8206",
+  "externalLabel": "V105",
+  "internalIdentity": "V106",
+  "baseRuntimeCommit": "40ed11aa4f6de5524f60b0ea1d0060f20a4172f4",
+  "targetBranch": "docs-tya-v6-v71-audit",
+  "authorized": true,
+  "authorizedBy": "Paula",
+  "authorizationBasis": "Continuar Phase A real TyA, verificar y corregir el empalme de la última versión V105 sin retroceder a una baseline anterior.",
+  "scope": {
+    "runtimeFilesPinned": 70,
+    "deltaFiles": 18,
+    "latestVersionRequired": true,
+    "preserveBackendOutsideRuntimePathList": true,
+    "visualSmokeRequiredBeforeCommit": true,
+    "sourceSafeRuntimeGuardRequired": true
+  },
+  "knownLimits": {
+    "internalManifest": "invalid_stale_two_differences",
+    "providedSmoke": "partial_not_full_routes_or_mobile",
+    "sourceSafeTyAVisualSmoke": "pending_separate_artifact"
+  },
+  "safeState": {
+    "providerWrites": false,
+    "firebaseWrites": false,
+    "hrWrites": false,
+    "paymentsExecuted": false,
+    "deploy": false,
+    "production": false,
+    "merge": false
+  }
+}
