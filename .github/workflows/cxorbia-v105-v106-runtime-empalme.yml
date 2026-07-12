@@ -1,4 +1,4 @@
-name: CXOrbia V105 V106 Runtime Empalme
+name: CXOrbia V110 Selective Empalme Runner
 
 on:
   workflow_dispatch:
@@ -6,29 +6,16 @@ on:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - 'backend/config/phase-a-v105-v106-empalme-request.source-safe.json'
       - '.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'
-  pull_request:
-    branches:
-      - release/cxorbia-tya-rc-20260630
-    paths:
-      - 'backend/config/phase-a-v105-v106-empalme-request.source-safe.json'
-      - '.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'
+      - 'tools/empalme/v110-selective/READY'
 
 permissions:
   contents: write
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
-  empalme-exacto-y-smoke:
+  empalme-selectivo-v110:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    concurrency:
-      group: cxorbia-v105-v106-runtime-empalme
-      cancel-in-progress: false
     steps:
       - name: Checkout rama viva
         uses: actions/checkout@v4
@@ -39,86 +26,54 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '22'
 
-      - name: Aplicar y validar runtime exacto V105 interno V106
+      - name: Ejecutar plan selectivo preparado
+        shell: bash
         run: |
-          chmod +x tools/empalme/tya-apply-v105-internal-v106-runtime.sh
-          env -u GITHUB_REF_NAME \
-            CXORBIA_CONFIRM=EMPALME_V105_INTERNAL_V106_EXACTO \
-            tools/empalme/tya-apply-v105-internal-v106-runtime.sh
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          import re, subprocess
 
-      - name: Preparar Playwright fuera del repo
-        run: |
-          rm -rf /tmp/cxorbia-playwright
-          mkdir -p /tmp/cxorbia-playwright
-          cp tools/qa/tya-phase-a-visual-smoke.mjs /tmp/cxorbia-playwright/smoke.mjs
-          cd /tmp/cxorbia-playwright
-          npm init -y >/dev/null
-          npm install --save-dev playwright@1.47.2 >/dev/null
-          npx playwright install --with-deps chromium
+          workflow = Path('.github/workflows/cxorbia-v110-selective-empalme.yml')
+          lines = workflow.read_text(encoding='utf-8').splitlines()
+          blocks = []
+          current_name = ''
+          i = 0
+          while i < len(lines):
+              line = lines[i]
+              m_name = re.match(r'^\s*- name:\s*(.+?)\s*$', line)
+              if m_name:
+                  current_name = m_name.group(1)
+              m_run = re.match(r'^(\s*)run:\s*\|\s*$', line)
+              if not m_run:
+                  i += 1
+                  continue
+              base = len(m_run.group(1))
+              i += 1
+              buf = []
+              while i < len(lines):
+                  nxt = lines[i]
+                  if nxt.strip() == '':
+                      buf.append('')
+                      i += 1
+                      continue
+                  indent = len(nxt) - len(nxt.lstrip(' '))
+                  if indent <= base:
+                      break
+                  cut = min(len(nxt), base + 2)
+                  buf.append(nxt[cut:])
+                  i += 1
+              blocks.append((current_name, '\n'.join(buf) + '\n'))
 
-      - name: Iniciar servidor local
-        run: |
-          python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp-v105-v106-server.log 2>&1 &
-          echo $! > .tmp-v105-v106-server.pid
-          for attempt in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:4173/index.html >/dev/null; then
-              exit 0
-            fi
-            sleep 1
-          done
-          cat .tmp-v105-v106-server.log || true
-          exit 1
+          if not blocks:
+              raise SystemExit('No se encontraron bloques run en el workflow selectivo')
 
-      - name: Smoke visual y consola por seis roles
-        env:
-          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html
-        run: |
-          cd /tmp/cxorbia-playwright
-          node smoke.mjs \
-            --base-url http://127.0.0.1:4173/index.html \
-            --out "$GITHUB_WORKSPACE/.tmp/v105-v106-visual-smoke"
-
-      - name: Validar runtime guard source-safe
-        run: node tools/release/tya-phase-a-source-safe-runtime-guard-validate.mjs --out .tmp/v105-v106-source-safe-runtime-guard
-
-      - name: Recalcular readiness R9 sin proveedores
-        run: node tools/release/tya-phase-a-operational-readiness-r9.mjs --out .tmp/v105-v106-r9/report.json
-
-      - name: Commit controlado de archivos runtime
-        id: commit
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          mapfile -t runtime_paths < .tmp/v105-v106-runtime-empalme/runtime-paths.txt
-          git add -- "${runtime_paths[@]}"
-          if git diff --cached --quiet; then
-            echo 'created=false' >> "$GITHUB_OUTPUT"
-            echo 'No hay delta runtime por confirmar.'
-          else
-            git commit -m 'feat(frontend): empalmar V105 interno V106 exacto'
-            git push origin HEAD:docs-tya-v6-v71-audit
-            echo 'created=true' >> "$GITHUB_OUTPUT"
-            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Resumen
-        if: always()
-        run: |
-          echo "Commit creado: ${{ steps.commit.outputs.created }}"
-          echo "SHA: ${{ steps.commit.outputs.sha }}"
-          git status --short
-
-      - name: Subir evidencia sanitizada
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: v105-v106-runtime-empalme-evidence
-          path: |
-            .tmp/v105-v106-runtime-empalme
-            .tmp/v105-v106-visual-smoke
-            .tmp/v105-v106-source-safe-runtime-guard
-            .tmp/v105-v106-r9
-          if-no-files-found: error
-          retention-days: 14
+          for name, script in blocks:
+              print(f'::group::{name}')
+              if name.startswith('Commit controlado'):
+                  subprocess.run(['git','rm','-f','.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'], check=True)
+              subprocess.run(['bash','-lc',script], check=True)
+              print('::endgroup::')
+          PY
