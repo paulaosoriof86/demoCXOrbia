@@ -179,7 +179,8 @@
 
 ## R10 source-safe post-V110 — 2026-07-12
 
-- Decisión: `HOLD_SOURCE_SAFE_VISUAL_SMOKE`.
-- V110 física y source lock unión verificados antes del smoke.
-- Fuente TyA source-safe: 0 periodos, 0 visitas, 0 shoppers.
+- Primer intento: `HARNESS_BLOCKED_NOT_RUNTIME_REGRESSION`; el HTML temporal no cargaba payload/bridge.
+- Decisión final retry: `HOLD_SOURCE_SAFE_VISUAL_SMOKE`.
+- Fuente TyA source-safe: 14 periodos, 616 visitas, 210 shoppers.
+- V110 física y source lock unión permanecen verificados.
 - Sin deploy, producción, imports, writes, providers ni pagos reales.

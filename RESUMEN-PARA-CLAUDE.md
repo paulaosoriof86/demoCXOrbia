@@ -102,6 +102,7 @@
 
 ## R10 source-safe post-V110 — 2026-07-12
 
-- R10 ejecutado sobre V110 empalmada: `HOLD_SOURCE_SAFE_VISUAL_SMOKE`.
+- Primer intento bloqueado por harness, no por regresión del prototipo.
+- Decisión final retry: `HOLD_SOURCE_SAFE_VISUAL_SMOKE`.
 - No reabrir los P0 cerrados de Academia/país ni Finanzas fail-closed.
-- Los blockers quedan documentados en el resultado R10; no se genera paquete amplio hasta clasificarlos.
+- Los blockers finales quedan documentados y se clasifican antes de cualquier paquete Claude.

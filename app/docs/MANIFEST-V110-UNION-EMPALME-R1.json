@@ -3,7 +3,7 @@
   "package": "CXORBIA-V110-UNION-EMPALME-R1",
   "project": "CXOrbia",
   "baseline": "V110 empalmada de forma determinística sobre rama viva",
-  "generatedAt": "2026-07-12T21:10:47.207Z",
+  "generatedAt": "2026-07-12T21:15:19.144Z",
   "sourceZipSha256": "1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227",
   "basePackageSha256": "582a8c98cdac7b46028bb720d1304657c6d678e99e4bc23a49e80ab440bc8206",
   "runtimePatchSha256": "d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd",
@@ -24,8 +24,8 @@
     ],
     "generatedUnionLock": "core/build-lock.js"
   },
-  "fileCount": 1375,
-  "aggregateSha256": "a0fdc3d9c16f7e87e43a1c06eb63b6593db280cddb62a92e6487564f4fe6d05b",
+  "fileCount": 1376,
+  "aggregateSha256": "86f5448022e52661f651799e4e04476f55022758b56d11b34befb4bf1a315b66",
   "exclusionsDeclared": [
     {
       "path": "core/build-lock.js",
@@ -998,8 +998,8 @@
     },
     {
       "path": "docs/ACADEMIA-IMPACT-SMOKE-SOURCE-SAFE-R10-POST-V110-20260712.md",
-      "size": 436,
-      "sha256": "331e276929908eb980aa56daf523580547ef2ca2260bb94918706be9b354542c"
+      "size": 387,
+      "sha256": "6b4b95f768a900695e4f5508c85e2a7e3e6e78b5133980230456470f82daef12"
     },
     {
       "path": "docs/ACADEMIA-IMPACT-SOURCE-LOCK-POST-V96-RUNTIME-RECONCILIATION-20260710.md",
@@ -2113,8 +2113,8 @@
     },
     {
       "path": "docs/CAMBIOS-BACKEND-ADDENDUM-SMOKE-SOURCE-SAFE-R10-POST-V110-20260712.md",
-      "size": 346,
-      "sha256": "9a52fbad4fc5212bd5c72dbb03cf0587ae4ab12a63d9a6d8a5d94902c869b97d"
+      "size": 458,
+      "sha256": "b704b8a1a1b2253b55327bf098620829e650878d24b9c900929656cafa25143e"
     },
     {
       "path": "docs/CAMBIOS-BACKEND-ADDENDUM-SMOKE-WORKFLOW-NOISE-REDUCTION-20260706.md",
@@ -4978,8 +4978,8 @@
     },
     {
       "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-R10-POST-V110-20260712.md",
-      "size": 359,
-      "sha256": "d6a083ab9a70659b9a4e364833df9fca0ef89c49fb2ce2838a5545e296ff9146"
+      "size": 420,
+      "sha256": "a58d3bc73e11a20ffce465045765131ea9572a55ca43156be74fe037158521d6"
     },
     {
       "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-RECHAZO-V102-CONTAMINACION-ORBIT-20260711.md",
@@ -5298,8 +5298,8 @@
     },
     {
       "path": "docs/PHASE-A-SOURCE-SAFE-VISUAL-SMOKE-R10-POST-V110-RESULT-20260712.md",
-      "size": 581,
-      "sha256": "c7679c7bd9927692bd8da65b4e85573d9b70f194e2481629ab1bc6e89bead84c"
+      "size": 2276,
+      "sha256": "cb76ef40550cb87248b757a82706045e3438ee533cc64004fc5e166908785785"
     },
     {
       "path": "docs/PHASE-A-SOURCE-SAFE-VISUAL-SMOKE-R5-20260711.md",
@@ -5600,6 +5600,11 @@
       "path": "docs/QUESTIONNAIRE-ROUTING-CONTRACT-CXORBIA-20260708.md",
       "size": 3010,
       "sha256": "5c2b134d1a91be02b21f6b8d3866ab390bb5131e09209a28a3fb176d70003eaf"
+    },
+    {
+      "path": "docs/R10-FIRST-ATTEMPT-HARNESS-BLOCKED-20260712.md",
+      "size": 471,
+      "sha256": "d9c5569848f3758eed0c81187b9a7ce23047579a21385d3b822ec9d91c4d0042"
     },
     {
       "path": "docs/RC-PHASE-A-CONTROLLED-DECISION-20260706.md",
@@ -6920,7 +6925,8 @@
   "r10": {
     "decision": "HOLD_SOURCE_SAFE_VISUAL_SMOKE",
     "report": "docs/PHASE-A-SOURCE-SAFE-VISUAL-SMOKE-R10-POST-V110-RESULT-20260712.md",
-    "blockers": 1,
-    "warnings": 0
+    "firstAttempt": "HARNESS_BLOCKED_NOT_RUNTIME_REGRESSION",
+    "blockers": 11,
+    "warnings": 3
   }
 }

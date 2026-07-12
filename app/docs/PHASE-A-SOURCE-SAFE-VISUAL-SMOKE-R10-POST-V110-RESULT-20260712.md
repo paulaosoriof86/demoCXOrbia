@@ -2,36 +2,62 @@
 
 Fecha: 2026-07-12
 
-## Decisión
+## Decisión final
 
 `HOLD_SOURCE_SAFE_VISUAL_SMOKE`
 
 ## Fuente operacional comprobada
 
-- tenantId: `n/a`;
-- projectId: `n/a`;
-- periodos: 0;
-- visitas: 0;
-- shoppers: 0;
-- países: `{}`;
-- monedas: `{}`;
-- junio con evidencia de ejecución: 0/0.
+- tenantId: `tya`;
+- projectId: `cinepolis`;
+- periodos: 14;
+- visitas: 616;
+- shoppers: 210;
+- países: `{"GT":476,"HN":140}`;
+- monedas: `{"Q":476,"L":140}`;
+- junio con evidencia de ejecución: 44/44.
 
 ## Roles
 
-- none
+- admin: pass; source-safe=true; project=cinepolis; routes=7; pageErrors=0; consoleErrors=0
+- cliente: pass; source-safe=true; project=cinepolis; routes=2; pageErrors=0; consoleErrors=0
+- shopper: pass; source-safe=true; project=cinepolis; routes=4; pageErrors=0; consoleErrors=0
 
 ## Rutas verificadas
 
-- none
+- admin/dashboard: target=dashboard; rendered=false; honestCopy=true
+- admin/proyectos: target=proyectos; rendered=false; honestCopy=true
+- admin/visitas: target=visitas; rendered=false; honestCopy=true
+- admin/postulaciones: target=postulaciones; rendered=false; honestCopy=true
+- admin/certificaciones: target=cert; rendered=false; honestCopy=true
+- admin/finanzas: target=none; rendered=false; honestCopy=true
+- admin/academia: target=none; rendered=false; honestCopy=true
+- cliente/dashboard: target=dashboard; rendered=false; honestCopy=true
+- cliente/visitas: target=visitas; rendered=false; honestCopy=true
+- shopper/visitas: target=visitas; rendered=false; honestCopy=true
+- shopper/certificaciones: target=cert; rendered=false; honestCopy=true
+- shopper/beneficios: target=beneficios; rendered=false; honestCopy=true
+- shopper/academia: target=none; rendered=false; honestCopy=true
 
 ## Blockers
 
-- smoke_fatal:page.waitForFunction: Timeout 20000ms exceeded.
+- shopper_count_mismatch:210/213
+- admin_module_not_rendered:dashboard
+- admin_module_not_rendered:proyectos
+- admin_module_not_rendered:visitas
+- admin_module_not_rendered:postulaciones
+- admin_module_not_rendered:certificaciones
+- cliente_module_not_rendered:dashboard
+- cliente_module_not_rendered:visitas
+- shopper_module_not_rendered:visitas
+- shopper_module_not_rendered:certificaciones
+- shopper_module_not_rendered:beneficios
 
 ## Warnings
 
-- none
+- admin_module_alias_not_found:finanzas
+- admin_module_alias_not_found:academia
+- shopper_module_alias_not_found:academia
 
 ## Estado seguro
 

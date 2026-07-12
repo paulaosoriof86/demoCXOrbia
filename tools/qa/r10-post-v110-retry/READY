@@ -1,5 +1,0 @@
-CXORBIA_R10_POST_V110_RETRY_READY
-firstAttempt=HARNESS_BLOCKED_NOT_RUNTIME_REGRESSION
-sourceLock=app/docs/MANIFEST-V110-UNION-EMPALME-R1.json
-noDeploy=true
-noProduction=true
