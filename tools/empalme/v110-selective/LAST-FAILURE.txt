@@ -1,42 +1,521 @@
-block=Precheck fail-closed de empalme 3-way
+block=Validar sintaxis y contratos críticos
 returncode=1
 runtimePatchSha256=d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd
 
 STDOUT
-checking file app/core/cliente-data.js
-Hunk #1 FAILED at 55.
-Hunk #2 FAILED at 94.
-Hunk #3 FAILED at 144.
-Hunk #4 FAILED at 162.
-Hunk #5 succeeded at 147 with fuzz 1 (offset -28 lines).
-4 out of 5 hunks FAILED
-checking file app/core/data.js
-checking file app/core/liquidacion.js
-Hunk #1 succeeded at 69 with fuzz 1 (offset -7 lines).
-checking file app/modules/beneficios.js
-checking file app/modules/cert.js
-Hunk #1 succeeded at 159 (offset -57 lines).
-Hunk #2 succeeded at 171 (offset -57 lines).
-checking file app/modules/cliente-extra.js
-Hunk #1 succeeded at 13 with fuzz 3.
-checking file app/modules/cliente.js
-Hunk #1 FAILED at 93.
-Hunk #2 FAILED at 227.
-Hunk #3 succeeded at 228 with fuzz 3 (offset -15 lines).
-Hunk #4 succeeded at 272 (offset -28 lines).
-Hunk #5 succeeded at 303 (offset -24 lines).
-Hunk #6 succeeded at 314 with fuzz 2 (offset -24 lines).
-2 out of 6 hunks FAILED
-checking file app/modules/dashboard.js
-Hunk #1 succeeded at 136 (offset -22 lines).
-checking file app/modules/finanzas.js
-Hunk #1 FAILED at 434.
-Hunk #2 succeeded at 572 (offset -2 lines).
-Hunk #3 FAILED at 606.
-2 out of 3 hunks FAILED
-checking file app/styles/layout.css
-Hunk #1 succeeded at 149 with fuzz 3.
 
 
 STDERR
+
+
+REJECTS
+
+===== app/core/cliente-data.js.rej =====
+--- app/core/cliente-data.js
++++ app/core/cliente-data.js
+@@ -55,12 +55,15 @@ window.CX = window.CX || {};
+        aún no tiene score real, cae a un valor determinístico estable. */
+     sucursales(p){
+       p = p || CX.data.project();
+-      if(this._cache && this._cache.id===p.id) return this._cache.list;
++      /* cache key incluye el modo de datos (demo/real) — evita servir una lista
++         calculada bajo un modo distinto al alternar demo/real en la misma sesión. */
++      const key = p.id + '::' + (this._allowSynthetic()?'demo':'real');
++      if(this._cache && this._cache.key===key) return this._cache.list;
+       const prog=this.programa(p);
+       const vis=(CX.data._visitas||[]).filter(v=>v.projectId===p.id);
+       const list = vis.length ? this._fromVisitas(p, prog, vis) : this._synthetic(p, prog);
+       list.sort((a,b)=>(b.score||0)-(a.score||0));
+-      this._cache={id:p.id, list};
++      this._cache={key, list};
+       return list;
+     },
+ 
+@@ -94,14 +97,19 @@ window.CX = window.CX || {};
+           /* sin cuestionarios reales y fuera de demo: no se fabrica ningún score */
+           score=null; sectionScores={}; hasScore=false;
+         }
+-        const prev = hasScore ? Math.max(35,Math.min(100,score+Math.round((r()-0.5)*16))) : null;
++        /* prev/nps/responsable son estimaciones derivadas, no datos capturados: solo se
++           fabrican en demo. Fuera de demo, sin fuente real para tendencia/NPS/responsable
++           de sucursal, se deja null/"—" — la UI debe rotularlo pendiente de fuente. */
++        const prev = hasScore && allowSynthetic ? Math.max(35,Math.min(100,score+Math.round((r()-0.5)*16))) : null;
++        const npsVal = hasScore && allowSynthetic ? Math.max(-100,Math.min(100,Math.round((score-55)*1.6))) : null;
++        const responsable = allowSynthetic ? pick(r,NAMES) : null;
+         const v0=vs[0];
+         return {
+           id:p.id+'-su'+(i+1), code:'SUC-'+String(i+1).padStart(2,'0'), name,
+           ciudad:v0.ciudad||'—', region:(CX.geo&&CX.geo.deptLabel?'':'')||v0.region||v0.ciudad||'Región', pais:v0.pais||(p.countries&&p.countries[0]),
+-          responsable:pick(r,NAMES), visitas:vs.length, evaluadas:evals.length,
+-          score, prev, delta: hasScore ? score-prev : null,
+-          nps: hasScore ? Math.max(-100,Math.min(100,Math.round((score-55)*1.6))) : null,
++          responsable, visitas:vs.length, evaluadas:evals.length,
++          score, prev, delta: (hasScore && prev!=null) ? score-prev : null,
++          nps: npsVal,
+           sectionScores, real:evals.length>0, hasScore,
+           lastVisit:(vs.map(v=>v.realizada||v.agendada||v.disponibleDesde||'').filter(Boolean).sort().slice(-1)[0])||(hasScore?'2026-06-15':null),
+         };
+@@ -144,7 +152,9 @@ window.CX = window.CX || {};
+        ni se promedian con `null`. Si NINGUNA sucursal tiene score real, el resumen honesto reporta
+        `pendingSource:true` y deja los agregados numéricos en `null` en vez de inventar un 0/NaN. */
+     resumen(list){
+-      const withScore=list.filter(s=>s.hasScore!==false && typeof s.score==='number');
++      /* T3 (paquete V109): usa el mismo validScore() que el resto de la app — nunca
++         `typeof===number` a secas (eso aceptaba NaN/Infinity en los promedios). */
++      const withScore=list.filter(s=>s.hasScore!==false && this.validScore(s.score));
+       const n=withScore.length;
+       if(!n){
+         return {
+@@ -162,9 +172,9 @@ window.CX = window.CX || {};
+       return {
+         n:list.length, visitas:totVis,
+         score:wScore,
+-        nps:Math.round(withScore.reduce((a,s)=>a+(s.nps||0),0)/n),
+-        excelentes:withScore.filter(s=>s.score>=85).length,
+-        criticas:withScore.filter(s=>s.score<70).length,
++        nps: withScore.some(s=>s.nps==null) ? null : Math.round(withScore.reduce((a,s)=>a+(s.nps||0),0)/n),
++        excelentes:withScore.filter(s=>this.band(s.score).key==='excelente').length,
++        criticas:withScore.filter(s=>this.band(s.score).key==='critico').length,
+         mejora:withScore.filter(s=>s.delta>0).length,
+         top:[...withScore].sort((a,b)=>b.score-a.score).slice(0,5),
+         bottom:[...withScore].sort((a,b)=>a.score-b.score).slice(0,5),
+
+===== app/modules/academia.js.rej =====
+--- app/modules/academia.js
++++ app/modules/academia.js
+@@ -24,11 +29,132 @@ CX.acadData={
+     if(CX.permissions && !CX.permissions.can('academy.create', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.create".'};
+     const arr=this.getCustom(r); const lessons=c.lessons||[]; const mins=(typeof c.mins==='number')?c.mins:Math.max(10,lessons.length*12);
+     const auditRef='aud_'+Math.random().toString(36).slice(2,8);
+-    arr.unshift(Object.assign({id:'cu'+Date.now().toString(36),lessons:[],mins,cert:false,estado:'borrador',contentVersion:1,workflowVersion:1,auditRef},c,{mins}));
++    /* Contrato Academia (paquete 20260711): creator identificado explícitamente y separado de
++       revisor/aprobador (setCourseState). scope opcional (vacío = global) — ver visibleFor(). */
++    const creador=(CX.session&&CX.session.user&&CX.session.user.name)||'—';
++    /* T1b (paquete V109): identidad ESTABLE del creador por id (cx_users o sesión sintética) —
++       creador (nombre) se conserva solo para presentación; la separación de funciones en
++       setCourseState se valida contra createdByUserId, nunca contra el nombre. */
++    const createdByUserId=this.actorId();
++    /* T2.D (paquete V108, sin cambios en V109): todo curso queda vinculado a un tenantId real
++       desde su creación — el eje tenantId del scope se fuerza al tenant activo aunque el resto
++       de ejes queden vacíos (regla documentada: sin scope explícito = global DENTRO del tenant,
++       nunca global cruzando tenants). Con el bug de T1 corregido, CX.acadData.ctx().tenantId
++       ahora SIEMPRE resuelve a este mismo CX.BRAND.id, así que el eje coincide. */
++    const scope=Object.assign({}, c.scope||{}, {tenantId:[CX.BRAND.id]});
++    arr.unshift(Object.assign({id:'cu'+Date.now().toString(36),lessons:[],mins,cert:false,estado:'borrador',contentVersion:1,workflowVersion:1,auditRef,
++      creador, createdByUserId, revisadoPor:null, reviewedByUserId:null, aprobadoPor:null, approvedByUserId:null, scope},c,{mins,scope}));
+     this.saveCustom(r,arr);
+     this._logAudit(r,{accion:'crear',cid:arr[0].id,titulo:arr[0].n,motivo:c.motivo||'(creación)'});
+     return {ok:true, course:arr[0]};
+   },
++
++  /* T1 (paquete V109 — 20260712, corrección P0 real): contexto académico CANÓNICO, propio de
++     Academia — independiente de CX.permissions.ctx() (que sirve a otro propósito: simular un
++     tenant/proyecto distinto para el gate de permisos, no el tenant/país reales del usuario).
++     Bug confirmado en V108: CX.permissions.ctx().tenantId lee CX.session.user.tenantId, campo
++     que NINGÚN flujo de login (admin/cliente/shopper/invitado) asigna jamás — así que un curso
++     creado con scope.tenantId=[CX.BRAND.id] quedaba invisible para TODOS los roles, incluido el
++     shopper correcto, porque ctx.tenantId llegaba `undefined`. Este helper resuelve tenantId al
++     tenant real de la instancia (CX.BRAND.id — un solo tenant por despliegue en este prototipo),
++     projectId al proyecto activo, país como LISTA (scope de países del usuario invitado si existe,
++     si no los países del proyecto activo) para que multipaís no rompa el filtro, y rol al rol
++     efectivo de sesión (scopeRole para roles de prueba, o el rol real). */
++  ctx(){
++    const u=(CX.session&&CX.session.user)||{};
++    const p=CX.data&&CX.data.project&&CX.data.project();
++    const rol = u.scopeRole || u.role || (CX.session&&CX.session.role) || undefined;
++    const projectId = p && p.id;
++    let paises;
++    /* T1-V110 (corrección P0 real, 20260712): para rol SHOPPER, el país de acceso debe ser el
++       país REAL del shopper autenticado (data.getShopper(shopperId).pais) — nunca
++       project.countries. V109 usaba project.countries como fallback cuando el shopper no traía
++       scopePaises propio: en un proyecto multipaís (GT/HN) eso le daba al shopper GT acceso
++       equivalente a [GT,HN], filtrando contenido HN que no le correspondía. Ahora:
++       - si el usuario es un invitado/rol de prueba con scopePaises explícito, se respeta (sirve
++         para simular un revisor multipaís, no es el caso de un shopper real);
++       - si es shopper real, se resuelve su país desde el catálogo canónico de shoppers;
++       - si el país del shopper no puede resolverse, paises queda `[]` (fail-closed): un curso
++         restringido por país no será visible (axisOkMulti trata lista vacía/ausente como "sin
++         país conocido" → no confirmable), pero el contenido GLOBAL (sin restricción de país en
++         su scope) sigue visible sin problema. */
++    if(rol==='shopper'){
++      const sid=u.shopperId;
++      const shopper=sid && CX.data && CX.data.getShopper && CX.data.getShopper(sid);
++      if(shopper && shopper.pais) paises=[shopper.pais];
++      else paises=[]; // fail-closed: sin país real conocido, no se asume el del proyecto
++    } else if(u.scopePaises && u.scopePaises.length){
++      paises=u.scopePaises; // invitados/roles de prueba explícitos (no shopper real)
++    } else if(p && p.countries && p.countries.length){
++      paises=p.countries; // admin/super viendo catálogo administrable general
++    }
++    return { tenantId: CX.BRAND.id, projectId, paises, rol };
++  },
++
++  /* Visibilidad efectiva por scope opcional. Separa dos familias de ejes (paquete V109 —
++     corrección P0): ACCESO (tenantId/projectId/pais/rol) decide si el curso es visible;
++     CLASIFICACIÓN (modulo/nivel/paquete) es taxonomía de contenido — se usa para FILTRAR el
++     catálogo desde la UI (ver matchesClassification), nunca para ocultar un curso solo porque
++     la sesión actual no tenga esos campos (bug V108: un shopper sin "módulo" en su contexto
++     perdía cursos con scope.modulo definido, aunque el eje de acceso fuera correcto). Un eje de
++     acceso vacío/ausente en el scope significa "global" para ese eje (no restringe). País acepta
++     una lista de países del usuario (multipaís): basta con que UNO se solape con el scope. */
++  visibleFor(course, ctx){
++    const sc=course&&course.scope; if(!sc || !Object.keys(sc).length) return true;
++    ctx=ctx||{};
++    const axisOk=(vals,current)=>!vals || !vals.length || (current!=null && vals.includes(current));
++    const axisOkMulti=(vals,currentArr)=>{
++      if(!vals || !vals.length) return true; // eje global, no restringe
++      if(!currentArr || !currentArr.length) return false; // curso restringido por país, sesión sin país conocido → no confirmable
++      return currentArr.some(c=>vals.includes(c));
++    };
++    return axisOk(sc.tenantId, ctx.tenantId) && axisOk(sc.projectId, ctx.projectId) && axisOkMulti(sc.pais, ctx.paises)
++      && axisOk(sc.rol, ctx.rol);
++  },
++
++  /* Filtros de CLASIFICACIÓN (no de acceso): módulo/nivel/paquete son metadatos del contenido.
++     `filters` trae los valores elegidos por el usuario en la UI (opcional cada uno); si el curso
++     no declara ese eje en su scope, no se excluye por esa clasificación (coincide con "cualquiera"). */
++  matchesClassification(course, filters){
++    filters=filters||{};
++    const sc=(course&&course.scope)||{};
++    const axisPick=(vals,chosen)=>!chosen || (Array.isArray(vals)&&vals.includes(chosen));
++    if(filters.modulo && !(Array.isArray(sc.modulo)&&sc.modulo.length)) return true; // sin taxonomía declarada, no se excluye
++    if(filters.modulo && Array.isArray(sc.modulo) && sc.modulo.length && !axisPick(sc.modulo, filters.modulo)) return false;
++    if(filters.nivel && Array.isArray(sc.nivel) && sc.nivel.length && !axisPick(sc.nivel, filters.nivel)) return false;
++    if(filters.paquete && Array.isArray(sc.paquete) && sc.paquete.length && !axisPick(sc.paquete, filters.paquete)) return false;
++    return true;
++  },
++
++  /* T1b — actores con identidad estable (paquete V109). El prototipo SÍ tiene un catálogo real
++     de usuarios invitados (cx_users, editable en Configuración → Usuarios & Permisos) además de
++     la sesión activa — V108 afirmaba erróneamente que no existía ninguno. actorId() resuelve un
++     id ESTABLE y persistido: si el usuario de sesión viene de cx_users (tiene email), se busca/crea
++     su id ahí; si es una sesión sintética de demo (Admin Demo/Cliente Demo/Evaluador 01, sin
++     registro propio), el id es estable por rol+shopperId dentro de este navegador. Nunca se compara
++     por nombre visible — el nombre es solo presentación. */
++  actorId(){
++    const u=(CX.session&&CX.session.user)||{};
++    if(u.email){
++      try{
++        const list=JSON.parse(localStorage.getItem('cx_users')||'[]');
++        const idx=list.findIndex(x=>x.email===u.email);
++        if(idx>=0){
++          if(!list[idx].id){ list[idx].id='usr_'+Math.random().toString(36).slice(2,10); try{localStorage.setItem('cx_users',JSON.stringify(list));}catch(e){} }
++          return list[idx].id;
++        }
++      }catch(e){}
++    }
++    return 'session_'+(u.role||(CX.session&&CX.session.role)||'anon')+(u.shopperId?'_'+u.shopperId:'');
++  },
++  /* compat: cursos legados que solo tienen el NOMBRE (creador/revisadoPor/aprobadoPor) sin id —
++     se les asigna un id determinístico derivado del nombre (hash estable), para que la
++     comparación de separación de funciones siga funcionando sin perder el dato existente. */
++  _idFromName(name){
++    name=String(name||'');
++    let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))|0;
++    return 'legacy_'+Math.abs(h).toString(36);
++  },
+   editCourse(r,cid,patch,ctx){
+     if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+     const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c)Object.assign(c,patch); const custom=this.getCustom(r); const cu=custom.find(x=>x.id===cid); if(cu){Object.assign(cu,patch); cu.contentVersion=(cu.contentVersion||1)+1;} this.saveCustom(r,custom);
+@@ -78,9 +204,38 @@ CX.acadData={
+     if(action && CX.permissions && !CX.permissions.can(action, opts.ctx)){
+       return {ok:false, error:'Tu rol no tiene el permiso de acción "'+action+'".'};
+     }
++    /* Contrato Academia (paquete 20260711): revisión y aprobación exigen una identidad
++       autenticada DISTINTA de quien creó el curso (separación de funciones configurable —
++       mismo patrón que el segundo actor de certificación en modules/cert.js). Sin backend real
++       de auth, el "autenticado" es la sesión activa del prototipo (session.user.name); nunca
++       texto libre. */
++    /* T1b (paquete V109 — corrección P0): la separación de funciones se valida por ID ESTABLE
++       (createdByUserId/reviewedByUserId/approvedByUserId), no por nombre visible. opts.revisorId /
++       opts.aprobadorId llegan de CX.acadData.actorId() en el módulo; opts.revisor/opts.aprobador
++       (nombre) se conservan solo para mostrarlos en la UI/auditoría. Para cursos legados sin id
++       persistido, c.createdByUserId/c.reviewedByUserId se retro-completan con _idFromName() la
++       primera vez que se necesitan, para no perder la garantía con datos antiguos. */
++    if(nextState==='en_revision'){
++      const revisor=(opts.revisor||'').trim();
++      const revisorId=opts.revisorId||(revisor?this._idFromName(revisor):'');
++      if(!revisor || !revisorId) return {ok:false, error:'Selecciona quién revisa (identidad distinta al creador).'};
++      const creadorId=c.createdByUserId||(c.creador?this._idFromName(c.creador):null);
++      if(creadorId && revisorId===creadorId) return {ok:false, error:'El revisor debe ser distinto de quien creó el curso ('+c.creador+').'};
++      c.revisadoPor=revisor; c.reviewedByUserId=revisorId;
++    }
++    if(nextState==='aprobado'){
++      const aprobador=(opts.aprobador||'').trim();
++      const aprobadorId=opts.aprobadorId||(aprobador?this._idFromName(aprobador):'');
++      if(!aprobador || !aprobadorId) return {ok:false, error:'Selecciona quién aprueba (identidad distinta al creador y, si aplica, al revisor).'};
++      const creadorId=c.createdByUserId||(c.creador?this._idFromName(c.creador):null);
++      const revisorId=c.reviewedByUserId||(c.revisadoPor?this._idFromName(c.revisadoPor):null);
++      if(creadorId && aprobadorId===creadorId) return {ok:false, error:'El aprobador debe ser distinto de quien creó el curso ('+c.creador+').'};
++      if(revisorId && aprobadorId===revisorId) return {ok:false, error:'El aprobador debe ser distinto de quien revisó ('+c.revisadoPor+') — separación de funciones.'};
++      c.aprobadoPor=aprobador; c.approvedByUserId=aprobadorId;
++    }
+     c.estado=nextState; c.workflowVersion=(c.workflowVersion||1)+1; this.saveCustom(r,custom);
+     const accionLbl={en_revision:'enviar a revisión',aprobado:'aprobar',publicado_preview:'publicar (preview)',archivado:'archivar',eliminado:'eliminar',borrador:'restaurar a borrador'}[nextState]||nextState;
+-    this._logAudit(r,{accion:accionLbl, cid, titulo:c.n, motivo:reason||'(sin motivo — transición sin exigencia)', estadoAnterior:prev, estadoNuevo:nextState, source:opts.source||'ui_admin'});
++    this._logAudit(r,{accion:accionLbl, cid, titulo:c.n, motivo:reason||'(sin motivo — transición sin exigencia)', estadoAnterior:prev, estadoNuevo:nextState, source:opts.source||'ui_admin', revisadoPor:c.revisadoPor, aprobadoPor:c.aprobadoPor});
+     /* notificación local del cambio (in-app; nunca canal externo) */
+     CX.notif && CX.notif.push({to:'admin', tipo:'academia_estado', icon:'📚', tono:'b', titulo:'Academia: "'+c.n+'" → '+nextState, txt:'workflow v'+c.workflowVersion+' · '+(reason||'sin motivo adicional')+' (auditoría preview local, no de backend)', nav:'aprendizaje'});
+     return {ok:true, course:c};
+@@ -2277,33 +2433,57 @@ CX.module('aprendizaje', ({data,role,ui})=>{
+     /* visibilidad de gestión a nivel de módulo (crear categoría, crear manual, etc.) — mismo
+        criterio que canManage por tarjeta: deriva del permiso real, no de role==='admin' crudo. */
+     const canManageTop = role==='admin' && CX.permissions && CX.permissions.can('academy.edit', CX.permissions.ctx());
+-    const filtered=activeCat==='Todos'?courses:courses.filter(c=>c.cat===activeCat);
+-    const totalLessons=courses.reduce((a,c)=>a+(c.lessons||[]).length,0);
+-    const completedCourses=courses.filter(c=>prog()[c.id]>=100).length;
+-    const completedLessons=courses.reduce((a,c)=>a+(c.lessons||[]).filter(l=>prog()[l.id]>=100).length,0);
+-    const avgProg=courses.length?Math.round(courses.reduce((a,c)=>{const ls=c.lessons||[];const done=ls.filter(l=>prog()[l.id]>=100).length;return a+(ls.length?done/ls.length*100:0);},0)/courses.length):0;
+-    const certs=courses.filter(c=>c.cert&&prog()[c.id]>=100).length;
++    /* T2.A (paquete V108 — 20260712): UNA sola colección visible ("visibleCourses") alimenta
++       TODOS los KPIs, conteos, categorías y modales. Antes las tarjetas se filtraban por scope
++       (`filtered`) pero los totales de arriba (cursos, lecciones, certificados, avance) se
++       calculaban sobre `courses` SIN filtrar — un curso fuera de scope (p.ej. solo-admin) no
++       aparecía como tarjeta pero sí sumaba en los KPIs de un shopper. Ahora los KPIs SIEMPRE
++       usan la misma colección que las tarjetas. Un administrador con permiso de gestión
++       (canManageTop) sí ve/cuenta el catálogo completo, porque gestiona todo el contenido. */
++    const visibleCourses = canManageTop ? courses : courses.filter(c=>CX.acadData.visibleFor(c, CX.acadData.ctx()));
++    const filtered=(activeCat==='Todos'?visibleCourses:visibleCourses.filter(c=>c.cat===activeCat))
++      .filter(c=>CX.acadData.matchesClassification(c, {modulo:clsModulo||null, nivel:clsNivel||null, paquete:clsPaquete||null}));
++    const totalLessons=visibleCourses.reduce((a,c)=>a+(c.lessons||[]).length,0);
++    const completedCourses=visibleCourses.filter(c=>prog()[c.id]>=100).length;
++    const completedLessons=visibleCourses.reduce((a,c)=>a+(c.lessons||[]).filter(l=>prog()[l.id]>=100).length,0);
++    const avgProg=visibleCourses.length?Math.round(visibleCourses.reduce((a,c)=>{const ls=c.lessons||[];const done=ls.filter(l=>prog()[l.id]>=100).length;return a+(ls.length?done/ls.length*100:0);},0)/visibleCourses.length):0;
++    const certs=visibleCourses.filter(c=>c.cert&&prog()[c.id]>=100).length;
+ 
+     host.innerHTML=`
+       <div style="background:linear-gradient(135deg,#1a2740,#0d1b2e);border-radius:14px;padding:20px 24px;margin-bottom:16px">
+-        <div class="between" style="margin-bottom:14px">
++        <div class="between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px">
+           <div><div style="font-size:18px;font-weight:900;color:#fff">🎓 Academia CXOrbia <span style="font-size:13px;font-weight:400;color:#94a3b8">Capacitación, certificaciones y recursos</span></div></div>
+-          <div class="flex" style="gap:8px">
++          <div class="flex" style="gap:8px;flex-wrap:wrap">
+             <button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.3)" id="acadManuales">📖 Manuales</button>
+             ${role==='admin'?`<select class="sel" id="acadAud" style="width:auto" title="A quién se dirigen los cursos"><option value="admin" ${(CX._acadAud||'admin')==='admin'?'selected':''}>🏢 Consultora</option><option value="shopper" ${CX._acadAud==='shopper'?'selected':''}>🕵️ Shopper</option><option value="cliente" ${CX._acadAud==='cliente'?'selected':''}>🏬 Cliente</option></select><button class="btn btn-sm ${showArchived?'':''}" style="background:rgba(255,255,255,${showArchived?'.3':'.1'});color:#fff;border-color:rgba(255,255,255,.25)" id="acadShowArch" title="Cursos personalizados archivados">🗄 ${showArchived?'Ocultar':'Ver'} archivados</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.3)" id="acadNew">✨ Crear con IA</button><button class="btn btn-sm" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)" id="acadLoad">⤒ Cargar recurso</button>`:''}
+           </div>
+         </div>
+         <div class="grid g4">
+-          <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#fff">${courses.length}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Cursos</div><div style="font-size:11px;color:#64748b">${completedCourses} completados</div></div>
++          <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#fff">${visibleCourses.length}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Cursos</div><div style="font-size:11px;color:#64748b">${completedCourses} completados</div></div>
+           <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:${avgProg>=80?'#34d399':'#fbbf24'}">${avgProg}%</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Avance promedio</div><div style="font-size:11px;color:#64748b">del equipo</div></div>
+           <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#a78bfa">${certs}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Certificaciones</div><div style="font-size:11px;color:#64748b">obtenidas</div></div>
+           <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#fff">${totalLessons}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Lecciones</div><div style="font-size:11px;color:#64748b">${completedLessons} completadas</div></div>
+         </div>
+       </div>
+       <div class="flex wrap" style="gap:6px;margin-bottom:16px">
+-        ${CX.acadData.CATS.filter(c=>c==='Todos'||courses.some(x=>x.cat===c)).map(c=>`<button class="btn btn-sm acad-cat ${activeCat===c?'btn-pr':'btn-ghost'}" data-cat="${c}">${c}</button>`).join('')}
++        ${CX.acadData.CATS.filter(c=>c==='Todos'||visibleCourses.some(x=>x.cat===c)).map(c=>`<button class="btn btn-sm acad-cat ${activeCat===c?'btn-pr':'btn-ghost'}" data-cat="${c}">${c}</button>`).join('')}
+         ${canManageTop?`<button class="btn btn-sm btn-ghost" id="acadNewCat" style="border-style:dashed">＋ Categoría</button>`:''}
+       </div>
++      ${(()=>{
++        /* Filtros de CLASIFICACIÓN (paquete V109) — módulo/nivel/paquete son taxonomía de contenido,
++           no ejes de acceso: solo aparecen si al menos un curso visible los declara, y filtran el
++           catálogo sin ocultar nada por ausencia de esos campos en la sesión. */
++        const anyModulo=visibleCourses.some(c=>c.scope&&c.scope.modulo&&c.scope.modulo.length);
++        const anyNivel=visibleCourses.some(c=>c.scope&&c.scope.nivel&&c.scope.nivel.length);
++        const anyPaquete=visibleCourses.some(c=>c.scope&&c.scope.paquete&&c.scope.paquete.length);
++        if(!anyModulo && !anyNivel && !anyPaquete) return '';
++        return `<div class="flex wrap" style="gap:8px;margin-bottom:14px;align-items:center">
++          <span style="font-size:11px;color:var(--t3)">Filtrar por:</span>
++          ${anyModulo?`<select class="sel" id="clsModulo" style="width:auto"><option value="">Módulo (todos)</option>${Object.keys(CX.MODULES||{}).map(mid=>`<option value="${mid}" ${clsModulo===mid?'selected':''}>${(CX.MODULES[mid]&&CX.MODULES[mid].name)||mid}</option>`).join('')}</select>`:''}
++          ${anyNivel?`<select class="sel" id="clsNivel" style="width:auto"><option value="">Nivel (todos)</option>${CX.acadData.NIVELES.map(n=>`<option value="${n.id}" ${clsNivel===n.id?'selected':''}>${n.label}</option>`).join('')}</select>`:''}
++          ${anyPaquete?`<select class="sel" id="clsPaquete" style="width:auto"><option value="">Paquete (todos)</option>${CX.acadData.PAQUETES.map(pk=>`<option value="${pk.id}" ${clsPaquete===pk.id?'selected':''}>${pk.label}</option>`).join('')}</select>`:''}
++        </div>`;
++      })()}
+       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+         ${filtered.map(c=>{
+           const ls=c.lessons||[];const done=ls.filter(l=>prog()[l.id]>=100).length;const pct=ls.length?Math.round(done/ls.length*100):0;
+@@ -2348,19 +2528,71 @@ CX.module('aprendizaje', ({data,role,ui})=>{
+     host.querySelector('#acadAud')?.addEventListener('change',e=>{CX._acadAud=e.target.value;activeCat='Todos';openCourse=null;openLesson=null;draw();});
+     host.querySelectorAll('[data-course]').forEach(c=>c.addEventListener('click',()=>{openCourse=c.dataset.course;const course=getCourses().find(x=>x.id===openCourse);if(course){openLesson=course.lessons[0].id;lessonPlayer(course);}}));
+     host.querySelectorAll('.acad-cat').forEach(b=>b.addEventListener('click',()=>{activeCat=b.dataset.cat;draw();}));
++    host.querySelector('#clsModulo')?.addEventListener('change',e=>{clsModulo=e.target.value;draw();});
++    host.querySelector('#clsNivel')?.addEventListener('change',e=>{clsNivel=e.target.value;draw();});
++    host.querySelector('#clsPaquete')?.addEventListener('change',e=>{clsPaquete=e.target.value;draw();});
+     host.querySelector('#acadNewCat')?.addEventListener('click',()=>ui.modal('＋ Nueva categoría',`
+       <label class="lbl">Nombre de la categoría</label><input class="inp" id="ncatN" placeholder="Ej. Investigación de mercados" style="margin-bottom:12px">
+       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="ncatSave">Crear</button></div>
+     `,{onMount:(ov,close)=>ov.querySelector('#ncatSave').addEventListener('click',()=>{const n=(ov.querySelector('#ncatN').value||'').trim();if(!n){ui.toast('Pon un nombre','warn');return;}if(!CX.acadData.CATS.includes(n))CX.acadData.CATS.push(n);try{localStorage.setItem('cx_acad_cats',JSON.stringify(CX.acadData.CATS));}catch(e){}close();draw();ui.toast('Categoría "'+n+'" creada','ok');})}));
+     host.querySelectorAll('.acad-edit').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='admin'?(CX._acadAud||'admin'):(role==='cliente'?'cliente':'shopper');const cc=getCourses().find(x=>x.id===b.dataset.cid);if(!cc)return;
+-      ui.modal('✎ Editar curso',`<div class="grid g2" style="gap:8px 12px"><div><label class="lbl">Nombre</label><input class="inp" id="ecN" value="${(cc.n||'').replace(/"/g,'&quot;')}"></div><div><label class="lbl">Categoría</label><select class="sel" id="ecC">${CX.acadData.CATS.filter(c=>c!=='Todos').map(c=>`<option ${c===cc.cat?'selected':''}>${c}</option>`).join('')}</select></div><div style="grid-column:1/3"><label class="lbl">Descripción</label><textarea class="inp" id="ecD" rows="2">${cc.desc||''}</textarea></div>${CX.acadData.isCustom(rr,cc.id)?`<div style="grid-column:1/3;font-size:10.5px;color:var(--t3)">Estado: <b>${({borrador:'📝 Borrador',en_revision:'👀 En revisión',aprobado:'✅ Aprobado',archivado:'🗄 Archivado',eliminado:'🗑 Eliminado',publicado_preview:'✓ Publicado (preview)'}[cc.estado]||'—')}</b> · contenido v${cc.contentVersion||1} · flujo v${cc.workflowVersion||1}${cc.auditRef?' · '+cc.auditRef:''}</div>
+-        <div style="grid-column:1/3;display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">${(CX.acadData.ALLOWED_TRANSITIONS[cc.estado||'borrador']||[]).filter(s=>s!=='archivado'&&s!=='eliminado').map(s=>`<button class="btn btn-soft btn-sm acadTrans" data-to="${s}" style="font-size:10.5px;padding:4px 9px">→ ${({borrador:'Borrador',en_revision:'Enviar a revisión',aprobado:'Aprobar',publicado_preview:'Publicar (preview)'}[s]||s)}</button>`).join('')}</div>`:''}</div><div style="text-align:right;margin-top:10px;display:flex;justify-content:space-between">${CX.acadData.isCustom(rr,cc.id)?'<button class="btn btn-ghost btn-sm" id="ecDel" style="color:var(--red)">🗑 Eliminar</button>':'<span></span>'}<button class="btn btn-pr btn-sm" id="ecSave">Guardar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#ecSave').addEventListener('click',()=>{const r=CX.acadData.editCourse(rr,cc.id,{n:ov.querySelector('#ecN').value.trim(),cat:ov.querySelector('#ecC').value,desc:ov.querySelector('#ecD').value.trim()});if(!r.ok){ui.toast('🔒 '+r.error,'warn',4200);return;}close();draw();ui.toast('Curso actualizado · auditado','ok');});
++      ui.modal('✎ Editar curso',`<div class="grid g2" style="gap:8px 12px"><div><label class="lbl">Nombre</label><input class="inp" id="ecN" value="${(cc.n||'').replace(/"/g,'&quot;')}"></div><div><label class="lbl">Categoría</label><select class="sel" id="ecC">${CX.acadData.CATS.filter(c=>c!=='Todos').map(c=>`<option ${c===cc.cat?'selected':''}>${c}</option>`).join('')}</select></div><div style="grid-column:1/3"><label class="lbl">Descripción</label><textarea class="inp" id="ecD" rows="2">${cc.desc||''}</textarea></div>
++        ${CX.acadData.isCustom(rr,cc.id)?`<div style="grid-column:1/3;border-top:1px solid var(--border-2);margin-top:4px;padding-top:10px"><label class="lbl">Alcance (opcional — vacío en un eje = visible para todos en ese eje)</label>
++          <div class="grid g2" style="gap:6px 10px">
++            <div><span style="font-size:10px;color:var(--t3)">Tenant</span><div class="inp" style="background:var(--panel-2);color:var(--t2);cursor:default">${CX.BRAND.id} <span style="color:var(--t3);font-size:10px">(heredado, no editable)</span></div></div>
++            <div><span style="font-size:10px;color:var(--t3)">Proyecto(s)</span><select class="sel" id="ecScProj" multiple size="3">${(CX.data.projects||[]).map(pr=>`<option value="${pr.id}" ${(cc.scope&&cc.scope.projectId||[]).includes(pr.id)?'selected':''}>${pr.name}</option>`).join('')}</select></div>
++            <div><span style="font-size:10px;color:var(--t3)">País(es)</span><select class="sel" id="ecScPais" multiple size="3">${Object.keys(CX.GEO||{}).map(g=>`<option value="${g}" ${(cc.scope&&cc.scope.pais||[]).includes(g)?'selected':''}>${CX.paisFlag?CX.paisFlag(g)+' ':''}${g}</option>`).join('')}</select></div>
++            <div><span style="font-size:10px;color:var(--t3)">Rol(es)</span><select class="sel" id="ecScRol" multiple size="3">${(CX.ROLES||[]).map(rl=>`<option value="${rl.id}" ${(cc.scope&&cc.scope.rol||[]).includes(rl.id)?'selected':''}>${rl.label}</option>`).join('')}</select></div>
++            <div><span style="font-size:10px;color:var(--t3)">Nivel(es)</span><select class="sel" id="ecScNivel" multiple size="3">${CX.acadData.NIVELES.map(n=>`<option value="${n.id}" ${(cc.scope&&cc.scope.nivel||[]).includes(n.id)?'selected':''}>${n.label}</option>`).join('')}</select></div>
++            <div><span style="font-size:10px;color:var(--t3)">Módulo(s)</span><select class="sel" id="ecScModulo" multiple size="3">${Object.keys(CX.MODULES||{}).map(mid=>`<option value="${mid}" ${(cc.scope&&cc.scope.modulo||[]).includes(mid)?'selected':''}>${(CX.MODULES[mid]&&CX.MODULES[mid].name)||mid}</option>`).join('')}</select></div>
++            <div><span style="font-size:10px;color:var(--t3)">Paquete(s)</span><select class="sel" id="ecScPaquete" multiple size="3">${CX.acadData.PAQUETES.map(pk=>`<option value="${pk.id}" ${(cc.scope&&cc.scope.paquete||[]).includes(pk.id)?'selected':''}>${pk.label}</option>`).join('')}</select></div>
++          </div>
++          <div style="font-size:10.5px;color:var(--t3);margin-top:6px">Creador: <b>${cc.creador||'—'}</b>${cc.revisadoPor?' · Revisado por: <b>'+cc.revisadoPor+'</b>':''}${cc.aprobadoPor?' · Aprobado por: <b>'+cc.aprobadoPor+'</b>':''}</div>
++        </div>`:''}
++        ${CX.acadData.isCustom(rr,cc.id)?`<div style="grid-column:1/3;font-size:10.5px;color:var(--t3)">Estado: <b>${({borrador:'📝 Borrador',en_revision:'👀 En revisión',aprobado:'✅ Aprobado',archivado:'🗄 Archivado',eliminado:'🗑 Eliminado',publicado_preview:'✓ Publicado (preview)'}[cc.estado]||'—')}</b> · contenido v${cc.contentVersion||1} · flujo v${cc.workflowVersion||1}${cc.auditRef?' · '+cc.auditRef:''}</div>
++        <div style="grid-column:1/3;display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">${(CX.acadData.ALLOWED_TRANSITIONS[cc.estado||'borrador']||[]).filter(s=>s!=='archivado'&&s!=='eliminado').map(s=>`<button class="btn btn-soft btn-sm acadTrans" data-to="${s}" style="font-size:10.5px;padding:4px 9px">→ ${({borrador:'Borrador',en_revision:'Enviar a revisión',aprobado:'Aprobar',publicado_preview:'Publicar (preview)'}[s]||s)}</button>`).join('')}</div>`:''}</div><div style="text-align:right;margin-top:10px;display:flex;justify-content:space-between">${CX.acadData.isCustom(rr,cc.id)?'<button class="btn btn-ghost btn-sm" id="ecDel" style="color:var(--red)">🗑 Eliminar</button>':'<span></span>'}<button class="btn btn-pr btn-sm" id="ecSave">Guardar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#ecSave').addEventListener('click',()=>{
++        /* T2.B (paquete V108): scope ya no es CSV libre — se lee de <select multiple> con IDs
++           estables de catálogos reales (proyectos, CX.GEO, CX.ROLES, CX.MODULES, niveles y
++           paquetes curados). tenantId siempre se fija al tenant activo (CX.BRAND.id), heredado
++           y no editable — todo curso queda vinculado a un tenant real. */
++        const multi=(sel)=>{const el=ov.querySelector(sel); if(!el) return undefined; return [...el.selectedOptions].map(o=>o.value).filter(Boolean);};
++        const scope=ov.querySelector('#ecScProj')?{tenantId:[CX.BRAND.id],projectId:multi('#ecScProj'),pais:multi('#ecScPais'),rol:multi('#ecScRol'),nivel:multi('#ecScNivel'),modulo:multi('#ecScModulo'),paquete:multi('#ecScPaquete')}:cc.scope;
++        const r=CX.acadData.editCourse(rr,cc.id,{n:ov.querySelector('#ecN').value.trim(),cat:ov.querySelector('#ecC').value,desc:ov.querySelector('#ecD').value.trim(),scope});if(!r.ok){ui.toast('🔒 '+r.error,'warn',4200);return;}close();draw();ui.toast('Curso actualizado · auditado','ok');});
+       ov.querySelectorAll('.acadTrans').forEach(b=>b.addEventListener('click',()=>{
+         const to=b.dataset.to;
+         close();
+-        ui.modal('Cambiar estado → '+to,`<p style="font-size:12px;color:var(--t2);margin-bottom:8px">"${(cc.n||'').replace(/"/g,'&quot;')}" pasará a estado <b>${to}</b>.</p><label class="lbl">Motivo</label><textarea class="inp" id="trMot" rows="2" placeholder="Explica el cambio de estado…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="trOk">Confirmar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#trOk').addEventListener('click',()=>{
++        const needsActor = to==='en_revision' || to==='aprobado';
++        /* T2 (paquete V108 — 20260712): el prototipo NO tiene un catálogo real de usuarios/Auth
++           con múltiples identidades — solo la sesión activa (CX.session.user). Antes se ofrecía
++           un "roster" armado con ETIQUETAS DE ROL (super/admin/coordinador) como si fueran personas
++           reales seleccionables: eso simulaba una separación de funciones que no existía. Ahora el
++           único actor posible es la identidad de sesión autenticada; si coincide con quien creó (o
++           revisó, para aprobar), no hay una segunda identidad real disponible y el flujo queda
++           bloqueado como preview — nunca se inventa una persona distinta. */
++        /* T1b (paquete V109 — corrección P0): el prototipo SÍ tiene un catálogo real de usuarios
++           invitados (cx_users, Configuración → Usuarios & Permisos) además de la sesión activa —
++           V108 afirmaba erróneamente que no existía ninguno. El actor se resuelve por ID ESTABLE
++           (CX.acadData.actorId(), persistido en cx_users cuando la sesión viene de un usuario
++           invitado con email, o derivado de rol+shopperId para sesiones demo sintéticas). Si el
++           id del actor de sesión coincide con quien creó (o revisó, para aprobar) el curso, no
++           hay una segunda identidad real disponible en ESTA sesión y el flujo queda bloqueado
++           como preview — nunca se inventa una persona ni un roster de etiquetas de rol. */
++        const sessionActor=(CX.session&&CX.session.user&&CX.session.user.name)||null;
++        const sessionActorId=CX.acadData.actorId();
++        const creadorId=cc.createdByUserId||(cc.creador?CX.acadData._idFromName(cc.creador):null);
++        const revisorId=cc.reviewedByUserId||(cc.revisadoPor?CX.acadData._idFromName(cc.revisadoPor):null);
++        const blockedReason = to==='aprobado' && revisorId && sessionActorId===revisorId
++          ? 'quien revisó ('+cc.revisadoPor+')'
++          : (creadorId && sessionActorId===creadorId ? 'quien creó ('+cc.creador+')' : null);
++        const actorAvailable = needsActor ? (sessionActor && !blockedReason) : true;
++        ui.modal('Cambiar estado → '+to,`<p style="font-size:12px;color:var(--t2);margin-bottom:8px">"${(cc.n||'').replace(/"/g,'&quot;')}" pasará a estado <b>${to}</b>.</p>${needsActor?(actorAvailable?`<div style="font-size:12px;color:var(--t2);margin-bottom:10px">${to==='en_revision'?'Revisa':'Aprueba'}: <b>${sessionActor}</b> (identidad de la sesión activa)</div>`:`<div class="bdg bdg-a" style="margin-bottom:10px;display:inline-block">Preview · requiere usuarios/Auth</div><div style="font-size:11.5px;color:var(--t3);margin-bottom:8px">Este prototipo no tiene un catálogo de usuarios/Auth con una segunda identidad distinta de ${blockedReason||'quien creó el curso'}. En producción, Auth real permite iniciar sesión como el revisor/aprobador correspondiente; aquí el flujo queda pendiente para no simular una separación de funciones inexistente.</div>`):''}<label class="lbl">Motivo</label><textarea class="inp" id="trMot" rows="2" placeholder="Explica el cambio de estado…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="trOk" ${actorAvailable?'':'disabled style="opacity:.5;cursor:not-allowed"'}>Confirmar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#trOk').addEventListener('click',()=>{
++          if(!actorAvailable){ ui.toast('Preview · requiere usuarios/Auth para esta transición','warn',3600); return; }
+           const m=(o2.querySelector('#trMot').value||'').trim();
+-          const r=CX.acadData.setCourseState(rr,cc.id,to,{reason:m,ctx:CX.permissions.ctx()});
++          const actor=needsActor?sessionActor:'';
++          const opts={reason:m,ctx:CX.permissions.ctx()};
++          if(to==='en_revision'){ opts.revisor=actor; opts.revisorId=sessionActorId; }
++          if(to==='aprobado'){ opts.aprobador=actor; opts.aprobadorId=sessionActorId; }
++          const r=CX.acadData.setCourseState(rr,cc.id,to,opts);
+           if(!r.ok){ ui.toast('🔒 '+r.error,'warn',4200); return; }
+           c2();draw();ui.toast('Curso → '+to+' · auditado','ok');
+         });}});
+
+===== app/modules/cliente.js.rej =====
+--- app/modules/cliente.js
++++ app/modules/cliente.js
+@@ -93,12 +93,12 @@ CX.cliUI = {
+         <div class="flex" style="gap:14px">${this.donut(suc.score,76)}
+           <div><div class="card-t" style="font-size:16px">${suc.name}</div>
+           <div style="font-size:12px;color:var(--t3)">${CX.paisFlag(suc.pais)} ${suc.ciudad} · ${suc.region}</div>
+-          <div style="font-size:12px;color:var(--t2);margin-top:3px">Responsable: <b>${suc.responsable}</b></div>
++          <div style="font-size:12px;color:var(--t2);margin-top:3px">Responsable: <b>${suc.responsable||'—'}</b></div>
+           <div style="margin-top:6px">${this.pill(suc.score)} ${this.delta(suc.delta)}</div></div></div>
+       </div>
+       <div class="grid g4" style="margin-bottom:16px">
+-        ${ui.kpi('Visitas',suc.visitas,'b')}${ui.kpi('NPS',suc.nps,'p')}
+-        ${ui.kpi('vs. periodo previo',(suc.delta>0?'+':'')+suc.delta,suc.delta>=0?'g':'r','pts')}${ui.kpi('Última visita',suc.lastVisit?suc.lastVisit.slice(5):ui.statusBdg('pending_source'),'n')}
++        ${ui.kpi('Visitas',suc.visitas,'b')}${ui.kpi('NPS',suc.nps!=null?suc.nps:CX.ui.statusBdg('pending_source'),'p')}
++        ${ui.kpi('vs. periodo previo',suc.delta!=null?(suc.delta>0?'+':'')+suc.delta:CX.ui.statusBdg('pending_source'),suc.delta>=0?'g':'r','pts')}${ui.kpi('Última visita',suc.lastVisit?suc.lastVisit.slice(5):ui.statusBdg('pending_source'),'n')}
+       </div>
+       <div class="card-t" style="font-size:13px;margin-bottom:10px">Score por sección (ponderado)</div>
+       ${secRows}
+@@ -227,10 +227,17 @@ CX.module('cli_dashboard', ({ui})=>{
+   const C=CX.clienteData, p=CX.data.project();
+   const list=C.scoped(p), R=C.resumen(list);
+   const hasBranches = list.length>0;
+-  const hasScored = R.n>0;
+-  const distrib=[['Excelente','g',list.filter(s=>s.score>=85).length],['Bueno','b',list.filter(s=>s.score>=75&&s.score<85).length],
+-    ['En atención','a',list.filter(s=>s.score>=65&&s.score<75).length],['Crítico','r',list.filter(s=>s.score<65).length]];
+-  const tot=list.length||1;
++  /* T3 (paquete V109 — 20260712, corrección P0): un solo helper decide qué es un score válido
++     y en qué banda cae — CX.clienteData.band()/validScore(). V108 usaba `typeof==='number'`
++     (acepta NaN/Infinity) y DOS umbrales de "crítico" distintos entre la distribución (<65) y
++     el KPI/drill (<70). Ahora withScore/pending y las 4 bandas salen de la MISMA fuente en
++     TODAS las vistas (distribución, KPI, drill, capacitación). */
++  const withScore=list.filter(s=>s.hasScore!==false && C.validScore(s.score));
++  const pending=list.filter(s=>s.hasScore===false || !C.validScore(s.score));
++  const hasScored = withScore.length>0;
++  const distrib=[['Excelente','g',withScore.filter(s=>C.band(s.score).key==='excelente').length],['Bueno','b',withScore.filter(s=>C.band(s.score).key==='bueno').length],
++    ['En atención','a',withScore.filter(s=>C.band(s.score).key==='atencion').length],['Crítico','r',withScore.filter(s=>C.band(s.score).key==='critico').length]];
++  const tot=withScore.length||1;
+   const rankRow=(s,i)=>`<div class="card hov flex" data-suc="${s.id}" style="padding:10px 12px;gap:10px;cursor:pointer">
+     <b style="width:18px;color:var(--t3);font-family:var(--disp)">${i+1}</b>
+     <div style="flex:1;min-width:0"><b style="font-size:13px">${s.name}</b><div style="font-size:11px;color:var(--t3)">${s.region}</div></div>
+
+===== app/modules/finanzas.js.rej =====
+--- app/modules/finanzas.js
++++ app/modules/finanzas.js
+@@ -434,7 +434,11 @@ CX.module('movimientos', ({data,ui})=>{
+       const val=CX.liq.forProject(data).filter(l=>l.estado==='validada');
+       if(!val.length){ui.toast('No hay liquidaciones validadas para pagar','warn');return;}
+       const r=data.payVisits(val.map(l=>l.visitaId));
+-      ui.toast(r.pagadas+' liquidaciones marcadas pagadas (preview) · egreso(s) preparados en Movimientos · cruce bancario real pendiente backend','ok',4200);
++      /* P0-2 (V110): el toast ya no asume que todo lo enviado se pagó — si payVisits() devolvió
++         reviewRequired, esas visitas NO cambiaron de estado ni generaron movimiento; se informa
++         aparte y honesto, nunca mezclado con "pagadas". */
++      const revMsg=(r.reviewRequired&&r.reviewRequired.length)?(' · '+r.reviewRequired.length+' en revisión requerida (dato incompleto, no pagada(s))'):'';
++      ui.toast(r.pagadas+' liquidaciones marcadas pagadas (preview) · egreso(s) preparados en Movimientos'+revMsg+' · cruce bancario real pendiente backend', r.reviewRequired&&r.reviewRequired.length?'warn':'ok',4800);
+     });
+     const ih=host.querySelector('#impHist');
+     if(ih)ih.addEventListener('click',()=>ui.modal('Importar histórico de movimientos',`
+@@ -606,12 +611,53 @@ CX.module('lotes', ({data,ui})=>{
+      para lotes genuinamente confirmados, mezclando las dos etiquetas. Ahora cada lote declara
+      `confirmado` (todas sus liquidaciones son 'pagada' con paymentSourceRef) y el estado/tono/label
+      salen de ese booleano, no de un texto fijo. */
++  /* lotes reales: se agrupan por identidad real de lote. P0-6 (paquete acumulado 20260711):
++     un lote con AL MENOS una liquidación en `pagada_preview` (sin paymentSourceRef real) no
++     puede rotularse "Pagado" igual que uno 100% confirmado.
++     T3 (paquete V108 — 20260712, corrección de fondo): antes se agrupaba SOLO por
++     `fechaEstimadaPago||fechaPago` — dos lotes de países/monedas distintos pagados el mismo
++     día colisionaban en una sola fila, sumando montos de monedas distintas bajo la moneda del
++     primer registro. Ahora la llave de agrupación es, en orden de prioridad: (1) `loteId` real
++     persistido por payVisits (identidad estable de backend/preview); si una liquidación no trae
++     loteId (dato legado), (2) una llave compuesta tenantId+projectId+país+moneda+periodo+fecha
++     — NUNCA solo la fecha — así país/moneda jamás se mezclan y dos lotes del mismo proyecto,
++     país, moneda y fecha con orígenes distintos no colisionan. */
++  const tenantId=(CX.BRAND&&CX.BRAND.id)||'tenant-demo';
+   const liqsPagadas=(CX.liq&&CX.liq.forProject?CX.liq.forProject(data):[]).filter(l=>['pagada','pagada_preview'].includes(l.estado));
+-  const porFecha={}; liqsPagadas.forEach(l=>{const f=l.fechaEstimadaPago||l.fechaPago||'—';(porFecha[f]=porFecha[f]||[]).push(l);});
+-  const lotesReales=Object.keys(porFecha).map((f,i)=>{const ls=porFecha[f];const monto=ls.reduce((a,l)=>a+(l.total||0),0);
++  /* T2.C (paquete V109 — defensa en la vista): aunque exista un loteId real, la vista SIEMPRE
++     valida país+moneda antes de sumar — un loteId legado que mezcle países/monedas (dato de una
++     versión anterior a la corrección) se divide en sub-filas por país+moneda y cada una se marca
++     "Revisión requerida" en vez de sumarse a ciegas bajo una sola moneda. */
++  const loteIdCombos={};
++  liqsPagadas.forEach(l=>{ if(l.loteId){ const combo=(l.pais||'—')+'::'+(l.moneda||'—'); (loteIdCombos[l.loteId]=loteIdCombos[l.loteId]||new Set()).add(combo); } });
++  const groupKey=(l)=>{
++    if(l.loteId) return 'id::'+l.loteId+'::'+(l.pais||'—')+'::'+(l.moneda||'—');
++    /* si falta país o moneda, el registro no se agrupa silenciosamente con otros — cae en su
++       propia llave de revisión, nunca se suma "a ciegas" a un lote con país/moneda distintos. */
++    if(!l.pais || !l.moneda){
++      /* T2 (paquete V109 — corrección P0): eliminado Math.random() del fallback de revisión —
++         ya no era reproducible. La llave ahora es estable: visitaId real si existe, o un hash
++         determinístico de los campos disponibles del registro (nunca aleatorio). */
++      const seed=l.visitaId || [l.shopper||'',l.sucursal||'',l.total||0,l.fechaEstimadaPago||l.fechaPago||''].join('|');
++      let h=0; for(let i=0;i<String(seed).length;i++) h=(h*31+String(seed).charCodeAt(i))|0;
++      return 'revision::'+Math.abs(h).toString(36);
++    }
++    const f=l.fechaEstimadaPago||l.fechaPago||'—';
++    const periodo=(f&&f!=='—')?f.slice(0,7):'—';
++    return ['legacy',tenantId,p.id,l.pais,l.moneda,periodo,f].join('::');
++  };
++  const porLote={}; liqsPagadas.forEach(l=>{const k=groupKey(l);(porLote[k]=porLote[k]||[]).push(l);});
++  const lotesReales=Object.keys(porLote).map((k,i)=>{const ls=porLote[k];const monto=ls.reduce((a,l)=>a+(l.total||0),0);
+     const confirmado=ls.every(l=>l.estado==='pagada');
+-    return {id:'#LOTE-'+(i+1),n:ls.length,monto,cur:ls[0].moneda||cur,
+-      estado: confirmado?'Pagado':'Pagado (preview)', tone: confirmado?'g':'a', confirmado,
++    const f=ls[0].fechaEstimadaPago||ls[0].fechaPago||'—';
++    /* id estable derivado de la llave real de agrupación (loteId+país+moneda o compuesta) — no
++       del índice de iteración ni de solo la fecha. */
++    let h=0; for(let c=0;c<k.length;c++)h=(h*31+k.charCodeAt(c))|0;
++    const conflict = ls[0].loteId && loteIdCombos[ls[0].loteId] && loteIdCombos[ls[0].loteId].size>1;
++    const baseId = ls[0].loteId?('#'+ls[0].loteId):('#LOTE-'+Math.abs(h).toString(36).toUpperCase().slice(0,6));
++    return {id: conflict?(baseId+' · '+(ls[0].pais||'—')+'/'+(ls[0].moneda||'—')):baseId,
++      n:ls.length,monto,cur:ls[0].moneda||cur,pais:ls[0].pais,
++      estado: conflict?'Revisión requerida':(confirmado?'Pagado':'Pagado (preview)'), tone: conflict?'r':(confirmado?'g':'a'), confirmado, conflict,
+       fecha:f,visitas:ls.slice(0,10).map(l=>[l.shopper||'—',l.sucursal||'—',l.total||0])}; });
+   const lotes = _showFixturesLotes ? lotesDemo : lotesReales;
+   const html=`
 
