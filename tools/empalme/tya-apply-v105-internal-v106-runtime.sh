@@ -11,6 +11,7 @@ REPORT_DIR=".tmp/v105-v106-runtime-empalme"
 BASE_COMMIT="40ed11aa4f6de5524f60b0ea1d0060f20a4172f4"
 TARGET_BRANCH="docs-tya-v6-v71-audit"
 EXPECTED_PACKAGE_SHA="582a8c98cdac7b46028bb720d1304657c6d678e99e4bc23a49e80ab440bc8206"
+EXPECTED_RAW_B64_SHA="30c486f481ee981ae8141cd506157371a0be82bc0e4a883a55568b3fe37645ec"
 EXPECTED_B64_SHA="d52ffc307a269d5630c81e4fd0e89d05cd4b672d261f104cb767998e46fa2c85"
 EXPECTED_ARCHIVE_SHA="eaab10c0cef8670d79fb6a6fb68b014acf0707545419172cf73ff1cdb2e7ccb7"
 EXPECTED_CHECKSUM_FILE_SHA="d198b0a1cf5d8e5de8fc87bbb961b40e08cd4b97314764ec9e87fcac4befc49b"
@@ -19,6 +20,7 @@ REQUIRED_CONFIRMATION="EMPALME_V105_INTERNAL_V106_EXACTO"
 mkdir -p "$REPORT_DIR"
 REPORT_PATH="$REPORT_DIR/report.json"
 PATHS_PATH="$REPORT_DIR/runtime-paths.txt"
+RAW_B64_PATH="$REPORT_DIR/runtime-delta.raw.b64"
 B64_PATH="$REPORT_DIR/runtime-delta.b64"
 ARCHIVE_PATH="$REPORT_DIR/runtime-delta.tar.gz"
 ARCHIVE_LIST="$REPORT_DIR/archive-paths.txt"
@@ -96,7 +98,31 @@ parts=(
 for part in "${parts[@]}"; do
   [[ -f "$part" ]] || fail "delta_part_missing" "$part"
 done
-cat "${parts[@]}" > "$B64_PATH"
+
+# El conector de archivos de texto alteró tres caracteres al transportar el blob.
+# Se normaliza y repara únicamente esos offsets conocidos; ambos estados quedan
+# fijados por SHA-256 antes de decodificar el archivo exacto del paquete.
+cat "${parts[@]}" | tr -d '\r\n\t ' > "$RAW_B64_PATH"
+printf '%s  %s\n' "$EXPECTED_RAW_B64_SHA" "$RAW_B64_PATH" | sha256sum -c - >/dev/null || fail "delta_raw_base64_hash_mismatch" "$RAW_B64_PATH"
+python3 - "$RAW_B64_PATH" "$B64_PATH" <<'PY'
+from pathlib import Path
+import sys
+source = Path(sys.argv[1]).read_bytes()
+if len(source) != 132090:
+    raise SystemExit(f'unexpected_raw_base64_length:{len(source)}')
+repaired = bytearray(source)
+if repaired[85527:85528] != b't':
+    raise SystemExit('unexpected_connector_offset_85527')
+repaired[85527:85527] = b'k'
+if repaired[101860:101861] != b'E':
+    raise SystemExit('unexpected_connector_offset_101860')
+repaired[101860:101861] = b'A'
+if repaired[114227:114228] != b'e':
+    raise SystemExit('unexpected_connector_offset_114227')
+repaired[114227:114227] = b'/'
+Path(sys.argv[2]).write_bytes(repaired)
+print(f'connector_repair_ok:{len(repaired)}')
+PY
 printf '%s  %s\n' "$EXPECTED_B64_SHA" "$B64_PATH" | sha256sum -c - >/dev/null || fail "delta_base64_hash_mismatch" "$B64_PATH"
 base64 --decode "$B64_PATH" > "$ARCHIVE_PATH"
 printf '%s  %s\n' "$EXPECTED_ARCHIVE_SHA" "$ARCHIVE_PATH" | sha256sum -c - >/dev/null || fail "delta_archive_hash_mismatch" "$ARCHIVE_PATH"
@@ -216,7 +242,8 @@ fs.writeFileSync(out, JSON.stringify({
     nodeSyntax: 'PASS',
     utf8NoBomNoMojibake: 'PASS',
     deltaSha256,
-    checksumFileSha256
+    checksumFileSha256,
+    connectorTransportRepair: 'THREE_FIXED_OFFSETS_HASH_VERIFIED'
   },
   knownHonestyLimits: {
     packageInternalManifest: 'INVALID_STALE_TWO_DIFFERENCES',
