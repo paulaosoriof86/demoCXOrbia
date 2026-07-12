@@ -1,0 +1,55 @@
+name: CXOrbia Export Current 11 Runtime Files
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - tools/empalme/export-current-11/READY
+
+permissions:
+  contents: read
+
+jobs:
+  export-current-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout rama viva
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+
+      - name: Empaquetar 11 archivos actuales
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/current-11
+          while IFS= read -r f; do
+            mkdir -p ".tmp/current-11/$(dirname "$f")"
+            cp "$f" ".tmp/current-11/$f"
+          done <<'EOF'
+          app/core/cliente-data.js
+          app/core/data.js
+          app/core/liquidacion.js
+          app/modules/academia.js
+          app/modules/beneficios.js
+          app/modules/cert.js
+          app/modules/cliente-extra.js
+          app/modules/cliente.js
+          app/modules/dashboard.js
+          app/modules/finanzas.js
+          app/styles/layout.css
+          EOF
+          sed -i 's/^          //' /dev/null || true
+          tar -czf .tmp/cxorbia-current-11.tar.gz -C .tmp/current-11 .
+          sha256sum .tmp/cxorbia-current-11.tar.gz > .tmp/cxorbia-current-11.sha256
+
+      - name: Subir artefacto source-safe
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-current-11-runtime
+          path: |
+            .tmp/cxorbia-current-11.tar.gz
+            .tmp/cxorbia-current-11.sha256
+          if-no-files-found: error
+          retention-days: 3
