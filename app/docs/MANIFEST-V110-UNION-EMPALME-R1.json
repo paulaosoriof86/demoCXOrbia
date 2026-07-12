@@ -3,7 +3,7 @@
   "package": "CXORBIA-V110-UNION-EMPALME-R1",
   "project": "CXOrbia",
   "baseline": "V110 empalmada de forma determinística sobre rama viva",
-  "generatedAt": "2026-07-12T21:26:17.068Z",
+  "generatedAt": "2026-07-12T21:28:16.199Z",
   "sourceZipSha256": "1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227",
   "basePackageSha256": "582a8c98cdac7b46028bb720d1304657c6d678e99e4bc23a49e80ab440bc8206",
   "runtimePatchSha256": "d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd",
@@ -25,7 +25,7 @@
     "generatedUnionLock": "core/build-lock.js"
   },
   "fileCount": 1380,
-  "aggregateSha256": "49f04c99e18db14b574d40c6a7f0a995682f2ddfc9487face33d74835cf320b1",
+  "aggregateSha256": "88acf515fcbf6ed55df98c8c90c2f113a2f43a8cd3a0943ab3a3e6ab569cb2a8",
   "exclusionsDeclared": [
     {
       "path": "core/build-lock.js",
@@ -4988,8 +4988,8 @@
     },
     {
       "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-R10-FINAL-20260712.md",
-      "size": 804,
-      "sha256": "368bb3e72c7e9ecb5418b41501aa9fafc52e082d7b6cc2bbfd582d489a2a5a44"
+      "size": 970,
+      "sha256": "0aa1b0874249e1f5f39f9aaa1aa1701420bc89e1132ac70ed083a59e67898b3b"
     },
     {
       "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-R10-POST-V110-20260712.md",

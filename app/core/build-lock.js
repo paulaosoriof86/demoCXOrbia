@@ -2,7 +2,7 @@
    No implica deploy, producción, importación ni providers activos. */
 var CX_SOURCE_LOCK={
   manifestFile:'docs/MANIFEST-V110-UNION-EMPALME-R1.json',
-  aggregateSha256:'49f04c99e18db14b574d40c6a7f0a995682f2ddfc9487face33d74835cf320b1',
+  aggregateSha256:'88acf515fcbf6ed55df98c8c90c2f113a2f43a8cd3a0943ab3a3e6ab569cb2a8',
   fileCount:1380,
   runtimeIdentity:'67 exactos V110 + 2 overrides locales protegidos + lock unión',
   r10Decision:'PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE',
