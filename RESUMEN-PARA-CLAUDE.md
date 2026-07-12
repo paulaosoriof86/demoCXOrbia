@@ -114,3 +114,9 @@
 - Decisión backend: `HOLD_REFERENCE_SET_UNAVAILABLE`.
 - No es tarea Claude: la diferencia 210/213 se procesa por referencias opacas y revisión humana.
 - No reabrir P0 V110 ni R10.
+
+
+## R11B shopper history recovery — 2026-07-12
+
+- Decisión backend: `HOLD_NO_213_REFERENCE_SET_IN_REACHABLE_GIT_OBJECTS`.
+- No es tarea Claude. No reabrir V110 ni R10.

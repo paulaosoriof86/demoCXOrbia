@@ -194,3 +194,10 @@
 - Decisión: `HOLD_REFERENCE_SET_UNAVAILABLE`.
 - Actual 210; histórica no localizada; históricas ausentes 0; nuevas 0.
 - No match por nombre, no materialización, no imports, no writes, no deploy ni producción.
+
+
+## R11B recuperación histórica shopper refs — 2026-07-12
+
+- Decisión: `HOLD_NO_213_REFERENCE_SET_IN_REACHABLE_GIT_OBJECTS`.
+- Objetos inspeccionados con referencias: 0; candidatos exactos 213: 0.
+- Sin match por nombre, materialización, imports, writes, deploy ni producción.
