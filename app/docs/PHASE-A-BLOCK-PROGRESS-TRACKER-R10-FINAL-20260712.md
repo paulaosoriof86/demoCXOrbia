@@ -11,8 +11,8 @@ Fecha: 2026-07-12
 - HR source-safe actual: 14 periodos / 616 visitas / 210 shoppers.
 - Reconciliación 210/213: REVIEW_REQUIRED, sin match por nombre.
 - Firebase DEV read-only: pendiente autorización específica.
-- Pagos/certificaciones: pendientes fuentes sanitizadas.
+- Pagos/certificaciones: importadores source-safe listos; fuentes sanitizadas reales pendientes.
 - Source lock final de producción: HOLD.
 - Producción: HOLD.
 
-Siguiente bloque exacto: reconciliación source-safe de las 3 referencias shopper y, en carril separado, evidencia Firebase DEV read-only solo con autorización explícita.
+Siguiente bloque exacto: reconciliar source-safe las 3 referencias shopper usando llaves estables ya documentadas, sin volver a extraer HR ni repetir Level 0/1. Después, preparar la evidencia Firebase DEV read-only en carril separado y ejecutarla únicamente con autorización explícita de Paula.
