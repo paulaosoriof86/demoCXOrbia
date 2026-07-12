@@ -70,4 +70,91 @@ app/core/finanzas-core.js: OK
 app/core/topbar.js: OK
 /tmp/v110-runtime.patch: OK
 /tmp/v110-academia.patch: OK
-base64: invalid input
+app/core/liquidacion.js: OK
+app/app.js: OK
+app/core/automations.js: OK
+app/core/cliente-data.js: OK
+app/core/config.js: OK
+app/core/costos.js: OK
+app/core/data-source.js: OK
+app/core/data.js: OK
+app/core/dedupe.js: OK
+app/core/geo.js: OK
+app/core/hr.js: OK
+app/core/importador.js: OK
+app/core/liquidacion.js: OK
+app/core/manuales-data.js: OK
+app/core/notif.js: OK
+app/core/permissions.js: OK
+app/core/programa.js: OK
+app/core/pwa.js: OK
+app/core/router.js: OK
+app/core/shoppers-store.js: OK
+app/core/store.js: OK
+app/core/ui.js: OK
+app/demo/index.html: OK
+app/index.html: OK
+app/manifest.webmanifest: OK
+app/modules/academia.js: OK
+app/modules/administrabilidad.js: OK
+app/modules/automatizaciones.js: OK
+app/modules/beneficios.js: OK
+app/modules/cert.js: OK
+app/modules/cliente-extra.js: OK
+app/modules/cliente-insights.js: OK
+app/modules/cliente.js: OK
+app/modules/clientes.js: OK
+app/modules/comercial.js: OK
+app/modules/configuracion.js: OK
+app/modules/correo.js: OK
+app/modules/crm.js: OK
+app/modules/cuestionario-shopper.js: OK
+app/modules/dashboard.js: OK
+app/modules/diagnostico.js: OK
+app/modules/documentos.js: OK
+app/modules/finanzas.js: OK
+app/modules/historico.js: OK
+app/modules/hr-source.js: OK
+app/modules/importador.js: OK
+app/modules/integraciones.js: OK
+app/modules/marca.js: OK
+app/modules/marketing.js: OK
+app/modules/midia.js: OK
+app/modules/misvisitas.js: OK
+app/modules/novedades.js: OK
+app/modules/operacion-extra.js: OK
+app/modules/periodos.js: OK
+app/modules/postulaciones.js: OK
+app/modules/proyecto-wizard.js: OK
+app/modules/proyectos.js: OK
+app/modules/reservas.js: OK
+app/modules/revision-admin.js: OK
+app/modules/saas-console.js: OK
+app/modules/shoppers.js: OK
+app/modules/soporte.js: OK
+app/modules/tablon.js: OK
+app/modules/visita-detalle.js: OK
+app/modules/visitas.js: OK
+app/styles/layout.css: OK
+app/styles/theme.css: OK
+app/sw.js: OK
+app/core/finanzas-core.js: OK
+app/core/topbar.js: OK
+utf8_no_bom_no_mojibake:PASS:70
+[stdin]:15
+if(regs.length!==48||new Set(regs).size!==48) throw new Error(`module_graph_invalid registrations=${regs.length} unique=${new Set(regs).size}`);
+                                              ^
+
+Error: module_graph_invalid registrations=49 unique=48
+    at [stdin]:15:53
+    at runScriptInThisContext (node:internal/vm:209:10)
+    at node:internal/process/execution:446:12
+    at [stdin]-wrapper:6:24
+    at runScriptInContext (node:internal/process/execution:444:60)
+    at evalFunction (node:internal/process/execution:279:30)
+    at evalTypeScript (node:internal/process/execution:291:3)
+    at node:internal/main/eval_stdin:53:5
+    at Socket.<anonymous> (node:internal/process/execution:201:5)
+    at Socket.emit (node:events:531:35)
+
+Node.js v22.23.1
