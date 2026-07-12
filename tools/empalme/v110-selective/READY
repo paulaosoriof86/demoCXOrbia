@@ -3,5 +3,7 @@ sourceZipSha256=1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227
 runtimePatchSha256=d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd
 academiaPatchSha256=8395ca4eeb4dc5b5e459bcaf51ef538419db80535baaf319aec68688551740fd
 mode=selective-three-way-fail-closed
+exactChunks=10
+attempt=20260712T1700
 noDeploy=true
 noProduction=true
