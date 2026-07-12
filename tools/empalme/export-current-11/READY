@@ -1,6 +1,7 @@
 CXORBIA_EXPORT_CURRENT_11_READY
-requestedAt=2026-07-12T20:42:00Z
-attempt=2
+requestedAt=2026-07-12T20:48:00Z
+attempt=3
 purpose=v110-selective-reconciliation
+chunkBytes=20000
 noDeploy=true
 noProduction=true
