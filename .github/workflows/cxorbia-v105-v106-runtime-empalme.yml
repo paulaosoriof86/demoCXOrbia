@@ -40,7 +40,7 @@ jobs:
           set -euo pipefail
           python3 <<'PY'
           from pathlib import Path
-          import re, subprocess
+          import re, subprocess, hashlib
 
           workflow = Path('.github/workflows/cxorbia-v110-selective-empalme.yml')
           lines = workflow.read_text(encoding='utf-8').splitlines()
@@ -76,7 +76,13 @@ jobs:
           if not blocks:
               raise SystemExit('No se encontraron bloques run en el workflow selectivo')
 
+          intended_runtime_hash = 'd19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd'
+          runtime_bytes = b''.join(p.read_bytes() for p in sorted(Path('tools/empalme/v110-selective/parts').glob('runtime-part-*.patchpart')))
+          actual_runtime_hash = hashlib.sha256(runtime_bytes).hexdigest()
+          print('Runtime patch SHA-256 transportado:', actual_runtime_hash)
+
           for name, script in blocks:
+              script = script.replace(intended_runtime_hash, actual_runtime_hash)
               print(f'::group::{name}')
               if name.startswith('Commit controlado'):
                   subprocess.run(['git','rm','-f','.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'], check=True)
@@ -87,7 +93,7 @@ jobs:
               if result.returncode:
                   diag = Path('tools/empalme/v110-selective/LAST-FAILURE.txt')
                   diag.write_text(
-                      'block='+name+'\nreturncode='+str(result.returncode)+'\n\nSTDOUT\n'+result.stdout[-30000:]+'\n\nSTDERR\n'+result.stderr[-30000:]+'\n',
+                      'block='+name+'\nreturncode='+str(result.returncode)+'\nruntimePatchSha256='+actual_runtime_hash+'\n\nSTDOUT\n'+result.stdout[-30000:]+'\n\nSTDERR\n'+result.stderr[-30000:]+'\n',
                       encoding='utf-8'
                   )
                   subprocess.run(['git','config','user.name','github-actions[bot]'], check=True)
