@@ -3,35 +3,40 @@ returncode=1
 runtimePatchSha256=d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd
 
 STDOUT
+checking file app/core/cliente-data.js
+Hunk #1 FAILED at 55.
+Hunk #2 FAILED at 94.
+Hunk #3 FAILED at 144.
+Hunk #4 FAILED at 162.
+Hunk #5 succeeded at 147 with fuzz 1 (offset -28 lines).
+4 out of 5 hunks FAILED
+checking file app/core/data.js
+checking file app/core/liquidacion.js
+Hunk #1 succeeded at 69 with fuzz 1 (offset -7 lines).
+checking file app/modules/beneficios.js
+checking file app/modules/cert.js
+Hunk #1 succeeded at 159 (offset -57 lines).
+Hunk #2 succeeded at 171 (offset -57 lines).
+checking file app/modules/cliente-extra.js
+Hunk #1 succeeded at 13 with fuzz 3.
+checking file app/modules/cliente.js
+Hunk #1 FAILED at 93.
+Hunk #2 FAILED at 227.
+Hunk #3 succeeded at 228 with fuzz 3 (offset -15 lines).
+Hunk #4 succeeded at 272 (offset -28 lines).
+Hunk #5 succeeded at 303 (offset -24 lines).
+Hunk #6 succeeded at 314 with fuzz 2 (offset -24 lines).
+2 out of 6 hunks FAILED
+checking file app/modules/dashboard.js
+Hunk #1 succeeded at 136 (offset -22 lines).
+checking file app/modules/finanzas.js
+Hunk #1 FAILED at 434.
+Hunk #2 succeeded at 572 (offset -2 lines).
+Hunk #3 FAILED at 606.
+2 out of 3 hunks FAILED
+checking file app/styles/layout.css
+Hunk #1 succeeded at 149 with fuzz 3.
 
 
 STDERR
-Applied patch to 'app/core/cliente-data.js' with conflicts.
-Applied patch to 'app/core/data.js' cleanly.
-error: repository lacks the necessary blob to perform 3-way merge.
-Falling back to direct application...
-error: patch failed: app/core/liquidacion.js:76
-error: app/core/liquidacion.js: patch does not apply
-error: repository lacks the necessary blob to perform 3-way merge.
-Falling back to direct application...
-error: repository lacks the necessary blob to perform 3-way merge.
-Falling back to direct application...
-error: repository lacks the necessary blob to perform 3-way merge.
-Falling back to direct application...
-error: patch failed: app/modules/cliente-extra.js:13
-error: app/modules/cliente-extra.js: patch does not apply
-error: repository lacks the necessary blob to perform 3-way merge.
-Falling back to direct application...
-error: patch failed: app/modules/cliente.js:93
-error: app/modules/cliente.js: patch does not apply
-error: repository lacks the necessary blob to perform 3-way merge.
-Falling back to direct application...
-error: repository lacks the necessary blob to perform 3-way merge.
-Falling back to direct application...
-error: patch failed: app/modules/finanzas.js:434
-error: app/modules/finanzas.js: patch does not apply
-error: repository lacks the necessary blob to perform 3-way merge.
-Falling back to direct application...
-error: patch failed: app/styles/layout.css:149
-error: app/styles/layout.css: patch does not apply
 
