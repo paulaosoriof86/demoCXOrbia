@@ -10,7 +10,7 @@ on:
       - 'tools/empalme/v110-selective/READY'
   pull_request:
     branches:
-      - release/cxorbia-tya-rc-20260630
+      - release/cxorbia-tya-v6-v71-audit
     paths:
       - '.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'
       - 'tools/empalme/v110-selective/READY'
@@ -106,10 +106,10 @@ jobs:
                   for pos,c in enumerate(cur):
                       if norm(c)==line: anchors.append((len(line),oi,pos))
               starts={max(0,pos-oi) for _,oi,pos in sorted(anchors,reverse=True)[:60]}
-              starts.update(range(max(0,expected-160),min(len(cur),expected+161)))
+              starts.update(range(max(0,expected-240),min(len(cur),expected+241)))
               best=(-1,None,None); base_len=max(1,len(h['old']))
               for s in starts:
-                  for ln in sorted(set(max(1,base_len+d) for d in range(-10,61))):
+                  for ln in sorted(set(max(1,base_len+d) for d in range(-12,81))):
                       if s+ln>len(cur): continue
                       cand=[norm(x) for x in cur[s:s+ln]]
                       score=difflib.SequenceMatcher(None,old_norm,cand,autojunk=False).ratio()+0.03*max(0,1-abs(s-expected)/1000)
@@ -126,11 +126,24 @@ jobs:
                       if needle and needle in joined:
                           trace.append(f'{target} hunk {idx}: already-applied'); continue
                       score,s,e=best_span(cur,h); trace.append(f'{target} hunk {idx}: score={score:.4f} span={s}:{e}')
-                      if s is None or score<0.33: raise RuntimeError(f'No se pudo ubicar {target} hunk {idx}; score={score:.3f}')
+                      if s is None or score<0.25: raise RuntimeError(f'No se pudo ubicar {target} hunk {idx}; score={score:.3f}')
                       cur[s:e]=h['new']
                   p.write_text('\n'.join(cur)+'\n',encoding='utf-8')
               for q in list(Path('.').rglob('*.rej'))+list(Path('.').rglob('*.orig')): q.unlink(missing_ok=True)
               Path('tools/empalme/v110-selective/RESOLVER-TRACE.txt').write_text('\n'.join(trace)+'\n',encoding='utf-8')
+
+          def persist_failure(name, result, exc=None):
+              if exc is not None: trace.append('EXCEPTION='+repr(exc))
+              stamp=datetime.datetime.utcnow().isoformat()+'Z'
+              trace_path=Path('tools/empalme/v110-selective/RESOLVER-TRACE.txt')
+              trace_path.write_text('\n'.join(trace)+'\n',encoding='utf-8')
+              diag=Path('tools/empalme/v110-selective/LAST-FAILURE.txt')
+              diag.write_text(f'stamp={stamp}\nrun={os.getenv("GITHUB_RUN_ID","unknown")}\nblock={name}\nreturncode={getattr(result,"returncode",1)}\nruntimePatchSha256={actual_runtime_hash}\n\nTRACE\n'+ '\n'.join(trace)+'\n\nSTDOUT\n'+getattr(result,'stdout','')[-30000:]+'\n\nSTDERR\n'+getattr(result,'stderr','')[-30000:]+'\n',encoding='utf-8')
+              subprocess.run(['git','config','user.name','github-actions[bot]'],check=True); subprocess.run(['git','config','user.email','41898282+github-actions[bot]@users.noreply.github.com'],check=True)
+              subprocess.run(['git','add',str(diag),str(trace_path)],check=True)
+              subprocess.run(['git','commit','-m','ci: record V110 resolver failure trace'],check=True)
+              subprocess.run(['git','push','origin','HEAD:docs-tya-v6-v71-audit'],check=True)
+              raise SystemExit(getattr(result,'returncode',1) or 1)
 
           for name, script in blocks:
               script=script.replace("cat tools/empalme/v110-selective/parts/runtime-part-*.patchpart > /tmp/v110-runtime.patch","test -f /tmp/v110-runtime.patch")
@@ -138,13 +151,8 @@ jobs:
               if name.startswith('Commit controlado'): subprocess.run(['git','rm','-f','.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'],check=True)
               result=subprocess.run(['bash','-lc',script],text=True,capture_output=True)
               print('BLOCK',name,'RC',result.returncode); print(result.stdout); print(result.stderr)
-              if result.returncode:
-                  diag=Path('tools/empalme/v110-selective/LAST-FAILURE.txt')
-                  stamp=datetime.datetime.utcnow().isoformat()+'Z'
-                  diag.write_text(f'stamp={stamp}\nrun={os.getenv("GITHUB_RUN_ID","unknown")}\nblock={name}\nreturncode={result.returncode}\nruntimePatchSha256={actual_runtime_hash}\n\nTRACE\n'+ '\n'.join(trace)+'\n\nSTDOUT\n'+result.stdout[-30000:]+'\n\nSTDERR\n'+result.stderr[-30000:]+'\n',encoding='utf-8')
-                  subprocess.run(['git','config','user.name','github-actions[bot]'],check=True); subprocess.run(['git','config','user.email','41898282+github-actions[bot]@users.noreply.github.com'],check=True)
-                  subprocess.run(['git','add',str(diag),'tools/empalme/v110-selective/RESOLVER-TRACE.txt'],check=False)
-                  subprocess.run(['git','commit','-m','ci: record V110 resolver failure trace'],check=True); subprocess.run(['git','push','origin','HEAD:docs-tya-v6-v71-audit'],check=True)
-                  raise SystemExit(result.returncode)
-              if name.startswith('Empalmar runtime'): resolve_rejects()
+              if result.returncode: persist_failure(name,result)
+              if name.startswith('Empalmar runtime'):
+                  try: resolve_rejects()
+                  except Exception as exc: persist_failure('Resolver semántico de rejects',result,exc)
           PY
