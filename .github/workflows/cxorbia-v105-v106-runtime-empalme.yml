@@ -44,6 +44,7 @@ jobs:
       - name: Aplicar y validar runtime exacto V105 interno V106
         env:
           CXORBIA_CONFIRM: EMPALME_V105_INTERNAL_V106_EXACTO
+          GITHUB_REF_NAME: docs-tya-v6-v71-audit
         run: |
           chmod +x tools/empalme/tya-apply-v105-internal-v106-runtime.sh
           tools/empalme/tya-apply-v105-internal-v106-runtime.sh
