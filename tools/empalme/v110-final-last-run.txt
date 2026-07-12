@@ -142,19 +142,17 @@ app/core/finanzas-core.js: OK
 app/core/topbar.js: OK
 utf8_no_bom_no_mojibake:PASS:70
 [stdin]:15
-if(regs.length!==48||new Set(regs).size!==48) throw new Error(`module_graph_invalid registrations=${regs.length} unique=${new Set(regs).size}`);
-                                              ^
+const unique=new Set(regs);const duplicates=[...unique].filter(id=>regs.filter(x=>x===id).length>1);if(unique.size!==48) throw new Error(`module_graph_invalid registrations=${regs.length} unique=${unique.size}`);console.log('moduleDuplicateExtensions',duplicates);
+                                 ^
 
-Error: module_graph_invalid registrations=49 unique=48
-    at [stdin]:15:53
-    at runScriptInThisContext (node:internal/vm:209:10)
-    at node:internal/process/execution:446:12
-    at [stdin]-wrapper:6:24
-    at runScriptInContext (node:internal/process/execution:444:60)
-    at evalFunction (node:internal/process/execution:279:30)
-    at evalTypeScript (node:internal/process/execution:291:3)
+SyntaxError: Identifier 'duplicates' has already been declared
+    at makeContextifyScript (node:internal/vm:185:14)
+    at compileScript (node:internal/process/execution:383:10)
+    at evalTypeScript (node:internal/process/execution:266:24)
     at node:internal/main/eval_stdin:53:5
     at Socket.<anonymous> (node:internal/process/execution:201:5)
     at Socket.emit (node:events:531:35)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
 
 Node.js v22.23.1
