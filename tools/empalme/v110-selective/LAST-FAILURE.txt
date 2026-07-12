@@ -1,0 +1,10 @@
+block=Reconstruir y verificar parches V110
+returncode=1
+
+STDOUT
+/tmp/v110-runtime.patch: FAILED
+
+
+STDERR
+sha256sum: WARNING: 1 computed checksum did NOT match
+
