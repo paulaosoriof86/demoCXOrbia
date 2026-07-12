@@ -31,12 +31,15 @@ jobs:
           mkdir -p tools/empalme
           bash tools/empalme/tya-apply-v105-internal-v106-runtime.sh > tools/empalme/v105-baseline-last-run.txt 2>&1
           rc=$?
+          cp .tmp/v105-v106-runtime-empalme/checksums.log tools/empalme/v105-baseline-checksums.log 2>/dev/null || true
           {
             echo
             echo "exitCode=$rc"
             echo "head=$(git rev-parse HEAD)"
             echo "branch=${GITHUB_REF_NAME:-$(git branch --show-current)}"
             echo "checksumFileSha=$(sha256sum tools/empalme/v105-v106-runtime-checksums.sha256 | awk '{print $1}')"
+            echo 'changedRuntimeFiles:'
+            git diff --name-only -- app
           } >> tools/empalme/v105-baseline-last-run.txt
           cat tools/empalme/v105-baseline-last-run.txt
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
@@ -50,8 +53,8 @@ jobs:
           rm -rf .tmp
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tools/empalme/v105-baseline-last-run.txt
-          git commit -m "ci: persist V105 baseline reconstruction diagnostic"
+          git add tools/empalme/v105-baseline-last-run.txt tools/empalme/v105-baseline-checksums.log
+          git commit -m "ci: persist exact V105 checksum mismatches"
           git push origin HEAD:docs-tya-v6-v71-audit
 
       - name: Fallar si la baseline no pasó
