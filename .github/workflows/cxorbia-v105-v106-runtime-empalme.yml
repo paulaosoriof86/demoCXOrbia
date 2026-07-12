@@ -7,6 +7,13 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - 'backend/config/phase-a-v105-v106-empalme-request.source-safe.json'
+      - '.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'backend/config/phase-a-v105-v106-empalme-request.source-safe.json'
+      - '.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'
 
 permissions:
   contents: write
@@ -19,6 +26,9 @@ jobs:
   empalme-exacto-y-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    concurrency:
+      group: cxorbia-v105-v106-runtime-empalme
+      cancel-in-progress: false
     steps:
       - name: Checkout rama viva
         uses: actions/checkout@v4
