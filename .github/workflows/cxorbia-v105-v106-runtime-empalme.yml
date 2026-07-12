@@ -1,4 +1,4 @@
-name: CXOrbia V105 Baseline Persisted Diagnostic
+name: CXOrbia V110 Deterministic Runtime Empalme
 
 on:
   push:
@@ -11,8 +11,9 @@ permissions:
   contents: write
 
 jobs:
-  diagnose-baseline:
+  empalme-deterministico-v110:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - name: Checkout rama viva
         uses: actions/checkout@v4
@@ -21,49 +22,13 @@ jobs:
           fetch-depth: 0
           show-progress: false
 
-      - name: Ejecutar reconstrucción y capturar salida
-        id: baseline
-        shell: bash
-        env:
-          CXORBIA_CONFIRM: EMPALME_V105_INTERNAL_V106_EXACTO
-        run: |
-          set +e
-          mkdir -p tools/empalme
-          {
-            echo 'beforeReconstruction:'
-            sha256sum app/core/finanzas-core.js app/core/liquidacion.js app/core/topbar.js
-          } > tools/empalme/v105-baseline-last-run.txt
-          bash tools/empalme/tya-apply-v105-internal-v106-runtime.sh >> tools/empalme/v105-baseline-last-run.txt 2>&1
-          rc=$?
-          cp .tmp/v105-v106-runtime-empalme/checksums.log tools/empalme/v105-baseline-checksums.log 2>/dev/null || true
-          {
-            echo
-            echo 'afterReconstruction:'
-            sha256sum app/core/finanzas-core.js app/core/liquidacion.js app/core/topbar.js
-            echo
-            echo "exitCode=$rc"
-            echo "head=$(git rev-parse HEAD)"
-            echo "branch=${GITHUB_REF_NAME:-$(git branch --show-current)}"
-            echo "checksumFileSha=$(sha256sum tools/empalme/v105-v106-runtime-checksums.sha256 | awk '{print $1}')"
-            echo 'changedRuntimeFiles:'
-            git diff --name-only -- app
-          } >> tools/empalme/v105-baseline-last-run.txt
-          cat tools/empalme/v105-baseline-last-run.txt
-          echo "rc=$rc" >> "$GITHUB_OUTPUT"
-          exit 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
-      - name: Persistir diagnóstico
+      - name: Ejecutar empalme determinístico V110
         shell: bash
         run: |
           set -euo pipefail
-          git restore app || true
-          rm -rf .tmp
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tools/empalme/v105-baseline-last-run.txt tools/empalme/v105-baseline-checksums.log
-          git commit -m "ci: persist V105 protected runtime hash diagnostic"
-          git push origin HEAD:docs-tya-v6-v71-audit
-
-      - name: Fallar si la baseline no pasó
-        if: steps.baseline.outputs.rc != '0'
-        run: exit 1
+          bash tools/empalme/run-v110-deterministic-final.sh
