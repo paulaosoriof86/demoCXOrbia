@@ -99,3 +99,9 @@
 - No se genera otro paquete Claude.
 - No reabrir scores finitos, bandas unificadas, lotes multipaís/multimoneda, IDs determinísticos, responsive, Beneficios, certificaciones, cache demo/real ni shell.
 - P1/P2 restantes quedan acumulados para un futuro paquete y no bloquean R10.
+
+## R10 source-safe post-V110 — 2026-07-12
+
+- R10 ejecutado sobre V110 empalmada: `HOLD_SOURCE_SAFE_VISUAL_SMOKE`.
+- No reabrir los P0 cerrados de Academia/país ni Finanzas fail-closed.
+- Los blockers quedan documentados en el resultado R10; no se genera paquete amplio hasta clasificarlos.

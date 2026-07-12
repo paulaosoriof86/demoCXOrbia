@@ -176,3 +176,10 @@
 - Identidad final: 67 archivos V110 exactos, 2 overrides locales protegidos y source lock unión regenerado.
 - Backend, source-safe, HR, importadores, R5/R6/R8/R9 y gates preservados.
 - Sin deploy, producción, imports, writes, providers ni pagos reales.
+
+## R10 source-safe post-V110 — 2026-07-12
+
+- Decisión: `HOLD_SOURCE_SAFE_VISUAL_SMOKE`.
+- V110 física y source lock unión verificados antes del smoke.
+- Fuente TyA source-safe: 0 periodos, 0 visitas, 0 shoppers.
+- Sin deploy, producción, imports, writes, providers ni pagos reales.

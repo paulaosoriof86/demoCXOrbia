@@ -105,3 +105,7 @@ Fuente puente: `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
 - Endurecer idempotencia ante llamadas repetidas.
 - Ajustar copy cuando cero visitas fueron procesadas.
 - Normalizar retorno futuro a `processed/reviewRequired`.
+
+## R10 source-safe post-V110 — 2026-07-12
+
+- smoke_fatal:page.waitForFunction: Timeout 20000ms exceeded.
