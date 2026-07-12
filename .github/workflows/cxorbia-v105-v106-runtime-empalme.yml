@@ -1,4 +1,4 @@
-name: CXOrbia V110 Selective Empalme Runner
+name: CXOrbia V110 Deterministic Runtime Empalme
 
 on:
   workflow_dispatch:
@@ -7,21 +7,14 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - '.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'
-      - 'tools/empalme/v110-selective/**'
-  pull_request:
-    branches:
-      - release/cxorbia-tya-rc-20260630
-    paths:
-      - '.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'
-      - 'tools/empalme/v110-selective/**'
 
 permissions:
   contents: write
 
 jobs:
-  empalme-selectivo-v110:
+  empalme-deterministico-v110:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - name: Checkout rama viva
         uses: actions/checkout@v4
@@ -34,16 +27,292 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Ejecutar empalme selectivo V110
+      - name: Proteger backend y fuentes source-safe fuera del runtime candidato
         shell: bash
         run: |
           set -euo pipefail
+          find app/core -maxdepth 1 -type f -name 'tya-phase-a-*' -print0 | sort -z | xargs -0 -r sha256sum > /tmp/v110-protected-before.sha256
+          find app/data -maxdepth 1 -type f -name 'tya-*' -print0 | sort -z | xargs -0 -r sha256sum >> /tmp/v110-protected-before.sha256
+          find backend -type f -print0 | sort -z | xargs -0 -r sha256sum > /tmp/v110-backend-before.sha256
+
+      - name: Reconstruir baseline exacta V105 build interno V106
+        shell: bash
+        env:
+          CXORBIA_CONFIRM: EMPALME_V105_INTERNAL_V106_EXACTO
+        run: |
+          set -euo pipefail
+          bash tools/empalme/tya-apply-v105-internal-v106-runtime.sh
+
+      - name: Reconstruir delta auditado V105 a V110
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat tools/empalme/v110-selective/exact/runtime-exact-*.b64 | tr -d '\r\n\t ' | base64 -d > /tmp/v110-runtime.patch
+          cat tools/empalme/v110-selective/parts/academia-part-*.patchpart > /tmp/v110-academia.patch
+          echo 'd19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd  /tmp/v110-runtime.patch' | sha256sum -c -
+          echo '8395ca4eeb4dc5b5e459bcaf51ef538419db80535baaf319aec68688551740fd  /tmp/v110-academia.patch' | sha256sum -c -
+          git apply --check /tmp/v110-runtime.patch
+          git apply --check /tmp/v110-academia.patch
+          git apply /tmp/v110-runtime.patch
+          git apply /tmp/v110-academia.patch
+
+      - name: Verificar identidad exacta del runtime V110
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/v110-runtime-checksums.sha256 <<'EOF'
+          220e097cd5959411e9633b553f0952e69ef5d08972205f3b09ebab6a0f902262  app/app.js
+          ffd77ab131b5a7a978cfa3b1e941917ec0c881e3045bdf2ee586f04fc948e0ba  app/core/automations.js
+          dbdbcaba1ddb7d7b9c3fb89cddea19e198bd830ac8a11cb1c854d8f6d25aa0be  app/core/build-lock.js
+          6d4fc902c4473fe3bae98910fed42139dad0cae9616aa395c9aced6b21d2e3c4  app/core/cliente-data.js
+          16e57576f09b720d7a65954a9c9be28cced31e4a5d37e970b7e39033e98af2dc  app/core/config.js
+          93533d54cc16a71ff76cc462daf54a1a3fdf720eaaf8cc13a9bd186d8b3de3a8  app/core/costos.js
+          f84a4314dadedd9e87f4ace4be44d7e3fc1760870956c7ca3dae10f0a4e97666  app/core/data-source.js
+          a0119aaf22d24ae5a1bebb4ba688b891ed39fb745b04dbe02a12e5d04adc8080  app/core/data.js
+          ca4c8edbf57a4a33d6f49fda8d02a0e3fff3b1827cc6c2b4e8d5ff374d0da0bc  app/core/dedupe.js
+          8fe50ee569c4a68f82ca55b15c42c9e0c64561b871b7993374b3d34617decad8  app/core/finanzas-core.js
+          51115e4d47baf849daebb4cb1a9097fe0c9e6bca3eba620fe9ad0a44ac25bcbc  app/core/geo.js
+          4a9bb1d2c1c166e818de3884bf9080b78ee84161832310daedbfc5c874a88d6f  app/core/hr.js
+          86616404ee47ae4ad813dff2b0295e5403b7343571b6ec4d2654c76131c58699  app/core/importador.js
+          d49670d640d9f78dca514d29e46e4afba2691a31a895b5cde67ce68e183a5faa  app/core/liquidacion.js
+          aba4f03ab9a6611f85495711ad7d062d9693b34784c4af8e0df546ac2049ab6c  app/core/manuales-data.js
+          24d6a209d7a7a53f96c04049761adac9284b2d6f852f4f534fab43a90d146e36  app/core/notif.js
+          5e3a51f2a34b98aca3fa7476efae3630915fea70f2a89218545b72b19eb28575  app/core/permissions.js
+          bca3dc6e7ddc5ace05d29d13232d1abcc8ebc82a2f794494926e58afe8791fae  app/core/programa.js
+          68caab966f043462c54cecffbe23aa41ff890bda0e44fedbe71bfb99cbb048b4  app/core/pwa.js
+          185f717f09e972d5c94ce51ecc8bd671d2bb275c999f563fdc0713c63f4ee9a5  app/core/router.js
+          153f73f9e54ff9b336e5ecdf4b4902689934ce3eff23c2930f1d49ffab4f6cf3  app/core/shoppers-store.js
+          b7f2c04fcbe18c90f3c71c74b41856127d780573888850d6d1c888e9ba12a866  app/core/store.js
+          55e4cc77b69fd93eda53a6aed8201e91d38bd28247b970c471c62906cb4d75c8  app/core/topbar.js
+          0aa51fedfe203b30222cb4bc2d522efe33dc2743498d80cbe24ae82a20753c2e  app/core/ui.js
+          feb3dbc4c33bc97a2b432216387964c28254f882883d5cbece078f45580070cd  app/demo/index.html
+          1579aea2ab174a6643ec11cddfbea8ef6c5b52bb641e87440606e25f570d3c70  app/index.html
+          cb3196c4c901360f35010172610f1b30b449ecc3a78230747b8606bd840de4ee  app/manifest.webmanifest
+          95c7b44c42a19d4362ea67f8e47fc39cfce060249de6ad824bdab76c55ffc326  app/modules/academia.js
+          92e0108afa8ca36e25e5654edd67d030e7322cb3c53859c3fafb0cc865248b9c  app/modules/administrabilidad.js
+          1fccb5b6d5b44cf081356bb2493192355291af5fe6e73f81b4083f3c413aee3c  app/modules/automatizaciones.js
+          a93fafff493540db7f19f6802c6d840b12ce6f0cf0ab830bfa46d1a2b2721bb4  app/modules/beneficios.js
+          4b4ce17cf1ad1fb37ecf80bcbb24900582cf7f574d30d35e492cfc73ad67cb4d  app/modules/cert.js
+          fd119bd8659cf8fc16e6181373af7d99b19f5c6c8788d0b380b115a06f17d240  app/modules/cliente-extra.js
+          e4da9baec91444efb5a0c5d97456e95f465fdd070c865633fec446eb35068da2  app/modules/cliente-insights.js
+          813923df3a35cb09687375221e8de0852df5bfd92bd6650ee9df84d5dcbe67ce  app/modules/cliente.js
+          b23c5480c2ee1e93ffeb49098942eeab58ec6867df378479559a771df2fb378d  app/modules/clientes.js
+          aecde3f762095b30e215338c94be235efd50214b58996138b5257be7171a5a35  app/modules/comercial.js
+          ed508050338b8083a20a29aecbd7afe9516ffb6fddebed5722bcec3288652550  app/modules/configuracion.js
+          d047313e2a0e0a150c376761b3dd9a1217fd5ff7da40a03c7d1de82395af0eff  app/modules/correo.js
+          6ad5b2cc7fa46b6a84f8bf4144137cc2a0f96267b04b458b7da7c9781dcd611a  app/modules/crm.js
+          335e012df4c7755bd997a98c50b3a2589c4b426625cae876b967002e2f816a9e  app/modules/cuestionario-shopper.js
+          1b585b5daa2da0af37938a6423f9a5860d000b33fb1fd4ffa0d523aa4186eabd  app/modules/dashboard.js
+          c0582680e76018b2c936643de364d89c26b14d1c5dd506ac45cd5283ac375f36  app/modules/diagnostico.js
+          6e664055ccb85c592104b11bbc1fc38260b1875932abb42f9a95640671f83e87  app/modules/documentos.js
+          8519da843257c2f3a16b666b50dd7c04b27ad756be65777bb6b37be795e81b7b  app/modules/finanzas.js
+          a6ea06b2d54a2f74388bd8f459b97daed3391913f6da65c3693bbe902398d0ab  app/modules/historico.js
+          e1a5e0ff68bdb4020a91c4ba11b80ff08abd89c329a4fe670cc3837f8baae71a  app/modules/hr-source.js
+          61c375c97eee82b05da02db93eecdec48e6735b8b59a36fdd8038239639f9dfb  app/modules/importador.js
+          2ea95968a941d137f75fcd6dd779cd5ad739b8e6e49a753a6f12d8a3d48a6378  app/modules/integraciones.js
+          552610c7fea98277ef0725dd46cf1ee1218c637bfab79597169c2832cebe61ee  app/modules/marca.js
+          1ebc814e7943c07d88613657cee47a5a2682cafa6a393c93f7c68916687c52d0  app/modules/marketing.js
+          bba8ed98aec605cdb0222c292fd9c54a017cfa03b645db2d3b79c1e649799e1e  app/modules/midia.js
+          09c027781d33025b8fad38e8f6d15c2ebb346ecb2c32e3480ef28cb327fda37d  app/modules/misvisitas.js
+          b95d27d83ae6010ebe5da2ede91f0bf820d64ff26c583b21dc1d44d0140a9ff6  app/modules/novedades.js
+          64384875d824474ab874d0ab707af807e26d4e533e29cfd4ced291f546897c74  app/modules/operacion-extra.js
+          eecec91e65d954b6032b6b78b31894e1293993fb02daa33215a24e31ed98216d  app/modules/periodos.js
+          0c43b1dbf6f13c78a711481baa12d4775fa5518fac69470edc2d387d77396737  app/modules/postulaciones.js
+          f97d10d4b28fb1076ab9b435a303f12e613e3561fb05172b3b37aef75b6d4236  app/modules/proyecto-wizard.js
+          c6b2fd3ba26e44fe9ebda04c303297510193fcdabfc138b68e434c8735253e23  app/modules/proyectos.js
+          e800f44a17d5e18355005f1613dffc429492400b2f1f29776a5c068d53e415ef  app/modules/reservas.js
+          efdca7ae77d923e796588452e94edae73c9af1df8b757bdae6ae69e4073281f0  app/modules/revision-admin.js
+          35cf1d78a581dac061d4ccac7246bdf475faf49bed0c13c66610d09b3226c397  app/modules/saas-console.js
+          6b9dff790369bdc612fb01296164fad5328f640ad94c33e39be6200740f02658  app/modules/shoppers.js
+          2427eae1366812ae52ae0738f950cca9b18b1e28d77b1dc0c20225288890e4e1  app/modules/soporte.js
+          ee32633748298ca3c7a76be87a50ac36ac2e9640e368595ee56446a504aed144  app/modules/tablon.js
+          b147d3fc6b5fd354827a3088ac3f30f4b0e3c4fa648bca4b9e899ced68e1029d  app/modules/visita-detalle.js
+          ca271c17102b9e7870c2fd4fa89d7a17cd894444f2b78dc0ec1fbaa1ef0802ce  app/modules/visitas.js
+          0b311b7cae0d33702ee10806f780c69e5f42904c10959048f3e5811ff17595c1  app/styles/layout.css
+          9ff569467fcb562312cc50d25f140ef149f6580aa6adccd62de2126ec798e3c4  app/styles/theme.css
+          de3751081f9ac43129501f902e796224b89d5f72217f3ce20f77317596acf866  app/sw.js
+          EOF
+          sed -i 's/^          //' /tmp/v110-runtime-checksums.sha256
+          echo '6fd975edb2fb52060a167e1ff9797401baabc391c63315502015726820dc253f  /tmp/v110-runtime-checksums.sha256' | sha256sum -c -
+          sha256sum -c /tmp/v110-runtime-checksums.sha256
+
+      - name: Validar estructura, sintaxis, UTF-8 y P0 V110
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' f; do node --check "$f"; done < <(find app -type f \( -name '*.js' -o -name '*.mjs' \) -print0)
           python3 - <<'PY'
           from pathlib import Path
-          source = Path('tools/empalme/v110-selective/run-empalme.py').read_text(encoding='utf-8')
-          source = source.replace(
-              "if name.startswith('Empalmar runtime'):",
-              "if name.startswith('Empalmar runtime') or name.startswith('Aplicar delta acumulado'):"
-          )
-          exec(compile(source, 'run-empalme.py', 'exec'))
+          bad=('Ã','Â','â€','ï»¿','�')
+          for p in Path('app').rglob('*'):
+              if not p.is_file() or p.suffix.lower() not in {'.js','.mjs','.html','.css','.json','.md','.webmanifest'}:
+                  continue
+              raw=p.read_bytes()
+              if raw.startswith(b'\xef\xbb\xbf'):
+                  raise SystemExit(f'utf8_bom:{p}')
+              text=raw.decode('utf-8')
+              for token in bad:
+                  if token in text:
+                      raise SystemExit(f'mojibake:{token}:{p}')
+          print('utf8_no_bom_no_mojibake:PASS')
           PY
+          grep -Fq "const reviewRequired=[]" app/core/data.js
+          grep -Fq "const visitasValidas=[]" app/core/data.js
+          grep -Fq "v.loteId=lote" app/core/data.js
+          grep -Fq "reviewRequired" app/modules/finanzas.js
+          grep -Fq "loteIdCombos" app/modules/finanzas.js
+          grep -Fq "if(rol==='shopper')" app/modules/academia.js
+          grep -Fq "CX.data.getShopper" app/modules/academia.js
+          grep -Fq "paises=[]" app/modules/academia.js
+          grep -Fq "visibleCourses" app/modules/academia.js
+          grep -Fq "createdByUserId" app/modules/academia.js
+          grep -Fq "Number.isFinite" app/core/cliente-data.js
+          grep -Fq ".between{flex-wrap:wrap" app/styles/layout.css
+          ! grep -RInE '^(<<<<<<<|=======|>>>>>>>)' app/core app/modules app/styles
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const html=fs.readFileSync('app/index.html','utf8');
+          const scripts=[...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map(m=>m[1]);
+          const local=scripts.filter(s=>!/^https?:\/\//i.test(s));
+          const missing=local.filter(s=>!fs.existsSync(path.join('app',s)));
+          const dup=local.filter((s,i)=>local.indexOf(s)!==i);
+          if(scripts.length!==66||local.length!==64||new Set(local).size!==64||missing.length||dup.length) throw new Error(`script_graph_invalid total=${scripts.length} local=${local.length} unique=${new Set(local).size} missing=${missing} dup=${dup}`);
+          const regs=[];for(const f of fs.readdirSync('app/modules').filter(f=>f.endsWith('.js'))){const t=fs.readFileSync(path.join('app/modules',f),'utf8');for(const m of t.matchAll(/CX\.module\(\s*['"]([^'"]+)/g))regs.push(m[1]);}
+          if(regs.length!==48||new Set(regs).size!==48) throw new Error(`module_graph_invalid registrations=${regs.length} unique=${new Set(regs).size}`);
+          console.log(JSON.stringify({scriptsTotal:scripts.length,scriptsLocal:local.length,moduleRegistrations:regs.length},null,2));
+          NODE
+
+      - name: Verificar preservación del backend protegido
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum -c /tmp/v110-protected-before.sha256
+          sha256sum -c /tmp/v110-backend-before.sha256
+
+      - name: Documentar empalme exacto V110
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > app/docs/CAMBIOS-BACKEND-ADDENDUM-EMPALME-DETERMINISTICO-V110-20260712.md <<'EOF'
+          # CAMBIOS BACKEND — EMPALME DETERMINÍSTICO V110
+
+          Fecha: 2026-07-12
+
+          ## Resultado
+
+          Se reconstruyó primero la baseline exacta `Prototype development request CXOrbia V105(1).zip` / build interno V106 desde el commit base y su delta SHA-verificado. Sobre esa identidad exacta se aplicó el delta auditado V105→V110, sin reconciliación difusa ni resolución heurística.
+
+          La identidad final de 70 archivos runtime se verificó contra checksums calculados directamente del ZIP V110 auditado. Los dos P0 quedan físicamente incorporados: Academia fail-closed por país real del shopper y Finanzas fail-closed antes de procesar pagos/lotes.
+
+          Se preservaron los archivos backend/source-safe externos al runtime candidato: `app/core/tya-phase-a-*`, `app/data/tya-*`, `backend/`, contratos, importadores, HR, reviewQueue, auditEvents, R5/R6/R8/R9 y gates.
+
+          ## Estado seguro
+
+          Sin merge del PR, deploy, producción, importación real, Firestore/HR writes, Make/Gemini live ni pagos reales.
+          EOF
+          sed -i 's/^          //' app/docs/CAMBIOS-BACKEND-ADDENDUM-EMPALME-DETERMINISTICO-V110-20260712.md
+
+          cat > app/docs/ACADEMIA-IMPACT-EMPALME-DETERMINISTICO-V110-20260712.md <<'EOF'
+          # ACADEMIA — IMPACTO EMPALME DETERMINÍSTICO V110
+
+          - El país del shopper se resuelve desde `CX.data.getShopper(shopperId).pais`.
+          - Si no existe país real resoluble, el contenido restringido falla cerrado; el contenido global continúa visible.
+          - KPIs, rutas, cursos, lecciones y certificados consumen la misma colección visible.
+          - Módulo/nivel/paquete son filtros de clasificación, no ejes de autorización.
+          - Creador, revisor y aprobador usan IDs estables o muestran pendiente honesto de Auth.
+          - R10 debe comprobar Admin/Shopper, GT/HN, KPIs y ausencia de fuga entre países.
+          EOF
+          sed -i 's/^          //' app/docs/ACADEMIA-IMPACT-EMPALME-DETERMINISTICO-V110-20260712.md
+
+          cat > app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-EMPALME-DETERMINISTICO-V110-20260712.md <<'EOF'
+          # TRACKER PHASE A — EMPALME DETERMINÍSTICO V110
+
+          - Auditoría V110: READY.
+          - P0 Claude V109→V110: CLOSED.
+          - Empalme físico V110: COMPLETED_VERIFIED.
+          - Identidad runtime: 70/70 checksums PASS.
+          - Backend/source-safe protegido: PASS.
+          - Source lock unión repo+V110: generado en este bloque.
+          - R10 source-safe: siguiente bloque exacto.
+          - Firebase DEV read-only: pendiente autorización específica.
+          - Pagos/certificaciones: pendientes fuentes sanitizadas.
+          - Producción: HOLD.
+          EOF
+          sed -i 's/^          //' app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-EMPALME-DETERMINISTICO-V110-20260712.md
+
+          cat >> CAMBIOS-BACKEND.md <<'EOF'
+
+          ## Empalme determinístico V110 — 2026-07-12
+
+          - Baseline V105/build interno V106 reconstruida desde identidad SHA-verificada; delta V105→V110 aplicado sin heurísticas.
+          - Runtime final V110 verificado 70/70 por checksum.
+          - Backend, source-safe, HR, importadores, R5/R6/R8/R9 y gates preservados.
+          - Sin deploy, producción, imports, writes, providers ni pagos reales.
+          EOF
+          cat >> RESUMEN-PARA-CLAUDE.md <<'EOF'
+
+          ## Cierre V110 empalmada — 2026-07-12
+
+          - Los dos P0 de Academia por país y Finanzas fail-closed quedaron cerrados, verificados y empalmados físicamente.
+          - No se genera otro paquete Claude.
+          - No reabrir finite scores, bandas unificadas, lotes multipaís/multimoneda, IDs determinísticos, responsive, Beneficios, certificaciones, cache demo/real ni shell.
+          - P1/P2 restantes quedan acumulados para un futuro paquete y no bloquean R10.
+          EOF
+          cat >> PENDIENTES-PROTOTIPO.md <<'EOF'
+
+          ## Pendientes no bloqueantes post-V110 — 2026-07-12
+
+          - Normalizar espacios en país/moneda antes del backend real de pagos.
+          - Deduplicar IDs dentro de una llamada directa a `payVisits()`.
+          - Endurecer idempotencia ante llamadas repetidas.
+          - Ajustar copy cuando cero visitas fueron procesadas.
+          - Normalizar retorno futuro a `processed/reviewRequired`.
+          EOF
+          sed -i 's/^          //' CAMBIOS-BACKEND.md RESUMEN-PARA-CLAUDE.md PENDIENTES-PROTOTIPO.md
+
+      - name: Generar y verificar source lock unión V110
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');const path=require('path');const crypto=require('crypto');
+          const root=path.resolve('app');
+          const manifestRel='docs/MANIFEST-V110-UNION-EMPALME-R1.json';
+          const verifierRel='docs/verify-manifest-v110-union-empalme.mjs';
+          const excluded=new Set(['core/build-lock.js',manifestRel,verifierRel]);
+          const rels=[];function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,e.name);if(e.isDirectory())walk(p);else if(e.isFile())rels.push(path.relative(root,p).split(path.sep).join('/'));}}walk(root);
+          const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+          const files=rels.filter(r=>!excluded.has(r)).sort().map(r=>{const b=fs.readFileSync(path.join(root,r));return{path:r,size:b.length,sha256:sha(b)};});
+          const aggregateSha256=sha(Buffer.from(files.map(f=>`${f.path}:${f.sha256}`).join('\n'),'utf8'));
+          const manifest={package:'CXORBIA-V110-UNION-EMPALME-R1',project:'CXOrbia',baseline:'V110 exacta empalmada sobre rama viva con backend/source-safe preservados',generatedAt:new Date().toISOString(),sourceZipSha256:'1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227',basePackageSha256:'582a8c98cdac7b46028bb720d1304657c6d678e99e4bc23a49e80ab440bc8206',runtimePatchSha256:'d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd',academiaPatchSha256:'8395ca4eeb4dc5b5e459bcaf51ef538419db80535baaf319aec68688551740fd',runtimeIdentityFiles:70,fileCount:files.length,aggregateSha256,exclusionsDeclared:[{path:'core/build-lock.js',reason:'referencia circular'},{path:manifestRel,reason:'manifest se excluye a sí mismo'},{path:verifierRel,reason:'verificador generado junto al manifest'}],files};
+          fs.writeFileSync(path.join(root,manifestRel),JSON.stringify(manifest,null,2)+'\n','utf8');
+          const lock=`/* CXOrbia · Source lock unión V110 empalme R1\n   Fuente auditada: Prototype development request CXOrbia V110.zip\n   Manifiesto: ${manifestRel}\n   No implica deploy, producción, importación ni providers activos. */\nvar CX_SOURCE_LOCK={\n  manifestFile:'${manifestRel}',\n  aggregateSha256:'${aggregateSha256}',\n  fileCount:${files.length},\n  runtimeIdentityFiles:70,\n  generatedAt:'${manifest.generatedAt.slice(0,10)}',\n  sourceZipSha256:'${manifest.sourceZipSha256}',\n  note:'Baseline auditada de continuidad V110 empalmada de forma determinística; backend y source-safe preservados.'\n};\nvar CX_BUILD_ID=CX_SOURCE_LOCK.aggregateSha256.slice(0,16);\nif(typeof window!=='undefined'){window.CX=window.CX||{};window.CX.BUILD_ID=CX_BUILD_ID;window.CX.SOURCE_LOCK=CX_SOURCE_LOCK;}\n`;
+          fs.writeFileSync(path.join(root,'core','build-lock.js'),lock,'utf8');
+          const verifier=`#!/usr/bin/env node\nimport {readFile} from 'node:fs/promises';\nimport {createHash} from 'node:crypto';\nimport path from 'node:path';\nconst ROOT=process.cwd();const M=JSON.parse(await readFile(path.join(ROOT,'${manifestRel}'),'utf8'));const sha=b=>createHash('sha256').update(b).digest('hex');let diffs=0;const entries=[];for(const f of M.files){let b;try{b=await readFile(path.join(ROOT,f.path));}catch(e){console.error('DIFERENCIA faltante',f.path);diffs++;continue;}const h=sha(b);if(h!==f.sha256||b.length!==f.size){console.error('DIFERENCIA',f.path);diffs++;}entries.push(f.path+':'+h);}const agg=sha(Buffer.from(entries.join('\\n'),'utf8'));if(agg!==M.aggregateSha256){console.error('DIFERENCIA aggregate',agg);diffs++;}console.log('Archivos verificados:',M.files.length);console.log('Aggregate recalculado:',agg);console.log(diffs?'Diferencias: '+diffs:'0 diferencias');process.exit(diffs?1:0);\n`;
+          fs.writeFileSync(path.join(root,verifierRel),verifier,'utf8');
+          console.log(JSON.stringify({fileCount:files.length,aggregateSha256},null,2));
+          NODE
+          node --check app/core/build-lock.js
+          (cd app && node docs/verify-manifest-v110-union-empalme.mjs)
+
+      - name: Limpiar transportes e intentos temporales
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -rf tools/empalme/v110-selective
+          git rm -rf tools/empalme/export-current-11 || true
+          git rm -f .github/workflows/cxorbia-v110-selective-empalme.yml || true
+          git rm -f .github/workflows/cxorbia-v110-runtime-empalme.yml || true
+          git rm -f .github/workflows/cxorbia-export-current-11.yml || true
+          git rm -f .github/workflows/cxorbia-v105-v106-runtime-empalme.yml
+
+      - name: Commit controlado del empalme determinístico V110
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app CAMBIOS-BACKEND.md RESUMEN-PARA-CLAUDE.md PENDIENTES-PROTOTIPO.md .github/workflows tools/empalme || true
+          if git diff --cached --quiet; then echo 'ERROR: no hay cambios que commitear' >&2; exit 1; fi
+          git commit -m "feat(frontend): empalme determinístico V110 con backend preservado"
+          git push origin HEAD:docs-tya-v6-v71-audit
