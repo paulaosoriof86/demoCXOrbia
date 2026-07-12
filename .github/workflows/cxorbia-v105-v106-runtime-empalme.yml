@@ -38,4 +38,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 tools/empalme/v110-selective/run-empalme.py
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('tools/empalme/v110-selective/run-empalme.py').read_text(encoding='utf-8')
+          source = source.replace(
+              "if name.startswith('Empalmar runtime'):",
+              "if name.startswith('Empalmar runtime') or name.startswith('Aplicar delta acumulado'):"
+          )
+          exec(compile(source, 'run-empalme.py', 'exec'))
+          PY
