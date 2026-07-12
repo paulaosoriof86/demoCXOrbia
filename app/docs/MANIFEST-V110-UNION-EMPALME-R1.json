@@ -3,7 +3,7 @@
   "package": "CXORBIA-V110-UNION-EMPALME-R1",
   "project": "CXOrbia",
   "baseline": "V110 empalmada de forma determinística sobre rama viva",
-  "generatedAt": "2026-07-12T21:36:00.839Z",
+  "generatedAt": "2026-07-12T21:37:50.493Z",
   "sourceZipSha256": "1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227",
   "basePackageSha256": "582a8c98cdac7b46028bb720d1304657c6d678e99e4bc23a49e80ab440bc8206",
   "runtimePatchSha256": "d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd",
@@ -24,8 +24,8 @@
     ],
     "generatedUnionLock": "core/build-lock.js"
   },
-  "fileCount": 1388,
-  "aggregateSha256": "445584ef4080676fbac0d409d7c9dba76e231a0bab7db5c602e7e2bfb690b0fd",
+  "fileCount": 1392,
+  "aggregateSha256": "121d98c24d76670174b842b1b9cd323c158c7a4f0dc8e7bfc2576e46469419fb",
   "exclusionsDeclared": [
     {
       "path": "core/build-lock.js",
@@ -980,6 +980,11 @@
       "path": "docs/ACADEMIA-IMPACT-SENSITIVE-DATA-POLICY-TYA-20260704.md",
       "size": 4686,
       "sha256": "6e5c5009ff9d609d35b0498650a2e012fe8df8d61844de23318d9884d8c839fd"
+    },
+    {
+      "path": "docs/ACADEMIA-IMPACT-SHOPPER-BUILDER-LINEAGE-R11C-20260712.md",
+      "size": 188,
+      "sha256": "61b697a6ea611886308abb854433fbac70534c461f6622e71de812510caf3613"
     },
     {
       "path": "docs/ACADEMIA-IMPACT-SHOPPER-COMMUNICATION-HISTORY-PREVIEW-TYA-20260704.md",
@@ -2100,6 +2105,11 @@
       "path": "docs/CAMBIOS-BACKEND-ADDENDUM-SENSITIVE-DATA-POLICY-20260704.md",
       "size": 2943,
       "sha256": "02986f271a9e850e3e564590bec883b86767e61397c9e93d2bbc4924929a6529"
+    },
+    {
+      "path": "docs/CAMBIOS-BACKEND-ADDENDUM-SHOPPER-BUILDER-LINEAGE-R11C-20260712.md",
+      "size": 257,
+      "sha256": "d54557f33c3e0462768ea57602888b65330b1ded4af3794df21130d35672ddb8"
     },
     {
       "path": "docs/CAMBIOS-BACKEND-ADDENDUM-SHOPPER-COMMUNICATION-HISTORY-PREVIEW-20260704.md",
@@ -5027,6 +5037,11 @@
       "sha256": "8a2b183e00d4071819da5da1e7d8a0e25e8c990098a2dde2974af54cc65c63c7"
     },
     {
+      "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-R11C-BUILDER-LINEAGE-20260712.md",
+      "size": 494,
+      "sha256": "79159b47b9793517fbce9ded1b8d7163aa517573ad7d9c5c3bcc99683dd4bd45"
+    },
+    {
       "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-RECHAZO-V102-CONTAMINACION-ORBIT-20260711.md",
       "size": 643,
       "sha256": "e0aef3df58611e3b40c93a96a7d226d39f02ae38940a846849bd07996a25b560"
@@ -5325,6 +5340,11 @@
       "path": "docs/PHASE-A-RUTA-CARRILES-TYA-20260709.md",
       "size": 2067,
       "sha256": "a84daa91b5bb9cc3c9dee0884c072f0f576beab59863eef246a1bced530a4ed0"
+    },
+    {
+      "path": "docs/PHASE-A-SHOPPER-REFERENCE-BUILDER-LINEAGE-R11C-20260712.md",
+      "size": 1179,
+      "sha256": "08e5fc63a5a6d6eeceb5882ca9b920af04c8b4f378db3dcd7d815e45c24f00be"
     },
     {
       "path": "docs/PHASE-A-SHOPPER-REFERENCE-DRIFT-R11-20260712.md",
@@ -7007,5 +7027,9 @@
     "exact213Candidates": 0,
     "historicalOnly": 0,
     "currentOnly": 0
+  },
+  "r11c": {
+    "decision": "SOURCE_SNAPSHOT_DRIFT_NOT_BUILDER_DRIFT",
+    "report": "docs/PHASE-A-SHOPPER-REFERENCE-BUILDER-LINEAGE-R11C-20260712.md"
   }
 }

@@ -120,3 +120,9 @@
 
 - Decisión backend: `HOLD_NO_213_REFERENCE_SET_IN_REACHABLE_GIT_OBJECTS`.
 - No es tarea Claude. No reabrir V110 ni R10.
+
+
+## R11C builder lineage — 2026-07-12
+
+- Decisión backend: `SOURCE_SNAPSHOT_DRIFT_NOT_BUILDER_DRIFT`.
+- No es tarea Claude; no reabrir V110/R10.

@@ -201,3 +201,10 @@
 - Decisión: `HOLD_NO_213_REFERENCE_SET_IN_REACHABLE_GIT_OBJECTS`.
 - Objetos inspeccionados con referencias: 0; candidatos exactos 213: 0.
 - Sin match por nombre, materialización, imports, writes, deploy ni producción.
+
+
+## R11C lineage builder shopper — 2026-07-12
+
+- Decisión: `SOURCE_SNAPSHOT_DRIFT_NOT_BUILDER_DRIFT`.
+- Se verificó si 213→210 proviene de cambio del builder/helper o de snapshot/fuente.
+- No nombres, imports, writes, deploy ni producción.
