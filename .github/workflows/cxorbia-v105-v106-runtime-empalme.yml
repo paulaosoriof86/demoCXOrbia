@@ -1,0 +1,114 @@
+name: CXOrbia V105 V106 Runtime Empalme
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/phase-a-v105-v106-empalme-request.source-safe.json'
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  empalme-exacto-y-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout rama viva
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Aplicar y validar runtime exacto V105 interno V106
+        env:
+          CXORBIA_CONFIRM: EMPALME_V105_INTERNAL_V106_EXACTO
+        run: |
+          chmod +x tools/empalme/tya-apply-v105-internal-v106-runtime.sh
+          tools/empalme/tya-apply-v105-internal-v106-runtime.sh
+
+      - name: Preparar Playwright fuera del repo
+        run: |
+          rm -rf /tmp/cxorbia-playwright
+          mkdir -p /tmp/cxorbia-playwright
+          cp tools/qa/tya-phase-a-visual-smoke.mjs /tmp/cxorbia-playwright/smoke.mjs
+          cd /tmp/cxorbia-playwright
+          npm init -y >/dev/null
+          npm install --save-dev playwright@1.47.2 >/dev/null
+          npx playwright install --with-deps chromium
+
+      - name: Iniciar servidor local
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp-v105-v106-server.log 2>&1 &
+          echo $! > .tmp-v105-v106-server.pid
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/index.html >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat .tmp-v105-v106-server.log || true
+          exit 1
+
+      - name: Smoke visual y consola por seis roles
+        env:
+          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html
+        run: |
+          cd /tmp/cxorbia-playwright
+          node smoke.mjs \
+            --base-url http://127.0.0.1:4173/index.html \
+            --out "$GITHUB_WORKSPACE/.tmp/v105-v106-visual-smoke"
+
+      - name: Validar runtime guard source-safe
+        run: node tools/release/tya-phase-a-source-safe-runtime-guard-validate.mjs --out .tmp/v105-v106-source-safe-runtime-guard
+
+      - name: Recalcular readiness R9 sin proveedores
+        run: node tools/release/tya-phase-a-operational-readiness-r9.mjs --out .tmp/v105-v106-r9/report.json
+
+      - name: Commit controlado de archivos runtime
+        id: commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          mapfile -t runtime_paths < .tmp/v105-v106-runtime-empalme/runtime-paths.txt
+          git add -- "${runtime_paths[@]}"
+          if git diff --cached --quiet; then
+            echo 'created=false' >> "$GITHUB_OUTPUT"
+            echo 'No hay delta runtime por confirmar.'
+          else
+            git commit -m 'feat(frontend): empalmar V105 interno V106 exacto'
+            git push origin HEAD:docs-tya-v6-v71-audit
+            echo 'created=true' >> "$GITHUB_OUTPUT"
+            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resumen
+        if: always()
+        run: |
+          echo "Commit creado: ${{ steps.commit.outputs.created }}"
+          echo "SHA: ${{ steps.commit.outputs.sha }}"
+          git status --short
+
+      - name: Subir evidencia sanitizada
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v105-v106-runtime-empalme-evidence
+          path: |
+            .tmp/v105-v106-runtime-empalme
+            .tmp/v105-v106-visual-smoke
+            .tmp/v105-v106-source-safe-runtime-guard
+            .tmp/v105-v106-r9
+          if-no-files-found: error
+          retention-days: 14
