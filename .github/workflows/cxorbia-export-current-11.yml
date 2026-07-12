@@ -8,7 +8,7 @@ on:
       - tools/empalme/export-current-11/READY
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   export-current-runtime:
@@ -18,12 +18,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
 
       - name: Empaquetar 11 archivos actuales
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .tmp/current-11
+          rm -rf .tmp/current-11 tools/empalme/export-current-11/output
+          mkdir -p .tmp/current-11 tools/empalme/export-current-11/output
           while IFS= read -r f; do
             mkdir -p ".tmp/current-11/$(dirname "$f")"
             cp "$f" ".tmp/current-11/$f"
@@ -40,16 +42,25 @@ jobs:
           app/modules/finanzas.js
           app/styles/layout.css
           EOF
-          sed -i 's/^          //' /dev/null || true
           tar -czf .tmp/cxorbia-current-11.tar.gz -C .tmp/current-11 .
-          sha256sum .tmp/cxorbia-current-11.tar.gz > .tmp/cxorbia-current-11.sha256
+          sha256sum .tmp/cxorbia-current-11.tar.gz | tee tools/empalme/export-current-11/output/archive.sha256
+          base64 -w0 .tmp/cxorbia-current-11.tar.gz > .tmp/cxorbia-current-11.b64
+          split -b 50000 -d -a 2 .tmp/cxorbia-current-11.b64 tools/empalme/export-current-11/output/chunk-
+          {
+            echo 'source=branch:docs-tya-v6-v71-audit'
+            echo 'files=11'
+            echo "chunks=$(find tools/empalme/export-current-11/output -maxdepth 1 -name 'chunk-*' | wc -l)"
+            echo "head=$(git rev-parse HEAD)"
+            echo 'noDeploy=true'
+            echo 'noProduction=true'
+          } > tools/empalme/export-current-11/output/MANIFEST.txt
 
-      - name: Subir artefacto source-safe
-        uses: actions/upload-artifact@v4
-        with:
-          name: cxorbia-current-11-runtime
-          path: |
-            .tmp/cxorbia-current-11.tar.gz
-            .tmp/cxorbia-current-11.sha256
-          if-no-files-found: error
-          retention-days: 3
+      - name: Commit export temporal verificable
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/empalme/export-current-11/output
+          git commit -m "ci: export current 11 runtime files for V110 reconciliation"
+          git push origin HEAD:docs-tya-v6-v71-audit
