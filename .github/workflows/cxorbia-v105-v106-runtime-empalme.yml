@@ -80,6 +80,20 @@ jobs:
               print(f'::group::{name}')
               if name.startswith('Commit controlado'):
                   subprocess.run(['git','rm','-f','.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'], check=True)
-              subprocess.run(['bash','-lc',script], check=True)
+              result = subprocess.run(['bash','-lc',script], text=True, capture_output=True)
+              print(result.stdout)
+              print(result.stderr)
               print('::endgroup::')
+              if result.returncode:
+                  diag = Path('tools/empalme/v110-selective/LAST-FAILURE.txt')
+                  diag.write_text(
+                      'block='+name+'\nreturncode='+str(result.returncode)+'\n\nSTDOUT\n'+result.stdout[-30000:]+'\n\nSTDERR\n'+result.stderr[-30000:]+'\n',
+                      encoding='utf-8'
+                  )
+                  subprocess.run(['git','config','user.name','github-actions[bot]'], check=True)
+                  subprocess.run(['git','config','user.email','41898282+github-actions[bot]@users.noreply.github.com'], check=True)
+                  subprocess.run(['git','add',str(diag)], check=True)
+                  subprocess.run(['git','commit','-m','ci: record V110 empalme failure diagnostic'], check=True)
+                  subprocess.run(['git','push','origin','HEAD:docs-tya-v6-v71-audit'], check=True)
+                  raise SystemExit(result.returncode)
           PY
