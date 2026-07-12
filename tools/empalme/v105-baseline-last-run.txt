@@ -1,9 +1,18 @@
+beforeReconstruction:
+97a38f96602ca50d126c35a46adb616531c6578aaec82d1cfb25d22b49ea928d  app/core/finanzas-core.js
+f72737bbe9d2b3a528fe51c4b7626ecf0705fa28395d4ba6fd5153187445990e  app/core/liquidacion.js
+b35a92af26b57939aef83562347ef9e02aec1966da95b43f078d66a0387f6d51  app/core/topbar.js
 connector_repair_ok:132092
 sha256sum: WARNING: 3 computed checksums did NOT match
 BLOCKED [runtime_checksum_mismatch] one or more V105/V106 runtime files differ
 
+afterReconstruction:
+97a38f96602ca50d126c35a46adb616531c6578aaec82d1cfb25d22b49ea928d  app/core/finanzas-core.js
+f72737bbe9d2b3a528fe51c4b7626ecf0705fa28395d4ba6fd5153187445990e  app/core/liquidacion.js
+b35a92af26b57939aef83562347ef9e02aec1966da95b43f078d66a0387f6d51  app/core/topbar.js
+
 exitCode=2
-head=d736b44c008fb65eb6dd72c0e50900e10147ec0d
+head=6114888653cbfe6fc20b5fa3f77fffe1c5ac30b3
 branch=docs-tya-v6-v71-audit
 checksumFileSha=d198b0a1cf5d8e5de8fc87bbb961b40e08cd4b97314764ec9e87fcac4befc49b
 changedRuntimeFiles:
