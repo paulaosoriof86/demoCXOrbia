@@ -1,0 +1,98 @@
+name: CXOrbia Phase A R12 Firebase DEV Read-Only Readiness
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - tools/release/r12-firebase-readonly/READY
+
+permissions:
+  contents: write
+
+jobs:
+  validate-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout rama viva
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Verify V110 lock and run static Firebase DEV gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd app && node docs/verify-manifest-v110-union-empalme.mjs)
+          rm -rf .tmp/r12-firebase-readonly
+          node tools/release/tya-firebase-dev-clean-state-read-only-gate-validate.mjs \
+            --out .tmp/r12-firebase-readonly
+          test -s .tmp/r12-firebase-readonly/firebase-dev-clean-state-read-only-static-gate-report.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync('.tmp/r12-firebase-readonly/firebase-dev-clean-state-read-only-static-gate-report.json','utf8'));
+          if(r.verdict!=='GO_SAFE_FIREBASE_DEV_READ_ONLY_GATE_PREPARED_NOT_EXECUTED') throw new Error('unexpected static gate verdict');
+          if(r.hardFailCount!==0||r.executionAuthorization!==false) throw new Error('gate invariant failed');
+          if(Object.values(r.safeState).some(Boolean)) throw new Error('static gate executed a provider action');
+          console.log(JSON.stringify({verdict:r.verdict,hardFails:r.hardFailCount,warnings:r.warningCount,authorization:r.executionAuthorization},null,2));
+          NODE
+
+      - name: Document R12 readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'),path=require('path'),crypto=require('crypto');
+          const G=JSON.parse(fs.readFileSync('.tmp/r12-firebase-readonly/firebase-dev-clean-state-read-only-static-gate-report.json','utf8'));
+          const C=JSON.parse(fs.readFileSync('backend/config/phase-a-firebase-dev-clean-state-read-only.source-safe.json','utf8'));
+          const M=JSON.parse(fs.readFileSync('app/docs/MANIFEST-V110-UNION-EMPALME-R1.json','utf8'));
+          const Q=JSON.parse(fs.readFileSync('backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json','utf8'));
+          const report={
+            schemaVersion:'1.0.0',reportId:'phase-a-firebase-dev-readonly-readiness-post-v110-r12',generatedAt:new Date().toISOString(),
+            tenantId:'tya',projectId:'cinepolis',baseline:{sourceZipSha256:M.sourceZipSha256,unionAggregateSha256:M.aggregateSha256,fileCount:M.fileCount,r10Decision:M.r10?.decision||null,r11dDecision:Q.decision,shopperGapReviewId:Q.reviewItems[0].reviewId},
+            target:C.target,execution:{workflow:C.execution.workflow,exactConfirmation:C.execution.exactConfirmation,manualOnly:true,providerRunAuthorized:false,credentialSecretName:C.execution.credentialSecretName},
+            staticGate:{verdict:G.verdict,hardFailCount:G.hardFailCount,warningCount:G.warningCount,executionAuthorization:G.executionAuthorization},
+            decision:'READY_FOR_EXPLICIT_AUTHORIZATION_NOT_EXECUTED',
+            blockedUntilAuthorization:['provider_reads','credential_use','auth_read','firestore_read','storage_read','functions_read','rules_release_read'],
+            prohibitedAlwaysInThisRun:C.blocked,
+            safeState:{providerCalls:false,credentialsUsed:false,authReads:false,authWrites:false,firestoreReads:false,firestoreWrites:false,storageReads:false,storageWrites:false,functionReads:false,functionWrites:false,rulesDeploy:false,hostingDeploy:false,imports:false,production:false}
+          };
+          fs.writeFileSync('backend/config/phase-a-firebase-dev-readonly-readiness-post-v110-r12.source-safe.json',JSON.stringify(report,null,2)+'\n','utf8');
+          fs.writeFileSync('app/docs/PHASE-A-FIREBASE-DEV-READONLY-READINESS-POST-V110-R12-20260712.md',`# PHASE A — R12 FIREBASE DEV READ-ONLY READINESS POST-V110\n\nFecha: 2026-07-12\n\n## Decisión\n\n\`${report.decision}\`\n\n## Baseline comprobada\n\n- V110 union source lock: \`${report.baseline.unionAggregateSha256}\`;\n- archivos: ${report.baseline.fileCount};\n- R10: \`${report.baseline.r10Decision}\`;\n- gap shopper review: \`${report.baseline.shopperGapReviewId}\`.\n\n## Gate estático\n\n- verdict: \`${G.verdict}\`;\n- hard fails: ${G.hardFailCount};\n- warnings: ${G.warningCount};\n- autorización de ejecución: ${G.executionAuthorization}.\n\n## Objetivo DEV\n\n- Firebase project: \`${C.target.projectId}\`;\n- bucket: \`${C.target.storageBucket}\`;\n- ambiente: \`${C.target.environment}\`;\n- workflow manual: \`${C.execution.workflow}\`;\n- confirmación exacta futura: \`${C.execution.exactConfirmation}\`.\n\n## Lo que se verificó ahora\n\nSolo contratos, configuración, workflow manual, runner y ausencia de patrones de escritura/deploy.\n\n## Lo que NO se ejecutó\n\nNo se usaron credenciales; no hubo lecturas de Auth, Firestore, Storage, Functions o Rules; no hubo writes, imports, deploy ni producción.\n\n## Siguiente gate\n\nLa lectura sanitizada del proveedor solo puede ejecutarse después de autorización explícita de Paula. Sin esa autorización, el estado correcto permanece \`READY_FOR_EXPLICIT_AUTHORIZATION_NOT_EXECUTED\`.\n`,'utf8');
+          fs.writeFileSync('app/docs/CAMBIOS-BACKEND-ADDENDUM-FIREBASE-DEV-READONLY-R12-20260712.md',`# CAMBIOS BACKEND — R12 FIREBASE DEV READ-ONLY\n\n- Gate estático post-V110 ejecutado: \`${G.verdict}\`.\n- 0 hard fails; 0 provider calls; 0 credenciales usadas.\n- Workflow manual y confirmación exacta preservados.\n- No se ejecutó lectura real del proveedor.\n`,'utf8');
+          fs.writeFileSync('app/docs/ACADEMIA-IMPACT-FIREBASE-DEV-READONLY-R12-20260712.md',`# ACADEMIA — IMPACTO R12\n\n- Explicar diferencia entre readiness estático y lectura real del proveedor.\n- \`READY_FOR_EXPLICIT_AUTHORIZATION_NOT_EXECUTED\` no significa Firebase conectado ni base limpia verificada.\n- No corresponde paquete Claude inmediato.\n`,'utf8');
+          fs.writeFileSync('app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-R12-FIREBASE-READONLY-20260712.md',`# TRACKER PHASE A — R12 FIREBASE DEV READ-ONLY\n\n- V110: COMPLETED_VERIFIED.\n- R10: PASS_WITH_REVIEW.\n- R11D shopper gap: REVIEW_QUEUE_SOURCE_LEVEL_ITEM_CREATED.\n- R12 static gate: ${G.verdict}.\n- Provider run authorization: FALSE.\n- Provider reads: NOT_EXECUTED.\n- Writes/imports/deploy/production: HOLD.\n\nSiguiente bloque exacto: ejecutar el workflow manual read-only únicamente después de autorización explícita de Paula; de lo contrario, continuar con preparación source-safe de pagos/certificaciones sin tocar proveedor.\n`,'utf8');
+          fs.appendFileSync('CAMBIOS-BACKEND.md',`\n\n## R12 Firebase DEV read-only readiness — 2026-07-12\n\n- Gate estático post-V110: \`${G.verdict}\`.\n- Autorización provider: FALSE; lecturas reales: NOT_EXECUTED.\n- Sin credenciales, writes, imports, deploy ni producción.\n`,'utf8');
+          fs.appendFileSync('RESUMEN-PARA-CLAUDE.md',`\n\n## R12 Firebase DEV read-only readiness — 2026-07-12\n\n- Estado: \`${report.decision}\`.\n- No mostrar Firebase conectado o base limpia verificada; solo readiness estático.\n- No corresponde paquete Claude inmediato.\n`,'utf8');
+          const root=path.resolve('app'),manifestRel='docs/MANIFEST-V110-UNION-EMPALME-R1.json',verifierRel='docs/verify-manifest-v110-union-empalme.mjs';
+          const excluded=new Set(['core/build-lock.js',manifestRel,verifierRel]),rels=[];
+          function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,e.name);if(e.isDirectory())walk(p);else if(e.isFile())rels.push(path.relative(root,p).split(path.sep).join('/'));}}walk(root);
+          const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+          const files=rels.filter(r=>!excluded.has(r)).sort().map(r=>{const b=fs.readFileSync(path.join(root,r));return{path:r,size:b.length,sha256:sha(b)};});
+          const aggregateSha256=sha(Buffer.from(files.map(f=>`${f.path}:${f.sha256}`).join('\n'),'utf8'));
+          M.generatedAt=new Date().toISOString();M.fileCount=files.length;M.aggregateSha256=aggregateSha256;M.files=files;M.r12={decision:report.decision,staticGate:G.verdict,providerRunAuthorized:false,report:'docs/PHASE-A-FIREBASE-DEV-READONLY-READINESS-POST-V110-R12-20260712.md'};
+          fs.writeFileSync(path.join(root,manifestRel),JSON.stringify(M,null,2)+'\n','utf8');
+          fs.writeFileSync(path.join(root,'core','build-lock.js'),`/* CXOrbia · Source lock unión V110 · R12 readiness */\nvar CX_SOURCE_LOCK={manifestFile:'${manifestRel}',aggregateSha256:'${aggregateSha256}',fileCount:${files.length},runtimeIdentity:'67 exactos V110 + 2 overrides locales protegidos + lock unión',r10Decision:'${M.r10?.decision}',r11dDecision:'${M.r11d?.decision}',r12Decision:'${report.decision}',generatedAt:'${M.generatedAt.slice(0,10)}',sourceZipSha256:'${M.sourceZipSha256}',note:'V110 empalmada; Firebase DEV solo readiness estático, provider no ejecutado.'};\nvar CX_BUILD_ID=CX_SOURCE_LOCK.aggregateSha256.slice(0,16);\nif(typeof window!=='undefined'){window.CX=window.CX||{};window.CX.BUILD_ID=CX_BUILD_ID;window.CX.SOURCE_LOCK=CX_SOURCE_LOCK;}\n`,'utf8');
+          NODE
+          node --check app/core/build-lock.js
+          (cd app && node docs/verify-manifest-v110-union-empalme.mjs)
+
+      - name: Commit y limpiar runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f .github/workflows/cxorbia-r12-firebase-dev-readonly-readiness.yml
+          git rm -rf tools/release/r12-firebase-readonly
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app backend/config CAMBIOS-BACKEND.md RESUMEN-PARA-CLAUDE.md .github/workflows tools/release
+          git commit -m "docs(phase-a): validate Firebase DEV read-only readiness R12"
+          git push origin HEAD:docs-tya-v6-v71-audit
