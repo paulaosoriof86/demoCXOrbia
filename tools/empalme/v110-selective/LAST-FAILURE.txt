@@ -1,10 +1,37 @@
 block=Precheck fail-closed de empalme 3-way
-returncode=128
-runtimePatchSha256=d0c9e28b1204007f023b7bd6756a906c3a679756e891551d168639b23888a944
+returncode=1
+runtimePatchSha256=d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd
 
 STDOUT
 
 
 STDERR
-error: corrupt patch at /tmp/v110-runtime.patch:192
+Applied patch to 'app/core/cliente-data.js' with conflicts.
+Applied patch to 'app/core/data.js' cleanly.
+error: repository lacks the necessary blob to perform 3-way merge.
+Falling back to direct application...
+error: patch failed: app/core/liquidacion.js:76
+error: app/core/liquidacion.js: patch does not apply
+error: repository lacks the necessary blob to perform 3-way merge.
+Falling back to direct application...
+error: repository lacks the necessary blob to perform 3-way merge.
+Falling back to direct application...
+error: repository lacks the necessary blob to perform 3-way merge.
+Falling back to direct application...
+error: patch failed: app/modules/cliente-extra.js:13
+error: app/modules/cliente-extra.js: patch does not apply
+error: repository lacks the necessary blob to perform 3-way merge.
+Falling back to direct application...
+error: patch failed: app/modules/cliente.js:93
+error: app/modules/cliente.js: patch does not apply
+error: repository lacks the necessary blob to perform 3-way merge.
+Falling back to direct application...
+error: repository lacks the necessary blob to perform 3-way merge.
+Falling back to direct application...
+error: patch failed: app/modules/finanzas.js:434
+error: app/modules/finanzas.js: patch does not apply
+error: repository lacks the necessary blob to perform 3-way merge.
+Falling back to direct application...
+error: patch failed: app/styles/layout.css:149
+error: app/styles/layout.css: patch does not apply
 
