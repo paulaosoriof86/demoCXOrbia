@@ -107,3 +107,10 @@
 - No reabrir P0 Academia/país ni Finanzas fail-closed.
 - No surge paquete crítico nuevo para Claude.
 - Diferencia shopper 210/213 pertenece a reconciliación backend/operativa, sin match por nombre.
+
+
+## R11 shopper references — 2026-07-12
+
+- Decisión backend: `HOLD_REFERENCE_SET_UNAVAILABLE`.
+- No es tarea Claude: la diferencia 210/213 se procesa por referencias opacas y revisión humana.
+- No reabrir P0 V110 ni R10.

@@ -186,3 +186,11 @@
 - HR source-safe actual: 14 periodos, 616 visitas y 210 shoppers.
 - Diferencia 210/213: revisión backend/operativa con llaves estables; no dedupe por nombre y no tarea Claude.
 - Sin deploy, producción, imports, writes, providers ni pagos reales.
+
+
+## R11 reconciliación shopper references — 2026-07-12
+
+- Reconciliador source-safe por referencias opacas agregado y ejecutado.
+- Decisión: `HOLD_REFERENCE_SET_UNAVAILABLE`.
+- Actual 210; histórica no localizada; históricas ausentes 0; nuevas 0.
+- No match por nombre, no materialización, no imports, no writes, no deploy ni producción.
