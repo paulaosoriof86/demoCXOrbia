@@ -208,3 +208,10 @@
 - Decisión: `SOURCE_SNAPSHOT_DRIFT_NOT_BUILDER_DRIFT`.
 - Se verificó si 213→210 proviene de cambio del builder/helper o de snapshot/fuente.
 - No nombres, imports, writes, deploy ni producción.
+
+
+## R11D reviewQueue brecha shopper — 2026-07-12
+
+- Se creó un único ítem source-level; no tres shoppers ficticios.
+- Materialización shopper/carryover de certificaciones queda HOLD hasta evidencia o decisión humana auditada.
+- Sin imports, writes, deploy ni producción.

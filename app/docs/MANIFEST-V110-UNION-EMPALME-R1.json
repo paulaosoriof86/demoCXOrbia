@@ -3,7 +3,7 @@
   "package": "CXORBIA-V110-UNION-EMPALME-R1",
   "project": "CXOrbia",
   "baseline": "V110 empalmada de forma determinística sobre rama viva",
-  "generatedAt": "2026-07-12T21:37:50.493Z",
+  "generatedAt": "2026-07-12T21:39:47.213Z",
   "sourceZipSha256": "1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227",
   "basePackageSha256": "582a8c98cdac7b46028bb720d1304657c6d678e99e4bc23a49e80ab440bc8206",
   "runtimePatchSha256": "d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd",
@@ -24,8 +24,8 @@
     ],
     "generatedUnionLock": "core/build-lock.js"
   },
-  "fileCount": 1392,
-  "aggregateSha256": "121d98c24d76670174b842b1b9cd323c158c7a4f0dc8e7bfc2576e46469419fb",
+  "fileCount": 1397,
+  "aggregateSha256": "d709668cc84886774ee3eb5b2ad3d14514e30ee791b90145f649f2b4f5510744",
   "exclusionsDeclared": [
     {
       "path": "core/build-lock.js",
@@ -990,6 +990,11 @@
       "path": "docs/ACADEMIA-IMPACT-SHOPPER-COMMUNICATION-HISTORY-PREVIEW-TYA-20260704.md",
       "size": 4126,
       "sha256": "e86a6c9dc4af48c113b61bb8ad3cc51b5b97104576adbab7368e807ce1502ac7"
+    },
+    {
+      "path": "docs/ACADEMIA-IMPACT-SHOPPER-GAP-REVIEW-R11D-20260712.md",
+      "size": 265,
+      "sha256": "cf600917ad4e7b64a8fdc529ca1c4ecae540e0614b0e626a471d5ddc7146d587"
     },
     {
       "path": "docs/ACADEMIA-IMPACT-SHOPPER-HISTORY-RECOVERY-R11B-20260712.md",
@@ -2115,6 +2120,11 @@
       "path": "docs/CAMBIOS-BACKEND-ADDENDUM-SHOPPER-COMMUNICATION-HISTORY-PREVIEW-20260704.md",
       "size": 3587,
       "sha256": "17e419fc8264bdca33f4666f44aa78d06981c9160678eb5c6d4ea3df2349eec1"
+    },
+    {
+      "path": "docs/CAMBIOS-BACKEND-ADDENDUM-SHOPPER-GAP-REVIEW-R11D-20260712.md",
+      "size": 269,
+      "sha256": "ffeedd527e78960a85a6869f435f374cb45ab6c80723604f3adc023ab907647a"
     },
     {
       "path": "docs/CAMBIOS-BACKEND-ADDENDUM-SHOPPER-HISTORY-RECOVERY-R11B-20260712.md",
@@ -3977,6 +3987,11 @@
       "sha256": "f44b90639f16d3bb529c91bf4c93755176ec5fcb78d4bdd7dd9e997751996720"
     },
     {
+      "path": "docs/INSUMO-PUNTUAL-SNAPSHOT-R5-SHOPPERS-20260712.md",
+      "size": 717,
+      "sha256": "c9a0828a1b35a0ca0ee469091b14238960e1f58df6fb181f6193ee2aaea8a2ac"
+    },
+    {
       "path": "docs/INTEGRACIONES.md",
       "size": 3301,
       "sha256": "81d0fc859e07c61da070a5bb20a0cc07bb05640099b0d8b04cd207ab0ba43a68"
@@ -5042,6 +5057,11 @@
       "sha256": "79159b47b9793517fbce9ded1b8d7163aa517573ad7d9c5c3bcc99683dd4bd45"
     },
     {
+      "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-R11D-SHOPPER-GAP-20260712.md",
+      "size": 514,
+      "sha256": "008c801dad855eb87130281489e03335d9aa3683028b976b6e9f0e27471fafe8"
+    },
+    {
       "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-RECHAZO-V102-CONTAMINACION-ORBIT-20260711.md",
       "size": 643,
       "sha256": "e0aef3df58611e3b40c93a96a7d226d39f02ae38940a846849bd07996a25b560"
@@ -5355,6 +5375,11 @@
       "path": "docs/PHASE-A-SHOPPER-REFERENCE-HISTORY-RECOVERY-R11B-20260712.md",
       "size": 892,
       "sha256": "c8033c21d6db0d6559daa949fe2dc19e888d96ed996fa318eabfa915d40bfc81"
+    },
+    {
+      "path": "docs/PHASE-A-SHOPPER-SOURCE-SNAPSHOT-GAP-REVIEW-R11D-20260712.md",
+      "size": 1311,
+      "sha256": "d9a5fb803a990fa6466569ee17d2db177d5f97eb92fc4918f1af10981e7ee3af"
     },
     {
       "path": "docs/PHASE-A-SOURCE-SAFE-DOMAIN-MAPPING-TYA-20260709.md",
@@ -7031,5 +7056,11 @@
   "r11c": {
     "decision": "SOURCE_SNAPSHOT_DRIFT_NOT_BUILDER_DRIFT",
     "report": "docs/PHASE-A-SHOPPER-REFERENCE-BUILDER-LINEAGE-R11C-20260712.md"
+  },
+  "r11d": {
+    "decision": "REVIEW_QUEUE_SOURCE_LEVEL_ITEM_CREATED",
+    "report": "docs/PHASE-A-SHOPPER-SOURCE-SNAPSHOT-GAP-REVIEW-R11D-20260712.md",
+    "reviewItems": 1,
+    "placeholderShoppers": 0
   }
 }

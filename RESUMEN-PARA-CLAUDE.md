@@ -126,3 +126,9 @@
 
 - Decisión backend: `SOURCE_SNAPSHOT_DRIFT_NOT_BUILDER_DRIFT`.
 - No es tarea Claude; no reabrir V110/R10.
+
+
+## R11D shopper gap review — 2026-07-12
+
+- Brecha 210/213 encapsulada en reviewQueue backend a nivel de fuente.
+- No es tarea Claude y no reabre V110/R10.
