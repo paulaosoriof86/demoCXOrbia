@@ -53,6 +53,16 @@ jobs:
           node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
           test -s app/data/tya-hr-source-safe-periods.js
           grep -q 'sourceSafe' app/data/tya-hr-source-safe-periods.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('app/index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('<script src="core/build-lock.js"></script>','<script src="data/tya-hr-source-safe-periods.js"></script>\n<script src="core/build-lock.js"></script>',1)
+          s=s.replace('<script src="core/data.js"></script>','<script src="core/data.js"></script>\n<script src="core/tya-phase-a-source-safe-preview.js"></script>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+          grep -Fq 'data/tya-hr-source-safe-periods.js' app/index.html
+          grep -Fq 'core/tya-phase-a-source-safe-preview.js' app/index.html
 
       - name: Install Playwright
         run: |
@@ -66,7 +76,7 @@ jobs:
           python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp-source-safe-server.log 2>&1 &
           echo $! > .tmp-source-safe-server.pid
           for attempt in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:4173/index.html >/dev/null; then
+            if curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' >/dev/null; then
               echo 'Source-safe smoke server ready.'
               exit 0
             fi
@@ -78,7 +88,7 @@ jobs:
 
       - name: Run source-safe operational visual smoke
         env:
-          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html
+          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
           CXORBIA_EXPECT_TENANT_ID: tya
           CXORBIA_EXPECT_PROJECT_ID: cinepolis
           CXORBIA_EXPECT_PERIODS: '14'
