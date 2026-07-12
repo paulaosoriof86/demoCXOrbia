@@ -1,0 +1,8 @@
+connector_repair_ok:132092
+sha256sum: WARNING: 3 computed checksums did NOT match
+BLOCKED [runtime_checksum_mismatch] one or more V105/V106 runtime files differ
+
+exitCode=2
+head=a97f4845265877e8bd6456fd11bc98f3d6072773
+branch=docs-tya-v6-v71-audit
+checksumFileSha=d198b0a1cf5d8e5de8fc87bbb961b40e08cd4b97314764ec9e87fcac4befc49b
