@@ -38,6 +38,8 @@ jobs:
           s=s.replace('V110_LIQ_B64="tools/empalme/v110-exact/liquidacion.js.b64"','V110_LIQ_FILE="tools/empalme/v110-exact/liquidacion.js.exact"')
           s=s.replace('$V110_LIQ_B64','$V110_LIQ_FILE')
           s=s.replace('tr -d \'\\r\\n\\t \' < "$V110_LIQ_FILE" | base64 -d > app/core/liquidacion.js','cp "$V110_LIQ_FILE" app/core/liquidacion.js')
+          s=s.replace("if(regs.length!==48||new Set(regs).size!==48) throw new Error(`module_graph_invalid registrations=${regs.length} unique=${new Set(regs).size}`);", "const unique=new Set(regs);const duplicates=[...unique].filter(id=>regs.filter(x=>x===id).length>1);if(unique.size!==48) throw new Error(`module_graph_invalid registrations=${regs.length} unique=${unique.size}`);console.log('moduleDuplicateExtensions',duplicates);")
+          s=s.replace('git rm -f tools/empalme/v105-baseline-last-run.txt tools/empalme/v105-baseline-checksums.log tools/empalme/v105-baseline-diagnostic.txt || true','git rm -f tools/empalme/v105-baseline-last-run.txt tools/empalme/v105-baseline-checksums.log tools/empalme/v105-baseline-diagnostic.txt tools/empalme/v110-final-last-run.txt || true')
           p.write_text(s,encoding='utf-8')
           PY
           bash tools/empalme/run-v110-deterministic-final.sh > tools/empalme/v110-final-last-run.txt 2>&1
