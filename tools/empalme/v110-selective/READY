@@ -4,6 +4,6 @@ runtimePatchSha256=d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f
 academiaPatchSha256=8395ca4eeb4dc5b5e459bcaf51ef538419db80535baaf319aec68688551740fd
 mode=selective-three-way-fail-closed
 exactChunks=19
-attempt=20260712T1730-resolver
+attempt=20260712T1740-resolver-retrigger
 noDeploy=true
 noProduction=true
