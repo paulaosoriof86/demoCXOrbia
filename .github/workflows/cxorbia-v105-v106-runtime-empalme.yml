@@ -8,6 +8,12 @@ on:
     paths:
       - '.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'
       - 'tools/empalme/v110-selective/READY'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - '.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'
+      - 'tools/empalme/v110-selective/READY'
 
 permissions:
   contents: write
