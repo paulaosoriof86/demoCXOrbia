@@ -1,0 +1,161 @@
+diff --git a/app/modules/academia.js b/app/modules/academia.js
+index 1b51df42a9c537d270298cdd72720f0cb5ff2a6a..ea643b910e917922a13c7620c9a1d38ea04cbc1f 100644
+--- a/app/modules/academia.js
++++ b/app/modules/academia.js
+@@ -7,6 +7,11 @@ window.CX=window.CX||{};
+ 
+ /* ─ Catálogo de cursos ─ */
+ CX.acadData={
++  /* T2.B (paquete V108): catálogos con IDs estables para el scope de Academia — reemplaza
++     el CSV libre. Nivel/paquete no tienen una fuente formal en el prototipo todavía, así que
++     se curan aquí como lista cerrada (misma idea que los planes ya usados en Consola SaaS). */
++  NIVELES:[{id:'basico',label:'Básico'},{id:'intermedio',label:'Intermedio'},{id:'avanzado',label:'Avanzado'}],
++  PAQUETES:[{id:'starter',label:'Starter'},{id:'estandar',label:'Estándar'},{id:'pro',label:'Pro'},{id:'enterprise',label:'Enterprise'}],
+   CATS:(()=>{try{const s=JSON.parse(localStorage.getItem('cx_acad_cats')||'null');if(s&&Array.isArray(s)&&s.length)return s;}catch(e){}return ['Todos','Inducción','Operación','Set-up','Finanzas','Comercial','Técnico','IA','Industria MS'];})(),
+   /* ── Persistencia de cursos personalizados ── */
+   _ck:'cx_acad_cust',
+@@ -19,11 +24,132 @@ CX.acadData={
+     if(CX.permissions && !CX.permissions.can('academy.create', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.create".'};
+     const arr=this.getCustom(r); const lessons=c.lessons||[]; const mins=(typeof c.mins==='number')?c.mins:Math.max(10,lessons.length*12);
+     const auditRef='aud_'+Math.random().toString(36).slice(2,8);
+-    arr.unshift(Object.assign({id:'cu'+Date.now().toString(36),lessons:[],mins,cert:false,estado:'borrador',contentVersion:1,workflowVersion:1,auditRef},c,{mins}));
++    /* Contrato Academia (paquete 20260711): creator identificado explícitamente y separado de
++       revisor/aprobador (setCourseState). scope opcional (vacío = global) — ver visibleFor(). */
++    const creador=(CX.session&&CX.session.user&&CX.session.user.name)||'—';
++    /* T1b (paquete V109): identidad ESTABLE del creador por id (cx_users o sesión sintética) —
++       creador (nombre) se conserva solo para presentación; la separación de funciones en
++       setCourseState se valida contra createdByUserId, nunca contra el nombre. */
++    const createdByUserId=this.actorId();
++    /* T2.D (paquete V108, sin cambios en V109): todo curso queda vinculado a un tenantId real
++       desde su creación — el eje tenantId del scope se fuerza al tenant activo aunque el resto
++       de ejes queden vacíos (regla documentada: sin scope explícito = global DENTRO del tenant,
++       nunca global cruzando tenants). Con el bug de T1 corregido, CX.acadData.ctx().tenantId
++       ahora SIEMPRE resuelve a este mismo CX.BRAND.id, así que el eje coincide. */
++    const scope=Object.assign({}, c.scope||{}, {tenantId:[CX.BRAND.id]});
++    arr.unshift(Object.assign({id:'cu'+Date.now().toString(36),lessons:[],mins,cert:false,estado:'borrador',contentVersion:1,workflowVersion:1,auditRef,
++      creador, createdByUserId, revisadoPor:null, reviewedByUserId:null, aprobadoPor:null, approvedByUserId:null, scope},c,{mins,scope}));
+     this.saveCustom(r,arr);
+     this._logAudit(r,{accion:'crear',cid:arr[0].id,titulo:arr[0].n,motivo:c.motivo||'(creación)'});
+     return {ok:true, course:arr[0]};
+   },
++
++  /* T1 (paquete V109 — 20260712, corrección P0 real): contexto académico CANÓNICO, propio de
++     Academia — independiente de CX.permissions.ctx() (que sirve a otro propósito: simular un
++     tenant/proyecto distinto para el gate de permisos, no el tenant/país reales del usuario).
++     Bug confirmado en V108: CX.permissions.ctx().tenantId lee CX.session.user.tenantId, campo
++     que NINGÚN flujo de login (admin/cliente/shopper/invitado) asigna jamás — así que un curso
++     creado con scope.tenantId=[CX.BRAND.id] quedaba invisible para TODOS los roles, incluido el
++     shopper correcto, porque ctx.tenantId llegaba `undefined`. Este helper resuelve tenantId al
++     tenant real de la instancia (CX.BRAND.id — un solo tenant por despliegue en este prototipo),
++     projectId al proyecto activo, país como LISTA (scope de países del usuario invitado si existe,
++     si no los países del proyecto activo) para que multipaís no rompa el filtro, y rol al rol
++     efectivo de sesión (scopeRole para roles de prueba, o el rol real). */
++  ctx(){
++    const u=(CX.session&&CX.session.user)||{};
++    const p=CX.data&&CX.data.project&&CX.data.project();
++    const rol = u.scopeRole || u.role || (CX.session&&CX.session.role) || undefined;
++    const projectId = p && p.id;
++    let paises;
++    /* T1-V110 (corrección P0 real, 20260712): para rol SHOPPER, el país de acceso debe ser el
++       país REAL del shopper autenticado (data.getShopper(shopperId).pais) — nunca
++       project.countries. V109 usaba project.countries como fallback cuando el shopper no traía
++       scopePaises propio: en un proyecto multipaís (GT/HN) eso le daba al shopper GT acceso
++       equivalente a [GT,HN], filtrando contenido HN que no le correspondía. Ahora:
++       - si el usuario es un invitado/rol de prueba con scopePaises explícito, se respeta (sirve
++         para simular un revisor multipaís, no es el caso de un shopper real);
++       - si es shopper real, se resuelve su país desde el catálogo canónico de shoppers;
++       - si el país del shopper no puede resolverse, paises queda `[]` (fail-closed): un curso
++         restringido por país no será visible (axisOkMulti trata lista vacía/ausente como "sin
++         país conocido" → no confirmable), pero el contenido GLOBAL (sin restricción de país en
++         su scope) sigue visible sin problema. */
++    if(rol==='shopper'){
++      const sid=u.shopperId;
++      const shopper=sid && CX.data && CX.data.getShopper && CX.data.getShopper(sid);
++      if(shopper && shopper.pais) paises=[shopper.pais];
++      else paises=[]; // fail-closed: sin país real conocido, no se asume el del proyecto
++    } else if(u.scopePaises && u.scopePaises.length){
++      paises=u.scopePaises; // invitados/roles de prueba explícitos (no shopper real)
++    } else if(p && p.countries && p.countries.length){
++      paises=p.countries; // admin/super viendo catálogo administrable general
++    }
++    return { tenantId: CX.BRAND.id, projectId, paises, rol };
++  },
++
++  /* Visibilidad efectiva por scope opcional. Separa dos familias de ejes (paquete V109 —
++     corrección P0): ACCESO (tenantId/projectId/pais/rol) decide si el curso es visible;
++     CLASIFICACIÓN (modulo/nivel/paquete) es taxonomía de contenido — se usa para FILTRAR el
++     catálogo desde la UI (ver matchesClassification), nunca para ocultar un curso solo porque
++     la sesión actual no tenga esos campos (bug V108: un shopper sin "módulo" en su contexto
++     perdía cursos con scope.modulo definido, aunque el eje de acceso fuera correcto). Un eje de
++     acceso vacío/ausente en el scope significa "global" para ese eje (no restringe). País acepta
++     una lista de países del usuario (multipaís): basta con que UNO se solape con el scope. */
++  visibleFor(course, ctx){
++    const sc=course&&course.scope; if(!sc || !Object.keys(sc).length) return true;
++    ctx=ctx||{};
++    const axisOk=(vals,current)=>!vals || !vals.length || (current!=null && vals.includes(current));
++    const axisOkMulti=(vals,currentArr)=>{
++      if(!vals || !vals.length) return true; // eje global, no restringe
++      if(!currentArr || !currentArr.length) return false; // curso restringido por país, sesión sin país conocido → no confirmable
++      return currentArr.some(c=>vals.includes(c));
++    };
++    return axisOk(sc.tenantId, ctx.tenantId) && axisOk(sc.projectId, ctx.projectId) && axisOkMulti(sc.pais, ctx.paises)
++      && axisOk(sc.rol, ctx.rol);
++  },
++
++  /* Filtros de CLASIFICACIÓN (no de acceso): módulo/nivel/paquete son metadatos del contenido.
++     `filters` trae los valores elegidos por el usuario en la UI (opcional cada uno); si el curso
++     no declara ese eje en su scope, no se excluye por esa clasificación (coincide con "cualquiera"). */
++  matchesClassification(course, filters){
++    filters=filters||{};
++    const sc=(course&&course.scope)||{};
++    const axisPick=(vals,chosen)=>!chosen || (Array.isArray(vals)&&vals.includes(chosen));
++    if(filters.modulo && !(Array.isArray(sc.modulo)&&sc.modulo.length)) return true; // sin taxonomía declarada, no se excluye
++    if(filters.modulo && Array.isArray(sc.modulo) && sc.modulo.length && !axisPick(sc.modulo, filters.modulo)) return false;
++    if(filters.nivel && Array.isArray(sc.nivel) && sc.nivel.length && !axisPick(sc.nivel, filters.nivel)) return false;
++    if(filters.paquete && Array.isArray(sc.paquete) && sc.paquete.length && !axisPick(sc.paquete, filters.paquete)) return false;
++    return true;
++  },
++
++  /* T1b — actores con identidad estable (paquete V109). El prototipo SÍ tiene un catálogo real
++     de usuarios invitados (cx_users, editable en Configuración → Usuarios & Permisos) además de
++     la sesión activa — V108 afirmaba erróneamente que no existía ninguno. actorId() resuelve un
++     id ESTABLE y persistido: si el usuario de sesión viene de cx_users (tiene email), se busca/crea
++     su id ahí; si es una sesión sintética de demo (Admin Demo/Cliente Demo/Evaluador 01, sin
++     registro propio), el id es estable por rol+shopperId dentro de este navegador. Nunca se compara
++     por nombre visible — el nombre es solo presentación. */
++  actorId(){
++    const u=(CX.session&&CX.session.user)||{};
++    if(u.email){
++      try{
++        const list=JSON.parse(localStorage.getItem('cx_users')||'[]');
++        const idx=list.findIndex(x=>x.email===u.email);
++        if(idx>=0){
++          if(!list[idx].id){ list[idx].id='usr_'+Math.random().toString(36).slice(2,10); try{localStorage.setItem('cx_users',JSON.stringify(list));}catch(e){} }
++          return list[idx].id;
++        }
++      }catch(e){}
++    }
++    return 'session_'+(u.role||(CX.session&&CX.session.role)||'anon')+(u.shopperId?'_'+u.shopperId:'');
++  },
++  /* compat: cursos legados que solo tienen el NOMBRE (creador/revisadoPor/aprobadoPor) sin id —
++     se les asigna un id determinístico derivado del nombre (hash estable), para que la
++     comparación de separación de funciones siga funcionando sin perder el dato existente. */
++  _idFromName(name){
++    name=String(name||'');
++    let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))|0;
++    return 'legacy_'+Math.abs(h).toString(36);
++  },
+   editCourse(r,cid,patch,ctx){
+     if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+     const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c)Object.assign(c,patch); const custom=this.getCustom(r); const cu=custom.find(x=>x.id===cid); if(cu){Object.assign(cu,patch); cu.contentVersion=(cu.contentVersion||1)+1;} this.saveCustom(r,custom);
+@@ -73,9 +199,38 @@ CX.acadData={
+     if(action && CX.permissions && !CX.permissions.can(action, opts.ctx)){
+       return {ok:false, error:'Tu rol no tiene el permiso de acción "'+action+'".'};
+     }
++    /* Contrato Academia (paquete 20260711): revisión y aprobación exigen una identidad
++       autenticada DISTINTA de quien creó el curso (separación de funciones configurable —
++       mismo patrón que el segundo actor de certificación en modules/cert.js). Sin backend real
++       de auth, el "autenticado" es la sesión activa del prototipo (session.user.name); nunca
++       texto libre. */
++    /* T1b (paquete V109 — corrección P0): la separación de funciones se valida por ID ESTABLE
++       (createdByUserId/reviewedByUserId/approvedByUserId), no por nombre visible. opts.revisorId /
