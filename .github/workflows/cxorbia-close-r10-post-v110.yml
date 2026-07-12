@@ -1,0 +1,124 @@
+name: CXOrbia Close R10 Post-V110
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - tools/qa/r10-close/READY
+
+permissions:
+  contents: write
+
+jobs:
+  close-r10:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout rama viva
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validar evidencia final R10
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const p='tools/qa/r10-final-result/report.source-safe.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(r.decision!=='PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE') throw new Error('unexpected R10 decision');
+          if((r.blockers||[]).length!==0) throw new Error('R10 has blockers');
+          if(!r.ok) throw new Error('R10 ok=false');
+          if(r.source?.counts?.periods!==14||r.source?.counts?.visits!==616||r.source?.counts?.shoppers!==210) throw new Error('unexpected source-safe counts');
+          if((r.roles||[]).length!==3||(r.modules||[]).length!==13) throw new Error('unexpected smoke coverage');
+          if((r.roles||[]).some(x=>x.status!=='pass'||x.pageErrorCount||x.consoleErrorCount)) throw new Error('role smoke failed');
+          if((r.modules||[]).some(x=>!x.attempted||!x.rendered||x.hasTechnicalPromise)) throw new Error('module smoke failed');
+          console.log(JSON.stringify({decision:r.decision,counts:r.source.counts,roles:r.roles.length,routes:r.modules.length,warnings:r.warnings},null,2));
+          NODE
+
+      - name: Documentar cierre real R10
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const R=JSON.parse(fs.readFileSync('tools/qa/r10-final-result/report.source-safe.json','utf8'));
+          const B=R.blockers||[], W=R.warnings||[];
+          const list=a=>a.length?a.map(x=>`- ${x}`).join('\n'):'- none';
+          const roles=(R.roles||[]).map(r=>`- ${r.id}: ${r.status}; source-safe=${r.sourceSafeMode}; project=${r.projectId}; rutas=${r.routes.length}; pageErrors=${r.pageErrorCount}; consoleErrors=${r.consoleErrorCount}`).join('\n');
+          const mods=(R.modules||[]).map(m=>`- ${m.role}/${m.token}: target=${m.target}; attempted=${m.attempted}; rendered=${m.rendered}; honestCopy=${!m.hasTechnicalPromise}`).join('\n');
+          const result=`# PHASE A — R10 SOURCE-SAFE POST-V110\n\nFecha: 2026-07-12\n\n## Decisión final\n\n\`${R.decision}\`\n\n## Fuente operacional comprobada\n\n- tenantId: \`${R.source.tenantId}\`;\n- projectId: \`${R.source.projectId}\`;\n- periodos: ${R.source.counts.periods};\n- visitas: ${R.source.counts.visits};\n- shoppers actuales en lectura HR source-safe: ${R.source.counts.shoppers};\n- referencia consolidada R5: 213 shoppers;\n- diferencia a reconciliar: 3 referencias;\n- países: \`${JSON.stringify(R.source.countryCounts)}\`;\n- monedas: \`${JSON.stringify(R.source.currencyCounts)}\`;\n- junio con evidencia de ejecución: ${R.source.june.withExecutionEvidence}/${R.source.june.visits};\n- registros inseguros: ${R.source.unsafeVisitCount};\n- señales de nombres shopper crudos: ${R.source.rawShopperNameSignals}.\n\n## Roles\n\n${roles}\n\n## Rutas verificadas\n\n${mods}\n\n## Blockers\n\n${list(B)}\n\n## Warnings\n\n${list(W)}\n\n## Decisión sobre 210/213\n\nLa lectura viva source-safe produce 210 identidades únicas frente a la referencia consolidada R5 de 213. La diferencia de 3 queda como \`REVIEW_REQUIRED\` de identidad/fuente. No se rellena con fixtures, no se deduplica ni enlaza por nombre y no se envía a Claude. No bloquea el smoke visual, pero mantiene HOLD sobre materialización/import de identidades hasta reconciliar llaves estables.\n\n## Estado seguro\n\nSin datos crudos, import real, escrituras, deploy, producción, Make/Gemini live ni pagos reales.\n`;
+          fs.writeFileSync('app/docs/PHASE-A-SOURCE-SAFE-VISUAL-SMOKE-R10-POST-V110-RESULT-20260712.md',result,'utf8');
+          fs.writeFileSync('app/docs/CAMBIOS-BACKEND-ADDENDUM-SMOKE-SOURCE-SAFE-R10-FINAL-20260712.md',`# CAMBIOS BACKEND — R10 FINAL POST-V110\n\nFecha: 2026-07-12\n\n## Resultado\n\n- V110 física y source lock unión se verificaron antes del smoke.\n- El harness usa rutas canónicas por rol y \`CX.router.nav()\`.\n- Decisión final: \`${R.decision}\`.\n- Cobertura: ${R.roles.length} roles, ${R.modules.length} rutas, 0 blockers, ${W.length} warning.\n- Fuente actual: ${R.source.counts.periods} periodos, ${R.source.counts.visits} visitas y ${R.source.counts.shoppers} shoppers source-safe.\n- La diferencia 210/213 queda en revisión backend/operativa, no como bug Claude.\n\n## Estado seguro\n\nSin deploy, producción, imports, writes, proveedores ni pagos reales.\n`,'utf8');
+          fs.writeFileSync('app/docs/ACADEMIA-IMPACT-SMOKE-SOURCE-SAFE-R10-FINAL-20260712.md',`# ACADEMIA — IMPACTO R10 FINAL POST-V110\n\nFecha: 2026-07-12\n\n- Ruta canónica \`aprendizaje\` renderizada para Admin y Shopper.\n- Ambos recorridos terminaron sin error de consola ni de página.\n- La segregación por país del shopper permanece fail-closed desde la identidad real.\n- No se detectó copy que prometa publicación o integración real.\n- Gemini y publicación automática continúan apagados; la revisión humana sigue obligatoria.\n- La reconciliación 210/213 pertenece a identidad/fuente, no a contenido de Academia.\n\nClasificación: \`Academia\` + \`Sin impacto Claude crítico\`.\n`,'utf8');
+          fs.writeFileSync('app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-R10-FINAL-20260712.md',`# TRACKER PHASE A — R10 FINAL POST-V110\n\nFecha: 2026-07-12\n\n- Auditoría V110: READY.\n- Empalme físico V110: COMPLETED_VERIFIED.\n- Source lock unión repo + V110: VERIFIED.\n- R10 source-safe: ${R.decision}.\n- Roles/rutas: ${R.roles.length}/${R.modules.length}, todos renderizados.\n- Errores de página/consola: 0/0.\n- HR source-safe actual: ${R.source.counts.periods} periodos / ${R.source.counts.visits} visitas / ${R.source.counts.shoppers} shoppers.\n- Reconciliación 210/213: REVIEW_REQUIRED, sin match por nombre.\n- Firebase DEV read-only: pendiente autorización específica.\n- Pagos/certificaciones: pendientes fuentes sanitizadas.\n- Source lock final de producción: HOLD.\n- Producción: HOLD.\n\nSiguiente bloque exacto: reconciliación source-safe de las 3 referencias shopper y, en carril separado, evidencia Firebase DEV read-only solo con autorización explícita.\n`,'utf8');
+          fs.writeFileSync('app/docs/R10-HARNESS-RECONCILIATION-20260712.md',`# R10 — RECONCILIACIÓN DEL HARNESS\n\nFecha: 2026-07-12\n\n1. Primer intento: bloqueado porque el HTML temporal no cargaba payload/bridge source-safe.\n2. Segundo intento: leyó correctamente 14/616/210, pero usó aliases y API de navegación incorrectos; se clasificó como fallo del harness, no regresión V110.\n3. Corrección final: payload/bridge inyectados solo en CI, rutas canónicas por rol y \`CX.router.nav()\`.\n4. Resultado final: \`${R.decision}\`, 0 blockers, 3 roles y 13 rutas renderizadas, 0 errores de página/consola.\n\nNo se reabre Claude ni el empalme V110 por fallos del harness.\n`,'utf8');
+          const marker='## R10 source-safe post-V110 — 2026-07-12';
+          let cb=fs.readFileSync('CAMBIOS-BACKEND.md','utf8');
+          cb=cb.replace(new RegExp(marker+'[\\s\\S]*$'),`${marker}\n\n- Empalme V110 y source lock unión verificados.\n- Harness corregido: payload/bridge source-safe solo en CI, rutas canónicas y \`CX.router.nav()\`.\n- Decisión final: \`${R.decision}\`.\n- Cobertura: ${R.roles.length} roles y ${R.modules.length} rutas; 0 errores de página/consola; 0 blockers.\n- HR source-safe actual: ${R.source.counts.periods} periodos, ${R.source.counts.visits} visitas y ${R.source.counts.shoppers} shoppers.\n- Diferencia 210/213: revisión backend/operativa con llaves estables; no dedupe por nombre y no tarea Claude.\n- Sin deploy, producción, imports, writes, providers ni pagos reales.\n`);
+          fs.writeFileSync('CAMBIOS-BACKEND.md',cb,'utf8');
+          let rs=fs.readFileSync('RESUMEN-PARA-CLAUDE.md','utf8');
+          if(rs.includes(marker)) rs=rs.replace(new RegExp(marker+'[\\s\\S]*$'),`${marker}\n\n- Decisión final: \`${R.decision}\`.\n- Admin, Cliente y Shopper: 13/13 rutas renderizadas, 0 errores de página/consola y sin copy de integración real.\n- No reabrir P0 Academia/país ni Finanzas fail-closed.\n- No surge paquete crítico nuevo para Claude.\n- Diferencia shopper 210/213 pertenece a reconciliación backend/operativa, sin match por nombre.\n`);
+          else rs+=`\n\n${marker}\n\n- Decisión final: \`${R.decision}\`.\n- Admin, Cliente y Shopper: 13/13 rutas renderizadas, 0 errores de página/consola y sin copy de integración real.\n- No reabrir P0 Academia/país ni Finanzas fail-closed.\n- No surge paquete crítico nuevo para Claude.\n- Diferencia shopper 210/213 pertenece a reconciliación backend/operativa, sin match por nombre.\n`;
+          fs.writeFileSync('RESUMEN-PARA-CLAUDE.md',rs,'utf8');
+          let pp=fs.readFileSync('PENDIENTES-PROTOTIPO.md','utf8');
+          pp=pp.replace(/\n## R10 source-safe post-V110 — 2026-07-12[\s\S]*$/,'');
+          fs.writeFileSync('PENDIENTES-PROTOTIPO.md',pp.replace(/\s+$/,'')+'\n','utf8');
+          NODE
+
+      - name: Refrescar source lock unión y verificar
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'),path=require('path'),crypto=require('crypto');
+          const root=path.resolve('app');
+          const manifestRel='docs/MANIFEST-V110-UNION-EMPALME-R1.json';
+          const verifierRel='docs/verify-manifest-v110-union-empalme.mjs';
+          const M=JSON.parse(fs.readFileSync(path.join(root,manifestRel),'utf8'));
+          const excluded=new Set(['core/build-lock.js',manifestRel,verifierRel]);
+          const rels=[];
+          function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,e.name);if(e.isDirectory())walk(p);else if(e.isFile())rels.push(path.relative(root,p).split(path.sep).join('/'));}}
+          walk(root);
+          const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+          const files=rels.filter(r=>!excluded.has(r)).sort().map(r=>{const b=fs.readFileSync(path.join(root,r));return{path:r,size:b.length,sha256:sha(b)};});
+          const aggregateSha256=sha(Buffer.from(files.map(f=>`${f.path}:${f.sha256}`).join('\n'),'utf8'));
+          const R=JSON.parse(fs.readFileSync('tools/qa/r10-final-result/report.source-safe.json','utf8'));
+          M.generatedAt=new Date().toISOString();
+          M.fileCount=files.length;
+          M.aggregateSha256=aggregateSha256;
+          M.files=files;
+          M.r10={decision:R.decision,report:'docs/PHASE-A-SOURCE-SAFE-VISUAL-SMOKE-R10-POST-V110-RESULT-20260712.md',blockers:R.blockers.length,warnings:R.warnings.length,roles:R.roles.length,routes:R.modules.length,shopperCurrent:R.source.counts.shoppers,shopperR5Reference:213,shopperReconciliation:'REVIEW_REQUIRED'};
+          fs.writeFileSync(path.join(root,manifestRel),JSON.stringify(M,null,2)+'\n','utf8');
+          const lock=`/* CXOrbia · Source lock unión V110 · R10 final\n   No implica deploy, producción, importación ni providers activos. */\nvar CX_SOURCE_LOCK={\n  manifestFile:'${manifestRel}',\n  aggregateSha256:'${aggregateSha256}',\n  fileCount:${files.length},\n  runtimeIdentity:'67 exactos V110 + 2 overrides locales protegidos + lock unión',\n  r10Decision:'${R.decision}',\n  generatedAt:'${M.generatedAt.slice(0,10)}',\n  sourceZipSha256:'${M.sourceZipSha256}',\n  note:'V110 empalmada; R10 final documentado; backend y source-safe preservados.'\n};\nvar CX_BUILD_ID=CX_SOURCE_LOCK.aggregateSha256.slice(0,16);\nif(typeof window!=='undefined'){window.CX=window.CX||{};window.CX.BUILD_ID=CX_BUILD_ID;window.CX.SOURCE_LOCK=CX_SOURCE_LOCK;}\n`;
+          fs.writeFileSync(path.join(root,'core','build-lock.js'),lock,'utf8');
+          NODE
+          node --check app/core/build-lock.js
+          (cd app && node docs/verify-manifest-v110-union-empalme.mjs)
+
+      - name: Limpiar runners temporales y commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f .github/workflows/cxorbia-close-r10-post-v110.yml
+          git rm -rf tools/qa/r10-close
+          git rm -f .github/workflows/cxorbia-r10-final-source-safe.yml || true
+          git rm -rf tools/qa/r10-final-source-safe || true
+          git rm -f .github/workflows/cxorbia-r10-post-v110-source-safe.yml || true
+          git rm -f .github/workflows/cxorbia-r10-post-v110-retry.yml || true
+          git rm -rf tools/qa/r10-post-v110-retry || true
+          git rm -f tools/empalme/v110-final-last-run.txt || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app CAMBIOS-BACKEND.md RESUMEN-PARA-CLAUDE.md PENDIENTES-PROTOTIPO.md .github/workflows tools/qa tools/empalme || true
+          git commit -m "docs(phase-a): close R10 post-V110 and refresh source lock"
+          git push origin HEAD:docs-tya-v6-v71-audit
