@@ -40,7 +40,7 @@ jobs:
           set -euo pipefail
           python3 <<'PY'
           from pathlib import Path
-          import re, subprocess, hashlib
+          import re, subprocess, hashlib, base64
 
           workflow = Path('.github/workflows/cxorbia-v110-selective-empalme.yml')
           lines = workflow.read_text(encoding='utf-8').splitlines()
@@ -77,12 +77,24 @@ jobs:
               raise SystemExit('No se encontraron bloques run en el workflow selectivo')
 
           intended_runtime_hash = 'd19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd'
-          runtime_bytes = b''.join(p.read_bytes() for p in sorted(Path('tools/empalme/v110-selective/parts').glob('runtime-part-*.patchpart')))
+          exact_parts = sorted(Path('tools/empalme/v110-selective/exact').glob('runtime-exact-*.b64'))
+          if not exact_parts:
+              raise SystemExit('No se encontraron chunks exactos del patch runtime V110')
+          encoded = ''.join(p.read_text(encoding='utf-8') for p in exact_parts)
+          encoded = ''.join(encoded.split())
+          runtime_bytes = base64.b64decode(encoded, validate=True)
           actual_runtime_hash = hashlib.sha256(runtime_bytes).hexdigest()
-          print('Runtime patch SHA-256 transportado:', actual_runtime_hash)
+          print('Chunks exactos:', len(exact_parts))
+          print('Runtime patch SHA-256 reconstruido:', actual_runtime_hash)
+          if actual_runtime_hash != intended_runtime_hash:
+              raise SystemExit('Identidad del patch runtime V110 no coincide con la fuente auditada')
+          Path('/tmp/v110-runtime.patch').write_bytes(runtime_bytes)
 
           for name, script in blocks:
-              script = script.replace(intended_runtime_hash, actual_runtime_hash)
+              script = script.replace(
+                  "cat tools/empalme/v110-selective/parts/runtime-part-*.patchpart > /tmp/v110-runtime.patch",
+                  "test -f /tmp/v110-runtime.patch"
+              )
               print(f'::group::{name}')
               if name.startswith('Commit controlado'):
                   subprocess.run(['git','rm','-f','.github/workflows/cxorbia-v105-v106-runtime-empalme.yml'], check=True)
