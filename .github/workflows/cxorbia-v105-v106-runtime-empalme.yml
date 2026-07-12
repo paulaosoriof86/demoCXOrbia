@@ -31,12 +31,21 @@ jobs:
         shell: bash
         run: |
           set +e
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('tools/empalme/run-v110-deterministic-final.sh')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('V110_LIQ_B64="tools/empalme/v110-exact/liquidacion.js.b64"','V110_LIQ_FILE="tools/empalme/v110-exact/liquidacion.js.exact"')
+          s=s.replace('$V110_LIQ_B64','$V110_LIQ_FILE')
+          s=s.replace('tr -d \'\\r\\n\\t \' < "$V110_LIQ_FILE" | base64 -d > app/core/liquidacion.js','cp "$V110_LIQ_FILE" app/core/liquidacion.js')
+          p.write_text(s,encoding='utf-8')
+          PY
           bash tools/empalme/run-v110-deterministic-final.sh > tools/empalme/v110-final-last-run.txt 2>&1
           rc=$?
           set -e
           cat tools/empalme/v110-final-last-run.txt
           if [ "$rc" -ne 0 ]; then
-            git restore app CAMBIOS-BACKEND.md RESUMEN-PARA-CLAUDE.md PENDIENTES-PROTOTIPO.md 2>/dev/null || true
+            git restore app CAMBIOS-BACKEND.md RESUMEN-PARA-CLAUDE.md PENDIENTES-PROTOTIPO.md tools/empalme/run-v110-deterministic-final.sh 2>/dev/null || true
             rm -rf .tmp
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
