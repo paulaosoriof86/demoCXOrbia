@@ -3,18 +3,18 @@
   CXOrbia TyA - RC Phase A drift gate
   Safe local validator. No deploy, no provider calls, no DB writes.
 
-  Purpose: after a runtime commit passes smoke gates, ensure later commits before
-  cutover are documentation, release notes, workflow gates, and preview-only
-  backend contract validators. If runtime app files change, the visual/technical
-  smoke must be run again and the validated runtime SHA updated.
-
-  Usage:
-    node tools/release/tya-rc-phase-a-drift-gate.mjs --validated <validated-runtime-sha>
+  Current rule:
+  - the complete app/ tree must match the deterministic V110 union manifest;
+  - once that source lock passes, app paths inherited since the old validation
+    SHA are not treated as drift;
+  - later backend/docs/source-safe/reconciliation/release-gate changes remain
+    reviewable without reopening the V110 frontend.
 */
 
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
 
 const args = process.argv.slice(2);
 const valIdx = args.indexOf('--validated');
@@ -30,12 +30,14 @@ const allowedPrefixes = [
   'backend/adapters/',
   'tools/contracts/',
   'tools/hr-source/',
+  'tools/reconciliation/',
+  'tools/empalme/',
+  'tools/qa/r10-final-result/',
+  'tools/release/',
   '.github/workflows/cxorbia-phase-a-remote-smoke.yml',
   '.github/workflows/cxorbia-rc-phase-a-drift-gate.yml',
   '.github/workflows/cxorbia-rc-phase-a-predeploy-gate.yml',
-  '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml',
-  'tools/release/tya-rc-phase-a-drift-gate.mjs',
-  'tools/release/tya-rc-phase-a-predeploy-gate.mjs'
+  '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml'
 ];
 
 const allowedExact = [
@@ -51,58 +53,64 @@ const allowedExact = [
   '.github/workflows/cxorbia-phase-a-visual-smoke.yml',
   '.github/workflows/cxorbia-phase-a-operational-readiness-r9.yml',
   '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml',
+  '.github/workflows/cxorbia-cxdata-firestore-readonly-r15d.yml',
+  '.github/workflows/cxorbia-firebase-existing-dev-provenance-r15c.yml',
+  '.github/workflows/cxorbia-firestore-canonical-drift-r15e.yml',
   'tools/migration/tya-assignment-sync-conflict-preview.mjs',
   'tools/migration/tya-assignment-sync-outbox-contract.mjs',
   'tools/migration/tya-phase-a-rc-smoke-gate.mjs',
   'tools/qa/tya-phase-a-visual-smoke.mjs',
   'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs',
-  'tools/release/tya-auth-dev-claims-seed-plan-validate.mjs',
-  'tools/release/tya-auth-dev-claims-taxonomy-seed-validate.mjs',
-  'tools/release/tya-auth-preactivation-route-action-validate.mjs',
-  'tools/release/tya-auth-rbac-contract-validate.mjs',
-  'tools/release/tya-claude-candidate-forensic-audit-prepare.mjs',
-  'tools/release/tya-cxdata-firestore-contract-validate.mjs',
-  'tools/release/tya-dev-auth-firestore-activation-readiness-post-v96-validate.mjs',
-  'tools/release/tya-firebase-dev-clean-state-read-only.mjs',
-  'tools/release/tya-firebase-dev-clean-state-read-only-gate-validate.mjs',
-  'tools/release/tya-hosting-deploy-readiness.mjs',
-  'tools/release/tya-hr-source-safe-protected-candidates-validate.mjs',
-  'tools/release/tya-module-readiness-matrix-validate.mjs',
-  'tools/release/tya-phase-a-operational-readiness-r9.mjs',
-  'tools/release/tya-phase-a-operational-readiness-r9-validate.mjs',
-  'tools/release/tya-phase-a-today-finish-readiness.mjs',
-  'tools/release/tya-post-claude-immediate-audit-pack.mjs',
-  'tools/release/tya-protected-read-access-adapter-validate.mjs',
-  'tools/release/tya-readiness-bucket-evaluator.mjs',
-  'tools/release/tya-real-connection-readiness-gate-validate.mjs',
-  'tools/release/tya-role-taxonomy-org-scope-validate.mjs',
-  'tools/release/tya-source-lock-post-v96-runtime-verify.mjs'
+  'backend/config/phase-a-financial-workbook-source-safe-r14.json'
 ];
 
-function fail(message) {
+function emitFailure(message, extra = {}) {
   const report = {
     gate: 'cxorbia-tya-rc-phase-a-drift',
     verdict: 'NO_GO_DRIFT',
     message,
     validated,
-    generatedAt: new Date().toISOString()
+    generatedAt: new Date().toISOString(),
+    ...extra
   };
+  if (outDir) {
+    fs.mkdirSync(outDir, { recursive: true });
+    fs.writeFileSync(path.join(outDir, 'rc-phase-a-drift-report.json'), JSON.stringify(report, null, 2), 'utf8');
+  }
   console.log(JSON.stringify(report, null, 2));
   process.exit(1);
 }
 
-if (!validated) fail('missing_validated_runtime_sha');
+if (!validated) emitFailure('missing_validated_runtime_sha');
+
+const sourceLockOut = outDir
+  ? path.join(outDir, 'v110-source-lock')
+  : '.tmp/rc-phase-a-drift-v110-source-lock';
+let sourceLockVerified = false;
+try {
+  execFileSync(process.execPath, [
+    'tools/release/tya-source-lock-v110-union-verify.mjs',
+    '--manifest', 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json',
+    '--out', sourceLockOut
+  ], { encoding: 'utf8', stdio: 'pipe' });
+  sourceLockVerified = true;
+} catch (error) {
+  emitFailure('v110_union_source_lock_failed', {
+    sourceLockVerified: false,
+    sourceLockError: String(error?.stderr || error?.message || error).slice(0, 500)
+  });
+}
 
 let files = [];
 try {
   const raw = execFileSync('git', ['diff', '--name-only', `${validated}..HEAD`], { encoding: 'utf8' });
-  files = raw.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-} catch (err) {
-  fail('git_diff_failed: ' + String(err.message || err));
+  files = raw.split(/\r?\n/).map((value) => value.trim()).filter(Boolean);
+} catch (error) {
+  emitFailure('git_diff_failed: ' + String(error.message || error), { sourceLockVerified });
 }
 
 function isSourceSafeConfig(file) {
-  return file.startsWith('backend/config/') && file.endsWith('.source-safe.json');
+  return file.startsWith('backend/config/') && file.endsWith('.json') && file.includes('source-safe');
 }
 
 function isDraftRules(file) {
@@ -110,20 +118,27 @@ function isDraftRules(file) {
 }
 
 function isAllowed(file) {
+  if (file.startsWith('app/')) return sourceLockVerified;
   if (allowedExact.includes(file)) return true;
   if (isSourceSafeConfig(file)) return true;
   if (isDraftRules(file)) return true;
-  return allowedPrefixes.some(prefix => file === prefix || file.startsWith(prefix));
+  return allowedPrefixes.some((prefix) => file === prefix || file.startsWith(prefix));
 }
 
-const blocked = files.filter(file => !isAllowed(file));
+const blocked = files.filter((file) => !isAllowed(file));
 const report = {
   gate: 'cxorbia-tya-rc-phase-a-drift',
   generatedAt: new Date().toISOString(),
   validatedRuntimeSha: validated,
+  runtimeSourceLock: {
+    baseline: 'V110 union deterministic manifest',
+    manifest: 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json',
+    verified: sourceLockVerified
+  },
   head: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
-  verdict: blocked.length ? 'NO_GO_DRIFT' : 'GO_DOCS_RELEASE_CONTRACTS_HR_SOURCE_SAFE_ONLY_AFTER_VALIDATION',
+  verdict: blocked.length ? 'NO_GO_DRIFT' : 'GO_V110_LOCKED_BACKEND_SOURCE_SAFE_ONLY_AFTER_VALIDATION',
   changedCount: files.length,
+  appChangedSinceHistoricalShaCount: files.filter((file) => file.startsWith('app/')).length,
   blockedCount: blocked.length,
   changedFiles: files,
   blockedFiles: blocked,
@@ -135,18 +150,18 @@ const report = {
     imports: false
   },
   allowedPolicy: {
+    v110ManifestLockedAppOnly: true,
     docs: true,
     rootRequiredDocs: true,
     backendContracts: true,
-    backendAdaptersPreviewOnly: true,
+    backendAdaptersReadOrPreviewOnly: true,
     backendSourceSafeConfigOnly: true,
     backendDraftRulesOnly: true,
     hrSourceSafeTools: true,
-    releaseGateWorkflowsExplicitOnly: true,
-    releaseValidatorsExplicitOnly: true,
-    previewOnlyContracts: true,
-    smokeGateValidators: true,
-    runtimeAppChanges: false,
+    reconciliationTools: true,
+    releaseValidators: true,
+    explicitReleaseWorkflows: true,
+    runtimeAppOutsideV110Manifest: false,
     providerActivation: false,
     databaseWrites: false,
     imports: false
@@ -160,34 +175,17 @@ if (outDir) {
     '# CXOrbia TyA RC Phase A drift report',
     '',
     `Generated: ${report.generatedAt}`,
-    `Validated runtime SHA: ${report.validatedRuntimeSha}`,
+    `Historical validated SHA: ${report.validatedRuntimeSha}`,
+    `Current runtime lock: ${report.runtimeSourceLock.baseline}`,
+    `V110 source lock verified: ${report.runtimeSourceLock.verified}`,
     `Head: ${report.head}`,
     `Verdict: ${report.verdict}`,
-    `Changed files: ${report.changedCount}`,
+    `Changed files since historical SHA: ${report.changedCount}`,
+    `App files covered by V110 source lock: ${report.appChangedSinceHistoricalShaCount}`,
     `Blocked files: ${report.blockedCount}`,
     '',
     '## Blocked files',
-    ...(blocked.length ? blocked.map(file => `- ${file}`) : ['- none']),
-    '',
-    '## Changed files',
-    ...(files.length ? files.map(file => `- ${file}`) : ['- none']),
-    '',
-    '## Allowed policy',
-    '- Docs: yes',
-    '- Root required docs: yes',
-    '- Backend contracts: yes',
-    '- Backend adapters preview-only: yes',
-    '- Backend source-safe config ending in .source-safe.json: yes',
-    '- Backend draft rules ending in .rules.draft: yes',
-    '- HR source-safe tools: yes',
-    '- Release workflows: explicit allowlist only',
-    '- Release validators: explicit allowlist only',
-    '- Preview-only contracts: yes',
-    '- Smoke gate validators: yes',
-    '- Runtime app changes: no',
-    '- Provider activation: no',
-    '- Database writes: no',
-    '- Imports: no',
+    ...(blocked.length ? blocked.map((file) => `- ${file}`) : ['- none']),
     '',
     '## Safe state',
     '- No deploy',
