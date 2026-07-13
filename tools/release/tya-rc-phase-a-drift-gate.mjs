@@ -64,6 +64,7 @@ const allowedExact = [
   '.github/workflows/cxorbia-canonical-materialization-provider-compare-r16e.yml',
   '.github/workflows/cxorbia-canonical-materialization-source-alignment-r16c.yml',
   '.github/workflows/cxorbia-r14c-financial-overlay-review-plan-r16d.yml',
+  '.github/workflows/cxorbia-r17-human-findings-semantic-gate.yml',
   'tools/migration/tya-assignment-sync-conflict-preview.mjs',
   'tools/migration/tya-assignment-sync-outbox-contract.mjs',
   'tools/migration/tya-phase-a-rc-smoke-gate.mjs',
@@ -72,6 +73,7 @@ const allowedExact = [
   'tools/qa/tya-phase-a-visual-smoke.mjs',
   'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs',
   'tools/qa/tya-phase-a-visible-data-smoke-r17.mjs',
+  'tools/qa/tya-r17-human-findings-semantic-gate.mjs',
   'backend/config/phase-a-financial-workbook-source-safe-r14.json'
 ];
 
