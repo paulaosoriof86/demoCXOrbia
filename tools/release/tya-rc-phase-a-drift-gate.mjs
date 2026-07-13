@@ -8,7 +8,8 @@
   - once that source lock passes, app paths inherited since the old validation
     SHA are not treated as drift;
   - later backend/docs/source-safe/reconciliation/release-gate changes remain
-    reviewable without reopening the V110 frontend.
+    reviewable without reopening the V110 frontend;
+  - consumed one-time deploy files are accepted only while they remain deleted.
 */
 
 import { execFileSync } from 'node:child_process';
@@ -74,6 +75,11 @@ const allowedExact = [
   'backend/config/phase-a-financial-workbook-source-safe-r14.json'
 ];
 
+const consumedOneTimeExact = [
+  '.github/authorized/cxorbia-visible-tya-r17-redeploy-20260713.txt',
+  '.github/workflows/cxorbia-authorized-visible-tya-r17-redeploy-once-20260713.yml'
+];
+
 function emitFailure(message, extra = {}) {
   const report = {
     gate: 'cxorbia-tya-rc-phase-a-drift',
@@ -129,6 +135,7 @@ function isDraftRules(file) {
 
 function isAllowed(file) {
   if (file.startsWith('app/')) return sourceLockVerified;
+  if (consumedOneTimeExact.includes(file)) return !fs.existsSync(file);
   if (allowedExact.includes(file)) return true;
   if (isSourceSafeConfig(file)) return true;
   if (isDraftRules(file)) return true;
@@ -171,6 +178,7 @@ const report = {
     reconciliationTools: true,
     releaseValidators: true,
     explicitReleaseWorkflows: true,
+    consumedOneTimeFilesMustRemainDeleted: true,
     runtimeAppOutsideV110Manifest: false,
     providerActivation: false,
     databaseWrites: false,
