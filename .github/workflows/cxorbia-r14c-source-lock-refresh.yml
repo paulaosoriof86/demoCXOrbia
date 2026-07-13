@@ -1,0 +1,66 @@
+name: CXOrbia Phase A R14C Source Lock Refresh
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - tools/reconciliation/READY-R14C-LOCK
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-r14c-source-lock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Validate R14C report and refresh union manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'),path=require('path'),crypto=require('crypto');
+          const R=JSON.parse(fs.readFileSync('backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json','utf8'));
+          if(R.decision!=='PASS_WITH_REVIEW_REAL_TYA_FINANCIAL_RECONCILIATION_R14C'||R.summary?.exactAcceptedLinks!==196) throw new Error('R14C result mismatch');
+          const root=path.resolve('app');
+          const manifestRel='docs/MANIFEST-V110-UNION-EMPALME-R1.json';
+          const verifierRel='docs/verify-manifest-v110-union-empalme.mjs';
+          const M=JSON.parse(fs.readFileSync(path.join(root,manifestRel),'utf8'));
+          const excluded=new Set(['core/build-lock.js',manifestRel,verifierRel]);
+          const rels=[];
+          function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,e.name);if(e.isDirectory())walk(p);else if(e.isFile())rels.push(path.relative(root,p).split(path.sep).join('/'));}}
+          walk(root);
+          const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+          const files=rels.filter(r=>!excluded.has(r)).sort().map(r=>{const b=fs.readFileSync(path.join(root,r));return{path:r,size:b.length,sha256:sha(b)};});
+          const aggregateSha256=sha(Buffer.from(files.map(f=>`${f.path}:${f.sha256}`).join('\n'),'utf8'));
+          M.generatedAt=new Date().toISOString();
+          M.fileCount=files.length;
+          M.aggregateSha256=aggregateSha256;
+          M.files=files;
+          M.r14c={decision:R.decision,exactAcceptedLinks:R.summary.exactAcceptedLinks,reviewLiquidationRows:R.summary.reviewLiquidationRows,ledgerRowsLinkedToVisit:R.summary.ledgerRowsLinkedToVisit,report:'docs/PHASE-A-FINANCIAL-REAL-TYA-R14C-RESULT-20260713.md'};
+          fs.writeFileSync(path.join(root,manifestRel),JSON.stringify(M,null,2)+'\n','utf8');
+          fs.writeFileSync(path.join(root,'core','build-lock.js'),`/* CXOrbia · Source lock unión V110 · R14C datos financieros reales TyA */\nvar CX_SOURCE_LOCK={manifestFile:'${manifestRel}',aggregateSha256:'${aggregateSha256}',fileCount:${files.length},runtimeIdentity:'67 exactos V110 + 2 overrides locales protegidos + lock unión',r10Decision:'${M.r10?.decision}',r11dDecision:'${M.r11d?.decision}',r13Decision:'${M.r13?.decision}',r14Decision:'${M.r14?.decision}',r14cDecision:'${R.decision}',generatedAt:'${M.generatedAt.slice(0,10)}',sourceZipSha256:'${M.sourceZipSha256}',note:'V110 empalmada; R14C vincula datos financieros reales TyA source-safe; provider writes siguen apagados.'};\nvar CX_BUILD_ID=CX_SOURCE_LOCK.aggregateSha256.slice(0,16);\nif(typeof window!=='undefined'){window.CX=window.CX||{};window.CX.BUILD_ID=CX_BUILD_ID;window.CX.SOURCE_LOCK=CX_SOURCE_LOCK;}\n`,'utf8');
+          console.log(JSON.stringify({fileCount:files.length,aggregateSha256,r14c:M.r14c},null,2));
+          NODE
+          node --check app/core/build-lock.js
+          (cd app && node docs/verify-manifest-v110-union-empalme.mjs)
+
+      - name: Commit refreshed lock and remove one-time workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f .github/workflows/cxorbia-r14c-source-lock-refresh.yml
+          git rm -f tools/reconciliation/READY-R14C-LOCK
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app .github/workflows tools/reconciliation
+          git commit -m 'chore(phase-a): refresh V110 union lock after R14C report'
+          git push origin HEAD:docs-tya-v6-v71-audit
