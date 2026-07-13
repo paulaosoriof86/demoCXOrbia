@@ -1,0 +1,92 @@
+name: CXOrbia R14C Financial Overlay Review Plan R16D
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/contracts/phase-a-r14c-financial-overlay-review-plan-r16d-v1.json'
+      - 'backend/contracts/phase-a-firestore-materialization-plan-v1.json'
+      - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
+      - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
+      - 'backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'
+      - 'app/data/tya-hr-source-safe-periods.js'
+      - 'app/data/tya-financial-control-source-safe.js'
+      - 'app/data/tya-certification-carryover-source-safe.js'
+      - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
+      - 'tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs'
+      - '.github/workflows/cxorbia-r14c-financial-overlay-review-plan-r16d.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'backend/contracts/phase-a-r14c-financial-overlay-review-plan-r16d-v1.json'
+      - 'backend/contracts/phase-a-firestore-materialization-plan-v1.json'
+      - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
+      - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
+      - 'backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'
+      - 'app/data/tya-hr-source-safe-periods.js'
+      - 'app/data/tya-financial-control-source-safe.js'
+      - 'app/data/tya-certification-carryover-source-safe.js'
+      - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
+      - 'tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs'
+      - '.github/workflows/cxorbia-r14c-financial-overlay-review-plan-r16d.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  r14c-overlay-review-plan:
+    name: Offline R14C overlay and review plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate syntax and source-safe inputs
+        run: |
+          set -euo pipefail
+          node --check tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs
+          node --check tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs
+          node -e "const fs=require('fs');for(const p of ['backend/contracts/phase-a-r14c-financial-overlay-review-plan-r16d-v1.json','backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json','backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json','backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'])JSON.parse(fs.readFileSync(p,'utf8'));console.log('R16D source-safe inputs valid.');"
+
+      - name: Build deterministic base materialization plan
+        run: |
+          set -euo pipefail
+          node tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs \
+            --hr app/data/tya-hr-source-safe-periods.js \
+            --financial app/data/tya-financial-control-source-safe.js \
+            --certifications app/data/tya-certification-carryover-source-safe.js \
+            --out .tmp/r16d-base-plan
+          test -s .tmp/r16d-base-plan/firestore-materialization-plan.json
+
+      - name: Build R14C overlays and review queues
+        run: |
+          set -euo pipefail
+          node tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs \
+            --plan .tmp/r16d-base-plan/firestore-materialization-plan.json \
+            --out .tmp/r14c-financial-overlay-review-plan-r16d
+
+      - name: Upload source-safe R16D artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r14c-financial-overlay-review-plan-r16d-report
+          path: |
+            .tmp/r14c-financial-overlay-review-plan-r16d
+            .tmp/r16d-base-plan/firestore-materialization-summary.json
+            .tmp/r16d-base-plan/firestore-materialization-plan.md
+          if-no-files-found: error
+          retention-days: 14
