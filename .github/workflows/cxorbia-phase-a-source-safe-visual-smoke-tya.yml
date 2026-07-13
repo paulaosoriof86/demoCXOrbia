@@ -7,6 +7,7 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - 'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs'
+      - 'tools/qa/tya-phase-a-visible-data-smoke-r17.mjs'
       - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
       - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
@@ -17,6 +18,7 @@ on:
       - release/cxorbia-tya-rc-20260630
     paths:
       - 'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs'
+      - 'tools/qa/tya-phase-a-visible-data-smoke-r17.mjs'
       - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
       - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
@@ -60,6 +62,8 @@ jobs:
             --out .tmp/source-safe-binding-r15f
           grep -Fq 'data/tya-hr-source-safe-periods.js' app/index.html
           grep -Fq 'core/tya-phase-a-source-safe-preview.js' app/index.html
+          grep -Fq 'adapters/tya-phase-a-source-safe-dev-adapter.js' app/index.html
+          test -s app/adapters/tya-phase-a-source-safe-dev-adapter.js
 
       - name: Install Playwright
         run: |
@@ -83,7 +87,7 @@ jobs:
           echo 'Source-safe smoke server did not become ready.' >&2
           exit 1
 
-      - name: Run source-safe operational visual smoke
+      - name: Run source-safe operational route smoke
         env:
           CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
           CXORBIA_EXPECT_TENANT_ID: tya
@@ -95,13 +99,21 @@ jobs:
           node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs \
             --out .tmp/phase-a-source-safe-visual-smoke
 
-      - name: Upload sanitized report and screenshots
+      - name: Run visible TyA data smoke
+        env:
+          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
+        run: |
+          node tools/qa/tya-phase-a-visible-data-smoke-r17.mjs \
+            --out .tmp/phase-a-visible-data-smoke-r17
+
+      - name: Upload sanitized reports and screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: phase-a-tya-source-safe-visual-smoke
           path: |
             .tmp/phase-a-source-safe-visual-smoke
+            .tmp/phase-a-visible-data-smoke-r17
             .tmp/source-safe-binding-r15f
           if-no-files-found: error
           retention-days: 14
