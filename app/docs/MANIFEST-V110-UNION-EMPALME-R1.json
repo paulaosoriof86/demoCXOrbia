@@ -3,7 +3,7 @@
   "package": "CXORBIA-V110-UNION-EMPALME-R1",
   "project": "CXOrbia",
   "baseline": "V110 empalmada de forma determinística sobre rama viva",
-  "generatedAt": "2026-07-13T14:34:43.637Z",
+  "generatedAt": "2026-07-13T16:50:50.197Z",
   "sourceZipSha256": "1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227",
   "basePackageSha256": "582a8c98cdac7b46028bb720d1304657c6d678e99e4bc23a49e80ab440bc8206",
   "runtimePatchSha256": "d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd",
@@ -24,8 +24,8 @@
     ],
     "generatedUnionLock": "core/build-lock.js"
   },
-  "fileCount": 1418,
-  "aggregateSha256": "e6a4427ce2bf4d273b8b9bd9b7c6e76216db0cc4baa7518e818aeefa92377cd7",
+  "fileCount": 1422,
+  "aggregateSha256": "8db73cc810b7d32a2afe913b4d60c2c9fe618fb25af633b9609f14e994d4cd36",
   "exclusionsDeclared": [
     {
       "path": "core/build-lock.js",
@@ -830,6 +830,11 @@
       "path": "docs/ACADEMIA-IMPACT-FIREBASE-DEV-READONLY-R13-20260712.md",
       "size": 225,
       "sha256": "7da3516a8201a24eb6aa034d73669f8c6acc1033f28ad7dcdb917f678e9dd8b7"
+    },
+    {
+      "path": "docs/ACADEMIA-IMPACT-FIREBASE-NEW-EMPTY-R15-20260713.md",
+      "size": 395,
+      "sha256": "5855dac38e1e1343ef87c393cc4cd288fbec74731d1b11d51e3cff661ec2310e"
     },
     {
       "path": "docs/ACADEMIA-IMPACT-FIREBASE-READONLY-HR-VIVA-TYA-20260710.md",
@@ -1915,6 +1920,11 @@
       "path": "docs/CAMBIOS-BACKEND-ADDENDUM-FIREBASE-DEV-READONLY-R13-20260712.md",
       "size": 301,
       "sha256": "930ecffb2590aed682825dc387285428b1602236f9c752dc0cd30cd68565afac"
+    },
+    {
+      "path": "docs/CAMBIOS-BACKEND-ADDENDUM-FIREBASE-NEW-EMPTY-R15-20260713.md",
+      "size": 1107,
+      "sha256": "ec12a48f653bb54980b930e37255102a20def5b2a1d9e49938abc93e59143873"
     },
     {
       "path": "docs/CAMBIOS-BACKEND-ADDENDUM-FIREBASE-READONLY-GATE-20260710.md",
@@ -5137,6 +5147,11 @@
       "sha256": "44c46f2f8e5cc9c52a168797e8af85063c7c37e65d6298fe1d0b89b0c4302cab"
     },
     {
+      "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-R15-FIREBASE-NEW-EMPTY-20260713.md",
+      "size": 615,
+      "sha256": "c65b07ef1fd24324aa9e9a26dd2d2aec500f6edf9eb276bff326c2789ea2a7b1"
+    },
+    {
       "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-RECHAZO-V102-CONTAMINACION-ORBIT-20260711.md",
       "size": 643,
       "sha256": "e0aef3df58611e3b40c93a96a7d226d39f02ae38940a846849bd07996a25b560"
@@ -5225,6 +5240,11 @@
       "path": "docs/PHASE-A-FIREBASE-DEV-CLEAN-STATE-READONLY-R13-PROVIDER-REPORT-20260712.md",
       "size": 1398,
       "sha256": "b461347e65b4ebe819092c1e7458ca7bcdf4693cedc061954cdcc0db0ffd5671"
+    },
+    {
+      "path": "docs/PHASE-A-FIREBASE-DEV-NEW-EMPTY-R15-RESULT-20260713.md",
+      "size": 908,
+      "sha256": "7a5bf2489fd683d125138a2fbfe6bdfd7958c18313ba831198659ad4308d5e4e"
     },
     {
       "path": "docs/PHASE-A-FIREBASE-DEV-NONEMPTY-REVIEW-R13B-20260712.md",
@@ -7197,5 +7217,13 @@
     "reviewLiquidationRows": 51,
     "ledgerRowsLinkedToVisit": 1,
     "report": "docs/PHASE-A-FINANCIAL-REAL-TYA-R14C-RESULT-20260713.md"
+  },
+  "r15": {
+    "decision": "BLOCKED_TARGET_PROJECT_EXISTENCE_UNVERIFIED",
+    "projectId": "cxorbia-tya-dev-260713-r15a",
+    "projectCreated": false,
+    "firebaseAdded": false,
+    "emptyBaselineVerified": false,
+    "report": "docs/PHASE-A-FIREBASE-DEV-NEW-EMPTY-R15-RESULT-20260713.md"
   }
 }

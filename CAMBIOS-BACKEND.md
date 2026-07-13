@@ -252,3 +252,12 @@
 - 196/247 enlaces exactos protegidos; 51 en revisión.
 - Ledger vinculado a visita: 1/37.
 - Sin writes, import real, pagos, deploy ni producción.
+
+
+## R15 Firebase DEV nuevo y vacío — 2026-07-13
+
+- Autorización explícita registrada.
+- Proyecto objetivo: `cxorbia-tya-dev-260713-r15a`.
+- Decisión: `BLOCKED_TARGET_PROJECT_EXISTENCE_UNVERIFIED`.
+- Proyecto creado: false; Firebase agregado: false; baseline vacía verificada: false.
+- Sin billing, import, deploy, producción ni datos TyA materializados.

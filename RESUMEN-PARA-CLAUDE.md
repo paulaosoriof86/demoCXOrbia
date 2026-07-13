@@ -164,3 +164,10 @@
 
 - Backend/datos: `PASS_WITH_REVIEW_REAL_TYA_FINANCIAL_RECONCILIATION_R14C`, 196 enlaces exactos.
 - Sin P0 frontend nuevo. Mantener liquidada/pagada como estados distintos y los P1 de pagos ya registrados.
+
+
+## R15 Firebase DEV nuevo y vacío — 2026-07-13
+
+- Backend/infraestructura: `BLOCKED_TARGET_PROJECT_EXISTENCE_UNVERIFIED` sobre `cxorbia-tya-dev-260713-r15a`.
+- Sin cambio frontend ni P0 Claude.
+- No afirmar que Auth, Firestore, Storage, sync, pagos o producción estén activos.
