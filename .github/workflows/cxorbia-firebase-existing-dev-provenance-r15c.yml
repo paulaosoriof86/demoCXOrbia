@@ -8,6 +8,13 @@ on:
       - 'backend/config/phase-a-firebase-existing-dev-provenance-r15c.source-safe.json'
       - 'tools/release/tya-firebase-existing-dev-provenance-reconcile-r15c.mjs'
       - '.github/workflows/cxorbia-firebase-existing-dev-provenance-r15c.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'backend/config/phase-a-firebase-existing-dev-provenance-r15c.source-safe.json'
+      - 'tools/release/tya-firebase-existing-dev-provenance-reconcile-r15c.mjs'
+      - '.github/workflows/cxorbia-firebase-existing-dev-provenance-r15c.yml'
   workflow_dispatch:
 
 permissions:
