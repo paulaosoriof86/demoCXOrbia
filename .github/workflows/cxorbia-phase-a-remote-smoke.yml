@@ -1,23 +1,26 @@
 name: CXOrbia Phase A Remote Smoke
 
+# Manual-only reusable remote verification.
+# No deploy, providers, database writes, imports or production actions.
 on:
   workflow_dispatch:
     inputs:
       base_url:
-        description: 'URL HTTPS del preview/staging a validar'
-        required: false
-        default: 'https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r17=visible'
+        description: 'URL HTTPS del preview/DEV/staging a validar'
+        required: true
         type: string
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - '.github/workflows/cxorbia-phase-a-remote-smoke.yml'
-  pull_request:
-    branches:
-      - release/cxorbia-tya-rc-20260630
-    paths:
-      - '.github/workflows/cxorbia-phase-a-remote-smoke.yml'
+      proof_url:
+        description: 'URL HTTPS del build proof JSON'
+        required: true
+        type: string
+      expected_commit:
+        description: 'Commit exacto que debe declarar el proof'
+        required: true
+        type: string
+      expected_build:
+        description: 'Build label exacto que debe declarar el proof'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -30,15 +33,9 @@ defaults:
   run:
     shell: bash
 
-env:
-  CXORBIA_DEFAULT_REMOTE_URL: https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r17=visible
-  CXORBIA_PROOF_URL: https://cxorbia-backend-dev.web.app/cxorbia-dev-build-proof.json
-  CXORBIA_EXPECT_DEPLOY_COMMIT: cf4c845722e2bbe2b401b2b332ff9f4d2f6cb803
-  CXORBIA_EXPECT_BUILD: tya-visible-r17-source-safe
-
 jobs:
   remote-smoke:
-    name: Visible TyA R17 remote smoke post-Hosting
+    name: Phase A visible remote smoke
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -46,37 +43,47 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Resolve and validate remote URL
+      - name: Validate inputs
         run: |
           set -euo pipefail
           URL='${{ inputs.base_url }}'
-          if [ -z "$URL" ]; then URL="$CXORBIA_DEFAULT_REMOTE_URL"; fi
-          if [[ ! "$URL" =~ ^https:// ]]; then
-            echo 'base_url must start with https://'
+          PROOF='${{ inputs.proof_url }}'
+          COMMIT='${{ inputs.expected_commit }}'
+          BUILD='${{ inputs.expected_build }}'
+          for value in "$URL" "$PROOF"; do
+            if [[ ! "$value" =~ ^https:// ]]; then
+              echo 'URLs must start with https://'
+              exit 1
+            fi
+            if [[ "$value" =~ localhost|127\.0\.0\.1 ]]; then
+              echo 'URLs must be remote, not localhost'
+              exit 1
+            fi
+          done
+          if [[ ! "$COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
+            echo 'expected_commit must be a full 40-character SHA.'
             exit 1
           fi
-          if [[ "$URL" =~ localhost|127\.0\.0\.1 ]]; then
-            echo 'base_url must be remote, not localhost'
+          if [ -z "$BUILD" ]; then
+            echo 'expected_build is required.'
             exit 1
           fi
           echo "CXORBIA_SMOKE_BASE_URL=$URL" >> "$GITHUB_ENV"
+          echo "CXORBIA_PROOF_URL=$PROOF" >> "$GITHUB_ENV"
+          echo "CXORBIA_EXPECT_DEPLOY_COMMIT=$COMMIT" >> "$GITHUB_ENV"
+          echo "CXORBIA_EXPECT_BUILD=$BUILD" >> "$GITHUB_ENV"
 
-      - name: Wait for exact deployed R17 proof
+      - name: Verify exact deployed proof
         run: |
           set -euo pipefail
           mkdir -p .tmp/phase-a-remote-smoke
-          for attempt in $(seq 1 60); do
-            if curl -fsSL --max-time 15 "$CXORBIA_PROOF_URL?attempt=$attempt" > .tmp/phase-a-remote-smoke/build-proof.json; then
-              if node <<'NODE'
+          curl -fsSL --max-time 20 "$CXORBIA_PROOF_URL" > .tmp/phase-a-remote-smoke/build-proof.json
+          node <<'NODE'
           const fs = require('fs');
-          let proof;
-          try { proof = JSON.parse(fs.readFileSync('.tmp/phase-a-remote-smoke/build-proof.json','utf8')); }
-          catch { process.exit(1); }
-          const expectedCommit = process.env.CXORBIA_EXPECT_DEPLOY_COMMIT;
-          const expectedBuild = process.env.CXORBIA_EXPECT_BUILD;
+          const proof = JSON.parse(fs.readFileSync('.tmp/phase-a-remote-smoke/build-proof.json','utf8'));
           const safe = proof.environment === 'dev' &&
-            proof.build === expectedBuild &&
-            proof.commit === expectedCommit &&
+            proof.build === process.env.CXORBIA_EXPECT_BUILD &&
+            proof.commit === process.env.CXORBIA_EXPECT_DEPLOY_COMMIT &&
             proof.tenantId === 'tya' && proof.projectId === 'cinepolis' &&
             proof.visibleDataGate === true &&
             proof.expectedPeriods === 14 && proof.expectedVisits === 616 &&
@@ -86,19 +93,9 @@ jobs:
             proof.imports === false && proof.rules === false && proof.functions === false &&
             proof.make === false && proof.gemini === false && proof.payments === false &&
             proof.production === false;
-          process.exit(safe ? 0 : 1);
+          if (!safe) throw new Error('Remote proof does not match the authorized safe build contract.');
+          console.log('Exact remote proof verified.');
           NODE
-              then
-                echo 'Exact visible TyA R17 deployed proof verified.'
-                exit 0
-              fi
-            fi
-            echo "Waiting for exact R17 proof ($attempt/60)..."
-            sleep 5
-          done
-          echo 'Exact visible TyA R17 proof was not available within the verification window.'
-          cat .tmp/phase-a-remote-smoke/build-proof.json 2>/dev/null || true
-          exit 1
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -111,7 +108,7 @@ jobs:
           npm install --no-save --ignore-scripts playwright@1.47.2
           npx playwright install --with-deps chromium
 
-      - name: Run authoritative visible TyA and 13-route remote smoke
+      - name: Run authoritative visible and 13-route smoke
         env:
           CXORBIA_BASE_URL: ${{ env.CXORBIA_SMOKE_BASE_URL }}
         run: |
@@ -126,7 +123,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: phase-a-remote-visible-tya-r17-smoke-report
+          name: phase-a-remote-smoke-report
           path: .tmp/phase-a-remote-smoke
           if-no-files-found: error
           retention-days: 14
