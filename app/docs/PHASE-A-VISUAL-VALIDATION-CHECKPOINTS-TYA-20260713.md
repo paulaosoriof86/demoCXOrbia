@@ -2,165 +2,190 @@
 
 Fecha: 2026-07-13
 
-## Corrección de estado
+## Estado actual
 
-La URL `https://cxorbia-backend-dev.web.app` continúa sirviendo por ahora la build anterior desplegada. Esa build contiene el payload TyA source-safe, pero no lo presenta correctamente en todas las superficies visibles; por lo tanto, **no debe usarse todavía para aprobar visualmente la migración TyA**.
+La build corregida visible TyA R17 está desplegada y verificada en Firebase Hosting DEV.
 
-La corrección fue construida y validada en CI, pero aún necesita un nuevo deploy exclusivo a Hosting DEV.
+- ambiente: DEV;
+- URL: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r17=visible`;
+- build: `tya-visible-r17-source-safe`;
+- commit desplegado: `cf4c845722e2bbe2b401b2b332ff9f4d2f6cb803`;
+- run deploy: `29285177647`;
+- smoke remoto independiente: `29285540738`;
+- decisión: `PASS_VISIBLE_TYA_DATA_R17`;
+- rutas críticas: 13/13;
+- errores de consola/página: 0;
+- blockers/warnings: 0.
 
-## Causa raíz
+## Causa raíz corregida
 
-El smoke anterior verificaba:
+El smoke anterior verificaba payload, conteos internos y carga de rutas, pero no garantizaba que una persona viera la marca TyA, el proyecto Cinépolis, los periodos separados y la ausencia de proyectos demo.
 
-- existencia del payload source-safe;
-- conteos internos;
-- carga de rutas;
-- ausencia de errores de página.
+Además:
 
-No verificaba que una persona realmente viera:
+- el bridge anterior se ejecutaba antes de `core/data-source.js`;
+- el selector de origen podía restaurar modo demo;
+- los 14 periodos compartían el ID `cinepolis`.
 
-- marca TyA;
-- proyecto Cinépolis;
-- periodos TyA correctamente separados;
-- ausencia de proyectos demo Retail/Banca/Restaurantes;
-- información del periodo seleccionado.
+Sin modificar `/app/modules` ni `/app/core`, el build ahora genera un adapter DEV después de `core/data-source.js` y distingue proyecto raíz de periodo activo.
 
-Además, el bridge anterior se ejecutaba antes de `core/data-source.js`; luego el selector de origen volvía a declarar modo demo. Los 14 periodos también compartían el mismo ID lógico `cinepolis`, por lo que no podían funcionar como periodos seleccionables independientes.
+## Contrato visible validado
 
-## Corrección implementada
+- tenant: TyA;
+- proyecto raíz: Cinépolis;
+- 14 IDs de periodo únicos, de `cinepolis-2025-06` a `cinepolis-2026-07`;
+- 616 visitas históricas;
+- 44 visitas en JUL 2026;
+- 210 shoppers source-safe;
+- 0 proyectos Retail/Banca/Restaurantes;
+- `Source-safe (preview) / ready`;
+- `imported:false`;
+- `production:false`.
 
-Sin modificar `/app/modules` ni `/app/core`, el build genera un adapter DEV en el único punto de conexión de datos, después de `core/data-source.js`.
+## Regla obligatoria
 
-El adapter corregido:
+Nunca se informará una revisión visual solo con una URL.
 
-- activa `source_safe_preview / ready`;
-- muestra branding TyA;
-- conserva Cinépolis como proyecto configurable;
-- crea 14 IDs de periodo únicos, de `cinepolis-2025-06` a `cinepolis-2026-07`;
-- vincula cada una de las 616 visitas con su periodo;
-- deja 44 visitas en el periodo seleccionado;
-- carga 210 shoppers source-safe;
-- elimina de la vista los proyectos demo Retail, Banca y Restaurantes;
-- conserva `imported:false` y `production:false`.
+Cada revisión debe indicar:
 
-Validación CI:
+1. URL y ambiente.
+2. Build o checkpoint.
+3. Perfil de ingreso.
+4. Ruta o módulo.
+5. Texto, conteo o estado esperado.
+6. Qué todavía no es real.
+7. Formato de reporte.
 
-- run: `29283637827`;
-- visible TyA data smoke: PASS;
-- legacy route inventory: PASS;
-- artifact digest: `sha256:cfcdaa7cbbc2a66d9f52d3d3071459634192c6ccfc92a3e28bcf20ab7b07d1a1`.
+## Revisión visual humana habilitada
 
-## Regla obligatoria desde este bloque
+### 1. Abrir la URL exacta
 
-Nunca se volverá a informar una revisión visual solo con una URL.
+`https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r17=visible`
 
-Cada revisión visual deberá incluir obligatoriamente:
+Ambiente: **Firebase Hosting DEV**. No es producción.
 
-1. URL y ambiente exacto.
-2. Build o checkpoint que se está revisando.
-3. Perfil con el que se debe ingresar.
-4. Ruta o módulo que se debe abrir.
-5. Texto, conteo o estado que debe aparecer.
-6. Lo que todavía no es real o no está autorizado.
-7. Formato para que Paula reporte aprobado, diferencia o error.
+### 2. Pantalla de ingreso
 
-Tampoco se declarará `visual PASS` únicamente porque existe un payload o porque las rutas no fallan. El gate visual debe inspeccionar el contenido visible.
+Antes de entrar debe verse:
 
-## Próxima revisión visual — después del redeploy corregido
-
-### URL
-
-`https://cxorbia-backend-dev.web.app`
-
-No revisar hasta recibir confirmación explícita de que la **build visible TyA corregida** fue redesplegada.
-
-### Perfil inicial
-
-Seleccionar `Administración / Coordinación`.
-
-### Pantalla de ingreso esperada
-
-Debe mostrar:
-
-- nombre `TyA`;
-- texto `Tenant TyA · Phase A controlada`;
+- `TyA`;
+- `Tenant TyA · Phase A controlada`;
 - países GT y HN;
-- no debe mostrar `Demo comercial`.
+- no debe aparecer el badge `Demo comercial`.
 
-### Barra superior esperada
+### 3. Perfil inicial
 
-Debe mostrar un estado equivalente a:
+Seleccionar:
 
-`Source-safe (preview) · Listo`
+`Administración / Coordinación`
 
-No debe afirmar `Conectado`, `Importado` o `Producción`.
+El nombre `Admin Demo` todavía es una identidad temporal de prueba porque Auth real permanece HOLD. No debe interpretarse como usuario real ni como dato TyA.
 
-### Proyectos y periodos
+### 4. Barra superior y menú lateral
 
-En `Proyectos` o selector principal:
+Debe verse:
 
-- único proyecto operativo: `Cinépolis`;
+- proyecto `Cinépolis`;
+- periodo `JUL 2026`;
+- estado equivalente a `Source-safe (preview) · Listo`.
+
+No debe afirmar:
+
+- Conectado;
+- Importado;
+- Producción;
+- Firestore materializado.
+
+### 5. Proyectos y periodos
+
+En el selector lateral o en `Proyectos` / `Periodos`:
+
+- único proyecto operativo visible: `Cinépolis`;
 - no deben aparecer `Proyecto Retail`, `Proyecto Banca` ni `Proyecto Restaurantes`;
 - deben existir 14 periodos desde `JUN 2025` hasta `JUL 2026`;
 - el periodo más reciente debe ser `JUL 2026`;
-- al cambiar de periodo deben cambiar las visitas mostradas.
+- al cambiar de periodo debe cambiar el conjunto de visitas.
 
-### Visitas
+### 6. Visitas
 
-En `Visitas`:
+Abrir `Visitas Disponibles` o `Visitas`.
 
-- periodo actual JUL 2026: 44 visitas;
-- cobertura histórica total: 616;
-- Guatemala: 34 por periodo;
-- Honduras: 10 por periodo;
-- las visitas deben mostrar país, sucursal, quincena, franja, estado y fechas source-safe;
-- junio 2026 no debe figurar como visitas pendientes de ejecutar.
+Verificar:
 
-### Shoppers
+- periodo JUL 2026: 44 visitas;
+- Guatemala: 34;
+- Honduras: 10;
+- histórico total al consultar Histórico/Periodos: 616;
+- campos visibles: país, sucursal, quincena, franja, estado y fechas source-safe;
+- junio 2026 no debe tratarse como visitas pendientes por ejecutar.
 
-En `Shoppers`:
+### 7. Shoppers
 
-- 210 registros source-safe visibles;
-- nombres/datos personales protegidos;
-- los 3 faltantes históricos no deben fusionarse por nombre ni aparecer inventados;
-- el gap 210/213 permanece pendiente de revisión backend.
+Abrir `Shoppers`.
 
-### Finanzas y certificaciones
+Verificar:
 
-Todavía no aprobar como datos definitivos:
+- 210 registros source-safe;
+- datos personales protegidos;
+- no deben aparecer 3 shoppers inventados para completar 213;
+- el gap 210/213 continúa en revisión backend.
 
+### 8. Mi Día
+
+Verificar que el encabezado indique `Cinépolis Julio 2026` y que los KPIs correspondan al periodo activo.
+
+Hallazgo conocido no bloqueante:
+
+- el calendario/cronograma puede abrir visualmente en junio de 2026 aunque el selector esté en JUL 2026;
+- ya quedó documentado como P1 para Claude/prototipo;
+- reportarlo como `DIFERENCIA` si se observa, no como pérdida de datos.
+
+### 9. Rutas adicionales
+
+El smoke automático ya validó:
+
+- Admin: Dashboard, Proyectos, Visitas, Postulaciones, Certificación, Finanzas y Academia;
+- Cliente: Dashboard y Sucursales;
+- Shopper: Visitas, Certificación, Beneficios y Academia.
+
+La revisión humana puede concentrarse en contenido y coherencia, no en abrir las 13 rutas una por una salvo que se detecte una diferencia.
+
+## Qué todavía no aprobar como real
+
+- Firestore materializado con las 616 visitas;
+- Auth y claims reales;
+- sincronización HR ↔ plataforma;
+- Make;
+- Gemini;
+- Storage/evidencias;
 - pagos ejecutados;
 - 572 controles como pagos;
 - 196 overlays como pagos confirmados;
-- certificaciones carryover como materializadas;
-- sincronización HR ↔ plataforma;
-- Auth real;
+- 213 certificaciones carryover como materializadas;
 - producción.
 
 ## Formato de respuesta de Paula
 
-Después de revisar, reportar por módulo:
+Reportar por módulo:
 
 - `APROBADO`;
 - `DIFERENCIA: esperado / observado`;
 - `ERROR: acción realizada / resultado`.
 
-Captura solo cuando exista una diferencia o error; no se pedirá evidencia manual innecesaria cuando el módulo esté aprobado.
+Captura solo cuando exista una diferencia o error. No se requiere evidencia manual adicional cuando el módulo esté aprobado.
 
 ## Checkpoints posteriores
 
-1. Build visible TyA source-safe corregida.
-2. Materialización Firestore DEV.
+1. Revisión humana de build visible TyA R17.
+2. Comparación read-only / materialización Firestore DEV bajo gate.
 3. Auth/roles y fuentes pendientes.
-4. Operación HR ↔ plataforma, certificaciones y liquidaciones.
+4. HR ↔ plataforma, certificaciones y liquidaciones.
 5. Ensayo final antes de producción.
-
-En cada checkpoint se entregará una lista específica distinta; no se reutilizará una lista genérica.
 
 ## Clasificación
 
 - **Reusable CXOrbia:** protocolo de validación humana y gate sobre contenido visible.
 - **Exclusivo cliente:** TyA/Cinépolis, 14 periodos, 616 visitas y 210/213 shoppers.
-- **Claude/prototipo:** no hay P0 de diseño; el defecto estaba en el binding de build/backend.
-- **Academia:** explicar cómo validar ambiente, fuente, proyecto, periodo y estados honestos.
-- **Sin impacto Claude:** CI, adapter generado, hashes y deploy Hosting DEV.
+- **Claude/prototipo:** P1 calendario Mi Día vs periodo; identidad temporal hasta Auth.
+- **Academia:** validar ambiente, fuente, proyecto, periodo, rutas y estados honestos.
+- **Sin impacto Claude:** CI, adapter generado, hashes, Hosting y proof remoto.
