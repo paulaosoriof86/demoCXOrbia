@@ -19,7 +19,7 @@ const manifestPath = manifestIdx >= 0
   ? args[manifestIdx + 1]
   : 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json';
 const outDir = outIdx >= 0 ? args[outIdx + 1] : '.tmp/source-lock-v110-union';
-const absoluteManifest = path.join(root, manifestPath);
+const absoluteManifest = path.isAbsolute(manifestPath) ? manifestPath : path.join(root, manifestPath);
 const appRoot = path.join(root, 'app');
 
 function sha256(buffer) {
@@ -125,7 +125,7 @@ const report = {
   }
 };
 
-const absoluteOut = path.join(root, outDir);
+const absoluteOut = path.isAbsolute(outDir) ? outDir : path.join(root, outDir);
 fs.mkdirSync(absoluteOut, { recursive: true });
 fs.writeFileSync(path.join(absoluteOut, 'source-lock-v110-union-report.json'), JSON.stringify(report, null, 2), 'utf8');
 fs.writeFileSync(path.join(absoluteOut, 'source-lock-v110-union-report.md'), [
