@@ -46,6 +46,7 @@ const allowedExact = [
   'RESUMEN-PARA-CLAUDE.md',
   'PENDIENTES-PROTOTIPO.md',
   '.github/authorized/cxorbia-dev-hosting-deploy-20260713.txt',
+  '.github/workflows/cxorbia-authorized-dev-hosting-deploy-once-20260713.yml',
   '.github/workflows/cxorbia-auth-preactivation-route-action.yml',
   '.github/workflows/cxorbia-dev-auth-firestore-readiness-post-v96.yml',
   '.github/workflows/cxorbia-firebase-dev-clean-state-read-only-gate.yml',
