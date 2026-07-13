@@ -14,7 +14,11 @@ on:
       - 'app/modules/**'
       - 'app/styles/**'
       - 'app/manifest.webmanifest'
+      - 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json'
+      - 'tools/release/tya-source-lock-v110-union-verify.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
       - 'tools/release/tya-rc-phase-a-predeploy-gate.mjs'
+      - '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml'
       - '.github/workflows/cxorbia-rc-phase-a-predeploy-gate.yml'
   push:
     branches:
@@ -28,7 +32,11 @@ on:
       - 'app/modules/**'
       - 'app/styles/**'
       - 'app/manifest.webmanifest'
+      - 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json'
+      - 'tools/release/tya-source-lock-v110-union-verify.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
       - 'tools/release/tya-rc-phase-a-predeploy-gate.mjs'
+      - '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml'
       - '.github/workflows/cxorbia-rc-phase-a-predeploy-gate.yml'
 
 permissions:
@@ -53,7 +61,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Run predeploy gate
         run: |
@@ -65,5 +73,5 @@ jobs:
         with:
           name: rc-phase-a-predeploy-report
           path: .tmp/rc-phase-a-predeploy
-          if-no-files-found: ignore
+          if-no-files-found: error
           retention-days: 14
