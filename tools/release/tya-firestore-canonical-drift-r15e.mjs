@@ -54,11 +54,13 @@ const binding = {
   rootIndexLoadsBridge: hasScript(index, 'core/tya-phase-a-source-safe-preview.js'),
   backendIndexLoadsPayload: hasScript(backendIndex, 'data/tya-hr-source-safe-periods.js'),
   backendIndexLoadsBridge: hasScript(backendIndex, 'core/tya-phase-a-source-safe-preview.js'),
-  sourceSafeSmokeInjectsPayload: sourceSafeSmokeWorkflow.includes("data/tya-hr-source-safe-periods.js"),
-  sourceSafeSmokeInjectsBridge: sourceSafeSmokeWorkflow.includes("core/tya-phase-a-source-safe-preview.js"),
+  sourceSafeSmokeUsesDeterministicBinder: sourceSafeSmokeWorkflow.includes('tya-source-safe-binding-build-r15f.mjs'),
+  sourceSafeSmokeInjectsPayload: sourceSafeSmokeWorkflow.includes('data/tya-hr-source-safe-periods.js'),
+  sourceSafeSmokeInjectsBridge: sourceSafeSmokeWorkflow.includes('core/tya-phase-a-source-safe-preview.js'),
   deployBuildsPayload: deployWorkflow.includes('tya-build-live-hr-source-safe-static.mjs'),
-  deployInjectsPayload: deployWorkflow.includes("data/tya-hr-source-safe-periods.js"),
-  deployInjectsBridge: deployWorkflow.includes("core/tya-phase-a-source-safe-preview.js")
+  deployUsesDeterministicBinder: deployWorkflow.includes('tya-source-safe-binding-build-r15f.mjs'),
+  deployInjectsPayload: deployWorkflow.includes('data/tya-hr-source-safe-periods.js'),
+  deployInjectsBridge: deployWorkflow.includes('core/tya-phase-a-source-safe-preview.js')
 };
 
 const drift = {
@@ -90,10 +92,17 @@ const canonicalDriftExists = drift.preferredCanonicalProjectMissingInFirestore |
   drift.liquidationCountDeltaFirestoreMinusFinancialRows !== 0 ||
   pendingCertificationShoppers > 0;
 const rootBindingMissing = !binding.rootIndexLoadsPayload || !binding.rootIndexLoadsBridge;
-const deployBindingMissing = binding.deployBuildsPayload && (!binding.deployInjectsPayload || !binding.deployInjectsBridge);
+const bindingPrepared = binding.deployBuildsPayload &&
+  binding.deployUsesDeterministicBinder &&
+  binding.deployInjectsPayload &&
+  binding.deployInjectsBridge &&
+  binding.sourceSafeSmokeUsesDeterministicBinder;
+const deployBindingMissing = !bindingPrepared;
 
 const decision = lineageValid && readFacadeValid && canonicalDriftExists
-  ? 'HOLD_FIRESTORE_AS_CANONICAL_BIND_SOURCE_SAFE_R15E'
+  ? (bindingPrepared
+      ? 'HOLD_FIRESTORE_AS_CANONICAL_SOURCE_SAFE_BINDING_PREPARED_R15F'
+      : 'HOLD_FIRESTORE_AS_CANONICAL_BIND_SOURCE_SAFE_R15E')
   : 'REVIEW_REQUIRED_FIRESTORE_CANONICAL_DRIFT_R15E';
 
 const report = {
@@ -110,7 +119,10 @@ const report = {
     currentCanonicalReadSource: 'tya_hr_live_multitab_source_safe_plus_r14c_financial_control',
     rootSourceSafeBindingMissing: rootBindingMissing,
     deploySourceSafeBindingMissing: deployBindingMissing,
-    safeNextBlock: 'R15F_CONTROLLED_SOURCE_SAFE_BINDING_BUILD_SMOKE_NO_DEPLOY'
+    sourceSafeBindingPreparedAtBuildTime: bindingPrepared,
+    safeNextBlock: bindingPrepared
+      ? 'R15F_SOURCE_SAFE_BINDING_BUILD_SMOKE_NO_DEPLOY'
+      : 'R15F_CONTROLLED_SOURCE_SAFE_BINDING_BUILD_SMOKE_NO_DEPLOY'
   },
   drift,
   binding,
@@ -157,10 +169,11 @@ const expected = {
   readFacadeValid: true,
   canonicalDriftExists: true,
   rootBindingMissing: true,
-  deployBindingMissing: true,
-  decision: 'HOLD_FIRESTORE_AS_CANONICAL_BIND_SOURCE_SAFE_R15E'
+  bindingPrepared: true,
+  deployBindingMissing: false,
+  decision: 'HOLD_FIRESTORE_AS_CANONICAL_SOURCE_SAFE_BINDING_PREPARED_R15F'
 };
-const actual = { lineageValid, readFacadeValid, canonicalDriftExists, rootBindingMissing, deployBindingMissing, decision };
+const actual = { lineageValid, readFacadeValid, canonicalDriftExists, rootBindingMissing, bindingPrepared, deployBindingMissing, decision };
 const mismatches = Object.keys(expected).filter((key) => actual[key] !== expected[key]);
 report.validation = { expected, actual, mismatches, pass: mismatches.length === 0 };
 
@@ -177,8 +190,8 @@ fs.writeFileSync(path.join(outDir, 'phase-a-firestore-canonical-drift-r15e.sourc
   `Visit drift: ${drift.visitCountDeltaFirestoreMinusCanonical}`,
   `Shopper drift vs live source-safe: ${drift.shopperCountDeltaFirestoreMinusLive}`,
   `Liquidation drift vs R14C rows: ${drift.liquidationCountDeltaFirestoreMinusFinancialRows}`,
-  `Root binding missing: ${rootBindingMissing}`,
-  `Deploy binding missing: ${deployBindingMissing}`,
+  `Root source file remains unmodified: ${rootBindingMissing}`,
+  `Build-time source-safe binding prepared: ${bindingPrepared}`,
   '',
   'No provider calls, writes, imports, deploy, runtime switch, production or PII.'
 ].join('\n'), 'utf8');
