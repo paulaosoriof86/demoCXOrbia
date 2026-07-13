@@ -1,0 +1,73 @@
+{
+  "configId": "phase-a-firebase-existing-dev-provenance-r15c-source-safe",
+  "status": "authorized_read_only",
+  "generatedAt": "2026-07-13",
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "storageBucket": "cxorbia-backend-dev.firebasestorage.app",
+    "expectedServiceAccountEmailSuffix": "@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "environment": "DEV",
+    "tenantId": "tya"
+  },
+  "authorization": {
+    "providerReadAuthorized": true,
+    "confirmation": "RECONCILE_EXISTING_FIREBASE_DEV_READ_ONLY",
+    "scope": "sanitized read-only provenance reconciliation only",
+    "writesAuthorized": false,
+    "deployAuthorized": false,
+    "productionAuthorized": false
+  },
+  "knownHistory": {
+    "auth": {
+      "minimumKnownFictitiousUsers": 6,
+      "knownEmailSuffix": "@cxorbia-dev.example.com",
+      "expectedTenantId": "tya",
+      "requiredClaimKeys": ["role", "tenantId", "projectIds"]
+    },
+    "firestore": {
+      "expectedRootCollection": "tenants",
+      "expectedTenantDocumentId": "tya",
+      "minimumCounts": {
+        "clients": 2,
+        "projects": 2,
+        "shoppers": 26,
+        "notifications": 20,
+        "shopperBenefits": 572
+      },
+      "knownProjects": [
+        {
+          "projectId": "r1",
+          "minimumVisits": 36
+        },
+        {
+          "projectId": "tya-piloto",
+          "minimumVisits": 0
+        }
+      ]
+    },
+    "rules": {
+      "minimumReleaseCount": 1
+    }
+  },
+  "decisionPolicy": {
+    "passWithReviewDecision": "PASS_WITH_REVIEW_EXISTING_CXORBIA_DEV_PROVENANCE_R15C",
+    "reviewDecision": "REVIEW_REQUIRED_EXISTING_CXORBIA_DEV_PROVENANCE_R15C",
+    "hardStopDecision": "TARGET_MISMATCH_HARD_STOP_R15C",
+    "allowReadOnlyCxDataAfterPassWithReview": true,
+    "allowAuthMutation": false,
+    "allowFirestoreWrites": false,
+    "allowStorageWrites": false,
+    "allowRulesDeploy": false,
+    "allowHostingDeploy": false,
+    "allowImport": false,
+    "allowProduction": false
+  },
+  "report": {
+    "directory": ".tmp/firebase-existing-dev-provenance-r15c",
+    "json": "firebase-existing-dev-provenance-r15c-report.json",
+    "markdown": "firebase-existing-dev-provenance-r15c-report.md",
+    "rawProviderResponsesPersisted": false,
+    "identifiersPersisted": false,
+    "credentialPersisted": false
+  }
+}
