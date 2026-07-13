@@ -25,7 +25,7 @@ env:
   CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
   FIREBASE_PROJECT_ID: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
-  CXORBIA_DEV_BUILD_LABEL: tya-hr-viva-multitab-source-safe-20260709f
+  CXORBIA_DEV_BUILD_LABEL: tya-hr-viva-multitab-source-safe-20260713-r15f
   CXORBIA_HR_LIVE_SHEET_ID: 1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4
 
 jobs:
@@ -123,6 +123,15 @@ jobs:
           set -euo pipefail
           node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
 
+      - name: Bind source-safe CX.data in build copy
+        run: |
+          set -euo pipefail
+          node tools/release/tya-source-safe-binding-build-r15f.mjs \
+            --html app/index.html \
+            --out .tmp/rc-phase-a-dev-root-deploy/source-safe-binding-r15f
+          grep -Fq 'data/tya-hr-source-safe-periods.js' app/index.html
+          grep -Fq 'core/tya-phase-a-source-safe-preview.js' app/index.html
+
       - name: Firebase CLI access check
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/rc-phase-a-dev-root-deploy/firebase-service-account.json
@@ -165,6 +174,11 @@ jobs:
           curl -fsSIL "$CXORBIA_DEV_ROOT_URL" | tee .tmp/rc-phase-a-dev-root-deploy/dev-root-headers.txt
           curl -fsSL "$CXORBIA_DEV_ROOT_URL" | tee .tmp/rc-phase-a-dev-root-deploy/dev-root-index.html | grep -E "CXOrbia|Plataforma Operativa de Campo" >/dev/null
           echo "verification=ok" >> .tmp/rc-phase-a-dev-root-deploy/dev-root-url.txt
+
+      - name: Cleanup temporary credential
+        if: always()
+        run: |
+          rm -f .tmp/rc-phase-a-dev-root-deploy/firebase-service-account.json
 
       - name: Upload DEV root deploy reports
         if: always()
