@@ -1,7 +1,8 @@
 name: CXOrbia Canonical Materialization Provider Compare R16E
 
-# Manual-only provider read gate. Do not run until Firestore read quota is
-# available and Paula has explicitly authorized this exact read-only comparison.
+# Manual-only provider read gate in normal operation.
+# A one-time push trigger is temporarily accepted only for the exact source-safe
+# authorization marker below. No writes, deletes, imports, deploy or production.
 on:
   workflow_dispatch:
     inputs:
@@ -10,6 +11,11 @@ on:
         required: true
         default: 'HOLD'
         type: string
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'docs/operations/cxorbia-r16e-read-only-authorized-20260713.txt'
 
 permissions:
   contents: read
@@ -18,16 +24,38 @@ defaults:
   run:
     shell: bash
 
+env:
+  CXORBIA_R16E_AUTH_MARKER: docs/operations/cxorbia-r16e-read-only-authorized-20260713.txt
+
 jobs:
   canonical-provider-compare:
     name: Source-aligned canonical provider comparison
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_read_only == 'CANONICAL_PROVIDER_COMPARE_READ_ONLY_R16E' }}
+    if: >-
+      ${{
+        (github.event_name == 'workflow_dispatch' && inputs.confirm_read_only == 'CANONICAL_PROVIDER_COMPARE_READ_ONLY_R16E') ||
+        github.event_name == 'push'
+      }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Verify exact read-only authorization
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          set -euo pipefail
+          test -f "$CXORBIA_R16E_AUTH_MARKER"
+          grep -Fxq 'scope=CANONICAL_PROVIDER_COMPARE_READ_ONLY_R16E' "$CXORBIA_R16E_AUTH_MARKER"
+          grep -Fxq 'authorization=AUTORIZO VERIFICACIÓN FIREBASE DEV READ-ONLY' "$CXORBIA_R16E_AUTH_MARKER"
+          grep -Fxq 'firebaseProjectId=cxorbia-backend-dev' "$CXORBIA_R16E_AUTH_MARKER"
+          grep -Fxq 'writes=false' "$CXORBIA_R16E_AUTH_MARKER"
+          grep -Fxq 'deletes=false' "$CXORBIA_R16E_AUTH_MARKER"
+          grep -Fxq 'imports=false' "$CXORBIA_R16E_AUTH_MARKER"
+          grep -Fxq 'deploy=false' "$CXORBIA_R16E_AUTH_MARKER"
+          grep -Fxq 'production=false' "$CXORBIA_R16E_AUTH_MARKER"
+          echo 'Exact R16E read-only authorization verified.'
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -105,7 +133,7 @@ jobs:
             --plan .tmp/r16e-r16d-plan/r14c-financial-overlay-review-plan-r16d.json \
             --out .tmp/canonical-provider-compare-r16e
 
-      - name: Cleanup temporary credential
+      - name: Cleanup temporary DEV credential
         if: always()
         run: |
           rm -f .tmp/canonical-provider-compare-r16e-private/credentials.json
