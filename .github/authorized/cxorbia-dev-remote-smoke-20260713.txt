@@ -1,5 +1,0 @@
-scope=read_only_remote_smoke
-url=https://cxorbia-backend-dev.web.app/index.html
-writes=false
-production=false
-authorizedFrom=dev_hosting_deploy_20260713
