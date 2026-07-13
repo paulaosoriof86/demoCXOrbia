@@ -1,0 +1,103 @@
+name: CXOrbia CX.data Firestore Read-Only R15D
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/phase-a-cxdata-firestore-readonly-r15d.source-safe.json'
+      - 'backend/adapters/firebase-cxdata-readonly-r15d.mjs'
+      - 'tools/release/tya-cxdata-firestore-readonly-smoke-r15d.mjs'
+      - '.github/workflows/cxorbia-cxdata-firestore-readonly-r15d.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'backend/config/phase-a-cxdata-firestore-readonly-r15d.source-safe.json'
+      - 'backend/adapters/firebase-cxdata-readonly-r15d.mjs'
+      - 'tools/release/tya-cxdata-firestore-readonly-smoke-r15d.mjs'
+      - '.github/workflows/cxorbia-cxdata-firestore-readonly-r15d.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  cxdata-firestore-readonly-smoke:
+    name: CX.data Firestore read-only facade smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate R15D syntax and gates
+        run: |
+          set -euo pipefail
+          node --check backend/adapters/firebase-cxdata-readonly-r15d.mjs
+          node --check tools/release/tya-cxdata-firestore-readonly-smoke-r15d.mjs
+          node -e "const fs=require('fs');const p='backend/config/phase-a-cxdata-firestore-readonly-r15d.source-safe.json';const x=JSON.parse(fs.readFileSync(p,'utf8'));if(x.status!=='authorized_read_only'||x.authorization?.providerReadAuthorized!==true||x.authorization?.writesAuthorized!==false)process.exit(2);console.log('R15D gates valid.');"
+
+      - name: Prepare temporary DEV credential
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          private_dir='.tmp/cxdata-firestore-readonly-r15d-private'
+          mkdir -p "$private_dir"
+          credential_path="$private_dir/credentials.json"
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT_JSON" ]; then
+            echo 'Blocked: missing FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV.'
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$credential_path"
+          chmod 600 "$credential_path"
+          node <<'NODE'
+          const fs = require('fs');
+          const file = '.tmp/cxdata-firestore-readonly-r15d-private/credentials.json';
+          const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+          if (parsed.type !== 'service_account') throw new Error('Credential type mismatch.');
+          if (parsed.project_id !== 'cxorbia-backend-dev') throw new Error('Credential project mismatch.');
+          if (!String(parsed.client_email || '').endsWith('@cxorbia-backend-dev.iam.gserviceaccount.com')) throw new Error('Credential service-account domain mismatch.');
+          console.log('DEV credential sanity checks passed without outputting identifiers.');
+          NODE
+
+      - name: Install Firebase Admin read-only dependency
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts firebase-admin@13
+
+      - name: Run R15D provider read-only facade smoke
+        env:
+          CXORBIA_CONFIRM: CXDATA_FIRESTORE_READONLY_R15D
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/cxdata-firestore-readonly-r15d-private/credentials.json
+        run: |
+          set -euo pipefail
+          node tools/release/tya-cxdata-firestore-readonly-smoke-r15d.mjs \
+            --config backend/config/phase-a-cxdata-firestore-readonly-r15d.source-safe.json \
+            --out .tmp/cxdata-firestore-readonly-r15d
+
+      - name: Cleanup temporary credential
+        if: always()
+        run: |
+          rm -f .tmp/cxdata-firestore-readonly-r15d-private/credentials.json
+          rmdir .tmp/cxdata-firestore-readonly-r15d-private 2>/dev/null || true
+
+      - name: Upload sanitized R15D report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxdata-firestore-readonly-r15d-report
+          path: .tmp/cxdata-firestore-readonly-r15d
+          if-no-files-found: ignore
+          retention-days: 14
