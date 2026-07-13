@@ -1,0 +1,141 @@
+name: CXOrbia Canonical Materialization Dry-Run R16
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/contracts/phase-a-canonical-materialization-dry-run-r16-v1.json'
+      - 'backend/contracts/phase-a-firestore-materialization-plan-v1.json'
+      - 'backend/config/phase-a-firestore-collection-map-v1.json'
+      - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
+      - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
+      - 'backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'
+      - 'app/data/tya-financial-control-source-safe.js'
+      - 'app/data/tya-certification-carryover-source-safe.js'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
+      - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
+      - 'tools/reconciliation/tya-canonical-materialization-dry-run-r16.mjs'
+      - '.github/workflows/cxorbia-canonical-materialization-dry-run-r16.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'backend/contracts/phase-a-canonical-materialization-dry-run-r16-v1.json'
+      - 'backend/contracts/phase-a-firestore-materialization-plan-v1.json'
+      - 'backend/config/phase-a-firestore-collection-map-v1.json'
+      - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
+      - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
+      - 'backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'
+      - 'app/data/tya-financial-control-source-safe.js'
+      - 'app/data/tya-certification-carryover-source-safe.js'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
+      - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
+      - 'tools/reconciliation/tya-canonical-materialization-dry-run-r16.mjs'
+      - '.github/workflows/cxorbia-canonical-materialization-dry-run-r16.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  canonical-materialization-dry-run:
+    name: Canonical materialization read-only classifier
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate R16 syntax and contract
+        run: |
+          set -euo pipefail
+          node --check tools/reconciliation/tya-canonical-materialization-dry-run-r16.mjs
+          node --check tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs
+          node -e "const fs=require('fs');const p='backend/contracts/phase-a-canonical-materialization-dry-run-r16-v1.json';const x=JSON.parse(fs.readFileSync(p,'utf8'));if(x.authorization?.providerReads!==true||x.authorization?.writes!==false||x.authorization?.deletes!==false||x.authorization?.imports!==false||x.authorization?.deploy!==false||x.authorization?.production!==false)process.exit(2);console.log('R16 read-only contract valid.');"
+
+      - name: Build live HR source-safe payload
+        env:
+          CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
+          test -s app/data/tya-hr-source-safe-periods.js
+          grep -q 'sourceSafe' app/data/tya-hr-source-safe-periods.js
+
+      - name: Build deterministic canonical materialization plan
+        run: |
+          set -euo pipefail
+          node tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs \
+            --hr app/data/tya-hr-source-safe-periods.js \
+            --financial app/data/tya-financial-control-source-safe.js \
+            --certifications app/data/tya-certification-carryover-source-safe.js \
+            --out .tmp/r16-materialization-plan
+          test -s .tmp/r16-materialization-plan/firestore-materialization-plan.json
+
+      - name: Prepare temporary DEV credential
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          private_dir='.tmp/canonical-materialization-r16-private'
+          mkdir -p "$private_dir"
+          credential_path="$private_dir/credentials.json"
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT_JSON" ]; then
+            echo 'Blocked: missing FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV.'
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$credential_path"
+          chmod 600 "$credential_path"
+          node <<'NODE'
+          const fs = require('fs');
+          const file = '.tmp/canonical-materialization-r16-private/credentials.json';
+          const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+          if (parsed.type !== 'service_account') throw new Error('Credential type mismatch.');
+          if (parsed.project_id !== 'cxorbia-backend-dev') throw new Error('Credential project mismatch.');
+          if (!String(parsed.client_email || '').endsWith('@cxorbia-backend-dev.iam.gserviceaccount.com')) throw new Error('Credential service-account domain mismatch.');
+          console.log('R16 credential sanity checks passed without outputting identifiers.');
+          NODE
+
+      - name: Install Firebase Admin read-only dependency
+        run: npm install --no-save --ignore-scripts firebase-admin@13
+
+      - name: Run R16 read-only canonical classifier
+        env:
+          CXORBIA_CONFIRM: CANONICAL_MATERIALIZATION_DRY_RUN_R16
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/canonical-materialization-r16-private/credentials.json
+        run: |
+          set -euo pipefail
+          node tools/reconciliation/tya-canonical-materialization-dry-run-r16.mjs \
+            --plan .tmp/r16-materialization-plan/firestore-materialization-plan.json \
+            --out .tmp/canonical-materialization-dry-run-r16
+
+      - name: Cleanup temporary credential
+        if: always()
+        run: |
+          rm -f .tmp/canonical-materialization-r16-private/credentials.json
+          rmdir .tmp/canonical-materialization-r16-private 2>/dev/null || true
+
+      - name: Upload source-safe R16 reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-materialization-dry-run-r16-report
+          path: |
+            .tmp/canonical-materialization-dry-run-r16
+            .tmp/r16-materialization-plan/firestore-materialization-summary.json
+            .tmp/r16-materialization-plan/firestore-materialization-plan.md
+          if-no-files-found: error
+          retention-days: 14
