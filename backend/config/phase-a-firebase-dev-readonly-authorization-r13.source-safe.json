@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "authorizationId": "phase-a-firebase-dev-readonly-r13",
+  "authorizationId": "phase-a-firebase-dev-readonly-authorization-r13",
   "authorizedAt": "2026-07-12",
   "authorizedBy": "Paula",
   "authorizationSource": "explicit project conversation instruction",
@@ -42,9 +42,15 @@
     "rawProviderResponsesPersisted": false,
     "sanitizedArtifactOnly": true
   },
-  "safeStateBeforeExecution": {
-    "providerCallsExecuted": false,
-    "credentialsUsed": false,
+  "result": {
+    "decision": "NONEMPTY_REVIEW_REQUIRED",
+    "providerCallsExecuted": true,
+    "cleanStateConfirmed": false,
+    "reviewId": "review_fbc5ec1eedd58db18254db1e"
+  },
+  "safeStateAfterExecution": {
+    "providerCallsExecuted": true,
+    "credentialsPersisted": false,
     "writes": false,
     "imports": false,
     "deploy": false,
