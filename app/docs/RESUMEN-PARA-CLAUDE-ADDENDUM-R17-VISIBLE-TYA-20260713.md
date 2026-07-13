@@ -40,6 +40,13 @@ Smoke remoto independiente:
 - 0 blockers, warnings, errores de consola o página;
 - artifact digest `sha256:8b849b2248c2d277a2b8434035d4e2679818a89f7a630b0615fdd8fe1277b1f7`.
 
+## Cleanup
+
+- workflow one-time de deploy eliminado;
+- marcador one-time eliminado;
+- drift gate bloquea su reaparición y solo acepta esas rutas históricas mientras sigan borradas;
+- remote smoke canónico volvió a manual-only parametrizable.
+
 ## Impacto Claude
 
 - No crear otra candidata por el binding R17.
