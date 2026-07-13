@@ -1,0 +1,65 @@
+name: CXOrbia Phase A R14 Payload Repair
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - tools/reconciliation/r14-financial-live-hr/ASSEMBLE
+
+permissions:
+  contents: write
+
+jobs:
+  repair-r14-payload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout current Phase A branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Assemble and verify exact sanitized payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir='tools/reconciliation/r14-financial-live-hr'
+          cat "$dir"/parts/part-*.b64 > "$dir/phase-a-financial-workbook-source-safe-r14.json.gz.b64"
+          bytes=$(wc -c < "$dir/phase-a-financial-workbook-source-safe-r14.json.gz.b64" | tr -d ' ')
+          test "$bytes" = '21312'
+          mkdir -p .tmp/r14-payload-repair
+          base64 -d "$dir/phase-a-financial-workbook-source-safe-r14.json.gz.b64" | gzip -d > .tmp/r14-payload-repair/source.json
+          node <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync('.tmp/r14-payload-repair/source.json','utf8'));
+          if(r.reportId!=='phase-a-financial-workbook-source-safe-r14') throw new Error('reportId mismatch');
+          if(r.source?.sha256!=='b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89') throw new Error('source hash mismatch');
+          if(r.liquidationControl?.summary?.uniqueRecordCount!==247) throw new Error('liquidation count mismatch');
+          if(r.safeState?.sourceSafe!==true||r.safeState?.piiOutput!==false||r.safeState?.rawWorkbookCommitted!==false) throw new Error('unsafe payload');
+          console.log(JSON.stringify({payloadBytes:21312,records:247,sourceSafe:true},null,2));
+          NODE
+
+      - name: Commit repaired payload and retrigger R14
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s\n' \
+            'CXORBIA_R14_REAL_TYA_FINANCIAL_RECONCILIATION' \
+            'retry=payload_repaired_from_verified_chunks' \
+            'scope=source_safe_real_tya_data' \
+            'firebase_writes=false' \
+            'imports=false' \
+            'payments=false' \
+            'deploy=false' \
+            'production=false' \
+            > tools/reconciliation/r14-financial-live-hr/READY
+          git rm -f .github/workflows/cxorbia-r14-payload-repair.yml
+          git rm -f tools/reconciliation/r14-financial-live-hr/ASSEMBLE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tools/reconciliation/r14-financial-live-hr .github/workflows
+          git commit -m 'fix(phase-a): repair and retrigger R14 sanitized payload'
+          git push origin HEAD:docs-tya-v6-v71-audit
