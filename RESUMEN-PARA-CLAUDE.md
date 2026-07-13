@@ -171,3 +171,9 @@
 - Backend/infraestructura: `BLOCKED_TARGET_PROJECT_EXISTENCE_UNVERIFIED` sobre `cxorbia-tya-dev-260713-r15a`.
 - Sin cambio frontend ni P0 Claude.
 - No afirmar que Auth, Firestore, Storage, sync, pagos o producción estén activos.
+
+
+## R15B Firebase DEV — 2026-07-13
+
+- Backend/infraestructura: `BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY` sobre `cxorbia-tya-dev-260713-r15a`.
+- Sin P0 frontend nuevo; no afirmar servicios activos ni producción.

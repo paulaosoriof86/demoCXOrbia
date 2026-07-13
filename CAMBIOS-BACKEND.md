@@ -261,3 +261,10 @@
 - Decisión: `BLOCKED_TARGET_PROJECT_EXISTENCE_UNVERIFIED`.
 - Proyecto creado: false; Firebase agregado: false; baseline vacía verificada: false.
 - Sin billing, import, deploy, producción ni datos TyA materializados.
+
+
+## R15B Firebase DEV nuevo y vacío — 2026-07-13
+
+- Decisión: `BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY`.
+- Proyecto `cxorbia-tya-dev-260713-r15a`; creación atómica nueva: false; Firebase agregado: false; baseline vacía: false.
+- Sin billing, import, deploy ni producción.

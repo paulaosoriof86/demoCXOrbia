@@ -124,3 +124,9 @@ Fuente puente: `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
 
 - Sin P0 nuevo.
 - Mantener copy honesto: un entorno DEV creado/vacío no implica backend operativo ni producción.
+
+
+## R15B Firebase DEV — impacto Claude
+
+- Sin P0 nuevo.
+- Mantener copy honesto: proyecto creado/vacío no equivale a backend operativo.
