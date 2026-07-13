@@ -1,41 +1,15 @@
 name: CXOrbia Canonical Materialization Dry-Run R16
 
+# Provider read workflow. Manual-only because repeated automatic Firestore reads
+# exhausted the DEV quota. The deterministic plan can still be built offline.
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - 'backend/contracts/phase-a-canonical-materialization-dry-run-r16-v1.json'
-      - 'backend/contracts/phase-a-firestore-materialization-plan-v1.json'
-      - 'backend/config/phase-a-firestore-collection-map-v1.json'
-      - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
-      - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
-      - 'backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'
-      - 'app/data/tya-financial-control-source-safe.js'
-      - 'app/data/tya-certification-carryover-source-safe.js'
-      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
-      - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
-      - 'tools/reconciliation/tya-canonical-materialization-dry-run-r16.mjs'
-      - 'tools/reconciliation/tya-canonical-materialization-dry-run-r16b.mjs'
-      - '.github/workflows/cxorbia-canonical-materialization-dry-run-r16.yml'
-  pull_request:
-    branches:
-      - release/cxorbia-tya-rc-20260630
-    paths:
-      - 'backend/contracts/phase-a-canonical-materialization-dry-run-r16-v1.json'
-      - 'backend/contracts/phase-a-firestore-materialization-plan-v1.json'
-      - 'backend/config/phase-a-firestore-collection-map-v1.json'
-      - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
-      - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
-      - 'backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'
-      - 'app/data/tya-financial-control-source-safe.js'
-      - 'app/data/tya-certification-carryover-source-safe.js'
-      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
-      - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
-      - 'tools/reconciliation/tya-canonical-materialization-dry-run-r16.mjs'
-      - 'tools/reconciliation/tya-canonical-materialization-dry-run-r16b.mjs'
-      - '.github/workflows/cxorbia-canonical-materialization-dry-run-r16.yml'
   workflow_dispatch:
+    inputs:
+      confirm_read_only:
+        description: 'Type CANONICAL_MATERIALIZATION_DRY_RUN_R16 after explicit read-only authorization and available quota.'
+        required: true
+        default: 'HOLD'
+        type: string
 
 permissions:
   contents: read
@@ -47,6 +21,7 @@ defaults:
 jobs:
   canonical-materialization-dry-run:
     name: Canonical materialization read-only classifier
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_read_only == 'CANONICAL_MATERIALIZATION_DRY_RUN_R16' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
