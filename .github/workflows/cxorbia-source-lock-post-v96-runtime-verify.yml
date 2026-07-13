@@ -1,4 +1,4 @@
-name: CXOrbia Source Lock Post-V96 Runtime Verify
+name: CXOrbia Source Lock V110 Union Verify
 
 on:
   workflow_dispatch:
@@ -14,8 +14,9 @@ on:
       - 'app/modules/**'
       - 'app/styles/**'
       - 'app/demo/**'
-      - 'backend/config/phase-a-source-lock-post-v96-runtime-manifest.source-safe.json'
-      - 'tools/release/tya-source-lock-post-v96-runtime-verify.mjs'
+      - 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json'
+      - 'app/docs/verify-manifest-v110-union-empalme.mjs'
+      - 'tools/release/tya-source-lock-v110-union-verify.mjs'
       - '.github/workflows/cxorbia-source-lock-post-v96-runtime-verify.yml'
   pull_request:
     branches:
@@ -29,8 +30,9 @@ on:
       - 'app/modules/**'
       - 'app/styles/**'
       - 'app/demo/**'
-      - 'backend/config/phase-a-source-lock-post-v96-runtime-manifest.source-safe.json'
-      - 'tools/release/tya-source-lock-post-v96-runtime-verify.mjs'
+      - 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json'
+      - 'app/docs/verify-manifest-v110-union-empalme.mjs'
+      - 'tools/release/tya-source-lock-v110-union-verify.mjs'
       - '.github/workflows/cxorbia-source-lock-post-v96-runtime-verify.yml'
 
 permissions:
@@ -41,8 +43,8 @@ defaults:
     shell: bash
 
 jobs:
-  source-lock-runtime-verify:
-    name: Source lock post-V96 runtime verify
+  source-lock-v110-union-verify:
+    name: Source lock V110 union verify
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -53,18 +55,19 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
-      - name: Verify source lock runtime hashes
+      - name: Verify V110 union source lock
         run: |
-          node tools/release/tya-source-lock-post-v96-runtime-verify.mjs \
-            --out .tmp/source-lock-post-v96-runtime
+          node tools/release/tya-source-lock-v110-union-verify.mjs \
+            --manifest app/docs/MANIFEST-V110-UNION-EMPALME-R1.json \
+            --out .tmp/source-lock-v110-union
 
-      - name: Upload source lock verification report
+      - name: Upload V110 source lock report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: source-lock-post-v96-runtime-report
-          path: .tmp/source-lock-post-v96-runtime
-          if-no-files-found: ignore
+          name: source-lock-v110-union-report
+          path: .tmp/source-lock-v110-union
+          if-no-files-found: error
           retention-days: 14
