@@ -14,6 +14,14 @@ La build corregida visible TyA R17 fue redesplegada en Firebase Hosting DEV y ve
 - 13/13 rutas críticas;
 - 0 blockers, warnings, errores de consola o página.
 
+## Cleanup confirmado
+
+- workflow temporal de redeploy: eliminado;
+- marcador temporal de autorización: eliminado;
+- no puede ejecutarse nuevamente con la autorización consumida;
+- drift gate solo tolera esas rutas históricas mientras permanezcan borradas;
+- remote smoke canónico: manual-only y parametrizable.
+
 ## P0
 
 No existe un P0 de diseño o módulo para Claude por el binding R17.
@@ -82,4 +90,4 @@ Paula debe confirmar:
 - **Exclusivo cliente:** datos TyA/Cinépolis.
 - **Claude/prototipo:** P1 Mi Día periodo vs calendario; identidad temporal honesta.
 - **Academia:** criterios de revisión por ambiente, periodo y rol.
-- **Sin impacto Claude:** deploy, proof, hashes y adapter build-only.
+- **Sin impacto Claude:** deploy, proof, hashes, adapter build-only y cleanup.
