@@ -3,7 +3,7 @@
   "package": "CXORBIA-V110-UNION-EMPALME-R1",
   "project": "CXOrbia",
   "baseline": "V110 empalmada de forma determinística sobre rama viva",
-  "generatedAt": "2026-07-13T14:32:07.209Z",
+  "generatedAt": "2026-07-13T14:34:43.637Z",
   "sourceZipSha256": "1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227",
   "basePackageSha256": "582a8c98cdac7b46028bb720d1304657c6d678e99e4bc23a49e80ab440bc8206",
   "runtimePatchSha256": "d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd",
@@ -25,7 +25,7 @@
     "generatedUnionLock": "core/build-lock.js"
   },
   "fileCount": 1418,
-  "aggregateSha256": "0224070cb96a77d99ede522362b8db054a57a3d0c9ddd7d34c81e861d85d7c88",
+  "aggregateSha256": "e6a4427ce2bf4d273b8b9bd9b7c6e76216db0cc4baa7518e818aeefa92377cd7",
   "exclusionsDeclared": [
     {
       "path": "core/build-lock.js",
@@ -5218,8 +5218,8 @@
     },
     {
       "path": "docs/PHASE-A-FINANCIAL-REAL-TYA-R14C-RESULT-20260713.md",
-      "size": 997,
-      "sha256": "e2a43ef059fbbfb6c3f9b92b1d595c07e2304e2dd6a8e3fe44d00daac74b76db"
+      "size": 4694,
+      "sha256": "441c7130ca5929f55b877f463ff600c9c55373f5a56f6ed8927b878e9acaf60b"
     },
     {
       "path": "docs/PHASE-A-FIREBASE-DEV-CLEAN-STATE-READONLY-R13-PROVIDER-REPORT-20260712.md",
