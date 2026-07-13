@@ -47,6 +47,8 @@ const allowedExact = [
   'PENDIENTES-PROTOTIPO.md',
   '.github/authorized/cxorbia-dev-hosting-deploy-20260713.txt',
   '.github/workflows/cxorbia-authorized-dev-hosting-deploy-once-20260713.yml',
+  '.github/authorized/cxorbia-visible-tya-r17-redeploy-20260713.txt',
+  '.github/workflows/cxorbia-authorized-visible-tya-r17-redeploy-once-20260713.yml',
   '.github/workflows/cxorbia-auth-preactivation-route-action.yml',
   '.github/workflows/cxorbia-dev-auth-firestore-readiness-post-v96.yml',
   '.github/workflows/cxorbia-firebase-dev-clean-state-read-only-gate.yml',
@@ -70,6 +72,7 @@ const allowedExact = [
   'tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs',
   'tools/qa/tya-phase-a-visual-smoke.mjs',
   'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs',
+  'tools/qa/tya-phase-a-visible-data-smoke-r17.mjs',
   'backend/config/phase-a-financial-workbook-source-safe-r14.json'
 ];
 
@@ -170,6 +173,7 @@ const report = {
     reconciliationTools: true,
     releaseValidators: true,
     explicitReleaseWorkflows: true,
+    authorizedVisibleTyAR17RedeployOnly: true,
     runtimeAppOutsideV110Manifest: false,
     providerActivation: false,
     databaseWrites: false,
