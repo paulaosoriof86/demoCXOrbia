@@ -1,0 +1,68 @@
+name: CXOrbia Firestore Canonical Drift R15E
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/phase-a-firebase-existing-dev-provenance-r15c-result.source-safe.json'
+      - 'backend/config/phase-a-cxdata-firestore-readonly-r15d-result.source-safe.json'
+      - 'backend/config/phase-a-period-history-integrity-snapshot.source-safe.json'
+      - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
+      - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
+      - 'backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'
+      - 'app/index.html'
+      - 'app/index-backend-dev.html'
+      - '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml'
+      - '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml'
+      - 'tools/release/tya-firestore-canonical-drift-r15e.mjs'
+      - '.github/workflows/cxorbia-firestore-canonical-drift-r15e.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'backend/config/phase-a-firebase-existing-dev-provenance-r15c-result.source-safe.json'
+      - 'backend/config/phase-a-cxdata-firestore-readonly-r15d-result.source-safe.json'
+      - 'backend/config/phase-a-period-history-integrity-snapshot.source-safe.json'
+      - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
+      - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
+      - 'backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'
+      - 'app/index.html'
+      - 'app/index-backend-dev.html'
+      - '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml'
+      - '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml'
+      - 'tools/release/tya-firestore-canonical-drift-r15e.mjs'
+      - '.github/workflows/cxorbia-firestore-canonical-drift-r15e.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  classify:
+    name: Firestore versus canonical source-safe classifier
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate syntax
+        run: node --check tools/release/tya-firestore-canonical-drift-r15e.mjs
+      - name: Run deterministic R15E classifier
+        run: node tools/release/tya-firestore-canonical-drift-r15e.mjs --out .tmp/firestore-canonical-drift-r15e
+      - name: Upload source-safe R15E report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: firestore-canonical-drift-r15e-report
+          path: .tmp/firestore-canonical-drift-r15e
+          if-no-files-found: error
+          retention-days: 14
