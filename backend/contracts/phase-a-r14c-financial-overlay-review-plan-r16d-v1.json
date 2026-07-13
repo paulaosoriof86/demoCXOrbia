@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-r14c-financial-overlay-review-plan-r16d-v1",
+  "purpose": "Overlay exact R14C financial links onto visit-level settlement controls and preserve all unresolved financial, shopper and certification cases in source-safe review queues without writes.",
+  "scope": {
+    "tenantId": "tya",
+    "projectId": "cinepolis"
+  },
+  "expected": {
+    "baseOperations": 1415,
+    "periods": 14,
+    "shoppers": 210,
+    "visits": 616,
+    "settlementControls": 572,
+    "financialRows": 247,
+    "exactFinancialOverlays": 196,
+    "financialReviewRows": 51,
+    "financialReviewQueue": 92,
+    "shopperGapItems": 1,
+    "shopperGapCount": 3,
+    "certificationCandidateShoppers": 213,
+    "certificationSourceRecords": 0
+  },
+  "rules": {
+    "exactOverlayRequiresStableVisitId": true,
+    "duplicateExactVisitIdIsHardStop": true,
+    "unmatchedExactFinancialRowIsHardStop": true,
+    "reviewRowsDoNotOverlaySettlementControls": true,
+    "paidIsNeverInferred": true,
+    "certificationIsNeverInferred": true,
+    "noNameMatching": true,
+    "noAutomaticMerge": true,
+    "reviewItemsAreExcludedFromMaterializationBatches": true,
+    "controlRecordsRemainForVisitsWithoutExactFinancialSource": true
+  },
+  "decisions": {
+    "pass": "PASS_R14C_FINANCIAL_OVERLAY_REVIEW_PLAN_R16D",
+    "hold": "HOLD_R14C_FINANCIAL_OVERLAY_REVIEW_PLAN_R16D",
+    "hardStop": "HARD_STOP_R14C_FINANCIAL_OVERLAY_REVIEW_PLAN_R16D"
+  },
+  "safeState": {
+    "providerCalls": false,
+    "writes": false,
+    "deletes": false,
+    "imports": false,
+    "deploy": false,
+    "production": false,
+    "paymentsExecuted": false,
+    "piiIncluded": false
+  }
+}
