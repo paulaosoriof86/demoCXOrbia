@@ -229,3 +229,10 @@
 - Decisión: `NONEMPTY_REVIEW_REQUIRED`.
 - Provider calls: true; clean confirmed: false.
 - Cero writes, imports, deploy y producción; credencial temporal eliminada.
+
+
+## R13B Firebase DEV nonempty review — 2026-07-12
+
+- Se creó review item de infraestructura por 17 usuarios Auth y Firestore no vacío.
+- Adapter/materialización/backend activation permanecen HOLD.
+- Sin writes, imports, deploy ni producción.

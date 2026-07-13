@@ -145,3 +145,9 @@
 
 - Decisión backend: `NONEMPTY_REVIEW_REQUIRED`.
 - No implica backend conectado ni producción; no corresponde paquete Claude inmediato.
+
+
+## R13B Firebase DEV nonempty — 2026-07-12
+
+- No es bug Claude ni del prototipo. El bloqueo es infraestructura/base DEV no limpia.
+- No mostrar backend conectado ni base limpia.
