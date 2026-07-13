@@ -236,3 +236,11 @@
 - Se creó review item de infraestructura por 17 usuarios Auth y Firestore no vacío.
 - Adapter/materialización/backend activation permanecen HOLD.
 - Sin writes, imports, deploy ni producción.
+
+
+## R14 Finanzas reales TyA — 2026-07-13
+
+- 247 filas reales de liquidación source-safe contra 616 visitas HR.
+- 0 enlaces compuestos exactos.
+- Decisión: `HOLD_NO_EXACT_REAL_TYA_LINKS`.
+- Sin writes, import real, pagos, deploy ni producción.

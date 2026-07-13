@@ -151,3 +151,10 @@
 
 - No es bug Claude ni del prototipo. El bloqueo es infraestructura/base DEV no limpia.
 - No mostrar backend conectado ni base limpia.
+
+
+## R14 Finanzas reales TyA — 2026-07-13
+
+- Backend/datos procesó fuente financiera real y HR viva.
+- Decisión: `HOLD_NO_EXACT_REAL_TYA_LINKS`; enlaces exactos: 0.
+- No corresponde cambio frontend inmediato; conservar distinción liquidada/pagada y los P1 ya registrados.

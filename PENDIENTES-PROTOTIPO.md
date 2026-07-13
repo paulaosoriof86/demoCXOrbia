@@ -105,3 +105,9 @@ Fuente puente: `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
 - Endurecer idempotencia ante llamadas repetidas.
 - Ajustar copy cuando cero visitas fueron procesadas.
 - Normalizar retorno futuro a `processed/reviewRequired`.
+
+
+## R14 Finanzas reales TyA — impacto Claude
+
+- Sin P0 frontend nuevo.
+- Mantener abiertos únicamente los P1 de pagos ya documentados; no convertir liquidación o día planificado en pago confirmado.
