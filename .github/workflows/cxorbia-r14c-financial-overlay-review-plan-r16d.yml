@@ -8,6 +8,7 @@ on:
       - 'backend/contracts/phase-a-r14c-financial-overlay-review-plan-r16d-v1.json'
       - 'backend/contracts/phase-a-firestore-materialization-plan-v1.json'
       - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
+      - 'backend/config/phase-a-financial-workbook-source-safe-r14.json'
       - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
       - 'backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'
       - 'app/data/tya-hr-source-safe-periods.js'
@@ -23,6 +24,7 @@ on:
       - 'backend/contracts/phase-a-r14c-financial-overlay-review-plan-r16d-v1.json'
       - 'backend/contracts/phase-a-firestore-materialization-plan-v1.json'
       - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
+      - 'backend/config/phase-a-financial-workbook-source-safe-r14.json'
       - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
       - 'backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'
       - 'app/data/tya-hr-source-safe-periods.js'
@@ -60,7 +62,7 @@ jobs:
           set -euo pipefail
           node --check tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs
           node --check tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs
-          node -e "const fs=require('fs');for(const p of ['backend/contracts/phase-a-r14c-financial-overlay-review-plan-r16d-v1.json','backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json','backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json','backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'])JSON.parse(fs.readFileSync(p,'utf8'));console.log('R16D source-safe inputs valid.');"
+          node -e "const fs=require('fs');for(const p of ['backend/contracts/phase-a-r14c-financial-overlay-review-plan-r16d-v1.json','backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json','backend/config/phase-a-financial-workbook-source-safe-r14.json','backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json','backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'])JSON.parse(fs.readFileSync(p,'utf8'));console.log('R16D source-safe inputs valid.');"
 
       - name: Build deterministic base materialization plan
         run: |
@@ -77,6 +79,8 @@ jobs:
           set -euo pipefail
           node tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs \
             --plan .tmp/r16d-base-plan/firestore-materialization-plan.json \
+            --financial backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json \
+            --controlled-financial backend/config/phase-a-financial-workbook-source-safe-r14.json \
             --out .tmp/r14c-financial-overlay-review-plan-r16d
 
       - name: Upload source-safe R16D artifacts
