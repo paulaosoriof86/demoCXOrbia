@@ -55,6 +55,14 @@ Objetivo:
 - definir lotes, rollback y auditoría;
 - preparar smoke autenticado posterior.
 
+## Clasificación
+
+- **Reusable CXOrbia:** plan de materialización canónica y gates separados de lectura/escritura.
+- **Exclusivo cliente:** conteos y colas TyA/Cinépolis.
+- **Claude/prototipo:** sin P0 nuevo; 40 hallazgos P1 acumulados.
+- **Academia:** backfill sobre fuente canónica, read-only, materialización y deploy.
+- **Sin impacto Claude:** CI, hashes, artifacts y service-account sanity.
+
 ## Estado seguro
 
 Sin writes, import, deploy, producción, proveedores, pagos ni PII.
