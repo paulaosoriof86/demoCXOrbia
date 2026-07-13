@@ -1,8 +1,8 @@
 name: CXOrbia Canonical Materialization Provider Compare R16E
 
 # Manual-only provider read gate in normal operation.
-# A one-time push trigger is temporarily accepted only for the exact source-safe
-# authorization marker below. No writes, deletes, imports, deploy or production.
+# A one-time pull_request trigger is temporarily accepted only for the exact
+# source-safe authorization marker below. No writes, deletes, imports, deploy or production.
 on:
   workflow_dispatch:
     inputs:
@@ -11,9 +11,9 @@ on:
         required: true
         default: 'HOLD'
         type: string
-  push:
+  pull_request:
     branches:
-      - docs-tya-v6-v71-audit
+      - release/cxorbia-tya-rc-20260630
     paths:
       - 'docs/operations/cxorbia-r16e-read-only-authorized-20260713.txt'
 
@@ -33,7 +33,7 @@ jobs:
     if: >-
       ${{
         (github.event_name == 'workflow_dispatch' && inputs.confirm_read_only == 'CANONICAL_PROVIDER_COMPARE_READ_ONLY_R16E') ||
-        github.event_name == 'push'
+        github.event_name == 'pull_request'
       }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Verify exact read-only authorization
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'pull_request' }}
         run: |
           set -euo pipefail
           test -f "$CXORBIA_R16E_AUTH_MARKER"
