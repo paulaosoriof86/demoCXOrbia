@@ -39,6 +39,7 @@ window.CX = window.CX || {};
     'postulacion.reject':    ['super','admin','ops'],
     'visit.reassign':        ['super','admin'],
     'visit.cancel':          ['super','admin'],
+    'visit.archive':         ['super','admin'],
   };
   const DEFAULTS_KEYS = Object.keys(DEFAULTS);
 
@@ -84,6 +85,16 @@ window.CX = window.CX || {};
        contexto vacío, dejando sin validar tenant/proyecto/país aunque el usuario tuviera scope
        asignado. `ctx()` construye el contexto estándar {tenantId, projectId, pais} a partir del
        proyecto activo, para que cualquier handler lo use sin tener que armarlo a mano. */
+    /* Bloque 6 (corrección V103, 20260711): bug real — ctx() usaba SIEMPRE p.countries[0] como
+       "el" país del contexto, incluso en proyectos multipaís (GT/HN). Un coordinador con scope
+       HN evaluando una acción sobre una entidad de HN terminaba comparado contra GT (el primer
+       país del arreglo), pasando el chequeo de país por accidente o fallando por accidente —
+       ninguno de los dos es correcto. Ahora: el país SOLO se infiere automáticamente cuando el
+       proyecto es de un único país (caso no ambiguo); en proyectos multipaís, `pais` queda
+       `undefined` a menos que el LLAMADOR pase el país real de la entidad sobre la que actúa
+       (extra.pais / extra.entityId con su país) — nunca se asume el primero del arreglo.
+       También acepta entityType/entityId explícitos para que _contextOk pueda, en el futuro,
+       validar contra el país real de la entidad en vez de solo el proyecto activo. */
     ctx(extra){
       const out={};
       try{
@@ -91,7 +102,10 @@ window.CX = window.CX || {};
         const p=CX.data&&CX.data.project&&CX.data.project();
         out.tenantId = u.tenantId || undefined;
         out.projectId = p&&p.id || undefined;
-        out.pais = (p&&p.countries&&p.countries[0]) || undefined;
+        const countries = (p&&p.countries)||[];
+        out.pais = countries.length===1 ? countries[0] : undefined; // multipaís: nunca asumir countries[0]
+        out.entityType = undefined;
+        out.entityId = undefined;
       }catch(e){}
       return Object.assign(out, extra||{});
     },
@@ -113,7 +127,15 @@ window.CX = window.CX || {};
        ctx admite: {role, tenantId, projectId, pais}. Todos opcionales — si el llamador no provee
        projectId/pais, no se valida ese eje (comportamiento igual al fail-closed por rol solamente,
        para no romper handlers que aún no pasan contexto — ver limitación documentada en el reporte). */
-    _contextOk(ctx){
+    /* P0-8 (paquete acumulado 20260711): acciones sensibles sobre entidades con país (pagos,
+       certificación, reasignación/archivado/cancelación de visita, resolución de conflicto) no
+       pueden pasar sin validar el eje país solo porque el llamador no lo proveyó — un usuario con
+       scopePaises (coordinador/aliado regional) quedaría sin restricción real si el handler omite
+       `pais`. Antes: sin `ctx.pais`, ese eje simplemente no se evaluaba (bypass silencioso). Ahora:
+       si la acción es geo-sensible Y el usuario tiene scopePaises definido pero el llamador no dio
+       país, se bloquea pidiendo selección explícita — nunca se asume "sin restricción". */
+    GEO_SENSITIVE:['finance.markPaid','certification.publish','visit.reassign','visit.cancel','visit.archive','conflict.resolve'],
+    _contextOk(ctx, actionId){
       ctx=ctx||{};
       const u=(CX.session&&CX.session.user)||{};
       /* tenant: si el llamador especifica un tenant y el usuario tiene uno propio, deben coincidir */
@@ -122,6 +144,9 @@ window.CX = window.CX || {};
       if(ctx.projectId && u.scopeProjectId && ctx.projectId!==u.scopeProjectId) return {ok:false, why:'fuera de tu proyecto asignado'};
       /* país: scopePaises (coordinador/aliado con alcance regional) */
       if(ctx.pais && u.scopePaises && u.scopePaises.length && !u.scopePaises.includes(ctx.pais)) return {ok:false, why:'fuera de tu alcance de país'};
+      if(!ctx.pais && u.scopePaises && u.scopePaises.length && actionId && this.GEO_SENSITIVE.includes(actionId)){
+        return {ok:false, why:'requiere seleccionar el país de la entidad — tu alcance está limitado por país'};
+      }
       return {ok:true, why:''};
     },
 
@@ -150,7 +175,7 @@ window.CX = window.CX || {};
       const allowed=this.matrix()[actionId];
       if(!allowed) return false;
       if(!allowed.includes(role)) return false;
-      return this._contextOk(ctx).ok;
+      return this._contextOk(ctx, actionId).ok;
     },
     /* variante que además explica el motivo de bloqueo, para mostrarlo en UI */
     check(actionId, ctx){
@@ -159,7 +184,7 @@ window.CX = window.CX || {};
       if(role!=='super'){
         const allowed=this.matrix()[actionId];
         if(!allowed || !allowed.includes(role)) return {ok:false, reason:'Tu rol ('+role+') no tiene el permiso de acción "'+actionId+'". Un admin puede otorgarlo en Usuarios & Permisos → Acciones.'};
-        const ctxCheck=this._contextOk(ctx);
+        const ctxCheck=this._contextOk(ctx, actionId);
         if(!ctxCheck.ok) return {ok:false, reason:'Esta acción está fuera de tu alcance asignado ('+ctxCheck.why+').'};
       }
       return {ok:true, reason:''};

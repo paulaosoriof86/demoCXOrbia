@@ -27,7 +27,11 @@ CX.module('cert', ({role,data,ui})=>{
        estado confirmado por backend habilitan tomar el examen. Antes cualquier banco con
        preguntas se ofrecía sin mirar su estado. */
     const bank=CX.certStore.bank(p.id);
-    const bankTakeable = bank && bank.preguntas && bank.preguntas.length && ['approved_preview','pending_backend','confirmed','published'].includes(bank.estado);
+    /* P0-7 (paquete acumulado 20260711): 'pending_backend' significa "esperando confirmación de
+       backend", NO "disponible para tomar" — incluirlo aquí dejaba certificar sobre un banco que
+       todavía no está aprobado ni confirmado. Solo approved_preview (práctica, rotulada como tal)
+       o un estado ya confirmado por backend (confirmed/published) habilitan el examen. */
+    const bankTakeable = bank && bank.preguntas && bank.preguntas.length && ['approved_preview','confirmed','published'].includes(bank.estado);
     if(bank && bank.preguntas && bank.preguntas.length && !bankTakeable){
       return `${ui.ph('Certificación', p.name+' · banco en revisión')}
         <div class="card card-p">${ui.degraded('Hay un banco de preguntas en preparación ('+(bank.estado||'borrador')+') todavía no revisado/aprobado — no está disponible para certificarte. Vuelve a intentarlo cuando el equipo lo publique.',{title:'Certificación · banco no publicado'})}</div>`;
@@ -59,8 +63,10 @@ CX.module('cert', ({role,data,ui})=>{
           const isPreviewOnly = bank.estado==='approved_preview';
           const box=host.querySelector('#examBox');
           box.insertAdjacentHTML('afterbegin',`<div class="flex" style="gap:14px;background:var(--${pass?'green':'amber'}-bg);border-radius:11px;padding:13px 16px;margin-bottom:12px"><div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--${pass?'green':'amber'})">${score}%</div><div><b style="color:var(--t1)">${pass?'Aprobado':'No alcanzado'}</b> · ${ok}/${bank.preguntas.length} correctas · gate ${bank.gate||80}%<div style="font-size:12px;color:var(--t3)">${pass?(isPreviewOnly?'Práctica en preview aprobada — la habilitación real para ejecutar visitas queda pendiente de confirmación backend.':'Ya puedes ejecutar tus visitas de este proyecto.'):'Repasa el feedback y vuelve a intentarlo.'}</div></div></div>`);
-          CX.automations&&CX.automations.fire&&CX.automations.fire('certificacion',{shopper:(CX.session.user&&CX.session.user.name)||'',score,pass});
-          ui.toast(pass?'✓ Certificación aprobada ('+score+'%)':'Puntaje '+score+'% · no alcanzó el gate','ok',4000);
+          /* P0-7: una práctica en preview NO es un evento operativo real — solo se registra el
+             evento de automatización cuando el banco ya está confirmed/published (no approved_preview). */
+          if(!isPreviewOnly) CX.automations&&CX.automations.fire&&CX.automations.fire('certificacion',{shopper:(CX.session.user&&CX.session.user.name)||'',score,pass});
+          ui.toast(pass?(isPreviewOnly?'✓ Práctica aprobada ('+score+'%, preview)':'✓ Certificación aprobada ('+score+'%)'):'Puntaje '+score+'% · no alcanzó el gate','ok',4000);
         });
       };
       draw(); return host;
@@ -167,22 +173,32 @@ CX.module('cert', ({role,data,ui})=>{
           const frag=s.length>90?s.slice(0,90)+'…':s;
           return {q:'Según el instructivo, ¿cuál afirmación es correcta? (fragmento '+(i+1)+')',ops:[frag,'Lo opuesto a lo indicado en el instructivo','No se menciona en el instructivo','Aplica solo si el cliente lo autoriza'],correcta:frag,exp:'Extraído directamente del instructivo — revisa y ajusta el redactado antes de publicar.'};
         });
-        close();
         const creador=(CX.session&&CX.session.user&&CX.session.user.name)||'—';
+        /* Bloque 5 (corrección V103, 20260711): bug real — el revisor era un <input> de texto
+           libre (cualquiera podía escribir cualquier nombre, incluso inventado). Ahora se elige
+           de un ROSTER real de personas con el permiso 'certification.publish' en este proyecto
+           (CX.ROLES + equipo con acceso), nunca texto libre. Sigue exigiendo que sea distinto al
+           generador. Queda honestamente rotulado: en este prototipo no hay sesiones concurrentes
+           reales, así que esto es una simulación de "segundo actor" — la confirmación de
+           identidad/autenticación real la hace el backend (Auth) en producción. */
+        const roster=(CX.ROLES||[]).filter(r=>['super','admin','coordinador'].includes(r.id)).map(r=>r.label);
+        const rosterOpts=roster.filter(n=>n.toLowerCase()!==creador.toLowerCase());
         ui.modal('🤖 Banco generado ('+preguntas.length+' preguntas · gate '+g+'%) — borrador local',
           `<div style="font-size:10.5px;color:var(--t3);margin-bottom:8px">Generado con heurística local (sin proveedor de IA real conectado) — <b>revisión humana obligatoria por una persona distinta a quien lo generó</b> antes de publicar; ajusta el redactado de cada pregunta.</div>
           <div class="acad-content" style="font-size:12.5px;line-height:1.55;max-height:52vh;overflow:auto">${preguntas.length?preguntas.map((q,i)=>`<div style="border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-bottom:7px"><b>${i+1}. ${q.q}</b><div style="color:var(--t3);margin-top:3px">${(q.ops||[]).join(' · ')}</div><div style="color:var(--green);margin-top:2px">✓ ${q.correcta}</div></div>`).join(''):'<p style="color:var(--t3)">No se pudieron extraer preguntas de este texto — intenta con un instructivo más largo.</p>'}</div>
           <div style="font-size:11px;color:var(--t3);margin:10px 0 4px">Generado por: <b>${creador}</b></div>
-          <label class="lbl">Nombre de quien revisa y aprueba (debe ser distinto al generador)</label>
-          <input class="inp" id="pubRevisor" placeholder="Nombre del revisor" style="margin-bottom:10px">
+          <label class="lbl">Quién revisa y aprueba (rol distinto al generador — no texto libre)</label>
+          <select class="sel" id="pubRevisor" style="margin-bottom:6px">${rosterOpts.length?('<option value="">Selecciona…</option>'+rosterOpts.map(n=>`<option>${n}</option>`).join('')):'<option value="">Sin otro rol disponible en este proyecto</option>'}</select>
+          <div style="font-size:10px;color:var(--t3);margin-bottom:10px">Simulación de segundo actor dentro del prototipo (sin sesiones concurrentes reales) — la verificación de identidad real la hace Auth en el backend de producción.</div>
           <div style="text-align:right;margin-top:2px"><button class="btn btn-pr btn-sm" id="pubBank" ${preguntas.length?'':'disabled'}>Confirmar revisión · publicar banco</button></div>`,
           {onMount:(o2,c2)=>o2.querySelector('#pubBank').addEventListener('click',()=>{
-            if(!CX.permissions.gate('certification.publish',{projectId:p.id,pais:p.countries&&p.countries[0]},ui)) return;
+        if(!CX.permissions.gate('certification.publish',CX.permissions.ctx({entityType:'certification_bank',entityId:p.id}),ui)) return;
             const revisor=(o2.querySelector('#pubRevisor').value||'').trim();
-            if(!revisor){ ui.toast('Escribe el nombre de quien revisa','warn',3200); return; }
+            if(!revisor){ ui.toast('Selecciona quién revisa (segundo actor obligatorio)','warn',3200); return; }
             if(revisor.toLowerCase()===creador.toLowerCase()){ ui.toast('El revisor debe ser una persona distinta a quien generó el banco (segundo actor obligatorio)','warn',4500); return; }
-            CX.certStore.save(p.id,{preguntas,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,revisadoPor:revisor,estado:'approved_preview'});
-            c2();draw();ui.toast('✅ Banco aprobado (preview) · '+preguntas.length+' preguntas · revisado por '+revisor+' · disponible en ESTE prototipo — publicación real en producción pendiente de confirmación backend','ok',5200);
+            const auditRef='aud_'+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
+            CX.certStore.save(p.id,{preguntas,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,revisadoPor:revisor,auditRef,estado:'approved_preview'});
+            c2();draw();ui.toast('✅ Banco aprobado (preview) · '+preguntas.length+' preguntas · revisado por '+revisor+' · auditRef '+auditRef+' · disponible en ESTE prototipo — publicación real en producción pendiente de confirmación backend','ok',5200);
           })});
       });
     });}}));
@@ -200,7 +216,8 @@ CX.module('cert', ({role,data,ui})=>{
           <div><label class="lbl">Motivo</label><select class="sel" id="rcReason"><option>Actualización del instructivo</option><option>Nueva ronda / periodo</option><option>Vencimiento de certificación</option><option>Bajo desempeño</option></select></div>
           <div><label class="lbl">Plazo (días)</label><input class="inp" id="rcDays" type="number" value="7"></div>
         </div>
-        <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:14px"><input type="checkbox" id="rcNotif" checked> Notificar por WhatsApp/correo (Make) y en su panel</label>
+        <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:6px"><input type="checkbox" id="rcNotif" checked> Notificar en su panel (in-app)</label>
+        <div style="font-size:10.5px;color:var(--t3);margin-bottom:14px">🔒 El envío real por WhatsApp/correo vía Make está pendiente de conexión backend por tenant — este prototipo solo registra el evento en el log local de automatizaciones y en el panel in-app del shopper, nunca envía un mensaje real.</div>
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rcOk">Solicitar re-certificación</button></div>
       `,{onMount:(ov,close)=>{
         const sc=ov.querySelector('#rcScope'); sc.addEventListener('change',()=>{ov.querySelector('#rcOneWrap').style.display=sc.value==='one'?'':'none';});
@@ -211,7 +228,7 @@ CX.module('cert', ({role,data,ui})=>{
             CX.notif&&CX.notif.push({to:'shopper',tipo:'recert',icon:'🔄',tono:'a',titulo:'Re-certificación requerida',txt:p.name+' · '+reason+' · plazo '+days+' días',nav:'cert'});
             CX.automations&&CX.automations.fire&&CX.automations.fire('recert',{proyecto:p.name,motivo:reason,plazo:days});
           }
-          close(); ui.toast('Re-certificación solicitada a '+who+' · '+reason+' · plazo '+days+' días'+(ov.querySelector('#rcNotif').checked?' · notificados':''),'ok',4200);
+          close(); ui.toast('Re-certificación solicitada a '+who+' · '+reason+' · plazo '+days+' días'+(ov.querySelector('#rcNotif').checked?' · notificado in-app (envío real por WhatsApp/correo pendiente de backend)':''),'ok',4200);
         });
       }});
     });

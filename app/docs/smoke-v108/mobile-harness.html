@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Smoke móvil V108 — viewport real vía iframe</title>
+<style>
+  body{font-family:system-ui,sans-serif;background:#0d1b2e;color:#eaf2fb;margin:0;padding:16px}
+  h1{font-size:16px}
+  .row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+  .cell{background:#14263d;border-radius:10px;padding:10px}
+  .cell b{display:block;margin-bottom:6px;font-size:12px;color:#9fc4e8}
+  iframe{border:2px solid #2196d3;border-radius:6px;background:#fff;display:block}
+  #log{white-space:pre-wrap;font-family:ui-monospace,monospace;font-size:12px;background:#08131f;padding:12px;border-radius:8px;max-height:340px;overflow:auto}
+</style>
+</head>
+<body>
+<h1>Smoke móvil V108 — cada iframe usa un viewport REAL (no proxy CSS): 360×800 / 390×844 / 412×915</h1>
+<div class="row" id="frames"></div>
+<div id="log">Cargando…</div>
+<script>
+const VIEWPORTS=[{w:360,h:800},{w:390,h:844},{w:412,h:915}];
+const SCREENS=['dashboard','financiero','postulaciones','reservas','aprendizaje'];
+const framesHost=document.getElementById('frames');
+const logEl=document.getElementById('log');
+const results=[];
+
+function mkFrame(vp){
+  const wrap=document.createElement('div'); wrap.className='cell';
+  wrap.innerHTML='<b>'+vp.w+'×'+vp.h+'</b>';
+  const f=document.createElement('iframe');
+  f.style.width=vp.w+'px'; f.style.height=vp.h+'px';
+  f.src='../../index.html';
+  wrap.appendChild(f);
+  framesHost.appendChild(wrap);
+  return f;
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function loginAsAdmin(win){
+  win.__cxErrors=[];
+  win.addEventListener('error', e=>win.__cxErrors.push(String(e.message||e)));
+  win.CX.app.selectRole('admin');
+  await sleep(500);
+}
+
+async function goTo(win,id){
+  win.CX.router.nav(id);
+  await sleep(500);
+}
+
+async function measure(win){
+  const doc=win.document;
+  const sw=doc.documentElement.scrollWidth;
+  const iw=win.innerWidth;
+  return {scrollWidth:sw, viewportWidth:iw, overflow: Math.max(0, sw-iw)};
+}
+
+(async()=>{
+  for(const vp of VIEWPORTS){
+    const f=mkFrame(vp);
+    await new Promise(res=>{ f.onload=res; });
+    await sleep(600);
+    const win=f.contentWindow;
+    await loginAsAdmin(win);
+    for(const scr of SCREENS){
+      await goTo(win, scr);
+      const m=await measure(win);
+      const consoleErrors = (win.__cxErrors||[]);
+      results.push({viewport:vp.w+'x'+vp.h, screen:scr, ...m, consoleErrors:consoleErrors.length});
+    }
+  }
+  logEl.textContent = JSON.stringify(results, null, 2);
+  window.__smokeResults = results;
+})();
+</script>
+</body>
+</html>

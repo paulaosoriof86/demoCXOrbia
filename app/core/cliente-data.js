@@ -55,12 +55,15 @@ window.CX = window.CX || {};
        aún no tiene score real, cae a un valor determinístico estable. */
     sucursales(p){
       p = p || CX.data.project();
-      if(this._cache && this._cache.id===p.id) return this._cache.list;
+      /* cache key incluye el modo de datos (demo/real) — evita servir una lista
+         calculada bajo un modo distinto al alternar demo/real en la misma sesión. */
+      const key = p.id + '::' + (this._allowSynthetic()?'demo':'real');
+      if(this._cache && this._cache.key===key) return this._cache.list;
       const prog=this.programa(p);
       const vis=(CX.data._visitas||[]).filter(v=>v.projectId===p.id);
       const list = vis.length ? this._fromVisitas(p, prog, vis) : this._synthetic(p, prog);
       list.sort((a,b)=>(b.score||0)-(a.score||0));
-      this._cache={id:p.id, list};
+      this._cache={key, list};
       return list;
     },
 
@@ -94,14 +97,19 @@ window.CX = window.CX || {};
           /* sin cuestionarios reales y fuera de demo: no se fabrica ningún score */
           score=null; sectionScores={}; hasScore=false;
         }
-        const prev = hasScore ? Math.max(35,Math.min(100,score+Math.round((r()-0.5)*16))) : null;
+        /* prev/nps/responsable son estimaciones derivadas, no datos capturados: solo se
+           fabrican en demo. Fuera de demo, sin fuente real para tendencia/NPS/responsable
+           de sucursal, se deja null/"—" — la UI debe rotularlo pendiente de fuente. */
+        const prev = hasScore && allowSynthetic ? Math.max(35,Math.min(100,score+Math.round((r()-0.5)*16))) : null;
+        const npsVal = hasScore && allowSynthetic ? Math.max(-100,Math.min(100,Math.round((score-55)*1.6))) : null;
+        const responsable = allowSynthetic ? pick(r,NAMES) : null;
         const v0=vs[0];
         return {
           id:p.id+'-su'+(i+1), code:'SUC-'+String(i+1).padStart(2,'0'), name,
           ciudad:v0.ciudad||'—', region:(CX.geo&&CX.geo.deptLabel?'':'')||v0.region||v0.ciudad||'Región', pais:v0.pais||(p.countries&&p.countries[0]),
-          responsable:pick(r,NAMES), visitas:vs.length, evaluadas:evals.length,
-          score, prev, delta: hasScore ? score-prev : null,
-          nps: hasScore ? Math.max(-100,Math.min(100,Math.round((score-55)*1.6))) : null,
+          responsable, visitas:vs.length, evaluadas:evals.length,
+          score, prev, delta: (hasScore && prev!=null) ? score-prev : null,
+          nps: npsVal,
           sectionScores, real:evals.length>0, hasScore,
           lastVisit:(vs.map(v=>v.realizada||v.agendada||v.disponibleDesde||'').filter(Boolean).sort().slice(-1)[0])||(hasScore?'2026-06-15':null),
         };
@@ -144,7 +152,9 @@ window.CX = window.CX || {};
        ni se promedian con `null`. Si NINGUNA sucursal tiene score real, el resumen honesto reporta
        `pendingSource:true` y deja los agregados numéricos en `null` en vez de inventar un 0/NaN. */
     resumen(list){
-      const withScore=list.filter(s=>s.hasScore!==false && typeof s.score==='number');
+      /* T3 (paquete V109): usa el mismo validScore() que el resto de la app — nunca
+         `typeof===number` a secas (eso aceptaba NaN/Infinity en los promedios). */
+      const withScore=list.filter(s=>s.hasScore!==false && this.validScore(s.score));
       const n=withScore.length;
       if(!n){
         return {
@@ -162,9 +172,9 @@ window.CX = window.CX || {};
       return {
         n:list.length, visitas:totVis,
         score:wScore,
-        nps:Math.round(withScore.reduce((a,s)=>a+(s.nps||0),0)/n),
-        excelentes:withScore.filter(s=>s.score>=85).length,
-        criticas:withScore.filter(s=>s.score<70).length,
+        nps: withScore.some(s=>s.nps==null) ? null : Math.round(withScore.reduce((a,s)=>a+(s.nps||0),0)/n),
+        excelentes:withScore.filter(s=>this.band(s.score).key==='excelente').length,
+        criticas:withScore.filter(s=>this.band(s.score).key==='critico').length,
         mejora:withScore.filter(s=>s.delta>0).length,
         top:[...withScore].sort((a,b)=>b.score-a.score).slice(0,5),
         bottom:[...withScore].sort((a,b)=>a.score-b.score).slice(0,5),
@@ -175,8 +185,24 @@ window.CX = window.CX || {};
     },
 
     /* ---- tono/etiqueta de score ---- */
-    tone(v){ return v>=85?'g':v>=75?'b':v>=65?'a':'r'; },
-    label(v){ return v>=85?'Excelente':v>=75?'Bueno':v>=65?'En atención':'Crítico'; },
+    /* T3 (paquete V109 — 20260712, corrección P0 real): V108 dejó DOS umbrales distintos para
+       "crítico" en el mismo flujo — la distribución de cli_dashboard usaba `<65` mientras el KPI
+       y el modal de drill usaban `<70` — así el total mostrado no coincidía entre vistas. Además
+       `typeof score==='number'` acepta `NaN` e `Infinity`, que rompen barras/promedios/ordenamientos
+       sin que ninguna capa lo detecte. validScore()/band() son ahora la ÚNICA fuente de verdad:
+       válido solo si es number Y finito; bandas: crítico <70, atención 70–74, bueno 75–84,
+       excelente ≥85. tone()/label() (y por lo tanto donut/pill en cliente.js) se derivan de la
+       MISMA función — ya no puede haber un umbral distinto en otro lugar. */
+    validScore(v){ return typeof v==='number' && Number.isFinite(v); },
+    band(v){
+      if(!this.validScore(v)) return {key:'pending', label:'Pendiente de evaluación', tone:'n'};
+      if(v>=85) return {key:'excelente', label:'Excelente', tone:'g'};
+      if(v>=75) return {key:'bueno', label:'Bueno', tone:'b'};
+      if(v>=70) return {key:'atencion', label:'En atención', tone:'a'};
+      return {key:'critico', label:'Crítico', tone:'r'};
+    },
+    tone(v){ return this.band(v).tone; },
+    label(v){ return this.band(v).label; },
 
     /* ---- planes de acción (seed + persistentes) ---- */
     /* seed de planes de acción — SOLO en demo (Bloque 1, auditoría V100): fuera de demo no se

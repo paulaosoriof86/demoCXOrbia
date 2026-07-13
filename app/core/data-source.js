@@ -77,11 +77,36 @@ window.CX = window.CX || {};
       return this;
     },
 
+    /* P0-5 (paquete acumulado 20260711): cambiar de modo EN LA MISMA sesión dejaba vivo en
+       localStorage (y en cachés en-memoria de otros módulos) cualquier dato sembrado/creado
+       mientras el modo era 'demo' — un correo leído, una reserva, un usuario editado seguían
+       apareciendo si luego se cambiaba a source_safe_preview/connected, mezclando fixtures con
+       lo que debería ser una vista limpia. Al SALIR de demo (o al volver a entrar, para no
+       arrastrar nada de una sesión previa en otro modo) se purgan los namespaces de datos
+       sembrados por fixtures: correo (cx_mails), reservas por proyecto (cx_reservas_*), usuarios
+       y roles personalizados (cx_users, cx_custom_roles), y las notificaciones en memoria
+       (CX.notif._items). NO se purga configuración real del tenant (cx_theme, cx_font, cx_modules,
+       cx_perm, cx_creds, cx_tenant_id, cx_session) — eso no es un fixture, es configuración
+       persistente legítima independiente del modo de datos. */
+    _purgeFixtureNamespaces(){
+      try{
+        localStorage.removeItem('cx_mails');
+        localStorage.removeItem('cx_users');
+        localStorage.removeItem('cx_custom_roles');
+        Object.keys(localStorage).filter(k=>k.indexOf('cx_reservas_')===0).forEach(k=>localStorage.removeItem(k));
+      }catch(e){}
+      try{ if(CX.topbar) CX.topbar._mails=null; }catch(e){}
+      try{ if(CX.reservas) CX.reservas._r={}; }catch(e){}
+      try{ if(CX.notif) CX.notif._items = this.showFixtures() ? CX.notif._items : []; }catch(e){}
+    },
+
     /* cambia de modo, persiste, re-resuelve y notifica — el shell (app.js) decide qué hacer
        con el nuevo estado (bloquear render o dejar pasar). Solo un modo puede estar activo. */
     setMode(mode){
       if(!MODES.includes(mode)) return this;
+      const changed = mode!==this.mode;
       this.mode=mode; this._save(); this.resolve();
+      if(changed) this._purgeFixtureNamespaces();
       CX.bus && CX.bus.emit('datasource');
       return this;
     },

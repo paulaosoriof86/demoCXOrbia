@@ -434,7 +434,11 @@ CX.module('movimientos', ({data,ui})=>{
       const val=CX.liq.forProject(data).filter(l=>l.estado==='validada');
       if(!val.length){ui.toast('No hay liquidaciones validadas para pagar','warn');return;}
       const r=data.payVisits(val.map(l=>l.visitaId));
-      ui.toast(r.pagadas+' liquidaciones marcadas pagadas (preview) · egreso(s) preparados en Movimientos · cruce bancario real pendiente backend','ok',4200);
+      /* P0-2 (V110): el toast ya no asume que todo lo enviado se pagó — si payVisits() devolvió
+         reviewRequired, esas visitas NO cambiaron de estado ni generaron movimiento; se informa
+         aparte y honesto, nunca mezclado con "pagadas". */
+      const revMsg=(r.reviewRequired&&r.reviewRequired.length)?(' · '+r.reviewRequired.length+' en revisión requerida (dato incompleto, no pagada(s))'):'';
+      ui.toast(r.pagadas+' liquidaciones marcadas pagadas (preview) · egreso(s) preparados en Movimientos'+revMsg+' · cruce bancario real pendiente backend', r.reviewRequired&&r.reviewRequired.length?'warn':'ok',4800);
     });
     const ih=host.querySelector('#impHist');
     if(ih)ih.addEventListener('click',()=>ui.modal('Importar histórico de movimientos',`
@@ -466,7 +470,7 @@ CX.module('liquidaciones', ({data,ui})=>{
     }).join('');
 
     const lrow=(l,i)=>{const lb=CX.liq.label(l.estado); const inD=draft.includes(l.visitaId);
-      return `<tr data-li="${i}" style="${inD?'background:var(--brand-light)':''}"><td style="position:sticky;left:0;background:${inD?'#eaf4fc':'var(--panel)'};z-index:1">${l.estado==='validada'?(inD?`<button class="btn btn-soft btn-sm" data-rm="${l.visitaId}" style="padding:3px 9px;color:var(--red)">✕ Retirar</button>`:`<button class="btn btn-pr btn-sm" data-add="${l.visitaId}" style="padding:3px 10px">▶ Mover a lote</button>`):l.estado==='pendiente_cuestionario'?ui.bdg('espera shopper','n'):l.estado==='pagada'||l.estado==='liquidada'?ui.bdg('✓ pagada','g'):ui.bdg('—','n')}</td>
+      return `<tr data-li="${i}" style="${inD?'background:var(--brand-light)':''}"><td style="position:sticky;left:0;background:${inD?'#eaf4fc':'var(--panel)'};z-index:1">${l.estado==='validada'?(inD?`<button class="btn btn-soft btn-sm" data-rm="${l.visitaId}" style="padding:3px 9px;color:var(--red)">✕ Retirar</button>`:`<button class="btn btn-pr btn-sm" data-add="${l.visitaId}" style="padding:3px 10px">▶ Mover a lote</button>`):l.estado==='pendiente_cuestionario'?ui.bdg('espera shopper','n'):l.estado==='pagada'?ui.bdg('✓ pagada','g'):l.estado==='pagada_preview'?ui.bdg('◐ pagada (preview)','a'):ui.bdg('—','n')}</td>
         <td style="position:sticky;left:96px;background:${inD?'#eaf4fc':'var(--panel)'};z-index:1"><b>${l.shopper||'—'}</b><div style="font-size:10px;color:var(--t3)">${l.shopperCode||''}</div></td>
         <td style="font-size:12px">${l.sucursal}</td><td style="font-size:12px">${l.freal||'—'}</td>
         <td>${inD?ui.bdg('● en lote','p'):ui.bdg(lb[0],lb[1])}</td><td>${l.submit?'✅':'—'}</td>
@@ -503,7 +507,7 @@ CX.module('liquidaciones', ({data,ui})=>{
       <div data-lk="pc" style="cursor:pointer">${ui.kpi('Pend. cuestionario',res.pendiente_cuestionario||0,'a')}</div>
       <div data-lk="pv" style="cursor:pointer">${ui.kpi('Pend./Validadas',(res.pendiente_submitir||0)+(res.validada||0),'b')}</div>
       <div data-lk="val" style="cursor:pointer">${ui.kpi('Candidatas para lote',res.validada||0,'b')}</div>
-      <div data-lk="pag" style="cursor:pointer">${ui.kpi('Pagadas (pend. cruce)',res.pagada||0,'g')}</div>
+      <div data-lk="pag" style="cursor:pointer">${ui.kpi('Pagadas (preview, pend. cruce)',(res.pagada||0)+(res.pagada_preview||0),'a')}</div>
     </div>
 
     ${cart}
@@ -525,7 +529,7 @@ CX.module('liquidaciones', ({data,ui})=>{
     host.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.add);}));
     host.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.rm);}));
     // KPIs clickeables → listado filtrado
-    const lkMap={pc:['Pend. cuestionario',l=>l.estado==='pendiente_cuestionario'],pv:['Pendientes/Validadas',l=>['pendiente_submitir','validada'].includes(l.estado)],val:['Candidatas para lote',l=>l.estado==='validada'],pag:['Pagadas',l=>['pagada','liquidada'].includes(l.estado)]};
+    const lkMap={pc:['Pend. cuestionario',l=>l.estado==='pendiente_cuestionario'],pv:['Pendientes/Validadas',l=>['pendiente_submitir','validada'].includes(l.estado)],val:['Candidatas para lote',l=>l.estado==='validada'],pag:['Pagadas (preview) · pend. cruce real',l=>['pagada','pagada_preview'].includes(l.estado)]};
     host.querySelectorAll('#liqKpis [data-lk]').forEach(el=>el.addEventListener('click',()=>{const m=lkMap[el.dataset.lk];const arr=all.filter(m[1]);
       ui.modal(m[0]+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Total</th><th>Pago est.</th></tr></thead><tbody>${arr.map(l=>`<tr><td><b>${l.shopper||'—'}</b></td><td style="font-size:12px">${l.sucursal}</td><td style="font-weight:700">${ui.money(l.moneda,l.total)}</td><td style="font-size:12px">${l.fechaEstimadaPago||'—'}</td></tr>`).join('')}</tbody></table>`:ui.empty('💸','Sin liquidaciones en esta categoría.'));
     }));
@@ -537,7 +541,7 @@ CX.module('liquidaciones', ({data,ui})=>{
           <div><label class="lbl">Honorario (${l.moneda})</label><input class="inp" id="le_hon" type="number" value="${l.honorario||0}"></div>
           <div><label class="lbl">Reembolso (${l.moneda})</label><input class="inp" id="le_re" type="number" value="${l.reembolso||0}"></div>
           <div><label class="lbl">Fecha realizada</label><input class="inp" id="le_f" type="date" value="${v.realizada||''}"></div>
-          <div><label class="lbl">Estado</label><select class="sel" id="le_est">${['realizada','cuestionario','liquidada','pagada'].map(o=>`<option ${o===v.estado?'selected':''}>${o}</option>`).join('')}</select></div>
+          <div><label class="lbl">Estado</label><select class="sel" id="le_est">${['realizada','cuestionario','liquidada'].map(o=>`<option ${o===v.estado?'selected':''}>${o}</option>`).join('')}</select></div>
         </div>
         <div style="background:var(--amber-bg);border-radius:9px;padding:8px 11px;font-size:11px;color:#8a5b00;margin-top:12px">Corrige aquí errores de captura. El cambio se refleja en la liquidación y se sincroniza con Beneficios y Finanzas.</div>
         <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="le_ok">Guardar corrección</button></div>
@@ -574,7 +578,8 @@ CX.module('liquidaciones', ({data,ui})=>{
         if(difBox&&difBox.checked){restantes.forEach(l=>{CX.finStore.addCxp(p.id,{concepto:'Liquidación diferida · '+l.shopper+' ('+l.sucursal+')',monto:l.total,pais:l.pais,origen:'liquidacion',visitaId:l.visitaId});diferidas++;});}
         const ids=[...draft]; close(); CX.finStore.clearDraft(p.id);
         const r=data.payVisits(ids);
-        ui.toast('Lote registrado como pagado (preview) · '+r.pagadas+' visita(s) · fecha de pago '+r.fechaPago+(diferidas?' · '+diferidas+' diferida(s) a CxP':'')+' · egresos reflejados en Movimientos · pendiente cruce financiero real','ok',4600);
+        const revMsg2=(r.reviewRequired&&r.reviewRequired.length)?(' · '+r.reviewRequired.length+' en revisión requerida (dato incompleto, no pagada(s))'):'';
+        ui.toast('Lote registrado como pagado (preview) · '+r.pagadas+' visita(s) · fecha de pago '+r.fechaPago+(diferidas?' · '+diferidas+' diferida(s) a CxP':'')+revMsg2+' · egresos reflejados en Movimientos · pendiente cruce financiero real', r.reviewRequired&&r.reviewRequired.length?'warn':'ok', 5200);
       });}});
     });
   };
@@ -598,16 +603,66 @@ CX.module('lotes', ({data,ui})=>{
     {id:'#L-205',n:8,monto:42000,cur:curHN,estado:'En revisión',tone:'a',fecha:'2026-06-18',visitas:[['Evaluador 05','Sucursal 02',5250],['Evaluador 09','Sucursal 11',5250]]},
     {id:'#L-206',n:5,monto:9300,cur:cur,estado:'Borrador',tone:'n',fecha:'—',visitas:[['Evaluador 01','Sucursal 03',1860],['Evaluador 14','Sucursal 07',1860]]},
   ];
-  /* lotes reales: liquidaciones ya marcadas pagadas, agrupadas por fecha de pago (una fila por fecha) */
-  const liqsPagadas=(CX.liq&&CX.liq.forProject?CX.liq.forProject(data):[]).filter(l=>['pagada','liquidada'].includes(l.estado));
-  const porFecha={}; liqsPagadas.forEach(l=>{const f=l.fechaEstimadaPago||l.fechaPago||'—';(porFecha[f]=porFecha[f]||[]).push(l);});
-  const lotesReales=Object.keys(porFecha).map((f,i)=>{const ls=porFecha[f];const monto=ls.reduce((a,l)=>a+(l.total||0),0);
-    return {id:'#LOTE-'+(i+1),n:ls.length,monto,cur:ls[0].moneda||cur,estado:'Pagado',tone:'g',fecha:f,visitas:ls.slice(0,10).map(l=>[l.shopper||'—',l.sucursal||'—',l.total||0])}; });
+  /* lotes reales: liquidaciones ya marcadas pagadas, agrupadas por fecha de pago (una fila por fecha).
+     P0-6 (paquete acumulado 20260711): un lote con AL MENOS una liquidación en `pagada_preview`
+     (sin paymentSourceRef real) no puede rotularse "Pagado" igual que uno 100% confirmado — antes
+     ambos casos producían estado:'Pagado'/tone:'g' y el detalle abajo forzaba "(preview)" incluso
+     para lotes genuinamente confirmados, mezclando las dos etiquetas. Ahora cada lote declara
+     `confirmado` (todas sus liquidaciones son 'pagada' con paymentSourceRef) y el estado/tono/label
+     salen de ese booleano, no de un texto fijo. */
+  /* lotes reales: se agrupan por identidad real de lote. P0-6 (paquete acumulado 20260711):
+     un lote con AL MENOS una liquidación en `pagada_preview` (sin paymentSourceRef real) no
+     puede rotularse "Pagado" igual que uno 100% confirmado.
+     T3 (paquete V108 — 20260712, corrección de fondo): antes se agrupaba SOLO por
+     `fechaEstimadaPago||fechaPago` — dos lotes de países/monedas distintos pagados el mismo
+     día colisionaban en una sola fila, sumando montos de monedas distintas bajo la moneda del
+     primer registro. Ahora la llave de agrupación es, en orden de prioridad: (1) `loteId` real
+     persistido por payVisits (identidad estable de backend/preview); si una liquidación no trae
+     loteId (dato legado), (2) una llave compuesta tenantId+projectId+país+moneda+periodo+fecha
+     — NUNCA solo la fecha — así país/moneda jamás se mezclan y dos lotes del mismo proyecto,
+     país, moneda y fecha con orígenes distintos no colisionan. */
+  const tenantId=(CX.BRAND&&CX.BRAND.id)||'tenant-demo';
+  const liqsPagadas=(CX.liq&&CX.liq.forProject?CX.liq.forProject(data):[]).filter(l=>['pagada','pagada_preview'].includes(l.estado));
+  /* T2.C (paquete V109 — defensa en la vista): aunque exista un loteId real, la vista SIEMPRE
+     valida país+moneda antes de sumar — un loteId legado que mezcle países/monedas (dato de una
+     versión anterior a la corrección) se divide en sub-filas por país+moneda y cada una se marca
+     "Revisión requerida" en vez de sumarse a ciegas bajo una sola moneda. */
+  const loteIdCombos={};
+  liqsPagadas.forEach(l=>{ if(l.loteId){ const combo=(l.pais||'—')+'::'+(l.moneda||'—'); (loteIdCombos[l.loteId]=loteIdCombos[l.loteId]||new Set()).add(combo); } });
+  const groupKey=(l)=>{
+    if(l.loteId) return 'id::'+l.loteId+'::'+(l.pais||'—')+'::'+(l.moneda||'—');
+    /* si falta país o moneda, el registro no se agrupa silenciosamente con otros — cae en su
+       propia llave de revisión, nunca se suma "a ciegas" a un lote con país/moneda distintos. */
+    if(!l.pais || !l.moneda){
+      /* T2 (paquete V109 — corrección P0): eliminado Math.random() del fallback de revisión —
+         ya no era reproducible. La llave ahora es estable: visitaId real si existe, o un hash
+         determinístico de los campos disponibles del registro (nunca aleatorio). */
+      const seed=l.visitaId || [l.shopper||'',l.sucursal||'',l.total||0,l.fechaEstimadaPago||l.fechaPago||''].join('|');
+      let h=0; for(let i=0;i<String(seed).length;i++) h=(h*31+String(seed).charCodeAt(i))|0;
+      return 'revision::'+Math.abs(h).toString(36);
+    }
+    const f=l.fechaEstimadaPago||l.fechaPago||'—';
+    const periodo=(f&&f!=='—')?f.slice(0,7):'—';
+    return ['legacy',tenantId,p.id,l.pais,l.moneda,periodo,f].join('::');
+  };
+  const porLote={}; liqsPagadas.forEach(l=>{const k=groupKey(l);(porLote[k]=porLote[k]||[]).push(l);});
+  const lotesReales=Object.keys(porLote).map((k,i)=>{const ls=porLote[k];const monto=ls.reduce((a,l)=>a+(l.total||0),0);
+    const confirmado=ls.every(l=>l.estado==='pagada');
+    const f=ls[0].fechaEstimadaPago||ls[0].fechaPago||'—';
+    /* id estable derivado de la llave real de agrupación (loteId+país+moneda o compuesta) — no
+       del índice de iteración ni de solo la fecha. */
+    let h=0; for(let c=0;c<k.length;c++)h=(h*31+k.charCodeAt(c))|0;
+    const conflict = ls[0].loteId && loteIdCombos[ls[0].loteId] && loteIdCombos[ls[0].loteId].size>1;
+    const baseId = ls[0].loteId?('#'+ls[0].loteId):('#LOTE-'+Math.abs(h).toString(36).toUpperCase().slice(0,6));
+    return {id: conflict?(baseId+' · '+(ls[0].pais||'—')+'/'+(ls[0].moneda||'—')):baseId,
+      n:ls.length,monto,cur:ls[0].moneda||cur,pais:ls[0].pais,
+      estado: conflict?'Revisión requerida':(confirmado?'Pagado':'Pagado (preview)'), tone: conflict?'r':(confirmado?'g':'a'), confirmado, conflict,
+      fecha:f,visitas:ls.slice(0,10).map(l=>[l.shopper||'—',l.sucursal||'—',l.total||0])}; });
   const lotes = _showFixturesLotes ? lotesDemo : lotesReales;
   const html=`
   ${ui.ph('Lotes de Pago', p.name+' · agrupa liquidaciones validadas y crea el egreso')}
   ${lotes.length?`<div class="grid g3" style="margin-bottom:16px">${lotes.map(r=>`<div class="card hov card-p" data-lote="${r.id}" style="cursor:pointer">
-    <div class="between" style="margin-bottom:8px"><b style="font-family:var(--disp);font-size:15px;color:var(--t1)">${r.id}</b>${ui.bdg(r.estado==='Pagado'?'Pagado (preview)':r.estado,r.tone)}</div>
+    <div class="between" style="margin-bottom:8px"><b style="font-family:var(--disp);font-size:15px;color:var(--t1)">${r.id}</b>${ui.bdg(r.estado,r.tone)}</div>
     <div style="font-size:12px;color:var(--t3)">${r.n} visitas · ${r.fecha}</div>
     <div style="font-size:18px;font-weight:800;color:var(--green);font-family:var(--disp);margin-top:4px">${_m(r.cur,r.monto)}</div>
     <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" data-lote="${r.id}">Ver detalle →</button></div></div>`).join('')}</div>`
@@ -623,7 +678,7 @@ CX.module('lotes', ({data,ui})=>{
         </tbody></table>
         <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px">${r.estado!=='Pagado'?`<button class="btn btn-green btn-sm" id="loteMark">Marcar pagado (preview)</button>`:ui.bdg('✓ Egreso preparado · cruce real pendiente backend','g')}<button class="btn btn-ghost btn-sm" id="loteExp">⤓ Exportar</button></div>
       `,{onMount:(ov,close)=>{ const lm=ov.querySelector('#loteMark'); if(lm)lm.addEventListener('click',()=>{
-        if(!CX.permissions.gate('finance.markPaid',{projectId:p.id,pais:p.countries&&p.countries[0]},ui)) return;
+        if(!CX.permissions.gate('finance.markPaid',CX.permissions.ctx({entityType:'lote_pago',entityId:r.id}),ui)) return;
         close();ui.toast('Lote '+r.id+' marcado pagado (preview) · egreso reflejado en Movimientos · pendiente cruce financiero real','ok',36000);}); ov.querySelector('#loteExp').addEventListener('click',()=>ui.toast('Exportando lote '+r.id+'…','ok')); }});
     }));
   },0);

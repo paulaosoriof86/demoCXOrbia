@@ -72,7 +72,23 @@ CX.topbar = {
 
   /* correo (bandeja básica con trazabilidad) */
   _mails:null,
-  mailStore(){ if(!this._mails)try{this._mails=JSON.parse(localStorage.getItem('cx_mails')||'null')||[{id:'m1',de:'cliente@marca.com',para:'equipo',asunto:'Consulta sobre el programa',cuerpo:'Hola, quería consultar sobre la próxima ronda de evaluaciones. ¿Cuándo empezamos?',fecha:'2026-06-23 09:12',leido:true,proyecto:'Proyecto Retail'},{id:'m2',de:'shopper@gmail.com',para:'equipo',asunto:'Duda sobre mi visita agendada',cuerpo:'Buenos días, tengo una duda: ¿puedo cambiar la franja de mi visita del viernes? Me surgió un compromiso.',fecha:'2026-06-24 14:35',leido:false,proyecto:'Proyecto Retail'},{id:'m3',de:'nuevo_cliente@empresa.com',para:'equipo',asunto:'Solicitud de información - programa de evaluaciones',cuerpo:'Hola, somos una cadena de 12 puntos de venta y nos interesa implementar mystery shopping. ¿Podría enviarnos información?',fecha:'2026-06-25 08:20',leido:false,proyecto:null}];}catch(e){this._mails=[];} return this._mails; },
+  /* Bloque 2 (corrección V103, 20260711): bug real — la bandeja sembraba 3 correos "demo"
+     (cliente@marca.com, shopper@gmail.com, nuevo_cliente@empresa.com) SIN gate de modo demo,
+     visibles también fuera de demo. Ahora el seed solo aplica si CX.dataSource.showFixtures()
+     es true; fuera de demo la bandeja empieza vacía (honesto, sin correos ficticios). */
+  mailStore(){
+    if(!this._mails){
+      try{
+        const stored=JSON.parse(localStorage.getItem('cx_mails')||'null');
+        if(stored){ this._mails=stored; }
+        else {
+          const allowSynthetic = CX.dataSource ? CX.dataSource.showFixtures() : true;
+          this._mails = allowSynthetic ? [{id:'m1',de:'cliente@marca.com',para:'equipo',asunto:'Consulta sobre el programa',cuerpo:'Hola, quería consultar sobre la próxima ronda de evaluaciones. ¿Cuándo empezamos?',fecha:'2026-06-23 09:12',leido:true,proyecto:'Proyecto Retail'},{id:'m2',de:'shopper@gmail.com',para:'equipo',asunto:'Duda sobre mi visita agendada',cuerpo:'Buenos días, tengo una duda: ¿puedo cambiar la franja de mi visita del viernes? Me surgió un compromiso.',fecha:'2026-06-24 14:35',leido:false,proyecto:'Proyecto Retail'},{id:'m3',de:'nuevo_cliente@empresa.com',para:'equipo',asunto:'Solicitud de información - programa de evaluaciones',cuerpo:'Hola, somos una cadena de 12 puntos de venta y nos interesa implementar mystery shopping. ¿Podría enviarnos información?',fecha:'2026-06-25 08:20',leido:false,proyecto:null}] : [];
+        }
+      }catch(e){this._mails=[];}
+    }
+    return this._mails;
+  },
   mailUnread(){ return this.mailStore().filter(m=>!m.leido).length; },
   mailBadge(){ const b=document.getElementById('tbMailBadge');if(!b)return;const n=this.mailUnread();b.textContent=n>9?'9+':n;b.style.display=n?'flex':'none'; },
   openMail(){ const mails=this.mailStore();

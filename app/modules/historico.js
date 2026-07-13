@@ -3,7 +3,13 @@
    Solo lectura sobre datos ya existentes (CX.data), no muta nada. */
 CX.module('historico', ({data,ui})=>{
   const host=ui.el('div');
-  let fPais='all', fEstado='all';
+  let fPais='all';
+  /* Frontend genérico (corrección 20260711): el copy decía "separado de la operación activa" pero
+     el filtro por defecto era 'all' — mezclaba el periodo activo con el histórico desde el primer
+     render. Ahora el default excluye explícitamente cualquier periodo en estado 'activo'; incluirlo
+     requiere que el usuario elija "Incluir periodo activo" a propósito. Sin cantidades ni nombres
+     de periodo hardcodeados — todo sale de data.periodsForProgram(key)/data.periodState(p.id). */
+  let fEstado='sinActivo';
 
   const draw=()=>{
     const key=data.currentProgramKey();
@@ -19,14 +25,14 @@ CX.module('historico', ({data,ui})=>{
       return {p,st,...s,paises,score};
     });
     const paisesAll=[...new Set(rows.flatMap(r=>r.paises))];
-    const filtered=rows.filter(r=>(fPais==='all'||r.paises.includes(fPais))&&(fEstado==='all'||r.st===fEstado));
+    const filtered=rows.filter(r=>(fPais==='all'||r.paises.includes(fPais))&&(fEstado==='all'?true:fEstado==='sinActivo'?r.st!=='activo':r.st===fEstado));
     const activo=data.currentProjectId;
 
     host.innerHTML=`
       ${ui.ph('Histórico · '+programa, 'Consulta de periodos y rondas anteriores · separado de la operación activa')}
       <div class="flex wrap" style="gap:8px;margin-bottom:14px">
         <select class="sel" id="hPais" style="width:auto"><option value="all">🌍 Todos los países</option>${paisesAll.map(c=>`<option value="${c}" ${fPais===c?'selected':''}>${c}</option>`).join('')}</select>
-        <select class="sel" id="hEstado" style="width:auto"><option value="all">Todos los estados</option><option value="activo" ${fEstado==='activo'?'selected':''}>Activo</option><option value="cerrado" ${fEstado==='cerrado'?'selected':''}>Cerrado</option><option value="archivado" ${fEstado==='archivado'?'selected':''}>Archivado</option></select>
+        <select class="sel" id="hEstado" style="width:auto"><option value="sinActivo" ${fEstado==='sinActivo'?'selected':''}>Cerrados/archivados (excluye activo)</option><option value="all" ${fEstado==='all'?'selected':''}>Todos los estados (incluir activo)</option><option value="activo" ${fEstado==='activo'?'selected':''}>Solo activo</option><option value="cerrado" ${fEstado==='cerrado'?'selected':''}>Cerrado</option><option value="archivado" ${fEstado==='archivado'?'selected':''}>Archivado</option></select>
         <button class="btn btn-ghost btn-sm" id="hExport">⤓ Exportar CSV</button>
       </div>
       <div class="grid g4" style="margin-bottom:16px">
@@ -51,7 +57,7 @@ CX.module('historico', ({data,ui})=>{
       <div class="card card-p">
         <div class="card-t" style="margin-bottom:12px">📊 Comparativo entre periodos</div>
         ${filtered.length?filtered.map(r=>`<div style="margin-bottom:10px"><div class="between" style="margin-bottom:3px"><span style="font-size:12px">${r.p.periodo||r.p.name} ${r.paises.length?'· '+r.paises.join('/'):''}</span><span style="font-size:11.5px;color:var(--t3)">${r.pct}% · score ${r.score!=null?r.score:'—'}</span></div><div class="bar" style="height:8px"><i style="width:${r.pct}%;background:${r.st==='activo'?'var(--brand)':'var(--t3)'}"></i></div></div>`).join(''):'<div style="font-size:12.5px;color:var(--t3)">Sin datos para comparar.</div>'}
-        <div style="margin-top:10px">${ui.aiBox('El histórico es solo de consulta: no mezcla los periodos anteriores con la operación activa. Para operar un periodo, actívalo desde el módulo Periodos.','Separación operación vs histórico')}</div>
+        <div style="margin-top:10px">${ui.aiBox('El histórico excluye por defecto el periodo activo ("'+programa+'" en curso) — solo se incluye si eliges explícitamente "Todos los estados". Para operar el periodo activo, hazlo desde el módulo Periodos.','Separación operación vs histórico')}</div>
       </div>`;
 
     host.querySelector('#hPais').addEventListener('change',e=>{fPais=e.target.value;draw();});

@@ -141,6 +141,45 @@ CX.module('visitas', ({data,role,ui})=>{
       }});
     };
     document.querySelectorAll('[data-assign]').forEach(b=>b.addEventListener('click',()=>assignModal(all.find(z=>z.id===b.dataset.assign))));
+    /* P0-12 (paquete acumulado 20260711): el botón "Ver detalle completo" (🔍) no tenía handler —
+       regresión que además había eliminado la tarjeta "Historial de estados". Se restaura con un
+       historial construido SOLO a partir de datos reales ya presentes en la visita (fechas de
+       cada transición que el propio dato guarda: disponibleDesde→agendada→realizada→cuestFecha→
+       pagada/pagada_preview) más los eventos realmente auditados (CX.automations.audit(), p.ej.
+       archivado). Si una visita no tiene ninguna transición registrada, se muestra empty state —
+       nunca se inventan eventos que no ocurrieron. */
+    const detailModal=(v)=>{
+      if(!v) return;
+      const steps=[];
+      if(v.disponibleDesde) steps.push({t:v.disponibleDesde, l:'Publicada / disponible'});
+      if(v.agendada) steps.push({t:v.agendada, l:'Agendada'+(v.shopper?' · '+v.shopper:'')});
+      if(v.realizada) steps.push({t:v.realizada, l:'Realizada'});
+      if(v.cuestFecha) steps.push({t:v.cuestFecha, l:'Cuestionario enviado'});
+      if(v.estado==='liquidada'){
+        const pagLabel=v.paymentSourceRef?'Pago confirmado':'Liquidada (preview, pendiente de pago confirmado)';
+        steps.push({t:v.fechaPago||v.fechaEstimadaPago||v.cuestFecha||'—', l:pagLabel});
+      }
+      if(v._archived) steps.push({t:(v._archivedFecha||'').slice(0,10)||'—', l:'Archivada · motivo: '+(v._archivedMotivo||'—')+' · '+(v._archivedPor||'—')+(v._archivedAuditRef?' · auditRef '+v._archivedAuditRef:'')});
+      const auditEvents=(CX.automations&&CX.automations.audit?CX.automations.audit():[]).filter(e=>e.ref===v.id);
+      auditEvents.forEach(e=>steps.push({t:(e.fecha||'').slice(0,10)||'—', l:(e.accion||'Evento')+(e.detalle?' · '+e.detalle:'')+' · '+(e.por||'—')}));
+      steps.sort((a,b)=>(a.t||'').localeCompare(b.t||''));
+      ui.modal('Detalle · '+v.sucursal, `
+        <div class="grid g2" style="gap:10px;margin-bottom:14px">
+          <div style="font-size:12px;color:var(--t3)">Estado actual</div><div>${ui.estadoBadge(v.estado)}</div>
+          <div style="font-size:12px;color:var(--t3)">Shopper</div><div style="font-size:13px;font-weight:700">${v.shopper||'— sin asignar'}</div>
+          <div style="font-size:12px;color:var(--t3)">Honorario</div><div style="font-size:13px;font-weight:700;color:var(--green)">${ui.money(v.currency,v.honorario)}</div>
+        </div>
+        <div class="card-h" style="padding:0;margin-bottom:8px"><div class="card-t">🕘 Historial de estados</div></div>
+        ${steps.length?`<div style="display:flex;flex-direction:column;gap:0">${steps.map((s,i)=>`
+          <div class="flex" style="gap:10px;align-items:flex-start;padding:8px 0;${i<steps.length-1?'border-bottom:1px dashed var(--border)':''}">
+            <div style="font-size:11px;color:var(--t3);min-width:78px">${s.t}</div>
+            <div style="font-size:12.5px;color:var(--t1)">${s.l}</div>
+          </div>`).join('')}</div>`
+          : ui.empty('🕘','Esta visita todavía no tiene transiciones de estado registradas.')}
+        <div style="text-align:right;margin-top:14px"><button class="btn btn-ghost btn-sm" data-x4>Cerrar</button></div>
+      `,{onMount:(ov,close)=>{ ov.querySelector('[data-x4]').addEventListener('click',close); }});
+    };
+    document.querySelectorAll('[data-vdetail]').forEach(b=>b.addEventListener('click',()=>detailModal(all.find(z=>z.id===b.dataset.vdetail))));
   },0);
   return html;
 });

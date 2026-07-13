@@ -332,26 +332,77 @@ CX.data = {
   /* pago de un lote: marca visitas como liquidadas con fecha de pago real Y
      genera el/los egreso(s) financiero(s) agrupados por país.
      Cierra la cadena visita → liquidación → beneficios → finanzas (CxP + Movimientos). */
-  payVisits(ids, fechaPago){
+  payVisits(ids, fechaPago, referencia){
     const f=fechaPago||new Date().toISOString().slice(0,10);
     const porPais={}; let n=0; const detalle=[];
-    (ids||[]).forEach(id=>{ const v=this._visitas.find(x=>x.id===id); if(v){
-      v.estado='liquidada'; v.fechaPago=f; v.realizada=v.realizada||f;
-      const tot=(v.honorario||0)+(v.boleto||0)+(v.comboAmt||0);
-      porPais[v.pais]=porPais[v.pais]||{monto:0,n:0,cur:v.currency}; porPais[v.pais].monto+=tot; porPais[v.pais].n++;
-      detalle.push({shopper:v.shopper||'Evaluador',sucursal:v.sucursal||'',pais:v.pais,monto:tot,cur:v.currency,visitaId:v.id});
-      n++;
-    }});
-    // un movimiento de egreso POR SHOPPER (detalle real, no consolidado) — #168
+    const tenantId=(CX.BRAND&&CX.BRAND.id)||'tenant-demo';
+    const projectId=this.currentProjectId;
+    const ref=(referencia||'').trim();
+    /* T2 (paquete V109 — 20260712): agrupación homogénea + ID determinístico. Preservado sin
+       cambios (no reabrir): tenantId+projectId+país+moneda(+referencia) → loteId = hash de la
+       clave + ids ordenados, nunca Math.random()/Date.now(). */
+    /* P0-2 (paquete V110 — 20260712, corrección P0 real): V109 seguía agrupando y PROCESANDO
+       cualquier id recibido, aunque la visita no tuviera país/moneda/monto válidos — el
+       fallback '—' de la clave homogénea SEPARABA esos registros de los válidos (ya no sumaba
+       monedas distintas), pero igual los marcaba `liquidada`, les asignaba loteId y fecha, y
+       creaba un movimiento `Pagado` con monto NaN/negativo. La vista de Finanzas mostraba luego
+       "Revisión requerida", pero el daño (estado+movimiento) ya había ocurrido. Ahora la
+       validación ocurre ANTES de tocar cualquier estado: cada id se valida por separado — id
+       estable presente, visita existente, projectId coincidente con el periodo activo, país
+       presente, moneda presente, monto total FINITO y no negativo. Los inválidos van a
+       `reviewRequired` con motivo, NUNCA cambian estado, NUNCA reciben loteId/fecha, NUNCA
+       generan movimiento ni automatización, y NUNCA se suman a porPais/detalle. Los válidos
+       siguen el flujo de agrupación homogénea sin cambios. */
+    const reviewRequired=[];
+    const visitasValidas=[];
+    (ids||[]).forEach(id=>{
+      if(!id){ reviewRequired.push({id:id||null, motivo:'ID de visita ausente'}); return; }
+      const v=this._visitas.find(x=>x.id===id);
+      if(!v){ reviewRequired.push({id, motivo:'Visita no encontrada'}); return; }
+      if(!v.projectId || v.projectId!==projectId){ reviewRequired.push({id, motivo:'Proyecto ausente o no coincide con el periodo activo'}); return; }
+      if(!v.pais){ reviewRequired.push({id, motivo:'País ausente'}); return; }
+      if(!v.currency){ reviewRequired.push({id, motivo:'Moneda ausente'}); return; }
+      /* OJO: `v.honorario||0` NO sirve para detectar NaN — `NaN||0` se evalúa a `0` porque NaN
+         es falsy en JS, así que un monto NaN se "lavaba" a 0 (finito, válido) y se colaba como
+         pagado. Cada componente se valida FINITO por separado (undefined/null se tratan como 0
+         ausente-válido; cualquier valor presente que NO sea finito invalida el registro) antes
+         de sumar. */
+      const comps=[v.honorario,v.boleto,v.comboAmt];
+      const compInvalido=comps.some(x=>x!==undefined && x!==null && !Number.isFinite(x));
+      if(compInvalido){ reviewRequired.push({id, motivo:'Monto total no finito (NaN/Infinity)'}); return; }
+      const tot=(Number.isFinite(v.honorario)?v.honorario:0)+(Number.isFinite(v.boleto)?v.boleto:0)+(Number.isFinite(v.comboAmt)?v.comboAmt:0);
+      if(tot<0){ reviewRequired.push({id, motivo:'Monto total negativo'}); return; }
+      visitasValidas.push(v);
+    });
+    const groups={};
+    visitasValidas.forEach(v=>{
+      const key=[tenantId,projectId,v.pais,v.currency,ref].join('::');
+      (groups[key]=groups[key]||[]).push(v);
+    });
+    const hashHex=(str)=>{ let h1=0,h2=0; for(let i=0;i<str.length;i++){ const c=str.charCodeAt(i); h1=(h1*31+c)|0; h2=(h2*131+c)|0; } return (Math.abs(h1).toString(36)+Math.abs(h2).toString(36)).toUpperCase().slice(0,8); };
+    Object.keys(groups).sort().forEach(key=>{
+      const group=groups[key];
+      const idsSorted=group.map(v=>v.id).sort().join(',');
+      const lote='L-'+hashHex(key+'::'+idsSorted);
+      group.forEach(v=>{
+        v.estado='liquidada'; v.fechaPago=f; v.realizada=v.realizada||f; v.loteId=lote; v.loteRef=ref||null;
+        const tot=(v.honorario||0)+(v.boleto||0)+(v.comboAmt||0);
+        porPais[v.pais]=porPais[v.pais]||{monto:0,n:0,cur:v.currency}; porPais[v.pais].monto+=tot; porPais[v.pais].n++;
+        detalle.push({shopper:v.shopper||'Evaluador',sucursal:v.sucursal||'',pais:v.pais,monto:tot,cur:v.currency,visitaId:v.id,loteId:lote});
+        n++;
+      });
+    });
+    // un movimiento de egreso POR SHOPPER (detalle real, no consolidado) — #168. Solo para
+    // visitas VÁLIDAS (ver P0-2 arriba) — los inválidos jamás llegan a `detalle`.
     if(n && CX.finStore){
-      const lote='L-'+Date.now().toString(36).slice(-4).toUpperCase();
       detalle.forEach(d=>{
-        CX.finStore.addMov(this.currentProjectId,{tipo:'egreso',cat:'Honorario · '+d.shopper,pais:d.pais,monto:-d.monto,desc:d.sucursal+' · lote '+lote,estado:'Pagado',origen:'lote',lote,shopper:d.shopper,visitaId:d.visitaId,fecha:f});
+        CX.finStore.addMov(this.currentProjectId,{tipo:'egreso',cat:'Honorario · '+d.shopper,pais:d.pais,monto:-d.monto,desc:d.sucursal+' · lote '+d.loteId,estado:'Pagado',origen:'lote',lote:d.loteId,shopper:d.shopper,visitaId:d.visitaId,fecha:f});
       });
     }
     if(n) CX.bus && CX.bus.emit('visit-flow');
-    (ids||[]).forEach(id=>{ const v=this._visitas.find(x=>x.id===id); if(v&&CX.automations) CX.automations.fire('pago',{shopper:v.shopper||'',sucursal:v.sucursal}); });
-    return {pagadas:n, fechaPago:f, porPais, detalle};
+    // automatización solo para las procesadas realmente (no para reviewRequired)
+    visitasValidas.forEach(v=>{ if(CX.automations) CX.automations.fire('pago',{shopper:v.shopper||'',sucursal:v.sucursal}); });
+    return {pagadas:n, fechaPago:f, porPais, detalle, reviewRequired};
   },
 
   /* conteo por fase con desglose por país */

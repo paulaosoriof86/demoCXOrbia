@@ -5,7 +5,12 @@
    P1 (V98 instrucciones exactas) + pendiente #11 (paquete genérico 20260711):
    BUILD_ID ya NO se define aquí de forma independiente — se importa desde
    core/build-lock.js, la ÚNICA fuente del valor, para que la app y el Service
-   Worker nunca puedan desincronizarse mostrando/usando dos IDs distintos. */
+   Worker nunca puedan desincronizarse mostrando/usando dos IDs distintos.
+   Bloque 1 (V103, 20260711): confirmado que este archivo (sw.js) está
+   declarado como EXCLUIDO del manifest de source lock (docs/MANIFEST-V103-
+   CORRECCION.json → exclusionesDeclaradas) y NO aparece en su files[] —
+   evita la referencia circular de hashear un archivo que a su vez importa
+   el propio BUILD_ID derivado de ese manifest. */
 importScripts('core/build-lock.js');
 const CX_CACHE = 'cxorbia-'+CX_BUILD_ID;
 self.addEventListener('install', e => { self.skipWaiting(); });

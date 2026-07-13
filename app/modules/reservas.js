@@ -27,7 +27,12 @@ CX.reservas = {
   list(pid){ pid=this._key(pid); if(!this._r[pid]){ try{ this._r[pid]=JSON.parse(localStorage.getItem('cx_reservas_'+pid)||'null')||this._seed(pid); }catch(e){ this._r[pid]=this._seed(pid); } } return this._r[pid]; },
   _persist(pid){ try{ localStorage.setItem('cx_reservas_'+pid, JSON.stringify(this._r[pid]||[])); }catch(e){} },
 
+  /* Frontend gen\u00e9rico (correcci\u00f3n 20260711): bug real \u2014 se sembraban 2 reservas "demo"
+     (Evaluador 01/02) SIN gate de modo, visibles tambi\u00e9n fuera de demo. Ahora solo se siembran en
+     demo; fuera de demo, sin reservas reales todav\u00eda, la lista empieza vac\u00eda (honesto). */
   _seed(pid){
+    const allowSynthetic = CX.dataSource ? CX.dataSource.showFixtures() : true;
+    if(!allowSynthetic) return [];
     const sucs=this.sucursales(pid).slice(0,4);
     const per=this.periodoActual();
     return sucs.slice(0,2).map((s,i)=>({id:'rsv'+i+Date.now().toString(36).slice(-3), sucursalId:s.id, sucursal:s.sucursal, ciudad:s.ciudad, pais:s.pais, periodo:per, shopperId:'sh'+(i+1), shopper:'Evaluador 0'+(i+1), estado:'solicitada', fecha:new Date().toISOString().slice(0,10)}));

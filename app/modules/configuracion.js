@@ -204,13 +204,19 @@ CX.module('usuarios', ({ui})=>{
     let savedUsers=null, savedRoles=null;
     try{ savedUsers=JSON.parse(localStorage.getItem(_U_KEY)||'null'); }catch(e){}
     try{ savedRoles=JSON.parse(localStorage.getItem(_UR_KEY)||'null'); }catch(e){}
-    _uState={users: savedUsers || [
+    /* Frontend gen\u00e9rico (correcci\u00f3n 20260711): bug real \u2014 estos 5 usuarios "demo" (incl. Admin
+       Demo, Evaluador 01, correos @demo.cxorbia) se sembraban SIN ning\u00fan gate de modo \u2014 aparec\u00edan
+       tambi\u00e9n fuera de demo. Ahora solo se siembran si CX.dataSource.showFixtures() es true; fuera
+       de demo, sin usuarios persistidos, la lista empieza vac\u00eda (estado honesto "pendiente
+       Auth/backend" en vez de fixtures con nombre y correo inventados). */
+    const _allowUserSeed = CX.dataSource ? CX.dataSource.showFixtures() : true;
+    _uState={users: savedUsers || (_allowUserSeed ? [
       {name:'Admin Demo',email:'admin@demo.cxorbia',rol:'super',activo:true},
       {name:'Coordinación',email:'coord@demo.cxorbia',rol:'admin',activo:true},
       {name:'Operaciones',email:'ops@demo.cxorbia',rol:'ops',activo:true},
       {name:'Evaluador 01',email:'evaluador01@demo.cxorbia',rol:'shopper',activo:true},
       {name:'Finanzas',email:'finanzas@demo.cxorbia',rol:'admin',activo:false},
-    ], customRoles: savedRoles || []};
+    ] : []), customRoles: savedRoles || []};
   }
   const st=_uState;
   const MODS=[['Operación','op'],['Finanzas','fin'],['Admin Proyecto','prj'],['Capacitación','cap'],['Configuración','cfg'],['Portal Shopper','sh'],['Comercial','com']];
