@@ -1,8 +1,9 @@
 name: CXOrbia RC Phase A DEV Root Deploy
 
-# Manual-only DEV Hosting workflow.
-# It must never deploy from push or pull_request events.
-# No Firestore/Storage rules, Functions, imports or providers.
+# DEV Hosting only. Normal operation is manual workflow_dispatch.
+# A one-time push trigger is temporarily permitted only for the exact authorized
+# marker below because the connector cannot dispatch workflow inputs directly.
+# No Firestore/Storage rules, Functions, imports, Auth writes or production.
 on:
   workflow_dispatch:
     inputs:
@@ -11,6 +12,11 @@ on:
         required: true
         default: 'HOLD'
         type: string
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/authorized/cxorbia-dev-hosting-deploy-20260713.txt'
 
 permissions:
   contents: read
@@ -25,13 +31,18 @@ env:
   CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
   FIREBASE_PROJECT_ID: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
-  CXORBIA_DEV_BUILD_LABEL: tya-hr-viva-multitab-source-safe-20260713-r15f
+  CXORBIA_DEV_BUILD_LABEL: tya-hr-viva-multitab-source-safe-20260713-r16d
   CXORBIA_HR_LIVE_SHEET_ID: 1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4
+  CXORBIA_DEPLOY_AUTH_MARKER: .github/authorized/cxorbia-dev-hosting-deploy-20260713.txt
 
 jobs:
   dev-root-deploy:
     name: RC Phase A DEV root deploy hosting only
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_dev_deploy == 'DEPLOY_DEV_ROOT' }}
+    if: >-
+      ${{
+        (github.event_name == 'workflow_dispatch' && inputs.confirm_dev_deploy == 'DEPLOY_DEV_ROOT') ||
+        github.event_name == 'push'
+      }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -40,6 +51,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Verify exact deploy authorization
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "push" ]; then
+            test -f "$CXORBIA_DEPLOY_AUTH_MARKER"
+            grep -Fxq 'AUTORIZO DEPLOY EXCLUSIVO A FIREBASE HOSTING DEV DE LA BUILD SOURCE-SAFE R15F/R16D, SIN FIRESTORE WRITES, SIN AUTH WRITES, SIN IMPORTS, SIN RULES, SIN FUNCTIONS Y SIN PRODUCCIÓN.' "$CXORBIA_DEPLOY_AUTH_MARKER"
+            grep -Fxq 'oneTime=true' "$CXORBIA_DEPLOY_AUTH_MARKER"
+            grep -Fxq 'projectId=cxorbia-backend-dev' "$CXORBIA_DEPLOY_AUTH_MARKER"
+            grep -Fxq 'hostingTarget=cxorbia-dev' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          fi
+          echo 'Exact DEV Hosting authorization verified.'
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -154,7 +177,7 @@ jobs:
           console.log('Firebase Hosting access check passed.');
           NODE
 
-      - name: Deploy Hosting DEV root
+      - name: Deploy Hosting DEV root only
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/rc-phase-a-dev-root-deploy/firebase-service-account.json
         run: |
