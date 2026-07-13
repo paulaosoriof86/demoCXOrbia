@@ -1,0 +1,125 @@
+name: CXOrbia Canonical Materialization Provider Compare R16E
+
+# Manual-only provider read gate. Do not run until Firestore read quota is
+# available and Paula has explicitly authorized this exact read-only comparison.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_read_only:
+        description: 'Type CANONICAL_PROVIDER_COMPARE_READ_ONLY_R16E after quota availability and explicit authorization.'
+        required: true
+        default: 'HOLD'
+        type: string
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  canonical-provider-compare:
+    name: Source-aligned canonical provider comparison
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_read_only == 'CANONICAL_PROVIDER_COMPARE_READ_ONLY_R16E' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate source-safe scripts and contracts
+        run: |
+          set -euo pipefail
+          node --check tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs
+          node --check tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs
+          node --check tools/reconciliation/tya-canonical-materialization-provider-compare-r16e-precheck.mjs
+          node --check tools/reconciliation/tya-canonical-materialization-dry-run-r16b.mjs
+          node -e "const fs=require('fs');for(const p of ['backend/contracts/phase-a-r14c-financial-overlay-review-plan-r16d-v1.json','backend/contracts/phase-a-canonical-materialization-provider-compare-r16e-v1.json','backend/contracts/phase-a-canonical-materialization-dry-run-r16-v1.json'])JSON.parse(fs.readFileSync(p,'utf8'));console.log('R16E contracts valid.');"
+
+      - name: Build deterministic base plan offline
+        run: |
+          set -euo pipefail
+          node tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs \
+            --hr app/data/tya-hr-source-safe-periods.js \
+            --financial app/data/tya-financial-control-source-safe.js \
+            --certifications app/data/tya-certification-carryover-source-safe.js \
+            --out .tmp/r16e-base-plan
+
+      - name: Build source-aligned R16D plan offline
+        run: |
+          set -euo pipefail
+          node tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs \
+            --plan .tmp/r16e-base-plan/firestore-materialization-plan.json \
+            --financial backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json \
+            --controlled-financial backend/config/phase-a-financial-workbook-source-safe-r14.json \
+            --out .tmp/r16e-r16d-plan
+
+      - name: Run R16E offline precheck
+        run: |
+          node tools/reconciliation/tya-canonical-materialization-provider-compare-r16e-precheck.mjs \
+            --plan .tmp/r16e-r16d-plan/r14c-financial-overlay-review-plan-r16d.json \
+            --out .tmp/canonical-provider-compare-r16e-precheck
+
+      - name: Prepare temporary DEV credential
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          private_dir='.tmp/canonical-provider-compare-r16e-private'
+          mkdir -p "$private_dir"
+          credential_path="$private_dir/credentials.json"
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT_JSON" ]; then
+            echo 'Blocked: missing FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV.'
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$credential_path"
+          chmod 600 "$credential_path"
+          node <<'NODE'
+          const fs = require('fs');
+          const file = '.tmp/canonical-provider-compare-r16e-private/credentials.json';
+          const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+          if (parsed.type !== 'service_account') throw new Error('Credential type mismatch.');
+          if (parsed.project_id !== 'cxorbia-backend-dev') throw new Error('Credential project mismatch.');
+          if (!String(parsed.client_email || '').endsWith('@cxorbia-backend-dev.iam.gserviceaccount.com')) throw new Error('Credential service-account domain mismatch.');
+          console.log('R16E credential sanity checks passed without outputting identifiers.');
+          NODE
+
+      - name: Install Firebase Admin read-only dependency
+        run: npm install --no-save --ignore-scripts firebase-admin@13
+
+      - name: Run read-only provider comparison
+        env:
+          CXORBIA_CONFIRM: CANONICAL_MATERIALIZATION_DRY_RUN_R16
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/canonical-provider-compare-r16e-private/credentials.json
+        run: |
+          set -euo pipefail
+          node tools/reconciliation/tya-canonical-materialization-dry-run-r16b.mjs \
+            --contract backend/contracts/phase-a-canonical-materialization-dry-run-r16-v1.json \
+            --plan .tmp/r16e-r16d-plan/r14c-financial-overlay-review-plan-r16d.json \
+            --out .tmp/canonical-provider-compare-r16e
+
+      - name: Cleanup temporary credential
+        if: always()
+        run: |
+          rm -f .tmp/canonical-provider-compare-r16e-private/credentials.json
+          rmdir .tmp/canonical-provider-compare-r16e-private 2>/dev/null || true
+
+      - name: Upload source-safe R16E artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-materialization-provider-compare-r16e-report
+          path: |
+            .tmp/canonical-provider-compare-r16e-precheck
+            .tmp/canonical-provider-compare-r16e
+            .tmp/r16e-r16d-plan/r14c-financial-overlay-review-plan-r16d-summary.json
+            .tmp/r16e-r16d-plan/r14c-financial-overlay-review-plan-r16d.md
+          if-no-files-found: error
+          retention-days: 14
