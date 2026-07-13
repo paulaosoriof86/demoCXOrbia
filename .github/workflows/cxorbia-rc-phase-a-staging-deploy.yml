@@ -44,12 +44,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
-      - name: Source lock post-V96 runtime gate
+      - name: Source lock V110 union gate
         run: |
-          node tools/release/tya-source-lock-post-v96-runtime-verify.mjs \
-            --out .tmp/source-lock-post-v96-runtime
+          node tools/release/tya-source-lock-v110-union-verify.mjs \
+            --manifest app/docs/MANIFEST-V110-UNION-EMPALME-R1.json \
+            --out .tmp/source-lock-v110-union
 
       - name: Predeploy gate
         run: |
@@ -58,7 +59,7 @@ jobs:
       - name: Drift gate
         run: |
           node tools/release/tya-rc-phase-a-drift-gate.mjs \
-            --validated 86e592db3f9f8016080302a852bfd194097b2074 \
+            --validated b0335ff143975abf67d50d9552c97273e15055c0 \
             --out .tmp/rc-phase-a-dev-root-drift
 
       - name: Secret availability and JSON sanity check
