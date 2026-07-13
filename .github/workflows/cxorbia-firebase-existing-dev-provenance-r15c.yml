@@ -1,21 +1,15 @@
 name: CXOrbia Firebase Existing DEV Provenance R15C
 
+# Provider read workflow. Manual-only to avoid consuming Firebase quotas on every
+# commit. Static syntax/config checks remain inside the same controlled run.
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - 'backend/config/phase-a-firebase-existing-dev-provenance-r15c.source-safe.json'
-      - 'tools/release/tya-firebase-existing-dev-provenance-reconcile-r15c.mjs'
-      - '.github/workflows/cxorbia-firebase-existing-dev-provenance-r15c.yml'
-  pull_request:
-    branches:
-      - release/cxorbia-tya-rc-20260630
-    paths:
-      - 'backend/config/phase-a-firebase-existing-dev-provenance-r15c.source-safe.json'
-      - 'tools/release/tya-firebase-existing-dev-provenance-reconcile-r15c.mjs'
-      - '.github/workflows/cxorbia-firebase-existing-dev-provenance-r15c.yml'
   workflow_dispatch:
+    inputs:
+      confirm_read_only:
+        description: 'Type RECONCILE_EXISTING_FIREBASE_DEV_READ_ONLY after explicit read-only authorization.'
+        required: true
+        default: 'HOLD'
+        type: string
 
 permissions:
   contents: read
@@ -31,6 +25,7 @@ env:
 jobs:
   reconcile-existing-dev-provenance:
     name: Sanitized read-only provenance reconciliation
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_read_only == 'RECONCILE_EXISTING_FIREBASE_DEV_READ_ONLY' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -74,9 +69,7 @@ jobs:
           NODE
 
       - name: Install read-only dependencies
-        run: |
-          set -euo pipefail
-          npm install --no-save --ignore-scripts firebase-admin@13 google-auth-library@9
+        run: npm install --no-save --ignore-scripts firebase-admin@13 google-auth-library@9
 
       - name: Run R15C sanitized provider reconciliation
         env:
