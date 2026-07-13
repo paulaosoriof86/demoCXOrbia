@@ -138,6 +138,19 @@ jobs:
           }
           NODE
 
+      - name: Upload compact semantic decision
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tya-r17-semantic-gate-summary
+          path: |
+            .tmp/tya-r17-human-findings-semantic-gate/tya-r17-human-findings-semantic-gate-report.json
+            .tmp/tya-r17-human-findings-semantic-gate/tya-r17-human-findings-semantic-gate-report.md
+            .tmp/phase-a-visible-data-smoke-r17/visible-data-smoke-r17.json
+            .tmp/phase-a-visible-data-smoke-r17/visible-data-smoke-r17.md
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Upload sanitized reports and screenshots
         if: always()
         uses: actions/upload-artifact@v4
