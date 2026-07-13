@@ -4,7 +4,7 @@
   Safe local validator. No deploy, no provider calls, no DB writes.
 
   Current rule:
-  - the complete app/ tree must match the deterministic V110 union manifest;
+  - the complete V110 runtime must match the deterministic union manifest;
   - once that source lock passes, app paths inherited since the old validation
     SHA are not treated as drift;
   - later backend/docs/source-safe/reconciliation/release-gate changes remain
@@ -53,12 +53,19 @@ const allowedExact = [
   '.github/workflows/cxorbia-phase-a-visual-smoke.yml',
   '.github/workflows/cxorbia-phase-a-operational-readiness-r9.yml',
   '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml',
+  '.github/workflows/cxorbia-phase-a-rc-smoke.yml',
   '.github/workflows/cxorbia-cxdata-firestore-readonly-r15d.yml',
   '.github/workflows/cxorbia-firebase-existing-dev-provenance-r15c.yml',
   '.github/workflows/cxorbia-firestore-canonical-drift-r15e.yml',
+  '.github/workflows/cxorbia-canonical-materialization-dry-run-r16.yml',
+  '.github/workflows/cxorbia-canonical-materialization-provider-compare-r16e.yml',
+  '.github/workflows/cxorbia-canonical-materialization-source-alignment-r16c.yml',
+  '.github/workflows/cxorbia-r14c-financial-overlay-review-plan-r16d.yml',
   'tools/migration/tya-assignment-sync-conflict-preview.mjs',
   'tools/migration/tya-assignment-sync-outbox-contract.mjs',
   'tools/migration/tya-phase-a-rc-smoke-gate.mjs',
+  'tools/migration/tya-canonical-materialization-source-alignment-r16c.mjs',
+  'tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs',
   'tools/qa/tya-phase-a-visual-smoke.mjs',
   'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs',
   'backend/config/phase-a-financial-workbook-source-safe-r14.json'
