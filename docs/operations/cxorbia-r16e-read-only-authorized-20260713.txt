@@ -1,9 +1,0 @@
-scope=CANONICAL_PROVIDER_COMPARE_READ_ONLY_R16E
-authorization=AUTORIZO VERIFICACIÓN FIREBASE DEV READ-ONLY
-firebaseProjectId=cxorbia-backend-dev
-writes=false
-deletes=false
-imports=false
-deploy=false
-production=false
-triggerAttempt=3
