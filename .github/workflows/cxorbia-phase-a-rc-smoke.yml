@@ -12,7 +12,11 @@ on:
       - 'app/modules/**'
       - 'app/styles/**'
       - 'app/manifest.webmanifest'
+      - 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json'
+      - 'tools/release/tya-source-lock-v110-union-verify.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
       - 'tools/migration/tya-phase-a-rc-smoke-gate.mjs'
+      - '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml'
       - '.github/workflows/cxorbia-phase-a-rc-smoke.yml'
   push:
     branches:
@@ -24,7 +28,11 @@ on:
       - 'app/modules/**'
       - 'app/styles/**'
       - 'app/manifest.webmanifest'
+      - 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json'
+      - 'tools/release/tya-source-lock-v110-union-verify.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
       - 'tools/migration/tya-phase-a-rc-smoke-gate.mjs'
+      - '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml'
       - '.github/workflows/cxorbia-phase-a-rc-smoke.yml'
 
 permissions:
@@ -47,7 +55,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Run Phase A RC smoke gate
         run: |
@@ -59,5 +67,5 @@ jobs:
         with:
           name: phase-a-rc-smoke-report
           path: .tmp/phase-a-rc-smoke
-          if-no-files-found: ignore
+          if-no-files-found: error
           retention-days: 14
