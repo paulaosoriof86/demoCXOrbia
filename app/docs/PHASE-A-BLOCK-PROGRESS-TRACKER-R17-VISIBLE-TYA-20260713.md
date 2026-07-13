@@ -13,6 +13,7 @@ Fecha: 2026-07-13
 | Redeploy Hosting DEV corregido | SUCCESS | run `29285177647`, commit desplegado `cf4c845722e2bbe2b401b2b332ff9f4d2f6cb803` |
 | Proof remoto exacto | PASS | build `tya-visible-r17-source-safe` |
 | Smoke remoto independiente | PASS | run `29285540738`, 13/13 rutas, 0 blockers |
+| Cleanup temporal | PASS | workflow y marcador one-time eliminados; drift protege su reaparición |
 | Revisión humana Paula | READY | checklist específico entregado en este bloque |
 | Firestore materialization | HOLD | sin writes |
 | Auth/claims | HOLD | sin writes |
@@ -49,6 +50,10 @@ Fecha: 2026-07-13
 - run: `29285540738`;
 - artifact: `phase-a-remote-visible-tya-r17-smoke-report`;
 - digest: `sha256:8b849b2248c2d277a2b8434035d4e2679818a89f7a630b0615fdd8fe1277b1f7`.
+
+### Resultado formal
+
+- `app/docs/PHASE-A-R17-HOSTING-REDEPLOY-RESULT-20260713.md`.
 
 ## Hallazgos visibles no bloqueantes
 
