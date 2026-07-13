@@ -1,0 +1,4 @@
+assemble=verified_chunks_01_to_09
+expected_base64_bytes=21312
+source_safe=true
+pii=false
