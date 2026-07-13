@@ -1,0 +1,53 @@
+{
+  "configId": "phase-a-cxdata-firestore-readonly-r15d-source-safe",
+  "status": "authorized_read_only",
+  "generatedAt": "2026-07-13",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "storageBucket": "cxorbia-backend-dev.firebasestorage.app",
+    "expectedServiceAccountEmailSuffix": "@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "tenantId": "tya",
+    "preferredProjectId": "cinepolis",
+    "fallbackProjectIds": ["r1", "tya-piloto"]
+  },
+  "authorization": {
+    "providerReadAuthorized": true,
+    "confirmation": "CXDATA_FIRESTORE_READONLY_R15D",
+    "writesAuthorized": false,
+    "deployAuthorized": false,
+    "productionAuthorized": false
+  },
+  "limits": {
+    "projects": 100,
+    "shoppers": 500,
+    "visits": 1000,
+    "postulations": 500,
+    "certifications": 500,
+    "liquidations": 1000,
+    "shopperBenefits": 1000
+  },
+  "safeFields": {
+    "projects": ["name", "displayName", "countries", "country", "currency", "currenciesByCountry", "status", "program", "periodId", "client"],
+    "shoppers": ["code", "pais", "country", "estado", "status", "projectIds", "certificationStatus", "paymentControlStatus"],
+    "visits": ["projectId", "pais", "country", "estado", "status", "shopperId", "quincena", "periodId", "hrRowId", "assignmentSource", "assignmentSyncStatus", "currency", "honorario"],
+    "postulations": ["projectId", "visitId", "hrRowId", "shopperId", "estado", "status", "assignmentSource", "assignmentSyncStatus", "syncConflict", "pais", "country"],
+    "certifications": ["projectId", "shopperId", "status", "certificationStatus", "preservedAlreadyPresented", "reviewRequired", "sourceRef"],
+    "liquidations": ["projectId", "visitId", "hrRowId", "shopperId", "paymentStatus", "paymentState", "paymentControlOnly", "currency", "honorarium", "boleto", "combo"],
+    "shopperBenefits": ["projectId", "visitId", "shopperId", "pais", "country", "currency", "honorario", "reimbursement", "paymentStatus"]
+  },
+  "forbiddenFields": [
+    "email", "phone", "telefono", "dpi", "document", "identityDocument", "bank", "bankAccount",
+    "nda", "address", "direccion", "password", "providerToken", "rawWorkbook", "privateSourceUrl"
+  ],
+  "requiredFacadeMembers": [
+    "projects", "shoppers", "_visitas", "_posts", "currentProjectId", "project", "setProject",
+    "projectsFor", "shoppersFor", "visitas", "posts", "getShopper", "addShopper", "updateShopper",
+    "assignVisit", "postularVisita", "setVisitState", "payVisits", "addProject"
+  ],
+  "decisionPolicy": {
+    "preferredPass": "PASS_READONLY_CXDATA_ADAPTER_R15D",
+    "fallbackPass": "PASS_WITH_REVIEW_READONLY_CXDATA_ADAPTER_FALLBACK_R15D",
+    "review": "REVIEW_REQUIRED_READONLY_CXDATA_ADAPTER_R15D",
+    "hardStop": "TARGET_MISMATCH_HARD_STOP_R15D"
+  }
+}
