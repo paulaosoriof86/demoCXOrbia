@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 defaults:
   run:
@@ -102,7 +103,7 @@ jobs:
           test -s app/data/tya-hr-source-safe-periods.js
           grep -Fq 'sourceSafe' app/data/tya-hr-source-safe-periods.js
 
-      - name: Bind source-safe CX.data in build copy
+      - name: Bind source-safe CX.data and build proof
         run: |
           set -euo pipefail
           node tools/release/tya-source-safe-binding-build-r15f.mjs \
@@ -110,6 +111,24 @@ jobs:
             --out .tmp/authorized-dev-hosting-deploy/source-safe-binding-r15f
           grep -Fq 'data/tya-hr-source-safe-periods.js' app/index.html
           grep -Fq 'core/tya-phase-a-source-safe-preview.js' app/index.html
+          node <<'NODE'
+          const fs = require('fs');
+          const proof = {
+            schemaVersion: '1.0.0',
+            environment: 'dev',
+            build: 'tya-source-safe-r15f-r16d',
+            commit: process.env.GITHUB_SHA,
+            runId: process.env.GITHUB_RUN_ID,
+            hostingOnly: true,
+            firestoreWrites: false,
+            authWrites: false,
+            imports: false,
+            rules: false,
+            functions: false,
+            production: false
+          };
+          fs.writeFileSync('app/cxorbia-dev-build-proof.json', JSON.stringify(proof, null, 2) + '\n', 'utf8');
+          NODE
 
       - name: Firebase Hosting access check
         env:
@@ -140,12 +159,22 @@ jobs:
             --json \
             2>&1 | tee .tmp/authorized-dev-hosting-deploy/firebase-deploy-output.txt
 
-      - name: Verify DEV URL
+      - name: Verify deployed DEV proof and URL
         run: |
           set -euo pipefail
           curl -fsSIL "$CXORBIA_DEV_ROOT_URL" | tee .tmp/authorized-dev-hosting-deploy/dev-root-headers.txt
           curl -fsSL "$CXORBIA_DEV_ROOT_URL" | tee .tmp/authorized-dev-hosting-deploy/dev-root-index.html | grep -E 'CXOrbia|Plataforma Operativa de Campo' >/dev/null
-          printf 'status=success\nurl=%s\nverification=ok\n' "$CXORBIA_DEV_ROOT_URL" > .tmp/authorized-dev-hosting-deploy/deploy-status.txt
+          curl -fsSL "$CXORBIA_DEV_ROOT_URL/cxorbia-dev-build-proof.json" > .tmp/authorized-dev-hosting-deploy/deployed-build-proof.json
+          node <<'NODE'
+          const fs = require('fs');
+          const proof = JSON.parse(fs.readFileSync('.tmp/authorized-dev-hosting-deploy/deployed-build-proof.json', 'utf8'));
+          if (proof.environment !== 'dev') throw new Error('DEV proof environment mismatch.');
+          if (proof.build !== 'tya-source-safe-r15f-r16d') throw new Error('DEV proof build mismatch.');
+          if (proof.commit !== process.env.GITHUB_SHA) throw new Error('DEV proof commit mismatch.');
+          if (proof.hostingOnly !== true || proof.firestoreWrites !== false || proof.authWrites !== false || proof.imports !== false || proof.rules !== false || proof.functions !== false || proof.production !== false) throw new Error('DEV proof safety flags mismatch.');
+          console.log('Deployed DEV build proof verified.');
+          NODE
+          printf 'status=success\nurl=%s\ncommit=%s\nrun_id=%s\nverification=ok\n' "$CXORBIA_DEV_ROOT_URL" "$GITHUB_SHA" "$GITHUB_RUN_ID" > .tmp/authorized-dev-hosting-deploy/deploy-status.txt
 
       - name: Cleanup temporary credential
         if: always()
@@ -164,3 +193,42 @@ jobs:
             .tmp/rc-phase-a-dev-root-drift
           if-no-files-found: ignore
           retention-days: 14
+
+      - name: Report success to PR 7
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          body=$(cat <<EOF
+          CXORBIA_DEV_HOSTING_DEPLOY_SUCCESS
+
+          - Environment: DEV
+          - URL: $CXORBIA_DEV_ROOT_URL
+          - Build: tya-source-safe-r15f-r16d
+          - Commit: $GITHUB_SHA
+          - Run ID: $GITHUB_RUN_ID
+          - Verification: deployed build proof OK
+          - Scope: Hosting only
+          - Firestore/Auth writes: none
+          - Imports/rules/Functions/production: none
+          EOF
+          )
+          gh api "repos/${GITHUB_REPOSITORY}/issues/7/comments" -f body="$body" >/dev/null
+
+      - name: Report failure to PR 7
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          body=$(cat <<EOF
+          CXORBIA_DEV_HOSTING_DEPLOY_FAILED_SAFE
+
+          - Environment: DEV
+          - Commit: $GITHUB_SHA
+          - Run ID: $GITHUB_RUN_ID
+          - Run: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+          - Firestore/Auth writes: none
+          - Imports/rules/Functions/production: none
+          EOF
+          )
+          gh api "repos/${GITHUB_REPOSITORY}/issues/7/comments" -f body="$body" >/dev/null
