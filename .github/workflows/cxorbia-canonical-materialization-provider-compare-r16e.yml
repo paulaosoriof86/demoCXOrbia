@@ -26,6 +26,7 @@ defaults:
 
 env:
   CXORBIA_R16E_AUTH_MARKER: docs/operations/cxorbia-r16e-read-only-authorized-20260713.txt
+  CXORBIA_R16E_NORMALIZED_PLAN: .tmp/r16e-r16d-plan/r14c-financial-overlay-review-plan-r16d-provider-compare.json
 
 jobs:
   canonical-provider-compare:
@@ -67,6 +68,7 @@ jobs:
           set -euo pipefail
           node --check tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs
           node --check tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs
+          node --check tools/reconciliation/tya-r16d-provider-compare-plan-normalize-r16e.mjs
           node --check tools/reconciliation/tya-canonical-materialization-provider-compare-r16e-precheck.mjs
           node --check tools/reconciliation/tya-canonical-materialization-dry-run-r16b.mjs
           node -e "const fs=require('fs');for(const p of ['backend/contracts/phase-a-r14c-financial-overlay-review-plan-r16d-v1.json','backend/contracts/phase-a-canonical-materialization-provider-compare-r16e-v1.json','backend/contracts/phase-a-canonical-materialization-dry-run-r16-v1.json'])JSON.parse(fs.readFileSync(p,'utf8'));console.log('R16E contracts valid.');"
@@ -89,10 +91,17 @@ jobs:
             --controlled-financial backend/config/phase-a-financial-workbook-source-safe-r14.json \
             --out .tmp/r16e-r16d-plan
 
+      - name: Normalize R16D source-safe flags for provider comparison
+        run: |
+          set -euo pipefail
+          node tools/reconciliation/tya-r16d-provider-compare-plan-normalize-r16e.mjs \
+            --plan .tmp/r16e-r16d-plan/r14c-financial-overlay-review-plan-r16d.json \
+            --out "$CXORBIA_R16E_NORMALIZED_PLAN"
+
       - name: Run R16E offline precheck
         run: |
           node tools/reconciliation/tya-canonical-materialization-provider-compare-r16e-precheck.mjs \
-            --plan .tmp/r16e-r16d-plan/r14c-financial-overlay-review-plan-r16d.json \
+            --plan "$CXORBIA_R16E_NORMALIZED_PLAN" \
             --out .tmp/canonical-provider-compare-r16e-precheck
 
       - name: Prepare temporary DEV credential
@@ -130,7 +139,7 @@ jobs:
           set -euo pipefail
           node tools/reconciliation/tya-canonical-materialization-dry-run-r16b.mjs \
             --contract backend/contracts/phase-a-canonical-materialization-dry-run-r16-v1.json \
-            --plan .tmp/r16e-r16d-plan/r14c-financial-overlay-review-plan-r16d.json \
+            --plan "$CXORBIA_R16E_NORMALIZED_PLAN" \
             --out .tmp/canonical-provider-compare-r16e
 
       - name: Cleanup temporary DEV credential
