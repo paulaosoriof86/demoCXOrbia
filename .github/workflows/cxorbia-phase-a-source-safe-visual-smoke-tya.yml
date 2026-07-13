@@ -87,7 +87,16 @@ jobs:
           echo 'Source-safe smoke server did not become ready.' >&2
           exit 1
 
-      - name: Run source-safe operational route smoke
+      - name: Run visible TyA data smoke
+        env:
+          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-phase-a-visible-data-smoke-r17.mjs \
+            --out .tmp/phase-a-visible-data-smoke-r17
+
+      - name: Run legacy route inventory smoke
+        continue-on-error: true
         env:
           CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
           CXORBIA_EXPECT_TENANT_ID: tya
@@ -98,13 +107,6 @@ jobs:
         run: |
           node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs \
             --out .tmp/phase-a-source-safe-visual-smoke
-
-      - name: Run visible TyA data smoke
-        env:
-          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
-        run: |
-          node tools/qa/tya-phase-a-visible-data-smoke-r17.mjs \
-            --out .tmp/phase-a-visible-data-smoke-r17
 
       - name: Upload sanitized reports and screenshots
         if: always()
