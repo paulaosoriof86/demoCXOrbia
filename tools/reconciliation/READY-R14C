@@ -1,9 +1,0 @@
-CXORBIA_R14C_REAL_TYA_FINANCIAL_RECONCILIATION
-scope=protected_operational_exact_linking
-source_safe=true
-provider_reads=false
-provider_writes=false
-imports=false
-payments=false
-deploy=false
-production=false

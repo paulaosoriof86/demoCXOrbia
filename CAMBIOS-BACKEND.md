@@ -244,3 +244,11 @@
 - 0 enlaces compuestos exactos.
 - Decisión: `HOLD_NO_EXACT_REAL_TYA_LINKS`.
 - Sin writes, import real, pagos, deploy ni producción.
+
+
+## R14C Finanzas reales TyA — 2026-07-13
+
+- Decisión: `PASS_WITH_REVIEW_REAL_TYA_FINANCIAL_RECONCILIATION_R14C`.
+- 196/247 enlaces exactos protegidos; 51 en revisión.
+- Ledger vinculado a visita: 1/37.
+- Sin writes, import real, pagos, deploy ni producción.

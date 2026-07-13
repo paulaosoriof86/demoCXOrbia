@@ -158,3 +158,9 @@
 - Backend/datos procesó fuente financiera real y HR viva.
 - Decisión: `HOLD_NO_EXACT_REAL_TYA_LINKS`; enlaces exactos: 0.
 - No corresponde cambio frontend inmediato; conservar distinción liquidada/pagada y los P1 ya registrados.
+
+
+## R14C Finanzas reales TyA — 2026-07-13
+
+- Backend/datos: `PASS_WITH_REVIEW_REAL_TYA_FINANCIAL_RECONCILIATION_R14C`, 196 enlaces exactos.
+- Sin P0 frontend nuevo. Mantener liquidada/pagada como estados distintos y los P1 de pagos ya registrados.

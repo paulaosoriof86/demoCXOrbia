@@ -3,7 +3,7 @@
   "package": "CXORBIA-V110-UNION-EMPALME-R1",
   "project": "CXOrbia",
   "baseline": "V110 empalmada de forma determinística sobre rama viva",
-  "generatedAt": "2026-07-13T14:22:12.817Z",
+  "generatedAt": "2026-07-13T14:32:07.209Z",
   "sourceZipSha256": "1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227",
   "basePackageSha256": "582a8c98cdac7b46028bb720d1304657c6d678e99e4bc23a49e80ab440bc8206",
   "runtimePatchSha256": "d19e42df846d4b03f9407e856cc70e1dace6166ff3a46f17d93bda035566f0bd",
@@ -24,8 +24,8 @@
     ],
     "generatedUnionLock": "core/build-lock.js"
   },
-  "fileCount": 1414,
-  "aggregateSha256": "c20c05738fa251911151e4fda222fc3161851d8ff710ffb6e4f8202cfa41fc87",
+  "fileCount": 1418,
+  "aggregateSha256": "0224070cb96a77d99ede522362b8db054a57a3d0c9ddd7d34c81e861d85d7c88",
   "exclusionsDeclared": [
     {
       "path": "core/build-lock.js",
@@ -659,7 +659,7 @@
     {
       "path": "data/tya-hr-source-safe-periods.js",
       "size": 816653,
-      "sha256": "25be9f0f1de2fb15c152830f575c898db5422e4b4b965f94c1046876b23c2dff"
+      "sha256": "5a636aafd72fd68d020b34f34d2d5a9df07687afb4acdb1874de3a5833915943"
     },
     {
       "path": "demo/index.html",
@@ -805,6 +805,11 @@
       "path": "docs/ACADEMIA-IMPACT-FINANCIAL-REAL-TYA-R14-20260713.md",
       "size": 379,
       "sha256": "5616a169dee8c42e2312c34938acd0d0dfea88598b7fc9a7059ce34f70607088"
+    },
+    {
+      "path": "docs/ACADEMIA-IMPACT-FINANCIAL-REAL-TYA-R14C-20260713.md",
+      "size": 418,
+      "sha256": "556bc5f392f9eccc2bcb01fc0033a6e6808528ad77552270fadd1707fb3ef185"
     },
     {
       "path": "docs/ACADEMIA-IMPACT-FIREBASE-DEV-CLEAN-STATE-READONLY-GATE-20260710.md",
@@ -1890,6 +1895,11 @@
       "path": "docs/CAMBIOS-BACKEND-ADDENDUM-FINANCIAL-REAL-TYA-R14-20260713.md",
       "size": 932,
       "sha256": "3b10200dde743a48107f33d10de7db2e24ac1a09b5ad4435bf0ca2520bf52b99"
+    },
+    {
+      "path": "docs/CAMBIOS-BACKEND-ADDENDUM-FINANCIAL-REAL-TYA-R14C-20260713.md",
+      "size": 1273,
+      "sha256": "e7fab1f169f6903c66fa400bb396c0381f633cff9e72a5e5ff35b1941a5821fc"
     },
     {
       "path": "docs/CAMBIOS-BACKEND-ADDENDUM-FIREBASE-DEV-NONEMPTY-R13B-20260712.md",
@@ -5122,6 +5132,11 @@
       "sha256": "94134dc10194b9c92cbaf6c3fdfcf6aee2bea4e010ef4e2b89591cee3ae574a2"
     },
     {
+      "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-R14C-FINANCIAL-REAL-TYA-20260713.md",
+      "size": 719,
+      "sha256": "44c46f2f8e5cc9c52a168797e8af85063c7c37e65d6298fe1d0b89b0c4302cab"
+    },
+    {
       "path": "docs/PHASE-A-BLOCK-PROGRESS-TRACKER-RECHAZO-V102-CONTAMINACION-ORBIT-20260711.md",
       "size": 643,
       "sha256": "e0aef3df58611e3b40c93a96a7d226d39f02ae38940a846849bd07996a25b560"
@@ -5200,6 +5215,11 @@
       "path": "docs/PHASE-A-FINANCIAL-REAL-TYA-R14-RESULT-20260713.md",
       "size": 777,
       "sha256": "7c36ddcec5d32993a82cb2bd5859fcc5d7abf4e192f49cc970d07db53f5c1565"
+    },
+    {
+      "path": "docs/PHASE-A-FINANCIAL-REAL-TYA-R14C-RESULT-20260713.md",
+      "size": 997,
+      "sha256": "e2a43ef059fbbfb6c3f9b92b1d595c07e2304e2dd6a8e3fe44d00daac74b76db"
     },
     {
       "path": "docs/PHASE-A-FIREBASE-DEV-CLEAN-STATE-READONLY-R13-PROVIDER-REPORT-20260712.md",
@@ -7170,5 +7190,12 @@
     "financialLiquidationRows": 247,
     "exactCompositeLinked": 0,
     "report": "docs/PHASE-A-FINANCIAL-REAL-TYA-R14-RESULT-20260713.md"
+  },
+  "r14c": {
+    "decision": "PASS_WITH_REVIEW_REAL_TYA_FINANCIAL_RECONCILIATION_R14C",
+    "exactAcceptedLinks": 196,
+    "reviewLiquidationRows": 51,
+    "ledgerRowsLinkedToVisit": 1,
+    "report": "docs/PHASE-A-FINANCIAL-REAL-TYA-R14C-RESULT-20260713.md"
   }
 }

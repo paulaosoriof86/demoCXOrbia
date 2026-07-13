@@ -1,5 +1,5 @@
 /* CXOrbia TyA live HR source-safe DEV payload. Generated in GitHub Actions; no PII/raw workbook. */window.CX_TYA_HR_SOURCE_SAFE = {
-  "generatedAt": "2026-07-13T14:22:09.954Z",
+  "generatedAt": "2026-07-13T14:32:04.672Z",
   "buildLabel": "tya-live-hr-source-safe-dev",
   "tenantId": "tya",
   "tenantName": "TyA",

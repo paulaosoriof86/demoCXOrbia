@@ -111,3 +111,10 @@ Fuente puente: `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
 
 - Sin P0 frontend nuevo.
 - Mantener abiertos únicamente los P1 de pagos ya documentados; no convertir liquidación o día planificado en pago confirmado.
+
+
+## R14C Finanzas reales TyA — impacto Claude
+
+- Sin P0 nuevo.
+- Mantener copy honesto: liquidación y fecha planificada no confirman pago.
+- Los casos backend en reviewQueue no deben mostrarse como pagados.
