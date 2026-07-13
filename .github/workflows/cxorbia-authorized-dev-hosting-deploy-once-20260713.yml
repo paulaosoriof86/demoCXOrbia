@@ -1,0 +1,166 @@
+name: CXOrbia Authorized DEV Hosting Deploy Once
+
+# One-time execution authorized by Paula on 2026-07-13.
+# Triggered only by the exact authorization marker. Hosting DEV only.
+# No Firestore/Auth/Storage writes, rules, Functions, imports or production.
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/authorized/cxorbia-dev-hosting-deploy-20260713.txt'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+  FIREBASE_PROJECT_ID: cxorbia-backend-dev
+  FIREBASE_HOSTING_TARGET: cxorbia-dev
+  CXORBIA_DEPLOY_AUTH_MARKER: .github/authorized/cxorbia-dev-hosting-deploy-20260713.txt
+
+jobs:
+  authorized-dev-hosting-deploy:
+    name: Authorized DEV Hosting deploy once
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify exact authorization marker
+        run: |
+          set -euo pipefail
+          test -f "$CXORBIA_DEPLOY_AUTH_MARKER"
+          grep -Fxq 'AUTORIZO DEPLOY EXCLUSIVO A FIREBASE HOSTING DEV DE LA BUILD SOURCE-SAFE R15F/R16D, SIN FIRESTORE WRITES, SIN AUTH WRITES, SIN IMPORTS, SIN RULES, SIN FUNCTIONS Y SIN PRODUCCIÓN.' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          grep -Fxq 'oneTime=true' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          grep -Fxq 'projectId=cxorbia-backend-dev' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          grep -Fxq 'hostingTarget=cxorbia-dev' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          echo 'Exact one-time DEV Hosting authorization verified.'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Source lock V110 union gate
+        run: |
+          set -euo pipefail
+          node tools/release/tya-source-lock-v110-union-verify.mjs \
+            --manifest app/docs/MANIFEST-V110-UNION-EMPALME-R1.json \
+            --out .tmp/source-lock-v110-union
+
+      - name: Predeploy gate
+        run: |
+          set -euo pipefail
+          node tools/release/tya-rc-phase-a-predeploy-gate.mjs \
+            --out .tmp/rc-phase-a-dev-root-predeploy
+
+      - name: Drift gate
+        run: |
+          set -euo pipefail
+          node tools/release/tya-rc-phase-a-drift-gate.mjs \
+            --validated b0335ff143975abf67d50d9552c97273e15055c0 \
+            --out .tmp/rc-phase-a-dev-root-drift
+
+      - name: Prepare temporary DEV credential
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/authorized-dev-hosting-deploy
+          credential='.tmp/authorized-dev-hosting-deploy/firebase-service-account.json'
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT_JSON" ]; then
+            echo 'status=blocked_missing_secret' > .tmp/authorized-dev-hosting-deploy/deploy-status.txt
+            echo 'Blocked before Firebase call: missing DEV service-account secret.'
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$credential"
+          chmod 600 "$credential"
+          node <<'NODE'
+          const fs = require('fs');
+          const file = '.tmp/authorized-dev-hosting-deploy/firebase-service-account.json';
+          const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+          if (parsed.type !== 'service_account') throw new Error('Credential type mismatch.');
+          if (parsed.project_id !== 'cxorbia-backend-dev') throw new Error('Credential project mismatch.');
+          if (!String(parsed.client_email || '').endsWith('@cxorbia-backend-dev.iam.gserviceaccount.com')) throw new Error('Credential domain mismatch.');
+          fs.writeFileSync('.tmp/authorized-dev-hosting-deploy/credential-sanity.txt', 'status=pass\nproject_id=cxorbia-backend-dev\n', 'utf8');
+          console.log('DEV credential sanity checks passed without outputting identifiers.');
+          NODE
+
+      - name: Build live HR source-safe payload
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
+          test -s app/data/tya-hr-source-safe-periods.js
+          grep -Fq 'sourceSafe' app/data/tya-hr-source-safe-periods.js
+
+      - name: Bind source-safe CX.data in build copy
+        run: |
+          set -euo pipefail
+          node tools/release/tya-source-safe-binding-build-r15f.mjs \
+            --html app/index.html \
+            --out .tmp/authorized-dev-hosting-deploy/source-safe-binding-r15f
+          grep -Fq 'data/tya-hr-source-safe-periods.js' app/index.html
+          grep -Fq 'core/tya-phase-a-source-safe-preview.js' app/index.html
+
+      - name: Firebase Hosting access check
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/authorized-dev-hosting-deploy/firebase-service-account.json
+        run: |
+          set -euo pipefail
+          npx --yes firebase-tools@latest --version | tee .tmp/authorized-dev-hosting-deploy/firebase-tools-version.txt
+          npx --yes firebase-tools@latest hosting:sites:list \
+            --project "$FIREBASE_PROJECT_ID" \
+            --json \
+            > .tmp/authorized-dev-hosting-deploy/hosting-sites.json
+          node <<'NODE'
+          const fs = require('fs');
+          const payload = JSON.parse(fs.readFileSync('.tmp/authorized-dev-hosting-deploy/hosting-sites.json', 'utf8'));
+          if (!JSON.stringify(payload).includes('cxorbia-backend-dev')) throw new Error('Expected DEV Hosting site not available.');
+          console.log('Firebase Hosting DEV access check passed.');
+          NODE
+
+      - name: Deploy Hosting DEV only
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/authorized-dev-hosting-deploy/firebase-service-account.json
+        run: |
+          set -euo pipefail
+          npx --yes firebase-tools@latest deploy \
+            --only "hosting:$FIREBASE_HOSTING_TARGET" \
+            --project "$FIREBASE_PROJECT_ID" \
+            --non-interactive \
+            --json \
+            2>&1 | tee .tmp/authorized-dev-hosting-deploy/firebase-deploy-output.txt
+
+      - name: Verify DEV URL
+        run: |
+          set -euo pipefail
+          curl -fsSIL "$CXORBIA_DEV_ROOT_URL" | tee .tmp/authorized-dev-hosting-deploy/dev-root-headers.txt
+          curl -fsSL "$CXORBIA_DEV_ROOT_URL" | tee .tmp/authorized-dev-hosting-deploy/dev-root-index.html | grep -E 'CXOrbia|Plataforma Operativa de Campo' >/dev/null
+          printf 'status=success\nurl=%s\nverification=ok\n' "$CXORBIA_DEV_ROOT_URL" > .tmp/authorized-dev-hosting-deploy/deploy-status.txt
+
+      - name: Cleanup temporary credential
+        if: always()
+        run: |
+          rm -f .tmp/authorized-dev-hosting-deploy/firebase-service-account.json
+
+      - name: Upload DEV Hosting evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: authorized-dev-hosting-deploy-once-report
+          path: |
+            .tmp/authorized-dev-hosting-deploy
+            .tmp/source-lock-v110-union
+            .tmp/rc-phase-a-dev-root-predeploy
+            .tmp/rc-phase-a-dev-root-drift
+          if-no-files-found: ignore
+          retention-days: 14
