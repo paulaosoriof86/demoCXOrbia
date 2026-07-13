@@ -1,5 +1,5 @@
 CXORBIA_R14_REAL_TYA_FINANCIAL_RECONCILIATION
-retry=payload_repaired_from_verified_chunks
+retry=payload_repaired_verified_and_user_triggered
 scope=source_safe_real_tya_data
 firebase_writes=false
 imports=false
