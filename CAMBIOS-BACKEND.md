@@ -222,3 +222,10 @@
 - Gate estático post-V110: `GO_SAFE_FIREBASE_DEV_READ_ONLY_GATE_PREPARED_NOT_EXECUTED`.
 - Autorización provider: FALSE; lecturas reales: NOT_EXECUTED.
 - Sin credenciales, writes, imports, deploy ni producción.
+
+
+## R13 Firebase DEV read-only autorizado — 2026-07-12
+
+- Decisión: `NONEMPTY_REVIEW_REQUIRED`.
+- Provider calls: true; clean confirmed: false.
+- Cero writes, imports, deploy y producción; credencial temporal eliminada.

@@ -139,3 +139,9 @@
 - Estado: `READY_FOR_EXPLICIT_AUTHORIZATION_NOT_EXECUTED`.
 - No mostrar Firebase conectado o base limpia verificada; solo readiness estático.
 - No corresponde paquete Claude inmediato.
+
+
+## R13 Firebase DEV read-only — 2026-07-12
+
+- Decisión backend: `NONEMPTY_REVIEW_REQUIRED`.
+- No implica backend conectado ni producción; no corresponde paquete Claude inmediato.
