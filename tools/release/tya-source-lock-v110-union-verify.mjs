@@ -2,7 +2,11 @@
 /*
   CXOrbia V110 union source-lock verifier.
 
-  Verifies the current app/ tree against the deterministic V110 union manifest.
+  Verifies every file declared by the deterministic V110 union manifest and
+  blocks unexpected runtime files. New documentation under app/docs/ is
+  allowed because it is non-runtime continuity evidence and must not invalidate
+  the approved frontend source lock.
+
   It does not modify files, call providers, deploy or access production.
 */
 
@@ -34,6 +38,10 @@ function listFiles(directory, base = directory) {
     else if (entry.isFile()) output.push(path.relative(base, absolute).replace(/\\/g, '/'));
   }
   return output.sort();
+}
+
+function isAllowedNonRuntimeAddition(relative) {
+  return relative.startsWith('docs/');
 }
 
 if (!fs.existsSync(absoluteManifest)) {
@@ -74,21 +82,30 @@ const declaredExclusions = new Set(
   (manifest.exclusionsDeclared || []).map((entry) => String(entry.path || '').replace(/\\/g, '/'))
 );
 const actualAppFiles = listFiles(appRoot);
-const unexpected = actualAppFiles.filter((relative) => !manifestPaths.has(relative) && !declaredExclusions.has(relative));
+const allowedNonRuntimeAdditions = actualAppFiles.filter(
+  (relative) => !manifestPaths.has(relative) &&
+    !declaredExclusions.has(relative) &&
+    isAllowedNonRuntimeAddition(relative)
+);
+const unexpectedRuntime = actualAppFiles.filter(
+  (relative) => !manifestPaths.has(relative) &&
+    !declaredExclusions.has(relative) &&
+    !isAllowedNonRuntimeAddition(relative)
+);
 const excludedMissing = [...declaredExclusions].filter((relative) => !fs.existsSync(path.join(appRoot, relative)));
 
 const aggregateSha256 = sha256(Buffer.from(entries.join('\n'), 'utf8'));
 const aggregateMatches = aggregateSha256 === manifest.aggregateSha256;
 const fileCountMatches = Number(manifest.fileCount) === (manifest.files || []).length;
-const appInventoryMatches = unexpected.length === 0 && excludedMissing.length === 0;
+const runtimeInventoryMatches = unexpectedRuntime.length === 0 && excludedMissing.length === 0;
 const pass = missing.length === 0 &&
   mismatched.length === 0 &&
   aggregateMatches &&
   fileCountMatches &&
-  appInventoryMatches;
+  runtimeInventoryMatches;
 
 const report = {
-  schemaVersion: '1.0.0',
+  schemaVersion: '1.1.0',
   gate: 'cxorbia-source-lock-v110-union',
   generatedAt: new Date().toISOString(),
   decision: pass ? 'PASS_V110_UNION_SOURCE_LOCK' : 'FAIL_V110_UNION_SOURCE_LOCK',
@@ -102,18 +119,25 @@ const report = {
   verifiedFileCount: entries.length,
   missingCount: missing.length,
   mismatchCount: mismatched.length,
-  unexpectedCount: unexpected.length,
+  allowedNonRuntimeAdditionCount: allowedNonRuntimeAdditions.length,
+  unexpectedRuntimeCount: unexpectedRuntime.length,
   excludedMissingCount: excludedMissing.length,
   aggregateExpected: manifest.aggregateSha256,
   aggregateActual: aggregateSha256,
   aggregateMatches,
   fileCountMatches,
-  appInventoryMatches,
+  runtimeInventoryMatches,
   missing,
   mismatched,
-  unexpected,
+  allowedNonRuntimeAdditions,
+  unexpectedRuntime,
   excludedMissing,
   pass,
+  policy: {
+    manifestFilesRemainHashLocked: true,
+    unexpectedRuntimeFilesBlocked: true,
+    newAppDocsAllowed: true
+  },
   safeState: {
     appFilesModified: false,
     providerCalls: false,
@@ -138,10 +162,12 @@ fs.writeFileSync(path.join(absoluteOut, 'source-lock-v110-union-report.md'), [
   `Declared exclusions: ${report.declaredExclusionCount}`,
   `Missing: ${report.missingCount}`,
   `Mismatched: ${report.mismatchCount}`,
-  `Unexpected: ${report.unexpectedCount}`,
+  `Allowed non-runtime docs: ${report.allowedNonRuntimeAdditionCount}`,
+  `Unexpected runtime files: ${report.unexpectedRuntimeCount}`,
   `Excluded but missing: ${report.excludedMissingCount}`,
   `Aggregate matches: ${report.aggregateMatches}`,
   '',
+  'Manifest files remain hash-locked. New app/docs continuity files are allowed.',
   'No app changes, provider calls, writes, imports, deploy or production.'
 ].join('\n'), 'utf8');
 
