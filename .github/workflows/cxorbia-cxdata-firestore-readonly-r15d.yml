@@ -1,23 +1,15 @@
 name: CXOrbia CX.data Firestore Read-Only R15D
 
+# Provider read workflow. Manual-only to avoid repeated Firestore reads on every
+# commit and preserve the DEV read quota for controlled operational gates.
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - 'backend/config/phase-a-cxdata-firestore-readonly-r15d.source-safe.json'
-      - 'backend/adapters/firebase-cxdata-readonly-r15d.mjs'
-      - 'tools/release/tya-cxdata-firestore-readonly-smoke-r15d.mjs'
-      - '.github/workflows/cxorbia-cxdata-firestore-readonly-r15d.yml'
-  pull_request:
-    branches:
-      - release/cxorbia-tya-rc-20260630
-    paths:
-      - 'backend/config/phase-a-cxdata-firestore-readonly-r15d.source-safe.json'
-      - 'backend/adapters/firebase-cxdata-readonly-r15d.mjs'
-      - 'tools/release/tya-cxdata-firestore-readonly-smoke-r15d.mjs'
-      - '.github/workflows/cxorbia-cxdata-firestore-readonly-r15d.yml'
   workflow_dispatch:
+    inputs:
+      confirm_read_only:
+        description: 'Type CXDATA_FIRESTORE_READONLY_R15D after explicit read-only authorization.'
+        required: true
+        default: 'HOLD'
+        type: string
 
 permissions:
   contents: read
@@ -29,6 +21,7 @@ defaults:
 jobs:
   cxdata-firestore-readonly-smoke:
     name: CX.data Firestore read-only facade smoke
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_read_only == 'CXDATA_FIRESTORE_READONLY_R15D' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
@@ -73,9 +66,7 @@ jobs:
           NODE
 
       - name: Install Firebase Admin read-only dependency
-        run: |
-          set -euo pipefail
-          npm install --no-save --ignore-scripts firebase-admin@13
+        run: npm install --no-save --ignore-scripts firebase-admin@13
 
       - name: Run R15D provider read-only facade smoke
         env:
