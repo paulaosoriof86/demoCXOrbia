@@ -16,6 +16,7 @@ on:
       - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
       - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
       - 'tools/reconciliation/tya-canonical-materialization-dry-run-r16.mjs'
+      - 'tools/reconciliation/tya-canonical-materialization-dry-run-r16b.mjs'
       - '.github/workflows/cxorbia-canonical-materialization-dry-run-r16.yml'
   pull_request:
     branches:
@@ -32,6 +33,7 @@ on:
       - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
       - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
       - 'tools/reconciliation/tya-canonical-materialization-dry-run-r16.mjs'
+      - 'tools/reconciliation/tya-canonical-materialization-dry-run-r16b.mjs'
       - '.github/workflows/cxorbia-canonical-materialization-dry-run-r16.yml'
   workflow_dispatch:
 
@@ -60,7 +62,7 @@ jobs:
       - name: Validate R16 syntax and contract
         run: |
           set -euo pipefail
-          node --check tools/reconciliation/tya-canonical-materialization-dry-run-r16.mjs
+          node --check tools/reconciliation/tya-canonical-materialization-dry-run-r16b.mjs
           node --check tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs
           node -e "const fs=require('fs');const p='backend/contracts/phase-a-canonical-materialization-dry-run-r16-v1.json';const x=JSON.parse(fs.readFileSync(p,'utf8'));if(x.authorization?.providerReads!==true||x.authorization?.writes!==false||x.authorization?.deletes!==false||x.authorization?.imports!==false||x.authorization?.deploy!==false||x.authorization?.production!==false)process.exit(2);console.log('R16 read-only contract valid.');"
 
@@ -118,7 +120,7 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/canonical-materialization-r16-private/credentials.json
         run: |
           set -euo pipefail
-          node tools/reconciliation/tya-canonical-materialization-dry-run-r16.mjs \
+          node tools/reconciliation/tya-canonical-materialization-dry-run-r16b.mjs \
             --plan .tmp/r16-materialization-plan/firestore-materialization-plan.json \
             --out .tmp/canonical-materialization-dry-run-r16
 
