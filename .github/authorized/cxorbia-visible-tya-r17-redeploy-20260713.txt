@@ -9,3 +9,4 @@ rules=false
 functions=false
 production=false
 authorizedAt=2026-07-13
+triggerAttempt=2
