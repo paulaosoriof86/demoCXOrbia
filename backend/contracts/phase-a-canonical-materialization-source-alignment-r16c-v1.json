@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-canonical-materialization-source-alignment-r16c-v1",
+  "purpose": "Verify that a canonical materialization plan distinguishes HR-derived settlement controls from R14C financial rows and does not infer certification or payment state.",
+  "inputs": {
+    "materializationPlan": ".tmp/r16c-materialization-plan/firestore-materialization-plan.json",
+    "financialReconciliation": "backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json",
+    "shopperGap": "backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json",
+    "certificationProjection": "backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json"
+  },
+  "required": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "hrVisits": 616,
+    "liveShoppers": 210,
+    "historicalShopperReferences": 213,
+    "financialRows": 247,
+    "financialExactLinks": 196,
+    "financialReviewRows": 51,
+    "financialReviewQueue": 92,
+    "certificationCandidateShoppers": 213,
+    "certificationSourceRecords": 0
+  },
+  "rules": {
+    "visitDerivedLiquidationsAreControlRecords": true,
+    "financialRowsMustOverlayByStableVisitId": true,
+    "reviewFinancialRowsMustNotBecomePaymentWrites": true,
+    "certificationsMustNotBeInferred": true,
+    "paidMustNotBeInferred": true,
+    "shopperGapMustRemainInReview": true,
+    "noNameMatching": true,
+    "noAutomaticMerge": true
+  },
+  "decisions": {
+    "aligned": "PASS_CANONICAL_MATERIALIZATION_SOURCE_ALIGNMENT_R16C",
+    "overlayMissing": "HOLD_CANONICAL_MATERIALIZATION_PLAN_NEEDS_R14C_OVERLAY_R16C",
+    "unsafe": "HARD_STOP_CANONICAL_MATERIALIZATION_SOURCE_ALIGNMENT_R16C"
+  },
+  "safeState": {
+    "providerCalls": false,
+    "writes": false,
+    "deletes": false,
+    "imports": false,
+    "deploy": false,
+    "production": false,
+    "paymentsExecuted": false,
+    "piiIncluded": false
+  }
+}
