@@ -1,0 +1,271 @@
+name: CXOrbia Authorized Visible TyA R17 Redeploy Once
+
+# One-time execution explicitly authorized by Paula on 2026-07-13.
+# Firebase Hosting DEV only. No Firestore/Auth/Storage writes, imports, rules,
+# Functions, Make, Gemini, payments or production.
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/authorized/cxorbia-visible-tya-r17-redeploy-20260713.txt'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+  FIREBASE_PROJECT_ID: cxorbia-backend-dev
+  FIREBASE_HOSTING_TARGET: cxorbia-dev
+  CXORBIA_DEPLOY_AUTH_MARKER: .github/authorized/cxorbia-visible-tya-r17-redeploy-20260713.txt
+  CXORBIA_BUILD_LABEL: tya-visible-r17-source-safe
+
+jobs:
+  authorized-visible-tya-r17-redeploy:
+    name: Authorized visible TyA R17 Hosting redeploy once
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify exact one-time authorization
+        run: |
+          set -euo pipefail
+          test -f "$CXORBIA_DEPLOY_AUTH_MARKER"
+          grep -Fxq 'AUTORIZO REDEPLOY EXCLUSIVO A FIREBASE HOSTING DEV DE LA BUILD CORREGIDA VISIBLE TYA R17, SIN FIRESTORE WRITES, SIN AUTH WRITES, SIN IMPORTS, SIN RULES, SIN FUNCTIONS Y SIN PRODUCCIÓN.' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          grep -Fxq 'oneTime=true' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          grep -Fxq 'projectId=cxorbia-backend-dev' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          grep -Fxq 'hostingTarget=cxorbia-dev' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          grep -Fxq 'firestoreWrites=false' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          grep -Fxq 'authWrites=false' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          grep -Fxq 'imports=false' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          grep -Fxq 'rules=false' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          grep -Fxq 'functions=false' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          grep -Fxq 'production=false' "$CXORBIA_DEPLOY_AUTH_MARKER"
+          echo 'Exact one-time visible TyA R17 Hosting authorization verified.'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Source lock V110 union gate
+        run: |
+          set -euo pipefail
+          node tools/release/tya-source-lock-v110-union-verify.mjs \
+            --manifest app/docs/MANIFEST-V110-UNION-EMPALME-R1.json \
+            --out .tmp/visible-tya-r17-redeploy/source-lock-v110-union
+
+      - name: Predeploy gate
+        run: |
+          set -euo pipefail
+          node tools/release/tya-rc-phase-a-predeploy-gate.mjs \
+            --out .tmp/visible-tya-r17-redeploy/predeploy
+
+      - name: Drift gate
+        run: |
+          set -euo pipefail
+          node tools/release/tya-rc-phase-a-drift-gate.mjs \
+            --validated b0335ff143975abf67d50d9552c97273e15055c0 \
+            --out .tmp/visible-tya-r17-redeploy/drift
+
+      - name: Build live HR source-safe payload
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/visible-tya-r17-redeploy
+          node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
+          test -s app/data/tya-hr-source-safe-periods.js
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const source = fs.readFileSync('app/data/tya-hr-source-safe-periods.js', 'utf8');
+          const sandbox = { window: {} };
+          vm.createContext(sandbox);
+          vm.runInContext(source, sandbox);
+          const payload = sandbox.window.CX_TYA_HR_SOURCE_SAFE;
+          if (!payload || payload.tenantId !== 'tya' || payload.projectId !== 'cinepolis') throw new Error('TyA/Cinepolis payload identity mismatch.');
+          const periods = Number(payload.counts?.periods ?? payload.periods?.length ?? 0);
+          const visits = Number(payload.counts?.visits ?? payload.visits?.length ?? 0);
+          const shoppers = Number(payload.counts?.shoppers ?? payload.shoppers?.length ?? 0);
+          if (periods !== 14 || visits !== 616 || shoppers !== 210) throw new Error(`Source-safe count mismatch: periods=${periods}, visits=${visits}, shoppers=${shoppers}`);
+          fs.writeFileSync('.tmp/visible-tya-r17-redeploy/source-counts.txt', `tenant=tya\nproject=cinepolis\nperiods=${periods}\nvisits=${visits}\nshoppers=${shoppers}\n`, 'utf8');
+          console.log('TyA source-safe identity and counts verified.');
+          NODE
+
+      - name: Bind corrected visible TyA adapter and build proof
+        run: |
+          set -euo pipefail
+          node tools/release/tya-source-safe-binding-build-r15f.mjs \
+            --html app/index.html \
+            --out .tmp/visible-tya-r17-redeploy/source-safe-binding-r17
+          grep -Fq 'data/tya-hr-source-safe-periods.js' app/index.html
+          grep -Fq 'core/tya-phase-a-source-safe-preview.js' app/index.html
+          grep -Fq 'adapters/tya-phase-a-source-safe-dev-adapter.js' app/index.html
+          test -s app/adapters/tya-phase-a-source-safe-dev-adapter.js
+          node <<'NODE'
+          const fs = require('fs');
+          const proof = {
+            schemaVersion: '1.1.0',
+            environment: 'dev',
+            build: 'tya-visible-r17-source-safe',
+            commit: process.env.GITHUB_SHA,
+            runId: process.env.GITHUB_RUN_ID,
+            tenantId: 'tya',
+            projectId: 'cinepolis',
+            visibleDataGate: true,
+            expectedPeriods: 14,
+            expectedVisits: 616,
+            expectedShoppers: 210,
+            hostingOnly: true,
+            firestoreWrites: false,
+            authWrites: false,
+            storageWrites: false,
+            imports: false,
+            rules: false,
+            functions: false,
+            make: false,
+            gemini: false,
+            payments: false,
+            production: false
+          };
+          fs.writeFileSync('app/cxorbia-dev-build-proof.json', JSON.stringify(proof, null, 2) + '\n', 'utf8');
+          NODE
+
+      - name: Install Playwright Chromium
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.47.2
+          npx playwright install --with-deps chromium
+
+      - name: Start local corrected build
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp/visible-tya-r17-redeploy/local-server.log 2>&1 &
+          echo $! > .tmp/visible-tya-r17-redeploy/local-server.pid
+          for attempt in $(seq 1 30); do
+            if curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' >/dev/null; then
+              echo 'Corrected local build ready.'
+              exit 0
+            fi
+            sleep 1
+          done
+          cat .tmp/visible-tya-r17-redeploy/local-server.log || true
+          exit 1
+
+      - name: Authoritative visible TyA smoke before deploy
+        env:
+          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-phase-a-visible-data-smoke-r17.mjs \
+            --out .tmp/visible-tya-r17-redeploy/local-visible-smoke
+          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs \
+            --base-url 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' \
+            --out .tmp/visible-tya-r17-redeploy/local-route-smoke
+
+      - name: Prepare temporary DEV credential
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          credential='.tmp/visible-tya-r17-redeploy/firebase-service-account.json'
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT_JSON" ]; then
+            echo 'status=blocked_missing_secret' > .tmp/visible-tya-r17-redeploy/deploy-status.txt
+            echo 'Blocked before Firebase call: missing DEV service-account secret.'
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$credential"
+          chmod 600 "$credential"
+          node <<'NODE'
+          const fs = require('fs');
+          const file = '.tmp/visible-tya-r17-redeploy/firebase-service-account.json';
+          const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+          if (parsed.type !== 'service_account') throw new Error('Credential type mismatch.');
+          if (parsed.project_id !== 'cxorbia-backend-dev') throw new Error('Credential project mismatch.');
+          if (!String(parsed.client_email || '').endsWith('@cxorbia-backend-dev.iam.gserviceaccount.com')) throw new Error('Credential domain mismatch.');
+          fs.writeFileSync('.tmp/visible-tya-r17-redeploy/credential-sanity.txt', 'status=pass\nproject_id=cxorbia-backend-dev\n', 'utf8');
+          console.log('DEV credential sanity checks passed without outputting identifiers.');
+          NODE
+
+      - name: Firebase Hosting access check
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/visible-tya-r17-redeploy/firebase-service-account.json
+        run: |
+          set -euo pipefail
+          npx --yes firebase-tools@latest --version | tee .tmp/visible-tya-r17-redeploy/firebase-tools-version.txt
+          npx --yes firebase-tools@latest hosting:sites:list \
+            --project "$FIREBASE_PROJECT_ID" \
+            --json \
+            > .tmp/visible-tya-r17-redeploy/hosting-sites.json
+          node <<'NODE'
+          const fs = require('fs');
+          const payload = JSON.parse(fs.readFileSync('.tmp/visible-tya-r17-redeploy/hosting-sites.json', 'utf8'));
+          if (!JSON.stringify(payload).includes('cxorbia-backend-dev')) throw new Error('Expected DEV Hosting site not available.');
+          console.log('Firebase Hosting DEV access check passed.');
+          NODE
+
+      - name: Redeploy Firebase Hosting DEV only
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/visible-tya-r17-redeploy/firebase-service-account.json
+        run: |
+          set -euo pipefail
+          npx --yes firebase-tools@latest deploy \
+            --only "hosting:$FIREBASE_HOSTING_TARGET" \
+            --project "$FIREBASE_PROJECT_ID" \
+            --non-interactive \
+            --json \
+            2>&1 | tee .tmp/visible-tya-r17-redeploy/firebase-deploy-output.txt
+
+      - name: Verify deployed proof
+        run: |
+          set -euo pipefail
+          curl -fsSIL "$CXORBIA_DEV_ROOT_URL" | tee .tmp/visible-tya-r17-redeploy/dev-root-headers.txt
+          curl -fsSL "$CXORBIA_DEV_ROOT_URL/cxorbia-dev-build-proof.json" > .tmp/visible-tya-r17-redeploy/deployed-build-proof.json
+          node <<'NODE'
+          const fs = require('fs');
+          const proof = JSON.parse(fs.readFileSync('.tmp/visible-tya-r17-redeploy/deployed-build-proof.json', 'utf8'));
+          if (proof.environment !== 'dev') throw new Error('DEV proof environment mismatch.');
+          if (proof.build !== 'tya-visible-r17-source-safe') throw new Error('DEV proof build mismatch.');
+          if (proof.commit !== process.env.GITHUB_SHA) throw new Error('DEV proof commit mismatch.');
+          if (proof.tenantId !== 'tya' || proof.projectId !== 'cinepolis' || proof.visibleDataGate !== true) throw new Error('Visible TyA proof mismatch.');
+          if (proof.expectedPeriods !== 14 || proof.expectedVisits !== 616 || proof.expectedShoppers !== 210) throw new Error('Expected visible counts mismatch.');
+          const safe = proof.hostingOnly === true && proof.firestoreWrites === false && proof.authWrites === false && proof.storageWrites === false && proof.imports === false && proof.rules === false && proof.functions === false && proof.make === false && proof.gemini === false && proof.payments === false && proof.production === false;
+          if (!safe) throw new Error('DEV proof safety flags mismatch.');
+          console.log('Deployed visible TyA R17 proof verified.');
+          NODE
+
+      - name: Authoritative remote visible TyA smoke
+        env:
+          CXORBIA_BASE_URL: https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r17=visible
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-phase-a-visible-data-smoke-r17.mjs \
+            --out .tmp/visible-tya-r17-redeploy/remote-visible-smoke
+          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs \
+            --base-url 'https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r17=visible' \
+            --out .tmp/visible-tya-r17-redeploy/remote-route-smoke
+          printf 'status=success\nurl=%s\nbuild=%s\ncommit=%s\nrun_id=%s\nvisible_smoke=pass\nroute_smoke=pass\n' \
+            "$CXORBIA_DEV_ROOT_URL" "$CXORBIA_BUILD_LABEL" "$GITHUB_SHA" "$GITHUB_RUN_ID" \
+            > .tmp/visible-tya-r17-redeploy/deploy-status.txt
+
+      - name: Cleanup temporary credential
+        if: always()
+        run: |
+          rm -f .tmp/visible-tya-r17-redeploy/firebase-service-account.json
+
+      - name: Upload redeploy and smoke evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visible-tya-r17-hosting-redeploy-report
+          path: .tmp/visible-tya-r17-redeploy
+          if-no-files-found: error
+          retention-days: 14
