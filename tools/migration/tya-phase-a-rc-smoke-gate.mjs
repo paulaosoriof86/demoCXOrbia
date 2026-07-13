@@ -1,24 +1,22 @@
 #!/usr/bin/env node
 /*
-  CXOrbia TyA - Phase A RC smoke gate aligned to the post-V96 source lock.
-  Safe-only: static files, hashes, syntax and source-safe reports.
+  CXOrbia TyA - Phase A RC smoke gate aligned to the V110 union source lock.
+  Safe-only: static files, source lock, syntax and source-safe reports.
   No deploy, providers, imports or database writes.
 */
-import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
 
 const root = process.cwd();
 const args = process.argv.slice(2);
 const outIdx = args.indexOf('--out');
 const outDir = outIdx >= 0 && args[outIdx + 1] ? path.resolve(root, args[outIdx + 1]) : null;
-const manifestPath = path.join(root, 'backend/config/phase-a-source-lock-post-v96-runtime-manifest.source-safe.json');
 const copyScanner = path.join(root, 'tools/quality/tya-p0-operational-copy-scanner.mjs');
 
 const exists = rel => fs.existsSync(path.join(root, rel));
 const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
-const sha256 = rel => crypto.createHash('sha256').update(fs.readFileSync(path.join(root, rel))).digest('hex');
 
 function listFiles(dir) {
   const abs = path.join(root, dir);
@@ -46,31 +44,32 @@ function localScripts(html) {
 const hardFails = [];
 const warnings = [];
 const checks = {};
-let manifest = null;
 
+const sourceLockOut = outDir
+  ? path.join(outDir, 'v110-source-lock')
+  : path.join(root, '.tmp/phase-a-rc-smoke-v110-source-lock');
+let sourceLockReport = null;
 try {
-  manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  if (manifest.kind !== 'cxorbia.sourceLockRuntimeManifest') hardFails.push('source_lock_manifest_kind_invalid');
-  if (!Array.isArray(manifest.runtimeFiles) || manifest.runtimeFiles.length !== 67) hardFails.push('source_lock_runtime_count_not_67');
+  execFileSync(process.execPath, [
+    'tools/release/tya-source-lock-v110-union-verify.mjs',
+    '--manifest', 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json',
+    '--out', sourceLockOut
+  ], { cwd: root, stdio: 'pipe' });
+  sourceLockReport = JSON.parse(fs.readFileSync(path.join(sourceLockOut, 'source-lock-v110-union-report.json'), 'utf8'));
+  if (sourceLockReport.pass !== true) hardFails.push('v110_union_source_lock_not_pass');
 } catch (error) {
-  hardFails.push(`source_lock_manifest_unreadable:${error.message}`);
+  hardFails.push(`v110_union_source_lock_failed:${String(error?.stderr || error?.message || error).slice(0, 400)}`);
 }
-
-const runtimeMissing = [];
-const runtimeMismatched = [];
-if (manifest?.runtimeFiles) {
-  for (const item of manifest.runtimeFiles) {
-    if (!exists(item.path)) runtimeMissing.push(item.path);
-    else if (sha256(item.path) !== item.sha256) runtimeMismatched.push(item.path);
-  }
-}
-if (runtimeMissing.length) hardFails.push(`source_lock_runtime_missing:${runtimeMissing.join(',')}`);
-if (runtimeMismatched.length) hardFails.push(`source_lock_runtime_mismatched:${runtimeMismatched.join(',')}`);
 checks.sourceLock = {
-  expected: manifest?.runtimeFiles?.length || 0,
-  matched: Math.max(0, (manifest?.runtimeFiles?.length || 0) - runtimeMissing.length - runtimeMismatched.length),
-  missing: runtimeMissing,
-  mismatched: runtimeMismatched
+  baseline: 'V110 union deterministic manifest',
+  manifest: 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json',
+  pass: sourceLockReport?.pass === true,
+  expected: sourceLockReport?.expectedFileCount ?? 1426,
+  verified: sourceLockReport?.verifiedFileCount ?? 0,
+  missingCount: sourceLockReport?.missingCount ?? null,
+  mismatchCount: sourceLockReport?.mismatchCount ?? null,
+  unexpectedCount: sourceLockReport?.unexpectedCount ?? null,
+  aggregateMatches: sourceLockReport?.aggregateMatches ?? false
 };
 
 let html = '';
@@ -132,8 +131,19 @@ const semanticMissing = [];
 for (const [id, file, pattern] of semanticRequirements) {
   if (!exists(file) || !pattern.test(read(file))) semanticMissing.push(id);
 }
-if (semanticMissing.length) hardFails.push(`post_v96_semantics_missing:${semanticMissing.join(',')}`);
-checks.postV96Semantics = { required: semanticRequirements.length, missing: semanticMissing };
+if (semanticMissing.length) hardFails.push(`v110_required_semantics_missing:${semanticMissing.join(',')}`);
+checks.v110Semantics = { required: semanticRequirements.length, missing: semanticMissing };
+
+const r15fWorkflow = exists('.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml')
+  ? read('.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml')
+  : '';
+const r15fBindingPrepared = r15fWorkflow.includes('tya-source-safe-binding-build-r15f.mjs');
+if (!r15fBindingPrepared) hardFails.push('r15f_source_safe_binding_not_prepared');
+checks.sourceSafeBinding = {
+  prepared: r15fBindingPrepared,
+  repoIndexRemainsV110Locked: !scripts.includes('data/tya-hr-source-safe-periods.js') && !scripts.includes('core/tya-phase-a-source-safe-preview.js'),
+  buildTimeOnly: true
+};
 
 const envFiles = listFiles('.').filter(file => /(^|\/)\.env(?:\.|$)/i.test(file) && !file.endsWith('.example'));
 if (envFiles.length) hardFails.push(`environment_files_present:${envFiles.join(',')}`);
@@ -172,20 +182,13 @@ checks.copy = {
   classification: copyResidues ? 'P1_REVIEW_NOT_PROVIDER_ACTIVATION' : 'CLEAN'
 };
 
-const expectedPaths = new Set([
-  ...(manifest?.runtimeFiles || []).map(item => item.path),
-  ...(manifest?.excludedDocumentationAndMetadata || [])
-]);
-const runtimeLikeAppFiles = listFiles('app').filter(file => /^(?:app\/(?:core|modules|styles)\/|app\/(?:app\.js|index\.html|manifest\.webmanifest|sw\.js)|app\/demo\/)/.test(file));
-const unexpectedAppFiles = runtimeLikeAppFiles.filter(file => !expectedPaths.has(file));
-if (unexpectedAppFiles.length) warnings.push(`preserved_additional_app_files:${unexpectedAppFiles.length}`);
-checks.additionalAppFiles = { count: unexpectedAppFiles.length, files: unexpectedAppFiles };
-
 const report = {
-  gate: 'cxorbia-tya-phase-a-rc-smoke-post-v96',
-  baseline: 'source-lock-post-v96',
+  gate: 'cxorbia-tya-phase-a-rc-smoke-v110',
+  baseline: 'V110-union-source-lock',
   generatedAt: new Date().toISOString(),
-  verdict: hardFails.length ? 'NO_GO_RC_PHASE_A_POST_V96' : (warnings.length ? 'GO_WITH_WARNINGS_RC_PHASE_A_POST_V96' : 'GO_RC_PHASE_A_POST_V96'),
+  verdict: hardFails.length
+    ? 'NO_GO_RC_PHASE_A_V110'
+    : (warnings.length ? 'GO_WITH_WARNINGS_RC_PHASE_A_V110' : 'GO_RC_PHASE_A_V110'),
   hardFails,
   warnings,
   checks,
@@ -204,16 +207,16 @@ if (outDir) {
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, 'phase-a-rc-smoke-report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
   const md = [
-    '# CXOrbia TyA Phase A RC smoke — source lock post-V96', '',
+    '# CXOrbia TyA Phase A RC smoke — V110 union source lock', '',
     `Generated: ${report.generatedAt}`,
     `Verdict: ${report.verdict}`,
     `Hard fails: ${hardFails.length}`,
     `Warnings: ${warnings.length}`,
-    `Runtime matched: ${checks.sourceLock.matched}/${checks.sourceLock.expected}`,
+    `V110 files verified: ${checks.sourceLock.verified}/${checks.sourceLock.expected}`,
     `JavaScript checked: ${checks.javascript.checked}`,
     `Module registrations: ${checks.modules.registrations} (${checks.modules.unique} unique)`,
+    `R15F binding prepared: ${checks.sourceSafeBinding.prepared}`,
     `Copy items for P1 review: ${checks.copy.sourceResidues}`,
-    `Preserved additional app files: ${checks.additionalAppFiles.count}`,
     '', '## Hard fails', ...(hardFails.length ? hardFails.map(x => `- ${x}`) : ['- none']),
     '', '## Warnings', ...(warnings.length ? warnings.map(x => `- ${x}`) : ['- none']),
     '', '## Safe state', '- No deploy', '- No production', '- No provider calls', '- No database writes', '- No imports', '- No Auth/Firestore activation', ''
