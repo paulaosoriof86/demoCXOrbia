@@ -8,9 +8,11 @@
     "shopperGap": "backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json",
     "certificationProjection": "backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json"
   },
-  "required": {
+  "scope": {
     "tenantId": "tya",
-    "projectId": "cinepolis",
+    "projectId": "cinepolis"
+  },
+  "required": {
     "hrVisits": 616,
     "liveShoppers": 210,
     "historicalShopperReferences": 213,
