@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /*
-  CXOrbia TyA - predeploy validation aligned to source lock post-V96.
+  CXOrbia TyA - predeploy validation aligned to the deterministic V110 union lock.
   Validation success is not deploy authorization.
   No provider calls, imports, database writes or deploys.
 */
-import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
 
 const root = process.cwd();
 const args = process.argv.slice(2);
@@ -15,7 +15,6 @@ const outIdx = args.indexOf('--out');
 const outDir = outIdx >= 0 && args[outIdx + 1] ? path.resolve(root, args[outIdx + 1]) : null;
 const exists = rel => fs.existsSync(path.join(root, rel));
 const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
-const sha256 = rel => crypto.createHash('sha256').update(fs.readFileSync(path.join(root, rel))).digest('hex');
 
 function listFiles(dir) {
   const abs = path.join(root, dir);
@@ -44,27 +43,31 @@ const hardFails = [];
 const warnings = [];
 const checks = {};
 
-let sourceManifest = null;
+const sourceLockOut = outDir
+  ? path.join(outDir, 'v110-source-lock')
+  : path.join(root, '.tmp/rc-phase-a-predeploy-v110-source-lock');
+let sourceLockReport = null;
 try {
-  sourceManifest = JSON.parse(read('backend/config/phase-a-source-lock-post-v96-runtime-manifest.source-safe.json'));
-  if (sourceManifest.kind !== 'cxorbia.sourceLockRuntimeManifest') hardFails.push('source_lock_manifest_kind_invalid');
-  if (!Array.isArray(sourceManifest.runtimeFiles) || sourceManifest.runtimeFiles.length !== 67) hardFails.push('source_lock_runtime_count_not_67');
+  execFileSync(process.execPath, [
+    'tools/release/tya-source-lock-v110-union-verify.mjs',
+    '--manifest', 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json',
+    '--out', sourceLockOut
+  ], { cwd: root, stdio: 'pipe' });
+  sourceLockReport = JSON.parse(fs.readFileSync(path.join(sourceLockOut, 'source-lock-v110-union-report.json'), 'utf8'));
+  if (sourceLockReport.pass !== true) hardFails.push('v110_union_source_lock_not_pass');
 } catch (error) {
-  hardFails.push(`source_lock_manifest_unreadable:${error.message}`);
+  hardFails.push(`v110_union_source_lock_failed:${String(error?.stderr || error?.message || error).slice(0, 400)}`);
 }
-const runtimeMissing = [];
-const runtimeMismatched = [];
-for (const item of sourceManifest?.runtimeFiles || []) {
-  if (!exists(item.path)) runtimeMissing.push(item.path);
-  else if (sha256(item.path) !== item.sha256) runtimeMismatched.push(item.path);
-}
-if (runtimeMissing.length) hardFails.push(`source_lock_runtime_missing:${runtimeMissing.join(',')}`);
-if (runtimeMismatched.length) hardFails.push(`source_lock_runtime_mismatched:${runtimeMismatched.join(',')}`);
 checks.sourceLock = {
-  expected: sourceManifest?.runtimeFiles?.length || 0,
-  matched: Math.max(0, (sourceManifest?.runtimeFiles?.length || 0) - runtimeMissing.length - runtimeMismatched.length),
-  missing: runtimeMissing,
-  mismatched: runtimeMismatched
+  baseline: 'V110 union deterministic manifest',
+  manifest: 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json',
+  pass: sourceLockReport?.pass === true,
+  expected: sourceLockReport?.expectedFileCount ?? 1426,
+  verified: sourceLockReport?.verifiedFileCount ?? 0,
+  missing: sourceLockReport?.missingCount ?? null,
+  mismatched: sourceLockReport?.mismatchCount ?? null,
+  unexpected: sourceLockReport?.unexpectedCount ?? null,
+  aggregateMatches: sourceLockReport?.aggregateMatches ?? false
 };
 
 let firebase = null;
@@ -87,15 +90,15 @@ const missingScripts = scripts.filter(src => !exists(`app/${src}`));
 if (duplicateScripts.length) hardFails.push(`duplicate_local_scripts:${duplicateScripts.join(',')}`);
 if (missingScripts.length) hardFails.push(`missing_local_scripts:${missingScripts.join(',')}`);
 if (!/<meta\s+charset=["']?UTF-8["']?\s*\/?>/i.test(html)) hardFails.push('index_charset_not_utf8');
-const activeBackendScripts = scripts.filter(src => /(?:^|\/)(?:backend-|cx-data-bridge|backend-connection-point)/i.test(src));
-if (activeBackendScripts.length) hardFails.push(`backend_runtime_scripts_active_before_authorization:${activeBackendScripts.join(',')}`);
-checks.index = { localScripts: scripts.length, duplicateScripts, missingScripts, activeBackendScripts };
+const activeProviderScripts = scripts.filter(src => /(?:^|\/)(?:backend-firebase|firebase-cxdata|provider-live)/i.test(src));
+if (activeProviderScripts.length) hardFails.push(`provider_runtime_scripts_active_before_authorization:${activeProviderScripts.join(',')}`);
+checks.index = { localScripts: scripts.length, duplicateScripts, missingScripts, activeProviderScripts };
 
 const requiredDocs = [
-  'app/docs/SOURCE-LOCK-EMPALME-PROTOTIPO-POST-V96-20260710.md',
-  'app/docs/REAUDITORIA-EMPALME-PROTOTIPO-POST-V96-20260710.md',
-  'app/docs/PHASE-A-DEV-AUTH-FIRESTORE-ACTIVATION-READINESS-POST-V96-20260710.md',
-  'app/docs/EMPALME-CONTROLADO-RUNTIME-POST-V96-20260710.md'
+  'app/docs/AUDITORIA-FORENSE-CXORBIA-V110-DECISION-EMPALME-20260712.md',
+  'app/docs/CAMBIOS-BACKEND-ADDENDUM-EMPALME-DETERMINISTICO-V110-20260712.md',
+  'app/docs/PHASE-A-SOURCE-SAFE-VISUAL-SMOKE-R10-POST-V110-RESULT-20260712.md',
+  'app/docs/PHASE-A-FINANCIAL-REAL-TYA-R14C-RESULT-20260713.md'
 ];
 const missingDocs = requiredDocs.filter(file => !exists(file));
 if (missingDocs.length) hardFails.push(`required_docs_missing:${missingDocs.join(',')}`);
@@ -107,12 +110,17 @@ try { deployWorkflow = read(deployWorkflowPath); } catch (error) { hardFails.pus
 const manualDispatch = /^\s{2}workflow_dispatch:/m.test(deployWorkflow);
 const automaticTriggers = [...deployWorkflow.matchAll(/^\s{2}(push|pull_request|schedule):/gm)].map(match => match[1]);
 const confirmationGate = deployWorkflow.includes('DEPLOY_DEV_ROOT');
-const sourceLockGateBeforeFirebase = deployWorkflow.indexOf('Source lock post-V96 runtime gate') >= 0 && deployWorkflow.indexOf('Source lock post-V96 runtime gate') < deployWorkflow.indexOf('Firebase CLI access check');
+const sourceLockStep = deployWorkflow.indexOf('Source lock V110 union gate');
+const predeployStep = deployWorkflow.indexOf('Predeploy gate');
+const firebaseStep = deployWorkflow.indexOf('Firebase CLI access check');
+const sourceLockGateBeforeFirebase = sourceLockStep >= 0 && predeployStep > sourceLockStep && firebaseStep > predeployStep;
+const deterministicBinding = deployWorkflow.includes('tya-source-safe-binding-build-r15f.mjs');
 if (!manualDispatch) hardFails.push('deploy_workflow_not_manual_dispatch');
 if (automaticTriggers.length) hardFails.push(`deploy_workflow_has_automatic_triggers:${automaticTriggers.join(',')}`);
 if (!confirmationGate) hardFails.push('deploy_workflow_missing_exact_confirmation');
-if (!sourceLockGateBeforeFirebase) hardFails.push('deploy_workflow_source_lock_gate_not_before_firebase');
-checks.deployWorkflow = { manualDispatch, automaticTriggers, confirmationGate, sourceLockGateBeforeFirebase };
+if (!sourceLockGateBeforeFirebase) hardFails.push('deploy_workflow_v110_source_lock_gate_not_before_firebase');
+if (!deterministicBinding) hardFails.push('deploy_workflow_missing_r15f_source_safe_binding');
+checks.deployWorkflow = { manualDispatch, automaticTriggers, confirmationGate, sourceLockGateBeforeFirebase, deterministicBinding };
 
 try {
   const webManifest = JSON.parse(read('app/manifest.webmanifest'));
@@ -141,9 +149,12 @@ if (copyResidues) warnings.push(`source_lock_copy_items_for_p1_review:${copyResi
 checks.copy = { scannerExecuted: Boolean(copyReport), sourceResidues: copyResidues };
 
 const report = {
-  gate: 'cxorbia-tya-rc-phase-a-predeploy-post-v96',
+  gate: 'cxorbia-tya-rc-phase-a-predeploy-v110',
+  baseline: 'V110-union-source-lock',
   generatedAt: new Date().toISOString(),
-  verdict: hardFails.length ? 'NO_GO_PREDEPLOY_POST_V96' : (warnings.length ? 'GO_WITH_WARNINGS_PREDEPLOY_NOT_DEPLOY_AUTHORIZATION' : 'GO_PREDEPLOY_NOT_DEPLOY_AUTHORIZATION'),
+  verdict: hardFails.length
+    ? 'NO_GO_PREDEPLOY_V110'
+    : (warnings.length ? 'GO_WITH_WARNINGS_PREDEPLOY_NOT_DEPLOY_AUTHORIZATION' : 'GO_PREDEPLOY_NOT_DEPLOY_AUTHORIZATION'),
   hardFails,
   warnings,
   checks,
@@ -163,12 +174,12 @@ if (outDir) {
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, 'rc-phase-a-predeploy-report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
   const md = [
-    '# CXOrbia TyA RC Phase A predeploy — source lock post-V96', '',
+    '# CXOrbia TyA RC Phase A predeploy — V110 union source lock', '',
     `Generated: ${report.generatedAt}`,
     `Verdict: ${report.verdict}`,
     `Hard fails: ${hardFails.length}`,
     `Warnings: ${warnings.length}`,
-    `Runtime matched: ${checks.sourceLock.matched}/${checks.sourceLock.expected}`,
+    `V110 files verified: ${checks.sourceLock.verified}/${checks.sourceLock.expected}`,
     `Deployment authorization: no`,
     '', '## Hard fails', ...(hardFails.length ? hardFails.map(x => `- ${x}`) : ['- none']),
     '', '## Warnings', ...(warnings.length ? warnings.map(x => `- ${x}`) : ['- none']),
