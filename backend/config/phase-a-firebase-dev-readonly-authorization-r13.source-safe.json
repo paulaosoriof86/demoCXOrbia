@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0.0",
+  "authorizationId": "phase-a-firebase-dev-readonly-r13",
+  "authorizedAt": "2026-07-12",
+  "authorizedBy": "Paula",
+  "authorizationSource": "explicit project conversation instruction",
+  "status": "explicitly_authorized",
+  "scope": "sanitized_read_only_firebase_dev",
+  "targetProjectId": "cxorbia-backend-dev",
+  "targetEnvironment": "DEV",
+  "exactConfirmation": "VERIFY_FIREBASE_DEV_READ_ONLY",
+  "authorizedActions": [
+    "sanitized_auth_user_count_read",
+    "sanitized_auth_configuration_boolean_read",
+    "sanitized_firestore_root_collection_count_read_without_document_fields",
+    "sanitized_firestore_database_count_read",
+    "sanitized_storage_empty_signal_read_without_object_names",
+    "sanitized_functions_empty_signal_read_without_function_names",
+    "sanitized_rules_release_count_read_without_release_names"
+  ],
+  "prohibited": {
+    "writes": true,
+    "imports": true,
+    "deploy": true,
+    "production": true,
+    "createOrModifyUsers": true,
+    "writeClaims": true,
+    "readUserIdentifiers": true,
+    "readFirestoreDocumentFields": true,
+    "writeOrDeleteFirestore": true,
+    "uploadOrDeleteStorage": true,
+    "createUpdateDeleteOrInvokeFunctions": true,
+    "deployRules": true,
+    "deployHosting": true,
+    "enableProviders": true,
+    "readOrExposeSensitiveData": true
+  },
+  "reportPolicy": {
+    "countsAndBooleansOnly": true,
+    "piiOutput": false,
+    "credentialOutput": false,
+    "rawProviderResponsesPersisted": false,
+    "sanitizedArtifactOnly": true
+  },
+  "safeStateBeforeExecution": {
+    "providerCallsExecuted": false,
+    "credentialsUsed": false,
+    "writes": false,
+    "imports": false,
+    "deploy": false,
+    "production": false
+  }
+}
