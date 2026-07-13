@@ -3,8 +3,8 @@
   CXOrbia Phase A R16D — R14C financial overlay and review plan.
 
   Offline/source-safe only. It overlays the 196 exact financial links onto the
-  corresponding visit-level settlement controls, keeps unresolved financial
-  rows in review, preserves the shopper gap and certification-source blocker,
+  corresponding visit-level settlement controls, keeps all unresolved finance
+  items in review, preserves the shopper gap and certification-source blocker,
   and never infers paid/certified states.
 */
 
@@ -23,6 +23,7 @@ const arg = (name, fallback) => {
 const contractPath = arg('--contract', 'backend/contracts/phase-a-r14c-financial-overlay-review-plan-r16d-v1.json');
 const basePlanPath = arg('--plan', '.tmp/r16d-base-plan/firestore-materialization-plan.json');
 const financialPath = arg('--financial', 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json');
+const controlledFinancialPath = arg('--controlled-financial', 'backend/config/phase-a-financial-workbook-source-safe-r14.json');
 const shopperGapPath = arg('--shopper-gap', 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json');
 const certificationPath = arg('--certifications', 'backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json');
 const outDirArg = arg('--out', '.tmp/r14c-financial-overlay-review-plan-r16d');
@@ -33,6 +34,7 @@ const stableJson = value => JSON.stringify(value, null, 2) + '\n';
 const sha256 = value => crypto.createHash('sha256').update(value).digest('hex');
 const safeArray = value => Array.isArray(value) ? value : [];
 const compact = value => value === undefined ? null : value;
+const finiteOrNull = value => Number.isFinite(Number(value)) ? Number(value) : null;
 
 function deterministicId(prefix, value) {
   return `${prefix}_${sha256(JSON.stringify(value)).slice(0, 20)}`;
@@ -46,11 +48,29 @@ function summarize(items, key) {
   }, {});
 }
 
-function safeReviewItem(item, index) {
-  const reviewReasons = safeArray(item.reviewReasons || item.reasons || item.reviewReason).map(String).slice(0, 20);
-  const safe = {
-    reviewId: String(item.reviewId || item.id || deterministicId('finrev', { index, sourceRecordId: item.sourceRecordId, evidenceId: item.evidenceId, matchStatus: item.matchStatus, periodKey: item.periodKey, country: item.country })),
-    kind: String(item.kind || item.type || item.reviewType || 'financial_reconciliation'),
+function safeReviewItem(item, index, sourceKind) {
+  const rawReasons = Array.isArray(item.reviewReasons)
+    ? item.reviewReasons
+    : Array.isArray(item.reasons)
+      ? item.reasons
+      : item.reviewReason
+        ? [item.reviewReason]
+        : [];
+  const reviewReasons = rawReasons.map(String).slice(0, 20);
+  const identity = {
+    sourceKind,
+    index,
+    reviewId: item.reviewId || item.id,
+    sourceRecordId: item.sourceRecordId || item.financialRecordId || item.recordId,
+    evidenceId: item.evidenceId || item.ledgerEvidenceId,
+    matchStatus: item.matchStatus || item.status,
+    periodKey: item.periodKey,
+    country: item.country
+  };
+  return {
+    reviewId: String(item.reviewId || item.id || deterministicId('finrev', identity)),
+    kind: String(item.kind || item.type || item.reviewType || sourceKind),
+    sourceKind,
     sourceRecordId: compact(item.sourceRecordId || item.financialRecordId || item.recordId),
     paymentItemId: compact(item.paymentItemId),
     evidenceId: compact(item.evidenceId || item.ledgerEvidenceId),
@@ -68,32 +88,37 @@ function safeReviewItem(item, index) {
     autoResolutionAllowed: false,
     materializationEligible: false
   };
-  return safe;
 }
 
-function findFinancialReviewQueue(financial) {
-  const directKeys = ['reviewQueue', 'reviewQueueItems', 'financialReviewQueue', 'reconciliationReviewQueue'];
-  for (const key of directKeys) {
-    if (Array.isArray(financial[key])) return { key, items: financial[key] };
-  }
+function buildFinancialReviewQueue(financial, controlledFinancial) {
+  const liquidationReview = safeArray(financial.liquidationCandidates)
+    .filter(item => item.reviewRequired === true)
+    .map((item, index) => safeReviewItem(item, index, 'liquidation_reconciliation'));
 
-  const reviewCandidates = safeArray(financial.liquidationCandidates).filter(item => item.reviewRequired === true);
-  const ledgerKeys = ['ledgerEvidenceCandidates', 'ledgerCandidates', 'paymentEvidenceCandidates', 'ledgerEvidence'];
-  let ledgerReview = [];
-  let ledgerKey = null;
-  for (const key of ledgerKeys) {
-    if (Array.isArray(financial[key])) {
-      ledgerKey = key;
-      ledgerReview = financial[key].filter(item => item.reviewRequired === true || item.matchStatus !== 'unique_linked');
-      break;
+  const ledgerReview = safeArray(financial.ledgerPaymentEvidenceCandidates)
+    .map((item, index) => safeReviewItem(item, index, 'ledger_payment_evidence'));
+
+  const controlledSourceReview = safeArray(controlledFinancial.reviewQueue)
+    .map((item, index) => safeReviewItem(item, index, 'controlled_financial_source'));
+
+  const all = [...liquidationReview, ...ledgerReview, ...controlledSourceReview];
+  const deduped = [...new Map(all.map(item => [`${item.sourceKind}:${item.reviewId}`, item])).values()];
+  return {
+    items: deduped,
+    components: {
+      liquidationReview: liquidationReview.length,
+      ledgerReview: ledgerReview.length,
+      controlledSourceReview: controlledSourceReview.length,
+      totalBeforeDedupe: all.length,
+      totalAfterDedupe: deduped.length
     }
-  }
-  return { key: `fallback:liquidationCandidates+${ledgerKey || 'none'}`, items: [...reviewCandidates, ...ledgerReview] };
+  };
 }
 
 const contract = readJson(contractPath);
 const basePlan = readJson(basePlanPath);
 const financial = readJson(financialPath);
+const controlledFinancial = readJson(controlledFinancialPath);
 const shopperGap = readJson(shopperGapPath);
 const certifications = readJson(certificationPath);
 const operations = safeArray(basePlan.operations);
@@ -127,6 +152,8 @@ for (const item of exactCandidates) {
 if (candidates.length !== Number(expected.financialRows)) hardStops.push('financial_row_count_mismatch');
 if (exactCandidates.length !== Number(expected.exactFinancialOverlays)) hardStops.push('financial_exact_count_mismatch');
 if (reviewCandidates.length !== Number(expected.financialReviewRows)) hardStops.push('financial_review_count_mismatch');
+if (safeArray(financial.ledgerPaymentEvidenceCandidates).length !== Number(expected.ledgerEvidenceRows)) hardStops.push('ledger_evidence_count_mismatch');
+if (safeArray(controlledFinancial.reviewQueue).length !== Number(expected.controlledSourceReviewItems)) hardStops.push('controlled_source_review_count_mismatch');
 
 const unmatchedExactVisitIds = [...exactByVisitId.keys()].filter(visitId => !liquidationByVisitId.has(visitId));
 if (unmatchedExactVisitIds.length) hardStops.push(`unmatched_exact_financial_visits:${unmatchedExactVisitIds.length}`);
@@ -141,37 +168,51 @@ const overlayedOperations = operations.map(operation => {
       data: {
         ...operation.data,
         financialOverlayState: 'pending_exact_source_link',
+        paymentControlOnly: true,
         paymentConfirmationStatus: 'not_confirmed',
+        paymentState: 'pending_financial_source',
         paid: false,
-        paidAt: null
+        paidAt: null,
+        paymentBatchId: null
       }
     };
   }
 
-  const requestedPaymentState = String(financialRow.paymentState || 'scheduled');
-  const safePaymentState = requestedPaymentState === 'paid' ? 'payment_confirmation_required' : requestedPaymentState;
+  const honorario = finiteOrNull(financialRow.honorario);
+  const boleto = finiteOrNull(financialRow.boleto);
+  const combo = finiteOrNull(financialRow.combo);
+  const total = finiteOrNull(financialRow.total);
+  const amountStatus = [honorario, boleto, combo, total].every(value => value !== null)
+    ? 'complete_control_amounts'
+    : 'partial_control_amounts';
+
   return {
     ...operation,
     data: {
       ...operation.data,
-      paymentItemId: financialRow.paymentItemId || operation.data?.paymentItemId,
+      paymentItemId: operation.data?.paymentItemId,
       financialSourceRecordId: financialRow.sourceRecordId || null,
       financialOverlayState: 'r14c_exact_protected_operational_linked',
       financialMatchStatus: financialRow.matchStatus || 'exact_protected_operational_linked',
-      paymentState: safePaymentState,
+      paymentState: 'pending_payment_confirmation',
       paymentControlOnly: true,
       paymentConfirmationStatus: 'not_confirmed',
       paid: false,
       paidAt: null,
       paymentBatchId: null,
       paymentSource: 'r14c_control_row_unconfirmed',
-      honorario: compact(financialRow.honorario),
-      boleto: compact(financialRow.boleto),
-      combo: compact(financialRow.combo),
-      reimbursement: compact(financialRow.reimbursement),
-      totalKnown: compact(financialRow.totalKnown),
-      amountStatus: compact(financialRow.amountStatus),
-      missingAmountFields: safeArray(financialRow.missingAmountFields).map(String),
+      honorario,
+      boleto,
+      combo,
+      reimbursement: boleto === null || combo === null ? null : boleto + combo,
+      totalKnown: total,
+      amountStatus,
+      missingAmountFields: [
+        honorario === null ? 'honorario' : null,
+        boleto === null ? 'boleto' : null,
+        combo === null ? 'combo' : null,
+        total === null ? 'total' : null
+      ].filter(Boolean),
       reviewRequired: false,
       reviewReasons: [],
       sourceRefs: {
@@ -182,10 +223,12 @@ const overlayedOperations = operations.map(operation => {
   };
 });
 
-const queueSource = findFinancialReviewQueue(financial);
-const financialReviewItems = queueSource.items.map(safeReviewItem);
-const dedupedFinancialReviewItems = [...new Map(financialReviewItems.map(item => [item.reviewId, item])).values()];
-if (dedupedFinancialReviewItems.length !== Number(expected.financialReviewQueue)) hardStops.push(`financial_review_queue_count_mismatch:${dedupedFinancialReviewItems.length}`);
+const queue = buildFinancialReviewQueue(financial, controlledFinancial);
+const financialReviewItems = queue.items;
+if (queue.components.liquidationReview !== Number(expected.financialReviewRows)) hardStops.push(`financial_liquidation_review_component_mismatch:${queue.components.liquidationReview}`);
+if (queue.components.ledgerReview !== Number(expected.ledgerEvidenceRows)) hardStops.push(`financial_ledger_review_component_mismatch:${queue.components.ledgerReview}`);
+if (queue.components.controlledSourceReview !== Number(expected.controlledSourceReviewItems)) hardStops.push(`financial_controlled_review_component_mismatch:${queue.components.controlledSourceReview}`);
+if (financialReviewItems.length !== Number(expected.financialReviewQueue)) hardStops.push(`financial_review_queue_count_mismatch:${financialReviewItems.length}`);
 
 const shopperReviewItems = safeArray(shopperGap.reviewItems).map((item, index) => ({
   reviewId: String(item.id || deterministicId('shopgap', { index, type: item.type, evidence: item.evidence })),
@@ -199,6 +242,7 @@ const shopperReviewItems = safeArray(shopperGap.reviewItems).map((item, index) =
   materializationEligible: false
 }));
 if (shopperReviewItems.length !== Number(expected.shopperGapItems)) hardStops.push('shopper_review_item_count_mismatch');
+if (shopperReviewItems.reduce((sum, item) => sum + item.missingCount, 0) !== Number(expected.shopperGapCount)) hardStops.push('shopper_gap_count_mismatch');
 
 const certificationReviewItems = [{
   reviewId: 'certification_carryover_source_required',
@@ -235,7 +279,11 @@ for (let start = 0; start < writeEligibleOperations.length; start += maxBatch) {
 const decision = hardStops.length ? contract.decisions.hardStop : contract.decisions.pass;
 const plan = {
   schemaVersion: '1.0.0',
-  planId: `r16d_${sha256(JSON.stringify({ basePlanId: basePlan.planId, overlayIds: exactCandidates.map(item => item.sourceRecordId), reviewIds: dedupedFinancialReviewItems.map(item => item.reviewId) })).slice(0, 20)}`,
+  planId: `r16d_${sha256(JSON.stringify({
+    basePlanId: basePlan.planId,
+    overlayIds: exactCandidates.map(item => item.sourceRecordId),
+    reviewIds: financialReviewItems.map(item => `${item.sourceKind}:${item.reviewId}`)
+  })).slice(0, 20)}`,
   contractId: contract.contractId,
   generatedAt: new Date().toISOString(),
   mode: 'dry_run',
@@ -246,10 +294,11 @@ const plan = {
   basePlanSha256: basePlan.planSha256,
   operations: overlayedOperations,
   reviewQueues: {
-    financial: dedupedFinancialReviewItems,
+    financial: financialReviewItems,
     shopper: shopperReviewItems,
     certification: certificationReviewItems
   },
+  reviewQueueComponents: queue.components,
   counts: {
     baseOperations: operations.length,
     operations: overlayedOperations.length,
@@ -259,7 +308,9 @@ const plan = {
     exactFinancialOverlays: overlayCount,
     pendingControlRecords: pendingControlCount,
     financialReviewRows: reviewCandidates.length,
-    financialReviewQueue: dedupedFinancialReviewItems.length,
+    ledgerEvidenceRows: safeArray(financial.ledgerPaymentEvidenceCandidates).length,
+    controlledSourceReviewItems: safeArray(controlledFinancial.reviewQueue).length,
+    financialReviewQueue: financialReviewItems.length,
     shopperReviewItems: shopperReviewItems.length,
     shopperGapCount: shopperReviewItems.reduce((sum, item) => sum + item.missingCount, 0),
     certificationReviewItems: certificationReviewItems.length,
@@ -288,7 +339,7 @@ fs.writeFileSync(path.join(outDir, 'r14c-financial-overlay-review-plan-r16d-summ
   planSha256: plan.planSha256,
   decision: plan.decision,
   counts: plan.counts,
-  reviewQueueSource: queueSource.key,
+  reviewQueueComponents: plan.reviewQueueComponents,
   hardStops: plan.hardStops,
   readiness: plan.readiness,
   safeState: plan.safeState
@@ -302,7 +353,9 @@ fs.writeFileSync(path.join(outDir, 'r14c-financial-overlay-review-plan-r16d.md')
   `Exact financial overlays: ${overlayCount}`,
   `Pending control records: ${pendingControlCount}`,
   `Financial review rows: ${reviewCandidates.length}`,
-  `Financial review queue: ${dedupedFinancialReviewItems.length}`,
+  `Ledger evidence rows: ${safeArray(financial.ledgerPaymentEvidenceCandidates).length}`,
+  `Controlled-source review items: ${safeArray(controlledFinancial.reviewQueue).length}`,
+  `Financial review queue: ${financialReviewItems.length}`,
   `Shopper gap: ${plan.counts.shopperGapCount}`,
   `Certification candidates pending source: ${plan.counts.certificationCandidateShoppers}`,
   `Payment confirmed/inferred: ${paidInferredCount}`,
@@ -316,7 +369,7 @@ console.log(stableJson({
   decision,
   planId: plan.planId,
   counts: plan.counts,
-  reviewQueueSource: queueSource.key,
+  reviewQueueComponents: plan.reviewQueueComponents,
   hardStops,
   readiness: plan.readiness,
   safeState: plan.safeState
