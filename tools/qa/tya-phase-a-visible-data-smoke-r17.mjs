@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /*
-  CXOrbia TyA Phase A R17 — visible-data smoke.
+  CXOrbia TyA Phase A R17 — authoritative visible-data and route smoke.
 
   Validates what a human actually sees, not only that a source-safe payload is
   present in window. It fails when the UI still shows generic demo data, when
-  periods are not independently selectable, or when TyA/Cinepolis branding and
-  counts are not visible. Browser-only, read-only, no providers or writes.
+  periods are not independently selectable, when TyA/Cinepolis branding and
+  counts are not visible, or when a critical route fails for Admin, Cliente or
+  Shopper. Browser-only, read-only, no providers or writes.
 */
 
 import fs from 'node:fs';
@@ -22,24 +23,27 @@ const baseUrl = valueOf('--base-url', process.env.CXORBIA_BASE_URL || 'http://12
 const outDir = path.resolve(valueOf('--out', '.tmp/phase-a-visible-data-smoke-r17'));
 fs.mkdirSync(outDir, { recursive:true });
 
-const expected = { periods:14, visits:616, shoppers:210, currentPeriodVisits:44 };
+const expected = { periods:14, visits:616, shoppers:210, currentPeriodVisits:44, routes:13 };
+const roleSpecs = [
+  { id:'admin', enter:'admin', routes:['dashboard','proyectos','visitas','postulaciones','cert','financiero','aprendizaje'] },
+  { id:'cliente', enter:'cliente', routes:['cli_dashboard','cli_sucursales'] },
+  { id:'shopper', enter:'shopper', routes:['visitas','cert','beneficios','aprendizaje'] }
+];
 const report = {
-  schemaVersion:'1.0.0', gate:'cxorbia-tya-visible-data-smoke-r17', generatedAt:new Date().toISOString(),
-  baseUrl, expected, login:null, runtime:null, admin:null, blockers:[], warnings:[], decision:'HOLD_NOT_RUN',
+  schemaVersion:'1.1.0', gate:'cxorbia-tya-visible-data-smoke-r17', generatedAt:new Date().toISOString(),
+  baseUrl, expected, login:null, runtime:null, admin:null, roles:[], routes:[], blockers:[], warnings:[], decision:'HOLD_NOT_RUN',
   safeState:{browserOnly:true,providerCalls:false,writes:false,imports:false,deploy:false,production:false,piiOutput:false}
 };
 const block = (code, detail='') => report.blockers.push(detail ? `${code}:${detail}` : code);
 const warn = (code, detail='') => report.warnings.push(detail ? `${code}:${detail}` : code);
 const clean = text => String(text || '').replace(/\s+/g,' ').trim().slice(0,500);
 
-const browser = await chromium.launch({ headless:true });
-try {
-  const context = await browser.newContext({ viewport:{width:1440,height:1100}, serviceWorkers:'block' });
-  const page = await context.newPage();
-  const consoleErrors=[];
-  const pageErrors=[];
+function attachErrorCapture(page, consoleErrors, pageErrors) {
   page.on('console', message => { if(message.type()==='error') consoleErrors.push(clean(message.text())); });
   page.on('pageerror', error => pageErrors.push(clean(error?.message || error)));
+}
+
+async function preparePage(page) {
   await page.addInitScript(() => {
     try {
       localStorage.clear();
@@ -50,7 +54,72 @@ try {
   });
   await page.goto(baseUrl, {waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(() => window.CX_TYA_VISIBLE_DATA_READY === true, null, {timeout:20000});
-  await page.waitForFunction(() => Boolean(window.CX?.app?.selectRole && window.CX?.dataSource), null, {timeout:20000});
+  await page.waitForFunction(() => Boolean(window.CX?.app?.selectRole && window.CX?.dataSource && window.CX?.router), null, {timeout:20000});
+  await page.evaluate(() => {
+    document.querySelectorAll('.cx-ov').forEach(node=>node.remove());
+    try { localStorage.setItem('cx_banners','[]'); } catch(e) {}
+    if(window.CX?.confidencialidad){
+      window.CX.confidencialidad.pending=()=>false;
+      window.CX.confidencialidad.show=(_r,done)=>done&&done();
+      window.CX.confidencialidad.accept=()=>{};
+    }
+    if(window.CX?.app) window.CX.app.showBanners=()=>{};
+  });
+}
+
+async function enterRole(page, role) {
+  await page.evaluate(value => {
+    document.querySelectorAll('.cx-ov').forEach(node=>node.remove());
+    if(window.CX?.session?.clear) window.CX.session.clear();
+    window.CX.app.selectRole(value);
+  }, role);
+  await page.waitForSelector('#app.on',{state:'visible',timeout:15000});
+  await page.waitForSelector('#rail',{state:'visible',timeout:15000});
+  await page.waitForSelector('#view',{state:'visible',timeout:15000});
+  await page.waitForTimeout(500);
+}
+
+async function tryRoute(page, token) {
+  return page.evaluate(async routeToken => {
+    const modules = window.CX?.modules || {};
+    const routes = window.CX?.routes || {};
+    const keys = [...new Set([...Object.keys(modules), ...Object.keys(routes)])];
+    const normalized = String(routeToken).toLowerCase();
+    const exact = keys.find(key => String(key).toLowerCase() === normalized);
+    const partial = keys.find(key => String(key).toLowerCase().includes(normalized) || normalized.includes(String(key).toLowerCase()));
+    const target = exact || partial || null;
+    if(!target) return {token:routeToken,target:null,attempted:false,rendered:false};
+    try {
+      if(window.CX?.router?.nav) window.CX.router.nav(target);
+      else if(window.CX?.router?.go) window.CX.router.go(target);
+      else if(window.CX?.router?.navigate) window.CX.router.navigate(target);
+      else return {token:routeToken,target,attempted:false,rendered:false};
+    } catch(error) {
+      return {token:routeToken,target,attempted:true,rendered:false,error:String(error?.message||error).slice(0,180)};
+    }
+    await new Promise(resolve=>setTimeout(resolve,300));
+    const view=document.querySelector('#view');
+    const text=String(view?.innerText||'').trim();
+    return {
+      token:routeToken,
+      target,
+      attempted:true,
+      rendered:Boolean(view && text.length>0),
+      textLength:text.length,
+      hasGenericDemo:/Proyecto Retail|Proyecto Banca|Proyecto Restaurantes|Cliente Retail \(demo\)/i.test(text),
+      hasTechnicalPromise:/enviado con éxito|sincronizado con hr|pago ejecutado|publicado automáticamente/i.test(text)
+    };
+  }, token);
+}
+
+const browser = await chromium.launch({ headless:true });
+try {
+  const context = await browser.newContext({ viewport:{width:1440,height:1100}, serviceWorkers:'block' });
+  const page = await context.newPage();
+  const consoleErrors=[];
+  const pageErrors=[];
+  attachErrorCapture(page, consoleErrors, pageErrors);
+  await preparePage(page);
 
   report.login = await page.evaluate(() => {
     const login = document.querySelector('#login');
@@ -76,6 +145,7 @@ try {
       uniqueProjectIds:new Set(projects.map(p=>p.id)).size,
       periodKeys:new Set(projects.map(p=>p.periodKey)).size,
       currentProjectId:window.CX?.data?.currentProjectId || null,
+      currentRootProjectId:window.CX?.data?.project?.()?.rootProjectId || window.CX_TYA_VISIBLE_DATA_CONTRACT?.rootProjectId || null,
       currentProjectName:window.CX?.data?.project?.()?.name || null,
       visitCount:visits.length,
       currentPeriodVisitCount:Array.isArray(currentVisits)?currentVisits.length:0,
@@ -102,21 +172,11 @@ try {
   if(report.runtime.shopperCount!==expected.shoppers) block('shopper_count_mismatch',`${report.runtime.shopperCount}/${expected.shoppers}`);
   if(report.runtime.genericProjectIds.length) block('generic_demo_projects_visible',report.runtime.genericProjectIds.join(','));
   if(!report.runtime.allVisitsHavePeriodProject) block('visits_not_bound_to_unique_periods');
+  if(report.runtime.currentRootProjectId!=='cinepolis') block('root_project_context_mismatch',String(report.runtime.currentRootProjectId));
+  if(!String(report.runtime.currentProjectId||'').startsWith('cinepolis-')) block('current_period_context_mismatch',String(report.runtime.currentProjectId));
   if(report.runtime.tenant!=='tya' || report.runtime.project!=='cinepolis' || report.runtime.source!=='source-safe') block('document_visible_contract_missing');
 
-  await page.evaluate(() => {
-    document.querySelectorAll('.cx-ov').forEach(node=>node.remove());
-    if(window.CX?.confidencialidad){
-      window.CX.confidencialidad.pending=()=>false;
-      window.CX.confidencialidad.show=(_r,done)=>done&&done();
-    }
-    if(window.CX?.app) window.CX.app.showBanners=()=>{};
-    window.CX.app.selectRole('admin');
-  });
-  await page.waitForSelector('#app.on',{state:'visible',timeout:15000});
-  await page.waitForSelector('#view',{state:'visible',timeout:15000});
-  await page.waitForTimeout(600);
-
+  await enterRole(page,'admin');
   report.admin = await page.evaluate(() => {
     const body=String(document.body.innerText||'').replace(/\s+/g,' ').trim();
     const badge=String(document.querySelector('.tb-demo')?.innerText||'').replace(/\s+/g,' ').trim();
@@ -134,14 +194,61 @@ try {
   if(!report.admin.hasCinepolis) block('admin_ui_missing_cinepolis');
   if(!report.admin.hasLatestPeriod) warn('admin_ui_latest_period_not_in_initial_view');
   if(report.admin.hasGenericDemo) block('admin_ui_contains_generic_demo');
-  if(consoleErrors.length) block('console_errors',String(consoleErrors.length));
-  if(pageErrors.length) block('page_errors',String(pageErrors.length));
-
+  if(consoleErrors.length) block('initial_console_errors',String(consoleErrors.length));
+  if(pageErrors.length) block('initial_page_errors',String(pageErrors.length));
   await page.screenshot({path:path.join(outDir,'tya-visible-login-admin-r17.png'),fullPage:true});
   report.consoleErrors=consoleErrors;
   report.pageErrors=pageErrors;
-  report.decision=report.blockers.length?'FAIL_VISIBLE_TYA_DATA_R17':(report.warnings.length?'PASS_WITH_REVIEW_VISIBLE_TYA_DATA_R17':'PASS_VISIBLE_TYA_DATA_R17');
   await context.close();
+
+  for(const spec of roleSpecs){
+    const roleContext=await browser.newContext({viewport:{width:1440,height:1100},serviceWorkers:'block'});
+    const rolePage=await roleContext.newPage();
+    const roleConsole=[];
+    const rolePageErrors=[];
+    attachErrorCapture(rolePage,roleConsole,rolePageErrors);
+    const roleResult={id:spec.id,status:'pending',currentPeriodId:null,rootProjectId:null,routes:[],consoleErrorCount:0,pageErrorCount:0};
+    try{
+      await preparePage(rolePage);
+      await enterRole(rolePage,spec.enter);
+      const contextState=await rolePage.evaluate(() => ({
+        currentPeriodId:window.CX?.data?.currentProjectId||null,
+        rootProjectId:window.CX?.data?.project?.()?.rootProjectId||window.CX_TYA_VISIBLE_DATA_CONTRACT?.rootProjectId||null,
+        sourceMode:window.CX?.dataSource?.mode||null,
+        sourceStatus:window.CX?.dataSource?.status||null
+      }));
+      roleResult.currentPeriodId=contextState.currentPeriodId;
+      roleResult.rootProjectId=contextState.rootProjectId;
+      if(contextState.rootProjectId!=='cinepolis') block(`${spec.id}_root_project_context_mismatch`,String(contextState.rootProjectId));
+      if(!String(contextState.currentPeriodId||'').startsWith('cinepolis-')) block(`${spec.id}_period_context_mismatch`,String(contextState.currentPeriodId));
+      if(contextState.sourceMode!=='source_safe_preview' || contextState.sourceStatus!=='ready') block(`${spec.id}_datasource_not_ready`);
+      for(const token of spec.routes){
+        const result=await tryRoute(rolePage,token);
+        roleResult.routes.push(result);
+        report.routes.push({role:spec.id,...result});
+        if(!result.target) block(`${spec.id}_route_missing`,token);
+        else if(!result.rendered) block(`${spec.id}_route_not_rendered`,token);
+        if(result.hasGenericDemo) block(`${spec.id}_route_contains_generic_demo`,token);
+        if(result.hasTechnicalPromise) block(`${spec.id}_route_dishonest_operational_copy`,token);
+      }
+      roleResult.consoleErrorCount=roleConsole.length;
+      roleResult.pageErrorCount=rolePageErrors.length;
+      if(roleConsole.length) block(`${spec.id}_console_errors`,String(roleConsole.length));
+      if(rolePageErrors.length) block(`${spec.id}_page_errors`,String(rolePageErrors.length));
+      roleResult.status=roleConsole.length||rolePageErrors.length?'fail':'pass';
+      await rolePage.screenshot({path:path.join(outDir,`${spec.id}-visible-routes-r17.png`),fullPage:true});
+    }catch(error){
+      roleResult.status='fail';
+      roleResult.error=clean(error?.message||error);
+      block(`${spec.id}_shell_failure`,roleResult.error);
+    }finally{
+      report.roles.push(roleResult);
+      await roleContext.close();
+    }
+  }
+
+  if(report.routes.length!==expected.routes) block('critical_route_count_mismatch',`${report.routes.length}/${expected.routes}`);
+  report.decision=report.blockers.length?'FAIL_VISIBLE_TYA_DATA_R17':(report.warnings.length?'PASS_WITH_REVIEW_VISIBLE_TYA_DATA_R17':'PASS_VISIBLE_TYA_DATA_R17');
 } catch(error) {
   block('smoke_exception',clean(error?.message || error));
   report.decision='FAIL_VISIBLE_TYA_DATA_R17';
@@ -149,14 +256,21 @@ try {
   await browser.close();
 }
 
+report.blockers=[...new Set(report.blockers)];
+report.warnings=[...new Set(report.warnings)];
+if(report.blockers.length) report.decision='FAIL_VISIBLE_TYA_DATA_R17';
+else if(report.warnings.length) report.decision='PASS_WITH_REVIEW_VISIBLE_TYA_DATA_R17';
+else report.decision='PASS_VISIBLE_TYA_DATA_R17';
+
 fs.writeFileSync(path.join(outDir,'visible-data-smoke-r17.json'),JSON.stringify(report,null,2)+'\n','utf8');
 fs.writeFileSync(path.join(outDir,'visible-data-smoke-r17.md'),[
-  '# CXOrbia TyA visible-data smoke R17','',`Decision: ${report.decision}`,
+  '# CXOrbia TyA visible-data and route smoke R17','',`Decision: ${report.decision}`,
   `Login client: ${report.login?.clientName || 'n/a'}`,
   `Data source: ${report.runtime?.dataSource?.mode || 'n/a'} / ${report.runtime?.dataSource?.status || 'n/a'}`,
   `Periods / unique IDs: ${report.runtime?.projectCount ?? 0} / ${report.runtime?.uniqueProjectIds ?? 0}`,
   `Visits / current period: ${report.runtime?.visitCount ?? 0} / ${report.runtime?.currentPeriodVisitCount ?? 0}`,
   `Shoppers: ${report.runtime?.shopperCount ?? 0}`,
+  `Critical routes: ${report.routes.length}/${expected.routes}`,
   `Topbar: ${report.admin?.badge || 'n/a'}`,
   `Blockers: ${report.blockers.length}`,
   ...report.blockers.map(item=>`- ${item}`),
@@ -165,5 +279,5 @@ fs.writeFileSync(path.join(outDir,'visible-data-smoke-r17.md'),[
   'Browser-only, read-only. No providers, writes, imports, deploy or production.'
 ].join('\n'),'utf8');
 
-console.log(JSON.stringify({decision:report.decision,login:report.login,runtime:report.runtime,admin:report.admin,blockers:report.blockers,warnings:report.warnings,safeState:report.safeState},null,2));
+console.log(JSON.stringify({decision:report.decision,login:report.login,runtime:report.runtime,admin:report.admin,roles:report.roles,routes:report.routes.length,blockers:report.blockers,warnings:report.warnings,safeState:report.safeState},null,2));
 process.exitCode=report.blockers.length?2:0;
