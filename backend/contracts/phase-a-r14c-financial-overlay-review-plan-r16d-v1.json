@@ -6,6 +6,12 @@
     "tenantId": "tya",
     "projectId": "cinepolis"
   },
+  "inputs": {
+    "r14cReconciliation": "backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json",
+    "controlledFinancialSource": "backend/config/phase-a-financial-workbook-source-safe-r14.json",
+    "shopperGap": "backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json",
+    "certificationProjection": "backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json"
+  },
   "expected": {
     "baseOperations": 1415,
     "periods": 14,
@@ -15,6 +21,8 @@
     "financialRows": 247,
     "exactFinancialOverlays": 196,
     "financialReviewRows": 51,
+    "ledgerEvidenceRows": 37,
+    "controlledSourceReviewItems": 4,
     "financialReviewQueue": 92,
     "shopperGapItems": 1,
     "shopperGapCount": 3,
