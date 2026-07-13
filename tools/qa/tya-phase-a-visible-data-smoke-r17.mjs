@@ -129,7 +129,7 @@ try {
     };
   });
 
-  if(!/DEV TyA.*source-safe/i.test(report.admin.badge)) block('topbar_not_tya_source_safe',report.admin.badge);
+  if(!/Source-safe \(preview\).*Listo/i.test(report.admin.badge)) block('topbar_not_source_safe_ready',report.admin.badge);
   if(!report.admin.hasTya) block('admin_ui_missing_tya');
   if(!report.admin.hasCinepolis) block('admin_ui_missing_cinepolis');
   if(!report.admin.hasLatestPeriod) warn('admin_ui_latest_period_not_in_initial_view');
