@@ -1,0 +1,7 @@
+CXORBIA_R13_FIREBASE_DEV_READONLY_AUTHORIZED
+confirmation=VERIFY_FIREBASE_DEV_READ_ONLY
+scope=sanitized_read_only_firebase_dev
+writes=false
+imports=false
+deploy=false
+production=false
