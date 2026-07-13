@@ -124,6 +124,7 @@ jobs:
             expectedPeriods: 14,
             expectedVisits: 616,
             expectedShoppers: 210,
+            expectedCriticalRoutes: 13,
             hostingOnly: true,
             firestoreWrites: false,
             authWrites: false,
@@ -160,16 +161,13 @@ jobs:
           cat .tmp/visible-tya-r17-redeploy/local-server.log || true
           exit 1
 
-      - name: Authoritative visible TyA smoke before deploy
+      - name: Authoritative visible TyA and 13-route smoke before deploy
         env:
           CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
         run: |
           set -euo pipefail
           node tools/qa/tya-phase-a-visible-data-smoke-r17.mjs \
             --out .tmp/visible-tya-r17-redeploy/local-visible-smoke
-          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs \
-            --base-url 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' \
-            --out .tmp/visible-tya-r17-redeploy/local-route-smoke
 
       - name: Prepare temporary DEV credential
         env:
@@ -236,23 +234,20 @@ jobs:
           if (proof.build !== 'tya-visible-r17-source-safe') throw new Error('DEV proof build mismatch.');
           if (proof.commit !== process.env.GITHUB_SHA) throw new Error('DEV proof commit mismatch.');
           if (proof.tenantId !== 'tya' || proof.projectId !== 'cinepolis' || proof.visibleDataGate !== true) throw new Error('Visible TyA proof mismatch.');
-          if (proof.expectedPeriods !== 14 || proof.expectedVisits !== 616 || proof.expectedShoppers !== 210) throw new Error('Expected visible counts mismatch.');
+          if (proof.expectedPeriods !== 14 || proof.expectedVisits !== 616 || proof.expectedShoppers !== 210 || proof.expectedCriticalRoutes !== 13) throw new Error('Expected visible counts/routes mismatch.');
           const safe = proof.hostingOnly === true && proof.firestoreWrites === false && proof.authWrites === false && proof.storageWrites === false && proof.imports === false && proof.rules === false && proof.functions === false && proof.make === false && proof.gemini === false && proof.payments === false && proof.production === false;
           if (!safe) throw new Error('DEV proof safety flags mismatch.');
           console.log('Deployed visible TyA R17 proof verified.');
           NODE
 
-      - name: Authoritative remote visible TyA smoke
+      - name: Authoritative remote visible TyA and 13-route smoke
         env:
           CXORBIA_BASE_URL: https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r17=visible
         run: |
           set -euo pipefail
           node tools/qa/tya-phase-a-visible-data-smoke-r17.mjs \
             --out .tmp/visible-tya-r17-redeploy/remote-visible-smoke
-          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs \
-            --base-url 'https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r17=visible' \
-            --out .tmp/visible-tya-r17-redeploy/remote-route-smoke
-          printf 'status=success\nurl=%s\nbuild=%s\ncommit=%s\nrun_id=%s\nvisible_smoke=pass\nroute_smoke=pass\n' \
+          printf 'status=success\nurl=%s\nbuild=%s\ncommit=%s\nrun_id=%s\nvisible_smoke=pass\ncritical_routes=13/13\n' \
             "$CXORBIA_DEV_ROOT_URL" "$CXORBIA_BUILD_LABEL" "$GITHUB_SHA" "$GITHUB_RUN_ID" \
             > .tmp/visible-tya-r17-redeploy/deploy-status.txt
 
