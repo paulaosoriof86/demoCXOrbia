@@ -196,15 +196,15 @@ export function createSynchronousCxDataFacade(snapshot = {}) {
         return !country || countries.includes(country);
       });
     },
-    visitas() { return this._visitas.filter((item) => safeProjectId(item) === currentProjectId); },
-    posts() { return this._posts.filter((item) => safeProjectId(item) === currentProjectId); },
+    visitas() { return this._visitas.filter((item) => String(item?.projectId || '') === currentProjectId); },
+    posts() { return this._posts.filter((item) => String(item?.projectId || '') === currentProjectId); },
     getShopper(id) { return this.shoppers.find((item) => String(item.id) === String(id)) || null; },
     addShopper(input) { return blockedWrite('addShopper', input); },
-    updateShopper(input) { return blockedWrite('updateShopper', input); },
-    assignVisit(input) { return blockedWrite('assignVisit', input); },
-    postularVisita(input) { return blockedWrite('postularVisita', input); },
-    setVisitState(input) { return blockedWrite('setVisitState', input); },
-    payVisits(input) { return blockedWrite('payVisits', input); },
+    updateShopper(id, patch) { return blockedWrite('updateShopper', { id, patch }); },
+    assignVisit(visitId, shopperId) { return blockedWrite('assignVisit', { visitId, shopperId }); },
+    postularVisita(visitId, shopperId) { return blockedWrite('postularVisita', { visitId, shopperId }); },
+    setVisitState(id, estado, dateField, dateVal) { return blockedWrite('setVisitState', { id, estado, dateField, dateVal }); },
+    payVisits(ids, fechaPago, referencia) { return blockedWrite('payVisits', { ids, fechaPago, referencia }); },
     addProject(input) { return blockedWrite('addProject', input); }
   };
 
