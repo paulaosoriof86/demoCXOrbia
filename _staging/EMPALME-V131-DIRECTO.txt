@@ -1,0 +1,1 @@
+Empalme directo por GitHub. Sin PowerShell manual. Rama focalizada y fallo cerrado.
