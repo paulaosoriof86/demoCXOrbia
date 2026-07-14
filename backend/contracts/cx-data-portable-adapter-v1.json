@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "cx-data-portable-adapter-v1",
+  "purpose": "Preserve the synchronous CX.data read interface after one explicit asynchronous hydration step, while keeping mutations fail-closed until a provider and write gate are authorized.",
+  "context": {
+    "required": ["tenantId", "projectId", "periodId"],
+    "optional": ["countryScope", "role", "sourceMode"],
+    "invariants": [
+      "tenantId is mandatory for every read and mutation",
+      "projectId and periodId are independent",
+      "periodId must belong to projectId",
+      "entities from another tenant are never returned",
+      "a provider error never falls back to demo fixtures"
+    ]
+  },
+  "lifecycle": {
+    "initial": "blocked_not_hydrated",
+    "hydrate": "provider.loadSnapshot(context)",
+    "ready": "ready_snapshot",
+    "runtimeReady": "ready_runtime",
+    "error": "blocked_provider_error"
+  },
+  "readInterface": [
+    "status",
+    "project",
+    "period",
+    "projects",
+    "periodsForProject",
+    "setCurrentProject",
+    "setCurrentPeriod",
+    "visitas",
+    "posts",
+    "shoppers",
+    "shoppersFor",
+    "getShopper"
+  ],
+  "legacyCompatibility": [
+    "currentProjectId",
+    "currentPeriodId",
+    "_visitas",
+    "_posts",
+    "setProject"
+  ],
+  "mutationInterface": [
+    "addShopper",
+    "updateShopper",
+    "assignVisit",
+    "postularVisita"
+  ],
+  "mutationPolicy": {
+    "default": "hold",
+    "requiredGate": "writeGateActive",
+    "requiredProviderMethod": "mutate",
+    "failClosedCode": "WRITE_GATE_HOLD",
+    "stableKeys": ["tenantId", "projectId", "periodId", "visitId", "hrRowId", "shopperId"]
+  },
+  "snapshotEnvelope": {
+    "required": ["tenantId", "projects", "periods", "visits", "posts", "shoppers"],
+    "metadata": ["sourceSnapshotAt", "sourceReadMode", "runtimeSyncActive", "sourceRef", "warnings", "blockers"],
+    "forbidden": ["rawSecrets", "rawCredentials", "unredactedBankData", "unredactedIdentityDocuments"]
+  },
+  "safeDefaults": {
+    "providerCalls": "read_only",
+    "writeGateActive": false,
+    "runtimeSyncActive": false,
+    "demoFallback": false,
+    "production": false
+  }
+}
