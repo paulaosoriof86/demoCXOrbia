@@ -1,0 +1,145 @@
+name: CXOrbia R24 New Empty Firebase DEV
+
+on:
+  push:
+    branches:
+      - phase-a/r24-firebase-dev-20260714
+    paths:
+      - '.github/workflows/cxorbia-r24-new-empty-firebase-dev.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cxorbia-r24-new-empty-firebase-dev
+  cancel-in-progress: true
+
+env:
+  CXORBIA_NEW_PROJECT_ID: cxorbia-tya-dev-260714-r24
+  CXORBIA_NEW_PROJECT_NAME: CXOrbia TyA DEV Clean R24
+
+jobs:
+  create-and-verify-new-empty-dev:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout focused execution branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Select strongest available project-creator credential without exposing it
+        env:
+          DEDICATED_CREATOR_JSON: ${{ secrets.CXORBIA_GCP_PROJECT_CREATOR_JSON }}
+          ALT_CREATOR_JSON: ${{ secrets.GOOGLE_CLOUD_PROJECT_CREATOR_JSON }}
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          private_dir='.tmp/r24-private'
+          report_dir='.tmp/r24-auth-route'
+          mkdir -p "$private_dir" "$report_dir"
+
+          route='none'
+          credential=''
+          if [ -n "$DEDICATED_CREATOR_JSON" ]; then
+            route='dedicated_project_creator'
+            credential="$DEDICATED_CREATOR_JSON"
+          elif [ -n "$ALT_CREATOR_JSON" ]; then
+            route='alternate_project_creator'
+            credential="$ALT_CREATOR_JSON"
+          elif [ -n "$EXISTING_DEV_JSON" ]; then
+            route='existing_dev_service_account'
+            credential="$EXISTING_DEV_JSON"
+          fi
+
+          node -e "const fs=require('fs');fs.writeFileSync('$report_dir/route.json',JSON.stringify({route:'$route',dedicatedCreatorAvailable:'$route'==='dedicated_project_creator'||'$route'==='alternate_project_creator',existingDevFallbackUsed:'$route'==='existing_dev_service_account',secretValuesOutput:false},null,2)+'\n')"
+
+          if [ "$route" = 'none' ]; then
+            echo 'No eligible credential secret is available.'
+            exit 0
+          fi
+
+          credential_path="$private_dir/credentials.json"
+          printf '%s' "$credential" > "$credential_path"
+          chmod 600 "$credential_path"
+          node <<'NODE'
+          const fs=require('fs');
+          const p='.tmp/r24-private/credentials.json';
+          const c=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(c.type!=='service_account') throw new Error('Credential is not a service account.');
+          if(!c.project_id) throw new Error('Credential project_id is missing.');
+          fs.writeFileSync('.tmp/r24-private/source-project-id.txt',String(c.project_id));
+          console.log('Credential structure validated; identifiers remain private.');
+          NODE
+
+      - name: Install provider dependency
+        run: npm install --no-save --ignore-scripts google-auth-library@9
+
+      - name: Attempt authorized atomic creation and empty-state verification
+        env:
+          CXORBIA_CONFIRM: CREATE_NEW_EMPTY_FIREBASE_DEV
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/r24-private/credentials.json
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/r24-result
+          if [ ! -s "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
+            node -e "const fs=require('fs');const r={decision:'BLOCKED_NO_PROJECT_CREATOR_CREDENTIAL_AVAILABLE',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID,environment:'DEV',production:false},safeState:{writes:false,imports:false,deploy:false,production:false,secretValuesOutput:false}};fs.writeFileSync('.tmp/r24-result/firebase-new-empty-r24-report.source-safe.json',JSON.stringify(r,null,2)+'\n');"
+            exit 0
+          fi
+          source_project_id="$(cat .tmp/r24-private/source-project-id.txt)"
+          CXORBIA_SOURCE_CREDENTIAL_PROJECT_ID="$source_project_id" \
+          node tools/release/tya-create-new-empty-firebase-dev-r15b.mjs \
+            --out .tmp/r24-result
+
+      - name: Normalize R24 decision without turning provider IAM into a GitHub failure
+        run: |
+          set -euo pipefail
+          result='.tmp/r24-result/firebase-new-empty-r15b-report.source-safe.json'
+          if [ ! -f "$result" ]; then
+            result='.tmp/r24-result/firebase-new-empty-r24-report.source-safe.json'
+          fi
+          node - "$result" <<'NODE'
+          const fs=require('fs');
+          const file=process.argv[2];
+          const report=JSON.parse(fs.readFileSync(file,'utf8'));
+          const decision=String(report.decision||'UNKNOWN');
+          const success=decision==='NEW_EMPTY_FIREBASE_DEV_VERIFIED';
+          const providerBlocked=/BLOCKED_|INCONCLUSIVE|REVIEW_REQUIRED/.test(decision);
+          const summary={
+            decision,
+            execution:'github_workflow_completed',
+            githubBlocked:false,
+            providerBlocked,
+            newEmptyFirebaseVerified:success,
+            targetProjectId:report.target?.projectId||process.env.CXORBIA_NEW_PROJECT_ID,
+            projectCreated:Boolean(report.summary?.projectCreated),
+            firebaseAdded:Boolean(report.summary?.firebaseAdded),
+            emptyBaselineVerified:Boolean(report.summary?.emptyBaselineVerified),
+            nextAction: success ? 'continue_r25_cx_data_connection' : 'grant_project_creator_to_dedicated_identity_or_create_empty_project_once_with_admin_identity',
+            noExistingDatabaseReused:true,
+            production:false
+          };
+          fs.writeFileSync('.tmp/r24-result/r24-summary.source-safe.json',JSON.stringify(summary,null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,`# R24 Firebase DEV\n\n- Decision: **${decision}**\n- GitHub execution blocked: **no**\n- Provider/IAM blocked: **${providerBlocked}**\n- New empty Firebase verified: **${success}**\n- Existing database reused: **no**\n`);
+          console.log(JSON.stringify(summary,null,2));
+          NODE
+
+      - name: Cleanup credential
+        if: always()
+        run: rm -rf .tmp/r24-private
+
+      - name: Upload sanitized R24 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-r24-new-empty-firebase-dev
+          path: |
+            .tmp/r24-auth-route
+            .tmp/r24-result
+          if-no-files-found: error
+          retention-days: 14
