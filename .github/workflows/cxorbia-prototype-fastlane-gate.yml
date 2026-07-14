@@ -1,0 +1,58 @@
+name: CXOrbia Prototype Fast-Lane Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      baseline:
+        description: 'Baseline label, for example V112'
+        required: false
+        default: ''
+      candidate:
+        description: 'Candidate label, for example V113'
+        required: false
+        default: ''
+  push:
+    branches:
+      - 'phase-a/prototype-candidate-*'
+    paths:
+      - 'app/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prototype-fastlane-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  verify-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax batch
+        run: |
+          set -euo pipefail
+          find app -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+      - name: Machine-enforced candidate acceptance
+        run: |
+          set -euo pipefail
+          ARGS=(--app app --out .tmp/prototype-fastlane-gate)
+          if [ -n "${{ inputs.baseline }}" ]; then ARGS+=(--baseline "${{ inputs.baseline }}"); fi
+          if [ -n "${{ inputs.candidate }}" ]; then ARGS+=(--candidate "${{ inputs.candidate }}"); fi
+          node tools/qa/verify-prototype-fastlane-gate.mjs "${ARGS[@]}"
+      - name: Upload focused evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: prototype-fastlane-gate
+          path: .tmp/prototype-fastlane-gate
+          if-no-files-found: error
+          retention-days: 14
