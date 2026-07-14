@@ -1,64 +1,56 @@
 {
-  "version": "1.3.0",
+  "version": "1.4.0",
   "updatedAt": "2026-07-14",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "baseline": {
-    "frontend": "V110",
-    "claudeCandidateRequested": "V111",
+    "sourceLockFrontend": "V110",
+    "continuityFrontend": "V111",
+    "continuityDecision": "audited_usable_not_final_source_lock",
+    "claudeCorrectiveRequested": "V112",
     "r17Role": "no_go_evidence_only",
     "production": "hold"
   },
-  "objective": "Close Phase A TyA by preserving completed canonical integration, auditing and empalming V111, creating a new clean backend, connecting CX.data and completing semantic production gates.",
+  "objective": "Close Phase A TyA by fast-auditing and empalming V112 over the audited V111 continuity baseline, resolving the single Firebase IAM blocker, connecting CX.data and completing semantic production gates.",
   "parallelLanes": {
     "frontend": {
-      "status": "waiting_for_v111",
-      "next": "R21_R23_AUDIT_AND_EMPALME_V111_WHEN_RECEIVED"
+      "status": "waiting_for_v112",
+      "next": "R21_R23_FAST_AUDIT_AND_EMPALME_V112"
     },
     "backend": {
       "status": "blocked_external_iam",
-      "next": "grant_project_creator_to_dedicated_identity_or_create_empty_project_once_with_admin_identity"
+      "next": "verify_new_empty_project_then_continue_r25"
     }
   },
   "activeBlock": {
-    "id": "R24_NEW_EMPTY_FIREBASE_DEV",
-    "status": "blocked_external_iam",
+    "id": "R21_R23_FAST_AUDIT_AND_EMPALME_V112",
+    "status": "waiting_external_input",
     "allowed": [
-      "reuse_existing_r15_r15b_evidence",
-      "verify_current_project_creation_permissions",
-      "create_new_empty_firebase_dev_only_if_authorized_and_possible",
-      "verify_empty_auth_firestore_storage_state_read_only",
-      "preserve_zero_manual_policy",
-      "record_exact_blocker_if_provider_policy_still_prevents_creation"
+      "compare_v112_only_against_v111_and_exact_v111_to_v112_package",
+      "inspect_only_changed_added_deleted_files_plus_index_manifest_build_lock",
+      "run_all_node_checks_in_one_batch",
+      "run_manifest_verifier_once",
+      "run_targeted_semantic_fixture_once",
+      "classify_go_empalme_or_max_three_concrete_gaps",
+      "empalme_immediately_if_no_structural_blocker",
+      "update_checkpoint_changes_claude_pending_academia_in_one_close_commit"
     ],
     "forbidden": [
-      "reuse_nonempty_existing_project",
-      "connect_old_application_database",
-      "import_real_tya_data",
+      "full_repository_reaudit",
+      "reopen_v110_or_v111_closed_items",
+      "inspect_unrelated_modules",
+      "create_new_contracts_before_candidate_decision",
+      "wait_for_unrelated_github_workflows",
+      "generate_large_claude_package",
+      "backend_patch_frontend_modules",
       "production_deploy",
-      "frontend_modules_or_core_patch_from_backend",
-      "firestore_writes_before_empty_baseline_verified",
-      "make_live",
-      "gemini_live",
-      "real_payments"
-    ],
-    "blocker": {
-      "type": "google_cloud_iam",
-      "decision": "BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY",
-      "githubBlocked": false,
-      "providerBlocked": true,
-      "targetProjectId": "cxorbia-tya-dev-260714-r24",
-      "projectCreated": false,
-      "firebaseAdded": false,
-      "emptyBaselineVerified": false,
-      "existingDatabaseReused": false,
-      "minimumExternalAction": "grant project-creation permission to a dedicated identity or create the empty project once with an administrator identity"
-    }
+      "real_imports_or_writes"
+    ]
   },
   "plan": [
-    "R24_NEW_EMPTY_FIREBASE_DEV",
-    "R21_R23_AUDIT_AND_EMPALME_V111_WHEN_RECEIVED",
+    "R21_R23_FAST_AUDIT_AND_EMPALME_V112",
+    "R24_NEW_EMPTY_FIREBASE_DEV_EXTERNAL_IAM_RESOLUTION",
     "R25_CX_DATA_DEV_BACKEND_CONNECTION",
     "R26_AUTH_ROLES_STORAGE_MINIMUM",
     "R27_CONTROLLED_TYA_IMPORT",
@@ -68,23 +60,23 @@
     "R31_CONTROLLED_PRODUCTION_DEPLOY"
   ],
   "completedEvidence": {
-    "v110Empalmed": true,
-    "v111RequestedFromClaude": true,
+    "v110SourceLock": true,
+    "v111Audited": true,
+    "v111ContinuityBaseline": true,
+    "v111ManifestNodeVerified": true,
+    "v111ManifestDifferences": 0,
+    "v111JavascriptSyntax": "PASS",
+    "v112RequestedFromClaude": true,
+    "v111RemainingFocusedGaps": 3,
     "r10Routes": "13/13",
     "hrPeriods": 14,
     "hrTabs": 28,
     "hrVisits": 616,
     "r18aCanonicalIntegration": "PASS",
-    "r18aWorkflowRun": 29299175536,
     "r18bExistingOverlays": "PASS",
-    "r18bWorkflowRun": 29299382569,
     "financialExactLinksR14C": 196,
-    "financialExactLinksAppliedR18B": 196,
-    "shopperSourceReviewItemsR11D": 1,
     "shopperIdentitiesInvented": 0,
     "paidConfirmedOrInferred": 0,
-    "certificationCarryoverConfirmed": 0,
-    "sourceSafeImporters": true,
     "r24WorkflowRun": 29299756581,
     "r24WorkflowConclusion": "success",
     "r24GithubBlocked": false,
@@ -97,8 +89,38 @@
     "r11_to_r11d_reconciliation",
     "r14c_financial_reconciliation",
     "payment_and_certification_importers",
-    "v110_closed_p0"
+    "v110_closed_p0",
+    "v111_login_title_country",
+    "v111_month_selector_and_literal_dates",
+    "v111_protected_reference_modal",
+    "v111_academia_lessons",
+    "v111_manifest"
   ],
+  "fastLaneCandidateAuditPolicy": {
+    "baselineRule": "latest_audited_usable_candidate_becomes_continuity_baseline_even_if_not_final_source_lock",
+    "comparisonScope": [
+      "immediate_previous_candidate",
+      "exact_claude_package",
+      "changed_added_deleted_files",
+      "index_html",
+      "manifest_and_build_lock"
+    ],
+    "singleBatchChecks": [
+      "node_check_modified_javascript",
+      "manifest_verifier",
+      "targeted_semantic_fixture",
+      "console_and_route_smoke_when_runtime_available"
+    ],
+    "decisionOutputs": [
+      "go_and_empalme",
+      "blocked_structural",
+      "maximum_three_focused_gaps"
+    ],
+    "documentationTiming": "one_batch_after_technical_decision",
+    "githubPolicy": "one_focused_branch_and_one_focused_workflow_only_when_needed",
+    "unrelatedWorkflowWait": false,
+    "fullPrAudit": false
+  },
   "ciExecutionPolicy": {
     "integrationBranch": "docs-tya-v6-v71-audit",
     "focusedExecutionBranchPattern": "phase-a/<block>-<date>",
@@ -126,14 +148,13 @@
   "readPolicy": {
     "normalIteration": [
       "app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md",
-      "diff_since_last_block_commit",
-      "block_validator_result",
+      "candidate_delta_or_block_diff",
+      "focused_validator_result",
       "current_pr_7_state"
     ],
     "fullContextOnlyWhen": [
       "new_conversation",
       "real_source_conflict",
-      "baseline_change",
       "production_authorization",
       "scope_change"
     ]
