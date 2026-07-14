@@ -1,0 +1,113 @@
+name: CXOrbia Phase A R18A Canonical Assets Integration
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r18a.mjs'
+      - 'tools/qa/tya-r18a-canonical-assets-integration-validate.mjs'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
+      - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
+      - 'backend/contracts/phase-a-live-execution-checkpoint-v1.json'
+      - 'app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md'
+      - '.github/workflows/cxorbia-phase-a-r18a-canonical-assets-integration.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r18a.mjs'
+      - 'tools/qa/tya-r18a-canonical-assets-integration-validate.mjs'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
+      - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
+      - 'backend/contracts/phase-a-live-execution-checkpoint-v1.json'
+      - 'app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md'
+      - '.github/workflows/cxorbia-phase-a-r18a-canonical-assets-integration.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  integrate-existing-canonical-assets:
+    name: Reuse existing canonical assets in HR source-safe path
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout current baseline and backend branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate syntax and isolated regression fixture
+        run: |
+          set -euo pipefail
+          node --check tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs
+          node --check tools/release/tya-source-safe-binding-build-r18a.mjs
+          node --check tools/qa/tya-r18a-canonical-assets-integration-validate.mjs
+          node tools/qa/tya-r18a-canonical-assets-integration-validate.mjs \
+            --self-test \
+            --out .tmp/r18a-self-test
+
+      - name: Build existing live HR source-safe snapshot
+        env:
+          CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
+          test -s app/data/tya-hr-source-safe-periods.js
+
+      - name: Canonicalize using existing date and state contracts
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/r18a-canonicalization
+          grep -q 'R18A_INTEGRATE_EXISTING_CANONICAL_ASSETS' app/data/tya-hr-source-safe-periods.js
+          grep -q 'runtimeSyncActive' app/data/tya-hr-source-safe-periods.js
+
+      - name: Generate canonical source-safe DEV adapter in build copy
+        run: |
+          set -euo pipefail
+          node tools/release/tya-source-safe-binding-build-r18a.mjs \
+            --html app/index.html \
+            --out .tmp/r18a-binding
+          test -s app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
+          node --check app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
+          grep -Fq 'adapters/tya-phase-a-source-safe-dev-adapter-r18a.js' app/index.html
+
+      - name: Validate canonical payload and adapter together
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-r18a-canonical-assets-integration-validate.mjs \
+            --payload app/data/tya-hr-source-safe-periods.js \
+            --adapter app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js \
+            --out .tmp/r18a-validation
+
+      - name: Upload source-safe reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-r18a-canonical-assets-integration
+          path: |
+            .tmp/r18a-self-test
+            .tmp/r18a-canonicalization
+            .tmp/r18a-binding
+            .tmp/r18a-validation
+            .tmp/rc-phase-a-dev-root-deploy/hr-live-source-safe-summary.json
+            .tmp/rc-phase-a-dev-root-deploy/hr-live-source-safe-summary.md
+          if-no-files-found: error
+          retention-days: 14
