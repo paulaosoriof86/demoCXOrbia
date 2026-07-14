@@ -1,6 +1,6 @@
 /* CXOrbia · Mis Beneficios (shopper) — honorarios vs reembolsos + beneficios en especie */
 CX.module('beneficios', ({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
   /* P0-D (paquete 20260711): shopper obligatorio — el fallback previo a 'sh1' hacía que
      cualquier sesión sin shopperId (ej. un rol mal mapeado) heredara los beneficios de un
      shopper fijo. Sin identidad de shopper autenticada, la vista se muestra vacía/pending,

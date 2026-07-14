@@ -60,7 +60,7 @@ window.CX = window.CX || {};
 
     /* construye visitas candidatas a partir de rows + mapeo */
     build(parsed, map, p){
-      p=p||CX.data.project();
+      p=p||CX.data.period();
       const col={}; Object.keys(map).forEach(i=>col[map[i]]=+i);
       const cur=(p.currency&&p.currency[p.countries[0]])||'$';
       const get=(r,f)=>col[f]!=null?r[col[f]]:'';
@@ -90,7 +90,7 @@ window.CX = window.CX || {};
 
     /* detecta duplicados contra las visitas existentes del proyecto (LLAVE NATURAL estable) */
     diff(cands, p){
-      p=p||CX.data.project();
+      p=p||CX.data.period();
       const idx=CX.dedupe?CX.dedupe.indexProject(p.id):{};
       const nuevos=[], dups=[];
       cands.forEach(c=>{ const hit=CX.dedupe&&((CX.dedupe.idKey(c)&&idx[CX.dedupe.idKey(c)])||idx[CX.dedupe.natKey(c)]); (hit?dups:nuevos).push(c); });
@@ -106,7 +106,7 @@ window.CX = window.CX || {};
 
     /* commit: crea visitas (y shoppers faltantes) en el proyecto; sincroniza */
     commit(cands, p){
-      p=p||CX.data.project();
+      p=p||CX.data.period();
       let creadas=0, shoppersNuevos=0, shoppersFusionados=0;
       const base=CX.data._visitas.filter(v=>v.projectId===p.id).length;
       // índice de shoppers por clave de identidad (para deduplicar e integrar)

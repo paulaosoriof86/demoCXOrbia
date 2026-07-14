@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* CXOrbia · Verificador independiente del manifest V110 (paquete V109→V110, 20260712).
+/* CXOrbia · Verificador independiente del manifest V111 (paquete V110→V111, 20260714).
    Uso: colocar este archivo junto a app/ (o ajustar ROOT) y ejecutar:
      node docs/verify-manifest.mjs
    desde dentro de la carpeta app/. Requiere Node 18+ (usa node:crypto). */
@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 
 const ROOT = process.cwd(); // ejecutar desde app/
-const MANIFEST_PATH = path.join(ROOT, 'docs', 'MANIFEST-V110.json');
+const MANIFEST_PATH = path.join(ROOT, 'docs', 'MANIFEST-V111.json');
 
 function sha256Hex(buf) {
   return createHash('sha256').update(buf).digest('hex');

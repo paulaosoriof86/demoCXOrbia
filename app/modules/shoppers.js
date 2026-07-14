@@ -6,15 +6,34 @@ CX.module('shoppers', ({data,ui})=>{
   const av=(n,sz)=>`<div class="rail-av" style="width:${sz}px;height:${sz}px;font-size:${sz*0.38}px;background:linear-gradient(135deg,var(--brand),var(--brand-dark))">${initials(n)}</div>`;
   const viaBadge=(v)=>({registro:ui.bdg('Auto-registro','b'),manual:ui.bdg('Alta manual','t'),asignacion:ui.bdg('Creado en asignación','t')})[v]||'';
 
-  const row=(s)=>`<tr data-sid="${s.id}" style="cursor:pointer">
+  const row=(s)=>{
+    /* P0-3 (paquete V110→V111, 20260714): antes el estado y el honorario SIEMPRE mostraban un
+       badge concreto — si s.estado no era exactamente 'Pendiente' ni 'Certificado', el código
+       caía a mostrar "Activo" por defecto; si s.honorarioPref no era 'Preferente', mostraba
+       "Estándar" por defecto. Para una REFERENCIA PROTEGIDA (sin esos atributos en la fuente)
+       eso INVENTABA un estado/honorario que nunca vino de ningún lado. Ahora se detecta el nivel
+       real de dato y, si no hay atributo operativo, se muestra "Perfil protegido" en vez de un
+       valor sintetizado. */
+    const lvl=CX.data_shopperDataLevel(s);
+    const estadoCell = lvl==='protected_reference'
+      ? '<span class="bdg bdg-n" title="Solo referencia protegida — sin datos operativos de la fuente">🔒 Protegido</span>'
+      : (s.estado==='Pendiente'?ui.bdg('Pendiente','a'):s.estado==='Certificado'?ui.bdg('Certificado','g'):s.estado==='Activo'?ui.bdg('Activo','b'):'<span class="muted">— sin dato</span>');
+    const honCell = lvl==='protected_reference'
+      ? '<span class="muted" style="font-size:11px">—</span>'
+      : (s.honorarioPref==='Preferente'?ui.bdg('Preferente','p'):s.honorarioPref==='Estándar'?ui.bdg('Estándar','n'):'<span class="muted">— sin dato</span>');
+    const perfilCell = lvl==='protected_reference'
+      ? '<span class="bdg bdg-n">Referencia protegida</span>'
+      : (s.perfilCompleto?ui.bdg('Completo','g'):ui.bdg('Incompleto','a'));
+    return `<tr data-sid="${s.id}" style="cursor:pointer">
     <td><div class="flex">${av(s.nombre,30)}
-      <div><b>${s.nombre}</b><div style="font-size:11px;color:var(--t3)">${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)||s.pais||'—'}</div></div></div></td>
+      <div><b>${s.nombre||('🔒 '+(s.code||'Referencia protegida'))}</b><div style="font-size:11px;color:var(--t3)">${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)||s.pais||'—'}</div></div></div></td>
     <td><span style="font-size:12px;font-weight:800;color:var(--amber)">${s.rating?('★ '+s.rating):'<span style="color:var(--t3)">—</span>'}</span></td>
-    <td style="font-size:12px">${s.visitas||0}</td>
-    <td>${s.perfilCompleto?ui.bdg('Completo','g'):ui.bdg('Incompleto','a')}</td>
-    <td>${s.estado==='Pendiente'?ui.bdg('Pendiente','a'):s.estado==='Certificado'?ui.bdg('Certificado','g'):ui.bdg('Activo','b')}</td>
-    <td>${s.honorarioPref==='Preferente'?ui.bdg('Preferente','p'):ui.bdg('Estándar','n')}</td>
+    <td style="font-size:12px">${typeof s.visitas==='number'?s.visitas:'<span class="muted">—</span>'}</td>
+    <td>${perfilCell}</td>
+    <td>${estadoCell}</td>
+    <td>${honCell}</td>
   </tr>`;
+  };
 
   const list=()=>data.shoppersFor();
 
@@ -22,11 +41,11 @@ CX.module('shoppers', ({data,ui})=>{
   const render=()=>{
     const L=list();
     return `
-    ${ui.ph('Shoppers / Auditores', data.project().name+' · red de evaluadores y calificación')}
+    ${ui.ph('Shoppers / Auditores', data.period().name+' · red de evaluadores y calificación')}
     <div class="grid g4" style="margin-bottom:16px" id="shTopKpis">
       <div data-tk="all" style="cursor:pointer">${ui.kpi('En este proyecto',L.length,'b')}</div>
       <div data-tk="act" style="cursor:pointer">${ui.kpi('Activos',L.filter(s=>s.estado!=='Pendiente').length,'g')}</div>
-      <div data-tk="incom" style="cursor:pointer">${ui.kpi('Perfiles incompletos',L.filter(s=>!s.perfilCompleto).length,'a')}</div>
+      <div data-tk="incom" style="cursor:pointer">${ui.kpi('Perfiles incompletos',L.filter(s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!s.perfilCompleto).length,'a')}</div>
       <div data-tk="pref" style="cursor:pointer">${ui.kpi('Preferentes',L.filter(s=>s.honorarioPref==='Preferente').length,'p')}</div>
     </div>
     <div class="card card-p">
@@ -87,13 +106,32 @@ CX.module('shoppers', ({data,ui})=>{
 
   /* ---------- modal de perfil completo ---------- */
   const profileModal=(s)=>{
+    const lvl=CX.data_shopperDataLevel(s);
     const st=data.shopperStats(s.id);
+    /* P0-3: una referencia protegida NO abre ficha con PII ni con métricas inventadas — se
+       muestra un modal reducido y honesto en vez del perfil completo. */
+    if(lvl==='protected_reference'){
+      ui.modal((s.code||'Referencia protegida'), `
+        <div style="text-align:center;padding:10px 0">
+          <div style="font-size:34px">🔒</div>
+          <div class="card-t" style="margin-top:8px">${s.code||'Referencia protegida'}</div>
+          <div style="font-size:12.5px;color:var(--t3);margin-top:4px">${CX.paisName(s.pais)||s.pais||'—'}</div>
+        </div>
+        <div style="background:var(--panel-2);border-radius:10px;padding:12px 14px;font-size:12.5px;color:var(--t2);line-height:1.6;margin-top:10px">
+          Esta fuente solo entrega una <b>referencia protegida</b>: no hay rating, estado, honorario,
+          contacto ni completitud de perfil disponibles. No se muestran ni infieren valores — la
+          ficha completa se habilita solo cuando la fuente entregue datos operativos/autorizados y
+          el rol en sesión tenga permiso para verlos.
+        </div>
+      `);
+      return;
+    }
     const body=`
       <div class="between" style="margin-bottom:14px">
         <div class="flex">${av(s.nombre,46)}
-          <div><div class="card-t" style="font-size:16px">${s.nombre}</div>
+          <div><div class="card-t" style="font-size:16px">${s.nombre||'—'}</div>
           <div style="font-size:12px;color:var(--t3)">${s.code} · ${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)||'—'}</div>
-          <div class="flex" style="gap:6px;margin-top:6px">${s.perfilCompleto?ui.bdg('Perfil completo','g'):ui.bdg('Perfil incompleto','a')} ${viaBadge(s.createdVia)}</div></div></div>
+          <div class="flex" style="gap:6px;margin-top:6px">${lvl==='operational_profile'?'<span class="bdg bdg-a">Perfil operativo · datos de contacto pendientes</span>':(s.perfilCompleto?ui.bdg('Perfil completo','g'):ui.bdg('Perfil incompleto','a'))} ${viaBadge(s.createdVia)}</div></div></div>
         <span style="font-size:18px;font-weight:800;color:var(--amber)">${s.rating?('★ '+s.rating):''}</span>
       </div>
       <div style="background:var(--brand-light);border-radius:10px;padding:9px 13px;font-size:12px;color:var(--brand-dark);margin-bottom:14px" class="between">
@@ -108,7 +146,8 @@ CX.module('shoppers', ({data,ui})=>{
       </div>
       <div style="font-size:11px;color:var(--t3);text-align:right;margin-bottom:14px">↑ toca un indicador para ver el detalle</div>
       <div class="card card-p" style="margin-bottom:14px;background:var(--panel-2)">
-        <div class="card-t" style="font-size:12.5px;margin-bottom:8px">📊 Criterio de puntuación (score ${(s.rating||0).toFixed?s.rating.toFixed(1):(s.rating||'—')}/5)</div>
+        ${Number.isFinite(s.rating) ? `
+        <div class="card-t" style="font-size:12.5px;margin-bottom:8px">📊 Criterio de puntuación (score ${s.rating.toFixed(1)}/5)</div>
         <div style="font-size:11.5px;color:var(--t2);line-height:1.85">
           El score pondera la calidad y confiabilidad del evaluador. Solo penaliza cuando la responsabilidad es del shopper:
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 14px;margin-top:6px">
@@ -122,9 +161,11 @@ CX.module('shoppers', ({data,ui})=>{
             <span>• Reincidencia de faltas</span><b style="color:var(--red)">−0.25 acum.</b>
           </div>
           <div style="font-size:10.5px;color:var(--t3);margin-top:6px">Config por tenant/proyecto. Cada penalización queda en la auditoría con motivo y responsable.</div>
-        </div>
+        </div>` : `
+        <div class="card-t" style="font-size:12.5px;margin-bottom:6px">📊 Criterio de puntuación</div>
+        <div style="font-size:11.5px;color:var(--t2);line-height:1.6">Sin score disponible — esta fuente todavía no entrega un rating para este perfil. No se muestra ni infiere un valor mientras no exista un dato real.</div>`}
       </div>
-      <div class="card-h" style="margin-bottom:10px"><div class="card-t">Datos del shopper</div>${(CX.session&&CX.session.canSeeProtectedData&&CX.session.canSeeProtectedData())?'<button class="btn btn-soft btn-sm" id="shEdit">✎ Editar perfil</button>':'<span class="muted" style="font-size:11px">🔒 Edición de datos protegidos requiere acceso completo (Auth pendiente)</span>'}</div>
+      <div class="card-h" style="margin-bottom:10px"><div class="card-t">Datos del shopper</div>${lvl==='full_authorized_profile'?((CX.session&&CX.session.canSeeProtectedData&&CX.session.canSeeProtectedData())?'<button class="btn btn-soft btn-sm" id="shEdit">✎ Editar perfil</button>':'<span class="muted" style="font-size:11px">🔒 Edición de datos protegidos requiere acceso completo (Auth pendiente)</span>'):'<span class="muted" style="font-size:11px">Sin datos de contacto/documento en la fuente — nada que editar todavía</span>'}</div>
       <div id="shFormHost"></div>
     `;
     ui.modal(s.nombre, body, {onMount:(ov,close)=>{
@@ -229,7 +270,7 @@ CX.module('shoppers', ({data,ui})=>{
     }));
     bindRows();
     // KPIs superiores clickeables → lista filtrada de shoppers
-    const tkMap={all:['Shoppers del proyecto',()=>true],act:['Shoppers activos',s=>s.estado!=='Pendiente'],incom:['Perfiles incompletos',s=>!s.perfilCompleto],pref:['Honorario preferente',s=>s.honorarioPref==='Preferente']};
+    const tkMap={all:['Shoppers del proyecto',()=>true],act:['Shoppers activos',s=>s.estado!=='Pendiente'],incom:['Perfiles incompletos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!s.perfilCompleto],pref:['Honorario preferente',s=>s.honorarioPref==='Preferente']};
     document.querySelectorAll('#shTopKpis [data-tk]').forEach(el=>el.addEventListener('click',()=>{const d=tkMap[el.dataset.tk];const arr=L.filter(d[1]);
       ui.modal(d[0]+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Ciudad</th><th>Rating</th><th>Estado</th></tr></thead><tbody>${arr.map(s=>`<tr class="hov" data-pk="${s.id}" style="cursor:pointer"><td><b>${s.nombre}</b><div style="font-size:10px;color:var(--t3)">${s.code}</div></td><td style="font-size:12px">${s.ciudad||CX.paisName(s.pais)}</td><td style="font-weight:700;color:var(--amber)">★ ${s.rating||'—'}</td><td>${ui.bdg(s.estado||'—',s.estado==='Pendiente'?'a':'g')}</td></tr>`).join('')}</tbody></table>`:ui.empty('👥','Sin shoppers en esta categoría.'),{onMount:(ov,close)=>ov.querySelectorAll('[data-pk]').forEach(tr=>tr.addEventListener('click',()=>{close();const s=data.getShopper(tr.dataset.pk);if(s)profileModal(s);}))});
     }));

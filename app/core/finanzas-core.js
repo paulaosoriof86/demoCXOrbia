@@ -88,7 +88,7 @@ CX.fin = {
 
   /* resumen por país a partir de las liquidaciones derivadas de visitas */
   porPais(data){
-    const p=data.project(), liq=CX.liq.forProject(data), out={};
+    const p=data.period(), liq=CX.liq.forProject(data), out={};
     p.countries.forEach(c=>{
       const ls=liq.filter(l=>l.pais===c);
       const cur=p.currency[c];
@@ -111,7 +111,7 @@ CX.fin = {
 
   /* serie mensual — anclada al ingreso/margen REAL del periodo actual (porPais) */
   serieMensual(p,c){
-    const fp=this.porPais({project:()=>p, visitas:()=>(CX.data._visitas||[]).filter(v=>v.projectId===p.id)});
+    const fp=this.porPais({period:()=>p, visitas:()=>(CX.data._visitas||[]).filter(v=>v.projectId===p.id)});
     const d=(fp&&fp[c])||{};
     const ingHoy=d.ingreso||this.honRecibe(p,c)*10||1000;
     const margenHoy=(typeof d.margen==='number')?d.margen:Math.round(ingHoy*0.38);

@@ -144,7 +144,7 @@ CX.module('clientes', ({data,ui})=>{
       <div class="card-t" style="font-size:13px;margin:16px 0 8px">Contactos</div>
       <div id="cl_contacts">${(c.contactos||[]).length?c.contactos.map(contactRow).join(''):'<div style="font-size:12.5px;color:var(--t3)">Sin contactos registrados.</div>'}</div>
     `, {onMount:(ov,close)=>{
-      ov.querySelectorAll('[data-goproj]').forEach(el=>el.addEventListener('click',()=>{ data.setProject(el.dataset.goproj); close(); CX.router.nav('dashboard'); CX.ui.toast('Proyecto activo: '+data.project().name,'ok'); }));
+      ov.querySelectorAll('[data-goproj]').forEach(el=>el.addEventListener('click',()=>{ data.setProject(el.dataset.goproj); close(); CX.router.nav('dashboard'); CX.ui.toast('Proyecto activo: '+data.period().name,'ok'); }));
       ov.querySelector('#cl_edit').addEventListener('click',()=>{
         const body=ov.querySelector('.cx-modal-b'); body.innerHTML=editForm(c);
         body.querySelector('[data-cancel]').addEventListener('click',()=>{ close(); detail(c); });

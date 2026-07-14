@@ -3,7 +3,7 @@
    Separación SIEMPRE por moneda y por país del proyecto (genérico, cualquier país). */
 
 function _fin(data){
-  const p=data.project(), out={};
+  const p=data.period(), out={};
   p.countries.forEach(c=>{
     const v=data.visitas().filter(x=>x.pais===c&&['realizada','cuestionario','liquidada'].includes(x.estado));
     const hon=v.reduce((a,x)=>a+x.honorario,0);
@@ -16,7 +16,7 @@ function _fin(data){
 const _m=(cur,n)=>`${cur} ${Number(n).toLocaleString('es-GT')}`;
 
 CX.module('financiero', ({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
   const fp=CX.fin.porPais(data);
   const modelLbl = p.modelo==='delegado' ? 'Delegado (franquicia)' : 'Facturado directamente';
 
@@ -182,7 +182,7 @@ CX.module('financiero', ({data,ui})=>{
 });
 
 CX.module('movimientos', ({data,ui})=>{
-  const p=data.project(), cur=p.currency[p.countries[0]];
+  const p=data.period(), cur=p.currency[p.countries[0]];
   const seed=[
     {tipo:'ingreso',cat:'Anticipo cliente',pais:p.countries[0],monto:40000,fecha:'2026-06-03',desc:'Anticipo del proyecto',estado:'Conciliado'},
     {tipo:'egreso',cat:'Pago lote #L-204',pais:p.countries[0],monto:-18240,fecha:'2026-06-12',desc:'Pago a evaluadores',estado:'Pagado',origen:'lote'},
@@ -454,7 +454,7 @@ CX.module('movimientos', ({data,ui})=>{
 });
 
 CX.module('liquidaciones', ({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
 
   const host=ui.el('div');
   const draw=()=>{
@@ -590,7 +590,7 @@ CX.module('liquidaciones', ({data,ui})=>{
 });
 
 CX.module('lotes', ({data,ui})=>{
-  const p=data.project(), cur=p.currency[p.countries[0]];
+  const p=data.period(), cur=p.currency[p.countries[0]];
   const curHN=p.currency[p.countries[p.countries.length-1]];
   /* Bloque A (auditoría V101 — 20260711): este módulo mostraba SIEMPRE 3 lotes fabricados
      (#L-204/#L-205/#L-206 con evaluadores, sucursales, montos y estados fijos) sin ningún guard

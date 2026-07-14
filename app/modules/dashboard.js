@@ -1,7 +1,7 @@
 /* CXOrbia · Dashboard Operativo (admin) — KPIs clickeables, filtro de meses,
    comparativo último trimestre, notificación WhatsApp. Genérico multipaís. */
 CX.module('dashboard', ({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
   const ALL=!!CX.session._dashAll;
   const cs=ALL?[...new Set(data._visitas.filter(v=>data.inScope(v.pais)).map(v=>v.pais))]:p.countries;
   /* Bloque 9 (corrección V103, 20260711): el archivado (soft-delete) marca v._archived=true pero
@@ -87,7 +87,12 @@ CX.module('dashboard', ({data,ui})=>{
       </div></div>`;
   }).join('');
 
-  const top=[...shoppersPool].sort((a,b)=>b.rating-a.rating).slice(0,5);
+  /* GAP3 (paquete V111→V112, 20260714): el top-5 ordenaba TODOS los shoppers del pool
+     (incluyendo referencias protegidas y perfiles sin rating) con `.sort((a,b)=>b.rating-a.rating)`
+     — sin rating numérico, la comparación produce NaN/orden arbitrario y una referencia protegida
+     puede colarse en el ranking. Ahora usa data.rankableShoppers() (nivel≠protected_reference Y
+     rating numérico real) como única fuente de quién es rankeable. */
+  const top=data.rankableShoppers(shoppersPool).sort((a,b)=>b.rating-a.rating).slice(0,5);
 
   const alerts=[];
   if(k.sinAsignar.t) alerts.push(['r','sinasign',`${k.sinAsignar.t} sin asignar (${split(k.sinAsignar)})`]);
@@ -138,7 +143,12 @@ CX.module('dashboard', ({data,ui})=>{
   }).join('');
 
   const host=ui.el('div');
-  let selMonth=new Date().getMonth(); // mes actual dinámico
+  /* P0-1 (paquete V110→V111): retirado `monthSel` — era un selector cosmético que, al cambiar,
+     solo mostraba un toast ('Mes: … · datos del periodo activo') sin filtrar NINGÚN dato; el
+     único selector real de periodo es el de la barra lateral (rail #periodSel) y el de proyecto
+     (#dashProjSel, abajo), que sí invocan el setter canónico CX.data.setProject/setCurrentPeriod.
+     El avance real-vs-ideal usa el mes REAL del calendario (no una selección simulada). */
+  const selMonth=new Date().getMonth();
   const avanceHTML=`<div class="card card-p" style="margin-bottom:18px">
     <div class="card-h"><div class="card-t">📊 Avance real vs ideal del mes — por país</div><span class="muted" style="font-size:11px">día ${new Date().getDate()} de ${new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate()} · ideal lineal</span></div>
     ${cs.map(c=>{
@@ -162,7 +172,6 @@ CX.module('dashboard', ({data,ui})=>{
     <div>${ui.ph('Dashboard Operativo', (ALL?('Todos los proyectos · operación general · '+data.projects.length+' proyectos'):(p.name+' · '+p.industry))+' · '+cs.map(c=>CX.paisFlag(c)).join(' '))}</div>
     <div class="flex" style="flex-wrap:wrap;gap:8px">
       <select class="sel" id="dashProjSel" style="width:auto"><option value="all" ${ALL?'selected':''}>🌐 Todos los proyectos</option>${data.scopedProyectos().map(pg=>`<option value="${pg.key}" ${(!ALL&&pg.key===data.currentProgramKey())?'selected':''}>${pg.name}</option>`).join('')}</select>
-      <select class="sel" id="monthSel" style="width:auto">${months.map((m,i)=>`<option value="${i}" ${i===selMonth?'selected':''}>${m} ${new Date().getFullYear()}</option>`).join('')}</select>
       <span class="bdg bdg-b">● Preview operativo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div>
   </div>
 
@@ -344,7 +353,7 @@ CX.module('dashboard', ({data,ui})=>{
     };
     host.querySelectorAll('[data-sh]').forEach(el=>el.addEventListener('click',()=>{const s=data.getShopper?data.getShopper(el.dataset.sh):data.shoppers.find(x=>x.id===el.dataset.sh);if(s)profileModal(s);}));
     const rf=host.querySelector('#rankFull');
-    if(rf)rf.addEventListener('click',()=>{const rank=[...data.shoppersFor()].sort((a,b)=>(b.rating||0)-(a.rating||0));
+    if(rf)rf.addEventListener('click',()=>{const rank=data.rankableShoppers(data.shoppersFor()).sort((a,b)=>b.rating-a.rating);
       ui.modal('Ranking completo de shoppers ('+rank.length+')',`<table class="tbl"><thead><tr><th>#</th><th>Shopper</th><th>Ciudad</th><th>Visitas</th><th>Rating</th></tr></thead><tbody>
         ${rank.map((s,i)=>`<tr class="hov" data-rk="${s.id}" style="cursor:pointer"><td style="font-family:var(--disp);color:var(--t3)">${i+1}</td><td><b>${s.nombre}</b><div style="font-size:10px;color:var(--t3)">${s.code}</div></td><td style="font-size:12px">${s.ciudad||CX.paisName(s.pais)}</td><td style="font-size:12px">${s.visitas||0}</td><td style="font-weight:800;color:var(--amber)">★ ${s.rating||'—'}</td></tr>`).join('')}
       </tbody></table>`,{onMount:(ov,close)=>ov.querySelectorAll('[data-rk]').forEach(tr=>tr.addEventListener('click',()=>{close();const s=data.getShopper(tr.dataset.rk);if(s)profileModal(s);}))});
@@ -361,9 +370,11 @@ CX.module('dashboard', ({data,ui})=>{
     host.querySelectorAll('[data-kpi]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.kpi;drill(el.querySelector('.k-l').textContent.replace(' ›',''),F[id]||F.total,WA[id]);}));
     host.querySelectorAll('[data-alert]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.alert;drill('Gestión: '+id,F[id]||F.total,WA[id]||'Gestionar con los involucrados.');}));
     host.querySelectorAll('[data-fase]').forEach(el=>el.addEventListener('click',()=>{const[c,fk]=el.dataset.fase.split('|');drill(CX.paisLabel(c)+' · '+fk,v=>v.pais===c&&(F[fk]||F.total)(v),WA[fk]);}));
-    const ms=host.querySelector('#monthSel');
-    if(ms)ms.addEventListener('change',()=>ui.toast('Mes: '+months[+ms.value]+' '+new Date().getFullYear()+' · datos del periodo activo',''));
     const ps=host.querySelector('#dashProjSel');
+    /* P0-1: este selector SÍ es el canónico (además del de la barra lateral) — llama al mismo
+       setter real (data.setProgram → internamente activa el periodo más reciente vía
+       data.setProject/setCurrentPeriod) y provoca el mismo evento 'project'/'cx:period-changed'
+       que re-renderiza rail + vista activa, nunca solo un toast cosmético. */
     if(ps)ps.addEventListener('change',()=>{ if(ps.value==='all'){CX.session._dashAll=true;} else {CX.session._dashAll=false;data.setProgram?data.setProgram(ps.value):data.setProject(ps.value);} CX.router.nav('dashboard'); });
   },0);
   return host;

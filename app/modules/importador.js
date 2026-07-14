@@ -1,6 +1,6 @@
 /* CXOrbia · Importador Inteligente v2 — IA real, migración de cliente, HR clásica, instructivos */
 CX.module('importador',({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
   const host=ui.el('div');
   let tab='ai'; // 'ai' | 'legacy' | 'hr' | 'setup'
   let ai={step:1,raw:'',result:null,confirmed:[]};

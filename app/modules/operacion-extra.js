@@ -143,7 +143,7 @@ CX.module('miperfil', ({data,ui})=>{
 
 /* CXOrbia · Hojas de Ruta (admin) — interna / importada / ONLINE con sync sin duplicar */
 CX.module('rutas', ({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
   const online=CX.hr.esOnline(p);
   const rows=CX.hr.external(p);
   const d=CX.hr.diff(p);
@@ -223,7 +223,7 @@ CX.module('rutas', ({data,ui})=>{
 
 /* CXOrbia · Reportes & KPIs / Informes (admin) */
 CX.module('informes', ({data,ui})=>{
-  const k=data.kpis(), p=data.project();
+  const k=data.kpis(), p=data.period();
   const vis=data.visitas();
   
   /* Ranking de sucursales por cumplimiento */

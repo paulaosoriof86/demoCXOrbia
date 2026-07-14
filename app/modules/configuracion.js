@@ -4,7 +4,7 @@
 /* ---------- Cuestionarios: editor del PROGRAMA (secciones→preguntas, pesos, versiones) ---------- */
 let _qProg=null, _qPid=null;
 CX.module('cuestionarios', ({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
   if(!_qProg||_qPid!==p.id){ _qProg=JSON.parse(JSON.stringify(CX.programa.get(p.id))); _qPid=p.id; }
   const TIPOS=CX.programa.TIPOS, CRIT=CX.programa.CRITERIOS;
   const host=ui.el('div');
@@ -381,7 +381,7 @@ CX.module('usuarios', ({ui})=>{
 /* ---------- Configuración general (submenús + consola cliente/proveedor) ---------- */
 let _cfgTab='centro', _cfgMode='proveedor';
 CX.module('config', ({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
   const host=ui.el('div');
   const plan=CX.session.plan||p.plan||'estandar';
 
@@ -465,7 +465,7 @@ CX.module('config', ({data,ui})=>{
     const nombre=brandStored&&brandStored.name||CX.BRAND.name||'CXOrbia';
     const curTheme=CX.BRAND.theme||'cxorbia';
     const demoOn=CX.BRAND.demoMode!==false;
-    const projOpts=(CX.data.projects||[]).map(p=>`<option value="${p.id}" ${p.id===CX.data.currentProjectId?'selected':''}>${p.name}</option>`).join('');
+    const projOpts=(CX.data.projects||[]).map(p=>`<option value="${p.id}" ${p.id===CX.data.currentPeriodId?'selected':''}>${p.name}</option>`).join('');
     const tenantCountries=(CX.BRAND.countries||[]).join(', ');
     body.innerHTML=`
     <div class="card card-p" style="margin-bottom:14px">
@@ -531,7 +531,7 @@ CX.module('config', ({data,ui})=>{
     });
     body.querySelector('#goMarca')?.addEventListener('click',()=>CX.router.nav('marca'));
     body.querySelector('#cfgDemo')?.addEventListener('change',e=>{try{localStorage.setItem('cx_demo_mode',e.target.checked?'on':'off');}catch(x){}CX.BRAND.demoMode=e.target.checked;ui.toast(e.target.checked?'Modo demo activado':'Modo piloto/cliente · sello demo oculto','ok',3000);});
-    body.querySelector('#cfgStartProj')?.addEventListener('change',e=>{try{localStorage.setItem('cx_start_project',e.target.value);}catch(x){}CX.data.setProject(e.target.value);ui.toast('Proyecto inicial: '+(CX.data.project()?CX.data.project().name:e.target.value),'ok',3000);});
+    body.querySelector('#cfgStartProj')?.addEventListener('change',e=>{try{localStorage.setItem('cx_start_project',e.target.value);}catch(x){}CX.data.setProject(e.target.value);ui.toast('Proyecto inicial: '+(CX.data.period()?CX.data.period().name:e.target.value),'ok',3000);});
     body.querySelectorAll('.tema-pick').forEach(btn=>btn.addEventListener('click',()=>{
       const id=btn.dataset.tema;
       CX.applyTheme(id);

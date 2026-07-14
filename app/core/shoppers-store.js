@@ -122,7 +122,10 @@ window.CX = window.CX || {};
 
   /* histórico de visitas de un shopper (todas o del proyecto activo) */
   D.visitsForShopper = function(id, onlyCurrentProject){
-    return this._visitas.filter(v=> v.shopperId===id && (!onlyCurrentProject || v.projectId===this.currentProjectId));
+    /* GAP2 (V113→V114): filtraba por currentProjectId (id de PROYECTO/programa) cuando
+       v.projectId siempre almacena el id del PERIODO — vaciaba el histórico "de este proyecto"
+       en cuanto currentProjectId dejó de ser un alias del periodo. Ahora usa currentPeriodId. */
+    return this._visitas.filter(v=> v.shopperId===id && (!onlyCurrentProject || v.projectId===this.currentPeriodId));
   };
 
   /* postulaciones de un shopper */

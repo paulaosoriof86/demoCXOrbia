@@ -21,7 +21,7 @@ CX.cliUI = {
   /* conmutador de persona (Director / Gerente Regional / Responsable de Sucursal) */
   personaBarHTML(){
     const u=CX.session.user||{}, role=u.clienteRole||'director';
-    const p=CX.data.project(), C=CX.clienteData;
+    const p=CX.data.period(), C=CX.clienteData;
     let scope='Toda la marca';
     if(role==='regional') scope='Región: '+(u.scopeRegion||C.topRegion(p));
     if(role==='sucursal'){ const s=C.sucursales(p).find(x=>x.id===u.scopeSucursal)||C.sucursales(p).slice(-1)[0]; scope='Sucursal: '+(s?s.name:'—'); }
@@ -41,9 +41,9 @@ CX.cliUI = {
   },
   wirePersona(){
     const sel=document.getElementById('cliPersonaSel'); if(!sel) return;
-    document.getElementById('cliProjSel')?.addEventListener('change',(e)=>{ CX.data.currentProjectId=e.target.value; CX.bus&&CX.bus.emit('project'); CX.router.enter(); });
+    document.getElementById('cliProjSel')?.addEventListener('change',(e)=>{ CX.data.setProject(e.target.value); CX.router.enter(); });
     sel.addEventListener('change',()=>{
-      const role=sel.value, u=CX.session.user, p=CX.data.project(), C=CX.clienteData;
+      const role=sel.value, u=CX.session.user, p=CX.data.period(), C=CX.clienteData;
       u.clienteRole=role;
       if(role==='regional') u.scopeRegion=C.topRegion(p);
       if(role==='sucursal'){ const list=C.sucursales(p); u.scopeSucursal=list[list.length-1].id; }
@@ -57,7 +57,7 @@ CX.cliUI = {
      proyecto/sucursal, se derivan de CX.data._visitas; si no hay y estamos fuera de demo, se
      devuelve un array vacío (la UI debe mostrar "sin histórico", nunca inventar filas). */
   branchVisits(suc){
-    const real=(CX.data._visitas||[]).filter(v=>v.projectId===CX.data.project().id && v.sucursal===suc.name && (v.realizada||v.agendada));
+    const real=(CX.data._visitas||[]).filter(v=>v.projectId===CX.data.period().id && v.sucursal===suc.name && (v.realizada||v.agendada));
     if(real.length){
       return real.map(v=>({fecha:v.realizada||v.agendada||'', escenario:v.escenario||'—', score:typeof v.score==='number'?v.score:null, shopper:v.shopper||'—'}))
         .sort((a,b)=>b.fecha.localeCompare(a.fecha));
@@ -66,7 +66,7 @@ CX.cliUI = {
     if(!allowSynthetic) return [];
     let s=0; for(let i=0;i<suc.id.length;i++)s=(s*31+suc.id.charCodeAt(i))|0; s=Math.abs(s)+3;
     const rnd=()=>(s=s*16807%2147483647)/2147483647;
-    const esc=(CX.data.project().scenarios)||['Visita estándar'];
+    const esc=(CX.data.period().scenarios)||['Visita estándar'];
     return Array.from({length:suc.visitas},(_,i)=>({
       fecha:'2026-'+(rnd()>.5?'06':'05')+'-'+String(3+Math.floor(rnd()*25)).padStart(2,'0'),
       escenario:esc[Math.floor(rnd()*esc.length)],
@@ -126,7 +126,7 @@ CX.cliUI = {
 
   /* alta de plan de acción */
   accionModal(prefill={}){
-    const p=CX.data.project(), C=CX.clienteData, ui=CX.ui;
+    const p=CX.data.period(), C=CX.clienteData, ui=CX.ui;
     const sucOpts=C.scoped(p).map(s=>`<option value="${s.id}" ${s.id===prefill.sucId?'selected':''}>${s.name}</option>`).join('');
     const tipoOpts=Object.keys(this.ACC_META).map(k=>`<option value="${k}" ${k===prefill.tipo?'selected':''}>${this.ACC_META[k].icon} ${this.ACC_META[k].label}</option>`).join('');
     ui.modal('Nueva acción', `
@@ -224,7 +224,7 @@ window.cliTablon = function(ui){
 
 /* ============== Panorama ejecutivo ============== */
 CX.module('cli_dashboard', ({ui})=>{
-  const C=CX.clienteData, p=CX.data.project();
+  const C=CX.clienteData, p=CX.data.period();
   const list=C.scoped(p), R=C.resumen(list);
   const hasBranches = list.length>0;
   /* T3 (paquete V109 — 20260712, corrección P0): un solo helper decide qué es un score válido
@@ -328,7 +328,7 @@ CX.module('cli_dashboard', ({ui})=>{
 
 /* ============== Sucursales & Score ============== */
 CX.module('cli_sucursales', ({ui})=>{
-  const C=CX.clienteData, p=CX.data.project();
+  const C=CX.clienteData, p=CX.data.period();
   const all=C.scoped(p);
   const card=(s)=>`<div class="card hov" data-suc="${s.id}" style="padding:14px;cursor:pointer">
     <div class="flex" style="gap:12px">${CX.cliUI.donut(s.score,58)}
@@ -367,7 +367,7 @@ CX.module('cli_sucursales', ({ui})=>{
 
 /* ============== Planes de Acción ============== */
 CX.module('cli_acciones', ({ui})=>{
-  const C=CX.clienteData, p=CX.data.project();
+  const C=CX.clienteData, p=CX.data.period();
   const M=CX.cliUI.ACC_META;
   const render=()=>{
     const acc=C.acciones(p);

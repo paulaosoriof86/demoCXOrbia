@@ -1,6 +1,6 @@
 /* CXOrbia · Visitas (admin: tabla operativa editable · shopper: marketplace) */
 CX.module('visitas', ({data,role,ui})=>{
-  const p=data.project();
+  const p=data.period();
 
   /* ---------------- SHOPPER: marketplace de oportunidades (TODOS los proyectos) ---------------- */
   if(role==='shopper'){

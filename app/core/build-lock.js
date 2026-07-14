@@ -1,44 +1,41 @@
 /* ============================================================
-   CXOrbia · Source lock / BUILD_ID único — corrección V110
-   (paquete exclusivo V109→V110, 20260712).
+   CXOrbia · Source lock / BUILD_ID único — corrección V113
+   (paquete exclusivo V112→V113, 20260714 — cierre real de las 2 tareas P0).
 
-   V110 corrige, sobre V109, los 2 P0 comprobados en
-   02-EVIDENCIA-TECNICA-MINIMA-V109.md:
+   V113 corrige, sobre V112, las 2 tareas señaladas por auditoría independiente
+   en PAQUETE-CLAUDE-CXORBIA-V112-A-V113-FASTLANE-FAIL-CLOSED-20260714:
 
-   P0 1 — Academia: CX.acadData.ctx() (V109) caía a
-   project.countries cuando un shopper real no traía scopePaises
-   (campo de invitados/roles de prueba, no de shoppers). En un
-   proyecto GT/HN eso le daba a un shopper GT acceso equivalente a
-   [GT,HN], viendo contenido HN fuera de su alcance. Ahora, para
-   rol==='shopper', el país de acceso se resuelve SIEMPRE desde
-   CX.data.getShopper(shopperId).pais — nunca project.countries; si
-   no se puede resolver, paises=[] (fail-closed: contenido restringido
-   por país no se confirma visible, contenido global sigue visible).
+   TAREA 1 — Proyecto/periodo, corrección real (V112 seguía teniendo
+   currentProjectId como getter derivado del periodo, project()===period(), y
+   DOS definiciones de setProgram() donde la segunda pisaba la primera).
+   Ahora: currentProjectId y currentPeriodId son dos campos de almacenamiento
+   reales; project() devuelve un objeto con id=currentProjectId (programKey
+   real) + activePeriodId, distinto de period() (entrada cruda del periodo);
+   una sola definición de setCurrentProject()/setCurrentPeriod()/alias de
+   programa; periodSel usa exclusivamente setCurrentPeriod() (valida
+   pertenencia al proyecto activo); projSel usa setCurrentProject()/alias.
 
-   P0 2 — Finanzas: payVisits() (V109) ya agrupaba homogéneamente por
-   país/moneda (sin mezclar monedas), pero seguía PROCESANDO cualquier
-   id recibido: visitas sin país/moneda, con monto NaN/Infinity/negativo
-   o con id inexistente igual cambiaban a 'liquidada', recibían loteId
-   y generaban movimiento 'Pagado' antes de que la vista pudiera avisar
-   nada. Ahora cada id se valida ANTES de tocar cualquier estado (id
-   presente, visita existente, proyecto coincidente, país presente,
-   moneda presente, monto finito y no negativo); los inválidos van a
-   reviewRequired sin cambiar estado, sin loteId/fecha y sin movimiento.
-   Bug encontrado y corregido en esta misma ronda: (v.honorario||0)
-   convertía NaN en 0 (NaN es falsy) — corregido validando
-   Number.isFinite por componente antes de sumar.
+   Efecto de segundo orden corregido (no listado explícitamente por la
+   auditoría, pero requerido para no romper el resto de la plataforma): ~30
+   archivos leían data.project().id esperando el id del PERIODO (para filtrar
+   visitas/postulaciones/documentos/HR/liquidaciones/Academia/permisos) — se
+   migraron a data.period() (mismo contenido, id de periodo correcto).
+   project() queda reservado para lo que de verdad es proyecto/programa.
 
-   Manifest único vigente: docs/MANIFEST-V110.json (V100–V109 quedan
-   retirados del conjunto vigente — el historial narrativo permanece
-   en docs/REPORTE-CORRECCION-V*.md, sin tocar).
+   TAREA 2 — Manifest regenerado desde el contenido FINAL (después de la
+   Tarea 1 y su efecto de segundo orden), 0 diferencias.
+
+   Manifest único vigente: docs/MANIFEST-V113.json (V100–V112 quedan retirados
+   del conjunto vigente — el historial narrativo permanece en
+   docs/REPORTE-CORRECCION-V*.md, sin tocar).
    ============================================================ */
 var CX_SOURCE_LOCK = {
-  manifestFile: 'docs/MANIFEST-V110.json',
-  aggregateSha256: '8ccd1fc0b72b03f4119f949dac322a63db277bbd1770d86212df1b0f311962d0',
-  fileCount: 138,
-  generatedAt: '2026-07-12',
-  previousManifest: 'docs/REPORTE-CORRECCION-V109.md (manifest V109 retirado del conjunto vigente)',
-  note: 'BUILD_ID = primeros 16 hex del aggregateSha256 de docs/MANIFEST-V110.json, calculado sobre el contenido real de app/ en esta entrega (138 archivos). Excluye core/build-lock.js, docs/verify-manifest.mjs y el propio MANIFEST-V110.json (referencia circular) — ver exclusionesDeclaradas dentro del manifest. Verificable ejecutando docs/verify-manifest.mjs.',
+  manifestFile: 'docs/MANIFEST-V113.json',
+  aggregateSha256: '924c02a262fe72ff29b1bdac30a4744b70a11fad157dc597cb6e4d2c7e10f4b1',
+  fileCount: 145,
+  generatedAt: '2026-07-14',
+  previousManifest: 'docs/MANIFEST-V112.json (manifest V112 retirado del conjunto vigente)',
+  note: 'BUILD_ID = primeros 16 hex del aggregateSha256 de docs/MANIFEST-V113.json, calculado sobre el contenido real de app/ en esta entrega (145 archivos). Excluye core/build-lock.js, docs/verify-manifest.mjs y el propio MANIFEST-V113.json (referencia circular). Verificable ejecutando docs/verify-manifest.mjs.',
 };
 var CX_BUILD_ID = CX_SOURCE_LOCK.aggregateSha256.slice(0,16);
 

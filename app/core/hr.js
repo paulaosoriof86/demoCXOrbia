@@ -18,14 +18,14 @@ window.CX = window.CX || {};
   CX.hr = {
     _ext:{},               // HR externa simulada por proyecto (fuente de verdad externa)
 
-    fuente(p){ p=p||CX.data.project(); return (p.hrMap&&p.hrMap.fuente)||'Hoja creada en plataforma'; },
+    fuente(p){ p=p||CX.data.period(); return (p.hrMap&&p.hrMap.fuente)||'Hoja creada en plataforma'; },
     esOnline(p){ const f=this.fuente(p); return /sheets|online|excel/i.test(f); },
-    setFuente(p, f){ p=p||CX.data.project(); p.hrMap=p.hrMap||{}; p.hrMap.fuente=f; CX.bus&&CX.bus.emit('project'); },
+    setFuente(p, f){ p=p||CX.data.period(); p.hrMap=p.hrMap||{}; p.hrMap.fuente=f; CX.bus&&CX.bus.emit('project'); },
 
     /* HR externa (simula la hoja online). Espeja algunas visitas + filas creadas
        DIRECTAMENTE en la HR (aún no existen como visita en la plataforma). */
     external(p){
-      p=p||CX.data.project();
+      p=p||CX.data.period();
       if(this._ext[p.id]) return this._ext[p.id];
       const cur=p.currency||{}; const c0=(p.countries&&p.countries[0])||'GT';
       const vis=CX.data._visitas.filter(v=>v.projectId===p.id).slice(0,6);
@@ -50,7 +50,7 @@ window.CX = window.CX || {};
 
     /* compara HR externa contra la plataforma → clasifica filas */
     diff(p){
-      p=p||CX.data.project();
+      p=p||CX.data.period();
       const rows=this.external(p);
       const nuevos=[], updates=[], iguales=[];
       rows.forEach(r=>{
@@ -68,7 +68,7 @@ window.CX = window.CX || {};
 
     /* sincroniza HR → plataforma SIN DUPLICAR (crea nuevas, actualiza cambios) */
     sync(p){
-      p=p||CX.data.project();
+      p=p||CX.data.period();
       const d=this.diff(p); let creadas=0, actualizadas=0;
       d.nuevos.forEach(r=>{
         const id=p.id+'-hr'+(Date.now().toString(36).slice(-4))+creadas;
@@ -102,7 +102,7 @@ window.CX = window.CX || {};
        al asignar/agendar en la plataforma, actualiza la fila externa que
        corresponde (por llave natural/extId) y dispara la automatización Make. */
     writeBack(p, v){
-      p=p||CX.data.project(); if(!v) return;
+      p=p||CX.data.period(); if(!v) return;
       const rows=this.external(p);
       let r = rows.find(x=>x.visitId===v.id) ||
               (CX.dedupe && rows.find(x=>CX.dedupe.natKey(x)===CX.dedupe.natKey(v)));

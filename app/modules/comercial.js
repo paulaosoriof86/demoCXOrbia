@@ -13,7 +13,7 @@ CX.propStore = CX.propStore || {
 };
 
 CX.module('costos', ({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
   const cur=(p.currency&&p.currency[p.countries[0]])||'$';
   // estado editable (persistente por sesión en memoria del módulo)
   let cfg=Object.assign(CX.costos.defaults(),{moneda:cur}, _costosState||{});

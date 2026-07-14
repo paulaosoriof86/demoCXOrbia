@@ -25,7 +25,7 @@ CX.supportStore = CX.supportStore || {
 };
 
 CX.module('soporte', ({data,role,ui})=>{
-  const p=data.project();
+  const p=data.period();
   const ctx=`Proyecto activo: ${p.name} (${p.industry}), países ${p.countries.join('/')}, escenarios: ${p.scenarios.join(', ')}. Honorario GT Q60 + combo + boleto reembolsados. Rango de visita típico 12–18 jun.`;
   const host=document.createElement('div');
   let tab=role==='admin'?'bandeja':'ia';

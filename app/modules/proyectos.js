@@ -5,7 +5,7 @@ CX.module('proyectos', ({data,ui})=>{
     const periods = data.periodosDe(pg.key);
     const rep = pg.sample;
     const totalV = periods.reduce((a,p)=>a+data._visitas.filter(x=>x.projectId===p.id).length,0);
-    const activePeriod = periods.find(p=>p.id===data.currentProjectId);
+    const activePeriod = periods.find(p=>p.id===data.currentPeriodId);
     const isActiveGroup = !!activePeriod;
     return `<div class="card hov card-p" data-pgkey="${pg.key}" style="cursor:pointer;${isActiveGroup?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}">
       <div class="between" style="margin-bottom:10px">
@@ -21,12 +21,12 @@ CX.module('proyectos', ({data,ui})=>{
       <div style="font-size:11.5px;color:var(--t2);margin-bottom:${periods.length>1?'8px':'0'}">Escenarios: ${rep.scenarios.join(' · ')}</div>
       ${periods.length>1?`<div style="border-top:1px solid var(--border-2);padding-top:8px;margin-top:2px">
         <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px">${periods.length} periodos</div>
-        <div class="flex wrap" style="gap:6px">${periods.map(pr=>`<span data-pid="${pr.id}" class="bdg ${pr.id===data.currentProjectId?'bdg-g':'bdg-n'}" style="cursor:pointer">${pr.periodo||pr.name}${data.periodState(pr.id)!=='activo'?' · '+data.periodState(pr.id):''}</span>`).join('')}</div>
+        <div class="flex wrap" style="gap:6px">${periods.map(pr=>`<span data-pid="${pr.id}" class="bdg ${pr.id===data.currentPeriodId?'bdg-g':'bdg-n'}" style="cursor:pointer">${pr.periodo||pr.name}${data.periodState(pr.id)!=='activo'?' · '+data.periodState(pr.id):''}</span>`).join('')}</div>
       </div>`:`<div data-pid="${periods[0].id}" style="display:none"></div>`}
     </div>`;
   }).join('');
 
-  const p=data.project();
+  const p=data.period();
   const html=`
   ${ui.ph('Proyectos', 'Cada proyecto reconfigura dashboard, KPIs, reglas y cuestionarios — sin tocar código. Los periodos (rondas) viven dentro de su proyecto.')}
   <div class="between" style="margin-bottom:14px">
@@ -42,10 +42,10 @@ CX.module('proyectos', ({data,ui})=>{
   setTimeout(()=>{
     document.querySelectorAll('[data-pid]').forEach(c=>c.addEventListener('click',(e)=>{
       e.stopPropagation();
-      data.setProject(c.dataset.pid); ui.toast('Plataforma adaptada a: '+data.project().name+(data.project().periodo?' · '+data.project().periodo:''),'ok');
+      data.setProject(c.dataset.pid); ui.toast('Plataforma adaptada a: '+data.period().name+(data.period().periodo?' · '+data.period().periodo:''),'ok');
     }));
     document.querySelectorAll('[data-pgkey]').forEach(c=>c.addEventListener('click',()=>{
-      if(!data.setProgram) return; data.setProgram(c.dataset.pgkey); ui.toast('Plataforma adaptada a: '+data.project().name,'ok');
+      if(!data.setProgram) return; data.setProgram(c.dataset.pgkey); ui.toast('Plataforma adaptada a: '+data.period().name,'ok');
     }));
     /* ver/editar configuración del proyecto */
     document.querySelectorAll('[data-cfg]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); const pr=data.projects.find(x=>x.id===b.dataset.cfg); if(!pr)return; projConfig(pr); }));

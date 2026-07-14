@@ -245,7 +245,7 @@ window.CX = window.CX || {};
     /* escanea visitas y detecta atrasadas / pendientes / desactualizadas */
     scanPendientes(){
       const hoy=new Date(); const out={atrasadas:[],pendientes:[],desactualizadas:[]};
-      (CX.data._visitas||[]).filter(v=>v.projectId===CX.data.currentProjectId).forEach(v=>{
+      (CX.data._visitas||[]).filter(v=>v.projectId===CX.data.currentPeriodId).forEach(v=>{
         const ref=v.agendada||v.disponibleDesde; const d=ref?new Date(ref+'T12:00:00'):null;
         if(['asignada','agendada'].includes(v.estado) && d && d<hoy) out.atrasadas.push(v);
         else if(v.estado==='realizada') out.pendientes.push(v);          // pend. cuestionario

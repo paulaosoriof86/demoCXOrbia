@@ -2,7 +2,7 @@
    instructivo → certificar → agendar → realizar → cuestionario → submit
    Cada acción sincroniza estado de visita y liquidación. */
 CX.module('misvisitas', ({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
   /* P0: SIEMPRE filtrar por el shopper autenticado (shopperId, no nombre) */
   const sid=(CX.session.user&&CX.session.user.shopperId)||'sh1';
   const base=(data.visitsForShopper?data.visitsForShopper(sid):data.visitas());

@@ -99,7 +99,7 @@ window.CX = window.CX || {};
       const out={};
       try{
         const u=(CX.session&&CX.session.user)||{};
-        const p=CX.data&&CX.data.project&&CX.data.project();
+        const p=CX.data&&CX.data.period&&CX.data.period();
         out.tenantId = u.tenantId || undefined;
         out.projectId = p&&p.id || undefined;
         const countries = (p&&p.countries)||[];

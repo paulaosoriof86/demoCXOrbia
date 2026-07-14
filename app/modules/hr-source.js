@@ -37,8 +37,8 @@ CX.hrSource = {
 
 CX.module('hrsource', ({data, ui})=>{
   const host=ui.el('div');
-  const p=data.project();
-  const pid=()=>data.currentProjectId;
+  const p=data.period();
+  const pid=()=>data.currentPeriodId;
 
   const draw=()=>{
     const cfg=CX.hrSource.get(pid());
@@ -188,7 +188,7 @@ CX.module('hrsource', ({data, ui})=>{
          4 tipos de candidato sobre datos ya presentes en el prototipo, siempre "no escrito".
          Llave estable (projectId+tipo+origen): al volver a generar, ACTUALIZA el candidato existente
          en vez de duplicarlo — evita que reviewQueue se infle con cada click. */
-      const proj = data.project();
+      const proj = data.period();
       const visitasProj = data._visitas.filter(v=>v.projectId===pid());
       const identity = visitasProj.filter(v=>v.shopperId).length;
       const carryover = data.shoppers.filter(s=>proj.countries.includes(s.pais) && (s.certs||0)>0).length;

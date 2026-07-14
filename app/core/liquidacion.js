@@ -87,7 +87,7 @@ CX.liq = {
 
   /* todas las liquidaciones del proyecto activo, derivadas de sus visitas */
   forProject(data){
-    const p=data.project();
+    const p=data.period();
     return data.visitas().map(v=>this.fromVisita(p,v)).filter(Boolean);
   },
 

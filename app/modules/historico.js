@@ -26,7 +26,7 @@ CX.module('historico', ({data,ui})=>{
     });
     const paisesAll=[...new Set(rows.flatMap(r=>r.paises))];
     const filtered=rows.filter(r=>(fPais==='all'||r.paises.includes(fPais))&&(fEstado==='all'?true:fEstado==='sinActivo'?r.st!=='activo':r.st===fEstado));
-    const activo=data.currentProjectId;
+    const activo=data.currentPeriodId;
 
     host.innerHTML=`
       ${ui.ph('Histórico · '+programa, 'Consulta de periodos y rondas anteriores · separado de la operación activa')}

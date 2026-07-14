@@ -10,12 +10,12 @@ CX.docStore = CX.docStore || {
     {id:'d4',ic:'📋',n:'Checklist de visita',meta:'Lista · 8 ítems',tipo:'check',
       items:['Certificación vigente','Escenario memorizado','Fecha confirmada','Evidencia lista (cámara)','Efectivo/medios de pago','Cronómetro a mano','Comprobantes guardados','Cuestionario completado el mismo día']},
   ];},
-  list(pid){ pid=pid||CX.data.currentProjectId; if(!this._d[pid]) this._d[pid]=this.seed(pid); return this._d[pid]; },
+  list(pid){ pid=pid||CX.data.currentPeriodId; if(!this._d[pid]) this._d[pid]=this.seed(pid); return this._d[pid]; },
   add(pid,d){ this.list(pid).unshift(Object.assign({id:'d'+Date.now().toString(36),ic:'📎',meta:'subido ahora'},d)); CX.bus&&CX.bus.emit('docs'); },
 };
 
 CX.module('documentos', ({data,role,ui})=>{
-  const p=data.project(), pid=p.id;
+  const p=data.period(), pid=p.id;
   const host=ui.el('div');
 
   /* visor a PANTALLA COMPLETA en el área del módulo (no modal) */

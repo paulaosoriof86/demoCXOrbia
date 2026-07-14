@@ -69,7 +69,7 @@ CX.crmStore = CX.crmStore || {
 CX.module('crm', ({data,ui})=>{
   const host=ui.el('div');
   let crmView='dashboard'; // dashboard | pipeline | leads | cuentas | contactos | actividades | reportes
-  const cur=()=>((data.project().currency&&data.project().currency.GT)||'$');
+  const cur=()=>((data.period().currency&&data.period().currency.GT)||'$');
   const k=(n)=>cur()+' '+(n/1000).toFixed(0)+'k';
   const emojis={llamada:'📞',reunion:'👥',nota:'🗒️',tarea:'⏰',acta:'📝',meet:'🎥',correo:'✉️'};
 

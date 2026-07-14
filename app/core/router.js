@@ -19,26 +19,31 @@ CX.router = {
         db.innerHTML='<span class="d" style="background:'+b.c+'"></span> '+b.t;
       }
     }catch(e){}
-    if(role==='shopper'){ const ok=CX.data.projectsFor(role); if(ok.length && !ok.some(p=>p.id===CX.data.currentProjectId)) CX.data.currentProjectId=ok[0].id; }
+    /* GAP1 (paquete V113→V114): ninguna de estas ramas escribe currentPeriodId/currentProjectId
+       directamente — todas pasan por CX.data.setProject(periodId), el único mutador real, que
+       sincroniza AMBOS campos (currentPeriodId y currentProjectId recalculado vía programKey) y
+       emite 'cx:period-changed'/'cx:project-changed'. Antes estas 5 ramas escribían
+       currentPeriodId a secas y dejaban currentProjectId desincronizado. */
+    if(role==='shopper'){ const ok=CX.data.projectsFor(role); if(ok.length && !ok.some(p=>p.id===CX.data.currentPeriodId)) CX.data.setProject(ok[0].id); }
     else if(role==='cliente'){
       /* P0 (V95 reauditoría): clientBrandAdmin/clientBrandViewer con scopeCliente/scopeProjectId
          deben aterrizar en SU proyecto, no en el que haya quedado activo de otra sesión. */
       const u=CX.session.user||{};
-      if(u.scopeProjectId && CX.data.projects.some(p=>p.id===u.scopeProjectId)) CX.data.currentProjectId=u.scopeProjectId;
+      if(u.scopeProjectId && CX.data.projects.some(p=>p.id===u.scopeProjectId)) CX.data.setProject(u.scopeProjectId);
       else if(u.scopeCliente){
         /* P1 (V96 reauditoría): con varios proyectos para el mismo cliente, conserva el ya activo
            si sigue siendo del cliente; si no, aterriza en el primero — el portal ofrece selector. */
         const matches=CX.data.clientProjects(u.scopeCliente);
-        if(matches.length && !matches.some(p=>p.id===CX.data.currentProjectId)) CX.data.currentProjectId=matches[0].id;
+        if(matches.length && !matches.some(p=>p.id===CX.data.currentPeriodId)) CX.data.setProject(matches[0].id);
       }
     }
     else if(CX.data.scopePaises()||((CX.session.user||{}).scopeProjectId)){
       const u=CX.session.user||{};
       if(u.scopeProjectId && CX.data.projects.some(p=>p.id===u.scopeProjectId)){
         /* projectCoordinator/operationsCoordinator con proyecto único asignado */
-        if(CX.data.currentProjectId!==u.scopeProjectId) CX.data.currentProjectId=u.scopeProjectId;
+        if(CX.data.currentPeriodId!==u.scopeProjectId) CX.data.setProject(u.scopeProjectId);
       } else {
-        const ok=CX.data.scopedProjects(); if(ok.length && !ok.some(p=>p.id===CX.data.currentProjectId)) CX.data.currentProjectId=ok[0].id;
+        const ok=CX.data.scopedProjects(); if(ok.length && !ok.some(p=>p.id===CX.data.currentPeriodId)) CX.data.setProject(ok[0].id);
       }
     }
     this.buildRail(role);
@@ -50,7 +55,7 @@ CX.router = {
   },
 
   buildRail(role){
-    const d=CX.data, p=d.project();
+    const d=CX.data, p=d.period();
     const rail=document.getElementById('rail');
     const u=CX.session.user||{};
     const initials=(u.name||'CX').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
@@ -66,7 +71,7 @@ CX.router = {
       const periods=d.periodsForProgram?d.periodsForProgram(curKey):[];
       const periodSel = periods.length>1
         ? `<div class="rail-proj-l" style="margin-top:9px">Periodo</div>
-           <select id="periodSel">${periods.map(pr=>`<option value="${pr.id}" ${pr.id===d.currentProjectId?'selected':''}>${pr.periodo||pr.name}</option>`).join('')}</select>`
+           <select id="periodSel">${periods.map(pr=>`<option value="${pr.id}" ${pr.id===d.currentPeriodId?'selected':''}>${pr.periodo||pr.name}</option>`).join('')}</select>`
         : '';
       projBlock = (role==='admin' || progs.length>1)
         ? `<div class="rail-proj"><div class="rail-proj-l">Proyecto${role!=='admin'&&u.code?(' · '+u.code):''}</div>
@@ -75,7 +80,7 @@ CX.router = {
              <div style="font-size:13px;font-weight:700">${p.name}</div>
              <div style="font-size:10.5px;color:var(--t3)">${p.industry}</div>${periodSel}</div>`;
     } else {
-      const projOpts=visibleProjects.map(pr=>`<option value="${pr.id}" ${pr.id===d.currentProjectId?'selected':''}>${pr.name}</option>`).join('');
+      const projOpts=visibleProjects.map(pr=>`<option value="${pr.id}" ${pr.id===d.currentPeriodId?'selected':''}>${pr.name}</option>`).join('');
       projBlock = role==='admin'
         ? `<div class="rail-proj"><div class="rail-proj-l">Proyecto activo</div><select id="projSel">${projOpts}</select></div>`
         : `<div class="rail-proj"><div class="rail-proj-l">Proyecto</div><div style="font-size:13px;font-weight:700">${p.name}</div><div style="font-size:10.5px;color:var(--t3)">${p.industry}</div></div>`;
@@ -111,6 +116,14 @@ CX.router = {
     const logoHTML = `<div class="logo-mark"><span class="dot"></span></div>
          <div><div class="brand-name">CXOrbia</div><div class="brand-sub">Field Operations Platform</div></div>`;
 
+    /* P0-2 (paquete V110→V111, 20260714): bug confirmado — para role==='shopper' este label
+       mostraba SIEMPRE los países del PROYECTO activo (p.countries, que puede ser multipaís,
+       ej. GT/HN), como si esos fueran el alcance del shopper — aunque el shopper real solo
+       opere en UNO de esos países. Ahora, para shopper, el país activo se deriva de su propio
+       registro (CX.data.getShopper) — nunca del proyecto. Coordinador/aliado con scopePaises
+       (verdadero alcance multipaís asignado) conservan su indicador multipaís sin cambios. */
+    const _shopperPais = role==='shopper' ? (()=>{ const sh=u.shopperId && CX.data.getShopper && CX.data.getShopper(u.shopperId); return sh&&sh.pais ? (CX.paisFlag(sh.pais)+' '+CX.paisName(sh.pais)) : 'sin país asignado'; })() : null;
+    const _roleLineLbl = role==='admin'?'Administración':role==='cliente'?'Portal del cliente':('Shopper · '+(_shopperPais||'—'));
     rail.innerHTML=`
       <div class="rail-brand">
         ${logoHTML}
@@ -120,7 +133,7 @@ CX.router = {
       <div class="rail-foot">
         <div class="rail-user"><div class="rail-av">${initials}</div>
           <div><div style="font-size:12.5px;font-weight:700;color:#fff" title="${(u.name||'Usuario demo').replace(/"/g,'&quot;')}">${u.name||'Usuario demo'}</div>
-          <div style="font-size:10.5px;color:rgba(255,255,255,.5)" title="${(role==='admin'?'Administración':role==='cliente'?'Portal del cliente':'Shopper · '+(p.countries.join('/')))+((u.scopePaises&&u.scopePaises.length)?' · 🌎 '+u.scopePaises.join('/'):'')}">${role==='admin'?'Administración':role==='cliente'?'Portal del cliente':'Shopper · '+(p.countries.join('/'))}${(u.scopePaises&&u.scopePaises.length)?' · 🌎 '+u.scopePaises.join('/'):''}</div></div></div>
+          <div style="font-size:10.5px;color:rgba(255,255,255,.5)" title="${_roleLineLbl+((u.scopePaises&&u.scopePaises.length)?' · 🌎 alcance multipaís: '+u.scopePaises.join('/'):'')}">${_roleLineLbl}${(u.scopePaises&&u.scopePaises.length)?' · 🌎 '+u.scopePaises.join('/'):''}</div></div></div>
         <button class="rail-logout" id="logoutBtn">Cerrar sesión</button>
       </div>`;
 
@@ -152,11 +165,10 @@ CX.router = {
     });
     const sel=document.getElementById('projSel');
     if(sel)sel.addEventListener('change',()=>{
-      if(d.setProgram && d.programs){ d.setProgram(sel.value); CX.ui.toast('Proyecto: '+(d.project()?d.programBase(d.project()):sel.value),'ok'); this.buildRail(CX.session.role); }
-      else { d.setProject(sel.value); CX.ui.toast('Proyecto: '+d.project().name,'ok'); }
+      d.setProgram(sel.value); CX.ui.toast('Proyecto: '+(d.period()?d.programBase(d.period()):sel.value),'ok'); this.buildRail(CX.session.role);
     });
     const psel=document.getElementById('periodSel');
-    if(psel)psel.addEventListener('change',()=>{ d.setProject(psel.value); CX.ui.toast('Periodo: '+(d.project().periodo||d.project().name),'ok'); });
+    if(psel)psel.addEventListener('change',()=>{ d.setCurrentPeriod(psel.value); CX.ui.toast('Periodo: '+(d.period().periodo||d.period().name),'ok'); });
     document.getElementById('logoutBtn').addEventListener('click',()=>CX.app.logout());
   },
 

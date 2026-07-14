@@ -130,7 +130,7 @@ CX.intStore._purgeLegacySecrets();
 
 CX.module('integraciones', ({ui,data})=>{
   const host=ui.el('div');
-  const PLAN=CX.session.plan||(data.project()&&data.project().plan)||'estandar';
+  const PLAN=CX.session.plan||(data.period()&&data.period().plan)||'estandar';
   const planLevel={estandar:0,pro:1,enterprise:2};
   const canUse=(p)=> (planLevel[p]||0) <= (planLevel[PLAN]||0);
 
