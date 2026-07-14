@@ -1,8 +1,8 @@
 # PHASE A — CHECKPOINT VIVO ÚNICO DE EJECUCIÓN TYA
 
-Fecha: 2026-07-13
-Repo: `paulaosoriof86/demoCXOrbia`
-Rama: `docs-tya-v6-v71-audit`
+Fecha de actualización: 2026-07-14  
+Repo: `paulaosoriof86/demoCXOrbia`  
+Rama: `docs-tya-v6-v71-audit`  
 PR: `#7` draft/open/no merge
 
 ## 1. Regla de precedencia
@@ -27,112 +27,116 @@ Cerrar Phase A TyA y llegar a una salida productiva controlada con:
 - tenant TyA;
 - Cinépolis como proyecto normal configurable;
 - HR TyA como fuente operacional;
-- periodos, visitas, shoppers, certificaciones y liquidaciones correctos;
+- periodos, visitas, shoppers, certificaciones, liquidaciones y pagos representados correctamente;
 - un único estado de periodo;
 - backend real por el punto único de `CX.data`;
 - datos demo fuera de la fuente final;
 - validación visual semántica por rol;
 - gates de producción explícitos.
 
-No se priorizan nuevos contratos, paquetes, reauditorías completas ni infraestructura abstracta que no desbloquee uno de esos puntos.
+No se priorizan nuevos contratos, reauditorías completas ni infraestructura abstracta que no desbloquee uno de esos puntos.
 
-## 3. Baseline y evidencia
+## 3. Baseline y carriles activos
 
-- Baseline frontend viva: V110 empalmada.
-- R17: evidencia NO-GO, no nueva baseline frontend.
-- R17 no se continúa parcheando como solución final.
-- No se crea otro prototipo desde cero.
-- Backend continúa sobre V110 y sobre los contratos/datos ya trabajados.
+- Baseline frontend viva: **V110 empalmada**.
+- Claude recibió paquete focalizado V110 → V111 para proyecto/periodo, marca/alcance y shoppers protegidos.
+- V111 todavía no es baseline hasta auditoría forense diferencial y empalme.
+- R17: evidencia NO-GO; no es baseline y no se continúa parcheando.
+- Backend trabaja en paralelo sin modificar `/app/modules` ni `/app/core`.
+- Producción permanece HOLD.
 
-## 4. Estado real ya alcanzado
+## 4. Estado real ya alcanzado y que no se reabre
 
-### Cerrado o reutilizable
+### Activos existentes reutilizables
 
-- V110 empalmada físicamente.
-- Admin, Cliente y Shopper renderizaron 13/13 rutas sin errores de consola en R10.
-- HR TyA accesible en lectura source-safe: 14 periodos, 28 tabs, 616 visitas.
-- Importadores separados de pagos y certificaciones soportan JSON, CSV, XLSX y XLSM.
-- Conciliación financiera R14C: 196 enlaces exactos con casos restantes en revisión.
-- Contratos de `CX.data`, reviewQueue, conflictos, pagos, certificaciones, Make y datos sensibles ya existen.
-- Source-safe, gates, rollback y auditoría ya están documentados; no se reabren desde cero.
+- Normalización de fechas Excel/ISO ya existe en importadores source-safe.
+- Máquina de estados `phase-a-operational-state-machine-v1` ya existe.
+- Domain mapping `phase-a-source-safe-domain-mapping-v1` ya existe.
+- ReviewQueue y conflictos ya están contratados.
+- V110 está empalmada físicamente.
+- R10: Admin, Cliente y Shopper renderizaron 13/13 rutas sin errores de consola.
+- HR source-safe: 14 periodos, 28 tabs y 616 visitas.
+- Importadores pagos/certificaciones soportan JSON, CSV, XLSX y XLSM.
+- R11D encapsuló la brecha shopper en revisión estable; no se deduplica por nombre.
+- R14C produjo 196 enlaces financieros exactos y 51 casos en revisión.
+- Materialización, rollback, auditoría y gates ya están documentados.
 
-### No cerrado
+### Pendiente real
 
-- Lectura runtime real de HR/backend.
-- Normalización completa de fechas.
-- Mapper canónico de estados TyA.
-- Periodo canónico compartido en toda la UI.
-- Mi Día/calendario alineado con periodo y fechas.
-- Login sin título duplicado.
-- País activo/banderas gobernados por configuración y alcance.
-- Shoppers operativos completos sin atributos inventados.
-- Firebase DEV nuevo y vacío disponible para conexión.
-- Auth, Storage, Make, Gemini y producción real.
+- Integrar esos activos existentes en la ruta que genera el payload visible.
+- Retirar de la salida final `submitido → liquidada`, seriales Excel y atributos shopper inventados.
+- Aplicar después, sin recalcular, los resultados R11D/certificaciones y R14C al modelo canónico.
+- Recibir, auditar y empalmar V111.
+- Conectar lectura runtime/backend real por `CX.data`.
+- Crear o habilitar Firebase DEV nuevo y vacío.
+- Activar Auth, Storage, Make, Gemini y producción solo por gates.
 
 ## 5. Bloque activo único
 
-`R18_BACKEND_CANONICAL_HR_MAPPING`
+`R18A_INTEGRATE_EXISTING_CANONICAL_ASSETS`
 
 Alcance permitido:
 
-1. normalizar fechas Sheets/XLSX a ISO;
-2. enviar fechas ambiguas o inválidas a `reviewQueue`;
-3. separar `operationalState`, `questionnaireState`, `submissionState`, `liquidationState` y `paymentState`;
-4. impedir que submitido se convierta en liquidada o pagada;
-5. agregar `sourceSnapshotAt`, `sourceReadMode` y `runtimeSyncActive`;
-6. eliminar rating, completitud, preferencia o estado shopper inventado en adapters source-safe;
-7. producir referencia source-safe por periodo para el gate semántico.
+1. consumir el payload del builder HR ya existente;
+2. aplicar las semánticas de fecha ya implementadas por los importadores;
+3. aplicar la máquina de estados y domain mapping ya existentes;
+4. normalizar fechas a ISO y enviar ambiguas a `reviewQueue`;
+5. separar estados operativo, cuestionario, submitido, liquidación y pago;
+6. impedir que submitido implique liquidado o pagado;
+7. agregar `sourceSnapshotAt`, `sourceReadMode` y `runtimeSyncActive`;
+8. retirar rating, estado, completitud, preferencia u honorario shopper inventados;
+9. generar adapter source-safe canónico para build DEV;
+10. verificar expresamente que R11D y R14C no fueron recalculados.
 
-Fuera de alcance de R18:
+Fuera de alcance:
 
-- crear otro paquete Claude;
-- rediseñar módulos;
-- reauditar V110 completa;
-- reabrir R11-R17;
-- crear más documentos de arquitectura general;
+- rehacer normalizador;
+- crear otra máquina de estados o domain mapping;
+- reabrir R11–R11D;
+- volver a conciliar R14/R14C;
+- crear otro importador;
+- tocar módulos/core desde backend;
 - desplegar producción;
-- activar writes, Make, Gemini o pagos.
+- ejecutar writes, imports, Make, Gemini o pagos.
 
 ## 6. Plan de trabajo restante Phase A
 
-### A. Corrección de datos y semántica
+### A. Backend canónico y datos existentes
 
-- `R18` Mapper canónico HR y fechas.
-- `R19` Reconciliación estable de shoppers 210/213/215 y certificaciones conservadas.
-- `R20` Overlay financiero: liquidación y pago separados, junio representado correctamente.
+- `R18A_INTEGRATE_EXISTING_CANONICAL_ASSETS`: integrar parser/estados/metadata existentes en la salida source-safe.
+- `R18B_APPLY_EXISTING_R11D_R14C_AND_CERTIFICATION_OUTPUTS`: aplicar resultados ya calculados; no reconciliar de nuevo.
 
-### B. Corrección frontend crítica sobre V110
+### B. Prototipo V111 y empalme
 
-- `R21` Periodo canónico único en sidebar, Dashboard, Visitas, Mi Día, Histórico y Finanzas.
-- `R22` Login, branding y banderas por tenant/proyecto/alcance.
-- `R23` Shoppers protegidos y perfiles operativos sin datos inventados.
-
-Estas tareas son Claude/prototipo cuando impliquen módulos UI. Backend solo documenta contrato y validación esperada.
+- `R21_CANONICAL_PERIOD_UI_V111`: un único periodo en sidebar, Dashboard, Visitas, Mi Día, Histórico y Finanzas.
+- `R22_LOGIN_BRANDING_COUNTRY_SCOPE_V111`: login, marca y alcance desde configuración.
+- `R23_PROTECTED_SHOPPER_PROFILE_V111`: referencias protegidas sin atributos inventados.
+- Auditoría diferencial V111 contra V110 y el paquete exacto; empalme de tres vías y source lock nuevo solo si pasa.
 
 ### C. Backend real
 
-- `R24` Proyecto Firebase DEV nuevo/vacío o entorno equivalente autorizado.
-- `R25` Conexión única `CX.data` a backend DEV manteniendo la interfaz.
-- `R26` Auth/roles y Storage/evidencias mínimos de Phase A.
-- `R27` Import controlado de datos TyA limpios y verificados.
-- `R28` Sincronización HR/plataforma con Make y conflictos fail-closed.
+- `R24_NEW_EMPTY_FIREBASE_DEV`.
+- `R25_CX_DATA_DEV_BACKEND_CONNECTION`.
+- `R26_AUTH_ROLES_STORAGE_MINIMUM`.
+- `R27_CONTROLLED_TYA_IMPORT`.
+- `R28_HR_PLATFORM_MAKE_SYNC`.
 
 ### D. Salida
 
-- `R29` Smoke semántico completo por rol y periodo.
-- `R30` GO/NO-GO de producción con rollback.
-- `R31` Deploy productivo controlado y verificación posterior.
+- `R29_SEMANTIC_ROLE_PERIOD_SMOKE`.
+- `R30_PRODUCTION_GO_NO_GO`.
+- `R31_CONTROLLED_PRODUCTION_DEPLOY`.
 
 No se agregan nuevos bloques salvo hallazgo que bloquee directamente uno de estos pasos. Todo bloque nuevo debe indicar qué bloque reemplaza o por qué es indispensable.
 
 ## 7. Control de tiempo y agilidad
 
 - Cada iteración debe entregar un cambio verificable o declarar un bloqueo concreto.
-- Una iteración no puede dedicarse únicamente a releer, reauditar o documentar lo ya conocido.
-- Diagnóstico máximo antes de actuar: revisión del checkpoint, diff y archivos directamente afectados.
-- No se revisa el PR completo de 2,000+ commits en cada bloque.
-- No se genera un nuevo paquete para Claude hasta acumular un conjunto crítico real o necesitar una corrección frontend inmediata.
-- Si una herramienta bloquea el trabajo, se reporta en el mismo bloque y se continúa por el siguiente carril ejecutable; no se abre una cadena indefinida de HOLD documentales.
+- Una iteración no puede dedicarse únicamente a releer, reauditar o documentar lo conocido.
+- Diagnóstico máximo normal: checkpoint, diff y archivos directamente afectados.
+- No revisar el PR completo de 2,000+ commits en cada bloque.
+- Mientras Claude trabaja, backend avanza por el carril ejecutable sin esperar.
+- Si una herramienta bloquea un carril, se continúa por otro carril Phase A; no se abre una cadena de HOLD documentales.
 
 ## 8. Cierre obligatorio de cada iteración
 
@@ -157,28 +161,30 @@ Si falta uno de esos apartados, el bloque no se considera cerrado.
 
 Al abrir una conversación nueva:
 
-1. leer documento maestro y addenda obligatorios una sola vez;
+1. leer maestro y addenda obligatorios una sola vez;
 2. leer este checkpoint;
 3. verificar PR #7 y HEAD;
 4. resumir en máximo diez líneas;
-5. continuar desde `Bloque activo único`;
+5. continuar desde el bloque activo único;
 6. no crear otro diagnóstico general ni solicitar información ya documentada.
 
-Si la conversación se acerca al límite, el prompt de continuidad debe copiar el estado de este checkpoint, el último commit, el resultado del bloque y el siguiente bloque exacto. No debe reconstruir dos meses de historia narrativa.
+Si la conversación se acerca al límite, el prompt de continuidad debe copiar este checkpoint, el último commit, el resultado del bloque y el siguiente bloque exacto.
 
-## 10. Clasificación obligatoria del bloque R18
+## 10. Clasificación obligatoria del bloque R18A
 
-- **Reusable CXOrbia:** normalizador de fechas, estados de dominio separados, metadata snapshot/runtime, reviewQueue y gate semántico.
-- **Exclusivo TyA/Cinépolis:** columnas HR, Q1/Q2, visita previa, GT/HN, 44 visitas mensuales y reglas de junio.
-- **Claude/prototipo:** periodo único, Mi Día, login, banderas, shoppers sin atributos ficticios y definición de KPIs.
-- **Academia:** proyecto vs periodo; snapshot vs runtime; estados operativo/cuestionario/submitido/liquidación/pago; fechas normalizadas y reviewQueue.
-- **Sin impacto Claude:** código interno de normalización, validadores y metadata cuando no cambien UI.
+- **Reusable CXOrbia:** integración de normalización externa, estados de dominio separados, metadata snapshot/runtime, niveles de protección y gate semántico.
+- **Exclusivo TyA/Cinépolis:** columnas HR, Q1/Q2, visita previa, GT/HN y reglas de junio; no se hardcodean en el paquete Claude comercializable.
+- **Claude/prototipo:** V111 para periodo único, Mi Día, login, alcance y shoppers protegidos.
+- **Academia:** proyecto vs periodo; snapshot vs runtime; estados operativo/cuestionario/submitido/liquidación/pago; referencia protegida vs perfil autorizado.
+- **Sin impacto Claude:** postprocesador canónico, adapter build-only, validadores y metadata interna.
 
-## 11. Estado al crear este checkpoint
+## 11. Estado al actualizar este checkpoint
 
 - Producción: HOLD.
-- Hosting R17: evidencia NO-GO.
+- V110: baseline frontend.
+- V111: solicitado a Claude, pendiente recepción y auditoría.
+- R17: evidencia NO-GO.
 - Firestore/Auth/Storage writes: HOLD.
 - Imports reales: HOLD.
 - Make/Gemini/pagos: HOLD.
-- Siguiente acción ejecutable: `R18_BACKEND_CANONICAL_HR_MAPPING`.
+- Siguiente acción ejecutable: `R18A_INTEGRATE_EXISTING_CANONICAL_ASSETS`.
