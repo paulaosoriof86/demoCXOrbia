@@ -1,0 +1,35 @@
+name: CXOrbia Phase A Live Execution Checkpoint
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md'
+      - 'backend/contracts/phase-a-live-execution-checkpoint-v1.json'
+      - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
+      - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md'
+      - 'backend/contracts/phase-a-live-execution-checkpoint-v1.json'
+      - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
+      - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live-checkpoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify Phase A live execution checkpoint
+        run: node tools/qa/verify-phase-a-live-execution-checkpoint.mjs
