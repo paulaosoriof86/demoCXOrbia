@@ -1,0 +1,110 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2026-07-13",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "baseline": {
+    "frontend": "V110",
+    "r17Role": "no_go_evidence_only",
+    "production": "hold"
+  },
+  "objective": "Close Phase A TyA with canonical HR semantics, a single period state, real backend through CX.data, semantic visual validation and controlled production release.",
+  "activeBlock": {
+    "id": "R18_BACKEND_CANONICAL_HR_MAPPING",
+    "status": "ready",
+    "allowed": [
+      "normalize_sheet_and_xlsx_dates_to_iso",
+      "route_ambiguous_dates_to_review_queue",
+      "separate_operational_questionnaire_submission_liquidation_payment_states",
+      "prevent_submitted_from_implying_liquidated_or_paid",
+      "add_snapshot_and_runtime_metadata",
+      "remove_invented_shopper_attributes_from_source_safe_adapters",
+      "produce_period_semantic_reference"
+    ],
+    "forbidden": [
+      "new_full_claude_package",
+      "frontend_redesign",
+      "full_v110_reaudit",
+      "reopen_r11_to_r17",
+      "new_general_architecture_docs",
+      "production_deploy",
+      "real_writes",
+      "make_live",
+      "gemini_live",
+      "real_payments"
+    ]
+  },
+  "plan": [
+    "R18_BACKEND_CANONICAL_HR_MAPPING",
+    "R19_SHOPPER_REFERENCE_AND_CERTIFICATION_RECONCILIATION",
+    "R20_FINANCIAL_OVERLAY_JUNE",
+    "R21_CANONICAL_PERIOD_UI",
+    "R22_LOGIN_BRANDING_COUNTRY_SCOPE",
+    "R23_SHOPPER_OPERATIONAL_PROFILE",
+    "R24_NEW_EMPTY_FIREBASE_DEV",
+    "R25_CX_DATA_DEV_BACKEND_CONNECTION",
+    "R26_AUTH_ROLES_STORAGE_MINIMUM",
+    "R27_CONTROLLED_TYA_IMPORT",
+    "R28_HR_PLATFORM_MAKE_SYNC",
+    "R29_SEMANTIC_ROLE_PERIOD_SMOKE",
+    "R30_PRODUCTION_GO_NO_GO",
+    "R31_CONTROLLED_PRODUCTION_DEPLOY"
+  ],
+  "completedEvidence": {
+    "v110Empalmed": true,
+    "r10Routes": "13/13",
+    "hrPeriods": 14,
+    "hrTabs": 28,
+    "hrVisits": 616,
+    "financialExactLinksR14C": 196,
+    "sourceSafeImporters": true
+  },
+  "mandatoryCloseSections": [
+    "plan",
+    "blockWorked",
+    "changesAndVerification",
+    "phaseAProgress",
+    "notReopened",
+    "nextExactBlock",
+    "realBlockers",
+    "claudePrototype",
+    "reusableCxorbia",
+    "exclusiveTya",
+    "academiaImpact",
+    "productionAndGates"
+  ],
+  "readPolicy": {
+    "normalIteration": [
+      "app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md",
+      "diff_since_last_block_commit",
+      "block_validator_result",
+      "current_pr_7_state"
+    ],
+    "fullContextOnlyWhen": [
+      "new_conversation",
+      "real_source_conflict",
+      "baseline_change",
+      "production_authorization",
+      "scope_change"
+    ]
+  },
+  "classificationRequired": [
+    "Reusable CXOrbia",
+    "Exclusivo TyA/Cinepolis",
+    "Claude/prototipo",
+    "Academia",
+    "Sin impacto Claude"
+  ],
+  "gates": {
+    "production": "hold",
+    "hostingR17": "no_go_evidence",
+    "firestoreWrites": "hold",
+    "authWrites": "hold",
+    "storageWrites": "hold",
+    "realImports": "hold",
+    "make": "hold",
+    "gemini": "hold",
+    "payments": "hold"
+  }
+}
