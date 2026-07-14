@@ -113,7 +113,7 @@ No se auditarán módulos no modificados ni se revisará el PR completo.
 - No se crean contratos, documentos o ramas antes de la decisión técnica.
 - Si pasa, se empalma en el mismo bloque.
 - Si falla, se devuelve un máximo de tres gaps con evidencia de archivo/función/prueba.
-- La documentación completa se actualiza una sola vez después de la decisión.
+- La documentación completa —cambios backend, Claude, pendientes y Academia— se actualiza una sola vez después de la decisión, no en archivos separados durante el diagnóstico.
 
 ### Para GitHub
 
