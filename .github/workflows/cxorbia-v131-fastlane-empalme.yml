@@ -1,9 +1,9 @@
 name: CXOrbia V131 Fast-lane Atomic Empalme
 
 on:
-  push:
+  pull_request:
     branches:
-      - phase-a/empalme-v131-fastlane-20260714
+      - docs-tya-v6-v71-audit
     paths:
       - '_staging/v131-product-*.b64'
       - '_staging/v131aux-*.b64'
@@ -24,6 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: phase-a/empalme-v131-fastlane-20260714
           fetch-depth: 0
           persist-credentials: true
       - uses: actions/setup-node@v4
