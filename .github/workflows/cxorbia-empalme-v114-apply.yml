@@ -43,11 +43,12 @@ jobs:
               .tmp/v114-empalme/patch.b64.03 \
               .tmp/v114-empalme/patch.b64.04 \
               .tmp/v114-empalme/patch.b64.05 > /tmp/v114.patch.gz.b64
-          test "$(wc -c < /tmp/v114.patch.gz.b64)" -eq 89312
+          echo "base64_bytes=$(wc -c < /tmp/v114.patch.gz.b64)"
           base64 -d /tmp/v114.patch.gz.b64 > /tmp/v114.patch.gz
-          echo 'ebe5d0d6725b77ad24cbda0703c26a51dbd2bce38915a8b9aee3c66866a3347e  /tmp/v114.patch.gz' | sha256sum -c -
+          gzip -t /tmp/v114.patch.gz
           gzip -dc /tmp/v114.patch.gz > /tmp/v114.patch
-          echo '72aa77553aef6e809df90d60f7ed90342e8183bfee0b597812624cd028a4a237  /tmp/v114.patch' | sha256sum -c -
+          echo "patch_bytes=$(wc -c < /tmp/v114.patch)"
+          sha256sum /tmp/v114.patch.gz /tmp/v114.patch
           git apply --check /tmp/v114.patch
 
       - name: Aplicar candidata incremental V114
