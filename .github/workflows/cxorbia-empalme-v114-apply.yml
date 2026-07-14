@@ -1,0 +1,95 @@
+name: CXOrbia Empalme Atómico V114
+
+on:
+  push:
+    branches:
+      - phase-a/empalme-v114-20260714
+    paths:
+      - '.github/workflows/cxorbia-empalme-v114-apply.yml'
+      - '.tmp/v114-empalme/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cxorbia-empalme-v114-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply-audit-commit:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout rama focalizada
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reconstruir y verificar patch V114
+        run: |
+          set -euo pipefail
+          cat .tmp/v114-empalme/patch.b64.00 \
+              .tmp/v114-empalme/patch.b64.01 \
+              .tmp/v114-empalme/patch.b64.02 \
+              .tmp/v114-empalme/patch.b64.03 \
+              .tmp/v114-empalme/patch.b64.04 \
+              .tmp/v114-empalme/patch.b64.05 > /tmp/v114.patch.gz.b64
+          test "$(wc -c < /tmp/v114.patch.gz.b64)" -eq 89312
+          base64 -d /tmp/v114.patch.gz.b64 > /tmp/v114.patch.gz
+          echo 'ebe5d0d6725b77ad24cbda0703c26a51dbd2bce38915a8b9aee3c66866a3347e  /tmp/v114.patch.gz' | sha256sum -c -
+          gzip -dc /tmp/v114.patch.gz > /tmp/v114.patch
+          echo '72aa77553aef6e809df90d60f7ed90342e8183bfee0b597812624cd028a4a237  /tmp/v114.patch' | sha256sum -c -
+          git apply --check /tmp/v114.patch
+
+      - name: Aplicar candidata incremental V114
+        run: |
+          set -euo pipefail
+          git apply /tmp/v114.patch
+          base64 -d .tmp/v114-empalme/finanzas-core.b64 > app/core/finanzas-core.js
+          echo '384e7171d9508f972e6a1d71ddab5a3ec84331fb7cd74625db69e31c03abc02a  app/core/finanzas-core.js' | sha256sum -c -
+
+      - name: Validación técnica focalizada
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do node --check "$file"; done < <(find app -type f -name '*.js' -print0)
+          (
+            cd app
+            node docs/verify-manifest.mjs
+          )
+          node <<'NODE'
+          const fs=require('fs');
+          const path=require('path');
+          const data=fs.readFileSync('app/core/data.js','utf8');
+          const router=fs.readFileSync('app/core/router.js','utf8');
+          const build=fs.readFileSync('app/core/build-lock.js','utf8');
+          const failures=[];
+          const setProgramCount=(data.match(/(?:^|[\n,]\s*)setProgram\s*\(/gm)||[]).length;
+          if(setProgramCount!==1) failures.push(`setProgram_count=${setProgramCount}`);
+          if(!/(?:^|[\n,]\s*)currentProjectId\s*:/.test(data)) failures.push('currentProjectId_not_stored');
+          if(!/(?:^|[\n,]\s*)currentPeriodId\s*:/.test(data)) failures.push('currentPeriodId_not_stored');
+          if(/\bget\s+currentProjectId\s*\(/.test(data)) failures.push('currentProjectId_accessor');
+          if(/period\s*\(\)\s*\{\s*return\s+this\.project/.test(data)) failures.push('period_aliases_project');
+          if(!/periodSel[\s\S]{0,900}setCurrentPeriod\s*\(/.test(router)) failures.push('period_selector_not_canonical');
+          if(!build.includes("version:'V114'") || !build.includes("status:'accepted_and_empalmed'")) failures.push('build_lock_not_v114');
+          const direct=[];
+          function walk(dir){for(const e of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,e.name);if(e.isDirectory())walk(p);else if(p.endsWith('.js')&&p!=='app/core/data.js'&&p!=='app/core/build-lock.js'){fs.readFileSync(p,'utf8').split(/\r?\n/).forEach((line,i)=>{if(/\bcurrent(?:Project|Period)Id\s*=(?!=)/.test(line))direct.push(`${p}:${i+1}`);});}}}
+          walk('app');
+          if(direct.length) failures.push(`direct_state_writes=${direct.join(',')}`);
+          if(failures.length){console.error(JSON.stringify({decision:'FAIL_V114_FOCUSED_GATE',failures},null,2));process.exit(4);}
+          console.log(JSON.stringify({decision:'PASS_V114_FOCUSED_GATE',setProgramCount,directStateWrites:0},null,2));
+          NODE
+
+      - name: Limpiar staging temporal y crear commit atómico
+        run: |
+          set -euo pipefail
+          rm -rf .tmp/v114-empalme
+          rm -f .github/workflows/cxorbia-empalme-v114-apply.yml
+          test ! -e .tmp/v114-empalme
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git status --short
+          git commit -m 'feat(prototype): accept and empalme V114 baseline'
+          git push origin HEAD:phase-a/empalme-v114-20260714
