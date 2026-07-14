@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "updatedAt": "2026-07-14",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -10,48 +10,43 @@
     "r17Role": "no_go_evidence_only",
     "production": "hold"
   },
-  "objective": "Close Phase A TyA by integrating existing canonical assets, empalming the focused V111 frontend delta, connecting CX.data to a new clean backend and completing semantic production gates.",
+  "objective": "Close Phase A TyA by preserving completed canonical integration, auditing and empalming V111, creating a new clean backend, connecting CX.data and completing semantic production gates.",
+  "parallelLanes": {
+    "frontend": {
+      "status": "waiting_for_v111",
+      "next": "audit_v111_against_v110_and_exact_claude_package"
+    },
+    "backend": {
+      "status": "active",
+      "next": "R24_NEW_EMPTY_FIREBASE_DEV"
+    }
+  },
   "activeBlock": {
-    "id": "R18A_INTEGRATE_EXISTING_CANONICAL_ASSETS",
-    "status": "in_progress",
+    "id": "R24_NEW_EMPTY_FIREBASE_DEV",
+    "status": "ready",
     "allowed": [
-      "consume_existing_hr_source_safe_payload",
-      "reuse_existing_import_date_semantics",
-      "reuse_operational_state_machine_contract",
-      "reuse_source_safe_domain_mapping_contract",
-      "normalize_output_dates_to_iso",
-      "route_ambiguous_dates_to_review_queue",
-      "separate_operational_questionnaire_submission_liquidation_payment_states",
-      "prevent_submitted_from_implying_liquidated_or_paid",
-      "add_snapshot_and_runtime_metadata",
-      "remove_invented_shopper_attributes_from_source_safe_adapter",
-      "generate_build_only_canonical_adapter",
-      "prove_r11d_and_r14c_not_recomputed"
+      "reuse_existing_r15_r15b_evidence",
+      "verify_current_project_creation_permissions",
+      "create_new_empty_firebase_dev_only_if_authorized_and_possible",
+      "verify_empty_auth_firestore_storage_state_read_only",
+      "preserve_zero_manual_policy",
+      "record_exact_blocker_if_provider_policy_still_prevents_creation"
     ],
     "forbidden": [
-      "rebuild_date_normalizer",
-      "new_state_machine",
-      "new_domain_mapping",
-      "reopen_r11_to_r11d",
-      "reconcile_r14c_again",
-      "new_importer",
-      "frontend_modules_or_core_patch_from_backend",
-      "full_v110_reaudit",
+      "reuse_nonempty_existing_project",
+      "connect_old_application_database",
+      "import_real_tya_data",
       "production_deploy",
-      "real_writes",
-      "real_imports",
+      "frontend_modules_or_core_patch_from_backend",
+      "firestore_writes_before_empty_baseline_verified",
       "make_live",
       "gemini_live",
       "real_payments"
     ]
   },
   "plan": [
-    "R18A_INTEGRATE_EXISTING_CANONICAL_ASSETS",
-    "R18B_APPLY_EXISTING_R11D_R14C_AND_CERTIFICATION_OUTPUTS",
-    "R21_CANONICAL_PERIOD_UI_V111",
-    "R22_LOGIN_BRANDING_COUNTRY_SCOPE_V111",
-    "R23_PROTECTED_SHOPPER_PROFILE_V111",
     "R24_NEW_EMPTY_FIREBASE_DEV",
+    "R21_R23_AUDIT_AND_EMPALME_V111_WHEN_RECEIVED",
     "R25_CX_DATA_DEV_BACKEND_CONNECTION",
     "R26_AUTH_ROLES_STORAGE_MINIMUM",
     "R27_CONTROLLED_TYA_IMPORT",
@@ -67,13 +62,27 @@
     "hrPeriods": 14,
     "hrTabs": 28,
     "hrVisits": 616,
-    "dateSemanticsExisting": true,
-    "operationalStateMachineExisting": true,
-    "sourceSafeDomainMappingExisting": true,
-    "shopperReviewQueueR11DExisting": true,
+    "r18aCanonicalIntegration": "PASS",
+    "r18aWorkflowRun": 29299175536,
+    "r18bExistingOverlays": "PASS",
+    "r18bWorkflowRun": 29299382569,
     "financialExactLinksR14C": 196,
+    "financialExactLinksAppliedR18B": 196,
+    "shopperSourceReviewItemsR11D": 1,
+    "shopperIdentitiesInvented": 0,
+    "paidConfirmedOrInferred": 0,
+    "certificationCarryoverConfirmed": 0,
     "sourceSafeImporters": true
   },
+  "notReopened": [
+    "date_normalization_semantics",
+    "operational_state_machine",
+    "source_safe_domain_mapping",
+    "r11_to_r11d_reconciliation",
+    "r14c_financial_reconciliation",
+    "payment_and_certification_importers",
+    "v110_closed_p0"
+  ],
   "mandatoryCloseSections": [
     "plan",
     "blockWorked",
