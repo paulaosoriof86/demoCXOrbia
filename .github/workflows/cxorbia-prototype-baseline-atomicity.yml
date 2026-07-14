@@ -1,0 +1,33 @@
+name: CXOrbia Prototype Baseline Atomicity
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+      - 'phase-a/prototype-*'
+    paths:
+      - 'backend/contracts/prototype-baseline-registry-v1.json'
+      - 'tools/qa/verify-prototype-baseline-atomicity.mjs'
+      - 'app/core/build-lock.js'
+      - 'app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md'
+      - '.github/workflows/cxorbia-prototype-baseline-atomicity.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prototype-baseline-atomicity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-atomic-baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify accepted equals empalmed equals active baseline
+        run: node tools/qa/verify-prototype-baseline-atomicity.mjs
