@@ -1,0 +1,113 @@
+name: CXOrbia Phase A R18B Existing R11D R14C Certification Overlays
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs'
+      - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
+      - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
+      - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
+      - 'backend/config/phase-a-financial-review-queue-r14c.source-safe.json'
+      - 'app/data/tya-certification-carryover-source-safe.js'
+      - '.github/workflows/cxorbia-phase-a-r18b-existing-overlays.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs'
+      - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
+      - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
+      - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
+      - 'backend/config/phase-a-financial-review-queue-r14c.source-safe.json'
+      - 'app/data/tya-certification-carryover-source-safe.js'
+      - '.github/workflows/cxorbia-phase-a-r18b-existing-overlays.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  apply-existing-overlays:
+    name: Apply existing R11D R14C and certification outputs without reprocessing
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Syntax checks
+        run: |
+          set -euo pipefail
+          node --check tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs
+          node --check tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs
+
+      - name: Build live HR source-safe snapshot
+        env:
+          CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
+
+      - name: Apply R18A canonical semantics
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/r18b-r18a-canonicalization
+
+      - name: Apply existing R11D R14C and certification outputs
+        run: |
+          set -euo pipefail
+          node tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs \
+            --payload app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/r18b-existing-overlays
+          grep -q 'R18B_APPLY_EXISTING_R11D_R14C_AND_CERTIFICATION_OUTPUTS' app/data/tya-hr-source-safe-periods.js
+          grep -q 'financialExactLinksApplied' app/data/tya-hr-source-safe-periods.js
+
+      - name: Fail closed on expected existing results
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const sandbox = {window:{}};
+          vm.createContext(sandbox);
+          vm.runInContext(fs.readFileSync('app/data/tya-hr-source-safe-periods.js','utf8'),sandbox);
+          const p=sandbox.window.CX_TYA_HR_SOURCE_SAFE;
+          const o=p.existingOverlays;
+          if(!o) throw new Error('existing overlays missing');
+          if(o.r14c.exactLinksApplied!==196) throw new Error(`expected 196 exact links, got ${o.r14c.exactLinksApplied}`);
+          if(o.r14c.missingVisitLinks!==0) throw new Error(`missing visit links: ${o.r14c.missingVisitLinks}`);
+          if(o.r14c.reconciledAgain!==false) throw new Error('R14C was recomputed');
+          if(o.r11d.reviewItemsApplied!==1 || o.r11d.identitiesInvented!==0 || o.r11d.reconciledAgain!==false) throw new Error('R11D anti-rework failed');
+          if(o.certification.carryoverConfirmed!==0 || o.certification.requestedAgainAutomatically!==0) throw new Error('certification honesty failed');
+          if(p.counts.paidConfirmed!==0) throw new Error('payment inferred as confirmed');
+          console.log(JSON.stringify({decision:'PASS_R18B_EXISTING_OUTPUTS_FAIL_CLOSED',exactLinks:o.r14c.exactLinksApplied,financialReview:o.r14c.reviewItemsApplied,shopperReview:o.r11d.reviewItemsApplied,certSource:o.certification.sourceRecords,paidConfirmed:p.counts.paidConfirmed},null,2));
+          NODE
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-r18b-existing-overlays
+          path: |
+            .tmp/r18b-r18a-canonicalization
+            .tmp/r18b-existing-overlays
+          if-no-files-found: error
+          retention-days: 14
