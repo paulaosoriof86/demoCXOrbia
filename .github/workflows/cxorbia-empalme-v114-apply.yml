@@ -7,13 +7,19 @@ on:
     paths:
       - '.github/workflows/cxorbia-empalme-v114-apply.yml'
       - '.tmp/v114-empalme/**'
+  pull_request:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/workflows/cxorbia-empalme-v114-apply.yml'
+      - '.tmp/v114-empalme/**'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: cxorbia-empalme-v114-${{ github.ref }}
+  group: cxorbia-empalme-v114-${{ github.event.pull_request.head.ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -25,6 +31,7 @@ jobs:
       - name: Checkout rama focalizada
         uses: actions/checkout@v4
         with:
+          ref: phase-a/empalme-v114-20260714
           fetch-depth: 0
 
       - name: Reconstruir y verificar patch V114
