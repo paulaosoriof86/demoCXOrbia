@@ -5,8 +5,8 @@ on:
     branches:
       - phase-a/empalme-v131-fastlane-20260714
     paths:
-      - '_staging/v131patch-*.b64'
-      - '_staging/v131aux-*.b64'
+      - '_staging/v131-product.patch.gz.b64'
+      - '_staging/v131aux.tar.gz.b64'
       - '.github/workflows/cxorbia-v131-fastlane-empalme.yml'
   workflow_dispatch:
 
@@ -33,8 +33,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .tmp
-          cat _staging/v131aux-*.b64 | base64 -d | tar -xzf - -C .
-          cat _staging/v131patch-*.b64 | base64 -d | gzip -d > .tmp/v131-product.patch
+          base64 -d _staging/v131aux.tar.gz.b64 | tar -xzf - -C .
+          base64 -d _staging/v131-product.patch.gz.b64 | gzip -d > .tmp/v131-product.patch
       - name: Apply audited incremental patch
         run: |
           set -euo pipefail
