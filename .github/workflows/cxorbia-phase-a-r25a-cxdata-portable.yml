@@ -1,0 +1,45 @@
+name: CXOrbia Phase A R25A CX.data Portable Adapter
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - phase-a/r25a-cxdata-portable-20260714
+    paths:
+      - 'backend/contracts/cx-data-portable-adapter-v1.json'
+      - 'backend/runtime/cx-data-portable-adapter-v1.mjs'
+      - 'tools/qa/verify-cx-data-portable-adapter-v1.mjs'
+      - '.github/workflows/cxorbia-phase-a-r25a-cxdata-portable.yml'
+  pull_request:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/contracts/cx-data-portable-adapter-v1.json'
+      - 'backend/runtime/cx-data-portable-adapter-v1.mjs'
+      - 'tools/qa/verify-cx-data-portable-adapter-v1.mjs'
+      - '.github/workflows/cxorbia-phase-a-r25a-cxdata-portable.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cxorbia-r25a-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax and contract
+        run: |
+          set -euo pipefail
+          node --check backend/runtime/cx-data-portable-adapter-v1.mjs
+          node --check tools/qa/verify-cx-data-portable-adapter-v1.mjs
+          node -e "JSON.parse(require('fs').readFileSync('backend/contracts/cx-data-portable-adapter-v1.json','utf8'))"
+      - name: Execute adapter verification
+        run: node tools/qa/verify-cx-data-portable-adapter-v1.mjs
