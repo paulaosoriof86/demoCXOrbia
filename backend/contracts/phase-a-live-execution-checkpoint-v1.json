@@ -1,20 +1,22 @@
 {
-  "version": "1.3.0",
+  "version": "1.4.0",
   "updatedAt": "2026-07-14",
   "repository": "paulaosoriof86/demoCXOrbia",
-  "branch": "docs-tya-v6-v71-audit",
+  "branch": "phase-a/integration-live-20260714",
   "pullRequest": 7,
   "baseline": {
-    "frontend": "V110",
-    "claudeCandidateRequested": "V111",
+    "sourceLock": "V110",
+    "continuity": "V111",
+    "rejectedCandidate": "V112",
+    "nextCandidateRequested": "V113",
     "r17Role": "no_go_evidence_only",
     "production": "hold"
   },
-  "objective": "Close Phase A TyA by preserving completed canonical integration, auditing and empalming V111, creating a new clean backend, connecting CX.data and completing semantic production gates.",
+  "objective": "Close Phase A TyA using a machine-enforced candidate gate, then connect the approved prototype to a new clean backend and complete semantic production gates.",
   "parallelLanes": {
     "frontend": {
-      "status": "waiting_for_v111",
-      "next": "R21_R23_AUDIT_AND_EMPALME_V111_WHEN_RECEIVED"
+      "status": "waiting_for_v113",
+      "next": "R21_R23_FAST_AUDIT_AND_EMPALME_V113"
     },
     "backend": {
       "status": "blocked_external_iam",
@@ -22,43 +24,49 @@
     }
   },
   "activeBlock": {
-    "id": "R24_NEW_EMPTY_FIREBASE_DEV",
-    "status": "blocked_external_iam",
-    "allowed": [
-      "reuse_existing_r15_r15b_evidence",
-      "verify_current_project_creation_permissions",
-      "create_new_empty_firebase_dev_only_if_authorized_and_possible",
-      "verify_empty_auth_firestore_storage_state_read_only",
-      "preserve_zero_manual_policy",
-      "record_exact_blocker_if_provider_policy_still_prevents_creation"
+    "id": "R21_R23_FAST_AUDIT_AND_EMPALME_V113",
+    "status": "awaiting_candidate",
+    "acceptanceGate": "tools/qa/verify-prototype-fastlane-gate.mjs",
+    "workflow": ".github/workflows/cxorbia-prototype-fastlane-gate.yml",
+    "failClosed": true,
+    "allowedDecisions": [
+      "PASS_AND_EMPALME",
+      "FAIL_WITH_MAXIMUM_THREE_GROUPED_GAPS",
+      "STRUCTURAL_BLOCK"
     ],
     "forbidden": [
-      "reuse_nonempty_existing_project",
-      "connect_old_application_database",
-      "import_real_tya_data",
-      "production_deploy",
-      "frontend_modules_or_core_patch_from_backend",
-      "firestore_writes_before_empty_baseline_verified",
-      "make_live",
-      "gemini_live",
-      "real_payments"
+      "accept_by_checklist_or_claim_only",
+      "accept_when_manifest_fails",
+      "accept_duplicate_critical_methods",
+      "accept_project_period_aliases",
+      "full_repo_reaudit",
+      "pr7_workflow_fanout_for_candidate_diagnosis",
+      "documentation_before_technical_decision"
+    ]
+  },
+  "candidateAcceptance": {
+    "v112Sha256": "400e887788cdbec699bdf153d09de7d205f5e01abc4dc6c47fb43ec8fc5a2429",
+    "v112Decision": "FAIL_PROTOTYPE_FASTLANE_GATE",
+    "v112Pass": [
+      "javascript_syntax",
+      "midia_active_period_default",
+      "explicit_all_periods_view",
+      "numeric_authorized_rating_ranking",
+      "rating_gated_scoring"
     ],
-    "blocker": {
-      "type": "google_cloud_iam",
-      "decision": "BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY",
-      "githubBlocked": false,
-      "providerBlocked": true,
-      "targetProjectId": "cxorbia-tya-dev-260714-r24",
-      "projectCreated": false,
-      "firebaseAdded": false,
-      "emptyBaselineVerified": false,
-      "existingDatabaseReused": false,
-      "minimumExternalAction": "grant project-creation permission to a dedicated identity or create the empty project once with an administrator identity"
-    }
+    "v112Fail": [
+      "manifest_literal_node_pass",
+      "single_setProgram_definition",
+      "project_and_period_have_independent_storage",
+      "project_and_period_accessors_are_not_aliases",
+      "period_selector_uses_validating_setter"
+    ],
+    "baselineUpdateAllowedOnlyWhenGatePasses": true,
+    "physicalEmpalmeAllowedOnlyWhenGatePasses": true
   },
   "plan": [
-    "R24_NEW_EMPTY_FIREBASE_DEV",
-    "R21_R23_AUDIT_AND_EMPALME_V111_WHEN_RECEIVED",
+    "R21_R23_FAST_AUDIT_AND_EMPALME_V113",
+    "R24_NEW_EMPTY_FIREBASE_DEV_EXTERNAL_IAM_RESOLUTION",
     "R25_CX_DATA_DEV_BACKEND_CONNECTION",
     "R26_AUTH_ROLES_STORAGE_MINIMUM",
     "R27_CONTROLLED_TYA_IMPORT",
@@ -68,24 +76,18 @@
     "R31_CONTROLLED_PRODUCTION_DEPLOY"
   ],
   "completedEvidence": {
-    "v110Empalmed": true,
-    "v111RequestedFromClaude": true,
-    "r10Routes": "13/13",
+    "v110SourceLock": true,
+    "v111ContinuityAudit": "PASS_WITH_THREE_GAPS_SENT_TO_CLAUDE",
+    "v112FastLaneGate": "FAIL",
+    "r18aCanonicalIntegration": "PASS",
+    "r18bExistingOverlays": "PASS",
+    "financialExactLinksR14C": 196,
+    "financialExactLinksAppliedR18B": 196,
+    "shopperIdentitiesInvented": 0,
+    "paidConfirmedOrInferred": 0,
     "hrPeriods": 14,
     "hrTabs": 28,
     "hrVisits": 616,
-    "r18aCanonicalIntegration": "PASS",
-    "r18aWorkflowRun": 29299175536,
-    "r18bExistingOverlays": "PASS",
-    "r18bWorkflowRun": 29299382569,
-    "financialExactLinksR14C": 196,
-    "financialExactLinksAppliedR18B": 196,
-    "shopperSourceReviewItemsR11D": 1,
-    "shopperIdentitiesInvented": 0,
-    "paidConfirmedOrInferred": 0,
-    "certificationCarryoverConfirmed": 0,
-    "sourceSafeImporters": true,
-    "r24WorkflowRun": 29299756581,
     "r24WorkflowConclusion": "success",
     "r24GithubBlocked": false,
     "r24ProviderBlocked": true
@@ -97,17 +99,20 @@
     "r11_to_r11d_reconciliation",
     "r14c_financial_reconciliation",
     "payment_and_certification_importers",
-    "v110_closed_p0"
+    "v110_closed_p0",
+    "v112_midia_fix",
+    "v112_ranking_and_scoring_fix"
   ],
   "ciExecutionPolicy": {
-    "integrationBranch": "docs-tya-v6-v71-audit",
-    "focusedExecutionBranchPattern": "phase-a/<block>-<date>",
-    "oneFocusedWorkflowPerBlock": true,
+    "integrationBranch": "phase-a/integration-live-20260714",
+    "focusedCandidateBranchPattern": "phase-a/prototype-candidate-*",
+    "oneFocusedWorkflowPerCandidate": true,
     "pathAndBranchFiltersRequired": true,
     "concurrencyCancelInProgressRequired": true,
-    "fastForwardIntegrationOnlyAfterDecision": true,
+    "maximumWorkflowMinutes": 5,
+    "fastForwardIntegrationOnlyAfterGatePass": true,
     "providerBlockMustNotBeReportedAsGithubFailure": true,
-    "batchCommitsBeforeIntegration": true
+    "pr7NotUsedForCandidateDiagnosis": true
   },
   "mandatoryCloseSections": [
     "plan",
@@ -126,14 +131,13 @@
   "readPolicy": {
     "normalIteration": [
       "app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md",
-      "diff_since_last_block_commit",
-      "block_validator_result",
-      "current_pr_7_state"
+      "candidate_delta_only",
+      "prototype_fastlane_gate_result",
+      "current_integration_branch_state"
     ],
     "fullContextOnlyWhen": [
       "new_conversation",
       "real_source_conflict",
-      "baseline_change",
       "production_authorization",
       "scope_change"
     ]
@@ -146,6 +150,7 @@
     "Sin impacto Claude"
   ],
   "gates": {
+    "prototypeCandidate": "fail_until_v113_pass",
     "production": "hold",
     "hostingR17": "no_go_evidence",
     "firestoreWrites": "hold",
