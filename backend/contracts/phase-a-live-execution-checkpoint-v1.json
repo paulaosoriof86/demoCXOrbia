@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "updatedAt": "2026-07-14",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -14,16 +14,16 @@
   "parallelLanes": {
     "frontend": {
       "status": "waiting_for_v111",
-      "next": "audit_v111_against_v110_and_exact_claude_package"
+      "next": "R21_R23_AUDIT_AND_EMPALME_V111_WHEN_RECEIVED"
     },
     "backend": {
-      "status": "active",
-      "next": "R24_NEW_EMPTY_FIREBASE_DEV"
+      "status": "blocked_external_iam",
+      "next": "grant_project_creator_to_dedicated_identity_or_create_empty_project_once_with_admin_identity"
     }
   },
   "activeBlock": {
     "id": "R24_NEW_EMPTY_FIREBASE_DEV",
-    "status": "ready",
+    "status": "blocked_external_iam",
     "allowed": [
       "reuse_existing_r15_r15b_evidence",
       "verify_current_project_creation_permissions",
@@ -42,7 +42,19 @@
       "make_live",
       "gemini_live",
       "real_payments"
-    ]
+    ],
+    "blocker": {
+      "type": "google_cloud_iam",
+      "decision": "BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY",
+      "githubBlocked": false,
+      "providerBlocked": true,
+      "targetProjectId": "cxorbia-tya-dev-260714-r24",
+      "projectCreated": false,
+      "firebaseAdded": false,
+      "emptyBaselineVerified": false,
+      "existingDatabaseReused": false,
+      "minimumExternalAction": "grant project-creation permission to a dedicated identity or create the empty project once with an administrator identity"
+    }
   },
   "plan": [
     "R24_NEW_EMPTY_FIREBASE_DEV",
@@ -72,7 +84,11 @@
     "shopperIdentitiesInvented": 0,
     "paidConfirmedOrInferred": 0,
     "certificationCarryoverConfirmed": 0,
-    "sourceSafeImporters": true
+    "sourceSafeImporters": true,
+    "r24WorkflowRun": 29299756581,
+    "r24WorkflowConclusion": "success",
+    "r24GithubBlocked": false,
+    "r24ProviderBlocked": true
   },
   "notReopened": [
     "date_normalization_semantics",
@@ -83,6 +99,16 @@
     "payment_and_certification_importers",
     "v110_closed_p0"
   ],
+  "ciExecutionPolicy": {
+    "integrationBranch": "docs-tya-v6-v71-audit",
+    "focusedExecutionBranchPattern": "phase-a/<block>-<date>",
+    "oneFocusedWorkflowPerBlock": true,
+    "pathAndBranchFiltersRequired": true,
+    "concurrencyCancelInProgressRequired": true,
+    "fastForwardIntegrationOnlyAfterDecision": true,
+    "providerBlockMustNotBeReportedAsGithubFailure": true,
+    "batchCommitsBeforeIntegration": true
+  },
   "mandatoryCloseSections": [
     "plan",
     "blockWorked",
