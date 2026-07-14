@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - phase-a/r24-firebase-dev-20260714
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/workflows/cxorbia-r24-new-empty-firebase-dev.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
     paths:
       - '.github/workflows/cxorbia-r24-new-empty-firebase-dev.yml'
   workflow_dispatch:
