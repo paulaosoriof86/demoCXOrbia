@@ -1,6 +1,6 @@
 {
-  "version": "1.1.0",
-  "updatedAt": "2026-07-14",
+  "version": "1.2.0",
+  "updatedAt": "2026-07-15",
   "repository": "paulaosoriof86/demoCXOrbia",
   "integrationBranch": "docs-tya-v6-v71-audit",
   "invariant": "acceptedCandidateVersion == empalmedVersion == activeBaselineVersion",
@@ -8,11 +8,24 @@
     "version": "V131",
     "status": "accepted_and_empalmed",
     "sourceZipSha256": "19424b2b709a4bff457454bbeff6abe47cd1c52c0f0388fd1a380008c8adc740",
-    "manifestFile": "docs/MANIFEST-V131-EMPALME-RUNTIME-R1.json",
-    "aggregateSha256": "077f366fc17953a46be7927f416ed8b05531b96ae0c55ff958f4dff3dd4645bc",
-    "verifiedAtIntegrationHead": "d5c04054d445723dd0bc9e48acbab75953a4b08b",
+    "manifestFile": "docs/MANIFEST-V131-R18D-HOTFIX-R1.json",
+    "aggregateSha256": "6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348",
+    "originalRuntimeCommit": "d5c04054d445723dd0bc9e48acbab75953a4b08b",
+    "hotfixRuntimeCommit": "593cdb9cc815cfa14d257968026bf3de886efba1",
+    "validationHead": "3b14bc775170e9525c2deff6bb72a1bf785b2db6",
     "accepted": true,
-    "empalmed": true
+    "empalmed": true,
+    "hotfixes": [
+      {
+        "id": "R18D_FINANCE_PERIOD_ADAPTER_HF1",
+        "sourceCandidateInternalVersion": "V132",
+        "sourceZipSha256": "788a32a6d44e0686b0627a47e4e4e038fdbe7d3befd3dde2651ff542706918bb",
+        "promotionMode": "reconciled_single_file_hotfix",
+        "functionalPath": "app/core/finanzas-core.js",
+        "decision": "PASS_R18D_VISIBLE_OVERLAYS",
+        "workflowRun": 29437465036
+      }
+    ]
   },
   "previousBaseline": {
     "version": "V110",
@@ -27,7 +40,7 @@
     "status": "accepted_and_empalmed",
     "accepted": true,
     "empalmed": true,
-    "gateDecision": "PASS_ATOMIC_PROTOTYPE_ACCEPTANCE",
+    "gateDecision": "PASS_ATOMIC_PROTOTYPE_ACCEPTANCE_WITH_RECONCILED_R18D_HOTFIX",
     "failures": [],
     "nextExpectedVersion": null
   },
@@ -45,6 +58,7 @@
       "update_active_baseline_registry",
       "fast_forward_integration_branch"
     ],
+    "hotfixException": "A focalized Claude hotfix may remain on the same active baseline version only when the functional delta is allowlisted, reconciled against protected local semantics, independently validated and recorded as an inherited manifest.",
     "forbiddenIntermediateStates": [
       "accepted_not_empalmed",
       "empalmed_not_baseline",
