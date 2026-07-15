@@ -6,6 +6,12 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - 'backend/config/phase-a-r18e-observe-once.source-safe.json'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - '.github/workflows/cxorbia-r18e-observe-hosting-dev-once.yml'
+      - 'backend/config/phase-a-r18e-observe-once.source-safe.json'
 
 permissions:
   contents: write
@@ -24,7 +30,7 @@ env:
 jobs:
   observe-remote-deploy:
     name: Observe exact remote proof and run remote R18D smoke
-    if: ${{ github.event.head_commit.message == 'ops(r18e): observe authorized Hosting DEV deploy once' }}
+    if: ${{ (github.event_name == 'push' && github.event.head_commit.message == 'ops(r18e): observe authorized Hosting DEV deploy once') || (github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -154,7 +160,7 @@ jobs:
           NODE
 
       - name: Commit sanitized result to integration branch
-        if: success()
+        if: success() && github.event_name == 'push'
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
