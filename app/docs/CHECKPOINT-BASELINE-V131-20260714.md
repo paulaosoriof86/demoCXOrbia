@@ -1,6 +1,6 @@
 # CHECKPOINT ACUMULADO — BASELINE V131
 
-Fecha: 2026-07-14
+Fecha de actualización: 2026-07-15
 
 ## Baseline viva
 
@@ -11,16 +11,26 @@ Fecha: 2026-07-14
 - Manifest: `docs/MANIFEST-V131-EMPALME-RUNTIME-R1.json`.
 - Aggregate SHA-256: `077f366fc17953a46be7927f416ed8b05531b96ae0c55ff958f4dff3dd4645bc`.
 
+## Bloque operativo cerrado
+
+Plan Firestore completo source-safe: **PASS**.
+
+- Plan `phasea_3913be553ec7140f`.
+- 1,421 operaciones en 4 lotes.
+- 14 periodos, 616 visitas, 216 shoppers y 572 liquidaciones candidatas.
+- Cero writes, pagos inferidos o certificaciones inventadas.
+- Pagos retenidos por fuente financiera pendiente.
+- Certificaciones retenidas por fuente de carryover pendiente.
+
 ## Estado de continuidad
 
 - V110 queda como referencia histórica anterior, no como baseline activa.
-- V113/V114 dejan de ser siguiente candidata o siguiente bloque.
-- No se requiere paquete Claude ni nueva candidata para cerrar V131.
+- No se requiere nueva candidata ni paquete Claude.
 - No se repite auditoría ni empalme de V131.
 
 ## Siguiente bloque exacto
 
-Continuar Phase A operativa desde V131 con datos reales TyA, priorizando histórico, shoppers, certificaciones, liquidaciones y sincronización HR/plataforma.
+Reconciliar, con las fuentes reales ya documentadas o disponibles, el control financiero por ítem y el carryover de certificaciones presentadas; mantener revisión humana y cero writes hasta autorización específica.
 
 ## Restricciones
 
