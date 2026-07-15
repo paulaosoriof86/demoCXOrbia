@@ -1,0 +1,337 @@
+name: CXOrbia R18E Authorized Hosting DEV Once
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/phase-a-r18e-hosting-dev-authorization-once.source-safe.json'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  FIREBASE_PROJECT_ID: cxorbia-backend-dev
+  FIREBASE_HOSTING_TARGET: cxorbia-dev
+  CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+  CXORBIA_R18E_BUILD_LABEL: v131-r18d-source-safe-20260715-r18e
+  CXORBIA_R18E_AUTH_FILE: backend/config/phase-a-r18e-hosting-dev-authorization-once.source-safe.json
+
+jobs:
+  deploy-hosting-dev-once:
+    name: Build, smoke, deploy and remotely verify Hosting DEV only
+    if: ${{ github.event.head_commit.message == 'ops(r18e): authorize one-shot Hosting DEV deploy' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout authorized integration head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Enforce exact one-shot authorization and target
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const file = process.env.CXORBIA_R18E_AUTH_FILE;
+          if (!fs.existsSync(file)) throw new Error('R18E authorization marker missing.');
+          const auth = JSON.parse(fs.readFileSync(file, 'utf8'));
+          const exact = 'AUTORIZO DEPLOY ÚNICAMENTE A FIREBASE HOSTING DEV DEL BUILD V131 R18D VALIDADO, SIN PRODUCCIÓN, SIN FIRESTORE/AUTH/STORAGE/HR WRITES, SIN IMPORTS, MAKE, GEMINI NI PAGOS.';
+          const expectedScopes = [
+            'firebase_hosting_dev_only',
+            'no_production',
+            'no_firestore_writes',
+            'no_auth_writes',
+            'no_storage_writes',
+            'no_hr_writes',
+            'no_imports',
+            'no_make',
+            'no_gemini',
+            'no_payments'
+          ];
+          if (auth.status !== 'APPROVED_ONCE') throw new Error(`Unexpected authorization status: ${auth.status}`);
+          if (auth.authorizationText !== exact) throw new Error('Authorization text mismatch.');
+          if (auth.firebaseProjectId !== 'cxorbia-backend-dev') throw new Error('Firebase project mismatch.');
+          if (auth.hostingTarget !== 'cxorbia-dev') throw new Error('Hosting target mismatch.');
+          if (auth.baseline !== 'V131') throw new Error('Baseline mismatch.');
+          if (auth.r18dDecision !== 'PASS_R18D_VISIBLE_OVERLAYS') throw new Error('R18D decision mismatch.');
+          if (JSON.stringify(auth.scopes) !== JSON.stringify(expectedScopes)) throw new Error('Authorization scopes mismatch.');
+          console.log(JSON.stringify({decision:'PASS_R18E_EXACT_AUTHORIZATION',project:auth.firebaseProjectId,target:auth.hostingTarget,baseline:auth.baseline}, null, 2));
+          NODE
+
+      - name: Validate V131 R18D source lock and focalized runtime
+        run: |
+          set -euo pipefail
+          node --check app/core/finanzas-core.js
+          node --check tools/release/tya-source-safe-binding-build-r18a.mjs
+          node --check tools/release/tya-visible-overlays-build-r18d.mjs
+          node --check tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const registry = JSON.parse(fs.readFileSync('backend/contracts/prototype-baseline-registry-v1.json', 'utf8'));
+          if (registry.activeBaseline?.version !== 'V131') throw new Error('Active baseline is not V131.');
+          if (registry.activeBaseline?.status !== 'accepted_and_empalmed') throw new Error('Active baseline is not accepted_and_empalmed.');
+          if (registry.activeBaseline?.manifestFile !== 'docs/MANIFEST-V131-R18D-HOTFIX-R1.json') throw new Error('Active manifest is not the R18D inherited manifest.');
+          const manifestPath = `app/${registry.activeBaseline.manifestFile}`;
+          if (!fs.existsSync(manifestPath)) throw new Error(`Active manifest missing: ${manifestPath}`);
+          const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+          if (manifest.decision !== 'PASS_R18D_VISIBLE_OVERLAYS') throw new Error('Manifest R18D decision is not PASS.');
+          if (manifest.derivedAggregateSha256 !== registry.activeBaseline.aggregateSha256) throw new Error('Registry/manifest aggregate mismatch.');
+          const sandbox = { window: {} };
+          vm.createContext(sandbox);
+          vm.runInContext(fs.readFileSync('app/core/build-lock.js', 'utf8'), sandbox);
+          const lock = sandbox.CX_SOURCE_LOCK;
+          if (!lock || lock.decision !== 'PASS_R18D_VISIBLE_OVERLAYS') throw new Error('Runtime source lock is not R18D PASS.');
+          if (lock.aggregateSha256 !== registry.activeBaseline.aggregateSha256) throw new Error('Runtime source lock/registry aggregate mismatch.');
+          const finance = fs.readFileSync('app/core/finanzas-core.js', 'utf8');
+          if (!finance.includes('const p=data.project()')) throw new Error('Protected project semantics missing in porPais().');
+          if (!finance.includes('project:()=>p, period:()=>p')) throw new Error('R18D local adapter compatibility missing.');
+          console.log(JSON.stringify({decision:'PASS_V131_R18D_SOURCE_LOCK',aggregate:lock.aggregateSha256,manifest:lock.manifestFile}, null, 2));
+          NODE
+
+      - name: Build live HR source-safe snapshot
+        env:
+          CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
+          test -s app/data/tya-hr-source-safe-periods.js
+
+      - name: Apply canonical R18A semantics
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/r18e-r18a-canonicalization
+
+      - name: Apply existing R11D R14C and certification overlays
+        run: |
+          set -euo pipefail
+          node tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs \
+            --payload app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/r18e-r18b-existing-overlays
+          grep -q 'R18B_APPLY_EXISTING_R11D_R14C_AND_CERTIFICATION_OUTPUTS' app/data/tya-hr-source-safe-periods.js
+
+      - name: Build canonical V131 source-safe binding
+        run: |
+          set -euo pipefail
+          node tools/release/tya-source-safe-binding-build-r18a.mjs \
+            --html app/index.html \
+            --out .tmp/r18e-r18a-binding
+          test -s app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
+
+      - name: Normalize approved R14C review queue stable IDs
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/r18e-source
+          node <<'NODE'
+          const fs = require('fs');
+          const input = 'backend/config/phase-a-financial-review-queue-r14c.source-safe.json';
+          const output = '.tmp/r18e-source/r14c-review-queue-stable.source-safe.json';
+          const rows = JSON.parse(fs.readFileSync(input, 'utf8'));
+          if (!Array.isArray(rows) || rows.length !== 92) throw new Error(`Expected 92 approved R14C review items, got ${Array.isArray(rows) ? rows.length : 'invalid'}`);
+          const normalized = rows.map((item, index) => ({
+            ...item,
+            key: item.key || `r14c_control:${item.type || 'review'}:${item.entityId || 'source'}:${String(index + 1).padStart(3, '0')}`,
+            sourceSafe: true
+          }));
+          if (new Set(normalized.map(item => item.key)).size !== 92) throw new Error('R14C stable review keys are not unique.');
+          fs.writeFileSync(output, JSON.stringify(normalized, null, 2) + '\n', 'utf8');
+          console.log(JSON.stringify({decision:'PASS_R18E_R14C_QUEUE_STABLE_IDS',records:92,uniqueKeys:92}, null, 2));
+          NODE
+
+      - name: Build R18D visible overlay binding
+        run: |
+          set -euo pipefail
+          node tools/release/tya-visible-overlays-build-r18d.mjs \
+            --html app/index.html \
+            --r14c-queue .tmp/r18e-source/r14c-review-queue-stable.source-safe.json \
+            --out .tmp/r18e-visible-overlay-build
+          test -s app/adapters/tya-phase-a-visible-overlays-r18d.js
+          grep -Fq 'adapters/tya-phase-a-visible-overlays-r18d.js' app/index.html
+
+      - name: Stamp exact deploy proof into build copy
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const registry = JSON.parse(fs.readFileSync('backend/contracts/prototype-baseline-registry-v1.json', 'utf8'));
+          const proof = {
+            schemaVersion: '1.0.0',
+            environment: 'FIREBASE_HOSTING_DEV',
+            firebaseProjectId: process.env.FIREBASE_PROJECT_ID,
+            hostingTarget: process.env.FIREBASE_HOSTING_TARGET,
+            buildLabel: process.env.CXORBIA_R18E_BUILD_LABEL,
+            gitCommit: process.env.GITHUB_SHA,
+            sourceLockAggregateSha256: registry.activeBaseline.aggregateSha256,
+            baseline: 'V131',
+            decision: 'PASS_R18D_VISIBLE_OVERLAYS',
+            sourceSafe: true,
+            imported: false,
+            production: false,
+            firestoreWrites: false,
+            authWrites: false,
+            storageWrites: false,
+            hrWrites: false,
+            payments: false
+          };
+          fs.writeFileSync('app/r18e-deploy-proof.json', JSON.stringify(proof, null, 2) + '\n', 'utf8');
+          console.log(JSON.stringify(proof, null, 2));
+          NODE
+
+      - name: Install Playwright
+        run: |
+          set -euo pipefail
+          npm init -y >/dev/null 2>&1
+          npm i -D playwright@1.47.2 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Start local exact build copy
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp-r18e-local-server.log 2>&1 &
+          echo $! > .tmp-r18e-local-server.pid
+          for attempt in $(seq 1 30); do
+            if curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible' >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat .tmp-r18e-local-server.log || true
+          exit 1
+
+      - name: Run local R18D smoke before provider access
+        env:
+          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs \
+            --out .tmp/r18e-local-smoke
+          node <<'NODE'
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('.tmp/r18e-local-smoke/r18d-visible-overlays-smoke.json', 'utf8'));
+          if (!String(report.decision || '').startsWith('PASS_') && !String(report.decision || '').startsWith('PASS_WITH_REVIEW_')) throw new Error(`Local R18D decision is not PASS: ${report.decision}`);
+          if (Array.isArray(report.blockers) && report.blockers.length) throw new Error(`Local R18D blockers: ${report.blockers.join(', ')}`);
+          console.log(JSON.stringify({decision:report.decision,blockers:report.blockers,warnings:report.warnings}, null, 2));
+          NODE
+
+      - name: Validate Firebase DEV service account without exposing it
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/r18e-deploy
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT_JSON" ]; then
+            echo 'Missing FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV secret.'
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > .tmp/r18e-deploy/firebase-service-account.json
+          node <<'NODE'
+          const fs = require('fs');
+          const parsed = JSON.parse(fs.readFileSync('.tmp/r18e-deploy/firebase-service-account.json', 'utf8'));
+          if (parsed.type !== 'service_account') throw new Error('Credential is not a service account.');
+          if (parsed.project_id !== 'cxorbia-backend-dev') throw new Error(`Credential project mismatch: ${parsed.project_id}`);
+          if (!String(parsed.client_email || '').endsWith('@cxorbia-backend-dev.iam.gserviceaccount.com')) throw new Error('Credential client email is outside DEV project domain.');
+          console.log(JSON.stringify({decision:'PASS_FIREBASE_DEV_CREDENTIAL_SANITY',projectId:parsed.project_id,clientEmailDomain:'***@cxorbia-backend-dev.iam.gserviceaccount.com'}, null, 2));
+          NODE
+
+      - name: Verify Firebase Hosting-only access
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/r18e-deploy/firebase-service-account.json
+        run: |
+          set -euo pipefail
+          npx --yes firebase-tools@latest --version | tee .tmp/r18e-deploy/firebase-tools-version.txt
+          npx --yes firebase-tools@latest hosting:sites:list \
+            --project "$FIREBASE_PROJECT_ID" \
+            --json > .tmp/r18e-deploy/hosting-sites.json
+          node <<'NODE'
+          const fs = require('fs');
+          const payload = JSON.parse(fs.readFileSync('.tmp/r18e-deploy/hosting-sites.json', 'utf8'));
+          if (!JSON.stringify(payload).includes('cxorbia-backend-dev')) throw new Error('Expected DEV Hosting site not found.');
+          console.log(JSON.stringify({decision:'PASS_FIREBASE_HOSTING_ACCESS',project:'cxorbia-backend-dev',target:'cxorbia-dev'}, null, 2));
+          NODE
+
+      - name: Deploy Firebase Hosting DEV target only
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/r18e-deploy/firebase-service-account.json
+        run: |
+          set -euo pipefail
+          npx --yes firebase-tools@latest deploy \
+            --only "hosting:$FIREBASE_HOSTING_TARGET" \
+            --project "$FIREBASE_PROJECT_ID" \
+            --non-interactive \
+            --json 2>&1 | tee .tmp/r18e-deploy/firebase-deploy-output.txt
+
+      - name: Verify exact remote build proof and index binding
+        run: |
+          set -euo pipefail
+          cache="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          curl -fsSL "$CXORBIA_DEV_ROOT_URL/r18e-deploy-proof.json?cache=$cache" \
+            -o .tmp/r18e-deploy/remote-proof.json
+          curl -fsSL "$CXORBIA_DEV_ROOT_URL/index.html?cxTyaPhaseA=1&r18d=visible&cache=$cache" \
+            -o .tmp/r18e-deploy/remote-index.html
+          grep -Fq 'adapters/tya-phase-a-visible-overlays-r18d.js' .tmp/r18e-deploy/remote-index.html
+          node <<'NODE'
+          const fs = require('fs');
+          const proof = JSON.parse(fs.readFileSync('.tmp/r18e-deploy/remote-proof.json', 'utf8'));
+          const registry = JSON.parse(fs.readFileSync('backend/contracts/prototype-baseline-registry-v1.json', 'utf8'));
+          if (proof.gitCommit !== process.env.GITHUB_SHA) throw new Error(`Remote commit mismatch: ${proof.gitCommit} vs ${process.env.GITHUB_SHA}`);
+          if (proof.sourceLockAggregateSha256 !== registry.activeBaseline.aggregateSha256) throw new Error('Remote source lock aggregate mismatch.');
+          if (proof.buildLabel !== process.env.CXORBIA_R18E_BUILD_LABEL) throw new Error('Remote build label mismatch.');
+          if (proof.environment !== 'FIREBASE_HOSTING_DEV' || proof.production !== false || proof.imported !== false) throw new Error('Remote environment/source-safe flags mismatch.');
+          console.log(JSON.stringify({decision:'PASS_REMOTE_EXACT_BUILD_PROOF',url:process.env.CXORBIA_DEV_ROOT_URL,buildLabel:proof.buildLabel,gitCommit:proof.gitCommit,aggregate:proof.sourceLockAggregateSha256}, null, 2));
+          NODE
+
+      - name: Run remote R18D smoke against deployed Hosting DEV
+        env:
+          CXORBIA_BASE_URL: https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs \
+            --out .tmp/r18e-remote-smoke
+          node <<'NODE'
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('.tmp/r18e-remote-smoke/r18d-visible-overlays-smoke.json', 'utf8'));
+          if (!String(report.decision || '').startsWith('PASS_') && !String(report.decision || '').startsWith('PASS_WITH_REVIEW_')) throw new Error(`Remote R18D decision is not PASS: ${report.decision}`);
+          if (Array.isArray(report.blockers) && report.blockers.length) throw new Error(`Remote R18D blockers: ${report.blockers.join(', ')}`);
+          console.log(JSON.stringify({decision:report.decision,blockers:report.blockers,warnings:report.warnings,counts:report.counts || report.validated || null}, null, 2));
+          NODE
+
+      - name: Cleanup temporary Firebase credential
+        if: always()
+        run: |
+          rm -f .tmp/r18e-deploy/firebase-service-account.json
+
+      - name: Upload sanitized R18E deployment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-r18e-hosting-dev-deploy-report
+          path: |
+            .tmp/r18e-r18a-canonicalization
+            .tmp/r18e-r18b-existing-overlays
+            .tmp/r18e-r18a-binding
+            .tmp/r18e-source
+            .tmp/r18e-visible-overlay-build
+            .tmp/r18e-local-smoke
+            .tmp/r18e-deploy
+            .tmp/r18e-remote-smoke
+            app/r18e-deploy-proof.json
+          if-no-files-found: error
+          retention-days: 14
