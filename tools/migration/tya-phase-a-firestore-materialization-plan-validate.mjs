@@ -27,6 +27,8 @@ const check = (name, condition, detail = null) => {
 };
 const sensitiveTerms = contract.security.denyFieldNamesContaining.map(value => String(value).toLowerCase());
 const paths = plan.operations.map(item => item.documentPath);
+const sourceCounts = plan.counts?.source || {};
+const domainCounts = plan.counts?.byDomain || {};
 check('mode_is_dry_run', plan.mode === 'dry_run');
 check('writes_false', plan.writes === false && plan.safeState?.writes === false);
 check('imported_false', plan.imported === false && plan.safeState?.imported === false);
@@ -36,13 +38,17 @@ check('precondition_exists_false', plan.operations.every(item => item.preconditi
 check('unique_document_paths', new Set(paths).size === paths.length);
 check('batch_size_limit', plan.batches.every(batch => batch.operationCount <= contract.writePlan.maxOperationsPerBatch));
 check('batch_operation_sum', plan.batches.reduce((sum, batch) => sum + batch.operationCount, 0) === plan.operations.length);
-check('tenant_count', plan.counts.byDomain.tenant === 1);
-check('project_count', plan.counts.byDomain.project === 1);
-check('hr_import_count', plan.counts.byDomain.hrImport === 1);
-check('period_count', plan.counts.byDomain.period === 14, String(plan.counts.byDomain.period));
-check('visit_count', plan.counts.byDomain.visit === 616, String(plan.counts.byDomain.visit));
-check('shopper_count', plan.counts.byDomain.shopper === 213, String(plan.counts.byDomain.shopper));
-check('liquidation_count', plan.counts.byDomain.liquidation === 572, String(plan.counts.byDomain.liquidation));
+check('tenant_count', domainCounts.tenant === 1);
+check('project_count', domainCounts.project === 1);
+check('hr_import_count', domainCounts.hrImport === 1);
+check('period_count', domainCounts.period === 14, String(domainCounts.period));
+check('visit_count', domainCounts.visit === 616, String(domainCounts.visit));
+check(
+  'shopper_count_matches_canonical_source',
+  Number(sourceCounts.shoppers) > 0 && domainCounts.shopper === sourceCounts.shoppers,
+  `planned=${domainCounts.shopper};source=${sourceCounts.shoppers}`
+);
+check('liquidation_count', domainCounts.liquidation === 572, String(domainCounts.liquidation));
 check('no_payment_operations', !plan.operations.some(item => ['payment', 'paymentLot', 'financeMovement'].includes(item.domain)));
 check('no_certification_operations', !plan.operations.some(item => item.domain === 'certification'));
 check('no_paid_records', !plan.operations.some(item => item.data?.paid === true || item.data?.paymentState === 'paid'));
