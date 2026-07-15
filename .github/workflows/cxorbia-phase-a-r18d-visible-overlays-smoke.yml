@@ -1,0 +1,165 @@
+name: CXOrbia Phase A R18D Visible Overlays Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'tools/release/tya-visible-overlays-build-r18d.mjs'
+      - 'tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r18a.mjs'
+      - 'tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs'
+      - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
+      - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
+      - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
+      - 'backend/config/phase-a-financial-review-queue-r14c.source-safe.json'
+      - 'app/data/tya-certification-carryover-source-safe.js'
+      - '.github/workflows/cxorbia-phase-a-r18d-visible-overlays-smoke.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'tools/release/tya-visible-overlays-build-r18d.mjs'
+      - 'tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r18a.mjs'
+      - 'tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs'
+      - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
+      - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
+      - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
+      - 'backend/config/phase-a-financial-review-queue-r14c.source-safe.json'
+      - 'app/data/tya-certification-carryover-source-safe.js'
+      - '.github/workflows/cxorbia-phase-a-r18d-visible-overlays-smoke.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  visible-overlays-smoke:
+    name: Build and smoke V131 R18D visible overlays
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout V131 integration branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate integration syntax
+        run: |
+          set -euo pipefail
+          node --check tools/release/tya-visible-overlays-build-r18d.mjs
+          node --check tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs
+          node --check tools/release/tya-source-safe-binding-build-r18a.mjs
+          node --check tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs
+          node --check tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs
+
+      - name: Build live HR source-safe snapshot
+        env:
+          CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
+          test -s app/data/tya-hr-source-safe-periods.js
+
+      - name: Apply canonical R18A semantics
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/r18d-r18a-canonicalization
+
+      - name: Apply approved existing R11D R14C and certification outputs
+        run: |
+          set -euo pipefail
+          node tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs \
+            --payload app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/r18d-r18b-existing-overlays
+          grep -q 'R18B_APPLY_EXISTING_R11D_R14C_AND_CERTIFICATION_OUTPUTS' app/data/tya-hr-source-safe-periods.js
+
+      - name: Build canonical V131 source-safe binding
+        run: |
+          set -euo pipefail
+          node tools/release/tya-source-safe-binding-build-r18a.mjs \
+            --html app/index.html \
+            --out .tmp/r18d-r18a-binding
+          test -s app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
+
+      - name: Build R18D visible overlay binding
+        run: |
+          set -euo pipefail
+          node tools/release/tya-visible-overlays-build-r18d.mjs \
+            --html app/index.html \
+            --out .tmp/r18d-visible-overlay-build
+          test -s app/adapters/tya-phase-a-visible-overlays-r18d.js
+          grep -Fq 'adapters/tya-phase-a-visible-overlays-r18d.js' app/index.html
+
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npm i -D playwright@1.47.2
+          npx playwright install --with-deps chromium
+
+      - name: Start local V131 build copy
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp-r18d-server.log 2>&1 &
+          echo $! > .tmp-r18d-server.pid
+          for attempt in $(seq 1 30); do
+            if curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible' >/dev/null; then
+              echo 'R18D build copy ready.'
+              exit 0
+            fi
+            sleep 1
+          done
+          cat .tmp-r18d-server.log || true
+          exit 1
+
+      - name: Run R18D visible overlay smoke
+        env:
+          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs \
+            --out .tmp/phase-a-visible-overlays-smoke-r18d
+
+      - name: Enforce fail-closed R18D decision
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const file = '.tmp/phase-a-visible-overlays-smoke-r18d/r18d-visible-overlays-smoke.json';
+          if (!fs.existsSync(file)) throw new Error('R18D smoke report missing.');
+          const report = JSON.parse(fs.readFileSync(file, 'utf8'));
+          console.log(JSON.stringify({decision:report.decision,blockers:report.blockers,warnings:report.warnings},null,2));
+          if (!String(report.decision || '').startsWith('PASS_') && !String(report.decision || '').startsWith('PASS_WITH_REVIEW_')) process.exit(1);
+          if (Array.isArray(report.blockers) && report.blockers.length) process.exit(1);
+          NODE
+
+      - name: Upload R18D sanitized evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-r18d-visible-overlays-smoke
+          path: |
+            .tmp/r18d-r18a-canonicalization
+            .tmp/r18d-r18b-existing-overlays
+            .tmp/r18d-r18a-binding
+            .tmp/r18d-visible-overlay-build
+            .tmp/phase-a-visible-overlays-smoke-r18d
+          if-no-files-found: error
+          retention-days: 14
