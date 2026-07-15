@@ -99,12 +99,33 @@ jobs:
             --out .tmp/r18d-r18a-binding
           test -s app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
 
+      - name: Normalize stable IDs for approved R14C review queue
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/r18d-source
+          node <<'NODE'
+          const fs = require('fs');
+          const input = 'backend/config/phase-a-financial-review-queue-r14c.source-safe.json';
+          const output = '.tmp/r18d-source/r14c-review-queue-stable.source-safe.json';
+          const rows = JSON.parse(fs.readFileSync(input, 'utf8'));
+          if (!Array.isArray(rows) || rows.length !== 92) throw new Error(`Expected 92 approved R14C review items, got ${Array.isArray(rows) ? rows.length : 'invalid'}`);
+          const normalized = rows.map((item, index) => ({
+            ...item,
+            key: item.key || `r14c_control:${item.type || 'review'}:${item.entityId || 'source'}:${String(index + 1).padStart(3, '0')}`,
+            sourceSafe: true
+          }));
+          if (new Set(normalized.map(item => item.key)).size !== 92) throw new Error('R14C stable review keys are not unique after normalization.');
+          fs.writeFileSync(output, JSON.stringify(normalized, null, 2) + '\n', 'utf8');
+          console.log(JSON.stringify({decision:'PASS_R18D_R14C_QUEUE_STABLE_IDS',records:normalized.length,uniqueKeys:92},null,2));
+          NODE
+
       - name: Build R18D visible overlay binding
         run: |
           mkdir -p .tmp/r18d-visible-overlay-build
           set +e
           node tools/release/tya-visible-overlays-build-r18d.mjs \
             --html app/index.html \
+            --r14c-queue .tmp/r18d-source/r14c-review-queue-stable.source-safe.json \
             --out .tmp/r18d-visible-overlay-build \
             > .tmp/r18d-visible-overlay-build/command.log 2>&1
           status=$?
@@ -165,6 +186,7 @@ jobs:
             .tmp/r18d-r18a-canonicalization
             .tmp/r18d-r18b-existing-overlays
             .tmp/r18d-r18a-binding
+            .tmp/r18d-source
             .tmp/r18d-visible-overlay-build
             .tmp/phase-a-visible-overlays-smoke-r18d
           if-no-files-found: error
