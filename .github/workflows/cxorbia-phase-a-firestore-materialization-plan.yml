@@ -11,6 +11,9 @@ on:
       - 'app/data/tya-hr-source-safe-periods.js'
       - 'app/data/tya-financial-control-source-safe.js'
       - 'app/data/tya-certification-carryover-source-safe.js'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
+      - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
+      - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
       - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
       - 'tools/migration/tya-phase-a-firestore-materialization-plan-validate.mjs'
       - 'tools/migration/tya-phase-a-firestore-materialization-fixture-validate.mjs'
@@ -25,6 +28,9 @@ on:
       - 'app/data/tya-hr-source-safe-periods.js'
       - 'app/data/tya-financial-control-source-safe.js'
       - 'app/data/tya-certification-carryover-source-safe.js'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
+      - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
+      - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
       - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
       - 'tools/migration/tya-phase-a-firestore-materialization-plan-validate.mjs'
       - 'tools/migration/tya-phase-a-firestore-materialization-fixture-validate.mjs'
@@ -37,7 +43,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -45,10 +51,28 @@ jobs:
           node-version: '24'
       - name: Validate zero-write materialization fixture
         run: node tools/migration/tya-phase-a-firestore-materialization-fixture-validate.mjs
+      - name: Build current live HR source-safe snapshot
+        env:
+          CXORBIA_HR_SOURCE_SAFE_OUT: .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.live.js
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/firestore-materialization-plan-full/source
+          node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
+          test -s .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.live.js
+      - name: Canonicalize current HR snapshot with existing R18A contracts
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
+            --input .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.live.js \
+            --out .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.canonical.js \
+            --report-dir .tmp/firestore-materialization-plan-full/r18a-canonicalization
+          grep -q 'R18A_INTEGRATE_EXISTING_CANONICAL_ASSETS' .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.canonical.js
       - name: Build full TyA source-safe materialization plan
         run: >-
           node tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs
-          --hr app/data/tya-hr-source-safe-periods.js
+          --hr .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.canonical.js
           --financial app/data/tya-financial-control-source-safe.js
           --certifications app/data/tya-certification-carryover-source-safe.js
           --out .tmp/firestore-materialization-plan-full
