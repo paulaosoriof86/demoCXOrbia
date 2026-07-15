@@ -46,7 +46,7 @@ jobs:
   visible-overlays-smoke:
     name: Build and smoke V131 R18D visible overlays
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
 
     steps:
       - name: Checkout V131 integration branch
@@ -159,7 +159,7 @@ jobs:
           cat .tmp-r18d-server.log || true
           exit 1
 
-      - name: Run R18D visible overlay smoke
+      - name: Run local R18D visible overlay smoke
         env:
           CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible
         run: |
@@ -167,7 +167,7 @@ jobs:
           node tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs \
             --out .tmp/phase-a-visible-overlays-smoke-r18d
 
-      - name: Enforce fail-closed R18D decision
+      - name: Enforce fail-closed local R18D decision
         run: |
           set -euo pipefail
           node <<'NODE'
@@ -180,7 +180,58 @@ jobs:
           if (Array.isArray(report.blockers) && report.blockers.length) process.exit(1);
           NODE
 
-      - name: Upload R18D sanitized evidence
+      - name: Verify exact authorized R18E remote proof
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/r18e-remote-verification
+          found=0
+          for attempt in $(seq 1 30); do
+            cache="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}"
+            if curl -fsSL "https://cxorbia-backend-dev.web.app/r18e-deploy-proof.json?cache=$cache" -o .tmp/r18e-remote-verification/remote-proof.json; then
+              if node <<'NODE'
+          const fs = require('fs');
+          const proof = JSON.parse(fs.readFileSync('.tmp/r18e-remote-verification/remote-proof.json', 'utf8'));
+          const ok = proof.environment === 'FIREBASE_HOSTING_DEV' &&
+            proof.firebaseProjectId === 'cxorbia-backend-dev' &&
+            proof.hostingTarget === 'cxorbia-dev' &&
+            proof.buildLabel === 'v131-r18d-source-safe-20260715-r18e' &&
+            proof.sourceLockAggregateSha256 === '6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348' &&
+            proof.baseline === 'V131' &&
+            proof.decision === 'PASS_R18D_VISIBLE_OVERLAYS' &&
+            proof.sourceSafe === true && proof.imported === false && proof.production === false &&
+            proof.firestoreWrites === false && proof.authWrites === false && proof.storageWrites === false &&
+            proof.hrWrites === false && proof.payments === false;
+          if (!ok) process.exit(1);
+          console.log(JSON.stringify({decision:'PASS_R18E_REMOTE_EXACT_BUILD_PROOF',proof},null,2));
+          NODE
+              then
+                found=1
+                break
+              fi
+            fi
+            sleep 10
+          done
+          if [ "$found" -ne 1 ]; then
+            echo 'Authorized R18E remote proof not found or does not match.'
+            exit 1
+          fi
+
+      - name: Run remote R18D visible overlay smoke
+        env:
+          CXORBIA_BASE_URL: https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs \
+            --out .tmp/r18e-remote-verification/remote-smoke
+          node <<'NODE'
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('.tmp/r18e-remote-verification/remote-smoke/r18d-visible-overlays-smoke.json', 'utf8'));
+          console.log(JSON.stringify({decision:report.decision,blockers:report.blockers,warnings:report.warnings,counts:report.counts||report.validated||null},null,2));
+          if (!String(report.decision || '').startsWith('PASS_') && !String(report.decision || '').startsWith('PASS_WITH_REVIEW_')) process.exit(1);
+          if (Array.isArray(report.blockers) && report.blockers.length) process.exit(1);
+          NODE
+
+      - name: Upload R18D and R18E sanitized evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -192,5 +243,6 @@ jobs:
             .tmp/r18d-source
             .tmp/r18d-visible-overlay-build
             .tmp/phase-a-visible-overlays-smoke-r18d
+            .tmp/r18e-remote-verification
           if-no-files-found: error
           retention-days: 14
