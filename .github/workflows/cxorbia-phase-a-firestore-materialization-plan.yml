@@ -8,6 +8,9 @@ on:
     paths:
       - 'backend/contracts/phase-a-firestore-materialization-plan-v1.json'
       - 'backend/config/phase-a-firestore-collection-map-v1.json'
+      - 'app/data/tya-hr-source-safe-periods.js'
+      - 'app/data/tya-financial-control-source-safe.js'
+      - 'app/data/tya-certification-carryover-source-safe.js'
       - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
       - 'tools/migration/tya-phase-a-firestore-materialization-plan-validate.mjs'
       - 'tools/migration/tya-phase-a-firestore-materialization-fixture-validate.mjs'
@@ -19,6 +22,9 @@ on:
     paths:
       - 'backend/contracts/phase-a-firestore-materialization-plan-v1.json'
       - 'backend/config/phase-a-firestore-collection-map-v1.json'
+      - 'app/data/tya-hr-source-safe-periods.js'
+      - 'app/data/tya-financial-control-source-safe.js'
+      - 'app/data/tya-certification-carryover-source-safe.js'
       - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
       - 'tools/migration/tya-phase-a-firestore-materialization-plan-validate.mjs'
       - 'tools/migration/tya-phase-a-firestore-materialization-fixture-validate.mjs'
@@ -39,11 +45,31 @@ jobs:
           node-version: '24'
       - name: Validate zero-write materialization fixture
         run: node tools/migration/tya-phase-a-firestore-materialization-fixture-validate.mjs
-      - name: Upload report
+      - name: Build full TyA source-safe materialization plan
+        run: >-
+          node tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs
+          --hr app/data/tya-hr-source-safe-periods.js
+          --financial app/data/tya-financial-control-source-safe.js
+          --certifications app/data/tya-certification-carryover-source-safe.js
+          --out .tmp/firestore-materialization-plan-full
+      - name: Validate full TyA source-safe materialization plan
+        run: >-
+          node tools/migration/tya-phase-a-firestore-materialization-plan-validate.mjs
+          --plan .tmp/firestore-materialization-plan-full/firestore-materialization-plan.json
+          --out .tmp/firestore-materialization-plan-full/verification.json
+      - name: Upload fixture report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: phase-a-firestore-materialization-plan-report
           path: .tmp/firestore-materialization-fixture
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload full source-safe plan
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-firestore-materialization-full-source-safe-plan
+          path: .tmp/firestore-materialization-plan-full
           if-no-files-found: error
           retention-days: 14
