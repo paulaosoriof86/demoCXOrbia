@@ -6,15 +6,10 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - 'backend/config/phase-a-r18e-observe-once.source-safe.json'
-  pull_request:
-    branches:
-      - release/cxorbia-tya-rc-20260630
-    paths:
-      - '.github/workflows/cxorbia-r18e-observe-hosting-dev-once.yml'
-      - 'backend/config/phase-a-r18e-observe-once.source-safe.json'
 
 permissions:
-  contents: write
+  contents: read
+  issues: write
 
 defaults:
   run:
@@ -25,14 +20,13 @@ env:
   CXORBIA_R18E_BUILD_LABEL: v131-r18d-source-safe-20260715-r18e
   CXORBIA_R18E_AGGREGATE: 6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348
   CXORBIA_R18E_OBSERVER_MARKER: backend/config/phase-a-r18e-observe-once.source-safe.json
-  CXORBIA_R18E_RESULT_FILE: app/docs/PHASE-A-R18E-HOSTING-DEV-OBSERVED-RESULT.source-safe.json
 
 jobs:
   observe-remote-deploy:
     name: Observe exact remote proof and run remote R18D smoke
-    if: ${{ (github.event_name == 'push' && github.event.head_commit.message == 'ops(r18e): observe authorized Hosting DEV deploy once') || (github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit') }}
+    if: ${{ github.event.head_commit.message == 'ops(r18e): observe authorized Hosting DEV deploy once' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 12
 
     steps:
       - name: Checkout branch
@@ -67,12 +61,11 @@ jobs:
           npx playwright install --with-deps chromium >/dev/null
 
       - name: Wait for exact remote deploy proof
-        id: proof
         run: |
           set -euo pipefail
           mkdir -p .tmp/r18e-observer
           found=0
-          for attempt in $(seq 1 72); do
+          for attempt in $(seq 1 36); do
             cache="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}"
             if curl -fsSL "$CXORBIA_DEV_ROOT_URL/r18e-deploy-proof.json?cache=$cache" -o .tmp/r18e-observer/remote-proof.json; then
               if node <<'NODE'
@@ -99,10 +92,9 @@ jobs:
             sleep 10
           done
           if [ "$found" -ne 1 ]; then
-            echo 'proof_found=false' >> "$GITHUB_OUTPUT"
+            echo 'Exact R18E remote proof was not found within the observer window.'
             exit 1
           fi
-          echo 'proof_found=true' >> "$GITHUB_OUTPUT"
 
       - name: Run remote R18D smoke
         env:
@@ -119,8 +111,7 @@ jobs:
           console.log(JSON.stringify({decision:report.decision,blockers:report.blockers,warnings:report.warnings,counts:report.counts || report.validated || null}, null, 2));
           NODE
 
-      - name: Write sanitized observed result
-        if: success()
+      - name: Build sanitized observed result
         run: |
           set -euo pipefail
           node <<'NODE'
@@ -155,19 +146,74 @@ jobs:
             payments: false,
             authorizationId: 'R18E_HOSTING_DEV_ONCE_20260715'
           };
-          fs.writeFileSync(process.env.CXORBIA_R18E_RESULT_FILE, JSON.stringify(result, null, 2) + '\n', 'utf8');
+          fs.writeFileSync('.tmp/r18e-observer/observed-result.source-safe.json', JSON.stringify(result, null, 2) + '\n', 'utf8');
           console.log(JSON.stringify(result, null, 2));
           NODE
 
-      - name: Commit sanitized result to integration branch
-        if: success() && github.event_name == 'push'
+      - name: Report PASS to PR 7
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add "$CXORBIA_R18E_RESULT_FILE"
-          git commit -m 'docs(r18e): record remotely verified Hosting DEV deployment'
-          git push origin HEAD:docs-tya-v6-v71-audit
+          node <<'NODE'
+          const fs = require('fs');
+          const result = JSON.parse(fs.readFileSync('.tmp/r18e-observer/observed-result.source-safe.json', 'utf8'));
+          const body = [
+            '<!-- CXORBIA_R18E_OBSERVER_RESULT -->',
+            '## R18E Hosting DEV — PASS remoto',
+            '',
+            `- Decisión: \`${result.decision}\`.`,
+            `- Build: \`${result.buildLabel}\`.`,
+            `- Commit desplegado: \`${result.deployedCommit}\`.`,
+            `- Source lock: \`${result.sourceLockAggregateSha256}\`.`,
+            `- R18D: \`${result.r18dDecision}\`.`,
+            `- URL: ${result.url}`,
+            '- Blockers: 0.',
+            '- Producción/imports/Firestore/Auth/Storage/HR writes/Make/Gemini/pagos: no ejecutados.'
+          ].join('\n');
+          const response = await fetch(`https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/issues/7/comments`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+              'Accept': 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({body})
+          });
+          if (!response.ok) throw new Error(`GitHub comment failed: ${response.status} ${await response.text()}`);
+          console.log('R18E PASS comment posted to PR 7.');
+          NODE
+
+      - name: Report failure to PR 7
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const body = [
+            '<!-- CXORBIA_R18E_OBSERVER_FAILURE -->',
+            '## R18E Hosting DEV — verificación remota no cerrada',
+            '',
+            `- Observer run: \`${process.env.GITHUB_RUN_ID}\`.`,
+            '- No se declara PASS ni se habilita revisión humana.',
+            '- Revisar el paso exacto fallido; no repetir empalme ni tocar runtime por inferencia.'
+          ].join('\n');
+          const response = await fetch(`https://api.github.com/repos/${process.env.GITHUB_REPOSITORY}/issues/7/comments`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+              'Accept': 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({body})
+          });
+          if (!response.ok) throw new Error(`GitHub failure comment failed: ${response.status} ${await response.text()}`);
+          console.log('R18E failure comment posted to PR 7.');
+          NODE
 
       - name: Upload observer evidence
         if: always()
