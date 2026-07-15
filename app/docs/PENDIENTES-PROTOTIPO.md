@@ -1,10 +1,10 @@
 # PENDIENTES-PROTOTIPO.md
 
-> Lista viva de mejoras del prototipo CXOrbia, priorizada. Actualizada 2026-07-01.
+> Lista viva de mejoras del prototipo CXOrbia, priorizada. Actualizada 2026-07-15.
 > Clasificación: P0 crítico · P1 importante · P2 posterior · [TyA] específico · [CX] generalizable
 > El detalle de CÓMO se resolvió cada ítem está en CAMBIOS-PROTOTIPO.md (entradas 1–25+).
 
-## ✅ RESUELTOS Y VERIFICADOS (sesiones 50–63)
+## ✅ RESUELTOS Y VERIFICADOS
 
 ### Núcleo / white-label / IA
 - IA multi-proveedor sin sesgo + comparativo costo/beneficio [CX]
@@ -32,6 +32,7 @@
 - Financiamiento con concepto; presupuesto mensual; análisis crítico [CX]
 - Fecha de pago = viernes + N días configurable; liquidación reacciona a cuestionario+submit [CX]
 - Importador Excel real (.xlsx) con SheetJS [CX]
+- R18D P0: `serieMensual()` ya entrega `project()`, `period()` y `visitas()` al adapter local; Finanzas renderiza sin `data.period is not a function` [CX]
 
 ### Comercial
 - CRM completo estilo Orbit: Dashboard/Insights, Pipeline, Leads, Cuentas, Contactos, Actividades, Reportes [CX]
@@ -67,13 +68,16 @@
 - **Centro de Actualizaciones/Novedades** SaaS multi-tenant: vista admin (releases, estado por tenant) + vista cliente (banner, historial, confirmación lectura) [CX]
 - **Sincronía de filtros** proyecto/periodo/país entre TODOS los módulos (un solo estado, sin mezclar) [CX]
 
-## 🔴 PENDIENTE — Estados honestos (P1, V63/V64)
+## 🔴 PENDIENTE — Estados honestos (P1)
 - Correo: "correo simulado / borrador / pendiente backend" (no "enviado") [CX]
 - Automatizaciones: activa/pausada/pendiente backend/error/simulada, última/próxima ejecución [CX]
 - Integraciones: conectado/pendiente/simulado honesto por cada una [CX]
 - IA: "pendiente de backend/IA real" cuando no hay API key conectada [CX]
+- Shoppers source-safe: el KPI `Activos` no debe contar referencias protegidas sin estado como activas; debe separar referencias protegidas, perfiles operativos y perfiles autorizados [CX]
+- Shoppers source-safe: revisar el KPI y la celda `Perfil` para no mostrar completo/incompleto cuando la fuente solo entrega referencia protegida [CX]
+- Finanzas source-safe: no mostrar un modelo financiero específico, ingresos estimados ni narrativa de margen creciente cuando esos campos no vienen de una fuente confirmada [CX]
 
-## 🔴 PENDIENTE — Fichas ampliadas (P1, V63/V64)
+## 🔴 PENDIENTE — Fichas ampliadas (P1)
 - Ficha de Periodo, Ficha de Visita ampliada, Ficha de Sucursal (histórico/scores/hallazgos/comparativo) [CX]
 
 ## 🔵 BACKEND (fuera de alcance del prototipo — lo hace ChatGPT)
@@ -86,17 +90,22 @@
 
 ---
 
-## Pendientes despues de aplicar V66 â€” ChatGPT/backend 2026-07-02
+## Pendientes después de aplicar V66 — ChatGPT/backend 2026-07-02
 
-- [CX] Mantener el prototipo comercializable y generalizable. TyA/Cinepolis es tenant DEV; no endurecer reglas como si fueran el unico cliente.
-- [Backend] Implementar segmentacion real por tenant, projectId, programId, periodId, pais, rol, permisos y feature flags.
+- [CX] Mantener el prototipo comercializable y generalizable. TyA/Cinépolis es tenant DEV; no endurecer reglas como si fueran el único cliente.
+- [Backend] Implementar segmentación real por tenant, projectId, programId, periodId, país, rol, permisos y feature flags.
 - [Backend] Sprint 9 sigue pendiente: no marcar como cerrado hasta validar Firebase DEV real.
-- [Claude] Revisar textos de acciones operativas, WhatsApp, correo, Make e IA para que digan claramente `simulado`, `preview` o `pendiente backend` cuando no haya conexion real.
-- [Claude] Validar visualmente reglas operativas por periodo/pais/quincena sin convertirlas en logica exclusiva de TyA.
-
+- [Claude] Revisar textos de acciones operativas, WhatsApp, correo, Make e IA para que digan claramente `simulado`, `preview` o `pendiente backend` cuando no haya conexión real.
+- [Claude] Validar visualmente reglas operativas por periodo/país/quincena sin convertirlas en lógica exclusiva de TyA.
 
 ## 2026-07-14 - Post empalme V131
 
 - No quedan P0 de candidata que impidan continuar Phase A.
-- Mantener smoke visual final por roles como verificacion posterior, no como bloqueo del empalme.
-- Produccion, proveedores, import real y writes siguen HOLD.
+- Mantener smoke visual final por roles como verificación posterior, no como bloqueo del empalme.
+- Producción, proveedores, import real y writes siguen HOLD.
+
+## 2026-07-15 - R18D hotfix cerrado
+
+- El P0 de Finanzas quedó empalmado de forma reconciliada y R18D pasó sin blockers ni warnings.
+- No corresponde otro paquete Claude por este P0.
+- Los tres ajustes source-safe de Shoppers/Finanzas listados como P1 deben revisarse en el próximo paquete acumulado o durante la validación visual DEV; no reabren el empalme ni R18D.
