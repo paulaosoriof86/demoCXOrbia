@@ -1,33 +1,35 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updatedAt": "2026-07-14",
   "repository": "paulaosoriof86/demoCXOrbia",
   "integrationBranch": "docs-tya-v6-v71-audit",
   "invariant": "acceptedCandidateVersion == empalmedVersion == activeBaselineVersion",
   "activeBaseline": {
-    "version": "V110",
+    "version": "V131",
     "status": "accepted_and_empalmed",
-    "sourceZipSha256": "1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227",
-    "manifestFile": "docs/MANIFEST-V110-UNION-EMPALME-R1.json",
-    "aggregateSha256": "b590f500a67f28fb911698f7a3c457eddd31ddad794efdfb760587630f7037b3",
-    "verifiedAtIntegrationHead": "db1101a4bc4a3aee56259d498a1969394c7a487a",
+    "sourceZipSha256": "19424b2b709a4bff457454bbeff6abe47cd1c52c0f0388fd1a380008c8adc740",
+    "manifestFile": "docs/MANIFEST-V131-EMPALME-RUNTIME-R1.json",
+    "aggregateSha256": "077f366fc17953a46be7927f416ed8b05531b96ae0c55ff958f4dff3dd4645bc",
+    "verifiedAtIntegrationHead": "d5c04054d445723dd0bc9e48acbab75953a4b08b",
     "accepted": true,
     "empalmed": true
   },
+  "previousBaseline": {
+    "version": "V110",
+    "status": "superseded_by_v131",
+    "sourceZipSha256": "1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227",
+    "manifestFile": "docs/MANIFEST-V110-UNION-EMPALME-R1.json",
+    "aggregateSha256": "b590f500a67f28fb911698f7a3c457eddd31ddad794efdfb760587630f7037b3"
+  },
   "candidate": {
-    "version": "V113",
-    "sourceZipSha256": "7bcbb57fcc7c1cd892ec3631a097468f54cc68058d07635b218990ee46cc52a5",
-    "status": "rejected_requires_correction",
-    "accepted": false,
-    "empalmed": false,
-    "gateDecision": "FAIL_ATOMIC_PROTOTYPE_ACCEPTANCE",
-    "failures": [
-      "literal_manifest_verifier_targets_v111_instead_of_active_manifest",
-      "direct_current_period_mutations_outside_core_data",
-      "period_filters_still_use_current_project_id",
-      "academia_states_project_and_period_ids_are_equal"
-    ],
-    "nextExpectedVersion": "V114"
+    "version": "V131",
+    "sourceZipSha256": "19424b2b709a4bff457454bbeff6abe47cd1c52c0f0388fd1a380008c8adc740",
+    "status": "accepted_and_empalmed",
+    "accepted": true,
+    "empalmed": true,
+    "gateDecision": "PASS_ATOMIC_PROTOTYPE_ACCEPTANCE",
+    "failures": [],
+    "nextExpectedVersion": null
   },
   "allowedCandidateStatuses": [
     "pending_audit",
