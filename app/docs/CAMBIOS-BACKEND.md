@@ -1,3 +1,29 @@
+## 2026-07-15 - R18E Firebase Hosting DEV controlado
+
+- Autorización explícita limitada a Firebase Hosting DEV del build V131 R18D.
+- Proyecto: `cxorbia-backend-dev`.
+- Target: `cxorbia-dev`.
+- URL: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible`.
+- Build: `v131-r18d-source-safe-20260715-r18e`.
+- Commit exacto desplegado: `fe9a498863dd8454c174971781e8dbbb606a3131`.
+- Firebase Hosting version: `projects/87461567267/sites/cxorbia-backend-dev/versions/32e865ce08af0d99`.
+- Workflow `29442279729`: todas las etapas PASS.
+- Smoke local y remoto: `PASS_R18D_VISIBLE_OVERLAYS`.
+- Validado remotamente: 14 periodos, 616 visitas, 44 visitas activas, 216 shoppers, 196 controles financieros y 92 revisiones.
+- Finanzas, Shoppers y Certificación renderizados; 0 errores de consola/página, blockers o warnings.
+- No producción, Firestore/Auth/Storage/HR writes, imports, Make, Gemini ni pagos.
+- Credencial temporal eliminada del runner.
+- Workflow R18D restaurado a smoke-only.
+- Autorización, workflows y marcadores temporales de uso único eliminados; no queda deploy automático activo.
+
+Clasificación:
+
+- `Reusable CXOrbia`: deploy Hosting-only con autorización exacta, proof remoto, smoke remoto y cleanup obligatorio.
+- `Exclusivo cliente`: snapshot y conteos TyA/Cinépolis.
+- `Claude/prototipo`: validación visual pendiente; sin paquete nuevo inmediato.
+- `Academia`: sin cambio de módulo/curso; impacto documental registrado.
+- `Sin impacto Claude`: credencial, Firebase CLI, Hosting version, proof y evidencia CI.
+
 ## 2026-07-15 - R18D hotfix focalizado reconciliado
 
 - Candidata recibida: `Prototype development request CXOrbia V131 fix.zip`, versión interna V132.
