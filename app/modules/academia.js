@@ -1416,7 +1416,7 @@ PWA) deben reflejar ya la marca configurada.</p></div>`},
   <div class="acad-step"><span>2</span><b>Dashboard</b><p>El mismo selector de proyecto está disponible arriba — cambia el mismo estado, no uno paralelo.</p></div>
   <div class="acad-step"><span>3</span><b>Periodos (módulo)</b><p>Lista completa de rondas del programa activo, con avance, estado (activo/cerrado/archivado) y comparativo.</p></div>
 </div>
-<div class="acad-section">✅ <b>Cómo comprobar que KPIs y listas corresponden al periodo activo</b><p>Mira el conteo total de visitas en el Dashboard y compáralo con el mismo número en Visitas/Histórico — deben coincidir siempre, porque ambos leen el mismo periodo activo (<code>CX.data.currentProjectId</code>/<code>currentPeriodId</code>, el mismo valor). Si cambias de periodo desde CUALQUIER selector, ese número debe actualizarse igual en Dashboard, Visitas, Mi Día e Histórico — sin recargar la página.</p></div>
+<div class="acad-section">✅ <b>Cómo comprobar que KPIs y listas corresponden al periodo activo</b><p>Mira el conteo total de visitas en el Dashboard y compáralo con el mismo número en Visitas/Histórico — deben coincidir siempre, porque ambos leen el mismo periodo activo. <code>CX.data.currentProjectId</code> identifica el proyecto/programa y <code>currentPeriodId</code> identifica el periodo — están relacionados pero <b>no son el mismo ID</b>: cambiar de periodo (mismo proyecto) nunca cambia el proyecto activo; cambiar de proyecto sí puede seleccionar un periodo distinto (el más reciente del nuevo proyecto, o el que ya estaba activo si pertenece a ambos). Si cambias de periodo o de proyecto desde CUALQUIER selector, los números deben actualizarse igual en Dashboard, Visitas, Mi Día e Histórico — sin recargar la página.</p></div>
 <div class="acad-section">⚠️ <b>Error frecuente</b><p>Ver un periodo seleccionado en un control y datos de OTRO periodo en otro panel. Esto NO debe pasar — todos los selectores de periodo llaman al mismo punto único (<code>CX.data.setCurrentPeriod</code>), nunca cambian solo una etiqueta visual.</p></div>
 <div class="acad-section">🔧 <b>Acción correctiva</b><p>Si detectas un desfase, recarga el módulo actual (navega a otro y vuelve) — si el desfase persiste tras eso, repórtalo como incidencia técnica: es síntoma de un selector roto, no de un dato faltante.</p></div>`},
        {id:'apc2',ic:'🌎',n:'Países habilitados vs. alcance activo de tu sesión',content:`
@@ -2215,7 +2215,11 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         if(newRes)content=newRes+content;
         const rEd=CX.acadData.editLesson(rr,course.id,lesson.id,{n:ov.querySelector('#elT').value.trim()||lesson.n,ic:ov.querySelector('#elI').value||lesson.ic,content});
         if(!rEd.ok){ ui.toast('🔒 '+rEd.error,'warn',4200); return; }
-        close();lessonPlayer(course);ui.toast('Lección actualizada','ok');
+        /* OLA3 (paquete V120→V121, 04-ACADEMIA-MANUALES-RUTAS-NOTIFICACIONES.md "lección
+           actualizada"): antes solo un toast efímero — sin notificación persistente para quienes
+           ya cursaron/asignados. No afirma envío real (WhatsApp/correo) sin proveedor. */
+        CX.notif && CX.notif.push({to:'all',tipo:'academia_leccion',icon:'📚',tono:'n',titulo:'Lección actualizada',txt:(course.n||'Curso')+' · '+(lesson.n||'Lección')+' tiene contenido nuevo',nav:'aprendizaje'});
+        close();lessonPlayer(course);ui.toast('Lección actualizada · notificación registrada','ok');
       });
     }}));
     host.querySelector('#addLsn')?.addEventListener('click',()=>{
@@ -2597,7 +2601,10 @@ CX.module('aprendizaje', ({data,role,ui})=>{
            y no editable — todo curso queda vinculado a un tenant real. */
         const multi=(sel)=>{const el=ov.querySelector(sel); if(!el) return undefined; return [...el.selectedOptions].map(o=>o.value).filter(Boolean);};
         const scope=ov.querySelector('#ecScProj')?{tenantId:[CX.BRAND.id],projectId:multi('#ecScProj'),pais:multi('#ecScPais'),rol:multi('#ecScRol'),nivel:multi('#ecScNivel'),modulo:multi('#ecScModulo'),paquete:multi('#ecScPaquete')}:cc.scope;
-        const r=CX.acadData.editCourse(rr,cc.id,{n:ov.querySelector('#ecN').value.trim(),cat:ov.querySelector('#ecC').value,desc:ov.querySelector('#ecD').value.trim(),scope});if(!r.ok){ui.toast('🔒 '+r.error,'warn',4200);return;}close();draw();ui.toast('Curso actualizado · auditado','ok');});
+        const r=CX.acadData.editCourse(rr,cc.id,{n:ov.querySelector('#ecN').value.trim(),cat:ov.querySelector('#ecC').value,desc:ov.querySelector('#ecD').value.trim(),scope});if(!r.ok){ui.toast('🔒 '+r.error,'warn',4200);return;}
+        /* OLA3 (paquete V120→V121, notificación "manual/curso actualizado" — antes solo toast) */
+        CX.notif && CX.notif.push({to:'all',tipo:'academia_curso',icon:'📚',tono:'n',titulo:'Curso actualizado',txt:(cc.n||'Curso')+' tiene cambios nuevos',nav:'aprendizaje'});
+        close();draw();ui.toast('Curso actualizado · auditado · notificación registrada','ok');});
       ov.querySelectorAll('.acadTrans').forEach(b=>b.addEventListener('click',()=>{
         const to=b.dataset.to;
         close();

@@ -23,13 +23,16 @@ CX.module('beneficios', ({data,ui})=>{
 
   const row=(l)=>{
     const lb=CX.liq.label(l.estado);
+    const v=data._visitas.find(x=>x.id===l.visitaId);
+    const vc=v&&data.visitContract?data.visitContract(v):null;
     return `<tr><td><b>${l.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(l.pais)} ${l.shopper||''}</div></td>
       <td style="font-size:12px">${l.freal||'—'}</td>
       <td style="color:var(--green);font-weight:700">${ui.money(l.moneda,l.honorario)}</td>
       <td style="color:var(--purple);font-weight:600">${l.reembolso?ui.money(l.moneda,l.reembolso):'—'}</td>
       <td style="font-weight:700;color:var(--t1)">${ui.money(l.moneda,l.total)}</td>
       <td>${ui.bdg(lb[0],lb[1])}</td>
-      <td style="font-size:12px;${l.estado==='pagada'?'color:var(--green);font-weight:700':''}">${l.estado==='pagada'?'✓ '+(l.fechaEstimadaPago||''):(l.fechaEstimadaPago||'—')}</td></tr>`;
+      <td style="font-size:12px;${l.estado==='pagada'?'color:var(--green);font-weight:700':''}">${l.estado==='pagada'?'✓ '+(l.fechaEstimadaPago||''):(l.fechaEstimadaPago||'—')}</td>
+      <td>${vc&&vc.paymentState!=='no_aplica'?ui.bdg(vc.paymentState,vc.paymentState==='confirmado'?'g':'n'):'—'}</td></tr>`;
   };
 
   /* conceptos de reembolso GENÉRICOS: cada programa define qué se reembolsa.
@@ -78,7 +81,7 @@ CX.module('beneficios', ({data,ui})=>{
 
     <div class="card card-p">
       <div class="card-h"><div class="card-t">Detalle por visita</div><button class="btn btn-ghost btn-sm">⤓ Descargar comprobante</button></div>
-      <table class="tbl"><thead><tr><th>Visita</th><th>Realizada</th><th>💵 Honorario</th><th>🎁 Reembolso</th><th>Total</th><th>Estado</th><th>Pago estimado</th></tr></thead>
-      <tbody>${all.length?all.map(row).join(''):'<tr><td colspan="7">'+ui.empty('💰','Sin liquidaciones aún')+'</td></tr>'}</tbody></table>
+      <table class="tbl"><thead><tr><th>Visita</th><th>Realizada</th><th>💵 Honorario</th><th>🎁 Reembolso</th><th>Total</th><th>Estado</th><th>Pago estimado</th><th>Pago (contrato)</th></tr></thead>
+      <tbody>${all.length?all.map(row).join(''):'<tr><td colspan="8">'+ui.empty('💰','Sin liquidaciones aún')+'</td></tr>'}</tbody></table>
     </div>`;
 });

@@ -22,7 +22,7 @@ CX.module('historico', ({data,ui})=>{
       const paises=[...new Set(vs.map(v=>v.pais).filter(Boolean))];
       const scored=vs.filter(v=>v.score!=null);
       const score=scored.length?Math.round(scored.reduce((a,v)=>a+v.score,0)/scored.length):null;
-      return {p,st,...s,paises,score};
+      return {p,st,...s,paises,score,pagadas:vs.filter(v=>{const vc=data.visitContract?data.visitContract(v):null;return vc&&vc.paymentState==='confirmado';}).length};
     });
     const paisesAll=[...new Set(rows.flatMap(r=>r.paises))];
     const filtered=rows.filter(r=>(fPais==='all'||r.paises.includes(fPais))&&(fEstado==='all'?true:fEstado==='sinActivo'?r.st!=='activo':r.st===fEstado));
@@ -40,6 +40,7 @@ CX.module('historico', ({data,ui})=>{
         ${ui.kpi('Visitas totales', filtered.reduce((a,r)=>a+r.total,0), 'p')}
         ${ui.kpi('Ejecutadas', filtered.reduce((a,r)=>a+r.done,0), 'g')}
         ${ui.kpi('Score promedio', (()=>{const sc=filtered.filter(r=>r.score!=null);return sc.length?Math.round(sc.reduce((a,r)=>a+r.score,0)/sc.length):'—';})(), 'a')}
+        ${ui.kpi('Pagos confirmados (contrato)', filtered.reduce((a,r)=>a+r.pagadas,0), 'n')}
       </div>
       <div class="card card-p" style="margin-bottom:16px">
         <div class="card-t" style="margin-bottom:10px">Periodos del programa</div>

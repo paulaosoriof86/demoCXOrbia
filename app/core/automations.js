@@ -143,7 +143,12 @@ window.CX = window.CX || {};
     logAction(accion, ref, detalle){
       const a=this.audit();
       const por=(CX.session&&CX.session.user&&CX.session.user.name)||'—';
-      a.unshift({id:'au'+Date.now().toString(36),accion,ref:ref||'',detalle:detalle||'',por,fecha:new Date().toISOString().replace('T',' ').slice(0,16)});
+      /* OLA1 (paquete V114→V123, migración transversal de contratos): la bitácora ahora incluye
+         el contexto completo (CX.data.ctx()) en cada entrada — antes una acción quedaba registrada
+         sin declarar en qué proyecto/periodo/rol ocurrió, dificultando auditar acciones cruzadas
+         entre proyectos. Aditivo: no cambia el shape que ya consumen auditFor()/vistas existentes. */
+      const ctx = CX.data && CX.data.ctx ? CX.data.ctx() : null;
+      a.unshift({id:'au'+Date.now().toString(36),accion,ref:ref||'',detalle:detalle||'',por,fecha:new Date().toISOString().replace('T',' ').slice(0,16),ctx});
       try{localStorage.setItem(this._aud,JSON.stringify(a.slice(0,1000)));}catch(e){}
       CX.bus&&CX.bus.emit('audit'); return a[0];
     },

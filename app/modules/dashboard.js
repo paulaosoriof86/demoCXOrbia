@@ -174,6 +174,7 @@ CX.module('dashboard', ({data,ui})=>{
       <select class="sel" id="dashProjSel" style="width:auto"><option value="all" ${ALL?'selected':''}>🌐 Todos los proyectos</option>${data.scopedProyectos().map(pg=>`<option value="${pg.key}" ${(!ALL&&pg.key===data.currentProgramKey())?'selected':''}>${pg.name}</option>`).join('')}</select>
       <span class="bdg bdg-b">● Preview operativo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div>
   </div>
+  <div style="font-size:10.5px;color:var(--t3);margin:-6px 0 12px" title="Contrato de contexto único (CX.data.ctx())">tenant ${(CX.data.ctx?CX.data.ctx().tenantId:CX.BRAND.id)||'—'} · rol ${CX.data.ctx?CX.data.ctx().role:CX.session.role} · modo ${CX.data.ctx?CX.data.ctx().dataMode:'demo'}${(()=>{if(!data.visitContract)return '';const arr=pool();const conf=arr.filter(v=>{const vc=data.visitContract(v);return vc&&vc.paymentState==='confirmado';}).length;return ' · '+conf+'/'+arr.length+' visitas con pago confirmado (contrato)';})()}</div>
 
   <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
     <div style="font-size:12.5px;color:var(--brand-dark)"><b>${months[selMonth]} ${new Date().getFullYear()} ·</b> ${k.total.t} visitas · ${split(k.total)}. Las tarjetas y fases son <b>clickeables</b> para ver su detalle. Multipaís: cada país mantiene su moneda.</div>

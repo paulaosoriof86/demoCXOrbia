@@ -37,6 +37,7 @@ CX.cliUI = {
       ${projSel}
       <span style="flex:1"></span>
       <span style="font-size:11.5px;color:var(--t3)">Programa: <b style="color:var(--t1)">${p.name}</b> · permisos y datos acotados por rol</span>
+      ${(()=>{const c=CX.data.ctx?CX.data.ctx():null;return c?`<span style="font-size:10px;color:var(--t3)" title="Contrato de contexto único">tenant ${c.tenantId}</span>`:'';})()}
     </div>`;
   },
   wirePersona(){

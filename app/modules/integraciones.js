@@ -201,7 +201,7 @@ CX.module('integraciones', ({ui,data})=>{
     const activeCount=items.filter(i=>CX.intStore.status(i.id)!=='not_requested').length;
     host.innerHTML=`
       <div class="between" style="margin-bottom:6px"><div>${ui.ph('Integraciones & Add-ons','Conecta tu ecosistema — activables por plan · configura una vez, funciona en toda la plataforma')}</div>
-        <div class="flex" style="gap:8px"><span class="bdg bdg-a">${activeCount} solicitada(s) · pendiente(s) de backend</span></div></div>
+        <div class="flex" style="gap:8px">${(()=>{const sc=CX.dataSource&&CX.dataSource.sourceContract?CX.dataSource.sourceContract():null;return sc?ui.bdg('fuente: '+sc.sourceReadMode+(sc.runtimeSyncActive?' · sync activo':''),sc.runtimeSyncActive?'g':'n'):'';})()}<span class="bdg bdg-a">${activeCount} solicitada(s) · pendiente(s) de backend</span></div></div>
       <div style="background:var(--brand-light);border-radius:10px;padding:11px 14px;font-size:12.5px;color:var(--brand-dark);margin-bottom:16px">
         ⚡ <b>Receta de automatización inteligente:</b> IA (Gemini/Claude) redacta → Canva/Gamma crean piezas → Metricool programa y publica → Make/Zapier orquesta → NotebookLM alimenta el conocimiento del cliente y la Academia.
       </div>

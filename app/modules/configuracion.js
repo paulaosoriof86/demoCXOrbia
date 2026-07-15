@@ -445,6 +445,7 @@ CX.module('config', ({data,ui})=>{
     <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
       <div style="font-size:13px;color:var(--brand-dark)"><b>✅ Toda la plataforma es autoadministrable.</b> Cada área de abajo se edita desde la interfaz, sin tocar código. Haz clic para abrir cada gestor.</div>
     </div>
+    ${(()=>{const sc=CX.dataSource&&CX.dataSource.sourceContract?CX.dataSource.sourceContract():null;if(!sc)return'';return `<div class="card card-p" style="margin-bottom:14px"><div class="card-t" style="margin-bottom:6px">Fuente de datos (contrato)</div><div class="flex wrap" style="gap:6px">${ui.bdg('modo: '+sc.sourceReadMode,'n')}${ui.bdg('sync activo: '+(sc.runtimeSyncActive?'sí':'no'),sc.runtimeSyncActive?'g':'n')}${sc.warnings.length?ui.bdg(sc.warnings.length+' advertencias','a'):''}${sc.blockers.length?ui.bdg(sc.blockers.length+' bloqueos','r'):''}</div></div>`;})()}
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
       ${areas.map(a=>`<button class="card hov centro-area" ${a.nav?`data-nav="${a.nav}"`:''} ${a.tab?`data-tab2="${a.tab}"`:''} style="padding:16px;cursor:pointer;text-align:left;border:1px solid var(--border);background:#fff;display:flex;flex-direction:column;gap:6px">
         <div class="between"><div style="font-size:24px">${a.ic}</div><span class="bdg bdg-n" style="font-size:9.5px">${a.tag}</span></div>

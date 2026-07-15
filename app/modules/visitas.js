@@ -166,6 +166,7 @@ CX.module('visitas', ({data,role,ui})=>{
       ui.modal('Detalle · '+v.sucursal, `
         <div class="grid g2" style="gap:10px;margin-bottom:14px">
           <div style="font-size:12px;color:var(--t3)">Estado actual</div><div>${ui.estadoBadge(v.estado)}</div>
+          ${(()=>{const vc=data.visitContract?data.visitContract(v):null;return vc&&vc.paymentState!=='no_aplica'?`<div style="font-size:12px;color:var(--t3)">Pago (contrato)</div><div>${ui.bdg(vc.paymentState,vc.paymentState==='confirmado'?'g':'n')}</div>`:'';})()}
           <div style="font-size:12px;color:var(--t3)">Shopper</div><div style="font-size:13px;font-weight:700">${v.shopper||'— sin asignar'}</div>
           <div style="font-size:12px;color:var(--t3)">Honorario</div><div style="font-size:13px;font-weight:700;color:var(--green)">${ui.money(v.currency,v.honorario)}</div>
         </div>

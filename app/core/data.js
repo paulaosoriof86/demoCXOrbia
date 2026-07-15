@@ -302,6 +302,43 @@ CX.data = {
   /* proyecto real = programa (agrupa periodos); alias de currentProgramKey()/proyectoActual() */
   program(){ return this.proyectoActual(); },
   projectGroup(){ return this.proyectoActual(); },
+  /* OLA1 (paquete V114→V115, contrato reutilizable 05-CONTRATOS-REUTILIZABLES-A-REFLEJAR.md):
+     objeto de contexto único {tenantId, projectId, periodId, countryScope, role, dataMode} —
+     compone fuentes YA existentes (no duplica lógica): CX.BRAND/CX.tenant para tenantId,
+     currentProjectId/currentPeriodId (estado real, ver arriba), scopePaises() para
+     countryScope, CX.session.effectiveRole() para role, CX.dataSource.mode para dataMode.
+     Uso previsto: cualquier módulo que hoy lee estos campos por separado puede migrar a
+     `CX.data.ctx()` sin cambiar el significado de ninguno. */
+  ctx(){
+    return {
+      tenantId: (CX.tenant && CX.tenant.id) || (CX.BRAND && CX.BRAND.tenantId) || (CX.BRAND && CX.BRAND.name) || null,
+      projectId: this.currentProjectId,
+      periodId: this.currentPeriodId,
+      countryScope: this.scopePaises(),
+      role: (CX.session && CX.session.effectiveRole && CX.session.effectiveRole()) || (CX.session && CX.session.role) || null,
+      dataMode: (CX.dataSource && CX.dataSource.mode) || 'demo',
+    };
+  },
+  /* OLA1 (05-CONTRATOS-REUTILIZABLES-A-REFLEJAR.md, contrato de Visita): nombres de campo
+     EXACTOS derivados de v.estado (el flujo real ya implementado) — alias de solo lectura, no
+     agrega estado nuevo ni cambia el significado de v.estado en ningún módulo existente. */
+  visitContract(v){
+    if(!v) return null;
+    const opMap={disponible:'disponible',postulada:'postulada',asignada:'asignada',agendada:'agendada',
+      realizada:'realizada',cuestionario:'realizada',liquidada:'realizada',fuera_rango:'fuera_rango'};
+    return {
+      operationalState: opMap[v.estado] || v.estado || null,
+      questionnaireState: v.estado==='cuestionario'||v.estado==='liquidada' ? (v.submit?'submitido':'pendiente_submitir') : (v.estado==='realizada'?'pendiente_cuestionario':'no_aplica'),
+      submissionState: v.submit ? 'submitido' : (v.estado==='liquidada'||v.estado==='cuestionario' ? 'pendiente_submitir' : 'no_aplica'),
+      liquidationState: CX.liq ? CX.liq.estadoFromVisita(v) : null,
+      paymentState: v.paymentSourceRef ? 'confirmado' : (v.estado==='liquidada' ? 'preview' : 'no_aplica'),
+      assignmentSource: v.origenAsignacion || (v.shopperId ? 'manual_o_postulacion' : null),
+      assignmentSyncStatus: v.hrSynced ? 'sincronizado' : 'pendiente_sync',
+      lastSyncedAt: v.hrSyncedAt || null,
+      reviewRequired: !!v.reviewRequired,
+      reviewReasons: v.reviewReasons || [],
+    };
+  },
 
   /* alta de proyecto nuevo (persistente, aislado: id propio, sin tocar los demás) */
   addProject(cfg){

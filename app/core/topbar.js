@@ -39,6 +39,7 @@ CX.topbar = {
     el.innerHTML=`
       <div class="tb-pop-h">
         <b>Novedades</b>
+        <span style="font-size:9.5px;color:var(--t3)" title="Contrato de contexto único">${(()=>{const c=CX.data&&CX.data.ctx?CX.data.ctx():null;return c?c.projectId+' · '+c.role:'';})()}</span>
         <button class="btn btn-ghost btn-sm" id="tbReadAll" style="padding:2px 8px">Marcar todo leído</button>
       </div>
       <div class="tb-pop-body">

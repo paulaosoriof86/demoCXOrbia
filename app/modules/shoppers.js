@@ -182,7 +182,8 @@ CX.module('shoppers', ({data,ui})=>{
           return `<div style="padding:7px 0;border-bottom:1px solid var(--border)" class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">${l}${canSeeSensitive?'':' 🔒'}</span><b style="font-size:13px;color:var(--t1);text-align:right">${shown||'<span style=\"color:var(--t3)\">— sin dato</span>'}</b></div>`; };
         const r=(l,v)=>`<div style="padding:7px 0;border-bottom:1px solid var(--border)" class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">${l}</span><b style="font-size:13px;color:var(--t1);text-align:right">${v||'<span style=\"color:var(--t3)\">— sin dato</span>'}</b></div>`;
         host.innerHTML=`<div>${rSens('WhatsApp',s.whatsapp)}${rSens('Correo',s.email)}${r(CX.geo.deptLabel(s.pais),s.depto)}${r('Edad',s.edad)}${r('Sexo',s.sexo)}${rSens('Documento',s.dpi)}${rSens('Banco',s.banco)}${rSens('Tipo de cuenta',s.ctaTipo)}${rSens('Número de cuenta',s.ctaNum)}${rSens('Titular',s.ctaTitular)}${rSens('Moneda',s.ctaMoneda)}
-        ${canSeeSensitive?'':'<div style="margin-top:8px;font-size:10.5px;color:var(--t3)">🔒 Datos protegidos · acceso completo pendiente Auth por rol (backend)</div>'}</div>`;
+        ${canSeeSensitive?'':'<div style="margin-top:8px;font-size:10.5px;color:var(--t3)">🔒 Datos protegidos · acceso completo pendiente Auth por rol (backend)</div>'}
+        ${(()=>{const c=CX.data&&CX.data.ctx?CX.data.ctx():null;return c?`<div style="margin-top:6px;font-size:10px;color:var(--t3)" title="Contrato de contexto único">scope: ${c.countryScope&&c.countryScope.length?c.countryScope.join(','):'sin restricción'} · rol ${c.role}</div>`:'';})()}</div>`;
       };
       readView();
       ov.querySelector('#shEdit')?.addEventListener('click',()=>{

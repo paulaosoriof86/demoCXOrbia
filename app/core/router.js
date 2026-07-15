@@ -91,7 +91,12 @@ CX.router = {
        banderas ahora son solo una nota de compatibilidad dentro de CX.dataSource, nunca una
        fuente de verdad independiente que pudiera contradecir el badge del topbar. */
     const _src = (CX.dataSource ? CX.dataSource.badge() : {t:'Demo · localStorage',c:'#d97706'});
-    projBlock += `<div class="rail-src" title="Fuente de datos del prototipo${_src.mode?(' · modo: '+_src.mode):''}" style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--t3)"><span style="width:7px;height:7px;border-radius:50%;background:${_src.c}"></span>Datos: ${_src.t}</div>`;
+    /* OLA1 (paquete V120→V121, consumidor real de CX.data.ctx()): el tooltip del indicador de
+       fuente ahora compone tenantId/countryScope desde el contrato único en vez de leer
+       CX.BRAND/scopePaises() por separado en este archivo — mismo dato, una sola fuente. */
+    const _ctx = CX.data.ctx ? CX.data.ctx() : null;
+    const _ctxTip = _ctx ? ` · tenant: ${_ctx.tenantId||'—'}${_ctx.countryScope?(' · alcance: '+_ctx.countryScope.join('/')):''}` : '';
+    projBlock += `<div class="rail-src" title="Fuente de datos del prototipo${_src.mode?(' · modo: '+_src.mode):''}${_ctxTip}" style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--t3)"><span style="width:7px;height:7px;border-radius:50%;background:${_src.c}"></span>Datos: ${_src.t}</div>`;
 
     const collapsed = (()=>{try{return JSON.parse(localStorage.getItem('cx_rail_col')||'{}')}catch(e){return {};}})();
     const nav=CX.NAV[role].map(group=>{

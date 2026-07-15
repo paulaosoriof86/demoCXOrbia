@@ -1,44 +1,22 @@
 /* ============================================================
-   CXOrbia · Source lock / BUILD_ID único — corrección V113
-   (paquete exclusivo V112→V113, 20260714 — cierre real de las 2 tareas P0).
+   CXOrbia Ã‚Â· Source lock / BUILD_ID ÃƒÂºnico Ã¢â‚¬â€ correcciÃƒÂ³n V131
+   (paquete exclusivo V114Ã¢â€ â€™V131, 20260714 Ã¢â‚¬â€ cierre total de la lista
+   priorizada del gate V121: Importador + Dashboard).
 
-   V113 corrige, sobre V112, las 2 tareas señaladas por auditoría independiente
-   en PAQUETE-CLAUDE-CXORBIA-V112-A-V113-FASTLANE-FAIL-CLOSED-20260714:
-
-   TAREA 1 — Proyecto/periodo, corrección real (V112 seguía teniendo
-   currentProjectId como getter derivado del periodo, project()===period(), y
-   DOS definiciones de setProgram() donde la segunda pisaba la primera).
-   Ahora: currentProjectId y currentPeriodId son dos campos de almacenamiento
-   reales; project() devuelve un objeto con id=currentProjectId (programKey
-   real) + activePeriodId, distinto de period() (entrada cruda del periodo);
-   una sola definición de setCurrentProject()/setCurrentPeriod()/alias de
-   programa; periodSel usa exclusivamente setCurrentPeriod() (valida
-   pertenencia al proyecto activo); projSel usa setCurrentProject()/alias.
-
-   Efecto de segundo orden corregido (no listado explícitamente por la
-   auditoría, pero requerido para no romper el resto de la plataforma): ~30
-   archivos leían data.project().id esperando el id del PERIODO (para filtrar
-   visitas/postulaciones/documentos/HR/liquidaciones/Academia/permisos) — se
-   migraron a data.period() (mismo contenido, id de periodo correcto).
-   project() queda reservado para lo que de verdad es proyecto/programa.
-
-   TAREA 2 — Manifest regenerado desde el contenido FINAL (después de la
-   Tarea 1 y su efecto de segundo orden), 0 diferencias.
-
-   Manifest único vigente: docs/MANIFEST-V113.json (V100–V112 quedan retirados
-   del conjunto vigente — el historial narrativo permanece en
-   docs/REPORTE-CORRECCION-V*.md, sin tocar).
+   Manifest ÃƒÂºnico vigente: docs/MANIFEST-V131.json.
+   Los 3 contratos aditivos (ctx, sourceContract, visitContract) tienen
+   consumidores reales probados en runtime en todos los mÃƒÂ³dulos
+   identificados por el gate V121. Ver docs/REPORTE-CORRECCION-V131.md.
    ============================================================ */
 var CX_SOURCE_LOCK = {
-  manifestFile: 'docs/MANIFEST-V113.json',
-  aggregateSha256: '924c02a262fe72ff29b1bdac30a4744b70a11fad157dc597cb6e4d2c7e10f4b1',
-  fileCount: 145,
+  manifestFile: 'docs/MANIFEST-V131.json',
+  aggregateSha256: '5c478297550dde19bfc85b3e7ea9e12c7300a6245bcf3869949f0047fb19d4e0',
+  fileCount: 180,
   generatedAt: '2026-07-14',
-  previousManifest: 'docs/MANIFEST-V112.json (manifest V112 retirado del conjunto vigente)',
-  note: 'BUILD_ID = primeros 16 hex del aggregateSha256 de docs/MANIFEST-V113.json, calculado sobre el contenido real de app/ en esta entrega (145 archivos). Excluye core/build-lock.js, docs/verify-manifest.mjs y el propio MANIFEST-V113.json (referencia circular). Verificable ejecutando docs/verify-manifest.mjs.',
+  previousManifest: 'docs/MANIFEST-V130.json (retirado del conjunto vigente)',
+  note: 'BUILD_ID = primeros 16 hex del aggregateSha256 de docs/MANIFEST-V131.json, calculado sobre el contenido real de app/. Excluye core/build-lock.js, docs/verify-manifest.mjs y el propio MANIFEST-V131.json. Verificable con docs/verify-manifest.mjs.',
 };
 var CX_BUILD_ID = CX_SOURCE_LOCK.aggregateSha256.slice(0,16);
-
 if (typeof window !== 'undefined') {
   window.CX = window.CX || {};
   window.CX.BUILD_ID = CX_BUILD_ID;

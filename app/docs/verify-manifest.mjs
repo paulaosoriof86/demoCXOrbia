@@ -1,14 +1,29 @@
 #!/usr/bin/env node
-/* CXOrbia · Verificador independiente del manifest V111 (paquete V110→V111, 20260714).
-   Uso: colocar este archivo junto a app/ (o ajustar ROOT) y ejecutar:
-     node docs/verify-manifest.mjs
-   desde dentro de la carpeta app/. Requiere Node 18+ (usa node:crypto). */
+/* CXOrbia · Verificador independiente del manifest vigente.
+   GAP3 (paquete V113→V114, 20260714): antes este script tenía la ruta del
+   manifest fijada a mano (MANIFEST-V111.json) — cada corrección de versión
+   obligaba a editar este archivo o quedaba verificando un manifest viejo.
+   Ahora lee la ruta vigente desde core/build-lock.js (CX_SOURCE_LOCK.manifestFile),
+   la única fuente de verdad de qué manifest corresponde al build actual.
+   Uso: node docs/verify-manifest.mjs   (ejecutar desde dentro de la carpeta app/)
+   Override manual opcional: node docs/verify-manifest.mjs --manifest docs/MANIFEST-X.json
+   Requiere Node 18+ (usa node:crypto). */
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 
 const ROOT = process.cwd(); // ejecutar desde app/
-const MANIFEST_PATH = path.join(ROOT, 'docs', 'MANIFEST-V111.json');
+
+async function resolveManifestPath() {
+  const argIdx = process.argv.indexOf('--manifest');
+  if (argIdx !== -1 && process.argv[argIdx + 1]) return path.join(ROOT, process.argv[argIdx + 1]);
+  const lockSrc = await readFile(path.join(ROOT, 'core', 'build-lock.js'), 'utf8');
+  const m = lockSrc.match(/manifestFile:\s*'([^']+)'/);
+  if (!m) throw new Error('No se pudo leer manifestFile desde core/build-lock.js');
+  return path.join(ROOT, m[1]);
+}
+
+const MANIFEST_PATH = await resolveManifestPath();
 
 function sha256Hex(buf) {
   return createHash('sha256').update(buf).digest('hex');
@@ -54,6 +69,7 @@ async function main() {
     diffs++;
   }
 
+  console.log(`Manifest: ${path.relative(ROOT, MANIFEST_PATH)}`);
   console.log(`Archivos verificados: ${manifest.files.length}`);
   console.log(`Aggregate recalculado: ${aggregate}`);
   console.log(diffs === 0 ? '0 diferencias' : `${diffs} diferencia(s) encontrada(s)`);

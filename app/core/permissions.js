@@ -40,6 +40,14 @@ window.CX = window.CX || {};
     'visit.reassign':        ['super','admin'],
     'visit.cancel':          ['super','admin'],
     'visit.archive':         ['super','admin'],
+    /* P1 (paquete V114→V125, matriz CRM/Documentos/Configuraci\u00f3n): antes documentos.js usaba
+       role==='admin' crudo (no CX.permissions, ignoraba scope real bajo shell admin) y crm.js/
+       clientes.js no ten\u00edan ning\u00fan gate de acci\u00f3n \u2014 cualquier admin pod\u00eda editar/eliminar/mover
+       sin validaci\u00f3n de permiso ni contexto. */
+    'documento.edit':        ['super','admin'],
+    'documento.delete':      ['super','admin'],
+    'cliente.edit':          ['super','admin'],
+    'crm.edit':              ['super','admin'],
   };
   const DEFAULTS_KEYS = Object.keys(DEFAULTS);
 

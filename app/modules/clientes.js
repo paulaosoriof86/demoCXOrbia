@@ -53,6 +53,34 @@ window.CX = window.CX || {};
     return {visitas:vis.length, realizadas:real.length, liquidadas:liq.length, cumpl, score, ranking, ultima:fechas[fechas.length-1]||null, proyectos:pids.length};
   };
 
+  /* Gap 5 (matriz V123): antes clientes.js y crm.js manten\u00edan contactos como DOS colecciones
+     paralelas sin identidad compartida (mismo contacto humano, dos registros sin relaci\u00f3n) \u2014
+     un contacto editado en Clientes nunca se reflejaba en CRM y viceversa. Ahora cada contacto de
+     un cliente se sincroniza a CX.crmStore.contactos() con un contactId DETERMIN\u00edSTICO
+     (clientId+email o clientId+nombre normalizado) y la cuentaId correcta \u2014 mismo patr\u00f3n que ya
+     usaba addClient() para sincronizar la Cuenta (no se invent\u00f3 un mecanismo nuevo). */
+  const _contactKey=(clientId,ct)=>'ctlink-'+clientId+'-'+slug(ct.email||ct.nombre||'sin-nombre');
+  function _syncContacts(clientId, contactos){
+    if(!CX.crmStore || !contactos || !contactos.length) return;
+    try{
+      const c=D.getClient(clientId);
+      const cuentas=CX.crmStore.cuentas();
+      let cu=cuentas.find(x=>x.clientId===clientId);
+      /* clientes sembrados directamente (no vía addClient) nunca tuvieron Cuenta CRM vinculada —
+         se crea aquí mismo, con la misma lógica que ya usa addClient(), para no dejar cuentaId
+         huérfano en los contactos sincronizados. */
+      if(!cu && c){ CX.crmStore.addCuenta({nombre:c.name,rubro:c.industry||'',pais:c.pais,estado:c.estado==='Activo'?'Cliente':'Prospecto',clientId}); cu=CX.crmStore.cuentas().find(x=>x.clientId===clientId); }
+      const existentes=CX.crmStore.contactos();
+      contactos.forEach(ct=>{
+        const key=_contactKey(clientId,ct);
+        let ex=existentes.find(x=>x.linkKey===key);
+        if(ex){ Object.assign(ex,{nombre:ct.nombre,cargo:ct.rol||ex.cargo,email:ct.email||ex.email,tel:ct.whatsapp||ex.tel}); }
+        else { CX.crmStore.contactos().unshift({id:'ct'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),linkKey:key,nombre:ct.nombre,cargo:ct.rol||'',cuentaId:cu?cu.id:null,email:ct.email||'',tel:ct.whatsapp||'',rol:'Contacto'}); }
+      });
+      CX.crmStore.saveContactos();
+    }catch(e){}
+  }
+
   D.addClient=function(cfg){ const id=cfg.id||('cl-'+slug(cfg.name||'cliente')+'-'+Date.now().toString(36).slice(-3));
     const c=Object.assign({id,estado:'Prospecto',plan:'estandar',contactos:[],industry:'',pais:'GT',desde:String(new Date().getFullYear())},cfg,{id});
     this.clients.push(c); persist();
@@ -62,9 +90,12 @@ window.CX = window.CX || {};
       if(!cu){ CX.crmStore.addCuenta({nombre:c.name,rubro:c.industry||'',pais:c.pais,estado:c.estado==='Activo'?'Cliente':'Prospecto',clientId:id}); }
       else { cu.clientId=id; cu.estado=c.estado==='Activo'?'Cliente':cu.estado; CX.crmStore.saveCuentas(); }
     }}catch(e){}
+    _syncContacts(id, c.contactos);
     CX.bus&&CX.bus.emit('clients'); return c; };
   D.updateClient=function(id,patch){ const c=this.getClient(id); if(!c)return null; Object.assign(c,patch);
-    if(SEED_IDS.has(id)) patches[id]=Object.assign(patches[id]||{},patch); persist(); CX.bus&&CX.bus.emit('clients'); return c; };
+    if(SEED_IDS.has(id)) patches[id]=Object.assign(patches[id]||{},patch); persist();
+    if(patch.contactos) _syncContacts(id, patch.contactos);
+    CX.bus&&CX.bus.emit('clients'); return c; };
 })();
 
 /* ---------- Módulo Clientes (admin) ---------- */
@@ -149,13 +180,19 @@ CX.module('clientes', ({data,ui})=>{
         const body=ov.querySelector('.cx-modal-b'); body.innerHTML=editForm(c);
         body.querySelector('[data-cancel]').addEventListener('click',()=>{ close(); detail(c); });
         body.querySelector('#cl_save').addEventListener('click',()=>{
+          if(!CX.permissions.gate('cliente.edit',CX.permissions.ctx({entityType:'cliente',entityId:c.id}),CX.ui))return;
           const patch={ name:body.querySelector('#cl_name').value.trim()||c.name, industry:body.querySelector('#cl_ind').value.trim(),
             pais:body.querySelector('#cl_pais').value, estado:body.querySelector('#cl_est').value, plan:body.querySelector('#cl_plan').value, desde:body.querySelector('#cl_desde').value.trim() };
           const cn=body.querySelector('#ct_n').value.trim();
           const contactos=(c.contactos||[]).slice();
           if(cn) contactos.push({nombre:cn,rol:body.querySelector('#ct_r').value.trim(),email:body.querySelector('#ct_e').value.trim(),whatsapp:body.querySelector('#ct_w').value.trim()});
           patch.contactos=contactos;
-          data.updateClient(c.id,patch); close(); CX.ui.toast('Cliente actualizado','ok'); CX.router.nav('clientes');
+          /* P1 (paquete V114→V125): historial real de clientes — antes editar no dejaba rastro.
+             Reusa CX.automations.logAction (misma bitácora única, ya con ctx desde V123). */
+          const changed=Object.keys(patch).filter(k=>k!=='contactos'&&patch[k]!==c[k]);
+          data.updateClient(c.id,patch);
+          CX.automations&&CX.automations.logAction('Cliente editado', c.id, changed.length?('cambió: '+changed.join(', ')):'sin cambios de campo (contacto agregado)');
+          close(); CX.ui.toast('Cliente actualizado','ok'); CX.router.nav('clientes');
         });
       });
     }});

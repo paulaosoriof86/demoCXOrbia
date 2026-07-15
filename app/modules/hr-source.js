@@ -152,6 +152,19 @@ CX.module('hrsource', ({data, ui})=>{
           <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:4px">🔐 Flujo de registro seguro del sourceRef</div>
           <div style="font-size:10.5px;color:var(--t3);line-height:1.7">1) El frontend solicita registro seguro · 2) El backend recibe la URL por canal seguro · 3) El backend guarda el secreto · 4) El backend devuelve un <code>sourceRef</code> opaco · 5) El preview usa el <code>sourceRef</code>, nunca la URL. Mientras no exista sourceRef, el preview queda en <code>pendiente_backend</code>.</div>
         </div>
+        ${(()=>{ /* OLA1 (paquete V120→V121, consumidor real de CX.dataSource.sourceContract()) */
+          const sc = CX.dataSource && CX.dataSource.sourceContract ? CX.dataSource.sourceContract() : null;
+          if(!sc) return '';
+          return `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border-2)">
+            <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px">📡 Contrato de Fuente (plataforma, no de esta HR)</div>
+            <div class="flex wrap" style="gap:5px">
+              ${ui.bdg('modo: '+sc.sourceReadMode, sc.sourceReadMode==='demo'?'g':'n')}
+              ${ui.bdg('runtime activo: '+(sc.runtimeSyncActive?'sí':'no'), sc.runtimeSyncActive?'g':'n')}
+              ${sc.sourceRef?ui.bdg('sourceRef: '+sc.sourceRef,'b'):ui.bdg('sin sourceRef','a')}
+            </div>
+            <div style="font-size:10px;color:var(--t3);margin-top:5px">Snapshot: ${sc.sourceSnapshotAt?new Date(sc.sourceSnapshotAt).toLocaleString():'—'}${sc.blockers.length?' · '+sc.blockers.length+' blocker(s) de plataforma':''}</div>
+          </div>`;
+        })()}
       </div>`;
 
     const setEstado=(estado, patch)=>{
