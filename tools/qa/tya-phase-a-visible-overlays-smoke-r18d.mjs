@@ -32,7 +32,7 @@ const expected = {
   requestedAgainAutomatically: 0
 };
 const report = {
-  schemaVersion: '1.0.0',
+  schemaVersion: '1.1.0',
   gate: 'cxorbia-tya-visible-overlays-smoke-r18d',
   generatedAt: new Date().toISOString(),
   baseUrl,
@@ -83,21 +83,32 @@ async function enterAdmin(page) {
 }
 
 async function openModule(page, token) {
-  const result = await page.evaluate(async routeToken => {
-    const keys = [...new Set([...Object.keys(window.CX?.modules || {}), ...Object.keys(window.CX?.routes || {})])];
-    const normalized = String(routeToken).toLowerCase();
-    const target = keys.find(key => String(key).toLowerCase() === normalized) ||
-      keys.find(key => String(key).toLowerCase().includes(normalized) || normalized.includes(String(key).toLowerCase())) || null;
-    if (!target) return { token: routeToken, target: null, rendered: false, text: '' };
-    if (window.CX?.router?.nav) window.CX.router.nav(target);
-    else if (window.CX?.router?.go) window.CX.router.go(target);
-    else if (window.CX?.router?.navigate) window.CX.router.navigate(target);
-    await new Promise(resolve => setTimeout(resolve, 450));
-    const text = String(document.querySelector('#view')?.innerText || '').replace(/\s+/g, ' ').trim();
-    return { token: routeToken, target, rendered: text.length > 0, text: text.slice(0, 2500) };
-  }, token);
+  let result;
+  try {
+    result = await page.evaluate(async routeToken => {
+      const keys = [...new Set([...Object.keys(window.CX?.modules || {}), ...Object.keys(window.CX?.routes || {})])];
+      const normalized = String(routeToken).toLowerCase();
+      const target = keys.find(key => String(key).toLowerCase() === normalized) ||
+        keys.find(key => String(key).toLowerCase().includes(normalized) || normalized.includes(String(key).toLowerCase())) || null;
+      if (!target) return { token: routeToken, target: null, rendered: false, text: '', error: null };
+      try {
+        if (window.CX?.router?.nav) window.CX.router.nav(target);
+        else if (window.CX?.router?.go) window.CX.router.go(target);
+        else if (window.CX?.router?.navigate) window.CX.router.navigate(target);
+        else return { token: routeToken, target, rendered: false, text: '', error: 'router_method_missing' };
+      } catch (error) {
+        return { token: routeToken, target, rendered: false, text: '', error: String(error?.stack || error?.message || error).slice(0, 800) };
+      }
+      await new Promise(resolve => setTimeout(resolve, 450));
+      const text = String(document.querySelector('#view')?.innerText || '').replace(/\s+/g, ' ').trim();
+      return { token: routeToken, target, rendered: text.length > 0, text: text.slice(0, 2500), error: null };
+    }, token);
+  } catch (error) {
+    result = { token, target: null, rendered: false, text: '', error: clean(error?.stack || error?.message || error) };
+  }
   report.modules.push(result);
   if (!result.target) block(`module_missing_${token}`);
+  else if (result.error) block(`module_render_error_${token}`, clean(result.error));
   else if (!result.rendered) block(`module_not_rendered_${token}`);
   return result;
 }
@@ -164,15 +175,15 @@ try {
   const financeModule = await openModule(page, 'financiero');
   const certificationModule = await openModule(page, 'cert');
 
-  if (!/216/.test(shoppersModule.text)) warn('shopper_count_not_visible_in_module', 'runtime_passes_216');
-  if (/Pagada \(confirmado\)|pago confirmado|lote confirmado/i.test(financeModule.text)) block('finance_module_claims_confirmed_payment');
-  if (!/pendiente de fuente|no hay.*certificaci|banco.*no publicado/i.test(certificationModule.text)) warn('certification_hold_copy_not_visible', clean(certificationModule.text).slice(0, 180));
+  if (shoppersModule.rendered && !/216/.test(shoppersModule.text)) warn('shopper_count_not_visible_in_module', 'runtime_passes_216');
+  if (financeModule.rendered && /Pagada \(confirmado\)|pago confirmado|lote confirmado/i.test(financeModule.text)) block('finance_module_claims_confirmed_payment');
+  if (certificationModule.rendered && !/pendiente de fuente|no hay.*certificaci|banco.*no publicado/i.test(certificationModule.text)) warn('certification_hold_copy_not_visible', clean(certificationModule.text).slice(0, 180));
   if (consoleErrors.length) block('console_errors', String(consoleErrors.length));
   if (pageErrors.length) block('page_errors', String(pageErrors.length));
 
   report.consoleErrors = consoleErrors;
   report.pageErrors = pageErrors;
-  await page.screenshot({ path: path.join(outDir, 'r18d-admin-certification-hold.png'), fullPage: true });
+  await page.screenshot({ path: path.join(outDir, 'r18d-admin-final-view.png'), fullPage: true });
   report.decision = report.blockers.length ? 'FAIL_R18D_VISIBLE_OVERLAYS' : (report.warnings.length ? 'PASS_WITH_REVIEW_R18D_VISIBLE_OVERLAYS' : 'PASS_R18D_VISIBLE_OVERLAYS');
   await context.close();
 } catch (error) {
@@ -198,11 +209,12 @@ fs.writeFileSync(path.join(outDir, 'r18d-visible-overlays-smoke.md'), [
   `R14C exact controls: ${report.runtime?.financialExactLinks ?? 0}`,
   `Financial review queue: ${report.runtime?.financialReviewQueue ?? 0}`,
   `Certification HOLD shoppers: ${report.runtime?.certificationHoldShoppers ?? 0}`,
+  `Modules rendered: ${report.modules.filter(item => item.rendered).length}/${report.modules.length}`,
   `Blockers: ${report.blockers.length}`,
   ...report.blockers.map(item => `- ${item}`),
   `Warnings: ${report.warnings.length}`,
   ...report.warnings.map(item => `- ${item}`), '',
   'Browser-only, read-only. No providers, writes, imports, deploy or production.'
 ].join('\n') + '\n', 'utf8');
-console.log(JSON.stringify({ decision: report.decision, runtime: report.runtime, modules: report.modules.map(item => ({ token: item.token, target: item.target, rendered: item.rendered })), blockers: report.blockers, warnings: report.warnings, safeState: report.safeState }, null, 2));
+console.log(JSON.stringify({ decision: report.decision, runtime: report.runtime, modules: report.modules.map(item => ({ token: item.token, target: item.target, rendered: item.rendered, error: item.error || null })), blockers: report.blockers, warnings: report.warnings, safeState: report.safeState }, null, 2));
 process.exitCode = report.blockers.length ? 2 : 0;
