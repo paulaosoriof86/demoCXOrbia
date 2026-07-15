@@ -6,97 +6,97 @@ Fecha de actualización: 2026-07-15
 
 - Versión: V131.
 - Estado: aceptada, empalmada y con hotfix R18D reconciliado.
-- Commit runtime original: `d5c04054d445723dd0bc9e48acbab75953a4b08b`.
-- Commit hotfix runtime: `593cdb9cc815cfa14d257968026bf3de886efba1`.
-- ZIP baseline SHA-256: `19424b2b709a4bff457454bbeff6abe47cd1c52c0f0388fd1a380008c8adc740`.
-- ZIP hotfix SHA-256: `788a32a6d44e0686b0627a47e4e4e038fdbe7d3befd3dde2651ff542706918bb`.
-- Manifest activo: `docs/MANIFEST-V131-R18D-HOTFIX-R1.json`.
-- Aggregate derivado: `6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348`.
+- Runtime original: `d5c04054d445723dd0bc9e48acbab75953a4b08b`.
+- Hotfix runtime: `593cdb9cc815cfa14d257968026bf3de886efba1`.
+- Manifest: `docs/MANIFEST-V131-R18D-HOTFIX-R1.json`.
+- Aggregate: `6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348`.
 
-## Bloques operativos cerrados
+## Bloques técnicos cerrados
 
-### Plan Firestore completo source-safe
+### Plan Firestore source-safe
 
-Estado: **PASS**.
+- PASS.
+- 14 periodos, 616 visitas, 216 shoppers, 572 liquidaciones candidatas.
+- 1,421 operaciones planificadas en 4 lotes.
+- 0 writes, pagos inferidos o certificaciones inventadas.
 
-- 1,421 operaciones en 4 lotes.
-- 14 periodos, 616 visitas, 216 shoppers y 572 liquidaciones candidatas.
-- Cero writes, pagos inferidos o certificaciones inventadas.
+### R18C
 
-### R18C — overlays existentes aplicados sin reproceso
+- PASS.
+- 196 enlaces financieros exactos.
+- 92 revisiones financieras y 1 shopper.
+- R11D/R14C no recalculados.
 
-Estado: **PASS_EXISTING_R11D_R14C_CERTIFICATION_OUTPUTS_APPLIED_TO_PLAN**.
+### R18D
 
-- Plan `phasea_9f67df19a2b9cd2f`.
-- SHA-256 `4701f7bf0cca578702f1e2415a2e9822daf8e6f06da1c4d53bd0d2d4c4865086`.
-- 196 enlaces financieros exactos aplicados a visitas y liquidaciones.
-- 92 revisiones financieras y 1 revisión shopper preservadas.
-- 0 identidades inventadas.
-- 0 pagos confirmados o inferidos.
-- 0 certificaciones materializadas.
-- R11D/R14C no fueron recalculados.
-- Workflow PASS: `29424007188`.
+- `PASS_R18D_VISIBLE_OVERLAYS`.
+- Finanzas, Shoppers y Certificación renderizan sin error técnico.
+- Hotfix de Finanzas reconciliado y protegido.
 
-### R18D — preview visible source-safe
+### R18E Hosting DEV
 
-Estado: **PASS_R18D_VISIBLE_OVERLAYS**.
-
-- Se conservó `data.project()` en `porPais()` y se agregó `period: () => p` únicamente al adapter local de `serieMensual()`.
-- No se importó el build-lock/manifest V132 del paquete aislado.
-- Finanzas, Shoppers y Certificación renderizan sin errores.
-- 14 periodos, 616 visitas, 44 visitas en JUL 2026 y 216 shoppers.
-- 196 controles financieros exactos y 92 casos en revisión.
-- 216 shoppers en HOLD de certificación.
-- 0 pagos, lotes o certificaciones confirmadas.
-- Workflow PASS: `29437465036`.
-
-### R18E — Firebase Hosting DEV controlado
-
-Estado: **PASS_HOSTING_DEV_V131_R18D_REMOTE_VERIFIED**.
-
-- Proyecto Firebase: `cxorbia-backend-dev`.
-- Target Hosting: `cxorbia-dev`.
+- `PASS_HOSTING_DEV_V131_R18D_REMOTE_VERIFIED`.
 - URL: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible`.
 - Build: `v131-r18d-source-safe-20260715-r18e`.
-- Commit exacto desplegado: `fe9a498863dd8454c174971781e8dbbb606a3131`.
-- Firebase Hosting version: `projects/87461567267/sites/cxorbia-backend-dev/versions/32e865ce08af0d99`.
-- Workflow PASS: `29442279729`.
-- Proof remoto coincide con V131 y aggregate `6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348`.
-- Smoke remoto: 14 periodos, 616 visitas, 44 visitas activas, 216 shoppers, 196 controles financieros y 92 revisiones.
-- Finanzas, Shoppers y Certificación renderizados remotamente.
-- 0 errores de consola/página, blockers o warnings.
-- 0 producción, Firestore/Auth/Storage/HR writes, imports, Make, Gemini o pagos.
-- Credencial temporal eliminada del runner.
-- Workflow y autorización de uso único retirados; no queda deploy automático activo.
+- Workflow `29442279729`.
+- Sin producción, Firestore/Auth/Storage/HR writes, imports, Make, Gemini ni pagos.
+- Autorización y workflows temporales retirados.
 
-## Estado de continuidad
+## R18E visual
 
-- V110 queda como referencia histórica anterior, no como baseline activa.
-- V131 sigue siendo la baseline única.
-- No se repite auditoría ni empalme de V131.
-- No se reconstruyen HR, periodos, shoppers, importadores, R11D ni R14C.
-- No se requiere otra candidata ni paquete Claude por R18D/R18E.
-- La validación visual es el único paso abierto de este bloque.
+Estado: **NO_GO_R18E_VISUAL_BUSINESS_SEMANTICS**.
+
+La revisión de Paula confirmó que render y cero errores de consola no equivalen a funcionamiento correcto.
+
+P0 confirmados:
+
+1. KPI y detalle no coinciden (`Pend. realizar` 25 vs detalle 0).
+2. Sin asignar y sin agendar están mal separados.
+3. El periodo seleccionado no gobierna todos los módulos.
+4. Visitas Disponibles y Postulaciones muestran datos de otros estados/periodos.
+5. Falta periodo de medición/quincena en detalles.
+6. Shoppers infiere 216 activos/completos desde referencias protegidas.
+7. Shopper y cliente muestran periodo como proyecto y carecen de selector multiproyecto.
+8. Configuración de proyecto/tenant/países/frecuencia/medición/HR no queda visible y verificable de forma consistente.
+9. Dashboard Financiero mezcla análisis con creación y presenta datos no confirmados.
+10. PWA Windows muestra instrucciones en vez del prompt nativo.
+
+## Reglas confirmadas
+
+- Pend. realizar = toda visita no realizada del periodo activo, aunque esté sin shopper o sin agenda.
+- Shopper activo = cuenta activa + visita realizada en los seis meses previos a la referencia del periodo.
+- Visitas Disponibles = postulables: sin shopper, no realizadas y del periodo activo.
+- País agregado habilita bandera, moneda, filtros, alcance, shoppers y HR.
+- Cinépolis = frecuencia mensual y medición quincenal; la HR define la quincena de cada visita.
+
+## Paquete Claude
+
+`cxorbia-claude-r19-cierre-operativo-visual-20260715`.
+
+Incluye cinco P0, matriz de pruebas, evidencias y protocolo de empalme sin reproceso.
 
 ## Siguiente bloque exacto
 
-`R18E-VISUAL — VALIDACIÓN HUMANA DE HOSTING DEV`.
+`R19 — CLAUDE + AUDITORÍA DELTA + GATES SEMÁNTICOS + EMPALME + DEV + VALIDACIÓN VISUAL + FREEZE`.
 
-Validar únicamente:
+Secuencia obligatoria:
 
-1. Proyecto/periodo visible: Cinépolis, JUL 2026, 14 periodos y 44 visitas del periodo activo.
-2. Shoppers: 216 referencias protegidas; registrar como P1 cualquier KPI que infiera activo/completo sin fuente.
-3. Finanzas: módulo renderiza; 196 controles y 92 revisiones no deben presentarse como pagos confirmados.
-4. Certificación: HOLD/pendiente de fuente; no pedir nuevamente ni mostrar aprobaciones inventadas.
-5. Login, tenant, banderas, selector de periodo y textos visibles que Paula ya había reportado.
+1. Claude entrega candidata completa derivada de V131+R18D.
+2. Auditoría delta focalizada; no repetir V131.
+3. Gates semánticos de KPI/detalle, periodo, roles, configuración, finanzas y PWA.
+4. Empalme atómico solo del delta validado.
+5. Hosting DEV y smoke remoto.
+6. Revisión visual de Paula por admin, shopper, cliente y PWA.
+7. Solo con aprobación, marcar R19 `FROZEN` y continuar Phase A.
 
-Después de la validación visual, el siguiente carril operativo será una autorización separada para materialización controlada en Firebase DEV; no se ejecuta automáticamente.
+## No reprocesar
 
-## Bloqueos externos vigentes
-
-- Pagos: falta evidencia por ítem de fecha, lote y actor antes de `paid`.
-- Certificaciones: fuente de carryover materializable todavía vacía.
-- Firestore/Auth/Storage continúan sin writes hasta autorización separada.
+- V131/V110.
+- HR, 14 periodos, 616 visitas y 216 referencias.
+- Importadores.
+- R11D/R14C.
+- 196 enlaces y 92 revisiones.
+- Hotfix R18D.
 
 ## Restricciones
 
