@@ -6,6 +6,7 @@ on:
     branches:
       - docs-tya-v6-v71-audit
     paths:
+      - 'app/core/finanzas-core.js'
       - 'tools/release/tya-visible-overlays-build-r18d.mjs'
       - 'tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs'
       - 'tools/release/tya-source-safe-binding-build-r18a.mjs'
@@ -21,6 +22,7 @@ on:
     branches:
       - release/cxorbia-tya-rc-20260630
     paths:
+      - 'app/core/finanzas-core.js'
       - 'tools/release/tya-visible-overlays-build-r18d.mjs'
       - 'tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs'
       - 'tools/release/tya-source-safe-binding-build-r18a.mjs'
@@ -58,6 +60,7 @@ jobs:
       - name: Validate integration syntax
         run: |
           set -euo pipefail
+          node --check app/core/finanzas-core.js
           node --check tools/release/tya-visible-overlays-build-r18d.mjs
           node --check tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs
           node --check tools/release/tya-source-safe-binding-build-r18a.mjs
