@@ -8,13 +8,18 @@ on:
     paths:
       - 'backend/contracts/phase-a-firestore-materialization-plan-v1.json'
       - 'backend/config/phase-a-firestore-collection-map-v1.json'
+      - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
+      - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
+      - 'backend/config/phase-a-financial-review-queue-r14c.source-safe.json'
       - 'app/data/tya-hr-source-safe-periods.js'
       - 'app/data/tya-financial-control-source-safe.js'
       - 'app/data/tya-certification-carryover-source-safe.js'
       - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
       - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
       - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
+      - 'tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs'
       - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
+      - 'tools/migration/tya-phase-a-apply-existing-overlays-to-materialization-plan.mjs'
       - 'tools/migration/tya-phase-a-firestore-materialization-plan-validate.mjs'
       - 'tools/migration/tya-phase-a-firestore-materialization-fixture-validate.mjs'
       - 'tools/migration/fixtures/phase-a-materialization-*.js'
@@ -25,13 +30,18 @@ on:
     paths:
       - 'backend/contracts/phase-a-firestore-materialization-plan-v1.json'
       - 'backend/config/phase-a-firestore-collection-map-v1.json'
+      - 'backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json'
+      - 'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json'
+      - 'backend/config/phase-a-financial-review-queue-r14c.source-safe.json'
       - 'app/data/tya-hr-source-safe-periods.js'
       - 'app/data/tya-financial-control-source-safe.js'
       - 'app/data/tya-certification-carryover-source-safe.js'
       - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
       - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
       - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
+      - 'tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs'
       - 'tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs'
+      - 'tools/migration/tya-phase-a-apply-existing-overlays-to-materialization-plan.mjs'
       - 'tools/migration/tya-phase-a-firestore-materialization-plan-validate.mjs'
       - 'tools/migration/tya-phase-a-firestore-materialization-fixture-validate.mjs'
       - 'tools/migration/fixtures/phase-a-materialization-*.js'
@@ -51,6 +61,12 @@ jobs:
           node-version: '24'
       - name: Validate zero-write materialization fixture
         run: node tools/migration/tya-phase-a-firestore-materialization-fixture-validate.mjs
+      - name: Validate integration syntax
+        run: |
+          set -euo pipefail
+          node --check tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs
+          node --check tools/migration/tya-phase-a-apply-existing-overlays-to-materialization-plan.mjs
+          node --check tools/migration/tya-phase-a-firestore-materialization-plan-validate.mjs
       - name: Build current live HR source-safe snapshot
         env:
           CXORBIA_HR_SOURCE_SAFE_OUT: .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.live.js
@@ -69,12 +85,26 @@ jobs:
             --out .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.canonical.js \
             --report-dir .tmp/firestore-materialization-plan-full/r18a-canonicalization
           grep -q 'R18A_INTEGRATE_EXISTING_CANONICAL_ASSETS' .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.canonical.js
+      - name: Apply existing R11D R14C and certification outputs without reprocessing
+        run: |
+          set -euo pipefail
+          node tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs \
+            --payload .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.canonical.js \
+            --out .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.r18b.js \
+            --report-dir .tmp/firestore-materialization-plan-full/r18b-existing-overlays
+          grep -q 'R18B_APPLY_EXISTING_R11D_R14C_AND_CERTIFICATION_OUTPUTS' .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.r18b.js
       - name: Build full TyA source-safe materialization plan
         run: >-
           node tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs
-          --hr .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.canonical.js
+          --hr .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.r18b.js
           --financial app/data/tya-financial-control-source-safe.js
           --certifications app/data/tya-certification-carryover-source-safe.js
+          --out .tmp/firestore-materialization-plan-full
+      - name: Apply approved existing overlays to materialization plan
+        run: >-
+          node tools/migration/tya-phase-a-apply-existing-overlays-to-materialization-plan.mjs
+          --hr .tmp/firestore-materialization-plan-full/source/tya-hr-source-safe-periods.r18b.js
+          --plan .tmp/firestore-materialization-plan-full/firestore-materialization-plan.json
           --out .tmp/firestore-materialization-plan-full
       - name: Validate full TyA source-safe materialization plan
         run: >-
