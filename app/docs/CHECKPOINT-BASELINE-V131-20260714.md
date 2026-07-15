@@ -37,27 +37,56 @@ Estado: **PASS_EXISTING_R11D_R14C_CERTIFICATION_OUTPUTS_APPLIED_TO_PLAN**.
 - R11D/R14C no fueron recalculados.
 - Workflow PASS: `29424007188`.
 
+## R18D — preview visible source-safe
+
+Estado: **HOLD_FRONTEND_P0_FINANCE_PERIOD_COMPATIBILITY**.
+
+La copia de build R18D validó correctamente:
+
+- 14 periodos únicos;
+- 616 visitas y 44 en JUL 2026;
+- 216 shoppers visibles;
+- 196 controles financieros exactos como `pending_financial_review`;
+- 92 casos financieros preservados en revisión;
+- 1 revisión shopper y 1 revisión de certificaciones;
+- 216 shoppers en HOLD de certificación;
+- 0 pagos, lotes o certificaciones confirmadas;
+- 0 solicitudes automáticas repetidas de certificación.
+
+Módulos:
+
+- Shoppers: PASS, muestra 216.
+- Certificación: PASS, pendiente de fuente sin resultados inventados.
+- Financiero: FAIL por `TypeError: data.period is not a function`.
+
+Causa exacta: `app/core/finanzas-core.js`, función `serieMensual(p,c)`, construye un adapter local con `project()` y `visitas()` pero sin `period()`, requerido por `CX.liq.forProject()`.
+
+Backend no parchó `app/core` ni `app/modules`. Se creó el paquete focalizado:
+
+```text
+app/docs/PAQUETE-EXCLUSIVO-CLAUDE-R18D-P0-FINANZAS-PERIOD-20260715.md
+```
+
 ## Estado de continuidad
 
 - V110 queda como referencia histórica anterior, no como baseline activa.
-- No se requiere nueva candidata ni paquete Claude.
 - No se repite auditoría ni empalme de V131.
-- No se reconstruyen HR, periodos, shoppers, importadores ni conciliación R14C.
+- No se reconstruyen HR, periodos, shoppers, importadores, R11D ni R14C.
+- El único trabajo frontend abierto es el P0 focalizado de `period()` en `app/core/finanzas-core.js`.
+- La próxima candidata debe derivarse directamente de V131 y contener únicamente esa corrección más su manifest/source lock regenerado.
 
 ## Siguiente bloque exacto
 
-`R18D — PREVIEW VISIBLE SOURCE-SAFE V131 CON OVERLAYS FINANCIEROS Y GATES DE CERTIFICACIÓN`.
+`R18D-FIX — CORRECCIÓN FOCALIZADA CLAUDE + REEMPALME ATÓMICO + REEJECUCIÓN DE SMOKE`.
 
-Debe:
+Secuencia:
 
-1. construir una copia DEV visible desde V131;
-2. aplicar el snapshot canónico R18B sin cambiar módulos ni `core`;
-3. mostrar 216 shoppers y 196 controles financieros exactos como pendientes de revisión, no pagados;
-4. mostrar 92 casos financieros en revisión;
-5. conservar certificaciones en HOLD sin solicitarlas de nuevo automáticamente;
-6. ejecutar smoke automático por roles y módulos;
-7. no desplegar hasta que el smoke automático pase y exista autorización separada para Hosting DEV;
-8. después del deploy DEV controlado, habilitar la revisión visual humana de Paula.
+1. Claude aplica `period: () => p` en el adapter local de `serieMensual()`.
+2. Entrega candidata completa derivada de V131, sin cambios ajenos.
+3. ChatGPT audita solo ese delta y empalma atómicamente.
+4. Se reejecuta R18D.
+5. Si el smoke pasa, se solicita autorización separada para Firebase Hosting DEV.
+6. Después del deploy DEV controlado, Paula realiza la validación visual humana.
 
 ## Bloqueos externos vigentes
 
