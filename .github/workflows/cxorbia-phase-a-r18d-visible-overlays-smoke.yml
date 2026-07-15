@@ -163,3 +163,5 @@ jobs:
             .tmp/phase-a-visible-overlays-smoke-r18d
           if-no-files-found: error
           retention-days: 14
+
+# R18D workflow established; this commit triggers the first reproducible run.
