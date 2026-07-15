@@ -20,6 +20,7 @@ const htmlPath = path.resolve(valueOf('--html', 'app/index.html'));
 const payloadSrc = valueOf('--payload-src', 'data/tya-hr-source-safe-periods.js');
 const baseAdapterSrc = valueOf('--base-adapter-src', 'adapters/tya-phase-a-source-safe-dev-adapter-r18a.js');
 const overlayAdapterSrc = valueOf('--overlay-adapter-src', 'adapters/tya-phase-a-visible-overlays-r18d.js');
+const r14cQueuePath = path.resolve(valueOf('--r14c-queue', 'backend/config/phase-a-financial-review-queue-r14c.source-safe.json'));
 const reportDir = path.resolve(valueOf('--out', '.tmp/r18d-visible-overlay-build'));
 const mode = valueOf('--mode', 'apply');
 
@@ -35,11 +36,17 @@ const baseAdapterFile = path.join(appDir, baseAdapterSrc);
 const overlayAdapterFile = path.join(appDir, overlayAdapterSrc);
 if (!fs.existsSync(payloadFile)) fail(`Missing R18B source-safe payload: ${payloadFile}`);
 if (!fs.existsSync(baseAdapterFile)) fail(`Missing R18A base adapter: ${baseAdapterFile}`);
+if (!fs.existsSync(r14cQueuePath)) fail(`Missing approved R14C review queue: ${r14cQueuePath}`);
 
 const payloadText = fs.readFileSync(payloadFile, 'utf8');
 if (!payloadText.includes('R18B_APPLY_EXISTING_R11D_R14C_AND_CERTIFICATION_OUTPUTS')) {
   fail('R18D requires the R18B payload with existing overlays applied.', 3);
 }
+const r14cQueue = JSON.parse(fs.readFileSync(r14cQueuePath, 'utf8'));
+if (!Array.isArray(r14cQueue) || r14cQueue.length !== 92 || !r14cQueue.every(item => item?.sourceSafe === true && item?.key)) {
+  fail(`R18D requires the approved 92-item source-safe R14C queue; received ${Array.isArray(r14cQueue) ? r14cQueue.length : 'invalid'}.`, 3);
+}
+const embeddedR14cQueue = JSON.stringify(r14cQueue);
 
 const adapterCode = `/* CXOrbia Phase A R18D visible overlays. Generated at build time; no provider calls or writes. */
 window.CX = window.CX || {};
@@ -48,6 +55,7 @@ window.CX = window.CX || {};
   const host = String(window.location.hostname || '').toLowerCase();
   const enabled = host === 'cxorbia-backend-dev.web.app' || params.get('cxTyaPhaseA') === '1';
   const snapshot = window.CX_TYA_HR_SOURCE_SAFE || null;
+  const sourceFinancialQueue = ${embeddedR14cQueue};
   window.CX_TYA_R18D_VISIBLE_READY = false;
   if(!enabled || !window.CX || !CX.data || !snapshot) return;
   if(snapshot.existingOverlays?.integrationId !== 'R18B_APPLY_EXISTING_R11D_R14C_AND_CERTIFICATION_OUTPUTS') return;
@@ -91,13 +99,28 @@ window.CX = window.CX || {};
   });
 
   const queue = Array.isArray(snapshot.reviewQueue) ? clone(snapshot.reviewQueue) : [];
-  const financialReview = queue.filter(item => item.appliedFrom === 'R14C_existing_result');
+  const queueWithoutFinancial = queue.filter(item => item.appliedFrom !== 'R14C_existing_result');
+  const financialReview = sourceFinancialQueue.map(item => ({
+    queueItemId: item.key,
+    queueType: item.type,
+    severity: 'warning',
+    status: item.state,
+    entityType: 'financial_source_record',
+    entityId: item.entityId,
+    stableKeys: {tenantId:snapshot.tenantId, projectId:snapshot.projectId},
+    reasonCode: Array.isArray(item.reasons) ? item.reasons.join('|') : 'financial_review_required',
+    candidateCount: item.candidateCount ?? null,
+    sourceRef: item.sourceRef,
+    gateStatus: 'hold_until_financial_review',
+    sourceSafe: true,
+    appliedFrom: 'R14C_existing_result'
+  }));
   const shopperReview = queue.filter(item => item.appliedFrom === 'R11D_existing_result');
   const certificationReview = queue.filter(item => item.queueType === 'certification_source_pending');
   const exactControls = (CX.data._visitas || []).filter(item => item.r14cExactControl === true);
   const certificationHold = (CX.data.shoppers || []).filter(item => item.certificationCarryoverConfirmed !== true);
 
-  CX.data.reviewQueue = queue;
+  CX.data.reviewQueue = [...queueWithoutFinancial, ...financialReview];
   CX.data.financialReviewQueue = financialReview;
   CX.data.shopperReviewQueue = shopperReview;
   CX.data.certificationReviewQueue = certificationReview;
@@ -177,7 +200,7 @@ const after = {
 const generated = fs.readFileSync(overlayAdapterFile, 'utf8');
 const semanticChecks = {
   exactFinancialControlExposed: generated.includes('financialExactLinks'),
-  financialReviewQueueExposed: generated.includes('financialReviewQueue'),
+  completeFinancialReviewQueueEmbedded: generated.includes('sourceFinancialQueue') && r14cQueue.length === 92,
   noPaymentConfirmation: generated.includes('paidConfirmed: 0') && generated.includes('paymentLotsCreated: 0'),
   certificationHoldExposed: generated.includes('certificationHoldShoppers') && generated.includes('requestedAgainAutomatically'),
   noFrontendModuleMutation: !generated.includes('CX.module('),
@@ -188,13 +211,14 @@ const structuralValid = after.baseAdapterTags === 1 && after.overlayAdapterTags 
 const valid = structuralValid && Object.values(semanticChecks).every(Boolean);
 
 const report = {
-  schemaVersion: '1.0.0',
+  schemaVersion: '1.1.0',
   reportId: 'phase-a-r18d-visible-overlay-build',
   generatedAt: new Date().toISOString(),
   mode,
   decision: valid ? 'PASS_R18D_VISIBLE_OVERLAY_BUILD' : 'FAIL_R18D_VISIBLE_OVERLAY_BUILD',
   html: path.relative(root, htmlPath).replace(/\\/g, '/'),
   adapter: path.relative(root, overlayAdapterFile).replace(/\\/g, '/'),
+  r14cQueue: {source:path.relative(root,r14cQueuePath).replace(/\\/g,'/'), records:r14cQueue.length},
   buildCopyModified: mode === 'apply',
   sourceLockRepoFileModifiedByCommit: false,
   before,
@@ -217,6 +241,7 @@ fs.writeFileSync(path.join(reportDir, 'r18d-visible-overlay-build.md'), [
   '# R18D visible overlay build', '',
   `Decision: **${report.decision}**`,
   `Generated adapter: ${report.adapter}`,
+  `R14C review items embedded: ${r14cQueue.length}`,
   `Overlay tag count: ${after.overlayAdapterTags}`, '',
   'Build-copy only. No app/modules or app/core changes, providers, writes, imports, deploy or production.'
 ].join('\n') + '\n', 'utf8');
