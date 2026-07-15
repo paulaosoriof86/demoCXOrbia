@@ -11,7 +11,7 @@ window.CX = window.CX || {};
 CX.reservas = {
   _r:{},                 // reservas: { pid: [ {id, sucursalId, sucursal, ciudad, pais, periodo, shopperId, shopper, estado, fecha} ] }
   _seeded:{},
-  _key(pid){ return pid || CX.data.currentProjectId; },
+  _key(pid){ return pid || CX.data.currentPeriodId; },
 
   /* sucursales del proyecto disponibles para reservar en un periodo (derivadas de las visitas) */
   sucursales(pid){
@@ -67,7 +67,7 @@ CX.reservas = {
         const s=CX.data.getShopper && CX.data.getShopper(r.shopperId);
         v.shopperId=r.shopperId; v.shopper=r.shopper||(s&&s.nombre); v.shopperCode=s&&s.code; v.estado='asignada';
         r.estado='cruzada'; r.visitaId=v.id; cruzadas++;
-        CX.hr&&CX.hr.writeBack&&CX.hr.writeBack(CX.data.project(), v);
+        CX.hr&&CX.hr.writeBack&&CX.hr.writeBack(CX.data.period(), v);
       }
     });
     this._persist(pid); CX.bus&&CX.bus.emit('visit-flow'); CX.bus&&CX.bus.emit('reservas');
@@ -84,7 +84,7 @@ CX.reservas = {
 
 /* ============== Módulo: Reservas de Visita (admin + shopper) ============== */
 CX.module('reservas', ({data,role,ui})=>{
-  const p=data.project(), pid=p.id;
+  const p=data.period(), pid=p.id;
   const host=ui.el('div');
   const ESTLBL={solicitada:'Solicitada',asignada:'Asignada',aprobada:'Aprobada',cruzada:'✓ Cruzada con visita',rechazada:'Rechazada'};
   const ESTTONE={solicitada:'a',asignada:'b',aprobada:'g',cruzada:'g',rechazada:'r'};

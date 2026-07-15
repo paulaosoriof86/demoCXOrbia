@@ -72,11 +72,11 @@ window.CX = window.CX || {};
     },
 
     get(pid){
-      pid = pid || CX.data.currentProjectId;
+      pid = pid || CX.data.currentPeriodId;
       try{ const s=JSON.parse(localStorage.getItem(this._ls(pid))||'null'); if(s) return this._migrate(s); }catch(e){}
       return defaultProgram();
     },
-    save(pid, prog){ pid=pid||CX.data.currentProjectId; try{ localStorage.setItem(this._ls(pid), JSON.stringify(prog)); }catch(e){} CX.bus&&CX.bus.emit('programa'); },
+    save(pid, prog){ pid=pid||CX.data.currentPeriodId; try{ localStorage.setItem(this._ls(pid), JSON.stringify(prog)); }catch(e){} CX.bus&&CX.bus.emit('programa'); },
     reset(pid){ try{ localStorage.removeItem(this._ls(pid)); }catch(e){} CX.bus&&CX.bus.emit('programa'); },
 
     /* versión activa y sus secciones (lo que consumen shopper y portal cliente) */

@@ -20,7 +20,7 @@ CX.certStore = CX.certStore || {
   },
 };
 CX.module('cert', ({role,data,ui})=>{
-  const p=data.project();
+  const p=data.period();
   if(role==='shopper'){
     /* Bloque A (auditoría V101 — 20260711): un banco en estado draft/pending_review NO habilita
        certificación para el shopper — solo approved_preview (práctica, en este prototipo) o un

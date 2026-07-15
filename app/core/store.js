@@ -38,12 +38,14 @@ CX.session = {
     }catch(e){}
     try{
       const pid=localStorage.getItem('cx_project');
-      if(pid&&CX.data.projects.some(p=>p.id===pid))CX.data.currentProjectId=pid;
+      /* GAP1 (V113→V114): restauración vía setProject(), no escritura directa de currentPeriodId
+         (mutador único en core/data.js, sincroniza currentProjectId también). */
+      if(pid&&CX.data.projects.some(p=>p.id===pid))CX.data.setProject(pid);
     }catch(e){}
   },
   save(){
     try{localStorage.setItem('cx_session',JSON.stringify({role:this.role,user:this.user,view:this.view,testRole:this.testRole}));}catch(e){}
-    try{localStorage.setItem('cx_project',CX.data.currentProjectId);}catch(e){}
+    try{localStorage.setItem('cx_project',CX.data.currentPeriodId);}catch(e){}
   },
   clear(){ this.role=null;this.user=null;this.view=null;this.testRole=null; try{localStorage.removeItem('cx_session');}catch(e){} },
 };

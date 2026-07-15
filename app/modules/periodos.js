@@ -24,7 +24,7 @@ CX.module('periodos', ({data,ui})=>{
         <div class="between" style="margin-bottom:12px"><div class="card-t">Periodos del programa</div>
           <div class="flex" style="gap:8px"><button class="btn btn-ghost btn-sm" id="pdCompare">📊 Comparar</button><button class="btn btn-pr btn-sm" id="pdNew">＋ Nuevo periodo</button></div></div>
         <table class="tbl"><thead><tr><th>Periodo</th><th>País(es)</th><th>Avance</th><th>Estado</th><th></th></tr></thead><tbody>
-        ${periods.map(p=>{const s=data.periodStats(p.id);const est=data.periodState(p.id);const activo=p.id===data.currentProjectId;
+        ${periods.map(p=>{const s=data.periodStats(p.id);const est=data.periodState(p.id);const activo=p.id===data.currentPeriodId;
           return `<tr style="${activo?'background:var(--brand-light)':''}">
             <td><b style="font-size:12.5px">${p.periodo||p.name}</b>${activo?' <span class="bdg bdg-b" style="font-size:9px">activo ahora</span>':''}</td>
             <td style="font-size:12px">${(p.countries||[]).join(' · ')||'—'}</td>
@@ -42,7 +42,7 @@ CX.module('periodos', ({data,ui})=>{
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="pdSave">Crear periodo</button></div>
     `,{onMount:(ov,close)=>ov.querySelector('#pdSave').addEventListener('click',()=>{
       const n=(ov.querySelector('#pdN').value||'').trim(); if(!n){ui.toast('Pon un nombre','warn');return;}
-      const dup=data.duplicatePeriod(data.currentProjectId,n); if(dup){data.setProject(dup.id);}
+      const dup=data.duplicatePeriod(data.currentPeriodId,n); if(dup){data.setProject(dup.id);}
       close();draw();ui.toast('Periodo "'+n+'" creado · estructura copiada, sin visitas','ok',4000);
     })}));
 

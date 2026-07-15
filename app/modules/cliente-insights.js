@@ -4,7 +4,7 @@
    3) Anotaciones colaborativas en resultados · 4) Agenda de reunión con la consultora */
 CX.module('cli_insights', ({data,ui})=>{
   const host=ui.el('div');
-  const p=data.project();
+  const p=data.period();
   const K='cx_cli_insights_'+p.id;
   const load=()=>{try{return JSON.parse(localStorage.getItem(K)||'{}');}catch(e){return {};}};
   const save=(o)=>{try{localStorage.setItem(K,JSON.stringify(o));}catch(e){} };

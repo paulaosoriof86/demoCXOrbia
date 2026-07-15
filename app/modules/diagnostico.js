@@ -161,7 +161,25 @@ CX.module('diagnostico', ({data, ui})=>{
     const ds=CX.dataSource||{mode:'demo',status:'ready',warnings:[],blockers:[],updatedAt:''};
     const canSee = CX.session.canSeeProtectedData ? CX.session.canSeeProtectedData() : (CX.session.role==='super');
     const st={ready:'g',blocked:'r',degraded:'a',loading:'b',error:'r'}[ds.status]||'n';
-    return `
+    /* OLA1 (paquete V114→V123, migración transversal de contratos): panel de Contexto —
+       primer consumidor visible de CX.data.ctx() en un módulo distinto de dashboard/finanzas.
+       Muestra los 6 campos del contrato único en un solo lugar, para detectar en el acto un
+       desface tenant/proyecto/periodo/país/rol/modo — exactamente la clase de bug que causó
+       reprocesos completos en V111-V114 (currentProjectId/currentPeriodId desincronizados). */
+    const ctx = CX.data.ctx ? CX.data.ctx() : null;
+    const ctxView = ctx ? `
+      <div class="card card-p" style="margin-bottom:14px">
+        <div class="card-t" style="margin-bottom:8px">Contexto activo (contrato único)</div>
+        <div class="grid g3" style="gap:8px">
+          <div>${ui.bdg('tenant: '+(ctx.tenantId||'—'),'n')}</div>
+          <div>${ui.bdg('proyecto: '+(ctx.projectId||'—'),'b')}</div>
+          <div>${ui.bdg('periodo: '+(ctx.periodId||'—'),'b')}</div>
+          <div>${ui.bdg('países: '+(ctx.countryScope?ctx.countryScope.join(','):'sin restricción'),'n')}</div>
+          <div>${ui.bdg('rol: '+(ctx.role||'—'),'p')}</div>
+          <div>${ui.bdg('modo: '+ctx.dataMode,'g')}</div>
+        </div>
+      </div>` : '';
+    return ctxView+`
       <div class="card card-p" style="margin-bottom:14px">
         <div class="between" style="margin-bottom:10px"><div class="card-t">Modo de datos activo</div>${ui.bdg(ds.label?ds.label():ds.mode,'b')} ${ui.bdg(ds.statusLabel?ds.statusLabel():ds.status,st)}</div>
         <p style="font-size:12px;color:var(--t3);margin-bottom:10px">Máquina única de modo de datos (demo / source-safe preview / connected). Solo un modo puede estar activo. Fuera de demo, sin fuente/adapter real conectado, la app se bloquea en vez de mostrar seeds de demo en silencio.</p>

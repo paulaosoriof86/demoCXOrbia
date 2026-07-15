@@ -1,6 +1,6 @@
 /* CXOrbia · Postulaciones (admin) — full fidelity */
 CX.module('postulaciones', ({data,ui})=>{
-  const p=data.project(), posts=data._posts.filter(x=>data.inScope(x.pais));
+  const p=data.period(), posts=data._posts.filter(x=>data.inScope(x.pais));
   const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
   const c=(s)=>posts.filter(x=>x.estado===s).length;
   const reprog=posts.filter(x=>x.reprog);

@@ -2,7 +2,7 @@
 
 /* ============== Capacitación (brechas → cursos recomendados) ============== */
 CX.module('cli_capacitacion', ({ui})=>{
-  const C=CX.clienteData, p=CX.data.project();
+  const C=CX.clienteData, p=CX.data.period();
   const list=C.scoped(p), R=C.resumen(list);
   const CURSOS={
     recib:['Protocolo de bienvenida','Primeros 30 segundos de servicio'],
@@ -54,7 +54,7 @@ CX.module('cli_capacitacion', ({ui})=>{
 
 /* ============== Reportes (exportables) ============== */
 CX.module('cli_reportes', ({ui})=>{
-  const C=CX.clienteData, p=CX.data.project();
+  const C=CX.clienteData, p=CX.data.period();
   const list=C.scoped(p), R=C.resumen(list);
   setTimeout(()=>{ CX.cliUI.wirePersona();
     document.querySelectorAll('[data-rep]').forEach(b=>b.addEventListener('click',()=>CX.ui.toast('Generando “'+b.dataset.rep+'” ('+b.dataset.fmt+') — demo','ok',2600)));
@@ -86,7 +86,7 @@ CX.module('cli_reportes', ({ui})=>{
 
 /* ============== Mi Programa (cuestionario con pesos + simulador) ============== */
 CX.module('cli_programa', ({ui})=>{
-  const C=CX.clienteData, p=CX.data.project(), prog=C.programa(p);
+  const C=CX.clienteData, p=CX.data.period(), prog=C.programa(p);
   const secBlock=(sec)=>`
     <div class="card card-p">
       <div class="between"><div class="card-t" style="font-size:14px">${sec.name}</div><span class="bdg bdg-b">Peso ${sec.weight}%</span></div>

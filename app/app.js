@@ -74,10 +74,18 @@ CX.app = {
     lg.classList.remove('hidden');
     const b=CX.BRAND;
     const hasClientLogo = !!(b.logoUrl||b.logo);
+    /* P0-2 (paquete V110→V111, 20260714): bug confirmado — sin logo, el nombre del tenant se
+       mostraba DOS veces: una en brandBlock (brand-name) y otra en login-title (que reusaba
+       b.clientName). Con logo tampoco existía un título funcional realmente distinto (login-title
+       seguía mostrando el nombre, no una descripción de lo que hace el sistema). Ahora
+       login-title SIEMPRE es un título funcional (b.tagline o un fallback neutral) y NUNCA
+       repite el nombre del tenant — el nombre aparece una única vez (en el logo si existe, o en
+       brand-name si no). */
+    const functionalTitle = b.tagline || 'Plataforma operativa de campo';
     const brandBlock = hasClientLogo
       ? `<img class="client-logo" src="${b.logoUrl||b.logo}" alt="logo" style="max-height:64px;max-width:200px;object-fit:contain">`
       : `<div class="logo-mark"><span class="dot"></span></div>
-         <div><div class="brand-name">${b.clientName||b.name}</div><div class="brand-sub">${b.tagline}</div></div>`;
+         <div><div class="brand-name">${b.clientName||b.name}</div></div>`;
     /* banderitas SOLO de los países configurados para el tenant/franquicia.
        Si no hay países elegidos, no se muestran (no listar todos). */
     let paises = (b.countries && b.countries.length) ? b.countries : [];
@@ -96,7 +104,7 @@ CX.app = {
           ${brandBlock}
         </div>
         <div class="login-divider"></div>
-        <div class="login-title">${b.clientName?b.clientName:'Plataforma operativa de campo'}</div>
+        <div class="login-title">${functionalTitle}</div>
         <div class="login-sub">Selecciona un perfil para entrar al ${b.demoMode?'demo':'sistema'}</div>
         ${flagsRow}
         <button class="role-btn role-admin" data-role="admin">
@@ -132,7 +140,7 @@ CX.app = {
               </div>
             </div>`;})()}
         </div>
-        ${b.clientName?`<div class="login-devfor">Plataforma operativa para <b>${b.clientName}</b></div>`:''}
+        ${(b.clientName&&hasClientLogo)?`<div class="login-devfor">Plataforma operativa para <b>${b.clientName}</b></div>`:''}
         ${devForFooter}
         ${(()=>{const std=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;const iOS=/iPad|iPhone|iPod/.test(navigator.userAgent);if(std)return '<div style="text-align:center;margin-top:14px;font-size:11px;color:var(--green)">✓ App instalada</div>';return `<div style="text-align:center;margin-top:14px"><button class="btn btn-ghost btn-sm" id="pwaBtn">📲 ${iOS?'Instalar (guía iOS)':'Instalar como app'}</button></div>`;})()}
         ${b.demoMode?`<div style="text-align:center;margin-top:10px;font-size:11px;color:var(--t3)">

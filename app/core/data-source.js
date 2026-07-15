@@ -117,6 +117,22 @@ window.CX = window.CX || {};
     /* color asociado al estado, para el punto de color del badge compacto */
     color(){ return {ready:'#0e9c6e',loading:'#2a6fdb',blocked:'#d97706',degraded:'#d97706',error:'#dc2626'}[this.status]||'#94a3b8'; },
 
+    /* OLA1 (paquete V114→V115, contrato reutilizable 05-CONTRATOS-REUTILIZABLES-A-REFLEJAR.md):
+       nombres de campo EXACTOS del contrato de Fuente, sin duplicar el estado ya resuelto arriba
+       (mode/status/sourceRef/warnings/blockers/updatedAt) — son alias de solo lectura sobre los
+       mismos valores, para que cualquier módulo que necesite el nombre exacto del contrato lo
+       obtenga de una única función en vez de inventar su propio mapeo. */
+    sourceContract(){
+      return {
+        sourceSnapshotAt: this.updatedAt || null,
+        sourceReadMode: this.mode,
+        runtimeSyncActive: this.mode==='connected' && this.status==='ready',
+        sourceRef: this.sourceRef || null,
+        warnings: this.warnings.slice(),
+        blockers: this.blockers.slice(),
+      };
+    },
+
     /* ÚNICA función que cualquier superficie de UI (rail, topbar, diagnóstico) debe llamar para
        pintar el indicador de origen de datos — nunca deriven su propia lógica de banderas. */
     badge(){

@@ -100,9 +100,9 @@ CX.fin = {
       const regal=p.modelo==='directo'?Math.round(ingreso*((p.regalias||0)/100)):0;
       const fijos=Object.values(CX.finStore.pres(p.id)).reduce((a,b)=>a+(+b||0),0);
       const margen=ingreso-honPaga-isr-regal; // reembolso es flujo, no resta utilidad
-      const cxp=ls.filter(l=>l.estado!=='pagada').reduce((a,l)=>a+l.total,0); // por pagar a shoppers
-      const cobrado=ls.filter(l=>l.estado==='pagada').length;
-      const cxc=ls.filter(l=>l.estado==='validada'||l.estado==='pagada').reduce((a)=>a+this.honRecibe(p,c),0); // facturable
+      const cxp=ls.filter(l=>l.estado!=='pagada').reduce((a,l)=>a+l.total,0); // por pagar a shoppers — pagada_preview sigue contando como pendiente real
+      const cobrado=ls.filter(l=>l.estado==='pagada').length; // solo pago confirmado (paymentSourceRef), nunca preview
+      const cxc=ls.filter(l=>['validada','pagada','pagada_preview'].includes(l.estado)).reduce((a)=>a+this.honRecibe(p,c),0); // facturable
       out[c]={cur,visRe,ingreso,honPaga,reemb,isr,regal,fijos,margen,cxp,cxc,
         margenPct: ingreso?Math.round(margen/ingreso*100):0};
     });

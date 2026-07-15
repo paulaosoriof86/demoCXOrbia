@@ -2,7 +2,7 @@
    instructivo → certificar → agendar → realizar → cuestionario → submit
    Cada acción sincroniza estado de visita y liquidación. */
 CX.module('misvisitas', ({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
   /* P0: SIEMPRE filtrar por el shopper autenticado (shopperId, no nombre) */
   const sid=(CX.session.user&&CX.session.user.shopperId)||'sh1';
   const base=(data.visitsForShopper?data.visitsForShopper(sid):data.visitas());
@@ -72,8 +72,16 @@ CX.module('misvisitas', ({data,ui})=>{
     <div class="flex" style="margin-bottom:14px;gap:8px"><button class="btn btn-sm ${view==='activas'?'btn-pr':'btn-ghost'}" data-view="activas">Activas ${activasN}</button> <button class="btn btn-sm ${view==='historial'?'btn-pr':'btn-ghost'}" data-view="historial">Historial ${histVis.length}</button></div>
     <div class="card card-p">
       <div class="card-h"><div class="card-t">Historial de visitas</div><span class="muted" style="font-size:11px">visitas liquidadas y cerradas</span></div>
-      ${histVis.length?`<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Honorario</th><th>Estado</th></tr></thead><tbody>
-        ${histVis.map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.escenario}</td><td style="font-size:12px">${v.realizada||v.fechaPago||v.agendada||'—'}</td><td>${ui.money(v.currency,v.honorario)}</td><td>${ui.estadoBadge(v.estado)}</td></tr>`).join('')}
+      ${histVis.length?`<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Honorario</th><th>Estado</th><th>Pago</th></tr></thead><tbody>
+        ${histVis.map(v=>{
+          /* OLA1 (paquete V120→V121, consumidor real de CX.data.visitContract(v)): columna de
+             pago derivada del contrato de Visita — nunca infiere "pagado" solo por el estado
+             operativo (preview vs. confirmado con sourceRef, igual criterio que Finanzas). */
+          const vc=data.visitContract?data.visitContract(v):null;
+          const payLbl = !vc||vc.paymentState==='no_aplica' ? '<span class="muted" style="font-size:11px">—</span>'
+            : vc.paymentState==='confirmado' ? ui.bdg('Pagado (confirmado)','g') : ui.bdg('Pagado (preview)','a');
+          return `<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.escenario}</td><td style="font-size:12px">${v.realizada||v.fechaPago||v.agendada||'—'}</td><td>${ui.money(v.currency,v.honorario)}</td><td>${ui.estadoBadge(v.estado)}</td><td>${payLbl}</td></tr>`;
+        }).join('')}
       </tbody></table></div>`:ui.empty('🗒️','Aún no tienes visitas en tu historial. Cuando una visita se liquida o cierra, aparece aquí.')}
     </div>`;
 

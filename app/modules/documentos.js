@@ -10,12 +10,12 @@ CX.docStore = CX.docStore || {
     {id:'d4',ic:'📋',n:'Checklist de visita',meta:'Lista · 8 ítems',tipo:'check',
       items:['Certificación vigente','Escenario memorizado','Fecha confirmada','Evidencia lista (cámara)','Efectivo/medios de pago','Cronómetro a mano','Comprobantes guardados','Cuestionario completado el mismo día']},
   ];},
-  list(pid){ pid=pid||CX.data.currentProjectId; if(!this._d[pid]) this._d[pid]=this.seed(pid); return this._d[pid]; },
+  list(pid){ pid=pid||CX.data.currentPeriodId; if(!this._d[pid]) this._d[pid]=this.seed(pid); return this._d[pid]; },
   add(pid,d){ this.list(pid).unshift(Object.assign({id:'d'+Date.now().toString(36),ic:'📎',meta:'subido ahora'},d)); CX.bus&&CX.bus.emit('docs'); },
 };
 
 CX.module('documentos', ({data,role,ui})=>{
-  const p=data.project(), pid=p.id;
+  const p=data.period(), pid=p.id;
   const host=ui.el('div');
 
   /* visor a PANTALLA COMPLETA en el área del módulo (no modal) */
@@ -72,7 +72,8 @@ CX.module('documentos', ({data,role,ui})=>{
       <div class="grid g2">
         ${docs.map(d=>`<div class="card hov card-p flex" style="gap:13px">
           <div style="flex:1;display:flex;gap:13px;cursor:pointer" data-doc="${d.id}"><div style="font-size:26px">${d.ic}</div>
-          <div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--t1)">${d.n}</div><div style="font-size:11.5px;color:var(--t3)">${d.meta}</div></div></div>
+          <div style="flex:1"><div style="font-size:13.5px;font-weight:700;color:var(--t1)">${d.n}</div><div style="font-size:11.5px;color:var(--t3)">${d.meta}</div>
+          <div class="flex wrap" style="gap:5px;margin-top:5px">${d.externalFolderRef?ui.bdg('📁 carpeta externa: '+d.externalFolderRef,'n'):''}${d.visitaId?(()=>{const lv=data._visitas.find(x=>x.id===d.visitaId);return lv?ui.bdg('🔗 '+lv.sucursal,'b'):'';})():''}</div></div></div>
           <div class="flex" style="gap:6px;flex-shrink:0">
             <button class="btn btn-soft btn-sm" data-doc="${d.id}">Abrir</button>
             ${role==='admin'?`<button class="btn btn-ghost btn-sm" data-editd="${d.id}" title="Editar">✎</button><button class="btn btn-ghost btn-sm" data-deld="${d.id}" title="Eliminar" style="color:var(--red)">✕</button>`:''}
@@ -81,12 +82,15 @@ CX.module('documentos', ({data,role,ui})=>{
       <div class="card card-p" style="margin-top:16px">${ui.aiBox('Cada recurso se abre y se lee dentro de la plataforma (PDF, video embebido, checklist) — sin descargar ni buscar en chats. Entrego el correcto según la visita.','Lectura contextual en plataforma')}</div>`;
     host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',()=>{const d=docs.find(x=>x.id===b.dataset.doc);if(d)viewer(d);}));
     host.querySelectorAll('[data-editd]').forEach(b=>b.addEventListener('click',()=>{const d=docs.find(x=>x.id===b.dataset.editd);if(!d)return;
+      if(!CX.permissions.gate('documento.edit',CX.permissions.ctx({entityType:'documento',entityId:d.id}),ui))return;
       ui.modal('✎ Editar documento · '+d.n,`
         <div class="grid g2" style="gap:10px 12px"><div><label class="lbl">Nombre</label><input class="inp" id="edN" value="${(d.n||'').replace(/"/g,'&quot;')}"></div>
         <div><label class="lbl">Icono</label><input class="inp" id="edIc" value="${d.ic||'📄'}" style="max-width:80px"></div>
         <div style="grid-column:1/3"><label class="lbl">Reemplazar archivo (PDF/imagen/video/Excel/Word)</label><input type="file" class="inp" id="edFile" accept="application/pdf,image/*,video/*,.xlsx,.xls,.docx" style="padding:7px">${d.url&&/^data:/.test(d.url)?'<div style="font-size:11px;color:var(--t3);margin-top:3px">📎 Archivo actual cargado · sube uno nuevo para reemplazar</div>':''}</div>
         <div style="grid-column:1/3"><label class="lbl">URL de video (YouTube/Vimeo, opcional)</label><input class="inp" id="edUrl" value="${(d.url&&/^https?:/.test(d.url))?d.url.replace(/"/g,'&quot;'):''}" placeholder="https://youtube.com/…"></div>
-        <div style="grid-column:1/3"><label class="lbl">Contenido / texto (Markdown)</label><textarea class="inp" id="edBody" rows="4">${d.body||''}</textarea></div></div>
+        <div style="grid-column:1/3"><label class="lbl">Contenido / texto (Markdown)</label><textarea class="inp" id="edBody" rows="4">${d.body||''}</textarea></div>
+        <div><label class="lbl">Carpeta externa (referencia opaca, opcional)</label><input class="inp" id="edFolderRef" value="${d.externalFolderRef||''}" placeholder="ej. FLD-7f2a91"></div>
+        <div><label class="lbl">Vincular a visita (opcional)</label><select class="sel" id="edVisita"><option value="">— sin vincular —</option>${data._visitas.filter(v=>v.projectId===pid).map(v=>`<option value="${v.id}" ${d.visitaId===v.id?'selected':''}>${v.sucursal} · ${v.fecha||v.agendada||'—'}</option>`).join('')}</select></div></div>
         <div class="between" style="margin-top:12px"><button class="btn btn-soft btn-sm" id="edIA">📝 Mejorar/generar (heurística local)</button><button class="btn btn-pr btn-sm" id="edSave">Guardar</button></div>
       `,{onMount:(ov,close)=>{
         ov.querySelector('#edIA').addEventListener('click',()=>{
@@ -101,15 +105,30 @@ CX.module('documentos', ({data,role,ui})=>{
           })});
         });
         ov.querySelector('#edSave').addEventListener('click',()=>{
+        const before={n:d.n,body:d.body,url:d.url};
         d.n=ov.querySelector('#edN').value.trim()||d.n;d.ic=ov.querySelector('#edIc').value||d.ic;
         const u=ov.querySelector('#edUrl').value.trim();if(u){d.url=CX.learnStore?CX.learnStore.embedUrl(u):u.replace('youtube.com/watch?v=','youtube-nocookie.com/embed/');d.tipo='video';d.ic=d.ic||'🎬';}
         d.body=ov.querySelector('#edBody').value;
+        /* Gap 3 (matriz V123): carpeta externa por referencia OPACA — nunca un nombre de
+           proveedor ni una URL real, solo el identificador que el equipo usa para ubicarla
+           externamente. Gap 4: vínculo opcional a una visita individual del proyecto (antes
+           un documento solo existía a nivel de proyecto, sin poder asociarse a una visita). */
+        d.externalFolderRef=ov.querySelector('#edFolderRef').value.trim()||null;
+        d.visitaId=ov.querySelector('#edVisita').value||null;
+        /* P1 (paquete V114→V125): historial real de documentos — antes editar/reemplazar no dejaba
+           rastro de quién/cuándo/qué cambió. Reusa CX.automations.logAction (ya incluye ctx completo
+           desde V123) como única bitácora — no se duplica una segunda tabla de auditoría. */
+        CX.automations&&CX.automations.logAction('Documento editado', d.id, d.n+(before.n!==d.n?' (antes: '+before.n+')':''));
         const nf=ov.querySelector('#edFile').files[0];
         if(nf){const rd=new FileReader();rd.onload=()=>{d.url=rd.result;d.meta=nf.name;if(nf.type==='application/pdf')d.tipo='pdf';else if(/^image\//.test(nf.type)){d.tipo='image';}else if(/^video\//.test(nf.type)){d.tipo='video';}close();draw();ui.toast('Documento actualizado','ok');};rd.readAsDataURL(nf);}
         else{close();draw();ui.toast('Documento actualizado','ok');}
       });}});
     }));
-    host.querySelectorAll('[data-deld]').forEach(b=>b.addEventListener('click',()=>{CX.docStore._d[pid]=(CX.docStore._d[pid]||[]).filter(x=>x.id!==b.dataset.deld);draw();ui.toast('Documento eliminado','');}));
+    host.querySelectorAll('[data-deld]').forEach(b=>b.addEventListener('click',()=>{
+      if(!CX.permissions.gate('documento.delete',CX.permissions.ctx({entityType:'documento',entityId:b.dataset.deld}),ui))return;
+      const d=(CX.docStore._d[pid]||[]).find(x=>x.id===b.dataset.deld);
+      CX.automations&&CX.automations.logAction('Documento eliminado', b.dataset.deld, d?d.n:'');
+      CX.docStore._d[pid]=(CX.docStore._d[pid]||[]).filter(x=>x.id!==b.dataset.deld);draw();ui.toast('Documento eliminado','');}));
     const up=host.querySelector('#docUp');
     host.querySelector('#docIA')?.addEventListener('click',()=>ui.modal('📝 Generar recurso (heurística local)',`
       <label class="lbl">Tipo de recurso a generar</label>
@@ -148,6 +167,10 @@ CX.module('documentos', ({data,role,ui})=>{
       <div style="margin-bottom:10px"><label class="lbl">Archivo (PDF/imagen/video)</label><input type="file" class="inp" id="duF" accept="application/pdf,image/*,video/*" style="padding:7px"></div>
       <div style="margin-bottom:10px"><label class="lbl">o URL de video (YouTube/Vimeo)</label><input class="inp" id="duU" placeholder="https://…"></div>
       <div style="margin-bottom:14px"><label class="lbl">o pega el texto (Markdown)</label><textarea class="inp" id="duB" rows="3" placeholder="# Título…"></textarea></div>
+      <div class="grid g2" style="gap:10px 12px;margin-bottom:14px">
+        <div><label class="lbl">Carpeta externa (referencia opaca, opcional)</label><input class="inp" id="duFolderRef" placeholder="ej. FLD-7f2a91"></div>
+        <div><label class="lbl">Vincular a visita (opcional)</label><select class="sel" id="duVisita"><option value="">— sin vincular —</option>${data._visitas.filter(v=>v.projectId===pid).map(v=>`<option value="${v.id}">${v.sucursal} · ${v.fecha||v.agendada||'—'}</option>`).join('')}</select></div>
+      </div>
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="duS">Subir</button></div>
     `,{onMount:(ov,close)=>{
       ov.querySelector('#duF').addEventListener('change',e=>{const f=e.target.files[0];if(f&&!ov.querySelector('#duN').value)ov.querySelector('#duN').value=f.name;});
@@ -155,6 +178,8 @@ CX.module('documentos', ({data,role,ui})=>{
         const n=(ov.querySelector('#duN').value||'').trim(); if(!n){ui.toast('Pon un nombre','warn');return;}
         const t=ov.querySelector('#duT').value, url=(ov.querySelector('#duU').value||'').trim(), body=(ov.querySelector('#duB').value||'').trim(), f=ov.querySelector('#duF').files[0];
         const rec={n,tipo:t,ic:t==='video'?'🎬':t==='text'?'📝':'📄',meta:f?f.name:(url?'video':'texto')};
+        const folderRef=(ov.querySelector('#duFolderRef').value||'').trim(); if(folderRef)rec.externalFolderRef=folderRef;
+        const visitaId=ov.querySelector('#duVisita').value; if(visitaId)rec.visitaId=visitaId;
         if(t==='video'&&url)rec.url=CX.learnStore?CX.learnStore.embedUrl(url):url;
         if(body)rec.body=body;
         const finish=()=>{CX.docStore.add(pid,rec);close();draw();ui.toast('Documento subido · disponible para el proyecto','ok');};

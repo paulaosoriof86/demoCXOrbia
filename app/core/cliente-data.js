@@ -37,7 +37,7 @@ window.CX = window.CX || {};
 
     /* ---- programa del proyecto (FUENTE ÚNICA: core/programa.js) ---- */
     programa(p){
-      p = p || CX.data.project();
+      p = p || CX.data.period();
       if(CX.programa) return CX.programa.sections(p.id).map(s=>({...s, questions:s.questions.map(q=>({...q}))}));
       return (p.programa || PROGRAMA_BASE).map(s=>({...s, questions:s.questions.map(q=>({...q}))}));
     },
@@ -54,7 +54,7 @@ window.CX = window.CX || {};
        El score usa cuestionarios efectivamente enviados (evaluada); si una sucursal
        aún no tiene score real, cae a un valor determinístico estable. */
     sucursales(p){
-      p = p || CX.data.project();
+      p = p || CX.data.period();
       /* cache key incluye el modo de datos (demo/real) — evita servir una lista
          calculada bajo un modo distinto al alternar demo/real en la misma sesión. */
       const key = p.id + '::' + (this._allowSynthetic()?'demo':'real');
@@ -217,12 +217,12 @@ window.CX = window.CX || {};
       return out;
     },
     acciones(p){
-      p=p||CX.data.project();
+      p=p||CX.data.period();
       let extra=[]; try{ extra=JSON.parse(localStorage.getItem(LS_ACC)||'[]').filter(a=>a.projectId===p.id); }catch(e){}
       return [...extra, ...this._seedAcciones(p)];
     },
     addAccion(p, a){
-      p=p||CX.data.project();
+      p=p||CX.data.period();
       let all=[]; try{ all=JSON.parse(localStorage.getItem(LS_ACC)||'[]'); }catch(e){}
       const rec=Object.assign({id:'acc-'+Date.now().toString(36), projectId:p.id, estado:'Abierto', fecha:new Date().toISOString().slice(0,10)}, a);
       all.unshift(rec); try{ localStorage.setItem(LS_ACC, JSON.stringify(all)); }catch(e){}
@@ -246,7 +246,7 @@ window.CX = window.CX || {};
     /* RESULTADOS REALES de operación: scores de cuestionarios efectivamente
        enviados por shoppers en este proyecto (sincronía operación → cliente). */
     realResults(p){
-      p=p||CX.data.project();
+      p=p||CX.data.period();
       const vis=CX.data._visitas.filter(v=>v.projectId===p.id && typeof v.score==='number' && v.evaluada);
       if(!vis.length) return {count:0};
       const avg=Math.round(vis.reduce((a,v)=>a+v.score,0)/vis.length);

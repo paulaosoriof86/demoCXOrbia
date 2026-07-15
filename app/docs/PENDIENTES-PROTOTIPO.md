@@ -93,3 +93,10 @@
 - [Backend] Sprint 9 sigue pendiente: no marcar como cerrado hasta validar Firebase DEV real.
 - [Claude] Revisar textos de acciones operativas, WhatsApp, correo, Make e IA para que digan claramente `simulado`, `preview` o `pendiente backend` cuando no haya conexion real.
 - [Claude] Validar visualmente reglas operativas por periodo/pais/quincena sin convertirlas en logica exclusiva de TyA.
+
+
+## 2026-07-14 - Post empalme V131
+
+- No quedan P0 de candidata que impidan continuar Phase A.
+- Mantener smoke visual final por roles como verificacion posterior, no como bloqueo del empalme.
+- Produccion, proveedores, import real y writes siguen HOLD.

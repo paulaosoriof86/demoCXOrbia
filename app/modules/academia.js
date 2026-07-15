@@ -57,7 +57,7 @@ CX.acadData={
      efectivo de sesión (scopeRole para roles de prueba, o el rol real). */
   ctx(){
     const u=(CX.session&&CX.session.user)||{};
-    const p=CX.data&&CX.data.project&&CX.data.project();
+    const p=CX.data&&CX.data.period&&CX.data.period();
     const rol = u.scopeRole || u.role || (CX.session&&CX.session.role) || undefined;
     const projectId = p && p.id;
     let paises;
@@ -1401,6 +1401,52 @@ PWA) deben reflejar ya la marca configurada.</p></div>`},
            {q:'Trabajas la HR de tu región en un Google Sheet compartido, pero también apruebas postulaciones en la plataforma. ¿Qué pasa con los datos?',o:['Se duplican y tienes que borrar manualmente','El sistema reconcilia por llave natural (documento del shopper + id de visita) y no duplica, aunque gestiones en ambos lados','Debes elegir solo uno de los dos','La plataforma bloquea el Google Sheet'],a:1,exp:'CXOrbia usa una llave natural inmutable para reconciliar la HR externa con la plataforma. Aunque asignes una visita en el Google Sheet y la apruebes también en la plataforma, el sistema reconoce que es el mismo registro y no lo duplica. Esto te permite mantener tu forma de trabajo colaborativa en Sheets mientras aprovechas la inteligencia y los KPIs de la plataforma.'},
          ]}
        ]},
+    /* ─── PLATAFORMA: CONTEXTO CANÓNICO (paquete V110→V111, 20260714) ─── */
+    {id:'a_plat_ctx',cat:'Plataforma',ic:'🧭',color:'#4f46e5',n:'Contexto de la plataforma: proyecto, periodo, país y niveles de dato',
+     desc:'Los cuatro conceptos que explican por qué ves lo que ves — y qué revisar cuando dos pantallas no coinciden.',
+     cert:false,mins:35,
+     lessons:[
+       {id:'apc1',ic:'🗂️',n:'Proyecto vs. periodo: qué significa cada nivel',content:`
+<h2>Proyecto (programa) vs. Periodo (ronda)</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Entender la diferencia entre un <b>proyecto</b> (el programa completo con un cliente — ej. "Proyecto Retail") y un <b>periodo</b> (una ronda concreta dentro de ese proyecto — ej. "Quincena 1", "Junio 2026"). Un periodo NUNCA es un proyecto nuevo: hereda país, moneda, marca y configuración de su proyecto.</p></div>
+<div class="acad-section">⚙️ <b>Cómo funciona</b><p>El selector <b>Proyecto</b> (barra lateral o Dashboard) elige el programa; el selector <b>Periodo</b> (que aparece solo si el proyecto tiene más de una ronda) elige la ronda activa dentro de ese programa. Cambiar el periodo NUNCA cambia el proyecto — cambia solo qué visitas, KPIs y calendario ves.</p></div>
+<h3>Dónde se selecciona cada uno</h3>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Barra lateral</b><p>Selector "Proyecto" (programa) y, debajo, "Periodo" si hay más de una ronda.</p></div>
+  <div class="acad-step"><span>2</span><b>Dashboard</b><p>El mismo selector de proyecto está disponible arriba — cambia el mismo estado, no uno paralelo.</p></div>
+  <div class="acad-step"><span>3</span><b>Periodos (módulo)</b><p>Lista completa de rondas del programa activo, con avance, estado (activo/cerrado/archivado) y comparativo.</p></div>
+</div>
+<div class="acad-section">✅ <b>Cómo comprobar que KPIs y listas corresponden al periodo activo</b><p>Mira el conteo total de visitas en el Dashboard y compáralo con el mismo número en Visitas/Histórico — deben coincidir siempre, porque ambos leen el mismo periodo activo. <code>CX.data.currentProjectId</code> identifica el proyecto/programa y <code>currentPeriodId</code> identifica el periodo — están relacionados pero <b>no son el mismo ID</b>: cambiar de periodo (mismo proyecto) nunca cambia el proyecto activo; cambiar de proyecto sí puede seleccionar un periodo distinto (el más reciente del nuevo proyecto, o el que ya estaba activo si pertenece a ambos). Si cambias de periodo o de proyecto desde CUALQUIER selector, los números deben actualizarse igual en Dashboard, Visitas, Mi Día e Histórico — sin recargar la página.</p></div>
+<div class="acad-section">⚠️ <b>Error frecuente</b><p>Ver un periodo seleccionado en un control y datos de OTRO periodo en otro panel. Esto NO debe pasar — todos los selectores de periodo llaman al mismo punto único (<code>CX.data.setCurrentPeriod</code>), nunca cambian solo una etiqueta visual.</p></div>
+<div class="acad-section">🔧 <b>Acción correctiva</b><p>Si detectas un desfase, recarga el módulo actual (navega a otro y vuelve) — si el desfase persiste tras eso, repórtalo como incidencia técnica: es síntoma de un selector roto, no de un dato faltante.</p></div>`},
+       {id:'apc2',ic:'🌎',n:'Países habilitados vs. alcance activo de tu sesión',content:`
+<h2>Configuración del tenant/proyecto vs. tu propio alcance</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Distinguir tres capas que se confunden fácil: los <b>países habilitados por el tenant</b> (marca/consultora), los <b>países de un proyecto</b> (ej. Retail opera en País A y País B), y tu <b>alcance activo de sesión</b> (los países que TÚ, con tu rol, puedes ver y operar).</p></div>
+<div class="acad-section">⚙️ <b>Cómo funciona</b><p>Un proyecto puede operar en varios países a la vez — eso es configuración, no tu alcance. Tu alcance real depende de tu rol: un <b>Coordinador/Aliado</b> tiene un conjunto de países asignado explícitamente (visible como "🌎 alcance multipaís" en tu perfil de la barra lateral); un <b>shopper</b> tiene exactamente UN país — el suyo propio, nunca la lista completa del proyecto.</p></div>
+<div class="acad-section">🖱️ <b>Dónde se ve</b><p>Tu país/alcance activo se muestra siempre en la esquina inferior de la barra lateral, junto a tu nombre. Un shopper ve su propio país (ej. "Shopper · 🇭🇳 Honduras"), nunca la lista de países del proyecto en el que participa.</p></div>
+<div class="acad-section">✅ <b>Qué ocurre ante un alcance inválido</b><p>Si tu usuario no tiene un país válido asignado (registro incompleto, país eliminado de catálogo), el sistema NO asume un país por defecto — el contenido restringido por país simplemente no se muestra (fail-closed), en vez de mostrarte datos de un país que no es el tuyo.</p></div>
+<div class="acad-section">⚠️ <b>Error frecuente</b><p>Confundir "el proyecto opera en 2 países" con "yo tengo acceso a esos 2 países" — son cosas distintas. Revisa siempre TU indicador de alcance, no la lista de países del proyecto.</p></div>
+<div class="acad-section">🔧 <b>Acción correctiva</b><p>Si tu alcance no es el correcto, pide a un administrador que revise tu asignación en Usuarios & Permisos — nunca se corrige eligiendo un país distinto tú mismo salvo que tu rol tenga selector real (coordinador/aliado).</p></div>`},
+       {id:'apc3',ic:'🔒',n:'Referencia protegida, perfil operativo y perfil autorizado',content:`
+<h2>Los tres niveles de dato de un shopper</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Saber por qué a veces un registro de shopper NO muestra rating, estado, honorario ni contacto — y por qué eso es correcto, no un error.</p></div>
+<div class="acad-section">⚙️ <b>Los tres niveles</b>
+<ul class="acad-check">
+<li><b>Referencia protegida</b>: la fuente solo entrega un código/identificador y país — sin ningún atributo operativo. Se muestra como "🔒 Protegido", sin rating/estado/honorario inventados.</li>
+<li><b>Perfil operativo</b>: hay atributos de operación (estado, conteo de visitas) pero SIN datos de contacto ni banco — no se puede editar ni contactar todavía.</li>
+<li><b>Perfil autorizado completo</b>: hay contacto/documento/cuenta de pago — la ficha completa se habilita, y solo con el permiso correspondiente se ven los campos protegidos (🔒) sin enmascarar.</li>
+</ul></div>
+<div class="acad-section">✅ <b>Por qué no se inventan valores</b><p>Mostrar un rating o un honorario "por defecto" cuando la fuente no lo entrega haría parecer que existe una evaluación real donde no la hay — eso rompe la confianza en TODO el resto de la plataforma. Por eso cada campo ausente se muestra como "— sin dato" o queda fuera de la tarjeta, nunca sustituido.</p></div>
+<div class="acad-section">⚠️ <b>Error frecuente</b><p>Pensar que un shopper en "🔒 Protegido" tiene un problema o está mal cargado — no es un error, es el nivel de dato real disponible desde su fuente. Compara con Shoppers → ábrelo y verás la explicación del nivel en su ficha.</p></div>
+<div class="acad-section">🔧 <b>Acción correctiva</b><p>Para subir de nivel, completa los datos operativos (estado, asignación a visitas) y luego los de contacto/banco desde su ficha (requiere permiso de datos protegidos) — nunca se "fuerza" un nivel manualmente.</p></div>`},
+       {id:'apc4',ic:'📸',n:'Snapshot vs. runtime: qué estás viendo en cada momento',content:`
+<h2>Foto fija vs. lectura en vivo</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Distinguir cuándo estás viendo un <b>snapshot</b> (una foto de datos capturada en un momento específico — útil para auditoría/evidencia) de cuándo estás viendo <b>runtime</b> (la lectura en vivo de los datos actuales, que cambia según lo que hagas).</p></div>
+<div class="acad-section">⚙️ <b>Cómo reconocer cada modo</b><p>Un snapshot se identifica porque trae una fecha/hora de captura fija y no cambia aunque edites datos después — se usa para evidencia (ej. una captura de auditoría). El runtime es lo que ves normalmente al navegar: KPIs, listas y calendarios que se recalculan en cada acción.</p></div>
+<div class="acad-section">✅ <b>Qué valida una actualización real</b><p>Si haces un cambio (ej. cambias de periodo, pagas un lote) y una pantalla en runtime no refleja el cambio de inmediato sin recargar, eso es una falla — repórtalo. Un snapshot, en cambio, es correcto que NO cambie: esa es su función (preservar el estado de un momento).</p></div>
+<div class="acad-section">⚠️ <b>Error frecuente</b><p>Comparar un snapshot antiguo contra el runtime actual y asumir que "algo se perdió" — en realidad son dos cosas distintas por diseño; el snapshot es un punto en el tiempo, el runtime es el presente.</p></div>
+<div class="acad-section">🔧 <b>Acción correctiva</b><p>Si necesitas comparar, usa el comparativo de periodos (módulo Periodos) en vez de comparar snapshots sueltos — te da la métrica real de cada ronda, lado a lado.</p></div>`},
+     ]},
     ],
     shopper:[
       /* ─── RUTA OPERATIVA DEL SHOPPER (paso a paso) ─── */
@@ -2169,7 +2215,11 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         if(newRes)content=newRes+content;
         const rEd=CX.acadData.editLesson(rr,course.id,lesson.id,{n:ov.querySelector('#elT').value.trim()||lesson.n,ic:ov.querySelector('#elI').value||lesson.ic,content});
         if(!rEd.ok){ ui.toast('🔒 '+rEd.error,'warn',4200); return; }
-        close();lessonPlayer(course);ui.toast('Lección actualizada','ok');
+        /* OLA3 (paquete V120→V121, 04-ACADEMIA-MANUALES-RUTAS-NOTIFICACIONES.md "lección
+           actualizada"): antes solo un toast efímero — sin notificación persistente para quienes
+           ya cursaron/asignados. No afirma envío real (WhatsApp/correo) sin proveedor. */
+        CX.notif && CX.notif.push({to:'all',tipo:'academia_leccion',icon:'📚',tono:'n',titulo:'Lección actualizada',txt:(course.n||'Curso')+' · '+(lesson.n||'Lección')+' tiene contenido nuevo',nav:'aprendizaje'});
+        close();lessonPlayer(course);ui.toast('Lección actualizada · notificación registrada','ok');
       });
     }}));
     host.querySelector('#addLsn')?.addEventListener('click',()=>{
@@ -2551,7 +2601,10 @@ CX.module('aprendizaje', ({data,role,ui})=>{
            y no editable — todo curso queda vinculado a un tenant real. */
         const multi=(sel)=>{const el=ov.querySelector(sel); if(!el) return undefined; return [...el.selectedOptions].map(o=>o.value).filter(Boolean);};
         const scope=ov.querySelector('#ecScProj')?{tenantId:[CX.BRAND.id],projectId:multi('#ecScProj'),pais:multi('#ecScPais'),rol:multi('#ecScRol'),nivel:multi('#ecScNivel'),modulo:multi('#ecScModulo'),paquete:multi('#ecScPaquete')}:cc.scope;
-        const r=CX.acadData.editCourse(rr,cc.id,{n:ov.querySelector('#ecN').value.trim(),cat:ov.querySelector('#ecC').value,desc:ov.querySelector('#ecD').value.trim(),scope});if(!r.ok){ui.toast('🔒 '+r.error,'warn',4200);return;}close();draw();ui.toast('Curso actualizado · auditado','ok');});
+        const r=CX.acadData.editCourse(rr,cc.id,{n:ov.querySelector('#ecN').value.trim(),cat:ov.querySelector('#ecC').value,desc:ov.querySelector('#ecD').value.trim(),scope});if(!r.ok){ui.toast('🔒 '+r.error,'warn',4200);return;}
+        /* OLA3 (paquete V120→V121, notificación "manual/curso actualizado" — antes solo toast) */
+        CX.notif && CX.notif.push({to:'all',tipo:'academia_curso',icon:'📚',tono:'n',titulo:'Curso actualizado',txt:(cc.n||'Curso')+' tiene cambios nuevos',nav:'aprendizaje'});
+        close();draw();ui.toast('Curso actualizado · auditado · notificación registrada','ok');});
       ov.querySelectorAll('.acadTrans').forEach(b=>b.addEventListener('click',()=>{
         const to=b.dataset.to;
         close();

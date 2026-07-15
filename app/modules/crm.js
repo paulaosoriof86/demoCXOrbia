@@ -19,7 +19,12 @@ CX.crmStore = CX.crmStore || {
   delCol(id){ if(['ganado','perdido','nuevo'].includes(id))return; this._cols=this.cols().filter(x=>x.id!==id); this.saveCols(); },
 
   /* ── Oportunidades ── */
+  /* OLA1 (paquete V114→V115/V117, 20260714): CRM sembraba oportunidades/cuentas/contactos
+     ficticios de clientes SIN gate de modo demo — visibles también fuera de demo, y con datos
+     que parecen reales (empresas, contactos, correos). Corregido al mismo patrón usado en el
+     resto de la plataforma: fuera de demo, listas vacías (honesto, pendiente de fuente real). */
   seed(){
+    if(!(CX.dataSource ? CX.dataSource.showFixtures() : true)) return [];
     return [
       {id:'op1',empresa:'Cadena Norte',rubro:'Supermercados',pais:'GT',etapa:'propuesta',valor:48000,contacto:'Ana Pérez',cargo:'Gerencia de Operaciones',contactoEmail:'ops@cadenanorte.gt',tel:'+502 5555 1010',prob:60,fuente:'LinkedIn',cuentaId:'ac1',proximaAccion:'Enviar propuesta revisada',proximaFecha:'2026-06-28',nota:'Solicitaron mystery + auditoría de imagen.',acts:[{id:'a01',tipo:'reunion',texto:'Reunión de relevamiento inicial',fecha:'2026-06-10 10:00',hecho:true},{id:'a02',tipo:'tarea',texto:'Enviar propuesta revisada',vence:'2026-06-28',hecho:false}],correos:[{de:'ops@cadenanorte.gt',asunto:'Re: Propuesta mystery shopping',fecha:'2026-06-18',preview:'Gracias por la información, quedamos atentos…'}],docs:[{n:'Brief del cliente.pdf',tipo:'pdf'},{n:'Protocolo de servicio.pdf',tipo:'pdf'}]},
       {id:'op2',empresa:'Grupo Vértice',rubro:'Restaurantes · Multimarca',pais:'GT',etapa:'calif',valor:32000,contacto:'Luis Marroquín',cargo:'Dirección de Marca',contactoEmail:'marca@vertice.com',tel:'+502 5555 2020',prob:35,fuente:'Referido',cuentaId:'ac2',proximaAccion:'Llamada de seguimiento',proximaFecha:'2026-06-26',nota:'Interés en experiencia al cliente trimestral.',acts:[{id:'a03',tipo:'llamada',texto:'Llamada de calificación inicial',fecha:'2026-06-15 14:00',hecho:true}],correos:[],docs:[]},
@@ -29,7 +34,14 @@ CX.crmStore = CX.crmStore || {
   },
   list(){ if(!this._l)this._l=this.seed(); return this._l; },
   add(o){ this.list().push(Object.assign({id:'op'+Date.now().toString(36),etapa:'nuevo',prob:15,valor:0,acts:[],docs:[],correos:[]},o)); CX.bus&&CX.bus.emit('crm'); },
-  move(id,etapa){ const o=this.list().find(x=>x.id===id); if(o){o.etapa=etapa;if(etapa==='ganado')o.prob=100;if(etapa==='perdido')o.prob=0;CX.bus&&CX.bus.emit('crm');} return o; },
+  /* P1 (paquete V114→V125): gate + historial en el \u00fanico punto real de mutaci\u00f3n (move()) en
+     vez de en cada call-site (bot\u00f3n, drag-drop, ganar/perder) \u2014 as\u00ed ning\u00fan camino nuevo puede
+     saltarse la validaci\u00f3n. Antes cualquier admin mov\u00eda una oportunidad sin gate ni rastro. */
+  move(id,etapa){ const o=this.list().find(x=>x.id===id); if(!o)return null;
+    if(CX.permissions && !CX.permissions.gate('crm.edit',CX.permissions.ctx({entityType:'oportunidad',entityId:id}),CX.ui)) return o;
+    const before=o.etapa; o.etapa=etapa;if(etapa==='ganado')o.prob=100;if(etapa==='perdido')o.prob=0;
+    CX.automations&&CX.automations.logAction('Oportunidad movida', id, o.empresa+' · '+before+' \u2192 '+etapa);
+    CX.bus&&CX.bus.emit('crm'); return o; },
   acts(id){ const o=this.list().find(x=>x.id===id);if(o&&!o.acts)o.acts=[];return o?o.acts:[]; },
   addAct(id,a){ const o=this.list().find(x=>x.id===id);if(o){o.acts=o.acts||[];o.acts.unshift(Object.assign({id:'a'+Date.now().toString(36),fecha:new Date().toISOString().slice(0,16).replace('T',' ')},a));CX.bus&&CX.bus.emit('crm');} },
   tareas(){ const out=[];this.list().forEach(o=>{(o.acts||[]).forEach(a=>{if(a.tipo==='tarea'&&!a.hecho)out.push(Object.assign({op:o.empresa,opId:o.id},a));});});return out.sort((a,b)=>(a.vence||'').localeCompare(b.vence||'')); },
@@ -37,6 +49,7 @@ CX.crmStore = CX.crmStore || {
 
   /* ── Cuentas (empresas) ── */
   cuentasSeed(){
+    if(!(CX.dataSource ? CX.dataSource.showFixtures() : true)) return [];
     return [
       {id:'ac1',nombre:'Cadena Norte',rubro:'Supermercados',pais:'GT',sitio:'cadenanorte.gt',empleados:'500+',estado:'Prospecto',salud:72,owner:'Comercial 1',sucursales:24},
       {id:'ac2',nombre:'Grupo Vértice',rubro:'Restaurantes · Multimarca',pais:'GT',sitio:'vertice.com',empleados:'200-500',estado:'Prospecto',salud:55,owner:'Comercial 2',sucursales:18},
@@ -50,6 +63,7 @@ CX.crmStore = CX.crmStore || {
 
   /* ── Contactos ── */
   contactosSeed(){
+    if(!(CX.dataSource ? CX.dataSource.showFixtures() : true)) return [];
     return [
       {id:'ct1',nombre:'Ana Pérez',cargo:'Gerencia de Operaciones',cuentaId:'ac1',email:'ops@cadenanorte.gt',tel:'+502 5555 1010',rol:'Decisor'},
       {id:'ct2',nombre:'Luis Marroquín',cargo:'Dirección de Marca',cuentaId:'ac2',email:'marca@vertice.com',tel:'+502 5555 2020',rol:'Influenciador'},
@@ -69,7 +83,7 @@ CX.crmStore = CX.crmStore || {
 CX.module('crm', ({data,ui})=>{
   const host=ui.el('div');
   let crmView='dashboard'; // dashboard | pipeline | leads | cuentas | contactos | actividades | reportes
-  const cur=()=>((data.project().currency&&data.project().currency.GT)||'$');
+  const cur=()=>((data.period().currency&&data.period().currency.GT)||'$');
   const k=(n)=>cur()+' '+(n/1000).toFixed(0)+'k';
   const emojis={llamada:'📞',reunion:'👥',nota:'🗒️',tarea:'⏰',acta:'📝',meet:'🎥',correo:'✉️'};
 

@@ -3,7 +3,7 @@
    Separación SIEMPRE por moneda y por país del proyecto (genérico, cualquier país). */
 
 function _fin(data){
-  const p=data.project(), out={};
+  const p=data.period(), out={};
   p.countries.forEach(c=>{
     const v=data.visitas().filter(x=>x.pais===c&&['realizada','cuestionario','liquidada'].includes(x.estado));
     const hon=v.reduce((a,x)=>a+x.honorario,0);
@@ -16,7 +16,7 @@ function _fin(data){
 const _m=(cur,n)=>`${cur} ${Number(n).toLocaleString('es-GT')}`;
 
 CX.module('financiero', ({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
   const fp=CX.fin.porPais(data);
   const modelLbl = p.modelo==='delegado' ? 'Delegado (franquicia)' : 'Facturado directamente';
 
@@ -136,7 +136,7 @@ CX.module('financiero', ({data,ui})=>{
           <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">⏳ Cuentas por cobrar (CxC)</div><div style="font-size:20px;font-weight:800;color:var(--amber);font-family:var(--disp)">${d.cur} ${d.cxc.toLocaleString()}</div></div>
         </div>
         <b style="font-size:13px">Liquidaciones del periodo (${liqs.length})</b>
-        <div style="overflow-x:auto;margin-top:10px;max-height:260px;overflow-y:auto">${liqs.length?`<table class="tbl"><thead><tr><th>Visita</th><th>Shopper</th><th>Total</th><th>Estado</th></tr></thead><tbody>${liqs.map(l=>`<tr><td style="font-size:12px"><b>${l.sucursal||l.visitaId}</b></td><td style="font-size:12px">${l.shopper||'—'}</td><td>${d.cur} ${(l.total||0).toLocaleString()}</td><td>${ui.estadoBadge?ui.estadoBadge(l.estado):l.estado}</td></tr>`).join('')}</tbody></table>`:ui.empty('💸','Sin liquidaciones en este periodo.')}</div>`);
+        <div style="overflow-x:auto;margin-top:10px;max-height:260px;overflow-y:auto">${liqs.length?`<table class="tbl"><thead><tr><th>Visita</th><th>Shopper</th><th>Total</th><th>Estado</th><th>Pago</th></tr></thead><tbody>${liqs.map(l=>`<tr><td style="font-size:12px"><b>${l.sucursal||l.visitaId}</b></td><td style="font-size:12px">${l.shopper||'—'}</td><td>${d.cur} ${(l.total||0).toLocaleString()}</td><td>${ui.estadoBadge?ui.estadoBadge(l.estado):l.estado}</td><td>${(()=>{const v=data._visitas.find(x=>x.id===l.visitaId);const vc=v&&data.visitContract?data.visitContract(v):null;return vc&&vc.paymentState!=='no_aplica'?ui.bdg(vc.paymentState,vc.paymentState==='confirmado'?'g':'n'):'—';})()}</td></tr>`).join('')}</tbody></table>`:ui.empty('💸','Sin liquidaciones en este periodo.')}</div>`);
     }));
     /* KPIs adicionales dentro del tile — sólo responde si no es ya un finDrill */
     document.querySelectorAll('[data-c]').forEach(el=>{ if(!el.classList.contains('finDrill')) return; });
@@ -182,7 +182,7 @@ CX.module('financiero', ({data,ui})=>{
 });
 
 CX.module('movimientos', ({data,ui})=>{
-  const p=data.project(), cur=p.currency[p.countries[0]];
+  const p=data.period(), cur=p.currency[p.countries[0]];
   const seed=[
     {tipo:'ingreso',cat:'Anticipo cliente',pais:p.countries[0],monto:40000,fecha:'2026-06-03',desc:'Anticipo del proyecto',estado:'Conciliado'},
     {tipo:'egreso',cat:'Pago lote #L-204',pais:p.countries[0],monto:-18240,fecha:'2026-06-12',desc:'Pago a evaluadores',estado:'Pagado',origen:'lote'},
@@ -409,7 +409,7 @@ CX.module('movimientos', ({data,ui})=>{
       ui.modal('Registrar cuenta por '+(k==='cxc'?'cobrar':'pagar'),`
         <p style="font-size:12px;color:var(--t2);margin-bottom:10px">Útil para cargar saldos iniciales en la importación o registrar deudas/derechos del periodo.</p>
         <div class="grid g2" style="gap:10px 12px">
-          <div style="grid-column:1/3"><label class="lbl">Concepto / contraparte</label><input class="inp" id="ctCon" list="ctConList" placeholder="${k==='cxc'?'Cliente / casa matriz':'Proveedor / financiamiento'}"></div><datalist id="ctConList">${(k==="cxc"?CX.finStore.cxc(pid()):CX.finStore.cxp(pid())).map(r=>`<option value="${r.concepto}">`).join("")}${CX.data._visitas.filter(v=>v.projectId===CX.data.currentProjectId).map(v=>v.shopper).filter((s,i,a)=>s&&a.indexOf(s)===i).map(s=>`<option value="${s}">`).join("")}</datalist>
+          <div style="grid-column:1/3"><label class="lbl">Concepto / contraparte</label><input class="inp" id="ctCon" list="ctConList" placeholder="${k==='cxc'?'Cliente / casa matriz':'Proveedor / financiamiento'}"></div><datalist id="ctConList">${(k==="cxc"?CX.finStore.cxc(pid()):CX.finStore.cxp(pid())).map(r=>`<option value="${r.concepto}">`).join("")}${CX.data._visitas.filter(v=>v.projectId===CX.data.currentPeriodId).map(v=>v.shopper).filter((s,i,a)=>s&&a.indexOf(s)===i).map(s=>`<option value="${s}">`).join("")}</datalist>
           <div><label class="lbl">Monto (${cur})</label><input class="inp" id="ctMonto" type="number"></div>
           <div><label class="lbl">País</label><select class="sel" id="ctPais"><option value="">—</option>${p.countries.map(c=>`<option>${c}</option>`).join('')}</select></div>
           <div style="grid-column:1/3"><label class="lbl">Vence</label><input class="inp" id="ctVence" type="date"></div>
@@ -454,7 +454,7 @@ CX.module('movimientos', ({data,ui})=>{
 });
 
 CX.module('liquidaciones', ({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
 
   const host=ui.el('div');
   const draw=()=>{
@@ -590,7 +590,7 @@ CX.module('liquidaciones', ({data,ui})=>{
 });
 
 CX.module('lotes', ({data,ui})=>{
-  const p=data.project(), cur=p.currency[p.countries[0]];
+  const p=data.period(), cur=p.currency[p.countries[0]];
   const curHN=p.currency[p.countries[p.countries.length-1]];
   /* Bloque A (auditoría V101 — 20260711): este módulo mostraba SIEMPRE 3 lotes fabricados
      (#L-204/#L-205/#L-206 con evaluadores, sucursales, montos y estados fijos) sin ningún guard

@@ -16,6 +16,10 @@ const HN_CITIES = ['Tegucigalpa','San Pedro Sula','La Ceiba','Choloma','Comayagu
 
 /* ---------- Proyectos genéricos (rubros distintos → la IA adapta) ---------- */
 const _TENANT_ID = (window.CX && CX.BRAND && CX.BRAND.id) || 'tenant-demo';
+/* P0-1 (corrección 20260714): 'ronda' (etiqueta corta del periodo, ej. "JUN 26") estaba fija en
+   "JUN 26" — se deriva ahora del mes/año reales del sistema, para no mostrar una ronda de un mes
+   que ya pasó. */
+function _rondaActual(){ const d=new Date(); const MES=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC']; return MES[d.getMonth()]+' '+String(d.getFullYear()).slice(2); }
 const PROJECTS = [
   {
     id:'retail', tenantId:_TENANT_ID, name:'Proyecto Retail', client:'Cliente Retail (demo)', industry:'Retail · Cadena de tiendas',
@@ -23,7 +27,7 @@ const PROJECTS = [
     sucursales:24, honorario:{GT:60,HN:200}, honRecibe:{GT:170,HN:520}, modelo:'directo', isr:5, regalias:10, boleto:{GT:33,HN:127}, combo:'Reembolso de compra', comboAmt:{GT:121,HN:291},
     scenarios:['Compra estándar','Fin de semana','Cliente incógnito'],
     quincenas:['Quincena 1','Quincena 2'], nVisitas:44,
-    canales:['App móvil','Tienda física','Teléfono'], formato:'Compra incógnita', ronda:'JUN 26',
+    canales:['App móvil','Tienda física','Teléfono'], formato:'Compra incógnita', ronda:_rondaActual(),
     restriccion:'No haber visitado esta sucursal en los últimos 2 meses.',
     cuestionario:{modo:'externa', url:'https://forms.example.com/retail', label:'Formulario web del cliente'},
     pago:{logica:'Pago 30 días después de submitir el cuestionario.', diasPago:30, moneda:'local'},
@@ -37,7 +41,7 @@ const PROJECTS = [
     sucursales:18, honorario:{GT:90,HN:240}, honRecibe:{GT:230,HN:600}, modelo:'directo', isr:5, regalias:0, boleto:{GT:0,HN:0}, combo:null, comboAmt:{GT:0,HN:0},
     scenarios:['Apertura de cuenta','Solicitud de préstamo','Atención telefónica'],
     quincenas:['Quincena 1','Quincena 2'], nVisitas:30,
-    canales:['Agencia','Teléfono','App'], formato:'Cliente incógnito', ronda:'JUN 26',
+    canales:['Agencia','Teléfono','App'], formato:'Cliente incógnito', ronda:_rondaActual(),
     restriccion:'No haber sido atendido por el mismo asesor en 90 días.',
     cuestionario:{modo:'interna', url:'', label:'Cuestionario dentro de la plataforma'},
     pago:{logica:'Pago al cierre de quincena validada.', diasPago:15, moneda:'local'},
@@ -51,7 +55,7 @@ const PROJECTS = [
     sucursales:30, honorario:{GT:75}, honRecibe:{GT:190}, modelo:'delegado', isr:0, regalias:0, boleto:{GT:0}, combo:'Combo + bebida', comboAmt:{GT:90},
     scenarios:['Almuerzo','Cena fin de semana','Drive-thru'],
     quincenas:['Quincena 1','Quincena 2'], nVisitas:34,
-    canales:['Salón','Drive-thru','Delivery'], formato:'Experiencia de consumo', ronda:'JUN 26',
+    canales:['Salón','Drive-thru','Delivery'], formato:'Experiencia de consumo', ronda:_rondaActual(),
     restriccion:'Máximo 1 visita por shopper a la misma marca por quincena.',
     cuestionario:{modo:'link', url:'', label:'Link distinto por cada visita'},
     pago:{logica:'Pago semanal de lotes validados.', diasPago:7, moneda:'local'},
@@ -76,8 +80,35 @@ const SHOPPERS = Array.from({length:16},(_,i)=>{
     visitas:Math.floor(r()*22)+2, postulaciones:Math.floor(r()*14)+1,
     promCuest:+(0.5+r()*2.2).toFixed(1), certs:Math.floor(r()*6)+1,
     honorarioPref: r()>0.8 ? 'Preferente' : 'Estándar',
+    perfilCompleto:true,
   };
 });
+/* P0-3 (paquete V110→V111, 20260714): las 16 semillas de arriba son todas perfiles OPERATIVOS
+   completos — no existía ningún registro que representara una fuente que solo entrega una
+   REFERENCIA PROTEGIDA (código/país, sin rating/estado/honorario/contacto reales). Los módulos
+   (shoppers.js) entonces siempre tenían con qué "rellenar" rating/estado/honorario, y nunca se
+   probó honestamente el caso donde esos atributos simplemente NO EXISTEN. Se agregan aquí (solo
+   visibles en modo demo, igual que el resto de fixtures) dos registros de ejemplo: uno de
+   referencia protegida pura (sin ningún atributo operativo) y uno de perfil operativo PARCIAL
+   (tiene estado/visitas pero no contacto/banco) — para poder probar los 3 niveles reales:
+   protected_reference / operational_profile / full_authorized_profile. */
+(function _seedProtectionTiers(){
+  // deshabilitado en la generación base: se agregan más abajo, DESPUÉS de generar
+  // visitas/postulaciones, para que estos registros de ejemplo nunca puedan ser
+  // auto-asignados a una visita/postulación (no son shoppers operativos reales).
+})();
+/* nivel de dato disponible para UN shopper — nunca se infiere por ausencia, se declara por
+   presencia real de campos. protected_reference: no hay ningún atributo operativo (ni estado, ni
+   rating, ni conteo de visitas). operational_profile: hay atributos operativos pero no contacto
+   ni banca (PII). full_authorized_profile: hay datos de contacto/documento/banco (perfil
+   completo autorizado). */
+CX.data_shopperDataLevel = function(s){
+  if(!s) return 'protected_reference';
+  const hasContact = !!(s.whatsapp||s.email||s.dpi||s.banco||s.ctaNum);
+  if(hasContact) return 'full_authorized_profile';
+  const hasOperational = s.estado!==undefined || typeof s.visitas==='number' || s.rating!==undefined || s.honorarioPref!==undefined;
+  return hasOperational ? 'operational_profile' : 'protected_reference';
+};
 
 /* ---------- Sucursales genéricas por proyecto ---------- */
 function sucursalName(p,r,i){
@@ -88,8 +119,24 @@ function sucursalName(p,r,i){
 
 /* ---------- Generador de visitas (por proyecto) ---------- */
 const ESTADOS=['disponible','postulada','asignada','agendada','realizada','cuestionario','liquidada','fuera_rango'];
+/* P0-1 (paquete V110→V111, corrección adicional 20260714): las fechas de las visitas generadas
+   estaban ancladas a un literal fijo '2026-06-XX' — sin importar la fecha real del sistema, todo
+   el calendario de Mi Día (que deriva su mes de ESTAS fechas via periodMonth()) mostraba siempre
+   junio. Ahora las fechas se generan RELATIVAS al día real de hoy (_TODAY = new Date(), tomado al
+   cargar la app), con el mismo patrón de dispersión relativa que tenía el prototipo (disponible
+   desde antes, agendada/realizada/cuestionario progresando hacia el presente) — así el mes
+   correcto (el real) se refleja en Mi Día, Dashboard, Histórico, etc. sin tocar la lógica de
+   negocio de cada módulo (que ya lee estas fechas, nunca las inventa por su cuenta).
+   Usa Date real (no concatenación de string) para evitar días inválidos (ej. 31 de febrero) al
+   cruzar límites de mes. */
+const _MES_ABR=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const _TODAY = new Date();
+function _fmtISO(d){ return d.toISOString().slice(0,10); }
+function _shiftDays(base, days){ const d=new Date(base); d.setDate(d.getDate()+days); return d; }
 function genVisitas(p){
   const out=[]; const r=_rng(p.id.length*97+11);
+  const dMin=_shiftDays(_TODAY,-5), dMax=_shiftDays(_TODAY,6);
+  const rango=dMin.getDate()+'–'+dMax.getDate()+' '+_MES_ABR[dMax.getMonth()];
   for(let i=1;i<=p.nVisitas;i++){
     const su=sucursalName(p,r,i);
     const est=_pick(r,ESTADOS);
@@ -105,10 +152,10 @@ function genVisitas(p){
       combo:p.combo, comboAmt:(p.comboAmt&&p.comboAmt[su.pais])||0,
       estado:est, shopperId:shopper?shopper.id:null, shopper:shopper?shopper.nombre:null,
       shopperCode:shopper?shopper.code:null,
-      rango:'12–18 jun', disponibleDesde:'2026-06-'+_pad(10+i%12),
-      agendada:['agendada','realizada','cuestionario','liquidada'].includes(est)?'2026-06-'+_pad(12+i%6):null,
-      realizada:['realizada','cuestionario','liquidada'].includes(est)?'2026-06-'+_pad(13+i%5):null,
-      cuestFecha:['cuestionario','liquidada'].includes(est)?'2026-06-'+_pad(14+i%4):null,
+      rango, disponibleDesde:_fmtISO(_shiftDays(_TODAY,-5+(i%12))),
+      agendada:['agendada','realizada','cuestionario','liquidada'].includes(est)?_fmtISO(_shiftDays(_TODAY,-3+(i%6))):null,
+      realizada:['realizada','cuestionario','liquidada'].includes(est)?_fmtISO(_shiftDays(_TODAY,-4+(i%5))):null,
+      cuestFecha:['cuestionario','liquidada'].includes(est)?_fmtISO(_shiftDays(_TODAY,-3+(i%4))):null,
       submit:['liquidada'].includes(est),
     });
   }
@@ -151,25 +198,147 @@ const _postsAll   = genPosts(_visitasAll);
   }catch(e){}
 })();
 
+/* P0-3 (paquete V110→V111, 20260714): registros de ejemplo para probar los 3 niveles reales de
+   dato de un shopper — se agregan AQUÍ, después de generar visitas/postulaciones, para que
+   nunca puedan ser auto-asignados a una visita (no son shoppers operativos reales, son fixtures
+   de demostración del propio nivel de protección). Solo visibles en modo demo, igual que el
+   resto de fixtures del prototipo. */
+(function _seedProtectionTiers(){
+  const showFx = CX.dataSource ? CX.dataSource.showFixtures() : true;
+  if(!showFx) return;
+  SHOPPERS.push(
+    { id:'sh_ref_protegida', code:'REF-PROT-01', pais:'GT' }, // protected_reference: sin nombre/estado/rating/visitas
+    { id:'sh_op_parcial', code:'EVL-OP-01', nombre:'Evaluador OP-01', pais:'GT', ciudad:'Guatemala',
+      estado:'Activo', visitas:3 } // operational_profile: sin whatsapp/email/dpi/banco/rating/honorario
+  );
+})();
+
 /* ---------- Exposición ---------- */
 CX.data = {
   projects:PROJECTS, shoppers:SHOPPERS, _visitas:_visitasAll, _posts:_postsAll,
-  currentProjectId:(()=>{try{const s=localStorage.getItem('cx_start_project');if(s&&PROJECTS.some(p=>p.id===s))return s;}catch(e){}return PROJECTS[0].id;})(),
+  /* GAP1-v2 (paquete V112→V113, 20260714 — auditoría independiente encontró que V112 seguía
+     usando `currentProjectId` como accessor DERIVADO del periodo, no como almacenamiento propio
+     — project() y period() devolvían el mismo objeto, y existían DOS definiciones del alias de
+     cambio de programa (la segunda pisaba la primera). Corrección real esta vez:
+       - `currentProjectId` y `currentPeriodId` son AMBOS campos de almacenamiento reales —
+         ninguno es un getter/setter derivado del otro.
+       - `project()` y `period()` devuelven objetos DISTINTOS: period() es la entrada cruda de
+         this.projects; project() es un objeto separado cuyo `id` es el `currentProjectId`
+         (la programKey real) y que expone `activePeriodId` — nunca son el mismo objeto ni el
+         mismo id, aunque project() siga heredando la config visual del periodo (países,
+         honorario, formato...) por compat con el resto de la UI.
+       - Una sola definición del setter de proyecto/periodo/alias de programa (se eliminó
+         la segunda copia que existía cerca de duplicatePeriod()). */
+  currentPeriodId:(()=>{try{const s=localStorage.getItem('cx_start_project');if(s&&PROJECTS.some(p=>p.id===s))return s;}catch(e){}return PROJECTS[0].id;})(),
+  /* bootstrap real justo después del cierre del objeto (necesita this.programKey, definido en
+     este mismo objeto — no se puede invocar dentro del propio literal). Ver el pie de archivo. */
+  currentProjectId: null,
 
-  project(){return this.projects.find(p=>p.id===this.currentProjectId);},
-  setProject(id){this.currentProjectId=id;CX.bus&&CX.bus.emit('project');},
+  /* proxy expuesto en CX.data — implementación real vive arriba, antes de CX.data (necesita
+     estar disponible antes de que se generen shoppers de fixture). */
+  shopperDataLevel(s){ return CX.data_shopperDataLevel(s); },
 
-  /* ---- P0-6 (V94 reauditoría): alias inequívocos periodo↔proyecto ----
-     `currentProjectId` sigue siendo, por compat, el ID del PERIODO activo (cada
-     entrada de this.projects es un periodo). Estos alias existen para que ningún
-     módulo nuevo vuelva a confundir "periodo" con "proyecto real" (=programa). */
-  get currentPeriodId(){ return this.currentProjectId; },
-  set currentPeriodId(id){ this.currentProjectId = id; },
-  period(){ return this.project(); },
+  /* period(): la entrada CRUDA de this.projects (lo que este código llama "periodo").
+     project(): objeto DISTINTO — id real es currentProjectId (la programKey/proyecto real),
+     más activePeriodId apuntando al periodo activo. Hereda la config visual del periodo
+     (países, honorario, formato...) porque así está modelada la config en este prototipo
+     (duplicatePeriod() copia esa config a cada periodo nuevo del mismo proyecto), pero su
+     identidad (`id`) YA NO es la del periodo. */
+  period(){ return this.projects.find(p=>p.id===this.currentPeriodId); },
+  project(){
+    const per=this.period();
+    if(!per) return null;
+    return Object.assign({}, per, { id:this.currentProjectId, activePeriodId:per.id });
+  },
+  /* setProject(periodId): salto DIRECTO y sin restricción a un periodo específico — lo usan
+     acciones explícitas de navegación ("abrir este proyecto/periodo" desde Proyectos, Clientes,
+     Gestión de Periodos, Configuración). Sincroniza AMBOS campos (currentPeriodId Y
+     currentProjectId, recalculando la programKey real del periodo destino) para que nunca
+     queden desalineados tras un salto directo. periodSel/projSel (selectores de la barra
+     lateral) NO deben usar este método — usan setCurrentPeriod/setCurrentProject, que sí
+     validan. */
+  setProject(id){
+    const per=this.projects.find(p=>p.id===id);
+    if(!per) return false;
+    this.currentPeriodId=id;
+    this.currentProjectId=this.programKey(per);
+    CX.bus&&CX.bus.emit('project');
+    CX.bus&&CX.bus.emit('cx:period-changed', {periodId:id});
+    CX.bus&&CX.bus.emit('cx:project-changed', {projectId:this.currentProjectId});
+    return true;
+  },
+  /* setCurrentPeriod(periodId): Único punto para el selector de PERIODO. Valida que el periodo
+     pertenezca al PROYECTO actualmente activo (currentProjectId, almacenamiento real — ya no
+     derivado) — si no, RECHAZA (false, sin mutar nada). Muta SOLO currentPeriodId. */
+  setCurrentPeriod(periodId){
+    const per=this.projects.find(p=>p.id===periodId);
+    if(!per) return false;
+    if(this.programKey(per)!==this.currentProjectId) return false;
+    this.currentPeriodId=periodId;
+    CX.bus&&CX.bus.emit('project');
+    CX.bus&&CX.bus.emit('cx:period-changed', {periodId});
+    return true;
+  },
+  /* setCurrentProject(projectId): único punto para el selector de PROYECTO. Valida que exista
+     al menos un periodo con esa programKey; muta currentProjectId; conserva el periodo activo
+     si pertenece al nuevo proyecto, si no activa el periodo más reciente. Única definición —
+     el alias de programa (ver más abajo) apunta aquí, ya no hay una segunda copia. */
+  setCurrentProject(projectId){
+    const periods=this.periodsForProgram(projectId);
+    if(!periods.length) return false;
+    this.currentProjectId=projectId;
+    const periodChanged = !periods.some(p=>p.id===this.currentPeriodId);
+    if(periodChanged) this.currentPeriodId=periods[periods.length-1].id;
+    CX.bus&&CX.bus.emit('project');
+    CX.bus&&CX.bus.emit('cx:project-changed', {projectId});
+    /* GAP1 (V113\u2192V114): si el cambio de proyecto arrastra un cambio de periodo (el activo no
+       pertenec\u00eda al nuevo proyecto), co-emitir cx:period-changed con el periodo RESULTANTE \u2014
+       antes solo se emit\u00eda cx:project-changed y ning\u00fan listener de period-changed se enteraba. */
+    if(periodChanged) CX.bus&&CX.bus.emit('cx:period-changed', {periodId:this.currentPeriodId});
+    return true;
+  },
+  setProgram(key){ return this.setCurrentProject(key); },
   setPeriod(id){ this.setProject(id); },
   /* proyecto real = programa (agrupa periodos); alias de currentProgramKey()/proyectoActual() */
   program(){ return this.proyectoActual(); },
   projectGroup(){ return this.proyectoActual(); },
+  /* OLA1 (paquete V114→V115, contrato reutilizable 05-CONTRATOS-REUTILIZABLES-A-REFLEJAR.md):
+     objeto de contexto único {tenantId, projectId, periodId, countryScope, role, dataMode} —
+     compone fuentes YA existentes (no duplica lógica): CX.BRAND/CX.tenant para tenantId,
+     currentProjectId/currentPeriodId (estado real, ver arriba), scopePaises() para
+     countryScope, CX.session.effectiveRole() para role, CX.dataSource.mode para dataMode.
+     Uso previsto: cualquier módulo que hoy lee estos campos por separado puede migrar a
+     `CX.data.ctx()` sin cambiar el significado de ninguno. */
+  ctx(){
+    return {
+      tenantId: (CX.tenant && CX.tenant.id) || (CX.BRAND && CX.BRAND.tenantId) || (CX.BRAND && CX.BRAND.name) || null,
+      projectId: this.currentProjectId,
+      periodId: this.currentPeriodId,
+      countryScope: this.scopePaises(),
+      role: (CX.session && CX.session.effectiveRole && CX.session.effectiveRole()) || (CX.session && CX.session.role) || null,
+      dataMode: (CX.dataSource && CX.dataSource.mode) || 'demo',
+    };
+  },
+  /* OLA1 (05-CONTRATOS-REUTILIZABLES-A-REFLEJAR.md, contrato de Visita): nombres de campo
+     EXACTOS derivados de v.estado (el flujo real ya implementado) — alias de solo lectura, no
+     agrega estado nuevo ni cambia el significado de v.estado en ningún módulo existente. */
+  visitContract(v){
+    if(!v) return null;
+    const opMap={disponible:'disponible',postulada:'postulada',asignada:'asignada',agendada:'agendada',
+      realizada:'realizada',cuestionario:'realizada',liquidada:'realizada',fuera_rango:'fuera_rango'};
+    return {
+      operationalState: opMap[v.estado] || v.estado || null,
+      questionnaireState: v.estado==='cuestionario'||v.estado==='liquidada' ? (v.submit?'submitido':'pendiente_submitir') : (v.estado==='realizada'?'pendiente_cuestionario':'no_aplica'),
+      submissionState: v.submit ? 'submitido' : (v.estado==='liquidada'||v.estado==='cuestionario' ? 'pendiente_submitir' : 'no_aplica'),
+      liquidationState: CX.liq ? CX.liq.estadoFromVisita(v) : null,
+      paymentState: v.paymentSourceRef ? 'confirmado' : (v.estado==='liquidada' ? 'preview' : 'no_aplica'),
+      assignmentSource: v.origenAsignacion || (v.shopperId ? 'manual_o_postulacion' : null),
+      assignmentSyncStatus: v.hrSynced ? 'sincronizado' : 'pendiente_sync',
+      lastSyncedAt: v.hrSyncedAt || null,
+      reviewRequired: !!v.reviewRequired,
+      reviewReasons: v.reviewReasons || [],
+    };
+  },
 
   /* alta de proyecto nuevo (persistente, aislado: id propio, sin tocar los demás) */
   addProject(cfg){
@@ -180,7 +349,8 @@ CX.data = {
     }, cfg, {id, tenantId: cfg.tenantId || tenantId});
     this.projects.push(proj);
     this._saveCustomProjects();
-    this.currentProjectId = id;
+    this.currentPeriodId = id;
+    this.currentProjectId = this.programKey(proj);
     CX.bus && CX.bus.emit('project');
     return proj;
   },
@@ -236,7 +406,7 @@ CX.data = {
   },
   /* periodos (los "proyectos" internos) de un programa */
   periodsForProgram(key){ return this.projects.filter(p=>this.programKey(p)===key); },
-  currentProgramKey(){ const p=this.project(); return p?this.programKey(p):(this.programs()[0]&&this.programs()[0].key); },
+  currentProgramKey(){ return this.currentProjectId || (this.programs()[0]&&this.programs()[0].key); },
   /* ============================================================
      ARQUITECTURA REAL (genérica, no específica de un tenant):
        Proyecto  = "programa" (this.programs()) → entidad configurable
@@ -282,6 +452,24 @@ CX.data = {
   closePeriod(id){ this.setPeriodState(id,'cerrado'); },
   archivePeriod(id){ this.setPeriodState(id,'archivado'); },
   reopenPeriod(id){ this.setPeriodState(id,'activo'); },
+  /* P0-1 (paquete V110→V111): deriva el mes real de un periodo a partir de SUS PROPIAS fechas
+     (nunca un literal hardcodeado). Se usa como mes por defecto del calendario de Mi Día — si
+     el periodo cambia, el mes visible cambia con él porque se recalcula sobre datos reales del
+     periodo activo, no sobre un string fijo tipo '2026-06'. Si el periodo no tiene NINGUNA
+     visita con fecha (periodo vacío), cae al mes real del reloj del sistema — nunca a un mes de
+     otro periodo ni a una fecha inventada. */
+  periodDates(id){
+    const vs=this._visitas.filter(v=>v.projectId===id);
+    const out=[];
+    vs.forEach(v=>{ [v.agendada,v.realizada,v.cuestFecha,v.disponibleDesde].forEach(d=>{ if(d) out.push(d); }); });
+    return out;
+  },
+  periodMonth(id){
+    const dates=this.periodDates(id);
+    if(!dates.length) return new Date().toISOString().slice(0,7);
+    const sorted=dates.slice().sort();
+    return sorted[0].slice(0,7);
+  },
   duplicatePeriod(id, nombre){ /* crea un PERIODO NUEVO dentro del mismo proyecto (programKey) — nunca un proyecto nuevo */
     const src=this.projects.find(p=>p.id===id); if(!src)return null;
     const nid='proj-'+Date.now().toString(36);
@@ -290,12 +478,22 @@ CX.data = {
     this._saveCustomProjects();
     /* clona la estructura (sucursales/escenarios) pero NO las visitas ejecutadas — periodo nuevo arranca limpio */
     CX.bus&&CX.bus.emit('project'); return dup; },
-  /* al elegir un programa, activa su periodo más reciente (o el ya activo si pertenece) */
-  setProgram(key){ const periods=this.periodsForProgram(key); if(!periods.length)return; if(periods.some(p=>p.id===this.currentProjectId))return; this.setProject(periods[periods.length-1].id); },
 
-  visitas(){const arr=this._visitas.filter(v=>v.projectId===this.currentProjectId);return this.scopePaises()?arr.filter(v=>this.inScope(v.pais)):arr;},
-  posts(){const arr=this._posts.filter(p=>p.projectId===this.currentProjectId);return this.scopePaises()?arr.filter(p=>this.inScope(p.pais)):arr;},
-  shoppersFor(){const cs=this.project().countries;const sc=this.scopePaises();return this.shoppers.filter(s=>cs.includes(s.pais)&&this.inScope(s.pais));},
+  visitas(){const arr=this._visitas.filter(v=>v.projectId===this.currentPeriodId);return this.scopePaises()?arr.filter(v=>this.inScope(v.pais)):arr;},
+  posts(){const arr=this._posts.filter(p=>p.projectId===this.currentPeriodId);return this.scopePaises()?arr.filter(p=>this.inScope(p.pais)):arr;},
+  shoppersFor(){const cs=this.period().countries;const sc=this.scopePaises();return this.shoppers.filter(s=>cs.includes(s.pais)&&this.inScope(s.pais));},
+
+  /* ---- P0-3/GAP3 (paquete V111→V112, 20260714): pool de shoppers RANKEABLES ----
+     Antes el ranking (Dashboard) y los KPIs de completitud/preferente en este módulo mezclaban
+     referencias protegidas y perfiles sin rating con perfiles reales, usando `rating||0`/
+     `!perfilCompleto` sin distinguir nivel de dato — una referencia protegida terminaba
+     ordenada en el ranking con '0' y contada como "perfil incompleto" aunque nunca fue un
+     perfil. Este helper es la Única fuente para "quién es rankeable": nivel de dato distinto de
+     protected_reference Y rating numérico real (nunca 0 fabricado). */
+  rankableShoppers(pool){
+    const arr = pool || this.shoppersFor();
+    return arr.filter(s => this.shopperDataLevel(s)!=='protected_reference' && Number.isFinite(s.rating));
+  },
 
   /* ---- Fase 5: alcance por país (roles coordinador/aliado, scopeCountry:true) ----
      Restringe SOLO cuando el usuario en sesión trae países asignados (u.scopePaises).
@@ -312,7 +510,7 @@ CX.data = {
     const v=this._visitas.find(x=>x.id===id); if(!v) return null;
     v.estado=estado;
     if(dateField && dateVal) v[dateField]=dateVal;
-    if(CX.hr) CX.hr.writeBack(this.project(), v);
+    if(CX.hr) CX.hr.writeBack(this.period(), v);
     CX.bus && CX.bus.emit('visit-flow');
     return v;
   },
@@ -324,7 +522,7 @@ CX.data = {
     if(!v||!s) return null;
     v.shopperId=s.id; v.shopper=s.nombre; v.shopperCode=s.code;
     if(v.estado==='disponible') v.estado='asignada';
-    if(CX.hr) CX.hr.writeBack(this.project(), v);
+    if(CX.hr) CX.hr.writeBack(this.period(), v);
     CX.bus && CX.bus.emit('visit-flow');
     return v;
   },
@@ -336,7 +534,7 @@ CX.data = {
     const f=fechaPago||new Date().toISOString().slice(0,10);
     const porPais={}; let n=0; const detalle=[];
     const tenantId=(CX.BRAND&&CX.BRAND.id)||'tenant-demo';
-    const projectId=this.currentProjectId;
+    const projectId=this.currentPeriodId;
     const ref=(referencia||'').trim();
     /* T2 (paquete V109 — 20260712): agrupación homogénea + ID determinístico. Preservado sin
        cambios (no reabrir): tenantId+projectId+país+moneda(+referencia) → loteId = hash de la
@@ -396,7 +594,7 @@ CX.data = {
     // visitas VÁLIDAS (ver P0-2 arriba) — los inválidos jamás llegan a `detalle`.
     if(n && CX.finStore){
       detalle.forEach(d=>{
-        CX.finStore.addMov(this.currentProjectId,{tipo:'egreso',cat:'Honorario · '+d.shopper,pais:d.pais,monto:-d.monto,desc:d.sucursal+' · lote '+d.loteId,estado:'Pagado',origen:'lote',lote:d.loteId,shopper:d.shopper,visitaId:d.visitaId,fecha:f});
+        CX.finStore.addMov(this.currentPeriodId,{tipo:'egreso',cat:'Honorario · '+d.shopper,pais:d.pais,monto:-d.monto,desc:d.sucursal+' · lote '+d.loteId,estado:'Pagado',origen:'lote',lote:d.loteId,shopper:d.shopper,visitaId:d.visitaId,fecha:f});
       });
     }
     if(n) CX.bus && CX.bus.emit('visit-flow');
@@ -406,7 +604,7 @@ CX.data = {
   },
 
   /* conteo por fase con desglose por país */
-  _phaseCount(v,fn){const cs=this.project().countries;const o={t:v.filter(fn).length};cs.forEach(c=>o[c]=v.filter(x=>x.pais===c&&fn(x)).length);return o;},
+  _phaseCount(v,fn){const cs=this.period().countries;const o={t:v.filter(fn).length};cs.forEach(c=>o[c]=v.filter(x=>x.pais===c&&fn(x)).length);return o;},
   kpis(){
     const v=this.visitas();
     const P=(fn)=>this._phaseCount(v,fn);
@@ -444,3 +642,8 @@ CX.data = {
     };
   },
 };
+/* GAP1-v2 (V112\u2192V113): bootstrap de currentProjectId \u2014 ahora que es almacenamiento real (no
+   un getter derivado), necesita un valor inicial calculado UNA vez, justo despu\u00e9s de que el
+   objeto CX.data exista (this.programKey/this.period() no est\u00e1n disponibles dentro del propio
+   literal). Se deriva del periodo inicial (currentPeriodId), nunca de un literal fijo. */
+CX.data.currentProjectId = CX.data.programKey(CX.data.period());

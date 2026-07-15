@@ -22,7 +22,7 @@ CX.revisionStore = CX.revisionStore || {
     r.estado=estado; r.status=estado; r.hist=r.hist||[];
     /* estructura compatible con el contrato backend */
     r.tenantId=ctx.tenantId||(CX.BRAND&&CX.BRAND.id)||'default';
-    r.projectId=ctx.projectId||(CX.data&&CX.data.currentProjectId)||'';
+    r.projectId=ctx.projectId||(CX.data&&CX.data.currentPeriodId)||'';
     r.visitId=visitaId; r.assignmentId=ctx.assignmentId||''; r.shopperId=ctx.shopperId||''; r.hrRowId=ctx.hrRowId||r.hrRowId||'';
     r.source=ctx.source||'admin_ui'; r.updatedAt=now;
     const entry={estado, nota:nota||'', por:(CX.session&&CX.session.user&&CX.session.user.name)||'admin', fecha:now.slice(0,16).replace('T',' ')};
