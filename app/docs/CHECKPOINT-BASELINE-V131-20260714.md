@@ -41,59 +41,63 @@ Estado: **PASS_EXISTING_R11D_R14C_CERTIFICATION_OUTPUTS_APPLIED_TO_PLAN**.
 
 Estado: **PASS_R18D_VISIBLE_OVERLAYS**.
 
-Candidata recibida: `Prototype development request CXOrbia V131 fix.zip`, versión interna V132.
-
-Auditoría focalizada:
-
-- La candidata completa cambió únicamente `core/finanzas-core.js`, `core/build-lock.js` y agregó manifest/reporte V132 frente al paquete prototipo V131.
-- El archivo funcional de la candidata incluía el fix requerido, pero también regresaba `porPais()` de `data.project()` a `data.period()` frente al runtime empalmado.
-- Se promovió únicamente el cambio correcto: conservar `data.project()` en `porPais()` y agregar `period: () => p` al adapter local de `serieMensual()`.
-- No se importó el `build-lock` ni el manifest V132 del paquete porque cubrían el árbol prototipo, no la unión runtime activa.
-- Delta contra el checkpoint anterior: 1 archivo funcional y 1 ajuste CI para que R18D se ejecute ante cambios de Finanzas.
-
-Validación automática R18D, workflow `29437465036`:
-
-- 14 periodos únicos.
-- 616 visitas y 44 en JUL 2026.
-- 216 shoppers visibles.
-- 196 controles financieros exactos como `pending_financial_review`.
-- 92 casos financieros preservados en revisión.
-- 1 revisión shopper y 1 revisión de certificaciones.
+- Se conservó `data.project()` en `porPais()` y se agregó `period: () => p` únicamente al adapter local de `serieMensual()`.
+- No se importó el build-lock/manifest V132 del paquete aislado.
+- Finanzas, Shoppers y Certificación renderizan sin errores.
+- 14 periodos, 616 visitas, 44 visitas en JUL 2026 y 216 shoppers.
+- 196 controles financieros exactos y 92 casos en revisión.
 - 216 shoppers en HOLD de certificación.
-- Financiero, Shoppers y Certificación renderizados.
-- 0 errores de consola o página.
 - 0 pagos, lotes o certificaciones confirmadas.
-- 0 solicitudes automáticas repetidas de certificación.
-- 0 writes, imports, deploy o producción.
+- Workflow PASS: `29437465036`.
+
+### R18E — Firebase Hosting DEV controlado
+
+Estado: **PASS_HOSTING_DEV_V131_R18D_REMOTE_VERIFIED**.
+
+- Proyecto Firebase: `cxorbia-backend-dev`.
+- Target Hosting: `cxorbia-dev`.
+- URL: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible`.
+- Build: `v131-r18d-source-safe-20260715-r18e`.
+- Commit exacto desplegado: `fe9a498863dd8454c174971781e8dbbb606a3131`.
+- Firebase Hosting version: `projects/87461567267/sites/cxorbia-backend-dev/versions/32e865ce08af0d99`.
+- Workflow PASS: `29442279729`.
+- Proof remoto coincide con V131 y aggregate `6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348`.
+- Smoke remoto: 14 periodos, 616 visitas, 44 visitas activas, 216 shoppers, 196 controles financieros y 92 revisiones.
+- Finanzas, Shoppers y Certificación renderizados remotamente.
+- 0 errores de consola/página, blockers o warnings.
+- 0 producción, Firestore/Auth/Storage/HR writes, imports, Make, Gemini o pagos.
+- Credencial temporal eliminada del runner.
+- Workflow y autorización de uso único retirados; no queda deploy automático activo.
 
 ## Estado de continuidad
 
 - V110 queda como referencia histórica anterior, no como baseline activa.
-- V131 sigue siendo la baseline única; el hotfix no abrió una baseline paralela.
+- V131 sigue siendo la baseline única.
 - No se repite auditoría ni empalme de V131.
 - No se reconstruyen HR, periodos, shoppers, importadores, R11D ni R14C.
-- No se requiere otro paquete Claude para este P0.
-- La candidata V132 de transporte no se copia como árbol completo; quedó reconciliada sobre la baseline empalmada.
+- No se requiere otra candidata ni paquete Claude por R18D/R18E.
+- La validación visual es el único paso abierto de este bloque.
 
 ## Siguiente bloque exacto
 
-`R18E — FIREBASE HOSTING DEV CONTROLADO + VALIDACIÓN VISUAL HUMANA`.
+`R18E-VISUAL — VALIDACIÓN HUMANA DE HOSTING DEV`.
 
-Secuencia:
+Validar únicamente:
 
-1. Obtener autorización explícita separada para deploy únicamente a Firebase Hosting DEV.
-2. Construir la copia V131 source-safe con R18A/R18B/R18D.
-3. Ejecutar predeploy y smoke automático del build exacto.
-4. Desplegar solo Hosting DEV, sin Firestore/Auth/Storage writes, imports, HR writes ni producción.
-5. Entregar a Paula URL exacta, build, perfil, módulos y valores esperados.
-6. Registrar hallazgos visuales sin reabrir los bloques ya cerrados.
+1. Proyecto/periodo visible: Cinépolis, JUL 2026, 14 periodos y 44 visitas del periodo activo.
+2. Shoppers: 216 referencias protegidas; registrar como P1 cualquier KPI que infiera activo/completo sin fuente.
+3. Finanzas: módulo renderiza; 196 controles y 92 revisiones no deben presentarse como pagos confirmados.
+4. Certificación: HOLD/pendiente de fuente; no pedir nuevamente ni mostrar aprobaciones inventadas.
+5. Login, tenant, banderas, selector de periodo y textos visibles que Paula ya había reportado.
+
+Después de la validación visual, el siguiente carril operativo será una autorización separada para materialización controlada en Firebase DEV; no se ejecuta automáticamente.
 
 ## Bloqueos externos vigentes
 
-- Proyecto Firebase DEV nuevo y vacío: creación bloqueada por permisos/política del proveedor; no se reutiliza una base preexistente.
 - Pagos: falta evidencia por ítem de fecha, lote y actor antes de `paid`.
 - Certificaciones: fuente de carryover materializable todavía vacía.
+- Firestore/Auth/Storage continúan sin writes hasta autorización separada.
 
 ## Restricciones
 
-Sin deploy, producción, imports reales, Firestore/HR writes, Make/Gemini live ni pagos reales sin autorización específica.
+Sin producción, imports reales, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos reales sin autorización específica.
