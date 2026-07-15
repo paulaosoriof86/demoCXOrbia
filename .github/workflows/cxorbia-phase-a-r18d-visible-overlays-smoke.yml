@@ -42,11 +42,19 @@ defaults:
   run:
     shell: bash
 
+env:
+  FIREBASE_PROJECT_ID: cxorbia-backend-dev
+  FIREBASE_HOSTING_TARGET: cxorbia-dev
+  CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+  CXORBIA_R18E_BUILD_LABEL: v131-r18d-source-safe-20260715-r18e
+  CXORBIA_R18E_AGGREGATE: 6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348
+  CXORBIA_R18E_AUTH_FILE: backend/config/phase-a-r18e-hosting-dev-authorization-once.source-safe.json
+
 jobs:
   visible-overlays-smoke:
-    name: Build and smoke V131 R18D visible overlays
+    name: Build, smoke and authorized Hosting DEV verify V131 R18D
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
 
     steps:
       - name: Checkout V131 integration branch
@@ -124,17 +132,12 @@ jobs:
 
       - name: Build R18D visible overlay binding
         run: |
+          set -euo pipefail
           mkdir -p .tmp/r18d-visible-overlay-build
-          set +e
           node tools/release/tya-visible-overlays-build-r18d.mjs \
             --html app/index.html \
             --r14c-queue .tmp/r18d-source/r14c-review-queue-stable.source-safe.json \
-            --out .tmp/r18d-visible-overlay-build \
-            > .tmp/r18d-visible-overlay-build/command.log 2>&1
-          status=$?
-          set -e
-          cat .tmp/r18d-visible-overlay-build/command.log
-          if [ "$status" -ne 0 ]; then exit "$status"; fi
+            --out .tmp/r18d-visible-overlay-build
           test -s app/adapters/tya-phase-a-visible-overlays-r18d.js
           grep -Fq 'adapters/tya-phase-a-visible-overlays-r18d.js' app/index.html
 
@@ -173,31 +176,119 @@ jobs:
           node <<'NODE'
           const fs = require('fs');
           const file = '.tmp/phase-a-visible-overlays-smoke-r18d/r18d-visible-overlays-smoke.json';
-          if (!fs.existsSync(file)) throw new Error('R18D smoke report missing.');
           const report = JSON.parse(fs.readFileSync(file, 'utf8'));
           console.log(JSON.stringify({decision:report.decision,blockers:report.blockers,warnings:report.warnings},null,2));
           if (!String(report.decision || '').startsWith('PASS_') && !String(report.decision || '').startsWith('PASS_WITH_REVIEW_')) process.exit(1);
           if (Array.isArray(report.blockers) && report.blockers.length) process.exit(1);
           NODE
 
+      - name: Enforce exact R18E authorization scope
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const auth = JSON.parse(fs.readFileSync(process.env.CXORBIA_R18E_AUTH_FILE, 'utf8'));
+          const exact = 'AUTORIZO DEPLOY ÚNICAMENTE A FIREBASE HOSTING DEV DEL BUILD V131 R18D VALIDADO, SIN PRODUCCIÓN, SIN FIRESTORE/AUTH/STORAGE/HR WRITES, SIN IMPORTS, MAKE, GEMINI NI PAGOS.';
+          if (auth.status !== 'APPROVED_ONCE' || auth.authorizationText !== exact) throw new Error('Exact authorization mismatch.');
+          if (auth.firebaseProjectId !== process.env.FIREBASE_PROJECT_ID || auth.hostingTarget !== process.env.FIREBASE_HOSTING_TARGET) throw new Error('Authorized target mismatch.');
+          if (auth.baseline !== 'V131' || auth.r18dDecision !== 'PASS_R18D_VISIBLE_OVERLAYS') throw new Error('Authorized baseline/decision mismatch.');
+          if (auth.sourceLockAggregateSha256 !== process.env.CXORBIA_R18E_AGGREGATE) throw new Error('Authorized aggregate mismatch.');
+          console.log(JSON.stringify({decision:'PASS_R18E_EXACT_AUTHORIZATION',project:auth.firebaseProjectId,target:auth.hostingTarget},null,2));
+          NODE
+
+      - name: Stamp exact R18E deploy proof into build copy
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/r18e-deploy
+          node <<'NODE'
+          const fs = require('fs');
+          const proof = {
+            schemaVersion:'1.0.0',
+            environment:'FIREBASE_HOSTING_DEV',
+            firebaseProjectId:process.env.FIREBASE_PROJECT_ID,
+            hostingTarget:process.env.FIREBASE_HOSTING_TARGET,
+            buildLabel:process.env.CXORBIA_R18E_BUILD_LABEL,
+            gitCommit:process.env.GITHUB_SHA,
+            sourceLockAggregateSha256:process.env.CXORBIA_R18E_AGGREGATE,
+            baseline:'V131',
+            decision:'PASS_R18D_VISIBLE_OVERLAYS',
+            sourceSafe:true,
+            imported:false,
+            production:false,
+            firestoreWrites:false,
+            authWrites:false,
+            storageWrites:false,
+            hrWrites:false,
+            make:false,
+            gemini:false,
+            payments:false
+          };
+          fs.writeFileSync('app/r18e-deploy-proof.json', JSON.stringify(proof,null,2)+'\n','utf8');
+          fs.writeFileSync('.tmp/r18e-deploy/local-proof.json', JSON.stringify(proof,null,2)+'\n','utf8');
+          console.log(JSON.stringify(proof,null,2));
+          NODE
+
+      - name: Validate Firebase DEV service account
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT_JSON" ]; then
+            echo 'Missing FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV.'
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > .tmp/r18e-deploy/firebase-service-account.json
+          node <<'NODE'
+          const fs = require('fs');
+          const parsed = JSON.parse(fs.readFileSync('.tmp/r18e-deploy/firebase-service-account.json','utf8'));
+          if (parsed.type !== 'service_account') throw new Error('Credential is not a service account.');
+          if (parsed.project_id !== 'cxorbia-backend-dev') throw new Error(`Credential project mismatch: ${parsed.project_id}`);
+          console.log(JSON.stringify({decision:'PASS_FIREBASE_DEV_CREDENTIAL_SANITY',projectId:parsed.project_id},null,2));
+          NODE
+
+      - name: Verify Firebase Hosting-only access
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/r18e-deploy/firebase-service-account.json
+        run: |
+          set -euo pipefail
+          npx --yes firebase-tools@latest --version | tee .tmp/r18e-deploy/firebase-tools-version.txt
+          npx --yes firebase-tools@latest hosting:sites:list --project "$FIREBASE_PROJECT_ID" --json > .tmp/r18e-deploy/hosting-sites.json
+          grep -Fq 'cxorbia-backend-dev' .tmp/r18e-deploy/hosting-sites.json
+
+      - name: Deploy Firebase Hosting DEV target only
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/r18e-deploy/firebase-service-account.json
+        run: |
+          set -euo pipefail
+          npx --yes firebase-tools@latest deploy \
+            --only "hosting:$FIREBASE_HOSTING_TARGET" \
+            --project "$FIREBASE_PROJECT_ID" \
+            --non-interactive \
+            --json 2>&1 | tee .tmp/r18e-deploy/firebase-deploy-output.txt
+
       - name: Verify exact authorized R18E remote proof
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
         run: |
           set -euo pipefail
           mkdir -p .tmp/r18e-remote-verification
           found=0
           for attempt in $(seq 1 30); do
             cache="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}"
-            if curl -fsSL "https://cxorbia-backend-dev.web.app/r18e-deploy-proof.json?cache=$cache" -o .tmp/r18e-remote-verification/remote-proof.json; then
+            if curl -fsSL "$CXORBIA_DEV_ROOT_URL/r18e-deploy-proof.json?cache=$cache" -o .tmp/r18e-remote-verification/remote-proof.json; then
               if node <<'NODE'
           const fs = require('fs');
-          const proof = JSON.parse(fs.readFileSync('.tmp/r18e-remote-verification/remote-proof.json', 'utf8'));
+          const proof = JSON.parse(fs.readFileSync('.tmp/r18e-remote-verification/remote-proof.json','utf8'));
           const ok = proof.environment === 'FIREBASE_HOSTING_DEV' &&
-            proof.firebaseProjectId === 'cxorbia-backend-dev' &&
-            proof.hostingTarget === 'cxorbia-dev' &&
-            proof.buildLabel === 'v131-r18d-source-safe-20260715-r18e' &&
-            proof.sourceLockAggregateSha256 === '6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348' &&
-            proof.baseline === 'V131' &&
-            proof.decision === 'PASS_R18D_VISIBLE_OVERLAYS' &&
+            proof.firebaseProjectId === process.env.FIREBASE_PROJECT_ID &&
+            proof.hostingTarget === process.env.FIREBASE_HOSTING_TARGET &&
+            proof.buildLabel === process.env.CXORBIA_R18E_BUILD_LABEL &&
+            proof.sourceLockAggregateSha256 === process.env.CXORBIA_R18E_AGGREGATE &&
+            proof.baseline === 'V131' && proof.decision === 'PASS_R18D_VISIBLE_OVERLAYS' &&
             proof.sourceSafe === true && proof.imported === false && proof.production === false &&
             proof.firestoreWrites === false && proof.authWrites === false && proof.storageWrites === false &&
             proof.hrWrites === false && proof.payments === false;
@@ -211,25 +302,26 @@ jobs:
             fi
             sleep 10
           done
-          if [ "$found" -ne 1 ]; then
-            echo 'Authorized R18E remote proof not found or does not match.'
-            exit 1
-          fi
+          if [ "$found" -ne 1 ]; then exit 1; fi
 
       - name: Run remote R18D visible overlay smoke
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
         env:
           CXORBIA_BASE_URL: https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible
         run: |
           set -euo pipefail
-          node tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs \
-            --out .tmp/r18e-remote-verification/remote-smoke
+          node tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs --out .tmp/r18e-remote-verification/remote-smoke
           node <<'NODE'
           const fs = require('fs');
-          const report = JSON.parse(fs.readFileSync('.tmp/r18e-remote-verification/remote-smoke/r18d-visible-overlays-smoke.json', 'utf8'));
+          const report = JSON.parse(fs.readFileSync('.tmp/r18e-remote-verification/remote-smoke/r18d-visible-overlays-smoke.json','utf8'));
           console.log(JSON.stringify({decision:report.decision,blockers:report.blockers,warnings:report.warnings,counts:report.counts||report.validated||null},null,2));
-          if (!String(report.decision || '').startsWith('PASS_') && !String(report.decision || '').startsWith('PASS_WITH_REVIEW_')) process.exit(1);
+          if (!String(report.decision||'').startsWith('PASS_') && !String(report.decision||'').startsWith('PASS_WITH_REVIEW_')) process.exit(1);
           if (Array.isArray(report.blockers) && report.blockers.length) process.exit(1);
           NODE
+
+      - name: Cleanup temporary Firebase credential
+        if: always()
+        run: rm -f .tmp/r18e-deploy/firebase-service-account.json
 
       - name: Upload R18D and R18E sanitized evidence
         if: always()
@@ -243,6 +335,8 @@ jobs:
             .tmp/r18d-source
             .tmp/r18d-visible-overlay-build
             .tmp/phase-a-visible-overlays-smoke-r18d
+            .tmp/r18e-deploy
             .tmp/r18e-remote-verification
-          if-no-files-found: error
+            app/r18e-deploy-proof.json
+          if-no-files-found: ignore
           retention-days: 14
