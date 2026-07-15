@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0.0",
+  "authorizationId": "R18E_HOSTING_DEV_ONCE_20260715",
+  "status": "APPROVED_ONCE",
+  "authorizedAt": "2026-07-15",
+  "authorizedBy": "Paula",
+  "authorizationText": "AUTORIZO DEPLOY ÚNICAMENTE A FIREBASE HOSTING DEV DEL BUILD V131 R18D VALIDADO, SIN PRODUCCIÓN, SIN FIRESTORE/AUTH/STORAGE/HR WRITES, SIN IMPORTS, MAKE, GEMINI NI PAGOS.",
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "hostingTarget": "cxorbia-dev",
+  "hostingUrl": "https://cxorbia-backend-dev.web.app",
+  "baseline": "V131",
+  "r18dDecision": "PASS_R18D_VISIBLE_OVERLAYS",
+  "sourceLockAggregateSha256": "6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348",
+  "scopes": [
+    "firebase_hosting_dev_only",
+    "no_production",
+    "no_firestore_writes",
+    "no_auth_writes",
+    "no_storage_writes",
+    "no_hr_writes",
+    "no_imports",
+    "no_make",
+    "no_gemini",
+    "no_payments"
+  ],
+  "singleUse": true,
+  "cleanupRequired": true
+}
