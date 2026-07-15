@@ -29,6 +29,12 @@ const sensitiveTerms = contract.security.denyFieldNamesContaining.map(value => S
 const paths = plan.operations.map(item => item.documentPath);
 const sourceCounts = plan.counts?.source || {};
 const domainCounts = plan.counts?.byDomain || {};
+const overlayCounts = plan.counts?.existingOverlays || {};
+const visitOperations = plan.operations.filter(item => item.domain === 'visit');
+const liquidationOperations = plan.operations.filter(item => item.domain === 'liquidation');
+const visitFinancialLinks = visitOperations.filter(item => item.data?.financialControl?.appliedFrom === 'R14C_existing_result');
+const liquidationFinancialLinks = liquidationOperations.filter(item => item.data?.financialControlRef?.appliedFrom === 'R14C_existing_result');
+
 check('mode_is_dry_run', plan.mode === 'dry_run');
 check('writes_false', plan.writes === false && plan.safeState?.writes === false);
 check('imported_false', plan.imported === false && plan.safeState?.imported === false);
@@ -51,13 +57,27 @@ check(
 check('liquidation_count', domainCounts.liquidation === 572, String(domainCounts.liquidation));
 check('no_payment_operations', !plan.operations.some(item => ['payment', 'paymentLot', 'financeMovement'].includes(item.domain)));
 check('no_certification_operations', !plan.operations.some(item => item.domain === 'certification'));
-check('no_paid_records', !plan.operations.some(item => item.data?.paid === true || item.data?.paymentState === 'paid'));
-check('liquidations_not_lot_eligible', plan.operations.filter(item => item.domain === 'liquidation').every(item => item.data?.lotEligible === false));
-check('period_links_valid', plan.operations.filter(item => item.domain === 'visit').every(item => /^\d{4}-\d{2}$/.test(item.data?.periodId || '')));
+check('no_paid_records', !plan.operations.some(item => item.data?.paid === true || item.data?.paymentConfirmed === true || item.data?.paymentState === 'paid'));
+check('liquidations_not_lot_eligible', liquidationOperations.every(item => item.data?.lotEligible === false));
+check('period_links_valid', visitOperations.every(item => /^\d{4}-\d{2}$/.test(item.data?.periodId || '')));
 check('all_source_safe', plan.operations.every(item => item.data?.sourceSafe === true && item.data?.imported === false && item.data?.production === false));
 
-const visitIds = new Set(plan.operations.filter(item => item.domain === 'visit').map(item => item.data.visitId));
-check('liquidation_visit_links_valid', plan.operations.filter(item => item.domain === 'liquidation').every(item => visitIds.has(item.data.visitId)));
+check('r18b_materialization_overlay_present', plan.existingOverlays?.integrationId === 'R18B_MATERIALIZATION_PLAN_EXISTING_OUTPUTS');
+check('r18b_source_overlay_preserved', plan.existingOverlays?.sourceIntegrationId === 'R18B_APPLY_EXISTING_R11D_R14C_AND_CERTIFICATION_OUTPUTS');
+check('r14c_exact_visit_links_applied', visitFinancialLinks.length === 196, String(visitFinancialLinks.length));
+check('r14c_exact_liquidation_links_applied', liquidationFinancialLinks.length === 196, String(liquidationFinancialLinks.length));
+check('r14c_overlay_count_consistent', overlayCounts.financialExactLinksApplied === 196);
+check('r14c_review_queue_preserved', overlayCounts.financialReviewQueue === 92, String(overlayCounts.financialReviewQueue));
+check('r11d_review_preserved_without_identity_invention', overlayCounts.shopperSourceReviewQueue === 1 && plan.existingOverlays?.r11d?.identitiesInvented === 0);
+check('certification_hold_preserved', overlayCounts.certificationCarryoverConfirmed === 0 && plan.existingOverlays?.certification?.carryoverConfirmed === 0);
+check('payments_remain_blocked', plan.blockedDomains?.payments?.plannedOperations === 0 && plan.blockedDomains?.payments?.state === 'pending_financial_review');
+check('payment_lots_remain_blocked', plan.blockedDomains?.paymentLots?.plannedOperations === 0 && plan.blockedDomains?.paymentLots?.state === 'blocked');
+check('certifications_remain_blocked', plan.blockedDomains?.certifications?.plannedOperations === 0);
+check('exact_links_not_marked_paid', visitFinancialLinks.every(item => item.data.paymentConfirmed === false && item.data.paymentState === 'pending_financial_review'));
+check('linked_liquidations_need_confirmation', liquidationFinancialLinks.every(item => item.data.reviewRequired === true && item.data.reviewReasons?.includes('payment_confirmation_evidence_missing')));
+
+const visitIds = new Set(visitOperations.map(item => item.data.visitId));
+check('liquidation_visit_links_valid', liquidationOperations.every(item => visitIds.has(item.data.visitId)));
 
 function scan(value, trail = '') {
   if (Array.isArray(value)) return value.forEach((item, index) => scan(item, `${trail}[${index}]`));
@@ -79,6 +99,7 @@ const result = {
   counts: plan.counts,
   batches: plan.batches.map(batch => ({ batchId: batch.batchId, operationCount: batch.operationCount })),
   blockedDomains: plan.blockedDomains,
+  existingOverlays: plan.existingOverlays,
   checks,
   warnings,
   blockers: [...new Set(blockers)],
