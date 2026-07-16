@@ -1,13 +1,15 @@
 {
-  "version": "1.3.0",
+  "version": "1.3.1",
   "updatedAt": "2026-07-16",
   "repository": "paulaosoriof86/demoCXOrbia",
   "integrationBranch": "docs-tya-v6-v71-audit",
   "invariant": "acceptedCandidateVersion == empalmedVersion == activeBaselineVersion",
   "activeBaseline": {
     "version": "V131",
+    "runtimeIdentity": "V131 + R18D",
     "status": "accepted_and_empalmed",
-    "sourceZipSha256": "19424b2b709a4bff457454bbeff6abe47cd1c52c0f0388fd1a380008c8adc740",
+    "baseSourceZipSha256": "19424b2b709a4bff457454bbeff6abe47cd1c52c0f0388fd1a380008c8adc740",
+    "sourceZipSha256": "788a32a6d44e0686b0627a47e4e4e038fdbe7d3befd3dde2651ff542706918bb",
     "manifestFile": "docs/MANIFEST-V131-R18D-HOTFIX-R1.json",
     "aggregateSha256": "6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348",
     "originalRuntimeCommit": "d5c04054d445723dd0bc9e48acbab75953a4b08b",
@@ -26,12 +28,16 @@
         "workflowRun": 29437465036
       },
       {
-        "id": "TYA_PROJECT_PERIOD_CONTEXT_HF1",
+        "id": "TYA_PROJECT_PERIOD_CONTEXT_R15G",
         "sourceCandidateInternalVersion": "V156",
         "promotionMode": "explicit_backend_connection_overlay_pending_revalidation",
-        "functionalPath": "app/core/tya-phase-a-source-safe-preview.js",
-        "decision": "PENDING_V156_ATOMIC_REVALIDATION",
-        "reason": "Separate parent project identity from unique period identity so HR history and KPI consumers do not mix periods."
+        "functionalPaths": [
+          "app/core/tya-phase-a-source-safe-preview.js",
+          "tools/release/tya-source-safe-binding-build-r15g.mjs",
+          "tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs"
+        ],
+        "decision": "IMPLEMENTED_PENDING_R15G_GATES",
+        "reason": "Separate parent project identity from unique period identity, normalize HR dates, and keep submitted distinct from liquidation/payment."
       }
     ]
   },
@@ -49,11 +55,12 @@
     "status": "pending_audit",
     "accepted": false,
     "empalmed": false,
-    "gateDecision": "PENDING_ATOMIC_MATERIALIZATION_AND_TYA_SEMANTIC_GATES",
+    "gateDecision": "HOLD_COMPLETE_V156_SOURCE_UNAVAILABLE_PENDING_REATTACHMENT",
     "failures": [
       "previous_promotion_workflow_excluded_runtime_files",
       "candidate_not_materialized_on_integration_branch",
-      "project_period_kpi_history_gate_not_yet_passed_on_v156"
+      "available_transport_payload_truncated_and_corrupt",
+      "complete_v156_zip_not_found_in_repo_refs_objects_or_actions_artifacts"
     ],
     "nextExpectedVersion": "V156"
   },
