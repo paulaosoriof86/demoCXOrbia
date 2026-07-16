@@ -1,17 +1,47 @@
-# CHECKPOINT ACUMULADO — BASELINE V131
+# CHECKPOINT ACUMULADO — R19 / BASELINE INTEGRADA V131
 
-Fecha de actualización: 2026-07-15
+Fecha de actualización: 2026-07-16
 
-## Baseline viva
+## Estado de baseline y candidata
 
-- Versión: V131.
-- Estado: aceptada, empalmada y con hotfix R18D reconciliado.
-- Runtime original: `d5c04054d445723dd0bc9e48acbab75953a4b08b`.
-- Hotfix runtime: `593cdb9cc815cfa14d257968026bf3de886efba1`.
-- Manifest: `docs/MANIFEST-V131-R18D-HOTFIX-R1.json`.
-- Aggregate: `6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348`.
+- Baseline físicamente integrada/rollback actual: V131 + R18D.
+- Fuente única de trabajo Claude/prototipo: V155.
+- V155 no compite como segunda baseline: todavía es candidata y será promovida atómicamente cuando pase el único P0 restante.
+- Después de la promoción: candidata aprobada = baseline activa única; V131 queda solo como rollback histórico.
 
-## Bloques técnicos cerrados
+## Candidata V155
+
+- ZIP SHA-256: `5dfd63bb7568e5dba9d70d6817b03998b8cb01a3cc144ac17f63fbb8a729ab13`.
+- Manifest: `docs/MANIFEST-V155.json`.
+- File count: 204.
+- Aggregate: `1c32731bcb249d5e8c2291d89932afbedf42f15687a849865b613aa85f231f51`.
+- Manifest: 0 diferencias.
+- JavaScript: 0 fallos de sintaxis.
+
+### Cerrado en V155
+
+- Migración legacy de proyectos limitada al tenant actual.
+- Sanitización repetible de fixtures explícitos.
+- Proyectos de otros tenants preservados.
+- Retail/Banca/Restaurantes preservados.
+- `hasTechAccess()` false en build comercial.
+- Curso técnico `a_backend` oculto.
+- Finanzas protegida.
+- PWA con un único propietario.
+
+### Único P0 abierto
+
+Estado: **HOLD_ONE_COMMERCIAL_GATE_P0**.
+
+Persisten términos técnicos visibles en superficies comerciales. El gate debe recorrer por rol/módulo DOM, tooltips, toasts, modales, manuales, cursos y plantillas y terminar con 0 coincidencias.
+
+Paquete Claude:
+
+`PAQUETE-EXCLUSIVO-CLAUDE-V155-UNICO-P0-GATE-COMERCIAL-20260716.zip`
+
+SHA-256: `995e5964ada9f3cc3f730fe32de897c0b88394e2a6882a5c51debebf23ddc549`.
+
+## Bloques técnicos Phase A ya cerrados
 
 ### Plan Firestore source-safe
 
@@ -31,37 +61,16 @@ Fecha de actualización: 2026-07-15
 
 - `PASS_R18D_VISIBLE_OVERLAYS`.
 - Finanzas, Shoppers y Certificación renderizan sin error técnico.
-- Hotfix de Finanzas reconciliado y protegido.
+- Hotfix de Finanzas protegido.
 
 ### R18E Hosting DEV
 
 - `PASS_HOSTING_DEV_V131_R18D_REMOTE_VERIFIED`.
-- URL: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible`.
-- Build: `v131-r18d-source-safe-20260715-r18e`.
-- Workflow `29442279729`.
+- URL histórica validada: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible`.
+- Build histórico: `v131-r18d-source-safe-20260715-r18e`.
 - Sin producción, Firestore/Auth/Storage/HR writes, imports, Make, Gemini ni pagos.
-- Autorización y workflows temporales retirados.
 
-## R18E visual
-
-Estado: **NO_GO_R18E_VISUAL_BUSINESS_SEMANTICS**.
-
-La revisión de Paula confirmó que render y cero errores de consola no equivalen a funcionamiento correcto.
-
-P0 confirmados:
-
-1. KPI y detalle no coinciden (`Pend. realizar` 25 vs detalle 0).
-2. Sin asignar y sin agendar están mal separados.
-3. El periodo seleccionado no gobierna todos los módulos.
-4. Visitas Disponibles y Postulaciones muestran datos de otros estados/periodos.
-5. Falta periodo de medición/quincena en detalles.
-6. Shoppers infiere 216 activos/completos desde referencias protegidas.
-7. Shopper y cliente muestran periodo como proyecto y carecen de selector multiproyecto.
-8. Configuración de proyecto/tenant/países/frecuencia/medición/HR no queda visible y verificable de forma consistente.
-9. Dashboard Financiero mezcla análisis con creación y presenta datos no confirmados.
-10. PWA Windows muestra instrucciones en vez del prompt nativo.
-
-## Reglas confirmadas
+## Reglas operativas confirmadas
 
 - Pend. realizar = toda visita no realizada del periodo activo, aunque esté sin shopper o sin agenda.
 - Shopper activo = cuenta activa + visita realizada en los seis meses previos a la referencia del periodo.
@@ -69,34 +78,29 @@ P0 confirmados:
 - País agregado habilita bandera, moneda, filtros, alcance, shoppers y HR.
 - Cinépolis = frecuencia mensual y medición quincenal; la HR define la quincena de cada visita.
 
-## Paquete Claude
-
-`cxorbia-claude-r19-cierre-operativo-visual-20260715`.
-
-Incluye cinco P0, matriz de pruebas, evidencias y protocolo de empalme sin reproceso.
-
 ## Siguiente bloque exacto
 
-`R19 — CLAUDE + AUDITORÍA DELTA + GATES SEMÁNTICOS + EMPALME + DEV + VALIDACIÓN VISUAL + FREEZE`.
-
-Secuencia obligatoria:
-
-1. Claude entrega candidata completa derivada de V131+R18D.
-2. Auditoría delta focalizada; no repetir V131.
-3. Gates semánticos de KPI/detalle, periodo, roles, configuración, finanzas y PWA.
-4. Empalme atómico solo del delta validado.
-5. Hosting DEV y smoke remoto.
-6. Revisión visual de Paula por admin, shopper, cliente y PWA.
-7. Solo con aprobación, marcar R19 `FROZEN` y continuar Phase A.
+```text
+Claude entrega candidata incremental sobre V155
+→ auditoría delta solo del gate comercial
+→ gate automatizado por rol/módulo PASS
+→ promoción atómica como baseline única
+→ empalme TyA/backend
+→ Hosting DEV
+→ revisión visual Paula
+→ R19 FROZEN
+```
 
 ## No reprocesar
 
-- V131/V110.
+- V110/V131 como base de desarrollo.
 - HR, 14 periodos, 616 visitas y 216 referencias.
-- Importadores.
+- Importadores backend.
 - R11D/R14C.
 - 196 enlaces y 92 revisiones.
 - Hotfix R18D.
+- Migración de proyectos V155.
+- Finanzas/PWA/KPI/periodos ya incorporados por Claude.
 
 ## Restricciones
 
