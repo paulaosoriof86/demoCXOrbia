@@ -1,0 +1,91 @@
+name: CXOrbia R15G isolated executor
+
+on:
+  push:
+    branches:
+      - phase-a/r15g-context-fix-20260716
+    paths:
+      - '.github/workflows/r15g-isolated-executor.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: phase-a/r15g-context-fix-20260716
+          fetch-depth: 0
+      - name: Apply validated R15G patch
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          def rewrite(path, transform):
+            p=Path(path); text=p.read_text(encoding='utf-8'); updated=transform(text)
+            if updated==text: print(f'No textual change required: {path}')
+            p.write_text(updated,encoding='utf-8',newline='\n')
+
+          def builder(text):
+            text=text.replace("id:'tya', clientName:'TyA', name:'TyA', tagline:'Tenant TyA · Phase A controlada'","id:'tya', tenantId:'tya', clientName:'TyA', name:'TyA', tagline:'Tenant TyA · Phase A controlada'")
+            text=re.sub(r"  CX\.data\.currentProjectId = latest && latest\.id;\n(?:  CX\.data\.currentPeriodId = latest && latest\.id;\n)?  CX\.data\.sourceMode = 'tya_hr_live_multitab_source_safe_dev';","  CX.data.currentProjectId = 'cinepolis';\n  CX.data.currentPeriodId = latest && latest.id;\n  CX.data.sourceMode = 'tya_hr_live_multitab_source_safe_dev';",text,count=1)
+            text=text.replace('currentPeriodId:CX.data.currentProjectId,','currentPeriodId:CX.data.currentPeriodId,')
+            text=re.sub(r"CX\.dataSource\.warnings = shoppers\.length === \d+ \? \[[^\n]*?\] : \[\];","CX.dataSource.warnings = shoppers.length === 216 ? [] : ['Conteo shopper source-safe distinto al snapshot aprobado: ' + shoppers.length + '/216.'];",text,count=1)
+            text=text.replace("tenantId:'tya', projectId:'cinepolis', projectName:'Cinépolis', sourceTitle:snapshot.source && snapshot.source.title,","tenantId:'tya', projectId:'cinepolis', projectName:'Cinépolis', activePeriodId:latest && latest.id, sourceTitle:snapshot.source && snapshot.source.title,")
+            required=["tenantId:'tya', clientName:'TyA'","CX.data.currentProjectId = 'cinepolis';","CX.data.currentPeriodId = latest && latest.id;",'currentPeriodId:CX.data.currentPeriodId,','shoppers.length === 216','activePeriodId:latest && latest.id']
+            missing=[x for x in required if x not in text]
+            if missing: raise SystemExit('builder invariants missing: '+', '.join(missing))
+            return text
+
+          def bridge(text):
+            text=text.replace("`${projectId}::${periodKey || 'pending'}`","`${projectId}-${periodKey || 'pending'}`")
+            if "tenantId: 'tya',\n    clientName: 'TyA'," not in text:
+              text=text.replace("    clientName: 'TyA',","    tenantId: 'tya',\n    clientName: 'TyA',",1)
+            required=["`${projectId}-${periodKey || 'pending'}`","tenantId: 'tya',",'CX.data.currentProjectId = parentProjectId;','CX.data.currentPeriodId =']
+            missing=[x for x in required if x not in text]
+            if missing: raise SystemExit('bridge invariants missing: '+', '.join(missing))
+            return text
+
+          rewrite('tools/release/tya-source-safe-binding-build-r15f.mjs',builder)
+          rewrite('app/core/tya-phase-a-source-safe-preview.js',bridge)
+          rewrite('tools/qa/tya-phase-a-source-safe-visual-smoke.mjs',lambda s:re.sub(r"shoppers: Number\(process\.env\.CXORBIA_EXPECT_SHOPPERS \|\| \d+\)","shoppers: Number(process.env.CXORBIA_EXPECT_SHOPPERS || 216)",s))
+          rewrite('tools/qa/tya-phase-a-visible-data-smoke-r17.mjs',lambda s:re.sub(r"shoppers:\d+, currentPeriodVisits",'shoppers:216, currentPeriodVisits',s))
+          rewrite('.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml',lambda s:re.sub(r"CXORBIA_EXPECT_SHOPPERS: '\d+'","CXORBIA_EXPECT_SHOPPERS: '216'",s))
+          PY
+
+          node --check app/core/tya-phase-a-source-safe-preview.js
+          node --check tools/release/tya-source-safe-binding-build-r15f.mjs
+          node --check tools/qa/tya-phase-a-source-safe-visual-smoke.mjs
+          node --check tools/qa/tya-phase-a-visible-data-smoke-r17.mjs
+
+          cat > app/docs/CAMBIOS-BACKEND-ADDENDUM-R15G-PROJECT-PERIOD-CONTEXT-20260716.md <<'EOF'
+          # CAMBIOS BACKEND — R15G CONTEXTO PROYECTO/PERIODO TYA
+
+          Fecha: 2026-07-16
+
+          El adapter generado después del bridge volvía a colocar el periodo en `currentProjectId`. Se corrige la cadena completa:
+
+          - proyecto padre: `cinepolis`;
+          - periodo activo: `cinepolis-YYYY-MM`;
+          - `CX.BRAND.tenantId = tya`;
+          - contrato visible y consumidores leen `currentPeriodId`;
+          - conteo source-safe aprobado: 216 shoppers;
+          - bridge y adapter comparten la misma identidad estable.
+
+          Validación: sintaxis JS/MJS PASS. Falta ejecutar gates source-safe y smoke por roles antes de cualquier deploy.
+
+          Estado seguro: sin `app/modules/**`, deploy, producción, imports, writes, Make, Gemini ni pagos.
+          EOF
+          sed -i 's/^          //' app/docs/CAMBIOS-BACKEND-ADDENDUM-R15G-PROJECT-PERIOD-CONTEXT-20260716.md
+
+          rm -f .github/workflows/r15g-isolated-executor.yml .github/workflows/tya-context-r15g-fix.yml
+          git config user.name 'CXOrbia R15G Bot'
+          git config user.email 'cxorbia-r15g@example.invalid'
+          git add -A
+          git commit -m 'fix: align TyA project period context across bridge and adapter'
+          git push origin HEAD:phase-a/r15g-context-fix-20260716
