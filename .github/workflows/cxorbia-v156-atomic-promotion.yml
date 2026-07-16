@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - audit/v156-atomic-20260716
+      - docs-tya-v6-v71-audit
     paths:
       - '.candidate/v156-runtime-delta.zip'
       - 'tools/release/tya-promote-v156-atomic.mjs'
@@ -24,7 +25,7 @@ jobs:
       - name: Checkout isolated V156 branch
         uses: actions/checkout@v4
         with:
-          ref: audit/v156-atomic-20260716
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
 
       - name: Setup Node
@@ -121,12 +122,13 @@ jobs:
       - name: Commit atomically tested V156 tree to isolated branch
         run: |
           set -euo pipefail
-          rm -rf evidence package.json package-lock.json node_modules .tmp .tmp-v156-server.log .tmp-v156-server.pid
+          rm -rf .candidate evidence package.json package-lock.json node_modules .tmp-v156-server.log .tmp-v156-server.pid
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A .candidate
           git add app CAMBIOS-BACKEND.md RESUMEN-PARA-CLAUDE.md PENDIENTES-PROTOTIPO.md backend/contracts/prototype-baseline-registry-v1.json tools/release/tya-promote-v156-atomic.mjs .github/workflows/cxorbia-v156-atomic-promotion.yml
           git commit -m "feat: promote V156 atomically with TyA gates [skip ci]"
-          git push origin HEAD:audit/v156-atomic-20260716
+          git push origin HEAD:"${GITHUB_REF_NAME}"
 
       - name: Upload sanitized V156 evidence
         if: always()
@@ -143,5 +145,3 @@ jobs:
             app/docs/MANIFEST-V156-R15G-ATOMIC-R1.json
           if-no-files-found: warn
           retention-days: 14
-
-# trigger: 2026-07-16T21:36Z
