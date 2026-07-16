@@ -1,3 +1,26 @@
+## 2026-07-16 - V153 auditoría delta / dos P0 reales restantes
+
+- Candidata externa: `Prototype development request (4).zip`; identidad interna V153.
+- ZIP SHA-256: `bb5727668dc6356358b09867df7415b12c318b8bcf2e08e909d728644032d377`.
+- Manifest V153: 202 archivos, aggregate `ea2543b1726e4fc32fb4e2b5e95a58e5e057f499c812e2d905e07bbd91ccb1dd`, 0 diferencias.
+- JavaScript: 0 fallos de sintaxis.
+- Delta contra V151: 18 archivos modificados, 4 agregados y 0 eliminados.
+- Protecciones preservadas: Finanzas usa `data.project()` y adapter `project()/period()/visitas()`; PWA conserva un único listener.
+- P0 confirmado: migración de proyectos elimina residuos sin comprobar tenant y queda desactivada para residuos creados después de la marca de migración.
+- P0 confirmado: curso técnico `a_backend` no queda oculto porque el filtro usa el ID incorrecto `a_sistema central`.
+- P0 confirmado: `?internal=1` concede acceso técnico al admin comercial; parámetro público no equivale a protección.
+- P0 confirmado: persisten textos técnicos visibles en módulos/manuales comerciales y el gate transversal no fue completado.
+- Paquete focalizado: `PAQUETE-EXCLUSIVO-CLAUDE-V153-DOS-P0-REALES-RESTANTES-20260716.zip`, SHA-256 `dafb1f2c2fbc32027d79a3b344ae8da78250d63c4f737e2a1b50e218f632d86c`.
+- No hubo empalme, deploy, producción, imports ni writes.
+
+Clasificación:
+
+- `Reusable CXOrbia`: migración tenant-safe, sanitización repetible de fixtures y copy comercial transversal.
+- `Exclusivo cliente`: sin cambio TyA/Cinépolis.
+- `Claude/prototipo`: solo dos P0.
+- `Academia`: curso técnico y manuales fuera de audiencias comerciales.
+- `Sin impacto Claude`: TyA source-safe, Firebase, R11D/R14C y datos reales.
+
 ## 2026-07-16 - V151 auditoría comercial / dos P0 restantes
 
 - Candidata externa: `Prototype development request (3).zip`; identidad interna V151.
