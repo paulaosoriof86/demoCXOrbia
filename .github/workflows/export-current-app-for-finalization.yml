@@ -6,6 +6,7 @@ on:
       - '.github/workflows/export-current-app-for-finalization.yml'
 permissions:
   contents: read
+  issues: write
 jobs:
   export:
     runs-on: ubuntu-latest
@@ -20,3 +21,9 @@ jobs:
             app
             firebase.json
           if-no-files-found: error
+      - name: Record artifact run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/7/comments \
+            -f body="CURRENT_APP_EXPORT_RUN_ID=${{ github.run_id }}; HEAD=${{ github.sha }}"
