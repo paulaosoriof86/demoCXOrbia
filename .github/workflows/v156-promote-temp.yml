@@ -1,3 +1,4 @@
+# temporary one-use promotion workflow
 name: v156 temporary promotion
 on:
   push:
