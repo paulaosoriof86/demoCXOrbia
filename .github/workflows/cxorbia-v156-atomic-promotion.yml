@@ -143,3 +143,5 @@ jobs:
             app/docs/MANIFEST-V156-R15G-ATOMIC-R1.json
           if-no-files-found: warn
           retention-days: 14
+
+# trigger: 2026-07-16T21:30Z
