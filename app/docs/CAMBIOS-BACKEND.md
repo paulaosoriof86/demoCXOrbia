@@ -1,3 +1,24 @@
+## 2026-07-16 - V155 auditoría / único P0 comercial restante
+
+- Candidata externa: `Prototype development request (5).zip`; identidad interna V155.
+- ZIP SHA-256: `5dfd63bb7568e5dba9d70d6817b03998b8cb01a3cc144ac17f63fbb8a729ab13`.
+- Manifest V155: 204 archivos, aggregate `1c32731bcb249d5e8c2291d89932afbedf42f15687a849865b613aa85f231f51`, 0 diferencias.
+- JavaScript: 0 fallos de sintaxis.
+- P0 proyectos aprobado: limpieza tenant-scoped, sanitización repetible de fixtures y preservación de otros tenants.
+- Gates protegidos aprobados: `hasTechAccess=false`, curso `a_backend` oculto, Finanzas protegida y PWA con un único propietario.
+- Único P0 restante: copy técnico visible en superficies comerciales y ausencia de gate automatizado por rol/módulo.
+- Ejemplos confirmados en `core/ui.js`, `core/topbar.js`, `core/automations.js`, `core/manuales-data.js`, `modules/dashboard.js`, `modules/postulaciones.js`, `modules/hr-source.js`, `modules/importador.js`, `modules/integraciones.js`, `modules/marketing.js` y `modules/proyectos.js`.
+- Paquete focalizado: `PAQUETE-EXCLUSIVO-CLAUDE-V155-UNICO-P0-GATE-COMERCIAL-20260716.zip`, SHA-256 `995e5964ada9f3cc3f730fe32de897c0b88394e2a6882a5c51debebf23ddc549`.
+- No hubo empalme, deploy, producción, imports ni writes.
+
+Clasificación:
+
+- `Reusable CXOrbia`: gate automatizado de lenguaje comercial por rol/módulo.
+- `Exclusivo cliente`: sin cambio TyA/Cinépolis.
+- `Claude/prototipo`: un único P0.
+- `Academia`: manuales/cursos comerciales sin jerga interna; técnico solo para audiencia protegida.
+- `Sin impacto Claude`: baseline registry, Hosting y empalme TyA permanecen posteriores.
+
 ## 2026-07-16 - V153 auditoría delta / dos P0 reales restantes
 
 - Candidata externa: `Prototype development request (4).zip`; identidad interna V153.
