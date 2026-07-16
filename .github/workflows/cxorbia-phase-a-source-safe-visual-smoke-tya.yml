@@ -5,25 +5,31 @@ on:
   push:
     branches:
       - docs-tya-v6-v71-audit
+      - phase-a/v156-atomic-recovery-20260716
     paths:
       - 'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs'
+      - 'tools/qa/tya-project-period-kpi-history-gate.mjs'
       - 'tools/qa/tya-phase-a-visible-data-smoke-r17.mjs'
       - 'tools/qa/tya-r17-human-findings-semantic-gate.mjs'
       - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
       - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
+      - 'app/core/tya-phase-a-source-safe-preview.js'
       - 'app/data/tya-hr-source-safe-periods.js'
       - '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml'
   pull_request:
     branches:
+      - docs-tya-v6-v71-audit
       - release/cxorbia-tya-rc-20260630
     paths:
       - 'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs'
+      - 'tools/qa/tya-project-period-kpi-history-gate.mjs'
       - 'tools/qa/tya-phase-a-visible-data-smoke-r17.mjs'
       - 'tools/qa/tya-r17-human-findings-semantic-gate.mjs'
       - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
       - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
+      - 'app/core/tya-phase-a-source-safe-preview.js'
       - 'app/data/tya-hr-source-safe-periods.js'
       - '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml'
 
@@ -41,7 +47,7 @@ jobs:
     timeout-minutes: 25
 
     steps:
-      - name: Checkout latest empalmed baseline
+      - name: Checkout candidate or active baseline
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -119,37 +125,41 @@ jobs:
           node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs \
             --out .tmp/phase-a-source-safe-visual-smoke
 
+      - name: Run project period KPI history gate
+        continue-on-error: true
+        env:
+          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
+          CXORBIA_EXPECT_TENANT_ID: tya
+          CXORBIA_EXPECT_PROJECT_ID: cinepolis
+          CXORBIA_EXPECT_PERIODS: '14'
+          CXORBIA_EXPECT_VISITS: '616'
+          CXORBIA_EXPECT_VISITS_PER_PERIOD: '44'
+        run: |
+          node tools/qa/tya-project-period-kpi-history-gate.mjs \
+            --out .tmp/tya-project-period-kpi-history-gate
+
       - name: Enforce fail-closed semantic decision
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs = require('fs');
-          const semanticPath = '.tmp/tya-r17-human-findings-semantic-gate/tya-r17-human-findings-semantic-gate-report.json';
-          const visiblePath = '.tmp/phase-a-visible-data-smoke-r17/visible-data-smoke-r17.json';
-          if (!fs.existsSync(semanticPath)) throw new Error('Semantic gate report missing.');
-          if (!fs.existsSync(visiblePath)) throw new Error('Visible smoke report missing.');
-          const semantic = JSON.parse(fs.readFileSync(semanticPath, 'utf8'));
-          const visible = JSON.parse(fs.readFileSync(visiblePath, 'utf8'));
-          console.log(`semantic=${semantic.decision}; blockers=${semantic.blockers?.length || 0}`);
-          console.log(`visible=${visible.decision}; blockers=${visible.blockers?.length || 0}`);
-          if (semantic.ok !== true || visible.ok !== true) {
-            console.error('NO_GO: TyA semantic/visible data mapping is not approved.');
+          const reports = [
+            ['semantic','.tmp/tya-r17-human-findings-semantic-gate/tya-r17-human-findings-semantic-gate-report.json'],
+            ['visible','.tmp/phase-a-visible-data-smoke-r17/visible-data-smoke-r17.json'],
+            ['project-period-kpi-history','.tmp/tya-project-period-kpi-history-gate/report.json']
+          ];
+          let failed = false;
+          for (const [name,file] of reports) {
+            if (!fs.existsSync(file)) throw new Error(`${name} report missing: ${file}`);
+            const result = JSON.parse(fs.readFileSync(file,'utf8'));
+            console.log(`${name}=${result.decision}; blockers=${result.blockers?.length || 0}; warnings=${result.warnings?.length || 0}`);
+            if (result.ok !== true) failed = true;
+          }
+          if (failed) {
+            console.error('NO_GO: TyA frontend/backend/source-safe context is not coherent.');
             process.exit(1);
           }
           NODE
-
-      - name: Upload compact semantic decision
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: tya-r17-semantic-gate-summary
-          path: |
-            .tmp/tya-r17-human-findings-semantic-gate/tya-r17-human-findings-semantic-gate-report.json
-            .tmp/tya-r17-human-findings-semantic-gate/tya-r17-human-findings-semantic-gate-report.md
-            .tmp/phase-a-visible-data-smoke-r17/visible-data-smoke-r17.json
-            .tmp/phase-a-visible-data-smoke-r17/visible-data-smoke-r17.md
-          if-no-files-found: error
-          retention-days: 14
 
       - name: Upload sanitized reports and screenshots
         if: always()
@@ -160,6 +170,7 @@ jobs:
             .tmp/phase-a-source-safe-visual-smoke
             .tmp/phase-a-visible-data-smoke-r17
             .tmp/tya-r17-human-findings-semantic-gate
+            .tmp/tya-project-period-kpi-history-gate
             .tmp/source-safe-binding-r15f
           if-no-files-found: error
           retention-days: 14
