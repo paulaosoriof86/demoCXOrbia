@@ -1,0 +1,174 @@
+name: CXOrbia Phase A R15G DEV Root Deploy
+
+# Manual-only Hosting DEV workflow.
+# It never runs on push or pull_request and never deploys production.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_dev_deploy:
+        description: 'Type DEPLOY_DEV_ROOT_R15G only after explicit Paula authorization and atomic source-lock GO.'
+        required: true
+        default: 'HOLD'
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+  checks: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+  FIREBASE_PROJECT_ID: cxorbia-backend-dev
+  FIREBASE_HOSTING_TARGET: cxorbia-dev
+  CXORBIA_HR_LIVE_SHEET_ID: 1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4
+
+jobs:
+  dev-root-deploy:
+    name: R15G DEV root deploy hosting only
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_dev_deploy == 'DEPLOY_DEV_ROOT_R15G' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout active integration branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Atomic baseline and fast-lane gates
+        run: |
+          set -euo pipefail
+          node tools/qa/verify-fast-lane-promotion-policy.mjs
+          node tools/qa/verify-prototype-baseline-atomicity.mjs
+          node --check app/core/build-lock.js
+
+      - name: Build normalized current TyA HR payload and canonical binding
+        env:
+          CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs
+          node tools/release/tya-source-safe-binding-build-r15g.mjs \
+            --html app/index.html \
+            --out .tmp/r15g-dev-deploy/source-safe-binding
+          grep -Fq "CX.data.currentProjectId = 'cinepolis'" app/adapters/tya-phase-a-source-safe-dev-adapter.js
+          grep -Fq 'CX.data.currentPeriodId = latest && latest.id' app/adapters/tya-phase-a-source-safe-dev-adapter.js
+          grep -q 'semanticNormalizer.*r15g' app/data/tya-hr-source-safe-periods.js
+
+      - name: Install Playwright for local predeploy gates
+        run: |
+          npm init -y
+          npm i -D playwright@1.47.2
+          npx playwright install --with-deps chromium
+
+      - name: Start local build copy
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/r15g-dev-deploy
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp/r15g-dev-deploy/server.log 2>&1 &
+          echo $! > .tmp/r15g-dev-deploy/server.pid
+          for attempt in $(seq 1 30); do
+            if curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat .tmp/r15g-dev-deploy/server.log || true
+          exit 1
+
+      - name: Run fail-closed local R15G gates
+        env:
+          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
+          CXORBIA_EXPECT_TENANT_ID: tya
+          CXORBIA_EXPECT_PROJECT_ID: cinepolis
+          CXORBIA_EXPECT_PERIODS: '14'
+          CXORBIA_EXPECT_VISITS: '616'
+          CXORBIA_EXPECT_SHOPPERS: '216'
+          CXORBIA_EXPECT_VISITS_PER_PERIOD: '44'
+          CXORBIA_MAX_SOURCE_AGE_HOURS: '24'
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-source-semantics-r15g-gate.mjs --out .tmp/r15g-dev-deploy/source-semantics
+          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs --out .tmp/r15g-dev-deploy/role-smoke
+          node tools/qa/tya-project-period-kpi-history-gate.mjs --out .tmp/r15g-dev-deploy/project-period-kpi-history
+
+      - name: Validate Firebase DEV secret without exposing it
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT_JSON" ]; then
+            echo 'Missing FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV.' >&2
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > .tmp/r15g-dev-deploy/firebase-service-account.json
+          node <<'NODE'
+          const fs=require('fs');
+          const file='.tmp/r15g-dev-deploy/firebase-service-account.json';
+          const value=JSON.parse(fs.readFileSync(file,'utf8'));
+          if(value.type!=='service_account') throw new Error('Secret is not a service account.');
+          if(value.project_id!=='cxorbia-backend-dev') throw new Error('Firebase project mismatch.');
+          if(!String(value.client_email||'').endsWith('@cxorbia-backend-dev.iam.gserviceaccount.com')) throw new Error('Service account domain mismatch.');
+          console.log('Firebase DEV credential sanity check passed.');
+          NODE
+
+      - name: Verify Firebase Hosting access
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/r15g-dev-deploy/firebase-service-account.json
+        run: |
+          set -euo pipefail
+          npx --yes firebase-tools@latest hosting:sites:list --project "$FIREBASE_PROJECT_ID" --json > .tmp/r15g-dev-deploy/hosting-sites.json
+          grep -q 'cxorbia-backend-dev' .tmp/r15g-dev-deploy/hosting-sites.json
+
+      - name: Deploy Hosting DEV only
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/r15g-dev-deploy/firebase-service-account.json
+        run: |
+          set -euo pipefail
+          npx --yes firebase-tools@latest deploy \
+            --only "hosting:$FIREBASE_HOSTING_TARGET" \
+            --project "$FIREBASE_PROJECT_ID" \
+            --non-interactive \
+            --json \
+            2>&1 | tee .tmp/r15g-dev-deploy/firebase-deploy-output.txt
+
+      - name: Remote R15G smoke on deployed DEV URL
+        env:
+          CXORBIA_BASE_URL: https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1
+          CXORBIA_EXPECT_TENANT_ID: tya
+          CXORBIA_EXPECT_PROJECT_ID: cinepolis
+          CXORBIA_EXPECT_PERIODS: '14'
+          CXORBIA_EXPECT_VISITS: '616'
+          CXORBIA_EXPECT_SHOPPERS: '216'
+          CXORBIA_EXPECT_VISITS_PER_PERIOD: '44'
+          CXORBIA_MAX_SOURCE_AGE_HOURS: '24'
+        run: |
+          set -euo pipefail
+          curl -fsSIL "$CXORBIA_DEV_ROOT_URL" > .tmp/r15g-dev-deploy/dev-root-headers.txt
+          node tools/qa/tya-source-semantics-r15g-gate.mjs --out .tmp/r15g-dev-deploy/remote-source-semantics
+          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs --out .tmp/r15g-dev-deploy/remote-role-smoke
+          node tools/qa/tya-project-period-kpi-history-gate.mjs --out .tmp/r15g-dev-deploy/remote-project-period-kpi-history
+
+      - name: Cleanup credential
+        if: always()
+        run: |
+          rm -f .tmp/r15g-dev-deploy/firebase-service-account.json
+
+      - name: Upload sanitized DEV deploy evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-r15g-dev-root-deploy-evidence
+          path: .tmp/r15g-dev-deploy
+          if-no-files-found: error
+          retention-days: 14
