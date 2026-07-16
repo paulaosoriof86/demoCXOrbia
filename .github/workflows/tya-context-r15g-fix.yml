@@ -144,4 +144,5 @@ jobs:
           git config user.email 'cxorbia-context@example.invalid'
           git add -A
           git commit -m 'fix: align TyA project period context across bridge and adapter'
+          git pull --rebase origin docs-tya-v6-v71-audit
           git push origin HEAD:docs-tya-v6-v71-audit
