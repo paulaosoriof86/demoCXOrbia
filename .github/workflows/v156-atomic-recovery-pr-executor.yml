@@ -1,13 +1,12 @@
-name: CXOrbia V156 atomic recovery PR executor
+name: CXOrbia V156 atomic recovery executor
 
 on:
-  pull_request:
+  push:
     branches:
       - docs-tya-v6-v71-audit
-    types: [opened, synchronize, reopened]
     paths:
-      - '.github/workflows/v156-atomic-recovery.yml'
-      - '.cxorbia/v156-promotion.patch.gz.b64'
+      - '.github/workflows/v156-atomic-recovery-pr-executor.yml'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -15,14 +14,13 @@ permissions:
 
 jobs:
   execute-isolated-recovery:
-    if: github.head_ref == 'phase-a/v156-atomic-recovery-20260716'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - name: Checkout exact recovery head
+      - name: Checkout isolated recovery branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: phase-a/v156-atomic-recovery-20260716
           fetch-depth: 0
 
       - name: Setup Node
@@ -76,7 +74,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: v156-atomic-recovery-pr-evidence
+          name: v156-atomic-recovery-executor-evidence
           path: .tmp/v156-atomic-recovery
           if-no-files-found: warn
           retention-days: 14
