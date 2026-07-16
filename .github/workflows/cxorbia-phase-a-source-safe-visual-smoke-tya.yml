@@ -1,36 +1,36 @@
-name: CXOrbia Phase A TyA Source-Safe Visual Smoke
+name: CXOrbia Phase A TyA R15G Source-Safe Gates
 
 on:
   workflow_dispatch:
   push:
     branches:
       - docs-tya-v6-v71-audit
-      - phase-a/v156-atomic-recovery-20260716
     paths:
-      - 'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs'
-      - 'tools/qa/tya-project-period-kpi-history-gate.mjs'
-      - 'tools/qa/tya-phase-a-visible-data-smoke-r17.mjs'
-      - 'tools/qa/tya-r17-human-findings-semantic-gate.mjs'
       - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs'
       - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r15g.mjs'
+      - 'tools/qa/tya-source-semantics-r15g-gate.mjs'
+      - 'tools/qa/tya-project-period-kpi-history-gate.mjs'
+      - 'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs'
+      - 'tools/qa/verify-fast-lane-promotion-policy.mjs'
       - 'app/core/tya-phase-a-source-safe-preview.js'
       - 'app/data/tya-hr-source-safe-periods.js'
+      - 'backend/contracts/prototype-baseline-registry-v1.json'
       - '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml'
   pull_request:
     branches:
       - docs-tya-v6-v71-audit
       - release/cxorbia-tya-rc-20260630
     paths:
-      - 'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs'
-      - 'tools/qa/tya-project-period-kpi-history-gate.mjs'
-      - 'tools/qa/tya-phase-a-visible-data-smoke-r17.mjs'
-      - 'tools/qa/tya-r17-human-findings-semantic-gate.mjs'
       - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
-      - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
-      - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r15g.mjs'
+      - 'tools/qa/tya-source-semantics-r15g-gate.mjs'
+      - 'tools/qa/tya-project-period-kpi-history-gate.mjs'
+      - 'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs'
       - 'app/core/tya-phase-a-source-safe-preview.js'
-      - 'app/data/tya-hr-source-safe-periods.js'
       - '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml'
 
 permissions:
@@ -41,10 +41,10 @@ defaults:
     shell: bash
 
 jobs:
-  source-safe-operational-visual-smoke:
-    name: TyA source-safe operational visual smoke
+  r15g-source-safe-gates:
+    name: TyA R15G source-safe semantic and role gates
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
 
     steps:
       - name: Checkout candidate or active baseline
@@ -55,23 +55,35 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Build and bind sanitized live TyA HR payload
+      - name: Build normalized live TyA HR payload and canonical binding
         env:
           CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
           CXORBIA_HR_LIVE_MAX_ROW: '140'
           CXORBIA_HR_LIVE_MAX_COL: AI
         run: |
           set -euo pipefail
-          node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
+          node tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs
           test -s app/data/tya-hr-source-safe-periods.js
-          grep -q 'sourceSafe' app/data/tya-hr-source-safe-periods.js
-          node tools/release/tya-source-safe-binding-build-r15f.mjs \
+          grep -q 'semanticNormalizer.*r15g' app/data/tya-hr-source-safe-periods.js
+          node tools/release/tya-source-safe-binding-build-r15g.mjs \
             --html app/index.html \
-            --out .tmp/source-safe-binding-r15f
+            --out .tmp/source-safe-binding-r15g
           grep -Fq 'data/tya-hr-source-safe-periods.js' app/index.html
           grep -Fq 'core/tya-phase-a-source-safe-preview.js' app/index.html
           grep -Fq 'adapters/tya-phase-a-source-safe-dev-adapter.js' app/index.html
           test -s app/adapters/tya-phase-a-source-safe-dev-adapter.js
+          grep -Fq "CX.data.currentProjectId = 'cinepolis'" app/adapters/tya-phase-a-source-safe-dev-adapter.js
+          grep -Fq 'CX.data.currentPeriodId = latest && latest.id' app/adapters/tya-phase-a-source-safe-dev-adapter.js
+
+      - name: Static syntax and fast-lane policy
+        run: |
+          set -euo pipefail
+          node --check tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs
+          node --check tools/release/tya-source-safe-binding-build-r15g.mjs
+          node --check tools/qa/tya-source-semantics-r15g-gate.mjs
+          node --check tools/qa/tya-project-period-kpi-history-gate.mjs
+          node --check app/core/tya-phase-a-source-safe-preview.js
+          node tools/qa/verify-fast-lane-promotion-policy.mjs
 
       - name: Install Playwright
         run: |
@@ -79,7 +91,7 @@ jobs:
           npm i -D playwright@1.47.2
           npx playwright install --with-deps chromium
 
-      - name: Start local app
+      - name: Start local source-safe app
         run: |
           set -euo pipefail
           python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp-source-safe-server.log 2>&1 &
@@ -95,24 +107,7 @@ jobs:
           echo 'Source-safe smoke server did not become ready.' >&2
           exit 1
 
-      - name: Run human-findings semantic gate
-        continue-on-error: true
-        env:
-          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
-        run: |
-          node tools/qa/tya-r17-human-findings-semantic-gate.mjs \
-            --base-url 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' \
-            --out .tmp/tya-r17-human-findings-semantic-gate
-
-      - name: Run visible TyA data smoke
-        continue-on-error: true
-        env:
-          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
-        run: |
-          node tools/qa/tya-phase-a-visible-data-smoke-r17.mjs \
-            --out .tmp/phase-a-visible-data-smoke-r17
-
-      - name: Run legacy route inventory smoke
+      - name: Run R15G source semantics gate
         continue-on-error: true
         env:
           CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
@@ -120,7 +115,21 @@ jobs:
           CXORBIA_EXPECT_PROJECT_ID: cinepolis
           CXORBIA_EXPECT_PERIODS: '14'
           CXORBIA_EXPECT_VISITS: '616'
-          CXORBIA_EXPECT_SHOPPERS: '213'
+          CXORBIA_EXPECT_SHOPPERS: '216'
+          CXORBIA_MAX_SOURCE_AGE_HOURS: '24'
+        run: |
+          node tools/qa/tya-source-semantics-r15g-gate.mjs \
+            --out .tmp/tya-source-semantics-r15g
+
+      - name: Run Admin Shopper Client source-safe smoke
+        continue-on-error: true
+        env:
+          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
+          CXORBIA_EXPECT_TENANT_ID: tya
+          CXORBIA_EXPECT_PROJECT_ID: cinepolis
+          CXORBIA_EXPECT_PERIODS: '14'
+          CXORBIA_EXPECT_VISITS: '616'
+          CXORBIA_EXPECT_SHOPPERS: '216'
         run: |
           node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs \
             --out .tmp/phase-a-source-safe-visual-smoke
@@ -138,14 +147,14 @@ jobs:
           node tools/qa/tya-project-period-kpi-history-gate.mjs \
             --out .tmp/tya-project-period-kpi-history-gate
 
-      - name: Enforce fail-closed semantic decision
+      - name: Enforce fail-closed R15G decision
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs = require('fs');
           const reports = [
-            ['semantic','.tmp/tya-r17-human-findings-semantic-gate/tya-r17-human-findings-semantic-gate-report.json'],
-            ['visible','.tmp/phase-a-visible-data-smoke-r17/visible-data-smoke-r17.json'],
+            ['source-semantics','.tmp/tya-source-semantics-r15g/report.json'],
+            ['role-smoke','.tmp/phase-a-source-safe-visual-smoke/phase-a-source-safe-visual-smoke-report.json'],
             ['project-period-kpi-history','.tmp/tya-project-period-kpi-history-gate/report.json']
           ];
           let failed = false;
@@ -159,18 +168,18 @@ jobs:
             console.error('NO_GO: TyA frontend/backend/source-safe context is not coherent.');
             process.exit(1);
           }
+          console.log('PASS_R15G_TYA_SOURCE_SAFE_GATES');
           NODE
 
       - name: Upload sanitized reports and screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: phase-a-tya-source-safe-visual-smoke
+          name: phase-a-tya-r15g-source-safe-gates
           path: |
+            .tmp/tya-source-semantics-r15g
             .tmp/phase-a-source-safe-visual-smoke
-            .tmp/phase-a-visible-data-smoke-r17
-            .tmp/tya-r17-human-findings-semantic-gate
             .tmp/tya-project-period-kpi-history-gate
-            .tmp/source-safe-binding-r15f
+            .tmp/source-safe-binding-r15g
           if-no-files-found: error
           retention-days: 14
