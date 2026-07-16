@@ -35,5 +35,5 @@ jobs:
           git add -A
           git commit -m "feat: promote V156 runtime as the only active version"
           FINAL_SHA=$(git rev-parse HEAD)
-          git push origin HEAD:docs-tya-v6-v71-audit
+          git push origin HEAD:tmp/v156-final-unique-20260716
           gh api repos/${{ github.repository }}/issues/7/comments -f body="V156_RUNTIME_FINAL_COMMIT=${FINAL_SHA}"
