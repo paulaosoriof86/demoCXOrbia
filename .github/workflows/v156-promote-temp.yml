@@ -1,0 +1,38 @@
+name: v156 temporary promotion
+on:
+  push:
+    branches: [tmp/v156-promotion-20260716]
+    paths:
+      - '.cxorbia/v156-promotion.patch.gz.b64'
+      - '.github/workflows/v156-promote-temp.yml'
+permissions:
+  contents: write
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply and validate V156 promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum .cxorbia/v156-promotion.patch.gz.b64
+          echo "d96784fac04b5ca03613fa790a46e63c5ca512da9d82b4cf4b6b0ad540d3a020  .cxorbia/v156-promotion.patch.gz.b64" | sha256sum -c -
+          base64 -d .cxorbia/v156-promotion.patch.gz.b64 | gzip -d > /tmp/v156.patch
+          echo "8bfb2a85e1c42d095f56fbac7367da54b2872503effb2a7af939aa8a471b9347  /tmp/v156.patch" | sha256sum -c -
+          git apply --check /tmp/v156.patch
+          git apply /tmp/v156.patch
+          rm -rf .cxorbia
+          (cd app && node docs/verify-manifest.mjs)
+          find app -name '*.js' -not -path 'app/docs/*' -print0 | xargs -0 -n1 node --check
+          python -m json.tool firebase.json >/dev/null
+          grep -q "const p=data.project()" app/core/finanzas-core.js
+          grep -q "project:()=>p, period:()=>p" app/core/finanzas-core.js
+          test "$(grep -R "addEventListener('beforeinstallprompt'" app/app.js app/core/pwa.js | wc -l)" -eq 1
+          git config user.name "CXOrbia Promotion Bot"
+          git config user.email "cxorbia-bot@example.invalid"
+          git add -A
+          git commit -m "feat: promote V156 as unique frontend baseline"
+          git push origin HEAD:tmp/v156-promotion-20260716
