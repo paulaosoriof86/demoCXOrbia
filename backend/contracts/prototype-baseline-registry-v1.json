@@ -1,5 +1,5 @@
 {
-  "version": "1.3.1",
+  "version": "1.3.2",
   "updatedAt": "2026-07-16",
   "repository": "paulaosoriof86/demoCXOrbia",
   "integrationBranch": "docs-tya-v6-v71-audit",
@@ -14,7 +14,7 @@
     "aggregateSha256": "6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348",
     "originalRuntimeCommit": "d5c04054d445723dd0bc9e48acbab75953a4b08b",
     "hotfixRuntimeCommit": "593cdb9cc815cfa14d257968026bf3de886efba1",
-    "validationHead": "3b14bc775170e9525c2deff6bb72a1bf785b2db6",
+    "validationHead": "bd8636f8f1899115b19cb13e875626c1532e541b",
     "accepted": true,
     "empalmed": true,
     "hotfixes": [
@@ -30,13 +30,27 @@
       {
         "id": "TYA_PROJECT_PERIOD_CONTEXT_R15G",
         "sourceCandidateInternalVersion": "V156",
-        "promotionMode": "explicit_backend_connection_overlay_pending_revalidation",
+        "promotionMode": "explicit_backend_connection_overlay_validated_on_current_source_safe_runtime",
         "functionalPaths": [
           "app/core/tya-phase-a-source-safe-preview.js",
           "tools/release/tya-source-safe-binding-build-r15g.mjs",
           "tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs"
         ],
-        "decision": "IMPLEMENTED_PENDING_R15G_GATES",
+        "decision": "PASS_R15G_TYA_SOURCE_SAFE_GATES",
+        "workflowRun": 29532682880,
+        "artifactId": 8389252633,
+        "artifactDigest": "sha256:cf030dafea6fd376e27484296822750fe02a76a8ba97e79ceba0c067af79ce71",
+        "evidence": {
+          "periods": 14,
+          "visits": 616,
+          "shoppers": 216,
+          "visitsPerActivePeriod": 44,
+          "numericDateSignals": 0,
+          "submittedAsLiquidated": 0,
+          "adminClientShopperRoutes": "PASS_WITH_ZERO_PAGE_OR_CONSOLE_ERRORS",
+          "projectPeriodKpiHistory": "PASS"
+        },
+        "warning": "DEV uses a fresh build-time HR snapshot; runtime live HR synchronization remains a separate production gate.",
         "reason": "Separate parent project identity from unique period identity, normalize HR dates, and keep submitted distinct from liquidation/payment."
       }
     ]
