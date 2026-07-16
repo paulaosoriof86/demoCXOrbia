@@ -9,6 +9,8 @@ Se detectó que una promoción de candidata podía aplicar parte del árbol nuev
 
 Desde ahora queda prohibido promover una candidata con exclusiones silenciosas sobre `app/index.html`, `app/app.js`, `app/core/**`, `app/modules/**`, `app/styles/**` o `app/sw.js`.
 
+También queda prohibido mantener más de una ruta de empalme abierta. Cuando una candidata nueva queda seleccionada como única fuente, los PRs y ramas de empalmes anteriores deben cerrarse o marcarse expresamente como rollback histórico. Solo PR #7 y la rama aislada de la candidata vigente pueden participar en el corte.
+
 ## 2. Regla atómica obligatoria
 
 Una candidata solo queda aceptada cuando, dentro del mismo bloque reproducible:
