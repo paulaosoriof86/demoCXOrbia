@@ -1,0 +1,82 @@
+name: CXOrbia V156 atomic recovery PR executor
+
+on:
+  pull_request:
+    branches:
+      - docs-tya-v6-v71-audit
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/v156-atomic-recovery.yml'
+      - '.cxorbia/v156-promotion.patch.gz.b64'
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  execute-isolated-recovery:
+    if: github.head_ref == 'phase-a/v156-atomic-recovery-20260716'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout exact recovery head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Execute reviewed recovery plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ ! -f .github/workflows/v156-atomic-recovery.yml ]; then
+            echo 'Recovery plan already consumed; no second promotion is allowed.'
+            exit 0
+          fi
+          python3 <<'PY'
+          from pathlib import Path
+          import os
+          src=Path('.github/workflows/v156-atomic-recovery.yml').read_text(encoding='utf-8').splitlines()
+          marker='      - name: Materialize V156, apply explicit overlays and validate'
+          try:
+              start=src.index(marker)
+          except ValueError:
+              raise SystemExit('Reviewed recovery step marker not found.')
+          run_idx=None
+          for i in range(start+1,len(src)):
+              if src[i]=='        run: |':
+                  run_idx=i+1
+                  break
+          if run_idx is None:
+              raise SystemExit('Reviewed recovery run block not found.')
+          out=[]
+          for line in src[run_idx:]:
+              if line.startswith('      - name:'):
+                  break
+              if line.startswith('          '):
+                  out.append(line[10:])
+              elif line.strip()=='' :
+                  out.append('')
+              else:
+                  raise SystemExit(f'Unexpected indentation in reviewed run block: {line!r}')
+          script='\n'.join(out)+'\n'
+          script=script.replace('${{ github.repository }}',os.environ['GITHUB_REPOSITORY'])
+          Path('/tmp/v156-atomic-recovery.sh').write_text(script,encoding='utf-8',newline='\n')
+          PY
+          chmod +x /tmp/v156-atomic-recovery.sh
+          /tmp/v156-atomic-recovery.sh
+
+      - name: Upload evidence if recovery stops
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v156-atomic-recovery-pr-evidence
+          path: .tmp/v156-atomic-recovery
+          if-no-files-found: warn
+          retention-days: 14
