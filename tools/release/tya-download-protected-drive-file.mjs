@@ -9,7 +9,7 @@ const output = process.env.V156_DRIVE_OUTPUT || '.candidate/v156-runtime-delta.z
 const expectedSha256 = process.env.V156_EXPECT_SHA256 || '';
 const diagnosticFile = process.env.V156_DRIVE_DIAGNOSTIC || '.tmp/v156-atomic/drive-diagnostic.json';
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '{}');
-const diagnostics = {schemaVersion:'1.0.0', fileId, output, attempts:[], success:false};
+const diagnostics = {schemaVersion:'1.0.1', fileId, output, attempts:[], success:false};
 
 const writeDiagnostic = () => {
   fs.mkdirSync(path.dirname(diagnosticFile), {recursive:true});
@@ -22,6 +22,7 @@ const fail = message => {
 };
 const b64url = value => Buffer.from(typeof value === 'string' ? value : JSON.stringify(value)).toString('base64url');
 const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+const safeSnippet = bytes => bytes.toString('utf8', 0, Math.min(bytes.length, 700)).replace(/[\r\n\t]+/g, ' ').replace(/\s{2,}/g, ' ').slice(0,700);
 
 if (!fileId) fail('Missing V156_DRIVE_FILE_ID.');
 if (serviceAccount.type !== 'service_account' || serviceAccount.project_id !== 'cxorbia-backend-dev' || !serviceAccount.private_key || !serviceAccount.client_email) {
@@ -58,7 +59,10 @@ for (const url of endpoints) {
     const response = await fetch(url, {headers:{authorization:`Bearer ${accessToken}`}, redirect:'follow'});
     const bytes = Buffer.from(await response.arrayBuffer());
     const digest = sha256(bytes);
-    diagnostics.attempts.push({endpoint:new URL(url).hostname, status:response.status, contentType:response.headers.get('content-type') || '', bytes:bytes.length, sha256:digest});
+    const contentType = response.headers.get('content-type') || '';
+    const attempt = {endpoint:new URL(url).hostname, status:response.status, contentType, bytes:bytes.length, sha256:digest};
+    if (!response.ok || contentType.includes('json') || contentType.includes('text/html')) attempt.responseSnippet = safeSnippet(bytes);
+    diagnostics.attempts.push(attempt);
     if (response.ok && (!expectedSha256 || digest === expectedSha256)) {
       fs.mkdirSync(path.dirname(output), {recursive:true});
       fs.writeFileSync(output, bytes);
