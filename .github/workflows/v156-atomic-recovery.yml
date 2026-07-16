@@ -1,0 +1,257 @@
+name: CXOrbia V156 atomic recovery
+
+on:
+  push:
+    branches:
+      - phase-a/v156-atomic-recovery-20260716
+    paths:
+      - '.github/workflows/v156-atomic-recovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout isolated recovery branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase-a/v156-atomic-recovery-20260716
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Materialize V156, apply explicit overlays and validate
+        id: recover
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/v156-atomic-recovery
+          exec > >(tee .tmp/v156-atomic-recovery/run.log) 2>&1
+
+          echo '== Verify isolated branch and payload =='
+          test "$(git branch --show-current)" = 'phase-a/v156-atomic-recovery-20260716'
+          test -f .cxorbia/v156-promotion.patch.gz.b64
+          echo 'd96784fac04b5ca03613fa790a46e63c5ca512da9d82b4cf4b6b0ad540d3a020  .cxorbia/v156-promotion.patch.gz.b64' | sha256sum -c -
+          base64 -d .cxorbia/v156-promotion.patch.gz.b64 | gzip -d > /tmp/v156.patch
+          echo '8bfb2a85e1c42d095f56fbac7367da54b2872503effb2a7af939aa8a471b9347  /tmp/v156.patch' | sha256sum -c -
+          grep '^diff --git ' /tmp/v156.patch | sed -E 's#^diff --git a/([^ ]+) b/.*#\1#' > .tmp/v156-atomic-recovery/candidate-patch-paths.txt
+          test -s .tmp/v156-atomic-recovery/candidate-patch-paths.txt
+
+          echo '== Preserve explicit backend-owned connection overlay =='
+          cp app/core/tya-phase-a-source-safe-preview.js /tmp/tya-phase-a-source-safe-preview.overlay.js
+
+          echo '== Apply complete candidate runtime tree =='
+          git apply --3way --index --verbose \
+            --include='app/**' \
+            --exclude='app/docs/**' \
+            --exclude='app/contracts/**' \
+            --exclude='app/adapters/**' \
+            --exclude='app/data/**' \
+            /tmp/v156.patch
+
+          echo '== Reapply explicit backend overlays on top of V156 =='
+          cp /tmp/tya-phase-a-source-safe-preview.overlay.js app/core/tya-phase-a-source-safe-preview.js
+          python3 <<'PY'
+          from pathlib import Path
+          p=Path('app/core/finanzas-core.js')
+          s=p.read_text(encoding='utf-8')
+          old="this.porPais({project:()=>p, visitas:()=>(CX.data._visitas||[]).filter(v=>v.projectId===p.id)})"
+          new="this.porPais({project:()=>p, period:()=>p, visitas:()=>(CX.data._visitas||[]).filter(v=>v.projectId===p.id)})"
+          if old in s:
+              s=s.replace(old,new)
+          if 'const p=data.project(), liq=CX.liq.forProject(data), out={};' not in s:
+              raise SystemExit('R18D semantic invariant missing: porPais must use data.project()')
+          if 'project:()=>p, period:()=>p' not in s:
+              raise SystemExit('R18D semantic invariant missing: serieMensual adapter must expose period()')
+          p.write_text(s,encoding='utf-8',newline='\n')
+          PY
+
+          echo '== Bind source-safe TyA backend connection point =='
+          node tools/release/tya-source-safe-binding-build-r15f.mjs \
+            --html app/index.html \
+            --out .tmp/v156-atomic-recovery/source-safe-binding
+          grep -Fq 'data/tya-hr-source-safe-periods.js' app/index.html
+          grep -Fq 'core/tya-phase-a-source-safe-preview.js' app/index.html
+          grep -Fq 'adapters/tya-phase-a-source-safe-dev-adapter.js' app/index.html
+
+          echo '== Static and policy gates =='
+          find app -name '*.js' -not -path 'app/docs/*' -print0 | xargs -0 -n1 node --check
+          node tools/qa/verify-fast-lane-promotion-policy.mjs
+          node tools/release/tya-phase-a-period-history-integrity-validate.mjs --out .tmp/v156-atomic-recovery/period-history-static
+
+          echo '== Install browser test dependency =='
+          npm init -y >/dev/null 2>&1
+          npm i -D playwright@1.47.2 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+
+          echo '== Start source-safe local runtime =='
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp/v156-atomic-recovery/server.log 2>&1 &
+          SERVER_PID=$!
+          echo $SERVER_PID > .tmp/v156-atomic-recovery/server.pid
+          trap 'kill $SERVER_PID >/dev/null 2>&1 || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' >/dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' >/dev/null
+
+          echo '== TyA project/period/KPI/history gate =='
+          CXORBIA_BASE_URL='http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' \
+          CXORBIA_EXPECT_TENANT_ID='tya' \
+          CXORBIA_EXPECT_PROJECT_ID='cinepolis' \
+          CXORBIA_EXPECT_PERIODS='14' \
+          CXORBIA_EXPECT_VISITS='616' \
+          CXORBIA_EXPECT_VISITS_PER_PERIOD='44' \
+          node tools/qa/tya-project-period-kpi-history-gate.mjs \
+            --out .tmp/v156-atomic-recovery/project-period-kpi-history
+
+          echo '== Admin / Shopper / Client source-safe role smoke =='
+          CXORBIA_BASE_URL='http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' \
+          CXORBIA_EXPECT_TENANT_ID='tya' \
+          CXORBIA_EXPECT_PROJECT_ID='cinepolis' \
+          CXORBIA_EXPECT_PERIODS='14' \
+          CXORBIA_EXPECT_VISITS='616' \
+          CXORBIA_EXPECT_SHOPPERS='216' \
+          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs \
+            --out .tmp/v156-atomic-recovery/role-smoke
+
+          echo '== Human findings and visible-data semantic gates =='
+          CXORBIA_BASE_URL='http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' \
+          node tools/qa/tya-r17-human-findings-semantic-gate.mjs \
+            --base-url 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' \
+            --out .tmp/v156-atomic-recovery/human-findings
+          CXORBIA_BASE_URL='http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' \
+          node tools/qa/tya-phase-a-visible-data-smoke-r17.mjs \
+            --out .tmp/v156-atomic-recovery/visible-data
+
+          echo '== Remove transient package/install files =='
+          kill $SERVER_PID >/dev/null 2>&1 || true
+          trap - EXIT
+          rm -rf node_modules package.json package-lock.json
+
+          echo '== Generate one final runtime manifest and source lock =='
+          node <<'NODE'
+          const fs=require('fs');
+          const path=require('path');
+          const crypto=require('crypto');
+          const root='app';
+          const files=[];
+          function walk(dir){
+            for(const name of fs.readdirSync(dir).sort()){
+              const full=path.join(dir,name);
+              const rel=path.relative(root,full).replaceAll('\\','/');
+              const st=fs.statSync(full);
+              if(st.isDirectory()){
+                if(rel==='docs') continue;
+                walk(full);
+              } else if(rel!=='core/build-lock.js') {
+                const buf=fs.readFileSync(full);
+                files.push({path:rel,sha256:crypto.createHash('sha256').update(buf).digest('hex'),size:buf.length});
+              }
+            }
+          }
+          walk(root);
+          const aggregateInput=files.map(f=>`${f.path}\0${f.sha256}\0${f.size}\n`).join('');
+          const aggregate=crypto.createHash('sha256').update(aggregateInput).digest('hex');
+          const manifest={
+            schemaVersion:'2.0.0',
+            package:'CXORBIA-V156-PROMOTED-R1',
+            baselineVersion:'V156',
+            sourceCandidate:'Prototype development request (6).zip',
+            sourceCandidateSha256:'8a8672b6403b0eccdd1406ffeaa1942546d100b3c99615549000fd519be65933',
+            declaredCandidateAggregateSha256:'0262675769bf613c933e0872484bd27d38c4adabe28b335f697ae456cc5c0305',
+            promotionMode:'complete_candidate_runtime_plus_explicit_backend_overlays',
+            generatedAt:new Date().toISOString(),
+            aggregateAlgorithm:'sha256(path + NUL + sha256 + NUL + size + LF)',
+            aggregateSha256:aggregate,
+            fileCount:files.length,
+            explicitOverlays:[
+              {path:'core/tya-phase-a-source-safe-preview.js',id:'TYA_PROJECT_PERIOD_CONTEXT_HF1'},
+              {path:'core/finanzas-core.js',id:'R18D_FINANCE_PERIOD_ADAPTER_HF1'},
+              {path:'index.html',id:'TYA_SOURCE_SAFE_BINDING_R15F'}
+            ],
+            files
+          };
+          fs.writeFileSync('app/docs/MANIFEST-V156-PROMOTED-R1.json',JSON.stringify(manifest,null,2)+'\n','utf8');
+          const lock=`/* CXOrbia source lock runtime V156 + explicit Phase A overlays 20260716 */\nvar CX_SOURCE_LOCK={manifestFile:'docs/MANIFEST-V156-PROMOTED-R1.json',aggregateSha256:'${aggregate}',fileCount:${files.length},runtimeIdentity:'V156 promoted atomically + TyA project/period context + R18D',generatedAt:'2026-07-16',sourceZipSha256:'8a8672b6403b0eccdd1406ffeaa1942546d100b3c99615549000fd519be65933',promotionMode:'complete_candidate_runtime_plus_explicit_backend_overlays',decision:'PASS_PENDING_FINAL_ATOMICITY_COMMIT'};\nvar CX_BUILD_ID=CX_SOURCE_LOCK.aggregateSha256.slice(0,16);\nif(typeof window!=='undefined'){window.CX=window.CX||{};window.CX.BUILD_ID=CX_BUILD_ID;window.CX.SOURCE_LOCK=CX_SOURCE_LOCK;}\n`;
+          fs.writeFileSync('app/core/build-lock.js',lock,'utf8');
+          const registry=JSON.parse(fs.readFileSync('backend/contracts/prototype-baseline-registry-v1.json','utf8'));
+          registry.version='1.4.0';
+          registry.updatedAt='2026-07-16';
+          registry.previousBaseline=registry.activeBaseline;
+          registry.activeBaseline={
+            version:'V156',status:'accepted_and_empalmed',sourceZipSha256:'8a8672b6403b0eccdd1406ffeaa1942546d100b3c99615549000fd519be65933',
+            manifestFile:'docs/MANIFEST-V156-PROMOTED-R1.json',aggregateSha256:aggregate,accepted:true,empalmed:true,
+            promotionMode:'complete_candidate_runtime_plus_explicit_backend_overlays',
+            overlays:manifest.explicitOverlays
+          };
+          registry.candidate={version:'V156',sourceZipSha256:registry.activeBaseline.sourceZipSha256,status:'accepted_and_empalmed',accepted:true,empalmed:true,gateDecision:'PASS_ATOMIC_V156_TYA_SOURCE_SAFE',failures:[],nextExpectedVersion:null};
+          fs.writeFileSync('backend/contracts/prototype-baseline-registry-v1.json',JSON.stringify(registry,null,2)+'\n','utf8');
+          fs.appendFileSync('app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md',`\n\n## V156 promoción atómica — 2026-07-16\n\n- Última candidata aceptada = candidata empalmada = baseline activa: V156.\n- Manifest: docs/MANIFEST-V156-PROMOTED-R1.json.\n- Proyecto/periodo/KPI/histórico TyA: PASS.\n- Admin/Shopper/Cliente source-safe: PASS.\n- V131 + R18D queda solo como rollback histórico.\n- Sin deploy, producción, imports ni writes.\n`,'utf8');
+          console.log(JSON.stringify({aggregate,fileCount:files.length},null,2));
+          NODE
+
+          node --check app/core/build-lock.js
+          node tools/qa/verify-prototype-baseline-atomicity.mjs
+
+          echo '== Record final report =='
+          cat > app/docs/GATE-V156-ATOMIC-TYA-SOURCE-SAFE-20260716.md <<'EOF'
+          # GATE V156 — PROMOCIÓN ATÓMICA TYA SOURCE-SAFE
+
+          Fecha: 2026-07-16
+
+          Decisión: `PASS_ATOMIC_V156_TYA_SOURCE_SAFE`.
+
+          - V156 materializada como árbol runtime completo.
+          - Overlays backend reaplicados explícitamente después de la candidata.
+          - Un manifest, un build lock y una baseline activa.
+          - Proyecto Cinépolis y 14 periodos separados correctamente.
+          - 616 visitas; 44 por periodo.
+          - MAY/JUN/JUL cambian contexto y conjunto de visitas.
+          - KPI/Finanzas/Liquidaciones limitados al periodo activo.
+          - Junio: ejecución cerrada y control de pagos/liquidaciones pendiente.
+          - Admin, Shopper y Cliente: source-safe smoke PASS.
+          - Sin deploy, producción, imports, writes, Make, Gemini ni pagos.
+          EOF
+          sed -i 's/^          //' app/docs/GATE-V156-ATOMIC-TYA-SOURCE-SAFE-20260716.md
+
+          echo '== Commit only the validated final tree =='
+          rm -rf .cxorbia
+          rm -f .github/workflows/v156-atomic-recovery.yml .github/workflows/diagnose-v156-apply.yml .github/workflows/export-current-app-for-finalization.yml
+          git config user.name 'CXOrbia Atomic Baseline Bot'
+          git config user.email 'cxorbia-baseline@example.invalid'
+          git add -A
+          git commit -m 'feat: promote V156 atomically with TyA semantic gates'
+          FINAL_SHA=$(git rev-parse HEAD)
+          git push origin HEAD:phase-a/v156-atomic-recovery-20260716
+          echo "final_sha=$FINAL_SHA" >> "$GITHUB_OUTPUT"
+          gh api repos/${{ github.repository }}/issues/7/comments -f body="V156_ATOMIC_RECOVERY_PASS=${FINAL_SHA}\nDecision=PASS_ATOMIC_V156_TYA_SOURCE_SAFE\nBranch=phase-a/v156-atomic-recovery-20260716\nNo deploy or production executed."
+
+      - name: Upload recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v156-atomic-recovery-evidence
+          path: .tmp/v156-atomic-recovery
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Report failure to PR 7
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/${{ github.repository }}/issues/7/comments -f body="V156_ATOMIC_RECOVERY_HOLD\nRun=${{ github.run_id }}\nThe isolated branch was not promoted and the active baseline was not changed. Review the sanitized workflow artifact."
