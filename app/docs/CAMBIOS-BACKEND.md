@@ -1,3 +1,24 @@
+## 2026-07-16 - V151 auditoría comercial / dos P0 restantes
+
+- Candidata externa: `Prototype development request (3).zip`; identidad interna V151.
+- ZIP SHA-256: `5d364e22371d2d97bed45745cdcd986e38e814b0a2c87d7529f6b31e48b620f9`.
+- Manifest V151: 200 archivos, aggregate `ef55c21d16e0cb2d6c62a145266b3bfd17274c4b1ffd2bfe2e33f69f5cd7dc51`, 0 diferencias.
+- JavaScript: 0 fallos de sintaxis.
+- Alcance corregido: Claude mantiene el prototipo comercializable genérico; no configura TyA/Cinépolis.
+- Se conservan los proyectos demo curados Retail, Banca y Restaurantes.
+- Hallazgo P0: la migración deduplica, pero deja visibles `Proyecto A`, `Test Dedupe Unico` y `Equipo Operativo (prueba)`.
+- Hallazgo P0: V151 todavía permite lenguaje técnico en superficies `admin`; admin/ops/coordinador/aliado también son audiencias comerciales.
+- Paquete focalizado: `PAQUETE-EXCLUSIVO-CLAUDE-V151-CIERRE-COMERCIAL-2P0-20260716.zip`, SHA-256 `670d2dd9c6133a2c1e753c2e63f1642e36ec4a382af30beb2868cf462dcec50b`.
+- No hubo empalme, deploy, producción, imports ni writes.
+
+Clasificación:
+
+- `Reusable CXOrbia`: demo limpio, cleanup de fixtures y copy por audiencia.
+- `Exclusivo cliente`: sin cambio TyA/Cinépolis.
+- `Claude/prototipo`: solo dos P0.
+- `Academia`: técnico interno solo para super; contenido comercial en lenguaje funcional.
+- `Sin impacto Claude`: TyA source-safe y exclusión Hosting se resolverán en backend/empalme.
+
 ## 2026-07-15 - R18E validación visual NO-GO / paquete R19
 
 - Hosting DEV y smoke técnico R18D permanecen PASS.
