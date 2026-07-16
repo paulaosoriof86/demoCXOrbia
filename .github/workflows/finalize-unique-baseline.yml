@@ -1,0 +1,98 @@
+name: cxorbia finalize unique baseline
+on:
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths:
+      - '.cxorbia/v156-promotion.patch.gz.b64'
+      - '.github/workflows/finalize-unique-baseline.yml'
+permissions:
+  contents: write
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+      - name: Promote V156 as the only active baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "d96784fac04b5ca03613fa790a46e63c5ca512da9d82b4cf4b6b0ad540d3a020  .cxorbia/v156-promotion.patch.gz.b64" | sha256sum -c -
+          base64 -d .cxorbia/v156-promotion.patch.gz.b64 | gzip -d > /tmp/v156.patch
+          echo "8bfb2a85e1c42d095f56fbac7367da54b2872503effb2a7af939aa8a471b9347  /tmp/v156.patch" | sha256sum -c -
+          git apply --check /tmp/v156.patch
+          git apply /tmp/v156.patch
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, shutil, json, hashlib
+          root=Path('.'); app=root/'app'; docs=app/'docs'
+
+          for p in sorted(docs.rglob('*'), reverse=True):
+              rel=p.relative_to(docs).as_posix()
+              if re.search(r'v\d+', rel, re.I) and 'v156' not in rel.lower():
+                  if p.is_file() or p.is_symlink(): p.unlink()
+                  elif p.is_dir(): shutil.rmtree(p)
+          for p in root.glob('*'):
+              if p.is_file() and re.search(r'v(110|121|131|132|145|146|149|151|153|155)',p.name,re.I): p.unlink()
+
+          (docs/'CAMBIOS-BACKEND.md').write_text('''# CAMBIOS BACKEND — ESTADO VIGENTE\n\nFecha: 2026-07-16\n\n## Baseline\n\n- Versión activa única: **V156**.\n- Runtime, manifest, build lock, tracker y documentación activa apuntan exclusivamente a V156.\n- No existe una segunda baseline, candidata o source lock activo.\n\n## Empalme\n\n- Se promovió el frontend auditado.\n- Se preservaron contratos, adaptadores, herramientas y fuentes backend ajenos al paquete frontend.\n- Se mantuvo la interfaz de `CX.data` y el punto único de conexión backend.\n- Se protegió la separación proyecto/periodo de Finanzas.\n\n## Estado seguro\n\n- Sin deploy de producción.\n- Sin import real ni escritura HR/Firestore/Storage.\n- Sin activación Make, Gemini o pagos.\n''',encoding='utf-8',newline='\n')
+          (docs/'RESUMEN-PARA-CLAUDE.md').write_text('''# RESUMEN PARA CLAUDE — BASE VIGENTE\n\nFecha: 2026-07-16\n\nClaude debe trabajar únicamente sobre **V156**. No debe partir de una versión anterior ni crear una baseline paralela.\n\n## Pendiente no bloqueante\n\nDurante la revisión visual se acumulará el copy técnico todavía visible para audiencias comerciales. Se entregará en un paquete focalizado posterior sin deshacer el empalme.\n\n## No tocar\n\n- backend TyA; Firebase; HR real; contratos y adaptadores; importadores backend; R11D/R14C; pagos y certificaciones reales.\n\n## Academia\n\nTodo ajuste visual futuro debe revisar manuales, cursos, rutas por rol y notificaciones.\n''',encoding='utf-8',newline='\n')
+          (docs/'PENDIENTES-PROTOTIPO.md').write_text('''# PENDIENTES DEL PROTOTIPO — BASE VIGENTE\n\nFecha: 2026-07-16\n\nBase única: **V156**.\n\n## P1 posterior a la validación visual\n\n- Reescribir copy técnico residual visible para usuarios comerciales.\n- Corregir typos visibles detectados durante el smoke.\n- Mantener contenido técnico solo en superficies internas protegidas.\n- Revisar Academia y manuales relacionados.\n\nEstos puntos no crean otra candidata ni suspenden el empalme backend.\n''',encoding='utf-8',newline='\n')
+          (docs/'PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md').write_text('''# PHASE A — TRACKER VIGENTE\n\nFecha: 2026-07-16\n\n## Baseline activa única\n\n**V156**\n\n## Completado\n\n- Auditoría de la última candidata.\n- Promoción como único frontend vigente.\n- Source lock y manifest unificados.\n- Preservación del backend y contratos TyA existentes.\n\n## En progreso\n\n- Empalme del punto único `CX.data` con la fuente source-safe ya trabajada.\n- Gates operativos por proyecto, periodo, visitas, shoppers, postulaciones y liquidaciones.\n\n## Siguiente bloque exacto\n\n1. Validar runtime source-safe sobre V156.\n2. Hosting DEV del mismo build.\n3. Revisión visual Administración, Shopper y Cliente.\n4. Corregir solo bloqueos operativos.\n5. Autorizar producción cuando los gates pasen.\n\n## Estado seguro\n\nSin producción, import real, writes HR/Firestore/Storage, Make, Gemini o pagos en este cierre.\n''',encoding='utf-8',newline='\n')
+          (docs/'CHECKPOINT-CURRENT.md').write_text('''# CXOrbia — checkpoint vigente\n\nFecha: 2026-07-16\n\n- Versión activa única: **V156**.\n- Baseline final única para continuidad y empalme backend.\n- No existe candidata, baseline, source lock ni build paralelo en las superficies activas.\n- Todas las comparaciones futuras parten exclusivamente de V156.\n- Pendiente P1 no bloqueante: copy técnico durante la revisión visual.\n''',encoding='utf-8',newline='\n')
+
+          firebase_path=root/'firebase.json'; firebase=json.loads(firebase_path.read_text(encoding='utf-8'))
+          ignore=firebase.setdefault('hosting',{}).setdefault('ignore',[])
+          for item in ['docs/**','demo/**','README.md']:
+              if item not in ignore: ignore.append(item)
+          firebase_path.write_text(json.dumps(firebase,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+
+          workflows=root/'.github'/'workflows'; current=workflows/'finalize-unique-baseline.yml'
+          obsolete=re.compile(r'v(110|121|131|132|145|146|149|151|153|155)',re.I)
+          if workflows.exists():
+              for p in workflows.glob('*'):
+                  if p==current or not p.is_file(): continue
+                  try: text=p.read_text(encoding='utf-8')
+                  except UnicodeDecodeError: continue
+                  if obsolete.search(p.name) or obsolete.search(text): p.unlink()
+          (workflows/'cxorbia-current-baseline-verify.yml').write_text('''name: CXOrbia current baseline verify\non:\n  pull_request:\n  push:\n    branches: [docs-tya-v6-v71-audit]\npermissions:\n  contents: read\njobs:\n  verify:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 22\n      - run: |\n          set -euo pipefail\n          cd app\n          node docs/verify-manifest.mjs\n          find . -name '*.js' -not -path './docs/*' -print0 | xargs -0 -n1 node --check\n          grep -q "runtimeIdentity:'V156'" core/build-lock.js\n          grep -q "status:'FINAL_UNIQUE_BASELINE'" core/build-lock.js\n''',encoding='utf-8',newline='\n')
+
+          excluded={'core/build-lock.js','docs/verify-manifest.mjs','docs/MANIFEST-V156.json'}
+          files=[]
+          for p in sorted(app.rglob('*')):
+              if not p.is_file(): continue
+              rel=p.relative_to(app).as_posix()
+              if rel in excluded or rel.startswith('docs/') or rel.startswith('demo/') or rel in {'.gitignore','README.md'}: continue
+              data=p.read_bytes(); files.append({'path':rel,'sha256':hashlib.sha256(data).hexdigest(),'size':len(data)})
+          aggregate=hashlib.sha256('\n'.join(f"{f['path']}:{f['sha256']}" for f in files).encode()).hexdigest()
+          manifest={'version':'V156','generatedAt':'2026-07-16T18:00:00Z','status':'FINAL_UNIQUE_BASELINE','fileCount':len(files),'aggregateSha256':aggregate,'exclusionesDeclaradas':[{'path':'core/build-lock.js','reason':'contiene el aggregate vigente'},{'path':'docs/verify-manifest.mjs','reason':'verificador'},{'path':'docs/MANIFEST-V156.json','reason':'manifest vigente'},{'path':'docs/**','reason':'documentación no publicada'},{'path':'demo/**','reason':'demo no publicada'}],'files':files}
+          (docs/'MANIFEST-V156.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+          (app/'core'/'build-lock.js').write_text(f'''/* CXOrbia · baseline única y final V156 · 2026-07-16 */\nvar CX_SOURCE_LOCK={{\n  manifestFile:'docs/MANIFEST-V156.json',\n  aggregateSha256:'{aggregate}',\n  fileCount:{len(files)},\n  runtimeIdentity:'V156',\n  status:'FINAL_UNIQUE_BASELINE',\n  generatedAt:'2026-07-16',\n  note:'Única versión vigente. No existen baseline, candidata ni source lock paralelos en las superficies activas.'\n}};\nvar CX_BUILD_ID=CX_SOURCE_LOCK.aggregateSha256.slice(0,16);\nif(typeof window!=='undefined'){{window.CX=window.CX||{{}};window.CX.BUILD_ID=CX_BUILD_ID;window.CX.SOURCE_LOCK=CX_SOURCE_LOCK;}}\n''',encoding='utf-8',newline='\n')
+          (docs/'CURRENT-BASELINE.json').write_text(json.dumps({'schemaVersion':'1.0.0','project':'CXOrbia','activeVersion':'V156','status':'FINAL_UNIQUE_BASELINE','manifest':'docs/MANIFEST-V156.json','aggregateSha256':aggregate,'fileCount':len(files),'generatedAt':'2026-07-16'},ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+          PY
+
+          (cd app && node docs/verify-manifest.mjs)
+          find app -name '*.js' -not -path 'app/docs/*' -print0 | xargs -0 -n1 node --check
+          python3 -m json.tool firebase.json >/dev/null
+          grep -q "const p=data.project()" app/core/finanzas-core.js
+          grep -q "project:()=>p, period:()=>p" app/core/finanzas-core.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          text='\n'.join((Path(p).read_text(encoding='utf-8') for p in ['app/app.js','app/core/pwa.js']))
+          text=re.sub(r'/\*.*?\*/','',text,flags=re.S)
+          text=re.sub(r'//.*','',text)
+          assert text.count("addEventListener('beforeinstallprompt'")==1
+          PY
+          ! grep -RIE 'V(110|121|131|132|145|146|149|151|153|155)' app/core/build-lock.js app/docs/CURRENT-BASELINE.json app/docs/CHECKPOINT-CURRENT.md app/docs/CAMBIOS-BACKEND.md app/docs/RESUMEN-PARA-CLAUDE.md app/docs/PENDIENTES-PROTOTIPO.md app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md
+
+          rm -rf .cxorbia
+          rm -f .github/workflows/finalize-unique-baseline.yml
+          git config user.name "CXOrbia Baseline Bot"
+          git config user.email "cxorbia-baseline@example.invalid"
+          git add -A
+          git commit -m "feat: establish V156 as the only active baseline"
+          git push origin HEAD:docs-tya-v6-v71-audit
