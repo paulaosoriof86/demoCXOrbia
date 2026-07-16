@@ -5,7 +5,8 @@
 - No empalmar todavía: quedan cinco críticos focalizados.
 - No rehacer estados ortogonales, KPIs, Postulaciones, Shoppers, Finanzas ni los avances parciales del wizard/PWA.
 - Corregir únicamente: periodo de medición visible; cambio MAY/JUN/JUL en runtime source-safe; configuración completa proyecto/tenant/HR; prompt PWA en primera interacción elegible; y restaurar `data.project()` en `finanzas-core.porPais()` conservando `period()` en el adapter local.
-- Entregar candidata completa derivada de V145, lista exacta de archivos, gates PASS y sin cambios backend/Firebase/datos/R11D/R14C.
+- La siguiente candidata debe derivarse directamente de V145. Se auditará solo el delta contra estos cinco críticos y contra la reconciliación protegida V131+R18D.
+- Entregar candidata completa, lista exacta de archivos, gates PASS y sin cambios backend/Firebase/datos/R11D/R14C.
 
 ## 2026-07-14 - Baseline activa V131
 
