@@ -6,14 +6,14 @@ on:
       - audit/v156-atomic-20260716
       - docs-tya-v6-v71-audit
     paths:
-      - 'tools/release/tya-download-protected-drive-file.mjs'
+      - '.candidate/v156-runtime-delta.zip'
       - 'tools/release/tya-promote-v156-atomic.mjs'
       - '.github/workflows/cxorbia-v156-atomic-promotion.yml'
   pull_request:
     branches:
       - release/cxorbia-tya-rc-20260630
     paths:
-      - 'tools/release/tya-download-protected-drive-file.mjs'
+      - '.candidate/v156-runtime-delta.zip'
       - 'tools/release/tya-promote-v156-atomic.mjs'
       - '.github/workflows/cxorbia-v156-atomic-promotion.yml'
 
@@ -27,13 +27,11 @@ defaults:
 jobs:
   promote-v156-atomic:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
     env:
       TARGET_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
-      V156_DRIVE_FILE_ID: 1kxtmJLcFp9X09-o2BpoFfap9MOi5ll3Q
-
+    timeout-minutes: 35
     steps:
-      - name: Checkout V156 integration branch
+      - name: Checkout isolated V156 branch
         uses: actions/checkout@v4
         with:
           ref: ${{ env.TARGET_BRANCH }}
@@ -44,21 +42,10 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Retrieve complete V156 transport through protected Drive handoff
-        env:
-          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-          V156_DRIVE_OUTPUT: .candidate/v156-runtime-delta.zip
-          V156_EXPECT_SHA256: 053af067f5ffa5f2c9244798af3d0cce28189457533a835fb5376eac5112ebf5
-          V156_DRIVE_DIAGNOSTIC: .tmp/v156-atomic/drive-diagnostic.json
-        run: |
-          set -euo pipefail
-          mkdir -p .candidate .tmp/v156-atomic
-          node tools/release/tya-download-protected-drive-file.mjs
-          test "$(sha256sum .candidate/v156-runtime-delta.zip | awk '{print $1}')" = "$V156_EXPECT_SHA256"
-
       - name: Materialize complete V156 candidate runtime first
         run: |
           set -euo pipefail
+          test "$(sha256sum .candidate/v156-runtime-delta.zip | awk '{print $1}')" = "053af067f5ffa5f2c9244798af3d0cce28189457533a835fb5376eac5112ebf5"
           rm -rf evidence
           unzip -oq .candidate/v156-runtime-delta.zip -d .
           mkdir -p app/docs .tmp/v156-atomic
@@ -81,7 +68,6 @@ jobs:
         run: |
           set -euo pipefail
           while IFS= read -r -d '' file; do node --check "$file"; done < <(find app -type f \( -name '*.js' -o -name '*.mjs' \) -not -path 'app/docs/*' -print0)
-          node --check tools/release/tya-download-protected-drive-file.mjs
           node --check tools/release/tya-promote-v156-atomic.mjs
           node tools/qa/verify-fast-lane-promotion-policy.mjs
 
@@ -142,14 +128,14 @@ jobs:
           set -euo pipefail
           node tools/release/tya-promote-v156-atomic.mjs finalize-pass
 
-      - name: Commit atomically tested V156 tree to integration branch
+      - name: Commit atomically tested V156 tree to isolated branch
         run: |
           set -euo pipefail
-          rm -rf .candidate evidence package.json package-lock.json node_modules .tmp-v156-server.log .tmp-v156-server.pid .github/workflows/cxorbia-resolve-dev-service-account.yml
+          rm -rf .candidate evidence package.json package-lock.json node_modules .tmp-v156-server.log .tmp-v156-server.pid
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add -A .candidate .github/workflows/cxorbia-resolve-dev-service-account.yml
-          git add app CAMBIOS-BACKEND.md RESUMEN-PARA-CLAUDE.md PENDIENTES-PROTOTIPO.md backend/contracts/prototype-baseline-registry-v1.json tools/release/tya-download-protected-drive-file.mjs tools/release/tya-promote-v156-atomic.mjs .github/workflows/cxorbia-v156-atomic-promotion.yml
+          git add -A .candidate
+          git add app CAMBIOS-BACKEND.md RESUMEN-PARA-CLAUDE.md PENDIENTES-PROTOTIPO.md backend/contracts/prototype-baseline-registry-v1.json tools/release/tya-promote-v156-atomic.mjs .github/workflows/cxorbia-v156-atomic-promotion.yml
           git commit -m "feat: promote V156 atomically with TyA gates [skip ci]"
           git push origin HEAD:"${TARGET_BRANCH}"
 
