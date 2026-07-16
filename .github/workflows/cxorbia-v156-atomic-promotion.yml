@@ -6,14 +6,12 @@ on:
       - audit/v156-atomic-20260716
       - docs-tya-v6-v71-audit
     paths:
-      - '.candidate/v156-runtime-delta.zip'
       - 'tools/release/tya-promote-v156-atomic.mjs'
       - '.github/workflows/cxorbia-v156-atomic-promotion.yml'
   pull_request:
     branches:
       - release/cxorbia-tya-rc-20260630
     paths:
-      - '.candidate/v156-runtime-delta.zip'
       - 'tools/release/tya-promote-v156-atomic.mjs'
       - '.github/workflows/cxorbia-v156-atomic-promotion.yml'
 
@@ -29,6 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TARGET_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+      V156_DRIVE_FILE_ID: 1kxtmJLcFp9X09-o2BpoFfap9MOi5ll3Q
     timeout-minutes: 35
     steps:
       - name: Checkout isolated V156 branch
@@ -42,10 +41,38 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Retrieve complete V156 transport through protected Drive handoff
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .candidate .tmp/v156-atomic
+          node <<'NODE'
+          const fs=require('fs');
+          const crypto=require('crypto');
+          const sa=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '{}');
+          if(sa.type!=='service_account' || sa.project_id!=='cxorbia-backend-dev' || !sa.private_key || !sa.client_email) {
+            throw new Error('Firebase DEV service account secret unavailable or mismatched.');
+          }
+          const b64url=value=>Buffer.from(typeof value==='string'?value:JSON.stringify(value)).toString('base64url');
+          const now=Math.floor(Date.now()/1000);
+          const unsigned=b64url({alg:'RS256',typ:'JWT'})+'.'+b64url({iss:sa.client_email,scope:'https://www.googleapis.com/auth/drive.readonly',aud:'https://oauth2.googleapis.com/token',iat:now,exp:now+900});
+          const signature=crypto.sign('RSA-SHA256',Buffer.from(unsigned),sa.private_key).toString('base64url');
+          const tokenResponse=await fetch('https://oauth2.googleapis.com/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'urn:ietf:params:oauth:grant-type:jwt-bearer',assertion:unsigned+'.'+signature})});
+          if(!tokenResponse.ok) throw new Error('OAuth token request failed: '+tokenResponse.status+' '+await tokenResponse.text());
+          const {access_token}=await tokenResponse.json();
+          const fileId=process.env.V156_DRIVE_FILE_ID;
+          const fileResponse=await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media`,{headers:{authorization:`Bearer ${access_token}`}});
+          if(!fileResponse.ok) throw new Error('Drive media download failed: '+fileResponse.status+' '+await fileResponse.text());
+          const bytes=Buffer.from(await fileResponse.arrayBuffer());
+          fs.writeFileSync('.candidate/v156-runtime-delta.zip',bytes);
+          console.log('Protected V156 transport retrieved; bytes='+bytes.length);
+          NODE
+          test "$(sha256sum .candidate/v156-runtime-delta.zip | awk '{print $1}')" = "053af067f5ffa5f2c9244798af3d0cce28189457533a835fb5376eac5112ebf5"
+
       - name: Materialize complete V156 candidate runtime first
         run: |
           set -euo pipefail
-          test "$(sha256sum .candidate/v156-runtime-delta.zip | awk '{print $1}')" = "053af067f5ffa5f2c9244798af3d0cce28189457533a835fb5376eac5112ebf5"
           rm -rf evidence
           unzip -oq .candidate/v156-runtime-delta.zip -d .
           mkdir -p app/docs .tmp/v156-atomic
@@ -128,13 +155,13 @@ jobs:
           set -euo pipefail
           node tools/release/tya-promote-v156-atomic.mjs finalize-pass
 
-      - name: Commit atomically tested V156 tree to isolated branch
+      - name: Commit atomically tested V156 tree to integration branch
         run: |
           set -euo pipefail
-          rm -rf .candidate evidence package.json package-lock.json node_modules .tmp-v156-server.log .tmp-v156-server.pid
+          rm -rf .candidate evidence package.json package-lock.json node_modules .tmp-v156-server.log .tmp-v156-server.pid .github/workflows/cxorbia-resolve-dev-service-account.yml
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add -A .candidate
+          git add -A .candidate .github/workflows/cxorbia-resolve-dev-service-account.yml
           git add app CAMBIOS-BACKEND.md RESUMEN-PARA-CLAUDE.md PENDIENTES-PROTOTIPO.md backend/contracts/prototype-baseline-registry-v1.json tools/release/tya-promote-v156-atomic.mjs .github/workflows/cxorbia-v156-atomic-promotion.yml
           git commit -m "feat: promote V156 atomically with TyA gates [skip ci]"
           git push origin HEAD:"${TARGET_BRANCH}"
