@@ -1,11 +1,10 @@
 # temporary one-use promotion workflow
 name: v156 temporary promotion
 on:
+  pull_request:
+    branches: [docs-tya-v6-v71-audit]
   push:
     branches: [tmp/v156-promotion-20260716]
-    paths:
-      - '.cxorbia/v156-promotion.patch.gz.b64'
-      - '.github/workflows/v156-promote-temp.yml'
 permissions:
   contents: write
 jobs:
@@ -14,6 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: tmp/v156-promotion-20260716
           fetch-depth: 0
       - name: Apply and validate V156 promotion
         shell: bash
