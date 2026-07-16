@@ -1,0 +1,97 @@
+name: CXOrbia TyA context R15G diagnostic
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/workflows/tya-context-r15g-diagnostic.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+      - name: Persist patch diagnostics
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          import json,re,subprocess,traceback,os,tempfile,shutil
+          result={'runId':os.environ.get('GITHUB_RUN_ID'),'steps':{},'decision':'HOLD'}
+          work=Path('/tmp/r15g-diagnostic')
+          if work.exists(): shutil.rmtree(work)
+          work.mkdir(parents=True)
+          files=[
+            'tools/release/tya-source-safe-binding-build-r15f.mjs',
+            'app/core/tya-phase-a-source-safe-preview.js',
+            'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs',
+            'tools/qa/tya-phase-a-visible-data-smoke-r17.mjs',
+            '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml'
+          ]
+          for src in files:
+            dst=work/src
+            dst.parent.mkdir(parents=True,exist_ok=True)
+            shutil.copy2(src,dst)
+          try:
+            p=work/files[0]; s=p.read_text(encoding='utf-8')
+            operations=[]
+            def literal(label,old,new):
+              nonlocal_s[0]=nonlocal_s[0].replace(old,new)
+              operations.append({'label':label,'found':old in s,'after':new in nonlocal_s[0]})
+            nonlocal_s=[s]
+            literal('tenant',"id:'tya', clientName:'TyA', name:'TyA', tagline:'Tenant TyA · Phase A controlada'","id:'tya', tenantId:'tya', clientName:'TyA', name:'TyA', tagline:'Tenant TyA · Phase A controlada'")
+            s=nonlocal_s[0]
+            pattern=r"  CX\.data\.currentProjectId = latest && latest\.id;\n(?:  CX\.data\.currentPeriodId = latest && latest\.id;\n)?  CX\.data\.sourceMode = 'tya_hr_live_multitab_source_safe_dev';"
+            s,n=re.subn(pattern,"  CX.data.currentProjectId = 'cinepolis';\n  CX.data.currentPeriodId = latest && latest.id;\n  CX.data.sourceMode = 'tya_hr_live_multitab_source_safe_dev';",s,count=1)
+            operations.append({'label':'context','replacements':n})
+            s,n2=re.subn(r"CX\.dataSource\.warnings = shoppers\.length === \d+ \? \[[^\n]*?\] : \[\];","CX.dataSource.warnings = shoppers.length === 216 ? [] : ['Conteo shopper source-safe distinto al snapshot aprobado: ' + shoppers.length + '/216.'];",s,count=1)
+            operations.append({'label':'warning','replacements':n2})
+            for old,new,label in [
+              ('currentPeriodId:CX.data.currentProjectId,','currentPeriodId:CX.data.currentPeriodId,','contract'),
+              ("tenantId:'tya', projectId:'cinepolis', projectName:'Cinépolis', sourceTitle:snapshot.source && snapshot.source.title,","tenantId:'tya', projectId:'cinepolis', projectName:'Cinépolis', activePeriodId:latest && latest.id, sourceTitle:snapshot.source && snapshot.source.title,",'meta')
+            ]:
+              found=old in s; s=s.replace(old,new,1); operations.append({'label':label,'found':found,'after':new in s})
+            p.write_text(s,encoding='utf-8')
+            result['steps']['builderOperations']=operations
+
+            bridge=work/files[1]; s=bridge.read_text(encoding='utf-8')
+            before='::' in s
+            s=s.replace("`${projectId}::${periodKey || 'pending'}`","`${projectId}-${periodKey || 'pending'}`")
+            inserted=False
+            if "tenantId: 'tya',\n    clientName: 'TyA'," not in s:
+              inserted="    clientName: 'TyA'," in s
+              s=s.replace("    clientName: 'TyA',","    tenantId: 'tya',\n    clientName: 'TyA',",1)
+            bridge.write_text(s,encoding='utf-8')
+            result['steps']['bridge']={'hadDoubleColon':before,'insertedTenant':inserted,'finalStable':"`${projectId}-${periodKey || 'pending'}`" in s,'finalTenant':"tenantId: 'tya'," in s}
+
+            qa=work/files[2]; s=qa.read_text(); s,n=re.subn(r"shoppers: Number\(process\.env\.CXORBIA_EXPECT_SHOPPERS \|\| \d+\)","shoppers: Number(process.env.CXORBIA_EXPECT_SHOPPERS || 216)",s); qa.write_text(s); result['steps']['qaCount']=n
+            visible=work/files[3]; s=visible.read_text(); s,n=re.subn(r"shoppers:\d+, currentPeriodVisits",'shoppers:216, currentPeriodVisits',s); visible.write_text(s); result['steps']['visibleCount']=n
+            wf=work/files[4]; s=wf.read_text(); s,n=re.subn(r"CXORBIA_EXPECT_SHOPPERS: '\d+'","CXORBIA_EXPECT_SHOPPERS: '216'",s); wf.write_text(s); result['steps']['workflowCount']=n
+
+            checks={}
+            for rel in files[:4]:
+              proc=subprocess.run(['node','--check',str(work/rel)],text=True,capture_output=True)
+              checks[rel]={'returncode':proc.returncode,'stdout':proc.stdout[-1000:],'stderr':proc.stderr[-2000:]}
+            result['steps']['nodeChecks']=checks
+            result['decision']='PASS_DIAGNOSTIC' if all(x['returncode']==0 for x in checks.values()) else 'HOLD_NODE_CHECK'
+          except Exception as exc:
+            result['error']=str(exc)
+            result['traceback']=traceback.format_exc()
+          Path('app/docs/R15G-PATCH-DIAGNOSTIC-20260716.json').write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          print(json.dumps(result,indent=2))
+          PY
+          rm -f .github/workflows/tya-context-r15g-diagnostic.yml
+          git config user.name 'CXOrbia R15G Diagnostic Bot'
+          git config user.email 'cxorbia-r15g@example.invalid'
+          git add -A
+          git commit -m 'docs: persist R15G patch diagnostic'
+          git pull --rebase origin docs-tya-v6-v71-audit
+          git push origin HEAD:docs-tya-v6-v71-audit
