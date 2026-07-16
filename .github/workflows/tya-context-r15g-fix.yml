@@ -24,79 +24,81 @@ jobs:
           set -euo pipefail
           python3 <<'PY'
           from pathlib import Path
+          import re
 
-          def replace_exact(path, old, new, label):
+          def load(path):
             p=Path(path)
-            s=p.read_text(encoding='utf-8')
-            if old not in s:
-              raise SystemExit(f'{label}: expected source fragment not found in {path}')
-            s=s.replace(old,new,1)
-            p.write_text(s,encoding='utf-8',newline='\n')
+            return p,p.read_text(encoding='utf-8')
 
-          builder='tools/release/tya-source-safe-binding-build-r15f.mjs'
-          replace_exact(
-            builder,
+          def save(p,text):
+            p.write_text(text,encoding='utf-8',newline='\n')
+
+          builder_path,builder=load('tools/release/tya-source-safe-binding-build-r15f.mjs')
+          builder=builder.replace(
             "id:'tya', clientName:'TyA', name:'TyA', tagline:'Tenant TyA · Phase A controlada'",
-            "id:'tya', tenantId:'tya', clientName:'TyA', name:'TyA', tagline:'Tenant TyA · Phase A controlada'",
-            'builder tenant identity'
+            "id:'tya', tenantId:'tya', clientName:'TyA', name:'TyA', tagline:'Tenant TyA · Phase A controlada'"
           )
-          replace_exact(
-            builder,
-            "  CX.data.currentProjectId = latest && latest.id;\n  CX.data.sourceMode = 'tya_hr_live_multitab_source_safe_dev';",
+          builder=re.sub(
+            r"  CX\.data\.currentProjectId = latest && latest\.id;\n(?:  CX\.data\.currentPeriodId = latest && latest\.id;\n)?  CX\.data\.sourceMode = 'tya_hr_live_multitab_source_safe_dev';",
             "  CX.data.currentProjectId = 'cinepolis';\n  CX.data.currentPeriodId = latest && latest.id;\n  CX.data.sourceMode = 'tya_hr_live_multitab_source_safe_dev';",
-            'builder project-period state'
-          )
-          replace_exact(
             builder,
-            "    currentPeriodId:CX.data.currentProjectId,",
-            "    currentPeriodId:CX.data.currentPeriodId,",
-            'visible contract period identity'
+            count=1
           )
-          replace_exact(
+          builder=builder.replace('currentPeriodId:CX.data.currentProjectId,','currentPeriodId:CX.data.currentPeriodId,')
+          builder=re.sub(
+            r"CX\.dataSource\.warnings = shoppers\.length === \d+ \? \[[^\n]*?\] : \[\];",
+            "CX.dataSource.warnings = shoppers.length === 216 ? [] : ['Conteo shopper source-safe distinto al snapshot aprobado: ' + shoppers.length + '/216.'];",
             builder,
-            "    CX.dataSource.warnings = shoppers.length === 210 ? ['Gap shopper protegido: 210/213; 3 referencias continúan en revisión.'] : [];",
-            "    CX.dataSource.warnings = shoppers.length === 216 ? [] : ['Conteo shopper source-safe distinto al snapshot aprobado: ' + shoppers.length + '/216.'];",
-            'shopper count warning'
+            count=1
           )
-          replace_exact(
-            builder,
-            "    tenantId:'tya', projectId:'cinepolis', projectName:'Cinépolis', sourceTitle:snapshot.source && snapshot.source.title,",
-            "    tenantId:'tya', projectId:'cinepolis', projectName:'Cinépolis', activePeriodId:latest && latest.id, sourceTitle:snapshot.source && snapshot.source.title,",
-            'preview metadata context'
+          builder=builder.replace(
+            "tenantId:'tya', projectId:'cinepolis', projectName:'Cinépolis', sourceTitle:snapshot.source && snapshot.source.title,",
+            "tenantId:'tya', projectId:'cinepolis', projectName:'Cinépolis', activePeriodId:latest && latest.id, sourceTitle:snapshot.source && snapshot.source.title,"
           )
+          required_builder=[
+            "tenantId:'tya', clientName:'TyA'",
+            "CX.data.currentProjectId = 'cinepolis';",
+            "CX.data.currentPeriodId = latest && latest.id;",
+            'currentPeriodId:CX.data.currentPeriodId,',
+            'shoppers.length === 216',
+            'activePeriodId:latest && latest.id'
+          ]
+          missing=[token for token in required_builder if token not in builder]
+          if missing: raise SystemExit('builder invariants missing: '+', '.join(missing))
+          save(builder_path,builder)
 
-          bridge='app/core/tya-phase-a-source-safe-preview.js'
-          replace_exact(
-            bridge,
-            "  const stablePeriodId = (projectId, periodKey) => `${projectId}::${periodKey || 'pending'}`;",
-            "  const stablePeriodId = (projectId, periodKey) => `${projectId}-${periodKey || 'pending'}`;",
-            'bridge period identity'
-          )
-          replace_exact(
-            bridge,
-            "    clientName: 'TyA',",
-            "    tenantId: 'tya',\n    clientName: 'TyA',",
-            'bridge tenant identity'
-          )
+          bridge_path,bridge=load('app/core/tya-phase-a-source-safe-preview.js')
+          bridge=bridge.replace("`${projectId}::${periodKey || 'pending'}`","`${projectId}-${periodKey || 'pending'}`")
+          if "tenantId: 'tya',\n    clientName: 'TyA'," not in bridge:
+            bridge=bridge.replace("    clientName: 'TyA',","    tenantId: 'tya',\n    clientName: 'TyA',",1)
+          required_bridge=[
+            "const stablePeriodId = (projectId, periodKey) => `${projectId}-${periodKey || 'pending'}`;",
+            "tenantId: 'tya',",
+            'CX.data.currentProjectId = parentProjectId;',
+            'CX.data.currentPeriodId ='
+          ]
+          missing=[token for token in required_bridge if token not in bridge]
+          if missing: raise SystemExit('bridge invariants missing: '+', '.join(missing))
+          save(bridge_path,bridge)
 
-          replace_exact(
-            'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs',
-            "  shoppers: Number(process.env.CXORBIA_EXPECT_SHOPPERS || 213)",
-            "  shoppers: Number(process.env.CXORBIA_EXPECT_SHOPPERS || 216)",
-            'source-safe smoke shopper count'
-          )
-          replace_exact(
-            'tools/qa/tya-phase-a-visible-data-smoke-r17.mjs',
-            "const expected = { periods:14, visits:616, shoppers:210, currentPeriodVisits:44, routes:13 };",
-            "const expected = { periods:14, visits:616, shoppers:216, currentPeriodVisits:44, routes:13 };",
-            'visible data shopper count'
-          )
-          replace_exact(
-            '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml',
-            "          CXORBIA_EXPECT_SHOPPERS: '213'",
-            "          CXORBIA_EXPECT_SHOPPERS: '216'",
-            'workflow shopper count'
-          )
+          replacements={
+            'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs':[(r"shoppers: Number\(process\.env\.CXORBIA_EXPECT_SHOPPERS \|\| \d+\)","shoppers: Number(process.env.CXORBIA_EXPECT_SHOPPERS || 216)")],
+            'tools/qa/tya-phase-a-visible-data-smoke-r17.mjs':[(r"shoppers:\d+, currentPeriodVisits",'shoppers:216, currentPeriodVisits')],
+            '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml':[(r"CXORBIA_EXPECT_SHOPPERS: '\d+'","CXORBIA_EXPECT_SHOPPERS: '216'")]
+          }
+          for path,rules in replacements.items():
+            p,text=load(path)
+            for pattern,repl in rules: text=re.sub(pattern,repl,text)
+            save(p,text)
+
+          checks={
+            'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs':'CXORBIA_EXPECT_SHOPPERS || 216',
+            'tools/qa/tya-phase-a-visible-data-smoke-r17.mjs':'shoppers:216, currentPeriodVisits',
+            '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml':"CXORBIA_EXPECT_SHOPPERS: '216'"
+          }
+          for path,token in checks.items():
+            if token not in Path(path).read_text(encoding='utf-8'):
+              raise SystemExit(f'{path}: invariant missing: {token}')
           PY
 
           node --check app/core/tya-phase-a-source-safe-preview.js
