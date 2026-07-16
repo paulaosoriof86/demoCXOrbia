@@ -1,4 +1,4 @@
-name: CXOrbia V156 atomic recovery executor
+name: CXOrbia V156 source discovery
 
 on:
   push:
@@ -9,72 +9,129 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  actions: read
   issues: write
 
 jobs:
-  execute-isolated-recovery:
+  discover-v156-source:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 20
     steps:
-      - name: Checkout isolated recovery branch
+      - name: Checkout all repository history
         uses: actions/checkout@v4
         with:
-          ref: phase-a/v156-atomic-recovery-20260716
+          ref: docs-tya-v6-v71-audit
           fetch-depth: 0
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Execute reviewed recovery plan
+      - name: Search refs, objects and Actions artifacts
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if [ ! -f .github/workflows/v156-atomic-recovery.yml ]; then
-            echo 'Recovery plan already consumed; no second promotion is allowed.'
-            exit 0
+          mkdir -p .tmp/v156-source-discovery/artifacts
+          exec > >(tee .tmp/v156-source-discovery/discovery.log) 2>&1
+
+          echo '== Remote refs =='
+          git fetch --all --tags --prune
+          git branch -a | tee .tmp/v156-source-discovery/branches.txt
+
+          echo '== Commit messages mentioning V156/finalization =='
+          git log --all --date=iso --pretty='%H %ad %d %s' --regexp-ignore-case \
+            --grep='V156\|finalization\|promote.*156\|source discovery' \
+            | tee .tmp/v156-source-discovery/commits.txt || true
+
+          echo '== Git objects and paths mentioning V156/candidate =='
+          git rev-list --all --objects > .tmp/v156-source-discovery/all-objects.txt
+          grep -Ei 'v156|manifest-v156|prototype development request|finalization' \
+            .tmp/v156-source-discovery/all-objects.txt \
+            | tee .tmp/v156-source-discovery/matching-objects.txt || true
+
+          echo '== Validate current transport payload =='
+          if test -f .cxorbia/v156-promotion.patch.gz.b64; then
+            wc -c .cxorbia/v156-promotion.patch.gz.b64 | tee .tmp/v156-source-discovery/payload-size.txt
+            sha256sum .cxorbia/v156-promotion.patch.gz.b64 | tee .tmp/v156-source-discovery/payload-sha256.txt
+            set +e
+            base64 -d .cxorbia/v156-promotion.patch.gz.b64 > .tmp/v156-source-discovery/payload.gz
+            BASE64_STATUS=$?
+            gzip -t .tmp/v156-source-discovery/payload.gz
+            GZIP_STATUS=$?
+            set -e
+            printf 'base64_status=%s\ngzip_status=%s\n' "$BASE64_STATUS" "$GZIP_STATUS" \
+              | tee .tmp/v156-source-discovery/payload-validation.txt
           fi
+
+          echo '== Enumerate all Actions artifacts =='
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/artifacts?per_page=100" \
+            --jq '.artifacts[] | [.id,.name,.size_in_bytes,.created_at,.expired] | @tsv' \
+            | tee .tmp/v156-source-discovery/all-artifacts.tsv
+
+          awk -F '\t' 'BEGIN{IGNORECASE=1} $2 ~ /(v156|final|candidate|prototype|export|source|baseline)/ {print}' \
+            .tmp/v156-source-discovery/all-artifacts.tsv \
+            | tee .tmp/v156-source-discovery/matching-artifacts.tsv || true
+
+          while IFS=$'\t' read -r id name size created expired; do
+            test -n "${id:-}" || continue
+            test "$expired" = "false" || continue
+            safe=$(printf '%s' "$name" | tr -cs 'A-Za-z0-9._-' '_')
+            out=".tmp/v156-source-discovery/artifacts/${id}-${safe}.zip"
+            echo "Downloading artifact $id $name ($size bytes)"
+            gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${id}/zip" > "$out" || { rm -f "$out"; continue; }
+            unzip -l "$out" > "${out}.listing.txt" 2>&1 || true
+            sha256sum "$out" >> .tmp/v156-source-discovery/downloaded-artifacts-sha256.txt
+          done < .tmp/v156-source-discovery/matching-artifacts.tsv
+
+          echo '== Inspect downloaded artifacts for exact candidate evidence =='
+          grep -RinE 'Prototype development request \(6\)|MANIFEST-V156|0262675769bf613c|8a8672b6403b0ecc|V156' \
+            .tmp/v156-source-discovery/artifacts \
+            > .tmp/v156-source-discovery/artifact-matches.txt 2>/dev/null || true
+
+          echo '== Decision =='
           python3 <<'PY'
           from pathlib import Path
-          import os
-          src=Path('.github/workflows/v156-atomic-recovery.yml').read_text(encoding='utf-8').splitlines()
-          marker='      - name: Materialize V156, apply explicit overlays and validate'
-          try:
-              start=src.index(marker)
-          except ValueError:
-              raise SystemExit('Reviewed recovery step marker not found.')
-          run_idx=None
-          for i in range(start+1,len(src)):
-              if src[i]=='        run: |':
-                  run_idx=i+1
-                  break
-          if run_idx is None:
-              raise SystemExit('Reviewed recovery run block not found.')
-          out=[]
-          for line in src[run_idx:]:
-              if line.startswith('      - name:'):
-                  break
-              if line.startswith('          '):
-                  out.append(line[10:])
-              elif line.strip()=='' :
-                  out.append('')
-              else:
-                  raise SystemExit(f'Unexpected indentation in reviewed run block: {line!r}')
-          script='\n'.join(out)+'\n'
-          script=script.replace('${{ github.repository }}',os.environ['GITHUB_REPOSITORY'])
-          Path('/tmp/v156-atomic-recovery.sh').write_text(script,encoding='utf-8',newline='\n')
+          import json, hashlib, base64, gzip
+          root=Path('.tmp/v156-source-discovery')
+          payload=Path('.cxorbia/v156-promotion.patch.gz.b64')
+          result={
+            'decision':'HOLD_SOURCE_NOT_YET_FOUND',
+            'expectedCandidateZipSha256':'8a8672b6403b0eccdd1406ffeaa1942546d100b3c99615549000fd519be65933',
+            'expectedPatchSha256':'8bfb2a85e1c42d095f56fbac7367da54b2872503effb2a7af939aa8a471b9347',
+            'payload':None,
+            'artifactCount':0,
+            'candidateArchives':[]
+          }
+          if payload.exists():
+            raw=payload.read_bytes()
+            p={'size':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'base64Valid':False,'gzipValid':False}
+            try:
+              gz=base64.b64decode(raw,validate=True); p['base64Valid']=True
+              try: gzip.decompress(gz); p['gzipValid']=True
+              except Exception as exc: p['gzipError']=str(exc)
+            except Exception as exc: p['base64Error']=str(exc)
+            result['payload']=p
+          for archive in sorted((root/'artifacts').glob('*.zip')):
+            result['artifactCount']+=1
+            if archive.stat().st_size>500000:
+              result['candidateArchives'].append({'path':str(archive),'size':archive.stat().st_size,'sha256':hashlib.sha256(archive.read_bytes()).hexdigest()})
+          if any(x['sha256']==result['expectedCandidateZipSha256'] for x in result['candidateArchives']):
+            result['decision']='FOUND_EXACT_V156_ZIP'
+          (root/'result.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(result,indent=2))
           PY
-          chmod +x /tmp/v156-atomic-recovery.sh
-          /tmp/v156-atomic-recovery.sh
 
-      - name: Upload evidence if recovery stops
+      - name: Upload complete discovery evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: v156-atomic-recovery-executor-evidence
-          path: .tmp/v156-atomic-recovery
-          if-no-files-found: warn
+          name: v156-source-discovery
+          path: .tmp/v156-source-discovery
+          if-no-files-found: error
           retention-days: 14
+
+      - name: Record discovery status in PR 7
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          decision=$(python3 -c "import json; print(json.load(open('.tmp/v156-source-discovery/result.json'))['decision'])" 2>/dev/null || echo DISCOVERY_FAILED)
+          gh api "repos/${GITHUB_REPOSITORY}/issues/7/comments" -f body="V156_SOURCE_DISCOVERY=${decision}\nRun=${GITHUB_RUN_ID}\nNo deploy, production, imports or writes executed."
