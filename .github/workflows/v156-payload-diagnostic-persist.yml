@@ -1,0 +1,106 @@
+name: CXOrbia V156 payload diagnostic persisted
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/workflows/v156-payload-diagnostic-persist.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+      - name: Persist exact payload diagnostics
+        run: |
+          set -u
+          mkdir -p .tmp/v156-payload-diagnostic app/docs
+          PAYLOAD=.cxorbia/v156-promotion.patch.gz.b64
+          OUT=.tmp/v156-payload-diagnostic
+          : > "$OUT/raw.txt"
+          if [ -f "$PAYLOAD" ]; then
+            wc -c "$PAYLOAD" | tee -a "$OUT/raw.txt"
+            sha256sum "$PAYLOAD" | tee -a "$OUT/raw.txt"
+            set +e
+            base64 -d "$PAYLOAD" > "$OUT/payload.gz"
+            BASE64_STATUS=$?
+            gzip -t "$OUT/payload.gz"
+            GZIP_STATUS=$?
+            gzip -dc "$OUT/payload.gz" > "$OUT/payload.patch"
+            DECODE_STATUS=$?
+            git apply --check "$OUT/payload.patch" > "$OUT/apply-check.txt" 2>&1
+            APPLY_STATUS=$?
+            set -e
+          else
+            BASE64_STATUS=99
+            GZIP_STATUS=99
+            DECODE_STATUS=99
+            APPLY_STATUS=99
+            : > "$OUT/payload.gz"
+            : > "$OUT/payload.patch"
+            echo 'payload missing' > "$OUT/apply-check.txt"
+          fi
+          export BASE64_STATUS GZIP_STATUS DECODE_STATUS APPLY_STATUS
+          python3 <<'PY'
+          from pathlib import Path
+          import hashlib,json,os,re
+          payload=Path('.cxorbia/v156-promotion.patch.gz.b64')
+          gz=Path('.tmp/v156-payload-diagnostic/payload.gz')
+          patch=Path('.tmp/v156-payload-diagnostic/payload.patch')
+          apply=Path('.tmp/v156-payload-diagnostic/apply-check.txt')
+          def meta(p):
+            return {'exists':p.exists(),'size':p.stat().st_size if p.exists() else 0,'sha256':hashlib.sha256(p.read_bytes()).hexdigest() if p.exists() else None}
+          text=patch.read_text(encoding='utf-8',errors='replace') if patch.exists() else ''
+          paths=re.findall(r'^diff --git a/(.+?) b/',text,re.M)
+          result={
+            'schemaVersion':'1.0.0',
+            'generatedAt':os.environ.get('GITHUB_RUN_ID'),
+            'headSha':os.environ.get('GITHUB_SHA'),
+            'expectedPayloadSha256':'d96784fac04b5ca03613fa790a46e63c5ca512da9d82b4cf4b6b0ad540d3a020',
+            'expectedPatchSha256':'8bfb2a85e1c42d095f56fbac7367da54b2872503effb2a7af939aa8a471b9347',
+            'payload':meta(payload),
+            'decodedGzip':meta(gz),
+            'decodedPatch':meta(patch),
+            'base64Status':int(os.environ['BASE64_STATUS']),
+            'gzipStatus':int(os.environ['GZIP_STATUS']),
+            'decodeStatus':int(os.environ['DECODE_STATUS']),
+            'applyCheckStatus':int(os.environ['APPLY_STATUS']),
+            'diffPathCount':len(paths),
+            'diffPaths':paths,
+            'applyCheckTail':'\n'.join(apply.read_text(errors='replace').splitlines()[-30:])
+          }
+          result['payloadMatchesExpected']=result['payload']['sha256']==result['expectedPayloadSha256']
+          result['patchMatchesExpected']=result['decodedPatch']['sha256']==result['expectedPatchSha256']
+          result['decision']='PASS_USABLE_PAYLOAD' if result['base64Status']==0 and result['gzipStatus']==0 and result['decodeStatus']==0 and result['applyCheckStatus']==0 else 'HOLD_UNUSABLE_PAYLOAD'
+          Path('app/docs/V156-PAYLOAD-DIAGNOSTIC-20260716.json').write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          Path('app/docs/V156-PAYLOAD-DIAGNOSTIC-20260716.md').write_text('\n'.join([
+            '# V156 payload diagnostic','',
+            f"Decision: `{result['decision']}`",'',
+            f"Payload size: {result['payload']['size']}",
+            f"Payload SHA-256: `{result['payload']['sha256']}`",
+            f"Payload expected: {result['payloadMatchesExpected']}",
+            f"Base64 status: {result['base64Status']}",
+            f"Gzip status: {result['gzipStatus']}",
+            f"Decoded patch size: {result['decodedPatch']['size']}",
+            f"Decoded patch SHA-256: `{result['decodedPatch']['sha256']}`",
+            f"Patch expected: {result['patchMatchesExpected']}",
+            f"Apply check status: {result['applyCheckStatus']}",
+            f"Diff paths: {result['diffPathCount']}",'',
+            'No deploy, production, imports or writes were executed.'
+          ])+'\n',encoding='utf-8')
+          print(json.dumps(result,indent=2))
+          PY
+          git config user.name 'CXOrbia Payload Diagnostic Bot'
+          git config user.email 'cxorbia-diagnostic@example.invalid'
+          git add app/docs/V156-PAYLOAD-DIAGNOSTIC-20260716.json app/docs/V156-PAYLOAD-DIAGNOSTIC-20260716.md
+          git commit -m 'docs: persist V156 payload diagnostics'
+          git push origin HEAD:docs-tya-v6-v71-audit
