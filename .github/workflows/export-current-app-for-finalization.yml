@@ -1,0 +1,22 @@
+name: export current app for finalization
+on:
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths:
+      - '.github/workflows/export-current-app-for-finalization.yml'
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-current-app
+          path: |
+            app
+            firebase.json
+          if-no-files-found: error
