@@ -1,0 +1,38 @@
+name: diagnose V156 apply
+on:
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths:
+      - '.github/workflows/diagnose-v156-apply.yml'
+permissions:
+  contents: write
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+      - name: Capture exact apply result
+        shell: bash
+        run: |
+          set -u
+          mkdir -p app/docs
+          sha256sum .cxorbia/v156-promotion.patch.gz.b64 > /tmp/diagnostic.txt 2>&1
+          base64 -d .cxorbia/v156-promotion.patch.gz.b64 | gzip -d > /tmp/v156.patch 2>> /tmp/diagnostic.txt
+          echo "decoded_patch_sha256=$(sha256sum /tmp/v156.patch | awk '{print $1}')" >> /tmp/diagnostic.txt
+          set +e
+          git apply --3way --index /tmp/v156.patch >> /tmp/diagnostic.txt 2>&1
+          status=$?
+          set -e
+          echo "git_apply_status=$status" >> /tmp/diagnostic.txt
+          git status --short >> /tmp/diagnostic.txt
+          git reset --hard HEAD
+          cp /tmp/diagnostic.txt app/docs/FINALIZATION-DIAGNOSTIC.txt
+          rm -f .github/workflows/diagnose-v156-apply.yml
+          git config user.name "CXOrbia Diagnostic Bot"
+          git config user.email "cxorbia-diagnostic@example.invalid"
+          git add -A
+          git commit -m "docs: capture V156 finalization diagnostic"
+          git push origin HEAD:docs-tya-v6-v71-audit
