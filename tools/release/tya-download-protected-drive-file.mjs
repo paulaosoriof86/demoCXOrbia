@@ -3,13 +3,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import process from 'node:process';
+import {setTimeout as sleep} from 'node:timers/promises';
 
 const fileId = process.env.V156_DRIVE_FILE_ID || '';
 const output = process.env.V156_DRIVE_OUTPUT || '.candidate/v156-runtime-delta.zip';
 const expectedSha256 = process.env.V156_EXPECT_SHA256 || '';
 const diagnosticFile = process.env.V156_DRIVE_DIAGNOSTIC || '.tmp/v156-atomic/drive-diagnostic.json';
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '{}');
-const diagnostics = {schemaVersion:'1.0.1', fileId, output, attempts:[], success:false};
+const projectNumber = '87461567267';
+const diagnostics = {schemaVersion:'1.1.0', fileId, output, projectNumber, serviceEnable:null, attempts:[], success:false};
 
 const writeDiagnostic = () => {
   fs.mkdirSync(path.dirname(diagnosticFile), {recursive:true});
@@ -32,7 +34,7 @@ if (serviceAccount.type !== 'service_account' || serviceAccount.project_id !== '
 const now = Math.floor(Date.now() / 1000);
 const unsigned = b64url({alg:'RS256',typ:'JWT'}) + '.' + b64url({
   iss: serviceAccount.client_email,
-  scope: 'https://www.googleapis.com/auth/drive.readonly',
+  scope: 'https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/drive.readonly',
   aud: 'https://oauth2.googleapis.com/token',
   iat: now,
   exp: now + 900
@@ -46,6 +48,34 @@ const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
 if (!tokenResponse.ok) fail(`OAuth token request failed: ${tokenResponse.status} ${(await tokenResponse.text()).slice(0,300)}`);
 const {access_token: accessToken} = await tokenResponse.json();
 if (!accessToken) fail('OAuth response did not contain an access token.');
+
+const enableUrl = `https://serviceusage.googleapis.com/v1/projects/${projectNumber}/services/drive.googleapis.com:enable`;
+const enableResponse = await fetch(enableUrl, {method:'POST', headers:{authorization:`Bearer ${accessToken}`,'content-type':'application/json'}, body:'{}'});
+const enableBytes = Buffer.from(await enableResponse.arrayBuffer());
+diagnostics.serviceEnable = {status:enableResponse.status, responseSnippet:safeSnippet(enableBytes)};
+if (enableResponse.ok) {
+  let operation = {};
+  try { operation = JSON.parse(enableBytes.toString('utf8')); } catch {}
+  diagnostics.serviceEnable.operation = operation.name || null;
+  if (operation.name) {
+    for (let attempt = 0; attempt < 30; attempt += 1) {
+      const opResponse = await fetch(`https://serviceusage.googleapis.com/v1/${operation.name}`, {headers:{authorization:`Bearer ${accessToken}`}});
+      const op = await opResponse.json().catch(() => ({}));
+      if (op.done) { diagnostics.serviceEnable.operationDone = true; diagnostics.serviceEnable.operationError = op.error || null; break; }
+      await sleep(2000);
+    }
+  }
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    const stateResponse = await fetch(`https://serviceusage.googleapis.com/v1/projects/${projectNumber}/services/drive.googleapis.com`, {headers:{authorization:`Bearer ${accessToken}`}});
+    const state = await stateResponse.json().catch(() => ({}));
+    diagnostics.serviceEnable.state = state.state || null;
+    if (state.state === 'ENABLED') break;
+    await sleep(2000);
+  }
+} else {
+  diagnostics.serviceEnable.warning = 'Drive API enable was not permitted; download attempts continue fail-closed.';
+}
+writeDiagnostic();
 
 const endpoints = [
   `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media&supportsAllDrives=true`,
