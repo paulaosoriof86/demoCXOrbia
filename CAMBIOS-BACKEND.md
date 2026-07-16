@@ -1,5 +1,31 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-16 — Fast-lane atómico y corrección proyecto/periodo TyA
+
+- Se diagnosticó la causa raíz del reproceso recurrente de empalmes: una promoción podía aplicar parcialmente una candidata y conservar archivos runtime anteriores mediante exclusiones silenciosas.
+- Se eliminó `.github/workflows/finalize-unique-baseline.yml`, porque excluía archivos runtime y podía producir una baseline híbrida.
+- Se creó `app/docs/ADDENDUM-MAESTRO-FAST-LANE-EMPALME-ATOMICO-TYA-20260716.md` con la metodología obligatoria para futuras candidatas: árbol completo primero, overlays explícitos después, una sola identidad/manifest/source lock y gates fail-closed.
+- Se corrigió `app/core/tya-phase-a-source-safe-preview.js` para separar correctamente:
+  - proyecto padre `cinepolis`;
+  - periodo mensual con ID estable `cinepolis::<YYYY-MM>`;
+  - visitas y postulaciones vinculadas al periodo activo;
+  - `currentProjectId` y `currentPeriodId` independientes.
+- Causa funcional corregida: el bridge anterior asignaba el mismo ID `cinepolis` a los 14 periodos y a todas las visitas, impidiendo que el cambio de periodo cambiara el histórico y permitiendo que KPI/Finanzas mezclaran periodos.
+- Se creó `tools/qa/tya-project-period-kpi-history-gate.mjs` para comprobar automáticamente proyecto/periodo/contexto, 14 periodos, 616 visitas, 44 visitas por periodo, MAY/JUN/JUL distintos, KPI por periodo y junio ejecutado con control de pagos pendiente.
+- Se creó `tools/qa/verify-fast-lane-promotion-policy.mjs` para bloquear workflows que excluyan silenciosamente rutas runtime de candidatas.
+- Se actualizó `.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml` para ejecutar el gate nuevo de forma fail-closed junto con los smokes Admin/Shopper/Cliente.
+- Se actualizó `backend/contracts/prototype-baseline-registry-v1.json`: V131+R18D sigue como rollback físico actual y V156 queda `pending_audit`, no aceptada ni empalmada, hasta promoción atómica y PASS de gates.
+- No se tocó ningún archivo en `app/modules/**` desde backend.
+- Estado seguro: sin deploy, producción, imports reales, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos.
+
+### Clasificación
+
+- **Reusable CXOrbia:** fast-lane atómico, política de propiedad de archivos, gate proyecto/periodo/contexto/KPI y bloqueo de exclusiones runtime.
+- **Exclusivo cliente:** 14 periodos TyA/Cinépolis, 44 visitas por periodo, 616 visitas y tratamiento operativo de junio.
+- **Claude/prototipo:** V156 continúa como única candidata frontend; no se solicita otra candidata por este incidente.
+- **Academia:** debe explicar proyecto vs periodo, cambio de contexto, histórico, KPI y estados honestos.
+- **Sin impacto Claude:** validadores, workflows, registro de baseline y controles de promoción.
+
 ## 2026-07-11 - Importadores source-safe operativos R4
 
 - Se agregaron importadores separados para pagos/movimientos y certificaciones presentadas.
@@ -97,174 +123,9 @@
 - Se actualizo `PENDIENTES-PROTOTIPO.md`.
 - Objetivo: completar el puente acumulado para Claude/prototipo/Academia desde los documentos recientes, sin tocar UI, sin pedir ejecucion local y sin reiniciar pendientes ni metodologia.
 - Contenido protegido para Claude: PR #7 draft/open/no merge, sin deploy, sin produccion, sin runtime, sin imports, sin Firestore/Auth/Storage writes, sin HR writes, sin Make/Gemini live, sin pagos reales y sin output local commiteado.
-- Foco Phase A: HR fuente operacional, datos reales/sanitizados TyA, shoppers historicos, certificaciones ya presentadas, junio como liquidacion/pago, Cinépolis configurable y multi-proyecto, cuestionario configurable, conflictos a revision humana con llaves estables.
-- Pendientes P0 documentados para Claude: copy honesto de gates/integraciones, Academia profunda/administrable y Phase A real TyA sin promesas falsas de runtime/import/sync/pago.
-- Pendientes P1 documentados para Claude: readiness/dashboard source-safe, proyecto configurable sin hardcode Cinépolis, Mis beneficios/liquidaciones/pagos con honorario-boleto-combo-lote-movimientos y postulaciones/asignaciones con conflictos a revision.
-- Impacto backend reusable: consolida patrones reutilizables de gates, readiness, source-safe, `CX.data`, multi-tenant, proyecto configurable, outbox/sync, review humana, copy honesto y Academia transversal.
-- Impacto Academia: define cobertura obligatoria sobre Phase A vs produccion, preview/dry-run/gate/runtime/import, HR fuente operacional, shoppers/certificaciones preservadas, asignaciones/conflictos, liquidaciones/pagos, Gemini con revision humana, Make/HR preparado y readiness dashboard.
-- Estado seguro: documentacion solamente. Sin cambios en `/app/modules`, sin cambios en `/app/core`, sin runtime, sin builder, sin imports, sin writes, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin deploy, sin produccion, sin pagos reales y sin datos sensibles.
-- Commits: `de0d535ea58d67bc51ac2100ab1ce9feca09b1e5`, `1db6091eacbdd178ca622808016d82ea568c94de`, `b28642ee81c383beb68c85ed7647612bce186829`.
-
-## 2026-07-09 - Continuity prompt and PR summary Phase A TyA
-
-- Se agrego `app/docs/PHASE-A-CONTINUITY-PROMPT-AND-PR-SUMMARY-TYA-20260709.md`.
-- Se agrego `app/docs/CAMBIOS-PHASE-A-CONTINUITY-PROMPT-AND-PR-SUMMARY-TYA-20260709.md`.
-- Objetivo: crear un prompt de continuidad completo y un resumen PR acumulado para abrir una nueva conversacion sin perder contexto, metodologia ni plan de trabajo.
-- Corrige errores previos: pedir pasos manuales innecesarios, repetir Level 0/1, reiniciar plan, pedir HR/reglas/shoppers/certificaciones ya documentadas, desviarse de Phase A real TyA, tratar infraestructura abstracta como avance operativo y asumir runtime activo.
-- Contenido protegido: repo/rama/base/PR, estado seguro, reglas de oro, foco Phase A, errores a no repetir, bloques completados, documentacion obligatoria, metodologia esperada y siguiente bloque exacto.
-- Impacto Phase A: permite continuar con HR fuente operacional, datos reales/sanitizados, junio como pagos/liquidaciones, shoppers historicos, certificaciones preservadas, Cinépolis configurable y multi-proyecto, sin pedir informacion ya documentada.
-- Impacto backend reusable: patron reusable de prompt/checkpoint para continuidad en proyectos largos multi-tenant sin perdida de metodologia.
-- Impacto Claude/prototipo: obliga a documentar para Claude y no tocar UI/core desde backend; evita asumir runtime, import, pagos o integraciones activas.
-- Impacto Academia: explicar continuidad operativa, no-reversion, metodologia por bloques, gates, source-safe y diferencia entre preparado/ejecutado/runtime/import/produccion.
-- Estado seguro: documento de continuidad solamente. Sin cambios UI/core, sin runtime, sin imports, sin writes, sin deploy, sin produccion y sin datos sensibles.
-- Commits: `25440b90046a4322b9a7e71b258c69dec4f1255a`, `081c2dbae104f05d5d73d8b9645008e212f2b429`.
-
-## 2026-07-09 - Accumulated continuity checkpoint Phase A TyA
-
-- Se agrego `backend/contracts/phase-a-accumulated-continuity-checkpoint-v1.json`.
-- Se agrego `app/docs/PHASE-A-ACCUMULATED-CONTINUITY-CHECKPOINT-TYA-20260709.md`.
-- Se agrego `app/docs/CAMBIOS-PHASE-A-ACCUMULATED-CONTINUITY-CHECKPOINT-TYA-20260709.md`.
-- Objetivo: conservar continuidad completa de Phase A backend TyA para evitar perdida de contexto, metodologia, estado, fuente viva, guardrails, avances, pendientes y siguiente bloque exacto.
-- Estado repo/PR: `paulaosoriof86/demoCXOrbia`, rama `docs-tya-v6-v71-audit`, base `release/cxorbia-tya-rc-20260630`, PR #7 draft abierto, sin merge, sin deploy, sin produccion, sin runtime.
-- Foco Phase A: datos reales/sanitizados TyA, HR fuente operacional, junio como pagos/liquidaciones, shoppers historicos, certificaciones preservadas, Cinépolis configurable y multi-proyecto.
-- Bloques protegidos: no-reversion Level 0/1, real-data preview, continuidad operacional, state machine, acciones auditables, colas, readiness, GO request, runtime switch plan, `CX.data` adapter, domain mapping, readiness pack, builder, ejecucion local y comando unico futuro.
-- Guardrails: no tocar `/app/modules` ni `/app/core`, no pedir datos privados por chat, no conectar base vieja, no usar fixture/`.tmp` como real, no repetir Level 0/1 y no activar runtime/write/import/deploy sin GO explicito.
-- Impacto Claude/prototipo: Claude debe usar este checkpoint para no reiniciar pendientes ni asumir runtime activo. Todo cambio UI futuro requiere source lock/candidata vigente y copy honesto.
-- Impacto Academia: explicar continuidad, no-reversion, gates, source-safe, dry-run, builder local, comando unico futuro y diferencia entre preparado/ejecutado/runtime/import/produccion.
-- Siguiente bloque exacto: preparar `PHASE-A-CONTINUITY-PROMPT-AND-PR-SUMMARY-TYA-20260709.md`.
-- Estado seguro: checkpoint documentado solamente. Sin cambios UI/core, sin runtime, sin imports, sin writes, sin deploy, sin produccion y sin datos sensibles.
-- Commits: `a91f172bf0587dc18255ff9a01b47da38645f71a`, `afecf7c5051d1ba434fd79e6f7850809b53aa9a9`, `581c30002ebe16d8269bae9fd3faf5ce5012d547`.
-
-## 2026-07-09 - Future single-command pack Phase A TyA
-
-- Se agrego `backend/contracts/phase-a-future-single-command-pack-v1.json`.
-- Se agrego `tools/contracts/tya-phase-a-future-single-command-pack-validate.mjs`.
-- Se agrego `app/docs/PHASE-A-FUTURE-SINGLE-COMMAND-PACK-TYA-20260709.md`.
-- Se agrego `app/docs/POWERSHELL-NO-EJECUTAR-PHASE-A-BUILDER-READINESS-TYA-20260709.md`.
-- Se agrego `app/docs/CAMBIOS-PHASE-A-FUTURE-SINGLE-COMMAND-PACK-TYA-20260709.md`.
-- Objetivo: dejar preparado el paquete de comando unico futuro para Paula, marcado como NO EJECUTAR TODAVIA, para reducir pasos manuales cuando se necesite computador y fuente local source-safe.
-- Flujo futuro: confirmar repo/rama, validar contratos, crear salidas `.tmp`, validar readiness pack contract-only y, si existe input local source-safe, validarlo con `--input`.
-- Guardrails: no ejecutar ahora, no pedir datos privados en chat, no HR cruda, no fixture como real, no `.tmp` como fuente original, no `git add .tmp`, no commit de reportes locales, no adapter/runtime/import/write/deploy, no Make/Gemini y no pagos.
-- Impacto Phase A: mantiene preparado el flujo local futuro para validar fuente real/sanitizada TyA sin activar runtime/imports/writes ni repetir Level 0/1.
-- Impacto backend reusable: patron reusable de paquete de comando unico futuro para validaciones locales source-safe por tenant/proyecto.
-- Impacto Claude/prototipo: Claude debe mostrar esto, si aplica, como estado tecnico pendiente: `comando local preparado · no ejecutado`.
-- Impacto Academia: explicar por que se prepara un comando unico, por que no se ejecuta hasta necesidad real, por que no se comparten datos privados y por que `.tmp` no se commitea.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, no se envio comando a Paula, comando no ejecutado, builder no ejecutado, output local no commiteado, adapter no habilitado, sin runtime, sin import de dominios, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
-- Commits: `86e554ae4d201f7fa1864d230acb1fefb845b116`, `a32067fc6375c55cee601a2007cfc5b8c1a7b4f3`, `1da72b5ea6ac92e85c98130b113b5a14e5d0063f`, `e1bb012257a7539099d9c0e2d148c5f265c01d1c`, `2b9c85be49031a0345b6b0c7d653f7153566e961`.
-
-## 2026-07-09 - Local builder execution control Phase A TyA
-
-- Se agrego `backend/contracts/phase-a-local-builder-execution-control-v1.json`.
-- Se agrego `tools/contracts/tya-phase-a-local-builder-execution-control-validate.mjs`.
-- Se agrego `app/docs/PHASE-A-LOCAL-BUILDER-EXECUTION-CONTROL-TYA-20260709.md`.
-- Se agrego `app/docs/CAMBIOS-PHASE-A-LOCAL-BUILDER-EXECUTION-CONTROL-TYA-20260709.md`.
-- Objetivo: definir el control de ejecucion local futura del builder source-safe Phase A para que, cuando se necesite computador, exista un solo flujo seguro y sin reprocesos.
-- Flujo futuro: un solo bloque/comando debe confirmar repo/rama, validar contratos, ejecutar builder solo con inputs source-safe, validar readiness pack con `--input`, escribir reportes solo bajo `.tmp` e imprimir verdict.
-- Inputs locales: HR source-safe/full-flow report, export TyA original sanitizado si aplica y project config source-safe.
-- Outputs locales: `.tmp/source-safe/tya-phase-a-domains.source-safe.local.json` y reportes `.tmp/tya-phase-a-realdata-domain-readiness-pack/*`, no commiteados.
-- Guardrails: no pedir datos privados en chat, no commitear `.tmp`, no raw HR, no datos sensibles, no fixture como real, no `.tmp` como original, no base vieja, no runtime, no writes, no imports, no deploy, no Make/Gemini, no pagos y no reproceso Level 0/1.
-- Impacto Phase A: prepara una corrida local segura para evaluar fuente real/sanitizada TyA sin pedir datos privados por chat, sin subir output al repo y sin activar runtime/imports/writes.
-- Impacto backend reusable: patron reusable para ejecucion local controlada de builders source-safe por tenant/proyecto.
-- Impacto Claude/prototipo: Claude debe mostrar estados honestos si el flujo local aun no se ejecuto o si el dry-run no paso. No debe representar datos como cargados.
-- Impacto Academia: explicar flujo local source-safe, no compartir datos privados, `.tmp` no commiteado, dry-run vs import/runtime/produccion.
-- Estado seguro: sin cambios en `/app/modules` o `/app/core`, no se pidio comando a Paula, builder no ejecutado, output local no commiteado, adapter no habilitado, sin runtime, sin import de dominios, sin deploy, sin produccion, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin correos/WhatsApp reales, sin pagos reales, sin import real y sin datos sensibles.
-- Commits: `79d95c6d850dc0e48f8bcba6f6ac6d47ef62643e`, `63509895c99045739ed1f7c1328040a0597bdbec`, `db0cd24495be3b5bc01104a3e23e7a1874b2a79f`, `a9661875e8c09cf2ba6f8870cbb6ab9a6af45eb8`.
-
-## Empalme determinístico V110 — 2026-07-12
-
-- Baseline V105/build interno V106 reconstruida y delta V105→V110 aplicado sin heurísticas.
-- Identidad final: 67 archivos V110 exactos, 2 overrides locales protegidos y source lock unión regenerado.
-- Backend, source-safe, HR, importadores, R5/R6/R8/R9 y gates preservados.
-- Sin deploy, producción, imports, writes, providers ni pagos reales.
-
-## R10 source-safe post-V110 — 2026-07-12
-
-- Empalme V110 y source lock unión verificados.
-- Harness corregido: payload/bridge source-safe solo en CI, rutas canónicas y `CX.router.nav()`.
-- Decisión final: `PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE`.
-- Cobertura: 3 roles y 13 rutas; 0 errores de página/consola; 0 blockers.
-- HR source-safe actual: 14 periodos, 616 visitas y 210 shoppers.
-- Diferencia 210/213: revisión backend/operativa con llaves estables; no dedupe por nombre y no tarea Claude.
-- Sin deploy, producción, imports, writes, providers ni pagos reales.
-
-
-## R11 reconciliación shopper references — 2026-07-12
-
-- Reconciliador source-safe por referencias opacas agregado y ejecutado.
-- Decisión: `HOLD_REFERENCE_SET_UNAVAILABLE`.
-- Actual 210; histórica no localizada; históricas ausentes 0; nuevas 0.
-- No match por nombre, no materialización, no imports, no writes, no deploy ni producción.
-
-
-## R11B recuperación histórica shopper refs — 2026-07-12
-
-- Decisión: `HOLD_NO_213_REFERENCE_SET_IN_REACHABLE_GIT_OBJECTS`.
-- Objetos inspeccionados con referencias: 0; candidatos exactos 213: 0.
-- Sin match por nombre, materialización, imports, writes, deploy ni producción.
-
-
-## R11C lineage builder shopper — 2026-07-12
-
-- Decisión: `SOURCE_SNAPSHOT_DRIFT_NOT_BUILDER_DRIFT`.
-- Se verificó si 213→210 proviene de cambio del builder/helper o de snapshot/fuente.
-- No nombres, imports, writes, deploy ni producción.
-
-
-## R11D reviewQueue brecha shopper — 2026-07-12
-
-- Se creó un único ítem source-level; no tres shoppers ficticios.
-- Materialización shopper/carryover de certificaciones queda HOLD hasta evidencia o decisión humana auditada.
-- Sin imports, writes, deploy ni producción.
-
-
-## R12 Firebase DEV read-only readiness — 2026-07-12
-
-- Gate estático post-V110: `GO_SAFE_FIREBASE_DEV_READ_ONLY_GATE_PREPARED_NOT_EXECUTED`.
-- Autorización provider: FALSE; lecturas reales: NOT_EXECUTED.
-- Sin credenciales, writes, imports, deploy ni producción.
-
-
-## R13 Firebase DEV read-only autorizado — 2026-07-12
-
-- Decisión: `NONEMPTY_REVIEW_REQUIRED`.
-- Provider calls: true; clean confirmed: false.
-- Cero writes, imports, deploy y producción; credencial temporal eliminada.
-
-
-## R13B Firebase DEV nonempty review — 2026-07-12
-
-- Se creó review item de infraestructura por 17 usuarios Auth y Firestore no vacío.
-- Adapter/materialización/backend activation permanecen HOLD.
-- Sin writes, imports, deploy ni producción.
-
-
-## R14 Finanzas reales TyA — 2026-07-13
-
-- 247 filas reales de liquidación source-safe contra 616 visitas HR.
-- 0 enlaces compuestos exactos.
-- Decisión: `HOLD_NO_EXACT_REAL_TYA_LINKS`.
-- Sin writes, import real, pagos, deploy ni producción.
-
-
-## R14C Finanzas reales TyA — 2026-07-13
-
-- Decisión: `PASS_WITH_REVIEW_REAL_TYA_FINANCIAL_RECONCILIATION_R14C`.
-- 196/247 enlaces exactos protegidos; 51 en revisión.
-- Ledger vinculado a visita: 1/37.
-- Sin writes, import real, pagos, deploy ni producción.
-
-
-## R15 Firebase DEV nuevo y vacío — 2026-07-13
-
-- Autorización explícita registrada.
-- Proyecto objetivo: `cxorbia-tya-dev-260713-r15a`.
-- Decisión: `BLOCKED_TARGET_PROJECT_EXISTENCE_UNVERIFIED`.
-- Proyecto creado: false; Firebase agregado: false; baseline vacía verificada: false.
-- Sin billing, import, deploy, producción ni datos TyA materializados.
-
-
-## R15B Firebase DEV nuevo y vacío — 2026-07-13
-
-- Decisión: `BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY`.
-- Proyecto `cxorbia-tya-dev-260713-r15a`; creación atómica nueva: false; Firebase agregado: false; baseline vacía: false.
-- Sin billing, import, deploy ni producción.
+- Foco Phase A: HR fuente operacional, datos reales/sanitizados TyA, shoppers historicos, certificaciones ya presentadas, junio como liquidacion/pago, Cinépolis proyecto configurable, multi-proyecto, cuestionario configurable y conflictos a revision humana con llaves estables.
+- Pendientes P0 para Claude: copy honesto de gates, Academia profunda/administrable, representacion de Phase A real TyA sin prometer imports/runtime/integraciones reales.
+- Pendientes P1 para Claude: readiness dashboard source-safe, proyecto configurable sin hardcode Cinépolis, Mis beneficios/liquidaciones/pagos con honorario-boleto-combo-lote-movimientos, postulaciones/asignaciones con conflictos a revision.
+- Academia debe cubrir: Phase A vs produccion, preview/dry-run/gate/runtime/import, HR fuente operacional, shoppers/certificaciones preservadas, asignaciones/conflictos, liquidaciones/pagos, administracion de Academia, Gemini con revision humana, Make/HR preparado y readiness dashboard.
+- No tocar: `tools/`, `tools/migration/`, `tools/contracts/`, `backend/contracts/`, `.github/workflows/`, reglas reales, secrets, datos sensibles, `.tmp/` ni integraciones reales.
+- Estado seguro: documento puente solamente. No toca `/app/modules` ni `/app/core`, no activa runtime, no ejecuta builder, no importa datos, no escribe Firestore/Auth/Storage/HR, no activa Make/Gemini, no hace deploy, no hace pagos reales y no agrega datos sensibles.
