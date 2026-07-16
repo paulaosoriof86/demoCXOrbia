@@ -1,6 +1,6 @@
 {
-  "version": "1.2.0",
-  "updatedAt": "2026-07-15",
+  "version": "1.3.0",
+  "updatedAt": "2026-07-16",
   "repository": "paulaosoriof86/demoCXOrbia",
   "integrationBranch": "docs-tya-v6-v71-audit",
   "invariant": "acceptedCandidateVersion == empalmedVersion == activeBaselineVersion",
@@ -24,6 +24,14 @@
         "functionalPath": "app/core/finanzas-core.js",
         "decision": "PASS_R18D_VISIBLE_OVERLAYS",
         "workflowRun": 29437465036
+      },
+      {
+        "id": "TYA_PROJECT_PERIOD_CONTEXT_HF1",
+        "sourceCandidateInternalVersion": "V156",
+        "promotionMode": "explicit_backend_connection_overlay_pending_revalidation",
+        "functionalPath": "app/core/tya-phase-a-source-safe-preview.js",
+        "decision": "PENDING_V156_ATOMIC_REVALIDATION",
+        "reason": "Separate parent project identity from unique period identity so HR history and KPI consumers do not mix periods."
       }
     ]
   },
@@ -35,14 +43,19 @@
     "aggregateSha256": "b590f500a67f28fb911698f7a3c457eddd31ddad794efdfb760587630f7037b3"
   },
   "candidate": {
-    "version": "V131",
-    "sourceZipSha256": "19424b2b709a4bff457454bbeff6abe47cd1c52c0f0388fd1a380008c8adc740",
-    "status": "accepted_and_empalmed",
-    "accepted": true,
-    "empalmed": true,
-    "gateDecision": "PASS_ATOMIC_PROTOTYPE_ACCEPTANCE_WITH_RECONCILED_R18D_HOTFIX",
-    "failures": [],
-    "nextExpectedVersion": null
+    "version": "V156",
+    "sourceZipSha256": "8a8672b6403b0eccdd1406ffeaa1942546d100b3c99615549000fd519be65933",
+    "declaredManifestAggregateSha256": "0262675769bf613c933e0872484bd27d38c4adabe28b335f697ae456cc5c0305",
+    "status": "pending_audit",
+    "accepted": false,
+    "empalmed": false,
+    "gateDecision": "PENDING_ATOMIC_MATERIALIZATION_AND_TYA_SEMANTIC_GATES",
+    "failures": [
+      "previous_promotion_workflow_excluded_runtime_files",
+      "candidate_not_materialized_on_integration_branch",
+      "project_period_kpi_history_gate_not_yet_passed_on_v156"
+    ],
+    "nextExpectedVersion": "V156"
   },
   "allowedCandidateStatuses": [
     "pending_audit",
@@ -53,17 +66,30 @@
     "passRequired": true,
     "sameBlock": [
       "audit_pass",
-      "empalme_candidate_tree",
+      "materialize_complete_candidate_runtime_tree",
+      "apply_explicit_backend_overlays",
+      "project_period_kpi_history_gate_pass",
+      "source_safe_role_smoke_pass",
       "update_source_lock",
       "update_active_baseline_registry",
       "fast_forward_integration_branch"
     ],
-    "hotfixException": "A focalized Claude hotfix may remain on the same active baseline version only when the functional delta is allowlisted, reconciled against protected local semantics, independently validated and recorded as an inherited manifest.",
+    "runtimeCandidateOwnedPaths": [
+      "app/index.html",
+      "app/app.js",
+      "app/core/**",
+      "app/modules/**",
+      "app/styles/**",
+      "app/sw.js"
+    ],
+    "forbidSilentRuntimeExclusions": true,
+    "hotfixException": "A focalized overlay may survive only when it is reapplied after the complete candidate runtime tree, independently validated, recorded in the final manifest and included in the same active source lock.",
     "forbiddenIntermediateStates": [
       "accepted_not_empalmed",
       "empalmed_not_baseline",
       "continuity_baseline_not_empalmed",
-      "two_active_baselines"
+      "two_active_baselines",
+      "hybrid_runtime_unregistered_overlay"
     ],
     "rollback": "previous accepted baseline remains immutable and is the only rollback reference"
   }
