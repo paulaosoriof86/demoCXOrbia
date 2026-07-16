@@ -1,8 +1,18 @@
 # PENDIENTES-PROTOTIPO.md
 
-> Lista viva de mejoras del prototipo CXOrbia, priorizada. Actualizada 2026-07-15.
+> Lista viva de mejoras del prototipo CXOrbia, priorizada. Actualizada 2026-07-16.
 > Clasificación: P0 crítico · P1 importante · P2 posterior · [TyA] específico · [CX] generalizable
 > El detalle de CÓMO se resolvió cada ítem está en CAMBIOS-PROTOTIPO.md (entradas 1–25+).
+
+## 🔴 P0 ACTUAL — V155 GATE COMERCIAL TRANSVERSAL
+
+- [CX] La migración de proyectos ya quedó tenant-safe y repetible; no reabrirla.
+- [CX] `hasTechAccess()` permanece false y el curso `a_backend` está oculto; no reabrir esos gates.
+- [Claude] Eliminar jerga técnica visible para admin/ops/coordinador/aliado/shopper/cliente en DOM, tooltips, toasts, manuales, cursos y plantillas.
+- [Claude] Ejecutar gate automatizado por rol/módulo con 0 coincidencias para `backend`, `runtime`, `source-safe`, `pending_backend`, `reviewQueue`, `auditEvents`, `sourceRef`, `connectionRef`, manifest/source lock/BUILD_ID, `app/docs`, `dry-run`, `gate backend` y `sync backend`.
+- [Claude] No cambiar identificadores internos, contratos, comentarios ni contenido técnico realmente inaccesible.
+- [Academia] Revisar cursos y manuales comerciales; técnico solo para audiencia interna protegida.
+- [Backend] Excluir `app/docs`, `app/demo` y evidencia técnica del Hosting durante el empalme, sin eliminarla del repositorio.
 
 ## ✅ RESUELTOS Y VERIFICADOS
 
@@ -69,10 +79,10 @@
 - **Sincronía de filtros** proyecto/periodo/país entre TODOS los módulos (un solo estado, sin mezclar) [CX]
 
 ## 🔴 PENDIENTE — Estados honestos (P1)
-- Correo: "correo simulado / borrador / pendiente backend" (no "enviado") [CX]
-- Automatizaciones: activa/pausada/pendiente backend/error/simulada, última/próxima ejecución [CX]
+- Correo: estado funcional `borrador` o `pendiente de envío`; no mostrar enviado sin proveedor real [CX]
+- Automatizaciones: activa/pausada/pendiente de activación/error/vista previa, última/próxima ejecución [CX]
 - Integraciones: conectado/pendiente/simulado honesto por cada una [CX]
-- IA: "pendiente de backend/IA real" cuando no hay API key conectada [CX]
+- IA: `pendiente de conexión` cuando no hay proveedor real [CX]
 - Shoppers source-safe: el KPI `Activos` no debe contar referencias protegidas sin estado como activas; debe separar referencias protegidas, perfiles operativos y perfiles autorizados [CX]
 - Shoppers source-safe: revisar el KPI y la celda `Perfil` para no mostrar completo/incompleto cuando la fuente solo entrega referencia protegida [CX]
 - Finanzas source-safe: no mostrar un modelo financiero específico, ingresos estimados ni narrativa de margen creciente cuando esos campos no vienen de una fuente confirmada [CX]
@@ -95,17 +105,15 @@
 - [CX] Mantener el prototipo comercializable y generalizable. TyA/Cinépolis es tenant DEV; no endurecer reglas como si fueran el único cliente.
 - [Backend] Implementar segmentación real por tenant, projectId, programId, periodId, país, rol, permisos y feature flags.
 - [Backend] Sprint 9 sigue pendiente: no marcar como cerrado hasta validar Firebase DEV real.
-- [Claude] Revisar textos de acciones operativas, WhatsApp, correo, Make e IA para que digan claramente `simulado`, `preview` o `pendiente backend` cuando no haya conexión real.
+- [Claude] Mantener estados honestos mediante lenguaje funcional comercial, sin jerga interna.
 - [Claude] Validar visualmente reglas operativas por periodo/país/quincena sin convertirlas en lógica exclusiva de TyA.
 
 ## 2026-07-14 - Post empalme V131
 
-- No quedan P0 de candidata que impidan continuar Phase A.
-- Mantener smoke visual final por roles como verificación posterior, no como bloqueo del empalme.
+- Mantener smoke visual final por roles como verificación posterior.
 - Producción, proveedores, import real y writes siguen HOLD.
 
 ## 2026-07-15 - R18D hotfix cerrado
 
 - El P0 de Finanzas quedó empalmado de forma reconciliada y R18D pasó sin blockers ni warnings.
-- No corresponde otro paquete Claude por este P0.
-- Los tres ajustes source-safe de Shoppers/Finanzas listados como P1 deben revisarse en el próximo paquete acumulado o durante la validación visual DEV; no reabren el empalme ni R18D.
+- Los ajustes source-safe de Shoppers/Finanzas se mantienen para validación visual DEV.
