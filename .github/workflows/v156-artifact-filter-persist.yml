@@ -10,7 +10,6 @@ on:
 
 permissions:
   contents: write
-  actions: read
 
 jobs:
   filter:
@@ -21,20 +20,15 @@ jobs:
         with:
           ref: docs-tya-v6-v71-audit
           fetch-depth: 0
-      - name: Filter likely candidate-source artifacts
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Filter likely candidate-source artifacts from persisted index
         run: |
           set -euo pipefail
-          gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/artifacts?per_page=100" \
-            --jq '.artifacts[] | {id,name,size_in_bytes,created_at,expires_at,expired,digest,run_id:.workflow_run.id,head_branch:.workflow_run.head_branch,head_sha:.workflow_run.head_sha}' \
-            > /tmp/artifacts.ndjson
+          test -s app/docs/V156-ACTIONS-ARTIFACT-INDEX-20260716.json
           python3 <<'PY'
           from pathlib import Path
-          import json,re,datetime,os
-          items=[]
-          for line in Path('/tmp/artifacts.ndjson').read_text().splitlines():
-            if line.strip(): items.append(json.loads(line))
+          import json,re,os
+          source=json.loads(Path('app/docs/V156-ACTIONS-ARTIFACT-INDEX-20260716.json').read_text(encoding='utf-8'))
+          items=source.get('allArtifacts',[])
           rx=re.compile(r'(v156|current[-_ ]?app|finalization|prototype|candidate|package|paquete|export|promotion|baseline|source[-_ ]?lock)',re.I)
           exclude=re.compile(r'(phase-a-(visual|rc|source-safe|runtime|period|operational|firestore|liquidation)|r18|readiness|drift|auth|firebase)',re.I)
           candidates=[]
@@ -53,18 +47,18 @@ jobs:
             if 'finalization' in low or 'promotion' in low or 'export' in low: score+=50
             if size>500000: score+=40
             elif size>100000: score+=20
-            if created.startswith('2026-07-16T16:') or created.startswith('2026-07-16T17:') or created.startswith('2026-07-16T18:'): score+=30
+            if created.startswith(('2026-07-16T15:','2026-07-16T16:','2026-07-16T17:','2026-07-16T18:')): score+=30
             if exclude.search(name): score-=60
             if score>0:
               y=dict(x); y['score']=score; candidates.append(y)
           candidates.sort(key=lambda x:(x['score'],x.get('created_at','')),reverse=True)
-          result={'schemaVersion':'1.0.0','generatedAtRunId':os.environ.get('GITHUB_RUN_ID'),'candidateCount':len(candidates),'candidates':candidates[:300]}
+          result={'schemaVersion':'1.1.0','generatedAtRunId':os.environ.get('GITHUB_RUN_ID'),'candidateCount':len(candidates),'candidates':candidates[:300]}
           Path('app/docs/V156-TARGETED-ARTIFACT-CANDIDATES-20260716.json').write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
           lines=['# V156 targeted artifact candidates','',f"Candidate artifacts: {len(candidates)}",'']
           for x in candidates[:300]:
             lines.append(f"- score={x['score']} · id=`{x['id']}` · **{x['name']}** · {x['size_in_bytes']} bytes · run=`{x['run_id']}` · branch=`{x.get('head_branch')}` · sha=`{x.get('head_sha')}` · {x['created_at']}")
           Path('app/docs/V156-TARGETED-ARTIFACT-CANDIDATES-20260716.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
-          print('\n'.join(lines[:80]))
+          print('\n'.join(lines[:100]))
           PY
           git config user.name 'CXOrbia Artifact Filter Bot'
           git config user.email 'cxorbia-artifacts@example.invalid'
