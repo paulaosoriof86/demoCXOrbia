@@ -1,12 +1,10 @@
-name: CXOrbia V156 Atomic Materialization
+name: CXOrbia V156 Direct Empalme
 
 on:
   push:
     branches:
       - audit/v156-atomic-20260716
     paths:
-      - '.candidate/v156-runtime-delta.zip'
-      - 'tools/release/tya-promote-v156-atomic.mjs'
       - '.github/workflows/cxorbia-v156-atomic-promotion.yml'
 
 permissions:
@@ -17,62 +15,111 @@ defaults:
     shell: bash
 
 jobs:
-  materialize-v156:
+  empalme-directo:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
-      - name: Checkout isolated V156 branch
+      - name: Checkout audited transport only
         uses: actions/checkout@v4
         with:
           ref: audit/v156-atomic-20260716
+          path: transport
+          fetch-depth: 1
+
+      - name: Checkout live integration branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          path: work
           fetch-depth: 0
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Materialize complete audited V156 runtime
+      - name: Apply audited V156 runtime delta and close source lock
+        working-directory: work
         run: |
           set -euo pipefail
-          test "$(sha256sum .candidate/v156-runtime-delta.zip | awk '{print $1}')" = "053af067f5ffa5f2c9244798af3d0cce28189457533a835fb5376eac5112ebf5"
-          rm -rf evidence
-          unzip -oq .candidate/v156-runtime-delta.zip -d .
-          mkdir -p app/docs .tmp/v156-atomic
-          cp evidence/MANIFEST-V156.json app/docs/MANIFEST-V156.json
-          cp evidence/REPORTE-CORRECCION-V156-GATE-AUTOMATIZADO-20260716.md app/docs/
-          node tools/release/tya-promote-v156-atomic.mjs materialize
+          ZIP='../transport/.candidate/v156-runtime-delta.zip'
+          test -f "$ZIP"
+          test "$(sha256sum "$ZIP" | awk '{print $1}')" = "053af067f5ffa5f2c9244798af3d0cce28189457533a835fb5376eac5112ebf5"
+          unzip -oq "$ZIP" -d .
+          node <<'NODE'
+          const fs=require('fs');
+          const crypto=require('crypto');
+          const path=require('path');
+          const changed=[
+            'app.js','core/automations.js','core/config.js','core/data.js','core/finanzas-core.js','core/manuales-data.js','core/pwa.js','core/router.js','core/store.js','core/topbar.js','core/ui.js','index.html','modules/academia.js','modules/administrabilidad.js','modules/automatizaciones.js','modules/cert.js','modules/cliente.js','modules/configuracion.js','modules/correo.js','modules/dashboard.js','modules/finanzas.js','modules/hr-source.js','modules/importador.js','modules/integraciones.js','modules/marketing.js','modules/midia.js','modules/misvisitas.js','modules/postulaciones.js','modules/proyecto-wizard.js','modules/proyectos.js','modules/reservas.js','modules/revision-admin.js','modules/saas-console.js','modules/shoppers.js','modules/visitas.js'
+          ].sort();
+          const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+          const parentAggregate='6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348';
+          const files=changed.map(p=>{
+            const b=fs.readFileSync(path.join('app',p));
+            return {path:p,size:b.length,sha256:sha(b)};
+          });
+          const payload=files.map(f=>`${f.path}\0${f.sha256}\n`).join('');
+          const aggregate=sha(Buffer.from(`${parentAggregate}\0${payload}`,'utf8'));
+          const manifest={
+            schemaVersion:'1.0.0',
+            package:'CXORBIA-V156-EMPALME-DIRECTO-R1',
+            project:'CXOrbia',
+            baselineVersion:'V156',
+            generatedAt:'2026-07-16',
+            sourceCandidate:'Prototype development request (7).zip',
+            sourceCandidateSha256:'1ecfe9b05f9ed5cdd2940483db3dd76c1f515b4bdd8c545a4121d03179c01637',
+            sourceCandidateInternalVersion:'V156',
+            sourceCandidateManifestAggregateSha256:'0262675769bf613c933e0872484bd27d38c4adabe28b335f697ae456cc5c0305',
+            parentManifest:'docs/MANIFEST-V131-R18D-HOTFIX-R1.json',
+            parentAggregateSha256:parentAggregate,
+            parentRuntimeFileCount:71,
+            effectiveRuntimeFileCount:71,
+            changedRuntimeFileCount:files.length,
+            removedRuntimeFileCount:0,
+            aggregateAlgorithm:"sha256(parentAggregate + NUL + sorted(path + NUL + sha256 + LF))",
+            aggregateSha256:aggregate,
+            changedRuntimeFiles:files,
+            reconciliations:[
+              {path:'core/finanzas-core.js',decision:'V156 already preserves R18D project-period semantics'},
+              {path:'backend/**',decision:'preserved from the live branch'},
+              {path:'tools/**',decision:'preserved from the live branch'},
+              {path:'app/core/tya-phase-a-*.js and app/data/tya-*.js',decision:'preserved as explicit backend connection overlays outside the Claude runtime delta'}
+            ],
+            decision:'PASS_EMPALME_DIRECTO_V156_BASELINE_ACTIVE_GATES_POST_EMPAlME_PENDING',
+            safeState:{merge:false,deploy:false,production:false,imports:false,writes:false,providers:false,payments:false}
+          };
+          fs.mkdirSync('app/docs',{recursive:true});
+          fs.writeFileSync('app/docs/MANIFEST-V156-EMPALME-DIRECTO-R1.json',JSON.stringify(manifest,null,2)+'\n');
+          const lock=`/* CXOrbia source lock runtime V156 empalme directo 20260716 */\nvar CX_SOURCE_LOCK=${JSON.stringify({manifestFile:'docs/MANIFEST-V156-EMPALME-DIRECTO-R1.json',aggregateSha256:aggregate,fileCount:71,runtimeIdentity:'V156 empalmada directamente sobre V131 + R18D',generatedAt:'2026-07-16',sourceZipSha256:'1ecfe9b05f9ed5cdd2940483db3dd76c1f515b4bdd8c545a4121d03179c01637',sourceCandidateManifestAggregateSha256:'0262675769bf613c933e0872484bd27d38c4adabe28b335f697ae456cc5c0305',parentManifest:'docs/MANIFEST-V131-R18D-HOTFIX-R1.json',decision:'PASS_EMPALME_DIRECTO_V156',note:'35 archivos runtime V156 aplicados; 0 eliminados. Backend, contratos, tools y overlays TyA preservados. Gates y smoke post-empalme pendientes antes de DEV/producción.'})};\nvar CX_BUILD_ID=CX_SOURCE_LOCK.aggregateSha256.slice(0,16);\nif(typeof window!=='undefined'){window.CX=window.CX||{};window.CX.BUILD_ID=CX_BUILD_ID;window.CX.SOURCE_LOCK=CX_SOURCE_LOCK;}\n`;
+          fs.writeFileSync('app/core/build-lock.js',lock);
+          const verifier=`#!/usr/bin/env node\nimport fs from 'node:fs';\nimport crypto from 'node:crypto';\nimport path from 'node:path';\nconst root=process.cwd();\nconst lock=fs.readFileSync(path.join(root,'core/build-lock.js'),'utf8');\nconst mm=lock.match(/manifestFile:\\"([^\\"]+)\\"|manifestFile:'([^']+)'/);\nif(!mm) throw new Error('manifestFile no encontrado en build-lock.js');\nconst manifestPath=path.join(root,mm[1]||mm[2]);\nconst m=JSON.parse(fs.readFileSync(manifestPath,'utf8'));\nconst sha=b=>crypto.createHash('sha256').update(b).digest('hex');\nlet diffs=0;\nconst entries=[];\nfor(const f of [...m.changedRuntimeFiles].sort((a,b)=>a.path.localeCompare(b.path))){const p=path.join(root,f.path);if(!fs.existsSync(p)){console.error('FALTA',f.path);diffs++;continue;}const b=fs.readFileSync(p);const h=sha(b);if(h!==f.sha256){console.error('HASH',f.path,h,f.sha256);diffs++;}if(b.length!==f.size){console.error('SIZE',f.path,b.length,f.size);diffs++;}entries.push(f.path+'\\0'+h+'\\n');}\nconst aggregate=sha(Buffer.from(m.parentAggregateSha256+'\\0'+entries.join(''),'utf8'));\nif(aggregate!==m.aggregateSha256){console.error('AGGREGATE',aggregate,m.aggregateSha256);diffs++;}\nconsole.log(JSON.stringify({manifest:path.relative(root,manifestPath),changedFiles:m.changedRuntimeFiles.length,effectiveRuntimeFileCount:m.effectiveRuntimeFileCount,aggregateSha256:aggregate,differences:diffs},null,2));\nprocess.exit(diffs?1:0);\n`;
+          fs.writeFileSync('app/docs/verify-manifest.mjs',verifier);
+          const result=`# Resultado — empalme directo V156\n\nFecha: 2026-07-16\n\n- Decisión: **PASS_EMPALME_DIRECTO_V156**.\n- Candidata: V156, transporte SHA-256 \`1ecfe9b05f9ed5cdd2940483db3dd76c1f515b4bdd8c545a4121d03179c01637\`.\n- Manifest candidato: 205 archivos, aggregate \`0262675769bf613c933e0872484bd27d38c4adabe28b335f697ae456cc5c0305\`, 0 diferencias.\n- Delta aplicado: 35 archivos runtime modificados, 0 eliminados.\n- Baseline anterior preservada como rollback: V131 + R18D.\n- Backend, contratos, adapters, tools, documentación y overlays TyA acumulados fueron preservados.\n- \`core/finanzas-core.js\` proviene de V156 y conserva la semántica R18D proyecto/periodo.\n- Source lock activo: \`docs/MANIFEST-V156-EMPALME-DIRECTO-R1.json\`.\n- Siguiente bloque: gates post-empalme de proyecto/periodo/KPI/histórico, 14 periodos, 616 visitas, 44 por periodo, 216 shoppers, junio ejecutado/pagos pendientes y smoke Admin/Shopper/Cliente.\n- Estado seguro: sin merge, deploy, producción, importaciones, writes, integraciones live ni pagos reales.\n`;
+          fs.writeFileSync('app/docs/RESULTADO-EMPALME-DIRECTO-V156-20260716.md',result);
+
+          const prepend=(file,block)=>{const old=fs.existsSync(file)?fs.readFileSync(file,'utf8'):'';if(!old.includes('EMPALME_DIRECTO_V156_CERRADO'))fs.writeFileSync(file,block+'\n'+old);};
+          prepend('CAMBIOS-BACKEND.md',`# EMPALME_DIRECTO_V156_CERRADO — 2026-07-16\n\n- V156 empalmada físicamente en la rama viva mediante el delta auditado de 35 archivos runtime y 0 eliminados.\n- Se preservaron backend, contratos, adapters, tools, documentación acumulada y overlays TyA.\n- Se generaron manifest derivado, build-lock, verificador y resultado de empalme.\n- Gates y smoke pasan al bloque post-empalme previo a DEV/producción.\n- Clasificación: Reusable CXOrbia = método directo y source lock; Exclusivo cliente = gates TyA; Claude/prototipo = V156 activa; Academia = pendiente smoke de rutas/contenidos; Sin impacto Claude = manifest/verificador.\n- Estado seguro: sin merge, deploy, producción, imports, writes, Make/Gemini live ni pagos.`);
+          prepend('RESUMEN-PARA-CLAUDE.md',`# EMPALME_DIRECTO_V156_CERRADO — 2026-07-16\n\n- V156 es la baseline frontend activa y ya fue empalmada físicamente.\n- No generar otra candidata ni reabrir V110/V131.\n- Backend preservó sus contratos, tools y overlays sin reescribir módulos UI.\n- Pendiente inmediato no Claude: gates y smoke post-empalme TyA.\n- Cualquier falla posterior se corrige focalizadamente sobre V156.`);
+          prepend('PENDIENTES-PROTOTIPO.md',`# EMPALME_DIRECTO_V156_CERRADO — 2026-07-16\n\n- No existe P0 nuevo que bloquee la baseline V156.\n- Permanecen únicamente P1/P2 ya documentados y los hallazgos que surjan del smoke post-empalme.\n- No pedir otra candidata por el empalme.\n- Academia, rutas por rol, notificaciones y copy honesto se validan en el smoke sobre V156.`);
+
+          const registryPath='backend/contracts/prototype-baseline-registry-v1.json';
+          const registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+          registry.version='1.4.0';
+          registry.updatedAt='2026-07-16';
+          registry.previousBaseline=registry.activeBaseline;
+          registry.previousBaseline.status='superseded_by_v156';
+          registry.activeBaseline={version:'V156',runtimeIdentity:'V156 empalme directo sobre V131 + R18D',status:'accepted_and_empalmed',sourceZipSha256:'1ecfe9b05f9ed5cdd2940483db3dd76c1f515b4bdd8c545a4121d03179c01637',sourceCandidateManifestAggregateSha256:'0262675769bf613c933e0872484bd27d38c4adabe28b335f697ae456cc5c0305',manifestFile:'docs/MANIFEST-V156-EMPALME-DIRECTO-R1.json',aggregateSha256:aggregate,accepted:true,empalmed:true,gatesPostEmpalme:'pending_before_dev_or_production',preservedOverlays:['TYA_PROJECT_PERIOD_CONTEXT_R15G','R18D_FINANCE_PERIOD_ADAPTER_HF1']};
+          registry.candidate={version:'V156',status:'accepted_and_empalmed',accepted:true,empalmed:true,gateDecision:'PASS_EMPALME_DIRECTO_V156'};
+          registry.promotionRule={method:'direct_delta_after_audit',preEmpalme:['zip_identity_manifest','delta','syntax_scripts_security','p0_decision'],postEmpalmeBeforeDevOrProduction:['project_period_kpi_history','source_safe_role_smoke','phase_a_operational_gates'],noParallelRoutes:true};
+          fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n');
+          console.log(JSON.stringify({aggregate,changed:files.length},null,2));
+          NODE
+
           while IFS= read -r -d '' file; do node --check "$file"; done < <(find app -type f \( -name '*.js' -o -name '*.mjs' \) -not -path 'app/docs/*' -print0)
-          cat > app/docs/RESULTADO-MATERIALIZACION-V156-20260716.json <<'JSON'
-          {
-            "schemaVersion": "1.0.0",
-            "decision": "PASS_V156_COMPLETE_RUNTIME_MATERIALIZED",
-            "candidateVersion": "V156",
-            "candidateManifestAggregateSha256": "0262675769bf613c933e0872484bd27d38c4adabe28b335f697ae456cc5c0305",
-            "candidateManifestFileCount": 205,
-            "candidateRuntimeFileCount": 71,
-            "deltaZipSha256": "053af067f5ffa5f2c9244798af3d0cce28189457533a835fb5376eac5112ebf5",
-            "runtimeMismatches": 0,
-            "syntax": "PASS",
-            "nextGate": "explicit_R15G_overlays_manifest_source_lock_and_role_smoke",
-            "safeState": {
-              "deploy": false,
-              "production": false,
-              "imports": false,
-              "writes": false,
-              "providers": false,
-              "payments": false
-            }
-          }
-          JSON
+          (cd app && node docs/verify-manifest.mjs)
 
-      - name: Commit complete V156 runtime atomically
+      - name: Commit one direct V156 baseline
+        working-directory: work
         run: |
           set -euo pipefail
-          rm -rf .candidate evidence .tmp
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add -A .candidate
-          git add app .github/workflows/cxorbia-v156-atomic-promotion.yml
-          git commit -m "feat: materialize complete audited V156 runtime [skip ci]"
-          git push origin HEAD:audit/v156-atomic-20260716
+          git add app/app.js app/core app/index.html app/modules app/docs/MANIFEST-V156-EMPALME-DIRECTO-R1.json app/docs/verify-manifest.mjs app/docs/RESULTADO-EMPALME-DIRECTO-V156-20260716.md CAMBIOS-BACKEND.md RESUMEN-PARA-CLAUDE.md PENDIENTES-PROTOTIPO.md backend/contracts/prototype-baseline-registry-v1.json
+          git commit -m "feat: empalme directo V156 y source lock [skip ci]"
+          git push origin HEAD:docs-tya-v6-v71-audit
