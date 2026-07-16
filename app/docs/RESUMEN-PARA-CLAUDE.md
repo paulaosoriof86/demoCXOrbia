@@ -1,3 +1,17 @@
+## 2026-07-16 - Candidata interna V156 / gate reportado no coincide con ZIP
+
+- Fuente única de trabajo Claude/prototipo: V156.
+- ZIP SHA-256: `8a8672b6403b0eccdd1406ffeaa1942546d100b3c99615549000fd519be65933`.
+- Manifest V156: 205 archivos, aggregate `0262675769bf613c933e0872484bd27d38c4adabe28b335f697ae456cc5c0305`, 0 diferencias.
+- JavaScript: 66 archivos, 0 fallos.
+- El reporte declara 0 coincidencias, pero el ZIP conserva copy visible con `backend`, `runtime`, `pending_backend`, `reviewQueue`, `source_safe` y otros términos internos.
+- Regresión nueva: `modules/dashboard.js` muestra el typo `pendienteend`.
+- No empalmar todavía: corregir únicamente este P0 comercial y entregar gate estático/runtime reproducible dentro del ZIP.
+- No reabrir proyectos, PWA, Finanzas, KPI, periodos, configuración, TyA, Firebase, R11D/R14C, pagos o certificaciones.
+- Paquete: `PAQUETE-EXCLUSIVO-CLAUDE-V156-CIERRE-REAL-GATE-COMERCIAL-20260716.zip`.
+- SHA-256 paquete: `cfe4a74afc19265af55133c56de1c974f7464dc790f4965b4fbd54cf73ccc58e`.
+- La siguiente candidata deriva únicamente de V156.
+
 ## 2026-07-16 - Candidata interna V155 / único P0 restante
 
 - Fuente única de trabajo Claude/prototipo: V155.
