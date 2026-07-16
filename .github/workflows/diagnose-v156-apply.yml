@@ -5,7 +5,7 @@ on:
     paths:
       - '.github/workflows/diagnose-v156-apply.yml'
 permissions:
-  contents: write
+  contents: read
 jobs:
   diagnose:
     runs-on: ubuntu-latest
@@ -17,22 +17,39 @@ jobs:
       - name: Capture exact apply result
         shell: bash
         run: |
-          set -u
-          mkdir -p app/docs
-          sha256sum .cxorbia/v156-promotion.patch.gz.b64 > /tmp/diagnostic.txt 2>&1
-          base64 -d .cxorbia/v156-promotion.patch.gz.b64 | gzip -d > /tmp/v156.patch 2>> /tmp/diagnostic.txt
-          echo "decoded_patch_sha256=$(sha256sum /tmp/v156.patch | awk '{print $1}')" >> /tmp/diagnostic.txt
           set +e
-          git apply --3way --index /tmp/v156.patch >> /tmp/diagnostic.txt 2>&1
-          status=$?
-          set -e
-          echo "git_apply_status=$status" >> /tmp/diagnostic.txt
-          git status --short >> /tmp/diagnostic.txt
-          git reset --hard HEAD
-          cp /tmp/diagnostic.txt app/docs/FINALIZATION-DIAGNOSTIC.txt
-          rm -f .github/workflows/diagnose-v156-apply.yml
-          git config user.name "CXOrbia Diagnostic Bot"
-          git config user.email "cxorbia-diagnostic@example.invalid"
-          git add -A
-          git commit -m "docs: capture V156 finalization diagnostic"
-          git push origin HEAD:docs-tya-v6-v71-audit
+          mkdir -p diagnostic
+          {
+            echo "branch=$(git branch --show-current)"
+            echo "head=$(git rev-parse HEAD)"
+            echo "payload_present=$(test -f .cxorbia/v156-promotion.patch.gz.b64 && echo yes || echo no)"
+            wc -c .cxorbia/v156-promotion.patch.gz.b64
+            sha256sum .cxorbia/v156-promotion.patch.gz.b64
+            base64 --decode .cxorbia/v156-promotion.patch.gz.b64 > /tmp/v156.patch.gz
+            echo "base64_status=$?"
+            wc -c /tmp/v156.patch.gz
+            sha256sum /tmp/v156.patch.gz
+            gzip -t /tmp/v156.patch.gz
+            echo "gzip_test_status=$?"
+            gzip -dc /tmp/v156.patch.gz > /tmp/v156.patch
+            echo "gzip_decode_status=$?"
+            wc -c /tmp/v156.patch
+            sha256sum /tmp/v156.patch
+            echo "--- patch head ---"
+            head -n 12 /tmp/v156.patch
+            echo "--- apply check ---"
+            git apply --check --verbose /tmp/v156.patch
+            echo "apply_check_status=$?"
+            echo "--- apply 3way ---"
+            git apply --3way --index --verbose /tmp/v156.patch
+            echo "apply_3way_status=$?"
+            echo "--- git status ---"
+            git status --short
+          } > diagnostic/FINALIZATION-DIAGNOSTIC.txt 2>&1
+          git reset --hard HEAD >/dev/null 2>&1
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v156-finalization-diagnostic
+          path: diagnostic/FINALIZATION-DIAGNOSTIC.txt
+          if-no-files-found: error
