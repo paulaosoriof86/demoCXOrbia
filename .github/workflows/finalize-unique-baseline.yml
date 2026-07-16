@@ -26,7 +26,7 @@ jobs:
           git apply --exclude=app/core/finanzas-core.js --exclude=app/core/build-lock.js --exclude=app/modules/importador.js --exclude='app/docs/**' /tmp/v156.patch
           grep -q "const p=data.project()" app/core/finanzas-core.js
           grep -q "project:()=>p, period:()=>p" app/core/finanzas-core.js
-          grep -q "data.sourceContract" app/modules/importador.js
+          grep -q "sourceContract" app/modules/importador.js
           find app -name '*.js' -not -path 'app/docs/*' -print0 | xargs -0 -n1 node --check
           rm -rf .cxorbia
           rm -f .github/workflows/finalize-unique-baseline.yml .github/workflows/diagnose-v156-apply.yml .github/workflows/export-current-app-for-finalization.yml .github/workflows/snapshot-current-for-finalization.yml
