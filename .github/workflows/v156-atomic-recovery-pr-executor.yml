@@ -1,4 +1,4 @@
-name: CXOrbia V156 source discovery
+name: CXOrbia V156 source discovery persisted
 
 on:
   push:
@@ -9,129 +9,144 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   actions: read
   issues: write
 
 jobs:
   discover-v156-source:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
-      - name: Checkout all repository history
+      - name: Checkout complete repository history
         uses: actions/checkout@v4
         with:
           ref: docs-tya-v6-v71-audit
           fetch-depth: 0
 
-      - name: Search refs, objects and Actions artifacts
+      - name: Discover exact V156 source and persist result
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          mkdir -p .tmp/v156-source-discovery/artifacts
-          exec > >(tee .tmp/v156-source-discovery/discovery.log) 2>&1
+          ROOT=.tmp/v156-source-discovery-persisted
+          mkdir -p "$ROOT/artifacts"
+          exec > >(tee "$ROOT/run.log") 2>&1
 
-          echo '== Remote refs =='
           git fetch --all --tags --prune
-          git branch -a | tee .tmp/v156-source-discovery/branches.txt
-
-          echo '== Commit messages mentioning V156/finalization =='
+          git branch -a > "$ROOT/branches.txt"
           git log --all --date=iso --pretty='%H %ad %d %s' --regexp-ignore-case \
-            --grep='V156\|finalization\|promote.*156\|source discovery' \
-            | tee .tmp/v156-source-discovery/commits.txt || true
-
-          echo '== Git objects and paths mentioning V156/candidate =='
-          git rev-list --all --objects > .tmp/v156-source-discovery/all-objects.txt
+            --grep='V156\|finalization\|promote.*156' > "$ROOT/commits.txt" || true
+          git rev-list --all --objects > "$ROOT/all-objects.txt"
           grep -Ei 'v156|manifest-v156|prototype development request|finalization' \
-            .tmp/v156-source-discovery/all-objects.txt \
-            | tee .tmp/v156-source-discovery/matching-objects.txt || true
+            "$ROOT/all-objects.txt" > "$ROOT/matching-objects.txt" || true
 
-          echo '== Validate current transport payload =='
-          if test -f .cxorbia/v156-promotion.patch.gz.b64; then
-            wc -c .cxorbia/v156-promotion.patch.gz.b64 | tee .tmp/v156-source-discovery/payload-size.txt
-            sha256sum .cxorbia/v156-promotion.patch.gz.b64 | tee .tmp/v156-source-discovery/payload-sha256.txt
-            set +e
-            base64 -d .cxorbia/v156-promotion.patch.gz.b64 > .tmp/v156-source-discovery/payload.gz
-            BASE64_STATUS=$?
-            gzip -t .tmp/v156-source-discovery/payload.gz
-            GZIP_STATUS=$?
-            set -e
-            printf 'base64_status=%s\ngzip_status=%s\n' "$BASE64_STATUS" "$GZIP_STATUS" \
-              | tee .tmp/v156-source-discovery/payload-validation.txt
-          fi
-
-          echo '== Enumerate all Actions artifacts =='
           gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/artifacts?per_page=100" \
-            --jq '.artifacts[] | [.id,.name,.size_in_bytes,.created_at,.expired] | @tsv' \
-            | tee .tmp/v156-source-discovery/all-artifacts.tsv
+            --jq '.artifacts[] | [.id,.workflow_run.id,.name,.size_in_bytes,.created_at,.expired] | @tsv' \
+            > "$ROOT/all-artifacts.tsv"
+          awk -F '\t' 'BEGIN{IGNORECASE=1} $3 ~ /(v156|final|candidate|prototype|export|source|baseline)/ && $6=="false" {print}' \
+            "$ROOT/all-artifacts.tsv" > "$ROOT/matching-artifacts.tsv" || true
 
-          awk -F '\t' 'BEGIN{IGNORECASE=1} $2 ~ /(v156|final|candidate|prototype|export|source|baseline)/ {print}' \
-            .tmp/v156-source-discovery/all-artifacts.tsv \
-            | tee .tmp/v156-source-discovery/matching-artifacts.tsv || true
-
-          while IFS=$'\t' read -r id name size created expired; do
+          while IFS=$'\t' read -r id run_id name size created expired; do
             test -n "${id:-}" || continue
-            test "$expired" = "false" || continue
             safe=$(printf '%s' "$name" | tr -cs 'A-Za-z0-9._-' '_')
-            out=".tmp/v156-source-discovery/artifacts/${id}-${safe}.zip"
-            echo "Downloading artifact $id $name ($size bytes)"
+            out="$ROOT/artifacts/${id}-${safe}.zip"
+            echo "Downloading artifact=$id run=$run_id name=$name size=$size"
             gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${id}/zip" > "$out" || { rm -f "$out"; continue; }
-            unzip -l "$out" > "${out}.listing.txt" 2>&1 || true
-            sha256sum "$out" >> .tmp/v156-source-discovery/downloaded-artifacts-sha256.txt
-          done < .tmp/v156-source-discovery/matching-artifacts.tsv
+          done < "$ROOT/matching-artifacts.tsv"
 
-          echo '== Inspect downloaded artifacts for exact candidate evidence =='
-          grep -RinE 'Prototype development request \(6\)|MANIFEST-V156|0262675769bf613c|8a8672b6403b0ecc|V156' \
-            .tmp/v156-source-discovery/artifacts \
-            > .tmp/v156-source-discovery/artifact-matches.txt 2>/dev/null || true
-
-          echo '== Decision =='
           python3 <<'PY'
           from pathlib import Path
-          import json, hashlib, base64, gzip
-          root=Path('.tmp/v156-source-discovery')
+          import base64, gzip, hashlib, json, os, re, zipfile
+          root=Path('.tmp/v156-source-discovery-persisted')
+          expected_zip='8a8672b6403b0eccdd1406ffeaa1942546d100b3c99615549000fd519be65933'
+          expected_patch='8bfb2a85e1c42d095f56fbac7367da54b2872503effb2a7af939aa8a471b9347'
           payload=Path('.cxorbia/v156-promotion.patch.gz.b64')
           result={
-            'decision':'HOLD_SOURCE_NOT_YET_FOUND',
-            'expectedCandidateZipSha256':'8a8672b6403b0eccdd1406ffeaa1942546d100b3c99615549000fd519be65933',
-            'expectedPatchSha256':'8bfb2a85e1c42d095f56fbac7367da54b2872503effb2a7af939aa8a471b9347',
-            'payload':None,
-            'artifactCount':0,
-            'candidateArchives':[]
+            'schemaVersion':'1.0.0',
+            'generatedAt':os.environ.get('GITHUB_RUN_ID',''),
+            'runId':os.environ.get('GITHUB_RUN_ID'),
+            'headSha':os.environ.get('GITHUB_SHA'),
+            'expectedV156ZipSha256':expected_zip,
+            'expectedPatchSha256':expected_patch,
+            'transportPayload':{},
+            'matchingArtifacts':[],
+            'exactSources':[],
+            'gitObjectMatches':[],
+            'decision':'HOLD_COMPLETE_V156_SOURCE_NOT_FOUND'
           }
           if payload.exists():
             raw=payload.read_bytes()
-            p={'size':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'base64Valid':False,'gzipValid':False}
+            p={'path':str(payload),'size':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'base64Valid':False,'gzipValid':False,'patchSha256':None}
             try:
               gz=base64.b64decode(raw,validate=True); p['base64Valid']=True
-              try: gzip.decompress(gz); p['gzipValid']=True
+              try:
+                patch=gzip.decompress(gz); p['gzipValid']=True; p['patchSha256']=hashlib.sha256(patch).hexdigest()
               except Exception as exc: p['gzipError']=str(exc)
             except Exception as exc: p['base64Error']=str(exc)
-            result['payload']=p
+            result['transportPayload']=p
+          objects=(root/'matching-objects.txt')
+          if objects.exists(): result['gitObjectMatches']=[x for x in objects.read_text(errors='replace').splitlines() if x][:200]
+          meta={}
+          for line in (root/'matching-artifacts.tsv').read_text(errors='replace').splitlines() if (root/'matching-artifacts.tsv').exists() else []:
+            parts=line.split('\t')
+            if len(parts)>=6: meta[parts[0]]={'artifactId':int(parts[0]),'runId':int(parts[1]),'name':parts[2],'declaredSize':int(parts[3]),'createdAt':parts[4]}
           for archive in sorted((root/'artifacts').glob('*.zip')):
-            result['artifactCount']+=1
-            if archive.stat().st_size>500000:
-              result['candidateArchives'].append({'path':str(archive),'size':archive.stat().st_size,'sha256':hashlib.sha256(archive.read_bytes()).hexdigest()})
-          if any(x['sha256']==result['expectedCandidateZipSha256'] for x in result['candidateArchives']):
-            result['decision']='FOUND_EXACT_V156_ZIP'
-          (root/'result.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
-          print(json.dumps(result,indent=2))
+            aid=archive.name.split('-',1)[0]
+            item=dict(meta.get(aid,{}))
+            item.update({'downloadedPath':str(archive),'archiveSize':archive.stat().st_size,'archiveSha256':hashlib.sha256(archive.read_bytes()).hexdigest(),'members':[],'nestedArchives':[],'hasV156Manifest':False,'hasAppTree':False})
+            try:
+              with zipfile.ZipFile(archive) as z:
+                names=z.namelist(); item['members']=names[:300]
+                low=[n.lower() for n in names]
+                item['hasV156Manifest']=any('manifest-v156' in n for n in low)
+                item['hasAppTree']=any('/app/index.html' in '/'+n or n=='app/index.html' for n in names)
+                for name in names:
+                  if not name.lower().endswith('.zip'): continue
+                  data=z.read(name); sha=hashlib.sha256(data).hexdigest()
+                  nested={'name':name,'size':len(data),'sha256':sha}
+                  item['nestedArchives'].append(nested)
+                  if sha==expected_zip: result['exactSources'].append({'artifactId':item.get('artifactId'),'runId':item.get('runId'),'artifactName':item.get('name'),'member':name,'sha256':sha})
+            except Exception as exc:
+              item['zipError']=str(exc)
+            if item['archiveSha256']==expected_zip:
+              result['exactSources'].append({'artifactId':item.get('artifactId'),'runId':item.get('runId'),'artifactName':item.get('name'),'member':None,'sha256':item['archiveSha256']})
+            result['matchingArtifacts'].append(item)
+          if result['exactSources']:
+            result['decision']='FOUND_EXACT_V156_SOURCE'
+          elif any(x.get('hasV156Manifest') and x.get('hasAppTree') for x in result['matchingArtifacts']):
+            result['decision']='FOUND_COMPLETE_V156_APP_TREE_ARTIFACT'
+          out=Path('app/docs/V156-SOURCE-DISCOVERY-RESULT-20260716.json')
+          out.write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          md=[
+            '# V156 source discovery result','',
+            f"Decision: `{result['decision']}`",'',
+            f"Run: `{result['runId']}`",'',
+            '## Transport payload','',
+            f"- Size: {result['transportPayload'].get('size')}",
+            f"- SHA-256: `{result['transportPayload'].get('sha256')}`",
+            f"- Base64 valid: {result['transportPayload'].get('base64Valid')}",
+            f"- Gzip valid: {result['transportPayload'].get('gzipValid')}",
+            f"- Error: {result['transportPayload'].get('gzipError') or result['transportPayload'].get('base64Error')}",'',
+            f"- Matching artifacts inspected: {len(result['matchingArtifacts'])}",
+            f"- Exact sources found: {len(result['exactSources'])}",'',
+            'No deploy, production, imports or writes were executed.'
+          ]
+          Path('app/docs/V156-SOURCE-DISCOVERY-RESULT-20260716.md').write_text('\n'.join(md)+'\n',encoding='utf-8')
+          print(json.dumps({'decision':result['decision'],'runId':result['runId'],'payload':result['transportPayload'],'matchingArtifacts':len(result['matchingArtifacts']),'exactSources':result['exactSources']},indent=2))
           PY
 
-      - name: Upload complete discovery evidence
+          git config user.name 'CXOrbia Source Discovery Bot'
+          git config user.email 'cxorbia-discovery@example.invalid'
+          git add app/docs/V156-SOURCE-DISCOVERY-RESULT-20260716.json app/docs/V156-SOURCE-DISCOVERY-RESULT-20260716.md
+          git commit -m 'docs: persist exact V156 source discovery result'
+          git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Upload discovery evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: v156-source-discovery
-          path: .tmp/v156-source-discovery
-          if-no-files-found: error
+          name: v156-source-discovery-persisted
+          path: .tmp/v156-source-discovery-persisted
+          if-no-files-found: warn
           retention-days: 14
-
-      - name: Record discovery status in PR 7
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          decision=$(python3 -c "import json; print(json.load(open('.tmp/v156-source-discovery/result.json'))['decision'])" 2>/dev/null || echo DISCOVERY_FAILED)
-          gh api "repos/${GITHUB_REPOSITORY}/issues/7/comments" -f body="V156_SOURCE_DISCOVERY=${decision}\nRun=${GITHUB_RUN_ID}\nNo deploy, production, imports or writes executed."
