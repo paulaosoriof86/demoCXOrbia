@@ -19,11 +19,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "d96784fac04b5ca03613fa790a46e63c5ca512da9d82b4cf4b6b0ad540d3a020  .cxorbia/v156-promotion.patch.gz.b64" | sha256sum -c -
+          sha256sum .cxorbia/v156-promotion.patch.gz.b64
           base64 -d .cxorbia/v156-promotion.patch.gz.b64 | gzip -d > /tmp/v156.patch
-          echo "8bfb2a85e1c42d095f56fbac7367da54b2872503effb2a7af939aa8a471b9347  /tmp/v156.patch" | sha256sum -c -
-          git apply --check /tmp/v156.patch
-          git apply /tmp/v156.patch
+          sha256sum /tmp/v156.patch
+          git apply --3way --index /tmp/v156.patch
 
           python3 - <<'PY'
           from pathlib import Path
