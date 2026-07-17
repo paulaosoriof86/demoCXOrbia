@@ -34,7 +34,7 @@ CX.liq = {
       pendiente_submitir:    ['Pend. submitir','a'],
       validada:              ['Validada · lista para lote','b'],
       en_lote:               ['En lote','p'],
-      pagada_preview:        ['Pagada (vista previa) · pendiente cruce real','a'],
+      pagada_preview:        ['Pagada (preview) · pendiente cruce real','a'],
       pagada:                ['Pagada (confirmado)','g'],
     }[estado] || [estado,'n'];
   },
