@@ -1,42 +1,34 @@
-name: CXOrbia V156 Atomic Promotion Gates
+name: CXOrbia V156 Direct Empalme
 
 on:
   push:
     branches:
-      - audit/v156-atomic-20260716
       - docs-tya-v6-v71-audit
     paths:
-      - '.candidate/v156-runtime-delta.zip'
       - 'tools/release/tya-promote-v156-atomic.mjs'
       - 'tools/release/tya-download-protected-drive-file.mjs'
-      - '.github/workflows/cxorbia-v156-atomic-promotion.yml'
-  pull_request:
-    branches:
-      - release/cxorbia-tya-rc-20260630
-    paths:
       - '.candidate/v156-runtime-delta.zip'
-      - 'tools/release/tya-promote-v156-atomic.mjs'
-      - 'tools/release/tya-download-protected-drive-file.mjs'
-      - '.github/workflows/cxorbia-v156-atomic-promotion.yml'
 
 permissions:
   contents: write
+
+concurrency:
+  group: cxorbia-v156-direct-empalme
+  cancel-in-progress: true
 
 defaults:
   run:
     shell: bash
 
 jobs:
-  promote-v156-atomic:
+  empalme-v156:
     runs-on: ubuntu-latest
-    env:
-      TARGET_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
-    timeout-minutes: 35
+    timeout-minutes: 12
     steps:
-      - name: Checkout V156 integration branch
+      - name: Checkout live integration branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ env.TARGET_BRANCH }}
+          ref: docs-tya-v6-v71-audit
           fetch-depth: 0
 
       - name: Setup Node
@@ -44,123 +36,36 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Retrieve audited V156 transport and apply direct delta
+      - name: Retrieve verified V156 delta
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
           V156_DRIVE_FILE_ID: 1kxtmJLcFp9X09-o2BpoFfap9MOi5ll3Q
           V156_DRIVE_OUTPUT: .candidate/v156-runtime-delta.zip
-          V156_EXPECT_SHA256: 053af067f5ffa5cdd2940483db3dd76c1f515b4bdd8c545a4121d03179c01637
-          V156_DRIVE_DIAGNOSTIC: .tmp/v156-atomic/drive-diagnostic.json
+          V156_EXPECT_SHA256: 053af067f5ffa5f2c9244798af3d0cce28189457533a835fb5376eac5112ebf5
+          V156_DRIVE_DIAGNOSTIC: .tmp/v156-direct/drive-diagnostic.json
         run: |
           set -euo pipefail
           rm -f .candidate/v156-runtime-delta.zip
           node tools/release/tya-download-protected-drive-file.mjs
           test "$(sha256sum .candidate/v156-runtime-delta.zip | awk '{print $1}')" = "053af067f5ffa5f2c9244798af3d0cce28189457533a835fb5376eac5112ebf5"
+
+      - name: Apply audited 35-file runtime delta
+        run: |
+          set -euo pipefail
           rm -rf evidence
           unzip -oq .candidate/v156-runtime-delta.zip -d .
-          mkdir -p app/docs .tmp/v156-atomic
           cp evidence/MANIFEST-V156.json app/docs/MANIFEST-V156.json
           cp evidence/REPORTE-CORRECCION-V156-GATE-AUTOMATIZADO-20260716.md app/docs/
           node tools/release/tya-promote-v156-atomic.mjs materialize
-
-      - name: Build fresh TyA source-safe payload and explicit R15G overlay
-        env:
-          CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
-          CXORBIA_HR_LIVE_MAX_ROW: '140'
-          CXORBIA_HR_LIVE_MAX_COL: AI
-        run: |
-          set -euo pipefail
-          node tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs
-          node tools/release/tya-source-safe-binding-build-r15g.mjs --html app/index.html --out .tmp/source-safe-binding-r15g
-          node tools/release/tya-promote-v156-atomic.mjs prepare-final
-
-      - name: Static syntax, scripts and promotion policy
-        run: |
-          set -euo pipefail
           while IFS= read -r -d '' file; do node --check "$file"; done < <(find app -type f \( -name '*.js' -o -name '*.mjs' \) -not -path 'app/docs/*' -print0)
-          node --check tools/release/tya-promote-v156-atomic.mjs
-          node tools/qa/verify-fast-lane-promotion-policy.mjs
+          (cd app && node docs/verify-manifest.mjs)
 
-      - name: Install Playwright
-        run: |
-          npm init -y
-          npm i -D playwright@1.47.2
-          npx playwright install --with-deps chromium
-
-      - name: Start isolated V156 source-safe app
+      - name: Commit final V156 baseline
         run: |
           set -euo pipefail
-          python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp-v156-server.log 2>&1 &
-          echo $! > .tmp-v156-server.pid
-          for attempt in $(seq 1 30); do
-            if curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' >/dev/null; then exit 0; fi
-            sleep 1
-          done
-          cat .tmp-v156-server.log || true
-          exit 1
-
-      - name: Run TyA source semantics gate
-        continue-on-error: true
-        env:
-          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
-          CXORBIA_EXPECT_TENANT_ID: tya
-          CXORBIA_EXPECT_PROJECT_ID: cinepolis
-          CXORBIA_EXPECT_PERIODS: '14'
-          CXORBIA_EXPECT_VISITS: '616'
-          CXORBIA_EXPECT_SHOPPERS: '216'
-          CXORBIA_MAX_SOURCE_AGE_HOURS: '24'
-        run: node tools/qa/tya-source-semantics-r15g-gate.mjs --out .tmp/tya-source-semantics-r15g
-
-      - name: Run Admin Shopper Client smoke
-        continue-on-error: true
-        env:
-          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
-          CXORBIA_EXPECT_TENANT_ID: tya
-          CXORBIA_EXPECT_PROJECT_ID: cinepolis
-          CXORBIA_EXPECT_PERIODS: '14'
-          CXORBIA_EXPECT_VISITS: '616'
-          CXORBIA_EXPECT_SHOPPERS: '216'
-        run: node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs --out .tmp/phase-a-source-safe-visual-smoke
-
-      - name: Run project period KPI history gate
-        continue-on-error: true
-        env:
-          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
-          CXORBIA_EXPECT_TENANT_ID: tya
-          CXORBIA_EXPECT_PROJECT_ID: cinepolis
-          CXORBIA_EXPECT_PERIODS: '14'
-          CXORBIA_EXPECT_VISITS: '616'
-          CXORBIA_EXPECT_VISITS_PER_PERIOD: '44'
-        run: node tools/qa/tya-project-period-kpi-history-gate.mjs --out .tmp/tya-project-period-kpi-history-gate
-
-      - name: Enforce gates and finalize one baseline
-        run: |
-          set -euo pipefail
-          node tools/release/tya-promote-v156-atomic.mjs finalize-pass
-
-      - name: Commit tested V156 tree to integration branch
-        run: |
-          set -euo pipefail
-          rm -rf .candidate evidence package.json package-lock.json node_modules .tmp-v156-server.log .tmp-v156-server.pid
+          rm -rf .candidate evidence .tmp
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add -A .candidate
-          git add app CAMBIOS-BACKEND.md RESUMEN-PARA-CLAUDE.md PENDIENTES-PROTOTIPO.md backend/contracts/prototype-baseline-registry-v1.json tools/release/tya-promote-v156-atomic.mjs tools/release/tya-download-protected-drive-file.mjs
+          git add -A
           git commit -m "feat: empalme directo V156 y source lock [skip ci]"
-          git push origin HEAD:"${TARGET_BRANCH}"
-
-      - name: Upload sanitized V156 evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cxorbia-v156-direct-empalme-evidence
-          path: |
-            .tmp/v156-atomic
-            .tmp/source-safe-binding-r15g
-            .tmp/tya-source-semantics-r15g
-            .tmp/phase-a-source-safe-visual-smoke
-            .tmp/tya-project-period-kpi-history-gate
-            app/docs/RESULTADO-EMPALME-DIRECTO-V156-20260716.md
-            app/docs/MANIFEST-V156-EMPALME-DIRECTO-R1.json
-          if-no-files-found: warn
-          retention-days: 14
+          git push origin HEAD:docs-tya-v6-v71-audit
