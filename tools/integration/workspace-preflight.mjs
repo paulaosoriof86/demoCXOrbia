@@ -12,21 +12,35 @@ export function runWorkspacePreflight(options) {
   const planPath = options.plan ? resolve(options.plan) : null;
   const productPolicyPath = options.policy ? resolve(options.policy) : null;
   const tenantPolicyPath = options.tenantPolicy ? resolve(options.tenantPolicy) : null;
+  const architecturePath = options.architecture || resolve(repoRoot, 'backend/contracts/integration-lane-architecture-lock-v1.json');
 
   add('candidateReadable', Boolean(candidatePath && existsSync(candidatePath)), candidatePath || 'missing --candidate');
   add('planReadable', Boolean(planPath && existsSync(planPath)), planPath || 'missing --plan');
   add('productPolicyReadable', Boolean(productPolicyPath && existsSync(productPolicyPath)), productPolicyPath || 'missing --policy');
   add('tenantPolicyReadable', Boolean(tenantPolicyPath && existsSync(tenantPolicyPath)), tenantPolicyPath || 'missing --tenant-policy');
+  add('architectureLockReadable', existsSync(architecturePath), architecturePath);
 
   let plan = null;
   let productPolicy = null;
   let tenantPolicy = null;
+  let architecture = null;
   try {
     if (planPath && existsSync(planPath)) plan = readJson(planPath);
     if (productPolicyPath && existsSync(productPolicyPath)) productPolicy = readJson(productPolicyPath);
     if (tenantPolicyPath && existsSync(tenantPolicyPath)) tenantPolicy = readJson(tenantPolicyPath);
+    if (existsSync(architecturePath)) architecture = readJson(architecturePath);
+    add('configurationJsonValid', true, 'JSON configuration loaded');
   } catch (error) {
     add('configurationJsonValid', false, String(error.message || error));
+  }
+
+  if (architecture) {
+    add('architectureActiveDefinitive', architecture.status === 'ACTIVE_DEFINITIVE', `status=${architecture.status}`);
+    add('architectureExecutionPlane', architecture.executionPlane === 'local_workspace_with_candidate_and_authenticated_git_checkout', `executionPlane=${architecture.executionPlane}`);
+    add('architectureSameWorkspaceRequired', architecture.invariants?.candidateAndGitCheckoutSameWorkspace === true, `candidateAndGitCheckoutSameWorkspace=${architecture.invariants?.candidateAndGitCheckoutSameWorkspace}`);
+    add('architecturePreflightRequired', architecture.invariants?.preflightRequired === true, `preflightRequired=${architecture.invariants?.preflightRequired}`);
+    add('architectureBackupRollbackRequired', architecture.invariants?.backupAndRollbackRequired === true, `backupAndRollbackRequired=${architecture.invariants?.backupAndRollbackRequired}`);
+    add('architectureIdempotencyRequired', architecture.invariants?.idempotencyRegistryRequired === true, `idempotencyRegistryRequired=${architecture.invariants?.idempotencyRegistryRequired}`);
   }
 
   let detectedRoot = null;
@@ -43,7 +57,7 @@ export function runWorkspacePreflight(options) {
   if (detectedRoot) {
     try {
       remote = git(['config', '--get', 'remote.origin.url'], { cwd: detectedRoot });
-      const expectedRepo = productPolicy?.repositoryFullName || plan?.repositoryFullName;
+      const expectedRepo = architecture?.repositoryFullName || productPolicy?.repositoryFullName || plan?.repositoryFullName;
       const normalizedRemote = remote.replace(/\.git$/i, '').replace(/^git@github\.com:/i, 'https://github.com/');
       const expectedFragment = expectedRepo ? `github.com/${expectedRepo}` : null;
       add('correctRepository', Boolean(!expectedFragment || normalizedRemote.includes(expectedFragment)), `${remote}${expectedRepo ? ` | expected ${expectedRepo}` : ''}`);
@@ -53,7 +67,7 @@ export function runWorkspacePreflight(options) {
 
     try {
       branch = git(['branch', '--show-current'], { cwd: detectedRoot });
-      const expectedBranch = plan?.expectedBranch || productPolicy?.expectedBranch;
+      const expectedBranch = plan?.expectedBranch || architecture?.liveBranch || productPolicy?.expectedBranch;
       add('correctBranch', Boolean(branch && (!expectedBranch || branch === expectedBranch)), `${branch || '(detached)'}${expectedBranch ? ` | expected ${expectedBranch}` : ''}`);
     } catch (error) {
       add('correctBranch', false, String(error.stderr || error.message || error));
@@ -97,7 +111,7 @@ export function runWorkspacePreflight(options) {
     try {
       const files = [...(plan.files?.added || []), ...(plan.files?.modified || []), ...(plan.files?.removed || [])].map(normalizeRepoPath);
       for (const path of files) assertCandidatePathAllowed(path, productPolicy, tenantPolicy);
-      add('candidatePathsAllowed', true, `${files.length} rutas autorizadas`);
+      add('candidatePathsAllowed', true, `${files.length} authorized paths`);
     } catch (error) {
       add('candidatePathsAllowed', false, String(error.message || error));
     }
@@ -107,13 +121,13 @@ export function runWorkspacePreflight(options) {
   }
 
   const ok = checks.every((check) => check.ok);
-  return { ok, state: ok ? 'PASS_REPO_WORKSPACE' : 'FAIL_REPO_WORKSPACE', checkedAt: new Date().toISOString(), repoRoot: detectedRoot || repoRoot, remote, branch, head, candidatePath, planPath, checks };
+  return { ok, state: ok ? 'PASS_REPO_WORKSPACE' : 'FAIL_REPO_WORKSPACE', checkedAt: new Date().toISOString(), architectureId: architecture?.architectureId || null, repoRoot: detectedRoot || repoRoot, remote, branch, head, candidatePath, planPath, checks };
 }
 
 function main() {
   const args = parseArgs();
   const here = dirname(fileURLToPath(import.meta.url));
-  const result = runWorkspacePreflight({ repoRoot: args.repo || process.cwd(), candidate: args.candidate, plan: args.plan, policy: args.policy || resolve(here, 'policies/cxorbia-product.json'), tenantPolicy: args['tenant-policy'] || resolve(here, 'policies/tenants/tya.json') });
+  const result = runWorkspacePreflight({ repoRoot: args.repo || process.cwd(), candidate: args.candidate, plan: args.plan, policy: args.policy || resolve(here, 'policies/cxorbia-product.json'), tenantPolicy: args['tenant-policy'] || resolve(here, 'policies/tenants/tya.json'), architecture: args.architecture });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   process.exitCode = result.ok ? 0 : 2;
 }
