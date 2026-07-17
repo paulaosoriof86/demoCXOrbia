@@ -19,7 +19,14 @@ function newestPlan() {
   return plans[0].path;
 }
 
+function runStep(script, args = []) {
+  const result = spawnSync(process.execPath, [script, ...args], { cwd: repoRoot, stdio: 'inherit' });
+  if (result.status !== 0) process.exit(result.status || 2);
+}
+
 function run() {
+  runStep(resolve(repoRoot, 'tools/qa/assert-integration-architecture-lock.mjs'));
+
   const planPath = newestPlan();
   const plan = readJson(planPath);
   if (!plan.candidateFile) throw new Error('El plan no contiene candidateFile');
@@ -28,11 +35,8 @@ function run() {
   const productPolicy = resolve(repoRoot, 'tools/integration/policies/cxorbia-product.json');
   const common = ['--repo', repoRoot, '--candidate', candidatePath, '--plan', planPath, '--policy', productPolicy, '--tenant-policy', tenantPolicy];
 
-  const preflight = spawnSync(process.execPath, [resolve(scriptDir, 'workspace-preflight.mjs'), ...common], { cwd: repoRoot, stdio: 'inherit' });
-  if (preflight.status !== 0) process.exit(preflight.status || 2);
-
-  const apply = spawnSync(process.execPath, [resolve(scriptDir, 'empalme-candidate.mjs'), ...common, '--apply', '--commit', '--push'], { cwd: repoRoot, stdio: 'inherit' });
-  process.exit(apply.status || 0);
+  runStep(resolve(scriptDir, 'workspace-preflight.mjs'), common);
+  runStep(resolve(scriptDir, 'empalme-candidate.mjs'), [...common, '--apply', '--commit', '--push']);
 }
 
 try { run(); }
