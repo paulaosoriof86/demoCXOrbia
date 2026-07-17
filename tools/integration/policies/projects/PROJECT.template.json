@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "policyId": "project-{tenantId}-{projectId}-validation-v1",
+  "tenantId": "{tenantId}",
+  "projectId": "{projectId}",
+  "role": "project-validation-profile",
+  "neverDefault": true,
+  "description": "Perfil opcional de validación para un proyecto. No define lógica global del tenant ni del producto.",
+  "gates": []
+}
