@@ -1,11 +1,12 @@
 {
-  "schemaVersion": 1,
-  "policyId": "project-tya-cinepolis-validation-v1",
+  "schemaVersion": 2,
+  "policyId": "project-tya-cinepolis-validation-v2",
   "tenantId": "tya",
   "projectId": "cinepolis",
   "role": "initial-project-validation-profile",
   "neverDefault": true,
-  "description": "Perfil opcional para validar el primer proyecto TyA. No define lógica global del tenant ni del producto.",
+  "integrationMethod": "APPLY_DELTA_DIRECTLY",
+  "description": "Perfil opcional para validar el primer proyecto TyA. No define lógica global del tenant ni del producto y no requiere carril local.",
   "gates": [],
   "expectedSourceSafe": {
     "periods": 14,
