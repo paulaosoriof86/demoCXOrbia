@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "architectureId": "cxorbia-local-deterministic-integration-lane-v1",
+  "status": "ACTIVE_DEFINITIVE",
+  "effectiveDate": "2026-07-17",
+  "repositoryFullName": "paulaosoriof86/demoCXOrbia",
+  "liveBranch": "docs-tya-v6-v71-audit",
+  "rootCause": "candidate files and authenticated Git checkout were separated; connector-only transport is not an atomic candidate integration workspace",
+  "executionPlane": "local_workspace_with_candidate_and_authenticated_git_checkout",
+  "flow": [
+    "claude_design_zip",
+    "chatgpt_forensic_audit",
+    "audited_plan_json",
+    "local_workspace_preflight",
+    "deterministic_integrator",
+    "commit_push",
+    "chatgpt_verification",
+    "visual_validation"
+  ],
+  "requiredComponents": [
+    "tools/integration/workspace-preflight.mjs",
+    "tools/integration/empalme-candidate.mjs",
+    "tools/integration/run-latest.mjs",
+    "tools/integration/CXORBIA-EMPALMAR-ULTIMA-CANDIDATA.cmd",
+    "tools/integration/policies/cxorbia-product.json",
+    "tools/integration/policies/tenants/tya.json",
+    "app/docs/ADDENDUM-MAESTRO-ARQUITECTURA-DEFINITIVA-CARRIL-EMPALMES-CXORBIA-20260717.md"
+  ],
+  "invariants": {
+    "multiTenant": true,
+    "tenantMultiProjectRequired": true,
+    "projectSelection": "explicit",
+    "globalProjectDefaultAllowed": false,
+    "candidateAndGitCheckoutSameWorkspace": true,
+    "preflightRequired": true,
+    "candidateIdentitySha256Required": true,
+    "auditedDeltaOnly": true,
+    "protectedBackendAndOverlays": true,
+    "backupAndRollbackRequired": true,
+    "idempotencyRegistryRequired": true,
+    "commitPushEvidenceRequired": true,
+    "postEmpalmeGatesRequiredBeforeDevOrProduction": true
+  },
+  "tenantRules": {
+    "tya": {
+      "multiProject": true,
+      "defaultProjectId": null,
+      "cinepolisRole": "initial_explicit_validation_project_only",
+      "cinepolisNeverGlobalDefault": true,
+      "newProjectsCreatedFromPlatformConfiguration": true
+    }
+  },
+  "forbiddenCandidateTransport": [
+    "github_connector_blobs_as_primary_lane",
+    "github_connector_trees_as_primary_lane",
+    "github_actions_transport_workflow",
+    "drive_transport",
+    "base64_transport",
+    "manual_file_by_file_copy_by_paula"
+  ],
+  "codexRole": "optional_installation_or_complex_conflict_support",
+  "connectorRole": "consultation_documentation_verification_and_small_text_changes",
+  "changeControl": {
+    "requiresProvenP0": true,
+    "requiresReproducibleEvidence": true,
+    "requiresMultiTenantMultiProjectCompatibility": true,
+    "requiresPaulaExplicitAuthorization": true,
+    "requiresSynchronizedDocumentationContractValidatorAndAgentsUpdate": true
+  },
+  "currentCandidate": {
+    "candidateId": "V156",
+    "state": "AUDITED_GO_READY_DIRECT_APPLY",
+    "modifiedRuntimeFiles": 35,
+    "removedRuntimeFiles": 0,
+    "physicallyEmpalmed": false
+  },
+  "safeState": "no merge, deploy, production, real imports, Firestore/HR writes, Make/Gemini live, real Storage or payments"
+}
