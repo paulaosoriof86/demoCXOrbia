@@ -1,0 +1,71 @@
+name: CXOrbia V156 Direct Empalme
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'tools/release/tya-promote-v156-atomic.mjs'
+      - 'tools/release/tya-download-protected-drive-file.mjs'
+      - '.candidate/v156-runtime-delta.zip'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cxorbia-v156-direct-empalme
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  empalme-v156:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout live integration branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Retrieve verified V156 delta
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          V156_DRIVE_FILE_ID: 1kxtmJLcFp9X09-o2BpoFfap9MOi5ll3Q
+          V156_DRIVE_OUTPUT: .candidate/v156-runtime-delta.zip
+          V156_EXPECT_SHA256: 053af067f5ffa5f2c9244798af3d0cce28189457533a835fb5376eac5112ebf5
+          V156_DRIVE_DIAGNOSTIC: .tmp/v156-direct/drive-diagnostic.json
+        run: |
+          set -euo pipefail
+          rm -f .candidate/v156-runtime-delta.zip
+          node tools/release/tya-download-protected-drive-file.mjs
+          test "$(sha256sum .candidate/v156-runtime-delta.zip | awk '{print $1}')" = "053af067f5ffa5f2c9244798af3d0cce28189457533a835fb5376eac5112ebf5"
+
+      - name: Apply audited 35-file runtime delta
+        run: |
+          set -euo pipefail
+          rm -rf evidence
+          unzip -oq .candidate/v156-runtime-delta.zip -d .
+          cp evidence/MANIFEST-V156.json app/docs/MANIFEST-V156.json
+          cp evidence/REPORTE-CORRECCION-V156-GATE-AUTOMATIZADO-20260716.md app/docs/
+          node tools/release/tya-promote-v156-atomic.mjs materialize
+          while IFS= read -r -d '' file; do node --check "$file"; done < <(find app -type f \( -name '*.js' -o -name '*.mjs' \) -not -path 'app/docs/*' -print0)
+          (cd app && node docs/verify-manifest.mjs)
+
+      - name: Commit final V156 baseline
+        run: |
+          set -euo pipefail
+          rm -rf .candidate evidence .tmp
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "feat: empalme directo V156 y source lock [skip ci]"
+          git push origin HEAD:docs-tya-v6-v71-audit
