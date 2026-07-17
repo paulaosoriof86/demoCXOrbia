@@ -7,10 +7,11 @@ Este archivo se lee antes de cualquier acción en el repositorio.
 Antes de planear, auditar, responder o modificar, leer:
 
 1. `app/docs/ADDENDUM-MAESTRO-EJECUCION-DIRECTA-EMPALMES-CXORBIA-20260716.md`.
-2. `CAMBIOS-BACKEND.md` y sus addenda recientes.
-3. `RESUMEN-PARA-CLAUDE.md` y sus addenda recientes.
-4. `PENDIENTES-PROTOTIPO.md` y sus addenda recientes.
-5. PR #7 actual.
+2. `app/docs/ADDENDUM-MAESTRO-CARRIL-OPERATIVO-LOCAL-REUTILIZABLE-CXORBIA-20260717.md`.
+3. `CAMBIOS-BACKEND.md` y sus addenda recientes.
+4. `RESUMEN-PARA-CLAUDE.md` y sus addenda recientes.
+5. `PENDIENTES-PROTOTIPO.md` y sus addenda recientes.
+6. PR #7 actual.
 
 ## Regla de ejecución
 
@@ -18,12 +19,17 @@ Cuando una candidata ya tiene auditoría PASS/GO y no existe P0 comprobado, la �
 
 Secuencia única:
 
-1. Aplicar el delta auditado sobre la rama viva.
-2. Preservar backend, contratos, adapters, tools, overlays TyA y documentación acumulada.
-3. Generar manifest, `build-lock.js`, verificador y registro de baseline.
-4. Actualizar documentación obligatoria.
-5. Crear el commit de empalme y mover la rama viva.
-6. Ejecutar gates y smoke después del empalme, antes de DEV/producción.
+1. Ejecutar el preflight de `tools/integration/`.
+2. Aplicar el delta auditado sobre la rama viva.
+3. Preservar backend, contratos, adapters, tools, overlays TyA y documentación acumulada.
+4. Generar manifest, `build-lock.js`, verificador y registro de baseline.
+5. Actualizar documentación obligatoria.
+6. Crear el commit de empalme y mover la rama viva.
+7. Ejecutar gates y smoke después del empalme, antes de DEV/producción.
+
+## Regla multi-tenant y multi-proyecto
+
+El motor es genérico CXOrbia. Cada tenant es multi-proyecto y cada proyecto se selecciona explícitamente. Cinépolis es solo el primer proyecto TyA y nunca puede convertirse en default del tenant ni en lógica global.
 
 ## Prohibiciones absolutas durante un empalme ordinario
 
@@ -35,10 +41,6 @@ No responder con otra explicación metodológica cuando existe una acción ejecu
 
 ## Lock actual
 
-V156 está en estado `AUDITED_GO_READY_DIRECT_APPLY`. La única operación permitida es `APPLY_DELTA_DIRECTLY`.
+V156 está en estado `AUDITED_GO_READY_DIRECT_APPLY`. La única operación permitida es `APPLY_DELTA_DIRECTLY` mediante el carril local determinístico.
 
-Antes de cualquier mutación ejecutar:
-
-`node tools/qa/assert-empalme-directo.mjs --operation APPLY_DELTA_DIRECTLY`
-
-Si la operación no coincide con el lock, detenerla. Un bloqueo real debe describirse una sola vez con evidencia concreta; no se permite experimentar con rutas alternativas.
+Si el preflight falla, detenerse sin experimentar con rutas alternativas. No declarar empalme completo sin commit/push verificable, `build-lock.js` V156 y gates aplicables.
