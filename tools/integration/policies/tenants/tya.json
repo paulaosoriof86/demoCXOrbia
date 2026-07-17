@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 1,
-  "policyId": "tenant-tya-v1",
+  "schemaVersion": 2,
+  "policyId": "tenant-tya-v2-direct-apply",
   "tenantId": "tya",
   "multiProject": true,
   "projectSelection": "explicit",
@@ -11,10 +11,13 @@
   ],
   "protectedFiles": [],
   "gates": [],
+  "integrationMethod": "APPLY_DELTA_DIRECTLY",
   "rules": {
     "cinépolisIsProjectNotTenantDefault": true,
     "newProjectsMustBeCreatedFromPlatformConfiguration": true,
     "tenantMayContainUnlimitedProjects": true,
-    "projectSpecificCountsNeverBecomeProductDefaults": true
+    "projectSpecificCountsNeverBecomeProductDefaults": true,
+    "manualActionByPaulaAllowed": false,
+    "localIncomingLaneRequired": false
   }
 }
