@@ -102,25 +102,35 @@ Solo puede modificarse cuando concurran simultáneamente:
 4. autorización expresa de Paula en la conversación actual;
 5. actualización conjunta de este addendum, `AGENTS.md`, contrato de método, validador y documentación obligatoria.
 
-La demora, el tamaño del ZIP, una limitación temporal del conector o la preferencia de un agente no constituyen P0 ni autorizan cambiar la metodología.
+La demora, el tamaño del ZIP, una limitación temporal del conector o la preferencia de un agente no constituyen P0 ni autorizan cambiar la metodología. Una limitación de herramienta se registra sin cambiar el estado GO, sin crear ruta alternativa y sin trasladar acciones manuales a Paula.
 
-## 8. Estado V156
+## 8. Estado operativo V159
 
-- Candidata: `V156`.
+- Candidata: `V159`.
+- Fuente: `Prototype development request (8).zip`.
+- SHA-256: `8ac5b04dda594366e0f27f717ec5f660328b43d9109a44e5df36fdcabcb09bc6`.
 - Estado: `AUDITED_GO_READY_DIRECT_APPLY`.
 - Decisión: GO.
-- Delta: 35 archivos runtime modificados y 0 eliminados.
+- Delta V158→V159: 14 archivos modificados, 0 agregados y 0 eliminados.
+- Delta runtime efectivo contra el árbol V156 ya presente en la rama: 17 archivos modificados y 0 eliminados.
+- Sintaxis: 67 JS/MJS, 0 errores.
+- Scripts locales: 64, 0 faltantes y 0 duplicados.
+- Módulos: 49 IDs únicos, 0 duplicados.
+- Firmas de secretos: 0 coincidencias.
 - Operación única: `APPLY_DELTA_DIRECTLY`.
 - Rama viva: `docs-tya-v6-v71-audit`.
+- Estado físico: pendiente de commit/push, manifest y build-lock verificables.
 - Gates y smoke: posteriores al empalme.
+
+El conector de repositorio disponible no admite tomar los archivos montados de la candidata como parámetros de escritura autenticada. La metodología prohíbe sustituir esa operación por Base64, blobs, trees, workflows, Drive, copias manuales o acciones de Paula. Esta limitación no es P0 y no modifica la decisión GO ni autoriza otra metodología.
 
 ## 9. Clasificación
 
 - **Reusable CXOrbia:** máquina de estados, aplicación directa, source lock y control antidesvío.
-- **Exclusivo cliente:** gates y reglas TyA/Cinépolis.
-- **Claude/prototipo:** V156 como candidata frontend activa y pendientes visuales reales.
-- **Academia:** revisión de manuales, cursos, rutas por rol, certificaciones y notificaciones después del empalme.
-- **Sin impacto Claude:** manifest, build-lock, validadores y controles internos.
+- **Exclusivo cliente:** gates y reglas TyA/Cinépolis posteriores al empalme.
+- **Claude/prototipo:** V159 es la candidata frontend activa; no se solicita otra candidata.
+- **Academia:** V159 incorpora ajustes de contenido y debe revisarse en smoke por rol después del empalme.
+- **Sin impacto Claude:** manifest, build-lock, validadores, overlays TyA y controles internos.
 
 ## 10. Estado seguro
 
