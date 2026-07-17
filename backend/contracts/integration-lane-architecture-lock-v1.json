@@ -1,44 +1,42 @@
 {
-  "schemaVersion": 1,
-  "architectureId": "cxorbia-local-deterministic-integration-lane-v1",
+  "schemaVersion": 2,
+  "architectureId": "cxorbia-orbit-direct-repository-apply-v1",
   "status": "ACTIVE_DEFINITIVE",
   "effectiveDate": "2026-07-17",
   "repositoryFullName": "paulaosoriof86/demoCXOrbia",
   "liveBranch": "docs-tya-v6-v71-audit",
-  "rootCause": "candidate files and authenticated Git checkout were separated; connector-only transport is not an atomic candidate integration workspace",
-  "executionPlane": "local_workspace_with_candidate_and_authenticated_git_checkout",
+  "sourceOfTruth": "app/docs/ADDENDUM-MAESTRO-EJECUCION-DIRECTA-EMPALMES-CXORBIA-20260716.md",
+  "originPattern": "Orbit 360 direct audited candidate integration",
+  "executionPlane": "authenticated_direct_repository_operations",
   "flow": [
-    "claude_design_zip",
     "chatgpt_forensic_audit",
-    "audited_plan_json",
-    "local_workspace_preflight",
-    "deterministic_integrator",
-    "commit_push",
-    "chatgpt_verification",
+    "audited_go_decision",
+    "apply_delta_directly_to_live_branch",
+    "preserve_backend_overlays_and_docs",
+    "generate_manifest_build_lock_and_verifier",
+    "commit_push_evidence",
+    "post_empalme_gates",
     "visual_validation"
   ],
-  "requiredComponents": [
-    "tools/integration/workspace-preflight.mjs",
-    "tools/integration/empalme-candidate.mjs",
-    "tools/integration/run-latest.mjs",
-    "tools/integration/CXORBIA-EMPALMAR-ULTIMA-CANDIDATA.cmd",
-    "tools/integration/policies/cxorbia-product.json",
-    "tools/integration/policies/tenants/tya.json",
-    "app/docs/ADDENDUM-MAESTRO-ARQUITECTURA-DEFINITIVA-CARRIL-EMPALMES-CXORBIA-20260717.md"
+  "states": [
+    "AUDIT_INCOMPLETE",
+    "P0_PROVEN",
+    "AUDITED_GO_READY_DIRECT_APPLY",
+    "EMPALMED_PENDING_POST_GATES",
+    "ACTIVE_BASELINE"
   ],
   "invariants": {
     "multiTenant": true,
     "tenantMultiProjectRequired": true,
     "projectSelection": "explicit",
     "globalProjectDefaultAllowed": false,
-    "candidateAndGitCheckoutSameWorkspace": true,
-    "preflightRequired": true,
-    "candidateIdentitySha256Required": true,
     "auditedDeltaOnly": true,
     "protectedBackendAndOverlays": true,
-    "backupAndRollbackRequired": true,
-    "idempotencyRegistryRequired": true,
+    "directApplyRequiredAfterGo": true,
+    "newMethodologyForbiddenAfterGo": true,
+    "manualActionByPaulaForbidden": true,
     "commitPushEvidenceRequired": true,
+    "manifestAndBuildLockRequired": true,
     "postEmpalmeGatesRequiredBeforeDevOrProduction": true
   },
   "tenantRules": {
@@ -50,26 +48,33 @@
       "newProjectsCreatedFromPlatformConfiguration": true
     }
   },
-  "forbiddenCandidateTransport": [
-    "github_connector_blobs_as_primary_lane",
-    "github_connector_trees_as_primary_lane",
+  "forbiddenAfterAuditedGo": [
+    "incoming_folder_requirement",
+    "empalme_plan_json_requirement",
+    "local_zip_checkout_requirement",
+    "cmd_or_powershell_for_paula",
     "github_actions_transport_workflow",
+    "new_branch_or_pr",
     "drive_transport",
     "base64_transport",
-    "manual_file_by_file_copy_by_paula"
+    "connector_blobs_or_trees_transport",
+    "manual_file_copy_by_paula",
+    "general_reaudit",
+    "new_candidate_request",
+    "new_methodology"
   ],
-  "codexRole": "optional_installation_or_complex_conflict_support",
-  "connectorRole": "consultation_documentation_verification_and_small_text_changes",
   "changeControl": {
     "requiresProvenP0": true,
     "requiresReproducibleEvidence": true,
     "requiresMultiTenantMultiProjectCompatibility": true,
-    "requiresPaulaExplicitAuthorization": true,
-    "requiresSynchronizedDocumentationContractValidatorAndAgentsUpdate": true
+    "requiresPaulaExplicitAuthorizationInCurrentConversation": true,
+    "requiresSynchronizedDocumentationContractValidatorAndAgentsUpdate": true,
+    "delaySizeOrConnectorPreferenceAreNotP0": true
   },
   "currentCandidate": {
     "candidateId": "V156",
     "state": "AUDITED_GO_READY_DIRECT_APPLY",
+    "operation": "APPLY_DELTA_DIRECTLY",
     "modifiedRuntimeFiles": 35,
     "removedRuntimeFiles": 0,
     "physicallyEmpalmed": false
