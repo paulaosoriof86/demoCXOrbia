@@ -6,6 +6,8 @@ const root = resolve(process.cwd());
 const contractPath = resolve(root, 'backend/contracts/integration-lane-architecture-lock-v1.json');
 const addendumPath = resolve(root, 'app/docs/ADDENDUM-MAESTRO-EJECUCION-DIRECTA-EMPALMES-CXORBIA-20260716.md');
 const agentsPath = resolve(root, 'AGENTS.md');
+const productPolicyPath = resolve(root, 'tools/integration/policies/cxorbia-product.json');
+const tenantPolicyPath = resolve(root, 'tools/integration/policies/tenants/tya.json');
 
 function stop(message) {
   process.stderr.write(`DIRECT_ORBIT_METHOD_LOCK_FAIL: ${message}\n`);
@@ -15,7 +17,9 @@ function stop(message) {
 for (const [label, path] of [
   ['contract', contractPath],
   ['prevalent addendum', addendumPath],
-  ['AGENTS.md', agentsPath]
+  ['AGENTS.md', agentsPath],
+  ['product policy', productPolicyPath],
+  ['TyA policy', tenantPolicyPath]
 ]) {
   if (!existsSync(path)) stop(`missing ${label}`);
 }
@@ -23,6 +27,8 @@ for (const [label, path] of [
 const contract = JSON.parse(readFileSync(contractPath, 'utf8'));
 const addendum = readFileSync(addendumPath, 'utf8');
 const agents = readFileSync(agentsPath, 'utf8');
+const product = JSON.parse(readFileSync(productPolicyPath, 'utf8'));
+const tenant = JSON.parse(readFileSync(tenantPolicyPath, 'utf8'));
 
 if (contract.architectureId !== 'cxorbia-orbit-direct-repository-apply-v1') stop('unexpected architectureId');
 if (contract.status !== 'ACTIVE_DEFINITIVE') stop(`method not active: ${contract.status}`);
@@ -40,6 +46,17 @@ if (contract.tenantRules?.tya?.cinepolisNeverGlobalDefault !== true) stop('Ciné
 if (contract.currentCandidate?.candidateId !== 'V156') stop('unexpected active candidate');
 if (contract.currentCandidate?.state !== 'AUDITED_GO_READY_DIRECT_APPLY') stop('V156 must remain ready for direct apply');
 if (contract.currentCandidate?.operation !== 'APPLY_DELTA_DIRECTLY') stop('V156 operation must be APPLY_DELTA_DIRECTLY');
+
+if (product.multiTenant !== true) stop('product policy must remain multi-tenant');
+if (product.integrationMethod !== 'APPLY_DELTA_DIRECTLY') stop('product policy must require direct apply');
+if (product.rules?.localIncomingLaneRequired !== false) stop('product policy must reject incoming lane');
+if (product.rules?.manualActionByPaulaAllowed !== false) stop('product policy must reject manual action by Paula');
+if (product.rules?.newMethodologyAfterGoAllowed !== false) stop('product policy must reject new methodology after GO');
+if (tenant.multiProject !== true) stop('TyA policy must remain multi-project');
+if (tenant.projectSelection !== 'explicit') stop('TyA project selection must remain explicit');
+if (tenant.integrationMethod !== 'APPLY_DELTA_DIRECTLY') stop('TyA policy must require direct apply');
+if (tenant.rules?.localIncomingLaneRequired !== false) stop('TyA policy must reject incoming lane');
+if (tenant.rules?.manualActionByPaulaAllowed !== false) stop('TyA policy must reject manual action by Paula');
 
 for (const required of [
   'ACTIVO, DEFINITIVO, OBLIGATORIO Y PREVALENTE',
@@ -66,7 +83,9 @@ const forbiddenActiveFiles = [
   'tools/integration/run-latest.mjs',
   'tools/integration/CXORBIA-EMPALMAR-ULTIMA-CANDIDATA.cmd',
   'tools/integration/workspace-preflight.mjs',
-  'tools/integration/empalme-candidate.mjs'
+  'tools/integration/empalme-candidate.mjs',
+  'tools/integration/lib.mjs',
+  'tools/integration/README.md'
 ];
 
 for (const path of forbiddenActiveFiles) {
@@ -85,5 +104,6 @@ process.stdout.write(`${JSON.stringify({
   multiTenant: true,
   multiProject: true,
   projectSelection: 'explicit',
-  cinepolisNeverDefault: true
+  cinepolisNeverDefault: true,
+  localLanePresent: false
 }, null, 2)}\n`);
