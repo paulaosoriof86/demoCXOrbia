@@ -20,7 +20,7 @@ CX.notif = {
     {id:'n3', to:'admin',   tipo:'realizada',   icon:'✅', tono:'g', titulo:'Visita realizada', txt:'Evaluador 01 marcó realizada · validar cuestionario', fecha:'hace 3 h', leida:false, nav:'postulaciones'},
     {id:'n4', to:'shopper', tipo:'aprobada',    icon:'✅', tono:'g', titulo:'Postulación aprobada', txt:'Tu visita a Sucursal 03 fue aprobada', fecha:'hace 20 min', leida:false, nav:'misvisitas'},
     {id:'n5', to:'shopper', tipo:'pide_fecha',  icon:'📅', tono:'a', titulo:'El equipo pide confirmar fecha', txt:'Confirma o propone fecha para Sucursal 07', fecha:'hace 40 min', leida:false, nav:'misvisitas', accion:'confirmar_fecha'},
-    {id:'n6', to:'shopper', tipo:'pago',        icon:'💰', tono:'g', titulo:'Liquidación actualizada', txt:'Tu pago de Sucursal 06 pasó a "pagada (vista previa)"', fecha:'ayer', leida:true, nav:'beneficios'},
+    {id:'n6', to:'shopper', tipo:'pago',        icon:'💰', tono:'g', titulo:'Liquidación actualizada', txt:'Tu pago de Sucursal 06 pasó a "pagada (preview)"', fecha:'ayer', leida:true, nav:'beneficios'},
     ];
   })(),
 
