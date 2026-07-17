@@ -1,46 +1,49 @@
-# CXOrbia — ejecución obligatoria
+# CXOrbia - ejecucion obligatoria
 
-Este archivo se lee antes de cualquier acción en el repositorio.
+Este archivo se lee antes de cualquier accion en el repositorio.
 
-## Fuente obligatoria
+## Fuentes obligatorias
 
-Antes de planear, auditar, responder o modificar, leer:
+1. `app/docs/ADDENDUM-MAESTRO-ARQUITECTURA-DEFINITIVA-CARRIL-EMPALMES-CXORBIA-20260717.md`.
+2. `backend/contracts/integration-lane-architecture-lock-v1.json`.
+3. `app/docs/ADDENDUM-MAESTRO-EJECUCION-DIRECTA-EMPALMES-CXORBIA-20260716.md`.
+4. `app/docs/ADDENDUM-MAESTRO-CARRIL-OPERATIVO-LOCAL-REUTILIZABLE-CXORBIA-20260717.md`.
+5. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` y PR #7.
 
-1. `app/docs/ADDENDUM-MAESTRO-EJECUCION-DIRECTA-EMPALMES-CXORBIA-20260716.md`.
-2. `app/docs/ADDENDUM-MAESTRO-CARRIL-OPERATIVO-LOCAL-REUTILIZABLE-CXORBIA-20260717.md`.
-3. `CAMBIOS-BACKEND.md` y sus addenda recientes.
-4. `RESUMEN-PARA-CLAUDE.md` y sus addenda recientes.
-5. `PENDIENTES-PROTOTIPO.md` y sus addenda recientes.
-6. PR #7 actual.
+## Arquitectura definitiva
 
-## Regla de ejecución
+Las candidatas completas solo se empalman en un workspace que contenga el ZIP y el checkout Git autenticado.
 
-Cuando una candidata ya tiene auditoría PASS/GO y no existe P0 comprobado, la única acción permitida es empalmar directamente el delta sobre `docs-tya-v6-v71-audit`.
+Flujo obligatorio: Claude Design entrega ZIP; ChatGPT audita y genera plan JSON; el integrador local aplica el delta; Git crea commit/push; ChatGPT verifica; Paula valida visualmente.
 
-Secuencia única:
+Codex es apoyo puntual, no requisito por candidata. El conector GitHub no transporta candidatas completas.
 
-1. Ejecutar el preflight de `tools/integration/`.
-2. Aplicar el delta auditado sobre la rama viva.
-3. Preservar backend, contratos, adapters, tools, overlays TyA y documentación acumulada.
-4. Generar manifest, `build-lock.js`, verificador y registro de baseline.
-5. Actualizar documentación obligatoria.
-6. Crear el commit de empalme y mover la rama viva.
-7. Ejecutar gates y smoke después del empalme, antes de DEV/producción.
+Antes de empalmar ejecutar:
 
-## Regla multi-tenant y multi-proyecto
+`node tools/qa/assert-integration-architecture-lock.mjs`
 
-El motor es genérico CXOrbia. Cada tenant es multi-proyecto y cada proyecto se selecciona explícitamente. Cinépolis es solo el primer proyecto TyA y nunca puede convertirse en default del tenant ni en lógica global.
+Despues ejecutar el preflight de `tools/integration/`. Un FAIL detiene el proceso sin rutas alternativas.
 
-## Prohibiciones absolutas durante un empalme ordinario
+## Regla de ejecucion
 
-No crear ramas, PR, workflows, Actions, artefactos Drive, transferencias Base64, service accounts, proyectos Firebase, colas CI, PowerShell para Paula, nuevas candidatas, nuevas metodologías ni reauditorías completas.
+Con auditoria PASS/GO y sin P0, aplicar el delta auditado sobre `docs-tya-v6-v71-audit` mediante el carril local deterministico. Preservar backend, contratos, adapters, tools, overlays y docs. Generar manifest, build-lock, registro, commit y push. Ejecutar gates por tenant/proyecto antes de DEV o produccion.
 
-No convertir gates post-empalme en bloqueo previo.
+## Multi-tenant y multi-proyecto
 
-No responder con otra explicación metodológica cuando existe una acción ejecutable. Ejecutar primero y reportar después.
+El motor pertenece a CXOrbia. Cada tenant es multi-proyecto, sin proyecto global por defecto, y toda seleccion es explicita.
+
+TyA es el tenant actual. Cinepolis es solo su primer proyecto operativo; nunca es default ni logica global. Sus cifras, HR, cuestionarios, pagos, certificaciones y reglas quedan en un perfil opcional. Los proximos proyectos TyA se crean/configuran desde la plataforma. Otros tenants reutilizan el motor con politicas propias.
+
+## Prohibiciones
+
+No usar blobs/trees del conector, workflows transportadores, Drive, Base64, copias manuales archivo por archivo, nuevas ramas/PR o nuevas metodologias como carril de candidatas completas.
+
+No declarar empalme completo sin commit/push, manifest y build-lock verificables.
+
+## Control de cambios
+
+La arquitectura solo cambia con P0 demostrado, evidencia reproducible, compatibilidad multi-tenant/multi-proyecto, autorizacion expresa de Paula y actualizacion conjunta del addendum, contrato, validador y este archivo.
 
 ## Lock actual
 
-V156 está en estado `AUDITED_GO_READY_DIRECT_APPLY`. La única operación permitida es `APPLY_DELTA_DIRECTLY` mediante el carril local determinístico.
-
-Si el preflight falla, detenerse sin experimentar con rutas alternativas. No declarar empalme completo sin commit/push verificable, `build-lock.js` V156 y gates aplicables.
+V156 esta `AUDITED_GO_READY_DIRECT_APPLY`, con 35 archivos modificados y 0 eliminados. Sigue pendiente fisicamente hasta tener commit/push y build-lock V156 verificables.
