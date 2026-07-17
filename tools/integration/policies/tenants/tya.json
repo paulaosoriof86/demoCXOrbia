@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "policyId": "tenant-tya-v1",
+  "tenantId": "tya",
+  "multiProject": true,
+  "projectSelection": "explicit",
+  "protectedPrefixes": [
+    "app/core/tya-phase-a-",
+    "app/data/tya-",
+    "app/adapters/tya-"
+  ],
+  "protectedFiles": [],
+  "gates": [],
+  "rules": {
+    "cinépolisIsProjectNotTenantDefault": true,
+    "newProjectsMustBeCreatedFromPlatformConfiguration": true,
+    "tenantMayContainUnlimitedProjects": true,
+    "projectSpecificCountsNeverBecomeProductDefaults": true
+  }
+}
