@@ -40,3 +40,5 @@ jobs:
           git add -A
           git commit -m "feat: empalme directo V156 y source lock [skip ci]"
           git push origin HEAD:docs-tya-v6-v71-audit
+
+# retrigger direct empalme 2026-07-16T23:59:00Z
