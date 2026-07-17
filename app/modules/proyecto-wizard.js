@@ -13,6 +13,7 @@ CX.projectWizard = function(data, ui){
     name:'', industry:'', countries:[], currency:{},
     honRecibe:{}, honPaga:{}, boleto:{}, comboAmt:{}, combo:'',
     modelo:'directo', isr:5, regalias:0,
+    frecuencia:'mensual', periodoMedicion:'igual', ventanas:'',
     cuestModo:'interna', cuestUrl:'',
     hrFuente:'Hoja creada en plataforma',
     revision:{consultora:true, cliente:false},
@@ -89,7 +90,13 @@ CX.projectWizard = function(data, ui){
       </select>
       <div style="margin-bottom:6px"><label class="lbl">Escenarios (separados por coma)</label><input class="inp" id="f_scn" value="${st.scenarios}" placeholder="Compra estándar, Fin de semana, Incógnito"></div>
       <div class="flex" style="gap:8px;margin:8px 0"><button class="btn btn-soft btn-sm" id="f_import" type="button">📥 Importar instructivo / HR (IA)</button></div>
-      <div style="font-size:11.5px;color:var(--t3)">Los cuestionarios pueden tener versiones por escenario, marca o tipo de establecimiento (editables luego en el módulo Cuestionarios).</div>`;
+      <div style="font-size:11.5px;color:var(--t3);margin-bottom:14px">Los cuestionarios pueden tener versiones por escenario, marca o tipo de establecimiento (editables luego en el módulo Cuestionarios).</div>
+      <label class="lbl">Frecuencia del programa</label>
+      <select class="sel" id="f_freq" style="margin-bottom:10px">${['mensual','bimensual','trimestral','semestral','anual','campaña'].map(f=>`<option value="${f}" ${st.frecuencia===f?'selected':''}>${f[0].toUpperCase()+f.slice(1)}</option>`).join('')}</select>
+      <label class="lbl">Periodo de medición</label>
+      <select class="sel" id="f_medi" style="margin-bottom:10px">${[['igual','Igual a la frecuencia'],['semanal','Semanal'],['quincenal','Quincenal'],['mensual','Mensual'],['personalizado','Personalizado']].map(([v,l])=>`<option value="${v}" ${st.periodoMedicion===v?'selected':''}>${l}</option>`).join('')}</select>
+      <div style="margin-bottom:6px"><label class="lbl">Ventanas de medición (opcional, separadas por coma — ej. Quincena 1, Quincena 2)</label><input class="inp" id="f_vent" value="${st.ventanas}" placeholder="Se deja vacío si no aplica"></div>
+      <div style="font-size:11px;color:var(--t3)">La Hoja de Ruta determina a qué ventana pertenece cada visita; esta lista solo sirve para alertas/metas, nunca asume 50/50 automático.</div>`;
 
     // step 5
     const recOK=st.countries.every(c=>st.honRecibe[c]!=null);
@@ -102,7 +109,8 @@ CX.projectWizard = function(data, ui){
         <div style="font-size:12px;color:var(--t2);line-height:1.7">
           <b>${st.name||'(sin nombre)'}</b> · ${st.industry||'—'}<br>
           Países: ${st.countries.join(', ')||'—'} · Modelo: <b>${st.modelo}</b>${st.modelo==='directo'?` (ISR ${st.isr}% · regalías ${st.regalias}%)`:''}<br>
-          Cuestionario: ${st.cuestModo} · HR: ${st.hrFuente} · pago ≈ ${st.diasPago} días
+          Cuestionario: ${st.cuestModo} · HR: ${st.hrFuente} · pago ≈ ${st.diasPago} días<br>
+          Frecuencia: <b>${st.frecuencia}</b> · Medición: <b>${st.periodoMedicion==='igual'?'igual a la frecuencia':st.periodoMedicion}</b>${st.ventanas?' · Ventanas: '+st.ventanas:''}
         </div>
       </div>
       ${ui.aiBox('Al crear, se genera un proyecto AISLADO con su propio dashboard, KPIs, reglas y finanzas. No afecta a los proyectos existentes.','Proyecto aislado e inteligente')}`;
@@ -124,7 +132,8 @@ CX.projectWizard = function(data, ui){
     if(st.step===3){ const r=wrap.querySelector('input[name="wmod"]:checked'); if(r)st.modelo=r.value;
       if(g('f_isr')!=null)st.isr=+g('f_isr')||0; if(g('f_reg')!=null)st.regalias=+g('f_reg')||0; }
     if(st.step===4){ if(g('f_cmodo')!=null)st.cuestModo=g('f_cmodo'); if(g('f_curl')!=null)st.cuestUrl=g('f_curl');
-      if(g('f_hr')!=null)st.hrFuente=g('f_hr'); if(g('f_scn')!=null)st.scenarios=g('f_scn'); }
+      if(g('f_hr')!=null)st.hrFuente=g('f_hr'); if(g('f_scn')!=null)st.scenarios=g('f_scn');
+      if(g('f_freq')!=null)st.frecuencia=g('f_freq'); if(g('f_medi')!=null)st.periodoMedicion=g('f_medi'); if(g('f_vent')!=null)st.ventanas=g('f_vent'); }
     if(st.step===5){ if(g('f_res')!=null)st.restriccion=g('f_res'); if(g('f_dias')!=null)st.diasPago=+g('f_dias')||30; if(g('f_con')!=null)st.conocimiento=g('f_con'); }
   };
 
@@ -136,6 +145,10 @@ CX.projectWizard = function(data, ui){
       name:st.name, client:st.name, industry:st.industry||'Proyecto', countries:st.countries,
       currency:st.currency, honorario:st.honPaga, honRecibe:st.honRecibe, boleto:st.boleto, comboAmt:st.comboAmt, combo:st.combo||null,
       modelo:st.modelo, isr:st.isr, regalias:st.regalias,
+      frecuencia:st.frecuencia, periodoMedicion:st.periodoMedicion,
+      periodicidad:st.frecuencia.charAt(0).toUpperCase()+st.frecuencia.slice(1),
+      periodoCumpl:st.periodoMedicion==='igual'?'Igual a la ronda':(st.periodoMedicion.charAt(0).toUpperCase()+st.periodoMedicion.slice(1)),
+      ventanas:(st.ventanas||'').split(',').map(s=>s.trim()).filter(Boolean),
       scenarios:(st.scenarios||'General').split(',').map(s=>s.trim()).filter(Boolean),
       canales:['Presencial','Online'], formato:'Evaluación', ronda:'JUN 26',
       restriccion:st.restriccion, conocimiento:st.conocimiento,

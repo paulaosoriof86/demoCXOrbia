@@ -42,12 +42,19 @@ CX.module('shoppers', ({data,ui})=>{
     const L=list();
     return `
     ${ui.ph('Shoppers / Auditores', data.period().name+' · red de evaluadores y calificación')}
-    <div class="grid g4" style="margin-bottom:16px" id="shTopKpis">
+    <div id="shTopKpis">
+    <div class="grid g4" style="margin-bottom:8px">
       <div data-tk="all" style="cursor:pointer">${ui.kpi('En este proyecto',L.length,'b')}</div>
-      <div data-tk="act" style="cursor:pointer">${ui.kpi('Activos',L.filter(s=>s.estado!=='Pendiente').length,'g')}</div>
-      <div data-tk="incom" style="cursor:pointer">${ui.kpi('Perfiles incompletos',L.filter(s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!s.perfilCompleto).length,'a')}</div>
-      <div data-tk="pref" style="cursor:pointer">${ui.kpi('Preferentes',L.filter(s=>s.honorarioPref==='Preferente').length,'p')}</div>
+      <div data-tk="act" style="cursor:pointer">${ui.kpi('Activos (6 meses)',L.filter(s=>data.shopperActivo(s)).length,'g')}</div>
+      <div data-tk="inact" style="cursor:pointer">${ui.kpi('Inactivas',L.filter(s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!data.shopperActivo(s)).length,'a')}</div>
+      <div data-tk="prot" style="cursor:pointer">${ui.kpi('Referencias protegidas',L.filter(s=>CX.data_shopperDataLevel(s)==='protected_reference').length,'n')}</div>
     </div>
+    <div class="grid g4" style="margin-bottom:16px">
+      <div data-tk="comp" style="cursor:pointer">${ui.kpi('Perfiles completos',L.filter(s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&s.perfilCompleto).length,'g')}</div>
+      <div data-tk="incom" style="cursor:pointer">${ui.kpi('Perfiles incompletos',L.filter(s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!s.perfilCompleto).length,'a')}</div>
+    </div>
+    </div>
+    <div style="font-size:10.5px;color:var(--t3);margin:-10px 0 12px">Activo = perfil real con al menos 1 visita realizada en los 6 meses previos al ${data.activeRefDate()} (fecha de referencia del periodo). Una referencia protegida nunca cuenta como activa.</div>
     <div class="card card-p">
       <div class="card-h">
         <div class="card-t">Base de shoppers</div>
@@ -182,8 +189,8 @@ CX.module('shoppers', ({data,ui})=>{
           return `<div style="padding:7px 0;border-bottom:1px solid var(--border)" class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">${l}${canSeeSensitive?'':' 🔒'}</span><b style="font-size:13px;color:var(--t1);text-align:right">${shown||'<span style=\"color:var(--t3)\">— sin dato</span>'}</b></div>`; };
         const r=(l,v)=>`<div style="padding:7px 0;border-bottom:1px solid var(--border)" class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">${l}</span><b style="font-size:13px;color:var(--t1);text-align:right">${v||'<span style=\"color:var(--t3)\">— sin dato</span>'}</b></div>`;
         host.innerHTML=`<div>${rSens('WhatsApp',s.whatsapp)}${rSens('Correo',s.email)}${r(CX.geo.deptLabel(s.pais),s.depto)}${r('Edad',s.edad)}${r('Sexo',s.sexo)}${rSens('Documento',s.dpi)}${rSens('Banco',s.banco)}${rSens('Tipo de cuenta',s.ctaTipo)}${rSens('Número de cuenta',s.ctaNum)}${rSens('Titular',s.ctaTitular)}${rSens('Moneda',s.ctaMoneda)}
-        ${canSeeSensitive?'':'<div style="margin-top:8px;font-size:10.5px;color:var(--t3)">🔒 Datos protegidos · acceso completo pendiente Auth por rol (backend)</div>'}
-        ${(()=>{const c=CX.data&&CX.data.ctx?CX.data.ctx():null;return c?`<div style="margin-top:6px;font-size:10px;color:var(--t3)" title="Contrato de contexto único">scope: ${c.countryScope&&c.countryScope.length?c.countryScope.join(','):'sin restricción'} · rol ${c.role}</div>`:'';})()}</div>`;
+        ${canSeeSensitive?'':'<div style="margin-top:8px;font-size:10.5px;color:var(--t3)">🔒 Datos protegidos · acceso completo pendiente de activación por rol</div>'}
+        ${(()=>{const c=CX.data&&CX.data.ctx?CX.data.ctx():null;return c?`<div style="margin-top:6px;font-size:10px;color:var(--t3)">alcance: ${c.countryScope&&c.countryScope.length?c.countryScope.join(','):'sin restricción'} · rol ${c.role}</div>`:'';})()}</div>`;
       };
       readView();
       ov.querySelector('#shEdit')?.addEventListener('click',()=>{
@@ -271,7 +278,7 @@ CX.module('shoppers', ({data,ui})=>{
     }));
     bindRows();
     // KPIs superiores clickeables → lista filtrada de shoppers
-    const tkMap={all:['Shoppers del proyecto',()=>true],act:['Shoppers activos',s=>s.estado!=='Pendiente'],incom:['Perfiles incompletos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!s.perfilCompleto],pref:['Honorario preferente',s=>s.honorarioPref==='Preferente']};
+    const tkMap={all:['Shoppers del proyecto',()=>true],act:['Shoppers activos (6 meses)',s=>data.shopperActivo(s)],inact:['Inactivas',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!data.shopperActivo(s)],prot:['Referencias protegidas',s=>CX.data_shopperDataLevel(s)==='protected_reference'],comp:['Perfiles completos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&s.perfilCompleto],incom:['Perfiles incompletos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!s.perfilCompleto]};
     document.querySelectorAll('#shTopKpis [data-tk]').forEach(el=>el.addEventListener('click',()=>{const d=tkMap[el.dataset.tk];const arr=L.filter(d[1]);
       ui.modal(d[0]+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Ciudad</th><th>Rating</th><th>Estado</th></tr></thead><tbody>${arr.map(s=>`<tr class="hov" data-pk="${s.id}" style="cursor:pointer"><td><b>${s.nombre}</b><div style="font-size:10px;color:var(--t3)">${s.code}</div></td><td style="font-size:12px">${s.ciudad||CX.paisName(s.pais)}</td><td style="font-weight:700;color:var(--amber)">★ ${s.rating||'—'}</td><td>${ui.bdg(s.estado||'—',s.estado==='Pendiente'?'a':'g')}</td></tr>`).join('')}</tbody></table>`:ui.empty('👥','Sin shoppers en esta categoría.'),{onMount:(ov,close)=>ov.querySelectorAll('[data-pk]').forEach(tr=>tr.addEventListener('click',()=>{close();const s=data.getShopper(tr.dataset.pk);if(s)profileModal(s);}))});
     }));

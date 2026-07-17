@@ -45,7 +45,7 @@ CX.revisionAdmin = function(data, p, v, ui){
       <div><b>Score:</b> ${v.score!=null?v.score:'—'}</div><div><b>Submitido:</b> ${submDesc}</div>
     </div>
     <div style="background:var(--brand-light);border-radius:9px;padding:9px 12px;font-size:11.5px;color:var(--brand-dark);margin-bottom:12px">
-      Etapas separadas: <b>cuestionario</b> → <b>revisión</b> → <b>submitido</b> → <b>liquidación</b>. ${rolDesc}. La sincronización con HR queda <b>pendiente de activación backend</b>.
+      Etapas separadas: <b>cuestionario</b> → <b>revisión</b> → <b>submitido</b> → <b>liquidación</b>. ${rolDesc}. La sincronización con HR queda <b>pendiente de activación</b>.
     </div>
     <div class="between" style="margin-bottom:8px"><span class="muted" style="font-size:12px">Estado de revisión</span>${ui.bdg(R.LABELS[r.estado]||r.estado, R.TONO[r.estado]||'n')}</div>
     <label class="lbl">Cambiar estado</label>
@@ -65,10 +65,10 @@ CX.revisionAdmin = function(data, p, v, ui){
       }
       R.set(v.id, estado, nota, {shopperId:v.shopperId, assignmentId:v.id, projectId:p.id, hrRowId:v.hrRowId||v.rowId||v.extId||'', source:'admin_ui'});
       if(estado==='approved_for_submitido' && hrDriven){
-        ui.toast('Aprobada · el submitido se registrará desde HR (pendiente backend)','ok',3600);
+        ui.toast('Aprobada · el submitido se registrará desde HR (pendiente de activación)','ok',3600);
       } else if(estado==='submitido_registered'){
         CX.automations&&CX.automations.logAction&&CX.automations.logAction(hrDriven?'Submitido confirmado por admin (basado en HR)':'Submitido registrado',v.id,(v.shopper||'')+' · '+(v.sucursal||''));
-        ui.toast(hrDriven?'Submitido admin-confirmado (basado en HR) · liquidación pendiente HR/backend':'Submitido registrado · liquidación candidata (pendiente cruce)','ok',3800);
+        ui.toast(hrDriven?'Submitido admin-confirmado (basado en HR) · liquidación pendiente de HR/activación':'Submitido registrado · liquidación candidata (pendiente cruce)','ok',3800);
       } else {
         ui.toast('Revisión actualizada: '+R.LABELS[estado],'ok');
       }

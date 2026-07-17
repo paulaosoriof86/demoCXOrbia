@@ -87,31 +87,17 @@ CX.module('financiero', ({data,ui})=>{
 
   <div class="grid g2" style="margin-bottom:16px">
     <div class="card card-p">
-      <div class="card-h"><div class="card-t">📈 Comparativo intermensual (margen %)</div><span class="muted" style="font-size:11px">mes vs mes anterior</span></div>
-      ${p.countries.map(c=>{const mom=CX.fin.margenMoM(p,c);return `<div style="margin-bottom:12px"><div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:8px">${CX.paisLabel(c)}</div>
-        <div class="flex" style="align-items:flex-end;gap:10px;height:84px">
-        ${mom.map(x=>`<div style="flex:1;text-align:center">
-          <div style="display:flex;flex-direction:column;justify-content:flex-end;height:60px"><div title="margen ${x.margenPct}%" style="height:${Math.round(x.margenPct/50*58)}px;background:var(--green);border-radius:3px 3px 0 0;opacity:.85"></div></div>
-          <div style="font-size:10px;color:var(--t3);margin-top:4px">${x.m}</div>
-          <div style="font-size:11px;font-weight:800;color:var(--t1)">${x.margenPct}%</div>
-          <div style="font-size:9.5px;font-weight:700;color:var(--${x.delta>=0?'green':'red'})">${x.delta>=0?'▲+'+x.delta:'▼'+x.delta}</div></div>`).join('')}
-        </div></div>`;}).join('')}
+      <div class="card-h"><div class="card-t">📈 Comparativo intermensual (margen %)</div><span class="bdg bdg-a" style="font-size:10.5px">Pendiente de fuente</span></div>
+      <div style="padding:14px 4px;font-size:12.5px;color:var(--t3)">No hay una fuente financiera histórica confirmada conectada a este proyecto. Este comparativo se activa cuando exista un cierre financiero validado de al menos dos meses — no se muestran series estimadas o de ejemplo.</div>
     </div>
     <div class="card card-p">
-      <div class="card-h"><div class="card-t">📅 Comparativo interanual (margen %)</div><span class="muted" style="font-size:11px">evolución por año</span></div>
-      ${p.countries.map(c=>{const ya=CX.fin.serieAnual(p,c),cur=p.currency[c];return `<div style="margin-bottom:12px"><div style="font-size:12px;font-weight:700;color:var(--t2);margin-bottom:8px">${CX.paisLabel(c)}</div>
-        ${ya.map((x,i)=>{const prev=i>0?ya[i-1].margenPct:x.margenPct;const d=x.margenPct-prev;return `<div class="between" style="padding:6px 0;border-bottom:1px solid var(--border-2)">
-          <span style="font-size:12.5px;font-weight:600">${x.y}</span>
-          <div class="flex" style="gap:10px"><span style="font-size:11.5px;color:var(--t3)">${cur} ${(x.ingreso/1000).toFixed(0)}k ing.</span>
-          <span style="font-size:12.5px;font-weight:800;color:var(--t1)">${x.margenPct}%</span>
-          <span style="font-size:10.5px;font-weight:700;color:var(--${d>=0?'green':'red'});min-width:34px;text-align:right">${i===0?'—':(d>=0?'▲+'+d:'▼'+d)}</span></div></div>`;}).join('')}</div>`;}).join('')}
-      <div style="margin-top:8px">${ui.aiBox('Margen interanual creciente (31%→36%→40%): la operación gana eficiencia. Vigila que la mezcla de país y los financiamientos no distorsionen el margen real.','Evolución del margen')}</div>
+      <div class="card-h"><div class="card-t">📅 Comparativo interanual (margen %)</div><span class="bdg bdg-a" style="font-size:10.5px">Pendiente de fuente</span></div>
+      <div style="padding:14px 4px;font-size:12.5px;color:var(--t3)">No hay una fuente financiera histórica confirmada conectada a este proyecto. Este comparativo se activa cuando exista un cierre financiero validado de años previos — no se muestran series estimadas o de ejemplo.</div>
     </div>
-  </div>
     <div class="card card-p" id="presCard">
-      <div class="card-h"><div class="card-t">📋 Presupuesto de gastos fijos</div><button class="btn btn-soft btn-sm" id="addPres">＋ Rubro</button></div>
+      <div class="card-h"><div class="card-t">📋 Presupuesto de gastos fijos</div><a href="#" data-nav="financiero-movimientos" class="btn btn-ghost btn-sm" id="presGoMov">Editar en Movimientos →</a></div>
       <div id="presList"></div>
-      <div style="margin-top:10px">${ui.aiBox('Los gastos fijos se presupuestan; los variables (honorarios) van según ejecución. El dashboard compara real vs presupuesto para decidir rentabilidad y honorarios.','Presupuesto vs real')}</div>
+      <div style="margin-top:10px">${ui.aiBox('Los gastos fijos se presupuestan; los variables (honorarios) van según ejecución. El dashboard compara real vs presupuesto para decidir rentabilidad y honorarios. La creación/edición de rubros vive en Movimientos.','Presupuesto vs real — solo análisis')}</div>
     </div>
   </div>
 
@@ -149,9 +135,8 @@ CX.module('financiero', ({data,ui})=>{
       const ks=Object.keys(store); const tot=ks.reduce((a,k)=>a+(+store[k]||0),0);
       list.innerHTML = (ks.length?ks.map(k=>`<div class="between" style="padding:7px 0;border-bottom:1px solid var(--border-2)">
         <span style="font-size:12.5px;color:var(--t1)">${k}</span>
-        <div class="flex" style="gap:8px"><b style="font-size:12.5px">${cur} ${(+store[k]).toLocaleString()}</b><button class="btn btn-ghost btn-sm" data-delp="${k}" style="color:var(--red);padding:2px 7px">✕</button></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:8px 0">Sin rubros aún</div>')
+        <b style="font-size:12.5px">${cur} ${(+store[k]).toLocaleString()}</b></div>`).join(''):'<div class="muted" style="font-size:12px;padding:8px 0">Sin rubros aún — configúralos en Movimientos</div>')
         + `<div class="between" style="padding:9px 0 0;font-weight:700"><span style="font-size:13px">Total fijo</span><b style="color:var(--t1)">${cur} ${tot.toLocaleString()}</b></div>`;
-      list.querySelectorAll('[data-delp]').forEach(b=>b.addEventListener('click',()=>{delete store[b.dataset.delp];draw();}));
     };
     draw();
     // barras de avance de presupuesto con semáforos (real vs presupuestado)
@@ -171,12 +156,8 @@ CX.module('financiero', ({data,ui})=>{
       }).join('') + `<div class="between" style="margin-top:10px;padding-top:9px;border-top:1px solid var(--border-2);font-weight:700"><span style="font-size:12.5px">Total ejecutado</span><span style="font-size:12.5px">${cur} ${fijReal.toLocaleString()} / ${cur} ${(totalPres).toLocaleString()}</span></div>`;
     };
     drawAvance();
-    const ap=document.getElementById('addPres');
-    if(ap)ap.addEventListener('click',()=>ui.modal('Nuevo rubro de gasto fijo',`
-      <div style="margin-bottom:12px"><label class="lbl">Concepto</label><input class="inp" id="prK" placeholder="Ej. Renta oficina"></div>
-      <div style="margin-bottom:16px"><label class="lbl">Monto mensual (${cur})</label><input class="inp" id="prV" type="number" placeholder="0"></div>
-      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="prSave">Agregar</button></div>
-    `,{onMount:(ov,close)=>{ov.querySelector('#prSave').addEventListener('click',()=>{const k=ov.querySelector('#prK').value||'Rubro';store[k]=+ov.querySelector('#prV').value||0;close();draw();ui.toast('Rubro agregado al presupuesto','ok');});}}));
+    const goMov=document.getElementById('presGoMov');
+    if(goMov)goMov.addEventListener('click',(e)=>{e.preventDefault();CX.router.nav('movimientos');});
   },0);
   return html_fin;
 });
@@ -438,7 +419,7 @@ CX.module('movimientos', ({data,ui})=>{
          reviewRequired, esas visitas NO cambiaron de estado ni generaron movimiento; se informa
          aparte y honesto, nunca mezclado con "pagadas". */
       const revMsg=(r.reviewRequired&&r.reviewRequired.length)?(' · '+r.reviewRequired.length+' en revisión requerida (dato incompleto, no pagada(s))'):'';
-      ui.toast(r.pagadas+' liquidaciones marcadas pagadas (preview) · egreso(s) preparados en Movimientos'+revMsg+' · cruce bancario real pendiente backend', r.reviewRequired&&r.reviewRequired.length?'warn':'ok',4800);
+      ui.toast(r.pagadas+' liquidaciones marcadas pagadas (vista previa) · egreso(s) preparados en Movimientos'+revMsg+' · cruce bancario pendiente de validación', r.reviewRequired&&r.reviewRequired.length?'warn':'ok',4800);
     });
     const ih=host.querySelector('#impHist');
     if(ih)ih.addEventListener('click',()=>ui.modal('Importar histórico de movimientos',`
@@ -676,7 +657,7 @@ CX.module('lotes', ({data,ui})=>{
         ${r.visitas.map(v=>`<tr><td><b>${v[0]}</b></td><td style="font-size:12px">${v[1]}</td><td style="text-align:right;font-weight:700">${_m(r.cur,v[2])}</td></tr>`).join('')}
         ${r.visitas.length<r.n?`<tr><td colspan="3" style="font-size:11px;color:var(--t3);text-align:center">+ ${r.n-r.visitas.length} visita(s) más en el lote</td></tr>`:''}
         </tbody></table>
-        <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px">${r.estado!=='Pagado'?`<button class="btn btn-green btn-sm" id="loteMark">Marcar pagado (preview)</button>`:ui.bdg('✓ Egreso preparado · cruce real pendiente backend','g')}<button class="btn btn-ghost btn-sm" id="loteExp">⤓ Exportar</button></div>
+        <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px">${r.estado!=='Pagado'?`<button class="btn btn-green btn-sm" id="loteMark">Marcar pagado (vista previa)</button>`:ui.bdg('✓ Egreso preparado · cruce real pendiente backend','g')}<button class="btn btn-ghost btn-sm" id="loteExp">⤓ Exportar</button></div>
       `,{onMount:(ov,close)=>{ const lm=ov.querySelector('#loteMark'); if(lm)lm.addEventListener('click',()=>{
         if(!CX.permissions.gate('finance.markPaid',CX.permissions.ctx({entityType:'lote_pago',entityId:r.id}),ui)) return;
         close();ui.toast('Lote '+r.id+' marcado pagado (preview) · egreso reflejado en Movimientos · pendiente cruce financiero real','ok',36000);}); ov.querySelector('#loteExp').addEventListener('click',()=>ui.toast('Exportando lote '+r.id+'…','ok')); }});

@@ -1,64 +1,64 @@
 /* ============================================================
-   CXOrbia · Administrabilidad (PREVIEW-ONLY) — Bloque 3
+   CXOrbia · Centro de administración — Bloque 3
    Superficie de configuración versionada por dominio. Refleja qué es
    administrable, versionado y con motivo obligatorio — SIN activar
-   backend ni sobre-escribir en silencio.
+   escritura real ni sobre-escribir en silencio.
    - NDA: usa CX.confidencialidad (versión real, demo local). Editar
      SUBE versión; NO altera las aceptaciones ya presentadas (auditLog).
-   - Planes: usa CX.PLANS (solo lectura + versión preview).
-   Gates apagados · fuente real pendiente · revisión humana · producción NO autorizada.
+   - Planes: usa CX.PLANS (solo lectura + versión vista previa).
+   Sin autorizar · fuente real pendiente · revisión humana · producción NO autorizada.
    ============================================================ */
 window.CX = window.CX || {};
 
 CX.adminCfg = CX.adminCfg || {
-  /* Matriz de administrabilidad por dominio (preview). */
+  /* Matriz de administrabilidad por dominio. */
   matrix(){
     return [
       { dom:'Tenant / Proyecto',      versionado:true,  motivo:true,  gate:'human', nota:'multi-tenant · project config con llaves estables' },
       { dom:'Reglas de negocio',      versionado:true,  motivo:true,  gate:'human', nota:'cambios con versión + motivo · sin overwrite silencioso' },
-      { dom:'Fuente HR / origen',     versionado:true,  motivo:true,  gate:'off',   nota:'assignmentSource · sync a revisión humana' },
+      { dom:'Fuente HR / origen',     versionado:true,  motivo:true,  gate:'off',   nota:'origen de asignación · sincronización a revisión humana' },
       { dom:'Cuestionarios',          versionado:true,  motivo:true,  gate:'off',   nota:'CXOrbia/plataforma externa/externo/general/HR por visita' },
       { dom:'Documentos / Recursos',  versionado:true,  motivo:false, gate:'off',   nota:'versionado de material · sin adjuntos crudos' },
       { dom:'NDA / Confidencialidad', versionado:true,  motivo:true,  gate:'human', nota:'editable/versionado · NO altera aceptaciones presentadas' },
       { dom:'Planes comerciales',     versionado:true,  motivo:true,  gate:'human', nota:'define módulos/temas/integraciones del tenant' },
-      { dom:'Evidencias',             versionado:true,  motivo:false, gate:'off',   nota:'tipos requeridos · Storage pendiente de gate' },
+      { dom:'Evidencias',             versionado:true,  motivo:false, gate:'off',   nota:'tipos requeridos · almacenamiento pendiente de autorización' },
       { dom:'Certificaciones',        versionado:true,  motivo:true,  gate:'off',   nota:'presentadas se conservan · no autoaprobar' },
       { dom:'Academia',               versionado:true,  motivo:false, gate:'preview',nota:'rutas por rol · cursos/manuales/checklists' },
-      { dom:'Notificaciones',         versionado:true,  motivo:false, gate:'off',   nota:'outbox · envío real pendiente de backend' },
+      { dom:'Notificaciones',         versionado:true,  motivo:false, gate:'off',   nota:'mensajería · envío real pendiente de activación' },
       { dom:'Postulaciones',          versionado:true,  motivo:true,  gate:'off',   nota:'sin duplicación · sync bidireccional' },
       { dom:'Shoppers',               versionado:true,  motivo:true,  gate:'off',   nota:'históricos conservados' },
       { dom:'Visitas',                versionado:true,  motivo:true,  gate:'off',   nota:'ciclo de vida honesto (realizada≠pago)' },
       { dom:'Reservas / Asignaciones',versionado:true,  motivo:true,  gate:'human', nota:'reprogramaciones y cancelaciones con motivo' },
       { dom:'Liquidaciones / Pagos',  versionado:true,  motivo:true,  gate:'off',   nota:'elegibilidad→liquidación→lote→pago (pendiente)' },
-      { dom:'Integraciones',          versionado:true,  motivo:true,  gate:'off',   nota:'provider-agnostic · ningún proveedor activo' },
-      { dom:'Roles & Gates',          versionado:true,  motivo:true,  gate:'human', nota:'permisos por rol · gates de activación' },
+      { dom:'Integraciones',          versionado:true,  motivo:true,  gate:'off',   nota:'sin proveedor fijo · ningún proveedor activo' },
+      { dom:'Roles y autorizaciones', versionado:true,  motivo:true,  gate:'human', nota:'permisos por rol · autorizaciones de activación' },
     ];
   },
 };
 
 CX.module('administrabilidad', ({data, ui, role})=>{
   const host = ui.el('div');
-  const GATE = { off:['⛔ Gate apagado','r'], preview:['🧪 Preview','b'], human:['👤 Revisión humana','a'] };
+  const GATE = { off:['⛔ Sin autorizar','r'], preview:['🧪 Vista previa','b'], human:['👤 Revisión humana','a'] };
   const NDA_ROLES = [['shopper','Evaluador'],['admin','Equipo administrativo'],['ops','Equipo operativo'],['coordinador','Coordinador'],['cliente','Cliente / Portal'],['super','Admin principal']];
   let tab = 'matriz';
   let ndaRole = 'shopper';
 
   const banner = `
     <div style="background:var(--amber-bg,#fff7e6);border:1px solid var(--amber,#d97706);border-radius:11px;padding:12px 15px;margin-bottom:16px;font-size:12.5px;color:#8a5b00;line-height:1.6">
-      <b>⚙️ Administrabilidad — PREVIEW.</b> Muestra qué es configurable y versionado por dominio.
+      <b>⚙️ Centro de administración.</b> Muestra qué es configurable y versionado por dominio.
       <b>Los cambios se guardan como versión (demo local), con motivo, sin sobre-escritura silenciosa.</b>
-      Gates apagados · aplicación real pendiente de backend · producción NO autorizada.
+      Acciones reales pendientes de autorización · producción NO autorizada.
     </div>`;
 
-  const tabs = [['matriz','🧭 Matriz de configuración'],['nda','🔒 NDA (versionado)'],['planes','📦 Planes (versionado)'],['reglas','📜 Reglas & gates'],['fasea','🏗️ Fase A & dominios profundos']];
+  const tabs = [['matriz','🧭 Matriz de configuración'],['nda','🔒 NDA (versionado)'],['planes','📦 Planes (versionado)'],['reglas','📜 Reglas y autorizaciones'],['fasea','🏗️ Fase A & dominios profundos']];
 
   const matrizView = ()=>{
     const rows = CX.adminCfg.matrix();
     return `
       <div class="card card-p">
-        <div class="card-t" style="margin-bottom:4px">Matriz de administrabilidad (preview)</div>
-        <p style="font-size:12px;color:var(--t3);margin-bottom:12px">Todo dominio administrable es <b>versionado</b>; los cambios sensibles exigen <b>motivo</b>. Ningún cambio se aplica en producción sin su <b>gate</b>.</p>
-        <table class="tbl"><thead><tr><th>Dominio</th><th>Versionado</th><th>Motivo obligatorio</th><th>Gate</th><th>Nota</th></tr></thead><tbody>
+        <div class="card-t" style="margin-bottom:4px">Matriz de configuración</div>
+        <p style="font-size:12px;color:var(--t3);margin-bottom:12px">Todo dominio administrable es <b>versionado</b>; los cambios sensibles exigen <b>motivo</b>. Ningún cambio se aplica en producción sin autorización.</p>
+        <table class="tbl"><thead><tr><th>Dominio</th><th>Versionado</th><th>Motivo obligatorio</th><th>Autorización</th><th>Nota</th></tr></thead><tbody>
         ${rows.map(r=>`<tr>
           <td><b>${r.dom}</b></td>
           <td>${r.versionado?ui.bdg('sí','g'):ui.bdg('no','n')}</td>
@@ -108,7 +108,7 @@ CX.module('administrabilidad', ({data, ui, role})=>{
     let pv = {}; try{ pv = JSON.parse(localStorage.getItem('cx_plan_ver')||'{}'); }catch(e){}
     return `
       <div class="card card-p">
-        <div class="card-t" style="margin-bottom:4px">Planes comerciales · versionado (preview)</div>
+        <div class="card-t" style="margin-bottom:4px">Planes comerciales · versionado</div>
         <p style="font-size:12px;color:var(--t3);margin-bottom:12px">Cada plan preconfigura módulos, temas e integraciones del tenant. Editar un plan crea una versión con motivo; los tenants existentes no se re-configuran en silencio.</p>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px">
         ${Object.keys(plans).map(id=>{const p=plans[id];const mods=(typeof p.modulos==='string')?p.modulos:(p.modulos||[]).length+' módulos';
@@ -120,7 +120,7 @@ CX.module('administrabilidad', ({data, ui, role})=>{
               <div>Temas: <b>${p.temas==='all'?'todos':(p.temas||[]).length}</b></div>
               <div>Integraciones: <b>${ints}</b></div>
             </div>
-            <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" data-plan="${id}">Editar (preview)</button></div>
+            <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" data-plan="${id}">Editar (vista previa)</button></div>
           </div>`;}).join('')}
         </div>
       </div>`;
@@ -132,12 +132,12 @@ CX.module('administrabilidad', ({data, ui, role})=>{
       { n:'Anti-duplicado de import',    v:2, gate:'off',   nota:'por llave natural · confirmación humana, no visual' },
       { n:'Ruteo de cuestionario',       v:2, gate:'off',   nota:'por visita vs. general · fuente configurable' },
       { n:'Sync de asignaciones',        v:4, gate:'human', nota:'plataforma↔HR · conflictos a revisión' },
-      { n:'Gate de certificación',       v:1, gate:'off',   nota:'no autoaprobar · Gemini con revisión humana' },
+      { n:'Requisito de certificación',  v:1, gate:'off',   nota:'no autoaprobar · asistente de IA con revisión humana' },
     ];
     return `
       <div class="card card-p">
-        <div class="card-t" style="margin-bottom:4px">Reglas versionadas & gates (preview)</div>
-        <p style="font-size:12px;color:var(--t3);margin-bottom:12px">Cada regla tiene versión y motivo de cambio. El <b>gate</b> controla si la regla aplica en runtime real (hoy: apagado / revisión humana).</p>
+        <div class="card-t" style="margin-bottom:4px">Reglas versionadas y autorizaciones</div>
+        <p style="font-size:12px;color:var(--t3);margin-bottom:12px">Cada regla tiene versión y motivo de cambio. La <b>autorización</b> controla si la regla aplica en la operación real (hoy: sin autorizar / revisión humana).</p>
         ${rules.map(r=>`<div class="card" style="padding:12px 14px;margin-bottom:9px">
           <div class="between" style="margin-bottom:5px"><b>${r.n}</b><div class="flex" style="gap:6px">${ui.bdg('v'+r.v,'n')}${ui.bdg(GATE[r.gate][0],GATE[r.gate][1])}</div></div>
           <div style="font-size:12px;color:var(--t2)">${r.nota}</div>
@@ -165,23 +165,23 @@ CX.module('administrabilidad', ({data, ui, role})=>{
       { t:'Bloque 8 · Cuestionarios / certificaciones', items:[
         ['Fuentes de ruteo','CXOrbia · plataforma externa · externo · general · HR-por-visita — configurable por proyecto'],
         ['Certificaciones','presentadas se conservan siempre; no hay auto-aprobación — revisión humana antes de certificar'],
-        ['Gemini (IA)','solo sugiere/asiste evaluación; la decisión final la marca una persona'],
+        ['Asistente de IA','solo sugiere/asiste evaluación; la decisión final la marca una persona'],
       ]},
       { t:'Bloque 9 · Evidencias', items:[
         ['Tipos requeridos','foto de fachada, ticket/factura, evidencia de producto — configurable por cuestionario'],
-        ['Storage','sin adjuntos crudos ni base64 en esta demo; el guardado real de archivos depende de Storage + su gate'],
-        ['Estado honesto','"evidencia preparada (preview)" en vez de "evidencia guardada" mientras el gate esté apagado'],
+        ['Almacenamiento','sin adjuntos crudos ni base64 en esta demo; el guardado real de archivos depende de la autorización de almacenamiento'],
+        ['Estado honesto','"evidencia preparada (vista previa)" en vez de "evidencia guardada" mientras no esté autorizada'],
       ]},
       { t:'Bloque 10 · Datos sensibles (política)', items:[
-        ['Prohibido en preview','DPI, número de cuenta bancaria, NDA firmado con firma real, tokens de API, webhooks o URLs privadas'],
+        ['Prohibido en vista previa','DPI, número de cuenta bancaria, NDA firmado con firma real, o cualquier credencial o URL privada'],
         ['Referencias opacas','todo cruce de datos usa IDs cortos (p.ej. hr#a4f2) en vez de nombres o documentos reales'],
         ['Aplicable a todo el prototipo','esta política rige todos los módulos nuevos — Diagnóstico, Administrabilidad y futuros'],
       ]},
     ];
     return `
       <div class="card card-p">
-        <div class="card-t" style="margin-bottom:4px">Fase A & dominios profundos (preview)</div>
-        <p style="font-size:12px;color:var(--t3);margin-bottom:14px">Detalle honesto de los bloques 5–10 del paquete: qué existe hoy, qué es solo preview, y qué política de datos aplica. Sin datos reales ni activación de backend.</p>
+        <div class="card-t" style="margin-bottom:4px">Fase A & dominios profundos</div>
+        <p style="font-size:12px;color:var(--t3);margin-bottom:14px">Detalle honesto de los bloques 5–10 del paquete: qué existe hoy, qué es solo vista previa, y qué política de datos aplica. Sin datos reales ni activación pendiente.</p>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px">
         ${blocks.map(b=>`<div class="card" style="padding:14px 16px">
           <div style="font-weight:700;font-size:13.5px;margin-bottom:10px">${b.t}</div>
@@ -194,7 +194,7 @@ CX.module('administrabilidad', ({data, ui, role})=>{
   const draw = ()=>{
     const body = tab==='matriz'?matrizView():tab==='nda'?ndaView():tab==='planes'?planesView():tab==='reglas'?reglasView():faseAView();
     host.innerHTML = `
-      ${ui.ph('Administrabilidad', 'Configuración versionada por dominio — preview, sin aplicar en producción')}
+      ${ui.ph('Centro de administración', 'Configuración versionada por dominio — vista previa, sin aplicar en producción')}
       ${banner}
       <div class="flex" style="gap:6px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:10px;flex-wrap:wrap">
         ${tabs.map(([t,l])=>`<button class="btn ${tab===t?'btn-pr':'btn-ghost'} btn-sm" data-tab="${t}">${l}</button>`).join('')}
@@ -208,13 +208,13 @@ CX.module('administrabilidad', ({data, ui, role})=>{
       if(!reason){ui.toast('El motivo del cambio es obligatorio','warn');return;}
       const nuevo=host.querySelector('#ndaTxt').value;
       if(CX.confidencialidad&&CX.confidencialidad.setText){ CX.confidencialidad.setText(ndaRole,nuevo); }
-      ui.toast('NDA guardado como nueva versión (demo local) · aceptaciones previas conservadas · aplicación real pendiente de backend','ok',4200);
+      ui.toast('NDA guardado como nueva versión (demo local) · aceptaciones previas conservadas · aplicación real pendiente de activación','ok',4200);
       draw();
     });
     host.querySelectorAll('[data-plan]').forEach(b=>b.addEventListener('click',()=>{
       let pv={}; try{pv=JSON.parse(localStorage.getItem('cx_plan_ver')||'{}');}catch(e){}
       pv[b.dataset.plan]=(pv[b.dataset.plan]||1)+1; try{localStorage.setItem('cx_plan_ver',JSON.stringify(pv));}catch(e){}
-      ui.toast('Nueva versión del plan registrada (preview) · tenants existentes no se reconfiguran en silencio · aplicación real pendiente de backend','ok',4200);
+      ui.toast('Nueva versión del plan registrada (vista previa) · tenants existentes no se reconfiguran en silencio · aplicación real pendiente de activación','ok',4200);
       draw();
     }));
   };

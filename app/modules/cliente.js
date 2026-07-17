@@ -37,7 +37,6 @@ CX.cliUI = {
       ${projSel}
       <span style="flex:1"></span>
       <span style="font-size:11.5px;color:var(--t3)">Programa: <b style="color:var(--t1)">${p.name}</b> · permisos y datos acotados por rol</span>
-      ${(()=>{const c=CX.data.ctx?CX.data.ctx():null;return c?`<span style="font-size:10px;color:var(--t3)" title="Contrato de contexto único">tenant ${c.tenantId}</span>`:'';})()}
     </div>`;
   },
   wirePersona(){
@@ -277,7 +276,7 @@ CX.module('cli_dashboard', ({ui})=>{
 
   if(!hasBranches){
     return `
-      ${ui.ph('Panorama de '+p.name, 'Resultados de la marca · score ponderado por programa')}
+      ${ui.ph('Panorama de '+CX.data.programBase(p), 'Resultados de la marca · score ponderado por programa · periodo '+(p.periodo||p.ronda||p.name))}
       ${CX.cliUI.personaBarHTML()}
       <div class="card card-p">${CX.ui.empty('🏬','Todavía no hay sucursales ni visitas registradas para este proyecto. En cuanto haya datos de operación (o carga de fuente), el panorama se completa aquí — sin cifras inventadas mientras tanto.')}</div>`;
   }
@@ -289,7 +288,7 @@ CX.module('cli_dashboard', ({ui})=>{
         ${ui.aiBox('La brecha en "'+R.peorSeccion.sec.name+'" arrastra el score. Sugiero un plan de acción + capacitación dirigida y reevaluar en 30 días.','Recomendación')}
       ` : CX.ui.empty('📊','Todavía no hay suficientes cuestionarios reales para calcular fortalezas y brechas por sección.');
   return `
-    ${ui.ph('Panorama de '+p.name, 'Resultados de la marca · score ponderado por programa')}
+    ${ui.ph('Panorama de '+CX.data.programBase(p), 'Resultados de la marca · score ponderado por programa · periodo '+(p.periodo||p.ronda||p.name))}
     <div class="between" style="margin-bottom:16px"><div></div><div class="flex" style="gap:8px">
       <button class="btn btn-ghost btn-sm" id="cliTabBtn">📢 Novedades</button>
       <button class="btn btn-soft btn-sm" id="cliSopBtn">🎫 Solicitar soporte</button>

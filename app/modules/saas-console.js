@@ -26,7 +26,7 @@ CX.module('saas', ({data, ui})=>{
     host.innerHTML=`
       ${ui.ph('Consola SaaS · Multi-tenant', 'CXOrbia como plataforma versionada · tenants, planes, módulos, países, permisos, feature flags y releases centralizados')}
       <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
-        <div style="font-size:12.5px;color:var(--brand-dark)"><b>Vista de prototipo.</b> La gestión real de tenants, activación de módulos y releases se ejecuta en el backend. Aquí se visualiza el modelo comercializable.</div>
+        <div style="font-size:12.5px;color:var(--brand-dark)"><b>Vista de prototipo.</b> La gestión real de tenants, activación de módulos y releases se ejecuta en el sistema central. Aquí se visualiza el modelo comercializable.</div>
       </div>
       <div class="grid g4" style="margin-bottom:16px">
         ${ui.kpi('Tenants',tenants.length,'b')}
@@ -54,7 +54,7 @@ CX.module('saas', ({data, ui})=>{
           <tr><td><b>V71</b></td><td>2026-07-03</td><td>Auditoría profunda · fichas ampliadas</td><td><span class="bdg bdg-a">Interno (sin deploy)</span></td></tr>
           <tr><td><b>V66</b></td><td>2026-07-02</td><td>Roles/alcance · finanzas · report builder</td><td><span class="bdg bdg-a">Interno (sin deploy)</span></td></tr>
         </tbody></table>
-        <div style="margin-top:8px;font-size:10.5px;color:var(--t3)">Prototipo interno sin deploy a producción. El despliegue centralizado real por tenant lo ejecuta el backend. Trazabilidad por versión en app/docs/CAMBIOS-PROTOTIPO.md.</div>
+        <div style="margin-top:8px;font-size:10.5px;color:var(--t3)">Prototipo interno sin publicación a producción. La puesta en marcha centralizada por tenant la ejecuta el sistema central. Trazabilidad por versión en app/docs/CAMBIOS-PROTOTIPO.md.</div>
       </div>`;
 
     host.querySelector('#saasNew').addEventListener('click',()=>ui.modal('＋ Nuevo tenant',`
@@ -80,7 +80,7 @@ CX.module('saas', ({data, ui})=>{
         <div class="card-t" style="font-size:12px;margin-bottom:6px">Feature flags</div>
         <div class="flex wrap" style="gap:8px;margin-bottom:12px">${FLAGS.map(f=>`<label class="flex" style="gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" class="tflag" data-f="${f[0]}" ${t.flags[f[0]]?'checked':''}> ${f[1]}</label>`).join('')}</div>
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="tSave">Guardar configuración</button></div>
-        <div style="font-size:10.5px;color:var(--t3);margin-top:8px">🔒 La activación real por tenant se aplica en el backend. Aquí se define el modelo.</div>
+        <div style="font-size:10.5px;color:var(--t3);margin-top:8px">🔒 La activación real por tenant se aplica en el sistema central. Aquí se define el modelo.</div>
       `,{onMount:(ov,close)=>ov.querySelector('#tSave').addEventListener('click',()=>{
         ov.querySelectorAll('.tmod').forEach(cb=>t.modulos[cb.dataset.m]=cb.checked);
         ov.querySelectorAll('.tflag').forEach(cb=>t.flags[cb.dataset.f]=cb.checked);

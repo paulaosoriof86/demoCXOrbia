@@ -112,7 +112,7 @@ window.CX = window.CX || {};
     },
 
     isBlocked(){ return this.status==='blocked' || this.status==='error'; },
-    label(){ return {demo:'Demo',source_safe_preview:'Source-safe (preview)',connected:'Conectado'}[this.mode]||this.mode; },
+    label(){ return {demo:'Demo',source_safe_preview:'Source-safe (preview)',connected:'Conectado'}[this.mode]||'No disponible'; },
     statusLabel(){ return {ready:'✅ Listo',loading:'⏳ Cargando',blocked:'⛔ Bloqueado',degraded:'⚠️ Degradado',error:'❌ Error'}[this.status]||this.status; },
     /* color asociado al estado, para el punto de color del badge compacto */
     color(){ return {ready:'#0e9c6e',loading:'#2a6fdb',blocked:'#d97706',degraded:'#d97706',error:'#dc2626'}[this.status]||'#94a3b8'; },

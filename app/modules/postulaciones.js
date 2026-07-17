@@ -2,8 +2,12 @@
 CX.module('postulaciones', ({data,ui})=>{
   const p=data.period(), posts=data._posts.filter(x=>data.inScope(x.pais));
   const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
-  const c=(s)=>posts.filter(x=>x.estado===s).length;
-  const reprog=posts.filter(x=>x.reprog);
+  /* R19 P0-1: los KPIs superiores deben coincidir con el periodo activo por defecto (mismo
+     criterio que el listado abajo) — nunca contar postulaciones de otros periodos salvo que se
+     pida explícitamente "Ver históricas". */
+  const activePosts=posts.filter(x=>x.projectId===data.currentPeriodId);
+  const c=(s)=>activePosts.filter(x=>x.estado===s).length;
+  const reprog=activePosts.filter(x=>x.reprog);
   const agendadas=data.visitas().filter(v=>v.agendada&&v.shopperId);
 
   /* agrupar por sucursal */
@@ -39,7 +43,13 @@ CX.module('postulaciones', ({data,ui})=>{
     </div>`;
   };
 
-  const groupHTML=Object.keys(groups).slice(0,8).map(suc=>{
+  /* R19 P0-1 fix (verificador): el cap .slice(0,8) escondía SIEMPRE los grupos de sucursal más
+     allá del octavo, sin importar periodo/filtro/"Ver históricas" — 9 postulaciones reales
+     (incluidas 'pendiente') quedaban inalcanzables aunque el KPI "Todas" ya mostrara el conteo
+     correcto del periodo activo. Se quita el cap: search() ya oculta grupos sin tarjetas
+     visibles, así que renderizar TODOS los grupos es seguro y cada postulación del periodo
+     activo queda accesible. */
+  const groupHTML=Object.keys(groups).map(suc=>{
     const items=groups[suc];const pend=items.filter(x=>x.estado==='pendiente').length;
     return `<div class="card card-p" style="margin-bottom:12px">
       <div class="between" style="margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--brand-dark);text-transform:uppercase;letter-spacing:.5px">📍 ${suc}</div>
@@ -74,7 +84,7 @@ CX.module('postulaciones', ({data,ui})=>{
     <div data-k="pend" style="cursor:pointer">${ui.kpi('Pendientes',c('pendiente'),'a')}</div>
     <div data-k="reprog" style="cursor:pointer">${ui.kpi('Reprogramaciones',reprog.length,'r')}</div>
     <div data-k="aprob" style="cursor:pointer">${ui.kpi('Aprobadas',c('aprobada'),'g')}</div>
-    <div data-k="todas" style="cursor:pointer">${ui.kpi('Todas',posts.length,'b')}</div>
+    <div data-k="todas" style="cursor:pointer">${ui.kpi('Todas',activePosts.length,'b')}</div>
     <div data-k="agenda" style="cursor:pointer">${ui.kpi('Agendamientos',agendadas.length,'n')}</div>
   </div>
 
@@ -93,10 +103,10 @@ CX.module('postulaciones', ({data,ui})=>{
     const poList=(title,arr)=>ui.modal(title+' ('+arr.length+')', arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Estado</th><th>Honorario</th><th></th></tr></thead><tbody>${arr.map(x=>`<tr><td><b style="font-size:12.5px">${x.shopper}</b><div style="font-size:10px;color:var(--t3)">${x.shopperCode}</div></td><td style="font-size:12px">${x.sucursal}<div style="font-size:10px;color:var(--t3)">${CX.paisFlag(x.pais)} ${x.ciudad}</div></td><td>${estTag(x.estado)}</td><td style="font-size:12px;color:var(--green)">${x.currency} ${x.honorario}</td><td style="text-align:right">${x.id?`<button class="btn btn-ghost btn-sm poRowGest" data-pid="${x.id}" style="padding:2px 9px;font-size:11px">Gestionar →</button>`:''}</td></tr>`).join('')}</tbody></table>`:ui.empty('📭','Sin elementos en esta categoría.'),
       {onMount:(ov,close)=>ov.querySelectorAll('.poRowGest').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.pid);if(x){close();postDetalle(x);}}))});
     const poKp={
-      pend:['Postulaciones pendientes',posts.filter(x=>x.estado==='pendiente')],
+      pend:['Postulaciones pendientes',activePosts.filter(x=>x.estado==='pendiente')],
       reprog:['Reprogramaciones',reprog],
-      aprob:['Postulaciones aprobadas',posts.filter(x=>x.estado==='aprobada')],
-      todas:['Todas las postulaciones',posts],
+      aprob:['Postulaciones aprobadas',activePosts.filter(x=>x.estado==='aprobada')],
+      todas:['Todas las postulaciones',activePosts],
       agenda:['Agendamientos autorizados',agendadas.map(v=>({shopper:v.shopper,shopperCode:v.shopperCode||'',sucursal:v.sucursal,ciudad:v.ciudad,pais:v.pais,estado:v.estado,currency:v.currency,honorario:v.honorario}))],
     };
     document.querySelectorAll('#poKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=poKp[el.dataset.k];poList(d[0],d[1]);}));
@@ -125,7 +135,7 @@ CX.module('postulaciones', ({data,ui})=>{
         <div class="flex" style="justify-content:flex-end;gap:8px"><button class="btn btn-soft btn-sm" id="pmWa">📲 WhatsApp</button><button class="btn btn-pr btn-sm" id="pmGo">Ver perfil completo →</button></div>
       `,{onMount:(ov,close)=>{
         ov.querySelector('#pmGo').addEventListener('click',()=>{close();CX.session._focusShopper=s.id;CX.router.nav('shoppers');});
-        ov.querySelector('#pmWa').addEventListener('click',()=>{close();ui.toast('WhatsApp a '+s.nombre+' preparado (preview) · envío real pendiente backend/Make','ok');});
+        ov.querySelector('#pmWa').addEventListener('click',()=>{close();ui.toast('WhatsApp a '+s.nombre+' preparado (vista previa) · envío pendiente de activación','ok');});
         const histModal=(filter,title)=>{ const arr=hist.filter(filter);
           ui.modal(title+' · '+s.nombre, arr.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>${arr.map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.escenario||''}</td><td style="font-size:12px">${v.realizada||v.agendada||'—'}</td><td>${ui.estadoBadge(v.estado)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🗒️','Sin visitas en esta categoría.')); };
         ov.querySelectorAll('[data-ph]').forEach(el=>el.addEventListener('click',()=>{const k=el.dataset.ph; if(k==='all')histModal(()=>true,'Historial completo'); else if(k==='real')histModal(v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Realizadas'); else histModal(v=>v.estado==='liquidada','Liquidadas');}));
@@ -164,12 +174,18 @@ CX.module('postulaciones', ({data,ui})=>{
     }));
     document.querySelectorAll('[data-sb]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.sb,'⏸ Standby','amber','Postulación en standby')));
     document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.rj);if(!CX.permissions.gate('postulacion.reject',{projectId:x&&x.projectId,pais:x&&x.pais},ui))return;act(b.dataset.rj,'✕ Rechazada','red','Postulación rechazada · notificación preparada · pendiente confirmación');}));
-    const search=()=>{const q=(document.getElementById('pSearch').value||'').toLowerCase(),fpr=document.getElementById('pProj').value,fp=document.getElementById('pPais').value,fe=document.getElementById('pEst').value;
+    const search=()=>{const q=(document.getElementById('pSearch').value||'').toLowerCase(),fpr=document.getElementById('pProj').value,fp=document.getElementById('pPais').value,fe=document.getElementById('pEst').value,hist=document.getElementById('pHist').checked;
       document.querySelectorAll('#pGroups [data-pid]').forEach(el=>{const x=posts.find(z=>z.id===el.dataset.pid);
-        const ok=(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});
+        const ok=(hist||x.projectId===data.currentPeriodId)&&(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});
       // ocultar grupos sin tarjetas visibles
       document.querySelectorAll('#pGroups .card').forEach(g=>{const any=[...g.querySelectorAll('[data-pid]')].some(el=>el.style.display!=='none');g.style.display=any?'':'none';});};
-    ['pSearch','pProj','pPais','pEst'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',search);});
+    ['pSearch','pProj','pPais','pEst','pHist'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',search);});
+    /* R19 P0-1 (20260715): "Postulaciones solo debe mostrar el periodo activo" — el checkbox
+       "Ver históricas" ya existía en el markup pero nunca estaba conectado a ningún filtro (todas
+       las postulaciones de TODOS los periodos se listaban siempre). Ahora search() oculta,
+       DESDE EL PRIMER RENDER, cualquier postulación de un periodo distinto al activo salvo que el
+       usuario marque "Ver históricas" explícitamente. */
+    search();
     /* botones de reprogramación (revisar / autorizar nueva fecha / conservar anterior) */
     document.querySelectorAll('[data-revpost]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.revpost);ui.modal('Revisar solicitud de reprogramación · '+(x&&x.shopper||''),`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Fecha actual: <b>${x&&x.fechaActual||'—'}</b> · Fecha propuesta: <b>${x&&x.fechaProp||'—'}</b></p><div style="background:var(--amber-bg);border-radius:9px;padding:9px 12px;font-size:12px;color:#8a5b00">Usa "Autorizar nueva fecha" para aprobar la reprogramación o "Conservar anterior" para mantener la fecha actual.</div>`);}));
     document.querySelectorAll('[data-authfecha]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.authfecha);if(x){const v=data._visitas.find(z=>z.id===x.visitaId);if(v&&x.fechaProp){v.agendada=x.fechaProp;x.reprog=false;}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_aprobada',icon:'✅',tono:'g',titulo:'Reprogramación aprobada',txt:'Tu visita en '+(x.sucursal||'')+' fue reprogramada a '+(x.fechaProp||'nueva fecha'),nav:'misvisitas'});CX.automations&&CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal,fecha:x.fechaProp});CX.bus&&CX.bus.emit('visit-flow');}ui.toast('Nueva fecha autorizada · notificación preparada · HR sync pendiente backend','ok',3600);}));
@@ -217,7 +233,7 @@ CX.module('postulaciones', ({data,ui})=>{
     /* asignar visita manual — con búsqueda y opción de crear shopper en el momento */
     const am=document.getElementById('asignManual');
     const shr=document.getElementById('syncHR');
-    if(shr)shr.addEventListener('click',()=>ui.toast('Lectura de HR preparada · el sync real (lectura/escritura) se ejecuta por backend cuando el gate esté activo (pendiente backend)','',4200));
+    if(shr)shr.addEventListener('click',()=>ui.toast('Lectura de HR preparada · la sincronización real (lectura/escritura) queda pendiente de activación','',4200));
     if(am)am.addEventListener('click',()=>{
       const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
       const disp=data._visitas.filter(v=>v.estado==='disponible'||!v.shopperId);
@@ -257,7 +273,7 @@ CX.module('postulaciones', ({data,ui})=>{
           const v=data.assignVisit&&data.assignVisit(vid,sid);
           CX.hr&&CX.hr.writeBack&&CX.hr.writeBack(p,v);
           CX.notif&&CX.notif.push({to:'admin',tipo:'asignacion',icon:'📌',tono:'g',titulo:'Visita asignada manual',txt:(v?v.sucursal:'')+' → '+(s?s.nombre:''),nav:'postulaciones'});
-          close(); ui.toast('Visita asignada a '+(s?s.nombre:'')+(nw.checked?' (nuevo · perfil incompleto)':'')+' · se reflejará en HR cuando el sync esté activo (pendiente backend) · por '+gestor(),'ok',4400);
+          close(); ui.toast('Visita asignada a '+(s?s.nombre:'')+(nw.checked?' (nuevo · perfil incompleto)':'')+' · se reflejará en HR cuando la sincronización esté activa · por '+gestor(),'ok',4400);
         });
       }});
     });
@@ -284,7 +300,7 @@ CX.module('postulaciones', ({data,ui})=>{
           const map={confirmar:['📅','El equipo pide confirmar fecha','confirmar_fecha'],cambio:['📅','El equipo pide cambio de fecha','confirmar_fecha'],reprog:['🔄','El equipo solicita reprogramación',''],agendar:['📅','Recordatorio: agenda tu visita','']};
           const m=map[tipo];
           CX.notif.push({to:'shopper',tipo,icon:m[0],tono:'a',titulo:m[1],txt:sh+' · responde desde Mis Visitas',nav:'misvisitas',accion:m[2]||undefined});
-          close();ui.toast('Solicitud preparada para '+sh+' · visible en Mi Día + Tablón · WhatsApp pendiente de envío real (backend)','ok',3500);
+          close();ui.toast('Solicitud preparada para '+sh+' · visible en Mi Día + Tablón · WhatsApp pendiente de envío','ok',3500);
         });
       }});
     });

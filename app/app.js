@@ -41,17 +41,12 @@ CX.setupPWA = function(){
   const isIOS=/iPad|iPhone|iPod/.test(ua)&&!window.MSStream;
   const isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
   if(isStandalone) return; /* ya está instalada */
-
-  /* Chrome/Edge/Android: capturar el evento y disparar el prompt automáticamente */
-  window.addEventListener('beforeinstallprompt',(e)=>{
-    e.preventDefault(); CX._deferredPrompt=e;
-    /* lanza el prompt apenas el usuario interactúe (requisito de los navegadores) */
-    const fire=()=>{ if(CX._deferredPrompt){ CX._deferredPrompt.prompt(); CX._deferredPrompt=null; }
-      document.removeEventListener('click',fire); document.removeEventListener('keydown',fire); };
-    if(!sessionStorage.getItem('cx_pwa_shown')){ sessionStorage.setItem('cx_pwa_shown','1');
-      document.addEventListener('click',fire,{once:false}); document.addEventListener('keydown',fire,{once:false}); }
-  });
-  /* iOS Safari no soporta prompt programático: mostrar una sola guía discreta */
+  /* R19 crítico 3.A (20260716): app.js YA NO escucha beforeinstallprompt — antes había DOS
+     propietarios del evento (este archivo y core/pwa.js), lo que podía disparar prompt() dos
+     veces. core/pwa.js (CX.pwa.init/_armFirstInteraction) es ahora el ÚNICO dueño: captura el
+     evento, arma un listener de una sola vez para la primera interacción elegible y llama
+     prompt() exactamente una vez. Aquí solo queda la guía discreta de iOS (Safari nunca expone
+     el evento, así que no puede haber doble disparo). */
   if(isIOS && !sessionStorage.getItem('cx_pwa_ios')){
     sessionStorage.setItem('cx_pwa_ios','1');
     setTimeout(()=>{ if(CX.ui&&CX.ui.toast) CX.ui.toast('📲 Para instalar la app: Compartir → “Agregar a inicio”','',6000); },2500);
@@ -280,7 +275,7 @@ CX.app = {
       const lbl={ops:'Equipo Operativo',coordinador:'Coordinador / Representante',aliado:'Aliado / Franquiciado'}[role]||role;
       CX.session.role='admin'; /* la vista admin es la base; el scope real se aplica por matriz */
       CX.session.testRole=role; /* rol bajo prueba */
-      CX.session.user={name:lbl+' (prueba)', role:role, org:'Tu Consultora', scopeRole:role, scopePaises:(scopePaises&&scopePaises.length)?scopePaises:undefined};
+      CX.session.user={name:lbl, role:role, org:'Tu Consultora', scopeRole:role, scopePaises:(scopePaises&&scopePaises.length)?scopePaises:undefined};
     }
     CX.session.view=null;
     CX.session.save();

@@ -190,7 +190,13 @@ CX.MODULES = {
   proyectos:     { icon:'🗂️', label:'Proyectos',            roles:['admin'],           status:'ready' },
   periodos:      { icon:'🗓️', label:'Periodos',             roles:['admin'],           status:'ready' },
   historico:     { icon:'📜', label:'Histórico',            roles:['admin'],           status:'ready' },
-  visitas:       { icon:'📋', label:'Visitas Disponibles',  roles:['admin','shopper'], status:'ready' },
+  /* R19 Gate 5 (20260715): un solo label estático se usaba para dos vistas distintas de este
+     mismo id — la del shopper SÍ lista solo postulables (oportunidades), pero la del admin es la
+     base operativa completa (todos los estados, edita/asigna/publica) — llamarla "Visitas
+     Disponibles" para el admin era engañoso (evidencia: título interno ya decía "Visitas", el nav
+     decía "Visitas Disponibles"). label ahora puede ser función (role)=>string; ver uso en
+     router.js (nav y breadcrumb). */
+  visitas:       { icon:'📋', label:(role)=>role==='shopper'?'Visitas Disponibles':'Visitas',  roles:['admin','shopper'], status:'ready' },
   postulaciones: { icon:'📩', label:'Postulaciones',        roles:['admin'], badge:true, status:'ready' },
   reservas:      { icon:'🙋', label:'Reservas & Asignación', roles:['admin','shopper'], status:'ready' },
   misvisitas:    { icon:'🧭', label:'Mis Visitas',          roles:['shopper'],         status:'ready' },
@@ -213,8 +219,8 @@ CX.MODULES = {
   cuestionarios: { icon:'🧩', label:'Cuestionarios',        roles:['admin'],           status:'ready' },
   usuarios:      { icon:'🔐', label:'Usuarios & Permisos',  roles:['admin'],           status:'ready' },
   config:        { icon:'⚙️', label:'Configuración',         roles:['admin'],           status:'ready' },
-  saas:          { icon:'🌐', label:'Consola SaaS',         roles:['admin'],           status:'ready' },
-  diagnostico:   { icon:'🧪', label:'Diagnóstico & Readiness',roles:['admin'],          status:'ready' },
+  saas:          { icon:'🌐', label:'Consola SaaS',         roles:['admin'],           status:'ready', superOnly:true },
+  diagnostico:   { icon:'🧪', label:'Diagnóstico & Readiness',roles:['admin'],          status:'ready', superOnly:true },
   administrabilidad: { icon:'⚙️', label:'Administrabilidad',   roles:['admin'],           status:'ready' },
   automatizaciones: { icon:'⚡', label:'Automatizaciones',     roles:['admin'],           status:'ready' },
   integraciones: { icon:'🔌', label:'Integraciones & Add-ons',roles:['admin'],           status:'ready' },
@@ -244,7 +250,7 @@ CX.NAV = {
     { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte','novedades'] },
     { sec:'Finanzas',  items:['financiero','movimientos','liquidaciones','lotes'] },
     { sec:'Comercial', items:['costos','crm','marketing'] },
-    { sec:'Configuración', items:['config','saas','diagnostico','administrabilidad','usuarios','automatizaciones','integraciones','correo','marca'] },
+    { sec:'Configuración', items:['config','administrabilidad','usuarios','automatizaciones','integraciones','correo','marca'] },
   ],
   shopper: [
     { sec:'Operación', items:['midia','miperfil','visitas','reservas','misvisitas'] },

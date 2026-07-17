@@ -86,7 +86,7 @@ CX.module('proyectos', ({data,ui})=>{
           <div><label class="lbl">Origen del cuestionario</label><select class="sel" id="cf_cueOrigen"><option value="interna" ${((pr.cuestionario||{}).modo||'interna')==='interna'?'selected':''}>Interno (plataforma)</option><option value="externo_general" ${((pr.cuestionario||{}).modo)==='externo_general'?'selected':''}>Externo · link general</option><option value="externo_visita" ${((pr.cuestionario||{}).modo)==='externo_visita'?'selected':''}>Externo · link por visita (desde HR)</option></select></div>
           <div><label class="lbl">Etiqueta cuestionario externo</label><input class="inp" id="cf_cueEtiq" value="${((pr.cuestionario||{}).etiqueta||'').replace(/"/g,'&quot;')}" placeholder="Ej. Formulario del cliente"></div>
         </div>
-        <div style="font-size:10.5px;color:var(--t3);margin-top:5px">Las URLs privadas de HR/cuestionario se registran de forma segura por backend (Fuente de HR); aquí solo etiqueta y origen.</div>
+        <div style="font-size:10.5px;color:var(--t3);margin-top:5px">Las URLs privadas de HR/cuestionario se registran de forma segura por el sistema central (Fuente de HR); aquí solo etiqueta y origen.</div>
         <div style="margin-top:12px"><b style="font-size:12px">📲 Contactos WhatsApp por tipo de gestión</b></div>
         <div class="grid g2" style="gap:8px 12px;margin-top:6px">
           ${[['evidencias','Evidencias'],['soporte','Soporte'],['cuestionario','Cuestionario'],['reprog','Reprogramación/cancelación'],['pagos','Pagos/liquidaciones'],['coordinacion','Coordinación general']].map(([k,l])=>`<div><label class="lbl">${l}</label><input class="inp cf_contacto" data-ck="${k}" value="${((pr.contactos||{})[k]||'').replace(/"/g,'&quot;')}" placeholder="+502…"></div>`).join('')}
@@ -123,7 +123,7 @@ CX.module('proyectos', ({data,ui})=>{
            persiste el cambio para que sobreviva un reload — nunca reescribe los 3 seeds de ejemplo. */
         data._saveCustomProjects&&data._saveCustomProjects();
         CX.bus&&CX.bus.emit('visit-flow'); close(); CX.router.nav('proyectos');
-        ui.toast('Configuración de '+pr.name+' actualizada'+(['retail','banca','food'].includes(pr.id)?' (seed de ejemplo · no persiste tras recargar)':' · guardado local preview · backend pendiente'),'ok',3600); });
+        ui.toast('Configuración de '+pr.name+' actualizada'+(['retail','banca','food'].includes(pr.id)?' (seed de ejemplo · no persiste tras recargar)':' · guardado localmente · vista previa pendiente de activación'),'ok',3600); });
       }});
     };
     const nb=document.getElementById('newProj');

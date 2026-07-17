@@ -1,0 +1,21 @@
+# CHECKLIST V121
+
+- [x] nombre del ZIP y source lock dicen V121 (consistentes).
+- [x] JS modificados pasan chequeo de sintaxis (5 archivos).
+- [x] manifest regenerado, 0 diffs, aggregate coincide.
+- [x] texto falso de Academia eliminado (verificado con búsqueda literal exacta).
+- [x] proyecto y periodo siguen separados (sin regresión).
+- [x] cero escrituras directas fuera de core/data.js (sin regresión).
+- [x] cero filtros de periodo con currentProjectId (sin regresión).
+- [x] ctx() tiene un consumidor real (core/router.js).
+- [x] sourceContract() tiene un consumidor real (modules/hr-source.js).
+- [x] visitContract() tiene un consumidor real (modules/misvisitas.js).
+- [x] dry-run separado pagos (nuevo tab Importador).
+- [x] dry-run separado certificaciones (nuevo tab Importador).
+- [x] dry-run separado documentos (nuevo tab Importador).
+- [ ] NO_ATENDIDO — migración transversal completa a los 3 helpers en todos los módulos priorizados.
+- [ ] NO_ATENDIDO — CRM/documentos/configuración con matriz PASS/PARCIAL/FAIL.
+- [ ] NO_ATENDIDO — Academia: cobertura transversal comprobada (rutas por rol, notificaciones, checklist).
+- [x] cero fixtures fuera de demo (sin regresión, ya verificado en V117).
+- [x] smoke Admin/Shopper/Cliente: 48/48 módulos, 0 errores.
+- [ ] NO_ATENDIDO — smoke visual 360/390/412/tablet/desktop de esta ronda específica (no se tomaron capturas).

@@ -261,7 +261,7 @@ CX.module('usuarios', ({ui})=>{
       <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Rol</th>${MODS.map(m=>`<th style="text-align:center">${m[0]}</th>`).join('')}</tr></thead><tbody>
       ${roles.map(r=>`<tr><td>${ui.bdg(r.label,getColor(r.id))}</td>${MODS.map(m=>`<td style="text-align:center"><input type="checkbox" class="permChk" data-role="${r.id}" data-mod="${m[1]}" ${PERM[r.id]&&PERM[r.id].includes(m[1])?'checked':''} ${r.id==='super'?'disabled title="Super siempre tiene acceso total"':''}></td>`).join('')}</tr>`).join('')}
       </tbody></table></div>
-      <div style="margin-top:14px">${ui.aiBox('Marca/desmarca el acceso de cada rol a cada módulo. Los roles personalizados permiten segmentar por área: Coordinador, Comercial, Revisor, etc. En producción también se valida en el backend.','Gobierno · autoadministrable')}</div>
+      <div style="margin-top:14px">${ui.aiBox('Marca/desmarca el acceso de cada rol a cada módulo. Los roles personalizados permiten segmentar por área: Coordinador, Comercial, Revisor, etc. En producción también se valida en el sistema central.','Gobierno · autoadministrable')}</div>
     </div>
     <div class="card card-p" style="margin-top:16px">
       <div class="between" style="margin-bottom:12px"><div class="card-t">Acciones sensibles <span class="muted" style="font-weight:500;font-size:11px">· quién puede ejecutar cada acción</span></div><span class="bdg bdg-g" id="actSaved" style="display:none">✓ Guardado</span></div>
@@ -306,7 +306,7 @@ CX.module('usuarios', ({ui})=>{
         });
         ov.querySelector('#euInvite').addEventListener('click',()=>{
           if(CX.automations&&CX.automations.fire)CX.automations.fire('invitacion_usuario',{nombre:u.name,email:u.email,rol:u.rol});
-          ui.toast('Invitación preparada para '+(u.email||u.name)+' · se enviará por correo/WA cuando el gate esté activo (pendiente backend)','ok',4000);
+          ui.toast('Invitación preparada para '+(u.email||u.name)+' · se enviará por correo/WA cuando la activación esté lista','ok',4000);
         });
       }});
     }));
@@ -341,7 +341,7 @@ CX.module('usuarios', ({ui})=>{
             cliente:(ov.querySelector('#nuCliente').value||'').trim(), activo:true,
           });
           _uSave(st);close();draw();
-          ui.toast('Invitación preparada (preview) · envío real pendiente backend/Auth/outbox','ok',4000);
+          ui.toast('Invitación preparada (vista previa) · envío pendiente de activación','ok',4000);
         });}}));
     /* Nuevo rol personalizado */
     host.querySelector('#addRol')?.addEventListener('click',()=>ui.modal('🎨 Crear rol personalizado',`
@@ -445,7 +445,7 @@ CX.module('config', ({data,ui})=>{
     <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
       <div style="font-size:13px;color:var(--brand-dark)"><b>✅ Toda la plataforma es autoadministrable.</b> Cada área de abajo se edita desde la interfaz, sin tocar código. Haz clic para abrir cada gestor.</div>
     </div>
-    ${(()=>{const sc=CX.dataSource&&CX.dataSource.sourceContract?CX.dataSource.sourceContract():null;if(!sc)return'';return `<div class="card card-p" style="margin-bottom:14px"><div class="card-t" style="margin-bottom:6px">Fuente de datos (contrato)</div><div class="flex wrap" style="gap:6px">${ui.bdg('modo: '+sc.sourceReadMode,'n')}${ui.bdg('sync activo: '+(sc.runtimeSyncActive?'sí':'no'),sc.runtimeSyncActive?'g':'n')}${sc.warnings.length?ui.bdg(sc.warnings.length+' advertencias','a'):''}${sc.blockers.length?ui.bdg(sc.blockers.length+' bloqueos','r'):''}</div></div>`;})()}
+    ${(()=>{const sc=CX.dataSource&&CX.dataSource.sourceContract?CX.dataSource.sourceContract():null;if(!sc)return'';const modeLbl={demo:'Demo',source_safe_preview:'Vista previa',connected:'Conectado'}[sc.sourceReadMode]||'No disponible';return `<div class="card card-p" style="margin-bottom:14px"><div class="card-t" style="margin-bottom:6px">Estado de tu fuente de datos</div><div class="flex wrap" style="gap:6px">${ui.bdg('modo: '+modeLbl,'n')}${ui.bdg('sincronización activa: '+(sc.runtimeSyncActive?'sí':'no'),sc.runtimeSyncActive?'g':'n')}${sc.warnings.length?ui.bdg(sc.warnings.length+' advertencias','a'):''}${sc.blockers.length?ui.bdg(sc.blockers.length+' bloqueos','r'):''}</div></div>`;})()}
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
       ${areas.map(a=>`<button class="card hov centro-area" ${a.nav?`data-nav="${a.nav}"`:''} ${a.tab?`data-tab2="${a.tab}"`:''} style="padding:16px;cursor:pointer;text-align:left;border:1px solid var(--border);background:#fff;display:flex;flex-direction:column;gap:6px">
         <div class="between"><div style="font-size:24px">${a.ic}</div><span class="bdg bdg-n" style="font-size:9.5px">${a.tag}</span></div>

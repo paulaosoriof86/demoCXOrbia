@@ -38,7 +38,8 @@ CX.module('midia', ({data,role,ui})=>{
     const pv=document.getElementById('cgPrev'); if(pv)pv.addEventListener('click',()=>{_cgMonth=_shiftMonth(_cgMonth,-1);CX.router.nav('midia');});
     const nx=document.getElementById('cgNext'); if(nx)nx.addEventListener('click',()=>{_cgMonth=_shiftMonth(_cgMonth,1);CX.router.nav('midia');});
     const cp=document.getElementById('cgProj'); if(cp)cp.addEventListener('change',()=>{_cgProj=cp.value;CX.router.nav('midia');});
-    document.querySelectorAll('#midKpis [data-mk]').forEach(el=>el.addEventListener('click',()=>{const kD={agd:['Agendadas',data.visitas().filter(v=>['agendada','realizada','cuestionario','liquidada'].includes(v.estado)),'visitas'],post:['Por aprobar',data._posts.filter(p=>p.estado==='pendiente'),'postulaciones'],real:['Realizadas',data.visitas().filter(v=>['realizada','cuestionario','liquidada'].includes(v.estado)),'visitas'],sinA:['Sin asignar',data.visitas().filter(v=>!v.shopperId&&v.estado!=='fuera_rango'),'visitas']};const d=kD[el.dataset.mk];if(!d)return;const L=d[1];ui.modal(d[0]+' ('+L.length+')',L.length?'<table class="tbl"><thead><tr><th>Sucursal</th><th>Shopper</th><th>Estado</th></tr></thead><tbody>'+L.slice(0,20).map(v=>'<tr><td><b>'+v.sucursal+'</b></td><td style="font-size:12px">'+(v.shopper||'—')+'</td><td>'+(v.estado||'')+'</td></tr>').join('')+'</tbody></table>':ui.empty('✅','Sin registros.'));}));
+    const BF=data.visitBucketFns;
+    document.querySelectorAll('#midKpis [data-mk]').forEach(el=>el.addEventListener('click',()=>{const kD={agd:['Agendadas',data.visitas().filter(BF.agendadas),'visitas'],post:['Por aprobar',data._posts.filter(p=>p.estado==='pendiente'),'postulaciones'],real:['Realizadas',data.visitas().filter(BF.realizadas),'visitas'],sinA:['Sin asignar',data.visitas().filter(BF.sinAsignar),'visitas']};const d=kD[el.dataset.mk];if(!d)return;const L=d[1];ui.modal(d[0]+' ('+L.length+')',L.length?'<table class="tbl"><thead><tr><th>Sucursal</th><th>Shopper</th><th>Estado</th></tr></thead><tbody>'+L.slice(0,20).map(v=>'<tr><td><b>'+v.sucursal+'</b></td><td style="font-size:12px">'+(v.shopper||'—')+'</td><td>'+(v.estado||'')+'</td></tr>').join('')+'</tbody></table>':ui.empty('✅','Sin registros.'));}));
   },0);};
 
   /* GAP2 (paquete V111→V112, 20260714): cronograma() arrancaba en `pool=data._visitas` — TODOS
@@ -106,7 +107,7 @@ CX.module('midia', ({data,role,ui})=>{
     ].filter(t=>t[3]>0);
     bindNotif();
     return `
-      ${ui.ph('Mi Día', 'Buen día, '+(CX.session.user.name.split(' ')[0])+' 👋 · '+p.name)}
+      ${ui.ph('Mi Día', 'Buen día, '+(CX.session.user.name.split(' ')[0])+' 👋 · '+data.programBase(p)+' · periodo '+(p.periodo||p.ronda||p.name))}
       <div class="grid g4" style="margin-bottom:18px" id="midKpis">
         <div data-mk="agd" style="cursor:pointer">${ui.kpi('Agendadas',k.agendadas.t,'b')}</div>
         <div data-mk="post" style="cursor:pointer">${ui.kpi('Por aprobar',k.postPend,'a')}</div>
@@ -136,7 +137,7 @@ CX.module('midia', ({data,role,ui})=>{
   const mine=data.visitas().filter(v=>v.shopperId===_mySid||['asignada','agendada'].includes(v.estado)).slice(0,2);
   const steps=['Postulación aprobada|done','Instructivo leído|done','Certificación 88%|done','Visita realizada|now','Cuestionario|todo','Liquidación|todo'];
   return `
-    ${ui.ph('Mi Día', 'Hola, '+CX.session.user.name.split(' ')[0]+' 👋')}
+    ${ui.ph('Mi Día', 'Hola, '+CX.session.user.name.split(' ')[0]+' 👋 · '+data.programBase(p)+' · periodo '+(p.periodo||p.ronda||p.name))}
     ${notifBlock()}
     ${cronograma()}
     <div class="card card-p" style="margin-bottom:16px">

@@ -1,0 +1,39 @@
+{
+  "metodologia": "Runtime real: CX.app.selectRole(role)/CX.data.setCurrentPeriod()/CX.data.getShopper() reales (no mocks). Captura window.onerror durante toda la ejecución.",
+  "fecha": "2026-07-14",
+  "build": "V111",
+  "moduleCount": 48,
+  "roles": {
+    "admin": { "navErrorsCount": 0, "navErrors": [], "newConsoleErrors": [] },
+    "cliente": { "navErrorsCount": 0, "navErrors": [], "newConsoleErrors": [] },
+    "shopper": { "navErrorsCount": 0, "navErrors": [], "newConsoleErrors": [] }
+  },
+  "p0_1_periodo_canonico": {
+    "setCurrentPeriod_existe": { "resultado": "PASS" },
+    "cambio_periodo_emite_evento": { "resultado": "PASS", "evidencia": { "periodChanged": true, "eventFired": true } },
+    "id_inexistente_rechazado": { "resultado": "PASS", "evidencia": { "invalidRejected": true } },
+    "periodMonth_deriva_de_datos_reales": { "resultado": "PASS", "evidencia": { "periodMonthValue": "2026-07 (recomprobado tras fix adicional 20260714 — antes devolvía 2026-06 aunque la fecha real del sistema fuera julio)" } },
+    "midia_sin_literales_2026-06-21": { "resultado": "PASS", "desc": "grep confirma 0 ocurrencias en midia.js; today deriva de new Date(). CORRECCIÓN ADICIONAL 20260714: genVisitas() en core/data.js generaba TODAS las fechas de visita ('2026-06-XX') con literal fijo, por lo que periodMonth() (que deriva del dato real) heredaba junio sin importar la fecha del sistema. Ahora genVisitas usa new Date() real con offsets relativos; ronda de proyecto también dejó de ser 'JUN 26' fijo." },
+    "midia_sin_shopperId_hardcodeado": { "resultado": "PASS", "desc": "'sh1' reemplazado por CX.session.user.shopperId real" },
+    "dashboard_monthSel_retirado": { "resultado": "PASS", "desc": "selector cosmético eliminado; dashProjSel es el único selector, ya invoca setter real" }
+  },
+  "p0_2_marca_pais": {
+    "login_sin_logo_nombre_unico": { "resultado": "PASS", "evidencia": { "noLogo_clientNameCount": 1, "noLogo_titleText": "Field Operations Platform" } },
+    "login_con_logo_nombre_unico": { "resultado": "PASS", "evidencia": { "withLogo_clientNameCount": 1, "withLogo_titleText": "Field Operations Platform" } },
+    "shopper_pais_real_no_proyecto": { "resultado": "PASS", "evidencia": { "shopperPais": "HN", "railText": "Shopper · 🇭🇳 Honduras" } }
+  },
+  "p0_3_shoppers_protegidos": {
+    "niveles_clasificados_correctamente": { "resultado": "PASS", "evidencia": { "refLevel": "protected_reference", "opLevel": "operational_profile", "fullLevel": "full_authorized_profile" } },
+    "fixture_protegido_visible_en_lista": { "resultado": "PASS", "evidencia": { "listIncludesRef": true } },
+    "modal_protegido_sin_pii_ni_valores_inventados": { "resultado": "PASS", "desc": "profileModal() retorna temprano para protected_reference con ficha reducida" }
+  },
+  "academia": {
+    "curso_a_plat_ctx_presente": { "resultado": "PASS", "evidencia": { "lessonCount": 4, "lessonIds": ["apc1","apc2","apc3","apc4"] } }
+  },
+  "responsive": {
+    "360px": { "resultado": "PASS_ESTRUCTURAL", "desc": "captura real del shell (rail + Mi Día), sin overflow horizontal visible" },
+    "390px": { "resultado": "PASS_ESTRUCTURAL", "desc": "captura real, sin overflow horizontal visible" },
+    "412px": { "resultado": "PASS_ESTRUCTURAL", "desc": "captura real, sin overflow horizontal visible" }
+  },
+  "limitacion_honesta": "docs/verify-manifest.mjs está escrito para Node y este entorno no tiene terminal/runtime Node para invocarlo literalmente. Se ejecutó la misma lógica SHA-256+aggregate directamente en el navegador sobre los archivos reales del manifest — 0 diffs, aggregate recalculado idéntico al declarado."
+}

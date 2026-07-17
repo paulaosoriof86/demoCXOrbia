@@ -31,6 +31,13 @@ CX.session = {
     const r = this.effectiveRole();
     return (r==='super'||r==='admin') && !this.testRole;
   },
+  /* P0-2 (paquete V153 dos P0 reales, 20260716): un parámetro de URL nunca es una protección —
+     cualquier admin comercial podía añadir ?internal=1 y abrir contenido técnico. El build
+     comercial de este prototipo NO expone ningún mecanismo de UI/URL para activar detalle
+     técnico: hasTechAccess() es una constante de build, false aquí siempre. Una build interna
+     para el equipo técnico cambiaría esta única línea (nunca una URL/flag del lado del cliente
+     alcanzable por un usuario comercial). */
+  hasTechAccess(){ return false; },
   load(){
     try{
       const s=JSON.parse(localStorage.getItem('cx_session')||'null');

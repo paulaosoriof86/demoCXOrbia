@@ -201,7 +201,7 @@ CX.acadData={
     }
     /* Contrato Academia (paquete 20260711): revisión y aprobación exigen una identidad
        autenticada DISTINTA de quien creó el curso (separación de funciones configurable —
-       mismo patrón que el segundo actor de certificación en modules/cert.js). Sin backend real
+       mismo patrón que el segundo actor de certificación en modules/cert.js). Sin sistema central real
        de auth, el "autenticado" es la sesión activa del prototipo (session.user.name); nunca
        texto libre. */
     /* T1b (paquete V109 — corrección P0): la separación de funciones se valida por ID ESTABLE
@@ -232,7 +232,7 @@ CX.acadData={
     const accionLbl={en_revision:'enviar a revisión',aprobado:'aprobar',publicado_preview:'publicar (preview)',archivado:'archivar',eliminado:'eliminar',borrador:'restaurar a borrador'}[nextState]||nextState;
     this._logAudit(r,{accion:accionLbl, cid, titulo:c.n, motivo:reason||'(sin motivo — transición sin exigencia)', estadoAnterior:prev, estadoNuevo:nextState, source:opts.source||'ui_admin', revisadoPor:c.revisadoPor, aprobadoPor:c.aprobadoPor});
     /* notificación local del cambio (in-app; nunca canal externo) */
-    CX.notif && CX.notif.push({to:'admin', tipo:'academia_estado', icon:'📚', tono:'b', titulo:'Academia: "'+c.n+'" → '+nextState, txt:'workflow v'+c.workflowVersion+' · '+(reason||'sin motivo adicional')+' (auditoría preview local, no de backend)', nav:'aprendizaje'});
+    CX.notif && CX.notif.push({to:'admin', tipo:'academia_estado', icon:'📚', tono:'b', titulo:'Academia: "'+c.n+'" → '+nextState, txt:'workflow v'+c.workflowVersion+' · '+(reason||'sin motivo adicional')+' (auditoría preview local, no del sistema central)', nav:'aprendizaje'});
     return {ok:true, course:c};
   },
 
@@ -315,10 +315,10 @@ CX.acadData={
   <div class="acad-step"><span>2</span><b>Revisión admin</b><p>Apruebas, pides corrección o marcas conflicto (held_for_conflict).</p></div>
   <div class="acad-step"><span>3</span><b>Submitido</b><p>Confirmado manual o desde HR según config del proyecto.</p></div>
   <div class="acad-step"><span>4</span><b>Candidata para lote</b><p>Verificas y mueves a un lote de pago (batchId).</p></div>
-  <div class="acad-step"><span>5</span><b>Pago (backend)</b><p>El cruce financiero real lo hace el backend. En el prototipo queda "preview".</p></div>
+  <div class="acad-step"><span>5</span><b>Pago (sistema central)</b><p>El cruce financiero real lo hace el sistema central. En el prototipo queda "preview".</p></div>
 </div>
 <div class="acad-section">✅ <b>Para qué sirve (si no existiera este módulo)</b><p>Sin este ciclo, calcularías honorarios y reembolsos manualmente en un Excel cada quincena, sin registro de quién aprobó qué ni por qué — y cualquier error en un cuestionario se pagaría igual porque nadie tendría un punto de control antes de comprometer el dinero.</p></div>
-<blockquote>Ningún estado dice "pagado" sin cruce financiero real del backend. En el prototipo verás "candidata / preview operativo".</blockquote>`},
+<blockquote>Ningún estado dice "pagado" sin cruce financiero real del sistema central. En el prototipo verás "candidata / preview operativo".</blockquote>`},
          {id:'af2',ic:'💳',n:'Movimientos: ingresos, egresos y CxC/CxP',content:`
 <h2>Movimientos & Tesorería</h2>
 <div class="acad-section">🎯 <b>Objetivo del módulo</b><p>Registrar y conciliar todo el dinero que entra y sale de la operación — vive en <b>Finanzas → Movimientos</b>. Es la fuente de verdad detrás de cada cifra del Dashboard Financiero.</p></div>
@@ -330,7 +330,7 @@ CX.acadData={
 <div class="acad-section"><b>CxC / CxP</b><p>Cuentas por cobrar y por pagar con buscador. Un egreso programado crea una CxP; al liquidarse, se concilia.</p></div>
 <div class="acad-section">✅ <b>Para qué sirve (si no existiera este módulo)</b><p>Sin Movimientos, el Dashboard Financiero mostraría solo estimaciones sin respaldo — no sabrías con certeza si un ingreso del cliente ya llegó de verdad o si sigues esperando el comprobante.</p></div>
 <h3>Datos sensibles</h3>
-<p>Los datos bancarios del shopper y montos de pago son sensibles: en producción se protegen por backend y solo se referencian con <code>sourcePaymentRef</code> opaco. El prototipo no expone datos reales.</p>`},
+<p>Los datos bancarios del shopper y montos de pago son sensibles: en producción se protegen por el sistema central y solo se referencian con <code>referencia de pago</code> opaco. El prototipo no expone datos reales.</p>`},
          {id:'af3',ic:'🎟️',n:'Conceptos configurables (Boleto, Combo, etc.)',content:`
 <h2>Conceptos de reembolso por proyecto</h2>
 <div class="acad-section">🎯 <b>Objetivo</b><p>Permitir que cada proyecto reembolse al shopper los consumos que su escenario exige (ej. entrada de cine, combo), sin que estos conceptos estén programados fijos en la plataforma.</p></div>
@@ -348,37 +348,37 @@ CX.acadData={
          {id:'af4',ic:'❓',n:'Evaluación de finanzas',tipo:'quiz',quiz:[
            {q:'Un egreso por pago de lote, ¿qué genera?',o:['Un ingreso','Un egreso por beneficiario con número de lote','Una CxC'],a:1,fb:'Genera un egreso por beneficiario (shopper/proveedor) asociado a su número de lote (batchId).'},
            {q:'¿Los conceptos "Boleto" y "Combo" son fijos de la plataforma?',o:['Sí, siempre están','No: son configuración por tenant/proyecto','Solo en cine'],a:1,fb:'Son configuración por proyecto. La plataforma es genérica y comercializable; cada cliente define sus conceptos.'},
-           {q:'¿Cuándo un movimiento dice "pagado"?',o:['Al moverlo a lote','Solo cuando el backend hace el cruce financiero real','Al crear la liquidación'],a:1,fb:'En el prototipo se muestra "candidata/preview". El estado real de pago depende del cruce del backend.'},
+           {q:'¿Cuándo un movimiento dice "pagado"?',o:['Al moverlo a lote','Solo cuando el sistema central hace el cruce financiero real','Al crear la liquidación'],a:1,fb:'En el prototipo se muestra "candidata/preview". El estado real de pago depende del cruce del sistema central.'},
          ]},
        ]},
       /* ─── BLOQUES BACKEND (transparencia de estado) ─── */
-      {id:'a_backend_prepared',cat:'Inducción',ic:'🔌',color:'#7c3aed',n:'Capacidades de backend: qué está preparado',
-       desc:'Qué funciones dependen del backend y cómo se ven mientras el gate no está activo.',
+      {id:'a_backend_prepared',cat:'Inducción',ic:'🔌',color:'#7c3aed',n:'Capacidades pendientes de activación',
+       desc:'Qué funciones dependen del sistema central y cómo se ven mientras la activación no está autorizada.',
        cert:false,mins:25,
        lessons:[
          {id:'ab1',ic:'🔌',n:'Preparado vs. activo',content:`
-<h2>Cómo leer los estados del backend</h2>
-<p>Varias capacidades ya tienen su interfaz lista pero su ejecución real ocurre en el backend. Mientras el gate no esté autorizado, verás el badge <b>"preparado / pendiente backend"</b> — nunca "enviado" o "en vivo" falsos. Esta distinción existe para que nunca confundas una demo bien diseñada con un sistema en producción: lo que ves funciona en pantalla, pero la acción real (enviar un WhatsApp, escribir en una base de datos externa) solo ocurre cuando el equipo técnico activa esa conexión.</p>
+<h2>Cómo leer los estados del sistema central</h2>
+<p>Varias capacidades ya tienen su interfaz lista pero su ejecución real ocurre en el sistema central. Mientras la activación no esté autorizada, verás el badge <b>"preparado / pendiente de conexión"</b> — nunca "enviado" o "en vivo" falsos. Esta distinción existe para que nunca confundas una demo bien diseñada con un sistema en producción: lo que ves funciona en pantalla, pero la acción real (enviar un WhatsApp, escribir en una base de datos externa) solo ocurre cuando el equipo técnico activa esa conexión.</p>
 <div class="acad-cards">
-  <div class="acad-card"><div>🕐</div><b>Historial de comunicación</b><p>Timeline seguro por shopper. Se poblará cuando el backend registre los envíos reales.</p></div>
+  <div class="acad-card"><div>🕐</div><b>Historial de comunicación</b><p>Timeline seguro por shopper. Se poblará cuando el sistema central registre los envíos reales.</p></div>
   <div class="acad-card"><div>⭐</div><b>Ranking / scoring</b><p>Ayuda al admin a decidir. No autoasigna: la decisión sigue siendo humana.</p></div>
-  <div class="acad-card"><div>📐</div><b>Versionado de reglas</b><p>Cada proyecto/tenant versiona sus reglas; los cambios quedan con changelog draft→review→approved.</p></div>
-  <div class="acad-card"><div>🚦</div><b>Release readiness</b><p>Snapshot con blockers antes de habilitar producción.</p></div>
-  <div class="acad-card"><div>🧪</div><b>Synthetic pack</b><p>Fixtures de prueba — NO son la fuente real de datos del cliente.</p></div>
+  <div class="acad-card"><div>📐</div><b>Versionado de reglas</b><p>Cada proyecto/tenant versiona sus reglas; los cambios quedan con historial borrador→revisión→aprobado.</p></div>
+  <div class="acad-card"><div>🚦</div><b>Estado de preparación</b><p>Resumen con pendientes antes de habilitar producción.</p></div>
+  <div class="acad-card"><div>🧪</div><b>Datos de ejemplo</b><p>Información de prueba — NO es la fuente real de datos del cliente.</p></div>
 </div>
-<blockquote>Regla de oro: si un dato no dice explícitamente que proviene de una fuente confirmada, trátalo como preview. El indicador de fuente de datos en el sidebar te lo aclara.</blockquote>`},
-         {id:'ab3',ic:'🚪',n:'Qué es un "gate" y quién lo activa',content:`
-<h2>El concepto de gate, explicado sin jerga</h2>
-<p>Un "gate" es simplemente un interruptor que separa "la interfaz está lista para mostrarse" de "la acción real está autorizada a ejecutarse". Existen tres estados posibles que verás repetidos en Diagnóstico & Readiness y en Administrabilidad:</p>
+<blockquote>Regla de oro: si un dato no dice explícitamente que proviene de una fuente confirmada, trátalo como vista previa. El indicador de fuente de datos en el sidebar te lo aclara.</blockquote>`},
+         {id:'ab3',ic:'🚪',n:'Qué significa "pendiente de activación" y quién la autoriza',content:`
+<h2>El concepto de activación, explicado sin jerga</h2>
+<p>"Pendiente de activación" separa "la interfaz está lista para mostrarse" de "la acción real está autorizada a ejecutarse". Existen tres estados posibles que verás repetidos en Administrabilidad:</p>
 <ul>
-<li><b>⛔ Gate apagado:</b> la funcionalidad está construida pero nadie la ha autorizado a tocar datos o sistemas reales todavía.</li>
-<li><b>🧪 Preview:</b> puedes probar el flujo completo con datos de ejemplo (fixtures), pero no afecta nada real.</li>
+<li><b>⛔ Sin autorizar:</b> la funcionalidad está construida pero nadie la ha autorizado a tocar datos o sistemas reales todavía.</li>
+<li><b>🧪 Vista previa:</b> puedes probar el flujo completo con datos de ejemplo, pero no afecta nada real.</li>
 <li><b>👤 Revisión humana:</b> la acción sí puede ejecutarse, pero solo después de que una persona confirme la decisión — nunca de forma automática.</li>
 </ul>
-<p>¿Quién prende un gate? Normalmente el equipo técnico, una vez que el backend correspondiente (Firebase, Make, Gemini, Storage) está conectado y probado en un ambiente controlado. Como admin de negocio, tu rol no es prender el gate — es entender en qué estado está cada capacidad para explicarle correctamente al cliente qué es demo y qué es producción real.</p>`},
+<p>¿Quién autoriza una activación? Normalmente el equipo técnico, una vez que el sistema central correspondiente está conectado y probado en un ambiente controlado. Como admin de negocio, tu rol no es autorizar la activación — es entender en qué estado está cada capacidad para explicarle correctamente al cliente qué es demo y qué es producción real.</p>`},
          {id:'ab4',ic:'❓',n:'Evaluación',tipo:'quiz',quiz:[
            {q:'El ranking de shoppers, ¿asigna visitas solo?',o:['Sí, automático','No: es ayuda para el admin; la decisión es humana','Solo en HN'],a:1,fb:'El ranking es apoyo a la decisión. La asignación la confirma una persona.'},
-           {q:'Ves "preparado / pendiente backend" en una acción. ¿Ya se ejecutó?',o:['Sí','No: la interfaz está lista, la ejecución real depende del gate de backend','Depende del plan'],a:1,fb:'"Preparado" = UI lista; la ejecución real ocurre cuando el gate de backend está activo.'},
+           {q:'Ves "preparado / pendiente de conexión" en una acción. ¿Ya se ejecutó?',o:['Sí','No: la interfaz está lista, la ejecución real depende del gate del sistema central','Depende del plan'],a:1,fb:'"Preparado" = UI lista; la ejecución real ocurre cuando el gate del sistema central está activo.'},
          ]},
        ]},
       /* ─── GLOSARIO & CHECKLISTS (referencia rápida) ─── */
@@ -397,22 +397,22 @@ CX.acadData={
 <dt>Revisión</dt><dd>Etapa formal del admin entre "cuestionario realizado" y "liquidación": aprobar, pedir corrección o marcar conflicto.</dd>
 <dt>Candidata (liquidación)</dt><dd>Una liquidación en preview operativo, aún sin cruce financiero real. No es un pago confirmado.</dd>
 </dl>
-<h3>Conceptos técnicos (backend)</h3>
+<h3>Conceptos técnicos (sistema central)</h3>
 <dl class="acad-gloss">
-<dt>sourceSafe</dt><dd>Registro seguro de la fuente de HR: el backend guarda la conexión y devuelve un <code>sourceRef</code> opaco. La URL real nunca se guarda en el navegador.</dd>
-<dt>sourceVisitRef</dt><dd>Referencia opaca que vincula una visita con su fila de origen en la HR, sin exponer datos sensibles.</dd>
-<dt>sourcePaymentRef</dt><dd>Referencia opaca que vincula un pago con su origen, para trazabilidad sin exponer datos bancarios.</dd>
-<dt>manual_review_required</dt><dd>Estado que exige revisión humana del admin antes de avanzar (p. ej. inconsistencia detectada).</dd>
-<dt>held_for_conflict</dt><dd>Retenido por conflicto entre la plataforma y la HR; requiere reconciliación antes de liquidar.</dd>
-<dt>batchId / paymentItemId / movementId</dt><dd>Identificadores del backend para el lote de pago, cada ítem de pago y cada movimiento financiero. Aparecen cuando el backend está activo.</dd>
+<dt>registro seguro</dt><dd>Registro seguro de la fuente de HR: el sistema central guarda la conexión y devuelve un <code>referencia segura</code> opaco. La URL real nunca se guarda en el navegador.</dd>
+<dt>referencia de visita</dt><dd>Referencia opaca que vincula una visita con su fila de origen en la HR, sin exponer datos sensibles.</dd>
+<dt>referencia de pago</dt><dd>Referencia opaca que vincula un pago con su origen, para trazabilidad sin exponer datos bancarios.</dd>
+<dt>requiere revisión</dt><dd>Estado que exige revisión humana del admin antes de avanzar (p. ej. inconsistencia detectada).</dd>
+<dt>en conflicto</dt><dd>Retenido por conflicto entre la plataforma y la HR; requiere reconciliación antes de liquidar.</dd>
+<dt>identificador de lote / de pago / de movimiento</dt><dd>Referencias que identifican el lote de pago, cada ítem de pago y cada movimiento financiero. Aparecen cuando el sistema central está activo.</dd>
 </dl>
-<blockquote>Los conceptos técnicos son visibles pero su ejecución real depende del backend. En el prototipo se muestran como preparados/pendientes.</blockquote>`},
+<blockquote>Los conceptos técnicos son visibles pero su ejecución real depende del sistema central. En el prototipo se muestran como preparados/pendientes.</blockquote>`},
          {id:'ag2',ic:'✅',n:'Checklist: publicar una ronda',content:`
 <h2>Antes de publicar visitas</h2>
 <p>Verifica cada punto. La lista es una guía real, no un párrafo.</p>
 <ul class="acad-check">
 <li class="done">Proyecto configurado (país, moneda, periodicidad de rondas)</li>
-<li class="done">Fuente de HR definida (interna, importada o registro seguro por backend)</li>
+<li class="done">Fuente de HR definida (interna, importada o registro seguro por el sistema central)</li>
 <li>Cuestionario asignado al tipo de visita correcto</li>
 <li>Escenarios cargados para la quincena</li>
 <li>Honorarios por país configurados</li>
@@ -426,10 +426,10 @@ CX.acadData={
 <li>Submitido confirmado (manual o desde HR según config)</li>
 <li>Liquidaciones candidatas verificadas antes de mover a lote</li>
 </ul>
-<blockquote>Marca mental cada punto. Los estados reales de pago dependen del cruce financiero del backend.</blockquote>`},
+<blockquote>Marca mental cada punto. Los estados reales de pago dependen del cruce financiero del sistema central.</blockquote>`},
          {id:'ag3',ic:'❓',n:'Evaluación de referencia',tipo:'quiz',quiz:[
-           {q:'¿Qué significa que una liquidación esté como "candidata"?',o:['Que ya se pagó','Que está en preview operativo, sin cruce financiero real','Que fue rechazada'],a:1,fb:'Candidata = preview operativo. El pago real depende del cruce financiero del backend.'},
-           {q:'¿Dónde se guarda la URL real de una HR externa?',o:['En el navegador (localStorage)','En ningún lado del frontend; el backend la registra y devuelve un sourceRef opaco','En el cuestionario'],a:1,fb:'Nunca en el navegador. El backend hace el registro seguro (sourceSafe) y devuelve un sourceRef opaco.'},
+           {q:'¿Qué significa que una liquidación esté como "candidata"?',o:['Que ya se pagó','Que está en preview operativo, sin cruce financiero real','Que fue rechazada'],a:1,fb:'Candidata = preview operativo. El pago real depende del cruce financiero del sistema central.'},
+           {q:'¿Dónde se guarda la URL real de una HR externa?',o:['En el navegador (localStorage)','En ningún lado del frontend; el sistema central la registra y devuelve un referencia segura opaco','En el cuestionario'],a:1,fb:'Nunca en el navegador. El sistema central hace el registro seguro (registro seguro) y devuelve un referencia segura opaco.'},
            {q:'¿Qué es la etapa de "Revisión"?',o:['Un paso opcional','La etapa formal del admin entre cuestionario realizado y liquidación','Lo mismo que el submitido'],a:1,fb:'Revisión es una etapa formal: aprobar, pedir corrección o marcar conflicto antes de liquidar.'},
          ]},
        ]},
@@ -440,34 +440,34 @@ CX.acadData={
        lessons:[
          {id:'ada1',ic:'🧪',n:'Diagnóstico & Readiness: qué verás',content:`
 <h2>Configuración → Diagnóstico & Readiness</h2>
-<p>Es la vista donde el equipo revisa la salud del sistema <b>en preview</b>, sin ejecutar nada real. Piénsalo como el panel de control de un piloto antes de despegar: te dice qué está listo, qué tiene bloqueos y qué necesita revisión, sin mover el avión todavía. Tiene 4 pestañas:</p>
+<p>Es la vista donde el equipo revisa la salud del sistema <b>en vista previa</b>, sin ejecutar nada real. Piénsalo como el panel de control de un piloto antes de despegar: te dice qué está listo, qué tiene bloqueos y qué necesita revisión, sin mover el avión todavía. Tiene 4 pestañas:</p>
 <div class="acad-cards">
-  <div class="acad-card"><div>🧪</div><b>Synthetic runner</b><p>Corre "paquetes" de casos de prueba ficticios (no datos reales de clientes) y muestra pass/warn/fail por paquete, con % de cobertura.</p></div>
-  <div class="acad-card"><div>📊</div><b>Readiness</b><p>Matriz por módulo (15 módulos: tenant/proyecto/periodo, HR/source, usuarios/roles, shoppers, visitas, postulaciones, Academia, certificaciones, pagos, notificaciones, reviewQueue, auditEvents, gates, branding, switch de backend) + readiness por dominio de datos.</p></div>
+  <div class="acad-card"><div>🧪</div><b>Pruebas de ejemplo</b><p>Corre "paquetes" de casos de prueba ficticios (no datos reales de clientes) y muestra pass/warn/fail por paquete, con % de cobertura.</p></div>
+  <div class="acad-card"><div>📊</div><b>Estado de preparación</b><p>Matriz por módulo (15 módulos: tenant/proyecto/periodo, HR/source, usuarios/roles, shoppers, visitas, postulaciones, Academia, certificaciones, pagos, notificaciones, cola de revisión, registro de decisiones, autorizaciones, branding, switch del sistema central) + preparación por dominio de datos.</p></div>
   <div class="acad-card"><div>⚖️</div><b>Conflictos</b><p>La bandeja de conflictos accionable, más los candidatos que llegaron desde el Importador — la ves en la siguiente lección.</p></div>
-  <div class="acad-card"><div>🔌</div><b>Contratos & gates</b><p>Lista cada capacidad de backend preparada (assignment sync, liquidaciones, evidencias, etc.) con su gate: apagado, preview o revisión humana.</p></div>
+  <div class="acad-card"><div>🔌</div><b>Capacidades y autorizaciones</b><p>Lista cada capacidad del sistema central preparada (assignment sync, liquidaciones, evidencias, etc.) con su estado: sin autorizar, vista previa o revisión humana.</p></div>
 </div>
-<blockquote>El banner ámbar de arriba de la pantalla siempre te recuerda: gates apagados · fuente real pendiente · revisión humana pendiente · producción NO autorizada. Si algo dice "preview", nunca asumas que ya pasó de verdad.</blockquote>`},
+<blockquote>El banner ámbar de arriba de la pantalla siempre te recuerda: acciones reales pendientes de autorización · fuente real pendiente · revisión humana pendiente · producción NO autorizada. Si algo dice "vista previa", nunca asumas que ya pasó de verdad.</blockquote>`},
          {id:'ada1b',ic:'📊',n:'Readiness por módulo y candidatos protegidos',content:`
 <h2>La matriz de readiness (patrón genérico)</h2>
 <p>Ningún módulo debe mostrarse como "conectado / importado / en producción" sin este semáforo. Cada módulo tiene un estado honesto:</p>
 <div class="acad-cards">
-  <div class="acad-card"><div>🟢</div><b>GO_READY</b><p>Sin blockers conocidos en preview. La confirmación real de producción la sigue dando el backend, no el frontend.</p></div>
-  <div class="acad-card"><div>🟡</div><b>WARNING_READY</b><p>Avanza, pero con revisión humana pendiente — hay warnings que alguien debe mirar antes de confiar del todo.</p></div>
-  <div class="acad-card"><div>🔴</div><b>NO_GO_BLOCKER</b><p>No avanza. Hay al menos un blocker real (ej. Auth real no conectado, gate de pagos apagado).</p></div>
+  <div class="acad-card"><div>🟢</div><b>Listo</b><p>Sin bloqueos conocidos en vista previa. La confirmación real de producción la sigue dando el sistema central, no el navegador.</p></div>
+  <div class="acad-card"><div>🟡</div><b>Avanza con revisión</b><p>Avanza, pero con revisión humana pendiente — hay advertencias que alguien debe mirar antes de confiar del todo.</p></div>
+  <div class="acad-card"><div>🔴</div><b>Bloqueado</b><p>No avanza. Hay al menos un bloqueo real (ej. verificación de identidad no conectada, pagos sin autorizar).</p></div>
 </div>
 <h3>De dónde salen los "candidatos"</h3>
 <p>Cuando importas datos (Importador) o lees una fuente de HR, nada se escribe directo al sistema. Todo pasa por un pipeline de 6 etapas, siempre en este orden:</p>
 <div class="acad-flow">
-  <div class="acad-step"><span>1</span><b>dry-run</b><p>Solo simula: cuenta filas, detecta tipos, no toca nada.</p></div>
-  <div class="acad-step"><span>2</span><b>source-safe</b><p>Los datos sensibles (DPI, teléfono, banco, correo) se enmascaran antes de mostrarse en preview.</p></div>
+  <div class="acad-step"><span>1</span><b>vista previa (sin escribir)</b><p>Solo simula: cuenta filas, detecta tipos, no toca nada.</p></div>
+  <div class="acad-step"><span>2</span><b>registro seguro</b><p>Los datos sensibles (DPI, teléfono, banco, correo) se enmascaran antes de mostrarse en preview.</p></div>
   <div class="acad-step"><span>3</span><b>protected candidates</b><p>Candidatos de shopper, certificación, liquidación o lote de pago — aún no son registros reales.</p></div>
-  <div class="acad-step"><span>4</span><b>reviewQueue</b><p>Bandeja donde una persona revisa cada candidato antes de decidir qué hacer.</p></div>
-  <div class="acad-step"><span>5</span><b>auditEvents</b><p>Cada decisión (aprobar, escalar, descartar) queda registrada con motivo y fecha — nunca en silencio.</p></div>
-  <div class="acad-step"><span>6</span><b>no escrito</b><p>El estado final en el prototipo: nada llega a la base de datos real hasta que el backend con su gate lo autorice.</p></div>
+  <div class="acad-step"><span>4</span><b>cola de revisión</b><p>Bandeja donde una persona revisa cada candidato antes de decidir qué hacer.</p></div>
+  <div class="acad-step"><span>5</span><b>registro de decisiones</b><p>Cada decisión (aprobar, escalar, descartar) queda registrada con motivo y fecha — nunca en silencio.</p></div>
+  <div class="acad-step"><span>6</span><b>no escrito</b><p>El estado final en el prototipo: nada llega a la base de datos real hasta que el sistema central con su gate lo autorice.</p></div>
 </div>
 <p>Verás esto en acción en <b>Importador → Análisis IA</b> (el stepper del pipeline arriba del análisis) y en <b>Diagnóstico → Conflictos</b> (bloque "Candidatos desde HR/Source").</p>
-<blockquote>Acceso de lectura protegido: un shopper solo lee su propio perfil; un rol sin Auth ve datos enmascarados con 🔒; finanzas nunca ve el número de cuenta bancaria crudo. Esto se aplica ya en el módulo Shoppers.</blockquote>`},
+<blockquote>Acceso de lectura protegido: un shopper solo lee su propio perfil; un rol sin ese acceso habilitado ve datos enmascarados con 🔒; finanzas nunca ve el número de cuenta bancaria crudo. Esto se aplica ya en el módulo Shoppers.</blockquote>`},
          {id:'ada2',ic:'⚖️',n:'Resolver un conflicto, paso a paso',content:`
 <h2>Bandeja de conflictos: cómo se resuelve de verdad</h2>
 <p>Cada tarjeta de conflicto trae: severidad, estado, <b>referencias de fuente opacas</b> (por ejemplo <code>src:hr#a4f2</code> — nunca un nombre o documento real) y un <code>auditRef</code>.</p>
@@ -476,7 +476,7 @@ CX.acadData={
 <li>Pulsa <b>Revisar</b>.</li>
 <li>Elige una decisión: <b>mantener ambos registros</b>, <b>escalar a supervisor</b>, o <b>marcar revisado</b>. No existe la opción de "fusionar" o "deduplicar" — nunca se resuelve por coincidencia visual.</li>
 <li>Escribe el <b>motivo</b> (obligatorio) — queda ligado al auditRef.</li>
-<li>Al registrar, el conflicto pasa a "Resuelto" con fecha y auditRef visibles. El banner te recuerda: la <b>aplicación real</b> de esa decisión la ejecuta el backend cuando su gate esté activo.</li>
+<li>Al registrar, el conflicto pasa a "Resuelto" con fecha y auditRef visibles. El banner te recuerda: la <b>aplicación real</b> de esa decisión la ejecuta el sistema central cuando su gate esté activo.</li>
 </ol>
 <blockquote>Esta bandeja es igual para asignaciones (HR↔plataforma), liquidaciones, cuestionarios, importaciones y evidencias — mismo patrón en todos los dominios.</blockquote>`},
          {id:'ada3',ic:'⚙️',n:'Administrabilidad: configurar sin romper nada',content:`
@@ -493,9 +493,9 @@ CX.acadData={
          {id:'ada4',ic:'❓',n:'Evaluación',tipo:'quiz',quiz:[
            {q:'En la bandeja de conflictos, ¿puedes "fusionar" dos registros que se parecen?',o:['Sí, si coinciden visualmente','No: nunca se deduplica por coincidencia visual; solo mantener ambos, escalar o marcar revisado','Solo el super admin puede fusionar'],a:1,fb:'La fusión/dedupe nunca es una opción. La única resolución válida es una decisión humana registrada con motivo.'},
            {q:'Si subes una nueva versión del NDA, ¿qué pasa con las aceptaciones ya firmadas?',o:['Se invalidan y hay que re-firmar','Se conservan intactas; solo aplica a nuevas aceptaciones','Se actualizan automáticamente a la nueva versión'],a:1,fb:'Las aceptaciones presentadas nunca se alteran. Es solo lectura y auditable.'},
-           {q:'¿Qué significa un gate en estado "apagado"?',o:['Que la función no existe','Que la interfaz está lista pero la ejecución real no está autorizada todavía','Que hay un error'],a:1,fb:'"Gate apagado" = preparado pero no autorizado a ejecutar en producción.'},
+           {q:'¿Qué significa una capacidad en estado "sin autorizar"?',o:['Que la función no existe','Que la interfaz está lista pero la ejecución real no está autorizada todavía','Que hay un error'],a:1,fb:'"Gate apagado" = preparado pero no autorizado a ejecutar en producción.'},
            {q:'Un módulo aparece como NO_GO_BLOCKER en la matriz de readiness. ¿Qué significa?',o:['Que el módulo no existe en el prototipo','Que tiene al menos un blocker real y no debe tratarse como listo para producción','Que necesita más diseño visual'],a:1,fb:'NO_GO_BLOCKER = hay un bloqueo real (ej. Auth no conectado). Nunca se muestra ese módulo como "conectado/producción" mientras tenga blockers.'},
-           {q:'Importaste un archivo de shoppers desde el Importador. ¿En qué etapa del pipeline queda antes de que alguien lo revise?',o:['Ya quedó escrito en el sistema','reviewQueue (candidato pendiente de revisión humana)','auditEvents directamente'],a:1,fb:'Todo candidato importado pasa por reviewQueue antes de cualquier decisión; nada se escribe sin gate + revisión.'},
+           {q:'Importaste un archivo de shoppers desde el Importador. ¿En qué etapa del pipeline queda antes de que alguien lo revise?',o:['Ya quedó escrito en el sistema','cola de revisión (candidato pendiente de revisión humana)','registro de decisiones directamente'],a:1,fb:'Todo candidato importado pasa por cola de revisión antes de cualquier decisión; nada se escribe sin gate + revisión.'},
          ]},
        ]},
 /* ─── GUÍA COMPLETA DE MÓDULOS (por módulo: beneficio, flujo, cómo usar) ─── */
@@ -541,7 +541,7 @@ individual. El bloque de comparativo trimestral (abajo) grafica 8 KPIs de los ú
 solo la foto de hoy. Los botones 📲 junto a cada shopper en la tabla abren un borrador de WhatsApp (manual, no
 automático) para dar seguimiento.</p>
 <p><b>Cómo validar que funcionó:</b> el número de la tarjeta baja/sube según las acciones que tomes en Postulaciones/
-Visitas — el dashboard no se actualiza "en vivo backend", se recalcula sobre los mismos datos del prototipo cada vez
+Visitas — el dashboard no se actualiza "en vivo sistema central", se recalcula sobre los mismos datos del prototipo cada vez
 que entras o cambias de proyecto.</p>
 <p><b>Errores frecuentes / qué hacer si falla:</b> si los KPIs parecen "congelados" tras aprobar algo, vuelve a entrar
 al módulo (o cambia de proyecto y regresa) para forzar el recálculo. Si un país/proyecto no aparece en el selector,
@@ -683,11 +683,11 @@ conexión viva (Google Sheets con lectura/escritura) — esto determina si un ca
 solo o si necesitas volver a importar cada vez.</p>
 <p><b>Flujo:</b> eliges "en vivo" (pegas la URL de un Sheet; el sistema usa una llave natural inmutable para nunca
 duplicar una fila ya importada) o "importación" para cargas puntuales sin conexión persistente.</p>
-<p><b>Botón clave:</b> "🧬 Generar candidatos source-safe (preview)" prepara los candidatos de sincronización
+<p><b>Botón clave:</b> "🧬 Generar candidatos registro seguro (preview)" prepara los candidatos de sincronización
 (identity link, certification carryover, liquidation, payment batch) para revisión humana en Diagnóstico →
 Conflictos — nunca escribe nada directamente, es siempre preview.</p>
 <p><b>Errores frecuentes:</b> pensar que "en vivo" sincroniza en tiempo real automáticamente — en el prototipo,
-"en vivo" prepara los candidatos para revisión; el sync real a producción lo ejecuta el backend con su gate.</p></div>
+"en vivo" prepara los candidatos para revisión; el sync real a producción lo ejecuta el sistema central con su gate.</p></div>
 
 <div class="acad-section">🧩 <b>Cuestionarios</b>
 <p><b>Qué es y por qué importa:</b> sin un cuestionario bien ponderado, el score final no refleja lo que realmente le
@@ -784,7 +784,7 @@ grave — se retiene hasta reconciliar, nunca se liquida "para no atrasar" mient
 pago — reduce el trabajo operativo y da un corte claro de cuándo se paga.</p>
 <p><b>Flujo y botones:</b> armas el lote seleccionando las liquidaciones candidatas (deben estar aprobadas, no en
 conflicto) → el botón <b>Marcar pagado (preview)</b> lo cierra y prepara el egreso correspondiente en Movimientos —
-"preview" porque el pago real y su evidencia bancaria los confirma el backend, no el navegador.</p>
+"preview" porque el pago real y su evidencia bancaria los confirma el sistema central, no el navegador.</p>
 <p><b>Errores frecuentes:</b> incluir en un lote a un shopper con datos bancarios incompletos deja ese pago
 bloqueado — revisa su ficha en Shoppers antes de armar el lote, no después de intentar pagar.</p></div>`},
          {id:'mg4',ic:'📈',n:'Comercial y Configuración (12 módulos)',content:`
@@ -810,7 +810,7 @@ borrador manual de seguimiento — no envía nada solo.</p>
 <p><b>Qué es y por qué importa:</b> genera piezas y calendario de contenido con IA (heurística local en este
 prototipo) sin depender de un equipo de diseño dedicado para cada pieza pequeña.</p>
 <p><b>Flujo:</b> eliges el tipo de pieza/tema → se genera un borrador → lo ajustas y lo dejas listo para publicar
-manualmente (la publicación real a redes la ejecuta el proveedor conectado por el backend, no este módulo).</p></div>
+manualmente (la publicación real a redes la ejecuta el proveedor conectado por el sistema central, no este módulo).</p></div>
 
 <h2>Configuración</h2>
 <div class="acad-section">⚙️ <b>Configuración</b>
@@ -858,7 +858,7 @@ que alguien tenga que enviarlas una por una manualmente.</p>
 <p><b>Flujo y botones:</b> activas/desactivas cada automatización con su switch → eliges canal y plantilla → el
 botón <b>Escanear y preparar notificaciones (in-app)</b> detecta visitas atrasadas/pendientes y prepara sus alertas.
 El navegador NUNCA llama directo a un proveedor real de IA ni guarda su API key — solo guarda tu preferencia de
-modelo para cuando el backend/adapter esté conectado.</p></div>
+modelo para cuando el sistema central/adapter esté conectado.</p></div>
 
 <div class="acad-section">🔌 <b>Integraciones & Add-ons</b>
 <p><b>Qué es y por qué importa:</b> muestra el catálogo del ecosistema (WhatsApp, Sheets, IA, facturación) que la
@@ -897,8 +897,8 @@ PWA) deben reflejar ya la marca configurada.</p></div>`},
 </div>
 <h3>¿Por qué no es una herramienta estática?</h3>
 <ul><li>Una visita realizada genera automáticamente la liquidación, actualiza el dashboard y notifica al equipo — sin captura manual.</li>
-<li>La IA (Gemini) es transversal: cuestionarios, propuestas, actas, análisis crítico, marketing.</li>
-<li>Conecta con Make, WhatsApp, Google Sheets, Outlook y 30+ herramientas sin programar.</li>
+<li>La IA es transversal: cuestionarios, propuestas, actas, análisis crítico, marketing — con el proveedor que elijas.</li>
+<li>Conecta con tu orquestador de automatizaciones, WhatsApp, Google Sheets, Outlook y 30+ herramientas sin programar.</li>
 <li>Multi-tenant: cada consultora tiene su propia instancia con marca, plan y módulos.</li></ul>`},
          {id:'l2',ic:'🗺️',n:'La plataforma: módulos y menú',content:`
 <h2>Arquitectura del menú (admin)</h2>
@@ -931,7 +931,7 @@ PWA) deben reflejar ya la marca configurada.</p></div>`},
 <div class="acad-flow">
   <div class="acad-step"><span>1</span><b>Publicar</b><p>El equipo carga la HR o publica visitas manualmente. Nacen en estado "disponible".</p></div>
   <div class="acad-step"><span>2</span><b>Reservar/Postular</b><p>El shopper reserva sucursales o se postula. El equipo recibe notificación.</p></div>
-  <div class="acad-step"><span>3</span><b>Asignar</b><p>El equipo aprueba la postulación o asigna manualmente. La visita pasa a "asignada" y se prepara la notificación al shopper (WhatsApp/in-app según configuración · pendiente backend).</p></div>
+  <div class="acad-step"><span>3</span><b>Asignar</b><p>El equipo aprueba la postulación o asigna manualmente. La visita pasa a "asignada" y se prepara la notificación al shopper (WhatsApp/in-app según configuración · pendiente de conexión).</p></div>
   <div class="acad-step"><span>4</span><b>Agendar</b><p>El shopper elige fecha y franja. El equipo recibe notificación.</p></div>
   <div class="acad-step"><span>5</span><b>Realizar</b><p>El shopper ejecuta la visita y la marca como realizada. Se habilita el cuestionario.</p></div>
   <div class="acad-step"><span>6</span><b>Cuestionario</b><p>El shopper llena el cuestionario el mismo día con evidencias. El score se calcula automáticamente.</p></div>
@@ -964,7 +964,7 @@ PWA) deben reflejar ya la marca configurada.</p></div>`},
            {q:'¿Cuál es el flujo correcto para que una visita pase de disponible a pagada?',o:['Disponible → Asignada → Realizada → Cuestionario → Pagada','Publicada → Postulación → Asignación → Agenda → Realización → Cuestionario → Liquidada/Pagada','Solo hay que marcarla como realizada y automáticamente se paga','El shopper la marca como pagada desde su app'],a:1,exp:'El ciclo completo es: Publicar → Postular/Reservar → Asignar → Agendar → Realizar → Cuestionario → Validar → Pagar. Cada etapa tiene responsables y genera notificaciones automáticas. Saltarse una etapa rompe la sincronía de la liquidación.'},
            {q:'¿Qué sección del menú contiene el Dashboard, Visitas y Postulaciones?',o:['Admin del Proyecto','Configuración','Operación','Finanzas'],a:2,exp:'El menú de Operación contiene todo lo que se usa a diario: Mi Día, Dashboard, Visitas, Postulaciones, Reservas, Shoppers e Informes. Admin del Proyecto contiene el set-up (Clientes, Proyectos, HR, Cuestionarios).'},
            {q:'¿Qué herramienta de IA usa CXOrbia por defecto y por qué?',o:['ChatGPT, porque es la más conocida','Gemini Flash, por su relación costo-beneficio para operaciones de alto volumen','No usa IA — todo es manual','Claude, porque es el más preciso'],a:1,exp:'CXOrbia usa Gemini Flash de Google por su excelente relación costo-beneficio con tokens económicos. Es configurable por tenant desde Configuración → Automatizaciones → Asistente de IA. Sin configurar, los generadores usan heurística local sin costo.'},
-           {q:'¿Qué ocurre cuando el equipo aprueba una postulación?',o:['Solo cambia el estado en la plataforma, nada más','La visita pasa a "asignada" y se emite un evento local (pendiente de backend) para notificar al shopper y, si aplica, reflejarse en la HR externa','El shopper debe verificar manualmente si fue aprobado','Se genera automáticamente la liquidación'],a:1,exp:'Al aprobar una postulación, la plataforma: (1) mueve la visita a "asignada", (2) emite un evento local que queda en estado pendiente de backend para notificar al shopper (WhatsApp/push vía Make, una vez que el backend confirme la conexión), (3) prepara la escritura de vuelta a la HR externa (Google Sheets) si esa integración está conectada, y (4) registra quién gestionó la aprobación para trazabilidad. Ninguna notificación ni escritura externa ocurre realmente hasta que el backend conecta la integración.'},
+           {q:'¿Qué ocurre cuando el equipo aprueba una postulación?',o:['Solo cambia el estado en la plataforma, nada más','La visita pasa a "asignada" y se emite un evento local (pendiente de conexión) para notificar al shopper y, si aplica, reflejarse en la HR externa','El shopper debe verificar manualmente si fue aprobado','Se genera automáticamente la liquidación'],a:1,exp:'Al aprobar una postulación, la plataforma: (1) mueve la visita a "asignada", (2) emite un evento local que queda en estado pendiente de conexión para notificar al shopper (WhatsApp/push vía Make, una vez que el sistema central confirme la conexión), (3) prepara la escritura de vuelta a la HR externa (Google Sheets) si esa integración está conectada, y (4) registra quién gestionó la aprobación para trazabilidad. Ninguna notificación ni escritura externa ocurre realmente hasta que el sistema central conecta la integración.'},
          ]}
        ]},
       /* ─── OPERACIÓN ─── */
@@ -1226,7 +1226,7 @@ PWA) deben reflejar ya la marca configurada.</p></div>`},
            {q:'¿Qué significa que un programa de mystery shopping tiene "calibración"?',o:['Que los cuestionarios son muy largos','Que todos los evaluadores miden igual los mismos criterios (consistencia metodológica), garantizando que los datos sean comparables entre sucursales y periodos','Que el programa es muy exacto en precios','Que los evaluadores son profesionales certificados'],a:1,exp:'La calibración es el proceso de asegurar que todos los evaluadores interpretan y aplican los criterios del cuestionario de la misma manera. Sin calibración, dos evaluadores en la misma sucursal pueden dar scores muy diferentes por interpretaciones distintas del mismo criterio. En CXOrbia, la certificación + el instructivo detallado son los mecanismos de calibración.'},
          ]}
        ]},
-      /* ── Admin: Backend técnico ── */
+      /* ── Admin: Sistema central técnico ── */
       {id:'a_backend',cat:'Técnico',ic:'⚙️',color:'#7c3aed',n:'Backend técnico: Firebase, Gemini, Make y Storage',
        desc:'Conecta el backend de producción: base de datos en tiempo real, IA generativa, automatizaciones y almacenamiento de archivos.',cert:false,mins:90,
        lessons:[
@@ -1312,12 +1312,12 @@ PWA) deben reflejar ya la marca configurada.</p></div>`},
 </div>
 <h3>Cómo decidir entre varios candidatos</h3>
 <p>Cuando más de un shopper se postula a la misma sucursal, prioriza por: certificación vigente para ese proyecto específico, rating histórico (visitas completas y a tiempo), cercanía geográfica declarada, y si ya conoce el instructivo de ese cliente por visitas anteriores. No hay una regla única correcta — usa criterio, pero sé consistente para no generar percepción de favoritismo.</p>
-<div class="acad-section"><b>Sin duplicar</b><p>Si gestionas desde la plataforma y desde la HR, verifica que la visita quede con un solo gestor. El sync real lo resuelve el backend por llave natural.</p></div>`},
+<div class="acad-section"><b>Sin duplicar</b><p>Si gestionas desde la plataforma y desde la HR, verifica que la visita quede con un solo gestor. El sync real lo resuelve el sistema central por llave natural.</p></div>`},
          {id:'ao2',ic:'⚠️',n:'Conflictos y sincronía de HR',content:`
 <h2>Cuando la HR y la plataforma no coinciden</h2>
 <div class="acad-section">🎯 <b>Objetivo</b><p>Detectar y resolver conflictos de datos entre HR externa y la plataforma sin perder información.</p></div>
 <p>Cuando un cliente gestiona su hoja de ruta en Google Sheets o Excel EN VIVO, y tu equipo también opera desde la plataforma, es cuestión de tiempo antes de que ambos lados intenten cambiar el mismo registro casi al mismo tiempo (por ejemplo: tú reasignas un shopper en la plataforma, mientras alguien en el cliente edita la misma fila en la hoja). Esto es un <b>conflicto de sincronía</b>, no un error — es esperable en cualquier integración de dos vías.</p>
-<p>La sincronía con hoja de ruta externa (Google Sheets/Excel) queda <b>pendiente de backend</b>. Mientras tanto, tu trabajo es NO dejar que un conflicto pase desapercibido:</p>
+<p>La sincronía con hoja de ruta externa (Google Sheets/Excel) queda <b>pendiente de conexión</b>. Mientras tanto, tu trabajo es NO dejar que un conflicto pase desapercibido:</p>
 <ul class="acad-check">
 <li>Revisa el panel de incidencias de la Fuente de HR</li>
 <li>Un conflicto (held_for_conflict) se retiene hasta reconciliar</li>
@@ -1326,7 +1326,7 @@ PWA) deben reflejar ya la marca configurada.</p></div>`},
 </ul>
 <h3>Cómo se ve un conflicto resuelto correctamente</h3>
 <p>Confirmas cuál de las dos versiones es la correcta (normalmente preguntando directamente a quien hizo el cambio más reciente), documentas el motivo en la nota, y solo entonces liberas la visita para continuar su flujo normal. Nunca se resuelve "a ojo" comparando qué versión se ve más completa — eso es exactamente lo que la política de "no dedupe visual" prohíbe en todo el sistema.</p>
-<blockquote>Los estados "sincronizada / actualizada" reales dependen del gate de backend. En preview verás "preparado · pendiente backend".</blockquote>`},
+<blockquote>Los estados "sincronizada / actualizada" reales dependen del gate del sistema central. En preview verás "preparado · pendiente de conexión".</blockquote>`},
          {id:'ao3',ic:'📍',n:'Visitas fuera de rango',content:`
 <h2>Autorizar (o no) una visita fuera de rango</h2>
 <div class="acad-section">🎯 <b>Objetivo</b><p>Decidir con criterio cuándo un atraso es responsabilidad del shopper y cuándo no.</p></div>
@@ -1341,7 +1341,7 @@ PWA) deben reflejar ya la marca configurada.</p></div>`},
 <p>Registrar el motivo no es un trámite burocrático: es lo que te protege a ti si el cliente pregunta después por qué una visita se aceptó fuera de fecha, y es lo que te permite detectar patrones (un shopper que siempre se atrasa, una sucursal que siempre cancela) para actuar a tiempo.</p>`},
          {id:'ao4',ic:'❓',n:'Evaluación operativa',tipo:'quiz',quiz:[
            {q:'Una visita está en conflicto (HR vs plataforma). ¿La liquidas?',o:['Sí, de inmediato','No: se retiene hasta reconciliar','Solo si el shopper insiste'],a:1,fb:'Un conflicto se retiene (held_for_conflict) hasta reconciliar. No se liquida forzado.'},
-           {q:'Apruebas una postulación. ¿El shopper ya recibió WhatsApp?',o:['Sí, automático','No: la notificación queda preparada, pendiente de confirmación/gate','Depende del país'],a:1,fb:'La notificación se prepara; el envío real depende del gate de backend.'},
+           {q:'Apruebas una postulación. ¿El shopper ya recibió WhatsApp?',o:['Sí, automático','No: la notificación queda preparada, pendiente de confirmación/gate','Depende del país'],a:1,fb:'La notificación se prepara; el envío real depende del gate del sistema central.'},
          ]},
        ]},
       /* ─── FRANQUICIA / COORDINACIÓN ─── */
@@ -1439,12 +1439,12 @@ PWA) deben reflejar ya la marca configurada.</p></div>`},
 <div class="acad-section">✅ <b>Por qué no se inventan valores</b><p>Mostrar un rating o un honorario "por defecto" cuando la fuente no lo entrega haría parecer que existe una evaluación real donde no la hay — eso rompe la confianza en TODO el resto de la plataforma. Por eso cada campo ausente se muestra como "— sin dato" o queda fuera de la tarjeta, nunca sustituido.</p></div>
 <div class="acad-section">⚠️ <b>Error frecuente</b><p>Pensar que un shopper en "🔒 Protegido" tiene un problema o está mal cargado — no es un error, es el nivel de dato real disponible desde su fuente. Compara con Shoppers → ábrelo y verás la explicación del nivel en su ficha.</p></div>
 <div class="acad-section">🔧 <b>Acción correctiva</b><p>Para subir de nivel, completa los datos operativos (estado, asignación a visitas) y luego los de contacto/banco desde su ficha (requiere permiso de datos protegidos) — nunca se "fuerza" un nivel manualmente.</p></div>`},
-       {id:'apc4',ic:'📸',n:'Snapshot vs. runtime: qué estás viendo en cada momento',content:`
+       {id:'apc4',ic:'📸',n:'Foto fija vs. datos en vivo: qué estás viendo en cada momento',content:`
 <h2>Foto fija vs. lectura en vivo</h2>
-<div class="acad-section">🎯 <b>Objetivo</b><p>Distinguir cuándo estás viendo un <b>snapshot</b> (una foto de datos capturada en un momento específico — útil para auditoría/evidencia) de cuándo estás viendo <b>runtime</b> (la lectura en vivo de los datos actuales, que cambia según lo que hagas).</p></div>
-<div class="acad-section">⚙️ <b>Cómo reconocer cada modo</b><p>Un snapshot se identifica porque trae una fecha/hora de captura fija y no cambia aunque edites datos después — se usa para evidencia (ej. una captura de auditoría). El runtime es lo que ves normalmente al navegar: KPIs, listas y calendarios que se recalculan en cada acción.</p></div>
-<div class="acad-section">✅ <b>Qué valida una actualización real</b><p>Si haces un cambio (ej. cambias de periodo, pagas un lote) y una pantalla en runtime no refleja el cambio de inmediato sin recargar, eso es una falla — repórtalo. Un snapshot, en cambio, es correcto que NO cambie: esa es su función (preservar el estado de un momento).</p></div>
-<div class="acad-section">⚠️ <b>Error frecuente</b><p>Comparar un snapshot antiguo contra el runtime actual y asumir que "algo se perdió" — en realidad son dos cosas distintas por diseño; el snapshot es un punto en el tiempo, el runtime es el presente.</p></div>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Distinguir cuándo estás viendo un <b>snapshot</b> (una foto de datos capturada en un momento específico — útil para auditoría/evidencia) de cuándo estás viendo los <b>datos en vivo</b> (la lectura actual, que cambia según lo que hagas).</p></div>
+<div class="acad-section">⚙️ <b>Cómo reconocer cada modo</b><p>Un snapshot se identifica porque trae una fecha/hora de captura fija y no cambia aunque edites datos después — se usa para evidencia (ej. una captura de auditoría). Los datos en vivo son lo que ves normalmente al navegar: KPIs, listas y calendarios que se recalculan en cada acción.</p></div>
+<div class="acad-section">✅ <b>Qué valida una actualización real</b><p>Si haces un cambio (ej. cambias de periodo, pagas un lote) y una pantalla en vivo no refleja el cambio de inmediato sin recargar, eso es una falla — repórtalo. Un snapshot, en cambio, es correcto que NO cambie: esa es su función (preservar el estado de un momento).</p></div>
+<div class="acad-section">⚠️ <b>Error frecuente</b><p>Comparar un snapshot antiguo contra los datos en vivo y asumir que "algo se perdió" — en realidad son dos cosas distintas por diseño; el snapshot es un punto en el tiempo, los datos en vivo son el presente.</p></div>
 <div class="acad-section">🔧 <b>Acción correctiva</b><p>Si necesitas comparar, usa el comparativo de periodos (módulo Periodos) en vez de comparar snapshots sueltos — te da la métrica real de cada ronda, lado a lado.</p></div>`},
      ]},
     ],
@@ -1514,7 +1514,7 @@ PWA) deben reflejar ya la marca configurada.</p></div>`},
          {id:'sr5',ic:'❓',n:'Evaluación de tu ruta',tipo:'quiz',quiz:[
            {q:'Reprogramas una visita con causa justificada. ¿Afecta tu puntaje?',o:['Sí, siempre','No, una reprogramación justificada no penaliza','Solo si es fin de semana'],a:1,fb:'Una reprogramación justificada no penaliza. Solo penaliza lo que es responsabilidad del shopper.'},
            {q:'El proyecto usa cuestionario externo por link y falta el link de tu visita. ¿Qué haces?',o:['Uso cualquier formulario interno','Aviso a soporte y espero el link de esa visita','Invento las respuestas'],a:1,fb:'Nunca uses otro formulario. Avisa a soporte; el link correcto es el de esa visita, desde la hoja de ruta.'},
-           {q:'En Mis Beneficios, un pago aparece como "candidata". ¿Ya te pagaron?',o:['Sí','No: es preview, el pago real depende del cruce financiero','Depende del país'],a:1,fb:'"Candidata/preview" no es pago confirmado. El pago real ocurre con el cruce financiero del backend.'},
+           {q:'En Mis Beneficios, un pago aparece como "candidata". ¿Ya te pagaron?',o:['Sí','No: es preview, el pago real depende del cruce financiero','Depende del país'],a:1,fb:'"Candidata/preview" no es pago confirmado. El pago real ocurre con el cruce financiero del sistema central.'},
          ]},
        ]},
       {id:'s_ind',cat:'Inducción',ic:'🕵️',color:'#10b981',n:'Inducción del evaluador incógnito',
@@ -1663,7 +1663,7 @@ PWA) deben reflejar ya la marca configurada.</p></div>`},
   <div class="acad-step"><span>1</span><b>Realizas y completas el cuestionario</b><p>Tu visita pasa a "cuestionario realizado/completado". Aún no genera liquidación: primero va a revisión.</p></div>
   <div class="acad-step"><span>2</span><b>Revisión del equipo</b><p>El coordinador revisa tu cuestionario y evidencias. Si hay observaciones, te notifican por la plataforma.</p></div>
   <div class="acad-step"><span>3</span><b>Submitido y lote de pago</b><p>Tras la revisión y el submitido, tu liquidación candidata puede incluirse en el lote de la quincena.</p></div>
-  <div class="acad-step"><span>4</span><b>Transferencia (backend)</b><p>El pago real se procesa por backend a tus datos bancarios. Verifica que estén correctos en Mi Perfil.</p></div>
+  <div class="acad-step"><span>4</span><b>Transferencia (sistema central)</b><p>El pago real se procesa por el sistema central a tus datos bancarios. Verifica que estén correctos en Mi Perfil.</p></div>
 </div>
 <h3>¿Qué hacer si hay un error en tu pago?</h3>
 <p>Abre un ticket de soporte con: visita afectada, monto esperado vs. monto recibido, y captura de la liquidación. El equipo responderá en máx. 48 horas hábiles. Ten la captura lista antes de escribir — acelera muchísimo la resolución porque el equipo no tiene que reconstruir tu caso desde cero.</p>`},
@@ -1866,12 +1866,12 @@ pierdan entre mensajes de WhatsApp de distintos chats y personas.</p></div>`},
 <h2>Estados honestos: qué significan</h2>
 <div class="acad-section">🎯 <b>Objetivo</b><p>Que nunca confundas un dato preliminar con uno confirmado.</p></div>
 <p>CXOrbia nunca te muestra un dato como "definitivo" si todavía puede cambiar. Esto protege tus decisiones: si tomaras una acción comercial basada en una cifra que luego se ajusta, perderías confianza en el sistema. Por eso cada dato lleva una etiqueta de estado que debes aprender a leer.</p>
-<div class="acad-section"><b>Preview / candidata</b><p>Dato operativo aún sin confirmación final del backend. No es cifra cerrada.</p></div>
-<div class="acad-section"><b>Pendiente backend</b><p>La integración (correo, WhatsApp, sincronía) está preparada pero aún no ejecuta en vivo.</p></div>
+<div class="acad-section"><b>Preview / candidata</b><p>Dato operativo aún sin confirmación final del sistema central. No es cifra cerrada.</p></div>
+<div class="acad-section"><b>Pendiente sistema central</b><p>La integración (correo, WhatsApp, sincronía) está preparada pero aún no ejecuta en vivo.</p></div>
 <div class="acad-section"><b>En vivo</b><p>Solo cuando el dato proviene de una fuente confirmada. Si no lo dice, trátalo como preview.</p></div>
 <blockquote>No interpretes un "preview" como resultado final. Pregunta a tu consultora cuándo el dato queda confirmado.</blockquote>
 <h3>Dónde aparecen estas etiquetas</h3>
-<p>Las verás junto a KPIs financieros compartidos, en badges de estado dentro de Sucursales & Score, y en cualquier cifra que dependa de un cruce que el backend aún no ha confirmado (por ejemplo, una liquidación reciente o un score calculado el mismo día de la visita). Con el tiempo aprenderás que la mayoría de tus decisiones estratégicas (dónde capacitar, a quién premiar) puedes tomarlas perfectamente sobre datos en preview — solo evita comprometerte con un número exacto frente a tu propia dirección hasta que esté confirmado.</p>`},
+<p>Las verás junto a KPIs financieros compartidos, en badges de estado dentro de Sucursales & Score, y en cualquier cifra que dependa de un cruce que el sistema central aún no ha confirmado (por ejemplo, una liquidación reciente o un score calculado el mismo día de la visita). Con el tiempo aprenderás que la mayoría de tus decisiones estratégicas (dónde capacitar, a quién premiar) puedes tomarlas perfectamente sobre datos en preview — solo evita comprometerte con un número exacto frente a tu propia dirección hasta que esté confirmado.</p>`},
          {id:'clr3',ic:'🤝',n:'Solicitar acciones y soporte',content:`
 <h2>Cómo pedir sin operar</h2>
 <div class="acad-section">🎯 <b>Objetivo</b><p>Que puedas activar cambios sin tocar la operación directamente.</p></div>
@@ -1886,7 +1886,7 @@ pierdan entre mensajes de WhatsApp de distintos chats y personas.</p></div>`},
 <p>Cada una de estas solicitudes llega como una tarea con tu nombre al equipo de la consultora — no se pierde en un correo genérico. Si necesitas visitas adicionales fuera de tu programa contratado, o quieres explorar un add-on (evidencia geolocalizada, NPS, benchmarking), también lo inicias desde aquí: la solicitud entra como oportunidad comercial y te contactan con una propuesta, sin que tengas que negociar el alcance tú mismo desde cero.</p>
 <div class="acad-section"><b>Datos sensibles</b><p>Los documentos que cargas se referencian de forma segura. La consultora los usa para el set-up; no se exponen públicamente.</p></div>`},
          {id:'clr4',ic:'❓',n:'Evaluación del portal',tipo:'quiz',quiz:[
-           {q:'Ves un margen en estado "preview". ¿Es cifra final?',o:['Sí','No: es dato operativo sin confirmación final del backend','Solo si es de este mes'],a:1,fb:'Preview = dato operativo sin confirmar. La cifra final la confirma el backend/consultora.'},
+           {q:'Ves un margen en estado "preview". ¿Es cifra final?',o:['Sí','No: es dato operativo sin confirmación final del sistema central','Solo si es de este mes'],a:1,fb:'Preview = dato operativo sin confirmar. La cifra final la confirma el sistema central/consultora.'},
            {q:'Quieres cambiar la asignación de un shopper. ¿Puedes?',o:['Sí, desde mi portal','No: la operación la hace la consultora; yo decido y solicito','Solo los viernes'],a:1,fb:'Tu rol es estratégico: lees y decides. La operación la ejecuta la consultora.'},
          ]},
        ]},
@@ -2484,7 +2484,11 @@ CX.module('aprendizaje', ({data,role,ui})=>{
        aparecía como tarjeta pero sí sumaba en los KPIs de un shopper. Ahora los KPIs SIEMPRE
        usan la misma colección que las tarjetas. Un administrador con permiso de gestión
        (canManageTop) sí ve/cuenta el catálogo completo, porque gestiona todo el contenido. */
-    const visibleCourses = canManageTop ? courses : courses.filter(c=>CX.acadData.visibleFor(c, CX.acadData.ctx()));
+    const visibleCourses = (canManageTop ? courses : courses.filter(c=>CX.acadData.visibleFor(c, CX.acadData.ctx())))
+      /* P0-2 (paquete V151 cierre comercial, 20260716): el curso del sistema central técnico (Firebase/
+         Gemini/Make/Storage) es para el equipo técnico, nunca para la audiencia comercial —
+         oculto incluso para quien gestiona el catálogo, salvo superadmin explícito. */
+      .filter(c=>c.id!=='a_backend' || CX.session.hasTechAccess());
     const filtered=(activeCat==='Todos'?visibleCourses:visibleCourses.filter(c=>c.cat===activeCat))
       .filter(c=>CX.acadData.matchesClassification(c, {modulo:clsModulo||null, nivel:clsNivel||null, paquete:clsPaquete||null}));
     const totalLessons=visibleCourses.reduce((a,c)=>a+(c.lessons||[]).length,0);
@@ -2539,7 +2543,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
              realmente va a pasar al hacer clic. */
           const canManage = role==='admin' && CX.permissions && CX.permissions.can('academy.edit', CX.permissions.ctx());
           const isCustom=canManage&&CX.acadData.isCustom(CX._acadAud||'admin',c.id);
-          const estadoLbl={borrador:'📝 Borrador',en_revision:'👀 En revisión',aprobado:'✅ Aprobado',archivado:'🗄 Archivado',eliminado:'🗑 Eliminado',publicado_preview:'✓ Publicado (preview)'}[c.estado]||'';
+          const estadoLbl={borrador:'📝 Borrador',en_revision:'👀 En revisión',aprobado:'✅ Aprobado',archivado:'🗄 Archivado',eliminado:'🗑 Eliminado',publicado_preview:'✓ Publicado (vista previa)'}[c.estado]||'';
           return `<div class="card hov" data-course="${c.id}" style="cursor:pointer;overflow:hidden;${c.estado==='archivado'||c.estado==='eliminado'?'opacity:.6':''}">
             <div style="background:linear-gradient(135deg,${c.color},${c.color}99);padding:18px 18px 14px;position:relative">
               <div class="between" style="margin-bottom:8px"><span style="background:rgba(255,255,255,.22);color:#fff;border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700">${c.ic} ${c.cat}</span><div class="flex" style="gap:6px;align-items:center">${c.cert&&pct>=100?'<span style="font-size:18px">🏅</span>':''}${canManage?`<button class="acad-dup" data-cid="${c.id}" title="Duplicar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">🧬</button>`:''}${isCustom?((c.estado==='archivado'||c.estado==='eliminado')?`<button class="acad-restore" data-cid="${c.id}" title="Restaurar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">♻️</button>`:`<button class="acad-arch" data-cid="${c.id}" title="Archivar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">🗄</button>`):''}${canManage?`<button class="acad-edit" data-cid="${c.id}" title="Editar / eliminar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:13px;line-height:1">✎</button>`:''}</div></div>
@@ -2593,8 +2597,8 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           </div>
           <div style="font-size:10.5px;color:var(--t3);margin-top:6px">Creador: <b>${cc.creador||'—'}</b>${cc.revisadoPor?' · Revisado por: <b>'+cc.revisadoPor+'</b>':''}${cc.aprobadoPor?' · Aprobado por: <b>'+cc.aprobadoPor+'</b>':''}</div>
         </div>`:''}
-        ${CX.acadData.isCustom(rr,cc.id)?`<div style="grid-column:1/3;font-size:10.5px;color:var(--t3)">Estado: <b>${({borrador:'📝 Borrador',en_revision:'👀 En revisión',aprobado:'✅ Aprobado',archivado:'🗄 Archivado',eliminado:'🗑 Eliminado',publicado_preview:'✓ Publicado (preview)'}[cc.estado]||'—')}</b> · contenido v${cc.contentVersion||1} · flujo v${cc.workflowVersion||1}${cc.auditRef?' · '+cc.auditRef:''}</div>
-        <div style="grid-column:1/3;display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">${(CX.acadData.ALLOWED_TRANSITIONS[cc.estado||'borrador']||[]).filter(s=>s!=='archivado'&&s!=='eliminado').map(s=>`<button class="btn btn-soft btn-sm acadTrans" data-to="${s}" style="font-size:10.5px;padding:4px 9px">→ ${({borrador:'Borrador',en_revision:'Enviar a revisión',aprobado:'Aprobar',publicado_preview:'Publicar (preview)'}[s]||s)}</button>`).join('')}</div>`:''}</div><div style="text-align:right;margin-top:10px;display:flex;justify-content:space-between">${CX.acadData.isCustom(rr,cc.id)?'<button class="btn btn-ghost btn-sm" id="ecDel" style="color:var(--red)">🗑 Eliminar</button>':'<span></span>'}<button class="btn btn-pr btn-sm" id="ecSave">Guardar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#ecSave').addEventListener('click',()=>{
+        ${CX.acadData.isCustom(rr,cc.id)?`<div style="grid-column:1/3;font-size:10.5px;color:var(--t3)">Estado: <b>${({borrador:'📝 Borrador',en_revision:'👀 En revisión',aprobado:'✅ Aprobado',archivado:'🗄 Archivado',eliminado:'🗑 Eliminado',publicado_preview:'✓ Publicado (vista previa)'}[cc.estado]||'—')}</b> · contenido v${cc.contentVersion||1} · flujo v${cc.workflowVersion||1}</div>
+        <div style="grid-column:1/3;display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">${(CX.acadData.ALLOWED_TRANSITIONS[cc.estado||'borrador']||[]).filter(s=>s!=='archivado'&&s!=='eliminado').map(s=>`<button class="btn btn-soft btn-sm acadTrans" data-to="${s}" style="font-size:10.5px;padding:4px 9px">→ ${({borrador:'Borrador',en_revision:'Enviar a revisión',aprobado:'Aprobar',publicado_preview:'Publicar (vista previa)'}[s]||s)}</button>`).join('')}</div>`:''}</div><div style="text-align:right;margin-top:10px;display:flex;justify-content:space-between">${CX.acadData.isCustom(rr,cc.id)?'<button class="btn btn-ghost btn-sm" id="ecDel" style="color:var(--red)">🗑 Eliminar</button>':'<span></span>'}<button class="btn btn-pr btn-sm" id="ecSave">Guardar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#ecSave').addEventListener('click',()=>{
         /* T2.B (paquete V108): scope ya no es CSV libre — se lee de <select multiple> con IDs
            estables de catálogos reales (proyectos, CX.GEO, CX.ROLES, CX.MODULES, niveles y
            paquetes curados). tenantId siempre se fija al tenant activo (CX.BRAND.id), heredado
@@ -2633,7 +2637,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           : (creadorId && sessionActorId===creadorId ? 'quien creó ('+cc.creador+')' : null);
         const actorAvailable = needsActor ? (sessionActor && !blockedReason) : true;
         ui.modal('Cambiar estado → '+to,`<p style="font-size:12px;color:var(--t2);margin-bottom:8px">"${(cc.n||'').replace(/"/g,'&quot;')}" pasará a estado <b>${to}</b>.</p>${needsActor?(actorAvailable?`<div style="font-size:12px;color:var(--t2);margin-bottom:10px">${to==='en_revision'?'Revisa':'Aprueba'}: <b>${sessionActor}</b> (identidad de la sesión activa)</div>`:`<div class="bdg bdg-a" style="margin-bottom:10px;display:inline-block">Preview · requiere usuarios/Auth</div><div style="font-size:11.5px;color:var(--t3);margin-bottom:8px">Este prototipo no tiene un catálogo de usuarios/Auth con una segunda identidad distinta de ${blockedReason||'quien creó el curso'}. En producción, Auth real permite iniciar sesión como el revisor/aprobador correspondiente; aquí el flujo queda pendiente para no simular una separación de funciones inexistente.</div>`):''}<label class="lbl">Motivo</label><textarea class="inp" id="trMot" rows="2" placeholder="Explica el cambio de estado…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="trOk" ${actorAvailable?'':'disabled style="opacity:.5;cursor:not-allowed"'}>Confirmar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#trOk').addEventListener('click',()=>{
-          if(!actorAvailable){ ui.toast('Preview · requiere usuarios/Auth para esta transición','warn',3600); return; }
+          if(!actorAvailable){ ui.toast('Vista previa · requiere gestión de usuarios/acceso para esta transición','warn',3600); return; }
           const m=(o2.querySelector('#trMot').value||'').trim();
           const actor=needsActor?sessionActor:'';
           const opts={reason:m,ctx:CX.permissions.ctx()};

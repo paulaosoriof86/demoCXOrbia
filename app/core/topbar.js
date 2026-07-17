@@ -125,7 +125,7 @@ CX.topbar = {
         <div class="between"><button class="btn btn-soft btn-sm" id="mcWa" title="Abre WhatsApp Web con un borrador manual — no es envío automático">📲 WA (borrador manual)</button><button class="btn btn-pr btn-sm" id="mcSend">Enviar correo</button></div>
       `,{onMount:(ov3,close3)=>{
         ov3.querySelector('#mcWa').addEventListener('click',()=>{const msg=encodeURIComponent(ov3.querySelector('#mcBody').value||'');window.open('https://wa.me/?text='+msg,'_blank');close3();});
-        ov3.querySelector('#mcSend').addEventListener('click',()=>{const to=(ov3.querySelector('#mcTo').value||'').trim();if(!to){CX.ui.toast('Ingresa el destinatario','warn');return;}const newMail={id:'ms'+Date.now().toString(36),de:'equipo@consultora.com',para:to,asunto:ov3.querySelector('#mcSub').value||'(sin asunto)',cuerpo:ov3.querySelector('#mcBody').value||'',fecha:new Date().toISOString().slice(0,16).replace('T',' '),leido:true};mails.unshift(newMail);try{localStorage.setItem('cx_mails',JSON.stringify(mails));}catch(e){}close3();CX.ui.toast('Correo preparado · envío real pendiente backend ('+to+')','ok');});
+        ov3.querySelector('#mcSend').addEventListener('click',()=>{const to=(ov3.querySelector('#mcTo').value||'').trim();if(!to){CX.ui.toast('Ingresa el destinatario','warn');return;}const newMail={id:'ms'+Date.now().toString(36),de:'equipo@consultora.com',para:to,asunto:ov3.querySelector('#mcSub').value||'(sin asunto)',cuerpo:ov3.querySelector('#mcBody').value||'',fecha:new Date().toISOString().slice(0,16).replace('T',' '),leido:true};mails.unshift(newMail);try{localStorage.setItem('cx_mails',JSON.stringify(mails));}catch(e){}close3();CX.ui.toast('Correo preparado · envío pendiente de activación ('+to+')','ok');});
       }});});
     }});
   },
@@ -157,6 +157,14 @@ CX.topbar = {
     if(sup&&!sup._wired){ sup._wired=true; sup.addEventListener('click',()=>this.support()); }
     const ml=document.getElementById('tbMail');
     if(ml&&!ml._wired){ ml._wired=true; ml.addEventListener('click',()=>{ if(CX.router&&CX.router.nav) CX.router.nav('correo'); else this.openMail(); }); }
+    /* R19 P0-3.D (20260715): control discreto de "Instalar app" DENTRO de la app (antes solo
+       existía en la pantalla de login) — para reintentar cuando el navegador ya lo permite
+       (deferredPrompt disponible) o mostrar la guía de iOS. Se oculta si ya está instalada
+       (standalone) o si el navegador no ofrece ningún camino de instalación. */
+    const pw=document.getElementById('tbPwa');
+    if(pw&&!pw._wired){ pw._wired=true; pw.addEventListener('click',()=>CX.pwa&&CX.pwa.openInstall(CX.ui));
+      this.updatePwaBtn(); window.addEventListener('appinstalled',()=>this.updatePwaBtn());
+      setTimeout(()=>this.updatePwaBtn(),400); }
     if(!document._tbDocWired){ document._tbDocWired=true;
       document.addEventListener('click',(e)=>{ const p=document.getElementById('tbBellPanel'); if(this._open&&p&&!p.contains(e.target)&&e.target.id!=='tbBell'&&!(e.target.closest&&e.target.closest('#tbBell')))this.close(); });
       window.addEventListener('resize',()=>{ if(this._open)this.position(); });
@@ -165,6 +173,13 @@ CX.topbar = {
     CX.bus&&CX.bus.on('route',()=>{ this.badge(); this.mailBadge(); });
     CX.bus&&CX.bus.on('login',()=>{ this.badge(); this.mailBadge(); });
     this.badge(); this.mailBadge();
+  },
+  updatePwaBtn(){
+    const pw=document.getElementById('tbPwa'); if(!pw)return;
+    const std=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
+    if(std){ pw.style.display='none'; return; }
+    const isIOS=/iPad|iPhone|iPod/i.test(navigator.userAgent);
+    pw.style.display=(CX.pwa&&CX.pwa.installable())||isIOS ? 'flex' : 'none';
   },
 };
 

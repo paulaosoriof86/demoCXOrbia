@@ -105,8 +105,9 @@ CX.router = {
         const badge = (m.badge && role==='admin') ? `<span class="n-badge">${d.kpis().postPend||''}</span>`
           : (m.badgeNotif && CX.notif && CX.notif.unread(role)) ? `<span class="n-badge">${CX.notif.unread(role)}</span>` : '';
         const soon  = m.status==='soon' ? `<span class="n-soon">pronto</span>` : '';
-        return `<div class="nav-i" id="nav-${id}" data-id="${id}" role="button" tabindex="0" aria-label="${m.label}">
-          <span class="n-ic" aria-hidden="true">${m.icon}</span><span>${m.label}</span>${badge||soon}</div>`;
+        const lbl = typeof m.label==='function' ? m.label(role) : m.label;
+        return `<div class="nav-i" id="nav-${id}" data-id="${id}" role="button" tabindex="0" aria-label="${lbl}">
+          <span class="n-ic" aria-hidden="true">${m.icon}</span><span>${lbl}</span>${badge||soon}</div>`;
       }).join('');
       if(!items) return '';
       const isc = collapsed[group.sec] || false;
@@ -180,12 +181,17 @@ CX.router = {
   nav(id){
     const role=CX.session.role, m=CX.MODULES[id];
     if(!m||!m.roles.includes(role)||!CX.moduleEnabled(id)||!CX.roleCanAccess(CX.session.testRole||role,id)) return;
+    /* P0-2 (paquete V149 fix, 20260716): detalle técnico (Diagnóstico & Readiness) solo para
+       superadmin explícito (session.effectiveRole()==='super'), nunca para admin/ops/coordinador/
+       aliado — sin entrada en el menú (ruta no comercial, ver buildRail). */
+    if(m.superOnly && !CX.session.hasTechAccess()) return;
     CX.session.view=id; CX.session.save();
     document.querySelectorAll('.nav-i').forEach(n=>n.classList.toggle('active',n.dataset.id===id));
     document.body.classList.remove('nav-open');
     // crumb
     const group=CX.NAV[role].find(g=>g.items.includes(id));
-    document.getElementById('crumb').innerHTML=`${group?group.sec:''} <span class="sep">/</span> <b>${m.label}</b>`;
+    const crumbLbl = typeof m.label==='function' ? m.label(role) : m.label;
+    document.getElementById('crumb').innerHTML=`${group?group.sec:''} <span class="sep">/</span> <b>${crumbLbl}</b>`;
     this.render(id);
     const c=document.querySelector('.content'); if(c)c.scrollTo({top:0});
   },

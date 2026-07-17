@@ -183,12 +183,70 @@ function genPosts(visitas){
 const _visitasAll = PROJECTS.flatMap(genVisitas);
 const _postsAll   = genPosts(_visitasAll);
 
+/* P0-1 (paquete V149 fix, 20260716): normaliza nombre de proyecto para deduplicar por
+   tenantId+nombre (evita "Proyecto A"/"Proyecto A " con distinto id tras ensayos repetidos). */
+function _normProjName(n){ return (n||'').trim().toLowerCase().replace(/\s+/g,' '); }
+
 /* P0-2 (20260710): reintegra proyectos/periodos creados en el prototipo (persistidos en localStorage)
    para que sobrevivan un reload. Sus visitas se generan igual que cualquier proyecto (arrancan vacías
    si nVisitas=0, que es el default de addProject). */
 (function _restoreCustomProjects(){
   try{
-    const saved = JSON.parse(localStorage.getItem('cx_custom_projects')||'[]');
+    let saved = JSON.parse(localStorage.getItem('cx_custom_projects')||'[]');
+    /* P0-1 (paquete V149 fix, 20260716): migración idempotente y versionada — colapsa duplicados
+       de ensayos repetidos (mismo tenantId+nombre normalizado, distinto id) en un único proyecto,
+       remapeando visitas/postulaciones que apuntaban al duplicado descartado. Nunca borra proyectos
+       reales: solo colapsa los que comparten tenant+nombre, quedándose con el primero (más antiguo). */
+    const MIGRATION_KEY='cx_projects_migration_v149_fix_1';
+    if(saved.length && !localStorage.getItem(MIGRATION_KEY)){
+      const keep=new Map(); const remap={};
+      saved.forEach(p=>{
+        const k=(p.tenantId||'')+'::'+_normProjName(p.name);
+        if(keep.has(k)){ remap[p.id]=keep.get(k).id; }
+        else keep.set(k,p);
+      });
+      const deduped=[...keep.values()];
+      if(Object.keys(remap).length){
+        try{
+          const v=JSON.parse(localStorage.getItem('cx_extra_visitas')||'[]');
+          v.forEach(x=>{ if(remap[x.projectId]) x.projectId=remap[x.projectId]; });
+          localStorage.setItem('cx_extra_visitas', JSON.stringify(v));
+        }catch(e){}
+        saved=deduped;
+        localStorage.setItem('cx_custom_projects', JSON.stringify(saved));
+      }
+      localStorage.setItem(MIGRATION_KEY, JSON.stringify({at:new Date().toISOString(), collapsed:Object.keys(remap).length}));
+    }
+    /* P0-1 (paquete V153 dos P0 reales, 20260716): la limpieza legacy de arriba NO comprobaba
+       tenant — podía borrar un proyecto REAL de otro tenant solo por llamarse "Proyecto A", y
+       una vez marcada la migración como ejecutada, un residuo de prueba creado DESPUÉS quedaba
+       para siempre. Se separan dos mecanismos: (A) limpieza legacy de arriba, ahora acotada al
+       tenant actual; (B) sanitización repetible de abajo, que corre en CADA carga (no depende
+       de ninguna marca) y solo actúa sobre metadatos explícitos de fixture del tenant actual —
+       nunca por nombre, para no arriesgar un proyecto real llamado igual. */
+    const CLEANUP_KEY='cx_projects_migration_v151_commercial_cleanup_1';
+    if(!localStorage.getItem(CLEANUP_KEY)){
+      const KNOWN_TEST_NAMES=new Set(['proyecto a','proyecto b','test dedupe unico']);
+      const before=saved.length;
+      saved = saved.filter(p=>{
+        if(!p) return true;
+        if(p.tenantId!==_TENANT_ID) return true; /* nunca tocar otros tenants */
+        if(p.testFixture || p.fixture || p.createdByTest) return false;
+        if(KNOWN_TEST_NAMES.has(_normProjName(p.name))) return false;
+        return true;
+      });
+      if(saved.length!==before) localStorage.setItem('cx_custom_projects', JSON.stringify(saved));
+      localStorage.setItem(CLEANUP_KEY, JSON.stringify({at:new Date().toISOString(), removed:before-saved.length}));
+    }
+    /* P0-1 (paquete V153 dos P0 reales, 20260716) — mecanismo B: sanitización REPETIBLE de
+       fixtures explícitos, corre en CADA carga, no depende de CLEANUP_KEY. Un residuo creado
+       después de la migración legacy no debe sobrevivir para siempre. Solo actúa sobre metadatos
+       explícitos (testFixture/fixture/createdByTest) del tenant ACTUAL — nunca por nombre. */
+    {
+      const beforeB=saved.length;
+      saved = saved.filter(p=>!(p && p.tenantId===_TENANT_ID && (p.testFixture || p.fixture || p.createdByTest)));
+      if(saved.length!==beforeB) localStorage.setItem('cx_custom_projects', JSON.stringify(saved));
+    }
     saved.forEach(p=>{
       if(!PROJECTS.some(x=>x.id===p.id)){
         PROJECTS.push(p);
@@ -342,8 +400,13 @@ CX.data = {
 
   /* alta de proyecto nuevo (persistente, aislado: id propio, sin tocar los demás) */
   addProject(cfg){
+    /* P0-1 (paquete V149 fix, 20260716): dedupe en el momento de creación — mismo tenant+nombre
+       normalizado devuelve el proyecto existente en vez de crear un duplicado con id distinto. */
+    const tenantId0 = cfg.tenantId || (window.CX && CX.BRAND && CX.BRAND.id) || 'tenant-demo';
+    const existing = this.projects.find(p=>p.tenantId===tenantId0 && _normProjName(p.name)===_normProjName(cfg.name));
+    if(existing) return existing;
     const id = cfg.id || ('proj-'+Date.now().toString(36));
-    const tenantId = (window.CX && CX.BRAND && CX.BRAND.id) || 'tenant-demo';
+    const tenantId = tenantId0;
     const proj = Object.assign({
       id, tenantId, accent:'#2196d3', quincenas:['Quincena 1','Quincena 2'], nVisitas:0,
     }, cfg, {id, tenantId: cfg.tenantId || tenantId});
@@ -494,6 +557,80 @@ CX.data = {
     const arr = pool || this.shoppersFor();
     return arr.filter(s => this.shopperDataLevel(s)!=='protected_reference' && Number.isFinite(s.rating));
   },
+  /* R19 Gate 6 (20260715): definición confirmada de "shopper activo" — cuenta activa (no
+     protected_reference) CON al menos una visita realizada en los 6 meses anteriores a la
+     FECHA DE REFERENCIA del periodo activo (no new Date() del navegador cuando el periodo está
+     cerrado/archivado: para vistas históricas, la referencia es el cierre del periodo). Antes
+     `s.estado!=='Pendiente'` contaba como activo CUALQUIER registro sin ese campo — incluida una
+     protected_reference sin ningún dato operativo (216/216 "activos" en la evidencia adjunta). */
+  activeRefDate(){
+    const id=this.currentPeriodId;
+    const st=this.periodState(id);
+    if(st==='cerrado'||st==='archivado'){
+      const dates=this.periodDates(id);
+      if(dates.length) return dates.slice().sort().slice(-1)[0];
+    }
+    return new Date().toISOString().slice(0,10);
+  },
+  /* R19 crítico 1.B (20260716): normaliza primero los campos CANÓNICOS
+     (measurementWindowId/measurementWindowLabel) antes de caer a la compatibilidad legacy
+     (v.quincena, que viene de la HR en proyectos existentes). Evita además que "Quincena" y
+     "Periodo de medición" sean dos columnas separadas mostrando el mismo dato — measurementWindow
+     es ahora LA fuente única; los módulos ya no deben leer v.quincena directamente para mostrarlo. */
+  measurementWindow(v, ctx){
+    if(!v) return {id:null,label:'—',source:'none'};
+    if(v.measurementWindowLabel) return {id:v.measurementWindowId||null, label:v.measurementWindowLabel, source:'hr'};
+    if(v.quincena) return {id:(v.quincena+'').toLowerCase().replace(/\s+/g,'_'), label:v.quincena, source:'hr'};
+    return {id:null, label:'Sin ventana asignada', source:'none'};
+  },
+  shopperActivo(s, refDateISO){
+    if(!s || this.shopperDataLevel(s)==='protected_reference') return false;
+    const ref=new Date((refDateISO||this.activeRefDate())+'T00:00:00');
+    const sixAgo=new Date(ref); sixAgo.setMonth(sixAgo.getMonth()-6);
+    return this._visitas.some(v=>v.shopperId===s.id && v.realizada && (()=>{const d=new Date(v.realizada+'T00:00:00');return d>=sixAgo&&d<=ref;})());
+  },
+  /* R19 P0-1 (20260715): fuente ÚNICA de los buckets de estado de visita que hoy consumen
+     dashboard.js, visitas.js y postulaciones.js — antes cada módulo redefinía su propia versión
+     de "sinAsignar"/"pendRealizar"/etc. como lambdas inline duplicadas (la causa raíz de que el
+     Gate 1 divergiera: dos copias del mismo filtro que un día dejan de ser idénticas). Estas son
+     las MISMAS definiciones que ya estaban en uso (no se cambia semántica visible en esta ronda,
+     evita romper KPIs ya validados) — el cambio es que ahora hay UN SOLO lugar que las declara.
+     Un futuro cambio de semántica (p.ej. hacia los estados ortogonales completos del paquete) se
+     hace aquí una vez y se propaga a todos los consumidores automáticamente. */
+  /* R19 P0-1 (20260715) — MIGRACIÓN a los 7 estados ortogonales confirmados por el paquete.
+     Sustituye la semántica anterior (que excluía indebidamente fuera_rango de sinAsignar, y
+     limitaba pendRealizar solo a asignada/agendada) por la definición canónica:
+       assigned = existe shopperId; scheduled = assigned && fecha agendada válida;
+       realized = existe fecha realizada o estado realizado/posterior; questionnaire = cuestionario
+       confirmado; submitted = submit confirmado; outOfRange = fuera de rango; cancelled = archivada.
+     "Pendientes de realizar" ahora es la definición confirmada por Paula: TODAS las visitas del
+     periodo activo que aún no se han realizado, aunque estén sin shopper o sin agenda — se
+     excluyen únicamente canceladas/archivadas. fueraRango puede COEXISTIR con sinAsignar/
+     sinAgendar/pendRealizar (no se fuerza exclusividad artificial), tal como exige el Gate 1
+     (fixture caso F: sin shopper + fuera de rango → sinAsignar + pendRealizar + fueraRango). */
+  visitFacets(v){
+    if(!v) return {assigned:false,scheduled:false,realized:false,questionnaire:false,submitted:false,outOfRange:false,cancelled:false};
+    const assigned=!!v.shopperId;
+    const scheduled=assigned&&!!v.agendada;
+    const realized=!!v.realizada||['realizada','cuestionario','liquidada'].includes(v.estado);
+    const questionnaire=!!v.cuestFecha||['cuestionario','liquidada'].includes(v.estado);
+    const submitted=!!v.submit||v.estado==='liquidada';
+    const outOfRange=v.estado==='fuera_rango';
+    const cancelled=!!v._archived;
+    return {assigned,scheduled,realized,questionnaire,submitted,outOfRange,cancelled};
+  },
+  visitBucketFns:{
+    asignadas:v=>CX.data.visitFacets(v).assigned,
+    sinAsignar:v=>{const f=CX.data.visitFacets(v);return !f.assigned&&!f.realized&&!f.cancelled;},
+    sinAgendar:v=>{const f=CX.data.visitFacets(v);return f.assigned&&!f.scheduled&&!f.realized&&!f.cancelled;},
+    agendadas:v=>{const f=CX.data.visitFacets(v);return f.scheduled&&!f.realized&&!f.cancelled;},
+    realizadas:v=>{const f=CX.data.visitFacets(v);return f.realized&&!f.cancelled;},
+    pendRealizar:v=>{const f=CX.data.visitFacets(v);return !f.realized&&!f.cancelled;},
+    cuestPend:v=>{const f=CX.data.visitFacets(v);return f.realized&&!f.questionnaire&&!f.cancelled;},
+    sinSubmitir:v=>{const f=CX.data.visitFacets(v);return f.questionnaire&&!f.submitted&&!f.cancelled;},
+    liquidadas:v=>v.estado==='liquidada'&&!v._archived,
+    fueraRango:v=>{const f=CX.data.visitFacets(v);return f.outOfRange&&!f.cancelled;},
+  },
 
   /* ---- Fase 5: alcance por país (roles coordinador/aliado, scopeCountry:true) ----
      Restringe SOLO cuando el usuario en sesión trae países asignados (u.scopePaises).
@@ -608,18 +745,19 @@ CX.data = {
   kpis(){
     const v=this.visitas();
     const P=(fn)=>this._phaseCount(v,fn);
+    const BF=this.visitBucketFns;
     return {
       total:P(()=>true),
-      asignadas:P(x=>x.shopperId),
-      sinAsignar:P(x=>!x.shopperId&&x.estado!=='fuera_rango'),
-      sinAgendar:P(x=>x.estado==='asignada'),
-      agendadas:P(x=>['agendada','realizada','cuestionario','liquidada'].includes(x.estado)),
-      realizadas:P(x=>['realizada','cuestionario','liquidada'].includes(x.estado)),
-      pendRealizar:P(x=>['asignada','agendada'].includes(x.estado)),
-      cuestPend:P(x=>x.estado==='realizada'),
-      sinSubmitir:P(x=>x.estado==='cuestionario'),
-      liquidadas:P(x=>x.estado==='liquidada'),
-      fueraRango:P(x=>x.estado==='fuera_rango'),
+      asignadas:P(BF.asignadas),
+      sinAsignar:P(BF.sinAsignar),
+      sinAgendar:P(BF.sinAgendar),
+      agendadas:P(BF.agendadas),
+      realizadas:P(BF.realizadas),
+      pendRealizar:P(BF.pendRealizar),
+      cuestPend:P(BF.cuestPend),
+      sinSubmitir:P(BF.sinSubmitir),
+      liquidadas:P(BF.liquidadas),
+      fueraRango:P(BF.fueraRango),
       postPend:this.posts().filter(p=>p.estado==='pendiente').length,
     };
   },

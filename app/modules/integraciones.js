@@ -63,7 +63,7 @@ CX.intStore = {
      visual sigue funcionando igual), pero ya no se usa para decidir el copy "activa"/"conectada" —
      eso ahora depende exclusivamente de `connectionRef()`, que este prototipo nunca emite. */
   isOn(id){ return !!this.state()[id]; },
-  /* connectionRef: SOLO un backend real podría emitirlo tras confirmar la integración. Este
+  /* connectionRef: SOLO el sistema central podría emitirlo tras confirmar la integración. Este
      prototipo nunca llama a un proveedor real, así que SIEMPRE es null — no se fabrica. */
   connectionRef(id){ return null; },
   /* Estados canónicos separados — nunca se cuenta una solicitud como "activa"/"configurada":
@@ -140,7 +140,7 @@ CX.module('integraciones', ({ui,data})=>{
          NO tiene conexión real solo por activar el toggle — antes decía "activado" sin más.
          Se mantiene el mismo estado canónico (requested/pending_backend) que las demás. */
       if(!CX.intStore.isOn(item.id))CX.intStore.toggle(item.id);
-      draw();ui.toast(item.n+': solicitud registrada · pendiente de conexión real por backend','ok',3200);
+      draw();ui.toast(item.n+': solicitud registrada · pendiente de conexión','ok',3200);
       return;
     }
     const cfg=CX.intStore.getConfig(item.id);
@@ -162,7 +162,7 @@ CX.module('integraciones', ({ui,data})=>{
         }).join('')}
       </div>
       <div class="between" style="margin-top:14px"><button class="btn btn-ghost btn-sm" id="cfTest">🔌 Probar conexión</button><button class="btn btn-pr btn-sm" id="cfSave">Guardar configuración</button></div>
-      <div style="font-size:10.5px;color:var(--t3);margin-top:8px">🔒 Las credenciales y endpoints reales las gestiona el backend en producción — este prototipo nunca las pide, las envía a ningún proveedor, ni las conserva en el navegador.</div>
+      <div style="font-size:10.5px;color:var(--t3);margin-top:8px">🔒 Las credenciales y endpoints reales los gestiona el sistema central una vez activo — este prototipo nunca las pide, las envía a ningún proveedor, ni las conserva en el navegador.</div>
     `,{onMount:(ov,close)=>{
       ov.querySelector('#cfTest').addEventListener('click',()=>{if(!CX.permissions.gate('integration.test',CX.permissions.ctx(),ui))return;ui.toast('⚠️ Prueba simulada · la validación real de credenciales ocurre en el backend de producción.','',3600);});
       ov.querySelector('#cfSave').addEventListener('click',()=>{
@@ -171,7 +171,7 @@ CX.module('integraciones', ({ui,data})=>{
         ov.querySelectorAll('.cfg-fld').forEach(i=>{patch[i.dataset.k]=i.value.trim();});
         ov.querySelectorAll('.cfg-fld-check').forEach(i=>{patch[i.dataset.k]=i.checked?'__CHECKED__':'';});
         CX.intStore.setConfig(item.id,patch);if(!CX.intStore.isOn(item.id))CX.intStore.toggle(item.id);
-        close();draw();ui.toast(item.n+': preferencia guardada · pendiente de conexión real por backend','ok',3200);
+        close();draw();ui.toast(item.n+': preferencia guardada · pendiente de conexión','ok',3200);
       });
     }});
   };
@@ -201,7 +201,7 @@ CX.module('integraciones', ({ui,data})=>{
     const activeCount=items.filter(i=>CX.intStore.status(i.id)!=='not_requested').length;
     host.innerHTML=`
       <div class="between" style="margin-bottom:6px"><div>${ui.ph('Integraciones & Add-ons','Conecta tu ecosistema — activables por plan · configura una vez, funciona en toda la plataforma')}</div>
-        <div class="flex" style="gap:8px">${(()=>{const sc=CX.dataSource&&CX.dataSource.sourceContract?CX.dataSource.sourceContract():null;return sc?ui.bdg('fuente: '+sc.sourceReadMode+(sc.runtimeSyncActive?' · sync activo':''),sc.runtimeSyncActive?'g':'n'):'';})()}<span class="bdg bdg-a">${activeCount} solicitada(s) · pendiente(s) de backend</span></div></div>
+        <div class="flex" style="gap:8px">${(()=>{const sc=CX.dataSource&&CX.dataSource.sourceContract?CX.dataSource.sourceContract():null;const modeLbl={demo:'Demo',source_safe_preview:'Vista previa',connected:'Conectado'}[sc&&sc.sourceReadMode]||'';return sc?ui.bdg('fuente: '+modeLbl+(sc.runtimeSyncActive?' · activo':''),sc.runtimeSyncActive?'g':'n'):'';})()}<span class="bdg bdg-a">${activeCount} solicitada(s) · pendiente(s) de activación</span></div></div>
       <div style="background:var(--brand-light);border-radius:10px;padding:11px 14px;font-size:12.5px;color:var(--brand-dark);margin-bottom:16px">
         ⚡ <b>Receta de automatización inteligente:</b> IA (Gemini/Claude) redacta → Canva/Gamma crean piezas → Metricool programa y publica → Make/Zapier orquesta → NotebookLM alimenta el conocimiento del cliente y la Academia.
       </div>
@@ -211,11 +211,11 @@ CX.module('integraciones', ({ui,data})=>{
         return `<div style="margin-bottom:20px"><div style="font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.6px;text-transform:uppercase;border-bottom:1px solid var(--border-2);padding-bottom:6px;margin-bottom:10px">${cat}</div>
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px">${catItems.map(card).join('')}</div></div>`;
       }).join('')}
-      <div style="margin-top:8px">${ui.aiBox('Cada integración solicitada queda pendiente de conexión real por backend antes de operar de extremo a extremo (WhatsApp, Sheets, Gemini, Metricool, Make, etc.). El prototipo registra la intención y el estado; el backend de producción confirma la conexión.','Ecosistema — estado honesto por integración')}</div>`;
+      <div style="margin-top:8px">${ui.aiBox('Cada integración solicitada queda pendiente de activación antes de operar de extremo a extremo (WhatsApp, Sheets, Gemini, Metricool, Make, etc.). El prototipo registra la intención y el estado; la activación real confirma la conexión.','Ecosistema — estado honesto por integración')}</div>`;
     host.querySelectorAll('.intTog').forEach(c=>c.addEventListener('change',()=>{
       const item=CX.intStore.ITEMS.find(i=>i.id===c.dataset.id);
       if(c.checked&&item&&item.cfg&&item.cfg.length){c.checked=false;configModal(item);}
-      else{CX.intStore.toggle(c.dataset.id);draw();ui.toast(c.checked?item.n+': solicitud registrada · pendiente de conexión real por backend':item.n+': solicitud retirada','ok');}
+      else{CX.intStore.toggle(c.dataset.id);draw();ui.toast(c.checked?item.n+': solicitud registrada · pendiente de conexión':item.n+': solicitud retirada','ok');}
     }));
     host.querySelectorAll('.intCfg').forEach(b=>b.addEventListener('click',()=>{
       const item=CX.intStore.ITEMS.find(i=>i.id===b.dataset.id);if(item)configModal(item);

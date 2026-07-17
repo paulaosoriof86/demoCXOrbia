@@ -14,7 +14,7 @@ CX.manualesData = {
   MANUALES:[
     {
       id:'m_master', rol:'superadmin', ic:'👑', titulo:'Manual Maestro CXOrbia (todo el sistema)',
-      desc:'Documento completo para el Super Admin: arquitectura, todos los módulos, configuración, operación, finanzas, comercial, IA, integraciones, multi-tenant y backend.',
+      desc:'Documento completo para el Super Admin: arquitectura, todos los módulos, configuración, operación, finanzas, comercial, IA, integraciones, multi-tenant y sistema central.',
       secciones:[
         {t:'1 · Qué es CXOrbia y arquitectura', html:`
 <h2>Plataforma estratégica de field operations</h2>
@@ -115,17 +115,17 @@ CX.manualesData = {
 <h2>Conectar el ecosistema</h2>
 <p>Configuración → Automatizaciones e Integraciones.</p>
 <ul>
-<li><b>Make.com</b>: la integración más importante. Cada evento (postulación, agenda, realizada, cuestionario, reprogramación, pago, atraso) puede disparar un escenario que ramifica a WhatsApp/correo/Sheets. Webhook por tenant (cada consultora usa los suyos).</li>
+<li><b>Orquestador de automatizaciones</b>: la integración más importante. Cada evento (postulación, agenda, realizada, cuestionario, reprogramación, pago, atraso) puede disparar una conexión que ramifica a WhatsApp/correo/Sheets. Configuración propia por tenant (cada consultora usa la suya).</li>
 <li><b>WhatsApp Business</b>: notificaciones al shopper.</li>
 <li><b>Correo (Outlook/Gmail)</b>: bandeja integrada con trazabilidad a clientes/proyectos.</li>
 <li><b>Google Sheets</b>: HR en vivo.</li>
 <li><b>IA (Gemini/ChatGPT/Claude)</b>: el motor inteligente.</li>
 </ul>`},
-        {t:'9 · Multi-tenant, franquicias y backend', html:`
+        {t:'9 · Multi-tenant, franquicias y sistema central', html:`
 <h2>Escalar a varios clientes</h2>
 <p>Cada consultora es un <b>tenant</b> con su marca, plan, países, usuarios y datos segmentados por <code>projectId</code>. Los roles <b>Coordinador/Representante</b> y <b>Aliado/Franquiciado</b> permiten dar acceso a colaboradores de otros países para administrar proyectos/HR de su país específico.</p>
-<h3>Backend (producción)</h3>
-<p>El prototipo usa almacenamiento local. En producción se conecta a Firebase (Firestore + Auth + Storage) o Supabase. Los datos reales entran por el <b>importador inteligente</b> (no por conexión directa a bases viejas). Ver guías de migración en los documentos del proyecto.</p>`},
+<h3>Sistema central (producción)</h3>
+<p>El prototipo usa almacenamiento local. En producción se conecta al sistema central autorizado. Los datos reales entran por el <b>importador inteligente</b> (no por conexión directa a bases viejas). Ver guías de migración en los documentos del proyecto.</p>`},
       ]
     },
     {
@@ -134,7 +134,7 @@ CX.manualesData = {
       secciones:[
         {t:'1 · Tu rol y acceso', html:`
 <h2>Equipo administrativo</h2>
-<p>Ves toda la operación, las finanzas y el comercial de tu tenant. No tienes acceso a la configuración técnica avanzada del Super Admin (backend, multi-tenant, IA transversal) — esa queda reservada al manual maestro.</p>
+<p>Ves toda la operación, las finanzas y el comercial de tu tenant. No tienes acceso a la configuración técnica avanzada del Super Admin (sistema central, multi-tenant, IA transversal) — esa queda reservada al manual maestro.</p>
 <div class="acad-cards">
   <div class="acad-card"><div>📋</div><b>Operación</b><p>Proyectos, visitas, postulaciones, reservas, shoppers.</p></div>
   <div class="acad-card"><div>💰</div><b>Finanzas</b><p>Movimientos, liquidaciones, lotes de pago, presupuesto.</p></div>
@@ -486,14 +486,14 @@ CX.manualesData = {
 
     {
       id:'m_automatizaciones', rol:'admin', ic:'⚡', titulo:'Manual de Automatizaciones',
-      desc:'Motor de eventos, catálogo completo, configuración con Make, plantillas y variables, canales y escenarios recomendados.',
+      desc:'Motor de eventos, catálogo completo, configuración del orquestador de automatizaciones, plantillas y variables, canales y escenarios recomendados.',
       secciones:[
         {t:'1 · Qué es una automatización', html:`<h2>Trabajo que ocurre solo</h2><p>Una automatización es una regla que dispara una acción cuando pasa algo, sin ejecutarla manualmente. Cuando un evento del flujo ocurre (visita asignada, pago procesado, visita atrasada), la plataforma notifica, registra o dispara un proceso externo automáticamente.</p>`},
         {t:'2 · El modelo de eventos', html:`<h2>Cómo funciona por dentro</h2><p>CXOrbia no envía mensajes ni hace POST directamente desde el navegador: cada acción <b>emite un evento local</b> (<code>CX.automations.fire</code>) que queda registrado en un outbox visual con estado <code>pending_backend</code>. Solo el backend, una vez conectado con su propio <code>connectionRef</code>, envía ese payload al escenario de Make real. Así cambias la lógica sin tocar la plataforma, y ningún secreto ni URL de webhook pasa por el navegador.</p>`},
         {t:'3 · Catálogo de eventos', html:`<h2>Eventos disponibles</h2><ul><li><b>postulacion</b> → equipo</li><li><b>aprobacion</b> → shopper</li><li><b>agenda</b> → equipo</li><li><b>realizada</b> → equipo</li><li><b>cuestionario</b> → equipo/QA</li><li><b>reprog</b> → shopper</li><li><b>pago</b> → shopper</li><li><b>atraso</b> → shopper + equipo</li><li><b>recert</b> → shopper</li><li><b>soporte_estado</b> → solicitante</li></ul>`},
-        {t:'4 · Configurar paso a paso', html:`<h2>Ruta: Configuración → Automatizaciones</h2><ol><li>El equipo de backend crea el escenario en Make (Custom webhook) y guarda esa URL exclusivamente del lado del servidor.</li><li>En este prototipo NO existe ningún campo para pegar esa URL — ni por tenant ni por automatización individual. Lo único que puedes hacer aquí es marcar la casilla "listo para conectar", que solo registra tu intención (estado <code>pending_backend</code>), nunca una URL ni una referencia que aparente una conexión.</li><li>Activa los eventos, elige canal y edita la plantilla.</li><li>En producción: el backend confirma la conexión y emite un <code>connectionRef</code> propio — solo entonces el estado pasa a "configurado". El navegador nunca ejecuta el disparo directamente.</li><li>Ramifica a WhatsApp/correo/Sheets desde Make.</li></ol><p>Autoadministrable desde la UI; la conexión real vive en el backend, nunca en el navegador.</p>`},
+        {t:'4 · Configurar paso a paso', html:`<h2>Ruta: Configuración → Automatizaciones</h2><ol><li>El equipo técnico habilita la conexión con el proveedor de mensajería desde el sistema central; ese paso no se hace desde este prototipo.</li><li>Aquí solo marcas la casilla "listo para conectar", que registra tu solicitud — nunca pegas una URL, clave ni credencial en ningún campo.</li><li>Activa los eventos, elige canal y edita la plantilla.</li><li>Cuando el sistema central confirme la conexión, el estado pasa a "configurado" automáticamente. El navegador nunca ejecuta el envío directamente.</li><li>Desde ahí, los mensajes se ramifican a WhatsApp/correo/Sheets.</li></ol><p>Autoadministrable desde la UI; la conexión real la gestiona el sistema central, nunca el navegador.</p>`},
         {t:'5 · Plantillas y variables', html:`<h2>Mensajes con datos reales</h2><p>Usa variables entre llaves: <code>{shopper}</code>, <code>{sucursal}</code>, <code>{fecha}</code>, <code>{estado}</code>, <code>{score}</code>, <code>{monto}</code>. Ejemplo: "Hola {shopper}, tu visita a {sucursal} fue aprobada. Agenda tu fecha en la app."</p>`},
-        {t:'6 · Canales y escenarios', html:`<h2>A dónde va cada evento</h2><p>Canales: in-app (siempre), WhatsApp (vía Make, mayor apertura), correo (formal), Google Sheets (auditoría). Escenarios recomendados: visita asignada → WhatsApp; recordatorio de agenda → WhatsApp+push; atraso → alerta equipo + shopper; lote pagado → notificación con monto.</p>`},
+        {t:'6 · Canales y escenarios', html:`<h2>A dónde va cada evento</h2><p>Canales: in-app (siempre), WhatsApp (mayor apertura), correo (formal), Google Sheets (auditoría). Escenarios recomendados: visita asignada → WhatsApp; recordatorio de agenda → WhatsApp+push; atraso → alerta equipo + shopper; lote pagado → notificación con monto.</p>`},
       ]
     },
     {
@@ -513,11 +513,11 @@ CX.manualesData = {
       desc:'Cada integración a fondo: qué hace, cómo se configura, qué módulos alimenta, su estado y su valor.',
       secciones:[
         {t:'1 · Patrón de configuración', html:`<h2>Cómo se configura cualquiera</h2><p>Configuración → Integraciones → busca la integración → ⚙️ Config → completa los campos → Guardar. En este prototipo <b>ningún campo sensible (API key, token, contraseña, webhook) se guarda en claro ni se pega en ningún formulario</b> — para campos sensibles solo hay una casilla para marcar tu intención de conectar. Estados canónicos: <code>not_requested</code> (nada marcado), <code>requested</code>/<code>pending_backend</code> (intención registrada, sin backend todavía), <code>configured</code>/<code>connected</code> (solo alcanzables cuando un backend real emite su propio <code>connectionRef</code> — nunca en este prototipo).</p>`},
-        {t:'2 · Comunicación', html:`<h2>💬 WhatsApp y ✉️ Correo</h2><p><b>WhatsApp:</b> vía Make (Twilio/360dialog/Meta) o wa.me manual. Alimenta automatizaciones, KPIs, soporte. Apertura ~98% en LatAm. <b>Correo:</b> OAuth Outlook/Gmail. Alimenta el módulo Correo (bandeja + trazabilidad) y el CRM.</p>`},
-        {t:'3 · Automatización y datos', html:`<h2>🔗 Make/Zapier/n8n · 📗 Sheets · 🗂️ Storage</h2><p><b>Make:</b> orquestador central de eventos. <b>Google Sheets:</b> HR viva con lectura/escritura sin duplicar. <b>Storage:</b> evidencias, logos y documentos segmentados por proyecto.</p>`},
+        {t:'2 · Comunicación', html:`<h2>💬 WhatsApp y ✉️ Correo</h2><p><b>WhatsApp:</b> vía tu orquestador de automatizaciones o wa.me manual. Alimenta automatizaciones, KPIs, soporte. Apertura ~98% en LatAm. <b>Correo:</b> OAuth Outlook/Gmail. Alimenta el módulo Correo (bandeja + trazabilidad) y el CRM.</p>`},
+        {t:'3 · Automatización y datos', html:`<h2>🔗 Orquestación de eventos · 📗 Hojas de cálculo · 🗂️ Almacenamiento</h2><p><b>Orquestación:</b> conecta tus eventos con mensajería y otras herramientas. <b>Google Sheets:</b> HR viva con lectura/escritura sin duplicar. <b>Almacenamiento:</b> evidencias, logos y documentos segmentados por proyecto.</p>`},
         {t:'4 · Inteligencia artificial', html:`<h2>✨ Gemini / ChatGPT / Claude / propio</h2><p>Configuración → Asistente de IA → elige proveedor preferido. En este prototipo esa elección <b>solo guarda una preferencia</b> — el navegador nunca llama al proveedor real ni guarda su API key; los módulos de importadores, set-up, cuestionarios, certificaciones, documentos y marketing usan heurística local mientras no exista el backend/adapter real. En producción, el backend conecta al proveedor elegido sin exponer la key al navegador.</p>`},
         {t:'5 · Marketing y facturación', html:`<h2>🎨 Contenido · 🧾 Facturación</h2><p><b>Canva/Gamma/HeyGen y Metricool:</b> alimentan el módulo Marketing. <b>Facturación electrónica (FEL/DIAN) y banca:</b> Enterprise, requieren backend seguro; alimentan Finanzas.</p>`},
-        {t:'6 · Seguridad en producción', html:`<h2>🔒 Nota crítica</h2><p>Las API keys, tokens, webhooks y cualquier secreto NUNCA se guardan en el navegador — ni siquiera en este prototipo. En producción viven exclusivamente en el backend/adapter, fuera del alcance del cliente. Lo único que este prototipo persiste localmente es tu <b>preferencia</b> (qué proveedor prefieres, si quieres solicitar la conexión de una integración) — nunca el secreto en sí. "Probar conexión" es siempre una simulación visual hasta que el backend confirme una conexión real con su propio <code>connectionRef</code>.</p>`},
+        {t:'6 · Seguridad en producción', html:`<h2>🔒 Nota crítica</h2><p>Ningún dato sensible (claves o credenciales) se guarda en el navegador — ni siquiera en este prototipo. Eso lo gestiona exclusivamente el sistema central, fuera del alcance del cliente. Lo único que este prototipo persiste localmente es tu <b>preferencia</b> (qué proveedor prefieres, si quieres solicitar la conexión de una integración) — nunca una credencial. "Probar conexión" es siempre una simulación visual hasta que el sistema central confirme una conexión real.</p>`},
       ]
     },
   ],

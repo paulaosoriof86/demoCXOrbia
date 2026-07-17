@@ -2,6 +2,7 @@
    comparativo último trimestre, notificación WhatsApp. Genérico multipaís. */
 CX.module('dashboard', ({data,ui})=>{
   const p=data.period();
+  const BF=data.visitBucketFns;
   const ALL=!!CX.session._dashAll;
   const cs=ALL?[...new Set(data._visitas.filter(v=>data.inScope(v.pais)).map(v=>v.pais))]:p.countries;
   /* Bloque 9 (corrección V103, 20260711): el archivado (soft-delete) marca v._archived=true pero
@@ -11,19 +12,25 @@ CX.module('dashboard', ({data,ui})=>{
      sourceRef para auditoría). */
   const pool=()=>(ALL?data._visitas.filter(v=>data.inScope(v.pais)):data.visitas()).filter(v=>!v._archived);
   const phaseCount=(fn)=>{const arr=pool();const o={t:arr.filter(fn).length};cs.forEach(c=>o[c]=arr.filter(x=>x.pais===c&&fn(x)).length);return o;};
-  const k=ALL?{
-    total:phaseCount(()=>true), asignadas:phaseCount(x=>x.shopperId),
-    sinAsignar:phaseCount(x=>!x.shopperId&&x.estado!=='fuera_rango'),
-    sinAgendar:phaseCount(x=>x.estado==='asignada'),
-    agendadas:phaseCount(x=>['agendada','realizada','cuestionario','liquidada'].includes(x.estado)),
-    realizadas:phaseCount(x=>['realizada','cuestionario','liquidada'].includes(x.estado)),
-    pendRealizar:phaseCount(x=>['asignada','agendada'].includes(x.estado)),
-    cuestPend:phaseCount(x=>x.estado==='realizada'),
-    sinSubmitir:phaseCount(x=>x.estado==='cuestionario'),
-    liquidadas:phaseCount(x=>x.estado==='liquidada'),
-    fueraRango:phaseCount(x=>x.estado==='fuera_rango'),
-    postPend:data._posts.filter(pp=>pp.estado==='pendiente'&&data.inScope(pp.pais)).length,
-  }:data.kpis();
+  /* R19 Gate 1 (20260715): antes, con !ALL, k se tomaba de CX.data.kpis() — una función DISTINTA
+     de phaseCount()/pool() de este módulo (no excluye _archived), mientras el modal de detalle
+     (drill) siempre usa pool() (sí excluye _archived). Resultado reproducido: el tile "Pend.
+     realizar" mostraba un conteo y su modal mostraba 0 filas — dos fuentes distintas para el
+     mismo número. Ahora k SIEMPRE se calcula con la MISMA pool()/phaseCount() que alimenta el
+     drill, sin importar ALL — una sola fuente, tile y detalle nunca pueden divergir. */
+  const k={
+    total:phaseCount(()=>true), asignadas:phaseCount(BF.asignadas),
+    sinAsignar:phaseCount(BF.sinAsignar),
+    sinAgendar:phaseCount(BF.sinAgendar),
+    agendadas:phaseCount(BF.agendadas),
+    realizadas:phaseCount(BF.realizadas),
+    pendRealizar:phaseCount(BF.pendRealizar),
+    cuestPend:phaseCount(BF.cuestPend),
+    sinSubmitir:phaseCount(BF.sinSubmitir),
+    liquidadas:phaseCount(BF.liquidadas),
+    fueraRango:phaseCount(BF.fueraRango),
+    postPend:data._posts.filter(pp=>pp.estado==='pendiente'&&data.inScope(pp.pais)&&!pp._archived).length,
+  };
   const phaseFlow=(c)=>{const arr=pool().filter(x=>x.pais===c);const t=arr.length||1;const n=fn=>arr.filter(fn).length;const pc=x=>Math.round(x/t*100);
     const real=n(x=>['realizada','cuestionario','liquidada'].includes(x.estado));const agen=n(x=>['agendada','realizada','cuestionario','liquidada'].includes(x.estado));
     return {total:arr.length,asign:[n(x=>x.shopperId),pc(n(x=>x.shopperId))],agend:[agen,pc(agen)],
@@ -39,14 +46,15 @@ CX.module('dashboard', ({data,ui})=>{
     const rows=vis.length?vis.slice(0,40).map(v=>`<tr data-vrow="${v.id}"><td style="width:30px;text-align:center"><input type="checkbox" class="drSel" data-vid="${v.id}" ${v.shopper?'':'disabled'}></td>
       <td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td>
       <td style="font-size:12px">${v.shopper||'<span class="muted">— sin asignar</span>'}</td><td>${ui.estadoBadge(v.estado)}</td>
+      <td style="font-size:11.5px;color:var(--t2)">${data.measurementWindow(v).label}</td>
       <td style="font-size:12px">${v.agendada?('📅 agend. '+v.agendada):(v.disponibleDesde?('disp. desde '+v.disponibleDesde):'—')}</td>
       <td style="text-align:right;white-space:nowrap">${v.shopper?`<button class="btn btn-soft btn-sm drWa" data-vid="${v.id}" title="WhatsApp a ${v.shopper} — borrador manual, no envío automático salvo Make activo">📲</button> <button class="btn btn-ghost btn-sm drMail" data-vid="${v.id}" title="Correo">✉️</button>`:'<span class="muted" style="font-size:11px">—</span>'}</td></tr>`).join('')
-      : '<tr><td colspan="6">'+ui.empty('🔍','Sin visitas en este KPI')+'</td></tr>';
+      : '<tr><td colspan="7">'+ui.empty('🔍','Sin visitas en este KPI')+'</td></tr>';
     ui.modal(titulo+' · '+vis.length, `
       ${vis.length?`<input class="inp" id="drFind" placeholder="🔍 Buscar sucursal, shopper o ciudad…" style="margin-bottom:10px">
         <div class="between" style="margin-bottom:10px"><label class="flex" style="gap:6px;font-size:12px;color:var(--t2);cursor:pointer"><input type="checkbox" id="drAll"> Seleccionar todos</label>
-        <div class="flex" style="gap:6px"><button class="btn btn-soft btn-sm" id="drWaSel" title="Borrador manual salvo que el gate de Make esté activo">📲 WhatsApp a seleccionados (<span id="drN">0</span>)</button><button class="btn btn-ghost btn-sm" id="drMailSel">✉️ Correo</button></div></div>`:''}
-      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th></th><th>Sucursal</th><th>Shopper</th><th>Estado</th><th>Fecha (agenda / disp.)</th><th style="text-align:right">Contacto</th></tr></thead><tbody id="drBody">${rows}</tbody></table></div>
+        <div class="flex" style="gap:6px"><button class="btn btn-soft btn-sm" id="drWaSel" title="Borrador manual salvo que la conexión con Make esté activa">📲 WhatsApp a seleccionados (<span id="drN">0</span>)</button><button class="btn btn-ghost btn-sm" id="drMailSel">✉️ Correo</button></div></div>`:''}
+      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th></th><th>Sucursal</th><th>Shopper</th><th>Estado</th><th>Periodo de medición</th><th>Fecha (agenda / disp.)</th><th style="text-align:right">Contacto</th></tr></thead><tbody id="drBody">${rows}</tbody></table></div>
       ${waMsg?`<div style="margin-top:12px;background:var(--green-bg);border-radius:10px;padding:10px 12px;font-size:11.5px;color:#0a7050">💡 ${waMsg} — elige a quiénes contactar arriba, o usa el botón por fila.</div>`:''}
       ${vis.length>40?`<div class="muted" style="font-size:11px;margin-top:8px">+${vis.length-40} más…</div>`:''}
     `,{onMount:(ov,close)=>{
@@ -60,9 +68,9 @@ CX.module('dashboard', ({data,ui})=>{
       const sendWa=(ids)=>{ if(!ids.length){ui.toast('Selecciona al menos un shopper','warn');return;}
         const hasHook=!!(CX.automations&&CX.automations.hook&&CX.automations.hook());
         ids.forEach(id=>{const v=vget(id);if(hasHook){CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'recordatorio',titulo:'Recordatorio',txt:(v.shopper||'')+' · '+v.sucursal,hook:CX.automations.hook()});}else{const wa=(v.shopperWa||v.whatsapp||'');const msg=encodeURIComponent('Hola '+(v.shopper||'Evaluador')+', recordatorio: tu visita en '+v.sucursal+'. Por favor confírmanos.');if(wa){window.open('https://wa.me/'+wa.replace(/[^0-9]/g,'')+'?text='+msg,'_blank');}else{ui.toast('Sin número WA para '+(v.shopper||'el shopper')+' — agrégalo en su perfil','warn',2500);}}});
-        ui.toast(hasHook?'WhatsApp preparado vía Make ('+ids.length+') · se envía cuando el gate esté activo':'WhatsApp Web abierto para '+ids.length+' shopper(s)','ok',3200); };
+        ui.toast(hasHook?'WhatsApp preparado vía Make ('+ids.length+') · se envía cuando la conexión esté activa':'WhatsApp Web abierto para '+ids.length+' shopper(s)','ok',3200); };
       ov.querySelectorAll('.drWa').forEach(b=>b.addEventListener('click',()=>sendWa([b.dataset.vid])));
-      ov.querySelectorAll('.drMail').forEach(b=>b.addEventListener('click',()=>ui.toast('Borrador de correo preparado para '+(vget(b.dataset.vid).shopper||'shopper')+' (envío por backend/Outlook pendiente)','ok')));
+      ov.querySelectorAll('.drMail').forEach(b=>b.addEventListener('click',()=>ui.toast('Borrador de correo preparado para '+(vget(b.dataset.vid).shopper||'shopper')+' (envío pendiente de conexión con Outlookiente)','ok')));
       const ws=ov.querySelector('#drWaSel'); if(ws)ws.addEventListener('click',()=>sendWa(sel()));
       const msel=ov.querySelector('#drMailSel'); if(msel)msel.addEventListener('click',()=>{const n=sel().length;if(!n){ui.toast('Selecciona al menos uno','warn');return;}ui.toast('Correo preparado para '+n+' shopper(s) · envío por backend/Outlook pendiente','ok');});
     }});
@@ -272,8 +280,8 @@ CX.module('dashboard', ({data,ui})=>{
       setTimeout(()=>{ if(vid){const row=document.querySelector(`[data-vid="${vid}"]`);if(row){row.style.outline='2px solid var(--brand)';row.style.borderRadius='8px';setTimeout(()=>row.style.outline='',2000);row.scrollIntoView&&row.scrollIntoView({block:'center'});}} },300);
     }));
     board.querySelectorAll('[data-wa]').forEach(b=>b.addEventListener('click',()=>{CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'recordatorio',titulo:'Recordatorio manual',txt:decodeURIComponent(b.dataset.wa),hook:CX.automations.hook()||'(Make sin configurar)'});ui.toast('WhatsApp preparado · envío real pendiente backend/Make: '+decodeURIComponent(b.dataset.wa).slice(0,40)+'…','ok');}));
-    board.querySelectorAll('[data-mail]').forEach(b=>b.addEventListener('click',()=>ui.toast('Borrador de correo preparado (envío por backend/Outlook pendiente)','ok')));
-    board.querySelectorAll('[data-bulk]').forEach(b=>b.addEventListener('click',()=>ui.toast('Recordatorio masivo preparado (WhatsApp + correo) · se envía cuando el gate esté activo (pendiente backend)','ok',3200)));
+    board.querySelectorAll('[data-mail]').forEach(b=>b.addEventListener('click',()=>ui.toast('Borrador de correo preparado (envío pendiente de conexión con Outlook)','ok')));
+    board.querySelectorAll('[data-bulk]').forEach(b=>b.addEventListener('click',()=>ui.toast('Recordatorio masivo preparado (WhatsApp + correo) · se envía cuando la conexión esté activa (pendienteend)','ok',3200)));
     /* #226 — subsecciones contraíbles */
     board.querySelectorAll('.bd-toggle').forEach(h=>h.addEventListener('click',(e)=>{
       if(e.target.closest('[data-bulk]'))return;
@@ -314,7 +322,7 @@ CX.module('dashboard', ({data,ui})=>{
           if(!CX.permissions.gate('visit.archive',CX.permissions.ctx({entityType:'visita',entityId:v.id,pais:v.pais}),ui)) return;
           ui.modal('🗄 Archivar visita',`
             <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">La visita de <b>${v.sucursal}</b> se archivará — no se borra físicamente, queda excluida de las vistas activas y recuperable con su historial completo (incluida su referencia de fuente HR, si la tiene).</p>
-            ${v.sourceRef?`<div style="font-size:11px;color:var(--t3);margin-bottom:10px">Referencia de fuente: <code>${v.sourceRef}</code> — se conserva.</div>`:''}
+            ${v.sourceRef?`<div style="font-size:11px;color:var(--t3);margin-bottom:10px">Referencia de fuente registrada — se conserva.</div>`:''}
             <label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="arMot" rows="2" placeholder="Ej. duplicada, cancelada por el cliente, error de captura…" style="margin-bottom:12px"></textarea>
             <div style="text-align:right"><button class="btn btn-sm" style="background:var(--red-bg);color:var(--red)" id="arOk">Confirmar archivado</button></div>
           `,{onMount:(o2,c2)=>{o2.querySelector('#arOk').addEventListener('click',()=>{
@@ -361,11 +369,11 @@ CX.module('dashboard', ({data,ui})=>{
     });
 
     const F={
-      total:()=>true, asign:v=>v.shopperId, sinasign:v=>!v.shopperId&&v.estado!=='fuera_rango',
-      sinagend:v=>v.estado==='asignada', real:v=>['realizada','cuestionario','liquidada'].includes(v.estado),
-      pend:v=>['asignada','agendada'].includes(v.estado), cuest:v=>v.estado==='realizada',
-      submit:v=>v.estado==='cuestionario', liq:v=>v.estado==='liquidada', fuera:v=>v.estado==='fuera_rango',
-      agend:v=>['agendada','realizada','cuestionario','liquidada'].includes(v.estado),
+      total:()=>true, asign:BF.asignadas, sinasign:BF.sinAsignar,
+      sinagend:BF.sinAgendar, real:BF.realizadas,
+      pend:BF.pendRealizar, cuest:BF.cuestPend,
+      submit:BF.sinSubmitir, liq:BF.liquidadas, fuera:BF.fueraRango,
+      agend:BF.agendadas,
     };
     const WA={ sinasign:'Visitas sin cobertura — avisar a la red de shoppers.', sinagend:'Pídeles agendar fecha.', cuest:'Recuérdales enviar el cuestionario.', fuera:'Coordinar reprogramación.' };
     host.querySelectorAll('[data-kpi]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.kpi;drill(el.querySelector('.k-l').textContent.replace(' ›',''),F[id]||F.total,WA[id]);}));

@@ -44,7 +44,7 @@ CX.module('correo',({data,role,ui})=>{
     {id:'em5',folder:'inbox',read:true,from:'Make · Sistema',email:'noreply@make.com',
      subject:'[Automatización] Visita aprobada — Juan Pérez asignado a SUC-089',
      preview:'Se aprobó la postulación de Juan Pérez para la visita SUC-089 · Oakland. Notificación preparada por WhatsApp (ejemplo demo).',
-     body:`<p><b>Automatización disparada: Visita aprobada</b></p><p>Shopper: <b>Juan Pérez</b><br>Sucursal: SUC-089 · Centro Comercial Oakland<br>Proyecto: Cliente Retail GT · Ronda Junio 2026<br>Fecha asignada: 22/06/2026<br>Honorario: Q 250.00</p><p>Notificación preparada por WhatsApp al shopper (ejemplo demo · envío real pendiente backend/Make). <a href="#" style="color:var(--brand)">Ver en plataforma →</a></p>`,
+     body:`<p><b>Automatización disparada: Visita aprobada</b></p><p>Shopper: <b>Juan Pérez</b><br>Sucursal: SUC-089 · Centro Comercial Oakland<br>Proyecto: Cliente Retail GT · Ronda Junio 2026<br>Fecha asignada: 22/06/2026<br>Honorario: Q 250.00</p><p>Notificación preparada por WhatsApp al shopper (ejemplo demo · envío real pendiente de activación). <a href="#" style="color:var(--brand)">Ver en plataforma →</a></p>`,
      date:'2026-06-18',time:'16:22',
      tags:[{label:'Sistema Make',type:'sistema'},{label:'Cliente Retail GT',type:'cliente'}],
      attachments:[]},
@@ -92,8 +92,8 @@ CX.module('correo',({data,role,ui})=>{
   <!-- Banner modo demo / conectado -->
   <div style="background:${conn?'#f0faf4':'#fffbeb'};border:1px solid ${conn?'#bbf7d0':'#fde68a'};border-radius:10px;padding:9px 14px;margin-bottom:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
     <span style="font-size:13px;color:var(--t2);flex:1">${conn
-      ?`🟡 Preparado como <b>${conn.email}</b> (${conn.provider}) · conexión y sincronización reales pendientes de backend/gate`
-      :`📬 Bandeja en <b>modo demo</b>. Conecta tu cuenta para sincronizar tu bandeja (requiere backend). <span style="font-size:11px;color:var(--t3)">Compatible con Outlook / Hotmail, Gmail y cualquier dominio corporativo (IMAP).</span>`}
+      ?`🟡 Preparado como <b>${conn.email}</b> (${conn.provider}) · conexión y sincronización reales pendientes de activación`
+      :`📬 Bandeja en <b>modo demo</b>. Conecta tu cuenta para sincronizar tu bandeja (requiere activación). <span style="font-size:11px;color:var(--t3)">Compatible con Outlook / Hotmail, Gmail y cualquier dominio corporativo (IMAP).</span>`}
     </span>
     ${conn?`<button class="btn btn-ghost btn-sm" id="mailDisconn" style="color:var(--red)">Desconectar</button>`:
            `<button class="btn btn-pr btn-sm" id="mailConn" style="background:#dc2626;border-color:#dc2626">Conectar Outlook / Gmail</button>`}
@@ -240,7 +240,7 @@ CX.module('correo',({data,role,ui})=>{
         body:`<p>${body.replace(/\n/g,'<br>')}</p>`,
         date:new Date().toISOString().slice(0,10),time:new Date().toTimeString().slice(0,5),
         tags:a?a.tags:[],attachments:[]});
-      ui.toast(conn?'Correo preparado · proveedor conectado (demo) · despacho real por backend':'Correo guardado en Enviados · se despachará al conectar tu cuenta','ok',3500);folder='sent';draw();
+      ui.toast(conn?'Correo preparado · proveedor conectado (demo) · despacho real pendiente de activación':'Correo guardado en Enviados · se despachará al conectar tu cuenta','ok',3500);folder='sent';draw();
     });
     host.querySelector('#replyWA')?.addEventListener('click',()=>{
       const a=DEMO.find(e=>e.id===activeId);if(!a)return;
@@ -269,7 +269,7 @@ CX.module('correo',({data,role,ui})=>{
         body:host.querySelector('#composeBody').innerHTML,
         date:new Date().toISOString().slice(0,10),time:new Date().toTimeString().slice(0,5),tags:[],attachments:[]});
       host.querySelector('#composeOverlay').style.display='none';
-      ui.toast(conn?'Correo preparado · proveedor conectado (demo) · despacho real por backend':'Correo guardado en Enviados · se despachará al conectar tu cuenta','ok',3500);folder='sent';draw();
+      ui.toast(conn?'Correo preparado · proveedor conectado (demo) · despacho real pendiente de activación':'Correo guardado en Enviados · se despachará al conectar tu cuenta','ok',3500);folder='sent';draw();
     });
     host.querySelector('#composeDraft')?.addEventListener('click',()=>{host.querySelector('#composeOverlay').style.display='none';ui.toast('Guardado como borrador','ok');});
     host.querySelector('#composeAI')?.addEventListener('click',()=>{
@@ -282,7 +282,7 @@ CX.module('correo',({data,role,ui})=>{
   };
 
   const showConnModal=()=>ui.modal('Conectar cuenta de correo',`
-    <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">Prepara la conexión de tu bandeja real (Outlook/Hotmail, Gmail o IMAP genérico) — la autenticación y sincronización real las gestiona el backend/adapter, nunca este prototipo en el navegador.</p>
+    <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">Prepara la conexión de tu bandeja real (Outlook/Hotmail, Gmail o IMAP genérico) — la autenticación y sincronización real las gestiona el sistema central, nunca este prototipo en el navegador.</p>
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
       <button class="btn btn-pr btn-sm" id="connOL" style="text-align:left;padding:12px 16px;font-size:13px;background:#0078d4;border-color:#0078d4">
         <b>📧 Preparar Outlook / Hotmail / Microsoft 365</b><br><span style="font-size:11px;font-weight:400;opacity:.85">empresa@outlook.com · hotmail.com · tudominio.com (Microsoft 365)</span>
@@ -298,10 +298,10 @@ CX.module('correo',({data,role,ui})=>{
       <button class="btn btn-soft btn-sm" id="connIMAP" style="width:100%">Preparar conexión IMAP</button>
     </div>
     <div style="margin-top:12px;padding:8px 12px;background:var(--brand-light);border-radius:8px;font-size:11.5px;color:var(--brand-dark)">
-      🔒 Este prototipo nunca pide ni guarda tu contraseña real. El OAuth/IMAP real lo autoriza y custodia el backend cuando esté conectado — aquí solo dejas listo el proveedor/correo para esa conexión.
+      🔒 Este prototipo nunca pide ni guarda tu contraseña real. El acceso real se autoriza cuando esté conectado — aquí solo dejas listo el proveedor/correo para esa conexión.
     </div>
   `,{onMount:(ov,close)=>{
-    const connect=(provider,email)=>{setConn({provider,email});close();ui.toast(provider+' preparado (preview) · conexión y sincronización reales pendientes de backend/gate','ok');draw();};
+    const connect=(provider,email)=>{setConn({provider,email});close();ui.toast(provider+' preparado (vista previa) · conexión y sincronización reales pendientes de activación','ok');draw();};
     ov.querySelector('#connOL').addEventListener('click',()=>connect('Outlook','admin@tuempresa.com'));
     ov.querySelector('#connGM').addEventListener('click',()=>connect('Gmail','admin@tuempresa.com'));
     ov.querySelector('#connIMAP').addEventListener('click',()=>{const em=ov.querySelector('#imapEmail').value.trim();if(!em){ui.toast('Escribe tu correo','warn');return;}connect('IMAP ('+em.split('@')[1]+')',em);});

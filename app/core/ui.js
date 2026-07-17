@@ -54,8 +54,8 @@ CX.ui = {
      de esta ronda (Automatizaciones, Integraciones, Finanzas, Certificación) — no propagado
      todavía a los ~48 módulos restantes (pendiente documentado, no se afirma cobertura total). */
   STATUS_VOCAB:{
-    prepared:       {label:'Preparado (preview)',      tone:'b'},
-    pending_backend:{label:'Pendiente de backend',     tone:'a'},
+    prepared:       {label:'Preparado (vista previa)',      tone:'b'},
+    pending_backend:{label:'Pendiente de conexión',     tone:'a'},
     pending_source: {label:'Pendiente de fuente',      tone:'a'},
     pending_gate:   {label:'Pendiente de gate',        tone:'a'},
     pending_review: {label:'Pendiente de revisión',    tone:'a'},
@@ -65,7 +65,7 @@ CX.ui = {
     not_requested:  {label:'No solicitado',             tone:'n'},
   },
   statusBdg(code, extra){
-    const s=this.STATUS_VOCAB[code]||{label:code,tone:'n'};
+    const s=this.STATUS_VOCAB[code]||{label:'Estado pendiente de clasificación',tone:'n'};
     return this.bdg(s.label+(extra?' · '+extra:''), s.tone);
   },
 

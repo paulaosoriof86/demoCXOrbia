@@ -1,7 +1,7 @@
-# CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
+# CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
-**Fecha:** 2026-07-17  
-**Estado:** ACTIVO; reemplazar este mismo archivo al cambiar el estado operativo.
+Fecha: 2026-07-17
+Estado: ACTIVO; reemplazar este mismo archivo al cambiar el estado operativo.
 
 ## 1. Repositorio y destino
 
@@ -14,41 +14,33 @@
 
 ## 2. Candidata activa
 
-- Identificación operativa: V159
-- Archivo: `Prototype development request (8).zip`
-- SHA-256: `8ac5b04dda594366e0f27f717ec5f660328b43d9109a44e5df36fdcabcb09bc6`
-- Inventario: 256 archivos
-- Delta V158 → V159: 14 modificados, 0 agregados, 0 eliminados
-- Delta runtime efectivo contra V156 presente: 17 archivos
-- Sintaxis: 67 JS/MJS, 0 errores
-- Estado: `AUDITED_GO_READY_DIRECT_APPLY`
+- Identificacion operativa: V159
+- Archivo usado: `Prototype development request CXOrbia V159.zip`
+- SHA-256 del adjunto usado: `d9d9e767bf6d9a26e0e084deed5d327d801620c36aee1a9bb3cc0c3db0e54ce2`
+- Inventario del adjunto: 256 archivos
+- Estado previo: `AUDITED_GO_READY_DIRECT_APPLY`
 - P0 demostrado: no
 
-## 3. Estado de aplicación
+## 3. Estado de aplicacion
 
-- V159 no está empalmada.
-- No existe unión funcional parcial activa.
-- Los intentos parciales fueron detenidos y restaurados.
+- V159 fue aplicada fisicamente por carril file-aware local sobre `docs-tya-v6-v71-audit`.
+- HEAD_BEFORE: `bf9c8f27500b26d547199d159659b58a42434811`.
+- Manifest: `app/docs/MANIFEST-V159-EMPALME-DIRECTO-20260717.json`.
+- Build lock: `app/core/build-lock.js`.
+- Verificador: `tools/release/tya-v159-empalme-directo-verify.mjs`.
+- Estado: `EMPALMED_PENDING_POST_GATES`.
 - No solicitar V160.
 - No generar otro paquete Claude.
 - No reauditar V159.
-- No aplicar archivo por archivo mediante el conector.
+- No aplicar por carriles alternos.
 
-## 4. Bloqueo comprobado de la sesión anterior
+## 4. Carril de ejecucion
 
-Código:
+Carril usado:
 
-`EXECUTION_LANE_NOT_READY`
+`C:\Users\paula\AppData\Local\Temp\demoCXOrbia-v159-direct-apply-20260717`
 
-Causa:
-
-La sesión tenía el ZIP en almacenamiento local y GitHub mediante conector, pero no un checkout autenticado file-aware que pudiera recibir simultáneamente la candidata extraída, preservar la rama viva y crear un commit atómico.
-
-Esto no es P0 de V159 y no cambia el GO.
-
-## 5. Siguiente bloque exacto
-
-Abrir V159 en un workspace file-aware con:
+Valores de entrada:
 
 ```text
 CANDIDATE_BYTES_AVAILABLE=true
@@ -57,36 +49,36 @@ REPO_CHECKOUT_AVAILABLE=true
 TARGET_REPOSITORY=paulaosoriof86/demoCXOrbia
 TARGET_BRANCH=docs-tya-v6-v71-audit
 AUTHENTICATED_COMMIT_PUSH_AVAILABLE=true
-HEAD_BEFORE=<sha>
-WORKTREE_STATE=<clean|documented>
+HEAD_BEFORE=bf9c8f27500b26d547199d159659b58a42434811
+WORKTREE_STATE=clean
 ```
 
-Luego:
+## 5. Siguiente bloque exacto
 
 ```text
-APPLY_DELTA_DIRECTLY
-→ reconciliar documentos vivos
-→ commit/push en docs-tya-v6-v71-audit
-→ registrar HEAD_AFTER
-→ manifest/build-lock/verificador
-→ gates post-empalme
-→ validación visual
-→ baseline activa
-→ continuar Phase A
+POST_EMPALME_GATES_V159
+-> sintaxis JS/MJS
+-> index/scripts/rutas/modulos
+-> manifest/build-lock/verificador
+-> gates proyecto-periodo-HR-shoppers-certificaciones-finanzas
+-> smoke Admin/Shopper/Cliente y Academia
+-> validacion visual
+-> ACTIVE_BASELINE
+-> Phase A operativa sin merge/deploy/produccion
 ```
 
-## 6. Preservación
+## 6. Preservacion
 
 Debe preservarse:
 
 - backend, contratos, adapters, tools y overlays TyA;
 - `CX.data`;
 - multi-tenant y multi-proyecto;
-- HR e histórico;
+- HR e historico;
 - shoppers y postulaciones;
 - certificaciones presentadas;
 - liquidaciones/pagos;
-- sincronización HR/plataforma;
+- sincronizacion HR/plataforma;
 - Academia, manuales, rutas por rol y notificaciones;
 - UTF-8 sin BOM;
 - ausencia de secretos.
@@ -95,7 +87,7 @@ Debe preservarse:
 
 - Sin merge.
 - Sin deploy.
-- Sin producción.
+- Sin produccion.
 - Sin importaciones reales.
 - Sin Firestore/Auth/Storage/HR writes.
 - Sin Make/Gemini live.

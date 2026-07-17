@@ -64,7 +64,7 @@ CX.module('misvisitas', ({data,ui})=>{
     ${visitCard(agendada,'agendada')}
     ${visitCard(realizada,'realizada')}
     <div class="card card-p">
-      ${ui.aiBox('Cada acción que marcas (agendar, realizar, completar cuestionario) actualiza tu visita y prepara la notificación al equipo. La sincronía con la hoja de ruta y el movimiento de tu liquidación se reflejan cuando el sync/backend esté activo (pendiente backend); mientras tanto verás preview con fecha estimada según las reglas de '+p.name+'.','Ejecución guiada · preview')}
+      ${ui.aiBox('Cada acción que marcas (agendar, realizar, completar cuestionario) actualiza tu visita y prepara la notificación al equipo. La sincronía con la hoja de ruta y el movimiento de tu liquidación se reflejan cuando la conexión esté activa (pendiente de activación); mientras tanto verás una vista previa con fecha estimada según las reglas de '+p.name+'.','Ejecución guiada · vista previa')}
     </div>`;
 
   const histHTML=()=>`

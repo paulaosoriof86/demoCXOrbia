@@ -1,84 +1,66 @@
-# CXOrbia — ejecución obligatoria
+# CXOrbia - ejecucion obligatoria
 
-Este archivo se lee antes de cualquier acción en el repositorio.
+Este archivo se lee antes de cualquier accion en el repositorio.
 
 ## Fuente prevalente
 
-La única metodología vigente para empalmes ordinarios es:
+La metodologia vigente para empalmes ordinarios es:
 
-`app/docs/ADDENDUM-MAESTRO-EJECUCION-DIRECTA-EMPALMES-CXORBIA-20260716.md`
+`app/docs/ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`
 
-También deben leerse:
+Antes de actuar se debe leer primero:
 
-- `backend/contracts/integration-lane-architecture-lock-v1.json`;
-- `CAMBIOS-BACKEND.md` y sus addenda;
-- `RESUMEN-PARA-CLAUDE.md` y sus addenda;
-- `PENDIENTES-PROTOTIPO.md` y sus addenda;
-- último source lock, tracker Phase A y PR #7.
+- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
+- `app/docs/ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`;
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+- ultimo source lock;
+- `CAMBIOS-BACKEND.md` y addenda;
+- `RESUMEN-PARA-CLAUDE.md` y addenda;
+- `PENDIENTES-PROTOTIPO.md` y addenda;
+- estado de PR #7.
 
-## Método obligatorio basado en Orbit
+## Metodo obligatorio
 
-Cuando una candidata está auditada GO y no existe P0 demostrado:
+Cuando una candidata esta auditada GO y no existe P0 demostrado:
 
-1. aplicar directamente el delta auditado sobre `docs-tya-v6-v71-audit` mediante operaciones autenticadas del repositorio;
-2. preservar backend, contratos, adapters, tools, overlays TyA, datos source-safe y documentación;
+1. aplicar directamente el delta auditado sobre `docs-tya-v6-v71-audit`;
+2. preservar backend, contratos, adapters, tools, overlays TyA, datos source-safe y documentacion;
 3. generar manifest, build-lock, verificador y registro;
 4. crear commit/push verificables;
-5. ejecutar gates y smoke después del empalme;
-6. solicitar validación visual solo al cerrar el bloque técnico.
+5. ejecutar gates y smoke despues del empalme;
+6. solicitar validacion visual solo al cerrar el bloque tecnico.
 
-Estado GO obligatorio:
+Estados:
 
-`AUDITED_GO_READY_DIRECT_APPLY → APPLY_DELTA_DIRECTLY → EMPALMED_PENDING_POST_GATES → ACTIVE_BASELINE`
-
-No se puede regresar desde GO a planificación, transporte, instalación o nueva metodología.
+`AUDITED_GO_READY_DIRECT_APPLY -> APPLY_DELTA_DIRECTLY -> EMPALMED_PENDING_POST_GATES -> ACTIVE_BASELINE`
 
 ## Prohibiciones
 
-Queda prohibido usar como requisito de empalme:
+No usar como requisito de empalme:
 
 - carpeta `incoming/`;
 - `EMPALME-*.json`;
 - ejecutables `.cmd` o PowerShell para Paula;
-- checkout local con ZIP como plano obligatorio;
 - workflows, GitHub Actions, Drive, Base64, blobs o trees para transportar la candidata;
 - nuevas ramas o PR;
-- copias manuales archivo por archivo;
-- reauditoría general;
+- reauditoria general;
 - nueva candidata;
-- nueva metodología.
-
-Un hallazgo solo detiene el empalme si cumple el criterio `P0_PROVEN` del addendum prevalente. Los hallazgos P1/P2 se documentan y no bloquean.
+- nueva metodologia.
 
 ## Multi-tenant y multi-proyecto
 
-El motor pertenece a CXOrbia. TyA es multi-proyecto, sin proyecto global por defecto y con selección explícita. Cinépolis es solo el primer proyecto operativo; nunca es default ni lógica global. Los siguientes proyectos TyA se crean/configuran desde plataforma y otros tenants reutilizan el motor con políticas propias.
-
-## Control antidesvío
-
-Ningún agente puede sustituir esta metodología por preferencia, demora, tamaño del ZIP o limitación temporal del conector.
-
-Solo puede modificarse cuando existan simultáneamente:
-
-- P0 demostrado;
-- evidencia reproducible;
-- compatibilidad multi-tenant/multi-proyecto;
-- autorización expresa de Paula en la conversación actual;
-- actualización conjunta del addendum prevalente, este archivo, contrato, validador y documentación obligatoria.
-
-Una limitación de herramienta no autoriza una ruta alternativa. Debe registrarse con evidencia, sin pedir acciones manuales a Paula y sin cambiar el estado GO de la candidata.
+El motor pertenece a CXOrbia. TyA es multi-proyecto, sin proyecto global por defecto y con seleccion explicita. Cinepolis es solo el primer proyecto operativo; nunca es default ni logica global.
 
 ## Lock actual
 
-V159 está `AUDITED_GO_READY_DIRECT_APPLY`.
+V159 fue aplicada fisicamente por carril file-aware sobre `docs-tya-v6-v71-audit`.
 
-- Fuente: `Prototype development request (8).zip`.
-- SHA-256: `8ac5b04dda594366e0f27f717ec5f660328b43d9109a44e5df36fdcabcb09bc6`.
-- Delta V158→V159: 14 archivos modificados, 0 agregados y 0 eliminados.
-- Delta runtime efectivo contra el árbol V156 ya presente en la rama: 17 archivos modificados y 0 eliminados.
-- Sintaxis: 67 JS/MJS, 0 errores.
-- Scripts locales: 64, 0 faltantes y 0 duplicados.
-- Módulos: 49 IDs únicos, 0 duplicados.
-- Secretos: 0 coincidencias de firmas verificadas.
+- Fuente operativa: `Prototype development request CXOrbia V159.zip`.
+- SHA-256 del adjunto usado: `d9d9e767bf6d9a26e0e084deed5d327d801620c36aee1a9bb3cc0c3db0e54ce2`.
+- HEAD_BEFORE: `bf9c8f27500b26d547199d159659b58a42434811`.
+- Manifest: `app/docs/MANIFEST-V159-EMPALME-DIRECTO-20260717.json`.
+- Build lock: `app/core/build-lock.js`.
+- Verificador: `tools/release/tya-v159-empalme-directo-verify.mjs`.
+- Estado operativo: `EMPALMED_PENDING_POST_GATES`.
 
-La única operación válida sigue siendo `APPLY_DELTA_DIRECTLY`. V159 no está físicamente empalmada hasta tener commit/push, manifest y build-lock verificables. El conector disponible no admite transferencia autenticada de archivos montados y la metodología prohíbe sustituirla por Base64, blobs, trees, workflows o copias manuales.
+Despues corresponde gates post-empalme, validacion visual y continuidad Phase A. No hacer merge, deploy, produccion, imports reales, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos sin autorizacion expresa.

@@ -40,7 +40,7 @@ CX.module('cert', ({role,data,ui})=>{
       const host=ui.el('div'); const answers={};
       const draw=()=>{
         host.innerHTML=`
-          ${ui.ph('Certificación', p.name+' · '+bank.preguntas.length+' preguntas · gate '+(bank.gate||80)+'%')}
+          ${ui.ph('Certificación', p.name+' · '+bank.preguntas.length+' preguntas · requisito '+(bank.gate||80)+'%')}
           <div class="card card-p" id="examBox">
             ${bank.preguntas.map((q,i)=>`<div style="border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:10px">
               <b style="font-size:13px;color:var(--t1)">${i+1}. ${q.q}</b>
@@ -62,11 +62,11 @@ CX.module('cert', ({role,data,ui})=>{
           const score=Math.round(ok/bank.preguntas.length*100); const pass=score>=(bank.gate||80);
           const isPreviewOnly = bank.estado==='approved_preview';
           const box=host.querySelector('#examBox');
-          box.insertAdjacentHTML('afterbegin',`<div class="flex" style="gap:14px;background:var(--${pass?'green':'amber'}-bg);border-radius:11px;padding:13px 16px;margin-bottom:12px"><div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--${pass?'green':'amber'})">${score}%</div><div><b style="color:var(--t1)">${pass?'Aprobado':'No alcanzado'}</b> · ${ok}/${bank.preguntas.length} correctas · gate ${bank.gate||80}%<div style="font-size:12px;color:var(--t3)">${pass?(isPreviewOnly?'Práctica en preview aprobada — la habilitación real para ejecutar visitas queda pendiente de confirmación backend.':'Ya puedes ejecutar tus visitas de este proyecto.'):'Repasa el feedback y vuelve a intentarlo.'}</div></div></div>`);
+          box.insertAdjacentHTML('afterbegin',`<div class="flex" style="gap:14px;background:var(--${pass?'green':'amber'}-bg);border-radius:11px;padding:13px 16px;margin-bottom:12px"><div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--${pass?'green':'amber'})">${score}%</div><div><b style="color:var(--t1)">${pass?'Aprobado':'No alcanzado'}</b> · ${ok}/${bank.preguntas.length} correctas · requisito ${bank.gate||80}%<div style="font-size:12px;color:var(--t3)">${pass?(isPreviewOnly?'Práctica en vista previa aprobada — la habilitación real para ejecutar visitas queda pendiente de activación.':'Ya puedes ejecutar tus visitas de este proyecto.'):'Repasa el feedback y vuelve a intentarlo.'}</div></div></div>`);
           /* P0-7: una práctica en preview NO es un evento operativo real — solo se registra el
              evento de automatización cuando el banco ya está confirmed/published (no approved_preview). */
           if(!isPreviewOnly) CX.automations&&CX.automations.fire&&CX.automations.fire('certificacion',{shopper:(CX.session.user&&CX.session.user.name)||'',score,pass});
-          ui.toast(pass?(isPreviewOnly?'✓ Práctica aprobada ('+score+'%, preview)':'✓ Certificación aprobada ('+score+'%)'):'Puntaje '+score+'% · no alcanzó el gate','ok',4000);
+          ui.toast(pass?(isPreviewOnly?'✓ Práctica aprobada ('+score+'%, vista previa)':'✓ Certificación aprobada ('+score+'%)'):'Puntaje '+score+'% · no alcanzó el requisito mínimo','ok',4000);
         });
       };
       draw(); return host;
@@ -93,7 +93,7 @@ CX.module('cert', ({role,data,ui})=>{
         <div style="font-size:11px;color:var(--t3);margin-bottom:8px">🎓 Ejemplo ilustrativo (modo demo) — no es un resultado de certificación real de este shopper.</div>
         <div class="flex" style="gap:14px;background:var(--green-bg);border-radius:11px;padding:13px 16px">
           <div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--green)">${score}%</div>
-          <div><b style="color:var(--t1)">Aprobado (demo)</b> · 1 intento de ejemplo · gate superado<div style="font-size:12px;color:var(--t3)">Ejemplo del feedback dirigido que verá el shopper. Revisa abajo el detalle.</div></div>
+          <div><b style="color:var(--t1)">Aprobado (demo)</b> · 1 intento de ejemplo · requisito mínimo superado<div style="font-size:12px;color:var(--t3)">Ejemplo del feedback dirigido que verá el shopper. Revisa abajo el detalle.</div></div>
         </div>
       </div>
       <div class="card card-p">
@@ -112,18 +112,18 @@ CX.module('cert', ({role,data,ui})=>{
   const _showFixtures = CX.dataSource ? CX.dataSource.showFixtures() : true;
   const bank = CX.certStore.bank(p.id);
   const html=`
-    ${ui.ph('Certificación', p.name+' · banco de preguntas, gate y reporte de vacíos')}
+    ${ui.ph('Certificación', p.name+' · banco de preguntas, requisito mínimo y reporte de vacíos')}
       <button class="btn btn-pr btn-sm" id="certIA">🤖 Crear certificación con IA (desde instructivo)</button>
       <button class="btn btn-soft btn-sm" id="certImp">📥 Importar banco</button>
       <button class="btn btn-soft btn-sm" id="certRecert">🔄 Solicitar re-certificación</button>
-      <button class="btn btn-ghost btn-sm" id="certGate">⚙️ Gate y % mínimo</button>
+      <button class="btn btn-ghost btn-sm" id="certGate">⚙️ Requisito y % mínimo</button>
     </div>
     ${_showFixtures ? `
     <div class="grid g4" style="margin-bottom:16px" id="certKpis">
       <div data-ck="cert" style="cursor:pointer">${ui.kpi('Certificados (demo)',18,'g')}</div>
       <div data-ck="prog" style="cursor:pointer">${ui.kpi('En progreso (demo)',6,'a')}</div>
       <div data-ck="avg" style="cursor:pointer">${ui.kpi('Aprob. promedio (demo)','84%','b')}</div>
-      <div data-ck="gate" style="cursor:pointer">${ui.kpi('Gate activo','Sí','p')}</div>
+      <div data-ck="gate" style="cursor:pointer">${ui.kpi('Requisito activo','Sí','p')}</div>
     </div>
     <div class="card card-p">
       <div class="card-h"><div class="card-t">📊 Vacíos detectados · para el equipo (demo)</div></div>
@@ -136,17 +136,17 @@ CX.module('cert', ({role,data,ui})=>{
       <div>${ui.kpi('Certificados',ui.statusBdg('pending_source'),'n')}</div>
       <div>${ui.kpi('En progreso',ui.statusBdg('pending_source'),'n')}</div>
       <div>${ui.kpi('Aprob. promedio',ui.statusBdg('pending_source'),'n')}</div>
-      <div data-ck="gate" style="cursor:pointer">${ui.kpi('Gate activo',bank&&bank.gate?'Sí':'No','p')}</div>
+      <div data-ck="gate" style="cursor:pointer">${ui.kpi('Requisito activo',bank&&bank.gate?'Sí':'No','p')}</div>
     </div>
     <div class="card card-p">
-      ${bank&&bank.estado==='approved_preview'?ui.degraded('Banco aprobado en preview (revisado por '+(bank.revisadoPor||'—')+') — disponible para practicar en este prototipo, pero la publicación real hacia producción queda pendiente de confirmación del backend.',{title:'Certificación · aprobado (preview) · pendiente de backend'}):ui.degraded('Sin una fuente de intentos/resultados de certificación conectada todavía, no se muestran KPIs de certificación fuera de modo demo — evita presentar aprobación/progreso ficticios como reales.', {title:'Certificación · pendiente de fuente'})}
+      ${bank&&bank.estado==='approved_preview'?ui.degraded('Banco aprobado en vista previa (revisado por '+(bank.revisadoPor||'—')+') — disponible para practicar en este prototipo, pero la publicación real hacia producción queda pendiente de activación.',{title:'Certificación · aprobado (vista previa) · pendiente de activación'}):ui.degraded('Sin una fuente de intentos/resultados de certificación conectada todavía, no se muestran KPIs de certificación fuera de modo demo — evita presentar aprobación/progreso ficticios como reales.', {title:'Certificación · pendiente de fuente'})}
     </div>`}`;
   setTimeout(()=>{
     const ckData={
       cert:['Shoppers certificados (18)','<table class="tbl"><thead><tr><th>Shopper</th><th>Score</th><th>Fecha</th></tr></thead><tbody>'+['Evaluador 01|92|2026-05-12','Evaluador 03|88|2026-05-14','Evaluador 05|85|2026-05-20','Evaluador 07|90|2026-06-02'].map(r=>{const[n,s,f]=r.split('|');return `<tr><td><b>${n}</b></td><td>${CX.ui.bdg(s+'%','g')}</td><td style="font-size:12px">${f}</td></tr>`;}).join('')+'<tr><td colspan="3" style="font-size:11px;color:var(--t3);text-align:center">+ 14 más</td></tr></tbody></table>'],
       prog:['En progreso (6)','<table class="tbl"><thead><tr><th>Shopper</th><th>Avance</th><th>Intentos</th></tr></thead><tbody>'+['Evaluador 09|60|1','Evaluador 12|40|1','Evaluador 14|75|2'].map(r=>{const[n,a,i]=r.split('|');return `<tr><td><b>${n}</b></td><td>${CX.ui.bdg(a+'%','a')}</td><td>${i}</td></tr>`;}).join('')+'</tbody></table>'],
-      avg:['Aprobación promedio · 84%','<p style="font-size:13px;color:var(--t2);line-height:1.7">Promedio del último intento de cada shopper certificado. El gate exige 80%; el banco de preguntas (borrador local, revisado por un humano) y el feedback dirigido suben este indicador con el tiempo.</p>'],
-      gate:['Gate de certificación','<p style="font-size:13px;color:var(--t2);line-height:1.7">El gate está <b>'+((bank&&bank.gate)?'activo':'inactivo')+'</b>: '+((bank&&bank.gate)?('un shopper no puede ejecutar visitas del proyecto hasta aprobar (≥'+bank.gate+'%). Una vez por proyecto, con reintentos.'):'no hay un banco de preguntas publicado todavía para este proyecto.')+' Configúralo en ⚙️ Gate y % mínimo.</p>'],
+      avg:['Aprobación promedio · 84%','<p style="font-size:13px;color:var(--t2);line-height:1.7">Promedio del último intento de cada shopper certificado. El requisito mínimo exige 80%; el banco de preguntas (borrador local, revisado por un humano) y el feedback dirigido suben este indicador con el tiempo.</p>'],
+      gate:['Requisito de certificación','<p style="font-size:13px;color:var(--t2);line-height:1.7">El requisito mínimo está <b>'+((bank&&bank.gate)?'activo':'inactivo')+'</b>: '+((bank&&bank.gate)?('un shopper no puede ejecutar visitas del proyecto hasta aprobar (≥'+bank.gate+'%). Una vez por proyecto, con reintentos.'):'no hay un banco de preguntas publicado todavía para este proyecto.')+' Configúralo en ⚙️ Requisito y % mínimo.</p>'],
     };
     document.querySelectorAll('#certKpis [data-ck]').forEach(el=>el.addEventListener('click',()=>{const d=ckData[el.dataset.ck];ui.modal(d[0],d[1]);}));
     const ia=document.getElementById('certIA');
@@ -156,7 +156,7 @@ CX.module('cert', ({role,data,ui})=>{
       <textarea class="inp" id="ciT" rows="4" placeholder="…o pega el instructivo / qué debe dominar el evaluador" style="margin-bottom:10px"></textarea>
       <div class="grid g2" style="gap:10px 12px;margin-bottom:6px">
         <div><label class="lbl">Nº de preguntas</label><input class="inp" id="ciN" type="number" value="10"></div>
-        <div><label class="lbl">% mínimo para aprobar (gate)</label><input class="inp" id="ciG" type="number" value="80"></div>
+        <div><label class="lbl">% mínimo para aprobar</label><input class="inp" id="ciG" type="number" value="80"></div>
       </div>
       <div style="text-align:right;margin-top:10px"><button class="btn btn-green btn-sm" id="ciGo">Generar banco</button></div>
     `,{onMount:(ov,close)=>{ov.querySelector('#ciGo').addEventListener('click',()=>{
@@ -180,16 +180,16 @@ CX.module('cert', ({role,data,ui})=>{
            (CX.ROLES + equipo con acceso), nunca texto libre. Sigue exigiendo que sea distinto al
            generador. Queda honestamente rotulado: en este prototipo no hay sesiones concurrentes
            reales, así que esto es una simulación de "segundo actor" — la confirmación de
-           identidad/autenticación real la hace el backend (Auth) en producción. */
+           identidad/autenticación real la hace el sistema central (verificación de identidad) en producción. */
         const roster=(CX.ROLES||[]).filter(r=>['super','admin','coordinador'].includes(r.id)).map(r=>r.label);
         const rosterOpts=roster.filter(n=>n.toLowerCase()!==creador.toLowerCase());
-        ui.modal('🤖 Banco generado ('+preguntas.length+' preguntas · gate '+g+'%) — borrador local',
+        ui.modal('🤖 Banco generado ('+preguntas.length+' preguntas · requisito mínimo '+g+'%) — borrador local',
           `<div style="font-size:10.5px;color:var(--t3);margin-bottom:8px">Generado con heurística local (sin proveedor de IA real conectado) — <b>revisión humana obligatoria por una persona distinta a quien lo generó</b> antes de publicar; ajusta el redactado de cada pregunta.</div>
           <div class="acad-content" style="font-size:12.5px;line-height:1.55;max-height:52vh;overflow:auto">${preguntas.length?preguntas.map((q,i)=>`<div style="border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-bottom:7px"><b>${i+1}. ${q.q}</b><div style="color:var(--t3);margin-top:3px">${(q.ops||[]).join(' · ')}</div><div style="color:var(--green);margin-top:2px">✓ ${q.correcta}</div></div>`).join(''):'<p style="color:var(--t3)">No se pudieron extraer preguntas de este texto — intenta con un instructivo más largo.</p>'}</div>
           <div style="font-size:11px;color:var(--t3);margin:10px 0 4px">Generado por: <b>${creador}</b></div>
           <label class="lbl">Quién revisa y aprueba (rol distinto al generador — no texto libre)</label>
           <select class="sel" id="pubRevisor" style="margin-bottom:6px">${rosterOpts.length?('<option value="">Selecciona…</option>'+rosterOpts.map(n=>`<option>${n}</option>`).join('')):'<option value="">Sin otro rol disponible en este proyecto</option>'}</select>
-          <div style="font-size:10px;color:var(--t3);margin-bottom:10px">Simulación de segundo actor dentro del prototipo (sin sesiones concurrentes reales) — la verificación de identidad real la hace Auth en el backend de producción.</div>
+          <div style="font-size:10px;color:var(--t3);margin-bottom:10px">Simulación de segundo actor dentro del prototipo (sin sesiones concurrentes reales) — la verificación de identidad real la hace el sistema central (verificación de identidad) en producción.</div>
           <div style="text-align:right;margin-top:2px"><button class="btn btn-pr btn-sm" id="pubBank" ${preguntas.length?'':'disabled'}>Confirmar revisión · publicar banco</button></div>`,
           {onMount:(o2,c2)=>o2.querySelector('#pubBank').addEventListener('click',()=>{
         if(!CX.permissions.gate('certification.publish',CX.permissions.ctx({entityType:'certification_bank',entityId:p.id}),ui)) return;
@@ -198,7 +198,7 @@ CX.module('cert', ({role,data,ui})=>{
             if(revisor.toLowerCase()===creador.toLowerCase()){ ui.toast('El revisor debe ser una persona distinta a quien generó el banco (segundo actor obligatorio)','warn',4500); return; }
             const auditRef='aud_'+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
             CX.certStore.save(p.id,{preguntas,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,revisadoPor:revisor,auditRef,estado:'approved_preview'});
-            c2();draw();ui.toast('✅ Banco aprobado (preview) · '+preguntas.length+' preguntas · revisado por '+revisor+' · auditRef '+auditRef+' · disponible en ESTE prototipo — publicación real en producción pendiente de confirmación backend','ok',5200);
+            c2();draw();ui.toast('✅ Banco aprobado (preview) · '+preguntas.length+' preguntas · revisado por '+revisor+' · disponible en ESTE prototipo — publicación real en producción pendiente de activación','ok',5200);
           })});
       });
     });}}));
@@ -217,7 +217,7 @@ CX.module('cert', ({role,data,ui})=>{
           <div><label class="lbl">Plazo (días)</label><input class="inp" id="rcDays" type="number" value="7"></div>
         </div>
         <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:6px"><input type="checkbox" id="rcNotif" checked> Notificar en su panel (in-app)</label>
-        <div style="font-size:10.5px;color:var(--t3);margin-bottom:14px">🔒 El envío real por WhatsApp/correo vía Make está pendiente de conexión backend por tenant — este prototipo solo registra el evento en el log local de automatizaciones y en el panel in-app del shopper, nunca envía un mensaje real.</div>
+        <div style="font-size:10.5px;color:var(--t3);margin-bottom:14px">🔒 El envío real por WhatsApp/correo está pendiente de activación por tenant — este prototipo solo registra el evento en el log local de automatizaciones y en el panel in-app del shopper, nunca envía un mensaje real.</div>
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rcOk">Solicitar re-certificación</button></div>
       `,{onMount:(ov,close)=>{
         const sc=ov.querySelector('#rcScope'); sc.addEventListener('change',()=>{ov.querySelector('#rcOneWrap').style.display=sc.value==='one'?'':'none';});
@@ -228,16 +228,16 @@ CX.module('cert', ({role,data,ui})=>{
             CX.notif&&CX.notif.push({to:'shopper',tipo:'recert',icon:'🔄',tono:'a',titulo:'Re-certificación requerida',txt:p.name+' · '+reason+' · plazo '+days+' días',nav:'cert'});
             CX.automations&&CX.automations.fire&&CX.automations.fire('recert',{proyecto:p.name,motivo:reason,plazo:days});
           }
-          close(); ui.toast('Re-certificación solicitada a '+who+' · '+reason+' · plazo '+days+' días'+(ov.querySelector('#rcNotif').checked?' · notificado in-app (envío real por WhatsApp/correo pendiente de backend)':''),'ok',4200);
+          close(); ui.toast('Re-certificación solicitada a '+who+' · '+reason+' · plazo '+days+' días'+(ov.querySelector('#rcNotif').checked?' · notificado in-app (envío por WhatsApp/correo pendiente de envío)':''),'ok',4200);
         });
       }});
     });
     const gate=document.getElementById('certGate');
-    if(gate)gate.addEventListener('click',()=>ui.modal('Gate de certificación',`
+    if(gate)gate.addEventListener('click',()=>ui.modal('Requisito de certificación',`
       <label class="lbl">% mínimo para aprobar</label><input class="inp" id="gtMin" type="number" value="80" style="margin-bottom:10px">
-      <label class="flex" style="gap:8px;font-size:12.5px;color:var(--t1);margin-bottom:6px"><input type="checkbox" checked> Obligatoria antes de ejecutar visitas (gate activo)</label>
+      <label class="flex" style="gap:8px;font-size:12.5px;color:var(--t1);margin-bottom:6px"><input type="checkbox" checked> Obligatoria antes de ejecutar visitas (requisito activo)</label>
       <label class="flex" style="gap:8px;font-size:12.5px;color:var(--t1);margin-bottom:14px"><input type="checkbox" checked> Una vez por proyecto · permite reintentos</label>
-      <div style="text-align:right"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Configuración del gate guardada','ok');this.closest('.cx-ov').remove()">Guardar</button></div>`));
+      <div style="text-align:right"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Configuración del requisito guardada','ok');this.closest('.cx-ov').remove()">Guardar</button></div>`));
   },0);
   return html;
 });

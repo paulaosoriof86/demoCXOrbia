@@ -129,7 +129,7 @@ CX.module('marketing', ({data,ui})=>{
       </div>
     `,{onMount:(ov,close)=>{
       ov.querySelector('#ed_ia').addEventListener('click',()=>{ov.querySelector('#ed_copy').value=iaCopy(ov.querySelector('#ed_enf').value,ov.querySelector('#ed_canal').value);ui.toast('Copy generado (heurística local, sin proveedor de IA real conectado)','ok',3200);});
-      ov.querySelector('#ed_pieza').addEventListener('click',()=>ui.toast('Pieza visual: placeholder listo · generación real pendiente backend/Canva','ok',3200));
+      ov.querySelector('#ed_pieza').addEventListener('click',()=>ui.toast('Pieza visual: borrador listo · generación real pendiente de conexión (Canva)','ok',3200));
       ov.querySelector('#ed_prog').addEventListener('click',()=>{ov.querySelector('#ed_est').value='programado';ui.toast('Programación preparada (preview) para '+ov.querySelector('#ed_canal').value+' · publicación real pendiente backend/Make','ok');});
       const del=ov.querySelector('#ed_del'); if(del)del.addEventListener('click',()=>{S.del(x.id);close();draw();ui.toast('Contenido eliminado','');});
       ov.querySelector('#ed_save').addEventListener('click',()=>{
@@ -179,7 +179,7 @@ CX.module('marketing', ({data,ui})=>{
       ${S.CANALES.map(c=>`<label class="between" style="padding:9px 12px;border:1px solid var(--border);border-radius:9px;cursor:pointer"><span style="font-size:13px">${S.canalIcon(c)} ${c}</span><input type="checkbox" ${['Instagram','Facebook','LinkedIn'].includes(c)?'checked':''}></label>`).join('')}
     </div>
     <div style="background:var(--brand-light);border-radius:9px;padding:9px 12px;font-size:11.5px;color:var(--brand-dark);margin-top:10px">🔒 Este prototipo no pide ni guarda la URL del webhook de Make — solo registra qué canales quieres automatizar. La conexión real la confirma el backend en Configuración → Automatizaciones.</div>
-    <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Preferencia de automatización registrada · pendiente de conexión real por backend (Make)','ok',3600);this.closest('.cx-ov').remove()">Registrar preferencia</button></div>
+    <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Preferencia de automatización registrada · pendiente de conexión (Make)','ok',3600);this.closest('.cx-ov').remove()">Registrar preferencia</button></div>
   `);
 
   draw();

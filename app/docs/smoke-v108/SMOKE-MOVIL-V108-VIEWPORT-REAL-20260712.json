@@ -1,0 +1,66 @@
+{
+  "metodologia": "Viewport REAL vía <iframe> con width/height CSS fijos (360x800, 390x844, 412x915) embebido en un harness — NO es un proxy de media query forzada: el iframe es su propio contexto de viewport, así que @media(max-width:...) evalúa exactamente como en un dispositivo real de ese ancho. Login real (CX.app.selectRole('admin')), navegación real (CX.router.nav) por los 5 módulos señalados en la auditoría.",
+  "fecha": "2026-07-12",
+  "build": "V108",
+  "screens": [
+    "dashboard",
+    "financiero",
+    "postulaciones",
+    "reservas",
+    "aprendizaje (Academia)"
+  ],
+  "antes_de_corregir": {
+    "dashboard": {
+      "360": {
+        "scrollWidth": 674,
+        "overflow": 314
+      },
+      "390": {
+        "scrollWidth": 375,
+        "overflow": 0
+      },
+      "412": {
+        "scrollWidth": 674,
+        "overflow": 262
+      }
+    },
+    "aprendizaje": {
+      "360": {
+        "scrollWidth": 754,
+        "overflow": 394
+      },
+      "390": {
+        "scrollWidth": 754,
+        "overflow": 364
+      }
+    }
+  },
+  "causa_raiz_1": "app/modules/dashboard.js — cabecera .between (título + selects de proyecto/mes + badge + botón Exportar) sin flex-wrap.",
+  "causa_raiz_2": "app/modules/academia.js — cabecera de Academia (título + Manuales/select audiencia/Ver archivados/Crear con IA/Cargar recurso) en .flex sin flex-wrap.",
+  "correccion": "1) flex-wrap+gap inline en las cabeceras puntuales de dashboard.js y academia.js. 2) Regla sistémica en app/styles/layout.css @media(max-width:480px): .between{flex-wrap:wrap} y .between>.flex{flex-wrap:wrap} — cubre el mismo patrón repetido en Finanzas/Postulaciones/Reservas sin tocar cada módulo uno por uno ni ocultar ninguna acción.",
+  "despues_de_corregir": {
+    "360x800": {
+      "dashboard": 0,
+      "financiero": 0,
+      "postulaciones": 0,
+      "reservas": 0,
+      "aprendizaje": 0
+    },
+    "390x844": {
+      "dashboard": 0,
+      "financiero": 0,
+      "postulaciones": 0,
+      "reservas": 0,
+      "aprendizaje": 0
+    },
+    "412x915": {
+      "dashboard": 0,
+      "financiero": 0,
+      "postulaciones": 0,
+      "reservas": 0,
+      "aprendizaje": 0
+    }
+  },
+  "consola": "0 errores de consola (window.onerror) en los 3 viewports durante navegación por los 5 módulos, con sesión admin autenticada real.",
+  "limitacion_honesta": "El entorno de herramientas disponible no puede capturar una CAPTURA DE PANTALLA en píxeles del contenido dentro de un <iframe> (el capturador DOM-a-imagen no atraviesa el límite de iframe, es una limitación de la herramienta, no del prototipo). La medición de scrollWidth/overflow y errores de consola SÍ se ejecutó contra un viewport real de 360/390/412px — es evidencia funcional real, no visual. Se recomienda una validación puntual en un dispositivo/emulador Chrome DevTools antes de considerarlo 100% concluyente a nivel píxel."
+}

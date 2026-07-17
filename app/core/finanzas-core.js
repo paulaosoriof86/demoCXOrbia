@@ -86,7 +86,13 @@ CX.fin = {
   /* honorario que se RECIBE por país (config del proyecto; fallback = lo que se paga) */
   honRecibe(p,c){ return (p.honRecibe&&p.honRecibe[c]!=null)?p.honRecibe[c]:(p.honorario&&p.honorario[c])||0; },
 
-  /* resumen por país a partir de las liquidaciones derivadas de visitas */
+  /* R19 crítico 3.B (20260716): porPais() usa data.project() — combinado con el adapter local de
+     serieMensual() que YA conserva project:()=>p Y period:()=>p simultáneamente (hotfix V132),
+     esta es la combinación protegida exigida para el empalme sobre V131+R18D. Antes usaba
+     data.period() aquí; con project() el llamador real (Dashboard Financiero) sigue funcionando
+     igual porque CX.data.project() expone la misma config visual (países, honorario, formato)
+     que period() — son compatibles para este uso — y el adapter de serieMensual() sigue pasando
+     ambos por si algún consumidor futuro requiere period() explícitamente. */
   porPais(data){
     const p=data.project(), liq=CX.liq.forProject(data), out={};
     p.countries.forEach(c=>{

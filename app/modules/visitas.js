@@ -61,7 +61,8 @@ CX.module('visitas', ({data,role,ui})=>{
   const row=(v)=>`<tr data-vid="${v.id}">
     <td><b style="color:var(--brand)">#${v.num}</b>${ALL?`<div style="font-size:9px;color:var(--t3)">${projName(v.projectId)}</div>`:''}</td>
     <td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${v.ciudad} · ${v.pais}</div></td>
-    <td style="font-size:12px">${v.quincena}<div style="font-size:10px;color:var(--t3)">${v.escenario}</div></td>
+    <td style="font-size:12px">${v.escenario}</td>
+    <td style="font-size:11.5px;color:var(--t2)">${data.measurementWindow(v).label}</td>
     <td>${v.shopper?`<b style="font-size:12px">${v.shopper}</b><div style="font-size:10px;color:var(--t3)">${v.shopperCode}</div>`:'<span class="muted">— sin asignar</span>'}</td>
     <td>${ui.estadoBadge(v.estado)}</td>
     <td style="font-size:12px">${v.agendada||'<span class="muted">—</span>'}</td>
@@ -89,7 +90,7 @@ CX.module('visitas', ({data,role,ui})=>{
       <div data-k="fuera" style="cursor:pointer">${ui.kpi('Fuera de rango',k.fueraRango.t,'a')}</div>
     </div>
     <div class="card card-p">
-      <table class="tbl"><thead><tr><th>#</th><th>Sucursal</th><th>Quincena</th><th>Shopper</th><th>Estado</th><th>Agenda</th><th>Honorario</th><th></th></tr></thead>
+      <table class="tbl"><thead><tr><th>#</th><th>Sucursal</th><th>Escenario</th><th>Periodo de medición</th><th>Shopper</th><th>Estado</th><th>Agenda</th><th>Honorario</th><th></th></tr></thead>
       <tbody id="vBody">${all.map(row).join('')}</tbody></table>
       <div style="margin-top:14px">${ui.aiBox('Cada visita es editable: sucursal, escenario, honorario, shopper y estado. Detecto solapamientos, fuera de rango y faltantes de cobertura antes de publicar.','Base operativa inteligente')}</div>
     </div>`;
@@ -99,7 +100,7 @@ CX.module('visitas', ({data,role,ui})=>{
     ['vSearch','vEst','vPais'].forEach(id=>document.getElementById(id).addEventListener('input',filt));
     const vp=document.getElementById('vProj');
     if(vp)vp.addEventListener('change',()=>{ if(vp.value==='all'){CX.session._visAll=true;} else {CX.session._visAll=false;data.setProgram?data.setProgram(vp.value):data.setProject(vp.value);} CX.router.nav('visitas'); });
-    const vKp={disp:['Visitas disponibles',v=>v.estado==='disponible'],asig:['Visitas asignadas',v=>v.shopperId],real:['Visitas realizadas',v=>['realizada','cuestionario','liquidada'].includes(v.estado)],sinasig:['Visitas sin asignar',v=>!v.shopperId&&v.estado!=='fuera_rango'],fuera:['Fuera de rango',v=>v.estado==='fuera_rango']};
+    const vKp={disp:['Visitas disponibles',v=>v.estado==='disponible'],asig:['Visitas asignadas',data.visitBucketFns.asignadas],real:['Visitas realizadas',data.visitBucketFns.realizadas],sinasig:['Visitas sin asignar',data.visitBucketFns.sinAsignar],fuera:['Fuera de rango',data.visitBucketFns.fueraRango]};
     document.querySelectorAll('#vKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{ const d=vKp[el.dataset.k]; const L=all.filter(d[1]);
       ui.modal(d[0]+' ('+L.length+')', L.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Shopper</th><th>Estado</th><th>Honorario</th></tr></thead><tbody>${L.map(v=>`<tr><td><b style="font-size:12.5px">${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.shopper||'<span class="muted">—</span>'}</td><td>${ui.estadoBadge(v.estado)}</td><td style="font-size:12px;color:var(--green)">${ui.money(v.currency,v.honorario)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🔍','Sin visitas en esta categoría.')); }));
     const editor=(v)=>ui.modal((v?'Editar':'Publicar')+' visita',`
@@ -159,7 +160,7 @@ CX.module('visitas', ({data,role,ui})=>{
         const pagLabel=v.paymentSourceRef?'Pago confirmado':'Liquidada (preview, pendiente de pago confirmado)';
         steps.push({t:v.fechaPago||v.fechaEstimadaPago||v.cuestFecha||'—', l:pagLabel});
       }
-      if(v._archived) steps.push({t:(v._archivedFecha||'').slice(0,10)||'—', l:'Archivada · motivo: '+(v._archivedMotivo||'—')+' · '+(v._archivedPor||'—')+(v._archivedAuditRef?' · auditRef '+v._archivedAuditRef:'')});
+      if(v._archived) steps.push({t:(v._archivedFecha||'').slice(0,10)||'—', l:'Archivada · motivo: '+(v._archivedMotivo||'—')+' · '+(v._archivedPor||'—')});
       const auditEvents=(CX.automations&&CX.automations.audit?CX.automations.audit():[]).filter(e=>e.ref===v.id);
       auditEvents.forEach(e=>steps.push({t:(e.fecha||'').slice(0,10)||'—', l:(e.accion||'Evento')+(e.detalle?' · '+e.detalle:'')+' · '+(e.por||'—')}));
       steps.sort((a,b)=>(a.t||'').localeCompare(b.t||''));
