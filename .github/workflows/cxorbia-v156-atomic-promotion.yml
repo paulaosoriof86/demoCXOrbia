@@ -8,6 +8,7 @@ on:
       - 'tools/release/tya-promote-v156-atomic.mjs'
       - 'tools/release/tya-download-protected-drive-file.mjs'
       - '.candidate/v156-runtime-delta.zip'
+      - '.github/workflows/cxorbia-v156-atomic-promotion.yml'
 
 permissions:
   contents: write
@@ -69,3 +70,5 @@ jobs:
           git add -A
           git commit -m "feat: empalme directo V156 y source lock [skip ci]"
           git push origin HEAD:docs-tya-v6-v71-audit
+
+# direct trigger 2026-07-17T00:12:00Z
