@@ -1,49 +1,71 @@
-# CXOrbia - ejecucion obligatoria
+# CXOrbia — ejecución obligatoria
 
-Este archivo se lee antes de cualquier accion en el repositorio.
+Este archivo se lee antes de cualquier acción en el repositorio.
 
-## Fuentes obligatorias
+## Fuente prevalente
 
-1. `app/docs/ADDENDUM-MAESTRO-ARQUITECTURA-DEFINITIVA-CARRIL-EMPALMES-CXORBIA-20260717.md`.
-2. `backend/contracts/integration-lane-architecture-lock-v1.json`.
-3. `app/docs/ADDENDUM-MAESTRO-EJECUCION-DIRECTA-EMPALMES-CXORBIA-20260716.md`.
-4. `app/docs/ADDENDUM-MAESTRO-CARRIL-OPERATIVO-LOCAL-REUTILIZABLE-CXORBIA-20260717.md`.
-5. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` y PR #7.
+La única metodología vigente para empalmes ordinarios es:
 
-## Arquitectura definitiva
+`app/docs/ADDENDUM-MAESTRO-EJECUCION-DIRECTA-EMPALMES-CXORBIA-20260716.md`
 
-Las candidatas completas solo se empalman en un workspace que contenga el ZIP y el checkout Git autenticado.
+También deben leerse:
 
-Flujo obligatorio: Claude Design entrega ZIP; ChatGPT audita y genera plan JSON; el integrador local aplica el delta; Git crea commit/push; ChatGPT verifica; Paula valida visualmente.
+- `backend/contracts/integration-lane-architecture-lock-v1.json`;
+- `CAMBIOS-BACKEND.md` y sus addenda;
+- `RESUMEN-PARA-CLAUDE.md` y sus addenda;
+- `PENDIENTES-PROTOTIPO.md` y sus addenda;
+- último source lock, tracker Phase A y PR #7.
 
-Codex es apoyo puntual, no requisito por candidata. El conector GitHub no transporta candidatas completas.
+## Método obligatorio basado en Orbit
 
-Antes de empalmar ejecutar:
+Cuando una candidata está auditada GO y no existe P0 demostrado:
 
-`node tools/qa/assert-integration-architecture-lock.mjs`
+1. aplicar directamente el delta auditado sobre `docs-tya-v6-v71-audit` mediante operaciones autenticadas del repositorio;
+2. preservar backend, contratos, adapters, tools, overlays TyA, datos source-safe y documentación;
+3. generar manifest, build-lock, verificador y registro;
+4. crear commit/push verificables;
+5. ejecutar gates y smoke después del empalme;
+6. solicitar validación visual solo al cerrar el bloque técnico.
 
-Despues ejecutar el preflight de `tools/integration/`. Un FAIL detiene el proceso sin rutas alternativas.
+Estado GO obligatorio:
 
-## Regla de ejecucion
+`AUDITED_GO_READY_DIRECT_APPLY → APPLY_DELTA_DIRECTLY → EMPALMED_PENDING_POST_GATES → ACTIVE_BASELINE`
 
-Con auditoria PASS/GO y sin P0, aplicar el delta auditado sobre `docs-tya-v6-v71-audit` mediante el carril local deterministico. Preservar backend, contratos, adapters, tools, overlays y docs. Generar manifest, build-lock, registro, commit y push. Ejecutar gates por tenant/proyecto antes de DEV o produccion.
-
-## Multi-tenant y multi-proyecto
-
-El motor pertenece a CXOrbia. Cada tenant es multi-proyecto, sin proyecto global por defecto, y toda seleccion es explicita.
-
-TyA es el tenant actual. Cinepolis es solo su primer proyecto operativo; nunca es default ni logica global. Sus cifras, HR, cuestionarios, pagos, certificaciones y reglas quedan en un perfil opcional. Los proximos proyectos TyA se crean/configuran desde la plataforma. Otros tenants reutilizan el motor con politicas propias.
+No se puede regresar desde GO a planificación, transporte, instalación o nueva metodología.
 
 ## Prohibiciones
 
-No usar blobs/trees del conector, workflows transportadores, Drive, Base64, copias manuales archivo por archivo, nuevas ramas/PR o nuevas metodologias como carril de candidatas completas.
+Queda prohibido usar como requisito de empalme:
 
-No declarar empalme completo sin commit/push, manifest y build-lock verificables.
+- carpeta `incoming/`;
+- `EMPALME-*.json`;
+- ejecutables `.cmd` o PowerShell para Paula;
+- checkout local con ZIP como plano obligatorio;
+- workflows, GitHub Actions, Drive, Base64, blobs o trees para transportar la candidata;
+- nuevas ramas o PR;
+- copias manuales archivo por archivo;
+- reauditoría general;
+- nueva candidata;
+- nueva metodología.
 
-## Control de cambios
+Un bloqueo real debe clasificarse como `P0_PROVEN`, con evidencia reproducible. P1/P2 se documentan y no bloquean.
 
-La arquitectura solo cambia con P0 demostrado, evidencia reproducible, compatibilidad multi-tenant/multi-proyecto, autorizacion expresa de Paula y actualizacion conjunta del addendum, contrato, validador y este archivo.
+## Multi-tenant y multi-proyecto
+
+El motor pertenece a CXOrbia. TyA es multi-proyecto, sin proyecto global por defecto y con selección explícita. Cinépolis es solo el primer proyecto operativo; nunca es default ni lógica global. Los siguientes proyectos TyA se crean/configuran desde plataforma y otros tenants reutilizan el motor con políticas propias.
+
+## Control antidesvío
+
+Ningún agente puede sustituir esta metodología por preferencia, demora, tamaño del ZIP o limitación temporal del conector.
+
+Solo puede modificarse cuando existan simultáneamente:
+
+- P0 demostrado;
+- evidencia reproducible;
+- compatibilidad multi-tenant/multi-proyecto;
+- autorización expresa de Paula en la conversación actual;
+- actualización conjunta del addendum prevalente, este archivo, contrato, validador y documentación obligatoria.
 
 ## Lock actual
 
-V156 esta `AUDITED_GO_READY_DIRECT_APPLY`, con 35 archivos modificados y 0 eliminados. Sigue pendiente fisicamente hasta tener commit/push y build-lock V156 verificables.
+V156 está `AUDITED_GO_READY_DIRECT_APPLY`, con 35 archivos modificados y 0 eliminados. La única operación válida es `APPLY_DELTA_DIRECTLY`. Sigue pendiente físicamente hasta tener commit/push, manifest y build-lock V156 verificables.
