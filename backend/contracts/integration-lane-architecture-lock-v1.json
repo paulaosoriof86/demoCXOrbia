@@ -59,6 +59,7 @@
     "base64_transport",
     "connector_blobs_or_trees_transport",
     "manual_file_copy_by_paula",
+    "manual_file_by_file_copy",
     "general_reaudit",
     "new_candidate_request",
     "new_methodology"
@@ -72,12 +73,39 @@
     "delaySizeOrConnectorPreferenceAreNotP0": true
   },
   "currentCandidate": {
-    "candidateId": "V156",
+    "candidateId": "V159",
+    "sourceFile": "Prototype development request (8).zip",
+    "sourceSha256": "8ac5b04dda594366e0f27f717ec5f660328b43d9109a44e5df36fdcabcb09bc6",
     "state": "AUDITED_GO_READY_DIRECT_APPLY",
+    "auditDecision": "GO",
     "operation": "APPLY_DELTA_DIRECTLY",
-    "modifiedRuntimeFiles": 35,
-    "removedRuntimeFiles": 0,
+    "candidateFiles": 256,
+    "deltaFromV158": {
+      "added": 0,
+      "modified": 14,
+      "removed": 0
+    },
+    "effectiveRuntimeDeltaAgainstLiveV156Tree": {
+      "modified": 17,
+      "removed": 0
+    },
+    "javascriptFilesChecked": 67,
+    "syntaxErrors": 0,
+    "localScripts": 64,
+    "missingLocalScripts": 0,
+    "duplicateLocalScripts": 0,
+    "moduleIds": 49,
+    "duplicateModuleIds": 0,
+    "secretPatternHits": 0,
     "physicallyEmpalmed": false
+  },
+  "directApplyStatus": {
+    "code": "FILE_AWARE_AUTHENTICATED_REPOSITORY_WRITE_UNAVAILABLE",
+    "isP0": false,
+    "branchRuntimeChanged": false,
+    "alternativeMethodAuthorized": false,
+    "manualActionRequestedFromPaula": false,
+    "requiredNextOperation": "APPLY_DELTA_DIRECTLY"
   },
   "safeState": "no merge, deploy, production, real imports, Firestore/HR writes, Make/Gemini live, real Storage or payments"
 }
