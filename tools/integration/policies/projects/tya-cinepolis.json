@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "policyId": "project-tya-cinepolis-validation-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "role": "initial-project-validation-profile",
+  "neverDefault": true,
+  "description": "Perfil opcional para validar el primer proyecto TyA. No define lógica global del tenant ni del producto.",
+  "gates": [],
+  "expectedSourceSafe": {
+    "periods": 14,
+    "visits": 616,
+    "visitsPerPeriod": 44,
+    "shoppers": 216
+  }
+}
