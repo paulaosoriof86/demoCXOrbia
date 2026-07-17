@@ -48,7 +48,7 @@ Queda prohibido usar como requisito de empalme:
 - nueva candidata;
 - nueva metodología.
 
-Un bloqueo real debe clasificarse como `P0_PROVEN`, con evidencia reproducible. P1/P2 se documentan y no bloquean.
+Un hallazgo solo detiene el empalme si cumple el criterio `P0_PROVEN` del addendum prevalente. Los hallazgos P1/P2 se documentan y no bloquean.
 
 ## Multi-tenant y multi-proyecto
 
@@ -66,6 +66,19 @@ Solo puede modificarse cuando existan simultáneamente:
 - autorización expresa de Paula en la conversación actual;
 - actualización conjunta del addendum prevalente, este archivo, contrato, validador y documentación obligatoria.
 
+Una limitación de herramienta no autoriza una ruta alternativa. Debe registrarse con evidencia, sin pedir acciones manuales a Paula y sin cambiar el estado GO de la candidata.
+
 ## Lock actual
 
-V156 está `AUDITED_GO_READY_DIRECT_APPLY`, con 35 archivos modificados y 0 eliminados. La única operación válida es `APPLY_DELTA_DIRECTLY`. Sigue pendiente físicamente hasta tener commit/push, manifest y build-lock V156 verificables.
+V159 está `AUDITED_GO_READY_DIRECT_APPLY`.
+
+- Fuente: `Prototype development request (8).zip`.
+- SHA-256: `8ac5b04dda594366e0f27f717ec5f660328b43d9109a44e5df36fdcabcb09bc6`.
+- Delta V158→V159: 14 archivos modificados, 0 agregados y 0 eliminados.
+- Delta runtime efectivo contra el árbol V156 ya presente en la rama: 17 archivos modificados y 0 eliminados.
+- Sintaxis: 67 JS/MJS, 0 errores.
+- Scripts locales: 64, 0 faltantes y 0 duplicados.
+- Módulos: 49 IDs únicos, 0 duplicados.
+- Secretos: 0 coincidencias de firmas verificadas.
+
+La única operación válida sigue siendo `APPLY_DELTA_DIRECTLY`. V159 no está físicamente empalmada hasta tener commit/push, manifest y build-lock verificables. El conector disponible no admite transferencia autenticada de archivos montados y la metodología prohíbe sustituirla por Base64, blobs, trees, workflows o copias manuales.
