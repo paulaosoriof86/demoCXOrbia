@@ -1,80 +1,83 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-07-17  
-**Estado:** `EMPALMED_PENDING_POST_GATES`; reemplazar este mismo archivo al cambiar el estado.
+Fecha: 2026-07-17  
+Estado: `TECHNICAL_PASS_PENDING_VISUAL` dentro de `EMPALMED_PENDING_POST_GATES`
 
-## 1. Repositorio y destino
+## Repositorio y destino
 
 - Repo: `paulaosoriof86/demoCXOrbia`
-- Rama viva: `docs-tya-v6-v71-audit`
+- Rama: `docs-tya-v6-v71-audit`
 - PR: `#7`, draft/open/no merge
-- Base: `release/cxorbia-tya-rc-20260630`
-- Destino prohibido: `main`
+- Prohibido: `main`, rama nueva, PR nuevo
 
-## 2. Candidata aplicada
+## Baseline candidata
 
-- Identificación: V159
-- Archivo: `Prototype development request CXOrbia V159.zip`
-- SHA-256 del adjunto usado: `d9d9e767bf6d9a26e0e084deed5d327d801620c36aee1a9bb3cc0c3db0e54ce2`
-- Identidad de contenido auditada previamente: `8ac5b04dda594366e0f27f717ec5f660328b43d9109a44e5df36fdcabcb09bc6`
-- `HEAD_BEFORE`: `bf9c8f27500b26d547199d159659b58a42434811`
+- V159 empalmada
 - Commit de empalme: `d47ea700f7e48a2b0ba31574a84b89c6a20f3449`
-- Estado: `EMPALMED_PENDING_POST_GATES`
+- Manifest, build-lock y verificador: presentes
 - P0 demostrado: no
+- `ACTIVE_BASELINE`: todavía no, pendiente validación visual
 
-## 3. Evidencia
-
-- Manifest: `app/docs/MANIFEST-V159-EMPALME-DIRECTO-20260717.json`
-- Build lock: `app/core/build-lock.js`
-- Verificador: `tools/release/tya-v159-empalme-directo-verify.mjs`
-- Sin rama o PR nuevos
-- Sin unión parcial
-
-## 4. Plan vigente revisado
-
-Fuente:
+## Plan canónico
 
 `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`
 
-Decisión:
+Método obligatorio:
 
-- no reiniciar Phase A;
-- no reconstruir adapter, HR, materialization plan, Auth matrix, importadores, reviewQueue, rollback ni sync contracts;
-- ajustar la secuencia al estado post-empalme V159;
-- cerrar primero la baseline visual/técnica antes de activar backend real.
+```text
+FUENTE Y REGLA
+→ MAPPING / ADAPTER
+→ GATE DE DATOS
+→ RUNTIME EXACTO
+→ VALIDACIÓN VISUAL
+→ FREEZE
+```
 
-## 5. Siguiente bloque exacto
+No se avanza al siguiente corte sin evidencia visual del corte actual.
 
-`POST_EMPALME_GATES_V159_EXACT_BUILD`
+## Corte activo
 
-1. Verificar HEAD/source lock V159.
-2. Ejecutar gates semánticos de proyecto/periodo/histórico/KPI.
-3. Confirmar 14 periodos, 616 visitas, 44 visitas activas y junio correctamente tratado.
-4. Validar GT/HN, monedas, shoppers, certificaciones y finanzas sin inferencias.
-5. Ejecutar smoke local/static Admin, Shopper, Cliente y Academia.
-6. No usar la URL V131/R18D como evidencia de V159.
-7. Si pasa, solicitar autorización separada para Hosting DEV V159 exacto.
-8. Ejecutar smoke remoto y validación visual de Paula.
-9. Con PASS, declarar V159 `ACTIVE_BASELINE`.
+`CORTE_0_V159_POST_EMPALME + CORTE_1_CONTEXTO_HR_HISTORICO`
 
-## 6. Plan posterior confirmado
+### Trabajo técnico pendiente
 
-1. Resolver Firebase nuevo y vacío.
-2. Conectar `CX.data` read-only mediante el adapter portable ya existente.
-3. Regenerar y ejecutar materialización DEV controlada con autorización.
-4. Activar Auth/RBAC/rules por gate separado.
-5. Completar histórico financiero y certificaciones.
-6. Activar sync HR/plataforma y evidencias de forma gradual.
-7. GO/NO GO y producción controlada.
+1. verificar HEAD/source lock/build V159;
+2. ejecutar gates semánticos;
+3. smoke local/static Admin, Shopper, Cliente y Academia;
+4. confirmar proyecto/periodo/histórico, 14 periodos, 616 visitas, 44 activas, junio, GT/HN, shoppers, certificaciones y finanzas.
 
-## 7. Bloqueo externo vivo
+### Validación visual pendiente
 
-La creación automática del proyecto Firebase nuevo y vacío continúa bloqueada por IAM. `cxorbia-backend-dev` puede usarse para Hosting DEV, pero no como nueva base TyA porque Auth/Firestore no están vacíos.
+1. publicar solo Hosting DEV V159 con autorización separada;
+2. smoke remoto del mismo commit;
+3. entregar a Paula URL, build, perfil, módulo, acción y resultado esperado;
+4. recibir `APROBADO`, `DIFERENCIA` o `ERROR`;
+5. congelar V159 como `ACTIVE_BASELINE` si no existe P0.
 
-## 8. Preservación
+La URL histórica V131/R18D no prueba V159.
 
-Backend, contratos, adapters, tools, overlays TyA, `CX.data`, multi-tenant, multi-proyecto, HR/histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, sincronización HR/plataforma, Academia, manuales, rutas por rol y notificaciones.
+## Siguiente secuencia después del freeze
 
-## 9. Estado seguro
+1. contexto/HR/histórico;
+2. ciclo shopper;
+3. finanzas/certificaciones;
+4. Firebase nuevo y limpio;
+5. `CX.data` read-only;
+6. materialización DEV;
+7. Auth/RBAC;
+8. sync HR/plataforma y evidencias;
+9. GO/NO GO producción.
 
-Sin merge, producción, importaciones reales, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos. Hosting DEV V159 requiere autorización separada.
+Cada paso incluye gate técnico, runtime exacto y validación visual antes de avanzar.
+
+## No reabrir desde cero
+
+Adapter portable `CX.data`, domain mapping, materialization plan, Auth readiness, importadores, reviewQueue, rollback, HR source-safe y contratos de sync.
+
+## Bloqueo vivo
+
+La creación automática del Firebase nuevo y vacío continúa bloqueada por IAM. `cxorbia-backend-dev` puede servir como Hosting DEV, no como nueva base TyA.
+
+## Estado seguro
+
+Sin merge, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos. Hosting DEV V159 requiere autorización separada.
