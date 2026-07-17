@@ -1,94 +1,54 @@
-# CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
+# CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-Fecha: 2026-07-17
-Estado: ACTIVO; reemplazar este mismo archivo al cambiar el estado operativo.
+**Fecha:** 2026-07-17  
+**Estado:** `EMPALMED_PENDING_POST_GATES`; reemplazar este mismo archivo al cambiar el estado.
 
 ## 1. Repositorio y destino
 
 - Repo: `paulaosoriof86/demoCXOrbia`
 - Rama viva: `docs-tya-v6-v71-audit`
-- PR: `#7`
+- PR: `#7`, draft/open/no merge
 - Base: `release/cxorbia-tya-rc-20260630`
-- PR: draft/open/no merge
 - Destino prohibido: `main`
 
-## 2. Candidata activa
+## 2. Candidata aplicada
 
-- Identificacion operativa: V159
-- Archivo usado: `Prototype development request CXOrbia V159.zip`
+- Identificación: V159
+- Archivo: `Prototype development request CXOrbia V159.zip`
 - SHA-256 del adjunto usado: `d9d9e767bf6d9a26e0e084deed5d327d801620c36aee1a9bb3cc0c3db0e54ce2`
-- Inventario del adjunto: 256 archivos
-- Estado previo: `AUDITED_GO_READY_DIRECT_APPLY`
+- Identidad de contenido auditada previamente: `8ac5b04dda594366e0f27f717ec5f660328b43d9109a44e5df36fdcabcb09bc6`
+- `HEAD_BEFORE`: `bf9c8f27500b26d547199d159659b58a42434811`
+- Commit de empalme: `d47ea700f7e48a2b0ba31574a84b89c6a20f3449`
+- Estado: `EMPALMED_PENDING_POST_GATES`
 - P0 demostrado: no
 
-## 3. Estado de aplicacion
+## 3. Evidencia
 
-- V159 fue aplicada fisicamente por carril file-aware local sobre `docs-tya-v6-v71-audit`.
-- HEAD_BEFORE: `bf9c8f27500b26d547199d159659b58a42434811`.
-- Manifest: `app/docs/MANIFEST-V159-EMPALME-DIRECTO-20260717.json`.
-- Build lock: `app/core/build-lock.js`.
-- Verificador: `tools/release/tya-v159-empalme-directo-verify.mjs`.
-- Estado: `EMPALMED_PENDING_POST_GATES`.
-- No solicitar V160.
-- No generar otro paquete Claude.
-- No reauditar V159.
-- No aplicar por carriles alternos.
+- Manifest: `app/docs/MANIFEST-V159-EMPALME-DIRECTO-20260717.json`
+- Build lock: `app/core/build-lock.js`
+- Verificador: `tools/release/tya-v159-empalme-directo-verify.mjs`
+- Rama actualizada por commit/push verificable
+- Sin rama o PR nuevos
+- Sin unión parcial
 
-## 4. Carril de ejecucion
+## 4. Corrección metodológica autorizada
 
-Carril usado:
+Paula autorizó el uso de blobs, tree, commit y ref como objetos Git internos exclusivamente dentro de un único `APPLY_DELTA_DIRECTLY` atómico.
 
-`C:\Users\paula\AppData\Local\Temp\demoCXOrbia-v159-direct-apply-20260717`
+Continúan prohibidos como transporte manual o fragmentado, igual que Contents API serial, workflows, Base64, Drive, PowerShell, ramas o PR nuevos y `force`.
 
-Valores de entrada:
+## 5. Preservación
 
-```text
-CANDIDATE_BYTES_AVAILABLE=true
-CANDIDATE_EXTRACTABLE=true
-REPO_CHECKOUT_AVAILABLE=true
-TARGET_REPOSITORY=paulaosoriof86/demoCXOrbia
-TARGET_BRANCH=docs-tya-v6-v71-audit
-AUTHENTICATED_COMMIT_PUSH_AVAILABLE=true
-HEAD_BEFORE=bf9c8f27500b26d547199d159659b58a42434811
-WORKTREE_STATE=clean
-```
+Backend, contratos, adapters, tools, overlays TyA, `CX.data`, multi-tenant, multi-proyecto, HR/histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, sincronización HR/plataforma, Academia, manuales, rutas por rol y notificaciones.
 
-## 5. Siguiente bloque exacto
+## 6. Siguiente bloque exacto
 
-```text
-POST_EMPALME_GATES_V159
--> sintaxis JS/MJS
--> index/scripts/rutas/modulos
--> manifest/build-lock/verificador
--> gates proyecto-periodo-HR-shoppers-certificaciones-finanzas
--> smoke Admin/Shopper/Cliente y Academia
--> validacion visual
--> ACTIVE_BASELINE
--> Phase A operativa sin merge/deploy/produccion
-```
-
-## 6. Preservacion
-
-Debe preservarse:
-
-- backend, contratos, adapters, tools y overlays TyA;
-- `CX.data`;
-- multi-tenant y multi-proyecto;
-- HR e historico;
-- shoppers y postulaciones;
-- certificaciones presentadas;
-- liquidaciones/pagos;
-- sincronizacion HR/plataforma;
-- Academia, manuales, rutas por rol y notificaciones;
-- UTF-8 sin BOM;
-- ausencia de secretos.
+1. Cerrar gates post-empalme profundos de Phase A.
+2. Ejecutar validación visual Admin, Shopper y Cliente.
+3. Confirmar proyecto/periodo, histórico, 14 periodos, 616 visitas, 44 por periodo, junio, países/monedas, shoppers, certificaciones y liquidaciones.
+4. Si pasa, declarar V159 `ACTIVE_BASELINE`.
+5. Retomar el siguiente bloque operativo Phase A.
 
 ## 7. Estado seguro
 
-- Sin merge.
-- Sin deploy.
-- Sin produccion.
-- Sin importaciones reales.
-- Sin Firestore/Auth/Storage/HR writes.
-- Sin Make/Gemini live.
-- Sin pagos.
+Sin merge, deploy, producción, importaciones reales, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos.
