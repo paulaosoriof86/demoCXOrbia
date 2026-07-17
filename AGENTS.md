@@ -6,10 +6,11 @@ Este archivo se lee antes de cualquier acción en el repositorio.
 
 Antes de planear, auditar, responder o modificar, leer:
 
-1. `app/docs/ADDENDUM-MAESTRO-CORTE-DE-RAIZ-EJECUCION-EMPALME-CXORBIA-TYA-20260716.md`.
-2. `app/docs/EMPALME-CHECKPOINT-ACTIVO.json`.
-3. `backend/contracts/empalme-execution-lock-v1.json`.
-4. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` y PR #7.
+1. `app/docs/ADDENDUM-MAESTRO-EJECUCION-DIRECTA-EMPALMES-CXORBIA-20260716.md`.
+2. `CAMBIOS-BACKEND.md` y sus addenda recientes.
+3. `RESUMEN-PARA-CLAUDE.md` y sus addenda recientes.
+4. `PENDIENTES-PROTOTIPO.md` y sus addenda recientes.
+5. PR #7 actual.
 
 ## Regla de ejecución
 
@@ -21,7 +22,7 @@ Secuencia única:
 2. Preservar backend, contratos, adapters, tools, overlays TyA y documentación acumulada.
 3. Generar manifest, `build-lock.js`, verificador y registro de baseline.
 4. Actualizar documentación obligatoria.
-5. Crear un solo commit y mover la rama viva.
+5. Crear el commit de empalme y mover la rama viva.
 6. Ejecutar gates y smoke después del empalme, antes de DEV/producción.
 
 ## Prohibiciones absolutas durante un empalme ordinario
@@ -30,7 +31,7 @@ No crear ramas, PR, workflows, Actions, artefactos Drive, transferencias Base64,
 
 No convertir gates post-empalme en bloqueo previo.
 
-No responder con otra explicación metodológica cuando el checkpoint indique una acción ejecutable. Ejecutar primero y reportar después.
+No responder con otra explicación metodológica cuando existe una acción ejecutable. Ejecutar primero y reportar después.
 
 ## Lock actual
 
@@ -38,6 +39,6 @@ V156 está en estado `AUDITED_GO_READY_DIRECT_APPLY`. La única operación permi
 
 Antes de cualquier mutación ejecutar:
 
-`node tools/qa/assert-empalme-execution-lock.mjs --operation APPLY_DELTA_DIRECTLY`
+`node tools/qa/assert-empalme-directo.mjs --operation APPLY_DELTA_DIRECTLY`
 
 Si la operación no coincide con el lock, detenerla. Un bloqueo real debe describirse una sola vez con evidencia concreta; no se permite experimentar con rutas alternativas.
