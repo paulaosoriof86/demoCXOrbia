@@ -3,6 +3,10 @@
   Reaplica la máquina canónica R20 después de normalización R18A y overlays
   R18B. Preserva evidencias/review queues y evita que capas anteriores vuelvan
   a escribir estados incompatibles.
+
+  Un control financiero R14C enlazado es evidencia de cruce pendiente, no pago.
+  Se conserva como candidato financiero aunque la HR no tenga submitido; la
+  contradicción pasa a revisión y nunca confirma liquidación/pago.
 */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -38,6 +42,9 @@ function writePayload(file,payload){
     ';'
   ].join(''),'utf8');
 }
+function exactFinancialControl(visit){
+  return visit?.financialControl?.matchStatus==='exact_protected_operational_linked';
+}
 
 const payload=readPayload(input);
 if(payload.sourceSafe!==true||payload.imported===true||payload.production===true)throw new Error('R20 final pass requires source-safe non-production input.');
@@ -45,6 +52,23 @@ if(payload.sourceSafe!==true||payload.imported===true||payload.production===true
 const previousShoppers=new Map((payload.shoppers||[]).map(s=>[String(s.id||s.shopperId||''),s]));
 payload.visits=(payload.visits||[]).map(raw=>{
   const visit=applyCanonicalVisitState(raw);
+  const financialLinked=exactFinancialControl(raw);
+  if(financialLinked){
+    visit.liquidationCandidate=true;
+    visit.liquidationState='candidate_pending_financial_match';
+    visit.paymentState='pending_financial_source';
+    visit.paymentControlOnly=true;
+    visit.paymentConfirmed=false;
+    visit.paid=false;
+    visit.lotEligible=false;
+    visit.canonicalFacets={...(visit.canonicalFacets||{}),liquidationCandidate:true,liquidationConfirmed:false,paymentConfirmed:false};
+    if(visit.canonicalFacets.submitted!==true){
+      const reasons=new Set(Array.isArray(visit.reviewReasons)?visit.reviewReasons:[]);
+      reasons.add('financial_control_without_hr_submission');
+      visit.reviewReasons=[...reasons].sort();
+      visit.reviewRequired=true;
+    }
+  }
   visit.submit=visit.canonicalFacets?.submitted===true;
   visit.stateModelVersion='phase-a-canonical-visit-state-r20-v1';
   visit.domainMappingVersion='phase-a-source-safe-domain-mapping-r20';
@@ -115,19 +139,22 @@ payload.counts={
   liquidationCandidatesPendingFinancialMatch:payload.visits.filter(v=>v.liquidationState==='candidate_pending_financial_match').length,
   liquidationConfirmed:payload.visits.filter(v=>v.liquidationState==='confirmed').length,
   paymentConfirmed:payload.visits.filter(v=>v.paymentState==='confirmed').length,
-  reviewRequired:payload.visits.filter(v=>v.reviewRequired===true).length
+  reviewRequired:payload.visits.filter(v=>v.reviewRequired===true).length,
+  financialExactLinks:payload.visits.filter(exactFinancialControl).length,
+  financialExactLinksWithoutHrSubmission:payload.visits.filter(v=>exactFinancialControl(v)&&v.canonicalFacets?.submitted!==true).length
 };
 payload.source={
   ...(payload.source||{}),
   semanticNormalizer:'r15g+r20',
   finalCanonicalPass:'after_r18a_r18b',
   canonicalStateAcrossAllDetectedPeriods:true,
+  financialControlsPreservedAsPendingReview:true,
   runtimeLiveSync:false
 };
 payload.normalization={
   ...(payload.normalization||{}),
   version:'R20-final',
-  historyScope:'all_detected_hr_periods',
+  historyScope:payload.normalization?.historyScope||'all_verified_hr_periods',
   finalCanonicalPass:true,
   periodCount:summaries.length,
   periodKeys:summaries.map(row=>row.periodKey)
@@ -136,7 +163,7 @@ payload.normalization={
 writePayload(output,payload);
 fs.mkdirSync(reportDir,{recursive:true});
 const report={
-  schemaVersion:'1.0.0',
+  schemaVersion:'1.1.0',
   decision:'PASS_R20_FINAL_CANONICAL_PASS',
   input:path.relative(process.cwd(),input).replaceAll('\\','/'),
   output:path.relative(process.cwd(),output).replaceAll('\\','/'),
@@ -153,6 +180,8 @@ fs.writeFileSync(path.join(reportDir,'report.md'),[
   `Assigned: ${payload.counts.assigned}`,
   `Unassigned: ${payload.counts.unassigned}`,
   `Submitted: ${payload.counts.submitted}`,
+  `Financial exact links: ${payload.counts.financialExactLinks}`,
+  `Financial links without HR submission: ${payload.counts.financialExactLinksWithoutHrSubmission}`,
   `Payments confirmed: ${payload.counts.paymentConfirmed}`
 ].join('\n'),'utf8');
 console.log(JSON.stringify(report,null,2));
