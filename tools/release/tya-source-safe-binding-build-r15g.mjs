@@ -7,6 +7,8 @@
   - root projectId: cinepolis
   - active periodId: cinepolis-YYYY-MM
   - one period owns its 44 visits
+  - operational, submission, liquidation and payment-control states survive the
+    payload-to-CX.data adapter boundary without inferring payments.
 
   This is a backend connection-layer overlay. It does not modify app/modules,
   write providers, import data, deploy, pay, or enable production.
@@ -55,16 +57,55 @@ code = code.replace(
   "tenantId:'tya', projectId:'cinepolis', projectName:'Cinépolis', activePeriodId:latest && latest.id, sourceTitle:snapshot.source && snapshot.source.title,"
 );
 
+const stateMappingBefore = `    estado: v.estado || 'disponible',
+    shopperId: v.shopperId || null,`;
+const stateMappingAfter = `    estado: v.estado || 'disponible',
+    canonicalState: v.canonicalState || null,
+    operationalState: v.operationalState || null,
+    questionnaireState: v.questionnaireState || null,
+    submissionState: v.submissionState || null,
+    liquidationState: v.liquidationState || null,
+    paymentState: v.paymentState || null,
+    paymentControlOnly: v.paymentControlOnly === true,
+    paymentConfirmed: v.paymentConfirmed === true,
+    paymentSourceRef: v.paymentSourceRef || null,
+    financialControl: v.financialControl || null,
+    liquidationEvidence: v.liquidationEvidence || null,
+    paymentEvidence: v.paymentEvidence || null,
+    shopperId: v.shopperId || null,`;
+if (!code.includes(stateMappingBefore)) fail('R15F visit-state insertion anchor missing.');
+code = code.replace(stateMappingBefore, stateMappingAfter);
+
+const workflowMappingBefore = `    submit: !!v.submit,
+    submittedAt: v.submittedAt || null,
+    assignmentSource: v.hasShopper ? 'hr' : null,
+    assignmentSyncStatus: 'hr_live_source_safe_preview',
+    reviewRequired: false,`;
+const workflowMappingAfter = `    submit: Boolean(v.submit || v.submittedAt || v.submissionState === 'submitted_by_tya'),
+    submittedAt: v.submittedAt || null,
+    assignmentSource: v.assignmentSource || (v.hasShopper ? 'hr' : null),
+    assignmentSyncStatus: v.assignmentSyncStatus || 'hr_live_source_safe_preview',
+    lastSyncedAt: v.lastSyncedAt || null,
+    reviewRequired: v.reviewRequired === true,
+    reviewReasons: Array.isArray(v.reviewReasons) ? v.reviewReasons : [],`;
+if (!code.includes(workflowMappingBefore)) fail('R15F workflow-state insertion anchor missing.');
+code = code.replace(workflowMappingBefore, workflowMappingAfter);
+
 const required = [
   "tenantId:'tya', clientName:'TyA'",
   "CX.data.currentProjectId = 'cinepolis';",
   'CX.data.currentPeriodId = latest && latest.id;',
   'currentPeriodId:CX.data.currentPeriodId,',
   'shoppers.length === 216',
-  'activePeriodId:latest && latest.id'
+  'activePeriodId:latest && latest.id',
+  'submissionState: v.submissionState || null,',
+  'liquidationState: v.liquidationState || null,',
+  'paymentState: v.paymentState || null,',
+  "v.submissionState === 'submitted_by_tya'",
+  'financialControl: v.financialControl || null,'
 ];
 const missing = required.filter(token => !code.includes(token));
-if (missing.length) fail(`Canonical context invariants missing: ${missing.join(', ')}`);
+if (missing.length) fail(`Canonical context/state invariants missing: ${missing.join(', ')}`);
 if (code.includes('CX.data.currentProjectId = latest && latest.id;')) {
   fail('Period identity still overwrites root project identity.');
 }
@@ -72,20 +113,30 @@ if (code.includes('CX.data.currentProjectId = latest && latest.id;')) {
 fs.writeFileSync(adapterFile, code, 'utf8');
 fs.mkdirSync(outDir, { recursive: true });
 const report = {
-  schemaVersion: '1.0.0',
-  decision: 'PASS_R15G_CANONICAL_PROJECT_PERIOD_BINDING',
+  schemaVersion: '1.1.0',
+  decision: 'PASS_R15G_CANONICAL_PROJECT_PERIOD_AND_WORKFLOW_BINDING',
   adapterFile: path.relative(process.cwd(), adapterFile).replaceAll('\\', '/'),
   tenantId: 'tya',
   projectId: 'cinepolis',
   periodIdentity: 'cinepolis-YYYY-MM',
   expectedShoppers: 216,
+  preservedStates: [
+    'canonicalState',
+    'operationalState',
+    'questionnaireState',
+    'submissionState',
+    'liquidationState',
+    'paymentState',
+    'financialControl'
+  ],
   safeState: {
     writes: false,
     imports: false,
     deploy: false,
     production: false,
     providers: false,
-    payments: false
+    payments: false,
+    paymentsInferred: false
   }
 };
 fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
