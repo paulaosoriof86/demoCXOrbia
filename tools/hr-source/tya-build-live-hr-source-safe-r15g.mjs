@@ -22,6 +22,7 @@ const OUT_FILE = process.env.CXORBIA_HR_SOURCE_SAFE_OUT || 'app/data/tya-hr-sour
 const baseBuilder = path.resolve('tools/hr-source/tya-build-live-hr-source-safe-static.mjs');
 const generatedBuilder = path.resolve('tools/hr-source/.tya-build-live-hr-source-safe-static-r20.generated.mjs');
 const columnMapPath = path.resolve('backend/contracts/tya-hr-column-map-r20-v1.json');
+const gateOut = path.resolve(process.env.CXORBIA_GATE_OUT || '.tmp/r20-source-safe-gates');
 if (!fs.existsSync(columnMapPath)) throw new Error(`R20 column map missing: ${columnMapPath}`);
 const columnMap = JSON.parse(fs.readFileSync(columnMapPath, 'utf8'));
 if (columnMap.contractId !== 'tya-hr-column-map-r20-v1' || columnMap.resolutionPolicy !== 'exact_or_unique_anchored_only') {
@@ -35,9 +36,6 @@ for (const [name, spec] of columnEntries) {
   }
 }
 
-// El builder histórico usaba `includes()` y podía seleccionar el primer encabezado
-// parcialmente parecido. R20 reemplaza esa función solo durante el build: exacto
-// primero y coincidencia anclada únicamente cuando es única.
 const baseSource = fs.readFileSync(baseBuilder, 'utf8');
 const strictColumnResolver = String.raw`function col(header, aliases){
   const key = value => norm(value).replace(/[^a-z0-9ñ]+/g, ' ').replace(/\s+/g, ' ').trim();
@@ -64,10 +62,49 @@ const contractMappingBlock = [
   '  };',
   '  const issues = [];'
 ].join('\n');
+const diagnosticsBlock = String.raw`  const candidateHeaders = (header.row || []).map((label,index)=>{
+    const normalized = norm(label);
+    if(!/(shopper|program|realiz|cuestion|submit|disponible|quincena|franja)/.test(normalized)) return null;
+    let nonEmptyCount = 0;
+    for(let rowIndex=header.index+1; rowIndex<values.length; rowIndex++){
+      if(String(cell(values[rowIndex] || [], index) || '').trim()) nonEmptyCount += 1;
+    }
+    return { index, label:String(label || '').trim(), normalized, nonEmptyCount };
+  }).filter(Boolean);
+  const columnDiagnostics = Object.fromEntries(Object.entries(c).map(([name,index])=>{
+    let nonEmptyCount = 0;
+    if(index >= 0){
+      for(let rowIndex=header.index+1; rowIndex<values.length; rowIndex++){
+        if(String(cell(values[rowIndex] || [], index) || '').trim()) nonEmptyCount += 1;
+      }
+    }
+    return [name,{ index, header:index>=0?String(cell(header.row,index)||'').trim():null, nonEmptyCount }];
+  }));
+`;
+
 let patchedSource = baseSource.replace(/function col\(header, aliases\)\{[\s\S]*?\n\}/, strictColumnResolver);
 patchedSource = patchedSource.replace(/  const c = \{[\s\S]*?\n  \};\n  const issues = \[\];/, contractMappingBlock);
-if (patchedSource === baseSource || !patchedSource.includes('const anchored = cells.reduce') || !patchedSource.includes(JSON.stringify(columnMap.columns.fechaSubmitido.aliases))) {
-  throw new Error('R20 could not install strict resolver and contract column map.');
+patchedSource = patchedSource.replace(
+  "    shopperId: safeHash(shopperName, `shopper_${country.toLowerCase()}`),",
+  "    shopperId: shopperName ? safeHash(shopperName, `shopper_${country.toLowerCase()}`) : null,"
+);
+patchedSource = patchedSource.replace('  const visits = [];\n  for(let i = header.index + 1;', diagnosticsBlock + '  const visits = [];\n  for(let i = header.index + 1;');
+patchedSource = patchedSource.replace(
+  '  return { meta, visits, issues, headerRow: header.index + 1 };',
+  '  return { meta, visits, issues, headerRow: header.index + 1, candidateHeaders, columnDiagnostics };'
+);
+patchedSource = patchedSource.replace(
+  'tabsRead.push({ title: tab.tabTitle, country: tab.country, periodKey: tab.key, rows: parsed.visits.length, headerRow: parsed.headerRow || null });',
+  'tabsRead.push({ title: tab.tabTitle, country: tab.country, periodKey: tab.key, rows: parsed.visits.length, headerRow: parsed.headerRow || null, candidateHeaders: parsed.candidateHeaders || [], columnDiagnostics: parsed.columnDiagnostics || {} });'
+);
+if (
+  patchedSource === baseSource ||
+  !patchedSource.includes('const anchored = cells.reduce') ||
+  !patchedSource.includes(JSON.stringify(columnMap.columns.fechaSubmitido.aliases)) ||
+  !patchedSource.includes('shopperName ? safeHash') ||
+  !patchedSource.includes('candidateHeaders: parsed.candidateHeaders')
+) {
+  throw new Error('R20 could not install strict resolver, column contract, shopper fix and safe diagnostics.');
 }
 fs.writeFileSync(generatedBuilder, patchedSource, 'utf8');
 let run;
@@ -99,6 +136,27 @@ const mappingBlockers = mappingIssues.filter(issue =>
 if (mappingBlockers.length) {
   throw new Error(`R20 HR mapping HOLD; missing/ambiguous critical headers: ${JSON.stringify(mappingBlockers).slice(0, 4000)}`);
 }
+
+fs.mkdirSync(gateOut, { recursive:true });
+fs.writeFileSync(path.join(gateOut, 'hr-header-column-diagnostics.source-safe.json'), JSON.stringify({
+  schemaVersion:'1.0.0',
+  sourceSafe:true,
+  containsDataRows:false,
+  containsPii:false,
+  historyScope:'all_detected_hr_periods',
+  columnMapContract:columnMap.contractId,
+  tabs:(snapshot.tabsRead || []).map(tab => ({
+    title:tab.title,
+    country:tab.country,
+    periodKey:tab.periodKey,
+    rows:tab.rows,
+    headerRow:tab.headerRow,
+    candidateHeaders:tab.candidateHeaders || [],
+    columnDiagnostics:tab.columnDiagnostics || {}
+  })),
+  issues:mappingIssues,
+  blockers:mappingBlockers
+}, null, 2) + '\n', 'utf8');
 
 function pad(value){ return String(value).padStart(2, '0'); }
 function isoDateFromExcelSerial(serial){
@@ -141,7 +199,7 @@ if (canonicalHistory.decision !== 'PASS_CANONICAL_HISTORY') {
 
 const shoppersById = new Map();
 for (const visit of snapshot.visits) {
-  if (!visit.shopperId) continue;
+  if (!visit.shopperId || !visit.canonicalFacets?.assigned) continue;
   const current = shoppersById.get(visit.shopperId) || {
     id: visit.shopperId,
     shopperId: visit.shopperId,
@@ -216,6 +274,7 @@ snapshot.normalization = {
     'contract_driven_column_map',
     'strict_unique_header_resolution',
     'critical_missing_or_ambiguous_headers_hold_build',
+    'empty_shopper_does_not_generate_identity',
     'unassigned_iff_no_shopper_reference',
     'assigned_without_valid_schedule_is_pending_schedule',
     'realized_without_questionnaire_is_pending_questionnaire',
