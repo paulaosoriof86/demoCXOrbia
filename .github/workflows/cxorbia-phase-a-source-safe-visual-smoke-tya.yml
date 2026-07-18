@@ -3,9 +3,15 @@ name: CXOrbia Phase A TyA R20 Source-Safe Gates
 on:
   workflow_dispatch:
   push:
-    branches: [docs-tya-v6-v71-audit]
+    branches:
+      - docs-tya-v6-v71-audit
     paths:
-      - 'tools/hr-source/**'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs'
+      - 'tools/hr-source/tya-canonical-visit-state-r20.mjs'
+      - 'tools/hr-source/tya-reapply-canonical-state-r20.mjs'
+      - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
+      - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
       - 'tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15g.mjs'
@@ -27,14 +33,23 @@ on:
       - 'backend/contracts/prototype-baseline-registry-v1.json'
       - '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml'
   pull_request:
-    branches: [docs-tya-v6-v71-audit, release/cxorbia-tya-rc-20260630]
+    branches:
+      - docs-tya-v6-v71-audit
+      - release/cxorbia-tya-rc-20260630
     paths:
-      - 'tools/hr-source/**'
+      - 'tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs'
+      - 'tools/hr-source/tya-canonical-visit-state-r20.mjs'
+      - 'tools/hr-source/tya-reapply-canonical-state-r20.mjs'
+      - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
       - 'tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15g.mjs'
       - 'tools/release/tya-source-safe-binding-build-r18a.mjs'
       - 'tools/release/tya-visible-overlays-build-r18d.mjs'
-      - 'tools/qa/**'
+      - 'tools/qa/tya-canonical-history-reconciliation-r20-gate.mjs'
+      - 'tools/qa/tya-source-semantics-r15g-gate.mjs'
+      - 'tools/qa/tya-project-period-kpi-history-gate.mjs'
+      - 'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs'
+      - 'tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs'
       - 'backend/contracts/tya-hr-column-map-r20-v1.json'
       - 'backend/contracts/phase-a-hr-canonical-visit-state-r20-v1.json'
       - 'backend/config/tya-tenant-runtime-profile.source-safe.json'
@@ -49,10 +64,7 @@ defaults:
     shell: bash
 
 env:
-  CXORBIA_GATE_OUT: r20-gate-artifacts
-  CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
-  CXORBIA_HR_LIVE_MAX_ROW: '140'
-  CXORBIA_HR_LIVE_MAX_COL: AI
+  CXORBIA_GATE_OUT: .tmp/r20-source-safe-gates
 
 jobs:
   r20-source-safe-gates:
@@ -61,10 +73,8 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - name: Checkout active branch
+      - name: Checkout candidate or active baseline
         uses: actions/checkout@v4
-        with:
-          show-progress: false
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -80,53 +90,41 @@ jobs:
           node --check tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs
           node --check tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs
           node --check tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs
+          node --check tools/release/tya-source-safe-binding-build-r15f.mjs
           node --check tools/release/tya-source-safe-binding-build-r15g.mjs
           node --check tools/release/tya-source-safe-binding-build-r18a.mjs
           node --check tools/release/tya-visible-overlays-build-r18d.mjs
           node --check tools/qa/tya-canonical-history-reconciliation-r20-gate.mjs
           node --check tools/qa/tya-source-semantics-r15g-gate.mjs
+          node --check tools/qa/tya-project-period-kpi-history-gate.mjs
+          node --check tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs
           node tools/qa/verify-fast-lane-promotion-policy.mjs
           node -e "for(const f of ['backend/contracts/tya-hr-column-map-r20-v1.json','backend/contracts/phase-a-hr-canonical-visit-state-r20-v1.json','backend/config/tya-tenant-runtime-profile.source-safe.json']) JSON.parse(require('fs').readFileSync(f,'utf8'));"
 
-      - name: R20.1 Read full HR and apply first canonical pass
+      - name: Build exact R20 source-safe runtime
+        env:
+          CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
         run: |
-          set -o pipefail
+          set -euo pipefail
+          mkdir -p "$CXORBIA_GATE_OUT"
           node tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs 2>&1 | tee "$CXORBIA_GATE_OUT/01-live-hr-r20.log"
-
-      - name: R20.2 Normalize dates with existing R18A asset
-        run: |
-          set -o pipefail
           node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
             --input app/data/tya-hr-source-safe-periods.js \
             --out app/data/tya-hr-source-safe-periods.js \
-            --report-dir "$CXORBIA_GATE_OUT/02-r18a-normalization" 2>&1 | tee "$CXORBIA_GATE_OUT/02-r18a.log"
-
-      - name: R20.3 Apply existing shopper financial and certification overlays
-        run: |
-          set -o pipefail
+            --report-dir "$CXORBIA_GATE_OUT/02-r18a-canonicalization" 2>&1 | tee "$CXORBIA_GATE_OUT/02-r18a.log"
           node tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs \
             --payload app/data/tya-hr-source-safe-periods.js \
             --out app/data/tya-hr-source-safe-periods.js \
-            --report-dir "$CXORBIA_GATE_OUT/03-r18b-overlays" 2>&1 | tee "$CXORBIA_GATE_OUT/03-r18b.log"
-
-      - name: R20.4 Reapply final canonical state after overlays
-        run: |
-          set -o pipefail
+            --report-dir "$CXORBIA_GATE_OUT/03-r18b-existing-overlays" 2>&1 | tee "$CXORBIA_GATE_OUT/03-r18b.log"
           node tools/hr-source/tya-reapply-canonical-state-r20.mjs \
             --input app/data/tya-hr-source-safe-periods.js \
             --out app/data/tya-hr-source-safe-periods.js \
-            --report-dir "$CXORBIA_GATE_OUT/04-final-canonical" 2>&1 | tee "$CXORBIA_GATE_OUT/04-final-canonical.log"
-
-      - name: R20.5 Gate full historical reconciliation
-        run: |
-          set -o pipefail
+            --report-dir "$CXORBIA_GATE_OUT/04-r20-final-canonical-pass" 2>&1 | tee "$CXORBIA_GATE_OUT/04-r20-final.log"
           node tools/qa/tya-canonical-history-reconciliation-r20-gate.mjs \
             --input app/data/tya-hr-source-safe-periods.js \
-            --out "$CXORBIA_GATE_OUT/05-canonical-history" 2>&1 | tee "$CXORBIA_GATE_OUT/05-canonical-history.log"
-
-      - name: R20.6 Build canonical adapter and visible overlays
-        run: |
-          set -euo pipefail
+            --out "$CXORBIA_GATE_OUT/05-canonical-history-r20" 2>&1 | tee "$CXORBIA_GATE_OUT/05-canonical-history.log"
           node <<'NODE'
           const fs = require('fs');
           const rows = JSON.parse(fs.readFileSync('backend/config/phase-a-financial-review-queue-r14c.source-safe.json','utf8'));
@@ -135,20 +133,25 @@ jobs:
           if (new Set(normalized.map(item=>item.key)).size !== normalized.length) throw new Error('R14C stable keys are not unique.');
           fs.writeFileSync(process.env.CXORBIA_GATE_OUT + '/r14c-review-queue-stable.source-safe.json',JSON.stringify(normalized,null,2)+'\n','utf8');
           NODE
-          node tools/release/tya-source-safe-binding-build-r18a.mjs --html app/index.html --out "$CXORBIA_GATE_OUT/06-source-safe-binding" 2>&1 | tee "$CXORBIA_GATE_OUT/06-binding.log"
+          node tools/release/tya-source-safe-binding-build-r18a.mjs \
+            --html app/index.html \
+            --out "$CXORBIA_GATE_OUT/06-source-safe-binding" 2>&1 | tee "$CXORBIA_GATE_OUT/06-binding.log"
           node tools/release/tya-visible-overlays-build-r18d.mjs \
             --html app/index.html \
             --r14c-queue "$CXORBIA_GATE_OUT/r14c-review-queue-stable.source-safe.json" \
-            --out "$CXORBIA_GATE_OUT/06-visible-overlays" 2>&1 | tee "$CXORBIA_GATE_OUT/06-visible-overlays.log"
+            --out "$CXORBIA_GATE_OUT/06-visible-overlay-build" 2>&1 | tee "$CXORBIA_GATE_OUT/06-overlays.log"
+          test -s app/data/tya-hr-source-safe-periods.js
           test -s app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
           test -s app/adapters/tya-phase-a-visible-overlays-r18d.js
           grep -q 'semanticNormalizer.*r15g+r20' app/data/tya-hr-source-safe-periods.js
           grep -q 'finalCanonicalPass.*after_r18a_r18b' app/data/tya-hr-source-safe-periods.js
           grep -q 'columnMapContract.*tya-hr-column-map-r20-v1' app/data/tya-hr-source-safe-periods.js
+          grep -Fq "CX.data.currentProjectId = 'cinepolis'" app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
+          grep -Fq 'CX.data.currentPeriodId = latest && latest.id' app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
           grep -Fq 'R20_CANONICAL_VISIT_STATE_BINDING' app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
           grep -Fq 'adapters/tya-phase-a-visible-overlays-r18d.js' app/index.html
 
-      - name: Install Chromium
+      - name: Install Playwright
         run: |
           npm init -y
           npm i -D playwright@1.47.2
@@ -160,13 +163,16 @@ jobs:
           python3 -m http.server 4173 --bind 127.0.0.1 --directory app > "$CXORBIA_GATE_OUT/server.log" 2>&1 &
           echo $! > "$CXORBIA_GATE_OUT/server.pid"
           for attempt in $(seq 1 30); do
-            curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible' >/dev/null && exit 0
+            if curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible' >/dev/null; then
+              echo 'R20 source-safe smoke server ready.'
+              exit 0
+            fi
             sleep 1
           done
           cat "$CXORBIA_GATE_OUT/server.log" || true
           exit 1
 
-      - name: Run browser and role gates
+      - name: Run fail-closed R20 browser gates
         continue-on-error: true
         env:
           CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible
@@ -183,41 +189,44 @@ jobs:
           node tools/qa/tya-project-period-kpi-history-gate.mjs --out "$CXORBIA_GATE_OUT/07-project-period-kpi-history"
           node tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs --out "$CXORBIA_GATE_OUT/07-visible-overlays"
 
-      - name: Enforce all R20 decisions
+      - name: Enforce fail-closed R20 decision
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs = require('fs');
           const root = process.env.CXORBIA_GATE_OUT;
-          const files = [
-            `${root}/05-canonical-history/report.json`,
-            `${root}/07-source-semantics/report.json`,
-            `${root}/07-role-smoke/phase-a-source-safe-visual-smoke-report.json`,
-            `${root}/07-project-period-kpi-history/report.json`,
-            `${root}/07-visible-overlays/r18d-visible-overlays-smoke.json`
+          const reports = [
+            ['canonical-history-r20',`${root}/05-canonical-history-r20/report.json`],
+            ['source-semantics',`${root}/07-source-semantics/report.json`],
+            ['role-smoke',`${root}/07-role-smoke/phase-a-source-safe-visual-smoke-report.json`],
+            ['project-period-kpi-history',`${root}/07-project-period-kpi-history/report.json`],
+            ['visible-overlays',`${root}/07-visible-overlays/r18d-visible-overlays-smoke.json`]
           ];
           let failed = false;
-          for(const file of files){
-            if(!fs.existsSync(file)) throw new Error(`Missing report: ${file}`);
-            const result=JSON.parse(fs.readFileSync(file,'utf8'));
-            console.log(`${file}: ${result.decision}; blockers=${result.blockers?.length||0}`);
-            if(result.ok!==true)failed=true;
+          for (const [name,file] of reports) {
+            if (!fs.existsSync(file)) throw new Error(`${name} report missing: ${file}`);
+            const result = JSON.parse(fs.readFileSync(file,'utf8'));
+            console.log(`${name}=${result.decision}; blockers=${result.blockers?.length || 0}; warnings=${result.warnings?.length || 0}`);
+            if (result.ok !== true) failed = true;
           }
-          if(failed)process.exit(1);
+          if (failed) process.exit(1);
           console.log('PASS_R20_TYA_SOURCE_SAFE_GATES');
           NODE
 
       - name: Cleanup local server
         if: always()
         run: |
-          if [ -f "$CXORBIA_GATE_OUT/server.pid" ]; then kill "$(cat "$CXORBIA_GATE_OUT/server.pid")" 2>/dev/null || true; fi
+          if [ -f "$CXORBIA_GATE_OUT/server.pid" ]; then
+            kill "$(cat "$CXORBIA_GATE_OUT/server.pid")" 2>/dev/null || true
+          fi
 
-      - name: Upload sanitized R20 evidence
+      - name: Upload sanitized reports and screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: phase-a-tya-r20-source-safe-gates
-          path: r20-gate-artifacts
+          path: .tmp/r20-source-safe-gates
+          include-hidden-files: true
           if-no-files-found: warn
           retention-days: 14
 
@@ -235,6 +244,8 @@ jobs:
               sha: context.sha,
               state,
               context: 'cxorbia/r20-source-safe',
-              description: state === 'success' ? 'R20 canonical historical runtime PASS' : 'R20 canonical historical runtime HOLD',
+              description: state === 'success'
+                ? 'R20 canonical historical runtime PASS'
+                : 'R20 canonical historical runtime HOLD',
               target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             });
