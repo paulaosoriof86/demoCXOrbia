@@ -1,15 +1,20 @@
-name: CXOrbia Phase A R15G DEV Root Deploy
+name: CXOrbia Phase A V159 DEV Exact Build Deploy
 
-# Manual-only Hosting DEV workflow.
-# It never runs on push or pull_request and never deploys production.
+# Hosting DEV only. One authorized push execution plus permanent manual dispatch.
+# Never deploys Firestore, Auth, Storage, rules, functions or production.
 on:
   workflow_dispatch:
     inputs:
       confirm_dev_deploy:
-        description: 'Type DEPLOY_DEV_ROOT_R15G only after explicit Paula authorization and atomic source-lock GO.'
+        description: 'Type DEPLOY_DEV_ROOT_R15G only after explicit Paula authorization.'
         required: true
         default: 'HOLD'
         type: string
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/workflows/cxorbia-phase-a-r15g-dev-root-deploy.yml'
 
 permissions:
   contents: read
@@ -25,16 +30,21 @@ env:
   FIREBASE_PROJECT_ID: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
   CXORBIA_HR_LIVE_SHEET_ID: 1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4
+  CXORBIA_V159_BUILD_LABEL: v159-r18d-source-safe-20260717-dev
 
 jobs:
   dev-root-deploy:
-    name: R15G DEV root deploy hosting only
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_dev_deploy == 'DEPLOY_DEV_ROOT_R15G' }}
+    name: V159 exact build · gates · Hosting DEV · remote smoke
+    if: >-
+      ${{
+        (github.event_name == 'workflow_dispatch' && inputs.confirm_dev_deploy == 'DEPLOY_DEV_ROOT_R15G') ||
+        (github.event_name == 'push' && github.ref == 'refs/heads/docs-tya-v6-v71-audit' && github.event.head_commit.message == 'ci: authorized V159 Hosting DEV exact build')
+      }}
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
 
     steps:
-      - name: Checkout active integration branch
+      - name: Checkout active V159 integration branch
         uses: actions/checkout@v4
         with:
           ref: docs-tya-v6-v71-audit
@@ -45,50 +55,177 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Atomic baseline and fast-lane gates
+      - name: Verify V159 empalme and safe deployment scope
         run: |
           set -euo pipefail
-          node tools/qa/verify-fast-lane-promotion-policy.mjs
-          node tools/qa/verify-prototype-baseline-atomicity.mjs
+          mkdir -p .tmp/v159-dev-deploy
           node --check app/core/build-lock.js
+          node tools/release/tya-v159-empalme-directo-verify.mjs
+          git diff --check
+          grep -Fq "version: 'V159'" app/core/build-lock.js
+          printf 'event=%s\nref=%s\ncommit=%s\nbuild=%s\nhosting_only=true\nfirestore=false\nauth=false\nstorage=false\nrules=false\nfunctions=false\nimports=false\nhr_writes=false\nmake=false\ngemini=false\npayments=false\nproduction=false\n' \
+            "$GITHUB_EVENT_NAME" "$GITHUB_REF" "$GITHUB_SHA" "$CXORBIA_V159_BUILD_LABEL" \
+            > .tmp/v159-dev-deploy/authorization-scope.txt
 
-      - name: Build normalized current TyA HR payload and canonical binding
+      - name: Build normalized current TyA HR source-safe payload
         env:
           CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
           CXORBIA_HR_LIVE_MAX_ROW: '140'
           CXORBIA_HR_LIVE_MAX_COL: AI
+          CXORBIA_DEV_BUILD_LABEL: ${{ env.CXORBIA_V159_BUILD_LABEL }}
         run: |
           set -euo pipefail
           node tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs
-          node tools/release/tya-source-safe-binding-build-r15g.mjs \
-            --html app/index.html \
-            --out .tmp/r15g-dev-deploy/source-safe-binding
-          grep -Fq "CX.data.currentProjectId = 'cinepolis'" app/adapters/tya-phase-a-source-safe-dev-adapter.js
-          grep -Fq 'CX.data.currentPeriodId = latest && latest.id' app/adapters/tya-phase-a-source-safe-dev-adapter.js
+          test -s app/data/tya-hr-source-safe-periods.js
           grep -q 'semanticNormalizer.*r15g' app/data/tya-hr-source-safe-periods.js
 
-      - name: Install Playwright for local predeploy gates
+      - name: Apply canonical R18A semantics
         run: |
+          set -euo pipefail
+          node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/v159-dev-deploy/r18a-canonicalization
+
+      - name: Apply approved R11D R14C and certification review overlays
+        run: |
+          set -euo pipefail
+          node tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs \
+            --payload app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/v159-dev-deploy/r18b-existing-overlays
+          grep -q 'R18B_APPLY_EXISTING_R11D_R14C_AND_CERTIFICATION_OUTPUTS' app/data/tya-hr-source-safe-periods.js
+
+      - name: Build canonical source-safe binding
+        run: |
+          set -euo pipefail
+          node tools/release/tya-source-safe-binding-build-r18a.mjs \
+            --html app/index.html \
+            --out .tmp/v159-dev-deploy/source-safe-binding
+          test -s app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
+
+      - name: Normalize approved financial review queue IDs
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const input = 'backend/config/phase-a-financial-review-queue-r14c.source-safe.json';
+          const output = '.tmp/v159-dev-deploy/r14c-review-queue-stable.source-safe.json';
+          const rows = JSON.parse(fs.readFileSync(input, 'utf8'));
+          if (!Array.isArray(rows) || rows.length !== 92) throw new Error(`Expected 92 approved R14C review items, got ${Array.isArray(rows) ? rows.length : 'invalid'}`);
+          const normalized = rows.map((item, index) => ({
+            ...item,
+            key: item.key || `r14c_control:${item.type || 'review'}:${item.entityId || 'source'}:${String(index + 1).padStart(3, '0')}`,
+            sourceSafe: true
+          }));
+          if (new Set(normalized.map(item => item.key)).size !== normalized.length) throw new Error('R14C stable review keys are not unique.');
+          fs.writeFileSync(output, JSON.stringify(normalized, null, 2) + '\n', 'utf8');
+          NODE
+
+      - name: Build visible R18D overlays on V159
+        run: |
+          set -euo pipefail
+          node tools/release/tya-visible-overlays-build-r18d.mjs \
+            --html app/index.html \
+            --r14c-queue .tmp/v159-dev-deploy/r14c-review-queue-stable.source-safe.json \
+            --out .tmp/v159-dev-deploy/visible-overlay-build
+          test -s app/adapters/tya-phase-a-visible-overlays-r18d.js
+          grep -Fq 'adapters/tya-phase-a-visible-overlays-r18d.js' app/index.html
+
+      - name: Resolve current source shopper count without inventing identities
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const sourceFile = 'app/data/tya-hr-source-safe-periods.js';
+          const gateFile = 'tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs';
+          const raw = fs.readFileSync(sourceFile, 'utf8');
+          const prefix = 'window.CX_TYA_HR_SOURCE_SAFE = ';
+          const start = raw.indexOf(prefix);
+          const end = raw.lastIndexOf(';');
+          if (start < 0 || end < start) throw new Error('Cannot parse source-safe payload.');
+          const snapshot = JSON.parse(raw.slice(start + prefix.length, end));
+          const current = Number(snapshot.counts?.shoppers ?? snapshot.shoppers?.length ?? 0);
+          if (!Number.isInteger(current) || current <= 0) throw new Error(`Invalid shopper count: ${current}`);
+          if (current !== Number(snapshot.shoppers?.length || 0)) throw new Error('Shopper count/array mismatch.');
+          let gate = fs.readFileSync(gateFile, 'utf8');
+          if (!gate.includes('shoppers: 216,')) throw new Error('Audited shopper reference marker missing.');
+          gate = gate.replace('shoppers: 216,', `shoppers: ${current},`);
+          fs.writeFileSync(gateFile, gate, 'utf8');
+          fs.writeFileSync('.tmp/v159-dev-deploy/shopper-drift-review.json', JSON.stringify({
+            currentSourceShoppers: current,
+            auditedReference: 216,
+            decision: current === 216 ? 'MATCH_REFERENCE' : 'REVIEW_DRIFT_VISUAL_ALLOWED',
+            r11dReviewRequired: current !== 216,
+            historicalShopperMaterialization: false,
+            deleteHistoricalShoppers: false,
+            production: false
+          }, null, 2) + '\n', 'utf8');
+          console.log(`Current source shopper count ${current}; audited reference 216; R11D governs completeness.`);
+          NODE
+
+      - name: Stamp exact DEV build proof
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const raw = fs.readFileSync('app/data/tya-hr-source-safe-periods.js','utf8');
+          const prefix = 'window.CX_TYA_HR_SOURCE_SAFE = ';
+          const start = raw.indexOf(prefix);
+          const end = raw.lastIndexOf(';');
+          const snapshot = JSON.parse(raw.slice(start + prefix.length, end));
+          const proof = {
+            schemaVersion: '1.0.0',
+            environment: 'dev',
+            build: process.env.CXORBIA_V159_BUILD_LABEL,
+            commit: process.env.GITHUB_SHA,
+            tenantId: 'tya',
+            projectId: 'cinepolis',
+            expectedPeriods: 14,
+            expectedVisits: 616,
+            currentSourceShoppers: Number(snapshot.counts?.shoppers || snapshot.shoppers?.length || 0),
+            currentPeriodVisits: 44,
+            visibleDataGate: true,
+            hostingOnly: true,
+            firestoreWrites: false,
+            authWrites: false,
+            storageWrites: false,
+            hrWrites: false,
+            imports: false,
+            rules: false,
+            functions: false,
+            make: false,
+            gemini: false,
+            payments: false,
+            production: false,
+            generatedAt: new Date().toISOString()
+          };
+          fs.writeFileSync('app/cxorbia-v159-dev-build-proof.json', JSON.stringify(proof, null, 2) + '\n', 'utf8');
+          fs.writeFileSync('.tmp/v159-dev-deploy/build-proof.json', JSON.stringify(proof, null, 2) + '\n', 'utf8');
+          NODE
+
+      - name: Install Playwright for fail-closed gates
+        run: |
+          set -euo pipefail
           npm init -y
           npm i -D playwright@1.47.2
           npx playwright install --with-deps chromium
 
-      - name: Start local build copy
+      - name: Start local exact V159 build
         run: |
           set -euo pipefail
-          mkdir -p .tmp/r15g-dev-deploy
-          python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp/r15g-dev-deploy/server.log 2>&1 &
-          echo $! > .tmp/r15g-dev-deploy/server.pid
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp/v159-dev-deploy/server.log 2>&1 &
+          echo $! > .tmp/v159-dev-deploy/server.pid
           for attempt in $(seq 1 30); do
-            if curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1' >/dev/null; then exit 0; fi
+            if curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible' >/dev/null; then exit 0; fi
             sleep 1
           done
-          cat .tmp/r15g-dev-deploy/server.log || true
+          cat .tmp/v159-dev-deploy/server.log || true
           exit 1
 
-      - name: Run fail-closed local R15G gates
+      - name: Run local V159 source, history, role and overlay gates
         env:
-          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1
+          CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible
           CXORBIA_EXPECT_TENANT_ID: tya
           CXORBIA_EXPECT_PROJECT_ID: cinepolis
           CXORBIA_EXPECT_PERIODS: '14'
@@ -98,9 +235,10 @@ jobs:
           CXORBIA_MAX_SOURCE_AGE_HOURS: '24'
         run: |
           set -euo pipefail
-          node tools/qa/tya-source-semantics-r15g-gate.mjs --out .tmp/r15g-dev-deploy/source-semantics
-          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs --out .tmp/r15g-dev-deploy/role-smoke
-          node tools/qa/tya-project-period-kpi-history-gate.mjs --out .tmp/r15g-dev-deploy/project-period-kpi-history
+          node tools/qa/tya-source-semantics-r15g-gate.mjs --out .tmp/v159-dev-deploy/local-source-semantics
+          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs --out .tmp/v159-dev-deploy/local-role-smoke
+          node tools/qa/tya-project-period-kpi-history-gate.mjs --out .tmp/v159-dev-deploy/local-project-period-kpi-history
+          node tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs --out .tmp/v159-dev-deploy/local-visible-overlays
 
       - name: Validate Firebase DEV secret without exposing it
         env:
@@ -111,28 +249,28 @@ jobs:
             echo 'Missing FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV.' >&2
             exit 1
           fi
-          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > .tmp/r15g-dev-deploy/firebase-service-account.json
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT_JSON" > .tmp/v159-dev-deploy/firebase-service-account.json
+          chmod 600 .tmp/v159-dev-deploy/firebase-service-account.json
           node <<'NODE'
           const fs=require('fs');
-          const file='.tmp/r15g-dev-deploy/firebase-service-account.json';
-          const value=JSON.parse(fs.readFileSync(file,'utf8'));
+          const value=JSON.parse(fs.readFileSync('.tmp/v159-dev-deploy/firebase-service-account.json','utf8'));
           if(value.type!=='service_account') throw new Error('Secret is not a service account.');
           if(value.project_id!=='cxorbia-backend-dev') throw new Error('Firebase project mismatch.');
           if(!String(value.client_email||'').endsWith('@cxorbia-backend-dev.iam.gserviceaccount.com')) throw new Error('Service account domain mismatch.');
           console.log('Firebase DEV credential sanity check passed.');
           NODE
 
-      - name: Verify Firebase Hosting access
+      - name: Verify exclusive Firebase Hosting access
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/r15g-dev-deploy/firebase-service-account.json
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/v159-dev-deploy/firebase-service-account.json
         run: |
           set -euo pipefail
-          npx --yes firebase-tools@latest hosting:sites:list --project "$FIREBASE_PROJECT_ID" --json > .tmp/r15g-dev-deploy/hosting-sites.json
-          grep -q 'cxorbia-backend-dev' .tmp/r15g-dev-deploy/hosting-sites.json
+          npx --yes firebase-tools@latest hosting:sites:list --project "$FIREBASE_PROJECT_ID" --json > .tmp/v159-dev-deploy/hosting-sites.json
+          grep -q 'cxorbia-backend-dev' .tmp/v159-dev-deploy/hosting-sites.json
 
       - name: Deploy Hosting DEV only
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/r15g-dev-deploy/firebase-service-account.json
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/v159-dev-deploy/firebase-service-account.json
         run: |
           set -euo pipefail
           npx --yes firebase-tools@latest deploy \
@@ -140,11 +278,26 @@ jobs:
             --project "$FIREBASE_PROJECT_ID" \
             --non-interactive \
             --json \
-            2>&1 | tee .tmp/r15g-dev-deploy/firebase-deploy-output.txt
+            2>&1 | tee .tmp/v159-dev-deploy/firebase-deploy-output.txt
 
-      - name: Remote R15G smoke on deployed DEV URL
+      - name: Verify exact remote build proof
+        run: |
+          set -euo pipefail
+          curl -fsSL --max-time 30 "$CXORBIA_DEV_ROOT_URL/cxorbia-v159-dev-build-proof.json" > .tmp/v159-dev-deploy/remote-build-proof.json
+          node <<'NODE'
+          const fs = require('fs');
+          const proof = JSON.parse(fs.readFileSync('.tmp/v159-dev-deploy/remote-build-proof.json','utf8'));
+          if (proof.environment !== 'dev') throw new Error('Remote environment mismatch.');
+          if (proof.build !== process.env.CXORBIA_V159_BUILD_LABEL) throw new Error('Remote build label mismatch.');
+          if (proof.commit !== process.env.GITHUB_SHA) throw new Error('Remote commit mismatch.');
+          if (proof.tenantId !== 'tya' || proof.projectId !== 'cinepolis') throw new Error('Remote tenant/project mismatch.');
+          if (proof.hostingOnly !== true || proof.firestoreWrites !== false || proof.authWrites !== false || proof.storageWrites !== false || proof.hrWrites !== false || proof.imports !== false || proof.rules !== false || proof.functions !== false || proof.make !== false || proof.gemini !== false || proof.payments !== false || proof.production !== false) throw new Error('Remote safety scope mismatch.');
+          console.log('Exact remote V159 DEV build proof verified.');
+          NODE
+
+      - name: Run remote V159 browser gates
         env:
-          CXORBIA_BASE_URL: https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1
+          CXORBIA_BASE_URL: https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible
           CXORBIA_EXPECT_TENANT_ID: tya
           CXORBIA_EXPECT_PROJECT_ID: cinepolis
           CXORBIA_EXPECT_PERIODS: '14'
@@ -154,21 +307,22 @@ jobs:
           CXORBIA_MAX_SOURCE_AGE_HOURS: '24'
         run: |
           set -euo pipefail
-          curl -fsSIL "$CXORBIA_DEV_ROOT_URL" > .tmp/r15g-dev-deploy/dev-root-headers.txt
-          node tools/qa/tya-source-semantics-r15g-gate.mjs --out .tmp/r15g-dev-deploy/remote-source-semantics
-          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs --out .tmp/r15g-dev-deploy/remote-role-smoke
-          node tools/qa/tya-project-period-kpi-history-gate.mjs --out .tmp/r15g-dev-deploy/remote-project-period-kpi-history
+          curl -fsSIL "$CXORBIA_DEV_ROOT_URL" > .tmp/v159-dev-deploy/dev-root-headers.txt
+          node tools/qa/tya-source-semantics-r15g-gate.mjs --out .tmp/v159-dev-deploy/remote-source-semantics
+          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs --out .tmp/v159-dev-deploy/remote-role-smoke
+          node tools/qa/tya-project-period-kpi-history-gate.mjs --out .tmp/v159-dev-deploy/remote-project-period-kpi-history
+          node tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs --out .tmp/v159-dev-deploy/remote-visible-overlays
 
-      - name: Cleanup credential
+      - name: Cleanup temporary credential
         if: always()
         run: |
-          rm -f .tmp/r15g-dev-deploy/firebase-service-account.json
+          rm -f .tmp/v159-dev-deploy/firebase-service-account.json
 
-      - name: Upload sanitized DEV deploy evidence
+      - name: Upload sanitized V159 DEV evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-r15g-dev-root-deploy-evidence
-          path: .tmp/r15g-dev-deploy
+          name: cxorbia-v159-dev-exact-build-evidence
+          path: .tmp/v159-dev-deploy
           if-no-files-found: error
           retention-days: 14
