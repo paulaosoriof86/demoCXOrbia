@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 /*
-  CXOrbia Phase A R18D — build-time visible overlay for existing R11D/R14C/certification results.
+  CXOrbia Phase A R18D — build-time visible overlay for existing
+  R11D/R14C/certification results and the approved period-level financial
+  control envelope.
 
   This tool runs only on a checked-out build copy. It does not modify app/modules,
-  app/core, providers, Firestore, HR, production or the checked-in V131 runtime.
+  app/core, providers, Firestore, HR, production or the checked-in runtime.
 */
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import vm from 'node:vm';
 
 const args = process.argv.slice(2);
 const valueOf = (flag, fallback) => {
@@ -21,12 +24,21 @@ const payloadSrc = valueOf('--payload-src', 'data/tya-hr-source-safe-periods.js'
 const baseAdapterSrc = valueOf('--base-adapter-src', 'adapters/tya-phase-a-source-safe-dev-adapter-r18a.js');
 const overlayAdapterSrc = valueOf('--overlay-adapter-src', 'adapters/tya-phase-a-visible-overlays-r18d.js');
 const r14cQueuePath = path.resolve(valueOf('--r14c-queue', 'backend/config/phase-a-financial-review-queue-r14c.source-safe.json'));
+const financialControlPath = path.resolve(valueOf('--financial-control', 'app/data/tya-financial-control-source-safe.js'));
 const reportDir = path.resolve(valueOf('--out', '.tmp/r18d-visible-overlay-build'));
 const mode = valueOf('--mode', 'apply');
 
 function fail(message, code = 2) {
   console.error(message);
   process.exit(code);
+}
+function readWindowAssignment(file, globalName) {
+  const sandbox = { window: {} };
+  vm.createContext(sandbox);
+  vm.runInContext(fs.readFileSync(file, 'utf8'), sandbox, { filename:file, timeout:5000 });
+  const value = sandbox.window[globalName];
+  if (!value) fail(`Missing window.${globalName} in ${file}`, 3);
+  return JSON.parse(JSON.stringify(value));
 }
 
 if (!fs.existsSync(htmlPath)) fail(`Missing HTML: ${htmlPath}`);
@@ -37,6 +49,7 @@ const overlayAdapterFile = path.join(appDir, overlayAdapterSrc);
 if (!fs.existsSync(payloadFile)) fail(`Missing R18B source-safe payload: ${payloadFile}`);
 if (!fs.existsSync(baseAdapterFile)) fail(`Missing R18A base adapter: ${baseAdapterFile}`);
 if (!fs.existsSync(r14cQueuePath)) fail(`Missing approved R14C review queue: ${r14cQueuePath}`);
+if (!fs.existsSync(financialControlPath)) fail(`Missing approved financial-control envelope: ${financialControlPath}`);
 
 const payloadText = fs.readFileSync(payloadFile, 'utf8');
 if (!payloadText.includes('R18B_APPLY_EXISTING_R11D_R14C_AND_CERTIFICATION_OUTPUTS')) {
@@ -46,7 +59,26 @@ const r14cQueue = JSON.parse(fs.readFileSync(r14cQueuePath, 'utf8'));
 if (!Array.isArray(r14cQueue) || r14cQueue.length !== 92 || !r14cQueue.every(item => item?.sourceSafe === true && item?.key)) {
   fail(`R18D requires the approved 92-item source-safe R14C queue; received ${Array.isArray(r14cQueue) ? r14cQueue.length : 'invalid'}.`, 3);
 }
+const financialControl = readWindowAssignment(financialControlPath, 'CX_TYA_FINANCIAL_CONTROL_SOURCE_SAFE');
+const financialControlValid =
+  financialControl.schemaVersion === '1.0.0' &&
+  financialControl.tenantId === 'tya' &&
+  financialControl.projectId === 'cinepolis' &&
+  financialControl.cutPeriod === '2026-06' &&
+  financialControl.sourceStatus === 'pending_financial_source' &&
+  financialControl.claims?.paidThroughPeriod === '2026-05' &&
+  String(financialControl.claims?.june?.q1 || '').includes('pending') &&
+  String(financialControl.claims?.june?.q2 || '').includes('pending') &&
+  Array.isArray(financialControl.payments) && financialControl.payments.length === 0 &&
+  Array.isArray(financialControl.batches) && financialControl.batches.length === 0 &&
+  financialControl.sourceSafe === true &&
+  financialControl.imported === false &&
+  financialControl.production === false &&
+  financialControl.providerWrites === false;
+if (!financialControlValid) fail('Financial-control envelope is not the approved source-safe June control.', 3);
+
 const embeddedR14cQueue = JSON.stringify(r14cQueue);
+const embeddedFinancialControl = JSON.stringify(financialControl);
 
 const adapterCode = `/* CXOrbia Phase A R18D visible overlays. Generated at build time; no provider calls or writes. */
 window.CX = window.CX || {};
@@ -56,6 +88,7 @@ window.CX = window.CX || {};
   const enabled = host === 'cxorbia-backend-dev.web.app' || params.get('cxTyaPhaseA') === '1';
   const snapshot = window.CX_TYA_HR_SOURCE_SAFE || null;
   const sourceFinancialQueue = ${embeddedR14cQueue};
+  const sourceFinancialControl = ${embeddedFinancialControl};
   window.CX_TYA_R18D_VISIBLE_READY = false;
   if(!enabled || !window.CX || !CX.data || !snapshot) return;
   if(snapshot.existingOverlays?.integrationId !== 'R18B_APPLY_EXISTING_R11D_R14C_AND_CERTIFICATION_OUTPUTS') return;
@@ -119,15 +152,25 @@ window.CX = window.CX || {};
   const certificationReview = queue.filter(item => item.queueType === 'certification_source_pending');
   const exactControls = (CX.data._visitas || []).filter(item => item.r14cExactControl === true);
   const certificationHold = (CX.data.shoppers || []).filter(item => item.certificationCarryoverConfirmed !== true);
+  const juneControl = sourceFinancialControl.claims?.june || {};
+  const junePaymentControlPresent = sourceFinancialControl.cutPeriod === '2026-06' &&
+    sourceFinancialControl.sourceStatus === 'pending_financial_source' &&
+    String(juneControl.q1 || '').includes('pending') &&
+    String(juneControl.q2 || '').includes('pending');
 
   CX.data.reviewQueue = [...queueWithoutFinancial, ...financialReview];
   CX.data.financialReviewQueue = financialReview;
   CX.data.shopperReviewQueue = shopperReview;
   CX.data.certificationReviewQueue = certificationReview;
+  CX.data.financialControl = clone(sourceFinancialControl);
   CX.data.previewMeta = Object.assign({}, CX.data.previewMeta || {}, {
     overlayVersion: 'R18D_VISIBLE_EXISTING_OVERLAYS',
     financialExactLinks: exactControls.length,
     financialReviewQueue: financialReview.length,
+    financialControlCutPeriod: sourceFinancialControl.cutPeriod,
+    financialControlSourceStatus: sourceFinancialControl.sourceStatus,
+    paidThroughPeriodClaim: sourceFinancialControl.claims?.paidThroughPeriod || null,
+    junePaymentControlPresent,
     shopperReviewQueue: shopperReview.length,
     certificationReviewQueue: certificationReview.length,
     certificationHoldShoppers: certificationHold.length,
@@ -148,6 +191,11 @@ window.CX = window.CX || {};
     shopperCount: Array.isArray(snapshot.shoppers) ? snapshot.shoppers.length : 0,
     financialExactLinks: exactControls.length,
     financialReviewQueue: financialReview.length,
+    financialControlCutPeriod: sourceFinancialControl.cutPeriod,
+    financialControlSourceStatus: sourceFinancialControl.sourceStatus,
+    paidThroughPeriodClaim: sourceFinancialControl.claims?.paidThroughPeriod || null,
+    junePaymentControlPresent,
+    junePaymentControl: clone(juneControl),
     shopperReviewQueue: shopperReview.length,
     certificationReviewQueue: certificationReview.length,
     certificationSourceRecords: Number(snapshot.existingOverlays?.certification?.sourceRecords || 0),
@@ -164,6 +212,7 @@ window.CX = window.CX || {};
   };
 
   document.documentElement.setAttribute('data-cx-financial-overlay', 'r14c-pending-review');
+  document.documentElement.setAttribute('data-cx-financial-control', junePaymentControlPresent ? 'june-pending-source-match' : 'hold');
   document.documentElement.setAttribute('data-cx-certification-carryover', 'hold-pending-source');
   window.CX_TYA_R18D_VISIBLE_READY = true;
   window.dispatchEvent(new CustomEvent('cx:r18d-visible-ready', {detail: clone(window.CX_TYA_R18D_VISIBLE_CONTRACT)}));
@@ -201,6 +250,7 @@ const generated = fs.readFileSync(overlayAdapterFile, 'utf8');
 const semanticChecks = {
   exactFinancialControlExposed: generated.includes('financialExactLinks'),
   completeFinancialReviewQueueEmbedded: generated.includes('sourceFinancialQueue') && r14cQueue.length === 92,
+  periodFinancialControlEmbedded: generated.includes('sourceFinancialControl') && generated.includes('junePaymentControlPresent') && financialControlValid,
   noPaymentConfirmation: generated.includes('paidConfirmed: 0') && generated.includes('paymentLotsCreated: 0'),
   certificationHoldExposed: generated.includes('certificationHoldShoppers') && generated.includes('requestedAgainAutomatically'),
   noFrontendModuleMutation: !generated.includes('CX.module('),
@@ -211,7 +261,7 @@ const structuralValid = after.baseAdapterTags === 1 && after.overlayAdapterTags 
 const valid = structuralValid && Object.values(semanticChecks).every(Boolean);
 
 const report = {
-  schemaVersion: '1.1.0',
+  schemaVersion: '1.2.0',
   reportId: 'phase-a-r18d-visible-overlay-build',
   generatedAt: new Date().toISOString(),
   mode,
@@ -219,6 +269,15 @@ const report = {
   html: path.relative(root, htmlPath).replace(/\\/g, '/'),
   adapter: path.relative(root, overlayAdapterFile).replace(/\\/g, '/'),
   r14cQueue: {source:path.relative(root,r14cQueuePath).replace(/\\/g,'/'), records:r14cQueue.length},
+  financialControl: {
+    source:path.relative(root,financialControlPath).replace(/\\/g,'/'),
+    cutPeriod:financialControl.cutPeriod,
+    sourceStatus:financialControl.sourceStatus,
+    paidThroughPeriodClaim:financialControl.claims?.paidThroughPeriod || null,
+    junePaymentControlPresent:financialControlValid,
+    payments:financialControl.payments.length,
+    batches:financialControl.batches.length
+  },
   buildCopyModified: mode === 'apply',
   sourceLockRepoFileModifiedByCommit: false,
   before,
@@ -232,7 +291,8 @@ const report = {
     hrWrites: false,
     imports: false,
     deploy: false,
-    production: false
+    production: false,
+    paymentsConfirmedOrInferred: false
   }
 };
 fs.mkdirSync(reportDir, { recursive: true });
@@ -242,8 +302,9 @@ fs.writeFileSync(path.join(reportDir, 'r18d-visible-overlay-build.md'), [
   `Decision: **${report.decision}**`,
   `Generated adapter: ${report.adapter}`,
   `R14C review items embedded: ${r14cQueue.length}`,
+  `June financial control: ${financialControl.sourceStatus}`,
   `Overlay tag count: ${after.overlayAdapterTags}`, '',
-  'Build-copy only. No app/modules or app/core changes, providers, writes, imports, deploy or production.'
+  'Build-copy only. No app/modules or app/core changes, providers, writes, imports, deploy, payment inference or production.'
 ].join('\n') + '\n', 'utf8');
 console.log(JSON.stringify(report, null, 2));
 process.exitCode = valid ? 0 : 4;
