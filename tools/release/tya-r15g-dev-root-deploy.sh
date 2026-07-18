@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-OUT_DIR="${CXORBIA_OUT_DIR:-.tmp/r15g-dev-deploy}"
+OUT_DIR="${CXORBIA_OUT_DIR:-.tmp/r20-dev-deploy}"
 REQUEST_FILE="${CXORBIA_EXECUTION_REQUEST:-backend/config/phase-a-hosting-dev-execution-request-v1.json}"
 DEV_URL="${CXORBIA_DEV_ROOT_URL:-https://cxorbia-backend-dev.web.app}"
 PROJECT_ID="${FIREBASE_PROJECT_ID:-cxorbia-backend-dev}"
 HOSTING_TARGET="${FIREBASE_HOSTING_TARGET:-cxorbia-dev}"
-BUILD_LABEL="${CXORBIA_V159_BUILD_LABEL:-v159-r18d-source-safe-20260717-dev}"
+BUILD_LABEL="${CXORBIA_V159_BUILD_LABEL:-v159-r20-source-safe-20260718-dev}"
 mkdir -p "$OUT_DIR"
 
 cleanup() {
@@ -66,8 +66,9 @@ validate_authorization() {
     if (request.targetProject !== expected.targetProject || request.hostingTarget !== expected.hostingTarget) fail('request hosting target mismatch');
     if (request.baseHead !== process.env.CXORBIA_EVENT_BEFORE) fail('request is not bound to previous HEAD');
     if (request.runtimeVersion !== runtime.version || request.sourceZipSha256 !== runtime.sourceZipSha256 || request.manifestFile !== runtime.manifestFile || request.aggregateSha256 !== runtime.aggregateSha256 || request.empalmeCommit !== runtime.empalmeCommit) fail('request runtime evidence mismatch');
+    if (request.authorizedR20Commit !== 'f9e7f65b7d7d5975d2905a55d25891d36e876255' || request.runtimeCodeEquivalentToAuthorizedCommit !== true) fail('R20 authorization binding mismatch');
   }
-  console.log(JSON.stringify({ok:true,decision:'PASS_HOSTING_DEV_EXECUTION_AUTHORIZATION',eventName,runtimeVersion:runtime.version,runtimeStatus:runtime.status,targetProject:expected.targetProject,hostingTarget:expected.hostingTarget,production:false,dataWrites:false},null,2));
+  console.log(JSON.stringify({ok:true,decision:'PASS_R20_HOSTING_DEV_EXECUTION_AUTHORIZATION',eventName,runtimeVersion:runtime.version,runtimeStatus:runtime.status,targetProject:expected.targetProject,hostingTarget:expected.hostingTarget,production:false,dataWrites:false},null,2));
 NODE
 }
 
@@ -93,6 +94,15 @@ build_exact_runtime() {
     --payload app/data/tya-hr-source-safe-periods.js \
     --out app/data/tya-hr-source-safe-periods.js \
     --report-dir "$OUT_DIR/r18b-existing-overlays"
+
+  node tools/hr-source/tya-reapply-canonical-state-r20.mjs \
+    --input app/data/tya-hr-source-safe-periods.js \
+    --out app/data/tya-hr-source-safe-periods.js \
+    --report-dir "$OUT_DIR/r20-final-canonical-pass"
+
+  node tools/qa/tya-canonical-history-reconciliation-r20-gate.mjs \
+    --input app/data/tya-hr-source-safe-periods.js \
+    --out "$OUT_DIR/canonical-history-r20"
 
   node <<'NODE'
   const fs = require('fs');
@@ -120,7 +130,8 @@ NODE
   const current = Number(snapshot.counts?.shoppers ?? snapshot.shoppers?.length ?? 0);
   if (!Number.isInteger(current) || current <= 0 || current !== Number(snapshot.shoppers?.length || 0)) throw new Error('Invalid shopper source count.');
   const proof = {
-    schemaVersion:'1.0.0',environment:'dev',build:process.env.CXORBIA_V159_BUILD_LABEL,commit:process.env.GITHUB_SHA,
+    schemaVersion:'1.1.0',environment:'dev',build:process.env.CXORBIA_V159_BUILD_LABEL,commit:process.env.GITHUB_SHA,
+    authorizedR20Commit:'f9e7f65b7d7d5975d2905a55d25891d36e876255',canonicalStateModel:'phase-a-canonical-visit-state-r20-v1',
     tenantId:'tya',projectId:'cinepolis',expectedPeriods:14,expectedVisits:616,currentSourceShoppers:current,currentPeriodVisits:44,
     visibleDataGate:true,hostingOnly:true,firestoreWrites:false,authWrites:false,storageWrites:false,hrWrites:false,imports:false,
     rules:false,functions:false,make:false,gemini:false,payments:false,production:false,generatedAt:new Date().toISOString()
@@ -146,8 +157,8 @@ run_local_gates() {
   export CXORBIA_EXPECT_TENANT_ID=tya CXORBIA_EXPECT_PROJECT_ID=cinepolis CXORBIA_EXPECT_PERIODS=14 CXORBIA_EXPECT_VISITS=616 CXORBIA_EXPECT_SHOPPERS=216 CXORBIA_EXPECT_VISITS_PER_PERIOD=44 CXORBIA_MAX_SOURCE_AGE_HOURS=24
   node tools/qa/tya-source-semantics-r15g-gate.mjs --out "$OUT_DIR/local-source-semantics"
   node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs --out "$OUT_DIR/local-role-smoke"
-  node tools/qa/tya-project-period-kpi-history-gate.mjs --out "$OUT_DIR/local-project-period-kpi-history"
-  node tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs --out "$OUT_DIR/local-visible-overlays"
+  node tools/qa/tya-project-period-kpi-history-gate-r20.mjs --out "$OUT_DIR/local-project-period-kpi-history-r20"
+  node tools/qa/tya-phase-a-visible-overlays-smoke-r20.mjs --out "$OUT_DIR/local-visible-overlays-r20"
 }
 
 validate_and_deploy() {
@@ -176,8 +187,8 @@ verify_remote_with_propagation_poll() {
       const file=process.argv[2];
       let proof;
       try { proof=JSON.parse(fs.readFileSync(file,'utf8')); } catch { process.exit(2); }
-      const expected={build:process.env.CXORBIA_V159_BUILD_LABEL,commit:process.env.GITHUB_SHA};
-      if(proof.environment!=='dev' || proof.build!==expected.build || proof.commit!==expected.commit || proof.tenantId!=='tya' || proof.projectId!=='cinepolis') process.exit(3);
+      const expected={build:process.env.CXORBIA_V159_BUILD_LABEL,commit:process.env.GITHUB_SHA,authorizedR20Commit:'f9e7f65b7d7d5975d2905a55d25891d36e876255'};
+      if(proof.environment!=='dev' || proof.build!==expected.build || proof.commit!==expected.commit || proof.authorizedR20Commit!==expected.authorizedR20Commit || proof.canonicalStateModel!=='phase-a-canonical-visit-state-r20-v1' || proof.tenantId!=='tya' || proof.projectId!=='cinepolis') process.exit(3);
       if(proof.hostingOnly!==true || proof.firestoreWrites!==false || proof.authWrites!==false || proof.storageWrites!==false || proof.hrWrites!==false || proof.imports!==false || proof.rules!==false || proof.functions!==false || proof.make!==false || proof.gemini!==false || proof.payments!==false || proof.production!==false) process.exit(4);
 NODE
       then
@@ -189,7 +200,7 @@ NODE
     sleep 5
   done
   if [ "$verified" != true ]; then
-    echo 'Remote exact build proof did not converge after propagation polling.' >&2
+    echo 'Remote exact R20 build proof did not converge after propagation polling.' >&2
     exit 1
   fi
 
@@ -197,9 +208,9 @@ NODE
   curl -fsSIL -H 'Cache-Control: no-cache' "$DEV_URL" > "$OUT_DIR/dev-root-headers.txt"
   node tools/qa/tya-source-semantics-r15g-gate.mjs --out "$OUT_DIR/remote-source-semantics"
   node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs --out "$OUT_DIR/remote-role-smoke"
-  node tools/qa/tya-project-period-kpi-history-gate.mjs --out "$OUT_DIR/remote-project-period-kpi-history"
-  node tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs --out "$OUT_DIR/remote-visible-overlays"
-  printf '{"ok":true,"decision":"PASS_R15G_HOSTING_DEV_AND_REMOTE_SMOKE","build":"%s","commit":"%s"}\n' "$BUILD_LABEL" "$GITHUB_SHA" > "$OUT_DIR/final-status.json"
+  node tools/qa/tya-project-period-kpi-history-gate-r20.mjs --out "$OUT_DIR/remote-project-period-kpi-history-r20"
+  node tools/qa/tya-phase-a-visible-overlays-smoke-r20.mjs --out "$OUT_DIR/remote-visible-overlays-r20"
+  printf '{"ok":true,"decision":"PASS_R20_HOSTING_DEV_AND_REMOTE_SMOKE","build":"%s","commit":"%s","authorizedR20Commit":"f9e7f65b7d7d5975d2905a55d25891d36e876255"}\n' "$BUILD_LABEL" "$GITHUB_SHA" > "$OUT_DIR/final-status.json"
 }
 
 export CXORBIA_OUT_DIR="$OUT_DIR" CXORBIA_V159_BUILD_LABEL="$BUILD_LABEL" CXORBIA_EXECUTION_REQUEST="$REQUEST_FILE"
