@@ -2,10 +2,9 @@
 /*
   CXOrbia TyA Phase A — R15G + R20 live HR source-safe builder.
 
-  Ejecuta el builder multi-tab vigente, normaliza fechas y aplica una única
-  máquina canónica a TODOS los periodos detectados. Asignación, agenda,
-  ejecución, cuestionario, submitido, liquidación y pago permanecen como
-  dimensiones separadas. No existen excepciones codificadas por mes.
+  Ejecuta el lector multi-tab con resolución de encabezados fail-closed,
+  normaliza fechas y aplica una única máquina canónica a TODOS los periodos
+  detectados. No existen excepciones codificadas por mes.
 
   No PII, providers, writes, imports, deploy, production or payments.
 */
@@ -21,11 +20,46 @@ import {
 
 const OUT_FILE = process.env.CXORBIA_HR_SOURCE_SAFE_OUT || 'app/data/tya-hr-source-safe-periods.js';
 const baseBuilder = path.resolve('tools/hr-source/tya-build-live-hr-source-safe-static.mjs');
-const run = spawnSync(process.execPath, [baseBuilder], {
-  env: process.env,
-  stdio: 'inherit',
-  encoding: 'utf8'
-});
+const generatedBuilder = path.resolve('tools/hr-source/.tya-build-live-hr-source-safe-static-r20.generated.mjs');
+
+// El builder histórico usaba `includes()` y podía seleccionar el primer encabezado
+// parcialmente parecido. R20 reemplaza esa función solo durante el build: exacto
+// primero y coincidencia anclada únicamente cuando es única.
+const baseSource = fs.readFileSync(baseBuilder, 'utf8');
+const strictColumnResolver = String.raw`function col(header, aliases){
+  const key = value => norm(value).replace(/[^a-z0-9ñ]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const cells = (header.row || []).map(key);
+  const needles = aliases.map(key).filter(Boolean);
+  for(const needle of needles){
+    const exact = cells.reduce((hits,value,index)=>{ if(value===needle) hits.push(index); return hits; },[]);
+    if(exact.length===1) return exact[0];
+    if(exact.length>1) return -1;
+  }
+  for(const needle of needles){
+    const anchored = cells.reduce((hits,value,index)=>{
+      if(value===needle || value.startsWith(needle+' ') || value.endsWith(' '+needle)) hits.push(index);
+      return hits;
+    },[]);
+    if(anchored.length===1) return anchored[0];
+    if(anchored.length>1) return -1;
+  }
+  return -1;
+}`;
+const patchedSource = baseSource.replace(/function col\(header, aliases\)\{[\s\S]*?\n\}/, strictColumnResolver);
+if (patchedSource === baseSource || !patchedSource.includes('const anchored = cells.reduce')) {
+  throw new Error('R20 could not install the strict HR column resolver.');
+}
+fs.writeFileSync(generatedBuilder, patchedSource, 'utf8');
+let run;
+try {
+  run = spawnSync(process.execPath, [generatedBuilder], {
+    env: process.env,
+    stdio: 'inherit',
+    encoding: 'utf8'
+  });
+} finally {
+  try { fs.unlinkSync(generatedBuilder); } catch {}
+}
 if (run.status !== 0) process.exit(run.status || 1);
 if (!fs.existsSync(OUT_FILE)) throw new Error(`R15G source payload missing: ${OUT_FILE}`);
 
@@ -35,6 +69,20 @@ const start = raw.indexOf(prefix);
 const end = raw.lastIndexOf(';');
 if (start < 0 || end < start) throw new Error('R15G cannot parse source-safe JS envelope.');
 const snapshot = JSON.parse(raw.slice(start + prefix.length, end));
+
+const mappingIssues = Array.isArray(snapshot.issues) ? snapshot.issues : [];
+const criticalColumns = new Set([
+  'pais','idCinema','ciudad','shopping','franja','formato','tipoCompra','quincena',
+  'shopper','disponibleDesde','fechaProgramada','controlDia','fechaRealizada',
+  'fechaCuestionario','fechaSubmitido'
+]);
+const mappingBlockers = mappingIssues.filter(issue =>
+  issue?.code === 'header_not_found' ||
+  (issue?.code === 'column_missing' && criticalColumns.has(issue.column))
+);
+if (mappingBlockers.length) {
+  throw new Error(`R20 HR mapping HOLD; missing/ambiguous critical headers: ${JSON.stringify(mappingBlockers).slice(0, 4000)}`);
+}
 
 function pad(value){ return String(value).padStart(2, '0'); }
 function isoDateFromExcelSerial(serial){
@@ -131,6 +179,8 @@ snapshot.periodOperationalSummary = canonicalPeriods;
 snapshot.source = {
   ...(snapshot.source || {}),
   semanticNormalizer: 'r15g+r20',
+  columnResolver: 'exact_or_unique_anchored_r20',
+  mappingFailClosed: true,
   dateFormat: 'YYYY-MM-DD',
   submissionLiquidationSeparated: true,
   canonicalStateAcrossAllDetectedPeriods: true,
@@ -140,10 +190,14 @@ snapshot.source = {
 snapshot.normalization = {
   version: 'R20',
   normalizedDateCount,
+  mappingIssues: mappingIssues.length,
+  mappingBlockers: mappingBlockers.length,
   periodCount: canonicalHistory.periodCount,
   periodKeys: canonicalHistory.periodKeys,
   historyScope: 'all_detected_hr_periods',
   rules: [
+    'strict_unique_header_resolution',
+    'critical_missing_or_ambiguous_headers_hold_build',
     'unassigned_iff_no_shopper_reference',
     'assigned_without_valid_schedule_is_pending_schedule',
     'realized_without_questionnaire_is_pending_questionnaire',
