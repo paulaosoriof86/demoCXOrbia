@@ -4,7 +4,7 @@
 
   La HR entrega evidencias ortogonales. Ningún consumidor debe reconstruir el
   ciclo solamente desde `estado`. La misma regla se aplica a todos los periodos
-  detectados; liquidación y pago requieren evidencia financiera independiente.
+  detectados; liquidación y pago requieren confirmación financiera explícita.
 */
 const ISO_DATE=/^20\d{2}-[01]\d-[0-3]\d$/;
 
@@ -16,8 +16,13 @@ export function dateReview(field,value,periodKey){if(!hasValue(value))return nul
 
 function acceptedDate(field,value,periodKey,reviewReasons){const issue=dateReview(field,value,periodKey);if(issue){reviewReasons.add(issue);return null;}return hasValue(value)?String(value).trim():null;}
 function explicitFinancialConfirmation(visit,kind){
-  if(kind==='payment')return visit.paymentConfirmed===true||visit.paymentState==='confirmed'||hasValue(visit.paymentConfirmedAt)||hasValue(visit.paymentSourceRef)||hasValue(visit.paymentEvidence);
-  return visit.liquidationState==='confirmed'||hasValue(visit.liquidationConfirmedAt)||hasValue(visit.liquidationEvidence);
+  if(kind==='payment')return visit.paymentConfirmed===true||['confirmed','paid','pagada'].includes(normalizedText(visit.paymentState))||hasValue(visit.paymentConfirmedAt);
+  return visit.liquidationConfirmed===true||['confirmed','liquidated','liquidada'].includes(normalizedText(visit.liquidationState))||hasValue(visit.liquidationConfirmedAt);
+}
+function explicitShopperPresence(visit){
+  if(visit.hasShopper===false)return false;
+  if(visit.hasShopper===true)return hasValue(visit.shopperCode)||hasValue(visit.shopperId)||hasValue(visit.shopper);
+  return hasValue(visit.shopperCode)||hasValue(visit.shopperId)||hasValue(visit.shopper);
 }
 
 export function deriveCanonicalVisitState(visit){
@@ -28,7 +33,7 @@ export function deriveCanonicalVisitState(visit){
   const questionnaireDate=acceptedDate('questionnaire',visit.cuestFecha,visit.periodKey,reviewReasons);
   const submittedDate=acceptedDate('submitted',visit.submittedAt,visit.periodKey,reviewReasons);
 
-  const hasShopper=visit.hasShopper===true||hasValue(visit.shopperId)||hasValue(visit.shopperCode);
+  const hasShopper=explicitShopperPresence(visit);
   const controlPendingAssignment=control.includes('p x asignar');
   const controlPendingSchedule=control.includes('p x agendar');
   const outOfRange=control.includes('fuera');
@@ -41,10 +46,14 @@ export function deriveCanonicalVisitState(visit){
   if(questionnaireDate&&!realizedDate)reviewReasons.add('questionnaire_without_realized_date');
   if(submittedDate&&!questionnaireDate)reviewReasons.add('submitted_without_questionnaire_date');
 
-  // Evidencia posterior cierra la progresión sin inventar las fechas que falten.
-  const submitted=Boolean(submittedDate||visit.submit===true||visit.submissionState==='confirmed_hr'||visit.workflowState==='submitted_by_tya');
-  const questionnaireCompleted=Boolean(questionnaireDate||submitted);
-  const realized=Boolean(realizedDate||questionnaireCompleted);
+  // Solo se acepta submitido por fecha válida o por estado confiable producido
+  // después de normalizar la fuente. Un booleano crudo no confirma submitido.
+  const trustedSubmittedState=['confirmed_hr','submitted_by_tya'].includes(normalizedText(visit.submissionState));
+  const trustedQuestionnaireState=['completed','questionnaire_completed'].includes(normalizedText(visit.questionnaireState));
+  const trustedExecutionState=['realized','completed'].includes(normalizedText(visit.executionState));
+  const submitted=Boolean(submittedDate||trustedSubmittedState);
+  const questionnaireCompleted=Boolean(questionnaireDate||trustedQuestionnaireState||submitted);
+  const realized=Boolean(realizedDate||trustedExecutionState||questionnaireCompleted);
   const assigned=Boolean(hasShopper);
   const scheduled=Boolean(assigned&&scheduledDate);
   const liquidationConfirmed=explicitFinancialConfirmation(visit,'liquidation');
@@ -75,7 +84,8 @@ export function deriveCanonicalVisitState(visit){
 
 export function applyCanonicalVisitState(visit){
   const c=deriveCanonicalVisitState(visit);
-  return {...visit,hasShopper:c.assigned,estado:c.presentationState,canonicalState:c.operationalStage,operationalState:c.operationalStage,assignmentState:c.assignmentState,schedulingState:c.schedulingState,executionState:c.executionState,questionnaireState:c.questionnaireState,submissionState:c.submissionState,liquidationState:c.liquidationState,paymentState:c.paymentState,liquidationCandidate:c.liquidationCandidate,paymentControlOnly:c.liquidationCandidate&&!c.paymentConfirmed,paymentConfirmed:c.paymentConfirmed,outOfRange:c.outOfRange,reviewRequired:c.reviewRequired,reviewReasons:c.reviewReasons,canonicalFacets:{assigned:c.assigned,scheduled:c.scheduled,realized:c.realized,questionnaire:c.questionnaireCompleted,submitted:c.submitted,outOfRange:c.outOfRange,cancelled:c.cancelled,liquidationCandidate:c.liquidationCandidate,liquidationConfirmed:c.liquidationConfirmed,paymentConfirmed:c.paymentConfirmed}};
+  const safeShopper=c.assigned?{}:{shopperId:null,shopperCode:null,shopper:null};
+  return {...visit,...safeShopper,hasShopper:c.assigned,estado:c.presentationState,canonicalState:c.operationalStage,operationalState:c.operationalStage,assignmentState:c.assignmentState,schedulingState:c.schedulingState,executionState:c.executionState,questionnaireState:c.questionnaireState,submissionState:c.submissionState,liquidationState:c.liquidationState,paymentState:c.paymentState,liquidationCandidate:c.liquidationCandidate,paymentControlOnly:c.liquidationCandidate&&!c.paymentConfirmed,paymentConfirmed:c.paymentConfirmed,outOfRange:c.outOfRange,reviewRequired:c.reviewRequired,reviewReasons:c.reviewReasons,canonicalFacets:{assigned:c.assigned,scheduled:c.scheduled,realized:c.realized,questionnaire:c.questionnaireCompleted,submitted:c.submitted,outOfRange:c.outOfRange,cancelled:c.cancelled,liquidationCandidate:c.liquidationCandidate,liquidationConfirmed:c.liquidationConfirmed,paymentConfirmed:c.paymentConfirmed}};
 }
 
 export function summarizeCanonicalPeriods(visits){
