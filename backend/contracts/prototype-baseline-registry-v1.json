@@ -1,5 +1,5 @@
 {
-  "version": "1.5.0",
+  "version": "1.6.0",
   "updatedAt": "2026-07-18",
   "repository": "paulaosoriof86/demoCXOrbia",
   "integrationBranch": "docs-tya-v6-v71-audit",
@@ -8,55 +8,14 @@
     "version": "V131",
     "runtimeIdentity": "V131 + R18D",
     "status": "active_baseline_frozen",
-    "baseSourceZipSha256": "19424b2b709a4bff457454bbeff6abe47cd1c52c0f0388fd1a380008c8adc740",
     "sourceZipSha256": "788a32a6d44e0686b0627a47e4e4e038fdbe7d3befd3dde2651ff542706918bb",
     "manifestFile": "docs/MANIFEST-V131-R18D-HOTFIX-R1.json",
     "aggregateSha256": "6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348",
-    "originalRuntimeCommit": "d5c04054d445723dd0bc9e48acbab75953a4b08b",
-    "hotfixRuntimeCommit": "593cdb9cc815cfa14d257968026bf3de886efba1",
-    "validationHead": "bd8636f8f1899115b19cb13e875626c1532e541b",
     "accepted": true,
     "empalmed": true,
     "active": true,
     "visualValidated": true,
-    "rollbackReference": true,
-    "hotfixes": [
-      {
-        "id": "R18D_FINANCE_PERIOD_ADAPTER_HF1",
-        "sourceCandidateInternalVersion": "V132",
-        "sourceZipSha256": "788a32a6d44e0686b0627a47e4e4e038fdbe7d3befd3dde2651ff542706918bb",
-        "promotionMode": "reconciled_single_file_hotfix",
-        "functionalPath": "app/core/finanzas-core.js",
-        "decision": "PASS_R18D_VISIBLE_OVERLAYS",
-        "workflowRun": 29437465036
-      },
-      {
-        "id": "TYA_PROJECT_PERIOD_CONTEXT_R15G",
-        "sourceCandidateInternalVersion": "V156",
-        "promotionMode": "explicit_backend_connection_overlay_validated_on_current_source_safe_runtime",
-        "functionalPaths": [
-          "app/core/tya-phase-a-source-safe-preview.js",
-          "tools/release/tya-source-safe-binding-build-r15g.mjs",
-          "tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs"
-        ],
-        "decision": "PASS_R15G_TYA_SOURCE_SAFE_GATES",
-        "workflowRun": 29532682880,
-        "artifactId": 8389252633,
-        "artifactDigest": "sha256:cf030dafea6fd376e27484296822750fe02a76a8ba97e79ceba0c067af79ce71",
-        "evidence": {
-          "periods": 14,
-          "visits": 616,
-          "shoppersReference": 216,
-          "visitsPerActivePeriod": 44,
-          "numericDateSignals": 0,
-          "submittedAsLiquidated": 0,
-          "adminClientShopperRoutes": "PASS_WITH_ZERO_PAGE_OR_CONSOLE_ERRORS",
-          "projectPeriodKpiHistory": "PASS"
-        },
-        "warning": "DEV uses a fresh build-time HR snapshot; runtime live HR synchronization remains a separate production gate.",
-        "reason": "Separate parent project identity from unique period identity, normalize HR dates, and keep submitted distinct from liquidation/payment."
-      }
-    ]
+    "rollbackReference": true
   },
   "currentRuntime": {
     "version": "V159",
@@ -68,7 +27,6 @@
     "aggregateSha256": "8f85f7c9a40d42672808294e912f5af74d8426dccadbaa43c51f70e048072226",
     "fileCount": 174,
     "empalmeCommit": "d47ea700f7e48a2b0ba31574a84b89c6a20f3449",
-    "headBefore": "bf9c8f27500b26d547199d159659b58a42434811",
     "parentBaselineVersion": "V131",
     "accepted": true,
     "empalmed": true,
@@ -79,14 +37,14 @@
     "visualValidated": false,
     "production": false,
     "hostingDevEvidence": {
-      "workflowRun": 29626385151,
-      "workflowCommit": "8cf166eea6a0ebd0b2c6221925671d04865999f0",
+      "evidenceRevision": 2,
+      "workflowRun": 29649918631,
+      "workflowCommit": "91aed5f9bdd54a396bd8758479888516dd1c3013",
       "buildLabel": "v159-r18d-source-safe-20260717-dev",
       "devUrl": "https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible",
-      "hostingVersion": "projects/87461567267/sites/cxorbia-backend-dev/versions/c8add179fb326b6a",
-      "artifactId": 8430697082,
-      "artifactDigest": "sha256:fbe071cf34561df95c6e4cffa393f3c6851d742eb8f00776c28a3354e4365692",
-      "localGates": "PASS",
+      "hostingVersion": "projects/87461567267/sites/cxorbia-backend-dev/versions/dbb0c50992aba5e2",
+      "artifactId": 8431164287,
+      "artifactDigest": "sha256:693d05ecfc4621c02321e13a0caf6f40ac2683356ee0893c02a04f027aa3539a",
       "remoteSourceSemantics": "PASS_WITH_WARNING_R15G_TYA_SOURCE_SEMANTICS",
       "remoteRoleSmoke": "PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE",
       "remoteProjectPeriodKpiHistory": "PASS_TYA_PROJECT_PERIOD_KPI_HISTORY",
@@ -94,16 +52,28 @@
       "blockers": 0,
       "shopperSourceCount": 215,
       "shopperReference": 216,
+      "shopperDataLevelPolicy": "DECLARED_SOURCE_LEVEL_PRECEDENCE",
+      "shopperProtectedReferences": 215,
+      "shopperActive": 0,
+      "shopperInactive": 0,
+      "shopperCompleteProfiles": 0,
+      "shopperIncompleteProfiles": 0,
+      "shopperRatingsInvented": 0,
+      "shopperStatusesInvented": 0,
       "shopperIdentitiesInvented": 0,
       "paidConfirmedOrInferred": 0
-    }
-  },
-  "previousBaseline": {
-    "version": "V110",
-    "status": "superseded_by_v131",
-    "sourceZipSha256": "1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227",
-    "manifestFile": "docs/MANIFEST-V110-UNION-EMPALME-R1.json",
-    "aggregateSha256": "b590f500a67f28fb911698f7a3c457eddd31ddad794efdfb760587630f7037b3"
+    },
+    "rootFixes": [
+      "project_period_identity_separated_at_binding_boundary",
+      "canonical_workflow_and_financial_states_preserved",
+      "june_period_financial_control_validated_without_payment_inference",
+      "declared_shopper_data_level_precedes_legacy_field_heuristics",
+      "protected_shopper_references_never_count_as_active_or_complete",
+      "hosting_dev_lane_centralized_and_observable",
+      "remote_propagation_polled_before_smoke",
+      "obsolete_v110_gates_removed_from_current_lane",
+      "firestore_drift_scoped_to_backend_evidence_only"
+    ]
   },
   "candidate": {
     "version": "V159",
@@ -130,22 +100,6 @@
   ],
   "promotionRule": {
     "passRequired": true,
-    "empalmeSequence": [
-      "audit_pass",
-      "materialize_complete_candidate_runtime_tree",
-      "apply_explicit_backend_overlays",
-      "update_source_lock",
-      "update_current_runtime_registry",
-      "fast_forward_integration_branch"
-    ],
-    "freezeSequence": [
-      "post_empalme_semantic_gates_pass",
-      "exact_runtime_browser_smoke_pass",
-      "hosting_dev_same_build_pass",
-      "remote_smoke_same_build_pass",
-      "human_visual_validation",
-      "update_active_baseline_registry"
-    ],
     "runtimeCandidateOwnedPaths": [
       "app/index.html",
       "app/app.js",
@@ -155,7 +109,14 @@
       "app/sw.js"
     ],
     "forbidSilentRuntimeExclusions": true,
-    "hotfixException": "A focalized overlay may survive only when it is reapplied after the complete candidate runtime tree, independently validated, recorded in the final manifest and included in the same source lock.",
+    "freezeSequence": [
+      "post_empalme_semantic_gates_pass",
+      "exact_runtime_browser_smoke_pass",
+      "hosting_dev_same_build_pass",
+      "remote_smoke_same_build_pass",
+      "human_visual_validation",
+      "update_active_baseline_registry"
+    ],
     "forbiddenStates": [
       "accepted_not_empalmed",
       "active_without_post_gates",
