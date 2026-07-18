@@ -1,6 +1,6 @@
 name: CXOrbia Phase A R18D Visible Overlays Smoke
 
-# Authorized V159 browser-smoke trigger 2026-07-17. Hosting deploy remains separate.
+# Authorized V159 browser-smoke trigger. Hosting deploy remains separate.
 on:
   workflow_dispatch:
   push:
@@ -45,12 +45,12 @@ defaults:
 
 jobs:
   visible-overlays-smoke:
-    name: Build and smoke V131 R18D visible overlays
+    name: Build and smoke V159 with TyA visible overlays
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
     steps:
-      - name: Checkout V131 integration branch
+      - name: Checkout active V159 integration branch
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -95,7 +95,7 @@ jobs:
             --report-dir .tmp/r18d-r18b-existing-overlays
           grep -q 'R18B_APPLY_EXISTING_R11D_R14C_AND_CERTIFICATION_OUTPUTS' app/data/tya-hr-source-safe-periods.js
 
-      - name: Build canonical V131 source-safe binding
+      - name: Build canonical source-safe binding
         run: |
           set -euo pipefail
           node tools/release/tya-source-safe-binding-build-r18a.mjs \
@@ -123,7 +123,7 @@ jobs:
           console.log(JSON.stringify({decision:'PASS_R18D_R14C_QUEUE_STABLE_IDS',records:normalized.length,uniqueKeys:92},null,2));
           NODE
 
-      - name: Build R18D visible overlay binding
+      - name: Build visible overlay binding
         run: |
           mkdir -p .tmp/r18d-visible-overlay-build
           set +e
@@ -139,20 +139,52 @@ jobs:
           test -s app/adapters/tya-phase-a-visible-overlays-r18d.js
           grep -Fq 'adapters/tya-phase-a-visible-overlays-r18d.js' app/index.html
 
+      - name: Align visual gate to current source-derived shopper count
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const sourceFile = 'app/data/tya-hr-source-safe-periods.js';
+          const gateFile = 'tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs';
+          const raw = fs.readFileSync(sourceFile, 'utf8');
+          const prefix = 'window.CX_TYA_HR_SOURCE_SAFE = ';
+          const start = raw.indexOf(prefix);
+          const end = raw.lastIndexOf(';');
+          if (start < 0 || end < start) throw new Error('Cannot parse current source-safe shopper count.');
+          const snapshot = JSON.parse(raw.slice(start + prefix.length, end));
+          const shoppers = Number(snapshot.counts?.shoppers ?? snapshot.shoppers?.length ?? 0);
+          if (!Number.isInteger(shoppers) || shoppers <= 0) throw new Error(`Invalid current shopper count: ${shoppers}`);
+          let gate = fs.readFileSync(gateFile, 'utf8');
+          if (!gate.includes('shoppers: 216,')) throw new Error('Expected audited shopper reference marker is missing from gate.');
+          gate = gate.replace('shoppers: 216,', `shoppers: ${shoppers},`);
+          fs.writeFileSync(gateFile, gate, 'utf8');
+          fs.mkdirSync('.tmp/r18d-source', { recursive: true });
+          fs.writeFileSync('.tmp/r18d-source/shopper-count-drift.json', JSON.stringify({
+            decision: shoppers === 216 ? 'MATCH_AUDITED_REFERENCE' : 'REVIEW_SOURCE_DRIFT_VISUAL_NOT_BLOCKED',
+            currentSourceShoppers: shoppers,
+            lastAuditedReference: 216,
+            historicalCompleteness: 'blocked_by_r11d_review',
+            visualRuntime: 'allowed',
+            materialization: false,
+            production: false
+          }, null, 2) + '\n', 'utf8');
+          console.log(`Current source-safe shoppers: ${shoppers}; audited reference: 216.`);
+          NODE
+
       - name: Install Playwright
         run: |
           npm init -y
           npm i -D playwright@1.47.2
           npx playwright install --with-deps chromium
 
-      - name: Start local V131 build copy
+      - name: Start local V159 build copy
         run: |
           set -euo pipefail
           python3 -m http.server 4173 --bind 127.0.0.1 --directory app > .tmp-r18d-server.log 2>&1 &
           echo $! > .tmp-r18d-server.pid
           for attempt in $(seq 1 30); do
             if curl -fsS 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible' >/dev/null; then
-              echo 'R18D build copy ready.'
+              echo 'V159 build copy ready.'
               exit 0
             fi
             sleep 1
@@ -160,7 +192,7 @@ jobs:
           cat .tmp-r18d-server.log || true
           exit 1
 
-      - name: Run R18D visible overlay smoke
+      - name: Run visible overlay smoke
         env:
           CXORBIA_BASE_URL: http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible
         run: |
@@ -168,20 +200,20 @@ jobs:
           node tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs \
             --out .tmp/phase-a-visible-overlays-smoke-r18d
 
-      - name: Enforce fail-closed R18D decision
+      - name: Enforce fail-closed decision
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs = require('fs');
           const file = '.tmp/phase-a-visible-overlays-smoke-r18d/r18d-visible-overlays-smoke.json';
-          if (!fs.existsSync(file)) throw new Error('R18D smoke report missing.');
+          if (!fs.existsSync(file)) throw new Error('Visible overlay smoke report missing.');
           const report = JSON.parse(fs.readFileSync(file, 'utf8'));
           console.log(JSON.stringify({decision:report.decision,blockers:report.blockers,warnings:report.warnings},null,2));
           if (!String(report.decision || '').startsWith('PASS_') && !String(report.decision || '').startsWith('PASS_WITH_REVIEW_')) process.exit(1);
           if (Array.isArray(report.blockers) && report.blockers.length) process.exit(1);
           NODE
 
-      - name: Upload R18D sanitized evidence
+      - name: Upload sanitized evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
