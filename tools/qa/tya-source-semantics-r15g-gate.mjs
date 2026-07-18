@@ -28,13 +28,14 @@ const expected = {
 };
 fs.mkdirSync(outDir, { recursive:true });
 
+const acceptedHistoryScopes = new Set(['all_detected_hr_periods', 'all_verified_hr_periods']);
 const report = {
-  schemaVersion:'2.0.0',
+  schemaVersion:'2.0.1',
   gate:'tya-source-semantics-r20',
   generatedAt:new Date().toISOString(),
   baseUrl,
   expected,
-  historyScope:'all_detected_hr_periods',
+  historyScopePolicy:'all_verified_or_detected_hr_periods',
   shopperCompletenessAuthority:'R11D_review_queue',
   observed:null,
   blockers:[],
@@ -154,7 +155,7 @@ try {
   if(observed.submittedWithoutCanonical) block('submitted_missing_canonical_state',String(observed.submittedWithoutCanonical));
   if(observed.semanticNormalizer !== 'r15g+r20') block('r20_semantic_normalizer_missing',String(observed.semanticNormalizer));
   if(!observed.canonicalStateAcrossAllDetectedPeriods) block('canonical_all_history_flag_missing');
-  if(observed.normalizationHistoryScope !== 'all_detected_hr_periods') block('history_scope_not_all_detected',String(observed.normalizationHistoryScope));
+  if(!acceptedHistoryScopes.has(observed.normalizationHistoryScope)) block('history_scope_not_all_history',String(observed.normalizationHistoryScope));
   if(observed.periodOperationalSummaryCount !== expected.periods) block('period_summary_count_mismatch',`${observed.periodOperationalSummaryCount}/${expected.periods}`);
   if(observed.duplicatePeriodKeys) block('duplicate_period_summary_keys',String(observed.duplicatePeriodKeys));
   if(observed.nonMonotonicPeriods.length) block('non_monotonic_operational_chain',observed.nonMonotonicPeriods.join(','));
@@ -190,7 +191,8 @@ fs.writeFileSync(path.join(outDir,'report.json'),JSON.stringify(report,null,2)+'
 fs.writeFileSync(path.join(outDir,'report.md'),[
   '# TyA R20 source semantics gate','',
   `Decision: **${report.decision}**`,'',
-  `History scope: ${report.historyScope}`,
+  `History scope policy: ${report.historyScopePolicy}`,
+  `Observed history scope: ${report.observed?.normalizationHistoryScope || 'unknown'}`,
   `Blockers: ${report.blockers.length}`,
   `Warnings: ${report.warnings.length}`,'',
   '## Blockers',...(report.blockers.length?report.blockers.map(x=>`- ${x}`):['- none']),'',
