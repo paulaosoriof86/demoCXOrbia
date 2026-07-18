@@ -9,6 +9,7 @@ on:
     paths:
       - 'backend/contracts/prototype-baseline-registry-v1.json'
       - 'tools/qa/verify-prototype-baseline-atomicity.mjs'
+      - 'tools/release/tya-r15g-dev-root-deploy.sh'
       - 'app/core/build-lock.js'
       - 'app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md'
       - '.github/workflows/cxorbia-prototype-baseline-atomicity.yml'
@@ -29,5 +30,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Verify accepted equals empalmed equals active baseline
+      - name: Verify accepted, empalmed and freeze transition
         run: node tools/qa/verify-prototype-baseline-atomicity.mjs
+      - name: Validate canonical Hosting DEV executor syntax
+        run: |
+          set -euo pipefail
+          test -s tools/release/tya-r15g-dev-root-deploy.sh
+          bash -n tools/release/tya-r15g-dev-root-deploy.sh
