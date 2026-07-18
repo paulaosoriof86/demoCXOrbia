@@ -1,85 +1,111 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-Fecha: 2026-07-18
-Estado: `CORTE_0_POST_GATES_RERUN_PENDING_EVIDENCE`
+Fecha: 2026-07-18  
+Estado: `HOSTING_DEV_REMOTE_SMOKE_PASS_PENDING_PAULA_VISUAL`
 
 ## Estado operativo
 
-- V159 auditada y empalmada en `docs-tya-v6-v71-audit`.
+- Repo: `paulaosoriof86/demoCXOrbia`
+- Rama viva: `docs-tya-v6-v71-audit`
+- PR: `#7`, draft/open/no merge
+- V159 auditada GO y empalmada.
 - Commit de empalme: `d47ea700f7e48a2b0ba31574a84b89c6a20f3449`.
-- Preflight estructural y semántico estático: PASS.
+- Estado de runtime: `hosting_dev_remote_smoke_pass_pending_visual`.
+- Preflight, gates locales, Hosting DEV, prueba de build remoto y smoke remoto: PASS.
 - P0 demostrado: no.
-- V159 permanece `EMPALMED_PENDING_POST_GATES` / `TECHNICAL_PASS_PENDING_VISUAL`.
-- V159 todavía no es `ACTIVE_BASELINE`.
+- V159 todavía no es `ACTIVE_BASELINE`; falta únicamente la validación visual de Paula.
+- V131 permanece como rollback visual hasta el freeze de V159.
 
-## Corte activo
+## URL exacta para validación visual
 
-`CORTE_0_V159_POST_EMPALME`
+`https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible`
 
-Secuencia restante:
+Build probado:
 
-`GATES POST-EMPALME → HOSTING DEV EXACTO → SMOKE REMOTO → VALIDACIÓN VISUAL → ACTIVE_BASELINE`
+- etiqueta: `v159-r18d-source-safe-20260717-dev`;
+- workflow run: `29626385151`;
+- commit exacto desplegado: `8cf166eea6a0ebd0b2c6221925671d04865999f0`;
+- Firebase Hosting version: `projects/87461567267/sites/cxorbia-backend-dev/versions/c8add179fb326b6a`;
+- artefacto sanitizado: `8430697082`;
+- digest: `sha256:fbe071cf34561df95c6e4cffa393f3c6851d742eb8f00776c28a3354e4365692`.
 
-## Avance del bloque
+## Evidencia cerrada del Corte 0
 
-- Se comprobó que el intento anterior de Hosting DEV no desplegó; se detuvo en gates locales después de catorce pasos previos PASS.
-- Se localizó un builder temporal R18A que colapsaba proyecto y periodo.
-- Se confirmó que el builder canónico R15G mantiene proyecto `cinepolis` y periodo con llave propia.
-- La deriva shopper 215/216 quedó como warning de revisión R11D, sin inventar, completar, borrar o materializar identidades.
-- Se corrigió la ruta del manifest V159 en `build-lock.js`.
-- Se reconciliaron registry, atomicidad, fast lane, contrato y verificador Phase A con V159 empalmada pendiente de post-gates y freeze.
-- El checkpoint histórico V113/V114 quedó marcado como superado.
-- Se actualizaron CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES, Academia y tracker.
-- No se modificó frontend ni se reabrió auditoría o empalme.
+Todos los pasos del workflow exacto finalizaron PASS:
 
-## Gate activo
+1. verificación de empalme y alcance Hosting-only;
+2. lectura HR source-safe actual;
+3. canonicalización R18A;
+4. aplicación de resultados existentes R11D, R14C y certificaciones;
+5. binding canónico R15G;
+6. overlay visible R18D;
+7. gates locales de fuente, roles, proyecto/periodo/KPI/histórico y overlays;
+8. validación de credencial y acceso exclusivo a Firebase Hosting DEV;
+9. deploy Hosting DEV;
+10. prueba remota del build exacto;
+11. gates remotos del mismo build;
+12. limpieza de credencial y evidencia sanitizada.
 
-El commit `6e36f2f2f9621d90390e9215d2f3bfa0efdceb15` reactivó el workflow canónico R15G.
+Resultados remotos:
 
-Solo se acepta evidencia sanitizada con `ok:true` y cero blockers en:
+- fuente: `PASS_WITH_WARNING_R15G_TYA_SOURCE_SEMANTICS`;
+- Admin/Shopper/Cliente: `PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE`;
+- proyecto/periodo/KPI/histórico: `PASS_TYA_PROJECT_PERIOD_KPI_HISTORY`;
+- overlays financieros/certificación: `PASS_WITH_REVIEW_R18D_VISIBLE_OVERLAYS`;
+- blockers: `0`;
+- 14 periodos, 616 visitas y 44 visitas en el periodo activo;
+- proyecto `cinepolis` separado del periodo;
+- junio ejecutado con control de liquidación/pago pendiente y cero pagos confirmados o inferidos;
+- 215 shoppers en la fuente actual frente a referencia 216, bajo revisión R11D;
+- identidades shopper inventadas: `0`.
 
-1. source semantics;
-2. smoke Admin, Shopper y Cliente;
-3. proyecto, periodo, KPI e histórico.
+## Bloqueos solucionados de raíz
 
-No se afirma PASS sin esa evidencia.
+1. **Proyecto/periodo colapsados:** R18A quedó delegado al binding canónico R15G.
+2. **Pérdida de estados en el adapter:** R15G conserva estados operativos, submitido, liquidación, pago y `financialControl`.
+3. **Control de junio evaluado por heurística obsoleta:** R18D expone y el gate valida el sobre financiero source-safe aprobado, sin inferir pagos.
+4. **Carril de deploy dependiente de dispatch y lógica duplicada:** workflow reducido a wrapper y ejecución centralizada en `tools/release/tya-r15g-dev-root-deploy.sh`.
+5. **Carrera de propagación remota:** el ejecutor canónico incorpora polling con cache-busting antes del smoke remoto.
+6. **Estado documental insuficiente:** registry y contrato incorporan el estado intermedio `hosting_dev_remote_smoke_pass_pending_visual`.
 
-## Autorización vigente
+## Advertencias no bloqueantes
 
-Autorizado exclusivamente:
-
-- Hosting DEV exacto V159 en `cxorbia-backend-dev`;
-- browser gate y smoke remoto.
-
-No autorizado:
-
-- Firestore/Auth/Storage/HR writes;
-- importaciones;
-- Make/Gemini;
-- pagos;
-- merge o producción.
+- La fuente actual contiene 215 shoppers frente a la referencia auditada 216. La diferencia queda en revisión R11D; no se inventan, borran ni completan identidades.
+- DEV usa un snapshot HR fresco de build; no equivale todavía a sincronización HR runtime live.
+- El conteo shopper no está impreso de forma visible en todos los módulos; esto es P1 de revisión, no P0.
 
 ## Siguiente acción exacta
 
-1. Confirmar evidencia sanitizada del rerun.
-2. Ejecutar `cxorbia-phase-a-r15g-dev-root-deploy.yml` con `DEPLOY_DEV_ROOT_R15G`.
-3. Publicar solo `hosting:cxorbia-dev`.
-4. Ejecutar smoke remoto del mismo build.
-5. Entregar URL y checklist visual a Paula.
-6. Congelar V159 como `ACTIVE_BASELINE` solo después de validación visual sin P0.
+Paula realiza la revisión visual del enlace DEV y responde:
 
-## Bloqueo real
+- `APROBADO`, o
+- un hallazgo concreto con rol, ruta, acción, resultado esperado y resultado observado.
 
-El conector disponible no expone `workflow_dispatch` y el runtime local no tiene credencial Firebase/Google. Esto bloquea únicamente la invocación manual de Hosting DEV; no reabre auditoría, empalme, frontend ni metodología.
+Checklist mínimo:
+
+- login y tenant TyA correctos;
+- proyecto Cinépolis separado del periodo;
+- cambiar mayo, junio y julio modifica filas y KPIs;
+- 44 visitas por periodo, GT 34 y HN 10;
+- junio aparece ejecutado, con liquidaciones/pagos pendientes y no como visitas pendientes o pagadas;
+- Dashboard, Proyectos, Periodos, Histórico y Visitas coherentes;
+- rutas Admin, Shopper, Cliente y Academia operativas;
+- textos honestos de fuentes, integraciones y pagos.
+
+Solo después de `APROBADO` se congela V159 como `ACTIVE_BASELINE` y se continúa al Corte 1 sin reabrir auditoría, empalme ni Hosting DEV.
+
+## Claude/prototipo
+
+No existe tarea frontend nueva confirmada. Claude solo interviene si la revisión visual demuestra un P0 frontend reproducible y localizado por archivo/módulo. P1/P2 se documentan y no bloquean el freeze.
 
 ## Clasificación
 
-- Reusable CXOrbia: transición empalme→post-gates→freeze, fuentes canónicas únicas y deriva visible sin inventar datos.
-- Exclusivo TyA/Cinépolis: proyecto `cinepolis`, 14 periodos, 616 visitas, 44 por periodo y revisión R11D 215/216.
-- Claude/prototipo: sin tarea nueva; no pedir V160. Solo intervenir ante P0 frontend reproducible localizado.
-- Academia: pendiente smoke por rol del mismo build V159 y validación de proyecto/periodo, fuentes, certificaciones, pagos y proveedores apagados.
-- Sin impacto Claude: manifest, registry, validadores, checkpoints y gates técnicos.
+- Reusable CXOrbia: binding canónico, sobre financiero por periodo, estado pre-freeze, ejecutor único y polling de propagación.
+- Exclusivo TyA/Cinépolis: 14/616/44, GT/HN, junio y revisión R11D 215/216.
+- Claude/prototipo: sin pendiente nuevo confirmado.
+- Academia: pendiente validación visual por rol del build ya desplegado.
+- Sin impacto Claude: gates, registry, contrato, CI y documentación técnica.
 
 ## Estado seguro
 
-Sin deploy ejecutado en este bloque, sin merge, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos. Sin base vieja conectada ni datos sensibles crudos agregados.
+Hosting DEV ejecutado. Sin merge, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos. Sin base vieja conectada ni datos sensibles crudos agregados.
