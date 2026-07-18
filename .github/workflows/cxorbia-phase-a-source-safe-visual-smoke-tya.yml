@@ -9,6 +9,7 @@ on:
       - 'tools/hr-source/tya-build-live-hr-source-safe-static.mjs'
       - 'tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs'
       - 'tools/hr-source/tya-canonical-visit-state-r20.mjs'
+      - 'tools/hr-source/tya-reapply-canonical-state-r20.mjs'
       - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
       - 'tools/hr-source/tya-hr-source-xlsx-lite.mjs'
       - 'tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs'
@@ -38,17 +39,15 @@ on:
     paths:
       - 'tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs'
       - 'tools/hr-source/tya-canonical-visit-state-r20.mjs'
+      - 'tools/hr-source/tya-reapply-canonical-state-r20.mjs'
       - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
       - 'tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs'
-      - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15g.mjs'
       - 'tools/release/tya-source-safe-binding-build-r18a.mjs'
       - 'tools/release/tya-visible-overlays-build-r18d.mjs'
       - 'tools/qa/tya-canonical-history-reconciliation-r20-gate.mjs'
       - 'tools/qa/tya-source-semantics-r15g-gate.mjs'
       - 'tools/qa/tya-project-period-kpi-history-gate.mjs'
-      - 'tools/qa/tya-phase-a-source-safe-visual-smoke.mjs'
-      - 'tools/qa/tya-phase-a-visible-overlays-smoke-r18d.mjs'
       - 'backend/contracts/tya-hr-column-map-r20-v1.json'
       - 'backend/contracts/phase-a-hr-canonical-visit-state-r20-v1.json'
       - 'backend/config/tya-tenant-runtime-profile.source-safe.json'
@@ -85,6 +84,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$CXORBIA_GATE_OUT"
           node --check tools/hr-source/tya-canonical-visit-state-r20.mjs
+          node --check tools/hr-source/tya-reapply-canonical-state-r20.mjs
           node --check tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs
           node --check tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs
           node --check tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs
@@ -105,56 +105,59 @@ jobs:
           CXORBIA_HR_LIVE_MAX_ROW: '140'
           CXORBIA_HR_LIVE_MAX_COL: AI
         run: |
-          set -euo pipefail
+          set -o pipefail
           mkdir -p "$CXORBIA_GATE_OUT"
           set +e
-          node tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs 2>&1 | tee "$CXORBIA_GATE_OUT/r20-live-builder.log"
+          {
+            set -euo pipefail
+            node tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs
+            node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
+              --input app/data/tya-hr-source-safe-periods.js \
+              --out app/data/tya-hr-source-safe-periods.js \
+              --report-dir "$CXORBIA_GATE_OUT/r18a-canonicalization"
+            node tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs \
+              --payload app/data/tya-hr-source-safe-periods.js \
+              --out app/data/tya-hr-source-safe-periods.js \
+              --report-dir "$CXORBIA_GATE_OUT/r18b-existing-overlays"
+            node tools/hr-source/tya-reapply-canonical-state-r20.mjs \
+              --input app/data/tya-hr-source-safe-periods.js \
+              --out app/data/tya-hr-source-safe-periods.js \
+              --report-dir "$CXORBIA_GATE_OUT/r20-final-canonical-pass"
+            node tools/qa/tya-canonical-history-reconciliation-r20-gate.mjs \
+              --input app/data/tya-hr-source-safe-periods.js \
+              --out "$CXORBIA_GATE_OUT/canonical-history-r20"
+            node <<'NODE'
+            const fs = require('fs');
+            const rows = JSON.parse(fs.readFileSync('backend/config/phase-a-financial-review-queue-r14c.source-safe.json','utf8'));
+            if (!Array.isArray(rows) || rows.length !== 92) throw new Error('Expected 92 approved R14C review items.');
+            const normalized = rows.map((item,index)=>({...item,key:item.key || `r14c_control:${item.type || 'review'}:${item.entityId || 'source'}:${String(index+1).padStart(3,'0')}`,sourceSafe:true}));
+            if (new Set(normalized.map(item=>item.key)).size !== normalized.length) throw new Error('R14C stable keys are not unique.');
+            fs.writeFileSync(process.env.CXORBIA_GATE_OUT + '/r14c-review-queue-stable.source-safe.json',JSON.stringify(normalized,null,2)+'\n','utf8');
+            NODE
+            node tools/release/tya-source-safe-binding-build-r18a.mjs \
+              --html app/index.html \
+              --out "$CXORBIA_GATE_OUT/source-safe-binding"
+            node tools/release/tya-visible-overlays-build-r18d.mjs \
+              --html app/index.html \
+              --r14c-queue "$CXORBIA_GATE_OUT/r14c-review-queue-stable.source-safe.json" \
+              --out "$CXORBIA_GATE_OUT/visible-overlay-build"
+            test -s app/data/tya-hr-source-safe-periods.js
+            test -s app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
+            test -s app/adapters/tya-phase-a-visible-overlays-r18d.js
+            grep -q 'semanticNormalizer.*r15g+r20' app/data/tya-hr-source-safe-periods.js
+            grep -q 'finalCanonicalPass.*after_r18a_r18b' app/data/tya-hr-source-safe-periods.js
+            grep -q 'columnMapContract.*tya-hr-column-map-r20-v1' app/data/tya-hr-source-safe-periods.js
+            grep -Fq "CX.data.currentProjectId = 'cinepolis'" app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
+            grep -Fq 'CX.data.currentPeriodId = latest && latest.id' app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
+            grep -Fq 'R20_CANONICAL_VISIT_STATE_BINDING' app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
+            grep -Fq 'adapters/tya-phase-a-visible-overlays-r18d.js' app/index.html
+          } 2>&1 | tee "$CXORBIA_GATE_OUT/r20-full-build.log"
           build_status=${PIPESTATUS[0]}
           set -e
           if [ "$build_status" -ne 0 ]; then
-            echo "R20 live builder HOLD with status $build_status" | tee "$CXORBIA_GATE_OUT/r20-live-builder-decision.txt"
+            echo "R20 exact build HOLD with status $build_status" | tee "$CXORBIA_GATE_OUT/r20-full-build-decision.txt"
             exit "$build_status"
           fi
-          node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
-            --input app/data/tya-hr-source-safe-periods.js \
-            --out app/data/tya-hr-source-safe-periods.js \
-            --report-dir "$CXORBIA_GATE_OUT/r18a-canonicalization"
-          node tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs \
-            --payload app/data/tya-hr-source-safe-periods.js \
-            --out app/data/tya-hr-source-safe-periods.js \
-            --report-dir "$CXORBIA_GATE_OUT/r18b-existing-overlays"
-          node tools/qa/tya-canonical-history-reconciliation-r20-gate.mjs \
-            --input app/data/tya-hr-source-safe-periods.js \
-            --out "$CXORBIA_GATE_OUT/canonical-history-r20"
-          node <<'NODE'
-          const fs = require('fs');
-          const rows = JSON.parse(fs.readFileSync('backend/config/phase-a-financial-review-queue-r14c.source-safe.json','utf8'));
-          if (!Array.isArray(rows) || rows.length !== 92) throw new Error('Expected 92 approved R14C review items.');
-          const normalized = rows.map((item,index)=>({...item,key:item.key || `r14c_control:${item.type || 'review'}:${item.entityId || 'source'}:${String(index+1).padStart(3,'0')}`,sourceSafe:true}));
-          if (new Set(normalized.map(item=>item.key)).size !== normalized.length) throw new Error('R14C stable keys are not unique.');
-          fs.writeFileSync(process.env.CXORBIA_GATE_OUT + '/r14c-review-queue-stable.source-safe.json',JSON.stringify(normalized,null,2)+'\n','utf8');
-          NODE
-          node tools/release/tya-source-safe-binding-build-r18a.mjs \
-            --html app/index.html \
-            --out "$CXORBIA_GATE_OUT/source-safe-binding"
-          node tools/release/tya-visible-overlays-build-r18d.mjs \
-            --html app/index.html \
-            --r14c-queue "$CXORBIA_GATE_OUT/r14c-review-queue-stable.source-safe.json" \
-            --out "$CXORBIA_GATE_OUT/visible-overlay-build"
-          test -s app/data/tya-hr-source-safe-periods.js
-          test -s app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
-          test -s app/adapters/tya-phase-a-visible-overlays-r18d.js
-          grep -q 'semanticNormalizer.*r15g+r20' app/data/tya-hr-source-safe-periods.js
-          grep -q 'columnMapContract.*tya-hr-column-map-r20-v1' app/data/tya-hr-source-safe-periods.js
-          grep -Fq "CX.data.currentProjectId = 'cinepolis'" app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
-          grep -Fq 'CX.data.currentPeriodId = latest && latest.id' app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
-          grep -Fq 'R20_CANONICAL_VISIT_STATE_BINDING' app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
-          grep -Fq 'adapters/tya-phase-a-visible-overlays-r18d.js' app/index.html
-
-      - name: Install Playwright
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
 
       - name: Install Chromium
         run: |
