@@ -8,7 +8,10 @@
   - active periodId: cinepolis-YYYY-MM
   - one period owns its 44 visits
   - operational, submission, liquidation and payment-control states survive the
-    payload-to-CX.data adapter boundary without inferring payments.
+    payload-to-CX.data adapter boundary without inferring payments
+  - an explicit shopper dataLevel from the protected source takes precedence over
+    legacy field-presence heuristics, so protected references can never be shown
+    as active or complete operational profiles.
 
   This is a backend connection-layer overlay. It does not modify app/modules,
   write providers, import data, deploy, pay, or enable production.
@@ -91,6 +94,34 @@ const workflowMappingAfter = `    submit: Boolean(v.submit || v.submittedAt || v
 if (!code.includes(workflowMappingBefore)) fail('R15F workflow-state insertion anchor missing.');
 code = code.replace(workflowMappingBefore, workflowMappingAfter);
 
+const shopperLevelAnchor = `  CX.data.currentProgramKey = function(){ return 'cinepolis'; };
+`;
+const shopperLevelOverlay = `  CX.data.currentProgramKey = function(){ return 'cinepolis'; };
+
+  /* The protected source declares the available shopper data tier explicitly.
+     That declaration must win over legacy heuristics based on field presence:
+     null placeholders and historical visit counts do not create an operational
+     profile, an active state or profile completeness. */
+  const baseShopperDataLevel = typeof CX.data_shopperDataLevel === 'function'
+    ? CX.data_shopperDataLevel
+    : null;
+  CX.data_shopperDataLevel = function(shopper){
+    const declared = shopper && shopper.dataLevel;
+    if (declared === 'protected_reference' || declared === 'operational_profile' || declared === 'full_authorized_profile') return declared;
+    return baseShopperDataLevel ? baseShopperDataLevel(shopper) : 'protected_reference';
+  };
+  CX.data.shopperDataLevel = function(shopper){ return CX.data_shopperDataLevel(shopper); };
+  const baseShopperActivo = typeof CX.data.shopperActivo === 'function'
+    ? CX.data.shopperActivo.bind(CX.data)
+    : null;
+  CX.data.shopperActivo = function(shopper){
+    if (CX.data_shopperDataLevel(shopper) === 'protected_reference') return false;
+    return baseShopperActivo ? baseShopperActivo(shopper) : false;
+  };
+`;
+if (!code.includes(shopperLevelAnchor)) fail('R15F shopper-level insertion anchor missing.');
+code = code.replace(shopperLevelAnchor, shopperLevelOverlay);
+
 const required = [
   "tenantId:'tya', clientName:'TyA'",
   "CX.data.currentProjectId = 'cinepolis';",
@@ -102,10 +133,13 @@ const required = [
   'liquidationState: v.liquidationState || null,',
   'paymentState: v.paymentState || null,',
   "v.submissionState === 'submitted_by_tya'",
-  'financialControl: v.financialControl || null,'
+  'financialControl: v.financialControl || null,',
+  "declared === 'protected_reference'",
+  "CX.data_shopperDataLevel(shopper) === 'protected_reference'",
+  'CX.data.shopperDataLevel = function(shopper)'
 ];
 const missing = required.filter(token => !code.includes(token));
-if (missing.length) fail(`Canonical context/state invariants missing: ${missing.join(', ')}`);
+if (missing.length) fail(`Canonical context/state/shopper invariants missing: ${missing.join(', ')}`);
 if (code.includes('CX.data.currentProjectId = latest && latest.id;')) {
   fail('Period identity still overwrites root project identity.');
 }
@@ -113,13 +147,19 @@ if (code.includes('CX.data.currentProjectId = latest && latest.id;')) {
 fs.writeFileSync(adapterFile, code, 'utf8');
 fs.mkdirSync(outDir, { recursive: true });
 const report = {
-  schemaVersion: '1.1.0',
-  decision: 'PASS_R15G_CANONICAL_PROJECT_PERIOD_AND_WORKFLOW_BINDING',
+  schemaVersion: '1.2.0',
+  decision: 'PASS_R15G_CANONICAL_CONTEXT_WORKFLOW_AND_SHOPPER_LEVEL_BINDING',
   adapterFile: path.relative(process.cwd(), adapterFile).replaceAll('\\', '/'),
   tenantId: 'tya',
   projectId: 'cinepolis',
   periodIdentity: 'cinepolis-YYYY-MM',
   expectedShoppers: 216,
+  shopperDataLevelPolicy: {
+    explicitDeclarationPrecedence: true,
+    protectedReferenceActive: false,
+    nullPlaceholdersCreateOperationalProfile: false,
+    historicalVisitCountCreatesOperationalProfile: false
+  },
   preservedStates: [
     'canonicalState',
     'operationalState',
@@ -136,7 +176,8 @@ const report = {
     production: false,
     providers: false,
     payments: false,
-    paymentsInferred: false
+    paymentsInferred: false,
+    frontendModulesModified: false
   }
 };
 fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
