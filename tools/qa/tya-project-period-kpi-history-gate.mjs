@@ -8,7 +8,8 @@
   - changing MAY/JUN/JUL changes the active visit set and all consumers see the same context;
   - financial/liquidation KPI calculations remain scoped to the active period;
   - June is executed and remains liquidation/payment control, not pending visits;
-  - payment control is read from canonical states and financialControl, never inferred as paid.
+  - payment control is proven from canonical visit states or the approved period-level
+    source-safe financial-control envelope, never inferred as paid.
 
   Source-safe browser test only. No providers, writes, imports, deploy or production.
 */
@@ -35,7 +36,7 @@ const expected = {
 
 fs.mkdirSync(outDir, { recursive: true });
 const report = {
-  schemaVersion:'1.1.0',
+  schemaVersion:'1.2.0',
   gate: 'tya-project-period-kpi-history-gate',
   generatedAt: new Date().toISOString(),
   baseUrl,
@@ -65,11 +66,12 @@ try {
     try { localStorage.setItem('cx_demo_mode','off'); localStorage.setItem('cx_banners','[]'); sessionStorage.setItem('cx_pwa_shown','1'); } catch {}
   });
   await page.goto(baseUrl, { waitUntil:'domcontentloaded', timeout:30000 });
-  await page.waitForFunction(() => Boolean(window.CX?.data && window.CX_TYA_HR_SOURCE_SAFE), null, { timeout:20000 });
+  await page.waitForFunction(() => Boolean(window.CX?.data && window.CX_TYA_HR_SOURCE_SAFE && window.CX_TYA_R18D_VISIBLE_READY), null, { timeout:20000 });
 
   const inventory = await page.evaluate(() => {
     const data = window.CX.data;
     const source = window.CX_TYA_HR_SOURCE_SAFE;
+    const visibleContract = window.CX_TYA_R18D_VISIBLE_CONTRACT || null;
     const periods = Array.isArray(data.projects) ? data.projects.map(p => ({
       id:p.id,
       parentProjectId:p.parentProjectId || p.program || null,
@@ -90,7 +92,9 @@ try {
       periods,
       visitCounts,
       totalVisits:(data._visitas || []).length,
-      programs:data.programs ? data.programs().map(pg=>({key:pg.key,name:pg.name,periodCount:(pg.periods||[]).length})) : []
+      programs:data.programs ? data.programs().map(pg=>({key:pg.key,name:pg.name,periodCount:(pg.periods||[]).length})) : [],
+      financialControl:data.financialControl || null,
+      visibleContract
     };
   });
   report.context = inventory;
@@ -115,6 +119,17 @@ try {
     const count = Number(inventory.visitCounts[period.id] || 0);
     if(count !== expected.visitsPerPeriod) block('period_visit_count_mismatch', `${period.periodKey}:${count}/${expected.visitsPerPeriod}`);
   }
+
+  const financialControl = inventory.financialControl;
+  if(!financialControl || financialControl.tenantId !== expected.tenantId || financialControl.projectId !== expected.projectId) {
+    block('period_financial_control_envelope_missing_or_mismatched');
+  } else {
+    if(financialControl.sourceSafe !== true || financialControl.imported !== false || financialControl.production !== false || financialControl.providerWrites !== false) block('unsafe_period_financial_control_envelope');
+    if(!Array.isArray(financialControl.payments) || financialControl.payments.length !== 0 || !Array.isArray(financialControl.batches) || financialControl.batches.length !== 0) block('period_financial_control_contains_unapproved_payment_records');
+    if(financialControl.cutPeriod !== '2026-06' || financialControl.sourceStatus !== 'pending_financial_source') block('june_period_financial_control_status_mismatch');
+  }
+  if(inventory.visibleContract?.junePaymentControlPresent !== true) block('june_visible_financial_control_not_exposed');
+  if(inventory.visibleContract?.paidConfirmed !== 0 || inventory.visibleContract?.paymentLotsCreated !== 0) block('visible_financial_control_falsely_confirms_payment');
 
   for(const key of expected.keys){
     const snapshot = await page.evaluate(periodKey => {
@@ -151,6 +166,22 @@ try {
       const paymentPending = visits.filter(v=>!isPaymentConfirmed(v) && hasExplicitPaymentControl(v)).length;
       const financialControlCount = visits.filter(v=>Boolean(v.financialControl) || v.paymentControlOnly === true).length;
       const financeVisits = Object.values(finance||{}).reduce((sum,row)=>sum+Number(row?.visRe||0),0);
+      const periodControl = data.financialControl || null;
+      const juneClaim = periodKey === periodControl?.cutPeriod ? periodControl?.claims?.june || null : null;
+      const periodPaymentControl = {
+        present: Boolean(
+          juneClaim &&
+          periodControl?.sourceStatus === 'pending_financial_source' &&
+          String(juneClaim.q1 || '').includes('pending') &&
+          String(juneClaim.q2 || '').includes('pending')
+        ),
+        sourceStatus:periodControl?.sourceStatus || null,
+        cutPeriod:periodControl?.cutPeriod || null,
+        q1:juneClaim?.q1 || null,
+        q2:juneClaim?.q2 || null,
+        payments:Array.isArray(periodControl?.payments) ? periodControl.payments.length : null,
+        batches:Array.isArray(periodControl?.batches) ? periodControl.batches.length : null
+      };
       return {
         periodKey,
         missing:false,
@@ -166,6 +197,7 @@ try {
         liquidationCount:liquidations.length,
         financeVisits,
         financialControlCount,
+        periodPaymentControl,
         statusCounts,
         submissionStateCounts,
         liquidationStateCounts,
@@ -195,7 +227,8 @@ try {
       if(snapshot.pendingExecution !== 0) block('june_has_pending_execution', String(snapshot.pendingExecution));
       if(snapshot.liquidationCount <= 0 || snapshot.financeVisits <= 0) block('june_liquidation_control_missing');
       if(snapshot.paymentConfirmed !== 0) block('june_payment_falsely_confirmed', String(snapshot.paymentConfirmed));
-      if(snapshot.paymentPending <= 0) block('june_payment_control_missing');
+      if(snapshot.paymentPending <= 0 && snapshot.periodPaymentControl?.present !== true) block('june_payment_control_missing');
+      if(snapshot.periodPaymentControl?.payments !== 0 || snapshot.periodPaymentControl?.batches !== 0) block('june_period_control_contains_payment_records');
     }
   }
 
@@ -228,7 +261,7 @@ fs.writeFileSync(path.join(outDir,'report.md'), [
   `Warnings: ${report.warnings.length}`,'',
   '## Blockers',...(report.blockers.length?report.blockers.map(x=>`- ${x}`):['- none']),'',
   '## Warnings',...(report.warnings.length?report.warnings.map(x=>`- ${x}`):['- none']),'',
-  'June payment control is proven only by canonical pending states, liquidation candidates or protected financial-control links; paid is never inferred.','',
+  'June payment control is proven only by canonical pending states, protected financial-control links or the approved period-level source-safe envelope; paid is never inferred.','',
   '## Safe state','- source-safe only','- no writes/import/deploy/production/providers/payments',''
 ].join('\n'),'utf8');
 console.log(JSON.stringify(report,null,2));
