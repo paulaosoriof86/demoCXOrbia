@@ -1,5 +1,6 @@
 name: CXOrbia Phase A R18D Visible Overlays Smoke
 
+# Authorized V159 browser-smoke trigger 2026-07-17. Hosting deploy remains separate.
 on:
   workflow_dispatch:
   push:
