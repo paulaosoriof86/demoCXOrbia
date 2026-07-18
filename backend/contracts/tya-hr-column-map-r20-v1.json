@@ -1,12 +1,13 @@
 {
   "contractId": "tya-hr-column-map-r20-v1",
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "tenantId": "tya",
   "projectId": "cinepolis",
   "historyScope": "all_detected_hr_periods",
   "resolutionPolicy": "exact_or_unique_anchored_only",
   "ambiguousMatchPolicy": "hold_and_review",
   "missingCriticalPolicy": "hold_build",
+  "contextualRequiredPolicy": "hold_only_when_period_is_open_or_future",
   "headerSignature": ["País", "ID CINEMA", "Shopping"],
   "columns": {
     "pais": {"aliases": ["País"], "critical": true, "domain": "identity"},
@@ -20,7 +21,13 @@
     "metodoPago": {"aliases": ["Método de Pago"], "critical": false, "domain": "finance"},
     "quincena": {"aliases": ["Quincena"], "critical": true, "domain": "measurement_period"},
     "shopper": {"aliases": ["Shopper Asignado"], "critical": true, "domain": "assignment"},
-    "disponibleDesde": {"aliases": ["Disponible a partir de", "Disponible desde"], "critical": true, "domain": "eligibility"},
+    "disponibleDesde": {
+      "aliases": ["Disponible a partir de", "Disponible desde"],
+      "critical": false,
+      "contextualRequired": "open_or_future_period",
+      "domain": "eligibility",
+      "historicalFallback": "null_without_inference"
+    },
     "fechaProgramada": {"aliases": ["Fecha programada"], "critical": true, "domain": "scheduling"},
     "controlDia": {"aliases": ["Control día s/ franja horaria", "Control dia s/ franja horaria"], "critical": true, "domain": "operational_control"},
     "fechaRealizada": {"aliases": ["Fecha realizada"], "critical": true, "domain": "execution"},
@@ -30,12 +37,19 @@
     "honorarios": {"aliases": ["Honorarios"], "critical": false, "domain": "finance"},
     "fechaSubmitido": {"aliases": ["Fecha submitido", "Submitido"], "critical": true, "domain": "submission"}
   },
+  "rules": [
+    "historical tabs are not discarded because Disponible desde did not exist yet",
+    "missing Disponible desde never invents an eligibility date",
+    "open/current periods require availability evidence for publishing available visits",
+    "all operational and submission evidence columns remain fail-closed"
+  ],
   "prohibitions": [
     "first_partial_match_wins",
     "silent_column_fallback",
     "month_specific_column_map",
     "use_control_label_instead_of_explicit_evidence",
-    "accept_ambiguous_header"
+    "accept_ambiguous_header",
+    "infer_historical_available_from_missing_column"
   ],
   "safeState": {
     "sourceSafe": true,
