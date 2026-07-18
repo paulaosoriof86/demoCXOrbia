@@ -15,79 +15,109 @@ Regla: este archivo se lee primero y define la única jerarquía vigente de fuen
 7. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`
 8. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
 9. `VALIDACION-VISUAL-V159-NO-APROBADO-20260718.md`
-10. `backend/contracts/phase-a-live-execution-checkpoint-v1.json`
-11. `backend/contracts/prototype-baseline-registry-v1.json`
-12. `app/core/build-lock.js`
+10. `backend/contracts/phase-a-hr-canonical-visit-state-r20-v1.json`
+11. `backend/config/tya-tenant-runtime-profile.source-safe.json`
+12. `backend/contracts/phase-a-live-execution-checkpoint-v1.json`
+13. `backend/contracts/prototype-baseline-registry-v1.json`
+14. `app/core/build-lock.js`
 
 Después consultar:
 
-13. `CAMBIOS-BACKEND.md` y el addendum vigente;
-14. `RESUMEN-PARA-CLAUDE.md` y el addendum vigente;
-15. `PENDIENTES-PROTOTIPO.md` y el addendum vigente;
-16. impacto vigente de Academia;
-17. tracker vigente de Phase A;
-18. PR #7 y HEAD de `docs-tya-v6-v71-audit`.
+15. `CAMBIOS-BACKEND.md` y el addendum vigente;
+16. `RESUMEN-PARA-CLAUDE.md` y el addendum vigente;
+17. `PENDIENTES-PROTOTIPO.md` y el addendum vigente;
+18. impacto vigente de Academia;
+19. tracker vigente de Phase A;
+20. PR #7 y HEAD de `docs-tya-v6-v71-audit`.
 
 ## 2. Addenda vigentes del bloque actual
 
 - `VALIDACION-VISUAL-V159-NO-APROBADO-20260718.md`
-- `CAMBIOS-BACKEND-ADDENDUM-V159-VISUAL-NO-APROBADO-20260718.md`
-- `RESUMEN-PARA-CLAUDE-ADDENDUM-V159-VISUAL-NO-APROBADO-20260718.md`
-- `PENDIENTES-PROTOTIPO-ADDENDUM-V159-VISUAL-NO-APROBADO-20260718.md`
+- `CAMBIOS-BACKEND-ADDENDUM-CORTE-0B-R20-HISTORICO-20260718.md`
+- `RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE-0B-R20-HISTORICO-20260718.md`
+- `PENDIENTES-PROTOTIPO-ADDENDUM-CORTE-0B-R20-HISTORICO-20260718.md`
+- `ACADEMIA-IMPACT-CORTE-0B-R20-HISTORICO-20260718.md`
+- `PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-CORTE-0B-R20-HISTORICO-20260718.md`
 
-Los addenda anteriores de Hosting DEV PASS quedan como evidencia técnica histórica, no como estado operativo vigente.
+Los addenda anteriores de Hosting DEV PASS y de V159 NO APROBADA permanecen como evidencia histórica, pero el estado operativo actual lo gobiernan el checkpoint y los addenda R20.
 
 ## 3. Estado operativo que manda
 
-- V159 está auditada y empalmada.
-- Hosting DEV y smoke remoto técnico: PASS.
-- Validación visual de Paula: `NO APROBADO`.
-- Estado: `HOLD_VISUAL_SEMANTIC_P0_PROVEN`.
-- P0 demostrado: sí.
+- V159 está auditada y empalmada, pero fue `NO APROBADA` visualmente.
+- Hosting DEV anterior se conserva solo como evidencia del fallo.
 - V159 no es `ACTIVE_BASELINE`.
-- No se reabre empalme ni auditoría estructural.
-- Siguiente acción: `CORTE 0B — MOTOR CANÓNICO DE ESTADOS + CONFIGURACIÓN TENANT/LOGIN`.
+- Corte activo: `CORTE 0B — MOTOR CANÓNICO HISTÓRICO + TENANT/LOGIN`.
+- Estado actual: `CORTE_0B_R20_IMPLEMENTED_PENDING_GATES_AND_VISUAL`.
+- El motor R20 aplica a todos los periodos detectados en la HR, no solo mayo/junio/julio.
+- Como mínimo debe cubrirse todo el año vigente si una fuente anterior no puede leerse.
+- Mayo, junio y julio son muestras obligatorias de regresión, no lógica especial.
+- Siguiente acción: ejecutar builder HR vivo R20, gates históricos, revisar conflictos y solo después publicar nuevo Hosting DEV con autorización específica.
 
 ## 4. Prevalencia
 
 - Continuidad general: documento maestro actualizado.
-- Candidatas y empalme: addendum canónico de carril, complementado por el gate visual pre-empalme del plan Phase A cuando la candidata toque módulos críticos o exista P0 semántico.
+- Candidatas/empalme: addendum canónico de composite previo y carril atómico.
 - Secuencia Phase A: plan canónico.
 - Estado puntual: checkpoint operativo vigente.
-- Evidencia visual actual: `VALIDACION-VISUAL-V159-NO-APROBADO-20260718.md`.
-- Identidad runtime/baseline: registry, build-lock y manifest.
+- Semántica HR: contrato R20.
+- Tenant/login: perfil source-safe TyA.
+- Evidencia del P0: validación visual V159 NO APROBADA.
+- Runtime/baseline: registry, build-lock y manifest.
 - Claude: resumen y pendientes vigentes.
-- Academia: addendum maestro e impacto vigente.
+- Academia: addendum maestro e impacto R20 vigente.
 
-## 5. Fuentes superadas
+## 5. Regla de candidatas futuras
+
+Para toda candidata que toque módulos críticos:
+
+```text
+EXECUTION_LANE_READY
+→ AUDITORÍA DELTA
+→ COMPOSITE TEMPORAL DEL MISMO HASH + BACKEND/OVERLAYS
+→ GATES SEMÁNTICOS
+→ VISUALIZACIÓN PRE-EMPALME
+→ APROBACIÓN/HOLD
+→ APPLY_DELTA_DIRECTLY DEL MISMO HASH APROBADO
+→ COMMIT/PUSH ATÓMICO
+→ POST-GATES
+→ FREEZE
+```
+
+La rama viva no recibe la candidata antes de que Paula apruebe visualmente el composite exacto.
+
+## 6. Fuentes superadas o que deben retirarse del panel de Fuentes
 
 No usar como estado operativo:
 
-- checkpoints V110, V113, V114, V131 o V156 anteriores;
-- checkpoint anterior que declaraba V159 pendiente únicamente de aprobación visual;
-- `PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md`, salvo como histórico marcado SUPERADO;
-- copias con `(1)` del índice, addendum, plan o checkpoint;
-- planes paralelos que contradigan el plan canónico;
-- addenda V159 que indiquen que no existe P0 visual.
+- checkpoints anteriores que declaraban V159 pendiente únicamente de aprobación;
+- copias con `(1)` del índice, addendum de empalme, plan o checkpoint;
+- addenda antiguos de ejecución directa 20260716/20260717;
+- planes paralelos que contradigan el composite pre-empalme;
+- documentos que limiten el Corte 0B a mayo/junio/julio;
+- ZIPs de candidatas como fuente maestra permanente.
 
-Los históricos permanecen en GitHub, pero no gobiernan la ejecución.
+Los históricos pueden permanecer en GitHub, pero no deben competir en Fuentes activas.
 
-## 6. Regla de continuidad
+## 7. Regla de continuidad
 
-Cada sesión continúa desde el checkpoint vigente. No reconstruye auditoría V159, empalme, adapters, importadores, Auth readiness, reviewQueue, rollback, Hosting DEV ni smoke remoto.
+Cada sesión continúa desde el checkpoint vigente. No reconstruye V159, el empalme, adapters, importadores, Auth readiness, reviewQueue, rollback ni Hosting anterior.
 
-Sí corrige focalizadamente el mapping/estado canónico, configuración tenant/login y consumidores visuales demostrados por el P0.
+Sí continúa focalizadamente con:
 
-Para futuras candidatas críticas:
+- lectura multi-tab completa;
+- motor histórico R20;
+- conflictos de columnas/fechas;
+- reconciliación de consumidores;
+- tenant/login configurable;
+- gates y nueva validación visual.
 
-`AUDITORÍA → COMPOSITE TEMPORAL CON OVERLAYS → GATES SEMÁNTICOS → VISUALIZACIÓN PRE-EMPALME → APROBACIÓN → APPLY_DELTA_DIRECTLY DEL MISMO HASH`.
+## 8. Mantenimiento
 
-## 7. Mantenimiento
+Después de cambiar estado, baseline o siguiente acción:
 
-Después de cambiar baseline o siguiente acción:
-
-1. actualizar el checkpoint canónico;
-2. actualizar plan, registry y contrato vivo cuando corresponda;
-3. registrar CAMBIOS, Claude, PENDIENTES, Academia y tracker;
-4. mantener detalles históricos en GitHub;
-5. conservar PR #7 draft/open hasta autorización expresa.
+1. actualizar este índice;
+2. actualizar checkpoint y plan;
+3. actualizar registry/contrato cuando corresponda;
+4. registrar CAMBIOS, Claude, PENDIENTES, Academia y tracker;
+5. reemplazar en Fuentes los archivos canónicos, sin duplicarlos;
+6. conservar PR #7 draft/open hasta autorización expresa.
