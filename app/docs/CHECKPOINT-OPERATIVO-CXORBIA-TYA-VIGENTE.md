@@ -8,7 +8,7 @@ Estado: `CORTE_0_POST_GATES_RERUN_PENDING_EVIDENCE`
 - Repo: `paulaosoriof86/demoCXOrbia`
 - Rama: `docs-tya-v6-v71-audit`
 - PR: `#7`, draft/open/no merge
-- HEAD de trabajo documentado: `6e36f2f2f9621d90390e9215d2f3bfa0efdceb15`
+- HEAD de trabajo documentado: `0196cfdd6bde8e0730db647717638f70949a95d9`
 - Prohibido: `main`, rama nueva, PR nuevo, nueva candidata o segundo empalme
 
 ## Runtime vigente
@@ -66,6 +66,14 @@ Commits principales del saneamiento:
 - `a86126144359dbf8ba7168f62774d0a817354ad8`
 - `39dc2fbb69323702ab0535f990eda983ee129c1f`
 - `6e36f2f2f9621d90390e9215d2f3bfa0efdceb15`
+
+Documentación actualizada:
+
+- `CAMBIOS-BACKEND-ADDENDUM-V159-PREFLIGHT-SEMANTICO-20260717.md` — `dd5454d0f6a8d2b1e0c62feaf5960888332b725c`.
+- `RESUMEN-PARA-CLAUDE-ADDENDUM-V159-PREFLIGHT-SEMANTICO-20260717.md` — `793d80110c324b3b2e8200e6322c470f819008ee`.
+- `PENDIENTES-PROTOTIPO-ADDENDUM-V159-PREFLIGHT-SEMANTICO-20260717.md` — `38d64bd9149b2905cf10ee19d5b2a9b9aa634581`.
+- `ACADEMIA-IMPACT-V159-EMPALME-DIRECTO-20260717.md` — `dd8e72850a9ee88bd35db91d9d262da5520a5245`.
+- `PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-V159-GO-20260717.md` — `0196cfdd6bde8e0730db647717638f70949a95d9`.
 
 No se modificaron módulos frontend ni se reabrió el empalme.
 
