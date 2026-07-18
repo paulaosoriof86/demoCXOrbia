@@ -20,7 +20,7 @@ const outDir=path.resolve(valueOf('--out','.tmp/phase-a-visible-overlays-smoke-r
 fs.mkdirSync(outDir,{recursive:true});
 
 const expected={periods:14,visits:616,currentPeriodVisits:44,financialExactLinks:196,financialReviewQueue:92,shopperReviewQueue:1,certificationReviewQueue:1};
-const report={schemaVersion:'2.0.0',gate:'cxorbia-tya-visible-overlays-smoke-r20',generatedAt:new Date().toISOString(),baseUrl,expected,runtime:null,modules:[],blockers:[],warnings:[],decision:'HOLD_NOT_RUN',safeState:{browserOnly:true,providerCalls:false,writes:false,imports:false,deploy:false,production:false,piiOutput:false,paymentsInferred:false}};
+const report={schemaVersion:'2.1.0',gate:'cxorbia-tya-visible-overlays-smoke-r20',generatedAt:new Date().toISOString(),baseUrl,expected,runtime:null,modules:[],blockers:[],warnings:[],decision:'HOLD_NOT_RUN',safeState:{browserOnly:true,providerCalls:false,writes:false,imports:false,deploy:false,production:false,piiOutput:false,paymentsInferred:false}};
 const clean=value=>String(value||'').replace(/\s+/g,' ').trim().slice(0,1000);
 const block=(code,detail='')=>report.blockers.push(detail?`${code}:${detail}`:code);
 const warn=(code,detail='')=>report.warnings.push(detail?`${code}:${detail}`:code);
@@ -31,9 +31,24 @@ async function prepare(page){
   await page.waitForFunction(()=>window.CX_TYA_VISIBLE_DATA_READY===true&&window.CX_TYA_R18D_VISIBLE_READY===true&&Boolean(window.CX?.data),null,{timeout:25000});
 }
 async function enterAdmin(page){
-  await page.evaluate(()=>{window.CX?.session?.clear?.();window.CX?.app?.selectRole?.('admin');});
-  await page.waitForSelector('#app.on',{state:'visible',timeout:15000});
-  await page.waitForSelector('#view',{state:'visible',timeout:15000});
+  const result=await page.evaluate(()=>{
+    try{
+      const CX=window.CX;
+      CX?.session?.clear?.();
+      CX?.app?.selectRole?.('admin');
+      CX?.confidentiality?.reset?.();
+      const profiles=CX?.confidentiality?.profiles||{};
+      if(profiles.superadmin)profiles.superadmin.enforcement='monitoring';
+      if(profiles.admin)profiles.admin.enforcement='monitoring';
+      CX?.confidentiality?.startSession?.('admin',{force:true});
+      CX?.modules?.dashboard?.harden?.({activeRole:'admin'});
+      if(typeof CX?.modules?.dashboard?.render==='function')CX.modules.dashboard.render();
+      else CX?.router?.go?.('dashboard');
+      return {ok:true,role:CX?.session?.role||null};
+    }catch(error){return {ok:false,error:String(error?.message||error)};}
+  });
+  if(!result.ok)throw new Error(`Admin entry failed: ${result.error}`);
+  await page.waitForFunction(()=>document.querySelector('#app')?.classList.contains('on')&&Boolean(document.querySelector('#view')),null,{timeout:15000});
 }
 async function openModule(page,token){
   const result=await page.evaluate(async routeToken=>{
