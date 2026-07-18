@@ -1,104 +1,125 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 Fecha: 2026-07-18  
-Estado: `HOLD_VISUAL_SEMANTIC_P0_PROVEN_NO_APPROBADO`
+Estado: `CORTE_0B_R20_IMPLEMENTED_PENDING_GATES_AND_VISUAL`
 
-## Estado operativo
+## 1. Repositorio y estado seguro
 
 - Repo: `paulaosoriof86/demoCXOrbia`
 - Rama viva: `docs-tya-v6-v71-audit`
 - PR: `#7`, draft/open/no merge
-- V159 auditada GO y empalmada.
-- Commit de empalme: `d47ea700f7e48a2b0ba31574a84b89c6a20f3449`.
-- Hosting DEV y smoke remoto técnico: PASS.
-- Validación visual de Paula: `NO APROBADO`.
-- P0 visual/semántico demostrado: sí.
+- V159 fue empalmada, pero la validación visual fue `NO APROBADA`.
 - V159 no es `ACTIVE_BASELINE`.
-- No se reabre empalme ni auditoría estructural; se abre corrección focalizada Corte 0B.
+- URL anterior se conserva únicamente como evidencia del fallo visual:
+  `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible`
+- Sin producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos.
 
-## URL de evidencia NO APROBADA
+## 2. P0 visual/semántico confirmado
 
-`https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible`
+- Cuestionario y submitido incorrectos en históricos.
+- KPI, fases y listados con derivaciones distintas.
+- Liquidaciones contaminadas por `v.estado`.
+- Asignadas/sin asignar/disponibles de julio no alineadas con shopper real de HR.
+- Shopper sin visitas elegibles.
+- Proyecto y periodo unidos en Shopper/Cliente.
+- Login no gobernado por perfil de tenant.
+- Cliente sin Academia visible.
+- Comparativo trimestral sin histórico real.
+- Manuales superficiales.
 
-La URL se conserva como evidencia del build que falló visualmente. No debe presentarse como baseline aprobada.
+## 3. Corte activo
 
-## P0 reproducibles
+`CORTE 0B — MOTOR CANÓNICO HISTÓRICO + TENANT/LOGIN`
 
-1. Mayo y junio: cuestionario pendiente y sin submitir no coinciden con HR histórica.
-2. KPI superiores, fases y listados inferiores no coinciden para el mismo periodo.
-3. Liquidaciones hereda `Pend. cuestionario` desde una clasificación incorrecta.
-4. Julio: asignadas/sin asignar/disponibles no refleja la operación real; Shopper no ve visitas elegibles.
-5. Shopper y Cliente unen proyecto+periodo y no ofrecen selectores separados por scope.
-6. Cliente no ve Academia aunque existen contenidos de rol Cliente.
-7. Comparativo trimestral no expone histórico mayo/junio.
-8. Manuales se muestran como cursos breves y no como documentos/instructivos profundos.
+El alcance ya no se limita a mayo, junio y julio. La regla se aplica a:
 
-## Causa raíz localizada
+1. todos los tabs/periodos detectados en la HR;
+2. como mínimo, todo el año vigente si una fuente anterior no puede leerse;
+3. cada periodo futuro sin agregar excepciones por mes.
 
-- `app/core/data.js` contiene facets/buckets canónicos.
-- `app/modules/dashboard.js` conserva cálculos duplicados directos por `v.estado` en flujo por fases y listados.
-- `app/core/liquidacion.js` deriva estados desde `v.estado`/`v.submit`, por lo que un mapping HR incorrecto contamina Finanzas.
-- La fuente actual es source-safe preview, no HR runtime live.
-- Tenant/login todavía usa configuración fragmentada/local y botones de rol hardcodeados.
+Mayo, junio y julio quedan como muestras obligatorias de regresión, no como lógica especial.
 
-Fuente completa:
+## 4. Implementado en este bloque
 
-`app/docs/VALIDACION-VISUAL-V159-NO-APROBADO-20260718.md`
+### Motor histórico R20
 
-## Responsabilidad
+- `tools/hr-source/tya-canonical-visit-state-r20.mjs`
+- `tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs` actualizado
+- `backend/contracts/phase-a-hr-canonical-visit-state-r20-v1.json`
 
-### ChatGPT/Codex/backend
+Dimensiones separadas:
 
-- mapping HR exacto;
-- motor canónico de estados;
-- estados explícitos de asignación, agenda, ejecución, cuestionario, submitido, liquidación y pago;
-- reconciliación KPI/fases/listados/Finanzas;
-- contrato tenant/login/roles/países/proyectos activos;
-- gates semánticos por visita.
+- `assignmentState`;
+- `schedulingState`;
+- `executionState`;
+- `questionnaireState`;
+- `submissionState`;
+- `liquidationState`;
+- `paymentState`;
+- `outOfRange`;
+- `reviewRequired`.
 
-### Claude/prototipo
+Reglas:
 
-- consumir el contrato sin recalcular negocio;
-- selectores proyecto/periodo por rol;
-- login con roles visibles configurables;
-- Academia Cliente;
-- manuales documentales profundos.
+- sin shopper real = sin asignar;
+- shopper sin fecha válida = pendiente de programar;
+- realizada sin cuestionario = pendiente de cuestionario;
+- cuestionario sin submitido = pendiente de submitido TyA;
+- submitido = ciclo operativo completado y candidato a liquidación;
+- submitido no equivale a liquidado ni pagado;
+- liquidación/pago requieren fuente financiera;
+- contradicciones de control/fechas/shopper pasan a revisión.
 
-## Corrección metodológica vigente
+### Binding source-safe
 
-Ante el P0 reproducible y autorización expresa de Paula, las futuras candidatas que toquen módulos críticos Phase A pasan por:
+- `tools/release/tya-source-safe-binding-build-r15g.mjs` actualizado.
+- Dashboard, filtros, Liquidaciones y comparativo reciben datos canónicos mediante adapter/overlay de build, sin modificar `app/modules` ni el core fuente.
+- Fases visibles se reconcilian desde facets canónicos.
+- Comparativo usa periodos históricos reales del snapshot.
+- `submitida` deja de aparecer como pendiente de cuestionario/submitido.
+- Liquidaciones muestran `Pend. pago · cruce financiero` cuando existe submitido sin pago confirmado.
 
-`AUDITORÍA → COMPOSITE TEMPORAL CON OVERLAYS → GATES SEMÁNTICOS → VISUALIZACIÓN PRE-EMPALME → APROBACIÓN → APPLY_DELTA_DIRECTLY DEL MISMO HASH → POST-GATES → FREEZE`
+### Tenant/login
 
-No se crea rama/PR nuevo, no se usa `main`, no se transporta ZIP archivo por archivo y no se pide acción técnica manual a Paula.
+- `backend/config/tya-tenant-runtime-profile.source-safe.json`
+- Roles visibles TyA: `admin`, `ops`, `shopper`.
+- Cliente, coordinador y aliado ocultos en login TyA mientras no se habiliten.
+- Países: GT/HN.
+- Banderas derivadas del tenant o proyectos activos, no del catálogo global.
+- Proyecto y periodo definidos como contextos separados.
+- Persistencia real todavía pendiente del backend limpio/Auth.
 
-## Siguiente bloque exacto
+### Gates
 
-`CORTE 0B — MOTOR CANÓNICO DE ESTADOS + CONFIGURACIÓN TENANT/LOGIN`
+- `tools/qa/tya-canonical-history-reconciliation-r20-gate.mjs`
+- `tools/qa/tya-source-semantics-r15g-gate.mjs` elevado a R20.
 
-1. Tabla de verdad HR mayo/junio/julio.
-2. Mapping source-safe por campos explícitos.
-3. Facets canónicos únicos consumidos por todos los módulos.
-4. Corrección de liquidaciones/pagos.
-5. Contrato tenant/login/roles/países/proyectos activos.
-6. Gates de reconciliación cruzada.
-7. Hosting DEV corregido y nueva validación visual.
+Los gates validan todos los periodos detectados, progresión monotónica, facets, resúmenes históricos, conflicto shopper/control, separación financiera, tenant y roles de login.
 
-## Documentación creada
+## 5. Pendiente real antes de nueva visualización
 
-- `app/docs/VALIDACION-VISUAL-V159-NO-APROBADO-20260718.md`
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-V159-VISUAL-NO-APROBADO-20260718.md`
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V159-VISUAL-NO-APROBADO-20260718.md`
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V159-VISUAL-NO-APROBADO-20260718.md`
+1. Ejecutar builder HR vivo R20 sobre el workbook vigente.
+2. Ejecutar gate histórico y gate browser R20.
+3. Revisar `reviewRequired`, especialmente fechas inválidas o columnas ambiguas.
+4. Confirmar conteos por todos los periodos y por 2026.
+5. Construir Hosting DEV corregido únicamente con autorización/gate de Hosting DEV.
+6. Validar visualmente Admin, Shopper, Cliente y Academia.
+7. Solo con `APROBADO` congelar Corte 0B.
 
-## Clasificación
+## 6. Metodología futura de empalme
 
-- Reusable CXOrbia: motor canónico, tenant/login configurable, proyectos activos, gate visual pre-empalme.
-- Exclusivo TyA/Cinépolis: mapping HR y verdad mayo/junio/julio.
-- Claude/prototipo: render, selectores, login, Academia y manuales.
-- Academia: rutas por rol y manuales documentales profundos.
-- Sin impacto Claude: adapters, contratos, gates y validadores.
+`AUDITORÍA → COMPOSITE DEL MISMO HASH → GATES SEMÁNTICOS → VISUALIZACIÓN PRE-EMPALME → APROBACIÓN → APPLY_DELTA_DIRECTLY → POST-GATES → FREEZE`
 
-## Estado seguro
+La rama viva no recibe futuras candidatas antes de la aprobación visual del composite.
 
-Hosting DEV conservado como evidencia. Sin merge, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos. Sin base vieja conectada ni datos sensibles crudos nuevos.
+## 7. Claude/prototipo y Academia
+
+Claude recibe únicamente ajustes localizados que todavía requieran modificación de módulos fuente: selectores por rol, Academia Cliente y manuales documentales. No recibe la lógica HR para reinterpretarla.
+
+Academia debe distinguir Manual de Curso y cubrir la operación completa, errores, validaciones, proyecto, periodo, estados y pagos.
+
+## 8. Siguiente bloque exacto
+
+`CORTE 0B.2 — EJECUCIÓN DE BUILDER/GATES R20 + REVISIÓN DE CONFLICTOS DE TODA LA HR`
+
+No iniciar Corte 1 ni producción antes de completar y aprobar este bloque.
