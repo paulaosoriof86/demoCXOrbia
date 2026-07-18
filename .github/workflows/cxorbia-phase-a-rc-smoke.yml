@@ -1,39 +1,16 @@
-name: CXOrbia Phase A RC Smoke Gate
+name: CXOrbia Historical V110 RC Diagnostic
 
+# Historical diagnostic only. V110 is superseded by the V159 registry/build-lock,
+# R15G/R18D semantic gates and the exact Hosting DEV lane. This workflow must not
+# run automatically or participate in the current release decision.
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - release/cxorbia-tya-rc-20260630
-    paths:
-      - 'app/index.html'
-      - 'app/app.js'
-      - 'app/core/**'
-      - 'app/modules/**'
-      - 'app/styles/**'
-      - 'app/manifest.webmanifest'
-      - 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json'
-      - 'tools/release/tya-source-lock-v110-union-verify.mjs'
-      - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
-      - 'tools/migration/tya-phase-a-rc-smoke-gate.mjs'
-      - '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml'
-      - '.github/workflows/cxorbia-phase-a-rc-smoke.yml'
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - 'app/index.html'
-      - 'app/app.js'
-      - 'app/core/**'
-      - 'app/modules/**'
-      - 'app/styles/**'
-      - 'app/manifest.webmanifest'
-      - 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json'
-      - 'tools/release/tya-source-lock-v110-union-verify.mjs'
-      - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
-      - 'tools/migration/tya-phase-a-rc-smoke-gate.mjs'
-      - '.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml'
-      - '.github/workflows/cxorbia-phase-a-rc-smoke.yml'
+    inputs:
+      confirm_historical_diagnostic:
+        description: 'Type RUN_HISTORICAL_V110_DIAGNOSTIC to generate a non-blocking historical report.'
+        required: true
+        default: 'HOLD'
+        type: string
 
 permissions:
   contents: read
@@ -43,8 +20,9 @@ defaults:
     shell: bash
 
 jobs:
-  phase-a-rc-smoke:
-    name: Phase A RC smoke gate
+  historical-v110-rc-diagnostic:
+    name: Historical V110 RC diagnostic · non-blocking
+    if: ${{ inputs.confirm_historical_diagnostic == 'RUN_HISTORICAL_V110_DIAGNOSTIC' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -57,15 +35,38 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Run Phase A RC smoke gate
+      - name: Confirm V110 is not the active runtime
         run: |
-          node tools/migration/tya-phase-a-rc-smoke-gate.mjs --out .tmp/phase-a-rc-smoke
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const registry = JSON.parse(fs.readFileSync('backend/contracts/prototype-baseline-registry-v1.json','utf8'));
+          if (registry.currentRuntime?.version === 'V110') throw new Error('V110 unexpectedly became current runtime.');
+          console.log(JSON.stringify({
+            ok:true,
+            decision:'PASS_V110_DIAGNOSTIC_IS_HISTORICAL_ONLY',
+            currentRuntime:registry.currentRuntime?.version,
+            currentStatus:registry.currentRuntime?.status,
+            releaseGate:false
+          },null,2));
+          NODE
 
-      - name: Upload smoke report
-        if: always()
+      - name: Generate optional historical report
+        continue-on-error: true
+        run: |
+          mkdir -p .tmp/phase-a-rc-smoke
+          node tools/migration/tya-phase-a-rc-smoke-gate.mjs --out .tmp/phase-a-rc-smoke || true
+          cat > .tmp/phase-a-rc-smoke/HISTORICAL-NOT-A-GATE.md <<'EOF'
+          # Historical V110 diagnostic
+
+          This output is preserved only for historical comparison. It is not a release gate and cannot block V159.
+          Current authority: prototype baseline registry, V159 build-lock, R15G/R18D gates, Hosting DEV evidence and Paula visual validation.
+          EOF
+
+      - name: Upload historical diagnostic
         uses: actions/upload-artifact@v4
         with:
-          name: phase-a-rc-smoke-report
+          name: historical-v110-rc-diagnostic
           path: .tmp/phase-a-rc-smoke
           if-no-files-found: error
           retention-days: 14
