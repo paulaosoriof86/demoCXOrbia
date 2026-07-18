@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0",
+  "version": "1.5.0",
   "updatedAt": "2026-07-18",
   "repository": "paulaosoriof86/demoCXOrbia",
   "integrationBranch": "docs-tya-v6-v71-audit",
@@ -61,7 +61,7 @@
   "currentRuntime": {
     "version": "V159",
     "runtimeIdentity": "V159 empalmada con preservaciones TyA",
-    "status": "empalmed_pending_post_gates",
+    "status": "hosting_dev_remote_smoke_pass_pending_visual",
     "sourceZipName": "Prototype development request CXOrbia V159.zip",
     "sourceZipSha256": "d9d9e767bf6d9a26e0e084deed5d327d801620c36aee1a9bb3cc0c3db0e54ce2",
     "manifestFile": "app/docs/MANIFEST-V159-EMPALME-DIRECTO-20260717.json",
@@ -73,9 +73,30 @@
     "accepted": true,
     "empalmed": true,
     "active": false,
-    "postGatesPassed": false,
+    "postGatesPassed": true,
+    "hostingDevPassed": true,
+    "remoteSmokePassed": true,
     "visualValidated": false,
-    "production": false
+    "production": false,
+    "hostingDevEvidence": {
+      "workflowRun": 29626385151,
+      "workflowCommit": "8cf166eea6a0ebd0b2c6221925671d04865999f0",
+      "buildLabel": "v159-r18d-source-safe-20260717-dev",
+      "devUrl": "https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible",
+      "hostingVersion": "projects/87461567267/sites/cxorbia-backend-dev/versions/c8add179fb326b6a",
+      "artifactId": 8430697082,
+      "artifactDigest": "sha256:fbe071cf34561df95c6e4cffa393f3c6851d742eb8f00776c28a3354e4365692",
+      "localGates": "PASS",
+      "remoteSourceSemantics": "PASS_WITH_WARNING_R15G_TYA_SOURCE_SEMANTICS",
+      "remoteRoleSmoke": "PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE",
+      "remoteProjectPeriodKpiHistory": "PASS_TYA_PROJECT_PERIOD_KPI_HISTORY",
+      "remoteVisibleOverlays": "PASS_WITH_REVIEW_R18D_VISIBLE_OVERLAYS",
+      "blockers": 0,
+      "shopperSourceCount": 215,
+      "shopperReference": 216,
+      "shopperIdentitiesInvented": 0,
+      "paidConfirmedOrInferred": 0
+    }
   },
   "previousBaseline": {
     "version": "V110",
@@ -89,19 +110,22 @@
     "sourceZipSha256": "d9d9e767bf6d9a26e0e084deed5d327d801620c36aee1a9bb3cc0c3db0e54ce2",
     "manifestFile": "app/docs/MANIFEST-V159-EMPALME-DIRECTO-20260717.json",
     "aggregateSha256": "8f85f7c9a40d42672808294e912f5af74d8426dccadbaa43c51f70e048072226",
-    "status": "empalmed_pending_post_gates",
+    "status": "hosting_dev_remote_smoke_pass_pending_visual",
     "accepted": true,
     "empalmed": true,
     "active": false,
-    "postGatesPassed": false,
+    "postGatesPassed": true,
+    "hostingDevPassed": true,
+    "remoteSmokePassed": true,
     "visualValidated": false,
-    "gateDecision": "TECHNICAL_PASS_PENDING_VISUAL",
+    "gateDecision": "HOSTING_DEV_AND_REMOTE_SMOKE_PASS_PENDING_VISUAL",
     "nextRequiredState": "active_baseline_frozen"
   },
   "allowedCandidateStatuses": [
     "pending_audit",
     "rejected_requires_correction",
     "empalmed_pending_post_gates",
+    "hosting_dev_remote_smoke_pass_pending_visual",
     "active_baseline_frozen"
   ],
   "promotionRule": {
@@ -117,6 +141,8 @@
     "freezeSequence": [
       "post_empalme_semantic_gates_pass",
       "exact_runtime_browser_smoke_pass",
+      "hosting_dev_same_build_pass",
+      "remote_smoke_same_build_pass",
       "human_visual_validation",
       "update_active_baseline_registry"
     ],
@@ -137,6 +163,6 @@
       "two_active_baselines",
       "hybrid_runtime_unregistered_overlay"
     ],
-    "rollback": "The last visually frozen baseline remains the rollback reference until the empalmed runtime passes post-gates and visual freeze."
+    "rollback": "V131 remains the rollback reference while V159 is deployed and remotely validated but still pending Paula's visual freeze."
   }
 }
