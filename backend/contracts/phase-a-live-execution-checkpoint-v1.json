@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0",
+  "version": "3.1.0",
   "updatedAt": "2026-07-18",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -15,7 +15,7 @@
   },
   "currentRuntime": {
     "version": "V159",
-    "status": "empalmed_pending_post_gates",
+    "status": "hosting_dev_remote_smoke_pass_pending_visual",
     "sourceZipSha256": "d9d9e767bf6d9a26e0e084deed5d327d801620c36aee1a9bb3cc0c3db0e54ce2",
     "manifestFile": "app/docs/MANIFEST-V159-EMPALME-DIRECTO-20260717.json",
     "aggregateSha256": "8f85f7c9a40d42672808294e912f5af74d8426dccadbaa43c51f70e048072226",
@@ -23,16 +23,22 @@
     "accepted": true,
     "empalmed": true,
     "active": false,
-    "postGatesPassed": false,
+    "postGatesPassed": true,
+    "hostingDevPassed": true,
+    "remoteSmokePassed": true,
     "visualValidated": false,
     "production": false
   },
   "candidate": {
     "version": "V159",
-    "status": "empalmed_pending_post_gates",
+    "status": "hosting_dev_remote_smoke_pass_pending_visual",
     "accepted": true,
     "empalmed": true,
     "active": false,
+    "postGatesPassed": true,
+    "hostingDevPassed": true,
+    "remoteSmokePassed": true,
+    "visualValidated": false,
     "nextRequiredState": "active_baseline_frozen"
   },
   "promotionPolicy": {
@@ -41,6 +47,7 @@
       "pending_audit",
       "rejected_requires_correction",
       "empalmed_pending_post_gates",
+      "hosting_dev_remote_smoke_pass_pending_visual",
       "active_baseline_frozen"
     ],
     "empalmeRequired": [
@@ -55,6 +62,7 @@
       "post_empalme_semantic_gates",
       "exact_runtime_browser_smoke",
       "hosting_dev_same_build",
+      "remote_smoke_same_build",
       "human_visual_validation",
       "active_baseline_registry_update"
     ],
@@ -66,17 +74,15 @@
       "hybrid_runtime_unregistered_overlay"
     ]
   },
-  "objective": "Close Corte 0 on the already empalmed V159 through exact runtime gates, Hosting DEV, remote smoke and visual freeze, then continue the operational Phase A cuts without reopening completed backend work.",
+  "objective": "Close Corte 0 on V159 by completing Paula's visual validation of the exact build already deployed and remotely validated, then freeze it without reopening audit, empalme or completed backend work.",
   "activeBlock": {
     "id": "CORTE_0_V159_POST_EMPALME",
-    "status": "in_progress_pending_runtime_and_visual",
+    "status": "hosting_dev_and_remote_smoke_pass_pending_visual",
     "allowed": [
-      "run_targeted_post_empalme_gates",
-      "apply_focalized_backend_or_gate_correction_only_when_evidenced",
-      "deploy_exact_v159_to_hosting_dev_under_existing_authorization",
-      "run_remote_smoke",
-      "request_visual_validation",
-      "freeze_v159_only_after_pass"
+      "perform_human_visual_validation_on_exact_dev_url",
+      "classify_any_finding_by_layer_and_severity",
+      "apply_only_focalized_fix_when_reproducible",
+      "freeze_v159_after_visual_approval"
     ],
     "forbidden": [
       "reaudit_v159",
@@ -84,9 +90,17 @@
       "second_empalme",
       "new_branch_or_pr",
       "frontend_redesign_from_backend",
+      "repeat_hosting_deploy_without_new_evidence",
       "production_without_gate",
       "real_imports_or_provider_writes"
     ]
+  },
+  "nextExactAction": {
+    "id": "PAULA_VISUAL_VALIDATION_V159_DEV",
+    "url": "https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible",
+    "expectedResponse": "APROBADO or a concise reproducible finding with role, route, action, expected and observed result",
+    "freezeOnApproval": true,
+    "productionAuthorization": false
   },
   "plan": [
     "CORTE_0_V159_POST_EMPALME",
@@ -106,14 +120,32 @@
     "manifestBuildLockVerifierPresent": true,
     "structuralPreflight": "PASS",
     "staticSemanticPreflight": "PASS",
+    "localSourceSemantics": "PASS_WITH_WARNING_R15G_TYA_SOURCE_SEMANTICS",
+    "localRoleSmoke": "PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE",
+    "localProjectPeriodKpiHistory": "PASS_TYA_PROJECT_PERIOD_KPI_HISTORY",
+    "localVisibleOverlays": "PASS_WITH_REVIEW_R18D_VISIBLE_OVERLAYS",
+    "hostingDev": "PASS",
+    "remoteSourceSemantics": "PASS_WITH_WARNING_R15G_TYA_SOURCE_SEMANTICS",
+    "remoteRoleSmoke": "PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE",
+    "remoteProjectPeriodKpiHistory": "PASS_TYA_PROJECT_PERIOD_KPI_HISTORY",
+    "remoteVisibleOverlays": "PASS_WITH_REVIEW_R18D_VISIBLE_OVERLAYS",
+    "hostingDevWorkflowRun": 29626385151,
+    "hostingDevWorkflowCommit": "8cf166eea6a0ebd0b2c6221925671d04865999f0",
+    "hostingDevVersion": "projects/87461567267/sites/cxorbia-backend-dev/versions/c8add179fb326b6a",
+    "hostingDevArtifactId": 8430697082,
+    "hostingDevArtifactDigest": "sha256:fbe071cf34561df95c6e4cffa393f3c6851d742eb8f00776c28a3354e4365692",
     "p0Proven": false,
     "hrPeriods": 14,
     "hrVisits": 616,
     "visitsPerActivePeriod": 44,
-    "projectPeriodSeparationPrepared": true,
+    "projectPeriodSeparation": "PASS",
+    "juneExecutedPaymentControlPending": "PASS_WITH_ZERO_PAYMENT_CONFIRMATION",
+    "shopperSourceCount": 215,
+    "shopperReference": 216,
+    "shopperReviewAuthority": "R11D",
     "shopperIdentitiesInvented": 0,
     "paidConfirmedOrInferred": 0,
-    "runtimeVisualValidation": "PENDING"
+    "runtimeVisualValidation": "PENDING_PAULA"
   },
   "readPolicy": {
     "normalIteration": [
@@ -132,7 +164,9 @@
       "auth_readiness",
       "importers",
       "review_queue",
-      "rollback_contracts"
+      "rollback_contracts",
+      "hosting_dev_deploy",
+      "remote_smoke"
     ]
   },
   "mandatoryCloseSections": [
@@ -157,8 +191,9 @@
     "Sin impacto Claude"
   ],
   "gates": {
-    "hostingDev": "authorized_pending_execution",
-    "browserSmoke": "pending",
+    "hostingDev": "pass",
+    "browserSmoke": "pass",
+    "remoteSmoke": "pass",
     "visualValidation": "pending",
     "activeBaselineFreeze": "pending",
     "production": "hold",
