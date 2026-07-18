@@ -1,13 +1,13 @@
 {
-  "version": "1.3.2",
-  "updatedAt": "2026-07-16",
+  "version": "1.4.0",
+  "updatedAt": "2026-07-18",
   "repository": "paulaosoriof86/demoCXOrbia",
   "integrationBranch": "docs-tya-v6-v71-audit",
-  "invariant": "acceptedCandidateVersion == empalmedVersion == activeBaselineVersion",
+  "invariant": "empalmedRuntimeVersion == candidateVersion; activeBaselineVersion advances only after postGatesAndVisualFreeze",
   "activeBaseline": {
     "version": "V131",
     "runtimeIdentity": "V131 + R18D",
-    "status": "accepted_and_empalmed",
+    "status": "active_baseline_frozen",
     "baseSourceZipSha256": "19424b2b709a4bff457454bbeff6abe47cd1c52c0f0388fd1a380008c8adc740",
     "sourceZipSha256": "788a32a6d44e0686b0627a47e4e4e038fdbe7d3befd3dde2651ff542706918bb",
     "manifestFile": "docs/MANIFEST-V131-R18D-HOTFIX-R1.json",
@@ -17,6 +17,9 @@
     "validationHead": "bd8636f8f1899115b19cb13e875626c1532e541b",
     "accepted": true,
     "empalmed": true,
+    "active": true,
+    "visualValidated": true,
+    "rollbackReference": true,
     "hotfixes": [
       {
         "id": "R18D_FINANCE_PERIOD_ADAPTER_HF1",
@@ -43,7 +46,7 @@
         "evidence": {
           "periods": 14,
           "visits": 616,
-          "shoppers": 216,
+          "shoppersReference": 216,
           "visitsPerActivePeriod": 44,
           "numericDateSignals": 0,
           "submittedAsLiquidated": 0,
@@ -55,6 +58,25 @@
       }
     ]
   },
+  "currentRuntime": {
+    "version": "V159",
+    "runtimeIdentity": "V159 empalmada con preservaciones TyA",
+    "status": "empalmed_pending_post_gates",
+    "sourceZipName": "Prototype development request CXOrbia V159.zip",
+    "sourceZipSha256": "d9d9e767bf6d9a26e0e084deed5d327d801620c36aee1a9bb3cc0c3db0e54ce2",
+    "manifestFile": "app/docs/MANIFEST-V159-EMPALME-DIRECTO-20260717.json",
+    "aggregateSha256": "8f85f7c9a40d42672808294e912f5af74d8426dccadbaa43c51f70e048072226",
+    "fileCount": 174,
+    "empalmeCommit": "d47ea700f7e48a2b0ba31574a84b89c6a20f3449",
+    "headBefore": "bf9c8f27500b26d547199d159659b58a42434811",
+    "parentBaselineVersion": "V131",
+    "accepted": true,
+    "empalmed": true,
+    "active": false,
+    "postGatesPassed": false,
+    "visualValidated": false,
+    "production": false
+  },
   "previousBaseline": {
     "version": "V110",
     "status": "superseded_by_v131",
@@ -63,37 +85,40 @@
     "aggregateSha256": "b590f500a67f28fb911698f7a3c457eddd31ddad794efdfb760587630f7037b3"
   },
   "candidate": {
-    "version": "V156",
-    "sourceZipSha256": "8a8672b6403b0eccdd1406ffeaa1942546d100b3c99615549000fd519be65933",
-    "declaredManifestAggregateSha256": "0262675769bf613c933e0872484bd27d38c4adabe28b335f697ae456cc5c0305",
-    "status": "pending_audit",
-    "accepted": false,
-    "empalmed": false,
-    "gateDecision": "HOLD_COMPLETE_V156_SOURCE_UNAVAILABLE_PENDING_REATTACHMENT",
-    "failures": [
-      "previous_promotion_workflow_excluded_runtime_files",
-      "candidate_not_materialized_on_integration_branch",
-      "available_transport_payload_truncated_and_corrupt",
-      "complete_v156_zip_not_found_in_repo_refs_objects_or_actions_artifacts"
-    ],
-    "nextExpectedVersion": "V156"
+    "version": "V159",
+    "sourceZipSha256": "d9d9e767bf6d9a26e0e084deed5d327d801620c36aee1a9bb3cc0c3db0e54ce2",
+    "manifestFile": "app/docs/MANIFEST-V159-EMPALME-DIRECTO-20260717.json",
+    "aggregateSha256": "8f85f7c9a40d42672808294e912f5af74d8426dccadbaa43c51f70e048072226",
+    "status": "empalmed_pending_post_gates",
+    "accepted": true,
+    "empalmed": true,
+    "active": false,
+    "postGatesPassed": false,
+    "visualValidated": false,
+    "gateDecision": "TECHNICAL_PASS_PENDING_VISUAL",
+    "nextRequiredState": "active_baseline_frozen"
   },
   "allowedCandidateStatuses": [
     "pending_audit",
     "rejected_requires_correction",
-    "accepted_and_empalmed"
+    "empalmed_pending_post_gates",
+    "active_baseline_frozen"
   ],
   "promotionRule": {
     "passRequired": true,
-    "sameBlock": [
+    "empalmeSequence": [
       "audit_pass",
       "materialize_complete_candidate_runtime_tree",
       "apply_explicit_backend_overlays",
-      "project_period_kpi_history_gate_pass",
-      "source_safe_role_smoke_pass",
       "update_source_lock",
-      "update_active_baseline_registry",
+      "update_current_runtime_registry",
       "fast_forward_integration_branch"
+    ],
+    "freezeSequence": [
+      "post_empalme_semantic_gates_pass",
+      "exact_runtime_browser_smoke_pass",
+      "human_visual_validation",
+      "update_active_baseline_registry"
     ],
     "runtimeCandidateOwnedPaths": [
       "app/index.html",
@@ -104,14 +129,14 @@
       "app/sw.js"
     ],
     "forbidSilentRuntimeExclusions": true,
-    "hotfixException": "A focalized overlay may survive only when it is reapplied after the complete candidate runtime tree, independently validated, recorded in the final manifest and included in the same active source lock.",
-    "forbiddenIntermediateStates": [
+    "hotfixException": "A focalized overlay may survive only when it is reapplied after the complete candidate runtime tree, independently validated, recorded in the final manifest and included in the same source lock.",
+    "forbiddenStates": [
       "accepted_not_empalmed",
-      "empalmed_not_baseline",
-      "continuity_baseline_not_empalmed",
+      "active_without_post_gates",
+      "active_without_visual_validation",
       "two_active_baselines",
       "hybrid_runtime_unregistered_overlay"
     ],
-    "rollback": "previous accepted baseline remains immutable and is the only rollback reference"
+    "rollback": "The last visually frozen baseline remains the rollback reference until the empalmed runtime passes post-gates and visual freeze."
   }
 }
