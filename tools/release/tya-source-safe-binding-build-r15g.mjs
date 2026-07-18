@@ -77,11 +77,7 @@ if(code.includes(shopperAnchor)&&!code.includes('R20_CANONICAL_VISIT_STATE_BINDI
   };
   CX.data.visitContract=function(v){const f=CX.data.visitFacets(v);return Object.assign({id:v&&v.id||null},f,{currentAction:v&&v.operationalState||null,reviewRequired:v&&v.reviewRequired===true,reviewReasons:Array.isArray(v&&v.reviewReasons)?v.reviewReasons:[]});};
   CX.data.periodOperationalSummary=Array.isArray(snapshot.periodOperationalSummary)?snapshot.periodOperationalSummary:[];
-  CX.data.periodKpis=function(periodRef){
-    const key=String(periodRef||'').replace(/^cinepolis-/,'');
-    const row=this.periodOperationalSummary.find(item=>item.periodKey===key);
-    return row?JSON.parse(JSON.stringify(row)):null;
-  };
+  CX.data.periodKpis=function(periodRef){const key=String(periodRef||'').replace(/^cinepolis-/,'');const row=this.periodOperationalSummary.find(item=>item.periodKey===key);return row?JSON.parse(JSON.stringify(row)):null;};
   CX.data.recentPeriodKpis=function(limit){return this.periodOperationalSummary.slice(-Math.max(1,Number(limit)||3)).map(item=>JSON.parse(JSON.stringify(item)));};
   function applyR20RuntimeOverrides(){
     if(CX.liq){
@@ -99,8 +95,82 @@ if(code.includes(shopperAnchor)&&!code.includes('R20_CANONICAL_VISIT_STATE_BINDI
       login.querySelectorAll('[data-role]').forEach(el=>{el.style.display=allowed.has(el.dataset.role)?'':'none';});
       const alt=login.querySelector('.role-alt[data-role="ops"]');if(alt){alt.textContent='👥 Operativo';alt.title='Acceso operativo autorizado para este tenant';}
     };
-    setTimeout(applyLoginVisibility,0);
-    const login=document.getElementById('login');if(login&&window.MutationObserver)new MutationObserver(applyLoginVisibility).observe(login,{childList:true,subtree:true});
+    const pct=(n,d)=>d?Math.round(n/d*100):0;
+    const setText=(node,value)=>{const text=String(value);if(node&&node.textContent!==text)node.textContent=text;};
+    const reconcilePhaseCells=()=>{
+      const title=[...document.querySelectorAll('h1,h2,.page-title')].find(el=>String(el.textContent||'').includes('Dashboard Operativo'));
+      if(!title)return;
+      const pool=typeof CX.data.visitas==='function'?CX.data.visitas():[];
+      const countries=[...new Set(pool.map(v=>v.pais||v.country).filter(Boolean))];
+      for(const country of countries){
+        const rows=pool.filter(v=>(v.pais||v.country)===country);
+        const total=rows.length;
+        const count=fn=>rows.filter(fn).length;
+        const values={
+          total:total,
+          asign:count(v=>CX.data.visitFacets(v).assigned),
+          agend:count(v=>CX.data.visitFacets(v).scheduled),
+          sinagend:count(v=>{const f=CX.data.visitFacets(v);return f.assigned&&!f.scheduled&&!f.realized&&!f.cancelled;}),
+          sinasign:count(v=>{const f=CX.data.visitFacets(v);return !f.assigned&&!f.realized&&!f.cancelled;}),
+          real:count(v=>CX.data.visitFacets(v).realized),
+          cuest:count(v=>CX.data.visitFacets(v).questionnaire),
+          submit:count(v=>CX.data.visitFacets(v).submitted),
+          liq:count(v=>CX.data.visitFacets(v).liquidationConfirmed)
+        };
+        for(const key of Object.keys(values)){
+          const cell=document.querySelector('[data-fase="'+country+'|'+key+'"]');if(!cell)continue;
+          const divs=cell.querySelectorAll(':scope > div');
+          setText(divs[0],values[key]);
+          if(divs[1]){const label=String(divs[1].textContent||'').split('·')[0].trim();setText(divs[1],label+' · '+(key==='total'?100:pct(values[key],total))+'%');}
+          const bar=cell.querySelector('.bar i');if(bar){const width=(key==='total'?100:pct(values[key],total))+'%';if(bar.style.width!==width)bar.style.width=width;}
+        }
+      }
+    };
+    const isoDays=(a,b)=>{if(!a||!b)return null;const x=new Date(a+'T12:00:00Z'),y=new Date(b+'T12:00:00Z');if(Number.isNaN(x.getTime())||Number.isNaN(y.getTime()))return null;return Math.round((y-x)/86400000);};
+    const periodStats=key=>{
+      const rows=(CX.data._visitas||[]).filter(v=>v.periodKey===key);
+      const total=rows.length||1;
+      const realized=rows.filter(v=>CX.data.visitFacets(v).realized).length;
+      const assigned=rows.filter(v=>CX.data.visitFacets(v).assigned).length;
+      const pairs=rows.map(v=>isoDays(v.realizada,v.submittedAt)).filter(v=>v!=null&&v>=0);
+      const questionnairePairs=rows.map(v=>isoDays(v.realizada,v.cuestFecha)).filter(v=>v!=null&&v>=0);
+      const branches=new Set(rows.map(v=>v.sucursal).filter(Boolean));
+      const realizedBranches=new Set(rows.filter(v=>CX.data.visitFacets(v).realized).map(v=>v.sucursal).filter(Boolean));
+      return {compliance:pct(realized,total),days:pairs.length?pairs.reduce((a,b)=>a+b,0)/pairs.length:null,realized,questionnaireOnTime:questionnairePairs.length?pct(questionnairePairs.filter(v=>v<=2).length,questionnairePairs.length):null,coverage:branches.size?pct(realizedBranches.size,branches.size):pct(assigned,total)};
+    };
+    const reconcileQuarter=()=>{
+      const heading=[...document.querySelectorAll('.card-t')].find(el=>String(el.textContent||'').includes('Comparativo último trimestre'));
+      if(!heading)return;
+      const table=heading.closest('.card')?.querySelector('table');if(!table)return;
+      const periodRows=(snapshot.periods||[]).slice().sort((a,b)=>String(a.key).localeCompare(String(b.key))).slice(-3);
+      if(periodRows.length<1)return;
+      const headers=table.querySelectorAll('thead th');
+      periodRows.forEach((p,i)=>{if(headers[i+1])setText(headers[i+1],String(p.label||p.key).replace(/\s+20\d{2}$/,''));});
+      const stats=periodRows.map(p=>periodStats(p.key));
+      const valueFor=(name,s)=>{
+        if(name==='% Cumplimiento')return s.compliance+'%';
+        if(name==='Días Real→Submit')return s.days==null?'—':s.days.toFixed(2)+'d';
+        if(name==='Visitas realizadas')return String(s.realized);
+        if(name==='% Cuestionarios a tiempo')return s.questionnaireOnTime==null?'—':s.questionnaireOnTime+'%';
+        if(name==='Cobertura de sucursales')return s.coverage+'%';
+        return '—';
+      };
+      table.querySelectorAll('tbody tr').forEach(row=>{
+        const cells=row.querySelectorAll('td');if(cells.length<5)return;
+        const name=String(cells[0].textContent||'').trim();
+        periodRows.forEach((p,i)=>setText(cells[i+1],valueFor(name,stats[i])));
+        const numeric=stats.map(s=>name==='% Cumplimiento'?s.compliance:name==='Visitas realizadas'?s.realized:name==='Cobertura de sucursales'?s.coverage:name==='% Cuestionarios a tiempo'?s.questionnaireOnTime:name==='Días Real→Submit'?s.days:null);
+        const prev=numeric[numeric.length-2],last=numeric[numeric.length-1];
+        setText(cells[cells.length-1],prev==null||last==null?'sin fuente':((last-prev)>=0?'▲ +':'▼ ')+Math.abs(Number((last-prev).toFixed(2))));
+      });
+    };
+    let queued=false;
+    const reconcile=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;applyLoginVisibility();reconcilePhaseCells();reconcileQuarter();});};
+    setTimeout(reconcile,0);
+    const view=document.getElementById('view');if(view&&window.MutationObserver)new MutationObserver(reconcile).observe(view,{childList:true,subtree:true});
+    const login=document.getElementById('login');if(login&&window.MutationObserver)new MutationObserver(reconcile).observe(login,{childList:true,subtree:true});
+    window.addEventListener('cx:period-change',reconcile);
+    window.addEventListener('cx:project-change',reconcile);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyR20RuntimeOverrides);else applyR20RuntimeOverrides();`);
 }
@@ -112,6 +182,8 @@ const invariants={
   visiblePeriod:code.includes('currentPeriodId:CX.data.currentPeriodId,'),
   shopperReference:code.includes("dataLevel:'protected_reference'")&&code.includes('perfilCompleto:false')&&code.includes('visitas:undefined'),
   canonicalVisitState:code.includes('R20_CANONICAL_VISIT_STATE_BINDING')&&code.includes('CX.data.visitBucketFns'),
+  historicalComparison:code.includes('reconcileQuarter')&&code.includes('periodStats'),
+  phaseReconciliation:code.includes('reconcilePhaseCells'),
   tenantLoginProfile:code.includes("visibleLoginRoles:['admin','ops','shopper']"),
   financialSeparation:code.includes("return 'pendiente_pago'"),
   sourceSafe:code.includes('runtimeSyncActive:false')
@@ -122,6 +194,6 @@ if(/CX\.data\.currentProjectId\s*=\s*latest\s*&&\s*latest\.id/.test(code)) fail(
 
 fs.writeFileSync(adapterFile,code,'utf8');
 fs.mkdirSync(outDir,{recursive:true});
-const report={schemaVersion:'2.0.0',decision:'PASS_R20_CANONICAL_HISTORY_TENANT_LOGIN_BINDING',adapterFile:path.relative(process.cwd(),adapterFile).replaceAll('\\','/'),invariants,historyScope:'all_detected_hr_periods',shopperDataLevelPolicy:{explicitDeclarationPrecedence:true,protectedReferenceActive:false,historicalVisitCountVisibleAsOperationalFact:false,adapterRunsAfterShopperStore:true},safeState:{writes:false,imports:false,deploy:false,production:false,providers:false,payments:false,frontendModulesModified:false,coreFilesModified:false}};
+const report={schemaVersion:'2.1.0',decision:'PASS_R20_CANONICAL_HISTORY_TENANT_LOGIN_VISIBLE_RECONCILIATION',adapterFile:path.relative(process.cwd(),adapterFile).replaceAll('\\','/'),invariants,historyScope:'all_detected_hr_periods',shopperDataLevelPolicy:{explicitDeclarationPrecedence:true,protectedReferenceActive:false,historicalVisitCountVisibleAsOperationalFact:false,adapterRunsAfterShopperStore:true},safeState:{writes:false,imports:false,deploy:false,production:false,providers:false,payments:false,frontendModulesModified:false,coreFilesModified:false}};
 fs.writeFileSync(path.join(outDir,'report.json'),JSON.stringify(report,null,2)+'\n','utf8');
 console.log(JSON.stringify(report,null,2));
