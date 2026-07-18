@@ -24,13 +24,19 @@ const runtime = registry.currentRuntime || {};
 const candidate = registry.candidate || {};
 const rule = registry.promotionRule || {};
 const invariant='empalmedRuntimeVersion == candidateVersion; activeBaselineVersion advances only after postGatesAndVisualFreeze';
+const visualPendingState='hosting_dev_remote_smoke_pass_pending_visual';
 
 if(registry.invariant !== invariant) fail('promotion transition invariant changed');
 if(active.status !== 'active_baseline_frozen' || active.active !== true || active.visualValidated !== true) fail('last frozen baseline is not preserved');
 if(runtime.accepted !== true || runtime.empalmed !== true) fail('current runtime is not physically accepted and empalmed');
 if(runtime.version !== candidate.version || runtime.sourceZipSha256 !== candidate.sourceZipSha256) fail('current runtime differs from candidate');
-if(!['empalmed_pending_post_gates','active_baseline_frozen'].includes(runtime.status)) fail(`unsupported runtime state: ${runtime.status}`);
-if(runtime.status === 'empalmed_pending_post_gates' && (runtime.active !== false || runtime.visualValidated !== false || runtime.postGatesPassed !== false)) fail('pending runtime falsely claims freeze evidence');
+if(!['empalmed_pending_post_gates',visualPendingState,'active_baseline_frozen'].includes(runtime.status)) fail(`unsupported runtime state: ${runtime.status}`);
+if(runtime.status === 'empalmed_pending_post_gates' && (runtime.active !== false || runtime.visualValidated !== false || runtime.postGatesPassed !== false)) fail('pre-gate runtime falsely claims completed evidence');
+if(runtime.status === visualPendingState){
+  if(runtime.active !== false || runtime.visualValidated !== false || runtime.postGatesPassed !== true) fail('visual-pending runtime transition evidence mismatch');
+  if(runtime.hostingDevPassed !== true || runtime.remoteSmokePassed !== true) fail('visual-pending runtime lacks Hosting DEV or remote smoke PASS');
+  if(candidate.status !== visualPendingState || candidate.postGatesPassed !== true || candidate.visualValidated !== false) fail('candidate visual-pending state mismatch');
+}
 if(runtime.status === 'active_baseline_frozen' && (runtime.active !== true || runtime.visualValidated !== true || runtime.postGatesPassed !== true || active.version !== runtime.version)) fail('active runtime lacks freeze evidence');
 
 for(const value of [runtime.manifestFile,runtime.aggregateSha256,runtime.sourceZipSha256]){
