@@ -3,14 +3,8 @@
   CXOrbia TyA Phase A — R15G source semantics gate.
 
   Verifies the source-safe payload and connection context before human visual review.
-  A fresh build-time HR snapshot is accepted for this gate but is explicitly
-  reported as not being runtime live synchronization.
-
-  Shopper counts are source-derived. Drift against the last audited reference is
-  reviewable and must not be hidden, but it does not block visual runtime while
-  the source-level R11D review queue remains the authority for historical identity
-  completeness. Array/count inconsistency, empty shoppers or invented identities
-  remain blockers.
+  This is a local/DEV read-only gate. A fresh build-time HR snapshot is accepted for
+  this gate but is explicitly reported as not being runtime live synchronization.
 */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -30,12 +24,12 @@ const expected = {
   projectId: process.env.CXORBIA_EXPECT_PROJECT_ID || 'cinepolis',
   periods: Number(process.env.CXORBIA_EXPECT_PERIODS || 14),
   visits: Number(process.env.CXORBIA_EXPECT_VISITS || 616),
-  shopperReference: Number(process.env.CXORBIA_EXPECT_SHOPPERS || 216)
+  shoppers: Number(process.env.CXORBIA_EXPECT_SHOPPERS || 216)
 };
 fs.mkdirSync(outDir, { recursive:true });
 
 const report = {
-  schemaVersion:'1.1.0',
+  schemaVersion:'1.0.0',
   gate:'tya-source-semantics-r15g',
   generatedAt:new Date().toISOString(),
   baseUrl,
@@ -77,7 +71,6 @@ try {
     const snapshot = window.CX_TYA_HR_SOURCE_SAFE || {};
     const data = window.CX?.data || {};
     const visits = Array.isArray(snapshot.visits) ? snapshot.visits : [];
-    const shoppers = Array.isArray(snapshot.shoppers) ? snapshot.shoppers : [];
     const dateFields = ['disponibleDesde','agendada','realizada','cuestFecha','submittedAt'];
     const numericDateSignals = visits.reduce((count, visit) => count + dateFields.filter(field => /^\d{3,6}(?:\.0+)?$/.test(String(visit?.[field] ?? '').trim())).length, 0);
     const submittedAsLiquidated = visits.filter(visit => visit?.estado === 'liquidada' && Boolean(visit?.submittedAt || visit?.submit) && !['confirmed'].includes(visit?.paymentState) && !['confirmed'].includes(visit?.liquidationState)).length;
@@ -95,8 +88,7 @@ try {
       projectId:snapshot.projectId || null,
       periodCount:snapshot.counts?.periods ?? snapshot.periods?.length ?? null,
       visitCount:snapshot.counts?.visits ?? visits.length,
-      shopperCount:snapshot.counts?.shoppers ?? shoppers.length,
-      shopperArrayCount:shoppers.length,
+      shopperCount:snapshot.counts?.shoppers ?? snapshot.shoppers?.length ?? null,
       numericDateSignals,
       submittedAsLiquidated,
       submittedWithoutWorkflowState,
@@ -106,7 +98,6 @@ try {
       semanticNormalizer:snapshot.source?.semanticNormalizer || null,
       buildTimeSnapshot:snapshot.source?.buildTimeSnapshot === true,
       runtimeLiveSync:snapshot.source?.runtimeLiveSync === true,
-      sourceAccessMode:snapshot.source?.accessMode || null,
       sourceMode:data.sourceMode || null,
       activeProjectId:data.currentProjectId || null,
       activePeriodId:data.currentPeriodId || null,
@@ -124,9 +115,7 @@ try {
   if(observed.projectId !== expected.projectId) block('source_project_mismatch',`${observed.projectId}/${expected.projectId}`);
   if(observed.periodCount !== expected.periods) block('period_count_mismatch',`${observed.periodCount}/${expected.periods}`);
   if(observed.visitCount !== expected.visits) block('visit_count_mismatch',`${observed.visitCount}/${expected.visits}`);
-  if(!Number.isFinite(observed.shopperCount) || observed.shopperCount <= 0) block('shopper_count_empty_or_invalid',String(observed.shopperCount));
-  if(observed.shopperCount !== observed.shopperArrayCount) block('shopper_count_array_mismatch',`${observed.shopperCount}/${observed.shopperArrayCount}`);
-  if(observed.shopperCount !== expected.shopperReference) warn('shopper_count_drift_review',`${observed.shopperCount}/${expected.shopperReference}`);
+  if(observed.shopperCount !== expected.shoppers) block('shopper_count_mismatch',`${observed.shopperCount}/${expected.shoppers}`);
   if(observed.numericDateSignals) block('raw_numeric_spreadsheet_dates',String(observed.numericDateSignals));
   if(observed.submittedAsLiquidated) block('submitted_conflated_with_liquidated',String(observed.submittedAsLiquidated));
   if(observed.submittedWithoutWorkflowState) block('submitted_missing_operational_state',String(observed.submittedWithoutWorkflowState));
@@ -164,7 +153,6 @@ fs.writeFileSync(path.join(outDir,'report.md'),[
   `Warnings: ${report.warnings.length}`,'',
   '## Blockers',...(report.blockers.length?report.blockers.map(x=>`- ${x}`):['- none']),'',
   '## Warnings',...(report.warnings.length?report.warnings.map(x=>`- ${x}`):['- none']),'',
-  'Shopper drift is reviewable under R11D; it does not authorize materialization or deletion of historical identities.','',
   'Build-time snapshot PASS in this local/DEV gate does not mean runtime HR sync or production readiness.',''
 ].join('\n'),'utf8');
 console.log(JSON.stringify(report,null,2));
