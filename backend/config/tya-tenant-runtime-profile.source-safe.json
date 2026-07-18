@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0.0",
+  "tenantId": "tya",
+  "tenantName": "TyA",
+  "status": "source_safe_preview_pending_persistence",
+  "branding": {
+    "displayName": "TyA",
+    "platformLabel": "Plataforma operativa para TyA",
+    "showCxOrbiaPoweredBy": true
+  },
+  "countries": ["GT", "HN"],
+  "countryFlags": {
+    "mode": "tenant_countries_or_active_project_countries",
+    "show": true,
+    "maxVisible": 8,
+    "excludeInactiveProjects": true,
+    "neverShowGlobalCountryCatalog": true
+  },
+  "projects": {
+    "selectionMode": "explicit",
+    "activeProjectIds": ["cinepolis"],
+    "inactiveProjectIds": [],
+    "defaultProjectId": "cinepolis",
+    "projectAndPeriodSeparated": true
+  },
+  "login": {
+    "visibleRoles": ["admin", "ops", "shopper"],
+    "hiddenRoles": ["client_portal", "coordinator", "partner"],
+    "showRoleTestArea": false,
+    "allowShopperSelfRegistration": true,
+    "clientPortalVisible": false,
+    "invitationOnlyRoles": []
+  },
+  "roleScope": {
+    "admin": {"projects": "all_active", "countries": "all_tenant"},
+    "ops": {"projects": "assigned_or_all_active", "countries": "assigned"},
+    "shopper": {"projects": "eligible_active_only", "countries": "assigned_profile_country"},
+    "client_portal": {"projects": "assigned_client_projects_only", "countries": "assigned"}
+  },
+  "academy": {
+    "admin": true,
+    "ops": true,
+    "shopper": true,
+    "client_portal": false,
+    "clientPortalReason": "hidden_until_client_portal_is_enabled_for_tenant"
+  },
+  "persistence": {
+    "targetPath": "tenants/{tenantId}/profile/main",
+    "currentMode": "build_time_source_safe",
+    "firestoreWriteAllowed": false,
+    "authRealAllowed": false
+  },
+  "safeState": {
+    "sourceSafe": true,
+    "writes": false,
+    "deploy": false,
+    "production": false
+  }
+}
