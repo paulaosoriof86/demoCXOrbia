@@ -1,43 +1,17 @@
-name: CXOrbia RC Phase A Predeploy Gate
+name: CXOrbia Historical V110 Predeploy Diagnostic
 
+# Historical diagnostic only. The former V110 predeploy gate referenced a
+# superseded source lock and a staging workflow that is no longer part of the
+# active V159 lane. Current predeploy authority is the V159 registry/build-lock,
+# atomicity, R15G/R18D gates and exact Hosting DEV executor.
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - release/cxorbia-tya-rc-20260630
-    paths:
-      - 'firebase.json'
-      - '.firebaserc'
-      - 'app/index.html'
-      - 'app/app.js'
-      - 'app/core/**'
-      - 'app/modules/**'
-      - 'app/styles/**'
-      - 'app/manifest.webmanifest'
-      - 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json'
-      - 'tools/release/tya-source-lock-v110-union-verify.mjs'
-      - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
-      - 'tools/release/tya-rc-phase-a-predeploy-gate.mjs'
-      - '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml'
-      - '.github/workflows/cxorbia-rc-phase-a-predeploy-gate.yml'
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - 'firebase.json'
-      - '.firebaserc'
-      - 'app/index.html'
-      - 'app/app.js'
-      - 'app/core/**'
-      - 'app/modules/**'
-      - 'app/styles/**'
-      - 'app/manifest.webmanifest'
-      - 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json'
-      - 'tools/release/tya-source-lock-v110-union-verify.mjs'
-      - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
-      - 'tools/release/tya-rc-phase-a-predeploy-gate.mjs'
-      - '.github/workflows/cxorbia-rc-phase-a-staging-deploy.yml'
-      - '.github/workflows/cxorbia-rc-phase-a-predeploy-gate.yml'
+    inputs:
+      confirm_historical_diagnostic:
+        description: 'Type RUN_HISTORICAL_V110_DIAGNOSTIC to generate a non-blocking historical report.'
+        required: true
+        default: 'HOLD'
+        type: string
 
 permissions:
   contents: read
@@ -47,8 +21,9 @@ defaults:
     shell: bash
 
 jobs:
-  rc-phase-a-predeploy:
-    name: RC Phase A predeploy gate
+  historical-v110-predeploy-diagnostic:
+    name: Historical V110 predeploy diagnostic · non-blocking
+    if: ${{ inputs.confirm_historical_diagnostic == 'RUN_HISTORICAL_V110_DIAGNOSTIC' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -63,15 +38,47 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Run predeploy gate
+      - name: Confirm current V159 gate authority
         run: |
-          node tools/release/tya-rc-phase-a-predeploy-gate.mjs --out .tmp/rc-phase-a-predeploy
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const registry = JSON.parse(fs.readFileSync('backend/contracts/prototype-baseline-registry-v1.json','utf8'));
+          const runtime = registry.currentRuntime || {};
+          if (runtime.version !== 'V159') throw new Error(`Expected current runtime V159, received ${runtime.version || 'missing'}.`);
+          if (!['empalmed_pending_post_gates','hosting_dev_remote_smoke_pass_pending_visual','active_baseline_frozen'].includes(runtime.status)) throw new Error(`Unsupported V159 state: ${runtime.status}`);
+          for (const file of [
+            'app/core/build-lock.js',
+            'tools/qa/verify-prototype-baseline-atomicity.mjs',
+            'tools/qa/verify-fast-lane-promotion-policy.mjs',
+            'tools/release/tya-r15g-dev-root-deploy.sh',
+            '.github/workflows/cxorbia-phase-a-r15g-dev-root-deploy.yml'
+          ]) if (!fs.existsSync(file)) throw new Error(`Missing active V159 gate asset: ${file}`);
+          console.log(JSON.stringify({
+            ok:true,
+            decision:'PASS_V159_PREDEPLOY_AUTHORITY_PRESENT',
+            currentRuntime:runtime.version,
+            currentStatus:runtime.status,
+            historicalV110ReleaseGate:false
+          },null,2));
+          NODE
 
-      - name: Upload predeploy report
-        if: always()
+      - name: Generate optional historical report
+        continue-on-error: true
+        run: |
+          mkdir -p .tmp/rc-phase-a-predeploy
+          node tools/release/tya-rc-phase-a-predeploy-gate.mjs --out .tmp/rc-phase-a-predeploy || true
+          cat > .tmp/rc-phase-a-predeploy/HISTORICAL-NOT-A-GATE.md <<'EOF'
+          # Historical V110 predeploy diagnostic
+
+          This output is retained only for historical comparison. The missing old staging workflow and V110 hash drift are expected because V110 is superseded.
+          It is not a release gate and cannot block V159.
+          EOF
+
+      - name: Upload historical diagnostic
         uses: actions/upload-artifact@v4
         with:
-          name: rc-phase-a-predeploy-report
+          name: historical-v110-predeploy-diagnostic
           path: .tmp/rc-phase-a-predeploy
           if-no-files-found: error
           retention-days: 14
