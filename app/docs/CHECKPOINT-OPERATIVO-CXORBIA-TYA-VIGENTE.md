@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 Fecha: 2026-07-17  
-Estado: `TECHNICAL_PASS_PENDING_VISUAL` dentro de `EMPALMED_PENDING_POST_GATES`
+Estado: `HOSTING_DEV_AUTHORIZED_EXECUTION_BLOCKED`
 
 ## Repositorio y destino
 
@@ -17,89 +17,52 @@ Estado: `TECHNICAL_PASS_PENDING_VISUAL` dentro de `EMPALMED_PENDING_POST_GATES`
 - Manifest, build-lock y verificador: presentes
 - Preflight estructural y semántico estático: PASS
 - P0 demostrado: no
-- `ACTIVE_BASELINE`: todavía no, pendiente browser smoke y validación visual
+- `ACTIVE_BASELINE`: pendiente browser smoke y validación visual
 
-## Plan canónico
+## Autorización recibida
 
-`app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`
+Paula autorizó exclusivamente publicar el build V159 exacto en Firebase Hosting DEV `cxorbia-backend-dev` y ejecutar gate browser y smoke remoto.
 
-Método obligatorio:
+No autorizó Firestore, Auth, Storage, HR writes, importaciones, Make, Gemini, pagos, merge ni producción.
 
-```text
-FUENTE Y REGLA
-→ MAPPING / ADAPTER
-→ GATE DE DATOS
-→ RUNTIME EXACTO
-→ VALIDACIÓN VISUAL
-→ FREEZE
-```
+## Bloqueo comprobado de esta sesión
 
-No se avanza al siguiente corte sin evidencia visual del corte actual.
+Código: `DEPLOY_EXECUTION_CAPABILITY_NOT_AVAILABLE`
 
-## Corte activo
+La sesión dispone de:
 
-`CORTE_0_V159_POST_EMPALME + CORTE_1_CONTEXTO_HR_HISTORICO`
+- acceso GitHub de lectura/escritura de archivos y PR;
+- workflow manual existente `cxorbia-phase-a-r15g-dev-root-deploy.yml`;
+- autorización expresa de Paula.
 
-## Evidencia técnica cerrada
+La sesión no dispone de:
 
-Documento:
+- acción `workflow_dispatch` en el conector GitHub;
+- credencial Firebase/Google en el runtime local;
+- autenticación Firebase CLI local.
 
-`app/docs/PHASE-A-V159-POST-EMPALME-SEMANTIC-PREFLIGHT-20260717.md`
+El intento de autenticación local devolvió `Failed to authenticate, have you run firebase login?`.
 
-Resultados:
+No se creó workflow, rama, PR ni transporte alternativo. No se afirmó deploy.
 
-- 67 JS/MJS, 0 errores de sintaxis;
-- 64 scripts locales, 0 faltantes;
-- 0 archivos BOM;
-- 17 archivos de delta runtime V156→V159 identificados;
-- Dashboard, Proyectos, Periodos, Histórico, Visitas, Shoppers, app.js e index.html sin delta;
-- cambios relevantes de data-source/HR/Finanzas limitados a copy o fallback visual;
-- source-safe preservada con proyecto y periodo separados;
-- 14 periodos, 616 visitas y 44 por periodo esperados;
-- MAY/JUN/JUL con claves distintas;
-- gate browser existente para verificar cambio real de consultas/KPIs/filas.
+## Siguiente acción exacta
 
-## Pendiente técnico inmediato
+Ejecutar el workflow manual existente sobre `docs-tya-v6-v71-audit` con confirmación `DEPLOY_DEV_ROOT_R15G`, sin modificar su alcance.
 
-`HOSTING_DEV_V159_EXACT_BUILD + BROWSER_RUNTIME_GATE`
+El workflow ya contiene:
 
-Requiere autorización separada para publicar únicamente Hosting DEV V159 exacto.
+1. checkout de la rama viva;
+2. gates de baseline y fuente source-safe;
+3. gate browser proyecto/periodo/KPI/histórico;
+4. smoke Admin, Shopper y Cliente;
+5. validación de acceso exclusivo a Hosting;
+6. deploy solo de `hosting:cxorbia-dev`;
+7. smoke remoto;
+8. limpieza de credencial;
+9. evidencia sanitizada.
 
-Después:
-
-1. desplegar solo Hosting DEV;
-2. ejecutar gate browser proyecto/periodo/KPI/histórico;
-3. ejecutar smoke remoto Admin, Shopper, Cliente y Academia;
-4. entregar URL, commit, perfil, módulos, acciones y resultados esperados;
-5. recibir `APROBADO`, `DIFERENCIA` o `ERROR`;
-6. corregir por capa si aplica;
-7. congelar V159 como `ACTIVE_BASELINE` si no existe P0.
-
-La URL histórica V131/R18D no prueba V159.
-
-## Siguiente secuencia después del freeze
-
-1. ciclo shopper;
-2. finanzas/certificaciones;
-3. Firebase nuevo y limpio;
-4. `CX.data` read-only;
-5. materialización DEV;
-6. Auth/RBAC;
-7. sync HR/plataforma y evidencias;
-8. GO/NO GO producción.
-
-Cada paso incluye gate técnico, runtime exacto y validación visual antes de avanzar.
-
-## No reabrir desde cero
-
-Adapter portable `CX.data`, domain mapping, materialization plan, Auth readiness, importadores, reviewQueue, rollback, HR source-safe y contratos de sync.
-
-## Bloqueo vivo
-
-- Hosting DEV V159 requiere autorización expresa del bloque.
-- La creación automática del Firebase nuevo y vacío continúa bloqueada por IAM.
-- `cxorbia-backend-dev` puede servir como Hosting DEV, no como nueva base TyA.
+Después corresponde revisión visual de Paula y freeze `ACTIVE_BASELINE` si no existe P0.
 
 ## Estado seguro
 
-Sin deploy ejecutado en este bloque, sin merge, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos.
+Sin deploy ejecutado en esta sesión, sin merge, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos.
