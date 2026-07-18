@@ -1,7 +1,8 @@
 name: CXOrbia Phase A R15G DEV Root Deploy
 
-# Manual-only Hosting DEV workflow.
-# It never runs on push or pull_request and never deploys production.
+# Hosting DEV only. Supports the existing manual dispatch and a one-shot,
+# fail-closed push authorization record so execution does not depend on a
+# client exposing workflow_dispatch. It never deploys production or data rules.
 on:
   workflow_dispatch:
     inputs:
@@ -10,11 +11,20 @@ on:
         required: true
         default: 'HOLD'
         type: string
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/phase-a-hosting-dev-execution-request-v1.json'
 
 permissions:
   contents: read
   actions: read
   checks: read
+
+concurrency:
+  group: cxorbia-r15g-hosting-dev
+  cancel-in-progress: false
 
 defaults:
   run:
@@ -25,11 +35,12 @@ env:
   FIREBASE_PROJECT_ID: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
   CXORBIA_HR_LIVE_SHEET_ID: 1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4
+  CXORBIA_EXECUTION_REQUEST: backend/config/phase-a-hosting-dev-execution-request-v1.json
 
 jobs:
   dev-root-deploy:
     name: R15G DEV root deploy hosting only
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm_dev_deploy == 'DEPLOY_DEV_ROOT_R15G' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.confirm_dev_deploy == 'DEPLOY_DEV_ROOT_R15G') || github.event_name == 'push' }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
 
@@ -39,6 +50,91 @@ jobs:
         with:
           ref: docs-tya-v6-v71-audit
           fetch-depth: 0
+
+      - name: Validate one-shot authorization and exact V159 runtime
+        env:
+          CXORBIA_EVENT_NAME: ${{ github.event_name }}
+          CXORBIA_EVENT_BEFORE: ${{ github.event.before || '' }}
+          CXORBIA_MANUAL_CONFIRM: ${{ inputs.confirm_dev_deploy || '' }}
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = "docs-tya-v6-v71-audit"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+
+          if [ "$CXORBIA_EVENT_NAME" = "workflow_dispatch" ]; then
+            test "$CXORBIA_MANUAL_CONFIRM" = "DEPLOY_DEV_ROOT_R15G"
+          elif [ "$CXORBIA_EVENT_NAME" = "push" ]; then
+            test -n "$CXORBIA_EVENT_BEFORE"
+            test -s "$CXORBIA_EXECUTION_REQUEST"
+            mapfile -t changed < <(git diff --name-only "$CXORBIA_EVENT_BEFORE" "$GITHUB_SHA")
+            test "${#changed[@]}" -eq 1
+            test "${changed[0]}" = "$CXORBIA_EXECUTION_REQUEST"
+          else
+            echo "Unsupported event: $CXORBIA_EVENT_NAME" >&2
+            exit 1
+          fi
+
+          node <<'NODE'
+          const fs = require('fs');
+          const eventName = process.env.CXORBIA_EVENT_NAME;
+          const registry = JSON.parse(fs.readFileSync('backend/contracts/prototype-baseline-registry-v1.json','utf8'));
+          const runtime = registry.currentRuntime || {};
+          const manifest = JSON.parse(fs.readFileSync(runtime.manifestFile,'utf8'));
+          const buildLock = fs.readFileSync('app/core/build-lock.js','utf8');
+
+          const expected = {
+            repository: 'paulaosoriof86/demoCXOrbia',
+            branch: 'docs-tya-v6-v71-audit',
+            runtimeVersion: 'V159',
+            targetProject: 'cxorbia-backend-dev',
+            hostingTarget: 'cxorbia-dev',
+            confirm: 'DEPLOY_DEV_ROOT_R15G',
+            scope: 'hosting_dev_only'
+          };
+          const fail = message => { throw new Error(message); };
+
+          if (registry.repository !== expected.repository) fail('repository mismatch');
+          if (registry.integrationBranch !== expected.branch) fail('integration branch mismatch');
+          if (runtime.version !== expected.runtimeVersion) fail('runtime version mismatch');
+          if (runtime.status !== 'empalmed_pending_post_gates') fail('runtime state is not deploy-eligible');
+          if (runtime.accepted !== true || runtime.empalmed !== true || runtime.active !== false) fail('runtime transition evidence mismatch');
+          if (manifest.version !== runtime.version) fail('manifest version mismatch');
+          if (manifest.candidateSha256 !== runtime.sourceZipSha256) fail('manifest candidate hash mismatch');
+          if (manifest.aggregateSha256 !== runtime.aggregateSha256) fail('manifest aggregate mismatch');
+          for (const value of [runtime.manifestFile, runtime.sourceZipSha256, runtime.aggregateSha256]) {
+            if (!value || !buildLock.includes(value)) fail('build lock mismatch');
+          }
+
+          if (eventName === 'push') {
+            const request = JSON.parse(fs.readFileSync(process.env.CXORBIA_EXECUTION_REQUEST,'utf8'));
+            if (request.schemaVersion !== '1.0.0') fail('request schema mismatch');
+            if (request.status !== 'authorized_once') fail('request status mismatch');
+            if (request.authorizedBy !== 'Paula') fail('request author mismatch');
+            if (request.authorizationSource !== 'current_conversation_2026-07-18') fail('authorization source mismatch');
+            if (request.confirm !== expected.confirm) fail('request confirmation mismatch');
+            if (request.scope !== expected.scope) fail('request scope mismatch');
+            if (request.repository !== expected.repository || request.branch !== expected.branch) fail('request repository/branch mismatch');
+            if (request.targetProject !== expected.targetProject || request.hostingTarget !== expected.hostingTarget) fail('request hosting target mismatch');
+            if (request.baseHead !== process.env.CXORBIA_EVENT_BEFORE) fail('request is not bound to the immediately previous HEAD');
+            if (request.runtimeVersion !== runtime.version) fail('request runtime version mismatch');
+            if (request.sourceZipSha256 !== runtime.sourceZipSha256) fail('request source hash mismatch');
+            if (request.manifestFile !== runtime.manifestFile) fail('request manifest mismatch');
+            if (request.aggregateSha256 !== runtime.aggregateSha256) fail('request aggregate mismatch');
+            if (request.empalmeCommit !== runtime.empalmeCommit) fail('request empalme commit mismatch');
+          }
+
+          console.log(JSON.stringify({
+            ok: true,
+            decision: 'PASS_HOSTING_DEV_EXECUTION_AUTHORIZATION',
+            eventName,
+            runtimeVersion: runtime.version,
+            runtimeStatus: runtime.status,
+            targetProject: expected.targetProject,
+            hostingTarget: expected.hostingTarget,
+            production: false,
+            dataWrites: false
+          }, null, 2));
+          NODE
 
       - name: Setup Node
         uses: actions/setup-node@v4
