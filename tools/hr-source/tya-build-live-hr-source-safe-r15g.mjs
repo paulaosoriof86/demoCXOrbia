@@ -4,7 +4,7 @@
 
   Ejecuta el lector multi-tab con resolución de encabezados fail-closed,
   normaliza fechas y aplica una única máquina canónica a TODOS los periodos
-  detectados. No existen excepciones codificadas por mes.
+  detectados. El mapeo de columnas proviene de un contrato único versionado.
 
   No PII, providers, writes, imports, deploy, production or payments.
 */
@@ -21,6 +21,19 @@ import {
 const OUT_FILE = process.env.CXORBIA_HR_SOURCE_SAFE_OUT || 'app/data/tya-hr-source-safe-periods.js';
 const baseBuilder = path.resolve('tools/hr-source/tya-build-live-hr-source-safe-static.mjs');
 const generatedBuilder = path.resolve('tools/hr-source/.tya-build-live-hr-source-safe-static-r20.generated.mjs');
+const columnMapPath = path.resolve('backend/contracts/tya-hr-column-map-r20-v1.json');
+if (!fs.existsSync(columnMapPath)) throw new Error(`R20 column map missing: ${columnMapPath}`);
+const columnMap = JSON.parse(fs.readFileSync(columnMapPath, 'utf8'));
+if (columnMap.contractId !== 'tya-hr-column-map-r20-v1' || columnMap.resolutionPolicy !== 'exact_or_unique_anchored_only') {
+  throw new Error('R20 column map contract identity/policy mismatch.');
+}
+const columnEntries = Object.entries(columnMap.columns || {});
+if (!columnEntries.length) throw new Error('R20 column map contract has no columns.');
+for (const [name, spec] of columnEntries) {
+  if (!/^[A-Za-z][A-Za-z0-9]*$/.test(name) || !Array.isArray(spec?.aliases) || !spec.aliases.length) {
+    throw new Error(`Invalid R20 column specification: ${name}`);
+  }
+}
 
 // El builder histórico usaba `includes()` y podía seleccionar el primer encabezado
 // parcialmente parecido. R20 reemplaza esa función solo durante el build: exacto
@@ -45,9 +58,16 @@ const strictColumnResolver = String.raw`function col(header, aliases){
   }
   return -1;
 }`;
-const patchedSource = baseSource.replace(/function col\(header, aliases\)\{[\s\S]*?\n\}/, strictColumnResolver);
-if (patchedSource === baseSource || !patchedSource.includes('const anchored = cells.reduce')) {
-  throw new Error('R20 could not install the strict HR column resolver.');
+const contractMappingBlock = [
+  '  const c = {',
+  ...columnEntries.map(([name, spec]) => `    ${name}: col(header, ${JSON.stringify(spec.aliases)}),`),
+  '  };',
+  '  const issues = [];'
+].join('\n');
+let patchedSource = baseSource.replace(/function col\(header, aliases\)\{[\s\S]*?\n\}/, strictColumnResolver);
+patchedSource = patchedSource.replace(/  const c = \{[\s\S]*?\n  \};\n  const issues = \[\];/, contractMappingBlock);
+if (patchedSource === baseSource || !patchedSource.includes('const anchored = cells.reduce') || !patchedSource.includes(JSON.stringify(columnMap.columns.fechaSubmitido.aliases))) {
+  throw new Error('R20 could not install strict resolver and contract column map.');
 }
 fs.writeFileSync(generatedBuilder, patchedSource, 'utf8');
 let run;
@@ -71,11 +91,7 @@ if (start < 0 || end < start) throw new Error('R15G cannot parse source-safe JS 
 const snapshot = JSON.parse(raw.slice(start + prefix.length, end));
 
 const mappingIssues = Array.isArray(snapshot.issues) ? snapshot.issues : [];
-const criticalColumns = new Set([
-  'pais','idCinema','ciudad','shopping','franja','formato','tipoCompra','quincena',
-  'shopper','disponibleDesde','fechaProgramada','controlDia','fechaRealizada',
-  'fechaCuestionario','fechaSubmitido'
-]);
+const criticalColumns = new Set(columnEntries.filter(([,spec]) => spec.critical === true).map(([name]) => name));
 const mappingBlockers = mappingIssues.filter(issue =>
   issue?.code === 'header_not_found' ||
   (issue?.code === 'column_missing' && criticalColumns.has(issue.column))
@@ -179,7 +195,8 @@ snapshot.periodOperationalSummary = canonicalPeriods;
 snapshot.source = {
   ...(snapshot.source || {}),
   semanticNormalizer: 'r15g+r20',
-  columnResolver: 'exact_or_unique_anchored_r20',
+  columnMapContract: columnMap.contractId,
+  columnResolver: columnMap.resolutionPolicy,
   mappingFailClosed: true,
   dateFormat: 'YYYY-MM-DD',
   submissionLiquidationSeparated: true,
@@ -196,6 +213,7 @@ snapshot.normalization = {
   periodKeys: canonicalHistory.periodKeys,
   historyScope: 'all_detected_hr_periods',
   rules: [
+    'contract_driven_column_map',
     'strict_unique_header_resolution',
     'critical_missing_or_ambiguous_headers_hold_build',
     'unassigned_iff_no_shopper_reference',
@@ -218,6 +236,7 @@ fs.writeFileSync(OUT_FILE, output, 'utf8');
 console.log(JSON.stringify({
   decision: 'PASS_R20_CANONICAL_HR_HISTORY',
   outFile: OUT_FILE,
+  columnMapContract: columnMap.contractId,
   counts: snapshot.counts,
   normalization: snapshot.normalization,
   safeState: { writes:false, imports:false, deploy:false, production:false, providers:false, payments:false }
