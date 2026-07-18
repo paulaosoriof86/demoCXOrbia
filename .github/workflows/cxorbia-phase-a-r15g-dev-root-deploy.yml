@@ -62,7 +62,7 @@ jobs:
           node --check app/core/build-lock.js
           node tools/release/tya-v159-empalme-directo-verify.mjs
           git diff --check
-          grep -Fq "version: 'V159'" app/core/build-lock.js
+          grep -Fq 'CXOrbia source lock runtime V159 empalme directo' app/core/build-lock.js
           printf 'event=%s\nref=%s\ncommit=%s\nbuild=%s\nhosting_only=true\nfirestore=false\nauth=false\nstorage=false\nrules=false\nfunctions=false\nimports=false\nhr_writes=false\nmake=false\ngemini=false\npayments=false\nproduction=false\n' \
             "$GITHUB_EVENT_NAME" "$GITHUB_REF" "$GITHUB_SHA" "$CXORBIA_V159_BUILD_LABEL" \
             > .tmp/v159-dev-deploy/authorization-scope.txt
