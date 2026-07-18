@@ -20,19 +20,25 @@ for(const file of [registryPath,buildLockPath,...requiredGateFiles.map(p=>path.j
 const registry = JSON.parse(fs.readFileSync(registryPath,'utf8'));
 const build = fs.readFileSync(buildLockPath,'utf8');
 const active = registry.activeBaseline || {};
+const runtime = registry.currentRuntime || {};
 const candidate = registry.candidate || {};
 const rule = registry.promotionRule || {};
+const invariant='empalmedRuntimeVersion == candidateVersion; activeBaselineVersion advances only after postGatesAndVisualFreeze';
 
-if(registry.invariant !== 'acceptedCandidateVersion == empalmedVersion == activeBaselineVersion') fail('baseline invariant changed');
-if(active.status !== 'accepted_and_empalmed' || active.accepted !== true || active.empalmed !== true) fail('active baseline is not physically accepted and empalmed');
-if(!build.includes(active.manifestFile) || !build.includes(active.aggregateSha256) || !build.includes(active.sourceZipSha256)) fail('build lock and active registry differ');
+if(registry.invariant !== invariant) fail('promotion transition invariant changed');
+if(active.status !== 'active_baseline_frozen' || active.active !== true || active.visualValidated !== true) fail('last frozen baseline is not preserved');
+if(runtime.accepted !== true || runtime.empalmed !== true) fail('current runtime is not physically accepted and empalmed');
+if(runtime.version !== candidate.version || runtime.sourceZipSha256 !== candidate.sourceZipSha256) fail('current runtime differs from candidate');
+if(!['empalmed_pending_post_gates','active_baseline_frozen'].includes(runtime.status)) fail(`unsupported runtime state: ${runtime.status}`);
+if(runtime.status === 'empalmed_pending_post_gates' && (runtime.active !== false || runtime.visualValidated !== false || runtime.postGatesPassed !== false)) fail('pending runtime falsely claims freeze evidence');
+if(runtime.status === 'active_baseline_frozen' && (runtime.active !== true || runtime.visualValidated !== true || runtime.postGatesPassed !== true || active.version !== runtime.version)) fail('active runtime lacks freeze evidence');
+
+for(const value of [runtime.manifestFile,runtime.aggregateSha256,runtime.sourceZipSha256]){
+  if(!value || !build.includes(value)) fail('build lock and current runtime registry differ');
+}
+if(!fs.existsSync(path.join(root,runtime.manifestFile))) fail(`runtime manifest missing: ${runtime.manifestFile}`);
 if(rule.forbidSilentRuntimeExclusions !== true) fail('silent runtime exclusions are not forbidden');
 if(!Array.isArray(rule.runtimeCandidateOwnedPaths) || rule.runtimeCandidateOwnedPaths.length < 6) fail('runtime ownership paths incomplete');
-if(candidate.status === 'accepted_and_empalmed'){
-  if(candidate.version !== active.version || candidate.sourceZipSha256 !== active.sourceZipSha256) fail('accepted candidate differs from active baseline');
-}else if(candidate.accepted || candidate.empalmed){
-  fail('pending/rejected candidate marked accepted or empalmed');
-}
 
 const runtimePatterns = [
   /--exclude(?:=|\s+)["']?app\/core(?:\/|\*|["'\s])/i,
@@ -64,7 +70,9 @@ if(/currentProjectId\s*=\s*\(latestPeriod[^\n]*projectId/.test(bridge)) fail('cu
 console.log(JSON.stringify({
   ok:true,
   decision:'PASS_FAST_LANE_PROMOTION_POLICY',
-  activeBaseline:active.version,
+  lastFrozenBaseline:active.version,
+  currentRuntime:runtime.version,
+  currentRuntimeStatus:runtime.status,
   candidate:candidate.version,
   candidateStatus:candidate.status,
   silentRuntimeExclusions:0,
