@@ -20,6 +20,20 @@ const runtime=registry.currentRuntime||{};
 const candidate=registry.candidate||{};
 const invariant='empalmedRuntimeVersion == candidateVersion; activeBaselineVersion advances only after postGatesAndVisualFreeze';
 const visualPendingState='hosting_dev_remote_smoke_pass_pending_visual';
+const trustedHostingEvidence=new Map([
+  [29626385151,{
+    workflowCommit:'8cf166eea6a0ebd0b2c6221925671d04865999f0',
+    artifactId:8430697082,
+    artifactDigest:'sha256:fbe071cf34561df95c6e4cffa393f3c6851d742eb8f00776c28a3354e4365692',
+    hostingVersion:'projects/87461567267/sites/cxorbia-backend-dev/versions/c8add179fb326b6a'
+  }],
+  [29649918631,{
+    workflowCommit:'91aed5f9bdd54a396bd8758479888516dd1c3013',
+    artifactId:8431164287,
+    artifactDigest:'sha256:693d05ecfc4621c02321e13a0caf6f40ac2683356ee0893c02a04f027aa3539a',
+    hostingVersion:'projects/87461567267/sites/cxorbia-backend-dev/versions/dbb0c50992aba5e2'
+  }]
+]);
 
 if(registry.invariant!==invariant) fail('transition invariant changed');
 if(active.status!=='active_baseline_frozen'||active.accepted!==true||active.empalmed!==true||active.active!==true||active.visualValidated!==true) fail('last frozen baseline evidence is incomplete');
@@ -58,10 +72,11 @@ if(runtime.status==='empalmed_pending_post_gates'){
   if(runtime.postGatesPassed!==true||candidate.postGatesPassed!==true) fail('visual-pending runtime lacks post-gate PASS');
   if(runtime.hostingDevPassed!==true||runtime.remoteSmokePassed!==true) fail('visual-pending runtime lacks Hosting DEV or remote smoke PASS');
   const evidence=runtime.hostingDevEvidence||{};
-  if(evidence.workflowRun!==29626385151) fail('Hosting DEV workflow evidence mismatch');
-  if(evidence.workflowCommit!=='8cf166eea6a0ebd0b2c6221925671d04865999f0') fail('exact deployed workflow commit mismatch');
-  if(evidence.artifactId!==8430697082||evidence.artifactDigest!=='sha256:fbe071cf34561df95c6e4cffa393f3c6851d742eb8f00776c28a3354e4365692') fail('sanitized artifact evidence mismatch');
-  if(!String(evidence.hostingVersion||'').endsWith('/versions/c8add179fb326b6a')) fail('Firebase Hosting version evidence mismatch');
+  const trusted=trustedHostingEvidence.get(evidence.workflowRun);
+  if(!trusted) fail('Hosting DEV workflow evidence is not trusted');
+  for(const [key,value] of Object.entries(trusted)) if(evidence[key]!==value) fail(`Hosting DEV ${key} evidence mismatch`);
+  if(evidence.blockers!==0) fail('Hosting DEV evidence contains blockers');
+  if(evidence.shopperIdentitiesInvented!==0||evidence.paidConfirmedOrInferred!==0) fail('Hosting DEV evidence invents identities or payments');
   if(!checkpoint.toLowerCase().includes('visual')) fail('checkpoint does not preserve pending visual gate');
 }else if(runtime.status==='active_baseline_frozen'){
   if(runtime.active!==true||candidate.active!==true||runtime.postGatesPassed!==true||runtime.visualValidated!==true) fail('frozen runtime lacks completed post-gates/visual evidence');
@@ -76,6 +91,7 @@ console.log(JSON.stringify({
   lastFrozenBaseline:active.version,
   currentRuntime:runtime.version,
   currentRuntimeStatus:runtime.status,
+  trustedHostingRun:runtime.hostingDevEvidence?.workflowRun||null,
   candidate:candidate.version,
   candidateStatus:candidate.status,
   invariant:registry.invariant
