@@ -1,5 +1,5 @@
 {
-  "version": "3.1.0",
+  "version": "3.2.0",
   "updatedAt": "2026-07-18",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -50,14 +50,6 @@
       "hosting_dev_remote_smoke_pass_pending_visual",
       "active_baseline_frozen"
     ],
-    "empalmeRequired": [
-      "audit_pass",
-      "complete_candidate_runtime_tree",
-      "explicit_backend_overlays",
-      "manifest_and_build_lock",
-      "registry_current_runtime",
-      "commit_and_push"
-    ],
     "freezeRequired": [
       "post_empalme_semantic_gates",
       "exact_runtime_browser_smoke",
@@ -74,10 +66,10 @@
       "hybrid_runtime_unregistered_overlay"
     ]
   },
-  "objective": "Close Corte 0 on V159 by completing Paula's visual validation of the exact build already deployed and remotely validated, then freeze it without reopening audit, empalme or completed backend work.",
+  "objective": "Close Corte 0 by visually validating the refreshed V159 DEV build that already passed local and remote gates after the shopper data-level root correction, then freeze without reopening completed work.",
   "activeBlock": {
     "id": "CORTE_0_V159_POST_EMPALME",
-    "status": "hosting_dev_and_remote_smoke_pass_pending_visual",
+    "status": "refreshed_hosting_dev_and_remote_smoke_pass_pending_visual",
     "allowed": [
       "perform_human_visual_validation_on_exact_dev_url",
       "classify_any_finding_by_layer_and_severity",
@@ -96,7 +88,7 @@
     ]
   },
   "nextExactAction": {
-    "id": "PAULA_VISUAL_VALIDATION_V159_DEV",
+    "id": "PAULA_VISUAL_VALIDATION_V159_DEV_REFRESHED",
     "url": "https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible",
     "expectedResponse": "APROBADO or a concise reproducible finding with role, route, action, expected and observed result",
     "freezeOnApproval": true,
@@ -129,11 +121,11 @@
     "remoteRoleSmoke": "PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE",
     "remoteProjectPeriodKpiHistory": "PASS_TYA_PROJECT_PERIOD_KPI_HISTORY",
     "remoteVisibleOverlays": "PASS_WITH_REVIEW_R18D_VISIBLE_OVERLAYS",
-    "hostingDevWorkflowRun": 29626385151,
-    "hostingDevWorkflowCommit": "8cf166eea6a0ebd0b2c6221925671d04865999f0",
-    "hostingDevVersion": "projects/87461567267/sites/cxorbia-backend-dev/versions/c8add179fb326b6a",
-    "hostingDevArtifactId": 8430697082,
-    "hostingDevArtifactDigest": "sha256:fbe071cf34561df95c6e4cffa393f3c6851d742eb8f00776c28a3354e4365692",
+    "hostingDevWorkflowRun": 29649918631,
+    "hostingDevWorkflowCommit": "91aed5f9bdd54a396bd8758479888516dd1c3013",
+    "hostingDevVersion": "projects/87461567267/sites/cxorbia-backend-dev/versions/dbb0c50992aba5e2",
+    "hostingDevArtifactId": 8431164287,
+    "hostingDevArtifactDigest": "sha256:693d05ecfc4621c02321e13a0caf6f40ac2683356ee0893c02a04f027aa3539a",
     "p0Proven": false,
     "hrPeriods": 14,
     "hrVisits": 616,
@@ -143,18 +135,27 @@
     "shopperSourceCount": 215,
     "shopperReference": 216,
     "shopperReviewAuthority": "R11D",
+    "shopperProtectedReferences": 215,
+    "shopperActive": 0,
+    "shopperInactive": 0,
+    "shopperCompleteProfiles": 0,
+    "shopperIncompleteProfiles": 0,
+    "shopperOperationalFactsInvented": 0,
     "shopperIdentitiesInvented": 0,
     "paidConfirmedOrInferred": 0,
     "runtimeVisualValidation": "PENDING_PAULA"
   },
+  "rootBlockersClosed": [
+    "project_period_identity_collapse",
+    "workflow_and_financial_state_loss_at_adapter_boundary",
+    "june_payment_control_heuristic_gap",
+    "protected_shopper_misclassified_as_active_complete_profile",
+    "hosting_lane_dispatch_and_observability_gap",
+    "remote_cdn_propagation_race",
+    "obsolete_v110_automatic_gates",
+    "firestore_drift_false_trigger_from_frontend_gate_changes"
+  ],
   "readPolicy": {
-    "normalIteration": [
-      "00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md",
-      "PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md",
-      "CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
-      "prototype-baseline-registry-v1.json",
-      "current_gate_result"
-    ],
     "doNotReopen": [
       "v159_audit",
       "v159_empalme",
@@ -166,7 +167,8 @@
       "review_queue",
       "rollback_contracts",
       "hosting_dev_deploy",
-      "remote_smoke"
+      "remote_smoke",
+      "shopper_data_level_root_fix"
     ]
   },
   "mandatoryCloseSections": [
