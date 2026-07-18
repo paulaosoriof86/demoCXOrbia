@@ -1,16 +1,10 @@
 #!/usr/bin/env node
 /*
-  CXOrbia TyA Phase A — R15G source semantics gate.
+  CXOrbia TyA Phase A — R20 source semantics gate.
 
-  Verifies the source-safe payload and connection context before human visual review.
-  A fresh build-time HR snapshot is accepted for this gate but is explicitly
-  reported as not being runtime live synchronization.
-
-  Shopper counts are source-derived. Drift against the last audited reference is
-  reviewable and must not be hidden, but it does not block visual runtime while
-  the source-level R11D review queue remains the authority for historical identity
-  completeness. Array/count inconsistency, empty shoppers or invented identities
-  remain blockers. This gate never materializes, deletes or completes identities.
+  Verifica el payload source-safe, el contexto proyecto/periodo y la máquina
+  canónica histórica antes de revisión visual. Un snapshot fresco de build es
+  aceptable en DEV, pero nunca se presenta como sincronización runtime live.
 */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,7 +17,7 @@ const valueOf = (flag, fallback) => {
   return index >= 0 && args[index + 1] ? args[index + 1] : fallback;
 };
 const baseUrl = valueOf('--base-url', process.env.CXORBIA_BASE_URL || 'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1');
-const outDir = path.resolve(valueOf('--out', '.tmp/tya-source-semantics-r15g'));
+const outDir = path.resolve(valueOf('--out', '.tmp/tya-source-semantics-r20'));
 const maxAgeHours = Number(process.env.CXORBIA_MAX_SOURCE_AGE_HOURS || 24);
 const expected = {
   tenantId: process.env.CXORBIA_EXPECT_TENANT_ID || 'tya',
@@ -35,11 +29,12 @@ const expected = {
 fs.mkdirSync(outDir, { recursive:true });
 
 const report = {
-  schemaVersion:'1.1.1',
-  gate:'tya-source-semantics-r15g',
+  schemaVersion:'2.0.0',
+  gate:'tya-source-semantics-r20',
   generatedAt:new Date().toISOString(),
   baseUrl,
   expected,
+  historyScope:'all_detected_hr_periods',
   shopperCompletenessAuthority:'R11D_review_queue',
   observed:null,
   blockers:[],
@@ -82,10 +77,27 @@ try {
     const dateFields = ['disponibleDesde','agendada','realizada','cuestFecha','submittedAt'];
     const numericDateSignals = visits.reduce((count, visit) => count + dateFields.filter(field => /^\d{3,6}(?:\.0+)?$/.test(String(visit?.[field] ?? '').trim())).length, 0);
     const submittedAsLiquidated = visits.filter(visit => visit?.estado === 'liquidada' && Boolean(visit?.submittedAt || visit?.submit) && !['confirmed'].includes(visit?.paymentState) && !['confirmed'].includes(visit?.liquidationState)).length;
-    const submittedWithoutWorkflowState = visits.filter(visit => Boolean(visit?.submittedAt || visit?.submit) && visit?.workflowState !== 'submitted_by_tya').length;
+    const submittedWithoutCanonical = visits.filter(visit => Boolean(visit?.submittedAt || visit?.submit) && !(visit?.canonicalFacets?.submitted === true && visit?.submissionState === 'confirmed_hr')).length;
     const genericProjects = (data.projects || []).filter(project => ['retail','banca','food'].includes(project?.id)).length;
     const generatedAt = snapshot.generatedAt || null;
     const ageHours = generatedAt ? (Date.now() - new Date(generatedAt).getTime()) / 3600000 : null;
+    const periodSummaries = Array.isArray(snapshot.periodOperationalSummary) ? snapshot.periodOperationalSummary : [];
+    const nonMonotonicPeriods = periodSummaries.filter(row => Number(row.submitted)>Number(row.questionnaireCompleted) || Number(row.questionnaireCompleted)>Number(row.realized) || Number(row.realized)>Number(row.total)).map(row=>row.periodKey);
+    const duplicatePeriodKeys = periodSummaries.length - new Set(periodSummaries.map(row=>row.periodKey)).size;
+    const currentVisits = typeof data.visitas==='function' ? data.visitas() : [];
+    const facetsAvailable = typeof data.visitFacets==='function' && data.visitBucketFns && typeof data.visitBucketFns.sinAsignar==='function';
+    const currentCanonical = facetsAvailable ? {
+      total:currentVisits.length,
+      assigned:currentVisits.filter(data.visitBucketFns.asignadas).length,
+      unassigned:currentVisits.filter(data.visitBucketFns.sinAsignar).length,
+      pendingSchedule:currentVisits.filter(data.visitBucketFns.sinAgendar).length,
+      realized:currentVisits.filter(data.visitBucketFns.realizadas).length,
+      pendingQuestionnaire:currentVisits.filter(data.visitBucketFns.cuestPend).length,
+      pendingSubmission:currentVisits.filter(data.visitBucketFns.sinSubmitir).length,
+      submitted:currentVisits.filter(data.visitBucketFns.submitidas).length,
+      liquidationConfirmed:currentVisits.filter(data.visitBucketFns.liquidadas).length,
+      paymentConfirmed:currentVisits.filter(data.visitBucketFns.pagadas).length
+    } : null;
     return {
       sourceSafe:snapshot.sourceSafe === true,
       imported:snapshot.imported === true,
@@ -100,11 +112,18 @@ try {
       shopperArrayCount:shoppers.length,
       numericDateSignals,
       submittedAsLiquidated,
-      submittedWithoutWorkflowState,
+      submittedWithoutCanonical,
       submittedCount:snapshot.counts?.submitted ?? visits.filter(v=>v?.submittedAt || v?.submit).length,
       liquidationCandidatesPendingFinancialMatch:snapshot.counts?.liquidationCandidatesPendingFinancialMatch ?? null,
+      liquidationConfirmed:snapshot.counts?.liquidationConfirmed ?? null,
       paymentConfirmed:snapshot.counts?.paymentConfirmed ?? null,
       semanticNormalizer:snapshot.source?.semanticNormalizer || null,
+      canonicalStateAcrossAllDetectedPeriods:snapshot.source?.canonicalStateAcrossAllDetectedPeriods === true,
+      normalizationHistoryScope:snapshot.normalization?.historyScope || null,
+      periodOperationalSummaryCount:periodSummaries.length,
+      periodOperationalSummaryKeys:periodSummaries.map(row=>row.periodKey),
+      nonMonotonicPeriods,
+      duplicatePeriodKeys,
       buildTimeSnapshot:snapshot.source?.buildTimeSnapshot === true,
       runtimeLiveSync:snapshot.source?.runtimeLiveSync === true,
       sourceAccessMode:snapshot.source?.accessMode || null,
@@ -114,7 +133,9 @@ try {
       projectAccessorId:data.project?.()?.id || null,
       periodAccessorId:data.period?.()?.id || null,
       context:data.ctx?.() || null,
-      currentPeriodVisits:data.visitas?.()?.length ?? null,
+      currentPeriodVisits:currentVisits.length,
+      currentCanonical,
+      tenantProfile:window.CX?.tenantProfile || null,
       genericProjects
     };
   });
@@ -130,8 +151,14 @@ try {
   if(observed.shopperCount !== expected.shopperReference) warn('shopper_count_drift_review',`${observed.shopperCount}/${expected.shopperReference}`);
   if(observed.numericDateSignals) block('raw_numeric_spreadsheet_dates',String(observed.numericDateSignals));
   if(observed.submittedAsLiquidated) block('submitted_conflated_with_liquidated',String(observed.submittedAsLiquidated));
-  if(observed.submittedWithoutWorkflowState) block('submitted_missing_operational_state',String(observed.submittedWithoutWorkflowState));
-  if(observed.semanticNormalizer !== 'r15g') block('r15g_semantic_normalizer_missing');
+  if(observed.submittedWithoutCanonical) block('submitted_missing_canonical_state',String(observed.submittedWithoutCanonical));
+  if(observed.semanticNormalizer !== 'r15g+r20') block('r20_semantic_normalizer_missing',String(observed.semanticNormalizer));
+  if(!observed.canonicalStateAcrossAllDetectedPeriods) block('canonical_all_history_flag_missing');
+  if(observed.normalizationHistoryScope !== 'all_detected_hr_periods') block('history_scope_not_all_detected',String(observed.normalizationHistoryScope));
+  if(observed.periodOperationalSummaryCount !== expected.periods) block('period_summary_count_mismatch',`${observed.periodOperationalSummaryCount}/${expected.periods}`);
+  if(observed.duplicatePeriodKeys) block('duplicate_period_summary_keys',String(observed.duplicatePeriodKeys));
+  if(observed.nonMonotonicPeriods.length) block('non_monotonic_operational_chain',observed.nonMonotonicPeriods.join(','));
+  if(!observed.currentCanonical) block('canonical_bucket_functions_missing');
   if(!observed.generatedAt || !Number.isFinite(observed.ageHours)) block('source_generated_at_missing_or_invalid');
   else if(observed.ageHours < -1 || observed.ageHours > maxAgeHours) block('source_snapshot_stale',`${observed.ageHours.toFixed(2)}h/${maxAgeHours}h`);
   if(observed.activeProjectId !== expected.projectId) block('active_root_project_mismatch',String(observed.activeProjectId));
@@ -140,12 +167,14 @@ try {
   if(observed.periodAccessorId !== observed.activePeriodId) block('period_accessor_mismatch',String(observed.periodAccessorId));
   if(observed.context?.tenantId !== expected.tenantId || observed.context?.projectId !== expected.projectId || observed.context?.periodId !== observed.activePeriodId) block('canonical_context_mismatch');
   if(observed.currentPeriodVisits !== 44) block('current_period_visit_scope_mismatch',String(observed.currentPeriodVisits));
+  if(observed.tenantProfile?.tenantId !== 'tya') block('tenant_profile_missing');
+  if(JSON.stringify(observed.tenantProfile?.visibleLoginRoles || []) !== JSON.stringify(['admin','ops','shopper'])) block('tenant_login_roles_mismatch',JSON.stringify(observed.tenantProfile?.visibleLoginRoles));
   if(observed.genericProjects) block('demo_projects_visible_in_tya_source',String(observed.genericProjects));
   if(observed.buildTimeSnapshot && !observed.runtimeLiveSync) warn('dev_uses_fresh_build_time_hr_snapshot_not_runtime_sync');
   if(report.pageErrors.length) block('page_errors',String(report.pageErrors.length));
   if(report.consoleErrors.length) warn('console_errors',String(report.consoleErrors.length));
 
-  await page.screenshot({path:path.join(outDir,'tya-source-semantics-r15g.png'),fullPage:true});
+  await page.screenshot({path:path.join(outDir,'tya-source-semantics-r20.png'),fullPage:true});
   await context.close();
 } catch(error) {
   block('gate_fatal',String(error?.message || error).slice(0,350));
@@ -156,17 +185,18 @@ try {
 report.blockers=[...new Set(report.blockers)];
 report.warnings=[...new Set(report.warnings)];
 report.ok=report.blockers.length===0;
-report.decision=report.ok?(report.warnings.length?'PASS_WITH_WARNING_R15G_TYA_SOURCE_SEMANTICS':'PASS_R15G_TYA_SOURCE_SEMANTICS'):'HOLD_R15G_TYA_SOURCE_SEMANTICS';
+report.decision=report.ok?(report.warnings.length?'PASS_WITH_WARNING_R20_TYA_SOURCE_SEMANTICS':'PASS_R20_TYA_SOURCE_SEMANTICS'):'HOLD_R20_TYA_SOURCE_SEMANTICS';
 fs.writeFileSync(path.join(outDir,'report.json'),JSON.stringify(report,null,2)+'\n','utf8');
 fs.writeFileSync(path.join(outDir,'report.md'),[
-  '# TyA R15G source semantics gate','',
+  '# TyA R20 source semantics gate','',
   `Decision: **${report.decision}**`,'',
+  `History scope: ${report.historyScope}`,
   `Blockers: ${report.blockers.length}`,
   `Warnings: ${report.warnings.length}`,'',
   '## Blockers',...(report.blockers.length?report.blockers.map(x=>`- ${x}`):['- none']),'',
   '## Warnings',...(report.warnings.length?report.warnings.map(x=>`- ${x}`):['- none']),'',
   'Shopper drift is reviewable under R11D; it does not authorize materialization or deletion of historical identities.','',
-  'Build-time snapshot PASS in this local/DEV gate does not mean runtime HR sync or production readiness.',''
+  'Build-time snapshot PASS does not mean runtime HR sync or production readiness.',''
 ].join('\n'),'utf8');
 console.log(JSON.stringify(report,null,2));
 if(!report.ok) process.exit(1);
