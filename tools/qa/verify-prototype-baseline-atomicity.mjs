@@ -6,7 +6,7 @@ import process from 'node:process';
 const root=process.cwd();
 const registryPath=path.join(root,'backend/contracts/prototype-baseline-registry-v1.json');
 const buildLockPath=path.join(root,'app/core/build-lock.js');
-const checkpointPath=path.join(root,'app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md');
+const checkpointPath=path.join(root,'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md');
 
 function fail(message){ console.error(`BASELINE_ATOMICITY_FAIL: ${message}`); process.exit(1); }
 for(const p of [registryPath,buildLockPath,checkpointPath]) if(!fs.existsSync(p)) fail(`missing ${path.relative(root,p)}`);
@@ -16,39 +16,51 @@ try{registry=JSON.parse(fs.readFileSync(registryPath,'utf8'));}catch(e){fail(`in
 const build=fs.readFileSync(buildLockPath,'utf8');
 const checkpoint=fs.readFileSync(checkpointPath,'utf8');
 const active=registry.activeBaseline||{};
+const runtime=registry.currentRuntime||{};
 const candidate=registry.candidate||{};
+const invariant='empalmedRuntimeVersion == candidateVersion; activeBaselineVersion advances only after postGatesAndVisualFreeze';
 
-if(registry.invariant!=='acceptedCandidateVersion == empalmedVersion == activeBaselineVersion') fail('invariant changed');
-if(active.status!=='accepted_and_empalmed'||active.accepted!==true||active.empalmed!==true) fail('active baseline is not accepted_and_empalmed');
-if(!active.version||!active.sourceZipSha256||!active.manifestFile||!active.aggregateSha256) fail('active baseline evidence incomplete');
-if(!build.includes(`sourceZipSha256:'${active.sourceZipSha256}'`)&&!build.includes(`sourceZipSha256: '${active.sourceZipSha256}'`)) fail('build lock source ZIP differs from registry');
-if(!build.includes(`manifestFile:'${active.manifestFile}'`)&&!build.includes(`manifestFile: '${active.manifestFile}'`)) fail('build lock manifest differs from registry');
-if(!build.includes(`aggregateSha256:'${active.aggregateSha256}'`)&&!build.includes(`aggregateSha256: '${active.aggregateSha256}'`)) fail('build lock aggregate differs from registry');
+if(registry.invariant!==invariant) fail('transition invariant changed');
+if(active.status!=='active_baseline_frozen'||active.accepted!==true||active.empalmed!==true||active.active!==true||active.visualValidated!==true) fail('last frozen baseline evidence is incomplete');
+if(!active.version||!active.sourceZipSha256||!active.manifestFile||!active.aggregateSha256) fail('last frozen baseline identity incomplete');
+if(!runtime.version||!runtime.sourceZipSha256||!runtime.manifestFile||!runtime.aggregateSha256||!runtime.empalmeCommit) fail('current empalmed runtime evidence incomplete');
+if(runtime.version!==candidate.version||runtime.sourceZipSha256!==candidate.sourceZipSha256||runtime.manifestFile!==candidate.manifestFile||runtime.aggregateSha256!==candidate.aggregateSha256) fail('current runtime and candidate registry differ');
+if(runtime.accepted!==true||runtime.empalmed!==true||candidate.accepted!==true||candidate.empalmed!==true) fail('current runtime is not physically accepted and empalmed');
 
 const allowed=new Set(registry.allowedCandidateStatuses||[]);
 if(!allowed.has(candidate.status)) fail(`unsupported candidate status: ${candidate.status}`);
-if(candidate.status==='accepted_and_empalmed'){
-  if(candidate.accepted!==true||candidate.empalmed!==true) fail('accepted candidate is not empalmed');
-  if(candidate.version!==active.version) fail('accepted candidate and active baseline differ');
-  if(candidate.sourceZipSha256!==active.sourceZipSha256) fail('accepted candidate ZIP and active baseline differ');
-}else{
-  if(candidate.accepted===true||candidate.empalmed===true) fail('unaccepted candidate cannot be accepted or empalmed');
-  if(candidate.version===active.version) fail('rejected/pending candidate cannot replace active baseline');
+if(candidate.status!==runtime.status) fail('candidate and current runtime statuses differ');
+
+const manifestPath=path.join(root,runtime.manifestFile);
+if(!fs.existsSync(manifestPath)) fail(`current runtime manifest missing: ${runtime.manifestFile}`);
+let manifest;
+try{manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));}catch(e){fail(`invalid current runtime manifest: ${e.message}`);}
+if(manifest.version!==runtime.version||manifest.candidateSha256!==runtime.sourceZipSha256||manifest.aggregateSha256!==runtime.aggregateSha256) fail('manifest and current runtime registry differ');
+
+for(const [label,value] of [['sourceZipSha256',runtime.sourceZipSha256],['manifestFile',runtime.manifestFile],['aggregateSha256',runtime.aggregateSha256]]){
+  if(!build.includes(`${label}:'${value}'`)&&!build.includes(`${label}: '${value}'`)) fail(`build lock ${label} differs from current runtime`);
 }
 
-for(const forbidden of registry.promotionRule?.forbiddenIntermediateStates||[]){
-  if(checkpoint.includes(forbidden)) fail(`forbidden intermediate state documented: ${forbidden}`);
+if(runtime.status==='empalmed_pending_post_gates'){
+  if(runtime.active!==false||candidate.active!==false) fail('pending runtime cannot be active baseline');
+  if(runtime.postGatesPassed!==false||candidate.postGatesPassed!==false) fail('pending runtime falsely marks post-gates passed');
+  if(runtime.visualValidated!==false||candidate.visualValidated!==false) fail('pending runtime falsely marks visual validation');
+  if(runtime.version===active.version) fail('pending runtime must remain distinct from the last frozen rollback baseline');
+  if(!checkpoint.includes(`${runtime.version} empalmada`)) fail('canonical checkpoint does not record current empalmed runtime');
+  if(!checkpoint.includes('ACTIVE_BASELINE')||!checkpoint.toLowerCase().includes('pendiente')) fail('canonical checkpoint does not keep freeze pending');
+}else if(runtime.status==='active_baseline_frozen'){
+  if(runtime.active!==true||candidate.active!==true||runtime.postGatesPassed!==true||runtime.visualValidated!==true) fail('frozen runtime lacks completed post-gates/visual evidence');
+  if(active.version!==runtime.version||active.sourceZipSha256!==runtime.sourceZipSha256) fail('frozen runtime and active baseline differ');
+}else{
+  fail(`unsupported current runtime status: ${runtime.status}`);
 }
-for(const phrase of ['baseline auditada de continuidad','continuity baseline','source lock vigente: V110.\n- V111']){
-  if(checkpoint.toLowerCase().includes(phrase.toLowerCase())) fail(`ambiguous baseline phrase present: ${phrase}`);
-}
-if(!checkpoint.includes('Última candidata aceptada = candidata empalmada = baseline activa')) fail('atomic rule missing from checkpoint');
 
 console.log(JSON.stringify({
   ok:true,
   decision:'PASS_PROTOTYPE_BASELINE_ATOMICITY',
-  activeBaseline:active.version,
-  activeStatus:active.status,
+  lastFrozenBaseline:active.version,
+  currentRuntime:runtime.version,
+  currentRuntimeStatus:runtime.status,
   candidate:candidate.version,
   candidateStatus:candidate.status,
   invariant:registry.invariant
