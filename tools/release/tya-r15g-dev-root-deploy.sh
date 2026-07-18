@@ -45,12 +45,17 @@ validate_authorization() {
     repository:'paulaosoriof86/demoCXOrbia', branch:'docs-tya-v6-v71-audit', runtimeVersion:'V159',
     targetProject:'cxorbia-backend-dev', hostingTarget:'cxorbia-dev', confirm:'DEPLOY_DEV_ROOT_R15G', scope:'hosting_dev_only'
   };
+  const deployEligibleStates = new Set([
+    'empalmed_pending_post_gates',
+    'hosting_dev_remote_smoke_pass_pending_visual'
+  ]);
   const fail = message => { throw new Error(message); };
   if (registry.repository !== expected.repository) fail('repository mismatch');
   if (registry.integrationBranch !== expected.branch) fail('integration branch mismatch');
   if (runtime.version !== expected.runtimeVersion) fail('runtime version mismatch');
-  if (runtime.status !== 'empalmed_pending_post_gates') fail('runtime state is not deploy-eligible');
-  if (runtime.accepted !== true || runtime.empalmed !== true || runtime.active !== false) fail('runtime transition evidence mismatch');
+  if (!deployEligibleStates.has(runtime.status)) fail(`runtime state is not deploy-eligible: ${runtime.status || 'missing'}`);
+  if (runtime.accepted !== true || runtime.empalmed !== true || runtime.active !== false || runtime.visualValidated !== false) fail('runtime transition evidence mismatch');
+  if (runtime.status === 'hosting_dev_remote_smoke_pass_pending_visual' && (runtime.postGatesPassed !== true || runtime.hostingDevPassed !== true || runtime.remoteSmokePassed !== true)) fail('visual-pending runtime lacks previous Hosting DEV evidence');
   if (manifest.version !== runtime.version || manifest.candidateSha256 !== runtime.sourceZipSha256 || manifest.aggregateSha256 !== runtime.aggregateSha256) fail('manifest/runtime mismatch');
   for (const value of [runtime.manifestFile,runtime.sourceZipSha256,runtime.aggregateSha256]) if (!value || !buildLock.includes(value)) fail('build lock mismatch');
   if (eventName === 'push') {
@@ -62,7 +67,7 @@ validate_authorization() {
     if (request.baseHead !== process.env.CXORBIA_EVENT_BEFORE) fail('request is not bound to previous HEAD');
     if (request.runtimeVersion !== runtime.version || request.sourceZipSha256 !== runtime.sourceZipSha256 || request.manifestFile !== runtime.manifestFile || request.aggregateSha256 !== runtime.aggregateSha256 || request.empalmeCommit !== runtime.empalmeCommit) fail('request runtime evidence mismatch');
   }
-  console.log(JSON.stringify({ok:true,decision:'PASS_HOSTING_DEV_EXECUTION_AUTHORIZATION',eventName,runtimeVersion:runtime.version,targetProject:expected.targetProject,hostingTarget:expected.hostingTarget,production:false,dataWrites:false},null,2));
+  console.log(JSON.stringify({ok:true,decision:'PASS_HOSTING_DEV_EXECUTION_AUTHORIZATION',eventName,runtimeVersion:runtime.version,runtimeStatus:runtime.status,targetProject:expected.targetProject,hostingTarget:expected.hostingTarget,production:false,dataWrites:false},null,2));
 NODE
 }
 
