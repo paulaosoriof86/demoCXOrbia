@@ -3,35 +3,25 @@
   Entrada de compatibilidad R15G.
 
   La implementación vigente vive en `tya-build-live-hr-source-safe-r20.mjs`.
-  Cuando no existe credencial de Sheets API, este wrapper usa el XLSX público
-  únicamente para descubrir nombres reales de tabs —nunca para leer sus filas—
-  y bloquea el comportamiento de GViz que devuelve silenciosamente otra hoja
-  cuando se consulta un nombre inexistente.
+  Cuando no existe acceso Sheets API, GViz se consulta por `gid` tomado de un
+  inventario source-safe verificado mediante Drive/Sheets metadata. Así se
+  evita que Google devuelva silenciosamente la primera hoja para un nombre de
+  tab inexistente. El inventario contiene solo títulos/gids, nunca filas o PII.
 */
-import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 import process from 'node:process';
-import {
-  unzipXlsx,
-  sharedStrings,
-  workbookSheets
-} from './tya-hr-source-xlsx-lite.mjs';
 
 const originalFetch=globalThis.fetch;
-const spreadsheetId=process.env.CXORBIA_HR_LIVE_SHEET_ID||'1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4';
-let validTabNames=null;
+const inventoryFile=path.resolve('backend/contracts/tya-hr-tab-inventory-r20-v1.json');
 
 if(!process.env.FIREBASE_SERVICE_ACCOUNT_JSON){
-  const nonce=`${Date.now()}-${crypto.randomBytes(6).toString('hex')}`;
-  const url=`https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=xlsx&_cxmeta=${nonce}`;
-  const response=await originalFetch(url,{redirect:'follow',headers:{'Cache-Control':'no-cache, no-store, max-age=0','Pragma':'no-cache','Expires':'0'}});
-  const buffer=Buffer.from(await response.arrayBuffer());
-  if(!response.ok||buffer.length<4||buffer[0]!==0x50||buffer[1]!==0x4b){
-    throw new Error(`R20 tab inventory HOLD: XLSX metadata unavailable HTTP ${response.status}`);
+  if(!fs.existsSync(inventoryFile))throw new Error(`R20 tab inventory missing: ${inventoryFile}`);
+  const inventory=JSON.parse(fs.readFileSync(inventoryFile,'utf8'));
+  if(inventory.contractId!=='tya-hr-tab-inventory-r20-v1'||!Array.isArray(inventory.tabs)||!inventory.tabs.length){
+    throw new Error('R20 tab inventory identity/content mismatch.');
   }
-  const files=unzipXlsx(buffer);
-  sharedStrings(files); // valida estructura compartida aunque no se lean filas.
-  validTabNames=new Set(workbookSheets(files).map(sheet=>String(sheet.name||'').trim()));
-  if(!validTabNames.size)throw new Error('R20 tab inventory HOLD: workbook has no sheets.');
+  const tabByTitle=new Map(inventory.tabs.map(tab=>[String(tab.title||'').trim(),tab]));
 
   globalThis.fetch=async (input,init)=>{
     const target=typeof input==='string'?input:input?.url;
@@ -39,9 +29,13 @@ if(!process.env.FIREBASE_SERVICE_ACCOUNT_JSON){
       const parsed=new URL(target);
       if(parsed.pathname.includes('/gviz/tq')){
         const requested=String(parsed.searchParams.get('sheet')||'').trim();
-        if(!validTabNames.has(requested)){
-          return new Response('sheet_not_in_workbook_inventory',{status:404,headers:{'content-type':'text/plain'}});
+        const tab=tabByTitle.get(requested);
+        if(!tab){
+          return new Response('sheet_not_in_verified_inventory',{status:404,headers:{'content-type':'text/plain'}});
         }
+        parsed.searchParams.delete('sheet');
+        parsed.searchParams.set('gid',String(tab.gid));
+        return originalFetch(parsed.toString(),init);
       }
     }catch{}
     return originalFetch(input,init);
