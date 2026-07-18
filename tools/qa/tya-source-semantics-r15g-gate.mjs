@@ -10,7 +10,7 @@
   reviewable and must not be hidden, but it does not block visual runtime while
   the source-level R11D review queue remains the authority for historical identity
   completeness. Array/count inconsistency, empty shoppers or invented identities
-  remain blockers.
+  remain blockers. This gate never materializes, deletes or completes identities.
 */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -35,18 +35,19 @@ const expected = {
 fs.mkdirSync(outDir, { recursive:true });
 
 const report = {
-  schemaVersion:'1.1.0',
+  schemaVersion:'1.1.1',
   gate:'tya-source-semantics-r15g',
   generatedAt:new Date().toISOString(),
   baseUrl,
   expected,
+  shopperCompletenessAuthority:'R11D_review_queue',
   observed:null,
   blockers:[],
   warnings:[],
   pageErrors:[],
   consoleErrors:[],
   decision:'HOLD_NOT_RUN',
-  safeState:{browserReadOnly:true,writes:false,imports:false,deploy:false,production:false,providers:false,payments:false}
+  safeState:{browserReadOnly:true,writes:false,imports:false,shopperMaterialization:false,shopperDeletion:false,deploy:false,production:false,providers:false,payments:false}
 };
 const add = (list, code, detail='') => {
   const value = detail ? `${code}:${detail}` : code;
