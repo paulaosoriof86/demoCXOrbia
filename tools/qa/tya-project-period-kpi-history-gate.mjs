@@ -7,7 +7,8 @@
   - the 14 HR periods are unique and each owns exactly 44 visits;
   - changing MAY/JUN/JUL changes the active visit set and all consumers see the same context;
   - financial/liquidation KPI calculations remain scoped to the active period;
-  - June is executed and remains payment/liquidation control, not pending visits.
+  - June is executed and remains liquidation/payment control, not pending visits;
+  - payment control is read from canonical states and financialControl, never inferred as paid.
 
   Source-safe browser test only. No providers, writes, imports, deploy or production.
 */
@@ -34,6 +35,7 @@ const expected = {
 
 fs.mkdirSync(outDir, { recursive: true });
 const report = {
+  schemaVersion:'1.1.0',
   gate: 'tya-project-period-kpi-history-gate',
   generatedAt: new Date().toISOString(),
   baseUrl,
@@ -44,7 +46,7 @@ const report = {
   blockers: [],
   warnings: [],
   decision: 'HOLD_NOT_RUN',
-  safeState: { sourceSafe:true, writes:false, imported:false, production:false, providersWritten:false, paymentsExecuted:false }
+  safeState: { sourceSafe:true, writes:false, imported:false, production:false, providersWritten:false, paymentsExecuted:false, paymentsInferred:false }
 };
 const block = (code, detail='') => report.blockers.push(detail ? `${code}:${detail}` : code);
 const warn = (code, detail='') => report.warnings.push(detail ? `${code}:${detail}` : code);
@@ -127,11 +129,27 @@ try {
       const finance = window.CX.fin?.porPais ? window.CX.fin.porPais(data) : {};
       const statusCounts = visits.reduce((acc,v)=>{const key=String(v.estado||'unknown');acc[key]=(acc[key]||0)+1;return acc;},{});
       const countryCounts = visits.reduce((acc,v)=>{const key=String(v.pais||v.country||'UNKNOWN');acc[key]=(acc[key]||0)+1;return acc;},{});
+      const submissionStateCounts = visits.reduce((acc,v)=>{const key=String(v.submissionState||'unknown');acc[key]=(acc[key]||0)+1;return acc;},{});
+      const liquidationStateCounts = visits.reduce((acc,v)=>{const key=String(v.liquidationState||'unknown');acc[key]=(acc[key]||0)+1;return acc;},{});
+      const paymentStateCounts = visits.reduce((acc,v)=>{const key=String(v.paymentState||'unknown');acc[key]=(acc[key]||0)+1;return acc;},{});
       const visitIds = visits.map(v=>v.id).sort();
       const executionEvidence = visits.filter(v=>Boolean(v.realizada||v.cuestFecha||v.submittedAt||v.submit)).length;
       const pendingExecution = visits.length - executionEvidence;
-      const paymentConfirmed = visits.filter(v=>Boolean(v.paymentSourceRef)).length;
-      const paymentPending = visits.filter(v=>!v.paymentSourceRef && (v.submit||v.estado==='liquidada'||v.estado==='cuestionario')).length;
+      const confirmedPaymentStates = new Set(['paid','payment_confirmed_external','confirmed']);
+      const pendingPaymentStates = new Set(['pending_financial_source','pending_financial_review','pending_payment_evidence']);
+      const liquidationCandidateStates = new Set(['liquidation_candidate','liquidation_candidate_exact_financial_link']);
+      const isPaymentConfirmed = v => v.paymentConfirmed === true || Boolean(v.paymentSourceRef) || confirmedPaymentStates.has(String(v.paymentState||''));
+      const hasExplicitPaymentControl = v =>
+        v.paymentControlOnly === true ||
+        Boolean(v.financialControl) ||
+        pendingPaymentStates.has(String(v.paymentState||'')) ||
+        liquidationCandidateStates.has(String(v.liquidationState||'')) ||
+        v.submissionState === 'submitted_by_tya' ||
+        Boolean(v.submit || v.submittedAt) ||
+        ['liquidada','cuestionario'].includes(String(v.estado||''));
+      const paymentConfirmed = visits.filter(isPaymentConfirmed).length;
+      const paymentPending = visits.filter(v=>!isPaymentConfirmed(v) && hasExplicitPaymentControl(v)).length;
+      const financialControlCount = visits.filter(v=>Boolean(v.financialControl) || v.paymentControlOnly === true).length;
       const financeVisits = Object.values(finance||{}).reduce((sum,row)=>sum+Number(row?.visRe||0),0);
       return {
         periodKey,
@@ -147,7 +165,11 @@ try {
         postCount:posts.length,
         liquidationCount:liquidations.length,
         financeVisits,
+        financialControlCount,
         statusCounts,
+        submissionStateCounts,
+        liquidationStateCounts,
+        paymentStateCounts,
         countryCounts,
         executionEvidence,
         pendingExecution,
@@ -171,6 +193,8 @@ try {
     if(snapshot.financeVisits > expected.visitsPerPeriod || snapshot.liquidationCount > expected.visitsPerPeriod) block('kpi_exceeds_active_period', key);
     if(key === '2026-06'){
       if(snapshot.pendingExecution !== 0) block('june_has_pending_execution', String(snapshot.pendingExecution));
+      if(snapshot.liquidationCount <= 0 || snapshot.financeVisits <= 0) block('june_liquidation_control_missing');
+      if(snapshot.paymentConfirmed !== 0) block('june_payment_falsely_confirmed', String(snapshot.paymentConfirmed));
       if(snapshot.paymentPending <= 0) block('june_payment_control_missing');
     }
   }
@@ -204,6 +228,7 @@ fs.writeFileSync(path.join(outDir,'report.md'), [
   `Warnings: ${report.warnings.length}`,'',
   '## Blockers',...(report.blockers.length?report.blockers.map(x=>`- ${x}`):['- none']),'',
   '## Warnings',...(report.warnings.length?report.warnings.map(x=>`- ${x}`):['- none']),'',
+  'June payment control is proven only by canonical pending states, liquidation candidates or protected financial-control links; paid is never inferred.','',
   '## Safe state','- source-safe only','- no writes/import/deploy/production/providers/payments',''
 ].join('\n'),'utf8');
 console.log(JSON.stringify(report,null,2));
