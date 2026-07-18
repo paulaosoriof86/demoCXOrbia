@@ -2,11 +2,16 @@
 /*
   CXOrbia Phase A R15F/R17 - build-time source-safe binding.
 
-  It modifies only the checked-out build copy of app/index.html. The V110 source
+  It modifies only the checked-out build copy of app/index.html. The source
   remains unchanged in Git. It injects the generated TyA payload, preserves the
   legacy source-safe bridge for compatibility, and generates a single DEV data
   adapter after core/data-source.js so the visible UI uses TyA/Cinepolis data
   instead of generic demo seeds.
+
+  The generated adapter is intentionally honest about its scope: it represents
+  a protected build-time HR snapshot, not runtime synchronization. Shopper
+  status, rating and operational profile are not invented when the protected
+  source does not provide them.
 */
 
 import fs from 'node:fs';
@@ -86,11 +91,12 @@ window.CX = window.CX || {};
     restriccion: 'Reglas Q1/Q2, franja y visita previa configurables por proyecto.',
     cuestionario: {modo:'configurable',url:'',label:'CXOrbia / TyAOnline / externo / link por visita desde HR'},
     pago: {logica:'Pagos y liquidaciones se controlan por submitido y cruce financiero.',diasPago:null,moneda:'local'},
-    hrMap: {fuente:'HR TyA viva multihoja source-safe',cols:['País','ID cinema','Shopping','Quincena','Franja','Disponible desde','Agendada','Realizada','Cuestionario','Submitido','Liquidación']},
+    hrMap: {fuente:'Snapshot HR TyA multihoja source-safe',cols:['País','ID cinema','Shopping','Quincena','Franja','Disponible desde','Agendada','Realizada','Cuestionario','Submitido','Liquidación']},
     geoloc: false,
     conocimiento: 'TyA/Cinépolis Phase A. Proyecto normal configurable dentro del tenant TyA.',
     sourceSafe: true,
-    importStatus: 'hr_live_source_safe_snapshot_not_imported',
+    importStatus: 'hr_snapshot_source_safe_not_imported',
+    runtimeSyncActive: false,
     snapshotCounts: p.countries || {GT:0,HN:0,total:Number(p.total || 0)}
   }));
 
@@ -144,8 +150,11 @@ window.CX = window.CX || {};
     nombre: s.nombre || 'Shopper protegido',
     pais: s.pais || 'GT',
     ciudad: s.ciudad || '',
-    estado: s.estado || 'Activo',
-    rating: 4.3,
+    estado: null,
+    status: null,
+    rating: null,
+    dataLevel: 'protected_reference',
+    operationalProfileAvailable: false,
     visitas: Number(s.visitas || 0),
     realizadas: Number(s.realizadas || 0),
     liquidadas: Number(s.liquidadas || 0),
@@ -196,8 +205,8 @@ window.CX = window.CX || {};
     tenantId:'tya', projectId:'cinepolis', projectName:'Cinépolis', sourceTitle:snapshot.source && snapshot.source.title,
     generatedAt:snapshot.generatedAt, periods:periods.length, tabs:snapshot.counts && snapshot.counts.tabs,
     totalVisits:visits.length, countries:snapshot.counts && snapshot.counts.byCountry,
-    production:false, imported:false, sourceSafe:true, piiProtected:true,
-    note:'HR viva multihoja source-safe. Datos personales de shopper protegidos hasta Auth/roles.'
+    production:false, imported:false, sourceSafe:true, piiProtected:true, runtimeSyncActive:false,
+    note:'Snapshot HR multihoja source-safe. Sin sincronización runtime live; datos personales de shopper protegidos hasta Auth/roles.'
   };
   CX.data.programBase = function(){ return 'Cinépolis'; };
   CX.data.programKey = function(){ return 'cinepolis'; };
@@ -215,8 +224,9 @@ window.CX = window.CX || {};
   if (CX.dataSource) {
     CX.dataSource.mode = 'source_safe_preview';
     CX.dataSource.status = 'ready';
-    CX.dataSource.sourceRef = 'hr-live-multitab:tya:cinepolis';
+    CX.dataSource.sourceRef = 'hr-snapshot-multitab:tya:cinepolis';
     CX.dataSource.updatedAt = snapshot.generatedAt || new Date().toISOString();
+    CX.dataSource.runtimeSyncActive = false;
     CX.dataSource.warnings = shoppers.length === 210 ? ['Gap shopper protegido: 210/213; 3 referencias continúan en revisión.'] : [];
     CX.dataSource.blockers = [];
     CX.dataSource.legacyNote = '';
@@ -225,7 +235,8 @@ window.CX = window.CX || {};
 
   window.CX_BACKEND_DEV = true;
   window.CX_TYA_PHASE_A_PREVIEW = true;
-  window.CX_TYA_HR_VIVA_SOURCE_SAFE = true;
+  window.CX_TYA_HR_VIVA_SOURCE_SAFE = false;
+  window.CX_TYA_HR_SNAPSHOT_SOURCE_SAFE = true;
   window.CX_TYA_VISIBLE_DATA_READY = true;
   window.CX_TYA_VISIBLE_DATA_CONTRACT = {
     tenantId:'tya', rootProjectId:'cinepolis', projectName:'Cinépolis',
@@ -234,12 +245,12 @@ window.CX = window.CX || {};
     currentPeriodId:CX.data.currentProjectId,
     currentPeriodVisits:CX.data.visitas ? CX.data.visitas().length : 0,
     genericProjectCount:periods.filter(p => ['retail','banca','food'].includes(p.id)).length,
-    sourceSafe:true, imported:false, production:false
+    sourceSafe:true, imported:false, production:false, runtimeSyncActive:false
   };
 
   function markVisibleState(){
     const badge = document.querySelector('.tb-demo');
-    if (badge) badge.innerHTML = '<span class="d"></span> DEV TyA · HR viva source-safe';
+    if (badge) badge.innerHTML = '<span class="d"></span> DEV TyA · Snapshot HR source-safe';
     document.documentElement.setAttribute('data-cx-tenant','tya');
     document.documentElement.setAttribute('data-cx-project','cinepolis');
     document.documentElement.setAttribute('data-cx-source','source-safe');
@@ -303,7 +314,7 @@ const valid = after.payloadTags === 1 && after.bridgeTags === 1 && after.adapter
   after.adapterPosition > after.dataSourcePosition && after.appBootPosition > after.adapterPosition;
 
 const report = {
-  schemaVersion:'1.1.0', reportId:'phase-a-source-safe-binding-build-r15f-r17', generatedAt:new Date().toISOString(),
+  schemaVersion:'1.2.0', reportId:'phase-a-source-safe-binding-build-r15f-r17', generatedAt:new Date().toISOString(),
   mode, decision: valid ? 'PASS_VISIBLE_TYA_SOURCE_SAFE_BINDING_R17' : 'FAIL_VISIBLE_TYA_SOURCE_SAFE_BINDING_R17',
   html:path.relative(root,htmlPath).replace(/\\/g,'/'), adapter:path.relative(root,adapterFile).replace(/\\/g,'/'),
   sourceLockRepoFileModifiedByCommit:false, buildCopyModified:mode === 'apply', before, after,
@@ -311,9 +322,13 @@ const report = {
     exactlyOnePayloadTag:after.payloadTags === 1, exactlyOneBridgeTag:after.bridgeTags === 1,
     exactlyOneAdapterTag:after.adapterTags === 1, payloadBeforeData:after.payloadPosition < after.dataPosition,
     bridgeAfterData:after.bridgePosition > after.dataPosition, adapterAfterDataSource:after.adapterPosition > after.dataSourcePosition,
-    adapterBeforeAppBoot:after.adapterPosition < after.appBootPosition, pass:valid
+    adapterBeforeAppBoot:after.adapterPosition < after.appBootPosition,
+    honestSnapshotCopy:!adapterCode.includes('HR viva source-safe'),
+    noInventedShopperRating:!adapterCode.includes('rating: 4.3'),
+    runtimeSyncInactive:adapterCode.includes('runtimeSyncActive:false'),
+    pass:valid && !adapterCode.includes('HR viva source-safe') && !adapterCode.includes('rating: 4.3') && adapterCode.includes('runtimeSyncActive:false')
   },
-  gates:{frontendModulesModified:false,coreFilesModified:false,providerCalls:false,firestoreWrites:false,authWrites:false,imports:false,deploy:false,production:false}
+  gates:{frontendModulesModified:false,coreFilesModified:false,providerCalls:false,firestoreWrites:false,authWrites:false,imports:false,deploy:false,production:false,runtimeSyncActive:false,shopperRatingInvented:false,shopperStatusInvented:false}
 };
 
 fs.mkdirSync(reportDir, { recursive:true });
@@ -323,9 +338,10 @@ fs.writeFileSync(path.join(reportDir,'source-safe-binding-r15f-report.md'), [
   `HTML build copy: ${report.html}`,`Generated adapter: ${report.adapter}`,
   `Payload tags: ${after.payloadTags}`,`Bridge tags: ${after.bridgeTags}`,`Adapter tags: ${after.adapterTags}`,
   `Adapter after data-source: ${report.validation.adapterAfterDataSource}`,
-  `Adapter before app boot: ${report.validation.adapterBeforeAppBoot}`,'',
+  `Adapter before app boot: ${report.validation.adapterBeforeAppBoot}`,
+  `Runtime sync active: false`,`Invented shopper rating/status: false`,'',
   'No modules/core source changes, provider calls, writes, imports, deploy or production.'
 ].join('\n'), 'utf8');
 
 console.log(JSON.stringify(report,null,2));
-process.exitCode = valid ? 0 : 4;
+process.exitCode = report.validation.pass ? 0 : 4;
