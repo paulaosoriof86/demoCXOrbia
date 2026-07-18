@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "requestId": "CXORBIA-TYA-V159-HOSTING-DEV-20260718-03",
+  "requestId": "CXORBIA-TYA-V159-HOSTING-DEV-20260718-04",
   "status": "authorized_once",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-07-18",
@@ -8,7 +8,7 @@
   "scope": "hosting_dev_only",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
-  "baseHead": "d06d0908be16ea5699931be14c51dfb0350c3b95",
+  "baseHead": "219f686f487147bd486abb82c0dce005b8cbed20",
   "runtimeVersion": "V159",
   "sourceZipSha256": "d9d9e767bf6d9a26e0e084deed5d327d801620c36aee1a9bb3cc0c3db0e54ce2",
   "manifestFile": "app/docs/MANIFEST-V159-EMPALME-DIRECTO-20260717.json",
