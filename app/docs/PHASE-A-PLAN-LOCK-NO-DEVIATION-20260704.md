@@ -1,7 +1,7 @@
 # CXOrbia TyA — Plan de trabajo Phase A con validación visual continua
 
 Fecha original: 2026-07-04  
-Última revisión: 2026-07-17, post-empalme V159  
+Última revisión: 2026-07-18, validación visual V159 NO APROBADA  
 Estado: ACTIVO, OBLIGATORIO Y PREVALENTE
 
 ## 1. Objetivo operativo
@@ -35,24 +35,40 @@ FUENTE Y REGLA
 → FREEZE DEL CORTE
 ```
 
-Sin validación visual, el estado máximo es:
+Sin validación visual, el estado máximo es `TECHNICAL_PASS_PENDING_VISUAL`. No puede declararse `cerrado`, `operativo`, `ACTIVE_BASELINE` ni pasar al siguiente corte.
 
-`TECHNICAL_PASS_PENDING_VISUAL`
+## 3. Regla reforzada para candidatas críticas antes del empalme
 
-No puede declararse `cerrado`, `operativo`, `ACTIVE_BASELINE` ni pasar al siguiente corte.
+La validación visual V159 demostró un P0 semántico que los gates estructurales no detectaron. Por autorización expresa de Paula, toda candidata futura que toque módulos críticos Phase A debe seguir:
 
-## 3. Diagnóstico por capa antes de corregir
+```text
+EXECUTION_LANE_READY
+→ AUDITORÍA DELTA ESTRUCTURAL
+→ COMPOSITE TEMPORAL candidata + backend/overlays vigentes
+→ GATES SEMÁNTICOS CON SNAPSHOT REAL/SOURCE-SAFE
+→ VISUALIZACIÓN PRE-EMPALME DEL COMPOSITE EXACTO
+→ APROBACIÓN/HOLD DE PAULA
+→ APPLY_DELTA_DIRECTLY DEL MISMO HASH APROBADO
+→ COMMIT/PUSH ATÓMICO
+→ GATES POST-EMPALME DE IDENTIDAD
+→ FREEZE
+```
+
+El composite temporal no crea rama ni PR nuevo, no modifica `main`, no transporta el ZIP archivo por archivo y no traslada acciones técnicas a Paula.
+
+## 4. Diagnóstico por capa antes de corregir
 
 Ante una diferencia visual:
 
 - datos PASS + pantalla FAIL: revisar runtime, adapter, selector, router o frontend;
 - datos FAIL + pantalla FAIL: corregir fuente, mapping o backend;
 - contenido PASS + interacción FAIL: corregir flujo/evento/estado del módulo;
-- build o fuente no coinciden: invalidar la revisión y publicar el build exacto.
+- build o fuente no coinciden: invalidar la revisión y publicar el build exacto;
+- KPI, fases y listados no coinciden: bloquear freeze y localizar derivaciones duplicadas antes de tocar copy o UI.
 
 Claude solo recibe una corrección cuando se demuestre que la causa está en frontend y se identifique el archivo o módulo responsable. No se envían paquetes generales ni se repite toda la auditoría.
 
-## 4. Definición de terminado por corte
+## 5. Definición de terminado por corte
 
 Un corte solo queda `FROZEN` cuando existen:
 
@@ -65,7 +81,7 @@ Un corte solo queda `FROZEN` cuando existen:
 
 Solo un `P0_PROVEN` bloquea la congelación.
 
-## 5. Estado de partida
+## 6. Estado de partida actualizado
 
 ### Cerrado
 
@@ -75,59 +91,69 @@ Solo un `P0_PROVEN` bloquea la congelación.
 - Gates estructurales iniciales: sintaxis, scripts, módulos, BOM y delta pendiente.
 - HR source-safe canonizada con 14 periodos y 616 visitas.
 - Adapter portable `CX.data`, materialization plan, Auth/RBAC readiness, importadores, reviewQueue, rollback y contratos de sync preparados.
+- Hosting DEV y smoke remoto técnico PASS.
 
-### No cerrado todavía
+### No cerrado
 
-V159 permanece en:
+V159 fue `NO APROBADA` visualmente y permanece en `HOLD_VISUAL_SEMANTIC_P0_PROVEN`. No es `ACTIVE_BASELINE`.
 
-`TECHNICAL_PASS_PENDING_VISUAL`
-
-La URL histórica V131/R18D no prueba V159.
-
-## 6. Plan de trabajo vigente
+## 7. Plan de trabajo vigente
 
 ### CORTE 0 — V159 post-empalme
 
+Estado: **NO CERRADO**
+
+La revisión visual demostró:
+
+- estados de cuestionario/submitido inconsistentes en mayo/junio;
+- KPI, fases y listados divergentes;
+- liquidaciones contaminadas por estado operativo;
+- julio sin asignar/disponibles no alineado a TyA;
+- Shopper sin visitas elegibles;
+- proyecto+periodo fijo en Shopper/Cliente;
+- Cliente sin Academia;
+- comparativo trimestral sin histórico;
+- manuales superficiales.
+
+Fuente: `app/docs/VALIDACION-VISUAL-V159-NO-APROBADO-20260718.md`.
+
+### CORTE 0B — Motor canónico de estados + configuración tenant/login
+
 Estado: **ACTIVO AHORA**
 
-Trabajo técnico:
+Objetivo: corregir la causa raíz antes de repetir visualización.
 
-- verificar HEAD, manifest, source lock y build exacto;
-- ejecutar gates semánticos del runtime V159;
-- ejecutar smoke local/static Admin, Shopper, Cliente y Academia.
+Trabajo:
 
-Validación visual obligatoria:
+1. Verificar mapping HR vigente para mayo/junio/julio.
+2. Construir tabla de verdad por visita.
+3. Separar estados explícitos: `assignmentState`, `scheduleState`, `executionState`, `questionnaireState`, `submissionState`, `liquidationState`, `paymentState`.
+4. Hacer que Dashboard, Visitas, Shopper y Finanzas consuman una única derivación canónica.
+5. Eliminar derivaciones duplicadas por `v.estado` en consumidores visuales.
+6. Crear gates de reconciliación KPI/fases/listados/Finanzas.
+7. Definir contrato de tenant: países, banderas, proyectos activos/inactivos, roles visibles en login, proyecto inicial, scopes por rol y branding.
+8. Corregir exposición de proyecto/periodo por rol.
+9. Corregir Academia Cliente y formato de manuales mediante tarea frontend focalizada.
+10. Desplegar el build corregido en Hosting DEV y repetir la validación visual.
 
-- login TyA sin duplicados ni demo engañosa;
-- proyecto y periodo separados;
-- cambio de periodo que modifique datos, KPIs y filas;
-- Dashboard, Proyectos, Periodos, Histórico y Visitas;
-- rutas Admin, Shopper, Cliente y Academia;
-- copy honesto de integraciones.
+Criterio de cierre:
 
-Cierre:
+- mayo/junio/julio coinciden con la HR y la tabla de verdad;
+- KPI, fases, listados y liquidaciones coinciden;
+- Shopper ve las visitas elegibles;
+- proyecto/periodo están separados en todos los roles;
+- login muestra solo roles configurados;
+- banderas corresponden a países configurados;
+- Cliente ve Academia si tiene contenido/permiso;
+- manuales se distinguen de cursos.
 
-- Hosting DEV V159 solo con autorización separada;
-- smoke remoto sobre el mismo commit;
-- revisión de Paula;
-- freeze de V159 como `ACTIVE_BASELINE`.
-
-No se inicia Firebase/backend limpio hasta cerrar este corte.
+No se inicia Corte 1 hasta congelar Corte 0B.
 
 ### CORTE 1 — Contexto, HR e histórico
 
-Objetivo:
+Objetivo: demostrar que la plataforma entiende TyA/Cinépolis y que el selector consulta datos reales distintos.
 
-Demostrar que la plataforma entiende TyA/Cinépolis y que el selector consulta datos reales distintos.
-
-Módulos:
-
-- Dashboard Operativo;
-- Proyectos;
-- Periodos;
-- Histórico;
-- Visitas;
-- estado/origen HR.
+Módulos: Dashboard Operativo, Proyectos, Periodos, Histórico, Visitas y estado/origen HR.
 
 Criterios:
 
@@ -144,16 +170,7 @@ Cierre visual obligatorio antes de avanzar.
 
 ### CORTE 2 — Ciclo shopper y operación de campo
 
-Módulos:
-
-- Visitas Disponibles;
-- Postulaciones;
-- Reservas/agenda;
-- Mi Día;
-- Mis Visitas;
-- Shoppers;
-- Certificación;
-- detalle e historial de visita.
+Módulos: Visitas Disponibles, Postulaciones, Reservas/agenda, Mi Día, Mis Visitas, Shoppers, Certificación, detalle e historial de visita.
 
 Criterios:
 
@@ -169,13 +186,7 @@ Cierre visual obligatorio antes de avanzar.
 
 ### CORTE 3 — Finanzas, liquidaciones y pagos
 
-Módulos:
-
-- Dashboard Financiero;
-- Movimientos;
-- Liquidaciones;
-- Lotes;
-- Beneficios del shopper.
+Módulos: Dashboard Financiero, Movimientos, Liquidaciones, Lotes y Beneficios del shopper.
 
 Criterios:
 
@@ -191,11 +202,7 @@ Cierre visual obligatorio antes de avanzar.
 
 ### CORTE 4 — Backend nuevo, limpio y `CX.data` read-only
 
-Prerequisito:
-
-- proyecto Firebase nuevo y vacío verificado;
-- no reutilizar Auth/Firestore no vacíos de `cxorbia-backend-dev`;
-- sin base vieja.
+Prerequisito: proyecto Firebase nuevo y vacío verificado; no reutilizar Auth/Firestore no vacíos de `cxorbia-backend-dev`; sin base vieja.
 
 Trabajo:
 
@@ -204,47 +211,28 @@ Trabajo:
 - conectar `CX.data` en el único punto autorizado;
 - impedir fallback demo ante error.
 
-Validación visual:
-
-Repetir Cortes 1, 2 y 3 con señal visible de fuente backend read-only.
+Validación visual: repetir Cortes 1, 2 y 3 con señal visible de fuente backend read-only.
 
 No se autorizan materialización ni writes si la lectura visual no coincide con la baseline source-safe.
 
 ### CORTE 5 — Materialización controlada DEV
 
-Trabajo:
-
-- regenerar el plan dry-run contra V159 y la fuente vigente;
+- regenerar el plan dry-run contra la baseline aprobada y la fuente vigente;
 - confirmar conteos, rutas, lotes, idempotencia y cero datos sensibles;
 - materializar solo con autorización expresa;
 - aplicar overlays exactos y enviar conflictos a reviewQueue;
 - mantener pagos y certificaciones pendientes si la fuente no confirma.
 
-Validación visual:
-
-- muestras GT/HN;
-- trazabilidad por tenant, proyecto, periodo, `visitId/hrRowId`, shopper y fuente;
-- ausencia de duplicados;
-- cero pagos/certificaciones inventados.
+Validación visual: muestras GT/HN, trazabilidad por tenant/proyecto/periodo/llaves, ausencia de duplicados y cero pagos/certificaciones inventados.
 
 ### CORTE 6 — Auth, RBAC y alcance por rol
-
-Trabajo:
 
 - identidades opacas de prueba;
 - claims por persona + rol + scope + bundles;
 - rules deploy bajo autorización separada;
 - sin importar Auth legacy.
 
-Perfiles visuales:
-
-- tenant owner/admin;
-- coordinador/representante por país;
-- operativo;
-- finanzas;
-- certificación;
-- cliente admin/viewer;
-- shopper.
+Perfiles visuales: tenant owner/admin, coordinador/representante por país, operativo, finanzas, certificación, cliente admin/viewer y shopper.
 
 Validar rutas, acciones, países, proyectos, datos visibles, Academia y notificaciones. Ver una ruta no equivale a tener permiso para ejecutar la acción.
 
@@ -264,41 +252,21 @@ Casos mínimos:
 - evidencia protegida;
 - pago nunca confirmado por inferencia.
 
-Llaves obligatorias:
-
-- `tenantId`;
-- `projectId`;
-- `visitId/hrRowId`;
-- `shopperId`;
-- `assignmentSource`;
-- `assignmentSyncStatus`;
-- `lastSyncedAt`.
+Llaves obligatorias: `tenantId`, `projectId`, `visitId/hrRowId`, `shopperId`, `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`.
 
 Make, Storage, Gemini y HR writes se activan únicamente por gates separados.
 
 ### CORTE 8 — Ensayo final y producción
 
-Prerequisitos:
+Prerequisitos: cortes 0B–7 congelados, rollback probado, smoke integral, source lock final, cero conexión a base vieja y autorización expresa de Paula.
 
-- cortes 0–7 congelados;
-- rollback probado;
-- smoke integral;
-- source lock final;
-- cero conexión a base vieja;
-- autorización expresa de Paula.
+Secuencia: decisión `GO`, `GO_WITH_WARNINGS`, `HOLD` o `NO_GO`; merge/deploy solo con autorización específica; smoke de producción; monitoreo inicial.
 
-Secuencia:
-
-- decisión `GO`, `GO_WITH_WARNINGS`, `HOLD` o `NO_GO`;
-- merge/deploy solo con autorización específica;
-- smoke de producción;
-- monitoreo inicial.
-
-## 7. Cadencia de revisión de Paula
+## 8. Cadencia de revisión de Paula
 
 Paula revisa antes de pasar al siguiente corte operativo:
 
-1. V159 post-empalme;
+1. Corte 0B corregido;
 2. contexto/HR/histórico;
 3. ciclo shopper;
 4. finanzas/certificaciones;
@@ -308,17 +276,9 @@ Paula revisa antes de pasar al siguiente corte operativo:
 8. sync/evidencias;
 9. preproducción.
 
-No se solicita revisión después de cada script. Sí se exige revisión antes de avanzar al siguiente corte.
+Formato: `APROBADO`, `DIFERENCIA: esperado / observado` o `ERROR: acción realizada / resultado`.
 
-Formato de respuesta:
-
-- `APROBADO`;
-- `DIFERENCIA: esperado / observado`;
-- `ERROR: acción realizada / resultado`.
-
-Captura solo cuando exista diferencia o error.
-
-## 8. Qué no se reabre desde cero
+## 9. Qué no se reabre desde cero
 
 - revisión admin funcional;
 - submitido HR-driven/configurable;
@@ -331,66 +291,31 @@ Captura solo cuando exista diferencia o error.
 - reviewQueue/conflictos;
 - rollback/auditoría;
 - HR canonical/source-safe;
-- R11D, R14C, R18A/R18B/R18D;
 - manifests y source locks previos.
 
 Se ejecutan, complementan o corrigen focalizadamente contra la baseline vigente.
 
-## 9. Bloqueo externo vivo
+## 10. Bloqueo externo vivo
 
-La creación automática del proyecto Firebase nuevo y vacío continúa bloqueada por IAM.
+La creación automática del proyecto Firebase nuevo y vacío continúa bloqueada por IAM. `cxorbia-backend-dev` puede usarse para Hosting DEV controlado, pero no como nueva base TyA porque Auth/Firestore no están vacíos.
 
-`cxorbia-backend-dev` puede usarse para Hosting DEV controlado, pero no como nueva base TyA porque Auth/Firestore no están vacíos.
+## 11. Claude/prototipo
 
-## 10. Claude/prototipo
-
-- V159 es la candidata empalmada.
-- No solicitar V160 por rutina.
-- Solo un P0 frontend reproducible justifica corrección inmediata.
-- P1/P2 se acumulan por archivo/módulo y no bloquean la baseline.
+- No solicitar nueva candidata por rutina.
+- Claude solo recibe tareas frontend localizadas después del contrato backend.
 - Claude no modifica backend, contratos, adapters, tools, Firebase ni proveedores.
+- No puede recalcular lógica de negocio dentro de módulos UI.
 
-## 11. Academia y documentación
+## 12. Academia y documentación
 
-Cada corte debe registrar:
+Cada corte debe registrar fuente/ambiente, rol, comportamiento esperado, errores y resolución, proyecto vs periodo, import/materialización, certificaciones/pagos, sync/rollback, estado real de proveedores, manuales, checklists, glosario y notificaciones.
 
-- fuente y ambiente;
-- rol;
-- comportamiento esperado;
-- errores y resolución;
-- proyecto vs periodo;
-- import/materialización;
-- certificaciones y pagos;
-- sync y rollback;
-- estado real de proveedores;
-- manuales, checklists, glosario y notificaciones.
+Los manuales deben ser documentos/instructivos CXOrbia profundos; no se aceptan cursos breves presentados como manuales.
 
-## 12. Cierre obligatorio de cada bloque
+## 13. Cierre obligatorio de cada bloque
 
-Informar siempre:
+Informar siempre: corte trabajado, qué se hizo, evidencia técnica, evidencia visual, avance Phase A, qué no se reabrió, Claude/prototipo, Academia, pendiente real, siguiente corte exacto, estado seguro y bloqueo comprobado.
 
-1. corte trabajado;
-2. qué se hizo;
-3. evidencia técnica;
-4. evidencia visual;
-5. avance Phase A;
-6. qué no se reabrió;
-7. Claude/prototipo;
-8. Academia;
-9. pendiente real;
-10. siguiente corte exacto;
-11. estado seguro;
-12. bloqueo comprobado.
+## 14. Estado seguro
 
-## 13. Estado seguro
-
-Hasta autorización específica:
-
-- sin merge;
-- sin producción;
-- sin import real;
-- sin Firestore/Auth/Storage/HR writes;
-- sin Make/Gemini live;
-- sin pagos;
-- sin base vieja conectada;
-- sin datos sensibles crudos en repo.
+Hasta autorización específica: sin merge, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live, pagos, base vieja conectada ni datos sensibles crudos en repo.
