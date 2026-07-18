@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 /*
   CXOrbia TyA Phase A R18D — visible overlay smoke.
-  Browser-only and read-only. Validates the V131 build copy after applying the
-  existing R11D/R14C/certification outputs; no providers, writes or deploy.
+
+  Browser-only and read-only. Validates the exact source-safe build after applying
+  existing R11D/R14C/certification outputs. Shopper completeness is source-derived:
+  drift against the last audited reference is reviewable, while empty/inconsistent
+  counts, invented operational facts, payment inference or certification inference
+  remain blockers.
 */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -21,7 +25,7 @@ fs.mkdirSync(outDir, { recursive: true });
 const expected = {
   periods: 14,
   visits: 616,
-  shoppers: 216,
+  shopperReference: 216,
   currentPeriodVisits: 44,
   financialExactLinks: 196,
   financialReviewQueue: 92,
@@ -32,17 +36,18 @@ const expected = {
   requestedAgainAutomatically: 0
 };
 const report = {
-  schemaVersion: '1.1.0',
+  schemaVersion: '1.2.0',
   gate: 'cxorbia-tya-visible-overlays-smoke-r18d',
   generatedAt: new Date().toISOString(),
   baseUrl,
   expected,
+  shopperCompletenessAuthority: 'R11D_review_queue',
   runtime: null,
   modules: [],
   blockers: [],
   warnings: [],
   decision: 'HOLD_NOT_RUN',
-  safeState: { browserOnly: true, providerCalls: false, writes: false, imports: false, deploy: false, production: false, piiOutput: false }
+  safeState: { browserOnly: true, providerCalls: false, writes: false, imports: false, deploy: false, production: false, piiOutput: false, shopperMaterialization: false, shopperDeletion: false, paymentsInferred: false }
 };
 const block = (code, detail = '') => report.blockers.push(detail ? `${code}:${detail}` : code);
 const warn = (code, detail = '') => report.warnings.push(detail ? `${code}:${detail}` : code);
@@ -132,11 +137,16 @@ try {
     return {
       visibleContract: window.CX_TYA_R18D_VISIBLE_CONTRACT || null,
       baseVisibleContract: window.CX_TYA_VISIBLE_DATA_CONTRACT || null,
-      dataSource: { mode: window.CX?.dataSource?.mode || null, status: window.CX?.dataSource?.status || null },
+      sourceSnapshotCount: Number(window.CX_TYA_HR_SOURCE_SAFE?.counts?.shoppers ?? window.CX_TYA_HR_SOURCE_SAFE?.shoppers?.length ?? 0),
+      sourceShopperArrayCount: Array.isArray(window.CX_TYA_HR_SOURCE_SAFE?.shoppers) ? window.CX_TYA_HR_SOURCE_SAFE.shoppers.length : 0,
+      dataSource: { mode: window.CX?.dataSource?.mode || null, status: window.CX?.dataSource?.status || null, runtimeSyncActive: window.CX?.dataSource?.runtimeSyncActive === true },
       periods: projects.length,
       uniquePeriodIds: new Set(projects.map(item => item.id)).size,
       visits: visits.length,
       shoppers: shoppers.length,
+      protectedReferenceShoppers: shoppers.filter(item => item.dataLevel === 'protected_reference' && item.operationalProfileAvailable === false).length,
+      shopperRatingsInvented: shoppers.filter(item => item.dataLevel === 'protected_reference' && item.rating != null).length,
+      shopperStatusesInvented: shoppers.filter(item => item.dataLevel === 'protected_reference' && (item.estado != null || item.status != null)).length,
       currentPeriodVisits: Array.isArray(currentVisits) ? currentVisits.length : 0,
       financialExactLinks: exact.length,
       exactControlsPendingReview: exact.every(item => item.paymentState === 'pending_financial_review'),
@@ -155,7 +165,14 @@ try {
   if (!r.visibleContract || r.visibleContract.integrationId !== 'R18D_VISIBLE_EXISTING_OVERLAYS') block('r18d_visible_contract_missing');
   if (r.periods !== expected.periods || r.uniquePeriodIds !== expected.periods) block('period_count_mismatch', `${r.periods}/${r.uniquePeriodIds}`);
   if (r.visits !== expected.visits) block('visit_count_mismatch', `${r.visits}/${expected.visits}`);
-  if (r.shoppers !== expected.shoppers) block('shopper_count_mismatch', `${r.shoppers}/${expected.shoppers}`);
+  if (!Number.isInteger(r.shoppers) || r.shoppers <= 0) block('shopper_count_empty_or_invalid', String(r.shoppers));
+  if (r.shoppers !== r.sourceSnapshotCount || r.shoppers !== r.sourceShopperArrayCount) block('shopper_source_runtime_count_mismatch', `${r.shoppers}/${r.sourceSnapshotCount}/${r.sourceShopperArrayCount}`);
+  if (r.visibleContract?.shopperCount !== r.shoppers || r.baseVisibleContract?.shopperCount !== r.shoppers) block('shopper_visible_contract_count_mismatch');
+  if (r.shoppers !== expected.shopperReference) warn('shopper_count_drift_review', `${r.shoppers}/${expected.shopperReference}`);
+  if (r.protectedReferenceShoppers !== r.shoppers) block('shopper_protected_reference_contract_mismatch', `${r.protectedReferenceShoppers}/${r.shoppers}`);
+  if (r.shopperRatingsInvented) block('protected_shopper_rating_invented', String(r.shopperRatingsInvented));
+  if (r.shopperStatusesInvented) block('protected_shopper_status_invented', String(r.shopperStatusesInvented));
+  if (r.dataSource.runtimeSyncActive) block('snapshot_falsely_claims_runtime_sync');
   if (r.currentPeriodVisits !== expected.currentPeriodVisits) block('current_period_visit_count_mismatch', `${r.currentPeriodVisits}/${expected.currentPeriodVisits}`);
   if (r.financialExactLinks !== expected.financialExactLinks) block('financial_exact_links_mismatch', `${r.financialExactLinks}/${expected.financialExactLinks}`);
   if (!r.exactControlsPendingReview) block('exact_controls_not_pending_financial_review');
@@ -163,7 +180,7 @@ try {
   if (r.financialReviewQueue !== expected.financialReviewQueue) block('financial_review_queue_mismatch', `${r.financialReviewQueue}/${expected.financialReviewQueue}`);
   if (r.shopperReviewQueue !== expected.shopperReviewQueue) block('shopper_review_queue_mismatch', `${r.shopperReviewQueue}/${expected.shopperReviewQueue}`);
   if (r.certificationReviewQueue !== expected.certificationReviewQueue) block('certification_review_queue_mismatch', `${r.certificationReviewQueue}/${expected.certificationReviewQueue}`);
-  if (r.certificationHoldShoppers !== expected.shoppers || r.certificationFalseConfirmations !== 0) block('certification_hold_mismatch', `${r.certificationHoldShoppers}/${r.certificationFalseConfirmations}`);
+  if (r.certificationHoldShoppers !== r.shoppers || r.certificationFalseConfirmations !== 0) block('certification_hold_mismatch', `${r.certificationHoldShoppers}/${r.shoppers}/${r.certificationFalseConfirmations}`);
   if (r.visibleContract.paidConfirmed !== expected.paidConfirmed || r.visibleContract.paymentLotsCreated !== 0) block('payment_confirmation_inferred');
   if (r.visibleContract.certificationCarryoverConfirmed !== expected.certificationCarryoverConfirmed) block('certification_carryover_inferred');
   if (r.visibleContract.requestedAgainAutomatically !== expected.requestedAgainAutomatically) block('certification_requested_again_automatically');
@@ -175,7 +192,8 @@ try {
   const financeModule = await openModule(page, 'financiero');
   const certificationModule = await openModule(page, 'cert');
 
-  if (shoppersModule.rendered && !/216/.test(shoppersModule.text)) warn('shopper_count_not_visible_in_module', 'runtime_passes_216');
+  if (shoppersModule.rendered && !new RegExp(`\\b${r.shoppers}\\b`).test(shoppersModule.text)) warn('shopper_count_not_visible_in_module', `runtime_source_count_${r.shoppers}`);
+  if (shoppersModule.rendered && /★\s*4\.3|\bActivo\b.*\bCompleto\b/i.test(shoppersModule.text)) block('shopper_module_displays_invented_operational_facts');
   if (financeModule.rendered && /Pagada \(confirmado\)|pago confirmado|lote confirmado/i.test(financeModule.text)) block('finance_module_claims_confirmed_payment');
   if (certificationModule.rendered && !/pendiente de fuente|no hay.*certificaci|banco.*no publicado/i.test(certificationModule.text)) warn('certification_hold_copy_not_visible', clean(certificationModule.text).slice(0, 180));
   if (consoleErrors.length) block('console_errors', String(consoleErrors.length));
@@ -198,6 +216,7 @@ report.warnings = [...new Set(report.warnings)];
 if (report.blockers.length) report.decision = 'FAIL_R18D_VISIBLE_OVERLAYS';
 else if (report.warnings.length) report.decision = 'PASS_WITH_REVIEW_R18D_VISIBLE_OVERLAYS';
 else report.decision = 'PASS_R18D_VISIBLE_OVERLAYS';
+report.ok = report.blockers.length === 0;
 
 fs.writeFileSync(path.join(outDir, 'r18d-visible-overlays-smoke.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
 fs.writeFileSync(path.join(outDir, 'r18d-visible-overlays-smoke.md'), [
@@ -205,7 +224,8 @@ fs.writeFileSync(path.join(outDir, 'r18d-visible-overlays-smoke.md'), [
   `Decision: **${report.decision}**`,
   `Periods: ${report.runtime?.periods ?? 0}`,
   `Visits: ${report.runtime?.visits ?? 0}`,
-  `Shoppers: ${report.runtime?.shoppers ?? 0}`,
+  `Shoppers current/reference: ${report.runtime?.shoppers ?? 0}/${expected.shopperReference}`,
+  `Protected references: ${report.runtime?.protectedReferenceShoppers ?? 0}`,
   `R14C exact controls: ${report.runtime?.financialExactLinks ?? 0}`,
   `Financial review queue: ${report.runtime?.financialReviewQueue ?? 0}`,
   `Certification HOLD shoppers: ${report.runtime?.certificationHoldShoppers ?? 0}`,
@@ -214,7 +234,7 @@ fs.writeFileSync(path.join(outDir, 'r18d-visible-overlays-smoke.md'), [
   ...report.blockers.map(item => `- ${item}`),
   `Warnings: ${report.warnings.length}`,
   ...report.warnings.map(item => `- ${item}`), '',
-  'Browser-only, read-only. No providers, writes, imports, deploy or production.'
+  'Shopper drift is reviewable under R11D and never authorizes identity materialization/deletion. Browser-only, read-only. No providers, writes, imports, deploy or production.'
 ].join('\n') + '\n', 'utf8');
-console.log(JSON.stringify({ decision: report.decision, runtime: report.runtime, modules: report.modules.map(item => ({ token: item.token, target: item.target, rendered: item.rendered, error: item.error || null })), blockers: report.blockers, warnings: report.warnings, safeState: report.safeState }, null, 2));
-process.exitCode = report.blockers.length ? 2 : 0;
+console.log(JSON.stringify({ decision: report.decision, ok: report.ok, runtime: report.runtime, modules: report.modules.map(item => ({ token: item.token, target: item.target, rendered: item.rendered, error: item.error || null })), blockers: report.blockers, warnings: report.warnings, safeState: report.safeState }, null, 2));
+process.exitCode = report.ok ? 0 : 2;
