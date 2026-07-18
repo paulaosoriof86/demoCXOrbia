@@ -1,10 +1,9 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
 Fecha: 2026-07-18  
-Estado: ACTIVO Y OBLIGATORIO  
-Regla: este archivo se lee primero y define la única jerarquía vigente de fuentes.
+Estado: ACTIVO Y OBLIGATORIO
 
-## 1. Fuentes activas y orden obligatorio
+## 1. Lectura obligatoria
 
 1. `00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`
 2. `00-REGLAS-MAESTRAS-CONTEXTO-CONTINUIDAD-CXORBIA-TYA-ACTUALIZADO-20260704.md`
@@ -14,110 +13,70 @@ Regla: este archivo se lee primero y define la única jerarquía vigente de fuen
 6. `ADDENDUM-MAESTRO-ANTIDESVIO-PRODUCCION-REAL-LEGACY-CLAUDE-CXORBIA-TYA-20260709.md`
 7. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`
 8. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
-9. `VALIDACION-VISUAL-V159-NO-APROBADO-20260718.md`
-10. `backend/contracts/phase-a-hr-canonical-visit-state-r20-v1.json`
-11. `backend/config/tya-tenant-runtime-profile.source-safe.json`
-12. `backend/contracts/phase-a-live-execution-checkpoint-v1.json`
-13. `backend/contracts/prototype-baseline-registry-v1.json`
-14. `app/core/build-lock.js`
 
-Después consultar:
+Después consultar contratos R20, CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES-PROTOTIPO, Academia, tracker, PR #7 y HEAD de `docs-tya-v6-v71-audit`.
 
-15. `CAMBIOS-BACKEND.md` y el addendum vigente;
-16. `RESUMEN-PARA-CLAUDE.md` y el addendum vigente;
-17. `PENDIENTES-PROTOTIPO.md` y el addendum vigente;
-18. impacto vigente de Academia;
-19. tracker vigente de Phase A;
-20. PR #7 y HEAD de `docs-tya-v6-v71-audit`.
+## 2. Estado operativo vigente
 
-## 2. Addenda vigentes del bloque actual
-
-- `VALIDACION-VISUAL-V159-NO-APROBADO-20260718.md`
-- `CAMBIOS-BACKEND-ADDENDUM-CORTE-0B-R20-HISTORICO-20260718.md`
-- `RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE-0B-R20-HISTORICO-20260718.md`
-- `PENDIENTES-PROTOTIPO-ADDENDUM-CORTE-0B-R20-HISTORICO-20260718.md`
-- `ACADEMIA-IMPACT-CORTE-0B-R20-HISTORICO-20260718.md`
-- `PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-CORTE-0B-R20-HISTORICO-20260718.md`
-
-Los addenda anteriores de Hosting DEV PASS y de V159 NO APROBADA permanecen como evidencia histórica, pero el estado operativo actual lo gobiernan el checkpoint y los addenda R20.
-
-## 3. Estado operativo que manda
-
-- V159 está auditada y empalmada, pero fue `NO APROBADA` visualmente.
-- Hosting DEV anterior se conserva solo como evidencia del fallo.
-- V159 no es `ACTIVE_BASELINE`.
+- V159 está empalmada, pero aún no es `ACTIVE_BASELINE`.
 - Corte activo: `CORTE 0B — MOTOR CANÓNICO HISTÓRICO + TENANT/LOGIN`.
-- Estado actual: `CORTE_0B_R20_IMPLEMENTED_PENDING_GATES_AND_VISUAL`.
-- El motor R20 aplica a todos los periodos detectados en la HR, no solo mayo/junio/julio.
-- Como mínimo debe cubrirse todo el año vigente si una fuente anterior no puede leerse.
-- Mayo, junio y julio son muestras obligatorias de regresión, no lógica especial.
-- Siguiente acción: ejecutar builder HR vivo R20, gates históricos, revisar conflictos y solo después publicar nuevo Hosting DEV con autorización específica.
+- Estado: `CORTE_0B_R20_TECHNICAL_PASS_PENDING_HOSTING_DEV_VISUAL`.
+- Commit de evidencia: `f9e7f65b7d7d5975d2905a55d25891d36e876255`.
+- Workflow: `29661230006`, resultado `SUCCESS`.
+- HR source-safe: 28 pestañas, 14 periodos, 616 visitas, junio 2025–julio 2026.
+- Los gates históricos, proyecto/periodo, roles, módulos y overlays pasaron.
+- Smoke local/static Admin, Cliente y Shopper pasó.
+- Falta Hosting DEV corregido, smoke remoto y aprobación visual de Paula.
+
+## 3. Evidencia resumida
+
+- 44 visitas por periodo: 34 GT y 10 HN.
+- Mayo y junio 2026: 44 realizadas, 44 cuestionarios y 44 submitidas por mes.
+- Julio 2026: 39 asignadas, 5 sin asignar, 35 programadas, 4 pendientes de programar, 21 realizadas/cuestionario, 7 pendientes de submitido y 14 submitidas.
+- 209 referencias shopper protegidas; la diferencia frente a la referencia 216 queda en revisión, sin inventar ni eliminar identidades.
+- 196 enlaces financieros exactos y 92 elementos de revisión financiera.
+- Cero pagos, lotes o certificaciones inferidos.
+- 40 visitas requieren revisión de calidad/contradicción de fuente.
 
 ## 4. Prevalencia
 
-- Continuidad general: documento maestro actualizado.
-- Candidatas/empalme: addendum canónico de composite previo y carril atómico.
-- Secuencia Phase A: plan canónico.
-- Estado puntual: checkpoint operativo vigente.
+- Empalmes: addendum canónico de carril file-aware y aplicación directa.
+- Phase A: plan canónico.
+- Estado puntual: checkpoint vigente.
 - Semántica HR: contrato R20.
-- Tenant/login: perfil source-safe TyA.
-- Evidencia del P0: validación visual V159 NO APROBADA.
-- Runtime/baseline: registry, build-lock y manifest.
-- Claude: resumen y pendientes vigentes.
-- Academia: addendum maestro e impacto R20 vigente.
 
-## 5. Regla de candidatas futuras
-
-Para toda candidata que toque módulos críticos:
+## 5. Regla de candidatas
 
 ```text
 EXECUTION_LANE_READY
 → AUDITORÍA DELTA
-→ COMPOSITE TEMPORAL DEL MISMO HASH + BACKEND/OVERLAYS
-→ GATES SEMÁNTICOS
-→ VISUALIZACIÓN PRE-EMPALME
-→ APROBACIÓN/HOLD
-→ APPLY_DELTA_DIRECTLY DEL MISMO HASH APROBADO
+→ P0_PROVEN o GO
+→ si GO sin P0: APPLY_DELTA_DIRECTLY
 → COMMIT/PUSH ATÓMICO
 → POST-GATES
+→ VALIDACIÓN VISUAL
 → FREEZE
 ```
 
-La rama viva no recibe la candidata antes de que Paula apruebe visualmente el composite exacto.
+No usar composite previo obligatorio, nueva rama/PR, workflow transportador, conectores archivo por archivo ni tareas manuales para Paula.
 
-## 6. Fuentes superadas o que deben retirarse del panel de Fuentes
+## 6. Fuentes que deben retirarse
 
-No usar como estado operativo:
+- copias con `(1)`;
+- checkpoints que digan que V159 no está empalmada;
+- addenda que exijan visualización antes de empalmar una candidata GO;
+- planes paralelos;
+- ZIPs de candidatas como fuente permanente.
 
-- checkpoints anteriores que declaraban V159 pendiente únicamente de aprobación;
-- copias con `(1)` del índice, addendum de empalme, plan o checkpoint;
-- addenda antiguos de ejecución directa 20260716/20260717;
-- planes paralelos que contradigan el composite pre-empalme;
-- documentos que limiten el Corte 0B a mayo/junio/julio;
-- ZIPs de candidatas como fuente maestra permanente.
+## 7. Siguiente acción exacta
 
-Los históricos pueden permanecer en GitHub, pero no deben competir en Fuentes activas.
-
-## 7. Regla de continuidad
-
-Cada sesión continúa desde el checkpoint vigente. No reconstruye V159, el empalme, adapters, importadores, Auth readiness, reviewQueue, rollback ni Hosting anterior.
-
-Sí continúa focalizadamente con:
-
-- lectura multi-tab completa;
-- motor histórico R20;
-- conflictos de columnas/fechas;
-- reconciliación de consumidores;
-- tenant/login configurable;
-- gates y nueva validación visual.
+1. Publicar Hosting DEV del mismo commit/build, solo con autorización específica.
+2. Ejecutar smoke remoto.
+3. Recibir revisión visual de Paula.
+4. Corregir únicamente diferencias reproducibles.
+5. Congelar Corte 0B con `APROBADO`.
+6. No iniciar Corte 1 antes del freeze.
 
 ## 8. Mantenimiento
 
-Después de cambiar estado, baseline o siguiente acción:
-
-1. actualizar este índice;
-2. actualizar checkpoint y plan;
-3. actualizar registry/contrato cuando corresponda;
-4. registrar CAMBIOS, Claude, PENDIENTES, Academia y tracker;
-5. reemplazar en Fuentes los archivos canónicos, sin duplicarlos;
-6. conservar PR #7 draft/open hasta autorización expresa.
+Al cambiar el estado, reemplazar este índice y el checkpoint canónico; actualizar CAMBIOS, Claude, PENDIENTES, Academia, tracker y PR #7 sin crear copias paralelas.
