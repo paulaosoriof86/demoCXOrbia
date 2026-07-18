@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 /*
-  Gate R20 — comprueba que toda la HR detectada use una sola verdad canónica.
-  No se limita a MAY/JUN/JUL: valida todos los periodos presentes en el payload.
+  Gate R20 — comprueba que toda la HR use una sola verdad canónica.
+
+  El núcleo operativo se recalcula desde HR. La única extensión permitida es
+  un control financiero R14C exacto: convierte la visita en candidata de cruce
+  pendiente, nunca en liquidada/pagada. No se limita a MAY/JUN/JUL.
 */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,14 +26,15 @@ fs.mkdirSync(outDir,{recursive:true});
 
 function fail(message){throw new Error(message);}
 function readSnapshot(){
-  if(!fs.existsSync(input)) fail(`Missing input: ${input}`);
+  if(!fs.existsSync(input))fail(`Missing input: ${input}`);
   const sandbox={window:{}};
   vm.createContext(sandbox);
   vm.runInContext(fs.readFileSync(input,'utf8'),sandbox,{filename:input,timeout:5000});
   const value=sandbox.window.CX_TYA_HR_SOURCE_SAFE;
-  if(!value) fail('Missing window.CX_TYA_HR_SOURCE_SAFE.');
+  if(!value)fail('Missing window.CX_TYA_HR_SOURCE_SAFE.');
   return JSON.parse(JSON.stringify(value));
 }
+function exactFinancialControl(visit){return visit?.financialControl?.matchStatus==='exact_protected_operational_linked';}
 
 const snapshot=readSnapshot();
 const visits=Array.isArray(snapshot.visits)?snapshot.visits:[];
@@ -46,27 +50,35 @@ if(periods.length!==expectedPeriods)block('period_count_mismatch',`${periods.len
 if(visits.length!==expectedVisits)block('visit_count_mismatch',`${visits.length}/${expectedVisits}`);
 if(snapshot.source?.semanticNormalizer!=='r15g+r20')block('semantic_normalizer_not_r20',String(snapshot.source?.semanticNormalizer));
 if(snapshot.source?.canonicalStateAcrossAllDetectedPeriods!==true)block('canonical_history_scope_missing');
-if(snapshot.normalization?.historyScope!=='all_detected_hr_periods')block('history_scope_not_all_detected');
+if(!['all_detected_hr_periods','all_verified_hr_periods'].includes(snapshot.normalization?.historyScope))block('history_scope_not_verified',String(snapshot.normalization?.historyScope));
 
 const recalculated=visits.map(v=>({...v,_derived:deriveCanonicalVisitState(v)}));
 for(const item of recalculated){
-  const v=item;
-  const d=item._derived;
-  const c=v.canonicalFacets||{};
-  const fields=[
-    ['assigned',c.assigned,d.assigned],['scheduled',c.scheduled,d.scheduled],['realized',c.realized,d.realized],
-    ['questionnaire',c.questionnaire,d.questionnaireCompleted],['submitted',c.submitted,d.submitted],
-    ['liquidationCandidate',c.liquidationCandidate,d.liquidationCandidate],
-    ['liquidationConfirmed',c.liquidationConfirmed,d.liquidationConfirmed],['paymentConfirmed',c.paymentConfirmed,d.paymentConfirmed]
-  ];
-  for(const [name,actual,expected] of fields){
-    if(actual!==expected)block('canonical_facet_mismatch',`${v.hrRowId||v.id}:${name}:${actual}/${expected}`);
+  const v=item,d=item._derived,c=v.canonicalFacets||{};
+  const financialLinked=exactFinancialControl(v);
+  const expectedFacets={
+    assigned:d.assigned,
+    scheduled:d.scheduled,
+    realized:d.realized,
+    questionnaire:d.questionnaireCompleted,
+    submitted:d.submitted,
+    liquidationCandidate:d.liquidationCandidate||financialLinked,
+    liquidationConfirmed:d.liquidationConfirmed,
+    paymentConfirmed:d.paymentConfirmed
+  };
+  for(const [name,expected] of Object.entries(expectedFacets)){
+    if(c[name]!==expected)block('canonical_facet_mismatch',`${v.hrRowId||v.id}:${name}:${c[name]}/${expected}`);
   }
   if(v.estado!==d.presentationState)block('presentation_state_mismatch',`${v.hrRowId||v.id}:${v.estado}/${d.presentationState}`);
   if(v.operationalState!==d.operationalStage)block('operational_state_mismatch',`${v.hrRowId||v.id}:${v.operationalState}/${d.operationalStage}`);
-  if(d.submitted && (!d.questionnaireCompleted || !d.realized))block('submitted_chain_not_closed',v.hrRowId||v.id);
-  if(d.paymentConfirmed && !d.liquidationCandidate)block('payment_without_candidate',v.hrRowId||v.id);
-  if(d.controlPendingAssignment && d.assigned && !v.reviewReasons?.includes('control_pending_assignment_but_shopper_present'))block('assignment_control_conflict_hidden',v.hrRowId||v.id);
+  if(d.submitted&&(!d.questionnaireCompleted||!d.realized))block('submitted_chain_not_closed',v.hrRowId||v.id);
+  if(c.paymentConfirmed&&!c.liquidationCandidate)block('payment_without_candidate',v.hrRowId||v.id);
+  if(financialLinked){
+    if(v.paymentState!=='pending_financial_source'||v.paymentControlOnly!==true)block('financial_control_not_pending_source',v.hrRowId||v.id);
+    if(v.paymentConfirmed===true||v.paid===true||v.lotEligible===true)block('financial_control_inferred_payment_or_lot',v.hrRowId||v.id);
+    if(!d.submitted&&!v.reviewReasons?.includes('financial_control_without_hr_submission'))block('financial_control_without_submission_not_reviewed',v.hrRowId||v.id);
+  }
+  if(d.controlPendingAssignment&&d.assigned&&!v.reviewReasons?.includes('control_pending_assignment_but_shopper_present'))block('assignment_control_conflict_hidden',v.hrRowId||v.id);
 }
 
 const history=validateCanonicalHistory(visits,periods);
@@ -85,16 +97,17 @@ for(const expected of summaries){
 const currentYear=new Date().getUTCFullYear();
 const currentYearPeriods=summaries.filter(row=>row.periodKey.startsWith(`${currentYear}-`));
 if(!currentYearPeriods.length)warn('current_year_not_present_in_hr',String(currentYear));
-const oldest=summaries[0]?.periodKey||null;
-const newest=summaries.at(-1)?.periodKey||null;
+const oldest=summaries[0]?.periodKey||null,newest=summaries.at(-1)?.periodKey||null;
+const exactControls=visits.filter(exactFinancialControl);
+const exactWithoutSubmission=exactControls.filter(v=>v.canonicalFacets?.submitted!==true);
 
 const report={
-  schemaVersion:'1.0.0',
+  schemaVersion:'1.1.0',
   gate:'tya-canonical-history-reconciliation-r20',
   generatedAt:new Date().toISOString(),
   input:path.relative(process.cwd(),input).replaceAll('\\','/'),
-  historyScope:'all_detected_hr_periods',
-  observed:{periods:periods.length,visits:visits.length,oldestPeriod:oldest,newestPeriod:newest,currentYearPeriods:currentYearPeriods.map(row=>row.periodKey),reviewRequired:visits.filter(v=>v.reviewRequired===true).length},
+  historyScope:snapshot.normalization?.historyScope||'unknown',
+  observed:{periods:periods.length,visits:visits.length,oldestPeriod:oldest,newestPeriod:newest,currentYearPeriods:currentYearPeriods.map(row=>row.periodKey),reviewRequired:visits.filter(v=>v.reviewRequired===true).length,financialExactLinks:exactControls.length,financialExactLinksWithoutHrSubmission:exactWithoutSubmission.length},
   summaries,
   blockers:[...new Set(blockers)],
   warnings:[...new Set(warnings)],
@@ -109,7 +122,9 @@ fs.writeFileSync(path.join(outDir,'report.md'),[
   `Scope: ${report.historyScope}`,
   `Periods: ${report.observed.periods} (${oldest} → ${newest})`,
   `Visits: ${report.observed.visits}`,
-  `Review required: ${report.observed.reviewRequired}`,'',
+  `Review required: ${report.observed.reviewRequired}`,
+  `Financial exact links: ${report.observed.financialExactLinks}`,
+  `Financial links without HR submit: ${report.observed.financialExactLinksWithoutHrSubmission}`,'',
   '## Blockers',...(report.blockers.length?report.blockers.map(x=>`- ${x}`):['- none']),'',
   '## Warnings',...(report.warnings.length?report.warnings.map(x=>`- ${x}`):['- none'])
 ].join('\n'),'utf8');
