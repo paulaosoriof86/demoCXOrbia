@@ -14,8 +14,9 @@ try{c=JSON.parse(fs.readFileSync(contractPath,'utf8'));r=JSON.parse(fs.readFileS
 const checkpoint=fs.readFileSync(checkpointPath,'utf8');
 const plan=fs.readFileSync(planPath,'utf8');
 const invariant='empalmedRuntimeVersion == candidateVersion; activeBaselineVersion advances only after postGatesAndVisualFreeze';
+const visualPendingState='hosting_dev_remote_smoke_pass_pending_visual';
 
-if(c.version!=='3.0.0') fail('checkpoint contract version drift');
+if(!['3.0.0','3.1.0'].includes(c.version)) fail('checkpoint contract version drift');
 if(c.lastFrozenBaseline?.status!=='active_baseline_frozen'||c.lastFrozenBaseline?.visualValidated!==true) fail('last frozen baseline not preserved');
 if(c.lastFrozenBaseline?.version!==r.activeBaseline?.version||c.lastFrozenBaseline?.sourceZipSha256!==r.activeBaseline?.sourceZipSha256) fail('checkpoint/registry frozen baseline mismatch');
 if(c.currentRuntime?.version!==r.currentRuntime?.version||c.currentRuntime?.status!==r.currentRuntime?.status) fail('checkpoint/registry current runtime mismatch');
@@ -26,7 +27,26 @@ if(c.plan?.[0]!==c.activeBlock?.id||c.activeBlock?.id!=='CORTE_0_V159_POST_EMPAL
 if(c.mandatoryCloseSections?.length!==12) fail('mandatory close sections drift');
 if(c.gates?.production!=='hold'||c.gates?.firestoreWrites!=='hold'||c.gates?.authWrites!=='hold'||c.gates?.storageWrites!=='hold'||c.gates?.hrWrites!=='hold'||c.gates?.realImports!=='hold'||c.gates?.make!=='hold'||c.gates?.gemini!=='hold'||c.gates?.payments!=='hold') fail('unauthorized gate enabled');
 
-for(const marker of ['V159 empalmada','d47ea700f7e48a2b0ba31574a84b89c6a20f3449','ACTIVE_BASELINE','pendiente']) if(!checkpoint.includes(marker)) fail(`canonical checkpoint missing marker: ${marker}`);
+const runtime=c.currentRuntime||{};
+if(runtime.status==='empalmed_pending_post_gates'){
+  if(runtime.postGatesPassed!==false||runtime.visualValidated!==false||runtime.active!==false) fail('pre-gate runtime state mismatch');
+  if(c.gates?.hostingDev!=='authorized_pending_execution'||c.gates?.browserSmoke!=='pending') fail('pre-gate contract gate mismatch');
+}else if(runtime.status===visualPendingState){
+  if(c.version!=='3.1.0') fail('visual-pending state requires checkpoint contract 3.1.0');
+  if(runtime.postGatesPassed!==true||runtime.hostingDevPassed!==true||runtime.remoteSmokePassed!==true||runtime.visualValidated!==false||runtime.active!==false) fail('visual-pending runtime evidence mismatch');
+  if(c.gates?.hostingDev!=='pass'||c.gates?.browserSmoke!=='pass'||c.gates?.remoteSmoke!=='pass'||c.gates?.visualValidation!=='pending'||c.gates?.activeBaselineFreeze!=='pending') fail('visual-pending contract gate mismatch');
+  if(c.completedEvidence?.hostingDevWorkflowRun!==29626385151||c.completedEvidence?.hostingDevArtifactId!==8430697082) fail('Hosting DEV evidence identifiers mismatch');
+  if(c.completedEvidence?.hostingDevArtifactDigest!=='sha256:fbe071cf34561df95c6e4cffa393f3c6851d742eb8f00776c28a3354e4365692') fail('Hosting DEV artifact digest mismatch');
+  if(c.completedEvidence?.remoteProjectPeriodKpiHistory!=='PASS_TYA_PROJECT_PERIOD_KPI_HISTORY') fail('remote project/period gate evidence missing');
+  if(c.completedEvidence?.paidConfirmedOrInferred!==0) fail('payment inference introduced');
+}else if(runtime.status==='active_baseline_frozen'){
+  if(runtime.postGatesPassed!==true||runtime.visualValidated!==true||runtime.active!==true) fail('frozen runtime evidence mismatch');
+}else{
+  fail(`unsupported checkpoint runtime state: ${runtime.status}`);
+}
+
+for(const marker of ['V159','ACTIVE_BASELINE']) if(!checkpoint.includes(marker)) fail(`canonical checkpoint missing marker: ${marker}`);
+if(!checkpoint.toLowerCase().includes('visual')) fail('canonical checkpoint does not preserve visual gate');
 for(const marker of ['CORTE 0','V159 post-empalme','TECHNICAL_PASS_PENDING_VISUAL','Hosting DEV V159']) if(!plan.includes(marker)) fail(`canonical plan missing marker: ${marker}`);
 if(/V159[^\n]{0,80}ACTIVE_BASELINE[^\n]{0,30}(cerrad|congelad|activo)/i.test(checkpoint)) fail('checkpoint prematurely claims V159 active baseline');
 
@@ -34,9 +54,11 @@ console.log(JSON.stringify({
   ok:true,
   decision:'PASS_PHASE_A_LIVE_EXECUTION_CHECKPOINT',
   lastFrozenBaseline:c.lastFrozenBaseline.version,
-  currentRuntime:c.currentRuntime.version,
-  currentRuntimeStatus:c.currentRuntime.status,
+  currentRuntime:runtime.version,
+  currentRuntimeStatus:runtime.status,
   activeBlock:c.activeBlock.id,
   hostingDev:c.gates.hostingDev,
+  remoteSmoke:c.gates.remoteSmoke||'not_applicable',
+  visualValidation:c.gates.visualValidation,
   production:c.gates.production
 },null,2));
