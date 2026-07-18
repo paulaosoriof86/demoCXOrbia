@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 Fecha: 2026-07-18  
-Estado: `HOSTING_DEV_REMOTE_SMOKE_PASS_PENDING_PAULA_VISUAL`
+Estado: `REFRESHED_HOSTING_DEV_REMOTE_SMOKE_PASS_PENDING_PAULA_VISUAL`
 
 ## Estado operativo
 
@@ -10,8 +10,9 @@ Estado: `HOSTING_DEV_REMOTE_SMOKE_PASS_PENDING_PAULA_VISUAL`
 - PR: `#7`, draft/open/no merge
 - V159 auditada GO y empalmada.
 - Commit de empalme: `d47ea700f7e48a2b0ba31574a84b89c6a20f3449`.
-- Estado de runtime: `hosting_dev_remote_smoke_pass_pending_visual`.
-- Preflight, gates locales, Hosting DEV, prueba de build remoto y smoke remoto: PASS.
+- Runtime: `hosting_dev_remote_smoke_pass_pending_visual`.
+- Preflight, gates locales, Hosting DEV, prueba remota del build exacto y smoke remoto: PASS.
+- La corrección raíz de clasificación shopper también está desplegada y validada remotamente.
 - P0 demostrado: no.
 - V159 todavía no es `ACTIVE_BASELINE`; falta únicamente la validación visual de Paula.
 - V131 permanece como rollback visual hasta el freeze de V159.
@@ -20,29 +21,30 @@ Estado: `HOSTING_DEV_REMOTE_SMOKE_PASS_PENDING_PAULA_VISUAL`
 
 `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible`
 
-Build probado:
+Build actualizado probado:
 
 - etiqueta: `v159-r18d-source-safe-20260717-dev`;
-- workflow run: `29626385151`;
-- commit exacto desplegado: `8cf166eea6a0ebd0b2c6221925671d04865999f0`;
-- Firebase Hosting version: `projects/87461567267/sites/cxorbia-backend-dev/versions/c8add179fb326b6a`;
-- artefacto sanitizado: `8430697082`;
-- digest: `sha256:fbe071cf34561df95c6e4cffa393f3c6851d742eb8f00776c28a3354e4365692`.
+- workflow run: `29649918631`;
+- commit exacto desplegado: `91aed5f9bdd54a396bd8758479888516dd1c3013`;
+- Firebase Hosting version: `projects/87461567267/sites/cxorbia-backend-dev/versions/dbb0c50992aba5e2`;
+- artefacto sanitizado: `8431164287`;
+- digest: `sha256:693d05ecfc4621c02321e13a0caf6f40ac2683356ee0893c02a04f027aa3539a`;
+- estado observable GitHub: `cxorbia/v159-hosting-dev = success`.
 
 ## Evidencia cerrada del Corte 0
 
-Todos los pasos del workflow exacto finalizaron PASS:
+Todos los pasos del carril exacto finalizaron PASS:
 
-1. verificación de empalme y alcance Hosting-only;
+1. verificación de empalme, registry, build-lock y alcance Hosting-only;
 2. lectura HR source-safe actual;
 3. canonicalización R18A;
 4. aplicación de resultados existentes R11D, R14C y certificaciones;
-5. binding canónico R15G;
+5. binding canónico R15G con precedencia explícita de `dataLevel`;
 6. overlay visible R18D;
 7. gates locales de fuente, roles, proyecto/periodo/KPI/histórico y overlays;
 8. validación de credencial y acceso exclusivo a Firebase Hosting DEV;
 9. deploy Hosting DEV;
-10. prueba remota del build exacto;
+10. polling de propagación y prueba remota del build/commit exactos;
 11. gates remotos del mismo build;
 12. limpieza de credencial y evidencia sanitizada.
 
@@ -57,22 +59,28 @@ Resultados remotos:
 - proyecto `cinepolis` separado del periodo;
 - junio ejecutado con control de liquidación/pago pendiente y cero pagos confirmados o inferidos;
 - 215 shoppers en la fuente actual frente a referencia 216, bajo revisión R11D;
+- módulo Shoppers: 215 referencias protegidas, 0 activos, 0 inactivos, 0 perfiles completos y 0 incompletos;
+- ratings inventados: `0`;
+- estados shopper inventados: `0`;
 - identidades shopper inventadas: `0`.
 
 ## Bloqueos solucionados de raíz
 
-1. **Proyecto/periodo colapsados:** R18A quedó delegado al binding canónico R15G.
+1. **Proyecto/periodo colapsados:** R18A delega al binding canónico R15G.
 2. **Pérdida de estados en el adapter:** R15G conserva estados operativos, submitido, liquidación, pago y `financialControl`.
 3. **Control de junio evaluado por heurística obsoleta:** R18D expone y el gate valida el sobre financiero source-safe aprobado, sin inferir pagos.
-4. **Carril de deploy dependiente de dispatch y lógica duplicada:** workflow reducido a wrapper y ejecución centralizada en `tools/release/tya-r15g-dev-root-deploy.sh`.
-5. **Carrera de propagación remota:** el ejecutor canónico incorpora polling con cache-busting antes del smoke remoto.
-6. **Estado documental insuficiente:** registry y contrato incorporan el estado intermedio `hosting_dev_remote_smoke_pass_pending_visual`.
+4. **Shopper protegido contado como activo/completo:** el adapter respeta primero `dataLevel`; una referencia protegida nunca se convierte en perfil operativo por tener valores nulos o conteos históricos.
+5. **Carril de deploy dependiente de dispatch y lógica duplicada:** workflow reducido a wrapper y ejecución centralizada en `tools/release/tya-r15g-dev-root-deploy.sh`.
+6. **Carrera de propagación remota:** polling con cache-busting antes del smoke remoto.
+7. **Falta de observabilidad:** el carril publica estado de commit `cxorbia/v159-hosting-dev`.
+8. **Gates V110 obsoletos:** retirados del carril automático vigente.
+9. **Firestore drift disparado por cambios frontend/gates:** limitado a evidencia backend/Firestore real.
+10. **Estado documental insuficiente:** registry y contrato registran el estado pre-freeze y la evidencia actualizada.
 
 ## Advertencias no bloqueantes
 
 - La fuente actual contiene 215 shoppers frente a la referencia auditada 216. La diferencia queda en revisión R11D; no se inventan, borran ni completan identidades.
 - DEV usa un snapshot HR fresco de build; no equivale todavía a sincronización HR runtime live.
-- El conteo shopper no está impreso de forma visible en todos los módulos; esto es P1 de revisión, no P0.
 
 ## Siguiente acción exacta
 
@@ -88,24 +96,25 @@ Checklist mínimo:
 - cambiar mayo, junio y julio modifica filas y KPIs;
 - 44 visitas por periodo, GT 34 y HN 10;
 - junio aparece ejecutado, con liquidaciones/pagos pendientes y no como visitas pendientes o pagadas;
+- módulo Shoppers muestra referencias protegidas, no activos/perfiles completos inventados;
 - Dashboard, Proyectos, Periodos, Histórico y Visitas coherentes;
 - rutas Admin, Shopper, Cliente y Academia operativas;
 - textos honestos de fuentes, integraciones y pagos.
 
-Solo después de `APROBADO` se congela V159 como `ACTIVE_BASELINE` y se continúa al Corte 1 sin reabrir auditoría, empalme ni Hosting DEV.
+Solo después de `APROBADO` se congela V159 como `ACTIVE_BASELINE` y se continúa al Corte 1 sin reabrir auditoría, empalme, Hosting DEV o smoke remoto.
 
 ## Claude/prototipo
 
-No existe tarea frontend nueva confirmada. Claude solo interviene si la revisión visual demuestra un P0 frontend reproducible y localizado por archivo/módulo. P1/P2 se documentan y no bloquean el freeze.
+No existe tarea frontend nueva confirmada. La causa shopper se corrigió en el adapter/backend de conexión, sin modificar `app/modules`. Claude solo interviene si la revisión visual demuestra un P0 frontend reproducible y localizado. P1/P2 se documentan sin bloquear el freeze.
 
 ## Clasificación
 
-- Reusable CXOrbia: binding canónico, sobre financiero por periodo, estado pre-freeze, ejecutor único y polling de propagación.
+- Reusable CXOrbia: binding canónico, precedencia de nivel de datos, sobre financiero por periodo, ejecutor único, polling y estado pre-freeze.
 - Exclusivo TyA/Cinépolis: 14/616/44, GT/HN, junio y revisión R11D 215/216.
 - Claude/prototipo: sin pendiente nuevo confirmado.
-- Academia: pendiente validación visual por rol del build ya desplegado.
+- Academia: pendiente validación visual por rol del build actualizado.
 - Sin impacto Claude: gates, registry, contrato, CI y documentación técnica.
 
 ## Estado seguro
 
-Hosting DEV ejecutado. Sin merge, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos. Sin base vieja conectada ni datos sensibles crudos agregados.
+Hosting DEV actualizado. Sin merge, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos. Sin base vieja conectada ni datos sensibles crudos agregados.
