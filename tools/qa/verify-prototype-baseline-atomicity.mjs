@@ -19,6 +19,7 @@ const active=registry.activeBaseline||{};
 const runtime=registry.currentRuntime||{};
 const candidate=registry.candidate||{};
 const invariant='empalmedRuntimeVersion == candidateVersion; activeBaselineVersion advances only after postGatesAndVisualFreeze';
+const visualPendingState='hosting_dev_remote_smoke_pass_pending_visual';
 
 if(registry.invariant!==invariant) fail('transition invariant changed');
 if(active.status!=='active_baseline_frozen'||active.accepted!==true||active.empalmed!==true||active.active!==true||active.visualValidated!==true) fail('last frozen baseline evidence is incomplete');
@@ -41,13 +42,27 @@ for(const [label,value] of [['sourceZipSha256',runtime.sourceZipSha256],['manife
   if(!build.includes(`${label}:'${value}'`)&&!build.includes(`${label}: '${value}'`)) fail(`build lock ${label} differs from current runtime`);
 }
 
+const assertPendingIdentity=()=>{
+  if(runtime.active!==false||candidate.active!==false) fail('non-frozen runtime cannot be active baseline');
+  if(runtime.visualValidated!==false||candidate.visualValidated!==false) fail('non-frozen runtime falsely marks visual validation');
+  if(runtime.version===active.version) fail('non-frozen runtime must remain distinct from rollback baseline');
+  if(!checkpoint.includes(runtime.version)) fail('canonical checkpoint does not record current runtime');
+  if(!checkpoint.includes('ACTIVE_BASELINE')) fail('canonical checkpoint does not preserve freeze boundary');
+};
+
 if(runtime.status==='empalmed_pending_post_gates'){
-  if(runtime.active!==false||candidate.active!==false) fail('pending runtime cannot be active baseline');
-  if(runtime.postGatesPassed!==false||candidate.postGatesPassed!==false) fail('pending runtime falsely marks post-gates passed');
-  if(runtime.visualValidated!==false||candidate.visualValidated!==false) fail('pending runtime falsely marks visual validation');
-  if(runtime.version===active.version) fail('pending runtime must remain distinct from the last frozen rollback baseline');
-  if(!checkpoint.includes(`${runtime.version} empalmada`)) fail('canonical checkpoint does not record current empalmed runtime');
-  if(!checkpoint.includes('ACTIVE_BASELINE')||!checkpoint.toLowerCase().includes('pendiente')) fail('canonical checkpoint does not keep freeze pending');
+  assertPendingIdentity();
+  if(runtime.postGatesPassed!==false||candidate.postGatesPassed!==false) fail('pre-gate runtime falsely marks post-gates passed');
+}else if(runtime.status===visualPendingState){
+  assertPendingIdentity();
+  if(runtime.postGatesPassed!==true||candidate.postGatesPassed!==true) fail('visual-pending runtime lacks post-gate PASS');
+  if(runtime.hostingDevPassed!==true||runtime.remoteSmokePassed!==true) fail('visual-pending runtime lacks Hosting DEV or remote smoke PASS');
+  const evidence=runtime.hostingDevEvidence||{};
+  if(evidence.workflowRun!==29626385151) fail('Hosting DEV workflow evidence mismatch');
+  if(evidence.workflowCommit!=='8cf166eea6a0ebd0b2c6221925671d04865999f0') fail('exact deployed workflow commit mismatch');
+  if(evidence.artifactId!==8430697082||evidence.artifactDigest!=='sha256:fbe071cf34561df95c6e4cffa393f3c6851d742eb8f00776c28a3354e4365692') fail('sanitized artifact evidence mismatch');
+  if(!String(evidence.hostingVersion||'').endsWith('/versions/c8add179fb326b6a')) fail('Firebase Hosting version evidence mismatch');
+  if(!checkpoint.toLowerCase().includes('visual')) fail('checkpoint does not preserve pending visual gate');
 }else if(runtime.status==='active_baseline_frozen'){
   if(runtime.active!==true||candidate.active!==true||runtime.postGatesPassed!==true||runtime.visualValidated!==true) fail('frozen runtime lacks completed post-gates/visual evidence');
   if(active.version!==runtime.version||active.sourceZipSha256!==runtime.sourceZipSha256) fail('frozen runtime and active baseline differ');
