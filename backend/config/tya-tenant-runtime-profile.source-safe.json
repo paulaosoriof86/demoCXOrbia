@@ -1,8 +1,8 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "tenantId": "tya",
   "tenantName": "TyA",
-  "status": "source_safe_preview_pending_persistence",
+  "status": "source_safe_validation_pending_persistence",
   "branding": {
     "displayName": "TyA",
     "platformLabel": "Plataforma operativa para TyA",
@@ -21,28 +21,50 @@
     "activeProjectIds": ["cinepolis"],
     "inactiveProjectIds": [],
     "defaultProjectId": "cinepolis",
-    "projectAndPeriodSeparated": true
+    "projectAndPeriodSeparated": true,
+    "roleSelectorsUseActiveAssignedProjects": true
   },
   "login": {
-    "visibleRoles": ["admin", "ops", "shopper"],
-    "hiddenRoles": ["client_portal", "coordinator", "partner"],
-    "showRoleTestArea": false,
+    "mode": "validation_all_roles_visible",
+    "visibleRoles": ["admin", "client_portal", "shopper", "ops", "coordinator", "partner"],
+    "hiddenRoles": [],
+    "showRoleTestArea": true,
+    "roleTestAreaLabel": "Accesos de validación",
     "allowShopperSelfRegistration": true,
-    "clientPortalVisible": false,
-    "invitationOnlyRoles": []
+    "clientPortalVisible": true,
+    "invitationOnlyRoles": [],
+    "productionConfigurationPending": true,
+    "productionDefaultVisibleRoles": ["admin", "ops", "shopper"]
   },
   "roleScope": {
     "admin": {"projects": "all_active", "countries": "all_tenant"},
     "ops": {"projects": "assigned_or_all_active", "countries": "assigned"},
     "shopper": {"projects": "eligible_active_only", "countries": "assigned_profile_country"},
-    "client_portal": {"projects": "assigned_client_projects_only", "countries": "assigned"}
+    "client_portal": {"projects": "assigned_client_projects_only", "countries": "assigned"},
+    "coordinator": {"projects": "assigned_or_all_active", "countries": "assigned"},
+    "partner": {"projects": "assigned_only", "countries": "assigned"}
   },
   "academy": {
     "admin": true,
     "ops": true,
     "shopper": true,
-    "client_portal": false,
-    "clientPortalReason": "hidden_until_client_portal_is_enabled_for_tenant"
+    "client_portal": true,
+    "clientPortalMode": "validation_visible_pending_frontend_route_alignment"
+  },
+  "configurationSurface": {
+    "targetRoute": "Configuración > Tenant > Accesos y login",
+    "currentAvailability": "contract_only_not_yet_exposed_in_ui",
+    "fields": [
+      "countries",
+      "activeProjectIds",
+      "inactiveProjectIds",
+      "visibleRoles",
+      "showRoleTestArea",
+      "allowShopperSelfRegistration",
+      "clientPortalVisible",
+      "academyByRole"
+    ],
+    "futurePersistencePath": "tenants/{tenantId}/profile/main"
   },
   "persistence": {
     "targetPath": "tenants/{tenantId}/profile/main",
