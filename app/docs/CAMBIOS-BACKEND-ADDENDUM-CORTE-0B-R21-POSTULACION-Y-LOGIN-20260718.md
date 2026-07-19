@@ -1,51 +1,48 @@
-# CAMBIOS BACKEND — CORTE 0B R21 POSTULACIÓN Y LOGIN
+# CAMBIOS BACKEND — CORTE 0B R21
 
 Fecha: 2026-07-18
 
-## Hallazgos reproducibles
+Estado: `R21_TECHNICAL_PASS_PENDING_FRONTEND_CORRECTION_AND_NEW_DEV_AUTHORIZATION`
 
-1. `sin asignar` se estaba tratando como `disponible` aunque la HR no entregara una fecha válida de disponibilidad.
-2. La HR usa `RH WK` y `RH WKND`, mientras el formulario frontend compara `Semana` y `Fin de semana`; por eso la franja no se validaba.
-3. La ficha no tiene control de límite de quincena/ventana de medición.
-4. El login DEV ocultó Cliente/Coordinador/Aliado antes de terminar la validación.
-5. La configuración de accesos todavía no está expuesta desde la plataforma.
+## Corregido
 
-## Evidencia HR julio 2026
+- Se separó visita sin asignar de oportunidad disponible.
+- Se reconoció `P1Q` como dependencia de la ventana anterior.
+- Se normalizaron `RH WK` y `RH WKND`.
+- Se agregaron límites de Q1 y Q2.
+- Se creó el contrato reusable de elegibilidad de postulación.
+- El perfil DEV habilita todos los roles necesarios para validación y conserva Admin, Operativo y Shopper como selección inicial prevista para producción TyA.
 
-- 5 visitas sin shopper.
-- 4 con fecha válida `Disponible a partir de`.
-- 1, MC. Santa Clara Q2, contiene el token `P1Q`; no es una oportunidad publicable y depende de la visita previa.
-- Fuente: HR externa Cinépolis. La arquitectura debe aplicar igual a HR externa, archivo, API o hoja creada dentro de CXOrbia.
+## Evidencia julio 2026
 
-## Archivos modificados
+- 44 visitas: 34 GT y 10 HN.
+- 39 asignadas, 5 sin asignar, 4 disponibles y 1 bloqueada.
+- La bloqueada es MC. Santa Clara Q2 por `P1Q`.
+- 35 programadas, 21 realizadas, 21 cuestionarios y 14 submitidas.
 
-- `backend/config/tya-tenant-runtime-profile.source-safe.json`
-  - todos los roles visibles durante validación;
-  - Cliente habilitado temporalmente;
-  - futuro destino de configuración: `Configuración > Tenant > Accesos y login`.
-- `tools/hr-source/tya-canonical-visit-state-r20.mjs`
-  - separa `unassigned` de `available`;
-  - reconoce dependencia de visita previa;
-  - no inventa fecha.
-- `tools/hr-source/tya-reapply-canonical-state-r20.mjs`
-  - normaliza franja;
-  - define inicio/fin de quincena;
-  - reaplica estado canónico después de overlays.
-- `tools/release/tya-source-safe-binding-build-r18a.mjs`
-  - consume perfil tenant para login;
-  - expone `CX.data.postulationEligibility(visit, proposedDate)`;
-  - expone `CX.data.availableVisits()`.
-- `backend/contracts/phase-a-postulation-eligibility-r21-v1.json`
-  - contrato reusable para fuentes internas y externas.
+## Gates
 
-## Estado
+- Commit validado: `287cd0729c14ef9dfe63ce566c6bc2ff8604f2a0`.
+- R18A run `29669393823`: éxito.
+- Gates completos run `29669735189`: éxito.
+- Artifact `8436913243`.
+- Historia canónica y semántica R21: PASS.
+- Proyecto/periodo, roles y overlays: PASS.
 
-Cambios aplicados en rama viva. No desplegados. Faltan gates, ajuste frontend localizado y autorización separada para nuevo Hosting DEV.
+La primera ejecución falló porque el wrapper R18A dependía de fragmentos exactos del adapter y los gates aún exigían contratos R20. Se corrigieron las anclas, postcondiciones y la compatibilidad R21.
+
+## Pendiente frontend
+
+1. `app/core/router.js`: proyecto y periodo separados y selectores por alcance.
+2. `app/modules/visita-detalle.js`: consumir el contrato de elegibilidad y no mostrar `null`.
+3. `app/app.js`: login gobernado por el perfil del tenant.
+4. Cliente: Academia separada de Capacitación.
 
 ## Clasificación
 
-- Reusable CXOrbia: disponibilidad, franja, ventana y login configurable.
-- Exclusivo TyA/Cinépolis: Q1/Q2, token `P1Q`, GT/HN y HR actual.
-- Claude/prototipo: selector proyecto/periodo, consumo del validador y Academia Cliente.
-- Academia: explicar disponibilidad, franja, quincena, rechazo y configuración de login.
-- Sin impacto Claude: motor, contratos y gates internos.
+- Reusable: disponibilidad, dependencia, franja, ventana, postulación y configuración tenant.
+- Exclusivo TyA: GT/HN, Q1/Q2 y `P1Q`.
+- Claude: cuatro ajustes frontend.
+- Academia: reglas de disponibilidad, rechazos y accesos.
+
+R21 no está desplegado. El DEV vigente continúa en R20 y no fue aprobado visualmente. Sin merge ni producción.
