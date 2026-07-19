@@ -1,78 +1,66 @@
 {
-  "schemaVersion": "1.0.0",
-  "gate": "tya-corte-0b-r21-delta-readonly-preflight",
-  "decision": "PASS_R21_DELTA_READONLY_PREFLIGHT",
-  "baseR20Evidence": {
-    "canonicalHistoryDecision": "PASS_R20_CANONICAL_HISTORY",
+  "schemaVersion": "1.1.0",
+  "decision": "PASS_R21_FULL_READONLY_GATES",
+  "validatedCommit": "287cd0729c14ef9dfe63ce566c6bc2ff8604f2a0",
+  "runs": {
+    "r18a": {"id": 29669393823, "status": "success"},
+    "full": {"id": 29669735189, "status": "success"}
+  },
+  "artifact": {
+    "id": 8436913243,
+    "name": "phase-a-tya-r20-source-safe-gates",
+    "digest": "sha256:af82de364b66a82eec1c6735f24d93d84f023da6961a8baad3b914638833aa51"
+  },
+  "history": {
     "periods": 14,
     "visits": 616,
-    "oldestPeriod": "2025-06",
-    "newestPeriod": "2026-07",
-    "projectPeriodDecision": "PASS_R20_PROJECT_PERIOD_KPI_HISTORY",
-    "july2026": {
-      "total": 44,
-      "assigned": 39,
-      "unassigned": 5,
-      "scheduled": 35,
-      "pendingSchedule": 4,
-      "realized": 21,
-      "questionnaireCompleted": 21,
-      "pendingSubmission": 7,
-      "submitted": 14,
-      "liquidationConfirmed": 0,
-      "paymentConfirmed": 0,
-      "byCountry": {"GT": 34, "HN": 10}
-    },
-    "remoteSmokeDecision": "PASS_R20_HOSTING_DEV_AND_REMOTE_SMOKE",
-    "deployedCommit": "68ac6513df24b307d46836c84ac15eb9ecd52648"
+    "range": ["2025-06", "2026-07"],
+    "canonical": "PASS_R21_CANONICAL_HISTORY",
+    "semantics": "PASS_WITH_WARNING_R21_TYA_SOURCE_SEMANTICS",
+    "projectPeriod": "PASS_R20_PROJECT_PERIOD_KPI_HISTORY",
+    "roles": "PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE",
+    "overlays": "PASS_R20_VISIBLE_OVERLAYS"
   },
-  "r21DeltaEvidence": {
-    "gate": "tya-postulation-eligibility-r21",
-    "decision": "PASS_R21_POSTULATION_ELIGIBILITY",
-    "observed": {
-      "unassigned": 5,
-      "available": 4,
-      "blocked": 1,
-      "blockedVisit": "MC. Santa Clara",
-      "blockedReason": "blocked_previous_measurement_window"
-    },
-    "assertions": {
-      "beforeAvailableFromRejected": true,
-      "measurementWindowRejected": true,
-      "weekendRuleRejected": true,
-      "weekdayRuleRejected": true,
-      "validDatesAccepted": true,
-      "nullAvailabilityNotPublished": true
-    },
-    "sourceSamples": ["JULIO 26", "JULIO 26 HN"]
+  "july2026": {
+    "total": 44,
+    "available": 4,
+    "eligibilityBlocked": 1,
+    "assigned": 39,
+    "unassigned": 5,
+    "scheduled": 35,
+    "pendingSchedule": 4,
+    "realized": 21,
+    "questionnaireCompleted": 21,
+    "pendingSubmission": 7,
+    "submitted": 14,
+    "liquidationConfirmed": 0,
+    "paymentConfirmed": 0,
+    "byCountry": {"GT": 34, "HN": 10},
+    "blockedVisit": "MC. Santa Clara",
+    "blockedReason": "blocked_previous_measurement_window"
   },
-  "tenantProfileEvidence": {
-    "visibleRoles": ["admin", "client_portal", "shopper", "ops", "coordinator", "partner"],
-    "productionDefaultVisibleRoles": ["admin", "ops", "shopper"],
-    "roleTestAreaLabel": "Accesos de validación",
-    "clientPortalVisible": true,
-    "academyClientVisible": true,
-    "configurationRoute": "Configuración > Tenant > Accesos y login",
-    "uiSurfaceState": "contract_only_not_yet_exposed_in_ui"
+  "postulation": {
+    "beforeAvailableFromRejected": true,
+    "measurementWindowRejected": true,
+    "weekendRuleRejected": true,
+    "weekdayRuleRejected": true,
+    "validDatesAccepted": true,
+    "nullAvailabilityNotPublished": true
   },
-  "remainingBlockers": [
-    "frontend_router_project_period_selectors_not_applied",
-    "frontend_visit_detail_not_consuming_postulationEligibility",
-    "frontend_login_not_consuming_full_tenant_profile",
-    "frontend_client_academy_route_not_aligned",
-    "full_repository_builder_and_browser_gates_not_yet_executed_for_r21",
-    "new_hosting_dev_not_authorized"
+  "remaining": [
+    "frontend project and period selectors",
+    "frontend postulation contract consumption",
+    "frontend tenant-driven login",
+    "client Academy route",
+    "new DEV authorization",
+    "visual approval"
   ],
-  "state": "R21_DELTA_PREFLIGHT_PASS_PENDING_FRONTEND_FULL_GATES_AND_DEV_AUTHORIZATION",
-  "localEvidenceSha256": "155f78e96f8b0d2990fe95906c82a1768f849f4213d26521176768078f20628e",
-  "safeState": {
-    "readOnly": true,
-    "writes": false,
-    "imports": false,
-    "deploy": false,
-    "production": false,
-    "providers": false,
-    "payments": false,
-    "piiIncluded": false
-  }
+  "deployed": {
+    "version": "R20",
+    "commit": "68ac6513df24b307d46836c84ac15eb9ecd52648",
+    "visual": "NOT_APPROVED",
+    "r21": false
+  },
+  "state": "R21_TECHNICAL_PASS_PENDING_FRONTEND_CORRECTION_AND_NEW_DEV_AUTHORIZATION",
+  "safeState": {"readOnly": true, "deploy": false, "production": false}
 }
