@@ -83,10 +83,48 @@ CX.app = {
          <div><div class="brand-name">${b.clientName||b.name}</div></div>`;
     /* banderitas SOLO de los países configurados para el tenant/franquicia.
        Si no hay países elegidos, no se muestran (no listar todos). */
-    let paises = (b.countries && b.countries.length) ? b.countries : [];
-    if(!paises.length){ /* derivar de los proyectos reales del tenant, si existen */
-      try{ const prj=(CX.data&&CX.data.projects)||[]; const set=new Set(); prj.forEach(p=>(p.countries||[]).forEach(c=>set.add(c))); paises=[...set]; }catch(e){}
+    /* R21: banderitas priorizan CX.tenantProfile.countries; si no existe, se derivan de los
+       proyectos activos del tenant (excluyendo inactiveProjectIds) — nunca un catálogo global. */
+    const tp = CX.tenantProfile || {};
+    let paises = (tp.countries && tp.countries.length) ? tp.countries : (b.countries && b.countries.length) ? b.countries : [];
+    if(!paises.length){
+      try{
+        const prj=(CX.data&&CX.data.projects)||[];
+        const active=Array.isArray(tp.activeProjectIds)?tp.activeProjectIds:null;
+        const inactive=Array.isArray(tp.inactiveProjectIds)?tp.inactiveProjectIds:[];
+        /* P1-2: activeProjectIds/inactiveProjectIds suelen traer programKeys de proyecto, no ids
+           de periodo — comparar contra id, CX.data.programKey(p) y p.program, no solo p.id. */
+        const idsOf=(pr)=>{const arr=[pr.id]; try{if(CX.data&&CX.data.programKey)arr.push(CX.data.programKey(pr));}catch(e){} if(pr.program)arr.push(pr.program); return arr;};
+        const scoped = active ? prj.filter(pr=>idsOf(pr).some(x=>active.includes(x))) : prj.filter(pr=>!idsOf(pr).some(x=>inactive.includes(x)));
+        const set=new Set(); scoped.forEach(p=>(p.countries||[]).forEach(c=>set.add(c))); paises=[...set];
+      }catch(e){}
     }
+    /* R21: roles visibles/flags gobernados por CX.tenantProfile cuando el adapter lo inyecta;
+       sin perfil (entorno actual sin adapter) se preserva el comportamiento existente. */
+    const visibleRoles = Array.isArray(tp.visibleLoginRoles) && tp.visibleLoginRoles.length ? tp.visibleLoginRoles : ['admin','cliente','shopper','ops','coordinador','aliado'];
+    const showAdminBtn = visibleRoles.includes('admin');
+    const showClienteBtn = visibleRoles.includes('cliente') && tp.clientPortalVisible!==false;
+    const showShopperBtn = visibleRoles.includes('shopper');
+    const showShopperReg = showShopperBtn && tp.allowShopperRegistration!==false;
+    const showTestArea = tp.showRoleTestArea!==false;
+    const testAreaLabel = tp.roleTestAreaLabel || 'Accesos de validación';
+    const altRoleDefs = {ops:'👥 Operativo',coordinador:'🌎 Coordinador',aliado:'🤝 Aliado'};
+    const altRoles = Object.keys(altRoleDefs).filter(id=>visibleRoles.includes(id));
+    /* P0-1 (V161): visibleLoginRoles determina QUÉ accesos existen; showRoleTestArea solo
+       controla el rótulo/separador de "validación" — nunca debe ocultar un rol autorizado.
+       Con showRoleTestArea=false, Operativo/Coordinador/Aliado (si están en visibleLoginRoles)
+       se siguen mostrando como accesos normales, sin texto técnico ni separador. */
+    const altRolesBtnsHTML = altRoles.map(id=>`<button class="btn btn-ghost btn-sm role-alt" data-role="${id}">${altRoleDefs[id]}</button>`).join('');
+    const altRolesBlock = altRoles.length
+      ? (showTestArea
+          ? `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div style="font-size:11px;color:var(--t3);text-align:center;margin-bottom:6px">${testAreaLabel}</div>
+          <div class="flex" style="gap:6px;justify-content:center;flex-wrap:wrap">
+            ${altRolesBtnsHTML}
+          </div>
+        </div>`
+          : `<div class="flex" style="gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px">${altRolesBtnsHTML}</div>`)
+      : '';
     const flagsRow = paises.length
       ? `<div class="login-flags">${paises.slice(0,8).map(c=>`<span class="cflag" title="${CX.paisName?CX.paisName(c):c}"><img src="https://flagcdn.com/24x18/${c.toLowerCase()}.png" alt="${c}" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'${c}',className:'cflag-txt'}))"><span>${c}</span></span>`).join('')}${paises.length>8?`<span style="font-size:11px;color:var(--t3);align-self:center">+${paises.length-8}</span>`:''}</div>`
       : '';
@@ -102,39 +140,32 @@ CX.app = {
         <div class="login-title">${functionalTitle}</div>
         <div class="login-sub">Selecciona un perfil para entrar al ${b.demoMode?'demo':'sistema'}</div>
         ${flagsRow}
-        <button class="role-btn role-admin" data-role="admin">
+        ${showAdminBtn?`<button class="role-btn role-admin" data-role="admin">
           <div class="r-ic">🖥️</div>
           <div><div class="r-t">Administración / Coordinación</div>
           <div class="r-d">Operación, proyectos, finanzas y configuración</div></div>
-        </button>
-        <button class="role-btn role-cliente" data-role="cliente">
+        </button>`:''}
+        ${showClienteBtn?`<button class="role-btn role-cliente" data-role="cliente">
           <div class="r-ic">📈</div>
           <div><div class="r-t">Portal del Cliente (marca evaluada)</div>
           <div class="r-d">Resultados, score por sucursal, acciones y reportes</div></div>
-        </button>
-        <button class="role-btn role-shopper" data-role="shopper">
+        </button>`:''}
+        ${showShopperBtn?`<button class="role-btn role-shopper" data-role="shopper">
           <div class="r-ic">📱</div>
           <div><div class="r-t">Shopper / Evaluador</div>
           <div class="r-d">Portal móvil: visitas, certificación y pagos</div></div>
-        </button>
-        <div style="text-align:center;margin-top:6px"><a id="goReg" style="font-size:12.5px;color:var(--brand);font-weight:600;cursor:pointer">¿Eres evaluador nuevo? Regístrate aquí →</a></div>
-        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
-          <div style="font-size:11px;color:var(--t3);text-align:center;margin-bottom:6px">Probar acceso por rol (matriz de permisos)</div>
-          <div class="flex" style="gap:6px;justify-content:center;flex-wrap:wrap">
-            <button class="btn btn-ghost btn-sm role-alt" data-role="ops">👥 Operativo</button>
-            <button class="btn btn-ghost btn-sm role-alt" data-role="coordinador">🌎 Coordinador</button>
-            <button class="btn btn-ghost btn-sm role-alt" data-role="aliado">🤝 Aliado</button>
-          </div>
-          ${(()=>{let us=[];try{us=JSON.parse(localStorage.getItem('cx_users')||'[]');}catch(e){}
-            if(!us.length) return '';
-            return `<div style="margin-top:10px">
-              <div style="font-size:11px;color:var(--t3);text-align:center;margin-bottom:6px">O entra como un usuario invitado (Configuración → Usuarios)</div>
-              <div class="flex" style="gap:6px;justify-content:center">
-                <select class="sel" id="loginUserSel" style="width:auto;max-width:220px;font-size:12px">${us.map((u,i)=>`<option value="${i}">${u.name} · ${(CX.PERSONAS.find(p=>p.id===u.persona)||{}).label||u.rol}</option>`).join('')}</select>
-                <button class="btn btn-soft btn-sm" id="loginAsUser">Entrar</button>
-              </div>
-            </div>`;})()}
-        </div>
+        </button>`:''}
+        ${showShopperReg?`<div style="text-align:center;margin-top:6px"><a id="goReg" style="font-size:12.5px;color:var(--brand);font-weight:600;cursor:pointer">¿Eres evaluador nuevo? Regístrate aquí →</a></div>`:''}
+        ${altRolesBlock}
+        ${(()=>{let us=[];try{us=JSON.parse(localStorage.getItem('cx_users')||'[]');}catch(e){}
+          if(!us.length) return '';
+          return `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+            <div style="font-size:11px;color:var(--t3);text-align:center;margin-bottom:6px">O entra como un usuario invitado (Configuración → Usuarios)</div>
+            <div class="flex" style="gap:6px;justify-content:center">
+              <select class="sel" id="loginUserSel" style="width:auto;max-width:220px;font-size:12px">${us.map((u,i)=>`<option value="${i}">${u.name} · ${(CX.PERSONAS.find(p=>p.id===u.persona)||{}).label||u.rol}</option>`).join('')}</select>
+              <button class="btn btn-soft btn-sm" id="loginAsUser">Entrar</button>
+            </div>
+          </div>`;})()}
         ${(b.clientName&&hasClientLogo)?`<div class="login-devfor">Plataforma operativa para <b>${b.clientName}</b></div>`:''}
         ${devForFooter}
         ${(()=>{const std=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;const iOS=/iPad|iPhone|iPod/.test(navigator.userAgent);if(std)return '<div style="text-align:center;margin-top:14px;font-size:11px;color:var(--green)">✓ App instalada</div>';return `<div style="text-align:center;margin-top:14px"><button class="btn btn-ghost btn-sm" id="pwaBtn">📲 ${iOS?'Instalar (guía iOS)':'Instalar como app'}</button></div>`;})()}

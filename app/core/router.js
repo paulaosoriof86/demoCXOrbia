@@ -24,7 +24,7 @@ CX.router = {
        sincroniza AMBOS campos (currentPeriodId y currentProjectId recalculado vía programKey) y
        emite 'cx:period-changed'/'cx:project-changed'. Antes estas 5 ramas escribían
        currentPeriodId a secas y dejaban currentProjectId desincronizado. */
-    if(role==='shopper'){ const ok=CX.data.projectsFor(role); if(ok.length && !ok.some(p=>p.id===CX.data.currentPeriodId)) CX.data.setProject(ok[0].id); }
+    if(role==='shopper'){ const ok=this.resolveVisibleProjects(role); if(ok.length && !ok.some(p=>p.id===CX.data.currentPeriodId)) CX.data.setProject(ok[0].id); }
     else if(role==='cliente'){
       /* P0 (V95 reauditoría): clientBrandAdmin/clientBrandViewer con scopeCliente/scopeProjectId
          deben aterrizar en SU proyecto, no en el que haya quedado activo de otra sesión. */
@@ -48,10 +48,45 @@ CX.router = {
     }
     this.buildRail(role);
     const gRole=CX.session.testRole||role;
-    const first=CX.NAV[role].flatMap(g=>g.items).find(id=>CX.moduleEnabled(id)&&CX.roleCanAccess(gRole,id));
-    const start = (CX.session.view && CX.MODULES[CX.session.view] && CX.MODULES[CX.session.view].roles.includes(role) && CX.moduleEnabled(CX.session.view))
-      ? CX.session.view : first;
+    const first=CX.NAV[role].flatMap(g=>g.items).find(id=>CX.moduleEnabled(id)&&CX.roleCanAccess(gRole,id)&&CX.moduleVisibleForProfile(id,role));
+    /* P0-4: la vista guardada solo se reutiliza si TODAS las validaciones de nav() la aceptarían
+       (roles, moduleEnabled, roleCanAccess, moduleVisibleForProfile) — si alguna falla, cae al
+       primer módulo permitido en vez de dejar una pantalla vacía. */
+    const savedOk = CX.session.view && CX.MODULES[CX.session.view] && CX.MODULES[CX.session.view].roles.includes(role)
+      && CX.moduleEnabled(CX.session.view) && CX.roleCanAccess(gRole,CX.session.view) && CX.moduleVisibleForProfile(CX.session.view,role);
+    const start = savedOk ? CX.session.view : first;
     this.nav(start);
+  },
+
+  /* P0-3 / P0-2A: proyectos visibles para el selector del rail — siempre data-driven, nunca
+     un nombre fijo de tenant. Cliente: scopeProjectId (uno solo) o scopeCliente (clientProjects)
+     primero — nunca projectsFor(role) sin filtrar, que puede exponer proyectos de otros clientes.
+     Shopper: projectsFor(role) filtrado por CX.tenantProfile.activeProjectIds/inactiveProjectIds
+     cuando estén configurados (comparando contra id de periodo, programKey y p.program). */
+  resolveVisibleProjects(role){
+    const d=CX.data, u=CX.session.user||{};
+    if(role==='cliente'){
+      if(u.scopeProjectId) return d.projects.filter(p=>p.id===u.scopeProjectId);
+      if(u.scopeCliente) return d.clientProjects(u.scopeCliente);
+      return d.projectsFor(role);
+    }
+    if(role==='shopper'){
+      let base=d.projectsFor(role);
+      const tp=CX.tenantProfile;
+      if(tp && (Array.isArray(tp.activeProjectIds)||Array.isArray(tp.inactiveProjectIds))){
+        const idsOf=(p)=>{const arr=[p.id]; try{if(d.programKey)arr.push(d.programKey(p));}catch(e){} if(p.program)arr.push(p.program); return arr;};
+        const activeSet=Array.isArray(tp.activeProjectIds)?tp.activeProjectIds:null;
+        const inactiveSet=Array.isArray(tp.inactiveProjectIds)?tp.inactiveProjectIds:[];
+        base=base.filter(p=>{
+          const ids=idsOf(p);
+          if(activeSet && !ids.some(x=>activeSet.includes(x))) return false;
+          if(ids.some(x=>inactiveSet.includes(x))) return false;
+          return true;
+        });
+      }
+      return base;
+    }
+    return d.projectsFor(role);
   },
 
   buildRail(role){
@@ -60,30 +95,73 @@ CX.router = {
     const u=CX.session.user||{};
     const initials=(u.name||'CX').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
 
-    /* project switcher: admin ve todos; shopper solo los de su país */
-    const visibleProjects = d.projectsFor(role);
+    /* project switcher: admin ve todos; shopper solo los de su país; cliente solo su alcance (P0-3) */
+    const visibleProjects = this.resolveVisibleProjects(role);
     /* P0 V63/V64 — selector de Proyecto muestra PROGRAMAS (no meses); el periodo se elige aparte */
     const progs = d.programs ? d.programs().filter(pg=>visibleProjects.some(vp=>d.programKey(vp)===pg.key)) : null;
     const curKey = d.currentProgramKey ? d.currentProgramKey() : null;
+    /* P0-5 (V160): helper único de etiqueta de periodo, usado en AMBAS ramas — nunca cae al
+       nombre completo del proyecto. Prioriza periodo/ronda/periodLabel/measurementPeriod; si
+       faltan, deriva mes/año solo de una fecha real; si no puede derivarse, muestra un rótulo
+       honesto (nunca inventa mes/año ni repite el nombre del proyecto). */
+    const periodLabelOf = (pr)=>{
+      if(!pr) return 'Periodo actual';
+      if(pr.periodo) return pr.periodo;
+      if(pr.ronda) return pr.ronda;
+      if(pr.periodLabel) return pr.periodLabel;
+      if(pr.measurementPeriod) return pr.measurementPeriod;
+      const dateStr = pr.startDate||pr.fechaInicio||pr.desde||pr.disponibleDesde||'';
+      const m = /^(\d{4})-(\d{2})/.exec(String(dateStr||''));
+      if(m){
+        const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+        const mi = parseInt(m[2],10)-1;
+        if(mi>=0 && mi<12) return MESES[mi].charAt(0).toUpperCase()+MESES[mi].slice(1)+' '+m[1];
+      }
+      return 'Periodo sin etiqueta';
+    };
+    /* Ajuste B (V161): si programBase() no existe, no usar ciegamente pr.name (puede incluir el
+       periodo). Fallback seguro: pr.program, o un rótulo honesto "Proyecto sin etiqueta". */
+    const projectBaseLabelOf = (pr)=>{
+      if(!pr) return 'Proyecto sin etiqueta';
+      if(d.programBase) return d.programBase(pr);
+      if(pr.program) return pr.program;
+      return 'Proyecto sin etiqueta';
+    };
     let projBlock;
     if(progs && progs.length){
       const progOpts=progs.map(pg=>`<option value="${pg.key}" ${pg.key===curKey?'selected':''}>${pg.name}</option>`).join('');
       const periods=d.periodsForProgram?d.periodsForProgram(curKey):[];
-      const periodSel = periods.length>1
+      /* P0-1 (V159.1): Periodo es SIEMPRE una zona separada, aunque exista un solo periodo —
+         antes desaparecía por completo con periods.length<=1, dejando Proyecto como única señal. */
+      const periodSel = periods.length
         ? `<div class="rail-proj-l" style="margin-top:9px">Periodo</div>
-           <select id="periodSel">${periods.map(pr=>`<option value="${pr.id}" ${pr.id===d.currentPeriodId?'selected':''}>${pr.periodo||pr.name}</option>`).join('')}</select>`
-        : '';
-      projBlock = (role==='admin' || progs.length>1)
-        ? `<div class="rail-proj"><div class="rail-proj-l">Proyecto${role!=='admin'&&u.code?(' · '+u.code):''}</div>
-             <select id="projSel">${progOpts}</select>${periodSel}</div>`
-        : `<div class="rail-proj"><div class="rail-proj-l">Proyecto</div>
-             <div style="font-size:13px;font-weight:700">${p.name}</div>
-             <div style="font-size:10.5px;color:var(--t3)">${p.industry}</div>${periodSel}</div>`;
+           <select id="periodSel">${periods.map(pr=>`<option value="${pr.id}" ${pr.id===d.currentPeriodId?'selected':''}>${periodLabelOf(pr)}</option>`).join('')}</select>`
+        : `<div class="rail-proj-l" style="margin-top:9px">Periodo</div><div style="font-size:11px;color:var(--t3);padding:4px 0">Sin periodos disponibles</div>`;
+      /* P0-2A: multiproyecto es invariante de plataforma — SIEMPRE un selector data-driven
+         (aunque hoy solo tenga una opción), nunca un rótulo estático derivado del periodo. Al
+         agregar un segundo proyecto autorizado, aparece solo porque progs/visibleProjects crece —
+         sin tocar este archivo. */
+      projBlock = `<div class="rail-proj"><div class="rail-proj-l">Proyecto${role!=='admin'&&u.code?(' · '+u.code):''}</div>
+           <select id="projSel">${progOpts}</select>${periodSel}</div>`;
     } else {
-      const projOpts=visibleProjects.map(pr=>`<option value="${pr.id}" ${pr.id===d.currentPeriodId?'selected':''}>${pr.name}</option>`).join('');
-      projBlock = role==='admin'
-        ? `<div class="rail-proj"><div class="rail-proj-l">Proyecto activo</div><select id="projSel">${projOpts}</select></div>`
-        : `<div class="rail-proj"><div class="rail-proj-l">Proyecto</div><div style="font-size:13px;font-weight:700">${p.name}</div><div style="font-size:10.5px;color:var(--t3)">${p.industry}</div></div>`;
+      /* P0-4/P0-5 (V160): fallback sin programs() debe seguir siendo multiproyecto FUNCIONAL:
+         agrupar visibleProjects por programKey real (nunca un registro de periodo por opción),
+         value de #projSel = programKey, y #periodSel limitado a los periodos de ESE proyecto.
+         Si falta programs() pero existen programKey()/programBase()/periodsForProgram(), se usan;
+         si tampoco existen, se deriva sin concatenar proyecto y periodo. */
+      const keyOf = d.programKey ? (pr=>d.programKey(pr)) : (pr=>pr.program||pr.id);
+      const baseOf = (pr)=>projectBaseLabelOf(pr);
+      const periodsOf = d.periodsForProgram ? (k=>d.periodsForProgram(k)) : (k=>visibleProjects.filter(pr=>keyOf(pr)===k));
+      const seen={}; const groups=[];
+      visibleProjects.forEach(pr=>{ const k=keyOf(pr); if(!seen[k]){ seen[k]={key:k,name:baseOf(pr)}; groups.push(seen[k]); } });
+      const curGroupKey = groups.some(g=>g.key===keyOf(p)) ? keyOf(p) : (groups[0]&&groups[0].key);
+      const projOpts = groups.map(g=>`<option value="${g.key}" ${g.key===curGroupKey?'selected':''}>${g.name}</option>`).join('');
+      const periodsForCur = curGroupKey ? periodsOf(curGroupKey) : [];
+      const periodSel = periodsForCur.length
+        ? `<div class="rail-proj-l" style="margin-top:9px">Periodo</div>
+           <select id="periodSel">${periodsForCur.map(pr=>`<option value="${pr.id}" ${pr.id===d.currentPeriodId?'selected':''}>${periodLabelOf(pr)}</option>`).join('')}</select>`
+        : `<div class="rail-proj-l" style="margin-top:9px">Periodo</div><div style="font-size:11px;color:var(--t3);padding:4px 0">Sin periodos disponibles</div>`;
+      projBlock = `<div class="rail-proj"><div class="rail-proj-l">Proyecto${role!=='admin'&&u.code?(' · '+u.code):''}</div><select id="projSel">${projOpts}</select>${periodSel}</div>`;
     }
     /* P0-1 (paquete genérico 20260711): indicador único de origen de datos — una sola función
        (CX.dataSource.badge()) resuelve modo/etiqueta/estado/color para TODA la UI. Ya no existe
@@ -100,7 +178,7 @@ CX.router = {
 
     const collapsed = (()=>{try{return JSON.parse(localStorage.getItem('cx_rail_col')||'{}')}catch(e){return {};}})();
     const nav=CX.NAV[role].map(group=>{
-      const items=group.items.filter(id=>CX.moduleEnabled(id)&&CX.roleCanAccess(CX.session.testRole||role,id)).map(id=>{
+      const items=group.items.filter(id=>CX.moduleEnabled(id)&&CX.roleCanAccess(CX.session.testRole||role,id)&&CX.moduleVisibleForProfile(id,role)).map(id=>{
         const m=CX.MODULES[id]; if(!m)return '';
         const badge = (m.badge && role==='admin') ? `<span class="n-badge">${d.kpis().postPend||''}</span>`
           : (m.badgeNotif && CX.notif && CX.notif.unread(role)) ? `<span class="n-badge">${CX.notif.unread(role)}</span>` : '';
@@ -171,16 +249,32 @@ CX.router = {
     });
     const sel=document.getElementById('projSel');
     if(sel)sel.addEventListener('change',()=>{
-      d.setProgram(sel.value); CX.ui.toast('Proyecto: '+(d.period()?d.programBase(d.period()):sel.value),'ok'); this.buildRail(CX.session.role);
+      /* P0-4 (V160): #projSel siempre trae un programKey (ambas ramas de projBlock ya lo garantizan).
+         setProgram(programKey) si existe; si no, activar el primer periodo v\u00e1lido de ese programa
+         con setProject(periodId) \u2014 nunca escribir currentProjectId/currentPeriodId directamente. */
+      if(typeof d.setProgram==='function'){ d.setProgram(sel.value); }
+      else {
+        const key=sel.value;
+        const periods=(typeof d.periodsForProgram==='function')?d.periodsForProgram(key):visibleProjects.filter(pr=>(d.programKey?d.programKey(pr):pr.program)===key);
+        if(periods && periods.length) d.setProject(periods[0].id);
+      }
+      CX.ui.toast('Proyecto: '+(d.period()?projectBaseLabelOf(d.period()):sel.value),'ok'); this.buildRail(CX.session.role);
     });
     const psel=document.getElementById('periodSel');
-    if(psel)psel.addEventListener('change',()=>{ d.setCurrentPeriod(psel.value); CX.ui.toast('Periodo: '+(d.period().periodo||d.period().name),'ok'); });
+    if(psel)psel.addEventListener('change',()=>{
+      /* P0-4: setCurrentPeriod(periodId) \u2014 fallback a setProject(periodId) si no existe. */
+      const ok = (typeof d.setCurrentPeriod==='function') ? d.setCurrentPeriod(psel.value) : false;
+      if(!ok && typeof d.setProject==='function') d.setProject(psel.value);
+      /* Ajuste B (V161): periodLabelOf() es la única fuente de etiqueta de periodo, también en
+         este toast — nunca lee periodo/ronda/name directamente aquí. */
+      CX.ui.toast('Periodo: '+periodLabelOf(d.period()),'ok');
+    });
     document.getElementById('logoutBtn').addEventListener('click',()=>CX.app.logout());
   },
 
   nav(id){
     const role=CX.session.role, m=CX.MODULES[id];
-    if(!m||!m.roles.includes(role)||!CX.moduleEnabled(id)||!CX.roleCanAccess(CX.session.testRole||role,id)) return;
+    if(!m||!m.roles.includes(role)||!CX.moduleEnabled(id)||!CX.roleCanAccess(CX.session.testRole||role,id)||!CX.moduleVisibleForProfile(id,role)) return;
     /* P0-2 (paquete V149 fix, 20260716): detalle técnico (Diagnóstico & Readiness) solo para
        superadmin explícito (session.effectiveRole()==='super'), nunca para admin/ops/coordinador/
        aliado — sin entrada en el menú (ruta no comercial, ver buildRail). */

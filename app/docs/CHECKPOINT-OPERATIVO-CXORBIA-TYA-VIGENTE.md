@@ -1,93 +1,59 @@
-# CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
+# CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
-Fecha: 2026-07-18  
-Estado: `R21_TECHNICAL_PASS_PENDING_FRONTEND_CORRECTION_AND_NEW_DEV_AUTHORIZATION`
+Fecha: 2026-07-19
+Estado: `EMPALMED_PENDING_POST_GATES`
 
 ## Repositorio y estado seguro
 
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
-- V159 está empalmada, pero no es `ACTIVE_BASELINE`.
-- El Hosting DEV publicado sigue en R20, commit `68ac6513df24b307d46836c84ac15eb9ecd52648`, y fue `NO APROBADO` visualmente.
-- R21 no está desplegado.
-- Sin producción, importaciones ni escrituras operativas.
+- Candidata aplicada: V161C.
+- HEAD_BEFORE: `d640b1119e373e303f188bfd87758221ef3b9fae`.
+- Manifest: `app/docs/MANIFEST-V161C-EMPALME-DIRECTO-20260719.json`.
+- Build lock: `app/core/build-lock.js`.
+- Verificador: `tools/release/tya-v161c-empalme-directo-verify.mjs`.
+- Sin Hosting DEV nuevo, sin merge, sin deploy, sin produccion, sin importaciones reales, sin Firestore/Auth/Storage/HR writes, sin Make/Gemini live y sin pagos.
 
-## Corte activo
+## Delta V161C autorizado
 
-`CORTE 0B — MOTOR CANÓNICO HISTÓRICO + TENANT/LOGIN`
+Modificados desde candidata:
 
-La misma semántica se aplica a todos los periodos detectados. Mayo, junio y julio son muestras de regresión, no reglas especiales.
+- `app/app.js`
+- `app/core/config.js`
+- `app/core/router.js`
+- `app/modules/visita-detalle.js`
+- `app/modules/visitas.js`
 
-## Implementado y validado
+Agregado/actualizado:
 
-### Historia y operación
+- `app/REPORTE-DE-CAMBIOS.md`
 
-- 14 periodos y 616 visitas, junio 2025–julio 2026.
-- 44 visitas por periodo: 34 GT y 10 HN.
-- Estados separados: asignación, disponibilidad, agenda, ejecución, cuestionario, submitido, liquidación y pago.
-- `sin asignar` no equivale a `disponible`.
-- `P1Q` bloquea por dependencia de la ventana anterior.
-- WK/WKND y Q1/Q2 quedan normalizados.
-- Submitido no equivale a liquidado ni pagado.
+Eliminado:
 
-### Julio 2026
+- `app/index-test-base.html`: no existia en la rama.
 
-- 39 asignadas y 5 sin asignar.
-- 4 disponibles y 1 bloqueada: MC. Santa Clara Q2.
-- 35 programadas, 21 realizadas, 21 cuestionarios, 7 pendientes de submitido y 14 submitidas.
-- Cero liquidaciones y pagos confirmados por inferencia.
+## Preservacion obligatoria
 
-### Tenant y login
-
-- DEV: Admin, Cliente, Shopper, Operativo, Coordinador y Aliado.
-- Rótulo técnico DEV: `Accesos de validación`.
-- Producción TyA prevista inicialmente: Admin, Operativo y Shopper.
-- Configuración futura: `Configuración > Tenant > Accesos y login`.
-- Países, banderas, roles, autorregistro, Cliente y Academia quedan gobernados por tenant.
-
-### Contratos públicos
-
-- `CX.data.availableVisits()`.
-- `CX.data.postulationEligibility(visit, proposedDate)`.
-- Proyecto y periodo mantienen identidades separadas.
-
-## Evidencia de gates
-
-- Commit validado: `287cd0729c14ef9dfe63ce566c6bc2ff8604f2a0`.
-- R18A run `29669393823`: éxito.
-- Gates completos run `29669735189`: éxito.
-- Artifact `8436913243`.
-- Historia canónica R21, semántica, proyecto/periodo, roles y overlays: PASS.
-- Advertencia no bloqueante: 209 referencias shopper frente a 216; no se crean ni eliminan identidades.
-
-## Pendiente real
-
-1. `app/core/router.js`: separar proyecto/periodo y agregar selectores por alcance.
-2. `app/modules/visita-detalle.js`: consumir elegibilidad, bloquear fechas inválidas y no mostrar `null`.
-3. `app/app.js`: login desde perfil tenant y bloque técnico oculto en producción.
-4. Cliente: Academia separada de Capacitación.
-5. Aplicar ese delta frontend directamente en la rama viva.
-6. Ejecutar post-gates.
-7. Solicitar autorización separada para nuevo Hosting DEV.
-8. Repetir validación visual.
-9. Congelar Corte 0B solo con `APROBADO`.
-
-## Carril vinculante
-
-`EXECUTION_LANE_READY → AUDITORÍA DELTA → GO o P0_PROVEN → APPLY_DELTA_DIRECTLY → COMMIT/PUSH → POST-GATES → VALIDACIÓN VISUAL → FREEZE`
-
-Quedan prohibidos nueva rama/PR, composite previo obligatorio, workflow transportador y tareas manuales para Paula.
-
-## Claude, Academia y clasificación
-
-- Claude recibe únicamente los cuatro ajustes frontend localizados; no reinterpreta la HR.
-- Academia debe explicar disponibilidad, dependencia, franja, ventana, rechazo, proyecto/periodo y accesos por tenant.
-- Reusable: motor, contrato de postulación, selectores y login configurable.
-- Exclusivo TyA: GT/HN, Q1/Q2 y token `P1Q`.
+- `app/core/data.js`
+- `app/core/store.js`
+- `app/index.html`
+- backend, adapters, tools y contratos
+- fuentes source-safe, integraciones y overlays
+- documentacion viva
+- interfaz exacta `CX.data`
 
 ## Siguiente bloque exacto
 
-`CORTE 0B.3 — CORRECCIÓN FRONTEND LOCALIZADA R21 + APPLY_DELTA_DIRECTLY + POST-GATES`
+```text
+POST_GATES_R21_V161C
+-> scripts locales index.html
+-> sintaxis JS modificados
+-> UTF-8 sin BOM y meta charset
+-> ausencia de secretos/datos sensibles
+-> verificador manifest/build-lock
+-> smoke/validacion visual Corte 0B
+-> TECHNICAL_PASS_PENDING_DEV_AUTHORIZATION si todo pasa
+```
 
-No iniciar Corte 1 ni producción antes del freeze.
+No iniciar Corte 1 antes de validacion visual y freeze de Corte 0B.

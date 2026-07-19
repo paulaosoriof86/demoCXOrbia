@@ -1,44 +1,37 @@
-# 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
+# 00 - INDICE DE FUENTES VIGENTES CXORBIA TyA
 
-Fecha: 2026-07-18
+Fecha: 2026-07-19
 Estado: ACTIVO Y OBLIGATORIO
 
 ## Lectura obligatoria
 
 1. Reglas maestras y continuidad.
 2. Addendum de empalme directo y carril file-aware.
-3. Addenda de Academia, patrones reutilizables y antidesvío.
-4. Plan Phase A sin desviación.
-5. Checkpoint operativo vigente.
+3. Addenda de Academia, patrones reutilizables y antidesvio.
+4. Plan Phase A sin desviacion.
+5. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`.
 6. Contratos R20/R21, CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES, tracker y PR #7.
 
 ## Estado vigente
 
 - Rama viva: `docs-tya-v6-v71-audit`.
-- V159 empalmada, aún no `ACTIVE_BASELINE`.
-- Corte activo: motor histórico y tenant/login.
-- Estado: `R21_TECHNICAL_PASS_PENDING_FRONTEND_CORRECTION_AND_NEW_DEV_AUTHORIZATION`.
-- Commit técnico validado: `287cd0729c14ef9dfe63ce566c6bc2ff8604f2a0`.
-- R18A run `29669393823`: éxito.
-- Gates completos run `29669735189`: éxito.
-- DEV publicado: R20, commit `68ac6513df24b307d46836c84ac15eb9ecd52648`, visual `NO APROBADA`.
-- R21 no está desplegado.
+- PR #7: draft/open/no merge.
+- V161C aplicada por carril file-aware.
+- Estado: `EMPALMED_PENDING_POST_GATES`.
+- HEAD_BEFORE: `d640b1119e373e303f188bfd87758221ef3b9fae`.
+- Manifest: `app/docs/MANIFEST-V161C-EMPALME-DIRECTO-20260719.json`.
+- Build lock: `app/core/build-lock.js`.
+- Verificador: `tools/release/tya-v161c-empalme-directo-verify.mjs`.
+- No publicar Hosting DEV sin autorizacion separada.
 
-## Evidencia
+## Evidencia funcional vigente
 
-- 14 periodos, 616 visitas, junio 2025–julio 2026.
-- Julio: 39 asignadas, 5 sin asignar, 4 disponibles y 1 bloqueada por `P1Q`.
-- Cero liquidaciones o pagos inferidos.
-
-## Pendiente frontend
-
-1. Proyecto y periodo separados con selectores por alcance.
-2. Postulación consumiendo elegibilidad canónica.
-3. Login desde perfil tenant.
-4. Academia Cliente separada de Capacitación.
+- Corte activo: `CORTE 0B - MOTOR CANONICO HISTORICO + TENANT/LOGIN`.
+- V161C corrige delta frontend localizado R21.
+- Se preservan proyecto/periodo, historia, source-safe, TyA multi-proyecto y `CX.data`.
 
 ## Carril
 
-`EXECUTION_LANE_READY → AUDITORÍA DELTA → GO o P0_PROVEN → APPLY_DELTA_DIRECTLY → POST-GATES → VALIDACIÓN VISUAL → FREEZE`
+`EXECUTION_LANE_READY -> APPLY_DELTA_DIRECTLY -> COMMIT/PUSH -> POST-GATES -> VALIDACION VISUAL -> FREEZE`
 
-Siguiente acción: corrección frontend localizada, aplicación directa en la rama viva, post-gates, autorización separada para nuevo DEV y validación visual. Paula no debe sustituir otra vez las Fuentes en este estado intermedio.
+Siguiente accion: post-gates R21 sobre el mismo HEAD/build. No iniciar Corte 1 antes de validacion visual y freeze de Corte 0B.

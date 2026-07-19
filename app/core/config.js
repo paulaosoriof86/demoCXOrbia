@@ -174,6 +174,22 @@ CX.setModuleEnabled = function(id, on){
   try{ localStorage.setItem('cx_modules', JSON.stringify(s)); }catch(e){}
 };
 
+/* R21: helper único y genérico para módulos cuya visibilidad depende del perfil del tenant
+   (CX.tenantProfile), además de rol/plan. Hoy solo gobierna Academia para el rol Cliente —
+   sin perfil configurado (entorno sin adapter) se mantiene visible, como ya viene operando. */
+CX.moduleVisibleForProfile = function(id, role){
+  if(id==='aprendizaje' && role==='cliente'){
+    const tp = CX.tenantProfile;
+    const ac = tp && tp.academy;
+    if(!ac) return true;
+    const cliente = ac.cliente, portal = ac.client_portal;
+    if(cliente===true || portal===true) return true;
+    if(cliente===false || portal===false) return false;
+    return true;
+  }
+  return true;
+};
+
 /* ---------- Module registry metadata ----------
    status: 'ready'  -> fully built
            'beta'   -> functional, being deepened
@@ -204,7 +220,7 @@ CX.MODULES = {
   miperfil:      { icon:'👤', label:'Mi Perfil',            roles:['shopper'],         status:'ready' },
   rutas:         { icon:'🗺️', label:'Hojas de Ruta',        roles:['admin'],           status:'ready' },
   documentos:    { icon:'📎', label:'Recursos del proyecto', roles:['admin','shopper'], status:'ready' },
-  aprendizaje:   { icon:'📚', label:'Academia',          roles:['admin','shopper'], status:'ready' },
+  aprendizaje:   { icon:'📚', label:'Academia',          roles:['admin','shopper','cliente'], status:'ready' },
   cert:          { icon:'🏆', label:'Certificación',        roles:['admin','shopper'], status:'ready' },
   tablon:        { icon:'📢', label:'Tablón / Novedades',   roles:['admin','shopper'], badgeNotif:true, status:'ready' },
   soporte:       { icon:'🤖', label:'Soporte IA',           roles:['admin','shopper'], status:'ready' },
@@ -259,7 +275,7 @@ CX.NAV = {
   ],
   cliente: [
     { sec:'Estrategia',  items:['cli_dashboard','cli_sucursales','cli_acciones','cli_insights'] },
-    { sec:'Desarrollo',  items:['cli_capacitacion','cli_reportes','cli_programa'] },
+    { sec:'Desarrollo',  items:['cli_capacitacion','aprendizaje','cli_reportes','cli_programa'] },
     { sec:'Crecimiento', items:['cli_market','novedades'] },
   ],
 };
