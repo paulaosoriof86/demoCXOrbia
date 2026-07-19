@@ -3,10 +3,10 @@
   CXOrbia TyA Phase A — R18A compatibility entrypoint with R21 tenant/login and
   postulation-eligibility binding.
 
-  Delegates generation to R15G, preserves the historical R18A adapter filename,
-  repairs one legacy warning fragment, applies the source-safe tenant profile
-  and exposes one reusable read-only eligibility contract. No UI source module
-  or core source file is modified.
+  R21 is applied to the generated build adapter only. The wrapper uses stable
+  regular-expression anchors and explicit postconditions so whitespace changes
+  in R15G cannot silently disable the binding. No UI source module or core
+  source file is modified.
 */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -36,53 +36,108 @@ if(profile.tenantId!=='tya'||profile.safeState?.sourceSafe!==true)throw new Erro
 const roleMap={client_portal:'cliente',coordinator:'coordinador',partner:'aliado'};
 const visibleRoles=(profile.login?.visibleRoles||[]).map(role=>roleMap[role]||role);
 const hiddenRoles=(profile.login?.hiddenRoles||[]).map(role=>roleMap[role]||role);
+const fail=message=>{throw new Error(`R18A R21 binding HOLD: ${message}`);};
+const replaceRequired=(source,pattern,replacement,label)=>{
+  if(!pattern.test(source))fail(`${label} anchor missing`);
+  return source.replace(pattern,replacement);
+};
 
 let code = fs.readFileSync(adapterFile, 'utf8');
 const danglingLegacyWarning = " 3 referencias continúan en revisión.'] : [];";
 if (code.includes(danglingLegacyWarning)) code = code.replace(danglingLegacyWarning, '');
 
-const profilePattern=/visibleLoginRoles:\[[^\]]*\],\s*hiddenLoginRoles:\[[^\]]*\],\s*showCountryFlags:true,\s*allowShopperRegistration:true,\s*sourceSafe:true,\s*runtimePersisted:false/;
-if(!profilePattern.test(code))throw new Error('Generated adapter tenant-profile anchor missing.');
-code=code.replace(profilePattern,`visibleLoginRoles:${JSON.stringify(visibleRoles)}, hiddenLoginRoles:${JSON.stringify(hiddenRoles)}, showRoleTestArea:${profile.login?.showRoleTestArea===true}, roleTestAreaLabel:${JSON.stringify(profile.login?.roleTestAreaLabel||'Accesos de validación')}, clientPortalVisible:${profile.login?.clientPortalVisible===true}, showCountryFlags:${profile.countryFlags?.show!==false}, allowShopperRegistration:${profile.login?.allowShopperSelfRegistration!==false}, configurationSurface:${JSON.stringify(profile.configurationSurface||{})}, sourceSafe:true, runtimePersisted:false`);
-
-const facetNeedle="const c=v&&v.canonicalFacets||{};\n     const assigned=c.assigned===true || (v&&v.assignmentState==='assigned');";
-if(!code.includes(facetNeedle))throw new Error('Generated adapter visitFacets anchor missing.');
-code=code.replace(facetNeedle,"const c=v&&v.canonicalFacets||{};\n     const available=c.available===true || (v&&v.availabilityState==='eligible_from_date') || (v&&v.estado==='disponible');\n     const eligibilityBlocked=c.eligibilityBlocked===true || (v&&String(v.availabilityState||'').startsWith('blocked_'));\n     const assigned=c.assigned===true || (v&&v.assignmentState==='assigned');");
-const returnNeedle="return {assigned,scheduled,realized,questionnaire,submitted,liquidationCandidate,liquidationConfirmed,paymentConfirmed,outOfRange:c.outOfRange===true||v?.outOfRange===true,cancelled:c.cancelled===true||v?.estado==='cancelada'};";
-if(!code.includes(returnNeedle))throw new Error('Generated adapter visitFacets return anchor missing.');
-code=code.replace(returnNeedle,"return {available,eligibilityBlocked,assigned,scheduled,realized,questionnaire,submitted,liquidationCandidate,liquidationConfirmed,paymentConfirmed,outOfRange:c.outOfRange===true||v?.outOfRange===true,cancelled:c.cancelled===true||v?.estado==='cancelada'};");
-
-const summaryAnchor='CX.data.periodOperationalSummary=Array.isArray(snapshot.periodOperationalSummary)?snapshot.periodOperationalSummary:[];';
-if(!code.includes(summaryAnchor))throw new Error('Generated adapter period summary anchor missing.');
-if(!code.includes('CX.data.postulationEligibility=function')){
-  code=code.replace(summaryAnchor,`CX.data.postulationEligibility=function(v,proposedDate){
-     const reasons=[];
-     const iso=value=>/^20\\d{2}-[01]\\d-[0-3]\\d$/.test(String(value||''));
-     const date=String(proposedDate||'');
-     if(!v)return {ok:false,reasons:['visit_missing'],sourceType:null};
-     const facets=this.visitFacets(v);
-     if(facets.assigned)reasons.push('visit_already_assigned');
-     if(facets.eligibilityBlocked)reasons.push(v.availabilityState||'eligibility_blocked');
-     if(!iso(v.disponibleDesde))reasons.push('available_from_missing_or_invalid');
-     if(!iso(date))reasons.push('proposed_date_invalid');
-     if(iso(v.disponibleDesde)&&iso(date)&&date<v.disponibleDesde)reasons.push('before_available_from');
-     if(iso(v.measurementWindowStart)&&iso(date)&&date<v.measurementWindowStart)reasons.push('before_measurement_window');
-     if(iso(v.measurementWindowEnd)&&iso(date)&&date>v.measurementWindowEnd)reasons.push('after_measurement_window');
-     if(iso(date)){
-       const day=new Date(date+'T12:00:00Z').getUTCDay();
-       const weekend=day===0||day===6;
-       if(v.franjaCode==='WKND'&&!weekend)reasons.push('requires_weekend');
-       if(v.franjaCode==='WK'&&weekend)reasons.push('requires_weekday');
-     }
-     return {ok:reasons.length===0,reasons:[...new Set(reasons)],availableFrom:v.disponibleDesde||null,measurementWindowStart:v.measurementWindowStart||null,measurementWindowEnd:v.measurementWindowEnd||null,franjaCode:v.franjaCode||null,sourceType:v.hrSourceType||snapshot.projectConfig?.hrSourceType||snapshot.source?.type||null};
-   };
-   CX.data.availableVisits=function(pool){return (Array.isArray(pool)?pool:(this._visitas||[])).filter(v=>this.visitFacets(v).available&&!this.visitFacets(v).assigned&&!this.visitFacets(v).cancelled);};
-   ${summaryAnchor}`);
+if(!code.includes('availabilityState:v.availabilityState')){
+  code=replaceRequired(
+    code,
+    /operationalState:v\.operationalState\s*\|\|\s*null,\s*assignmentState:/,
+    "operationalState:v.operationalState || null, availabilityState:v.availabilityState || null, availabilityDependency:v.availabilityDependency || null, availableFromRaw:v.availableFromRaw ?? v.disponibleDesde ?? null, measurementWindowId:v.measurementWindowId || null, measurementWindowLabel:v.measurementWindowLabel || v.quincena || null, measurementWindowStart:v.measurementWindowStart || null, measurementWindowEnd:v.measurementWindowEnd || null, franjaRaw:v.franjaRaw ?? v.franja ?? null, franjaCode:v.franjaCode || null, assignmentState:",
+    'visit projection'
+  );
 }
 
-const loginNeedle="const login=document.getElementById('login');if(!login)return;\n       login.querySelectorAll('[data-role]').forEach(el=>{el.style.display=allowed.has(el.dataset.role)?'':'none';});";
-if(!code.includes(loginNeedle))throw new Error('Generated adapter login-visibility anchor missing.');
-code=code.replace(loginNeedle,"const login=document.getElementById('login');if(!login)return;\n       login.querySelectorAll('[data-role]').forEach(el=>{el.style.display=allowed.has(el.dataset.role)?'':'none';});\n       const testLabel=[...login.querySelectorAll('div')].find(el=>String(el.textContent||'').trim()==='Probar acceso por rol (matriz de permisos)'||String(el.textContent||'').trim()==='Accesos de validación');\n       if(testLabel){testLabel.textContent=CX.tenantProfile.roleTestAreaLabel||'Accesos de validación';const wrap=testLabel.parentElement;if(wrap)wrap.style.display=CX.tenantProfile.showRoleTestArea===false?'none':'';}");
+const profilePattern=/visibleLoginRoles:\[[^\]]*\],\s*hiddenLoginRoles:\[[^\]]*\],\s*showCountryFlags:true,\s*allowShopperRegistration:true,\s*sourceSafe:true,\s*runtimePersisted:false/;
+if(!code.includes('roleTestAreaLabel:')){
+  code=replaceRequired(
+    code,
+    profilePattern,
+    `visibleLoginRoles:${JSON.stringify(visibleRoles)}, hiddenLoginRoles:${JSON.stringify(hiddenRoles)}, showRoleTestArea:${profile.login?.showRoleTestArea===true}, roleTestAreaLabel:${JSON.stringify(profile.login?.roleTestAreaLabel||'Accesos de validación')}, clientPortalVisible:${profile.login?.clientPortalVisible===true}, showCountryFlags:${profile.countryFlags?.show!==false}, allowShopperRegistration:${profile.login?.allowShopperSelfRegistration!==false}, configurationSurface:${JSON.stringify(profile.configurationSurface||{})}, sourceSafe:true, runtimePersisted:false`,
+    'tenant profile'
+  );
+}
+
+if(!code.includes('const available=c.available===true')){
+  code=replaceRequired(
+    code,
+    /const c=v&&v\.canonicalFacets\|\|\{\};\s*const assigned=c\.assigned===true\s*\|\|\s*\(v&&v\.assignmentState==='assigned'\);/,
+    "const c=v&&v.canonicalFacets||{};\n    const available=c.available===true || (v&&v.availabilityState==='eligible_from_date') || (v&&v.estado==='disponible');\n    const eligibilityBlocked=c.eligibilityBlocked===true || (v&&String(v.availabilityState||'').startsWith('blocked_'));\n    const assigned=c.assigned===true || (v&&v.assignmentState==='assigned');",
+    'visit facets'
+  );
+}
+
+if(!code.includes('return {available,eligibilityBlocked,assigned')){
+  code=replaceRequired(
+    code,
+    /return \{assigned,scheduled,realized,questionnaire,submitted,liquidationCandidate,liquidationConfirmed,paymentConfirmed,outOfRange:c\.outOfRange===true\|\|v\?\.outOfRange===true,cancelled:c\.cancelled===true\|\|v\?\.estado==='cancelada'\};/,
+    "return {available,eligibilityBlocked,assigned,scheduled,realized,questionnaire,submitted,liquidationCandidate,liquidationConfirmed,paymentConfirmed,outOfRange:c.outOfRange===true||v?.outOfRange===true,cancelled:c.cancelled===true||v?.estado==='cancelada'};",
+    'visit facets return'
+  );
+}
+
+const summaryAnchor='CX.data.periodOperationalSummary=Array.isArray(snapshot.periodOperationalSummary)?snapshot.periodOperationalSummary:[];';
+if(!code.includes('R21_POSTULATION_ELIGIBILITY_CONTRACT')){
+  code=replaceRequired(
+    code,
+    new RegExp(summaryAnchor.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')),
+    `/* R21_POSTULATION_ELIGIBILITY_CONTRACT — reusable for external/internal route sources. */
+  CX.data.postulationEligibility=function(v,proposedDate){
+    const reasons=[];
+    const iso=value=>/^20\\d{2}-[01]\\d-[0-3]\\d$/.test(String(value||''));
+    const date=String(proposedDate||'');
+    if(!v)return {ok:false,reasons:['visit_missing'],sourceType:null};
+    const facets=this.visitFacets(v);
+    if(facets.assigned)reasons.push('visit_already_assigned');
+    if(facets.eligibilityBlocked)reasons.push(v.availabilityState||'eligibility_blocked');
+    if(!iso(v.disponibleDesde))reasons.push('available_from_missing_or_invalid');
+    if(!iso(date))reasons.push('proposed_date_invalid');
+    if(iso(v.disponibleDesde)&&iso(date)&&date<v.disponibleDesde)reasons.push('before_available_from');
+    if(iso(v.measurementWindowStart)&&iso(date)&&date<v.measurementWindowStart)reasons.push('before_measurement_window');
+    if(iso(v.measurementWindowEnd)&&iso(date)&&date>v.measurementWindowEnd)reasons.push('after_measurement_window');
+    if(iso(date)){
+      const day=new Date(date+'T12:00:00Z').getUTCDay();
+      const weekend=day===0||day===6;
+      if(v.franjaCode==='WKND'&&!weekend)reasons.push('requires_weekend');
+      if(v.franjaCode==='WK'&&weekend)reasons.push('requires_weekday');
+    }
+    return {ok:reasons.length===0,reasons:[...new Set(reasons)],availableFrom:v.disponibleDesde||null,measurementWindowStart:v.measurementWindowStart||null,measurementWindowEnd:v.measurementWindowEnd||null,franjaCode:v.franjaCode||null,sourceType:v.hrSourceType||snapshot.projectConfig?.hrSourceType||snapshot.source?.type||null};
+  };
+  CX.data.availableVisits=function(pool){return (Array.isArray(pool)?pool:(this._visitas||[])).filter(v=>{const f=this.visitFacets(v);return f.available&&!f.assigned&&!f.cancelled;});};
+  ${summaryAnchor}`,
+    'period summary'
+  );
+}
+
+if(!code.includes("testLabel.textContent=CX.tenantProfile.roleTestAreaLabel")){
+  code=replaceRequired(
+    code,
+    /const login=document\.getElementById\('login'\);if\(!login\)return;\s*login\.querySelectorAll\('\[data-role\]'\)\.forEach\(el=>\{el\.style\.display=allowed\.has\(el\.dataset\.role\)\?'':'none';\}\);/,
+    "const login=document.getElementById('login');if(!login)return;\n      login.querySelectorAll('[data-role]').forEach(el=>{el.style.display=allowed.has(el.dataset.role)?'':'none';});\n      const testLabel=[...login.querySelectorAll('div')].find(el=>String(el.textContent||'').trim()==='Probar acceso por rol (matriz de permisos)'||String(el.textContent||'').trim()==='Accesos de validación');\n      if(testLabel){testLabel.textContent=CX.tenantProfile.roleTestAreaLabel||'Accesos de validación';const wrap=testLabel.parentElement;if(wrap)wrap.style.display=CX.tenantProfile.showRoleTestArea===false?'none':'';}\n      const reg=login.querySelector('#goReg');if(reg)reg.style.display=CX.tenantProfile.allowShopperRegistration===false?'none':'';",
+    'login visibility'
+  );
+}
+
+const requiredMarkers=[
+  'availabilityState:v.availabilityState',
+  'measurementWindowStart:v.measurementWindowStart',
+  'franjaCode:v.franjaCode',
+  'roleTestAreaLabel:',
+  'const available=c.available===true',
+  'return {available,eligibilityBlocked,assigned',
+  'R21_POSTULATION_ELIGIBILITY_CONTRACT',
+  'CX.data.postulationEligibility=function',
+  'CX.data.availableVisits=function',
+  "testLabel.textContent=CX.tenantProfile.roleTestAreaLabel"
+];
+for(const marker of requiredMarkers)if(!code.includes(marker))fail(`postcondition missing: ${marker}`);
 
 fs.writeFileSync(adapterFile, code, 'utf8');
 
@@ -104,6 +159,7 @@ console.log(JSON.stringify({
   hiddenRoles,
   showRoleTestArea:profile.login?.showRoleTestArea===true,
   postulationEligibilityContract:true,
+  stableRegexAnchors:true,
   legacyWarningFragmentRemoved:!code.includes(danglingLegacyWarning),
   safeState:{writes:false,imports:false,deploy:false,production:false,providers:false,payments:false,frontendModulesModified:false,coreFilesModified:false}
 }, null, 2));
