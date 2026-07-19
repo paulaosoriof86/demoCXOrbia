@@ -3,80 +3,54 @@
 Fecha: 2026-07-18  
 Estado: ACTIVO Y OBLIGATORIO
 
-## 1. Lectura obligatoria
+## Lectura obligatoria
 
 1. `00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`
 2. `00-REGLAS-MAESTRAS-CONTEXTO-CONTINUIDAD-CXORBIA-TYA-ACTUALIZADO-20260704.md`
 3. `ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`
-4. `ADDENDUM-MAESTRO-ACADEMIA-PROFUNDA-INTERACTIVA-CXORBIA-TYA-20260704.md`
-5. `ADDENDUM-MAESTRO-PATRONES-REUTILIZABLES-CXORBIA-20260707.md`
-6. `ADDENDUM-MAESTRO-ANTIDESVIO-PRODUCCION-REAL-LEGACY-CLAUDE-CXORBIA-TYA-20260709.md`
-7. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`
-8. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
+4. Addenda de Academia, patrones reutilizables y antidesvío.
+5. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`
+6. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
+7. Contratos R20/R21, CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES, tracker y PR #7.
 
-Después consultar contratos R20, CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES-PROTOTIPO, Academia, tracker, PR #7 y HEAD de `docs-tya-v6-v71-audit`.
+## Estado vigente
 
-## 2. Estado operativo vigente
-
-- V159 está empalmada, pero aún no es `ACTIVE_BASELINE`.
+- Rama viva: `docs-tya-v6-v71-audit`.
+- V159 empalmada, aún no `ACTIVE_BASELINE`.
 - Corte activo: `CORTE 0B — MOTOR CANÓNICO HISTÓRICO + TENANT/LOGIN`.
-- Estado: `CORTE_0B_R20_TECHNICAL_PASS_PENDING_HOSTING_DEV_VISUAL`.
-- Commit de evidencia: `f9e7f65b7d7d5975d2905a55d25891d36e876255`.
-- Workflow: `29661230006`, resultado `SUCCESS`.
-- HR source-safe: 28 pestañas, 14 periodos, 616 visitas, junio 2025–julio 2026.
-- Los gates históricos, proyecto/periodo, roles, módulos y overlays pasaron.
-- Smoke local/static Admin, Cliente y Shopper pasó.
-- Falta Hosting DEV corregido, smoke remoto y aprobación visual de Paula.
+- Estado: `R21_TECHNICAL_PASS_PENDING_FRONTEND_CORRECTION_AND_NEW_DEV_AUTHORIZATION`.
+- Commit técnico validado: `287cd0729c14ef9dfe63ce566c6bc2ff8604f2a0`.
+- R18A run `29669393823`: éxito.
+- Gates completos run `29669735189`: éxito.
+- Artifact `8436913243`.
+- El DEV publicado sigue en R20, commit `68ac6513df24b307d46836c84ac15eb9ecd52648`, con validación visual `NO APROBADA`.
+- R21 no está desplegado.
 
-## 3. Evidencia resumida
+## Evidencia
 
+- 14 periodos y 616 visitas, junio 2025–julio 2026.
 - 44 visitas por periodo: 34 GT y 10 HN.
-- Mayo y junio 2026: 44 realizadas, 44 cuestionarios y 44 submitidas por mes.
-- Julio 2026: 39 asignadas, 5 sin asignar, 35 programadas, 4 pendientes de programar, 21 realizadas/cuestionario, 7 pendientes de submitido y 14 submitidas.
-- 209 referencias shopper protegidas; la diferencia frente a la referencia 216 queda en revisión, sin inventar ni eliminar identidades.
-- 196 enlaces financieros exactos y 92 elementos de revisión financiera.
-- Cero pagos, lotes o certificaciones inferidos.
-- 40 visitas requieren revisión de calidad/contradicción de fuente.
+- Julio: 39 asignadas, 5 sin asignar, 4 disponibles, 1 bloqueada por `P1Q`, 35 programadas, 21 realizadas/cuestionario y 14 submitidas.
+- Cero liquidaciones o pagos inferidos.
+- 209 referencias shopper frente a 216: revisión no bloqueante, sin crear ni eliminar identidades.
 
-## 4. Prevalencia
+## Pendiente frontend
 
-- Empalmes: addendum canónico de carril file-aware y aplicación directa.
-- Phase A: plan canónico.
-- Estado puntual: checkpoint vigente.
-- Semántica HR: contrato R20.
+1. `app/core/router.js`: proyecto/periodo separados y selectores por alcance.
+2. `app/modules/visita-detalle.js`: consumir elegibilidad y no mostrar `null` ni éxito falso.
+3. `app/app.js`: login desde perfil tenant.
+4. Cliente: Academia separada de Capacitación.
 
-## 5. Regla de candidatas
+Handoff: `RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE-0B-R21-POSTULACION-LOGIN-Y-SELECTORES-20260718.md`.
 
-```text
-EXECUTION_LANE_READY
-→ AUDITORÍA DELTA
-→ P0_PROVEN o GO
-→ si GO sin P0: APPLY_DELTA_DIRECTLY
-→ COMMIT/PUSH ATÓMICO
-→ POST-GATES
-→ VALIDACIÓN VISUAL
-→ FREEZE
-```
+## Carril vinculante
 
-No usar composite previo obligatorio, nueva rama/PR, workflow transportador, conectores archivo por archivo ni tareas manuales para Paula.
+`EXECUTION_LANE_READY → AUDITORÍA DELTA → GO o P0_PROVEN → APPLY_DELTA_DIRECTLY → POST-GATES → VALIDACIÓN VISUAL → FREEZE`
 
-## 6. Fuentes que deben retirarse
+No crear nueva rama, PR, composite previo obligatorio ni tarea manual para Paula.
 
-- copias con `(1)`;
-- checkpoints que digan que V159 no está empalmada;
-- addenda que exijan visualización antes de empalmar una candidata GO;
-- planes paralelos;
-- ZIPs de candidatas como fuente permanente.
+## Siguiente acción
 
-## 7. Siguiente acción exacta
+Claude corrige solo los cuatro puntos; el delta se aplica directamente en la rama viva; se ejecutan post-gates; luego se solicita autorización separada para nuevo Hosting DEV y se repite la validación visual. Corte 0B solo se congela con `APROBADO`.
 
-1. Publicar Hosting DEV del mismo commit/build, solo con autorización específica.
-2. Ejecutar smoke remoto.
-3. Recibir revisión visual de Paula.
-4. Corregir únicamente diferencias reproducibles.
-5. Congelar Corte 0B con `APROBADO`.
-6. No iniciar Corte 1 antes del freeze.
-
-## 8. Mantenimiento
-
-Al cambiar el estado, reemplazar este índice y el checkpoint canónico; actualizar CAMBIOS, Claude, PENDIENTES, Academia, tracker y PR #7 sin crear copias paralelas.
+Paula no debe volver a sustituir las Fuentes durante este estado intermedio.
