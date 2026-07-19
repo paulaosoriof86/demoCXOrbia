@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "tya-corte-0b-r21-delta-readonly-preflight",
+  "decision": "PASS_R21_DELTA_READONLY_PREFLIGHT",
+  "baseR20Evidence": {
+    "canonicalHistoryDecision": "PASS_R20_CANONICAL_HISTORY",
+    "periods": 14,
+    "visits": 616,
+    "oldestPeriod": "2025-06",
+    "newestPeriod": "2026-07",
+    "projectPeriodDecision": "PASS_R20_PROJECT_PERIOD_KPI_HISTORY",
+    "july2026": {
+      "total": 44,
+      "assigned": 39,
+      "unassigned": 5,
+      "scheduled": 35,
+      "pendingSchedule": 4,
+      "realized": 21,
+      "questionnaireCompleted": 21,
+      "pendingSubmission": 7,
+      "submitted": 14,
+      "liquidationConfirmed": 0,
+      "paymentConfirmed": 0,
+      "byCountry": {"GT": 34, "HN": 10}
+    },
+    "remoteSmokeDecision": "PASS_R20_HOSTING_DEV_AND_REMOTE_SMOKE",
+    "deployedCommit": "68ac6513df24b307d46836c84ac15eb9ecd52648"
+  },
+  "r21DeltaEvidence": {
+    "gate": "tya-postulation-eligibility-r21",
+    "decision": "PASS_R21_POSTULATION_ELIGIBILITY",
+    "observed": {
+      "unassigned": 5,
+      "available": 4,
+      "blocked": 1,
+      "blockedVisit": "MC. Santa Clara",
+      "blockedReason": "blocked_previous_measurement_window"
+    },
+    "assertions": {
+      "beforeAvailableFromRejected": true,
+      "measurementWindowRejected": true,
+      "weekendRuleRejected": true,
+      "weekdayRuleRejected": true,
+      "validDatesAccepted": true,
+      "nullAvailabilityNotPublished": true
+    },
+    "sourceSamples": ["JULIO 26", "JULIO 26 HN"]
+  },
+  "tenantProfileEvidence": {
+    "visibleRoles": ["admin", "client_portal", "shopper", "ops", "coordinator", "partner"],
+    "productionDefaultVisibleRoles": ["admin", "ops", "shopper"],
+    "roleTestAreaLabel": "Accesos de validación",
+    "clientPortalVisible": true,
+    "academyClientVisible": true,
+    "configurationRoute": "Configuración > Tenant > Accesos y login",
+    "uiSurfaceState": "contract_only_not_yet_exposed_in_ui"
+  },
+  "remainingBlockers": [
+    "frontend_router_project_period_selectors_not_applied",
+    "frontend_visit_detail_not_consuming_postulationEligibility",
+    "frontend_login_not_consuming_full_tenant_profile",
+    "frontend_client_academy_route_not_aligned",
+    "full_repository_builder_and_browser_gates_not_yet_executed_for_r21",
+    "new_hosting_dev_not_authorized"
+  ],
+  "state": "R21_DELTA_PREFLIGHT_PASS_PENDING_FRONTEND_FULL_GATES_AND_DEV_AUTHORIZATION",
+  "localEvidenceSha256": "155f78e96f8b0d2990fe95906c82a1768f849f4213d26521176768078f20628e",
+  "safeState": {
+    "readOnly": true,
+    "writes": false,
+    "imports": false,
+    "deploy": false,
+    "production": false,
+    "providers": false,
+    "payments": false,
+    "piiIncluded": false
+  }
+}
