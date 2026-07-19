@@ -1,10 +1,15 @@
 #!/usr/bin/env node
 /*
-  CXOrbia TyA Phase A — motor canónico histórico de estados de visita R20.
+  CXOrbia TyA Phase A — motor canónico histórico de estados de visita R20/R21.
 
   La HR entrega evidencias ortogonales. Ningún consumidor debe reconstruir el
   ciclo solamente desde `estado`. La misma regla se aplica a todos los periodos
   detectados; liquidación y pago requieren confirmación financiera explícita.
+
+  R21 separa además `sin asignar` de `disponible`: una visita sin shopper solo
+  se publica como oportunidad cuando la fuente entrega una fecha de
+  disponibilidad válida. Tokens como P1Q/P x visita previa bloquean la oferta
+  hasta resolver la dependencia del periodo de medición anterior.
 */
 const ISO_DATE=/^20\d{2}-[01]\d-[0-3]\d$/;
 
@@ -23,6 +28,24 @@ function explicitShopperPresence(visit){
   if(visit.hasShopper===false)return false;
   if(visit.hasShopper===true)return hasValue(visit.shopperCode)||hasValue(visit.shopperId)||hasValue(visit.shopper);
   return hasValue(visit.shopperCode)||hasValue(visit.shopperId)||hasValue(visit.shopper);
+}
+function availabilityDependency(raw){
+  const text=normalizedText(raw);
+  if(!text)return null;
+  if(['p1q','p 1q','p x visita previa','pendiente visita previa','pendiente primera quincena','p x 1q'].includes(text))return 'previous_measurement_window';
+  if(text.includes('visita previa')||text.includes('primera quincena'))return 'previous_measurement_window';
+  return null;
+}
+function deriveAvailability(visit,assigned,reviewReasons){
+  const raw=hasValue(visit.availableFromRaw)?visit.availableFromRaw:visit.disponibleDesde;
+  const dependency=visit.availabilityDependency||availabilityDependency(raw);
+  const availableFrom=validIsoDate(visit.disponibleDesde)?String(visit.disponibleDesde):null;
+  if(assigned)return {available:false,availabilityState:'not_applicable_assigned',availabilityDependency:null,availableFrom};
+  if(availableFrom)return {available:true,availabilityState:'eligible_from_date',availabilityDependency:null,availableFrom};
+  if(dependency)return {available:false,availabilityState:'blocked_previous_measurement_window',availabilityDependency:dependency,availableFrom:null};
+  if(hasValue(raw))reviewReasons.add('available_from_unrecognized_source_token');
+  else reviewReasons.add('available_from_missing_for_unassigned_visit');
+  return {available:false,availabilityState:'blocked_missing_availability',availabilityDependency:null,availableFrom:null};
 }
 
 export function deriveCanonicalVisitState(visit){
@@ -46,8 +69,6 @@ export function deriveCanonicalVisitState(visit){
   if(questionnaireDate&&!realizedDate)reviewReasons.add('questionnaire_without_realized_date');
   if(submittedDate&&!questionnaireDate)reviewReasons.add('submitted_without_questionnaire_date');
 
-  // Solo se acepta submitido por fecha válida o por estado confiable producido
-  // después de normalizar la fuente. Un booleano crudo no confirma submitido.
   const trustedSubmittedState=['confirmed_hr','submitted_by_tya'].includes(normalizedText(visit.submissionState));
   const trustedQuestionnaireState=['completed','questionnaire_completed'].includes(normalizedText(visit.questionnaireState));
   const trustedExecutionState=['realized','completed'].includes(normalizedText(visit.executionState));
@@ -56,12 +77,13 @@ export function deriveCanonicalVisitState(visit){
   const realized=Boolean(realizedDate||trustedExecutionState||questionnaireCompleted);
   const assigned=Boolean(hasShopper);
   const scheduled=Boolean(assigned&&scheduledDate);
+  const availability=deriveAvailability(visit,assigned,reviewReasons);
   const liquidationConfirmed=explicitFinancialConfirmation(visit,'liquidation');
   const paymentConfirmed=explicitFinancialConfirmation(visit,'payment');
   const liquidationCandidate=submitted;
 
-  let operationalStage='pending_assignment';
-  let presentationState='disponible';
+  let operationalStage=availability.available?'available':'pending_availability';
+  let presentationState=availability.available?'disponible':'pendiente_disponibilidad';
   if(assigned){operationalStage='pending_schedule';presentationState='asignada';}
   if(scheduled){operationalStage='pending_realization';presentationState='agendada';}
   if(realized){operationalStage='pending_questionnaire';presentationState='realizada';}
@@ -79,22 +101,22 @@ export function deriveCanonicalVisitState(visit){
   const submissionState=submitted?'confirmed_hr':(questionnaireCompleted?'pending_tya_submit':'not_submitted');
   const liquidationState=liquidationConfirmed?'confirmed':(liquidationCandidate?'candidate_pending_financial_match':'not_eligible');
   const paymentState=paymentConfirmed?'confirmed':(liquidationCandidate?'not_confirmed':'not_eligible');
-  return {assigned,scheduled,realized,questionnaireCompleted,submitted,outOfRange,cancelled,liquidationCandidate,liquidationConfirmed,paymentConfirmed,assignmentState,schedulingState,executionState,questionnaireState,submissionState,liquidationState,paymentState,operationalStage,presentationState,controlPendingAssignment,controlPendingSchedule,reviewRequired:reviewReasons.size>0,reviewReasons:[...reviewReasons].sort()};
+  return {assigned,scheduled,realized,questionnaireCompleted,submitted,outOfRange,cancelled,available:availability.available,availabilityState:availability.availabilityState,availabilityDependency:availability.availabilityDependency,availableFrom:availability.availableFrom,liquidationCandidate,liquidationConfirmed,paymentConfirmed,assignmentState,schedulingState,executionState,questionnaireState,submissionState,liquidationState,paymentState,operationalStage,presentationState,controlPendingAssignment,controlPendingSchedule,reviewRequired:reviewReasons.size>0,reviewReasons:[...reviewReasons].sort()};
 }
 
 export function applyCanonicalVisitState(visit){
   const c=deriveCanonicalVisitState(visit);
   const safeShopper=c.assigned?{}:{shopperId:null,shopperCode:null,shopper:null};
-  return {...visit,...safeShopper,hasShopper:c.assigned,estado:c.presentationState,canonicalState:c.operationalStage,operationalState:c.operationalStage,assignmentState:c.assignmentState,schedulingState:c.schedulingState,executionState:c.executionState,questionnaireState:c.questionnaireState,submissionState:c.submissionState,liquidationState:c.liquidationState,paymentState:c.paymentState,liquidationCandidate:c.liquidationCandidate,paymentControlOnly:c.liquidationCandidate&&!c.paymentConfirmed,paymentConfirmed:c.paymentConfirmed,outOfRange:c.outOfRange,reviewRequired:c.reviewRequired,reviewReasons:c.reviewReasons,canonicalFacets:{assigned:c.assigned,scheduled:c.scheduled,realized:c.realized,questionnaire:c.questionnaireCompleted,submitted:c.submitted,outOfRange:c.outOfRange,cancelled:c.cancelled,liquidationCandidate:c.liquidationCandidate,liquidationConfirmed:c.liquidationConfirmed,paymentConfirmed:c.paymentConfirmed}};
+  return {...visit,...safeShopper,hasShopper:c.assigned,disponibleDesde:c.availableFrom,estado:c.presentationState,canonicalState:c.operationalStage,operationalState:c.operationalStage,availabilityState:c.availabilityState,availabilityDependency:c.availabilityDependency,assignmentState:c.assignmentState,schedulingState:c.schedulingState,executionState:c.executionState,questionnaireState:c.questionnaireState,submissionState:c.submissionState,liquidationState:c.liquidationState,paymentState:c.paymentState,liquidationCandidate:c.liquidationCandidate,paymentControlOnly:c.liquidationCandidate&&!c.paymentConfirmed,paymentConfirmed:c.paymentConfirmed,outOfRange:c.outOfRange,reviewRequired:c.reviewRequired,reviewReasons:c.reviewReasons,canonicalFacets:{available:c.available,eligibilityBlocked:!c.available&&!c.assigned,assigned:c.assigned,scheduled:c.scheduled,realized:c.realized,questionnaire:c.questionnaireCompleted,submitted:c.submitted,outOfRange:c.outOfRange,cancelled:c.cancelled,liquidationCandidate:c.liquidationCandidate,liquidationConfirmed:c.liquidationConfirmed,paymentConfirmed:c.paymentConfirmed}};
 }
 
 export function summarizeCanonicalPeriods(visits){
   const map=new Map();
   for(const visit of visits||[]){
     const key=String(visit.periodKey||'unknown');
-    if(!map.has(key))map.set(key,{periodKey:key,total:0,assigned:0,unassigned:0,scheduled:0,pendingSchedule:0,realized:0,pendingQuestionnaire:0,questionnaireCompleted:0,pendingSubmission:0,submitted:0,liquidationCandidates:0,liquidationConfirmed:0,paymentConfirmed:0,outOfRange:0,reviewRequired:0,byCountry:{}});
+    if(!map.has(key))map.set(key,{periodKey:key,total:0,available:0,eligibilityBlocked:0,assigned:0,unassigned:0,scheduled:0,pendingSchedule:0,realized:0,pendingQuestionnaire:0,questionnaireCompleted:0,pendingSubmission:0,submitted:0,liquidationCandidates:0,liquidationConfirmed:0,paymentConfirmed:0,outOfRange:0,reviewRequired:0,byCountry:{}});
     const row=map.get(key);const f=visit.canonicalFacets||deriveCanonicalVisitState(visit);
-    row.total++;row.assigned+=f.assigned?1:0;row.unassigned+=f.assigned?0:1;row.scheduled+=f.scheduled?1:0;row.pendingSchedule+=f.assigned&&!f.scheduled&&!f.realized?1:0;row.realized+=f.realized?1:0;row.pendingQuestionnaire+=f.realized&&!f.questionnaire?1:0;row.questionnaireCompleted+=f.questionnaire?1:0;row.pendingSubmission+=f.questionnaire&&!f.submitted?1:0;row.submitted+=f.submitted?1:0;row.liquidationCandidates+=f.liquidationCandidate?1:0;row.liquidationConfirmed+=f.liquidationConfirmed?1:0;row.paymentConfirmed+=f.paymentConfirmed?1:0;row.outOfRange+=f.outOfRange?1:0;row.reviewRequired+=visit.reviewRequired===true?1:0;
+    row.total++;row.available+=f.available?1:0;row.eligibilityBlocked+=f.eligibilityBlocked?1:0;row.assigned+=f.assigned?1:0;row.unassigned+=f.assigned?0:1;row.scheduled+=f.scheduled?1:0;row.pendingSchedule+=f.assigned&&!f.scheduled&&!f.realized?1:0;row.realized+=f.realized?1:0;row.pendingQuestionnaire+=f.realized&&!f.questionnaire?1:0;row.questionnaireCompleted+=f.questionnaire?1:0;row.pendingSubmission+=f.questionnaire&&!f.submitted?1:0;row.submitted+=f.submitted?1:0;row.liquidationCandidates+=f.liquidationCandidate?1:0;row.liquidationConfirmed+=f.liquidationConfirmed?1:0;row.paymentConfirmed+=f.paymentConfirmed?1:0;row.outOfRange+=f.outOfRange?1:0;row.reviewRequired+=visit.reviewRequired===true?1:0;
     const country=visit.country||visit.pais||'unknown';row.byCountry[country]=(row.byCountry[country]||0)+1;
   }
   return [...map.values()].sort((a,b)=>a.periodKey.localeCompare(b.periodKey));
@@ -103,6 +125,6 @@ export function summarizeCanonicalPeriods(visits){
 export function validateCanonicalHistory(visits,periods){
   const issues=[];const summaries=summarizeCanonicalPeriods(visits);const expected=new Set((periods||[]).map(item=>String(item.key)));const actual=new Set(summaries.map(item=>item.periodKey));
   for(const key of expected)if(!actual.has(key))issues.push({code:'period_without_visits',periodKey:key,severity:'blocker'});
-  for(const s of summaries){if(s.submitted>s.questionnaireCompleted||s.questionnaireCompleted>s.realized||s.realized>s.total)issues.push({code:'non_monotonic_operational_chain',periodKey:s.periodKey,severity:'blocker',summary:s});if(s.paymentConfirmed>s.liquidationCandidates)issues.push({code:'payment_without_liquidation_candidate',periodKey:s.periodKey,severity:'blocker',summary:s});}
+  for(const s of summaries){if(s.submitted>s.questionnaireCompleted||s.questionnaireCompleted>s.realized||s.realized>s.total)issues.push({code:'non_monotonic_operational_chain',periodKey:s.periodKey,severity:'blocker',summary:s});if(s.paymentConfirmed>s.liquidationCandidates)issues.push({code:'payment_without_liquidation_candidate',periodKey:s.periodKey,severity:'blocker',summary:s});if(s.available>s.unassigned)issues.push({code:'available_exceeds_unassigned',periodKey:s.periodKey,severity:'blocker',summary:s});}
   return {decision:issues.some(item=>item.severity==='blocker')?'HOLD_CANONICAL_HISTORY':'PASS_CANONICAL_HISTORY',periodCount:summaries.length,periodKeys:summaries.map(item=>item.periodKey),summaries,issues};
 }
