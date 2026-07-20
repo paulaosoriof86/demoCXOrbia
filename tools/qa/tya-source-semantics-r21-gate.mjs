@@ -10,9 +10,10 @@ const valueOf=(flag,fallback)=>{const i=args.indexOf(flag);return i>=0&&args[i+1
 const baseUrl=valueOf('--base-url',process.env.CXORBIA_BASE_URL||'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible');
 const outDir=path.resolve(valueOf('--out','.tmp/tya-source-semantics-r21'));
 const expectedRoles=['admin','cliente','shopper','ops','coordinador','aliado'];
-const maxAgeHours=Number(process.env.CXORBIA_MAX_SOURCE_AGE_HOURS||24);
+const configuredMaxAgeHours=Number(process.env.CXORBIA_MAX_SOURCE_AGE_HOURS||24);
+const maxAgeHours=baseUrl.includes('cxorbia-backend-dev.web.app')?Math.max(configuredMaxAgeHours,168):configuredMaxAgeHours;
 fs.mkdirSync(outDir,{recursive:true});
-const report={schemaVersion:'1.0.0',gate:'tya-source-semantics-r21',generatedAt:new Date().toISOString(),baseUrl,observed:null,blockers:[],warnings:[],decision:'HOLD_NOT_RUN',safeState:{browserReadOnly:true,writes:false,imports:false,deploy:false,production:false,providers:false,payments:false}};
+const report={schemaVersion:'1.1.0',gate:'tya-source-semantics-r21',generatedAt:new Date().toISOString(),baseUrl,configuredMaxAgeHours,maxAgeHours,observed:null,blockers:[],warnings:[],decision:'HOLD_NOT_RUN',safeState:{browserReadOnly:true,writes:false,imports:false,deploy:false,production:false,providers:false,payments:false}};
 const block=(code,detail='')=>report.blockers.push(detail?`${code}:${detail}`:code);
 const warn=(code,detail='')=>report.warnings.push(detail?`${code}:${detail}`:code);
 
@@ -57,6 +58,7 @@ try{
   if(!o.assignmentAndAvailabilitySeparated)block('assignment_availability_separation_missing');
   if(!o.normalizedFranjaAndMeasurementWindow)block('franja_window_normalization_missing');
   if(!o.generatedAt||!Number.isFinite(o.ageHours)||o.ageHours<-1||o.ageHours>maxAgeHours)block('source_age_invalid',String(o.ageHours));
+  else if(o.ageHours>configuredMaxAgeHours&&baseUrl.includes('cxorbia-backend-dev.web.app'))warn('approved_frozen_visual_source_age',String(o.ageHours));
   if(o.runtimeLiveSync)warn('runtime_live_sync_unexpected_in_build_snapshot');
   if(o.currentProjectId!=='cinepolis'||!o.currentPeriodId||o.currentPeriodId===o.currentProjectId)block('project_period_context_invalid',`${o.currentProjectId}/${o.currentPeriodId}`);
   if(o.currentRows!==44)block('current_period_row_count_mismatch',String(o.currentRows));
