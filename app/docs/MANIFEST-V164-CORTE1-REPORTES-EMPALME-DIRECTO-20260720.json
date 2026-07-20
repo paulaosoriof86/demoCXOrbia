@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "manifest-v164-corte1-reportes-empalme-directo-20260720",
+  "candidate": {
+    "name": "Prototype development request CXOrbia V164.zip",
+    "sha256": "b62a9df4f5e9a20580502e7e971c553af0d2ccac83c82ab8431c509f6a3d8128",
+    "auditDecision": "GO_NO_P0_READY_FOR_APPLY_DELTA_DIRECTLY"
+  },
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pr": 7,
+  "headBefore": "c2ad722ddf7574ba51cc26369c9f532324610646",
+  "empalmeCommit": "f708515a637a3998eefdbe39ef66d37a3f130fb6",
+  "technicalGateCommit": "cf0dbf735522f5ae2ed67d865dfb97d1a37335f2",
+  "files": [
+    {
+      "path": "app/modules/cliente-extra.js",
+      "status": "modified",
+      "sha256": "a8a90275bfb53a804ad240e3792e735302290aba1d040ab008af333c4b05e526",
+      "gitBlob": "d446e2bb220d3b31ea9b13c4149c59c068fde0a6"
+    },
+    {
+      "path": "app/index.html",
+      "status": "modified",
+      "sha256": "040c6521c21e799e12495070b9fbb77594adba32c41d91127839a653b7131c01",
+      "gitBlob": "3855486bdddcfcdc2c702f08b2a640d99717d980"
+    },
+    {
+      "path": "app/vendor/pptxgenjs.min.js",
+      "status": "added",
+      "sha256": "cd078ca9e91c6f9e061ee0a3c310d6ff157c3a71b1dea7f40fd53818017266ff",
+      "gitBlob": "1ff971b3a9684bf3d2592883f1832e6992043154"
+    },
+    {
+      "path": "app/REPORTE-DE-CAMBIOS.md",
+      "status": "modified",
+      "sha256": "db4cf066b1d4cb682efbb9b352e6553fd09cf1fc047b0b2808c65f2e840b61e3",
+      "gitBlob": "10bb8d5e0b4bb5bb19c796fbc025e015522b4ebc"
+    }
+  ],
+  "preserved": [
+    "app/core/data.js",
+    "app/core/store.js",
+    "app/core/router.js",
+    "backend",
+    "app/adapters",
+    "app/data",
+    "tools/hr-source",
+    "finanzas",
+    "certificaciones",
+    "recursos"
+  ],
+  "state": "EMPALMED_TECHNICAL_PASS_PENDING_HOSTING_DEV_VISUAL",
+  "production": false,
+  "merged": false
+}
