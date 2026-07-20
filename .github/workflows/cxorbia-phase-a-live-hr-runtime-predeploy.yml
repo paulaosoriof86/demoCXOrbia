@@ -1,0 +1,153 @@
+name: CXOrbia Phase A Live HR Runtime Predeploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/runtime/hr-live-service/**'
+      - 'app/adapters/tya-live-source-refresh-watch.js'
+      - 'tools/release/tya-source-safe-live-binding-build-r22.mjs'
+      - 'tools/qa/tya-live-hr-read-probe-gate.mjs'
+      - 'backend/contracts/phase-a-live-hr-runtime-read-v1.json'
+      - '.github/workflows/cxorbia-phase-a-live-hr-runtime-predeploy.yml'
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-phase-a-live-hr-runtime-predeploy
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  predeploy:
+    name: Validate live endpoint and canonical build binding without deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout active branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate syntax
+        run: |
+          set -euo pipefail
+          node --check backend/runtime/hr-live-service/server.mjs
+          node --check app/adapters/tya-live-source-refresh-watch.js
+          node --check tools/release/tya-source-safe-live-binding-build-r22.mjs
+          node --check tools/qa/tya-live-hr-read-probe-gate.mjs
+
+      - name: Prepare current source-safe payload for canonical adapter generation
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
+          CXORBIA_HR_EARLIEST_PERIOD: '2025-06'
+          CXORBIA_GATE_OUT: .tmp/live-runtime-predeploy/source
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/live-runtime-predeploy
+          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
+          node tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --inventory backend/contracts/tya-hr-tab-inventory-r20-v1.json \
+            --report-dir .tmp/live-runtime-predeploy/inventory
+          node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/live-runtime-predeploy/canonical
+          node tools/hr-source/tya-reapply-canonical-state-r20.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/live-runtime-predeploy/state
+
+      - name: Start source-safe live service locally
+        env:
+          PORT: '4182'
+          CXORBIA_LIVE_HR_CACHE_MS: '1000'
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
+          CXORBIA_HR_EARLIEST_PERIOD: '2025-06'
+        run: |
+          set -euo pipefail
+          node backend/runtime/hr-live-service/server.mjs > .tmp/live-runtime-predeploy/service.log 2>&1 &
+          echo $! > .tmp/live-runtime-predeploy/service.pid
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:4182/health >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat .tmp/live-runtime-predeploy/service.log
+          exit 1
+
+      - name: Validate live endpoint formats and freshness
+        run: |
+          set -euo pipefail
+          base='http://127.0.0.1:4182/v1/tenants/tya/projects/cinepolis/hr-live'
+          curl -fsS -H 'Cache-Control: no-cache' "$base?format=meta&ts=$(date +%s)" > .tmp/live-runtime-predeploy/meta.json
+          curl -fsS -H 'Cache-Control: no-cache' "$base?format=js&ts=$(date +%s)" > .tmp/live-runtime-predeploy/live-source.js
+          curl -fsS -H 'Cache-Control: no-cache' "$base?ts=$(date +%s)" > .tmp/live-runtime-predeploy/snapshot.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const meta=JSON.parse(fs.readFileSync('.tmp/live-runtime-predeploy/meta.json','utf8'));
+          const snap=JSON.parse(fs.readFileSync('.tmp/live-runtime-predeploy/snapshot.json','utf8'));
+          const js=fs.readFileSync('.tmp/live-runtime-predeploy/live-source.js','utf8');
+          if(meta.ok!==true||meta.sourceSafe!==true||meta.runtimeRead!==true||!meta.revision)throw new Error('meta contract failed');
+          if(snap.sourceSafe!==true||!Array.isArray(snap.visits)||!snap.visits.length||!Array.isArray(snap.periods)||!snap.periods.length)throw new Error('snapshot contract failed');
+          if(!js.includes('window.CX_TYA_HR_SOURCE_SAFE=')||!js.includes('window.CX_TYA_HR_LIVE_META='))throw new Error('javascript format failed');
+          const age=(Date.now()-Date.parse(meta.generatedAt))/1000;
+          if(!Number.isFinite(age)||age>600)throw new Error('endpoint source is stale: '+age);
+          fs.writeFileSync('.tmp/live-runtime-predeploy/endpoint-pass.json',JSON.stringify({ok:true,decision:'PASS_LIVE_HR_ENDPOINT_LOCAL',revision:meta.revision,generatedAt:meta.generatedAt,periods:meta.periods,visits:meta.visits,fixedCounts:false,writes:false,deploy:false,production:false},null,2));
+          NODE
+
+      - name: Build canonical app binding against local live endpoint
+        run: |
+          set -euo pipefail
+          node tools/release/tya-source-safe-live-binding-build-r22.mjs \
+            --html app/index.html \
+            --live-endpoint http://127.0.0.1:4182/v1/tenants/tya/projects/cinepolis/hr-live \
+            --out .tmp/live-runtime-predeploy/binding
+          grep -q 'http://127.0.0.1:4182/v1/tenants/tya/projects/cinepolis/hr-live' app/index.html
+          ! grep -q '<script src="data/tya-hr-source-safe-periods.js"></script>' app/index.html
+          grep -q '<script src="adapters/tya-live-source-refresh-watch.js"></script>' app/index.html
+          node --check app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
+
+      - name: Stop local service
+        if: always()
+        run: |
+          if [ -f .tmp/live-runtime-predeploy/service.pid ]; then kill "$(cat .tmp/live-runtime-predeploy/service.pid)" 2>/dev/null || true; fi
+
+      - name: Upload predeploy evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-live-hr-runtime-predeploy
+          path: .tmp/live-runtime-predeploy
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish predeploy status
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          JOB_STATE: ${{ job.status }}
+        with:
+          script: |
+            const state=process.env.JOB_STATE==='success'?'success':'failure';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/live-hr-runtime-predeploy',description:state==='success'?'Live HR endpoint and build binding PASS without deploy':'Live HR runtime predeploy failed'});
