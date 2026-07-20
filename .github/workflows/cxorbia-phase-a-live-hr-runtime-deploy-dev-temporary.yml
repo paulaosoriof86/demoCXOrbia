@@ -55,4 +55,5 @@ jobs:
       - uses: actions/github-script@v7
         with:
           script: |
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'success',context:'cxorbia/live-hr-runtime-api-diagnostic',description:'Exact DEV service diagnostics captured'});
+            const target=`https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'success',context:'cxorbia/live-hr-runtime-api-diagnostic',description:'Exact DEV service diagnostics captured',target_url:target});
