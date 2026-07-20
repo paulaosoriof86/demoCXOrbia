@@ -1,26 +1,43 @@
 {
-  "version": "1.8.0",
-  "updatedAt": "2026-07-19",
+  "version": "1.9.0",
+  "updatedAt": "2026-07-20",
   "repository": "paulaosoriof86/demoCXOrbia",
   "integrationBranch": "docs-tya-v6-v71-audit",
   "invariant": "empalmedRuntimeVersion == candidateVersion; activeBaselineVersion advances only after postGatesAndVisualFreeze",
-  "activeBaseline": {
+  "previousBaseline": {
     "version": "V131",
     "runtimeIdentity": "V131 + R18D",
-    "status": "active_baseline_frozen",
+    "status": "historical_previous_baseline",
     "sourceZipSha256": "788a32a6d44e0686b0627a47e4e4e038fdbe7d3befd3dde2651ff542706918bb",
     "manifestFile": "docs/MANIFEST-V131-R18D-HOTFIX-R1.json",
     "aggregateSha256": "6e833331f5aa9ba9458ef0724756e72747352add3f8c6cc1fa327c96fadec348",
+    "active": false,
+    "visualValidated": true,
+    "replacedBy": "V161C"
+  },
+  "activeBaseline": {
+    "version": "V161C",
+    "runtimeIdentity": "V161C empalmada con contrato canónico R21 y preservaciones TyA",
+    "status": "active_baseline_frozen",
+    "sourceZipSha256": "7504b80eed202fff801b1ce39f1028c91dc8446e56670c932042a4fb4a4e74e8",
+    "manifestFile": "app/docs/MANIFEST-V161C-EMPALME-DIRECTO-20260719.json",
+    "aggregateSha256": "7075f70822e3fed8442d62b56e1467fa643facd756aa88258ae2d6d6bdc95cdf",
     "accepted": true,
     "empalmed": true,
     "active": true,
+    "postGatesPassed": true,
+    "hostingDevPassed": true,
+    "remoteSmokePassed": true,
     "visualValidated": true,
+    "visualApproval": "APROBADO CON OBSERVACIONES NO BLOQUEANTES",
+    "visualApprovalDate": "2026-07-20",
+    "freezeEvidenceFile": "app/docs/FREEZE-CORTE-0B-ACTIVE-BASELINE-V161C-20260720.md",
     "rollbackReference": true
   },
   "currentRuntime": {
     "version": "V161C",
     "runtimeIdentity": "V161C empalmada con contrato canónico R21 y preservaciones TyA",
-    "status": "hosting_dev_remote_smoke_pass_pending_visual",
+    "status": "active_baseline_frozen",
     "sourceZipName": "Prototype development request CXOrbia V161C.zip",
     "sourceZipSha256": "7504b80eed202fff801b1ce39f1028c91dc8446e56670c932042a4fb4a4e74e8",
     "manifestFile": "app/docs/MANIFEST-V161C-EMPALME-DIRECTO-20260719.json",
@@ -30,11 +47,20 @@
     "parentBaselineVersion": "V131",
     "accepted": true,
     "empalmed": true,
-    "active": false,
+    "active": true,
     "postGatesPassed": true,
     "hostingDevPassed": true,
     "remoteSmokePassed": true,
-    "visualValidated": false,
+    "visualValidated": true,
+    "visualApproval": "APROBADO CON OBSERVACIONES NO BLOQUEANTES",
+    "visualApprovalDate": "2026-07-20",
+    "visualReviewEvidence": {
+      "evidenceFile": "app/docs/VALIDACION-VISUAL-V161C-OBSERVACIONES-PAULA-20260719.md",
+      "freezeFile": "app/docs/FREEZE-CORTE-0B-ACTIVE-BASELINE-V161C-20260720.md",
+      "p0": 0,
+      "decision": "APPROVED_WITH_NONBLOCKING_FINDINGS",
+      "nextCut": "CORTE 1 — CONTEXTO, HR, HISTÓRICO, REPORTES Y EXPORTACIÓN"
+    },
     "production": false,
     "technicalGateEvidence": {
       "workflowRun": 29712762494,
@@ -100,7 +126,9 @@
       "r21_availability_assignment_and_postulation_eligibility_separated",
       "tenant_login_project_period_r21_binding_verified",
       "v161c_r21_exact_build_published_to_hosting_dev",
-      "remote_role_and_academy_smoke_passed_without_blockers"
+      "remote_role_and_academy_smoke_passed_without_blockers",
+      "paula_visual_review_completed_with_zero_p0",
+      "corte_0b_frozen_as_active_baseline"
     ]
   },
   "candidate": {
@@ -108,16 +136,16 @@
     "sourceZipSha256": "7504b80eed202fff801b1ce39f1028c91dc8446e56670c932042a4fb4a4e74e8",
     "manifestFile": "app/docs/MANIFEST-V161C-EMPALME-DIRECTO-20260719.json",
     "aggregateSha256": "7075f70822e3fed8442d62b56e1467fa643facd756aa88258ae2d6d6bdc95cdf",
-    "status": "hosting_dev_remote_smoke_pass_pending_visual",
+    "status": "active_baseline_frozen",
     "accepted": true,
     "empalmed": true,
-    "active": false,
+    "active": true,
     "postGatesPassed": true,
     "hostingDevPassed": true,
     "remoteSmokePassed": true,
-    "visualValidated": false,
-    "gateDecision": "HOSTING_DEV_AND_REMOTE_SMOKE_PASS_PENDING_VISUAL",
-    "nextRequiredState": "active_baseline_frozen"
+    "visualValidated": true,
+    "gateDecision": "ACTIVE_BASELINE_FROZEN_AFTER_VISUAL_APPROVAL",
+    "nextRequiredState": "corte_1_context_hr_history_reports"
   },
   "allowedCandidateStatuses": [
     "pending_audit",
@@ -146,6 +174,8 @@
       "human_visual_validation",
       "update_active_baseline_registry"
     ],
+    "visualReviewAfterEveryCut": true,
+    "visualReviewRuleFile": "app/docs/REGLA-PREVALENTE-VALIDACION-VISUAL-DESPUES-DE-CADA-CORTE-20260720.md",
     "forbiddenStates": [
       "accepted_not_empalmed",
       "active_without_post_gates",
@@ -153,6 +183,6 @@
       "two_active_baselines",
       "hybrid_runtime_unregistered_overlay"
     ],
-    "rollback": "V131 remains the rollback reference while V161C is published and remotely validated in DEV but still pending Paula's visual freeze."
+    "rollback": "V161C is the active frozen baseline and rollback reference for Corte 1. V131 remains historical evidence only."
   }
 }
