@@ -1,9 +1,15 @@
 {
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "id": "phase-a-corte1-context-history-reports-v1",
   "tenantId": "tya",
   "projectId": "cinepolis",
   "activeBaseline": "V161C",
+  "integratedCandidate": {
+    "version": "V164",
+    "commit": "f708515a637a3998eefdbe39ef66d37a3f130fb6",
+    "technicalStatus": "integrated_pending_visual",
+    "visualValidated": false
+  },
   "sourceScope": {
     "sourceSafeRequired": true,
     "production": false,
@@ -103,9 +109,11 @@
   },
   "exports": {
     "sanitizedFormats": ["json", "csv"],
-    "frontendFormatsPending": ["pdf", "xlsx", "pptx"],
+    "frontendFormatsReady": ["pdf", "xlsx", "pptx"],
+    "frontendFormatsPending": [],
     "mustRespectScope": true,
     "mustRespectReportAvailability": true,
+    "mustUseSameScopedRowsAcrossFormats": true,
     "mustNotInventScores": true,
     "mustNotInferPayments": true,
     "mustNotRelabelCountryAsRegion": true,
