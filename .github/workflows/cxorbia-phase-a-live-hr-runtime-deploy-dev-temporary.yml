@@ -1,0 +1,214 @@
+name: CXOrbia Phase A Live HR Runtime Deploy DEV Temporary
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev-temporary.yml'
+
+permissions:
+  contents: read
+  statuses: write
+  id-token: write
+
+concurrency:
+  group: cxorbia-phase-a-live-hr-runtime-deploy-dev-temporary
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  SOURCE_BRANCH: docs-tya-v6-v71-audit
+  GCP_PROJECT_ID: cxorbia-backend-dev
+  GCP_REGION: us-central1
+  CLOUD_RUN_SERVICE: cxorbia-live-hr-dev
+  FIREBASE_HOSTING_TARGET: cxorbia-dev
+  LIVE_ENDPOINT_PATH: /api/tya/cinepolis/hr-live
+  DEPLOY_REQUEST: backend/config/phase-a-live-hr-runtime-deploy-request-v1.json
+  OUT_DIR: .tmp/live-hr-runtime-deploy-dev
+
+jobs:
+  deploy:
+    name: Deploy read-only live HR service and exact Hosting DEV build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout authorized source branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+
+      - name: Capture source identity
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          git rev-parse HEAD | tee "$OUT_DIR/source-head.txt"
+          test "$(git branch --show-current)" = "$SOURCE_BRANCH"
+
+      - name: Validate explicit DEV-only authorization
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(fs.readFileSync(process.env.DEPLOY_REQUEST,'utf8'));
+          const a=x.authorization||{};
+          if(a.paulaExplicitInCurrentConversation!==true)throw new Error('Current-conversation authorization is not recorded.');
+          if(a.cloudRunDeploy!==true||a.hostingDevRedeploy!==true)throw new Error('Cloud Run DEV and Hosting DEV authorization flags must both be true.');
+          if(a.production!==false||a.writes!==false||a.imports!==false||a.payments!==false)throw new Error('Unsafe authorization state.');
+          if(x.environment!=='DEV')throw new Error('Environment must be DEV.');
+          console.log('Explicit DEV-only deployment authorization passed.');
+          NODE
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Authenticate to Google Cloud DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+
+      - name: Resolve runtime service account without exposing credentials
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          runtime_sa="$(node -e "const x=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);if(!x.client_email)process.exit(2);process.stdout.write(x.client_email)")"
+          echo "RUNTIME_SERVICE_ACCOUNT=$runtime_sa" >> "$GITHUB_ENV"
+
+      - name: Precheck required enabled APIs without enabling anything
+        run: |
+          set -euo pipefail
+          enabled="$(gcloud services list --enabled --format='value(config.name)')"
+          for api in run.googleapis.com cloudbuild.googleapis.com firebasehosting.googleapis.com; do
+            echo "$enabled" | grep -qx "$api" || { echo "Required API not enabled: $api"; exit 2; }
+          done
+
+      - name: Re-run live source and runtime predeploy gates
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
+          CXORBIA_HR_EARLIEST_PERIOD: '2025-06'
+          CXORBIA_GATE_OUT: .tmp/live-hr-runtime-deploy-dev/source
+        run: |
+          set -euo pipefail
+          node --check backend/runtime/hr-live-service/server.mjs
+          node --check app/adapters/tya-live-source-refresh-watch.js
+          node --check tools/release/tya-source-safe-live-binding-build-r22.mjs
+          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
+          node tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs --input app/data/tya-hr-source-safe-periods.js --out app/data/tya-hr-source-safe-periods.js --inventory backend/contracts/tya-hr-tab-inventory-r20-v1.json --report-dir "$OUT_DIR/inventory"
+          node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs --input app/data/tya-hr-source-safe-periods.js --out app/data/tya-hr-source-safe-periods.js --report-dir "$OUT_DIR/canonical"
+          node tools/hr-source/tya-reapply-canonical-state-r20.mjs --input app/data/tya-hr-source-safe-periods.js --out app/data/tya-hr-source-safe-periods.js --report-dir "$OUT_DIR/state"
+          node tools/qa/tya-live-hr-read-probe-gate.mjs --payload app/data/tya-hr-source-safe-periods.js --out "$OUT_DIR/live-probe" --max-age-seconds 600
+
+      - name: Build and push Cloud Run image
+        run: |
+          set -euo pipefail
+          source_head="$(cat "$OUT_DIR/source-head.txt")"
+          image_uri="gcr.io/$GCP_PROJECT_ID/$CLOUD_RUN_SERVICE:$source_head"
+          echo "IMAGE_URI=$image_uri" >> "$GITHUB_ENV"
+          gcloud builds submit . --project "$GCP_PROJECT_ID" --config backend/runtime/hr-live-service/cloudbuild.yaml --substitutions "_IMAGE=$image_uri" --quiet
+
+      - name: Deploy source-safe Cloud Run DEV service
+        run: |
+          set -euo pipefail
+          gcloud run deploy "$CLOUD_RUN_SERVICE" \
+            --project "$GCP_PROJECT_ID" \
+            --region "$GCP_REGION" \
+            --image "$IMAGE_URI" \
+            --platform managed \
+            --allow-unauthenticated \
+            --service-account "$RUNTIME_SERVICE_ACCOUNT" \
+            --set-env-vars "CXORBIA_LIVE_HR_CACHE_MS=15000,CXORBIA_HR_LIVE_MAX_ROW=140,CXORBIA_HR_LIVE_MAX_COL=AI,CXORBIA_HR_EARLIEST_PERIOD=2025-06" \
+            --min-instances 0 \
+            --max-instances 2 \
+            --memory 512Mi \
+            --cpu 1 \
+            --timeout 120 \
+            --quiet
+          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format='value(status.url)' > "$OUT_DIR/cloud-run-url.txt"
+
+      - name: Smoke Cloud Run source-safe endpoint
+        run: |
+          set -euo pipefail
+          service_url="$(cat "$OUT_DIR/cloud-run-url.txt")"
+          curl -fsS "$service_url/health" > "$OUT_DIR/cloud-run-health.json"
+          curl -fsS -H 'Cache-Control: no-cache' "$service_url/v1/tenants/tya/projects/cinepolis/hr-live?format=meta&ts=$(date +%s)" > "$OUT_DIR/cloud-run-live-meta.json"
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/cloud-run-live-meta.json','utf8'));if(x.ok!==true||x.sourceSafe!==true||x.runtimeRead!==true||!x.revision)process.exit(2);console.log('Cloud Run live endpoint PASS.');"
+
+      - name: Build exact app with same-origin live endpoint
+        run: |
+          set -euo pipefail
+          node tools/release/tya-source-safe-live-binding-build-r22.mjs --html app/index.html --live-endpoint "$LIVE_ENDPOINT_PATH" --out "$OUT_DIR/binding"
+          grep -q "$LIVE_ENDPOINT_PATH" app/index.html
+          ! grep -q '<script src="data/tya-hr-source-safe-periods.js"></script>' app/index.html
+          grep -q '<script src="adapters/tya-live-source-refresh-watch.js"></script>' app/index.html
+
+      - name: Prepare temporary Firebase Hosting rewrite
+        run: |
+          set -euo pipefail
+          cp firebase.json "$OUT_DIR/firebase.before.json"
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='firebase.json';
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          const rewrites=Array.isArray(x.hosting?.rewrites)?x.hosting.rewrites:[];
+          const live={source:process.env.LIVE_ENDPOINT_PATH,run:{serviceId:process.env.CLOUD_RUN_SERVICE,region:process.env.GCP_REGION}};
+          x.hosting.rewrites=[live,...rewrites.filter(r=>r.source!==process.env.LIVE_ENDPOINT_PATH)];
+          fs.writeFileSync(p,JSON.stringify(x,null,2)+'\n','utf8');
+          NODE
+
+      - name: Deploy Hosting DEV only
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts firebase-tools@latest
+          npx firebase deploy --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive
+
+      - name: Verify same-origin live source and app propagation
+        run: |
+          set -euo pipefail
+          root='https://cxorbia-backend-dev.web.app'
+          for i in $(seq 1 30); do
+            if curl -fsS -H 'Cache-Control: no-cache' "$root$LIVE_ENDPOINT_PATH?format=meta&ts=$(date +%s)" > "$OUT_DIR/hosting-live-meta.json"; then break; fi
+            sleep 5
+          done
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/hosting-live-meta.json','utf8'));if(x.ok!==true||x.runtimeRead!==true||x.sourceSafe!==true||!x.revision)process.exit(2);console.log('Hosting same-origin live source PASS.');"
+          curl -fsS -H 'Cache-Control: no-cache' "$root/index.html?cxTyaPhaseA=1&r18d=visible&live=1&ts=$(date +%s)" > "$OUT_DIR/index.html"
+          grep -q "$LIVE_ENDPOINT_PATH" "$OUT_DIR/index.html"
+          grep -q 'adapters/tya-live-source-refresh-watch.js' "$OUT_DIR/index.html"
+
+      - name: Publish deployment evidence
+        run: |
+          printf '%s\n' '{"decision":"PASS_LIVE_HR_RUNTIME_DEV_DEPLOY","environment":"DEV","production":false,"hrWrites":0,"firestoreWrites":0,"imports":0,"payments":0}' > "$OUT_DIR/final-status.json"
+
+      - name: Upload sanitized deployment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-live-hr-runtime-dev-deploy
+          path: ${{ env.OUT_DIR }}
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish deployment commit status
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          JOB_STATE: ${{ job.status }}
+        with:
+          script: |
+            const state=process.env.JOB_STATE==='success'?'success':'failure';
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/live-hr-runtime-dev-deploy',description:state==='success'?'Live HR runtime and Hosting DEV deployed':'Live HR DEV deployment failed'});
