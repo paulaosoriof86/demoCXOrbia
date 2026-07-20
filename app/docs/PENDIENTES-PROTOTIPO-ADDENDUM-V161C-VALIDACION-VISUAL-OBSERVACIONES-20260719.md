@@ -1,9 +1,9 @@
-# PENDIENTES PROTOTIPO — V161C VALIDACIÓN VISUAL
+# PENDIENTES PROTOTIPO — V161C POST FREEZE
 
-Fecha: 2026-07-19
-Estado: `PENDING_EXPLICIT_APPROVAL_WITH_NONBLOCKING_FINDINGS`
+Fecha: 2026-07-20
+Estado: `CORTE_0B_FROZEN_CORTE_1_READY`
 
-## P1 no bloqueantes
+## P1 trasladados
 
 - Reportes y exportaciones por proyecto/periodo: Corte 1.
 - Reservas debe filtrar solo sucursales elegibles no asignadas y todavía no postulables: Corte 2.
@@ -17,12 +17,16 @@ Estado: `PENDING_EXPLICIT_APPROVAL_WITH_NONBLOCKING_FINDINGS`
 - Manuales profundos separados de cursos.
 - Reemplazar `Q1/Q2` por lenguaje natural en la ficha de postulación.
 
-## Correcto actualmente
+## Estado actual correcto
 
-- Los cuadros naranjas de postulación son guías operativas, no errores técnicos.
+- Los cuadros naranjas de postulación son guías operativas.
 - `Pend. pago - cruce financiero` evita afirmar pago sin fuente.
 - Lotes permanece vacío porque no existen pagos confirmados.
 
-## Cierre pendiente
+## Cierre
 
-Paula debe emitir `APROBADO CON OBSERVACIONES NO BLOQUEANTES` para congelar Corte 0B. No iniciar Corte 1 antes de ese freeze.
+Paula aprobó con observaciones no bloqueantes. Corte 0B quedó congelado con V161C como `ACTIVE_BASELINE`.
+
+## Regla vigente
+
+Después de cada corte Paula debe realizar revisión visual antes del freeze y antes de iniciar el siguiente.
