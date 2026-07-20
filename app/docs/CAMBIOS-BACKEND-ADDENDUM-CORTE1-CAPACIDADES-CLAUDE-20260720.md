@@ -1,7 +1,15 @@
 # CAMBIOS BACKEND — CORTE 1.2 REPORTES
 
 Fecha: 2026-07-20
-Estado: `TECHNICAL_PASS_PENDING_VISUAL`
+Estado: `DEV_PASS_PENDING_VISUAL`
+
+## Actualización DEV
+
+- Run `29771355833`: SUCCESS.
+- Artifact `8473242334`.
+- Build `v164-corte1-reportes-20260720-dev`.
+- Reportes y roles remotos: PASS.
+- Revisión visual de Paula: pendiente.
 
 ## Base preparada
 
@@ -24,17 +32,19 @@ Estado: `TECHNICAL_PASS_PENDING_VISUAL`
 - `tools/release/tya-corte1-report-projection-build.mjs`: disponibilidad de formatos derivada del contrato.
 - `tools/qa/tya-corte1-report-projection-browser-gate.mjs`: expectativas derivadas del contrato, sin versión fija.
 - `tools/qa/tya-corte1-report-frontend-runtime-gate.mjs`: validación dinámica de Director, Regional, Sucursal, periodo faltante, Tendencia y exportaciones.
-- Workflow canónico actualizado con gates frontend estático y runtime.
+- Smoke visual ampliado a `cli_reportes`.
+- Carril de publicación DEV consumido y nuevamente en HOLD.
 
 ## Evidencia
 
-- Run `29768206645`: SUCCESS.
-- Artifact `8471655866`.
-- Digest `sha256:37d3a6cc41fcd431ec54ca2cea2d306528e29459ddc48e47a5805ab477e600ac`.
+- Run técnico `29768206645`: SUCCESS.
+- Artifact técnico `8471655866`.
+- Run DEV `29771355833`: SUCCESS.
+- Artifact DEV `8473242334`.
 - 14 periodos, 616 visitas, 28 filas periodo/país y 308 filas de sucursal.
 - 611 asignadas, 5 sin asignar, 592 realizadas, 590 cuestionarios y 527 submitidas.
 - 4 reportes disponibles y 3 pendientes de fuente.
-- JSON, CSV, PDF, XLSX y PPTX listos técnicamente.
+- JSON, CSV, PDF, XLSX y PPTX listos.
 - Gates sin blockers ni errores de navegador.
 
 ## Clasificación
@@ -47,4 +57,4 @@ Estado: `TECHNICAL_PASS_PENDING_VISUAL`
 
 ## Pendiente
 
-Hosting DEV autorizado, smoke remoto, revisión visual y freeze Corte 1.
+Revisión visual y freeze Corte 1.
