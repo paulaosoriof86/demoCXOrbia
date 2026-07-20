@@ -1,40 +1,27 @@
-# ACADEMIA IMPACT - V161C Y POST-GATES R21
+# ACADEMIA IMPACT — V161C EMPALME DIRECTO Y HOSTING DEV R21
 
 Fecha: 2026-07-19
+Estado: `HOSTING_DEV_REMOTE_SMOKE_PASS_PENDING_VISUAL`
 
-## Impacto funcional confirmado
+## Impacto vigente
 
-V161C y el build canónico R21 quedaron técnicamente validados para comprobar visualmente:
+V161C quedó empalmada y publicada en Hosting DEV con el build canónico R21. La validación automatizada comprobó:
 
-- login por perfil tenant;
+- login y rutas por perfil tenant;
 - separación proyecto/periodo;
 - elegibilidad canónica de postulación;
-- visitas y visita detalle sin estados `null`;
-- cuatro oportunidades publicables y una bloqueada en julio;
-- Academia Cliente separada de Capacitación;
-- rutas por rol.
+- visitas sin estados nulos inventados;
+- Academia Admin y Shopper renderizadas;
+- rutas Cliente renderizadas;
+- 0 blockers, 0 errores de página y 0 errores de consola.
 
-## Contenido que debe mantenerse alineado
+## Pendiente humano
 
-Los manuales, cursos, lecciones, checklists y errores frecuentes deben explicar por rol:
-
-- cómo identificar Proyecto y Periodo como controles distintos;
-- por qué una visita sin shopper no siempre está disponible;
-- cómo operan `Disponible desde`, franja y ventana de medición;
-- por qué P1Q o una dependencia de periodo anterior bloquea la postulación;
-- qué significa una advertencia en revisión frente a un error bloqueante;
-- que una liquidación candidata no equivale a pago confirmado.
-
-## Hallazgo de continuidad
-
-La HR viva ya contiene agosto de 2026, pero Corte 0B está congelado técnicamente hasta julio. Academia no debe enseñar agosto como periodo activo de este corte antes de incorporarlo mediante un bloque controlado posterior al freeze.
-
-## Estado
-
-- No se requiere nueva candidata Claude ni nuevo contenido visual antes del Hosting DEV.
-- La actualización final de capturas, botones y pasos se realiza después de la validación visual del build DEV aprobado.
-- Advertencia shopper `209/216`: asunto de revisión operativa, no contenido para inferir identidades.
+- Academia Cliente.
+- Navegación y aprendizaje desde Operativo.
+- Separación visible entre Academia Cliente y Capacitaciones internas.
+- Validación final de rutas, cursos, manuales y contenidos por rol.
 
 ## Estado seguro
 
-Sin Hosting DEV nuevo, sin producción, sin proveedores live, sin writes, sin imports y sin pagos.
+Sin producción, merge, proveedores live, imports, writes ni pagos. No congelar Corte 0B hasta la revisión visual de Paula.
