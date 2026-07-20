@@ -1,7 +1,15 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
 Fecha: 2026-07-20
-Estado: `CORTE_1_V164_TECHNICAL_PASS_PENDING_HOSTING_DEV_VISUAL`
+Estado: `CORTE_1_V164_DEV_PASS_PENDING_VISUAL`
+
+## Actualización DEV
+
+- Run `29771355833`: SUCCESS.
+- Artifact `8473242334`.
+- Build `v164-corte1-reportes-20260720-dev`.
+- Revisión visual de Paula: pendiente.
+- Corte 2: bloqueado hasta el freeze.
 
 ## Repositorio y baseline
 
@@ -58,6 +66,6 @@ Resultado:
 
 ## Siguiente bloque
 
-`AUTORIZACION HOSTING DEV -> PUBLICAR BUILD EXACTO -> SMOKE REMOTO -> REVISION VISUAL PAULA -> APROBADO -> FREEZE CORTE 1`
+`REVISION VISUAL PAULA -> APROBADO -> FREEZE CORTE 1`
 
 No se requiere otra candidata de Claude. Corte 2 continúa bloqueado hasta el freeze.
