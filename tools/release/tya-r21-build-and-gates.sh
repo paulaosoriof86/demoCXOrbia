@@ -3,7 +3,7 @@ set -euo pipefail
 OUT="${CXORBIA_OUT_DIR:-.tmp/v164-corte1-dev-deploy}"
 LABEL="${CXORBIA_RUNTIME_BUILD_LABEL:-v164-corte1-reportes-20260720-dev}"
 BASE_URL="${CXORBIA_BASE_URL:-http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible}"
-FROZEN_SOURCE_URL="${CXORBIA_FROZEN_SOURCE_URL:-}"
+FROZEN_SOURCE_URL="${CXORBIA_FROZEN_SOURCE_URL:-https://cxorbia-backend-dev.web.app/data/tya-hr-source-safe-periods.js}"
 mkdir -p "$OUT"
 node tools/qa/verify-fast-lane-promotion-policy.mjs
 node tools/qa/verify-prototype-baseline-atomicity.mjs
