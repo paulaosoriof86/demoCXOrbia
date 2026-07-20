@@ -1,29 +1,34 @@
-# PHASE A TRACKER — CORTE 1.2 CLAUDE REQUERIDO
+# PHASE A TRACKER — CORTE 1.2 V164
 
 Fecha: 2026-07-20
+Estado: `TECHNICAL_PASS_PENDING_HOSTING_DEV_VISUAL`
 
-## Estado
+## Estado por bloque
 
 - Corte 0B: `FROZEN`.
 - Corte 1 backend/contexto/histórico: `PASS`.
 - Corte 1 proyección periodo/país: `PASS`.
 - Corte 1 proyección por sucursal: `PASS`.
 - Corte 1 matriz de capacidades: `PASS`.
-- Corte 1 consumidor frontend: `CLAUDE_REQUIRED`.
-- Corte 1 build DEV: pendiente.
+- Corte 1 consumidor frontend V164: `PASS`.
+- Corte 1 runtime por rol/alcance: `PASS`.
+- Corte 1 build DEV: pendiente de autorización.
 - Corte 1 revisión visual Paula: pendiente.
 - Corte 1 freeze: pendiente.
 - Corte 2: bloqueado hasta freeze Corte 1.
 
 ## Evidencia
 
-- Run `29727050055`: SUCCESS.
-- Artifact `8454684849`.
+- Empalme: `f708515a637a3998eefdbe39ef66d37a3f130fb6`.
+- Run `29768206645`: SUCCESS.
+- Artifact `8471655866`.
 - 616 visitas, 28 filas periodo/país y 308 filas de sucursal.
-- 0 blockers, 0 errores de página y 0 errores de consola.
+- 4 reportes disponibles y 3 pendientes.
+- JSON, CSV, PDF, XLSX y PPTX listos técnicamente.
+- 0 blockers, 0 warnings de reportes, 0 errores de página y 0 errores de consola.
 
 ## Próxima acción
 
-Claude entrega únicamente el delta de `app/modules/cliente-extra.js` y, si es indispensable, el asset local de presentación y su carga en `app/index.html`.
+`AUTORIZACION HOSTING DEV -> PUBLICAR BUILD EXACTO -> SMOKE REMOTO -> REVISION VISUAL PAULA -> FREEZE CORTE 1`
 
-Después: auditoría delta, aplicación directa si GO, gates, Hosting DEV autorizado, revisión visual y freeze.
+No se requiere otra candidata de Claude salvo hallazgo visual reproducible.
