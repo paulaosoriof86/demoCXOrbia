@@ -1,116 +1,84 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
 Fecha: 2026-07-20
-Estado: `CORTE_1_BACKEND_REPORT_PROJECTION_PASS_FRONTEND_CONSUMER_PENDING`
+Estado: `CORTE_1_CLAUDE_REQUIRED_LOCALIZED_DELTA_READY`
 
-## 1. Repositorio y baseline
+## Baseline
 
-- Repo: `paulaosoriof86/demoCXOrbia`.
-- Rama viva: `docs-tya-v6-v71-audit`.
-- PR #7: draft/open/no merge.
+- Repo `paulaosoriof86/demoCXOrbia`.
+- Rama `docs-tya-v6-v71-audit`.
+- PR #7 draft/open/no merge.
 - `ACTIVE_BASELINE`: V161C/R21.
-- Corte 0B: congelado con aprobación visual de Paula.
-- Commit de empalme: `ab862d2e2a92993238ee96d214c7024fccb22c1a`.
-- Manifest: `app/docs/MANIFEST-V161C-EMPALME-DIRECTO-20260719.json`.
-- Aggregate: `7075f70822e3fed8442d62b56e1467fa643facd756aa88258ae2d6d6bdc95cdf`.
-- Freeze Corte 0B: `app/docs/FREEZE-CORTE-0B-ACTIVE-BASELINE-V161C-20260720.md`.
+- Corte 0B congelado y aprobado visualmente.
 
-## 2. Regla visual obligatoria
+## Corte 1 — avance técnico
 
-Después de cada corte Paula revisa visualmente el build exacto antes del freeze y antes de iniciar el corte siguiente. Ningún PASS técnico, gate, smoke automático o agente sustituye esa revisión.
+Componentes:
 
-Regla: `app/docs/REGLA-PREVALENTE-VALIDACION-VISUAL-DESPUES-DE-CADA-CORTE-20260720.md`.
+- `backend/contracts/phase-a-corte1-context-history-reports-v1.json` schema 1.1.0.
+- `backend/contracts/phase-a-corte1-report-frontend-consumer-v1.json`.
+- `tools/qa/tya-corte1-context-history-reports-gate.mjs`.
+- `tools/release/tya-corte1-report-projection-build.mjs`.
+- `tools/qa/tya-corte1-report-projection-browser-gate.mjs`.
+- `tools/qa/tya-corte1-report-frontend-consumer-acceptance.mjs`.
+- Build API: `window.CX_TYA_CORTE1_REPORTS`.
 
-## 3. Corte 1 iniciado
+Evidencia:
 
-Objetivo: contexto, HR, histórico, reportes y exportaciones por tenant, proyecto, periodo y país.
-
-Componentes creados:
-
-- Contrato: `backend/contracts/phase-a-corte1-context-history-reports-v1.json`.
-- Gate de fuente/proyección: `tools/qa/tya-corte1-context-history-reports-gate.mjs`.
-- Builder de proyección: `tools/release/tya-corte1-report-projection-build.mjs`.
-- Gate navegador: `tools/qa/tya-corte1-report-projection-browser-gate.mjs`.
-- Proyección generada en build: `CX_TYA_CORTE1_REPORTS`.
-- Carril canónico R18A/R21 actualizado sin deploy ni cambio de producción.
-
-## 4. Evidencia Corte 1
-
-### Gate fuente y reporte
-
-- Workflow `29725084348`: SUCCESS.
-- Artifact `8453902137`.
-- Digest `sha256:01d28de1db01ea587ca06612f926dbbc5c80baed906b993a203ccaea2d8c3bad`.
-- Decisión: `PASS_WITH_REVIEW_CORTE1_CONTEXT_HISTORY_REPORTS`.
-
-### Builder y gate navegador
-
-- Workflow `29725365613`: SUCCESS.
-- Commit técnico: `082a077b9e7bdc10f337d916274c43c6ed5e240e`.
-- Artifact `8454013971`.
-- Digest `sha256:408123e54d604fad24302a5afe79abd7aee36daa398cdf078ffe805ec63c3af6`.
-- Decisión: `PASS_WITH_REVIEW_CORTE1_REPORT_PROJECTION_BROWSER`.
+- Run `29727050055`: SUCCESS.
+- Artifact `8454684849`.
+- Digest `sha256:da068c013b3911f062ac5d7154580224b5fa68f5df91a6bfd68c0c7e6ec5aabf`.
 - 0 blockers, 0 errores de página y 0 errores de consola.
-- Advertencia única: formatos frontend PDF/XLSX/PPTX pendientes.
-
-Resultado canónico:
-
-- 14 periodos.
-- 616 visitas.
-- 28 filas por periodo/país.
-- 13 periodos históricos por defecto, excluyendo julio activo.
-- 611 asignadas y 5 sin asignar.
-- 592 realizadas.
-- 590 con cuestionario.
-- 527 submitidas.
+- 14 periodos, 616 visitas.
+- 28 filas periodo/país y 308 filas periodo/país/sucursal.
+- 611 asignadas, 5 sin asignar, 592 realizadas, 590 cuestionarios y 527 submitidas.
 - 0 pagos confirmados o inferidos.
-- JSON/CSV source-safe filtrables por periodo y país.
-- Sin campos PII.
 
-Junio 2026:
+Reportes disponibles:
 
-- GT: 34/34 realizadas, cuestionario y submitido.
-- HN: 10/10 realizadas, cuestionario y submitido.
-- Pago confirmado: 0.
+- resumen ejecutivo operativo;
+- estado operativo por sucursal;
+- cobertura por país;
+- tendencia operativa por periodo.
 
-## 5. Certificaciones y recursos del proyecto
+Pendientes de fuente:
 
-### Certificaciones
+- scorecard validado;
+- planes de acción;
+- brechas y capacitación.
 
-- Corte 2: cierre funcional principal — búsqueda certificados/no certificados, certificaciones ya presentadas, banco por proyecto, solicitud puntual, excepción autorizada, re-certificación, intentos, elegibilidad y vínculo con visitas.
-- Corte 6: Auth/RBAC y permisos por rol/scope.
-- Corte 7: sincronización y preservación completa HR/plataforma.
+## Claude requerido
 
-### Recursos del proyecto
+El pendiente es frontend y está localizado en `app/modules/cliente-extra.js`, módulo `cli_reportes`.
 
-- Corte 1: catálogo, contexto, origen y vínculo con tenant/proyecto/periodo.
-- Corte 2: entrega contextual al shopper por visita, escenario y certificación.
-- Corte 6: permisos por rol.
-- Corte 7: carga protegida, Storage, versionado, evidencias y sincronización.
+Paquete:
 
-Certificaciones y recursos son transversales y se revisan visualmente cada vez que cambian.
+`app/docs/PAQUETE-CLAUDE-CORTE1-REPORTES-EXPORTACIONES-20260720.md`
 
-## 6. Pendiente real de Corte 1
+Objetivo: PDF/XLSX/PPTX reales, estados pendientes honestos, cambio de periodo/país coherente y responsive.
 
-El módulo `app/modules/cliente-extra.js` todavía muestra toast demo en PDF/Excel/PPT. Backend no parchea UI; el consumidor frontend debe usar exclusivamente la proyección aprobada y respetar tenant, proyecto, periodo, país y rol.
+No se solicita candidata general ni reauditoría completa.
 
-También debe verificarse visualmente que cambiar periodo actualiza KPI, filas, detalle, histórico y exportación.
+## Registro reusable
 
-## 7. Siguiente bloque exacto
+`app/docs/CLAUDE-PATRONES-REUTILIZABLES-ADDENDUM-CORTE0B-CORTE1-20260720.md`
+
+## Certificaciones y recursos
+
+- Certificaciones: Corte 2 funcional, Corte 6 permisos y Corte 7 sincronización/preservación.
+- Recursos: contexto Corte 1, entrega Corte 2, permisos Corte 6 y almacenamiento/versionado Corte 7.
+
+## Siguiente bloque exacto
 
 ```text
-CORTE 1.2 — CONSUMIDOR FRONTEND LOCALIZADO
--> documentar ajuste por archivo/módulo para Claude
--> conectar PDF/Excel/PPT a la proyección aprobada
--> impedir fixtures, scores y pagos inventados
--> validar cambio proyecto/periodo en reportes e histórico
--> construir build exacto DEV
--> revisión visual de Paula
--> corrección focalizada si aplica
--> aprobación explícita
--> freeze Corte 1
+CLAUDE DELTA LOCALIZADO CORTE 1.2
+-> candidata incremental
+-> auditoría solo del delta
+-> APPLY_DELTA_DIRECTLY si GO sin P0
+-> post-gates
+-> autorización separada Hosting DEV
+-> revisión visual Paula
+-> aprobación y freeze Corte 1
 ```
 
-Corte 2 no comienza antes de la revisión visual y freeze de Corte 1.
-
-Estado seguro: sin deploy nuevo, merge, producción, importaciones reales, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos.
+Corte 2 no inicia antes del freeze de Corte 1. Estado seguro sin merge, producción, importaciones ni escrituras reales.
