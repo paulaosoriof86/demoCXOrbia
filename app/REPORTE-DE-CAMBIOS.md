@@ -1,3 +1,93 @@
+# Ronda V164 / Corte 1.2 Reportes (20260720) — Corrección de los P0/P1 de la auditoría V163 (HOLD)
+
+Paquete atendido: `PAQUETE_CORRECCION_CLAUDE_CXORBIA_V163_CORTE1_20260720` (candidata V163, SHA-256 `73fcffc4…f5cfe0`, decisión **HOLD — P0_PROVEN**). Archivos autorizados y únicos modificados: `modules/cliente-extra.js` (solo el bloque `cli_reportes`) y este reporte. `index.html` y `vendor/pptxgenjs.min.js` sin cambios respecto a V163. No se incluye ni se carga ningún adapter generado.
+
+## P0-1 — El rol Sucursal ya no ve datos de todo el país
+Antes, solo `branch_operational_status` quedaba acotado a la sucursal; `executive_operational_summary`, `country_coverage` y `period_trend` usaban `rows` por país. Ahora, con `role==='sucursal'`, **los cuatro reportes disponibles se derivan exclusivamente de `branchRows` filtradas por el `branchName` resuelto** (`proj.filter(scope,'branch')`), incluido el histórico de la tendencia. La etiqueta de alcance sigue siendo "Sucursal: <nombre>". Las vistas de resumen/cobertura para Sucursal muestran columnas Sucursal/Ciudad/País y agregan solo cifras de esa sucursal.
+
+Prueba obligatoria ejecutada (fixture Miraflores 2 visitas jul + Oakland 2 visitas jul, ambas GT; `scopeSucursal='suc-miraflores'`): los 4 reportes (contenido real del flujo de exportación PDF) suman **Visitas: 2**, **ninguno** incluye C. Oakland; resumen ejecutivo, cobertura, estado por sucursal y tendencia acotados. Antes: 34/34/68 visitas de GT.
+
+## P0-2 — Sin fallback silencioso al último periodo
+`periodKey` se toma **exclusivamente** de `CX.data.period().periodKey`. Si el contexto no lo expone, se falla cerrado: estado "Sin datos para este periodo y alcance" con explicación honesta, cero filas y exportaciones deshabilitadas. Nunca se selecciona `latestPeriod` de forma silenciosa ni se usa `p.id` como sustituto.
+
+Prueba obligatoria ejecutada (`p.id='cinepolis-2026-06'`, `periodKey` ausente, `latestPeriod='2026-07'`): 0 reportes disponibles, 21 botones deshabilitados, ninguna fila de 2026-07 mostrada ni exportable.
+
+## P1 — La tendencia excluye el periodo activo
+`period_trend` filtra `proj.latestPeriod` por defecto (`defaultExcludesLatestActivePeriod=true` del contrato). Mantiene todos los demás periodos verificados; Director puede filtrar por país; Sucursal usa `branchRows` históricas de su sucursal. No se agregó ningún control "incluir activo".
+
+Prueba obligatoria ejecutada (periodos 2026-06 y 2026-07, `latestPeriod='2026-07'`): la tendencia contiene 2026-06 y **no** contiene ninguna fila 2026-07 (Director y Sucursal).
+
+## P1 hardening — Resolución única de sucursal
+La coincidencia exacta de `scopeSucursal` contra `branchName` sigue siendo válida. La resolución vía catálogo UI ahora exige **un único** candidato (`filter().length===1`); la coincidencia normalizada solo vale si el nombre normalizado corresponde a **exactamente un** `branchName` distinto en la proyección. Ambigüedad (0 o >1) → "Pendiente de alcance autorizado" (fail-closed).
+
+Prueba ejecutada: proyección con `C. Miraflores` y `C.. Miraflores` (mismo nombre normalizado) → pendiente de alcance, 21 botones deshabilitados.
+
+## Conservado de V163 (verificado sin regresión)
+Cuatro archivos autorizados; sin adapter generado; `rows`/`branchRows`/`catalog`/`report()`/`filter()`; Director con selector Todos/GT/HN; 4 disponibles + 3 pendientes de fuente; PDF/XLSX/PPTX reales; nombres de archivo con alcance (`todos`/`gt`/`hn`/sucursal); sin score, NPS, benchmark ni región; Regional fail-closed; etiqueta humana de fuente.
+
+## Pruebas ejecutadas (reales, con resultados)
+1. **Sintaxis** (`node --check` equivalente por parseo completo): `modules/cliente-extra.js` **OK**.
+2. **Réplica del gate oficial** (mismas comprobaciones estáticas + ejecución dinámica contra fixture schema 1.1.0): **PASS — 0 blockers**. Director: 4 Disponible, 3 Pendiente de fuente, 21 botones (12 habilitados / 9 deshabilitados), selector `repPaisSel` con Todos/GT/HN.
+3. **Regional**: 21 botones deshabilitados, "Pendiente de alcance autorizado".
+4. **Sucursal**: ID `suc-miraflores` → `C. Miraflores`; 4 disponibles; cifras acotadas (ver P0-1).
+5. **Periodo sin periodKey**: bloqueado (ver P0-2).
+6. **Tendencia sin periodo activo** (ver P1).
+7. `index.html` verificado: solo `vendor/pptxgenjs.min.js` añadido; sin CDN remoto de PPTX; sin adapter cargado.
+
+## Pruebas NO ejecutadas / limitaciones reales
+- No existe `node` en este entorno aislado: deben re-ejecutarse `node --check app/modules/cliente-extra.js` y `node tools/qa/tya-corte1-report-frontend-consumer-acceptance.mjs` en el checkout antes de aplicar.
+- La verificación visual de los archivos PDF/XLSX/PPTX descargados queda para la auditoría.
+- No se declara cerrado el Corte 1.
+
+---
+
+# Ronda V163 / Corte 1.2 Reportes (20260720) — Corrección de los P0/P1 de la auditoría V162 (HOLD)
+
+Paquete de auditoría atendido: `PAQUETE_CORRECCION_CLAUDE_CXORBIA_V162_CORTE1_20260720` (candidata V162, SHA-256 `3d7a1462…7e24b`, decisión **HOLD — P0_PROVEN**). Archivos autorizados y únicos modificados en esta ronda: `modules/cliente-extra.js` (solo el bloque `cli_reportes`), `index.html`, este reporte. Asset conservado sin cambios: `vendor/pptxgenjs.min.js`. **No** se tocaron `core/*`, `data.js`, `store.js`, contratos, builders, gates, adapters source-safe, datos HR, finanzas, certificaciones ni ningún otro módulo. El histórico previo (V161C y anteriores) se preserva íntegro debajo.
+
+## P0-1 — Se retira el adapter generado y su carga en `index.html`
+La candidata V162 incluía y cargaba `app/adapters/tya-corte1-report-projection.js`, una fotografía del builder del 2026-07-13 con conteos ya desactualizados frente al corte vigente (asignadas/sin asignar/realizadas/cuestionarios/submitidas incorrectas). 
+- Ese archivo **no** forma parte de la fuente del prototipo: fue eliminado del proyecto (`app/adapters/` queda vacío) y **no** se incluye en el ZIP de entrega.
+- Se eliminó de `index.html` la línea `<script src="adapters/tya-corte1-report-projection.js"></script>`. `index.html` solo agrega la carga local `<script src="vendor/pptxgenjs.min.js"></script>` (verificado presente, sin CDN remoto de PPTX).
+- El builder oficial (`tools/release/tya-corte1-report-projection-build.mjs`, archivo protegido no tocado) debe regenerar el adapter contra la fuente vigente **después** del empalme e insertar esa etiqueta en la copia de build. El módulo consume `window.CX_TYA_CORTE1_REPORTS` por feature-detection: si el global aún no está inyectado en este entorno, muestra "Pendiente de fuente" de forma honesta, sin inventar cifras.
+- Conteos vigentes que debe producir el adapter regenerado (responsabilidad del builder, documentados aquí para la aceptación): visitas 616, asignadas 611, sin asignar 5, realizadas 592, cuestionarios 590, submitidas 527, pagos confirmados 0.
+
+## P0-2 — El rol Sucursal ahora resuelve el ID a `branchName`
+La plataforma guarda `scopeSucursal` normalmente como **ID** de sucursal (p. ej. `suc-miraflores`), no como `branchName`. La candidata comparaba `scopeSucursal === branchName`, lo que dejaba a un Responsable de Sucursal real con 0 reportes. Nuevo `resolveBranchName()`:
+1. Lee `u.scopeSucursal`.
+2. Si ya coincide exactamente con un `branchName` de `proj.branchRows`, se acepta tal cual.
+3. Si no, busca en `CX.clienteData.sucursales(p)` una sucursal cuyo `id` **o** `name` coincida, y usa su `name` para filtrar `branchRows` (con respaldo por nombre normalizado).
+4. Si no hay resolución estable → "Pendiente de alcance autorizado" y exportaciones bloqueadas (fail-closed).
+
+Prueba obligatoria ejecutada: `scopeSucursal='suc-miraflores'`, catálogo UI `{id:'suc-miraflores', name:'C. Miraflores'}`, proyección con `branchName:'C. Miraflores'` → **4 reportes disponibles** para esa sucursal (12 botones habilitados). ID inexistente → fail-closed (21 botones deshabilitados).
+
+## P0-3 — Historial de REPORTE-DE-CAMBIOS preservado
+Esta sección V163 se antepone; **todo** el contenido histórico anterior (Ronda V161C, V161, V160, V159.1 y rondas previas) se conserva íntegro debajo, sin truncar.
+
+## P1 — Nombres de archivo con alcance (sin colisión)
+`buildFilename()` incorpora un `scopeToken()`: `todos` / `gt` / `hn` para Director, el nombre de sucursal resuelto para Sucursal, `pendiente-alcance` para Regional. El nombre es `tipo_proyecto_periodo_alcance_fecha.ext`. Exportar "Todos los países" y luego "GT" produce nombres distintos:
+- `resumen-ejecutivo-operativo_cinepolis_2026-07_todos_2026-07-20.xlsx`
+- `resumen-ejecutivo-operativo_cinepolis_2026-07_gt_2026-07-20.xlsx`
+
+## Conservado de la candidata V162 (funcionaba y no se tocó su lógica)
+`periodKey` real (nunca `p.id`); consumo de `rows`, `branchRows`, `catalog`, `report()` y `filter()`; 4 reportes disponibles y 3 pendientes de fuente; selector de país para Director; PDF (`window.print`), Excel (SheetJS) y PowerPoint (PptxGenJS local) con flujo real; sin score/NPS/benchmark/región inventados; Regional fail-closed; diseño responsive con estados legibles por texto.
+
+## Pruebas ejecutadas (reales, con resultados)
+1. **Sintaxis** (`node --check` equivalente por parseo completo del archivo): `modules/cliente-extra.js` **OK**.
+2. **Réplica del gate oficial** (`tools/qa/tya-corte1-report-frontend-consumer-acceptance.mjs`: mismas comprobaciones estáticas + ejecución dinámica del módulo contra fixture schema 1.1.0): **PASS, 0 blockers**. Director: 4 disponibles, 3 pendientes, 21 botones (12 habilitados / 9 deshabilitados), `repPaisSel` presente.
+3. **Roles**: Regional → todo "Pendiente de alcance autorizado" (21 deshabilitados). Sucursal por ID `suc-miraflores` → 4 disponibles acotados a su sucursal/país. Sucursal por ID inexistente → fail-closed.
+4. **Nombres de archivo**: distintos para Todos (`…_todos_…`) y GT (`…_gt_…`).
+5. **Alcance de archivos**: `app/adapters/` vacío; `index.html` sin la etiqueta del adapter y con `vendor/pptxgenjs.min.js`; ningún archivo protegido modificado.
+6. **Carga en preview** de `app/index.html`: sin errores de consola.
+
+## Pruebas NO ejecutadas / limitaciones reales
+- No existe `node` en este entorno aislado: el gate oficial se replicó 1:1 (mismas comprobaciones + fixture); deben re-ejecutarse `node --check app/modules/cliente-extra.js` y `node tools/qa/tya-corte1-report-frontend-consumer-acceptance.mjs` en el checkout de prueba.
+- El adapter debe regenerarse con el builder oficial dentro del checkout y confirmar los conteos vigentes (616/611/5/592/590/527/0) **antes** de aplicar.
+- La verificación visual de los archivos PDF/XLSX/PPTX descargados queda para la auditoría (el sandbox no abre el diálogo de impresión ni el explorador de archivos).
+- **No se declara cerrado el Corte 1.**
+
+---
+
 # Ronda V161C (20260719) — Aislamiento de periodo por proyecto + limpieza de artefacto de prueba
 
 Paquete: `CXOrbia_Correccion_Final_V161C_Periodo_Multiproyecto_Y_Limpieza_Test_20260719`. Archivos autorizados y únicos modificados: `modules/visitas.js`, este reporte. Eliminación autorizada y ejecutada: `app/index-test-base.html`. No se tocó `app.js`, `core/router.js`, `core/config.js`, `core/data.js`, `core/store.js`, `modules/visita-detalle.js`, `index.html`, adapters, backend, fuentes, integraciones ni otros módulos.

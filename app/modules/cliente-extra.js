@@ -52,36 +52,245 @@ CX.module('cli_capacitacion', ({ui})=>{
     </div>`;
 });
 
-/* ============== Reportes (exportables) ============== */
+/* ============== Reportes (exportables) — Corte 1.2 ==============
+   Corrección P0 (auditoría 20260720): este módulo consume la forma REAL de la
+   proyección aprobada schema 1.1.0 expuesta en window.CX_TYA_CORTE1_REPORTS:
+   periods (claves string "YYYY-MM"), countries, latestPeriod, rows (periodo+país),
+   branchRows (periodo+país+sucursal), catalog (única verdad de disponibilidad),
+   filter(scope, level), report(reportId, scope), toCSV, toJSON.
+   Métricas operativas únicamente: visits, assigned, unassigned, performed,
+   questionnaire, submitted, paymentConfirmed. El periodo se resuelve con
+   CX.data.period().periodKey — nunca con el id visual del periodo. */
 CX.module('cli_reportes', ({ui})=>{
-  const C=CX.clienteData, p=CX.data.period();
-  const list=C.scoped(p), R=C.resumen(list);
-  setTimeout(()=>{ CX.cliUI.wirePersona();
-    document.querySelectorAll('[data-rep]').forEach(b=>b.addEventListener('click',()=>CX.ui.toast('Generando “'+b.dataset.rep+'” ('+b.dataset.fmt+') — demo','ok',2600)));
+  const p=CX.data.period()||{};
+  const projectLabel=CX.data.programBase?CX.data.programBase(p):(p.name||CX.data.programKey(p)||'Proyecto');
+  const u=CX.session.user||{};
+  const role=u.clienteRole||'director';
+  const SOURCE_LABEL='Fuente verificada · Vista previa segura';
+
+  const proj=(()=>{const g=(typeof window!=='undefined')?window.CX_TYA_CORTE1_REPORTS:undefined;return(g&&typeof g==='object'&&Array.isArray(g.rows)&&typeof g.report==='function'&&typeof g.filter==='function')?g:null;})();
+  /* P0-2 (V164): el periodo sale EXCLUSIVAMENTE de CX.data.period().periodKey.
+     Si el contexto no lo expone, se falla cerrado (cero filas, exportaciones
+     bloqueadas). Nunca se infiere latestPeriod ni se usa p.id como sustituto. */
+  const periodKey=(p&&typeof p.periodKey==='string'&&p.periodKey)?p.periodKey:null;
+  const periodLabel=(p.periodo||p.ronda||p.name||'Periodo')+(periodKey?(' · '+periodKey):'');
+
+  const esc=(s)=>String(s==null?'—':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmtDate=()=>new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
+  const sanitize=(s)=>String(s||'reporte').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'reporte';
+  /* P1: el nombre incluye el ALCANCE (todos/GT/HN/sucursal) para que
+     exportar "Todos los países" y luego "GT" no colisione en un mismo nombre. */
+  const scopeToken=()=>{
+    if(role==='sucursal') return sanitize(resolvedBranchName||u.scopeSucursal||'sucursal');
+    if(role==='regional') return 'pendiente-alcance';
+    return selectedCountry?sanitize(selectedCountry):'todos';
+  };
+  const buildFilename=(cat,ext)=>[sanitize(cat.label),sanitize(projectLabel),sanitize(periodKey||''),scopeToken(),new Date().toISOString().slice(0,10)].filter(Boolean).join('_')+'.'+ext;
+
+  const STATE_META={available:{label:'Disponible',tone:'g'},pending_source:{label:'Pendiente de fuente',tone:'n'},pending_scope:{label:'Pendiente de alcance autorizado',tone:'a'},no_data:{label:'Sin datos para este periodo y alcance',tone:'n'},error:{label:'Error al generar archivo',tone:'r'}};
+  const CARD_META={executive_operational_summary:{icon:'📊',desc:'Totales operativos del periodo por país'},branch_operational_status:{icon:'🏬',desc:'Avance operativo por sucursal y ciudad'},country_coverage:{icon:'🗺️',desc:'Cobertura operativa del periodo por país'},period_trend:{icon:'📈',desc:'Comparativo operativo entre periodos'},brand_scorecard:{icon:'🎯',desc:'Scorecard validado de cuestionarios'},action_plans:{icon:'📋',desc:'Planes de acción registrados'},training_gaps:{icon:'🎓',desc:'Brechas por sección y capacitación'}};
+  const MISSING={brand_scorecard:'scores validados de cuestionarios',action_plans:'registros reales de planes de acción',training_gaps:'resultados por sección de cuestionario'};
+  const DEFAULT_CATALOG=[
+    {id:'executive_operational_summary',label:'Resumen ejecutivo operativo',projectionLevel:'periodCountry',availability:'available'},
+    {id:'branch_operational_status',label:'Estado operativo por sucursal',projectionLevel:'branch',availability:'available'},
+    {id:'country_coverage',label:'Cobertura por país',projectionLevel:'periodCountry',availability:'available'},
+    {id:'period_trend',label:'Tendencia operativa por periodo',projectionLevel:'periodCountry',availability:'available'},
+    {id:'action_plans',label:'Planes de acción',projectionLevel:null,availability:'pending_source',requiredSource:'action_plan_records'},
+    {id:'training_gaps',label:'Brechas y capacitación',projectionLevel:null,availability:'pending_source',requiredSource:'questionnaire_section_scores'},
+    {id:'brand_scorecard',label:'Scorecard de marca',projectionLevel:null,availability:'pending_source',requiredSource:'validated_questionnaire_scores'}];
+  const catalog=(proj&&Array.isArray(proj.catalog)&&proj.catalog.length)?proj.catalog:DEFAULT_CATALOG;
+
+  const countries=(proj&&Array.isArray(proj.countries))?proj.countries:[];
+  let selectedCountry=(()=>{try{const v=sessionStorage.getItem('cx_rep_country')||'';return countries.includes(v)?v:'';}catch(e){return '';}})();
+
+  /* P0-2: la plataforma guarda scopeSucursal normalmente como ID de sucursal,
+     no como branchName. Resolvemos el ID contra el catálogo de sucursales de la
+     UI (CX.clienteData.sucursales(p)) para obtener el name real, y con ese name
+     filtramos branchRows. Si scopeSucursal ya coincide exactamente con un
+     branchName de la proyección, también se acepta. Sin resolución estable
+     → "Pendiente de alcance autorizado" (fail-closed). */
+  /* P1 hardening (V164): la coincidencia exacta vale; la normalizada solo vale
+     si es ÚNICA. Ambigüedad (0 o >1 candidatos) → fail-closed. */
+  const resolveBranchName=()=>{
+    if(!proj||role!=='sucursal'||!u.scopeSucursal) return null;
+    const raw=String(u.scopeSucursal);
+    const known=new Set(proj.branchRows.map(r=>r.branchName));
+    if(known.has(raw)) return raw;
+    let uiList=[];
+    try{ uiList=(CX.clienteData&&typeof CX.clienteData.sucursales==='function')?(CX.clienteData.sucursales(p)||[]):[]; }catch(e){ uiList=[]; }
+    const hits=uiList.filter(s=>s&&(String(s.id)===raw||String(s.name)===raw));
+    if(hits.length!==1) return null;
+    const hit=hits[0];
+    if(hit.name&&known.has(hit.name)) return hit.name;
+    if(hit.name){ const norm=[...new Set(proj.branchRows.filter(r=>sanitize(r.branchName)===sanitize(hit.name)).map(r=>r.branchName))]; if(norm.length===1) return norm[0]; }
+    return null;
+  };
+  const resolvedBranchName=resolveBranchName();
+  const myBranchRows=resolvedBranchName?proj.filter({branchName:resolvedBranchName},'branch'):[];
+
+  const scopeGate=()=>{
+    if(role==='regional') return {state:'pending_scope',explain:'Todavía no existe una dimensión regional estable autorizada en la fuente; las exportaciones quedan bloqueadas hasta definir ese alcance.'};
+    if(role==='sucursal'&&!myBranchRows.length) return {state:'pending_scope',explain:'La sucursal asignada a este usuario no se resuelve de forma estable en la fuente verificada; las exportaciones quedan bloqueadas.'};
+    return null;
+  };
+  /* P0-1 (V164): con rol Sucursal TODOS los reportes disponibles se derivan
+     exclusivamente de branchRows filtradas por la sucursal resuelta — nunca
+     de rows de todo el país. */
+  const scopeFor=(cat)=>{
+    const s={periodKey};
+    if(role==='sucursal'){ s.branchName=resolvedBranchName; }
+    else if(role==='director'&&selectedCountry){ s.country=selectedCountry; }
+    if(cat.id==='period_trend') delete s.periodKey;
+    return s;
+  };
+  const scopeLabelText=()=>{
+    if(role==='sucursal') return 'Sucursal: '+(resolvedBranchName||u.scopeSucursal||'—');
+    if(role==='regional') return 'Alcance regional pendiente';
+    return selectedCountry?('País: '+selectedCountry):'Todos los países';
+  };
+
+  function statusFor(cat){
+    if(cat.availability!=='available') return {state:'pending_source',explain:'Falta la fuente: '+(MISSING[cat.id]||cat.requiredSource||'origen de datos')+'. No se muestran cifras inventadas.',rows:null};
+    const gate=scopeGate(); if(gate) return {...gate,rows:null};
+    if(!proj) return {state:'pending_source',explain:'La fuente operativa verificada aún no está conectada en este entorno; sin ella no hay filas reales que mostrar ni exportar.',rows:null};
+    if(!periodKey) return {state:'no_data',explain:'El contexto actual no expone un periodo verificable; para no inferir un periodo distinto al seleccionado, este reporte queda bloqueado.',rows:null};
+    let rows;
+    if(role==='sucursal'){ rows=proj.filter(scopeFor(cat),'branch'); }
+    else{ const r=proj.report(cat.id,scopeFor(cat)); if(!r||!r.available) return {state:'pending_source',explain:'La fuente marca este reporte como pendiente.',rows:null}; rows=r.rows||[]; }
+    /* P1 (V164): la tendencia excluye por defecto el periodo activo (latestPeriod),
+       según defaultExcludesLatestActivePeriod del contrato vigente. */
+    if(cat.id==='period_trend'&&proj.latestPeriod){ rows=rows.filter(x=>x&&x.periodKey!==proj.latestPeriod); }
+    rows=rows.filter(x=>x&&typeof x.visits==='number');
+    if(!rows.length) return {state:'no_data',explain:'Sin datos para este periodo y alcance.',rows:null};
+    return {state:'available',rows};
+  }
+
+  const M=[['Visitas','visits'],['Asignadas','assigned'],['Sin asignar','unassigned'],['Realizadas','performed'],['Con cuestionario','questionnaire'],['Submitidas','submitted'],['Pago confirmado','paymentConfirmed']];
+  function computeView(cat,rows){
+    const branchDims=[['Sucursal','branchName'],['Ciudad','city'],['País','country']];
+    const dims=cat.projectionLevel==='branch'?branchDims
+      :(role==='sucursal'?(cat.id==='period_trend'?[['Periodo','periodKey'],['Sucursal','branchName'],['País','country']]:branchDims)
+      :[['Periodo','periodKey'],['País','country']]);
+    const extra=cat.id==='country_coverage'?[['Avance de realizadas','__pct']]:[];
+    const val=(r,k)=>k==='__pct'?((typeof r.visits==='number'&&r.visits>0)?Math.round(r.performed*100/r.visits)+'%':'0%'):r[k];
+    const cols=[...dims,...M,...extra];
+    const head=cols.map(c=>c[0]);
+    const trows=rows.map(r=>cols.map(c=>{const v=val(r,c[1]);return (v==null||v==='')?'—':String(v);}));
+    const data=rows.map(r=>{const o={};cols.forEach(c=>{const v=val(r,c[1]);o[c[0]]=(v==null)?'':v;});return o;});
+    const tot=(k)=>rows.reduce((a,r)=>a+((typeof r[k]==='number')?r[k]:0),0);
+    const summary=['Filas en alcance: '+rows.length,'Visitas: '+tot('visits')+' · Asignadas: '+tot('assigned')+' · Sin asignar: '+tot('unassigned'),'Realizadas: '+tot('performed')+' · Con cuestionario: '+tot('questionnaire')+' · Submitidas: '+tot('submitted')+' · Pago confirmado: '+tot('paymentConfirmed')];
+    return {head,trows,data,summary};
+  }
+
+  function ensurePrintStyle(){
+    if(document.getElementById('cxReportPrintStyle')) return;
+    const st=document.createElement('style');st.id='cxReportPrintStyle';
+    st.textContent='#cxReportPrint{display:none}@media print{body>*:not(#cxReportPrint){display:none !important}#cxReportPrint{display:block !important;padding:28px;font-family:Arial,Helvetica,sans-serif;color:#1f2937}#cxReportPrint h1{font-size:22px;margin:0 0 6px}#cxReportPrint .cxr-meta{font-size:12px;color:#4b5563;margin-bottom:16px}#cxReportPrint table{width:100%;border-collapse:collapse;font-size:12px}#cxReportPrint th,#cxReportPrint td{border:1px solid #d1d5db;padding:6px 8px;text-align:left}}';
+    document.head.appendChild(st);
+  }
+  function exportPDF(cat){
+    const status=statusFor(cat); if(status.state!=='available'){CX.ui.toast(STATE_META[status.state].label,'err');return;}
+    const view=computeView(cat,status.rows);
+    ensurePrintStyle();
+    let host=document.getElementById('cxReportPrint');
+    if(!host){host=document.createElement('div');host.id='cxReportPrint';document.body.appendChild(host);}
+    host.innerHTML=`<h1>${esc(cat.label)}</h1><div class="cxr-meta"><b>${esc(projectLabel)}</b> · ${esc(periodLabel)} · ${esc(scopeLabelText())} · ${esc(SOURCE_LABEL)} · ${esc(fmtDate())}</div><ul style="margin:0 0 16px 18px;font-size:13px">${view.summary.map(s=>`<li>${esc(s)}</li>`).join('')}</ul><table><thead><tr>${view.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${view.trows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+    window.print();
+  }
+  function exportExcel(cat){
+    const status=statusFor(cat); if(status.state!=='available'){CX.ui.toast(STATE_META[status.state].label,'err');return;}
+    if(typeof XLSX==='undefined'){CX.ui.toast('Error al generar archivo','err');return;}
+    try{
+      const view=computeView(cat,status.rows);
+      if(!view.data.length){CX.ui.toast('Sin datos para este periodo y alcance','err');return;}
+      const summary=[['Reporte',cat.label],['Proyecto',projectLabel],['Periodo',periodLabel],['Alcance',scopeLabelText()],['Fuente',SOURCE_LABEL],['Fecha de generación',fmtDate()],['Filas',view.data.length]];
+      const wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(summary),'Resumen');
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(view.data),'Datos');
+      XLSX.writeFile(wb,buildFilename(cat,'xlsx'));
+      CX.ui.toast('Excel generado: '+cat.label+' ('+view.data.length+' filas)','ok');
+    }catch(e){CX.ui.toast('Error al generar archivo','err');}
+  }
+  function exportPPT(cat){
+    const status=statusFor(cat); if(status.state!=='available'){CX.ui.toast(STATE_META[status.state].label,'err');return;}
+    if(typeof PptxGenJS==='undefined'){CX.ui.toast('Error al generar archivo','err');return;}
+    try{
+      const view=computeView(cat,status.rows);
+      if(!view.trows.length){CX.ui.toast('Sin datos para este periodo y alcance','err');return;}
+      const pptx=new PptxGenJS();
+      pptx.defineLayout({name:'CX_16x9',width:13.33,height:7.5});pptx.layout='CX_16x9';
+      const s1=pptx.addSlide();
+      s1.addText(cat.label,{x:0.6,y:2.2,w:12,h:1,fontSize:32,bold:true,color:'1F2937'});
+      s1.addText(projectLabel+' · '+periodLabel,{x:0.6,y:3.2,w:12,h:0.6,fontSize:16,color:'4B5563'});
+      s1.addText(scopeLabelText()+' · '+fmtDate(),{x:0.6,y:3.7,w:12,h:0.5,fontSize:12,color:'6B7280'});
+      const s2=pptx.addSlide();
+      s2.addText('Resumen operativo',{x:0.5,y:0.4,w:12,h:0.6,fontSize:22,bold:true});
+      s2.addText(view.summary.map(t=>({text:t,options:{bullet:true,breakLine:true}})),{x:0.6,y:1.2,w:11.5,h:3,fontSize:16,color:'1F2937'});
+      const s3=pptx.addSlide();
+      const maxRows=12, shown=view.trows.slice(0,maxRows);
+      s3.addText('Detalle'+(view.trows.length>maxRows?(' (primeras '+maxRows+' de '+view.trows.length+' filas; el Excel contiene todas)'):''),{x:0.5,y:0.4,w:12.3,h:0.6,fontSize:18,bold:true});
+      s3.addTable([view.head.map(h=>({text:h,options:{bold:true}})),...shown],{x:0.5,y:1.1,w:12.3,fontSize:9,border:{type:'solid',color:'D1D5DB',pt:0.5}});
+      const s4=pptx.addSlide();
+      s4.addText('Nota de fuente',{x:0.5,y:0.4,w:12,h:0.6,fontSize:22,bold:true});
+      s4.addText([{text:SOURCE_LABEL,options:{breakLine:true}},{text:'Alcance: '+scopeLabelText(),options:{breakLine:true}},{text:'Generado: '+fmtDate(),options:{breakLine:true}},{text:'"Ver como" es una vista previa de rol, no un control de seguridad real.',options:{breakLine:true,italic:true,color:'6B7280'}}],{x:0.6,y:1.2,w:11.5,h:3,fontSize:14});
+      const done=pptx.writeFile({fileName:buildFilename(cat,'pptx')});
+      if(done&&typeof done.then==='function'){done.then(()=>CX.ui.toast('PowerPoint generado: '+cat.label,'ok')).catch(()=>CX.ui.toast('Error al generar archivo','err'));}
+      else CX.ui.toast('PowerPoint generado: '+cat.label,'ok');
+    }catch(e){CX.ui.toast('Error al generar archivo','err');}
+  }
+
+  function renderRoot(){
+    const countrySel=(role==='director'&&countries.length)?`<select class="sel" id="repPaisSel" aria-label="Filtrar por país" style="width:auto;min-width:150px"><option value="">Todos los países</option>${countries.map(c=>`<option value="${esc(c)}" ${c===selectedCountry?'selected':''}>${esc(c)}</option>`).join('')}</select>`:'';
+    const levelLabel=(cat)=>cat.projectionLevel==='branch'?'Sucursal':(cat.projectionLevel==='periodCountry'?'Periodo y país':'Pendiente');
+    const card=(cat)=>{
+      const meta=CARD_META[cat.id]||{icon:'📄',desc:''};
+      const status=statusFor(cat), sm=STATE_META[status.state]||STATE_META.no_data;
+      const canExport=status.state==='available';
+      const btn=(fmt)=>`<button class="btn btn-soft btn-sm" data-rep-act="${cat.id}:${fmt}" ${canExport?'':'disabled'} aria-label="${esc(fmt+' — '+cat.label)}" title="${canExport?esc('Exportar '+fmt):esc(sm.label)}">${fmt}</button>`;
+      return `<div class="card card-p" style="min-width:0">
+        <div class="flex" style="gap:12px;align-items:flex-start;flex-wrap:wrap">
+          <div style="font-size:26px;flex-shrink:0">${meta.icon}</div>
+          <div style="flex:1;min-width:180px">
+            <div class="card-t" style="font-size:14px">${esc(cat.label)}</div>
+            <div style="font-size:12px;color:var(--t3);margin-top:2px">${esc(meta.desc)} · ${esc(levelLabel(cat))}</div>
+            <div style="margin-top:8px">${ui.bdg(sm.label,sm.tone)}</div>
+            ${status.explain?`<div style="font-size:11.5px;color:var(--t2);margin-top:6px;line-height:1.5">${esc(status.explain)}</div>`:''}
+          </div>
+          <div class="flex" style="gap:6px;flex-wrap:wrap">${btn('PDF')}${btn('Excel')}${btn('PPT')}</div>
+        </div>
+      </div>`;
+    };
+    return `<div id="repRoot">
+      <div class="card card-p" style="margin-bottom:16px">
+        <div class="flex" style="gap:10px;flex-wrap:wrap;align-items:center">
+          <span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Contexto</span>
+          <span class="bdg bdg-b">${esc(projectLabel)}</span><span class="bdg bdg-p">${esc(periodLabel)}</span><span class="bdg bdg-n">${esc(scopeLabelText())}</span><span class="bdg bdg-g">${esc(SOURCE_LABEL)}</span>
+          ${countrySel}
+        </div>
+      </div>
+      <div class="grid g2" style="gap:14px">${catalog.map(card).join('')}</div>
+      <div style="margin-top:16px">${ui.aiBox('Cada reporte usa las filas reales de la fuente verificada según tu rol y alcance. “Ver como” es una vista previa, no un control de seguridad real.','Exportación por alcance')}</div>
+    </div>`;
+  }
+
+  setTimeout(()=>{
+    CX.cliUI.wirePersona();
+    const wire=()=>{
+      const sel=document.getElementById('repPaisSel');
+      if(sel) sel.addEventListener('change',(e)=>{selectedCountry=e.target.value;try{sessionStorage.setItem('cx_rep_country',selectedCountry);}catch(err){}const root=document.getElementById('repRoot');if(root){root.outerHTML=renderRoot();wire();}});
+      document.querySelectorAll('[data-rep-act]').forEach(b=>{
+        if(b.disabled) return;
+        b.addEventListener('click',()=>{
+          const i=b.dataset.repAct.lastIndexOf(':');const id=b.dataset.repAct.slice(0,i),fmt=b.dataset.repAct.slice(i+1);
+          const cat=catalog.find(c=>c.id===id);if(!cat)return;
+          if(fmt==='PDF')exportPDF(cat);else if(fmt==='Excel')exportExcel(cat);else exportPPT(cat);
+        });
+      });
+    };
+    wire();
   },0);
-  const reps=[
-    ['📊','Resumen ejecutivo de la marca','Score global, NPS, ranking y tendencia'],
-    ['🏬','Scorecard por sucursal','Desglose ponderado por sección y visita'],
-    ['🗺️','Cobertura por región','Avance del programa por región y periodo'],
-    ['📈','Tendencia y benchmarking','Comparativo entre periodos y regiones'],
-    ['🎯','Planes de acción','Incentivos, mejoras y sanciones con seguimiento'],
-    ['🎓','Brechas y capacitación','Secciones débiles y cursos recomendados'],
-  ];
-  return `
-    ${ui.ph('Reportes', 'Entregables listos para dirección, regional y sucursal')}
-    ${CX.cliUI.personaBarHTML()}
-    <div class="grid g4" style="margin-bottom:16px">
-      ${ui.kpi('Sucursales en alcance',R.n,'b')}${ui.kpi('Visitas del periodo',R.visitas,'p')}
-      ${ui.kpi('Score global',R.score!=null?R.score:CX.ui.statusBdg('pending_source'),R.score!=null?C.tone(R.score):'n','/100')}${ui.kpi('NPS',R.nps!=null?R.nps:CX.ui.statusBdg('pending_source'),'g')}
-    </div>
-    <div class="grid g2" style="gap:14px">
-      ${reps.map(r=>`<div class="card card-p flex" style="gap:14px">
-        <div style="font-size:26px">${r[0]}</div>
-        <div style="flex:1"><div class="card-t" style="font-size:14px">${r[1]}</div><div style="font-size:12px;color:var(--t3);margin-top:2px">${r[2]}</div></div>
-        <div class="flex" style="gap:6px"><button class="btn btn-soft btn-sm" data-rep="${r[1]}" data-fmt="PDF">PDF</button><button class="btn btn-soft btn-sm" data-rep="${r[1]}" data-fmt="Excel">Excel</button><button class="btn btn-soft btn-sm" data-rep="${r[1]}" data-fmt="PPT">PPT</button></div>
-      </div>`).join('')}
-    </div>
-    <div style="margin-top:16px">${ui.aiBox('Cada reporte respeta tu rol y alcance: un Responsable de Sucursal exporta lo suyo; un Director, toda la marca.','Exportación por permiso')}</div>`;
+
+  return `${ui.ph('Reportes','Entregables operativos reales por periodo, país y sucursal')}${CX.cliUI.personaBarHTML()}${renderRoot()}`;
 });
 
 /* ============== Mi Programa (cuestionario con pesos + simulador) ============== */
