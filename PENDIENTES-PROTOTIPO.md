@@ -2,6 +2,17 @@
 
 Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
 
+## Corte 1 — HR viva, coherencia y reportes — 2026-07-20
+
+- El freeze está bloqueado por la validación visual de Paula.
+- KPI y detalle deben consumir la misma revisión HR y las mismas facets.
+- El cambio de periodo debe actualizar Dashboard, Panorama, Histórico, detalle y reportes.
+- En administración, exportar/imprimir debe generar el reporte específico, no imprimir la página.
+- La personalización debe permitir agregar, quitar, reordenar y renombrar columnas.
+- Reportes por rol deben usar logo, colores y tipografía del tenant, con gráficas cuando la fuente lo permita.
+- Fuente completa: `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE1-20260720.md`.
+- No solicitar una nueva candidata por rutina; primero se valida el mismo Corte 1 con lectura HR viva.
+
 ## Addendum R4 — importadores source-safe — 2026-07-11
 
 - Agregar vista de dry-run separada para pagos y certificaciones.
@@ -106,27 +117,13 @@ Fuente puente: `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
 - Ajustar copy cuando cero visitas fueron procesadas.
 - Normalizar retorno futuro a `processed/reviewRequired`.
 
-
 ## R14 Finanzas reales TyA — impacto Claude
 
 - Sin P0 frontend nuevo.
 - Mantener abiertos únicamente los P1 de pagos ya documentados; no convertir liquidación o día planificado en pago confirmado.
-
 
 ## R14C Finanzas reales TyA — impacto Claude
 
 - Sin P0 nuevo.
 - Mantener copy honesto: liquidación y fecha planificada no confirman pago.
 - Los casos backend en reviewQueue no deben mostrarse como pagados.
-
-
-## R15 Firebase DEV — impacto Claude
-
-- Sin P0 nuevo.
-- Mantener copy honesto: un entorno DEV creado/vacío no implica backend operativo ni producción.
-
-
-## R15B Firebase DEV — impacto Claude
-
-- Sin P0 nuevo.
-- Mantener copy honesto: proyecto creado/vacío no equivale a backend operativo.
