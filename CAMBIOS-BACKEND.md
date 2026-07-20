@@ -1,5 +1,29 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-20 — Corte 1A lectura HR viva runtime y eliminación de snapshot como verdad operativa
+
+- La validación visual de Paula bloqueó el freeze de Corte 1 por inconsistencias entre KPI, detalle, reportes y cambio de periodo.
+- Se demostró la causa raíz: `tools/release/tya-r21-build-and-gates.sh` reutilizaba por defecto un `FROZEN_SOURCE_URL`, validaba conteos fijos del snapshot aprobado y el adapter declaraba `runtimeSyncActive:false`.
+- Se creó `backend/contracts/phase-a-live-hr-runtime-read-v1.json`: lectura server-side, source-safe, sin workbook crudo en navegador, sin conteos fijos y con una sola revisión para KPI/detalle/reportes.
+- Se creó `tools/qa/tya-live-hr-read-probe-gate.mjs` y `.github/workflows/cxorbia-phase-a-live-hr-read-probe.yml`.
+- El probe read-only pasó en el commit `de508a8b60f63b60fae0aacf4a8fc464e164c4d9` con estado `cxorbia/live-hr-read-probe: success`.
+- Se creó el servicio source-safe `backend/runtime/hr-live-service/` con endpoint JSON/JS/meta, cache corto, no-store, revisión SHA-256 y cero escrituras.
+- Se creó `app/adapters/tya-live-source-refresh-watch.js`: refresco por foco/visibilidad y sondeo; si cambia la revisión recarga el contexto, y si falla muestra estado degradado, sin fallback silencioso.
+- Se creó `tools/release/tya-source-safe-live-binding-build-r22.mjs`: reutiliza el adapter canónico y sustituye únicamente en el build el payload local congelado por el endpoint live same-origin.
+- Se creó `.github/workflows/cxorbia-phase-a-live-hr-runtime-predeploy.yml`; pasó en `4db471e8852f85444843862bb0c8fd453873af30` con `cxorbia/live-hr-runtime-predeploy: success`, sin deploy.
+- Se preparó `.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml`, bloqueado por `backend/config/phase-a-live-hr-runtime-deploy-request-v1.json` hasta autorización expresa de Paula.
+- Se actualizó el checkpoint a `CORTE_1_VISUAL_FAIL_LIVE_HR_RUNTIME_REQUIRED`.
+- No se modificó ningún archivo de `app/modules/**` ni la lógica UI del prototipo.
+- Estado seguro: sin merge, producción, import real, HR/Firestore/Auth/Storage writes, Make/Gemini live ni pagos. El deploy Cloud Run DEV y Hosting DEV no se ejecutó.
+
+### Clasificación
+
+- **Reusable CXOrbia:** endpoint live source-safe, revisión/frescura, un solo adapter canónico, watcher por revisión y gates sin conteos fijos.
+- **Exclusivo cliente:** configuración HR TyA/Cinépolis y su mapeo de pestañas/columnas.
+- **Claude/prototipo:** constructor y branding de reportes por tenant; exportación del reporte en vez de imprimir la página; copy de fuente vencida.
+- **Academia:** diferencia entre lectura viva, snapshot, sincronización y estado degradado; uso de reportes por rol.
+- **Sin impacto Claude:** servicio runtime, probe, predeploy, deploy gate y contratos.
+
 ## 2026-07-16 — Fast-lane atómico y corrección proyecto/periodo TyA
 
 - Se diagnosticó la causa raíz del reproceso recurrente de empalmes: una promoción podía aplicar parcialmente una candidata y conservar archivos runtime anteriores mediante exclusiones silenciosas.
@@ -78,54 +102,3 @@
 - Confirmacion de foco: seguimos en Phase A TyA, con HR como fuente operacional, informacion real/source-safe para implementacion controlada, junio como liquidaciones/pagos y certificaciones ya presentadas preservadas.
 - Condiciones antes de futuro DEV: decision de smoke aceptable, autorizacion explicita de Paula, base nueva limpia, secrets fuera del repo, punto unico `CX.data`, no reescritura de UI/core desde backend, fuente TyA source-safe, Cinépolis configurado por proyecto, rollback, auditoria, impacto Claude y Academia documentados.
 - Impacto backend reusable: patron por tenant/proyecto para separar smoke, DEV, runtime, import, proveedores y produccion; mantiene gates, rollback, auditoria y estados honestos.
-- Impacto Claude/prototipo: mostrar DEV como pendiente hasta autorizacion; no afirmar Firestore/Auth/Storage/Make/Gemini/HR sync/pagos activos; mantener Cinépolis como proyecto configurable y datos TyA como source-safe o pendiente.
-- Impacto Academia: cubrir DEV vs staging vs produccion, base nueva limpia, `CX.data`, gates, fuente source-safe, preservacion de certificaciones, revision de conflictos, liquidaciones/pagos y no exponer datos privados.
-- Estado seguro: documentacion/contrato solamente. Sin cambios en `/app/modules`, sin cambios en `/app/core`, sin DEV activo, sin runtime, sin builder, sin imports, sin writes, sin Firestore/Auth/Storage/HR, sin Make/Gemini, sin deploy, sin produccion, sin pagos reales y sin datos sensibles.
-- Nota de herramienta: la creacion del changelog detallado fue bloqueada por controles de herramienta; se creo una nota breve segura `DEV-CONDITIONS-NOTE-TYA-20260709.md` y este `CAMBIOS-BACKEND.md` conserva el registro completo.
-- Commits: `3388e27dced620bc73567f9874da7a0d0e032808`, `5eb6db9b7cac703c241666c3dba44a32691c8a2c`, `711ad166211555bcaabaed46a919c778bb1f36e0`.
-
-## 2026-07-09 - Phase A GO/NO GO decision pack TyA
-
-- Se agrego `backend/contracts/phase-a-go-nogo-decision-pack-v1.json`.
-- Se agrego `app/docs/PHASE-A-GO-NOGO-DECISION-PACK-TYA-20260709.md`.
-- Se agrego `app/docs/DECISION-PACK-CHANGELOG-TYA-20260709.md`.
-- Objetivo: preparar la logica documental de decision `GO`, `GO_WITH_WARNINGS`, `NO_GO` o `HOLD` para una validacion humana futura, sin ejecutar smoke ni activar runtime.
-- Regla central: un resultado visual positivo no equivale a merge, deploy, produccion, runtime switch, imports, writes, Make/Gemini live, HR sync real ni pagos reales.
-- Impacto Phase A: permite convertir el futuro smoke humano en decision controlada y evita que `NO_GO` cause reproceso Level 0/1 o redisenos amplios.
-- Impacto backend reusable: patron reusable de decision por tenant/proyecto con hard stops, evidencia source-safe, autorizaciones separadas y antirreproceso.
-- Impacto TyA/Cinépolis: junio se mantiene como liquidaciones/pagos y Cinépolis como proyecto configurable, no producto global.
-- Impacto Claude/prototipo: debe representar GO/warnings/blockers con copy honesto; GO visual no activa providers, no importa, no paga y no sincroniza HR.
-- Impacto Academia: explicar decision GO/NO GO/HOLD, diferencia smoke/readiness/runtime/produccion, warnings, blockers, evidencia segura y antirreproceso.
-- Estado seguro: documentacion/contrato solamente. Sin cambios en `/app/modules`, sin cambios en `/app/core`, sin smoke ejecutado, sin computador solicitado, sin runtime, sin builder, sin imports, sin writes, sin Firestore/Auth/Storage/HR, sin Make/Gemini, sin deploy, sin produccion, sin pagos reales y sin datos sensibles.
-- Nota de herramienta: la creacion del changelog detallado con el nombre `CAMBIOS-PHASE-A-GO-NOGO-DECISION-PACK-TYA-20260709.md` fue bloqueada por controles de herramienta; se creo alternativa segura `DECISION-PACK-CHANGELOG-TYA-20260709.md` y este `CAMBIOS-BACKEND.md` conserva el registro completo.
-- Commits: `75cb6b22831f452aae5c0fbe840bd976a9266f66`, `22f2bafebafe7587b411eb57b293cc0ef172752d`, `b29b5f0e23818e5da18f5793b745deda000bfc77`.
-
-## 2026-07-09 - Phase A human smoke precheck pack TyA
-
-- Se agrego `backend/contracts/phase-a-human-smoke-precheck-pack-v1.json`.
-- Se agrego `app/docs/PHASE-A-HUMAN-SMOKE-PRECHECK-PACK-TYA-20260709.md`.
-- Se agrego `app/docs/CAMBIOS-PHASE-A-HUMAN-SMOKE-PRECHECK-PACK-TYA-20260709.md`.
-- Objetivo: preparar el precheck para smoke humano/consola de RC Phase A controlada, sin pedir ejecucion todavia, sin activar runtime y sin repetir Level 0/1.
-- Rutas criticas definidas: login/admin shell, navegacion base, dashboard, postulaciones/asignaciones, reservas/visitas, cuestionario shopper, finanzas/liquidaciones/pagos, Academia, Diagnostico/Readiness y Administrabilidad.
-- Criterios GO: rutas criticas abren, sin pantalla blanca, sin errores JS criticos, copy honesto, Academia administrable o pendiente honesto, readiness preview/source-safe/gate-off, pagos como control administrativo, Cinépolis no hardcode global.
-- Criterios NO GO: pantalla blanca, errores JS criticos, rutas criticas bloqueadas, guard rompiendo render, copy de envio/sync/import/pago real sin gate, datos sensibles visibles, activacion de proveedores reales sin GO, junio tratado como visitas pendientes o Cinépolis como producto global.
-- Impacto Phase A: deja listo el filtro humano minimo antes de decidir RC controlada, enfocado en operacion real TyA y no en infraestructura abstracta.
-- Impacto backend reusable: patron reusable de smoke humano, GO/NO GO estructurado, copy honesto, gates apagados y verificacion multi-tenant.
-- Impacto Claude/prototipo: rutas smokeables, estados visibles honestos, Academia administrable, readiness no productivo y no hardcode Cinépolis.
-- Impacto Academia: manual/checklist de smoke humano, GO/NO GO, errores de consola, preview/gate/runtime/import/produccion, revision humana y liquidaciones/pagos como control.
-- Estado seguro: documentacion/contrato solamente. Sin cambios en `/app/modules`, sin cambios en `/app/core`, smoke no ejecutado, no se pidio PowerShell/computador, sin runtime, sin builder, sin imports, sin writes, sin Firestore/Auth/Storage, sin HR writes, sin Make/Gemini, sin deploy, sin produccion, sin pagos reales y sin datos sensibles.
-- Commits: `4c7f3b95960ecd9798e237f29ea5dd8ff888586b`, `0c785345e20464cf78b7f6935aa790acf073ddce`, `05093e714ff2e14f8d4ff9ccd6df8ab625aa59b8`.
-
-## 2026-07-09 - Paquete acumulado Claude/Pendientes/Academia Phase A TyA
-
-- Se agrego `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
-- Se actualizo `RESUMEN-PARA-CLAUDE.md`.
-- Se actualizo `PENDIENTES-PROTOTIPO.md`.
-- Objetivo: completar el puente acumulado para Claude/prototipo/Academia desde los documentos recientes, sin tocar UI, sin pedir ejecucion local y sin reiniciar pendientes ni metodologia.
-- Contenido protegido para Claude: PR #7 draft/open/no merge, sin deploy, sin produccion, sin runtime, sin imports, sin Firestore/Auth/Storage writes, sin HR writes, sin Make/Gemini live, sin pagos reales y sin output local commiteado.
-- Foco Phase A: HR fuente operacional, datos reales/sanitizados TyA, shoppers historicos, certificaciones ya presentadas, junio como liquidacion/pago, Cinépolis proyecto configurable, multi-proyecto, cuestionario configurable y conflictos a revision humana con llaves estables.
-- Pendientes P0 para Claude: copy honesto de gates, Academia profunda/administrable, representacion de Phase A real TyA sin prometer imports/runtime/integraciones reales.
-- Pendientes P1 para Claude: readiness dashboard source-safe, proyecto configurable sin hardcode Cinépolis, Mis beneficios/liquidaciones/pagos con honorario-boleto-combo-lote-movimientos, postulaciones/asignaciones con conflictos a revision.
-- Academia debe cubrir: Phase A vs produccion, preview/dry-run/gate/runtime/import, HR fuente operacional, shoppers/certificaciones preservadas, asignaciones/conflictos, liquidaciones/pagos, administracion de Academia, Gemini con revision humana, Make/HR preparado y readiness dashboard.
-- No tocar: `tools/`, `tools/migration/`, `tools/contracts/`, `backend/contracts/`, `.github/workflows/`, reglas reales, secrets, datos sensibles, `.tmp/` ni integraciones reales.
-- Estado seguro: documento puente solamente. No toca `/app/modules` ni `/app/core`, no activa runtime, no ejecuta builder, no importa datos, no escribe Firestore/Auth/Storage/HR, no activa Make/Gemini, no hace deploy, no hace pagos reales y no agrega datos sensibles.
