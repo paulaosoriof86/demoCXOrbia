@@ -44,6 +44,12 @@ const trustedHostingEvidence=new Map([
     artifactId:8431164287,
     artifactDigest:'sha256:693d05ecfc4621c02321e13a0caf6f40ac2683356ee0893c02a04f027aa3539a',
     hostingVersion:'projects/87461567267/sites/cxorbia-backend-dev/versions/dbb0c50992aba5e2'
+  }],
+  [29716601804,{
+    workflowCommit:'8950ef47a8dd0e6f86ad368ffb68b2be638accb6',
+    artifactId:8450820491,
+    artifactDigest:'sha256:f207df387fe0449fc8382093097cb9c316746b60fdc42d8feaa67abe098dc96f',
+    buildLabel:'v161c-r21-source-safe-20260719-dev'
   }]
 ]);
 
