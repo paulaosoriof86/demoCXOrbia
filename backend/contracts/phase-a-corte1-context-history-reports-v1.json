@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "id": "phase-a-corte1-context-history-reports-v1",
   "tenantId": "tya",
   "projectId": "cinepolis",
@@ -19,15 +19,22 @@
     "projectKey": "projectId",
     "periodKey": "periodKey",
     "countryKeys": ["pais", "country"],
+    "branchKeys": ["sucursal", "branchName"],
+    "cityKeys": ["ciudad", "city"],
     "visitKey": "id",
     "hrRowKeys": ["hrRowId", "sourceTab", "sourceRow"]
   },
-  "reportDimensions": [
-    "tenantId",
-    "projectId",
-    "periodKey",
-    "country"
-  ],
+  "projectionLevels": {
+    "periodCountry": {
+      "dimensions": ["tenantId", "projectId", "periodKey", "country"],
+      "required": true
+    },
+    "branch": {
+      "dimensions": ["tenantId", "projectId", "periodKey", "country", "branchName", "city"],
+      "required": true,
+      "piiAllowed": false
+    }
+  },
   "reportMeasures": [
     "visits",
     "assigned",
@@ -36,6 +43,57 @@
     "questionnaire",
     "submitted",
     "paymentConfirmed"
+  ],
+  "reportCatalog": [
+    {
+      "id": "executive_operational_summary",
+      "label": "Resumen ejecutivo operativo",
+      "projectionLevel": "periodCountry",
+      "availability": "available",
+      "forbiddenClaims": ["score", "nps", "benchmark"]
+    },
+    {
+      "id": "branch_operational_status",
+      "label": "Estado operativo por sucursal",
+      "projectionLevel": "branch",
+      "availability": "available",
+      "forbiddenClaims": ["scorecard", "weighted_score"]
+    },
+    {
+      "id": "country_coverage",
+      "label": "Cobertura por país",
+      "projectionLevel": "periodCountry",
+      "availability": "available",
+      "forbiddenClaims": ["region"]
+    },
+    {
+      "id": "period_trend",
+      "label": "Tendencia operativa por periodo",
+      "projectionLevel": "periodCountry",
+      "availability": "available",
+      "forbiddenClaims": ["external_benchmark"]
+    },
+    {
+      "id": "action_plans",
+      "label": "Planes de acción",
+      "projectionLevel": null,
+      "availability": "pending_source",
+      "requiredSource": "action_plan_records"
+    },
+    {
+      "id": "training_gaps",
+      "label": "Brechas y capacitación",
+      "projectionLevel": null,
+      "availability": "pending_source",
+      "requiredSource": "questionnaire_section_scores"
+    },
+    {
+      "id": "brand_scorecard",
+      "label": "Scorecard de marca",
+      "projectionLevel": null,
+      "availability": "pending_source",
+      "requiredSource": "validated_questionnaire_scores"
+    }
   ],
   "history": {
     "defaultExcludesLatestActivePeriod": true,
@@ -47,8 +105,11 @@
     "sanitizedFormats": ["json", "csv"],
     "frontendFormatsPending": ["pdf", "xlsx", "pptx"],
     "mustRespectScope": true,
+    "mustRespectReportAvailability": true,
     "mustNotInventScores": true,
-    "mustNotInferPayments": true
+    "mustNotInferPayments": true,
+    "mustNotRelabelCountryAsRegion": true,
+    "pendingSourceBehavior": "disable_export_and_show_pending_source"
   },
   "forbiddenRecordFields": [
     "email",
