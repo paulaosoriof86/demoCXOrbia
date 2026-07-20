@@ -3,56 +3,28 @@
 Fecha: 2026-07-20
 Estado: ACTIVO Y OBLIGATORIO
 
-## Lectura obligatoria
-
-1. Reglas maestras y continuidad.
-2. Addendum de empalme directo y carril file-aware.
-3. Addenda de Academia, patrones reutilizables y antidesvío.
-4. Plan Phase A sin desviación.
-5. `REGLA-PREVALENTE-VALIDACION-VISUAL-DESPUES-DE-CADA-CORTE-20260720.md`.
-6. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`.
-7. Manifest V164 y gates Corte 1.
-8. CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES, Academia, tracker y PR #7.
-
 ## Estado vigente
 
-- Rama: `docs-tya-v6-v71-audit`.
-- PR #7: draft/open/no merge.
-- `ACTIVE_BASELINE`: V161C/R21 hasta aprobación visual.
-- Corte 0B: congelado.
-- V164: integrada, post-gates PASS y build DEV PASS.
-- Estado: `CORTE_1_V164_DEV_PASS_PENDING_VISUAL`.
-
-## Evidencia vigente
-
-- Empalme V164: `f708515a637a3998eefdbe39ef66d37a3f130fb6`.
-- Run técnico `29768206645`: SUCCESS.
-- Artifact técnico `8471655866`.
-- Run DEV `29771355833`: SUCCESS.
+- Rama `docs-tya-v6-v71-audit`.
+- PR #7 draft/open/no merge.
+- V161C/R21 sigue como baseline activa hasta aprobación visual.
+- V164 integrada, gates PASS, build DEV PASS y smoke remoto PASS.
+- Run técnico `29768206645`.
+- Run DEV `29771355833`.
 - Artifact DEV `8473242334`.
-- Build: `v164-corte1-reportes-20260720-dev`.
-
-## Resultado Corte 1
-
-- 14 periodos y 616 visitas.
-- 28 filas periodo/país y 308 filas por sucursal.
-- 611 asignadas, 5 sin asignar, 592 realizadas, 590 cuestionarios y 527 submitidas.
-- 0 pagos confirmados.
+- 14 periodos, 616 visitas.
 - 4 reportes disponibles y 3 pendientes de fuente.
-- JSON, CSV, PDF, XLSX y PPTX listos.
-- Gate frontend estático y runtime: PASS.
-- Gate navegador local y remoto: PASS.
-- 0 blockers, errores de página o consola.
-- Warning no bloqueante: shopper `209/216`.
+- No se requiere otra candidata de Claude.
 
-## Claude, certificaciones y recursos
+## Lectura obligatoria
 
-- No se requiere otra candidata de Claude para Corte 1.
-- Certificaciones: Corte 2 funcional; Corte 6 permisos; Corte 7 sincronización.
-- Recursos: contexto Corte 1; entrega Corte 2; permisos Corte 6; almacenamiento/versionado Corte 7.
+1. Reglas maestras.
+2. Plan Phase A.
+3. Regla visual después de cada corte.
+4. Checkpoint vigente.
+5. Manifest y gates V164.
+6. CAMBIOS, resumen para Claude, pendientes, Academia y tracker.
 
-## Siguiente acción exacta
+Siguiente acción: revisión visual de Paula y freeze Corte 1.
 
-`REVISION VISUAL PAULA -> APROBACION -> FREEZE CORTE 1`
-
-Corte 2 no comienza antes del freeze.
+Corte 2 continúa bloqueado.
