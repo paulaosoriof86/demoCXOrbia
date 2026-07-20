@@ -1,91 +1,118 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
 Fecha: 2026-07-20
-Estado: `CORTE_1_LIVE_HR_DEV_DEPLOY_AUTHORIZED_EXECUTION_BLOCKED_BY_TOOL_LANE`
+Estado: `CORTE_1_LIVE_HR_DEV_DEPLOY_BLOCKED_CLOUD_BUILD_API_DISABLED`
 
 ## Estado comprobado
 
-- Rama: `docs-tya-v6-v71-audit`.
+- Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
+- HEAD funcional de la rama viva antes de este checkpoint: `6845c20d05d1226d27e6f96668c650b78e3ebaf1`.
 - Baseline activa: V161C/R21.
-- V164 continúa integrada como candidata técnica de Corte 1, pero NO se congela.
+- V164 está integrada como candidata técnica de Corte 1, pero NO está congelada.
 - La validación visual de Paula detectó inconsistencias reproducibles entre KPI, detalle, reportes y cambio de periodo.
 - Corte 2 continúa bloqueado.
 
-## Causa raíz demostrada
+## Causa raíz funcional demostrada
 
 El build V164 no usaba la HR como verdad runtime viva:
 
-1. `tools/release/tya-r21-build-and-gates.sh` descargaba por defecto una copia ya publicada desde `FROZEN_SOURCE_URL` y la reutilizaba como payload del build.
-2. Ese gate validaba conteos operativos fijos del snapshot aprobado, por lo que un PASS técnico no demostraba actualidad de la HR.
-3. El adapter generado declaraba expresamente `runtimeSyncActive:false`, `CX_TYA_HR_VIVA_SOURCE_SAFE=false` y `CX_TYA_HR_SNAPSHOT_SOURCE_SAFE=true`.
+1. `tools/release/tya-r21-build-and-gates.sh` reutilizaba por defecto una copia publicada desde `FROZEN_SOURCE_URL`.
+2. El gate validaba conteos fijos del snapshot aprobado.
+3. El adapter declaraba `runtimeSyncActive:false`, `CX_TYA_HR_VIVA_SOURCE_SAFE=false` y `CX_TYA_HR_SNAPSHOT_SOURCE_SAFE=true`.
 
-Los conteos documentados quedan como evidencia histórica de una lectura, nunca como valores fijos para operación continua.
+Los conteos documentados son evidencia histórica de una lectura, nunca constantes operativas.
 
 ## Modelo operacional aclarado por Paula
 
 - Cada proyecto tiene su propia hoja de ruta y configuración de fuente.
-- Los cambios manuales realizados en la hoja de ruta deben reflejarse en CXOrbia.
-- En un bloque posterior y con gate separado de escritura, las automatizaciones de CXOrbia podrán actualizar la hoja de ruta por asignación, agenda, reprogramación, cancelación, cuestionario y otros eventos autorizados.
-- El origen del cuestionario es configurable por proyecto o por visita: CXOrbia, TyAOnline, plataforma externa, enlace general o enlace individual.
-- TyAOnline es únicamente uno de los posibles proveedores de cuestionarios del tenant TyA; no es el propietario ni el sincronizador general de la hoja de ruta.
+- Los cambios manuales en la hoja de ruta deben reflejarse en CXOrbia.
+- Las futuras automatizaciones plataforma→HR requieren un gate separado de escritura y cubrirán asignación, agenda, reprogramación, cancelación, cuestionario y otros eventos autorizados.
+- El cuestionario es configurable por proyecto o visita: CXOrbia, TyAOnline, plataforma externa, enlace general o enlace individual.
+- TyAOnline es solo un posible proveedor de cuestionarios del tenant TyA; no sincroniza de forma general la hoja de ruta.
 
-## Bloque ejecutado
+## Corte 1A preparado y validado
 
-`CORTE 1A — LECTURA HR VIVA SOURCE-SAFE EN RUNTIME + VERDAD CANÓNICA ÚNICA`
+Se crearon y validaron:
 
-Creado y validado:
-
-- `backend/contracts/phase-a-live-hr-runtime-read-v1.json`.
-- `tools/qa/tya-live-hr-read-probe-gate.mjs`.
-- `.github/workflows/cxorbia-phase-a-live-hr-read-probe.yml`.
-- `backend/runtime/hr-live-service/`.
-- `app/adapters/tya-live-source-refresh-watch.js`.
-- `tools/release/tya-source-safe-live-binding-build-r22.mjs`.
+- `backend/contracts/phase-a-live-hr-runtime-read-v1.json`;
+- `tools/qa/tya-live-hr-read-probe-gate.mjs`;
+- `.github/workflows/cxorbia-phase-a-live-hr-read-probe.yml`;
+- `backend/runtime/hr-live-service/`;
+- `app/adapters/tya-live-source-refresh-watch.js`;
+- `tools/release/tya-source-safe-live-binding-build-r22.mjs`;
 - `.github/workflows/cxorbia-phase-a-live-hr-runtime-predeploy.yml`.
 
-Evidencia:
+Evidencia previa:
 
-- `cxorbia/live-hr-read-probe`: `SUCCESS` en `de508a8b60f63b60fae0aacf4a8fc464e164c4d9`.
-- `cxorbia/live-hr-runtime-predeploy`: `SUCCESS` en `4db471e8852f85444843862bb0c8fd453873af30`.
-- El endpoint y el binding fueron probados localmente en CI contra la HR actual, sin conteos fijos y sin deploy.
+- `cxorbia/live-hr-read-probe`: SUCCESS en `de508a8b60f63b60fae0aacf4a8fc464e164c4d9`.
+- `cxorbia/live-hr-runtime-predeploy`: SUCCESS en `4db471e8852f85444843862bb0c8fd453873af30`.
 
-## Autorización DEV
+## Autorización DEV y carril temporal
 
-Paula autorizó expresamente en la conversación actual:
+Paula autorizó expresamente:
 
-1. desplegar el endpoint read-only de HR viva en Cloud Run DEV;
-2. republicar Hosting DEV;
-3. mantener producción, escrituras HR/Firestore, imports y pagos desactivados.
+1. Cloud Run DEV read-only;
+2. republicación de Hosting DEV;
+3. una excepción temporal para alojar el runner en `main`;
+4. cero producción, escrituras HR/Firestore, imports y pagos.
 
-La autorización quedó registrada en `backend/config/phase-a-live-hr-runtime-deploy-request-v1.json`, commit `6d87bbf6330182a03da64fe350032a1c5335dac3`.
+La autorización base está en `backend/config/phase-a-live-hr-runtime-deploy-request-v1.json`, commit `6d87bbf6330182a03da64fe350032a1c5335dac3`.
 
-## Bloqueo de ejecución comprobado
+El runner temporal en `main` sí logró ejecutar Actions y comprobar la rama viva. No se utilizó nueva rama, nuevo PR, PowerShell, blobs/trees ni transporte manual.
 
-El despliegue todavía NO se ejecutó.
+## Bloqueo exacto comprobado
 
-- El conector GitHub disponible en esta sesión no expone una acción para disparar `workflow_dispatch`.
-- El intento de cambiar el workflow para activar el despliegue autorizado por push fue bloqueado por los controles de seguridad de la herramienta.
-- No se intentó evadir ese control mediante blobs, trees, nueva rama, nuevo PR, PowerShell ni otro transportador.
+El endpoint Cloud Run DEV y el nuevo Hosting DEV todavía NO fueron desplegados.
 
-Este es un bloqueo del carril de herramienta, no un bloqueo de la HR, del código, de los predeploy gates ni de la autorización de Paula.
+Evidencia del carril temporal:
+
+- Run `29787418426`: diagnóstico exacto del principal GCP.
+- Principal: service account Firebase Admin SDK del proyecto DEV.
+- `gcloud services list`: `AUTH_PERMISSION_DENIED`.
+- `gcloud services enable`: `AUTH_PERMISSION_DENIED` para Cloud Build, Cloud Run, Firebase Hosting, Container Registry y Artifact Registry.
+- Run `29787549700`: los gates de HR viva y runtime volvieron a pasar; el fallo ocurrió únicamente en `gcloud builds submit`.
+- Error exacto: `cloudbuild.googleapis.com` está deshabilitada o nunca utilizada en el proyecto `cxorbia-backend-dev`.
+- El principal actual no tiene permiso `serviceusage.services.enable`, por lo que no puede habilitarla desde GitHub Actions.
+
+Esto demuestra que el bloqueo ya no es del empalme, de la HR, del código, de los gates ni del trigger de Actions. Es un bloqueo administrativo de Google Cloud: API requerida deshabilitada y principal sin permiso para habilitarla.
+
+## Qué está confirmado y qué no
+
+Confirmado:
+
+- V164 y los overlays/backend de Corte 1A están en la rama viva.
+- El adapter live, el watcher, el servicio read-only y los gates predeploy existen y pasan.
+- La HR actual puede leerse en CI de forma source-safe.
+- No se alteraron `/app/modules/**` ni `/app/core/**` desde backend para resolver este bloqueo.
+
+Aún no confirmado:
+
+- Cloud Run DEV desplegado.
+- rewrite same-origin en Hosting DEV.
+- actualización visible después de un cambio real en HR.
+- coherencia final KPI ↔ modal ↔ histórico ↔ reportes.
+- correcciones de reportes y Panorama.
+- aprobación visual y freeze de Corte 1.
+
+Por tanto, no es correcto afirmar todavía que solo falta revisión visual.
 
 ## Condición de salida
 
-Corte 1 solo puede congelarse cuando:
-
-1. el endpoint DEV lea la HR actual;
-2. `CX.data` cargue una única revisión viva al iniciar;
-3. KPI, detalle, histórico y reportes consuman esa misma revisión y las mismas facets;
-4. una modificación posterior de HR se refleje tras refresco/foco/sondeo;
-5. una fuente vencida se muestre como vencida, sin fallback silencioso;
-6. el build DEV exacto pase smoke y revisión visual de Paula;
-7. los pendientes frontend de reportes queden corregidos o documentados por prioridad.
+1. Un principal autorizado habilita Cloud Build API y las APIs DEV requeridas que continúen deshabilitadas.
+2. Se reejecuta el runner temporal contra `docs-tya-v6-v71-audit`.
+3. Cloud Run DEV y Hosting DEV pasan smoke remoto.
+4. Un cambio posterior de HR se refleja mediante inicio/foco/sondeo.
+5. KPI, detalle, histórico y reportes consumen la misma revisión y facets.
+6. Paula realiza revisión visual.
+7. Se corrigen diferencias reproducibles.
+8. Se elimina el workflow temporal de `main`.
+9. Se congela Corte 1 únicamente con `APROBADO`.
 
 ## Siguiente paso exacto
 
-`EJECUTAR WORKFLOW GATED DE CLOUD RUN DEV + HOSTING DEV DESDE UN CARRIL AUTENTICADO QUE PUEDA DISPARAR ACTIONS → SMOKE REMOTO → PRUEBA DE CAMBIO HR EN VIVO → VALIDACIÓN VISUAL → CORRECCIÓN FOCALIZADA → FREEZE CORTE 1`
+`HABILITAR CLOUD BUILD API EN cxorbia-backend-dev CON UN PRINCIPAL SERVICE USAGE ADMIN → REEJECUTAR RUNNER TEMPORAL → CLOUD RUN DEV → HOSTING DEV → SMOKE REMOTO → PRUEBA DE CAMBIO HR → VALIDACIÓN VISUAL → CORRECCIÓN FOCALIZADA → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
 
 ## Estado seguro
 
-Sin merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos. El endpoint y Hosting DEV no han sido desplegados.
+Sin merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos. Los intentos no alcanzaron Cloud Run ni Hosting DEV.
