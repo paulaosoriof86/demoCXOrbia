@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "phase-a-corte1-context-history-reports-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "activeBaseline": "V161C",
+  "sourceScope": {
+    "sourceSafeRequired": true,
+    "production": false,
+    "imported": false,
+    "periodStart": "2025-06",
+    "periodEnd": "2026-07",
+    "expectedPeriods": 14,
+    "expectedVisits": 616,
+    "countries": ["GT", "HN"]
+  },
+  "identity": {
+    "tenantKey": "tenantId",
+    "projectKey": "projectId",
+    "periodKey": "periodKey",
+    "countryKeys": ["pais", "country"],
+    "visitKey": "id",
+    "hrRowKeys": ["hrRowId", "sourceTab", "sourceRow"]
+  },
+  "reportDimensions": [
+    "tenantId",
+    "projectId",
+    "periodKey",
+    "country"
+  ],
+  "reportMeasures": [
+    "visits",
+    "assigned",
+    "unassigned",
+    "performed",
+    "questionnaire",
+    "submitted",
+    "paymentConfirmed"
+  ],
+  "history": {
+    "defaultExcludesLatestActivePeriod": true,
+    "allVerifiedPeriodsRemainQueryable": true,
+    "countryFilterRequired": true,
+    "periodFilterRequired": true
+  },
+  "exports": {
+    "sanitizedFormats": ["json", "csv"],
+    "frontendFormatsPending": ["pdf", "xlsx", "pptx"],
+    "mustRespectScope": true,
+    "mustNotInventScores": true,
+    "mustNotInferPayments": true
+  },
+  "forbiddenRecordFields": [
+    "email",
+    "mail",
+    "phone",
+    "telefono",
+    "whatsapp",
+    "dpi",
+    "banco",
+    "cuenta",
+    "ctaNum",
+    "direccion",
+    "address"
+  ],
+  "visualGate": {
+    "requiredAfterCut": true,
+    "requiredBeforeFreeze": true,
+    "requiredBeforeNextCut": true
+  }
+}
