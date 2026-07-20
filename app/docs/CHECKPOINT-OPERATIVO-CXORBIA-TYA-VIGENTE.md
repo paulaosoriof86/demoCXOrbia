@@ -1,63 +1,63 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
 Fecha: 2026-07-20
-Estado: `CORTE_1_V163_HOLD_CORRECCION_CLAUDE_REQUERIDA`
+Estado: `CORTE_1_V164_TECHNICAL_PASS_PENDING_HOSTING_DEV_VISUAL`
 
-## Baseline
+## Repositorio y baseline
 
-- Repo `paulaosoriof86/demoCXOrbia`.
-- Rama `docs-tya-v6-v71-audit`.
-- PR #7 draft/open/no merge.
-- `ACTIVE_BASELINE`: V161C/R21.
-- Corte 0B congelado y aprobado visualmente.
+- Repo: `paulaosoriof86/demoCXOrbia`.
+- Rama: `docs-tya-v6-v71-audit`.
+- PR #7: draft/open/no merge.
+- `ACTIVE_BASELINE`: V161C/R21 hasta aprobación visual.
+- Corte 0B: congelado.
+- V164: integrada técnicamente, pendiente de validación visual.
 
-## Corte 1 aprobado antes de frontend
+## Empalme V164
+
+- `HEAD_BEFORE`: `c2ad722ddf7574ba51cc26369c9f532324610646`.
+- Commit: `f708515a637a3998eefdbe39ef66d37a3f130fb6`.
+- Archivos: `cliente-extra.js`, `index.html`, `pptxgenjs.min.js` y `REPORTE-DE-CAMBIOS.md`.
+- Conflictos: ninguno.
+- Manifest: `MANIFEST-V164-CORTE1-REPORTES-EMPALME-DIRECTO-20260720.json`.
+- Verificador: `tools/qa/verify-v164-corte1-reportes-lock.mjs`.
+
+## Post-gates
+
+- Commit técnico: `cf0dbf735522f5ae2ed67d865dfb97d1a37335f2`.
+- Run `29768206645`: SUCCESS.
+- Artifact `8471655866`.
+- Digest `sha256:37d3a6cc41fcd431ec54ca2cea2d306528e29459ddc48e47a5805ab477e600ac`.
+
+PASS:
+
+- frontend consumer;
+- frontend runtime;
+- contexto e histórico;
+- builder de reportes;
+- navegador de reportes;
+- integración R18A;
+- semántica R21 con warning shopper `209/216` preservado.
+
+Resultado:
 
 - 14 periodos y 616 visitas.
-- 28 filas periodo/país y 308 filas periodo/país/sucursal.
-- 611 asignadas, 5 sin asignar, 592 realizadas, 590 cuestionarios, 527 submitidas y 0 pagos confirmados.
-- Run `29727050055`: SUCCESS.
-- Artifact `8454684849`.
+- 28 filas periodo/país y 308 filas de sucursal.
+- 611 asignadas, 5 sin asignar, 592 realizadas, 590 cuestionarios y 527 submitidas.
+- 0 pagos confirmados.
+- 4 reportes disponibles y 3 pendientes de fuente.
+- JSON, CSV, PDF, XLSX y PPTX listos técnicamente.
+- 0 blockers, 0 errores de página y 0 errores de consola.
 
-## Auditoría V163
+## Alcance por rol
 
-- Candidata: `Prototype development request (12).zip`.
-- SHA-256: `73fcffc48f6d897c7b4e701ff6dbc61898ef6c9afe1ea8291d1950f0d8f5cfe0`.
-- Decisión: `HOLD_P0_PROVEN_NO_APPLY`.
-- Evidencia: `app/docs/AUDITORIA-V163-CORTE1-REPORTES-HOLD-20260720.md`.
+- Director: Todos/GT/HN.
+- Regional: fail-closed.
+- Sucursal: cuatro reportes limitados a su `branchName`.
+- Sin `periodKey`: fail-closed.
+- Tendencia: excluye el periodo activo.
 
-Controles que sí pasaron:
+## Siguiente bloque
 
-- cuatro archivos autorizados;
-- sin adapter generado;
-- PptxGenJS local;
-- baseline preservada fuera de `cli_reportes`;
-- histórico completo de cambios preservado;
-- sintaxis Node PASS;
-- cuatro reportes disponibles y tres pendientes para Director;
-- nombres de exportación con alcance.
+`AUTORIZACION HOSTING DEV -> PUBLICAR BUILD EXACTO -> SMOKE REMOTO -> REVISION VISUAL PAULA -> APROBADO -> FREEZE CORTE 1`
 
-P0:
-
-1. El rol Sucursal recibe datos de todo el país en Resumen, Cobertura y Tendencia; solo Estado por sucursal queda acotado.
-2. Si falta `periodKey`, el módulo selecciona silenciosamente `latestPeriod` y puede mostrar otro mes.
-
-P1:
-
-1. Tendencia incluye `latestPeriod` pese a que el contrato exige excluir el periodo activo por defecto.
-2. La coincidencia normalizada de sucursal no exige unicidad.
-
-## Siguiente bloque exacto
-
-```text
-CLAUDE CORRECCION LOCALIZADA V163
--> nueva candidata de cuatro archivos
--> auditoría ChatGPT
--> APPLY_DELTA_DIRECTLY solo si GO sin P0
--> post-gates
--> autorización Hosting DEV
--> revisión visual Paula
--> freeze Corte 1
-```
-
-Corte 2 continúa bloqueado. Sin frontend aplicado, deploy, merge, producción, importaciones ni escrituras reales.
+No se requiere otra candidata de Claude. Corte 2 continúa bloqueado hasta el freeze.
