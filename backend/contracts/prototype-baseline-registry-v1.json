@@ -1,5 +1,5 @@
 {
-  "version": "1.7.0",
+  "version": "1.8.0",
   "updatedAt": "2026-07-19",
   "repository": "paulaosoriof86/demoCXOrbia",
   "integrationBranch": "docs-tya-v6-v71-audit",
@@ -20,7 +20,7 @@
   "currentRuntime": {
     "version": "V161C",
     "runtimeIdentity": "V161C empalmada con contrato canónico R21 y preservaciones TyA",
-    "status": "technical_pass_pending_dev_authorization",
+    "status": "hosting_dev_remote_smoke_pass_pending_visual",
     "sourceZipName": "Prototype development request CXOrbia V161C.zip",
     "sourceZipSha256": "7504b80eed202fff801b1ce39f1028c91dc8446e56670c932042a4fb4a4e74e8",
     "manifestFile": "app/docs/MANIFEST-V161C-EMPALME-DIRECTO-20260719.json",
@@ -32,8 +32,8 @@
     "empalmed": true,
     "active": false,
     "postGatesPassed": true,
-    "hostingDevPassed": false,
-    "remoteSmokePassed": false,
+    "hostingDevPassed": true,
+    "remoteSmokePassed": true,
     "visualValidated": false,
     "production": false,
     "technicalGateEvidence": {
@@ -58,6 +58,33 @@
       "pageErrors": 0,
       "consoleErrors": 0
     },
+    "hostingDevEvidence": {
+      "workflowRun": 29716601804,
+      "workflowCommit": "8950ef47a8dd0e6f86ad368ffb68b2be638accb6",
+      "artifactId": 8450820491,
+      "artifactDigest": "sha256:f207df387fe0449fc8382093097cb9c316746b60fdc42d8feaa67abe098dc96f",
+      "buildLabel": "v161c-r21-source-safe-20260719-dev",
+      "devUrl": "https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible",
+      "decision": "PASS_R21_HOSTING_DEV_AND_REMOTE_SMOKE",
+      "remoteSourceSemantics": "PASS_WITH_WARNING_R21_TYA_SOURCE_SEMANTICS",
+      "remoteRoleAcademySmoke": "PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE",
+      "periods": 14,
+      "visits": 616,
+      "shopperProtectedReferences": 209,
+      "currentPeriodVisits": 44,
+      "currentPeriodAssigned": 39,
+      "currentPeriodUnassigned": 5,
+      "currentPeriodAvailable": 4,
+      "currentPeriodEligibilityBlocked": 1,
+      "countryCounts": {"GT": 476, "HN": 140},
+      "blockers": 0,
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "shopperIdentitiesInvented": 0,
+      "paidConfirmedOrInferred": 0,
+      "production": false,
+      "dataWrites": false
+    },
     "rootFixes": [
       "project_period_identity_separated_at_binding_boundary",
       "canonical_workflow_and_financial_states_preserved",
@@ -71,7 +98,9 @@
       "contract_driven_r20_header_resolution",
       "verified_inventory_cutoff_2025_06_to_2026_07",
       "r21_availability_assignment_and_postulation_eligibility_separated",
-      "tenant_login_project_period_r21_binding_verified"
+      "tenant_login_project_period_r21_binding_verified",
+      "v161c_r21_exact_build_published_to_hosting_dev",
+      "remote_role_and_academy_smoke_passed_without_blockers"
     ]
   },
   "candidate": {
@@ -79,16 +108,16 @@
     "sourceZipSha256": "7504b80eed202fff801b1ce39f1028c91dc8446e56670c932042a4fb4a4e74e8",
     "manifestFile": "app/docs/MANIFEST-V161C-EMPALME-DIRECTO-20260719.json",
     "aggregateSha256": "7075f70822e3fed8442d62b56e1467fa643facd756aa88258ae2d6d6bdc95cdf",
-    "status": "technical_pass_pending_dev_authorization",
+    "status": "hosting_dev_remote_smoke_pass_pending_visual",
     "accepted": true,
     "empalmed": true,
     "active": false,
     "postGatesPassed": true,
-    "hostingDevPassed": false,
-    "remoteSmokePassed": false,
+    "hostingDevPassed": true,
+    "remoteSmokePassed": true,
     "visualValidated": false,
-    "gateDecision": "TECHNICAL_PASS_PENDING_DEV_AUTHORIZATION",
-    "nextRequiredState": "hosting_dev_remote_smoke_pass_pending_visual"
+    "gateDecision": "HOSTING_DEV_AND_REMOTE_SMOKE_PASS_PENDING_VISUAL",
+    "nextRequiredState": "active_baseline_frozen"
   },
   "allowedCandidateStatuses": [
     "pending_audit",
@@ -124,6 +153,6 @@
       "two_active_baselines",
       "hybrid_runtime_unregistered_overlay"
     ],
-    "rollback": "V131 remains the rollback reference while V161C is technically approved and pending Hosting DEV, remote smoke and Paula visual freeze."
+    "rollback": "V131 remains the rollback reference while V161C is published and remotely validated in DEV but still pending Paula's visual freeze."
   }
 }
