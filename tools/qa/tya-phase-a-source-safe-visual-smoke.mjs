@@ -60,12 +60,8 @@ const report = {
   }
 };
 
-function addBlocker(code, detail = null) {
-  report.blockers.push(detail ? `${code}:${detail}` : code);
-}
-function addWarning(code, detail = null) {
-  report.warnings.push(detail ? `${code}:${detail}` : code);
-}
+function addBlocker(code, detail = null) { report.blockers.push(detail ? `${code}:${detail}` : code); }
+function addWarning(code, detail = null) { report.warnings.push(detail ? `${code}:${detail}` : code); }
 function countOf(payload, key) {
   const explicit = Number(payload?.counts?.[key]);
   if (Number.isFinite(explicit)) return explicit;
@@ -83,21 +79,9 @@ function sanitizeConsole(text) {
 }
 
 const roleSpecs = [
-  {
-    id: 'admin',
-    enter: 'admin',
-    expectedModules: ['dashboard', 'proyectos', 'visitas', 'postulaciones', 'cert', 'financiero', 'aprendizaje']
-  },
-  {
-    id: 'cliente',
-    enter: 'cliente',
-    expectedModules: ['cli_dashboard', 'cli_sucursales']
-  },
-  {
-    id: 'shopper',
-    enter: 'shopper',
-    expectedModules: ['visitas', 'cert', 'beneficios', 'aprendizaje']
-  }
+  { id: 'admin', enter: 'admin', expectedModules: ['dashboard', 'proyectos', 'visitas', 'postulaciones', 'cert', 'financiero', 'aprendizaje'] },
+  { id: 'cliente', enter: 'cliente', expectedModules: ['cli_dashboard', 'cli_sucursales', 'cli_reportes'] },
+  { id: 'shopper', enter: 'shopper', expectedModules: ['visitas', 'cert', 'beneficios', 'aprendizaje'] }
 ];
 
 const browser = await chromium.launch({ headless: true });
@@ -144,11 +128,7 @@ async function readSource(page) {
       acc[key] = (acc[key] || 0) + 1;
       return acc;
     }, {});
-    const unsafeVisitCount = visits.filter(visit =>
-      visit?.sourceSafe !== true ||
-      visit?.tenantId !== 'tya' ||
-      visit?.projectId !== 'cinepolis'
-    ).length;
+    const unsafeVisitCount = visits.filter(visit => visit?.sourceSafe !== true || visit?.tenantId !== 'tya' || visit?.projectId !== 'cinepolis').length;
     const rawShopperNameSignals = visits.filter(visit => {
       const value = String(visit?.shopper || '');
       return value && value !== 'Shopper protegido';
@@ -195,10 +175,7 @@ async function moduleInventory(page) {
   return page.evaluate(() => ({
     moduleKeys: Object.keys(window.CX?.modules || {}).map(key => String(key).toLowerCase()).sort(),
     routeKeys: Object.keys(window.CX?.routes || {}).map(key => String(key).toLowerCase()).sort(),
-    navText: Array.from(document.querySelectorAll('#rail button,#rail [data-nav],#rail [data-go],#rail .nav-item'))
-      .map(node => String(node.textContent || '').trim().toLowerCase())
-      .filter(Boolean)
-      .slice(0, 100),
+    navText: Array.from(document.querySelectorAll('#rail button,#rail [data-nav],#rail [data-go],#rail .nav-item')).map(node => String(node.textContent || '').trim().toLowerCase()).filter(Boolean).slice(0, 100),
     dataMode: window.CX?.data?.previewMeta?.sourceSafe === true || window.CX?.dataSource?.mode === 'source_safe_preview',
     currentProjectId: window.CX?.data?.currentProjectId || window.CX_TYA_HR_SOURCE_SAFE?.projectId || null
   }));
@@ -225,14 +202,7 @@ async function tryRoute(page, token) {
     await new Promise(resolve => setTimeout(resolve, 250));
     const view = document.querySelector('#view');
     const text = String(view?.innerText || '').trim();
-    return {
-      token: routeToken,
-      target,
-      attempted: true,
-      rendered: Boolean(view && text.length > 0),
-      textLength: text.length,
-      hasTechnicalPromise: /enviado con éxito|sincronizado con hr|pago ejecutado|publicado automáticamente/i.test(text)
-    };
+    return { token: routeToken, target, attempted: true, rendered: Boolean(view && text.length > 0), textLength: text.length, hasTechnicalPromise: /enviado con éxito|sincronizado con hr|pago ejecutado|publicado automáticamente/i.test(text) };
   }, token);
 }
 
@@ -241,9 +211,7 @@ try {
   const sourcePage = await sourceContext.newPage();
   const sourceConsoleErrors = [];
   const sourcePageErrors = [];
-  sourcePage.on('console', message => {
-    if (message.type() === 'error') sourceConsoleErrors.push(sanitizeConsole(message.text()));
-  });
+  sourcePage.on('console', message => { if (message.type() === 'error') sourceConsoleErrors.push(sanitizeConsole(message.text())); });
   sourcePage.on('pageerror', error => sourcePageErrors.push(sanitizeConsole(error?.message || error)));
   await openSourceSafePage(sourcePage);
   report.source = await readSource(sourcePage);
@@ -262,9 +230,7 @@ try {
   if (report.source.rawShopperNameSignals) addBlocker('raw_shopper_name_signals', String(report.source.rawShopperNameSignals));
   if (!report.source.countryCounts.GT || !report.source.countryCounts.HN) addBlocker('country_coverage_missing');
   if (!report.source.currencyCounts.Q || !report.source.currencyCounts.L) addWarning('currency_coverage_review', JSON.stringify(report.source.currencyCounts));
-  if (report.source.june.visits && report.source.june.withExecutionEvidence !== report.source.june.visits) {
-    addWarning('june_rows_without_execution_evidence', `${report.source.june.visits - report.source.june.withExecutionEvidence}`);
-  }
+  if (report.source.june.visits && report.source.june.withExecutionEvidence !== report.source.june.visits) addWarning('june_rows_without_execution_evidence', `${report.source.june.visits - report.source.june.withExecutionEvidence}`);
   if (sourceConsoleErrors.length) addWarning('source_console_errors', String(sourceConsoleErrors.length));
   if (sourcePageErrors.length) addBlocker('source_page_errors', String(sourcePageErrors.length));
   await sourcePage.screenshot({ path: path.join(outDir, 'source-safe-admin-entry.png'), fullPage: true });
@@ -275,21 +241,9 @@ try {
     const page = await context.newPage();
     const consoleErrors = [];
     const pageErrors = [];
-    page.on('console', message => {
-      if (message.type() === 'error') consoleErrors.push(sanitizeConsole(message.text()));
-    });
+    page.on('console', message => { if (message.type() === 'error') consoleErrors.push(sanitizeConsole(message.text())); });
     page.on('pageerror', error => pageErrors.push(sanitizeConsole(error?.message || error)));
-    const roleResult = {
-      id: spec.id,
-      status: 'pending',
-      sourceSafeMode: false,
-      projectId: null,
-      expectedModules: spec.expectedModules,
-      availableModuleKeys: [],
-      routes: [],
-      consoleErrorCount: 0,
-      pageErrorCount: 0
-    };
+    const roleResult = { id: spec.id, status: 'pending', sourceSafeMode: false, projectId: null, expectedModules: spec.expectedModules, availableModuleKeys: [], routes: [], consoleErrorCount: 0, pageErrorCount: 0 };
     try {
       await openSourceSafePage(page);
       await enterRole(page, spec.enter);
@@ -329,45 +283,8 @@ try {
   await browser.close();
 }
 
-report.blockers = [...new Set(report.blockers)];
-report.warnings = [...new Set(report.warnings)];
-report.decision = report.blockers.length
-  ? 'HOLD_SOURCE_SAFE_VISUAL_SMOKE'
-  : report.warnings.length
-    ? 'PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE'
-    : 'PASS_SOURCE_SAFE_VISUAL_SMOKE';
-report.ok = !report.blockers.length;
-
-fs.writeFileSync(path.join(outDir, 'phase-a-source-safe-visual-smoke-report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
-const md = [
-  '# CXOrbia TyA Phase A — source-safe operational visual smoke',
-  '',
-  `Generated: ${report.generatedAt}`,
-  `Decision: ${report.decision}`,
-  `Tenant/project: ${report.source?.tenantId || 'n/a'} / ${report.source?.projectId || 'n/a'}`,
-  `Counts: ${report.source?.counts?.periods || 0} periods / ${report.source?.counts?.visits || 0} visits / ${report.source?.counts?.shoppers || 0} shoppers`,
-  `Roles tested: ${report.roles.length}`,
-  `Module routes tested: ${report.modules.length}`,
-  `Blockers: ${report.blockers.length}`,
-  `Warnings: ${report.warnings.length}`,
-  '',
-  '## Blockers',
-  ...(report.blockers.length ? report.blockers.map(item => `- ${item}`) : ['- none']),
-  '',
-  '## Warnings',
-  ...(report.warnings.length ? report.warnings.map(item => `- ${item}`) : ['- none']),
-  '',
-  '## Roles',
-  ...report.roles.map(role => `- ${role.id}: ${role.status}; source-safe=${role.sourceSafeMode}; project=${role.projectId}; routes=${role.routes.length}`),
-  '',
-  '## Safe state',
-  '- Source-safe data only',
-  '- No raw PII output',
-  '- No provider writes',
-  '- No Firestore/Auth/Storage/HR writes',
-  '- No import, payment, deploy or production',
-  ''
-].join('\n');
-fs.writeFileSync(path.join(outDir, 'phase-a-source-safe-visual-smoke-report.md'), md, 'utf8');
+report.decision = report.blockers.length ? 'HOLD_SOURCE_SAFE_VISUAL_SMOKE' : report.warnings.length ? 'PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE' : 'PASS_SOURCE_SAFE_VISUAL_SMOKE';
+fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
+fs.writeFileSync(path.join(outDir, 'report.md'), `# Source-safe visual smoke\n\n- Decision: \`${report.decision}\`\n- Blockers: ${report.blockers.length}\n- Warnings: ${report.warnings.length}\n- Roles: ${report.roles.length}\n- Modules checked: ${report.modules.length}\n`, 'utf8');
 console.log(JSON.stringify(report, null, 2));
-if (!report.ok) process.exitCode = 2;
+if (report.blockers.length) process.exit(1);
