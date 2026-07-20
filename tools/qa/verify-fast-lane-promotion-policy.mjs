@@ -24,14 +24,21 @@ const runtime = registry.currentRuntime || {};
 const candidate = registry.candidate || {};
 const rule = registry.promotionRule || {};
 const invariant='empalmedRuntimeVersion == candidateVersion; activeBaselineVersion advances only after postGatesAndVisualFreeze';
+const technicalPassState='technical_pass_pending_dev_authorization';
 const visualPendingState='hosting_dev_remote_smoke_pass_pending_visual';
 
 if(registry.invariant !== invariant) fail('promotion transition invariant changed');
 if(active.status !== 'active_baseline_frozen' || active.active !== true || active.visualValidated !== true) fail('last frozen baseline is not preserved');
 if(runtime.accepted !== true || runtime.empalmed !== true) fail('current runtime is not physically accepted and empalmed');
 if(runtime.version !== candidate.version || runtime.sourceZipSha256 !== candidate.sourceZipSha256) fail('current runtime differs from candidate');
-if(!['empalmed_pending_post_gates',visualPendingState,'active_baseline_frozen'].includes(runtime.status)) fail(`unsupported runtime state: ${runtime.status}`);
+if(!['empalmed_pending_post_gates',technicalPassState,visualPendingState,'active_baseline_frozen'].includes(runtime.status)) fail(`unsupported runtime state: ${runtime.status}`);
 if(runtime.status === 'empalmed_pending_post_gates' && (runtime.active !== false || runtime.visualValidated !== false || runtime.postGatesPassed !== false)) fail('pre-gate runtime falsely claims completed evidence');
+if(runtime.status === technicalPassState){
+  if(runtime.active !== false || runtime.visualValidated !== false || runtime.postGatesPassed !== true) fail('technical-pass runtime transition evidence mismatch');
+  if(runtime.hostingDevPassed !== false || runtime.remoteSmokePassed !== false) fail('technical-pass runtime falsely claims Hosting DEV or remote smoke');
+  if(candidate.status !== technicalPassState || candidate.postGatesPassed !== true || candidate.visualValidated !== false || candidate.hostingDevPassed !== false || candidate.remoteSmokePassed !== false) fail('candidate technical-pass state mismatch');
+  if(runtime.technicalGateEvidence?.workflowRun !== 29712762494 || runtime.technicalGateEvidence?.blockers !== 0) fail('technical-pass evidence mismatch');
+}
 if(runtime.status === visualPendingState){
   if(runtime.active !== false || runtime.visualValidated !== false || runtime.postGatesPassed !== true) fail('visual-pending runtime transition evidence mismatch');
   if(runtime.hostingDevPassed !== true || runtime.remoteSmokePassed !== true) fail('visual-pending runtime lacks Hosting DEV or remote smoke PASS');
