@@ -2,6 +2,7 @@
 
 Fecha: 2026-07-19
 Estado: `HOSTING_DEV_R21_AUTHORIZED_EXECUTION_PENDING`
+Estado técnico previo preservado: `TECHNICAL_PASS_PENDING_DEV_AUTHORIZATION`
 
 ## Repositorio
 
@@ -29,9 +30,9 @@ Los post-gates R21 están aprobados. Evidencia técnica:
 
 La última `ACTIVE_BASELINE` congelada sigue siendo V131 como rollback. V161C no será `ACTIVE_BASELINE` hasta completar Hosting DEV, smoke remoto, validación visual de Paula y freeze explícito de Corte 0B.
 
-## Intento de Hosting DEV
+## Intentos de Hosting DEV
 
-El run `29716367170` pasó autorización y source lock, pero se detuvo antes del deploy porque el gate de atomicidad exigía que este checkpoint registrara literalmente la frontera `ACTIVE_BASELINE`. No hubo publicación parcial. La precondición documental queda corregida aquí.
+Los runs `29716367170` y `29716484448` pasaron autorización y source lock, pero se detuvieron antes del deploy por precondiciones literales del gate de atomicidad en este checkpoint. No hubo publicación parcial. Quedan registradas tanto la frontera `ACTIVE_BASELINE` como el estado técnico previo exigido por el contrato.
 
 ## Siguiente bloque exacto
 
