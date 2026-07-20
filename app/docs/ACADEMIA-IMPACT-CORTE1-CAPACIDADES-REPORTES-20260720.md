@@ -1,31 +1,41 @@
-# ACADEMIA IMPACT — CORTE 1.2 CAPACIDADES DE REPORTES
+# ACADEMIA IMPACT — CORTE 1.2 REPORTES V164
 
 Fecha: 2026-07-20
-Estado: `CONTENT_READY_FOR_FRONTEND_DELTA`
+Estado: `TECHNICAL_CONTENT_READY_PENDING_VISUAL`
+
+## Contenido confirmado
 
 Academia debe explicar:
 
 - diferencia entre proyecto, periodo, país y sucursal;
 - origen source-safe y datos protegidos;
-- por qué un reporte puede estar disponible o pendiente de fuente;
-- cómo cambiar periodo y país modifica el reporte;
-- diferencia entre resumen operativo, estado por sucursal, cobertura y tendencia;
-- por qué no se muestra score, NPS, benchmark, planes o brechas sin fuente validada;
-- cómo exportar PDF, Excel y presentación;
-- cómo verificar el alcance antes de compartir un archivo;
-- diferencia entre “Ver como” y permiso real de Auth/RBAC.
+- diferencia entre reporte disponible y pendiente de fuente;
+- cambio de periodo y país;
+- resumen operativo, estado por sucursal, cobertura y tendencia;
+- por qué no se muestran score, NPS, benchmark, planes o brechas sin fuente validada;
+- exportación PDF, Excel y presentación;
+- verificación del alcance antes de compartir un archivo;
+- diferencia entre “Ver como” y Auth/RBAC real.
 
 ## Rutas por rol
 
-- Director: proyecto/periodo y país opcional.
-- Regional: pendiente hasta mapping regional estable.
-- Sucursal: solo cuando el scope resuelve a una sucursal estable.
+- Director: proyecto/periodo y Todos/GT/HN.
+- Regional: reportes bloqueados hasta mapping estable.
+- Sucursal: reportes limitados a su `branchName`.
+- Sin periodo verificable: estado fail-closed.
+
+## Fixes reutilizables
+
+- Los formatos usan una única proyección.
+- El periodo activo se excluye de Tendencia por defecto.
+- La resolución de sucursal exige coincidencia estable y única.
+- Reportes sin fuente permanecen visibles pero deshabilitados con explicación.
 
 ## Certificaciones y recursos
 
-- Certificaciones se profundizan en Corte 2 y permisos en Corte 6.
-- Recursos se contextualizan desde Corte 1 y se entregan por visita en Corte 2.
+- Certificaciones: cierre funcional Corte 2, permisos Corte 6 y sincronización Corte 7.
+- Recursos: contexto Corte 1, entrega por visita Corte 2, permisos Corte 6 y almacenamiento/versionado Corte 7.
 
-## Revisión visual
+## Revisión visual pendiente
 
-Al cerrar Corte 1, Paula debe revisar Reportes, histórico, fuente, cambio de periodo, exportaciones y contenido asociado de Academia.
+Paula debe revisar Reportes, Histórico, selector de país, roles, archivos exportados y contenido relacionado de Academia antes del freeze de Corte 1.
