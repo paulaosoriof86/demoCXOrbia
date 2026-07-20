@@ -19,7 +19,19 @@ const active=registry.activeBaseline||{};
 const runtime=registry.currentRuntime||{};
 const candidate=registry.candidate||{};
 const invariant='empalmedRuntimeVersion == candidateVersion; activeBaselineVersion advances only after postGatesAndVisualFreeze';
+const technicalPassState='technical_pass_pending_dev_authorization';
 const visualPendingState='hosting_dev_remote_smoke_pass_pending_visual';
+const trustedTechnicalEvidence=new Map([
+  ['V161C',{
+    workflowRun:29712762494,
+    workflowCommit:'7acc4e6c18355827df6ed649c3a537db07eec196',
+    artifactId:8449340543,
+    artifactDigest:'sha256:a2e4861610a1928bbf77ce34b790bad1765ff5bda91302669f7d14ad1ee75864',
+    periods:14,
+    visits:616,
+    blockers:0
+  }]
+]);
 const trustedHostingEvidence=new Map([
   [29626385151,{
     workflowCommit:'8cf166eea6a0ebd0b2c6221925671d04865999f0',
@@ -67,6 +79,15 @@ const assertPendingIdentity=()=>{
 if(runtime.status==='empalmed_pending_post_gates'){
   assertPendingIdentity();
   if(runtime.postGatesPassed!==false||candidate.postGatesPassed!==false) fail('pre-gate runtime falsely marks post-gates passed');
+}else if(runtime.status===technicalPassState){
+  assertPendingIdentity();
+  if(runtime.postGatesPassed!==true||candidate.postGatesPassed!==true) fail('technical-pass runtime lacks post-gate PASS');
+  if(runtime.hostingDevPassed!==false||runtime.remoteSmokePassed!==false||candidate.hostingDevPassed!==false||candidate.remoteSmokePassed!==false) fail('technical-pass runtime falsely marks Hosting DEV or remote smoke');
+  const evidence=runtime.technicalGateEvidence||{};
+  const trusted=trustedTechnicalEvidence.get(runtime.version);
+  if(!trusted) fail('technical gate evidence is not trusted');
+  for(const [key,value] of Object.entries(trusted)) if(evidence[key]!==value) fail(`technical gate ${key} evidence mismatch`);
+  if(!checkpoint.includes('TECHNICAL_PASS_PENDING_DEV_AUTHORIZATION')) fail('checkpoint does not record technical PASS boundary');
 }else if(runtime.status===visualPendingState){
   assertPendingIdentity();
   if(runtime.postGatesPassed!==true||candidate.postGatesPassed!==true) fail('visual-pending runtime lacks post-gate PASS');
@@ -91,6 +112,7 @@ console.log(JSON.stringify({
   lastFrozenBaseline:active.version,
   currentRuntime:runtime.version,
   currentRuntimeStatus:runtime.status,
+  trustedTechnicalRun:runtime.technicalGateEvidence?.workflowRun||null,
   trustedHostingRun:runtime.hostingDevEvidence?.workflowRun||null,
   candidate:candidate.version,
   candidateStatus:candidate.status,
