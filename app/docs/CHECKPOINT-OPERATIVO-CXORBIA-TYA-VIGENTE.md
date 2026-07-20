@@ -1,15 +1,14 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
 Fecha: 2026-07-20
-Estado: `CORTE_1_LIVE_HR_DEV_DEPLOY_BLOCKED_CLOUD_BUILD_API_DISABLED`
+Estado: `CORTE_1_LIVE_HR_DEV_DEPLOY_BLOCKED_DEPLOYER_IAM`
 
 ## Estado comprobado
 
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
-- HEAD funcional de la rama viva antes de este checkpoint: `6845c20d05d1226d27e6f96668c650b78e3ebaf1`.
 - Baseline activa: V161C/R21.
-- V164 está integrada como candidata técnica de Corte 1, pero NO está congelada.
+- V164 y los overlays/backend de Corte 1A están integrados en la rama viva, pero Corte 1 NO está congelado.
 - La validación visual de Paula detectó inconsistencias reproducibles entre KPI, detalle, reportes y cambio de periodo.
 - Corte 2 continúa bloqueado.
 
@@ -59,47 +58,53 @@ Paula autorizó expresamente:
 
 La autorización base está en `backend/config/phase-a-live-hr-runtime-deploy-request-v1.json`, commit `6d87bbf6330182a03da64fe350032a1c5335dac3`.
 
-El runner temporal en `main` sí logró ejecutar Actions y comprobar la rama viva. No se utilizó nueva rama, nuevo PR, PowerShell, blobs/trees ni transporte manual.
+El runner temporal en `main` ejecuta Actions contra la rama viva. No se utilizó nueva rama, nuevo PR, PowerShell, blobs/trees ni transporte manual.
 
-## Bloqueo exacto comprobado
+## Reejecución después de habilitar APIs
 
-El endpoint Cloud Run DEV y el nuevo Hosting DEV todavía NO fueron desplegados.
+Paula confirmó que las APIs fueron habilitadas y se reejecutó el run `29787549700`.
 
-Evidencia del carril temporal:
+Resultado del último intento:
 
-- Run `29787418426`: diagnóstico exacto del principal GCP.
-- Principal: service account Firebase Admin SDK del proyecto DEV.
-- `gcloud services list`: `AUTH_PERMISSION_DENIED`.
-- `gcloud services enable`: `AUTH_PERMISSION_DENIED` para Cloud Build, Cloud Run, Firebase Hosting, Container Registry y Artifact Registry.
-- Run `29787549700`: los gates de HR viva y runtime volvieron a pasar; el fallo ocurrió únicamente en `gcloud builds submit`.
-- Error exacto: `cloudbuild.googleapis.com` está deshabilitada o nunca utilizada en el proyecto `cxorbia-backend-dev`.
-- El principal actual no tiene permiso `serviceusage.services.enable`, por lo que no puede habilitarla desde GitHub Actions.
+- checkout/autorización: PASS;
+- autenticación Google Cloud DEV: PASS;
+- gates de lectura HR viva y runtime: PASS;
+- carga del paquete fuente al bucket de Cloud Build: PASS;
+- creación del build: FAIL;
+- Cloud Run deploy: no ejecutado;
+- Hosting DEV: no ejecutado.
 
-Esto demuestra que el bloqueo ya no es del empalme, de la HR, del código, de los gates ni del trigger de Actions. Es un bloqueo administrativo de Google Cloud: API requerida deshabilitada y principal sin permiso para habilitarla.
+Error exacto del run:
+
+`PERMISSION_DENIED: The caller does not have permission` al ejecutar `gcloud builds submit`, autenticado como `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com`.
+
+La API ya no es el bloqueo. El principal de despliegue carece de `cloudbuild.builds.create` y todavía no se ha comprobado que posea todos los permisos posteriores de Cloud Run/actAs/Artifact Registry.
 
 ## Qué está confirmado y qué no
 
 Confirmado:
 
-- V164 y los overlays/backend de Corte 1A están en la rama viva.
+- V164 y Corte 1A están empalmados en la rama viva.
 - El adapter live, el watcher, el servicio read-only y los gates predeploy existen y pasan.
 - La HR actual puede leerse en CI de forma source-safe.
+- Las APIs fueron habilitadas por Paula.
 - No se alteraron `/app/modules/**` ni `/app/core/**` desde backend para resolver este bloqueo.
 
 Aún no confirmado:
 
-- Cloud Run DEV desplegado.
-- rewrite same-origin en Hosting DEV.
-- actualización visible después de un cambio real en HR.
-- coherencia final KPI ↔ modal ↔ histórico ↔ reportes.
-- correcciones de reportes y Panorama.
+- imagen Cloud Run construida;
+- Cloud Run DEV desplegado;
+- rewrite same-origin en Hosting DEV;
+- actualización visible después de un cambio real en HR;
+- coherencia final KPI ↔ modal ↔ histórico ↔ reportes;
+- correcciones de reportes y Panorama;
 - aprobación visual y freeze de Corte 1.
 
-Por tanto, no es correcto afirmar todavía que solo falta revisión visual.
+Por tanto, todavía no es correcto afirmar que solo falta revisión visual.
 
 ## Condición de salida
 
-1. Un principal autorizado habilita Cloud Build API y las APIs DEV requeridas que continúen deshabilitadas.
+1. La cuenta de servicio deployer recibe los roles DEV mínimos para crear builds, desplegar Cloud Run, usar la service identity y leer la imagen.
 2. Se reejecuta el runner temporal contra `docs-tya-v6-v71-audit`.
 3. Cloud Run DEV y Hosting DEV pasan smoke remoto.
 4. Un cambio posterior de HR se refleja mediante inicio/foco/sondeo.
@@ -111,8 +116,8 @@ Por tanto, no es correcto afirmar todavía que solo falta revisión visual.
 
 ## Siguiente paso exacto
 
-`HABILITAR CLOUD BUILD API EN cxorbia-backend-dev CON UN PRINCIPAL SERVICE USAGE ADMIN → REEJECUTAR RUNNER TEMPORAL → CLOUD RUN DEV → HOSTING DEV → SMOKE REMOTO → PRUEBA DE CAMBIO HR → VALIDACIÓN VISUAL → CORRECCIÓN FOCALIZADA → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
+`GRANT DEV DEPLOYER IAM → RERUN TEMPORARY DEPLOY → CLOUD RUN DEV → HOSTING DEV → REMOTE SMOKE → LIVE HR CHANGE TEST → VISUAL REVIEW → FOCUSED FIXES → REMOVE TEMP WORKFLOW → FREEZE CORTE 1`
 
 ## Estado seguro
 
-Sin merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos. Los intentos no alcanzaron Cloud Run ni Hosting DEV.
+Sin merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos. El último intento no alcanzó Cloud Run ni Hosting DEV.
