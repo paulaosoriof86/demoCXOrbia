@@ -1,9 +1,9 @@
 # PHASE A — CHECKPOINT HISTÓRICO SUPERADO
 
-Fecha de reemplazo: 2026-07-18  
+Fecha de reemplazo: 2026-07-19  
 Estado: `SUPERADO_NO_USAR_COMO_ESTADO_OPERATIVO`
 
-Este archivo conserva únicamente su nombre histórico para evitar enlaces rotos. Ya no define baseline, candidata, plan, gates ni siguiente acción.
+Este archivo conserva únicamente su nombre histórico para evitar enlaces rotos. No define baseline, candidata, plan, gates ni siguiente acción.
 
 Fuentes canónicas vigentes:
 
@@ -13,17 +13,17 @@ Fuentes canónicas vigentes:
 4. `backend/contracts/prototype-baseline-registry-v1.json`;
 5. `app/core/build-lock.js`.
 
-Estado resumido al reemplazar este histórico:
+Estado vigente resumido:
 
-- V159 está físicamente empalmada en `docs-tya-v6-v71-audit`;
-- commit de empalme: `d47ea700f7e48a2b0ba31574a84b89c6a20f3449`;
-- estado: `EMPALMED_PENDING_POST_GATES` / `TECHNICAL_PASS_PENDING_VISUAL`;
-- V159 no es todavía `ACTIVE_BASELINE`;
-- la última baseline visual congelada permanece como referencia de rollback hasta que V159 pase gates de runtime, Hosting DEV y revisión visual;
-- no se debe pedir otra candidata ni reabrir el empalme.
+- V161C está empalmada en `docs-tya-v6-v71-audit`;
+- Hosting DEV y smoke remoto R21 pasaron;
+- estado: `HOSTING_DEV_REMOTE_SMOKE_PASS_PENDING_VISUAL`;
+- V131 permanece como `ACTIVE_BASELINE` de rollback;
+- V161C no será baseline activa hasta la validación visual y freeze explícito de Paula;
+- no solicitar nueva candidata ni iniciar Corte 1.
 
 Secuencia vigente:
 
-`V159 EMPALMADA → GATES POST-EMPALME → HOSTING DEV EXACTO → SMOKE REMOTO → VALIDACIÓN VISUAL → ACTIVE_BASELINE`
+`V161C EMPALMADA → POST-GATES PASS → HOSTING DEV PASS → REMOTE SMOKE PASS → VALIDACIÓN VISUAL → ACTIVE_BASELINE`
 
 Estado seguro: sin merge, producción, importaciones reales, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos.
