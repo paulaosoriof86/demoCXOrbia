@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: read
+  statuses: write
 
 concurrency:
   group: cxorbia-phase-a-live-hr-read-probe
@@ -97,3 +98,20 @@ jobs:
             .tmp/live-hr-read-probe
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish probe commit status
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          PROBE_STATE: ${{ job.status }}
+        with:
+          script: |
+            const state = process.env.PROBE_STATE === 'success' ? 'success' : 'failure';
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state,
+              context: 'cxorbia/live-hr-read-probe',
+              description: state === 'success' ? 'Live HR read-only source is fresh and coherent' : 'Live HR read-only probe failed'
+            });
