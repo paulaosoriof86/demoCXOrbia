@@ -13,10 +13,12 @@ on:
       - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15g.mjs'
       - 'tools/release/tya-source-safe-binding-build-r18a.mjs'
+      - 'tools/release/tya-corte1-report-projection-build.mjs'
       - 'tools/qa/tya-r18a-canonical-assets-integration-validate.mjs'
       - 'tools/qa/tya-source-semantics-r21-gate.mjs'
       - 'tools/qa/tya-postulation-eligibility-r21-gate.mjs'
       - 'tools/qa/tya-corte1-context-history-reports-gate.mjs'
+      - 'tools/qa/tya-corte1-report-projection-browser-gate.mjs'
       - 'tools/dev/cxorbia-static-preview-server.mjs'
       - 'backend/contracts/tya-hr-column-map-r20-v1.json'
       - 'backend/contracts/tya-hr-tab-inventory-r20-v1.json'
@@ -43,10 +45,12 @@ on:
       - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15g.mjs'
       - 'tools/release/tya-source-safe-binding-build-r18a.mjs'
+      - 'tools/release/tya-corte1-report-projection-build.mjs'
       - 'tools/qa/tya-r18a-canonical-assets-integration-validate.mjs'
       - 'tools/qa/tya-source-semantics-r21-gate.mjs'
       - 'tools/qa/tya-postulation-eligibility-r21-gate.mjs'
       - 'tools/qa/tya-corte1-context-history-reports-gate.mjs'
+      - 'tools/qa/tya-corte1-report-projection-browser-gate.mjs'
       - 'tools/dev/cxorbia-static-preview-server.mjs'
       - 'backend/contracts/tya-hr-column-map-r20-v1.json'
       - 'backend/contracts/tya-hr-tab-inventory-r20-v1.json'
@@ -96,10 +100,12 @@ jobs:
           node --check tools/release/tya-source-safe-binding-build-r15f.mjs
           node --check tools/release/tya-source-safe-binding-build-r15g.mjs
           node --check tools/release/tya-source-safe-binding-build-r18a.mjs
+          node --check tools/release/tya-corte1-report-projection-build.mjs
           node --check tools/qa/tya-r18a-canonical-assets-integration-validate.mjs
           node --check tools/qa/tya-source-semantics-r21-gate.mjs
           node --check tools/qa/tya-postulation-eligibility-r21-gate.mjs
           node --check tools/qa/tya-corte1-context-history-reports-gate.mjs
+          node --check tools/qa/tya-corte1-report-projection-browser-gate.mjs
           node --check tools/dev/cxorbia-static-preview-server.mjs
           node tools/qa/tya-r18a-canonical-assets-integration-validate.mjs \
             --self-test \
@@ -158,7 +164,7 @@ jobs:
             --frontend app/modules/cliente-extra.js \
             --out .tmp/tya-corte1-context-history-reports
 
-      - name: Generate canonical source-safe DEV adapter in build copy
+      - name: Generate canonical source-safe DEV adapters in build copy
         run: |
           set -euo pipefail
           node tools/release/tya-source-safe-binding-build-r18a.mjs \
@@ -167,6 +173,15 @@ jobs:
           test -s app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
           node --check app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
           grep -Fq 'adapters/tya-phase-a-source-safe-dev-adapter-r18a.js' app/index.html
+          node tools/release/tya-corte1-report-projection-build.mjs \
+            --payload app/data/tya-hr-source-safe-periods.js \
+            --contract backend/contracts/phase-a-corte1-context-history-reports-v1.json \
+            --html app/index.html \
+            --out app/adapters/tya-corte1-report-projection.js \
+            --report-dir .tmp/tya-corte1-report-projection-build
+          test -s app/adapters/tya-corte1-report-projection.js
+          node --check app/adapters/tya-corte1-report-projection.js
+          grep -Fq 'adapters/tya-corte1-report-projection.js' app/index.html
 
       - name: Validate canonical payload and adapter together
         run: |
@@ -182,13 +197,13 @@ jobs:
           npm install --no-save --ignore-scripts playwright@1.61.1
           npx playwright install --with-deps chromium
 
-      - name: Run R21 browser source semantics gate on generated build
+      - name: Run R21 and Corte 1 browser gates on generated build
         env:
           CXORBIA_STATIC_PREVIEW_PORT: '4173'
           CXORBIA_MAX_SOURCE_AGE_HOURS: '24'
         run: |
           set -euo pipefail
-          mkdir -p .tmp/tya-source-semantics-r21
+          mkdir -p .tmp/tya-source-semantics-r21 .tmp/tya-corte1-report-projection-browser
           node tools/dev/cxorbia-static-preview-server.mjs > .tmp/tya-source-semantics-r21/static-server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
@@ -204,6 +219,9 @@ jobs:
           node tools/qa/tya-source-semantics-r21-gate.mjs \
             --base-url 'http://127.0.0.1:4173/app/index.html?cxTyaPhaseA=1&r18d=visible' \
             --out .tmp/tya-source-semantics-r21
+          node tools/qa/tya-corte1-report-projection-browser-gate.mjs \
+            --base-url 'http://127.0.0.1:4173/app/index.html?cxTyaPhaseA=1&r18d=visible' \
+            --out .tmp/tya-corte1-report-projection-browser
 
       - name: Upload source-safe reports
         if: always()
@@ -217,6 +235,8 @@ jobs:
             .tmp/r18a-canonicalization
             .tmp/r20-r21-final-canonical-pass
             .tmp/tya-corte1-context-history-reports
+            .tmp/tya-corte1-report-projection-build
+            .tmp/tya-corte1-report-projection-browser
             .tmp/r18a-binding
             .tmp/r18a-validation
             .tmp/tya-postulation-eligibility-r21
