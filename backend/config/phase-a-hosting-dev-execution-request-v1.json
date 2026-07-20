@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.1.0",
-  "requestId": "CXORBIA-TYA-V161C-R21-HOSTING-DEV-20260719-01",
+  "requestId": "CXORBIA-TYA-V161C-R21-HOSTING-DEV-20260719-02",
   "status": "authorized_once",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-07-19",
@@ -8,7 +8,7 @@
   "scope": "hosting_dev_only",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
-  "baseHead": "27f7f3c3b5a400b604c397153381b39e55bcf9a7",
+  "baseHead": "104a744e2643687306164fffc255d74720785009",
   "authorizedTechnicalGateCommit": "7acc4e6c18355827df6ed649c3a537db07eec196",
   "authorizedTechnicalGateRun": 29712762494,
   "runtimeCodeEquivalentToTechnicalGateCommit": true,
