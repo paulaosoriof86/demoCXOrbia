@@ -19,14 +19,19 @@ on:
       - 'tools/qa/tya-postulation-eligibility-r21-gate.mjs'
       - 'tools/qa/tya-corte1-context-history-reports-gate.mjs'
       - 'tools/qa/tya-corte1-report-projection-browser-gate.mjs'
+      - 'tools/qa/tya-corte1-report-frontend-consumer-acceptance.mjs'
+      - 'tools/qa/tya-corte1-report-frontend-runtime-gate.mjs'
       - 'tools/dev/cxorbia-static-preview-server.mjs'
       - 'backend/contracts/tya-hr-column-map-r20-v1.json'
       - 'backend/contracts/tya-hr-tab-inventory-r20-v1.json'
       - 'backend/contracts/phase-a-live-execution-checkpoint-v1.json'
       - 'backend/contracts/phase-a-postulation-eligibility-r21-v1.json'
       - 'backend/contracts/phase-a-corte1-context-history-reports-v1.json'
+      - 'backend/contracts/phase-a-corte1-report-frontend-consumer-v1.json'
       - 'backend/config/tya-tenant-runtime-profile.source-safe.json'
       - 'app/app.js'
+      - 'app/index.html'
+      - 'app/vendor/pptxgenjs.min.js'
       - 'app/core/config.js'
       - 'app/core/router.js'
       - 'app/modules/visita-detalle.js'
@@ -51,14 +56,19 @@ on:
       - 'tools/qa/tya-postulation-eligibility-r21-gate.mjs'
       - 'tools/qa/tya-corte1-context-history-reports-gate.mjs'
       - 'tools/qa/tya-corte1-report-projection-browser-gate.mjs'
+      - 'tools/qa/tya-corte1-report-frontend-consumer-acceptance.mjs'
+      - 'tools/qa/tya-corte1-report-frontend-runtime-gate.mjs'
       - 'tools/dev/cxorbia-static-preview-server.mjs'
       - 'backend/contracts/tya-hr-column-map-r20-v1.json'
       - 'backend/contracts/tya-hr-tab-inventory-r20-v1.json'
       - 'backend/contracts/phase-a-live-execution-checkpoint-v1.json'
       - 'backend/contracts/phase-a-postulation-eligibility-r21-v1.json'
       - 'backend/contracts/phase-a-corte1-context-history-reports-v1.json'
+      - 'backend/contracts/phase-a-corte1-report-frontend-consumer-v1.json'
       - 'backend/config/tya-tenant-runtime-profile.source-safe.json'
       - 'app/app.js'
+      - 'app/index.html'
+      - 'app/vendor/pptxgenjs.min.js'
       - 'app/core/config.js'
       - 'app/core/router.js'
       - 'app/modules/visita-detalle.js'
@@ -90,9 +100,11 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Validate syntax and isolated regression fixture
+      - name: Validate syntax and isolated regression fixtures
         run: |
           set -euo pipefail
+          node --check app/modules/cliente-extra.js
+          node --check app/vendor/pptxgenjs.min.js
           node --check tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
           node --check tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs
           node --check tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs
@@ -106,12 +118,19 @@ jobs:
           node --check tools/qa/tya-postulation-eligibility-r21-gate.mjs
           node --check tools/qa/tya-corte1-context-history-reports-gate.mjs
           node --check tools/qa/tya-corte1-report-projection-browser-gate.mjs
+          node --check tools/qa/tya-corte1-report-frontend-consumer-acceptance.mjs
+          node --check tools/qa/tya-corte1-report-frontend-runtime-gate.mjs
           node --check tools/dev/cxorbia-static-preview-server.mjs
           node tools/qa/tya-r18a-canonical-assets-integration-validate.mjs \
             --self-test \
             --out .tmp/r18a-self-test
           node tools/qa/tya-postulation-eligibility-r21-gate.mjs \
             --out .tmp/tya-postulation-eligibility-r21
+          node tools/qa/tya-corte1-report-frontend-consumer-acceptance.mjs \
+            --out .tmp/tya-corte1-report-frontend-consumer
+          node tools/qa/tya-corte1-report-frontend-runtime-gate.mjs \
+            --file app/modules/cliente-extra.js \
+            --out .tmp/tya-corte1-report-frontend-runtime
 
       - name: Build live HR source-safe snapshot with the contract-driven R20 mapper
         env:
@@ -237,6 +256,8 @@ jobs:
             .tmp/tya-corte1-context-history-reports
             .tmp/tya-corte1-report-projection-build
             .tmp/tya-corte1-report-projection-browser
+            .tmp/tya-corte1-report-frontend-consumer
+            .tmp/tya-corte1-report-frontend-runtime
             .tmp/r18a-binding
             .tmp/r18a-validation
             .tmp/tya-postulation-eligibility-r21
@@ -259,7 +280,7 @@ jobs:
               state,
               context: 'cxorbia/r18a-r21-corte1-context-history-reports',
               description: state === 'success'
-                ? 'Canonical source and Corte 1 report projection PASS'
-                : 'Canonical source or Corte 1 report projection HOLD',
+                ? 'Canonical source and Corte 1 frontend reports PASS'
+                : 'Canonical source or Corte 1 frontend reports HOLD',
               target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             });
