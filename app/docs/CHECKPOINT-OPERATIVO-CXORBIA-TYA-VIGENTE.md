@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
 Fecha: 2026-07-20
-Estado: `CORTE_1_VISUAL_FAIL_LIVE_HR_RUNTIME_REQUIRED`
+Estado: `CORTE_1_LIVE_HR_RUNTIME_PREDEPLOY_PASS_PENDING_AUTHORIZED_DEV_DEPLOY`
 
 ## Estado comprobado
 
@@ -14,49 +14,76 @@ Estado: `CORTE_1_VISUAL_FAIL_LIVE_HR_RUNTIME_REQUIRED`
 
 ## Causa raíz demostrada
 
-El build V164 no usa la HR como verdad runtime viva:
+El build V164 no usaba la HR como verdad runtime viva:
 
-1. `tools/release/tya-r21-build-and-gates.sh` descarga por defecto una copia ya publicada desde `FROZEN_SOURCE_URL` y la reutiliza como payload del build.
-2. Ese mismo gate valida conteos operativos fijos del snapshot aprobado, por lo que un PASS técnico no demuestra actualidad de la HR.
-3. El adapter generado declara expresamente `runtimeSyncActive:false`, `CX_TYA_HR_VIVA_SOURCE_SAFE=false` y `CX_TYA_HR_SNAPSHOT_SOURCE_SAFE=true`.
+1. `tools/release/tya-r21-build-and-gates.sh` descargaba por defecto una copia ya publicada desde `FROZEN_SOURCE_URL` y la reutilizaba como payload del build.
+2. Ese gate validaba conteos operativos fijos del snapshot aprobado, por lo que un PASS técnico no demostraba actualidad de la HR.
+3. El adapter generado declaraba expresamente `runtimeSyncActive:false`, `CX_TYA_HR_VIVA_SOURCE_SAFE=false` y `CX_TYA_HR_SNAPSHOT_SOURCE_SAFE=true`.
 
-Por ello, los conteos documentados son evidencia histórica de una lectura, no valores que puedan fijarse para operación continua.
+Los conteos documentados quedan como evidencia histórica de una lectura, nunca como valores fijos para operación continua.
 
-## Bloque en ejecución
+## Bloque ejecutado
 
 `CORTE 1A — LECTURA HR VIVA SOURCE-SAFE EN RUNTIME + VERDAD CANÓNICA ÚNICA`
 
-Creado:
+Creado y validado:
 
 - `backend/contracts/phase-a-live-hr-runtime-read-v1.json`.
 - `tools/qa/tya-live-hr-read-probe-gate.mjs`.
 - `.github/workflows/cxorbia-phase-a-live-hr-read-probe.yml`.
+- `backend/runtime/hr-live-service/`.
+- `app/adapters/tya-live-source-refresh-watch.js`.
+- `tools/release/tya-source-safe-live-binding-build-r22.mjs`.
+- `.github/workflows/cxorbia-phase-a-live-hr-runtime-predeploy.yml`.
 
-El probe:
+Evidencia:
 
-- lee la HR actual;
-- no usa conteos operativos fijos;
-- valida frescura, llaves, privacidad y coherencia cuestionario/submitido;
-- genera evidencia source-safe;
+- `cxorbia/live-hr-read-probe`: `SUCCESS` en `de508a8b60f63b60fae0aacf4a8fc464e164c4d9`.
+- `cxorbia/live-hr-runtime-predeploy`: `SUCCESS` en `4db471e8852f85444843862bb0c8fd453873af30`.
+- El endpoint y el binding fueron probados localmente en CI contra la HR actual, sin conteos fijos y sin deploy.
+
+## Runtime preparado
+
+El servicio preparado:
+
+- lee la HR actual desde servidor;
+- expone solo proyección source-safe JSON/JS/meta;
+- usa revisión SHA-256, `no-store` y cache corto;
+- permite refresco al iniciar, al recuperar foco y mediante sondeo controlado;
+- obliga a que KPI, detalle, histórico y reportes consuman una misma revisión;
+- muestra estado degradado si la fuente viva falla, sin presentar el snapshot vencido como listo;
 - no escribe HR, Firestore ni Storage;
-- no importa, no despliega, no paga y no toca producción.
+- no importa, no paga y no toca producción.
+
+## Gate de despliegue
+
+Preparado, pero NO ejecutado:
+
+- `backend/config/phase-a-live-hr-runtime-deploy-request-v1.json`.
+- `.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml`.
+
+Requiere autorización expresa de Paula para desplegar:
+
+1. el endpoint read-only en Cloud Run DEV;
+2. el mismo build en Hosting DEV con rewrite same-origin;
+3. smoke remoto y nueva validación visual.
 
 ## Condición de salida
 
-Corte 1 solo puede volver a validación visual cuando:
+Corte 1 solo puede congelarse cuando:
 
-1. el probe read-only confirme la fuente actual;
-2. exista endpoint server-side source-safe de lectura runtime;
-3. `CX.data` cargue una única revisión viva al iniciar;
-4. KPI, detalle, histórico y reportes consuman esa misma revisión y las mismas facets;
-5. haya refresco por foco y sondeo controlado;
-6. una fuente vencida se muestre como vencida, sin fallback silencioso a snapshot;
-7. el build DEV exacto pase smoke y revisión visual de Paula.
+1. el endpoint DEV lea la HR actual;
+2. `CX.data` cargue una única revisión viva al iniciar;
+3. KPI, detalle, histórico y reportes consuman esa misma revisión y las mismas facets;
+4. una modificación posterior de HR se refleje tras refresco/foco/sondeo;
+5. una fuente vencida se muestre como vencida, sin fallback silencioso;
+6. el build DEV exacto pase smoke y revisión visual de Paula;
+7. los pendientes frontend de reportes queden corregidos o documentados por prioridad.
 
 ## Siguiente paso exacto
 
-`PROBE HR ACTUAL → ENDPOINT DEV READ-ONLY → ADAPTER ÚNICO CX.data LIVE → GATES DINÁMICOS → HOSTING DEV AUTORIZADO → VALIDACIÓN VISUAL`
+`AUTORIZACIÓN CLOUD RUN DEV + HOSTING DEV → DEPLOY GATED → SMOKE REMOTO → PRUEBA DE CAMBIO HR EN VIVO → VALIDACIÓN VISUAL → CORRECCIÓN FOCALIZADA → FREEZE CORTE 1`
 
 ## Estado seguro
 
-Sin merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos. El endpoint y el redeploy DEV requieren gate y autorización separada antes de ejecutarse.
+Sin merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos. El endpoint y Hosting DEV no han sido desplegados.
