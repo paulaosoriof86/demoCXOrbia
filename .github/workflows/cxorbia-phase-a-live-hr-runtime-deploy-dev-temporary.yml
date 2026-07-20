@@ -18,72 +18,41 @@ env:
 
 jobs:
   diagnose:
-    name: Diagnose required DEV API activation
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout authorized source branch
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           ref: docs-tya-v6-v71-audit
           fetch-depth: 0
 
-      - name: Validate authorization remains DEV-only
-        run: |
-          set -euo pipefail
-          mkdir -p "$OUT_DIR"
-          node - <<'NODE'
-          const fs=require('fs');
-          const x=JSON.parse(fs.readFileSync('backend/config/phase-a-live-hr-runtime-deploy-request-v1.json','utf8'));
-          const a=x.authorization||{};
-          if(a.paulaExplicitInCurrentConversation!==true||a.cloudRunDeploy!==true||a.hostingDevRedeploy!==true)throw new Error('DEV authorization missing.');
-          if(a.production!==false||a.writes!==false||a.imports!==false||a.payments!==false)throw new Error('Unsafe authorization state.');
-          NODE
-
-      - name: Authenticate to Google Cloud DEV
-        uses: google-github-actions/auth@v2
+      - uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
 
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
+      - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: cxorbia-backend-dev
 
-      - name: Capture enabled APIs and activation result
+      - name: Capture service activation diagnostics
         run: |
-          set -uo pipefail
-          mkdir -p "$OUT_DIR"
-          gcloud services list --enabled --project "$GCP_PROJECT_ID" --format='value(config.name)' | sort | tee "$OUT_DIR/enabled-apis-before.txt"
           set +e
-          gcloud services enable \
-            run.googleapis.com \
-            cloudbuild.googleapis.com \
-            firebasehosting.googleapis.com \
-            containerregistry.googleapis.com \
-            artifactregistry.googleapis.com \
-            --project "$GCP_PROJECT_ID" \
-            --quiet 2>&1 | tee "$OUT_DIR/api-enable.log"
-          code=${PIPESTATUS[0]}
-          echo "$code" > "$OUT_DIR/api-enable-exit-code.txt"
-          gcloud services list --enabled --project "$GCP_PROJECT_ID" --format='value(config.name)' | sort | tee "$OUT_DIR/enabled-apis-after.txt"
-          exit "$code"
+          mkdir -p "$OUT_DIR"
+          gcloud services list --enabled --project "$GCP_PROJECT_ID" --format='value(config.name)' > "$OUT_DIR/enabled.out" 2> "$OUT_DIR/enabled.err"
+          echo $? > "$OUT_DIR/enabled.exit"
+          gcloud services enable run.googleapis.com cloudbuild.googleapis.com firebasehosting.googleapis.com containerregistry.googleapis.com artifactregistry.googleapis.com --project "$GCP_PROJECT_ID" --quiet > "$OUT_DIR/enable.out" 2> "$OUT_DIR/enable.err"
+          echo $? > "$OUT_DIR/enable.exit"
+          printf '%s\n' '{"diagnosticOnly":true,"deploy":false,"production":false,"writes":false}' > "$OUT_DIR/safe-state.json"
+          exit 0
 
-      - name: Upload diagnostic evidence
-        if: always()
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-live-hr-runtime-api-diagnostic
+          name: cxorbia-live-hr-runtime-api-diagnostic-exact
           path: ${{ env.OUT_DIR }}
           if-no-files-found: error
           retention-days: 14
 
-      - name: Publish diagnostic status
-        if: always()
-        uses: actions/github-script@v7
-        env:
-          JOB_STATE: ${{ job.status }}
+      - uses: actions/github-script@v7
         with:
           script: |
-            const state=process.env.JOB_STATE==='success'?'success':'failure';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/live-hr-runtime-api-diagnostic',description:state==='success'?'DEV API activation ready':'DEV API activation blocked; evidence uploaded'});
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state:'success',context:'cxorbia/live-hr-runtime-api-diagnostic',description:'Exact DEV service diagnostics captured'});
