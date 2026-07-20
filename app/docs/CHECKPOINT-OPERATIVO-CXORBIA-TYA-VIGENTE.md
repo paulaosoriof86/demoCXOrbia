@@ -80,6 +80,13 @@ Corte 1 solo puede congelarse cuando:
 6. el build DEV exacto pase smoke y revisión visual de Paula;
 7. los pendientes frontend de reportes queden corregidos o documentados por prioridad.
 
+## Documentación reconciliada
+
+- `CAMBIOS-BACKEND.md`.
+- `RESUMEN-PARA-CLAUDE.md` y addendum de Corte 1.
+- `PENDIENTES-PROTOTIPO.md` y addendum de Corte 1.
+- Checkpoint vigente.
+
 ## Siguiente paso exacto
 
 `AUTORIZACIÓN CLOUD RUN DEV + HOSTING DEV → DEPLOY GATED → SMOKE REMOTO → PRUEBA DE CAMBIO HR EN VIVO → VALIDACIÓN VISUAL → CORRECCIÓN FOCALIZADA → FREEZE CORTE 1`
