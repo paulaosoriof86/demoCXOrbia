@@ -20,19 +20,17 @@ Estado: ACTIVO Y OBLIGATORIO
 - PR #7: draft/open/no merge.
 - `ACTIVE_BASELINE`: V161C/R21 hasta aprobación visual.
 - Corte 0B: congelado.
-- V164: integrada técnicamente.
-- Estado: `CORTE_1_V164_TECHNICAL_PASS_PENDING_HOSTING_DEV_VISUAL`.
+- V164: integrada, post-gates PASS y build DEV PASS.
+- Estado: `CORTE_1_V164_DEV_PASS_PENDING_VISUAL`.
 
-## Empalme y evidencia
+## Evidencia vigente
 
-- `HEAD_BEFORE`: `c2ad722ddf7574ba51cc26369c9f532324610646`.
-- Commit V164: `f708515a637a3998eefdbe39ef66d37a3f130fb6`.
-- Commit técnico: `cf0dbf735522f5ae2ed67d865dfb97d1a37335f2`.
-- Run `29768206645`: SUCCESS.
-- Artifact `8471655866`.
-- Digest `sha256:37d3a6cc41fcd431ec54ca2cea2d306528e29459ddc48e47a5805ab477e600ac`.
-- Manifest: `MANIFEST-V164-CORTE1-REPORTES-EMPALME-DIRECTO-20260720.json`.
-- Verificador: `tools/qa/verify-v164-corte1-reportes-lock.mjs`.
+- Empalme V164: `f708515a637a3998eefdbe39ef66d37a3f130fb6`.
+- Run técnico `29768206645`: SUCCESS.
+- Artifact técnico `8471655866`.
+- Run DEV `29771355833`: SUCCESS.
+- Artifact DEV `8473242334`.
+- Build: `v164-corte1-reportes-20260720-dev`.
 
 ## Resultado Corte 1
 
@@ -41,9 +39,10 @@ Estado: ACTIVO Y OBLIGATORIO
 - 611 asignadas, 5 sin asignar, 592 realizadas, 590 cuestionarios y 527 submitidas.
 - 0 pagos confirmados.
 - 4 reportes disponibles y 3 pendientes de fuente.
-- JSON, CSV, PDF, XLSX y PPTX listos técnicamente.
+- JSON, CSV, PDF, XLSX y PPTX listos.
 - Gate frontend estático y runtime: PASS.
-- Gate navegador: PASS, sin blockers, warnings ni errores.
+- Gate navegador local y remoto: PASS.
+- 0 blockers, errores de página o consola.
 - Warning no bloqueante: shopper `209/216`.
 
 ## Claude, certificaciones y recursos
@@ -54,6 +53,6 @@ Estado: ACTIVO Y OBLIGATORIO
 
 ## Siguiente acción exacta
 
-`AUTORIZACION HOSTING DEV -> BUILD EXACTO -> SMOKE REMOTO -> REVISION VISUAL PAULA -> APROBADO -> FREEZE CORTE 1`
+`REVISION VISUAL PAULA -> APROBACION -> FREEZE CORTE 1`
 
 Corte 2 no comienza antes del freeze.
