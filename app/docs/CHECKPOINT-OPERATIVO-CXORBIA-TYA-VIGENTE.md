@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
 Fecha: 2026-07-20
-Estado: `CORTE_1_V162_HOLD_CORRECCION_CLAUDE_REQUERIDA`
+Estado: `CORTE_1_V163_HOLD_CORRECCION_CLAUDE_REQUERIDA`
 
 ## Baseline
 
@@ -11,9 +11,7 @@ Estado: `CORTE_1_V162_HOLD_CORRECCION_CLAUDE_REQUERIDA`
 - `ACTIVE_BASELINE`: V161C/R21.
 - Corte 0B congelado y aprobado visualmente.
 
-## Corte 1
-
-El backend y la proyección canónica permanecen aprobados:
+## Corte 1 aprobado antes de frontend
 
 - 14 periodos y 616 visitas.
 - 28 filas periodo/país y 308 filas periodo/país/sucursal.
@@ -21,30 +19,42 @@ El backend y la proyección canónica permanecen aprobados:
 - Run `29727050055`: SUCCESS.
 - Artifact `8454684849`.
 
-## Auditoría V162
+## Auditoría V163
 
-- ZIP SHA-256: `3d7a1462392bc054947e5a0374b905a0a7b00aa2f1a442b785bba4158817e24b`.
+- Candidata: `Prototype development request (12).zip`.
+- SHA-256: `73fcffc48f6d897c7b4e701ff6dbc61898ef6c9afe1ea8291d1950f0d8f5cfe0`.
 - Decisión: `HOLD_P0_PROVEN_NO_APPLY`.
-- Evidencia: `app/docs/AUDITORIA-V162-CORTE1-HOLD-20260720.md`.
+- Evidencia: `app/docs/AUDITORIA-V163-CORTE1-REPORTES-HOLD-20260720.md`.
+
+Controles que sí pasaron:
+
+- cuatro archivos autorizados;
+- sin adapter generado;
+- PptxGenJS local;
+- baseline preservada fuera de `cli_reportes`;
+- histórico completo de cambios preservado;
+- sintaxis Node PASS;
+- cuatro reportes disponibles y tres pendientes para Director;
+- nombres de exportación con alcance.
 
 P0:
 
-1. Adapter generado viejo incluido y cargado como fuente.
-2. Rol Sucursal bloqueado porque no resuelve id a nombre estable.
-3. REPORTE-DE-CAMBIOS truncado y sin histórico anterior.
+1. El rol Sucursal recibe datos de todo el país en Resumen, Cobertura y Tendencia; solo Estado por sucursal queda acotado.
+2. Si falta `periodKey`, el módulo selecciona silenciosamente `latestPeriod` y puede mostrar otro mes.
 
 P1:
 
-- Nombres de exportación sin alcance, con colisión entre Todos y GT/HN.
+1. Tendencia incluye `latestPeriod` pese a que el contrato exige excluir el periodo activo por defecto.
+2. La coincidencia normalizada de sucursal no exige unicidad.
 
 ## Siguiente bloque exacto
 
 ```text
-CLAUDE CORRECCION LOCALIZADA V162
--> nueva candidata de máximo cuatro archivos
+CLAUDE CORRECCION LOCALIZADA V163
+-> nueva candidata de cuatro archivos
 -> auditoría ChatGPT
 -> APPLY_DELTA_DIRECTLY solo si GO sin P0
--> gates
+-> post-gates
 -> autorización Hosting DEV
 -> revisión visual Paula
 -> freeze Corte 1
