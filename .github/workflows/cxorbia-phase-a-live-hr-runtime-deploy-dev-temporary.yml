@@ -87,13 +87,17 @@ jobs:
           runtime_sa="$(node -e "const x=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);if(!x.client_email)process.exit(2);process.stdout.write(x.client_email)")"
           echo "RUNTIME_SERVICE_ACCOUNT=$runtime_sa" >> "$GITHUB_ENV"
 
-      - name: Precheck required enabled APIs without enabling anything
+      - name: Enable only required DEV APIs for the authorized deployment
         run: |
           set -euo pipefail
-          enabled="$(gcloud services list --enabled --format='value(config.name)')"
-          for api in run.googleapis.com cloudbuild.googleapis.com firebasehosting.googleapis.com; do
-            echo "$enabled" | grep -qx "$api" || { echo "Required API not enabled: $api"; exit 2; }
-          done
+          gcloud services enable \
+            run.googleapis.com \
+            cloudbuild.googleapis.com \
+            firebasehosting.googleapis.com \
+            containerregistry.googleapis.com \
+            artifactregistry.googleapis.com \
+            --project "$GCP_PROJECT_ID" \
+            --quiet
 
       - name: Re-run live source and runtime predeploy gates
         env:
