@@ -1,23 +1,21 @@
-# PHASE A BLOCK PROGRESS TRACKER — V161C VALIDACIÓN VISUAL
+# PHASE A BLOCK PROGRESS TRACKER — V161C FREEZE
 
-Fecha: 2026-07-19
+Fecha: 2026-07-20
 
 ## Bloque
 
-`CORTE 0B.5 — VALIDACIÓN VISUAL PAULA`
+`CORTE 0B — MOTOR CANÓNICO HISTÓRICO + TENANT/LOGIN`
 
 ## Resultado
 
-`VISUAL_REVIEW_COMPLETED_WITH_NONBLOCKING_FINDINGS_PENDING_EXPLICIT_APPROVAL`
+`FROZEN_ACTIVE_BASELINE_V161C`
 
-## Comprobado
+## Evidencia
 
-- Login y accesos de validación visibles.
-- Cliente y Academia Cliente renderizados.
-- Operativo y Academia Operativa renderizados.
-- Shopper, postulación, reservas y perfil renderizados.
-- Dashboard Financiero, Liquidaciones y Lotes renderizados.
+- Login, Cliente, Operativo, Shopper, Academia, postulación, reservas, perfil, Finanzas, Liquidaciones y Lotes revisados.
 - No se demostró P0.
+- Paula aprobó con observaciones no bloqueantes.
+- V161C/R21 fue promovida a `ACTIVE_BASELINE`.
 
 ## Observaciones trasladadas
 
@@ -26,8 +24,8 @@ Fecha: 2026-07-19
 - Corte 3: honorarios, tipo local/delegado/regional, regalías, cruce y lotes.
 - Claude/Academia: manual profundo, copy de postulación y perfil protegido humano.
 
-## Estado
+## Siguiente bloque
 
-Corte 0B no se congela sin aprobación explícita. Siguiente transición válida:
+`CORTE 1 — CONTEXTO, HR, HISTÓRICO, REPORTES Y EXPORTACIÓN`
 
-`APROBADO CON OBSERVACIONES NO BLOQUEANTES -> ACTIVE_BASELINE_V161C -> CORTE 1`
+Regla: Corte 1 deberá finalizar con revisión visual de Paula antes de su freeze y antes de iniciar Corte 2.
