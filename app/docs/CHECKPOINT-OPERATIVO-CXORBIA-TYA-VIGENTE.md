@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
 Fecha: 2026-07-20
-Estado: `CORTE_1_LIVE_HR_RUNTIME_PREDEPLOY_PASS_PENDING_AUTHORIZED_DEV_DEPLOY`
+Estado: `CORTE_1_LIVE_HR_DEV_DEPLOY_AUTHORIZED_EXECUTION_BLOCKED_BY_TOOL_LANE`
 
 ## Estado comprobado
 
@@ -21,6 +21,14 @@ El build V164 no usaba la HR como verdad runtime viva:
 3. El adapter generado declaraba expresamente `runtimeSyncActive:false`, `CX_TYA_HR_VIVA_SOURCE_SAFE=false` y `CX_TYA_HR_SNAPSHOT_SOURCE_SAFE=true`.
 
 Los conteos documentados quedan como evidencia histórica de una lectura, nunca como valores fijos para operación continua.
+
+## Modelo operacional aclarado por Paula
+
+- Cada proyecto tiene su propia hoja de ruta y configuración de fuente.
+- Los cambios manuales realizados en la hoja de ruta deben reflejarse en CXOrbia.
+- En un bloque posterior y con gate separado de escritura, las automatizaciones de CXOrbia podrán actualizar la hoja de ruta por asignación, agenda, reprogramación, cancelación, cuestionario y otros eventos autorizados.
+- El origen del cuestionario es configurable por proyecto o por visita: CXOrbia, TyAOnline, plataforma externa, enlace general o enlace individual.
+- TyAOnline es únicamente uno de los posibles proveedores de cuestionarios del tenant TyA; no es el propietario ni el sincronizador general de la hoja de ruta.
 
 ## Bloque ejecutado
 
@@ -42,31 +50,25 @@ Evidencia:
 - `cxorbia/live-hr-runtime-predeploy`: `SUCCESS` en `4db471e8852f85444843862bb0c8fd453873af30`.
 - El endpoint y el binding fueron probados localmente en CI contra la HR actual, sin conteos fijos y sin deploy.
 
-## Runtime preparado
+## Autorización DEV
 
-El servicio preparado:
+Paula autorizó expresamente en la conversación actual:
 
-- lee la HR actual desde servidor;
-- expone solo proyección source-safe JSON/JS/meta;
-- usa revisión SHA-256, `no-store` y cache corto;
-- permite refresco al iniciar, al recuperar foco y mediante sondeo controlado;
-- obliga a que KPI, detalle, histórico y reportes consuman una misma revisión;
-- muestra estado degradado si la fuente viva falla, sin presentar el snapshot vencido como listo;
-- no escribe HR, Firestore ni Storage;
-- no importa, no paga y no toca producción.
+1. desplegar el endpoint read-only de HR viva en Cloud Run DEV;
+2. republicar Hosting DEV;
+3. mantener producción, escrituras HR/Firestore, imports y pagos desactivados.
 
-## Gate de despliegue
+La autorización quedó registrada en `backend/config/phase-a-live-hr-runtime-deploy-request-v1.json`, commit `6d87bbf6330182a03da64fe350032a1c5335dac3`.
 
-Preparado, pero NO ejecutado:
+## Bloqueo de ejecución comprobado
 
-- `backend/config/phase-a-live-hr-runtime-deploy-request-v1.json`.
-- `.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml`.
+El despliegue todavía NO se ejecutó.
 
-Requiere autorización expresa de Paula para desplegar:
+- El conector GitHub disponible en esta sesión no expone una acción para disparar `workflow_dispatch`.
+- El intento de cambiar el workflow para activar el despliegue autorizado por push fue bloqueado por los controles de seguridad de la herramienta.
+- No se intentó evadir ese control mediante blobs, trees, nueva rama, nuevo PR, PowerShell ni otro transportador.
 
-1. el endpoint read-only en Cloud Run DEV;
-2. el mismo build en Hosting DEV con rewrite same-origin;
-3. smoke remoto y nueva validación visual.
+Este es un bloqueo del carril de herramienta, no un bloqueo de la HR, del código, de los predeploy gates ni de la autorización de Paula.
 
 ## Condición de salida
 
@@ -80,16 +82,9 @@ Corte 1 solo puede congelarse cuando:
 6. el build DEV exacto pase smoke y revisión visual de Paula;
 7. los pendientes frontend de reportes queden corregidos o documentados por prioridad.
 
-## Documentación reconciliada
-
-- `CAMBIOS-BACKEND.md`.
-- `RESUMEN-PARA-CLAUDE.md` y addendum de Corte 1.
-- `PENDIENTES-PROTOTIPO.md` y addendum de Corte 1.
-- Checkpoint vigente.
-
 ## Siguiente paso exacto
 
-`AUTORIZACIÓN CLOUD RUN DEV + HOSTING DEV → DEPLOY GATED → SMOKE REMOTO → PRUEBA DE CAMBIO HR EN VIVO → VALIDACIÓN VISUAL → CORRECCIÓN FOCALIZADA → FREEZE CORTE 1`
+`EJECUTAR WORKFLOW GATED DE CLOUD RUN DEV + HOSTING DEV DESDE UN CARRIL AUTENTICADO QUE PUEDA DISPARAR ACTIONS → SMOKE REMOTO → PRUEBA DE CAMBIO HR EN VIVO → VALIDACIÓN VISUAL → CORRECCIÓN FOCALIZADA → FREEZE CORTE 1`
 
 ## Estado seguro
 
