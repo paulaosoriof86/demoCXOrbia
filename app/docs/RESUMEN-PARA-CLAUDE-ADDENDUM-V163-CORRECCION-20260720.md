@@ -1,56 +1,45 @@
-# RESUMEN PARA CLAUDE — CORRECCIÓN V163 CORTE 1.2
+# RESUMEN PARA CLAUDE — CORTE 1.2 CERRADO TÉCNICAMENTE
 
 Fecha: 2026-07-20
-Estado: `CLAUDE_CORRECTION_REQUIRED`
+Estado: `NO_NEW_CLAUDE_PACKAGE_REQUIRED`
 
-## Candidata auditada
+## V164 integrada
 
-- ZIP: `Prototype development request (12).zip`.
-- SHA-256: `73fcffc48f6d897c7b4e701ff6dbc61898ef6c9afe1ea8291d1950f0d8f5cfe0`.
-- Decisión: `HOLD_P0_PROVEN_NO_APPLY`.
+- ZIP auditado: `Prototype development request CXOrbia V164.zip`.
+- SHA-256: `b62a9df4f5e9a20580502e7e971c553af0d2ccac83c82ab8431c509f6a3d8128`.
+- Commit de empalme: `f708515a637a3998eefdbe39ef66d37a3f130fb6`.
+- Conflictos: ninguno.
 
-## Conservar
+## Resultado frontend
 
-- Solo cuatro archivos autorizados.
-- Sin adapter generado.
-- PptxGenJS local.
-- Histórico completo preservado.
-- `rows`, `branchRows`, `catalog`, `report()` y `filter()`.
-- Director con Todos/GT/HN.
-- Cuatro disponibles y tres pendientes.
-- PDF/XLSX/PPTX reales.
-- Nombres con alcance.
-- Sin score, NPS, benchmark ni región inventados.
+- `cli_reportes` consume `window.CX_TYA_CORTE1_REPORTS`.
+- Director: Todos/GT/HN.
+- Regional: fail-closed.
+- Sucursal: los cuatro reportes usan solo su `branchName`.
+- Sin `periodKey`: fail-closed.
+- Tendencia excluye el periodo activo.
+- 4 reportes disponibles y 3 pendientes de fuente.
+- PDF, XLSX y PPTX reales con nombres por alcance.
+- Sin score, NPS, benchmark, región, pagos ni datos inventados.
 
-## Corregir
+## Gates
 
-1. Para `role === 'sucursal'`, los cuatro reportes disponibles deben consumir exclusivamente `branchRows` filtradas por `resolvedBranchName`.
-2. Eliminar el fallback `proj.latestPeriod`; si falta `CX.data.period().periodKey`, fallar cerrado.
-3. Excluir `proj.latestPeriod` de `period_trend` por defecto.
-4. Aceptar coincidencia normalizada de sucursal solo si es única.
+- Run `29768206645`: SUCCESS.
+- Artifact `8471655866`.
+- Frontend consumer: PASS.
+- Frontend runtime: PASS.
+- Navegador: PASS sin blockers, warnings ni errores.
 
-## Evidencia
+## Reutilizable para el prototipo comercializable
 
-Con Miraflores 2 visitas y Oakland 2 visitas, ambas GT:
+- Gate dinámico por rol y alcance.
+- Fail-closed cuando falta periodo o scope estable.
+- Todos los formatos usan la misma proyección.
+- Disponibilidad de formatos declarada por contrato.
+- Gate navegador deriva versión y conteos desde el contrato.
 
-- reporte de sucursal: 2 visitas — correcto;
-- resumen ejecutivo: 34 visitas GT — incorrecto;
-- cobertura: 34 visitas GT — incorrecto;
-- tendencia: 68 visitas GT — incorrecto.
+## Estado
 
-Con contexto junio sin `periodKey`, el módulo selecciona julio por fallback — incorrecto.
+No solicitar otra candidata de Claude para Corte 1. Solo si la revisión visual de Paula detecta una diferencia reproducible se prepara una corrección focalizada.
 
-## Archivos permitidos
-
-- `app/modules/cliente-extra.js`.
-- `app/index.html`.
-- `app/vendor/pptxgenjs.min.js`.
-- `app/REPORTE-DE-CAMBIOS.md`.
-
-No tocar core, contratos, builders, gates, adapters, HR, finanzas, certificaciones ni recursos.
-
-## Entrega
-
-Candidata incremental con los mismos cuatro archivos y pruebas dinámicas de Director, Regional, Sucursal, periodo faltante y tendencia histórica.
-
-No declarar cerrado Corte 1.
+Siguiente paso: Hosting DEV autorizado, smoke remoto y revisión visual antes del freeze.
