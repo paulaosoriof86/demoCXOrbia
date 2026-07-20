@@ -11,56 +11,49 @@ Estado: ACTIVO Y OBLIGATORIO
 4. Plan Phase A sin desviación.
 5. `REGLA-PREVALENTE-VALIDACION-VISUAL-DESPUES-DE-CADA-CORTE-20260720.md`.
 6. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`.
-7. `AUDITORIA-V163-CORTE1-REPORTES-HOLD-20260720.md`.
-8. `RESUMEN-PARA-CLAUDE-ADDENDUM-V163-CORRECCION-20260720.md`.
-9. `PENDIENTES-V163-CORTE1-20260720.md`.
-10. Contratos, CAMBIOS, tracker, Academia y PR #7.
+7. Manifest V164 y gates Corte 1.
+8. CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES, Academia, tracker y PR #7.
 
 ## Estado vigente
 
-- Rama viva: `docs-tya-v6-v71-audit`.
+- Rama: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
-- `ACTIVE_BASELINE`: V161C/R21.
-- Corte 0B congelado y aprobado visualmente.
-- Estado: `CORTE_1_V163_HOLD_CORRECCION_CLAUDE_REQUERIDA`.
+- `ACTIVE_BASELINE`: V161C/R21 hasta aprobación visual.
+- Corte 0B: congelado.
+- V164: integrada técnicamente.
+- Estado: `CORTE_1_V164_TECHNICAL_PASS_PENDING_HOSTING_DEV_VISUAL`.
 
-## Corte 1 aprobado antes de frontend
+## Empalme y evidencia
+
+- `HEAD_BEFORE`: `c2ad722ddf7574ba51cc26369c9f532324610646`.
+- Commit V164: `f708515a637a3998eefdbe39ef66d37a3f130fb6`.
+- Commit técnico: `cf0dbf735522f5ae2ed67d865dfb97d1a37335f2`.
+- Run `29768206645`: SUCCESS.
+- Artifact `8471655866`.
+- Digest `sha256:37d3a6cc41fcd431ec54ca2cea2d306528e29459ddc48e47a5805ab477e600ac`.
+- Manifest: `MANIFEST-V164-CORTE1-REPORTES-EMPALME-DIRECTO-20260720.json`.
+- Verificador: `tools/qa/verify-v164-corte1-reportes-lock.mjs`.
+
+## Resultado Corte 1
 
 - 14 periodos y 616 visitas.
-- 28 filas periodo/país y 308 filas periodo/país/sucursal.
+- 28 filas periodo/país y 308 filas por sucursal.
 - 611 asignadas, 5 sin asignar, 592 realizadas, 590 cuestionarios y 527 submitidas.
 - 0 pagos confirmados.
-- Run `29727050055`: SUCCESS.
-- Artifact `8454684849`.
+- 4 reportes disponibles y 3 pendientes de fuente.
+- JSON, CSV, PDF, XLSX y PPTX listos técnicamente.
+- Gate frontend estático y runtime: PASS.
+- Gate navegador: PASS, sin blockers, warnings ni errores.
+- Warning no bloqueante: shopper `209/216`.
 
-## V163
+## Claude, certificaciones y recursos
 
-- Candidata: `Prototype development request (12).zip`.
-- SHA-256: `73fcffc48f6d897c7b4e701ff6dbc61898ef6c9afe1ea8291d1950f0d8f5cfe0`.
-- Decisión: `HOLD_P0_PROVEN_NO_APPLY`.
-- No se aplicó frontend ni se ejecutó Hosting DEV.
-
-P0:
-
-- tres reportes de Sucursal usan métricas de todo el país;
-- ausencia de `periodKey` cae silenciosamente en `latestPeriod`.
-
-P1:
-
-- Tendencia incluye el periodo activo;
-- coincidencia normalizada de sucursal no exige unicidad.
-
-## Certificaciones y recursos
-
-- Certificaciones: Corte 2 funcional; Corte 6 permisos; Corte 7 sincronización/preservación.
+- No se requiere otra candidata de Claude para Corte 1.
+- Certificaciones: Corte 2 funcional; Corte 6 permisos; Corte 7 sincronización.
 - Recursos: contexto Corte 1; entrega Corte 2; permisos Corte 6; almacenamiento/versionado Corte 7.
 
-## Regla visual
+## Siguiente acción exacta
 
-Después de cada corte Paula revisa visualmente el build exacto antes del freeze y antes de iniciar el siguiente.
+`AUTORIZACION HOSTING DEV -> BUILD EXACTO -> SMOKE REMOTO -> REVISION VISUAL PAULA -> APROBADO -> FREEZE CORTE 1`
 
-## Siguiente bloque exacto
-
-`CLAUDE CORRECCION V163 -> AUDITORIA CHATGPT -> APPLY_DELTA_DIRECTLY SOLO SI GO -> POST-GATES -> HOSTING DEV AUTORIZADO -> REVISION VISUAL -> FREEZE CORTE 1`
-
-Corte 2 no comienza antes del freeze de Corte 1.
+Corte 2 no comienza antes del freeze.
