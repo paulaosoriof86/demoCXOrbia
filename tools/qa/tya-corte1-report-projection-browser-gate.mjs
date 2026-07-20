@@ -7,7 +7,9 @@ import { chromium } from 'playwright';
 const args=process.argv.slice(2);
 const arg=(name,fallback)=>{const i=args.indexOf(name);return i>=0?args[i+1]:fallback;};
 const baseUrl=arg('--base-url',process.env.CXORBIA_BASE_URL||'http://127.0.0.1:4173/app/index.html?cxTyaPhaseA=1&r18d=visible');
+const contractFile=arg('--contract','backend/contracts/phase-a-corte1-context-history-reports-v1.json');
 const outDir=arg('--out','.tmp/tya-corte1-report-projection-browser');
+const contract=JSON.parse(fs.readFileSync(contractFile,'utf8'));
 fs.mkdirSync(outDir,{recursive:true});
 const blockers=[];
 const warnings=[];
@@ -49,17 +51,18 @@ try{
   });
   if(!observed.exists)add(blockers,'report_projection_missing',false,true);
   else {
-    if(observed.schemaVersion!=='1.1.0')add(blockers,'schema_version_mismatch',observed.schemaVersion,'1.1.0');
-    if(observed.contractId!=='phase-a-corte1-context-history-reports-v1')add(blockers,'contract_id_mismatch',observed.contractId,'phase-a-corte1-context-history-reports-v1');
-    if(observed.tenantId!=='tya')add(blockers,'tenant_mismatch',observed.tenantId,'tya');
-    if(observed.projectId!=='cinepolis')add(blockers,'project_mismatch',observed.projectId,'cinepolis');
-    if(observed.periods?.length!==14)add(blockers,'period_count_mismatch',observed.periods?.length,14);
-    if(observed.latestPeriod!=='2026-07')add(blockers,'latest_period_mismatch',observed.latestPeriod,'2026-07');
-    if(observed.rows?.length!==28)add(blockers,'report_row_count_mismatch',observed.rows?.length,28);
+    const scope=contract.sourceScope||{};
+    if(observed.schemaVersion!==contract.schemaVersion)add(blockers,'schema_version_mismatch',observed.schemaVersion,contract.schemaVersion);
+    if(observed.contractId!==contract.id)add(blockers,'contract_id_mismatch',observed.contractId,contract.id);
+    if(observed.tenantId!==contract.tenantId)add(blockers,'tenant_mismatch',observed.tenantId,contract.tenantId);
+    if(observed.projectId!==contract.projectId)add(blockers,'project_mismatch',observed.projectId,contract.projectId);
+    if(observed.periods?.length!==scope.expectedPeriods)add(blockers,'period_count_mismatch',observed.periods?.length,scope.expectedPeriods);
+    if(observed.latestPeriod!==scope.periodEnd)add(blockers,'latest_period_mismatch',observed.latestPeriod,scope.periodEnd);
+    if(observed.rows?.length!==scope.expectedPeriods*(scope.countries||[]).length)add(blockers,'report_row_count_mismatch',observed.rows?.length,scope.expectedPeriods*(scope.countries||[]).length);
     if(!Array.isArray(observed.branchRows)||!observed.branchRows.length)add(blockers,'branch_projection_missing',observed.branchRows?.length||0,'> 0');
-    if((observed.branchRows||[]).reduce((n,r)=>n+r.visits,0)!==616)add(blockers,'branch_projection_total_mismatch',(observed.branchRows||[]).reduce((n,r)=>n+r.visits,0),616);
-    if(observed.totals?.visits!==616)add(blockers,'visit_total_mismatch',observed.totals?.visits,616);
-    if((observed.totals?.assigned||0)+(observed.totals?.unassigned||0)!==616)add(blockers,'assignment_partition_mismatch',observed.totals,616);
+    if((observed.branchRows||[]).reduce((n,r)=>n+r.visits,0)!==scope.expectedVisits)add(blockers,'branch_projection_total_mismatch',(observed.branchRows||[]).reduce((n,r)=>n+r.visits,0),scope.expectedVisits);
+    if(observed.totals?.visits!==scope.expectedVisits)add(blockers,'visit_total_mismatch',observed.totals?.visits,scope.expectedVisits);
+    if((observed.totals?.assigned||0)+(observed.totals?.unassigned||0)!==scope.expectedVisits)add(blockers,'assignment_partition_mismatch',observed.totals,scope.expectedVisits);
     if(observed.totals?.paymentConfirmed!==0)add(blockers,'payment_inference_detected',observed.totals?.paymentConfirmed,0);
     if(observed.juneGT?.[0]?.visits!==34||observed.juneHN?.[0]?.visits!==10)add(blockers,'june_country_counts_mismatch',{GT:observed.juneGT?.[0]?.visits,HN:observed.juneHN?.[0]?.visits},{GT:34,HN:10});
     const julyVisits=(observed.july||[]).reduce((n,r)=>n+r.visits,0);
@@ -72,8 +75,8 @@ try{
     if(observed.source?.sourceSafe!==true||observed.source?.production!==false||observed.source?.imported!==false)add(blockers,'source_state_mismatch',observed.source,{sourceSafe:true,production:false,imported:false});
 
     const catalogById=new Map((observed.catalog||[]).map(x=>[x.id,x]));
-    const expectedAvailable=['executive_operational_summary','branch_operational_status','country_coverage','period_trend'];
-    const expectedPending=['action_plans','training_gaps','brand_scorecard'];
+    const expectedAvailable=(contract.reportCatalog||[]).filter(x=>x.availability==='available').map(x=>x.id);
+    const expectedPending=(contract.reportCatalog||[]).filter(x=>x.availability==='pending_source').map(x=>x.id);
     for(const id of expectedAvailable)if(catalogById.get(id)?.availability!=='available')add(blockers,'report_capability_available_mismatch',{id,value:catalogById.get(id)?.availability},'available');
     for(const id of expectedPending)if(catalogById.get(id)?.availability!=='pending_source')add(blockers,'report_capability_pending_mismatch',{id,value:catalogById.get(id)?.availability},'pending_source');
     if(observed.availableReport.available!==true||observed.availableReport.level!=='periodCountry'||observed.availableReport.rows!==2)add(blockers,'available_report_contract_mismatch',observed.availableReport,{available:true,level:'periodCountry',rows:2});
@@ -89,9 +92,9 @@ try{
   if(consoleErrors.length)add(blockers,'console_errors',consoleErrors,[]);
   await page.screenshot({path:path.join(outDir,'tya-corte1-report-projection.png'),fullPage:true});
   const decision=blockers.length?'HOLD_CORTE1_REPORT_PROJECTION_BROWSER':warnings.length?'PASS_WITH_REVIEW_CORTE1_REPORT_PROJECTION_BROWSER':'PASS_CORTE1_REPORT_PROJECTION_BROWSER';
-  const result={ok:blockers.length===0,decision,baseUrl,blockers,warnings,pageErrors,consoleErrors,observed};
+  const result={ok:blockers.length===0,decision,baseUrl,contractFile,blockers,warnings,pageErrors,consoleErrors,observed};
   fs.writeFileSync(path.join(outDir,'report.json'),JSON.stringify(result,null,2)+'\n','utf8');
-  fs.writeFileSync(path.join(outDir,'report.md'),`# Corte 1 report projection browser gate\n\n- Decision: \`${decision}\`\n- Blockers: ${blockers.length}\n- Warnings: ${warnings.length}\n- Page errors: ${pageErrors.length}\n- Console errors: ${consoleErrors.length}\n- Period/country rows: ${observed.rows?.length||0}\n- Branch rows: ${observed.branchRows?.length||0}\n`,'utf8');
+  fs.writeFileSync(path.join(outDir,'report.md'),`# Corte 1 report projection browser gate\n\n- Decision: \`${decision}\`\n- Contract: \`${contractFile}\`\n- Blockers: ${blockers.length}\n- Warnings: ${warnings.length}\n- Page errors: ${pageErrors.length}\n- Console errors: ${consoleErrors.length}\n- Period/country rows: ${observed.rows?.length||0}\n- Branch rows: ${observed.branchRows?.length||0}\n`,'utf8');
   console.log(JSON.stringify(result,null,2));
   if(blockers.length)process.exitCode=1;
 } finally {
