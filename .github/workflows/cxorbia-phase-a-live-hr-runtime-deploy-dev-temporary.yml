@@ -10,7 +10,6 @@ on:
 permissions:
   contents: read
   statuses: write
-  issues: write
   id-token: write
 
 env:
@@ -45,26 +44,6 @@ jobs:
           echo $? > "$OUT_DIR/enable.exit"
           printf '%s\n' '{"diagnosticOnly":true,"deploy":false,"production":false,"writes":false}' > "$OUT_DIR/safe-state.json"
           exit 0
-
-      - name: Publish sanitized diagnostic to PR 7
-        uses: actions/github-script@v7
-        env:
-          OUT_DIR: ${{ env.OUT_DIR }}
-        with:
-          script: |
-            const fs=require('fs');
-            const p=process.env.OUT_DIR;
-            const read=(f)=>{try{return fs.readFileSync(`${p}/${f}`,'utf8').trim();}catch{return ''}};
-            const sanitize=(s)=>String(s||'')
-              .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,'[service-account]')
-              .replace(/\b\d{8,}\b/g,'[numeric-id]')
-              .slice(0,1800);
-            const enabledExit=read('enabled.exit');
-            const enableExit=read('enable.exit');
-            const enabledCount=read('enabled.out')?read('enabled.out').split(/\r?\n/).filter(Boolean).length:0;
-            const errors=sanitize([read('enabled.err'),read('enable.err')].filter(Boolean).join('\n'))||'(sin texto de error)';
-            const body=`### Diagnóstico automático — carril temporal DEV\n\n- Commit main temporal: \`${context.sha}\`\n- Lectura de APIs habilitadas: exit \`${enabledExit||'n/a'}\`\n- APIs visibles: \`${enabledCount}\`\n- Activación de APIs requeridas: exit \`${enableExit||'n/a'}\`\n- Deploy ejecutado: **no**\n- Producción/escrituras/importaciones/pagos: **no**\n\n\`\`\`text\n${errors}\n\`\`\``;
-            await github.rest.issues.createComment({owner:context.repo.owner,repo:context.repo.repo,issue_number:7,body});
 
       - uses: actions/upload-artifact@v4
         with:
