@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
 Fecha: 2026-07-20
-Estado: `CORTE_1_IN_PROGRESS_CONTEXT_HISTORY_REPORT_PROJECTION_READY`
+Estado: `CORTE_1_BACKEND_REPORT_PROJECTION_PASS_FRONTEND_CONSUMER_PENDING`
 
 ## 1. Repositorio y baseline
 
@@ -25,38 +25,49 @@ Regla: `app/docs/REGLA-PREVALENTE-VALIDACION-VISUAL-DESPUES-DE-CADA-CORTE-202607
 
 Objetivo: contexto, HR, histórico, reportes y exportaciones por tenant, proyecto, periodo y país.
 
-Primer bloque ejecutado:
+Componentes creados:
 
 - Contrato: `backend/contracts/phase-a-corte1-context-history-reports-v1.json`.
 - Gate de fuente/proyección: `tools/qa/tya-corte1-context-history-reports-gate.mjs`.
 - Builder de proyección: `tools/release/tya-corte1-report-projection-build.mjs`.
 - Gate navegador: `tools/qa/tya-corte1-report-projection-browser-gate.mjs`.
+- Proyección generada en build: `CX_TYA_CORTE1_REPORTS`.
 - Carril canónico R18A/R21 actualizado sin deploy ni cambio de producción.
 
-## 4. Primera evidencia Corte 1
+## 4. Evidencia Corte 1
 
-Workflow `29725084348`: SUCCESS.
+### Gate fuente y reporte
 
-Artifact `8453902137`.
-Digest: `sha256:01d28de1db01ea587ca06612f926dbbc5c80baed906b993a203ccaea2d8c3bad`.
+- Workflow `29725084348`: SUCCESS.
+- Artifact `8453902137`.
+- Digest `sha256:01d28de1db01ea587ca06612f926dbbc5c80baed906b993a203ccaea2d8c3bad`.
+- Decisión: `PASS_WITH_REVIEW_CORTE1_CONTEXT_HISTORY_REPORTS`.
 
-Decisión: `PASS_WITH_REVIEW_CORTE1_CONTEXT_HISTORY_REPORTS`.
+### Builder y gate navegador
 
-Resultado:
+- Workflow `29725365613`: SUCCESS.
+- Commit técnico: `082a077b9e7bdc10f337d916274c43c6ed5e240e`.
+- Artifact `8454013971`.
+- Digest `sha256:408123e54d604fad24302a5afe79abd7aee36daa398cdf078ffe805ec63c3af6`.
+- Decisión: `PASS_WITH_REVIEW_CORTE1_REPORT_PROJECTION_BROWSER`.
+- 0 blockers, 0 errores de página y 0 errores de consola.
+- Advertencia única: formatos frontend PDF/XLSX/PPTX pendientes.
+
+Resultado canónico:
 
 - 14 periodos.
 - 616 visitas.
-- 28 filas de reporte por periodo/país.
+- 28 filas por periodo/país.
 - 13 periodos históricos por defecto, excluyendo julio activo.
-- 611 asignadas y 5 sin asignar en el alcance completo.
+- 611 asignadas y 5 sin asignar.
 - 592 realizadas.
 - 590 con cuestionario.
 - 527 submitidas.
 - 0 pagos confirmados o inferidos.
-- 0 blockers.
-- Única advertencia: botones PDF/Excel/PPT de `app/modules/cliente-extra.js` todavía son demo y requieren consumidor frontend localizado.
+- JSON/CSV source-safe filtrables por periodo y país.
+- Sin campos PII.
 
-Junio 2026 queda correctamente representado como ejecutado:
+Junio 2026:
 
 - GT: 34/34 realizadas, cuestionario y submitido.
 - HN: 10/10 realizadas, cuestionario y submitido.
@@ -79,21 +90,20 @@ Junio 2026 queda correctamente representado como ejecutado:
 
 Certificaciones y recursos son transversales y se revisan visualmente cada vez que cambian.
 
-## 6. Observaciones trasladadas
+## 6. Pendiente real de Corte 1
 
-- Corte 2: reservas elegibles, postulaciones, asignaciones y shopper por llave estable.
-- Corte 3: honorarios, modelo local/delegado/regional, regalías, cruce financiero y lotes.
-- Cortes 4/6: datos shopper mediante backend protegido + Auth/RBAC.
-- Claude/Academia futuro: manual profundo, reportes UI, copy sin `Q1/Q2` y perfil protegido humano.
+El módulo `app/modules/cliente-extra.js` todavía muestra toast demo en PDF/Excel/PPT. Backend no parchea UI; el consumidor frontend debe usar exclusivamente la proyección aprobada y respetar tenant, proyecto, periodo, país y rol.
+
+También debe verificarse visualmente que cambiar periodo actualiza KPI, filas, detalle, histórico y exportación.
 
 ## 7. Siguiente bloque exacto
 
 ```text
-CORTE 1.2 — CONSUMIDOR DE REPORTES Y CAMBIO DE CONTEXTO
--> confirmar gate navegador de la proyección source-safe
--> documentar contrato frontend localizado para Reportes
--> conectar PDF/Excel/PPT al mismo scope tenant/proyecto/periodo/país
--> validar cambio de periodo en KPI, filas, detalle y exportación
+CORTE 1.2 — CONSUMIDOR FRONTEND LOCALIZADO
+-> documentar ajuste por archivo/módulo para Claude
+-> conectar PDF/Excel/PPT a la proyección aprobada
+-> impedir fixtures, scores y pagos inventados
+-> validar cambio proyecto/periodo en reportes e histórico
 -> construir build exacto DEV
 -> revisión visual de Paula
 -> corrección focalizada si aplica
