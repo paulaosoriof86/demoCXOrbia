@@ -1,13 +1,18 @@
-name: CXOrbia Phase A V161C R21 DEV Root Deploy — authorization consumed
+name: CXOrbia Phase A V164 Corte 1 DEV Root Deploy
 
 on:
   workflow_dispatch:
     inputs:
       confirm_dev_deploy:
-        description: 'Disabled until a new explicit Paula authorization is registered.'
+        description: 'Exact one-time confirmation token for V164 Corte 1 Hosting DEV.'
         required: true
         default: 'HOLD'
         type: string
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/phase-a-hosting-dev-execution-request-v1.json'
 
 permissions:
   contents: read
@@ -16,7 +21,7 @@ permissions:
   statuses: write
 
 concurrency:
-  group: cxorbia-r21-hosting-dev
+  group: cxorbia-v164-corte1-hosting-dev
   cancel-in-progress: false
 
 defaults:
@@ -27,14 +32,14 @@ env:
   CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
   FIREBASE_PROJECT_ID: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
-  CXORBIA_RUNTIME_BUILD_LABEL: v161c-r21-source-safe-20260719-dev
+  CXORBIA_RUNTIME_BUILD_LABEL: v164-corte1-reportes-20260720-dev
   CXORBIA_EXECUTION_REQUEST: backend/config/phase-a-hosting-dev-execution-request-v1.json
-  CXORBIA_OUT_DIR: .tmp/r21-dev-deploy
+  CXORBIA_OUT_DIR: .tmp/v164-corte1-dev-deploy
 
 jobs:
   dev-root-deploy:
-    name: HOLD · requires new explicit authorization
-    if: ${{ false }}
+    name: Deploy exact V164 Corte 1 build to Hosting DEV
+    if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.confirm_dev_deploy == 'DEPLOY_DEV_ROOT_V164_CORTE1') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -68,7 +73,7 @@ jobs:
           npm install --no-save --ignore-scripts playwright@1.61.1
           npx playwright install --with-deps chromium
 
-      - name: Build exact R21 runtime and run local gates
+      - name: Build exact V164 runtime and run local gates
         run: |
           set -euo pipefail
           mkdir -p "$CXORBIA_OUT_DIR"
@@ -90,7 +95,7 @@ jobs:
       - name: Verify remote propagation and smoke
         run: |
           set -euo pipefail
-          proof_url="$CXORBIA_DEV_ROOT_URL/cxorbia-v161c-r21-dev-build-proof.json"
+          proof_url="$CXORBIA_DEV_ROOT_URL/cxorbia-v164-corte1-dev-build-proof.json"
           verified=0
           for attempt in $(seq 1 24); do
             if curl -fsSL -H 'Cache-Control: no-cache' "$proof_url?attempt=$attempt&ts=$(date +%s)" > "$CXORBIA_OUT_DIR/remote-proof.json" && node tools/release/tya-r21-verify-remote-proof.mjs "$CXORBIA_OUT_DIR/remote-proof.json"; then
@@ -103,15 +108,16 @@ jobs:
           export CXORBIA_EXPECT_TENANT_ID=tya CXORBIA_EXPECT_PROJECT_ID=cinepolis CXORBIA_EXPECT_PERIODS=14 CXORBIA_EXPECT_VISITS=616 CXORBIA_EXPECT_SHOPPERS=216 CXORBIA_MAX_SOURCE_AGE_HOURS=24
           remote_url="$CXORBIA_DEV_ROOT_URL/index.html?cxTyaPhaseA=1&r18d=visible"
           node tools/qa/tya-source-semantics-r21-gate.mjs --base-url "$remote_url" --out "$CXORBIA_OUT_DIR/remote-semantics"
-          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs --base-url "$remote_url" --out "$CXORBIA_OUT_DIR/remote-roles-academy"
-          printf '{"ok":true,"decision":"PASS_R21_HOSTING_DEV_AND_REMOTE_SMOKE","build":"%s","commit":"%s","production":false,"dataWrites":false}\n' "$CXORBIA_RUNTIME_BUILD_LABEL" "$GITHUB_SHA" > "$CXORBIA_OUT_DIR/final-status.json"
+          node tools/qa/tya-corte1-report-projection-browser-gate.mjs --base-url "$remote_url" --out "$CXORBIA_OUT_DIR/remote-report-browser"
+          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs --base-url "$remote_url" --out "$CXORBIA_OUT_DIR/remote-roles-academy-reports"
+          printf '{"ok":true,"decision":"PASS_V164_CORTE1_HOSTING_DEV_AND_REMOTE_SMOKE","build":"%s","commit":"%s","production":false,"dataWrites":false}\n' "$CXORBIA_RUNTIME_BUILD_LABEL" "$GITHUB_SHA" > "$CXORBIA_OUT_DIR/final-status.json"
 
       - name: Upload sanitized DEV evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-v161c-r21-dev-root-deploy-evidence
-          path: .tmp/r21-dev-deploy
+          name: cxorbia-v164-corte1-dev-root-deploy-evidence
+          path: .tmp/v164-corte1-dev-deploy
           if-no-files-found: error
           retention-days: 14
 
@@ -128,9 +134,9 @@ jobs:
               repo: context.repo.repo,
               sha: context.sha,
               state,
-              context: 'cxorbia/v161c-r21-hosting-dev',
+              context: 'cxorbia/v164-corte1-hosting-dev',
               description: state === 'success'
-                ? 'V161C R21 Hosting DEV and remote smoke PASS'
-                : 'V161C R21 Hosting DEV or remote smoke HOLD',
+                ? 'V164 Corte 1 Hosting DEV and remote smoke PASS'
+                : 'V164 Corte 1 Hosting DEV or remote smoke HOLD',
               target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             });
