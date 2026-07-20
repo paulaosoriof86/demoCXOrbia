@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "requestId": "phase-a-live-hr-runtime-deploy-request-v1",
   "environment": "DEV",
   "serviceId": "cxorbia-live-hr-dev",
@@ -9,17 +9,26 @@
   "endpointPath": "/api/tya/cinepolis/hr-live",
   "runtimeSource": "backend/runtime/hr-live-service",
   "authorization": {
-    "paulaExplicitInCurrentConversation": false,
-    "cloudRunDeploy": false,
-    "hostingDevRedeploy": false,
+    "paulaExplicitInCurrentConversation": true,
+    "authorizedAt": "2026-07-20",
+    "cloudRunDeploy": true,
+    "hostingDevRedeploy": true,
     "production": false,
     "writes": false,
     "imports": false,
     "payments": false
   },
+  "operationalSourceModel": {
+    "hrPerProject": true,
+    "manualHrChangesMustReflectInPlatform": true,
+    "futurePlatformAutomationsMayWriteHrUnderSeparateWriteGate": true,
+    "questionnaireSourceConfigurableByProjectOrVisit": true,
+    "tyaOnlineIsOnlyOnePossibleQuestionnaireProviderForThisTenant": true,
+    "tyaOnlineDoesNotOwnHrSynchronization": true
+  },
   "requiredPredeployStatuses": [
     "cxorbia/live-hr-read-probe",
     "cxorbia/live-hr-runtime-predeploy"
   ],
-  "safeState": "Blocked until Paula explicitly authorizes Cloud Run DEV and Hosting DEV deployment in the current conversation."
+  "safeState": "Authorized for Cloud Run DEV read-only endpoint and Hosting DEV redeploy only. No production, HR writes, Firestore writes, imports or payments."
 }
