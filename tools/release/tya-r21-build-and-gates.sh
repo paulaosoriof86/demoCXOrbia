@@ -24,13 +24,14 @@ else
 fi
 node tools/qa/tya-corte1-context-history-reports-gate.mjs --payload app/data/tya-hr-source-safe-periods.js --contract backend/contracts/phase-a-corte1-context-history-reports-v1.json --frontend app/modules/cliente-extra.js --out "$OUT/corte1-context"
 node tools/release/tya-source-safe-binding-build-r18a.mjs --html app/index.html --out "$OUT/binding"
-node tools/release/tya-corte1-report-projection-build.mjs --payload app/data/tya-hr-source-safe-periods.js --contract backend/contracts/phase-a-corte1-context-history-reports-v1.json --html app/index.html --out app/adapters/tya-corte1-report-projection.js --report-dir "$OUT/report-projection-build"
+CXORBIA_APPLY_APPROVED_REPORT_OVERRIDES=1 node tools/release/tya-corte1-report-projection-build.mjs --payload app/data/tya-hr-source-safe-periods.js --contract backend/contracts/phase-a-corte1-context-history-reports-v1.json --html app/index.html --out app/adapters/tya-corte1-report-projection.js --report-dir "$OUT/report-projection-build"
 node - "$OUT/report-projection-build/report.json" <<'NODE'
 const fs=require('fs');
 const report=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
 const expected={visits:616,assigned:611,unassigned:5,performed:592,questionnaire:590,submitted:527,paymentConfirmed:0};
 for(const [key,want] of Object.entries(expected))if(Number(report.totals?.[key])!==want)throw new Error(`approved snapshot mismatch ${key}: ${report.totals?.[key]}/${want}`);
-console.log(JSON.stringify({ok:true,decision:'PASS_V164_APPROVED_SOURCE_TOTALS',totals:report.totals},null,2));
+if(Number(report.approvedOverrideMeta?.applied)!==3)throw new Error('approved report overrides were not applied exactly');
+console.log(JSON.stringify({ok:true,decision:'PASS_V164_APPROVED_SOURCE_TOTALS',totals:report.totals,approvedOverrides:report.approvedOverrideMeta},null,2));
 NODE
 node tools/qa/tya-r18a-canonical-assets-integration-validate.mjs --payload app/data/tya-hr-source-safe-periods.js --adapter app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js --out "$OUT/integration"
 export CXORBIA_EXPECT_TENANT_ID=tya CXORBIA_EXPECT_PROJECT_ID=cinepolis CXORBIA_EXPECT_PERIODS=14 CXORBIA_EXPECT_VISITS=616 CXORBIA_EXPECT_SHOPPERS=216 CXORBIA_MAX_SOURCE_AGE_HOURS=168
