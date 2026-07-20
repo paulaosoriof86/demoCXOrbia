@@ -75,6 +75,9 @@ const catalog=(contract.reportCatalog||[]).map(item=>({
   requiredSource:item.requiredSource||null,
   forbiddenClaims:item.forbiddenClaims||[]
 }));
+const sanitizedFormats=Array.isArray(contract.exports?.sanitizedFormats)?contract.exports.sanitizedFormats:[];
+const frontendFormatsReady=Array.isArray(contract.exports?.frontendFormatsReady)?contract.exports.frontendFormatsReady:[];
+const frontendFormatsPending=Array.isArray(contract.exports?.frontendFormatsPending)?contract.exports.frontendFormatsPending:[];
 const projection={
   schemaVersion:contract.schemaVersion,contractId:contract.id,generatedAt:snapshot.generatedAt||null,
   tenantId:snapshot.tenantId,projectId:snapshot.projectId,projectName:snapshot.projectName||'Cinépolis',
@@ -85,9 +88,13 @@ const projection={
     visits:rows.reduce((n,r)=>n+r.visits,0),assigned:rows.reduce((n,r)=>n+r.assigned,0),unassigned:rows.reduce((n,r)=>n+r.unassigned,0),
     performed:rows.reduce((n,r)=>n+r.performed,0),questionnaire:rows.reduce((n,r)=>n+r.questionnaire,0),submitted:rows.reduce((n,r)=>n+r.submitted,0),paymentConfirmed:rows.reduce((n,r)=>n+r.paymentConfirmed,0)
   },
-  frontend:{formatsReady:['json','csv'],formatsPending:['pdf','xlsx','pptx'],pendingSourceBehavior:contract.exports?.pendingSourceBehavior||'disable_export_and_show_pending_source'}
+  frontend:{
+    formatsReady:[...new Set([...sanitizedFormats,...frontendFormatsReady])],
+    formatsPending:frontendFormatsPending,
+    pendingSourceBehavior:contract.exports?.pendingSourceBehavior||'disable_export_and_show_pending_source'
+  }
 };
-const serialized=JSON.stringify(projection).replaceAll('</','<\\/');
+const serialized=JSON.stringify(projection).replaceAll('</','<\/');
 const adapter=`/* Generated Corte 1 source-safe report projection. No PII, writes or production. */\n(function(){\n  const projection=${serialized};\n  const headers={\n    periodCountry:['tenantId','projectId','periodKey','country','visits','assigned','unassigned','performed','questionnaire','submitted','paymentConfirmed'],\n    branch:['tenantId','projectId','periodKey','country','branchName','city','visits','assigned','unassigned','performed','questionnaire','submitted','paymentConfirmed']\n  };\n  const rowsFor=(level='periodCountry')=>level==='branch'?projection.branchRows:projection.rows;\n  const filter=(scope={},level='periodCountry')=>rowsFor(level).filter(r=>(!scope.periodKey||r.periodKey===scope.periodKey)&&(!scope.country||r.country===scope.country)&&(!scope.branchName||r.branchName===scope.branchName)&&(!scope.city||r.city===scope.city));\n  const toCSV=(scope={},level='periodCountry')=>{const cols=headers[level]||headers.periodCountry;const rows=filter(scope,level);return [cols,...rows.map(r=>cols.map(k=>r[k]))].map(row=>row.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\\n');};\n  const toJSON=(scope={},level='periodCountry')=>JSON.stringify({schemaVersion:projection.schemaVersion,tenantId:projection.tenantId,projectId:projection.projectId,level,scope,rows:filter(scope,level)},null,2);\n  const report=(reportId,scope={})=>{const definition=projection.catalog.find(x=>x.id===reportId)||null;if(!definition)return {available:false,reason:'unknown_report',definition:null,rows:[]};if(definition.availability!=='available')return {available:false,reason:'pending_source',definition,rows:[]};return {available:true,reason:null,definition,rows:filter(scope,definition.projectionLevel||'periodCountry')};};\n  window.CX_TYA_CORTE1_REPORTS=Object.freeze({\n    ...projection,rowsFor,filter,toCSV,toJSON,report\n  });\n})();\n`;
 fs.writeFileSync(outputFile,adapter,'utf8');
 
@@ -109,8 +116,10 @@ const report={
   branchRows:branchRows.length,
   availableReports:catalog.filter(x=>x.availability==='available').map(x=>x.id),
   pendingReports:catalog.filter(x=>x.availability!=='available').map(x=>x.id),
+  frontendFormatsReady:projection.frontend.formatsReady,
+  frontendFormatsPending:projection.frontend.formatsPending,
   totals:projection.totals
 };
 fs.writeFileSync(path.join(reportDir,'report.json'),JSON.stringify(report,null,2)+'\n','utf8');
-fs.writeFileSync(path.join(reportDir,'report.md'),`# Corte 1 report projection build\n\n- Decision: \`${report.decision}\`\n- Periods: ${report.periods}\n- Period/country rows: ${report.periodCountryRows}\n- Branch rows: ${report.branchRows}\n- Visits: ${report.totals.visits}\n- Available reports: ${report.availableReports.join(', ')}\n- Pending-source reports: ${report.pendingReports.join(', ')}\n- Output: \`${outputFile}\`\n`,'utf8');
+fs.writeFileSync(path.join(reportDir,'report.md'),`# Corte 1 report projection build\n\n- Decision: \`${report.decision}\`\n- Periods: ${report.periods}\n- Period/country rows: ${report.periodCountryRows}\n- Branch rows: ${report.branchRows}\n- Visits: ${report.totals.visits}\n- Available reports: ${report.availableReports.join(', ')}\n- Pending-source reports: ${report.pendingReports.join(', ')}\n- Frontend formats ready: ${report.frontendFormatsReady.join(', ')}\n- Frontend formats pending: ${report.frontendFormatsPending.join(', ')||'none'}\n- Output: \`${outputFile}\`\n`,'utf8');
 console.log(JSON.stringify(report,null,2));
