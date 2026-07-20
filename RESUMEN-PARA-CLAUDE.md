@@ -1,5 +1,14 @@
 # RESUMEN-PARA-CLAUDE.md
 
+## 2026-07-20 — Corte 1 live HR y reportes
+
+- La validación visual bloqueó el freeze de Corte 1.
+- Backend demostró que V164 usaba un snapshot congelado, no lectura HR runtime viva.
+- Se prepararon endpoint source-safe, revisión/frescura, watcher y binding al adapter canónico; probes read-only y predeploy PASS, sin deploy.
+- Claude debe atender únicamente los ajustes localizados de KPI/detalle, reportes Admin, branding/exportación y Panorama por periodo.
+- No solicitar otra candidata por rutina.
+- Fuente completa: `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE1-LIVE-HR-REPORTES-20260720.md`.
+
 ## 2026-07-11 - Importadores source-safe operativos R4
 
 - Backend agregó importadores dry-run separados para pagos/movimientos y certificaciones presentadas, compatibles con JSON, CSV, XLSX y XLSM.
@@ -78,102 +87,3 @@
 - ChatGPT/backend agrego `tools/contracts/cxorbia-readiness-dashboard-source-safe-contract.mjs` y documentos `app/docs/READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md` / `app/docs/CAMBIOS-READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md`.
 - El contrato no toca `/app/modules` ni `/app/core`, no conecta runtime, no activa Firestore/Auth/Storage/HR/Make/Gemini/correo/WhatsApp/import/pagos y no incluye datos sensibles.
 - Claude debe usar este patron si implementa dashboard/panel de readiness: area, estado preview, sourceRef opaca, gate apagado, revision humana y motivo.
-- Estados permitidos: preview listo, diagnostico ejecutado, fixture sintetico, input sanitizado, warning, fail, pendiente fuente real, pendiente gate real, pendiente revision humana, produccion no autorizada, proveedor no activo, bloqueado por datos sensibles, bloqueado por conflicto, solo documental.
-- Copy honesto obligatorio: readiness dashboard no significa produccion lista, import real, sync real, envio real, pago real, provider activo, Storage activo, Firestore conectado, HR sincronizada ni deploy.
-- Academia debe explicar readiness dashboard, preview vs real, fixture sintetico, input sanitizado, source-safe report, gates apagados, errores, warnings, blockers y revision humana.
-- No tocar backend, contracts, tools, workflows, Firestore/Auth/Storage, Make, Gemini, imports, pagos reales ni datos reales.
-
-## 2026-07-08 - Addendum synthetic input pack expanded coverage
-
-- ChatGPT/backend actualizo `tools/contracts/cxorbia-synthetic-input-pack-runner.mjs` y agrego `app/docs/SYNTHETIC-INPUT-PACK-EXPANDED-COVERAGE-CXORBIA-20260708.md` / `app/docs/CAMBIOS-SYNTHETIC-INPUT-PACK-EXPANDED-COVERAGE-CXORBIA-20260708.md`.
-- La cobertura agregada ejecuta fixtures sinteticos existentes para assignment sync conflict preview, notification outbox preview, project/tenant rule versioning preview, rule change changelog notification preview y release readiness snapshot preview.
-- Claude debe mostrar esta cobertura solo como diagnostico preview por area/pass-fail/warnings si se refleja en UI.
-- Copy honesto obligatorio: coverage/pass de synthetic runner no significa produccion lista, import real, sync aplicado, envio real, pago real, provider activo, Storage activo ni deploy.
-- Readiness visual debe separar: contrato probado, fixture sintetico validado, preview listo, warning, fail, pendiente gate real, pendiente fuente real, pendiente revision humana y produccion no autorizada.
-- Academia debe explicar cobertura del runner, fixtures sinteticos, inputs sanitizados, pass/fail/warnings, preflight contractual, gates apagados y revision humana.
-- No tocar backend, contracts, tools, workflows, Firestore/Auth/Storage, Make, Gemini, imports, pagos reales ni datos reales.
-
-## Cierre V110 empalmada — 2026-07-12
-
-- Los dos P0 de Academia por país y Finanzas fail-closed quedaron cerrados, verificados y empalmados físicamente.
-- No se genera otro paquete Claude.
-- No reabrir scores finitos, bandas unificadas, lotes multipaís/multimoneda, IDs determinísticos, responsive, Beneficios, certificaciones, cache demo/real ni shell.
-- P1/P2 restantes quedan acumulados para un futuro paquete y no bloquean R10.
-
-## R10 source-safe post-V110 — 2026-07-12
-
-- Decisión final: `PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE`.
-- Admin, Cliente y Shopper: 13/13 rutas renderizadas, 0 errores de página/consola y sin copy de integración real.
-- No reabrir P0 Academia/país ni Finanzas fail-closed.
-- No surge paquete crítico nuevo para Claude.
-- Diferencia shopper 210/213 pertenece a reconciliación backend/operativa, sin match por nombre.
-
-
-## R11 shopper references — 2026-07-12
-
-- Decisión backend: `HOLD_REFERENCE_SET_UNAVAILABLE`.
-- No es tarea Claude: la diferencia 210/213 se procesa por referencias opacas y revisión humana.
-- No reabrir P0 V110 ni R10.
-
-
-## R11B shopper history recovery — 2026-07-12
-
-- Decisión backend: `HOLD_NO_213_REFERENCE_SET_IN_REACHABLE_GIT_OBJECTS`.
-- No es tarea Claude. No reabrir V110 ni R10.
-
-
-## R11C builder lineage — 2026-07-12
-
-- Decisión backend: `SOURCE_SNAPSHOT_DRIFT_NOT_BUILDER_DRIFT`.
-- No es tarea Claude; no reabrir V110/R10.
-
-
-## R11D shopper gap review — 2026-07-12
-
-- Brecha 210/213 encapsulada en reviewQueue backend a nivel de fuente.
-- No es tarea Claude y no reabre V110/R10.
-
-
-## R12 Firebase DEV read-only readiness — 2026-07-12
-
-- Estado: `READY_FOR_EXPLICIT_AUTHORIZATION_NOT_EXECUTED`.
-- No mostrar Firebase conectado o base limpia verificada; solo readiness estático.
-- No corresponde paquete Claude inmediato.
-
-
-## R13 Firebase DEV read-only — 2026-07-12
-
-- Decisión backend: `NONEMPTY_REVIEW_REQUIRED`.
-- No implica backend conectado ni producción; no corresponde paquete Claude inmediato.
-
-
-## R13B Firebase DEV nonempty — 2026-07-12
-
-- No es bug Claude ni del prototipo. El bloqueo es infraestructura/base DEV no limpia.
-- No mostrar backend conectado ni base limpia.
-
-
-## R14 Finanzas reales TyA — 2026-07-13
-
-- Backend/datos procesó fuente financiera real y HR viva.
-- Decisión: `HOLD_NO_EXACT_REAL_TYA_LINKS`; enlaces exactos: 0.
-- No corresponde cambio frontend inmediato; conservar distinción liquidada/pagada y los P1 ya registrados.
-
-
-## R14C Finanzas reales TyA — 2026-07-13
-
-- Backend/datos: `PASS_WITH_REVIEW_REAL_TYA_FINANCIAL_RECONCILIATION_R14C`, 196 enlaces exactos.
-- Sin P0 frontend nuevo. Mantener liquidada/pagada como estados distintos y los P1 de pagos ya registrados.
-
-
-## R15 Firebase DEV nuevo y vacío — 2026-07-13
-
-- Backend/infraestructura: `BLOCKED_TARGET_PROJECT_EXISTENCE_UNVERIFIED` sobre `cxorbia-tya-dev-260713-r15a`.
-- Sin cambio frontend ni P0 Claude.
-- No afirmar que Auth, Firestore, Storage, sync, pagos o producción estén activos.
-
-
-## R15B Firebase DEV — 2026-07-13
-
-- Backend/infraestructura: `BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY` sobre `cxorbia-tya-dev-260713-r15a`.
-- Sin P0 frontend nuevo; no afirmar servicios activos ni producción.
