@@ -1,7 +1,7 @@
 # ACADEMIA IMPACT — CORTE 1.2 REPORTES V164
 
 Fecha: 2026-07-20
-Estado: `TECHNICAL_CONTENT_READY_PENDING_VISUAL`
+Estado: `DEV_PASS_PENDING_VISUAL`
 
 ## Contenido confirmado
 
@@ -35,6 +35,13 @@ Academia debe explicar:
 
 - Certificaciones: cierre funcional Corte 2, permisos Corte 6 y sincronización Corte 7.
 - Recursos: contexto Corte 1, entrega por visita Corte 2, permisos Corte 6 y almacenamiento/versionado Corte 7.
+
+## Evidencia DEV
+
+- Run `29771355833`: SUCCESS.
+- Admin, Cliente y Shopper: PASS.
+- Ruta `cli_reportes`: renderizada correctamente.
+- Cero errores de página y consola.
 
 ## Revisión visual pendiente
 
