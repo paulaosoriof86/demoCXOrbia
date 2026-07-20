@@ -7,6 +7,7 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
+      - 'tools/hr-source/tya-reapply-canonical-state-r20.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15g.mjs'
       - 'tools/release/tya-source-safe-binding-build-r18a.mjs'
@@ -31,6 +32,7 @@ on:
       - release/cxorbia-tya-rc-20260630
     paths:
       - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
+      - 'tools/hr-source/tya-reapply-canonical-state-r20.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15g.mjs'
       - 'tools/release/tya-source-safe-binding-build-r18a.mjs'
@@ -78,6 +80,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs
+          node --check tools/hr-source/tya-reapply-canonical-state-r20.mjs
           node --check tools/release/tya-source-safe-binding-build-r15f.mjs
           node --check tools/release/tya-source-safe-binding-build-r15g.mjs
           node --check tools/release/tya-source-safe-binding-build-r18a.mjs
@@ -101,16 +104,21 @@ jobs:
           node tools/hr-source/tya-build-live-hr-source-safe-static.mjs
           test -s app/data/tya-hr-source-safe-periods.js
 
-      - name: Canonicalize using existing date and state contracts
+      - name: Canonicalize and reapply the final R20/R21 state machine
         run: |
           set -euo pipefail
           node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
             --input app/data/tya-hr-source-safe-periods.js \
             --out app/data/tya-hr-source-safe-periods.js \
             --report-dir .tmp/r18a-canonicalization
+          node tools/hr-source/tya-reapply-canonical-state-r20.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/r20-r21-final-canonical-pass
           grep -q 'R18A_INTEGRATE_EXISTING_CANONICAL_ASSETS' app/data/tya-hr-source-safe-periods.js
           grep -q 'runtimeSyncActive' app/data/tya-hr-source-safe-periods.js
           grep -q 'r15g+r20+r21-eligibility' app/data/tya-hr-source-safe-periods.js
+          grep -q 'all_verified_hr_periods' app/data/tya-hr-source-safe-periods.js
 
       - name: Generate canonical source-safe DEV adapter in build copy
         run: |
@@ -167,6 +175,7 @@ jobs:
           path: |
             .tmp/r18a-self-test
             .tmp/r18a-canonicalization
+            .tmp/r20-r21-final-canonical-pass
             .tmp/r18a-binding
             .tmp/r18a-validation
             .tmp/tya-postulation-eligibility-r21
