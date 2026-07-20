@@ -1,13 +1,10 @@
-name: CXOrbia Phase A R15G DEV Root Deploy
+name: CXOrbia Phase A V161C R21 DEV Root Deploy
 
-# Canonical Hosting DEV lane. The workflow is only an authorization and runner
-# wrapper; all build, gates, deploy, propagation polling and remote verification
-# live in tools/release/tya-r15g-dev-root-deploy.sh.
 on:
   workflow_dispatch:
     inputs:
       confirm_dev_deploy:
-        description: 'Type DEPLOY_DEV_ROOT_R15G only after explicit Paula authorization and atomic source-lock GO.'
+        description: 'Type DEPLOY_DEV_ROOT_R21 only after explicit Paula authorization.'
         required: true
         default: 'HOLD'
         type: string
@@ -24,7 +21,7 @@ permissions:
   statuses: write
 
 concurrency:
-  group: cxorbia-r15g-hosting-dev
+  group: cxorbia-r21-hosting-dev
   cancel-in-progress: false
 
 defaults:
@@ -35,14 +32,14 @@ env:
   CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
   FIREBASE_PROJECT_ID: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
-  CXORBIA_V159_BUILD_LABEL: v159-r18d-source-safe-20260717-dev
+  CXORBIA_RUNTIME_BUILD_LABEL: v161c-r21-source-safe-20260719-dev
   CXORBIA_EXECUTION_REQUEST: backend/config/phase-a-hosting-dev-execution-request-v1.json
-  CXORBIA_OUT_DIR: .tmp/r15g-dev-deploy
+  CXORBIA_OUT_DIR: .tmp/r21-dev-deploy
 
 jobs:
   dev-root-deploy:
-    name: V159 exact build · gates · Hosting DEV · remote smoke
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.confirm_dev_deploy == 'DEPLOY_DEV_ROOT_R15G') || github.event_name == 'push' }}
+    name: V161C R21 exact build · Hosting DEV · remote smoke
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.confirm_dev_deploy == 'DEPLOY_DEV_ROOT_R21') || github.event_name == 'push' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -58,30 +55,73 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Validate canonical executor syntax
-        run: |
-          set -euo pipefail
-          test -s tools/release/tya-r15g-dev-root-deploy.sh
-          bash -n tools/release/tya-r15g-dev-root-deploy.sh
-
-      - name: Execute fail-closed V159 Hosting DEV lane
+      - name: Validate one-time authorization and source lock
         env:
           CXORBIA_EVENT_NAME: ${{ github.event_name }}
           CXORBIA_EVENT_BEFORE: ${{ github.event.before || '' }}
-          CXORBIA_MANUAL_CONFIRM: ${{ inputs.confirm_dev_deploy || '' }}
-          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-        run: bash tools/release/tya-r15g-dev-root-deploy.sh
+        run: |
+          set -euo pipefail
+          test -s "$CXORBIA_EXECUTION_REQUEST"
+          if [ "$CXORBIA_EVENT_NAME" = push ]; then
+            mapfile -t changed < <(git diff --name-only "$CXORBIA_EVENT_BEFORE" "$GITHUB_SHA")
+            test "${#changed[@]}" -eq 1
+            test "${changed[0]}" = "$CXORBIA_EXECUTION_REQUEST"
+          fi
+          node tools/release/tya-r21-validate-dev-authorization.mjs "$CXORBIA_EXECUTION_REQUEST"
+          node --check tools/release/tya-r21-write-build-proof.mjs
+          node --check tools/release/tya-r21-verify-remote-proof.mjs
+          bash -n tools/release/tya-r21-build-and-gates.sh
 
-      - name: Cleanup temporary credential
-        if: always()
-        run: rm -f .tmp/r15g-dev-deploy/firebase-service-account.json
+      - name: Install transient browser
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.61.1
+          npx playwright install --with-deps chromium
 
-      - name: Upload sanitized DEV deploy evidence
+      - name: Build exact R21 runtime and run local gates
+        run: |
+          set -euo pipefail
+          mkdir -p "$CXORBIA_OUT_DIR"
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory app > "$CXORBIA_OUT_DIR/local-server.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          export CXORBIA_BASE_URL='http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible'
+          bash tools/release/tya-r21-build-and-gates.sh
+
+      - name: Deploy Hosting DEV only
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          projectId: cxorbia-backend-dev
+          channelId: live
+          target: cxorbia-dev
+
+      - name: Verify remote propagation and smoke
+        run: |
+          set -euo pipefail
+          proof_url="$CXORBIA_DEV_ROOT_URL/cxorbia-v161c-r21-dev-build-proof.json"
+          verified=0
+          for attempt in $(seq 1 24); do
+            if curl -fsSL -H 'Cache-Control: no-cache' "$proof_url?attempt=$attempt&ts=$(date +%s)" > "$CXORBIA_OUT_DIR/remote-proof.json" && node tools/release/tya-r21-verify-remote-proof.mjs "$CXORBIA_OUT_DIR/remote-proof.json"; then
+              verified=1
+              break
+            fi
+            sleep 5
+          done
+          test "$verified" -eq 1
+          export CXORBIA_EXPECT_TENANT_ID=tya CXORBIA_EXPECT_PROJECT_ID=cinepolis CXORBIA_EXPECT_PERIODS=14 CXORBIA_EXPECT_VISITS=616 CXORBIA_EXPECT_SHOPPERS=216 CXORBIA_MAX_SOURCE_AGE_HOURS=24
+          remote_url="$CXORBIA_DEV_ROOT_URL/index.html?cxTyaPhaseA=1&r18d=visible"
+          node tools/qa/tya-source-semantics-r21-gate.mjs --base-url "$remote_url" --out "$CXORBIA_OUT_DIR/remote-semantics"
+          node tools/qa/tya-phase-a-source-safe-visual-smoke.mjs --base-url "$remote_url" --out "$CXORBIA_OUT_DIR/remote-roles-academy"
+          printf '{"ok":true,"decision":"PASS_R21_HOSTING_DEV_AND_REMOTE_SMOKE","build":"%s","commit":"%s","production":false,"dataWrites":false}\n' "$CXORBIA_RUNTIME_BUILD_LABEL" "$GITHUB_SHA" > "$CXORBIA_OUT_DIR/final-status.json"
+
+      - name: Upload sanitized DEV evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-r15g-dev-root-deploy-evidence
-          path: .tmp/r15g-dev-deploy
+          name: cxorbia-v161c-r21-dev-root-deploy-evidence
+          path: .tmp/r21-dev-deploy
           if-no-files-found: error
           retention-days: 14
 
@@ -98,9 +138,9 @@ jobs:
               repo: context.repo.repo,
               sha: context.sha,
               state,
-              context: 'cxorbia/v159-hosting-dev',
+              context: 'cxorbia/v161c-r21-hosting-dev',
               description: state === 'success'
-                ? 'V159 Hosting DEV and remote smoke PASS'
-                : 'V159 Hosting DEV or remote smoke HOLD',
+                ? 'V161C R21 Hosting DEV and remote smoke PASS'
+                : 'V161C R21 Hosting DEV or remote smoke HOLD',
               target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             });
