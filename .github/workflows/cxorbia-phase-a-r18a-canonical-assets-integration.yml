@@ -7,6 +7,7 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - 'tools/hr-source/tya-build-live-hr-source-safe-r20.mjs'
+      - 'tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs'
       - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
       - 'tools/hr-source/tya-reapply-canonical-state-r20.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
@@ -17,6 +18,7 @@ on:
       - 'tools/qa/tya-postulation-eligibility-r21-gate.mjs'
       - 'tools/dev/cxorbia-static-preview-server.mjs'
       - 'backend/contracts/tya-hr-column-map-r20-v1.json'
+      - 'backend/contracts/tya-hr-tab-inventory-r20-v1.json'
       - 'backend/contracts/phase-a-live-execution-checkpoint-v1.json'
       - 'backend/contracts/phase-a-postulation-eligibility-r21-v1.json'
       - 'backend/config/tya-tenant-runtime-profile.source-safe.json'
@@ -32,6 +34,7 @@ on:
       - release/cxorbia-tya-rc-20260630
     paths:
       - 'tools/hr-source/tya-build-live-hr-source-safe-r20.mjs'
+      - 'tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs'
       - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
       - 'tools/hr-source/tya-reapply-canonical-state-r20.mjs'
       - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
@@ -42,6 +45,7 @@ on:
       - 'tools/qa/tya-postulation-eligibility-r21-gate.mjs'
       - 'tools/dev/cxorbia-static-preview-server.mjs'
       - 'backend/contracts/tya-hr-column-map-r20-v1.json'
+      - 'backend/contracts/tya-hr-tab-inventory-r20-v1.json'
       - 'backend/contracts/phase-a-live-execution-checkpoint-v1.json'
       - 'backend/contracts/phase-a-postulation-eligibility-r21-v1.json'
       - 'backend/config/tya-tenant-runtime-profile.source-safe.json'
@@ -80,6 +84,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
+          node --check tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs
           node --check tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs
           node --check tools/hr-source/tya-reapply-canonical-state-r20.mjs
           node --check tools/release/tya-source-safe-binding-build-r15f.mjs
@@ -110,6 +115,17 @@ jobs:
           grep -q 'exact_or_unique_anchored_only' app/data/tya-hr-source-safe-periods.js
           grep -q 'empty_or_placeholder_shopper_is_unassigned' app/data/tya-hr-source-safe-periods.js
 
+      - name: Restrict the fresh snapshot to the verified Corte 0B inventory
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --inventory backend/contracts/tya-hr-tab-inventory-r20-v1.json \
+            --report-dir .tmp/r20-inventory-cutoff
+          grep -q 'tya-hr-tab-inventory-r20-v1' app/data/tya-hr-source-safe-periods.js
+          grep -q 'all_verified_hr_periods' app/data/tya-hr-source-safe-periods.js
+
       - name: Canonicalize and reapply the final R20/R21 state machine
         run: |
           set -euo pipefail
@@ -124,7 +140,7 @@ jobs:
           grep -q 'R18A_INTEGRATE_EXISTING_CANONICAL_ASSETS' app/data/tya-hr-source-safe-periods.js
           grep -q 'runtimeSyncActive' app/data/tya-hr-source-safe-periods.js
           grep -q 'r15g+r20+r21-eligibility' app/data/tya-hr-source-safe-periods.js
-          grep -q 'all_verified_hr_periods\|all_detected_hr_periods' app/data/tya-hr-source-safe-periods.js
+          grep -q 'all_verified_hr_periods' app/data/tya-hr-source-safe-periods.js
 
       - name: Generate canonical source-safe DEV adapter in build copy
         run: |
@@ -181,6 +197,7 @@ jobs:
           path: |
             .tmp/r18a-self-test
             .tmp/r20-source-safe-gates
+            .tmp/r20-inventory-cutoff
             .tmp/r18a-canonicalization
             .tmp/r20-r21-final-canonical-pass
             .tmp/r18a-binding
@@ -205,7 +222,7 @@ jobs:
               state,
               context: 'cxorbia/r18a-r21-canonical-assets',
               description: state === 'success'
-                ? 'R20 source mapper, canonical build and R21 browser semantics PASS'
-                : 'R20 source mapper, canonical build or R21 browser semantics HOLD',
+                ? 'Verified inventory, canonical build and R21 browser semantics PASS'
+                : 'Verified inventory, canonical build or R21 browser semantics HOLD',
               target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             });
