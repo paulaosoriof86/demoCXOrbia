@@ -1,18 +1,13 @@
-name: CXOrbia Phase A V164 Corte 1 DEV Root Deploy
+name: CXOrbia Phase A V164 Corte 1 DEV Root Deploy — authorization consumed
 
 on:
   workflow_dispatch:
     inputs:
       confirm_dev_deploy:
-        description: 'Exact one-time confirmation token for V164 Corte 1 Hosting DEV.'
+        description: 'Disabled until a new explicit Paula authorization is registered.'
         required: true
         default: 'HOLD'
         type: string
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - 'backend/config/phase-a-hosting-dev-execution-request-v1.json'
 
 permissions:
   contents: read
@@ -38,8 +33,8 @@ env:
 
 jobs:
   dev-root-deploy:
-    name: Deploy exact V164 Corte 1 build to Hosting DEV
-    if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.confirm_dev_deploy == 'DEPLOY_DEV_ROOT_V164_CORTE1') }}
+    name: HOLD · requires new explicit authorization
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -105,7 +100,7 @@ jobs:
             sleep 5
           done
           test "$verified" -eq 1
-          export CXORBIA_EXPECT_TENANT_ID=tya CXORBIA_EXPECT_PROJECT_ID=cinepolis CXORBIA_EXPECT_PERIODS=14 CXORBIA_EXPECT_VISITS=616 CXORBIA_EXPECT_SHOPPERS=216 CXORBIA_MAX_SOURCE_AGE_HOURS=24
+          export CXORBIA_EXPECT_TENANT_ID=tya CXORBIA_EXPECT_PROJECT_ID=cinepolis CXORBIA_EXPECT_PERIODS=14 CXORBIA_EXPECT_VISITS=616 CXORBIA_EXPECT_SHOPPERS=216 CXORBIA_MAX_SOURCE_AGE_HOURS=168
           remote_url="$CXORBIA_DEV_ROOT_URL/index.html?cxTyaPhaseA=1&r18d=visible"
           node tools/qa/tya-source-semantics-r21-gate.mjs --base-url "$remote_url" --out "$CXORBIA_OUT_DIR/remote-semantics"
           node tools/qa/tya-corte1-report-projection-browser-gate.mjs --base-url "$remote_url" --out "$CXORBIA_OUT_DIR/remote-report-browser"
