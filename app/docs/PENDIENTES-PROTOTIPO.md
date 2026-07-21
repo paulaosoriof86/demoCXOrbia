@@ -1,133 +1,83 @@
 # PENDIENTES-PROTOTIPO.md
 
-> Lista viva de mejoras del prototipo CXOrbia, priorizada. Actualizada 2026-07-20.
-> Clasificación: P0 crítico · P1 importante · P2 posterior · [TyA] específico · [CX] generalizable
-> El detalle de CÓMO se resolvió cada ítem está en CAMBIOS-PROTOTIPO.md y CAMBIOS-BACKEND.md/addenda.
+> Lista viva de mejoras del prototipo CXOrbia. Actualizada 2026-07-20.
+> P0 crítico · P1 importante · P2 posterior · [TyA] específico · [CX] reusable.
 
-## 🔴 P0 ACTUAL — CORTE 1 POST HR VIVA DEV
+## 🔴 P0/P1 ACTUAL — CORTE 1 CON HR VIVA CONFIRMADA
 
-- [CX] KPI, tarjetas, modales, histórico y reportes deben consumir una sola revisión live y las mismas facets.
-- [TyA] El modal `Sin submitir` no puede incluir o etiquetar como `Pend. cuestionario` visitas que ya tienen cuestionario.
-- [CX] No fijar conteos de visitas, cuestionarios o submitidos en código, gates ni documentación operativa; son observaciones temporales de HR.
-- [CX] Panorama debe reproyectarse al cambiar periodo. Si no hay fuente, mostrar `Pendiente de fuente` sin cifras aparentes o estáticas.
-- [Claude] Reportes Admin deben permitir editar columnas/contenido realmente y exportar el reporte, no imprimir la página completa.
-- [Claude] Reportes de admin, cliente, shopper y demás roles deben aplicar logo, color, tipografía y gráficas según configuración del tenant.
-- [Claude] Mantener el endpoint live, watcher, binding R22 y contratos backend sin cambios desde frontend.
-- [Academia] Actualizar manuales/cursos después de la validación visual: lectura viva, cambio de periodo, fuente ausente, revisión y exportación.
-- [Backend] Ejecutar prueba de cambio real en HR; verificar nueva revisión, foco/sondeo y reproyección antes de congelar Corte 1.
-- [Backend] Retirar el workflow temporal de `main` después de cerrar correcciones DEV y antes del freeze.
-- [Gobierno] No pedir nueva candidata ni reabrir el empalme; corregir únicamente diferencias reproducibles del Corte 1.
+### Resuelto por backend/adapters
 
-## 🔴 P0 HISTÓRICO — V155 GATE COMERCIAL TRANSVERSAL
+- [Backend] La lectura HR viva quedó confirmada con dos pruebas reales: fecha de cuestionario actualizó KPI y asignación HR retiró una visita disponible del shopper.
+- [Backend] La revisión ahora excluye timestamps volátiles y ya no debe provocar recargas falsas.
+- [Backend] La carga inicial usa bootstrap/cache y la comprobación fresca ocurre de forma controlada.
+- [Backend] La proyección live de reportes volvió a integrarse en el build DEV.
+- [Gobierno] No pedir nueva candidata ni reabrir empalme, histórico, estados, shoppers o Finanzas.
 
-- [CX] La migración de proyectos ya quedó tenant-safe y repetible; no reabrirla.
-- [CX] `hasTechAccess()` permanece false y el curso `a_backend` está oculto; no reabrir esos gates.
-- [Claude] Eliminar jerga técnica visible para admin/ops/coordinador/aliado/shopper/cliente en DOM, tooltips, toasts, manuales, cursos y plantillas.
-- [Claude] Ejecutar gate automatizado por rol/módulo con 0 coincidencias para `backend`, `runtime`, `source-safe`, `pending_backend`, `reviewQueue`, `auditEvents`, `sourceRef`, `connectionRef`, manifest/source lock/BUILD_ID, `app/docs`, `dry-run`, `gate backend` y `sync backend`.
-- [Claude] No cambiar identificadores internos, contratos, comentarios ni contenido técnico realmente inaccesible.
-- [Academia] Revisar cursos y manuales comerciales; técnico solo para audiencia interna protegida.
-- [Backend] Excluir `app/docs`, `app/demo` y evidencia técnica del Hosting durante el empalme, sin eliminarla del repositorio.
+### Validación visual inmediata
 
-## ✅ RESUELTOS Y VERIFICADOS
+- [CX] Confirmar que la página no se recargue cuando la HR no cambió.
+- [CX] Confirmar una sola actualización al existir un cambio real.
+- [CX] Confirmar cuatro reportes operativos disponibles con PDF, Excel y PPT habilitados.
+- [CX] Confirmar KPI, modal, histórico y reportes sobre la misma revisión y facets.
+- [TyA] Confirmar que `Sin submitir` no muestre filas como `Pend. cuestionario` cuando ya existe cuestionario.
 
-### Núcleo / white-label / IA
-- IA multi-proveedor sin sesgo + comparativo costo/beneficio [CX]
-- IA REAL: `CX.ai.ask` llama Gemini/OpenAI/Anthropic; `readAttachment` lee PDF/texto adjunto [CX]
-- PWA auto-install + favicon = logo de la consultora [CX]
-- Login white-label: logo cliente + banderitas (chips) + "Desarrollado por CXOrbia" [CX]
-- Logo del cliente en topbar + propuestas [CX]
-- Temas: 4 paletas nuevas (gris oscuro/claro, índigo, teal) + tipografías [CX]
-- Roles franquicia (coordinador/aliado/representante) con scopeCountry + NDA por rol [CX]
-- Permisos por rol que gobiernan navegación real (matriz `cx_perm` persistente) [CX]
+### Frontend focalizado — Panorama
 
-### Operación
-- Mis Visitas / Mis Beneficios filtran por shopper autenticado [CX]
-- Acciones operativas persistibles + bitácora de auditoría (`automations.logAction`) [CX]
-- Postulaciones: solicitar ajuste, gestión visitas aprobadas, reasignar con buscador, perfil real [CX]
-- Reservas/Asignación: cruce reserva↔postulación, notificaciones bidireccionales [CX]
-- Botón "Asignar responsable" → notifica + aparece en Mi Día [CX]
-- Dashboard operativo: KPIs vivos, avance real vs ideal por país, sin hardcode de mes/2026 [CX]
-- Estado operativo de visitas: detalle real por visita, editar/borrar inline [CX]
-- Visitas disponibles multi-proyecto para shopper [CX]
+- [Claude/CX] `app/core/cliente-data.js`: invalidar cache por periodo y revisión live.
+- [Claude/CX] `app/modules/cliente.js`: separar resultados operativos de score, NPS y secciones pendientes.
+- [Claude/CX] Al cambiar MAY/JUN/JUL, mostrar realizadas, cuestionarios, submitidas, cobertura y tendencia del periodo seleccionado.
+- [Claude/CX] Sin score validado, usar `Pendiente de fuente` sin ceros que parezcan resultados.
+- [Claude/CX] Cuando dos periodos compartan el mismo universo, explicar qué cambió y qué no tiene fuente.
 
-### Finanzas
-- CxC/CxP clickeables: detalle, editar saldo, cambiar estado, eliminar [CX]
-- Pago de lote = movimiento por shopper (no "pago lote" genérico) [CX]
-- Financiamiento con concepto; presupuesto mensual; análisis crítico [CX]
-- Fecha de pago = viernes + N días configurable; liquidación reacciona a cuestionario+submit [CX]
-- Importador Excel real (.xlsx) con SheetJS [CX]
-- R18D P0: `serieMensual()` ya entrega `project()`, `period()` y `visitas()` al adapter local; Finanzas renderiza sin `data.period is not a function` [CX]
+### Frontend focalizado — Reportes y diseño
 
-### Comercial
-- CRM completo estilo Orbit: Dashboard/Insights, Pipeline, Leads, Cuentas, Contactos, Actividades, Reportes [CX]
-- Ficha 360 hub a pantalla completa con pestañas + trazabilidad de correos + proyectos/propuestas vinculados [CX]
-- Clientes ↔ Cuentas CRM sincronizados (misma entidad) [CX]
-- Costos/Propuestas: cargar plantilla, redactar IA, investigar cliente web, exportar PDF, enviar; propuestas vinculadas al cliente con estado [CX]
-- Marketing: generar mes IA con temáticas/embudo/objetivo/CTA/hashtags + elegir herramienta [CX]
+- [Claude/CX] Portal cliente: exportaciones deben usar periodo, país, sucursal, rol y revisión live activos.
+- [Claude/CX] Administración: edición real de columnas, orden, notas y alcance.
+- [Claude/CX] Imprimir/exportar el artefacto del reporte, no la página completa.
+- [Claude/CX] Aplicar logo, colores y tipografía configurados por tenant, con fallback CXOrbia.
+- [Claude/CX] Incorporar gráficas de avance, cobertura, tendencia y distribución cuando correspondan.
+- [Claude/CX] Aplicar el estándar a admin, cliente, shopper y demás roles según permisos.
+- [Claude/CX] No fijar el diseño ni la lógica a TyA/Cinépolis.
 
-### Capacitación / contenido
-- Academia: 16 cursos (7 admin + 5 shopper + 4 cliente), lecciones profundas + quiz, 9 categorías [CX]
-- Admin ve/edita/dirige cursos de TODAS las audiencias (selector de audiencia) [CX]
-- Crear curso/lección/categoría con IA; embeber video/imagen/documento inline [CX]
-- Manuales: 10 con visibilidad por rol, visor a pantalla completa; 3 profundos (Automatizaciones/Add-ons/Integraciones) [CX]
-- Certificación: crear banco con IA desde instructivo, examen shopper, recertificación con notificación [CX]
-- Documentos → "Recursos del proyecto": visor pantalla completa + generación IA + IA en edición [CX]
-- Reportes: crear/editar, exportar CSV real, generar con IA [CX]
-- Soporte: bandeja viva, cambiar estado notifica al solicitante, asignar responsable [CX]
+### Estados honestos
 
-### Config / gobierno
-- Config: Centro de autoadministración + listas desplegables administrables (rubros/tipos/canales/conceptos/estados) [CX]
-- Usuarios: crear/editar, correo cualquier dominio, roles personalizados [CX]
-- Set-up inteligente: elegir QUÉ ítems generar (instructivo/cuestionario/cert/HR/evidencias) [CX]
-- NDA/Legal: versionado + auditoría + textos por rol (incl. coordinador/aliado/representante/socio) [CX]
-- Modo demo/piloto + proyecto inicial configurable [CX]
-- Impresión/PDF limpia (sin topbar, @media print) [CX]
-- Add-ons: catálogo in-app + evidencia geolocalizada + docs comerciales [CX]
+- [CX] Planes de acción continúa pendiente hasta su fuente real.
+- [CX] Brechas y capacitación continúa pendiente hasta resultados por sección.
+- [CX] Scorecard de marca continúa pendiente hasta scores validados.
+- [CX] No inferir score, NPS, planes ni brechas desde conteos operativos.
+- [CX] No fijar conteos operativos en código o gates.
 
-## 🔴 PENDIENTE — Paquete V63/V64 (P0, próximas sesiones)
-- ✅ Selector Proyecto = programa (no meses) + sub-selector Periodo — HECHO V64
-- **Submódulo "Periodos"**: crear/cerrar/archivar/duplicar/comparar periodos de un programa [CX]
-- **Vista de Histórico**: consultable sin mezclarse con operación activa (por proyecto/país/periodo/comparativos) [CX]
-- **Detección de periodo en importador HR**: proyecto nuevo/existente, periodo nuevo/existente, duplicados, errores, con panel de confirmación [CX]
-- **Centro de Actualizaciones/Novedades** SaaS multi-tenant: vista admin (releases, estado por tenant) + vista cliente (banner, historial, confirmación lectura) [CX]
-- **Sincronía de filtros** proyecto/periodo/país entre TODOS los módulos (un solo estado, sin mezclar) [CX]
+### Academia y gobierno
 
-## 🔴 PENDIENTE — Estados honestos (P1)
-- Correo: estado funcional `borrador` o `pendiente de envío`; no mostrar enviado sin proveedor real [CX]
-- Automatizaciones: activa/pausada/pendiente de activación/error/vista previa, última/próxima ejecución [CX]
-- Integraciones: conectado/pendiente/simulado honesto por cada una [CX]
-- IA: `pendiente de conexión` cuando no hay proveedor real [CX]
-- Shoppers source-safe: el KPI `Activos` no debe contar referencias protegidas sin estado como activas; debe separar referencias protegidas, perfiles operativos y perfiles autorizados [CX]
-- Shoppers source-safe: revisar el KPI y la celda `Perfil` para no mostrar completo/incompleto cuando la fuente solo entrega referencia protegida [CX]
-- Finanzas source-safe: no mostrar un modelo financiero específico, ingresos estimados ni narrativa de margen creciente cuando esos campos no vienen de una fuente confirmada [CX]
+- [Academia] Actualizar después de la validación visual: lectura viva, revisión estable, periodos, fuente ausente y exportación por rol.
+- [Academia] Explicar la diferencia entre HR operativa y resultados del cuestionario.
+- [Backend] Retirar el workflow temporal de `main` después del cierre DEV y antes del freeze.
+- [Gobierno] Corte 1 solo se congela con `APROBADO` de Paula.
 
-## 🔴 PENDIENTE — Fichas ampliadas (P1)
-- Ficha de Periodo, Ficha de Visita ampliada, Ficha de Sucursal (histórico/scores/hallazgos/comparativo) [CX]
+## 🔴 P0 HISTÓRICO PROTEGIDO
 
-## 🔵 BACKEND (fuera de alcance del prototipo — lo hace ChatGPT)
-- Persistencia real (hoy localStorage), Auth, Storage de evidencias
-- Make/WhatsApp/correo/HR-online reales; Gemini server-side
-- Importación que persista; migración de datos reales
+- [CX] Mantener migración tenant-safe, `hasTechAccess=false` y curso técnico oculto.
+- [Claude] Eliminar jerga técnica visible sin cambiar identificadores o contratos internos.
+- [Academia] Mantener contenido técnico solo para audiencia interna protegida.
 
-## 🟡 PROFUNDIDAD DE CONTENIDO (ampliable, no bloqueante)
-- Más cursos extensos en Academia por industria; más analítica en Finanzas/portal cliente
+## ✅ RESUELTOS Y PRESERVADOS
 
----
+- White-label, temas, roles y permisos.
+- Operación, postulaciones, reservas, shoppers y visitas disponibles.
+- Finanzas reconciliadas e importador Excel.
+- CRM, clientes, propuestas y marketing.
+- Academia, manuales, certificaciones, recursos y soporte.
+- Configuración, usuarios, setup y gobierno.
 
-## Pendientes después de aplicar V66 — ChatGPT/backend 2026-07-02
+## 🟡 PENDIENTES POSTERIORES
 
-- [CX] Mantener el prototipo comercializable y generalizable. TyA/Cinépolis es tenant DEV; no endurecer reglas como si fueran el único cliente.
-- [Backend] Implementar segmentación real por tenant, projectId, programId, periodId, país, rol, permisos y feature flags.
-- [Backend] Sprint 9 sigue pendiente: no marcar como cerrado hasta validar Firebase DEV real.
-- [Claude] Mantener estados honestos mediante lenguaje funcional comercial, sin jerga interna.
-- [Claude] Validar visualmente reglas operativas por periodo/país/quincena sin convertirlas en lógica exclusiva de TyA.
+- Gestión completa de periodos e histórico comparativo.
+- Importador HR con detección de proyecto, periodo y duplicados.
+- Centro de actualizaciones SaaS.
+- Sincronía global de proyecto, periodo y país.
+- Fichas ampliadas de periodo, visita y sucursal.
+- Persistencia, autenticación, evidencias e integraciones cuando llegue su bloque autorizado.
 
-## 2026-07-14 - Post empalme V131
+## Estado seguro
 
-- Mantener smoke visual final por roles como verificación posterior.
-- Producción, proveedores, import real y writes siguen HOLD.
-
-## 2026-07-15 - R18D hotfix cerrado
-
-- El P0 de Finanzas quedó empalmado de forma reconciliada y R18D pasó sin blockers ni warnings.
-- Los ajustes source-safe de Shoppers/Finanzas se mantienen para validación visual DEV.
+Sin merge ni producción. Importaciones reales, automatizaciones externas y pagos permanecen en espera.
