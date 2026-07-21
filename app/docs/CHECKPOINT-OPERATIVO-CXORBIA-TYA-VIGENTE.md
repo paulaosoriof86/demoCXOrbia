@@ -35,17 +35,10 @@ Esto prueba que la plataforma ya no depende de conteos fijos ni de un snapshot h
 
 ## Causas raíz demostradas
 
-### Recargas falsas y lentitud
-
-La revisión SHA-256 incluía marcas temporales regeneradas. El watcher interpretaba cada reconstrucción como cambio de HR y ejecutaba `location.reload()`. El script inicial también podía esperar una reconstrucción completa cuando expiraba el cache.
-
-### Reportes cliente bloqueados
-
-El despliegue live cargaba la HR runtime, pero omitía la proyección `window.CX_TYA_CORTE1_REPORTS`. El módulo actuó fail-closed y deshabilitó PDF/Excel/PPT.
-
-### Panorama por periodo
-
-Panorama usa scores/NPS/secciones validados, no solo conteos operativos. Mayo y julio comparten 22 sucursales y 44 visitas, y no existe todavía una fuente conectada de scores por sección. Falta frontend para separar claramente operación del periodo y resultados de evaluación pendientes.
+- La revisión incluía marcas temporales regeneradas y el watcher recargaba la página sin cambio operativo real.
+- El script inicial podía esperar una reconstrucción completa de la HR cuando expiraba el cache.
+- El build live omitía `CX_TYA_CORTE1_REPORTS`, por lo que el portal cliente fallaba cerrado.
+- Panorama usa scores/NPS/secciones validados; actualmente falta esa fuente y varios periodos comparten el mismo universo programado.
 
 ## Correcciones focalizadas aplicadas
 
@@ -93,6 +86,13 @@ Los conteos observados son evidencia temporal, no constantes operativas.
 6. Corregir diseño/exportación en `app/modules/cliente-extra.js` y reportes administrativos en `app/modules/operacion-extra.js`.
 7. Retirar el workflow temporal de `main` después de cerrar DEV.
 8. Congelar Corte 1 únicamente con `APROBADO`.
+
+## Documentación actualizada
+
+- `app/docs/CAMBIOS-BACKEND.md`;
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-LIVE-HR-CLOUD-BUILD-BLOCKER-20260720.md`;
+- `app/docs/RESUMEN-PARA-CLAUDE.md`;
+- `app/docs/PENDIENTES-PROTOTIPO.md`.
 
 ## Siguiente bloque exacto
 
