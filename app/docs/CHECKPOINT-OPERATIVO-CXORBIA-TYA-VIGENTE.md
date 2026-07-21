@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
 Fecha: 2026-07-21
-Estado: `CORTE_1B_CANDIDATE_V170_HOLD_P0_PROVEN`
+Estado: `CORTE_1B_CANDIDATE_V171B_HOLD_P0_SHOPPER_IDENTITY`
 
 ## Estado comprobado
 
@@ -27,59 +27,63 @@ Paula confirmó que:
 
 Último deploy DEV preservado: run `29799752544`, job `88538293485`, artefacto `8483321397`, digest `sha256:b5386d5a9c4a7f2d4ad385026bd2d795de59c7e54b2b8cf73d972fd516fc6d86`.
 
-## Candidata V170 auditada
+## Candidata V171b auditada focalizadamente
 
-- Archivo: `Prototype development request (14).zip`.
-- SHA-256: `c7819bbd28436d0ae22fabf0d7339e8b6ad4d653e950fed45cf1407641b8eaa3`.
-- `EXECUTION_LANE_READY`: confirmado.
-- 15 JS: sintaxis PASS.
-- No hardcode Cinépolis: PASS.
-- Decisión: `HOLD — P0_PROVEN`.
+- Archivo: `Prototype development request CXOrbiaV171b.zip`.
+- SHA-256: `e655ea88950c8485a497b52b3870c9b18ebef98181e1662993ef496efc17d4e2`.
+- Paquete acumulado: 261 entradas y 258 archivos dentro de `app/`.
+- Manifiesto e inventario: presentes; hashes de los 15 archivos modificados: PASS.
+- 67 JavaScript: sintaxis PASS.
+- `index.html`: referencias locales completas y sin scripts duplicados.
+- No hardcode Cinépolis en archivos modificados: PASS.
+- `EXECUTION_LANE_READY`: no; falta checkout Git autenticado en el mismo workspace.
+- Decisión: `HOLD — P0_PROVEN_SHOPPER_IDENTITY_FAIL_OPEN`.
 - Aplicación a rama viva: no ejecutada.
 
-## Mejoras reales que se preservan para la corrección
+## Mejoras V171b que deben preservarse
 
 - `CX.reportKit` reusable;
-- reportes multiformato por varios roles y secciones;
+- reportes PDF/XLSX/PPTX en múltiples roles;
 - editor, branding, gráficas y multiproyecto;
-- Panorama operación/evaluación;
-- add-ons con selección de roles;
-- check-in visible para Shopper;
+- Panorama operación/evaluación con facetas canónicas;
+- add-ons aislados por tenant/proyecto;
+- geo-checkin honesto pendiente de backend/Storage;
+- `mireportes` visible en NAV Shopper;
+- router `super` protegido;
+- extensiones resueltas por exportador;
 - Novedades por rol.
 
-## P0 demostrados
+## P0 demostrado en V171b
 
-1. Router `super` sigue sin guard en `mount` y `nav`.
-2. Reportes Shopper fallan abiertos con fallback `sh1`.
-3. `openReport` puede generar XLSX/PPTX con filename `.pdf`.
-4. Panorama redefine estados y cuenta submitido sin confirmación explícita.
-5. Reportes Admin redefine estados y puede incluir archivadas/canceladas.
-6. Add-ons usan clave global y no están aislados por tenant/proyecto.
-7. Geo-checkin guarda solo nombre de foto, no persiste y permite afirmar evidencia sin GPS.
+1. `app/modules/misvisitas.js` usa `shopperId || 'sh1'`.
+2. Si falta `visitsForShopper`, `misvisitas` puede caer a todas las visitas mediante `data.visitas()`.
+3. `app/modules/reservas.js` usa el mismo fallback `sh1`.
+4. `app/modules/midia.js` amplía visitas privadas por estado y puede mostrar visitas activas de otro shopper.
+5. `app/app.js` conserva `sh1` sin guard explícito que lo limite a modo demo.
 
-## P1 importantes
+Una prueba reproducible con el archivo real de la candidata confirmó que una sesión Shopper sin `shopperId` renderiza una visita ajena de `sh1`.
 
-- `mireportes` no aparece en NAV Shopper.
-- rol Admin de `geo_checkin` no tiene consumidor funcional.
-- PDF/PPT/XLSX requieren equivalencia y legibilidad final.
-- PPT puede anunciar éxito antes de terminar la escritura.
+## P1/P2
+
+- El campo `bytes` del inventario/manifiesto parece contar caracteres, no bytes UTF-8; los hashes son correctos.
+- PDF/PPT/XLSX requieren validación visual final de legibilidad y equivalencia después de resolver el P0.
 
 ## Documentación vinculante
 
-- `app/docs/AUDITORIA-CANDIDATA-V170-CORTE1B-20260721.md`;
-- `app/docs/PAQUETE-CORRECCION-CLAUDE-V170-CORTE1B-20260721.md`;
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V170-HOLD-20260721.md`;
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V170-HOLD-20260721.md`;
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V170-CORTE1B-20260721.md`.
+- `app/docs/AUDITORIA-CANDIDATA-V171B-CORTE1B-20260721.md`;
+- `app/docs/PAQUETE-CORRECCION-CLAUDE-V171B-CORTE1B-20260721.md`;
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V171B-HOLD-20260721.md`;
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V171B-HOLD-20260721.md`;
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V171B-CORTE1B-20260721.md`.
 
 ## Regla de continuidad
 
-Claude debe corregir sobre V170 y preservar las mejoras. No reiniciar desde V164 ni cambiar backend, `CX.data`, adapters live, contratos, Cloud Run, Hosting, IAM o producción.
+Claude debe corregir exactamente sobre V171b y preservar todas sus mejoras. No reiniciar desde V164 ni cambiar backend, `CX.data`, adapters live, contratos, Cloud Run, Hosting, IAM o producción.
 
 ## Siguiente bloque exacto
 
-`CANDIDATA V170 CORREGIDA → AUDITORÍA FOCALIZADA → APPLY_DELTA_DIRECTLY EN RAMA VIVA → GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
+`CANDIDATA V171B CORREGIDA → EXECUTION_LANE_READY → AUDITORÍA FOCALIZADA → GO: APPLY_DELTA_DIRECTLY EN RAMA VIVA → GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
 
 ## Estado seguro
 
-Sin merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos.
+Sin empalme de V171b, merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos.
