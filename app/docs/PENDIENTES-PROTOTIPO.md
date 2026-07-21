@@ -7,10 +7,10 @@
 
 ### Resuelto por backend/adapters
 
-- [Backend] La lectura HR viva quedó confirmada con dos pruebas reales: fecha de cuestionario actualizó KPI y asignación HR retiró una visita disponible del shopper.
-- [Backend] La revisión ahora excluye timestamps volátiles y ya no debe provocar recargas falsas.
+- [Backend] La lectura HR viva quedó confirmada: fecha de cuestionario actualizó KPI y asignación HR retiró una visita disponible del shopper.
+- [Backend] La revisión excluye timestamps volátiles y no debe provocar recargas falsas.
 - [Backend] La carga inicial usa bootstrap/cache y la comprobación fresca ocurre de forma controlada.
-- [Backend] La proyección live de reportes volvió a integrarse en el build DEV.
+- [Backend] La proyección live de reportes está integrada en DEV.
 - [Gobierno] No pedir nueva candidata ni reabrir empalme, histórico, estados, shoppers o Finanzas.
 
 ### Validación visual inmediata
@@ -59,8 +59,8 @@
 
 ## 🔴 P0 HISTÓRICO PROTEGIDO
 
-- [CX] Mantener migración tenant-safe, `hasTechAccess=false` y curso técnico oculto.
-- [Claude] Eliminar jerga técnica visible sin cambiar identificadores o contratos internos.
+- [CX] Mantener migración tenant-safe, acceso técnico protegido y contenido comercial sin jerga interna.
+- [Claude] No cambiar identificadores o contratos internos sin evidencia nueva.
 - [Academia] Mantener contenido técnico solo para audiencia interna protegida.
 
 ## ✅ RESUELTOS Y PRESERVADOS
@@ -80,6 +80,10 @@
 - Sincronía global de proyecto, periodo y país.
 - Fichas ampliadas de periodo, visita y sucursal.
 - Persistencia, autenticación, evidencias e integraciones cuando llegue su bloque autorizado.
+
+## Siguiente bloque exacto
+
+`REVALIDAR DEV ESTABILIDAD Y REPORTES → CORRECCIONES FRONTEND FOCALIZADAS → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
 
 ## Estado seguro
 
