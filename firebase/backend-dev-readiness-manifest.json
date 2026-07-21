@@ -1,0 +1,24 @@
+{
+  "manifestVersion": "backend-dev-readiness-20260629",
+  "runtimeFiles": [
+    "app/core/backend-firebase.js",
+    "app/core/backend-finance-benefits.js",
+    "app/core/backend-operational-actions.js",
+    "app/core/backend-cxdata-finance-read.js"
+  ],
+  "tooling": [
+    "firebase/client-write-tools/validate-backend-runtime-files.mjs",
+    "firebase/client-write-tools/run-backend-dev-readiness-dry-run.mjs",
+    "firebase/client-write-tools/run-finance-benefits-full-pipeline-dry-run.mjs"
+  ],
+  "outputs": [
+    "firebase/private-output/backend-runtime-files-validation-summary.md",
+    "firebase/private-output/backend-dev-readiness-dry-run-summary.md",
+    "firebase/private-output/finance-benefits-full-pipeline-dry-run-summary.md"
+  ],
+  "statusMeaning": {
+    "OK": "ready for next controlled step",
+    "REVIEW": "review report before next step",
+    "FAIL": "stop and fix"
+  }
+}

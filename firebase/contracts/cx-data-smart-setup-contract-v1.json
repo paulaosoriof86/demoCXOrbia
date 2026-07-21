@@ -1,0 +1,49 @@
+{
+  "contractVersion": "cx-data-smart-setup-contract-v1",
+  "status": "draft-no-frontend-change",
+  "purpose": "Contrato para set-up inteligente con fuentes, recomendaciones, decisiones y write-plan revisable.",
+  "methods": {
+    "startSetupSession": {
+      "mode": "write",
+      "input": { "tenantId": "string", "scope": "tenant|project|module", "projectId": "string|null", "countryScope": "array" },
+      "output": { "ok": "boolean", "sessionId": "string|null", "errors": "array" }
+    },
+    "addSetupSource": {
+      "mode": "write",
+      "input": { "tenantId": "string", "sessionId": "string", "sourceType": "string", "fileAssetId": "string|null", "summarySanitized": "string|null" },
+      "output": { "ok": "boolean", "sourceId": "string|null", "errors": "array" }
+    },
+    "runSetupAnalysis": {
+      "mode": "action",
+      "input": { "tenantId": "string", "sessionId": "string", "mode": "rules|ai|hybrid" },
+      "output": { "ok": "boolean", "recommendationCount": "number", "taskCount": "number", "errors": "array" },
+      "requires": ["sources", "aiGovernanceIfAi", "humanReview"]
+    },
+    "getSetupRecommendations": {
+      "mode": "read",
+      "input": { "tenantId": "string", "sessionId": "string", "area": "string|null" },
+      "output": { "items": "array", "status": "ok|error" }
+    },
+    "decideSetupRecommendation": {
+      "mode": "write",
+      "input": { "tenantId": "string", "sessionId": "string", "recommendationId": "string", "decision": "accept|reject|edit|defer", "editedValueSanitized": "object|null" },
+      "output": { "ok": "boolean", "decisionId": "string|null", "errors": "array" }
+    },
+    "buildSetupWritePlan": {
+      "mode": "action",
+      "input": { "tenantId": "string", "sessionId": "string" },
+      "output": { "ok": "boolean", "writePlanId": "string|null", "opsCount": "number", "errors": "array" },
+      "requires": ["acceptedRecommendations", "validation"]
+    },
+    "getSetupTasks": {
+      "mode": "read",
+      "input": { "tenantId": "string", "sessionId": "string", "status": "string|null" },
+      "output": { "items": "array", "status": "ok|error" }
+    }
+  },
+  "frontendGuidance": {
+    "setUpModule": "Debe mostrar fuentes, analisis, recomendaciones, confianza, decision humana, tareas y write-plan.",
+    "noFalseSuccess": "No mostrar configurado si solo se generaron recomendaciones.",
+    "applyGate": "Aplicar configuracion requiere write-plan validado y autorizacion."
+  }
+}

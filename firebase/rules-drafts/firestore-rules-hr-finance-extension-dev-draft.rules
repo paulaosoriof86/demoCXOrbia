@@ -1,0 +1,112 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // DRAFT ONLY — no publicar sin validación explícita.
+    // Extiende reglas existentes para colecciones HR/finanzas.
+    // Este archivo no reemplaza firestore.rules actual.
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function tokenTenant() {
+      return request.auth.token.tenantId;
+    }
+
+    function sameTenant(tenantId) {
+      return signedIn() && tokenTenant() == tenantId;
+    }
+
+    function role() {
+      return request.auth.token.role;
+    }
+
+    function isAdmin() {
+      return role() in ['superAdmin', 'admin', 'owner'];
+    }
+
+    function isOps() {
+      return role() in ['superAdmin', 'admin', 'owner', 'ops', 'coordinator'];
+    }
+
+    function isFinance() {
+      return role() in ['superAdmin', 'admin', 'owner', 'finance'];
+    }
+
+    function isShopper(shopperId) {
+      return signedIn() && request.auth.token.shopperId == shopperId;
+    }
+
+    function projectPath(tenantId, projectId) {
+      return /databases/$(database)/documents/tenants/$(tenantId)/projects/$(projectId);
+    }
+
+    match /tenants/{tenantId}/projects/{projectId}/hrImportBatches/{batchId} {
+      allow read: if sameTenant(tenantId) && isOps();
+      allow create: if sameTenant(tenantId) && isOps() && request.resource.data.mode in ['dryRun', 'write'];
+      allow update: if sameTenant(tenantId) && isOps();
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/projects/{projectId}/hrSyncRuns/{syncRunId} {
+      allow read: if sameTenant(tenantId) && isOps();
+      allow create: if sameTenant(tenantId) && isOps();
+      allow update: if sameTenant(tenantId) && isOps();
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/projects/{projectId}/hrWriteBackJobs/{jobId} {
+      allow read: if sameTenant(tenantId) && isOps();
+      allow create: if sameTenant(tenantId) && isOps();
+      allow update: if sameTenant(tenantId) && isOps();
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/projects/{projectId}/shopperBenefits/{benefitId} {
+      allow read: if sameTenant(tenantId) && (
+        isOps() ||
+        isFinance() ||
+        isShopper(resource.data.shopperId)
+      );
+      allow create: if sameTenant(tenantId) && isOps();
+      allow update: if sameTenant(tenantId) && (isOps() || isFinance());
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/projects/{projectId}/paymentLots/{lotId} {
+      allow read: if sameTenant(tenantId) && (isOps() || isFinance());
+      allow create: if sameTenant(tenantId) && isFinance();
+      allow update: if sameTenant(tenantId) && isFinance();
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/projects/{projectId}/financialMovements/{movementId} {
+      allow read: if sameTenant(tenantId) && isFinance();
+      allow create: if sameTenant(tenantId) && isFinance();
+      allow update: if sameTenant(tenantId) && isFinance();
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/projects/{projectId}/reconciliations/{reconciliationId} {
+      allow read: if sameTenant(tenantId) && isFinance();
+      allow create: if sameTenant(tenantId) && isFinance();
+      allow update: if sameTenant(tenantId) && isFinance();
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/projects/{projectId}/collaborators/{userId} {
+      allow read: if sameTenant(tenantId) && isAdmin();
+      allow create: if sameTenant(tenantId) && isAdmin();
+      allow update: if sameTenant(tenantId) && isAdmin();
+      allow delete: if sameTenant(tenantId) && isAdmin();
+    }
+
+    match /tenants/{tenantId}/shoppers/{shopperId}/aliases/{aliasId} {
+      allow read: if sameTenant(tenantId) && (isOps() || isFinance() || isShopper(shopperId));
+      allow create: if sameTenant(tenantId) && isOps();
+      allow update: if sameTenant(tenantId) && isOps();
+      allow delete: if false;
+    }
+  }
+}
