@@ -10,18 +10,24 @@ Estado: ACTIVO Y OBLIGATORIO
 - HR viva read-only confirmada con cambios reales.
 - Cloud Run DEV y Hosting DEV desplegados.
 - Último deploy de refresco rápido: run `29799752544`, job `88538293485`, artefacto `8483321397`.
-- V171b permanece no aplicada; su P0 Shopper fue corregido por V172.
-- Candidata V172: SHA-256 `2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5`.
-- Auditoría focalizada V172: `AUDITED_GO_READY_DIRECT_APPLY`.
-- 67 JS sintaxis PASS; 73 referencias locales PASS; 18 hashes/bytes PASS; gate Shopper A/B/sin identidad PASS.
-- No existe P0 nuevo reproducible.
-- El supuesto bloqueo de checkout queda retractado como desvío metodológico.
-- Fuente vigente: `AUDITORIA-CANDIDATA-V172-CORTE1B-20260721.md`.
+- V171b permanece no aplicada por el P0 Shopper documentado.
+- Candidata V172 recibida: SHA-256 `2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5`.
+- Estado V172: `EXECUTION_LANE_NOT_READY`.
+- La declaración GO emitida fuera del carril quedó invalidada.
+- No existe empalme parcial: los objetos blob/tree creados durante el desvío no fueron asociados a commit ni a la rama.
+- Fuente vigente: `PREFLIGHT-CANDIDATA-V172-EXECUTION-LANE-NOT-READY-20260721.md`.
+- Fuente de trazabilidad invalidada: `AUDITORIA-CANDIDATA-V172-CORTE1B-20260721.md`.
 
-Lectura obligatoria: reglas maestras, plan Phase A, addendum de empalme, checkpoint vigente, auditoría V172, CAMBIOS, resumen, pendientes, Academia y PR #7.
+Lectura obligatoria: reglas maestras, addendum canónico de empalme file-aware, plan Phase A, checkpoint vigente, preflight V172, CAMBIOS, resumen, pendientes, Academia y PR #7.
 
-Siguiente acción exacta:
+## Método obligatorio
 
-`APPLY_DELTA_DIRECTLY V172 SOBRE docs-tya-v6-v71-audit → COMMIT/PUSH ATÓMICO → MANIFEST/BUILD-LOCK/VERIFICADOR → POST-GATES → HOSTING DEV → VALIDACIÓN VISUAL → FREEZE CORTE 1`
+`EXECUTION_LANE_READY → AUDITORÍA DELTA → P0_PROVEN o GO → si GO: APPLY_DELTA_DIRECTLY → COMMIT/PUSH ATÓMICO → POST-GATES → VALIDACIÓN VISUAL → FREEZE`
+
+No Contents API archivo por archivo, blobs/trees, workflow transportador, nueva rama/PR, nueva candidata ni trabajo manual para Paula.
+
+## Siguiente acción exacta
+
+`CAMBIAR AL WORKSPACE FILE-AWARE CORRECTO → CANDIDATA + CHECKOUT AUTENTICADO EN LA MISMA SESIÓN → EXECUTION_LANE_READY → AUDITORÍA DELTA V172 → GO/P0 → APPLY_DELTA_DIRECTLY si GO`
 
 Corte 2 continúa bloqueado.
