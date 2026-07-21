@@ -11,7 +11,10 @@ const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
 const PORT=Number(process.env.PORT||8080);
 const CACHE_MS=Math.max(0,Number(process.env.CXORBIA_LIVE_HR_CACHE_MS||15000));
-const ENDPOINT_PATH='/v1/tenants/tya/projects/cinepolis/hr-live';
+const ENDPOINT_PATHS=new Set([
+  '/v1/tenants/tya/projects/cinepolis/hr-live',
+  '/api/tya/cinepolis/hr-live'
+]);
 const ALLOWED_ORIGINS=new Set([
   'https://cxorbia-backend-dev.web.app',
   'https://cxorbia-backend-dev.firebaseapp.com',
@@ -107,7 +110,7 @@ const server=http.createServer(async(req,res)=>{
   if(req.method!=='GET')return sendJson(res,405,{ok:false,error:'method_not_allowed'});
   const url=new URL(req.url||'/',`http://${req.headers.host||'localhost'}`);
   if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,writes:false,production:false});
-  if(url.pathname!==ENDPOINT_PATH)return sendJson(res,404,{ok:false,error:'not_found'});
+  if(!ENDPOINT_PATHS.has(url.pathname))return sendJson(res,404,{ok:false,error:'not_found'});
   try{
     const current=await buildSnapshot();
     const format=url.searchParams.get('format')||'json';
