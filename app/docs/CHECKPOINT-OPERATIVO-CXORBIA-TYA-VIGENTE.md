@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
 Fecha: 2026-07-21
-Estado: `CORTE_1B_CANDIDATE_V172_EXECUTION_LANE_NOT_READY`
+Estado: `CORTE_1B_CANDIDATE_V172_AUDITED_GO_READY_DIRECT_APPLY`
 
 ## Estado comprobado
 
@@ -15,70 +15,55 @@ Estado: `CORTE_1B_CANDIDATE_V172_EXECUTION_LANE_NOT_READY`
 - Corte 1 no está congelado.
 - Corte 2 continúa bloqueado.
 
-## Evidencia funcional preservada
+## Corrección metodológica
 
-Paula confirmó que:
+Se retracta el supuesto bloqueo `EXECUTION_LANE_NOT_READY` atribuido a falta de checkout local. Fue un desvío: una limitación temporal de herramienta no debía sustituir ni detener el método vigente. No se pide nueva candidata, no se abre rama/PR y no se traslada trabajo manual a Paula.
 
-1. agregar fecha de cuestionario en HR cambia el KPI;
-2. asignar shopper en HR retira la visita disponible;
-3. los KPI de julio coinciden con la HR actual;
-4. los cuatro reportes operativos del cliente están disponibles;
-5. los cambios HR se reflejan después del ciclo live de lectura/canonización.
-
-Último deploy DEV preservado: run `29799752544`, job `88538293485`, artefacto `8483321397`, digest `sha256:b5386d5a9c4a7f2d4ad385026bd2d795de59c7e54b2b8cf73d972fd516fc6d86`.
-
-## Continuidad V171b
-
-V171b permanece sin aplicar por el P0 demostrado de identidad Shopper fail-open. Sus mejoras acumuladas deben preservarse: reportKit, reportes multiformato, branding, gráficas, multiproyecto, Panorama canónico, add-ons aislados, geo-checkin honesto, `mireportes`, router `super` y Novedades por rol.
-
-## Candidata corregida V172 — preflight
+## Candidata V172 auditada
 
 - Archivo: `Prototype development request CXOrbia V172.zip`.
 - SHA-256: `2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5`.
-- Raíz: `CANDIDATA_V172_ACUMULADA_20260721/`.
-- Entradas: 261.
-- Manifiesto, inventario y reporte de cambios: presentes.
-- Comparación byte a byte contra V171b:
-  - agregados: 0;
-  - eliminados: 0;
-  - modificados: 8.
-- Archivos funcionales modificados: `app/app.js`, `app/modules/midia.js`, `app/modules/misvisitas.js`, `app/modules/reservas.js`.
-- Archivos de control modificados: `INVENTARIO.md`, `MANIFEST.json`, `MANIFEST.sha256`, `app/REPORTE-DE-CAMBIOS.md`.
-- El delta coincide con el alcance de corrección solicitado.
+- Base inmediata: V171b.
+- Delta: 0 agregados, 0 eliminados y 8 modificados.
+- Archivos funcionales:
+  - `app/app.js`;
+  - `app/modules/midia.js`;
+  - `app/modules/misvisitas.js`;
+  - `app/modules/reservas.js`.
+- Archivos de control:
+  - `INVENTARIO.md`;
+  - `MANIFEST.json`;
+  - `MANIFEST.sha256`;
+  - `app/REPORTE-DE-CAMBIOS.md`.
 
-## Gate de ejecución
+## Gates V172
 
-```text
-CANDIDATE_BYTES_AVAILABLE=true
-CANDIDATE_EXTRACTABLE=true
-CANDIDATE_MANIFEST_PRESENT=true
-AUTHENTICATED_GITHUB_CONNECTOR=true
-TARGET_BRANCH=docs-tya-v6-v71-audit
-LOCAL_LIVE_BRANCH_CHECKOUT=false
-NETWORK_GIT_CLONE_AVAILABLE=false
-EXECUTION_LANE_READY=false
-```
+- 67 JavaScript: sintaxis PASS.
+- 73 referencias locales de `index.html`: PASS.
+- 18 hashes y tamaños UTF-8 declarados: PASS.
+- UTF-8 sin BOM y sin mojibake en los cuatro archivos funcionales: PASS.
+- Gate dinámico `V172_IDENTITY_GATE_PASS`:
+  - Shopper A ve únicamente A;
+  - Shopper B ve únicamente B;
+  - sin `shopperId`, Mis Visitas/Reservas/Mi Día muestran cero datos privados y cero acciones;
+  - sin `visitsForShopper`, no se abre `data.visitas()` global;
+  - `sh1` queda únicamente bajo guard demo explícito;
+  - live/real sin identidad conserva `shopperId:null`.
 
-El entorno actual no contiene un checkout autenticado de la rama viva en el mismo workspace que los bytes extraídos. Por el lock vigente, se detuvo antes de declarar auditoría completa, GO o HOLD.
+## Preservación
 
-## Operaciones no realizadas
+V172 conserva las mejoras V171b: reportKit, PDF/XLSX/PPTX por rol, editor, branding, gráficas, multiproyecto, Panorama canónico, add-ons aislados, geo-checkin honesto, `mireportes`, router `super`, extensiones correctas y Novedades por rol.
 
-- no se aplicó V172;
-- no se usaron Contents API archivo por archivo, blobs/trees ni workflow transportador;
-- no se creó rama o PR;
-- no hubo deploy, merge, producción ni acciones manuales para Paula.
+## Decisión
 
-## Documentación vigente
+No existe P0 nuevo reproducible.
 
-- `app/docs/PREFLIGHT-CANDIDATA-V172-EXECUTION-LANE-NOT-READY-20260721.md`;
-- auditoría y paquete de corrección V171b;
-- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
-- PR #7.
+`AUDITED_GO_READY_DIRECT_APPLY`
 
 ## Siguiente bloque exacto
 
-`RESTABLECER WORKSPACE FILE-AWARE CON CHECKOUT AUTENTICADO DE docs-tya-v6-v71-audit → DECLARAR EXECUTION_LANE_READY → AUDITORÍA FOCALIZADA V172 → GO: APPLY_DELTA_DIRECTLY EN RAMA VIVA → GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
+`APPLY_DELTA_DIRECTLY V172 SOBRE docs-tya-v6-v71-audit → COMMIT/PUSH ATÓMICO → HEAD_AFTER → MANIFEST/BUILD-LOCK/VERIFICADOR → POST-GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
 
 ## Estado seguro
 
-Sin empalme V172, merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos.
+Todavía sin declarar empalme V172, merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos.
