@@ -1,3 +1,28 @@
+## 2026-07-20 - Corte 1A HR viva desplegada en DEV
+
+- V164 y Corte 1A están integrados en `docs-tya-v6-v71-audit`.
+- Cloud Run DEV read-only y Hosting DEV pasaron build, deploy y smoke same-origin.
+- La plataforma ya no debe depender de conteos fijos ni de un snapshot aprobado como verdad operativa.
+- Cada proyecto conserva su propia HR y configuración de cuestionario.
+- TyAOnline es solo un proveedor posible de cuestionarios, no el sincronizador general de HR.
+- No solicitar nueva candidata ni reabrir el empalme.
+
+### Pendientes localizados para Claude/prototipo
+
+1. KPI y modal deben consumir la misma revisión live y las mismas facets.
+2. `Sin submitir` no puede mostrar filas etiquetadas como `Pend. cuestionario`.
+3. Panorama debe reproyectarse por periodo; si falta fuente, no mostrar cifras aparentes o estáticas.
+4. Reportes Admin deben permitir composición real de columnas y exportar el reporte, no imprimir la página.
+5. Reportes de todos los roles deben usar branding configurable del tenant: logo, color, tipografía y gráficas cuando aplique.
+6. No alterar contratos backend, endpoint live, watcher, binding R22, IAM ni Hosting desde frontend.
+7. Academia y manuales deben explicar lectura viva, revisión de fuente y estados honestos.
+
+### Estado del bloque
+
+- DEV deploy: PASS.
+- Producción, writes, imports, pagos y Make/Gemini live: HOLD.
+- Pendiente: prueba de cambio real en HR, validación visual, correcciones focalizadas y freeze de Corte 1.
+
 ## 2026-07-16 - Candidata interna V156 / gate reportado no coincide con ZIP
 
 - Fuente única de trabajo Claude/prototipo: V156.
