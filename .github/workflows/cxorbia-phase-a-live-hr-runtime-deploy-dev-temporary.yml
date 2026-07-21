@@ -29,6 +29,7 @@ env:
   LIVE_ENDPOINT_PATH: /api/tya/cinepolis/hr-live
   DEPLOY_REQUEST: backend/config/phase-a-live-hr-runtime-deploy-request-v1.json
   OUT_DIR: .tmp/live-hr-runtime-deploy-dev
+  RERUN_NONCE: roles-granted-20260720-1850
 
 jobs:
   deploy:
