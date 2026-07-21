@@ -10,7 +10,8 @@ Estado: `CORTE_1B_VISUAL_NO_GO_FIX_PACKAGE_READY`
 - PR #7: draft/open/no merge.
 - Baseline de seguridad: V161C/R21.
 - V164 y Corte 1A integrados.
-- Commit de aplicación parcial V172: `0ca607f430ac97ca022687419df688bccfd66e19`.
+- Commit runtime V172 parcial preservado como ancestro: `0ca607f430ac97ca022687419df688bccfd66e19`.
+- `HEAD_BEFORE` debe resolverse al ejecutar desde `origin/docs-tya-v6-v71-audit`.
 - Cloud Run DEV y Hosting DEV están desplegados, pero la validación visual es NO-GO.
 - Corte 1 no está congelado.
 - Corte 2 continúa bloqueado.
@@ -66,7 +67,7 @@ Consecuencia: snapshot anterior visible, pantalla blanca y estado degradado.
 ## Paquete correctivo preparado
 
 - Archivo: `PAQUETE_EJECUCION_CODEX_CXORBIA_V172_HR_INPLACE_20260721.zip`.
-- SHA-256: `46bb502d4422113b55517afbe8099dcd89da9ca330fe435b64ee16ec1d152d60`.
+- SHA-256 final: `eaadd16ef78539bfd45c60ad8eed9dc0507a385b80583640fb3f1666f4f9eb15`.
 - Estado: `READY_FOR_CODEX_APPLY_ONLY`.
 
 Incluye:
@@ -99,7 +100,7 @@ Incluye:
 
 ## Siguiente bloque exacto
 
-`CODEX APPLY PACKAGE EXACTO → COMMIT/PUSH ATÓMICO → HEAD_AFTER → MANIFEST/BUILD-LOCK/VERIFICADOR → CLOUD RUN DEV + HOSTING DEV → CAMBIO HR YA EXISTENTE REFLEJADO SIN RECARGA → VALIDACIÓN VISUAL ADMIN/CLIENTE/SHOPPER`
+`RESOLVER HEAD_BEFORE ACTUAL → VERIFICAR ANCESTRO 0ca607f → CODEX APPLY PACKAGE EXACTO → COMMIT/PUSH ATÓMICO → HEAD_AFTER → MANIFEST/BUILD-LOCK/VERIFICADOR → CLOUD RUN DEV + HOSTING DEV → CAMBIO HR YA EXISTENTE REFLEJADO SIN RECARGA → VALIDACIÓN VISUAL ADMIN/CLIENTE/SHOPPER`
 
 ## Estado seguro
 
