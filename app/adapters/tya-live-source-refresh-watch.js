@@ -25,6 +25,7 @@ window.CX = window.CX || {};
         runtimeReadActive:true,
         runtimeSyncActive:false,
         sourceRevision:meta.revision||null,
+        revisionStable:meta.revisionStable===true,
         note:'Lectura HR viva source-safe en runtime. No escribe la HR ni materializa datos.'
       });
     }
@@ -51,23 +52,32 @@ window.CX = window.CX || {};
     refreshBadge();
   }
 
+  function lastReloadRevision(){try{return sessionStorage.getItem('cx_live_last_reload_revision')||null;}catch(e){return null;}}
+  function rememberReloadRevision(revision){try{sessionStorage.setItem('cx_live_last_reload_revision',revision);}catch(e){}}
+
   async function check(reason){
     if(checking||reloadRequested)return;
     checking=true;
     try{
-      const url=endpoint+(endpoint.includes('?')?'&':'?')+'format=meta&ts='+Date.now();
+      const url=endpoint+(endpoint.includes('?')?'&':'?')+'format=meta&fresh=1&ts='+Date.now();
       const response=await fetch(url,{cache:'no-store',headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});
       if(!response.ok)throw new Error('HTTP '+response.status);
       const meta=await response.json();
       if(meta.sourceSafe!==true||meta.runtimeRead!==true||!meta.revision)throw new Error('Respuesta live inválida');
       markLive(meta);
       if(currentRevision&&meta.revision!==currentRevision){
+        if(lastReloadRevision()===meta.revision){
+          markStale('La fuente cambió, pero esta sesión ya intentó aplicar esa revisión. Recarga manualmente si la vista no se actualizó.');
+          return;
+        }
         reloadRequested=true;
+        rememberReloadRevision(meta.revision);
         try{sessionStorage.setItem('cx_live_source_reload_reason',reason||'source_changed');}catch(e){}
-        location.reload();
+        window.setTimeout(()=>location.reload(),250);
         return;
       }
       currentRevision=meta.revision;
+      if(lastReloadRevision()===currentRevision){try{sessionStorage.removeItem('cx_live_last_reload_revision');}catch(e){}}
     }catch(error){
       markStale('Lectura HR viva no disponible: '+String(error&&error.message||error));
     }finally{
