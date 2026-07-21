@@ -29,7 +29,7 @@ env:
   LIVE_ENDPOINT_PATH: /api/tya/cinepolis/hr-live
   DEPLOY_REQUEST: backend/config/phase-a-live-hr-runtime-deploy-request-v1.json
   OUT_DIR: .tmp/live-hr-runtime-deploy-dev
-  RERUN_NONCE: roles-granted-20260720-1850
+  RERUN_NONCE: live-stability-reports-20260720-1930
 
 jobs:
   deploy:
@@ -87,6 +87,7 @@ jobs:
           set -euo pipefail
           node --check backend/runtime/hr-live-service/server.mjs
           node --check app/adapters/tya-live-source-refresh-watch.js
+          node --check app/adapters/tya-corte1-report-projection-live.js
           node --check tools/release/tya-source-safe-live-binding-build-r22.mjs
           node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
           node tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs --input app/data/tya-hr-source-safe-periods.js --out app/data/tya-hr-source-safe-periods.js --inventory backend/contracts/tya-hr-tab-inventory-r20-v1.json --report-dir "$OUT_DIR/inventory"
@@ -116,9 +117,9 @@ jobs:
             --image "$IMAGE_URI" \
             --platform managed \
             --allow-unauthenticated \
-            --set-env-vars "CXORBIA_LIVE_HR_CACHE_MS=15000,CXORBIA_HR_LIVE_MAX_ROW=140,CXORBIA_HR_LIVE_MAX_COL=AI,CXORBIA_HR_EARLIEST_PERIOD=2025-06" \
+            --set-env-vars "CXORBIA_LIVE_HR_CACHE_MS=55000,CXORBIA_HR_LIVE_MAX_ROW=140,CXORBIA_HR_LIVE_MAX_COL=AI,CXORBIA_HR_EARLIEST_PERIOD=2025-06" \
             --min-instances 0 \
-            --max-instances 2 \
+            --max-instances 1 \
             --memory 512Mi \
             --cpu 1 \
             --timeout 120 \
@@ -135,8 +136,8 @@ jobs:
           set -euo pipefail
           service_url="$(cat "$OUT_DIR/cloud-run-url.txt")"
           curl -fsS "$service_url/health" > "$OUT_DIR/cloud-run-health.json"
-          curl -fsS -H 'Cache-Control: no-cache' "$service_url/v1/tenants/tya/projects/cinepolis/hr-live?format=meta&ts=$(date +%s)" > "$OUT_DIR/cloud-run-live-meta.json"
-          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/cloud-run-live-meta.json','utf8'));if(x.ok!==true||x.sourceSafe!==true||x.runtimeRead!==true||!x.revision)process.exit(2);"
+          curl -fsS -H 'Cache-Control: no-cache' "$service_url/v1/tenants/tya/projects/cinepolis/hr-live?format=meta&fresh=1&ts=$(date +%s)" > "$OUT_DIR/cloud-run-live-meta.json"
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/cloud-run-live-meta.json','utf8'));if(x.ok!==true||x.sourceSafe!==true||x.runtimeRead!==true||x.revisionStable!==true||!x.revision)process.exit(2);"
 
       - name: Build exact app with same-origin live endpoint
         run: |
@@ -144,6 +145,7 @@ jobs:
           node tools/release/tya-source-safe-live-binding-build-r22.mjs --html app/index.html --live-endpoint "$LIVE_ENDPOINT_PATH" --out "$OUT_DIR/binding"
           grep -q "$LIVE_ENDPOINT_PATH" app/index.html
           ! grep -q '<script src="data/tya-hr-source-safe-periods.js"></script>' app/index.html
+          grep -q '<script src="adapters/tya-corte1-report-projection-live.js"></script>' app/index.html
           grep -q '<script src="adapters/tya-live-source-refresh-watch.js"></script>' app/index.html
 
       - name: Prepare temporary Firebase Hosting rewrite
@@ -175,14 +177,15 @@ jobs:
           set -euo pipefail
           root='https://cxorbia-backend-dev.web.app'
           for i in $(seq 1 30); do
-            if curl -fsS -H 'Cache-Control: no-cache' "$root$LIVE_ENDPOINT_PATH?format=meta&ts=$(date +%s)" > "$OUT_DIR/hosting-live-meta.json"; then break; fi
+            if curl -fsS -H 'Cache-Control: no-cache' "$root$LIVE_ENDPOINT_PATH?format=meta&fresh=1&ts=$(date +%s)" > "$OUT_DIR/hosting-live-meta.json"; then break; fi
             sleep 5
           done
-          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/hosting-live-meta.json','utf8'));if(x.ok!==true||x.runtimeRead!==true||x.sourceSafe!==true||!x.revision)process.exit(2);"
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/hosting-live-meta.json','utf8'));if(x.ok!==true||x.runtimeRead!==true||x.sourceSafe!==true||x.revisionStable!==true||!x.revision)process.exit(2);"
           curl -fsS -H 'Cache-Control: no-cache' "$root/index.html?cxTyaPhaseA=1&r18d=visible&live=1&ts=$(date +%s)" > "$OUT_DIR/index.html"
           grep -q "$LIVE_ENDPOINT_PATH" "$OUT_DIR/index.html"
+          grep -q 'adapters/tya-corte1-report-projection-live.js' "$OUT_DIR/index.html"
           grep -q 'adapters/tya-live-source-refresh-watch.js' "$OUT_DIR/index.html"
-          printf '%s\n' '{"decision":"PASS_LIVE_HR_RUNTIME_DEV_DEPLOY","environment":"DEV","production":false,"hrWrites":0,"firestoreWrites":0,"imports":0,"payments":0}' > "$OUT_DIR/final-status.json"
+          printf '%s\n' '{"decision":"PASS_LIVE_HR_STABLE_REVISION_AND_LIVE_REPORTS_DEV_DEPLOY","environment":"DEV","production":false,"hrWrites":0,"firestoreWrites":0,"imports":0,"payments":0}' > "$OUT_DIR/final-status.json"
 
       - name: Upload sanitized deployment evidence
         if: always()
@@ -202,4 +205,4 @@ jobs:
           script: |
             const state=process.env.JOB_STATE==='success'?'success':'failure';
             const target=`https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/live-hr-runtime-dev-deploy',description:state==='success'?'Live HR runtime and Hosting DEV deployed':'Live HR DEV deployment failed',target_url:target});
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/live-hr-runtime-dev-deploy',description:state==='success'?'Stable live HR and live reports deployed':'Stable live HR DEV deployment failed',target_url:target});
