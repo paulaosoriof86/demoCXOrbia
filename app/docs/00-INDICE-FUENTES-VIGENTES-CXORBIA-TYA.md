@@ -10,15 +10,21 @@ Estado: ACTIVO Y OBLIGATORIO
 - HR viva read-only confirmada con cambios reales.
 - Cloud Run DEV y Hosting DEV desplegados.
 - Último deploy de refresco rápido: run `29799752544`, job `88538293485`, artefacto `8483321397`.
-- Candidata V170 auditada: SHA-256 `c7819bbd28436d0ae22fabf0d7339e8b6ad4d653e950fed45cf1407641b8eaa3`.
-- Decisión V170: `HOLD — P0_PROVEN`; no aplicada.
-- Mejoras a preservar: reportKit, reportes por rol, multiproyecto, branding, gráficas, Panorama, add-ons y Novedades.
-- Fuentes vinculantes nuevas: `AUDITORIA-CANDIDATA-V170-CORTE1B-20260721.md` y `PAQUETE-CORRECCION-CLAUDE-V170-CORTE1B-20260721.md`.
+- Candidata acumulada V171b auditada: SHA-256 `e655ea88950c8485a497b52b3870c9b18ebef98181e1662993ef496efc17d4e2`.
+- V171b preserva las mejoras de V170 y corrige estáticamente sus siete P0 principales.
+- Decisión V171b: `HOLD — P0_PROVEN_SHOPPER_IDENTITY_FAIL_OPEN`; no aplicada.
+- P0 vigente: `misvisitas`, `reservas`, `midia` y fallback demo de `app.js` no fallan cerrados cuando falta `shopperId`.
+- Fuentes vinculantes actuales:
+  - `AUDITORIA-CANDIDATA-V171B-CORTE1B-20260721.md`;
+  - `PAQUETE-CORRECCION-CLAUDE-V171B-CORTE1B-20260721.md`;
+  - `RESUMEN-PARA-CLAUDE-ADDENDUM-V171B-HOLD-20260721.md`;
+  - `PENDIENTES-PROTOTIPO-ADDENDUM-V171B-HOLD-20260721.md`;
+  - `CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V171B-CORTE1B-20260721.md`.
 
-Lectura obligatoria: reglas maestras, plan Phase A, addendum de empalme, checkpoint vigente, auditoría V170, paquete de corrección, CAMBIOS, resumen, pendientes, Academia y PR #7.
+Lectura obligatoria: reglas maestras, plan Phase A, addendum de empalme, checkpoint vigente, auditoría V171b, paquete de corrección V171b, CAMBIOS, resumen, pendientes, Academia y PR #7.
 
 Siguiente acción exacta:
 
-`CANDIDATA V170 CORREGIDA → AUDITORÍA FOCALIZADA → APPLY_DELTA_DIRECTLY → GATES → HOSTING DEV → VALIDACIÓN VISUAL → FREEZE CORTE 1`
+`CANDIDATA V171B CORREGIDA → EXECUTION_LANE_READY → AUDITORÍA FOCALIZADA → GO: APPLY_DELTA_DIRECTLY → GATES → HOSTING DEV → VALIDACIÓN VISUAL → FREEZE CORTE 1`
 
 Corte 2 continúa bloqueado.
