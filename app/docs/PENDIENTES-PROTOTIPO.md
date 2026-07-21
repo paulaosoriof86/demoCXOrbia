@@ -3,45 +3,43 @@
 > Lista viva de mejoras del prototipo CXOrbia. Actualizada 2026-07-21.
 > P0 crítico · P1 importante · P2 posterior · [TyA] específico · [CX] reusable.
 
-## 🔴 P0 ACTUAL — V171b / AISLAMIENTO SHOPPER
+## CORTE 1B — V172 AUDITADA GO
 
 ### Resuelto y preservado
 
 - [Backend] HR viva read-only confirmada con cambios reales.
 - [Backend] Refresco al cargar, `pageshow` y sondeo de 15 segundos desplegados.
 - [Backend] Cuatro reportes operativos live preservados.
-- [Claude/CX] V171b conserva reportKit, reportes multiformato, branding, gráficas, multiproyecto, Panorama, add-ons, Novedades y las correcciones principales de V170.
-- [Gobierno] V171b no fue aplicada; no pedir reinicio desde V164 ni reabrir HR, histórico, shoppers o Finanzas.
+- [Claude/CX] V172 conserva reportKit, reportes multiformato, branding, gráficas, multiproyecto, Panorama, add-ons, Novedades y las correcciones principales de V170/V171.
+- [Gobierno] Se retractó el supuesto bloqueo por falta de checkout local; no constituye P0 ni justifica nueva metodología.
 
-### P0 — identidad Shopper fail-open
+### P0 identidad Shopper — resuelto en V172
 
-- [Claude/CX] `app/modules/misvisitas.js`: eliminar `shopperId || 'sh1'`.
-- [Claude/CX] Sin `shopperId`, Mis Visitas debe mostrar cero filas y bloquear acciones.
-- [Claude/CX] Sin `CX.data.visitsForShopper`, usar `[]`; nunca caer a `CX.data.visitas()`.
-- [Claude/CX] `app/modules/reservas.js`: eliminar fallback `sh1`; cero reservas y acciones sin identidad.
-- [Claude/CX] `app/modules/midia.js`: Mi Día y próxima visita deben filtrar exclusivamente por `shopperId`; no ampliar por estado.
-- [Claude/CX] `app/app.js`: el seed `sh1` solo puede existir bajo guard demo explícito; live/real falla cerrado.
+- [PASS] `misvisitas.js`: sin fallback `sh1`; sin identidad, cero filas y cero acciones.
+- [PASS] Sin `visitsForShopper`, usa `[]`; nunca abre `data.visitas()` global.
+- [PASS] `reservas.js`: sin identidad, cero reservas y acciones.
+- [PASS] `midia.js`: Mi Día y cronograma filtran exclusivamente por `shopperId`.
+- [PASS] `app.js`: `sh1` únicamente bajo guard demo explícito; live/real conserva `shopperId:null`.
+- [PASS] Shopper A ve solo A; Shopper B ve solo B; sin identidad no existe fuga.
 
-### Gates obligatorios
+### Pendiente operativo inmediato
 
-- [QA] Shopper A ve solo A.
-- [QA] Shopper B ve solo B.
-- [QA] Sesión sin identidad ve cero datos privados y ejecuta cero acciones.
-- [QA] Una visita agendada de B no aparece en Mi Día de A.
-- [QA] Sin `visitsForShopper`, Mis Visitas queda vacío.
-- [QA] Búsqueda global de `sh1`: solo semillas demo protegidas.
-- [QA] Las siete correcciones V170 continúan pasando.
-- [QA] PDF/XLSX/PPTX conservan extensión, contenido, identidad y legibilidad.
+- [Empalme] `APPLY_DELTA_DIRECTLY` de V172 en `docs-tya-v6-v71-audit`.
+- [Empalme] Commit/push atómico y registro de `HEAD_AFTER`.
+- [Release] Manifest, build-lock y verificador del build empalmado.
+- [QA] Post-gates de regresión y equivalencia PDF/XLSX/PPTX.
+- [DEV] Publicar Hosting DEV y ejecutar validación visual Admin/Cliente/Shopper.
+- [Gobierno] Retirar workflow temporal después del PASS y congelar Corte 1 solo con `APROBADO`.
 
-### P1/P2
+### P1/P2 preservados
 
-- [Claude/CX] Corregir o renombrar el campo `bytes` del manifiesto/inventario para representar bytes UTF-8 reales.
-- [Academia] Documentar diferencia entre oportunidades disponibles y visitas privadas; sin identidad no se muestran datos.
+- [QA visual] Verificar legibilidad y equivalencia final PDF/XLSX/PPTX.
+- [Academia] Documentar selección de rol vs autenticación y diferencia entre oportunidades y visitas privadas después de aprobación visual.
 
-### Paquete vinculante
+### Fuente vigente
 
-- `app/docs/PAQUETE-CORRECCION-CLAUDE-V171B-CORTE1B-20260721.md`.
+- `app/docs/AUDITORIA-CANDIDATA-V172-CORTE1B-20260721.md`.
 
 ### Cierre pendiente
 
-`CANDIDATA V171B CORREGIDA → EXECUTION_LANE_READY → AUDITORÍA FOCALIZADA → APPLY_DELTA_DIRECTLY → GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
+`APPLY_DELTA_DIRECTLY V172 → COMMIT/PUSH ATÓMICO → MANIFEST/BUILD-LOCK/VERIFICADOR → POST-GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
