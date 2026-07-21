@@ -8,8 +8,8 @@ Estado: `VISUAL_NO_GO_FIX_PACKAGE_READY`
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
-- HEAD vigente de documentación: `d32ddb6497ac8f5277d99198b46ac1af7a3ccb0c`.
-- Commit runtime V172 parcial preservado como ancestro: `0ca607f430ac97ca022687419df688bccfd66e19`.
+- `HEAD_BEFORE` debe resolverse al ejecutar desde `origin/docs-tya-v6-v71-audit`.
+- Commit runtime V172 parcial que debe permanecer como ancestro: `0ca607f430ac97ca022687419df688bccfd66e19`.
 - Candidata: `Prototype development request CXOrbia V172.zip`.
 - SHA-256 candidata: `2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5`.
 
@@ -72,7 +72,7 @@ Paquete local:
 
 SHA-256 final:
 
-`57276c924c26067caea227e6bd975844c2b703e6c554a1d25b44d7d4e39cfd6f`
+`eaadd16ef78539bfd45c60ad8eed9dc0507a385b80583640fb3f1666f4f9eb15`
 
 Incluye:
 
@@ -108,7 +108,7 @@ Los 21 JS/MJS incluidos pasan `node --check`.
 
 ## Siguiente bloque exacto
 
-`CODEX APPLY PACKAGE EXACTO SOBRE HEAD d32ddb6497ac8f5277d99198b46ac1af7a3ccb0c → COMMIT/PUSH ATÓMICO → MANIFEST/BUILD-LOCK/VERIFICADOR → CLOUD RUN DEV + HOSTING DEV → CAMBIO HR YA EXISTENTE REFLEJADO IN-PLACE → VALIDACIÓN VISUAL ADMIN/CLIENTE/SHOPPER`
+`CODEX RESUELVE HEAD_BEFORE ACTUAL → VERIFICA ANCESTRO 0ca607f → APLICA PAQUETE EXACTO → COMMIT/PUSH ATÓMICO → MANIFEST/BUILD-LOCK/VERIFICADOR → CLOUD RUN DEV + HOSTING DEV → CAMBIO HR YA EXISTENTE REFLEJADO IN-PLACE → VALIDACIÓN VISUAL ADMIN/CLIENTE/SHOPPER`
 
 ## Estado seguro
 
