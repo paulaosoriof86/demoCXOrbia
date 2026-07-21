@@ -1,6 +1,6 @@
 ## 2026-07-21 — V172 auditada GO / corrección metodológica
 
-Estado: `AUDITED_GO_READY_DIRECT_APPLY`
+Estado: `EMPALMED_PENDING_POST_GATES`
 
 - Se retractó el supuesto bloqueo por falta de checkout local; fue un desvío metodológico y no un P0 de la candidata.
 - Candidata: `Prototype development request CXOrbia V172.zip`.
@@ -15,7 +15,11 @@ Estado: `AUDITED_GO_READY_DIRECT_APPLY`
 - `sh1` queda únicamente bajo guard demo explícito; live/real conserva `shopperId:null`.
 - No existe P0 nuevo reproducible.
 - V172 conserva reportKit, reportes por rol, branding, gráficas, multiproyecto, Panorama canónico, add-ons aislados, geo-checkin honesto, `mireportes`, router `super` y Novedades.
-- Siguiente acción obligatoria: `APPLY_DELTA_DIRECTLY` sobre `docs-tya-v6-v71-audit`.
+- Empalme file-aware aplicado sobre `docs-tya-v6-v71-audit`.
+- Delta aplicado: `app/app.js`, `app/modules/midia.js`, `app/modules/misvisitas.js`, `app/modules/reservas.js`.
+- V164/Corte 1A, reportes PDF/XLSX/PPTX, backend, adapters, tools, contratos y HR viva preservados.
+- Manifest/build-lock/verificador V172 generados.
+- Siguiente acción obligatoria: post-gates V172 y Hosting DEV autorizado.
 
 Documentación:
 

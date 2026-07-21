@@ -1,4 +1,4 @@
-## 2026-07-21 - V172 auditada GO; siguiente acción empalme directo
+## 2026-07-21 - V172 empalmada; pendiente post-gates y visual
 
 - Se retracta el supuesto bloqueo por falta de checkout local; fue un desvío metodológico.
 - V172 deriva de V171b y corrige únicamente el P0 de identidad Shopper fail-open.
@@ -7,10 +7,14 @@
 - Gate dinámico A/B/sin identidad: PASS.
 - 67 JS, referencias locales, hashes/bytes y UTF-8: PASS.
 - No existe P0 nuevo reproducible.
-- Decisión: `AUDITED_GO_READY_DIRECT_APPLY`.
+- Decisión: `EMPALMED_PENDING_POST_GATES`.
 - No solicitar otra candidata ni reiniciar desde V164.
 - Preservar reportKit, reportes por rol, branding, gráficas, multiproyecto, Panorama canónico, add-ons aislados, geo-checkin honesto, `mireportes`, router `super` y Novedades por rol.
-- Siguiente acción: `APPLY_DELTA_DIRECTLY` en `docs-tya-v6-v71-audit`, seguido de commit/push atómico, manifest/build-lock/verificador, gates y validación visual.
+- Empalme file-aware aplicado en `docs-tya-v6-v71-audit`.
+- Delta aplicado: `app/app.js`, `app/modules/midia.js`, `app/modules/misvisitas.js`, `app/modules/reservas.js`.
+- V164/Corte 1A, reportKit, PDF/XLSX/PPTX, backend live-HR, Cloud Run, Hosting, IAM y contratos preservados.
+- Manifest/build-lock/verificador V172 generados.
+- Siguiente acción: post-gates, Hosting DEV autorizado y validación visual.
 
 ### Clasificación
 

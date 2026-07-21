@@ -52,11 +52,13 @@ CX.module('midia', ({data,role,ui})=>{
      activo). Periodo vacío: data.visitas() ya devuelve [] honestamente — el calendario se ve sin
      puntos, no reutiliza eventos de otro periodo. */
   const cronograma=()=>{
-    const sid=CX.session.user.shopperId;
+    const sid=(CX.session.user||{}).shopperId||null;
     const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
     let pool = _cgProj==='ALL' ? data._visitas.filter(v=>data.inScope(v.pais)) : data.visitas();
     let vis;
-    if(role==='shopper') vis=pool.filter(v=>v.shopperId===sid||['asignada','agendada','realizada'].includes(v.estado));
+    /* P0 (V172): shopper ve SOLO sus visitas por shopperId; el estado no sustituye identidad.
+       Sin shopperId verificable no se muestra cronograma privado. */
+    if(role==='shopper') vis = sid ? pool.filter(v=>v.shopperId===sid) : [];
     else vis=pool.filter(v=>v.agendada||['asignada','realizada','cuestionario'].includes(v.estado));
     const items=[];
     vis.forEach(v=>{
@@ -131,10 +133,10 @@ CX.module('midia', ({data,role,ui})=>{
   }
   // shopper
   bindNotif();
-  /* P0-1: 'sh1' era un id de shopper hardcodeado (fixture) — cualquier shopper autenticado veía
-     la próxima visita de "sh1" mezclada con las suyas. Ahora usa el shopperId real de la sesión. */
-  const _mySid=(CX.session.user||{}).shopperId;
-  const mine=data.visitas().filter(v=>v.shopperId===_mySid||['asignada','agendada'].includes(v.estado)).slice(0,2);
+  /* P0 (V172): 'sh1' hardcodeado eliminado; el shopper ve SOLO sus visitas por shopperId real.
+     El estado (asignada/agendada) NO sustituye identidad. Sin shopperId: cero contenido privado. */
+  const _mySid=(CX.session.user||{}).shopperId||null;
+  const mine=_mySid?data.visitas().filter(v=>v.shopperId===_mySid).slice(0,2):[];
   const steps=['Postulación aprobada|done','Instructivo leído|done','Certificación 88%|done','Visita realizada|now','Cuestionario|todo','Liquidación|todo'];
   return `
     ${ui.ph('Mi Día', 'Hola, '+CX.session.user.name.split(' ')[0]+' 👋 · '+data.programBase(p)+' · periodo '+(p.periodo||p.ronda||p.name))}

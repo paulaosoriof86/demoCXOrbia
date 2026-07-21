@@ -3,7 +3,7 @@
 > Lista viva de mejoras del prototipo CXOrbia. Actualizada 2026-07-21.
 > P0 crítico · P1 importante · P2 posterior · [TyA] específico · [CX] reusable.
 
-## CORTE 1B — V172 AUDITADA GO
+## CORTE 1B — V172 EMPALMADA
 
 ### Resuelto y preservado
 
@@ -24,9 +24,9 @@
 
 ### Pendiente operativo inmediato
 
-- [Empalme] `APPLY_DELTA_DIRECTLY` de V172 en `docs-tya-v6-v71-audit`.
+- [PASS] `APPLY_DELTA_DIRECTLY` de V172 en `docs-tya-v6-v71-audit`.
+- [PASS] Manifest, build-lock y verificador del build empalmado.
 - [Empalme] Commit/push atómico y registro de `HEAD_AFTER`.
-- [Release] Manifest, build-lock y verificador del build empalmado.
 - [QA] Post-gates de regresión y equivalencia PDF/XLSX/PPTX.
 - [DEV] Publicar Hosting DEV y ejecutar validación visual Admin/Cliente/Shopper.
 - [Gobierno] Retirar workflow temporal después del PASS y congelar Corte 1 solo con `APROBADO`.
@@ -42,4 +42,4 @@
 
 ### Cierre pendiente
 
-`APPLY_DELTA_DIRECTLY V172 → COMMIT/PUSH ATÓMICO → MANIFEST/BUILD-LOCK/VERIFICADOR → POST-GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
+`COMMIT/PUSH ATÓMICO V172 → POST-GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`

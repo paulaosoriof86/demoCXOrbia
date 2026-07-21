@@ -88,7 +88,9 @@ CX.module('reservas', ({data,role,ui})=>{
   const host=ui.el('div');
   const ESTLBL={solicitada:'Solicitada',asignada:'Asignada',aprobada:'Aprobada',cruzada:'✓ Cruzada con visita',rechazada:'Rechazada'};
   const ESTTONE={solicitada:'a',asignada:'b',aprobada:'g',cruzada:'g',rechazada:'r'};
-  const sid=()=> (CX.session.user&&CX.session.user.shopperId)||'sh1';
+  /* P0 (V172): identidad fail-closed — sin shopperId verificable no hay sid; nunca 'sh1'. */
+  const sid=()=> (CX.session.user&&CX.session.user.shopperId)||null;
+  const shopperIdentityOk=()=>!!sid();
 
   const periodos=()=>{ const s=new Set([CX.reservas.periodoActual()]); CX.reservas.list(pid).forEach(r=>s.add(r.periodo)); return [...s].sort().reverse(); };
   let per=CX.reservas.periodoActual();
@@ -99,6 +101,10 @@ CX.module('reservas', ({data,role,ui})=>{
     const R=CX.reservas.resumen(pid);
 
     if(role==='shopper'){
+      if(!shopperIdentityOk()){
+        host.innerHTML=`${ui.ph('Reservar Visitas', p.name)}<div class="card card-p" style="border-left:3px solid var(--red)"><div class="flex" style="gap:8px;align-items:center;margin-bottom:6px"><span style="font-size:20px">🔒</span><b>Identidad de evaluador no verificable</b></div><div style="font-size:12.5px;color:var(--t2)">Sin un <code>shopperId</code> verificable no se muestran, crean, aprueban ni cancelan reservas. Inicia sesión con una identidad real.</div></div>`;
+        return;
+      }
       const sucs=CX.reservas.sucursales(pid);
       host.innerHTML=`
         ${ui.ph('Reservar Visitas', p.name+' · pide las sucursales que quieres evaluar este periodo')}

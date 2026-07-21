@@ -1,4 +1,13 @@
-/* CXOrbia source lock runtime V161C empalme directo 20260719 */
-var CX_SOURCE_LOCK={manifestFile:'app/docs/MANIFEST-V161C-EMPALME-DIRECTO-20260719.json',aggregateSha256:'7075f70822e3fed8442d62b56e1467fa643facd756aa88258ae2d6d6bdc95cdf',fileCount:175,runtimeIdentity:'V161C empalmada sobre docs-tya-v6-v71-audit con delta R21 restringido',generatedAt:'2026-07-19',sourceZipName:'Prototype development request CXOrbia V161C.zip',sourceZipSha256:'7504b80eed202fff801b1ce39f1028c91dc8446e56670c932042a4fb4a4e74e8',headBefore:'d640b1119e373e303f188bfd87758221ef3b9fae',parentManifest:'app/docs/MANIFEST-V159-EMPALME-DIRECTO-20260717.json',decision:'EMPALMED_PENDING_POST_GATES',note:'Empalme directo V161C: modifica solo app.js, config.js, router.js, visita-detalle.js, visitas.js y REPORTE-DE-CAMBIOS.md; preserva data.js, store.js, index.html, backend, adapters, tools, contratos, source-safe, integraciones, overlays, documentacion viva y CX.data. Sin merge, deploy, produccion, imports reales, writes, proveedores live ni pagos.'};
+/* CXOrbia source lock runtime V172 empalme directo 20260721 */
+var CX_SOURCE_LOCK={
+  "manifestFile": "docs/MANIFEST-V172-EMPALME-DIRECTO-20260721.json",
+  "aggregateSha256": "dd4cec1d7af4b4382d9671aa90a9c5a6e4808dae98d0d9feffb5a521982dfcb3",
+  "fileCount": 1861,
+  "generatedAt": "2026-07-21",
+  "candidateSha256": "2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5",
+  "headBefore": "aedb31aa15ec5e4eecf4a9a82c4161b50adca7b5",
+  "status": "EMPALMED_PENDING_POST_GATES",
+  "note": "BUILD_ID = primeros 16 hex del aggregateSha256; calculado sobre app/ excluyendo build-lock y el propio manifest V172."
+};
 var CX_BUILD_ID=CX_SOURCE_LOCK.aggregateSha256.slice(0,16);
 if(typeof window!=='undefined'){window.CX=window.CX||{};window.CX.BUILD_ID=CX_BUILD_ID;window.CX.SOURCE_LOCK=CX_SOURCE_LOCK;}

@@ -3,9 +3,11 @@
    Cada acción sincroniza estado de visita y liquidación. */
 CX.module('misvisitas', ({data,ui})=>{
   const p=data.period();
-  /* P0: SIEMPRE filtrar por el shopper autenticado (shopperId, no nombre) */
-  const sid=(CX.session.user&&CX.session.user.shopperId)||'sh1';
-  const base=(data.visitsForShopper?data.visitsForShopper(sid):data.visitas());
+  /* P0 (V172): identidad fail-closed. Sin shopperId verificable NO se listan ni ejecutan
+     acciones; nunca 'sh1'. Si visitsForShopper no existe, se usa [] (nunca visitas() global). */
+  const sid=(CX.session.user&&CX.session.user.shopperId)||null;
+  const identityOk=!!sid;
+  const base=identityOk?(data.visitsForShopper?data.visitsForShopper(sid):[]):[];
   const asignada = base.find(v=>v.estado==='asignada');
   const agendada = base.find(v=>v.estado==='agendada');
   const realizada= base.find(v=>['realizada','cuestionario'].includes(v.estado));
@@ -27,12 +29,12 @@ CX.module('misvisitas', ({data,ui})=>{
       <button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>
       <button class="btn btn-soft btn-sm" data-cert="${v.id}">🏆 Certificarme</button>
       <button class="btn btn-pr btn-sm" data-sched="${v.id}">📅 Agendar</button>
-      <button class="btn btn-ghost btn-sm" data-reprog="${v.id}">🔄 Reprogramar</button>`;
+      <button class="btn btn-ghost btn-sm" data-reprog="${v.id}">🔄 Reprogramar</button>${geoBtn(v)}`;
     else if(kind==='agendada') actions=`
       <button class="btn btn-green btn-sm" data-done="${v.id}">✅ Marcar realizada</button>
       <button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>
       <button class="btn btn-ghost btn-sm" data-reprog="${v.id}">🔄 Reprogramar</button>
-      <button class="btn btn-ghost btn-sm" data-cancel="${v.id}">✕ Cancelar</button>`;
+      <button class="btn btn-ghost btn-sm" data-cancel="${v.id}">✕ Cancelar</button>${geoBtn(v)}`;
     else actions=`
       <button class="btn btn-pr btn-sm" data-quest="${v.id}">📝 ${cfg.modo==='interna'?'Llenar cuestionario':'Abrir cuestionario'}</button>
       <button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>`;
@@ -51,15 +53,28 @@ CX.module('misvisitas', ({data,ui})=>{
     </div>`;
   };
 
-  const mine=(data.visitsForShopper?data.visitsForShopper(sid):base);
+  const mine=identityOk?(data.visitsForShopper?data.visitsForShopper(sid):[]):[];
+  const geoOn=!!(CX.addons&&CX.addons.on('geo_checkin','shopper'));
+  const geoBtn=(v)=>{ if(!geoOn||!v)return ''; const g=v.geoCheckin;
+    return g?`<button class="btn btn-soft btn-sm" data-geo="${v.id}" title="Check-in preparado (pendiente de backend)">⏳ Check-in ${g.ts||''}</button>`
+      :`<button class="btn btn-green btn-sm" data-geo="${v.id}">📍 Check-in geolocalizado</button>`; };
   const histVis=mine.filter(v=>['liquidada','cancelada'].includes(v.estado));
   const activasN=[asignada,agendada,realizada].filter(Boolean).length;
   let view='activas';
   const host=ui.el('div');
 
+  /* Estado seguro: sesión Shopper sin identidad verificable → cero datos, cero acciones. */
+  const blockedHTML=()=>`
+    ${ui.ph('Mis Visitas', p.name)}
+    <div class="card card-p" style="border-left:3px solid var(--red)">
+      <div class="flex" style="gap:8px;align-items:center;margin-bottom:6px"><span style="font-size:20px">🔒</span><b>Identidad de evaluador no verificable</b></div>
+      <div style="font-size:12.5px;color:var(--t2)">No hay un <code>shopperId</code> verificable en esta sesión. Por seguridad no se muestran ni se ejecutan visitas de ningún evaluador. Inicia sesión con una identidad real para ver tus visitas.</div>
+    </div>`;
+
   const activeHTML=()=>`
     ${ui.ph('Mis Visitas', p.name+' · agenda, ejecuta y da seguimiento')}
     <div class="flex" style="margin-bottom:14px;gap:8px"><button class="btn btn-sm ${view==='activas'?'btn-pr':'btn-ghost'}" data-view="activas">Activas ${activasN}</button> <button class="btn btn-sm ${view==='historial'?'btn-pr':'btn-ghost'}" data-view="historial">Historial ${histVis.length}</button></div>
+    ${geoOn?`<div class="card card-p" style="margin-bottom:12px;border-left:3px solid var(--green)"><div class="flex" style="gap:8px;align-items:center;margin-bottom:4px"><span style="font-size:18px">📍</span><b style="font-size:13px">Check-in con foto geolocalizada</b><span class="bdg bdg-a" style="font-size:10px">Pendiente de backend/Storage</span></div><div style="font-size:11.5px;color:var(--t2)">Prepara tu llegada con foto (vista previa local) + GPS y hora desde el botón 📍 de cada visita activa. La <b>evidencia definitiva se guarda cuando el backend/Storage esté activo</b>; aquí no se almacena la foto ni datos sensibles.</div></div>`:''}
     ${visitCard(asignada,'asignada')}
     ${visitCard(agendada,'agendada')}
     ${visitCard(realizada,'realizada')}
@@ -85,7 +100,8 @@ CX.module('misvisitas', ({data,ui})=>{
       </tbody></table></div>`:ui.empty('🗒️','Aún no tienes visitas en tu historial. Cuando una visita se liquida o cierra, aparece aquí.')}
     </div>`;
 
-  const draw=()=>{ host.innerHTML = view==='historial'?histHTML():activeHTML();
+  const draw=()=>{ if(!identityOk){ host.innerHTML=blockedHTML(); return; }
+    host.innerHTML = view==='historial'?histHTML():activeHTML();
     host.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;draw();}));
     if(view==='activas') bindActive();
   };
@@ -95,6 +111,38 @@ CX.module('misvisitas', ({data,ui})=>{
     const today=new Date().toISOString().slice(0,10);
     host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('documentos')));
     host.querySelectorAll('[data-cert]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('cert')));
+    host.querySelectorAll('[data-geo]').forEach(b=>b.addEventListener('click',()=>{
+      const v=find(b.dataset.geo); if(!v)return; const g=v.geoCheckin;
+      ui.modal('📍 Check-in geolocalizado · '+v.sucursal,`
+        <div style="background:var(--amber-bg,#fffbeb);border-radius:9px;padding:9px 12px;font-size:11.5px;color:#8a5b00;margin-bottom:12px">⏳ <b>Pendiente de backend/Storage.</b> Puedes previsualizar la foto y sellar GPS + hora localmente, pero la evidencia definitiva se guarda cuando el almacenamiento seguro esté activo. No se almacena la foto ni datos sensibles en este dispositivo.</div>
+        <input type="file" accept="image/*" capture="environment" class="inp" id="geoPhoto" style="padding:6px;font-size:12px;margin-bottom:8px">
+        <div id="geoPrev" style="margin-bottom:10px"></div>
+        <button class="btn btn-soft btn-sm" id="geoLoc" type="button" style="width:100%;justify-content:center;margin-bottom:6px">${g?('⏳ '+(g.lat!=null?g.lat.toFixed(5)+', '+g.lon.toFixed(5):'ubicación')+' · '+g.ts):'📍 Capturar ubicación GPS'}</button>
+        <div id="geoMsg" style="font-size:11px;color:var(--t3);min-height:16px">${g?'Check-in preparado (pendiente de sincronizar al backend).':''}</div>
+        <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="geoSave" disabled>Preparar check-in</button></div>`,
+      {onMount:(ov,close)=>{
+        let cap=null; let photoOk=false; let previewUrl=null;
+        const save=ov.querySelector('#geoSave');
+        const refresh=()=>{ save.disabled=!(cap&&cap.lat!=null&&photoOk); }; /* fail-closed: exige GPS válido + foto */
+        ov.querySelector('#geoPhoto').addEventListener('change',e=>{const f=e.target.files[0]; const prev=ov.querySelector('#geoPrev');
+          if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null;}
+          if(f){ photoOk=true; previewUrl=URL.createObjectURL(f); prev.innerHTML='<img src="'+previewUrl+'" style="max-width:100%;max-height:150px;border-radius:8px"><div style="font-size:10.5px;color:var(--t3);margin-top:4px">Vista previa local — no se almacena en el dispositivo.</div>'; }
+          else { photoOk=false; prev.innerHTML=''; }
+          refresh(); });
+        ov.querySelector('#geoLoc').addEventListener('click',()=>{ const btn=ov.querySelector('#geoLoc'); btn.textContent='📍 Obteniendo GPS…'; btn.disabled=true;
+          if(navigator.geolocation){ navigator.geolocation.getCurrentPosition(
+            pos=>{ const ts=new Date().toLocaleString('es-GT'); cap={lat:pos.coords.latitude,lon:pos.coords.longitude,ts,acc:pos.coords.accuracy}; btn.disabled=false; btn.innerHTML='✅ '+cap.lat.toFixed(5)+', '+cap.lon.toFixed(5)+' · '+ts; refresh(); ui.toast('📍 Ubicación capturada','ok',2500); },
+            err=>{ cap=null; btn.disabled=false; btn.textContent='📍 Capturar ubicación GPS'; refresh(); ui.toast('GPS no disponible ('+err.code+') · sin ubicación no se puede preparar el check-in','warn',3500); },
+            {enableHighAccuracy:true,timeout:8000}); }
+          else { cap=null; btn.disabled=false; refresh(); ui.toast('Este dispositivo no expone GPS · no se puede preparar el check-in','warn',3500); } });
+        save.addEventListener('click',()=>{ if(!(cap&&cap.lat!=null&&photoOk)){ui.toast('Se requieren foto y GPS válidos','warn');return;}
+          /* No se persiste foto ni PII: solo metadatos mínimos no sensibles del estado de preparación. */
+          v.geoCheckin={lat:cap.lat,lon:cap.lon,ts:cap.ts,acc:cap.acc,pending:true};
+          if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null;}
+          CX.notif&&CX.notif.push({to:'admin',tipo:'checkin',icon:'⏳',tono:'a',titulo:'Check-in preparado (pendiente de backend)',txt:(v.shopper||CX.session.user.name)+' · '+v.sucursal+' · '+v.geoCheckin.ts,nav:'postulaciones'});
+          close(); draw(); ui.toast('Check-in preparado · se guardará como evidencia cuando el backend/Storage esté activo','ok',3600); });
+      }});
+    }));
     host.querySelectorAll('[data-quest]').forEach(b=>b.addEventListener('click',()=>CX.shopperQuestionnaire(data,p,find(b.dataset.quest),ui)));
 
     host.querySelectorAll('[data-sched]').forEach(b=>b.addEventListener('click',()=>{

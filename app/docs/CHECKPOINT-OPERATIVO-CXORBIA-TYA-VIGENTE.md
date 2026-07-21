@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
 Fecha: 2026-07-21
-Estado: `CORTE_1B_CANDIDATE_V172_EXECUTION_LANE_NOT_READY`
+Estado: `CORTE_1B_V172_EMPALMED_PENDING_POST_GATES`
 
 ## Estado comprobado
 
@@ -36,17 +36,25 @@ Quedan prohibidos como sustitutos:
 - Entradas: 261.
 - Manifiesto, inventario y reporte: presentes.
 
-## Gate de ejecución
+## Gate de ejecución restablecido
 
 ```text
 CANDIDATE_BYTES_AVAILABLE=true
 CANDIDATE_EXTRACTABLE=true
 TARGET_REPOSITORY=paulaosoriof86/demoCXOrbia
 TARGET_BRANCH=docs-tya-v6-v71-audit
-REPO_CHECKOUT_AVAILABLE=false
-AUTHENTICATED_COMMIT_PUSH_AVAILABLE_IN_SAME_WORKSPACE=false
-EXECUTION_LANE_READY=false
+REPO_CHECKOUT_AVAILABLE=true
+AUTHENTICATED_COMMIT_PUSH_AVAILABLE=true
+HEAD_BEFORE=aedb31aa15ec5e4eecf4a9a82c4161b50adca7b5
+WORKTREE_STATE=clean
+EXECUTION_LANE_READY=true
 ```
+
+## Empalme V172
+
+- Delta aplicado file-aware: `app/app.js`, `app/modules/midia.js`, `app/modules/misvisitas.js`, `app/modules/reservas.js`.
+- V164/Corte 1A reportKit, exportes PDF/XLSX/PPTX, backend, adapters, tools, contratos y HR viva fueron preservados.
+- Manifest/build-lock/verificador: `MANIFEST-V172-EMPALME-DIRECTO-20260721.json`, `app/core/build-lock.js`, `tools/release/tya-v172-empalme-directo-verify.mjs`.
 
 ## Corrección del desvío
 
@@ -67,8 +75,8 @@ Durante el intento posterior se crearon objetos Git huérfanos de tipo blob/tree
 
 ## Siguiente bloque exacto
 
-`CAMBIAR AL WORKSPACE FILE-AWARE CORRECTO → CANDIDATA + CHECKOUT AUTENTICADO EN LA MISMA SESIÓN → EXECUTION_LANE_READY → AUDITORÍA DELTA V172 → P0_PROVEN o GO → si GO: APPLY_DELTA_DIRECTLY → COMMIT/PUSH ATÓMICO → POST-GATES → HOSTING DEV → VALIDACIÓN VISUAL → FREEZE CORTE 1`
+`POST-GATES V172 → HOSTING DEV → VALIDACIÓN VISUAL PAULA → FREEZE CORTE 1 SOLO CON APROBADO`
 
 ## Estado seguro
 
-Sin empalme V172, deploy, merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos.
+Sin merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos.

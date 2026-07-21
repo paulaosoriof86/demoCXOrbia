@@ -297,9 +297,15 @@ CX.app = {
     } else if(role==='cliente'){
       CX.session.user={name:'Cliente Demo', role:'cliente', clienteRole:'director', org:'Marca Cliente'};
     } else if(role==='shopper'){
-      const sid=shopperId||'sh1';
-      const s=CX.data.getShopper ? CX.data.getShopper(sid) : null;
-      CX.session.user={name:(s&&s.nombre)||'Evaluador 01', role:'shopper', shopperId:sid, code:(s&&s.code)||'EVL-01'};
+      /* P0 (V172): 'sh1' es semilla SOLO de modo demo, bajo guard explícito. En live/real,
+         una sesión Shopper sin shopperId provisto NO recibe identidad ficticia: los módulos
+         privados (Mis Visitas, Reservas, Mi Día) quedan fail-closed. La selección visual de
+         rol no es autenticación ni autorización. */
+      const demoMode=!!((CX.BRAND&&CX.BRAND.demoMode) || (CX.dataSource&&CX.dataSource.mode==='demo'));
+      const sid=shopperId||(demoMode?'sh1':null);
+      const s=(sid&&CX.data.getShopper)?CX.data.getShopper(sid):null;
+      if(sid){ CX.session.user={name:(s&&s.nombre)||'Evaluador 01', role:'shopper', shopperId:sid, code:(s&&s.code)||'EVL-01'}; }
+      else { CX.session.user={name:'Evaluador (sin identidad)', role:'shopper', shopperId:null}; }
     } else {
       /* roles no estándar (ops, coordinador, aliado, personalizados) — para probar la matriz de permisos.
          Navegan como el rol elegido; el router aplica roleCanAccess. Usan la vista de admin (roles:['admin']). */
