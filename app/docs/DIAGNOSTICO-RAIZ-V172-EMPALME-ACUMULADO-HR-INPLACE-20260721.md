@@ -8,7 +8,8 @@ Estado: `VISUAL_NO_GO_FIX_PACKAGE_READY`
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
-- HEAD empalmado observado: `0ca607f430ac97ca022687419df688bccfd66e19`.
+- HEAD vigente de documentación: `d32ddb6497ac8f5277d99198b46ac1af7a3ccb0c`.
+- Commit runtime V172 parcial preservado como ancestro: `0ca607f430ac97ca022687419df688bccfd66e19`.
 - Candidata: `Prototype development request CXOrbia V172.zip`.
 - SHA-256 candidata: `2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5`.
 
@@ -69,9 +70,9 @@ Paquete local:
 
 `PAQUETE_EJECUCION_CODEX_CXORBIA_V172_HR_INPLACE_20260721.zip`
 
-SHA-256:
+SHA-256 final:
 
-`46bb502d4422113b55517afbe8099dcd89da9ca330fe435b64ee16ec1d152d60`
+`57276c924c26067caea227e6bd975844c2b703e6c554a1d25b44d7d4e39cfd6f`
 
 Incluye:
 
@@ -107,7 +108,7 @@ Los 21 JS/MJS incluidos pasan `node --check`.
 
 ## Siguiente bloque exacto
 
-`CODEX APPLY PACKAGE EXACTO → COMMIT/PUSH ATÓMICO → MANIFEST/BUILD-LOCK/VERIFICADOR → CLOUD RUN DEV + HOSTING DEV → CAMBIO HR YA EXISTENTE REFLEJADO IN-PLACE → VALIDACIÓN VISUAL ADMIN/CLIENTE/SHOPPER`
+`CODEX APPLY PACKAGE EXACTO SOBRE HEAD d32ddb6497ac8f5277d99198b46ac1af7a3ccb0c → COMMIT/PUSH ATÓMICO → MANIFEST/BUILD-LOCK/VERIFICADOR → CLOUD RUN DEV + HOSTING DEV → CAMBIO HR YA EXISTENTE REFLEJADO IN-PLACE → VALIDACIÓN VISUAL ADMIN/CLIENTE/SHOPPER`
 
 ## Estado seguro
 
