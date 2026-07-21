@@ -10,17 +10,18 @@ Estado: ACTIVO Y OBLIGATORIO
 - HR viva read-only confirmada con cambios reales.
 - Cloud Run DEV y Hosting DEV desplegados.
 - Último deploy de refresco rápido: run `29799752544`, job `88538293485`, artefacto `8483321397`.
-- V171b permanece `HOLD — P0_PROVEN_SHOPPER_IDENTITY_FAIL_OPEN`; no aplicada.
-- Candidata corregida V172 recibida y extraída.
-- SHA-256 V172: `2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5`.
-- V172 contiene 261 entradas y un delta exacto de 8 archivos frente a V171b: cuatro archivos funcionales autorizados, `REPORTE-DE-CAMBIOS` y manifiestos/inventario.
-- Estado V172: `EXECUTION_LANE_NOT_READY`; no se declara auditoría, GO ni HOLD porque falta checkout autenticado de la rama viva en el mismo workspace.
-- Fuente vigente adicional: `PREFLIGHT-CANDIDATA-V172-EXECUTION-LANE-NOT-READY-20260721.md`.
+- V171b permanece no aplicada por el P0 Shopper ya corregido en V172.
+- Candidata V172: SHA-256 `2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5`.
+- Auditoría focalizada V172: `AUDITED_GO_READY_DIRECT_APPLY`.
+- 67 JS sintaxis PASS, 73 referencias locales PASS, 18 hashes/bytes PASS, gate Shopper A/B/sin identidad PASS.
+- No existe P0 nuevo reproducible.
+- El supuesto bloqueo de checkout documentado previamente queda retractado como desvío metodológico.
+- Fuente vigente nueva: `AUDITORIA-CANDIDATA-V172-CORTE1B-20260721.md`.
 
-Lectura obligatoria: reglas maestras, plan Phase A, addendum de empalme, checkpoint vigente, preflight V172, auditoría/paquete V171b, CAMBIOS, resumen, pendientes, Academia y PR #7.
+Lectura obligatoria: reglas maestras, plan Phase A, addendum de empalme, checkpoint vigente, auditoría V172, CAMBIOS, resumen, pendientes, Academia y PR #7.
 
 Siguiente acción exacta:
 
-`RESTABLECER WORKSPACE FILE-AWARE CON CHECKOUT AUTENTICADO → EXECUTION_LANE_READY → AUDITORÍA FOCALIZADA V172 → GO: APPLY_DELTA_DIRECTLY → GATES → HOSTING DEV → VALIDACIÓN VISUAL → FREEZE CORTE 1`
+`APPLY_DELTA_DIRECTLY V172 SOBRE docs-tya-v6-v71-audit → COMMIT/PUSH ATÓMICO → MANIFEST/BUILD-LOCK/VERIFICADOR → POST-GATES → HOSTING DEV → VALIDACIÓN VISUAL → FREEZE CORTE 1`
 
 Corte 2 continúa bloqueado.
