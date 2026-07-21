@@ -25,12 +25,15 @@
 
 - [Claude/CX] `app/core/cliente-data.js`: invalidar cache por periodo y revisión live.
 - [Claude/CX] `app/modules/cliente.js`: separar resultados operativos de score, NPS y secciones pendientes.
+- [Claude/CX] `app/modules/cliente-insights.js`: revisar comparativos cuando corresponda.
 - [Claude/CX] Al cambiar MAY/JUN/JUL, mostrar realizadas, cuestionarios, submitidas, cobertura y tendencia del periodo seleccionado.
 - [Claude/CX] Sin score validado, usar `Pendiente de fuente` sin ceros que parezcan resultados.
 - [Claude/CX] Cuando dos periodos compartan el mismo universo, explicar qué cambió y qué no tiene fuente.
 
 ### Frontend focalizado — Reportes y diseño
 
+- [Claude/CX] `app/modules/cliente-extra.js`: exportaciones y presentación del portal cliente.
+- [Claude/CX] `app/modules/operacion-extra.js`: `Reportes & KPIs` administrativo y personalización visible.
 - [Claude/CX] Portal cliente: exportaciones deben usar periodo, país, sucursal, rol y revisión live activos.
 - [Claude/CX] Administración: edición real de columnas, orden, notas y alcance.
 - [Claude/CX] Imprimir/exportar el artefacto del reporte, no la página completa.
