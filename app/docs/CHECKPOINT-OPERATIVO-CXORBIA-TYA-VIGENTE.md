@@ -1,131 +1,98 @@
-# CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
+# CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 Fecha: 2026-07-21
-Estado: `CORTE_1B_VISUAL_NO_GO_FIX_PACKAGE_READY`
+Estado: `CORTE_1B_R20_HEADER_VARIANT_FIX_READY`
 
 ## Estado comprobado
 
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
-- Baseline de seguridad: V161C/R21.
-- V164 y Corte 1A integrados.
-- Commit runtime V172 parcial preservado como ancestro: `0ca607f430ac97ca022687419df688bccfd66e19`.
-- `HEAD_BEFORE` debe resolverse al ejecutar desde `origin/docs-tya-v6-v71-audit`.
-- Cloud Run DEV y Hosting DEV están desplegados, pero la validación visual es NO-GO.
-- Corte 1 no está congelado.
-- Corte 2 continúa bloqueado.
+- Commit operativo V172 + HR in-place: `4f195b07a8cfc5962a7de6bd99d0c13915b847ad`.
+- Los 14 archivos acumulados V165–V171 ya están aplicados.
+- Backend/adapters in-place y Hosting DEV R22 ya están aplicados.
+- Cloud Run DEV sigue ejecutando el mapper anterior porque el deploy local quedó bloqueado por falta de sesión gcloud.
+- Corte 1: abierto.
+- Corte 2: bloqueado.
 
-## Evidencia visual de Paula
+## Gate remoto actual
 
-En URL pública e incógnito:
+```text
+/api/tya/cinepolis/hr-live?format=meta&fresh=1
+HTTP 503
+live_hr_read_failed
+R20 HR mapping HOLD: header_not_found en tab JULIO 26
+```
 
-- `Conectado · Degradado` en Admin, Cliente y Shopper;
-- datos anteriores de HR en KPI y Liquidaciones;
-- recargas frecuentes con pantalla blanca;
-- Reportes Admin todavía con comportamiento anterior;
-- Reportes Cliente sin diseño/gráficas aprobados;
-- Shopper sin módulo `Mis Reportes`.
+El HOLD es correcto y evita publicar un snapshot incompleto.
 
-La causa actual no se atribuye a caché del navegador.
+## Causa raíz exacta
 
-## Causa raíz 1 — empalme acumulado incompleto
+La HR vigente es la misma configurada desde el inicio.
 
-El commit V172 aplicó solo:
+`JULIO 26` GT tiene una variante compacta:
 
-- `app/app.js`;
-- `app/modules/midia.js`;
-- `app/modules/misvisitas.js`;
-- `app/modules/reservas.js`.
+- empieza en `CIUDAD`, `DIRECCIÓN`, `Shopping`;
+- no incluye `País` ni `ID CINEMA`;
+- repite dos veces `Fecha submitido`.
 
-Esos eran los cuatro archivos modificados entre V171b y V172. Como V171b no estaba empalmada, quedaron fuera 14 archivos acumulados V165–V171. La comparación por Git blob SHA confirmó diferencia en todos:
+`JULIO 26 HN` conserva la variante completa con `País` e `ID CINEMA`.
 
-- `app/core/router.js`;
-- `app/core/cliente-data.js`;
-- `app/core/config.js`;
-- `app/modules/operacion-extra.js`;
-- `app/modules/cliente-extra.js`;
-- `app/modules/integraciones.js`;
-- `app/modules/novedades.js`;
-- `app/modules/finanzas.js`;
-- `app/modules/visitas.js`;
-- `app/modules/dashboard.js`;
-- `app/modules/crm.js`;
-- `app/modules/cliente.js`;
-- `app/modules/historico.js`;
-- `app/modules/cliente-insights.js`.
+El mapper R20 actual:
 
-## Causa raíz 2 — lectura HR con recarga
+- reconoce encabezado solo si existe `País`;
+- acepta filas solo si existen País + Shopping + ID CINEMA;
+- marca País e ID CINEMA como críticos sin excepción contextual;
+- rechazaría la duplicidad exacta de `Fecha submitido`.
 
-- `fresh=1` no omitía TTL.
-- El watcher comparaba revisión y ejecutaba `location.reload()`.
-- El fast trigger repetía el chequeo cada 15 segundos.
-- La proyección de reportes no se reconstruía al sustituir el snapshot.
+## Corrección preparada
 
-Consecuencia: snapshot anterior visible, pantalla blanca y estado degradado.
+Paquete:
 
-## Paquete correctivo preparado
+`PAQUETE_EJECUCION_CODEX_CXORBIA_R20_HEADER_VARIANT_20260721.zip`
 
-- Archivo: `PAQUETE_EJECUCION_CODEX_CXORBIA_V172_HR_INPLACE_20260721.zip`.
-- SHA-256 final: `eaadd16ef78539bfd45c60ad8eed9dc0507a385b80583640fb3f1666f4f9eb15`.
-- Estado: `READY_FOR_CODEX_APPLY_ONLY`.
+SHA-256:
 
-Incluye:
+`371199c7790c181dbc8077aedcc4c22286146e17f116b58d2611e68b2ab7b899`
 
-1. los 14 archivos acumulados exactos de V172;
-2. `server.mjs` con lectura `fresh=1` que omite TTL;
-3. adapter nuevo de aplicación in-place;
-4. watcher sin recarga de documento;
-5. trigger sin intervalo duplicado;
-6. proyección Corte 1 reconstruible;
-7. build R22 con orden correcto;
-8. gate antirretroceso.
+Delta permitido:
 
-## Gates locales
+1. `tools/hr-source/tya-build-live-hr-source-safe-r20.mjs`;
+2. `backend/contracts/tya-hr-column-map-r20-v1.json`;
+3. `tools/qa/tya-hr-header-variants-r20-gate.mjs`;
+4. documentación operativa.
 
-- 21 JS/MJS: `node --check` PASS.
-- `PASS_TYA_LIVE_HR_INPLACE_REFRESH_GATE`:
-  - cero `location.reload()`;
-  - fresh omite TTL;
-  - snapshot aplicado en memoria;
-  - proyección reconstruida;
-  - revisión compartida;
-  - re-render por bus existente.
+No se modifican frontend, adapters in-place, server, HR, ID de hoja, tabs, Hosting ni producción.
 
-## División de responsabilidades
+## Política de mapping
 
-- ChatGPT/backend: diagnóstico, archivos, arquitectura, paquete y gates — completado.
-- Codex: aplicar exactamente `files/`, commit/push atómico, gates, DEV y evidencia.
-- Claude: no interviene.
+- `full_identity`: País e ID CINEMA desde columnas.
+- `tab_scoped_compact`: país desde nombre validado del tab; ID CINEMA nulo.
+- La identidad se mantiene con `hrRowId/sourceTab/sourceRow`; nunca solo por nombre visual.
+- Duplicados de `Fecha submitido`:
+  - un solo valor → usarlo;
+  - valores iguales → consolidar;
+  - valores distintos → HOLD crítico.
+
+## Evidencia obligatoria después del deploy
+
+- `fresh=1`: HTTP 200 y `cacheOrigin=runtime_refresh`.
+- `JULIO 26`: `headerVariant=tab_scoped_compact`.
+- `JULIO 26 HN`: `headerVariant=full_identity`.
+- JUL 2026: 34 visitas GT + 10 HN.
+- Cero `header_not_found`, `column_ambiguous` y `duplicate_column_conflict`.
+- `JULIO 26!7` refleja cuestionario confirmado y deja de aparecer en `Cuest. pendiente`.
+- Sin `location.reload()`, pantalla blanca o estado degradado.
+- Misma `sourceRevision` en Dashboard, Liquidaciones, Reportes Admin y Reportes Cliente.
+
+## Ejecución
+
+Codex debe aplicar el paquete exacto y hacer un commit/push atómico. Para Cloud Run DEV debe usar únicamente el workflow temporal ya autorizado que produjo los despliegues R22 anteriores; no debe crear/modificar workflows ni pedir autenticación manual a Paula.
 
 ## Siguiente bloque exacto
 
-`RESOLVER HEAD_BEFORE ACTUAL → VERIFICAR ANCESTRO 0ca607f → CODEX APPLY PACKAGE EXACTO → COMMIT/PUSH ATÓMICO → HEAD_AFTER → MANIFEST/BUILD-LOCK/VERIFICADOR → CLOUD RUN DEV + HOSTING DEV → CAMBIO HR YA EXISTENTE REFLEJADO SIN RECARGA → VALIDACIÓN VISUAL ADMIN/CLIENTE/SHOPPER`
+`CODEX APLICA PAQUETE → COMMIT/PUSH → WORKFLOW DEV EXISTENTE DESPLIEGA CLOUD RUN → GATE REMOTO fresh=1 → VALIDACIÓN VISUAL ADMIN/CLIENTE/SHOPPER`
 
 ## Estado seguro
 
-Sin merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos.
-# Checkpoint operativo CXOrbia TyA — V172 HR in-place aplicado
-
-Fecha: 2026-07-21
-Estado: `V172_HR_INPLACE_APPLIED_PENDING_REMOTE_DEV_GATES`
-
-HEAD_BEFORE resuelto desde `origin/docs-tya-v6-v71-audit`: `a41e7ef7b6315ef71151f1695aa1875bb482fba9`.
-Ancestro obligatorio conservado: `0ca607f430ac97ca022687419df688bccfd66e19`.
-
-Paquete aplicado literalmente: `PAQUETE_EJECUCION_CODEX_CXORBIA_V172_HR_INPLACE_20260721.zip`.
-SHA-256 del paquete: `eaadd16ef78539bfd45c60ad8eed9dc0507a385b80583640fb3f1666f4f9eb15`.
-
-Delta aplicado desde `files/`: 14 archivos acumulados V172 faltantes, backend HR live, adapters R22/in-place, build R22 y gate `tya-live-hr-inplace-refresh-gate.mjs`.
-
-Validaciones locales:
-- `node --check`: PASS en 21 JS/MJS del paquete.
-- Blob SHA de los 14 acumulados V172 contra `02_RECONCILIACION-V172.json`: PASS.
-- `tools/qa/tya-live-hr-inplace-refresh-gate.mjs`: `PASS_TYA_LIVE_HR_INPLACE_REFRESH_GATE`.
-- `tools/release/tya-v172-empalme-directo-verify.mjs`: PASS tras regenerar manifest/build-lock.
-- R21 postulaciones: PASS.
-- Gates históricos V164/reportes cliente quedan en HOLD por reemplazo literal de `cliente-extra.js` V172 acumulado; no se parchea por instrucción de paquete exacto.
-
-Manifest aggregate V172 HR in-place: `dc6ead9fc81a75d32efcf7f0febe431ba944f1d9812d4551dae7c17f62cd6b27`.
-
-Pendiente inmediato: commit/push atómico, Cloud Run DEV HR, Hosting DEV R22 y gate remoto in-place con misma `sourceRevision` en Dashboard/KPI/Liquidaciones/Reportes.
+Sin merge, producción, importación real, writes Firestore/Auth/Storage/HR, Make/Gemini ni pagos.
