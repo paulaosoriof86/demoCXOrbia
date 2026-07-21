@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
 Fecha: 2026-07-21
-Estado: `CORTE_1B_CANDIDATE_V172_AUDITED_GO_READY_DIRECT_APPLY`
+Estado: `CORTE_1B_CANDIDATE_V172_EXECUTION_LANE_NOT_READY`
 
 ## Estado comprobado
 
@@ -15,55 +15,60 @@ Estado: `CORTE_1B_CANDIDATE_V172_AUDITED_GO_READY_DIRECT_APPLY`
 - Corte 1 no está congelado.
 - Corte 2 continúa bloqueado.
 
-## Corrección metodológica
+## Metodología canónica restablecida
 
-Se retracta el supuesto bloqueo atribuido a falta de checkout local. Fue un desvío: una limitación temporal de herramienta no debía sustituir ni detener el método vigente. No se pide nueva candidata, no se abre rama/PR y no se traslada trabajo manual a Paula.
+El addendum prevalente exige `EXECUTION_LANE_READY` antes de auditar y declarar GO. La candidata, el checkout autenticado de la rama viva, el HEAD congelado y la capacidad de commit/push deben coexistir en el mismo workspace.
 
-## Candidata V172 auditada
+Quedan prohibidos como sustitutos:
+
+- Contents API archivo por archivo;
+- blobs/trees;
+- workflow transportador;
+- nueva rama/PR;
+- PowerShell/manual para Paula;
+- nueva candidata o reauditoría por falta de carril.
+
+## Candidata V172
 
 - Archivo: `Prototype development request CXOrbia V172.zip`.
 - SHA-256: `2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5`.
-- Base inmediata: V171b.
-- Delta: 0 agregados, 0 eliminados y 8 modificados.
-- Archivos funcionales:
-  - `app/app.js`;
-  - `app/modules/midia.js`;
-  - `app/modules/misvisitas.js`;
-  - `app/modules/reservas.js`.
-- Archivos de control:
-  - `INVENTARIO.md`;
-  - `MANIFEST.json`;
-  - `MANIFEST.sha256`;
-  - `app/REPORTE-DE-CAMBIOS.md`.
+- ZIP extraíble: sí.
+- Entradas: 261.
+- Manifiesto, inventario y reporte: presentes.
 
-## Gates V172
+## Gate de ejecución
 
-- 67 JavaScript: sintaxis PASS.
-- 73 referencias locales de `index.html`: PASS.
-- 18 hashes y tamaños UTF-8 declarados: PASS.
-- UTF-8 sin BOM y sin mojibake en los cuatro archivos funcionales: PASS.
-- Gate dinámico `V172_IDENTITY_GATE_PASS`:
-  - Shopper A ve únicamente A;
-  - Shopper B ve únicamente B;
-  - sin `shopperId`, Mis Visitas/Reservas/Mi Día muestran cero datos privados y cero acciones;
-  - sin `visitsForShopper`, no se abre `data.visitas()` global;
-  - `sh1` queda únicamente bajo guard demo explícito;
-  - live/real sin identidad conserva `shopperId:null`.
+```text
+CANDIDATE_BYTES_AVAILABLE=true
+CANDIDATE_EXTRACTABLE=true
+TARGET_REPOSITORY=paulaosoriof86/demoCXOrbia
+TARGET_BRANCH=docs-tya-v6-v71-audit
+REPO_CHECKOUT_AVAILABLE=false
+AUTHENTICATED_COMMIT_PUSH_AVAILABLE_IN_SAME_WORKSPACE=false
+EXECUTION_LANE_READY=false
+```
+
+## Corrección del desvío
+
+La declaración anterior `AUDITED_GO_READY_DIRECT_APPLY` quedó invalidada porque fue emitida fuera del carril.
+
+Durante el intento posterior se crearon objetos Git huérfanos de tipo blob/tree. Se detuvo antes de `create_commit` y `update_ref`; por tanto:
+
+- no forman parte de la rama viva;
+- no existe commit de V172;
+- no existe empalme parcial;
+- DEV y producción permanecen intactos.
 
 ## Preservación
 
-V172 conserva reportKit, PDF/XLSX/PPTX por rol, editor, branding, gráficas, multiproyecto, Panorama canónico, add-ons aislados, geo-checkin honesto, `mireportes`, router `super`, extensiones correctas y Novedades por rol.
-
-## Decisión
-
-No existe P0 nuevo reproducible.
-
-`AUDITED_GO_READY_DIRECT_APPLY`
+- V164 y Corte 1A preservados.
+- HR viva, backend, adapters, contratos, tools y documentación operativa preservados.
+- V171b/V172 no incorporados al frontend vivo.
 
 ## Siguiente bloque exacto
 
-`APPLY_DELTA_DIRECTLY V172 SOBRE docs-tya-v6-v71-audit → COMMIT/PUSH ATÓMICO → HEAD_AFTER → MANIFEST/BUILD-LOCK/VERIFICADOR → POST-GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
+`CAMBIAR AL WORKSPACE FILE-AWARE CORRECTO → CANDIDATA + CHECKOUT AUTENTICADO EN LA MISMA SESIÓN → EXECUTION_LANE_READY → AUDITORÍA DELTA V172 → P0_PROVEN o GO → si GO: APPLY_DELTA_DIRECTLY → COMMIT/PUSH ATÓMICO → POST-GATES → HOSTING DEV → VALIDACIÓN VISUAL → FREEZE CORTE 1`
 
 ## Estado seguro
 
-Todavía sin declarar empalme V172, merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos.
+Sin empalme V172, deploy, merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos.
