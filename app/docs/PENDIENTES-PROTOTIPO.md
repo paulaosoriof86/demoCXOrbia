@@ -1,47 +1,48 @@
 # PENDIENTES-PROTOTIPO.md
 
-> Lista viva de mejoras del prototipo CXOrbia. Actualizada 2026-07-20.
+> Lista viva de mejoras del prototipo CXOrbia. Actualizada 2026-07-21.
 > P0 crítico · P1 importante · P2 posterior · [TyA] específico · [CX] reusable.
 
-## 🔴 P0/P1 ACTUAL — CORTE 1B CON HR VIVA CONFIRMADA
+## CORTE 1B — CANDIDATA V170 EN HOLD
 
-### Resuelto por backend/adapters
+### Resuelto y protegido
 
-- [Backend] La lectura HR viva quedó confirmada: fecha de cuestionario actualizó KPI y asignación HR retiró una visita disponible del shopper.
-- [Backend] La revisión excluye timestamps volátiles y no debe provocar recargas falsas.
-- [Backend] El build usa bootstrap/cache y comprobación fresca controlada.
-- [Backend] El trigger de refresco comprueba al cargar, en `pageshow` y cada 15 segundos.
-- [Backend] La proyección live de cuatro reportes operativos está desplegada en DEV.
-- [Gobierno] No pedir nueva candidata por rutina ni reabrir empalme, histórico, estados, shoppers o Finanzas.
+- [Backend] HR viva read-only confirmada con cambios reales.
+- [Backend] Cloud Run DEV, Hosting DEV y refresco live desplegados.
+- [Backend] Cuatro reportes operativos Cliente disponibles.
+- [Gobierno] V170 no se aplicó porque contiene P0 reproducibles.
+- [Gobierno] Preservar reportKit, reportes por rol, multiproyecto, branding, gráficas, Panorama, add-ons y Novedades.
 
-### P0 — Reportes Admin
+### P0 — Router e identidad
 
-- [Claude/CX] `app/modules/operacion-extra.js`: PDF debe exportar el reporte seleccionado y no ejecutar impresión de la página completa.
-- [Claude/CX] La edición debe modificar columnas, orden, títulos y notas en vista previa y exportaciones.
-- [Claude/CX] Excel debe ser `.xlsx` real; no CSV presentado como Excel.
-- [Claude/CX] No mostrar velocidad, calidad, hallazgos, scores, NPS o liquidaciones como cifras reales sin fuente confirmada.
+- [Claude/CX] `router.js`: resolver NAV efectivo en `mount`, `buildRail` y `nav`; probar rol `super`.
+- [Claude/CX] eliminar todo fallback `shopperId || 'sh1'`; identidad faltante debe fallar cerrado.
 
-### P0 — Panorama por periodo
+### P0 — Reportes y estados canónicos
 
-- [Claude/CX] `app/core/cliente-data.js`: cache por `tenantId + projectId + periodKey + sourceRevision + mode`.
-- [Claude/CX] `app/modules/cliente.js`: separar operación del periodo de score/NPS/secciones.
-- [Claude/CX] `app/modules/cliente-insights.js`: revisar comparativos si comparte el mismo estado.
-- [Claude/CX] MAY/JUN/JUL deben mostrar indicadores operativos del periodo seleccionado.
-- [Claude/CX] Sin score validado, usar un único `Pendiente de fuente`; no mostrar ceros aparentes como resultados.
+- [Claude/CX] `reportKit`: extensión correcta por exportador y éxito PPT solo después de terminar la escritura.
+- [Claude/CX] Panorama debe consumir `CX.data.visitFacets`/`visitBucketFns`; submit exige confirmación explícita.
+- [Claude/CX] Reportes Admin debe consumir facetas canónicas y excluir canceladas/archivadas.
+- [Claude/CX] Dashboard, detalle, Panorama y reportes deben compartir revisión y conteos.
 
-### P1 bloqueante visual — Diseño reusable de reportes
+### P0 — Add-ons y geo-checkin
 
-- [Claude/CX] `app/modules/cliente-extra.js` y `app/modules/operacion-extra.js` deben usar una plantilla común configurable.
-- [Claude/CX] Aplicar logo, paleta, tipografía, proyecto, periodo, alcance, fecha, fuente, pie y paginación.
-- [Claude/CX] Incluir gráficas de cumplimiento, cobertura, tendencia, distribución o comparativo cuando correspondan.
-- [Claude/CX] PDF, Excel y PPT deben contener las mismas filas y la misma revisión.
-- [Claude/CX] El estándar aplica a Admin, Cliente, Shopper y demás roles según permisos.
-- [Claude/CX] Cinépolis no se hardcodea.
+- [Claude/CX] estado de add-ons aislado por `tenantId + projectId`; eliminar clave global `cx_addons_fx`.
+- [Claude/CX] geo-checkin no puede afirmar foto guardada/evidencia sellada sin persistencia real.
+- [Claude/CX] sin backend/Storage autorizado: captura local preparatoria, fail-closed, cero PII/foto en localStorage y estado `Pendiente de backend/Storage`.
 
-### Paquete vinculante
+### P1
 
-- `app/docs/PAQUETE-CLAUDE-CORTE1B-REPORTES-PANORAMA.md`.
+- [Claude/CX] agregar `mireportes` al NAV Shopper.
+- [Claude/CX] retirar rol Admin de geo-checkin o implementar consumidor funcional real.
+- [Claude/CX] mejorar legibilidad PDF y equivalencia funcional de identidad/gráficas en PDF/XLSX/PPTX.
+- [Claude/CX] Novedades no debe anunciar como final una función no persistida.
+
+### Fuentes vinculantes
+
+- `app/docs/AUDITORIA-CANDIDATA-V170-CORTE1B-20260721.md`.
+- `app/docs/PAQUETE-CORRECCION-CLAUDE-V170-CORTE1B-20260721.md`.
 
 ### Cierre pendiente
 
-`DELTA CLAUDE CORTE 1B → AUDITORÍA FOCALIZADA → APPLY_DELTA_DIRECTLY → GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
+`CANDIDATA V170 CORREGIDA → AUDITORÍA FOCALIZADA → APPLY_DELTA_DIRECTLY → GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
