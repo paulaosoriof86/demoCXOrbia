@@ -15,8 +15,6 @@ La lectura HR runtime read-only queda funcionalmente confirmada. Los conteos obs
 
 ## Hallazgos posteriores
 
-La validación visual mostró:
-
 1. carga lenta y recargas repetidas;
 2. Panorama prácticamente igual al cambiar periodo;
 3. reportes operativos del cliente bloqueados como `Pendiente de fuente`;
@@ -26,73 +24,40 @@ La validación visual mostró:
 
 ## Causas raíz
 
-### Revisión inestable
-
-La revisión del servicio se calculaba sobre el JSON completo, incluyendo timestamps regenerados. El watcher veía una revisión nueva aunque no hubiera cambiado un dato operativo y recargaba la página.
-
-### Bootstrap lento
-
-El script live inicial podía quedar esperando una reconstrucción completa de las pestañas HR cuando el cache vencía.
-
-### Proyección de reportes ausente en el build live
-
-El nuevo binding runtime cargaba la HR y el adapter canónico, pero no la proyección `CX_TYA_CORTE1_REPORTS` utilizada por el portal cliente. El módulo falló cerrado y bloqueó las exportaciones.
+- La revisión incluía timestamps regenerados y el watcher recargaba sin cambio operativo.
+- El script inicial podía esperar una reconstrucción completa de las pestañas HR.
+- El build live no cargaba `CX_TYA_CORTE1_REPORTS`; el portal cliente falló cerrado.
 
 ## Archivos creados o modificados
 
 ### Reusable CXOrbia
 
-- `backend/runtime/hr-live-service/server.mjs`
-  - hash estable sin campos temporales volátiles;
-  - bootstrap desde snapshot source-safe construido en deploy;
-  - stale-while-refresh para acelerar la carga;
-  - `fresh=1` para comprobación explícita;
-  - metadatos de revisión estable y origen del cache.
-- `app/adapters/tya-live-source-refresh-watch.js`
-  - recarga solo ante cambio real de revisión;
-  - guard de sesión contra bucles de recarga.
-- `app/adapters/tya-corte1-report-projection-live.js`
-  - proyección sanitizada de reportes desde el snapshot runtime;
-  - periodos, países y sucursales dinámicos;
-  - PDF/Excel/PPT habilitados para los cuatro reportes operativos.
-- `tools/release/tya-source-safe-live-binding-build-r22.mjs`
-  - carga la proyección live antes del watcher.
-
-### Exclusivo cliente
-
-- Endpoint y contexto TyA/Cinépolis en DEV.
-- La estructura queda parametrizable por tenant/proyecto; no convierte Cinépolis en lógica global.
+- `backend/runtime/hr-live-service/server.mjs`: hash estable, bootstrap, actualización controlada y metadatos de revisión.
+- `app/adapters/tya-live-source-refresh-watch.js`: recarga solo ante cambio real y guard anti-loop.
+- `app/adapters/tya-corte1-report-projection-live.js`: proyección sanitizada desde el snapshot runtime.
+- `tools/release/tya-source-safe-live-binding-build-r22.mjs`: carga la proyección live antes del watcher.
 
 ### Claude/prototipo
 
 No se modificaron `app/modules/**` ni `app/core/**`.
 
-Permanecen localizados:
+Pendientes localizados:
 
-- Panorama por periodo;
-- reportes Admin;
-- edición real de columnas;
-- exportación del reporte y no de la página;
-- branding por tenant;
-- logo, paleta, tipografía y gráficas;
-- coherencia de reportes en admin, cliente, shopper y demás roles.
+- `app/core/cliente-data.js`;
+- `app/modules/cliente.js`;
+- `app/modules/cliente-insights.js`, si aplica;
+- `app/modules/cliente-extra.js`;
+- `app/modules/operacion-extra.js`.
+
+Alcance: Panorama por periodo, reportes Admin, edición real de columnas, exportación del reporte, branding por tenant, logo, paleta, tipografía y gráficas.
 
 ### Academia
 
-Actualizar después de la validación visual:
-
-- lectura viva y revisión de fuente;
-- cambio real frente a recarga falsa;
-- periodos operativos frente a scores pendientes;
-- exportación por alcance y branding.
+Actualizar después de la validación visual: lectura viva, revisión de fuente, periodos operativos frente a scores pendientes y exportación por rol.
 
 ### Sin impacto Claude
 
-- Cloud Build;
-- Cloud Run;
-- Hosting DEV;
-- IAM;
-- workflow temporal en `main`.
+Cloud Build, Cloud Run, Hosting DEV, IAM y workflow temporal.
 
 ## Evidencia
 
@@ -124,8 +89,8 @@ Decisión: `PASS_LIVE_HR_STABLE_REVISION_AND_LIVE_REPORTS_DEV_DEPLOY`.
 - Revalidar carga y ausencia de recargas sin cambio de HR.
 - Confirmar cuatro reportes disponibles y exportaciones funcionales.
 - Confirmar una sola actualización ante cambio real.
-- Atender Panorama y diseño/administración de reportes desde frontend, por archivo/módulo.
-- Retirar el workflow temporal de `main` después del cierre DEV.
+- Atender Panorama y diseño/administración de reportes desde frontend.
+- Retirar el workflow temporal después del cierre DEV.
 - Congelar Corte 1 solo con `APROBADO`.
 
 ## Siguiente bloque exacto
