@@ -1,81 +1,105 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA - VIGENTE
 
 Fecha: 2026-07-21
-Estado: `CORTE_1B_V172_EMPALMED_PENDING_POST_GATES`
+Estado: `CORTE_1B_VISUAL_NO_GO_FIX_PACKAGE_READY`
 
 ## Estado comprobado
 
+- Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
-- Baseline activa: V161C/R21.
-- V164 y Corte 1A están integrados.
-- Cloud Run DEV read-only y Hosting DEV están desplegados.
-- La HR viva quedó confirmada con cambios reales.
-- Refresco al cargar, `pageshow` y sondeo de 15 segundos están desplegados.
+- Baseline de seguridad: V161C/R21.
+- V164 y Corte 1A integrados.
+- Commit de aplicación parcial V172: `0ca607f430ac97ca022687419df688bccfd66e19`.
+- Cloud Run DEV y Hosting DEV están desplegados, pero la validación visual es NO-GO.
 - Corte 1 no está congelado.
 - Corte 2 continúa bloqueado.
 
-## Metodología canónica restablecida
+## Evidencia visual de Paula
 
-El addendum prevalente exige `EXECUTION_LANE_READY` antes de auditar y declarar GO. La candidata, el checkout autenticado de la rama viva, el HEAD congelado y la capacidad de commit/push deben coexistir en el mismo workspace.
+En URL pública e incógnito:
 
-Quedan prohibidos como sustitutos:
+- `Conectado · Degradado` en Admin, Cliente y Shopper;
+- datos anteriores de HR en KPI y Liquidaciones;
+- recargas frecuentes con pantalla blanca;
+- Reportes Admin todavía con comportamiento anterior;
+- Reportes Cliente sin diseño/gráficas aprobados;
+- Shopper sin módulo `Mis Reportes`.
 
-- Contents API archivo por archivo;
-- blobs/trees;
-- workflow transportador;
-- nueva rama/PR;
-- PowerShell/manual para Paula;
-- nueva candidata o reauditoría por falta de carril.
+La causa actual no se atribuye a caché del navegador.
 
-## Candidata V172
+## Causa raíz 1 — empalme acumulado incompleto
 
-- Archivo: `Prototype development request CXOrbia V172.zip`.
-- SHA-256: `2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5`.
-- ZIP extraíble: sí.
-- Entradas: 261.
-- Manifiesto, inventario y reporte: presentes.
+El commit V172 aplicó solo:
 
-## Gate de ejecución restablecido
+- `app/app.js`;
+- `app/modules/midia.js`;
+- `app/modules/misvisitas.js`;
+- `app/modules/reservas.js`.
 
-```text
-CANDIDATE_BYTES_AVAILABLE=true
-CANDIDATE_EXTRACTABLE=true
-TARGET_REPOSITORY=paulaosoriof86/demoCXOrbia
-TARGET_BRANCH=docs-tya-v6-v71-audit
-REPO_CHECKOUT_AVAILABLE=true
-AUTHENTICATED_COMMIT_PUSH_AVAILABLE=true
-HEAD_BEFORE=aedb31aa15ec5e4eecf4a9a82c4161b50adca7b5
-WORKTREE_STATE=clean
-EXECUTION_LANE_READY=true
-```
+Esos eran los cuatro archivos modificados entre V171b y V172. Como V171b no estaba empalmada, quedaron fuera 14 archivos acumulados V165–V171. La comparación por Git blob SHA confirmó diferencia en todos:
 
-## Empalme V172
+- `app/core/router.js`;
+- `app/core/cliente-data.js`;
+- `app/core/config.js`;
+- `app/modules/operacion-extra.js`;
+- `app/modules/cliente-extra.js`;
+- `app/modules/integraciones.js`;
+- `app/modules/novedades.js`;
+- `app/modules/finanzas.js`;
+- `app/modules/visitas.js`;
+- `app/modules/dashboard.js`;
+- `app/modules/crm.js`;
+- `app/modules/cliente.js`;
+- `app/modules/historico.js`;
+- `app/modules/cliente-insights.js`.
 
-- Delta aplicado file-aware: `app/app.js`, `app/modules/midia.js`, `app/modules/misvisitas.js`, `app/modules/reservas.js`.
-- V164/Corte 1A reportKit, exportes PDF/XLSX/PPTX, backend, adapters, tools, contratos y HR viva fueron preservados.
-- Manifest/build-lock/verificador: `MANIFEST-V172-EMPALME-DIRECTO-20260721.json`, `app/core/build-lock.js`, `tools/release/tya-v172-empalme-directo-verify.mjs`.
+## Causa raíz 2 — lectura HR con recarga
 
-## Corrección del desvío
+- `fresh=1` no omitía TTL.
+- El watcher comparaba revisión y ejecutaba `location.reload()`.
+- El fast trigger repetía el chequeo cada 15 segundos.
+- La proyección de reportes no se reconstruía al sustituir el snapshot.
 
-La declaración anterior `AUDITED_GO_READY_DIRECT_APPLY` quedó invalidada porque fue emitida fuera del carril.
+Consecuencia: snapshot anterior visible, pantalla blanca y estado degradado.
 
-Durante el intento posterior se crearon objetos Git huérfanos de tipo blob/tree. Se detuvo antes de `create_commit` y `update_ref`; por tanto:
+## Paquete correctivo preparado
 
-- no forman parte de la rama viva;
-- no existe commit de V172;
-- no existe empalme parcial;
-- DEV y producción permanecen intactos.
+- Archivo: `PAQUETE_EJECUCION_CODEX_CXORBIA_V172_HR_INPLACE_20260721.zip`.
+- SHA-256: `46bb502d4422113b55517afbe8099dcd89da9ca330fe435b64ee16ec1d152d60`.
+- Estado: `READY_FOR_CODEX_APPLY_ONLY`.
 
-## Preservación
+Incluye:
 
-- V164 y Corte 1A preservados.
-- HR viva, backend, adapters, contratos, tools y documentación operativa preservados.
-- V171b/V172 no incorporados al frontend vivo.
+1. los 14 archivos acumulados exactos de V172;
+2. `server.mjs` con lectura `fresh=1` que omite TTL;
+3. adapter nuevo de aplicación in-place;
+4. watcher sin recarga de documento;
+5. trigger sin intervalo duplicado;
+6. proyección Corte 1 reconstruible;
+7. build R22 con orden correcto;
+8. gate antirretroceso.
+
+## Gates locales
+
+- 21 JS/MJS: `node --check` PASS.
+- `PASS_TYA_LIVE_HR_INPLACE_REFRESH_GATE`:
+  - cero `location.reload()`;
+  - fresh omite TTL;
+  - snapshot aplicado en memoria;
+  - proyección reconstruida;
+  - revisión compartida;
+  - re-render por bus existente.
+
+## División de responsabilidades
+
+- ChatGPT/backend: diagnóstico, archivos, arquitectura, paquete y gates — completado.
+- Codex: aplicar exactamente `files/`, commit/push atómico, gates, DEV y evidencia.
+- Claude: no interviene.
 
 ## Siguiente bloque exacto
 
-`POST-GATES V172 → HOSTING DEV → VALIDACIÓN VISUAL PAULA → FREEZE CORTE 1 SOLO CON APROBADO`
+`CODEX APPLY PACKAGE EXACTO → COMMIT/PUSH ATÓMICO → HEAD_AFTER → MANIFEST/BUILD-LOCK/VERIFICADOR → CLOUD RUN DEV + HOSTING DEV → CAMBIO HR YA EXISTENTE REFLEJADO SIN RECARGA → VALIDACIÓN VISUAL ADMIN/CLIENTE/SHOPPER`
 
 ## Estado seguro
 
