@@ -33,7 +33,9 @@ CX.module('historico', ({data,ui})=>{
       <div class="flex wrap" style="gap:8px;margin-bottom:14px">
         <select class="sel" id="hPais" style="width:auto"><option value="all">🌍 Todos los países</option>${paisesAll.map(c=>`<option value="${c}" ${fPais===c?'selected':''}>${c}</option>`).join('')}</select>
         <select class="sel" id="hEstado" style="width:auto"><option value="sinActivo" ${fEstado==='sinActivo'?'selected':''}>Cerrados/archivados (excluye activo)</option><option value="all" ${fEstado==='all'?'selected':''}>Todos los estados (incluir activo)</option><option value="activo" ${fEstado==='activo'?'selected':''}>Solo activo</option><option value="cerrado" ${fEstado==='cerrado'?'selected':''}>Cerrado</option><option value="archivado" ${fEstado==='archivado'?'selected':''}>Archivado</option></select>
-        <button class="btn btn-ghost btn-sm" id="hExport">⤓ Exportar CSV</button>
+        <button class="btn btn-ghost btn-sm" id="hPdf">⤓ PDF</button>
+        <button class="btn btn-soft btn-sm" id="hXls">⤓ Excel</button>
+        <button class="btn btn-pr btn-sm" id="hPpt">⤓ PPT</button>
       </div>
       <div class="grid g4" style="margin-bottom:16px">
         ${ui.kpi('Periodos', filtered.length, 'b')}
@@ -63,10 +65,20 @@ CX.module('historico', ({data,ui})=>{
 
     host.querySelector('#hPais').addEventListener('change',e=>{fPais=e.target.value;draw();});
     host.querySelector('#hEstado').addEventListener('change',e=>{fEstado=e.target.value;draw();});
-    host.querySelector('#hExport').addEventListener('click',()=>{
-      const csv=[['Periodo','Paises','Estado','Total','Ejecutadas','Avance%','Score']].concat(filtered.map(r=>[r.p.periodo||r.p.name,r.paises.join('/'),r.st,r.total,r.done,r.pct,r.score!=null?r.score:''])).map(row=>row.map(c=>'"'+(''+c).replace(/"/g,'""')+'"').join(',')).join('\n');
-      const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='historico_'+key+'.csv';a.click();ui.toast('Histórico exportado','ok');
-    });
+    const hSpec=(ext)=>{
+      const san=(s)=>String(s||'reporte').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'reporte';
+      return { title:'Histórico de periodos',
+        meta:{title:'Histórico · '+programa,project:programa,period:(fEstado==='sinActivo'?'Cerrados/archivados':fEstado==='all'?'Todos los estados':fEstado),scope:(fPais==='all'?'Todos los países':fPais),sourceLabel:'Periodos cerrados/archivados (solo lectura)',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
+        columns:[{key:'periodo',label:'Periodo'},{key:'paises',label:'País(es)'},{key:'estado',label:'Estado'},{key:'total',label:'Total'},{key:'ejecutadas',label:'Ejecutadas'},{key:'avance',label:'Avance %'},{key:'score',label:'Score'}],
+        rows:filtered.map(r=>({periodo:r.p.periodo||r.p.name,paises:r.paises.join('/')||'—',estado:r.st,total:r.total,ejecutadas:r.done,avance:r.pct,score:r.score!=null?r.score:'—'})),
+        notes:'',
+        summary:['Periodos: '+filtered.length,'Visitas: '+filtered.reduce((a,r)=>a+r.total,0)+' · Ejecutadas: '+filtered.reduce((a,r)=>a+r.done,0)],
+        chart:{title:'Avance por periodo (%)',data:filtered.map(r=>({label:r.p.periodo||r.p.name,value:r.pct,display:r.pct+'%'}))},
+        filename:[san('historico'),san(programa),new Date().toISOString().slice(0,10)].join('_')+'.'+ext };
+    };
+    host.querySelector('#hPdf').addEventListener('click',()=>CX.reportKit.exportPDF(hSpec('pdf')));
+    host.querySelector('#hXls').addEventListener('click',()=>{if(CX.reportKit.exportExcel(hSpec('xlsx')))ui.toast('Excel .xlsx generado','ok');});
+    host.querySelector('#hPpt').addEventListener('click',()=>{if(CX.reportKit.exportPPT(hSpec('pptx')))ui.toast('PowerPoint generado','ok');});
     host.querySelectorAll('.hVer').forEach(b=>b.addEventListener('click',()=>{
       const r=rows.find(x=>x.p.id===b.dataset.id); if(!r)return;
       const vs=data._visitas.filter(v=>v.projectId===r.p.id);

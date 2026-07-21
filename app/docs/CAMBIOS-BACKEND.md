@@ -152,3 +152,22 @@ Clasificación:
 - Se documentaron reglas definitivas de `Pend. realizar`, shopper activo, visitas postulables, país nuevo y medición quincenal Cinépolis.
 - El siguiente bloque quedó encadenado a candidata, auditoría delta, empalme, Hosting DEV, revisión visual y freeze.
 - No se modificó runtime, frontend, backend, datos, Firebase ni integraciones en ese registro.
+# Addendum 2026-07-21 — V172 HR in-place
+
+Se aplicó literalmente `PAQUETE_EJECUCION_CODEX_CXORBIA_V172_HR_INPLACE_20260721.zip` sobre `origin/docs-tya-v6-v71-audit`.
+
+Backend/runtime:
+- `backend/runtime/hr-live-service/server.mjs` actualizado desde `files/`.
+- `fresh=1` queda preparado para lectura fresca real y cacheOrigin `runtime_refresh`.
+
+Adapters/build:
+- Nuevo `app/adapters/tya-live-source-inplace-apply.js`.
+- Actualizados adapters R22 de watcher, trigger y report projection live.
+- Actualizado `tools/release/tya-source-safe-live-binding-build-r22.mjs`.
+- Nuevo gate `tools/qa/tya-live-hr-inplace-refresh-gate.mjs`.
+
+Validación local:
+- PASS `tya-live-hr-inplace-refresh-gate`.
+- PASS manifest/build-lock V172 HR in-place.
+
+Estado seguro: DEV only, sin producción, sin writes, sin importaciones, sin Make/Gemini y sin pagos.

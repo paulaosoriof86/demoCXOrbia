@@ -43,3 +43,21 @@
 ### Cierre pendiente
 
 `COMMIT/PUSH ATÓMICO V172 → POST-GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
+# Pendientes vigentes — V172 HR in-place
+
+Estado: `V172_HR_INPLACE_APPLIED_PENDING_REMOTE_DEV_GATES`.
+
+Completado localmente:
+- Aplicación exacta de `files/`.
+- Verificación SHA de los 14 archivos acumulados V172.
+- `node --check` de 21 JS/MJS.
+- PASS gate HR in-place local.
+- Manifest/build-lock/verificador V172 regenerados.
+
+Pendiente operativo:
+- Commit/push atómico.
+- Cloud Run DEV HR.
+- Hosting DEV R22.
+- Gate remoto con cambio HR ya existente reflejado sin `location.reload`, sin pantalla blanca y misma `sourceRevision` en Dashboard, KPI, Liquidaciones y Reportes.
+
+Prohibiciones vigentes: no producción, no merge, no writes, no Make/Gemini, no pagos.

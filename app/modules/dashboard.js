@@ -180,7 +180,7 @@ CX.module('dashboard', ({data,ui})=>{
     <div>${ui.ph('Dashboard Operativo', (ALL?('Todos los proyectos · operación general · '+data.projects.length+' proyectos'):(p.name+' · '+p.industry))+' · '+cs.map(c=>CX.paisFlag(c)).join(' '))}</div>
     <div class="flex" style="flex-wrap:wrap;gap:8px">
       <select class="sel" id="dashProjSel" style="width:auto"><option value="all" ${ALL?'selected':''}>🌐 Todos los proyectos</option>${data.scopedProyectos().map(pg=>`<option value="${pg.key}" ${(!ALL&&pg.key===data.currentProgramKey())?'selected':''}>${pg.name}</option>`).join('')}</select>
-      <span class="bdg bdg-b">● Preview operativo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div>
+      <span class="bdg bdg-b">● Preview operativo</span><button class="btn btn-ghost btn-sm" id="dashExport">⤓ Exportar</button></div>
   </div>
   <div style="font-size:10.5px;color:var(--t3);margin:-6px 0 12px" title="Contrato de contexto único (CX.data.ctx())">tenant ${(CX.data.ctx?CX.data.ctx().tenantId:CX.BRAND.id)||'—'} · rol ${CX.data.ctx?CX.data.ctx().role:CX.session.role} · modo ${CX.data.ctx?CX.data.ctx().dataMode:'demo'}${(()=>{if(!data.visitContract)return '';const arr=pool();const conf=arr.filter(v=>{const vc=data.visitContract(v);return vc&&vc.paymentState==='confirmado';}).length;return ' · '+conf+'/'+arr.length+' visitas con pago confirmado (contrato)';})()}</div>
 
@@ -379,6 +379,22 @@ CX.module('dashboard', ({data,ui})=>{
     host.querySelectorAll('[data-kpi]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.kpi;drill(el.querySelector('.k-l').textContent.replace(' ›',''),F[id]||F.total,WA[id]);}));
     host.querySelectorAll('[data-alert]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.alert;drill('Gestión: '+id,F[id]||F.total,WA[id]||'Gestionar con los involucrados.');}));
     host.querySelectorAll('[data-fase]').forEach(el=>el.addEventListener('click',()=>{const[c,fk]=el.dataset.fase.split('|');drill(CX.paisLabel(c)+' · '+fk,v=>v.pais===c&&(F[fk]||F.total)(v),WA[fk]);}));
+    const dx=host.querySelector('#dashExport');
+    if(dx&&CX.reportKit){
+      const dSpec=(ext)=>{
+        const san=(s)=>String(s||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';
+        const projectLabel=ALL?'Todos los proyectos':(data.programBase?data.programBase(p):p.name);
+        const rows=cs.map(c=>{const tot=k.total[c]||0,real=k.realizadas[c]||0;return {pais:CX.paisLabel?CX.paisLabel(c):c,total:tot,asignadas:(k.asignadas[c]||0),sin_asignar:(k.sinAsignar[c]||0),realizadas:real,avance:(tot?Math.round(real/tot*100):0)+'%'};});
+        return { title:'Dashboard Operativo',
+          meta:{title:'Dashboard Operativo',project:projectLabel,period:(months[selMonth]+' '+new Date().getFullYear()),scope:(ALL?'Todos los proyectos':p.name),sourceLabel:'Operación viva del periodo',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
+          columns:[{key:'pais',label:'País'},{key:'total',label:'Total'},{key:'asignadas',label:'Asignadas'},{key:'sin_asignar',label:'Sin asignar'},{key:'realizadas',label:'Realizadas'},{key:'avance',label:'Avance'}],
+          rows, notes:'',
+          summary:['Total visitas: '+(k.total.t||0),'Realizadas: '+(k.realizadas.t||0)],
+          chart:{title:'Realizadas por país',data:cs.map(c=>({label:(CX.paisLabel?CX.paisLabel(c):c),value:(k.realizadas[c]||0)}))},
+          filename:[san('dashboard-operativo'),san(projectLabel),new Date().toISOString().slice(0,10)].join('_')+'.'+ext };
+      };
+      dx.addEventListener('click',()=>CX.ui.modal('⤓ Exportar dashboard',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Genera el reporte operativo del alcance actual con el diseño del tenant.</p><div class="flex" style="gap:8px;justify-content:flex-end"><button class="btn btn-ghost btn-sm" id="dxPdf">⤓ PDF</button><button class="btn btn-soft btn-sm" id="dxXls">⤓ Excel</button><button class="btn btn-pr btn-sm" id="dxPpt">⤓ PPT</button></div>`,{onMount:(ov)=>{ov.querySelector('#dxPdf').addEventListener('click',()=>CX.reportKit.exportPDF(dSpec('pdf')));ov.querySelector('#dxXls').addEventListener('click',()=>{if(CX.reportKit.exportExcel(dSpec('xlsx')))CX.ui.toast('Excel .xlsx generado','ok');});ov.querySelector('#dxPpt').addEventListener('click',()=>{if(CX.reportKit.exportPPT(dSpec('pptx')))CX.ui.toast('PowerPoint generado','ok');});}}));
+    }
     const ps=host.querySelector('#dashProjSel');
     /* P0-1: este selector SÍ es el canónico (además del de la barra lateral) — llama al mismo
        setter real (data.setProgram → internamente activa el periodo más reciente vía

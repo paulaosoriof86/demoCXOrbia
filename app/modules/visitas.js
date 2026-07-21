@@ -203,7 +203,7 @@ CX.module('visitas', ({data,role,ui})=>{
     <div class="flex wrap" style="gap:8px;margin-bottom:12px">
       <button class="btn btn-green btn-sm" id="addV">＋ Publicar visita</button>
       <button class="btn btn-soft btn-sm">⤒ Importar HR</button>
-      <button class="btn btn-ghost btn-sm">⤓ Exportar</button>
+      <button class="btn btn-ghost btn-sm" id="vExport">⤓ Exportar</button>
       <div class="spacer"></div>
       <input class="inp" id="vSearch" placeholder="🔎 Sucursal, shopper, ciudad…" style="max-width:240px">
       <select class="sel" id="vProj" style="width:auto"><option value="all" ${ALL?'selected':''}>🌐 Todos los proyectos</option>${data.scopedProyectos().map(pg=>`<option value="${pg.key}" ${(!ALL&&pg.key===data.currentProgramKey())?'selected':''}>${pg.name}</option>`).join('')}</select>
@@ -223,6 +223,24 @@ CX.module('visitas', ({data,role,ui})=>{
       <div style="margin-top:14px">${ui.aiBox('Cada visita es editable: sucursal, escenario, honorario, shopper y estado. Detecto solapamientos, fuera de rango y faltantes de cobertura antes de publicar.','Base operativa inteligente')}</div>
     </div>`;
   setTimeout(()=>{
+    const vx=document.getElementById('vExport');
+    if(vx&&CX.reportKit){
+      const vSpec=(ext)=>{
+        const byEst={}; all.forEach(v=>{byEst[v.estado]=(byEst[v.estado]||0)+1;});
+        const san=(s)=>String(s||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';
+        const projectLabel=ALL?'Todos los proyectos':(data.programBase?data.programBase(p):p.name);
+        const periodLabel=(p.periodo||p.ronda||p.name||'Periodo');
+        return { title:'Visitas · base operativa',
+          meta:{title:'Visitas · base operativa',project:projectLabel,period:periodLabel,scope:(ALL?'Todos los proyectos':p.name),sourceLabel:'Operación viva del periodo',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
+          columns:[{key:'sucursal',label:'Sucursal'},{key:'pais',label:'País'},{key:'escenario',label:'Escenario'},{key:'shopper',label:'Shopper'},{key:'estado',label:'Estado'},{key:'agendada',label:'Agenda'},{key:'honorario',label:'Honorario'}],
+          rows:all.map(v=>({sucursal:v.sucursal||'—',pais:v.pais||'—',escenario:v.escenario||'—',shopper:v.shopper||'—',estado:v.estado,agendada:v.agendada||'—',honorario:(v.honorario!=null?v.honorario:'—')})),
+          notes:'',
+          summary:['Visitas: '+all.length, Object.entries(byEst).map(([k2,v2])=>k2+': '+v2).join(' · ')],
+          chart:{title:'Visitas por estado',data:Object.entries(byEst).map(([k2,v2])=>({label:k2,value:v2}))},
+          filename:[san('visitas'),san(projectLabel),san(periodLabel),new Date().toISOString().slice(0,10)].join('_')+'.'+ext };
+      };
+      vx.addEventListener('click',()=>CX.ui.modal('⤓ Exportar visitas',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Genera el reporte de visitas del alcance actual con el diseño del tenant.</p><div class="flex" style="gap:8px;justify-content:flex-end"><button class="btn btn-ghost btn-sm" id="vxPdf">⤓ PDF</button><button class="btn btn-soft btn-sm" id="vxXls">⤓ Excel</button><button class="btn btn-pr btn-sm" id="vxPpt">⤓ PPT</button></div>`,{onMount:(ov)=>{ov.querySelector('#vxPdf').addEventListener('click',()=>CX.reportKit.exportPDF(vSpec('pdf')));ov.querySelector('#vxXls').addEventListener('click',()=>{if(CX.reportKit.exportExcel(vSpec('xlsx')))CX.ui.toast('Excel .xlsx generado','ok');});ov.querySelector('#vxPpt').addEventListener('click',()=>{if(CX.reportKit.exportPPT(vSpec('pptx')))CX.ui.toast('PowerPoint generado','ok');});}}));
+    }
     const filt=()=>{const q=(document.getElementById('vSearch').value||'').toLowerCase(),fe=document.getElementById('vEst').value,fp=document.getElementById('vPais').value;
       document.querySelectorAll('#vBody tr').forEach(tr=>{const v=all.find(z=>z.id===tr.dataset.vid);const ok=(!q||(v.sucursal+(v.shopper||'')+v.ciudad).toLowerCase().includes(q))&&(!fe||v.estado===fe)&&(!fp||v.pais===fp);tr.style.display=ok?'':'none';});};
     ['vSearch','vEst','vPais'].forEach(id=>document.getElementById(id).addEventListener('input',filt));

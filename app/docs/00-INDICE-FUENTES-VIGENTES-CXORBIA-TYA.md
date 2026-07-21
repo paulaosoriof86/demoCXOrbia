@@ -31,3 +31,19 @@ No Contents API archivo por archivo, blobs/trees, workflow transportador, nueva 
 `CODEX APLICA SOLO files/ DEL PAQUETE → COMMIT/PUSH ATÓMICO → DEPLOY DEV → DEMOSTRAR CAMBIO HR YA EXISTENTE SIN RECARGA → VALIDAR ADMIN/CLIENTE/SHOPPER`
 
 Corte 1 continúa abierto. Corte 2 continúa bloqueado.
+# Índice vigente CXOrbia TyA — actualización V172 HR in-place
+
+Estado actual: `V172_HR_INPLACE_APPLIED_PENDING_REMOTE_DEV_GATES`.
+
+Fuente operativa vigente:
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
+- `app/docs/MANIFEST-V172-EMPALME-DIRECTO-20260721.json`
+- `app/core/build-lock.js`
+- `tools/release/tya-v172-empalme-directo-verify.mjs`
+- `tools/qa/tya-live-hr-inplace-refresh-gate.mjs`
+
+Paquete aplicado: `PAQUETE_EJECUCION_CODEX_CXORBIA_V172_HR_INPLACE_20260721.zip`.
+HEAD_BEFORE: `a41e7ef7b6315ef71151f1695aa1875bb482fba9`.
+Aggregate vigente: `dc6ead9fc81a75d32efcf7f0febe431ba944f1d9812d4551dae7c17f62cd6b27`.
+
+Siguiente bloque: commit/push, despliegue Cloud Run DEV + Hosting DEV R22 y gate remoto HR in-place.

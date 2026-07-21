@@ -551,7 +551,22 @@ CX.module('crm', ({data,ui})=>{
       <label class="lbl">Meta trimestral (${cur()})</label><input class="inp" id="mT" type="number" value="${m.trimestral}" style="margin-bottom:12px">
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="mSave">Guardar</button></div>
     `,{onMount:(ov,close)=>ov.querySelector('#mSave').addEventListener('click',()=>{CX.crmStore.setMeta({mensual:+ov.querySelector('#mM').value||m.mensual,trimestral:+ov.querySelector('#mT').value||m.trimestral});close();draw();ui.toast('Meta actualizada','ok');})})});
-    host.querySelector('#expRep')?.addEventListener('click',()=>ui.toast('Reporte exportado (demo)','ok'));
+    host.querySelector('#expRep')?.addEventListener('click',()=>{
+      if(!CX.reportKit)return;
+      const san=(s)=>String(s||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';
+      const projectLabel=(CX.data.programBase?CX.data.programBase(CX.data.period()):(CX.BRAND&&CX.BRAND.name))||'Comercial';
+      const ops2=CX.crmStore.list?CX.crmStore.list():[];
+      const porFuente2={};ops2.forEach(o=>{porFuente2[o.fuente||'Directo']=(porFuente2[o.fuente||'Directo']||0)+(o.valor||0);});
+      const crmSpec=(ext)=>({ title:'Reporte comercial · cierres',
+        meta:{title:'Reporte comercial · cierres',project:projectLabel,period:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long'}),scope:'Pipeline CRM',sourceLabel:'CRM · oportunidades registradas',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
+        columns:[{key:'empresa',label:'Empresa'},{key:'rubro',label:'Rubro'},{key:'etapa',label:'Etapa'},{key:'valor',label:'Valor'},{key:'prob',label:'Prob. %'}],
+        rows:ops2.map(o=>({empresa:o.empresa,rubro:o.rubro,etapa:(CX.crmStore.cols().find(c=>c.id===o.etapa)||{}).n||o.etapa,valor:(o.valor!=null?o.valor:'—'),prob:(o.prob!=null?o.prob:'—')})),
+        notes:'',
+        summary:['Oportunidades: '+ops2.length,'Cerrado ganado: '+k(ops2.filter(o=>o.etapa==='ganado').reduce((a,o)=>a+(o.valor||0),0))],
+        chart:{title:'Valor por fuente',data:Object.entries(porFuente2).map(([f,v])=>({label:f,value:v}))},
+        filename:[san('reporte-comercial'),san(projectLabel),new Date().toISOString().slice(0,10)].join('_')+'.'+ext });
+      CX.ui.modal('⤓ Exportar reporte comercial',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Genera el reporte de cierres con el diseño del tenant.</p><div class="flex" style="gap:8px;justify-content:flex-end"><button class="btn btn-ghost btn-sm" id="cxPdf">⤓ PDF</button><button class="btn btn-soft btn-sm" id="cxXls">⤓ Excel</button><button class="btn btn-pr btn-sm" id="cxPpt">⤓ PPT</button></div>`,{onMount:(ov)=>{ov.querySelector('#cxPdf').addEventListener('click',()=>CX.reportKit.exportPDF(crmSpec('pdf')));ov.querySelector('#cxXls').addEventListener('click',()=>{if(CX.reportKit.exportExcel(crmSpec('xlsx')))CX.ui.toast('Excel .xlsx generado','ok');});ov.querySelector('#cxPpt').addEventListener('click',()=>{if(CX.reportKit.exportPPT(crmSpec('pptx')))CX.ui.toast('PowerPoint generado','ok');});}});
+    });
 
     /* KPI drills */
     const allOps=CX.crmStore.list();

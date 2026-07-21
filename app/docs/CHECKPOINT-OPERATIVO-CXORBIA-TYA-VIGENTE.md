@@ -105,3 +105,27 @@ Incluye:
 ## Estado seguro
 
 Sin merge, producción, importación real, escrituras Firestore/Auth/Storage/HR, Make/Gemini live ni pagos.
+# Checkpoint operativo CXOrbia TyA — V172 HR in-place aplicado
+
+Fecha: 2026-07-21
+Estado: `V172_HR_INPLACE_APPLIED_PENDING_REMOTE_DEV_GATES`
+
+HEAD_BEFORE resuelto desde `origin/docs-tya-v6-v71-audit`: `a41e7ef7b6315ef71151f1695aa1875bb482fba9`.
+Ancestro obligatorio conservado: `0ca607f430ac97ca022687419df688bccfd66e19`.
+
+Paquete aplicado literalmente: `PAQUETE_EJECUCION_CODEX_CXORBIA_V172_HR_INPLACE_20260721.zip`.
+SHA-256 del paquete: `eaadd16ef78539bfd45c60ad8eed9dc0507a385b80583640fb3f1666f4f9eb15`.
+
+Delta aplicado desde `files/`: 14 archivos acumulados V172 faltantes, backend HR live, adapters R22/in-place, build R22 y gate `tya-live-hr-inplace-refresh-gate.mjs`.
+
+Validaciones locales:
+- `node --check`: PASS en 21 JS/MJS del paquete.
+- Blob SHA de los 14 acumulados V172 contra `02_RECONCILIACION-V172.json`: PASS.
+- `tools/qa/tya-live-hr-inplace-refresh-gate.mjs`: `PASS_TYA_LIVE_HR_INPLACE_REFRESH_GATE`.
+- `tools/release/tya-v172-empalme-directo-verify.mjs`: PASS tras regenerar manifest/build-lock.
+- R21 postulaciones: PASS.
+- Gates históricos V164/reportes cliente quedan en HOLD por reemplazo literal de `cliente-extra.js` V172 acumulado; no se parchea por instrucción de paquete exacto.
+
+Manifest aggregate V172 HR in-place: `dc6ead9fc81a75d32efcf7f0febe431ba944f1d9812d4551dae7c17f62cd6b27`.
+
+Pendiente inmediato: commit/push atómico, Cloud Run DEV HR, Hosting DEV R22 y gate remoto in-place con misma `sourceRevision` en Dashboard/KPI/Liquidaciones/Reportes.

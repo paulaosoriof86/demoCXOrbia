@@ -26,6 +26,10 @@ const VOLATILE_REVISION_KEYS=new Set(['generatedAt','lastSnapshotAt','sourceSnap
 
 let cache=null;
 let inFlight=null;
+let lastRefreshError=null;
+let lastRefreshStartedAt=null;
+let lastRefreshFinishedAt=null;
+let lastRefreshDurationMs=null;
 
 function runNode(args,env){
   return new Promise((resolve,reject)=>{
@@ -83,6 +87,8 @@ function loadBootstrap(){
 
 async function refreshSnapshot(){
   if(inFlight)return inFlight;
+  lastRefreshStartedAt=new Date().toISOString();
+  const started=Date.now();
   inFlight=(async()=>{
     const dir=fs.mkdtempSync(path.join(os.tmpdir(),'cxorbia-hr-live-'));
     const payload=path.join(dir,'snapshot.js');
@@ -100,24 +106,59 @@ async function refreshSnapshot(){
       await runNode(['tools/hr-source/tya-reapply-canonical-state-r20.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'state')],env);
       await runNode(['tools/qa/tya-live-hr-read-probe-gate.mjs','--payload',payload,'--out',path.join(dir,'probe'),'--max-age-seconds','600'],env);
       cache=materialize(parseSnapshot(payload),'runtime_refresh');
+      lastRefreshError=null;
+      lastRefreshFinishedAt=new Date().toISOString();
+      lastRefreshDurationMs=Date.now()-started;
       return cache;
     } finally {
       fs.rmSync(dir,{recursive:true,force:true});
-      inFlight=null;
     }
   })();
-  return inFlight;
+  try{
+    return await inFlight;
+  }catch(error){
+    lastRefreshError=String(error?.message||error).slice(0,500);
+    lastRefreshFinishedAt=new Date().toISOString();
+    lastRefreshDurationMs=Date.now()-started;
+    throw error;
+  }finally{
+    inFlight=null;
+  }
 }
 
-async function buildSnapshot({waitForFresh=false}={}){
+/* P0 fix: forceFresh bypasses CACHE_MS completely. A request with fresh=1 never
+   returns build_bootstrap or a still-valid stale cache as if it were a fresh read. */
+async function buildSnapshot({forceFresh=false}={}){
+  if(forceFresh)return inFlight||refreshSnapshot();
   const age=cache?Date.now()-cache.loadedAt:Infinity;
   if(cache&&age<CACHE_MS)return cache;
-  if(inFlight)return waitForFresh?inFlight:(cache||inFlight);
-  if(cache&&!waitForFresh){
+  if(inFlight)return cache||inFlight;
+  if(cache){
     refreshSnapshot().catch(error=>console.error(`CXOrbia live HR background refresh failed: ${String(error?.message||error)}`));
     return cache;
   }
   return refreshSnapshot();
+}
+
+function runtimeMeta(current){
+  return {
+    revision:current.revision,
+    revisionStable:true,
+    generatedAt:current.snapshot.generatedAt,
+    sourceReadAt:new Date(current.loadedAt).toISOString(),
+    runtimeRead:true,
+    sourceSafe:true,
+    cacheOrigin:current.origin||null,
+    cacheAgeMs:Math.max(0,Date.now()-current.loadedAt),
+    cacheMs:CACHE_MS,
+    refreshStartedAt:lastRefreshStartedAt,
+    refreshFinishedAt:lastRefreshFinishedAt,
+    refreshDurationMs:lastRefreshDurationMs,
+    refreshError:lastRefreshError,
+    writes:false,
+    imports:false,
+    production:false
+  };
 }
 
 function setCommonHeaders(res,origin){
@@ -149,43 +190,36 @@ const server=http.createServer(async(req,res)=>{
   }
   if(req.method!=='GET')return sendJson(res,405,{ok:false,error:'method_not_allowed'});
   const url=new URL(req.url||'/',`http://${req.headers.host||'localhost'}`);
-  if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,writes:false,production:false});
+  if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,lastRefreshError,writes:false,production:false});
   if(!ENDPOINT_PATHS.has(url.pathname))return sendJson(res,404,{ok:false,error:'not_found'});
   try{
-    const waitForFresh=url.searchParams.get('fresh')==='1';
-    const current=await buildSnapshot({waitForFresh});
+    const forceFresh=url.searchParams.get('fresh')==='1';
+    const current=await buildSnapshot({forceFresh});
     const format=url.searchParams.get('format')||'json';
+    const meta=runtimeMeta(current);
     res.setHeader('ETag',`"${current.revision}"`);
     res.setHeader('X-CXOrbia-Source-Revision',current.revision);
     res.setHeader('X-CXOrbia-Generated-At',current.snapshot.generatedAt||'');
+    res.setHeader('X-CXOrbia-Source-Read-At',meta.sourceReadAt||'');
     res.setHeader('X-CXOrbia-Cache-Origin',current.origin||'unknown');
     if(format==='meta'){
       return sendJson(res,200,{
         ok:true,
-        revision:current.revision,
-        revisionStable:true,
-        generatedAt:current.snapshot.generatedAt,
+        ...meta,
         periods:current.snapshot.counts?.periods??current.snapshot.periods.length,
         visits:current.snapshot.counts?.visits??current.snapshot.visits.length,
-        latestPeriodKey:[...(current.snapshot.periods||[])].map(p=>p.key).filter(Boolean).sort().at(-1)||null,
-        sourceSafe:true,
-        runtimeRead:true,
-        cacheMs:CACHE_MS,
-        cacheOrigin:current.origin||null,
-        writes:false,
-        imports:false,
-        production:false
+        latestPeriodKey:[...(current.snapshot.periods||[])].map(p=>p.key).filter(Boolean).sort().at(-1)||null
       });
     }
     if(format==='js'){
       res.statusCode=200;
       res.setHeader('Content-Type','application/javascript; charset=utf-8');
-      return res.end(`window.CX_TYA_HR_SOURCE_SAFE=${current.json};window.CX_TYA_HR_LIVE_META=${JSON.stringify({revision:current.revision,revisionStable:true,generatedAt:current.snapshot.generatedAt,runtimeRead:true,sourceSafe:true,cacheOrigin:current.origin||null})};`);
+      return res.end(`window.CX_TYA_HR_SOURCE_SAFE=${current.json};window.CX_TYA_HR_LIVE_META=${JSON.stringify(meta)};`);
     }
-    return sendJson(res,200,{...current.snapshot,_runtime:{revision:current.revision,revisionStable:true,runtimeRead:true,cacheMs:CACHE_MS,cacheOrigin:current.origin||null}});
+    return sendJson(res,200,{...current.snapshot,_runtime:meta});
   }catch(error){
     console.error(error.stack||error.message||String(error));
-    return sendJson(res,503,{ok:false,error:'live_hr_read_failed',message:String(error.message||error).slice(0,500),sourceSafe:true,writes:false,production:false});
+    return sendJson(res,503,{ok:false,error:'live_hr_read_failed',message:String(error.message||error).slice(0,500),sourceSafe:true,lastRefreshError,writes:false,production:false});
   }
 });
 

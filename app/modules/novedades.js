@@ -5,6 +5,12 @@
 CX.novedades = CX.novedades || {
   _k:'cx_novedades', _rk:'cx_novedades_read',
   seed(){ return [
+    {id:'r_069',ver:'v6.9',fecha:'2026-07-21',tipo:'Nuevo',titulo:'Add-ons funcionales por rol + Check-in geolocalizado',
+     cuerpo:'Nuevos add-ons que se activan y se asignan por rol desde Integraciones & Add-ons. El primero: Check-in con foto geolocalizada, ahora como sección y botón propio en Mis Visitas del shopper (GPS + hora reales), independiente del cuestionario.',roles:['admin','shopper']},
+    {id:'r_068',ver:'v6.8',fecha:'2026-07-21',tipo:'Nuevo',titulo:'Reportes personalizables en todos los roles',
+     cuerpo:'Crea y personaliza reportes eligiendo, ocultando, ordenando y renombrando columnas + notas, con exportación multiformato (PDF, Excel .xlsx y PPT) y el diseño de tu marca con gráficas. Disponible en Cliente, Admin/Operativo, Comercial, Finanzas y en el nuevo módulo Mis Reportes del shopper.',roles:['admin','cliente','shopper']},
+    {id:'r_067',ver:'v6.7',fecha:'2026-07-21',tipo:'Mejora',titulo:'Panorama por periodo y exportables honestos',
+     cuerpo:'El Panorama separa la Operación del periodo de los Resultados de evaluación y cambia sus indicadores por periodo; sin fuente de score se muestra un único Pendiente de fuente (sin ceros aparentes). Los exportables de Reportes, Histórico, Planes de Acción, Visitas, Dashboard, CRM y Finanzas ya son multiformato con gráficas.',roles:['admin','cliente']},
     {id:'r_066',ver:'v6.6',fecha:'2026-07-02',tipo:'Nuevo',titulo:'Insights & Benchmark en el portal del cliente',
      cuerpo:'El cliente ahora ve su score vs. el promedio de su industria, califica el programa (NPS), deja anotaciones colaborativas y agenda reuniones de revisión.',roles:['cliente','admin']},
     {id:'r_065',ver:'v6.5',fecha:'2026-07-01',tipo:'Nuevo',titulo:'Periodos del proyecto + detección de periodo en HR',
@@ -12,7 +18,11 @@ CX.novedades = CX.novedades || {
     {id:'r_064',ver:'v6.4',fecha:'2026-06-30',tipo:'Mejora',titulo:'Foto geolocalizada real en la visita',
      cuerpo:'La evidencia geolocalizada captura GPS + fecha/hora reales dentro del cuestionario del shopper.',roles:['shopper','admin']},
   ];},
-  list(){ try{const s=JSON.parse(localStorage.getItem(this._k)||'null'); return s||this.seed();}catch(e){return this.seed();} },
+  list(){ try{const s=JSON.parse(localStorage.getItem(this._k)||'null'); if(!s)return this.seed();
+    /* Merge: conserva lo guardado (estado/ediciones) y suma novedades nuevas del seed que aún no existan. */
+    const ids=new Set(s.map(n=>n.id)); const add=this.seed().filter(n=>!ids.has(n.id));
+    return add.length?add.concat(s):s;
+  }catch(e){return this.seed();} },
   save(a){ try{localStorage.setItem(this._k,JSON.stringify(a));}catch(e){} CX.bus&&CX.bus.emit('novedades'); },
   add(n){ const a=this.list(); a.unshift(Object.assign({id:'r'+Date.now().toString(36),fecha:new Date().toISOString().slice(0,10),tipo:'Nuevo',estado:'publicado',modulo:''},n)); this.save(a); },
   forRole(role){ return this.list().filter(n=>(n.estado!=='archivado')&&(n.estado!=='borrador')&&(!n.roles||n.roles.includes(role))); },

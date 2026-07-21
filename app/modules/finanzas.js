@@ -58,7 +58,7 @@ CX.module('financiero', ({data,ui})=>{
 
   const html_fin = `
   <div class="between" style="margin-bottom:12px"><div>${ui.ph('Dashboard Financiero', p.name+' · '+modelLbl+' · '+p.countries.map(c=>c+' ('+CX.moneda(p,c)+')').join(' y ')+' separados')}</div>
-    <div class="flex" style="gap:8px"><select id="finDashPer" class="sel" style="width:auto">${CX.finStore.periods(p.id).map(pp=>`<option ${pp===CX.finStore.curPeriod()?'selected':''}>${pp}</option>`).join('')}</select><span class="bdg ${p.modelo==='directo'?'bdg-b':'bdg-p'}">${modelLbl}</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
+    <div class="flex" style="gap:8px"><select id="finDashPer" class="sel" style="width:auto">${CX.finStore.periods(p.id).map(pp=>`<option ${pp===CX.finStore.curPeriod()?'selected':''}>${pp}</option>`).join('')}</select><span class="bdg ${p.modelo==='directo'?'bdg-b':'bdg-p'}">${modelLbl}</span><button class="btn btn-ghost btn-sm" id="finExport">⤓ Exportar</button></div></div>
 
   <div class="card card-p" style="margin-bottom:16px;background:var(--brand-light);border-color:#cfe6f7">
     <div style="font-size:12.5px;color:var(--brand-dark)">${p.modelo==='directo'
@@ -110,6 +110,20 @@ CX.module('financiero', ({data,ui})=>{
   </div>`;
 
   setTimeout(()=>{
+    const fx=document.getElementById('finExport');
+    if(fx&&CX.reportKit){
+      const san=(s)=>String(s||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';
+      const projectLabel=data.programBase?data.programBase(p):p.name;
+      const finSpec=(ext)=>({ title:'Dashboard Financiero',
+        meta:{title:'Dashboard Financiero',project:projectLabel,period:(CX.finStore.curPeriod?CX.finStore.curPeriod():(p.periodo||p.name)),scope:p.countries.join(' · '),sourceLabel:'Finanzas · '+modelLbl,generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
+        columns:[{key:'pais',label:'País'},{key:'moneda',label:'Moneda'},{key:'ingreso',label:'Ingresos'},{key:'honPaga',label:'Honorarios'},{key:'fijos',label:'Gastos fijos'},{key:'margen',label:'Margen'},{key:'margenPct',label:'Margen %'},{key:'cxc',label:'CxC'}],
+        rows:p.countries.map(c=>{const d=fp[c];return {pais:CX.paisLabel(c),moneda:d.cur,ingreso:Math.round(d.ingreso),honPaga:Math.round(d.honPaga),fijos:Math.round(d.fijos),margen:Math.round(d.margen),margenPct:d.margenPct+'%',cxc:Math.round(d.cxc)};}),
+        notes:'',
+        summary:['Países: '+p.countries.length,'Modelo: '+modelLbl],
+        chart:{title:'Margen % por país',data:p.countries.map(c=>({label:CX.paisLabel(c),value:fp[c].margenPct,display:fp[c].margenPct+'%'}))},
+        filename:[san('dashboard-financiero'),san(projectLabel),new Date().toISOString().slice(0,10)].join('_')+'.'+ext });
+      fx.addEventListener('click',()=>CX.reportKit.openReport(finSpec('pdf'),'fin_dashboard'));
+    }
     document.getElementById('finDashPer')?.addEventListener('change',e=>{CX.finStore.setPeriod(e.target.value);CX.router.nav('financiero');});
     document.querySelectorAll('.finDrill').forEach(el=>el.addEventListener('click',()=>{
       const c=el.dataset.c, liqs=CX.liq.forProject(data).filter(l=>l.pais===c);
@@ -194,7 +208,7 @@ CX.module('movimientos', ({data,ui})=>{
 
     host.innerHTML=`
     <div class="between" style="margin-bottom:12px"><div>${ui.ph('Movimientos & Tesorería', 'Ingresos, egresos, CxC/CxP, financiamientos y remesas · por proyecto o globales')}</div>
-      <div class="flex"><span class="bdg bdg-a">◐ Preview operativo</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
+      <div class="flex"><span class="bdg bdg-a">◐ Preview operativo</span><button class="btn btn-ghost btn-sm" id="movExport">⤓ Exportar</button></div></div>
 
     <div class="between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px">
       <div class="flex" style="gap:0;border:1px solid var(--border);border-radius:9px;overflow:hidden;width:max-content">
@@ -265,6 +279,21 @@ CX.module('movimientos', ({data,ui})=>{
     </div>`;
 
     host.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>{scope=b.dataset.scope;draw();}));
+    const mx=host.querySelector('#movExport');
+    if(mx&&CX.reportKit){
+      const san=(s)=>String(s||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';
+      const projectLabel=data.programBase?data.programBase(p):p.name;
+      const byCat={}; movs.forEach(m=>{const key=(m.monto<0?'Egreso':'Ingreso');byCat[key]=(byCat[key]||0)+Math.abs(m.monto);});
+      const movSpec=(ext)=>({ title:'Movimientos & Tesorería',
+        meta:{title:'Movimientos & Tesorería',project:(isG?'Global (administrativo)':projectLabel),period:per,scope:(isG?'Global':projectLabel),sourceLabel:'Finanzas · movimientos del periodo',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
+        columns:[{key:'fecha',label:'Fecha'},{key:'concepto',label:'Concepto'},{key:'categoria',label:'Categoría'},{key:'tipo',label:'Tipo'},{key:'pais',label:'País'},{key:'monto',label:'Monto'},{key:'estado',label:'Estado'}],
+        rows:movs.map(m=>({fecha:m.fecha||'—',concepto:m.cat||m.desc||'—',categoria:m.categoria||(m.global?'Administrativo':'Proyecto'),tipo:(TI[m.tipoIngreso]||TE[m.tipoEgreso]||m.tipo||'—'),pais:m.pais||'—',monto:Math.round(m.monto||0),estado:m.estado||'—'})),
+        notes:'',
+        summary:['Movimientos: '+movs.length,'Ingresos oper.: '+ui.money(cur,ingOper)+' · Egresos: '+ui.money(cur,Math.abs(egr))],
+        chart:{title:'Ingresos vs Egresos',data:Object.entries(byCat).map(([k2,v2])=>({label:k2,value:Math.round(v2)}))},
+        filename:[san('movimientos'),san(projectLabel),san(per),new Date().toISOString().slice(0,10)].join('_')+'.'+ext });
+      mx.addEventListener('click',()=>CX.reportKit.openReport(movSpec('pdf'),'fin_movimientos'));
+    }
     const ps=host.querySelector('#perSel'); if(ps)ps.addEventListener('change',()=>{CX.finStore.setPeriod(ps.value);draw();});
     const nm=host.querySelector('#nextMonth'); if(nm)nm.addEventListener('click',()=>{const nx=CX.finStore.crearMesSiguiente(pid());draw();ui.toast('Mes '+nx+' creado · presupuesto replicado (editable) · movimientos en blanco','ok',3600);});
 
@@ -481,7 +510,7 @@ CX.module('liquidaciones', ({data,ui})=>{
 
     host.innerHTML=`
     <div class="between" style="margin-bottom:12px"><div>${ui.ph('Liquidaciones', p.name+' · sincronizadas con el avance de cada visita')}</div>
-      <div class="flex"><span class="bdg bdg-a">◐ Candidatas · pend. cruce</span><button class="btn btn-ghost btn-sm">⤓ Exportar</button></div></div>
+      <div class="flex"><span class="bdg bdg-a">◐ Candidatas · pend. cruce</span><button class="btn btn-ghost btn-sm" id="liqExport">⤓ Exportar</button></div></div>
     <div class="card card-p" style="margin-bottom:12px;border-left:4px solid var(--amber);background:var(--amber-bg,#fffbeb)"><div style="font-size:11.5px;color:#92400e;line-height:1.6">📌 Las liquidaciones son <b>candidatas</b> derivadas del avance operativo. El <b>monto final a pagar</b> se confirma al cruzar con el Excel financiero externo del cierre. No se muestra “deuda final” ni “pagos listos” solo desde la HR.</div></div>
 
     <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px" id="liqKpis">
@@ -510,6 +539,21 @@ CX.module('liquidaciones', ({data,ui})=>{
     host.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.add);}));
     host.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.rm);}));
     // KPIs clickeables → listado filtrado
+    const lx=host.querySelector('#liqExport');
+    if(lx&&CX.reportKit){
+      const san=(s)=>String(s||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';
+      const projectLabel=data.programBase?data.programBase(p):p.name;
+      const byEst={}; all.forEach(l=>{byEst[l.estado]=(byEst[l.estado]||0)+1;});
+      const liqSpec=(ext)=>({ title:'Liquidaciones',
+        meta:{title:'Liquidaciones',project:projectLabel,period:(p.periodo||p.ronda||p.name||'Periodo'),scope:'Candidatas · pend. cruce',sourceLabel:'Finanzas · liquidaciones derivadas del avance',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
+        columns:[{key:'shopper',label:'Shopper'},{key:'sucursal',label:'Sucursal'},{key:'pais',label:'País'},{key:'estado',label:'Estado'},{key:'honorario',label:'Honorario'},{key:'reembolso',label:'Reembolso'},{key:'total',label:'Total'},{key:'pago',label:'Pago est.'}],
+        rows:all.map(l=>({shopper:l.shopper||'—',sucursal:l.sucursal||'—',pais:l.pais||'—',estado:l.estado,honorario:Math.round(l.honorario||0),reembolso:Math.round(l.reembolso||0),total:Math.round(l.total||0),pago:l.fechaEstimadaPago||'—'})),
+        notes:'',
+        summary:['Liquidaciones: '+all.length, Object.entries(byEst).map(([k2,v2])=>k2+': '+v2).join(' · ')],
+        chart:{title:'Liquidaciones por estado',data:Object.entries(byEst).map(([k2,v2])=>({label:k2,value:v2}))},
+        filename:[san('liquidaciones'),san(projectLabel),new Date().toISOString().slice(0,10)].join('_')+'.'+ext });
+      lx.addEventListener('click',()=>CX.reportKit.openReport(liqSpec('pdf'),'fin_liquidaciones'));
+    }
     const lkMap={pc:['Pend. cuestionario',l=>l.estado==='pendiente_cuestionario'],pv:['Pendientes/Validadas',l=>['pendiente_submitir','validada'].includes(l.estado)],val:['Candidatas para lote',l=>l.estado==='validada'],pag:['Pagadas (preview) · pend. cruce real',l=>['pagada','pagada_preview'].includes(l.estado)]};
     host.querySelectorAll('#liqKpis [data-lk]').forEach(el=>el.addEventListener('click',()=>{const m=lkMap[el.dataset.lk];const arr=all.filter(m[1]);
       ui.modal(m[0]+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Total</th><th>Pago est.</th></tr></thead><tbody>${arr.map(l=>`<tr><td><b>${l.shopper||'—'}</b></td><td style="font-size:12px">${l.sucursal}</td><td style="font-weight:700">${ui.money(l.moneda,l.total)}</td><td style="font-size:12px">${l.fechaEstimadaPago||'—'}</td></tr>`).join('')}</tbody></table>`:ui.empty('💸','Sin liquidaciones en esta categoría.'));

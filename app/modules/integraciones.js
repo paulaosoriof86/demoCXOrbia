@@ -3,6 +3,36 @@
    Cada integración tiene: nombre, categoría, descripción, toggleable, config modal. */
 window.CX = window.CX || {};
 
+/* ============================================================
+   CX.addons — Add-ons FUNCIONALES (Corte 1B ext.)
+   A diferencia de las integraciones externas (que dependen de backend), estos
+   son beneficios que SÍ operan en el frontend cuando se activan. Cada add-on:
+   toggle por tenant + selección de roles a los que aplica. Los módulos consultan
+   CX.addons.on(id, role) para encender la función en la UI del rol correcto.
+   El backend queda pendiente sólo para persistencia/servidor; la función corre. */
+CX.addons = {
+  _base:'cx_addons_fx', _state:null, _stateKey:null,
+  DEFS:[
+    {id:'geo_checkin', n:'Check-in con foto geolocalizada', ic:'📍', cat:'Operación en campo',
+     desc:'El evaluador registra su llegada a la sucursal con foto sellada por GPS + hora, como paso propio de la visita (no dentro del cuestionario). Requiere backend/Storage para persistir la evidencia.',
+     roles:['shopper'], allowRoles:['shopper'], where:'Mis Visitas (shopper)'},
+  ],
+  /* P0-6 (V171): persistencia AISLADA por tenantId + projectId. Nunca clave global.
+     No se infiere tenant por marca visual; sale de CX.data.ctx()/sesión. */
+  _tenant(){ try{ return (CX.data&&CX.data.ctx&&CX.data.ctx().tenantId)||(CX.session.user&&CX.session.user.tenantId)||(CX.BRAND&&CX.BRAND.id)||'default'; }catch(e){ return 'default'; } },
+  _project(){ try{ const p=CX.data&&CX.data.period&&CX.data.period(); return (p&&(CX.data.programKey?CX.data.programKey(p):p.id))||'all'; }catch(e){ return 'all'; } },
+  _key(){ return this._base+'::'+this._tenant()+'::'+this._project(); },
+  state(){ const k=this._key(); if(this._state&&this._stateKey===k) return this._state; try{this._state=JSON.parse(localStorage.getItem(k)||'{}');}catch(e){this._state={};} this._stateKey=k; return this._state; },
+  _save(){ try{localStorage.setItem(this._key(),JSON.stringify(this._state||{}));}catch(e){} CX.bus&&CX.bus.emit('addons'); },
+  def(id){ return this.DEFS.find(d=>d.id===id)||null; },
+  isOn(id){ const s=this.state()[id]; return s?!!s.on:false; },
+  rolesFor(id){ const s=this.state()[id]; if(s&&Array.isArray(s.roles))return s.roles; const d=this.def(id); return d?d.roles.slice():[]; },
+  on(id,role){ return this.isOn(id) && this.rolesFor(id).includes(role); },
+  setOn(id,v){ const s=this.state(); s[id]=Object.assign({roles:this.rolesFor(id)},s[id]||{},{on:!!v}); this._save(); },
+  toggleRole(id,role){ const d=this.def(id); if(d&&d.allowRoles&&!d.allowRoles.includes(role))return; const s=this.state(); const cur=this.rolesFor(id); const roles=cur.includes(role)?cur.filter(r=>r!==role):cur.concat(role); s[id]=Object.assign({on:this.isOn(id)},s[id]||{},{roles}); this._save(); },
+};
+
+
 CX.intStore = {
   _state: null,
   _key: 'cx_integraciones',
@@ -205,6 +235,7 @@ CX.module('integraciones', ({ui,data})=>{
       <div style="background:var(--brand-light);border-radius:10px;padding:11px 14px;font-size:12.5px;color:var(--brand-dark);margin-bottom:16px">
         ⚡ <b>Receta de automatización inteligente:</b> IA (Gemini/Claude) redacta → Canva/Gamma crean piezas → Metricool programa y publica → Make/Zapier orquesta → NotebookLM alimenta el conocimiento del cliente y la Academia.
       </div>
+      ${(()=>{const RL={admin:'Admin',shopper:'Shopper',cliente:'Cliente'};return `<div style="margin-bottom:18px"><div class="card-t" style="margin-bottom:4px">🧩 Add-ons funcionales</div><div style="font-size:11.5px;color:var(--t3);margin-bottom:10px">Beneficios que operan en la plataforma al activarlos. Elige a qué roles aplica cada uno — aparecerá funcional en la vista de ese rol.</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px">${CX.addons.DEFS.map(a=>{const on=CX.addons.isOn(a.id);const roles=CX.addons.rolesFor(a.id);return `<div class="card" style="padding:14px 16px;background:${on?'var(--brand-light)':'var(--panel)'};border:1px solid ${on?'var(--brand)':'var(--border)'};border-radius:12px"><div class="between" style="margin-bottom:6px"><div class="flex" style="gap:8px;align-items:center"><span style="font-size:20px">${a.ic}</span><b style="font-size:13px">${a.n}</b></div><label class="flex" style="gap:6px;cursor:pointer;align-items:center"><input type="checkbox" class="axTog" data-id="${a.id}" ${on?'checked':''} style="width:18px;height:18px"><span style="font-size:11px;font-weight:700;color:${on?'var(--brand)':'var(--t3)'}">${on?'Activo':'Inactivo'}</span></label></div><div style="font-size:11.5px;color:var(--t2);line-height:1.5;margin-bottom:10px">${a.desc}</div><div style="font-size:10.5px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Roles</div><div class="flex" style="gap:6px;flex-wrap:wrap">${a.allowRoles.map(r=>`<button class="btn btn-sm ${roles.includes(r)?'btn-pr':'btn-ghost'} axRole" data-id="${a.id}" data-role="${r}" ${on?'':'disabled'} style="padding:3px 10px;font-size:11px">${RL[r]||r}</button>`).join('')}</div><div style="font-size:10.5px;color:var(--t3);margin-top:8px">${on&&roles.length?('✅ Visible para: '+roles.map(r=>RL[r]||r).join(', ')+' · '+a.where):(on?'⚠ Activa sin roles seleccionados — elige al menos uno':'Inactivo')}</div></div>`;}).join('')}</div></div>`;})()}
       ${CX.intStore.CATS.map(cat=>{
         const catItems=items.filter(i=>i.cat===cat);
         if(!catItems.length)return '';
@@ -212,6 +243,8 @@ CX.module('integraciones', ({ui,data})=>{
           <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px">${catItems.map(card).join('')}</div></div>`;
       }).join('')}
       <div style="margin-top:8px">${ui.aiBox('Cada integración solicitada queda pendiente de activación antes de operar de extremo a extremo (WhatsApp, Sheets, Gemini, Metricool, Make, etc.). El prototipo registra la intención y el estado; la activación real confirma la conexión.','Ecosistema — estado honesto por integración')}</div>`;
+    host.querySelectorAll('.axTog').forEach(c=>c.addEventListener('click',()=>{CX.addons.setOn(c.dataset.id,c.checked);draw();ui.toast('Add-on '+(c.checked?'activado':'desactivado'),'ok');}));
+    host.querySelectorAll('.axRole').forEach(b=>b.addEventListener('click',()=>{CX.addons.toggleRole(b.dataset.id,b.dataset.role);draw();}));
     host.querySelectorAll('.intTog').forEach(c=>c.addEventListener('change',()=>{
       const item=CX.intStore.ITEMS.find(i=>i.id===c.dataset.id);
       if(c.checked&&item&&item.cfg&&item.cfg.length){c.checked=false;configModal(item);}

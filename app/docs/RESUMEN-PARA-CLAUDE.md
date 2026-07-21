@@ -91,3 +91,19 @@
 - V156/V155: gates comerciales y de lenguaje técnico preservados.
 - V145/V131: separación proyecto-periodo, Finanzas y baseline histórica preservadas.
 - No reabrir sin evidencia nueva reproducible.
+# Resumen vigente — V172 HR in-place
+
+No enviar a Claude. Este bloque queda registrado solo como estado técnico de rama.
+
+Se aplicó exactamente `PAQUETE_EJECUCION_CODEX_CXORBIA_V172_HR_INPLACE_20260721.zip` en `docs-tya-v6-v71-audit`.
+
+Incluye:
+- 14 archivos acumulados V172 faltantes.
+- Runtime HR live con refresh in-place.
+- Adapter `tya-live-source-inplace-apply.js`.
+- R22 live binding actualizado.
+- Gate `tya-live-hr-inplace-refresh-gate.mjs`.
+
+Estado: `V172_HR_INPLACE_APPLIED_PENDING_REMOTE_DEV_GATES`.
+
+No producción, no writes, no merge.

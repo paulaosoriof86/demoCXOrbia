@@ -1,7 +1,18 @@
 /* CXOrbia · Mi Perfil (shopper) — editable + completar perfil + histórico/KPIs */
 CX.module('miperfil', ({data,ui})=>{
-  const sid=(CX.session.user&&CX.session.user.shopperId)||'sh1';
-  const s=data.getShopper(sid)||data.shoppers[0];
+  /* P0-2 (V171): sin shopperId verificable, fail-closed — nunca 'sh1' ni primer registro. */
+  const sid=(CX.session.user&&CX.session.user.shopperId)||null;
+  if(!sid){
+    const host=ui.el('div');
+    host.innerHTML=`${ui.ph('Mi Perfil','Tu perfil de evaluador')}<div class="card card-p">${CX.ui.empty('🔒','No hay una identidad de evaluador verificable en esta sesión. Inicia sesión como shopper para ver y editar tu perfil.')}</div>`;
+    return host;
+  }
+  const s=data.getShopper(sid);
+  if(!s){
+    const host=ui.el('div');
+    host.innerHTML=`${ui.ph('Mi Perfil','Tu perfil de evaluador')}<div class="card card-p">${CX.ui.empty('🔒','No se encontró tu registro de evaluador. Contacta al equipo para verificar tu identidad.')}</div>`;
+    return host;
+  }
   const st=data.shopperStats(s.id);
   const incompleto=!s.perfilCompleto;
   const initials=(s.nombre||'?').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
@@ -221,110 +232,228 @@ CX.module('rutas', ({data,ui})=>{
   return host;
 });
 
-/* CXOrbia · Reportes & KPIs / Informes (admin) */
+/* CXOrbia · Reportes & KPIs / Informes (admin) — Corte 1B
+   P0: exporta SOLO el reporte seleccionado (nunca la página completa); edición
+   REAL de columnas (ocultar / ordenar / renombrar) reflejada en vista previa y
+   en PDF/Excel/PPT; Excel .xlsx real; ninguna métrica sin fuente confirmada se
+   muestra como real (velocidad, calidad, hallazgos, score, NPS y liquidaciones
+   quedan "Pendiente de fuente"). Usa la plantilla reusable CX.reportKit con la
+   identidad del tenant (logo, colores, tipografía) — sin hardcode de cliente. */
 CX.module('informes', ({data,ui})=>{
-  const k=data.kpis(), p=data.period();
-  const vis=data.visitas();
-  
-  /* Ranking de sucursales por cumplimiento */
-  const bySuc={}; vis.forEach(v=>{const s=bySuc[v.sucursal]=bySuc[v.sucursal]||{suc:v.sucursal,pais:v.pais,t:0,r:0};s.t++;if(['realizada','cuestionario','liquidada'].includes(v.estado))s.r++;});
-  const rankSuc=Object.values(bySuc).map(s=>({...s,pct:s.t?Math.round(s.r/s.t*100):0})).sort((a,b)=>b.pct-a.pct);
-  
-  /* Ranking shoppers */
-  const bySh={}; vis.filter(v=>v.shopperId).forEach(v=>{const s=bySh[v.shopperId]=bySh[v.shopperId]||{n:v.shopper,code:v.shopperCode,t:0,r:0};s.t++;if(['realizada','cuestionario','liquidada'].includes(v.estado))s.r++;});
-  const rankSh=Object.values(bySh).map(s=>({...s,pct:s.t?Math.round(s.r/s.t*100):0})).sort((a,b)=>b.r-a.r);
-  
-  /* Hallazgos */
-  const hallazgos=[['Tiempo de espera sobre estándar',Math.round(vis.length*0.22)],['Protocolo de bienvenida incompleto',Math.round(vis.length*0.17)],['Limpieza/orden debajo del estándar',Math.round(vis.length*0.13)],['Oferta no comunicada',Math.round(vis.length*0.09)]].filter(h=>h[1]>0);
-  
-  /* Store para reportes personalizados */
-  const CUSTOM_KEY='cx_rpts_'+p.id;
-  const customRpts=()=>{try{return JSON.parse(localStorage.getItem(CUSTOM_KEY)||'[]');}catch(e){return [];}};
-  const saveCustomRpts=(arr)=>{try{localStorage.setItem(CUSTOM_KEY,JSON.stringify(arr));}catch(e){}};
+  const p=data.period();
+  /* P0-5 (V171): estados canónicos ÚNICOS (visitFacets/visitBucketFns) y exclusión de
+     canceladas/archivadas. Prohibido redefinir done/cuest aquí. Coincide con Dashboard/Panorama. */
+  const F=data.visitFacets, BF=data.visitBucketFns;
+  const vis=data.visitas().filter(v=>!F(v).cancelled);
+  const projectLabel=data.programBase?data.programBase(p):(p.name||'Proyecto');
+  const periodLabel=p.periodo||p.ronda||p.name||'Periodo';
+  const SOURCE_LABEL='Operación viva · '+((CX.dataSource&&CX.dataSource.label&&CX.dataSource.label())||'Demo');
+  const fecha=()=>new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'});
+  const sanitize=(s)=>String(s||'reporte').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'reporte';
+  const isReal=v=>BF.realizadas(v);
+  const isCuest=v=>{const f=F(v);return f.questionnaire&&!f.cancelled;};
 
-  const reportes={
-    cumpSuc:['📊 Cumplimiento por sucursal',()=>`<table class="tbl"><thead><tr><th>#</th><th>Sucursal</th><th>País</th><th>Realizadas/Total</th><th>Cumplimiento</th></tr></thead><tbody>${rankSuc.map((s,i)=>`<tr><td style="color:var(--t3)">${i+1}</td><td><b>${s.suc}</b></td><td>${CX.paisFlag(s.pais)}</td><td>${s.r}/${s.t}</td><td>${ui.bdg(s.pct+'%',s.pct>=80?'g':s.pct>=50?'a':'r')}</td></tr>`).join('')}</tbody></table>`],
-    cobertura:['🗺️ Cobertura por país',()=>`<table class="tbl"><thead><tr><th>País</th><th>Realizadas</th><th>Total</th><th>%</th></tr></thead><tbody>${p.countries.map(c=>`<tr><td><b>${CX.paisLabel(c)}</b></td><td>${k.realizadas[c]||0}</td><td>${k.total[c]||0}</td><td>${ui.bdg(Math.round((k.realizadas[c]||0)/Math.max(k.total[c]||1,1)*100)+'%','g')}</td></tr>`).join('')}</tbody></table>`],
-    rankSh:['🏆 Ranking de evaluadores',()=>`<table class="tbl"><thead><tr><th>#</th><th>Evaluador</th><th>Realizadas</th><th>Efectividad</th></tr></thead><tbody>${rankSh.slice(0,15).map((s,i)=>`<tr><td style="color:var(--t3)">${i+1}</td><td><b>${s.n}</b> <span class="muted">${s.code||''}</span></td><td>${s.r}/${s.t}</td><td>${ui.bdg(s.pct+'%',s.pct>=80?'g':'a')}</td></tr>`).join('')}</tbody></table>`],
-    hallazgos:['🔎 Hallazgos frecuentes',()=>`<p style="font-size:12px;color:var(--t2);margin-bottom:10px">Hallazgos recurrentes del periodo — base para planes de capacitación.</p><table class="tbl"><thead><tr><th>Hallazgo</th><th>Visitas afectadas</th><th>%</th></tr></thead><tbody>${hallazgos.map(h=>`<tr><td>${h[0]}</td><td><b>${h[1]}</b></td><td>${Math.round(h[1]/Math.max(vis.length,1)*100)}%</td></tr>`).join('')}</tbody></table>`],
-    liq:['💰 Liquidaciones del periodo',()=>`<p style="font-size:13px;color:var(--t2)">Detalle completo en Finanzas → Liquidaciones. Exporta el lote con honorarios + reembolsos por país.</p>`],
-    scoreSuc:['🎯 Score por sucursal',()=>`<table class="tbl"><thead><tr><th>Sucursal</th><th>Visitas</th><th>Score prom.</th></tr></thead><tbody>${rankSuc.map(s=>`<tr><td><b>${s.suc}</b></td><td>${s.t}</td><td>${ui.bdg(s.pct+'%',s.pct>=80?'g':s.pct>=50?'a':'r')}</td></tr>`).join('')}</tbody></table>`],
+  /* --- agregados con FUENTE REAL (operación viva del periodo) --- */
+  const bySuc={}; vis.forEach(v=>{const s=bySuc[v.sucursal]=bySuc[v.sucursal]||{suc:v.sucursal||'—',pais:v.pais,t:0,r:0,c:0};s.t++;if(isReal(v))s.r++;if(isCuest(v))s.c++;});
+  const rankSuc=Object.values(bySuc).map(s=>({...s,pct:s.t?Math.round(s.r/s.t*100):0})).sort((a,b)=>b.pct-a.pct);
+  const bySh={}; vis.filter(v=>v.shopperId).forEach(v=>{const s=bySh[v.shopperId]=bySh[v.shopperId]||{n:v.shopper||'—',code:v.shopperCode,t:0,r:0};s.t++;if(isReal(v))s.r++;});
+  const rankSh=Object.values(bySh).map(s=>({...s,pct:s.t?Math.round(s.r/s.t*100):0})).sort((a,b)=>b.r-a.r);
+  const estMap={}; vis.forEach(v=>{estMap[v.estado]=(estMap[v.estado]||0)+1;});
+  const estRows=Object.keys(estMap).map(e=>({estado:e,visitas:estMap[e],pct:Math.round(estMap[e]/Math.max(vis.length,1)*100)+'%'})).sort((a,b)=>b.visitas-a.visitas);
+  const byPais={}; vis.forEach(v=>{const c=byPais[v.pais]=byPais[v.pais]||{pais:v.pais,t:0,r:0};c.t++;if(isReal(v))c.r++;});
+  const covRows=Object.values(byPais).map(c=>({pais:c.pais,realizadas:c.r,total:c.t,cobertura:Math.round(c.r/Math.max(c.t,1)*100)+'%'}));
+  const totVis=vis.length, totReal=vis.filter(isReal).length;
+  const cumpGlobal=totVis?Math.round(totReal/totVis*100):0;
+  const efectGlobal=rankSh.length?Math.round(rankSh.reduce((a,s)=>a+s.pct,0)/rankSh.length):null;
+
+  const REPORTS={
+    cumpSuc:{icon:'📊',source:'real',label:'Cumplimiento por sucursal',desc:'Realizadas / total por sucursal',
+      columns:[{key:'suc',label:'Sucursal'},{key:'pais',label:'País'},{key:'r',label:'Realizadas'},{key:'t',label:'Total'},{key:'pct',label:'Cumplimiento %'}],
+      rows:()=>rankSuc.map(s=>({suc:s.suc,pais:s.pais,r:s.r,t:s.t,pct:s.pct})),
+      chart:()=>({title:'Cumplimiento por sucursal (%)',data:rankSuc.slice(0,10).map(s=>({label:s.suc,value:s.pct,display:s.pct+'%'}))})},
+    cobertura:{icon:'🗺️',source:'real',label:'Cobertura por país',desc:'Cobertura operativa del periodo por país',
+      columns:[{key:'pais',label:'País'},{key:'realizadas',label:'Realizadas'},{key:'total',label:'Total'},{key:'cobertura',label:'Cobertura'}],
+      rows:()=>covRows,
+      chart:()=>({title:'Cobertura por país (%)',data:Object.values(byPais).map(c=>({label:c.pais,value:Math.round(c.r/Math.max(c.t,1)*100),display:Math.round(c.r/Math.max(c.t,1)*100)+'%'}))})},
+    rankSh:{icon:'🏆',source:'real',label:'Ranking de evaluadores',desc:'Efectividad por evaluador',
+      columns:[{key:'n',label:'Evaluador'},{key:'code',label:'Código'},{key:'r',label:'Realizadas'},{key:'t',label:'Asignadas'},{key:'pct',label:'Efectividad %'}],
+      rows:()=>rankSh.map(s=>({n:s.n,code:s.code||'—',r:s.r,t:s.t,pct:s.pct})),
+      chart:()=>({title:'Efectividad de evaluadores (%)',data:rankSh.slice(0,10).map(s=>({label:s.n,value:s.pct,display:s.pct+'%'}))})},
+    estado:{icon:'📈',source:'real',label:'Estado operativo del periodo',desc:'Distribución de visitas por estado',
+      columns:[{key:'estado',label:'Estado'},{key:'visitas',label:'Visitas'},{key:'pct',label:'% del total'}],
+      rows:()=>estRows,
+      chart:()=>({title:'Visitas por estado',data:estRows.map(r=>({label:r.estado,value:r.visitas}))})},
+    hallazgos:{icon:'🔎',source:'pending',label:'Hallazgos frecuentes',requiredSource:'clasificación real de hallazgos por visita'},
+    scoreSuc:{icon:'🎯',source:'pending',label:'Score por sucursal',requiredSource:'cuestionarios validados con score'},
+    liq:{icon:'💰',source:'pending',label:'Liquidaciones del periodo',requiredSource:'lote de liquidaciones confirmado (ver Finanzas)'},
   };
 
-  const openReport=(id,rpt)=>{
-    const content=typeof rpt[1]==='function'?rpt[1]():rpt[1];
-    ui.modal(rpt[0], content+`
-      <div class="between" style="margin-top:14px">
-        <button class="btn btn-soft btn-sm" id="rptEdit">✎ Editar / añadir columna</button>
-        <div class="flex" style="gap:8px"><button class="btn btn-ghost btn-sm" id="rptPdf">⤓ PDF</button><button class="btn btn-pr btn-sm" id="rptXls">⤓ Excel</button></div>
+  /* --- edición REAL de columnas + notas, persistente por periodo --- */
+  const CFG_KEY='cx_inf_cfg_'+p.id;
+  const loadCfg=()=>{try{return JSON.parse(localStorage.getItem(CFG_KEY)||'{}');}catch(e){return {};}};
+  const saveCfg=(o)=>{try{localStorage.setItem(CFG_KEY,JSON.stringify(o));}catch(e){}};
+  const effCols=(id)=>{
+    const base=REPORTS[id].columns||[];
+    const cc=((loadCfg()[id]||{}).columns)||{};
+    return base.map((c,i)=>({key:c.key,
+      label:(cc[c.key]&&cc[c.key].label!=null&&cc[c.key].label!=='')?cc[c.key].label:c.label,
+      hidden:cc[c.key]?!!cc[c.key].hidden:false,
+      order:(cc[c.key]&&typeof cc[c.key].order==='number')?cc[c.key].order:i}))
+      .sort((a,b)=>a.order-b.order);
+  };
+  const notesFor=(id)=>((loadCfg()[id]||{}).notes)||'';
+  const buildSpec=(id,ext)=>{
+    const R=REPORTS[id];
+    const cols=effCols(id).map(c=>({key:c.key,label:c.label,hidden:c.hidden}));
+    const rows=R.rows?R.rows():[];
+    return { title:R.label,
+      meta:{title:R.label,project:projectLabel,period:periodLabel,scope:'Toda la operación',sourceLabel:SOURCE_LABEL,generatedAt:fecha()},
+      columns:cols, rows, notes:notesFor(id),
+      summary:['Filas en el reporte: '+rows.length,'Reporte operativo real del periodo '+periodLabel],
+      chart:R.chart?R.chart():null,
+      filename:[sanitize(R.label),sanitize(projectLabel),sanitize(periodLabel),new Date().toISOString().slice(0,10)].join('_')+'.'+ext };
+  };
+
+  const editModal=(id,onDone)=>{
+    const R=REPORTS[id]; const cols=effCols(id);
+    ui.modal('✎ Editar columnas — '+R.label, `
+      <p style="font-size:12px;color:var(--t2);margin-bottom:10px">Elige qué columnas se ven, en qué orden y con qué título. Se aplica a la vista previa y a PDF, Excel y PPT.</p>
+      <div id="colEd">${cols.map((c,i)=>`<div class="flex" data-key="${c.key}" style="gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border-2)">
+        <input type="checkbox" class="colVis" ${c.hidden?'':'checked'} title="Mostrar columna">
+        <input class="inp colName" value="${(c.label||'').replace(/"/g,'&quot;')}" style="flex:1;padding:5px 7px" placeholder="Título de la columna">
+        <button class="btn btn-ghost btn-sm colUp" title="Subir" ${i===0?'disabled':''}>▲</button>
+        <button class="btn btn-ghost btn-sm colDn" title="Bajar" ${i===cols.length-1?'disabled':''}>▼</button>
+      </div>`).join('')}</div>
+      <label class="lbl" style="margin-top:12px">Notas / encabezado del reporte</label>
+      <textarea class="inp" id="edNotes" rows="2" placeholder="Ej. Corte operativo del periodo">${(notesFor(id)||'').replace(/</g,'&lt;')}</textarea>
+      <div class="between" style="margin-top:14px"><button class="btn btn-ghost btn-sm" id="edReset">Restablecer</button><button class="btn btn-pr btn-sm" id="edSave">Guardar cambios</button></div>
+    `,{onMount:(ov,close)=>{
+      const cont=ov.querySelector('#colEd');
+      const move=(row,dir)=>{const sib=dir<0?row.previousElementSibling:row.nextElementSibling;if(!sib)return;if(dir<0)cont.insertBefore(row,sib);else cont.insertBefore(sib,row);};
+      cont.querySelectorAll('.colUp').forEach(b=>b.addEventListener('click',()=>move(b.closest('[data-key]'),-1)));
+      cont.querySelectorAll('.colDn').forEach(b=>b.addEventListener('click',()=>move(b.closest('[data-key]'),1)));
+      ov.querySelector('#edReset').addEventListener('click',()=>{const cfg=loadCfg();delete cfg[id];saveCfg(cfg);close();onDone&&onDone();});
+      ov.querySelector('#edSave').addEventListener('click',()=>{
+        const cfg=loadCfg(); const colCfg={};
+        [...cont.querySelectorAll('[data-key]')].forEach((row,order)=>{
+          colCfg[row.dataset.key]={order,hidden:!row.querySelector('.colVis').checked,label:(row.querySelector('.colName').value||'').trim()};
+        });
+        cfg[id]={columns:colCfg,notes:(ov.querySelector('#edNotes').value||'').trim()};
+        saveCfg(cfg); close(); ui.toast('Reporte actualizado','ok'); onDone&&onDone();
+      });
+    }});
+  };
+
+  const openReport=(id)=>{
+    const R=REPORTS[id];
+    const render=(ov)=>{ const body=ov.querySelector('#rptBody'); if(body) body.innerHTML=CX.reportKit.previewHTML(buildSpec(id,'pdf')); };
+    ui.modal(R.icon+' '+R.label, `
+      <div id="rptBody" style="max-height:52vh;overflow:auto">${CX.reportKit.previewHTML(buildSpec(id,'pdf'))}</div>
+      <div class="between" style="margin-top:14px;flex-wrap:wrap;gap:8px">
+        <button class="btn btn-soft btn-sm" id="rptEdit">✎ Editar columnas / notas</button>
+        <div class="flex" style="gap:8px"><button class="btn btn-ghost btn-sm" id="rptPdf">⤓ PDF</button><button class="btn btn-soft btn-sm" id="rptXls">⤓ Excel</button><button class="btn btn-pr btn-sm" id="rptPpt">⤓ PPT</button></div>
       </div>`,
     {onMount:(ov,close)=>{
-      ov.querySelector('#rptEdit')?.addEventListener('click',()=>{
-        ui.modal('✎ Editar reporte: '+rpt[0],`
-          <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Añade notas, una columna extra o ajusta el contenido de este reporte. El reporte original queda intacto.</p>
-          <label class="lbl">Notas / encabezado</label><textarea class="inp" id="rptNote" rows="2" placeholder="Ej. Datos del periodo junio 2026"></textarea>
-          <label class="lbl" style="margin-top:10px">Columna extra (opcional)</label><input class="inp" id="rptCol" placeholder="Nombre de la columna">
-          <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="rptSave">Guardar versión personalizada</button></div>
-        `,{onMount:(ov2,close2)=>{ov2.querySelector('#rptSave').addEventListener('click',()=>{const arr=customRpts();arr.push({id:'cr'+Date.now().toString(36),base:id,nota:ov2.querySelector('#rptNote').value,col:ov2.querySelector('#rptCol').value,fecha:new Date().toISOString().slice(0,10)});saveCustomRpts(arr);close2();close();ui.toast('Versión personalizada guardada','ok');});}});
-      });
-      ov.querySelector('#rptPdf')?.addEventListener('click',()=>{close();window.print();});
-      ov.querySelector('#rptXls')?.addEventListener('click',()=>{
-        /* exporta el contenido de la tabla del reporte a CSV real */
-        const tmp=document.createElement('div');tmp.innerHTML=content;const tbl=tmp.querySelector('table');
-        if(tbl){const rows=[...tbl.querySelectorAll('tr')].map(tr=>[...tr.querySelectorAll('th,td')].map(c=>'"'+(c.textContent||'').replace(/"/g,'""').trim()+'"').join(','));
-          const csv=rows.join('\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=rpt[0].replace(/[^\w]/g,'_')+'.csv';a.click();close();ui.toast('Reporte exportado a CSV','ok');}
-        else{close();ui.toast('Este reporte no tiene tabla exportable','warn');}
-      });
+      ov.querySelector('#rptEdit').addEventListener('click',()=>editModal(id,()=>render(ov)));
+      ov.querySelector('#rptPdf').addEventListener('click',()=>{ CX.reportKit.exportPDF(buildSpec(id,'pdf')); });
+      ov.querySelector('#rptXls').addEventListener('click',()=>{ if(CX.reportKit.exportExcel(buildSpec(id,'xlsx')))ui.toast('Excel .xlsx generado','ok'); });
+      ov.querySelector('#rptPpt').addEventListener('click',()=>{ if(CX.reportKit.exportPPT(buildSpec(id,'pptx')))ui.toast('PowerPoint generado','ok'); });
     }});
   };
 
   const host=ui.el('div');
   const draw=()=>{
-    const custom=customRpts();
+    const pendKpi=(l)=>`<div class="card card-p"><div class="k-l" style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.4px">${l}</div><div style="margin-top:6px">${CX.ui.statusBdg('pending_source')}</div></div>`;
+    const card=(id)=>{ const R=REPORTS[id];
+      if(R.source!=='real') return `<div class="card card-p flex" style="gap:12px;align-items:flex-start;opacity:.9">
+        <div style="font-size:22px">${R.icon}</div>
+        <div style="flex:1"><div class="card-t" style="font-size:13.5px">${R.label}</div>
+          <div style="margin-top:6px">${CX.ui.statusBdg('pending_source')}</div>
+          <div style="font-size:11.5px;color:var(--t2);margin-top:6px;line-height:1.5">Falta la fuente: ${R.requiredSource}. No se muestran cifras inventadas.</div></div></div>`;
+      return `<div class="card hov card-p flex" data-rep="${id}" style="gap:12px;cursor:pointer;align-items:flex-start">
+        <div style="font-size:22px">${R.icon}</div>
+        <div style="flex:1"><div class="card-t" style="font-size:13.5px">${R.label}</div>
+          <div style="font-size:11.5px;color:var(--t3);margin-top:2px">${R.desc||''}</div>
+          <div style="margin-top:6px">${ui.bdg('Fuente real','g')}</div></div>
+        <span class="btn btn-soft btn-sm">Abrir →</span></div>`;
+    };
     host.innerHTML=`
-      ${ui.ph('Reportes & KPIs', p.name+' · entregables para dirección y cliente')}
-      <div class="grid g4" style="margin-bottom:16px" id="infKpis">
-        <div data-k="cump" style="cursor:pointer">${ui.kpi('Cumplimiento',Math.round(k.realizadas.t/Math.max(k.total.t,1)*100)+'%','g')}</div>
-        <div data-k="vel" style="cursor:pointer">${ui.kpi('Velocidad media','2.6d','b')}</div>
-        <div data-k="cal" style="cursor:pointer">${ui.kpi('Calidad cuest.','92%','p')}</div>
-        <div data-k="rent" style="cursor:pointer">${ui.kpi('Efectividad',rankSh.length?Math.round(rankSh.reduce((a,s)=>a+s.pct,0)/rankSh.length)+'%':'—','a')}</div>
+      ${ui.ph('Reportes & KPIs', projectLabel+' · '+periodLabel+' · entregables operativos reales')}
+      <div class="grid g4" style="margin-bottom:16px">
+        ${ui.kpi('Cumplimiento',cumpGlobal+'%',cumpGlobal>=80?'g':cumpGlobal>=50?'a':'r','realizadas/total')}
+        ${ui.kpi('Efectividad',efectGlobal==null?CX.ui.statusBdg('pending_source'):efectGlobal+'%',efectGlobal!=null&&efectGlobal>=80?'g':'a','evaluadores')}
+        ${pendKpi('Velocidad media')}
+        ${pendKpi('Calidad de cuestionario')}
       </div>
       <div class="card card-p">
-        <div class="between" style="margin-bottom:14px"><div class="card-t">Reportes estándar</div><button class="btn btn-pr btn-sm" id="newCustom">＋ Nuevo reporte personalizado</button></div>
-        <div class="grid g2">
-          ${Object.entries(reportes).map(([id,rpt])=>`<div class="card hov card-p flex" data-rep="${id}" style="gap:12px;cursor:pointer">
-            <div style="font-size:22px">${rpt[0].split(' ')[0]}</div>
-            <div style="flex:1;font-size:13px;font-weight:600;color:var(--t1)">${rpt[0].slice(rpt[0].indexOf(' ')+1)}</div>
-            <div class="flex" style="gap:6px"><span class="btn btn-soft btn-sm">Ver →</span><button class="btn btn-ghost btn-sm" data-dl="${id}" title="Descargar">⤓</button></div></div>`).join('')}
-        </div>
-        ${custom.length?`<div class="card-t" style="font-size:13px;margin:16px 0 8px">Reportes personalizados</div>
-        <div class="grid g2">${custom.map(c=>`<div class="card card-p flex" style="gap:10px"><div style="flex:1"><div style="font-size:12.5px;font-weight:700">${(reportes[c.base]||['📄 Personalizado'])[0]}</div><div style="font-size:11px;color:var(--t3)">${c.nota||''} · ${c.fecha}</div></div><button class="btn btn-ghost btn-sm" data-delrpt="${c.id}" style="color:var(--red)">✕</button></div>`).join('')}</div>`:''}
-        <div style="margin-top:14px">${ui.aiBox('Reportes de cumplimiento, hallazgos, rankings y liquidaciones — con opción de crear versiones personalizadas, añadir columnas y exportar a PDF/Excel. Los hallazgos alimentan los planes de capacitación del portal del cliente.','Reportería accionable')}</div>
+        <div class="card-t" style="margin-bottom:12px">Reportes operativos</div>
+        <div class="grid g2">${['cumpSuc','cobertura','rankSh','estado'].map(card).join('')}</div>
+        <div class="card-t" style="font-size:13px;margin:16px 0 8px">Pendientes de fuente</div>
+        <div class="grid g2">${['scoreSuc','hallazgos','liq'].map(card).join('')}</div>
+        <div style="margin-top:14px">${ui.aiBox('Cada reporte usa las visitas reales del periodo activo. Puedes ocultar, ordenar y renombrar columnas y añadir notas: los cambios se reflejan en la vista previa y en PDF, Excel y PPT. Velocidad, calidad, hallazgos, score, NPS y liquidaciones quedan Pendiente de fuente mientras no exista un origen confirmado.','Reportería honesta y editable')}</div>
       </div>`;
-    
-    host.querySelectorAll('[data-rep]').forEach(b=>b.addEventListener('click',(e)=>{if(e.target.closest('[data-dl]'))return;const rpt=reportes[b.dataset.rep];if(rpt)openReport(b.dataset.rep,rpt);}));
-    host.querySelectorAll('[data-dl]').forEach(b=>b.addEventListener('click',()=>ui.toast('Descargando: '+(reportes[b.dataset.dl]||['reporte'])[0],'ok')));
-    host.querySelector('#newCustom')?.addEventListener('click',()=>{
-      const b=Object.entries(reportes).map(([id,r])=>'<option value="'+id+'">'+r[0]+'</option>').join('');
-      ui.modal('＋ Nuevo reporte personalizado','<label class="lbl">Basado en</label><select class="sel" id="nrBase" style="margin-bottom:10px">'+b+'</select><label class="lbl">Nombre</label><input class="inp" id="nrNota" placeholder="Ej. Reporte dirección Q2" style="margin-bottom:10px"><label class="lbl">Columnas a incluir</label><div class="flex wrap" style="gap:8px;margin-bottom:10px">'+['Sucursal','Ciudad/País','Shopper','Estado','Score','Fecha','Honorario','Hallazgos'].map(c=>'<label class="flex" style="gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" class="nrCol" value="'+c+'" checked> '+c+'</label>').join('')+'</div><label class="lbl">O describe qué reporte necesitas (se genera con heurística local, sin IA real)</label><textarea class="inp" id="nrIA" rows="2" placeholder="Ej. compara cumplimiento por país y destaca las 3 sucursales más débiles con recomendaciones" style="margin-bottom:12px"><\/textarea><div style="text-align:right"><button class="btn btn-pr btn-sm" id="nrSave">Crear</button></div>',
-        {onMount:(ov,close)=>{ov.querySelector('#nrSave').addEventListener('click',()=>{
-          const instr=(ov.querySelector('#nrIA').value||'').trim();
-          /* P0.1 (V98): heurística local directa — nunca se llama CX.ai.ask() (available() es
-             siempre false en el navegador); nunca bloquea por falta de proveedor configurado. */
-          if(instr){
-            const ctx='Cumplimiento '+Math.round(k.realizadas.t/Math.max(k.total.t,1)*100)+'%, '+rankSuc.length+' sucursales. Ranking: '+rankSuc.slice(0,5).map(s=>s.suc+' '+s.pct+'%').join(', ')+'. Hallazgos: '+hallazgos.map(h=>h[0]).join(', ')+'.';
-            const iaHtml='<h3>Reporte: '+instr+'</h3><p>'+ctx+'</p><p style="color:var(--t3);font-size:11px">Generado con heurística local (sin proveedor de IA real conectado) a partir de la instrucción — completa manualmente el análisis fino.</p>';
-            const arr=customRpts();arr.push({id:'cr'+Date.now().toString(36),base:ov.querySelector('#nrBase').value,nota:ov.querySelector('#nrNota').value||'Reporte (borrador local)',iaHtml,fecha:new Date().toISOString().slice(0,10)});saveCustomRpts(arr);close();draw();ui.toast('Reporte (borrador local) creado · revísalo e itera','ok',3500);
-          } else {
-            const arr=customRpts();
-            arr.push({id:'cr'+Date.now().toString(36),base:ov.querySelector('#nrBase').value,nota:ov.querySelector('#nrNota').value,fecha:new Date().toISOString().slice(0,10)});
-            saveCustomRpts(arr);close();draw();ui.toast('Reporte personalizado creado','ok');
-          }
-        });}});
-    });
-    host.querySelectorAll('#infKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=drills[el.dataset.k];ui.modal(d[0],d[1]);}));
+    host.querySelectorAll('[data-rep]').forEach(b=>b.addEventListener('click',()=>openReport(b.dataset.rep)));
   };
   draw();
   return host;
 });
 
+/* CXOrbia · Mis Reportes (shopper) — Corte 1B
+   Módulo de Reportes propio del Shopper: mismos multiformato (PDF/Excel/PPT),
+   diseño del tenant y editor de columnas (elegir/ocultar/ordenar/renombrar +
+   notas) que Admin y Cliente, vía CX.reportKit. Solo datos reales del shopper
+   autenticado; sin métricas fabricadas. */
+CX.module('mireportes', ({data,ui})=>{
+  const p=data.period();
+  /* P0-2 (V171): identidad fail-closed — sin shopperId verificable, cero filas y export deshabilitado.
+     Prohibido el fallback 'sh1'/nombre/primer registro. */
+  const sid=(CX.session.user&&CX.session.user.shopperId)||null;
+  if(!sid){
+    const host=ui.el('div');
+    host.innerHTML=`${ui.ph('Mis Reportes','Reportes de tu actividad')}<div class="card card-p">${CX.ui.empty('🔒','No hay una identidad de evaluador verificable en esta sesión. Por seguridad no se muestran ni exportan reportes de otro usuario. Inicia sesión como shopper para ver los tuyos.')}</div>`;
+    return host;
+  }
+  const s=(data.getShopper&&data.getShopper(sid))||{nombre:'Shopper'};
+  const vis=(data.visitsForShopper?data.visitsForShopper(sid):[]);
+  const projectLabel=data.programBase?data.programBase(p):(p.name||'Proyecto');
+  const periodLabel=p.periodo||p.ronda||p.name||'Periodo';
+  const isReal=v=>data.visitBucketFns.realizadas(v);
+  const myLiq=(()=>{try{const ids=new Set(vis.map(v=>v.id));return (CX.liq&&CX.liq.forProject?CX.liq.forProject(data):[]).filter(l=>ids.has(l.visitaId));}catch(e){return [];}})();
+
+  const REPORTS={
+    misVisitas:{icon:'📋',label:'Mis visitas del periodo',desc:'Detalle de tus visitas asignadas y su estado',
+      columns:[{key:'sucursal',label:'Sucursal'},{key:'ciudad',label:'Ciudad'},{key:'escenario',label:'Escenario'},{key:'estado',label:'Estado'},{key:'fecha',label:'Fecha'},{key:'honorario',label:'Honorario'}],
+      rows:()=>vis.map(v=>({sucursal:v.sucursal||'—',ciudad:v.ciudad||'—',escenario:v.escenario||'—',estado:v.estado,fecha:v.realizada||v.agendada||'—',honorario:(v.honorario!=null?v.honorario:'—')})),
+      chart:()=>{const by={};vis.forEach(v=>{by[v.estado]=(by[v.estado]||0)+1;});return {title:'Mis visitas por estado',data:Object.entries(by).map(([k,n])=>({label:k,value:n}))};}},
+    misPagos:{icon:'💰',label:'Mis liquidaciones',desc:'Honorarios y reembolsos derivados de tus visitas',
+      columns:[{key:'sucursal',label:'Sucursal'},{key:'estado',label:'Estado'},{key:'honorario',label:'Honorario'},{key:'reembolso',label:'Reembolso'},{key:'total',label:'Total'},{key:'pago',label:'Pago est.'}],
+      rows:()=>myLiq.map(l=>({sucursal:l.sucursal||'—',estado:l.estado,honorario:Math.round(l.honorario||0),reembolso:Math.round(l.reembolso||0),total:Math.round(l.total||0),pago:l.fechaEstimadaPago||'—'})),
+      chart:()=>{const by={};myLiq.forEach(l=>{by[l.estado]=(by[l.estado]||0)+1;});return {title:'Mis liquidaciones por estado',data:Object.entries(by).map(([k,n])=>({label:k,value:n}))};}},
+  };
+
+  const san=(x)=>String(x||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';
+  const buildSpec=(id,ext)=>{ const R=REPORTS[id]; const rows=R.rows();
+    return { title:R.label,
+      meta:{title:R.label,project:projectLabel,period:periodLabel,scope:(s.nombre||'Shopper'),sourceLabel:'Operación viva · mi actividad',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
+      columns:R.columns.map(c=>({key:c.key,label:c.label})), rows, notes:'',
+      summary:['Filas: '+rows.length, R.desc],
+      chart:R.chart(),
+      filename:[san(R.label),san(s.nombre||'shopper'),san(periodLabel),new Date().toISOString().slice(0,10)].join('_')+'.'+ext };
+  };
+
+  const host=ui.el('div');
+  const card=(id)=>{ const R=REPORTS[id]; const n=R.rows().length;
+    return `<div class="card hov card-p flex" data-mr="${id}" style="gap:12px;cursor:pointer;align-items:flex-start">
+      <div style="font-size:22px">${R.icon}</div>
+      <div style="flex:1"><div class="card-t" style="font-size:13.5px">${R.label}</div>
+        <div style="font-size:11.5px;color:var(--t3);margin-top:2px">${R.desc}</div>
+        <div style="margin-top:6px">${n?ui.bdg(n+' fila(s) · fuente real','g'):CX.ui.statusBdg('no_data')}</div></div>
+      <span class="btn btn-soft btn-sm">Abrir →</span></div>`;
+  };
+  host.innerHTML=`
+    ${ui.ph('Mis Reportes', (s.nombre||'Shopper')+' · '+projectLabel+' · '+periodLabel)}
+    <div class="grid g2" style="gap:14px">${Object.keys(REPORTS).map(card).join('')}</div>
+    <div style="margin-top:16px">${ui.aiBox('Genera reportes de tu propia actividad en PDF, Excel y PPT con el diseño de la marca. Puedes elegir, ocultar, ordenar y renombrar columnas y agregar notas; los cambios se reflejan en los tres formatos. Solo se usan tus datos reales del periodo.','Reportes del shopper')}</div>`;
+  host.querySelectorAll('[data-mr]').forEach(b=>b.addEventListener('click',()=>{ const id=b.dataset.mr; if(!REPORTS[id].rows().length){ui.toast('Sin datos para este periodo','err');return;} CX.reportKit.openReport(buildSpec(id,'pdf'),'sh_'+id); }));
+  return host;
+});

@@ -57,7 +57,9 @@ window.CX = window.CX || {};
       p = p || CX.data.period();
       /* cache key incluye el modo de datos (demo/real) — evita servir una lista
          calculada bajo un modo distinto al alternar demo/real en la misma sesión. */
-      const key = p.id + '::' + (this._allowSynthetic()?'demo':'real');
+      /* Corte 1B: clave de caché COMPLETA (tenant + proyecto + periodKey +
+         sourceRevision + modo). Invalida sola al cambiar periodo o revisión HR. */
+      const key = this._cacheKey(p);
       if(this._cache && this._cache.key===key) return this._cache.list;
       const prog=this.programa(p);
       const vis=(CX.data._visitas||[]).filter(v=>v.projectId===p.id);
@@ -240,6 +242,48 @@ window.CX = window.CX || {};
       {cat:'Marketing', icon:'📣', name:'Contenidos & campañas', desc:'Generación de piezas, publicaciones y medición de campañas.', tag:'Add-on'},
       {cat:'Integración', icon:'🔗', name:'Integraciones a la medida', desc:'WhatsApp, Notion, Zoom/Meet, Mailchimp, M365, SSO y más.', tag:'Pro'},
     ],
+
+    /* ============================================================
+       Corte 1B — clave de caché e invalidación por revisión
+       tenantId + projectId(programKey) + periodKey + sourceRevision + mode.
+       periodKey se deriva de las fechas reales del periodo (nunca del id
+       visual); sourceRevision resume el estado operativo vivo del periodo
+       (visitas: estado/score/evaluada/cuestionario/shopper) para invalidar
+       cuando la HR/operación cambia. ============================================================ */
+    _tenantId(){ try{ return (CX.session&&CX.session.user&&CX.session.user.tenantId)||(CX.BRAND&&CX.BRAND.id)||'default'; }catch(e){ return 'default'; } },
+    _mode(){ try{ return (CX.dataSource&&CX.dataSource.mode)||'demo'; }catch(e){ return 'demo'; } },
+    periodKey(p){ p=p||CX.data.period(); if(!p) return null;
+      if(typeof p.periodKey==='string'&&p.periodKey) return p.periodKey;
+      /* mes real (YYYY-MM) derivado de las fechas de las visitas del periodo;
+         nunca del id visual. Estable por proyecto/periodo. */
+      try{ const vis=(CX.data._visitas||[]).filter(v=>v.projectId===p.id); const ds=[];
+        vis.forEach(v=>{ [v.realizada,v.agendada,v.cuestFecha,v.disponibleDesde].forEach(d=>{ if(typeof d==='string'&&d.length>=7) ds.push(d); }); });
+        ds.sort(); if(ds.length) return ds[0].slice(0,7); }catch(e){}
+      return p.id; },
+    sourceRevision(p){ p=p||CX.data.period(); if(!p) return '0';
+      const vis=(CX.data._visitas||[]).filter(v=>v.projectId===p.id);
+      let h=(vis.length*2654435761)>>>0;
+      for(const v of vis){ const s=(v.id||'')+'|'+(v.estado||'')+'|'+(v.score==null?'':v.score)+'|'+(v.evaluada?1:0)+'|'+(v.cuestFecha||'')+'|'+(v.shopperId||''); for(let i=0;i<s.length;i++){ h=((h*31)+s.charCodeAt(i))>>>0; } }
+      return String(h); },
+    _cacheKey(p){ p=p||CX.data.period(); const pid=(CX.data.programKey?CX.data.programKey(p):p.id); return [this._tenantId(),pid,this.periodKey(p),this.sourceRevision(p),this._mode()].join('::'); },
+
+    /* ---- Operación del periodo (SIEMPRE real, cambia por periodKey) ----
+       Separada de los RESULTADOS DE EVALUACIÓN (score/NPS/secciones). Se deriva
+       de las visitas vivas del periodo; no fabrica ninguna cifra. */
+    operacion(p){
+      p=p||CX.data.period();
+      /* P0-4 (V171): estados canónicos ÚNICOS — se consumen CX.data.visitFacets/visitBucketFns.
+         Prohibido redefinir done/cuest/submitted aquí; submitted exige submit explícito;
+         se excluyen canceladas/archivadas. Dashboard, detalle, Panorama y reportes coinciden. */
+      const BF=CX.data.visitBucketFns, F=CX.data.visitFacets;
+      const vis=(CX.data._visitas||[]).filter(v=>v.projectId===p.id && !F(v).cancelled);
+      const countries=[...new Set(vis.map(v=>v.pais).filter(Boolean))];
+      const agg=(arr)=>({visitas:arr.length,asignadas:arr.filter(BF.asignadas).length,realizadas:arr.filter(BF.realizadas).length,cuestionarios:arr.filter(v=>F(v).questionnaire&&!F(v).cancelled).length,submitidas:arr.filter(v=>F(v).submitted&&!F(v).cancelled).length,cobertura:arr.length?Math.round(arr.filter(BF.realizadas).length/arr.length*100):0});
+      return { periodKey:this.periodKey(p), sourceRevision:this.sourceRevision(p),
+        total:agg(vis),
+        byCountry:countries.map(c=>Object.assign({country:c},agg(vis.filter(v=>v.pais===c)))).sort((a,b)=>b.visitas-a.visitas),
+        hasOps:vis.length>0 };
+    },
 
     invalidate(){ this._cache=null; },
 

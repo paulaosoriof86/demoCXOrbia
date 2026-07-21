@@ -235,6 +235,20 @@ CX.module('cli_dashboard', ({ui})=>{
   const withScore=list.filter(s=>s.hasScore!==false && C.validScore(s.score));
   const pending=list.filter(s=>s.hasScore===false || !C.validScore(s.score));
   const hasScored = withScore.length>0;
+  /* Corte 1B: OPERACIÓN del periodo (real, cambia por periodKey) separada de los
+     RESULTADOS DE EVALUACIÓN (score/NPS/secciones). */
+  const OP=C.operacion(p);
+  const opBlock = OP.hasOps ? `
+    <div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin:2px 0 10px">Operación del periodo · ${p.periodo||p.ronda||OP.periodKey}</div>
+    <div class="grid g4" style="margin-bottom:10px">
+      ${ui.kpi('Visitas',OP.total.visitas,'b')}
+      ${ui.kpi('Realizadas',OP.total.realizadas,'g')}
+      ${ui.kpi('Con cuestionario',OP.total.cuestionarios,'p')}
+      ${ui.kpi('Cobertura',OP.total.cobertura+'%',OP.total.cobertura>=70?'g':'a')}
+    </div>
+    ${OP.byCountry.length>1?`<div class="card card-p" style="margin-bottom:16px"><div class="card-t" style="font-size:13px;margin-bottom:8px">Operación por país</div><table class="tbl"><thead><tr><th>País</th><th>Visitas</th><th>Realizadas</th><th>Cuestionarios</th><th>Cobertura</th></tr></thead><tbody>${OP.byCountry.map(c=>`<tr><td><b>${CX.paisFlag(c.country)} ${c.country}</b></td><td>${c.visitas}</td><td>${c.realizadas}</td><td>${c.cuestionarios}</td><td>${ui.bdg(c.cobertura+'%',c.cobertura>=70?'g':'a')}</td></tr>`).join('')}</tbody></table></div>`:'<div style="height:4px"></div>'}` : `<div class="card card-p" style="margin-bottom:16px">${CX.ui.empty('🗓️','Sin visitas registradas para este periodo todavía.')}</div>`;
+  const evalHeader = `<div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin:2px 0 10px">Resultados de evaluación</div>`;
+  const evalPending = `<div class="card card-p" style="margin-bottom:16px">${CX.ui.empty('📊','Aún no hay una fuente de cuestionarios validados para este periodo. El score, el NPS y las secciones aparecerán cuando exista fuente confirmada — no se muestran ceros como si fueran resultados.')}</div>`;
   const distrib=[['Excelente','g',withScore.filter(s=>C.band(s.score).key==='excelente').length],['Bueno','b',withScore.filter(s=>C.band(s.score).key==='bueno').length],
     ['En atención','a',withScore.filter(s=>C.band(s.score).key==='atencion').length],['Crítico','r',withScore.filter(s=>C.band(s.score).key==='critico').length]];
   const tot=withScore.length||1;
@@ -294,8 +308,10 @@ CX.module('cli_dashboard', ({ui})=>{
       <button class="btn btn-soft btn-sm" id="cliSopBtn">🎫 Solicitar soporte</button>
     </div></div>
     ${CX.cliUI.personaBarHTML()}
+    ${opBlock}
+    ${evalHeader}
     ${liveBlock}
-    <div class="flex" style="gap:16px;align-items:stretch;margin-bottom:16px;flex-wrap:wrap">
+    ${hasScored ? `<div class="flex" style="gap:16px;align-items:stretch;margin-bottom:16px;flex-wrap:wrap">
       <div class="card card-p flex" style="gap:16px;min-width:260px;flex:1">
         ${CX.cliUI.donut(R.score,86)}
         <div><div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Score global</div>
@@ -309,8 +325,8 @@ CX.module('cli_dashboard', ({ui})=>{
         <div data-ck="mej" style="cursor:pointer">${ui.kpi('Mejorando',R.mejora,'b','vs. periodo previo')}</div>
         ${pending.length?`<div data-ck="pend" style="cursor:pointer;grid-column:1/3">${ui.kpi('Pendientes de evaluación',pending.length,'n','sin cuestionario confirmado — no cuentan en niveles')}</div>`:''}
       </div>
-    </div>
-    <div class="grid g2" style="gap:16px;margin-bottom:16px">
+    </div>` : evalPending}
+    ${hasScored ? `<div class="grid g2" style="gap:16px;margin-bottom:16px">
       <div class="card card-p"><div class="card-h"><div class="card-t">🏆 Mejores sucursales</div></div>
         <div class="grid" style="gap:8px">${R.top.length?R.top.map(rankRow).join(''):CX.ui.empty('🏆','Sin sucursales con score real todavía.')}</div></div>
       <div class="card card-p"><div class="card-h"><div class="card-t">⚠ Requieren atención</div></div>
@@ -318,12 +334,12 @@ CX.module('cli_dashboard', ({ui})=>{
     </div>
     <div class="grid g2" style="gap:16px">
       <div class="card card-p"><div class="card-h"><div class="card-t">Distribución por nivel</div></div>
-        ${hasScored?distrib.map(d=>ui.bar(Math.round(d[2]/tot*100),d[0],d[2])).join(''):CX.ui.empty('📊','Sin scores reales todavía para distribuir por nivel.')}
+        ${distrib.map(d=>ui.bar(Math.round(d[2]/tot*100),d[0],d[2])).join('')}
       </div>
       <div class="card card-p"><div class="card-h"><div class="card-t">Fortalezas y brechas (por sección)</div></div>
         ${fortalezaBrechaBlock}
       </div>
-    </div>`;
+    </div>` : ''}`;
 });
 
 /* ============== Sucursales & Score ============== */
@@ -399,7 +415,7 @@ CX.module('cli_acciones', ({ui})=>{
         <textarea class="inp" id="acCom" rows="2" placeholder="Agregar comentario de seguimiento…" style="margin-bottom:10px"></textarea>
         <div class="between"><button class="btn btn-soft btn-sm" id="acExp">🖨 Exportar PDF</button><button class="btn btn-pr btn-sm" id="acSave">Guardar</button></div>
       `,{onMount:(ov,close)=>{
-        ov.querySelector('#acExp').addEventListener('click',()=>window.print());
+        ov.querySelector('#acExp').addEventListener('click',()=>CX.reportKit.exportPDF(accSpec('pdf')));
         ov.querySelector('#acSave').addEventListener('click',()=>{
           a.estado=ov.querySelector('#acEst').value;
           const evi=ov.querySelector('#acEvi').files[0]; if(evi)a.evidencia=evi.name;
@@ -419,6 +435,28 @@ CX.module('cli_acciones', ({ui})=>{
     }));
     render();
   },0);
+  const accSpec=(ext)=>{
+    const list=C.acciones(p);
+    const M2=CX.cliUI.ACC_META;
+    const rows=list.map(a=>({titulo:a.titulo,tipo:(M2[a.tipo]||{label:a.tipo}).label,sucursal:a.sucursal||'—',responsable:a.responsable||'—',limite:a.limite||a.fecha||'—',estado:a.estado||'Abierto'}));
+    const byEstado={}; rows.forEach(r=>{byEstado[r.estado]=(byEstado[r.estado]||0)+1;});
+    const projectLabel=CX.data.programBase?CX.data.programBase(p):(p.name||'Proyecto');
+    const periodLabel=(p.periodo||p.ronda||p.name||'Periodo');
+    const san=(s)=>String(s||'reporte').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'reporte';
+    return { title:'Planes de Acción',
+      meta:{title:'Planes de Acción',project:projectLabel,period:periodLabel,scope:'Todas las categorías',sourceLabel:'Portal del Cliente · planes registrados',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
+      columns:[{key:'titulo',label:'Acción'},{key:'tipo',label:'Tipo'},{key:'sucursal',label:'Sucursal'},{key:'responsable',label:'Responsable'},{key:'limite',label:'Límite'},{key:'estado',label:'Estado'}],
+      rows, notes:'',
+      summary:['Acciones en el plan: '+rows.length, Object.entries(byEstado).map(([k,v])=>k+': '+v).join(' · ')],
+      chart:{title:'Acciones por estado',data:Object.entries(byEstado).map(([k,v])=>({label:k,value:v}))},
+      filename:[san('planes-de-accion'),san(projectLabel),san(periodLabel),new Date().toISOString().slice(0,10)].join('_')+'.'+ext };
+  };
+  setTimeout(()=>{
+    const b1=document.getElementById('accPdf'),b2=document.getElementById('accXls'),b3=document.getElementById('accPpt');
+    if(b1)b1.addEventListener('click',()=>CX.reportKit.exportPDF(accSpec('pdf')));
+    if(b2)b2.addEventListener('click',()=>{if(CX.reportKit.exportExcel(accSpec('xlsx')))CX.ui.toast('Excel .xlsx generado','ok');});
+    if(b3)b3.addEventListener('click',()=>{if(CX.reportKit.exportPPT(accSpec('pptx')))CX.ui.toast('PowerPoint generado','ok');});
+  },0);
   const acc=C.acciones(p);
   const count=(t)=>acc.filter(a=>a.tipo===t).length;
   return `
@@ -433,6 +471,12 @@ CX.module('cli_acciones', ({ui})=>{
         <button class="btn btn-sm btn-soft" data-f="sancion">⚠ Sanciones (${count('sancion')})</button>
       </div>
       <button class="btn btn-pr btn-sm" id="accNew">+ Nueva acción</button>
+    </div>
+    <div class="flex" style="gap:6px;flex-wrap:wrap;margin-bottom:14px">
+      <span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;align-self:center">Exportar plan</span>
+      <button class="btn btn-ghost btn-sm" id="accPdf">⎓ PDF</button>
+      <button class="btn btn-soft btn-sm" id="accXls">⎓ Excel</button>
+      <button class="btn btn-pr btn-sm" id="accPpt">⎓ PPT</button>
     </div>
     <div class="grid" id="accList" style="gap:12px"></div>`;
 });

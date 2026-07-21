@@ -52,6 +52,110 @@ CX.module('cli_capacitacion', ({ui})=>{
     </div>`;
 });
 
+/* ============== CX.reportKit — plantilla reusable de reportes (Corte 1B) ==============
+   Identidad del TENANT (logo, colores, tipografía de CX.BRAND) + encabezado,
+   proyecto, periodo, alcance, fecha, fuente, pie con paginación y gráficas.
+   Las MISMAS filas/columnas/revisión en PDF, Excel (.xlsx) y PPT. Sin hardcode
+   de ningún cliente. La usan cli_reportes (Cliente) e informes (Admin), y queda
+   disponible para Shopper y demás roles según permisos. */
+CX.reportKit = CX.reportKit || (function(){
+  const esc=(s)=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const hex=(s)=>String(s||'').replace('#','').padStart(6,'0').slice(-6).toUpperCase();
+  const brand=()=>{ const b=(typeof CX!=='undefined'&&CX.BRAND)||{}; const c=b.colors||{};
+    const font=(CX.THEMES&&b.theme&&CX.THEMES[b.theme]&&CX.THEMES[b.theme].font)||"'Manrope',system-ui,sans-serif";
+    return { name:b.name||'CXOrbia', client:b.clientName||'', logoText:b.logoText||'CX', logoUrl:b.logoUrl||'', font,
+      brandHex:c.brand||'#2196d3', brandDark:c.brandDark||'#1565a8', brandLight:c.brandLight||'#e8f4fd' }; };
+  const vis=(cols)=>(cols||[]).filter(c=>!c.hidden);
+  const cell=(row,col)=>{ const v=row[col.key]; return (v==null||v==='')?'—':v; };
+  function ensureStyle(){ if(document.getElementById('cxRKStyle'))return;
+    const st=document.createElement('style'); st.id='cxRKStyle';
+    st.textContent='#cxRKPrint{display:none}@media print{@page{margin:14mm}body>*:not(#cxRKPrint){display:none!important}#cxRKPrint{display:block!important;color:#1f2937}#cxRKPrint table{width:100%;border-collapse:collapse;font-size:11px}#cxRKPrint th,#cxRKPrint td{border:1px solid #d1d5db;padding:5px 7px;text-align:left}#cxRKPrint thead{display:table-header-group}#cxRKPrint tr{break-inside:avoid}.cxrk-foot{position:fixed;bottom:6mm;left:0;right:0;display:flex;justify-content:space-between;font-size:10px;color:#6b7280;padding:0 2mm}.cxrk-foot .pg:after{counter-increment:page;content:"Pág. " counter(page)}}';
+    document.head.appendChild(st); }
+  function header(t,m){
+    const logo=t.logoUrl?`<img src="${esc(t.logoUrl)}" style="height:34px">`:`<div style="width:34px;height:34px;border-radius:8px;background:${t.brandHex};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800">${esc(t.logoText)}</div>`;
+    return `<div style="display:flex;align-items:center;gap:12px;border-bottom:3px solid ${t.brandHex};padding-bottom:10px;margin-bottom:14px">${logo}<div style="flex:1"><div style="font-size:20px;font-weight:800;color:${t.brandDark}">${esc(m.title)}</div><div style="font-size:11.5px;color:#4b5563">${esc(t.name)}${t.client?(' · '+esc(t.client)):''}</div></div><div style="text-align:right;font-size:11px;color:#4b5563;line-height:1.55"><div><b>${esc(m.project)}</b></div><div>${esc(m.period)}</div><div>${esc(m.scope)}</div></div></div>`;
+  }
+  function chartHTML(t,ch){ if(!ch||!ch.data||!ch.data.length)return '';
+    const max=Math.max(...ch.data.map(d=>+d.value||0),1);
+    return `<div style="margin:6px 0 14px"><div style="font-size:12px;font-weight:700;color:${t.brandDark};margin-bottom:8px">${esc(ch.title||'')}</div>${ch.data.map(d=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><span style="width:150px;font-size:10.5px;color:#4b5563;flex-shrink:0;text-align:right">${esc(d.label)}</span><span style="flex:1;background:#eef2f7;border-radius:3px;height:14px;position:relative"><span style="position:absolute;left:0;top:0;bottom:0;width:${Math.round((+d.value||0)/max*100)}%;background:${t.brandHex};border-radius:3px"></span></span><b style="width:48px;font-size:10.5px;text-align:right">${esc(d.display!=null?d.display:d.value)}</b></div>`).join('')}</div>`; }
+  const RK_CFG='cx_rk_cfg_';
+  const loadCfg=(key)=>{try{return JSON.parse(localStorage.getItem(RK_CFG+key)||'{}');}catch(e){return {};}};
+  const saveCfg=(key,o)=>{try{localStorage.setItem(RK_CFG+key,JSON.stringify(o));}catch(e){}};
+  return {
+    brand, hex, visibleColumns:vis,
+    /* aplica columnas (ocultar/ordenar/renombrar) + notas guardadas por el usuario */
+    applyStoredConfig(spec,key){ if(!key)return spec; const cfg=loadCfg(key); const cc=cfg.columns||{};
+      const cols=(spec.columns||[]).map((c,i)=>({key:c.key,label:(cc[c.key]&&cc[c.key].label)?cc[c.key].label:c.label,hidden:cc[c.key]?!!cc[c.key].hidden:!!c.hidden,order:(cc[c.key]&&typeof cc[c.key].order==='number')?cc[c.key].order:i})).sort((a,b)=>a.order-b.order);
+      return Object.assign({},spec,{columns:cols,notes:(cfg.notes!=null?cfg.notes:spec.notes)}); },
+    /* editor real: elegir/ocultar/ordenar/renombrar columnas + notas; persiste por key */
+    openEditor(spec,key,onDone){ const cols=(this.applyStoredConfig(spec,key).columns)||spec.columns;
+      CX.ui.modal('✎ Personalizar reporte — '+esc(spec.title||''),
+        '<p style="font-size:12px;color:var(--t2);margin-bottom:10px">Elige qué columnas se ven, en qué orden y con qué título. Aplica a vista previa, PDF, Excel y PPT.</p>'+
+        '<div id="rkEd">'+cols.map((c,i)=>'<div class="flex" data-key="'+esc(c.key)+'" style="gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border-2)"><input type="checkbox" class="rkVis" '+(c.hidden?'':'checked')+' title="Mostrar"><input class="inp rkName" value="'+esc(c.label||'').replace(/"/g,'&quot;')+'" style="flex:1;padding:5px 7px"><button class="btn btn-ghost btn-sm rkUp" '+(i===0?'disabled':'')+'>▲</button><button class="btn btn-ghost btn-sm rkDn" '+(i===cols.length-1?'disabled':'')+'>▼</button></div>').join('')+'</div>'+
+        '<label class="lbl" style="margin-top:12px">Notas / encabezado</label><textarea class="inp" id="rkNotes" rows="2">'+esc((this.applyStoredConfig(spec,key).notes)||'').replace(/</g,'&lt;')+'</textarea>'+
+        '<div class="between" style="margin-top:14px"><button class="btn btn-ghost btn-sm" id="rkReset">Restablecer</button><button class="btn btn-pr btn-sm" id="rkSave">Guardar</button></div>',
+      {onMount:(ov,close)=>{ const cont=ov.querySelector('#rkEd');
+        const move=(row,d)=>{const s=d<0?row.previousElementSibling:row.nextElementSibling;if(!s)return;if(d<0)cont.insertBefore(row,s);else cont.insertBefore(s,row);};
+        cont.querySelectorAll('.rkUp').forEach(b=>b.addEventListener('click',()=>move(b.closest('[data-key]'),-1)));
+        cont.querySelectorAll('.rkDn').forEach(b=>b.addEventListener('click',()=>move(b.closest('[data-key]'),1)));
+        ov.querySelector('#rkReset').addEventListener('click',()=>{saveCfg(key,{});close();onDone&&onDone();});
+        ov.querySelector('#rkSave').addEventListener('click',()=>{ const colCfg={};
+          [...cont.querySelectorAll('[data-key]')].forEach((row,order)=>{colCfg[row.dataset.key]={order,hidden:!row.querySelector('.rkVis').checked,label:(row.querySelector('.rkName').value||'').trim()};});
+          saveCfg(key,{columns:colCfg,notes:(ov.querySelector('#rkNotes').value||'').trim()});
+          close();CX.ui.toast('Reporte personalizado','ok');onDone&&onDone(); }); }}); },
+    /* abre vista previa con acciones de exportar + personalizar (reusable en cualquier rol) */
+    openReport(spec,key){ const self=this; const eff=()=>self.applyStoredConfig(spec,key);
+      CX.ui.modal((spec.title||'Reporte'),
+        '<div id="rkBody" style="max-height:52vh;overflow:auto">'+self.previewHTML(eff())+'</div>'+
+        '<div class="between" style="margin-top:14px;flex-wrap:wrap;gap:8px"><button class="btn btn-soft btn-sm" id="rkEdit">✎ Personalizar</button><div class="flex" style="gap:8px"><button class="btn btn-ghost btn-sm" id="rkPdf">⤓ PDF</button><button class="btn btn-soft btn-sm" id="rkXls">⤓ Excel</button><button class="btn btn-pr btn-sm" id="rkPpt">⤓ PPT</button></div></div>',
+      {onMount:(ov)=>{ const rr=()=>{const b=ov.querySelector('#rkBody');if(b)b.innerHTML=self.previewHTML(eff());};
+        ov.querySelector('#rkEdit').addEventListener('click',()=>self.openEditor(spec,key,rr));
+        ov.querySelector('#rkPdf').addEventListener('click',()=>self.exportPDF(eff()));
+        ov.querySelector('#rkXls').addEventListener('click',()=>{if(self.exportExcel(eff()))CX.ui.toast('Excel .xlsx generado','ok');});
+        ov.querySelector('#rkPpt').addEventListener('click',()=>{if(self.exportPPT(eff()))CX.ui.toast('PowerPoint generado','ok');}); }}); },
+    /* P0-3 (V171): nombre final SIEMPRE con la extensión correcta del exportador,
+       sin importar con qué extensión se construyó el spec. Base neutral. */
+    _fname(spec,ext){ const base=String((spec&&(spec.filename||spec.title))||'reporte').replace(/\.(pdf|xlsx|pptx|csv|ppt|xls)$/i,''); return base+'.'+ext; },
+    /* HTML de vista previa (misma identidad, filas y columnas que las exportaciones) */
+    previewHTML(spec){ const t=brand(),m=spec.meta,cols=vis(spec.columns),rows=spec.rows||[];
+      return `<div style="font-family:${t.font}">${header(t,m)}<div style="font-size:11px;color:#6b7280;margin-bottom:10px">Generado: ${esc(m.generatedAt)} · Fuente: ${esc(m.sourceLabel)}</div>${spec.notes?`<div style="font-size:12px;background:${t.brandLight};border-radius:8px;padding:9px 12px;margin-bottom:12px"><b>Notas:</b> ${esc(spec.notes)}</div>`:''}${chartHTML(t,spec.chart)}<div style="overflow:auto"><table class="tbl"><thead><tr>${cols.map(c=>`<th>${esc(c.label)}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${cols.map(c=>`<td>${esc(cell(r,c))}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${cols.length||1}" style="text-align:center;color:#9ca3af">Sin filas</td></tr>`}</tbody></table></div><div style="font-size:10.5px;color:#6b7280;margin-top:8px">${rows.length} fila(s) · ${esc(m.scope)}</div></div>`; },
+    exportPDF(spec){ const t=brand(),m=spec.meta,cols=vis(spec.columns),rows=spec.rows||[]; ensureStyle();
+      let host=document.getElementById('cxRKPrint'); if(!host){host=document.createElement('div');host.id='cxRKPrint';document.body.appendChild(host);} host.style.fontFamily=t.font;
+      host.innerHTML=`<div style="padding:0 2mm">${header(t,m)}<div style="font-size:11px;color:#6b7280;margin-bottom:10px">Generado: ${esc(m.generatedAt)} · Fuente: ${esc(m.sourceLabel)}</div>${spec.notes?`<div style="font-size:12px;background:${t.brandLight};border-radius:8px;padding:9px 12px;margin-bottom:12px"><b>Notas:</b> ${esc(spec.notes)}</div>`:''}${chartHTML(t,spec.chart)}<table><thead><tr>${cols.map(c=>`<th>${esc(c.label)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${esc(cell(r,c))}</td>`).join('')}</tr>`).join('')}</tbody></table><div style="font-size:10px;color:#6b7280;margin-top:10px">${rows.length} fila(s) · ${esc(m.scope)}</div></div><div class="cxrk-foot"><span>${esc(t.name)} · ${esc(m.project)}</span><span class="pg"></span></div>`;
+      window.print(); return true; },
+    exportExcel(spec){ if(typeof XLSX==='undefined'){CX.ui.toast('Error al generar archivo','err');return false;}
+      const m=spec.meta,cols=vis(spec.columns),rows=spec.rows||[]; if(!rows.length){CX.ui.toast('Sin datos para esta vista','err');return false;}
+      const resumen=[['Reporte',m.title],['Empresa',brand().name],['Proyecto',m.project],['Periodo',m.period],['Alcance',m.scope],['Fuente',m.sourceLabel],['Generado',m.generatedAt],['Filas',rows.length]]; if(spec.notes)resumen.push(['Notas',spec.notes]);
+      const data=rows.map(r=>{const o={};cols.forEach(c=>{o[c.label]=(r[c.key]==null?'':r[c.key]);});return o;});
+      const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(resumen),'Resumen'); XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(data),'Datos');
+      XLSX.writeFile(wb,this._fname(spec,'xlsx')); return true; },
+    exportPPT(spec){ if(typeof PptxGenJS==='undefined'){CX.ui.toast('Error al generar archivo','err');return false;}
+      const t=brand(),m=spec.meta,cols=vis(spec.columns),rows=spec.rows||[],bh=hex(t.brandHex),bd=hex(t.brandDark);
+      const pptx=new PptxGenJS(); pptx.defineLayout({name:'CX',width:13.33,height:7.5}); pptx.layout='CX';
+      const s1=pptx.addSlide(); s1.addShape(pptx.ShapeType.rect,{x:0,y:0,w:13.33,h:1.1,fill:{color:bh}});
+      s1.addText(t.logoText+' · '+t.name,{x:0.5,y:0.3,w:12,h:0.5,fontSize:16,bold:true,color:'FFFFFF'});
+      s1.addText(m.title,{x:0.6,y:2.6,w:12,h:1,fontSize:34,bold:true,color:bd});
+      s1.addText(m.project+' · '+m.period,{x:0.6,y:3.7,w:12,h:0.5,fontSize:16,color:'4B5563'});
+      s1.addText(m.scope+' · '+m.generatedAt,{x:0.6,y:4.2,w:12,h:0.5,fontSize:12,color:'6B7280'});
+      const s2=pptx.addSlide(); s2.addText('Resumen',{x:0.5,y:0.4,w:12,h:0.6,fontSize:24,bold:true,color:bd});
+      const bl=(spec.summary||[]).map(x=>({text:x,options:{bullet:true,breakLine:true}})); if(spec.notes)bl.unshift({text:'Notas: '+spec.notes,options:{bullet:true,breakLine:true,italic:true}});
+      s2.addText(bl.length?bl:[{text:'Sin resumen',options:{}}],{x:0.6,y:1.3,w:11.8,h:4,fontSize:15,color:'1F2937'});
+      if(spec.chart&&spec.chart.data&&spec.chart.data.length){ const s3=pptx.addSlide(); s3.addText(spec.chart.title||'Gráfica',{x:0.5,y:0.4,w:12,h:0.6,fontSize:22,bold:true,color:bd});
+        try{ s3.addChart(pptx.ChartType.bar,[{name:spec.chart.title||'Serie',labels:spec.chart.data.map(d=>String(d.label)),values:spec.chart.data.map(d=>+d.value||0)}],{x:0.6,y:1.2,w:12,h:5.6,barDir:'bar',chartColors:[bh],showValue:true}); }catch(e){ s3.addText('(gráfica no disponible en este entorno)',{x:0.6,y:1.2,w:12,h:0.5,fontSize:12,color:'6B7280'}); } }
+      const s4=pptx.addSlide(); const maxR=12,shown=rows.slice(0,maxR);
+      s4.addText('Detalle'+(rows.length>maxR?(' (primeras '+maxR+' de '+rows.length+'; el Excel contiene todas)'):''),{x:0.5,y:0.4,w:12.3,h:0.6,fontSize:18,bold:true,color:bd});
+      s4.addTable([cols.map(c=>({text:c.label,options:{bold:true,color:'FFFFFF',fill:{color:bh}}})),...shown.map(r=>cols.map(c=>({text:String(cell(r,c)),options:{}})))],{x:0.4,y:1.1,w:12.5,fontSize:9,border:{type:'solid',color:'D1D5DB',pt:0.5}});
+      const s5=pptx.addSlide(); s5.addText('Nota de fuente',{x:0.5,y:0.4,w:12,h:0.6,fontSize:22,bold:true,color:bd});
+      s5.addText([{text:m.sourceLabel,options:{breakLine:true}},{text:'Proyecto: '+m.project,options:{breakLine:true}},{text:'Alcance: '+m.scope,options:{breakLine:true}},{text:'Generado: '+m.generatedAt,options:{breakLine:true}}],{x:0.6,y:1.3,w:11.8,h:4,fontSize:14,color:'1F2937'});
+      /* P0-3/P1-3 (V171): éxito SOLO cuando writeFile resuelve; extensión .pptx garantizada. */
+      try{ const done=pptx.writeFile({fileName:this._fname(spec,'pptx')});
+        if(done&&done.then){ done.then(()=>CX.ui.toast('PowerPoint generado','ok')).catch(()=>CX.ui.toast('Error al generar archivo','err')); }
+        else { CX.ui.toast('PowerPoint generado','ok'); }
+      }catch(e){ CX.ui.toast('Error al generar archivo','err'); return false; }
+      return undefined; }
+  };
+})();
+
 /* ============== Reportes (exportables) — Corte 1.2 ==============
    Corrección P0 (auditoría 20260720): este módulo consume la forma REAL de la
    proyección aprobada schema 1.1.0 expuesta en window.CX_TYA_CORTE1_REPORTS:
@@ -182,62 +286,20 @@ CX.module('cli_reportes', ({ui})=>{
     return {head,trows,data,summary};
   }
 
-  function ensurePrintStyle(){
-    if(document.getElementById('cxReportPrintStyle')) return;
-    const st=document.createElement('style');st.id='cxReportPrintStyle';
-    st.textContent='#cxReportPrint{display:none}@media print{body>*:not(#cxReportPrint){display:none !important}#cxReportPrint{display:block !important;padding:28px;font-family:Arial,Helvetica,sans-serif;color:#1f2937}#cxReportPrint h1{font-size:22px;margin:0 0 6px}#cxReportPrint .cxr-meta{font-size:12px;color:#4b5563;margin-bottom:16px}#cxReportPrint table{width:100%;border-collapse:collapse;font-size:12px}#cxReportPrint th,#cxReportPrint td{border:1px solid #d1d5db;padding:6px 8px;text-align:left}}';
-    document.head.appendChild(st);
+  function buildSpec(cat,ext){
+    const view=computeView(cat,(statusFor(cat).rows)||[]);
+    const columns=view.head.map(h=>({key:h,label:h}));
+    const rows=view.data;
+    let chart=null; const dimKey=view.head[0], realKey='Realizadas';
+    if(view.head.includes(realKey)&&rows.length){ chart={title:realKey+' por '+dimKey,data:rows.slice(0,10).map(r=>({label:String(r[dimKey]),value:+r[realKey]||0}))}; }
+    return { title:cat.label,
+      meta:{title:cat.label,project:projectLabel,period:periodLabel,scope:scopeLabelText(),sourceLabel:SOURCE_LABEL,generatedAt:fmtDate()},
+      columns, rows, notes:'', summary:view.summary, chart, filename:buildFilename(cat,ext) };
   }
-  function exportPDF(cat){
-    const status=statusFor(cat); if(status.state!=='available'){CX.ui.toast(STATE_META[status.state].label,'err');return;}
-    const view=computeView(cat,status.rows);
-    ensurePrintStyle();
-    let host=document.getElementById('cxReportPrint');
-    if(!host){host=document.createElement('div');host.id='cxReportPrint';document.body.appendChild(host);}
-    host.innerHTML=`<h1>${esc(cat.label)}</h1><div class="cxr-meta"><b>${esc(projectLabel)}</b> · ${esc(periodLabel)} · ${esc(scopeLabelText())} · ${esc(SOURCE_LABEL)} · ${esc(fmtDate())}</div><ul style="margin:0 0 16px 18px;font-size:13px">${view.summary.map(s=>`<li>${esc(s)}</li>`).join('')}</ul><table><thead><tr>${view.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${view.trows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
-    window.print();
-  }
-  function exportExcel(cat){
-    const status=statusFor(cat); if(status.state!=='available'){CX.ui.toast(STATE_META[status.state].label,'err');return;}
-    if(typeof XLSX==='undefined'){CX.ui.toast('Error al generar archivo','err');return;}
-    try{
-      const view=computeView(cat,status.rows);
-      if(!view.data.length){CX.ui.toast('Sin datos para este periodo y alcance','err');return;}
-      const summary=[['Reporte',cat.label],['Proyecto',projectLabel],['Periodo',periodLabel],['Alcance',scopeLabelText()],['Fuente',SOURCE_LABEL],['Fecha de generación',fmtDate()],['Filas',view.data.length]];
-      const wb=XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(summary),'Resumen');
-      XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(view.data),'Datos');
-      XLSX.writeFile(wb,buildFilename(cat,'xlsx'));
-      CX.ui.toast('Excel generado: '+cat.label+' ('+view.data.length+' filas)','ok');
-    }catch(e){CX.ui.toast('Error al generar archivo','err');}
-  }
-  function exportPPT(cat){
-    const status=statusFor(cat); if(status.state!=='available'){CX.ui.toast(STATE_META[status.state].label,'err');return;}
-    if(typeof PptxGenJS==='undefined'){CX.ui.toast('Error al generar archivo','err');return;}
-    try{
-      const view=computeView(cat,status.rows);
-      if(!view.trows.length){CX.ui.toast('Sin datos para este periodo y alcance','err');return;}
-      const pptx=new PptxGenJS();
-      pptx.defineLayout({name:'CX_16x9',width:13.33,height:7.5});pptx.layout='CX_16x9';
-      const s1=pptx.addSlide();
-      s1.addText(cat.label,{x:0.6,y:2.2,w:12,h:1,fontSize:32,bold:true,color:'1F2937'});
-      s1.addText(projectLabel+' · '+periodLabel,{x:0.6,y:3.2,w:12,h:0.6,fontSize:16,color:'4B5563'});
-      s1.addText(scopeLabelText()+' · '+fmtDate(),{x:0.6,y:3.7,w:12,h:0.5,fontSize:12,color:'6B7280'});
-      const s2=pptx.addSlide();
-      s2.addText('Resumen operativo',{x:0.5,y:0.4,w:12,h:0.6,fontSize:22,bold:true});
-      s2.addText(view.summary.map(t=>({text:t,options:{bullet:true,breakLine:true}})),{x:0.6,y:1.2,w:11.5,h:3,fontSize:16,color:'1F2937'});
-      const s3=pptx.addSlide();
-      const maxRows=12, shown=view.trows.slice(0,maxRows);
-      s3.addText('Detalle'+(view.trows.length>maxRows?(' (primeras '+maxRows+' de '+view.trows.length+' filas; el Excel contiene todas)'):''),{x:0.5,y:0.4,w:12.3,h:0.6,fontSize:18,bold:true});
-      s3.addTable([view.head.map(h=>({text:h,options:{bold:true}})),...shown],{x:0.5,y:1.1,w:12.3,fontSize:9,border:{type:'solid',color:'D1D5DB',pt:0.5}});
-      const s4=pptx.addSlide();
-      s4.addText('Nota de fuente',{x:0.5,y:0.4,w:12,h:0.6,fontSize:22,bold:true});
-      s4.addText([{text:SOURCE_LABEL,options:{breakLine:true}},{text:'Alcance: '+scopeLabelText(),options:{breakLine:true}},{text:'Generado: '+fmtDate(),options:{breakLine:true}},{text:'"Ver como" es una vista previa de rol, no un control de seguridad real.',options:{breakLine:true,italic:true,color:'6B7280'}}],{x:0.6,y:1.2,w:11.5,h:3,fontSize:14});
-      const done=pptx.writeFile({fileName:buildFilename(cat,'pptx')});
-      if(done&&typeof done.then==='function'){done.then(()=>CX.ui.toast('PowerPoint generado: '+cat.label,'ok')).catch(()=>CX.ui.toast('Error al generar archivo','err'));}
-      else CX.ui.toast('PowerPoint generado: '+cat.label,'ok');
-    }catch(e){CX.ui.toast('Error al generar archivo','err');}
-  }
+  function exportPDF(cat){ const s=statusFor(cat); if(s.state!=='available'){CX.ui.toast(STATE_META[s.state].label,'err');return;} CX.reportKit.exportPDF(CX.reportKit.applyStoredConfig(buildSpec(cat,'pdf'),'cli_'+cat.id)); }
+  function exportExcel(cat){ const s=statusFor(cat); if(s.state!=='available'){CX.ui.toast(STATE_META[s.state].label,'err');return;} if(CX.reportKit.exportExcel(CX.reportKit.applyStoredConfig(buildSpec(cat,'xlsx'),'cli_'+cat.id)))CX.ui.toast('Excel generado: '+cat.label,'ok'); }
+  function exportPPT(cat){ const s=statusFor(cat); if(s.state!=='available'){CX.ui.toast(STATE_META[s.state].label,'err');return;} if(CX.reportKit.exportPPT(CX.reportKit.applyStoredConfig(buildSpec(cat,'pptx'),'cli_'+cat.id)))CX.ui.toast('PowerPoint generado: '+cat.label,'ok'); }
+  function openReport(cat){ const s=statusFor(cat); if(s.state!=='available'){CX.ui.toast(STATE_META[s.state].label,'err');return;} CX.reportKit.openReport(buildSpec(cat,'pdf'),'cli_'+cat.id); }
 
   function renderRoot(){
     const countrySel=(role==='director'&&countries.length)?`<select class="sel" id="repPaisSel" aria-label="Filtrar por país" style="width:auto;min-width:150px"><option value="">Todos los países</option>${countries.map(c=>`<option value="${esc(c)}" ${c===selectedCountry?'selected':''}>${esc(c)}</option>`).join('')}</select>`:'';
@@ -256,7 +318,7 @@ CX.module('cli_reportes', ({ui})=>{
             <div style="margin-top:8px">${ui.bdg(sm.label,sm.tone)}</div>
             ${status.explain?`<div style="font-size:11.5px;color:var(--t2);margin-top:6px;line-height:1.5">${esc(status.explain)}</div>`:''}
           </div>
-          <div class="flex" style="gap:6px;flex-wrap:wrap">${btn('PDF')}${btn('Excel')}${btn('PPT')}</div>
+          <div class="flex" style="gap:6px;flex-wrap:wrap">${canExport?`<button class="btn btn-ghost btn-sm" data-rep-open="${cat.id}" title="Ver y personalizar">Ver / personalizar</button>`:''}${btn('PDF')}${btn('Excel')}${btn('PPT')}</div>
         </div>
       </div>`;
     };
@@ -278,6 +340,7 @@ CX.module('cli_reportes', ({ui})=>{
     const wire=()=>{
       const sel=document.getElementById('repPaisSel');
       if(sel) sel.addEventListener('change',(e)=>{selectedCountry=e.target.value;try{sessionStorage.setItem('cx_rep_country',selectedCountry);}catch(err){}const root=document.getElementById('repRoot');if(root){root.outerHTML=renderRoot();wire();}});
+      document.querySelectorAll('[data-rep-open]').forEach(b=>b.addEventListener('click',()=>{const cat=catalog.find(c=>c.id===b.dataset.repOpen);if(cat)openReport(cat);}));
       document.querySelectorAll('[data-rep-act]').forEach(b=>{
         if(b.disabled) return;
         b.addEventListener('click',()=>{

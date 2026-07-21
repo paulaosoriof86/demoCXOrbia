@@ -4,6 +4,12 @@
 window.CX = window.CX || {};
 
 CX.router = {
+  /* P0-1 (V171): resolver ÚNICO de navegación efectiva. CX.NAV solo define admin/shopper/cliente;
+     cualquier otro rol (super, ops, coordinador, aliado, desconocido) navega sobre el layout admin
+     SIN ampliar permisos (roleCanAccess sigue gobernando cada módulo). Usado por mount/buildRail/nav. */
+  navRole(role){ role=role||CX.session.role; return (CX.NAV[role]?role:'admin'); },
+  navGroups(role){ return CX.NAV[this.navRole(role)]||CX.NAV.admin||[]; },
+
   mount(){
     const role=CX.session.role;
     document.body.classList.toggle('role-shopper',role==='shopper');
@@ -48,7 +54,7 @@ CX.router = {
     }
     this.buildRail(role);
     const gRole=CX.session.testRole||role;
-    const first=CX.NAV[role].flatMap(g=>g.items).find(id=>CX.moduleEnabled(id)&&CX.roleCanAccess(gRole,id)&&CX.moduleVisibleForProfile(id,role));
+    const first=this.navGroups(role).flatMap(g=>g.items).find(id=>CX.moduleEnabled(id)&&CX.roleCanAccess(gRole,id)&&CX.moduleVisibleForProfile(id,role));
     /* P0-4: la vista guardada solo se reutiliza si TODAS las validaciones de nav() la aceptarían
        (roles, moduleEnabled, roleCanAccess, moduleVisibleForProfile) — si alguna falla, cae al
        primer módulo permitido en vez de dejar una pantalla vacía. */
@@ -177,7 +183,7 @@ CX.router = {
     projBlock += `<div class="rail-src" title="Fuente de datos del prototipo${_src.mode?(' · modo: '+_src.mode):''}${_ctxTip}" style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--t3)"><span style="width:7px;height:7px;border-radius:50%;background:${_src.c}"></span>Datos: ${_src.t}</div>`;
 
     const collapsed = (()=>{try{return JSON.parse(localStorage.getItem('cx_rail_col')||'{}')}catch(e){return {};}})();
-    const nav=CX.NAV[role].map(group=>{
+    const nav=this.navGroups(role).map(group=>{
       const items=group.items.filter(id=>CX.moduleEnabled(id)&&CX.roleCanAccess(CX.session.testRole||role,id)&&CX.moduleVisibleForProfile(id,role)).map(id=>{
         const m=CX.MODULES[id]; if(!m)return '';
         const badge = (m.badge && role==='admin') ? `<span class="n-badge">${d.kpis().postPend||''}</span>`
@@ -283,7 +289,7 @@ CX.router = {
     document.querySelectorAll('.nav-i').forEach(n=>n.classList.toggle('active',n.dataset.id===id));
     document.body.classList.remove('nav-open');
     // crumb
-    const group=CX.NAV[role].find(g=>g.items.includes(id));
+    const group=this.navGroups(role).find(g=>g.items.includes(id));
     const crumbLbl = typeof m.label==='function' ? m.label(role) : m.label;
     document.getElementById('crumb').innerHTML=`${group?group.sec:''} <span class="sep">/</span> <b>${crumbLbl}</b>`;
     this.render(id);

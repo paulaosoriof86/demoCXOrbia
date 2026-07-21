@@ -152,7 +152,7 @@ CX.MOD_CAT = {
   aprendizaje:'cap', cert:'cap', documentos:'cap', soporte:'cap', novedades:'cap',
   config:'cfg', usuarios:'cfg', marca:'cfg', automatizaciones:'cfg', integraciones:'cfg', correo:'cfg', saas:'cfg', diagnostico:'cfg', administrabilidad:'cfg',
   costos:'com', crm:'com', marketing:'com', informes:'com',
-  miperfil:'sh', misvisitas:'sh', beneficios:'sh',
+  miperfil:'sh', misvisitas:'sh', beneficios:'sh', mireportes:'sh',
 };
 /* super y admin: acceso pleno. Otros roles: gobernados por la matriz guardada (cx_perm).
    Fail-closed (V95/V96 reauditoría): un rol sin matriz configurada NO obtiene acceso total —
@@ -231,6 +231,7 @@ CX.MODULES = {
   liquidaciones: { icon:'💸', label:'Liquidaciones',        roles:['admin'],           status:'ready' },
   lotes:         { icon:'📦', label:'Lotes de Pago',        roles:['admin'],           status:'ready' },
   beneficios:    { icon:'💰', label:'Mis Beneficios',       roles:['shopper'],         status:'ready' },
+  mireportes:    { icon:'📑', label:'Mis Reportes',         roles:['shopper'],         status:'ready' },
   // Configuración (admin)
   cuestionarios: { icon:'🧩', label:'Cuestionarios',        roles:['admin'],           status:'ready' },
   usuarios:      { icon:'🔐', label:'Usuarios & Permisos',  roles:['admin'],           status:'ready' },
@@ -271,7 +272,7 @@ CX.NAV = {
   shopper: [
     { sec:'Operación', items:['midia','miperfil','visitas','reservas','misvisitas'] },
     { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte','novedades'] },
-    { sec:'Mis Beneficios', items:['beneficios'] },
+    { sec:'Mis Beneficios', items:['beneficios','mireportes'] },
   ],
   cliente: [
     { sec:'Estrategia',  items:['cli_dashboard','cli_sucursales','cli_acciones','cli_insights'] },
