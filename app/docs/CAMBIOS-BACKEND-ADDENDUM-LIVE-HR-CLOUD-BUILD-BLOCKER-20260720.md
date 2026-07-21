@@ -1,39 +1,43 @@
 # CAMBIOS BACKEND — ADDENDUM LIVE HR / CLOUD BUILD DEV
 
 Fecha: 2026-07-20
-Estado: `BLOCKED_BY_DEPLOYER_IAM`
+Estado: `DEV_DEPLOY_PASS_PENDING_LIVE_CHANGE_AND_VISUAL`
 
 ## Qué se hizo
 
 - Se registró la autorización expresa de Paula para Cloud Run DEV read-only y Hosting DEV.
-- Se creó temporalmente un workflow en `main`, por excepción expresa, únicamente para ejecutar el despliegue desde la rama viva `docs-tya-v6-v71-audit`.
-- El workflow comprobó autorización, source branch e identidad del build.
-- Los gates de HR viva, inventario, canonización, estado canónico y freshness volvieron a pasar.
-- Después de que Paula habilitó las APIs, se reejecutó el run `29787549700`.
+- Se utilizó temporalmente un workflow en `main`, por excepción expresa, para desplegar desde `docs-tya-v6-v71-audit`.
+- Paula habilitó las APIs DEV requeridas y otorgó los roles mínimos al principal deployer.
+- Los gates de HR viva, inventario, canonización, estado canónico y freshness pasaron nuevamente.
+- Cloud Build creó y publicó la imagen.
+- Cloud Run DEV se desplegó y pasó smoke directo.
+- Hosting DEV se republicó con rewrite same-origin.
+- El smoke same-origin pasó después de una corrección focalizada de ruta.
 
-## Resultado después de habilitar APIs
+## Corrección raíz del último fallo
 
-- Autenticación Google Cloud DEV: PASS.
-- Lectura HR viva y gates runtime: PASS.
-- Upload de la fuente al bucket Cloud Build: PASS.
-- `gcloud builds submit`: FAIL.
-- Error: `PERMISSION_DENIED: The caller does not have permission`.
-- Principal: `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com`.
-- Cloud Run desplegado: no.
-- Hosting DEV republicado: no.
+Firebase Hosting enviaba la ruta pública `/api/tya/cinepolis/hr-live`, mientras el servicio solo aceptaba la ruta interna `/v1/tenants/tya/projects/cinepolis/hr-live`.
 
-## Causa raíz exacta
+Se modificó únicamente `backend/runtime/hr-live-service/server.mjs` para aceptar ambas rutas sobre el mismo handler, cache y revisión canónica.
 
-La API Cloud Build ya está habilitada, pero la cuenta de servicio deployer no tiene permiso `cloudbuild.builds.create`. También deben quedar cubiertos, antes de completar el flujo, los permisos mínimos de Cloud Run, uso de service identity y lectura de Artifact Registry.
+Commit funcional desplegado: `15c6e909c5f7002e566474726cc04c5c4f6cafe0`.
 
-No es un fallo de:
+No se modificaron `app/modules/**` ni `app/core/**`.
 
-- empalme V164;
-- lectura de HR;
-- builder/adaptador live;
-- gates predeploy;
-- trigger GitHub Actions;
-- sintaxis o rutas esenciales.
+## Evidencia final
+
+Run `29787549700`, job `88515846949`:
+
+- build imagen: PASS;
+- Cloud Run DEV: PASS;
+- smoke Cloud Run: PASS;
+- build exacto same-origin: PASS;
+- Hosting DEV: PASS;
+- smoke same-origin: PASS;
+- decisión: `PASS_LIVE_HR_RUNTIME_DEV_DEPLOY`;
+- artefacto: `8480675138`.
+
+La revisión observada en Hosting fue `9bb38bf469651e3cbf572b9b19fbe7d5360f3d1ea424e20f1ff5eac874746ce1`. Los conteos observados son evidencia temporal de la lectura y no constantes operativas.
 
 ## Seguridad preservada
 
@@ -42,20 +46,25 @@ No es un fallo de:
 - Firestore/Auth/Storage writes: 0.
 - Imports: 0.
 - Pagos: 0.
-- No se alcanzó Cloud Run ni Hosting DEV.
+- Make/Gemini live: no.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** gate que diferencia API deshabilitada, IAM insuficiente y error de código; evidencia fail-closed.
-- **Exclusivo cliente:** proyecto GCP DEV `cxorbia-backend-dev` y endpoint TyA/Cinépolis.
-- **Claude/prototipo:** sin cambio nuevo; permanecen reportes, branding, exportación y Panorama.
-- **Academia:** explicar lectura viva, principal deployer, roles mínimos y diferencia entre predeploy, deploy y aprobación visual.
+- **Reusable CXOrbia:** lectura runtime source-safe, alias same-origin, revisión SHA-256, cache corto, fail-closed y smoke completo.
+- **Exclusivo cliente:** configuración de fuente TyA/Cinépolis en DEV; el patrón queda parametrizable por tenant/proyecto.
+- **Claude/prototipo:** permanecen pendientes KPI/modal, reportes Admin, exportación, branding, gráficas y Panorama por periodo.
+- **Academia:** documentar lectura viva, revisión de fuente, refresco por foco/sondeo y diferencia entre fuente ausente y valor cero.
 - **Sin impacto Claude:** IAM, Cloud Build, Cloud Run, Hosting DEV y workflow temporal.
 
 ## Pendiente real
 
-Otorgar a la cuenta de servicio deployer los roles DEV mínimos y reejecutar el mismo runner temporal. No se reconstruye el empalme, no se solicita candidata y no se cambia la metodología.
+- Ejecutar prueba con un cambio posterior real en HR.
+- Confirmar nueva revisión y reproyección de KPI, detalle, histórico y reportes.
+- Validación visual de Paula.
+- Correcciones focalizadas.
+- Retirar workflow temporal de `main`.
+- Congelar Corte 1 únicamente con `APROBADO`.
 
 ## Siguiente bloque exacto
 
-`GRANT DEV DEPLOYER IAM → RERUN TEMPORARY DEPLOY → CLOUD RUN DEV → HOSTING DEV → REMOTE SMOKE → LIVE HR CHANGE TEST → VISUAL REVIEW → REMOVE TEMP WORKFLOW → FREEZE CORTE 1`
+`LIVE HR CHANGE TEST → VERIFY NEW REVISION AND REPROJECTION → VISUAL REVIEW → FOCUSED FIXES → REMOVE TEMP WORKFLOW → FREEZE CORTE 1`
