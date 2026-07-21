@@ -17,7 +17,7 @@ Estado: `CORTE_1B_CANDIDATE_V172_AUDITED_GO_READY_DIRECT_APPLY`
 
 ## Corrección metodológica
 
-Se retracta el supuesto bloqueo `EXECUTION_LANE_NOT_READY` atribuido a falta de checkout local. Fue un desvío: una limitación temporal de herramienta no debía sustituir ni detener el método vigente. No se pide nueva candidata, no se abre rama/PR y no se traslada trabajo manual a Paula.
+Se retracta el supuesto bloqueo atribuido a falta de checkout local. Fue un desvío: una limitación temporal de herramienta no debía sustituir ni detener el método vigente. No se pide nueva candidata, no se abre rama/PR y no se traslada trabajo manual a Paula.
 
 ## Candidata V172 auditada
 
@@ -52,7 +52,7 @@ Se retracta el supuesto bloqueo `EXECUTION_LANE_NOT_READY` atribuido a falta de 
 
 ## Preservación
 
-V172 conserva las mejoras V171b: reportKit, PDF/XLSX/PPTX por rol, editor, branding, gráficas, multiproyecto, Panorama canónico, add-ons aislados, geo-checkin honesto, `mireportes`, router `super`, extensiones correctas y Novedades por rol.
+V172 conserva reportKit, PDF/XLSX/PPTX por rol, editor, branding, gráficas, multiproyecto, Panorama canónico, add-ons aislados, geo-checkin honesto, `mireportes`, router `super`, extensiones correctas y Novedades por rol.
 
 ## Decisión
 
