@@ -3,46 +3,45 @@
 > Lista viva de mejoras del prototipo CXOrbia. Actualizada 2026-07-21.
 > P0 crítico · P1 importante · P2 posterior · [TyA] específico · [CX] reusable.
 
-## CORTE 1B — CANDIDATA V170 EN HOLD
+## 🔴 P0 ACTUAL — V171b / AISLAMIENTO SHOPPER
 
-### Resuelto y protegido
+### Resuelto y preservado
 
 - [Backend] HR viva read-only confirmada con cambios reales.
-- [Backend] Cloud Run DEV, Hosting DEV y refresco live desplegados.
-- [Backend] Cuatro reportes operativos Cliente disponibles.
-- [Gobierno] V170 no se aplicó porque contiene P0 reproducibles.
-- [Gobierno] Preservar reportKit, reportes por rol, multiproyecto, branding, gráficas, Panorama, add-ons y Novedades.
+- [Backend] Refresco al cargar, `pageshow` y sondeo de 15 segundos desplegados.
+- [Backend] Cuatro reportes operativos live preservados.
+- [Claude/CX] V171b conserva reportKit, reportes multiformato, branding, gráficas, multiproyecto, Panorama, add-ons, Novedades y las correcciones principales de V170.
+- [Gobierno] V171b no fue aplicada; no pedir reinicio desde V164 ni reabrir HR, histórico, shoppers o Finanzas.
 
-### P0 — Router e identidad
+### P0 — identidad Shopper fail-open
 
-- [Claude/CX] `router.js`: resolver NAV efectivo en `mount`, `buildRail` y `nav`; probar rol `super`.
-- [Claude/CX] eliminar todo fallback `shopperId || 'sh1'`; identidad faltante debe fallar cerrado.
+- [Claude/CX] `app/modules/misvisitas.js`: eliminar `shopperId || 'sh1'`.
+- [Claude/CX] Sin `shopperId`, Mis Visitas debe mostrar cero filas y bloquear acciones.
+- [Claude/CX] Sin `CX.data.visitsForShopper`, usar `[]`; nunca caer a `CX.data.visitas()`.
+- [Claude/CX] `app/modules/reservas.js`: eliminar fallback `sh1`; cero reservas y acciones sin identidad.
+- [Claude/CX] `app/modules/midia.js`: Mi Día y próxima visita deben filtrar exclusivamente por `shopperId`; no ampliar por estado.
+- [Claude/CX] `app/app.js`: el seed `sh1` solo puede existir bajo guard demo explícito; live/real falla cerrado.
 
-### P0 — Reportes y estados canónicos
+### Gates obligatorios
 
-- [Claude/CX] `reportKit`: extensión correcta por exportador y éxito PPT solo después de terminar la escritura.
-- [Claude/CX] Panorama debe consumir `CX.data.visitFacets`/`visitBucketFns`; submit exige confirmación explícita.
-- [Claude/CX] Reportes Admin debe consumir facetas canónicas y excluir canceladas/archivadas.
-- [Claude/CX] Dashboard, detalle, Panorama y reportes deben compartir revisión y conteos.
+- [QA] Shopper A ve solo A.
+- [QA] Shopper B ve solo B.
+- [QA] Sesión sin identidad ve cero datos privados y ejecuta cero acciones.
+- [QA] Una visita agendada de B no aparece en Mi Día de A.
+- [QA] Sin `visitsForShopper`, Mis Visitas queda vacío.
+- [QA] Búsqueda global de `sh1`: solo semillas demo protegidas.
+- [QA] Las siete correcciones V170 continúan pasando.
+- [QA] PDF/XLSX/PPTX conservan extensión, contenido, identidad y legibilidad.
 
-### P0 — Add-ons y geo-checkin
+### P1/P2
 
-- [Claude/CX] estado de add-ons aislado por `tenantId + projectId`; eliminar clave global `cx_addons_fx`.
-- [Claude/CX] geo-checkin no puede afirmar foto guardada/evidencia sellada sin persistencia real.
-- [Claude/CX] sin backend/Storage autorizado: captura local preparatoria, fail-closed, cero PII/foto en localStorage y estado `Pendiente de backend/Storage`.
+- [Claude/CX] Corregir o renombrar el campo `bytes` del manifiesto/inventario para representar bytes UTF-8 reales.
+- [Academia] Documentar diferencia entre oportunidades disponibles y visitas privadas; sin identidad no se muestran datos.
 
-### P1
+### Paquete vinculante
 
-- [Claude/CX] agregar `mireportes` al NAV Shopper.
-- [Claude/CX] retirar rol Admin de geo-checkin o implementar consumidor funcional real.
-- [Claude/CX] mejorar legibilidad PDF y equivalencia funcional de identidad/gráficas en PDF/XLSX/PPTX.
-- [Claude/CX] Novedades no debe anunciar como final una función no persistida.
-
-### Fuentes vinculantes
-
-- `app/docs/AUDITORIA-CANDIDATA-V170-CORTE1B-20260721.md`.
-- `app/docs/PAQUETE-CORRECCION-CLAUDE-V170-CORTE1B-20260721.md`.
+- `app/docs/PAQUETE-CORRECCION-CLAUDE-V171B-CORTE1B-20260721.md`.
 
 ### Cierre pendiente
 
-`CANDIDATA V170 CORREGIDA → AUDITORÍA FOCALIZADA → APPLY_DELTA_DIRECTLY → GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
+`CANDIDATA V171B CORREGIDA → EXECUTION_LANE_READY → AUDITORÍA FOCALIZADA → APPLY_DELTA_DIRECTLY → GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
