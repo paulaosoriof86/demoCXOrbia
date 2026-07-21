@@ -3,88 +3,45 @@
 > Lista viva de mejoras del prototipo CXOrbia. Actualizada 2026-07-20.
 > P0 crítico · P1 importante · P2 posterior · [TyA] específico · [CX] reusable.
 
-## 🔴 P0/P1 ACTUAL — CORTE 1 CON HR VIVA CONFIRMADA
+## 🔴 P0/P1 ACTUAL — CORTE 1B CON HR VIVA CONFIRMADA
 
 ### Resuelto por backend/adapters
 
 - [Backend] La lectura HR viva quedó confirmada: fecha de cuestionario actualizó KPI y asignación HR retiró una visita disponible del shopper.
 - [Backend] La revisión excluye timestamps volátiles y no debe provocar recargas falsas.
-- [Backend] La carga inicial usa bootstrap/cache y la comprobación fresca ocurre de forma controlada.
-- [Backend] La proyección live de reportes está integrada en DEV.
-- [Gobierno] No pedir nueva candidata ni reabrir empalme, histórico, estados, shoppers o Finanzas.
+- [Backend] El build usa bootstrap/cache y comprobación fresca controlada.
+- [Backend] El trigger de refresco comprueba al cargar, en `pageshow` y cada 15 segundos.
+- [Backend] La proyección live de cuatro reportes operativos está desplegada en DEV.
+- [Gobierno] No pedir nueva candidata por rutina ni reabrir empalme, histórico, estados, shoppers o Finanzas.
 
-### Validación visual inmediata
+### P0 — Reportes Admin
 
-- [CX] Confirmar que la página no se recargue cuando la HR no cambió.
-- [CX] Confirmar una sola actualización al existir un cambio real.
-- [CX] Confirmar cuatro reportes operativos disponibles con PDF, Excel y PPT habilitados.
-- [CX] Confirmar KPI, modal, histórico y reportes sobre la misma revisión y facets.
-- [TyA] Confirmar que `Sin submitir` no muestre filas como `Pend. cuestionario` cuando ya existe cuestionario.
+- [Claude/CX] `app/modules/operacion-extra.js`: PDF debe exportar el reporte seleccionado y no ejecutar impresión de la página completa.
+- [Claude/CX] La edición debe modificar columnas, orden, títulos y notas en vista previa y exportaciones.
+- [Claude/CX] Excel debe ser `.xlsx` real; no CSV presentado como Excel.
+- [Claude/CX] No mostrar velocidad, calidad, hallazgos, scores, NPS o liquidaciones como cifras reales sin fuente confirmada.
 
-### Frontend focalizado — Panorama
+### P0 — Panorama por periodo
 
-- [Claude/CX] `app/core/cliente-data.js`: invalidar cache por periodo y revisión live.
-- [Claude/CX] `app/modules/cliente.js`: separar resultados operativos de score, NPS y secciones pendientes.
-- [Claude/CX] `app/modules/cliente-insights.js`: revisar comparativos cuando corresponda.
-- [Claude/CX] Al cambiar MAY/JUN/JUL, mostrar realizadas, cuestionarios, submitidas, cobertura y tendencia del periodo seleccionado.
-- [Claude/CX] Sin score validado, usar `Pendiente de fuente` sin ceros que parezcan resultados.
-- [Claude/CX] Cuando dos periodos compartan el mismo universo, explicar qué cambió y qué no tiene fuente.
+- [Claude/CX] `app/core/cliente-data.js`: cache por `tenantId + projectId + periodKey + sourceRevision + mode`.
+- [Claude/CX] `app/modules/cliente.js`: separar operación del periodo de score/NPS/secciones.
+- [Claude/CX] `app/modules/cliente-insights.js`: revisar comparativos si comparte el mismo estado.
+- [Claude/CX] MAY/JUN/JUL deben mostrar indicadores operativos del periodo seleccionado.
+- [Claude/CX] Sin score validado, usar un único `Pendiente de fuente`; no mostrar ceros aparentes como resultados.
 
-### Frontend focalizado — Reportes y diseño
+### P1 bloqueante visual — Diseño reusable de reportes
 
-- [Claude/CX] `app/modules/cliente-extra.js`: exportaciones y presentación del portal cliente.
-- [Claude/CX] `app/modules/operacion-extra.js`: `Reportes & KPIs` administrativo y personalización visible.
-- [Claude/CX] Portal cliente: exportaciones deben usar periodo, país, sucursal, rol y revisión live activos.
-- [Claude/CX] Administración: edición real de columnas, orden, notas y alcance.
-- [Claude/CX] Imprimir/exportar el artefacto del reporte, no la página completa.
-- [Claude/CX] Aplicar logo, colores y tipografía configurados por tenant, con fallback CXOrbia.
-- [Claude/CX] Incorporar gráficas de avance, cobertura, tendencia y distribución cuando correspondan.
-- [Claude/CX] Aplicar el estándar a admin, cliente, shopper y demás roles según permisos.
-- [Claude/CX] No fijar el diseño ni la lógica a TyA/Cinépolis.
+- [Claude/CX] `app/modules/cliente-extra.js` y `app/modules/operacion-extra.js` deben usar una plantilla común configurable.
+- [Claude/CX] Aplicar logo, paleta, tipografía, proyecto, periodo, alcance, fecha, fuente, pie y paginación.
+- [Claude/CX] Incluir gráficas de cumplimiento, cobertura, tendencia, distribución o comparativo cuando correspondan.
+- [Claude/CX] PDF, Excel y PPT deben contener las mismas filas y la misma revisión.
+- [Claude/CX] El estándar aplica a Admin, Cliente, Shopper y demás roles según permisos.
+- [Claude/CX] Cinépolis no se hardcodea.
 
-### Estados honestos
+### Paquete vinculante
 
-- [CX] Planes de acción continúa pendiente hasta su fuente real.
-- [CX] Brechas y capacitación continúa pendiente hasta resultados por sección.
-- [CX] Scorecard de marca continúa pendiente hasta scores validados.
-- [CX] No inferir score, NPS, planes ni brechas desde conteos operativos.
-- [CX] No fijar conteos operativos en código o gates.
+- `app/docs/PAQUETE-CLAUDE-CORTE1B-REPORTES-PANORAMA.md`.
 
-### Academia y gobierno
+### Cierre pendiente
 
-- [Academia] Actualizar después de la validación visual: lectura viva, revisión estable, periodos, fuente ausente y exportación por rol.
-- [Academia] Explicar la diferencia entre HR operativa y resultados del cuestionario.
-- [Backend] Retirar el workflow temporal de `main` después del cierre DEV y antes del freeze.
-- [Gobierno] Corte 1 solo se congela con `APROBADO` de Paula.
-
-## 🔴 P0 HISTÓRICO PROTEGIDO
-
-- [CX] Mantener migración tenant-safe, acceso técnico protegido y contenido comercial sin jerga interna.
-- [Claude] No cambiar identificadores o contratos internos sin evidencia nueva.
-- [Academia] Mantener contenido técnico solo para audiencia interna protegida.
-
-## ✅ RESUELTOS Y PRESERVADOS
-
-- White-label, temas, roles y permisos.
-- Operación, postulaciones, reservas, shoppers y visitas disponibles.
-- Finanzas reconciliadas e importador Excel.
-- CRM, clientes, propuestas y marketing.
-- Academia, manuales, certificaciones, recursos y soporte.
-- Configuración, usuarios, setup y gobierno.
-
-## 🟡 PENDIENTES POSTERIORES
-
-- Gestión completa de periodos e histórico comparativo.
-- Importador HR con detección de proyecto, periodo y duplicados.
-- Centro de actualizaciones SaaS.
-- Sincronía global de proyecto, periodo y país.
-- Fichas ampliadas de periodo, visita y sucursal.
-- Persistencia, autenticación, evidencias e integraciones cuando llegue su bloque autorizado.
-
-## Siguiente bloque exacto
-
-`REVALIDAR DEV ESTABILIDAD Y REPORTES → CORRECCIONES FRONTEND FOCALIZADAS → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
-
-## Estado seguro
-
-Sin merge ni producción. Importaciones reales, automatizaciones externas y pagos permanecen en espera.
+`DELTA CLAUDE CORTE 1B → AUDITORÍA FOCALIZADA → APPLY_DELTA_DIRECTLY → GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
