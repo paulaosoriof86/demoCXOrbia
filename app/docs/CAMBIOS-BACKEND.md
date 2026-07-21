@@ -1,3 +1,40 @@
+## 2026-07-21 — V172 auditada GO / corrección metodológica
+
+Estado: `AUDITED_GO_READY_DIRECT_APPLY`
+
+- Se retractó el supuesto bloqueo por falta de checkout local; fue un desvío metodológico y no un P0 de la candidata.
+- Candidata: `Prototype development request CXOrbia V172.zip`.
+- SHA-256: `2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5`.
+- Delta contra V171b: 0 agregados, 0 eliminados y 8 modificados.
+- Archivos funcionales: `app/app.js`, `app/modules/midia.js`, `app/modules/misvisitas.js`, `app/modules/reservas.js`.
+- 67 JavaScript: sintaxis PASS.
+- 73 referencias locales: PASS.
+- 18 hashes y tamaños UTF-8: PASS.
+- Gate dinámico `V172_IDENTITY_GATE_PASS`: Shopper A ve solo A, Shopper B solo B y una sesión sin identidad ve cero datos privados y ejecuta cero acciones.
+- Sin `visitsForShopper`, Mis Visitas usa `[]`; nunca abre `data.visitas()` global.
+- `sh1` queda únicamente bajo guard demo explícito; live/real conserva `shopperId:null`.
+- No existe P0 nuevo reproducible.
+- V172 conserva reportKit, reportes por rol, branding, gráficas, multiproyecto, Panorama canónico, add-ons aislados, geo-checkin honesto, `mireportes`, router `super` y Novedades.
+- Siguiente acción obligatoria: `APPLY_DELTA_DIRECTLY` sobre `docs-tya-v6-v71-audit`.
+
+Documentación:
+
+- `AUDITORIA-CANDIDATA-V172-CORTE1B-20260721.md`;
+- `PREFLIGHT-CANDIDATA-V172-EXECUTION-LANE-NOT-READY-20260721.md` marcado como retractado;
+- checkpoint, índice, resumen, pendientes y PR #7 actualizados.
+
+Clasificación:
+
+- `Reusable CXOrbia`: identidad Shopper fail-closed.
+- `Exclusivo cliente`: validación visual posterior con shoppers TyA; cero hardcode Cinépolis.
+- `Claude/prototipo`: candidata V172 cerrada; no pedir otra ronda.
+- `Academia`: selección de rol no equivale a autenticación; actualizar tras aprobación visual.
+- `Sin impacto Claude`: HR viva, backend, adapters, contratos, Cloud Run, Hosting e IAM preservados.
+
+Estado seguro: todavía sin declarar empalme V172, merge, producción, importaciones, escrituras HR/Firestore/Auth/Storage, pagos, Make o Gemini live.
+
+---
+
 ## 2026-07-21 — Auditoría focalizada candidata V171b
 
 Estado: `HOLD_P0_PROVEN_SHOPPER_IDENTITY_FAIL_OPEN`
