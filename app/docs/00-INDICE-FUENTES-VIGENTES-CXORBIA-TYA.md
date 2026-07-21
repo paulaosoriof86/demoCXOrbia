@@ -1,49 +1,70 @@
-# 00 - INDICE DE FUENTES VIGENTES CXORBIA TyA
+# 00 - ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
 Fecha: 2026-07-21
 Estado: ACTIVO Y OBLIGATORIO
 
-- Rama `docs-tya-v6-v71-audit`.
-- PR #7 draft/open/no merge.
-- V161C/R21 continúa como baseline de seguridad hasta aprobación visual.
-- V164 y Corte 1A están integrados.
-- Candidata V172: SHA-256 `2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5`.
-- Commit runtime V172 parcial que debe permanecer como ancestro: `0ca607f430ac97ca022687419df688bccfd66e19`.
-- Estado actual: `VISUAL_NO_GO_FIX_PACKAGE_READY`.
-- Paula reprodujo en URL pública e incógnito: HR anterior, `Conectado · Degradado`, recargas con pantalla blanca, Reportes Admin/Cliente antiguos y Shopper sin `Mis Reportes`.
-- Causa raíz 1: se aplicaron solo cuatro archivos V172 contra V171b, pero V171b no estaba empalmada; faltan 14 archivos acumulados V165–V171.
-- Causa raíz 2: `fresh=1` no omitía TTL, el watcher ejecutaba `location.reload()` y el fast trigger repetía el ciclo cada 15 segundos.
-- Fuente vigente: `DIAGNOSTICO-RAIZ-V172-EMPALME-ACUMULADO-HR-INPLACE-20260721.md`.
-- Paquete exacto: `PAQUETE_EJECUCION_CODEX_CXORBIA_V172_HR_INPLACE_20260721.zip`.
-- SHA-256 final: `eaadd16ef78539bfd45c60ad8eed9dc0507a385b80583640fb3f1666f4f9eb15`.
-- Gate local: `PASS_TYA_LIVE_HR_INPLACE_REFRESH_GATE`; 21 JS/MJS con sintaxis PASS.
+## Rama y seguridad
 
-Lectura obligatoria: reglas maestras, addendum canónico de empalme file-aware, plan Phase A, checkpoint vigente, diagnóstico raíz V172, CAMBIOS, resumen, pendientes, Academia y PR #7.
+- Repo: `paulaosoriof86/demoCXOrbia`.
+- Rama viva: `docs-tya-v6-v71-audit`.
+- PR #7: draft/open/no merge.
+- Producción: sin merge, sin deploy productivo y sin writes.
+- Corte 1: abierto.
+- Corte 2: bloqueado.
+
+## Estado V172
+
+- Candidata V172: SHA-256 `2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5`.
+- Empalme acumulado + HR in-place aplicado en `4f195b07a8cfc5962a7de6bd99d0c13915b847ad`.
+- Los 14 archivos acumulados V165–V171 ya están en la rama.
+- Backend/adapters in-place y Hosting DEV R22 están aplicados.
+- Gate local HR in-place: PASS.
+- Gate remoto `fresh=1`: HOLD por mapper R20, no por V172, caché, credencial ni cambio de HR.
+
+## Causa raíz vigente
+
+La HR configurada sigue siendo la misma: `HR Guatemala - Sincronizacion Google Sheets`.
+
+La pestaña actual `JULIO 26` de Guatemala usa una firma compacta legítima:
+
+- encabezado inicia con `CIUDAD`, `DIRECCIÓN`, `Shopping`;
+- no contiene `País` ni `ID CINEMA`;
+- contiene dos columnas exactas `Fecha submitido`.
+
+`JULIO 26 HN` conserva la firma completa con `País` e `ID CINEMA`.
+
+El mapper actual exige siempre `País + ID CINEMA + Shopping`; por eso falla con `header_not_found` antes de leer las filas GT.
+
+## Corrección preparada
+
+Paquete: `PAQUETE_EJECUCION_CODEX_CXORBIA_R20_HEADER_VARIANT_20260721.zip`
+
+SHA-256: `371199c7790c181dbc8077aedcc4c22286146e17f116b58d2611e68b2ab7b899`
+
+Modifica únicamente:
+
+1. `tools/hr-source/tya-build-live-hr-source-safe-r20.mjs`;
+2. `backend/contracts/tya-hr-column-map-r20-v1.json`;
+3. `tools/qa/tya-hr-header-variants-r20-gate.mjs`.
+
+Política:
+
+- firma `full_identity` para tabs completos;
+- firma `tab_scoped_compact` para tabs sin País/ID CINEMA;
+- país derivado solo del nombre exacto del tab;
+- no inventar `ID CINEMA`;
+- identidad mediante `hrRowId/sourceTab/sourceRow`;
+- `Fecha submitido` duplicada se consolida solo si hay un valor o los valores coinciden;
+- conflicto entre duplicados = HOLD.
 
 ## Método obligatorio
 
-`RESOLVER HEAD_BEFORE ACTUAL → VERIFICAR ANCESTRO 0ca607f → APLICAR PAQUETE EXACTO → COMMIT/PUSH ATÓMICO → MANIFEST/BUILD-LOCK/VERIFICADOR → GATES → CLOUD RUN DEV/HOSTING DEV → VALIDACIÓN VISUAL → FREEZE`
+`RESOLVER HEAD_BEFORE → VERIFICAR ANCESTRO 4f195b0 → APLICAR PAQUETE EXACTO → COMMIT/PUSH ATÓMICO → GATES → DEPLOY CLOUD RUN DEV MEDIANTE WORKFLOW YA AUTORIZADO → GATE REMOTO fresh=1 → VALIDACIÓN VISUAL IN-PLACE`
 
-No Contents API archivo por archivo, blobs/trees, workflow transportador, nueva rama/PR, nueva candidata, Claude ni trabajo manual para Paula.
+No reempalmar V172, no Claude, no nueva candidata, no cambiar HR/ID/tabs, no parchear UI, no crear workflows y no pedir autenticación manual a Paula.
 
-## Siguiente acción exacta
+## Fuente vigente
 
-`CODEX APLICA SOLO files/ DEL PAQUETE → COMMIT/PUSH ATÓMICO → DEPLOY DEV → DEMOSTRAR CAMBIO HR YA EXISTENTE SIN RECARGA → VALIDAR ADMIN/CLIENTE/SHOPPER`
-
-Corte 1 continúa abierto. Corte 2 continúa bloqueado.
-# Índice vigente CXOrbia TyA — actualización V172 HR in-place
-
-Estado actual: `V172_HR_INPLACE_APPLIED_PENDING_REMOTE_DEV_GATES`.
-
-Fuente operativa vigente:
-- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
-- `app/docs/MANIFEST-V172-EMPALME-DIRECTO-20260721.json`
-- `app/core/build-lock.js`
-- `tools/release/tya-v172-empalme-directo-verify.mjs`
-- `tools/qa/tya-live-hr-inplace-refresh-gate.mjs`
-
-Paquete aplicado: `PAQUETE_EJECUCION_CODEX_CXORBIA_V172_HR_INPLACE_20260721.zip`.
-HEAD_BEFORE: `a41e7ef7b6315ef71151f1695aa1875bb482fba9`.
-Aggregate vigente: `dc6ead9fc81a75d32efcf7f0febe431ba944f1d9812d4551dae7c17f62cd6b27`.
-
-Siguiente bloque: commit/push, despliegue Cloud Run DEV + Hosting DEV R22 y gate remoto HR in-place.
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+- `app/docs/DIAGNOSTICO-RAIZ-R20-HEADER-VARIANT-JULIO26-20260721.md`;
+- PR #7.
