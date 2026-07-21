@@ -1,3 +1,41 @@
+## 2026-07-21 — Auditoría focalizada candidata V171b
+
+Estado: `HOLD_P0_PROVEN_SHOPPER_IDENTITY_FAIL_OPEN`
+
+- Candidata acumulada V171b recibida y validada estructuralmente.
+- SHA-256: `e655ea88950c8485a497b52b3870c9b18ebef98181e1662993ef496efc17d4e2`.
+- 67 JavaScript: sintaxis PASS.
+- Manifiesto, inventario, hashes e `index.html`: PASS.
+- V171b corrige estáticamente los siete P0 principales de V170 y preserva sus mejoras.
+- P0 demostrado: identidad Shopper fail-open en `misvisitas`, `reservas`, `midia` y fallback demo de `app.js`.
+- Prueba reproducible: sesión Shopper sin `shopperId` renderizó una visita ajena de `sh1`.
+- V171b no fue aplicada ni desplegada.
+- Se preservan V164, Corte 1A, HR viva y Hosting DEV.
+
+Documentación:
+
+- `AUDITORIA-CANDIDATA-V171B-CORTE1B-20260721.md`;
+- `PAQUETE-CORRECCION-CLAUDE-V171B-CORTE1B-20260721.md`;
+- `RESUMEN-PARA-CLAUDE-ADDENDUM-V171B-HOLD-20260721.md`;
+- `PENDIENTES-PROTOTIPO-ADDENDUM-V171B-HOLD-20260721.md`;
+- `CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V171B-CORTE1B-20260721.md`.
+
+Clasificación:
+
+- `Reusable CXOrbia`: identidad fail-closed para vistas privadas Shopper.
+- `Exclusivo cliente`: validación posterior con shoppers y proyectos TyA.
+- `Claude/prototipo`: `app.js`, `misvisitas.js`, `reservas.js` y `midia.js`.
+- `Academia`: oportunidades disponibles vs. visitas privadas y sesión sin identidad.
+- `Sin impacto Claude`: HR viva, backend, adapters, contratos, Cloud Run, Hosting e IAM.
+
+Siguiente bloque:
+
+`CANDIDATA V171B CORREGIDA → EXECUTION_LANE_READY → AUDITORÍA FOCALIZADA → APPLY_DELTA_DIRECTLY → GATES → HOSTING DEV → VALIDACIÓN VISUAL → FREEZE CORTE 1`
+
+Estado seguro: sin merge, producción, importaciones, escrituras HR/Firestore/Auth/Storage, pagos, Make o Gemini live.
+
+---
+
 ## 2026-07-20 - Corte 1A HR viva confirmada y redeploy de estabilidad/reportes
 
 - Paula confirmó lectura HR viva con cambios reales: una fecha de cuestionario actualizó KPI y una asignación HR retiró una visita disponible del shopper.
@@ -48,7 +86,6 @@ Clasificación:
 ## 2026-07-16 - V153 auditoría delta / dos P0 reales restantes
 
 - Candidata externa: `Prototype development request (4).zip`; identidad interna V153.
-- ZIP SHA-256: `bb5727668dc6356358b09867df7415b12c318b8bcf2e08e909d728644032d377`.
 - Manifest V153: 202 archivos, aggregate `ea2543b1726e4fc32fb4e2b5e95a58e5e057f499c812e2d905e07bbd91ccb1dd`, 0 diferencias.
 - JavaScript: 0 fallos de sintaxis.
 - Delta contra V151: 18 archivos modificados, 4 agregados y 0 eliminados.
