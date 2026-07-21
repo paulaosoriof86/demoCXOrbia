@@ -1,10 +1,24 @@
 # PENDIENTES-PROTOTIPO.md
 
-> Lista viva de mejoras del prototipo CXOrbia, priorizada. Actualizada 2026-07-16.
+> Lista viva de mejoras del prototipo CXOrbia, priorizada. Actualizada 2026-07-20.
 > Clasificación: P0 crítico · P1 importante · P2 posterior · [TyA] específico · [CX] generalizable
-> El detalle de CÓMO se resolvió cada ítem está en CAMBIOS-PROTOTIPO.md (entradas 1–25+).
+> El detalle de CÓMO se resolvió cada ítem está en CAMBIOS-PROTOTIPO.md y CAMBIOS-BACKEND.md/addenda.
 
-## 🔴 P0 ACTUAL — V155 GATE COMERCIAL TRANSVERSAL
+## 🔴 P0 ACTUAL — CORTE 1 POST HR VIVA DEV
+
+- [CX] KPI, tarjetas, modales, histórico y reportes deben consumir una sola revisión live y las mismas facets.
+- [TyA] El modal `Sin submitir` no puede incluir o etiquetar como `Pend. cuestionario` visitas que ya tienen cuestionario.
+- [CX] No fijar conteos de visitas, cuestionarios o submitidos en código, gates ni documentación operativa; son observaciones temporales de HR.
+- [CX] Panorama debe reproyectarse al cambiar periodo. Si no hay fuente, mostrar `Pendiente de fuente` sin cifras aparentes o estáticas.
+- [Claude] Reportes Admin deben permitir editar columnas/contenido realmente y exportar el reporte, no imprimir la página completa.
+- [Claude] Reportes de admin, cliente, shopper y demás roles deben aplicar logo, color, tipografía y gráficas según configuración del tenant.
+- [Claude] Mantener el endpoint live, watcher, binding R22 y contratos backend sin cambios desde frontend.
+- [Academia] Actualizar manuales/cursos después de la validación visual: lectura viva, cambio de periodo, fuente ausente, revisión y exportación.
+- [Backend] Ejecutar prueba de cambio real en HR; verificar nueva revisión, foco/sondeo y reproyección antes de congelar Corte 1.
+- [Backend] Retirar el workflow temporal de `main` después de cerrar correcciones DEV y antes del freeze.
+- [Gobierno] No pedir nueva candidata ni reabrir el empalme; corregir únicamente diferencias reproducibles del Corte 1.
+
+## 🔴 P0 HISTÓRICO — V155 GATE COMERCIAL TRANSVERSAL
 
 - [CX] La migración de proyectos ya quedó tenant-safe y repetible; no reabrirla.
 - [CX] `hasTechAccess()` permanece false y el curso `a_backend` está oculto; no reabrir esos gates.
