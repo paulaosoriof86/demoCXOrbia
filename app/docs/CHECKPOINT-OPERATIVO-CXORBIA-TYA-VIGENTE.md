@@ -1,26 +1,26 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 Fecha: 2026-07-22  
-Estado: `CORTE_2A_STARTED_FRONTEND_DELTA_PENDING_CLAUDE`
+Estado: `CORTE_2A_V174_AUDITED_GO_APPLY_LANE_PENDING`
 
 ## 1. Repositorio y baseline funcional
 
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
-- Build funcional validado en DEV: `67c0943260f076f5686284ac509458ed5fd34dbd`.
+- Build funcional M1 validado en DEV: `67c0943260f076f5686284ac509458ed5fd34dbd`.
 - Corte 1 / M1: `FROZEN_WITH_DOCUMENTED_P1_P2`.
-- Corte 2A: iniciado mediante contrato, gate compuesto y paquete frontend localizado; delta de Claude aún pendiente.
+- Corte 2A: candidata V174 auditada GO; aplicación atómica pendiente.
 
-La candidata que produjo el build funcional M1 ya fue aplicada a la rama viva y validada visualmente. No existe un segundo empalme pendiente de M1. El PR permanece sin merge porque merge/producción pertenecen a Corte 8 y requieren autorización expresa.
+La candidata que produjo M1 ya fue aplicada y validada. V174 es la siguiente candidata incremental/acumulada para Corte 2A; no reabre M1.
 
-## 2. Resultado técnico y visual congelado
+## 2. Resultado técnico y visual M1 congelado
 
 - Cloud Run DEV y Hosting DEV: PASS.
 - HR runtime viva y source-safe: PASS.
 - Refresco in-place sin recarga evidente: PASS.
 - Cambio de periodos: PASS.
-- Actualización automática de KPI ante asignación/cuestionario controlado: PASS.
+- KPI ante asignación/cuestionario controlado: PASS.
 - Portal shopper retira visitas asignadas desde HR: PASS.
 - Coherencia Dashboard Admin / Panorama Cliente / reportes: PASS.
 
@@ -36,72 +36,94 @@ La candidata que produjo el build funcional M1 ya fue aplicada a la rama viva y 
 - 2 cuestionarios pendientes.
 - 0 pagos confirmados.
 
-## 3. Corte 2A — alcance autorizado
+## 3. Corrección metodológica aplicada
 
-1. `app/modules/visitas.js`
-   - facets canónicas en tabla, filtros, detalle, drilldowns y exportación;
-   - no usar `v.estado` crudo como verdad única;
-   - monto ausente distinto de cero confirmado.
+Causa raíz corregida: el checkout local estaba siendo tratado erróneamente como requisito previo de auditoría.
 
-2. `app/modules/postulaciones.js`
-   - reasignación con conservar/cambiar/dejar pendiente fecha y franja;
-   - Exportar para alcance filtrado y periodo activo;
-   - eliminar `undefined` y claims falsos de sincronización.
+Desde ahora:
 
-3. `app/core/tya-phase-a-source-safe-preview.js`
-   - solo si es indispensable: preservar `null` financiero sin alterar IDs, periodos, facets o sourceRevision.
+- `AUDIT_LANE_READY` requiere bytes/extracción, runtime local y lectura autoritativa de rama; no checkout local.
+- `APPLY_LANE_READY` exige aplicación atómica autenticada con commit/push y HEAD verificables.
+- una candidata GO sin carril de aplicación queda `AUDITED_GO_APPLY_LANE_PENDING`, sin pedir otra candidata ni reauditar.
 
-Contrato y paquete:
+Fuente prevalente:
 
-- `backend/contracts/phase-a-corte2a-shopper-operation-canonical-v1.json`.
-- `app/docs/PAQUETE-CLAUDE-CORTE2A-CICLO-SHOPPER-OPERACION-CANONICA-20260722.md`.
+- `app/docs/ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`.
 
-## 4. Lock anti-regresión obligatorio
+## 4. Auditoría V174 cerrada
 
-Toda candidata futura debe preservar:
+- Archivo: `Prototype development request (16).zip`.
+- Paquete: `CANDIDATA_V174_ACUMULADA_20260722`.
+- SHA-256: `e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f`.
+- `HEAD_BEFORE` de auditoría: `91924ff34d377fff6601cebe6d59b269a2c00834`.
+- Decisión: `AUDITED_GO_APPLY_LANE_PENDING`.
+- P0: ninguno demostrado.
+
+Evidencia:
+
+- integridad de 20 archivos declarados: PASS;
+- 68/68 JS/MJS pasan sintaxis Node;
+- scripts locales faltantes: 0;
+- secretos detectados: 0;
+- UTF-8/BOM: PASS;
+- Visitas y Postulaciones cumplen el gate estático de Corte 2A preservando overlays de rama;
+- V174 incorpora Excel enriquecido, Efectividad, Academia canónica y Novedades.
+
+Source lock:
+
+- `app/docs/AUDITORIA-CANDIDATA-V174-CORTE2A-SOURCE-LOCK-20260722.md`.
+
+## 5. P1/P2 no bloqueantes
+
+1. Build-lock/verificador del paquete permanecen en V156 y deben regenerarse tras el empalme.
+2. El logo gráfico real en PPT no está demostrado y continúa pendiente de validación/corrección focalizada.
+3. `MANIFEST.sha256` está nombrado de forma imprecisa.
+4. Mojibake histórico menor fuera del delta funcional.
+
+## 6. Regla de aplicación
+
+No reemplazar `app/` completa. La candidata excluye backend, adapters live, contratos, tools y overlays vivos.
+
+Aplicar únicamente el delta auditado V165→V174, preservando:
+
+- adapters de refresco/aplicación in-place;
+- contratos y gates M1/Corte 2A;
+- backend, tools y documentación vigente;
+- sourceRevision y contexto proyecto/periodo;
+- Academia/manuales acumulados no incluidos en la candidata.
+
+## 7. Lock anti-regresión obligatorio
+
+Toda aplicación/deploy debe preservar:
 
 - una sola revisión runtime para Admin, Cliente, Shopper y reportes;
-- `fresh=1` fail-closed sin fallback silencioso;
+- `fresh=1` fail-closed;
 - aplicación in-place sin `location.reload()`;
 - proyecto y periodo separados;
 - facets canónicas y estados ortogonales;
 - ausencia de fuente distinta de cero confirmado;
 - canary de asignación/cuestionario;
-- comparación transversal de KPI por periodo y revisión;
+- comparación transversal de KPI;
 - marketplace shopper coherente;
 - cero pagos inferidos.
 
 Gates mínimos:
 
-- `tools/qa/tya-hr-header-variants-r20-gate.mjs`;
-- `tools/qa/tya-live-hr-inplace-refresh-gate.mjs`;
-- `tools/qa/tya-corte1-context-history-reports-gate.mjs`;
-- `tools/qa/tya-corte1-report-frontend-runtime-gate.mjs`;
-- `tools/qa/tya-project-period-kpi-history-gate-r20.mjs`;
-- `tools/qa/tya-corte1-m1-regression-lock.mjs`;
+- `tya-hr-header-variants-r20-gate.mjs`;
+- `tya-live-hr-inplace-refresh-gate.mjs`;
+- `tya-corte1-context-history-reports-gate.mjs`;
+- `tya-corte1-report-frontend-runtime-gate.mjs`;
+- `tya-project-period-kpi-history-gate-r20.mjs`;
+- `tya-corte1-m1-regression-lock.mjs`;
+- `tya-corte2a-shopper-operation-canonical-gate.mjs`;
 - smoke remoto `fresh=1` y validación visual.
 
-## 5. Claude/prototipo y Academia
+## 8. Siguiente acción exacta
 
-Claude se requiere exclusivamente para el delta frontend localizado de Corte 2A. No debe reinterpretar HR, reconstruir M1, crear otra arquitectura ni cambiar módulos ajenos sin dependencia demostrada.
+`APPLY_LANE_READY → verificar SHA V174 y HEAD compatible → APPLY_DELTA_DIRECTLY sobre docs-tya-v6-v71-audit → commit/push atómico → manifest/build-lock/verificador nuevos → gates M1 + Corte2A → Hosting DEV autorizado → validación visual → freeze Corte 2A`.
 
-Academia incorpora fuente/revisión única, refresco in-place, estados ortogonales, ausencia vs cero, reasignación segura, exportación por alcance, canary y seguridad fail-closed.
+No se solicita otra candidata ni se repite la auditoría V174.
 
-## 6. Método de recepción de la siguiente candidata
+## 9. Estado seguro
 
-`EXECUTION_LANE_READY → auditoría delta localizada → GO/P0_PROVEN → APPLY_DELTA_DIRECTLY sobre docs-tya-v6-v71-audit → commit/push atómico → manifest/build-lock/verificador → gates M1 + Corte2A → Hosting DEV autorizado → validación visual → freeze Corte 2A`.
-
-P1/P2 no bloquean. Solo un `P0_PROVEN` reproducible y autorizado puede detener el empalme.
-
-## 7. Pendientes transversales no bloqueantes
-
-- calidad multiformato de Excel/PPT/PDF;
-- logo, branding, gráficas, anchos y catálogo de columnas;
-- definición/gate del KPI Efectividad;
-- copy menor duplicado de países.
-
-`Mis Reportes` shopper sin identidad continúa correctamente fail-closed.
-
-## 8. Estado seguro
-
-Sin merge, producción, importación real, escrituras HR/Firestore/Auth/Storage, Make/Gemini live ni pagos reales.
+Sin empalme V174 todavía, sin merge, producción, importación real, escrituras HR/Firestore/Auth/Storage, Make/Gemini live ni pagos reales.
