@@ -1,25 +1,38 @@
-# ADDENDUM MAESTRO — EMPALME DIRECTO Y CARRIL FILE-AWARE CXORBIA TyA
+# ADDENDUM MAESTRO — AUDITORÍA Y EMPALME DIRECTO FILE-AWARE CXORBIA TyA
 
 **Fecha de emisión:** 2026-07-17  
-**Última actualización:** 2026-07-18  
+**Última actualización:** 2026-07-22  
 **Estado:** ACTIVO, DEFINITIVO, OBLIGATORIO Y PREVALENTE  
 **Nombre canónico:** `ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`
 
-## 0. Lock prevalente
+## 0. Corrección metodológica prevalente
 
-Para toda candidata frontend auditada `GO` y sin `P0_PROVEN`, la única operación permitida es:
+Se corrige una causa raíz demostrada de demora: la versión anterior trataba el checkout local autenticado como requisito previo para **auditar**, aunque la sesión ya tuviera simultáneamente los bytes extraídos de la candidata, herramientas locales de análisis y lectura autoritativa de la rama mediante el conector GitHub.
+
+Ese criterio producía un falso `EXECUTION_LANE_NOT_READY` y detenía auditorías que sí podían ejecutarse.
+
+Desde esta versión se separan obligatoriamente dos capacidades distintas:
+
+1. `AUDIT_LANE_READY`: capacidad de auditar la candidata de forma completa y compararla con la rama viva.
+2. `APPLY_LANE_READY`: capacidad de aplicar atómicamente el delta GO y producir commit/push verificables.
+
+La ausencia temporal de checkout local puede afectar la **aplicación atómica**, pero no puede volver a bloquear una auditoría cuando el carril de auditoría está listo.
+
+## 1. Lock prevalente de empalme
+
+Para toda candidata frontend auditada `GO` y sin `P0_PROVEN`, la única operación permitida continúa siendo:
 
 `APPLY_DELTA_DIRECTLY`
 
 sobre la rama viva `docs-tya-v6-v71-audit`.
 
-Ningún documento, conversación, limitación temporal de herramienta, tamaño del ZIP o demora puede sustituir este método por composite previo obligatorio, `incoming/`, plan JSON, CMD/PowerShell, workflow transportador, nueva rama/PR, copias manuales, nueva candidata o reauditoría.
+Ningún documento, conversación, limitación temporal de herramienta, tamaño del ZIP o demora puede sustituir este método por `incoming/`, plan JSON, CMD/PowerShell, workflow transportador, nueva rama/PR, copias manuales, otra candidata o reconstrucción paralela.
 
-Solo un `P0_PROVEN` con evidencia reproducible y autorización expresa de Paula en la conversación actual permite detener el empalme o proponer otro método.
+Solo un `P0_PROVEN` con evidencia reproducible y autorización expresa de Paula en la conversación actual permite detener el empalme o proponer un cambio de método.
 
-La revisión visual y los gates funcionales se ejecutan después del empalme atómico. Un fallo post-gate se corrige focalizadamente sobre la rama viva; no invalida retroactivamente el método de empalme ni autoriza reconstrucciones paralelas.
+P1/P2 se documentan y no bloquean.
 
-## 1. Mantenimiento y prevalencia
+## 2. Mantenimiento y prevalencia
 
 Este archivo es la única fuente maestra vigente para recepción, auditoría y empalme de candidatas CXOrbia TyA.
 
@@ -27,7 +40,7 @@ Se reemplaza bajo el mismo nombre. No se crean copias con fecha, `(1)`, `V2`, `f
 
 Ante contradicción con otro documento, prevalece este lock.
 
-## 2. Lectura obligatoria
+## 3. Lectura obligatoria
 
 Antes de responder, auditar, modificar, documentar o cerrar un bloque:
 
@@ -38,14 +51,12 @@ Antes de responder, auditar, modificar, documentar o cerrar un bloque:
 5. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 6. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 7. source lock/checkpoint contractual más reciente;
-8. `CAMBIOS-BACKEND.md` y addendum vigente;
-9. `RESUMEN-PARA-CLAUDE.md` y addendum vigente;
-10. `PENDIENTES-PROTOTIPO.md` y addendum vigente;
-11. PR #7 y HEAD de la rama viva.
+8. CAMBIOS, RESUMEN-PARA-CLAUDE y PENDIENTES vigentes;
+9. PR #7 y HEAD de la rama viva.
 
-No se piden datos ya entregados ni se reinician metodología, reglas, mapeos, adapters o Phase A.
+No se piden datos ya entregados ni se reinician reglas, mapeos, adapters, contratos o Phase A.
 
-## 3. Destino fijo
+## 4. Destino fijo
 
 - Repo: `paulaosoriof86/demoCXOrbia`
 - Rama viva: `docs-tya-v6-v71-audit`
@@ -56,82 +67,142 @@ No se piden datos ya entregados ni se reinician metodología, reglas, mapeos, ad
 - No nuevo PR
 - No `force`
 
-Antes de modificar, commit y push se verifica repo, rama y HEAD. Si no coinciden, se detiene sin escribir.
+Antes de cualquier escritura se verifica repo, rama y HEAD. Si no coinciden, se detiene sin escribir.
 
-## 4. Gate obligatorio `EXECUTION_LANE_READY`
+## 5. Gate `AUDIT_LANE_READY`
 
 Antes de auditar una candidata se registra:
 
 ```text
 CANDIDATE_BYTES_AVAILABLE=true
 CANDIDATE_EXTRACTABLE=true
-REPO_CHECKOUT_AVAILABLE=true
+LOCAL_AUDIT_RUNTIME_AVAILABLE=true
+AUTHORITATIVE_BRANCH_READ_AVAILABLE=true
 TARGET_REPOSITORY=paulaosoriof86/demoCXOrbia
 TARGET_BRANCH=docs-tya-v6-v71-audit
-AUTHENTICATED_COMMIT_PUSH_AVAILABLE=true
 HEAD_BEFORE=<sha>
-WORKTREE_STATE=<clean|documented>
+CANDIDATE_SHA256=<sha>
 ```
 
-Solo con todos los valores críticos verdaderos se declara `EXECUTION_LANE_READY`.
+### 5.1 Qué satisface cada requisito
 
-Si alguno es falso:
+- `CANDIDATE_BYTES_AVAILABLE`: el ZIP está montado en la sesión.
+- `CANDIDATE_EXTRACTABLE`: se extrajo y se verificó su inventario.
+- `LOCAL_AUDIT_RUNTIME_AVAILABLE`: existen herramientas para hashes, sintaxis, rutas, encoding, búsquedas, gates y comparación semántica.
+- `AUTHORITATIVE_BRANCH_READ_AVAILABLE`: se pueden leer PR, HEAD y archivos vigentes desde GitHub mediante checkout o conector autoritativo.
 
-- declarar `EXECUTION_LANE_NOT_READY` inmediatamente;
-- no iniciar auditoría extensa;
-- no declarar GO;
-- no pedir otra candidata;
-- no generar paquete Claude;
-- no reconstruir el ZIP por conectores o workflows;
-- no trasladar tareas manuales a Paula;
-- cambiar al workspace file-aware correcto.
+`REPO_CHECKOUT_AVAILABLE` **no es requisito para declarar `AUDIT_LANE_READY`**.
 
-## 5. Sesión única
+Si los cuatro requisitos críticos anteriores son verdaderos, la auditoría debe comenzar inmediatamente. Una falla de DNS de `git clone`, ausencia de `gh` o falta de checkout local no autoriza detenerla.
 
-Recepción, hash, inventario, auditoría delta, decisión GO/P0, aplicación, commit y push deben ocurrir:
+### 5.2 Cuándo sí se declara `AUDIT_LANE_NOT_READY`
 
-- con la misma candidata;
-- en el mismo workspace;
-- con el mismo checkout;
-- sobre la misma rama;
-- sin trasladar el empalme a otra conversación o herramienta sin los bytes extraídos.
+Solo cuando falta alguno de estos elementos:
 
-## 6. Estados válidos
+- bytes reales de la candidata;
+- capacidad de extraerlos;
+- runtime local de auditoría;
+- lectura autoritativa de la rama/HEAD.
 
-- `EXECUTION_LANE_NOT_READY`
-- `EXECUTION_LANE_READY`
+En ese caso se declara el faltante exacto. No se inventa un bloqueo de checkout si la auditoría puede ejecutarse por otros medios autoritativos.
+
+## 6. Gate `APPLY_LANE_READY`
+
+La aplicación solo comienza después de `AUDITED_GO`.
+
+Se registra:
+
+```text
+AUDITED_CANDIDATE_SHA256=<sha>
+HEAD_BEFORE=<sha>
+ATOMIC_DIRECT_APPLY_AVAILABLE=true
+AUTHENTICATED_COMMIT_PUSH_AVAILABLE=true
+TARGET_BRANCH=docs-tya-v6-v71-audit
+```
+
+`ATOMIC_DIRECT_APPLY_AVAILABLE` exige un mecanismo que produzca una sola mutación coherente de la rama con commit y push/ref verificables, preservando backend, contratos, adapters, tools, overlays y documentación viva.
+
+No satisfacen este gate:
+
+- escrituras secuenciales archivo por archivo mediante Contents API;
+- blobs/trees usados como transporte fragmentado o reconstrucción manual;
+- workflow transportador;
+- PowerShell para Paula;
+- nueva rama o PR;
+- copias manuales.
+
+Si la auditoría termina GO pero el carril de aplicación atómica aún no está listo, el estado correcto es:
+
+`AUDITED_GO_APPLY_LANE_PENDING`
+
+No se invalida la auditoría, no se pide otra candidata y no se repite el análisis salvo que cambie el SHA de la candidata o la rama se mueva de forma incompatible.
+
+## 7. Continuidad de candidata y evidencia
+
+Recepción, auditoría y aplicación deben conservar una identidad inmutable:
+
+- mismo `CANDIDATE_SHA256`;
+- mismo inventario auditado;
+- reporte de auditoría persistente;
+- `HEAD_BEFORE` registrado;
+- delta nuevo separado de acumulado heredado;
+- lista de overlays/backend protegidos.
+
+Cuando auditoría y aplicación no puedan ocurrir en el mismo workspace físico, el source lock anterior sustituye la repetición del análisis. No se reaudita por rutina.
+
+## 8. Estados válidos
+
+- `AUDIT_LANE_NOT_READY`
+- `AUDIT_LANE_READY`
 - `AUDIT_INCOMPLETE`
 - `P0_PROVEN`
-- `AUDITED_GO_READY_DIRECT_APPLY`
+- `AUDITED_GO`
+- `AUDITED_GO_APPLY_LANE_PENDING`
+- `APPLY_LANE_READY`
 - `EMPALMED_PENDING_POST_GATES`
 - `TECHNICAL_PASS_PENDING_VISUAL`
 - `ACTIVE_BASELINE`
 
-No se declara GO si el carril no está listo. Después de GO, la siguiente acción es aplicación directa.
+Después de `AUDITED_GO`, la siguiente operación es preparar o ejecutar la aplicación atómica; nunca volver a empezar la auditoría sin insumo nuevo.
 
-## 7. Auditoría incremental
+## 9. Auditoría incremental obligatoria
 
-La auditoría compara únicamente:
+La auditoría compara:
 
-1. candidata inmediata anterior;
-2. baseline/source lock viva;
-3. backend, contratos, adapters, tools, overlays y documentación que deben preservarse.
+1. candidata actual;
+2. candidata inmediata anterior cuando esté disponible;
+3. baseline/source lock viva;
+4. backend, contratos, adapters, tools, overlays y documentos que deben preservarse.
 
-Se separa:
+Se separa explícitamente:
 
 - delta nuevo;
 - acumulado heredado;
+- ya empalmado;
 - pendiente vivo;
 - regresión;
 - hallazgo nuevo;
 - P0;
 - P1/P2.
 
+Se verifica como mínimo:
+
+- SHA e inventario;
+- sintaxis;
+- `index.html`, scripts, rutas y módulos huérfanos;
+- encoding UTF-8 sin BOM;
+- secretos y datos sensibles;
+- semántica de los módulos tocados;
+- contratos/gates del corte;
+- impacto en M1 congelado;
+- Academia, manuales, roles y notificaciones;
+- manifest/build-lock/verificador de entrega.
+
 No se repite una auditoría cerrada sin insumo nuevo.
 
-## 8. Criterio P0
+## 10. Criterio P0
 
-Solo bloquea el empalme evidencia reproducible de:
+Solo bloquea evidencia reproducible de:
 
 - app que no inicia;
 - sintaxis o ruta esencial rota;
@@ -140,35 +211,38 @@ Solo bloquea el empalme evidencia reproducible de:
 - write, deploy, proveedor, pago o producción no autorizado;
 - regresión que impida Phase A.
 
-P1/P2 se documentan y no bloquean.
+P1/P2 se documentan y no bloquean el empalme.
 
-## 9. Operación única cuando hay GO
+## 11. Operación cuando hay GO
 
-Al alcanzar `AUDITED_GO_READY_DIRECT_APPLY`:
+Al alcanzar `AUDITED_GO` y `APPLY_LANE_READY`:
 
-1. congelar `HEAD_BEFORE`;
-2. aplicar el delta auditado directamente al checkout de la rama viva;
-3. preservar backend, contratos, adapters, tools, overlays y documentos vivos;
-4. confirmar cero archivos del delta pendientes;
-5. ejecutar verificaciones estructurales mínimas;
-6. crear un único commit de empalme;
-7. hacer push a la rama viva;
-8. registrar `HEAD_AFTER`;
-9. generar manifest, build-lock y verificador;
-10. ejecutar gates post-empalme;
-11. ejecutar validación visual;
-12. corregir focalizadamente cualquier diferencia reproducible;
-13. congelar baseline solo con evidencia y `APROBADO`.
+1. confirmar el mismo SHA auditado;
+2. congelar `HEAD_BEFORE`;
+3. aplicar únicamente el delta auditado directamente a la rama viva;
+4. preservar backend, contratos, adapters, tools, overlays y documentos vivos;
+5. confirmar cero archivos del delta pendientes;
+6. ejecutar verificaciones estructurales mínimas;
+7. crear un único commit de empalme;
+8. hacer push/ref update verificable;
+9. registrar `HEAD_AFTER`;
+10. generar manifest, build-lock y verificador nuevos;
+11. ejecutar gates post-empalme;
+12. ejecutar validación visual;
+13. corregir focalizadamente diferencias reproducibles;
+14. congelar baseline solo con evidencia y `APROBADO`.
 
-## 10. Atomicidad
+Una candidata completa entregada por Claude no autoriza reemplazar `app/` a ciegas. Se aplica el delta auditado y se preservan los overlays vivos de la rama.
+
+## 12. Atomicidad
 
 Una candidata solo está empalmada cuando existen conjuntamente:
 
 - commit SHA verificable;
-- push comprobado;
+- push/ref update comprobado;
 - delta completo;
 - cero archivos pendientes;
-- backend protegido;
+- backend y overlays protegidos;
 - documentos vivos reconciliados;
 - `HEAD_AFTER` registrado.
 
@@ -176,11 +250,11 @@ Ante fallo durante la aplicación:
 
 1. detener;
 2. no continuar con otro archivo;
-3. restaurar el estado previo;
+3. restaurar el estado previo cuando corresponda;
 4. documentar el fallo exacto;
 5. no declarar unión parcial.
 
-## 11. Preservación obligatoria
+## 13. Preservación obligatoria
 
 Se conserva:
 
@@ -191,7 +265,7 @@ Se conserva:
 - multi-proyecto por `projectId`;
 - Cinépolis como proyecto configurable;
 - HR e histórico completo;
-- shoppers, postulaciones y certificaciones presentadas;
+- shoppers, postulaciones y certificaciones;
 - liquidaciones y pagos;
 - sincronización HR/plataforma;
 - Academia, manuales, rutas por rol y notificaciones;
@@ -200,40 +274,43 @@ Se conserva:
 
 No se conecta ni copia la base vieja. No se parchea UI desde backend.
 
-## 12. Documentos vivos
+## 14. Documentos vivos
 
 Se reconcilian, no se reemplazan a ciegas:
 
-- `CAMBIOS-BACKEND.md`;
-- `RESUMEN-PARA-CLAUDE.md`;
-- `PENDIENTES-PROTOTIPO.md`;
+- `CAMBIOS-BACKEND.md` y addendum vigente;
+- `RESUMEN-PARA-CLAUDE.md` y addendum vigente;
+- `PENDIENTES-PROTOTIPO.md` y addendum vigente;
 - documentación de Academia;
 - tracker, source lock y checkpoint;
-- manifest/build-lock/verificador.
+- manifest/build-lock/verificador;
+- PR #7.
 
-## 13. Prohibiciones
+## 15. Prohibiciones
 
-Queda prohibido como sustituto del carril file-aware:
+Queda prohibido:
 
+- detener una auditoría lista únicamente porque no existe checkout local;
+- confundir `AUDIT_LANE_READY` con `APPLY_LANE_READY`;
 - aplicar una candidata completa archivo por archivo mediante Contents API;
-- usar blobs/trees como transporte fragmentado;
-- Base64, Drive, `incoming/`, plan JSON, `.cmd` o PowerShell para Paula;
+- usar Base64, Drive, `incoming/`, plan JSON, `.cmd` o PowerShell para Paula;
 - workflow como transportador;
 - nueva rama o PR;
 - escribir en `main`;
-- solicitar otra candidata cuando la actual está GO;
-- reauditar por falta de carril;
+- solicitar otra candidata cuando la actual ya fue auditada GO;
+- reauditar por falta temporal del carril de aplicación;
 - declarar éxito sin commit, push y HEAD verificables.
 
-## 14. Circuit breaker antidemora
+## 16. Circuit breaker antidemora
 
-1. La primera respuesta operativa indica `EXECUTION_LANE_READY` o `EXECUTION_LANE_NOT_READY`.
-2. No más de un bloque de diagnóstico sin evidencia o cambio de estado.
-3. Después de GO, la siguiente acción es `APPLY_DELTA_DIRECTLY`.
-4. Si una respuesta adicional transcurre sin commit, se declara el bloqueo exacto.
-5. No se promete trabajo en segundo plano.
-6. Una limitación del carril se informa antes de auditar, no después.
+1. La primera respuesta operativa indica `AUDIT_LANE_READY` o el faltante real.
+2. Si está READY, se audita en esa misma sesión sin esperar checkout local.
+3. No más de un bloque de diagnóstico sin evidencia o cambio de estado.
+4. Después de GO, se informa `APPLY_LANE_READY` o `AUDITED_GO_APPLY_LANE_PENDING`.
+5. La falta de carril de aplicación no borra ni reinicia la auditoría.
+6. No se promete trabajo en segundo plano.
+7. No se traslada trabajo manual a Paula.
 
-## 15. Estado seguro
+## 17. Estado seguro
 
 Este addendum no autoriza merge, deploy, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live, pagos ni proveedores externos.
