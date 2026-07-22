@@ -1,70 +1,87 @@
 # 00 - ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-Fecha: 2026-07-21
+Fecha: 2026-07-22  
 Estado: ACTIVO Y OBLIGATORIO
 
-## Rama y seguridad
+## 1. Lectura obligatoria
+
+1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`.
+2. `app/docs/00-REGLAS-MAESTRAS-CONTEXTO-CONTINUIDAD-CXORBIA-TYA.md`.
+3. `app/docs/ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`.
+4. Addenda vigentes de Academia, patrones reutilizables y antidesvío.
+5. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`.
+6. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`.
+7. `app/docs/VALIDACION-VISUAL-Y-LOCK-ANTI-REGRESION-CORTE1-M1-20260722.md`.
+8. CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES-PROTOTIPO, tracker, PR #7 y HEAD de la rama viva.
+
+## 2. Rama y seguridad
 
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Producción: sin merge, sin deploy productivo y sin writes.
-- Corte 1: abierto.
-- Corte 2: bloqueado.
+- Build funcional M1 validado en DEV: `67c0943260f076f5686284ac509458ed5fd34dbd`.
+- Corte 1 / M1: `FROZEN_WITH_DOCUMENTED_P1_P2`.
+- Corte 2: desbloqueado, aún no iniciado.
 
-## Estado V172
+## 3. Fuente HR viva congelada para M1
 
-- Candidata V172: SHA-256 `2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5`.
-- Empalme acumulado + HR in-place aplicado en `4f195b07a8cfc5962a7de6bd99d0c13915b847ad`.
-- Los 14 archivos acumulados V165–V171 ya están en la rama.
-- Backend/adapters in-place y Hosting DEV R22 están aplicados.
-- Gate local HR in-place: PASS.
-- Gate remoto `fresh=1`: HOLD por mapper R20, no por V172, caché, credencial ni cambio de HR.
+- 14 periodos.
+- 616 visitas.
+- `JULIO 26`: variante `tab_scoped_compact`.
+- `JULIO 26 HN`: variante `full_identity`.
+- Refresco en memoria sin `location.reload()`.
+- Cambio de periodos correcto.
+- KPI cambian ante asignación/cuestionario controlado.
+- Portal shopper retira visitas asignadas en HR.
+- Dashboard Admin, Panorama Cliente y reportes comparten los conteos de julio.
 
-## Causa raíz vigente
+### Julio 2026
 
-La HR configurada sigue siendo la misma: `HR Guatemala - Sincronizacion Google Sheets`.
+- 44 visitas.
+- 41 asignadas.
+- 3 sin asignar.
+- 28 realizadas.
+- 26 cuestionarios.
+- 20 submitidas.
+- 6 sin submitir.
+- 2 cuestionarios pendientes.
+- 0 pagos confirmados.
 
-La pestaña actual `JULIO 26` de Guatemala usa una firma compacta legítima:
+## 4. Pendientes no bloqueantes trasladados
 
-- encabezado inicia con `CIUDAD`, `DIRECCIÓN`, `Shopping`;
-- no contiene `País` ni `ID CINEMA`;
-- contiene dos columnas exactas `Fecha submitido`.
+- estado canónico en Visitas Admin;
+- no convertir dato financiero ausente en cero;
+- reasignación con decisión explícita de fecha/franja;
+- Exportar Postulaciones;
+- eliminar `undefined` visible;
+- diseño, logo, gráficas y columnas de reportes multiformato;
+- definición/gate de Efectividad;
+- copy menor de países.
 
-`JULIO 26 HN` conserva la firma completa con `País` e `ID CINEMA`.
+No existe P0 nuevo. Los detalles y archivos exactos están en el documento de validación vigente.
 
-El mapper actual exige siempre `País + ID CINEMA + Shopping`; por eso falla con `header_not_found` antes de leer las filas GT.
+## 5. Lock anti-regresión
 
-## Corrección preparada
+Antes de cualquier futuro deploy/freeze deben pasar conjuntamente:
 
-Paquete: `PAQUETE_EJECUCION_CODEX_CXORBIA_R20_HEADER_VARIANT_20260721.zip`
+- header variants R20;
+- live HR in-place refresh;
+- Corte 1 contexto/histórico/reportes;
+- frontend report runtime;
+- proyecto/periodo/KPI histórico;
+- smoke remoto `fresh=1`;
+- canary funcional de asignación/cuestionario;
+- comparación transversal por `sourceRevision`.
 
-SHA-256: `371199c7790c181dbc8077aedcc4c22286146e17f116b58d2611e68b2ab7b899`
+No reabrir la lectura HR desde cero ni regresar a snapshot congelado, recarga completa, estado crudo o conteos hardcodeados.
 
-Modifica únicamente:
+## 6. Siguiente acción exacta
 
-1. `tools/hr-source/tya-build-live-hr-source-safe-r20.mjs`;
-2. `backend/contracts/tya-hr-column-map-r20-v1.json`;
-3. `tools/qa/tya-hr-header-variants-r20-gate.mjs`.
+`CORTE 2A — CICLO SHOPPER Y OPERACIÓN CANÓNICA: Visitas Admin con facets canónicas + postulaciones/reasignación/fecha/exportación + canary de asignación/cuestionario, preservando el lock de Corte 1.`
 
-Política:
+Reportes multiformato continúan como P1 transversal sin bloquear Corte 2.
 
-- firma `full_identity` para tabs completos;
-- firma `tab_scoped_compact` para tabs sin País/ID CINEMA;
-- país derivado solo del nombre exacto del tab;
-- no inventar `ID CINEMA`;
-- identidad mediante `hrRowId/sourceTab/sourceRow`;
-- `Fecha submitido` duplicada se consolida solo si hay un valor o los valores coinciden;
-- conflicto entre duplicados = HOLD.
+## 7. Mantenimiento
 
-## Método obligatorio
-
-`RESOLVER HEAD_BEFORE → VERIFICAR ANCESTRO 4f195b0 → APLICAR PAQUETE EXACTO → COMMIT/PUSH ATÓMICO → GATES → DEPLOY CLOUD RUN DEV MEDIANTE WORKFLOW YA AUTORIZADO → GATE REMOTO fresh=1 → VALIDACIÓN VISUAL IN-PLACE`
-
-No reempalmar V172, no Claude, no nueva candidata, no cambiar HR/ID/tabs, no parchear UI, no crear workflows y no pedir autenticación manual a Paula.
-
-## Fuente vigente
-
-- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-- `app/docs/DIAGNOSTICO-RAIZ-R20-HEADER-VARIANT-JULIO26-20260721.md`;
-- PR #7.
+Al avanzar Corte 2, reemplazar este índice y el checkpoint canónico; actualizar CAMBIOS, Claude, PENDIENTES, Academia, tracker y PR #7 sin crear rutas paralelas.
