@@ -1,98 +1,93 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-Fecha: 2026-07-21
-Estado: `CORTE_1B_R20_HEADER_VARIANT_FIX_READY`
+Fecha: 2026-07-22  
+Estado: `CORTE_1_M1_FROZEN_WITH_DOCUMENTED_P1_P2`
 
-## Estado comprobado
+## 1. Repositorio y fuente funcional
 
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
-- Commit operativo V172 + HR in-place: `4f195b07a8cfc5962a7de6bd99d0c13915b847ad`.
-- Los 14 archivos acumulados V165–V171 ya están aplicados.
-- Backend/adapters in-place y Hosting DEV R22 ya están aplicados.
-- Cloud Run DEV sigue ejecutando el mapper anterior porque el deploy local quedó bloqueado por falta de sesión gcloud.
-- Corte 1: abierto.
-- Corte 2: bloqueado.
+- Build funcional validado en DEV: `67c0943260f076f5686284ac509458ed5fd34dbd`.
+- Commit documental de validación/lock: `c5ad3473932f00f7b72a04d5bd490c29af39a8c3`.
+- Corte 1 / M1: congelado con pendientes P1/P2 documentados.
+- Corte 2: desbloqueado para iniciar; todavía no ejecutado.
 
-## Gate remoto actual
+## 2. Resultado técnico y visual
 
-```text
-/api/tya/cinepolis/hr-live?format=meta&fresh=1
-HTTP 503
-live_hr_read_failed
-R20 HR mapping HOLD: header_not_found en tab JULIO 26
-```
+- Cloud Run DEV y Hosting DEV: PASS.
+- HR runtime viva y source-safe: PASS.
+- Refresco in-place sin recarga evidente: PASS.
+- Cambio de periodos: PASS.
+- Actualización automática de KPI ante asignación/cuestionario controlado: PASS.
+- Portal shopper retira visitas asignadas desde HR: PASS.
+- Coherencia Dashboard Admin / Panorama Cliente / reportes: PASS.
 
-El HOLD es correcto y evita publicar un snapshot incompleto.
+### Julio 2026 validado
 
-## Causa raíz exacta
+- 44 visitas: GT 34, HN 10.
+- 41 asignadas: GT 32, HN 9.
+- 3 sin asignar: GT 2, HN 1.
+- 28 realizadas: GT 21, HN 7.
+- 26 con cuestionario: GT 20, HN 6.
+- 20 submitidas: GT 16, HN 4.
+- 6 sin submitir.
+- 2 cuestionarios pendientes.
+- 0 pagos confirmados.
 
-La HR vigente es la misma configurada desde el inicio.
+## 3. Decisión de freeze
 
-`JULIO 26` GT tiene una variante compacta:
+No se demostró P0 que bloquee M1. Los hallazgos restantes se clasifican como P1/P2 y pasan al bloque siguiente sin reabrir la lectura HR:
 
-- empieza en `CIUDAD`, `DIRECCIÓN`, `Shopping`;
-- no incluye `País` ni `ID CINEMA`;
-- repite dos veces `Fecha submitido`.
+1. Visitas Admin muestra estado crudo en tabla y no la proyección canónica.
+2. Campos financieros ausentes aparecen como `Q 0` en vez de pendiente de fuente.
+3. Reasignación no incluye decisión de conservar/cambiar fecha y franja.
+4. Exportar Postulaciones no tiene implementación.
+5. Tarjeta de Postulaciones muestra `undefined` cuando no existe teléfono autorizado.
+6. Excel no conserva diseño/branding, no contiene gráficas y presenta columnas estrechas.
+7. PowerPoint no incluye logo real y algunas gráficas tienen etiquetas ambiguas.
+8. Catálogo de columnas requiere ampliación por tipo de reporte/fuente.
+9. Fórmula de `Efectividad` requiere definición y gate visible.
+10. Copy menor duplicado de países en Dashboard.
 
-`JULIO 26 HN` conserva la variante completa con `País` e `ID CINEMA`.
+`Mis Reportes` del shopper sin identidad queda correctamente bloqueado por seguridad y no es bug.
 
-El mapper R20 actual:
+## 4. Lock anti-regresión vigente
 
-- reconoce encabezado solo si existe `País`;
-- acepta filas solo si existen País + Shopping + ID CINEMA;
-- marca País e ID CINEMA como críticos sin excepción contextual;
-- rechazaría la duplicidad exacta de `Fecha submitido`.
+La lectura HR actual se preserva mediante:
 
-## Corrección preparada
+- una sola revisión runtime para Admin, Cliente, Shopper y reportes;
+- `fresh=1` fail-closed sin fallback silencioso;
+- aplicación in-place sin `location.reload()`;
+- facets canónicas y estados ortogonales;
+- ausencia de fuente distinta de cero confirmado;
+- canary de asignación/cuestionario;
+- comparación transversal de KPI por periodo y revisión;
+- gates existentes de headers, refresh, contexto/histórico/reportes y proyecto/periodo.
 
-Paquete:
+Fuente completa:
 
-`PAQUETE_EJECUCION_CODEX_CXORBIA_R20_HEADER_VARIANT_20260721.zip`
+- `app/docs/VALIDACION-VISUAL-Y-LOCK-ANTI-REGRESION-CORTE1-M1-20260722.md`.
 
-SHA-256:
+## 5. Claude/prototipo y Academia
 
-`371199c7790c181dbc8077aedcc4c22286146e17f116b58d2611e68b2ab7b899`
+Claude debe trabajar únicamente sobre los archivos/módulos localizados en el documento de validación. No se solicita nueva candidata por rutina ni se reinterpreta HR.
 
-Delta permitido:
+Academia debe incorporar:
 
-1. `tools/hr-source/tya-build-live-hr-source-safe-r20.mjs`;
-2. `backend/contracts/tya-hr-column-map-r20-v1.json`;
-3. `tools/qa/tya-hr-header-variants-r20-gate.mjs`;
-4. documentación operativa.
+- lectura viva vs snapshot;
+- revisión y refresco sin recarga;
+- estados ortogonales;
+- dato ausente vs cero;
+- seguridad fail-closed del shopper;
+- reportes multiformato y alcance por rol.
 
-No se modifican frontend, adapters in-place, server, HR, ID de hoja, tabs, Hosting ni producción.
+## 6. Siguiente bloque exacto
 
-## Política de mapping
+`CORTE 2A — CICLO SHOPPER Y OPERACIÓN CANÓNICA: Visitas Admin con facets canónicas + postulaciones/reasignación/fecha/exportación + canary de asignación/cuestionario, preservando el lock de Corte 1.`
 
-- `full_identity`: País e ID CINEMA desde columnas.
-- `tab_scoped_compact`: país desde nombre validado del tab; ID CINEMA nulo.
-- La identidad se mantiene con `hrRowId/sourceTab/sourceRow`; nunca solo por nombre visual.
-- Duplicados de `Fecha submitido`:
-  - un solo valor → usarlo;
-  - valores iguales → consolidar;
-  - valores distintos → HOLD crítico.
+Reportes multiformato continúan como P1 transversal y no bloquean el inicio de Corte 2.
 
-## Evidencia obligatoria después del deploy
+## 7. Estado seguro
 
-- `fresh=1`: HTTP 200 y `cacheOrigin=runtime_refresh`.
-- `JULIO 26`: `headerVariant=tab_scoped_compact`.
-- `JULIO 26 HN`: `headerVariant=full_identity`.
-- JUL 2026: 34 visitas GT + 10 HN.
-- Cero `header_not_found`, `column_ambiguous` y `duplicate_column_conflict`.
-- `JULIO 26!7` refleja cuestionario confirmado y deja de aparecer en `Cuest. pendiente`.
-- Sin `location.reload()`, pantalla blanca o estado degradado.
-- Misma `sourceRevision` en Dashboard, Liquidaciones, Reportes Admin y Reportes Cliente.
-
-## Ejecución
-
-Codex debe aplicar el paquete exacto y hacer un commit/push atómico. Para Cloud Run DEV debe usar únicamente el workflow temporal ya autorizado que produjo los despliegues R22 anteriores; no debe crear/modificar workflows ni pedir autenticación manual a Paula.
-
-## Siguiente bloque exacto
-
-`CODEX APLICA PAQUETE → COMMIT/PUSH → WORKFLOW DEV EXISTENTE DESPLIEGA CLOUD RUN → GATE REMOTO fresh=1 → VALIDACIÓN VISUAL ADMIN/CLIENTE/SHOPPER`
-
-## Estado seguro
-
-Sin merge, producción, importación real, writes Firestore/Auth/Storage/HR, Make/Gemini ni pagos.
+Sin merge, producción, importación real, escrituras HR/Firestore/Auth/Storage, Make/Gemini live ni pagos reales.
