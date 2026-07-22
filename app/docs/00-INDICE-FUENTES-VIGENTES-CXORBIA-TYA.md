@@ -12,7 +12,9 @@ Estado: ACTIVO Y OBLIGATORIO
 5. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`.
 6. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`.
 7. `app/docs/VALIDACION-VISUAL-Y-LOCK-ANTI-REGRESION-CORTE1-M1-20260722.md`.
-8. CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES-PROTOTIPO, tracker, PR #7 y HEAD de la rama viva.
+8. `backend/contracts/phase-a-corte2a-shopper-operation-canonical-v1.json`.
+9. `app/docs/PAQUETE-CLAUDE-CORTE2A-CICLO-SHOPPER-OPERACION-CANONICA-20260722.md`.
+10. CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES-PROTOTIPO, tracker, PR #7 y HEAD de la rama viva.
 
 ## 2. Rama y seguridad
 
@@ -22,7 +24,7 @@ Estado: ACTIVO Y OBLIGATORIO
 - Producción: sin merge, sin deploy productivo y sin writes.
 - Build funcional M1 validado en DEV: `67c0943260f076f5686284ac509458ed5fd34dbd`.
 - Corte 1 / M1: `FROZEN_WITH_DOCUMENTED_P1_P2`.
-- Corte 2: desbloqueado, aún no iniciado.
+- Corte 2A: `STARTED_FRONTEND_DELTA_PENDING_CLAUDE`.
 
 ## 3. Fuente HR viva congelada para M1
 
@@ -48,40 +50,56 @@ Estado: ACTIVO Y OBLIGATORIO
 - 2 cuestionarios pendientes.
 - 0 pagos confirmados.
 
-## 4. Pendientes no bloqueantes trasladados
+## 4. Corte 2A activo
 
-- estado canónico en Visitas Admin;
-- no convertir dato financiero ausente en cero;
+Alcance localizado:
+
+- Visitas Admin con facets canónicas en tabla, filtros, detalle y exportación;
+- ausencia financiera distinta de cero confirmado;
 - reasignación con decisión explícita de fecha/franja;
 - Exportar Postulaciones;
 - eliminar `undefined` visible;
+- canary de asignación/cuestionario;
+- preservación completa del lock M1.
+
+Archivos de control:
+
+- `backend/contracts/phase-a-corte2a-shopper-operation-canonical-v1.json`;
+- `tools/qa/tya-corte1-m1-regression-lock.mjs`;
+- `app/docs/PAQUETE-CLAUDE-CORTE2A-CICLO-SHOPPER-OPERACION-CANONICA-20260722.md`.
+
+Claude solo modifica el delta frontend localizado. No reinterpreta HR ni crea otra arquitectura/candidata por rutina.
+
+## 5. Pendientes transversales no bloqueantes
+
 - diseño, logo, gráficas y columnas de reportes multiformato;
 - definición/gate de Efectividad;
 - copy menor de países.
 
-No existe P0 nuevo. Los detalles y archivos exactos están en el documento de validación vigente.
+`Mis Reportes` shopper sin identidad permanece correctamente fail-closed.
 
-## 5. Lock anti-regresión
+## 6. Lock anti-regresión
 
-Antes de cualquier futuro deploy/freeze deben pasar conjuntamente:
+Antes de cualquier futura candidata, deploy o freeze deben pasar conjuntamente:
 
 - header variants R20;
 - live HR in-place refresh;
 - Corte 1 contexto/histórico/reportes;
 - frontend report runtime;
 - proyecto/periodo/KPI histórico;
+- gate compuesto `tya-corte1-m1-regression-lock.mjs`;
 - smoke remoto `fresh=1`;
 - canary funcional de asignación/cuestionario;
 - comparación transversal por `sourceRevision`.
 
-No reabrir la lectura HR desde cero ni regresar a snapshot congelado, recarga completa, estado crudo o conteos hardcodeados.
+No reabrir la lectura HR desde cero ni regresar a snapshot congelado, recarga completa, estado crudo, conteos hardcodeados o ausencia convertida en cero.
 
-## 6. Siguiente acción exacta
+## 7. Siguiente acción exacta
 
-`CORTE 2A — CICLO SHOPPER Y OPERACIÓN CANÓNICA: Visitas Admin con facets canónicas + postulaciones/reasignación/fecha/exportación + canary de asignación/cuestionario, preservando el lock de Corte 1.`
+`Claude entrega delta frontend localizado de Corte 2A → EXECUTION_LANE_READY → auditoría incremental → GO/P0_PROVEN → APPLY_DELTA_DIRECTLY en docs-tya-v6-v71-audit → manifest/build-lock/verificador → gates M1 + Corte2A → Hosting DEV autorizado → validación visual → freeze Corte 2A.`
 
-Reportes multiformato continúan como P1 transversal sin bloquear Corte 2.
+No se requiere otro empalme de M1. Reportes multiformato continúan como P1 transversal sin bloquear Corte 2A.
 
-## 7. Mantenimiento
+## 8. Mantenimiento
 
-Al avanzar Corte 2, reemplazar este índice y el checkpoint canónico; actualizar CAMBIOS, Claude, PENDIENTES, Academia, tracker y PR #7 sin crear rutas paralelas.
+Al avanzar Corte 2A, reemplazar este índice y el checkpoint canónico; actualizar CAMBIOS, Claude, PENDIENTES, Academia, tracker y PR #7 sin crear rutas paralelas.
