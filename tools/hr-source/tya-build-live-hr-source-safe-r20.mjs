@@ -63,10 +63,59 @@ async function readFromGvizCsv(apiError){const candidates=candidateTabs();const 
 async function readLiveHr(){try{return await readFromSheetsApi();}catch(error){console.warn('[HR live] Sheets API unavailable; using per-tab GViz CSV read-only fallback.');console.warn(String(error?.message||error).slice(0,800));return readFromGvizCsv(error);}}
 
 function keyText(value){return normalizedText(value).replace(/[^a-z0-9ñ]+/g,' ').replace(/\s+/g,' ').trim();}
-function findHeader(values){for(let index=0;index<Math.min(values.length,14);index++){const row=values[index]||[],cells=row.map(keyText);if(cells.includes('pais')&&cells.some(value=>value.includes('shopping')))return {index,row,cells};}return null;}
-function resolveColumn(header,aliases){const needles=aliases.map(keyText).filter(Boolean);for(const needle of needles){const hits=header.cells.reduce((out,value,index)=>{if(value===needle)out.push(index);return out;},[]);if(hits.length===1)return hits[0];if(hits.length>1)return -2;}for(const needle of needles){const hits=header.cells.reduce((out,value,index)=>{if(value===needle||value.startsWith(`${needle} `)||value.endsWith(` ${needle}`))out.push(index);return out;},[]);if(hits.length===1)return hits[0];if(hits.length>1)return -2;}return -1;}
+/* R20_TAB_SCOPED_HEADER_VARIANT — supports explicit full headers and declared tab-scoped compact headers without silent inference. */
+function headerVariants(columnMap){
+  const configured=Array.isArray(columnMap?.headerVariants)?columnMap.headerVariants:[];
+  if(configured.length)return configured;
+  return [{id:'full_identity',required:columnMap?.headerSignature||['País','ID CINEMA','Shopping'],countrySource:'column',cinemaIdSource:'column'}];
+}
+function findHeader(values,tab,columnMap){
+  const variants=headerVariants(columnMap);
+  for(let index=0;index<Math.min(values.length,14);index++){
+    const row=values[index]||[],cells=row.map(keyText);
+    for(const variant of variants){
+      const required=(variant.required||[]).map(keyText).filter(Boolean);
+      if(required.length&&required.every(needle=>cells.includes(needle))){
+        return {index,row,cells,variantId:variant.id||'unknown',countrySource:variant.countrySource||'column',cinemaIdSource:variant.cinemaIdSource||'column',duplicateColumns:{}};
+      }
+    }
+  }
+  return null;
+}
+function resolveColumn(header,aliases,name,spec={}){
+  const needles=aliases.map(keyText).filter(Boolean);
+  const decide=hits=>{
+    if(hits.length===1)return hits[0];
+    if(hits.length>1){
+      if(spec.duplicatePolicy==='coalesce_equal_or_single_nonempty'){
+        header.duplicateColumns[name]=hits;
+        return hits[hits.length-1];
+      }
+      return -2;
+    }
+    return null;
+  };
+  for(const needle of needles){
+    const result=decide(header.cells.reduce((out,value,index)=>{if(value===needle)out.push(index);return out;},[]));
+    if(result!==null)return result;
+  }
+  for(const needle of needles){
+    const result=decide(header.cells.reduce((out,value,index)=>{if(value===needle||value.startsWith(needle+' ')||value.endsWith(' '+needle))out.push(index);return out;},[]));
+    if(result!==null)return result;
+  }
+  return -1;
+}
 function cell(row,index){return index>=0?String(row?.[index]??'').trim():'';}
-function isVisitRow(row,columns){return Boolean(cell(row,columns.pais)&&cell(row,columns.shopping)&&cell(row,columns.idCinema));}
+function duplicateValues(row,header,name){return (header.duplicateColumns?.[name]||[]).map(index=>cell(row,index)).filter(Boolean);}
+function mappedColumnConflict(row,header,name){return new Set(duplicateValues(row,header,name).map(normalizedText)).size>1;}
+function mappedCell(row,columns,header,name){const values=duplicateValues(row,header,name);return values.length?values[values.length-1]:cell(row,columns[name]);}
+function isVisitRow(row,columns,header,tab){
+  const shopping=mappedCell(row,columns,header,'shopping');
+  const city=mappedCell(row,columns,header,'ciudad');
+  if(!shopping||!city)return false;
+  if(header.countrySource==='tab_name')return Boolean(tab?.country);
+  return Boolean(mappedCell(row,columns,header,'pais')&&mappedCell(row,columns,header,'idCinema'));
+}
 function isShopperAssigned(value){const text=normalizedText(value);if(!text)return false;if(/^(p x asignar|por asignar|pendiente|sin asignar|no asignado|n\/a|na|ninguno|-|0|false)$/.test(text))return false;return !text.includes('p x asignar');}
 function normalizeMoney(value){const text=String(value||'').trim();if(!text)return null;const normalized=text.replace(/[QL\s]/gi,'').replace(/\.(?=\d{3}(?:\D|$))/g,'').replace(/,/g,'.').replace(/[^0-9.-]/g,'');const number=Number(normalized);return Number.isFinite(number)?number:null;}
 function serialDate(value){const number=Number(value);if(!Number.isFinite(number)||number<1||number>100000)return null;const date=new Date(Date.UTC(1899,11,30)+Math.floor(number)*86400000);return Number.isNaN(date.getTime())?null:date.toISOString().slice(0,10);}
@@ -74,10 +123,22 @@ function shortDate(day,month,period){let year=period.year;if(period.month===12&&
 function normalizeDate(value,period){if(value==null||value==='')return null;const text=String(value).trim();if(!text)return null;if(/^\d{3,6}(?:\.\d+)?$/.test(text))return serialDate(text)||text;let match=text.match(/^(20\d{2})[-/]([01]?\d)[-/]([0-3]?\d)(?:\s.*)?$/);if(match){const iso=`${match[1]}-${pad(match[2])}-${pad(match[3])}`;return validIsoDate(iso)?iso:text;}match=text.match(/^([0-3]?\d)[/.-]([01]?\d)[/.-](20\d{2})(?:\s.*)?$/);if(match){const iso=`${match[3]}-${pad(match[2])}-${pad(match[1])}`;return validIsoDate(iso)?iso:text;}match=text.match(/(?:^|\s)([0-3]?\d)[-/.]([01]?\d)$/);if(match)return shortDate(Number(match[1]),Number(match[2]),period)||text;return text;}
 function loadColumnMap(){if(!fs.existsSync(COLUMN_MAP_FILE))fail(`Missing column map: ${COLUMN_MAP_FILE}`);const contract=JSON.parse(fs.readFileSync(COLUMN_MAP_FILE,'utf8'));if(contract.contractId!=='tya-hr-column-map-r20-v1'||contract.resolutionPolicy!=='exact_or_unique_anchored_only')fail('Column map identity/policy mismatch.');return contract;}
 
-function parseTab(tab,values,columnMap){const header=findHeader(values||[]);if(!header)return {visits:[],issues:[{code:'header_not_found',severity:'critical',tab:tab.tabTitle}],diagnostic:{title:tab.tabTitle,country:tab.country,periodKey:tab.key,rows:0,headerRow:null,columns:{}}};const columns={},issues=[];for(const [name,spec] of Object.entries(columnMap.columns||{})){columns[name]=resolveColumn(header,spec.aliases||[]);if(columns[name]===-2)issues.push({code:'column_ambiguous',severity:spec.critical?'critical':'warning',tab:tab.tabTitle,column:name});else if(columns[name]<0&&spec.critical)issues.push({code:'column_missing',severity:'critical',tab:tab.tabTitle,column:name});else if(columns[name]<0)issues.push({code:'column_missing_optional',severity:'warning',tab:tab.tabTitle,column:name});}if(issues.some(issue=>issue.severity==='critical'))return {visits:[],issues,diagnostic:{title:tab.tabTitle,country:tab.country,periodKey:tab.key,rows:0,headerRow:header.index+1,columns}};
+function parseTab(tab,values,columnMap){
+  const header=findHeader(values||[],tab,columnMap);
+  if(!header)return {visits:[],issues:[{code:'header_not_found',severity:'critical',tab:tab.tabTitle}],diagnostic:{title:tab.tabTitle,country:tab.country,periodKey:tab.key,rows:0,headerRow:null,columns:{}}};
+  const columns={},issues=[];
+  for(const [name,spec] of Object.entries(columnMap.columns||{})){
+    columns[name]=resolveColumn(header,spec.aliases||[],name,spec);
+    const contextualMissing=columns[name]<0&&Array.isArray(spec.contextualMissingAllowedIn)&&spec.contextualMissingAllowedIn.includes(header.variantId);
+    if(columns[name]===-2)issues.push({code:'column_ambiguous',severity:spec.critical?'critical':'warning',tab:tab.tabTitle,column:name});
+    else if(columns[name]<0&&spec.critical&&!contextualMissing)issues.push({code:'column_missing',severity:'critical',tab:tab.tabTitle,column:name});
+    else if(contextualMissing)issues.push({code:'column_contextual_identity',severity:'warning',tab:tab.tabTitle,column:name,headerVariant:header.variantId});
+    else if(columns[name]<0)issues.push({code:'column_missing_optional',severity:'warning',tab:tab.tabTitle,column:name});
+  }
+  if(issues.some(issue=>issue.severity==='critical'))return {visits:[],issues,diagnostic:{title:tab.tabTitle,country:tab.country,periodKey:tab.key,rows:0,headerRow:header.index+1,headerVariant:header.variantId,columns}};
   const visits=[],shopperSignals={assigned:0,unassigned:0,placeholder:0},columnDiagnostics={};for(const [name,index] of Object.entries(columns))columnDiagnostics[name]={index,header:index>=0?cell(header.row,index):null,nonEmptyVisitRows:0};
-  for(let rowIndex=header.index+1;rowIndex<values.length;rowIndex++){const row=values[rowIndex]||[];if(!isVisitRow(row,columns))continue;for(const [name,index] of Object.entries(columns))if(index>=0&&cell(row,index))columnDiagnostics[name].nonEmptyVisitRows++;const shopperRaw=cell(row,columns.shopper),hasShopper=isShopperAssigned(shopperRaw);if(hasShopper)shopperSignals.assigned++;else{shopperSignals.unassigned++;if(shopperRaw)shopperSignals.placeholder++;}const cinemaId=cell(row,columns.idCinema),shopping=cell(row,columns.shopping),visitId=`hr_${tab.key}_${tab.country.toLowerCase()}_${rowIndex+1}_${safeHash([cinemaId,shopping,cell(row,columns.quincena),cell(row,columns.franja),rowIndex+1].join('|'),'v').slice(-10)}`,shopperId=hasShopper?safeHash(shopperRaw,`shopper_${tab.country.toLowerCase()}`):null;visits.push(applyCanonicalVisitState({id:visitId,hrRowId:`${tab.tabTitle}!${rowIndex+1}`,sourceTab:tab.tabTitle,sourceRow:rowIndex+1,tenantId:'tya',projectId:'cinepolis',program:'cinepolis',periodKey:tab.key,periodLabel:tab.label,pais:tab.country,country:tab.country,cinemaId,sucursal:shopping,ciudad:cell(row,columns.ciudad),quincena:cell(row,columns.quincena),franja:cell(row,columns.franja),franjaCode:normalizedText(cell(row,columns.franja)).includes('wknd')?'WKND':'WK',formato:cell(row,columns.formato),escenario:cell(row,columns.tipoCompra),tipoCombo:cell(row,columns.tipoCombo),metodoPago:cell(row,columns.metodoPago),disponibleDesde:normalizeDate(cell(row,columns.disponibleDesde),tab),agendada:normalizeDate(cell(row,columns.fechaProgramada),tab),realizada:normalizeDate(cell(row,columns.fechaRealizada),tab),cuestFecha:normalizeDate(cell(row,columns.fechaCuestionario),tab),submittedAt:normalizeDate(cell(row,columns.fechaSubmitido),tab),controlDia:cell(row,columns.controlDia),shopperId,shopper:hasShopper?'Shopper protegido':null,shopperCode:hasShopper?safeHash(shopperRaw,`TYA_${tab.country}`).toUpperCase():null,hasShopper,currency:tab.country==='HN'?'L':'Q',honorario:normalizeMoney(cell(row,columns.honorarios)),boleto:normalizeMoney(cell(row,columns.precioBoleto)),comboAmt:normalizeMoney(cell(row,columns.precioCombo)),sourceSafe:true,piiProtected:true}));}
-  return {visits,issues,diagnostic:{title:tab.tabTitle,country:tab.country,periodKey:tab.key,rows:visits.length,headerRow:header.index+1,shopperSignals,columnDiagnostics}};
+  for(let rowIndex=header.index+1;rowIndex<values.length;rowIndex++){const row=values[rowIndex]||[];if(!isVisitRow(row,columns,header,tab))continue;const duplicateConflicts=Object.keys(header.duplicateColumns||{}).filter(name=>mappedColumnConflict(row,header,name));if(duplicateConflicts.length){for(const name of duplicateConflicts)issues.push({code:'duplicate_column_conflict',severity:'critical',tab:tab.tabTitle,row:rowIndex+1,column:name});continue;}const value=name=>mappedCell(row,columns,header,name);for(const [name,index] of Object.entries(columns))if(index>=0&&cell(row,index))columnDiagnostics[name].nonEmptyVisitRows++;const shopperRaw=value('shopper'),hasShopper=isShopperAssigned(shopperRaw);if(hasShopper)shopperSignals.assigned++;else{shopperSignals.unassigned++;if(shopperRaw)shopperSignals.placeholder++;}const cinemaId=value('idCinema'),shopping=value('shopping'),visitId=`hr_${tab.key}_${tab.country.toLowerCase()}_${rowIndex+1}_${safeHash([cinemaId,shopping,value('quincena'),value('franja'),rowIndex+1].join('|'),'v').slice(-10)}`,shopperId=hasShopper?safeHash(shopperRaw,`shopper_${tab.country.toLowerCase()}`):null;visits.push(applyCanonicalVisitState({id:visitId,hrRowId:`${tab.tabTitle}!${rowIndex+1}`,sourceTab:tab.tabTitle,sourceRow:rowIndex+1,tenantId:'tya',projectId:'cinepolis',program:'cinepolis',periodKey:tab.key,periodLabel:tab.label,pais:tab.country,country:tab.country,cinemaId,sucursal:shopping,ciudad:value('ciudad'),quincena:value('quincena'),franja:value('franja'),franjaCode:normalizedText(value('franja')).includes('wknd')?'WKND':'WK',formato:value('formato'),escenario:value('tipoCompra'),tipoCombo:value('tipoCombo'),metodoPago:value('metodoPago'),disponibleDesde:normalizeDate(value('disponibleDesde'),tab),agendada:normalizeDate(value('fechaProgramada'),tab),realizada:normalizeDate(value('fechaRealizada'),tab),cuestFecha:normalizeDate(value('fechaCuestionario'),tab),submittedAt:normalizeDate(value('fechaSubmitido'),tab),controlDia:value('controlDia'),shopperId,shopper:hasShopper?'Shopper protegido':null,shopperCode:hasShopper?safeHash(shopperRaw,`TYA_${tab.country}`).toUpperCase():null,hasShopper,currency:tab.country==='HN'?'L':'Q',honorario:normalizeMoney(value('honorarios')),boleto:normalizeMoney(value('precioBoleto')),comboAmt:normalizeMoney(value('precioCombo')),sourceSafe:true,piiProtected:true}));}
+  return {visits,issues,diagnostic:{title:tab.tabTitle,country:tab.country,periodKey:tab.key,rows:visits.length,headerRow:header.index+1,headerVariant:header.variantId,countrySource:header.countrySource,cinemaIdSource:header.cinemaIdSource,duplicateColumns:header.duplicateColumns,shopperSignals,columnDiagnostics}};
 }
 function buildPeriods(visits,tabs){const map=new Map();for(const tab of tabs)if(!map.has(tab.key))map.set(tab.key,{key:tab.key,id:`cinepolis-${tab.key}`,projectId:'cinepolis',label:tab.label,fullLabel:tab.fullLabel,year:tab.year,month:tab.month,visits:0,byCountry:{GT:0,HN:0}});for(const visit of visits){const row=map.get(visit.periodKey);if(row){row.visits++;row.byCountry[visit.country]=(row.byCountry[visit.country]||0)+1;}}return [...map.values()].sort((a,b)=>a.key.localeCompare(b.key));}
 function buildShoppers(visits){const map=new Map();for(const visit of visits){if(!visit.canonicalFacets?.assigned||!visit.shopperId)continue;const current=map.get(visit.shopperId)||{id:visit.shopperId,shopperId:visit.shopperId,code:visit.shopperCode,nombre:'Shopper protegido',pais:visit.country,ciudad:visit.ciudad||'',estado:null,status:null,rating:null,completion:null,preference:null,honorario:null,perfilCompleto:false,dataLevel:'protected_reference',operationalProfileAvailable:false,fullAuthorizedProfileAvailable:false,visitas:0,realizadas:0,submitidas:0,liquidationCandidates:0,liquidadas:0,pagadas:0,sourceSafe:true,piiProtected:true};current.visitas++;current.realizadas+=visit.canonicalFacets.realized?1:0;current.submitidas+=visit.canonicalFacets.submitted?1:0;current.liquidationCandidates+=visit.canonicalFacets.liquidationCandidate?1:0;current.liquidadas+=visit.canonicalFacets.liquidationConfirmed?1:0;current.pagadas+=visit.canonicalFacets.paymentConfirmed?1:0;map.set(visit.shopperId,current);}return [...map.values()].sort((a,b)=>String(a.code||'').localeCompare(String(b.code||'')));}

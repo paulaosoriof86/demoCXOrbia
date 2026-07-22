@@ -1,6 +1,6 @@
 {
   "contractId": "tya-hr-column-map-r20-v1",
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "tenantId": "tya",
   "projectId": "cinepolis",
   "historyScope": "all_detected_hr_periods",
@@ -8,40 +8,175 @@
   "ambiguousMatchPolicy": "hold_and_review",
   "missingCriticalPolicy": "hold_build",
   "contextualRequiredPolicy": "hold_only_when_period_is_open_or_future",
-  "headerSignature": ["País", "ID CINEMA", "Shopping"],
+  "headerSignature": [
+    "País",
+    "ID CINEMA",
+    "Shopping"
+  ],
   "columns": {
-    "pais": {"aliases": ["País"], "critical": true, "domain": "identity"},
-    "idCinema": {"aliases": ["ID CINEMA"], "critical": true, "domain": "identity"},
-    "ciudad": {"aliases": ["CIUDAD"], "critical": true, "domain": "location"},
-    "shopping": {"aliases": ["Shopping"], "critical": true, "domain": "identity"},
-    "franja": {"aliases": ["Franja Horaria"], "critical": true, "domain": "eligibility"},
-    "formato": {"aliases": ["Formato de Cine"], "critical": true, "domain": "scenario"},
-    "tipoCombo": {"aliases": ["Tipo de Combo"], "critical": false, "domain": "reimbursement"},
-    "tipoCompra": {"aliases": ["Tipo de Compra"], "critical": true, "domain": "scenario"},
-    "metodoPago": {"aliases": ["Método de Pago"], "critical": false, "domain": "finance"},
-    "quincena": {"aliases": ["Quincena"], "critical": true, "domain": "measurement_period"},
-    "shopper": {"aliases": ["Shopper Asignado"], "critical": true, "domain": "assignment"},
+    "pais": {
+      "aliases": [
+        "País"
+      ],
+      "critical": true,
+      "domain": "identity",
+      "contextualMissingAllowedIn": [
+        "tab_scoped_compact"
+      ]
+    },
+    "idCinema": {
+      "aliases": [
+        "ID CINEMA"
+      ],
+      "critical": true,
+      "domain": "identity",
+      "contextualMissingAllowedIn": [
+        "tab_scoped_compact"
+      ]
+    },
+    "ciudad": {
+      "aliases": [
+        "CIUDAD"
+      ],
+      "critical": true,
+      "domain": "location"
+    },
+    "shopping": {
+      "aliases": [
+        "Shopping"
+      ],
+      "critical": true,
+      "domain": "identity"
+    },
+    "franja": {
+      "aliases": [
+        "Franja Horaria"
+      ],
+      "critical": true,
+      "domain": "eligibility"
+    },
+    "formato": {
+      "aliases": [
+        "Formato de Cine"
+      ],
+      "critical": true,
+      "domain": "scenario"
+    },
+    "tipoCombo": {
+      "aliases": [
+        "Tipo de Combo"
+      ],
+      "critical": false,
+      "domain": "reimbursement"
+    },
+    "tipoCompra": {
+      "aliases": [
+        "Tipo de Compra"
+      ],
+      "critical": true,
+      "domain": "scenario"
+    },
+    "metodoPago": {
+      "aliases": [
+        "Método de Pago"
+      ],
+      "critical": false,
+      "domain": "finance"
+    },
+    "quincena": {
+      "aliases": [
+        "Quincena"
+      ],
+      "critical": true,
+      "domain": "measurement_period"
+    },
+    "shopper": {
+      "aliases": [
+        "Shopper Asignado"
+      ],
+      "critical": true,
+      "domain": "assignment"
+    },
     "disponibleDesde": {
-      "aliases": ["Disponible a partir de", "Disponible desde"],
+      "aliases": [
+        "Disponible a partir de",
+        "Disponible desde"
+      ],
       "critical": false,
       "contextualRequired": "open_or_future_period",
       "domain": "eligibility",
       "historicalFallback": "null_without_inference"
     },
-    "fechaProgramada": {"aliases": ["Fecha programada"], "critical": true, "domain": "scheduling"},
-    "controlDia": {"aliases": ["Control día s/ franja horaria", "Control dia s/ franja horaria"], "critical": true, "domain": "operational_control"},
-    "fechaRealizada": {"aliases": ["Fecha realizada"], "critical": true, "domain": "execution"},
-    "fechaCuestionario": {"aliases": ["Fecha Cuestionario completado", "Ccuestionario completado", "Cuestionario completado"], "critical": true, "domain": "questionnaire"},
-    "precioBoleto": {"aliases": ["Precio de boleto"], "critical": false, "domain": "reimbursement"},
-    "precioCombo": {"aliases": ["Precio de combo"], "critical": false, "domain": "reimbursement"},
-    "honorarios": {"aliases": ["Honorarios"], "critical": false, "domain": "finance"},
-    "fechaSubmitido": {"aliases": ["Fecha submitido", "Submitido"], "critical": true, "domain": "submission"}
+    "fechaProgramada": {
+      "aliases": [
+        "Fecha programada"
+      ],
+      "critical": true,
+      "domain": "scheduling"
+    },
+    "controlDia": {
+      "aliases": [
+        "Control día s/ franja horaria",
+        "Control dia s/ franja horaria"
+      ],
+      "critical": true,
+      "domain": "operational_control"
+    },
+    "fechaRealizada": {
+      "aliases": [
+        "Fecha realizada"
+      ],
+      "critical": true,
+      "domain": "execution"
+    },
+    "fechaCuestionario": {
+      "aliases": [
+        "Fecha Cuestionario completado",
+        "Ccuestionario completado",
+        "Cuestionario completado"
+      ],
+      "critical": true,
+      "domain": "questionnaire"
+    },
+    "precioBoleto": {
+      "aliases": [
+        "Precio de boleto"
+      ],
+      "critical": false,
+      "domain": "reimbursement"
+    },
+    "precioCombo": {
+      "aliases": [
+        "Precio de combo"
+      ],
+      "critical": false,
+      "domain": "reimbursement"
+    },
+    "honorarios": {
+      "aliases": [
+        "Honorarios"
+      ],
+      "critical": false,
+      "domain": "finance"
+    },
+    "fechaSubmitido": {
+      "aliases": [
+        "Fecha submitido",
+        "Submitido"
+      ],
+      "critical": true,
+      "domain": "submission",
+      "duplicatePolicy": "coalesce_equal_or_single_nonempty"
+    }
   },
   "rules": [
     "historical tabs are not discarded because Disponible desde did not exist yet",
     "missing Disponible desde never invents an eligibility date",
     "open/current periods require availability evidence for publishing available visits",
-    "all operational and submission evidence columns remain fail-closed"
+    "all operational and submission evidence columns remain fail-closed",
+    "tab name is authoritative country evidence only for declared tab_scoped_compact headers",
+    "missing ID CINEMA in a declared compact tab never invents a cinema identifier; hrRowId/sourceTab/sourceRow remain the identity evidence",
+    "duplicate Fecha submitido columns coalesce only when one is populated or all populated values are equal"
   ],
   "prohibitions": [
     "first_partial_match_wins",
@@ -49,7 +184,9 @@
     "month_specific_column_map",
     "use_control_label_instead_of_explicit_evidence",
     "accept_ambiguous_header",
-    "infer_historical_available_from_missing_column"
+    "infer_historical_available_from_missing_column",
+    "silent compact-header acceptance outside declared headerVariants",
+    "coalesce conflicting duplicate evidence"
   ],
   "safeState": {
     "sourceSafe": true,
@@ -58,5 +195,33 @@
     "writes": false,
     "deploy": false,
     "production": false
-  }
+  },
+  "headerVariants": [
+    {
+      "id": "full_identity",
+      "required": [
+        "País",
+        "ID CINEMA",
+        "CIUDAD",
+        "Shopping",
+        "Quincena",
+        "Shopper Asignado"
+      ],
+      "countrySource": "column",
+      "cinemaIdSource": "column"
+    },
+    {
+      "id": "tab_scoped_compact",
+      "required": [
+        "CIUDAD",
+        "DIRECCIÓN",
+        "Shopping",
+        "Franja Horaria",
+        "Quincena",
+        "Shopper Asignado"
+      ],
+      "countrySource": "tab_name",
+      "cinemaIdSource": "absent_use_hr_row_identity"
+    }
+  ]
 }

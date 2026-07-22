@@ -9,8 +9,8 @@
   "packageZip": "PAQUETE_EJECUCION_CODEX_CXORBIA_V172_HR_INPLACE_20260721.zip",
   "packageSha256": "eaadd16ef78539bfd45c60ad8eed9dc0507a385b80583640fb3f1666f4f9eb15",
   "candidateSha256": "2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5",
-  "fileCount": 1863,
-  "aggregateSha256": "dbfd2786e7dd3557351de591bda3464669a6ac36681f93b677c5bf696f22087e",
+  "fileCount": 1867,
+  "aggregateSha256": "0dc27bd0258a6f69590b4110d101a83f14cfd8229038eb5330115b340d3d9efa",
   "excludedFromHash": [
     "app/core/build-lock.js",
     "app/docs/MANIFEST-V172-EMPALME-DIRECTO-20260721.json"
@@ -710,8 +710,8 @@
     },
     {
       "path": "app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md",
-      "size": 2883,
-      "sha256": "d802e960643baee346e7a0a91dc6eeb4e28b03acdc9ad7ae47e853cc3541f16c"
+      "size": 2623,
+      "sha256": "d9d43875206e3465f3982c0501f53f628bf54f4c257711789edce38f79caee07"
     },
     {
       "path": "app/docs/00-REGLAS-MAESTRAS-CONTEXTO-CONTINUIDAD-CXORBIA-TYA.md",
@@ -2584,6 +2584,11 @@
       "sha256": "257bd26bddebf618222a9fbb8fffdaf81de3cad285c5e55efb22508ab40abea2"
     },
     {
+      "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-R20-HEADER-VARIANT-20260721.md",
+      "size": 1303,
+      "sha256": "71b833828ebe9d2c74352bf67ae7701f9a7d3b6bbda9bf22f1e82f327b017a64"
+    },
+    {
       "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-R25A-CX-DATA-PORTABLE-20260714.md",
       "size": 648,
       "sha256": "c4a023b2254e08b44b558b23b172450d80c11bb2c9ab1a93ebe7083d4e251be1"
@@ -3790,8 +3795,8 @@
     },
     {
       "path": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
-      "size": 5208,
-      "sha256": "3d89eac9aa1508fe87f9153009d14ec40ce1ece696d0b1a24bbff06c5411b64d"
+      "size": 3440,
+      "sha256": "c73c6ee4c9de9d37cb9f6e9c3e3a63e0932a37e9a59addec5771f0345e4bda7c"
     },
     {
       "path": "app/docs/CHECKPOINT-OPERATIVO-REALDATA-PREVIEW-TYA-20260709.md",
@@ -4322,6 +4327,11 @@
       "path": "app/docs/DEV-WRITE-RUNNER-DISABLED-TYA-20260704.md",
       "size": 940,
       "sha256": "ff81696d54a46652dec4332416b31196ab1b12b7e76f15e0e9a8d864efe5489e"
+    },
+    {
+      "path": "app/docs/DIAGNOSTICO-RAIZ-R20-HEADER-VARIANT-JULIO26-20260721.md",
+      "size": 3337,
+      "sha256": "4e9dad9d03e597fc8dcea4da93c64b4f65dc3bbd0bdd82b31e6f945b5cf82172"
     },
     {
       "path": "app/docs/DIAGNOSTICO-RAIZ-V172-EMPALME-ACUMULADO-HR-INPLACE-20260721.md",
@@ -5987,6 +5997,11 @@
       "path": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-R19-VISUAL-NO-GO-20260715.md",
       "size": 1715,
       "sha256": "8c60a5ddd44be281843613010f9f221e7c156d577f864f7a21ce1380096a1338"
+    },
+    {
+      "path": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-R20-HEADER-VARIANT-20260721.md",
+      "size": 1032,
+      "sha256": "15f032fbc44058564a4b3fe0c38afcc85d11cd1902ee796f8527b58d3e4d30b3"
     },
     {
       "path": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-R25A-CX-DATA-PORTABLE-20260714.md",
@@ -8257,6 +8272,11 @@
       "path": "app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-R19-VISUAL-NO-GO-20260715.md",
       "size": 1902,
       "sha256": "f91b80a4b1951964fee346c738a9b7200ba06093d216dadc6b50c6f1733c2351"
+    },
+    {
+      "path": "app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-R20-HEADER-VARIANT-20260721.md",
+      "size": 892,
+      "sha256": "c88ac01e9891c1d5ae14fde2c5795f283fe3887021f0cc83d086f92251637c41"
     },
     {
       "path": "app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-R25A-CX-DATA-PORTABLE-20260714.md",
