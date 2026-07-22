@@ -9,7 +9,6 @@ Estado: `CORTE_1_M1_FROZEN_WITH_DOCUMENTED_P1_P2`
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Build funcional validado en DEV: `67c0943260f076f5686284ac509458ed5fd34dbd`.
-- Commit documental de validación/lock: `c5ad3473932f00f7b72a04d5bd490c29af39a8c3`.
 - Corte 1 / M1: congelado con pendientes P1/P2 documentados.
 - Corte 2: desbloqueado para iniciar; todavía no ejecutado.
 
