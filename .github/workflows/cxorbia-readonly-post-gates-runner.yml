@@ -6,13 +6,22 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - .github/cxorbia-gate-requests/request.json
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    types:
+      - synchronize
+    paths:
+      - .github/cxorbia-gate-requests/request.json
+      - .github/workflows/cxorbia-readonly-post-gates-runner.yml
+      - tools/release/cxorbia-readonly-post-gates-runner.mjs
 
 permissions:
   contents: read
   issues: write
 
 concurrency:
-  group: cxorbia-readonly-post-gates-runner-docs-tya-v6-v71-audit
+  group: cxorbia-readonly-post-gates-runner-${{ github.event.pull_request.head.sha || github.sha }}
   cancel-in-progress: false
 
 defaults:
@@ -105,6 +114,7 @@ jobs:
             '## CXORBIA_READONLY_POST_GATES_RUNNER',
             '',
             `- Run: ${process.env.GITHUB_RUN_ID}`,
+            `- Event: ${process.env.GITHUB_EVENT_NAME}`,
             `- Estado: \`${report.status}\``,
             `- Request: \`${report.requestId || 'n/a'}\``,
             `- Source HEAD: \`${report.sourceHeadSha || 'n/a'}\``,
