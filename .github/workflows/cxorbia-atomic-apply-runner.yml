@@ -10,6 +10,7 @@ on:
 permissions:
   contents: write
   issues: write
+  statuses: write
 
 concurrency:
   group: cxorbia-atomic-apply-runner-docs-tya-v6-v71-audit
@@ -37,8 +38,14 @@ jobs:
         run: |
           if [ -f .github/cxorbia-apply-requests/request.json ]; then
             echo "present=true" >> "$GITHUB_OUTPUT"
+            node <<'NODE'
+            const fs = require('fs');
+            const request = JSON.parse(fs.readFileSync('.github/cxorbia-apply-requests/request.json', 'utf8'));
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `mode=${request.mode || 'blob_delta_v1'}\n`);
+            NODE
           else
             echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "mode=none" >> "$GITHUB_OUTPUT"
             echo "Request already consumed; cleanup push is a safe no-op."
           fi
 
@@ -52,19 +59,86 @@ jobs:
         if: steps.request.outputs.present == 'true'
         run: node tools/qa/cxorbia-controlled-runners-contract-gate.mjs
 
+      - name: Execute controlled focal text patch
+        if: steps.request.outputs.present == 'true' && steps.request.outputs.mode == 'focal_text_patch_v1'
+        id: focal
+        continue-on-error: true
+        run: |
+          set +e
+          node <<'NODE'
+          const crypto = require('crypto');
+          const fs = require('fs');
+          const { spawnSync } = require('child_process');
+          const requestPath = '.github/cxorbia-apply-requests/request.json';
+          const outDir = '.tmp/cxorbia-atomic-apply-runner';
+          const report = {schemaVersion:'1.0.0',runner:'CXORBIA_ATOMIC_APPLY_RUNNER',mode:'focal_text_patch_v1',status:'HOLD_ATOMIC_APPLY',requestId:null,functionalCommitSha:null,files:[],blockers:[],safeState:{deploy:false,merge:false,production:false,providerWrites:false,dataWrites:false,forcePush:false,newBranch:false,newPullRequest:false}};
+          fs.mkdirSync(outDir,{recursive:true});
+          const run=(cmd,args)=>{const r=spawnSync(cmd,args,{encoding:'utf8',maxBuffer:20*1024*1024});if(r.status!==0)throw new Error(`command_failed:${cmd} ${args.join(' ')}:${(r.stderr||r.stdout||'').slice(0,1000)}`);return String(r.stdout||'').trim();};
+          const sha256=x=>crypto.createHash('sha256').update(x).digest('hex');
+          try {
+            const request=JSON.parse(fs.readFileSync(requestPath,'utf8'));
+            report.requestId=request.requestId||null;
+            if(request.schemaVersion!=='cxorbia.atomic-apply-request.v1'||request.mode!=='focal_text_patch_v1')throw new Error('request_schema_or_mode_invalid');
+            if(request.repository!=='paulaosoriof86/demoCXOrbia'||request.branch!=='docs-tya-v6-v71-audit'||Number(request.pullRequest)!==7)throw new Error('request_target_invalid');
+            if(request.deploy!==false||request.merge!==false||request.production!==false||request.providerWrites!==false||request.dataWrites!==false)throw new Error('unsafe_request_flags');
+            const allowed=['tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs'];
+            if(!allowed.includes(request.targetPath))throw new Error(`target_not_allowlisted:${request.targetPath}`);
+            const head=run('git',['rev-parse','HEAD']);
+            const parent=run('git',['rev-parse','HEAD^']);
+            if(parent!==request.expectedParentSha)throw new Error(`parent_mismatch:${parent}/${request.expectedParentSha}`);
+            const requestDelta=run('git',['diff','--name-only','HEAD^','HEAD']).split(/\r?\n/).filter(Boolean);
+            if(requestDelta.length!==1||requestDelta[0]!==requestPath)throw new Error(`request_commit_scope_invalid:${requestDelta.join(',')}`);
+            const currentBlob=run('git',['hash-object',request.targetPath]);
+            if(currentBlob!==request.expectedCurrentGitBlobSha)throw new Error(`current_blob_mismatch:${currentBlob}/${request.expectedCurrentGitBlobSha}`);
+            const original=fs.readFileSync(request.targetPath,'utf8');
+            const occurrences=original.split(request.findText).length-1;
+            if(occurrences!==1)throw new Error(`find_occurrence_mismatch:${occurrences}`);
+            const updated=original.replace(request.findText,request.replaceText);
+            if(updated===original)throw new Error('patch_no_change');
+            if(updated.charCodeAt(0)===0xFEFF)throw new Error('utf8_bom_forbidden');
+            fs.writeFileSync(request.targetPath,updated,'utf8');
+            run('node',['--check',request.targetPath]);
+            run('git',['rm','--',requestPath]);
+            const changed=run('git',['diff','--name-only']).split(/\r?\n/).filter(Boolean).sort();
+            const expected=[request.targetPath,requestPath].sort();
+            if(JSON.stringify(changed)!==JSON.stringify(expected))throw new Error(`working_tree_delta_invalid:${changed.join(',')}`);
+            run('git',['config','user.name','cxorbia-automation']);
+            run('git',['config','user.email','cxorbia-automation@users.noreply.github.com']);
+            run('git',['add','-A','--',request.targetPath,requestPath]);
+            run('git',['commit','-m',request.commitMessage]);
+            report.functionalCommitSha=run('git',['rev-parse','HEAD']);
+            report.files=[{path:request.targetPath,operation:'focal_text_patch_v1',beforeGitBlobSha:currentBlob,afterGitBlobSha:run('git',['hash-object',request.targetPath]),afterSha256:sha256(Buffer.from(updated,'utf8'))}];
+            run('git',['push','origin','HEAD:docs-tya-v6-v71-audit']);
+            report.status='APPLIED_AND_VERIFIED';
+          } catch(error) { report.blockers.push(String(error.message||error)); process.exitCode=1; }
+          finally { fs.writeFileSync(`${outDir}/report.json`,JSON.stringify(report,null,2)+'\n','utf8'); fs.writeFileSync(`${outDir}/report.md`,`# CXOrbia atomic apply\n\n- Status: \`${report.status}\`\n- Request: \`${report.requestId||'n/a'}\`\n- Commit: \`${report.functionalCommitSha||'n/a'}\`\n\n## Blockers\n${report.blockers.length?report.blockers.map(x=>`- ${x}`).join('\n'):'- none'}\n`,'utf8'); }
+          NODE
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
       - name: Execute single atomic functional apply
-        if: steps.request.outputs.present == 'true'
+        if: steps.request.outputs.present == 'true' && steps.request.outputs.mode != 'focal_text_patch_v1'
         id: apply
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set +e
-          node tools/release/cxorbia-atomic-apply-runner.mjs \
-            .github/cxorbia-apply-requests/request.json
+          node tools/release/cxorbia-atomic-apply-runner.mjs .github/cxorbia-apply-requests/request.json
           code=$?
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           exit 0
+
+      - name: Resolve execution result
+        if: always() && steps.request.outputs.present == 'true'
+        id: result
+        run: |
+          if [ "${{ steps.request.outputs.mode }}" = "focal_text_patch_v1" ]; then
+            echo "exit_code=${{ steps.focal.outputs.exit_code }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "exit_code=${{ steps.apply.outputs.exit_code }}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Upload sanitized apply evidence
         if: always() && steps.request.outputs.present == 'true'
@@ -75,49 +149,20 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Report result in PR 7
+      - name: Publish observable status
         if: always() && steps.request.outputs.present == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APPLY_EXIT_CODE: ${{ steps.apply.outputs.exit_code }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           node <<'NODE'
-          const fs = require('fs');
-          const reportPath = '.tmp/cxorbia-atomic-apply-runner/report.json';
-          const report = fs.existsSync(reportPath)
-            ? JSON.parse(fs.readFileSync(reportPath, 'utf8'))
-            : { status: 'HOLD_REPORT_MISSING', requestId: null, functionalCommitSha: null, files: [], blockers: ['report_missing'] };
-          const body = [
-            '## CXORBIA_ATOMIC_APPLY_RUNNER',
-            '',
-            `- Run: ${process.env.GITHUB_RUN_ID}`,
-            `- Estado: \`${report.status}\``,
-            `- Request: \`${report.requestId || 'n/a'}\``,
-            `- Commit funcional: \`${report.functionalCommitSha || 'n/a'}\``,
-            `- Archivos: ${Array.isArray(report.files) ? report.files.length : 0}`,
-            `- Exit code: ${process.env.APPLY_EXIT_CODE || 'n/a'}`,
-            '',
-            'Blockers:',
-            ...(report.blockers?.length ? report.blockers.map(x => `- ${x}`) : ['- none']),
-            '',
-            'Sin deploy, merge, producción ni writes reales.'
-          ].join('\n');
-          const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
-          fetch(`${process.env.GITHUB_API_URL}/repos/${owner}/${repo}/issues/7/comments`, {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-              Accept: 'application/vnd.github+json',
-              'X-GitHub-Api-Version': '2022-11-28',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ body })
-          }).then(async response => {
-            if (!response.ok) throw new Error(`comment_failed_HTTP_${response.status}:${await response.text()}`);
-          }).catch(error => { console.error(error); process.exitCode = 1; });
+          const fs=require('fs');
+          const report=JSON.parse(fs.readFileSync('.tmp/cxorbia-atomic-apply-runner/report.json','utf8'));
+          const [owner,repo]=process.env.GITHUB_REPOSITORY.split('/');
+          const sha=process.env.GITHUB_SHA;
+          const state=report.status==='APPLIED_AND_VERIFIED'?'success':'failure';
+          fetch(`${process.env.GITHUB_API_URL}/repos/${owner}/${repo}/statuses/${sha}`,{method:'POST',headers:{Authorization:`Bearer ${process.env.GH_TOKEN}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},body:JSON.stringify({state,context:'cxorbia/atomic-apply/overall',description:report.status,target_url:`${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`})}).then(async r=>{if(!r.ok)throw new Error(await r.text());}).catch(e=>{console.error(e);process.exitCode=1;});
           NODE
 
       - name: Enforce apply result
         if: steps.request.outputs.present == 'true'
-        run: |
-          test "${{ steps.apply.outputs.exit_code }}" = "0"
+        run: test "${{ steps.result.outputs.exit_code }}" = "0"
