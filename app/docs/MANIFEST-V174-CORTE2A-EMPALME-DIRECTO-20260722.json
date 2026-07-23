@@ -1,18 +1,24 @@
 {
   "schema": "cxorbia.runtime-manifest.v1",
-  "version": "V174-CORTE2A-HOLD-FIX",
-  "generatedAt": "2026-07-22",
+  "version": "V174-CORTE2A-R20-SOURCE-IDENTITY-FIX",
+  "generatedAt": "2026-07-23T16:45:21.090Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
+  "sourceHead": "d47400ce070002b109cf21f6fe6a24661cba4619",
+  "requestCommit": "f1ef5ba754262b1897cbf23c64135596a6ba2602",
   "headBefore": "0fd63faf2a873640e042421c40749714a4d12fd4",
   "empalmeCommit": "b21e494d127fb4b902de5576e3fab0292362b097",
   "priorDocumentationCommit": "1703d36252cb957387fac6bcf348cf06ff22a5ef",
   "holdFixCommit": "0acdc6772f2d4a7743dea0992a4279241dcb79d7",
+  "r20SourceIdentityFixCommits": [
+    "396efcf3cc98fb196a756067ef23dba13f348f61",
+    "d78f4f79821755ec705a7ef7aacdf8a1f2fcbc20"
+  ],
   "packageZip": "CXOrbia-V174-VERIFICADA-e48452a4385e5dd.zip",
   "packageSha256": "e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f",
   "candidatePackage": "CANDIDATA_V174_ACUMULADA_20260722",
-  "fileCount": 1886,
-  "aggregateSha256": "1019c6e2660d0e1b2d9433d5d92ac3f6148ef6eeb6534ad0bd115cd68404f300",
+  "fileCount": 1895,
+  "aggregateSha256": "ab11bc47dfd096cbe6a110db250c46e656c2dc9760ad832c07958b6c9a886818",
   "excludedFromHash": [
     "app/core/build-lock.js",
     "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json"
@@ -29,19 +35,26 @@
     "app/core/tya-phase-a-source-safe-preview.js",
     "tools/qa/tya-corte1-report-frontend-runtime-gate.mjs"
   ],
-  "methodologyRootCause": "PRE_GATE_NOT_RECONCILED_WITH_EXACT_HEAD_OVERLAY_COMPOSITE",
+  "r20FixDelta": [
+    "tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs",
+    "tools/qa/tya-hr-header-variants-r20-gate.mjs",
+    "tools/release/cxorbia-readonly-post-gates-runner.mjs"
+  ],
+  "methodologyRootCause": "R20_INVENTORY_BUILDER_NOT_USING_CANONICAL_HEADER_VARIANT_RESOLVER",
+  "sourceIdentity": "public_gviz_gid_verified_inventory",
+  "expectedInventory": {
+    "periods": 14,
+    "tabs": 28,
+    "visits": 616,
+    "byCountry": {
+      "GT": 476,
+      "HN": 140
+    }
+  },
   "gates": {
-    "pass": [
-      "tya-hr-header-variants-r20-gate.mjs",
-      "tya-live-hr-inplace-refresh-gate.mjs",
-      "tya-corte1-context-history-reports-gate.mjs",
-      "tya-corte1-report-frontend-runtime-gate.mjs",
-      "tya-corte2a-shopper-operation-canonical-gate.mjs"
-    ],
-    "hold": [
-      "tya-project-period-kpi-history-gate-r20.mjs",
-      "tya-corte1-m1-regression-lock.mjs"
-    ]
+    "status": "PENDING_FINAL_RERUN_AFTER_LOCK_APPLY",
+    "pass": [],
+    "hold": []
   },
   "safeState": {
     "production": false,
@@ -699,8 +712,8 @@
     },
     {
       "path": "app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md",
-      "size": 7084,
-      "sha256": "c4f67f0742929175395dfdf44891a926d3da4e28cb4c2dedee302097ea1bd0eb"
+      "size": 6839,
+      "sha256": "bebf902f748c46725d654e67700ffcaea7febe469adc6f2cc9343f2b2ca1e581"
     },
     {
       "path": "app/docs/00-REGLAS-MAESTRAS-CONTEXTO-CONTINUIDAD-CXORBIA-TYA.md",
@@ -1103,6 +1116,11 @@
       "sha256": "44cbb97b5509ff06200fcb501023ee62cdd67262703e45ff1ba0ff88eb9c7945"
     },
     {
+      "path": "app/docs/ACADEMIA-IMPACT-R20-M1-TECHNICAL-PASS-20260723.md",
+      "size": 2933,
+      "sha256": "ad1cdf0ee4a2911dc1e505820b3719ed45fafd3132c0c298bab73a57b2c5c366"
+    },
+    {
       "path": "app/docs/ACADEMIA-IMPACT-READINESS-BUCKET-EVALUATOR-TYA-20260710.md",
       "size": 1135,
       "sha256": "83804f12d06db80ac11b8e7c74b04c233de8f95cbd6af04e47aa0b33df875a18"
@@ -1156,6 +1174,11 @@
       "path": "app/docs/ACADEMIA-IMPACT-RULE-CHANGE-CHANGELOG-NOTIFICATION-PREVIEW-TYA-20260704.md",
       "size": 4011,
       "sha256": "2c6367b9861645f0c75746c1b9adf4615c0eb2e5a829e4cc56c6ec38dabb14b4"
+    },
+    {
+      "path": "app/docs/ACADEMIA-IMPACT-RUNNERS-CONTROLADOS-20260722.md",
+      "size": 3532,
+      "sha256": "bdfb116302dddee3aeaf618c70c5603db4e6a5972bce72c02162364928695495"
     },
     {
       "path": "app/docs/ACADEMIA-IMPACT-SENSITIVE-DATA-POLICY-TYA-20260704.md",
@@ -1394,8 +1417,8 @@
     },
     {
       "path": "app/docs/ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md",
-      "size": 11336,
-      "sha256": "2f82fe44c52fb3e02ea5ff670c7974721f9df241c6bd37686d0590eccac828b7"
+      "size": 12980,
+      "sha256": "89bcd84a72bf1d69338c597800f7462ce337b648f7a489537d9b21de19402ceb"
     },
     {
       "path": "app/docs/ADDENDUM-MAESTRO-FAST-LANE-EMPALME-ATOMICO-TYA-20260716.md",
@@ -2613,6 +2636,11 @@
       "sha256": "71b833828ebe9d2c74352bf67ae7701f9a7d3b6bbda9bf22f1e82f327b017a64"
     },
     {
+      "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-R20-M1-TECHNICAL-PASS-20260723.md",
+      "size": 3094,
+      "sha256": "1a1e39d732cf00741d4bd736d8c95f70989c42ca89384290f9fffee8e41a2c4a"
+    },
+    {
       "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-R25A-CX-DATA-PORTABLE-20260714.md",
       "size": 648,
       "sha256": "c4a023b2254e08b44b558b23b172450d80c11bb2c9ab1a93ebe7083d4e251be1"
@@ -2686,6 +2714,11 @@
       "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-RULE-CHANGE-CHANGELOG-NOTIFICATION-PREVIEW-20260704.md",
       "size": 3624,
       "sha256": "500c0708daf7bd101a0613a4cd2016864a12437e49426d501e72ea7021237840"
+    },
+    {
+      "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-RUNNERS-CONTROLADOS-20260722.md",
+      "size": 2980,
+      "sha256": "b4f6e4a608311a70e36b8390513134ee17ac6048c8e2d18da779d059e0a0d90c"
     },
     {
       "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-SAFE-AUDIT-BUNDLE-20260705.md",
@@ -3819,8 +3852,8 @@
     },
     {
       "path": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
-      "size": 8210,
-      "sha256": "5cc71590ff81bde62fbe285d4b939d00030812a5327e74c46245616cd102d73f"
+      "size": 6768,
+      "sha256": "039f00048da5027b01edd48094cbc0ad2b63a681543ad1c1f592d65255c45b7a"
     },
     {
       "path": "app/docs/CHECKPOINT-OPERATIVO-REALDATA-PREVIEW-TYA-20260709.md",
@@ -6058,6 +6091,11 @@
       "sha256": "15f032fbc44058564a4b3fe0c38afcc85d11cd1902ee796f8527b58d3e4d30b3"
     },
     {
+      "path": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-R20-M1-TECHNICAL-PASS-20260723.md",
+      "size": 2465,
+      "sha256": "13fac89630279641beccf337ca02bdcc2b1ac3b4dd1628364f8c0a31de0a0500"
+    },
+    {
       "path": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-R25A-CX-DATA-PORTABLE-20260714.md",
       "size": 610,
       "sha256": "605a0cf03de005c47048e986bc3c2d4d3cc171e93c6b73e7f4b521930498fdef"
@@ -6106,6 +6144,11 @@
       "path": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-ROLE-TAXONOMY-ORG-SCOPE-20260709.md",
       "size": 908,
       "sha256": "4ce44a8abf7274c125f6bfea13e2e6ad0561430a557b466b24a1a4c4921996d8"
+    },
+    {
+      "path": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-RUNNERS-CONTROLADOS-20260722.md",
+      "size": 2058,
+      "sha256": "d29051050e63683988c36191fa1304e0d997d8db35b9283d1f6ce3eff8d5e37d"
     },
     {
       "path": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-SAAS-PROPUESTAS-20260703.md",
@@ -6381,6 +6424,11 @@
       "path": "app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-R16E-R17-20260713.md",
       "size": 2499,
       "sha256": "9ec660d8597661987273821c60dbcfc3aad35a3d3e198a55e29c5c80a2f16bbb"
+    },
+    {
+      "path": "app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-R20-M1-TECHNICAL-PASS-20260723.md",
+      "size": 2188,
+      "sha256": "19dc0f0e8b7ffbdcbee5f1f874445e569bbe604f10eb0bae395e64234aebaf8e"
     },
     {
       "path": "app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-READINESS-BRIDGE-20260708.md",
@@ -8363,6 +8411,11 @@
       "sha256": "c88ac01e9891c1d5ae14fde2c5795f283fe3887021f0cc83d086f92251637c41"
     },
     {
+      "path": "app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-R20-M1-TECHNICAL-PASS-20260723.md",
+      "size": 2541,
+      "sha256": "b0b21e1ed86398bee6bee6d205c2a564d42e9547cab8de8bb34681c926ded3c5"
+    },
+    {
       "path": "app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-R25A-CX-DATA-PORTABLE-20260714.md",
       "size": 589,
       "sha256": "d850286d1b9b1ee0702f254ef2833d56d6e208defdb8e81fae7e79ba48690adf"
@@ -8391,6 +8444,11 @@
       "path": "app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-RULE-CHANGE-CHANGELOG-NOTIFICATION-PREVIEW-20260704.md",
       "size": 2974,
       "sha256": "ae0a6b6f80528e571b63f84eb3fbddc8237baee40ccba9ae0cb5e61bbf553522"
+    },
+    {
+      "path": "app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-RUNNERS-CONTROLADOS-20260722.md",
+      "size": 2671,
+      "sha256": "89bf6ec8a5c707a60f8d4aece9c49d4da43a4fcb9c613d203515ac2d6f98b216"
     },
     {
       "path": "app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-SENSITIVE-DATA-POLICY-20260704.md",
