@@ -1,6 +1,6 @@
 {
   "contractId": "cxorbia-controlled-runners-v1",
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -29,7 +29,7 @@
           "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json"
         ],
         "verifier": "tools/release/tya-v174-corte2a-empalme-directo-verify.mjs",
-        "requestMustBeRemovedInFunctionalCommit": true
+        "requestMustBeRemovedInCommit": true
       }
     },
     "readonlyPostGates": {
@@ -50,7 +50,9 @@
         "version": "tya-stable-visit-id-r20-row-identity-v1",
         "helper": "tools/hr-source/tya-stable-visit-id-r20.mjs",
         "applyScript": "tools/hr-source/tya-stabilize-source-safe-visit-ids-r20.mjs",
-        "gate": "tools/qa/tya-stable-visit-id-r20-gate.mjs",
+        "runtimeInventoryFilter": "tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs",
+        "contractGate": "tools/qa/tya-stable-visit-id-r20-gate.mjs",
+        "payloadGate": "tools/qa/tya-source-safe-stable-visit-payload-r20-gate.mjs",
         "canonicalFields": [
           "tenantId",
           "projectId",
@@ -76,23 +78,28 @@
         "V174_R20_M1_CORTE2A": {
           "browserRequired": true,
           "stableVisitIdentityRequired": true,
+          "runtimeInventoryFilterRequired": true,
           "purpose": "R20, stable visit identity, M1, Corte 2A and V174 verification"
         },
         "CORTE3_FINANCIAL_RECONCILIATION_R20": {
           "browserRequired": false,
           "providerReads": true,
           "stableVisitIdentityRequired": true,
-          "purpose": "Refresh live source-safe HR R20 ephemerally, stabilize visit identity, reconcile the source-safe financial workbook and fail closed on substantive link drift",
+          "runtimeInventoryFilterRequired": true,
+          "reviewContract": "backend/contracts/tya-corte3-financial-r20-delta-review-v1.json",
+          "purpose": "Refresh live source-safe HR R20 ephemerally, stabilize visit identity, reconcile the source-safe financial workbook and fail closed on any unreviewed substantive link drift",
           "liveHrRefreshScript": "tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs",
           "inputs": [
             "backend/contracts/tya-hr-tab-inventory-r20-v1.json",
             "backend/config/phase-a-financial-workbook-source-safe-r14.json",
-            "backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json"
+            "backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json",
+            "backend/contracts/tya-corte3-financial-r20-delta-review-v1.json"
           ],
           "ephemeralGeneratedInputs": [
             "app/data/tya-hr-source-safe-periods.js"
           ],
           "outputs": [
+            ".tmp/tya-corte3-runtime-inventory-filter-r20",
             ".tmp/tya-corte3-stable-visit-id-r20",
             ".tmp/phase-a-financial-r14c-live-hr",
             ".tmp/tya-corte3-financial-reconciliation-r20"
