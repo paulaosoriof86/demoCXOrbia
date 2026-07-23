@@ -179,6 +179,29 @@ CX.module('visitas', ({data,role,ui})=>{
   const ALL=!!CX.session._visAll;
   const all=ALL?data._visitas.filter(v=>data.inScope(v.pais)):data.visitas();
   const projName=(id)=>{let pr=data.projects.find(x=>x.id===id); if(!pr) pr=data.projects.find(x=>data.programKey(x)===id); return pr?data.programBase(pr):'';};
+  /* CORTE 2A P1 — estado VISIBLE canónico derivado de facets ortogonales (visitFacets),
+     nunca del v.estado crudo. Asignación, agenda, ejecución, cuestionario, submitido,
+     liquidación, pago, fuera de rango y revisión requerida permanecen ortogonales; la
+     etiqueta visible refleja la etapa más avanzada alcanzada sin colapsar las demás.
+     Coincide semánticamente con Dashboard y HR (mismas visitBucketFns). */
+  const facetsOf=(v)=>typeof data.visitFacets==='function'?data.visitFacets(v):null;
+  const estadoCanon=(v)=>{
+    const f=facetsOf(v);
+    if(!f){ return {key:v.estado||'—', label:(v.estado||'—'), tone:'n'}; }
+    if(f.cancelled) return {key:'cancelada', label:'Cancelada', tone:'n'};
+    if(f.outOfRange) return {key:'fuera_rango', label:'Fuera de rango', tone:'r'};
+    if(v.estado==='liquidada'||(f.submitted&&v.estado==='liquidada')) return {key:'liquidada', label:'Liquidada', tone:'g'};
+    if(f.submitted) return {key:'submitida', label:'Submitida', tone:'g'};
+    if(f.questionnaire) return {key:'cuestionario', label:'Con cuestionario', tone:'g'};
+    if(f.realized) return {key:'realizada', label:'Realizada', tone:'g'};
+    if(f.scheduled) return {key:'agendada', label:'Agendada', tone:'t'};
+    if(f.assigned) return {key:'asignada', label:'Asignada', tone:'b'};
+    if(typeof f.available==='boolean'&&f.available) return {key:'disponible', label:'Disponible', tone:'b'};
+    return {key:(v.estado||'sin_asignar'), label:(v.estado==='disponible'?'Disponible':'Sin asignar'), tone:'a'};
+  };
+  const estadoCanonBadge=(v)=>{const s=estadoCanon(v);return `<span class="bdg bdg-${s.tone}">${s.label}</span>`;};
+  /* revisión operativa canónica del alcance (misma que Dashboard/reportes) */
+  const sourceRevision=(CX.clienteData&&CX.clienteData.sourceRevision)?CX.clienteData.sourceRevision(p):(p&&p.sourceRevision)||'0';
   /* P0-1: mismo criterio de disponibilidad canónica que en el marketplace del shopper. */
   const isAvailableAdmin=(v)=>{
     const f=typeof data.visitFacets==='function'?data.visitFacets(v):null;
@@ -192,9 +215,9 @@ CX.module('visitas', ({data,role,ui})=>{
     <td style="font-size:12px">${v.escenario}</td>
     <td style="font-size:11.5px;color:var(--t2)">${data.measurementWindow(v).label}</td>
     <td>${v.shopper?`<b style="font-size:12px">${v.shopper}</b><div style="font-size:10px;color:var(--t3)">${v.shopperCode}</div>`:'<span class="muted">— sin asignar</span>'}</td>
-    <td>${ui.estadoBadge(v.estado)}</td>
+    <td>${estadoCanonBadge(v)}</td>
     <td style="font-size:12px">${v.agendada||'<span class="muted">—</span>'}</td>
-    <td style="font-size:12px;font-weight:600;color:var(--green)">${ui.money(v.currency,v.honorario)}</td>
+    <td style="font-size:12px;font-weight:600;color:var(--green)">${v.honorario!=null?ui.money(v.currency,v.honorario):'<span class="muted" title="Sin honorario en la fuente">Pendiente de fuente</span>'}</td>
     <td style="text-align:right"><button class="btn btn-ghost btn-sm" data-vdetail="${v.id}" title="Ver detalle completo">🔍</button> ${!v.shopper&&v.estado!=='fuera_rango'?`<button class="btn btn-soft btn-sm" data-assign="${v.id}">Asignar</button> `:''}<button class="btn btn-ghost btn-sm" data-edit="${v.id}">✏️</button></td>
   </tr>`;
   const html=`
@@ -207,7 +230,7 @@ CX.module('visitas', ({data,role,ui})=>{
       <div class="spacer"></div>
       <input class="inp" id="vSearch" placeholder="🔎 Sucursal, shopper, ciudad…" style="max-width:240px">
       <select class="sel" id="vProj" style="width:auto"><option value="all" ${ALL?'selected':''}>🌐 Todos los proyectos</option>${data.scopedProyectos().map(pg=>`<option value="${pg.key}" ${(!ALL&&pg.key===data.currentProgramKey())?'selected':''}>${pg.name}</option>`).join('')}</select>
-      <select class="sel" id="vEst" style="width:auto"><option value="">Todos los estados</option>${['disponible','postulada','asignada','agendada','realizada','cuestionario','liquidada','fuera_rango'].map(e=>`<option value="${e}">${e}</option>`).join('')}</select>
+      <select class="sel" id="vEst" style="width:auto"><option value="">Todos los estados</option>${['disponible','asignada','agendada','realizada','cuestionario','submitida','liquidada','fuera_rango','cancelada'].map(e=>`<option value="${e}">${e}</option>`).join('')}</select>
       <select class="sel" id="vPais" style="width:auto"><option value="">País</option>${[...new Set(all.map(v=>v.pais))].map(c=>`<option>${c}</option>`).join('')}</select>
     </div>
     <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px" id="vKpis">
@@ -226,29 +249,29 @@ CX.module('visitas', ({data,role,ui})=>{
     const vx=document.getElementById('vExport');
     if(vx&&CX.reportKit){
       const vSpec=(ext)=>{
-        const byEst={}; all.forEach(v=>{byEst[v.estado]=(byEst[v.estado]||0)+1;});
+        const byEst={}; all.forEach(v=>{const l=estadoCanon(v).label;byEst[l]=(byEst[l]||0)+1;});
         const san=(s)=>String(s||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';
         const projectLabel=ALL?'Todos los proyectos':(data.programBase?data.programBase(p):p.name);
         const periodLabel=(p.periodo||p.ronda||p.name||'Periodo');
         return { title:'Visitas · base operativa',
-          meta:{title:'Visitas · base operativa',project:projectLabel,period:periodLabel,scope:(ALL?'Todos los proyectos':p.name),sourceLabel:'Operación viva del periodo',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
+          meta:{title:'Visitas · base operativa',project:projectLabel,period:periodLabel,scope:(ALL?'Todos los proyectos':p.name),sourceLabel:'Operación viva del periodo',sourceRevision,generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
           columns:[{key:'sucursal',label:'Sucursal'},{key:'pais',label:'País'},{key:'escenario',label:'Escenario'},{key:'shopper',label:'Shopper'},{key:'estado',label:'Estado'},{key:'agendada',label:'Agenda'},{key:'honorario',label:'Honorario'}],
-          rows:all.map(v=>({sucursal:v.sucursal||'—',pais:v.pais||'—',escenario:v.escenario||'—',shopper:v.shopper||'—',estado:v.estado,agendada:v.agendada||'—',honorario:(v.honorario!=null?v.honorario:'—')})),
+          rows:all.map(v=>({sucursal:v.sucursal||'—',pais:v.pais||'—',escenario:v.escenario||'—',shopper:v.shopper||'—',estado:estadoCanon(v).label,agendada:v.agendada||'—',honorario:(v.honorario!=null?v.honorario:'Pendiente de fuente')})),
           notes:'',
-          summary:['Visitas: '+all.length, Object.entries(byEst).map(([k2,v2])=>k2+': '+v2).join(' · ')],
-          chart:{title:'Visitas por estado',data:Object.entries(byEst).map(([k2,v2])=>({label:k2,value:v2}))},
+          summary:['Visitas: '+all.length,'Revisión de fuente: '+sourceRevision, Object.entries(byEst).map(([k2,v2])=>k2+': '+v2).join(' · ')],
+          chart:{title:'Visitas por estado (canónico)',data:Object.entries(byEst).map(([k2,v2])=>({label:k2,value:v2}))},
           filename:[san('visitas'),san(projectLabel),san(periodLabel),new Date().toISOString().slice(0,10)].join('_')+'.'+ext };
       };
       vx.addEventListener('click',()=>CX.ui.modal('⤓ Exportar visitas',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Genera el reporte de visitas del alcance actual con el diseño del tenant.</p><div class="flex" style="gap:8px;justify-content:flex-end"><button class="btn btn-ghost btn-sm" id="vxPdf">⤓ PDF</button><button class="btn btn-soft btn-sm" id="vxXls">⤓ Excel</button><button class="btn btn-pr btn-sm" id="vxPpt">⤓ PPT</button></div>`,{onMount:(ov)=>{ov.querySelector('#vxPdf').addEventListener('click',()=>CX.reportKit.exportPDF(vSpec('pdf')));ov.querySelector('#vxXls').addEventListener('click',()=>{if(CX.reportKit.exportExcel(vSpec('xlsx')))CX.ui.toast('Excel .xlsx generado','ok');});ov.querySelector('#vxPpt').addEventListener('click',()=>{if(CX.reportKit.exportPPT(vSpec('pptx')))CX.ui.toast('PowerPoint generado','ok');});}}));
     }
     const filt=()=>{const q=(document.getElementById('vSearch').value||'').toLowerCase(),fe=document.getElementById('vEst').value,fp=document.getElementById('vPais').value;
-      document.querySelectorAll('#vBody tr').forEach(tr=>{const v=all.find(z=>z.id===tr.dataset.vid);const ok=(!q||(v.sucursal+(v.shopper||'')+v.ciudad).toLowerCase().includes(q))&&(!fe||v.estado===fe)&&(!fp||v.pais===fp);tr.style.display=ok?'':'none';});};
+      document.querySelectorAll('#vBody tr').forEach(tr=>{const v=all.find(z=>z.id===tr.dataset.vid);const ok=(!q||(v.sucursal+(v.shopper||'')+v.ciudad).toLowerCase().includes(q))&&(!fe||estadoCanon(v).key===fe)&&(!fp||v.pais===fp);tr.style.display=ok?'':'none';});};
     ['vSearch','vEst','vPais'].forEach(id=>document.getElementById(id).addEventListener('input',filt));
     const vp=document.getElementById('vProj');
     if(vp)vp.addEventListener('change',()=>{ if(vp.value==='all'){CX.session._visAll=true;} else {CX.session._visAll=false;data.setProgram?data.setProgram(vp.value):data.setProject(vp.value);} CX.router.nav('visitas'); });
     const vKp={disp:['Visitas disponibles',isAvailableAdmin],asig:['Visitas asignadas',data.visitBucketFns.asignadas],real:['Visitas realizadas',data.visitBucketFns.realizadas],sinasig:['Visitas sin asignar',data.visitBucketFns.sinAsignar],fuera:['Fuera de rango',data.visitBucketFns.fueraRango]};
     document.querySelectorAll('#vKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{ const d=vKp[el.dataset.k]; const L=all.filter(d[1]);
-      ui.modal(d[0]+' ('+L.length+')', L.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Shopper</th><th>Estado</th><th>Honorario</th></tr></thead><tbody>${L.map(v=>`<tr><td><b style="font-size:12.5px">${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.shopper||'<span class="muted">—</span>'}</td><td>${ui.estadoBadge(v.estado)}</td><td style="font-size:12px;color:var(--green)">${ui.money(v.currency,v.honorario)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🔍','Sin visitas en esta categoría.')); }));
+      ui.modal(d[0]+' ('+L.length+')', L.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Shopper</th><th>Estado</th><th>Honorario</th></tr></thead><tbody>${L.map(v=>`<tr><td><b style="font-size:12.5px">${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.shopper||'<span class="muted">—</span>'}</td><td>${estadoCanonBadge(v)}</td><td style="font-size:12px;color:var(--green)">${v.honorario!=null?ui.money(v.currency,v.honorario):'<span class="muted">Pendiente de fuente</span>'}</td></tr>`).join('')}</tbody></table>`:ui.empty('🔍','Sin visitas en esta categoría.')); }));
     const editor=(v)=>ui.modal((v?'Editar':'Publicar')+' visita',`
       <div class="grid g2" style="gap:12px">
         <div style="grid-column:1/3"><label class="lbl">Sucursal (elige o escribe nueva)</label>
@@ -312,10 +335,10 @@ CX.module('visitas', ({data,role,ui})=>{
       steps.sort((a,b)=>(a.t||'').localeCompare(b.t||''));
       ui.modal('Detalle · '+v.sucursal, `
         <div class="grid g2" style="gap:10px;margin-bottom:14px">
-          <div style="font-size:12px;color:var(--t3)">Estado actual</div><div>${ui.estadoBadge(v.estado)}</div>
+          <div style="font-size:12px;color:var(--t3)">Estado actual</div><div>${estadoCanonBadge(v)}</div>
           ${(()=>{const vc=data.visitContract?data.visitContract(v):null;return vc&&vc.paymentState!=='no_aplica'?`<div style="font-size:12px;color:var(--t3)">Pago (contrato)</div><div>${ui.bdg(vc.paymentState,vc.paymentState==='confirmado'?'g':'n')}</div>`:'';})()}
           <div style="font-size:12px;color:var(--t3)">Shopper</div><div style="font-size:13px;font-weight:700">${v.shopper||'— sin asignar'}</div>
-          <div style="font-size:12px;color:var(--t3)">Honorario</div><div style="font-size:13px;font-weight:700;color:var(--green)">${ui.money(v.currency,v.honorario)}</div>
+          <div style="font-size:12px;color:var(--t3)">Honorario</div><div style="font-size:13px;font-weight:700;color:var(--green)">${v.honorario!=null?ui.money(v.currency,v.honorario):'<span class="muted">Pendiente de fuente</span>'}</div>
         </div>
         <div class="card-h" style="padding:0;margin-bottom:8px"><div class="card-t">🕘 Historial de estados</div></div>
         ${steps.length?`<div style="display:flex;flex-direction:column;gap:0">${steps.map((s,i)=>`

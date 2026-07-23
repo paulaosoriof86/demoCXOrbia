@@ -5,6 +5,8 @@
 CX.novedades = CX.novedades || {
   _k:'cx_novedades', _rk:'cx_novedades_read',
   seed(){ return [
+    {id:'r_070',ver:'v7.0',fecha:'2026-07-22',tipo:'Mejora',titulo:'Operación canónica, Excel enriquecido y Efectividad con fórmula',
+     cuerpo:'Visitas y Postulaciones muestran el estado con la misma lógica canónica del Dashboard (sin colapsar etapas), con exportación por revisión de fuente y reasignación segura con 3 caminos de fecha. El Excel de todos los reportes incluye ahora anchos automáticos, autofiltro y una hoja de Catálogo de columnas; la Efectividad muestra su fórmula (realizadas ÷ asignadas) y queda Pendiente de fuente si no hay asignadas, sin ceros aparentes.',roles:['admin']},
     {id:'r_069',ver:'v6.9',fecha:'2026-07-21',tipo:'Nuevo',titulo:'Add-ons funcionales por rol + Check-in geolocalizado',
      cuerpo:'Nuevos add-ons que se activan y se asignan por rol desde Integraciones & Add-ons. El primero: Check-in con foto geolocalizada, ahora como sección y botón propio en Mis Visitas del shopper (GPS + hora reales), independiente del cuestionario.',roles:['admin','shopper']},
     {id:'r_068',ver:'v6.8',fecha:'2026-07-21',tipo:'Nuevo',titulo:'Reportes personalizables en todos los roles',

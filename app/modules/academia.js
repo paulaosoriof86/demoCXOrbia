@@ -299,6 +299,69 @@ CX.acadData={
   },
   COURSES:{
     admin:[
+      /* ─── FUNDAMENTOS DE OPERACIÓN CANÓNICA (Corte 1B/2A) ─── */
+      {id:'a_canon_ops',cat:'Operación',ic:'🧭',color:'#2563eb',n:'Operación canónica: datos vivos, estados y honestidad',
+       desc:'Cómo lee la plataforma la operación real: fuente viva con revisión única, estados ortogonales, ausencia ≠ cero, reasignación segura, exportación por alcance y seguridad del evaluador.',
+       cert:false,mins:45,
+       scope:{modulo:['Operación','Reportes']},
+       lessons:[
+         {id:'ac1',ic:'🔄',n:'Fuente viva y revisión única',content:`
+<h2>Una sola verdad por periodo</h2>
+<div class="acad-section">🎯 <b>Idea central</b><p>Todo lo que ves en Dashboard, Visitas, Panorama y Reportes se calcula de la <b>misma fuente viva</b> del periodo activo, identificada por una <b>revisión única</b> (<code>sourceRevision</code>) que combina tenant + proyecto + periodo + revisión de HR + modo.</p></div>
+<p>Cuando cambias de periodo o llega una nueva revisión de HR, la caché se <b>invalida</b> y todo se recalcula. Por eso los conteos de Visitas, Dashboard y los reportes exportados <b>siempre coinciden</b>: comparten la misma revisión. En cada exportación (PDF/Excel/PPT) la revisión de fuente aparece en el encabezado y en la hoja Resumen.</p>
+<p><b>Cómo validar:</b> exporta un reporte y confirma que la "Revisión de fuente" es la misma que ves en pantalla; cambia de periodo y verás que los números cambian juntos, sin recargar la página.</p>`},
+         {id:'ac2',ic:'⚡',n:'Refresco in-place, sin recarga',content:`
+<h2>La pantalla se actualiza sola</h2>
+<p>Marcar una visita, reasignar, cambiar de país o de periodo <b>refresca la vista en el momento</b>, sin <code>location.reload</code>. No se pierde el contexto ni la sesión.</p>
+<div class="acad-section">✅ <b>Por qué importa</b><p>Un refresco completo borraría filtros y estado. El refresco in-place mantiene tu trabajo y garantiza que lo que ves es el estado más reciente de la fuente viva.</p></div>`},
+         {id:'ac3',ic:'🧩',n:'Estados ortogonales (no se pisan)',content:`
+<h2>Una visita tiene varias facetas a la vez</h2>
+<p>Asignación, agenda, ejecución, cuestionario, submitido, liquidación, pago, fuera de rango y cancelación son <b>facetas independientes</b> (ortogonales). La etiqueta visible muestra la etapa más avanzada, pero cada faceta se evalúa por separado con la misma función canónica (<code>visitFacets</code>/<code>visitBucketFns</code>).</p>
+<ul>
+<li><b>Disponible → Asignada → Agendada → Realizada → Con cuestionario → Submitida → Liquidada.</b></li>
+<li><b>Fuera de rango</b> y <b>Cancelada</b> se marcan aparte, sin borrar el resto del historial.</li>
+</ul>
+<div class="acad-section">⚠️ <b>Regla</b><p>El estado visible <b>nunca</b> se toma del texto crudo del registro: se deriva de las facetas canónicas, para que Dashboard, Visitas y Reportes digan exactamente lo mismo.</p></div>`},
+         {id:'ac4',ic:'🚫',n:'Ausencia distinta de cero',content:`
+<h2>"No hay dato" ≠ "es cero"</h2>
+<p>Si una métrica no tiene fuente confirmada (un honorario ausente, un score que aún no llega), la plataforma muestra <b>"Pendiente de fuente"</b>, nunca un <b>0</b> aparente que se lea como un valor real.</p>
+<div class="acad-section">🎯 <b>Ejemplo</b><p>La <b>Efectividad</b> = Σ realizadas ÷ Σ asignadas. Si no hay asignadas reales en el alcance, el KPI dice "Pendiente de fuente" (gate fail-closed), no "0%". La fórmula siempre está visible para que el número sea auditable.</p></div>`},
+         {id:'ac5',ic:'🔁',n:'Reasignación segura y trazable',content:`
+<h2>Cambiar de evaluador sin perder la fecha</h2>
+<p>Al reasignar una visita, la plataforma te muestra el <b>evaluador actual, la fecha y la franja vigentes</b>, y exige una <b>decisión explícita</b> sobre la fecha:</p>
+<ul>
+<li><b>Conservar fecha</b> — mantiene la agenda vigente.</li>
+<li><b>Cambiar fecha</b> — pide nueva fecha y franja.</li>
+<li><b>Pendiente de agendamiento</b> — deja la visita sin fecha hasta coordinar.</li>
+</ul>
+<p>Nunca se borra ni se inventa una fecha en silencio. Cada reasignación queda <b>registrada</b> (quién, a quién, con qué decisión de fecha) y notifica al equipo. El cambio se prepara en memoria y queda <b>pendiente de sincronización autorizada</b> — no escribe en HR por su cuenta.</p>`},
+         {id:'ac6',ic:'⤓',n:'Exportación por alcance, periodo, rol y revisión',content:`
+<h2>Lo que exportas es lo que ves</h2>
+<p>Cada reporte (Reportes, Visitas, Postulaciones, Dashboard, CRM, Finanzas y Mis Reportes del evaluador) exporta en <b>PDF, Excel (.xlsx real) y PowerPoint</b> con el <b>diseño del tenant</b> (logo, colores, tipografía), encabezado con proyecto/periodo/país/sucursal/alcance/fecha/fuente/revisión, pie con paginación y gráficas cuando aplican.</p>
+<ul>
+<li>Las <b>mismas filas y columnas</b> aparecen en los tres formatos.</li>
+<li>Puedes <b>elegir, ocultar, ordenar y renombrar columnas</b> y agregar notas; la personalización se refleja en los tres formatos.</li>
+<li>Se exporta <b>solo el periodo activo y el alcance filtrado</b> visible; los datos protegidos (p. ej. teléfono) no se incluyen sin autorización.</li>
+</ul>`},
+         {id:'ac7',ic:'🧪',n:'Canary funcional',content:`
+<h2>Prueba viva de que el flujo responde</h2>
+<p>Acciones como <b>asignar</b> un evaluador o <b>registrar un cuestionario</b> cambian de inmediato las facetas y los KPIs derivados, sin recargar. Este "canary" confirma que la operación está viva y que los indicadores reaccionan a la realidad, no a datos congelados.</p>`},
+         {id:'ac8',ic:'🔒',n:'Seguridad fail-closed del evaluador',content:`
+<h2>Sin identidad verificable, sin datos</h2>
+<p>Los módulos privados del evaluador (Mis Visitas, Reservas, Mi Día, Mis Reportes) muestran datos <b>solo</b> cuando hay un <code>shopperId</code> verificable en la sesión. Sin identidad real:</p>
+<ul>
+<li>No se listan ni ejecutan visitas de nadie.</li>
+<li>Se muestra "Identidad de evaluador no verificable" y las exportaciones quedan bloqueadas.</li>
+<li>El estado de una visita <b>nunca</b> sustituye la identidad: un evaluador ve lo suyo, jamás lo de otro.</li>
+</ul>
+<div class="acad-section">⚠️ <b>Importante</b><p>La selección visual de rol ("Ver como") es una <b>vista previa</b>, no autenticación ni control de seguridad real. El RBAC/Auth real lo gobierna el backend.</p></div>`},
+         {id:'ac9',ic:'❓',n:'Evaluación: operación canónica',tipo:'quiz',quiz:[
+           {q:'¿Por qué Dashboard, Visitas y los reportes exportados muestran los mismos números?',o:['Porque se copian a mano','Porque comparten la misma fuente viva y una revisión única (sourceRevision)','Porque se recargan cada minuto'],a:1},
+           {q:'Una métrica no tiene fuente confirmada. ¿Qué debe mostrar la plataforma?',o:['0 para no dejar el espacio vacío','"Pendiente de fuente" — nunca un cero aparente','Un promedio estimado'],a:1},
+           {q:'Al reasignar una visita, ¿qué NO puede pasar?',o:['Que te pida decidir sobre la fecha','Que se borre o invente la fecha en silencio','Que quede registrada la reasignación'],a:1},
+           {q:'Un evaluador inicia sesión sin shopperId verificable. ¿Qué ve en Mis Visitas?',o:['Las visitas de un evaluador de ejemplo','Nada: estado "identidad no verificable", sin datos ni acciones','Todas las visitas del proyecto'],a:1}
+         ]}
+       ]},
       /* ─── FINANZAS & LIQUIDACIONES (profundo) ─── */
       {id:'a_fin_op',cat:'Finanzas',ic:'💵',color:'#0e9c6e',n:'Finanzas: liquidaciones, movimientos y beneficios',
        desc:'Cómo se liquida, se paga y se concilia — pantalla por pantalla, con estados honestos.',

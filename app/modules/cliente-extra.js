@@ -73,7 +73,7 @@ CX.reportKit = CX.reportKit || (function(){
     document.head.appendChild(st); }
   function header(t,m){
     const logo=t.logoUrl?`<img src="${esc(t.logoUrl)}" style="height:34px">`:`<div style="width:34px;height:34px;border-radius:8px;background:${t.brandHex};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800">${esc(t.logoText)}</div>`;
-    return `<div style="display:flex;align-items:center;gap:12px;border-bottom:3px solid ${t.brandHex};padding-bottom:10px;margin-bottom:14px">${logo}<div style="flex:1"><div style="font-size:20px;font-weight:800;color:${t.brandDark}">${esc(m.title)}</div><div style="font-size:11.5px;color:#4b5563">${esc(t.name)}${t.client?(' · '+esc(t.client)):''}</div></div><div style="text-align:right;font-size:11px;color:#4b5563;line-height:1.55"><div><b>${esc(m.project)}</b></div><div>${esc(m.period)}</div><div>${esc(m.scope)}</div></div></div>`;
+    return `<div style="display:flex;align-items:center;gap:12px;border-bottom:3px solid ${t.brandHex};padding-bottom:10px;margin-bottom:14px">${logo}<div style="flex:1"><div style="font-size:20px;font-weight:800;color:${t.brandDark}">${esc(m.title)}</div><div style="font-size:11.5px;color:#4b5563">${esc(t.name)}${t.client?(' · '+esc(t.client)):''}</div></div><div style="text-align:right;font-size:11px;color:#4b5563;line-height:1.55"><div><b>${esc(m.project)}</b></div><div>${esc(m.period)}</div><div>${esc(m.scope)}</div>${m.sourceRevision?`<div style="color:#94a3b8">rev. ${esc(m.sourceRevision)}</div>`:''}</div></div>`;
   }
   function chartHTML(t,ch){ if(!ch||!ch.data||!ch.data.length)return '';
     const max=Math.max(...ch.data.map(d=>+d.value||0),1);
@@ -125,9 +125,18 @@ CX.reportKit = CX.reportKit || (function(){
       window.print(); return true; },
     exportExcel(spec){ if(typeof XLSX==='undefined'){CX.ui.toast('Error al generar archivo','err');return false;}
       const m=spec.meta,cols=vis(spec.columns),rows=spec.rows||[]; if(!rows.length){CX.ui.toast('Sin datos para esta vista','err');return false;}
-      const resumen=[['Reporte',m.title],['Empresa',brand().name],['Proyecto',m.project],['Periodo',m.period],['Alcance',m.scope],['Fuente',m.sourceLabel],['Generado',m.generatedAt],['Filas',rows.length]]; if(spec.notes)resumen.push(['Notas',spec.notes]);
+      const resumen=[['Reporte',m.title],['Empresa',brand().name],['Proyecto',m.project],['Periodo',m.period],['Alcance',m.scope],['Fuente',m.sourceLabel]]; if(m.sourceRevision)resumen.push(['Revisión de fuente',m.sourceRevision]); resumen.push(['Generado',m.generatedAt],['Filas',rows.length]); if(spec.notes)resumen.push(['Notas',spec.notes]);
       const data=rows.map(r=>{const o={};cols.forEach(c=>{o[c.label]=(r[c.key]==null?'':r[c.key]);});return o;});
-      const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(resumen),'Resumen'); XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(data),'Datos');
+      const wb=XLSX.utils.book_new();
+      const wsR=XLSX.utils.aoa_to_sheet(resumen); wsR['!cols']=[{wch:22},{wch:Math.max(28,...resumen.map(r=>String(r[1]??'').length+2))}]; XLSX.utils.book_append_sheet(wb,wsR,'Resumen');
+      const wsD=XLSX.utils.json_to_sheet(data);
+      /* CORTE 2A P1 — anchos de columna calculados por contenido (encabezado vs celdas). */
+      wsD['!cols']=cols.map(c=>({wch:Math.min(48,Math.max(10,c.label.length+2,...rows.map(r=>String(r[c.key]==null?'':r[c.key]).length+2)))}));
+      wsD['!autofilter']={ref:XLSX.utils.encode_range({s:{c:0,r:0},e:{c:Math.max(0,cols.length-1),r:rows.length}})};
+      XLSX.utils.book_append_sheet(wb,wsD,'Datos');
+      /* Catálogo de columnas visibles (documenta qué contiene cada columna del reporte). */
+      const cat=[['Columna','Clave','Incluida'],...spec.columns.map(c=>[c.label,c.key,c.hidden?'Oculta':'Visible'])];
+      const wsC=XLSX.utils.aoa_to_sheet(cat); wsC['!cols']=[{wch:28},{wch:22},{wch:12}]; XLSX.utils.book_append_sheet(wb,wsC,'Catálogo de columnas');
       XLSX.writeFile(wb,this._fname(spec,'xlsx')); return true; },
     exportPPT(spec){ if(typeof PptxGenJS==='undefined'){CX.ui.toast('Error al generar archivo','err');return false;}
       const t=brand(),m=spec.meta,cols=vis(spec.columns),rows=spec.rows||[],bh=hex(t.brandHex),bd=hex(t.brandDark);

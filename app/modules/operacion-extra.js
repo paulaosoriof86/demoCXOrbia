@@ -119,22 +119,25 @@ CX.module('miperfil', ({data,ui})=>{
       <div data-k="curso" style="cursor:pointer">${ui.kpi('En curso',st.enCurso,'a')}</div>
     </div>
     <div style="font-size:11px;color:var(--t3);text-align:right;margin-bottom:16px">↑ toca un indicador para ver el detalle</div>
-    ${(()=>{const hist=data.visitsForShopper(s.id);
-      const asign=hist.filter(v=>v.shopperId===s.id||['asignada','agendada','realizada','cuestionario','liquidada'].includes(v.estado));
-      const realiz=hist.filter(v=>['realizada','cuestionario','liquidada'].includes(v.estado));
-      const efect=asign.length?Math.round(realiz.length/asign.length*100):0;
-      const aTiempo=realiz.length?Math.round(realiz.filter(v=>v.submit!==false).length/realiz.length*100):0;
-      const cuestOk=realiz.length?Math.round(realiz.filter(v=>['cuestionario','liquidada'].includes(v.estado)).length/realiz.length*100):0;
+    ${(()=>{const hist=data.visitsForShopper(s.id); const BF=data.visitBucketFns,F=data.visitFacets;
+      /* CORTE 2A P1 — OKR del shopper con facets canónicas + gate fail-closed:
+         sin asignadas reales, Efectividad = Pendiente de fuente (nunca 0% aparente). */
+      const asign=hist.filter(v=>F&&!F(v).cancelled).filter(BF.asignadas);
+      const realiz=hist.filter(v=>F&&!F(v).cancelled).filter(BF.realizadas);
+      const efect=asign.length?Math.round(realiz.length/asign.length*100):null;
+      const aTiempo=realiz.length?Math.round(realiz.filter(v=>v.submit!==false).length/realiz.length*100):null;
+      const cuestOk=realiz.length?Math.round(realiz.filter(v=>F&&F(v).questionnaire).length/realiz.length*100):null;
       const reprog=asign.length?Math.round(asign.filter(v=>v.reprog).length/asign.length*100):0;
-      const okr=(lbl,val,meta,tone,suf)=>{const pct=Math.min(100,Math.round(val/meta*100));return `<div style="margin-bottom:12px">
+      const pctTxt=(v,suf)=>v==null?'—':v+suf;
+      const okr=(lbl,val,meta,tone,suf)=>{if(val==null)return `<div style="margin-bottom:12px"><div class="between" style="margin-bottom:4px"><span style="font-size:12.5px;font-weight:600;color:var(--t1)">${lbl}</span><span style="font-size:11.5px">${CX.ui.statusBdg('pending_source')}</span></div></div>`;const pct=Math.min(100,Math.round(val/meta*100));return `<div style="margin-bottom:12px">
         <div class="between" style="margin-bottom:4px"><span style="font-size:12.5px;font-weight:600;color:var(--t1)">${lbl}</span><span style="font-size:12px;font-weight:700;color:var(--${val>=meta?'green':tone})">${val}${suf} <span class="muted" style="font-weight:500">/ meta ${meta}${suf}</span></span></div>
         <div class="bar" style="height:7px"><i style="width:${pct}%;background:var(--${val>=meta?'green':tone})"></i></div></div>`;};
       return `<div class="card card-p" style="margin-bottom:16px">
         <div class="card-h"><div class="card-t">🎯 Mi desempeño y metas (OKRs)</div><span class="muted" style="font-size:11px">para mejorar y acceder a más visitas</span></div>
         <div class="grid g4" style="margin-bottom:14px" id="okrKpis">
-          <div data-ok="efect" style="cursor:pointer">${ui.kpi('Efectividad',efect+'%',efect>=85?'g':'a','realizadas/asignadas')}</div>
-          <div data-ok="cuest" style="cursor:pointer">${ui.kpi('Cuest. completos',cuestOk+'%',cuestOk>=90?'g':'a')}</div>
-          <div data-ok="atiempo" style="cursor:pointer">${ui.kpi('Envíos a tiempo',aTiempo+'%',aTiempo>=90?'g':'a')}</div>
+          <div data-ok="efect" style="cursor:pointer">${ui.kpi('Efectividad',efect==null?CX.ui.statusBdg('pending_source'):efect+'%',efect!=null&&efect>=85?'g':'a','realizadas/asignadas')}</div>
+          <div data-ok="cuest" style="cursor:pointer">${ui.kpi('Cuest. completos',cuestOk==null?CX.ui.statusBdg('pending_source'):cuestOk+'%',cuestOk!=null&&cuestOk>=90?'g':'a')}</div>
+          <div data-ok="atiempo" style="cursor:pointer">${ui.kpi('Envíos a tiempo',aTiempo==null?CX.ui.statusBdg('pending_source'):aTiempo+'%',aTiempo!=null&&aTiempo>=90?'g':'a')}</div>
           <div data-ok="rating" style="cursor:pointer">${ui.kpi('Calificación',s.rating?('★ '+s.rating):'—','p')}</div>
         </div>
         ${okr('Efectividad de visitas',efect,90,'amber','%')}
@@ -264,7 +267,11 @@ CX.module('informes', ({data,ui})=>{
   const covRows=Object.values(byPais).map(c=>({pais:c.pais,realizadas:c.r,total:c.t,cobertura:Math.round(c.r/Math.max(c.t,1)*100)+'%'}));
   const totVis=vis.length, totReal=vis.filter(isReal).length;
   const cumpGlobal=totVis?Math.round(totReal/totVis*100):0;
-  const efectGlobal=rankSh.length?Math.round(rankSh.reduce((a,s)=>a+s.pct,0)/rankSh.length):null;
+  /* CORTE 2A P1 — Efectividad canónica y con fórmula visible: Σrealizadas ÷ Σasignadas.
+     Gate fail-closed: si no hay asignadas reales, es Pendiente de fuente (nunca 0% aparente). */
+  const totAsign=vis.filter(v=>data.visitBucketFns.asignadas(v)).length;
+  const efectGlobal=totAsign>0?Math.round(totReal/totAsign*100):null;
+  const efectFormula='Efectividad = Σ realizadas ('+totReal+') ÷ Σ asignadas ('+(totAsign||0)+')';
 
   const REPORTS={
     cumpSuc:{icon:'📊',source:'real',label:'Cumplimiento por sucursal',desc:'Realizadas / total por sucursal',
@@ -379,12 +386,13 @@ CX.module('informes', ({data,ui})=>{
     };
     host.innerHTML=`
       ${ui.ph('Reportes & KPIs', projectLabel+' · '+periodLabel+' · entregables operativos reales')}
-      <div class="grid g4" style="margin-bottom:16px">
-        ${ui.kpi('Cumplimiento',cumpGlobal+'%',cumpGlobal>=80?'g':cumpGlobal>=50?'a':'r','realizadas/total')}
-        ${ui.kpi('Efectividad',efectGlobal==null?CX.ui.statusBdg('pending_source'):efectGlobal+'%',efectGlobal!=null&&efectGlobal>=80?'g':'a','evaluadores')}
+      <div class="grid g4" style="margin-bottom:8px">
+        ${ui.kpi('Cumplimiento',cumpGlobal+'%',cumpGlobal>=80?'g':cumpGlobal>=50?'a':'r','realizadas ÷ total')}
+        ${ui.kpi('Efectividad',efectGlobal==null?CX.ui.statusBdg('pending_source'):efectGlobal+'%',efectGlobal!=null&&efectGlobal>=80?'g':'a','realizadas ÷ asignadas')}
         ${pendKpi('Velocidad media')}
         ${pendKpi('Calidad de cuestionario')}
       </div>
+      <div style="font-size:11px;color:var(--t3);margin-bottom:16px">📐 ${efectGlobal==null?'Efectividad: sin visitas asignadas en el alcance — Pendiente de fuente (no se muestra 0% aparente).':efectFormula+' = '+efectGlobal+'%'} · Cumplimiento = realizadas (${totReal}) ÷ total (${totVis})</div>
       <div class="card card-p">
         <div class="card-t" style="margin-bottom:12px">Reportes operativos</div>
         <div class="grid g2">${['cumpSuc','cobertura','rankSh','estado'].map(card).join('')}</div>

@@ -2,6 +2,12 @@
 CX.module('postulaciones', ({data,ui})=>{
   const p=data.period(), posts=data._posts.filter(x=>data.inScope(x.pais));
   const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
+  /* CORTE 2A — revisión de fuente canónica (misma que Dashboard/reportes/Visitas) */
+  const sourceRevision=(CX.clienteData&&CX.clienteData.sourceRevision)?CX.clienteData.sourceRevision(p):(p&&p.sourceRevision)||'0';
+  /* CORTE 2A — teléfono protegido: etiqueta segura si el dato está ausente o protegido,
+     nunca 'undefined'/'null' ni un teléfono expuesto sin autorización. */
+  const safePhone=(x)=>{const t=(x&&x.phone!=null)?String(x.phone).trim():'';return t?t:'Contacto protegido';};
+  const safe=(val)=>{const t=(val==null)?'':String(val).trim();return (t&&t!=='undefined'&&t!=='null')?t:'—';};
   /* R19 P0-1: los KPIs superiores deben coincidir con el periodo activo por defecto (mismo
      criterio que el listado abajo) — nunca contar postulaciones de otros periodos salvo que se
      pida explícitamente "Ver históricas". */
@@ -28,7 +34,7 @@ CX.module('postulaciones', ({data,ui})=>{
           <div style="font-size:14px;font-weight:700;color:var(--t1)">${x.shopper} <span class="muted" style="font-weight:500;font-size:12px">· ${x.shopperCode}</span></div>
           <div style="font-size:10px;font-weight:700;color:var(--brand);background:var(--brand-light);display:inline-block;padding:1px 7px;border-radius:6px;margin-top:3px">🗂️ ${projName(x.projectId)}</div>
           <div style="font-size:12px;color:var(--t2);margin-top:3px">📍 ${x.sucursal} · ${x.ciudad}</div>
-          <div style="font-size:11.5px;color:var(--t3);margin-top:4px">📅 ${x.fechaProp} · ⏱️ ${x.franjaCode} · 📞 ${x.phone} · desde ${x.disponibleDesde}</div>
+          <div style="font-size:11.5px;color:var(--t3);margin-top:4px">📅 ${safe(x.fechaProp)} · ⏱️ ${safe(x.franjaCode)} · 📞 ${safePhone(x)} · desde ${safe(x.disponibleDesde)}</div>
           <div style="font-size:12px;color:var(--green);font-weight:600;margin-top:4px">💲 ${hon}</div>
           ${x.estado==='aprobada'?`<div style="font-size:11px;color:var(--t3);margin-top:5px">✅ ${x.quincena} · WA fallback/manual preparado · pendiente confirmación · Aprobada por <b style="color:var(--t2)">${x.aprobadaPor}</b></div>`:''}
         </div>
@@ -66,7 +72,7 @@ CX.module('postulaciones', ({data,ui})=>{
   <div class="flex wrap" style="gap:8px;margin-bottom:12px">
     <button class="btn btn-soft btn-sm" id="syncHR">🔄 Sincronizar HR</button>
     <button class="btn btn-green btn-sm" id="asignManual">＋ Asignar visita manual</button>
-    <button class="btn btn-ghost btn-sm">⤓ Exportar</button>
+    <button class="btn btn-ghost btn-sm" id="poExport">⤓ Exportar</button>
     <div class="spacer"></div>
     <button class="btn btn-pr btn-sm" id="reqShopper">📤 Pedir al shopper…</button>
     <button class="btn btn-pr btn-sm" id="openAgenda">🗓️ Gestionar agendamientos</button>
@@ -100,7 +106,39 @@ CX.module('postulaciones', ({data,ui})=>{
   <div class="card card-p">${ui.aiBox('Sugiero el mejor shopper por historial y certificación, detecto reprogramaciones tardías y disparo WhatsApp y notificaciones automáticamente al aprobar. Cada decisión queda firmada y trazada.','Asistente de asignación')}</div>`;
 
   setTimeout(()=>{
-    const poList=(title,arr)=>ui.modal(title+' ('+arr.length+')', arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Estado</th><th>Honorario</th><th></th></tr></thead><tbody>${arr.map(x=>`<tr><td><b style="font-size:12.5px">${x.shopper}</b><div style="font-size:10px;color:var(--t3)">${x.shopperCode}</div></td><td style="font-size:12px">${x.sucursal}<div style="font-size:10px;color:var(--t3)">${CX.paisFlag(x.pais)} ${x.ciudad}</div></td><td>${estTag(x.estado)}</td><td style="font-size:12px;color:var(--green)">${x.currency} ${x.honorario}</td><td style="text-align:right">${x.id?`<button class="btn btn-ghost btn-sm poRowGest" data-pid="${x.id}" style="padding:2px 9px;font-size:11px">Gestionar →</button>`:''}</td></tr>`).join('')}</tbody></table>`:ui.empty('📭','Sin elementos en esta categoría.'),
+    /* CORTE 2A — Exportar Postulaciones: solo periodo activo + alcance filtrado visible,
+       conserva proyecto/país/estado/revisión de fuente, columnas autorizadas, sin datos
+       protegidos no autorizados (teléfono se excluye del export). */
+    const pox=document.getElementById('poExport');
+    if(pox&&CX.reportKit){
+      const san=(s)=>String(s||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';
+      const visibleActive=()=>{
+        const hist=(document.getElementById('pHist')||{}).checked;
+        const q=((document.getElementById('pSearch')||{}).value||'').toLowerCase();
+        const fpr=(document.getElementById('pProj')||{}).value||'';
+        const fp=(document.getElementById('pPais')||{}).value||'';
+        const fe=(document.getElementById('pEst')||{}).value||'';
+        return posts.filter(x=>(hist||x.projectId===data.currentPeriodId)&&(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe));
+      };
+      const poSpec=(ext)=>{
+        const rows=visibleActive();
+        const byEst={}; rows.forEach(x=>{byEst[x.estado]=(byEst[x.estado]||0)+1;});
+        const projectLabel=data.programBase?data.programBase(p):p.name;
+        const periodLabel=(p.periodo||p.ronda||p.name||'Periodo');
+        return { title:'Postulaciones',
+          meta:{title:'Postulaciones',project:projectLabel,period:periodLabel,scope:'Periodo activo · alcance filtrado',sourceLabel:'Operación viva · postulaciones del periodo',sourceRevision,generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
+          columns:[{key:'shopper',label:'Shopper'},{key:'sucursal',label:'Sucursal'},{key:'ciudad',label:'Ciudad'},{key:'pais',label:'País'},{key:'proyecto',label:'Proyecto'},{key:'estado',label:'Estado'},{key:'fecha',label:'Fecha propuesta'},{key:'franja',label:'Franja'},{key:'honorario',label:'Honorario'}],
+          rows:rows.map(x=>({shopper:safe(x.shopper),sucursal:safe(x.sucursal),ciudad:safe(x.ciudad),pais:safe(x.pais),proyecto:projName(x.projectId),estado:safe(x.estado),fecha:safe(x.fechaProp),franja:safe(x.franjaCode),honorario:(x.honorario!=null?x.honorario:'Pendiente de fuente')})),
+          notes:'',
+          summary:['Postulaciones: '+rows.length,'Revisión de fuente: '+sourceRevision, Object.entries(byEst).map(([k2,v2])=>k2+': '+v2).join(' · ')],
+          chart:{title:'Postulaciones por estado',data:Object.entries(byEst).map(([k2,v2])=>({label:k2,value:v2}))},
+          filename:[san('postulaciones'),san(projectLabel),san(periodLabel),new Date().toISOString().slice(0,10)].join('_')+'.'+ext };
+      };
+      pox.addEventListener('click',()=>{ const n=visibleActive().length;
+        CX.ui.modal('⤓ Exportar postulaciones',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">${n} postulación(es) del periodo activo y alcance filtrado. Se exporta con el diseño del tenant; el teléfono protegido no se incluye.</p><div class="flex" style="gap:8px;justify-content:flex-end"><button class="btn btn-ghost btn-sm" id="poPdf">⤓ PDF</button><button class="btn btn-soft btn-sm" id="poXls">⤓ Excel</button><button class="btn btn-pr btn-sm" id="poPpt">⤓ PPT</button></div>`,{onMount:(ov)=>{ov.querySelector('#poPdf').addEventListener('click',()=>CX.reportKit.exportPDF(poSpec('pdf')));ov.querySelector('#poXls').addEventListener('click',()=>{if(CX.reportKit.exportExcel(poSpec('xlsx')))CX.ui.toast('Excel .xlsx generado','ok');});ov.querySelector('#poPpt').addEventListener('click',()=>{if(CX.reportKit.exportPPT(poSpec('pptx')))CX.ui.toast('PowerPoint generado','ok');});}});
+      });
+    }
+    const poList=(title,arr)=>ui.modal(title+' ('+arr.length+')', arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Estado</th><th>Honorario</th><th></th></tr></thead><tbody>${arr.map(x=>`<tr><td><b style="font-size:12.5px">${x.shopper}</b><div style="font-size:10px;color:var(--t3)">${x.shopperCode}</div></td><td style="font-size:12px">${x.sucursal}<div style="font-size:10px;color:var(--t3)">${CX.paisFlag(x.pais)} ${x.ciudad}</div></td><td>${estTag(x.estado)}</td><td style="font-size:12px;color:var(--green)">${x.honorario!=null?x.currency+' '+x.honorario:'<span class="muted">Pendiente de fuente</span>'}</td><td style="text-align:right">${x.id?`<button class="btn btn-ghost btn-sm poRowGest" data-pid="${x.id}" style="padding:2px 9px;font-size:11px">Gestionar →</button>`:''}</td></tr>`).join('')}</tbody></table>`:ui.empty('📭','Sin elementos en esta categoría.'),
       {onMount:(ov,close)=>ov.querySelectorAll('.poRowGest').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.pid);if(x){close();postDetalle(x);}}))});
     const poKp={
       pend:['Postulaciones pendientes',activePosts.filter(x=>x.estado==='pendiente')],
@@ -198,27 +236,53 @@ CX.module('postulaciones', ({data,ui})=>{
         <label class="lbl">Fecha</label><input class="inp" id="edF" type="date" value="${x.fechaProp||''}" style="margin-bottom:10px">
         <label class="lbl">Franja</label><select class="sel" id="edFr" style="margin-bottom:14px">${['AM 8–12h','PM 14–18h','WK fin de semana'].map(o=>`<option ${o.startsWith(x.franjaCode||'')?'selected':''}>${o}</option>`).join('')}</select>
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="edOk">Guardar</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#edOk').addEventListener('click',()=>{ const f=ov.querySelector('#edF').value; x.fechaProp=f; const v=data._visitas.find(z=>z.id===x.visitaId); if(v){v.agendada=f;} CX.hr&&CX.hr.writeBack&&CX.hr.writeBack(p,v); close(); ui.toast('Asignación actualizada · HR sincronizada · por '+gestor(),'ok'); });}});
+      `,{onMount:(ov,close)=>{ov.querySelector('#edOk').addEventListener('click',()=>{ const f=ov.querySelector('#edF').value; x.fechaProp=f; const v=data._visitas.find(z=>z.id===x.visitaId); if(v){v.agendada=f;} CX.bus&&CX.bus.emit('visit-flow'); close(); ui.toast('Asignación actualizada en memoria · pendiente de sincronización autorizada · por '+gestor(),'ok',3600); });}});
     }));
 
     /* reasignar a otro shopper */
     document.querySelectorAll('[data-reasig]').forEach(b=>b.addEventListener('click',()=>{ const x=posts.find(z=>z.id===b.dataset.reasig); if(!x)return;
       const cands=data.shoppersFor().filter(s=>s.id!==x.shopperId);
+      const curFecha=safe(x.fechaProp), curFranja=safe(x.franjaCode);
       ui.modal('Reasignar visita · '+x.sucursal,`
-        <p style="font-size:12px;color:var(--t2);margin-bottom:8px">Actualmente: <b>${x.shopper}</b>. Busca y elige el nuevo evaluador.</p>
+        <div style="background:var(--panel-2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--t2)">
+          <div>Shopper actual: <b>${safe(x.shopper)}</b></div>
+          <div>Fecha vigente: <b>${curFecha}</b> · Franja vigente: <b>${curFranja}</b></div>
+        </div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:8px">Busca y elige el nuevo evaluador.</p>
         <input class="inp" id="rsFind" placeholder="🔍 Buscar por nombre, código o ciudad…" style="margin-bottom:6px">
         <div class="flex" style="gap:6px;margin-bottom:8px"><select class="sel" id="rsPais" style="flex:1"><option value="">País: todos</option>${[...new Set(cands.map(s=>s.pais))].map(p=>`<option value="${p}">${CX.paisName(p)}</option>`).join('')}</select><select class="sel" id="rsCert" style="flex:1"><option value="">Certificación: todas</option><option value="1">Solo certificados</option></select></div>
-        <div id="rsList" style="max-height:220px;overflow:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:12px"></div>
+        <div id="rsList" style="max-height:180px;overflow:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:12px"></div>
+        <label class="lbl">Decisión de fecha / franja <b style="color:var(--accent)">*</b></label>
+        <div id="rsDate" style="margin-bottom:6px">
+          <label class="flex" style="gap:7px;align-items:center;padding:6px 0;font-size:12.5px;cursor:pointer"><input type="radio" name="rsDateMode" value="keep" checked> <span>Conservar fecha <span style="color:var(--t3)">(mantiene ${curFecha} · ${curFranja})</span></span></label>
+          <label class="flex" style="gap:7px;align-items:center;padding:6px 0;font-size:12.5px;cursor:pointer"><input type="radio" name="rsDateMode" value="change"> <span>Cambiar fecha</span></label>
+          <div id="rsChangeBox" style="display:none;padding:4px 0 4px 24px"><div class="flex" style="gap:8px"><input class="inp" id="rsNewF" type="date" value="${x.fechaProp||''}" style="flex:1"><select class="sel" id="rsNewFr" style="flex:1">${['AM 8–12h','PM 14–18h','WK fin de semana'].map(o=>`<option ${o.startsWith(x.franjaCode||'')?'selected':''}>${o}</option>`).join('')}</select></div></div>
+          <label class="flex" style="gap:7px;align-items:center;padding:6px 0;font-size:12.5px;cursor:pointer"><input type="radio" name="rsDateMode" value="pending"> <span>Pendiente de agendamiento <span style="color:var(--t3)">(sin fecha hasta coordinar)</span></span></label>
+        </div>
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rsOk" disabled>Reasignar</button></div>
       `,{onMount:(ov,close)=>{
         let sel=null;
+        const modeOf=()=>ov.querySelector('input[name=rsDateMode]:checked').value;
+        const box=ov.querySelector('#rsChangeBox');
+        ov.querySelectorAll('input[name=rsDateMode]').forEach(r=>r.addEventListener('change',()=>{box.style.display=modeOf()==='change'?'':'none';}));
         const draw=()=>{ const q=(ov.querySelector('#rsFind').value||'').toLowerCase(); const fp=ov.querySelector('#rsPais').value; const fc=ov.querySelector('#rsCert').value;
           const list=cands.filter(s=>(!q||(s.nombre+' '+s.code+' '+(s.ciudad||'')).toLowerCase().includes(q))&&(!fp||s.pais===fp)&&(!fc||s.certificado));
           ov.querySelector('#rsList').innerHTML=list.length?list.slice(0,50).map(s=>`<div class="rsRow" data-id="${s.id}" style="padding:8px 11px;border-bottom:1px solid var(--border-2);cursor:pointer;${sel===s.id?'background:var(--brand-light)':''}"><b style="font-size:12.5px">${s.nombre}</b> <span style="font-size:11px;color:var(--t3)">· ${s.code} · ${s.ciudad||CX.paisName(s.pais)} · ⭐${(s.rating||0).toFixed?s.rating.toFixed(1):s.rating||'—'}</span></div>`).join(''):'<div style="padding:14px;font-size:12px;color:var(--t3)">Sin coincidencias.</div>';
           ov.querySelectorAll('.rsRow').forEach(r=>r.addEventListener('click',()=>{sel=r.dataset.id;ov.querySelector('#rsOk').disabled=false;draw();}));
         };
         ov.querySelector('#rsFind').addEventListener('input',draw); ov.querySelector('#rsPais').addEventListener('change',draw); ov.querySelector('#rsCert').addEventListener('change',draw); draw();
-        ov.querySelector('#rsOk').addEventListener('click',()=>{ if(!sel)return; if(!CX.permissions.gate('visit.reassign',{projectId:x.projectId,pais:x.pais},ui))return; data.assignVisit&&data.assignVisit(x.visitaId,sel); const ns=data.getShopper&&data.getShopper(sel); x.shopper=ns?ns.nombre:x.shopper; x.shopperId=sel; x.gestionadoPor=gestor(); CX.automations&&CX.automations.logAction&&CX.automations.logAction('Reasignada',x.visitaId||x.id,(x.shopper||'')+' · '+(x.sucursal||'')); CX.bus&&CX.bus.emit('visit-flow'); close(); CX.notif&&CX.notif.push({to:'admin',tipo:'reasig',icon:'🔁',tono:'a',titulo:'Visita reasignada',txt:x.sucursal+' → '+(x.shopper||''),nav:'postulaciones'}); ui.toast('Visita reasignada a '+x.shopper,'ok'); }); }});
+        ov.querySelector('#rsOk').addEventListener('click',()=>{ if(!sel)return; if(!CX.permissions.gate('visit.reassign',{projectId:x.projectId,pais:x.pais},ui))return;
+          const mode=modeOf();
+          /* Nunca borrar/inventar fecha en silencio: la decisión es explícita. */
+          let fechaMsg='';
+          const v=data._visitas?data._visitas.find(z=>z.id===x.visitaId):null;
+          if(mode==='keep'){ fechaMsg='fecha conservada ('+curFecha+')'; }
+          else if(mode==='change'){ const nf=ov.querySelector('#rsNewF').value; if(!nf){ui.toast('Elige la nueva fecha','warn');return;} const nfr=ov.querySelector('#rsNewFr').value; x.fechaProp=nf; x.franjaCode=nfr; if(v)v.agendada=nf; fechaMsg='fecha cambiada a '+nf; }
+          else { x.fechaProp=null; if(v){v.agendada=null;} x.pendienteAgendamiento=true; fechaMsg='pendiente de agendamiento'; }
+          data.assignVisit&&data.assignVisit(x.visitaId,sel); const ns=data.getShopper&&data.getShopper(sel); x.shopper=ns?ns.nombre:x.shopper; x.shopperId=sel; x.gestionadoPor=gestor();
+          CX.automations&&CX.automations.logAction&&CX.automations.logAction('Reasignada',x.visitaId||x.id,(x.shopper||'')+' · '+(x.sucursal||'')+' · '+fechaMsg); CX.bus&&CX.bus.emit('visit-flow'); close();
+          CX.notif&&CX.notif.push({to:'admin',tipo:'reasig',icon:'🔁',tono:'a',titulo:'Visita reasignada',txt:x.sucursal+' → '+(x.shopper||'')+' · '+fechaMsg,nav:'postulaciones'});
+          ui.toast('Cambio preparado · reasignada a '+x.shopper+' · '+fechaMsg+' · pendiente de sincronización autorizada','ok',4200); }); }});
     }));
 
     /* cancelar: la visita vuelve a disponible */
