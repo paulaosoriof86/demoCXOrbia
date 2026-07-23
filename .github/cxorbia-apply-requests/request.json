@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "cxorbia.atomic-apply-request.v1",
+  "mode": "focal_text_patch_v1",
+  "requestId": "r20-header-variant-live-contract-fix-20260723",
+  "issuedAt": "2026-07-23",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "expectedParentSha": "2d13a1f2e8c876bbe2a6e04ac75c3dd3307ed6e1",
+  "targetPath": "tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs",
+  "expectedCurrentGitBlobSha": "c13005513e2e2f2a0b4b5115080a8fdfe6790831",
+  "findText": "  const julyGt=diagnostics.find(item=>item.title==='JULIO 26');\n  const julyHn=diagnostics.find(item=>item.title==='JULIO 26 HN');\n  if(julyGt?.headerVariant!=='tab_scoped_compact')issues.push({code:'july_26_variant_mismatch',observed:julyGt?.headerVariant||null});\n  if(julyHn?.headerVariant!=='full_identity')issues.push({code:'july_26_hn_variant_mismatch',observed:julyHn?.headerVariant||null});",
+  "replaceText": "  const allowedHeaderVariants=new Set(['full_identity','tab_scoped_compact']);\n  const invalidHeaderVariants=diagnostics.filter(item=>!allowedHeaderVariants.has(item.headerVariant));\n  if(invalidHeaderVariants.length)issues.push({code:'header_variant_not_contract_declared',tabs:invalidHeaderVariants.map(item=>({title:item.title,observed:item.headerVariant||null}))});\n  const inconsistentHeaderIdentity=diagnostics.filter(item=>(item.headerVariant==='full_identity'&&(item.countrySource!=='column'||item.cinemaIdSource!=='column'))||(item.headerVariant==='tab_scoped_compact'&&(item.countrySource!=='tab_name'||item.cinemaIdSource!=='absent_use_hr_row_identity')));\n  if(inconsistentHeaderIdentity.length)issues.push({code:'header_variant_identity_source_mismatch',tabs:inconsistentHeaderIdentity.map(item=>({title:item.title,headerVariant:item.headerVariant,countrySource:item.countrySource,cinemaIdSource:item.cinemaIdSource}))});\n  const julyGt=diagnostics.find(item=>item.title==='JULIO 26');\n  const julyHn=diagnostics.find(item=>item.title==='JULIO 26 HN');",
+  "commitMessage": "fix(tya): verify live R20 header variants by contract",
+  "deploy": false,
+  "merge": false,
+  "production": false,
+  "providerWrites": false,
+  "dataWrites": false,
+  "containsPii": false,
+  "containsSecrets": false
+}
