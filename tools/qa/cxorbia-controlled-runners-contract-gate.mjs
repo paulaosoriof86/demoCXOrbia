@@ -40,11 +40,27 @@ if (contract) {
   for (const profile of requiredReadonlyProfiles) if (!actualProfiles.includes(profile)) add(blockers, 'readonly_profile_missing', profile);
   if (!exists('tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs')) add(blockers, 'corte3_financial_gate_missing');
 
+  const stableIdentity=readonly?.stableVisitIdentity||{};
+  const stableFiles=[stableIdentity.helper,stableIdentity.applyScript,stableIdentity.gate];
+  for(const file of stableFiles){
+    if(!file||!exists(file))add(blockers,'stable_visit_identity_file_missing',file||'undefined');
+  }
+  if(stableIdentity.version!=='tya-stable-visit-id-r20-row-identity-v1')add(blockers,'stable_visit_identity_version_invalid',String(stableIdentity.version||''));
+  const canonicalFields=['tenantId','projectId','periodKey','country','sourceRow'];
+  if(JSON.stringify(stableIdentity.canonicalFields||[])!==JSON.stringify(canonicalFields))add(blockers,'stable_visit_identity_fields_invalid');
+  for(const profile of requiredReadonlyProfiles){
+    if(!stableIdentity.requiredInProfiles?.includes(profile))add(blockers,'stable_visit_identity_profile_missing',profile);
+    if(readonly?.profileDefinitions?.[profile]?.stableVisitIdentityRequired!==true)add(blockers,'profile_stable_visit_identity_not_required',profile);
+  }
+
   if (!blockers.length) {
     const atomicYml = read(atomic.workflow);
     const readonlyYml = read(readonly.workflow);
     const atomicScript = read(atomic.script);
     const readonlyScript = read(readonly.script);
+    const stableHelper=read(stableIdentity.helper);
+    const stableApply=read(stableIdentity.applyScript);
+    const stableGate=read(stableIdentity.gate);
 
     has(atomicYml, /^name:\s*CXORBIA_ATOMIC_APPLY_RUNNER\s*$/m, 'atomic_name_missing');
     has(atomicYml, /docs-tya-v6-v71-audit/, 'atomic_branch_missing');
@@ -81,9 +97,20 @@ if (contract) {
     has(readonlyScript, /CORTE3_FINANCIAL_RECONCILIATION_R20/, 'readonly_corte3_profile_missing');
     has(readonlyScript, /tya-financial-workbook-live-hr-reconcile-r14c/, 'readonly_corte3_reconcile_missing');
     has(readonlyScript, /tya-corte3-financial-reconciliation-r20-gate/, 'readonly_corte3_gate_missing');
+    has(readonlyScript, /tya-stabilize-source-safe-visit-ids-r20/, 'readonly_stable_visit_apply_missing');
+    has(readonlyScript, /tya-stable-visit-id-r20-gate/, 'readonly_stable_visit_gate_missing');
+    has(readonlyScript, /stableVisitIdentityGates\('tya-v174'\)/, 'v174_stable_visit_identity_missing');
+    has(readonlyScript, /stableVisitIdentityGates\('tya-corte3'\)/, 'corte3_stable_visit_identity_missing');
     has(readonlyScript, /repositoryWrites:\s*false/, 'readonly_repository_write_guard_missing');
     has(readonlyScript, /dataWrites:\s*false/, 'readonly_data_write_guard_missing');
     has(readonlyScript, /production:\s*false/, 'readonly_production_guard_missing');
+
+    has(stableHelper,/tenantId='tya'.*projectId='cinepolis'.*periodKey.*country.*sourceRow/s,'stable_helper_canonical_fields_missing');
+    lacks(stableHelper,/cinemaId|shopping|quincena|franja/,'stable_helper_mutable_field_dependency_forbidden');
+    has(stableApply,/stableVisitIdentityApplied:true/,'stable_apply_marker_missing');
+    has(stableApply,/stable_id_collision/,'stable_apply_collision_guard_missing');
+    has(stableApply,/hr_row_identity_mismatch/,'stable_apply_hr_row_guard_missing');
+    has(stableGate,/mutable_fields_changed_visit_id/,'stable_gate_mutable_regression_missing');
 
     const atomicPolicy = contract.atomicApplyPolicy || {};
     const readonlyPolicy = contract.readonlyGatePolicy || {};
