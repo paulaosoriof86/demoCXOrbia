@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-23  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V174_ACTIVE_BASELINE_CORTE3_FINANCIAL_RECONCILIATION_R20_RUNNER_READY_PENDING_EXECUTION_NO_PRODUCTION`
+**Estado vivo:** `V174_ACTIVE_BASELINE_STABLE_VISIT_ID_R20_PASS_CORTE3_FINANCIAL_RECONCILIATION_REVIEWED_PASS_CANONICAL_FINANCE_ADAPTER_NEXT_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -24,64 +24,64 @@
 7. `app/docs/VALIDACION-VISUAL-V174-APROBADA-CON-PENDIENTES-P1-P2-20260723.md`.
 8. `app/docs/PHASE-A-CORTE3-INICIO-FINANZAS-20260723.md`.
 9. `app/docs/CORTE3-FINANCIAL-SOURCE-INVENTORY-GAP-MATRIX-20260723.md`.
-10. `app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json`.
-11. `backend/contracts/cxorbia-controlled-runners-v1.json`.
-12. CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES, Academia, tracker, PR #7 y HEAD vivo.
+10. `app/docs/CORTE3-FINANCIAL-RECONCILIATION-R20-TECHNICAL-PASS-20260723.md`.
+11. `backend/contracts/tya-corte3-financial-r20-delta-review-v1.json`.
+12. `backend/contracts/cxorbia-controlled-runners-v1.json`.
+13. Manifest/source lock más reciente, CAMBIOS, Claude, PENDIENTES, Academia, tracker, PR #7 y HEAD vivo.
 
-## 3. Lock prevalente
+## 3. Baseline activa preservada
 
-`FUENTE Y REGLA → MAPPING/ADAPTER → GATES → BUILD EXACTO → VALIDACIÓN VISUAL → CORRECCIÓN FOCALIZADA → FREEZE`
-
-V174 fue aprobada visualmente. Los hallazgos P1/P2 no bloquean y no autorizan una nueva candidata ni cambios frontend dentro de Corte 3.
-
-## 4. Baseline activa V174
-
+- V174/M1/Corte 1/Corte 2A: PASS técnico y visual aprobado.
 - Package SHA-256: `e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f`.
 - Empalme funcional: `b21e494d127fb4b902de5576e3fab0292362b097`.
-- Source-lock final: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
-- Aggregate: `ab11bc47dfd096cbe6a110db250c46e656c2dc9760ad832c07958b6c9a886818`.
-- R20, HR in-place, histórico, reportes, proyecto/periodo/KPI, Corte 2A, M1 y verificador: PASS técnico.
-- Validación visual: APROBADA.
+- Source lock de la baseline visual: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
+- Hosting DEV vigente: 14 periodos, 616 visitas y 34 GT/10 HN por periodo.
+- Lectura HR viva, módulos V174, adapters y `CX.data`: preservados.
 
-## 5. Pendientes visuales no bloqueantes
+## 4. Identidad estable de visita R20
+
+Versión: `tya-stable-visit-id-r20-row-identity-v1`.
+
+La identidad se deriva solo de:
+
+`tenantId + projectId + periodKey + country + sourceRow`.
+
+No participan cinemaId, shopping, quincena, franja, shopper, fechas ni montos. El filtro runtime, payload source-safe y perfiles V174/Corte 3 verifican esta regla de forma fail-closed.
+
+## 5. Corte 3 — conciliación financiera PASS técnico
+
+Resultado fresco y revisado:
+
+- 616 visitas HR;
+- 247 filas financieras;
+- 209 enlaces exactos aceptados;
+- 38 filas todavía en revisión;
+- 79 entradas en review queue;
+- 15 enlaces exactos nuevos revisados;
+- 2 enlaces previos retirados y mantenidos sin vínculo por diferencia de monto/detalle;
+- 1 cambio de estado mantenido sin vínculo por diferencia de referencia de shopper;
+- 0 cambios de `hrRowId` canónico;
+- 0 registros financieros nuevos o perdidos.
+
+No se confirmó ni ejecutó ningún pago.
+
+## 6. Evidencia
+
+- Corte 3 reviewed-delta: run `30038407143`, job `89312040827`, artifact `8576206104`, digest `sha256:485463c0304f39e8c866514d373a5e365de54640cd0c826869c3b6f386cff91e`.
+- Corte 3 con filtro runtime estable: run `30038739598`, request commit `9a3be4cdbca3c4e234bbcb3cb160b65607b96ceb`, PASS.
+- Regresión V174/M1/Corte 2A: run `30039152686`, job `89314519400`, request commit `b2c49ba2c237451a93fa1444fdf2894333238ca1`, artifact `8576510415`, digest `sha256:d9b3ac061fd8d667939fb5caec66810acfaf1a007d78c17cd685a56ae6b84eeb`, PASS.
+
+## 7. Pendientes no bloqueantes preservados
 
 - P1: responsive parcial en algunas tablas y fichas.
 - P1: PDF sin gráficas.
 - P2: Excel sin formato operativo suficiente.
 - P2: telemetría `sourceAccessMode` conserva etiqueta anterior.
 
-## 6. Hosting DEV vigente
+## 8. Siguiente bloque exacto
 
-- URL: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1`.
-- Run: `30027204176`.
-- Artifact: `8571796399`.
-- Hosting deploy: SUCCESS.
-- Endpoint HR vivo: `runtimeRead=true`, `sourceSafe=true`, 14 periodos y 616 visitas.
+`SNAPSHOT FINANCIERO CANÓNICO SOURCE-SAFE → ADAPTER ÚNICO → FINANZAS Y BENEFICIOS CONSUMEN LA MISMA VERDAD → GATES UI/EXPORTACIONES → HOSTING DEV Y VALIDACIÓN VISUAL`.
 
-## 7. Bloque activo: Corte 3 Finanzas
-
-- Envelope actual: fuente financiera pendiente; pagos y lotes vacíos.
-- Afirmación operativa: pagado hasta mayo pendiente de cruce por fuente; junio requiere match por ítem.
-- Reconciliación R14C baseline: 247 filas financieras, 196 links exactos aceptados, 51 filas a revisión y 92 entradas en review queue.
-- Junio: cero enlaces exactos aceptados en R14C; no marcar pago por inferencia.
-- Inventario source-safe y matriz inicial de cobertura/gaps: completados.
-
-## 8. Carril controlado preparado
-
-El mismo `CXORBIA_READONLY_POST_GATES_RUNNER` incorpora el perfil autorizado `CORTE3_FINANCIAL_RECONCILIATION_R20`.
-
-El perfil:
-
-- regenera R14C en un checkout efímero contra la HR R20 vigente;
-- compara `sourceRecordId`, llaves estables e identidad de enlace contra la baseline;
-- verifica 14 periodos, 616 visitas, 247 filas financieras y 34 GT/10 HN por periodo;
-- detiene cualquier enlace nuevo, perdido, cambiado o ambiguo para revisión humana;
-- no importa, no paga, no despliega y no escribe datos ni repositorio.
-
-## 9. Siguiente paso exacto
-
-`ACTIVAR REQUEST LIGADO AL HEAD EXACTO → EJECUTAR PERFIL CORTE3 → LEER ARTIFACT Y DELTA → PASS ESTABLE O HOLD FOCALIZADO DE REVISIÓN HUMANA`.
-
-## 10. Estado seguro
+## 9. Estado seguro
 
 Sin merge, deploy productivo, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos.
