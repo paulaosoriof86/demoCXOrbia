@@ -1,6 +1,6 @@
 {
   "contractId": "cxorbia-controlled-runners-v1",
-  "schemaVersion": "1.0.1",
+  "schemaVersion": "1.1.0",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -15,7 +15,22 @@
       "allowedExecutionsPerRequest": 1,
       "functionalCommitCount": 1,
       "requestCommitMayBeEphemeral": true,
-      "requestMustBeRemovedInFunctionalCommit": true
+      "requestMustBeRemovedInFunctionalCommit": true,
+      "allowedModes": [
+        "blob_delta_v1",
+        "focal_text_patch_v1",
+        "source_lock_regenerate_v1"
+      ],
+      "sourceLockRegeneration": {
+        "script": "tools/release/cxorbia-source-lock-atomic-apply.mjs",
+        "proposalScript": "tools/release/tya-v174-r20-source-lock-proposal.mjs",
+        "exactTargetPaths": [
+          "app/core/build-lock.js",
+          "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json"
+        ],
+        "verifier": "tools/release/tya-v174-corte2a-empalme-directo-verify.mjs",
+        "requestMustBeRemovedInCommit": true
+      }
     },
     "readonlyPostGates": {
       "name": "CXORBIA_READONLY_POST_GATES_RUNNER",
@@ -49,6 +64,10 @@
       "app/core/tya-phase-a-source-safe-preview.js",
       "app/core/tya-phase-a-source-safe-runtime-guard.js",
       "app/data/tya-hr-source-safe-periods.js"
+    ],
+    "sourceLockModeExactException": [
+      "app/core/build-lock.js",
+      "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json"
     ],
     "requiredEvidence": [
       "candidateSha256",
