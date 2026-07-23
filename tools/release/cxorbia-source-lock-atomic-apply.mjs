@@ -11,7 +11,7 @@ const proposalDir=path.join(outDir,'source-lock-proposal');
 const manifestPath='app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json';
 const buildLockPath='app/core/build-lock.js';
 const report={
-  schemaVersion:'1.0.3',
+  schemaVersion:'1.0.4',
   runner:'CXORBIA_ATOMIC_APPLY_RUNNER',
   mode:'source_lock_regenerate_v1',
   status:'HOLD_ATOMIC_APPLY',
@@ -94,7 +94,7 @@ try{
   if(JSON.stringify(changed)!==JSON.stringify(expected))fail(`working_tree_delta_invalid:${changed.join(',')}`);
   run('git',['config','user.name','cxorbia-automation']);
   run('git',['config','user.email','cxorbia-automation@users.noreply.github.com']);
-  run('git',['add','-A','--',...expected]);
+  run('git',['add','--',buildLockPath,manifestPath]);
   const staged=run('git',['diff','--cached','--name-only']).split(/\r?\n/).filter(Boolean).sort();
   if(JSON.stringify(staged)!==JSON.stringify(expected))fail(`staged_delta_invalid:${staged.join(',')}`);
   const message=String(request.commitMessage||'').trim();
