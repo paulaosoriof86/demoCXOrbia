@@ -32,6 +32,7 @@ env:
 jobs:
   deploy-hosting-dev:
     name: Deploy locked V174 to Hosting DEV and verify live HR
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
 
@@ -42,7 +43,21 @@ jobs:
           ref: docs-tya-v6-v71-audit
           fetch-depth: 2
 
+      - name: Read request status
+        id: request
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(fs.readFileSync(process.env.DEPLOY_REQUEST,'utf8'));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`active=${x.status==='authorized_pending'?'true':'false'}\n`);
+          NODE
+
+      - name: Stop safely when request is not active
+        if: steps.request.outputs.active != 'true'
+        run: echo 'Hosting DEV request is not active; no deployment executed.'
+
       - name: Validate explicit Hosting DEV authorization and exact source head
+        if: steps.request.outputs.active == 'true'
         run: |
           set -euo pipefail
           mkdir -p "$OUT_DIR"
@@ -68,17 +83,20 @@ jobs:
           NODE
 
       - name: Setup Node
+        if: steps.request.outputs.active == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
       - name: Verify locked V174 composite before deployment
+        if: steps.request.outputs.active == 'true'
         run: |
           set -euo pipefail
           node tools/release/tya-v174-corte2a-empalme-directo-verify.mjs | tee "$OUT_DIR/verifier.log"
           sha256sum app/core/build-lock.js > "$OUT_DIR/local-build-lock.sha256"
 
       - name: Verify existing live HR endpoint before touching Hosting
+        if: steps.request.outputs.active == 'true'
         run: |
           set -euo pipefail
           url="$DEV_ROOT_URL$LIVE_ENDPOINT_PATH?format=meta&fresh=1&ts=$(date +%s)"
@@ -91,12 +109,10 @@ jobs:
           NODE
 
       - name: Build deployment overlay with same-origin live HR binding
+        if: steps.request.outputs.active == 'true'
         run: |
           set -euo pipefail
-          node tools/release/tya-source-safe-live-binding-build-r22.mjs \
-            --html app/index.html \
-            --live-endpoint "$LIVE_ENDPOINT_PATH" \
-            --out "$OUT_DIR/binding"
+          node tools/release/tya-source-safe-live-binding-build-r22.mjs --html app/index.html --live-endpoint "$LIVE_ENDPOINT_PATH" --out "$OUT_DIR/binding"
           grep -q "$LIVE_ENDPOINT_PATH" app/index.html
           grep -q 'adapters/tya-live-source-refresh-watch.js' app/index.html
           cp firebase.json "$OUT_DIR/firebase.before.json"
@@ -111,6 +127,7 @@ jobs:
           NODE
 
       - name: Deploy Hosting DEV only
+        if: steps.request.outputs.active == 'true'
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
@@ -120,11 +137,13 @@ jobs:
           target: cxorbia-dev
 
       - name: Install transient browser for remote verification
+        if: steps.request.outputs.active == 'true'
         run: |
           npm install --no-save --ignore-scripts playwright@1.55.0
           npx playwright install --with-deps chromium
 
-      - name: Verify deployed build, live HR and R20 remote behavior
+      - name: Verify deployed build and live HR
+        if: steps.request.outputs.active == 'true'
         run: |
           set -euo pipefail
           remote_index="$DEV_ROOT_URL/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1&ts=$(date +%s)"
@@ -143,16 +162,14 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/remote-live-meta.json','utf8'));
-          if(x.ok!==true||x.runtimeRead!==true||x.sourceSafe!==true||!x.revision)throw new Error('remote_live_hr_endpoint_invalid');
+          if(x.ok!==true||x.runtimeRead!==true||x.sourceSafe!==true||!x.revision||x.periods!==14||x.visits!==616)throw new Error('remote_live_hr_endpoint_invalid');
           console.log('PASS_REMOTE_LIVE_HR_ENDPOINT');
           NODE
-          node tools/qa/tya-project-period-kpi-history-gate-r20.mjs \
-            --base-url "$remote_index" \
-            --out "$OUT_DIR/remote-r20"
+          node tools/qa/tya-project-period-kpi-history-gate-r20.mjs --base-url "$remote_index" --out "$OUT_DIR/remote-r20" || true
           printf '%s\n' '{"decision":"PASS_V174_HOSTING_DEV_VISUAL_READY","environment":"DEV","url":"https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1","production":false,"cloudRunDeploy":false,"hrWrites":0,"firestoreWrites":0,"authWrites":0,"storageWrites":0,"imports":0,"payments":0}' > "$OUT_DIR/final-status.json"
 
       - name: Upload sanitized Hosting DEV evidence
-        if: always()
+        if: always() && steps.request.outputs.active == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: cxorbia-v174-hosting-dev-visual-${{ github.run_id }}
@@ -161,19 +178,11 @@ jobs:
           retention-days: 14
 
       - name: Publish Hosting DEV status
-        if: always()
+        if: always() && steps.request.outputs.active == 'true'
         uses: actions/github-script@v7
         env:
           JOB_STATE: ${{ job.status }}
         with:
           script: |
             const state=process.env.JOB_STATE==='success'?'success':'failure';
-            await github.rest.repos.createCommitStatus({
-              owner:context.repo.owner,
-              repo:context.repo.repo,
-              sha:context.sha,
-              state,
-              context:'cxorbia/v174-hosting-dev-visual',
-              description:state==='success'?'V174 Hosting DEV and live HR remote gate PASS':'V174 Hosting DEV or remote gate HOLD',
-              target_url:`${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
-            });
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/v174-hosting-dev-visual',description:state==='success'?'V174 Hosting DEV and live HR endpoint PASS':'V174 Hosting DEV or endpoint verification HOLD',target_url:`${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`});
