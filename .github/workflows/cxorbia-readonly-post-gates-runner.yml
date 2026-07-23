@@ -15,6 +15,7 @@ on:
       - .github/cxorbia-gate-requests/request.json
       - .github/workflows/cxorbia-readonly-post-gates-runner.yml
       - tools/release/cxorbia-readonly-post-gates-runner.mjs
+      - tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs
 
 permissions:
   contents: read
@@ -31,7 +32,7 @@ defaults:
 
 jobs:
   post-gates:
-    name: Run R20 M1 Corte 2A gates read-only
+    name: Run authorized CXOrbia read-only profile
     runs-on: ubuntu-latest
     timeout-minutes: 35
 
@@ -58,15 +59,16 @@ jobs:
           const p = '.github/cxorbia-gate-requests/request.json';
           const x = JSON.parse(fs.readFileSync(p, 'utf8'));
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `enabled=${x.enabled === true ? 'true' : 'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `profile=${x.profile || ''}\n`);
           NODE
 
-      - name: Install Playwright runtime only in ephemeral runner
-        if: steps.request.outputs.enabled == 'true'
+      - name: Install Playwright runtime only for browser profile
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.profile == 'V174_R20_M1_CORTE2A'
         run: |
           npm install --no-save --ignore-scripts playwright@1.55.0
           npx playwright install --with-deps chromium
 
-      - name: Execute fixed read-only gate profile
+      - name: Execute authorized read-only gate profile
         if: steps.request.outputs.enabled == 'true'
         id: gates
         continue-on-error: true
@@ -93,6 +95,8 @@ jobs:
             .tmp/tya-corte2a-shopper-operation-canonical
             .tmp/tya-corte1-report-frontend-runtime
             .tmp/r20-source-safe-gates
+            .tmp/phase-a-financial-r14c-live-hr
+            .tmp/tya-corte3-financial-reconciliation-r20
           if-no-files-found: warn
           retention-days: 14
 
@@ -126,7 +130,7 @@ jobs:
             state: overallState,
             context: 'cxorbia/readonly-post-gates/overall',
             description: enabled
-              ? `${report.status}; gates=${Array.isArray(report.gates) ? report.gates.length : 0}; blockers=${Array.isArray(report.blockers) ? report.blockers.length : 0}`.slice(0, 140)
+              ? `${report.status}; profile=${report.profile || 'n/a'}; gates=${Array.isArray(report.gates) ? report.gates.length : 0}; blockers=${Array.isArray(report.blockers) ? report.blockers.length : 0}`.slice(0, 140)
               : 'SKIPPED_DISABLED_REQUEST',
             target_url: runUrl
           }];
@@ -178,6 +182,7 @@ jobs:
             `- Event: ${process.env.GITHUB_EVENT_NAME}`,
             `- Estado: \`${report.status}\``,
             `- Request: \`${report.requestId || 'n/a'}\``,
+            `- Profile: \`${report.profile || 'n/a'}\``,
             `- Source HEAD: \`${report.sourceHeadSha || 'n/a'}\``,
             `- Exit code: ${process.env.GATES_EXIT_CODE || 'n/a'}`,
             '',
