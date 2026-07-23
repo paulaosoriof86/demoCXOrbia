@@ -14,7 +14,7 @@ const serverLogPath = path.join(outDir, 'static-server.log');
 const effectiveBranch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || null;
 
 const report = {
-  schemaVersion: '1.0.3',
+  schemaVersion: '1.1.0',
   runner: 'CXORBIA_READONLY_POST_GATES_RUNNER',
   generatedAt: new Date().toISOString(),
   status: 'HOLD_NOT_RUN',
@@ -137,6 +137,78 @@ async function waitForServer(url, timeoutMs = 30000) {
   throw new Error(`static_server_not_ready:${last}`);
 }
 
+async function runV174Profile() {
+  const gatesBeforeServer = [
+    ['tya-v174-r20-source-lock-proposal', 'node', ['tools/release/tya-v174-r20-source-lock-proposal.mjs']],
+    ['node-check-builder', 'node', ['--check', 'tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs']],
+    ['tya-hr-header-variants-r20-gate', 'node', ['tools/qa/tya-hr-header-variants-r20-gate.mjs']],
+    ['tya-build-live-hr-source-safe-r20-inventory', 'node', ['tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs']],
+    ['tya-source-safe-binding-build-r18a', 'node', ['tools/release/tya-source-safe-binding-build-r18a.mjs', '--app-dir', 'app', '--out', '.tmp/source-safe-binding-r18a']],
+    ['tya-live-hr-inplace-refresh-gate', 'node', ['tools/qa/tya-live-hr-inplace-refresh-gate.mjs']],
+    ['tya-corte1-context-history-reports-gate', 'node', ['tools/qa/tya-corte1-context-history-reports-gate.mjs']],
+    ['tya-corte1-report-frontend-runtime-gate', 'node', ['tools/qa/tya-corte1-report-frontend-runtime-gate.mjs']]
+  ];
+  for (const [id, command, args] of gatesBeforeServer) executeGate(id, command, args);
+
+  const serverLog = fs.openSync(serverLogPath, 'w');
+  const server = spawn('python3', ['-m', 'http.server', '4173', '--bind', '127.0.0.1', '--directory', 'app'], {
+    cwd: root,
+    stdio: ['ignore', serverLog, serverLog],
+    detached: false
+  });
+  try {
+    await waitForServer('http://127.0.0.1:4173/index.html');
+    executeGate(
+      'tya-project-period-kpi-history-gate-r20',
+      'node',
+      [
+        'tools/qa/tya-project-period-kpi-history-gate-r20.mjs',
+        '--base-url',
+        'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible',
+        '--out',
+        '.tmp/tya-project-period-kpi-history-r20'
+      ]
+    );
+    executeGate('tya-corte2a-shopper-operation-canonical-gate', 'node', ['tools/qa/tya-corte2a-shopper-operation-canonical-gate.mjs']);
+    executeGate('tya-corte1-m1-regression-lock', 'node', ['tools/qa/tya-corte1-m1-regression-lock.mjs']);
+    executeGate('tya-v174-corte2a-empalme-directo-verify', 'node', ['tools/release/tya-v174-corte2a-empalme-directo-verify.mjs']);
+  } finally {
+    server.kill('SIGTERM');
+    fs.closeSync(serverLog);
+  }
+}
+
+function runCorte3FinancialProfile() {
+  executeGate('node-check-corte3-reconcile-r14c', 'node', ['--check', 'tools/reconciliation/tya-financial-workbook-live-hr-reconcile-r14c.mjs']);
+  executeGate('node-check-corte3-r20-gate', 'node', ['--check', 'tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs']);
+  executeGate(
+    'tya-financial-workbook-live-hr-reconcile-r14c-current-r20',
+    'node',
+    [
+      'tools/reconciliation/tya-financial-workbook-live-hr-reconcile-r14c.mjs',
+      '--hr',
+      'app/data/tya-hr-source-safe-periods.js',
+      '--financial',
+      'backend/config/phase-a-financial-workbook-source-safe-r14.json',
+      '--out',
+      '.tmp/phase-a-financial-r14c-live-hr'
+    ]
+  );
+  executeGate(
+    'tya-corte3-financial-reconciliation-r20-gate',
+    'node',
+    [
+      'tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs',
+      '--current',
+      '.tmp/phase-a-financial-r14c-live-hr/financial-live-hr-reconciliation-r14c.source-safe.json',
+      '--baseline',
+      'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json',
+      '--out',
+      '.tmp/tya-corte3-financial-reconciliation-r20'
+    ]
+  );
+}
+
 async function main() {
   fs.mkdirSync(outDir, { recursive: true });
   const contract = readJson(contractPath);
@@ -160,7 +232,11 @@ async function main() {
   assert(request.repository === contract.repository, 'request_repository_mismatch');
   assert(request.branch === contract.branch, 'request_branch_mismatch');
   assert(Number(request.pullRequest) === Number(contract.pullRequest), 'request_pr_mismatch');
-  assert(request.profile === contract.authorizedRunners.readonlyPostGates.profile, 'profile_not_allowed');
+  const readonlyContract = contract.authorizedRunners.readonlyPostGates;
+  const allowedProfiles = Array.isArray(readonlyContract.profiles)
+    ? readonlyContract.profiles
+    : [readonlyContract.profile].filter(Boolean);
+  assert(allowedProfiles.includes(request.profile), 'profile_not_allowed', String(request.profile || ''));
   assert(/^[0-9a-f]{40}$/i.test(String(request.expectedSourceHead || '')), 'expected_source_head_invalid');
   assert(report.sourceHeadSha === request.expectedSourceHead, 'source_head_mismatch', `${report.sourceHeadSha}/${request.expectedSourceHead}`);
   assert(request.repositoryWrites === false, 'repository_writes_forbidden');
@@ -170,52 +246,13 @@ async function main() {
   const requestDelta = git('diff', '--name-only', 'HEAD^', 'HEAD').split(/\r?\n/).filter(Boolean).sort();
   assert(requestDelta.length === 1 && requestDelta[0] === requestPath, 'request_commit_scope_invalid', requestDelta.join(','));
 
-  const gatesBeforeServer = [
-    ['tya-v174-r20-source-lock-proposal', 'node', ['tools/release/tya-v174-r20-source-lock-proposal.mjs']],
-    ['node-check-builder', 'node', ['--check', 'tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs']],
-    ['tya-hr-header-variants-r20-gate', 'node', ['tools/qa/tya-hr-header-variants-r20-gate.mjs']],
-    ['tya-build-live-hr-source-safe-r20-inventory', 'node', ['tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs']],
-    ['tya-source-safe-binding-build-r18a', 'node', ['tools/release/tya-source-safe-binding-build-r18a.mjs', '--app-dir', 'app', '--out', '.tmp/source-safe-binding-r18a']],
-    ['tya-live-hr-inplace-refresh-gate', 'node', ['tools/qa/tya-live-hr-inplace-refresh-gate.mjs']],
-    ['tya-corte1-context-history-reports-gate', 'node', ['tools/qa/tya-corte1-context-history-reports-gate.mjs']],
-    ['tya-corte1-report-frontend-runtime-gate', 'node', ['tools/qa/tya-corte1-report-frontend-runtime-gate.mjs']]
-  ];
-
-  for (const [id, command, args] of gatesBeforeServer) executeGate(id, command, args);
-
-  const serverLog = fs.openSync(serverLogPath, 'w');
-  const server = spawn('python3', ['-m', 'http.server', '4173', '--bind', '127.0.0.1', '--directory', 'app'], {
-    cwd: root,
-    stdio: ['ignore', serverLog, serverLog],
-    detached: false
-  });
-
-  try {
-    await waitForServer('http://127.0.0.1:4173/index.html');
-    executeGate(
-      'tya-project-period-kpi-history-gate-r20',
-      'node',
-      [
-        'tools/qa/tya-project-period-kpi-history-gate-r20.mjs',
-        '--base-url',
-        'http://127.0.0.1:4173/index.html?cxTyaPhaseA=1&r18d=visible',
-        '--out',
-        '.tmp/tya-project-period-kpi-history-r20'
-      ]
-    );
-    executeGate('tya-corte2a-shopper-operation-canonical-gate', 'node', ['tools/qa/tya-corte2a-shopper-operation-canonical-gate.mjs']);
-    executeGate('tya-corte1-m1-regression-lock', 'node', ['tools/qa/tya-corte1-m1-regression-lock.mjs']);
-    executeGate('tya-v174-corte2a-empalme-directo-verify', 'node', ['tools/release/tya-v174-corte2a-empalme-directo-verify.mjs']);
-  } finally {
-    server.kill('SIGTERM');
-    fs.closeSync(serverLog);
-  }
+  if (request.profile === 'V174_R20_M1_CORTE2A') await runV174Profile();
+  else if (request.profile === 'CORTE3_FINANCIAL_RECONCILIATION_R20') runCorte3FinancialProfile();
+  else throw new Error(`profile_handler_missing:${request.profile}`);
 
   const holds = report.gates.filter(gate => gate.status !== 'PASS');
   report.gitStatusAfter = git('status', '--porcelain');
-  if (report.gitStatusAfter) {
-    report.warnings.push('local_generated_files_present_in_ephemeral_checkout');
-  }
+  if (report.gitStatusAfter) report.warnings.push('local_generated_files_present_in_ephemeral_checkout');
   report.status = holds.length ? 'HOLD_READONLY_POST_GATES' : 'PASS_READONLY_POST_GATES';
   if (holds.length) report.blockers.push(...holds.map(gate => `${gate.id}:exit_${gate.exitCode}`));
   if (holds.length) process.exitCode = 1;
