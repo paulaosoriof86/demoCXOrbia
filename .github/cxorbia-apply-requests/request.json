@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.atomic-apply-request.v1",
-  "requestId": "v174-r20-source-lock-regenerate-20260723",
+  "requestId": "v174-r20-source-lock-regenerate-after-pass-20260723",
   "mode": "source_lock_regenerate_v1",
   "issuedAt": "2026-07-23",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "expectedParentSha": "1d2d2644c455779b62bcd0b568cfa4ce422e4b54",
+  "expectedParentSha": "0c7002c30ff88e8863b86acce56e72d9f1ba772c",
   "allowedExecutions": 1,
   "atomicApply": true,
   "targetPaths": [
     "app/core/build-lock.js",
     "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json"
   ],
-  "commitMessage": "chore(tya): regenerate V174 R20 source lock",
+  "commitMessage": "chore(tya): lock V174 R20 verified source identity",
   "deploy": false,
   "merge": false,
   "production": false,
