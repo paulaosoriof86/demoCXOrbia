@@ -14,19 +14,21 @@
 
 ### CORTE 3 — FINANZAS
 
-Estado inicial: `SOURCE_AND_RULE_RECOVERY_IN_PROGRESS_READ_ONLY`.
+Estado: `SOURCE_INVENTORY_COMPLETE_RECONCILIATION_REFRESH_PENDING_READ_ONLY`.
 
-Avance ya realizado:
+Avance realizado:
 
 - envelope financiero source-safe identificado;
 - contrato de liquidación/pago identificado;
 - reconciliación R14C recuperada;
+- fuentes source-safe inventariadas;
+- matriz de cobertura enero–junio y gaps sanitizada;
 - reglas de no inferencia y llaves estables ratificadas;
 - gaps de junio y review queue identificados.
 
 Siguiente subbloque exacto:
 
-`INVENTARIO DE FUENTES FINANCIERAS → RECONCILIACIÓN CONTRA HR R20 ACTUAL → MATRIZ EXACTOS/FALTANTES/AMBIGUOS/CONFLICTOS → REVIEW QUEUE SANITIZADA → GATES`.
+`REFRESCAR RECONCILIACIÓN R14C CONTRA HR R20 ACTUAL → COMPARAR DELTA DE CONTEOS Y LLAVES → EMITIR MATRIZ EXACTOS/FALTANTES/AMBIGUOS/CONFLICTOS → GATE FAIL-CLOSED`.
 
 ## Seguridad
 
