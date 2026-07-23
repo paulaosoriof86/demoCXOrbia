@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-07-22  
-**Estado:** `V174_EMPALMADA_CONTROLLED_RUNNERS_BOOTSTRAPPED_R20_REMOTE_FIX_PENDING_NO_DEPLOY`
+**Fecha:** 2026-07-23  
+**Estado:** `V174_R20_M1_CORTE2A_FUNCTIONAL_PASS_SOURCE_LOCK_CLOSURE_PENDING_NO_DEPLOY`
 
 ## 1. Repositorio y seguridad
 
@@ -9,170 +9,180 @@
 - Rama obligatoria: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
-- HEAD previo al bootstrap: `b5f63459ab096689e364ab85ab3c89f2640bc25c`.
 - No nueva rama, PR, `main` ni force push.
-- No Hosting DEV, deploy, producción, imports ni writes reales.
+- No Hosting DEV nuevo, deploy productivo, producción, imports ni writes reales.
 
-## 2. V174 aplicada
+## 2. V174 aplicada y preservada
 
 - Package SHA-256: `e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f`.
-- Commit funcional: `b21e494d127fb4b902de5576e3fab0292362b097`.
+- Commit funcional V174: `b21e494d127fb4b902de5576e3fab0292362b097`.
 - Commit documental inicial: `1703d36252cb957387fac6bcf348cf06ff22a5ef`.
-- Corrección focalizada: `0acdc6772f2d4a7743dea0992a4279241dcb79d7`.
+- Corrección focalizada V174: `0acdc6772f2d4a7743dea0992a4279241dcb79d7`.
 - Delta V174: seis módulos frontend exactos.
-- Backend, adapters live, contratos, tools, overlays y `CX.data`: preservados.
-- Honorario, boleto y combo conservan `0` confirmado y ausencia como `null`.
+- Backend, adapters live, contratos operativos, overlays y `CX.data`: preservados.
+- Finanzas: `0` confirmado permanece `0`; ausencia permanece `null`.
 
-## 3. Gates antes del bootstrap
+## 3. R20 remoto cerrado funcionalmente
 
-PASS:
-
-- `tya-hr-header-variants-r20-gate.mjs`;
-- `tya-live-hr-inplace-refresh-gate.mjs`;
-- `tya-corte1-context-history-reports-gate.mjs`;
-- `tya-corte1-report-frontend-runtime-gate.mjs`;
-- `tya-corte2a-shopper-operation-canonical-gate.mjs`;
-- verificador V174.
-
-HOLD:
-
-- `tya-project-period-kpi-history-gate-r20.mjs` por identidad de fuente observada como `public_gviz_csv_cache_busted`;
-- `tya-corte1-m1-regression-lock.mjs` derivado del HOLD R20.
-
-## 4. Diagnóstico R20 comprobado por Codex
-
-Codex trabajó desde `b5f63459ab096689e364ab85ab3c89f2640bc25c` y creó localmente el commit no publicado:
-
-`ec20ff49262a4c315995a278479931d6017ef798`
-
-No se considera aplicado porque no existe push ni HEAD remoto.
-
-Causa raíz comprobada:
+Causa raíz corregida:
 
 `R20_INVENTORY_BUILDER_NOT_USING_CANONICAL_HEADER_VARIANT_RESOLVER`
 
-El builder remoto usa lógica legacy propia para encabezados y filas; el contrato R20 ya define:
+El builder remoto vigente usa el contrato R20 para:
 
-- `JULIO 26 = tab_scoped_compact`;
-- `JULIO 26 HN = full_identity`;
+- `full_identity`;
+- `tab_scoped_compact`;
+- país desde columna o nombre del tab según variante;
+- identidad de fila cuando `ID CINEMA` está ausente;
 - `contextualMissingAllowedIn`;
-- `coalesce_equal_or_single_nonempty`.
+- `coalesce_equal_or_single_nonempty`;
+- bloqueo de ambigüedad o conflicto;
+- verificación de inventario y cache-busting por GID antes de publicar identidad de fuente.
 
-Resultado local comprobado por Codex, aún no remoto:
+No se usa un hardcode mensual para aceptar `JULIO 26`.
 
-- builder R20 PASS;
-- `accessMode=public_gviz_gid_verified_inventory`;
-- 14 periodos;
-- 28 tabs;
-- 616 visitas;
-- GT 476;
-- HN 140;
-- 209 shoppers.
+## 4. Evidencia read-only reproducible
 
-El gate de navegador no se ejecutó por límite del entorno Codex. No se falseó PASS.
+- Workflow: `CXORBIA_READONLY_POST_GATES_RUNNER`.
+- Perfil: `V174_R20_M1_CORTE2A`.
+- Run: `30016360952`.
+- Job: `89237272004`.
+- Artifact: `8567304475`.
+- Digest: `sha256:b7b65933e1f81002dfac8ca65a2b1415d57e1158b87e755e9bd7706253dede57`.
+- Source HEAD: `96bf7db74a144a3ddb27635933d3860658198719`.
+- Request commit: `0c7002c30ff88e8863b86acce56e72d9f1ba772c`.
+- Entorno: Ubuntu 24.04, Node 24, Playwright 1.55.0 y Chromium efímero.
+- Permisos observados: contents read, issues/statuses write; cero permisos de escritura de contenido.
 
-## 5. Runners controlados autorizados
+## 5. Inventario HR actual
 
-Paula autorizó el 2026-07-22 exclusivamente:
+- Periodos: 14, desde junio 2025 hasta julio 2026.
+- Tabs: 28.
+- Visitas: 616.
+- GT: 476.
+- HN: 140.
+- Shoppers source-safe: 209.
+- Nonces únicos: 28, uno por GID.
+- Access mode: `public_gviz_gid_verified_inventory`.
+- History scope: `all_verified_hr_periods`.
+- `JULIO 26`: `full_identity` observado actualmente.
+- `JULIO 26 HN`: `full_identity` observado actualmente.
+- Soporte contractual de `tab_scoped_compact`: preservado y fail-closed.
 
-1. `CXORBIA_ATOMIC_APPLY_RUNNER`.
-2. `CXORBIA_READONLY_POST_GATES_RUNNER`.
+Totales históricos actuales:
 
-### 5.1 Archivos instalados
+- asignadas: 615;
+- sin asignar: 1;
+- programadas: 614;
+- realizadas: 600;
+- cuestionarios: 597;
+- submitidas: 533;
+- candidatas de liquidación pendientes de fuente financiera: 533;
+- liquidaciones confirmadas: 0;
+- pagos confirmados: 0;
+- reviewRequired: 0.
 
-- `backend/contracts/cxorbia-controlled-runners-v1.json`;
-- `tools/release/cxorbia-atomic-apply-runner.mjs`;
-- `tools/release/cxorbia-readonly-post-gates-runner.mjs`;
-- `tools/qa/cxorbia-controlled-runners-contract-gate.mjs`;
-- `.github/workflows/cxorbia-atomic-apply-runner.yml`;
-- `.github/workflows/cxorbia-readonly-post-gates-runner.yml`;
-- `.github/cxorbia-gate-requests/request.json` en estado bootstrap `enabled:false`.
+## 6. Julio 2026 observado por navegador
 
-### 5.2 Commits de bootstrap
+- total: 44;
+- GT/HN: 34/10;
+- asignadas: 43;
+- sin asignar: 1;
+- programadas: 43;
+- realizadas: 29;
+- cuestionarios completados: 28;
+- cuestionario pendiente: 1;
+- submitidas: 20;
+- pendientes de submitir: 8;
+- candidatas de liquidación: 20;
+- liquidaciones confirmadas: 0;
+- pagos confirmados: 0.
 
-- `7b9191c404aeebf9bbf14e93ecdb8a050d35d57d` — contrato;
-- `88daf642b813ad777896bd2c448850608312d6fb` — ejecutor atomic apply;
-- `92b9d09d0fc3b3460b26b173af097c5e24e448c9` — ejecutor read-only gates;
-- `8e996fbaee275b2ff2066a72250dc61d596c6679` — gate contractual;
-- `1735735af7356711146a1443be6407d4c334de28` — request bootstrap desactivado;
-- `0dc93edbb6d1bd7cfb916e67266e4d3231ce6318` — workflow atomic apply;
-- `e30499a7f8d4dff51e566378026e4b0b05318df8` — workflow read-only gates;
-- `ebbf61fcb35458b4d8e182779a384186e8a7821f` — addendum prevalente actualizado;
-- `445491aa16f44901c62f9e82590a0e61ebd60bbd` — índice vigente actualizado.
+Los valores provienen de la HR leída durante el run; no son fixtures ni constantes del producto.
 
-### 5.3 Gate local de infraestructura
+## 7. Lectura viva protegida
 
-`PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT`
+`PASS_TYA_LIVE_HR_INPLACE_REFRESH_GATE`:
 
-- blockers: 0;
-- warnings: 0;
-- deploy: false;
-- merge: false;
-- producción: false;
-- data writes: false.
+- `documentReload=false`;
+- `freshBypassesTtl=true`;
+- `projectionRebuilt=true`;
+- `snapshotAppliedInMemory=true`;
+- `sourceRevision=rev-new` en el gate controlado.
 
-Los runners están instalados pero todavía no se consideran probados end-to-end sobre una solicitud funcional real.
+Archivos de lectura viva no modificados por R20:
 
-## 6. Alcance de cada runner
+- `backend/runtime/hr-live-service/server.mjs`;
+- `app/adapters/tya-live-source-inplace-apply.js`.
 
-### `CXORBIA_ATOMIC_APPLY_RUNNER`
+No se modificaron módulos V174 ni `CX.data`.
 
-- futura aplicación de deltas frontend auditados bajo `app/`;
-- verificación de HEAD, candidate/package SHA y SHA actual/final por archivo;
-- bytes transportados como Git blobs exactos dentro del runner;
-- un solo commit funcional;
-- request de control eliminado en el commit funcional;
-- push no forzado a la rama viva;
-- rutas backend/tools/.github y overlays protegidos fail-closed.
+## 8. Gates del run 30016360952
 
-### `CXORBIA_READONLY_POST_GATES_RUNNER`
+PASS:
 
-- Node 24 + Playwright 1.55.0 + Chromium efímero;
-- contents read-only;
-- servidor local temporal;
-- artifacts y comentario sanitizado en PR #7;
-- cero commit/push, deploy, merge, producción o writes reales.
+1. `tya-v174-r20-source-lock-proposal`;
+2. `node-check-builder`;
+3. `tya-hr-header-variants-r20-gate`;
+4. `tya-build-live-hr-source-safe-r20-inventory`;
+5. `tya-source-safe-binding-build-r18a`;
+6. `tya-live-hr-inplace-refresh-gate`;
+7. `tya-corte1-context-history-reports-gate`;
+8. `tya-corte1-report-frontend-runtime-gate`;
+9. `tya-project-period-kpi-history-gate-r20`;
+10. `tya-corte2a-shopper-operation-canonical-gate`;
+11. `tya-corte1-m1-regression-lock`.
 
-Perfil inicial:
+HOLD único:
 
-`V174_R20_M1_CORTE2A`.
+- `tya-v174-corte2a-empalme-directo-verify`: manifest/build-lock anteriores no representaban aún la corrección R20, el payload generado y la documentación viva actualizada.
 
-## 7. Bootstrap único
+La aplicación, HR, periodos, visitas, KPIs, reportes, Corte 2A y M1 no tienen HOLD funcional.
 
-Los commits secuenciales de instalación fueron una excepción de infraestructura expresamente autorizada porque los runners no existían. No aplicaron candidata ni delta funcional.
+## 9. Source lock y cierre técnico
 
-A partir del cierre del bootstrap:
+La primera propuesta produjo:
 
-- no Contents API secuencial para empalmes funcionales;
-- no workflows genéricos;
-- futuras candidatas GO usan checkout Git autenticado o `CXORBIA_ATOMIC_APPLY_RUNNER`;
-- gates con navegador usan `CXORBIA_READONLY_POST_GATES_RUNNER`.
+- file count: `1890`;
+- aggregate: `cdce7c1026a78d639ed887f19151e43ba142397359cbcab5b6ce93676a6c4123`.
 
-## 8. Phase A
+Ese aggregate corresponde al app del run antes de esta reconciliación documental. Debido a que los documentos vivos se incluyen en el lock, debe regenerarse después de cerrar índice/checkpoint/CAMBIOS/RESUMEN/PENDIENTES/Academia.
 
-- M1/Corte 1: preservado.
-- V174/Corte 2A: empalmada; aceptación canónica PASS.
-- R20/M1 compuesto: pendiente únicamente de reproducir la corrección del builder en remoto y ejecutar el perfil read-only completo.
-- Hosting DEV: no autorizado todavía.
-- Validación visual: posterior a todos los gates PASS y autorización separada.
+Condición automática de transición:
 
-## 9. Clasificación
+- si el source lock final se aplica sobre el HEAD documental exacto;
+- y el perfil read-only vuelve a dejar todos los gates, incluido el verificador, en PASS;
+- el estado pasa a `TECHNICAL_PASS_PENDING_VISUAL` sin reabrir V174, R20, Corte 2A o M1.
 
-- **Reusable CXOrbia:** carril atómico de aplicación y runner QA read-only reproducible.
-- **Exclusivo cliente:** perfil inicial valida HR TyA GT/HN y Corte 2A.
-- **Claude/prototipo:** futuras candidatas se empalman sin Codex; Claude sigue entregando frontend, no opera infraestructura.
-- **Academia:** explicar integridad de fuente, ausencia distinta de cero, evidencia reproducible y separación aplicación/gates.
-- **Sin impacto Claude:** GitHub Actions, Playwright efímero, artifacts, contrato de control y permisos del runner.
+## 10. Phase A
 
-## 10. Siguiente bloque exacto
+- M1/Corte 1: preservado y gate compuesto PASS.
+- V174/Corte 2A: empalmada y gate canónico PASS.
+- HR/histórico/visitas: lectura técnica PASS con 616 visitas y cambio de periodo validado.
+- Source lock final: en cierre.
+- Hosting DEV: aún no autorizado en este bloque.
+- Validación visual: siguiente etapa después del PASS técnico final.
+- Producción: solo después de DEV, visual, freeze y cutover controlado.
 
-1. cerrar documentación restante del bootstrap y actualizar PR #7;
-2. reproducir en remoto la corrección focalizada del builder R20 sin usar el commit local de Codex como evidencia aplicada;
-3. activar un request read-only ligado al HEAD exacto;
-4. ejecutar R20 + Corte 2A + M1 + verificador;
-5. regenerar lock y documentar;
-6. solo después decidir autorización de Hosting DEV.
+## 11. Clasificación
 
-## 11. Estado seguro
+- **Reusable CXOrbia:** resolver de encabezados por contrato, inventario verificable y runners controlados.
+- **Exclusivo cliente:** lectura TyA GT/HN y conteos actuales de la HR.
+- **Claude/prototipo:** sin nueva candidata; V174 se preserva.
+- **Academia:** fuente viva, identidad de filas, ausencia distinta de cero y evidencia de gates.
+- **Sin impacto Claude:** GitHub Actions, Playwright/Chromium, source lock y telemetry.
 
-Cero Hosting DEV, deploy, merge, producción, imports, Firestore/Auth/Storage/HR writes, Make/Gemini, pagos y base vieja conectada.
+## 12. Siguiente bloque exacto
+
+1. completar documentación viva;
+2. regenerar manifest/build-lock final;
+3. reejecutar R20 + M1 + Corte 2A + verificador contra el lock;
+4. declarar `TECHNICAL_PASS_PENDING_VISUAL` si todo pasa;
+5. solicitar autorización separada de Hosting DEV;
+6. ejecutar `fresh=1`, smoke remoto y validación visual;
+7. freeze Phase A;
+8. preparar cutover de producción.
+
+## 13. Estado seguro
+
+Cero Hosting DEV nuevo, deploy productivo, merge, producción, imports, Firestore/Auth/Storage/HR writes, Make/Gemini, pagos y conexión a la base vieja.
