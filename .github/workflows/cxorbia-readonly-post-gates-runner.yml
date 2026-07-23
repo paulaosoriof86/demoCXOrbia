@@ -1,0 +1,138 @@
+name: CXORBIA_READONLY_POST_GATES_RUNNER
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - .github/cxorbia-gate-requests/request.json
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: cxorbia-readonly-post-gates-runner-docs-tya-v6-v71-audit
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  post-gates:
+    name: Run R20 M1 Corte 2A gates read-only
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout exact live branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: docs-tya-v6-v71-audit
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate controlled runner contract
+        run: node tools/qa/cxorbia-controlled-runners-contract-gate.mjs
+
+      - name: Read request state
+        id: request
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const p = '.github/cxorbia-gate-requests/request.json';
+          const x = JSON.parse(fs.readFileSync(p, 'utf8'));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `enabled=${x.enabled === true ? 'true' : 'false'}\n`);
+          NODE
+
+      - name: Install Playwright runtime only in ephemeral runner
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Execute fixed read-only gate profile
+        if: steps.request.outputs.enabled == 'true'
+        id: gates
+        continue-on-error: true
+        run: |
+          set +e
+          node tools/release/cxorbia-readonly-post-gates-runner.mjs \
+            .github/cxorbia-gate-requests/request.json
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Record disabled request safely
+        if: steps.request.outputs.enabled != 'true'
+        run: echo "Controlled gate request disabled; no gates executed."
+
+      - name: Upload sanitized gate evidence
+        if: always() && steps.request.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-readonly-post-gates-${{ github.run_id }}
+          path: |
+            .tmp/cxorbia-readonly-post-gates
+            .tmp/tya-project-period-kpi-history-r20
+            .tmp/tya-corte2a-shopper-operation-canonical
+            .tmp/tya-corte1-report-frontend-runtime
+            .tmp/r20-source-safe-gates
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Report result in PR 7
+        if: always() && steps.request.outputs.enabled == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GATES_EXIT_CODE: ${{ steps.gates.outputs.exit_code }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const reportPath = '.tmp/cxorbia-readonly-post-gates/report.json';
+          const report = fs.existsSync(reportPath)
+            ? JSON.parse(fs.readFileSync(reportPath, 'utf8'))
+            : { status: 'HOLD_REPORT_MISSING', requestId: null, sourceHeadSha: null, gates: [], blockers: ['report_missing'] };
+          const gateLines = Array.isArray(report.gates) && report.gates.length
+            ? report.gates.map(g => `- ${g.status}: \`${g.id}\``)
+            : ['- none'];
+          const body = [
+            '## CXORBIA_READONLY_POST_GATES_RUNNER',
+            '',
+            `- Run: ${process.env.GITHUB_RUN_ID}`,
+            `- Estado: \`${report.status}\``,
+            `- Request: \`${report.requestId || 'n/a'}\``,
+            `- Source HEAD: \`${report.sourceHeadSha || 'n/a'}\``,
+            `- Exit code: ${process.env.GATES_EXIT_CODE || 'n/a'}`,
+            '',
+            'Gates:',
+            ...gateLines,
+            '',
+            'Blockers:',
+            ...(report.blockers?.length ? report.blockers.map(x => `- ${x}`) : ['- none']),
+            '',
+            'Ejecución read-only: cero commit/push, deploy, merge, producción, importaciones o writes reales.'
+          ].join('\n');
+          const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+          fetch(`${process.env.GITHUB_API_URL}/repos/${owner}/${repo}/issues/7/comments`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+              Accept: 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ body })
+          }).then(async response => {
+            if (!response.ok) throw new Error(`comment_failed_HTTP_${response.status}:${await response.text()}`);
+          }).catch(error => { console.error(error); process.exitCode = 1; });
+          NODE
+
+      - name: Enforce gate result
+        if: steps.request.outputs.enabled == 'true'
+        run: test "${{ steps.gates.outputs.exit_code }}" = "0"
