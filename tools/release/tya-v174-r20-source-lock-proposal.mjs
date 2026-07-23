@@ -8,7 +8,7 @@ import { spawnSync } from 'node:child_process';
 const root=process.cwd();
 const appDir=path.join(root,'app');
 const oldManifestPath=path.join(appDir,'docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json');
-const outDir=path.resolve(process.env.CXORBIA_SOURCE_LOCK_PROPOSAL_OUT||'.tmp/tya-v174-r20-source-lock-proposal');
+const outDir=path.resolve(process.env.CXORBIA_SOURCE_LOCK_PROPOSAL_OUT||'.tmp/cxorbia-readonly-post-gates/source-lock-proposal');
 const excluded=new Set([
   'app/core/build-lock.js',
   'app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json'
