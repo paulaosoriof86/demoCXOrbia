@@ -1,5 +1,33 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
+## Addendum 2026-07-22 — V174 HOLD focalizado corregido / R20 fuente pendiente
+
+Estado: `V174_HOLD_FIX_APPLIED_R20_SOURCE_IDENTITY_HOLD_NO_DEPLOY`.
+
+- `HEAD_BEFORE`: `1703d36252cb957387fac6bcf348cf06ff22a5ef`.
+- Commit funcional focalizado: `0acdc6772f2d4a7743dea0992a4279241dcb79d7`.
+- Archivos modificados en el commit focalizado:
+  - `app/core/tya-phase-a-source-safe-preview.js`;
+  - `tools/qa/tya-corte1-report-frontend-runtime-gate.mjs`.
+- El overlay source-safe ahora preserva `0` real y deja ausencia como `null` para `honorario`, `boleto` y `comboAmt`.
+- El harness Node de reportes modela `XLSX.utils.encode_range` y la API mínima PPT usada por V174.
+
+Gates post-corrección:
+
+- PASS: `tya-hr-header-variants-r20-gate.mjs`.
+- PASS: `tya-live-hr-inplace-refresh-gate.mjs`.
+- PASS: `tya-corte1-context-history-reports-gate.mjs`.
+- PASS: `tya-corte1-report-frontend-runtime-gate.mjs`.
+- HOLD: `tya-project-period-kpi-history-gate-r20.mjs` por `source_not_live_verified:public_gviz_csv_cache_busted`; el runtime local observó 14 periodos, 616 visitas, GT/HN, Julio 2026 con 44 visitas y conteos coherentes, pero la identidad de fuente no es una de las aceptadas por el gate.
+- PASS: `tya-corte2a-shopper-operation-canonical-gate.mjs`.
+- HOLD: `tya-corte1-m1-regression-lock.mjs`, derivado únicamente del HOLD R20 anterior.
+
+Causa raíz metodológica registrada: `PRE_GATE_NOT_RECONCILED_WITH_EXACT_HEAD_OVERLAY_COMPOSITE`.
+
+Regla reusable: todo PASS pre-empalme debe registrar y verificar conjuntamente candidate SHA, HEAD SHA, SHA del overlay protegido, SHA del gate ejecutado, SHA/identidad del composite exacto y salida real del gate.
+
+No se hizo deploy, merge, producción, imports, writes HR/Firestore/Auth/Storage, Make/Gemini ni pagos.
+
 ## Addendum 2026-07-22 — V174 empalme funcional aplicado / gates en HOLD
 
 Estado: `V174_FUNCTIONAL_EMPALMED_GATE_HOLD_NO_DEPLOY`.

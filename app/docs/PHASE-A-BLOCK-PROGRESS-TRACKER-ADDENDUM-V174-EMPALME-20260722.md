@@ -4,6 +4,22 @@ Fecha: 2026-07-22
 
 Estado: `V174_FUNCTIONAL_EMPALMED_GATE_HOLD_NO_DEPLOY`.
 
+## Addendum corrección focalizada
+
+Estado: `V174_HOLD_FIX_APPLIED_R20_SOURCE_IDENTITY_HOLD_NO_DEPLOY`.
+
+- `HEAD_BEFORE` de corrección: `1703d36252cb957387fac6bcf348cf06ff22a5ef`.
+- Commit focalizado: `0acdc6772f2d4a7743dea0992a4279241dcb79d7`.
+- `app/core/tya-phase-a-source-safe-preview.js`: `honorario`, `boleto` y `comboAmt` usan semántica nullish.
+- `tools/qa/tya-corte1-report-frontend-runtime-gate.mjs`: stub XLSX/PPT actualizado para V174.
+- PASS: headers R20, HR in-place, contexto/histórico/reportes, report frontend runtime y Corte 2A canonical.
+- HOLD: R20 proyecto/periodo/KPI por identidad `sourceAccessMode=public_gviz_csv_cache_busted`.
+- HOLD derivado: M1 regression lock.
+
+Causa raíz: `PRE_GATE_NOT_RECONCILED_WITH_EXACT_HEAD_OVERLAY_COMPOSITE`.
+
+Regla reusable: todo PASS pre-empalme debe capturar candidate SHA, HEAD SHA, SHA del overlay protegido, SHA del gate, SHA/identidad del composite exacto y salida real del gate.
+
 ## Ejecutado
 
 - Repositorio: `paulaosoriof86/demoCXOrbia`.

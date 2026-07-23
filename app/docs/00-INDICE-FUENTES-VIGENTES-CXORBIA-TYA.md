@@ -14,6 +14,18 @@ Estado: ACTIVO Y OBLIGATORIO
 - Gate Corte 2A queda en HOLD por overlay preservado `app/core/tya-phase-a-source-safe-preview.js`; no se autorizó parche funcional fuera de los seis módulos V174.
 - No hay deploy, merge, producción ni writes reales.
 
+## Addendum 2026-07-22 — corrección focalizada del HOLD V174
+
+- Estado vivo: `V174_HOLD_FIX_APPLIED_R20_SOURCE_IDENTITY_HOLD_NO_DEPLOY`.
+- Commit funcional focalizado: `0acdc6772f2d4a7743dea0992a4279241dcb79d7`.
+- Corrección funcional única: `app/core/tya-phase-a-source-safe-preview.js` preserva `0` real y ausencia como `null` en honorario, boleto y combo.
+- Harness actualizado: `tools/qa/tya-corte1-report-frontend-runtime-gate.mjs`.
+- Corte 2A canonical: PASS.
+- Report frontend runtime: PASS.
+- R20 proyecto/periodo/KPI: HOLD por identidad de fuente `public_gviz_csv_cache_busted`.
+- Causa raíz metodológica: `PRE_GATE_NOT_RECONCILED_WITH_EXACT_HEAD_OVERLAY_COMPOSITE`.
+- Regla reusable obligatoria: un PASS pre-empalme debe registrar candidate SHA, HEAD SHA, SHA del overlay protegido, SHA del gate, SHA/identidad del composite exacto y salida real del gate.
+
 ## 1. Lectura obligatoria
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`.

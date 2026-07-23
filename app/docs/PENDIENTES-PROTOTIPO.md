@@ -23,6 +23,28 @@ Estado: `V174_FUNCTIONAL_EMPALMED_GATE_HOLD_NO_DEPLOY`.
 
 Sin deploy, sin merge, sin producción, sin importaciones, sin HR/Firestore/Auth/Storage writes, sin Make/Gemini y sin pagos.
 
+## CORTE 2A — corrección focalizada aplicada
+
+Estado: `V174_HOLD_FIX_APPLIED_R20_SOURCE_IDENTITY_HOLD_NO_DEPLOY`.
+
+### Resuelto
+
+- [PASS] Ausencia financiera ya no se colapsa a cero en el overlay source-safe.
+- [PASS] `0` real se conserva para honorario, boleto y combo cuando la fuente lo confirma.
+- [PASS] Harness de reportes actualizado para autofiltro Excel y PPT V174.
+- [PASS] `tya-corte2a-shopper-operation-canonical-gate.mjs`.
+- [PASS] `tya-corte1-report-frontend-runtime-gate.mjs`.
+
+### Pendiente real
+
+- [HOLD] `tya-project-period-kpi-history-gate-r20.mjs`: `sourceAccessMode=public_gviz_csv_cache_busted`; se observaron 14 periodos, 616 visitas, GT/HN y conteos Julio 2026 correctos, pero no la identidad de fuente aceptada por el gate.
+- [HOLD] Builder por inventario verificado: `header_not_found` en `JULIO 26`.
+- [HOLD] M1 compuesto hasta resolver el punto anterior.
+
+### Regla reusable agregada
+
+Todo PASS pre-empalme debe registrar candidate SHA, HEAD SHA, SHA del overlay protegido, SHA del gate ejecutado, SHA/identidad del composite exacto y salida real del gate.
+
 # PENDIENTES-PROTOTIPO.md
 
 > Lista viva de mejoras del prototipo CXOrbia. Actualizada 2026-07-21.

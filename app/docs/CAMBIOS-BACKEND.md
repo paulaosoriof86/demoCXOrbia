@@ -182,3 +182,15 @@ Estado: `V174_FUNCTIONAL_EMPALMED_GATE_HOLD_NO_DEPLOY`.
 - PASS: headers R20, HR in-place y contexto/histórico/reportes.
 - HOLD: runtime reportes por stub local `XLSX.utils.encode_range`; proyecto-periodo por `playwright-core` ausente; Corte 2A por overlay preservado que colapsa ausencias financieras a cero.
 - No deploy, no producción, no importaciones, no writes reales y no pagos.
+
+## 2026-07-22 — Corrección focalizada HOLD V174 / backend preservado
+
+Estado: `V174_HOLD_FIX_APPLIED_R20_SOURCE_IDENTITY_HOLD_NO_DEPLOY`.
+
+- Commit focalizado: `0acdc6772f2d4a7743dea0992a4279241dcb79d7`.
+- Backend y adapters live persistidos sin cambio.
+- `app/core/tya-phase-a-source-safe-preview.js` corrige ausencia financiera: `0` confirmado se conserva; falta de fuente queda `null`.
+- Harness QA actualizado sin modificar producto ni `cliente-extra.js`.
+- PASS: headers R20, HR in-place, contexto/histórico/reportes, report frontend runtime y Corte 2A canonical.
+- HOLD restante: `tya-project-period-kpi-history-gate-r20.mjs` por identidad de fuente `public_gviz_csv_cache_busted`; conteos observados correctos, pero source access mode fuera de la lista aceptada.
+- Causa raíz metodológica: `PRE_GATE_NOT_RECONCILED_WITH_EXACT_HEAD_OVERLAY_COMPOSITE`.

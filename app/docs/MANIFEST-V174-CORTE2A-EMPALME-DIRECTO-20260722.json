@@ -1,16 +1,18 @@
 {
   "schema": "cxorbia.runtime-manifest.v1",
-  "version": "V174-CORTE2A",
+  "version": "V174-CORTE2A-HOLD-FIX",
   "generatedAt": "2026-07-22",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "headBefore": "0fd63faf2a873640e042421c40749714a4d12fd4",
   "empalmeCommit": "b21e494d127fb4b902de5576e3fab0292362b097",
+  "priorDocumentationCommit": "1703d36252cb957387fac6bcf348cf06ff22a5ef",
+  "holdFixCommit": "0acdc6772f2d4a7743dea0992a4279241dcb79d7",
   "packageZip": "CXOrbia-V174-VERIFICADA-e48452a4385e5dd.zip",
   "packageSha256": "e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f",
   "candidatePackage": "CANDIDATA_V174_ACUMULADA_20260722",
   "fileCount": 1886,
-  "aggregateSha256": "0969b56ef0ab031c663220a8ec8fa6ca2c18c8b7ee22e419202d0f26d62c631d",
+  "aggregateSha256": "1019c6e2660d0e1b2d9433d5d92ac3f6148ef6eeb6534ad0bd115cd68404f300",
   "excludedFromHash": [
     "app/core/build-lock.js",
     "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json"
@@ -23,26 +25,22 @@
     "app/modules/postulaciones.js",
     "app/modules/academia.js"
   ],
-  "preserved": [
-    "backend/",
-    "adapters live",
-    "tools existentes",
-    "contratos",
-    "overlays TyA",
-    "CX.data",
-    "documentacion acumulada"
+  "holdFixDelta": [
+    "app/core/tya-phase-a-source-safe-preview.js",
+    "tools/qa/tya-corte1-report-frontend-runtime-gate.mjs"
   ],
+  "methodologyRootCause": "PRE_GATE_NOT_RECONCILED_WITH_EXACT_HEAD_OVERLAY_COMPOSITE",
   "gates": {
     "pass": [
       "tya-hr-header-variants-r20-gate.mjs",
       "tya-live-hr-inplace-refresh-gate.mjs",
-      "tya-corte1-context-history-reports-gate.mjs"
+      "tya-corte1-context-history-reports-gate.mjs",
+      "tya-corte1-report-frontend-runtime-gate.mjs",
+      "tya-corte2a-shopper-operation-canonical-gate.mjs"
     ],
     "hold": [
-      "tya-corte1-report-frontend-runtime-gate.mjs",
       "tya-project-period-kpi-history-gate-r20.mjs",
-      "tya-corte1-m1-regression-lock.mjs",
-      "tya-corte2a-shopper-operation-canonical-gate.mjs"
+      "tya-corte1-m1-regression-lock.mjs"
     ]
   },
   "safeState": {
@@ -656,8 +654,8 @@
     },
     {
       "path": "app/core/tya-phase-a-source-safe-preview.js",
-      "size": 9785,
-      "sha256": "5a7a8b49cf6e982d71985bbd1973315d1acb2850ee703fd6cb47c0ccc9f7299a"
+      "size": 9794,
+      "sha256": "6e61aa00d59b44b129241573ee39190ce3a0a57c94fc49739b0fd13ac93dbcd6"
     },
     {
       "path": "app/core/tya-phase-a-source-safe-runtime-guard.js",
@@ -701,8 +699,8 @@
     },
     {
       "path": "app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md",
-      "size": 6210,
-      "sha256": "5dd199f463567742bbe38b22bf155a6134132aea656ebab2292a4b93445959a5"
+      "size": 7084,
+      "sha256": "c4f67f0742929175395dfdf44891a926d3da4e28cb4c2dedee302097ea1bd0eb"
     },
     {
       "path": "app/docs/00-REGLAS-MAESTRAS-CONTEXTO-CONTINUIDAD-CXORBIA-TYA.md",
@@ -746,8 +744,8 @@
     },
     {
       "path": "app/docs/ACADEMIA-IMPACT-AUDITORIA-V174-CORTE2A-20260722.md",
-      "size": 1476,
-      "sha256": "9530e4ccee1d3c8f299c43e87f65c73ccacf0a4c5fe89811b14bf672ececde95"
+      "size": 2070,
+      "sha256": "847a8ba1df77a414d4b5cfdec10817674f67592601b2c985dcb0e43b9eb48de6"
     },
     {
       "path": "app/docs/ACADEMIA-IMPACT-AUDITORIA-V97-20260710.md",
@@ -2941,8 +2939,8 @@
     },
     {
       "path": "app/docs/CAMBIOS-BACKEND.md",
-      "size": 11339,
-      "sha256": "fc5d2cc4b6f9a3fe0ccee29416be46f704c2b0ae32cf3313eacfc4c24973d77a"
+      "size": 12204,
+      "sha256": "7a127c59dac5907bff0293871e629f3afa12f0984344d3125882ba5a14320bb1"
     },
     {
       "path": "app/docs/CAMBIOS-CERTIFICATION-ADMIN-ACTIONS-CONTRACT-20260707.md",
@@ -3821,8 +3819,8 @@
     },
     {
       "path": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
-      "size": 6455,
-      "sha256": "365808b8d011fe3dae1ec2e95f168a4c405745447466a36075cd884122c39cf4"
+      "size": 8210,
+      "sha256": "5cc71590ff81bde62fbe285d4b939d00030812a5327e74c46245616cd102d73f"
     },
     {
       "path": "app/docs/CHECKPOINT-OPERATIVO-REALDATA-PREVIEW-TYA-20260709.md",
@@ -6291,8 +6289,8 @@
     },
     {
       "path": "app/docs/PENDIENTES-PROTOTIPO.md",
-      "size": 4200,
-      "sha256": "fa996c6e97bb9c47f948b5684ec6e20ad5aa3cc94ec8a2679d106f667493df94"
+      "size": 5289,
+      "sha256": "0c507c196a5631829505df2f86de97e5f0c7e155155988824a66552910cbc187"
     },
     {
       "path": "app/docs/PENDIENTES-V163-CORTE1-20260720.md",
@@ -6456,8 +6454,8 @@
     },
     {
       "path": "app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-V174-EMPALME-20260722.md",
-      "size": 1610,
-      "sha256": "704ca05822e9a4d89327573f2bbdc2ce9af5aed64ac954e2576721e9418b05ad"
+      "size": 2557,
+      "sha256": "50159e7d95004fa81c5a4bc484b505717e1c872ea88e64c0af7466eaedec06a8"
     },
     {
       "path": "app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-V83-AUDITORIA-20260704.md",
@@ -8581,8 +8579,8 @@
     },
     {
       "path": "app/docs/RESUMEN-PARA-CLAUDE.md",
-      "size": 6272,
-      "sha256": "b10258ea9b3bda2269e5caf216709310c3e6ca35573eaac460442db25fd1d4cc"
+      "size": 7056,
+      "sha256": "f31a03edf27b2dcbc052528e89436d75cd1a96207004f44451ec45a255941193"
     },
     {
       "path": "app/docs/REUSABLE-BACKEND-TO-CLAUDE-COVERAGE-CONTRACT-CXORBIA-20260708.md",

@@ -12,6 +12,19 @@ No pedir otra candidata ni reabrir V174. Si se requiere un bloque posterior para
 
 Backend, adapters live, contratos, CX.data, herramientas y documentación viva fueron preservados. No hubo deploy, merge, producción ni writes reales.
 
+## 2026-07-22 — HOLD focalizado corregido; no pedir nueva candidata
+
+Estado: `V174_HOLD_FIX_APPLIED_R20_SOURCE_IDENTITY_HOLD_NO_DEPLOY`.
+
+El bloqueo de ausencia financiera fue corregido en `app/core/tya-phase-a-source-safe-preview.js`: ausencia ya no se convierte en cero, y `0` real se conserva. El gate Corte 2A canonical pasa.
+
+No enviar nueva ronda a Claude por V174. El pendiente restante es operativo/gate:
+
+- `tya-project-period-kpi-history-gate-r20.mjs` observa conteos correctos de HR viva/local, pero retiene HOLD porque `sourceAccessMode=public_gviz_csv_cache_busted`.
+- El builder por inventario verificado también queda en HOLD por `header_not_found` en `JULIO 26`.
+
+Causa raíz metodológica documentada: `PRE_GATE_NOT_RECONCILED_WITH_EXACT_HEAD_OVERLAY_COMPOSITE`.
+
 ## 2026-07-21 - V172 empalmada; pendiente post-gates y visual
 
 - Se retracta el supuesto bloqueo por falta de checkout local; fue un desvío metodológico.
