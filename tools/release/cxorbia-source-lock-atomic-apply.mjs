@@ -11,7 +11,7 @@ const proposalDir=path.join(outDir,'source-lock-proposal');
 const manifestPath='app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json';
 const buildLockPath='app/core/build-lock.js';
 const report={
-  schemaVersion:'1.0.0',
+  schemaVersion:'1.0.1',
   runner:'CXORBIA_ATOMIC_APPLY_RUNNER',
   mode:'source_lock_regenerate_v1',
   status:'HOLD_ATOMIC_APPLY',
@@ -37,7 +37,7 @@ function save(){fs.mkdirSync(outDir,{recursive:true});fs.writeFileSync(path.join
   ...(report.blockers.length?report.blockers.map(x=>`- ${x}`):['- none'])
 ].join('\n')+'\n','utf8');}
 function fail(message){throw new Error(message);}
-function run(command,args){const result=spawnSync(command,args,{cwd:root,encoding:'utf8',maxBuffer:30*1024*1024});if(result.status!==0)fail(`command_failed:${command} ${args.join(' ')}:${String(result.stderr||result.stdout||'').slice(0,1500)}`);return String(result.stdout||'').trim();}
+function run(command,args,options={}){const result=spawnSync(command,args,{cwd:root,encoding:'utf8',env:{...process.env,...(options.env||{})},maxBuffer:30*1024*1024});if(result.status!==0)fail(`command_failed:${command} ${args.join(' ')}:${String(result.stderr||result.stdout||'').slice(0,1500)}`);return String(result.stdout||'').trim();}
 function readJson(rel){if(!fs.existsSync(path.join(root,rel)))fail(`required_file_missing:${rel}`);return JSON.parse(fs.readFileSync(path.join(root,rel),'utf8'));}
 
 try{
