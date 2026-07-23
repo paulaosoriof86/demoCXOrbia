@@ -7,14 +7,6 @@ on:
     paths:
       - .github/cxorbia-apply-requests/request.json
       - .github/workflows/cxorbia-atomic-apply-runner.yml
-  pull_request:
-    branches:
-      - release/cxorbia-tya-rc-20260630
-    types:
-      - synchronize
-    paths:
-      - .github/cxorbia-apply-requests/request.json
-      - .github/workflows/cxorbia-atomic-apply-runner.yml
       - tools/release/cxorbia-atomic-apply-runner.mjs
       - tools/release/cxorbia-focal-text-patch-runner.mjs
       - tools/release/cxorbia-source-lock-atomic-apply.mjs
@@ -48,18 +40,17 @@ jobs:
       - name: Detect active request
         id: request
         run: |
-          if [ -f .github/cxorbia-apply-requests/request.json ]; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-            node <<'NODE'
-            const fs=require('fs');
-            const request=JSON.parse(fs.readFileSync('.github/cxorbia-apply-requests/request.json','utf8'));
-            fs.appendFileSync(process.env.GITHUB_OUTPUT,`mode=${request.mode||'blob_delta_v1'}\n`);
-            NODE
-          else
+          if [ ! -f .github/cxorbia-apply-requests/request.json ]; then
             echo "present=false" >> "$GITHUB_OUTPUT"
             echo "mode=none" >> "$GITHUB_OUTPUT"
-            echo "Request already consumed; safe no-op."
+            exit 0
           fi
+          echo "present=true" >> "$GITHUB_OUTPUT"
+          node <<'NODE'
+          const fs = require('fs');
+          const request = JSON.parse(fs.readFileSync('.github/cxorbia-apply-requests/request.json', 'utf8'));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `mode=${request.mode || 'blob_delta_v1'}\n`);
+          NODE
 
       - name: Setup Node
         if: steps.request.outputs.present == 'true'
@@ -71,65 +62,29 @@ jobs:
         if: steps.request.outputs.present == 'true'
         run: node tools/qa/cxorbia-controlled-runners-contract-gate.mjs
 
-      - name: Publish started status
+      - name: Execute controlled atomic request
         if: steps.request.outputs.present == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          node <<'NODE'
-          const {spawnSync}=require('child_process');
-          const [owner,repo]=process.env.GITHUB_REPOSITORY.split('/');
-          const sha=spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).stdout.trim();
-          const body={state:'pending',context:'cxorbia/atomic-apply/overall',description:'CONTROLLED_ATOMIC_APPLY_STARTED',target_url:`${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`};
-          fetch(`${process.env.GITHUB_API_URL}/repos/${owner}/${repo}/statuses/${sha}`,{method:'POST',headers:{Authorization:`Bearer ${process.env.GITHUB_TOKEN}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},body:JSON.stringify(body)}).then(async r=>{if(!r.ok)throw new Error(await r.text());}).catch(e=>{console.error(e);process.exitCode=1;});
-          NODE
-
-      - name: Execute controlled focal text patch
-        if: steps.request.outputs.present == 'true' && steps.request.outputs.mode == 'focal_text_patch_v1'
-        id: focal
-        continue-on-error: true
-        run: |
-          set +e
-          node tools/release/cxorbia-focal-text-patch-runner.mjs .github/cxorbia-apply-requests/request.json
-          code=$?
-          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Execute controlled source-lock regeneration
-        if: steps.request.outputs.present == 'true' && steps.request.outputs.mode == 'source_lock_regenerate_v1'
-        id: source_lock
-        continue-on-error: true
-        run: |
-          set +e
-          node tools/release/cxorbia-source-lock-atomic-apply.mjs .github/cxorbia-apply-requests/request.json
-          code=$?
-          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Execute controlled blob delta
-        if: steps.request.outputs.present == 'true' && steps.request.outputs.mode != 'focal_text_patch_v1' && steps.request.outputs.mode != 'source_lock_regenerate_v1'
-        id: apply
+        id: execute
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REQUEST_MODE: ${{ steps.request.outputs.mode }}
         run: |
           set +e
-          node tools/release/cxorbia-atomic-apply-runner.mjs .github/cxorbia-apply-requests/request.json
+          case "$REQUEST_MODE" in
+            focal_text_patch_v1)
+              node tools/release/cxorbia-focal-text-patch-runner.mjs .github/cxorbia-apply-requests/request.json
+              ;;
+            source_lock_regenerate_v1)
+              node tools/release/cxorbia-source-lock-atomic-apply.mjs .github/cxorbia-apply-requests/request.json
+              ;;
+            *)
+              node tools/release/cxorbia-atomic-apply-runner.mjs .github/cxorbia-apply-requests/request.json
+              ;;
+          esac
           code=$?
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           exit 0
-
-      - name: Resolve execution result
-        if: always() && steps.request.outputs.present == 'true'
-        id: result
-        run: |
-          if [ "${{ steps.request.outputs.mode }}" = "focal_text_patch_v1" ]; then
-            echo "exit_code=${{ steps.focal.outputs.exit_code }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ steps.request.outputs.mode }}" = "source_lock_regenerate_v1" ]; then
-            echo "exit_code=${{ steps.source_lock.outputs.exit_code }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "exit_code=${{ steps.apply.outputs.exit_code }}" >> "$GITHUB_OUTPUT"
-          fi
 
       - name: Upload sanitized apply evidence
         if: always() && steps.request.outputs.present == 'true'
@@ -140,23 +95,45 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Publish final status
+      - name: Publish observable result
         if: always() && steps.request.outputs.present == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXECUTE_EXIT_CODE: ${{ steps.execute.outputs.exit_code }}
         run: |
           node <<'NODE'
-          const fs=require('fs');
-          const reportPath='.tmp/cxorbia-atomic-apply-runner/report.json';
-          const report=fs.existsSync(reportPath)?JSON.parse(fs.readFileSync(reportPath,'utf8')):{status:'HOLD_REPORT_MISSING',requestCommitSha:null,blockers:['report_missing']};
-          const {spawnSync}=require('child_process');
-          const [owner,repo]=process.env.GITHUB_REPOSITORY.split('/');
-          const sha=report.requestCommitSha||spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).stdout.trim();
-          const state=report.status==='APPLIED_AND_VERIFIED'?'success':'failure';
-          const body={state,context:'cxorbia/atomic-apply/overall',description:`${report.status}; blockers=${Array.isArray(report.blockers)?report.blockers.length:0}`.slice(0,140),target_url:`${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`};
-          fetch(`${process.env.GITHUB_API_URL}/repos/${owner}/${repo}/statuses/${sha}`,{method:'POST',headers:{Authorization:`Bearer ${process.env.GITHUB_TOKEN}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},body:JSON.stringify(body)}).then(async r=>{if(!r.ok)throw new Error(await r.text());}).catch(e=>{console.error(e);process.exitCode=1;});
+          const fs = require('fs');
+          const { spawnSync } = require('child_process');
+          const reportPath = '.tmp/cxorbia-atomic-apply-runner/report.json';
+          const report = fs.existsSync(reportPath)
+            ? JSON.parse(fs.readFileSync(reportPath, 'utf8'))
+            : { status: 'HOLD_REPORT_MISSING', requestCommitSha: null, blockers: ['report_missing'] };
+          const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+          const sha = report.requestCommitSha || spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim();
+          const state = report.status === 'APPLIED_AND_VERIFIED' ? 'success' : 'failure';
+          const body = {
+            state,
+            context: 'cxorbia/atomic-apply/overall',
+            description: `${report.status}; blockers=${Array.isArray(report.blockers) ? report.blockers.length : 0}`.slice(0, 140),
+            target_url: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+          };
+          fetch(`${process.env.GITHUB_API_URL}/repos/${owner}/${repo}/statuses/${sha}`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+              Accept: 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+          }).then(async response => {
+            if (!response.ok) throw new Error(await response.text());
+          }).catch(error => {
+            console.error(error);
+            process.exitCode = 1;
+          });
           NODE
 
       - name: Enforce apply result
         if: steps.request.outputs.present == 'true'
-        run: test "${{ steps.result.outputs.exit_code }}" = "0"
+        run: test "${{ steps.execute.outputs.exit_code }}" = "0"
