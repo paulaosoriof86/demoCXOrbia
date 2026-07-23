@@ -11,9 +11,10 @@ const outDir = path.join(root, '.tmp/cxorbia-readonly-post-gates');
 const reportPath = path.join(outDir, 'report.json');
 const reportMdPath = path.join(outDir, 'report.md');
 const serverLogPath = path.join(outDir, 'static-server.log');
+const effectiveBranch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || null;
 
 const report = {
-  schemaVersion: '1.0.0',
+  schemaVersion: '1.0.1',
   runner: 'CXORBIA_READONLY_POST_GATES_RUNNER',
   generatedAt: new Date().toISOString(),
   status: 'HOLD_NOT_RUN',
@@ -21,7 +22,8 @@ const report = {
   requestId: null,
   profile: null,
   repository: process.env.GITHUB_REPOSITORY || null,
-  branch: process.env.GITHUB_REF_NAME || null,
+  branch: effectiveBranch,
+  eventName: process.env.GITHUB_EVENT_NAME || null,
   expectedSourceHead: null,
   requestCommitSha: null,
   sourceHeadSha: null,
@@ -55,6 +57,8 @@ function saveReport() {
     `- Status: \`${report.status}\``,
     `- Request: \`${report.requestId || 'n/a'}\``,
     `- Profile: \`${report.profile || 'n/a'}\``,
+    `- Event: \`${report.eventName || 'n/a'}\``,
+    `- Branch: \`${report.branch || 'n/a'}\``,
     `- Source HEAD: \`${report.sourceHeadSha || 'n/a'}\``,
     '',
     '## Gates',
@@ -151,7 +155,7 @@ async function main() {
 
   assert(contract.contractId === 'cxorbia-controlled-runners-v1', 'contract_identity_invalid');
   assert(process.env.GITHUB_REPOSITORY === contract.repository, 'repository_mismatch', process.env.GITHUB_REPOSITORY || '');
-  assert(process.env.GITHUB_REF_NAME === contract.branch, 'branch_mismatch', process.env.GITHUB_REF_NAME || '');
+  assert(effectiveBranch === contract.branch, 'branch_mismatch', effectiveBranch || '');
   assert(request.schemaVersion === 'cxorbia.readonly-post-gates-request.v1', 'request_schema_invalid');
   assert(request.repository === contract.repository, 'request_repository_mismatch');
   assert(request.branch === contract.branch, 'request_branch_mismatch');
