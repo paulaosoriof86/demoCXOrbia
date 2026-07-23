@@ -15,11 +15,12 @@ Ante contradicción con cualquier documento previo, conversación, agente o proc
 
 ## 1. Correcciones metodológicas acumuladas
 
-Se mantienen cerradas tres causas raíz:
+Se mantienen cerradas cuatro causas raíz:
 
 1. `FALSE_AUDIT_LANE_BLOCKED_BY_LOCAL_CHECKOUT`: una auditoría no se detiene por ausencia de checkout local cuando existen bytes reales, runtime local de auditoría y lectura autoritativa de la rama.
 2. `PRE_GATE_NOT_RECONCILED_WITH_EXACT_HEAD_OVERLAY_COMPOSITE`: ningún PASS es válido si no identifica candidata, HEAD, overlay, gate y composite exactos.
 3. `CODEX_DEPENDENCY_CAUSED_BY_MISSING_CONTROLLED_GITHUB_LANES`: Codex no debe ser requisito operativo para empalmes ni gates cuando los runners controlados estén disponibles.
+4. `MUTABLE_OPERATIONAL_FIELDS_USED_AS_VISIT_IDENTITY`: ningún campo mutable como cinema, shopping, quincena, franja, shopper, fecha o monto puede formar parte de la identidad estable de una visita.
 
 ## 2. Destino fijo
 
@@ -215,36 +216,71 @@ Ejecutar en un entorno efímero reproducible perfiles de gates autorizados. Play
 - cero Make/Gemini;
 - lecturas públicas/source-safe permitidas solo para gates autorizados.
 
-### 9.3 Perfiles autorizados
+### 9.3 Identidad estable obligatoria
 
-#### `V174_R20_M1_CORTE2A`
+Versión:
+
+`tya-stable-visit-id-r20-row-identity-v1`
+
+Campos canónicos:
+
+`tenantId + projectId + periodKey + country + sourceRow`.
+
+Campos mutables excluidos:
+
+- cinemaId;
+- shopping;
+- quincena;
+- franja;
+- shopper;
+- fechas;
+- montos.
+
+La identidad estable se ejecuta y verifica en el filtro runtime del inventario, payload source-safe y perfiles V174/Corte 3. Un cambio de campo mutable no puede producir un nuevo `visitId`.
+
+### 9.4 Perfil `V174_R20_M1_CORTE2A`
 
 Ejecuta:
 
-1. sintaxis del builder R20;
-2. variantes de encabezado R20;
-3. builder de inventario R20;
-4. HR in-place;
-5. contexto/histórico/reportes Corte 1;
-6. runtime de reportes frontend;
-7. proyecto/periodo/KPI R20 con Playwright/Chromium;
+1. sintaxis y variantes del builder R20;
+2. builder de inventario;
+3. filtro runtime e identidad estable;
+4. payload source-safe y aplicación idempotente;
+5. HR in-place;
+6. contexto/histórico/reportes;
+7. proyecto/periodo/KPI con navegador;
 8. Corte 2A canónico;
 9. lock compuesto M1;
-10. verificador V174.
+10. propuesta de source lock después del build;
+11. verificación efímera del composite exacto contra la propuesta.
 
-#### `CORTE3_FINANCIAL_RECONCILIATION_R20`
+El source lock propuesto se usa dentro del checkout efímero y se restaura antes de terminar. No implica commit ni push.
+
+### 9.5 Perfil `CORTE3_FINANCIAL_RECONCILIATION_R20`
 
 Ejecuta sin navegador:
 
-1. validación de sintaxis del reconciliador R14C;
-2. regeneración efímera de la conciliación usando la HR R20 vigente y el workbook financiero source-safe;
-3. validación de sintaxis del gate Corte 3;
-4. comparación fail-closed contra la baseline R14C por `sourceRecordId`, llaves estables e identidad de enlace;
-5. verificación de 14 periodos, 616 visitas, 247 filas financieras y distribución 34 GT/10 HN por periodo;
-6. verificación de que ledger, lotes y confirmaciones no inventen evidencias de pago;
-7. envío a revisión humana de todo enlace nuevo, perdido, cambiado, ambiguo o con cambio de estado.
+1. builder R20 e inventario vigente;
+2. filtro runtime con identidad estable;
+3. gate del payload source-safe;
+4. conciliación del workbook financiero source-safe contra la HR vigente;
+5. comparación por `sourceRecordId`, `hrRowId`, llaves estables e identidad de enlace;
+6. verificación de 14 periodos, 616 visitas, 247 filas financieras y 34 GT/10 HN por periodo;
+7. revisión contra `backend/contracts/tya-corte3-financial-r20-delta-review-v1.json`;
+8. bloqueo de todo delta no revisado, identidad canónica alterada, duplicado, evidencia inventada o pago inferido.
 
-Este perfil no importa, no ejecuta pagos, no escribe repositorio ni proveedores, no despliega y no toca producción. Sus salidas existen únicamente como artifacts source-safe bajo `.tmp`.
+El PASS revisado vigente conserva:
+
+- 209 enlaces exactos;
+- 38 filas en revisión;
+- 79 entradas en review queue;
+- 15 enlaces nuevos técnicamente revisados;
+- dos enlaces retirados y mantenidos sin vínculo por monto/detalle;
+- un cambio de estado mantenido sin vínculo por referencia de shopper;
+- cero cambios de `hrRowId` canónico;
+- cero pagos ejecutados.
+
+Este perfil no importa, no paga, no escribe repositorio ni proveedores, no despliega y no toca producción.
 
 No se declara PASS compuesto si algún gate queda HOLD.
 
