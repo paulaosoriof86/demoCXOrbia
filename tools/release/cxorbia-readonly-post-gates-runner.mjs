@@ -14,7 +14,7 @@ const serverLogPath = path.join(outDir, 'static-server.log');
 const effectiveBranch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || null;
 
 const report = {
-  schemaVersion: '1.0.1',
+  schemaVersion: '1.0.2',
   runner: 'CXORBIA_READONLY_POST_GATES_RUNNER',
   generatedAt: new Date().toISOString(),
   status: 'HOLD_NOT_RUN',
@@ -174,6 +174,7 @@ async function main() {
     ['node-check-builder', 'node', ['--check', 'tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs']],
     ['tya-hr-header-variants-r20-gate', 'node', ['tools/qa/tya-hr-header-variants-r20-gate.mjs']],
     ['tya-build-live-hr-source-safe-r20-inventory', 'node', ['tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs']],
+    ['tya-source-safe-binding-build-r18a', 'node', ['tools/release/tya-source-safe-binding-build-r18a.mjs', '--app-dir', 'app', '--out', '.tmp/source-safe-binding-r18a']],
     ['tya-live-hr-inplace-refresh-gate', 'node', ['tools/qa/tya-live-hr-inplace-refresh-gate.mjs']],
     ['tya-corte1-context-history-reports-gate', 'node', ['tools/qa/tya-corte1-context-history-reports-gate.mjs']],
     ['tya-corte1-report-frontend-runtime-gate', 'node', ['tools/qa/tya-corte1-report-frontend-runtime-gate.mjs']]
