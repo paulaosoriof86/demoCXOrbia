@@ -1,6 +1,6 @@
 {
   "contractId": "cxorbia-controlled-runners-v1",
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.0.1",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -23,6 +23,8 @@
       "requestPath": ".github/cxorbia-gate-requests/request.json",
       "script": "tools/release/cxorbia-readonly-post-gates-runner.mjs",
       "contentsPermission": "read",
+      "issuesPermission": "write",
+      "statusesPermission": "write",
       "browser": "playwright-chromium",
       "profile": "V174_R20_M1_CORTE2A"
     }
@@ -69,6 +71,8 @@
     "allowedRequestSchema": "cxorbia.readonly-post-gates-request.v1",
     "providerReads": true,
     "repositoryWrites": false,
+    "commitStatusTelemetry": true,
+    "issueCommentTelemetry": true,
     "dataWrites": false,
     "deploy": false,
     "merge": false,
