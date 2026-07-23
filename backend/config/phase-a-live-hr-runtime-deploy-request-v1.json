@@ -28,6 +28,23 @@
     "payments": false,
     "merge": false
   },
+  "executionEvidence": {
+    "workflowRun": 30027204176,
+    "job": 89274577170,
+    "artifactId": 8571796399,
+    "artifactDigest": "sha256:50ef940bb7ab52f0fac318cd23f6c4e233f4581fee0a1035c8d936abb7e42a9e",
+    "hostingDeploy": "success",
+    "lockedCompositeVerifier": "pass",
+    "existingLiveHrPrecheck": "pass",
+    "remoteBuildLockMatch": "pass",
+    "remoteLiveHrEndpoint": "pass",
+    "remotePeriods": 14,
+    "remoteVisits": 616,
+    "remoteJulyVisits": 44,
+    "remoteCountrySplit": {"GT": 34, "HN": 10},
+    "remoteSourceIdentityTelemetry": "hold_public_gviz_csv_cache_busted",
+    "visualReview": "pending_paula"
+  },
   "safeState": {
     "firestoreWrites": false,
     "authWrites": false,
