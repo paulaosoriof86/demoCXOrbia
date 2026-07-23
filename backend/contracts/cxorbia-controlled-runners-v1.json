@@ -1,6 +1,6 @@
 {
   "contractId": "cxorbia-controlled-runners-v1",
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -41,7 +41,25 @@
       "issuesPermission": "write",
       "statusesPermission": "write",
       "browser": "playwright-chromium",
-      "profile": "V174_R20_M1_CORTE2A"
+      "profile": "V174_R20_M1_CORTE2A",
+      "sourceLockCoordinator": {
+        "enabled": true,
+        "jobId": "atomic-source-lock-bridge",
+        "triggerPath": ".github/cxorbia-apply-requests/request.json",
+        "invokesAuthorizedAtomicMode": "source_lock_regenerate_v1",
+        "script": "tools/release/cxorbia-source-lock-atomic-apply.mjs",
+        "contentsPermission": "write",
+        "statusesPermission": "write",
+        "exactTargetPaths": [
+          "app/core/build-lock.js",
+          "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json"
+        ],
+        "functionalDeltaAllowed": false,
+        "dataWrites": false,
+        "deploy": false,
+        "merge": false,
+        "production": false
+      }
     }
   },
   "atomicApplyPolicy": {
@@ -92,6 +110,14 @@
     "repositoryWrites": false,
     "commitStatusTelemetry": true,
     "issueCommentTelemetry": true,
+    "sourceLockCoordinatorException": {
+      "enabled": true,
+      "repositoryContentWrites": true,
+      "mode": "source_lock_regenerate_v1",
+      "exactTargetsOnly": true,
+      "functionalDeltaAllowed": false,
+      "requestConsumedAtomically": true
+    },
     "dataWrites": false,
     "deploy": false,
     "merge": false,
@@ -112,6 +138,7 @@
     "merge": false,
     "production": false,
     "providerWrites": false,
-    "dataWrites": false
+    "dataWrites": false,
+    "functionalDeltaWritesByCoordinator": false
   }
 }
