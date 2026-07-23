@@ -162,6 +162,7 @@ jobs:
 
       - name: Report result in PR 7
         if: always() && steps.request.outputs.enabled == 'true'
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GATES_EXIT_CODE: ${{ steps.gates.outputs.exit_code }}
@@ -210,5 +211,5 @@ jobs:
           NODE
 
       - name: Enforce gate result
-        if: steps.request.outputs.enabled == 'true'
+        if: always() && steps.request.outputs.enabled == 'true'
         run: test "${{ steps.gates.outputs.exit_code }}" = "0"
