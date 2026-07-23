@@ -2,38 +2,54 @@
 
 **Fecha:** 2026-07-23
 
-## Archivos creados
+## V174
 
-- `app/docs/VALIDACION-VISUAL-V174-APROBADA-CON-PENDIENTES-P1-P2-20260723.md`.
-- `app/docs/PHASE-A-CORTE3-INICIO-FINANZAS-20260723.md`.
-- `app/docs/CORTE3-FINANCIAL-SOURCE-INVENTORY-GAP-MATRIX-20260723.md`.
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-V174-VISUAL-FREEZE-CORTE3-INICIO-20260723.md`.
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V174-VISUAL-FREEZE-CORTE3-INICIO-20260723.md`.
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V174-VISUAL-FREEZE-CORTE3-INICIO-20260723.md`.
-- `app/docs/ACADEMIA-IMPACT-V174-VISUAL-FREEZE-CORTE3-INICIO-20260723.md`.
-- `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-V174-VISUAL-FREEZE-CORTE3-INICIO-20260723.md`.
+V174 queda aprobada visualmente y congelada como baseline activa de M1/Corte 1 y Corte 2A. Los hallazgos responsive/PDF/Excel son P1/P2 no bloqueantes. No se modifica frontend en este bloque.
 
-## Archivos actualizados
+## Corte 3 — fuentes e inventario
 
-- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`.
-- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`.
-- PR #7.
+Se recuperó el estado financiero vigente, se inventariaron las fuentes source-safe y se produjo la matriz sanitizada de cobertura y gaps. No se importó ni se marcó ningún pago.
 
-## Decisión
+## Corte 3 — carril de reconciliación preparado
 
-V174 queda aprobada visualmente y congelada como baseline activa de M1/Corte 1 y Corte 2A. Los hallazgos de responsividad y exportaciones se registran como P1/P2 no bloqueantes. No se modifica frontend en este bloque.
+### Archivo creado
 
-## Inicio Corte 3
+- `tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs`.
 
-Se recuperó el estado financiero vigente, se inventariaron las fuentes source-safe y se produjo una primera matriz sanitizada de cobertura y gaps. No se importa ni se marca ningún pago.
+### Archivos actualizados
+
+- `backend/contracts/cxorbia-controlled-runners-v1.json`;
+- `tools/release/cxorbia-readonly-post-gates-runner.mjs`;
+- `tools/qa/cxorbia-controlled-runners-contract-gate.mjs`;
+- `.github/workflows/cxorbia-readonly-post-gates-runner.yml`;
+- `app/docs/ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`;
+- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+- este registro y tracker Phase A;
+- PR #7 al cierre del run.
+
+### Perfil autorizado
+
+`CORTE3_FINANCIAL_RECONCILIATION_R20`
+
+El perfil usa el runner read-only ya autorizado. Regenera la conciliación R14C en un checkout efímero con HR R20 vigente y compara contra la baseline mediante `sourceRecordId`, llaves estables e identidad de enlace.
+
+Bloquea:
+
+- pérdida o cambio de un enlace previamente aceptado;
+- duplicación de visita entre filas financieras;
+- cambio de fuente financiera;
+- conteos o cobertura HR incompatibles;
+- lotes, confirmadores o estados pagados sin evidencia;
+- cualquier enlace nuevo o cambio de estado que no haya pasado revisión humana.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** reglas de responsividad/exportación como backlog y contrato de liquidación/pago separado.
-- **Exclusivo cliente:** afirmación TyA pagado hasta mayo pendiente de fuente y junio pendiente de match.
-- **Claude/prototipo:** corregir responsive parcial, PDF con gráficas y formato Excel en corte posterior; no crear candidata ahora.
-- **Academia:** actualizar contenidos sobre responsive, exportaciones y diferencia entre liquidación y pago.
-- **Sin impacto Claude:** freeze documental, checkpoint, índice, inventario source-safe y PR.
+- **Reusable CXOrbia:** perfil financiero fail-closed y comparación de identidad estable.
+- **Exclusivo cliente:** cobertura R14C TyA/Cinépolis y estado mayo-junio.
+- **Claude/prototipo:** sin cambio frontend; pendientes responsive/PDF/Excel preservados.
+- **Academia:** incorporar separación entre conciliación, liquidación, evidencia y pago.
+- **Sin impacto Claude:** runner, contrato, gate, artifacts y telemetría.
 
 ## Estado seguro
 
