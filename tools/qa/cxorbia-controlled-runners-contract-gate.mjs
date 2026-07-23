@@ -35,6 +35,11 @@ if (contract) {
     if (!item?.script || !exists(item.script)) add(blockers, `${name}_script_missing`, item?.script || 'undefined');
   }
 
+  const requiredReadonlyProfiles = ['V174_R20_M1_CORTE2A', 'CORTE3_FINANCIAL_RECONCILIATION_R20'];
+  const actualProfiles = Array.isArray(readonly?.profiles) ? readonly.profiles : [readonly?.profile].filter(Boolean);
+  for (const profile of requiredReadonlyProfiles) if (!actualProfiles.includes(profile)) add(blockers, 'readonly_profile_missing', profile);
+  if (!exists('tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs')) add(blockers, 'corte3_financial_gate_missing');
+
   if (!blockers.length) {
     const atomicYml = read(atomic.workflow);
     const readonlyYml = read(readonly.workflow);
@@ -73,6 +78,9 @@ if (contract) {
     has(readonlyScript, /tya-corte1-m1-regression-lock/, 'readonly_m1_gate_missing');
     has(readonlyScript, /tya-corte2a-shopper-operation-canonical-gate/, 'readonly_corte2a_gate_missing');
     has(readonlyScript, /tya-v174-corte2a-empalme-directo-verify/, 'readonly_verifier_missing');
+    has(readonlyScript, /CORTE3_FINANCIAL_RECONCILIATION_R20/, 'readonly_corte3_profile_missing');
+    has(readonlyScript, /tya-financial-workbook-live-hr-reconcile-r14c/, 'readonly_corte3_reconcile_missing');
+    has(readonlyScript, /tya-corte3-financial-reconciliation-r20-gate/, 'readonly_corte3_gate_missing');
     has(readonlyScript, /repositoryWrites:\s*false/, 'readonly_repository_write_guard_missing');
     has(readonlyScript, /dataWrites:\s*false/, 'readonly_data_write_guard_missing');
     has(readonlyScript, /production:\s*false/, 'readonly_production_guard_missing');
