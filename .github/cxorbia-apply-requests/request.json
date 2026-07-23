@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.atomic-apply-request.v1",
-  "requestId": "v174-r20-source-lock-regenerate-after-pass-20260723",
+  "requestId": "v174-r20-source-lock-regenerate-after-pass-run2-20260723",
   "mode": "source_lock_regenerate_v1",
   "issuedAt": "2026-07-23",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "expectedParentSha": "0c7002c30ff88e8863b86acce56e72d9f1ba772c",
+  "expectedParentSha": "19ab92fb26ecfcee8670219c7d7066640e85b331",
   "allowedExecutions": 1,
   "atomicApply": true,
   "targetPaths": [
