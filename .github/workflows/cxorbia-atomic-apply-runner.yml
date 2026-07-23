@@ -1,0 +1,123 @@
+name: CXORBIA_ATOMIC_APPLY_RUNNER
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - .github/cxorbia-apply-requests/request.json
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: cxorbia-atomic-apply-runner-docs-tya-v6-v71-audit
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  atomic-apply:
+    name: Apply audited delta atomically
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout exact live branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: docs-tya-v6-v71-audit
+
+      - name: Detect active request
+        id: request
+        run: |
+          if [ -f .github/cxorbia-apply-requests/request.json ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "Request already consumed; cleanup push is a safe no-op."
+          fi
+
+      - name: Setup Node
+        if: steps.request.outputs.present == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate controlled runner contract
+        if: steps.request.outputs.present == 'true'
+        run: node tools/qa/cxorbia-controlled-runners-contract-gate.mjs
+
+      - name: Execute single atomic functional apply
+        if: steps.request.outputs.present == 'true'
+        id: apply
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          node tools/release/cxorbia-atomic-apply-runner.mjs \
+            .github/cxorbia-apply-requests/request.json
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload sanitized apply evidence
+        if: always() && steps.request.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-atomic-apply-${{ github.run_id }}
+          path: .tmp/cxorbia-atomic-apply-runner
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Report result in PR 7
+        if: always() && steps.request.outputs.present == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLY_EXIT_CODE: ${{ steps.apply.outputs.exit_code }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const reportPath = '.tmp/cxorbia-atomic-apply-runner/report.json';
+          const report = fs.existsSync(reportPath)
+            ? JSON.parse(fs.readFileSync(reportPath, 'utf8'))
+            : { status: 'HOLD_REPORT_MISSING', requestId: null, functionalCommitSha: null, files: [], blockers: ['report_missing'] };
+          const body = [
+            '## CXORBIA_ATOMIC_APPLY_RUNNER',
+            '',
+            `- Run: ${process.env.GITHUB_RUN_ID}`,
+            `- Estado: \`${report.status}\``,
+            `- Request: \`${report.requestId || 'n/a'}\``,
+            `- Commit funcional: \`${report.functionalCommitSha || 'n/a'}\``,
+            `- Archivos: ${Array.isArray(report.files) ? report.files.length : 0}`,
+            `- Exit code: ${process.env.APPLY_EXIT_CODE || 'n/a'}`,
+            '',
+            'Blockers:',
+            ...(report.blockers?.length ? report.blockers.map(x => `- ${x}`) : ['- none']),
+            '',
+            'Sin deploy, merge, producción ni writes reales.'
+          ].join('\n');
+          const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+          fetch(`${process.env.GITHUB_API_URL}/repos/${owner}/${repo}/issues/7/comments`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+              Accept: 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ body })
+          }).then(async response => {
+            if (!response.ok) throw new Error(`comment_failed_HTTP_${response.status}:${await response.text()}`);
+          }).catch(error => { console.error(error); process.exitCode = 1; });
+          NODE
+
+      - name: Enforce apply result
+        if: steps.request.outputs.present == 'true'
+        run: |
+          test "${{ steps.apply.outputs.exit_code }}" = "0"
