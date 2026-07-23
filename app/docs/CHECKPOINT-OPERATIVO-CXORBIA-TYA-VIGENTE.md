@@ -56,13 +56,15 @@ No bloquean la baseline ni reabren V174. Quedan documentados para delta incremen
 - Cloud Run redeploy: no.
 - HR viva: 14 periodos, 616 visitas y split 34 GT/10 HN por periodo.
 
-## 6. Corte 3 Finanzas iniciado
+## 6. Corte 3 Finanzas activo
 
-Fuentes recuperadas:
+Fuentes recuperadas e inventariadas:
 
 - `app/data/tya-financial-control-source-safe.js`;
 - `backend/contracts/phase-a-liquidation-payment-control-v1.json`;
-- `backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json`.
+- `backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json`;
+- `backend/config/phase-a-financial-review-queue-r14c.source-safe.json`;
+- `backend/config/phase-a-ledger-payment-evidence-candidates-r14c.source-safe.json`.
 
 Estado:
 
@@ -71,7 +73,8 @@ Estado:
 - pagado hasta mayo: afirmación documentada pendiente de source match;
 - junio: requiere match por ítem;
 - reconciliación R14C: 247 filas, 196 enlaces exactos, 51 filas a revisión y 92 entradas en review queue;
-- junio: cero enlaces exactos aceptados; no se marca pago.
+- junio: cero enlaces exactos aceptados; no se marca pago;
+- inventario source-safe y matriz inicial de cobertura/gaps: completados.
 
 ## 7. Reglas activas
 
@@ -84,7 +87,7 @@ Estado:
 
 ## 8. Siguiente bloque exacto
 
-`INVENTARIO DE FUENTES FINANCIERAS → RECONCILIACIÓN CONTRA HR R20 ACTUAL → MATRIZ EXACTOS/FALTANTES/AMBIGUOS/CONFLICTOS → REVIEW QUEUE SANITIZADA → GATES`.
+`REFRESCAR RECONCILIACIÓN R14C CONTRA HR R20 ACTUAL → COMPARAR DELTA DE CONTEOS Y LLAVES → EMITIR MATRIZ EXACTOS/FALTANTES/AMBIGUOS/CONFLICTOS → GATE FAIL-CLOSED`.
 
 ## 9. Clasificación
 
@@ -92,7 +95,7 @@ Estado:
 - **Exclusivo cliente:** estado financiero TyA/Cinépolis y cortes mayo-junio.
 - **Claude/prototipo:** responsive, PDF con gráficas y formato Excel quedan localizados; no nueva candidata ahora.
 - **Academia:** responsive/exportaciones y diferencia entre visita, liquidación y pago.
-- **Sin impacto Claude:** freeze, índice, checkpoint, tracker y PR.
+- **Sin impacto Claude:** freeze, inventario source-safe, índice, checkpoint, tracker y PR.
 
 ## 10. Estado seguro
 
