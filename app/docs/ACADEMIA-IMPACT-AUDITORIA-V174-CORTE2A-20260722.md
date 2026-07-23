@@ -1,7 +1,14 @@
 # ACADEMIA — Impacto auditoría V174 Corte 2A
 
 Fecha: 2026-07-22  
-Estado: `COURSE_PRESENT_PENDING_POST_APPLY_VISUAL`
+Estado: `COURSE_PRESENT_FUNCTIONAL_EMPALMED_GATE_HOLD`
+
+## Addendum post-empalme 2026-07-22
+
+- El módulo `app/modules/academia.js` fue aplicado en el commit funcional V174 `b21e494d127fb4b902de5576e3fab0292362b097`.
+- No se modificaron cursos fuera del delta V174.
+- La validación visual de Academia queda pendiente porque los post-gates generales del build no cerraron.
+- El contenido `a_canon_ops` debe mantenerse alineado con el siguiente bloque: ausencia financiera no equivale a cero y los gates deben ejecutarse con dependencias completas.
 
 ## Confirmado en candidata
 

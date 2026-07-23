@@ -3,6 +3,17 @@
 Fecha: 2026-07-22  
 Estado: ACTIVO Y OBLIGATORIO
 
+## Addendum 2026-07-22 — V174 empalmada con HOLD de gates
+
+- Estado vivo: `V174_FUNCTIONAL_EMPALMED_GATE_HOLD_NO_DEPLOY`.
+- Commit funcional V174: `b21e494d127fb4b902de5576e3fab0292362b097`.
+- Delta funcional autorizado aplicado: seis módulos V174, sin archivos funcionales extra.
+- Source lock nuevo: `app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json`.
+- Build-lock activo: `app/core/build-lock.js`.
+- Verificador activo: `tools/release/tya-v174-corte2a-empalme-directo-verify.mjs`.
+- Gate Corte 2A queda en HOLD por overlay preservado `app/core/tya-phase-a-source-safe-preview.js`; no se autorizó parche funcional fuera de los seis módulos V174.
+- No hay deploy, merge, producción ni writes reales.
+
 ## 1. Lectura obligatoria
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`.

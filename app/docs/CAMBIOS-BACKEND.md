@@ -171,3 +171,14 @@ Validación local:
 - PASS manifest/build-lock V172 HR in-place.
 
 Estado seguro: DEV only, sin producción, sin writes, sin importaciones, sin Make/Gemini y sin pagos.
+## 2026-07-22 — V174 Corte 2A empalmada / sin cambios backend
+
+Estado: `V174_FUNCTIONAL_EMPALMED_GATE_HOLD_NO_DEPLOY`.
+
+- Commit funcional V174 publicado: `b21e494d127fb4b902de5576e3fab0292362b097`.
+- Delta limitado a seis módulos frontend: `cliente-extra.js`, `operacion-extra.js`, `visitas.js`, `novedades.js`, `postulaciones.js`, `academia.js`.
+- Backend, Cloud Run, adapters live, contratos y herramientas backend quedaron preservados.
+- Manifest/build-lock/verificador V174 generados.
+- PASS: headers R20, HR in-place y contexto/histórico/reportes.
+- HOLD: runtime reportes por stub local `XLSX.utils.encode_range`; proyecto-periodo por `playwright-core` ausente; Corte 2A por overlay preservado que colapsa ausencias financieras a cero.
+- No deploy, no producción, no importaciones, no writes reales y no pagos.

@@ -1,3 +1,28 @@
+## CORTE 2A — V174 empalmada con HOLD técnico
+
+Estado: `V174_FUNCTIONAL_EMPALMED_GATE_HOLD_NO_DEPLOY`.
+
+### Resuelto
+
+- [PASS] ZIP V174 correcto verificado por SHA-256.
+- [PASS] Aplicación atómica de los seis módulos auditados.
+- [PASS] Commit/push funcional a `docs-tya-v6-v71-audit`: `b21e494d127fb4b902de5576e3fab0292362b097`.
+- [PASS] Manifest/build-lock/verificador V174 generados.
+- [PASS] `tya-hr-header-variants-r20-gate.mjs`.
+- [PASS] `tya-live-hr-inplace-refresh-gate.mjs`.
+- [PASS] `tya-corte1-context-history-reports-gate.mjs`.
+
+### Pendiente real
+
+- [HOLD] `tya-corte2a-shopper-operation-canonical-gate.mjs`: corregir en bloque autorizado el overlay preservado `app/core/tya-phase-a-source-safe-preview.js` para no convertir ausencia financiera en cero.
+- [HOLD] `tya-corte1-report-frontend-runtime-gate.mjs`: completar stub/harness `XLSX.utils.encode_range` o validar con SheetJS real.
+- [HOLD] `tya-project-period-kpi-history-gate-r20.mjs`: completar dependencia local Playwright (`playwright-core`) antes de ejecutar navegador.
+- [HOLD] `tya-corte1-m1-regression-lock.mjs`: desbloquear después de los gates anteriores.
+
+### Prohibiciones preservadas
+
+Sin deploy, sin merge, sin producción, sin importaciones, sin HR/Firestore/Auth/Storage writes, sin Make/Gemini y sin pagos.
+
 # PENDIENTES-PROTOTIPO.md
 
 > Lista viva de mejoras del prototipo CXOrbia. Actualizada 2026-07-21.

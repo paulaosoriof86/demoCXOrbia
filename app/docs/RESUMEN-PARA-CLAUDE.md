@@ -1,3 +1,17 @@
+## 2026-07-22 — V174 aplicada; no enviar a Claude salvo corrección focalizada posterior
+
+Estado: `V174_FUNCTIONAL_EMPALMED_GATE_HOLD_NO_DEPLOY`.
+
+La candidata V174 ya fue aplicada de forma atómica en `docs-tya-v6-v71-audit` mediante el commit `b21e494d127fb4b902de5576e3fab0292362b097`.
+
+No pedir otra candidata ni reabrir V174. Si se requiere un bloque posterior para Claude/prototipo, debe ser focalizado al HOLD real:
+
+- overlay preservado `app/core/tya-phase-a-source-safe-preview.js` colapsa ausencias financieras a cero en honorario, boleto y combo;
+- el harness local de reportes debe simular `XLSX.utils.encode_range` si se mantiene el gate Node;
+- el entorno local de navegador necesita Playwright completo para ejecutar el gate R20.
+
+Backend, adapters live, contratos, CX.data, herramientas y documentación viva fueron preservados. No hubo deploy, merge, producción ni writes reales.
+
 ## 2026-07-21 - V172 empalmada; pendiente post-gates y visual
 
 - Se retracta el supuesto bloqueo por falta de checkout local; fue un desvío metodológico.

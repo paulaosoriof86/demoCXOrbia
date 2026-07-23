@@ -1,5 +1,29 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
+## Addendum 2026-07-22 — V174 empalme funcional aplicado / gates en HOLD
+
+Estado: `V174_FUNCTIONAL_EMPALMED_GATE_HOLD_NO_DEPLOY`.
+
+- `HEAD_BEFORE`: `0fd63faf2a873640e042421c40749714a4d12fd4`.
+- ZIP aplicado: `CXOrbia-V174-VERIFICADA-e48452a4385e5dd.zip`.
+- SHA-256 verificado: `e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f`.
+- Commit funcional: `b21e494d127fb4b902de5576e3fab0292362b097`.
+- Delta aplicado exclusivamente: `app/modules/cliente-extra.js`, `app/modules/operacion-extra.js`, `app/modules/visitas.js`, `app/modules/novedades.js`, `app/modules/postulaciones.js`, `app/modules/academia.js`.
+- Cero archivos funcionales adicionales en el commit de empalme.
+- Manifest/build-lock/verificador V174 generados sobre el HEAD empalmado.
+
+Gates:
+
+- PASS: `tya-hr-header-variants-r20-gate.mjs`.
+- PASS: `tya-live-hr-inplace-refresh-gate.mjs`.
+- PASS: `tya-corte1-context-history-reports-gate.mjs`.
+- HOLD: `tya-corte1-report-frontend-runtime-gate.mjs` por dependencia de harness local (`XLSX.utils.encode_range` ausente en stub).
+- HOLD: `tya-project-period-kpi-history-gate-r20.mjs` por dependencia local Playwright incompleta (`playwright-core` ausente).
+- HOLD: `tya-corte2a-shopper-operation-canonical-gate.mjs` por overlay preservado `app/core/tya-phase-a-source-safe-preview.js` con colapso de ausencias financieras a cero (`v.honorario||0`, `v.boleto||0`, `v.comboAmt||0`).
+- HOLD: `tya-corte1-m1-regression-lock.mjs` como consecuencia de gates anteriores.
+
+No se hizo deploy, merge, produccion, imports, writes HR/Firestore/Auth/Storage, Make/Gemini ni pagos.
+
 Fecha: 2026-07-22  
 Estado: `CORTE_2A_V174_AUDITED_GO_APPLY_LANE_PENDING`
 
