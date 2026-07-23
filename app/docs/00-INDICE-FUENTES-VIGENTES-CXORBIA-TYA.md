@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-23  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V174_R20_M1_CORTE2A_ACTIVE_BASELINE_VISUAL_APPROVED_P1_P2_DOCUMENTED_CORTE3_FINANZAS_ACTIVE_NO_PRODUCTION`
+**Estado vivo:** `V174_ACTIVE_BASELINE_CORTE3_FINANCIAL_RECONCILIATION_R20_RUNNER_READY_PENDING_EXECUTION_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -62,14 +62,26 @@ V174 fue aprobada visualmente. Los hallazgos P1/P2 no bloquean y no autorizan un
 
 - Envelope actual: fuente financiera pendiente; pagos y lotes vacíos.
 - Afirmación operativa: pagado hasta mayo pendiente de cruce por fuente; junio requiere match por ítem.
-- Reconciliación R14C: 247 filas financieras, 196 links exactos aceptados, 51 filas a revisión y 92 entradas en review queue.
+- Reconciliación R14C baseline: 247 filas financieras, 196 links exactos aceptados, 51 filas a revisión y 92 entradas en review queue.
 - Junio: cero enlaces exactos aceptados en R14C; no marcar pago por inferencia.
 - Inventario source-safe y matriz inicial de cobertura/gaps: completados.
 
-## 8. Siguiente subbloque exacto
+## 8. Carril controlado preparado
 
-`REFRESCAR RECONCILIACIÓN R14C CONTRA HR R20 ACTUAL → COMPARAR DELTA DE CONTEOS Y LLAVES → EMITIR MATRIZ EXACTOS/FALTANTES/AMBIGUOS/CONFLICTOS → GATE FAIL-CLOSED`.
+El mismo `CXORBIA_READONLY_POST_GATES_RUNNER` incorpora el perfil autorizado `CORTE3_FINANCIAL_RECONCILIATION_R20`.
 
-## 9. Estado seguro
+El perfil:
+
+- regenera R14C en un checkout efímero contra la HR R20 vigente;
+- compara `sourceRecordId`, llaves estables e identidad de enlace contra la baseline;
+- verifica 14 periodos, 616 visitas, 247 filas financieras y 34 GT/10 HN por periodo;
+- detiene cualquier enlace nuevo, perdido, cambiado o ambiguo para revisión humana;
+- no importa, no paga, no despliega y no escribe datos ni repositorio.
+
+## 9. Siguiente paso exacto
+
+`ACTIVAR REQUEST LIGADO AL HEAD EXACTO → EJECUTAR PERFIL CORTE3 → LEER ARTIFACT Y DELTA → PASS ESTABLE O HOLD FOCALIZADO DE REVISIÓN HUMANA`.
+
+## 10. Estado seguro
 
 Sin merge, deploy productivo, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos.
