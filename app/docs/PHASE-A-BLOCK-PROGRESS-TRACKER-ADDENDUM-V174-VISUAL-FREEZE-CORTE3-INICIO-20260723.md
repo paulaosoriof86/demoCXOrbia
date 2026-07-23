@@ -14,21 +14,25 @@
 
 ### CORTE 3 — FINANZAS
 
-Estado: `SOURCE_INVENTORY_COMPLETE_RECONCILIATION_REFRESH_PENDING_READ_ONLY`.
+Estado: `FINANCIAL_RECONCILIATION_R20_RUNNER_READY_PENDING_EXECUTION_READ_ONLY`.
 
 Avance realizado:
 
 - envelope financiero source-safe identificado;
 - contrato de liquidación/pago identificado;
-- reconciliación R14C recuperada;
+- reconciliación R14C baseline recuperada;
 - fuentes source-safe inventariadas;
 - matriz de cobertura enero–junio y gaps sanitizada;
 - reglas de no inferencia y llaves estables ratificadas;
-- gaps de junio y review queue identificados.
+- gaps de junio y review queue identificados;
+- gate fail-closed de Corte 3 creado;
+- perfil financiero agregado al runner read-only autorizado;
+- contrato, workflow y gate estructural actualizados;
+- addendum prevalente, índice, checkpoint y CAMBIOS actualizados.
 
-Siguiente subbloque exacto:
+Siguiente paso exacto:
 
-`REFRESCAR RECONCILIACIÓN R14C CONTRA HR R20 ACTUAL → COMPARAR DELTA DE CONTEOS Y LLAVES → EMITIR MATRIZ EXACTOS/FALTANTES/AMBIGUOS/CONFLICTOS → GATE FAIL-CLOSED`.
+`REQUEST ÚNICO SOBRE HEAD EXACTO → RUN CORTE3 READ-ONLY → ARTIFACT/DELTA → PASS ESTABLE O HOLD FOCALIZADO`.
 
 ## Seguridad
 
