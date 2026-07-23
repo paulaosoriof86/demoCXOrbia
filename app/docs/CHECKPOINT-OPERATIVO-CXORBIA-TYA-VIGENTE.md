@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-23  
-**Estado:** `V174_R20_M1_CORTE2A_ACTIVE_BASELINE_VISUAL_APPROVED_P1_P2_DOCUMENTED_CORTE3_FINANZAS_ACTIVE_NO_PRODUCTION`
+**Estado:** `V174_ACTIVE_BASELINE_CORTE3_FINANCIAL_RECONCILIATION_R20_RUNNER_READY_PENDING_EXECUTION_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -23,60 +23,41 @@
 
 ## 3. Cierre M1/Corte 1/Corte 2A
 
-PASS técnico:
-
-- builder y variantes R20;
-- inventario source-safe;
-- HR live in-place;
-- contexto, histórico y reportes;
-- proyecto, periodo y KPI R20;
-- Corte 2A canonical;
-- M1 regression lock;
-- verificador V174.
-
-Validación visual de Paula: **APROBADA**.
+- Gates técnicos: PASS.
+- Validación visual de Paula: APROBADA.
+- Hosting DEV: vigente.
+- HR viva: 14 periodos, 616 visitas y 34 GT/10 HN por periodo.
 
 ## 4. Hallazgos P1/P2 aceptados
 
-- P1: algunas tablas y fichas no aprovechan correctamente el viewport móvil.
-- P1: PDF no incorpora las gráficas.
-- P2: Excel exporta sin formato operativo suficiente.
+- P1: responsive parcial en algunas tablas y fichas.
+- P1: PDF sin gráficas.
+- P2: Excel sin formato operativo suficiente.
 - P2: `sourceAccessMode` conserva una etiqueta técnica anterior.
 
-No bloquean la baseline ni reabren V174. Quedan documentados para delta incremental posterior de UX/exportaciones.
+No bloquean la baseline ni reabren V174. Quedan para delta incremental posterior de UX/exportaciones.
 
-## 5. Hosting DEV vigente
-
-- URL: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1`.
-- Run: `30027204176`.
-- Job: `89274577170`.
-- Artifact: `8571796399`.
-- Digest: `sha256:50ef940bb7ab52f0fac318cd23f6c4e233f4581fee0a1035c8d936abb7e42a9e`.
-- Firebase Hosting DEV: SUCCESS.
-- Cloud Run redeploy: no.
-- HR viva: 14 periodos, 616 visitas y split 34 GT/10 HN por periodo.
-
-## 6. Corte 3 Finanzas activo
+## 5. Corte 3 Finanzas
 
 Fuentes recuperadas e inventariadas:
 
 - `app/data/tya-financial-control-source-safe.js`;
 - `backend/contracts/phase-a-liquidation-payment-control-v1.json`;
+- `backend/config/phase-a-financial-workbook-source-safe-r14.json`;
 - `backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json`;
 - `backend/config/phase-a-financial-review-queue-r14c.source-safe.json`;
 - `backend/config/phase-a-ledger-payment-evidence-candidates-r14c.source-safe.json`.
 
-Estado:
+Baseline R14C:
 
-- fuente financiera todavía pendiente de cruce;
-- pagos y lotes importados: 0;
-- pagado hasta mayo: afirmación documentada pendiente de source match;
-- junio: requiere match por ítem;
-- reconciliación R14C: 247 filas, 196 enlaces exactos, 51 filas a revisión y 92 entradas en review queue;
-- junio: cero enlaces exactos aceptados; no se marca pago;
-- inventario source-safe y matriz inicial de cobertura/gaps: completados.
+- 247 filas financieras;
+- 196 enlaces exactos;
+- 51 filas a revisión;
+- 92 entradas en review queue;
+- junio con cero enlaces exactos aceptados;
+- pagos y lotes importados: 0.
 
-## 7. Reglas activas
+## 6. Reglas activas
 
 - `liquidada` no equivale a `paid`.
 - realizada, cuestionario o submitido no prueban pago.
@@ -85,17 +66,39 @@ Estado:
 - conflictos a revisión humana.
 - datos bancarios crudos fuera del repo.
 
-## 8. Siguiente bloque exacto
+## 7. Carril técnico preparado
 
-`REFRESCAR RECONCILIACIÓN R14C CONTRA HR R20 ACTUAL → COMPARAR DELTA DE CONTEOS Y LLAVES → EMITIR MATRIZ EXACTOS/FALTANTES/AMBIGUOS/CONFLICTOS → GATE FAIL-CLOSED`.
+Archivos creados o actualizados:
+
+- `tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs`;
+- `tools/release/cxorbia-readonly-post-gates-runner.mjs`;
+- `tools/qa/cxorbia-controlled-runners-contract-gate.mjs`;
+- `.github/workflows/cxorbia-readonly-post-gates-runner.yml`;
+- `backend/contracts/cxorbia-controlled-runners-v1.json`;
+- addendum prevalente vigente.
+
+Perfil: `CORTE3_FINANCIAL_RECONCILIATION_R20`.
+
+Comportamiento:
+
+- regenera conciliación contra HR R20 actual en entorno efímero;
+- compara conteos y llaves contra R14C baseline;
+- bloquea pérdida/cambio de enlaces aceptados;
+- envía todo enlace nuevo o cambio de estado a revisión humana;
+- no instala navegador para este perfil;
+- cero import, pago, deploy, producción o writes.
+
+## 8. Siguiente paso exacto
+
+`ACTIVAR REQUEST LIGADO AL HEAD EXACTO → EJECUTAR PERFIL CORTE3 → LEER ARTIFACT Y DELTA → PASS ESTABLE O HOLD FOCALIZADO DE REVISIÓN HUMANA`.
 
 ## 9. Clasificación
 
-- **Reusable CXOrbia:** separación liquidación/pago, llaves estables, review queue y backlog responsive/exportaciones.
-- **Exclusivo cliente:** estado financiero TyA/Cinépolis y cortes mayo-junio.
-- **Claude/prototipo:** responsive, PDF con gráficas y formato Excel quedan localizados; no nueva candidata ahora.
-- **Academia:** responsive/exportaciones y diferencia entre visita, liquidación y pago.
-- **Sin impacto Claude:** freeze, inventario source-safe, índice, checkpoint, tracker y PR.
+- **Reusable CXOrbia:** perfil financiero fail-closed, comparación de identidad y review queue.
+- **Exclusivo cliente:** cobertura financiera TyA/Cinépolis y cortes mayo-junio.
+- **Claude/prototipo:** sin cambios frontend; responsive/PDF/Excel siguen documentados.
+- **Academia:** separación entre liquidación, evidencia y pago confirmado.
+- **Sin impacto Claude:** runner, gate, contrato, artifacts, índice y checkpoint.
 
 ## 10. Estado seguro
 
