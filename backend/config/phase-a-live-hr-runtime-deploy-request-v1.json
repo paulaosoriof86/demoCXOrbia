@@ -1,7 +1,7 @@
 {
   "schemaVersion": "2.1.0",
   "requestId": "CXORBIA-TYA-V174-HOSTING-DEV-VISUAL-20260723-01",
-  "status": "authorized_pending",
+  "status": "consumed_visual_pending",
   "scope": "hosting_dev_visual_only",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
