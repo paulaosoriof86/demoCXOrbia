@@ -11,7 +11,7 @@ const proposalDir=path.join(outDir,'source-lock-proposal');
 const manifestPath='app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json';
 const buildLockPath='app/core/build-lock.js';
 const report={
-  schemaVersion:'1.0.2',
+  schemaVersion:'1.0.3',
   runner:'CXORBIA_ATOMIC_APPLY_RUNNER',
   mode:'source_lock_regenerate_v1',
   status:'HOLD_ATOMIC_APPLY',
@@ -56,6 +56,7 @@ function changedPaths(){
     .filter(Boolean)
     .map(line=>line.slice(3).replace(/^"|"$/g,''))
     .map(value=>value.includes(' -> ')?value.split(' -> ').pop():value)
+    .filter(value=>value!=='.tmp/'&&!value.startsWith('.tmp/'))
     .sort();
 }
 
