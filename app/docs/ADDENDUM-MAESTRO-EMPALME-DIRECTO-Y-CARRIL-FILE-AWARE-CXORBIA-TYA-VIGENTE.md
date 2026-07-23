@@ -1,7 +1,7 @@
 # ADDENDUM MAESTRO — AUDITORÍA, EMPALME DIRECTO Y RUNNERS CONTROLADOS CXORBIA TyA
 
 **Fecha de emisión:** 2026-07-17  
-**Última actualización:** 2026-07-22  
+**Última actualización:** 2026-07-23  
 **Estado:** ACTIVO, DEFINITIVO, OBLIGATORIO Y PREVALENTE  
 **Nombre canónico:** `ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`
 
@@ -201,7 +201,7 @@ Archivos canónicos:
 
 ### 9.1 Propósito
 
-Ejecutar en un entorno efímero reproducible los gates post-empalme que requieren Node, Playwright, Chromium, servidor local y artifacts.
+Ejecutar en un entorno efímero reproducible perfiles de gates autorizados. Playwright, Chromium y servidor local se instalan o levantan solamente cuando el perfil los requiere.
 
 ### 9.2 Permisos y límites
 
@@ -215,9 +215,11 @@ Ejecutar en un entorno efímero reproducible los gates post-empalme que requiere
 - cero Make/Gemini;
 - lecturas públicas/source-safe permitidas solo para gates autorizados.
 
-### 9.3 Perfil inicial autorizado
+### 9.3 Perfiles autorizados
 
-`V174_R20_M1_CORTE2A` ejecuta:
+#### `V174_R20_M1_CORTE2A`
+
+Ejecuta:
 
 1. sintaxis del builder R20;
 2. variantes de encabezado R20;
@@ -229,6 +231,20 @@ Ejecutar en un entorno efímero reproducible los gates post-empalme que requiere
 8. Corte 2A canónico;
 9. lock compuesto M1;
 10. verificador V174.
+
+#### `CORTE3_FINANCIAL_RECONCILIATION_R20`
+
+Ejecuta sin navegador:
+
+1. validación de sintaxis del reconciliador R14C;
+2. regeneración efímera de la conciliación usando la HR R20 vigente y el workbook financiero source-safe;
+3. validación de sintaxis del gate Corte 3;
+4. comparación fail-closed contra la baseline R14C por `sourceRecordId`, llaves estables e identidad de enlace;
+5. verificación de 14 periodos, 616 visitas, 247 filas financieras y distribución 34 GT/10 HN por periodo;
+6. verificación de que ledger, lotes y confirmaciones no inventen evidencias de pago;
+7. envío a revisión humana de todo enlace nuevo, perdido, cambiado, ambiguo o con cambio de estado.
+
+Este perfil no importa, no ejecuta pagos, no escribe repositorio ni proveedores, no despliega y no toca producción. Sus salidas existen únicamente como artifacts source-safe bajo `.tmp`.
 
 No se declara PASS compuesto si algún gate queda HOLD.
 
