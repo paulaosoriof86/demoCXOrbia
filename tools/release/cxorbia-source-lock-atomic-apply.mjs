@@ -11,7 +11,7 @@ const proposalDir=path.join(outDir,'source-lock-proposal');
 const manifestPath='app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json';
 const buildLockPath='app/core/build-lock.js';
 const report={
-  schemaVersion:'1.0.1',
+  schemaVersion:'1.0.2',
   runner:'CXORBIA_ATOMIC_APPLY_RUNNER',
   mode:'source_lock_regenerate_v1',
   status:'HOLD_ATOMIC_APPLY',
@@ -26,19 +26,38 @@ const report={
   safeState:{deploy:false,merge:false,production:false,providerWrites:false,dataWrites:false,forcePush:false,newBranch:false,newPullRequest:false}
 };
 
-function save(){fs.mkdirSync(outDir,{recursive:true});fs.writeFileSync(path.join(outDir,'report.json'),JSON.stringify(report,null,2)+'\n','utf8');fs.writeFileSync(path.join(outDir,'report.md'),[
-  '# CXOrbia atomic source-lock regeneration','',
-  `- Status: \`${report.status}\``,
-  `- Request: \`${report.requestId||'n/a'}\``,
-  `- Parent: \`${report.expectedParentSha||'n/a'}\``,
-  `- Commit: \`${report.functionalCommitSha||'n/a'}\``,
-  `- Aggregate: \`${report.aggregateSha256||'n/a'}\``,
-  `- File count: ${report.fileCount??'n/a'}`,'','## Blockers',
-  ...(report.blockers.length?report.blockers.map(x=>`- ${x}`):['- none'])
-].join('\n')+'\n','utf8');}
+function save(){
+  fs.mkdirSync(outDir,{recursive:true});
+  fs.writeFileSync(path.join(outDir,'report.json'),JSON.stringify(report,null,2)+'\n','utf8');
+  fs.writeFileSync(path.join(outDir,'report.md'),[
+    '# CXOrbia atomic source-lock regeneration','',
+    `- Status: \`${report.status}\``,
+    `- Request: \`${report.requestId||'n/a'}\``,
+    `- Parent: \`${report.expectedParentSha||'n/a'}\``,
+    `- Commit: \`${report.functionalCommitSha||'n/a'}\``,
+    `- Aggregate: \`${report.aggregateSha256||'n/a'}\``,
+    `- File count: ${report.fileCount??'n/a'}`,'','## Blockers',
+    ...(report.blockers.length?report.blockers.map(x=>`- ${x}`):['- none'])
+  ].join('\n')+'\n','utf8');
+}
 function fail(message){throw new Error(message);}
-function run(command,args,options={}){const result=spawnSync(command,args,{cwd:root,encoding:'utf8',env:{...process.env,...(options.env||{})},maxBuffer:30*1024*1024});if(result.status!==0)fail(`command_failed:${command} ${args.join(' ')}:${String(result.stderr||result.stdout||'').slice(0,1500)}`);return String(result.stdout||'').trim();}
-function readJson(rel){if(!fs.existsSync(path.join(root,rel)))fail(`required_file_missing:${rel}`);return JSON.parse(fs.readFileSync(path.join(root,rel),'utf8'));}
+function run(command,args,options={}){
+  const result=spawnSync(command,args,{cwd:root,encoding:'utf8',env:{...process.env,...(options.env||{})},maxBuffer:30*1024*1024});
+  if(result.status!==0)fail(`command_failed:${command} ${args.join(' ')}:${String(result.stderr||result.stdout||'').slice(0,1500)}`);
+  return String(result.stdout||'').trim();
+}
+function readJson(rel){
+  if(!fs.existsSync(path.join(root,rel)))fail(`required_file_missing:${rel}`);
+  return JSON.parse(fs.readFileSync(path.join(root,rel),'utf8'));
+}
+function changedPaths(){
+  return run('git',['status','--porcelain'])
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .map(line=>line.slice(3).replace(/^"|"$/g,''))
+    .map(value=>value.includes(' -> ')?value.split(' -> ').pop():value)
+    .sort();
+}
 
 try{
   const request=readJson(requestPath);
@@ -69,7 +88,7 @@ try{
   fs.copyFileSync(path.join(proposalDir,'build-lock.js'),path.join(root,buildLockPath));
   run('node',['tools/release/tya-v174-corte2a-empalme-directo-verify.mjs']);
   run('git',['rm','--',requestPath]);
-  const changed=run('git',['diff','--name-only']).split(/\r?\n/).filter(Boolean).sort();
+  const changed=changedPaths();
   const expected=[buildLockPath,manifestPath,requestPath].sort();
   if(JSON.stringify(changed)!==JSON.stringify(expected))fail(`working_tree_delta_invalid:${changed.join(',')}`);
   run('git',['config','user.name','cxorbia-automation']);
@@ -88,5 +107,9 @@ try{
   ];
   run('git',['push','origin','HEAD:docs-tya-v6-v71-audit']);
   report.status='APPLIED_AND_VERIFIED';
-}catch(error){report.blockers.push(String(error?.message||error));process.exitCode=1;}
-finally{save();}
+}catch(error){
+  report.blockers.push(String(error?.message||error));
+  process.exitCode=1;
+}finally{
+  save();
+}
