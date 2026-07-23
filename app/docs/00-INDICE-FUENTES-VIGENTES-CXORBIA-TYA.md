@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-23  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V174_R20_M1_TECHNICAL_PASS_HOSTING_DEV_DEPLOYED_VISUAL_REVIEW_PENDING`
+**Estado vivo:** `V174_R20_M1_CORTE2A_ACTIVE_BASELINE_VISUAL_APPROVED_P1_P2_DOCUMENTED_CORTE3_FINANZAS_ACTIVE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -21,55 +21,52 @@
 4. Addenda vigentes de Academia, patrones reutilizables y antidesvío.
 5. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`.
 6. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`.
-7. `app/docs/VALIDACION-VISUAL-Y-LOCK-ANTI-REGRESION-CORTE1-M1-20260722.md`.
-8. `app/docs/AUDITORIA-CANDIDATA-V174-CORTE2A-SOURCE-LOCK-20260722.md`.
+7. `app/docs/VALIDACION-VISUAL-V174-APROBADA-CON-PENDIENTES-P1-P2-20260723.md`.
+8. `app/docs/PHASE-A-CORTE3-INICIO-FINANZAS-20260723.md`.
 9. `app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json`.
 10. `backend/contracts/cxorbia-controlled-runners-v1.json`.
 11. CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES, Academia, tracker, PR #7 y HEAD vivo.
 
 ## 3. Lock prevalente
 
-`AUDIT_LANE_READY → AUDITED_GO → APPLY_DELTA_DIRECTLY → COMMIT/PUSH ATÓMICO → POST-GATES → HOSTING DEV → VALIDACIÓN VISUAL → FREEZE`
+`FUENTE Y REGLA → MAPPING/ADAPTER → GATES → BUILD EXACTO → VALIDACIÓN VISUAL → CORRECCIÓN FOCALIZADA → FREEZE`
 
-Carril atómico y gates controlados permanecen vigentes. No nueva candidata, reauditoría, nueva metodología ni trabajo manual para Paula mientras V174 está en revisión visual.
+V174 fue aprobada visualmente. Los hallazgos P1/P2 no bloquean y no autorizan una nueva candidata ni cambios frontend dentro de Corte 3.
 
-## 4. Source lock y technical PASS
+## 4. Baseline activa V174
 
-- V174 package SHA-256: `e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f`.
+- Package SHA-256: `e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f`.
 - Empalme funcional: `b21e494d127fb4b902de5576e3fab0292362b097`.
 - Source-lock final: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
 - Aggregate: `ab11bc47dfd096cbe6a110db250c46e656c2dc9760ad832c07958b6c9a886818`.
 - R20, HR in-place, histórico, reportes, proyecto/periodo/KPI, Corte 2A, M1 y verificador: PASS técnico.
+- Validación visual: APROBADA.
 
-## 5. Hosting DEV vigente
+## 5. Pendientes visuales no bloqueantes
 
-- URL visual: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1`.
-- Workflow run: `30027204176`.
-- Job: `89274577170`.
+- P1: responsive parcial en algunas tablas y fichas.
+- P1: PDF sin gráficas.
+- P2: Excel sin formato operativo suficiente.
+- P2: telemetría `sourceAccessMode` conserva etiqueta anterior.
+
+## 6. Hosting DEV vigente
+
+- URL: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1`.
+- Run: `30027204176`.
 - Artifact: `8571796399`.
-- Digest: `sha256:50ef940bb7ab52f0fac318cd23f6c4e233f4581fee0a1035c8d936abb7e42a9e`.
 - Hosting deploy: SUCCESS.
-- Cloud Run redeploy: no.
-- Build-lock remoto: coincide con el local.
 - Endpoint HR vivo: `runtimeRead=true`, `sourceSafe=true`, 14 periodos y 616 visitas.
 
-## 6. HR remota comprobada
+## 7. Bloque activo: Corte 3 Finanzas
 
-- 14 periodos, junio 2025–julio 2026.
-- 616 visitas históricas.
-- 44 visitas por periodo.
-- GT 34 + HN 10 por periodo.
-- Julio 2026: 44 visitas, 43 asignadas, 1 sin asignar, 29 realizadas, 28 cuestionarios, 20 submitidas y 0 pagos confirmados.
+- Envelope actual: fuente financiera pendiente; pagos y lotes vacíos.
+- Afirmación operativa: pagado hasta mayo pendiente de cruce por fuente; junio requiere match por ítem.
+- Reconciliación R14C: 247 filas financieras, 196 links exactos aceptados, 51 filas a revisión y 92 entradas en review queue.
+- Junio: cero enlaces exactos aceptados en R14C; no marcar pago por inferencia.
 
-## 7. Pendiente vivo
+## 8. Siguiente subbloque exacto
 
-Revisión visual focalizada por Paula. Solo un NO GO visual reproducible puede abrir corrección.
-
-La telemetría remota de `sourceAccessMode` todavía muestra `public_gviz_csv_cache_busted`, aunque el endpoint same-origin devuelve lectura runtime source-safe fresca y los conteos correctos. Se documenta para cierre productivo y no impide la revisión visual DEV.
-
-## 8. Siguiente bloque exacto
-
-`PAULA ABRE HOSTING DEV → VALIDA LOGIN/ROLES/PROYECTO/PERIODO/DASHBOARD/HISTÓRICO/VISITAS/REPORTES/ACADEMIA → APROBADO O NO GO CONCRETO → FREEZE O FIX ÚNICO → PLAN DE CUTOVER PRODUCTIVO`.
+`INVENTARIO DE FUENTES FINANCIERAS → RECONCILIACIÓN CONTRA HR R20 ACTUAL → MATRIZ EXACTOS/FALTANTES/AMBIGUOS/CONFLICTOS → REVIEW QUEUE SANITIZADA → GATES`.
 
 ## 9. Estado seguro
 
