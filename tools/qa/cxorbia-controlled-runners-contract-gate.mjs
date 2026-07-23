@@ -61,13 +61,16 @@ if (contract) {
     requireText(readonlyYml, /^name:\s*CXORBIA_READONLY_POST_GATES_RUNNER\s*$/m, 'readonly_name_missing');
     requireText(readonlyYml, /branches:\s*\n\s*- docs-tya-v6-v71-audit/m, 'readonly_branch_missing');
     requireText(readonlyYml, /\.github\/cxorbia-gate-requests\/request\.json/, 'readonly_request_path_missing');
-    requireText(readonlyYml, /permissions:\s*\n\s*contents:\s*read\s*\n\s*issues:\s*write/m, 'readonly_permissions_invalid');
+    requireText(readonlyYml, /permissions:\s*\n\s*contents:\s*read\s*\n\s*issues:\s*write\s*\n\s*statuses:\s*write/m, 'readonly_permissions_invalid');
     requireText(readonlyYml, /playwright@1\.55\.0/, 'readonly_playwright_pin_missing');
     requireText(readonlyYml, /playwright install --with-deps chromium/, 'readonly_chromium_install_missing');
+    requireText(readonlyYml, /repos\/\$\{owner\}\/\$\{repo\}\/statuses\//, 'readonly_status_telemetry_missing');
+    requireText(readonlyYml, /cxorbia\/readonly-post-gates\/overall/, 'readonly_overall_status_context_missing');
     requireText(readonlyScript, /tya-project-period-kpi-history-gate-r20/, 'readonly_r20_gate_missing');
     requireText(readonlyScript, /tya-corte1-m1-regression-lock/, 'readonly_m1_gate_missing');
     requireText(readonlyScript, /tya-corte2a-shopper-operation-canonical-gate/, 'readonly_corte2a_gate_missing');
     requireText(readonlyScript, /repositoryWrites:\s*false/, 'readonly_safe_state_missing');
+    requireText(readonlyScript, /GITHUB_HEAD_REF/, 'readonly_effective_branch_missing');
 
     forbidText(readonlyYml, /contents:\s*write/, 'readonly_contents_write_forbidden');
     forbidText(readonlyYml, /firebase\s+deploy|gcloud\s+|firestore:|storage:|functions:/i, 'readonly_deploy_command_forbidden');
@@ -78,6 +81,8 @@ if (contract) {
     if (contract.atomicApplyPolicy?.directFunctionalTreeMutationOutsideRunner !== false) add(blockers, 'direct_tree_mutation_policy_not_closed');
     if (contract.atomicApplyPolicy?.sequentialContentsApiFunctionalWrites !== false) add(blockers, 'sequential_contents_policy_not_closed');
     if (contract.readonlyGatePolicy?.repositoryWrites !== false) add(blockers, 'readonly_repository_write_policy_not_closed');
+    if (contract.readonlyGatePolicy?.commitStatusTelemetry !== true) add(blockers, 'readonly_status_telemetry_not_authorized');
+    if (readonly?.statusesPermission !== 'write') add(blockers, 'readonly_status_permission_contract_missing');
   }
 }
 
@@ -90,7 +95,9 @@ const report = {
     deploy: false,
     merge: false,
     production: false,
-    dataWrites: false
+    dataWrites: false,
+    repositoryContentWritesByReadonlyRunner: false,
+    commitStatusTelemetryOnly: true
   }
 };
 fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
