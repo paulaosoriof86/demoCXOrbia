@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-23  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V174_R20_M1_CORTE2A_FUNCTIONAL_PASS_SOURCE_LOCK_CLOSURE_PENDING_NO_DEPLOY`
+**Estado vivo:** `V174_R20_M1_TECHNICAL_PASS_HOSTING_DEV_DEPLOYED_VISUAL_REVIEW_PENDING`
 
 ## 1. Repositorio y seguridad
 
@@ -11,7 +11,7 @@
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
 - `main`, nueva rama/PR y force push: prohibidos.
-- Hosting DEV, producción, imports y writes reales: no ejecutados en este bloque.
+- Producción, merge, imports, pagos y writes reales: no ejecutados.
 
 ## 2. Lectura obligatoria
 
@@ -29,157 +29,48 @@
 
 ## 3. Lock prevalente
 
-Para candidatas frontend `GO` sin `P0_PROVEN`:
+`AUDIT_LANE_READY → AUDITED_GO → APPLY_DELTA_DIRECTLY → COMMIT/PUSH ATÓMICO → POST-GATES → HOSTING DEV → VALIDACIÓN VISUAL → FREEZE`
 
-`AUDIT_LANE_READY → AUDITED_GO → APPLY_DELTA_DIRECTLY → COMMIT/PUSH ATÓMICO → POST-GATES → VALIDACIÓN VISUAL → FREEZE`
+Carril atómico y gates controlados permanecen vigentes. No nueva candidata, reauditoría, nueva metodología ni trabajo manual para Paula mientras V174 está en revisión visual.
 
-Carril de aplicación permitido:
+## 4. Source lock y technical PASS
 
-- checkout Git autenticado nativo; o
-- `CXORBIA_ATOMIC_APPLY_RUNNER`.
+- V174 package SHA-256: `e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f`.
+- Empalme funcional: `b21e494d127fb4b902de5576e3fab0292362b097`.
+- Source-lock final: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
+- Aggregate: `ab11bc47dfd096cbe6a110db250c46e656c2dc9760ad832c07958b6c9a886818`.
+- R20, HR in-place, histórico, reportes, proyecto/periodo/KPI, Corte 2A, M1 y verificador: PASS técnico.
 
-Carril de gates con navegador permitido:
+## 5. Hosting DEV vigente
 
-- entorno local completo y reproducible; o
-- `CXORBIA_READONLY_POST_GATES_RUNNER`.
+- URL visual: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1`.
+- Workflow run: `30027204176`.
+- Job: `89274577170`.
+- Artifact: `8571796399`.
+- Digest: `sha256:50ef940bb7ab52f0fac318cd23f6c4e233f4581fee0a1035c8d936abb7e42a9e`.
+- Hosting deploy: SUCCESS.
+- Cloud Run redeploy: no.
+- Build-lock remoto: coincide con el local.
+- Endpoint HR vivo: `runtimeRead=true`, `sourceSafe=true`, 14 periodos y 616 visitas.
 
-Continúan prohibidos Contents API secuencial para delta funcional, reconstrucción manual, workflows genéricos, `incoming/`, Drive/Base64 manual, PowerShell/CMD para Paula, copias manuales y nueva candidata cuando la actual ya quedó auditada GO.
+## 6. HR remota comprobada
 
-## 4. V174 y Phase A
+- 14 periodos, junio 2025–julio 2026.
+- 616 visitas históricas.
+- 44 visitas por periodo.
+- GT 34 + HN 10 por periodo.
+- Julio 2026: 44 visitas, 43 asignadas, 1 sin asignar, 29 realizadas, 28 cuestionarios, 20 submitidas y 0 pagos confirmados.
 
-- Package SHA-256: `e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f`.
-- Commit funcional V174: `b21e494d127fb4b902de5576e3fab0292362b097`.
-- Corrección focalizada V174: `0acdc6772f2d4a7743dea0992a4279241dcb79d7`.
-- M1/Corte 1: preservado.
-- Corte 2A canonical: PASS.
-- Backend, adapters live, contratos operativos, overlays y `CX.data`: preservados.
-- Honorario, boleto y combo: `0` confirmado se conserva; ausencia permanece `null`.
+## 7. Pendiente vivo
 
-## 5. Corrección R20 aplicada en remoto
+Revisión visual focalizada por Paula. Solo un NO GO visual reproducible puede abrir corrección.
 
-La causa raíz quedó corregida en la rama viva:
+La telemetría remota de `sourceAccessMode` todavía muestra `public_gviz_csv_cache_busted`, aunque el endpoint same-origin devuelve lectura runtime source-safe fresca y los conteos correctos. Se documenta para cierre productivo y no impide la revisión visual DEV.
 
-`R20_INVENTORY_BUILDER_NOT_USING_CANONICAL_HEADER_VARIANT_RESOLVER`
+## 8. Siguiente bloque exacto
 
-El builder vigente:
+`PAULA ABRE HOSTING DEV → VALIDA LOGIN/ROLES/PROYECTO/PERIODO/DASHBOARD/HISTÓRICO/VISITAS/REPORTES/ACADEMIA → APROBADO O NO GO CONCRETO → FREEZE O FIX ÚNICO → PLAN DE CUTOVER PRODUCTIVO`.
 
-- reutiliza `headerVariants` del contrato R20;
-- admite únicamente variantes declaradas `full_identity` y `tab_scoped_compact`;
-- obtiene país desde columna o tab según la variante;
-- conserva identidad por `hrRowId/sourceTab/sourceRow` cuando `ID CINEMA` no existe;
-- respeta `contextualMissingAllowedIn`;
-- aplica `coalesce_equal_or_single_nonempty` y bloquea conflictos;
-- no contiene hardcode mensual para aceptar encabezados;
-- publica `public_gviz_gid_verified_inventory` solo después de verificar inventario, conteos y cache-busting por GID.
+## 9. Estado seguro
 
-## 6. Fuente HR viva verificada
-
-Ejecución read-only autorizada:
-
-- Run: `30016360952`.
-- Job: `89237272004`.
-- Artifact: `8567304475`.
-- Digest: `sha256:b7b65933e1f81002dfac8ca65a2b1415d57e1158b87e755e9bd7706253dede57`.
-- Source HEAD probado: `96bf7db74a144a3ddb27635933d3860658198719`.
-- Request commit: `0c7002c30ff88e8863b86acce56e72d9f1ba772c`.
-
-Inventario actual observado:
-
-- 14 periodos: junio 2025 a julio 2026.
-- 28 tabs.
-- 616 visitas.
-- GT: 476.
-- HN: 140.
-- 209 shoppers source-safe.
-- 28 nonces únicos: cache-busting por cada GID.
-- `JULIO 26`: `full_identity` en la lectura actual.
-- `JULIO 26 HN`: `full_identity` en la lectura actual.
-- El contrato conserva soporte fail-closed para `tab_scoped_compact`; no se fija una variante por nombre de mes.
-
-Totales históricos actuales:
-
-- 615 asignadas y 1 sin asignar.
-- 614 programadas.
-- 600 realizadas.
-- 597 cuestionarios completados.
-- 533 submitidas.
-- 533 candidatas de liquidación pendientes de fuente financiera.
-- 0 liquidaciones confirmadas por fuente financiera.
-- 0 pagos confirmados.
-- 0 conflictos en revisión.
-
-Julio 2026 observado por navegador:
-
-- 44 visitas: 34 GT + 10 HN.
-- 43 asignadas y 1 sin asignar.
-- 43 programadas.
-- 29 realizadas.
-- 28 cuestionarios completados.
-- 20 submitidas.
-- 8 pendientes de submitir.
-- 1 cuestionario pendiente.
-- 20 candidatas de liquidación.
-- 0 pagos confirmados.
-
-Estos conteos son evidencia de la lectura actual; no son constantes hardcodeadas del producto.
-
-## 7. Lectura viva preservada
-
-`PASS_TYA_LIVE_HR_INPLACE_REFRESH_GATE` confirmó:
-
-- `fresh=1` omite TTL;
-- snapshot aplicado en memoria;
-- proyección reconstruida;
-- `sourceRevision` actualizado;
-- cero `location.reload()`.
-
-No se modificaron en la corrección R20:
-
-- `backend/runtime/hr-live-service/server.mjs`;
-- `app/adapters/tya-live-source-inplace-apply.js`;
-- `CX.data`;
-- módulos V174.
-
-## 8. Gates técnicos
-
-PASS en el composite exacto del run `30016360952`:
-
-1. propuesta de source lock V174/R20;
-2. sintaxis del builder;
-3. variantes R20;
-4. builder de inventario R20;
-5. build source-safe R18A;
-6. HR live in-place;
-7. contexto/histórico/reportes Corte 1;
-8. runtime frontend de reportes;
-9. proyecto/periodo/KPI/histórico R20 con Playwright/Chromium;
-10. Corte 2A canonical;
-11. M1 regression lock.
-
-Único HOLD del run:
-
-- `tya-v174-corte2a-empalme-directo-verify.mjs`, exclusivamente porque manifest/build-lock anteriores no incluían todavía la corrección R20, documentación vigente y build generado.
-
-No existe HOLD funcional de HR, visitas, periodos, KPIs, reportes, Corte 2A o M1.
-
-## 9. Source lock de cierre
-
-Propuesta reproducible generada:
-
-- file count: `1890`.
-- aggregate SHA-256: `cdce7c1026a78d639ed887f19151e43ba142397359cbcab5b6ce93676a6c4123` para el app probado antes de reconciliar esta documentación.
-
-Como los documentos vivos forman parte del aggregate, el cierre correcto es:
-
-1. reconciliar índice/checkpoint/CAMBIOS/RESUMEN/PENDIENTES/Academia;
-2. regenerar manifest/build-lock sobre el HEAD documental final;
-3. reejecutar el perfil read-only completo;
-4. declarar `TECHNICAL_PASS_PENDING_VISUAL` solo cuando el verificador final pase.
-
-## 10. Siguiente bloque exacto
-
-`RECONCILIAR DOCUMENTACIÓN VIVA → REGENERAR SOURCE LOCK FINAL → RERUN R20 + M1 + CORTE2A + VERIFICADOR → TECHNICAL_PASS_PENDING_VISUAL → AUTORIZACIÓN HOSTING DEV → FRESH=1 + SMOKE REMOTO → VALIDACIÓN VISUAL → FREEZE PHASE A`.
-
-## 11. Estado seguro
-
-Sin merge, Hosting DEV nuevo, deploy productivo, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live, pagos ni conexión a la base vieja.
+Sin merge, deploy productivo, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos.
