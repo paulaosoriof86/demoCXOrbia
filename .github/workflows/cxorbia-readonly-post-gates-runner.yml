@@ -19,6 +19,7 @@ on:
 permissions:
   contents: read
   issues: write
+  statuses: write
 
 concurrency:
   group: cxorbia-readonly-post-gates-runner-${{ github.event.pull_request.head.sha || github.sha }}
@@ -94,6 +95,66 @@ jobs:
             .tmp/r20-source-safe-gates
           if-no-files-found: warn
           retention-days: 14
+
+      - name: Publish observable commit statuses
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GATES_EXIT_CODE: ${{ steps.gates.outputs.exit_code }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const requestPath = '.github/cxorbia-gate-requests/request.json';
+          const request = fs.existsSync(requestPath) ? JSON.parse(fs.readFileSync(requestPath, 'utf8')) : { enabled: false, requestId: null };
+          const reportPath = '.tmp/cxorbia-readonly-post-gates/report.json';
+          const report = fs.existsSync(reportPath)
+            ? JSON.parse(fs.readFileSync(reportPath, 'utf8'))
+            : {
+                status: request.enabled ? 'HOLD_REPORT_MISSING' : 'SKIPPED_DISABLED_REQUEST',
+                requestId: request.requestId || null,
+                requestCommitSha: process.env.GITHUB_SHA,
+                gates: [],
+                blockers: request.enabled ? ['report_missing_or_preflight_failed'] : []
+              };
+          const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+          const sha = report.requestCommitSha || process.env.GITHUB_SHA;
+          const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+          const enabled = request.enabled === true;
+          const overallSuccess = enabled && report.status === 'PASS_READONLY_POST_GATES';
+          const overallState = enabled ? (overallSuccess ? 'success' : 'failure') : 'success';
+          const statuses = [{
+            state: overallState,
+            context: 'cxorbia/readonly-post-gates/overall',
+            description: enabled
+              ? `${report.status}; gates=${Array.isArray(report.gates) ? report.gates.length : 0}; blockers=${Array.isArray(report.blockers) ? report.blockers.length : 0}`.slice(0, 140)
+              : 'SKIPPED_DISABLED_REQUEST',
+            target_url: runUrl
+          }];
+          for (const gate of Array.isArray(report.gates) ? report.gates : []) {
+            statuses.push({
+              state: gate.status === 'PASS' ? 'success' : 'failure',
+              context: `cxorbia/gate/${gate.id}`.slice(0, 100),
+              description: `${gate.status}; exit=${gate.exitCode}`.slice(0, 140),
+              target_url: runUrl
+            });
+          }
+          async function postStatus(status) {
+            const response = await fetch(`${process.env.GITHUB_API_URL}/repos/${owner}/${repo}/statuses/${sha}`, {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+                Accept: 'application/vnd.github+json',
+                'X-GitHub-Api-Version': '2022-11-28',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(status)
+            });
+            if (!response.ok) throw new Error(`status_failed_HTTP_${response.status}:${await response.text()}`);
+          }
+          (async () => {
+            for (const status of statuses) await postStatus(status);
+          })().catch(error => { console.error(error); process.exitCode = 1; });
+          NODE
 
       - name: Report result in PR 7
         if: always() && steps.request.outputs.enabled == 'true'
