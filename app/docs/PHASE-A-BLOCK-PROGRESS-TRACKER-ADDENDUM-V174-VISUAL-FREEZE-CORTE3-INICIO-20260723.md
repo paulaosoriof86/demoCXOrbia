@@ -1,4 +1,4 @@
-# PHASE A TRACKER — V174 VISUAL FREEZE E INICIO CORTE 3
+# PHASE A TRACKER — V174 Y CORTE 3 FINANZAS
 
 **Fecha:** 2026-07-23
 
@@ -6,33 +6,57 @@
 
 - M1/Corte 1: técnico y visual aprobado.
 - V174/Corte 2A: técnico y visual aprobado.
-- Source lock: vigente.
-- Hosting DEV: vigente.
-- Pendientes responsive/PDF/Excel: P1/P2 documentados, no bloqueantes.
+- Hosting DEV HR/histórico: vigente.
+- Pendientes responsive/PDF/Excel: P1/P2 documentados y no bloqueantes.
 
-## Bloque activo
+## Corte 3 — avance cerrado técnicamente
 
-### CORTE 3 — FINANZAS
+Estado:
 
-Estado: `FINANCIAL_RECONCILIATION_R20_RUNNER_READY_PENDING_EXECUTION_READ_ONLY`.
+`FINANCIAL_RECONCILIATION_R20_REVIEWED_PASS_STABLE_VISIT_ID_PASS`
 
-Avance realizado:
+Completado:
 
-- envelope financiero source-safe identificado;
-- contrato de liquidación/pago identificado;
-- reconciliación R14C baseline recuperada;
-- fuentes source-safe inventariadas;
-- matriz de cobertura enero–junio y gaps sanitizada;
-- reglas de no inferencia y llaves estables ratificadas;
-- gaps de junio y review queue identificados;
-- gate fail-closed de Corte 3 creado;
-- perfil financiero agregado al runner read-only autorizado;
-- contrato, workflow y gate estructural actualizados;
-- addendum prevalente, índice, checkpoint y CAMBIOS actualizados.
+- fuentes financieras source-safe inventariadas;
+- matriz de cobertura y gaps;
+- identidad estable de visita R20;
+- integración de identidad en filtro runtime;
+- gate de payload source-safe;
+- conciliación fresca contra HR R20;
+- revisión técnica de 15 enlaces nuevos;
+- retención sin vínculo de dos diferencias monto/detalle y un conflicto shopper;
+- reviewed-delta PASS;
+- regresión V174/M1/Corte 2A PASS;
+- composite post-build verificado mediante source-lock propuesto.
 
-Siguiente paso exacto:
+Conteos vigentes:
 
-`REQUEST ÚNICO SOBRE HEAD EXACTO → RUN CORTE3 READ-ONLY → ARTIFACT/DELTA → PASS ESTABLE O HOLD FOCALIZADO`.
+- 616 visitas HR;
+- 247 filas financieras;
+- 209 enlaces exactos;
+- 38 filas en revisión;
+- 79 entradas en review queue;
+- pagos ejecutados: 0.
+
+## Corte 3 — subbloque activo
+
+Estado:
+
+`CANONICAL_FINANCIAL_SNAPSHOT_AND_ADAPTER_PENDING`
+
+Siguiente secuencia:
+
+`SNAPSHOT FINANCIERO CANÓNICO SOURCE-SAFE → ADAPTER ÚNICO → FINANZAS Y BENEFICIOS CONSUMEN LA MISMA VERDAD → GATES UI/EXPORTACIONES → HOSTING DEV → VALIDACIÓN VISUAL → FREEZE CORTE 3`.
+
+## Bloques posteriores de Phase A
+
+Después del freeze visual de Corte 3:
+
+1. Corte 4 — backend nuevo y vacío con `CX.data` read-only;
+2. Corte 5 — materialización DEV controlada;
+3. Corte 6 — Auth/RBAC;
+4. Corte 7 — sync/evidencias/operación completa;
+5. Corte 8 — preproducción y producción con autorización expresa.
 
 ## Seguridad
 
