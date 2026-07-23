@@ -1,56 +1,92 @@
-# CAMBIOS BACKEND — V174 VISUAL FREEZE E INICIO CORTE 3
+# CAMBIOS BACKEND — V174 VISUAL FREEZE, VISIT ID ESTABLE Y CORTE 3
 
 **Fecha:** 2026-07-23
 
-## V174
+## 1. V174 preservada
 
-V174 queda aprobada visualmente y congelada como baseline activa de M1/Corte 1 y Corte 2A. Los hallazgos responsive/PDF/Excel son P1/P2 no bloqueantes. No se modifica frontend en este bloque.
+V174 continúa como baseline activa, técnica y visualmente aprobada para M1/Corte 1/Corte 2A. No se modificaron sus módulos frontend ni la interfaz de `CX.data`.
 
-## Corte 3 — fuentes e inventario
+## 2. Archivos creados
 
-Se recuperó el estado financiero vigente, se inventariaron las fuentes source-safe y se produjo la matriz sanitizada de cobertura y gaps. No se importó ni se marcó ningún pago.
+### Identidad estable de visita
 
-## Corte 3 — carril de reconciliación preparado
+- `tools/hr-source/tya-stable-visit-id-r20.mjs`;
+- `tools/hr-source/tya-stabilize-source-safe-visit-ids-r20.mjs`;
+- `tools/qa/tya-stable-visit-id-r20-gate.mjs`;
+- `tools/qa/tya-source-safe-stable-visit-payload-r20-gate.mjs`.
 
-### Archivo creado
+### Corte 3 Finanzas
 
-- `tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs`.
+- `tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs`;
+- `backend/contracts/tya-corte3-financial-r20-delta-review-v1.json`;
+- `app/docs/CORTE3-FINANCIAL-RECONCILIATION-R20-TECHNICAL-PASS-20260723.md`.
 
-### Archivos actualizados
+### Source-lock verificable
 
-- `backend/contracts/cxorbia-controlled-runners-v1.json`;
+- `tools/release/tya-v174-proposed-source-lock-verify.mjs`.
+
+## 3. Archivos actualizados
+
+- `tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs`;
 - `tools/release/cxorbia-readonly-post-gates-runner.mjs`;
 - `tools/qa/cxorbia-controlled-runners-contract-gate.mjs`;
 - `.github/workflows/cxorbia-readonly-post-gates-runner.yml`;
+- `backend/contracts/cxorbia-controlled-runners-v1.json`;
 - `app/docs/ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`;
 - `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 - `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-- este registro y tracker Phase A;
-- PR #7 al cierre del run.
+- este registro;
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V174-VISUAL-FREEZE-CORTE3-INICIO-20260723.md`;
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V174-VISUAL-FREEZE-CORTE3-INICIO-20260723.md`;
+- `app/docs/ACADEMIA-IMPACT-V174-VISUAL-FREEZE-CORTE3-INICIO-20260723.md`;
+- `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-V174-VISUAL-FREEZE-CORTE3-INICIO-20260723.md`;
+- PR #7.
 
-### Perfil autorizado
+## 4. Causa raíz corregida
 
-`CORTE3_FINANCIAL_RECONCILIATION_R20`
+La identidad anterior usaba campos mutables de operación. Se reemplazó por identidad canónica basada en:
 
-El perfil usa el runner read-only ya autorizado. Regenera la conciliación R14C en un checkout efímero con HR R20 vigente y compara contra la baseline mediante `sourceRecordId`, llaves estables e identidad de enlace.
+`tenantId + projectId + periodKey + country + sourceRow`.
 
-Bloquea:
+El filtro runtime de inventario ahora estabiliza cada visita antes de que el snapshot sea consumido por plataforma o conciliación financiera.
 
-- pérdida o cambio de un enlace previamente aceptado;
-- duplicación de visita entre filas financieras;
-- cambio de fuente financiera;
-- conteos o cobertura HR incompatibles;
-- lotes, confirmadores o estados pagados sin evidencia;
-- cualquier enlace nuevo o cambio de estado que no haya pasado revisión humana.
+## 5. Corte 3 — resultado
 
-## Clasificación
+El perfil controlado produjo PASS técnico revisado:
 
-- **Reusable CXOrbia:** perfil financiero fail-closed y comparación de identidad estable.
-- **Exclusivo cliente:** cobertura R14C TyA/Cinépolis y estado mayo-junio.
-- **Claude/prototipo:** sin cambio frontend; pendientes responsive/PDF/Excel preservados.
-- **Academia:** incorporar separación entre conciliación, liquidación, evidencia y pago.
-- **Sin impacto Claude:** runner, contrato, gate, artifacts y telemetría.
+- 616 visitas HR;
+- 247 filas financieras;
+- 209 enlaces exactos;
+- 38 filas en revisión;
+- 79 entradas en review queue;
+- 15 enlaces nuevos exactos revisados;
+- 2 enlaces anteriores retirados y mantenidos en revisión;
+- 1 cambio de estado mantenido en revisión;
+- 0 cambios de `hrRowId` canónico;
+- 0 registros financieros nuevos o perdidos.
 
-## Estado seguro
+No se aprobó ni ejecutó ningún pago.
 
-Sin merge, producción, import real, pagos, Firestore/Auth/Storage/HR writes, Make/Gemini ni cambio de base.
+## 6. Regresión
+
+El perfil V174/M1/Corte 2A se volvió a ejecutar con el filtro runtime y la identidad estable. Pasaron builder, encabezados, payload, HR in-place, histórico, reportes, proyecto/periodo/KPI, Corte 2A, M1, propuesta de source lock y verificación del composite propuesto.
+
+Run: `30039152686`  
+Artifact: `8576510415`  
+Digest: `sha256:d9b3ac061fd8d667939fb5caec66810acfaf1a007d78c17cd685a56ae6b84eeb`.
+
+## 7. Clasificación
+
+- **Reusable CXOrbia:** identidad estable de visita, filtros runtime, reconciliación financiera fail-closed y revisión source-safe.
+- **Exclusivo cliente:** delta financiero TyA/Cinépolis, 15 exactos nuevos y tres casos retenidos en revisión.
+- **Claude/prototipo:** no cambiar módulos; próximo trabajo será consumo visual mediante adapter único. Responsive/PDF/Excel siguen pendientes no bloqueantes.
+- **Academia:** identidad estable, review queue y separación entre conciliación, liquidación y pago.
+- **Sin impacto Claude:** runners, gate contractual, artifacts y verificación source-lock efímera.
+
+## 8. Siguiente bloque
+
+`SNAPSHOT FINANCIERO CANÓNICO SOURCE-SAFE → ADAPTER ÚNICO → FINANZAS Y BENEFICIOS CONSUMEN LA MISMA VERDAD → GATES UI/EXPORTACIONES`.
+
+## 9. Estado seguro
+
+Sin merge, producción, deploy, import real, pagos, Firestore/Auth/Storage/HR writes, Make/Gemini ni base vieja conectada.
