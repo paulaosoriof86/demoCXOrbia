@@ -30,8 +30,11 @@ for(const [name,source] of [['canonical',builder],['inventory',inventoryBuilder]
   if(!source.includes('contextualMissingAllowedIn'))fail('contextual_missing_policy_missing',{builder:name});
   if(!source.includes('duplicate_column_conflict'))fail('duplicate_conflict_guard_missing',{builder:name});
 }
-for(const marker of ['public_gviz_gid_verified_inventory','verifyInventoryAndCounts','gid_cache_bust_evidence_incomplete','july_26_variant_mismatch','july_26_hn_variant_mismatch']){
+for(const marker of ['public_gviz_gid_verified_inventory','verifyInventoryAndCounts','gid_cache_bust_evidence_incomplete','header_variant_identity_source_mismatch','variantById','allowed:[...variantById.keys()]']){
   if(!inventoryBuilder.includes(marker))fail('verified_inventory_guard_missing',{marker});
+}
+for(const forbidden of ['july_26_variant_mismatch','july_26_hn_variant_mismatch']){
+  if(inventoryBuilder.includes(forbidden))fail('month_specific_variant_assertion_forbidden',{marker:forbidden});
 }
 
 const fullHeader=['País','ID CINEMA','CIUDAD','DIRECCIÓN','Shopping','Franja Horaria','Formato de Cine','Tipo de Combo','Tipo de Compra','Método de Pago','Quincena','Shopper Asignado','Fecha programada','Fecha realizada','Fecha Cuestionario completado','Fecha submitido'];
@@ -65,6 +68,6 @@ console.log(JSON.stringify({
   variants:{full:full.id,compact:compact.id},
   compactIdentity:{countrySource:compact.countrySource,cinemaIdSource:compact.cinemaIdSource},
   duplicateSubmission:{equal:'coalesced',single:'coalesced',conflict:'blocked'},
-  verifiedInventory:{accessMode:'guarded',countVerification:'guarded',cacheBustByGid:'guarded'},
+  verifiedInventory:{accessMode:'guarded',countVerification:'guarded',cacheBustByGid:'guarded',liveVariantMustBeContractDeclared:true,monthSpecificAssumptions:false},
   safeState:{writes:false,hrWrites:false,production:false,deploy:false}
 },null,2));
