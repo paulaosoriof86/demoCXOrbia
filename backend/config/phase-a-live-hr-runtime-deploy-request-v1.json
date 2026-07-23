@@ -1,34 +1,40 @@
 {
-  "schemaVersion": "1.1.0",
-  "requestId": "phase-a-live-hr-runtime-deploy-request-v1",
-  "environment": "DEV",
-  "serviceId": "cxorbia-live-hr-dev",
-  "region": "us-central1",
-  "projectId": "cxorbia-backend-dev",
+  "schemaVersion": "2.1.0",
+  "requestId": "CXORBIA-TYA-V174-HOSTING-DEV-VISUAL-20260723-01",
+  "status": "authorized_pending",
+  "scope": "hosting_dev_visual_only",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "expectedSourceHead": "6cd66ac22e86c20a0cfc4d6fb84c697e672fab42",
+  "runtimeVersion": "V174-CORTE2A-R20-SOURCE-IDENTITY-FIX",
+  "manifestFile": "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json",
+  "aggregateSha256": "ab11bc47dfd096cbe6a110db250c46e656c2dc9760ad832c07958b6c9a886818",
+  "targetProject": "cxorbia-backend-dev",
   "hostingTarget": "cxorbia-dev",
-  "endpointPath": "/api/tya/cinepolis/hr-live",
-  "runtimeSource": "backend/runtime/hr-live-service",
+  "devUrl": "https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1",
+  "liveEndpointPath": "/api/tya/cinepolis/hr-live",
+  "existingCloudRunService": "cxorbia-live-hr-dev",
   "authorization": {
+    "authorizedBy": "Paula",
+    "authorizationSource": "current_conversation_2026-07-23",
+    "authorizationText": "correcto, procede",
     "paulaExplicitInCurrentConversation": true,
-    "authorizedAt": "2026-07-20",
-    "cloudRunDeploy": true,
     "hostingDevRedeploy": true,
+    "cloudRunDeploy": false,
     "production": false,
     "writes": false,
     "imports": false,
-    "payments": false
+    "payments": false,
+    "merge": false
   },
-  "operationalSourceModel": {
-    "hrPerProject": true,
-    "manualHrChangesMustReflectInPlatform": true,
-    "futurePlatformAutomationsMayWriteHrUnderSeparateWriteGate": true,
-    "questionnaireSourceConfigurableByProjectOrVisit": true,
-    "tyaOnlineIsOnlyOnePossibleQuestionnaireProviderForThisTenant": true,
-    "tyaOnlineDoesNotOwnHrSynchronization": true
-  },
-  "requiredPredeployStatuses": [
-    "cxorbia/live-hr-read-probe",
-    "cxorbia/live-hr-runtime-predeploy"
-  ],
-  "safeState": "Authorized for Cloud Run DEV read-only endpoint and Hosting DEV redeploy only. No production, HR writes, Firestore writes, imports or payments."
+  "safeState": {
+    "firestoreWrites": false,
+    "authWrites": false,
+    "storageWrites": false,
+    "hrWrites": false,
+    "make": false,
+    "gemini": false,
+    "production": false
+  }
 }
