@@ -14,7 +14,7 @@ const serverLogPath = path.join(outDir, 'static-server.log');
 const effectiveBranch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || null;
 
 const report = {
-  schemaVersion: '1.1.0',
+  schemaVersion: '1.1.1',
   runner: 'CXORBIA_READONLY_POST_GATES_RUNNER',
   generatedAt: new Date().toISOString(),
   status: 'HOLD_NOT_RUN',
@@ -179,6 +179,9 @@ async function runV174Profile() {
 }
 
 function runCorte3FinancialProfile() {
+  executeGate('node-check-corte3-r20-live-builder', 'node', ['--check', 'tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs']);
+  executeGate('tya-corte3-r20-header-variants', 'node', ['tools/qa/tya-hr-header-variants-r20-gate.mjs']);
+  executeGate('tya-corte3-refresh-live-hr-r20', 'node', ['tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs']);
   executeGate('node-check-corte3-reconcile-r14c', 'node', ['--check', 'tools/reconciliation/tya-financial-workbook-live-hr-reconcile-r14c.mjs']);
   executeGate('node-check-corte3-r20-gate', 'node', ['--check', 'tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs']);
   executeGate(
