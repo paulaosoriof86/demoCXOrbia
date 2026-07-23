@@ -14,7 +14,7 @@ const serverLogPath = path.join(outDir, 'static-server.log');
 const effectiveBranch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || null;
 
 const report = {
-  schemaVersion: '1.2.0',
+  schemaVersion: '1.3.0',
   runner: 'CXORBIA_READONLY_POST_GATES_RUNNER',
   generatedAt: new Date().toISOString(),
   status: 'HOLD_NOT_RUN',
@@ -137,12 +137,29 @@ async function waitForServer(url, timeoutMs = 30000) {
   throw new Error(`static_server_not_ready:${last}`);
 }
 
+function runtimeInventoryStableGates(prefix) {
+  return [
+    [`${prefix}-node-check-runtime-inventory-filter`, 'node', ['--check', 'tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs']],
+    [`${prefix}-runtime-inventory-filter`, 'node', [
+      'tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs',
+      '--input', 'app/data/tya-hr-source-safe-periods.js',
+      '--out', 'app/data/tya-hr-source-safe-periods.js',
+      '--inventory', 'backend/contracts/tya-hr-tab-inventory-r20-v1.json',
+      '--report-dir', `.tmp/${prefix}-runtime-inventory-filter-r20`
+    ]],
+    [`${prefix}-stable-payload-gate`, 'node', [
+      'tools/qa/tya-source-safe-stable-visit-payload-r20-gate.mjs',
+      '--input', 'app/data/tya-hr-source-safe-periods.js'
+    ]]
+  ];
+}
+
 function stableVisitIdentityGates(prefix) {
   return [
     [`${prefix}-node-check-stable-visit-helper`, 'node', ['--check', 'tools/hr-source/tya-stable-visit-id-r20.mjs']],
     [`${prefix}-node-check-stable-visit-apply`, 'node', ['--check', 'tools/hr-source/tya-stabilize-source-safe-visit-ids-r20.mjs']],
     [`${prefix}-stable-visit-contract-gate`, 'node', ['tools/qa/tya-stable-visit-id-r20-gate.mjs']],
-    [`${prefix}-stable-visit-apply`, 'node', [
+    [`${prefix}-stable-visit-apply-idempotent`, 'node', [
       'tools/hr-source/tya-stabilize-source-safe-visit-ids-r20.mjs',
       '--input', 'app/data/tya-hr-source-safe-periods.js',
       '--out', 'app/data/tya-hr-source-safe-periods.js',
@@ -157,6 +174,7 @@ async function runV174Profile() {
     ['node-check-builder', 'node', ['--check', 'tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs']],
     ['tya-hr-header-variants-r20-gate', 'node', ['tools/qa/tya-hr-header-variants-r20-gate.mjs']],
     ['tya-build-live-hr-source-safe-r20-inventory', 'node', ['tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs']],
+    ...runtimeInventoryStableGates('tya-v174'),
     ...stableVisitIdentityGates('tya-v174'),
     ['tya-source-safe-binding-build-r18a', 'node', ['tools/release/tya-source-safe-binding-build-r18a.mjs', '--app-dir', 'app', '--out', '.tmp/source-safe-binding-r18a']],
     ['tya-live-hr-inplace-refresh-gate', 'node', ['tools/qa/tya-live-hr-inplace-refresh-gate.mjs']],
@@ -197,6 +215,7 @@ function runCorte3FinancialProfile() {
   executeGate('node-check-corte3-r20-live-builder', 'node', ['--check', 'tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs']);
   executeGate('tya-corte3-r20-header-variants', 'node', ['tools/qa/tya-hr-header-variants-r20-gate.mjs']);
   executeGate('tya-corte3-refresh-live-hr-r20', 'node', ['tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs']);
+  for (const [id, command, args] of runtimeInventoryStableGates('tya-corte3')) executeGate(id, command, args);
   for (const [id, command, args] of stableVisitIdentityGates('tya-corte3')) executeGate(id, command, args);
   executeGate('node-check-corte3-reconcile-r14c', 'node', ['--check', 'tools/reconciliation/tya-financial-workbook-live-hr-reconcile-r14c.mjs']);
   executeGate('node-check-corte3-r20-gate', 'node', ['--check', 'tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs']);
@@ -222,6 +241,8 @@ function runCorte3FinancialProfile() {
       '.tmp/phase-a-financial-r14c-live-hr/financial-live-hr-reconciliation-r14c.source-safe.json',
       '--baseline',
       'backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json',
+      '--review',
+      'backend/contracts/tya-corte3-financial-r20-delta-review-v1.json',
       '--out',
       '.tmp/tya-corte3-financial-reconciliation-r20'
     ]
