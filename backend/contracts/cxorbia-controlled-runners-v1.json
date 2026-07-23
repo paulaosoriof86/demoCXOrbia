@@ -1,0 +1,94 @@
+{
+  "contractId": "cxorbia-controlled-runners-v1",
+  "schemaVersion": "1.0.0",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "baseBranch": "release/cxorbia-tya-rc-20260630",
+  "authorizedRunners": {
+    "atomicApply": {
+      "name": "CXORBIA_ATOMIC_APPLY_RUNNER",
+      "workflow": ".github/workflows/cxorbia-atomic-apply-runner.yml",
+      "requestPath": ".github/cxorbia-apply-requests/request.json",
+      "script": "tools/release/cxorbia-atomic-apply-runner.mjs",
+      "contentsPermission": "write",
+      "allowedExecutionsPerRequest": 1,
+      "functionalCommitCount": 1,
+      "requestCommitMayBeEphemeral": true,
+      "requestMustBeRemovedInFunctionalCommit": true
+    },
+    "readonlyPostGates": {
+      "name": "CXORBIA_READONLY_POST_GATES_RUNNER",
+      "workflow": ".github/workflows/cxorbia-readonly-post-gates-runner.yml",
+      "requestPath": ".github/cxorbia-gate-requests/request.json",
+      "script": "tools/release/cxorbia-readonly-post-gates-runner.mjs",
+      "contentsPermission": "read",
+      "browser": "playwright-chromium",
+      "profile": "V174_R20_M1_CORTE2A"
+    }
+  },
+  "atomicApplyPolicy": {
+    "allowedRequestSchema": "cxorbia.atomic-apply-request.v1",
+    "allowedOperations": ["create", "replace", "delete"],
+    "maxFiles": 80,
+    "maxFileBytes": 5242880,
+    "allowedTargetPrefixes": [
+      "app/"
+    ],
+    "alwaysProtectedPrefixes": [
+      "backend/",
+      "tools/",
+      ".github/",
+      "functions/",
+      "public/"
+    ],
+    "alwaysProtectedExactPaths": [
+      "app/core/build-lock.js",
+      "app/core/tya-phase-a-source-safe-preview.js",
+      "app/core/tya-phase-a-source-safe-runtime-guard.js",
+      "app/data/tya-hr-source-safe-periods.js"
+    ],
+    "requiredEvidence": [
+      "candidateSha256",
+      "packageSha256",
+      "expectedParentSha",
+      "sourceLockDocument",
+      "files[].path",
+      "files[].operation",
+      "files[].sha256",
+      "files[].expectedCurrentSha256"
+    ],
+    "gitBlobInputAllowed": true,
+    "directFunctionalTreeMutationOutsideRunner": false,
+    "sequentialContentsApiFunctionalWrites": false,
+    "newBranch": false,
+    "newPullRequest": false,
+    "forcePush": false
+  },
+  "readonlyGatePolicy": {
+    "allowedRequestSchema": "cxorbia.readonly-post-gates-request.v1",
+    "providerReads": true,
+    "repositoryWrites": false,
+    "dataWrites": false,
+    "deploy": false,
+    "merge": false,
+    "production": false,
+    "imports": false,
+    "payments": false,
+    "make": false,
+    "gemini": false,
+    "firestoreWrites": false,
+    "authWrites": false,
+    "storageWrites": false,
+    "hrWrites": false
+  },
+  "safeState": {
+    "containsPii": false,
+    "containsSecrets": false,
+    "deploy": false,
+    "merge": false,
+    "production": false,
+    "providerWrites": false,
+    "dataWrites": false
+  }
+}
