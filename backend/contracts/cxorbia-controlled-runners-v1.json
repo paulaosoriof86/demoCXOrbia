@@ -1,6 +1,6 @@
 {
   "contractId": "cxorbia-controlled-runners-v1",
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.3.1",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -53,11 +53,16 @@
         },
         "CORTE3_FINANCIAL_RECONCILIATION_R20": {
           "browserRequired": false,
-          "purpose": "Refresh source-safe financial reconciliation against current HR R20 and fail closed on link drift",
+          "providerReads": true,
+          "purpose": "Refresh live source-safe HR R20 ephemerally, reconcile the source-safe financial workbook and fail closed on link drift",
+          "liveHrRefreshScript": "tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs",
           "inputs": [
-            "app/data/tya-hr-source-safe-periods.js",
+            "backend/contracts/tya-hr-tab-inventory-r20-v1.json",
             "backend/config/phase-a-financial-workbook-source-safe-r14.json",
             "backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json"
+          ],
+          "ephemeralGeneratedInputs": [
+            "app/data/tya-hr-source-safe-periods.js"
           ],
           "outputs": [
             ".tmp/phase-a-financial-r14c-live-hr",
