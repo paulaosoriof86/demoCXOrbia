@@ -23,9 +23,10 @@
 6. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`.
 7. `app/docs/VALIDACION-VISUAL-V174-APROBADA-CON-PENDIENTES-P1-P2-20260723.md`.
 8. `app/docs/PHASE-A-CORTE3-INICIO-FINANZAS-20260723.md`.
-9. `app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json`.
-10. `backend/contracts/cxorbia-controlled-runners-v1.json`.
-11. CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES, Academia, tracker, PR #7 y HEAD vivo.
+9. `app/docs/CORTE3-FINANCIAL-SOURCE-INVENTORY-GAP-MATRIX-20260723.md`.
+10. `app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json`.
+11. `backend/contracts/cxorbia-controlled-runners-v1.json`.
+12. CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES, Academia, tracker, PR #7 y HEAD vivo.
 
 ## 3. Lock prevalente
 
@@ -63,10 +64,11 @@ V174 fue aprobada visualmente. Los hallazgos P1/P2 no bloquean y no autorizan un
 - Afirmación operativa: pagado hasta mayo pendiente de cruce por fuente; junio requiere match por ítem.
 - Reconciliación R14C: 247 filas financieras, 196 links exactos aceptados, 51 filas a revisión y 92 entradas en review queue.
 - Junio: cero enlaces exactos aceptados en R14C; no marcar pago por inferencia.
+- Inventario source-safe y matriz inicial de cobertura/gaps: completados.
 
 ## 8. Siguiente subbloque exacto
 
-`INVENTARIO DE FUENTES FINANCIERAS → RECONCILIACIÓN CONTRA HR R20 ACTUAL → MATRIZ EXACTOS/FALTANTES/AMBIGUOS/CONFLICTOS → REVIEW QUEUE SANITIZADA → GATES`.
+`REFRESCAR RECONCILIACIÓN R14C CONTRA HR R20 ACTUAL → COMPARAR DELTA DE CONTEOS Y LLAVES → EMITIR MATRIZ EXACTOS/FALTANTES/AMBIGUOS/CONFLICTOS → GATE FAIL-CLOSED`.
 
 ## 9. Estado seguro
 
