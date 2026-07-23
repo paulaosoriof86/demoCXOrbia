@@ -14,7 +14,7 @@ const serverLogPath = path.join(outDir, 'static-server.log');
 const effectiveBranch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || null;
 
 const report = {
-  schemaVersion: '1.0.2',
+  schemaVersion: '1.0.3',
   runner: 'CXORBIA_READONLY_POST_GATES_RUNNER',
   generatedAt: new Date().toISOString(),
   status: 'HOLD_NOT_RUN',
@@ -171,6 +171,7 @@ async function main() {
   assert(requestDelta.length === 1 && requestDelta[0] === requestPath, 'request_commit_scope_invalid', requestDelta.join(','));
 
   const gatesBeforeServer = [
+    ['tya-v174-r20-source-lock-proposal', 'node', ['tools/release/tya-v174-r20-source-lock-proposal.mjs']],
     ['node-check-builder', 'node', ['--check', 'tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs']],
     ['tya-hr-header-variants-r20-gate', 'node', ['tools/qa/tya-hr-header-variants-r20-gate.mjs']],
     ['tya-build-live-hr-source-safe-r20-inventory', 'node', ['tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs']],
