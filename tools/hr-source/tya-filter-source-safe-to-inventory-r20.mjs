@@ -7,11 +7,16 @@
   reproducible against its approved inventory (June 2025 through July 2026)
   until that cut is visually approved and frozen. This filter is read-only,
   source-safe and fail-closed: it never invents rows, identities or states.
+
+  R20 stable identity: every retained visit is keyed only by the protected
+  tenant/project/period/country/sourceRow identity. Mutable HR values never
+  change visitId.
 */
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import vm from 'node:vm';
+import { buildStableVisitId, stableVisitIdentityVersion } from './tya-stable-visit-id-r20.mjs';
 
 const args=process.argv.slice(2);
 const valueOf=(flag,fallback)=>{const i=args.indexOf(flag);return i>=0&&args[i+1]?args[i+1]:fallback;};
@@ -45,6 +50,36 @@ function countBy(items,field){
   for(const item of items){const key=item?.[field]??'missing';out[key]=(out[key]||0)+1;}
   return out;
 }
+function stabilizeVisits(items,payload){
+  const version=stableVisitIdentityVersion();
+  const seenIds=new Map();
+  const seenRows=new Map();
+  let changedIds=0;
+  const visits=items.map(source=>{
+    const visit={...source};
+    const tenantId=String(visit.tenantId||payload.tenantId||'').trim();
+    const projectId=String(visit.projectId||payload.projectId||'').trim();
+    const periodKey=String(visit.periodKey||'').trim();
+    const country=String(visit.country||visit.pais||'').trim().toUpperCase();
+    const sourceTab=String(visit.sourceTab||'').trim();
+    const sourceRow=Number(visit.sourceRow);
+    const hrRowId=String(visit.hrRowId||'').trim();
+    if(!sourceTab||!Number.isInteger(sourceRow)||sourceRow<1)fail(`stable identity source missing for ${hrRowId||visit.id||'unknown'}`);
+    const expectedHrRowId=`${sourceTab}!${sourceRow}`;
+    if(hrRowId!==expectedHrRowId)fail(`hrRowId mismatch ${hrRowId}/${expectedHrRowId}`);
+    const stableId=buildStableVisitId({tenantId,projectId,periodKey,country,sourceRow});
+    if(seenIds.has(stableId))fail(`stable visit id duplicate ${stableId}`);
+    if(seenRows.has(hrRowId))fail(`hrRowId duplicate ${hrRowId}`);
+    seenIds.set(stableId,hrRowId);
+    seenRows.set(hrRowId,stableId);
+    if(String(visit.id||visit.visitId||'')!==stableId)changedIds++;
+    visit.id=stableId;
+    if(Object.prototype.hasOwnProperty.call(visit,'visitId'))visit.visitId=stableId;
+    visit.visitIdentityVersion=version;
+    return visit;
+  });
+  return {visits,version,changedIds,uniqueIds:seenIds.size,uniqueRows:seenRows.size};
+}
 
 const inventory=JSON.parse(fs.readFileSync(inventoryFile,'utf8'));
 if(inventory.contractId!=='tya-hr-tab-inventory-r20-v1')fail('inventory contract identity mismatch');
@@ -57,7 +92,9 @@ if(payload.sourceSafe!==true||payload.imported===true||payload.production===true
 const allowedPeriods=new Set(inventory.tabs.map(tab=>String(tab.periodKey)));
 const allowedTabs=new Set(inventory.tabs.map(tab=>String(tab.title)));
 const periods=(payload.periods||[]).filter(period=>allowedPeriods.has(String(period.key)));
-const visits=(payload.visits||[]).filter(visit=>allowedPeriods.has(String(visit.periodKey))&&allowedTabs.has(String(visit.sourceTab)));
+const rawVisits=(payload.visits||[]).filter(visit=>allowedPeriods.has(String(visit.periodKey))&&allowedTabs.has(String(visit.sourceTab)));
+const stable=stabilizeVisits(rawVisits,payload);
+const visits=stable.visits;
 const tabsRead=Array.isArray(payload.tabsRead)
   ? payload.tabsRead.filter(tab=>allowedTabs.has(String(tab.title||tab.tabTitle)))
   : payload.tabsRead;
@@ -101,7 +138,11 @@ const filtered={
     inventoryLastPeriod:expected.lastPeriod,
     inventoryCountryTabs:Number(expected.countryTabs),
     inventoryFilterApplied:true,
-    laterWorkbookPeriodsExcludedFromCurrentCut:true
+    laterWorkbookPeriodsExcludedFromCurrentCut:true,
+    visitIdentityVersion:stable.version,
+    visitIdentityFields:['tenantId','projectId','periodKey','country','sourceRow'],
+    visitIdentityMutableFieldsExcluded:['cinemaId','shopping','quincena','franja','shopper','dates','amounts'],
+    stableVisitIdentityApplied:true
   },
   normalization:{
     ...(payload.normalization||{}),
@@ -109,7 +150,8 @@ const filtered={
     periodCount:periods.length,
     periodKeys:periods.map(period=>period.key),
     inventoryContract:inventory.contractId,
-    rules:[...(payload.normalization?.rules||[]),'verified_inventory_cutoff_before_visual_freeze']
+    visitIdentityVersion:stable.version,
+    rules:[...new Set([...(payload.normalization?.rules||[]),'verified_inventory_cutoff_before_visual_freeze','stable_visit_identity_from_protected_row_key'])]
   }
 };
 
@@ -117,13 +159,14 @@ writePayload(output,filtered);
 fs.mkdirSync(reportDir,{recursive:true});
 const excludedPeriods=(payload.periods||[]).map(period=>String(period.key)).filter(key=>!allowedPeriods.has(key));
 const report={
-  schemaVersion:'1.0.0',
+  schemaVersion:'1.1.0',
   decision:'PASS_R20_VERIFIED_INVENTORY_FILTER',
   inventoryContract:inventory.contractId,
   input:path.relative(process.cwd(),input).replaceAll('\\','/'),
   output:path.relative(process.cwd(),output).replaceAll('\\','/'),
   observedBefore:{periods:(payload.periods||[]).length,tabs:Number(payload.counts?.tabs||0),visits:(payload.visits||[]).length,shoppers:(payload.shoppers||[]).length},
   observedAfter:{periods:periods.length,tabs:allowedTabs.size,visits:visits.length,shoppers:shoppers.length,firstPeriod:periods[0]?.key||null,lastPeriod:periods.at(-1)?.key||null},
+  stableVisitIdentity:{version:stable.version,changedIds:stable.changedIds,uniqueIds:stable.uniqueIds,uniqueHrRowIds:stable.uniqueRows},
   excludedPeriods,
   missingTabs,
   safeState:{writes:false,imports:false,deploy:false,production:false,providers:false,payments:false,piiIncluded:false,rawWorkbookIncluded:false}
@@ -135,6 +178,8 @@ fs.writeFileSync(path.join(reportDir,'report.md'),[
   `Periods before/after: ${report.observedBefore.periods}/${report.observedAfter.periods}`,
   `Visits before/after: ${report.observedBefore.visits}/${report.observedAfter.visits}`,
   `Verified tabs: ${report.observedAfter.tabs}`,
+  `Stable visit identity: ${stable.version}`,
+  `Visit IDs normalized: ${stable.changedIds}`,
   `Excluded later periods: ${excludedPeriods.length?excludedPeriods.join(', '):'none'}`,'',
   'Read-only source-safe cutoff. No writes, imports, deploy or production.'
 ].join('\n')+'\n','utf8');
