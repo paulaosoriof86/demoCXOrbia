@@ -6,6 +6,7 @@
 
 - `app/docs/VALIDACION-VISUAL-V174-APROBADA-CON-PENDIENTES-P1-P2-20260723.md`.
 - `app/docs/PHASE-A-CORTE3-INICIO-FINANZAS-20260723.md`.
+- `app/docs/CORTE3-FINANCIAL-SOURCE-INVENTORY-GAP-MATRIX-20260723.md`.
 - `app/docs/CAMBIOS-BACKEND-ADDENDUM-V174-VISUAL-FREEZE-CORTE3-INICIO-20260723.md`.
 - `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V174-VISUAL-FREEZE-CORTE3-INICIO-20260723.md`.
 - `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V174-VISUAL-FREEZE-CORTE3-INICIO-20260723.md`.
@@ -24,7 +25,7 @@ V174 queda aprobada visualmente y congelada como baseline activa de M1/Corte 1 y
 
 ## Inicio Corte 3
 
-Se recuperó el estado financiero vigente y se abrió el bloque read-only de reconciliación por llaves estables. No se importa ni se marca ningún pago.
+Se recuperó el estado financiero vigente, se inventariaron las fuentes source-safe y se produjo una primera matriz sanitizada de cobertura y gaps. No se importa ni se marca ningún pago.
 
 ## Clasificación
 
@@ -32,7 +33,7 @@ Se recuperó el estado financiero vigente y se abrió el bloque read-only de rec
 - **Exclusivo cliente:** afirmación TyA pagado hasta mayo pendiente de fuente y junio pendiente de match.
 - **Claude/prototipo:** corregir responsive parcial, PDF con gráficas y formato Excel en corte posterior; no crear candidata ahora.
 - **Academia:** actualizar contenidos sobre responsive, exportaciones y diferencia entre liquidación y pago.
-- **Sin impacto Claude:** freeze documental, checkpoint, índice y PR.
+- **Sin impacto Claude:** freeze documental, checkpoint, índice, inventario source-safe y PR.
 
 ## Estado seguro
 
