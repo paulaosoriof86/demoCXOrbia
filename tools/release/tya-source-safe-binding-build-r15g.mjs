@@ -19,7 +19,9 @@ let code=fs.readFileSync(adapterFile,'utf8');
 code=code.replace(/id:'tya',\s*clientName:'TyA'/,"id:'tya', tenantId:'tya', clientName:'TyA'");
 code=code.replace(/CX\.data\.currentProjectId\s*=\s*latest\s*&&\s*latest\.id;/,"CX.data.currentProjectId = 'cinepolis';\n  CX.data.currentPeriodId = latest && latest.id;");
 code=code.replace(/currentPeriodId:CX\.data\.currentProjectId,/,'currentPeriodId:CX.data.currentPeriodId,');
-code=code.replace(/CX\.dataSource\.warnings\s*=\s*shoppers\.length\s*===\s*210\s*\?[^;]+;/,"CX.dataSource.warnings = shoppers.length === 216 ? [] : ['Conteo shopper source-safe distinto al snapshot aprobado: ' + shoppers.length + '/216.'];");
+/* The source string contains an internal semicolon. Match the complete assignment line,
+   not the first semicolon, or the remainder becomes invalid JavaScript. */
+code=code.replace(/CX\.dataSource\.warnings\s*=\s*shoppers\.length\s*===\s*210\s*\?[^\n]+;/,"CX.dataSource.warnings = shoppers.length === 216 ? [] : ['Conteo shopper source-safe distinto al snapshot aprobado: ' + shoppers.length + '/216.'];");
 code=code.replace(/tenantId:'tya',\s*projectId:'cinepolis',\s*projectName:'Cinépolis',\s*sourceTitle:/,"tenantId:'tya', projectId:'cinepolis', projectName:'Cinépolis', activePeriodId:latest && latest.id, sourceTitle:");
 
 if(!code.includes('canonicalFacets:v.canonicalFacets')){
@@ -191,9 +193,10 @@ const invariants={
 const failures=Object.entries(invariants).filter(([,v])=>!v).map(([k])=>k);
 if(failures.length) fail(`Canonical invariants missing: ${failures.join(', ')}`);
 if(/CX\.data\.currentProjectId\s*=\s*latest\s*&&\s*latest\.id/.test(code)) fail('Period identity still overwrites project identity.');
+try{new Function(code);}catch(error){fail(`Generated adapter syntax invalid: ${error.message}`);}
 
 fs.writeFileSync(adapterFile,code,'utf8');
 fs.mkdirSync(outDir,{recursive:true});
-const report={schemaVersion:'2.1.0',decision:'PASS_R20_CANONICAL_HISTORY_TENANT_LOGIN_VISIBLE_RECONCILIATION',adapterFile:path.relative(process.cwd(),adapterFile).replaceAll('\\','/'),invariants,historyScope:'all_detected_hr_periods',shopperDataLevelPolicy:{explicitDeclarationPrecedence:true,protectedReferenceActive:false,historicalVisitCountVisibleAsOperationalFact:false,adapterRunsAfterShopperStore:true},safeState:{writes:false,imports:false,deploy:false,production:false,providers:false,payments:false,frontendModulesModified:false,coreFilesModified:false}};
+const report={schemaVersion:'2.2.0',decision:'PASS_R20_CANONICAL_HISTORY_TENANT_LOGIN_VISIBLE_RECONCILIATION',adapterFile:path.relative(process.cwd(),adapterFile).replaceAll('\\','/'),invariants,syntaxValid:true,historyScope:'all_detected_hr_periods',shopperDataLevelPolicy:{explicitDeclarationPrecedence:true,protectedReferenceActive:false,historicalVisitCountVisibleAsOperationalFact:false,adapterRunsAfterShopperStore:true},safeState:{writes:false,imports:false,deploy:false,production:false,providers:false,payments:false,frontendModulesModified:false,coreFilesModified:false}};
 fs.writeFileSync(path.join(outDir,'report.json'),JSON.stringify(report,null,2)+'\n','utf8');
 console.log(JSON.stringify(report,null,2));
