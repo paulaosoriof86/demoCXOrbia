@@ -14,7 +14,7 @@ const outDir = path.resolve(arg('--out', '.tmp/tya-corte3-canonical-finance-ui-e
 fs.mkdirSync(outDir, { recursive: true });
 
 const report = {
-  schemaVersion: '1.2.1',
+  schemaVersion: '1.3.0',
   gateId: 'tya-corte3-canonical-finance-ui-export-r23',
   generatedAt: new Date().toISOString(),
   baseUrl,
@@ -126,6 +126,7 @@ try {
     const changed = typeof CX.data.setProject === 'function' ? CX.data.setProject(project.id) : false;
     if (changed === false && CX.data.period()?.id !== project.id) throw new Error('period_2026_05_not_selected');
 
+    const currentVisits = typeof CX.data.visitas === 'function' ? CX.data.visitas() : [];
     const currentPeriodKey = String(CX.data.period()?.periodKey || CX.data.period()?.id || '').replace(/^cinepolis(?:-|::)/, '');
     const snapshot = CX.data.financialSnapshot;
     const allSnapshot = Array.isArray(snapshot?.liquidations) ? snapshot.liquidations : [];
@@ -195,20 +196,27 @@ try {
       CX.router.nav('beneficios');
       await sleep(120);
     }
-    const benefitsText = document.getElementById('view')?.innerText || '';
     const benefitsHtml = document.getElementById('view')?.innerHTML || '';
+    const benefitKpiKeys = [...document.querySelectorAll('#benKpis [data-k]')].map(node => node.getAttribute('data-k')).filter(Boolean);
     const shopperId = shopperVisit?.shopperId || null;
     const shopperVisitIds = new Set(shopperId && CX.data.visitsForShopper ? CX.data.visitsForShopper(shopperId).map(v => String(v.id)) : []);
     const shopperLiqs = CX.liq.forProject(CX.data).filter(x => shopperVisitIds.has(String(x.visitaId)));
     const shopperPaid = shopperLiqs.filter(x => x.estado === 'pagada' || x.paymentConfirmed === true);
     const exactCountFromFinance = Object.values(financeByCountry || {}).reduce((sum, value) => sum + Number(value?.exactReconciledRecords || 0), 0);
+    const linkReviewCount = typeof CX.data.financialReviewQueue === 'function' ? CX.data.financialReviewQueue().length : null;
+    const amountReviewCount = typeof CX.data.financialAmountReviewQueue === 'function' ? CX.data.financialAmountReviewQueue().length : null;
+    const paymentEvidenceCount = typeof CX.data.paymentEvidenceCandidates === 'function' ? CX.data.paymentEvidenceCandidates().length : null;
 
     return {
       currentPeriodKey,
+      currentVisitCount: currentVisits.length,
       snapshotSummary: snapshot.summary,
       snapshotPaymentCount: Array.isArray(snapshot.payments) ? snapshot.payments.length : null,
       snapshotBatchCount: Array.isArray(snapshot.batches) ? snapshot.batches.length : null,
       financialSourceMetaPaymentCount: CX.data.financialSourceMeta?.paymentConfirmedCount,
+      linkReviewCount,
+      amountReviewCount,
+      paymentEvidenceCount,
       periodSnapshotCount: periodSnapshot.length,
       liquidationCount: liqs.length,
       exactCount: exact.length,
@@ -223,7 +231,7 @@ try {
       exactCountFromFinance,
       adminHasDashboard: adminText.includes('Dashboard Financiero'),
       adminHasExport: adminHtml.includes('finExport'),
-      adminCanonicalBinding: exactCountFromFinance === exact.length && exact.length > 0 && pending.length > 0,
+      adminCanonicalBinding: exactCountFromFinance === exact.length && exact.length > 0,
       reportCaptured: !!capturedReport,
       reportId: capturedReport?.id || null,
       reportRows: capturedReport?.spec?.rows?.length || 0,
@@ -233,11 +241,7 @@ try {
       shopperId,
       shopperLiquidationCount: shopperLiqs.length,
       shopperPaidCount: shopperPaid.length,
-      benefitsHasTitle: benefitsText.includes('Mis Beneficios'),
-      benefitsHasHonorarios: benefitsText.includes('Honorarios'),
-      benefitsHasReembolsos: benefitsText.includes('Reembolsos'),
-      benefitsHasPorCobrar: benefitsText.includes('Por cobrar'),
-      benefitsHasPaidZero: benefitsText.includes('Pagado'),
+      benefitKpiKeys,
       benefitsRows: (benefitsHtml.match(/<tr>/g) || []).length
     };
   });
@@ -246,15 +250,18 @@ try {
   await page.screenshot({ path: path.join(outDir, 'corte3-ui-final-state.png'), fullPage: true });
 
   check(core.currentPeriodKey.includes('2026-05'), 'period_2026_05_active', core.currentPeriodKey);
+  check(core.currentVisitCount === 44, 'current_period_visit_inventory_44', String(core.currentVisitCount));
   check(core.snapshotSummary.exactAcceptedLinks === 209, 'snapshot_exact_links_209', String(core.snapshotSummary.exactAcceptedLinks));
   check(core.snapshotSummary.canonicalAmountReady === 207, 'snapshot_amount_ready_207', String(core.snapshotSummary.canonicalAmountReady));
   check(core.snapshotSummary.amountReviewRequired === 2, 'snapshot_amount_review_2', String(core.snapshotSummary.amountReviewRequired));
   check(core.snapshotSummary.reviewQueue === 79, 'snapshot_link_review_79', String(core.snapshotSummary.reviewQueue));
+  check(core.linkReviewCount === 79 && core.amountReviewCount === 2 && core.paymentEvidenceCount === 37,
+    'review_queues_exposed_without_inference', `${core.linkReviewCount}/${core.amountReviewCount}/${core.paymentEvidenceCount}`);
   check(core.snapshotPaymentCount === 0 && core.snapshotBatchCount === 0 && core.financialSourceMetaPaymentCount === 0,
     'snapshot_confirmed_payments_zero', `${core.snapshotPaymentCount}/${core.snapshotBatchCount}/${core.financialSourceMetaPaymentCount}`);
-  check(core.liquidationCount === 44, 'current_period_liquidations_44', String(core.liquidationCount));
+  check(core.liquidationCount === core.periodSnapshotCount, 'current_period_financial_rows_match_snapshot', `${core.liquidationCount}/${core.periodSnapshotCount}`);
   check(core.exactCount === core.periodSnapshotCount, 'ui_exact_count_matches_snapshot', `${core.exactCount}/${core.periodSnapshotCount}`);
-  check(core.exactCount + core.pendingCount === 44, 'exact_plus_pending_44');
+  check(core.exactCount + core.pendingCount === core.liquidationCount, 'exact_plus_pending_matches_financial_collection');
   check(core.paidCount === 0, 'no_paid_in_finance_collection');
   check(core.amountMismatchCount === 0, 'canonical_amounts_match_snapshot', String(core.amountMismatchCount));
   check(core.exactVisitId && core.exactVisitHrRowId, 'canonical_visit_match_found');
@@ -267,10 +274,11 @@ try {
   check(String(core.reportFilename || '').endsWith('.pdf'), 'finance_report_pdf_filename');
   check(core.shopperId && core.shopperLiquidationCount > 0, 'shopper_with_canonical_benefits_found');
   check(core.shopperPaidCount === 0, 'benefits_paid_zero');
-  check(core.benefitsHasTitle && core.benefitsHasHonorarios && core.benefitsHasReembolsos && core.benefitsHasPorCobrar && core.benefitsHasPaidZero,
-    'benefits_ui_uses_canonical_collection');
+  check(['hon','reemb','cobrar','pagado'].every(key => core.benefitKpiKeys.includes(key)),
+    'benefits_four_canonical_kpis_rendered', core.benefitKpiKeys.join(','));
   check(core.benefitsRows > 1, 'benefits_detail_rows_rendered', String(core.benefitsRows));
 
+  report.warnings.push('The selected May period contains 44 HR visits and 42 identity-exact canonical financial rows. The two non-exact rows remain in the review queues and are not fabricated as canonical liquidations.');
   report.warnings.push('PDF chart rendering and Excel visual formatting remain P1/P2 until real files are visually inspected. This gate verifies the canonical report specification and UI binding only.');
   report.status = 'PASS';
   fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
