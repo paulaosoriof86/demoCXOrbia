@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-24  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V174_ACTIVE_BASELINE_CORTE3_CANONICAL_FINANCE_UI_EXPORT_TECHNICAL_PASS_PENDING_HOSTING_DEV_VISUAL_NO_PRODUCTION`
+**Estado vivo:** `V174_ACTIVE_BASELINE_CORTE3_HOSTING_DEV_AUTHORIZED_PENDING_EXACT_REQUEST_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -25,11 +25,12 @@
 8. `app/docs/CORTE3-FINANCIAL-RECONCILIATION-R20-TECHNICAL-PASS-20260723.md`.
 9. `app/docs/CORTE3-CANONICAL-FINANCE-SNAPSHOT-ADAPTER-R23-20260723.md`.
 10. `app/docs/CORTE3-CANONICAL-FINANCE-UI-EXPORT-R23-TECHNICAL-PASS-20260724.md`.
-11. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE3-UI-EXPORT-R23-PASS-20260724.md`.
-12. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE3-UI-EXPORT-R23-PASS-20260724.md`.
-13. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE3-UI-EXPORT-R23-PASS-20260724.md`.
-14. `app/docs/ACADEMIA-IMPACTO-CORTE3-FINANZAS-UI-EXPORT-R23-20260724.md`.
-15. Tracker, manifest/source lock más reciente, PR #7 y HEAD vivo.
+11. `app/docs/CORTE3-HOSTING-DEV-AUTORIZACION-Y-PREFLIGHT-20260724.md`.
+12. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE3-UI-EXPORT-R23-PASS-20260724.md`.
+13. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE3-UI-EXPORT-R23-PASS-20260724.md`.
+14. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE3-UI-EXPORT-R23-PASS-20260724.md`.
+15. `app/docs/ACADEMIA-IMPACTO-CORTE3-FINANZAS-UI-EXPORT-R23-20260724.md`.
+16. Tracker, manifest/source lock más reciente, PR #7 y HEAD vivo.
 
 ## 3. Baseline activa preservada
 
@@ -67,19 +68,36 @@ Finanzas y Beneficios consumen la misma verdad. Pago permanece `pending_source_c
 
 Mayo 2026 se comprobó con 44 visitas HR y 42 filas financieras exactas. Los dos casos no exactos permanecen en revisión y no se fabrican como liquidaciones.
 
-## 6. Pendientes no bloqueantes preservados
+## 6. Hosting DEV autorizado
+
+Paula autorizó expresamente el 2026-07-24 publicar el mismo build en Hosting DEV.
+
+El carril queda limitado a:
+
+- V174 + HR live source-safe + finanzas canónicas R23;
+- proyecto `cxorbia-backend-dev`, target `cxorbia-dev`;
+- smoke remoto y validación visual;
+- cero Cloud Run deploy, producción, merge, imports, pagos o writes reales.
+
+Archivos preparados:
+
+- `tools/release/tya-corte3-hosting-dev-build-r24.mjs`;
+- `.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml`;
+- solicitud aislada pendiente de activación exacta.
+
+## 7. Pendientes no bloqueantes preservados
 
 - responsive parcial;
 - inspección visual de gráfica en PDF real;
 - formato operativo del Excel real;
 - etiqueta técnica `sourceAccessMode`.
 
-## 7. Siguiente bloque exacto
+## 8. Siguiente bloque exacto
 
-`AUTORIZACIÓN ESPECÍFICA DE HOSTING DEV → PUBLICAR EL MISMO BUILD → SMOKE REMOTO → VALIDACIÓN VISUAL DE PAULA → CORRECCIÓN FOCALIZADA SI APLICA → FREEZE CORTE 3`.
+`COMMIT AISLADO DE SOLICITUD AUTORIZADA → HOSTING DEV DEL MISMO BUILD → SMOKE REMOTO → VALIDACIÓN VISUAL DE PAULA → CORRECCIÓN FOCALIZADA SI APLICA → FREEZE CORTE 3`.
 
 No iniciar Corte 4 antes del freeze.
 
-## 8. Estado seguro
+## 9. Estado seguro
 
-Sin merge, Hosting nuevo, deploy productivo, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live, lotes ni pagos.
+Sin Hosting nuevo todavía, merge, deploy productivo, producción, import real, Firestore/Auth/Storage/HR writes, Cloud Run deploy, Make/Gemini live, lotes ni pagos.
