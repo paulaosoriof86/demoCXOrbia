@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-24  
-**Estado:** `CORTE3_TECHNICAL_PASS_PENDING_HOSTING_DEV_VISUAL`
+**Estado:** `CORTE3_HOSTING_DEV_REMOTE_LIVE_SMOKE_PASS_PENDING_PAULA_VISUAL`
 
 ## 1. Estado general
 
@@ -10,7 +10,8 @@
 - Rama: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Baseline activa: V174.
-- Sin Hosting nuevo, deploy productivo, merge, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos.
+- Hosting DEV: publicado.
+- Sin deploy productivo, merge, producción, import real, Firestore/Auth/Storage/HR writes, Cloud Run deploy, Make/Gemini live ni pagos.
 
 ## 2. Cortes cerrados
 
@@ -23,6 +24,7 @@
 - 44 visitas por periodo: 34 GT y 10 HN.
 - Proyecto y periodo separados.
 - Ciclo Shopper y operación preservados.
+- Gate R24 confirma 0 drift funcional prohibido.
 
 No reabrir sin evidencia reproducible.
 
@@ -36,9 +38,13 @@ No reabrir sin evidencia reproducible.
 - snapshot financiero canónico source-safe;
 - adapter único para Finanzas y Beneficios;
 - pago fail-closed;
-- entrada Backend DEV alineada con binding V174;
-- gate remoto de Finanzas, Beneficios y export spec;
-- runner read-only limpio y reproducible.
+- gate técnico UI/export R23;
+- overlay live HR + finanzas;
+- Hosting DEV;
+- build-lock remoto;
+- endpoint HR remoto;
+- smoke remoto live R25;
+- evidencia de Admin, Shopper y export spec.
 
 ### Conteos canónicos
 
@@ -53,83 +59,94 @@ No reabrir sin evidencia reproducible.
 - 0 pagos;
 - 0 lotes.
 
-### Evidencia UI/export PASS
-
-- Target HEAD: `357cdbc73467344557c0da113262bba4f6a976fc`.
-- Request commit: `f415f23eb974b664181d1f618aa47e79ac99ed94`.
-- Run: `30074835544`.
-- Job: `89423207982`.
-- Artifact: `8589444193`.
-- Digest: `sha256:06188dc26dcba0a4e0b9b6fc4119ed32ca31d38462a6e513f177ab84cdba0deb`.
-- Resultado: `PASS_READONLY_POST_GATES`.
-
-Mayo 2026:
+### Mayo 2026 remoto
 
 - 44 visitas HR;
 - 42 filas financieras exactas;
-- 2 casos no exactos permanecen en revisión;
-- 32 filas GT y 10 HN;
+- 2 revisiones fail-closed;
+- 32 exactas GT y 10 HN;
+- 0 diferencias de monto;
 - 0 pagos;
 - Finanzas y Beneficios consumen la misma verdad.
 
-## 4. Bloques intermedios agregados y cerrados
+## 4. Evidencia principal
 
-1. Diagnóstico de entrada DEV source-safe.
-2. Corrección de sintaxis del adapter generado R15G.
-3. Gate sintáctico del código generado.
-4. Estabilización Playwright frente a service worker/PWA.
-5. Separación semántica de visitas HR y filas financieras exactas.
-6. Evidencia del falso delta `.tmp/`.
-7. Exclusión efímera local sin debilitar cambios rastreados.
+### Gate técnico R23
 
-Estos bloques eran necesarios para cerrar el gate remoto; no abren una metodología paralela.
+- run `30074835544`;
+- job `89423207982`;
+- artifact `8589444193`;
+- digest `sha256:06188dc26dcba0a4e0b9b6fc4119ed32ca31d38462a6e513f177ab84cdba0deb`;
+- PASS.
 
-## 5. Pendientes para congelar Corte 3
+### Hosting DEV
 
-1. Autorización específica de Paula para Hosting DEV.
-2. Publicar el mismo build aprobado técnicamente.
-3. Ejecutar smoke remoto.
-4. Validar visualmente Admin y Shopper.
-5. Descargar/inspeccionar PDF real: gráfica y datos.
-6. Descargar/inspeccionar Excel real: formato operativo y datos.
-7. Corregir únicamente una diferencia reproducible, si existe.
+- run `30098823043`;
+- job `89499452079`;
+- artifact `8598747476`;
+- digest `sha256:88d201f834ce1237384de5c916f8cce65442e4255a710e58a9ade64e3707b016`;
+- deploy success.
+
+### Smoke remoto live R25
+
+- request commit `cf86e115dde490fbb8c1d407482413411c9079e8`;
+- run `30099476156`;
+- job `89501621499`;
+- artifact `8598990578`;
+- digest `sha256:09c69c975a0933368b346d27218386b28421616adc039f3a37caf16ca8bbba12`;
+- PASS;
+- no redeploy.
+
+## 5. Bloques intermedios agregados y cerrados
+
+1. Binding V174 en entrada DEV.
+2. Sintaxis del generador R15G.
+3. Service worker bloqueado en gates.
+4. Separación visita HR / fila financiera exacta.
+5. Evidencia efímera `.tmp/` separada del repo.
+6. Verificador V174 full-app obsoleto reemplazado por gate R24.
+7. Snapshot congelado diferenciado del runtime live.
+8. Gate R25 para 42 exactas + 2 revisiones fail-closed.
+9. Modo smoke-only para evitar redeploy innecesario.
+
+Estos bloques fueron necesarios para cerrar el mismo objetivo; no abren metodología paralela.
+
+## 6. Pendientes para congelar Corte 3
+
+1. Validar visualmente Admin → Finanzas.
+2. Validar las dos filas pendientes de fuente financiera.
+3. Descargar/inspeccionar PDF real, incluida gráfica.
+4. Descargar/inspeccionar Excel real y formato operativo.
+5. Validar Shopper → Beneficios y pagado en cero.
+6. Revisar responsive y copy de fuente.
+7. Corregir solo una diferencia reproducible, si existe.
 8. Recibir `APROBADO`.
 9. Congelar Corte 3.
 
-## 6. Pendientes prototipo / Claude
+## 7. Pendientes prototipo / Claude
 
 - responsive parcial;
 - gráfica del PDF real pendiente de inspección;
 - formato operativo del Excel real;
 - copy visible de `sourceAccessMode`;
-- no hay una corrección nueva demostrada en `modules/finanzas.js` o `modules/beneficios.js`.
+- no hay corrección nueva demostrada en `modules/finanzas.js` o `modules/beneficios.js`.
 
-## 7. Pendientes Academia
+## 8. Pendientes Academia
 
-- curso/manual por rol para conciliación financiera;
-- diferencia visita/vínculo exacto;
+- inventario HR vs fila exacta;
+- fila en revisión fail-closed;
 - honorario, boleto, combo, total y moneda;
-- revisión de vínculo y monto;
 - liquidación vs pago;
-- exportación PDF/Excel y checklist de contraste con UI;
-- caso práctico 44 visitas / 42 vínculos / 2 revisiones;
-- publicación únicamente después de revisión humana.
+- snapshot congelado vs runtime live;
+- Hosting DEV vs producción;
+- checklist UI/PDF/Excel.
 
-## 8. Siguiente bloque exacto
+## 9. Siguiente bloque exacto
 
-`AUTORIZACIÓN ESPECÍFICA DE HOSTING DEV → PUBLICAR EL MISMO BUILD → SMOKE REMOTO → VALIDACIÓN VISUAL DE PAULA → CORRECCIÓN FOCALIZADA SI APLICA → FREEZE CORTE 3`.
+`VALIDACIÓN VISUAL DE PAULA → CORRECCIÓN FOCALIZADA SI APLICA → REVALIDACIÓN PUNTUAL → APROBADO → FREEZE CORTE 3`.
 
 Corte 4 no comienza antes del freeze.
 
-## 9. Regla de cierre
+## 10. Regla de cierre
 
-Cada bloque debe indicar:
-
-- qué se hizo;
-- qué parte de Phase A avanzó;
-- qué se preservó;
-- qué se documentó para Claude y Academia;
-- pendiente real;
-- siguiente bloque exacto;
-- estado seguro;
-- bloqueo comprobado o ausencia de bloqueo.
+Cada bloque debe indicar qué se hizo, avance Phase A, preservación, documentación Claude/Academia, pendiente real, siguiente bloque, estado seguro y bloqueo comprobado o ausencia de bloqueo.
