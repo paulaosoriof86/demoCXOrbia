@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-23  
-**Estado:** `V174_ACTIVE_BASELINE_STABLE_VISIT_ID_R20_PASS_CORTE3_FINANCIAL_RECONCILIATION_REVIEWED_PASS_CANONICAL_FINANCE_ADAPTER_NEXT_NO_PRODUCTION`
+**Estado:** `V174_ACTIVE_BASELINE_CORTE3_CANONICAL_FINANCE_SOURCE_SAFE_ADAPTER_APPLIED_PENDING_REMOTE_UI_GATES_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -17,103 +17,88 @@
 - V174/M1/Corte 1/Corte 2A: PASS técnico y visual aprobado.
 - Package SHA-256: `e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f`.
 - Commit funcional: `b21e494d127fb4b902de5576e3fab0292362b097`.
-- Source lock de baseline visual: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
-- Hosting DEV: vigente.
-- HR viva: 14 periodos, 616 visitas y 34 GT/10 HN por periodo.
-- Módulos V174, adapters operativos, overlays y `CX.data`: preservados.
+- Source lock visual: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
+- Hosting DEV vigente: 14 periodos, 616 visitas y 34 GT/10 HN por periodo.
+- Módulos V174, lectura HR viva, adapters operativos y `CX.data`: preservados.
 
-## 3. Hallazgos visuales P1/P2
+## 3. Pendientes visuales P1/P2 preservados
 
 - responsive parcial en algunas tablas y fichas;
 - PDF sin gráficas;
 - Excel sin formato operativo suficiente;
 - etiqueta técnica `sourceAccessMode` pendiente de alineación.
 
-No reabren V174 ni bloquean Corte 3.
+No reabren V174 ni bloquean el avance técnico de Corte 3.
 
-## 4. Causa raíz financiera/identidad corregida
+## 4. Identidad estable de visita
 
-La identidad de visita ya no depende de campos mutables de la HR.
+Versión: `tya-stable-visit-id-r20-row-identity-v1`.
 
-Versión canónica:
+Campos canónicos:
 
-`tya-stable-visit-id-r20-row-identity-v1`
+`tenantId + projectId + periodKey + country + sourceRow`.
 
-Campos de identidad:
+Cinema, shopping, quincena, franja, shopper, fechas y montos no forman parte de la identidad.
 
-`tenantId`, `projectId`, `periodKey`, `country`, `sourceRow`.
-
-Campos excluidos:
-
-`cinemaId`, `shopping`, `quincena`, `franja`, shopper, fechas y montos.
-
-La regla está integrada en el filtro runtime del inventario, payload source-safe, postprocesador idempotente y perfiles de gates V174/Corte 3.
-
-## 5. Corte 3 — resultado fresco revisado
+## 5. Corte 3 — conciliación financiera revisada
 
 - visitas HR: 616;
 - filas financieras: 247;
-- enlaces exactos: 209;
-- filas en revisión: 38;
-- review queue: 79;
-- filas itemizadas ledger: 37;
-- ledger enlazado a visita: 1;
-- nuevos exactos revisados: 15;
-- exactos previos retirados y retenidos sin vínculo: 2;
-- cambio de estado retenido sin vínculo: 1;
-- cambios de `hrRowId` canónico: 0;
-- registros financieros nuevos/perdidos: 0.
+- enlaces exactos de identidad: 209;
+- filas sin vínculo exacto: 38;
+- review queue de vínculo: 79;
+- evidencias candidatas de ledger: 37;
+- pagos confirmados: 0;
+- lotes importados: 0.
 
-Los dos enlaces retirados mantienen `candidate_amount_or_hr_detail_mismatch`. El cambio de estado mantiene `candidate_shopper_ref_mismatch`. No se resolvieron por nombre ni por inferencia.
+Evidencia:
 
-## 6. Evidencia reproducible
+- run `30038407143`;
+- artifact `8576206104`;
+- digest `sha256:485463c0304f39e8c866514d373a5e365de54640cd0c826869c3b6f386cff91e`.
 
-### Corte 3
+## 6. Snapshot financiero canónico R23
 
-- Reviewed-delta run: `30038407143`.
-- Job: `89312040827`.
-- Artifact: `8576206104`.
-- Digest: `sha256:485463c0304f39e8c866514d373a5e365de54640cd0c826869c3b6f386cff91e`.
-- Runtime stable-filter run: `30038739598`.
-- Request commit: `9a3be4cdbca3c4e234bbcb3cb160b65607b96ceb`.
-- Estado: PASS.
+Se creó una única verdad source-safe para Finanzas y Beneficios:
 
-### Regresión V174/M1/Corte 2A
+- 209 vínculos exactos preservados;
+- 207 montos canónicos listos para consumo;
+- 2 vínculos exactos en revisión de consistencia de monto;
+- 79 entradas de revisión de vínculo;
+- 37 evidencias de ledger tratadas solo como candidatas;
+- cero estados `paid` confirmados;
+- cero lotes.
 
-- Run: `30039152686`.
-- Job: `89314519400`.
-- Request commit: `b2c49ba2c237451a93fa1444fdf2894333238ca1`.
-- Artifact: `8576510415`.
-- Digest: `sha256:d9b3ac061fd8d667939fb5caec66810acfaf1a007d78c17cd685a56ae6b84eeb`.
-- Todos los gates funcionales, browser, M1, Corte 2A, propuesta de source lock y verificación del composite propuesto: PASS.
+Los dos conflictos de monto no se corrigieron ni sobrescribieron silenciosamente.
 
-## 7. Qué permanece pendiente en Corte 3
+## 7. Adapter único DEV
 
-La conciliación backend está en PASS técnico, pero Corte 3 todavía no está congelado visualmente.
+- Snapshot: familia `app/data/tya-financial-canonical-source-safe*.js` (cabecera, chunks determinísticos y ensamblador final).
+- Adapter: `app/adapters/tya-financial-canonical-source-safe-adapter.js`.
+- Entrada DEV: `app/index-backend-dev.html`.
+- `CX.data` conserva su interfaz.
+- Finanzas y Beneficios consumen `CX.liq.forProject()` desde la misma verdad.
+- `visitContract()` falla cerrado con `paymentState=pending_source_confirmation`.
+- No se tocaron `app/modules/**`, `app/core/**` ni `app/index.html`.
 
-Pendiente:
+Gate local:
 
-1. generar snapshot financiero canónico source-safe;
-2. conectar un adapter único sin cambiar la interfaz de `CX.data`;
-3. hacer que Finanzas y Beneficios consuman la misma verdad;
-4. probar honorario, boleto, combo/reembolso, total, moneda, liquidación y pago separado;
-5. ejecutar gates de UI/exportaciones;
-6. Hosting DEV y validación visual con autorización específica.
-
-No se mostrará `paid` sin fuente, fecha, lote, confirmación y referencia de auditoría.
+`PASS_TYA_FINANCIAL_CANONICAL_SNAPSHOT_ADAPTER_R23`.
 
 ## 8. Siguiente bloque exacto
 
-`SNAPSHOT FINANCIERO CANÓNICO SOURCE-SAFE → ADAPTER ÚNICO → FINANZAS Y BENEFICIOS CONSUMEN LA MISMA VERDAD → GATES UI/EXPORTACIONES → HOSTING DEV Y VALIDACIÓN VISUAL`.
+`GATE REMOTO DEL MISMO HEAD → VALIDAR FINANZAS Y BENEFICIOS EN UI → GATE PDF/EXCEL → HOSTING DEV CON AUTORIZACIÓN ESPECÍFICA → VALIDACIÓN VISUAL DE PAULA → FREEZE CORTE 3`.
+
+No iniciar Corte 4 antes del freeze.
 
 ## 9. Clasificación
 
-- **Reusable CXOrbia:** identidad estable de visita, conciliación fail-closed, adapter financiero canónico.
-- **Exclusivo cliente:** filas y revisión financiera TyA/Cinépolis.
-- **Claude/prototipo:** no modificar ahora los módulos; pendientes responsive/PDF/Excel permanecen localizados.
-- **Academia:** identidad estable, diferencia entre conciliación, liquidación y pago.
-- **Sin impacto Claude:** runners, artifacts, source-lock propuesto, índice y checkpoint.
+- **Reusable CXOrbia:** snapshot financiero canónico, adapter único, revisión separada de vínculo/monto y pago fail-closed.
+- **Exclusivo cliente:** datos y revisión TyA/Cinépolis.
+- **Claude/prototipo:** esperar evidencia UI reproducible antes de tocar módulos.
+- **Academia:** honorario, boleto, combo, total, conciliación, revisión, liquidación y pago como conceptos separados.
+- **Sin impacto Claude:** llaves estables, payload source-safe y guardas de pago.
 
 ## 10. Estado seguro
 
-Sin merge, deploy productivo, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos.
+Sin merge, deploy productivo, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live, lotes ni pagos.
