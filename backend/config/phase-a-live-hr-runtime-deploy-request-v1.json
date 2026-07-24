@@ -1,12 +1,13 @@
 {
   "schemaVersion": "2.1.0",
-  "requestId": "CXORBIA-TYA-CORTE3-HOSTING-DEV-VISUAL-20260724-02",
+  "requestId": "CXORBIA-TYA-CORTE3-HOSTING-DEV-REMOTE-SMOKE-20260724-03",
   "status": "authorized_pending",
   "scope": "hosting_dev_visual_only",
+  "executionMode": "remote_smoke_only",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "expectedSourceHead": "517e9bca2315ccf07f278f36c6166dd1b1d96357",
+  "expectedSourceHead": "45dd3a20616e6248e253e2cbf90c54be47eed314",
   "runtimeVersion": "V174-CORTE3-CANONICAL-FINANCE-R23",
   "manifestFile": "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json",
   "aggregateSha256": "ab11bc47dfd096cbe6a110db250c46e656c2dc9760ad832c07958b6c9a886818",
@@ -25,13 +26,27 @@
     "artifactDigest": "sha256:06188dc26dcba0a4e0b9b6fc4119ed32ca31d38462a6e513f177ab84cdba0deb",
     "status": "PASS_READONLY_POST_GATES"
   },
-  "preflightRemediation": {
-    "previousRun": 30098219557,
-    "previousJob": 89497455866,
-    "previousDecision": "HOLD_BEFORE_HOSTING_DEPLOY",
-    "hostingTouched": false,
-    "rootCause": "STALE_FULL_APP_HASH_INCLUDED_MUTABLE_DOCS_AND_APPROVED_DEV_ENTRY",
-    "replacementGate": "tools/qa/tya-corte3-v174-runtime-preservation-r24-gate.mjs",
+  "hostingDeploymentEvidence": {
+    "run": 30098823043,
+    "job": 89499452079,
+    "artifactId": 8598747476,
+    "artifactDigest": "sha256:88d201f834ce1237384de5c916f8cce65442e4255a710e58a9ade64e3707b016",
+    "hostingDeploy": "success",
+    "remoteBuildLockMatch": "pass",
+    "remoteLiveHrEndpoint": "pass",
+    "periods": 14,
+    "visits": 616,
+    "cloudRunDeploy": false
+  },
+  "smokeRemediation": {
+    "previousRemoteRun": 30098823043,
+    "previousRemoteDecision": "HOLD_AFTER_SUCCESSFUL_HOSTING_DEPLOY",
+    "rootCause": "FROZEN_SNAPSHOT_GATE_CONFLATED_EXACT_CANONICAL_ROWS_WITH_LIVE_FAIL_CLOSED_REVIEW_ROWS",
+    "replacementGate": "tools/qa/tya-corte3-remote-live-finance-smoke-r25-gate.mjs",
+    "expectedMayVisits": 44,
+    "expectedMayExactFinancialRows": 42,
+    "expectedMayFailClosedReviewRows": 2,
+    "hostingRedeployThisRun": false,
     "blindRetry": false
   },
   "buildOverlay": {
@@ -54,8 +69,8 @@
     "merge": false
   },
   "executionEvidence": {
-    "status": "pending",
-    "hostingDeploy": "pending",
+    "status": "pending_remote_smoke_only",
+    "hostingDeploy": "already_successful_not_repeated",
     "remoteSmoke": "pending",
     "visualReview": "pending_paula"
   },
@@ -67,6 +82,7 @@
     "make": false,
     "gemini": false,
     "cloudRunDeploy": false,
+    "hostingRedeployThisRun": false,
     "production": false
   }
 }
