@@ -1,217 +1,135 @@
 # Phase A block progress tracker TyA
 
-Fecha: 2026-07-04  
-Ultima actualizacion: 2026-07-08
+**Fecha original:** 2026-07-04  
+**Última actualización:** 2026-07-24  
+**Estado:** `CORTE3_TECHNICAL_PASS_PENDING_HOSTING_DEV_VISUAL`
 
-## Estado general
+## 1. Estado general
 
-- Repo: `paulaosoriof86/demoCXOrbia`
-- Rama: `docs-tya-v6-v71-audit`
-- PR: #7 draft/open/no merge
-- Ultima version entregada y auditada: baseline auditada de continuidad backend, no source lock final ni produccion
-- Estado: documentacion, contratos y validadores seguros
-- Sin deploy
-- Sin produccion
-- Sin Firestore writes reales
-- Sin HR writes reales
-- Sin Storage writes reales
-- Sin pagos reales
-- Sin correo real conectado
-- Sin Make real
+- Repo: `paulaosoriof86/demoCXOrbia`.
+- Rama: `docs-tya-v6-v71-audit`.
+- PR #7: draft/open/no merge.
+- Baseline activa: V174.
+- Sin Hosting nuevo, deploy productivo, merge, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos.
 
-## Bloques completados o documentados
+## 2. Cortes cerrados
 
-### Base / continuidad
+### V174 / M1 / Corte 1 / Corte 2A
 
-- Documento maestro y continuidad.
-- Auditorias forenses de prototipos previos.
-- Paquetes Claude de auditorias previas.
-- Auditoria complementaria delta vs acumulado Codex/Claude.
-- Empalme de ultima version auditada como baseline de continuidad backend.
-- Regla de no reiniciar por cada ZIP.
-- Regla de trabajar sobre la ultima version auditada usable, salvo bloqueo critico.
-- Addenda de cambios, Claude y pendientes.
-- Paquete Claude completo acumulado post synthetic coverage.
+- PASS técnico.
+- Validación visual aprobada.
+- 14 periodos, junio 2025–julio 2026.
+- 616 visitas.
+- 44 visitas por periodo: 34 GT y 10 HN.
+- Proyecto y periodo separados.
+- Ciclo Shopper y operación preservados.
 
-### Backend foundation
+No reabrir sin evidencia reproducible.
 
-- HR Source / preview seguro.
-- CX.data backend adapter contract.
-- DEV preview schema manifest.
-- Data source selector.
-- Auth claims readiness.
-- Admin review contract.
-- Submitido HR-driven configurable.
-- Project wizard Phase A.
-- Sensitive data policy Phase A.
-- Project/tenant rule versioning preview.
-- Rule change changelog/notification preview.
-- Release readiness snapshot preview.
-- Admin configurability contract preview-only.
-- Conflict review queue + import readiness contract preview-only.
-- Synthetic input pack runner preview-only.
-- Synthetic input pack expanded coverage preview-only.
-- Readiness dashboard source-safe contract preview-only.
+## 3. Corte activo — Corte 3 Finanzas
 
-### Academia
+### Completado
 
-- Academia role-based learning contract.
-- Academia deep interactive addendum.
-- Academia module sync gate.
-- Academia backfill backend blocks.
-- Academia coverage audit backend to date.
-- Academia implementation backlog.
-- Academia impact de release readiness snapshot.
-- Academia impact de admin configurability.
-- Academia impact de conflict review/import readiness.
-- Academia impact de synthetic input pack runner.
-- Academia impact de synthetic input pack expanded coverage.
-- Academia impact de readiness dashboard source-safe: preview vs real, fixtures, inputs sanitizados, source-safe report, gates apagados, errores, warnings, blockers y revision humana.
+- inventario de fuente financiera;
+- conciliación con identidad estable;
+- revisión humana del delta;
+- snapshot financiero canónico source-safe;
+- adapter único para Finanzas y Beneficios;
+- pago fail-closed;
+- entrada Backend DEV alineada con binding V174;
+- gate remoto de Finanzas, Beneficios y export spec;
+- runner read-only limpio y reproducible.
 
-### Operacion Phase A
+### Conteos canónicos
 
-- Postulaciones y asignaciones sync HR/plataforma.
-- Visit lifecycle.
-- Reservas, franja, rango y quincena.
-- Restricciones de proyecto y ficha de postulacion.
-- Ficha de postulacion dinamica.
-- Login externo configurable por tenant.
-- Gestion estrategica de postulaciones.
-- Notification outbox / WhatsApp Web fallback.
-- Email traceability.
-- Email real futuro por usuario.
-- Email provider-agnostic por usuario.
-- CRM, OneDrive, documentos y pipeline.
-- Shopper communication history.
-- Shopper ranking/scoring.
-- Project/tenant rule versioning.
-- Rule change changelog/notification preview.
-- Release readiness snapshot preview.
-- Admin configurability.
-- Conflict review/import readiness.
-- Synthetic input pack runner.
-- Synthetic input pack expanded coverage para assignment sync, notification outbox, rule versioning, changelog/notifications y release readiness.
-- Readiness dashboard source-safe para estados honestos agregados sin runtime real.
-- Liquidaciones y pagos.
-- Cinepolis Boleto/Combo, lotes y movimientos individuales.
-- Preview validator/source-safe mapping para liquidaciones/corte junio y Cinepolis Boleto/Combo.
-- Politica consolidada de datos sensibles para fuentes, pagos, correo, adjuntos y evidencias.
+- 616 visitas HR;
+- 247 filas financieras;
+- 209 vínculos exactos;
+- 207 montos listos;
+- 38 filas sin vínculo exacto;
+- 79 revisiones de vínculo;
+- 2 revisiones de monto;
+- 37 evidencias candidatas;
+- 0 pagos;
+- 0 lotes.
 
-## Bloques agregados durante revision
+### Evidencia UI/export PASS
 
-1. Reservas y control de franja/quincena.
-2. Restricciones configurables por proyecto.
-3. Ficha de postulacion dinamica y shopper-visible.
-4. Opciones externas de login por tenant.
-5. Gestion de postulaciones por sucursal/shopper.
-6. Notification outbox y WhatsApp Web fallback.
-7. Correo por usuario y provider-agnostic.
-8. CRM/OneDrive/documentos/pipeline.
-9. Shopper communication history ampliado.
-10. Reembolsos Cinepolis Boleto/Combo.
-11. Movimientos individuales asociados a lotes.
-12. Tracker de avance por bloque.
-13. Source-safe preview para corte junio/liquidaciones antes de fuentes reales.
-14. Politica sensible previa a fuentes reales: banco, documentos, NDA, correo, adjuntos y evidencias.
-15. Assignment sync conflict preview antes de Make/HR real.
-16. Visit lifecycle/reservation preview antes de agenda/HR real.
-17. Dynamic postulation form preview antes de ficha real/storage real.
-18. Auditorias de prototipos como candidatas parciales y empalme de ultima baseline auditada de continuidad backend.
-19. Notification outbox preview antes de proveedores reales.
-20. Email user mailbox preview antes de OAuth/SMTP/email real.
-21. CRM external folder refs preview antes de OAuth/API/proveedor documental real.
-22. Shopper communication history preview antes de lectura/envio/import real de comunicaciones.
-23. Auditoria profunda reforzada: cada paquete debe distinguir delta vs acumulado y responder punto por punto a reportes Claude/Codex.
-24. Shopper ranking/scoring preview antes de decisiones automaticas, Gemini real o autoasignacion.
-25. Project/tenant rule versioning preview antes de cambios reales de configuracion, providers, HR mapping, questionnaire routing, pagos o pais/moneda.
-26. Rule change changelog/notification preview antes de publicar changelog, enviar comunicaciones o marcar roles informados.
-27. Release readiness snapshot preview antes de cualquier deploy, merge, import, escritura o activacion real.
-28. Admin configurability preview antes de administrar desde UI real NDAs, planes, reglas, evidencias, cuestionarios, pagos, certificaciones, Academia, notificaciones, imports, Make/Gemini, roles y gates.
-29. Conflict review/import readiness preview antes de cualquier import real o resolucion de conflictos HR/plataforma/historico.
-30. Synthetic input pack runner preview antes de correr validadores con fuentes reales o inputs sanitizados ampliados.
-31. Synthetic input pack expanded coverage antes de diagnosticar readiness agregado por areas criticas.
-32. Readiness dashboard source-safe antes de exponer estados agregados en UI o declarar readiness operacional.
+- Target HEAD: `357cdbc73467344557c0da113262bba4f6a976fc`.
+- Request commit: `f415f23eb974b664181d1f618aa47e79ac99ed94`.
+- Run: `30074835544`.
+- Job: `89423207982`.
+- Artifact: `8589444193`.
+- Digest: `sha256:06188dc26dcba0a4e0b9b6fc4119ed32ca31d38462a6e513f177ab84cdba0deb`.
+- Resultado: `PASS_READONLY_POST_GATES`.
 
-## Bloque recien completado
+Mayo 2026:
 
-### Readiness dashboard source-safe contract preview-only
+- 44 visitas HR;
+- 42 filas financieras exactas;
+- 2 casos no exactos permanecen en revisión;
+- 32 filas GT y 10 HN;
+- 0 pagos;
+- Finanzas y Beneficios consumen la misma verdad.
 
-Archivos:
+## 4. Bloques intermedios agregados y cerrados
 
-- `tools/contracts/cxorbia-readiness-dashboard-source-safe-contract.mjs`
-- `app/docs/READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md`
-- `app/docs/CAMBIOS-READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md`
-- `CAMBIOS-BACKEND.md`
-- `RESUMEN-PARA-CLAUDE.md`
-- `PENDIENTES-PROTOTIPO.md`
-- `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`
+1. Diagnóstico de entrada DEV source-safe.
+2. Corrección de sintaxis del adapter generado R15G.
+3. Gate sintáctico del código generado.
+4. Estabilización Playwright frente a service worker/PWA.
+5. Separación semántica de visitas HR y filas financieras exactas.
+6. Evidencia del falso delta `.tmp/`.
+7. Exclusión efímera local sin debilitar cambios rastreados.
 
-Estado:
+Estos bloques eran necesarios para cerrar el gate remoto; no abren una metodología paralela.
 
-- Contrato preview-only para manifest agregado de readiness.
-- No cambia `/app/modules` ni `/app/core`.
-- No activa runtime, produccion, Firestore, Storage, Auth, Make, Gemini, email/WhatsApp, pagos, deploy, merge, providers ni import real.
-- Valida source-safe, input sintetico/sanitizado, sourceRefs opacas, gates apagados, estados honestos y absence de claims prohibidos.
+## 5. Pendientes para congelar Corte 3
 
-## Ultima auditoria de prototipo
+1. Autorización específica de Paula para Hosting DEV.
+2. Publicar el mismo build aprobado técnicamente.
+3. Ejecutar smoke remoto.
+4. Validar visualmente Admin y Shopper.
+5. Descargar/inspeccionar PDF real: gráfica y datos.
+6. Descargar/inspeccionar Excel real: formato operativo y datos.
+7. Corregir únicamente una diferencia reproducible, si existe.
+8. Recibir `APROBADO`.
+9. Congelar Corte 3.
 
-Decision vigente:
+## 6. Pendientes prototipo / Claude
 
-- La ultima version entregada y auditada queda como baseline auditada de continuidad backend.
-- No es source lock final ni produccion.
-- La auditoria profunda debe distinguir siempre delta vs acumulado.
-- Claude debe generar la siguiente correctiva sobre la ultima baseline auditada valida cuando recupere capacidad.
+- responsive parcial;
+- gráfica del PDF real pendiente de inspección;
+- formato operativo del Excel real;
+- copy visible de `sourceAccessMode`;
+- no hay una corrección nueva demostrada en `modules/finanzas.js` o `modules/beneficios.js`.
 
-## Pendientes backend inmediatos
+## 7. Pendientes Academia
 
-1. Revisar gates del nuevo head despues de este bloque.
-2. Preparar input sintetico/sanitizado ampliado para conflict review/import readiness contract.
-3. Preparar input sintetico/sanitizado ampliado para admin configurability contract.
-4. Preparar puente opcional entre synthetic runner report y readiness dashboard manifest, sin outputs reales por defecto.
-5. Mantener politica de datos sensibles como gate transversal de validators restantes.
+- curso/manual por rol para conciliación financiera;
+- diferencia visita/vínculo exacto;
+- honorario, boleto, combo, total y moneda;
+- revisión de vínculo y monto;
+- liquidación vs pago;
+- exportación PDF/Excel y checklist de contraste con UI;
+- caso práctico 44 visitas / 42 vínculos / 2 revisiones;
+- publicación únicamente después de revisión humana.
 
-## Pendientes prototipo / Claude
+## 8. Siguiente bloque exacto
 
-1. Login externo por tenant.
-2. Ficha de postulacion frontal/dorso dinamica.
-3. Bandeja postulaciones por sucursal/shopper.
-4. Acciones ajuste fecha/confirmacion/reprogramacion.
-5. Estados honestos de notificaciones.
-6. WhatsApp Web fallback con confirmacion manual.
-7. Email por usuario/provider agnostic.
-8. CRM con carpeta externa/documentos/pipeline.
-9. Shopper history completo.
-10. Shopper ranking/scoring preview honesto, sin autoasignacion ni datos sensibles.
-11. Project settings/rule versioning con estados draft/review/future active/deprecated.
-12. Changelog/centro de actualizaciones con estados draft/review/approved preview y audiencia por rol.
-13. Readiness dashboard con preview ready, warnings, fail, pending real source, pending real gate, human review, production not authorized, provider not active y blockers.
-14. Admin configurability UI.
-15. Conflict review/import readiness UI.
-16. Synthetic input pack UI opcional: mostrar diagnostico preview/pass-fail/warnings sin prometer produccion, import, sync, provider activo ni deploy.
-17. Synthetic expanded coverage UI opcional: mostrar areas cubiertas, fixtures, validators, pass/fail/warnings y gates apagados.
-18. Readiness: no decir production ready, deployed, imported, connected, sent o synced si gates estan apagados.
+`AUTORIZACIÓN ESPECÍFICA DE HOSTING DEV → PUBLICAR EL MISMO BUILD → SMOKE REMOTO → VALIDACIÓN VISUAL DE PAULA → CORRECCIÓN FOCALIZADA SI APLICA → FREEZE CORTE 3`.
 
-## Pendientes Academia
+Corte 4 no comienza antes del freeze.
 
-1. Matriz curso/manual por rol y modulo.
-2. Glosario consolidado.
-3. Checklists interactivos.
-4. Rutas obligatorias por rol.
-5. Notificaciones de cursos/manuales.
-6. Contenido retroactivo de todos los bloques backend.
-7. Profundizar readiness dashboard source-safe: preview vs real, fixture sintetico, input sanitizado, source-safe report, gates apagados, errores, warnings, blockers y revision humana.
+## 9. Regla de cierre
 
-## Siguiente bloque recomendado
+Cada bloque debe indicar:
 
-Preparar puente opcional entre resultados del synthetic input pack runner y un manifest de readiness dashboard source-safe, sin runtime real ni outputs por defecto.
-
-## Regla de cierre por bloque
-
-Cada cierre debe mostrar:
-
-- avance del plan;
-- bloque completado;
-- pendientes agregados;
-- bloque siguiente;
-- gates apagados;
-- si se requiere insumo de Paula.
+- qué se hizo;
+- qué parte de Phase A avanzó;
+- qué se preservó;
+- qué se documentó para Claude y Academia;
+- pendiente real;
+- siguiente bloque exacto;
+- estado seguro;
+- bloqueo comprobado o ausencia de bloqueo.
