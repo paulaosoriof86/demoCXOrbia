@@ -16,6 +16,7 @@ on:
       - .github/workflows/cxorbia-readonly-post-gates-runner.yml
       - tools/release/cxorbia-readonly-post-gates-runner.mjs
       - tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs
+      - tools/qa/tya-corte3-canonical-finance-ui-export-r23-gate.mjs
 
 permissions:
   contents: read
@@ -62,8 +63,11 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `profile=${x.profile || ''}\n`);
           NODE
 
-      - name: Install Playwright runtime only for browser profile
-        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.profile == 'V174_R20_M1_CORTE2A'
+      - name: Install Playwright runtime for browser profiles
+        if: >-
+          steps.request.outputs.enabled == 'true' &&
+          (steps.request.outputs.profile == 'V174_R20_M1_CORTE2A' ||
+           steps.request.outputs.profile == 'CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23')
         run: |
           npm install --no-save --ignore-scripts playwright@1.55.0
           npx playwright install --with-deps chromium
@@ -90,74 +94,64 @@ jobs:
         with:
           name: cxorbia-readonly-post-gates-${{ github.run_id }}
           path: |
-            .tmp/cxorbia-readonly-post-gates
+            .tmp/cxorbia-readonly-post-gates-runner
             .tmp/tya-project-period-kpi-history-r20
             .tmp/tya-corte2a-shopper-operation-canonical
             .tmp/tya-corte1-report-frontend-runtime
             .tmp/r20-source-safe-gates
             .tmp/phase-a-financial-r14c-live-hr
             .tmp/tya-corte3-financial-reconciliation-r20
+            .tmp/tya-corte3-canonical-finance-ui-export-r23
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Publish observable commit statuses
+      - name: Publish observable commit status
         if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GATES_EXIT_CODE: ${{ steps.gates.outputs.exit_code }}
         run: |
           node <<'NODE'
           const fs = require('fs');
           const requestPath = '.github/cxorbia-gate-requests/request.json';
-          const request = fs.existsSync(requestPath) ? JSON.parse(fs.readFileSync(requestPath, 'utf8')) : { enabled: false, requestId: null };
-          const reportPath = '.tmp/cxorbia-readonly-post-gates/report.json';
+          const request = fs.existsSync(requestPath)
+            ? JSON.parse(fs.readFileSync(requestPath, 'utf8'))
+            : { enabled: false, requestId: null };
+          const reportPath = '.tmp/cxorbia-readonly-post-gates-runner/report.json';
           const report = fs.existsSync(reportPath)
             ? JSON.parse(fs.readFileSync(reportPath, 'utf8'))
             : {
                 status: request.enabled ? 'HOLD_REPORT_MISSING' : 'SKIPPED_DISABLED_REQUEST',
                 requestId: request.requestId || null,
                 requestCommitSha: process.env.GITHUB_SHA,
-                gates: [],
+                targetHeadSha: request.targetHeadSha || null,
+                checks: [],
                 blockers: request.enabled ? ['report_missing_or_preflight_failed'] : []
               };
           const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
           const sha = report.requestCommitSha || process.env.GITHUB_SHA;
           const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
           const enabled = request.enabled === true;
-          const overallSuccess = enabled && report.status === 'PASS_READONLY_POST_GATES';
-          const overallState = enabled ? (overallSuccess ? 'success' : 'failure') : 'success';
-          const statuses = [{
-            state: overallState,
+          const success = enabled && report.status === 'PASS_READONLY_POST_GATES';
+          const status = {
+            state: enabled ? (success ? 'success' : 'failure') : 'success',
             context: 'cxorbia/readonly-post-gates/overall',
             description: enabled
-              ? `${report.status}; profile=${report.profile || 'n/a'}; gates=${Array.isArray(report.gates) ? report.gates.length : 0}; blockers=${Array.isArray(report.blockers) ? report.blockers.length : 0}`.slice(0, 140)
+              ? `${report.status}; profile=${report.profile || 'n/a'}; checks=${Array.isArray(report.checks) ? report.checks.length : 0}; blockers=${Array.isArray(report.blockers) ? report.blockers.length : 0}`.slice(0, 140)
               : 'SKIPPED_DISABLED_REQUEST',
             target_url: runUrl
-          }];
-          for (const gate of Array.isArray(report.gates) ? report.gates : []) {
-            statuses.push({
-              state: gate.status === 'PASS' ? 'success' : 'failure',
-              context: `cxorbia/gate/${gate.id}`.slice(0, 100),
-              description: `${gate.status}; exit=${gate.exitCode}`.slice(0, 140),
-              target_url: runUrl
-            });
-          }
-          async function postStatus(status) {
-            const response = await fetch(`${process.env.GITHUB_API_URL}/repos/${owner}/${repo}/statuses/${sha}`, {
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-                Accept: 'application/vnd.github+json',
-                'X-GitHub-Api-Version': '2022-11-28',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(status)
-            });
+          };
+          fetch(`${process.env.GITHUB_API_URL}/repos/${owner}/${repo}/statuses/${sha}`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+              Accept: 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(status)
+          }).then(async response => {
             if (!response.ok) throw new Error(`status_failed_HTTP_${response.status}:${await response.text()}`);
-          }
-          (async () => {
-            for (const status of statuses) await postStatus(status);
-          })().catch(error => { console.error(error); process.exitCode = 1; });
+          }).catch(error => { console.error(error); process.exitCode = 1; });
           NODE
 
       - name: Report result in PR 7
@@ -169,12 +163,12 @@ jobs:
         run: |
           node <<'NODE'
           const fs = require('fs');
-          const reportPath = '.tmp/cxorbia-readonly-post-gates/report.json';
+          const reportPath = '.tmp/cxorbia-readonly-post-gates-runner/report.json';
           const report = fs.existsSync(reportPath)
             ? JSON.parse(fs.readFileSync(reportPath, 'utf8'))
-            : { status: 'HOLD_REPORT_MISSING', requestId: null, sourceHeadSha: null, gates: [], blockers: ['report_missing'] };
-          const gateLines = Array.isArray(report.gates) && report.gates.length
-            ? report.gates.map(g => `- ${g.status}: \`${g.id}\``)
+            : { status: 'HOLD_REPORT_MISSING', requestId: null, targetHeadSha: null, checks: [], blockers: ['report_missing'] };
+          const checkLines = Array.isArray(report.checks) && report.checks.length
+            ? report.checks.map(value => `- PASS: \`${value}\``)
             : ['- none'];
           const body = [
             '## CXORBIA_READONLY_POST_GATES_RUNNER',
@@ -184,11 +178,11 @@ jobs:
             `- Estado: \`${report.status}\``,
             `- Request: \`${report.requestId || 'n/a'}\``,
             `- Profile: \`${report.profile || 'n/a'}\``,
-            `- Source HEAD: \`${report.sourceHeadSha || 'n/a'}\``,
+            `- Target HEAD: \`${report.targetHeadSha || 'n/a'}\``,
             `- Exit code: ${process.env.GATES_EXIT_CODE || 'n/a'}`,
             '',
-            'Gates:',
-            ...gateLines,
+            'Checks:',
+            ...checkLines,
             '',
             'Blockers:',
             ...(report.blockers?.length ? report.blockers.map(x => `- ${x}`) : ['- none']),
