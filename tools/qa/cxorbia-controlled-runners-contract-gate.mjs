@@ -30,13 +30,24 @@ if(contract){
     requireFile(item.script,`${name}_script_missing`);
   }
 
-  const profiles=['V174_R20_M1_CORTE2A','CORTE3_FINANCIAL_RECONCILIATION_R20'];
+  const requiredProfiles=[
+    'V174_R20_M1_CORTE2A',
+    'CORTE3_FINANCIAL_RECONCILIATION_R20',
+    'CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23'
+  ];
   const actual=Array.isArray(readonly.profiles)?readonly.profiles:[readonly.profile].filter(Boolean);
-  for(const profile of profiles){
+  for(const profile of requiredProfiles){
     if(!actual.includes(profile))add(blockers,'readonly_profile_missing',profile);
+    if(!readonly.profileDefinitions?.[profile])add(blockers,'readonly_profile_definition_missing',profile);
     if(readonly.profileDefinitions?.[profile]?.stableVisitIdentityRequired!==true)add(blockers,'stable_identity_not_required',profile);
+  }
+  for(const profile of ['V174_R20_M1_CORTE2A','CORTE3_FINANCIAL_RECONCILIATION_R20']){
     if(readonly.profileDefinitions?.[profile]?.runtimeInventoryFilterRequired!==true)add(blockers,'runtime_filter_not_required',profile);
   }
+  const uiProfile=readonly.profileDefinitions?.CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23||{};
+  if(uiProfile.browserRequired!==true)add(blockers,'canonical_ui_browser_not_required');
+  if(uiProfile.providerReads!==false)add(blockers,'canonical_ui_provider_reads_not_false');
+  if(uiProfile.runtimeInventoryFilterRequired!==false)add(blockers,'canonical_ui_runtime_filter_should_be_false');
 
   const stable=readonly.stableVisitIdentity||{};
   for(const [key,code] of [
@@ -53,15 +64,15 @@ if(contract){
   const c3=readonly.profileDefinitions?.CORTE3_FINANCIAL_RECONCILIATION_R20||{};
   requireFile(c3.reviewContract,'corte3_review_contract_missing');
   requireFile('tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs','corte3_financial_gate_missing');
+  requireFile('tools/qa/tya-corte3-canonical-finance-ui-export-r23-gate.mjs','corte3_canonical_ui_gate_missing');
   requireFile('tools/release/tya-v174-r20-source-lock-proposal.mjs','source_lock_proposal_missing');
-  requireFile('tools/release/tya-v174-proposed-source-lock-verify.mjs','proposed_source_lock_verify_missing');
+  requireFile('tools/release/tya-v174-corte2a-empalme-directo-verify.mjs','canonical_source_lock_verify_missing');
 
   if(!blockers.length){
     const atomicYml=read(atomic.workflow),atomicScript=read(atomic.script);
     const readonlyYml=read(readonly.workflow),readonlyScript=read(readonly.script);
     const helper=read(stable.helper),apply=read(stable.applyScript),filter=read(stable.runtimeInventoryFilter);
     const stableGate=read(stable.contractGate),payloadGate=read(stable.payloadGate);
-    const proposedVerify=read('tools/release/tya-v174-proposed-source-lock-verify.mjs');
     const review=JSON.parse(read(c3.reviewContract));
 
     has(atomicYml,/^name:\s*CXORBIA_ATOMIC_APPLY_RUNNER\s*$/m,'atomic_name_missing');
@@ -76,24 +87,28 @@ if(contract){
     has(readonlyYml,/^name:\s*CXORBIA_READONLY_POST_GATES_RUNNER\s*$/m,'readonly_name_missing');
     has(readonlyYml,/permissions:[\s\S]*?contents:\s*read[\s\S]*?issues:\s*write[\s\S]*?statuses:\s*write/,'readonly_permissions_invalid');
     has(readonlyYml,/playwright@1\.55\.0/,'playwright_pin_missing');
+    has(readonlyYml,/CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23/,'canonical_ui_profile_not_installed_in_workflow');
+    has(readonlyYml,/\.tmp\/cxorbia-readonly-post-gates-runner\/report\.json/,'readonly_report_path_misaligned');
+    has(readonlyYml,/\.tmp\/tya-corte3-canonical-finance-ui-export-r23/,'canonical_ui_artifact_path_missing');
     lacks(readonlyYml,/contents:\s*write/,'readonly_contents_write_forbidden');
     lacks(readonlyYml,/firebase\s+deploy|gcloud\s+|firestore:|storage:|functions:/i,'readonly_deploy_forbidden');
     lacks(readonlyYml,/(?:branches|ref):[\s\S]{0,80}\bmain\b/m,'readonly_main_forbidden');
 
     for(const [pattern,code] of [
-      [/runtimeInventoryStableGates\('tya-v174'\)/,'v174_runtime_stable_missing'],
-      [/runtimeInventoryStableGates\('tya-corte3'\)/,'corte3_runtime_stable_missing'],
+      [/PROFILE_ALIASES/,'profile_aliases_missing'],
+      [/V174_R20_M1_CORTE2A/,'v174_profile_handler_missing'],
+      [/CORTE3_FINANCIAL_RECONCILIATION_R20/,'corte3_profile_handler_missing'],
+      [/CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23/,'canonical_ui_profile_handler_missing'],
+      [/tya-corte3-canonical-finance-ui-export-r23-gate\.mjs/,'canonical_ui_gate_not_called'],
+      [/definition\.reviewContract/,'corte3_review_contract_not_consumed'],
       [/tya-v174-r20-source-lock-proposal/,'post_build_source_lock_proposal_not_called'],
-      [/tya-v174-proposed-source-lock-verify/,'proposed_source_lock_verify_not_called'],
-      [/tya-corte3-financial-r20-delta-review-v1/,'corte3_review_not_consumed'],
+      [/tya-v174-corte2a-empalme-directo-verify/,'canonical_source_lock_verify_not_called'],
+      [/target_head_exact/,'target_head_guard_missing'],
+      [/repository_unchanged_after_gates/,'readonly_repository_unchanged_guard_missing'],
       [/repositoryWrites:\s*false/,'readonly_repo_write_guard_missing'],
       [/dataWrites:\s*false/,'readonly_data_write_guard_missing'],
       [/production:\s*false/,'readonly_production_guard_missing']
     ])has(readonlyScript,pattern,code);
-
-    has(proposedVerify,/tya-v174-corte2a-empalme-directo-verify\.mjs/,'proposed_verify_does_not_delegate_canonical_verifier');
-    has(proposedVerify,/restore\(\)/,'proposed_verify_restore_missing');
-    lacks(proposedVerify,/git\s+commit|git\s+push|firebase\s+deploy/i,'proposed_verify_write_forbidden');
 
     has(helper,/tenantId='tya'.*projectId='cinepolis'.*periodKey.*country.*sourceRow/s,'stable_helper_fields_missing');
     lacks(helper,/cinemaId|shopping|quincena|franja/,'stable_helper_mutable_dependency_forbidden');
