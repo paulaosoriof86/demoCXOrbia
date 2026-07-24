@@ -1,13 +1,14 @@
 {
   "schemaVersion": "2.1.0",
   "requestId": "CXORBIA-TYA-CORTE3-HOSTING-DEV-REMOTE-SMOKE-20260724-03",
-  "status": "authorized_pending",
+  "status": "consumed_visual_pending",
   "scope": "hosting_dev_visual_only",
   "executionMode": "remote_smoke_only",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "expectedSourceHead": "45dd3a20616e6248e253e2cbf90c54be47eed314",
+  "consumedAtHead": "4363a55f6b3c8c5e90f8207967c27d79cfce6bda",
   "runtimeVersion": "V174-CORTE3-CANONICAL-FINANCE-R23",
   "manifestFile": "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json",
   "aggregateSha256": "ab11bc47dfd096cbe6a110db250c46e656c2dc9760ad832c07958b6c9a886818",
@@ -38,23 +39,26 @@
     "visits": 616,
     "cloudRunDeploy": false
   },
-  "smokeRemediation": {
-    "previousRemoteRun": 30098823043,
-    "previousRemoteDecision": "HOLD_AFTER_SUCCESSFUL_HOSTING_DEPLOY",
-    "rootCause": "FROZEN_SNAPSHOT_GATE_CONFLATED_EXACT_CANONICAL_ROWS_WITH_LIVE_FAIL_CLOSED_REVIEW_ROWS",
-    "replacementGate": "tools/qa/tya-corte3-remote-live-finance-smoke-r25-gate.mjs",
-    "expectedMayVisits": 44,
-    "expectedMayExactFinancialRows": 42,
-    "expectedMayFailClosedReviewRows": 2,
-    "hostingRedeployThisRun": false,
-    "blindRetry": false
+  "remoteSmokeEvidence": {
+    "requestCommit": "cf86e115dde490fbb8c1d407482413411c9079e8",
+    "run": 30099476156,
+    "job": 89501621499,
+    "artifactId": 8598990578,
+    "artifactDigest": "sha256:09c69c975a0933368b346d27218386b28421616adc039f3a37caf16ca8bbba12",
+    "decision": "PASS_CORTE3_HOSTING_DEV_AND_REMOTE_LIVE_SMOKE",
+    "statusContext": "cxorbia/corte3-hosting-dev-visual",
+    "status": "success",
+    "hostingRedeployed": false,
+    "mayVisits": 44,
+    "mayExactFinancialRows": 42,
+    "mayFailClosedReviewRows": 2,
+    "payments": 0,
+    "batches": 0
   },
-  "buildOverlay": {
-    "liveHrBinding": "tools/release/tya-source-safe-live-binding-build-r22.mjs",
-    "canonicalFinanceOverlay": "tools/release/tya-corte3-hosting-dev-build-r24.mjs",
-    "financialAdapter": "app/adapters/tya-financial-canonical-source-safe-adapter.js",
-    "modifiesTrackedFrontendSource": false
-  },
+  "rootCausesClosed": [
+    "STALE_FULL_APP_HASH_INCLUDED_MUTABLE_DOCS_AND_APPROVED_DEV_ENTRY",
+    "FROZEN_SNAPSHOT_GATE_CONFLATED_EXACT_CANONICAL_ROWS_WITH_LIVE_FAIL_CLOSED_REVIEW_ROWS"
+  ],
   "authorization": {
     "authorizedBy": "Paula",
     "authorizationSource": "current_conversation_2026-07-24",
@@ -69,10 +73,11 @@
     "merge": false
   },
   "executionEvidence": {
-    "status": "pending_remote_smoke_only",
-    "hostingDeploy": "already_successful_not_repeated",
-    "remoteSmoke": "pending",
-    "visualReview": "pending_paula"
+    "status": "pass_visual_pending",
+    "hostingDeploy": "success",
+    "remoteSmoke": "pass",
+    "visualReview": "pending_paula",
+    "freezeCorte3": "pending"
   },
   "safeState": {
     "firestoreWrites": false,
@@ -82,7 +87,7 @@
     "make": false,
     "gemini": false,
     "cloudRunDeploy": false,
-    "hostingRedeployThisRun": false,
+    "hostingRedeployFinalSmoke": false,
     "production": false
   }
 }
