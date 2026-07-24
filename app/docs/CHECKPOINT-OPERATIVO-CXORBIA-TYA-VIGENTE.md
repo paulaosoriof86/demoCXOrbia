@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-24  
-**Estado:** `V174_ACTIVE_BASELINE_CORTE3_CANONICAL_FINANCE_UI_EXPORT_TECHNICAL_PASS_PENDING_HOSTING_DEV_VISUAL_NO_PRODUCTION`
+**Estado:** `V174_ACTIVE_BASELINE_CORTE3_HOSTING_DEV_AUTHORIZED_PENDING_EXACT_REQUEST_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -50,11 +50,11 @@ Los conflictos no se resolvieron ni sobrescribieron silenciosamente.
 
 - Snapshot: `app/data/tya-financial-canonical-source-safe*.js`.
 - Adapter: `app/adapters/tya-financial-canonical-source-safe-adapter.js`.
-- Entrada: `app/index-backend-dev.html`.
+- Entrada técnica aprobada: `app/index-backend-dev.html`.
 - `CX.data` conserva su interfaz.
 - Finanzas y Beneficios consumen `CX.liq.forProject()` desde la misma verdad.
 - `visitContract()` falla cerrado con `paymentState=pending_source_confirmation`.
-- No se modificaron `app/modules/**`, `app/core/**` ni `app/index.html` en el bloque de gate.
+- No se modificaron `app/modules/**`, `app/core/**` ni `app/index.html` en Git.
 
 ## 6. Gate remoto UI/export — PASS
 
@@ -82,19 +82,29 @@ Comprobaciones principales:
 - Beneficios: honorarios, reembolsos, por cobrar y pagado;
 - shopper controlado: 3 liquidaciones y 0 pagadas.
 
-## 7. Correcciones focalizadas del carril
+## 7. Autorización Hosting DEV vigente
 
-1. Se restauró el binding source-safe V174 en la entrada DEV.
-2. Se corrigió el generador R15G que cortaba un texto en un punto y coma interno y producía JavaScript inválido.
-3. Se agregó validación sintáctica obligatoria del adapter generado.
-4. Se bloquearon service workers en el gate para impedir recargas destructivas del navegador.
-5. Se separó inventario HR de filas financieras exactas.
-6. Se demostró que el falso delta provenía únicamente de `.tmp/`.
-7. `.tmp/` se excluye localmente con `.git/info/exclude`; el guard de archivos rastreados permanece intacto.
+Paula autorizó expresamente en la conversación actual del 2026-07-24 publicar el mismo build de Corte 3 en Hosting DEV.
+
+Alcance exacto:
+
+- proyecto `cxorbia-backend-dev`;
+- target `cxorbia-dev`;
+- V174 + HR live source-safe + finanzas canónicas R23;
+- smoke remoto y validación visual;
+- `cloudRunDeploy=false`;
+- producción, merge, imports, pagos y writes reales en `false`.
+
+Carril preparado:
+
+- helper reusable `tools/release/tya-corte3-hosting-dev-build-r24.mjs`;
+- workflow existente `.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml` actualizado, sin workflow paralelo;
+- solicitud exacta pendiente de activarse en un commit aislado.
 
 ## 8. Pendientes reales
 
-- Hosting DEV del mismo build: requiere autorización específica.
+- Ejecutar el commit aislado de solicitud autorizada.
+- Hosting DEV del mismo build.
 - Smoke remoto del mismo build.
 - Validación visual de Paula.
 - PDF real: verificar gráfica.
@@ -103,18 +113,18 @@ Comprobaciones principales:
 
 ## 9. Siguiente bloque exacto
 
-`AUTORIZACIÓN ESPECÍFICA DE HOSTING DEV → PUBLICAR EL MISMO BUILD → SMOKE REMOTO → VALIDACIÓN VISUAL DE PAULA → CORRECCIÓN FOCALIZADA SI APLICA → FREEZE CORTE 3`.
+`COMMIT AISLADO DE SOLICITUD AUTORIZADA → HOSTING DEV DEL MISMO BUILD → SMOKE REMOTO → VALIDACIÓN VISUAL DE PAULA → CORRECCIÓN FOCALIZADA SI APLICA → FREEZE CORTE 3`.
 
 No iniciar Corte 4 antes del freeze.
 
 ## 10. Clasificación
 
-- **Reusable CXOrbia:** adapter único, pagos fail-closed, separación inventario/filas financieras, review queues, gate UI/export y evidencia efímera sin debilitar guardas.
+- **Reusable CXOrbia:** adapter único, pagos fail-closed, separación inventario/filas financieras, review queues, overlay de build y smoke remoto.
 - **Exclusivo cliente:** conteos y conciliación TyA/Cinépolis.
-- **Claude/prototipo:** sin corrección de módulos demostrada; pendientes P1/P2 de PDF, Excel, responsive y copy de fuente.
-- **Academia:** inventario, vínculo exacto, revisión, liquidación, pago, honorario, boleto, combo y exportación como conceptos separados.
-- **Sin impacto Claude:** correcciones de runner, build, service worker del gate y `.tmp/`.
+- **Claude/prototipo:** sin corrección de módulos; pendientes P1/P2 de PDF, Excel, responsive y copy de fuente.
+- **Academia:** inventario, vínculo exacto, revisión, liquidación, pago, exportación, Hosting DEV y freeze como pasos diferentes.
+- **Sin impacto Claude:** workflow, helper, solicitud y evidencias del carril.
 
 ## 11. Estado seguro
 
-Sin merge, Hosting nuevo, deploy productivo, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live, lotes ni pagos.
+Sin Hosting nuevo todavía, merge, deploy productivo, producción, import real, Firestore/Auth/Storage/HR writes, Cloud Run deploy, Make/Gemini live, lotes ni pagos.
