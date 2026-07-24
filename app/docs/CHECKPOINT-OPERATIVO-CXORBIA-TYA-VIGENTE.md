@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-24  
-**Estado:** `V174_ACTIVE_BASELINE_CORTE3_HOSTING_DEV_REMOTE_LIVE_SMOKE_PASS_PENDING_PAULA_VISUAL_NO_PRODUCTION`
+**Estado:** `V174_ACTIVE_BASELINE_CORTE3_P0_PROVEN_VISUAL_HOLD_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -18,135 +18,79 @@
 - Package SHA-256: `e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f`.
 - Commit funcional V174: `b21e494d127fb4b902de5576e3fab0292362b097`.
 - Source lock visual: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
-- Módulos V174, lectura HR source-safe, adapters y `CX.data`: preservados.
-- Gate de preservación R24: PASS, 1890/1895 hashes exactos, cinco drifts permitidos no funcionales y 0 drift funcional prohibido.
+- Módulos V174, HR source-safe, adapters y `CX.data`: preservados.
 
-## 3. Identidad estable de visita
+## 3. Corte 3 — verdad financiera canónica
 
-Versión: `tya-stable-visit-id-r20-row-identity-v1`.
+- 616 visitas HR;
+- 247 filas financieras;
+- 209 vínculos exactos;
+- 207 montos canónicos listos;
+- 38 filas sin vínculo exacto;
+- 79 revisiones de vínculo;
+- 2 revisiones de monto;
+- 37 evidencias candidatas;
+- 0 pagos confirmados;
+- 0 lotes.
 
-Campos canónicos:
+## 4. Hosting DEV y smoke técnico
 
-`tenantId + projectId + periodKey + country + sourceRow`.
+- Hosting DEV: publicado.
+- Remote live smoke R25: PASS técnico.
+- Mayo 2026: 44 visitas HR, 42 filas exactas, 2 revisiones fail-closed, 32 exactas GT y 10 HN.
+- El smoke validó DOM/spec y una sesión Shopper controlada; no sustituyó la validación humana de archivos, identidad real y móvil.
 
-Cinema, shopping, quincena, franja, shopper, fechas y montos no forman parte de la identidad.
+## 5. Validación visual de Paula — HOLD
 
-## 4. Corte 3 — conciliación y snapshot canónico
+Paula aportó diez capturas móviles y demostró los siguientes P0:
 
-- visitas HR: 616;
-- filas financieras: 247;
-- vínculos exactos: 209;
-- filas sin vínculo exacto: 38;
-- montos canónicos listos: 207;
-- revisiones de vínculo: 79;
-- revisiones de monto: 2;
-- evidencias candidatas de ledger: 37;
-- pagos confirmados: 0;
-- lotes: 0.
+1. **Multimoneda:** `Q 13,229` resulta de sumar `Q 7,368 + L 5,861` y rotular el total como quetzales.
+2. **Pago:** la UI habla de “honorarios pagados” con 0 pagos confirmados.
+3. **Reembolsos:** se presentan diferencias conciliadas/inferidas sin fuente confirmada.
+4. **Periodo:** el selector financiero solo muestra `2026-07` y no los 14 periodos canónicos.
+5. **Exportación:** PDF vacío/incorrecto y Excel no generado.
+6. **Revisión humana:** las dos filas pendientes no se muestran ni se pueden localizar.
+7. **Shopper:** Beneficios no se puede validar con una identidad Shopper real visible en DEV.
 
-Los conflictos no se resolvieron ni sobrescribieron silenciosamente.
+P1 confirmados:
 
-## 5. Adapter único DEV
+- tablas, modales, topbar y breadcrumbs no operables correctamente en móvil;
+- scroll horizontal sin señal;
+- Dashboard y Movimientos/Tesorería ambiguos;
+- copy de IA/Gemini no honesto mientras la integración está bloqueada;
+- exportación habilitada con 0 filas.
 
-- Snapshot: `app/data/tya-financial-canonical-source-safe*.js`.
-- Adapter: `app/adapters/tya-financial-canonical-source-safe-adapter.js`.
-- `CX.data` conserva su interfaz.
-- Finanzas y Beneficios consumen `CX.liq.forProject()` desde la misma verdad.
-- `visitContract()` falla cerrado con `paymentState=pending_source_confirmation`.
-- No se modificaron `app/modules/**`, `app/core/**` ni `app/index.html` en Git.
+## 6. Ubicación de las dos revisiones
 
-## 6. Gate técnico UI/export — PASS
+Por conteos canónicos, ambas pertenecen a Guatemala: 34 visitas HR GT frente a 32 exactas GT; Honduras tiene 10/10 exactas. La UI no expone `visitId`, `hrRowId`, shopper, cine ni motivo para identificarlas.
 
-- Perfil: `CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23`.
-- Target HEAD: `357cdbc73467344557c0da113262bba4f6a976fc`.
-- Request commit: `f415f23eb974b664181d1f618aa47e79ac99ed94`.
-- Run: `30074835544`.
-- Job: `89423207982`.
-- Artifact: `8589444193`.
-- Digest: `sha256:06188dc26dcba0a4e0b9b6fc4119ed32ca31d38462a6e513f177ab84cdba0deb`.
-- Estado: `PASS_READONLY_POST_GATES`.
+## 7. Decisión
 
-## 7. Causas raíz cerradas en el carril Hosting
+- Corte 3: `P0_PROVEN_VISUAL_HOLD`.
+- Freeze: prohibido.
+- Corte 4: no iniciar.
+- No se permite tratar los P0 como pendientes cosméticos P1/P2.
 
-### Preflight V174
+## 8. Documentación
 
-`STALE_FULL_APP_HASH_INCLUDED_MUTABLE_DOCS_AND_APPROVED_DEV_ENTRY`
+- `VALIDACION-VISUAL-CORTE3-HOLD-PAULA-20260724.md`.
+- `CAMBIOS-BACKEND-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`.
+- `RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`.
+- `PENDIENTES-PROTOTIPO-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`.
+- `ACADEMIA-IMPACTO-CORTE3-VISUAL-HOLD-20260724.md`.
 
-El verificador antiguo mezclaba runtime protegido, documentación viva y entry DEV. Se sustituyó por gate R24 sin permitir drift en módulos/core/index funcional.
+## 9. Siguiente bloque exacto
 
-### Smoke snapshot/live
+`DIAGNÓSTICO DE CAUSA RAÍZ POR HALLAZGO → PAQUETE FOCALIZADO PARA CLAUDE/PROTOTIPO + AJUSTE DE GATES → CANDIDATA AUDITADA → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN MÓVIL REAL → APROBADO → FREEZE CORTE 3`.
 
-`FROZEN_SNAPSHOT_GATE_CONFLATED_EXACT_CANONICAL_ROWS_WITH_LIVE_FAIL_CLOSED_REVIEW_ROWS`
+## 10. Clasificación
 
-El snapshot congelado exponía 42 filas exactas; el runtime live muestra además dos revisiones operativas explícitas. Gate R25 valida esa diferencia sin tratarlas como canónicas ni pagadas.
+- **Reusable CXOrbia:** separación multimoneda, estados de pago honestos, review queue visible, pruebas reales de exportación y sesión por rol.
+- **Exclusivo cliente:** cifras y filas TyA/Cinépolis.
+- **Claude/prototipo:** Finanzas, Movimientos, Beneficios, reportes, periodo, responsive y copy IA.
+- **Academia:** monedas, liquidación/pago, revisión, exportación y rutas por rol.
+- **Sin impacto Claude:** documentación y actualización de estado.
 
-## 8. Hosting DEV — desplegado
+## 11. Estado seguro
 
-- URL: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1`.
-- Run: `30098823043`.
-- Job: `89499452079`.
-- Artifact: `8598747476`.
-- Digest: `sha256:88d201f834ce1237384de5c916f8cce65442e4255a710e58a9ade64e3707b016`.
-- Deploy Hosting DEV: success.
-- Build-lock remoto: coincide.
-- Endpoint HR remoto: source-safe, 14 periodos y 616 visitas.
-- Snapshot/adapter financiero remoto: ready.
-- Cloud Run deploy: 0.
-
-## 9. Remote live smoke R25 — PASS
-
-- Request commit: `cf86e115dde490fbb8c1d407482413411c9079e8`.
-- Run: `30099476156`.
-- Job: `89501621499`.
-- Artifact: `8598990578`.
-- Digest: `sha256:09c69c975a0933368b346d27218386b28421616adc039f3a37caf16ca8bbba12`.
-- Contexto observable: `cxorbia/corte3-hosting-dev-visual = success`.
-- Decisión: `PASS_CORTE3_HOSTING_DEV_AND_REMOTE_LIVE_SMOKE`.
-- Ejecución: `remote_smoke_only`.
-- Hosting redesplegado en este run: no.
-
-Comprobaciones remotas:
-
-- `visibleReady=true`;
-- `financeReady=true`;
-- 14 periodos y 616 visitas;
-- mayo: 44 visitas;
-- 42 filas exactas;
-- 2 revisiones fail-closed;
-- 32 exactas GT y 10 HN;
-- 0 diferencias de monto;
-- 0 pagos y 0 lotes;
-- dashboard y exportación visibles;
-- reporte: 2 filas, 8 columnas y 2 puntos de gráfica;
-- Beneficios: cuatro KPI y detalle;
-- shopper controlado: 3 liquidaciones y 0 pagadas.
-
-Las dos revisiones conservan `reviewRequired=true`, `pending_financial_source`, `pending_source_confirmation` y `paymentConfirmed=false`.
-
-## 10. Pendientes reales
-
-- Validación visual de Paula en Admin y Shopper.
-- PDF real: verificar gráfica y datos.
-- Excel real: verificar formato operativo y datos.
-- Responsive parcial.
-- Copy visible de fuente.
-- Corrección focalizada solo si aparece diferencia reproducible.
-- Aprobación y freeze Corte 3.
-
-## 11. Siguiente bloque exacto
-
-`VALIDACIÓN VISUAL DE PAULA → CORRECCIÓN FOCALIZADA SI APLICA → REVALIDACIÓN PUNTUAL → APROBADO → FREEZE CORTE 3`.
-
-No iniciar Corte 4 antes del freeze.
-
-## 12. Clasificación
-
-- **Reusable CXOrbia:** gate R24, overlay R24, smoke R25, revisiones fail-closed y modo smoke-only.
-- **Exclusivo cliente:** conteos y conciliación TyA/Cinépolis.
-- **Claude/prototipo:** sin corrección de módulos; P1/P2 visuales pendientes.
-- **Academia:** inventario, vínculo exacto, revisión, liquidación, pago y DEV/producción separados.
-- **Sin impacto Claude:** workflow, gates, requests y artifacts.
-
-## 13. Estado seguro
-
-Hosting DEV actualizado; sin producción, merge, Cloud Run deploy, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live, lotes ni pagos.
+Hosting DEV permanece publicado; sin producción, merge, Cloud Run deploy, Firestore/Auth/Storage/HR writes, imports, pagos, lotes, Make ni Gemini live.
