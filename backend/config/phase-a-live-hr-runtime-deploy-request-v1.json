@@ -1,12 +1,12 @@
 {
   "schemaVersion": "2.1.0",
-  "requestId": "CXORBIA-TYA-CORTE3-HOSTING-DEV-VISUAL-20260724-01",
+  "requestId": "CXORBIA-TYA-CORTE3-HOSTING-DEV-VISUAL-20260724-02",
   "status": "authorized_pending",
   "scope": "hosting_dev_visual_only",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "expectedSourceHead": "9da37583a15b3fa0e02e26d14e488f0f39f5537d",
+  "expectedSourceHead": "517e9bca2315ccf07f278f36c6166dd1b1d96357",
   "runtimeVersion": "V174-CORTE3-CANONICAL-FINANCE-R23",
   "manifestFile": "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json",
   "aggregateSha256": "ab11bc47dfd096cbe6a110db250c46e656c2dc9760ad832c07958b6c9a886818",
@@ -24,6 +24,15 @@
     "artifactId": 8589444193,
     "artifactDigest": "sha256:06188dc26dcba0a4e0b9b6fc4119ed32ca31d38462a6e513f177ab84cdba0deb",
     "status": "PASS_READONLY_POST_GATES"
+  },
+  "preflightRemediation": {
+    "previousRun": 30098219557,
+    "previousJob": 89497455866,
+    "previousDecision": "HOLD_BEFORE_HOSTING_DEPLOY",
+    "hostingTouched": false,
+    "rootCause": "STALE_FULL_APP_HASH_INCLUDED_MUTABLE_DOCS_AND_APPROVED_DEV_ENTRY",
+    "replacementGate": "tools/qa/tya-corte3-v174-runtime-preservation-r24-gate.mjs",
+    "blindRetry": false
   },
   "buildOverlay": {
     "liveHrBinding": "tools/release/tya-source-safe-live-binding-build-r22.mjs",
