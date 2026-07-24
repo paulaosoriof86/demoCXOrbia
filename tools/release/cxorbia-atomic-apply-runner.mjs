@@ -281,7 +281,7 @@ async function main() {
   check(Boolean(status), 'working_tree_has_expected_changes');
   run('git', ['config', 'user.name', 'cxorbia-automation']);
   run('git', ['config', 'user.email', 'cxorbia-automation@users.noreply.github.com']);
-  run('git', ['add', '-A', '--', ...expected]);
+  run('git', ['add', '-A', '--', ...unique]);
 
   const staged = lines(run('git', ['diff', '--cached', '--name-only'])).sort();
   check(JSON.stringify(staged) === JSON.stringify(expected), 'staged_delta_exact', staged.join(','));
