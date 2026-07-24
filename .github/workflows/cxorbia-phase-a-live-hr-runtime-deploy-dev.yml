@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: docs-tya-v6-v71-audit
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Read request status
         id: request
@@ -92,11 +92,12 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Verify locked V174 composite and Corte 3 sources
+      - name: Verify V174 runtime preservation and Corte 3 sources
         if: steps.request.outputs.active == 'true'
         run: |
           set -euo pipefail
-          node tools/release/tya-v174-corte2a-empalme-directo-verify.mjs | tee "$OUT_DIR/v174-verifier.log"
+          node --check tools/qa/tya-corte3-v174-runtime-preservation-r24-gate.mjs
+          node tools/qa/tya-corte3-v174-runtime-preservation-r24-gate.mjs --out "$OUT_DIR/runtime-preservation" 2>&1 | tee "$OUT_DIR/runtime-preservation.log"
           node --check tools/release/tya-source-safe-live-binding-build-r22.mjs
           node --check tools/release/tya-corte3-hosting-dev-build-r24.mjs
           node --check tools/qa/tya-corte3-canonical-finance-ui-export-r23-gate.mjs
