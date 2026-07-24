@@ -14,7 +14,7 @@ const outDir = path.resolve(arg('--out', '.tmp/tya-corte3-canonical-finance-ui-e
 fs.mkdirSync(outDir, { recursive: true });
 
 const report = {
-  schemaVersion: '1.2.0',
+  schemaVersion: '1.2.1',
   gateId: 'tya-corte3-canonical-finance-ui-export-r23',
   generatedAt: new Date().toISOString(),
   baseUrl,
@@ -45,7 +45,8 @@ const check = (condition, id, detail = '') => {
 let browser;
 try {
   browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });
+  const page = await context.newPage();
   page.on('pageerror', error => report.pageErrors.push(String(error?.message || error).slice(0, 1000)));
   page.on('console', message => {
     if (message.type() === 'error') report.consoleErrors.push(message.text().slice(0, 1000));
@@ -57,6 +58,7 @@ try {
   await page.addInitScript(() => {
     localStorage.clear();
     sessionStorage.clear();
+    sessionStorage.setItem('cx_pwa_shown', '1');
   });
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
