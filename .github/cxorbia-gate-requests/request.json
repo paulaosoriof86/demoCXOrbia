@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "corte3-canonical-finance-ui-export-r23-20260723-r9",
+  "requestId": "corte3-canonical-finance-ui-export-r23-20260723-r10",
   "enabled": true,
   "issuedAt": "2026-07-23",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "a57068bac1b031f2422fe21dc2e8a35055038871",
+  "targetHeadSha": "c5f18038d283a4c08a94b900514e3574cad61322",
   "profile": "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23",
   "allowedProfiles": [
     "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23"
