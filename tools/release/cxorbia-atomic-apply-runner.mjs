@@ -12,7 +12,7 @@ const reportDir = path.join(root, '.tmp/cxorbia-atomic-apply-runner');
 const reportPath = path.join(reportDir, 'report.json');
 const reportMdPath = path.join(reportDir, 'report.md');
 const report = {
-  schemaVersion: '1.0.0',
+  schemaVersion: '1.0.1',
   runner: 'CXORBIA_ATOMIC_APPLY_RUNNER',
   generatedAt: new Date().toISOString(),
   status: 'HOLD_NOT_RUN',
@@ -98,6 +98,22 @@ function run(command, args, options = {}) {
   return String(result.stdout || '').trim();
 }
 
+function lines(value) {
+  return String(value || '')
+    .split(/\r?\n/)
+    .map(x => x.trim())
+    .filter(Boolean);
+}
+
+function workingTreeDelta() {
+  const paths = new Set([
+    ...lines(run('git', ['diff', '--name-only'])),
+    ...lines(run('git', ['diff', '--cached', '--name-only'])),
+    ...lines(run('git', ['ls-files', '--others', '--exclude-standard']))
+  ]);
+  return [...paths].sort();
+}
+
 function sha256(buffer) {
   return crypto.createHash('sha256').update(buffer).digest('hex');
 }
@@ -169,11 +185,7 @@ function verifyAllowedTarget(rel, contract) {
 }
 
 function validateRequestCommitOnlyTouchesRequest() {
-  const changed = run('git', ['diff', '--name-only', 'HEAD^', 'HEAD'])
-    .split(/\r?\n/)
-    .map(x => x.trim())
-    .filter(Boolean)
-    .sort();
+  const changed = lines(run('git', ['diff', '--name-only', 'HEAD^', 'HEAD'])).sort();
   check(changed.length === 1 && changed[0] === requestPath, 'request_commit_scope_exact', changed.join(','));
 }
 
@@ -261,11 +273,7 @@ async function main() {
   }
 
   run('git', ['rm', '--', requestPath]);
-  const changed = run('git', ['diff', '--name-only'])
-    .split(/\r?\n/)
-    .map(x => x.trim())
-    .filter(Boolean)
-    .sort();
+  const changed = workingTreeDelta();
   const expected = [...unique, requestPath].sort();
   check(JSON.stringify(changed) === JSON.stringify(expected), 'working_tree_delta_exact', changed.join(','));
 
@@ -275,11 +283,7 @@ async function main() {
   run('git', ['config', 'user.email', 'cxorbia-automation@users.noreply.github.com']);
   run('git', ['add', '-A', '--', ...expected]);
 
-  const staged = run('git', ['diff', '--cached', '--name-only'])
-    .split(/\r?\n/)
-    .map(x => x.trim())
-    .filter(Boolean)
-    .sort();
+  const staged = lines(run('git', ['diff', '--cached', '--name-only'])).sort();
   check(JSON.stringify(staged) === JSON.stringify(expected), 'staged_delta_exact', staged.join(','));
 
   const message = String(request.commitMessage || '').trim();
