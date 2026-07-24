@@ -31,7 +31,7 @@ env:
 
 jobs:
   deploy-hosting-dev:
-    name: Deploy locked Corte 3 build to Hosting DEV and verify
+    name: Deploy or verify locked Corte 3 Hosting DEV build
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -50,11 +50,12 @@ jobs:
           const fs=require('fs');
           const x=JSON.parse(fs.readFileSync(process.env.DEPLOY_REQUEST,'utf8'));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`active=${x.status==='authorized_pending'?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`mode=${x.executionMode||'deploy_and_verify'}\n`);
           NODE
 
       - name: Stop safely when request is not active
         if: steps.request.outputs.active != 'true'
-        run: echo 'Hosting DEV request is not active; no deployment executed.'
+        run: echo 'Hosting DEV request is not active; no deployment or smoke executed.'
 
       - name: Validate explicit Hosting DEV authorization and exact source head
         if: steps.request.outputs.active == 'true'
@@ -70,6 +71,7 @@ jobs:
           if(x.schemaVersion!=='2.1.0')throw new Error('request_schema_invalid');
           if(x.status!=='authorized_pending')throw new Error('request_not_authorized_pending');
           if(x.scope!=='hosting_dev_visual_only')throw new Error('scope_invalid');
+          if(!['deploy_and_verify','remote_smoke_only'].includes(x.executionMode))throw new Error('execution_mode_invalid');
           if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('target_invalid');
           if(x.targetProject!=='cxorbia-backend-dev'||x.hostingTarget!=='cxorbia-dev')throw new Error('hosting_target_invalid');
           if(x.runtimeVersion!=='V174-CORTE3-CANONICAL-FINANCE-R23')throw new Error('runtime_version_invalid');
@@ -83,7 +85,7 @@ jobs:
           if(parent!==x.expectedSourceHead)throw new Error(`source_head_mismatch:${parent}/${x.expectedSourceHead}`);
           const changed=run(['diff','--name-only','HEAD^','HEAD']).split(/\r?\n/).filter(Boolean);
           if(changed.length!==1||changed[0]!==p)throw new Error(`request_commit_scope_invalid:${changed.join(',')}`);
-          console.log(JSON.stringify({decision:'PASS_CORTE3_HOSTING_DEV_AUTHORIZATION',sourceHead:parent,requestCommit:run(['rev-parse','HEAD']),production:false,writes:false,cloudRunDeploy:false}));
+          console.log(JSON.stringify({decision:'PASS_CORTE3_HOSTING_DEV_AUTHORIZATION',executionMode:x.executionMode,sourceHead:parent,requestCommit:run(['rev-parse','HEAD']),production:false,writes:false,cloudRunDeploy:false}));
           NODE
 
       - name: Setup Node
@@ -101,6 +103,7 @@ jobs:
           node --check tools/release/tya-source-safe-live-binding-build-r22.mjs
           node --check tools/release/tya-corte3-hosting-dev-build-r24.mjs
           node --check tools/qa/tya-corte3-canonical-finance-ui-export-r23-gate.mjs
+          node --check tools/qa/tya-corte3-remote-live-finance-smoke-r25-gate.mjs
           for file in \
             app/data/tya-financial-canonical-source-safe.js \
             app/data/tya-financial-canonical-source-safe-liq-01.js \
@@ -115,22 +118,22 @@ jobs:
           done
           sha256sum app/core/build-lock.js > "$OUT_DIR/local-build-lock.sha256"
 
-      - name: Verify existing live HR endpoint before touching Hosting
+      - name: Verify existing live HR endpoint
         if: steps.request.outputs.active == 'true'
         run: |
           set -euo pipefail
           url="$DEV_ROOT_URL$LIVE_ENDPOINT_PATH?format=meta&fresh=1&ts=$(date +%s)"
-          curl -fsS -H 'Cache-Control: no-cache' "$url" > "$OUT_DIR/predeploy-live-meta.json"
+          curl -fsS -H 'Cache-Control: no-cache' "$url" > "$OUT_DIR/precheck-live-meta.json"
           node <<'NODE'
           const fs=require('fs');
-          const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/predeploy-live-meta.json','utf8'));
+          const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/precheck-live-meta.json','utf8'));
           if(x.ok!==true||x.runtimeRead!==true||x.sourceSafe!==true||!x.revision)throw new Error('existing_live_hr_endpoint_not_ready');
           if(x.periods!==14||x.visits!==616)throw new Error('existing_live_hr_counts_invalid');
           console.log('PASS_EXISTING_LIVE_HR_ENDPOINT');
           NODE
 
       - name: Build exact Corte 3 deployment overlay
-        if: steps.request.outputs.active == 'true'
+        if: steps.request.outputs.active == 'true' && steps.request.outputs.mode == 'deploy_and_verify'
         run: |
           set -euo pipefail
           node tools/release/tya-source-safe-live-binding-build-r22.mjs --html app/index.html --live-endpoint "$LIVE_ENDPOINT_PATH" --out "$OUT_DIR/live-binding"
@@ -152,7 +155,7 @@ jobs:
           git diff -- app/index.html firebase.json > "$OUT_DIR/ephemeral-deploy-delta.patch"
 
       - name: Deploy Hosting DEV only
-        if: steps.request.outputs.active == 'true'
+        if: steps.request.outputs.active == 'true' && steps.request.outputs.mode == 'deploy_and_verify'
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
@@ -160,6 +163,10 @@ jobs:
           projectId: cxorbia-backend-dev
           channelId: live
           target: cxorbia-dev
+
+      - name: Record smoke-only no-redeploy decision
+        if: steps.request.outputs.active == 'true' && steps.request.outputs.mode == 'remote_smoke_only'
+        run: printf '%s\n' '{"executionMode":"remote_smoke_only","hostingRedeployed":false,"reason":"authorized build already deployed successfully in prior run; verifying same remote bytes only"}' > "$OUT_DIR/smoke-only-decision.json"
 
       - name: Install transient browser for remote verification
         if: steps.request.outputs.active == 'true'
@@ -196,9 +203,21 @@ jobs:
           if(x.ok!==true||x.runtimeRead!==true||x.sourceSafe!==true||!x.revision||x.periods!==14||x.visits!==616)throw new Error('remote_live_hr_endpoint_invalid');
           console.log('PASS_REMOTE_LIVE_HR_ENDPOINT');
           NODE
-          node tools/qa/tya-corte3-canonical-finance-ui-export-r23-gate.mjs --base-url "$remote_index" --out "$OUT_DIR/remote-corte3-ui-export"
+          node tools/qa/tya-corte3-remote-live-finance-smoke-r25-gate.mjs --base-url "$remote_index" --out "$OUT_DIR/remote-corte3-live-smoke"
           node tools/qa/tya-project-period-kpi-history-gate-r20.mjs --base-url "$remote_index" --out "$OUT_DIR/remote-r20" || true
-          printf '%s\n' '{"decision":"PASS_CORTE3_HOSTING_DEV_AND_REMOTE_SMOKE","environment":"DEV","url":"https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1","production":false,"cloudRunDeploy":false,"hrWrites":0,"firestoreWrites":0,"authWrites":0,"storageWrites":0,"imports":0,"payments":0}' > "$OUT_DIR/final-status.json"
+          node <<'NODE'
+          const fs=require('fs');
+          const request=JSON.parse(fs.readFileSync(process.env.DEPLOY_REQUEST,'utf8'));
+          const status={
+            decision:'PASS_CORTE3_HOSTING_DEV_AND_REMOTE_LIVE_SMOKE',
+            executionMode:request.executionMode,
+            hostingRedeployed:request.executionMode==='deploy_and_verify',
+            environment:'DEV',
+            url:'https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1',
+            production:false,cloudRunDeploy:false,hrWrites:0,firestoreWrites:0,authWrites:0,storageWrites:0,imports:0,payments:0
+          };
+          fs.writeFileSync(process.env.OUT_DIR+'/final-status.json',JSON.stringify(status,null,2)+'\n','utf8');
+          NODE
 
       - name: Upload sanitized Hosting DEV evidence
         if: always() && steps.request.outputs.active == 'true'
@@ -217,4 +236,4 @@ jobs:
         with:
           script: |
             const state=process.env.JOB_STATE==='success'?'success':'failure';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/corte3-hosting-dev-visual',description:state==='success'?'Corte 3 Hosting DEV and remote smoke PASS':'Corte 3 Hosting DEV or remote smoke HOLD',target_url:`${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`});
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/corte3-hosting-dev-visual',description:state==='success'?'Corte 3 Hosting DEV and remote live smoke PASS':'Corte 3 Hosting DEV or remote live smoke HOLD',target_url:`${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`});
