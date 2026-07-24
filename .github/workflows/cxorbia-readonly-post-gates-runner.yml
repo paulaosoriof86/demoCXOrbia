@@ -69,7 +69,7 @@ jobs:
           (steps.request.outputs.profile == 'V174_R20_M1_CORTE2A' ||
            steps.request.outputs.profile == 'CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23')
         run: |
-          npm install --no-save --ignore-scripts playwright@1.55.0
+          npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0
           npx playwright install --with-deps chromium
 
       - name: Prepare exact V174 source-safe binding for Corte 3 UI
