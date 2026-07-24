@@ -1,12 +1,13 @@
 # CXOrbia TyA — Plan de trabajo Phase A con validación visual continua
 
-Fecha original: 2026-07-04  
-Última revisión: 2026-07-18, Corte 0B R20 histórico  
-Estado: ACTIVO, OBLIGATORIO Y PREVALENTE
+**Fecha original:** 2026-07-04  
+**Última revisión:** 2026-07-24  
+**Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
+**Estado vivo:** `V174_ACTIVE_BASELINE_CORTE3_ROOT_CAUSE_DIAGNOSED_CORRECTION_PACKAGE_READY_P0_HOLD`
 
-## 1. Objetivo
+## 1. Objetivo operativo
 
-Acondicionar CXOrbia para operar TyA/Cinépolis como primer proyecto configurable con HR e histórico completos, shoppers, certificaciones, visitas, cuestionarios, liquidaciones/pagos, multi-tenant, multi-proyecto, roles, Academia, manuales y sincronización HR/plataforma, siempre sobre base nueva y sin conectar ni copiar la base vieja.
+Acondicionar CXOrbia para operar TyA/Cinépolis como primer proyecto configurable con HR e histórico completos, shoppers, certificaciones, visitas, agenda, cuestionarios, liquidaciones/pagos, multi-tenant, multi-proyecto, roles, Academia, manuales y sincronización HR/plataforma, sobre una base nueva y sin conectar ni copiar la base vieja.
 
 El resultado debe verse y funcionar en pantalla. Un contrato, script o PASS técnico sin validación visual no cierra un corte.
 
@@ -22,223 +23,164 @@ FUENTE Y REGLA
 → FREEZE
 ```
 
-Sin `APROBADO`, el estado máximo es `TECHNICAL_PASS_PENDING_VISUAL`.
+Sin `APROBADO`, el estado máximo es `TECHNICAL_PASS_PENDING_VISUAL` o `P0_PROVEN_VISUAL_HOLD` cuando exista bloqueo demostrado.
 
-## 3. Método obligatorio para futuras candidatas
+## 3. Método obligatorio para candidatas
 
 ```text
 EXECUTION_LANE_READY
 → AUDITORÍA DELTA
-→ COMPOSITE TEMPORAL DEL MISMO HASH + BACKEND/OVERLAYS
-→ GATES SEMÁNTICOS
-→ VISUALIZACIÓN PRE-EMPALME
-→ APROBACIÓN/HOLD
-→ APPLY_DELTA_DIRECTLY DEL MISMO HASH APROBADO
+→ P0_PROVEN o GO
+→ si GO sin P0: APPLY_DELTA_DIRECTLY
 → COMMIT/PUSH ATÓMICO
+→ MANIFEST / BUILD-LOCK / VERIFICADOR
 → POST-GATES
+→ VALIDACIÓN VISUAL
+→ CORRECCIÓN FOCALIZADA SI APLICA
 → FREEZE
 ```
 
-No nueva rama, PR, `main`, workflow transportador, PowerShell para Paula ni candidata distinta entre visualización y empalme.
+No se sustituye por composite previo obligatorio, nueva rama/PR, workflow transportador, aplicación archivo por archivo, PowerShell ni acciones manuales de Paula.
+
+Cuando ya existe un `P0_PROVEN`, primero se realiza diagnóstico localizado y paquete correctivo. La candidata correctiva vuelve al flujo anterior; no se reconstruye la baseline ni se reinicia el plan.
 
 ## 4. Definición de terminado
 
 Un corte solo queda `FROZEN` cuando:
 
-1. fuente, campos, claves, periodos y conteos están identificados;
-2. el mapping no depende de heurísticas silenciosas;
-3. los consumidores usan una única verdad;
-4. gates reproducibles pasan sobre el mismo build;
-5. Paula valida el comportamiento en pantalla;
-6. checkpoint, CAMBIOS, Claude, PENDIENTES, Academia, tracker y PR están actualizados.
+1. fuente, campos, llaves, periodos y conteos están identificados;
+2. mapping y adapter usan una única verdad;
+3. gates reproducibles pasan sobre el mismo build;
+4. archivos reales de exportación y flujos por rol se prueban cuando aplican;
+5. visualización y comportamiento móvil/escritorio fueron comprobados;
+6. Paula responde `APROBADO` o se documenta un P1/P2 no bloqueante;
+7. checkpoint, CAMBIOS, Claude, PENDIENTES, Academia, tracker y PR están actualizados.
 
-## 5. Estado actual
+## 5. Baseline y cortes cerrados
 
-### Cerrado técnicamente
+### V174 / M1 / Corte 1 / Corte 2A
 
-- V159 auditada y empalmada.
-- Manifest/build-lock/verificador.
-- Hosting DEV y smoke técnico anteriores.
-- HR source-safe con 14 periodos/616 visitas disponible como snapshot de build.
-- Contratos, adapters, importadores, reviewQueue, rollback y readiness preparados.
+Estado: **FROZEN / APROBADO**.
 
-### No cerrado
+- V174 empalmada y preservada.
+- Source lock visual: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
+- 14 periodos y 616 visitas.
+- HR source-safe, adapters y `CX.data` preservados.
+- Contexto, histórico y ciclo Shopper de Corte 2A aprobados según checkpoint vigente.
+- No se reabren por la corrección financiera.
 
-V159 fue `NO APROBADA` visualmente. No es `ACTIVE_BASELINE`.
-
-## 6. Plan vigente
-
-### CORTE 0 — V159 post-empalme
-
-Estado: **NO CERRADO**.
-
-P0 comprobado: cuestionarios/submitidos históricos incorrectos, divergencia KPI/fases/listados, liquidaciones contaminadas, asignación/disponibilidad incorrecta, Shopper sin visitas disponibles, contexto y Academia por rol incompletos, comparativo sin histórico y manuales superficiales.
-
-### CORTE 0B — Motor canónico histórico + tenant/login
-
-Estado: **ACTIVO**.
-
-#### Alcance histórico obligatorio
-
-La lectura y las reglas se aplican a:
-
-- todos los tabs/periodos detectados en la HR;
-- como mínimo todo el año vigente si una fuente más antigua no puede leerse;
-- todo periodo futuro sin programar excepciones por mes.
-
-Mayo, junio y julio son casos obligatorios de regresión, no el límite del desarrollo.
-
-#### 0B.1 — Fuente y motor canónico
-
-- leer HR multi-tab completa;
-- normalizar fechas sin aceptar valores inválidos como agenda/realizada/cuestionario/submitido;
-- mapear por fila: shopper, fecha programada, realizada, cuestionario, submitido y control;
-- separar:
-  - `assignmentState`;
-  - `schedulingState`;
-  - `executionState`;
-  - `questionnaireState`;
-  - `submissionState`;
-  - `liquidationState`;
-  - `paymentState`;
-  - `outOfRange`;
-  - `reviewRequired`;
-- enviar contradicciones a revisión, sin sobrescritura silenciosa;
-- mantener liquidación/pago separados de submitido.
-
-Implementación actual:
-
-- `tools/hr-source/tya-canonical-visit-state-r20.mjs`;
-- `tools/hr-source/tya-build-live-hr-source-safe-r15g.mjs` con R20;
-- `backend/contracts/phase-a-hr-canonical-visit-state-r20-v1.json`.
-
-#### 0B.2 — Consumo único y gates
-
-- Dashboard KPI, fases, listados, Visitas, disponibles, Shopper y Finanzas consumen facets canónicos;
-- submitido no aparece como pendiente de cuestionario/submitido;
-- submitido sin cruce financiero aparece como pendiente de pago/cruce, no pagado;
-- comparativo usa periodos reales;
-- gate recorre todos los periodos y valida progresión monotónica;
-- gate compara resúmenes por periodo, país y estado;
-- gate bloquea fechas/columnas ambiguas y conflictos ocultos.
-
-Implementación actual:
-
-- `tools/release/tya-source-safe-binding-build-r15g.mjs`;
-- `tools/qa/tya-canonical-history-reconciliation-r20-gate.mjs`;
-- `tools/qa/tya-source-semantics-r15g-gate.mjs` elevado a R20.
-
-#### 0B.3 — Tenant y login
-
-- perfil único de tenant;
-- países y banderas configurables;
-- banderas solo de países del tenant o proyectos activos;
-- proyectos activos/inactivos;
-- proyecto y periodo separados;
-- roles visibles de login configurables;
-- scopes por rol;
-- TyA inicialmente muestra Admin, Operativo y Shopper;
-- Cliente permanece oculto hasta habilitar portal y contenido;
-- ocultar un botón no sustituye Auth/RBAC.
-
-Implementación actual:
-
-- `backend/config/tya-tenant-runtime-profile.source-safe.json`;
-- binding source-safe de build.
-
-#### 0B.4 — Pendiente antes de cerrar
-
-1. ejecutar builder vivo R20;
-2. revisar todos los conflictos/fechas inválidas;
-3. ejecutar gates R20;
-4. construir Hosting DEV corregido con autorización específica;
-5. verificar Admin, Operativo, Shopper, Cliente habilitable y Academia;
-6. corregir únicamente diferencias reproducibles;
-7. recibir `APROBADO`;
-8. congelar Corte 0B.
-
-Corte 1 no comienza antes.
-
-### CORTE 1 — Contexto, HR e histórico
-
-- proyecto Cinépolis configurable;
-- todos los periodos HR reconocidos;
-- 14 periodos y 616 visitas para el snapshot vigente, con diferencias futuras documentadas;
-- cambio de periodo altera KPI, filas, detalle y exportación;
-- histórico por país y periodo;
-- junio ejecutado, no visitas pendientes;
-- fuente/origen visible y honesto.
-
-### CORTE 2 — Ciclo Shopper
-
-- disponibles reales;
-- postulaciones;
-- asignaciones HR/plataforma sin duplicar;
-- agenda/reprogramación/cancelación;
-- realizadas/cuestionario/submitido;
-- shopper por llave estable;
-- certificaciones preservadas;
-- conflictos visibles.
+## 6. Corte activo
 
 ### CORTE 3 — Finanzas
 
-- honorario, boleto, combo/reembolso, total y moneda;
-- liquidación no equivale a pago;
-- hasta mayo pagado solo con fuente;
-- junio pendiente según fuente financiera;
-- lotes/movimientos sin inferencias;
-- Beneficios del shopper coherente.
+Estado: `ROOT_CAUSE_DIAGNOSED_CORRECTION_PACKAGE_READY_P0_HOLD`.
+
+#### Verdad canónica preservada
+
+- 247 filas financieras;
+- 209 vínculos exactos;
+- 207 montos canónicos listos;
+- 38 filas sin vínculo exacto;
+- 79 revisiones de vínculo;
+- 2 revisiones de monto;
+- 37 evidencias candidatas;
+- 0 pagos confirmados;
+- 0 lotes.
+
+#### Mayo 2026
+
+- 44 visitas HR;
+- 42 filas exactas;
+- 2 revisiones fail-closed;
+- 32 exactas GT;
+- 10 exactas HN.
+
+#### Hosting y gate anterior
+
+- Hosting DEV publicado.
+- Remote live smoke R25: PASS técnico.
+- El PASS R25 no cerró Corte 3 porque solo validó DOM/spec y una sesión Shopper inyectada; no abrió exportaciones reales ni probó móvil/identidad visible.
+
+#### P0 demostrados
+
+1. suma GTQ + HNL rotulada como GTQ;
+2. honorarios mostrados como pagados con cero pagos confirmados;
+3. reembolso conciliado por regla inventada del 85 %;
+4. periodo financiero aislado del contexto canónico;
+5. PDF vacío/incorrecto y Excel no generado;
+6. dos revisiones financieras sin superficie visible;
+7. Beneficios no validable con identidad Shopper visible en DEV.
+
+#### Corrección ya preparada
+
+- diagnóstico de causa raíz cerrado;
+- paquete focalizado para Claude creado;
+- gate fuente fail-closed R26 creado;
+- plan canónico reconciliado;
+- baseline y datos preservados.
+
+#### Pendiente para cerrar Corte 3
+
+1. Claude aplica el paquete focalizado sobre V174.
+2. Entrega candidata incremental.
+3. Confirmar `EXECUTION_LANE_READY`.
+4. Auditar delta contra V174 y backend protegido.
+5. Ejecutar `node --check`, gate R26 y gates semánticos.
+6. Si queda GO sin P0, `APPLY_DELTA_DIRECTLY` sobre la rama viva.
+7. Commit/push atómico y post-gates.
+8. Hosting DEV del mismo build.
+9. Revalidación móvil real de Paula.
+10. PDF y Excel descargados y abiertos.
+11. Dos revisiones visibles.
+12. Shopper controlado accesible desde el login DEV.
+13. `APROBADO`.
+14. Freeze de Corte 3.
+
+Corte 4 no comienza antes.
+
+## 7. Cortes siguientes
 
 ### CORTE 4 — Backend nuevo `CX.data` read-only
 
-Prerequisito: Firebase nuevo y vacío. Implementar `loadSnapshot(context)`, bloquear `mutate`, conectar en punto único y repetir visualmente Cortes 1–3 sin fallback demo.
+Prerequisito: Corte 3 congelado y Firebase nuevo/vacío. Conectar `loadSnapshot(context)` en el punto único autorizado, bloquear mutaciones y repetir visualmente Cortes 1–3 sin fallback demo.
 
 ### CORTE 5 — Materialización DEV
 
-Dry-run, idempotencia, lotes controlados, trazabilidad, conflictos y cero datos sensibles. Solo con autorización expresa.
+Dry-run, idempotencia, trazabilidad, conflictos, lotes controlados y datos sensibles protegidos. Solo con autorización expresa.
 
 ### CORTE 6 — Auth/RBAC
 
-Claims por persona/rol/scope, proyectos, países, rutas, acciones, Academia y notificaciones. No importar Auth legacy.
+Claims por persona, rol y scope; países, proyectos, rutas, acciones, Academia y notificaciones. No importar Auth legacy.
 
-### CORTE 7 — Sync/evidencias/operación completa
+### CORTE 7 — Sincronización y evidencias
 
 HR→plataforma, plataforma→HR, no duplicación, reviewQueue, cuestionario configurable, evidencias protegidas, certificaciones preservadas y pagos nunca inferidos. Make, Storage, Gemini y HR writes por gates separados.
 
 ### CORTE 8 — Preproducción y producción
 
-Cortes anteriores congelados, rollback probado, smoke integral, source lock final y autorización expresa para merge/deploy/producción.
+Cortes anteriores congelados, rollback probado, smoke integral, source lock final y autorización específica para merge/deploy/producción.
 
-## 7. Cadencia visual
+## 8. Claude/prototipo
 
-Paula revisa antes de pasar a cada corte:
+Claude recibe únicamente tareas localizadas y reproducibles por archivo/módulo. No reinterpreta reglas HR ni modifica backend, adapters, gates o datos. No se solicita una candidata nueva por rutina; solo la correctiva ya justificada por P0.
 
-- `APROBADO`;
-- `DIFERENCIA: rol / ruta / acción / esperado / observado`;
-- `ERROR: acción / resultado`.
+Paquete vigente:
 
-No se pide revisar cada script; sí el build exacto antes de congelar.
+`app/docs/PAQUETE-CLAUDE-CORTE3-CORRECCION-FOCALIZADA-20260724.md`.
 
-## 8. No reabrir desde cero
+## 9. Academia
 
-No se reinician adapters, domain mapping, materialization plan, Auth readiness, importadores, reviewQueue, rollback, HR source-safe, manifests, source locks ni V159. Se complementan o corrigen focalizadamente.
+Cada corrección debe actualizar o documentar:
 
-## 9. Claude/prototipo
+- devengado vs liquidado vs por pagar vs pagado;
+- multimoneda sin conversión implícita;
+- revisión financiera fail-closed;
+- exportación PDF/Excel;
+- identidad Shopper DEV vs Auth real;
+- rutas por rol y errores frecuentes.
 
-Claude no reinterpreta reglas HR. Recibe contratos y tareas localizadas para:
+Manual y Curso permanecen como objetos distintos.
 
-- selectores proyecto/periodo por rol;
-- componentes configurables de login;
-- Academia Cliente;
-- Manual como documento distinto de Curso;
-- UX/copy que consuma estados canónicos.
+## 10. Estado seguro
 
-Todo patrón reusable se documenta para el prototipo comercializable.
-
-## 10. Academia
-
-Cada cambio actualiza manuales, cursos, checklists, glosario, errores frecuentes, rutas por rol, notificaciones y fecha/versión. Los manuales deben ser documentos profundos, no lecciones breves disfrazadas.
-
-## 11. Estado seguro
-
-Sin merge, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live, pagos ni base vieja conectada. Hosting DEV requiere autorización separada.
+Hosting DEV permanece publicado. Sin producción, merge, Cloud Run deploy, Firestore/Auth/Storage/HR writes, import real, pagos, lotes, Make ni Gemini live.
