@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-24  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V174_ACTIVE_BASELINE_CORTE3_P0_PROVEN_VISUAL_HOLD_NO_FREEZE_NO_PRODUCTION`
+**Estado vivo:** `V174_ACTIVE_BASELINE_CORTE3_ROOT_CAUSE_DIAGNOSED_CORRECTION_PACKAGE_READY_P0_HOLD_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -24,13 +24,15 @@
 7. `app/docs/VALIDACION-VISUAL-V174-APROBADA-CON-PENDIENTES-P1-P2-20260723.md`.
 8. `app/docs/CORTE3-FINANCIAL-RECONCILIATION-R20-TECHNICAL-PASS-20260723.md`.
 9. `app/docs/CORTE3-CANONICAL-FINANCE-SNAPSHOT-ADAPTER-R23-20260723.md`.
-10. `app/docs/CORTE3-HOSTING-DEV-REMOTE-LIVE-SMOKE-R25-PASS-20260724.md`.
+10. `app/docs/CORTE3-HOSTING-DEV-REMOTE-LIVE-SMOKE-R25-PASS-20260724.md` como evidencia técnica reemplazada por el HOLD visual.
 11. `app/docs/VALIDACION-VISUAL-CORTE3-HOLD-PAULA-20260724.md`.
-12. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`.
-13. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`.
-14. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`.
-15. `app/docs/ACADEMIA-IMPACTO-CORTE3-VISUAL-HOLD-20260724.md`.
-16. Tracker, manifest/source lock más reciente, PR #7 y HEAD vivo.
+12. `app/docs/CORTE3-DIAGNOSTICO-CAUSA-RAIZ-Y-CORRECCION-FOCALIZADA-20260724.md`.
+13. `app/docs/PAQUETE-CLAUDE-CORTE3-CORRECCION-FOCALIZADA-20260724.md`.
+14. `tools/qa/tya-corte3-p0-source-contract-r26-gate.mjs`.
+15. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE3-DIAGNOSTICO-Y-GATE-R26-20260724.md`.
+16. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`.
+17. `app/docs/ACADEMIA-IMPACTO-CORTE3-VISUAL-HOLD-20260724.md`.
+18. Tracker, manifest/source lock más reciente, PR #7 y HEAD vivo.
 
 ## 3. Baseline preservada
 
@@ -48,34 +50,38 @@
 - 38 filas sin vínculo exacto;
 - 79 revisiones de vínculo;
 - 2 revisiones de monto;
-- 37 evidencias candidatas de ledger;
+- 37 evidencias candidatas;
 - 0 pagos confirmados;
 - 0 lotes.
 
-## 5. Hosting y smoke técnico
+## 5. Estado del diagnóstico y corrección
 
-- Hosting DEV publicado.
-- Remote live smoke R25: PASS técnico.
-- Mayo 2026: 44 visitas HR, 42 filas exactas, 2 revisiones fail-closed, 32 exactas GT y 10 HN.
-- El PASS técnico no cerró el corte porque la validación móvil real encontró P0.
+- Hosting DEV y smoke R25: PASS técnico histórico.
+- Validación móvil: siete P0 comprobados.
+- Diagnóstico de causa raíz: cerrado.
+- Paquete focalizado para Claude: creado.
+- Gate fuente R26: creado y fail-closed.
+- Plan Phase A y checkpoint: reconciliados.
+- Módulos/core: no modificados por backend.
 
-## 6. P0 visuales comprobados
+## 6. P0 que la candidata debe resolver
 
-- suma inválida de GTQ y HNL en un KPI rotulado Q;
+- suma inválida de GTQ y HNL;
 - honorarios presentados como pagados con 0 pagos confirmados;
 - conciliación de reembolsos inferida sin fuente;
 - selector financiero desacoplado de los 14 periodos;
 - PDF vacío/incorrecto y Excel no generado;
 - dos revisiones no visibles ni localizables;
-- Shopper Beneficios no validable con identidad real desde DEV.
+- Shopper Beneficios no validable desde el flujo visible DEV.
 
 ## 7. Decisión
 
 - Corte 3: `HOLD`.
+- Diagnóstico: cerrado.
 - Freeze: prohibido.
 - Corte 4: no iniciar.
 - No producción, merge, pagos, imports ni writes.
 
 ## 8. Siguiente bloque exacto
 
-`DIAGNÓSTICO DE CAUSA RAÍZ POR HALLAZGO → PAQUETE FOCALIZADO PARA CLAUDE/PROTOTIPO + AJUSTE DE GATES → CANDIDATA AUDITADA → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN MÓVIL REAL → APROBADO → FREEZE CORTE 3`.
+`CLAUDE APLICA PAQUETE FOCALIZADO SOBRE V174 → ENTREGA CANDIDATA → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + GATES → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN MÓVIL REAL → APROBADO → FREEZE CORTE 3`.
