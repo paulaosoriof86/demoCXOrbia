@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-24  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V174_ACTIVE_BASELINE_CORTE3_HOSTING_DEV_REMOTE_LIVE_SMOKE_PASS_PENDING_PAULA_VISUAL_NO_PRODUCTION`
+**Estado vivo:** `V174_ACTIVE_BASELINE_CORTE3_P0_PROVEN_VISUAL_HOLD_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -24,30 +24,24 @@
 7. `app/docs/VALIDACION-VISUAL-V174-APROBADA-CON-PENDIENTES-P1-P2-20260723.md`.
 8. `app/docs/CORTE3-FINANCIAL-RECONCILIATION-R20-TECHNICAL-PASS-20260723.md`.
 9. `app/docs/CORTE3-CANONICAL-FINANCE-SNAPSHOT-ADAPTER-R23-20260723.md`.
-10. `app/docs/CORTE3-CANONICAL-FINANCE-UI-EXPORT-R23-TECHNICAL-PASS-20260724.md`.
-11. `app/docs/CORTE3-HOSTING-DEV-AUTORIZACION-Y-PREFLIGHT-20260724.md`.
-12. `app/docs/CORTE3-HOSTING-DEV-PREFLIGHT-HOLD-ROOT-CAUSE-20260724.md`.
-13. `app/docs/CORTE3-HOSTING-DEV-REMOTE-SMOKE-HOLD-ROOT-CAUSE-20260724.md`.
-14. `app/docs/CORTE3-HOSTING-DEV-REMOTE-LIVE-SMOKE-R25-PASS-20260724.md`.
-15. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE3-HOSTING-DEV-R25-PASS-20260724.md`.
-16. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE3-HOSTING-DEV-R25-PASS-20260724.md`.
-17. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE3-HOSTING-DEV-R25-PASS-20260724.md`.
-18. `app/docs/ACADEMIA-IMPACTO-CORTE3-HOSTING-DEV-R25-20260724.md`.
-19. `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`.
-20. Manifest/source lock más reciente, PR #7 y HEAD vivo.
+10. `app/docs/CORTE3-HOSTING-DEV-REMOTE-LIVE-SMOKE-R25-PASS-20260724.md`.
+11. `app/docs/VALIDACION-VISUAL-CORTE3-HOLD-PAULA-20260724.md`.
+12. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`.
+13. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`.
+14. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`.
+15. `app/docs/ACADEMIA-IMPACTO-CORTE3-VISUAL-HOLD-20260724.md`.
+16. Tracker, manifest/source lock más reciente, PR #7 y HEAD vivo.
 
-## 3. Baseline activa preservada
+## 3. Baseline preservada
 
 - V174/M1/Corte 1/Corte 2A: PASS técnico y visual aprobado.
 - Source lock visual: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
-- Lectura HR source-safe, módulos V174, adapters y `CX.data`: preservados.
-- Gate R24: 1890/1895 archivos del manifest exactos; cinco drifts permitidos limitados a documentación viva y `app/index-backend-dev.html`.
-- Drift funcional prohibido: 0.
+- HR source-safe, módulos V174, adapters y `CX.data`: preservados.
+- 14 periodos y 616 visitas.
 - No se reabren V174, Corte 1 o Corte 2A.
 
-## 4. Corte 3 — verdad financiera canónica
+## 4. Corte 3 — verdad financiera canónica preservada
 
-- 616 visitas HR;
 - 247 filas financieras;
 - 209 vínculos exactos;
 - 207 montos canónicos listos;
@@ -58,73 +52,30 @@
 - 0 pagos confirmados;
 - 0 lotes.
 
-Finanzas y Beneficios consumen la misma verdad. Pago permanece `pending_source_confirmation` hasta evidencia completa.
+## 5. Hosting y smoke técnico
 
-## 5. Gate UI/export técnico — PASS
+- Hosting DEV publicado.
+- Remote live smoke R25: PASS técnico.
+- Mayo 2026: 44 visitas HR, 42 filas exactas, 2 revisiones fail-closed, 32 exactas GT y 10 HN.
+- El PASS técnico no cerró el corte porque la validación móvil real encontró P0.
 
-- Perfil: `CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23`.
-- Target HEAD: `357cdbc73467344557c0da113262bba4f6a976fc`.
-- Request commit: `f415f23eb974b664181d1f618aa47e79ac99ed94`.
-- Run: `30074835544`.
-- Job: `89423207982`.
-- Artifact: `8589444193`.
-- Digest: `sha256:06188dc26dcba0a4e0b9b6fc4119ed32ca31d38462a6e513f177ab84cdba0deb`.
-- Estado: `PASS_READONLY_POST_GATES`.
+## 6. P0 visuales comprobados
 
-## 6. Hosting DEV — desplegado
+- suma inválida de GTQ y HNL en un KPI rotulado Q;
+- honorarios presentados como pagados con 0 pagos confirmados;
+- conciliación de reembolsos inferida sin fuente;
+- selector financiero desacoplado de los 14 periodos;
+- PDF vacío/incorrecto y Excel no generado;
+- dos revisiones no visibles ni localizables;
+- Shopper Beneficios no validable con identidad real desde DEV.
 
-URL vigente:
+## 7. Decisión
 
-`https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1`
+- Corte 3: `HOLD`.
+- Freeze: prohibido.
+- Corte 4: no iniciar.
+- No producción, merge, pagos, imports ni writes.
 
-Evidencia:
+## 8. Siguiente bloque exacto
 
-- run `30098823043`;
-- job `89499452079`;
-- artifact `8598747476`;
-- digest `sha256:88d201f834ce1237384de5c916f8cce65442e4255a710e58a9ade64e3707b016`;
-- `Deploy Hosting DEV only`: success;
-- build-lock remoto: coincide;
-- endpoint HR remoto: 14 periodos y 616 visitas;
-- snapshot y adapter financiero remoto: ready;
-- Cloud Run deploy: 0.
-
-## 7. Remote live smoke R25 — PASS
-
-- request commit `cf86e115dde490fbb8c1d407482413411c9079e8`;
-- run `30099476156`;
-- job `89501621499`;
-- artifact `8598990578`;
-- digest `sha256:09c69c975a0933368b346d27218386b28421616adc039f3a37caf16ca8bbba12`;
-- contexto `cxorbia/corte3-hosting-dev-visual = success`;
-- decisión `PASS_CORTE3_HOSTING_DEV_AND_REMOTE_LIVE_SMOKE`;
-- modo `remote_smoke_only`;
-- redeploy en este run: no.
-
-Mayo 2026:
-
-- 44 visitas HR;
-- 42 filas financieras exactas;
-- 2 revisiones fail-closed;
-- 32 exactas GT y 10 HN;
-- 0 diferencias de monto;
-- 0 pagos y 0 lotes;
-- Finanzas, Beneficios y export spec: PASS.
-
-## 8. Pendientes no bloqueantes preservados
-
-- validación visual de Paula;
-- responsive parcial;
-- gráfica del PDF real;
-- formato operativo del Excel real;
-- etiqueta visible de fuente.
-
-## 9. Siguiente bloque exacto
-
-`VALIDACIÓN VISUAL DE PAULA → CORRECCIÓN FOCALIZADA SI APLICA → REVALIDACIÓN PUNTUAL → APROBADO → FREEZE CORTE 3`.
-
-No iniciar Corte 4 antes del freeze.
-
-## 10. Estado seguro
-
-Hosting DEV actualizado; sin producción, merge, Cloud Run deploy, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live, lotes ni pagos.
+`DIAGNÓSTICO DE CAUSA RAÍZ POR HALLAZGO → PAQUETE FOCALIZADO PARA CLAUDE/PROTOTIPO + AJUSTE DE GATES → CANDIDATA AUDITADA → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN MÓVIL REAL → APROBADO → FREEZE CORTE 3`.
