@@ -14,14 +14,18 @@ const outDir = path.resolve(arg('--out', '.tmp/tya-corte3-canonical-finance-ui-e
 fs.mkdirSync(outDir, { recursive: true });
 
 const report = {
-  schemaVersion: '1.1.0',
+  schemaVersion: '1.2.0',
   gateId: 'tya-corte3-canonical-finance-ui-export-r23',
   generatedAt: new Date().toISOString(),
   baseUrl,
   status: 'HOLD',
+  readiness: null,
   summary: null,
   checks: [],
   warnings: [],
+  pageErrors: [],
+  consoleErrors: [],
+  failedRequests: [],
   safeState: {
     sourceSafe: true,
     paymentsExecuted: 0,
@@ -42,16 +46,69 @@ let browser;
 try {
   browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  page.on('pageerror', error => report.pageErrors.push(String(error?.message || error).slice(0, 1000)));
+  page.on('console', message => {
+    if (message.type() === 'error') report.consoleErrors.push(message.text().slice(0, 1000));
+  });
+  page.on('requestfailed', request => report.failedRequests.push({
+    url: request.url(),
+    error: request.failure()?.errorText || 'request_failed'
+  }));
   await page.addInitScript(() => {
     localStorage.clear();
     sessionStorage.clear();
   });
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
-  await page.waitForFunction(() => Boolean(
-    window.CX && CX.data && CX.liq && CX.fin &&
-    window.CX_TYA_VISIBLE_DATA_READY === true &&
-    window.CX_TYA_FINANCIAL_CANONICAL_READY === true
-  ), null, { timeout: 60000 });
+
+  let readiness = null;
+  const deadline = Date.now() + 15000;
+  do {
+    readiness = await page.evaluate(() => {
+      const scripts = [...document.scripts].map(script => script.getAttribute('src')).filter(Boolean);
+      const financial = window.CX_TYA_FINANCIAL_CANONICAL_SOURCE_SAFE || null;
+      return {
+        documentReadyState: document.readyState,
+        cxPresent: !!window.CX,
+        dataPresent: !!window.CX?.data,
+        liqPresent: !!window.CX?.liq,
+        finPresent: !!window.CX?.fin,
+        visibleReady: window.CX_TYA_VISIBLE_DATA_READY === true,
+        financeReady: window.CX_TYA_FINANCIAL_CANONICAL_READY === true,
+        visibleFlagRaw: window.CX_TYA_VISIBLE_DATA_READY ?? null,
+        financeFlagRaw: window.CX_TYA_FINANCIAL_CANONICAL_READY ?? null,
+        hrSnapshotPresent: !!window.CX_TYA_HR_SOURCE_SAFE,
+        financialSnapshotPresent: !!financial,
+        financialLiquidationCount: Array.isArray(financial?.liquidations) ? financial.liquidations.length : null,
+        financialReviewCount: Array.isArray(financial?.reviewQueue) ? financial.reviewQueue.length : null,
+        financialPaymentsCount: Array.isArray(financial?.payments) ? financial.payments.length : null,
+        financialBatchesCount: Array.isArray(financial?.batches) ? financial.batches.length : null,
+        dataFinancialSnapshotPresent: !!window.CX?.data?.financialSnapshot,
+        projectCount: Array.isArray(window.CX?.data?.projects) ? window.CX.data.projects.length : null,
+        visitCount: Array.isArray(window.CX?.data?._visitas) ? window.CX.data._visitas.length : null,
+        currentProjectId: window.CX?.data?.currentProjectId || null,
+        currentPeriodId: window.CX?.data?.currentPeriodId || null,
+        sourceAdapterTagCount: scripts.filter(src => src.includes('tya-phase-a-source-safe-dev-adapter.js')).length,
+        financialAdapterTagCount: scripts.filter(src => src.includes('tya-financial-canonical-source-safe-adapter.js')).length,
+        sourcePayloadTagCount: scripts.filter(src => src.includes('tya-hr-source-safe-periods.js')).length,
+        financialFinalTagCount: scripts.filter(src => src.includes('tya-financial-canonical-source-safe-final.js')).length,
+        scripts
+      };
+    });
+    if (readiness.visibleReady && readiness.financeReady) break;
+    await page.waitForTimeout(250);
+  } while (Date.now() < deadline);
+
+  report.readiness = readiness;
+  fs.writeFileSync(path.join(outDir, 'readiness-debug.json'), JSON.stringify({
+    readiness,
+    pageErrors: report.pageErrors,
+    consoleErrors: report.consoleErrors,
+    failedRequests: report.failedRequests
+  }, null, 2) + '\n', 'utf8');
+  await page.screenshot({ path: path.join(outDir, 'readiness-debug.png'), fullPage: true });
+
+  check(readiness?.visibleReady === true, 'visible_source_safe_data_ready', JSON.stringify(readiness));
+  check(readiness?.financeReady === true, 'canonical_finance_ready', JSON.stringify(readiness));
 
   const adminBtn = page.locator('[data-role="admin"]');
   check(await adminBtn.count() === 1, 'admin_login_available');
