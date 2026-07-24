@@ -1,6 +1,6 @@
 {
   "contractId": "cxorbia-controlled-runners-v1",
-  "schemaVersion": "1.5.0",
+  "schemaVersion": "1.6.0",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -44,7 +44,8 @@
       "profile": "V174_R20_M1_CORTE2A",
       "profiles": [
         "V174_R20_M1_CORTE2A",
-        "CORTE3_FINANCIAL_RECONCILIATION_R20"
+        "CORTE3_FINANCIAL_RECONCILIATION_R20",
+        "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23"
       ],
       "stableVisitIdentity": {
         "version": "tya-stable-visit-id-r20-row-identity-v1",
@@ -71,7 +72,8 @@
         ],
         "requiredInProfiles": [
           "V174_R20_M1_CORTE2A",
-          "CORTE3_FINANCIAL_RECONCILIATION_R20"
+          "CORTE3_FINANCIAL_RECONCILIATION_R20",
+          "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23"
         ]
       },
       "profileDefinitions": {
@@ -103,6 +105,22 @@
             ".tmp/tya-corte3-stable-visit-id-r20",
             ".tmp/phase-a-financial-r14c-live-hr",
             ".tmp/tya-corte3-financial-reconciliation-r20"
+          ]
+        },
+        "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23": {
+          "browserRequired": true,
+          "providerReads": false,
+          "stableVisitIdentityRequired": true,
+          "runtimeInventoryFilterRequired": false,
+          "purpose": "Validate the canonical source-safe finance snapshot and unique adapter in the exact DEV entrypoint, proving that Finanzas and Beneficios consume one truth while payments remain fail-closed",
+          "inputs": [
+            "app/index-backend-dev.html",
+            "app/data/tya-financial-canonical-source-safe.js",
+            "app/data/tya-financial-canonical-source-safe-final.js",
+            "app/adapters/tya-financial-canonical-source-safe-adapter.js"
+          ],
+          "outputs": [
+            ".tmp/tya-corte3-canonical-finance-ui-export-r23"
           ]
         }
       },
