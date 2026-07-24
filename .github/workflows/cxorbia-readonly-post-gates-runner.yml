@@ -49,6 +49,9 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Exclude ephemeral gate evidence from repository delta
+        run: echo ".tmp/" >> .git/info/exclude
+
       - name: Validate controlled runner contract
         run: node tools/qa/cxorbia-controlled-runners-contract-gate.mjs
 
