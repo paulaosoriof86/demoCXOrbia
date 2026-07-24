@@ -1,13 +1,13 @@
 {
   "schemaVersion": "2.1.0",
-  "requestId": "CXORBIA-TYA-V174-HOSTING-DEV-VISUAL-20260723-01",
-  "status": "consumed_visual_pending",
+  "requestId": "CXORBIA-TYA-CORTE3-HOSTING-DEV-VISUAL-20260724-01",
+  "status": "authorized_pending",
   "scope": "hosting_dev_visual_only",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "expectedSourceHead": "6cd66ac22e86c20a0cfc4d6fb84c697e672fab42",
-  "runtimeVersion": "V174-CORTE2A-R20-SOURCE-IDENTITY-FIX",
+  "expectedSourceHead": "9da37583a15b3fa0e02e26d14e488f0f39f5537d",
+  "runtimeVersion": "V174-CORTE3-CANONICAL-FINANCE-R23",
   "manifestFile": "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json",
   "aggregateSha256": "ab11bc47dfd096cbe6a110db250c46e656c2dc9760ad832c07958b6c9a886818",
   "targetProject": "cxorbia-backend-dev",
@@ -15,10 +15,26 @@
   "devUrl": "https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1",
   "liveEndpointPath": "/api/tya/cinepolis/hr-live",
   "existingCloudRunService": "cxorbia-live-hr-dev",
+  "technicalGate": {
+    "profile": "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23",
+    "targetHead": "357cdbc73467344557c0da113262bba4f6a976fc",
+    "requestCommit": "f415f23eb974b664181d1f618aa47e79ac99ed94",
+    "run": 30074835544,
+    "job": 89423207982,
+    "artifactId": 8589444193,
+    "artifactDigest": "sha256:06188dc26dcba0a4e0b9b6fc4119ed32ca31d38462a6e513f177ab84cdba0deb",
+    "status": "PASS_READONLY_POST_GATES"
+  },
+  "buildOverlay": {
+    "liveHrBinding": "tools/release/tya-source-safe-live-binding-build-r22.mjs",
+    "canonicalFinanceOverlay": "tools/release/tya-corte3-hosting-dev-build-r24.mjs",
+    "financialAdapter": "app/adapters/tya-financial-canonical-source-safe-adapter.js",
+    "modifiesTrackedFrontendSource": false
+  },
   "authorization": {
     "authorizedBy": "Paula",
-    "authorizationSource": "current_conversation_2026-07-23",
-    "authorizationText": "correcto, procede",
+    "authorizationSource": "current_conversation_2026-07-24",
+    "authorizationText": "Autorizado",
     "paulaExplicitInCurrentConversation": true,
     "hostingDevRedeploy": true,
     "cloudRunDeploy": false,
@@ -29,20 +45,9 @@
     "merge": false
   },
   "executionEvidence": {
-    "workflowRun": 30027204176,
-    "job": 89274577170,
-    "artifactId": 8571796399,
-    "artifactDigest": "sha256:50ef940bb7ab52f0fac318cd23f6c4e233f4581fee0a1035c8d936abb7e42a9e",
-    "hostingDeploy": "success",
-    "lockedCompositeVerifier": "pass",
-    "existingLiveHrPrecheck": "pass",
-    "remoteBuildLockMatch": "pass",
-    "remoteLiveHrEndpoint": "pass",
-    "remotePeriods": 14,
-    "remoteVisits": 616,
-    "remoteJulyVisits": 44,
-    "remoteCountrySplit": {"GT": 34, "HN": 10},
-    "remoteSourceIdentityTelemetry": "hold_public_gviz_csv_cache_busted",
+    "status": "pending",
+    "hostingDeploy": "pending",
+    "remoteSmoke": "pending",
     "visualReview": "pending_paula"
   },
   "safeState": {
@@ -52,6 +57,7 @@
     "hrWrites": false,
     "make": false,
     "gemini": false,
+    "cloudRunDeploy": false,
     "production": false
   }
 }
