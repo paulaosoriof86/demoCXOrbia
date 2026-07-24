@@ -93,6 +93,20 @@ jobs:
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           exit 0
 
+      - name: Capture exact repository delta evidence
+        if: always() && steps.request.outputs.enabled == 'true'
+        run: |
+          mkdir -p .tmp/cxorbia-repository-status
+          git status --porcelain=v1 > .tmp/cxorbia-repository-status/status-porcelain.txt
+          git diff --name-status > .tmp/cxorbia-repository-status/tracked-delta.txt
+          git ls-files --others --exclude-standard > .tmp/cxorbia-repository-status/untracked.txt
+          printf '%s\n' '--- status --porcelain ---'
+          cat .tmp/cxorbia-repository-status/status-porcelain.txt
+          printf '%s\n' '--- tracked delta ---'
+          cat .tmp/cxorbia-repository-status/tracked-delta.txt
+          printf '%s\n' '--- untracked ---'
+          cat .tmp/cxorbia-repository-status/untracked.txt
+
       - name: Record disabled request safely
         if: steps.request.outputs.enabled != 'true'
         run: echo "Controlled gate request disabled; no gates executed."
@@ -104,6 +118,7 @@ jobs:
           name: cxorbia-readonly-post-gates-${{ github.run_id }}
           path: |
             .tmp/cxorbia-readonly-post-gates-runner
+            .tmp/cxorbia-repository-status
             .tmp/tya-project-period-kpi-history-r20
             .tmp/tya-corte2a-shopper-operation-canonical
             .tmp/tya-corte1-report-frontend-runtime
