@@ -62,6 +62,10 @@ jobs:
         if: steps.request.outputs.present == 'true'
         run: node tools/qa/cxorbia-controlled-runners-contract-gate.mjs
 
+      - name: Clear transient contract evidence before atomic delta
+        if: steps.request.outputs.present == 'true'
+        run: rm -rf .tmp/cxorbia-controlled-runners-contract-gate
+
       - name: Execute controlled atomic request
         if: steps.request.outputs.present == 'true'
         id: execute
