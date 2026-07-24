@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-24  
-**Estado:** `V174_ACTIVE_BASELINE_CORTE3_HOSTING_DEV_DEPLOYED_REMOTE_LIVE_SMOKE_PENDING_NO_PRODUCTION`
+**Estado:** `V174_ACTIVE_BASELINE_CORTE3_HOSTING_DEV_REMOTE_LIVE_SMOKE_PASS_PENDING_PAULA_VISUAL_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -19,7 +19,7 @@
 - Commit funcional V174: `b21e494d127fb4b902de5576e3fab0292362b097`.
 - Source lock visual: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
 - Módulos V174, lectura HR source-safe, adapters y `CX.data`: preservados.
-- Gate de preservación R24: PASS, 0 drift funcional prohibido.
+- Gate de preservación R24: PASS, 1890/1895 hashes exactos, cinco drifts permitidos no funcionales y 0 drift funcional prohibido.
 
 ## 3. Identidad estable de visita
 
@@ -58,7 +58,7 @@ Los conflictos no se resolvieron ni sobrescribieron silenciosamente.
 ## 6. Gate técnico UI/export — PASS
 
 - Perfil: `CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23`.
-- Target HEAD validado: `357cdbc73467344557c0da113262bba4f6a976fc`.
+- Target HEAD: `357cdbc73467344557c0da113262bba4f6a976fc`.
 - Request commit: `f415f23eb974b664181d1f618aa47e79ac99ed94`.
 - Run: `30074835544`.
 - Job: `89423207982`.
@@ -66,80 +66,87 @@ Los conflictos no se resolvieron ni sobrescribieron silenciosamente.
 - Digest: `sha256:06188dc26dcba0a4e0b9b6fc4119ed32ca31d38462a6e513f177ab84cdba0deb`.
 - Estado: `PASS_READONLY_POST_GATES`.
 
-## 7. Primer preflight de Hosting — HOLD seguro
+## 7. Causas raíz cerradas en el carril Hosting
 
-- Run `30098219557`, job `89497455866`.
-- Autorización exacta: PASS.
-- Fallo: verificador V174 full-app obsoleto incluyó documentación mutable y entry DEV aprobado.
-- Deploy ejecutado: no.
-- Causa raíz documentada y gate R24 aplicado.
+### Preflight V174
+
+`STALE_FULL_APP_HASH_INCLUDED_MUTABLE_DOCS_AND_APPROVED_DEV_ENTRY`
+
+El verificador antiguo mezclaba runtime protegido, documentación viva y entry DEV. Se sustituyó por gate R24 sin permitir drift en módulos/core/index funcional.
+
+### Smoke snapshot/live
+
+`FROZEN_SNAPSHOT_GATE_CONFLATED_EXACT_CANONICAL_ROWS_WITH_LIVE_FAIL_CLOSED_REVIEW_ROWS`
+
+El snapshot congelado exponía 42 filas exactas; el runtime live muestra además dos revisiones operativas explícitas. Gate R25 valida esa diferencia sin tratarlas como canónicas ni pagadas.
 
 ## 8. Hosting DEV — desplegado
 
+- URL: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1`.
 - Run: `30098823043`.
 - Job: `89499452079`.
 - Artifact: `8598747476`.
 - Digest: `sha256:88d201f834ce1237384de5c916f8cce65442e4255a710e58a9ade64e3707b016`.
-- Step de deploy Hosting DEV: success.
-- URL: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1`.
+- Deploy Hosting DEV: success.
 - Build-lock remoto: coincide.
-- Endpoint HR previo y remoto: ready, source-safe, 14 periodos y 616 visitas.
-- Snapshot financiero remoto: ready.
-- Adapter financiero remoto: ready.
+- Endpoint HR remoto: source-safe, 14 periodos y 616 visitas.
+- Snapshot/adapter financiero remoto: ready.
 - Cloud Run deploy: 0.
 
-## 9. HOLD del smoke remoto y causa raíz
+## 9. Remote live smoke R25 — PASS
 
-El gate R23 terminó HOLD en la comparación `44/42`:
+- Request commit: `cf86e115dde490fbb8c1d407482413411c9079e8`.
+- Run: `30099476156`.
+- Job: `89501621499`.
+- Artifact: `8598990578`.
+- Digest: `sha256:09c69c975a0933368b346d27218386b28421616adc039f3a37caf16ca8bbba12`.
+- Contexto observable: `cxorbia/corte3-hosting-dev-visual = success`.
+- Decisión: `PASS_CORTE3_HOSTING_DEV_AND_REMOTE_LIVE_SMOKE`.
+- Ejecución: `remote_smoke_only`.
+- Hosting redesplegado en este run: no.
 
-- 44 visitas HR live;
-- 42 filas financieras exactas;
-- 2 filas operativas no exactas expuestas deliberadamente como revisión fail-closed.
+Comprobaciones remotas:
 
-Las dos filas adicionales cumplen:
+- `visibleReady=true`;
+- `financeReady=true`;
+- 14 periodos y 616 visitas;
+- mayo: 44 visitas;
+- 42 filas exactas;
+- 2 revisiones fail-closed;
+- 32 exactas GT y 10 HN;
+- 0 diferencias de monto;
+- 0 pagos y 0 lotes;
+- dashboard y exportación visibles;
+- reporte: 2 filas, 8 columnas y 2 puntos de gráfica;
+- Beneficios: cuatro KPI y detalle;
+- shopper controlado: 3 liquidaciones y 0 pagadas.
 
-- `reviewRequired=true`;
-- `financialSourceStatus=pending_or_review`;
-- `liquidationState=pending_financial_source`;
-- `paymentState=pending_source_confirmation`;
-- `paymentConfirmed=false`.
+Las dos revisiones conservan `reviewRequired=true`, `pending_financial_source`, `pending_source_confirmation` y `paymentConfirmed=false`.
 
-No son filas canónicas, no están pagadas y no entran a lotes. El problema estaba en reutilizar una expectativa del snapshot congelado sobre el runtime live.
+## 10. Pendientes reales
 
-Causa raíz:
+- Validación visual de Paula en Admin y Shopper.
+- PDF real: verificar gráfica y datos.
+- Excel real: verificar formato operativo y datos.
+- Responsive parcial.
+- Copy visible de fuente.
+- Corrección focalizada solo si aparece diferencia reproducible.
+- Aprobación y freeze Corte 3.
 
-`FROZEN_SNAPSHOT_GATE_CONFLATED_EXACT_CANONICAL_ROWS_WITH_LIVE_FAIL_CLOSED_REVIEW_ROWS`.
+## 11. Siguiente bloque exacto
 
-## 10. Corrección focalizada
-
-- Gate nuevo: `tools/qa/tya-corte3-remote-live-finance-smoke-r25-gate.mjs`.
-- Workflow existente con `executionMode=remote_smoke_only`.
-- La siguiente ejecución no redespliega Hosting.
-- Exige 42 exactas + 2 revisiones fail-closed, 0 pagos y 0 diferencias de monto.
-
-## 11. Pendientes reales
-
-- Ejecutar solicitud aislada `remote_smoke_only`.
-- Obtener smoke remoto R25 PASS.
-- Validación visual de Paula.
-- PDF real: verificar gráfica.
-- Excel real: verificar formato operativo.
-- Responsive parcial y copy `sourceAccessMode`: P1/P2 preservados.
-
-## 12. Siguiente bloque exacto
-
-`SOLICITUD AISLADA REMOTE_SMOKE_ONLY → SMOKE REMOTO R25 → VALIDACIÓN VISUAL DE PAULA → CORRECCIÓN FOCALIZADA SI APLICA → FREEZE CORTE 3`.
+`VALIDACIÓN VISUAL DE PAULA → CORRECCIÓN FOCALIZADA SI APLICA → REVALIDACIÓN PUNTUAL → APROBADO → FREEZE CORTE 3`.
 
 No iniciar Corte 4 antes del freeze.
 
-## 13. Clasificación
+## 12. Clasificación
 
-- **Reusable CXOrbia:** preservación de runtime separada de docs; snapshot vs live; revisiones fail-closed; smoke-only sin redeploy.
+- **Reusable CXOrbia:** gate R24, overlay R24, smoke R25, revisiones fail-closed y modo smoke-only.
 - **Exclusivo cliente:** conteos y conciliación TyA/Cinépolis.
-- **Claude/prototipo:** sin corrección de módulos; pendientes P1/P2 preservados.
-- **Academia:** fila exacta, fila en revisión, liquidación y pago son conceptos diferentes.
-- **Sin impacto Claude:** workflow, gates y evidencias.
+- **Claude/prototipo:** sin corrección de módulos; P1/P2 visuales pendientes.
+- **Academia:** inventario, vínculo exacto, revisión, liquidación, pago y DEV/producción separados.
+- **Sin impacto Claude:** workflow, gates, requests y artifacts.
 
-## 14. Estado seguro
+## 13. Estado seguro
 
 Hosting DEV actualizado; sin producción, merge, Cloud Run deploy, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live, lotes ni pagos.
