@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-24  
-**Estado:** `V174_ACTIVE_BASELINE_CORTE3_P0_PROVEN_VISUAL_HOLD_NO_FREEZE_NO_PRODUCTION`
+**Estado:** `V174_ACTIVE_BASELINE_CORTE3_ROOT_CAUSE_DIAGNOSED_CORRECTION_PACKAGE_READY_P0_HOLD_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -38,58 +38,70 @@
 - Hosting DEV: publicado.
 - Remote live smoke R25: PASS técnico.
 - Mayo 2026: 44 visitas HR, 42 filas exactas, 2 revisiones fail-closed, 32 exactas GT y 10 HN.
-- El smoke validó DOM/spec y una sesión Shopper controlada; no sustituyó la validación humana de archivos, identidad real y móvil.
+- El smoke validó DOM/spec y una sesión Shopper inyectada; no sustituyó descarga real, identidad visible ni viewport móvil.
 
-## 5. Validación visual de Paula — HOLD
+## 5. Validación visual de Paula — P0 HOLD
 
-Paula aportó diez capturas móviles y demostró los siguientes P0:
-
-1. **Multimoneda:** `Q 13,229` resulta de sumar `Q 7,368 + L 5,861` y rotular el total como quetzales.
-2. **Pago:** la UI habla de “honorarios pagados” con 0 pagos confirmados.
-3. **Reembolsos:** se presentan diferencias conciliadas/inferidas sin fuente confirmada.
-4. **Periodo:** el selector financiero solo muestra `2026-07` y no los 14 periodos canónicos.
+1. **Multimoneda:** `Q 13,229` sumó `Q 7,368 + L 5,861`.
+2. **Pago:** se mostró “honorarios pagados” con 0 pagos confirmados.
+3. **Reembolsos:** se aplicó una conciliación inferida del 85 % sin fuente.
+4. **Periodo:** Finanzas quedó aislado del contexto de 14 periodos.
 5. **Exportación:** PDF vacío/incorrecto y Excel no generado.
-6. **Revisión humana:** las dos filas pendientes no se muestran ni se pueden localizar.
-7. **Shopper:** Beneficios no se puede validar con una identidad Shopper real visible en DEV.
+6. **Revisión humana:** dos filas pendientes sin superficie visible.
+7. **Shopper:** Beneficios no validable con identidad real/controlada desde el flujo visible DEV.
 
-P1 confirmados:
+P1 vinculados:
 
-- tablas, modales, topbar y breadcrumbs no operables correctamente en móvil;
-- scroll horizontal sin señal;
+- tablas, modales, topbar y breadcrumbs insuficientes en móvil;
+- scroll horizontal sin pista;
 - Dashboard y Movimientos/Tesorería ambiguos;
-- copy de IA/Gemini no honesto mientras la integración está bloqueada;
-- exportación habilitada con 0 filas.
+- exportación habilitada sin filas;
+- copy de IA/Gemini no honesto.
 
-## 6. Ubicación de las dos revisiones
+## 6. Diagnóstico de causa raíz cerrado
 
-Por conteos canónicos, ambas pertenecen a Guatemala: 34 visitas HR GT frente a 32 exactas GT; Honduras tiene 10/10 exactas. La UI no expone `visitId`, `hrRowId`, shopper, cine ni motivo para identificarlas.
+- `app/modules/finanzas.js` usa la moneda del primer país en agregados multimoneda.
+- `app/modules/beneficios.js` usa la moneda del primer país para totales del shopper.
+- `app/core/finanzas-core.js` denomina `honPaga` a honorarios que no están pagados.
+- `app/modules/finanzas.js` infiere `reembolsado = reembolso * 0.85`.
+- Finanzas/Movimientos usan `CX.finStore.periods()` en vez del contexto canónico.
+- R25 interceptó la especificación del reporte, no descargó ni abrió archivos reales.
+- Las revisiones existen en datos, pero no en una bandeja visible.
+- R25 inyectó `shopperId`; el flujo visible no ofreció identidad Shopper controlada.
 
-## 7. Decisión
+Documento:
+
+`app/docs/CORTE3-DIAGNOSTICO-CAUSA-RAIZ-Y-CORRECCION-FOCALIZADA-20260724.md`.
+
+## 7. Corrección preparada
+
+- Paquete focalizado para Claude:
+  `app/docs/PAQUETE-CLAUDE-CORTE3-CORRECCION-FOCALIZADA-20260724.md`.
+- Gate fuente fail-closed:
+  `tools/qa/tya-corte3-p0-source-contract-r26-gate.mjs`.
+- Plan Phase A canónico reconciliado con V174 y Corte 3.
+- No se modificaron módulos/core desde backend.
+
+## 8. Decisión
 
 - Corte 3: `P0_PROVEN_VISUAL_HOLD`.
+- Diagnóstico: cerrado.
+- Corrección frontend: paquete listo, pendiente candidata de Claude.
 - Freeze: prohibido.
 - Corte 4: no iniciar.
-- No se permite tratar los P0 como pendientes cosméticos P1/P2.
-
-## 8. Documentación
-
-- `VALIDACION-VISUAL-CORTE3-HOLD-PAULA-20260724.md`.
-- `CAMBIOS-BACKEND-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`.
-- `RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`.
-- `PENDIENTES-PROTOTIPO-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`.
-- `ACADEMIA-IMPACTO-CORTE3-VISUAL-HOLD-20260724.md`.
+- No tratar los P0 como pendientes cosméticos.
 
 ## 9. Siguiente bloque exacto
 
-`DIAGNÓSTICO DE CAUSA RAÍZ POR HALLAZGO → PAQUETE FOCALIZADO PARA CLAUDE/PROTOTIPO + AJUSTE DE GATES → CANDIDATA AUDITADA → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN MÓVIL REAL → APROBADO → FREEZE CORTE 3`.
+`CLAUDE APLICA PAQUETE FOCALIZADO SOBRE V174 → ENTREGA CANDIDATA → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + GATES → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN MÓVIL REAL → APROBADO → FREEZE CORTE 3`.
 
 ## 10. Clasificación
 
-- **Reusable CXOrbia:** separación multimoneda, estados de pago honestos, review queue visible, pruebas reales de exportación y sesión por rol.
-- **Exclusivo cliente:** cifras y filas TyA/Cinépolis.
+- **Reusable CXOrbia:** multimoneda, estados devengado/por pagar/pagado, review queue visible, exportación real y sesión visible por rol.
+- **Exclusivo cliente:** cifras TyA/Cinépolis y dos revisiones de mayo.
 - **Claude/prototipo:** Finanzas, Movimientos, Beneficios, reportes, periodo, responsive y copy IA.
 - **Academia:** monedas, liquidación/pago, revisión, exportación y rutas por rol.
-- **Sin impacto Claude:** documentación y actualización de estado.
+- **Sin impacto Claude:** gate R26, diagnóstico y reconciliación documental.
 
 ## 11. Estado seguro
 
