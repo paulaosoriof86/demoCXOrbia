@@ -72,6 +72,15 @@ jobs:
           npm install --no-save --ignore-scripts playwright@1.55.0
           npx playwright install --with-deps chromium
 
+      - name: Prepare exact V174 source-safe binding for Corte 3 UI
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.profile == 'CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23'
+        run: |
+          echo "app/adapters/tya-phase-a-source-safe-dev-adapter.js" >> .git/info/exclude
+          node tools/release/tya-source-safe-binding-build-r15g.mjs \
+            --html app/index-backend-dev.html \
+            --app-dir app \
+            --out .tmp/tya-corte3-canonical-finance-source-safe-binding-r23
+
       - name: Execute authorized read-only gate profile
         if: steps.request.outputs.enabled == 'true'
         id: gates
@@ -101,6 +110,7 @@ jobs:
             .tmp/r20-source-safe-gates
             .tmp/phase-a-financial-r14c-live-hr
             .tmp/tya-corte3-financial-reconciliation-r20
+            .tmp/tya-corte3-canonical-finance-source-safe-binding-r23
             .tmp/tya-corte3-canonical-finance-ui-export-r23
           if-no-files-found: warn
           retention-days: 14
