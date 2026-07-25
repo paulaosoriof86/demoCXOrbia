@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-25  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V174_ACTIVE_BASELINE_V178_AUDITED_P0_PROVEN_HOLD_V179_REQUIRED_NO_FREEZE_NO_PRODUCTION`
+**Estado vivo:** `V174_ACTIVE_BASELINE_V179_AUDITED_P0_PROVEN_HOLD_V180_REQUIRED_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -25,18 +25,20 @@
 8. `app/docs/CORTE3-FINANCIAL-RECONCILIATION-R20-TECHNICAL-PASS-20260723.md`.
 9. `app/docs/CORTE3-CANONICAL-FINANCE-SNAPSHOT-ADAPTER-R23-20260723.md`.
 10. `app/docs/VALIDACION-VISUAL-CORTE3-HOLD-PAULA-20260724.md`.
-11. Auditorías V175, V176 y V177 como antecedentes de HOLD.
-12. `app/docs/AUDITORIA-V178-CORTE3-P0-PROVEN-HOLD-20260725.md`.
-13. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V178-P0-HOLD-20260725.md`.
-14. `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V178-P0-HOLD-20260725.md`.
-15. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V178-P0-HOLD-20260725.md`.
-16. `app/docs/ACADEMIA-IMPACTO-V178-P0-HOLD-20260725.md`.
-17. `tools/qa/tya-corte3-p0-source-contract-r26-gate.mjs`.
-18. `tools/qa/tya-corte3-v175-residual-p0-r27-gate.mjs`.
-19. `tools/qa/tya-corte3-v176-semantic-residual-p0-r28-gate.mjs`.
-20. `tools/qa/tya-corte3-v177-finance-truth-r29-gate.mjs`.
-21. `tools/qa/tya-corte3-v178-residual-finance-truth-r30-gate.mjs`.
-22. Manifest/source lock más reciente, PR #7 y HEAD vivo.
+11. Auditorías V175–V178 como antecedentes de HOLD.
+12. `app/docs/AUDITORIA-V179-CORTE3-P0-PROVEN-HOLD-20260725.md`.
+13. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V179-P0-HOLD-20260725.md`.
+14. `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V179-P0-HOLD-20260725.md`.
+15. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V179-P0-HOLD-20260725.md`.
+16. `app/docs/ACADEMIA-IMPACTO-V179-P0-HOLD-20260725.md`.
+17. `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-V179-P0-HOLD-20260725.md`.
+18. `tools/qa/tya-corte3-p0-source-contract-r26-gate.mjs`.
+19. `tools/qa/tya-corte3-v175-residual-p0-r27-gate.mjs`.
+20. `tools/qa/tya-corte3-v176-semantic-residual-p0-r28-gate.mjs`.
+21. `tools/qa/tya-corte3-v177-finance-truth-r29-gate.mjs`.
+22. `tools/qa/tya-corte3-v178-residual-finance-truth-r30-gate.mjs`.
+23. `tools/qa/tya-corte3-v179-operational-currency-r31-gate.mjs`.
+24. Manifest/source lock más reciente, PR #7 y HEAD vivo.
 
 ## 3. Baseline preservada
 
@@ -64,32 +66,33 @@ Mayo 2026: 44 visitas HR, 42 exactas, 2 revisiones fail-closed, 32 exactas GT y 
 
 - **V175:** R26/R27 HOLD; no aplicada.
 - **V176:** R26/R27/R28 HOLD; no aplicada.
-- **V177:** R26/R27/R28 PASS, R29 HOLD; no aplicada.
-- **V178:** integridad, hashes, UTF-8 y `node --check` PASS; R26/R27/R28/R29 PASS; R30 HOLD 1/12; no aplicada.
+- **V177:** R26–R28 PASS, R29 HOLD; no aplicada.
+- **V178:** R26–R29 PASS, R30 HOLD; no aplicada.
+- **V179:** integridad, hashes, UTF-8 y `node --check` PASS; R26–R30 PASS; R31 HOLD 4/27; no aplicada.
 
-Delta real V178:
+Delta real V179:
 
-- cambia `app/core/finanzas-core.js`;
-- cambia `app/modules/finanzas.js`;
-- `beneficios.js`, `app.js` y `layout.css` son idénticos a V177.
+- cambia únicamente `app/modules/finanzas.js`;
+- `finanzas-core.js`, `beneficios.js`, `app.js` y `layout.css` son idénticos a V178.
 
-P0 V178:
+P0 V179:
 
-- moneda pendiente todavía entra a agregación;
-- `pendingCurrencyRows` no es visible;
-- export incluye moneda no resuelta;
-- gráfica exportada suma monedas;
-- presupuesto mensual usa primera moneda;
-- copy conserva `＋ Mes siguiente` eliminado;
-- financiamientos y CxP/CxC usan primera moneda;
-- lote sin moneda hereda primera moneda;
-- Dashboard usa periodo global en una lectura;
+- presupuesto con identidades de periodo distintas;
+- totales crudos anteriores al filtro de moneda;
+- `pending_currency` en ingresos por tipo y superficies monetarias;
+- formularios no reactivos ni fail-closed;
+- edición CxP/CxC sin resolución de moneda;
+- Abonar/Devolver/Pagar lote no bloqueados de forma coherente;
+- financiamiento pendiente puede aparecer saldado;
+- lote pendiente puede aparecer pagado y monetario;
+- exportación y conteo no demostrados;
+- markup residual;
 - evidencia canónica/móvil/PDF/Excel incompleta.
 
 ## 6. Decisión
 
 - Baseline funcional: V174.
-- V175–V178 no aplicadas.
+- V175–V179 no aplicadas.
 - Corte 3: HOLD.
 - Freeze: prohibido.
 - Corte 4: no iniciar.
@@ -97,4 +100,4 @@ P0 V178:
 
 ## 7. Siguiente bloque exacto
 
-`CLAUDE CORRIGE V178 Y ENTREGA V179 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 + R28 + R29 + R30 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN CANÓNICA/MÓVIL + PDF/EXCEL → APROBADO → FREEZE CORTE 3`.
+`CLAUDE CORRIGE V179 Y ENTREGA V180 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 + R28 + R29 + R30 + R31 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN CANÓNICA/MÓVIL + PDF/EXCEL → APROBADO → FREEZE CORTE 3`.
