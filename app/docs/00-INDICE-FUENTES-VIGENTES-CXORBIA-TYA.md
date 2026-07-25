@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-25  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V174_ACTIVE_BASELINE_V177_AUDITED_P0_PROVEN_HOLD_V178_REQUIRED_NO_FREEZE_NO_PRODUCTION`
+**Estado vivo:** `V174_ACTIVE_BASELINE_V178_AUDITED_P0_PROVEN_HOLD_V179_REQUIRED_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -25,17 +25,17 @@
 8. `app/docs/CORTE3-FINANCIAL-RECONCILIATION-R20-TECHNICAL-PASS-20260723.md`.
 9. `app/docs/CORTE3-CANONICAL-FINANCE-SNAPSHOT-ADAPTER-R23-20260723.md`.
 10. `app/docs/VALIDACION-VISUAL-CORTE3-HOLD-PAULA-20260724.md`.
-11. `app/docs/AUDITORIA-V175-CORTE3-P0-PROVEN-HOLD-20260724.md`.
-12. `app/docs/AUDITORIA-V176-CORTE3-P0-PROVEN-HOLD-20260725.md`.
-13. `app/docs/AUDITORIA-V177-CORTE3-P0-PROVEN-HOLD-20260725.md`.
-14. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V177-P0-HOLD-20260725.md`.
-15. `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V177-P0-HOLD-20260725.md`.
-16. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V177-P0-HOLD-20260725.md`.
-17. `app/docs/ACADEMIA-IMPACTO-V177-P0-HOLD-20260725.md`.
-18. `tools/qa/tya-corte3-p0-source-contract-r26-gate.mjs`.
-19. `tools/qa/tya-corte3-v175-residual-p0-r27-gate.mjs`.
-20. `tools/qa/tya-corte3-v176-semantic-residual-p0-r28-gate.mjs`.
-21. `tools/qa/tya-corte3-v177-finance-truth-r29-gate.mjs`.
+11. Auditorías V175, V176 y V177 como antecedentes de HOLD.
+12. `app/docs/AUDITORIA-V178-CORTE3-P0-PROVEN-HOLD-20260725.md`.
+13. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V178-P0-HOLD-20260725.md`.
+14. `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V178-P0-HOLD-20260725.md`.
+15. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V178-P0-HOLD-20260725.md`.
+16. `app/docs/ACADEMIA-IMPACTO-V178-P0-HOLD-20260725.md`.
+17. `tools/qa/tya-corte3-p0-source-contract-r26-gate.mjs`.
+18. `tools/qa/tya-corte3-v175-residual-p0-r27-gate.mjs`.
+19. `tools/qa/tya-corte3-v176-semantic-residual-p0-r28-gate.mjs`.
+20. `tools/qa/tya-corte3-v177-finance-truth-r29-gate.mjs`.
+21. `tools/qa/tya-corte3-v178-residual-finance-truth-r30-gate.mjs`.
 22. Manifest/source lock más reciente, PR #7 y HEAD vivo.
 
 ## 3. Baseline preservada
@@ -62,42 +62,34 @@ Mayo 2026: 44 visitas HR, 42 exactas, 2 revisiones fail-closed, 32 exactas GT y 
 
 ## 5. Estado de candidatas
 
-### V175
+- **V175:** R26/R27 HOLD; no aplicada.
+- **V176:** R26/R27/R28 HOLD; no aplicada.
+- **V177:** R26/R27/R28 PASS, R29 HOLD; no aplicada.
+- **V178:** integridad, hashes, UTF-8 y `node --check` PASS; R26/R27/R28/R29 PASS; R30 HOLD 1/12; no aplicada.
 
-- integridad/sintaxis: PASS;
-- R26/R27: HOLD;
-- no aplicada.
+Delta real V178:
 
-### V176
+- cambia `app/core/finanzas-core.js`;
+- cambia `app/modules/finanzas.js`;
+- `beneficios.js`, `app.js` y `layout.css` son idénticos a V177.
 
-- integridad/sintaxis: PASS;
-- R26/R27/R28: HOLD;
-- no aplicada.
+P0 V178:
 
-### V177
-
-- ZIP SHA-256: `cb755c9d7ce02d11944cb9926d1362ef37062a6edb8a46f28544ed3c7b849aea`;
-- manifest/hashes, UTF-8 y `node --check` 4/4: PASS;
-- R26/R27/R28: PASS;
-- delta real: tres archivos; `app.js` y `layout.css` son idénticos a V176;
-- R29: HOLD, 11/12 checks fallidos;
-- decisión: `P0_PROVEN_HOLD_NO_APPLY`.
-
-P0 V177:
-
-- presupuesto del Dashboard usa periodo local implícito;
-- presupuesto vacío crea cifras ficticias;
-- filas sin moneda heredan la primera moneda;
-- financiamientos multipaís se rotulan con una sola moneda;
-- presupuesto no asignado se presenta como gasto ejecutado;
-- referencia obsoleta y moneda inventada en presupuesto;
-- `porPais(data)` usa contexto global en vez del suministrado;
+- moneda pendiente todavía entra a agregación;
+- `pendingCurrencyRows` no es visible;
+- export incluye moneda no resuelta;
+- gráfica exportada suma monedas;
+- presupuesto mensual usa primera moneda;
+- copy conserva `＋ Mes siguiente` eliminado;
+- financiamientos y CxP/CxC usan primera moneda;
+- lote sin moneda hereda primera moneda;
+- Dashboard usa periodo global en una lectura;
 - evidencia canónica/móvil/PDF/Excel incompleta.
 
 ## 6. Decisión
 
 - Baseline funcional: V174.
-- V175, V176 y V177 no aplicadas.
+- V175–V178 no aplicadas.
 - Corte 3: HOLD.
 - Freeze: prohibido.
 - Corte 4: no iniciar.
@@ -105,4 +97,4 @@ P0 V177:
 
 ## 7. Siguiente bloque exacto
 
-`CLAUDE CORRIGE V177 Y ENTREGA V178 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 + R28 + R29 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN CANÓNICA/MÓVIL + PDF/EXCEL → APROBADO → FREEZE CORTE 3`.
+`CLAUDE CORRIGE V178 Y ENTREGA V179 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 + R28 + R29 + R30 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN CANÓNICA/MÓVIL + PDF/EXCEL → APROBADO → FREEZE CORTE 3`.
