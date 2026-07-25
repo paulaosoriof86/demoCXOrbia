@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-25  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `V174_ACTIVE_BASELINE_V178_AUDITED_P0_PROVEN_HOLD_V179_REQUIRED`
+**Estado vivo:** `V174_ACTIVE_BASELINE_V179_AUDITED_P0_PROVEN_HOLD_V180_REQUIRED`
 
 ## 1. Objetivo operativo
 
@@ -54,7 +54,7 @@ Un corte solo queda `FROZEN` cuando:
 4. exportaciones y flujos por rol se prueban realmente;
 5. móvil y escritorio fueron comprobados;
 6. Paula responde `APROBADO` o se documenta un P1/P2 no bloqueante;
-7. checkpoint, CAMBIOS, Claude, PENDIENTES, Academia, índice y PR están actualizados.
+7. checkpoint, CAMBIOS, Claude, PENDIENTES, Academia, tracker, índice y PR están actualizados.
 
 ## 5. Baseline y cortes cerrados
 
@@ -70,7 +70,7 @@ Estado: **FROZEN / APROBADO**.
 
 ## 6. Corte activo — Corte 3 Finanzas
 
-Estado: `V178_AUDITED_P0_PROVEN_HOLD_V179_REQUIRED`.
+Estado: `V179_AUDITED_P0_PROVEN_HOLD_V180_REQUIRED`.
 
 ### Verdad canónica preservada
 
@@ -96,54 +96,58 @@ Mayo 2026:
 
 - **V175:** R26/R27 HOLD; no aplicada.
 - **V176:** R26/R27/R28 HOLD; no aplicada.
-- **V177:** R26/R27/R28 PASS; R29 HOLD; no aplicada.
-- **V178:** integridad, hashes, UTF-8 y sintaxis PASS; R26/R27/R28/R29 PASS; R30 HOLD 1/12; no aplicada.
+- **V177:** R26–R28 PASS; R29 HOLD; no aplicada.
+- **V178:** R26–R29 PASS; R30 HOLD; no aplicada.
+- **V179:** integridad, hashes, UTF-8 y sintaxis PASS; R26–R30 PASS; R31 HOLD 4/27; no aplicada.
 
-### Correcciones válidas de V178
+### Correcciones válidas de V179
 
-- periodo explícito para presupuesto en core/Dashboard;
-- montos ficticios de presupuesto eliminados;
-- presupuesto pendiente no tratado como gasto real en Dashboard;
-- resolución base `currencyOf()` fail-closed;
-- análisis de financiamientos por moneda;
-- `porPais(data)` usa contexto recibido;
+- movimiento sin moneda sale de agregación principal;
+- bandeja visible de moneda pendiente;
+- gráfica por moneda;
+- presupuesto mensual sin primera moneda visible;
+- base de lote `pending_currency`;
 - cero pagos y lotes.
 
-### P0 residuales de V178
+### P0 residuales de V179
 
-1. movimiento sin moneda entra a agregación;
-2. `pendingCurrencyRows` no tiene superficie visible;
-3. export incluye moneda no resuelta;
-4. gráfica de exportación suma monedas;
-5. presupuesto mensual usa primera moneda;
-6. copy conserva `＋ Mes siguiente` eliminado;
-7. financiamientos usan primera moneda como fallback;
-8. alta de financiamiento no resuelve moneda por país;
-9. CxP/CxC manuales y edición usan primera moneda;
-10. lote sin moneda hereda primera moneda;
-11. Dashboard usa periodo global en una lectura;
-12. evidencia canónica/móvil/PDF/Excel incompleta.
+1. presupuesto usa identidades de periodo distintas;
+2. totales crudos se calculan antes de filtrar moneda;
+3. ingresos por tipo agrega `pending_currency`;
+4. tablas y drill pueden renderizar moneda pendiente como dinero;
+5. formularios no actualizan moneda ni exigen país;
+6. edición CxP/CxC no permite resolver moneda;
+7. Abonar permanece habilitado sin moneda;
+8. financiamiento activo sin moneda puede aparecer saldado;
+9. Devolver no tiene contrato fail-closed completo;
+10. Pagar lote no se bloquea por revisiones;
+11. lote sin moneda puede aparecer pagado y monetario;
+12. export usa contrato de revisión no demostrado y conteo incorrecto;
+13. copy/markup de presupuesto conserva texto residual;
+14. evidencia canónica/móvil/PDF/Excel incompleta.
 
 ### Pendiente para cerrar Corte 3
 
-1. Claude corrige V178 y entrega V179 incremental.
+1. Claude corrige V179 y entrega V180 incremental.
 2. Confirmar `EXECUTION_LANE_READY`.
-3. Auditar delta contra V178 y baseline V174.
-4. Ejecutar `node --check`, R26, R27, R28, R29 y R30.
+3. Auditar delta contra V179 y baseline V174.
+4. Ejecutar `node --check`, R26, R27, R28, R29, R30 y R31.
 5. Si queda GO sin P0, `APPLY_DELTA_DIRECTLY` sobre la rama viva.
 6. Commit/push atómico y post-gates.
 7. Hosting DEV del mismo build.
 8. Revalidación con fuente TyA y viewport móvil.
 9. PDF y Excel descargados y abiertos.
 10. Dos revisiones GT visibles en mayo.
-11. Moneda pendiente visible y fuera de agregados.
-12. Export y gráfica separados por moneda.
-13. Presupuesto sin moneda inventada.
-14. Financiamientos, CxP/CxC y lotes fail-closed sin moneda.
-15. Shopper HNL sin Q 0.
-16. Host DEV autorizado y host no autorizado probados.
-17. `APROBADO`.
-18. Freeze de Corte 3.
+11. Presupuesto idéntico en Dashboard/Movimientos.
+12. Filas pendientes fuera de KPIs, tablas y drill monetarios.
+13. Formularios y edición fail-closed.
+14. Abonar/Devolver/Pagar lote bloqueados sin moneda.
+15. Lote sin moneda en revisión.
+16. Export bloqueado hasta resolver revisiones.
+17. Shopper HNL sin Q 0.
+18. Host DEV autorizado y host no autorizado probados.
+19. `APROBADO`.
+20. Freeze de Corte 3.
 
 Corte 4 no comienza antes.
 
@@ -175,14 +179,15 @@ Claude recibe tareas localizadas y reproducibles por archivo/módulo. No reinter
 
 Paquete vigente:
 
-`app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V178-P0-HOLD-20260725.md`.
+`app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V179-P0-HOLD-20260725.md`.
 
 ## 9. Academia
 
 La corrección aprobada debe documentar:
 
-- periodo canónico;
+- periodo financiero único;
 - moneda faltante fail-closed;
+- formularios y acciones monetarias;
 - multimoneda sin suma implícita;
 - presupuesto planeado, pendiente y ejecutado;
 - devengado/por pagar/pagado;
