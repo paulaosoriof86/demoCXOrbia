@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-24  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V174_ACTIVE_BASELINE_CORTE3_ROOT_CAUSE_DIAGNOSED_CORRECTION_PACKAGE_READY_P0_HOLD_NO_FREEZE_NO_PRODUCTION`
+**Estado vivo:** `V174_ACTIVE_BASELINE_V175_AUDITED_P0_PROVEN_HOLD_V176_REQUIRED_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -29,10 +29,13 @@
 12. `app/docs/CORTE3-DIAGNOSTICO-CAUSA-RAIZ-Y-CORRECCION-FOCALIZADA-20260724.md`.
 13. `app/docs/PAQUETE-CLAUDE-CORTE3-CORRECCION-FOCALIZADA-20260724.md`.
 14. `tools/qa/tya-corte3-p0-source-contract-r26-gate.mjs`.
-15. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE3-DIAGNOSTICO-Y-GATE-R26-20260724.md`.
-16. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`.
-17. `app/docs/ACADEMIA-IMPACTO-CORTE3-VISUAL-HOLD-20260724.md`.
-18. Tracker, manifest/source lock más reciente, PR #7 y HEAD vivo.
+15. `app/docs/AUDITORIA-V175-CORTE3-P0-PROVEN-HOLD-20260724.md`.
+16. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V175-P0-HOLD-20260724.md`.
+17. `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V175-P0-HOLD-20260724.md`.
+18. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V175-P0-HOLD-20260724.md`.
+19. `app/docs/ACADEMIA-IMPACTO-V175-P0-HOLD-20260724.md`.
+20. `tools/qa/tya-corte3-v175-residual-p0-r27-gate.mjs`.
+21. Tracker, manifest/source lock más reciente, PR #7 y HEAD vivo.
 
 ## 3. Baseline preservada
 
@@ -54,34 +57,34 @@
 - 0 pagos confirmados;
 - 0 lotes.
 
-## 5. Estado del diagnóstico y corrección
+Mayo 2026: 44 visitas HR, 42 exactas, 2 revisiones fail-closed, 32 GT y 10 HN exactas.
 
-- Hosting DEV y smoke R25: PASS técnico histórico.
-- Validación móvil: siete P0 comprobados.
-- Diagnóstico de causa raíz: cerrado.
-- Paquete focalizado para Claude: creado.
-- Gate fuente R26: creado y fail-closed.
-- Plan Phase A y checkpoint: reconciliados.
-- Módulos/core: no modificados por backend.
+## 5. Candidata V175
 
-## 6. P0 que la candidata debe resolver
+- ZIP e integridad: PASS.
+- Sintaxis: PASS.
+- Correcciones parciales válidas: estados de honorario, eliminación del 85 %, copy determinístico y estructura parcial multimoneda/revisión/Shopper DEV.
+- R26: HOLD.
+- R27: HOLD.
+- Decisión: `P0_PROVEN_HOLD_NO_APPLY`.
 
-- suma inválida de GTQ y HNL;
-- honorarios presentados como pagados con 0 pagos confirmados;
-- conciliación de reembolsos inferida sin fuente;
-- selector financiero desacoplado de los 14 periodos;
-- PDF vacío/incorrecto y Excel no generado;
-- dos revisiones no visibles ni localizables;
-- Shopper Beneficios no validable desde el flujo visible DEV.
+P0 residuales:
 
-## 7. Decisión
+- selector Shopper DEV habilitado por sufijos Firebase genéricos;
+- review queue no filtra contratos canónicos;
+- periodo visible canónico con datos todavía locales;
+- moneda del primer país aún usada en superficies principales;
+- presupuesto con llave incoherente y duplicación potencial;
+- exportación habilitada sin filas financieras reales.
 
-- Corte 3: `HOLD`.
-- Diagnóstico: cerrado.
+## 6. Decisión
+
+- V175 no aplicada.
+- Corte 3: HOLD.
 - Freeze: prohibido.
 - Corte 4: no iniciar.
 - No producción, merge, pagos, imports ni writes.
 
-## 8. Siguiente bloque exacto
+## 7. Siguiente bloque exacto
 
-`CLAUDE APLICA PAQUETE FOCALIZADO SOBRE V174 → ENTREGA CANDIDATA → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + GATES → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN MÓVIL REAL → APROBADO → FREEZE CORTE 3`.
+`CLAUDE CORRIGE V175 Y ENTREGA V176 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN MÓVIL REAL → APROBADO → FREEZE CORTE 3`.
