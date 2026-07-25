@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-24  
-**Estado:** `CORTE3_P0_PROVEN_VISUAL_HOLD_NO_FREEZE`
+**Estado:** `CORTE3_V175_P0_PROVEN_HOLD_V176_REQUIRED_NO_FREEZE`
 
 ## 1. Estado general
 
@@ -10,7 +10,7 @@
 - Rama: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Baseline activa: V174.
-- Hosting DEV: publicado.
+- Hosting DEV: publicado sobre la versión anterior.
 - Sin deploy productivo, merge, producción, import real, Firestore/Auth/Storage/HR writes, Cloud Run deploy, Make/Gemini live ni pagos.
 
 ## 2. Cortes cerrados
@@ -23,7 +23,6 @@
 - 44 visitas por periodo: 34 GT y 10 HN.
 - Proyecto y periodo separados.
 - Ciclo Shopper y operación preservados.
-- Gate R24 confirma 0 drift funcional prohibido.
 
 No reabrir sin evidencia reproducible.
 
@@ -41,55 +40,61 @@ No reabrir sin evidencia reproducible.
 - 0 pagos;
 - 0 lotes.
 
-### Hosting y smoke técnico
+Mayo 2026: 44 visitas, 42 exactas, 2 revisiones fail-closed, 32 GT y 10 HN exactas.
 
-- Hosting DEV publicado.
-- Smoke remoto live R25: PASS técnico.
-- Mayo 2026: 44 visitas, 42 exactas, 2 revisiones fail-closed, 32 GT y 10 HN exactas.
+## 4. Bloques ejecutados
 
-### Validación visual de Paula — HOLD
+### Hosting DEV / R25
 
-P0 comprobados:
+- Smoke técnico PASS histórico.
+- Validación visual real: siete P0.
+- Corte 3 quedó HOLD.
 
-1. suma GTQ/HNL rotulada como Q;
-2. honorarios mostrados como pagados con 0 pagos confirmados;
-3. conciliación de reembolsos inferida sin fuente;
-4. selector financiero solo julio, desacoplado de 14 periodos;
-5. PDF vacío/incorrecto y Excel no generado;
-6. dos revisiones no visibles ni localizables;
-7. Shopper Beneficios no validable con identidad real.
+### Diagnóstico y paquete inicial
 
-P1 comprobados:
+- Causa raíz cerrada.
+- Paquete para Claude creado.
+- Gate R26 creado.
 
-- responsive insuficiente;
-- tablas y modales cortados;
-- exportación habilitada con 0 filas;
-- copy IA/Gemini no honesto;
-- Dashboard y Movimientos/Tesorería ambiguos;
-- topbar y breadcrumbs truncados.
+### Candidata V175
 
-## 4. Hallazgo metodológico
+- ZIP, hashes, UTF-8 y sintaxis: PASS.
+- Cinco archivos declarados.
+- Correcciones válidas parciales: estados de honorario, 85 % eliminado, copy determinístico y estructuras parciales de moneda/revisión/Shopper DEV.
+- R26: HOLD.
+- R27: HOLD.
+- V175 no aplicada.
 
-El gate R25 comprobó DOM, spec de reporte y una sesión Shopper controlada, pero no descargó los archivos reales, no validó una identidad Shopper visible y no ejecutó un recorrido móvil humano completo. El PASS técnico no sustituyó la validación visual.
+P0 residuales:
+
+1. Firebase Hosting genérico habilita selector Shopper DEV;
+2. review queue no reconoce estados canónicos de revisión;
+3. periodo visible canónico pero datos/presupuesto/export local;
+4. moneda del primer país persiste en superficies principales;
+5. presupuesto con llaves incoherentes y duplicación potencial;
+6. exportación no falla cerrado con cero filas financieras.
 
 ## 5. Decisión
 
 - Corte 3 no aprobado.
+- V175: `P0_PROVEN_HOLD`.
 - Freeze prohibido.
 - Corte 4 no inicia.
-- Los P0 no pueden degradarse a pendientes cosméticos.
+- No aplicar parcialmente V175.
 
 ## 6. Claude/prototipo
 
-Paquete focalizado creado en `RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE3-VISUAL-HOLD-20260724.md`, con archivos, reglas y validación esperada.
+V176 debe ser incremental sobre V175 y conservar sus correcciones válidas. Contrato vigente:
+
+`app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V175-P0-HOLD-20260724.md`.
 
 ## 7. Academia
 
-Pendiente actualizar monedas, liquidación/pago, revisión financiera, selector de periodo, exportación y rutas Admin/Shopper después de la corrección aprobada.
+Pendiente actualizar seguridad DEV, periodo único, multimoneda completa, presupuesto, review queue y evidencia después de V176 aprobada.
 
 ## 8. Siguiente bloque exacto
 
-`DIAGNÓSTICO DE CAUSA RAÍZ POR HALLAZGO → PAQUETE FOCALIZADO PARA CLAUDE/PROTOTIPO + AJUSTE DE GATES → CANDIDATA AUDITADA → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN MÓVIL REAL → APROBADO → FREEZE CORTE 3`.
+`CLAUDE CORRIGE V175 Y ENTREGA V176 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN MÓVIL REAL → APROBADO → FREEZE CORTE 3`.
 
 ## 9. Regla de cierre
 
