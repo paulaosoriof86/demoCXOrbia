@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-25  
-**Estado:** `V174_ACTIVE_BASELINE_V176_AUDITED_P0_PROVEN_HOLD_V177_REQUIRED_NO_FREEZE_NO_PRODUCTION`
+**Estado:** `V174_ACTIVE_BASELINE_V177_AUDITED_P0_PROVEN_HOLD_V178_REQUIRED_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -41,82 +41,107 @@ Mayo 2026:
 - 32 exactas GT;
 - 10 exactas HN.
 
-## 4. Estado de V175
+## 4. Candidatas anteriores
 
-- Integridad y sintaxis: PASS.
-- R26/R27: HOLD.
-- V175: `P0_PROVEN_HOLD_NO_APPLY`.
-- Correcciones válidas preservables: estados financieros honestos, eliminación del 85 %, estructura parcial multimoneda/revisión/Shopper DEV y responsive.
+### V175
 
-## 5. Candidata V176
+- integridad y sintaxis PASS;
+- R26/R27 HOLD;
+- no aplicada.
+
+### V176
+
+- integridad y sintaxis PASS;
+- correcciones parciales válidas preservables;
+- R26/R27/R28 HOLD;
+- no aplicada.
+
+## 5. Candidata V177
 
 ### EXECUTION_LANE_READY
 
-- ZIP: `Prototype development request CXOrbia V176.zip`.
-- Candidata: `CANDIDATA_V176_CORTE3_20260724`.
-- SHA-256 ZIP: `6b13adc994fa4fb64f69666c949144c8e93056741de9e090a9995f0802964edf`.
+- ZIP: `Prototype development request CXOrbia V177.zip`.
+- Candidata: `CANDIDATA_V177_CORTE3_20260725`.
+- SHA-256 ZIP: `cb755c9d7ce02d11944cb9926d1362ef37062a6edb8a46f28544ed3c7b849aea`.
 - Manifest y cinco hashes: PASS.
 - UTF-8 sin BOM: PASS.
 - `node --check`: 4/4 JavaScript PASS.
-- CSS estructural: PASS.
-- Tres capturas diferentes: PASS.
-- No se detectaron secretos.
+- Dos capturas diferentes: PASS.
+- GitHub autenticado, rama viva y PR #7 verificados.
+- No secretos detectados.
+
+### Delta real
+
+Cambian V176→V177:
+
+- `app/core/finanzas-core.js`;
+- `app/modules/finanzas.js`;
+- `app/modules/beneficios.js`.
+
+Son idénticos a V176:
+
+- `app/app.js`;
+- `app/styles/layout.css`.
 
 ### Correcciones válidas
 
-- allowlist DEV sin sufijos Firebase genéricos;
-- review queue por contratos canónicos;
-- eliminación de lectura directa `finStore.curPeriod()` en Finanzas;
-- tabla principal de movimientos por moneda de fila;
-- KPIs superiores de Beneficios por moneda;
-- export guard mejorado;
-- cero pagos y cero lotes preservados.
+- elimina `crearMesSiguiente` de la UI;
+- R26/R27/R28 pasan;
+- completa varias superficies multimoneda;
+- elimina moneda primaria del panel inferior de Beneficios;
+- agrega `__unassignedBudget` único fuera del mapa por país;
+- conserva allowlist DEV, review queue, export guard, cero pagos y cero lotes.
 
-## 6. V176 — P0 comprobados
+## 6. V177 — P0 comprobados
 
-1. “Mes siguiente” todavía usa `CX.finStore.crearMesSiguiente()` y crea periodo local paralelo.
-2. Drill de movimientos, ingresos por tipo y listado CxP siguen usando una moneda única.
-3. El panel inferior de Beneficios conserva la primera moneda del proyecto y puede mostrar Q 0 a shopper HNL.
-4. Presupuesto se lee con `data.project().id` sin periodo y se escribe con `data.period().id + periodo canónico`.
-5. El presupuesto pendiente se adjunta y muestra completo en cada país, con moneda no confirmada.
-6. No existe evidencia canónica/móvil completa de dos revisiones, mayo↔julio, host autorizado/no autorizado y PDF/Excel abiertos.
+1. Dashboard usa `CX.finStore.pres(p.id)` sin periodo canónico explícito.
+2. Dashboard siembra presupuestos ficticios 4000/1200/800 cuando no existe fuente.
+3. Resolutores y agregadores con `|| cur` convierten moneda faltante en la primera moneda.
+4. Financiamientos multipaís se suman y rotulan con `defCur0(p)`.
+5. `__unassignedBudget.total` se usa como `fijReal`, semáforo y `Total ejecutado`.
+6. Persiste `d.fijosPendienteAsignacion`, campo eliminado.
+7. Presupuesto sin moneda asignada se muestra con la primera moneda.
+8. `CX.fin.porPais(data)` toma el periodo desde `CX.data` global y no desde `data`.
+9. Evidencia canónica/móvil/exportación incompleta.
 
 ## 7. Gates
 
-- R26 sobre V176: HOLD — 23/28 PASS.
-- R27 sobre V176: HOLD — 7/13 PASS.
-- R28 semántico: HOLD — 9 fallos funcionales.
-- Gate nuevo: `tools/qa/tya-corte3-v176-semantic-residual-p0-r28-gate.mjs`.
+- R26 sobre V177: PASS.
+- R27 sobre V177: PASS.
+- R28 sobre V177: PASS.
+- R29 sobre V177: HOLD — 11/12 checks fallidos.
+- Gate vigente agregado:
+  `tools/qa/tya-corte3-v177-finance-truth-r29-gate.mjs`.
 
 ## 8. Decisión
 
-- V176: `P0_PROVEN_HOLD`.
-- V176 no se aplicó parcial ni totalmente.
+- V177: `P0_PROVEN_HOLD`.
+- V177 no se aplicó parcial ni totalmente.
 - `APPLY_DELTA_DIRECTLY`: no ejecutado.
 - Hosting DEV: no actualizado.
 - Freeze: prohibido.
 - Corte 4: no iniciar.
-- Siguiente candidata requerida: V177 incremental sobre V176, preservando V174 y los fixes válidos.
+- Siguiente candidata: V178 incremental sobre V177, preservando V174 y fixes válidos.
 
-## 9. Documentación vigente del bloque
+## 9. Documentación vigente
 
-- `app/docs/AUDITORIA-V176-CORTE3-P0-PROVEN-HOLD-20260725.md`.
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V176-P0-HOLD-20260725.md`.
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V176-P0-HOLD-20260725.md`.
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V176-P0-HOLD-20260725.md`.
-- `app/docs/ACADEMIA-IMPACTO-V176-P0-HOLD-20260725.md`.
+- `app/docs/AUDITORIA-V177-CORTE3-P0-PROVEN-HOLD-20260725.md`.
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V177-P0-HOLD-20260725.md`.
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V177-P0-HOLD-20260725.md`.
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V177-P0-HOLD-20260725.md`.
+- `app/docs/ACADEMIA-IMPACTO-V177-P0-HOLD-20260725.md`.
 
 ## 10. Clasificación
 
-- **Reusable CXOrbia:** periodo único, moneda por superficie, presupuesto canónico y gate R28.
+- **Reusable CXOrbia:** periodo explícito, presupuesto sin fixtures, moneda faltante fail-closed, contexto suministrado y R29.
 - **Exclusivo cliente:** cifras TyA y dos revisiones GT.
-- **Claude/prototipo:** corrección V177 en cinco archivos.
-- **Academia:** periodo, moneda, presupuesto, revisión y evidencia.
-- **Sin impacto Claude:** auditoría, gates y continuidad documental.
+- **Claude/prototipo:** V178 sobre tres archivos de delta real.
+- **Academia:** presupuesto planeado/ejecutado, moneda y contexto.
+- **Sin impacto Claude:** auditoría, gate y continuidad.
 
 ## 11. Siguiente bloque exacto
 
-`CLAUDE CORRIGE V176 Y ENTREGA V177 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 + R28 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN MÓVIL REAL + PDF/EXCEL → APROBADO → FREEZE CORTE 3`.
+`CLAUDE CORRIGE V177 Y ENTREGA V178 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 + R28 + R29 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN CANÓNICA/MÓVIL + PDF/EXCEL → APROBADO → FREEZE CORTE 3`.
 
 ## 12. Estado seguro
 
