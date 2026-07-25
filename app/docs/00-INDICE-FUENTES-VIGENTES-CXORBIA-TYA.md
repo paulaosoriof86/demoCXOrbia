@@ -1,8 +1,8 @@
 # 00 - ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-07-24  
+**Fecha:** 2026-07-25  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V174_ACTIVE_BASELINE_V175_AUDITED_P0_PROVEN_HOLD_V176_REQUIRED_NO_FREEZE_NO_PRODUCTION`
+**Estado vivo:** `V174_ACTIVE_BASELINE_V176_AUDITED_P0_PROVEN_HOLD_V177_REQUIRED_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -24,18 +24,17 @@
 7. `app/docs/VALIDACION-VISUAL-V174-APROBADA-CON-PENDIENTES-P1-P2-20260723.md`.
 8. `app/docs/CORTE3-FINANCIAL-RECONCILIATION-R20-TECHNICAL-PASS-20260723.md`.
 9. `app/docs/CORTE3-CANONICAL-FINANCE-SNAPSHOT-ADAPTER-R23-20260723.md`.
-10. `app/docs/CORTE3-HOSTING-DEV-REMOTE-LIVE-SMOKE-R25-PASS-20260724.md` como evidencia técnica reemplazada por el HOLD visual.
-11. `app/docs/VALIDACION-VISUAL-CORTE3-HOLD-PAULA-20260724.md`.
-12. `app/docs/CORTE3-DIAGNOSTICO-CAUSA-RAIZ-Y-CORRECCION-FOCALIZADA-20260724.md`.
-13. `app/docs/PAQUETE-CLAUDE-CORTE3-CORRECCION-FOCALIZADA-20260724.md`.
-14. `tools/qa/tya-corte3-p0-source-contract-r26-gate.mjs`.
-15. `app/docs/AUDITORIA-V175-CORTE3-P0-PROVEN-HOLD-20260724.md`.
-16. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V175-P0-HOLD-20260724.md`.
-17. `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V175-P0-HOLD-20260724.md`.
-18. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V175-P0-HOLD-20260724.md`.
-19. `app/docs/ACADEMIA-IMPACTO-V175-P0-HOLD-20260724.md`.
-20. `tools/qa/tya-corte3-v175-residual-p0-r27-gate.mjs`.
-21. Tracker, manifest/source lock más reciente, PR #7 y HEAD vivo.
+10. `app/docs/VALIDACION-VISUAL-CORTE3-HOLD-PAULA-20260724.md`.
+11. `app/docs/AUDITORIA-V175-CORTE3-P0-PROVEN-HOLD-20260724.md`.
+12. `app/docs/AUDITORIA-V176-CORTE3-P0-PROVEN-HOLD-20260725.md`.
+13. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V176-P0-HOLD-20260725.md`.
+14. `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V176-P0-HOLD-20260725.md`.
+15. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V176-P0-HOLD-20260725.md`.
+16. `app/docs/ACADEMIA-IMPACTO-V176-P0-HOLD-20260725.md`.
+17. `tools/qa/tya-corte3-p0-source-contract-r26-gate.mjs`.
+18. `tools/qa/tya-corte3-v175-residual-p0-r27-gate.mjs`.
+19. `tools/qa/tya-corte3-v176-semantic-residual-p0-r28-gate.mjs`.
+20. Manifest/source lock más reciente, PR #7 y HEAD vivo.
 
 ## 3. Baseline preservada
 
@@ -45,7 +44,7 @@
 - 14 periodos y 616 visitas.
 - No se reabren V174, Corte 1 o Corte 2A.
 
-## 4. Corte 3 — verdad financiera canónica preservada
+## 4. Verdad financiera canónica
 
 - 247 filas financieras;
 - 209 vínculos exactos;
@@ -57,29 +56,39 @@
 - 0 pagos confirmados;
 - 0 lotes.
 
-Mayo 2026: 44 visitas HR, 42 exactas, 2 revisiones fail-closed, 32 GT y 10 HN exactas.
+Mayo 2026: 44 visitas HR, 42 exactas, 2 revisiones fail-closed, 32 exactas GT y 10 HN.
 
-## 5. Candidata V175
+## 5. Estado de candidatas
 
-- ZIP e integridad: PASS.
-- Sintaxis: PASS.
-- Correcciones parciales válidas: estados de honorario, eliminación del 85 %, copy determinístico y estructura parcial multimoneda/revisión/Shopper DEV.
-- R26: HOLD.
-- R27: HOLD.
-- Decisión: `P0_PROVEN_HOLD_NO_APPLY`.
+### V175
+
+- integridad/sintaxis: PASS;
+- R26/R27: HOLD;
+- decisión: `P0_PROVEN_HOLD_NO_APPLY`.
+
+### V176
+
+- integridad, hashes, UTF-8 y sintaxis: PASS;
+- screenshots distintos: PASS;
+- correcciones parciales válidas: allowlist DEV, review queue por contratos, tabla principal y KPIs superiores por moneda, export guard mejorado;
+- R26: HOLD 23/28;
+- R27: HOLD 7/13;
+- R28: HOLD con 9 fallos funcionales;
+- decisión: `P0_PROVEN_HOLD_NO_APPLY`.
 
 P0 residuales:
 
-- selector Shopper DEV habilitado por sufijos Firebase genéricos;
-- review queue no filtra contratos canónicos;
-- periodo visible canónico con datos todavía locales;
-- moneda del primer país aún usada en superficies principales;
-- presupuesto con llave incoherente y duplicación potencial;
-- exportación habilitada sin filas financieras reales.
+- “Mes siguiente” crea un periodo local paralelo;
+- drill, ingresos por tipo y CxP todavía usan moneda única;
+- panel inferior de Beneficios conserva la primera moneda;
+- presupuesto usa llaves proyecto/periodo incompatibles;
+- presupuesto pendiente se repite por país;
+- evidencia canónica, móvil y de exportaciones incompleta.
 
 ## 6. Decisión
 
-- V175 no aplicada.
+- Baseline funcional: V174.
+- V175 y V176 no aplicadas.
 - Corte 3: HOLD.
 - Freeze: prohibido.
 - Corte 4: no iniciar.
@@ -87,4 +96,4 @@ P0 residuales:
 
 ## 7. Siguiente bloque exacto
 
-`CLAUDE CORRIGE V175 Y ENTREGA V176 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN MÓVIL REAL → APROBADO → FREEZE CORTE 3`.
+`CLAUDE CORRIGE V176 Y ENTREGA V177 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 + R28 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN MÓVIL REAL + PDF/EXCEL → APROBADO → FREEZE CORTE 3`.
