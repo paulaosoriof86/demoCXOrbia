@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-25  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V174_ACTIVE_BASELINE_V176_AUDITED_P0_PROVEN_HOLD_V177_REQUIRED_NO_FREEZE_NO_PRODUCTION`
+**Estado vivo:** `V174_ACTIVE_BASELINE_V177_AUDITED_P0_PROVEN_HOLD_V178_REQUIRED_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -27,14 +27,16 @@
 10. `app/docs/VALIDACION-VISUAL-CORTE3-HOLD-PAULA-20260724.md`.
 11. `app/docs/AUDITORIA-V175-CORTE3-P0-PROVEN-HOLD-20260724.md`.
 12. `app/docs/AUDITORIA-V176-CORTE3-P0-PROVEN-HOLD-20260725.md`.
-13. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V176-P0-HOLD-20260725.md`.
-14. `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V176-P0-HOLD-20260725.md`.
-15. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V176-P0-HOLD-20260725.md`.
-16. `app/docs/ACADEMIA-IMPACTO-V176-P0-HOLD-20260725.md`.
-17. `tools/qa/tya-corte3-p0-source-contract-r26-gate.mjs`.
-18. `tools/qa/tya-corte3-v175-residual-p0-r27-gate.mjs`.
-19. `tools/qa/tya-corte3-v176-semantic-residual-p0-r28-gate.mjs`.
-20. Manifest/source lock más reciente, PR #7 y HEAD vivo.
+13. `app/docs/AUDITORIA-V177-CORTE3-P0-PROVEN-HOLD-20260725.md`.
+14. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V177-P0-HOLD-20260725.md`.
+15. `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V177-P0-HOLD-20260725.md`.
+16. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V177-P0-HOLD-20260725.md`.
+17. `app/docs/ACADEMIA-IMPACTO-V177-P0-HOLD-20260725.md`.
+18. `tools/qa/tya-corte3-p0-source-contract-r26-gate.mjs`.
+19. `tools/qa/tya-corte3-v175-residual-p0-r27-gate.mjs`.
+20. `tools/qa/tya-corte3-v176-semantic-residual-p0-r28-gate.mjs`.
+21. `tools/qa/tya-corte3-v177-finance-truth-r29-gate.mjs`.
+22. Manifest/source lock más reciente, PR #7 y HEAD vivo.
 
 ## 3. Baseline preservada
 
@@ -64,31 +66,38 @@ Mayo 2026: 44 visitas HR, 42 exactas, 2 revisiones fail-closed, 32 exactas GT y 
 
 - integridad/sintaxis: PASS;
 - R26/R27: HOLD;
-- decisión: `P0_PROVEN_HOLD_NO_APPLY`.
+- no aplicada.
 
 ### V176
 
-- integridad, hashes, UTF-8 y sintaxis: PASS;
-- screenshots distintos: PASS;
-- correcciones parciales válidas: allowlist DEV, review queue por contratos, tabla principal y KPIs superiores por moneda, export guard mejorado;
-- R26: HOLD 23/28;
-- R27: HOLD 7/13;
-- R28: HOLD con 9 fallos funcionales;
+- integridad/sintaxis: PASS;
+- R26/R27/R28: HOLD;
+- no aplicada.
+
+### V177
+
+- ZIP SHA-256: `cb755c9d7ce02d11944cb9926d1362ef37062a6edb8a46f28544ed3c7b849aea`;
+- manifest/hashes, UTF-8 y `node --check` 4/4: PASS;
+- R26/R27/R28: PASS;
+- delta real: tres archivos; `app.js` y `layout.css` son idénticos a V176;
+- R29: HOLD, 11/12 checks fallidos;
 - decisión: `P0_PROVEN_HOLD_NO_APPLY`.
 
-P0 residuales:
+P0 V177:
 
-- “Mes siguiente” crea un periodo local paralelo;
-- drill, ingresos por tipo y CxP todavía usan moneda única;
-- panel inferior de Beneficios conserva la primera moneda;
-- presupuesto usa llaves proyecto/periodo incompatibles;
-- presupuesto pendiente se repite por país;
-- evidencia canónica, móvil y de exportaciones incompleta.
+- presupuesto del Dashboard usa periodo local implícito;
+- presupuesto vacío crea cifras ficticias;
+- filas sin moneda heredan la primera moneda;
+- financiamientos multipaís se rotulan con una sola moneda;
+- presupuesto no asignado se presenta como gasto ejecutado;
+- referencia obsoleta y moneda inventada en presupuesto;
+- `porPais(data)` usa contexto global en vez del suministrado;
+- evidencia canónica/móvil/PDF/Excel incompleta.
 
 ## 6. Decisión
 
 - Baseline funcional: V174.
-- V175 y V176 no aplicadas.
+- V175, V176 y V177 no aplicadas.
 - Corte 3: HOLD.
 - Freeze: prohibido.
 - Corte 4: no iniciar.
@@ -96,4 +105,4 @@ P0 residuales:
 
 ## 7. Siguiente bloque exacto
 
-`CLAUDE CORRIGE V176 Y ENTREGA V177 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 + R28 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN MÓVIL REAL + PDF/EXCEL → APROBADO → FREEZE CORTE 3`.
+`CLAUDE CORRIGE V177 Y ENTREGA V178 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 + R28 + R29 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN CANÓNICA/MÓVIL + PDF/EXCEL → APROBADO → FREEZE CORTE 3`.
