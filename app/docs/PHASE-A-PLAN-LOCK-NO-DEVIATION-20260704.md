@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-25  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `V174_ACTIVE_BASELINE_V176_AUDITED_P0_PROVEN_HOLD_V177_REQUIRED`
+**Estado vivo:** `V174_ACTIVE_BASELINE_V177_AUDITED_P0_PROVEN_HOLD_V178_REQUIRED`
 
 ## 1. Objetivo operativo
 
@@ -70,7 +70,7 @@ Estado: **FROZEN / APROBADO**.
 
 ## 6. Corte activo — Corte 3 Finanzas
 
-Estado: `V176_AUDITED_P0_PROVEN_HOLD_V177_REQUIRED`.
+Estado: `V177_AUDITED_P0_PROVEN_HOLD_V178_REQUIRED`.
 
 ### Verdad canónica preservada
 
@@ -103,38 +103,51 @@ Mayo 2026:
 
 #### V176
 
-- integridad, SHA, UTF-8, sintaxis y screenshots distintos: PASS;
-- allowlist DEV, review queue, tabla principal y KPIs superiores por moneda: mejoras válidas;
-- R26: HOLD 23/28;
-- R27: HOLD 7/13;
-- R28: HOLD con 9 fallos funcionales;
+- integridad y sintaxis PASS;
+- mejoras parciales válidas;
+- R26/R27/R28 HOLD;
 - no aplicada.
 
-### P0 residuales de V176
+#### V177
 
-1. “Mes siguiente” usa `CX.finStore.crearMesSiguiente()` y mantiene periodo local paralelo.
-2. Drill, ingresos por tipo y CxP todavía rotulan valores con una moneda única.
-3. El panel inferior de Beneficios conserva la primera moneda del proyecto.
-4. Presupuesto se lee y escribe con llaves proyecto/periodo incompatibles.
-5. Presupuesto pendiente se repite por país y puede rotularse con moneda no confirmada.
-6. No hay evidencia canónica/móvil completa ni PDF/Excel abiertos.
+- SHA ZIP `cb755c9d7ce02d11944cb9926d1362ef37062a6edb8a46f28544ed3c7b849aea`;
+- manifest/hashes, UTF-8 y sintaxis: PASS;
+- R26/R27/R28: PASS;
+- delta real: `finanzas-core.js`, `finanzas.js`, `beneficios.js`;
+- `app.js` y `layout.css`: idénticos a V176;
+- R29: HOLD 11/12;
+- no aplicada.
+
+### P0 residuales de V177
+
+1. Dashboard usa presupuesto con periodo implícito local.
+2. Dashboard crea montos de presupuesto ficticios al no existir fuente.
+3. Moneda faltante hereda la primera moneda mediante `|| cur`.
+4. Financiamientos multipaís se suman y rotulan con una sola moneda.
+5. Presupuesto no asignado se presenta como gasto real/ejecutado.
+6. Persiste referencia a campo eliminado y moneda inventada para presupuesto.
+7. `porPais(data)` usa periodo global en vez del contexto suministrado.
+8. Evidencia canónica/móvil/PDF/Excel incompleta.
 
 ### Pendiente para cerrar Corte 3
 
-1. Claude corrige V176 y entrega V177 incremental.
+1. Claude corrige V177 y entrega V178 incremental.
 2. Confirmar `EXECUTION_LANE_READY`.
-3. Auditar delta contra V176 y baseline V174.
-4. Ejecutar `node --check`, R26, R27 y R28.
+3. Auditar delta contra V177 y baseline V174.
+4. Ejecutar `node --check`, R26, R27, R28 y R29.
 5. Si queda GO sin P0, `APPLY_DELTA_DIRECTLY` sobre la rama viva.
 6. Commit/push atómico y post-gates.
 7. Hosting DEV del mismo build.
-8. Revalidación móvil real.
+8. Revalidación con fuente TyA y viewport móvil.
 9. PDF y Excel descargados y abiertos.
 10. Dos revisiones GT visibles en mayo.
-11. Shopper HNL sin ningún Q 0.
-12. Host DEV autorizado y host no autorizado probados.
-13. `APROBADO`.
-14. Freeze de Corte 3.
+11. Fila sin moneda visible en revisión y fuera de agregados.
+12. Presupuesto vacío sin cifras ficticias.
+13. Presupuesto pendiente no presentado como ejecutado.
+14. Shopper HNL sin Q 0.
+15. Host DEV autorizado y host no autorizado probados.
+16. `APROBADO`.
+17. Freeze de Corte 3.
 
 Corte 4 no comienza antes.
 
@@ -166,7 +179,7 @@ Claude recibe tareas localizadas y reproducibles por archivo/módulo. No reinter
 
 Paquete vigente:
 
-`app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V176-P0-HOLD-20260725.md`.
+`app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V177-P0-HOLD-20260725.md`.
 
 ## 9. Academia
 
@@ -174,7 +187,7 @@ La corrección aprobada debe documentar:
 
 - periodo canónico vs mes local;
 - multimoneda sin fallback;
-- presupuesto pendiente de asignación;
+- presupuesto planeado, pendiente y ejecutado;
 - devengado/por pagar/pagado;
 - revisión financiera fail-closed;
 - exportación PDF/Excel;
