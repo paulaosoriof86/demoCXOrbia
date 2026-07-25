@@ -1,9 +1,9 @@
 # CXOrbia TyA — Plan de trabajo Phase A con validación visual continua
 
 **Fecha original:** 2026-07-04  
-**Última revisión:** 2026-07-24  
+**Última revisión:** 2026-07-25  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `V174_ACTIVE_BASELINE_CORTE3_ROOT_CAUSE_DIAGNOSED_CORRECTION_PACKAGE_READY_P0_HOLD`
+**Estado vivo:** `V174_ACTIVE_BASELINE_V176_AUDITED_P0_PROVEN_HOLD_V177_REQUIRED`
 
 ## 1. Objetivo operativo
 
@@ -23,7 +23,7 @@ FUENTE Y REGLA
 → FREEZE
 ```
 
-Sin `APROBADO`, el estado máximo es `TECHNICAL_PASS_PENDING_VISUAL` o `P0_PROVEN_VISUAL_HOLD` cuando exista bloqueo demostrado.
+Sin `APROBADO`, el estado máximo es `TECHNICAL_PASS_PENDING_VISUAL` o `P0_PROVEN_VISUAL_HOLD`.
 
 ## 3. Método obligatorio para candidatas
 
@@ -40,9 +40,9 @@ EXECUTION_LANE_READY
 → FREEZE
 ```
 
-No se sustituye por composite previo obligatorio, nueva rama/PR, workflow transportador, aplicación archivo por archivo, PowerShell ni acciones manuales de Paula.
+No se sustituye por composite, nueva rama/PR, workflow transportador, PowerShell, incoming ni acciones manuales de Paula.
 
-Cuando ya existe un `P0_PROVEN`, primero se realiza diagnóstico localizado y paquete correctivo. La candidata correctiva vuelve al flujo anterior; no se reconstruye la baseline ni se reinicia el plan.
+Cuando existe `P0_PROVEN`, se hace diagnóstico localizado y paquete correctivo. No se reconstruye la baseline ni se reinicia el plan.
 
 ## 4. Definición de terminado
 
@@ -51,10 +51,10 @@ Un corte solo queda `FROZEN` cuando:
 1. fuente, campos, llaves, periodos y conteos están identificados;
 2. mapping y adapter usan una única verdad;
 3. gates reproducibles pasan sobre el mismo build;
-4. archivos reales de exportación y flujos por rol se prueban cuando aplican;
-5. visualización y comportamiento móvil/escritorio fueron comprobados;
+4. exportaciones y flujos por rol se prueban realmente;
+5. móvil y escritorio fueron comprobados;
 6. Paula responde `APROBADO` o se documenta un P1/P2 no bloqueante;
-7. checkpoint, CAMBIOS, Claude, PENDIENTES, Academia, tracker y PR están actualizados.
+7. checkpoint, CAMBIOS, Claude, PENDIENTES, Academia, índice y PR están actualizados.
 
 ## 5. Baseline y cortes cerrados
 
@@ -66,16 +66,13 @@ Estado: **FROZEN / APROBADO**.
 - Source lock visual: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
 - 14 periodos y 616 visitas.
 - HR source-safe, adapters y `CX.data` preservados.
-- Contexto, histórico y ciclo Shopper de Corte 2A aprobados según checkpoint vigente.
 - No se reabren por la corrección financiera.
 
-## 6. Corte activo
+## 6. Corte activo — Corte 3 Finanzas
 
-### CORTE 3 — Finanzas
+Estado: `V176_AUDITED_P0_PROVEN_HOLD_V177_REQUIRED`.
 
-Estado: `ROOT_CAUSE_DIAGNOSED_CORRECTION_PACKAGE_READY_P0_HOLD`.
-
-#### Verdad canónica preservada
+### Verdad canónica preservada
 
 - 247 filas financieras;
 - 209 vínculos exactos;
@@ -87,7 +84,7 @@ Estado: `ROOT_CAUSE_DIAGNOSED_CORRECTION_PACKAGE_READY_P0_HOLD`.
 - 0 pagos confirmados;
 - 0 lotes.
 
-#### Mayo 2026
+Mayo 2026:
 
 - 44 visitas HR;
 - 42 filas exactas;
@@ -95,44 +92,47 @@ Estado: `ROOT_CAUSE_DIAGNOSED_CORRECTION_PACKAGE_READY_P0_HOLD`.
 - 32 exactas GT;
 - 10 exactas HN.
 
-#### Hosting y gate anterior
+### Candidatas correctivas
 
-- Hosting DEV publicado.
-- Remote live smoke R25: PASS técnico.
-- El PASS R25 no cerró Corte 3 porque solo validó DOM/spec y una sesión Shopper inyectada; no abrió exportaciones reales ni probó móvil/identidad visible.
+#### V175
 
-#### P0 demostrados
+- integridad y sintaxis PASS;
+- mejoras parciales válidas;
+- R26/R27 HOLD;
+- no aplicada.
 
-1. suma GTQ + HNL rotulada como GTQ;
-2. honorarios mostrados como pagados con cero pagos confirmados;
-3. reembolso conciliado por regla inventada del 85 %;
-4. periodo financiero aislado del contexto canónico;
-5. PDF vacío/incorrecto y Excel no generado;
-6. dos revisiones financieras sin superficie visible;
-7. Beneficios no validable con identidad Shopper visible en DEV.
+#### V176
 
-#### Corrección ya preparada
+- integridad, SHA, UTF-8, sintaxis y screenshots distintos: PASS;
+- allowlist DEV, review queue, tabla principal y KPIs superiores por moneda: mejoras válidas;
+- R26: HOLD 23/28;
+- R27: HOLD 7/13;
+- R28: HOLD con 9 fallos funcionales;
+- no aplicada.
 
-- diagnóstico de causa raíz cerrado;
-- paquete focalizado para Claude creado;
-- gate fuente fail-closed R26 creado;
-- plan canónico reconciliado;
-- baseline y datos preservados.
+### P0 residuales de V176
 
-#### Pendiente para cerrar Corte 3
+1. “Mes siguiente” usa `CX.finStore.crearMesSiguiente()` y mantiene periodo local paralelo.
+2. Drill, ingresos por tipo y CxP todavía rotulan valores con una moneda única.
+3. El panel inferior de Beneficios conserva la primera moneda del proyecto.
+4. Presupuesto se lee y escribe con llaves proyecto/periodo incompatibles.
+5. Presupuesto pendiente se repite por país y puede rotularse con moneda no confirmada.
+6. No hay evidencia canónica/móvil completa ni PDF/Excel abiertos.
 
-1. Claude aplica el paquete focalizado sobre V174.
-2. Entrega candidata incremental.
-3. Confirmar `EXECUTION_LANE_READY`.
-4. Auditar delta contra V174 y backend protegido.
-5. Ejecutar `node --check`, gate R26 y gates semánticos.
-6. Si queda GO sin P0, `APPLY_DELTA_DIRECTLY` sobre la rama viva.
-7. Commit/push atómico y post-gates.
-8. Hosting DEV del mismo build.
-9. Revalidación móvil real de Paula.
-10. PDF y Excel descargados y abiertos.
-11. Dos revisiones visibles.
-12. Shopper controlado accesible desde el login DEV.
+### Pendiente para cerrar Corte 3
+
+1. Claude corrige V176 y entrega V177 incremental.
+2. Confirmar `EXECUTION_LANE_READY`.
+3. Auditar delta contra V176 y baseline V174.
+4. Ejecutar `node --check`, R26, R27 y R28.
+5. Si queda GO sin P0, `APPLY_DELTA_DIRECTLY` sobre la rama viva.
+6. Commit/push atómico y post-gates.
+7. Hosting DEV del mismo build.
+8. Revalidación móvil real.
+9. PDF y Excel descargados y abiertos.
+10. Dos revisiones GT visibles en mayo.
+11. Shopper HNL sin ningún Q 0.
+12. Host DEV autorizado y host no autorizado probados.
 13. `APROBADO`.
 14. Freeze de Corte 3.
 
@@ -162,25 +162,21 @@ Cortes anteriores congelados, rollback probado, smoke integral, source lock fina
 
 ## 8. Claude/prototipo
 
-Claude recibe únicamente tareas localizadas y reproducibles por archivo/módulo. No reinterpreta reglas HR ni modifica backend, adapters, gates o datos. No se solicita una candidata nueva por rutina; solo la correctiva ya justificada por P0.
+Claude recibe tareas localizadas y reproducibles por archivo/módulo. No reinterpreta HR ni modifica backend, adapters, gates o datos.
 
 Paquete vigente:
 
-`app/docs/PAQUETE-CLAUDE-CORTE3-CORRECCION-FOCALIZADA-20260724.md`.
+`app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V176-P0-HOLD-20260725.md`.
 
 ## 9. Academia
 
-Cada corrección debe actualizar o documentar:
+La corrección aprobada debe documentar:
 
-- devengado vs liquidado vs por pagar vs pagado;
-- multimoneda sin conversión implícita;
+- periodo canónico vs mes local;
+- multimoneda sin fallback;
+- presupuesto pendiente de asignación;
+- devengado/por pagar/pagado;
 - revisión financiera fail-closed;
 - exportación PDF/Excel;
 - identidad Shopper DEV vs Auth real;
 - rutas por rol y errores frecuentes.
-
-Manual y Curso permanecen como objetos distintos.
-
-## 10. Estado seguro
-
-Hosting DEV permanece publicado. Sin producción, merge, Cloud Run deploy, Firestore/Auth/Storage/HR writes, import real, pagos, lotes, Make ni Gemini live.
