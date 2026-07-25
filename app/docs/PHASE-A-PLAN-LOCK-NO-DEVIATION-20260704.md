@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-25  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `V174_ACTIVE_BASELINE_V180_AUDITED_P0_PROVEN_HOLD_V181_REQUIRED`
+**Estado vivo:** `V174_ACTIVE_BASELINE_V181_AUDITED_P0_PROVEN_HOLD_V182_REQUIRED`
 
 ## 1. Objetivo
 
@@ -31,7 +31,7 @@ V174/M1/Corte 1/Corte 2A: **FROZEN/APROBADO**.
 
 ## 5. Corte activo — Corte 3 Finanzas
 
-Estado: `V180_P0_PROVEN_HOLD_V181_REQUIRED`.
+Estado: `V181_P0_PROVEN_HOLD_V182_REQUIRED`.
 
 ### Verdad canónica
 
@@ -49,46 +49,56 @@ Estado: `V180_P0_PROVEN_HOLD_V181_REQUIRED`.
 - V177 HOLD R29;
 - V178 HOLD R30;
 - V179 HOLD R31;
-- V180 R26–R31 PASS, R32 HOLD; no aplicada.
+- V180 HOLD R32;
+- V181 R26–R31 PASS, R32 anterior PASS, R32 vigente HOLD; no aplicada.
 
-### P0 V180
+### Avances válidos de V181
 
-1. filas review dentro de métricas/export;
-2. presupuesto copiado automáticamente;
-3. CxP duplicada;
-4. liquidaciones/CxP histórica no fail-closed;
-5. lotes en revisión con pago/export;
-6. Beneficios omite moneda pendiente.
+- filas review fuera de métricas;
+- presupuesto vacío sin herencia;
+- CxP sin doble suma conocida;
+- liquidaciones/CxP histórica con controles de moneda;
+- lotes y Beneficios con revisión visible;
+- 0 pagos y 0 lotes.
+
+### P0 V181
+
+1. Lotes referencia `PENDING_CURRENCY` declarado solo dentro de Movimientos.
+2. Liquidaciones/CxP histórica referencia `currencyOf` declarado solo dentro de Movimientos.
+3. Ambos producen `ReferenceError` runtime.
 
 ### Cierre de gates
 
-R32 es el barrido consolidado final de fuente. Después de R26–R32 PASS:
+R32 sigue siendo el barrido consolidado final. Se amplió con un harness runtime de módulos; no se creó R33.
 
-- se aplica directamente V181;
-- no se crea R33 por falta de datos TyA, móvil, host o archivos abiertos;
+Después de R26–R32 vigentes PASS:
+
+- se aplica directamente V182;
+- no se crea otro gate por falta de datos TyA, móvil, host o archivos abiertos;
 - esas pruebas se ejecutan post-apply sobre el mismo build.
 
 ### Pendiente para congelar Corte 3
 
-1. Claude entrega V181 incremental.
+1. Claude entrega V182 incremental.
 2. Confirmar carril.
-3. Auditar delta contra V180/V174.
-4. Ejecutar `node --check` y R26–R32.
-5. Con GO sin P0: `APPLY_DELTA_DIRECTLY`.
-6. Commit/push y post-gates.
-7. Hosting DEV del mismo build.
-8. Validar mayo 44/42/2/32/10/209/207.
-9. Validar mayo ↔ julio.
-10. Validar revisión fuera de métricas.
-11. Validar presupuesto vacío.
-12. Validar CxP sin duplicación.
-13. Validar liquidaciones/lotes/Beneficios fail-closed.
-14. Validar viewport móvil.
-15. Validar host autorizado/no autorizado.
-16. Descargar y abrir PDF/XLSX.
-17. Validar shopper HNL sin Q 0.
-18. Paula: `APROBADO`.
-19. Freeze Corte 3.
+3. Auditar delta contra V181/V174.
+4. Ejecutar `node --check` y R26–R32 vigentes.
+5. Ejecutar harness de Lotes y CxP histórica.
+6. Con GO sin P0: `APPLY_DELTA_DIRECTLY`.
+7. Commit/push y post-gates.
+8. Hosting DEV del mismo build.
+9. Validar mayo 44/42/2/32/10/209/207.
+10. Validar mayo ↔ julio.
+11. Validar revisión fuera de métricas.
+12. Validar presupuesto vacío.
+13. Validar CxP sin duplicación.
+14. Validar liquidaciones/lotes/Beneficios fail-closed.
+15. Validar viewport móvil.
+16. Validar host autorizado/no autorizado.
+17. Descargar y abrir PDF/XLSX.
+18. Validar shopper HNL sin Q 0.
+19. Paula: `APROBADO`.
+20. Freeze Corte 3.
 
 Corte 4 no comienza antes.
 
@@ -102,15 +112,14 @@ Corte 4 no comienza antes.
 
 ## 7. Claude/prototipo
 
-Paquete vigente: `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V180-P0-HOLD-20260725.md`.
+Paquete vigente: `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V181-P0-HOLD-20260725.md`.
 
 ## 8. Academia
 
-Después de V181 GO documentar:
+Después de V182 GO documentar:
 
-- exacta vs revisión;
-- presupuesto por fuente;
-- CxP sin duplicación;
+- sintaxis frente a runtime;
+- aislamiento de módulos;
 - moneda fail-closed;
-- liquidaciones/lotes/Beneficios;
+- liquidaciones/lotes/CxP histórica;
 - exportación y pruebas post-apply.
