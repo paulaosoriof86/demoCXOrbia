@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-25  
-**Estado:** `V174_ACTIVE_BASELINE_V177_AUDITED_P0_PROVEN_HOLD_V178_REQUIRED_NO_FREEZE_NO_PRODUCTION`
+**Estado:** `V174_ACTIVE_BASELINE_V178_AUDITED_P0_PROVEN_HOLD_V179_REQUIRED_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -18,7 +18,7 @@
 - Package SHA-256 V174: `e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f`.
 - Commit funcional V174: `b21e494d127fb4b902de5576e3fab0292362b097`.
 - Source lock visual: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
-- Módulos V174, HR source-safe, adapters y `CX.data`: preservados.
+- HR source-safe, adapters, módulos V174 y `CX.data`: preservados.
 
 ## 3. Verdad financiera canónica
 
@@ -41,108 +41,109 @@ Mayo 2026:
 - 32 exactas GT;
 - 10 exactas HN.
 
-## 4. Candidatas anteriores
+## 4. Candidatas correctivas previas
 
-### V175
+- **V175:** integridad/sintaxis PASS; R26/R27 HOLD; no aplicada.
+- **V176:** integridad/sintaxis PASS; R26/R27/R28 HOLD; no aplicada.
+- **V177:** integridad/sintaxis PASS; R26/R27/R28 PASS; R29 HOLD; no aplicada.
 
-- integridad y sintaxis PASS;
-- R26/R27 HOLD;
-- no aplicada.
-
-### V176
-
-- integridad y sintaxis PASS;
-- correcciones parciales válidas preservables;
-- R26/R27/R28 HOLD;
-- no aplicada.
-
-## 5. Candidata V177
+## 5. Candidata V178
 
 ### EXECUTION_LANE_READY
 
-- ZIP: `Prototype development request CXOrbia V177.zip`.
-- Candidata: `CANDIDATA_V177_CORTE3_20260725`.
-- SHA-256 ZIP: `cb755c9d7ce02d11944cb9926d1362ef37062a6edb8a46f28544ed3c7b849aea`.
+- ZIP: `Prototype development request CXOrbia V178.zip`.
+- Candidata: `CANDIDATA_V178_CORTE3_20260725`.
+- SHA-256 ZIP: `ff77d4c6adda699327b4620207eb0be83689dbd3da55651c9a31d091b8217268`.
+- GitHub autenticado, rama y PR verificados en HEAD `7c50bf79ff8105f7d00d82eac13a020000a44f7b` antes de auditar.
 - Manifest y cinco hashes: PASS.
 - UTF-8 sin BOM: PASS.
 - `node --check`: 4/4 JavaScript PASS.
-- Dos capturas diferentes: PASS.
-- GitHub autenticado, rama viva y PR #7 verificados.
-- No secretos detectados.
+- Sin secretos.
 
-### Delta real
+### Delta real V177 → V178
 
-Cambian V176→V177:
+Cambian:
 
 - `app/core/finanzas-core.js`;
-- `app/modules/finanzas.js`;
-- `app/modules/beneficios.js`.
+- `app/modules/finanzas.js`.
 
-Son idénticos a V176:
+Idénticos a V177:
 
+- `app/modules/beneficios.js`;
 - `app/app.js`;
 - `app/styles/layout.css`.
 
 ### Correcciones válidas
 
-- elimina `crearMesSiguiente` de la UI;
-- R26/R27/R28 pasan;
-- completa varias superficies multimoneda;
-- elimina moneda primaria del panel inferior de Beneficios;
-- agrega `__unassignedBudget` único fuera del mapa por país;
-- conserva allowlist DEV, review queue, export guard, cero pagos y cero lotes.
+- presupuesto del Dashboard con periodo explícito;
+- defaults ficticios 4000/1200/800 eliminados;
+- presupuesto pendiente no tratado como gasto real en Dashboard;
+- base `currencyOf()` fail-closed;
+- análisis de financiamientos por moneda;
+- `porPais(data)` usa contexto recibido;
+- R26/R27/R28/R29 PASS;
+- cero pagos y lotes.
 
-## 6. V177 — P0 comprobados
+## 6. V178 — P0 comprobados
 
-1. Dashboard usa `CX.finStore.pres(p.id)` sin periodo canónico explícito.
-2. Dashboard siembra presupuestos ficticios 4000/1200/800 cuando no existe fuente.
-3. Resolutores y agregadores con `|| cur` convierten moneda faltante en la primera moneda.
-4. Financiamientos multipaís se suman y rotulan con `defCur0(p)`.
-5. `__unassignedBudget.total` se usa como `fijReal`, semáforo y `Total ejecutado`.
-6. Persiste `d.fijosPendienteAsignacion`, campo eliminado.
-7. Presupuesto sin moneda asignada se muestra con la primera moneda.
-8. `CX.fin.porPais(data)` toma el periodo desde `CX.data` global y no desde `data`.
-9. Evidencia canónica/móvil/exportación incompleta.
+1. movimiento `pending_currency` todavía entra a `bump()`;
+2. `pendingCurrencyRows` no se muestra ni cuenta;
+3. export incluye moneda no resuelta;
+4. gráfica exportada vuelve a sumar GTQ/HNL;
+5. presupuesto mensual conserva primera moneda;
+6. copy sigue mencionando `＋ Mes siguiente` eliminado;
+7. financiamientos usan fallback `p.currency[f.pais] || cur`;
+8. alta de financiamiento muestra monto con primera moneda antes de país;
+9. CxP/CxC manuales y edición usan primera moneda;
+10. lote sin moneda hereda primera moneda;
+11. una lectura de presupuesto usa `CX.data.currentPeriodId` global.
+
+Evidencia:
+
+- una sola captura;
+- no muestra la tarjeta de presupuesto indicada;
+- no demuestra fuente TyA, móvil, host ni PDF/Excel.
 
 ## 7. Gates
 
-- R26 sobre V177: PASS.
-- R27 sobre V177: PASS.
-- R28 sobre V177: PASS.
-- R29 sobre V177: HOLD — 11/12 checks fallidos.
-- Gate vigente agregado:
-  `tools/qa/tya-corte3-v177-finance-truth-r29-gate.mjs`.
+- R26: PASS.
+- R27: PASS.
+- R28: PASS.
+- R29: PASS.
+- R30 residual: HOLD — 1/12 PASS.
+- Gate vigente:
+  `tools/qa/tya-corte3-v178-residual-finance-truth-r30-gate.mjs`.
 
 ## 8. Decisión
 
-- V177: `P0_PROVEN_HOLD`.
-- V177 no se aplicó parcial ni totalmente.
+- V178: `P0_PROVEN_HOLD`.
+- V178 no se aplicó parcial ni totalmente.
 - `APPLY_DELTA_DIRECTLY`: no ejecutado.
 - Hosting DEV: no actualizado.
 - Freeze: prohibido.
 - Corte 4: no iniciar.
-- Siguiente candidata: V178 incremental sobre V177, preservando V174 y fixes válidos.
+- Siguiente candidata: V179 incremental sobre V178.
 
-## 9. Documentación vigente
+## 9. Documentación vigente del bloque
 
-- `app/docs/AUDITORIA-V177-CORTE3-P0-PROVEN-HOLD-20260725.md`.
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V177-P0-HOLD-20260725.md`.
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V177-P0-HOLD-20260725.md`.
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V177-P0-HOLD-20260725.md`.
-- `app/docs/ACADEMIA-IMPACTO-V177-P0-HOLD-20260725.md`.
+- `app/docs/AUDITORIA-V178-CORTE3-P0-PROVEN-HOLD-20260725.md`.
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V178-P0-HOLD-20260725.md`.
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V178-P0-HOLD-20260725.md`.
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V178-P0-HOLD-20260725.md`.
+- `app/docs/ACADEMIA-IMPACTO-V178-P0-HOLD-20260725.md`.
 
 ## 10. Clasificación
 
-- **Reusable CXOrbia:** periodo explícito, presupuesto sin fixtures, moneda faltante fail-closed, contexto suministrado y R29.
-- **Exclusivo cliente:** cifras TyA y dos revisiones GT.
-- **Claude/prototipo:** V178 sobre tres archivos de delta real.
-- **Academia:** presupuesto planeado/ejecutado, moneda y contexto.
-- **Sin impacto Claude:** auditoría, gate y continuidad.
+- **Reusable CXOrbia:** moneda pendiente, export por moneda, presupuesto, financiamientos, CxP/CxC y lotes.
+- **Exclusivo cliente:** conteos TyA y dos revisiones GT.
+- **Claude/prototipo:** V179 principalmente en Finanzas.
+- **Academia:** moneda, presupuesto, revisión y exportación.
+- **Sin impacto Claude:** auditoría, R30 y continuidad.
 
 ## 11. Siguiente bloque exacto
 
-`CLAUDE CORRIGE V177 Y ENTREGA V178 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 + R28 + R29 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN CANÓNICA/MÓVIL + PDF/EXCEL → APROBADO → FREEZE CORTE 3`.
+`CLAUDE CORRIGE V178 Y ENTREGA V179 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 + R28 + R29 + R30 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN CANÓNICA/MÓVIL + PDF/EXCEL → APROBADO → FREEZE CORTE 3`.
 
 ## 12. Estado seguro
 
-Hosting DEV permanece en la versión anterior; sin producción, merge, Cloud Run deploy, Firestore/Auth/Storage/HR writes, imports, pagos, lotes, Make ni Gemini live.
+Hosting DEV permanece en la versión anterior; sin producción, merge, Cloud Run, Firestore/Auth/Storage/HR writes, imports, pagos, lotes, Make ni Gemini live.
