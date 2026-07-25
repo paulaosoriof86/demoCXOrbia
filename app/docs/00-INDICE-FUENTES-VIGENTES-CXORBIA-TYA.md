@@ -2,102 +2,76 @@
 
 **Fecha:** 2026-07-25  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V174_ACTIVE_BASELINE_V179_AUDITED_P0_PROVEN_HOLD_V180_REQUIRED_NO_FREEZE_NO_PRODUCTION`
+**Estado vivo:** `V174_ACTIVE_BASELINE_V180_AUDITED_P0_PROVEN_HOLD_V181_REQUIRED_NO_FREEZE_NO_PRODUCTION`
 
-## 1. Repositorio y seguridad
+## 1. Repositorio
 
 - Repo: `paulaosoriof86/demoCXOrbia`.
-- Rama viva: `docs-tya-v6-v71-audit`.
+- Rama: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
-- `main`, nueva rama/PR y force push: prohibidos.
-- Producción, merge, imports, pagos y writes reales: no ejecutados.
+- Nueva rama/PR, `main`, force push, producción, merge, imports, pagos y writes: prohibidos/no ejecutados.
 
-## 2. Lectura obligatoria
+## 2. Lectura obligatoria vigente
 
-1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`.
-2. `app/docs/00-REGLAS-MAESTRAS-CONTEXTO-CONTINUIDAD-CXORBIA-TYA.md`.
-3. `app/docs/ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`.
-4. Addenda vigentes de Academia, patrones reutilizables y antidesvío.
-5. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`.
-6. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`.
-7. `app/docs/VALIDACION-VISUAL-V174-APROBADA-CON-PENDIENTES-P1-P2-20260723.md`.
-8. `app/docs/CORTE3-FINANCIAL-RECONCILIATION-R20-TECHNICAL-PASS-20260723.md`.
-9. `app/docs/CORTE3-CANONICAL-FINANCE-SNAPSHOT-ADAPTER-R23-20260723.md`.
-10. `app/docs/VALIDACION-VISUAL-CORTE3-HOLD-PAULA-20260724.md`.
-11. Auditorías V175–V178 como antecedentes de HOLD.
-12. `app/docs/AUDITORIA-V179-CORTE3-P0-PROVEN-HOLD-20260725.md`.
-13. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V179-P0-HOLD-20260725.md`.
-14. `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V179-P0-HOLD-20260725.md`.
-15. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V179-P0-HOLD-20260725.md`.
-16. `app/docs/ACADEMIA-IMPACTO-V179-P0-HOLD-20260725.md`.
-17. `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-V179-P0-HOLD-20260725.md`.
-18. `tools/qa/tya-corte3-p0-source-contract-r26-gate.mjs`.
-19. `tools/qa/tya-corte3-v175-residual-p0-r27-gate.mjs`.
-20. `tools/qa/tya-corte3-v176-semantic-residual-p0-r28-gate.mjs`.
-21. `tools/qa/tya-corte3-v177-finance-truth-r29-gate.mjs`.
-22. `tools/qa/tya-corte3-v178-residual-finance-truth-r30-gate.mjs`.
-23. `tools/qa/tya-corte3-v179-operational-currency-r31-gate.mjs`.
-24. Manifest/source lock más reciente, PR #7 y HEAD vivo.
+1. este índice;
+2. reglas maestras vigentes;
+3. addendum de empalme directo/carril file-aware;
+4. addenda de Academia, patrones y antidesvío;
+5. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+6. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+7. validación visual V174 aprobada;
+8. reconciliación/canonical finance Corte 3 R20/R23;
+9. validación visual Corte 3 HOLD;
+10. auditorías V175–V179 como antecedentes;
+11. `app/docs/AUDITORIA-V180-CORTE3-P0-PROVEN-HOLD-20260725.md`;
+12. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V180-P0-HOLD-20260725.md`;
+13. CAMBIOS/PENDIENTES/ACADEMIA/tracker V180;
+14. gates R26, R27, R28, R29, R30, R31 y R32;
+15. manifest/source lock, PR #7 y HEAD vivo.
 
-## 3. Baseline preservada
+## 3. Baseline y verdad canónica
 
-- V174/M1/Corte 1/Corte 2A: PASS técnico y visual aprobado.
-- Source lock visual: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
-- HR source-safe, módulos V174, adapters y `CX.data`: preservados.
+- V174/M1/Corte 1/Corte 2A: aprobados.
+- Source lock: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
 - 14 periodos y 616 visitas.
-- No se reabren V174, Corte 1 o Corte 2A.
+- 247 filas financieras, 209 vínculos y 207 montos.
+- 0 pagos y 0 lotes.
+- Mayo: 44 visitas, 42 exactas, 2 revisiones, 32 GT y 10 HN.
 
-## 4. Verdad financiera canónica
+## 4. Estado de candidatas
 
-- 247 filas financieras;
-- 209 vínculos exactos;
-- 207 montos canónicos listos;
-- 38 filas sin vínculo exacto;
-- 79 revisiones de vínculo;
-- 2 revisiones de monto;
-- 37 evidencias candidatas;
-- 0 pagos confirmados;
-- 0 lotes.
+- V175: HOLD R26/R27.
+- V176: HOLD R26–R28.
+- V177: HOLD R29.
+- V178: HOLD R30.
+- V179: HOLD R31.
+- V180: manifest/sintaxis PASS; R26–R31 PASS; R32 HOLD 4/22; no aplicada.
 
-Mayo 2026: 44 visitas HR, 42 exactas, 2 revisiones fail-closed, 32 exactas GT y 10 HN.
+Delta real V180: solo `app/modules/finanzas.js`.
 
-## 5. Estado de candidatas
+P0 V180:
 
-- **V175:** R26/R27 HOLD; no aplicada.
-- **V176:** R26/R27/R28 HOLD; no aplicada.
-- **V177:** R26–R28 PASS, R29 HOLD; no aplicada.
-- **V178:** R26–R29 PASS, R30 HOLD; no aplicada.
-- **V179:** integridad, hashes, UTF-8 y `node --check` PASS; R26–R30 PASS; R31 HOLD 4/27; no aplicada.
+- revisiones dentro de métricas;
+- presupuesto copiado sin fuente;
+- CxP duplicada;
+- liquidaciones/CxP histórica sin cierre de moneda;
+- lotes con acciones durante revisión;
+- Beneficios que omite moneda pendiente.
 
-Delta real V179:
+## 5. Límite final
 
-- cambia únicamente `app/modules/finanzas.js`;
-- `finanzas-core.js`, `beneficios.js`, `app.js` y `layout.css` son idénticos a V178.
-
-P0 V179:
-
-- presupuesto con identidades de periodo distintas;
-- totales crudos anteriores al filtro de moneda;
-- `pending_currency` en ingresos por tipo y superficies monetarias;
-- formularios no reactivos ni fail-closed;
-- edición CxP/CxC sin resolución de moneda;
-- Abonar/Devolver/Pagar lote no bloqueados de forma coherente;
-- financiamiento pendiente puede aparecer saldado;
-- lote pendiente puede aparecer pagado y monetario;
-- exportación y conteo no demostrados;
-- markup residual;
-- evidencia canónica/móvil/PDF/Excel incompleta.
+R32 es el cierre consolidado de fuente. Cuando R26–R32 pasen, debe ejecutarse `APPLY_DELTA_DIRECTLY`. Conteos TyA, móvil, host y PDF/XLSX son post-apply y no originan R33 por sí solos.
 
 ## 6. Decisión
 
-- Baseline funcional: V174.
-- V175–V179 no aplicadas.
+- Baseline: V174.
+- V175–V180 no aplicadas.
 - Corte 3: HOLD.
 - Freeze: prohibido.
 - Corte 4: no iniciar.
-- No producción, merge, pagos, imports ni writes.
+- V181 requerida.
 
-## 7. Siguiente bloque exacto
+## 7. Siguiente bloque
 
-`CLAUDE CORRIGE V179 Y ENTREGA V180 INCREMENTAL → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26 + R27 + R28 + R29 + R30 + R31 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → REVALIDACIÓN CANÓNICA/MÓVIL + PDF/EXCEL → APROBADO → FREEZE CORTE 3`.
+`V181 → EXECUTION_LANE_READY → R26–R32 → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → TYA/MÓVIL/HOST/PDF/XLSX → APROBADO → FREEZE CORTE 3`.
