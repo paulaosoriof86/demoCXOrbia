@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-25  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `V174_ACTIVE_BASELINE_V177_AUDITED_P0_PROVEN_HOLD_V178_REQUIRED`
+**Estado vivo:** `V174_ACTIVE_BASELINE_V178_AUDITED_P0_PROVEN_HOLD_V179_REQUIRED`
 
 ## 1. Objetivo operativo
 
@@ -70,7 +70,7 @@ Estado: **FROZEN / APROBADO**.
 
 ## 6. Corte activo — Corte 3 Finanzas
 
-Estado: `V177_AUDITED_P0_PROVEN_HOLD_V178_REQUIRED`.
+Estado: `V178_AUDITED_P0_PROVEN_HOLD_V179_REQUIRED`.
 
 ### Verdad canónica preservada
 
@@ -94,60 +94,56 @@ Mayo 2026:
 
 ### Candidatas correctivas
 
-#### V175
+- **V175:** R26/R27 HOLD; no aplicada.
+- **V176:** R26/R27/R28 HOLD; no aplicada.
+- **V177:** R26/R27/R28 PASS; R29 HOLD; no aplicada.
+- **V178:** integridad, hashes, UTF-8 y sintaxis PASS; R26/R27/R28/R29 PASS; R30 HOLD 1/12; no aplicada.
 
-- integridad y sintaxis PASS;
-- mejoras parciales válidas;
-- R26/R27 HOLD;
-- no aplicada.
+### Correcciones válidas de V178
 
-#### V176
+- periodo explícito para presupuesto en core/Dashboard;
+- montos ficticios de presupuesto eliminados;
+- presupuesto pendiente no tratado como gasto real en Dashboard;
+- resolución base `currencyOf()` fail-closed;
+- análisis de financiamientos por moneda;
+- `porPais(data)` usa contexto recibido;
+- cero pagos y lotes.
 
-- integridad y sintaxis PASS;
-- mejoras parciales válidas;
-- R26/R27/R28 HOLD;
-- no aplicada.
+### P0 residuales de V178
 
-#### V177
-
-- SHA ZIP `cb755c9d7ce02d11944cb9926d1362ef37062a6edb8a46f28544ed3c7b849aea`;
-- manifest/hashes, UTF-8 y sintaxis: PASS;
-- R26/R27/R28: PASS;
-- delta real: `finanzas-core.js`, `finanzas.js`, `beneficios.js`;
-- `app.js` y `layout.css`: idénticos a V176;
-- R29: HOLD 11/12;
-- no aplicada.
-
-### P0 residuales de V177
-
-1. Dashboard usa presupuesto con periodo implícito local.
-2. Dashboard crea montos de presupuesto ficticios al no existir fuente.
-3. Moneda faltante hereda la primera moneda mediante `|| cur`.
-4. Financiamientos multipaís se suman y rotulan con una sola moneda.
-5. Presupuesto no asignado se presenta como gasto real/ejecutado.
-6. Persiste referencia a campo eliminado y moneda inventada para presupuesto.
-7. `porPais(data)` usa periodo global en vez del contexto suministrado.
-8. Evidencia canónica/móvil/PDF/Excel incompleta.
+1. movimiento sin moneda entra a agregación;
+2. `pendingCurrencyRows` no tiene superficie visible;
+3. export incluye moneda no resuelta;
+4. gráfica de exportación suma monedas;
+5. presupuesto mensual usa primera moneda;
+6. copy conserva `＋ Mes siguiente` eliminado;
+7. financiamientos usan primera moneda como fallback;
+8. alta de financiamiento no resuelve moneda por país;
+9. CxP/CxC manuales y edición usan primera moneda;
+10. lote sin moneda hereda primera moneda;
+11. Dashboard usa periodo global en una lectura;
+12. evidencia canónica/móvil/PDF/Excel incompleta.
 
 ### Pendiente para cerrar Corte 3
 
-1. Claude corrige V177 y entrega V178 incremental.
+1. Claude corrige V178 y entrega V179 incremental.
 2. Confirmar `EXECUTION_LANE_READY`.
-3. Auditar delta contra V177 y baseline V174.
-4. Ejecutar `node --check`, R26, R27, R28 y R29.
+3. Auditar delta contra V178 y baseline V174.
+4. Ejecutar `node --check`, R26, R27, R28, R29 y R30.
 5. Si queda GO sin P0, `APPLY_DELTA_DIRECTLY` sobre la rama viva.
 6. Commit/push atómico y post-gates.
 7. Hosting DEV del mismo build.
 8. Revalidación con fuente TyA y viewport móvil.
 9. PDF y Excel descargados y abiertos.
 10. Dos revisiones GT visibles en mayo.
-11. Fila sin moneda visible en revisión y fuera de agregados.
-12. Presupuesto vacío sin cifras ficticias.
-13. Presupuesto pendiente no presentado como ejecutado.
-14. Shopper HNL sin Q 0.
-15. Host DEV autorizado y host no autorizado probados.
-16. `APROBADO`.
-17. Freeze de Corte 3.
+11. Moneda pendiente visible y fuera de agregados.
+12. Export y gráfica separados por moneda.
+13. Presupuesto sin moneda inventada.
+14. Financiamientos, CxP/CxC y lotes fail-closed sin moneda.
+15. Shopper HNL sin Q 0.
+16. Host DEV autorizado y host no autorizado probados.
+17. `APROBADO`.
+18. Freeze de Corte 3.
 
 Corte 4 no comienza antes.
 
@@ -179,17 +175,18 @@ Claude recibe tareas localizadas y reproducibles por archivo/módulo. No reinter
 
 Paquete vigente:
 
-`app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V177-P0-HOLD-20260725.md`.
+`app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V178-P0-HOLD-20260725.md`.
 
 ## 9. Academia
 
 La corrección aprobada debe documentar:
 
-- periodo canónico vs mes local;
-- multimoneda sin fallback;
+- periodo canónico;
+- moneda faltante fail-closed;
+- multimoneda sin suma implícita;
 - presupuesto planeado, pendiente y ejecutado;
 - devengado/por pagar/pagado;
-- revisión financiera fail-closed;
+- revisión financiera;
 - exportación PDF/Excel;
 - identidad Shopper DEV vs Auth real;
 - rutas por rol y errores frecuentes.
