@@ -1,197 +1,116 @@
-# CXOrbia TyA — Plan de trabajo Phase A con validación visual continua
+# CXOrbia TyA — Plan Phase A con validación visual continua
 
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-25  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `V174_ACTIVE_BASELINE_V179_AUDITED_P0_PROVEN_HOLD_V180_REQUIRED`
+**Estado vivo:** `V174_ACTIVE_BASELINE_V180_AUDITED_P0_PROVEN_HOLD_V181_REQUIRED`
 
-## 1. Objetivo operativo
+## 1. Objetivo
 
-Acondicionar CXOrbia para operar TyA/Cinépolis como primer proyecto configurable con HR e histórico completos, shoppers, certificaciones, visitas, agenda, cuestionarios, liquidaciones/pagos, multi-tenant, multi-proyecto, roles, Academia, manuales y sincronización HR/plataforma, sobre una base nueva y sin conectar ni copiar la base vieja.
+Operar TyA/Cinépolis como proyecto configurable con HR/histórico, shoppers, certificaciones, visitas, agenda, cuestionarios, liquidaciones/pagos, multi-tenant, multi-proyecto, roles, Academia y sincronización, sobre base nueva sin conectar/copiar la base vieja.
 
-El resultado debe verse y funcionar en pantalla. Un contrato, script o PASS técnico sin validación visual no cierra un corte.
+## 2. Secuencia por corte
 
-## 2. Secuencia obligatoria por corte
+`FUENTE → MAPPING/ADAPTER → GATES → BUILD → VALIDACIÓN VISUAL → CORRECCIÓN FOCALIZADA → FREEZE`
 
-```text
-FUENTE Y REGLA
-→ MAPPING / ADAPTER
-→ GATES DE DATOS Y SEMÁNTICA
-→ BUILD EXACTO
-→ VALIDACIÓN VISUAL
-→ CORRECCIÓN FOCALIZADA
-→ FREEZE
-```
+Un PASS técnico sin validación real no congela un corte.
 
-Sin `APROBADO`, el estado máximo es `TECHNICAL_PASS_PENDING_VISUAL` o `P0_PROVEN_VISUAL_HOLD`.
+## 3. Carril de candidatas
 
-## 3. Método obligatorio para candidatas
+`EXECUTION_LANE_READY → AUDITORÍA DELTA → P0_PROVEN o GO → si GO APPLY_DELTA_DIRECTLY → COMMIT/PUSH → POST-GATES → HOSTING DEV → VALIDACIÓN → FREEZE`
 
-```text
-EXECUTION_LANE_READY
-→ AUDITORÍA DELTA
-→ P0_PROVEN o GO
-→ si GO sin P0: APPLY_DELTA_DIRECTLY
-→ COMMIT/PUSH ATÓMICO
-→ MANIFEST / BUILD-LOCK / VERIFICADOR
-→ POST-GATES
-→ VALIDACIÓN VISUAL
-→ CORRECCIÓN FOCALIZADA SI APLICA
-→ FREEZE
-```
+No se sustituye por nueva rama/PR, workflow, PowerShell, incoming, composite ni acción manual de Paula.
 
-No se sustituye por composite, nueva rama/PR, workflow transportador, PowerShell, incoming ni acciones manuales de Paula.
+## 4. Cortes cerrados
 
-Cuando existe `P0_PROVEN`, se hace diagnóstico localizado y paquete correctivo. No se reconstruye la baseline ni se reinicia el plan.
+V174/M1/Corte 1/Corte 2A: **FROZEN/APROBADO**.
 
-## 4. Definición de terminado
+- source lock `d057d77c9117d9d451cfc9a6563083b78b926d57`;
+- 14 periodos y 616 visitas;
+- HR, adapters y `CX.data` preservados.
 
-Un corte solo queda `FROZEN` cuando:
+## 5. Corte activo — Corte 3 Finanzas
 
-1. fuente, campos, llaves, periodos y conteos están identificados;
-2. mapping y adapter usan una única verdad;
-3. gates reproducibles pasan sobre el mismo build;
-4. exportaciones y flujos por rol se prueban realmente;
-5. móvil y escritorio fueron comprobados;
-6. Paula responde `APROBADO` o se documenta un P1/P2 no bloqueante;
-7. checkpoint, CAMBIOS, Claude, PENDIENTES, Academia, tracker, índice y PR están actualizados.
+Estado: `V180_P0_PROVEN_HOLD_V181_REQUIRED`.
 
-## 5. Baseline y cortes cerrados
+### Verdad canónica
 
-### V174 / M1 / Corte 1 / Corte 2A
+- 247 filas;
+- 209 vínculos;
+- 207 montos;
+- 0 pagos;
+- 0 lotes;
+- mayo: 44 visitas, 42 exactas, 2 revisiones, 32 GT y 10 HN.
 
-Estado: **FROZEN / APROBADO**.
+### Historial correctivo
 
-- V174 empalmada y preservada.
-- Source lock visual: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
-- 14 periodos y 616 visitas.
-- HR source-safe, adapters y `CX.data` preservados.
-- No se reabren por la corrección financiera.
+- V175 HOLD R26/R27;
+- V176 HOLD R26–R28;
+- V177 HOLD R29;
+- V178 HOLD R30;
+- V179 HOLD R31;
+- V180 R26–R31 PASS, R32 HOLD; no aplicada.
 
-## 6. Corte activo — Corte 3 Finanzas
+### P0 V180
 
-Estado: `V179_AUDITED_P0_PROVEN_HOLD_V180_REQUIRED`.
+1. filas review dentro de métricas/export;
+2. presupuesto copiado automáticamente;
+3. CxP duplicada;
+4. liquidaciones/CxP histórica no fail-closed;
+5. lotes en revisión con pago/export;
+6. Beneficios omite moneda pendiente.
 
-### Verdad canónica preservada
+### Cierre de gates
 
-- 247 filas financieras;
-- 209 vínculos exactos;
-- 207 montos canónicos listos;
-- 38 filas sin vínculo exacto;
-- 79 revisiones de vínculo;
-- 2 revisiones de monto;
-- 37 evidencias candidatas;
-- 0 pagos confirmados;
-- 0 lotes.
+R32 es el barrido consolidado final de fuente. Después de R26–R32 PASS:
 
-Mayo 2026:
+- se aplica directamente V181;
+- no se crea R33 por falta de datos TyA, móvil, host o archivos abiertos;
+- esas pruebas se ejecutan post-apply sobre el mismo build.
 
-- 44 visitas HR;
-- 42 filas exactas;
-- 2 revisiones fail-closed;
-- 32 exactas GT;
-- 10 exactas HN.
+### Pendiente para congelar Corte 3
 
-### Candidatas correctivas
-
-- **V175:** R26/R27 HOLD; no aplicada.
-- **V176:** R26/R27/R28 HOLD; no aplicada.
-- **V177:** R26–R28 PASS; R29 HOLD; no aplicada.
-- **V178:** R26–R29 PASS; R30 HOLD; no aplicada.
-- **V179:** integridad, hashes, UTF-8 y sintaxis PASS; R26–R30 PASS; R31 HOLD 4/27; no aplicada.
-
-### Correcciones válidas de V179
-
-- movimiento sin moneda sale de agregación principal;
-- bandeja visible de moneda pendiente;
-- gráfica por moneda;
-- presupuesto mensual sin primera moneda visible;
-- base de lote `pending_currency`;
-- cero pagos y lotes.
-
-### P0 residuales de V179
-
-1. presupuesto usa identidades de periodo distintas;
-2. totales crudos se calculan antes de filtrar moneda;
-3. ingresos por tipo agrega `pending_currency`;
-4. tablas y drill pueden renderizar moneda pendiente como dinero;
-5. formularios no actualizan moneda ni exigen país;
-6. edición CxP/CxC no permite resolver moneda;
-7. Abonar permanece habilitado sin moneda;
-8. financiamiento activo sin moneda puede aparecer saldado;
-9. Devolver no tiene contrato fail-closed completo;
-10. Pagar lote no se bloquea por revisiones;
-11. lote sin moneda puede aparecer pagado y monetario;
-12. export usa contrato de revisión no demostrado y conteo incorrecto;
-13. copy/markup de presupuesto conserva texto residual;
-14. evidencia canónica/móvil/PDF/Excel incompleta.
-
-### Pendiente para cerrar Corte 3
-
-1. Claude corrige V179 y entrega V180 incremental.
-2. Confirmar `EXECUTION_LANE_READY`.
-3. Auditar delta contra V179 y baseline V174.
-4. Ejecutar `node --check`, R26, R27, R28, R29, R30 y R31.
-5. Si queda GO sin P0, `APPLY_DELTA_DIRECTLY` sobre la rama viva.
-6. Commit/push atómico y post-gates.
+1. Claude entrega V181 incremental.
+2. Confirmar carril.
+3. Auditar delta contra V180/V174.
+4. Ejecutar `node --check` y R26–R32.
+5. Con GO sin P0: `APPLY_DELTA_DIRECTLY`.
+6. Commit/push y post-gates.
 7. Hosting DEV del mismo build.
-8. Revalidación con fuente TyA y viewport móvil.
-9. PDF y Excel descargados y abiertos.
-10. Dos revisiones GT visibles en mayo.
-11. Presupuesto idéntico en Dashboard/Movimientos.
-12. Filas pendientes fuera de KPIs, tablas y drill monetarios.
-13. Formularios y edición fail-closed.
-14. Abonar/Devolver/Pagar lote bloqueados sin moneda.
-15. Lote sin moneda en revisión.
-16. Export bloqueado hasta resolver revisiones.
-17. Shopper HNL sin Q 0.
-18. Host DEV autorizado y host no autorizado probados.
-19. `APROBADO`.
-20. Freeze de Corte 3.
+8. Validar mayo 44/42/2/32/10/209/207.
+9. Validar mayo ↔ julio.
+10. Validar revisión fuera de métricas.
+11. Validar presupuesto vacío.
+12. Validar CxP sin duplicación.
+13. Validar liquidaciones/lotes/Beneficios fail-closed.
+14. Validar viewport móvil.
+15. Validar host autorizado/no autorizado.
+16. Descargar y abrir PDF/XLSX.
+17. Validar shopper HNL sin Q 0.
+18. Paula: `APROBADO`.
+19. Freeze Corte 3.
 
 Corte 4 no comienza antes.
 
-## 7. Cortes siguientes
+## 6. Cortes siguientes
 
-### CORTE 4 — Backend nuevo `CX.data` read-only
+- **Corte 4:** backend nuevo `CX.data` read-only en Firebase nuevo/vacío.
+- **Corte 5:** materialización DEV con dry-run/idempotencia.
+- **Corte 6:** Auth/RBAC.
+- **Corte 7:** sincronización, evidencias y gates Make/Gemini.
+- **Corte 8:** preproducción/producción con autorización.
 
-Prerequisito: Corte 3 congelado y Firebase nuevo/vacío. Conectar `loadSnapshot(context)` en el punto único autorizado, bloquear mutaciones y repetir visualmente Cortes 1–3 sin fallback demo.
+## 7. Claude/prototipo
 
-### CORTE 5 — Materialización DEV
+Paquete vigente: `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V180-P0-HOLD-20260725.md`.
 
-Dry-run, idempotencia, trazabilidad, conflictos, lotes controlados y datos sensibles protegidos. Solo con autorización expresa.
+## 8. Academia
 
-### CORTE 6 — Auth/RBAC
+Después de V181 GO documentar:
 
-Claims por persona, rol y scope; países, proyectos, rutas, acciones, Academia y notificaciones. No importar Auth legacy.
-
-### CORTE 7 — Sincronización y evidencias
-
-HR→plataforma, plataforma→HR, no duplicación, reviewQueue, cuestionario configurable, evidencias protegidas, certificaciones preservadas y pagos nunca inferidos. Make, Storage, Gemini y HR writes por gates separados.
-
-### CORTE 8 — Preproducción y producción
-
-Cortes anteriores congelados, rollback probado, smoke integral, source lock final y autorización específica para merge/deploy/producción.
-
-## 8. Claude/prototipo
-
-Claude recibe tareas localizadas y reproducibles por archivo/módulo. No reinterpreta HR ni modifica backend, adapters, gates o datos.
-
-Paquete vigente:
-
-`app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V179-P0-HOLD-20260725.md`.
-
-## 9. Academia
-
-La corrección aprobada debe documentar:
-
-- periodo financiero único;
-- moneda faltante fail-closed;
-- formularios y acciones monetarias;
-- multimoneda sin suma implícita;
-- presupuesto planeado, pendiente y ejecutado;
-- devengado/por pagar/pagado;
-- revisión financiera;
-- exportación PDF/Excel;
-- identidad Shopper DEV vs Auth real;
-- rutas por rol y errores frecuentes.
+- exacta vs revisión;
+- presupuesto por fuente;
+- CxP sin duplicación;
+- moneda fail-closed;
+- liquidaciones/lotes/Beneficios;
+- exportación y pruebas post-apply.
