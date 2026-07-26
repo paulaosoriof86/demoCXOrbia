@@ -1,8 +1,8 @@
 # 00 - ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-07-25  
+**Fecha:** 2026-07-26  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V174_ACTIVE_BASELINE_V181_AUDITED_P0_PROVEN_HOLD_V182_REQUIRED_NO_FREEZE_NO_PRODUCTION`
+**Estado vivo:** `V174_ACTIVE_BASELINE_V182_AUDITED_GO_APPLY_LANE_PENDING_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio
 
@@ -22,13 +22,12 @@
 6. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 7. validación visual V174 aprobada;
 8. reconciliación/canonical finance Corte 3 R20/R23;
-9. validación visual Corte 3 HOLD;
-10. auditorías V175–V180 como antecedentes;
-11. `app/docs/AUDITORIA-V181-CORTE3-P0-PROVEN-HOLD-20260725.md`;
-12. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V181-P0-HOLD-20260725.md`;
-13. CAMBIOS/PENDIENTES/ACADEMIA/tracker V181;
-14. gates R26, R27, R28, R29, R30, R31 y R32 vigente;
-15. manifest/source lock, PR #7 y HEAD vivo.
+9. auditorías V175–V181 como antecedentes;
+10. `app/docs/AUDITORIA-V182-CORTE3-GO-APPLY-LANE-PENDING-20260726.md`;
+11. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V182-SOURCE-GO-20260726.md`;
+12. CAMBIOS/PENDIENTES/ACADEMIA/tracker V182;
+13. gates R26–R32 vigentes;
+14. manifest/source lock, PR #7 y HEAD vivo.
 
 ## 3. Baseline y verdad canónica
 
@@ -41,42 +40,47 @@
 
 ## 4. Estado de candidatas
 
-- V175: HOLD R26/R27.
-- V176: HOLD R26–R28.
-- V177: HOLD R29.
-- V178: HOLD R30.
-- V179: HOLD R31.
-- V180: HOLD R32.
-- V181: manifest/sintaxis y R26–R31 PASS; R32 vigente HOLD 23/25; no aplicada.
+- V175–V181: HOLD documentado; ninguna aplicada.
+- V182: manifest/hashes/UTF-8/sintaxis/CSS/secretos PASS.
+- V182 runtime: Lotes PASS; CxP histórica PASS.
+- V182 R26–R32 vigentes: 135/135 PASS.
+- V182: `AUDITED_GO`, P0 de fuente 0.
+- No V183.
+- No R33.
 
-Delta real V181:
+Delta V181→V182:
 
-- cambia core;
-- cambia Finanzas;
-- cambia Beneficios;
-- `app.js` y `layout.css` son idénticos a V180.
+- cambia solo `app/modules/finanzas.js`.
 
-P0 V181:
+Empalme acumulado V174→V182:
 
-- Lotes usa `PENDING_CURRENCY` fuera del scope donde fue declarado;
-- Liquidaciones/CxP histórica usa `currencyOf` fuera del scope donde fue declarado;
-- ambos producen `ReferenceError` runtime.
+- `app/app.js`;
+- `app/core/finanzas-core.js`;
+- `app/modules/beneficios.js`;
+- `app/modules/finanzas.js`;
+- `app/styles/layout.css`.
 
 ## 5. Límite final
 
-R32 continúa siendo el cierre consolidado de fuente y ahora incluye un harness runtime de módulos. No se creó R33.
+R32 es el cierre de fuente. TyA, móvil, host y PDF/XLSX son post-apply y no originan V183/R33 por sí solos.
 
-Cuando R26–R32 vigentes pasen, debe ejecutarse `APPLY_DELTA_DIRECTLY`. Conteos TyA, móvil, host y PDF/XLSX son post-apply y no originan R33 por sí solos.
+## 6. Aplicación
 
-## 6. Decisión
+Estado: `AUDITED_GO_APPLY_LANE_PENDING`.
 
-- Baseline: V174.
-- V175–V181 no aplicadas.
-- Corte 3: HOLD.
-- Freeze: prohibido.
-- Corte 4: no iniciar.
-- V182 requerida.
+- método autorizado: checkout Git autenticado o `CXORBIA_ATOMIC_APPLY_RUNNER`;
+- blobs exactos disponibles: core y Beneficios;
+- blobs grandes pendientes de transferencia exacta: app.js, finanzas.js y layout.css;
+- no aplicación parcial ni método alterno.
 
-## 7. Siguiente bloque
+## 7. Decisión
 
-`V182 → EXECUTION_LANE_READY → R26–R32 VIGENTES → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → TYA/MÓVIL/HOST/PDF/XLSX → APROBADO → FREEZE CORTE 3`.
+- Baseline viva: V174.
+- V182 cerrada como source-GO.
+- Corte 3 todavía no frozen.
+- Corte 4 no inicia.
+- No producción, merge, pagos, imports ni writes.
+
+## 8. Siguiente bloque
+
+`COMPLETAR BLOBS → CXORBIA_ATOMIC_APPLY_RUNNER → COMMIT FUNCIONAL → R26–R32 POST-APPLY → HOSTING DEV → TYA/MÓVIL/HOST/PDF/XLSX → APROBADO → FREEZE CORTE 3`.
