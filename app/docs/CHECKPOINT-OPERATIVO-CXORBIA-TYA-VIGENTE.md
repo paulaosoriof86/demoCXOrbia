@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-07-25  
-**Estado:** `V174_ACTIVE_BASELINE_V181_AUDITED_P0_PROVEN_HOLD_V182_REQUIRED_NO_FREEZE_NO_PRODUCTION`
+**Fecha:** 2026-07-26  
+**Estado:** `V174_ACTIVE_BASELINE_V182_AUDITED_GO_APPLY_LANE_PENDING_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -36,102 +36,89 @@ Mayo 2026: 44 visitas, 42 exactas, 2 revisiones fail-closed, 32 GT y 10 HN.
 
 ## 4. Historial correctivo
 
-- V175: HOLD R26/R27; no aplicada.
-- V176: HOLD R26–R28; no aplicada.
-- V177: HOLD R29; no aplicada.
-- V178: HOLD R30; no aplicada.
-- V179: HOLD R31; no aplicada.
-- V180: HOLD R32; no aplicada.
+- V175–V181: HOLD documentado; ninguna aplicada.
+- R32 permanece como último gate de fuente; no existe R33.
 
-## 5. V181 — EXECUTION_LANE_READY
+## 5. V182 — auditoría
 
-- ZIP: `Prototype development request (17).zip`.
-- Candidata: `CANDIDATA_V181_CORTE3_20260725`.
-- SHA-256: `318f6eb5e3ba0fd1a0d8b1f47890fcb83de243e625193a9dac9a4e01bef5b33d`.
-- Rama/PR verificados en HEAD `4834d99a819557149c76c1c62ab98f59ee56f964` antes de auditar.
-- Manifest y cinco hashes: PASS.
+- ZIP: `Prototype development request (18).zip`.
+- Candidata: `CANDIDATA_V182_CORTE3_20260725`.
+- ZIP SHA-256: `5eb07c461f030aa2500aebb791afdda33e1cb6f3d986538fb7db586c19459ac8`.
+- Rama/PR verificados en HEAD `cf29908bd1e6d9663fe4128bee358636d02cfb2d` antes de la auditoría.
+- Manifest/hashes: PASS.
 - UTF-8 sin BOM: PASS.
 - `node --check`: 4/4 PASS.
-- Secretos: 0.
+- CSS: PASS.
+- secretos: 0.
 
-Delta real V180→V181:
+Delta V181→V182:
 
-- cambia `app/core/finanzas-core.js`;
-- cambia `app/modules/finanzas.js`;
-- cambia `app/modules/beneficios.js`;
-- `app/app.js` y `app/styles/layout.css` son idénticos a V180.
+- cambia solo `app/modules/finanzas.js`;
+- core, Beneficios, app.js y layout.css son idénticos a V181.
 
-## 6. V181 — resultados
+Empalme acumulado requerido sobre V174:
 
-Avances válidos:
+- `app/app.js`;
+- `app/core/finanzas-core.js`;
+- `app/modules/beneficios.js`;
+- `app/modules/finanzas.js`;
+- `app/styles/layout.css`.
 
-- revisiones excluidas de métricas;
-- presupuesto vacío sin copia automática;
-- CxP sin doble suma conocida;
-- liquidaciones/CxP histórica con controles de moneda;
-- lotes y Beneficios con revisión visible;
-- R26–R31 PASS;
-- R32 anterior PASS;
-- 0 pagos y 0 lotes.
+## 6. Gates y runtime
 
-P0 reproducidos:
+- R26: 28/28 PASS;
+- R27: 13/13 PASS;
+- R28: 18/18 PASS;
+- R29: 12/12 PASS;
+- R30: 12/12 PASS;
+- R31: 27/27 PASS;
+- R32 vigente: 25/25 PASS;
+- total: 135/135 PASS;
+- Lotes runtime: PASS;
+- CxP histórica runtime: PASS;
+- `ReferenceError`: 0.
 
-1. Lotes lanza `ReferenceError: PENDING_CURRENCY is not defined`.
-2. CxP histórica lanza `ReferenceError: currencyOf is not defined`.
+## 7. Decisión
 
-Causa:
+- V182: `AUDITED_GO`.
+- P0 de fuente: 0.
+- No V183.
+- No R33.
+- TyA/móvil/host/PDF/XLSX: post-apply.
 
-- ambos helpers se declaran dentro de Movimientos;
-- Liquidaciones y Lotes son callbacks independientes y no comparten scope.
+## 8. Aplicación
 
-## 7. R32 final vigente
+Estado: `AUDITED_GO_APPLY_LANE_PENDING`.
 
-No se creó R33.
+El empalme debe ejecutarse en un solo commit mediante checkout Git autenticado o `CXORBIA_ATOMIC_APPLY_RUNNER`.
 
-R32 fue ampliado con un harness runtime de módulos que ejecuta:
+- blobs exactos disponibles: core y Beneficios;
+- blobs exactos pendientes de transferencia al runner: app.js, finanzas.js y layout.css;
+- Contents API funcional secuencial, tree directo, nueva rama/PR, workflow transportador y acción manual de Paula: rechazados.
 
-- render de Lotes;
-- acción `Incluir CxP de meses anteriores`.
-
-Resultado V181:
-
-- R32 vigente: HOLD 23/25;
-- 2 fallos de scope.
-
-Los conteos TyA, móvil, host y PDF/XLSX siguen siendo pruebas post-apply y no originan R33.
-
-## 8. Decisión
-
-- V181: `P0_PROVEN_HOLD`.
-- V181 no se aplicó parcial ni totalmente.
-- `APPLY_DELTA_DIRECTLY`: no ejecutado.
-- Hosting DEV: no actualizado.
-- Freeze: prohibido.
-- Corte 4: no iniciar.
-- Siguiente candidata: V182 incremental sobre V181.
+V182 no se reaudita ni se reemplaza por otra candidata.
 
 ## 9. Documentación vigente
 
-- `app/docs/AUDITORIA-V181-CORTE3-P0-PROVEN-HOLD-20260725.md`;
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V181-P0-HOLD-20260725.md`;
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V181-P0-HOLD-20260725.md`;
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V181-P0-HOLD-20260725.md`;
-- `app/docs/ACADEMIA-IMPACTO-V181-P0-HOLD-20260725.md`;
-- `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-V181-P0-HOLD-20260725.md`;
-- `tools/qa/tya-corte3-v180-source-closure-r32-gate.mjs`.
+- `app/docs/AUDITORIA-V182-CORTE3-GO-APPLY-LANE-PENDING-20260726.md`;
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V182-SOURCE-GO-20260726.md`;
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V182-SOURCE-GO-20260726.md`;
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V182-SOURCE-GO-20260726.md`;
+- `app/docs/ACADEMIA-IMPACTO-V182-SOURCE-GO-20260726.md`;
+- `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-V182-SOURCE-GO-20260726.md`.
 
 ## 10. Clasificación
 
-- **Reusable CXOrbia:** aislamiento de scope y harness runtime.
-- **Exclusivo cliente:** conteos TyA post-apply.
-- **Claude/prototipo:** V182 focalizada en Finanzas.
-- **Academia:** sintaxis frente a runtime.
-- **Sin impacto Claude:** documentación y actualización del gate.
+- **Reusable CXOrbia:** cierre R26–R32 y harness runtime.
+- **Exclusivo cliente:** evidencia TyA post-apply.
+- **Claude/prototipo:** V182 cerrada; no nueva candidata.
+- **Academia:** contrato financiero fail-closed.
+- **Sin impacto Claude:** desbloqueo del carril atómico.
 
 ## 11. Siguiente bloque exacto
 
-`CLAUDE ENTREGA V182 → EXECUTION_LANE_READY → AUDITORÍA DELTA → R26–R32 VIGENTES → APPLY_DELTA_DIRECTLY SI GO → HOSTING DEV → TYA/MÓVIL/HOST/PDF/XLSX → APROBADO → FREEZE CORTE 3`.
+`COMPLETAR TRES BLOBS EXACTOS → CXORBIA_ATOMIC_APPLY_RUNNER → COMMIT FUNCIONAL ATÓMICO → R26–R32 POST-APPLY → HOSTING DEV → TYA/MÓVIL/HOST/PDF/XLSX → APROBADO → FREEZE CORTE 3`.
 
 ## 12. Estado seguro
 
-Sin producción, merge, Cloud Run, Firestore/Auth/Storage/HR writes, imports, pagos, lotes, Make ni Gemini live.
+Sin aplicación parcial, Hosting DEV, producción, merge, Cloud Run, Firestore/Auth/Storage/HR writes, imports, pagos, lotes, Make ni Gemini live.
