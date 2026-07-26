@@ -1,9 +1,9 @@
 # CXOrbia TyA — Plan Phase A con validación visual continua
 
 **Fecha original:** 2026-07-04  
-**Última revisión:** 2026-07-25  
+**Última revisión:** 2026-07-26  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `V174_ACTIVE_BASELINE_V181_AUDITED_P0_PROVEN_HOLD_V182_REQUIRED`
+**Estado vivo:** `V174_ACTIVE_BASELINE_V182_AUDITED_GO_APPLY_LANE_PENDING`
 
 ## 1. Objetivo
 
@@ -19,7 +19,9 @@ Un PASS técnico sin validación real no congela un corte.
 
 `EXECUTION_LANE_READY → AUDITORÍA DELTA → P0_PROVEN o GO → si GO APPLY_DELTA_DIRECTLY → COMMIT/PUSH → POST-GATES → HOSTING DEV → VALIDACIÓN → FREEZE`
 
-No se sustituye por nueva rama/PR, workflow, PowerShell, incoming, composite ni acción manual de Paula.
+No se sustituye por nueva rama/PR, workflow transportador, PowerShell, incoming, composite, tree directo ni acción manual de Paula.
+
+Si la candidata queda GO pero no puede completarse el carril atómico, el estado es `AUDITED_GO_APPLY_LANE_PENDING`; no se reaudita ni se pide otra candidata.
 
 ## 4. Cortes cerrados
 
@@ -31,7 +33,7 @@ V174/M1/Corte 1/Corte 2A: **FROZEN/APROBADO**.
 
 ## 5. Corte activo — Corte 3 Finanzas
 
-Estado: `V181_P0_PROVEN_HOLD_V182_REQUIRED`.
+Estado: `V182_AUDITED_GO_APPLY_LANE_PENDING`.
 
 ### Verdad canónica
 
@@ -44,61 +46,65 @@ Estado: `V181_P0_PROVEN_HOLD_V182_REQUIRED`.
 
 ### Historial correctivo
 
-- V175 HOLD R26/R27;
-- V176 HOLD R26–R28;
-- V177 HOLD R29;
-- V178 HOLD R30;
-- V179 HOLD R31;
-- V180 HOLD R32;
-- V181 R26–R31 PASS, R32 anterior PASS, R32 vigente HOLD; no aplicada.
+- V175–V181: HOLD documentado; ninguna aplicada.
+- V182: source-GO.
 
-### Avances válidos de V181
+### V182 — evidencia de fuente
 
-- filas review fuera de métricas;
-- presupuesto vacío sin herencia;
-- CxP sin doble suma conocida;
-- liquidaciones/CxP histórica con controles de moneda;
-- lotes y Beneficios con revisión visible;
-- 0 pagos y 0 lotes.
-
-### P0 V181
-
-1. Lotes referencia `PENDING_CURRENCY` declarado solo dentro de Movimientos.
-2. Liquidaciones/CxP histórica referencia `currencyOf` declarado solo dentro de Movimientos.
-3. Ambos producen `ReferenceError` runtime.
+- manifest/hashes/UTF-8/sintaxis/CSS/secretos: PASS;
+- R26: 28/28;
+- R27: 13/13;
+- R28: 18/18;
+- R29: 12/12;
+- R30: 12/12;
+- R31: 27/27;
+- R32 vigente: 25/25;
+- total: 135/135 PASS;
+- Lotes runtime: PASS;
+- CxP histórica runtime: PASS;
+- P0 de fuente: 0.
 
 ### Cierre de gates
 
-R32 sigue siendo el barrido consolidado final. Se amplió con un harness runtime de módulos; no se creó R33.
+R32 es el barrido consolidado final. No se crea R33 ni V183 por falta de datos TyA, móvil, host o archivos abiertos; esas pruebas son post-apply.
 
-Después de R26–R32 vigentes PASS:
+### Empalme acumulado requerido
 
-- se aplica directamente V182;
-- no se crea otro gate por falta de datos TyA, móvil, host o archivos abiertos;
-- esas pruebas se ejecutan post-apply sobre el mismo build.
+V175–V181 no fueron aplicadas. El commit funcional V182 debe reemplazar juntos:
+
+- `app/app.js`;
+- `app/core/finanzas-core.js`;
+- `app/modules/beneficios.js`;
+- `app/modules/finanzas.js`;
+- `app/styles/layout.css`.
+
+### Estado del carril
+
+- método: checkout Git autenticado o `CXORBIA_ATOMIC_APPLY_RUNNER`;
+- blobs exactos disponibles: core y Beneficios;
+- blobs exactos pendientes: app.js, finanzas.js y layout.css;
+- no aplicación parcial;
+- no método alterno.
 
 ### Pendiente para congelar Corte 3
 
-1. Claude entrega V182 incremental.
-2. Confirmar carril.
-3. Auditar delta contra V181/V174.
-4. Ejecutar `node --check` y R26–R32 vigentes.
-5. Ejecutar harness de Lotes y CxP histórica.
-6. Con GO sin P0: `APPLY_DELTA_DIRECTLY`.
-7. Commit/push y post-gates.
-8. Hosting DEV del mismo build.
-9. Validar mayo 44/42/2/32/10/209/207.
-10. Validar mayo ↔ julio.
-11. Validar revisión fuera de métricas.
-12. Validar presupuesto vacío.
-13. Validar CxP sin duplicación.
-14. Validar liquidaciones/lotes/Beneficios fail-closed.
-15. Validar viewport móvil.
-16. Validar host autorizado/no autorizado.
-17. Descargar y abrir PDF/XLSX.
-18. Validar shopper HNL sin Q 0.
-19. Paula: `APROBADO`.
-20. Freeze Corte 3.
+1. Completar los tres blobs exactos restantes.
+2. Crear una solicitud única al runner atómico con HEAD esperado fresco.
+3. Verificar el commit funcional y retiro de la solicitud.
+4. Ejecutar R26–R32 sobre el HEAD aplicado.
+5. Publicar Hosting DEV del mismo build, si el gate/autorización permanece vigente.
+6. Validar mayo 44/42/2/32/10/209/207.
+7. Validar mayo ↔ julio.
+8. Validar revisión fuera de métricas.
+9. Validar presupuesto vacío.
+10. Validar CxP sin duplicación.
+11. Validar liquidaciones/lotes/Beneficios fail-closed.
+12. Validar viewport móvil.
+13. Validar host autorizado/no autorizado.
+14. Descargar y abrir PDF/XLSX.
+15. Validar shopper HNL sin `Q 0`.
+16. Paula: `APROBADO`.
+17. Freeze Corte 3.
 
 Corte 4 no comienza antes.
 
@@ -112,14 +118,17 @@ Corte 4 no comienza antes.
 
 ## 7. Claude/prototipo
 
-Paquete vigente: `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V181-P0-HOLD-20260725.md`.
+Paquete vigente: `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V182-SOURCE-GO-20260726.md`.
+
+No preparar V183.
 
 ## 8. Academia
 
-Después de V182 GO documentar:
+Después del empalme y la aprobación visual documentar:
 
-- sintaxis frente a runtime;
-- aislamiento de módulos;
+- exacta vs revisión;
+- presupuesto vacío sin fuente;
+- CxP sin duplicación;
 - moneda fail-closed;
-- liquidaciones/lotes/CxP histórica;
+- liquidaciones/lotes/Beneficios;
 - exportación y pruebas post-apply.
