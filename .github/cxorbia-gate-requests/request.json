@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "corte3-v182-postdeploy-focal-finance-ui-r23-20260728-01",
+  "requestId": "corte3-v182-postdeploy-finance-source-semantics-r23-20260728-02",
   "enabled": true,
   "issuedAt": "2026-07-28",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "94c388653f4e9ceee0e50c654d44c56face58587",
+  "targetHeadSha": "eeaf6be558aa98fc1a500c629f2b6fafc14992ea",
   "profile": "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23",
   "allowedProfiles": [
     "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23"
