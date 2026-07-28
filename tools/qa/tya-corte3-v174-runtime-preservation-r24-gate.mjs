@@ -31,14 +31,14 @@ const runGit = args => {
 const sha256 = data => createHash('sha256').update(data).digest('hex');
 const isAllowedManifestDrift = path => path === 'app/index-backend-dev.html' || path.startsWith('app/docs/');
 
-/* V182 was independently audited GO and then empalmed atomically. R24 must not
-   reinterpret those five approved bytes as a V174 regression. Any mismatch from
-   these exact hashes still fails closed. */
+/* V182 was independently audited GO and empalmed atomically. The single
+   post-deploy correction in finanzas.js was reproduced by remote smoke and is
+   locked here by its exact post-fix SHA/size. Any other drift remains blocked. */
 const authorizedRuntimeOverlay = new Map([
   ['app/app.js', { size: 30467, sha256: '4bcb12c050ab69ff8551eb8a030004ad3ef0cf3a03cf75beccb28b251dd6559c' }],
   ['app/core/finanzas-core.js', { size: 14284, sha256: '1097ddb0488d7a0cd3235900c2a5883c0b32a652861bd622150457de5a6df6d0' }],
   ['app/modules/beneficios.js', { size: 9599, sha256: 'a8e330f6eb7eb9304eacdc1edff1ac83783011b883e3a3ddca2080eef918113c' }],
-  ['app/modules/finanzas.js', { size: 100871, sha256: '1fae2ef8c6a205f4a0ffa54d7821e75ff3b255ee35643b12832e983fd2690410' }],
+  ['app/modules/finanzas.js', { size: 100922, sha256: '3255770abffcdaf439810ab35ea6f29139807510366266b0273dd5fa8d80e57a' }],
   ['app/styles/layout.css', { size: 25234, sha256: 'efddab2779cc6873cdf05e42f7c8729c75fd58cac57e3bd947d532b4b5df2f27' }]
 ]);
 const overlayMatch = path => {
@@ -68,7 +68,7 @@ const canonicalFinancePaths = [
 
 mkdirSync(outDir, { recursive: true });
 const report = {
-  schemaVersion: '1.1.0',
+  schemaVersion: '1.1.1',
   gateId: 'tya-corte3-v174-runtime-preservation-r24',
   generatedAt: new Date().toISOString(),
   decision: 'HOLD',
@@ -84,7 +84,7 @@ const report = {
   appChangesSinceTechnicalPass: [],
   canonicalFinanceChangesSinceTechnicalPass: [],
   legacyVerifierDiagnosis: 'STALE_FULL_APP_HASH_INCLUDED_MUTABLE_DOCS_AND_APPROVED_DEV_ENTRY',
-  runtimeOverlayDiagnosis: 'V182_EXACT_AUDITED_OVERLAY_ALLOWED_FAIL_CLOSED',
+  runtimeOverlayDiagnosis: 'V182_EXACT_AUDITED_OVERLAY_PLUS_REMOTE_SMOKE_FOCAL_FIX_ALLOWED_FAIL_CLOSED',
   safeState: {
     sourceSafe: true,
     deploy: false,
