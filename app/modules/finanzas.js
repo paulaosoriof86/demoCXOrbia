@@ -96,7 +96,7 @@ CX.module('financiero', ({data,ui})=>{
      o marcada como no confirmable. Mientras la fuente esté incompleta NO se permite pago, lote
      ni confirmación. Fuente canónica: liquidaciones del periodo activo. */
     const REVIEW_CONTRACTS=['reviewRequired','financialSourceStatus','liquidationState','paymentState'];
-    const isReviewByContract=(l)=> l.reviewRequired===true || l.financialSourceStatus==='pending_or_review' || l.liquidationState==='pending_financial_source' || l.paymentState==='pending_source_confirmation';
+    const isReviewByContract=(l)=> l.reviewRequired===true || l.financialSourceStatus==='pending_or_review' || l.liquidationState==='pending_financial_source';
     const revs=CX.liq.forProject(data).map(l=>{ const faltan=[];
       if(!l.pais)faltan.push('país'); if(!l.moneda)faltan.push('moneda');
       if(l.honorario==null)faltan.push('honorario'); if(l.total==null)faltan.push('monto total');
