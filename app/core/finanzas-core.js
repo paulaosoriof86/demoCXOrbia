@@ -109,7 +109,6 @@ CX.fin = {
     const isReview=(l)=> l.reviewRequired===true
       || l.financialSourceStatus==='pending_or_review'
       || l.liquidationState==='pending_financial_source'
-      || l.paymentState==='pending_source_confirmation'
       || !l.pais || !(l.moneda||(p.currency&&p.currency[l.pais]));
     const allLiq=CX.liq.forProject(data);
     const liq=allLiq.filter(l=>!isReview(l));
