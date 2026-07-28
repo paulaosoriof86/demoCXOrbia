@@ -24,7 +24,10 @@ try{
   if(request.schemaVersion!=='cxorbia.atomic-apply-request.v1'||request.mode!=='focal_text_patch_v1')fail('request_schema_or_mode_invalid');
   if(request.repository!=='paulaosoriof86/demoCXOrbia'||request.branch!=='docs-tya-v6-v71-audit'||Number(request.pullRequest)!==7)fail('request_target_invalid');
   if(request.deploy!==false||request.merge!==false||request.production!==false||request.providerWrites!==false||request.dataWrites!==false)fail('unsafe_request_flags');
-  const allowed=['tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs'];
+  const allowed=[
+    'tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs',
+    'app/modules/finanzas.js'
+  ];
   if(!allowed.includes(request.targetPath))fail(`target_not_allowlisted:${request.targetPath}`);
   const parent=run('git',['rev-parse','HEAD^']);
   if(parent!==request.expectedParentSha)fail(`parent_mismatch:${parent}/${request.expectedParentSha}`);
