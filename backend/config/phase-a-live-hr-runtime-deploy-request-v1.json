@@ -1,21 +1,42 @@
 {
   "schemaVersion": "2.1.0",
-  "requestId": "CXORBIA-TYA-V182-CORTE3-HOSTING-DEV-VISUAL-20260728-03",
+  "requestId": "CXORBIA-TYA-V182-CORTE3-HOSTING-DEV-VISUAL-20260728-04",
   "status": "authorized_pending",
   "scope": "hosting_dev_visual_only",
   "executionMode": "deploy_and_verify",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "expectedSourceHead": "d223cb698d8172eac5145c5378bed36d763e1688",
+  "expectedSourceHead": "2177ac6ef1ccddfc86546b46b9260887b492d25f",
   "runtimeVersion": "V174-CORTE3-CANONICAL-FINANCE-R23",
   "frontendCandidate": "V182",
   "functionalEmpalmeCommit": "e3cfe464fd80e5bd4ce273556cfd0021e22c0810",
-  "postDeployFocalFixCommit": "27599aa534dff1b832340c67ee00ad4087485cd7",
-  "documentedHeadBeforeDeployRequest": "d223cb698d8172eac5145c5378bed36d763e1688",
-  "functionalAggregateSha256": "62d85bace9276070bfc642df31da74abd684ab072f155eed3895c6e3926c57c9",
-  "postFixFinanzasSha256": "3255770abffcdaf439810ab35ea6f29139807510366266b0273dd5fa8d80e57a",
-  "postFixFinanzasGitBlobSha": "1d22a2480012c4717395d2ee894ab895feb8ed37",
+  "postDeployFocalFixCommits": [
+    "27599aa534dff1b832340c67ee00ad4087485cd7",
+    "3e508c2d883f2f57b2e5fb7276ff14eec0e983de",
+    "f5457ad6f9430ee3fd91a732977c7efbb95d7bfe",
+    "91063ff8f6cd963b7361acbe371f27c4ce9e4870"
+  ],
+  "r24PostFixLockCommit": "eeaf6be558aa98fc1a500c629f2b6fafc14992ea",
+  "localFinanceUiPostFixGate": {
+    "requestCommit": "2177ac6ef1ccddfc86546b46b9260887b492d25f",
+    "workflowRun": 30402106874,
+    "status": "PASS_READONLY_POST_GATES"
+  },
+  "documentedHeadBeforeDeployRequest": "2177ac6ef1ccddfc86546b46b9260887b492d25f",
+  "originalV182AggregateSha256": "62d85bace9276070bfc642df31da74abd684ab072f155eed3895c6e3926c57c9",
+  "postFixIdentities": {
+    "app/core/finanzas-core.js": {
+      "gitBlobSha": "6d3f46f003f3319f96cfd759b8b5ed52afc6a125",
+      "sha256": "72a599b7ed6fdc02bf4ca915ff2cb0f04a558a9597092b49b31f8112897c26af",
+      "size": 14228
+    },
+    "app/modules/finanzas.js": {
+      "gitBlobSha": "9cd2be619cd2ec433bed959918f86c2bf70cf31d",
+      "sha256": "560f25b6308bbe9ea96f16c1d94da6e47be7eb068e11aca809962cfcc7e8e72e",
+      "size": 100917
+    }
+  },
   "manifestFile": "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json",
   "targetProject": "cxorbia-backend-dev",
   "hostingTarget": "cxorbia-dev",
@@ -44,7 +65,6 @@
     "total": "135/135 PASS",
     "lotesRuntime": "PASS",
     "cxpHistoricaRuntime": "PASS",
-    "referenceErrorsBeforeRemoteSmoke": 0,
     "backendPreserved": true,
     "hrPreserved": true,
     "cxDataPreserved": true
@@ -55,8 +75,7 @@
       "workflowRun": 30400195082,
       "hostingDeployed": false,
       "result": "HOLD",
-      "rootCause": "R24_STALE_V174_MANIFEST_REJECTED_EXACT_AUDITED_V182_OVERLAY",
-      "resolutionCommit": "a10028e9c0915067cb13470a782226f92a26b2a4"
+      "rootCause": "R24_STALE_V174_MANIFEST_REJECTED_EXACT_AUDITED_V182_OVERLAY"
     },
     {
       "attempt": 2,
@@ -64,10 +83,21 @@
       "hostingDeployed": true,
       "result": "REMOTE_SMOKE_HOLD",
       "rootCause": "REFERENCE_ERROR_CANONICAL_PERIOD_ID_UNDEFINED_IN_FINANCIERO",
-      "focalFixCommit": "27599aa534dff1b832340c67ee00ad4087485cd7",
-      "r24PostFixLockCommit": "94c388653f4e9ceee0e50c654d44c56face58587",
-      "localPostFixGateRun": 30401168221,
-      "localPostFixGateObservation": "all canonical finance/data checks passed through finance_ui_bound_to_canonical_state; report capture harness remained HOLD and is treated as tooling evidence pending remote confirmation"
+      "resolutionCommit": "27599aa534dff1b832340c67ee00ad4087485cd7"
+    },
+    {
+      "attempt": 3,
+      "workflowRun": 30401375293,
+      "hostingDeployed": true,
+      "result": "REMOTE_SMOKE_HOLD",
+      "rootCause": "EXACT_UNPAID_ROWS_MISCLASSIFIED_AS_SOURCE_REVIEW_CAUSING_ZERO_FINANCE_METRICS_AND_BLOCKED_EXPORT",
+      "resolutionCommits": [
+        "3e508c2d883f2f57b2e5fb7276ff14eec0e983de",
+        "f5457ad6f9430ee3fd91a732977c7efbb95d7bfe",
+        "91063ff8f6cd963b7361acbe371f27c4ce9e4870"
+      ],
+      "localPostFixGateRun": 30402106874,
+      "localPostFixGateResult": "PASS_READONLY_POST_GATES"
     }
   ],
   "authorization": {
