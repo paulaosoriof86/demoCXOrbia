@@ -1,17 +1,17 @@
 {
   "schemaVersion": "2.1.0",
-  "requestId": "CXORBIA-TYA-V182-CORTE3-HOSTING-DEV-VISUAL-20260728-01",
+  "requestId": "CXORBIA-TYA-V182-CORTE3-HOSTING-DEV-VISUAL-20260728-02",
   "status": "authorized_pending",
   "scope": "hosting_dev_visual_only",
   "executionMode": "deploy_and_verify",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "expectedSourceHead": "a25eff52526131d06e4cbf32fd06c08a2e4fa04b",
+  "expectedSourceHead": "a10028e9c0915067cb13470a782226f92a26b2a4",
   "runtimeVersion": "V174-CORTE3-CANONICAL-FINANCE-R23",
   "frontendCandidate": "V182",
   "functionalEmpalmeCommit": "e3cfe464fd80e5bd4ce273556cfd0021e22c0810",
-  "documentedHeadBeforeDeployRequest": "a25eff52526131d06e4cbf32fd06c08a2e4fa04b",
+  "documentedHeadBeforeDeployRequest": "a10028e9c0915067cb13470a782226f92a26b2a4",
   "functionalAggregateSha256": "62d85bace9276070bfc642df31da74abd684ab072f155eed3895c6e3926c57c9",
   "manifestFile": "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json",
   "targetProject": "cxorbia-backend-dev",
@@ -45,6 +45,15 @@
     "backendPreserved": true,
     "hrPreserved": true,
     "cxDataPreserved": true
+  },
+  "previousAttempt": {
+    "requestId": "CXORBIA-TYA-V182-CORTE3-HOSTING-DEV-VISUAL-20260728-01",
+    "requestCommit": "1261284a33e3d7dffe835188eff7eac6d38663ab",
+    "workflowRun": 30400195082,
+    "hostingDeployed": false,
+    "rootCause": "R24_STALE_V174_MANIFEST_REJECTED_EXACT_AUDITED_V182_OVERLAY",
+    "resolutionCommit": "a10028e9c0915067cb13470a782226f92a26b2a4",
+    "resolution": "R24 now accepts only the five exact audited V182 hashes and remains fail-closed for any other runtime drift"
   },
   "authorization": {
     "authorizedBy": "Paula",
