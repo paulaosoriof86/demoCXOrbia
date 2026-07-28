@@ -1,147 +1,124 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-07-26  
-**Estado:** `V174_ACTIVE_BASELINE_V182_AUDITED_GO_APPLY_LANE_PENDING_NO_FREEZE_NO_PRODUCTION`
+**Fecha:** 2026-07-28  
+**Estado:** `V182_HOSTING_DEV_REMOTE_SMOKE_PASS_PENDING_PAULA_VISUAL_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
 - Repo: `paulaosoriof86/demoCXOrbia`.
-- Rama: `docs-tya-v6-v71-audit`.
+- Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
-- Sin nueva rama/PR, `main`, force push, producción, merge, imports, pagos o writes reales.
+- Sin `main`, nueva rama/PR, force push, merge, producción, imports, pagos o writes reales.
+- Hosting DEV autorizado y ejecutado; Cloud Run no fue redeployado.
 
-## 2. Baseline preservada
+## 2. Baseline y empalme V182
 
-- V174/M1/Corte 1/Corte 2A: PASS técnico y visual aprobado.
-- V174 SHA-256: `e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f`.
-- Commit funcional: `b21e494d127fb4b902de5576e3fab0292362b097`.
-- Source lock: `d057d77c9117d9d451cfc9a6563083b78b926d57`.
-- HR source-safe, adapters y `CX.data`: preservados.
+- V174/M1/Corte 1/Corte 2A permanecen FROZEN/APROBADOS.
+- V182 fue auditada GO y empalmada acumulativamente sobre V174.
+- HEAD_BEFORE del empalme: `2a4f93ecb8e5d309363cd7968f72947a61e2b754`.
+- Commit funcional V182: `e3cfe464fd80e5bd4ce273556cfd0021e22c0810`.
+- Cinco archivos V182 empalmados: `app/app.js`, `app/core/finanzas-core.js`, `app/modules/beneficios.js`, `app/modules/finanzas.js`, `app/styles/layout.css`.
+- Identidad original V182: 5/5 SHA-256 y Git blob PASS; agregado `62d85bace9276070bfc642df31da74abd684ab072f155eed3895c6e3926c57c9`.
+- ZIP disponible reconciliado como `ZIP_CONTAINER_REPACKAGED` con contenido funcional byte-identical.
+- R26–R32 post-apply iniciales: `135/135 PASS`; Lotes PASS; CxP histórica PASS.
+- No V183. No R33.
 
-## 3. Verdad financiera canónica
+## 3. Verdad canónica preservada
 
-- 14 periodos y 616 visitas;
-- 247 filas financieras;
-- 209 vínculos exactos;
-- 207 montos canónicos;
-- 38 sin vínculo exacto;
-- 79 revisiones de vínculo;
-- 2 revisiones de monto;
-- 37 evidencias candidatas;
-- 0 pagos;
-- 0 lotes.
+- 14 periodos y 616 visitas.
+- 247 filas financieras.
+- 209 vínculos exactos.
+- 207 montos canónicos.
+- 38 sin vínculo exacto.
+- 79 revisiones de vínculo.
+- 2 revisiones de monto.
+- 37 evidencias candidatas de pago.
+- 0 pagos confirmados.
+- 0 lotes reales.
 
-Mayo 2026: 44 visitas, 42 exactas, 2 revisiones fail-closed, 32 GT y 10 HN.
+Mayo 2026:
 
-## 4. Historial correctivo
+- 44 visitas HR;
+- 42 filas financieras exactas;
+- 2 filas explícitas de revisión fail-closed;
+- 32 exactas GT y 10 exactas HN;
+- 0 pagadas.
 
-- V175–V181: HOLD documentado; ninguna aplicada.
-- R32 permanece como último gate de fuente; no existe R33.
+## 4. Correcciones focales post-empalme demostradas por Hosting DEV
 
-## 5. V182 — auditoría
+El empalme V182 no se reabrió ni se sustituyó. Los smoke remotos demostraron P0 reproducibles y se corrigieron focalmente sobre la rama viva:
 
-- ZIP: `Prototype development request (18).zip`.
-- Candidata: `CANDIDATA_V182_CORTE3_20260725`.
-- ZIP SHA-256: `5eb07c461f030aa2500aebb791afdda33e1cb6f3d986538fb7db586c19459ac8`.
-- Rama/PR verificados en HEAD `cf29908bd1e6d9663fe4128bee358636d02cfb2d` antes de la auditoría.
-- Manifest/hashes: PASS.
-- UTF-8 sin BOM: PASS.
-- `node --check`: 4/4 PASS.
-- CSS: PASS.
-- secretos: 0.
+1. `27599aa534dff1b832340c67ee00ad4087485cd7` — define `canonicalPeriodId` en el scope de Dashboard Financiero; elimina `ReferenceError` remoto.
+2. `3e508c2d883f2f57b2e5fb7276ff14eec0e983de` — una fila `exact_reconciled_source_safe` con pago aún no confirmado permanece en métricas/CxP; `pending_source_confirmation` por sí solo no significa revisión de fuente.
+3. `f5457ad6f9430ee3fd91a732977c7efbb95d7bfe` — la cola visible de revisión deja de clasificar como revisión de fuente las filas exactas solamente por estar impagas.
+4. `91063ff8f6cd963b7361acbe371f27c4ce9e4870` — copy visible alineado con la semántica anterior.
 
-Delta V181→V182:
+Identidades post-fix protegidas por R24:
 
-- cambia solo `app/modules/finanzas.js`;
-- core, Beneficios, app.js y layout.css son idénticos a V181.
+- `app/core/finanzas-core.js`: blob `6d3f46f003f3319f96cfd759b8b5ed52afc6a125`, SHA-256 `72a599b7ed6fdc02bf4ca915ff2cb0f04a558a9597092b49b31f8112897c26af`.
+- `app/modules/finanzas.js`: blob `9cd2be619cd2ec433bed959918f86c2bf70cf31d`, SHA-256 `560f25b6308bbe9ea96f16c1d94da6e47be7eb068e11aca809962cfcc7e8e72e`.
+- R24 lock post-fix: `eeaf6be558aa98fc1a500c629f2b6fafc14992ea`.
 
-Empalme acumulado requerido sobre V174:
+## 5. Gates post-fix
 
-- `app/app.js`;
-- `app/core/finanzas-core.js`;
-- `app/modules/beneficios.js`;
-- `app/modules/finanzas.js`;
-- `app/styles/layout.css`.
+Read-only finance UI gate post-fix:
 
-## 6. Gates y runtime
+- request commit: `2177ac6ef1ccddfc86546b46b9260887b492d25f`;
+- run: `30402106874`;
+- resultado: `PASS_READONLY_POST_GATES`.
 
-- R26: 28/28 PASS;
-- R27: 13/13 PASS;
-- R28: 18/18 PASS;
-- R29: 12/12 PASS;
-- R30: 12/12 PASS;
-- R31: 27/27 PASS;
-- R32 vigente: 25/25 PASS;
-- total: 135/135 PASS;
-- Lotes runtime: PASS;
-- CxP histórica runtime: PASS;
-- `ReferenceError`: 0.
+Hosting DEV + smoke remoto final:
 
-## 7. Decisión
+- deploy request commit: `d550d2c5055d24e9032470f45243208130180804`;
+- run: `30402212216`;
+- Hosting DEV: PASS;
+- live HR endpoint: PASS;
+- remote finance smoke R25: `PASS_TYA_CORTE3_REMOTE_LIVE_FINANCE_SMOKE_R25`;
+- 14 periodos / 616 visitas: PASS;
+- mayo: 44 visitas / 42 exactas / 2 reviews / 32 GT / 10 HN: PASS;
+- filas review fail-closed: PASS;
+- pagos/lotes = 0: PASS;
+- Dashboard Financiero visible: PASS;
+- Export visible y spec capturado: PASS;
+- reporte: 2 filas / 10 columnas / 2 puntos de gráfica / nombre `.pdf`: PASS;
+- Beneficios Shopper: 3 liquidaciones canónicas / 0 pagadas / 4 KPI / detalle visible: PASS.
 
-- V182: `AUDITED_GO`.
-- P0 de fuente: 0.
-- No V183.
-- No R33.
-- TyA/móvil/host/PDF/XLSX: post-apply.
+## 6. Hosting DEV vigente
 
-## 8. Aplicación
+- Firebase project: `cxorbia-backend-dev`.
+- Hosting target: `cxorbia-dev`.
+- URL visual: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1`.
+- Cloud Run existente solo se leyó/verificó; no hubo redeploy.
+- Producción no fue tocada.
 
-Estado: `AUDITED_GO_APPLY_LANE_PENDING`.
+## 7. Estado Phase A
 
-El empalme debe ejecutarse en un solo commit mediante checkout Git autenticado o `CXORBIA_ATOMIC_APPLY_RUNNER`.
+- M1 / Corte 1 / Corte 2A: FROZEN/APROBADOS.
+- Corte 3: empalmado + correcciones focales + gates + Hosting DEV + smoke remoto PASS.
+- Corte 3 todavía NO está FROZEN ni ACTIVE_BASELINE: falta validación visual de Paula y `APROBADO`.
+- Corte 4 no inicia antes del freeze.
 
-- blobs exactos disponibles: core y Beneficios;
-- blobs exactos pendientes de transferencia al runner: app.js, finanzas.js y layout.css;
-- Contents API funcional secuencial, tree directo, nueva rama/PR, workflow transportador y acción manual de Paula: rechazados.
+## 8. Visualización pendiente de Paula
 
-V182 no se reaudita ni se reemplaza por otra candidata.
+Validar en Hosting DEV:
 
-## 9. Documentación vigente
+1. Admin → Finanzas, mayo 2026: métricas monetarias reales no deben quedar en cero por el solo hecho de estar pendientes de pago.
+2. Revisión de fuente: deben quedar 2 filas de mayo, no las 42 exactas impagas.
+3. Exportar reporte: vista previa debe contener GT/HN; probar PDF y XLSX y abrir ambos archivos.
+4. Shopper/Beneficios: valores por moneda correctos; pagado = 0 mientras no exista fuente de pago confirmada; sin `Q 0` para HNL.
+5. Vista móvil y navegación básica sin regresión.
 
-- `app/docs/AUDITORIA-V182-CORTE3-GO-APPLY-LANE-PENDING-20260726.md`;
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V182-SOURCE-GO-20260726.md`;
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-AUDITORIA-V182-SOURCE-GO-20260726.md`;
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V182-SOURCE-GO-20260726.md`;
-- `app/docs/ACADEMIA-IMPACTO-V182-SOURCE-GO-20260726.md`;
-- `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-V182-SOURCE-GO-20260726.md`.
+## 9. Claude/prototipo y Academia
 
-## 10. Clasificación
+- No preparar V183 ni R33.
+- Para Claude: registrar las cuatro correcciones focales post-empalme por archivo y causa reproducible; no reinterpretar reglas HR/financieras.
+- Academia: después de `APROBADO`, actualizar Manual de Finanzas, Movimientos/Tesorería, Liquidaciones/Lotes, Beneficios y errores frecuentes con la separación `fuente exacta / revisión / pago pendiente`.
 
-- **Reusable CXOrbia:** cierre R26–R32 y harness runtime.
-- **Exclusivo cliente:** evidencia TyA post-apply.
-- **Claude/prototipo:** V182 cerrada; no nueva candidata.
-- **Academia:** contrato financiero fail-closed.
-- **Sin impacto Claude:** desbloqueo del carril atómico.
+## 10. Siguiente bloque exacto
 
-## 11. Siguiente bloque exacto
+`VALIDACIÓN VISUAL PAULA EN HOSTING DEV → PDF/XLSX + MÓVIL + BENEFICIOS → CORRECCIÓN FOCALIZADA SOLO SI HAY DIFERENCIA REPRODUCIBLE → APROBADO → FREEZE CORTE 3 → recién entonces CORTE 4`.
 
-`COMPLETAR TRES BLOBS EXACTOS → CXORBIA_ATOMIC_APPLY_RUNNER → COMMIT FUNCIONAL ATÓMICO → R26–R32 POST-APPLY → HOSTING DEV → TYA/MÓVIL/HOST/PDF/XLSX → APROBADO → FREEZE CORTE 3`.
+## 11. Estado seguro
 
-## 12. Estado seguro
-
-Sin aplicación parcial, Hosting DEV, producción, merge, Cloud Run, Firestore/Auth/Storage/HR writes, imports, pagos, lotes, Make ni Gemini live.
-
----
-
-## Actualizacion vigente 2026-07-28 - V182 empalmada
-
-**Estado vigente:** `V182_EMPALMED_PENDING_VISUAL_NO_FREEZE_NO_PRODUCTION`.
-
-V182 fue empalmada funcionalmente mediante checkout Git autenticado/file-aware sobre `docs-tya-v6-v71-audit`.
-
-- HEAD_BEFORE: `2a4f93ecb8e5d309363cd7968f72947a61e2b754`.
-- Commit funcional: `e3cfe464fd80e5bd4ce273556cfd0021e22c0810`.
-- HEAD_AFTER remoto: `e3cfe464fd80e5bd4ce273556cfd0021e22c0810`.
-- Archivos aplicados: `app/app.js`, `app/core/finanzas-core.js`, `app/modules/beneficios.js`, `app/modules/finanzas.js`, `app/styles/layout.css`.
-- Identidad funcional: 5/5 SHA-256, 5/5 Git blob SHA y agregado `62d85bace9276070bfc642df31da74abd684ab072f155eed3895c6e3926c57c9` PASS.
-- ZIP disponible clasificado como `ZIP_CONTAINER_REPACKAGED`.
-- R26-R32 post-apply: 135/135 PASS.
-- Lotes runtime: PASS.
-- CxP historica runtime: PASS.
-- ReferenceError: 0.
-
-V182 no queda ACTIVE_BASELINE/FROZEN hasta Hosting DEV, smoke remoto, validacion visual Paula y APROBADO.
-
-**Siguiente bloque exacto:** `HOSTING DEV DEL MISMO HEAD_AFTER -> SMOKE REMOTO -> TYA/MOVIL/HOST/PDF/XLSX -> VALIDACION VISUAL PAULA -> CORRECCION FOCALIZADA SI APLICA -> APROBADO -> FREEZE CORTE 3`.
+Sin producción, merge, Firestore/Auth/Storage/HR writes, imports, pagos reales, lotes reales, Make ni Gemini live.
