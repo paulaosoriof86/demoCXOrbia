@@ -1,18 +1,21 @@
 {
   "schemaVersion": "2.1.0",
-  "requestId": "CXORBIA-TYA-V182-CORTE3-HOSTING-DEV-VISUAL-20260728-02",
+  "requestId": "CXORBIA-TYA-V182-CORTE3-HOSTING-DEV-VISUAL-20260728-03",
   "status": "authorized_pending",
   "scope": "hosting_dev_visual_only",
   "executionMode": "deploy_and_verify",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "expectedSourceHead": "a10028e9c0915067cb13470a782226f92a26b2a4",
+  "expectedSourceHead": "d223cb698d8172eac5145c5378bed36d763e1688",
   "runtimeVersion": "V174-CORTE3-CANONICAL-FINANCE-R23",
   "frontendCandidate": "V182",
   "functionalEmpalmeCommit": "e3cfe464fd80e5bd4ce273556cfd0021e22c0810",
-  "documentedHeadBeforeDeployRequest": "a10028e9c0915067cb13470a782226f92a26b2a4",
+  "postDeployFocalFixCommit": "27599aa534dff1b832340c67ee00ad4087485cd7",
+  "documentedHeadBeforeDeployRequest": "d223cb698d8172eac5145c5378bed36d763e1688",
   "functionalAggregateSha256": "62d85bace9276070bfc642df31da74abd684ab072f155eed3895c6e3926c57c9",
+  "postFixFinanzasSha256": "3255770abffcdaf439810ab35ea6f29139807510366266b0273dd5fa8d80e57a",
+  "postFixFinanzasGitBlobSha": "1d22a2480012c4717395d2ee894ab895feb8ed37",
   "manifestFile": "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json",
   "targetProject": "cxorbia-backend-dev",
   "hostingTarget": "cxorbia-dev",
@@ -41,20 +44,32 @@
     "total": "135/135 PASS",
     "lotesRuntime": "PASS",
     "cxpHistoricaRuntime": "PASS",
-    "referenceErrors": 0,
+    "referenceErrorsBeforeRemoteSmoke": 0,
     "backendPreserved": true,
     "hrPreserved": true,
     "cxDataPreserved": true
   },
-  "previousAttempt": {
-    "requestId": "CXORBIA-TYA-V182-CORTE3-HOSTING-DEV-VISUAL-20260728-01",
-    "requestCommit": "1261284a33e3d7dffe835188eff7eac6d38663ab",
-    "workflowRun": 30400195082,
-    "hostingDeployed": false,
-    "rootCause": "R24_STALE_V174_MANIFEST_REJECTED_EXACT_AUDITED_V182_OVERLAY",
-    "resolutionCommit": "a10028e9c0915067cb13470a782226f92a26b2a4",
-    "resolution": "R24 now accepts only the five exact audited V182 hashes and remains fail-closed for any other runtime drift"
-  },
+  "attemptHistory": [
+    {
+      "attempt": 1,
+      "workflowRun": 30400195082,
+      "hostingDeployed": false,
+      "result": "HOLD",
+      "rootCause": "R24_STALE_V174_MANIFEST_REJECTED_EXACT_AUDITED_V182_OVERLAY",
+      "resolutionCommit": "a10028e9c0915067cb13470a782226f92a26b2a4"
+    },
+    {
+      "attempt": 2,
+      "workflowRun": 30400460509,
+      "hostingDeployed": true,
+      "result": "REMOTE_SMOKE_HOLD",
+      "rootCause": "REFERENCE_ERROR_CANONICAL_PERIOD_ID_UNDEFINED_IN_FINANCIERO",
+      "focalFixCommit": "27599aa534dff1b832340c67ee00ad4087485cd7",
+      "r24PostFixLockCommit": "94c388653f4e9ceee0e50c654d44c56face58587",
+      "localPostFixGateRun": 30401168221,
+      "localPostFixGateObservation": "all canonical finance/data checks passed through finance_ui_bound_to_canonical_state; report capture harness remained HOLD and is treated as tooling evidence pending remote confirmation"
+    }
+  ],
   "authorization": {
     "authorizedBy": "Paula",
     "authorizationSource": "current_conversation_2026-07-28",
