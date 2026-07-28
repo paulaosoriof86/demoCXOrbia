@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-/* CXOrbia TyA · Corte 3 V174 runtime preservation gate R24.
-   The legacy V174 composite verifier hashes mutable documentation and the
-   approved DEV-only entry, so it is not a valid predeploy gate after Corte 3.
-   This gate preserves the same protection without treating sanctioned docs or
-   the already-PASS DEV entry as regressions. */
+/* CXOrbia TyA · Corte 3 runtime preservation gate R24.
+   The original V174 manifest remains the baseline protection, while an audited
+   frontend overlay may be explicitly accepted only when every authorized path
+   matches its locked byte identity. Mutable documentation and the approved
+   DEV-only entry remain non-blocking drift. */
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve, relative } from 'node:path';
@@ -31,6 +31,28 @@ const runGit = args => {
 const sha256 = data => createHash('sha256').update(data).digest('hex');
 const isAllowedManifestDrift = path => path === 'app/index-backend-dev.html' || path.startsWith('app/docs/');
 
+/* V182 was independently audited GO and then empalmed atomically. R24 must not
+   reinterpret those five approved bytes as a V174 regression. Any mismatch from
+   these exact hashes still fails closed. */
+const authorizedRuntimeOverlay = new Map([
+  ['app/app.js', { size: 30467, sha256: '4bcb12c050ab69ff8551eb8a030004ad3ef0cf3a03cf75beccb28b251dd6559c' }],
+  ['app/core/finanzas-core.js', { size: 14284, sha256: '1097ddb0488d7a0cd3235900c2a5883c0b32a652861bd622150457de5a6df6d0' }],
+  ['app/modules/beneficios.js', { size: 9599, sha256: 'a8e330f6eb7eb9304eacdc1edff1ac83783011b883e3a3ddca2080eef918113c' }],
+  ['app/modules/finanzas.js', { size: 100871, sha256: '1fae2ef8c6a205f4a0ffa54d7821e75ff3b255ee35643b12832e983fd2690410' }],
+  ['app/styles/layout.css', { size: 25234, sha256: 'efddab2779cc6873cdf05e42f7c8729c75fd58cac57e3bd947d532b4b5df2f27' }]
+]);
+const overlayMatch = path => {
+  const expected = authorizedRuntimeOverlay.get(path);
+  if (!expected) return null;
+  const filePath = resolve(root, path);
+  if (!existsSync(filePath)) return null;
+  const data = readFileSync(filePath);
+  const actualSha256 = sha256(data);
+  return actualSha256 === expected.sha256 && data.length === expected.size
+    ? { path, expectedSha256: expected.sha256, actualSha256, expectedSize: expected.size, actualSize: data.length }
+    : null;
+};
+
 const canonicalFinancePaths = [
   'app/index-backend-dev.html',
   'app/adapters/tya-financial-canonical-source-safe-adapter.js',
@@ -46,7 +68,7 @@ const canonicalFinancePaths = [
 
 mkdirSync(outDir, { recursive: true });
 const report = {
-  schemaVersion: '1.0.0',
+  schemaVersion: '1.1.0',
   gateId: 'tya-corte3-v174-runtime-preservation-r24',
   generatedAt: new Date().toISOString(),
   decision: 'HOLD',
@@ -55,12 +77,14 @@ const report = {
   head: null,
   manifestFileCount: 0,
   exactManifestMatches: 0,
+  authorizedRuntimeOverlay: [],
   allowedManifestDrift: [],
   forbiddenManifestDrift: [],
   missingCanonicalFinancePaths: [],
   appChangesSinceTechnicalPass: [],
   canonicalFinanceChangesSinceTechnicalPass: [],
   legacyVerifierDiagnosis: 'STALE_FULL_APP_HASH_INCLUDED_MUTABLE_DOCS_AND_APPROVED_DEV_ENTRY',
+  runtimeOverlayDiagnosis: 'V182_EXACT_AUDITED_OVERLAY_ALLOWED_FAIL_CLOSED',
   safeState: {
     sourceSafe: true,
     deploy: false,
@@ -98,6 +122,11 @@ try {
       report.exactManifestMatches += 1;
       continue;
     }
+    const authorized = overlayMatch(entry.path);
+    if (authorized) {
+      report.authorizedRuntimeOverlay.push(authorized);
+      continue;
+    }
     const item = {
       path: entry.path,
       expectedSha256: entry.sha256,
@@ -113,7 +142,7 @@ try {
 
   const changedApp = runGit(['diff', '--name-only', technicalPassHead, 'HEAD', '--', 'app']);
   report.appChangesSinceTechnicalPass = changedApp ? changedApp.split(/\r?\n/).filter(Boolean) : [];
-  const nonDocAppChanges = report.appChangesSinceTechnicalPass.filter(path => !path.startsWith('app/docs/'));
+  const nonDocAppChanges = report.appChangesSinceTechnicalPass.filter(path => !path.startsWith('app/docs/') && !overlayMatch(path));
 
   const changedFinance = runGit(['diff', '--name-only', technicalPassHead, 'HEAD', '--', ...canonicalFinancePaths]);
   report.canonicalFinanceChangesSinceTechnicalPass = changedFinance ? changedFinance.split(/\r?\n/).filter(Boolean) : [];
@@ -129,6 +158,7 @@ try {
   const invalidTagCounts = requiredDevTags.filter(tag => devHtml.split(tag).length - 1 !== 1);
 
   const blockers = [];
+  if (report.authorizedRuntimeOverlay.length !== authorizedRuntimeOverlay.size) blockers.push(`authorized_v182_overlay_incomplete:${report.authorizedRuntimeOverlay.length}/${authorizedRuntimeOverlay.size}`);
   if (report.forbiddenManifestDrift.length) blockers.push('forbidden_v174_manifest_drift');
   if (report.missingCanonicalFinancePaths.length) blockers.push('canonical_finance_path_missing');
   if (nonDocAppChanges.length) blockers.push(`app_runtime_changed_after_technical_pass:${nonDocAppChanges.join(',')}`);
