@@ -31,14 +31,16 @@ const runGit = args => {
 const sha256 = data => createHash('sha256').update(data).digest('hex');
 const isAllowedManifestDrift = path => path === 'app/index-backend-dev.html' || path.startsWith('app/docs/');
 
-/* V182 was independently audited GO and empalmed atomically. The single
-   post-deploy correction in finanzas.js was reproduced by remote smoke and is
-   locked here by its exact post-fix SHA/size. Any other drift remains blocked. */
+/* V182 was independently audited GO and empalmed atomically. Remote Hosting DEV
+   then reproduced two finance defects: an undefined canonicalPeriodId and an
+   incorrect classification of exact-but-unpaid rows as source review. The
+   resulting focal corrections are locked here by exact SHA/size. Any other
+   runtime drift remains blocked fail-closed. */
 const authorizedRuntimeOverlay = new Map([
   ['app/app.js', { size: 30467, sha256: '4bcb12c050ab69ff8551eb8a030004ad3ef0cf3a03cf75beccb28b251dd6559c' }],
-  ['app/core/finanzas-core.js', { size: 14284, sha256: '1097ddb0488d7a0cd3235900c2a5883c0b32a652861bd622150457de5a6df6d0' }],
+  ['app/core/finanzas-core.js', { size: 14228, sha256: '72a599b7ed6fdc02bf4ca915ff2cb0f04a558a9597092b49b31f8112897c26af' }],
   ['app/modules/beneficios.js', { size: 9599, sha256: 'a8e330f6eb7eb9304eacdc1edff1ac83783011b883e3a3ddca2080eef918113c' }],
-  ['app/modules/finanzas.js', { size: 100922, sha256: '3255770abffcdaf439810ab35ea6f29139807510366266b0273dd5fa8d80e57a' }],
+  ['app/modules/finanzas.js', { size: 100917, sha256: '560f25b6308bbe9ea96f16c1d94da6e47be7eb068e11aca809962cfcc7e8e72e' }],
   ['app/styles/layout.css', { size: 25234, sha256: 'efddab2779cc6873cdf05e42f7c8729c75fd58cac57e3bd947d532b4b5df2f27' }]
 ]);
 const overlayMatch = path => {
@@ -68,7 +70,7 @@ const canonicalFinancePaths = [
 
 mkdirSync(outDir, { recursive: true });
 const report = {
-  schemaVersion: '1.1.1',
+  schemaVersion: '1.1.2',
   gateId: 'tya-corte3-v174-runtime-preservation-r24',
   generatedAt: new Date().toISOString(),
   decision: 'HOLD',
@@ -84,7 +86,7 @@ const report = {
   appChangesSinceTechnicalPass: [],
   canonicalFinanceChangesSinceTechnicalPass: [],
   legacyVerifierDiagnosis: 'STALE_FULL_APP_HASH_INCLUDED_MUTABLE_DOCS_AND_APPROVED_DEV_ENTRY',
-  runtimeOverlayDiagnosis: 'V182_EXACT_AUDITED_OVERLAY_PLUS_REMOTE_SMOKE_FOCAL_FIX_ALLOWED_FAIL_CLOSED',
+  runtimeOverlayDiagnosis: 'V182_EXACT_AUDITED_OVERLAY_PLUS_REMOTE_SMOKE_FOCAL_FINANCE_FIXES_ALLOWED_FAIL_CLOSED',
   safeState: {
     sourceSafe: true,
     deploy: false,
