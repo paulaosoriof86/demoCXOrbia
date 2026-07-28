@@ -172,7 +172,12 @@ CX.app = {
         ${b.demoMode?`<div style="text-align:center;margin-top:10px;font-size:11px;color:var(--t3)">
           <span class="bdg bdg-a">● Demo comercial · datos ficticios</span></div>`:''}
       </div>`;
-    lg.querySelectorAll('.role-btn').forEach(b=>b.addEventListener('click',()=>this.selectRole(b.dataset.role)));
+    lg.querySelectorAll('.role-btn').forEach(b=>b.addEventListener('click',()=>{
+      /* CORTE 3 P0-7 — en DEV, el acceso Shopper permite elegir una identidad real EXISTENTE desde
+         el flujo visible (no inyección oculta). En live/producción se mantiene el guard fail-closed. */
+      if(b.dataset.role==='shopper' && this._isDevAccess()) return this.pickShopperDev();
+      this.selectRole(b.dataset.role);
+    }));
     lg.querySelector('#loginAsUser')?.addEventListener('click',()=>{
       let us=[];try{us=JSON.parse(localStorage.getItem('cx_users')||'[]');}catch(e){}
       const i=+(lg.querySelector('#loginUserSel').value||0); const u=us[i]; if(!u)return;
@@ -269,6 +274,42 @@ CX.app = {
         const sel=[...ov.querySelectorAll('.scPais:checked')].map(c=>c.value);
         if(!sel.length){ CX.ui.toast('Elige al menos un país','warn'); return; }
         close(); this.selectRole(role, null, sel);
+      });
+    }});
+  },
+
+  /* CORTE 3 P0-7 / V176 P0-1 — detección de entorno DEV FAIL-CLOSED con allowlist EXACTA.
+     No se acepta ningún dominio Firebase genérico (*.web.app / *.firebaseapp.com): eso incluiría
+     posibles hosts productivos. Solo hosts exactos de la allowlist, localhost, o un flag de build
+     explícito (window.CX_DEV_BUILD===true). Cualquier otro host → false (producción fail-closed). */
+  _DEV_HOST_ALLOWLIST:['localhost','127.0.0.1','[::1]'],
+  _isDevAccess(){
+    try{
+      if(window.CX_DEV_BUILD===true) return true;                 // flag de build explícito
+      if(CX.tenantProfile && CX.tenantProfile.devShopperAccess===true) return true; // control runtime autorizado
+      const h=(location.hostname||'').toLowerCase();
+      if(this._DEV_HOST_ALLOWLIST.includes(h)) return true;       // hosts DEV exactos
+      const extra=(CX.tenantProfile && Array.isArray(CX.tenantProfile.devHostAllowlist))?CX.tenantProfile.devHostAllowlist.map(s=>String(s).toLowerCase()):[];
+      if(extra.includes(h)) return true;                          // allowlist exacta inyectada por perfil
+    }catch(e){}
+    return false;                                                 // producción y hosts no autorizados: fail-closed
+  },
+  /* Selector VISIBLE de identidad Shopper para validación DEV: lista shoppers reales existentes
+     y entra con un shopperId real. Rotulado como validación DEV, no autenticación. */
+  pickShopperDev(){
+    const shoppers=(CX.data&&CX.data.shoppers?CX.data.shoppers:[]).filter(s=>s&&s.id).slice(0,60);
+    if(!shoppers.length){ CX.ui.toast('No hay evaluadores en la fuente para validación DEV','warn'); return; }
+    const opts=shoppers.map(s=>`<option value="${s.id}">${(s.nombre||s.id)} · ${s.code||''} · ${CX.paisName?CX.paisName(s.pais):s.pais||''}</option>`).join('');
+    CX.ui.modal('📱 Acceso Shopper · validación DEV', `
+      <div class="bdg bdg-a" style="margin-bottom:10px">⚠ Acceso de validación DEV — no es autenticación real</div>
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Elige una identidad de evaluador <b>real existente</b> para recorrer el portal móvil. En producción este acceso queda fail-closed.</p>
+      <label class="lbl">Evaluador</label>
+      <select class="sel" id="devShopperSel" style="width:100%;margin-bottom:14px">${opts}</select>
+      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="devShopperGo">Entrar como este evaluador</button></div>
+    `,{onMount:(ov,close)=>{
+      ov.querySelector('#devShopperGo').addEventListener('click',()=>{
+        const id=ov.querySelector('#devShopperSel').value; if(!id)return;
+        close(); this.selectRole('shopper', id);
       });
     }});
   },

@@ -119,6 +119,14 @@
   .cx-modal,.cx-modal-wide{width:calc(100vw - 20px)!important}
   .cx-modal-full{width:100vw!important;height:100vh!important;max-height:100vh!important;border-radius:0!important}
   table.tbl{display:block;overflow-x:auto;white-space:nowrap}
+  /* CORTE 3 (responsive) — en móvil la tabla scrollea horizontal: encabezado y primera
+     columna quedan fijos para no perder contexto, con sombras que indican que hay más. */
+  table.tbl thead th{position:sticky;top:0;z-index:2;background:var(--panel,#fff)}
+  table.tbl th:first-child,table.tbl td:first-child{position:sticky;left:0;z-index:1;background:var(--panel,#fff);box-shadow:2px 0 4px -2px rgba(0,0,0,.12)}
+  table.tbl thead th:first-child{z-index:3}
+  /* pista "Desliza para ver más" — opt-in con .scroll-hint en contenedores anchos */
+  .scroll-hint{position:relative}
+  .scroll-hint::after{content:"→ Desliza para ver más";position:absolute;right:8px;bottom:6px;font-size:10px;color:var(--t3,#94a3b8);background:var(--panel,#fff);padding:1px 6px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.12);pointer-events:none;opacity:.9}
   .card-p{padding:14px 15px}
   .ph-title{font-size:20px!important}
   /* Shopper móvil (corrección 20260711) — causa real del overflow horizontal en 360/390/412px:
