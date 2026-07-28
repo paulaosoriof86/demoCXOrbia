@@ -34,6 +34,7 @@ const _m=(cur,n)=>`${cur} ${Number(n).toLocaleString('es-GT')}`;
 CX.module('financiero', ({data,ui})=>{
   const p=data.period();
   const fp=CX.fin.porPais(data);
+  const canonicalPeriodId=CX.fin.canonCurrentId();
   /* CORTE 3 P0-4 — selector interno lee/escribe EXACTAMENTE el periodo canónico de CX.data */
   const finPeriods=()=>CX.fin.canonPeriods();
   const finCurPeriod=()=>{const cur=CX.fin.canonPeriods().find(x=>x.id===CX.fin.canonCurrentId());return cur?cur.label:'';};
