@@ -84,3 +84,26 @@ Estado: `AUDITED_GO_APPLY_LANE_PENDING`.
 ## 8. Siguiente bloque
 
 `COMPLETAR BLOBS → CXORBIA_ATOMIC_APPLY_RUNNER → COMMIT FUNCIONAL → R26–R32 POST-APPLY → HOSTING DEV → TYA/MÓVIL/HOST/PDF/XLSX → APROBADO → FREEZE CORTE 3`.
+
+---
+
+## Actualizacion vigente 2026-07-28 - V182 empalmada
+
+**Estado vigente:** `V182_EMPALMED_PENDING_VISUAL_NO_FREEZE_NO_PRODUCTION`.
+
+V182 fue empalmada funcionalmente mediante checkout Git autenticado/file-aware sobre `docs-tya-v6-v71-audit`.
+
+- HEAD_BEFORE: `2a4f93ecb8e5d309363cd7968f72947a61e2b754`.
+- Commit funcional: `e3cfe464fd80e5bd4ce273556cfd0021e22c0810`.
+- HEAD_AFTER remoto: `e3cfe464fd80e5bd4ce273556cfd0021e22c0810`.
+- Archivos aplicados: `app/app.js`, `app/core/finanzas-core.js`, `app/modules/beneficios.js`, `app/modules/finanzas.js`, `app/styles/layout.css`.
+- Identidad funcional: 5/5 SHA-256, 5/5 Git blob SHA y agregado `62d85bace9276070bfc642df31da74abd684ab072f155eed3895c6e3926c57c9` PASS.
+- ZIP disponible clasificado como `ZIP_CONTAINER_REPACKAGED`.
+- R26-R32 post-apply: 135/135 PASS.
+- Lotes runtime: PASS.
+- CxP historica runtime: PASS.
+- ReferenceError: 0.
+
+V182 no queda ACTIVE_BASELINE/FROZEN hasta Hosting DEV, smoke remoto, validacion visual Paula y APROBADO.
+
+**Siguiente bloque exacto:** `HOSTING DEV DEL MISMO HEAD_AFTER -> SMOKE REMOTO -> TYA/MOVIL/HOST/PDF/XLSX -> VALIDACION VISUAL PAULA -> CORRECCION FOCALIZADA SI APLICA -> APROBADO -> FREEZE CORTE 3`.
