@@ -51,7 +51,8 @@ try{
   if(JSON.stringify(changed)!==JSON.stringify(expected))fail(`working_tree_delta_invalid:${changed.join(',')}`);
   run('git',['config','user.name','cxorbia-automation']);
   run('git',['config','user.email','cxorbia-automation@users.noreply.github.com']);
-  run('git',['add','-A','--',...expected]);
+  /* requestPath deletion is already staged by git rm; only the functional target remains unstaged. */
+  run('git',['add','--',request.targetPath]);
   run('git',['commit','-m',String(request.commitMessage||'fix(tya): apply focal controlled patch')]);
   report.functionalCommitSha=run('git',['rev-parse','HEAD']);
   report.files=[{path:request.targetPath,operation:'focal_text_patch_v1',beforeGitBlobSha:currentBlob,afterGitBlobSha:run('git',['hash-object',request.targetPath]),afterSha256:sha256(Buffer.from(updated,'utf8'))}];
