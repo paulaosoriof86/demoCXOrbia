@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "cxorbia.atomic-apply-request.v1",
+  "mode": "focal_text_patch_v1",
+  "requestId": "CXORBIA-TYA-V182-CORTE3-P1-REVIEW-COPY-20260728-01",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "expectedParentSha": "f5457ad6f9430ee3fd91a732977c7efbb95d7bfe",
+  "targetPath": "app/modules/finanzas.js",
+  "expectedCurrentGitBlobSha": "b5e646ec0f0eba6900db5a39f7a8bcf6aacd3333",
+  "findText": "Mientras la fuente esté incompleta no se permite pago, lote ni confirmación. Cada fila conserva su país y moneda. Contratos de revisión: reviewRequired, financialSourceStatus (pending_or_review), liquidationState (pending_financial_source), paymentState (pending_source_confirmation).",
+  "replaceText": "Mientras la fuente esté incompleta no se permite pago, lote ni confirmación. Cada fila conserva su país y moneda. Contratos de revisión: reviewRequired, financialSourceStatus (pending_or_review) y liquidationState (pending_financial_source). paymentState se muestra como estado de pago y no abre revisión de fuente por sí solo.",
+  "commitMessage": "fix(corte3): clarify unpaid versus source-review status",
+  "deploy": false,
+  "merge": false,
+  "production": false,
+  "providerWrites": false,
+  "dataWrites": false
+}
