@@ -44,7 +44,9 @@ try{
   fs.writeFileSync(path.join(root,request.targetPath),updated,'utf8');
   run('node',['--check',request.targetPath]);
   run('git',['rm','--',requestPath]);
-  const changed=run('git',['diff','--name-only']).split(/\r?\n/).filter(Boolean).sort();
+  const unstaged=run('git',['diff','--name-only']).split(/\r?\n/).filter(Boolean);
+  const staged=run('git',['diff','--cached','--name-only']).split(/\r?\n/).filter(Boolean);
+  const changed=[...new Set([...unstaged,...staged])].sort();
   const expected=[request.targetPath,requestPath].sort();
   if(JSON.stringify(changed)!==JSON.stringify(expected))fail(`working_tree_delta_invalid:${changed.join(',')}`);
   run('git',['config','user.name','cxorbia-automation']);
