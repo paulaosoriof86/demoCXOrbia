@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "cxorbia.atomic-apply-request.v1",
+  "mode": "focal_text_patch_v1",
+  "requestId": "CXORBIA-TYA-V182-CORTE3-P0-EXACT-UNPAID-METRICS-20260728-01",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "expectedParentSha": "4592d5e200edf26f0d39f6d2597a109e3f6f15da",
+  "targetPath": "app/core/finanzas-core.js",
+  "expectedCurrentGitBlobSha": "ca1811366180eedbc910f2fbf8cfb2a75a242997",
+  "findText": "      || l.liquidationState==='pending_financial_source'\n      || l.paymentState==='pending_source_confirmation'\n      || !l.pais || !(l.moneda||(p.currency&&p.currency[l.pais]));",
+  "replaceText": "      || l.liquidationState==='pending_financial_source'\n      || !l.pais || !(l.moneda||(p.currency&&p.currency[l.pais]));",
+  "commitMessage": "fix(corte3): keep exact unpaid rows in finance metrics",
+  "deploy": false,
+  "merge": false,
+  "production": false,
+  "providerWrites": false,
+  "dataWrites": false
+}
