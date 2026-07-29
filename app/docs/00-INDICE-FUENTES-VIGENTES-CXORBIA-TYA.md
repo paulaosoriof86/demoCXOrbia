@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-29  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `CORTE3_PAYMENT_HISTORY_HOSTING_DEV_REMOTE_PASS_PENDING_PAULA_FINAL_VISUAL_NO_FREEZE_NO_PRODUCTION`
+**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_READONLY_HARDENED_PROVIDER_IDENTITY_PENDING_NO_PRODUCTION`
 
 ## 1. Repositorio
 
@@ -10,7 +10,7 @@
 - Rama: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
-- Producción, nueva rama/PR, force push, merge, imports, ejecución de pagos y writes reales: prohibidos/no ejecutados.
+- Producción, merge, imports, pagos ejecutados y writes reales: prohibidos/no ejecutados.
 
 ## 2. Orden de lectura vigente
 
@@ -20,103 +20,75 @@
 4. addenda de Academia, patrones y antidesvío;
 5. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 6. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-7. contratos, adapters y gates source-safe de HR, finanzas y pagos;
-8. CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES, Academia y tracker vigentes;
-9. PR #7 y HEAD vivo.
+7. `app/docs/ACTIVE-BASELINE-CORTE3-V182-20260729.json`;
+8. `app/docs/FREEZE-CORTE3-V182-APPROVED-20260729.md`;
+9. contratos/adapters/gates source-safe vigentes;
+10. CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES, Academia y tracker;
+11. PR #7 y HEAD vivo.
 
-Las auditorías V175–V181 quedan solo como antecedentes HOLD. V182 es la candidata empalmada vigente. No V183 y no R33.
+## 3. Corte 3 — fuente congelada
 
-## 3. Baseline y operación
-
-- V174/M1/Corte 1/Corte 2A: FROZEN/APROBADOS.
-- V182: auditada GO y empalmada; commit funcional `e3cfe464fd80e5bd4ce273556cfd0021e22c0810`.
+- Estado: `FROZEN_ACTIVE_BASELINE`.
+- Baseline: `CXORBIA-TYA-CORTE3-V182-20260729`.
+- Aprobación Paula: `Procede`.
+- Baseline head: `1b34c3998625a3f2402ceeada283ab57b56ffbf6`.
+- V182 empalmada; no V183 y no R33.
 - 14 periodos / 616 visitas.
-- 247 filas financieras / 209 vínculos exactos / 207 montos canónicos.
-- 79 revisiones de vínculo / 2 revisiones de monto / 37 evidencias candidatas.
-- 0 lotes ejecutables creados o importados.
+- Mayo: 44 pagadas / 0 pendientes / CxP Q0-L0.
+- Junio: 2 pagadas / 42 pendientes / Q451-L0.
+- Run `30416875149`, job `90468374816`: SUCCESS.
 
-## 4. Fuente vigente de histórico de pagos
+Corte 3 no se reabre por P1/P2.
 
-Fuente privada read-only:
+## 4. Corte 4 — fuentes activas
 
-- SHA-256 `b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89`;
-- hoja `Liquidación May 26`;
-- rango `A1:AB57`;
-- Excel crudo y PII excluidos del repo.
+Objetivo: Firebase nuevo/vacío, `CX.data` read-only y cero writes.
 
-Fuentes runtime vigentes:
+Fuentes vigentes:
 
-- `backend/contracts/tya-payment-history-source-safe-v1.json`;
-- `app/data/tya-payment-history-source-safe.js`;
-- `app/adapters/tya-financial-canonical-source-safe-adapter.js`;
-- `tools/qa/tya-payment-history-source-safe-gate.mjs`;
-- `tools/release/tya-corte3-hosting-dev-build-r24.mjs`;
-- `tools/qa/tya-corte3-remote-live-finance-smoke-r25-gate.mjs`;
-- `tools/qa/tya-corte3-v174-runtime-preservation-r24-gate.mjs`.
-
-## 5. Verdad canónica de pagos
-
-### Mayo 2026
-
-- 44 visitas / 44 pagadas / 0 pendientes.
-- 42 vínculos exactos / 2 revisiones financieras preservadas.
-- CxP GT Q0 / CxP HN L0.
-- GT: honorarios Q2,040 + reembolsos Q5,448 = Q7,488 pagados.
-- HN: honorarios L2,000 + reembolsos L3,861 = L5,861 pagados.
-
-### Junio 2026
-
-- 44 visitas / 2 pagadas / 42 pendientes.
-- Pagadas únicamente `JUNIO 26!2` y `JUNIO 26!6`.
-- GT pagado Q451 / HN pagado L0.
-- Ningún pago adicional inferido.
+- `backend/contracts/cxdata-firestore-readonly-corte4-v1.json`;
+- `app/core/backend-config.js`;
+- `app/core/backend-config-preview-dev.js`;
+- `app/core/backend-firebase.js`;
+- `app/core/backend-cxdata-read-guard.js`;
+- `app/core/backend-cxdata-readonly-corte4.js`;
+- `app/index-backend-dev.html`;
+- `tools/qa/cxdata-firestore-readonly-corte4-gate.mjs`.
 
 Reglas prevalentes:
 
-- revisión financiera y pago confirmado son estados independientes;
-- pago pendiente no abre revisión financiera;
-- pago confirmado no borra revisión financiera;
-- grupos históricos son inmutables/no ejecutables;
-- no se inventa `paymentBatchId`;
-- GTQ y HNL no se suman.
+- `CX.data` conserva interfaz pública;
+- lectura solamente;
+- `writeMode=disabled`;
+- backend vacío se representa como vacío;
+- error de lectura falla cerrado;
+- no fallback silencioso a mock/localStorage;
+- no conexión/copias de base legacy;
+- no provider activation hasta verificar identidad, vacío y Rules.
 
-## 6. Gates y Hosting DEV vigentes
+## 5. Estado del proveedor
 
-- Gate local: `PASS_TYA_PAYMENT_HISTORY_SOURCE_SAFE_GATE`.
-- Adapter harness: `PASS_PAYMENT_HISTORY_ADAPTER_HARNESS`.
-- R24 fail-closed: `PASS_CORTE3_V174_RUNTIME_PRESERVATION_R24`.
-- Request final: `7d314818e58c19e4332830d4c474ff3a6157b509`.
-- Run `30416875149`, job final `90468374816`: SUCCESS.
-- Hosting DEV: PASS.
-- Live HR: `PASS_REMOTE_LIVE_HR_ENDPOINT`.
-- Smoke: `PASS_TYA_CORTE3_REMOTE_LIVE_PAYMENT_HISTORY_SMOKE_R25`.
-- Mayo remoto: 44 pagadas / 0 pendientes / CxP Q0-L0.
-- Junio remoto: 2 pagadas / 42 pendientes / Q451-L0.
-- Shopper identificado: Beneficios con pagos históricos visibles.
-- Pagos ejecutados y lotes ejecutables: 0.
+`READONLY_HARDENED_PROVIDER_IDENTITY_PENDING`
 
-Hosting DEV:
+- Firebase projectId configurado como referencia: `cxorbia-backend-dev`.
+- Identidad de proyecto nuevo/limpio: pendiente de verificación.
+- Vacío del proyecto: pendiente de verificación.
+- Config completa DEV: pendiente, sin secretos en repo.
+- Activación: prohibida por ahora.
 
-`https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=4`
+## 6. Claude/prototipo y Academia
 
-## 7. Decisión vigente
+- Claude: Corte 3 congelado; no tocar backend/contracts/adapters desde candidata; P1/P2 solo por archivo/módulo.
+- Academia: documentar baseline Corte 3 y Corte 4 read-only/fail-closed.
 
-- Corte 3: empalmado, corregido y desplegado en DEV con smoke remoto PASS.
-- Todavía NO `ACTIVE_BASELINE` y NO FROZEN.
-- Falta validación visual final de Paula y `APROBADO`.
-- Corte 4 no inicia antes del freeze.
-
-## 8. Claude/prototipo y Academia
-
-- Claude: no V183; preservar contrato de pagos históricos; cualquier copy/frontend pendiente se corrige de forma localizada por archivo/módulo.
-- Academia: diferenciar visita, liquidación, revisión financiera, pago confirmado y lote/grupo histórico; explicar precisión parcial de fecha y no ejecución de grupos históricos.
-
-## 9. Pendientes no bloqueantes
+## 7. Pendientes no bloqueantes preservados
 
 - PDF imprime sin gráfica visible.
 - Excel conserva formato básico.
 - Mejora transversal de `reportKit`.
+- Refinamiento de copy “Pendiente de fuente”.
+- Registry/gate R20 antes de producción.
 
-## 10. Siguiente bloque exacto
+## 8. Siguiente bloque exacto
 
-`VALIDACIÓN VISUAL FINAL PAULA → APROBADO → FREEZE CORTE 3 / ACTIVE_BASELINE → CORTE 4: CX.data READ-ONLY EN FIREBASE NUEVO Y VACÍO`.
+`VERIFICAR FIREBASE NUEVO/LIMPIO → VERIFICAR VACÍO Y RULES READ-ONLY → GATE CORTE 4 → ACTIVAR LECTURA DEV → SMOKE CX.data`.
