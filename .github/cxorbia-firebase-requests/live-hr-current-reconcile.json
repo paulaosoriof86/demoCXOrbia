@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "cxorbia.live-hr-current-reconcile.request.v1",
+  "enabled": true,
+  "mode": "LIVE_HR_READ_ONLY_RECONCILIATION",
+  "hrWrites": 0,
+  "firestoreWrites": 0,
+  "production": false,
+  "merge": false,
+  "triggerNonce": 1
+}
