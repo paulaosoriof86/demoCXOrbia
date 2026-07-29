@@ -5,6 +5,7 @@
    - No hardcodear T&A en módulos UI.
    - T&A entra como tenant inicial: tenantId = 'tya'.
    - El adapter permanece desactivado hasta validar reglas/importación.
+   - Corte 4 inicia en lectura estricta: cero escrituras y fail-closed.
    - No guardar API keys, secretos ni credenciales reales en repo.
    ============================================================ */
 window.CX = window.CX || {};
@@ -23,12 +24,22 @@ window.CX = window.CX || {};
   CX.BACKEND = Object.assign({
     provider: 'firebase',
     env: 'dev',
-    enabled: false, // Cambiar a true solo tras validar reglas y piloto. No activa producción.
+    enabled: false, // Solo preview DEV autorizado; no activa producción.
     tenantId: 'tya',
     defaultProjectId: null,
     firebaseConfig,
     configSource: 'repo-placeholder',
     sdkVersion: '10.12.5',
+    readOnly: true,
+    writeMode: 'disabled',
+    enableDataWrites: false,
+    enableOperationalWrites: false,
+    allowEmptyBackend: true,
+    failClosedOnReadError: true,
+    preserveCxDataInterface: true,
+    newCleanProjectRequired: true,
+    projectIdentityVerified: false,
+    emptyProjectVerified: false,
     collections: {
       tenants: 'tenants',
       users: 'users',
