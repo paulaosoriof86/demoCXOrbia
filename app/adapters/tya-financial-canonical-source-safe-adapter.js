@@ -74,7 +74,20 @@ window.CX = window.CX || {};
     const truth = paymentTruthFor(visit,item || liquidation);
     if(!truth) return liquidation;
     const paidDay = Number.isFinite(Number(truth.paidDay)) ? Number(truth.paidDay) : null;
-    return Object.assign({}, liquidation, {
+    const explicitRow = !!truth.paymentItemId;
+    const explicitIdentityAndAmounts = explicitRow ? {
+      visitaId:truth.visitId || liquidation.visitaId || liquidation.visitId || null,
+      visitId:truth.visitId || liquidation.visitId || liquidation.visitaId || null,
+      hrRowId:truth.hrRowId || liquidation.hrRowId || (visit && visit.hrRowId) || null,
+      paymentItemId:truth.paymentItemId,
+      pais:truth.country || liquidation.pais || null,
+      moneda:truth.currency || liquidation.moneda || null,
+      honorario:num(truth.honorarioPaid),
+      reembolso:num(truth.reimbursementPaid),
+      total:num(truth.totalPaid),
+      amountSource:'historical_payment_source_safe'
+    } : {};
+    return Object.assign({}, liquidation, explicitIdentityAndAmounts, {
       estado:'pagada',
       paymentState:'payment_confirmed',
       paymentConfirmed:true,
@@ -209,6 +222,12 @@ window.CX = window.CX || {};
     const estado = base.estado === 'pendiente_cuestionario' || base.estado === 'pendiente_submitir'
       ? base.estado : 'pendiente_fuente_financiera';
     const liquidation = Object.assign({}, base, {
+      visitaId:visit.id || base.visitaId || null,
+      visitId:visit.id || base.visitId || base.visitaId || null,
+      hrRowId:visit.hrRowId || base.hrRowId || null,
+      periodKey:visit.periodKey || base.periodKey || null,
+      pais:visit.pais || visit.country || base.pais || null,
+      moneda:visit.moneda || visit.currency || base.moneda || null,
       estado,
       liquidationState:'pending_financial_source',
       paymentState:'pending_source_confirmation',
