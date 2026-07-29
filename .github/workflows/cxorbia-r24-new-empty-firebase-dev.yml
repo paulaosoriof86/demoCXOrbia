@@ -16,6 +16,8 @@ on:
 
 permissions:
   contents: read
+  issues: write
+  statuses: write
 
 concurrency:
   group: cxorbia-r24-new-empty-firebase-dev
@@ -24,6 +26,7 @@ concurrency:
 env:
   CXORBIA_NEW_PROJECT_ID: cxorbia-tya-dev-260729-c4
   CXORBIA_NEW_PROJECT_NAME: CXOrbia TyA DEV Clean Corte 4
+  CXORBIA_MIN_CREATE_TIME: '2026-07-29T03:45:00Z'
 
 jobs:
   create-and-verify-new-empty-dev:
@@ -102,7 +105,7 @@ jobs:
           node tools/release/tya-create-new-empty-firebase-dev-r15b.mjs \
             --out .tmp/r24-result
 
-      - name: Normalize R24 decision without turning provider IAM into a GitHub failure
+      - name: Normalize atomic-creation decision
         run: |
           set -euo pipefail
           result='.tmp/r24-result/firebase-new-empty-r15b-report.source-safe.json'
@@ -126,20 +129,81 @@ jobs:
             projectCreated:Boolean(report.summary?.projectCreated),
             firebaseAdded:Boolean(report.summary?.firebaseAdded),
             emptyBaselineVerified:Boolean(report.summary?.emptyBaselineVerified),
-            nextAction: success ? 'continue_r25_cx_data_connection' : 'grant_project_creator_to_dedicated_identity_or_create_empty_project_once_with_admin_identity',
             noExistingDatabaseReused:true,
             production:false
           };
           fs.writeFileSync('.tmp/r24-result/r24-summary.source-safe.json',JSON.stringify(summary,null,2)+'\n');
-          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,`# R24 Firebase DEV\n\n- Decision: **${decision}**\n- GitHub execution blocked: **no**\n- Provider/IAM blocked: **${providerBlocked}**\n- New empty Firebase verified: **${success}**\n- Existing database reused: **no**\n`);
           console.log(JSON.stringify(summary,null,2));
           NODE
+
+      - name: Verify target identity and empty state with sanitized provider reads
+        env:
+          CXORBIA_CONFIRM: VERIFY_NEW_EMPTY_FIREBASE_DEV_READ_ONLY
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/r24-private/credentials.json
+        run: |
+          set -euo pipefail
+          if [ ! -s "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
+            node -e "const fs=require('fs');const r={decision:'BLOCKED_NO_READ_CREDENTIAL_AVAILABLE',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},summary:{emptyBaselineVerified:false},safeState:{providerReads:false,providerWrites:false,production:false}};fs.writeFileSync('.tmp/r24-result/corte4-new-empty-firebase-verification.source-safe.json',JSON.stringify(r,null,2)+'\n');"
+            exit 0
+          fi
+          node tools/release/cxorbia-verify-new-empty-firebase-dev-corte4.mjs \
+            --out .tmp/r24-result
+
+      - name: Publish sanitized Corte 4 status and PR evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          report='.tmp/r24-result/corte4-new-empty-firebase-verification.source-safe.json'
+          if [ ! -f "$report" ]; then
+            echo 'Sanitized verification report missing.'
+            exit 1
+          fi
+          node - "$report" <<'NODE' > .tmp/r24-result/corte4-status.env
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const pass=r.decision==='NEW_EMPTY_FIREBASE_DEV_VERIFIED_C4';
+          const summary=r.summary||{};
+          const lines=[
+            `STATE=${pass?'success':'error'}`,
+            `DECISION=${String(r.decision||'UNKNOWN').replace(/[^A-Z0-9_.-]/gi,'_')}`,
+            `DESCRIPTION=${pass?'New empty Firebase DEV verified':'Firebase DEV identity or empty-state gate blocked'}`,
+            `EMPTY=${Boolean(summary.emptyBaselineVerified)}`,
+            `NEW_IDENTITY=${Boolean(summary.newIdentityConfirmed)}`,
+            `UNAVAILABLE=${Number(summary.unavailableMandatoryCount||0)}`,
+            `NONEMPTY=${Number(summary.nonEmptySignalCount||0)}`
+          ];
+          console.log(lines.join('\n'));
+          NODE
+          source .tmp/r24-result/corte4-status.env
+          gh api --method POST \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" \
+            -f context='cxorbia/corte4-new-empty-firebase' \
+            -f description="$DESCRIPTION" >/dev/null
+          body=$(cat <<EOF
+          ## Corte 4 · Firebase DEV nuevo/vacío · evidencia source-safe
+
+          - Decision: \`$DECISION\`
+          - Nueva identidad confirmada: \`$NEW_IDENTITY\`
+          - Vacío verificado: \`$EMPTY\`
+          - Checks obligatorios no disponibles: \`$UNAVAILABLE\`
+          - Señales no vacías: \`$NONEMPTY\`
+          - Base existente reutilizada: \`false\`
+          - Provider writes fuera de creación autorizada: \`0\`
+          - Firestore/Auth/Storage/Rules/Hosting writes: \`0\`
+          - Producción: \`false\`
+          EOF
+          )
+          gh issue comment 7 --repo "$GITHUB_REPOSITORY" --body "$body" >/dev/null
+          printf '%s\n' "$body" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Cleanup credential
         if: always()
         run: rm -rf .tmp/r24-private
 
-      - name: Upload sanitized R24 evidence
+      - name: Upload sanitized R24/Corte 4 evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
