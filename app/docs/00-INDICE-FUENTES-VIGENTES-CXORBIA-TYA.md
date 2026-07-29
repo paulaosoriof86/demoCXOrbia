@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-29  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_WEB_FIRESTORE_RULES_READY__AUTH_CONSOLE_INITIALIZATION_REQUIRED__NO_DATA_WRITES`
+**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_PROVIDER_BOOTSTRAP_COMPLETED__PROTECTED_CXDATA_SMOKE_AUTH_PRINCIPAL_PENDING__NO_DATA_WRITES`
 
 ## 1. Repositorio
 
@@ -58,7 +58,7 @@ Hardening vigente:
 - vacío integral previo PASS;
 - `cxorbia-backend-dev` sigue excluido.
 
-## 6. Bootstrap DEV read-only — estado vivo
+## 6. Bootstrap DEV read-only — COMPLETADO
 
 Paula autorizó `Autorizo bootstrap DEV read-only de Corte 4` y confirmó `us-central1`.
 
@@ -69,43 +69,53 @@ IAM temporal sobre la service account del runner:
 - Cloud Datastore Owner;
 - Service Usage Admin.
 
-Re-preflight: `BOOTSTRAP_PREFLIGHT_READY_FOR_AUTHORIZED_WRITES_C4`, missing permissions=0, location=`us-central1`.
-
-Provider bootstrap completado hasta:
+Provider bootstrap completado:
 
 - Web App DEV `CXOrbia TyA DEV Corte 4`: READY;
 - Firestore `(default)`: READY, Native/Standard, `us-central1`, sin colecciones;
 - Rules `backend/rules/firestore.corte4-readonly.rules`: DEPLOYED + VERIFIED;
-- Auth config: PENDING CONSOLE INITIALIZATION.
+- Firebase Authentication: INITIALIZED en consola, sin proveedor habilitado y sin usuarios;
+- revalidación idempotente: commit `e524b968c0003c27351d5d5826e21ffcf7cbfdbe`;
+- statuses: `cxorbia/corte4-bootstrap-execute=success`, `cxorbia/c4exec-BOOTSTRAP_DEV_READONLY_COMPLETED_C4=success`, `cxorbia/c4bootstrap-w0-webtrue-dbtrue-authtrue-rulestrue=success`;
+- provider config writes en la revalidación: 0.
 
-Estado sanitizado en commit `3acfaf9566f54e08e5a8db61247f445e90612ca5`:
+Estado: `BOOTSTRAP_DEV_READONLY_COMPLETED_C4`.
 
-`BOOTSTRAP_DEV_READONLY_PROVIDER_READY_AUTH_CONSOLE_REQUIRED_C4`
+## 7. Gate vivo — principal autenticado para smoke protegido
 
-Diagnóstico: `web=true`, `db=true`, `auth=false`, `rules=true`.
+Las Rules desplegadas permiten lectura únicamente a un operador autenticado con rol permitido y tenant `tya`. El proyecto nuevo continúa con:
 
-## 7. Causa raíz Auth
+- Auth users=0;
+- Email/Password=deshabilitado;
+- Google/otros proveedores=deshabilitados;
+- Firestore document writes=0.
 
-El endpoint público `projects.identityPlatform.initializeAuth` devuelve HTTP 400 en este proyecto Spark. Google documenta que esa variante pública está disponible solo para proyectos con facturación habilitada. Se retiró el reintento automático; Auth permanece fail-closed.
+Por tanto el siguiente smoke real de navegador no puede ejecutarse honestamente bajo las Rules actuales sin crear un principal DEV temporal. Crear ese usuario o habilitar un proveedor constituye un nuevo Auth user/config write y no se ejecuta por inferencia.
+
+Siguiente gate propuesto, acotado y reversible:
+
+`AUTORIZAR OPERADOR DEV TEMPORAL PARA SMOKE PROTEGIDO → habilitar Email/Password solo en DEV → crear 1 usuario temporal con claims role=admin + tenantId=tya → ejecutar CX.data read-only contra Firestore vacío → demostrar source=firestore / empty=true / fallbackUsed=false / writes=0 → eliminar usuario temporal → deshabilitar proveedor → conservar Auth users=0`.
+
+Hosting DEV para revisión visual seguirá siendo una autorización separada; no está incluido en este gate.
 
 ## 8. Seguridad actual
 
 - Firestore document writes=0;
-- Auth user writes=0;
+- Auth user writes permanentes=0;
 - Storage writes=0;
-- Hosting deploy=0;
+- Hosting deploy nuevo=0;
 - Functions/imports/HR/Make/Gemini/payments/merge/production=0.
 
-Hubo únicamente config writes autorizados para API/Web App/Firestore/Rules. No existe materialización de datos TyA.
+Los únicos config writes del bootstrap fueron los expresamente autorizados para API/Web App/Firestore/Rules. La revalidación posterior a la inicialización manual de Auth fue idempotente y produjo 0 provider writes.
 
 ## 9. Siguiente acción exacta
 
-`FIREBASE CONSOLE → AUTHENTICATION → COMENZAR/GET STARTED (SIN HABILITAR PROVEEDORES) → REEJECUTAR BOOTSTRAP IDEMPOTENTE → CONFIG WEB DEV → ACTIVAR LECTURA → SMOKE CX.data → VALIDACIÓN VISUAL → FREEZE CORTE 4 → RETIRAR IAM TEMPORAL A VIEWER`.
+`AUTORIZACIÓN ACOTADA DE PRINCIPAL DEV TEMPORAL → SMOKE PROTEGIDO CX.data → DOCUMENTAR RESULTADO → AUTORIZACIÓN SEPARADA HOSTING DEV → VALIDACIÓN VISUAL → FREEZE CORTE 4 → RETIRAR IAM TEMPORAL A VIEWER`.
 
 No se requiere PowerShell, nueva candidata, ZIP ni datos TyA.
 
 ## 10. Claude/prototipo y Academia
 
 - Claude: sin nueva candidata; no tocar backend/contracts/adapters. Solo actuar si smoke demuestra P0 localizado.
-- Academia: diferenciar proyecto, IAM, API, Web App, Firestore, Auth, Rules, lectura y materialización.
-- Reusable CXOrbia: bootstrap idempotente/fail-closed y least privilege posterior.
+- Academia: diferenciar inicialización Auth de habilitación de proveedor, creación de usuario temporal, claims, lectura protegida y Auth/RBAC completo de Corte 6.
+- Reusable CXOrbia: bootstrap idempotente/fail-closed, principal temporal reversible para smoke y least privilege posterior.
