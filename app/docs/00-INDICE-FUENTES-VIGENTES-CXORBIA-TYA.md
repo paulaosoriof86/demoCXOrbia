@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-29  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_READONLY_HARDENED_PROVIDER_IDENTITY_PENDING_NO_PRODUCTION`
+**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_READONLY_STATIC_PASS_PROVIDER_IAM_BLOCKED_NO_PRODUCTION`
 
 ## 1. Repositorio
 
@@ -10,7 +10,7 @@
 - Rama: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
-- Producción, merge, imports, pagos ejecutados y writes reales: prohibidos/no ejecutados.
+- Producción, merge, imports, pagos y writes reales: 0.
 
 ## 2. Orden de lectura vigente
 
@@ -22,29 +22,25 @@
 6. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 7. `app/docs/ACTIVE-BASELINE-CORTE3-V182-20260729.json`;
 8. `app/docs/FREEZE-CORTE3-V182-APPROVED-20260729.md`;
-9. contratos/adapters/gates source-safe vigentes;
-10. CAMBIOS, RESUMEN-PARA-CLAUDE, PENDIENTES, Academia y tracker;
+9. contrato/gate Corte 4;
+10. CAMBIOS, Claude, PENDIENTES, Academia y tracker;
 11. PR #7 y HEAD vivo.
 
 ## 3. Corte 3 — fuente congelada
 
-- Estado: `FROZEN_ACTIVE_BASELINE`.
-- Baseline: `CXORBIA-TYA-CORTE3-V182-20260729`.
-- Aprobación Paula: `Procede`.
-- Baseline head: `1b34c3998625a3f2402ceeada283ab57b56ffbf6`.
-- V182 empalmada; no V183 y no R33.
+- `FROZEN_ACTIVE_BASELINE`.
+- Baseline `CXORBIA-TYA-CORTE3-V182-20260729`.
+- V182 empalmada; no V183/R33.
 - 14 periodos / 616 visitas.
 - Mayo: 44 pagadas / 0 pendientes / CxP Q0-L0.
 - Junio: 2 pagadas / 42 pendientes / Q451-L0.
 - Run `30416875149`, job `90468374816`: SUCCESS.
 
-Corte 3 no se reabre por P1/P2.
+P1/P2 de reportes no reabren Corte 3.
 
 ## 4. Corte 4 — fuentes activas
 
 Objetivo: Firebase nuevo/vacío, `CX.data` read-only y cero writes.
-
-Fuentes vigentes:
 
 - `backend/contracts/cxdata-firestore-readonly-corte4-v1.json`;
 - `app/core/backend-config.js`;
@@ -53,42 +49,53 @@ Fuentes vigentes:
 - `app/core/backend-cxdata-read-guard.js`;
 - `app/core/backend-cxdata-readonly-corte4.js`;
 - `app/index-backend-dev.html`;
-- `tools/qa/cxdata-firestore-readonly-corte4-gate.mjs`.
+- `backend/rules/firestore.corte4-readonly.rules`;
+- `tools/qa/cxdata-firestore-readonly-corte4-gate.mjs`;
+- `tools/release/cxorbia-probe-firebase-project-identity-corte4.mjs`;
+- `tools/release/tya-create-new-empty-firebase-dev-r15b.mjs`.
 
-Reglas prevalentes:
+Reglas:
 
-- `CX.data` conserva interfaz pública;
-- lectura solamente;
-- `writeMode=disabled`;
-- backend vacío se representa como vacío;
-- error de lectura falla cerrado;
-- no fallback silencioso a mock/localStorage;
-- no conexión/copias de base legacy;
-- no provider activation hasta verificar identidad, vacío y Rules.
+- interfaz `CX.data` preservada;
+- readOnly=true / writeMode=disabled;
+- backend vacío visible como vacío;
+- error de lectura fail-closed;
+- no fallback mock/localStorage;
+- no base legacy/preexistente;
+- no activación antes de identidad, vacío y Rules.
 
 ## 5. Estado del proveedor
 
-`READONLY_HARDENED_PROVIDER_IDENTITY_PENDING`
+`PROVIDER_IAM_BLOCKED_NEW_PROJECT_NOT_CREATED_NOT_CONNECTED`
 
-- Firebase projectId configurado como referencia: `cxorbia-backend-dev`.
-- Identidad de proyecto nuevo/limpio: pendiente de verificación.
-- Vacío del proyecto: pendiente de verificación.
-- Config completa DEV: pendiente, sin secretos en repo.
-- Activación: prohibida por ahora.
+- `cxorbia-backend-dev` está excluido porque contiene datos DEV y no es nuevo/vacío.
+- Candidato: `cxorbia-tya-dev-260729-c4`.
+- Gate estático Corte 4: PASS.
+- Única ruta de credencial estructuralmente válida: `existing_dev_service_account`.
+- Probe de identidad: `TARGET_PROJECT_PERMISSION_DENIED_C4`.
+- Creación atómica: `BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY`.
+- Proyecto creado=false; Firebase agregado=false; base existente reutilizada=false.
+- Rules deploy/provider activation=false.
 
-## 6. Claude/prototipo y Academia
+## 6. Desbloqueo mínimo
 
-- Claude: Corte 3 congelado; no tocar backend/contracts/adapters desde candidata; P1/P2 solo por archivo/módulo.
-- Academia: documentar baseline Corte 3 y Corte 4 read-only/fail-closed.
+Configurar una identidad dedicada con permiso para crear el proyecto y agregar Firebase, o crear el proyecto una sola vez con una identidad administradora y dar acceso de lectura a la service account existente.
 
-## 7. Pendientes no bloqueantes preservados
+No se requiere PowerShell, nueva candidata, ZIP ni datos TyA.
 
-- PDF imprime sin gráfica visible.
-- Excel conserva formato básico.
-- Mejora transversal de `reportKit`.
-- Refinamiento de copy “Pendiente de fuente”.
-- Registry/gate R20 antes de producción.
+## 7. Claude/prototipo y Academia
 
-## 8. Siguiente bloque exacto
+- Claude: Corte 3 congelado; no tocar backend/contracts/adapters.
+- Academia: documentar credencial, IAM, proyecto, Firebase, Rules, lectura y escritura como gates distintos.
 
-`VERIFICAR FIREBASE NUEVO/LIMPIO → VERIFICAR VACÍO Y RULES READ-ONLY → GATE CORTE 4 → ACTIVAR LECTURA DEV → SMOKE CX.data`.
+## 8. Backlog no bloqueante
+
+- PDF sin gráfica visible.
+- Excel con formato básico.
+- reportKit transversal.
+- copy de fuentes.
+- registry/gate R20 antes de producción.
+
+## 9. Siguiente bloque exacto
+
+`RESOLVER IAM PROJECT CREATOR → CREAR/VERIFICAR FIREBASE NUEVO/VACÍO → CONFIG WEB DEV → RULES READ-ONLY → ACTIVAR LECTURA DEV → SMOKE CX.data`.
