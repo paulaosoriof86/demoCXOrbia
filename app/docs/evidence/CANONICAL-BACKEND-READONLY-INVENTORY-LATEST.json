@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "cxorbia.canonical-backend-readonly-inventory.v2",
-  "generatedAt": "2026-07-29T23:08:15.282Z",
+  "schemaVersion": "cxorbia.canonical-backend-readonly-inventory.v3",
+  "generatedAt": "2026-07-29T23:16:35.864Z",
   "projectId": "cxorbia-backend-dev",
   "classification": "CXORBIA_CANONICAL_DEV_BACKEND_CANDIDATE__NOT_LEGACY_TYA_PLATFORM",
   "readOnly": true,
@@ -2502,9 +2502,657 @@
     "certifications": null,
     "postulations": 3,
     "notifications": 20,
-    "benefits": null,
+    "shopperBenefits": 572,
     "liquidations": 255,
     "finance": null
+  },
+  "shopperReconciliation": {
+    "total": 215,
+    "allFieldNames": [
+      "cities",
+      "ciudad",
+      "code",
+      "countries",
+      "country",
+      "createdAt",
+      "createdFromExternalSource",
+      "displayName",
+      "documentsOmitted",
+      "email",
+      "emailOmitted",
+      "estado",
+      "firstName",
+      "id",
+      "lastName",
+      "migratedFrom",
+      "name",
+      "nombre",
+      "pais",
+      "perfilCompleto",
+      "phone",
+      "phoneOmitted",
+      "profileStatus",
+      "rating",
+      "score",
+      "shopperId",
+      "source",
+      "stats",
+      "status",
+      "sync",
+      "tenantId",
+      "updatedAt"
+    ],
+    "shoppersWithCertificationLikeFields": 0,
+    "certificationLikeFieldCounts": {},
+    "embeddedCertificationItemCounts": {}
+  },
+  "projectReconciliation": [
+    {
+      "id": "cinepolis-abril-26",
+      "idPattern": "period-country",
+      "country": "GT",
+      "periodKey": "2026-04",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 35,
+        "questionnaires": 34,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-abril-26-hn",
+      "idPattern": "period-country",
+      "country": "HN",
+      "periodKey": "2026-04",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 10,
+        "questionnaires": 10,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-agosto-25",
+      "idPattern": "period-country",
+      "country": "GT",
+      "periodKey": "2025-08",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 34,
+        "questionnaires": 34,
+        "liquidations": 34,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-agosto-25-hn",
+      "idPattern": "period-country",
+      "country": "HN",
+      "periodKey": "2025-08",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 10,
+        "questionnaires": 9,
+        "liquidations": 9,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-diciembre-25",
+      "idPattern": "period-country",
+      "country": "GT",
+      "periodKey": "2025-12",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 34,
+        "questionnaires": 33,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-diciembre-25-hn",
+      "idPattern": "period-country",
+      "country": "HN",
+      "periodKey": "2025-12",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 10,
+        "questionnaires": 10,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-enero-26",
+      "idPattern": "period-country",
+      "country": "GT",
+      "periodKey": "2026-01",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 34,
+        "questionnaires": 34,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-enero-26-hn",
+      "idPattern": "period-country",
+      "country": "HN",
+      "periodKey": "2026-01",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 10,
+        "questionnaires": 10,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-febrero-26",
+      "idPattern": "period-country",
+      "country": "GT",
+      "periodKey": "2026-02",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 34,
+        "questionnaires": 34,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-febrero-26-hn",
+      "idPattern": "period-country",
+      "country": "HN",
+      "periodKey": "2026-02",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 10,
+        "questionnaires": 10,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-julio-25",
+      "idPattern": "period-country",
+      "country": "GT",
+      "periodKey": "2025-07",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 34,
+        "questionnaires": 34,
+        "liquidations": 34,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-julio-25-hn",
+      "idPattern": "period-country",
+      "country": "HN",
+      "periodKey": "2025-07",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 10,
+        "questionnaires": 10,
+        "liquidations": 10,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-junio-25",
+      "idPattern": "period-country",
+      "country": "GT",
+      "periodKey": "2025-06",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 34,
+        "questionnaires": 34,
+        "liquidations": 34,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-junio-25-hn",
+      "idPattern": "period-country",
+      "country": "HN",
+      "periodKey": "2025-06",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 10,
+        "questionnaires": 10,
+        "liquidations": 10,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-junio-26",
+      "idPattern": "period-country",
+      "country": "GT",
+      "periodKey": "2026-06",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 34,
+        "questionnaires": 24,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-junio-26-hn",
+      "idPattern": "period-country",
+      "country": "HN",
+      "periodKey": "2026-06",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 11,
+        "questionnaires": 7,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-marzo-26",
+      "idPattern": "period-country",
+      "country": "GT",
+      "periodKey": "2026-03",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 34,
+        "questionnaires": 34,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-marzo-26-hn",
+      "idPattern": "period-country",
+      "country": "HN",
+      "periodKey": "2026-03",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 10,
+        "questionnaires": 10,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-mayo-26",
+      "idPattern": "period-country",
+      "country": "GT",
+      "periodKey": "2026-05",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 34,
+        "questionnaires": 34,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-mayo-26-hn",
+      "idPattern": "period-country",
+      "country": "HN",
+      "periodKey": "2026-05",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 10,
+        "questionnaires": 10,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-noviembre-25",
+      "idPattern": "period-country",
+      "country": "GT",
+      "periodKey": "2025-11",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 34,
+        "questionnaires": 34,
+        "liquidations": 34,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-noviembre-25-hn",
+      "idPattern": "period-country",
+      "country": "HN",
+      "periodKey": "2025-11",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 10,
+        "questionnaires": 10,
+        "liquidations": 3,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-octubre-25",
+      "idPattern": "period-country",
+      "country": "GT",
+      "periodKey": "2025-10",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 34,
+        "questionnaires": 34,
+        "liquidations": 34,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-octubre-25-hn",
+      "idPattern": "period-country",
+      "country": "HN",
+      "periodKey": "2025-10",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 10,
+        "questionnaires": 9,
+        "liquidations": 9,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-septiembre-25",
+      "idPattern": "period-country",
+      "country": "GT",
+      "periodKey": "2025-09",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 34,
+        "questionnaires": 34,
+        "liquidations": 34,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "cinepolis-septiembre-25-hn",
+      "idPattern": "period-country",
+      "country": "HN",
+      "periodKey": "2025-09",
+      "source": "hr-tya-historico-sync",
+      "sourceType": "hr-sheet",
+      "status": "active",
+      "isPeriodSelectable": true,
+      "childCounts": {
+        "visits": 10,
+        "questionnaires": 10,
+        "liquidations": 10,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "julio-pilot",
+      "idPattern": "non-period-pattern",
+      "country": null,
+      "periodKey": null,
+      "source": null,
+      "sourceType": null,
+      "status": "dev-active",
+      "isPeriodSelectable": false,
+      "childCounts": {
+        "visits": 1,
+        "questionnaires": 0,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 1,
+        "periods": 1,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "r1",
+      "idPattern": "non-period-pattern",
+      "country": null,
+      "periodKey": null,
+      "source": null,
+      "sourceType": null,
+      "status": "real-dev",
+      "isPeriodSelectable": false,
+      "childCounts": {
+        "visits": 36,
+        "questionnaires": 0,
+        "liquidations": 0,
+        "postulations": 0,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    },
+    {
+      "id": "tya-piloto",
+      "idPattern": "non-period-pattern",
+      "country": null,
+      "periodKey": null,
+      "source": null,
+      "sourceType": null,
+      "status": "dev",
+      "isPeriodSelectable": false,
+      "childCounts": {
+        "visits": 8,
+        "questionnaires": 1,
+        "liquidations": 0,
+        "postulations": 3,
+        "applications": 0,
+        "periods": 0,
+        "certifications": 0
+      }
+    }
+  ],
+  "projectPatternSummary": {
+    "period-country": {
+      "projects": 26,
+      "visits": 574,
+      "questionnaires": 556,
+      "liquidations": 255,
+      "postulations": 0,
+      "applications": 0,
+      "periods": 0,
+      "certifications": 0,
+      "ids": [
+        "cinepolis-abril-26",
+        "cinepolis-abril-26-hn",
+        "cinepolis-agosto-25",
+        "cinepolis-agosto-25-hn",
+        "cinepolis-diciembre-25",
+        "cinepolis-diciembre-25-hn",
+        "cinepolis-enero-26",
+        "cinepolis-enero-26-hn",
+        "cinepolis-febrero-26",
+        "cinepolis-febrero-26-hn",
+        "cinepolis-julio-25",
+        "cinepolis-julio-25-hn",
+        "cinepolis-junio-25",
+        "cinepolis-junio-25-hn",
+        "cinepolis-junio-26",
+        "cinepolis-junio-26-hn",
+        "cinepolis-marzo-26",
+        "cinepolis-marzo-26-hn",
+        "cinepolis-mayo-26",
+        "cinepolis-mayo-26-hn",
+        "cinepolis-noviembre-25",
+        "cinepolis-noviembre-25-hn",
+        "cinepolis-octubre-25",
+        "cinepolis-octubre-25-hn",
+        "cinepolis-septiembre-25",
+        "cinepolis-septiembre-25-hn"
+      ]
+    },
+    "non-period-pattern": {
+      "projects": 3,
+      "visits": 45,
+      "questionnaires": 1,
+      "liquidations": 0,
+      "postulations": 3,
+      "applications": 1,
+      "periods": 1,
+      "certifications": 0,
+      "ids": [
+        "julio-pilot",
+        "r1",
+        "tya-piloto"
+      ]
+    }
   },
   "safety": {
     "documentWrites": 0,
@@ -2515,7 +3163,7 @@
     "hostingDeploys": 0,
     "production": false,
     "merge": false,
-    "valuesExported": false,
-    "sensitiveValuesExported": false
+    "sensitiveValuesExported": false,
+    "shopperIdentityValuesExported": false
   }
 }

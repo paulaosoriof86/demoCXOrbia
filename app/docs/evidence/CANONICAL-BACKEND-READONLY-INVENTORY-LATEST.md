@@ -1,6 +1,6 @@
 # CXOrbia — inventario read-only del backend canónico DEV
 
-- Fecha: 2026-07-29T23:08:15.282Z
+- Fecha: 2026-07-29T23:16:35.864Z
 - Proyecto: `cxorbia-backend-dev`
 - Clasificación: backend DEV de CXOrbia / tenant TyA; **no** plataforma legacy TyA a retirar.
 - Modo: read-only; provider writes=0; no valores sensibles exportados.
@@ -19,9 +19,54 @@
 - certifications: no localizado
 - postulations: 3
 - notifications: 20
-- benefits: no localizado
+- shopperBenefits: 572
 - liquidations: 255
 - finance: no localizado
+
+## Reconciliación segura de shoppers/certificaciones
+
+- Shoppers: 215
+- Shoppers con algún campo cuyo nombre parece de certificación/curso/Academia: 0
+- Campos de certificación/curso detectados: ninguno
+- Ítems embebidos contados en arrays de esos campos: 0
+- No se exportaron nombres, emails, teléfonos, documentos ni valores de shopper.
+
+## Reconciliación segura de proyectos
+
+- period-country: proyectos=26, visitas=574, cuestionarios=556, liquidaciones=255, postulaciones=0, applications=0, periods=0, certifications=0; ids=cinepolis-abril-26, cinepolis-abril-26-hn, cinepolis-agosto-25, cinepolis-agosto-25-hn, cinepolis-diciembre-25, cinepolis-diciembre-25-hn, cinepolis-enero-26, cinepolis-enero-26-hn, cinepolis-febrero-26, cinepolis-febrero-26-hn, cinepolis-julio-25, cinepolis-julio-25-hn, cinepolis-junio-25, cinepolis-junio-25-hn, cinepolis-junio-26, cinepolis-junio-26-hn, cinepolis-marzo-26, cinepolis-marzo-26-hn, cinepolis-mayo-26, cinepolis-mayo-26-hn, cinepolis-noviembre-25, cinepolis-noviembre-25-hn, cinepolis-octubre-25, cinepolis-octubre-25-hn, cinepolis-septiembre-25, cinepolis-septiembre-25-hn
+- non-period-pattern: proyectos=3, visitas=45, cuestionarios=1, liquidaciones=0, postulaciones=3, applications=1, periods=1, certifications=0; ids=julio-pilot, r1, tya-piloto
+
+| Project ID | Patrón | País | Period key | Source | Status | Visits | Questionnaires | Liquidations | Posts | Apps | Periods | Certs |
+|---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| cinepolis-abril-26 | period-country | GT | 2026-04 | hr-tya-historico-sync | active | 35 | 34 | 0 | 0 | 0 | 0 | 0 |
+| cinepolis-abril-26-hn | period-country | HN | 2026-04 | hr-tya-historico-sync | active | 10 | 10 | 0 | 0 | 0 | 0 | 0 |
+| cinepolis-agosto-25 | period-country | GT | 2025-08 | hr-tya-historico-sync | active | 34 | 34 | 34 | 0 | 0 | 0 | 0 |
+| cinepolis-agosto-25-hn | period-country | HN | 2025-08 | hr-tya-historico-sync | active | 10 | 9 | 9 | 0 | 0 | 0 | 0 |
+| cinepolis-diciembre-25 | period-country | GT | 2025-12 | hr-tya-historico-sync | active | 34 | 33 | 0 | 0 | 0 | 0 | 0 |
+| cinepolis-diciembre-25-hn | period-country | HN | 2025-12 | hr-tya-historico-sync | active | 10 | 10 | 0 | 0 | 0 | 0 | 0 |
+| cinepolis-enero-26 | period-country | GT | 2026-01 | hr-tya-historico-sync | active | 34 | 34 | 0 | 0 | 0 | 0 | 0 |
+| cinepolis-enero-26-hn | period-country | HN | 2026-01 | hr-tya-historico-sync | active | 10 | 10 | 0 | 0 | 0 | 0 | 0 |
+| cinepolis-febrero-26 | period-country | GT | 2026-02 | hr-tya-historico-sync | active | 34 | 34 | 0 | 0 | 0 | 0 | 0 |
+| cinepolis-febrero-26-hn | period-country | HN | 2026-02 | hr-tya-historico-sync | active | 10 | 10 | 0 | 0 | 0 | 0 | 0 |
+| cinepolis-julio-25 | period-country | GT | 2025-07 | hr-tya-historico-sync | active | 34 | 34 | 34 | 0 | 0 | 0 | 0 |
+| cinepolis-julio-25-hn | period-country | HN | 2025-07 | hr-tya-historico-sync | active | 10 | 10 | 10 | 0 | 0 | 0 | 0 |
+| cinepolis-junio-25 | period-country | GT | 2025-06 | hr-tya-historico-sync | active | 34 | 34 | 34 | 0 | 0 | 0 | 0 |
+| cinepolis-junio-25-hn | period-country | HN | 2025-06 | hr-tya-historico-sync | active | 10 | 10 | 10 | 0 | 0 | 0 | 0 |
+| cinepolis-junio-26 | period-country | GT | 2026-06 | hr-tya-historico-sync | active | 34 | 24 | 0 | 0 | 0 | 0 | 0 |
+| cinepolis-junio-26-hn | period-country | HN | 2026-06 | hr-tya-historico-sync | active | 11 | 7 | 0 | 0 | 0 | 0 | 0 |
+| cinepolis-marzo-26 | period-country | GT | 2026-03 | hr-tya-historico-sync | active | 34 | 34 | 0 | 0 | 0 | 0 | 0 |
+| cinepolis-marzo-26-hn | period-country | HN | 2026-03 | hr-tya-historico-sync | active | 10 | 10 | 0 | 0 | 0 | 0 | 0 |
+| cinepolis-mayo-26 | period-country | GT | 2026-05 | hr-tya-historico-sync | active | 34 | 34 | 0 | 0 | 0 | 0 | 0 |
+| cinepolis-mayo-26-hn | period-country | HN | 2026-05 | hr-tya-historico-sync | active | 10 | 10 | 0 | 0 | 0 | 0 | 0 |
+| cinepolis-noviembre-25 | period-country | GT | 2025-11 | hr-tya-historico-sync | active | 34 | 34 | 34 | 0 | 0 | 0 | 0 |
+| cinepolis-noviembre-25-hn | period-country | HN | 2025-11 | hr-tya-historico-sync | active | 10 | 10 | 3 | 0 | 0 | 0 | 0 |
+| cinepolis-octubre-25 | period-country | GT | 2025-10 | hr-tya-historico-sync | active | 34 | 34 | 34 | 0 | 0 | 0 | 0 |
+| cinepolis-octubre-25-hn | period-country | HN | 2025-10 | hr-tya-historico-sync | active | 10 | 9 | 9 | 0 | 0 | 0 | 0 |
+| cinepolis-septiembre-25 | period-country | GT | 2025-09 | hr-tya-historico-sync | active | 34 | 34 | 34 | 0 | 0 | 0 | 0 |
+| cinepolis-septiembre-25-hn | period-country | HN | 2025-09 | hr-tya-historico-sync | active | 10 | 10 | 10 | 0 | 0 | 0 | 0 |
+| julio-pilot | non-period-pattern |  |  |  | dev-active | 1 | 0 | 0 | 0 | 1 | 1 | 0 |
+| r1 | non-period-pattern |  |  |  | real-dev | 36 | 0 | 0 | 0 | 0 | 0 | 0 |
+| tya-piloto | non-period-pattern |  |  |  | dev | 8 | 1 | 0 | 3 | 0 | 0 | 0 |
 
 ## Árbol de colecciones
 
