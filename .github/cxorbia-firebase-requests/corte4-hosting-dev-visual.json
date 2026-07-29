@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "cxorbia.corte4-hosting-dev-visual.v1",
+  "enabled": true,
+  "authorizationSource": "current_conversation",
+  "authorizationText": "Autorizo Hosting DEV de Corte 4 para validación visual.",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "targetProjectId": "cxorbia-tya-dev-260729-c4",
+  "targetDisplayName": "CXOrbia TyA DEV Clean Corte 4",
+  "webAppDisplayName": "CXOrbia TyA DEV Corte 4",
+  "protectedSmokeCommit": "b698a925f5f6a7c8405afb7fb54a9f4c551e8498",
+  "mode": "HOSTING_DEV_VISUAL_READONLY_BUILD",
+  "hostingOnly": true,
+  "production": false,
+  "merge": false,
+  "allowedProviderWrites": {
+    "hostingDeployExecutions": 1,
+    "firestoreDocuments": 0,
+    "authUsers": 0,
+    "authConfig": 0,
+    "storage": 0,
+    "rules": 0,
+    "functions": 0,
+    "imports": 0,
+    "hr": 0,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0
+  }
+}
