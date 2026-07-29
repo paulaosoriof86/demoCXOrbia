@@ -23,7 +23,7 @@
 
 Objetivo: `FIREBASE NUEVO Y VACÍO → CX.data READ-ONLY → MISMA INTERFAZ → CERO WRITES`.
 
-Ya está preparado y validado técnicamente:
+Hardening ya validado:
 
 - interfaz pública `CX.data` preservada;
 - backend desactivado por defecto;
@@ -35,19 +35,28 @@ Ya está preparado y validado técnicamente:
 - Rules candidate preparado, no desplegado;
 - gate `PASS_READONLY_POST_GATES`.
 
-`cxorbia-backend-dev` está excluido por no ser nuevo/vacío. No copiarlo, conectarlo ni reutilizarlo.
+`cxorbia-backend-dev` continúa excluido por no ser nuevo/vacío. No copiarlo, conectarlo ni reutilizarlo.
 
-Candidato nuevo: `cxorbia-tya-dev-260729-c4`.
+Firebase nuevo: `cxorbia-tya-dev-260729-c4`.
 
-Bloqueo actual comprobado: `PROVIDER_IAM_BLOCKED_NEW_PROJECT_NOT_CREATED_NOT_CONNECTED`.
+### Corte 4 — gates cerrados
 
-- probe: `TARGET_PROJECT_PERMISSION_DENIED_C4`;
-- creación atómica: `BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY`;
-- projectCreated=false;
-- firebaseAdded=false;
-- existingDatabaseReused=false.
+**Gate 1 · identidad nueva: PASS**
 
-Este bloqueo es IAM/proveedor; no requiere cambios de Claude ni nueva candidata.
+- commit `b18f0b6cf74afb8b3ac770a73231c6cf1353b37c`;
+- `TARGET_PROJECT_IDENTITY_VERIFIED_C4`;
+- provider writes=0.
+
+**Gate 2 · vacío integral: PASS**
+
+- request `corte4-verify-new-empty-firebase-dev-20260729-05`;
+- commit `7b0e40f8607b80a4f37238314a66064af35c5e6d`;
+- identidad=true / vacío=true / unavailable=0 / nonempty=0;
+- apps=0 / Auth users=0 / Firestore DB=0 / Storage buckets=0;
+- Hosting=1 `DEFAULT_SITE` administrado por Firebase, sin `USER_SITE`/release como señal de contenido;
+- provider writes=0.
+
+El verificador requirió dos correcciones focalizadas de backend: query Auth count-only válida y separación entre infraestructura Hosting provider-default y contenido/despliegue real. No es trabajo de Claude.
 
 ### Lo que Claude NO debe hacer ahora
 
@@ -56,7 +65,21 @@ Este bloqueo es IAM/proveedor; no requiere cambios de Claude ni nueva candidata.
 - no reabrir Finanzas/Corte 3;
 - no tocar `backend/contracts`, adapters, tools, workflows, Rules, secrets ni configuración provider;
 - no introducir persistencia local/mock para suplir Firestore;
-- no activar proveedores reales desde módulos UI.
+- no activar proveedores reales desde módulos UI;
+- no crear otra candidata por Corte 4.
+
+### Siguiente gate backend, no frontend
+
+Pendiente autorización expresa para:
+
+1. registrar/configurar una Web App DEV sin secretos en repo;
+2. inicializar únicamente Firestore + Auth bootstrap mínimo temporal para lectura protegida;
+3. desplegar `backend/rules/firestore.corte4-readonly.rules` solo en DEV;
+4. activar solo lectura;
+5. smoke `CX.data` con `source=firestore`, `empty=true`, `fallbackUsed=false`, interfaz preservada, writes=0;
+6. validación visual y freeze Corte 4.
+
+El Auth bootstrap de Corte 4 es temporal/mínimo para la prueba read-only. Auth/RBAC completo continúa en Corte 6.
 
 ### Backlog frontend no bloqueante preservado
 
@@ -72,17 +95,21 @@ Debe reflejar la diferencia entre:
 
 1. credencial estructuralmente válida;
 2. permiso IAM;
-3. creación/verificación de proyecto;
-4. agregar Firebase;
-5. Rules;
-6. lectura read-only;
-7. escritura/materialización posterior.
+3. identidad nueva verificada;
+4. vacío integral verificado;
+5. infraestructura provider-default (`DEFAULT_SITE`) vs contenido/despliegue;
+6. Web App;
+7. Auth bootstrap;
+8. Firestore;
+9. Rules;
+10. lectura read-only;
+11. escritura/materialización posterior.
 
-No presentar “credencial válida” como “Firebase conectado”.
+No presentar “proyecto vacío verificado” como “CX.data ya conectado”.
 
 ### Siguiente bloque exacto backend
 
-`RESOLVER IAM PROJECT CREATOR → CREAR/VERIFICAR FIREBASE NUEVO/VACÍO → CONFIG WEB DEV → RULES READ-ONLY → ACTIVAR LECTURA DEV → SMOKE CX.data → VALIDACIÓN VISUAL → FREEZE CORTE 4`.
+`AUTORIZAR BOOTSTRAP DEV READ-ONLY → WEB APP DEV → FIRESTORE/AUTH BOOTSTRAP MÍNIMO → RULES READ-ONLY → ACTIVAR LECTURA DEV → SMOKE CX.data → VALIDACIÓN VISUAL → FREEZE CORTE 4`.
 
 ## Referencias históricas que siguen vigentes donde no contradigan este estado
 
@@ -93,4 +120,4 @@ No presentar “credencial válida” como “Firebase conectado”.
 
 ## Estado seguro
 
-Sin merge, producción, provider activation, Rules deploy, Firestore/Auth/Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live.
+Sin merge, producción, Rules deploy, Firestore/Auth/Storage/HR data writes, imports, pagos, lotes reales, Make ni Gemini live.
