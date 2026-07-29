@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-29  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_VISUAL_P0_PROVEN__FREEZE_BLOCKED`
+**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_P0_FIXED_REMOTE_REVALIDATION_PASS__HUMAN_VISUAL_PENDING`
 
 ## 1. Objetivo
 
@@ -13,13 +13,13 @@ Operar TyA/Cinépolis como proyecto configurable con HR/histórico, shoppers, ce
 
 `FUENTE → MAPPING/ADAPTER → GATES → BUILD → VALIDACIÓN VISUAL → CORRECCIÓN FOCALIZADA → FREEZE`
 
-Un PASS técnico sin validación real no congela un corte.
+Un PASS técnico sin validación humana final no congela un corte.
 
 ## 3. Carril de candidatas
 
 `EXECUTION_LANE_READY → AUDITORÍA DELTA → P0_PROVEN o GO → si GO APPLY_DELTA_DIRECTLY → COMMIT/PUSH → POST-GATES → HOSTING DEV → VALIDACIÓN → FREEZE`
 
-No se sustituye por nueva rama/PR, workflow transportador, PowerShell, incoming, composite, tree directo ni acción manual de Paula.
+No se sustituye por nueva rama/PR, PowerShell, incoming, nueva candidata ni acción manual de Paula salvo imposibilidad técnica real.
 
 ## 4. Cortes cerrados
 
@@ -39,84 +39,94 @@ No se sustituye por nueva rama/PR, workflow transportador, PowerShell, incoming,
 - Junio: 2 pagadas / 42 pendientes / Q451-L0.
 - Pagos/lotes ejecutados por CXOrbia: 0.
 
-P1/P2 de reportes/copy permanecen como backlog transversal y no reabren Corte 3.
+P1/P2 de reportes/copy permanecen backlog transversal y no reabren Corte 3.
 
 ## 5. Corte activo — Corte 4
 
 Objetivo: `CX.data READ-ONLY → FIREBASE NUEVO Y VACÍO → MISMA INTERFAZ → CERO WRITES`.
 
-Estado: `VISUAL_P0_PROVEN__FREEZE_BLOCKED`.
+Estado: `P0_FIXED_REMOTE_REVALIDATION_PASS__HUMAN_VISUAL_PENDING`.
 
-### 5.1 Hardening exigido
+### 5.1 Hardening
 
 - contrato read-only;
 - backend desactivado por defecto;
-- preview DEV solo lectura;
-- guard `CX.data` que preserva interfaz y bloquea persistencia/acciones operativas;
+- Preview DEV solo lectura;
+- guard `CX.data` preserva interfaz y bloquea persistencia/acciones;
 - backend vacío sin fallback demo;
-- errores de lectura fail-closed;
+- errores/read/Auth fail-closed;
+- `fallbackUsed=false` observable desde primer estado;
 - Rules read-only desplegadas únicamente en Firebase DEV nuevo.
 
 ### 5.2 Base existente descartada
 
-`cxorbia-backend-dev` queda excluida y no se conecta, copia o reutiliza.
+`cxorbia-backend-dev` queda excluida: no conectar, copiar ni reutilizar.
 
 ### 5.3 Firebase nuevo
 
 - projectId `cxorbia-tya-dev-260729-c4`;
 - display name `CXOrbia TyA DEV Clean Corte 4`;
-- Firestore `us-central1`;
-- creado sin reutilizar base existente.
+- Firestore `us-central1`.
 
-### 5.4 Gates 1–3 — PASS
+### 5.4 Gates 1–4 — PASS
 
-- identidad nueva: PASS;
-- vacío integral previo: PASS;
-- Web App DEV READY;
-- Firestore `(default)` READY, Native/Standard, `us-central1`, sin colecciones;
-- Rules read-only DEPLOYED + VERIFIED;
-- Authentication inicializado;
-- bootstrap idempotente `BOOTSTRAP_DEV_READONLY_COMPLETED_C4` PASS.
+- identidad nueva y vacío integral: PASS;
+- Web App, Firestore, Rules, Auth config: PASS;
+- protected smoke `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`: `source=firestore`, `empty=true`, `fallback=false`, `readOnly=true`, writes=0, cleanup completo.
 
-### 5.5 Gate 4 — protected CX.data smoke: PASS
-
-Intento válido: `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`.
-
-Confirmado: `source=firestore`, `empty=true`, `fallbackUsed=false`, `readOnly=true`, write directo bloqueado, Firestore writes=0, cleanup completo, Auth users=0 y Email/Password deshabilitado al final.
-
-### 5.6 Gate 5 — Hosting DEV: PASS técnico
-
-Autorización consumida: `Autorizo Hosting DEV de Corte 4 para validación visual.`
+### 5.5 Hosting DEV inicial — PASS técnico
 
 - authorizationId `c4-hosting-visual-20260729-01`;
-- deployed source commit `fabba5c76bb40f5105f8e10dd54be63e9b3eb783`;
-- exactamente 1 deploy Hosting-only;
-- remote proof y entrypoint verificados;
-- cero writes de datos/proveedor fuera de Hosting.
+- deployed source `fabba5c76bb40f5105f8e10dd54be63e9b3eb783`;
+- 1 deploy Hosting-only;
+- proof/entrypoint PASS.
 
-### 5.7 Gate 6 — validación visual: P0 PROVEN
+### 5.6 Visual inicial — P0 PROVEN
 
-La validación de Paula mostró:
-
-- `Fuente: localStorage/demo`;
-- `Auth: pendiente`;
-- `Demo comercial · datos ficticios`;
-- 3 proyectos, 108 visitas, 18 shoppers y 48 postulaciones ficticias;
-- Proyecto Retail/Banca/Restaurantes y KPIs demo visibles.
+La visual humana mostró fallback prohibido a `localStorage/demo`, fixtures Retail/Banca/Restaurantes y conteos 3/108/18/48.
 
 P0: `P0-C4-VIS-01 — FORBIDDEN_DEMO_FALLBACK_ON_AUTH_PENDING`.
 
-Causa raíz localizada en backend: `backend-config-preview-dev.js` activa preview Auth; tras el cleanup correcto del principal temporal, `backend-firebase.js` no encuentra credencial y cae explícitamente a `localStorage/demo`, contradiciendo el contrato fail-closed/no-fallback.
+### 5.7 Corrección focalizada P0 — COMPLETADA
 
-### 5.8 Gates restantes
+Autorización consumida:
 
-7. autorización expresa para corrección focalizada del P0;
-8. patch backend/core únicamente;
-9. gates de no-fallback y cero writes;
-10. Hosting DEV controlado para revalidación;
-11. validación visual PASS;
-12. freeze Corte 4;
-13. retirar IAM temporal elevado y dejar runner en Viewer.
+`Autorizo corrección focalizada de P0-C4-VIS-01 y un único Hosting DEV de revalidación de Corte 4, sin data writes ni producción`
+
+Solo backend/core:
+
+- `app/core/backend-config-preview-dev.js`;
+- `app/core/backend-cxdata-readonly-corte4.js`;
+- `app/core/backend-preview-status.js`.
+
+No se tocaron módulos UI.
+
+### 5.8 Diagnóstico local — PASS
+
+- trigger `58f227e2d67c0efa15c363e19e2cbcfea91e19b8`;
+- `c4p0vis01-diagnostic=success`;
+- `c4p0local-pass=success`;
+- provider writes=0.
+
+### 5.9 Hosting DEV revalidación — PASS
+
+- authorizationId `c4-p0-vis01-revalidate-20260729-01`;
+- deployed source `424eca2ae5a7cd6f240dfc97b17048f3c124eb2c`;
+- `c4p0vis01-revalidation=success`;
+- `c4p0vis01-deploys1=success`;
+- exactamente 1 deploy en esta autorización;
+- browser remoto: 0 proyectos/visitas/shoppers/postulaciones, fixtures=false, demoMode=false, fallbackUsed=false y sin proyectos/badge demo.
+- autorización consumida; workflow HOLD.
+
+URL visual nueva:
+
+`https://cxorbia-tya-dev-260729-c4.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&p0vis01=424eca2ae5a7cd6f240dfc97b17048f3c124eb2c`
+
+### 5.10 Gates restantes
+
+1. validación visual humana de Paula sobre URL nueva;
+2. si no hay P0: freeze Corte 4;
+3. retirar IAM temporal elevado y dejar runner en Viewer.
 
 ## 6. Cortes siguientes
 
@@ -125,17 +135,17 @@ Causa raíz localizada en backend: `backend-config-preview-dev.js` activa previe
 - **Corte 7:** sincronización, evidencias y gates Make/Gemini.
 - **Corte 8:** preproducción/producción con autorización.
 
-Corte 5 no inicia mientras P0-C4-VIS-01 permanezca abierto.
+Corte 5 inicia inmediatamente después del freeze de Corte 4.
 
 ## 7. Claude/prototipo
 
-Corte 3 está congelado. No preparar V183. No tocar módulos UI ni crear nueva candidata por este P0. La corrección pertenece a backend/core.
+Corte 3 está congelado. No preparar V183. P0-C4-VIS-01 no requiere nueva candidata ni cambio en módulos UI. Solo actuar si la nueva visual prueba otro P0 localizado.
 
 ## 8. Academia
 
 - Corte 3: fuente operacional/financiera/pago y monedas separadas.
-- Corte 4: distinguir provider smoke PASS, Hosting proof PASS y fuente efectiva del runtime visual. Patrón: backend real seleccionado + Auth ausente debe fail-close, nunca caer a demo.
+- Corte 4: provider/Hosting no sustituyen browser/humano; backend real + Auth ausente debe fail-close antes del primer render; `fallbackUsed=false` debe ser observable desde estado inicial.
 
 ## 9. Estado seguro
 
-Sin producción, merge, Firestore document writes, Auth users permanentes, Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live. Corte 4 está correctamente detenido por P0 visual reproducible.
+Sin producción, merge, Firestore document writes, Auth users permanentes, Storage/HR writes, imports, pagos/lotes reales, Make ni Gemini live. P0-C4-VIS-01 pasó corrección técnica local/remota; gate vivo único: validación visual humana.
