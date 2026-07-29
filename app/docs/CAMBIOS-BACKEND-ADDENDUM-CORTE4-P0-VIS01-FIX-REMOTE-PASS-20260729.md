@@ -37,14 +37,18 @@ Solo se modificaron archivos backend/core del runtime:
 
 No se modificó ningún archivo de `app/modules/`.
 
-## 4. Diagnóstico y corrección del gate
+## 4. Incidentes de runner antes del deploy real
 
-El primer diagnóstico local posterior al fix detectó una inconsistencia de estado, no un regreso del P0 visual:
+Hubo dos stops seguros antes de ejecutar Hosting:
 
-- todo el estado no-demo ya cumplía;
-- el único fallo era `CX_CORTE4_READONLY.fallbackUsed` todavía indefinido durante la ventana inicial.
+1. el primer preflight del runner nuevo falló por un typo interno en el `grant_type` OAuth del propio script de validación; se corrigió a `urn:ietf:params:oauth:grant-type:jwt-bearer`;
+2. el diagnóstico local posterior encontró que `CX_CORTE4_READONLY.fallbackUsed` quedaba temporalmente indefinido aunque el runtime ya no mostraba datos demo.
 
-Se corrigió en `app/core/backend-cxdata-readonly-corte4.js` inicializando el estado público del guard desde `clearToBackendEmpty()`.
+Ninguno de esos stops ejecutó Hosting ni produjo provider/data writes. Se mantuvo el gate fail-closed y no se consumió la única ejecución real autorizada hasta que el diagnóstico read-only quedó PASS.
+
+## 5. Diagnóstico y corrección del estado público
+
+El único fallo funcional restante del diagnóstico era `CX_CORTE4_READONLY.fallbackUsed` indefinido durante la ventana inicial. Se corrigió en `app/core/backend-cxdata-readonly-corte4.js` inicializando el estado público del guard desde `clearToBackendEmpty()`.
 
 Diagnóstico read-only final:
 
@@ -53,7 +57,7 @@ Diagnóstico read-only final:
 - `cxorbia/c4p0local-pass = success`;
 - provider writes del diagnóstico: `0`.
 
-## 5. Revalidación Hosting DEV
+## 6. Revalidación Hosting DEV
 
 Trigger/deployed source commit: `424eca2ae5a7cd6f240dfc97b17048f3c124eb2c`.
 
@@ -77,7 +81,7 @@ URL humana de revalidación:
 
 `https://cxorbia-tya-dev-260729-c4.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&p0vis01=424eca2ae5a7cd6f240dfc97b17048f3c124eb2c`
 
-## 6. Seguridad
+## 7. Seguridad
 
 - Firestore document writes: `0`.
 - Auth user writes: `0`.
@@ -94,7 +98,7 @@ URL humana de revalidación:
 
 La autorización one-shot quedó consumida y el workflow de revalidación fue puesto en HOLD. El diagnóstico read-only también quedó cerrado después del PASS.
 
-## 7. Clasificación obligatoria
+## 8. Clasificación obligatoria
 
 - **Reusable CXOrbia:** fail-closed antes del primer render, fuente efectiva separada de Auth, `fallbackUsed=false` observable desde estado inicial, autorización one-shot y gate navegador no-demo.
 - **Exclusivo cliente:** projectId `cxorbia-tya-dev-260729-c4` y tenant `tya`.
@@ -102,7 +106,7 @@ La autorización one-shot quedó consumida y el workflow de revalidación fue pu
 - **Academia:** documentar diferencia entre provider PASS, estado público incompleto y gate visual/no-fallback.
 - **Sin impacto Claude:** workflows, requests Firebase, provider preflight, Hosting DEV y cleanup de autorización.
 
-## 8. Gate vivo
+## 9. Gate vivo
 
 No congelar Corte 4 todavía. Falta únicamente **revalidación visual humana de Paula** sobre la URL nueva.
 
