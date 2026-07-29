@@ -57,22 +57,36 @@ jobs:
           const base=JSON.parse(fs.readFileSync('.tmp/canonical-plan-refresh/base/firestore-materialization-plan.json','utf8'));
           const overlay=JSON.parse(fs.readFileSync('.tmp/canonical-plan-refresh/r16d/r14c-financial-overlay-review-plan-r16d.json','utf8'));
           const ops=overlay.operations||base.operations||[];
-          const countType=t=>ops.filter(o=>o.entityType===t).length;
           const paths=ops.map(o=>o.documentPath);
           const parentProjectPath='tenants/tya/projects/cinepolis';
+          const countPath=(fn)=>paths.filter(fn).length;
+          const counts={
+            operations:ops.length,
+            tenants:countPath(p=>p==='tenants/tya'),
+            projects:countPath(p=>p===parentProjectPath),
+            hrImports:countPath(p=>p.startsWith('tenants/tya/hrImports/')),
+            periods:countPath(p=>p.startsWith(parentProjectPath+'/periods/')&&!p.includes('/visits/')&&!p.includes('/liquidations/')),
+            shoppers:countPath(p=>p.startsWith('tenants/tya/shoppers/')),
+            visits:countPath(p=>p.includes('/visits/')),
+            liquidations:countPath(p=>p.includes('/liquidations/')),
+            certifications:countPath(p=>p.includes('/certifications/')),
+            payments:countPath(p=>p.includes('/payments/')),
+          };
+          const operationKinds=ops.reduce((acc,o)=>{const k=o.kind||o.operation||o.op||'unknown';acc[k]=(acc[k]||0)+1;return acc;},{});
           const report={
-            schemaVersion:'cxorbia.canonical-plan-refresh-offline.v1',
+            schemaVersion:'cxorbia.canonical-plan-refresh-offline.v2',
             generatedAt:new Date().toISOString(),
             providerCalls:0,writes:0,production:false,merge:false,
             basePlanId:base.planId||null,basePlanSha256:base.planSha256||null,
             overlayPlanId:overlay.planId||null,overlayPlanSha256:overlay.planSha256||null,
-            counts:{operations:ops.length,tenants:countType('tenant'),projects:countType('project'),hrImports:countType('hr_import'),periods:countType('period'),shoppers:countType('shopper'),visits:countType('visit'),liquidations:countType('liquidation'),certifications:countType('certification'),payments:countType('payment')},
-            canonicalShape:{parentProjectPath,parentProjectPresentInPlan:paths.includes(parentProjectPath),periodPaths:paths.filter(p=>p.startsWith(parentProjectPath+'/periods/')).length,visitPaths:paths.filter(p=>p.includes('/visits/')).length},
-            reviewQueue:overlay.reviewQueue||null,
+            counts,operationKinds,
+            canonicalShape:{parentProjectPath,parentProjectPresentInPlan:paths.includes(parentProjectPath),periodPaths:counts.periods,visitPaths:counts.visits},
+            reviewQueueSummary:overlay.reviewQueueSummary||overlay.summary?.reviewQueue||null,
             safety:{writes:false,imports:false,providerCalls:false,pii:false}
           };
+          if(counts.operations!==1415||counts.projects!==1||counts.periods!==14||counts.visits!==616||counts.liquidations!==572||counts.certifications!==0||counts.payments!==0) throw new Error('canonical_plan_counts_unexpected:'+JSON.stringify(counts));
           fs.writeFileSync('app/docs/evidence/CANONICAL-PLAN-REFRESH-OFFLINE-LATEST.json',JSON.stringify(report,null,2)+'\n');
-          const md=['# CXOrbia — refresh offline del plan canónico Phase A','',`- Fecha: ${report.generatedAt}`,'- Reutiliza los builders R6/R16D existentes; no crea una arquitectura nueva.','- Provider calls=0; writes=0; producción=false.','',`- Plan base: ${report.basePlanId}.`,`- Plan overlay: ${report.overlayPlanId}.`,`- Operaciones: ${report.counts.operations}.`,`- Tenant: ${report.counts.tenants}; proyecto padre: ${report.counts.projects}; periodos: ${report.counts.periods}; shoppers: ${report.counts.shoppers}; visitas: ${report.counts.visits}; liquidaciones: ${report.counts.liquidations}; certificaciones: ${report.counts.certifications}; pagos: ${report.counts.payments}.`,`- Ruta proyecto padre: \`${parentProjectPath}\`.`,'', '## Lectura operativa','', '- Este plan representa la arquitectura aprobada proyecto padre → periodos → visitas, no proyectos separados por mes/país.','- No se ejecuta contra Firestore en este gate.','- El siguiente comparador read-only debe clasificar create/update/noop/review contra `cxorbia-backend-dev` antes de autorizar cualquier write.',''];
+          const md=['# CXOrbia — refresh offline del plan canónico Phase A','',`- Fecha: ${report.generatedAt}`,'- Reutiliza los builders R6/R16D existentes; no crea una arquitectura nueva.','- Provider calls=0; writes=0; producción=false.','',`- Plan base: ${report.basePlanId}.`,`- Plan overlay: ${report.overlayPlanId}.`,`- Operaciones: ${counts.operations}.`,`- Tenant: ${counts.tenants}; proyecto padre: ${counts.projects}; HR import: ${counts.hrImports}; periodos: ${counts.periods}; shoppers: ${counts.shoppers}; visitas: ${counts.visits}; liquidaciones: ${counts.liquidations}; certificaciones: ${counts.certifications}; pagos: ${counts.payments}.`,`- Ruta proyecto padre: \`${parentProjectPath}\`.`,'','## Lectura operativa','', '- Este plan representa la arquitectura aprobada proyecto padre → periodos → visitas, no proyectos separados por mes/país.','- Reproduce exactamente 14 periodos / 616 visitas y 572 controles de liquidación del source lock.','- No se ejecuta contra Firestore en este gate.','- El siguiente comparador read-only debe clasificar create/update/noop/review contra `cxorbia-backend-dev` antes de autorizar cualquier write.',''];
           fs.writeFileSync('app/docs/evidence/CANONICAL-PLAN-REFRESH-OFFLINE-LATEST.md',md.join('\n'));
           NODE
       - name: Commit evidence on latest head
