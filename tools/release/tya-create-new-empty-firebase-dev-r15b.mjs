@@ -26,9 +26,12 @@ const projectId=String(process.env.CXORBIA_NEW_PROJECT_ID||'').trim();
 const displayName=String(process.env.CXORBIA_NEW_PROJECT_NAME||'CXOrbia TyA DEV Clean R15A').trim();
 const sourceProjectId=String(process.env.CXORBIA_SOURCE_CREDENTIAL_PROJECT_ID||'cxorbia-backend-dev').trim();
 const credentialPath=process.env.GOOGLE_APPLICATION_CREDENTIALS;
+const REQUEST_TIMEOUT_MS=Math.max(2000,Number(process.env.CXORBIA_PROVIDER_REQUEST_TIMEOUT_MS||8000));
+const OPERATION_DEADLINE_MS=Math.max(10000,Number(process.env.CXORBIA_PROVIDER_OPERATION_DEADLINE_MS||90000));
+const POLL_INTERVAL_MS=Math.max(500,Number(process.env.CXORBIA_PROVIDER_POLL_INTERVAL_MS||2000));
 
 function category(value){
-  const raw=String(value?.category||value?.status||value?.code||value?.message||value||'UNKNOWN');
+  const raw=String(value?.category||value?.status||value?.code||value?.name||value?.message||value||'UNKNOWN');
   if(/409|already.exists/i.test(raw))return'ALREADY_EXISTS';
   if(/403|permission|denied|forbidden/i.test(raw))return'PERMISSION_DENIED';
   if(/401|unauth/i.test(raw))return'UNAUTHENTICATED';
@@ -36,15 +39,16 @@ function category(value){
   if(/429|quota|rate/i.test(raw))return'QUOTA_OR_RATE_LIMIT';
   if(/billing/i.test(raw))return'BILLING_REQUIRED_OR_RESTRICTED';
   if(/organization|folder|parent/i.test(raw))return'RESOURCE_HIERARCHY_RESTRICTION';
-  if(/timeout/i.test(raw))return'TIMEOUT';
+  if(/timeout|abort/i.test(raw))return'TIMEOUT';
   return raw.replace(/[^A-Z0-9_.-]/gi,'_').slice(0,100)||'UNKNOWN';
 }
 function validProjectId(v){return /^[a-z][a-z0-9-]{4,28}[a-z0-9]$/.test(v)&&!/--/.test(v);}
 function initial(){return{
-  schemaVersion:'1.0.0',gate:'cxorbia-phase-a-create-new-empty-firebase-dev-r15b',generatedAt:new Date().toISOString(),
+  schemaVersion:'1.1.0',gate:'cxorbia-phase-a-create-new-empty-firebase-dev-r15b',generatedAt:new Date().toISOString(),
   authorization:{explicitAuthorizationRecorded:process.env.CXORBIA_CONFIRM===REQUIRED_CONFIRMATION,scope:'create_new_empty_firebase_dev_and_sanitized_verify_only'},
   target:{projectId,displayName,environment:'DEV',production:false},
   sourceCredential:{expectedProjectId:sourceProjectId,typeValid:false,projectMatch:false,domainMatch:false,identifierOutput:false},
+  networkPolicy:{requestTimeoutMs:REQUEST_TIMEOUT_MS,operationDeadlineMs:OPERATION_DEADLINE_MS,pollIntervalMs:POLL_INTERVAL_MS},
   checks:{},
   summary:{lookupAbsenceVerified:false,lookupPermissionDenied:false,atomicCreateGuardUsed:false,atomicCreateConfirmedNew:false,projectCreateAttempted:false,projectCreated:false,firebaseAddAttempted:false,firebaseAdded:false,projectActive:false,emptyBaselineVerified:false,appCount:null,authUserCount:null,firestoreDatabaseCount:null,storageBucketCount:null,hostingSiteCount:null},
   safeState:{authorizedProviderWriteAttempted:false,onlyAuthorizedProviderWrites:true,projectDeletionAttempted:false,billingLinkAttempted:false,authWrites:false,claimsWrites:false,firestoreWrites:false,storageWrites:false,rulesDeploy:false,functionsDeployOrInvocation:false,hostingDeploy:false,deploy:false,imports:false,dataMigration:false,production:false,piiOrCredentialsOutput:false,credentialPersisted:false}
@@ -54,7 +58,13 @@ function write(report){
   fs.writeFileSync(path.join(dir,'firebase-new-empty-r15b-report.source-safe.json'),JSON.stringify(report,null,2)+'\n','utf8');
   const md=['# CXOrbia Phase A R15B — Firebase DEV nuevo y vacío','',`Decision: **${report.decision}**`,`Project: \`${projectId}\``,`Atomic create confirmed new: ${report.summary.atomicCreateConfirmedNew}`,`Project created: ${report.summary.projectCreated}`,`Firebase added: ${report.summary.firebaseAdded}`,`Empty baseline verified: ${report.summary.emptyBaselineVerified}`,'','## Sanitized checks',...Object.entries(report.checks).map(([k,v])=>`- ${k}: ${JSON.stringify(v)}`),'','## Safe state','- No billing link','- No Auth/Firestore/Storage initialization','- No imports or data migration','- No deploy or production','- No credentials or PII in output',''].join('\n');
   fs.writeFileSync(path.join(dir,'firebase-new-empty-r15b-report.source-safe.md'),md,'utf8');
-  console.log(JSON.stringify({decision:report.decision,target:report.target,summary:report.summary,safeState:report.safeState},null,2));
+  console.log(JSON.stringify({decision:report.decision,target:report.target,networkPolicy:report.networkPolicy,summary:report.summary,safeState:report.safeState},null,2));
+}
+function timeoutError(label){return Object.assign(new Error(`${label} timeout`),{category:'TIMEOUT'});}
+async function withTimeout(promise,ms,label){
+  let timer;
+  try{return await Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(timeoutError(label)),ms);})]);}
+  finally{if(timer)clearTimeout(timer);}
 }
 
 async function main(){
@@ -71,22 +81,30 @@ async function main(){
 
   const {GoogleAuth}=await import('google-auth-library');
   const client=await new GoogleAuth({credentials:cred,scopes:['https://www.googleapis.com/auth/cloud-platform']}).getClient();
-  async function token(){const r=await client.getAccessToken();const t=typeof r==='string'?r:r?.token;if(!t)throw Object.assign(new Error('token unavailable'),{category:'UNAUTHENTICATED'});return t;}
+  async function token(){const r=await withTimeout(client.getAccessToken(),REQUEST_TIMEOUT_MS,'access_token');const t=typeof r==='string'?r:r?.token;if(!t)throw Object.assign(new Error('token unavailable'),{category:'UNAUTHENTICATED'});return t;}
   async function request(method,url,body){
-    const response=await fetch(url,{method,headers:{Authorization:`Bearer ${await token()}`,Accept:'application/json',...(body===undefined?{}:{'Content-Type':'application/json'})},body:body===undefined?undefined:JSON.stringify(body)});
-    const text=await response.text();let payload=null;if(text){try{payload=JSON.parse(text);}catch{payload=null;}}
-    return{ok:response.ok,status:response.status,payload};
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),REQUEST_TIMEOUT_MS);
+    try{
+      const response=await fetch(url,{method,signal:controller.signal,headers:{Authorization:`Bearer ${await token()}`,Accept:'application/json',...(body===undefined?{}:{'Content-Type':'application/json'})},body:body===undefined?undefined:JSON.stringify(body)});
+      const text=await withTimeout(response.text(),REQUEST_TIMEOUT_MS,'response_body');let payload=null;if(text){try{payload=JSON.parse(text);}catch{payload=null;}}
+      return{ok:response.ok,status:response.status,payload};
+    }catch(error){if(error?.name==='AbortError')throw timeoutError('provider_request');throw error;}
+    finally{clearTimeout(timer);}
   }
   async function poll(base,name){
     if(!name)return;
     const url=`${base}/${String(name).replace(/^\//,'')}`;
-    for(let i=0;i<90;i++){
+    const deadline=Date.now()+OPERATION_DEADLINE_MS;
+    let attempts=0;
+    while(Date.now()<deadline){
+      attempts+=1;
       const r=await request('GET',url);
       if(!r.ok)throw Object.assign(new Error('operation poll failed'),{category:String(r.status)});
-      if(r.payload?.done){if(r.payload?.error)throw Object.assign(new Error('operation failed'),{category:String(r.payload.error?.status||r.payload.error?.code||'OPERATION_ERROR')});return;}
-      await new Promise(resolve=>setTimeout(resolve,4000));
+      if(r.payload?.done){if(r.payload?.error)throw Object.assign(new Error('operation failed'),{category:String(r.payload.error?.status||r.payload.error?.code||'OPERATION_ERROR')});return{attempts};}
+      await new Promise(resolve=>setTimeout(resolve,POLL_INTERVAL_MS));
     }
-    throw Object.assign(new Error('operation timeout'),{category:'TIMEOUT'});
+    throw Object.assign(new Error('operation timeout'),{category:'TIMEOUT',attempts});
   }
 
   let parent=null;
@@ -109,16 +127,16 @@ async function main(){
     const created=await request('POST','https://cloudresourcemanager.googleapis.com/v1/projects',{projectId,name:displayName,...(parent?{parent}:{})});
     if(created.status===409){report.checks.projectCreation={attempted:true,succeeded:false,errorCategory:'ALREADY_EXISTS'};report.decision='BLOCKED_TARGET_PROJECT_ALREADY_EXISTS_DO_NOT_REUSE';return write(report);}
     if(!created.ok)throw Object.assign(new Error('project create failed'),{category:String(created.payload?.error?.status||created.payload?.error?.code||created.status)});
-    await poll('https://cloudresourcemanager.googleapis.com/v1',created.payload?.name);
-    report.summary.projectCreated=true;report.summary.atomicCreateConfirmedNew=true;report.checks.projectCreation={attempted:true,succeeded:true,atomicNewProjectConfirmed:true,errorCategory:null};
+    const pollResult=await poll('https://cloudresourcemanager.googleapis.com/v1',created.payload?.name);
+    report.summary.projectCreated=true;report.summary.atomicCreateConfirmedNew=true;report.checks.projectCreation={attempted:true,succeeded:true,atomicNewProjectConfirmed:true,pollAttempts:pollResult?.attempts||0,errorCategory:null};
   }catch(error){report.checks.projectCreation={attempted:true,succeeded:false,errorCategory:category(error)};report.decision='BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY';return write(report);}
 
   report.summary.firebaseAddAttempted=true;
   try{
     const added=await request('POST',`https://firebase.googleapis.com/v1beta1/projects/${encodeURIComponent(projectId)}:addFirebase`,{});
     if(!added.ok)throw Object.assign(new Error('add firebase failed'),{category:String(added.payload?.error?.status||added.payload?.error?.code||added.status)});
-    await poll('https://firebase.googleapis.com/v1beta1',added.payload?.name);
-    report.summary.firebaseAdded=true;report.checks.firebaseAddition={attempted:true,succeeded:true,errorCategory:null};
+    const pollResult=await poll('https://firebase.googleapis.com/v1beta1',added.payload?.name);
+    report.summary.firebaseAdded=true;report.checks.firebaseAddition={attempted:true,succeeded:true,pollAttempts:pollResult?.attempts||0,errorCategory:null};
   }catch(error){report.checks.firebaseAddition={attempted:true,succeeded:false,errorCategory:category(error)};report.decision='PROJECT_CREATED_FIREBASE_ADDITION_BLOCKED_REVIEW_REQUIRED';return write(report);}
 
   async function check(id,fn){try{return{id,available:true,...await fn()};}catch(error){return{id,available:false,errorCategory:category(error)};}}
