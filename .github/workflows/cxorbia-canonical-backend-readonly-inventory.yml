@@ -61,9 +61,16 @@ jobs:
           CXORBIA_INVENTORY_MD: app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.md
         run: node tools/qa/cxorbia-canonical-backend-readonly-inventory.mjs
 
-      - name: Commit sanitized evidence only
+      - name: Commit sanitized evidence on latest branch head
         run: |
           set -euo pipefail
+          cp app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.json /tmp/cxorbia-inventory.json
+          cp app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.md /tmp/cxorbia-inventory.md
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/cxorbia-inventory.json app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.json
+          cp /tmp/cxorbia-inventory.md app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.md
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.json app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.md
