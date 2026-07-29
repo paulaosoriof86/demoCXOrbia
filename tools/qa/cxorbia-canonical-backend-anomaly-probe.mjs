@@ -33,6 +33,7 @@ for(const t of targets){
   const maxRow=uniqueRows.length?uniqueRows[uniqueRows.length-1]:null;
   const rowGaps=[];
   if(minRow!==null&&maxRow!==null) for(let n=minRow;n<=maxRow;n++) if(!uniqueRows.includes(n)) rowGaps.push(n);
+  const safeRecords=rows.map(x=>({id:x.id,sourceRow:x.sourceRow,sourceKeyPresent:!!x.sourceKey,sourceSheet:x.sourceSheet||null})).sort((a,b)=>Number(a.sourceRow??9999)-Number(b.sourceRow??9999)||a.id.localeCompare(b.id));
   projects.push({
     projectId:t.projectId,
     expectedVisits:t.expected,
@@ -41,13 +42,13 @@ for(const t of targets){
     sourceRow:{present:sourceRows.length,unique:uniqueRows.length,min:minRow,max:maxRow,duplicateGroups:groupDup(rows,'sourceRow'),gaps:rowGaps},
     sourceKey:{present:rows.filter(x=>x.sourceKey).length,duplicateGroups:groupDup(rows,'sourceKey')},
     sourceSheet:{distinct:[...new Set(rows.map(x=>x.sourceSheet).filter(Boolean))].sort()},
-    documentIds:rows.map(x=>x.id).sort(),
+    records:safeRecords,
     recordsWithShopperId:rows.filter(x=>x.hasShopperId).length,
   });
 }
 
 const report={
-  schemaVersion:'cxorbia.canonical-backend-anomaly-probe.v1',
+  schemaVersion:'cxorbia.canonical-backend-anomaly-probe.v2',
   generatedAt:new Date().toISOString(),
   projectId:expectedProject,
   readOnly:true,
@@ -59,6 +60,6 @@ const report={
 fs.mkdirSync(new URL('../../app/docs/evidence/',import.meta.url),{recursive:true});
 fs.writeFileSync(outJson,JSON.stringify(report,null,2)+'\n');
 const md=['# CXOrbia — probe read-only de 2 excesos HR/Firestore','',`- Fecha: ${report.generatedAt}`,`- Proyecto Firebase: \`${expectedProject}\``,'- Modo: read-only; provider writes=0; sin nombres/emails/teléfonos/documentos.','',...projects.flatMap(p=>[
-`## ${p.projectId}`,'',`- Esperado: ${p.expectedVisits}; observado: ${p.observedVisits}; delta: ${p.delta>=0?'+':''}${p.delta}.`,`- sourceRow presentes/únicos: ${p.sourceRow.present}/${p.sourceRow.unique}; rango ${p.sourceRow.min}..${p.sourceRow.max}.`,`- Duplicados sourceRow: ${p.sourceRow.duplicateGroups.length?JSON.stringify(p.sourceRow.duplicateGroups):'ninguno'}.`,`- Gaps sourceRow: ${p.sourceRow.gaps.length?p.sourceRow.gaps.join(', '):'ninguno'}.`,`- Duplicados sourceKey: ${p.sourceKey.duplicateGroups.length?JSON.stringify(p.sourceKey.duplicateGroups):'ninguno'}.`,`- Source sheets: ${p.sourceSheet.distinct.join(', ')||'no informado'}.`,`- Document IDs: ${p.documentIds.join(', ')}.`,`- Registros con shopperId: ${p.recordsWithShopperId}.`,'']), '## Conclusión','',`\`${report.conclusion}\``,'','No se borra ni modifica nada con este probe. Cualquier corrección requiere contraste con HR/source lock y autorización de write.',''];
+`## ${p.projectId}`,'',`- Esperado: ${p.expectedVisits}; observado: ${p.observedVisits}; delta: ${p.delta>=0?'+':''}${p.delta}.`,`- sourceRow presentes/únicos: ${p.sourceRow.present}/${p.sourceRow.unique}; rango ${p.sourceRow.min}..${p.sourceRow.max}.`,`- Duplicados sourceRow: ${p.sourceRow.duplicateGroups.length?JSON.stringify(p.sourceRow.duplicateGroups):'ninguno'}.`,`- Gaps sourceRow: ${p.sourceRow.gaps.length?p.sourceRow.gaps.join(', '):'ninguno'}.`,`- Duplicados sourceKey: ${p.sourceKey.duplicateGroups.length?JSON.stringify(p.sourceKey.duplicateGroups):'ninguno'}.`,`- Source sheets: ${p.sourceSheet.distinct.join(', ')||'no informado'}.`,`- Mapa sourceRow→documentId: ${p.records.map(r=>`${r.sourceRow}:${r.id}`).join(', ')}.`,`- Registros con shopperId: ${p.recordsWithShopperId}.`,'']), '## Conclusión','',`\`${report.conclusion}\``,'','No se borra ni modifica nada con este probe. Cualquier corrección requiere contraste con HR/source lock y autorización de write.',''];
 fs.writeFileSync(outMd,md.join('\n'));
 console.log(JSON.stringify({conclusion:report.conclusion,projects}));
