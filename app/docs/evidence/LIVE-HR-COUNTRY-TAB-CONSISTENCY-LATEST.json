@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "tya.hr-country-tab-consistency.v1",
+  "generatedAt": "2026-07-29T23:35:28.461Z",
+  "sourceSafe": true,
+  "pii": false,
+  "providerWrites": 0,
+  "results": [
+    {
+      "title": "JUNIO 26 HN",
+      "expectedCountry": "HN",
+      "headerRow": 1,
+      "visitRows": 10,
+      "countryCounts": {
+        "HN": 10
+      },
+      "mismatchCount": 0,
+      "mismatchRows": []
+    },
+    {
+      "title": "JULIO 26 HN",
+      "expectedCountry": "HN",
+      "headerRow": 1,
+      "visitRows": 10,
+      "countryCounts": {
+        "HN": 10
+      },
+      "mismatchCount": 0,
+      "mismatchRows": []
+    },
+    {
+      "title": "AGOSTO 26 HN",
+      "expectedCountry": "HN",
+      "headerRow": 1,
+      "visitRows": 34,
+      "countryCounts": {
+        "GT": 34
+      },
+      "mismatchCount": 34,
+      "mismatchRows": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ]
+    },
+    {
+      "title": "AGOSTO 26",
+      "expectedCountry": "GT",
+      "headerRow": 1,
+      "visitRows": 34,
+      "countryCounts": {
+        "GT": 34
+      },
+      "mismatchCount": 0,
+      "mismatchRows": []
+    }
+  ],
+  "decision": "HOLD_COUNTRY_TAB_MISMATCH",
+  "safety": {
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hostingDeploys": 0,
+    "production": false,
+    "merge": false
+  }
+}
