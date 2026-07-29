@@ -15,15 +15,14 @@ window.CX = window.CX || {};
   function isPreview(){
     try{
       const q=new URLSearchParams(window.location.search||'');
-      return q.get('cxBackendPreview')==='YES_PAULA_20260628_PREVIEW_DEV'
-        && !!(CX.BACKEND && CX.BACKEND.previewMode===true && CX.BACKEND.readOnly===true);
+      return q.get('cxBackendPreview')==='YES_PAULA_20260628_PREVIEW_DEV';
     }catch(e){ return false; }
   }
 
   function isProtectedEmpty(){
     try{
       if(!isPreview() || !CX.data || !Array.isArray(CX.data.projects)) return false;
-      return CX.data.projects.length===0;
+      return CX.data.projects.length===0 || window.CX_CORTE4_READONLY?.empty===true || window.CX_BACKEND_LAST_STATE?.empty===true;
     }catch(e){ return false; }
   }
 
