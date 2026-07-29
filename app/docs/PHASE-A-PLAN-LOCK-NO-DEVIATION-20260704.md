@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-29  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_PROVIDER_BOOTSTRAP_COMPLETED__PROTECTED_CXDATA_SMOKE_AUTH_PRINCIPAL_PENDING`
+**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_PROTECTED_CXDATA_SMOKE_PASS__HOSTING_DEV_AUTH_PENDING`
 
 ## 1. Objetivo
 
@@ -45,7 +45,7 @@ P1/P2 de reportes/copy permanecen como backlog transversal y no reabren Corte 3.
 
 Objetivo: `CX.data READ-ONLY → FIREBASE NUEVO Y VACÍO → MISMA INTERFAZ → CERO WRITES`.
 
-Estado: `PROVIDER_BOOTSTRAP_COMPLETED__PROTECTED_CXDATA_SMOKE_AUTH_PRINCIPAL_PENDING`.
+Estado: `PROTECTED_CXDATA_SMOKE_PASS__HOSTING_DEV_AUTH_PENDING`.
 
 ### 5.1 Hardening completado
 
@@ -55,7 +55,7 @@ Estado: `PROVIDER_BOOTSTRAP_COMPLETED__PROTECTED_CXDATA_SMOKE_AUTH_PRINCIPAL_PEN
 - guard `CX.data` que preserva interfaz y bloquea persistencia/acciones operativas;
 - backend vacío sin fallback demo;
 - errores de lectura fail-closed;
-- Rules read-only preparadas y desplegadas únicamente en Firebase DEV nuevo;
+- Rules read-only desplegadas únicamente en Firebase DEV nuevo;
 - gate estático Corte 4 PASS.
 
 ### 5.2 Base existente descartada
@@ -70,14 +70,12 @@ Estado: `PROVIDER_BOOTSTRAP_COMPLETED__PROTECTED_CXDATA_SMOKE_AUTH_PRINCIPAL_PEN
 
 ### 5.4 Gate 1 — identidad nueva: PASS
 
-- request `corte4-probe-project-identity-20260729-03`;
 - commit `b18f0b6cf74afb8b3ac770a73231c6cf1353b37c`;
 - status `TARGET_PROJECT_IDENTITY_VERIFIED_C4`;
 - provider writes=0.
 
 ### 5.5 Gate 2 — vacío integral: PASS
 
-- request `corte4-verify-new-empty-firebase-dev-20260729-05`;
 - commit `7b0e40f8607b80a4f37238314a66064af35c5e6d`;
 - nueva identidad=true;
 - vacío verificado=true;
@@ -93,36 +91,49 @@ Resultado:
 - Web App DEV READY;
 - Firestore `(default)` READY, Native/Standard, `us-central1`, sin colecciones;
 - Rules read-only DEPLOYED + VERIFIED;
-- Authentication inicializado manualmente por Paula en consola, sin proveedor habilitado y sin usuarios;
-- revalidación idempotente commit `e524b968c0003c27351d5d5826e21ffcf7cbfdbe`;
+- Authentication inicializado en consola, sin proveedor ni usuarios permanentes;
+- revalidación idempotente `e524b968c0003c27351d5d5826e21ffcf7cbfdbe`;
 - `BOOTSTRAP_DEV_READONLY_COMPLETED_C4` PASS;
-- `web=true`, `db=true`, `auth=true`, `rules=true`;
-- provider config writes en revalidación=0;
+- Web/DB/Auth/Rules=true;
+- provider config writes en revalidación=0.
+
+### 5.7 Gate 4 — protected CX.data smoke: PASS
+
+Autorización consumida: `Autorizo operador DEV temporal para smoke protegido de Corte 4`.
+
+Intento válido: `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`.
+
+Evidencia:
+
+- `c4smoke-error-NONE`;
+- `c4smoke-srcfirestore-etrue-fbfalse-rotrue`;
+- `c4cleanup-u0-emailfalse`.
+
+El smoke confirmó:
+
+- `source=firestore`;
+- `empty=true`;
+- `fallbackUsed=false`;
+- `readOnly=true` / `writeMode=disabled`;
+- interfaz `CX.data` preservada;
+- claims `role=admin`, `tenantId=tya`;
+- bloqueo de write directo;
+- Firestore data arrays vacíos;
 - Firestore document writes=0;
-- Auth user writes=0.
+- operador temporal eliminado;
+- Auth users final=0;
+- Email/Password final=deshabilitado.
 
-### 5.7 Gate 4 — smoke protegido `CX.data`: pendiente de principal temporal
-
-Las Rules actuales requieren usuario autenticado con rol de operador y tenant permitido. El Firebase nuevo sigue con Auth users=0 y sin proveedores habilitados.
-
-No se crea usuario ni se habilita proveedor por inferencia. Para ejecutar el smoke real de cliente protegido se requiere autorización expresa y acotada para:
-
-1. habilitar Email/Password únicamente en DEV;
-2. crear exactamente un operador temporal con credencial aleatoria no expuesta y claims `role=admin`, `tenantId=tya`;
-3. ejecutar `CX.data` read-only contra el Firestore vacío;
-4. demostrar `source=firestore`, `empty=true`, `fallbackUsed=false`, interfaz preservada y Firestore document writes=0;
-5. eliminar el operador temporal;
-6. deshabilitar Email/Password;
-7. confirmar Auth users=0 nuevamente.
-
-Ese usuario temporal no se migra, no sustituye Corte 6 y no toca datos TyA.
+El status agregado quedó falsamente en error porque el publicador esperaba un segundo archivo de cleanup ya redundante. La corrección de raíz quedó en `9967146e112322efcd043155ae05351bbbbd4e8a` sin rerun ni nuevo Auth write.
 
 ### 5.8 Gates restantes
 
 5. autorización separada de Hosting DEV para el mismo build read-only;
-6. validación visual;
-7. freeze Corte 4;
-8. retirar IAM temporal elevado y dejar runner en Viewer.
+6. deploy Hosting DEV;
+7. validación visual;
+8. corrección focalizada solo si existe P0 reproducible;
+9. freeze Corte 4;
+10. retirar IAM temporal elevado y dejar runner en Viewer.
 
 ## 6. Cortes siguientes
 
@@ -131,7 +142,7 @@ Ese usuario temporal no se migra, no sustituye Corte 6 y no toca datos TyA.
 - **Corte 7:** sincronización, evidencias y gates Make/Gemini.
 - **Corte 8:** preproducción/producción con autorización.
 
-El principal temporal de Corte 4, si se autoriza, existe únicamente durante el smoke y se elimina al terminar; no sustituye Auth/RBAC completo de Corte 6.
+El principal temporal de Corte 4 fue exclusivamente de smoke y ya fue eliminado; no sustituye Auth/RBAC completo de Corte 6.
 
 ## 7. Claude/prototipo
 
@@ -140,8 +151,8 @@ Corte 3 está congelado. No preparar V183. No tocar backend/contratos/adapters d
 ## 8. Academia
 
 - Corte 3: fuente operacional/financiera/pago y monedas separadas.
-- Corte 4: backend vacío, fail-closed, interfaz estable y separación entre proyecto, IAM, Web App, Firestore, inicialización Auth, proveedor, usuario temporal, claims, Rules, lectura protegida y materialización.
+- Corte 4: backend vacío, fail-closed, interfaz estable y separación entre proyecto, IAM, Web App, Firestore, inicialización Auth, proveedor temporal, usuario temporal, claims, Rules, protected smoke, cleanup y reporting.
 
 ## 9. Estado seguro
 
-Sin producción, merge, Firestore document writes, Auth users permanentes, Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live. Provider bootstrap de Corte 4 está completado; el siguiente gate requiere autorización específica antes de crear un principal Auth temporal.
+Sin producción, merge, Firestore document writes, Auth users permanentes, Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live. Provider bootstrap y protected smoke de Corte 4 están completados; el siguiente gate es Hosting DEV con autorización separada.
