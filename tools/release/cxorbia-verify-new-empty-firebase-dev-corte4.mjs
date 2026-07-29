@@ -131,7 +131,7 @@ async function main(){
     const response=await boundedFetch(credential.token_uri||'https://oauth2.googleapis.com/token',{
       method:'POST',
       headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:new URLSearchParams({grant_type:'urn:ietf:params:oauth-type:jwt-bearer',assertion}).toString()
+      body:new URLSearchParams({grant_type:'urn:ietf:params:oauth:grant-type:jwt-bearer',assertion}).toString()
     },'oauth_token');
     const text=await response.text();
     let payload={};try{payload=text?JSON.parse(text):{};}catch{}
