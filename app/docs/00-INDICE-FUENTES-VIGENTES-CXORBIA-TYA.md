@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-29  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `CORTE3_FROZEN__CORTE4_VIS01_FIXED__VIS02_FIXED__VIS02B_FINAL_DEPLOY1_CONSUMED__REMOTE_DIAGNOSTIC_PASS__HUMAN_VISUAL_PENDING__NO_DATA_WRITES`
+**Estado vivo:** `CORTE3_FROZEN__CORTE4_SANDBOX_TECHNICAL_LEARNINGS_PRESERVED__ARCHITECTURE_CORRECTED__CANONICAL_BACKEND_READONLY_INVENTORY_ACTIVE__NO_DATA_WRITES`
 
 ## 1. Repositorio
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -13,94 +13,82 @@
 
 ## 2. Orden de lectura vigente
 1. este índice;
-2. reglas maestras vigentes;
-3. addendum de empalme directo/carril file-aware;
-4. addenda de Academia, patrones y antidesvío;
-5. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-6. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-ADDENDUM-CORTE4-VIS02B-FINAL-REMOTE-PASS-20260729.md`;
-7. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE4-VIS02B-FINAL-REMOTE-PASS-20260729.md`;
-8. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE4-VIS02B-FINAL-REMOTE-PASS-20260729.md`;
-9. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE4-VIS02B-FINAL-REMOTE-PASS-20260729.md`;
-10. `app/docs/ACADEMIA-IMPACTO-CORTE4-VIS02B-FINAL-REMOTE-PASS-20260729.md`;
-11. documentación histórica de VIS-01, VIS-02 y VIS-02B;
-12. `backend/contracts/cxdata-firestore-readonly-corte4-v1.json`;
-13. baseline/freeze Corte 3;
-14. PR #7 y HEAD vivo.
+2. `ADDENDUM-CORRECCION-ARQUITECTURA-LEGACY-VS-CXORBIA-BACKEND-DEV-20260729.md`;
+3. reglas maestras vigentes;
+4. addendum de empalme directo/carril file-aware;
+5. addenda de Academia, patrones y antidesvío;
+6. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+7. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+8. evidencia `app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.md` cuando termine/refresque;
+9. CAMBIOS/RESUMEN-PARA-CLAUDE/PENDIENTES/Academia vigentes;
+10. baseline/freeze Corte 3;
+11. PR #7 y HEAD vivo.
 
-Los addenda anteriores quedan como evidencia histórica; prevalecen los documentos `VIS02B-FINAL-REMOTE-PASS` de este índice.
+La corrección de arquitectura de este índice prevalece sobre documentos recientes que llamen a `cxorbia-backend-dev` “base anterior excluida”.
 
-## 3. Corte 3 — congelado
+## 3. Distinción obligatoria de sistemas
+
+### Legacy TyA Consultores — plataforma actual a retirar
+- Es la plataforma operativa anterior con parches/fixes.
+- Es el origen del que solo se recuperan datos útiles y limpios.
+- No se copia su arquitectura, código, dashboard, parches ni lógica defectuosa.
+- Refresh pendiente: shoppers y certificaciones nuevas/actualizadas; visitas siguen HR como fuente principal.
+
+### `cxorbia-backend-dev` — backend DEV canónico de CXOrbia / tenant TyA
+- Es el backend nuevo de CXOrbia que se venía construyendo desde junio.
+- TyA es el primer tenant real.
+- **No es la base legacy a excluir.**
+- Debe inventariarse read-only antes de decidir cualquier materialización adicional.
+
+### `cxorbia-tya-dev-260729-c4` — sandbox técnico Corte 4
+- Se creó por una interpretación incorrecta de “base vieja”.
+- Sus pruebas fueron útiles para descubrir/corregir VIS-01/VIS-02/VIS-02B.
+- No es destino de materialización Phase A.
+- No se replica allí el tenant TyA existente.
+
+### Hosting público TyA
+- La dirección pública actual de los shoppers se conserva para el cutover final.
+- Se reemplazará la app legacy por CXOrbia cuando Phase A y gates de producción estén completos.
+- No se asume la identidad del proyecto Firebase dueño de ese Hosting hasta verificarla antes del cutover.
+
+## 4. Corte 3 — congelado
 - `FROZEN_ACTIVE_BASELINE`.
 - Baseline `CXORBIA-TYA-CORTE3-V182-20260729`.
-- V182 empalmada; no V183/R33.
 - 14 periodos / 616 visitas.
 - Mayo: 44 pagadas / 0 pendientes / CxP Q0-L0.
 - Junio: 2 pagadas / 42 pendientes / Q451-L0.
 - P1/P2 PDF/Excel/reportKit/copy no reabren Corte 3.
 
-## 4. Corte 4 — objetivo y gates previos
-Objetivo: Firebase nuevo/vacío, `CX.data` read-only, misma interfaz, backend vacío visible, fail-closed y cero data writes.
+## 5. Aprendizajes técnicos preservados del sandbox Corte 4
+- no fallback demo/localStorage;
+- backend vacío first-class;
+- null-safety proyecto/período;
+- role-switch limpia DOM;
+- entrypoint sin scripts huérfanos;
+- gate anti-dangling-script;
+- remote diagnostic final PASS, 0 pageerrors y 0/0/0/0.
 
-PASS previos:
-- Firebase `cxorbia-tya-dev-260729-c4` nuevo/vacío;
-- Web App DEV, Firestore `us-central1`, Rules read-only y Auth config;
-- protected smoke `source=firestore`, `empty=true`, `fallbackUsed=false`, `readOnly=true`, writes=0;
-- P0-C4-VIS-01 corregido: no demo/localStorage y visual humana con 0/0/0/0.
+Estos resultados se preservan, pero ya no implican materializar TyA en `cxorbia-tya-dev-260729-c4`.
 
-## 5. P0-C4-VIS-02 — corregido
-- `app/core/backend-corte4-empty-shell-guard.js` maneja backend vacío como estado válido;
-- null-safety de proyecto/período en preview vacío;
-- limpieza de rail/view/crumb entre roles;
-- no se tocaron `app/modules`.
+## 6. Inventario canónico read-only
+Se inició inventario provider read-only sobre `cxorbia-backend-dev` con:
+- provider writes=0;
+- sin exportar valores sensibles;
+- Auth y árbol Firestore solo para conteos/esquema;
+- evidencia durable en `app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.*`.
 
-Gate local de role-switch: PASS.
+Primer resultado ya comprobó:
+- projectId `cxorbia-backend-dev`;
+- Auth users=17;
+- root `tenants` existe;
+- el inventario debe recorrer subcolecciones antes de cerrar conclusiones.
 
-## 6. P0-C4-VIS-02B — corregido y desplegado
-Causa: referencia inexistente `adapters/tya-phase-a-source-safe-dev-adapter.js` en `index-backend-dev.html`; Firebase Hosting la reescribía al HTML principal y el browser intentaba parsearlo como JS.
+## 7. Gate vivo único
+`COMPLETAR INVENTARIO READ-ONLY RECURSIVO DE cxorbia-backend-dev → REUTILIZAR LO YA EXISTENTE → REFRESH LEGACY SOLO SHOPPERS/CERTIFICACIONES → CONTINUAR PHASE A DESDE FALTANTE REAL → PREPROD/CUTOVER EN HOSTING PÚBLICO ACTUAL`.
 
-Corrección:
-- referencia huérfana eliminada;
-- no se creó adapter ficticio;
-- gate reusable `tools/qa/cxorbia-corte4-entrypoint-script-integrity.mjs` PASS.
+No nueva base, no nueva candidata, no PowerShell, no materialización duplicada.
 
-Autorización final consumida:
-`Autorizo un único Hosting DEV final para revalidación de P0-C4-VIS-02B, sin data writes ni producción`.
-
-- authorizationId `c4-p0-vis02b-final-20260729-01`;
-- deployed source `e9b7441fab4370ba455a77791b79b6e167cd33ac`;
-- `cxorbia/c4p0vis02b-final-deploys1=success`;
-- `cxorbia/c4p0vis02b-final-scripts=success`;
-- Hosting final autorizado/ejecutado: 1/1;
-- workflow one-shot convertido a HOLD.
-
-## 7. Revalidación remota vigente
-El status agregado del runner final quedó `error`, por lo que no se interpretó como PASS sin evidencia. Se ejecutó diagnóstico remoto independiente read-only, providerWrites=0.
-
-Resultado:
-- `cxorbia/c4p0vis02b-diag-summary=success`;
-- `cxorbia/c4p0vis02b-diag-pass=success`;
-- proof corresponde al source desplegado;
-- 0 pageerrors;
-- todos los scripts locales resuelven como JavaScript;
-- Admin vacío → logout → Shopper vacío → logout → Admin vacío: PASS;
-- sin shell Shopper residual;
-- conteos 0/0/0/0, sin demo/localStorage.
-
-## 8. Seguridad actual
-- Firestore document writes=0;
-- Auth users permanentes=0;
-- Email/Password deshabilitado;
-- Auth config/user writes adicionales=0;
-- Storage/Rules/Functions/imports/HR/Make/Gemini/payments=0;
-- producción=false;
-- merge=false.
-
-## 9. Gate vivo único
-`VALIDACIÓN VISUAL HUMANA DE URL FINAL → si no hay P0: FREEZE CORTE 4 → IAM TEMPORAL A VIEWER → CORTE 5 MATERIALIZACIÓN DEV`.
-
-No PowerShell, no nueva candidata, no nueva base y no materialización anticipada.
-
-## 10. Claude/prototipo y Academia
-- Claude: sin nueva candidata; preservar fix core/entrypoint y no tocar `app/modules` por estos P0.
-- Academia: backend vacío first-class state + gate anti-dangling-script + role-switch limpio.
-- Reusable CXOrbia: sí.
+## 8. Claude/prototipo y Academia
+- Claude: no nueva candidata por esta corrección; preservar fixes core/entrypoint.
+- Academia: documentar diferencia entre legacy/origen, backend canónico, sandbox y Hosting/cutover.
+- Reusable CXOrbia: sí; migración incremental y sandbox no equivalen a backend destino.
