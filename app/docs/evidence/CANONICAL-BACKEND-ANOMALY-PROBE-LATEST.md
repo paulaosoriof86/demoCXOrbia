@@ -1,0 +1,33 @@
+# CXOrbia — probe read-only de 2 excesos HR/Firestore
+
+- Fecha: 2026-07-29T23:22:08.989Z
+- Proyecto Firebase: `cxorbia-backend-dev`
+- Modo: read-only; provider writes=0; sin nombres/emails/teléfonos/documentos.
+
+## cinepolis-abril-26
+
+- Esperado: 34; observado: 35; delta: +1.
+- sourceRow presentes/únicos: 35/35; rango 0..35.
+- Duplicados sourceRow: ninguno.
+- Gaps sourceRow: 1.
+- Duplicados sourceKey: ninguno.
+- Source sheets: ABRIL 26.
+- Document IDs: hr-0190796980c3585a, hr-019164f5d22fc032, hr-05e72ed19d9d5c57, hr-14dfad39f7fbedc8, hr-1508cd6cd58d6836, hr-169f606288372023, hr-1dfb5d65ad2ed210, hr-201a235fb3b22a37, hr-2083745ba8c8a0ec, hr-215f5f816f5c9b6e, hr-27fbb39acb6543e6, hr-2d5532fdb2b8302d, hr-42875a99acff1123, hr-4e08d5f53c2966a5, hr-577e06288974050e, hr-5823f5744d6793a3, hr-658e4703ffa3e308, hr-6a2298bd05ee88bc, hr-6d0d3d40b8b3d381, hr-6dbf99069903295c, hr-6e45241ffe5a9880, hr-7420e6bd4a8deb96, hr-7d0083dcba89148e, hr-862c23e646605e28, hr-8cb24d032fc4a44f, hr-94466495d87a0d3d, hr-ac7e44dfcbf18de8, hr-b562720e4f1082bb, hr-cb9a62a79d186be5, hr-ef26fcd2f3148823, hr-f1f77dd7775744d2, hr-f34e2fb28be887c8, hr-f79c65b40b34571c, hr-fb3a347bd3a7ed85, sprint5-visit-mutation-no-real-data.
+- Registros con shopperId: 35.
+
+## cinepolis-junio-26-hn
+
+- Esperado: 10; observado: 11; delta: +1.
+- sourceRow presentes/únicos: 11/11; rango 2..12.
+- Duplicados sourceRow: ninguno.
+- Gaps sourceRow: ninguno.
+- Duplicados sourceKey: ninguno.
+- Source sheets: JUNIO 26 HN.
+- Document IDs: hr-02ad5397e4106202, hr-074e8762c5ef6e7a, hr-263956c31dab71bd, hr-58fb469666080189, hr-6697d557acb579b3, hr-a0b66347030dc42b, hr-bb069c82c275d882, hr-cbcf3f481473da98, hr-ed4a63cafe53712d, hr-efdd1b6c1c01f566, hr-fc81c63167fa1de0.
+- Registros con shopperId: 11.
+
+## Conclusión
+
+`TWO_OVERAGES_LOCATED__REVIEW_STABLE_KEYS_BEFORE_ANY_WRITE`
+
+No se borra ni modifica nada con este probe. Cualquier corrección requiere contraste con HR/source lock y autorización de write.
