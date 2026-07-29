@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "cxorbia.canonical-plan-refresh-offline.v1",
-  "generatedAt": "2026-07-29T23:43:40.282Z",
+  "schemaVersion": "cxorbia.canonical-plan-refresh-offline.v2",
+  "generatedAt": "2026-07-29T23:45:19.923Z",
   "providerCalls": 0,
   "writes": 0,
   "production": false,
@@ -8,18 +8,21 @@
   "basePlanId": "phasea_2f71daec3e68dfa1",
   "basePlanSha256": "54bc996c0d13741e330125c3ff2604d0e299cee25aa2412c5764c6ebf7885453",
   "overlayPlanId": "r16d_f471a6b486f3a269b0dd",
-  "overlayPlanSha256": "de91ad7714f2e174cc602c8295496d7a93185093240d5b2fd7a48b7ae7567bff",
+  "overlayPlanSha256": "422e8533b81e7d495c2092725887bb970204b8fd4a22120a1d7eeb3be0cf7ec0",
   "counts": {
     "operations": 1415,
-    "tenants": 0,
-    "projects": 0,
+    "tenants": 1,
+    "projects": 1,
     "hrImports": 0,
-    "periods": 0,
-    "shoppers": 0,
-    "visits": 0,
-    "liquidations": 0,
+    "periods": 14,
+    "shoppers": 210,
+    "visits": 616,
+    "liquidations": 572,
     "certifications": 0,
     "payments": 0
+  },
+  "operationKinds": {
+    "create": 1415
   },
   "canonicalShape": {
     "parentProjectPath": "tenants/tya/projects/cinepolis",
@@ -27,7 +30,7 @@
     "periodPaths": 14,
     "visitPaths": 616
   },
-  "reviewQueue": null,
+  "reviewQueueSummary": null,
   "safety": {
     "writes": false,
     "imports": false,
