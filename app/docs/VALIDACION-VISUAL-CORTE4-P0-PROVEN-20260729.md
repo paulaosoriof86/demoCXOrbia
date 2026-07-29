@@ -1,72 +1,77 @@
-# Validación visual Corte 4 — P0 PROVEN
+# Validación visual Corte 4 — P0 PROVEN / resolución técnica pendiente de revalidación humana
 
 **Fecha:** 2026-07-29  
-**Estado:** `P0_PROVEN__CORTE4_FREEZE_BLOCKED`
+**Estado:** `P0_TECHNICALLY_FIXED__REMOTE_REVALIDATION_PASS__HUMAN_VISUAL_PENDING`
 
-## Evidencia visual de Paula
+## Evidencia visual inicial de Paula
 
-La URL canónica de Hosting DEV abrió correctamente, pero el runtime publicado incumple el contrato de Corte 4:
+La URL inicial de Hosting DEV abrió correctamente, pero el runtime publicado incumplió el contrato de Corte 4:
 
-- pantalla de acceso muestra `Demo comercial · datos ficticios`;
+- pantalla de acceso mostró `Demo comercial · datos ficticios`;
 - status visible: `Fuente: localStorage/demo`;
 - status visible: `Auth: pendiente`;
 - status visible: `Proyecto: proyecto retail`;
 - status visible: `Proyectos: 3 · Visitas: 108 · Shoppers: 18 · Postulaciones: 48`;
-- al entrar como Administración aparecen `Proyecto Retail`, `Proyecto Banca`, `Proyecto Restaurantes` y KPIs/demo;
-- el Dashboard Operativo muestra `44` visitas y datos ficticios de JUL 26.
+- al entrar como Administración aparecieron `Proyecto Retail`, `Proyecto Banca`, `Proyecto Restaurantes` y KPIs/demo;
+- el Dashboard Operativo mostró datos ficticios.
 
-Esto contradice directamente el contrato vigente de Corte 4, que exige backend nuevo vacío, `fallbackToMockOnReadError=false`, `fallbackToLocalStorageOnEmpty=false` y `emptyBackendMustRenderAsEmpty=true`.
+Esto contradijo `fallbackToMockOnReadError=false`, `fallbackToLocalStorageOnEmpty=false` y `emptyBackendMustRenderAsEmpty=true`.
 
 ## P0 reproducible
 
 `P0-C4-VIS-01 — FORBIDDEN_DEMO_FALLBACK_ON_AUTH_PENDING`
 
-Reproducción:
+## Causa raíz localizada
 
-1. abrir la URL canónica de Corte 4 Hosting DEV;
-2. no existe usuario Auth permanente ni Email/Password habilitado, por diseño después del protected smoke;
-3. el preview intenta autenticación DEV;
-4. la credencial temporal no existe;
-5. el runtime cae en `localStorage/demo` y conserva/renderiza seeds ficticios.
+El principal temporal de Auth del protected smoke había sido correctamente eliminado. Sin esa credencial, la ruta genérica de `backend-firebase.js` marcaba `localStorage/demo`. El guard Corte 4 reaccionaba demasiado tarde para impedir el primer render de fixtures y el status visual también interpretaba el error como demo.
 
-## Causa raíz técnica localizada
+## Corrección focalizada autorizada
 
-El conflicto está en la cadena backend, no en los módulos UI:
+Autorización consumida:
 
-- `app/core/backend-config-preview-dev.js` activa `devPreviewAuth.enabled=true`;
-- `app/core/backend-firebase.js::ensurePreviewAuth()` exige una credencial temporal almacenada;
-- si falta la credencial, `backend-firebase.js` marca explícitamente `localStorage/demo` y lanza error;
-- su `catch` vuelve a marcar `localStorage/demo` y declara que la UI sigue con mock/localStorage;
-- esto es incompatible con `failClosedOnReadError=true` de Corte 4 y explica exactamente el status observado por Paula.
+`Autorizo corrección focalizada de P0-C4-VIS-01 y un único Hosting DEV de revalidación de Corte 4, sin data writes ni producción`
 
-La credencial no debe reintroducirse: el protected smoke ya comprobó lectura autenticada y luego limpió el principal temporal. La corrección debe hacer que Hosting DEV sin principal temporal permanezca vacío/fail-closed y nunca vuelva a demo/localStorage.
+Archivos runtime modificados:
 
-## Alcance permitido de la corrección
-
-Corrección backend focalizada únicamente. No nueva candidata, no rediseño UI, no PowerShell, no nueva rama/PR, no base nueva adicional, no reactivación de datos TyA.
-
-Archivos candidatos a revisar como causa:
-
-- `app/core/backend-firebase.js`;
+- `app/core/backend-config-preview-dev.js`;
 - `app/core/backend-cxdata-readonly-corte4.js`;
-- `app/core/backend-preview-status.js` solo para asegurar que el status refleje el estado real después de corregir la fuente.
+- `app/core/backend-preview-status.js`.
 
-No tocar `/app/modules` salvo evidencia adicional P0 independiente.
+No se tocaron módulos UI.
 
-## Gate posterior obligatorio
+## Resultado de gates
 
-Después de una autorización explícita para la corrección:
+Diagnóstico local read-only final:
 
-`PATCH FOCALIZADO → GATE LOCAL/ESTÁTICO → HOSTING DEV CONTROLADO → VALIDACIÓN VISUAL`.
+- commit `58f227e2d67c0efa15c363e19e2cbcfea91e19b8`;
+- `cxorbia/c4p0vis01-diagnostic=success`;
+- `cxorbia/c4p0local-pass=success`.
 
-PASS visual requerido:
+Revalidación remota:
 
-- no `localStorage/demo`;
-- no proyectos/visitas/shoppers/postulaciones ficticios;
-- backend vacío renderizado como vacío o estado fail-closed honesto;
-- cero writes;
-- Corte 3 preservado.
+- deployed source `424eca2ae5a7cd6f240dfc97b17048f3c124eb2c`;
+- `cxorbia/c4p0vis01-revalidation=success`;
+- `cxorbia/c4p0vis01-deploys1=success`;
+- exactamente 1 Hosting-only deploy para esta autorización.
 
-## Estado seguro
+El browser remoto comprobó:
 
-Corte 3 sigue FROZEN. Corte 4 no se congela. No hubo producción, merge, materialización, Firestore document writes, Auth users permanentes, Storage/HR writes, pagos, Make ni Gemini.
+- conteos proyectos/visitas/shoppers/postulaciones = `0/0/0/0`;
+- `CX.dataSource.mode=connected`;
+- fixtures=false;
+- `CX.BRAND.demoMode=false`;
+- `fallbackUsed=false` desde estado inicial;
+- ausencia de `Proyecto Retail`, `Proyecto Banca`, `Proyecto Restaurantes`, `Demo comercial · datos ficticios` y `Fuente: localStorage/demo`;
+- entrada al shell admin mantiene estado vacío.
+
+## URL nueva para Paula
+
+`https://cxorbia-tya-dev-260729-c4.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&p0vis01=424eca2ae5a7cd6f240dfc97b17048f3c124eb2c`
+
+## Estado actual
+
+El P0 está técnicamente corregido y revalidado por navegador remoto, pero Corte 4 no se congela hasta la revalidación visual humana de Paula.
+
+Si la nueva visual no demuestra otro P0: `FREEZE CORTE 4 → IAM temporal a Viewer → CORTE 5`.
+
+Data writes/producción/merge de este bloque: `0`.
