@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-29  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_HOSTING_DEV_PASS__VISUAL_VALIDATION_PENDING__NO_DATA_WRITES`
+**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_VISUAL_P0_PROVEN__FREEZE_BLOCKED__NO_DATA_WRITES`
 
 ## 1. Repositorio
 
@@ -21,11 +21,11 @@
 5. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 6. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 7. `backend/contracts/cxdata-firestore-readonly-corte4-v1.json`;
-8. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE4-HOSTING-DEV-PASS-20260729.md`;
-9. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE4-HOSTING-DEV-PASS-20260729.md`;
-10. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE4-HOSTING-DEV-PASS-20260729.md`;
-11. `app/docs/ACADEMIA-IMPACTO-CORTE4-HOSTING-DEV-PASS-20260729.md`;
-12. `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-CORTE4-HOSTING-DEV-PASS-20260729.md`;
+8. `app/docs/VALIDACION-VISUAL-CORTE4-P0-PROVEN-20260729.md`;
+9. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE4-VISUAL-P0-PROVEN-20260729.md`;
+10. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE4-VISUAL-P0-PROVEN-20260729.md`;
+11. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE4-VISUAL-P0-PROVEN-20260729.md`;
+12. `app/docs/ACADEMIA-IMPACTO-CORTE4-VISUAL-P0-PROVEN-20260729.md`;
 13. `app/docs/ACTIVE-BASELINE-CORTE3-V182-20260729.json`;
 14. `app/docs/FREEZE-CORTE3-V182-APPROVED-20260729.md`;
 15. PR #7 y HEAD vivo.
@@ -44,7 +44,7 @@
 
 Objetivo: Firebase nuevo/vacío, `CX.data` read-only, misma interfaz y cero data writes.
 
-Hardening vigente:
+Hardening exigido:
 
 - interfaz `CX.data` preservada;
 - `readOnly=true` / `writeMode=disabled`;
@@ -53,63 +53,41 @@ Hardening vigente:
 - no fallback mock/localStorage;
 - base legacy/preexistente prohibida.
 
-## 5. Gates 1–3 — PASS
+## 5. Gates 1–4 — PASS técnico
 
-Firebase nuevo:
+- Firebase nuevo `cxorbia-tya-dev-260729-c4`.
+- Identidad y vacío integral: PASS.
+- Web App DEV, Firestore `us-central1`, Rules read-only y Auth config: PASS.
+- Protected smoke: `source=firestore`, `empty=true`, `fallbackUsed=false`, `readOnly=true`, writes=0 y cleanup completo.
 
-- projectId `cxorbia-tya-dev-260729-c4`;
-- display name `CXOrbia TyA DEV Clean Corte 4`;
-- identidad nueva PASS;
-- vacío integral previo PASS;
-- `cxorbia-backend-dev` sigue excluido;
-- Web App DEV READY;
-- Firestore `(default)` READY, Native/Standard, `us-central1`, sin colecciones;
-- Rules read-only DEPLOYED + VERIFIED;
-- Firebase Authentication INITIALIZED.
+Intento protegido válido: `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`.
 
-Bootstrap idempotente: `BOOTSTRAP_DEV_READONLY_COMPLETED_C4`.
-
-## 6. Gate 4 — protected CX.data smoke: PASS
-
-Autorización consumida: `Autorizo operador DEV temporal para smoke protegido de Corte 4`.
-
-Intento válido: `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`.
-
-Resultado comprobado:
-
-- `source=firestore`;
-- `empty=true`;
-- `fallbackUsed=false`;
-- `readOnly=true` / `writeMode=disabled`;
-- interfaz pública `CX.data` preservada;
-- claims temporales `role=admin`, `tenantId=tya` verificados;
-- write directo bloqueado;
-- Firestore document writes=0;
-- operador temporal eliminado;
-- Auth users final=0;
-- Email/Password final=deshabilitado.
-
-El falso negativo del publicador se corrigió en `9967146e112322efcd043155ae05351bbbbd4e8a` sin rerun ni nuevo Auth write.
-
-## 7. Gate 5 — Hosting DEV: PASS
+## 6. Gate 5 — Hosting DEV: PASS técnico
 
 Autorización consumida: `Autorizo Hosting DEV de Corte 4 para validación visual.`
 
 - Authorization ID: `c4-hosting-visual-20260729-01`.
 - Deployed source commit: `fabba5c76bb40f5105f8e10dd54be63e9b3eb783`.
-- Status `cxorbia/corte4-hosting-dev-visual = success`.
-- Status `cxorbia/c4hosting-deploys1 = success`.
-- Hosting deploy executions: exactamente 1.
-- Remote proof: verificado.
-- Entrypoint `index-backend-dev.html`: verificado.
-- Deployment: Hosting-only sobre `cxorbia-tya-dev-260729-c4`.
+- exactamente 1 deploy Hosting-only;
+- remote proof y entrypoint verificados;
 - Firestore/Auth/Storage/Rules/Functions/HR/import/Make/Gemini/payment/merge/production writes: 0.
 
-Visual URL:
+## 7. Gate 6 — validación visual: P0 PROVEN
 
-`https://cxorbia-tya-dev-260729-c4.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&c4visual=fabba5c76bb40f5105f8e10dd54be63e9b3eb783`
+Paula aportó evidencia visual reproducible del runtime publicado:
 
-La autorización one-shot quedó consumida y congelada: workflow en HOLD y request con `hostingDeployExecutions=0`.
+- `Fuente: localStorage/demo`;
+- `Auth: pendiente`;
+- `Proyecto: proyecto retail`;
+- `Proyectos: 3 · Visitas: 108 · Shoppers: 18 · Postulaciones: 48`;
+- badge `Demo comercial · datos ficticios`;
+- proyectos Retail/Banca/Restaurantes y KPIs demo visibles.
+
+Esto viola directamente `fallbackToMockOnReadError=false`, `fallbackToLocalStorageOnEmpty=false` y `emptyBackendMustRenderAsEmpty=true`.
+
+P0 activo: `P0-C4-VIS-01 — FORBIDDEN_DEMO_FALLBACK_ON_AUTH_PENDING`.
+
+Causa raíz localizada en backend: preview Auth queda habilitado lógicamente, pero el principal temporal fue correctamente eliminado después del protected smoke; `backend-firebase.js` ante credencial ausente marca y conserva `localStorage/demo` en lugar de fail-closed vacío.
 
 ## 8. Seguridad actual
 
@@ -122,12 +100,12 @@ La autorización one-shot quedó consumida y congelada: workflow en HOLD y reque
 
 ## 9. Siguiente acción exacta
 
-`VALIDACIÓN VISUAL PAULA → si P0 reproducible, corrección focalizada únicamente → si no P0, FREEZE CORTE 4 → retirar IAM temporal elevado y dejar runner en Viewer → CORTE 5 materialización DEV`.
+`AUTORIZACIÓN EXPRESA DE CORRECCIÓN P0-C4-VIS-01 → PATCH BACKEND FOCALIZADO → GATES → HOSTING DEV CONTROLADO → REVALIDACIÓN VISUAL → FREEZE CORTE 4 SI PASS → RETIRAR IAM TEMPORAL A VIEWER → CORTE 5`.
 
-No se requiere PowerShell, nueva candidata, ZIP ni datos TyA para la validación visual.
+No se requiere PowerShell, nueva candidata, ZIP ni datos TyA.
 
 ## 10. Claude/prototipo y Academia
 
-- Claude: sin nueva candidata; no tocar backend/contracts/adapters. Solo actuar si la validación visual demuestra P0 localizado.
-- Academia: distinguir Hosting DEV de producción, deployment de runtime, protected smoke y visual humana.
-- Reusable CXOrbia: autorización one-shot, deploy Hosting-only, proof remoto, antiredeploy por `authorizationId` y freeze posterior.
+- Claude: sin nueva candidata; no tocar módulos UI ni backend/contracts/adapters.
+- Academia: registrar diferencia entre protected smoke PASS, Hosting proof PASS y runtime visual con fallback prohibido.
+- Reusable CXOrbia: `AUTH NO DISPONIBLE + BACKEND REAL SELECCIONADO => FAIL-CLOSED`, nunca demo/localStorage silencioso.
