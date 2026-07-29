@@ -3,22 +3,49 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-29  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_VIS01_VIS02_VIS02B_TECHNICALLY_RESOLVED__FINAL_REMOTE_DIAGNOSTIC_PASS__HUMAN_VISUAL_PENDING`
+**Estado vivo:** `CORTE3_FROZEN__ARCHITECTURE_CORRECTED__CANONICAL_BACKEND_READONLY_INVENTORY_ACTIVE`
 
 ## 1. Objetivo
-Operar TyA/Cinépolis como proyecto configurable con HR/histórico, shoppers, certificaciones, visitas, agenda, cuestionarios, liquidaciones/pagos, multi-tenant, multi-proyecto, roles, Academia y sincronización, sobre base nueva sin conectar/copiar la base vieja.
+Operar TyA/Cinépolis como primer tenant/proyecto configurable de CXOrbia con HR/histórico, shoppers, certificaciones, visitas, agenda, cuestionarios, liquidaciones/pagos, multi-tenant, multi-proyecto, roles, Academia y sincronización.
+
+La “base vieja” que no se conecta/copia es la **plataforma legacy TyA Consultores actualmente operativa y destinada a retiro**. `cxorbia-backend-dev` es el backend DEV nuevo de CXOrbia ya trabajado desde junio y debe reutilizarse según inventario, no excluirse por estar poblado.
 
 ## 2. Secuencia por corte
 `FUENTE → MAPPING/ADAPTER → GATES → BUILD → VALIDACIÓN VISUAL → CORRECCIÓN FOCALIZADA → FREEZE`
 
-Un PASS técnico sin validación humana final no congela un corte.
+Un PASS técnico sin validación humana cuando aplica no congela un corte.
 
 ## 3. Carril de candidatas
 `EXECUTION_LANE_READY → AUDITORÍA DELTA → P0_PROVEN o GO → si GO APPLY_DELTA_DIRECTLY → COMMIT/PUSH → POST-GATES → HOSTING DEV → VALIDACIÓN → FREEZE`
 
 No se sustituye por nueva rama/PR, PowerShell, incoming, nueva candidata ni acción manual de Paula salvo imposibilidad técnica real.
 
-## 4. Cortes cerrados
+## 4. Identidades de arquitectura — lock corregido
+
+### Plataforma legacy TyA Consultores
+- sistema actual a retirar;
+- solo origen de datos útiles y limpios;
+- no copiar código, parches, fixes, dashboard ni arquitectura;
+- refresh pendiente limitado principalmente a shoppers y certificaciones.
+
+### `cxorbia-backend-dev`
+- backend DEV canónico de CXOrbia construido desde junio;
+- TyA es el primer tenant real;
+- contiene trabajo previo que debe reutilizarse;
+- inventario read-only antes de cualquier nueva materialización.
+
+### `cxorbia-tya-dev-260729-c4`
+- sandbox aislado de pruebas creado por una interpretación incorrecta;
+- no destino de materialización Phase A;
+- preservar únicamente fixes/gates útiles descubiertos allí.
+
+### Hosting público TyA
+- conservar la URL pública que ya usan los shoppers;
+- en Corte 8 se reemplaza la app legacy por CXOrbia después de smoke/rollback/autorización;
+- verificar identidad técnica del Hosting antes del cutover, sin asumirla.
+
+## 5. Cortes cerrados
+
 ### M1 / Corte 1 / Corte 2A
 `FROZEN/APROBADO`.
 
@@ -26,106 +53,86 @@ No se sustituye por nueva rama/PR, PowerShell, incoming, nueva candidata ni acci
 `FROZEN_ACTIVE_BASELINE`.
 
 - Baseline `CXORBIA-TYA-CORTE3-V182-20260729`.
-- V182 empalmada; no V183/R33.
+- V182 empalmada.
 - R26–R32: 135/135 PASS.
 - HR remota, Hosting DEV y smoke de pagos: PASS.
 - Mayo: 44 pagadas / 0 pendientes / 2 reviews / CxP Q0-L0.
 - Junio: 2 pagadas / 42 pendientes / Q451-L0.
 - Pagos/lotes ejecutados por CXOrbia: 0.
-- P1/P2 de reportes/copy permanecen backlog transversal y no reabren Corte 3.
+- P1/P2 PDF/Excel/reportKit/copy permanecen backlog transversal.
 
-## 5. Corte activo — Corte 4
-Objetivo: `CX.data READ-ONLY → FIREBASE NUEVO Y VACÍO → MISMA INTERFAZ → CERO WRITES`.
+## 6. Corte 4 — conexión `CX.data` read-only / corrección de arquitectura
 
-Estado: `VIS01_VIS02_VIS02B_TECHNICALLY_RESOLVED__FINAL_REMOTE_DIAGNOSTIC_PASS__HUMAN_VISUAL_PENDING`.
+### 6.1 Objetivo correcto
+Demostrar `CX.data` read-only y fail-closed **sobre el backend canónico de CXOrbia**, reutilizando `cxorbia-backend-dev`, sin duplicar materialización.
 
-### 5.1 Hardening
-- contrato read-only;
-- backend desactivado por defecto;
-- Preview DEV solo lectura;
-- guard `CX.data` preserva interfaz y bloquea persistencia/acciones;
-- backend vacío sin fallback demo;
-- errores/read/Auth fail-closed;
-- `fallbackUsed=false` observable desde primer estado;
-- Rules read-only desplegadas únicamente en Firebase DEV nuevo.
+### 6.2 Sandbox Corte 4 — aprendizaje técnico preservado
+En `cxorbia-tya-dev-260729-c4` quedaron probados:
+- VIS-01: no fallback demo/localStorage;
+- VIS-02: backend vacío first-class, null-safety y role-switch limpio;
+- VIS-02B: eliminación de script huérfano + gate de integridad;
+- remoto: 0 pageerrors y 0/0/0/0;
+- visual humana: Admin vacío y Shopper vacío renderizan correctamente.
 
-### 5.2 Firebase nuevo
-- projectId `cxorbia-tya-dev-260729-c4`;
-- display name `CXOrbia TyA DEV Clean Corte 4`;
-- Firestore `us-central1`;
-- base anterior `cxorbia-backend-dev` excluida: no conectar, copiar ni reutilizar.
+El sandbox **no se promueve a destino de datos**.
 
-### 5.3 Gates provider/smoke — PASS
-- identidad nueva y vacío integral: PASS;
-- Web App, Firestore, Rules, Auth config: PASS;
-- protected smoke `source=firestore`, `empty=true`, `fallbackUsed=false`, `readOnly=true`, writes=0, cleanup completo.
+### 6.3 Gate activo — inventario canónico read-only
+Herramienta: `tools/qa/cxorbia-canonical-backend-readonly-inventory.mjs`.
 
-### 5.4 P0-C4-VIS-01 — CORREGIDO
-Visual inicial mostró fallback prohibido a demo/localStorage. Fix backend/core revalidado; visual humana posterior confirmó Firestore activo, sin fixtures demo y conteos 0/0/0/0.
+Debe comprobar, sin valores sensibles ni provider writes:
+- projectId exacto `cxorbia-backend-dev`;
+- Auth total/claims presentes;
+- árbol de colecciones y conteos;
+- ubicación real de tenant/proyectos/shoppers/certificaciones/visitas/finanzas;
+- qué ya está materializado y qué falta.
 
-### 5.5 P0-C4-VIS-02 — CORREGIDO
-Visual humana mostró Admin blanco y shell Shopper residual con backend vacío.
+Primer barrido: Auth users=17 y raíz `tenants`=1; se amplió a subcolecciones antes de cerrar conteos.
 
-Fix focalizado sin `app/modules`:
-- `app/core/backend-corte4-empty-shell-guard.js`;
-- backend vacío tratado como first-class state;
-- null-safety proyecto/período;
-- limpieza de rail/view/crumb entre roles.
+### 6.4 Cierre Corte 4
+Corte 4 se cierra cuando:
+1. inventario recursivo canónico PASS;
+2. se confirma que no habrá re-migración innecesaria;
+3. la configuración/backend apunta de nuevo al camino canónico sin reintroducir demo ni los P0 corregidos;
+4. smoke read-only sobre `cxorbia-backend-dev` pasa;
+5. documentación queda reconciliada.
 
-Gate local Admin vacío → logout → Shopper vacío → logout → Admin vacío: PASS.
+No requiere volver a poblar un Firebase vacío.
 
-### 5.6 P0-C4-VIS-02B — CORREGIDO
-El primer deploy VIS-02 reveló `Unexpected token '<'`. Causa raíz: `index-backend-dev.html` referenciaba `adapters/tya-phase-a-source-safe-dev-adapter.js`, archivo inexistente; el rewrite de Hosting devolvía HTML 200 para esa ruta `.js`.
+## 7. Corte 5 — materialización DEV incremental, no reconstrucción
+Solo después del inventario:
+- reutilizar datos ya existentes;
+- materializar únicamente faltantes reales;
+- dry-run/idempotencia/trazabilidad;
+- refresh legacy limitado a shoppers/certificaciones nuevas o actualizadas;
+- HR sigue como fuente principal de visitas/operación;
+- dedupe por llave estable y conflictos a revisión;
+- datos sensibles protegidos.
 
-Corrección:
-- referencia huérfana eliminada;
-- no se creó adapter ficticio;
-- gate reusable `tools/qa/cxorbia-corte4-entrypoint-script-integrity.mjs` PASS.
+## 8. Corte 6 — Auth/RBAC
+Claims por persona, rol y scope; países, proyectos, rutas, acciones, Academia y notificaciones. No importar Auth legacy a ciegas.
 
-### 5.7 Hosting DEV final VIS-02B — AUTORIZACIÓN CONSUMIDA
-Autorización:
-`Autorizo un único Hosting DEV final para revalidación de P0-C4-VIS-02B, sin data writes ni producción`.
+## 9. Corte 7 — sincronización y evidencias
+HR→plataforma, plataforma→HR, no duplicación, reviewQueue, cuestionario configurable, evidencias protegidas y gates Make/Gemini.
 
-- authorizationId `c4-p0-vis02b-final-20260729-01`;
-- deployed source `e9b7441fab4370ba455a77791b79b6e167cd33ac`;
-- `cxorbia/c4p0vis02b-final-deploys1=success`;
-- `cxorbia/c4p0vis02b-final-scripts=success`;
-- exactamente 1 deploy;
-- workflow one-shot convertido a HOLD después de consumir la autorización.
+## 10. Corte 8 — preproducción y producción
+- cortes previos congelados;
+- refresh final delta legacy si aplica;
+- rollback listo;
+- smoke integral;
+- verificar proyecto dueño del Hosting público actual;
+- desplegar CXOrbia sobre la URL pública que ya usan los shoppers;
+- autorización específica;
+- no cambiar URL pública por rutina.
 
-### 5.8 Diagnóstico remoto final — PASS
-El status agregado del runner final quedó `error`; no se declaró PASS por inferencia. Se ejecutó diagnóstico remoto independiente read-only con providerWrites=0.
+## 11. Claude/prototipo
+No nueva candidata por la corrección de arquitectura. Preservar fixes core/entrypoint descubiertos en sandbox. No tocar `app/modules` por este bloque.
 
-- `cxorbia/c4p0vis02b-diag-summary=success`;
-- `cxorbia/c4p0vis02b-diag-pass=success`;
-- proof del source desplegado: correcto;
-- 0 pageerrors;
-- todos los scripts locales: JavaScript válido;
-- Admin vacío → logout → Shopper vacío → logout → Admin vacío: PASS;
-- sin shell Shopper residual;
-- conteos 0/0/0/0 y sin demo/localStorage.
+## 12. Academia
+Documentar:
+- diferencia entre legacy/origen, backend canónico y sandbox;
+- migración incremental/delta;
+- cutover con rollback y conservación de URL pública;
+- patrones fail-closed, empty-backend, role-switch y asset-integrity.
 
-### 5.9 Gate restante
-1. validación visual humana final de Paula sobre la URL VIS-02B;
-2. si no existe P0 reproducible: freeze Corte 4;
-3. retirar IAM temporal elevado y dejar Viewer.
-
-## 6. Cortes siguientes
-- **Corte 5:** materialización DEV con dry-run/idempotencia.
-- **Corte 6:** Auth/RBAC completo.
-- **Corte 7:** sincronización, evidencias y gates Make/Gemini.
-- **Corte 8:** preproducción/producción con autorización.
-
-Corte 5 inicia inmediatamente después del freeze de Corte 4.
-
-## 7. Claude/prototipo
-Corte 3 está congelado. No preparar nueva candidata por VIS-01/VIS-02/VIS-02B. Preservar fix core/entrypoint y no tocar `app/modules` para estos P0.
-
-## 8. Academia
-- backend conectado + dataset vacío es estado válido;
-- role-switch debe limpiar DOM previo;
-- rewrite Hosting puede convertir asset faltante en HTML 200;
-- gate de integridad de entrypoint debe validar existencia + tipo de contenido, no solo status HTTP.
-
-## 9. Estado seguro
-Sin producción, merge, Firestore document writes, Auth users permanentes, Storage/HR writes, imports, pagos/lotes reales, Make ni Gemini live. Hosting final VIS-02B fue exactamente 1/1 y la autorización quedó consumida. Gate vivo único: validación visual humana final.
+## 13. Estado seguro
+Sin producción, merge, nuevos Hosting, Firestore/Auth/Storage/HR writes, imports, pagos/lotes, Make ni Gemini live durante inventario/reconciliación.
