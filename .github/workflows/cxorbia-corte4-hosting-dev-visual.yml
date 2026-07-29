@@ -5,6 +5,7 @@ on:
     branches:
       - docs-tya-v6-v71-audit
     paths:
+      - '.github/workflows/cxorbia-corte4-hosting-dev-visual.yml'
       - '.github/cxorbia-firebase-requests/corte4-hosting-dev-visual.json'
 
 permissions:
@@ -18,6 +19,7 @@ concurrency:
 
 env:
   PROJECT_ID: cxorbia-tya-dev-260729-c4
+  AUTHORIZATION_ID: c4-hosting-visual-20260729-01
   CXORBIA_REQUEST_PATH: .github/cxorbia-firebase-requests/corte4-hosting-dev-visual.json
   CXORBIA_OUT_DIR: .tmp/corte4-hosting-dev
   CXORBIA_PRIVATE_DIR: .tmp/corte4-hosting-private
@@ -45,22 +47,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const r=JSON.parse(fs.readFileSync(process.env.CXORBIA_REQUEST_PATH,'utf8'));
-          const exact={
-            schemaVersion:'cxorbia.corte4-hosting-dev-visual.v1',
-            enabled:true,
-            authorizationSource:'current_conversation',
-            authorizationText:'Autorizo Hosting DEV de Corte 4 para validación visual.',
-            repository:'paulaosoriof86/demoCXOrbia',
-            branch:'docs-tya-v6-v71-audit',
-            pullRequest:7,
-            targetProjectId:'cxorbia-tya-dev-260729-c4',
-            targetDisplayName:'CXOrbia TyA DEV Clean Corte 4',
-            webAppDisplayName:'CXOrbia TyA DEV Corte 4',
-            mode:'HOSTING_DEV_VISUAL_READONLY_BUILD',
-            hostingOnly:true,
-            production:false,
-            merge:false
-          };
+          const exact={schemaVersion:'cxorbia.corte4-hosting-dev-visual.v1',enabled:true,authorizationSource:'current_conversation',authorizationText:'Autorizo Hosting DEV de Corte 4 para validación visual.',authorizationId:'c4-hosting-visual-20260729-01',repository:'paulaosoriof86/demoCXOrbia',branch:'docs-tya-v6-v71-audit',pullRequest:7,targetProjectId:'cxorbia-tya-dev-260729-c4',targetDisplayName:'CXOrbia TyA DEV Clean Corte 4',webAppDisplayName:'CXOrbia TyA DEV Corte 4',mode:'HOSTING_DEV_VISUAL_READONLY_BUILD',hostingOnly:true,production:false,merge:false};
           for(const [k,v] of Object.entries(exact)) if(r[k]!==v) throw new Error(`Request mismatch: ${k}`);
           if(r.allowedProviderWrites?.hostingDeployExecutions!==1) throw new Error('Exactly one Hosting deploy execution must be authorized');
           for(const k of ['firestoreDocuments','authUsers','authConfig','storage','rules','functions','imports','hr','make','gemini','payments']) if(Number(r.allowedProviderWrites?.[k]||0)!==0) throw new Error(`Forbidden provider write: ${k}`);
@@ -74,9 +61,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$CXORBIA_PRIVATE_DIR" "$CXORBIA_OUT_DIR"
           node <<'NODE'
-          const fs=require('fs');
-          const raw=process.env.EXISTING_DEV_JSON||'';
-          let p=null;try{p=JSON.parse(raw);}catch{}
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw);}catch{}
           if(!(p&&p.type==='service_account'&&p.client_email&&p.private_key&&p.token_uri)) process.exit(2);
           fs.writeFileSync(process.env.CXORBIA_PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
           NODE
@@ -87,36 +72,30 @@ jobs:
           set -euo pipefail
           node "$PREPARE_SCRIPT"
           node <<'NODE'
-          const fs=require('fs');
-          const r=JSON.parse(fs.readFileSync(process.env.CXORBIA_OUT_DIR+'/preflight.source-safe.json','utf8'));
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.CXORBIA_OUT_DIR+'/preflight.source-safe.json','utf8'));
           if(r.decision!=='PASS_C4_HOSTING_DEV_PREFLIGHT_READY_FOR_ONE_DEPLOY') throw new Error(r.decision);
-          if(r.provider.firestoreEmpty!==true||r.provider.authUsers!==0||r.provider.emailPasswordEnabled!==false||r.provider.rulesVerified!==true||r.build.prepared!==true) throw new Error('Preflight invariant failed');
+          if(r.authorization.id!==process.env.AUTHORIZATION_ID||r.provider.firestoreEmpty!==true||r.provider.authUsers!==0||r.provider.emailPasswordEnabled!==false||r.provider.rulesVerified!==true||r.build.prepared!==true) throw new Error('Preflight invariant failed');
           console.log('Corte 4 Hosting DEV preflight PASS.');
           NODE
 
-      - name: Enforce one actual deploy for this source commit
+      - name: Enforce one actual deploy for this authorization
         id: deploy_guard
         run: |
           set -euo pipefail
-          URL="https://${PROJECT_ID}.web.app/corte4-hosting-proof.json?source=${GITHUB_SHA}"
+          URL="https://${PROJECT_ID}.web.app/corte4-hosting-proof.json?authorization=${AUTHORIZATION_ID}"
           NEED=true
           if curl -fsS --max-time 15 "$URL" -o "$CXORBIA_OUT_DIR/existing-proof.json"; then
-            if node -e "const p=require('./$CXORBIA_OUT_DIR/existing-proof.json'); process.exit(p.sourceCommit===process.env.GITHUB_SHA&&p.firebaseProjectId===process.env.PROJECT_ID?0:1)"; then
+            if node -e "const p=require('./$CXORBIA_OUT_DIR/existing-proof.json'); process.exit(p.authorizationId===process.env.AUTHORIZATION_ID&&p.firebaseProjectId===process.env.PROJECT_ID?0:1)"; then
               NEED=false
             fi
           fi
           echo "needed=$NEED" >> "$GITHUB_OUTPUT"
-          echo "DEPLOY_NEEDED=$NEED" >> "$GITHUB_ENV"
 
       - name: Execute the single authorized Hosting-only deploy
         if: steps.deploy_guard.outputs.needed == 'true'
         run: |
           set -euo pipefail
-          npx -y firebase-tools@14.12.1 deploy \
-            --only hosting \
-            --project "$PROJECT_ID" \
-            --config "$CXORBIA_OUT_DIR/firebase.corte4-hosting.json" \
-            --non-interactive
+          npx -y firebase-tools@14.12.1 deploy --only hosting --project "$PROJECT_ID" --config "$CXORBIA_OUT_DIR/firebase.corte4-hosting.json" --non-interactive
           echo '1' > "$CXORBIA_OUT_DIR/deploy-executions.txt"
 
       - name: Record idempotent no-redeploy path
@@ -126,21 +105,19 @@ jobs:
       - name: Verify remote Hosting proof and entrypoint
         run: |
           set -euo pipefail
-          PROOF_URL="https://${PROJECT_ID}.web.app/corte4-hosting-proof.json?source=${GITHUB_SHA}"
-          ENTRY_URL="https://${PROJECT_ID}.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&c4visual=${GITHUB_SHA}"
+          PROOF_URL="https://${PROJECT_ID}.web.app/corte4-hosting-proof.json?authorization=${AUTHORIZATION_ID}"
           curl -fsS --retry 8 --retry-delay 2 --max-time 20 "$PROOF_URL" -o "$CXORBIA_OUT_DIR/remote-proof.json"
+          DEPLOYED_SHA=$(node -p "require('./$CXORBIA_OUT_DIR/remote-proof.json').sourceCommit")
+          ENTRY_URL="https://${PROJECT_ID}.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&c4visual=${DEPLOYED_SHA}"
           curl -fsS --retry 8 --retry-delay 2 --max-time 20 "$ENTRY_URL" -o "$CXORBIA_OUT_DIR/remote-entry.html"
           node <<'NODE'
-          const fs=require('fs');
-          const p=JSON.parse(fs.readFileSync(process.env.CXORBIA_OUT_DIR+'/remote-proof.json','utf8'));
-          const h=fs.readFileSync(process.env.CXORBIA_OUT_DIR+'/remote-entry.html','utf8');
-          const executions=Number(fs.readFileSync(process.env.CXORBIA_OUT_DIR+'/deploy-executions.txt','utf8').trim());
-          if(p.environment!=='DEV'||p.cut!==4||p.mode!=='read-only-visual'||p.firebaseProjectId!==process.env.PROJECT_ID||p.sourceCommit!==process.env.GITHUB_SHA||p.hostingOnly!==true||p.readOnly!==true||p.writeMode!=='disabled'||p.production!==false) throw new Error('Remote proof mismatch');
+          const fs=require('fs');const p=JSON.parse(fs.readFileSync(process.env.CXORBIA_OUT_DIR+'/remote-proof.json','utf8'));const h=fs.readFileSync(process.env.CXORBIA_OUT_DIR+'/remote-entry.html','utf8');const executions=Number(fs.readFileSync(process.env.CXORBIA_OUT_DIR+'/deploy-executions.txt','utf8').trim());
+          if(p.authorizationId!==process.env.AUTHORIZATION_ID||p.environment!=='DEV'||p.cut!==4||p.mode!=='read-only-visual'||p.firebaseProjectId!==process.env.PROJECT_ID||p.protectedSmokeCommit!=='b698a925f5f6a7c8405afb7fb54a9f4c551e8498'||p.hostingOnly!==true||p.readOnly!==true||p.writeMode!=='disabled'||p.production!==false) throw new Error('Remote proof mismatch');
           if(!h.includes('CXOrbia · Preview Backend DEV')||!h.includes('backend-cxdata-readonly-corte4.js')) throw new Error('Remote entrypoint mismatch');
           if(![0,1].includes(executions)) throw new Error('Invalid deploy execution count');
-          const report={schemaVersion:'1.0.0',decision:'PASS_C4_HOSTING_DEV_DEPLOYED_FOR_VISUAL',projectId:process.env.PROJECT_ID,sourceCommit:process.env.GITHUB_SHA,url:`https://${process.env.PROJECT_ID}.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&c4visual=${process.env.GITHUB_SHA}`,remoteProof:true,entrypointVerified:true,deployExecutionsThisRun:executions,hostingOnly:true,firestoreDocumentWrites:0,authUserWrites:0,authConfigWrites:0,storageWrites:0,rulesDeploys:0,functionsDeploys:0,imports:0,hrWrites:0,make:0,gemini:0,payments:0,merge:false,production:false};
-          fs.writeFileSync(process.env.CXORBIA_OUT_DIR+'/hosting-result.source-safe.json',JSON.stringify(report,null,2)+'\n','utf8');
-          console.log(JSON.stringify(report,null,2));
+          const url=`https://${process.env.PROJECT_ID}.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&c4visual=${p.sourceCommit}`;
+          const report={schemaVersion:'1.1.0',decision:'PASS_C4_HOSTING_DEV_DEPLOYED_FOR_VISUAL',authorizationId:p.authorizationId,projectId:process.env.PROJECT_ID,deployedSourceCommit:p.sourceCommit,triggerCommit:process.env.GITHUB_SHA,url,remoteProof:true,entrypointVerified:true,deployExecutionsThisRun:executions,hostingOnly:true,firestoreDocumentWrites:0,authUserWrites:0,authConfigWrites:0,storageWrites:0,rulesDeploys:0,functionsDeploys:0,imports:0,hrWrites:0,make:0,gemini:0,payments:0,merge:false,production:false};
+          fs.writeFileSync(process.env.CXORBIA_OUT_DIR+'/hosting-result.source-safe.json',JSON.stringify(report,null,2)+'\n','utf8');console.log(JSON.stringify(report,null,2));
           NODE
 
       - name: Publish sanitized status and PR evidence
@@ -150,25 +127,17 @@ jobs:
         run: |
           set +e
           RESULT="$CXORBIA_OUT_DIR/hosting-result.source-safe.json"
-          if [ -f "$RESULT" ]; then
-            STATE=success
-            DECISION=PASS_C4_HOSTING_DEV_DEPLOYED_FOR_VISUAL
-            EXEC=$(node -p "require('./$RESULT').deployExecutionsThisRun")
-            URL=$(node -p "require('./$RESULT').url")
-          else
-            STATE=error
-            DECISION=HOLD_C4_HOSTING_DEV_NOT_VERIFIED
-            EXEC=-1
-            URL="https://${PROJECT_ID}.web.app/"
-          fi
+          if [ -f "$RESULT" ]; then STATE=success; DECISION=PASS_C4_HOSTING_DEV_DEPLOYED_FOR_VISUAL; EXEC=$(node -p "require('./$RESULT').deployExecutionsThisRun"); URL=$(node -p "require('./$RESULT').url"); DEPLOYED=$(node -p "require('./$RESULT').deployedSourceCommit"); else STATE=error; DECISION=HOLD_C4_HOSTING_DEV_NOT_VERIFIED; EXEC=-1; URL="https://${PROJECT_ID}.web.app/"; DEPLOYED=UNKNOWN; fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/corte4-hosting-dev-visual' -f description="$DECISION" >/dev/null 2>&1
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c4hosting-deploys${EXEC}" -f description='Hosting-only deployment execution count for this run' >/dev/null 2>&1
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c4hosting-deploys${EXEC}" -f description='Hosting-only deployment executions in this run' >/dev/null 2>&1
           BODY=$(cat <<EOF
           ## Corte 4 · Hosting DEV para validación visual
 
           - Decision: \`$DECISION\`
+          - Authorization: \`$AUTHORIZATION_ID\`
           - Firebase DEV: \`$PROJECT_ID\`
-          - Source commit: \`$GITHUB_SHA\`
+          - Deployed source commit: \`$DEPLOYED\`
+          - Trigger commit: \`$GITHUB_SHA\`
           - Hosting deploy executions in this run: \`$EXEC\`
           - Visual URL: $URL
           - Firestore document writes: \`0\`
