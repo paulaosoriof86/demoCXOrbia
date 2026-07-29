@@ -113,8 +113,8 @@ jobs:
           const fs=require('fs'); const r=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
           const s=r.summary||{};
           const pass=r.decision==='BOOTSTRAP_PREFLIGHT_READY_FOR_AUTHORIZED_WRITES_C4';
-          const decision=String(r.decision||'UNKNOWN').replace(/[^A-Z0-9_.-]/gi,'_').slice(0,64);
-          const location=String(r.target?.locationId||'unset').replace(/[^a-z0-9_-]/gi,'_').slice(0,24);
+          const decision=String(r.decision||'UNKNOWN').replace(/[^A-Z0-9_.-]/gi,'_').slice(0,52);
+          const location=String(r.target?.locationId||'unset').replace(/[^a-z0-9_-]/gi,'_').slice(0,20);
           console.log(`STATE=${pass?'success':'error'}`);
           console.log(`DECISION=${decision}`);
           console.log(`READY=${Boolean(s.providerWriteReady)}`);
@@ -123,6 +123,12 @@ jobs:
           console.log(`LOCATION=${location}`);
           NODE
           source .tmp/corte4-bootstrap-preflight/status.env
+          diag="cxorbia/c4boot-${DECISION}-m${MISSING}-d${DISABLED}-loc${LOCATION}"
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" \
+            -f context="$diag" \
+            -f description="Sanitized Corte 4 bootstrap preflight diagnosis" >/dev/null
           gh api --method POST -H 'Accept: application/vnd.github+json' \
             "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
             -f state="$STATE" \
