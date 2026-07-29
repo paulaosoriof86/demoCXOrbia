@@ -1,0 +1,449 @@
+{
+  "schemaVersion": "cxorbia.live-hr-current-reconcile.v1",
+  "generatedAt": "2026-07-29T23:28:05.932Z",
+  "sourceGeneratedAt": "2026-07-29T23:28:03.240Z",
+  "accessMode": "public_gviz_csv_cache_busted",
+  "cacheBustApplied": true,
+  "counts": {
+    "periods": 15,
+    "tabs": 30,
+    "visits": 684,
+    "shoppers": 236,
+    "byStatus": {
+      "submitida": 599,
+      "cuestionario": 75,
+      "agendada": 4,
+      "realizada": 3,
+      "fuera_rango": 3
+    },
+    "byCountry": {
+      "GT": 510,
+      "HN": 174
+    },
+    "assigned": 684,
+    "unassigned": 0,
+    "scheduled": 683,
+    "realized": 677,
+    "questionnaireCompleted": 674,
+    "submitted": 599,
+    "liquidationCandidatesPendingFinancialMatch": 599,
+    "liquidationConfirmed": 0,
+    "paymentConfirmed": 0,
+    "reviewRequired": 0
+  },
+  "periods": [
+    {
+      "key": "2025-06",
+      "visits": 44,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    {
+      "key": "2025-07",
+      "visits": 44,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    {
+      "key": "2025-08",
+      "visits": 44,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    {
+      "key": "2025-09",
+      "visits": 44,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    {
+      "key": "2025-10",
+      "visits": 44,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    {
+      "key": "2025-11",
+      "visits": 44,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    {
+      "key": "2025-12",
+      "visits": 44,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    {
+      "key": "2026-01",
+      "visits": 44,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    {
+      "key": "2026-02",
+      "visits": 44,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    {
+      "key": "2026-03",
+      "visits": 44,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    {
+      "key": "2026-04",
+      "visits": 44,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    {
+      "key": "2026-05",
+      "visits": 44,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    {
+      "key": "2026-06",
+      "visits": 44,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    {
+      "key": "2026-07",
+      "visits": 44,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    {
+      "key": "2026-08",
+      "visits": 68,
+      "byCountry": {
+        "GT": 34,
+        "HN": 34
+      }
+    }
+  ],
+  "tabs": [
+    {
+      "title": "JUNIO 25",
+      "country": "GT",
+      "periodKey": "2025-06",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "JUNIO 25 HN",
+      "country": "HN",
+      "periodKey": "2025-06",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "JULIO 25",
+      "country": "GT",
+      "periodKey": "2025-07",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "JULIO 25 HN",
+      "country": "HN",
+      "periodKey": "2025-07",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "AGOSTO 25",
+      "country": "GT",
+      "periodKey": "2025-08",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "AGOSTO 25 HN",
+      "country": "HN",
+      "periodKey": "2025-08",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "SEPTIEMBRE 25",
+      "country": "GT",
+      "periodKey": "2025-09",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "SEPTIEMBRE 25 HN",
+      "country": "HN",
+      "periodKey": "2025-09",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "OCTUBRE 25",
+      "country": "GT",
+      "periodKey": "2025-10",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "OCTUBRE 25 HN",
+      "country": "HN",
+      "periodKey": "2025-10",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "NOVIEMBRE 25",
+      "country": "GT",
+      "periodKey": "2025-11",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "NOVIEMBRE 25 HN",
+      "country": "HN",
+      "periodKey": "2025-11",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "DICIEMBRE 25",
+      "country": "GT",
+      "periodKey": "2025-12",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "DICIEMBRE 25 HN",
+      "country": "HN",
+      "periodKey": "2025-12",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "ENERO 26",
+      "country": "GT",
+      "periodKey": "2026-01",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "ENERO 26 HN",
+      "country": "HN",
+      "periodKey": "2026-01",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "FEBRERO 26",
+      "country": "GT",
+      "periodKey": "2026-02",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "FEBRERO 26 HN",
+      "country": "HN",
+      "periodKey": "2026-02",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "MARZO 26",
+      "country": "GT",
+      "periodKey": "2026-03",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "MARZO 26 HN",
+      "country": "HN",
+      "periodKey": "2026-03",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "ABRIL 26",
+      "country": "GT",
+      "periodKey": "2026-04",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "ABRIL 26 HN",
+      "country": "HN",
+      "periodKey": "2026-04",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "MAYO 26",
+      "country": "GT",
+      "periodKey": "2026-05",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "MAYO 26 HN",
+      "country": "HN",
+      "periodKey": "2026-05",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "JUNIO 26",
+      "country": "GT",
+      "periodKey": "2026-06",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "JUNIO 26 HN",
+      "country": "HN",
+      "periodKey": "2026-06",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "JULIO 26",
+      "country": "GT",
+      "periodKey": "2026-07",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "JULIO 26 HN",
+      "country": "HN",
+      "periodKey": "2026-07",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "AGOSTO 26",
+      "country": "GT",
+      "periodKey": "2026-08",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    {
+      "title": "AGOSTO 26 HN",
+      "country": "HN",
+      "periodKey": "2026-08",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    }
+  ],
+  "focus": {
+    "june2026HN": {
+      "title": "JUNIO 26 HN",
+      "country": "HN",
+      "periodKey": "2026-06",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    "july2026GT": {
+      "title": "JULIO 26",
+      "country": "GT",
+      "periodKey": "2026-07",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    "july2026HN": {
+      "title": "JULIO 26 HN",
+      "country": "HN",
+      "periodKey": "2026-07",
+      "rows": 10,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    "august2026GT": {
+      "title": "AGOSTO 26",
+      "country": "GT",
+      "periodKey": "2026-08",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    },
+    "august2026HN": {
+      "title": "AGOSTO 26 HN",
+      "country": "HN",
+      "periodKey": "2026-08",
+      "rows": 34,
+      "headerRow": 1,
+      "headerVariant": "full_identity"
+    }
+  },
+  "safeState": {
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hostingDeploys": 0,
+    "production": false,
+    "merge": false,
+    "pii": false
+  }
+}
