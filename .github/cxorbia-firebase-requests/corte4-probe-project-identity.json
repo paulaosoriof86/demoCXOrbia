@@ -1,10 +1,10 @@
 {
   "schemaVersion": "cxorbia.firebase-project-identity-probe-request.v1",
-  "requestId": "corte4-probe-project-identity-20260729-01",
+  "requestId": "corte4-probe-project-identity-20260729-02",
   "enabled": true,
   "issuedAt": "2026-07-29",
   "authorizationSource": "current_conversation",
-  "authorizationText": "Continúa",
+  "authorizationText": "Proyecto Firebase creado manualmente y evidenciado por Paula; verificar identidad en modo read-only",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
