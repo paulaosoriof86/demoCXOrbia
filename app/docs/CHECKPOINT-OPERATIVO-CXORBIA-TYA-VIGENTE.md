@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-29  
-**Estado:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_READONLY_STATIC_PASS_PROVIDER_IAM_BLOCKED_NO_PRODUCTION`
+**Estado:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_NEW_FIREBASE_CREATED_VISUALLY__IAM_READ_ACCESS_PENDING_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -19,7 +19,6 @@
 - V182 empalmada; no V183/R33.
 - R26–R32: 135/135 PASS.
 - R24, HR remota, Hosting DEV y smoke de pagos: PASS.
-- Run `30416875149`, job `90468374816`: SUCCESS.
 - Mayo: 44 pagadas / 0 pendientes / 42 exactas / 2 reviews / CxP Q0-L0.
 - Junio: 2 pagadas / 42 pendientes / Q451-L0.
 - Pagos y lotes ejecutados por CXOrbia: 0.
@@ -41,14 +40,18 @@ Decisión vinculante:
 - no reutilizarla;
 - no retargetear `.firebaserc` antes de verificar una identidad nueva.
 
-## 5. Candidato nuevo
+## 5. Firebase nuevo creado por Paula
 
-- Project ID: `cxorbia-tya-dev-260729-c4`.
-- Display name: `CXOrbia TyA DEV Clean Corte 4`.
-- Reutilización de base existente: false.
-- Conexión/copia legacy: false.
-- Únicos provider writes autorizados en la solicitud: crear proyecto y agregar Firebase.
-- Billing, Auth, Firestore, Storage, Rules, Hosting, Functions, imports y migración: false.
+Evidencia visual recibida el 2026-07-29:
+
+- Firebase Console abierto en `cxorbia-tya-dev-260729-c4`;
+- nombre visible: `CXOrbia TyA DEV Clean Corte 4`;
+- Project ID visible: `cxorbia-tya-dev-260729-c4`;
+- Project number visible en consola;
+- plan Spark;
+- sección `Tus apps`: `No hay apps en tu proyecto`.
+
+Esta evidencia confirma creación manual del proyecto Firebase correcto y cero apps registradas. No demuestra todavía, por sí sola, vacío integral de Firestore/Auth/Storage; ese gate sigue pendiente de verificación provider read-only.
 
 ## 6. Hardening read-only completado
 
@@ -74,88 +77,86 @@ Decisión vinculante:
 - providerReads=0 / providerWrites=0 / dataWrites=0;
 - activación=false.
 
-## 8. Diagnóstico provider e IAM — bloqueo comprobado
+## 8. Provider/IAM
 
 ### 8.1 Preflight de credenciales
 
-La primera selección fallaba porque elegía el primer secret no vacío aunque su estructura fuera inválida. Se corrigió para evaluar todas las rutas y seleccionar la primera credencial de service account estructuralmente válida.
-
-Resultado comprobado:
-
 - commit `e698734245b793ef645fb6aeb2aef625fc230437`;
-- status `cxorbia/corte4-provider-route-existing_dev_service_account-shape-valid = success`;
-- única ruta válida disponible: `existing_dev_service_account`;
+- única ruta estructuralmente válida: `existing_dev_service_account`;
 - provider calls=0;
 - provider writes=0;
 - secretos expuestos=0.
 
-### 8.2 Probe read-only de identidad
+### 8.2 Probe anterior
 
 - commit `adec9039a202ade1753001e79d6fa2d1ba74d1d8`;
-- status `TARGET_PROJECT_PERMISSION_DENIED_C4`;
-- la service account válida no puede leer/verificar `cxorbia-tya-dev-260729-c4`;
+- decisión `TARGET_PROJECT_PERMISSION_DENIED_C4`;
 - provider writes=0.
 
-Este resultado no prueba existencia ni ausencia del proyecto. Solo prueba falta de permiso de lectura sobre esa identidad.
-
-### 8.3 Creación atómica
-
-Se corrigió el runner para usar OAuth nativo, timeouts acotados y la credencial válida. La solicitud atómica se ejecutó:
+### 8.3 Creación atómica automática anterior
 
 - request `corte4-new-empty-firebase-dev-20260729-04`;
 - commit `581c45c245a2b2ea0629900da0296f96088994f3`;
-- ruta `existing_dev_service_account`;
 - decisión `BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY`;
-- proyecto creado=false;
-- Firebase agregado=false;
-- base existente reutilizada=false;
-- Firestore/Auth/Storage/Rules/Hosting writes=0;
-- producción=false.
+- projectCreated=false;
+- firebaseAdded=false;
+- existingDatabaseReused=false;
+- Firestore/Auth/Storage/Rules/Hosting writes=0.
 
-## 9. Causa raíz y bloqueo real
+Ese bloqueo de creación quedó superado por creación manual de Paula, sin reutilizar el proyecto DEV histórico.
 
-La única credencial válida disponible en GitHub corresponde al proyecto DEV existente y carece del permiso organizacional/proveedor necesario para crear el proyecto Firebase nuevo o verificar el candidato.
+### 8.4 Re-probe posterior a creación manual
+
+- request `corte4-probe-project-identity-20260729-02`;
+- commit `691ec3c0c76ebc45a9d901b82dfb95d08f27daa6`;
+- decisión observable: `TARGET_PROJECT_PERMISSION_DENIED_C4`;
+- la service account existente sigue sin permiso de lectura sobre el proyecto nuevo;
+- provider writes=0.
+
+## 9. Causa raíz vigente
+
+El proyecto nuevo ya existe. El bloqueo actual ya no es `project creation`: es exclusivamente que la service account usada por los runners GitHub no tiene IAM de lectura sobre `cxorbia-tya-dev-260729-c4`.
 
 Estado exacto:
 
-`PROVIDER_IAM_BLOCKED_NEW_PROJECT_NOT_CREATED_NOT_CONNECTED`
+`NEW_FIREBASE_CREATED__RUNNER_IAM_READ_ACCESS_PENDING`
 
-No es un bloqueo del prototipo, `CX.data`, GitHub, rama, PR, gate estático ni código read-only. Es un bloqueo externo de IAM/creación de proyecto.
+No es un bloqueo del prototipo, `CX.data`, GitHub, rama, PR o hardening read-only.
 
-## 10. Qué no se hará
+## 10. Desbloqueo mínimo requerido
+
+Otorgar a la service account existente acceso read-only al proyecto nuevo. El rol básico `Viewer` es suficiente para el gate de lectura general; no se requiere Editor/Owner.
+
+Después:
+
+1. re-probe de identidad;
+2. verificación independiente de vacío;
+3. config web DEV sin secretos;
+4. autorización separada de Rules read-only DEV;
+5. activación solo lectura;
+6. smoke `CX.data` con `source=firestore`, `empty=true`, `fallbackUsed=false`, interfaz preservada y writes=0.
+
+No se requieren PowerShell, ZIP, nueva candidata ni datos TyA.
+
+## 11. Qué no se hará
 
 - no reutilizar `cxorbia-backend-dev`;
 - no conectar una base preexistente;
 - no crear otra rama o PR;
-- no activar Rules, Auth, Storage o Firestore;
+- no activar Auth/Storage/Firestore writes;
 - no importar datos;
-- no pedir una nueva candidata frontend;
+- no pedir nueva candidata frontend;
 - no reabrir Corte 3.
-
-## 11. Desbloqueo mínimo requerido
-
-Se necesita una identidad con capacidad de:
-
-1. crear un proyecto Google Cloud/Firebase nuevo dentro de la organización/cuenta autorizada;
-2. agregar Firebase al proyecto creado;
-3. permitir lectura de verificación del proyecto.
-
-Opciones válidas:
-
-- corregir/configurar el secret `CXORBIA_GCP_PROJECT_CREATOR_JSON` con una service account dedicada que tenga `resourcemanager.projects.create` y permisos para `addFirebase`; o
-- crear una sola vez el proyecto `cxorbia-tya-dev-260729-c4` desde una identidad administradora y otorgar a la service account existente acceso de lectura para verificarlo.
-
-No se requieren PowerShell, ZIP, nueva candidata ni datos TyA.
 
 ## 12. Claude/prototipo y Academia
 
 - Claude: Corte 3 congelado; no tocar backend/contracts/adapters; no reintroducir persistencia o fallback mock.
-- Academia: documentar diferencia entre credencial estructuralmente válida, permiso IAM, creación de proyecto, agregar Firebase, Rules, lectura y escritura.
+- Academia: documentar diferencia entre creación del proyecto, IAM de lectura, Firebase app registration, Rules, lectura y escritura.
 
 ## 13. Siguiente bloque exacto
 
-`RESOLVER IAM DE PROJECT CREATOR → CREAR/VERIFICAR FIREBASE NUEVO Y VACÍO → CONFIG WEB DEV SIN SECRETOS → AUTORIZAR RULES READ-ONLY → ACTIVAR SOLO LECTURA DEV → SMOKE CX.data`.
+`OTORGAR IAM READ-ONLY A RUNNER → RE-PROBE IDENTIDAD → VERIFICAR VACÍO → CONFIG WEB DEV → RULES READ-ONLY → ACTIVAR SOLO LECTURA DEV → SMOKE CX.data`.
 
 ## 14. Estado seguro
 
-Sin producción, merge, provider activation, Rules deploy, Firestore/Auth/Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live.
+Sin producción, merge, Rules deploy, Firestore/Auth/Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live.
