@@ -1,96 +1,87 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-29  
-**Estado:** `CORTE3_FROZEN__CORTE4_VIS01_FIXED__VIS02_FIXED__VIS02B_FINAL_DEPLOY1_CONSUMED__REMOTE_DIAGNOSTIC_PASS__HUMAN_VISUAL_PENDING__NO_DATA_WRITES`
+**Estado:** `CORTE3_FROZEN__CORTE4_SANDBOX_LEARNINGS_PRESERVED__ARCHITECTURE_CORRECTED__CANONICAL_BACKEND_READONLY_INVENTORY_ACTIVE__NO_DATA_WRITES`
 
 ## 1. Repositorio y seguridad
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
-- Producción, merge, imports, pagos y Firestore/Auth/Storage/HR data writes permanentes: 0.
+- Producción/merge/imports/pagos y provider data writes reales: 0 en este bloque.
 
-## 2. Corte 3 — FROZEN / ACTIVE_BASELINE
+## 2. Corrección de arquitectura vinculante
+La expresión histórica “base anterior/base vieja” corresponde a la **plataforma legacy TyA Consultores actualmente operativa y destinada a retiro**.
+
+No corresponde a `cxorbia-backend-dev`.
+
+Identidades canónicas:
+1. Legacy TyA Consultores: sistema actual a retirar; solo origen de datos útiles limpios.
+2. `cxorbia-backend-dev`: backend DEV de CXOrbia ya construido, con TyA como primer tenant; debe reutilizarse según inventario y no excluirse por estar poblado.
+3. `cxorbia-tya-dev-260729-c4`: sandbox técnico creado por interpretación incorrecta; no destino de materialización.
+4. Hosting público actual de TyA: se conserva como URL de cutover final; la app legacy será reemplazada por CXOrbia cuando Phase A esté lista.
+
+Prevalece `ADDENDUM-CORRECCION-ARQUITECTURA-LEGACY-VS-CXORBIA-BACKEND-DEV-20260729.md`.
+
+## 3. Corte 3 — FROZEN / ACTIVE_BASELINE
 - Baseline `CXORBIA-TYA-CORTE3-V182-20260729`.
-- V182 empalmada; no V183/R33.
-- R26–R32: 135/135 PASS.
-- HR remota, Hosting DEV y smoke pagos Corte 3: PASS.
+- V182 empalmada.
+- 14 periodos / 616 visitas.
+- HR remota y finanzas/pagos técnicamente validados.
 - Mayo: 44 pagadas / 0 pendientes / CxP Q0-L0.
 - Junio: 2 pagadas / 42 pendientes / Q451-L0.
-- Pagos/lotes ejecutados por CXOrbia: 0.
-- P1/P2 PDF/Excel/reportKit/copy siguen backlog y no reabren Corte 3.
+- P1/P2 PDF/Excel/reportKit/copy no reabren Corte 3.
 
-## 3. Corte 4 — objetivo
-`CX.data READ-ONLY → Firebase nuevo y vacío → misma interfaz → cero data writes`.
+## 4. Sandbox Corte 4 — propósito cerrado como validación técnica
+En `cxorbia-tya-dev-260729-c4` se demostraron y corrigieron:
+- VIS-01: fallback prohibido demo/localStorage;
+- VIS-02: Admin blanco/estado vacío y shell residual;
+- VIS-02B: script huérfano reescrito como HTML por Hosting;
+- 0 pageerrors remoto;
+- Admin vacío → logout → Shopper vacío → logout → Admin vacío: PASS automatizado;
+- visual humana mostró Admin vacío y Shopper vacío correctamente;
+- 0/0/0/0 y sin datos demo.
 
-Firebase DEV: `cxorbia-tya-dev-260729-c4`, Firestore `us-central1`, Rules read-only, Auth inicializado, 0 usuarios permanentes, Email/Password deshabilitado.
+Estos fixes se preservan como aprendizaje/core reusable. **No se materializa TyA en este sandbox.**
 
-Protected smoke: PASS con `source=firestore`, `empty=true`, `fallbackUsed=false`, `readOnly=true`, writes=0.
+## 5. Backend canónico recuperado: `cxorbia-backend-dev`
+La continuidad histórica confirma que este proyecto es el backend DEV de CXOrbia usado desde junio para el primer tenant TyA, no la plataforma legacy.
 
-## 4. P0-C4-VIS-01 — corregido
-La visual inicial mostró fallback demo/localStorage. La corrección backend/core eliminó ese fallback; visual posterior confirmó Firestore activo, sin fixtures demo y conteos 0/0/0/0.
+Se inició inventario read-only con herramienta `tools/qa/cxorbia-canonical-backend-readonly-inventory.mjs`.
 
-## 5. P0-C4-VIS-02 — corregido
-La visual humana mostró Admin blanco y shell Shopper residual con backend vacío.
+Primer inventario seguro comprobó:
+- projectId exacto `cxorbia-backend-dev`;
+- Auth users=17;
+- Firestore raíz `tenants` existe con 1 documento;
+- provider writes=0;
+- sin valores sensibles exportados.
 
-Fix focalizado:
-- `app/core/backend-corte4-empty-shell-guard.js`;
-- backend vacío como estado válido;
-- null-safety proyecto/período;
-- limpieza de rail/view/crumb al cambiar/salir de rol;
-- sin tocar `app/modules`.
+El primer barrido solo vio raíz; se amplió el inventario a subcolecciones de manera read-only antes de concluir conteos de proyectos/shoppers/certificaciones/visitas.
 
-Gate local Admin vacío → logout → Shopper vacío → logout → Admin vacío: PASS.
+## 6. Refresh legacy requerido, sin reproceso
+El extract/prompt legacy previo ya no es corte final porque la plataforma TyA continuó operando.
 
-## 6. P0-C4-VIS-02B — corregido
-El primer deploy VIS-02 reveló `Unexpected token '<'` porque `index-backend-dev.html` referenciaba `adapters/tya-phase-a-source-safe-dev-adapter.js`, archivo inexistente; Firebase Hosting devolvía el HTML principal por rewrite global.
+Refresh limitado a:
+- shoppers nuevos/actualizados;
+- certificaciones nuevas presentadas/aprobadas;
+- no volver a tomar visitas como fuente principal si HR ya contiene la verdad operacional;
+- dedupe por llave estable;
+- conflictos a revisión;
+- no copiar fixes/parches/código legacy.
 
-Corrección:
-- referencia huérfana eliminada;
-- no se creó adapter ficticio;
-- gate `tools/qa/cxorbia-corte4-entrypoint-script-integrity.mjs` PASS.
+Para no depender de una fecha exacta, se prefiere export sanitizado de shoppers+certificaciones y diff contra el backend canónico, no reexport completo de toda la plataforma.
 
-## 7. Hosting final VIS-02B — ejecutado exactamente una vez
-Autorización consumida:
-`Autorizo un único Hosting DEV final para revalidación de P0-C4-VIS-02B, sin data writes ni producción`.
+## 7. Ruta real hacia producción
+`LEGACY TYA (delta útil) + HR VIVA → cxorbia-backend-dev / tenant tya → completar Phase A → preprod/smoke/rollback → cutover sobre Hosting público actual`.
 
-- authorizationId `c4-p0-vis02b-final-20260729-01`;
-- deployed source `e9b7441fab4370ba455a77791b79b6e167cd33ac`;
-- `cxorbia/c4p0vis02b-final-deploys1=success`;
-- `cxorbia/c4p0vis02b-final-scripts=success`;
-- Hosting autorizado/ejecutado: 1/1;
-- workflow one-shot convertido a HOLD.
+No crear otro Firebase ni repetir materialización en el sandbox.
 
-El status agregado del runner quedó `error`; no se interpretó como PASS por inferencia.
+## 8. Gate siguiente exacto
+`CERRAR INVENTARIO READ-ONLY RECURSIVO DE cxorbia-backend-dev → MAPEAR QUÉ YA EXISTE/QUÉ FALTA → PREPARAR DELTA LEGACY SHOPPERS+CERTIFICACIONES → CONTINUAR PHASE A DESDE EL FALTANTE REAL`.
 
-## 8. Diagnóstico remoto independiente — PASS
-Se ejecutó un diagnóstico read-only con `providerWrites=0` contra el deployment final.
+No PowerShell para Paula, no nueva candidata, no nueva base, no Hosting/deploy ni producción en este gate.
 
-- `cxorbia/c4p0vis02b-diag-summary=success`;
-- `cxorbia/c4p0vis02b-diag-pass=success`;
-- proof corresponde al source desplegado;
-- 0 pageerrors;
-- todos los scripts locales resuelven como JavaScript;
-- Admin vacío → logout → Shopper vacío → logout → Admin vacío: PASS;
-- sin shell Shopper residual;
-- conteos 0/0/0/0 y sin demo/localStorage.
-
-## 9. URL canónica de validación humana
-`https://cxorbia-tya-dev-260729-c4.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&p0vis02b=e9b7441fab4370ba455a77791b79b6e167cd33ac`
-
-## 10. Seguridad comprobada
-- Firestore document writes: 0.
-- Auth users permanentes: 0.
-- Email/Password: deshabilitado.
-- Auth user/config writes adicionales: 0.
-- Storage/Rules/Functions/imports/HR/Make/Gemini/pagos: 0 writes adicionales.
-- Producción: false.
-- Merge: false.
-
-## 11. Gate real siguiente
-`PAULA VALIDA URL FINAL → SI NO HAY P0, FREEZE CORTE 4 → RETIRAR IAM TEMPORAL A VIEWER → CORTE 5 MATERIALIZACIÓN DEV`.
-
-No PowerShell, nueva candidata, ZIP, nueva base ni materialización anticipada.
-
-## 12. Continuidad
-Prevalece además `CHECKPOINT-OPERATIVO-CXORBIA-TYA-ADDENDUM-CORTE4-VIS02B-FINAL-REMOTE-PASS-20260729.md` y el índice vigente actualizado.
+## 9. Claude/prototipo y Academia
+- Claude: no nueva candidata por la corrección de arquitectura; preservar fixes core/entrypoint descubiertos en sandbox.
+- Academia: incorporar distinción legacy/origen vs backend canónico vs sandbox y estrategia de cutover sin cambio de URL pública.
+- Reusable CXOrbia: migración incremental y recuperación de backend canónico existente.
