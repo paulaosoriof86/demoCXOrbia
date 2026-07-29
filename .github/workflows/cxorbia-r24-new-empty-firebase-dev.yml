@@ -77,7 +77,20 @@ jobs:
           console.log('Exact Corte 4 Firebase request validated.');
           NODE
 
+      - name: Publish observable provider gate start
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api --method POST \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state='pending' \
+            -f context='cxorbia/corte4-new-empty-firebase' \
+            -f description='Atomic new/empty Firebase DEV gate running' >/dev/null
+
       - name: Select strongest available project-creator credential without exposing it
+        continue-on-error: true
         env:
           DEDICATED_CREATOR_JSON: ${{ secrets.CXORBIA_GCP_PROJECT_CREATOR_JSON }}
           ALT_CREATOR_JSON: ${{ secrets.GOOGLE_CLOUD_PROJECT_CREATOR_JSON }}
@@ -122,9 +135,12 @@ jobs:
           NODE
 
       - name: Install provider dependency
+        continue-on-error: true
         run: npm install --no-save --ignore-scripts google-auth-library@9
 
       - name: Attempt authorized atomic creation and empty-state verification
+        if: always()
+        continue-on-error: true
         env:
           CXORBIA_CONFIRM: CREATE_NEW_EMPTY_FIREBASE_DEV
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/r24-private/credentials.json
@@ -132,7 +148,11 @@ jobs:
           set -euo pipefail
           mkdir -p .tmp/r24-result
           if [ ! -s "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
-            node -e "const fs=require('fs');const r={decision:'BLOCKED_NO_PROJECT_CREATOR_CREDENTIAL_AVAILABLE',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID,environment:'DEV',production:false},safeState:{writes:false,imports:false,deploy:false,production:false,secretValuesOutput:false}};fs.writeFileSync('.tmp/r24-result/firebase-new-empty-r24-report.source-safe.json',JSON.stringify(r,null,2)+'\n');"
+            node -e "const fs=require('fs');const r={decision:'BLOCKED_NO_PROJECT_CREATOR_CREDENTIAL_AVAILABLE',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID,environment:'DEV',production:false},summary:{projectCreated:false,firebaseAdded:false,emptyBaselineVerified:false},safeState:{writes:false,imports:false,deploy:false,production:false,secretValuesOutput:false}};fs.writeFileSync('.tmp/r24-result/firebase-new-empty-r24-report.source-safe.json',JSON.stringify(r,null,2)+'\n');"
+            exit 0
+          fi
+          if [ ! -d node_modules/google-auth-library ]; then
+            node -e "const fs=require('fs');const r={decision:'BLOCKED_PROVIDER_DEPENDENCY_UNAVAILABLE',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID,environment:'DEV',production:false},summary:{projectCreated:false,firebaseAdded:false,emptyBaselineVerified:false},safeState:{writes:false,imports:false,deploy:false,production:false,secretValuesOutput:false}};fs.writeFileSync('.tmp/r24-result/firebase-new-empty-r24-report.source-safe.json',JSON.stringify(r,null,2)+'\n');"
             exit 0
           fi
           source_project_id="$(cat .tmp/r24-private/source-project-id.txt)"
@@ -141,10 +161,16 @@ jobs:
             --out .tmp/r24-result
 
       - name: Normalize atomic-creation decision
+        if: always()
         run: |
           set -euo pipefail
+          mkdir -p .tmp/r24-result
           result='.tmp/r24-result/firebase-new-empty-r15b-report.source-safe.json'
           if [ ! -f "$result" ]; then
+            result='.tmp/r24-result/firebase-new-empty-r24-report.source-safe.json'
+          fi
+          if [ ! -f "$result" ]; then
+            node -e "const fs=require('fs');const r={decision:'BLOCKED_ATOMIC_CREATION_REPORT_MISSING',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},summary:{projectCreated:false,firebaseAdded:false,emptyBaselineVerified:false},safeState:{providerWrites:false,production:false}};fs.writeFileSync('.tmp/r24-result/firebase-new-empty-r24-report.source-safe.json',JSON.stringify(r,null,2)+'\n');"
             result='.tmp/r24-result/firebase-new-empty-r24-report.source-safe.json'
           fi
           node - "$result" <<'NODE'
@@ -172,27 +198,35 @@ jobs:
           NODE
 
       - name: Verify target identity and empty state with sanitized provider reads
+        if: always()
+        continue-on-error: true
         env:
           CXORBIA_CONFIRM: VERIFY_NEW_EMPTY_FIREBASE_DEV_READ_ONLY
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/r24-private/credentials.json
         run: |
           set -euo pipefail
+          mkdir -p .tmp/r24-result
           if [ ! -s "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
-            node -e "const fs=require('fs');const r={decision:'BLOCKED_NO_READ_CREDENTIAL_AVAILABLE',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},summary:{emptyBaselineVerified:false},safeState:{providerReads:false,providerWrites:false,production:false}};fs.writeFileSync('.tmp/r24-result/corte4-new-empty-firebase-verification.source-safe.json',JSON.stringify(r,null,2)+'\n');"
+            node -e "const fs=require('fs');const r={decision:'BLOCKED_NO_READ_CREDENTIAL_AVAILABLE',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},summary:{newIdentityConfirmed:false,emptyBaselineVerified:false,unavailableMandatoryCount:1,nonEmptySignalCount:0},safeState:{providerReads:false,providerWrites:false,production:false}};fs.writeFileSync('.tmp/r24-result/corte4-new-empty-firebase-verification.source-safe.json',JSON.stringify(r,null,2)+'\n');"
+            exit 0
+          fi
+          if [ ! -d node_modules/google-auth-library ]; then
+            node -e "const fs=require('fs');const r={decision:'BLOCKED_PROVIDER_DEPENDENCY_UNAVAILABLE',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},summary:{newIdentityConfirmed:false,emptyBaselineVerified:false,unavailableMandatoryCount:1,nonEmptySignalCount:0},safeState:{providerReads:false,providerWrites:false,production:false}};fs.writeFileSync('.tmp/r24-result/corte4-new-empty-firebase-verification.source-safe.json',JSON.stringify(r,null,2)+'\n');"
             exit 0
           fi
           node tools/release/cxorbia-verify-new-empty-firebase-dev-corte4.mjs \
             --out .tmp/r24-result
 
       - name: Publish sanitized Corte 4 status and PR evidence
+        if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          mkdir -p .tmp/r24-result
           report='.tmp/r24-result/corte4-new-empty-firebase-verification.source-safe.json'
           if [ ! -f "$report" ]; then
-            echo 'Sanitized verification report missing.'
-            exit 1
+            node -e "const fs=require('fs');const r={decision:'BLOCKED_WORKFLOW_PRECONDITION',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},summary:{newIdentityConfirmed:false,emptyBaselineVerified:false,unavailableMandatoryCount:1,nonEmptySignalCount:0},safeState:{providerReads:false,providerWrites:false,production:false}};fs.writeFileSync('.tmp/r24-result/corte4-new-empty-firebase-verification.source-safe.json',JSON.stringify(r,null,2)+'\n');"
           fi
           node - "$report" <<'NODE' > .tmp/r24-result/corte4-status.env
           const fs=require('fs');
