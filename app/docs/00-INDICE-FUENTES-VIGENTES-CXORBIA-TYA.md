@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-29  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_PROVIDER_BOOTSTRAP_COMPLETED__PROTECTED_CXDATA_SMOKE_AUTH_PRINCIPAL_PENDING__NO_DATA_WRITES`
+**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_PROTECTED_CXDATA_SMOKE_PASS__HOSTING_DEV_AUTH_PENDING__NO_DATA_WRITES`
 
 ## 1. Repositorio
 
@@ -21,11 +21,13 @@
 5. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 6. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 7. `backend/contracts/cxdata-firestore-readonly-corte4-v1.json`;
-8. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE4-AUTH-REVALIDATION-20260729.md`;
-9. `app/docs/ACTIVE-BASELINE-CORTE3-V182-20260729.json`;
-10. `app/docs/FREEZE-CORTE3-V182-APPROVED-20260729.md`;
-11. CAMBIOS, Claude, PENDIENTES, Academia y tracker;
-12. PR #7 y HEAD vivo.
+8. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE4-PROTECTED-SMOKE-PASS-20260729.md`;
+9. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE4-PROTECTED-SMOKE-PASS-20260729.md`;
+10. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE4-PROTECTED-SMOKE-PASS-20260729.md`;
+11. `app/docs/ACADEMIA-IMPACTO-CORTE4-PROTECTED-SMOKE-PASS-20260729.md`;
+12. `app/docs/ACTIVE-BASELINE-CORTE3-V182-20260729.json`;
+13. `app/docs/FREEZE-CORTE3-V182-APPROVED-20260729.md`;
+14. PR #7 y HEAD vivo.
 
 ## 3. Corte 3 — congelado
 
@@ -50,72 +52,70 @@ Hardening vigente:
 - no fallback mock/localStorage;
 - base legacy/preexistente prohibida.
 
-## 5. Firebase nuevo — Gates 1–2 PASS
+## 5. Firebase nuevo — Gates 1–3 PASS
 
 - projectId `cxorbia-tya-dev-260729-c4`;
 - display name `CXOrbia TyA DEV Clean Corte 4`;
 - identidad nueva PASS;
 - vacío integral previo PASS;
-- `cxorbia-backend-dev` sigue excluido.
+- `cxorbia-backend-dev` sigue excluido;
+- Web App DEV READY;
+- Firestore `(default)` READY, Native/Standard, `us-central1`, sin colecciones;
+- Rules read-only DEPLOYED + VERIFIED;
+- Firebase Authentication INITIALIZED.
 
-## 6. Bootstrap DEV read-only — COMPLETADO
+Bootstrap idempotente: `BOOTSTRAP_DEV_READONLY_COMPLETED_C4`.
 
-Paula autorizó `Autorizo bootstrap DEV read-only de Corte 4` y confirmó `us-central1`.
+## 6. Gate 4 — protected CX.data smoke: PASS
 
-IAM temporal sobre la service account del runner:
+Autorización consumida: `Autorizo operador DEV temporal para smoke protegido de Corte 4`.
 
-- Viewer;
-- Firebase Editor;
-- Cloud Datastore Owner;
-- Service Usage Admin.
+Intento válido: commit `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`.
 
-Provider bootstrap completado:
+Evidencia sanitizada:
 
-- Web App DEV `CXOrbia TyA DEV Corte 4`: READY;
-- Firestore `(default)`: READY, Native/Standard, `us-central1`, sin colecciones;
-- Rules `backend/rules/firestore.corte4-readonly.rules`: DEPLOYED + VERIFIED;
-- Firebase Authentication: INITIALIZED en consola, sin proveedor habilitado y sin usuarios;
-- revalidación idempotente: commit `e524b968c0003c27351d5d5826e21ffcf7cbfdbe`;
-- statuses: `cxorbia/corte4-bootstrap-execute=success`, `cxorbia/c4exec-BOOTSTRAP_DEV_READONLY_COMPLETED_C4=success`, `cxorbia/c4bootstrap-w0-webtrue-dbtrue-authtrue-rulestrue=success`;
-- provider config writes en la revalidación: 0.
+- `cxorbia/c4smoke-error-NONE`;
+- `cxorbia/c4smoke-srcfirestore-etrue-fbfalse-rotrue`;
+- `cxorbia/c4cleanup-u0-emailfalse`.
 
-Estado: `BOOTSTRAP_DEV_READONLY_COMPLETED_C4`.
+Resultado comprobado:
 
-## 7. Gate vivo — principal autenticado para smoke protegido
+- `source=firestore`;
+- `empty=true`;
+- `fallbackUsed=false`;
+- `readOnly=true` / `writeMode=disabled`;
+- interfaz pública `CX.data` preservada;
+- claims temporales `role=admin`, `tenantId=tya` verificados por el smoke exitoso;
+- Firestore document writes=0;
+- operador temporal eliminado;
+- Auth users final=0;
+- Email/Password final=deshabilitado.
 
-Las Rules desplegadas permiten lectura únicamente a un operador autenticado con rol permitido y tenant `tya`. El proyecto nuevo continúa con:
+No hubo materialización de datos TyA.
 
-- Auth users=0;
-- Email/Password=deshabilitado;
-- Google/otros proveedores=deshabilitados;
-- Firestore document writes=0.
+### Falso negativo de reporting — resuelto
 
-Por tanto el siguiente smoke real de navegador no puede ejecutarse honestamente bajo las Rules actuales sin crear un principal DEV temporal. Crear ese usuario o habilitar un proveedor constituye un nuevo Auth user/config write y no se ejecuta por inferencia.
+El status agregado del workflow quedó `error` porque el publicador exigía un segundo archivo de cleanup aun cuando el executor principal ya había ejecutado y verificado `cleanup.complete=true`. No fue fallo de Firebase ni del browser smoke.
 
-Siguiente gate propuesto, acotado y reversible:
+Corrección de raíz: commit `9967146e112322efcd043155ae05351bbbbd4e8a`, sin volver a ejecutar el principal temporal. El publicador ahora acepta el cleanup verificado por el executor principal y no se auto-dispara al editar su propio workflow.
 
-`AUTORIZAR OPERADOR DEV TEMPORAL PARA SMOKE PROTEGIDO → habilitar Email/Password solo en DEV → crear 1 usuario temporal con claims role=admin + tenantId=tya → ejecutar CX.data read-only contra Firestore vacío → demostrar source=firestore / empty=true / fallbackUsed=false / writes=0 → eliminar usuario temporal → deshabilitar proveedor → conservar Auth users=0`.
-
-Hosting DEV para revisión visual seguirá siendo una autorización separada; no está incluido en este gate.
-
-## 8. Seguridad actual
+## 7. Seguridad actual
 
 - Firestore document writes=0;
-- Auth user writes permanentes=0;
+- Auth users permanentes=0;
+- Email/Password=deshabilitado;
 - Storage writes=0;
 - Hosting deploy nuevo=0;
 - Functions/imports/HR/Make/Gemini/payments/merge/production=0.
 
-Los únicos config writes del bootstrap fueron los expresamente autorizados para API/Web App/Firestore/Rules. La revalidación posterior a la inicialización manual de Auth fue idempotente y produjo 0 provider writes.
+## 8. Siguiente acción exacta
 
-## 9. Siguiente acción exacta
-
-`AUTORIZACIÓN ACOTADA DE PRINCIPAL DEV TEMPORAL → SMOKE PROTEGIDO CX.data → DOCUMENTAR RESULTADO → AUTORIZACIÓN SEPARADA HOSTING DEV → VALIDACIÓN VISUAL → FREEZE CORTE 4 → RETIRAR IAM TEMPORAL A VIEWER`.
+`AUTORIZACIÓN SEPARADA HOSTING DEV DEL BUILD READ-ONLY → DEPLOY DEV → VALIDACIÓN VISUAL → CORRECCIÓN SOLO SI P0 REPRODUCIBLE → FREEZE CORTE 4 → RETIRAR IAM TEMPORAL A VIEWER`.
 
 No se requiere PowerShell, nueva candidata, ZIP ni datos TyA.
 
-## 10. Claude/prototipo y Academia
+## 9. Claude/prototipo y Academia
 
-- Claude: sin nueva candidata; no tocar backend/contracts/adapters. Solo actuar si smoke demuestra P0 localizado.
-- Academia: diferenciar inicialización Auth de habilitación de proveedor, creación de usuario temporal, claims, lectura protegida y Auth/RBAC completo de Corte 6.
-- Reusable CXOrbia: bootstrap idempotente/fail-closed, principal temporal reversible para smoke y least privilege posterior.
+- Claude: sin nueva candidata; no tocar backend/contracts/adapters. Solo actuar si la validación visual demuestra P0 localizado.
+- Academia: distinguir ejecución del gate, cleanup y status agregado; documentar falso negativo de reporting y su corrección sin rerun.
+- Reusable CXOrbia: bootstrap idempotente/fail-closed, principal temporal reversible, smoke protegido, cleanup verificable y least privilege posterior.
