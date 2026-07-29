@@ -162,6 +162,24 @@ jobs:
           const s=r.summary||{};
           const safeRoute=String(route.route||'unknown').replace(/[^a-z0-9_-]/gi,'_').slice(0,36);
           const safeDecision=String(r.decision||'UNKNOWN').replace(/[^A-Z0-9_.-]/gi,'_').slice(0,48);
+          const num=v=>Number.isFinite(Number(v))?String(Number(v)):'x';
+          const unavailable=Object.entries(r.checks||{}).filter(([,v])=>v&&v.available===false);
+          const firstUnavailable=unavailable.length?String(unavailable[0][0]).replace(/[^a-z0-9_-]/gi,'_').slice(0,18):'none';
+          const firstError=unavailable.length?String(unavailable[0][1]?.errorCategory||'unknown').replace(/[^a-z0-9_-]/gi,'_').slice(0,18):'none';
+          const diagContext=[
+            'cxorbia/c4diag',
+            `id${s.newIdentityConfirmed?1:0}`,
+            `e${s.emptyBaselineVerified?1:0}`,
+            `u${num(s.unavailableMandatoryCount)}`,
+            `n${num(s.nonEmptySignalCount)}`,
+            `a${num(s.appCount)}`,
+            `au${num(s.authUserCount)}`,
+            `f${num(s.firestoreDatabaseCount)}`,
+            `s${num(s.storageBucketCount)}`,
+            `h${num(s.hostingSiteCount)}`,
+            `x${firstUnavailable}`,
+            `r${firstError}`
+          ].join('-').slice(0,100);
           console.log([
             `STATE=${pass?'success':'error'}`,
             `DECISION=${safeDecision}`,
@@ -169,9 +187,16 @@ jobs:
             `DESCRIPTION=${pass?'New-empty-Firebase-DEV-verified':'Firebase-identity-or-empty-state-verification-blocked'}`,
             `EMPTY=${Boolean(s.emptyBaselineVerified)}`,
             `NEW_IDENTITY=${Boolean(s.newIdentityConfirmed)}`,
-            `UNAVAILABLE=${Number(s.unavailableMandatoryCount||0)}`,
-            `NONEMPTY=${Number(s.nonEmptySignalCount||0)}`,
-            `CONTEXT=cxorbia/corte4-verify-${safeRoute}-${safeDecision}`
+            `UNAVAILABLE=${num(s.unavailableMandatoryCount)}`,
+            `NONEMPTY=${num(s.nonEmptySignalCount)}`,
+            `APPS=${num(s.appCount)}`,
+            `AUTH=${num(s.authUserCount)}`,
+            `FIRESTORE=${num(s.firestoreDatabaseCount)}`,
+            `STORAGE=${num(s.storageBucketCount)}`,
+            `HOSTING=${num(s.hostingSiteCount)}`,
+            `FIRST_UNAVAILABLE=${firstUnavailable}`,
+            `FIRST_ERROR=${firstError}`,
+            `CONTEXT=${diagContext}`
           ].join('\n'));
           NODE
           source .tmp/corte4-verify/status.env
@@ -194,6 +219,13 @@ jobs:
           - Vacío verificado: \`$EMPTY\`
           - Checks no disponibles: \`$UNAVAILABLE\`
           - Señales no vacías: \`$NONEMPTY\`
+          - Apps: \`$APPS\`
+          - Auth users: \`$AUTH\`
+          - Firestore databases: \`$FIRESTORE\`
+          - Storage buckets: \`$STORAGE\`
+          - Hosting sites: \`$HOSTING\`
+          - Primer check no disponible: \`$FIRST_UNAVAILABLE\`
+          - Categoría: \`$FIRST_ERROR\`
           - Provider writes: \`0\`
           - Base existente reutilizada: \`false\`
           - Producción: \`false\`
