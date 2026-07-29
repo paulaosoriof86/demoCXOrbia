@@ -20,10 +20,10 @@
 4. addenda de Academia, patrones y antidesvío;
 5. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 6. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-7. `app/docs/CHECKPOINT-CORTE4-BOOTSTRAP-PREFLIGHT-20260729.md`;
-8. `app/docs/ACTIVE-BASELINE-CORTE3-V182-20260729.json`;
-9. `app/docs/FREEZE-CORTE3-V182-APPROVED-20260729.md`;
-10. contrato/gates Corte 4;
+7. `backend/contracts/cxdata-firestore-readonly-corte4-v1.json`;
+8. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE4-AUTH-REVALIDATION-20260729.md`;
+9. `app/docs/ACTIVE-BASELINE-CORTE3-V182-20260729.json`;
+10. `app/docs/FREEZE-CORTE3-V182-APPROVED-20260729.md`;
 11. CAMBIOS, Claude, PENDIENTES, Academia y tracker;
 12. PR #7 y HEAD vivo.
 
