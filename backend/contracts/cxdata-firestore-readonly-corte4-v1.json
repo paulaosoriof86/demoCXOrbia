@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "1.5.0",
+  "schemaVersion": "1.6.0",
   "contractId": "cxdata-firestore-readonly-corte4-v1",
   "phase": "A",
   "cut": 4,
-  "status": "VISUAL_P0_PROVEN_FREEZE_BLOCKED",
+  "status": "P0_FIXED_REMOTE_REVALIDATION_PASS_HUMAN_VISUAL_PENDING",
   "provider": "firebase",
   "environment": "dev",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -29,9 +29,14 @@
   "visualValidationPassed": false,
   "visualP0Proven": true,
   "visualP0Id": "P0-C4-VIS-01",
+  "visualP0TechnicallyFixed": true,
+  "p0LocalDiagnosticPassed": true,
+  "p0RemoteRevalidationPassed": true,
+  "p0HostingRevalidationDeployExecutions": 1,
+  "humanRevalidationPending": true,
   "activationAllowed": false,
   "hostingDevAllowed": false,
-  "activationBlocker": "FORBIDDEN_DEMO_FALLBACK_ON_AUTH_PENDING",
+  "activationBlocker": "HUMAN_VISUAL_REVALIDATION_REQUIRED_BEFORE_CORTE4_FREEZE",
   "excludedExistingProjects": [
     {
       "projectId": "cxorbia-backend-dev",
@@ -45,37 +50,45 @@
     "bootstrapPath": ".github/cxorbia-firebase-requests/corte4-bootstrap-execute.json",
     "protectedSmokePath": ".github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json",
     "hostingDevPath": ".github/cxorbia-firebase-requests/corte4-hosting-dev-visual.json",
+    "p0RevalidationPath": ".github/cxorbia-firebase-requests/corte4-p0-vis01-revalidate.json",
+    "p0DiagnosticPath": ".github/cxorbia-firebase-requests/corte4-p0-vis01-diagnostic.json",
     "bootstrapRevalidationCommit": "e524b968c0003c27351d5d5826e21ffcf7cbfdbe",
     "protectedSmokeCommit": "b698a925f5f6a7c8405afb7fb54a9f4c551e8498",
     "publisherFixCommit": "9967146e112322efcd043155ae05351bbbbd4e8a",
     "hostingDeployedSourceCommit": "fabba5c76bb40f5105f8e10dd54be63e9b3eb783",
     "hostingAuthorizationId": "c4-hosting-visual-20260729-01",
-    "hostingAuthorizationFreezeCommit": "cfca7726e69a3fb2f082a75a27c59c96e29f80fe",
+    "p0DiagnosticPassCommit": "58f227e2d67c0efa15c363e19e2cbcfea91e19b8",
+    "p0RevalidationDeployedSourceCommit": "424eca2ae5a7cd6f240dfc97b17048f3c124eb2c",
+    "p0RevalidationAuthorizationId": "c4-p0-vis01-revalidate-20260729-01",
     "resultObserved": true,
-    "decision": "VISUAL_P0_PROVEN_FREEZE_BLOCKED",
-    "revalidationProviderWrites": 0,
+    "decision": "P0_FIXED_REMOTE_REVALIDATION_PASS_HUMAN_VISUAL_PENDING",
+    "revalidationAuthorizationConsumed": true,
+    "revalidationProviderWritesExceptHosting": 0,
     "publisherFalseNegativeCorrectedWithoutRerun": true
   },
   "repositoryMapping": {
     "firebasercCurrentProjectId": "cxorbia-backend-dev",
     "matchesCandidate": false,
     "mappingChangeAllowed": false,
-    "reason": "Corte 4 Hosting used an explicit temporary Hosting-only config scoped to cxorbia-tya-dev-260729-c4; repository-wide Firebase mapping was not retargeted"
+    "reason": "Corte 4 uses explicit project-scoped Hosting configs for cxorbia-tya-dev-260729-c4; repository-wide Firebase mapping is not retargeted"
   },
   "interface": {
     "name": "CX.data",
     "preserveExactPublicInterface": true,
     "uiModulesMayDependOnBackend": false,
     "backendLogicInsideUiModules": false,
-    "protectedSmokeInterfacePreserved": true
+    "protectedSmokeInterfacePreserved": true,
+    "p0FixTouchesUiModules": false
   },
   "readPolicy": {
     "readOnly": true,
     "writeMode": "disabled",
     "allowEmptyBackend": true,
     "failClosedOnReadError": true,
+    "failClosedBeforeFirstRender": true,
     "fallbackToMockOnReadError": false,
     "fallbackToLocalStorageOnEmpty": false,
+    "fallbackUsedInitialState": false,
     "emptyBackendMustRenderAsEmpty": true,
     "protectedReadRequired": true,
     "protectedSmokeSource": "firestore",
@@ -145,7 +158,7 @@
     "merge": false,
     "production": false
   },
-  "visualValidationEvidence": {
+  "initialVisualValidationEvidence": {
     "date": "2026-07-29",
     "result": "P0_PROVEN",
     "sourceVisible": "localStorage/demo",
@@ -158,12 +171,65 @@
       "postulations": 48
     },
     "visibleDemoProjects": ["Proyecto Retail", "Proyecto Banca", "Proyecto Restaurantes"],
-    "violatedRequirements": [
-      "fallbackToMockOnReadError=false",
-      "fallbackToLocalStorageOnEmpty=false",
-      "emptyBackendMustRenderAsEmpty=true"
+    "p0Id": "P0-C4-VIS-01"
+  },
+  "focusedFixEvidence": {
+    "authorizationText": "Autorizo corrección focalizada de P0-C4-VIS-01 y un único Hosting DEV de revalidación de Corte 4, sin data writes ni producción",
+    "authorizationId": "c4-p0-vis01-revalidate-20260729-01",
+    "runtimeFiles": [
+      "app/core/backend-config-preview-dev.js",
+      "app/core/backend-cxdata-readonly-corte4.js",
+      "app/core/backend-preview-status.js"
     ],
-    "rootCause": "preview auth remains logically required after the temporary smoke principal was correctly removed; backend-firebase.js explicitly marks localStorage/demo on missing preview credential instead of staying fail-closed"
+    "uiModulesChanged": false,
+    "behavior": [
+      "protected backend identity before first render",
+      "demoMode=false in Corte 4 preview",
+      "empty CX.data before first render",
+      "fallbackUsed=false initialized before async Auth result",
+      "backend errors remain Firestore fail-closed instead of demo/localStorage"
+    ]
+  },
+  "p0DiagnosticEvidence": {
+    "passCommit": "58f227e2d67c0efa15c363e19e2cbcfea91e19b8",
+    "providerPreflightStatus": "cxorbia/c4p0vis01-diagnostic=success",
+    "localBrowserStatus": "cxorbia/c4p0local-pass=success",
+    "providerWrites": 0
+  },
+  "p0RemoteRevalidationEvidence": {
+    "authorizationId": "c4-p0-vis01-revalidate-20260729-01",
+    "deployedSourceCommit": "424eca2ae5a7cd6f240dfc97b17048f3c124eb2c",
+    "status": "cxorbia/c4p0vis01-revalidation=success",
+    "executionStatus": "cxorbia/c4p0vis01-deploys1=success",
+    "deployExecutions": 1,
+    "sourceStartsWithFirestore": true,
+    "counts": {
+      "projects": 0,
+      "visits": 0,
+      "shoppers": 0,
+      "postulations": 0
+    },
+    "dataSourceMode": "connected",
+    "fixturesEnabled": false,
+    "demoMode": false,
+    "fallbackUsed": false,
+    "forbiddenDemoCopyAbsent": true,
+    "adminShellPreservesEmptyState": true,
+    "visualUrl": "https://cxorbia-tya-dev-260729-c4.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&p0vis01=424eca2ae5a7cd6f240dfc97b17048f3c124eb2c",
+    "firestoreDocumentWrites": 0,
+    "authUserWrites": 0,
+    "authConfigWrites": 0,
+    "storageWrites": 0,
+    "rulesDeploys": 0,
+    "functionsDeploys": 0,
+    "imports": 0,
+    "hrWrites": 0,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "merge": false,
+    "production": false,
+    "authorizationConsumed": true
   },
   "rulesCandidate": {
     "path": "backend/rules/firestore.corte4-readonly.rules",
@@ -209,14 +275,17 @@
     "hosting_dev_remote_proof_verified",
     "hosting_dev_entrypoint_verified",
     "hosting_dev_authorization_consumed",
-    "visual_validation_executed",
-    "visual_p0_proven"
+    "initial_visual_validation_executed",
+    "visual_p0_proven",
+    "p0_c4_vis_01_explicit_fix_authorization_consumed",
+    "p0_c4_vis_01_backend_core_fix_applied",
+    "p0_c4_vis_01_local_diagnostic_passed",
+    "p0_c4_vis_01_hosting_revalidation_deployed_once",
+    "p0_c4_vis_01_remote_browser_revalidation_passed",
+    "p0_c4_vis_01_revalidation_authorization_consumed"
   ],
   "pendingGates": [
-    "p0_c4_vis_01_explicit_fix_authorization",
-    "p0_c4_vis_01_backend_fix",
-    "hosting_dev_revalidation",
-    "visual_validation_pass",
+    "human_visual_revalidation_pass",
     "corte4_freeze",
     "temporary_iam_removed_to_viewer"
   ],
@@ -225,8 +294,10 @@
     "merge": false,
     "production": false,
     "hostingDeploy": true,
-    "hostingDeployExecutions": 1,
-    "hostingAuthorizationConsumed": true,
+    "hostingDeployExecutionsTotalCorte4": 2,
+    "initialHostingDeployExecutions": 1,
+    "p0RevalidationHostingDeployExecutions": 1,
+    "hostingAuthorizationsConsumed": true,
     "rulesDeploymentCompleted": true,
     "firestoreDocumentWrites": false,
     "authPermanentUsers": 0,
