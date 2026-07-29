@@ -1,0 +1,59 @@
+name: TyA HR Country Tab Consistency Current
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/live-hr-country-tab-consistency.json'
+
+permissions:
+  contents: write
+  statuses: write
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate request
+        run: |
+          node <<'NODE'
+          const r=require('./.github/cxorbia-firebase-requests/live-hr-country-tab-consistency.json');
+          if(r.enabled!==true||r.mode!=='READ_ONLY_COUNTRY_TAB_CONSISTENCY'||r.providerWrites!==0||r.production!==false||r.merge!==false)process.exit(1);
+          NODE
+      - name: Run source-safe country consistency gate
+        id: gate
+        continue-on-error: true
+        run: node tools/qa/tya-hr-country-tab-consistency-current.mjs
+      - name: Commit sanitized evidence on latest head
+        run: |
+          set -euo pipefail
+          cp app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json /tmp/country.json
+          cp app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md /tmp/country.md
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/country.json app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json
+          cp /tmp/country.md app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md
+          if ! git diff --cached --quiet; then git commit -m 'evidence: check live HR country-tab consistency'; git push origin HEAD:docs-tya-v6-v71-audit; fi
+      - name: Publish status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          STATE=error; DESC='HOLD_HR_COUNTRY_TAB_CONSISTENCY'
+          if [ -f app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json ]; then
+            D=$(node -p "require('./app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json').decision")
+            if [ "$D" = 'PASS_COUNTRY_TAB_CONSISTENCY' ]; then STATE=success; DESC='PASS_HR_COUNTRY_TAB_CONSISTENCY'; fi
+          fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/live-hr-country-tab-consistency' -f description="$DESC" >/dev/null
