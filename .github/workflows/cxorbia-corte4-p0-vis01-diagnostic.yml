@@ -1,95 +1,15 @@
-name: CXOrbia Corte 4 P0 VIS-01 Diagnostic Read-only
+name: CXOrbia Corte 4 P0 VIS-01 Diagnostic — closed
 
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - '.github/cxorbia-firebase-requests/corte4-p0-vis01-diagnostic.json'
+  workflow_dispatch:
 
 permissions:
   contents: read
-  statuses: write
-
-env:
-  CXORBIA_REQUEST_PATH: .github/cxorbia-firebase-requests/corte4-p0-vis01-revalidate.json
-  CXORBIA_OUT_DIR: .tmp/corte4-p0-vis01-diag
-  CXORBIA_PRIVATE_DIR: .tmp/corte4-p0-vis01-diag-private
-  PREPARE_SCRIPT: tools/release/cxorbia-corte4-p0-vis01-hosting-prepare.mjs
 
 jobs:
   diagnose:
+    name: HOLD · P0 VIS-01 diagnostic closed after PASS
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Load credential
-        env:
-          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-        run: |
-          set -euo pipefail
-          mkdir -p "$CXORBIA_PRIVATE_DIR" "$CXORBIA_OUT_DIR"
-          node <<'NODE'
-          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw);}catch{}
-          if(!(p&&p.type==='service_account'&&p.client_email&&p.private_key&&p.token_uri)){fs.writeFileSync(process.env.CXORBIA_OUT_DIR+'/diag.json',JSON.stringify({stage:'credential',ok:false,error:'credential_invalid'})+'\n');process.exit(0)}
-          fs.writeFileSync(process.env.CXORBIA_PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
-          NODE
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${CXORBIA_PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
-      - name: Run provider preflight without deploy
-        continue-on-error: true
-        run: node "$PREPARE_SCRIPT"
-      - name: Publish exact preflight diagnosis
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          R="$CXORBIA_OUT_DIR/preflight.source-safe.json"
-          if [ ! -f "$R" ]; then DESC='DIAG_NO_PREFLIGHT_REPORT'; STATE=error; else DEC=$(node -p "require('./$R').decision||''"); ERR=$(node -p "require('./$R').error||''"); if [ "$DEC" = 'PASS_C4_P0_VIS01_PREFLIGHT_READY_FOR_ONE_DEPLOY' ]; then DESC='DIAG_PREFLIGHT_PASS'; STATE=success; else DESC="DIAG_${ERR:-$DEC}"; STATE=error; fi; fi
-          DESC=$(printf '%s' "$DESC" | cut -c1-140)
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/c4p0vis01-diagnostic' -f description="$DESC" >/dev/null
-      - name: Install transient browser for local diagnosis
-        if: always()
-        run: |
-          set -euo pipefail
-          npm install --no-save --ignore-scripts playwright@1.61.1 >/dev/null 2>&1
-          npx playwright install --with-deps chromium >/dev/null 2>&1
-      - name: Run local browser diagnosis without deploy
-        if: always()
-        run: |
-          set +e
-          if [ ! -d "$CXORBIA_OUT_DIR/site" ]; then echo '{"ok":false,"stage":"local","error":"site_missing_after_preflight"}' > "$CXORBIA_OUT_DIR/local-diag.json"; exit 0; fi
-          python3 -m http.server 4173 --bind 127.0.0.1 --directory "$CXORBIA_OUT_DIR/site" > "$CXORBIA_OUT_DIR/local-server.log" 2>&1 &
-          PID=$!
-          trap 'kill "$PID" 2>/dev/null || true' EXIT
-          sleep 1
-          node <<'NODE'
-          const fs=require('fs');const {chromium}=require('playwright');
-          (async()=>{let browser;try{
-            browser=await chromium.launch({headless:true});const page=await browser.newPage();
-            await page.goto('http://127.0.0.1:4173/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&p0vis01=diag',{waitUntil:'domcontentloaded',timeout:30000});
-            await page.waitForTimeout(2200);
-            const s=await page.evaluate(()=>({source:window.CX_BACKEND_DATA_SOURCE||'',last:window.CX_BACKEND_LAST_STATE||{},ro:window.CX_CORTE4_READONLY||{},mode:CX.dataSource&&CX.dataSource.mode,status:CX.dataSource&&CX.dataSource.status,fixtures:CX.dataSource&&CX.dataSource.showFixtures&&CX.dataSource.showFixtures(),demo:CX.BRAND&&CX.BRAND.demoMode,counts:{projects:(CX.data.projects||[]).length,visits:(CX.data._visitas||[]).length,shoppers:(CX.data.shoppers||[]).length,posts:(CX.data._posts||[]).length},pill:(document.getElementById('cxBackendPreviewStatus')||{}).innerText||'',body:document.body.innerText||''}));
-            const errors=[];if(!Object.values(s.counts).every(v=>v===0))errors.push('counts_nonzero');if(s.mode!=='connected')errors.push('mode_'+s.mode);if(s.fixtures!==false)errors.push('fixtures_'+s.fixtures);if(s.demo!==false)errors.push('demo_'+s.demo);if(!String(s.source).startsWith('firestore'))errors.push('source_'+s.source);if(s.last.fallbackUsed!==false)errors.push('last_fallback_'+s.last.fallbackUsed);if(s.ro.fallbackUsed!==false)errors.push('ro_fallback_'+s.ro.fallbackUsed);for(const x of ['Proyecto Retail','Proyecto Banca','Proyecto Restaurantes','Demo comercial · datos ficticios','Fuente: localStorage/demo'])if((s.body+s.pill).includes(x))errors.push('visible_'+x.replace(/\s+/g,'_'));
-            fs.writeFileSync(process.env.CXORBIA_OUT_DIR+'/local-diag.json',JSON.stringify({ok:errors.length===0,stage:'local',errors,state:{source:s.source,mode:s.mode,status:s.status,fixtures:s.fixtures,demo:s.demo,counts:s.counts,lastFallback:s.last.fallbackUsed,roFallback:s.ro.fallbackUsed,pill:s.pill}},null,2)+'\n');
-          }catch(e){fs.writeFileSync(process.env.CXORBIA_OUT_DIR+'/local-diag.json',JSON.stringify({ok:false,stage:'local',error:String(e&&e.message||e)},null,2)+'\n');}finally{if(browser)await browser.close();}})();
-          NODE
-      - name: Publish local browser diagnosis
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          R="$CXORBIA_OUT_DIR/local-diag.json"
-          if [ ! -f "$R" ]; then ERR='no_report'; STATE=error; else OK=$(node -p "require('./$R').ok===true?'yes':'no'"); if [ "$OK" = yes ]; then ERR='pass'; STATE=success; else ERR=$(node -p "(require('./$R').errors||[require('./$R').error||'unknown']).join(',')"); STATE=error; fi; fi
-          SAFE=$(printf '%s' "$ERR" | tr ' /:,·' '______' | tr -cd 'A-Za-z0-9_.-_' | cut -c1-62)
-          CTX="cxorbia/c4p0local-${SAFE}"
-          DESC=$(printf 'LOCAL_DIAG_%s' "$ERR" | cut -c1-140)
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="$CTX" -f description="$DESC" >/dev/null
-      - name: Cleanup
-        if: always()
-        run: rm -rf "$CXORBIA_PRIVATE_DIR" "$CXORBIA_OUT_DIR/site" "$CXORBIA_OUT_DIR/firebase.corte4-p0-vis01.json"
+      - run: echo 'P0-C4-VIS-01 diagnostic completed; no automatic rerun permitted.'
