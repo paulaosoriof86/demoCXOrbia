@@ -7,11 +7,13 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - '.github/workflows/cxorbia-r24-new-empty-firebase-dev.yml'
+      - '.github/cxorbia-firebase-requests/corte4-new-empty.json'
   pull_request:
     branches:
       - release/cxorbia-tya-rc-20260630
     paths:
       - '.github/workflows/cxorbia-r24-new-empty-firebase-dev.yml'
+      - '.github/cxorbia-firebase-requests/corte4-new-empty.json'
   workflow_dispatch:
 
 permissions:
@@ -27,6 +29,7 @@ env:
   CXORBIA_NEW_PROJECT_ID: cxorbia-tya-dev-260729-c4
   CXORBIA_NEW_PROJECT_NAME: CXOrbia TyA DEV Clean Corte 4
   CXORBIA_MIN_CREATE_TIME: '2026-07-29T03:45:00Z'
+  CXORBIA_REQUEST_PATH: .github/cxorbia-firebase-requests/corte4-new-empty.json
 
 jobs:
   create-and-verify-new-empty-dev:
@@ -41,6 +44,38 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+
+      - name: Validate exact Corte 4 provider request
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const path=process.env.CXORBIA_REQUEST_PATH;
+          if(!fs.existsSync(path)) throw new Error('Corte 4 Firebase request missing.');
+          const r=JSON.parse(fs.readFileSync(path,'utf8'));
+          const exact={
+            schemaVersion:'cxorbia.firebase-new-empty-request.v1',
+            enabled:true,
+            repository:'paulaosoriof86/demoCXOrbia',
+            branch:'docs-tya-v6-v71-audit',
+            pullRequest:7,
+            targetProjectId:process.env.CXORBIA_NEW_PROJECT_ID,
+            targetDisplayName:process.env.CXORBIA_NEW_PROJECT_NAME,
+            confirmation:'CREATE_NEW_EMPTY_FIREBASE_DEV',
+            production:false,
+            reuseExistingProject:false,
+            connectLegacyDatabase:false,
+            copyLegacyDatabase:false
+          };
+          for(const [key,value] of Object.entries(exact)){
+            if(r[key]!==value) throw new Error(`Request mismatch: ${key}`);
+          }
+          if(r.allowedProviderWrites?.projectCreate!==true||r.allowedProviderWrites?.firebaseAdd!==true) throw new Error('Exact provider writes not authorized.');
+          for(const key of ['billingLink','authWrites','firestoreWrites','storageWrites','rulesDeploy','hostingDeploy','functionsDeploy','imports','dataMigration']){
+            if(r.allowedProviderWrites?.[key]!==false) throw new Error(`Forbidden provider write flag: ${key}`);
+          }
+          console.log('Exact Corte 4 Firebase request validated.');
+          NODE
 
       - name: Select strongest available project-creator credential without exposing it
         env:
