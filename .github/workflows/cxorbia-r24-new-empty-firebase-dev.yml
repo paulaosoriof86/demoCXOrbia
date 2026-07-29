@@ -22,8 +22,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CXORBIA_NEW_PROJECT_ID: cxorbia-tya-dev-260714-r24
-  CXORBIA_NEW_PROJECT_NAME: CXOrbia TyA DEV Clean R24
+  CXORBIA_NEW_PROJECT_ID: cxorbia-tya-dev-260729-c4
+  CXORBIA_NEW_PROJECT_NAME: CXOrbia TyA DEV Clean Corte 4
 
 jobs:
   create-and-verify-new-empty-dev:
