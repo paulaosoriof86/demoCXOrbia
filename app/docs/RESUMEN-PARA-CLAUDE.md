@@ -134,3 +134,18 @@ Incluye:
 Estado: `V172_HR_INPLACE_APPLIED_PENDING_REMOTE_DEV_GATES`.
 
 No producción, no writes, no merge.
+# ADDENDUM CORTE 3 FOCAL FIX - 2026-07-28
+
+No crear V183 ni R33. No reauditar V182. No proponer nueva rama/PR ni merge.
+
+Cambios que debe preservar Claude/prototipo:
+
+- `paymentState=pending_source_confirmation` es pago pendiente, no revision de fuente.
+- Predicado financiero canonico: reviewRequired, financialSourceStatus pending_or_review, liquidationState pending_financial_source, falta de pais o falta de moneda.
+- Liquidaciones exactas conciliadas con pago pendiente: cuentan en metricas, CxP y export; no habilitan lote/pago por si mismas.
+- KPIs Liquidaciones: revision financiera, conciliadas con pago pendiente, candidatas para lote, pagadas confirmadas.
+- Movimientos CxP: solo liquidaciones no pagadas y no-review; las reviews quedan visibles, no pagables.
+- Rollover: mes calendario actual si existe; si no, ultimo no futuro; si no, primero disponible. No hardcodear agosto ni inventario R20.
+- Reportes PDF/Excel quedan P2 transversal: no bloquear esta correccion por grafica/formato.
+
+Estado local: `CORTE3_FOCAL_FIX_LOCAL_PASS_PENDING_HOSTING_DEV_REMOTE_SMOKE_NO_FREEZE_NO_PRODUCTION`.

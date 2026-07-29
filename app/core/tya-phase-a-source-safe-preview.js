@@ -54,7 +54,16 @@ window.CX = window.CX || {};
   const parentProjectName = data.projectName || 'Cinépolis';
   const currency = { GT:'Q', HN:'L' };
   const stablePeriodId = (projectId, periodKey) => `${projectId}::${periodKey || 'pending'}`;
-  const latestPeriod = [...data.periods].sort((a,b)=>String(a.key).localeCompare(String(b.key))).pop() || data.periods[0];
+  const selectActivePeriod = (periods, clock = new Date()) => {
+    const sortedPeriods = [...(periods || [])]
+      .filter(p => p && p.key)
+      .sort((a,b)=>String(a.key).localeCompare(String(b.key)));
+    const currentPeriodKey = clock.toISOString().slice(0,7);
+    const exactCurrent = sortedPeriods.find(p=>String(p.key)===currentPeriodKey);
+    const nonFuture = sortedPeriods.filter(p=>String(p.key)<=currentPeriodKey);
+    return exactCurrent || nonFuture[nonFuture.length-1] || sortedPeriods[0] || (periods && periods[0]);
+  };
+  const activePeriod = selectActivePeriod(data.periods);
 
   const projects = data.periods.map(p => {
     const periodId = stablePeriodId(parentProjectId, p.key);
@@ -100,7 +109,7 @@ window.CX = window.CX || {};
   });
 
   const periodsByKey = new Map(projects.map(period => [String(period.periodKey), period]));
-  const latestPeriodId = stablePeriodId(parentProjectId, latestPeriod && latestPeriod.key);
+  const activePeriodId = stablePeriodId(parentProjectId, activePeriod && activePeriod.key);
 
   const visits = (data.visits || []).map((v, idx) => {
     const period = periodsByKey.get(String(v.periodKey || ''));
@@ -203,13 +212,15 @@ window.CX = window.CX || {};
   CX.data._visitas = visits;
   CX.data._posts = posts;
   CX.data.currentProjectId = parentProjectId;
-  CX.data.currentPeriodId = projects.some(p=>p.id===latestPeriodId) ? latestPeriodId : (projects[0] && projects[0].id);
+  CX.data.currentPeriodId = projects.some(p=>p.id===activePeriodId) ? activePeriodId : (projects[0] && projects[0].id);
   CX.data.sourceMode = hasLivePayload ? 'tya_hr_live_multitab_source_safe_dev' : 'tya_hr_live_pending';
   CX.data.previewMeta = {
     tenantId,
     projectId:parentProjectId,
     projectName:parentProjectName,
     activePeriodId:CX.data.currentPeriodId,
+    activePeriodKey:activePeriod && activePeriod.key,
+    activePeriodPolicy:'current-month-if-present-else-last-non-future-else-first',
     sourceTitle:data.source && data.source.title,
     generatedAt:data.generatedAt,
     periods:data.counts && data.counts.periods,

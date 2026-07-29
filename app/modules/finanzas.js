@@ -243,6 +243,10 @@ CX.module('movimientos', ({data,ui})=>{
   const PENDING_CURRENCY='pending_currency';
   const currencyOf=(row)=>{ if(row&&row.pais&&p.currency&&p.currency[row.pais])return p.currency[row.pais]; if(row&&row.moneda)return row.moneda; return PENDING_CURRENCY; };
   const curOfRow=(r)=>currencyOf(r);
+  const isFinancialReview=(l)=>{
+    const cur=currencyOf(l);
+    return !l||l.reviewRequired===true||l.financialSourceStatus==='pending_or_review'||l.liquidationState==='pending_financial_source'||!l.pais||cur===PENDING_CURRENCY;
+  };
   const canonMonth=()=>{const pr=CX.data.period()||{};const s=pr.periodKey||pr.startDate||pr.fechaInicio||pr.desde||'';const m=/^(\d{4})-(\d{2})/.exec(String(s));if(m)return m[1]+'-'+m[2];return new Date().toISOString().slice(0,7);};
   const seed=[
     {tipo:'ingreso',cat:'Anticipo cliente',pais:p.countries[0],monto:40000,fecha:'2026-06-03',desc:'Anticipo del proyecto',estado:'Conciliado'},
@@ -273,7 +277,9 @@ CX.module('movimientos', ({data,ui})=>{
       if((m.estado||'').includes('CxC'))bump(cu,'cxc',Math.abs(m.monto)); });
     CX.finStore.cxp(pid()).forEach(r=>{const cu=currencyOf(r);if(cu===PENDING_CURRENCY){pendingCurrencyRows.push({kind:'cxp',r});return;}bump(cu,'cxp',r.saldo||0);});
     CX.finStore.cxc(pid()).forEach(r=>{const cu=currencyOf(r);if(cu===PENDING_CURRENCY){pendingCurrencyRows.push({kind:'cxc',r});return;}bump(cu,'cxc',r.saldo||0);});
-    if(!isG)CX.liq.forProject(data).filter(l=>l.estado!=='pagada').forEach(l=>{const cu=l.moneda||(l.pais&&p.currency[l.pais]);if(!cu){pendingCurrencyRows.push({kind:'liq',r:l});return;}bump(cu,'cxp',l.total||0);});
+    const derivedLiqCxps=!isG?CX.liq.forProject(data).filter(l=>l.estado!=='pagada'&&l.estado!=='pagada_preview'&&!isFinancialReview(l)):[];
+    const derivedLiqReviews=!isG?CX.liq.forProject(data).filter(l=>l.estado!=='pagada'&&l.estado!=='pagada_preview'&&isFinancialReview(l)):[];
+    derivedLiqCxps.forEach(l=>{const cu=currencyOf(l);if(cu===PENDING_CURRENCY){pendingCurrencyRows.push({kind:'liq',r:l});return;}bump(cu,'cxp',l.total||0);});
     const shownCurs=[...new Set([...p.countries.map(c=>p.currency[c]), ...Object.keys(aggByCur)])].filter(Boolean);
     const multiCur=shownCurs.length>1;
     /* KPIs de una sola moneda: se leen del grupo de la moneda visible (ya sin pending_currency). */
@@ -338,7 +344,10 @@ CX.module('movimientos', ({data,ui})=>{
       </div>
       <div class="card card-p"><div class="card-h"><div class="card-t">Cuentas por pagar (CxP)</div></div>
         ${CX.finStore.cxp(pid()).length?`<input class="inp" id="cxpFind" placeholder="🔍 Buscar concepto/beneficiario…" style="margin-bottom:8px;padding:5px 9px;font-size:12px">`:''}
-        <div id="cxpBody">${CX.finStore.cxp(pid()).length?CX.finStore.cxp(pid()).map(r=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div style="cursor:pointer" data-cxdet="cxp:${r.id}"><b style="font-size:12px">${r.concepto}</b><div style="font-size:10px;color:var(--t3)">${r.pais||'<span class="bdg bdg-n" style="font-size:9px">Pendiente de moneda</span>'} · ${r.estado||'pendiente'} · saldo ↗ ver detalle</div></div><div class="flex" style="gap:8px"><b style="font-size:12.5px;color:var(--amber)">${r.pais&&p.currency[r.pais]?ui.money(p.currency[r.pais],r.saldo||0):(r.moneda?ui.money(r.moneda,r.saldo||0):'Pendiente de moneda')}</b>${currencyOf(r)!==PENDING_CURRENCY?`<button class="btn btn-soft btn-sm" data-abono="${r.id}">Abonar</button>`:ui.bdg('Revisión · sin moneda','r')}</div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:8px 0">Sin CxP registradas. Útil al importar saldos iniciales.</div>'}</div>
+        <div id="cxpBody">${CX.finStore.cxp(pid()).length?CX.finStore.cxp(pid()).map(r=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div style="cursor:pointer" data-cxdet="cxp:${r.id}"><b style="font-size:12px">${r.concepto}</b><div style="font-size:10px;color:var(--t3)">${r.pais||'<span class="bdg bdg-n" style="font-size:9px">Pendiente de moneda</span>'} · ${r.estado||'pendiente'} · saldo ↗ ver detalle</div></div><div class="flex" style="gap:8px"><b style="font-size:12.5px;color:var(--amber)">${r.pais&&p.currency[r.pais]?ui.money(p.currency[r.pais],r.saldo||0):(r.moneda?ui.money(r.moneda,r.saldo||0):'Pendiente de moneda')}</b>${currencyOf(r)!==PENDING_CURRENCY?`<button class="btn btn-soft btn-sm" data-abono="${r.id}">Abonar</button>`:ui.bdg('Revisión · sin moneda','r')}</div></div>`).join(''):''}
+        ${derivedLiqCxps.length?`<div style="font-size:10.5px;font-weight:700;color:var(--t3);text-transform:uppercase;margin:8px 0 4px">CxP derivada de liquidaciones exactas</div>${derivedLiqCxps.slice(0,8).map(l=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12px">Liquidación pendiente · ${l.shopper||'Shopper'}</b><div style="font-size:10px;color:var(--t3)">${l.pais||''} · ${l.estado||'conciliada_pendiente_pago'} · fuente exacta, pago pendiente</div></div><b style="font-size:12.5px;color:var(--amber)">${ui.money(currencyOf(l),l.total||0)}</b></div>`).join('')}${derivedLiqCxps.length>8?`<div class="muted" style="font-size:11px;padding:5px 0">+${derivedLiqCxps.length-8} liquidación(es) exacta(s) adicionales</div>`:''}`:''}
+        ${derivedLiqReviews.length?`<div style="font-size:11px;color:var(--red);margin-top:8px">🔒 ${derivedLiqReviews.length} liquidación(es) en revisión financiera visibles, excluidas de CxP pagable.</div>`:''}
+        ${!CX.finStore.cxp(pid()).length&&!derivedLiqCxps.length?'<div class="muted" style="font-size:12px;padding:8px 0">Sin CxP registradas ni liquidaciones exactas por pagar. Útil al importar saldos iniciales.</div>':''}</div>
       </div>
     </div>
 
@@ -506,7 +515,7 @@ CX.module('movimientos', ({data,ui})=>{
 
     const acx=host.querySelector('#autoCxp');
     if(acx)acx.addEventListener('click',()=>{
-      const liqPend=CX.liq.forProject(data).filter(l=>['validada','pendiente_submitir'].includes(l.estado));
+      const liqPend=CX.liq.forProject(data).filter(l=>['validada','pendiente_submitir','conciliada_pendiente_pago'].includes(l.estado)&&!isFinancialReview(l));
       const yaCxp=new Set(CX.finStore.cxp(pid()).map(r=>r.visitaId).filter(Boolean));
       const nuevasCxp=liqPend.filter(l=>!yaCxp.has(l.visitaId));
       // CxC: sin fuente confirmada de reintegro no se infiere monto pendiente (Corte 3 P0-3)
@@ -589,11 +598,22 @@ CX.module('liquidaciones', ({data,ui})=>{
   const currencyOf=(row)=>{ if(row&&row.pais&&p.currency&&p.currency[row.pais])return p.currency[row.pais]; if(row&&row.moneda)return row.moneda; return PENDING_CURRENCY; };
   const _liqCur=(l)=>l.moneda||(l.pais&&p.currency&&p.currency[l.pais])||null;
   const _liqMoney=(l,v)=>{const cu=_liqCur(l);return cu?ui.money(cu,v):'<span class="bdg bdg-a" style="font-size:9px">Pendiente de moneda</span>';};
+  const isFinancialReview=(l)=>{
+    const cur=l&&(l.moneda||(l.pais&&p.currency&&p.currency[l.pais]));
+    return !l||l.reviewRequired===true||l.financialSourceStatus==='pending_or_review'||l.liquidationState==='pending_financial_source'||!l.pais||!cur;
+  };
 
   const host=ui.el('div');
   const draw=()=>{
     const all=CX.liq.forProject(data);
     const res=CX.liq.resumen(all);
+    const reviewLiqAll=all.filter(isFinancialReview);
+    const exactLiqAll=all.filter(l=>!isFinancialReview(l));
+    const isPaidConfirmed=(l)=>l.paymentState==='confirmed'||l.paymentState==='payment_confirmed'||(l.estado==='pagada'&&!!l.paymentSourceRef);
+    const isPendingPaymentExact=(l)=>!isPaidConfirmed(l)&&(l.estado==='conciliada_pendiente_pago'||l.liquidationState==='reconciled_source_safe'||l.paymentState==='pending_source_confirmation');
+    const reconciledPendingPayment=exactLiqAll.filter(isPendingPaymentExact);
+    const loteCandidates=exactLiqAll.filter(l=>l.estado==='validada'&&!isPendingPaymentExact(l));
+    const paidConfirmed=all.filter(isPaidConfirmed);
     const draft=CX.finStore.draft(p.id).filter(vid=>all.some(l=>l.visitaId===vid&&l.estado==='validada'));
     CX.finStore._draft[p.id]=draft; // limpia ids ya no validados
     const oblig=p.countries.map(c=>{
@@ -639,10 +659,10 @@ CX.module('liquidaciones', ({data,ui})=>{
     <div class="card card-p" style="margin-bottom:12px;border-left:4px solid var(--amber);background:var(--amber-bg,#fffbeb)"><div style="font-size:11.5px;color:#92400e;line-height:1.6">📌 Las liquidaciones son <b>candidatas</b> derivadas del avance operativo. El <b>monto final a pagar</b> se confirma al cruzar con el Excel financiero externo del cierre. No se muestra “deuda final” ni “pagos listos” solo desde la HR.</div></div>
 
     <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px" id="liqKpis">
-      <div data-lk="pc" style="cursor:pointer">${ui.kpi('Pend. cuestionario',res.pendiente_cuestionario||0,'a')}</div>
-      <div data-lk="pv" style="cursor:pointer">${ui.kpi('Pend./Validadas',(res.pendiente_submitir||0)+(res.validada||0),'b')}</div>
-      <div data-lk="val" style="cursor:pointer">${ui.kpi('Candidatas para lote',res.validada||0,'b')}</div>
-      <div data-lk="pag" style="cursor:pointer">${ui.kpi('Pagadas (preview, pend. cruce)',(res.pagada||0)+(res.pagada_preview||0),'a')}</div>
+      <div data-lk="review" style="cursor:pointer">${ui.kpi('En revisión financiera',reviewLiqAll.length,'r')}</div>
+      <div data-lk="reconciled" style="cursor:pointer">${ui.kpi('Conciliadas · pago pendiente',reconciledPendingPayment.length,'a')}</div>
+      <div data-lk="lote" style="cursor:pointer">${ui.kpi('Candidatas para lote',loteCandidates.length,'b')}</div>
+      <div data-lk="paid" style="cursor:pointer">${ui.kpi('Pagadas confirmadas',paidConfirmed.length,'g')}</div>
     </div>
 
     ${cart}
@@ -669,9 +689,8 @@ CX.module('liquidaciones', ({data,ui})=>{
       const san=(s)=>String(s||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';
       const projectLabel=data.programBase?data.programBase(p):p.name;
       const _lcur=(l)=>l.moneda||(l.pais&&p.currency&&p.currency[l.pais])||null;
-      const _lreview=(l)=>l.reviewRequired===true||l.financialSourceStatus==='pending_or_review'||l.liquidationState==='pending_financial_source'||l.paymentState==='pending_source_confirmation'||!_lcur(l);
-      const exportable=all.filter(l=>!_lreview(l));
-      const reviewLiq=all.filter(_lreview);
+      const exportable=all.filter(l=>!isFinancialReview(l));
+      const reviewLiq=all.filter(isFinancialReview);
       const byEst={}; exportable.forEach(l=>{byEst[l.estado]=(byEst[l.estado]||0)+1;});
       const liqSpec=(ext)=>({ title:'Liquidaciones',
         meta:{title:'Liquidaciones',project:projectLabel,period:(p.periodo||p.ronda||p.name||'Periodo'),scope:'Candidatas · pend. cruce',sourceLabel:'Finanzas · liquidaciones derivadas del avance',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
@@ -684,7 +703,7 @@ CX.module('liquidaciones', ({data,ui})=>{
         filename:[san('liquidaciones'),san(projectLabel),new Date().toISOString().slice(0,10)].join('_')+'.'+ext });
       lx.addEventListener('click',()=>{ if(!exportable.length){ui.toast('No hay liquidaciones con moneda/fuente resuelta para exportar'+(reviewLiq.length?(' · '+reviewLiq.length+' en revisión'):''),'err',4200);return;} CX.reportKit.openReport(liqSpec('pdf'),'fin_liquidaciones'); });
     }
-    const lkMap={pc:['Pend. cuestionario',l=>l.estado==='pendiente_cuestionario'],pv:['Pendientes/Validadas',l=>['pendiente_submitir','validada'].includes(l.estado)],val:['Candidatas para lote',l=>l.estado==='validada'],pag:['Pagadas (preview) · pend. cruce real',l=>['pagada','pagada_preview'].includes(l.estado)]};
+    const lkMap={review:['En revisión financiera',l=>isFinancialReview(l)],reconciled:['Conciliadas · pago pendiente',l=>!isFinancialReview(l)&&isPendingPaymentExact(l)],lote:['Candidatas para lote',l=>!isFinancialReview(l)&&l.estado==='validada'&&!isPendingPaymentExact(l)],paid:['Pagadas confirmadas',l=>isPaidConfirmed(l)]};
     host.querySelectorAll('#liqKpis [data-lk]').forEach(el=>el.addEventListener('click',()=>{const m=lkMap[el.dataset.lk];const arr=all.filter(m[1]);
       ui.modal(m[0]+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Total</th><th>Pago est.</th></tr></thead><tbody>${arr.map(l=>`<tr><td><b>${l.shopper||'—'}</b></td><td style="font-size:12px">${l.sucursal}</td><td style="font-weight:700">${_liqMoney(l,l.total)}</td><td style="font-size:12px">${l.fechaEstimadaPago||'—'}</td></tr>`).join('')}</tbody></table>`:ui.empty('💸','Sin liquidaciones en esta categoría.'));
     }));

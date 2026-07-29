@@ -88,3 +88,14 @@ Hosting DEV:
 ## 8. Siguiente bloque exacto
 
 `VALIDACIÓN VISUAL PAULA EN HOSTING DEV → PDF/XLSX + MÓVIL + BENEFICIOS → CORRECCIÓN FOCALIZADA SOLO SI APLICA → APROBADO → FREEZE CORTE 3 → CORTE 4`.
+# ADDENDUM OBLIGATORIO POST-VALIDACION VISUAL PAULA - 2026-07-28
+
+- Comentario fuente PR #7: `5110893740`.
+- HEAD remoto de entrada: `a776e769b4ace5f1b4ec04039f820ae55cdeb6f9`.
+- Correccion focal autorizada sin V183, sin R33, sin nueva rama/PR, sin merge y sin produccion.
+- Archivos funcionales: `app/modules/finanzas.js` y `app/core/tya-phase-a-source-safe-preview.js`.
+- Reusable CXOrbia: separacion fuente exacta / revision / pago pendiente; predicado financiero unico; rollover current-month-safe.
+- Exclusivo TyA: HR mensual Cinepolis, GT/HN, sin mezcla de monedas.
+- Claude/prototipo: KPI Liquidaciones, export y copy de CxP derivada.
+- Academia: actualizar explicacion de fuente financiera exacta, revision financiera, pago pendiente y cambio automatico de periodo.
+- Estado local tras gates: `CORTE3_FOCAL_FIX_LOCAL_PASS_PENDING_HOSTING_DEV_REMOTE_SMOKE_NO_FREEZE_NO_PRODUCTION`.

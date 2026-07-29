@@ -108,3 +108,15 @@ Pendiente operativo:
 - Gate remoto con cambio HR ya existente reflejado sin `location.reload`, sin pantalla blanca y misma `sourceRevision` en Dashboard, KPI, Liquidaciones y Reportes.
 
 Prohibiciones vigentes: no producción, no merge, no writes, no Make/Gemini, no pagos.
+# CORTE 3 FOCAL FIX - PENDIENTES POST-GATE LOCAL 2026-07-28
+
+- Pendiente Hosting DEV del nuevo HEAD y smoke remoto focal.
+- Pendiente validacion visual minima Paula: Liquidaciones, Movimientos, periodo/agosto, Shopper/movil.
+- PDF sin grafica visible y Excel con formato basico quedan como mejora transversal P2, no bloqueo de esta correccion.
+- Mantener bloqueados: produccion, merge, writes reales, pagos reales, lotes reales, Make/Gemini.
+
+Listo localmente:
+
+- R26-R32 PASS.
+- Focal mayo PASS: 44 HR / 42 exactas / 2 reviews / GT32 / HN10 / 0 pagos / 0 lotes / CxP GT Q 7,178.
+- Rollover current-month-safe PASS.

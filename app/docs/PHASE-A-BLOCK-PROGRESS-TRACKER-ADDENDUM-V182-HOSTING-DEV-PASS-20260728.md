@@ -44,3 +44,24 @@
 ## Siguiente bloque exacto
 
 `PAULA VISUAL DEV → PDF/XLSX + MÓVIL + BENEFICIOS → APROBADO → FREEZE CORTE 3 → CORTE 4`.
+# ADDENDUM 2026-07-28 - CORTE 3 FOCAL FIX LOCAL PASS
+
+Entrada: HEAD remoto `a776e769b4ace5f1b4ec04039f820ae55cdeb6f9`, PR #7 draft/open/no merge.
+
+Correccion focal:
+
+- Finanzas: predicado unico sin `paymentState` para revision financiera.
+- Liquidaciones: KPIs y export alineados a 42 exactas + 2 reviews.
+- Movimientos: CxP canonica excluye reviews y conserva GT/HN separados.
+- Source-safe preview: periodo activo current-month-safe, sin hardcodear agosto.
+
+Gates locales:
+
+- `node --check` JS tocados: PASS.
+- R26/R27/R28/R29/R30/R31/R32: PASS.
+- Smoke financiero focal mayo: PASS.
+- Rollover focal: PASS.
+
+Estado: `CORTE3_FOCAL_FIX_LOCAL_PASS_PENDING_HOSTING_DEV_REMOTE_SMOKE_NO_FREEZE_NO_PRODUCTION`.
+
+No ejecutado en este addendum local: produccion, merge, writes reales, pagos reales, lotes reales, Make/Gemini.

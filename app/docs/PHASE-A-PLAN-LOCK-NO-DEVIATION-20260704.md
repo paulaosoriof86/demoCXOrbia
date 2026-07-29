@@ -116,3 +116,19 @@ Después de aprobación visual documentar en manuales y cursos:
 ## 9. Estado seguro
 
 Sin producción, merge, Firestore/Auth/Storage/HR writes, imports, pagos reales, lotes reales, Make ni Gemini live.
+# ADDENDUM CORTE 3 FOCAL FIX - 2026-07-28
+
+Se ejecuta una correccion focal post-validacion visual Paula sobre la rama `docs-tya-v6-v71-audit`, PR #7 draft/open/no merge, partiendo de HEAD remoto `a776e769b4ace5f1b4ec04039f820ae55cdeb6f9`.
+
+No es nueva candidata, no V183, no R33 y no cambia la metodologia. Solo modifica `app/modules/finanzas.js` y `app/core/tya-phase-a-source-safe-preview.js`.
+
+Reglas preservadas:
+
+- `paymentState` pendiente no equivale a revision de fuente.
+- Liquidaciones exactas conciliadas con pago pendiente permanecen en metricas, CxP y export.
+- Las revisiones financieras quedan visibles y fail-closed, pero fuera de CxP monetaria pagable.
+- El adapter source-safe selecciona mes calendario actual si existe; si no, ultimo periodo no futuro; si no, primer periodo disponible.
+- No se hardcodea agosto ni se toca discovery R20.
+- PDF sin grafica visible y Excel con formato basico quedan P2 transversal, no bloqueante para esta correccion.
+
+Estado local: `CORTE3_FOCAL_FIX_LOCAL_PASS_PENDING_HOSTING_DEV_REMOTE_SMOKE_NO_FREEZE_NO_PRODUCTION`.

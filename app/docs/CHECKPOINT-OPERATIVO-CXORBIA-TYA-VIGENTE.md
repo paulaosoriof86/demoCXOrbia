@@ -122,3 +122,31 @@ Validar en Hosting DEV:
 ## 11. Estado seguro
 
 Sin producción, merge, Firestore/Auth/Storage/HR writes, imports, pagos reales, lotes reales, Make ni Gemini live.
+# ADDENDUM CORTE 3 FOCAL FIX - 2026-07-28
+
+Estado local: `CORTE3_FOCAL_FIX_LOCAL_PASS_PENDING_HOSTING_DEV_REMOTE_SMOKE_NO_FREEZE_NO_PRODUCTION`.
+
+HEAD remoto de entrada: `a776e769b4ace5f1b4ec04039f820ae55cdeb6f9`.
+
+Archivos funcionales tocados:
+
+- `app/modules/finanzas.js`.
+- `app/core/tya-phase-a-source-safe-preview.js`.
+
+Cambios:
+
+- Reusable CXOrbia: fuente financiera exacta, revision financiera y pago pendiente quedan separados. `paymentState=pending_source_confirmation` ya no abre revision de fuente.
+- Reusable CXOrbia: Movimientos, Liquidaciones y export usan el mismo predicado financiero fail-closed.
+- Reusable CXOrbia: rollover current-month-safe: mes calendario actual si existe; si no, ultimo periodo no futuro; si no, primer periodo disponible.
+- Exclusivo TyA: se conserva nomenclatura mensual HR Cinepolis y monedas GT/HN sin sumar GTQ + HNL.
+- Claude/prototipo: KPIs de Liquidaciones muestran revision financiera, conciliadas con pago pendiente, candidatas para lote y pagadas confirmadas.
+- Academia: explicar fuente financiera exacta, revision financiera, pago pendiente y cambio automatico de periodo.
+
+Gates locales:
+
+- `node --check` JS tocados: PASS.
+- R26/R27/R28/R29/R30/R31/R32: PASS.
+- Focal mayo: 44 visitas HR / 42 exactas / 2 reviews / GT32 / HN10 / 0 pagos / 0 lotes / export 42 + 2 review / CxP GT Q 7,178 / CxP HN L 5,861: PASS.
+- Rollover focal: julio con agosto futuro no salta a futuro; agosto exacto activa agosto; agosto ausente conserva julio; guard de futuro con no-futuro disponible; Mi Dia/calendario alineado por `currentPeriodId`: PASS.
+
+Pendiente en este addendum local: push, Hosting DEV del nuevo HEAD y smoke remoto focal. Produccion, merge, writes reales, pagos, lotes reales, Make y Gemini siguen en 0.
