@@ -22,7 +22,9 @@ window.CX = window.CX || {};
   function isProtectedEmpty(){
     try{
       if(!isPreview() || !CX.data || !Array.isArray(CX.data.projects)) return false;
-      return CX.data.projects.length===0 || window.CX_CORTE4_READONLY?.empty===true || window.CX_BACKEND_LAST_STATE?.empty===true;
+      const explicitEmpty = CX.data.projects.length===0 || window.CX_CORTE4_READONLY?.empty===true || window.CX_BACKEND_LAST_STATE?.empty===true;
+      const corte4EmptyContract = !!(CX.BACKEND && CX.BACKEND.previewMode===true && CX.BACKEND.readOnly===true && CX.BACKEND.allowEmptyBackend===true && window.CX_CORTE4_READONLY?.empty!==false);
+      return explicitEmpty || corte4EmptyContract;
     }catch(e){ return false; }
   }
 
@@ -122,6 +124,11 @@ window.CX = window.CX || {};
     const originalEnter=CX.app.enter.bind(CX.app);
     CX.app.enter=function(){
       clearShellDom();
+      if(isProtectedEmpty()){
+        const lg=document.getElementById('login'); if(lg) lg.classList.add('hidden');
+        const app=document.getElementById('app'); if(app) app.classList.add('on');
+        return renderEmptyShell(CX.session&&CX.session.role);
+      }
       return originalEnter.apply(CX.app,arguments);
     };
 
