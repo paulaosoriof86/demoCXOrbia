@@ -15,16 +15,15 @@ window.CX = window.CX || {};
   function isPreview(){
     try{
       const q=new URLSearchParams(window.location.search||'');
-      return q.get('cxBackendPreview')==='YES_PAULA_20260628_PREVIEW_DEV' && !!window.CX_CORTE4_READONLY;
+      return q.get('cxBackendPreview')==='YES_PAULA_20260628_PREVIEW_DEV'
+        && !!(CX.BACKEND && CX.BACKEND.previewMode===true && CX.BACKEND.readOnly===true);
     }catch(e){ return false; }
   }
 
   function isProtectedEmpty(){
     try{
       if(!isPreview() || !CX.data || !Array.isArray(CX.data.projects)) return false;
-      const source=String(window.CX_BACKEND_DATA_SOURCE||'');
-      const connected=!!(CX.dataSource && CX.dataSource.mode==='connected') || source.startsWith('firestore');
-      return connected && CX.data.projects.length===0;
+      return CX.data.projects.length===0;
     }catch(e){ return false; }
   }
 
