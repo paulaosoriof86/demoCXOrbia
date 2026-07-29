@@ -1,6 +1,6 @@
 {
   "contractId": "cxorbia-controlled-runners-v1",
-  "schemaVersion": "1.6.0",
+  "schemaVersion": "1.7.0",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -45,7 +45,8 @@
       "profiles": [
         "V174_R20_M1_CORTE2A",
         "CORTE3_FINANCIAL_RECONCILIATION_R20",
-        "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23"
+        "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23",
+        "CORTE4_CXDATA_FIRESTORE_READONLY"
       ],
       "stableVisitIdentity": {
         "version": "tya-stable-visit-id-r20-row-identity-v1",
@@ -121,6 +122,28 @@
           ],
           "outputs": [
             ".tmp/tya-corte3-canonical-finance-ui-export-r23"
+          ]
+        },
+        "CORTE4_CXDATA_FIRESTORE_READONLY": {
+          "browserRequired": false,
+          "providerReads": false,
+          "stableVisitIdentityRequired": false,
+          "runtimeInventoryFilterRequired": false,
+          "purpose": "Validate Corte 3 active baseline, strict CX.data interface preservation, fail-closed empty Firestore behavior, zero write paths and the non-deployed read-only Rules candidate without connecting to or activating Firebase",
+          "inputs": [
+            "app/docs/ACTIVE-BASELINE-CORTE3-V182-20260729.json",
+            "backend/contracts/cxdata-firestore-readonly-corte4-v1.json",
+            "backend/rules/firestore.corte4-readonly.rules",
+            "app/core/backend-config.js",
+            "app/core/backend-config-preview-dev.js",
+            "app/core/backend-cxdata-readonly-corte4.js",
+            "app/index-backend-dev.html",
+            "firestore.rules",
+            "firebase.json",
+            ".firebaserc"
+          ],
+          "outputs": [
+            ".tmp/cxdata-firestore-readonly-corte4-gate/report.json"
           ]
         }
       },
