@@ -4,7 +4,7 @@
    - enable required Firebase/Firestore/Auth/Rules services;
    - create exactly one Firebase Web App DEV if none exists;
    - create the (default) Firestore Native database in the explicitly authorized location if absent;
-   - initialize Firebase Auth/Identity Platform config if absent;
+   - verify Firebase Auth config; Spark projects that require Console initialization stay fail-closed;
    - publish backend/rules/firestore.corte4-readonly.rules to cloud.firestore.
 
    Forbidden here: Firestore document writes, Auth user creation, Storage, Hosting deploy,
@@ -36,7 +36,7 @@ const requiredPermissions=[
 ];
 
 const report={
-  schemaVersion:'1.0.1',
+  schemaVersion:'1.1.0',
   gate:'cxorbia-corte4-bootstrap-dev-readonly-execute',
   generatedAt:new Date().toISOString(),
   decision:'HOLD_NOT_EXECUTED',
@@ -46,7 +46,7 @@ const report={
   services:{},
   webApp:{beforeCount:null,created:false,reused:false,appCount:null,displayNameMatch:false,configWrittenToArtifact:false,configSha256:null},
   firestore:{beforeExists:null,created:false,reused:false,locationMatch:false,typeMatch:false,collectionIdCount:null,emptyVerified:false},
-  auth:{beforeInitialized:null,initialized:false,reused:false,configVerified:false,userWrites:false},
+  auth:{beforeInitialized:null,initialized:false,reused:false,configVerified:false,manualConsoleInitializationRequired:false,userWrites:false},
   rules:{rulesSha256:null,releaseBeforeExists:null,currentRulesMatched:false,rulesetCreated:false,releaseCreated:false,releaseUpdated:false,releaseVerified:false},
   providerWrites:{serviceEnable:0,webAppCreate:0,firestoreDatabaseCreate:0,authInitialize:0,rulesetCreate:0,releaseCreate:0,releaseUpdate:0,total:0},
   safeState:{firestoreDocumentWrites:false,authUserWrites:false,storageWrites:false,hostingDeploy:false,functions:false,imports:false,dataMigration:false,hrWrites:false,make:false,gemini:false,payments:false,merge:false,production:false,credentialsOutput:false,piiOutput:false}
@@ -134,7 +134,7 @@ async function main(){
       current=await request('GET',getUrl);state=current.ok?String(current.payload?.state||'UNKNOWN'):`UNAVAILABLE_${category(current.status)}`;enabled=state==='ENABLED';
       if(!enabled)return stop(`BLOCKED_SERVICE_NOT_ENABLED_${service.replace(/[^a-z0-9]/gi,'_').toUpperCase()}`);
     }
-    report.services[service]={enabled,state,writePerformed:report.providerWrites.serviceEnable>0};
+    report.services[service]={enabled,state};
   }
 
   let appsResp=await request('GET',`https://firebase.googleapis.com/v1beta1/projects/${encodeURIComponent(projectId)}/webApps?pageSize=100`);
@@ -149,9 +149,8 @@ async function main(){
     appsResp=await request('GET',`https://firebase.googleapis.com/v1beta1/projects/${encodeURIComponent(projectId)}/webApps?pageSize=100`);
     if(!appsResp.ok)return stop('BLOCKED_WEB_APP_POSTCREATE_LIST_UNAVAILABLE');
     apps=Array.isArray(appsResp.payload?.apps)?appsResp.payload.apps:[];
-  } else if(apps.length===1&&String(apps[0]?.displayName||'')===webAppDisplayName){
-    report.webApp.reused=true;
-  } else return stop('BLOCKED_UNEXPECTED_WEB_APP_STATE_DO_NOT_REUSE');
+  } else if(apps.length===1&&String(apps[0]?.displayName||'')===webAppDisplayName){report.webApp.reused=true;}
+  else return stop('BLOCKED_UNEXPECTED_WEB_APP_STATE_DO_NOT_REUSE');
   report.webApp.appCount=apps.length;
   const app=apps.length===1?apps[0]:null;
   report.webApp.displayNameMatch=Boolean(app&&String(app.displayName||'')===webAppDisplayName);
@@ -187,17 +186,11 @@ async function main(){
   report.firestore.collectionIdCount=collectionIds.length;report.firestore.emptyVerified=collectionIds.length===0;
   if(!report.firestore.emptyVerified)return stop('BLOCKED_FIRESTORE_NOT_EMPTY_AFTER_BOOTSTRAP');
 
-  let authConfig=await request('GET',`https://identitytoolkit.googleapis.com/admin/v2/projects/${encodeURIComponent(projectId)}/config`);
+  const authConfig=await request('GET',`https://identitytoolkit.googleapis.com/admin/v2/projects/${encodeURIComponent(projectId)}/config`);
   report.auth.beforeInitialized=authConfig.ok;
-  if(authConfig.status===404){
-    const init=await request('POST',`https://identitytoolkit.googleapis.com/v2/projects/${encodeURIComponent(projectId)}/identityPlatform:initializeAuth`);
-    report.providerWrites.authInitialize+=1;report.auth.initialized=true;
-    if(!init.ok)return stop(`BLOCKED_AUTH_INITIALIZE_${category(init.status)}`);
-    authConfig=await request('GET',`https://identitytoolkit.googleapis.com/admin/v2/projects/${encodeURIComponent(projectId)}/config`);
-  } else if(authConfig.ok){report.auth.reused=true;}
+  if(authConfig.ok){report.auth.reused=true;report.auth.configVerified=true;}
+  else if(authConfig.status===404){report.auth.manualConsoleInitializationRequired=true;}
   else return stop(`BLOCKED_AUTH_CONFIG_GET_${category(authConfig.status)}`);
-  report.auth.configVerified=authConfig.ok;
-  if(!report.auth.configVerified)return stop('BLOCKED_AUTH_CONFIG_NOT_VERIFIED');
 
   const releaseName=`projects/${projectId}/releases/cloud.firestore`;
   let release=await request('GET',`https://firebaserules.googleapis.com/v1/${releaseName}`);
@@ -235,7 +228,9 @@ async function main(){
   report.rules.releaseVerified=finalSet.ok&&sha256(finalContent)===sha256(rulesContent);
   if(!report.rules.releaseVerified)return stop('BLOCKED_RULES_CONTENT_POSTVERIFY');
 
-  report.decision='BOOTSTRAP_DEV_READONLY_COMPLETED_C4';
+  report.decision=report.auth.manualConsoleInitializationRequired
+    ? 'BOOTSTRAP_DEV_READONLY_PROVIDER_READY_AUTH_CONSOLE_REQUIRED_C4'
+    : 'BOOTSTRAP_DEV_READONLY_COMPLETED_C4';
   write();
 }
 
