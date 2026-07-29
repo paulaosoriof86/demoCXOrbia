@@ -34,10 +34,18 @@ window.CX = window.CX || {};
   }
 
   function inferSource(status, eventName){
+    const live = window.CX_BACKEND_DATA_SOURCE || '';
+    /* P0-C4-VIS-01: en modo fail-closed, backend-error NO significa demo. El guard Corte 4
+       establece Firestore como fuente objetivo y vacío seguro; priorizar ese estado evita
+       volver a rotular la UI como localStorage/demo después del cleanup correcto de Auth. */
+    if(live && live !== 'localStorage/demo') return live;
     if(status === 'ready' || eventName === 'backend-ready' || eventName === 'backend-read-guard-ready') return 'firestore';
-    if(status === 'error' || eventName === 'backend-error') return 'localStorage/demo';
+    if(status === 'error' || eventName === 'backend-error'){
+      if(CX.BACKEND && CX.BACKEND.failClosedOnReadError === true) return 'firestore-read-error';
+      return 'localStorage/demo';
+    }
     if(eventName === 'backend-disabled') return 'localStorage/demo';
-    if(window.CX_BACKEND_DATA_SOURCE) return window.CX_BACKEND_DATA_SOURCE;
+    if(live) return live;
     return 'pending';
   }
 
@@ -58,7 +66,7 @@ window.CX = window.CX || {};
     const totals = g.totals || {};
     const anomalies = Array.isArray(g.anomalies) ? g.anomalies.length : 0;
     const countries = Array.isArray(cur.countries) && cur.countries.length ? cur.countries.join('/') : 's/pais';
-    return '<div>Guard CX.data: <b>ok</b> · Proyecto visitas: '+(cur.visits || 0)+' · Posts proyecto: '+(cur.posts || 0)+' · Países: '+countries+' · Alertas: '+anomalies+'</div>'+
+    return '<div>Guard CX.data: <b>ok</b> · Proyecto visitas: '+(cur.visits || 0)+' · Posts proyecto: '+(cur.posts || 0)+' · Países: '+countries+' · Alertas: '+anomalies+'</div>'+ 
       '<div style="opacity:.78">Totales normalizados: P '+(totals.projects || 0)+' · V '+(totals.visits || 0)+' · S '+(totals.shoppers || 0)+' · Post '+(totals.posts || 0)+'</div>';
   }
 
@@ -68,10 +76,12 @@ window.CX = window.CX || {};
     const f = firebaseState();
     const source = inferSource(status, eventName);
     const tenant = (payload && payload.tenantId) || (CX.BACKEND && CX.BACKEND.tenantId) || (CX.backend && CX.backend.tenantId && CX.backend.tenantId()) || 'pendiente';
-    const isFirestore = source === 'firestore';
+    const isFirestore = source.indexOf('firestore') === 0;
     const isError = status === 'error';
-    const tone = isFirestore ? '#16a05c' : isError ? '#c8232c' : '#d97706';
-    const label = isFirestore ? 'Firestore activo' : isError ? 'Usando demo/localStorage' : 'Validando fuente';
+    const tone = isFirestore ? (isError ? '#d97706' : '#16a05c') : isError ? '#c8232c' : '#d97706';
+    const label = isFirestore
+      ? (isError ? 'Firestore protegido · sin fallback' : 'Firestore activo')
+      : isError ? 'Fuente no disponible' : 'Validando fuente';
     const authLabel = f.email ? f.email : 'pendiente';
 
     STATE.status = status || STATE.status;
