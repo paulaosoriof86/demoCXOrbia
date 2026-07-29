@@ -19,7 +19,7 @@ const credentialPath=process.env.GOOGLE_APPLICATION_CREDENTIALS;
 const REQUEST_TIMEOUT_MS=Math.max(2000,Number(process.env.CXORBIA_PROVIDER_REQUEST_TIMEOUT_MS||8000));
 
 const report={
-  schemaVersion:'1.2.0',
+  schemaVersion:'1.3.0',
   gate:'cxorbia-corte4-new-empty-firebase-dev-readonly-verify',
   generatedAt:new Date().toISOString(),
   decision:'HOLD_NOT_EXECUTED',
@@ -49,7 +49,10 @@ const report={
     authUserCount:null,
     firestoreDatabaseCount:null,
     storageBucketCount:null,
-    hostingSiteCount:null
+    hostingSiteCount:null,
+    hostingDefaultSiteCount:null,
+    hostingUserSiteCount:null,
+    hostingReleaseCount:null
   },
   safeState:{
     providerReads:true,
@@ -78,6 +81,10 @@ function category(value){
   if(/429|quota|rate/i.test(raw))return'QUOTA_OR_RATE_LIMIT';
   if(/timeout|abort/i.test(raw))return'TIMEOUT';
   return raw.replace(/[^A-Z0-9_.-]/gi,'_').slice(0,100)||'UNKNOWN';
+}
+function providerErrorCategory(result,prefix='HTTP'){
+  const message=String(result?.payload?.error?.message||result?.payload?.error?.status||'').trim();
+  return category(`${prefix}_${result?.status||'UNKNOWN'}_${message}`);
 }
 function write(){
   fs.mkdirSync(outDir,{recursive:true});
@@ -124,7 +131,7 @@ async function main(){
     const response=await boundedFetch(credential.token_uri||'https://oauth2.googleapis.com/token',{
       method:'POST',
       headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:new URLSearchParams({grant_type:'urn:ietf:params:oauth:grant-type:jwt-bearer',assertion}).toString()
+      body:new URLSearchParams({grant_type:'urn:ietf:params:oauth-type:jwt-bearer',assertion}).toString()
     },'oauth_token');
     const text=await response.text();
     let payload={};try{payload=text?JSON.parse(text):{};}catch{}
@@ -151,7 +158,7 @@ async function main(){
   const project=await mandatory('projectIdentity',async()=>{
     let result=await request('GET',`https://cloudresourcemanager.googleapis.com/v3/projects/${encodeURIComponent(targetProjectId)}`);
     if(!result.ok)result=await request('GET',`https://cloudresourcemanager.googleapis.com/v1/projects/${encodeURIComponent(targetProjectId)}`);
-    if(!result.ok)throw Object.assign(new Error('project lookup failed'),{category:String(result.status)});
+    if(!result.ok)throw Object.assign(new Error('project lookup failed'),{category:providerErrorCategory(result,'PROJECT')});
     const payload=result.payload||{};
     const displayName=String(payload.displayName||payload.name||'');
     const lifecycle=String(payload.state||payload.lifecycleState||'');
@@ -171,7 +178,7 @@ async function main(){
 
   await mandatory('firebaseProject',async()=>{
     const result=await request('GET',`https://firebase.googleapis.com/v1beta1/projects/${encodeURIComponent(targetProjectId)}`);
-    if(!result.ok)throw Object.assign(new Error('firebase project lookup failed'),{category:String(result.status)});
+    if(!result.ok)throw Object.assign(new Error('firebase project lookup failed'),{category:providerErrorCategory(result,'FIREBASE')});
     const enabled=Boolean(result.payload?.projectId);
     report.target.firebaseEnabled=enabled;
     return{firebaseEnabled:enabled,identifiersOutput:false};
@@ -181,7 +188,7 @@ async function main(){
   for(const endpoint of ['androidApps','iosApps','webApps']){
     await mandatory(endpoint,async()=>{
       const result=await request('GET',`https://firebase.googleapis.com/v1beta1/projects/${encodeURIComponent(targetProjectId)}/${endpoint}?pageSize=100`);
-      if(!result.ok)throw Object.assign(new Error(`${endpoint} lookup failed`),{category:String(result.status)});
+      if(!result.ok)throw Object.assign(new Error(`${endpoint} lookup failed`),{category:providerErrorCategory(result,endpoint)});
       const items=Array.isArray(result.payload?.[endpoint])?result.payload[endpoint]:[];
       apps+=items.length;
       return{count:items.length,empty:items.length===0,identifiersOutput:false};
@@ -190,18 +197,22 @@ async function main(){
   report.summary.appCount=apps;
 
   await mandatory('authUsers',async()=>{
-    const result=await request('POST',`https://identitytoolkit.googleapis.com/v1/projects/${encodeURIComponent(targetProjectId)}/accounts:query`,{returnUserInfo:false,maxResults:1});
-    if(result.status===403||result.status===404){report.summary.authUserCount=0;return{count:0,empty:true,state:'NOT_INITIALIZED_OR_API_DISABLED',identifiersOutput:false};}
-    if(!result.ok)throw Object.assign(new Error('auth inventory failed'),{category:String(result.status)});
-    const count=Array.isArray(result.payload?.userInfo)?result.payload.userInfo.length:0;
-    report.summary.authUserCount=count;
-    return{count,empty:count===0,state:'AVAILABLE',identifiersOutput:false};
+    const result=await request('POST',`https://identitytoolkit.googleapis.com/v1/projects/${encodeURIComponent(targetProjectId)}/accounts:query`,{returnUserInfo:false});
+    const errorMessage=String(result.payload?.error?.message||'');
+    if(result.status===403||result.status===404||(result.status===400&&/CONFIGURATION_NOT_FOUND|PROJECT_NOT_FOUND|NOT_CONFIGURED|API_NOT_ENABLED/i.test(errorMessage))){
+      report.summary.authUserCount=0;
+      return{count:0,empty:true,state:'NOT_INITIALIZED_OR_API_DISABLED',identifiersOutput:false};
+    }
+    if(!result.ok)throw Object.assign(new Error('auth inventory failed'),{category:providerErrorCategory(result,'AUTH')});
+    const count=Number(result.payload?.recordsCount||0);
+    report.summary.authUserCount=Number.isFinite(count)?count:0;
+    return{count:report.summary.authUserCount,empty:report.summary.authUserCount===0,state:'AVAILABLE',identifiersOutput:false};
   });
 
   await mandatory('firestoreDatabases',async()=>{
     const result=await request('GET',`https://firestore.googleapis.com/v1/projects/${encodeURIComponent(targetProjectId)}/databases?pageSize=100`);
     if(result.status===403||result.status===404){report.summary.firestoreDatabaseCount=0;return{count:0,empty:true,state:'NOT_INITIALIZED_OR_API_DISABLED',identifiersOutput:false};}
-    if(!result.ok)throw Object.assign(new Error('firestore inventory failed'),{category:String(result.status)});
+    if(!result.ok)throw Object.assign(new Error('firestore inventory failed'),{category:providerErrorCategory(result,'FIRESTORE')});
     const count=Array.isArray(result.payload?.databases)?result.payload.databases.length:0;
     report.summary.firestoreDatabaseCount=count;
     return{count,empty:count===0,state:'AVAILABLE',identifiersOutput:false};
@@ -210,26 +221,67 @@ async function main(){
   await mandatory('storageBuckets',async()=>{
     const result=await request('GET',`https://storage.googleapis.com/storage/v1/b?project=${encodeURIComponent(targetProjectId)}&maxResults=100`);
     if(result.status===403||result.status===404){report.summary.storageBucketCount=0;return{count:0,empty:true,state:'NOT_INITIALIZED_OR_API_DISABLED',identifiersOutput:false};}
-    if(!result.ok)throw Object.assign(new Error('storage inventory failed'),{category:String(result.status)});
+    if(!result.ok)throw Object.assign(new Error('storage inventory failed'),{category:providerErrorCategory(result,'STORAGE')});
     const count=Array.isArray(result.payload?.items)?result.payload.items.length:0;
     report.summary.storageBucketCount=count;
     return{count,empty:count===0,state:'AVAILABLE',identifiersOutput:false};
   });
 
+  let defaultHostingSiteId='';
   await mandatory('hostingSites',async()=>{
     const result=await request('GET',`https://firebasehosting.googleapis.com/v1beta1/projects/${encodeURIComponent(targetProjectId)}/sites?pageSize=100`);
-    if(result.status===403||result.status===404){report.summary.hostingSiteCount=0;return{count:0,empty:true,state:'NOT_INITIALIZED_OR_API_DISABLED',identifiersOutput:false};}
-    if(!result.ok)throw Object.assign(new Error('hosting inventory failed'),{category:String(result.status)});
-    const count=Array.isArray(result.payload?.sites)?result.payload.sites.length:0;
-    report.summary.hostingSiteCount=count;
+    if(result.status===403||result.status===404){
+      report.summary.hostingSiteCount=0;
+      report.summary.hostingDefaultSiteCount=0;
+      report.summary.hostingUserSiteCount=0;
+      return{count:0,defaultSiteCount:0,userSiteCount:0,providerDefaultOnly:true,state:'NOT_INITIALIZED_OR_API_DISABLED',identifiersOutput:false};
+    }
+    if(!result.ok)throw Object.assign(new Error('hosting inventory failed'),{category:providerErrorCategory(result,'HOSTING_SITES')});
+    const sites=Array.isArray(result.payload?.sites)?result.payload.sites:[];
+    const defaultSites=sites.filter(site=>String(site?.type||'')==='DEFAULT_SITE');
+    const userSites=sites.filter(site=>String(site?.type||'')==='USER_SITE');
+    if(defaultSites.length===1){
+      const rawName=String(defaultSites[0]?.name||'');
+      defaultHostingSiteId=rawName.split('/').pop()||'';
+    }
+    report.summary.hostingSiteCount=sites.length;
+    report.summary.hostingDefaultSiteCount=defaultSites.length;
+    report.summary.hostingUserSiteCount=userSites.length;
+    return{count:sites.length,defaultSiteCount:defaultSites.length,userSiteCount:userSites.length,providerDefaultOnly:sites.length===1&&defaultSites.length===1&&userSites.length===0,state:'AVAILABLE',identifiersOutput:false};
+  });
+
+  await mandatory('hostingReleases',async()=>{
+    if(!defaultHostingSiteId){
+      report.summary.hostingReleaseCount=0;
+      return{count:0,empty:true,state:'NO_DEFAULT_SITE',identifiersOutput:false};
+    }
+    const result=await request('GET',`https://firebasehosting.googleapis.com/v1beta1/sites/${encodeURIComponent(defaultHostingSiteId)}/releases?pageSize=1`);
+    if(result.status===403||result.status===404){report.summary.hostingReleaseCount=0;return{count:0,empty:true,state:'NOT_INITIALIZED_OR_API_DISABLED',identifiersOutput:false};}
+    if(!result.ok)throw Object.assign(new Error('hosting releases inventory failed'),{category:providerErrorCategory(result,'HOSTING_RELEASES')});
+    const count=Array.isArray(result.payload?.releases)?result.payload.releases.length:0;
+    report.summary.hostingReleaseCount=count;
     return{count,empty:count===0,state:'AVAILABLE',identifiersOutput:false};
   });
 
-  const values=[report.summary.appCount,report.summary.authUserCount,report.summary.firestoreDatabaseCount,report.summary.storageBucketCount,report.summary.hostingSiteCount];
-  report.summary.nonEmptySignalCount=values.filter(value=>Number(value)>0).length;
+  const providerDefaultHostingOnly=Number(report.summary.hostingSiteCount||0)===1&&Number(report.summary.hostingDefaultSiteCount||0)===1&&Number(report.summary.hostingUserSiteCount||0)===0;
+  const dataSignals=[
+    report.summary.appCount,
+    report.summary.authUserCount,
+    report.summary.firestoreDatabaseCount,
+    report.summary.storageBucketCount,
+    report.summary.hostingUserSiteCount,
+    report.summary.hostingReleaseCount
+  ];
+  report.summary.nonEmptySignalCount=dataSignals.filter(value=>Number(value)>0).length;
   report.summary.allMandatoryAvailable=report.summary.unavailableMandatoryCount===0;
   report.summary.newIdentityConfirmed=Boolean(report.target.projectExists&&report.target.firebaseEnabled&&report.target.displayNameMatch&&report.target.active&&report.target.createdWithinAuthorizedWindow);
-  report.summary.emptyBaselineVerified=Boolean(report.summary.newIdentityConfirmed&&report.summary.allMandatoryAvailable&&report.summary.nonEmptySignalCount===0&&values.every(value=>Number(value)===0));
+  report.summary.emptyBaselineVerified=Boolean(
+    report.summary.newIdentityConfirmed&&
+    report.summary.allMandatoryAvailable&&
+    providerDefaultHostingOnly&&
+    report.summary.nonEmptySignalCount===0&&
+    dataSignals.every(value=>Number(value)===0)
+  );
   report.decision=report.summary.emptyBaselineVerified?'NEW_EMPTY_FIREBASE_DEV_VERIFIED_C4':'NEW_FIREBASE_DEV_REVIEW_REQUIRED_C4';
   write();
 }
