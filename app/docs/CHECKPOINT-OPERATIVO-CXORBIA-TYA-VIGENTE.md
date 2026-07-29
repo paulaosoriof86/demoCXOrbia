@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-29  
-**Estado:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_PROTECTED_CXDATA_SMOKE_PASS__HOSTING_DEV_AUTH_PENDING__NO_DATA_WRITES`
+**Estado:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_HOSTING_DEV_PASS__VISUAL_VALIDATION_PENDING__NO_DATA_WRITES`
 
 ## 1. Repositorio y seguridad
 
@@ -27,67 +27,27 @@ Backlog P1/P2 de PDF, Excel, reportKit y copy no reabre Corte 3.
 
 `CX.data READ-ONLY → Firebase nuevo y vacío → misma interfaz → cero data writes`.
 
-## 4. Firebase nuevo / Gates 1–2
+## 4. Firebase nuevo / Gates 1–3: PASS
 
 - Project ID: `cxorbia-tya-dev-260729-c4`.
 - Display name: `CXOrbia TyA DEV Clean Corte 4`.
 - `cxorbia-backend-dev` permanece excluido: no se conecta, copia o reutiliza.
 - Identidad nueva: PASS, commit `b18f0b6cf74afb8b3ac770a73231c6cf1353b37c`.
 - Vacío integral previo: PASS, commit `7b0e40f8607b80a4f37238314a66064af35c5e6d`.
+- Web App DEV `CXOrbia TyA DEV Corte 4`: READY.
+- Firestore `(default)`: READY, Native/Standard, `us-central1`, sin colecciones.
+- Rules `backend/rules/firestore.corte4-readonly.rules`: DEPLOYED + VERIFIED.
+- Firebase Authentication: INITIALIZED; sin usuario permanente.
+- Bootstrap revalidado idempotentemente: `e524b968c0003c27351d5d5826e21ffcf7cbfdbe`.
+- Decisión: `BOOTSTRAP_DEV_READONLY_COMPLETED_C4`.
 
-## 5. Hardening read-only
-
-- contrato `backend/contracts/cxdata-firestore-readonly-corte4-v1.json`;
-- `readOnly=true` / `writeMode=disabled`;
-- interfaz pública `CX.data` preservada;
-- mutaciones/persistencia bloqueadas;
-- backend vacío = vacío;
-- errores fail-closed;
-- no fallback mock/localStorage.
-
-## 6. Gate 3 — bootstrap provider DEV: PASS
-
-Autorización consumida: `Autorizo bootstrap DEV read-only de Corte 4`.
-
-Resultado:
-
-- Web App DEV `CXOrbia TyA DEV Corte 4`: READY;
-- Firestore `(default)`: READY, Native/Standard, `us-central1`, sin colecciones;
-- Rules `backend/rules/firestore.corte4-readonly.rules`: DEPLOYED + VERIFIED;
-- Firebase Authentication inicializado por Paula desde Console sin proveedor ni usuarios;
-- revalidación idempotente `e524b968c0003c27351d5d5826e21ffcf7cbfdbe`;
-- `BOOTSTRAP_DEV_READONLY_COMPLETED_C4`;
-- Web App=true / Firestore=true / Auth=true / Rules=true;
-- provider config writes en la revalidación=0.
-
-## 7. Gate 4 — protected CX.data smoke: PASS
+## 5. Gate 4 — protected CX.data smoke: PASS
 
 Autorización consumida: `Autorizo operador DEV temporal para smoke protegido de Corte 4`.
 
-### Ejecución
+Intento válido: `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`.
 
-El gate hizo únicamente lo autorizado:
-
-1. habilitó temporalmente Email/Password en el Firebase nuevo DEV;
-2. creó un único operador temporal con credencial aleatoria no expuesta;
-3. aplicó claims `role=admin`, `tenantId=tya`;
-4. ejecutó navegador real contra `app/index-backend-dev.html` y Firestore vacío bajo Rules read-only;
-5. verificó lectura protegida y bloqueo de escrituras;
-6. eliminó el usuario temporal;
-7. restauró Email/Password a deshabilitado;
-8. confirmó Auth users=0 y Firestore aún vacío.
-
-### Evidencia válida
-
-Commit: `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`.
-
-Statuses sanitizados:
-
-- `cxorbia/c4smoke-error-NONE`;
-- `cxorbia/c4smoke-srcfirestore-etrue-fbfalse-rotrue`;
-- `cxorbia/c4cleanup-u0-emailfalse`.
-
-Condiciones demostradas:
+Comprobado:
 
 - `source=firestore`;
 - `empty=true`;
@@ -95,65 +55,83 @@ Condiciones demostradas:
 - `readOnly=true`;
 - `writeMode=disabled`;
 - interfaz `CX.data` preservada;
-- claims del principal temporal verificados;
-- arrays de datos Firestore vacíos;
-- write directo bloqueado por guard;
+- claims temporales `role=admin`, `tenantId=tya`;
+- write directo bloqueado;
 - Firestore document writes=0;
 - cleanup completo;
 - Auth users final=0;
 - Email/Password final=false.
 
-### Falso negativo del publicador — no reabre el gate
+El falso negativo del publicador quedó corregido en `9967146e112322efcd043155ae05351bbbbd4e8a` sin rerun ni nuevo Auth write.
 
-El contexto agregado `cxorbia/corte4-protected-cxdata-smoke` quedó `error` porque el publicador exigía `cleanup.source-safe.json` además de `main.cleanup.complete=true`. El executor principal ya había realizado y verificado cleanup antes de eliminar el directorio privado, por lo que el segundo cleanup redundante no generó ese archivo.
+## 6. Gate 5 — Hosting DEV para validación visual: PASS
 
-La combinación `errorCategory=NONE + source=firestore + empty=true + fallback=false + readOnly=true + usersAfter=0 + emailAfter=false` solo ocurre después de que el executor pasa su browser smoke y cleanup internos.
+Autorización consumida: `Autorizo Hosting DEV de Corte 4 para validación visual.`
 
-Corrección de raíz: `9967146e112322efcd043155ae05351bbbbd4e8a`.
+Ejecución:
 
-- el publicador acepta cleanup verificado en el reporte principal;
-- la edición del workflow ya no lo auto-dispara;
-- no se creó otro usuario temporal para corregir reporting.
+- authorizationId `c4-hosting-visual-20260729-01`;
+- deployed source commit `fabba5c76bb40f5105f8e10dd54be63e9b3eb783`;
+- `cxorbia/corte4-hosting-dev-visual = success`;
+- `cxorbia/c4hosting-deploys1 = success`;
+- exactamente 1 Hosting deploy ejecutado;
+- remote proof PASS;
+- `index-backend-dev.html` remoto verificado;
+- build temporal con Firebase Web config inyectado solo durante deploy, sin credencial de usuario ni secreto persistido en repo;
+- `backend-dev-auth.local.js` remoto sin credenciales;
+- Hosting-only sobre `cxorbia-tya-dev-260729-c4`.
 
-## 8. Seguridad comprobada
+URL visual canónica:
+
+`https://cxorbia-tya-dev-260729-c4.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&c4visual=fabba5c76bb40f5105f8e10dd54be63e9b3eb783`
+
+La autorización quedó consumida y congelada:
+
+- workflow one-shot pasó a HOLD en `03ce796ee5320ed8c0ecffe8954cbaf735c63df0`;
+- request pasó a `enabled=false`, `status=consumed`, `hostingDeployExecutions=0` en `cfca7726e69a3fb2f082a75a27c59c96e29f80fe`.
+
+## 7. Seguridad comprobada
 
 - Firestore document writes: 0.
 - Auth users permanentes: 0.
 - Email/Password: deshabilitado.
 - Storage writes: 0.
-- Hosting deploy nuevo de Corte 4: 0.
+- Rules deploy adicionales: 0.
 - Functions: 0.
 - imports/materialización: 0.
 - HR writes: 0.
 - Make/Gemini: 0.
 - pagos/lotes: 0.
 - merge/producción: 0.
+- Hosting Corte 4: exactamente 1 deploy autorizado, ya consumido.
 
-## 9. Gate real siguiente — Hosting DEV
+## 8. Gate real siguiente — validación visual
 
-Corte 4 tiene lectura protegida técnicamente demostrada. El siguiente paso modifica Hosting DEV y por eso conserva gate separado:
+La infraestructura y lectura protegida de Corte 4 ya están demostradas técnicamente. Falta validación humana del runtime DEV publicado.
 
-1. autorización explícita para Hosting DEV del mismo build read-only;
-2. deploy DEV sin producción;
-3. validación visual real;
-4. si aparece un P0 reproducible, corrección focalizada únicamente;
-5. freeze Corte 4;
-6. retirar los roles IAM elevados temporales y dejar runner en Viewer.
+Criterio:
 
-## 10. Siguiente acción exacta
+1. Paula abre la URL visual canónica;
+2. comprueba arranque, login/shell, navegación y estado vacío/fail-closed sin fallback demo;
+3. si existe P0 reproducible, corregir únicamente ese P0;
+4. si no existe P0, `FREEZE CORTE 4`;
+5. retirar IAM temporal elevado y dejar runner en Viewer;
+6. continuar inmediatamente con Corte 5 materialización DEV.
 
-`AUTORIZAR HOSTING DEV DE CORTE 4 → DEPLOY READ-ONLY DEV → VALIDACIÓN VISUAL → FREEZE CORTE 4 → RETIRAR IAM TEMPORAL A VIEWER`.
+## 9. Siguiente acción exacta
 
-No se necesita PowerShell, nueva candidata, ZIP ni datos TyA.
+`VALIDACIÓN VISUAL PAULA → FREEZE CORTE 4 SI NO HAY P0 → RETIRAR IAM TEMPORAL A VIEWER → CORTE 5`.
 
-## 11. Claude/prototipo y Academia
+No se necesita PowerShell, nueva candidata, ZIP ni configuración Firebase manual.
 
-- Claude/prototipo: sin nueva candidata; no tocar backend/contracts/adapters. Solo abrir tarea si la validación visual demuestra una diferencia P0 reproducible localizada.
-- Academia: separar gate ejecutado, cleanup y publicador; documentar falso negativo metodológico de reporting y corrección sin rerun.
-- Reusable CXOrbia: preflight IAM/location, bootstrap idempotente, fail-closed, principal temporal reversible, protected smoke, cleanup verificable y retiro de privilegios.
+## 10. Claude/prototipo y Academia
+
+- Claude/prototipo: sin nueva candidata; solo abrir tarea si la visual demuestra P0 reproducible localizado.
+- Academia: separar Hosting DEV, protected smoke, visual humana y producción.
+- Reusable CXOrbia: one-shot authorization, Hosting-only config, remote proof, anti-redeploy y cleanup de autorización.
 - Exclusivo cliente: projectId DEV TyA y `us-central1`.
-- Sin impacto Claude: runners, IAM, Auth temporal y reporting.
+- Sin impacto Claude: runner, Firebase Hosting, IAM y proof remoto.
 
-## 12. Estado seguro
+## 11. Estado seguro
 
-PR #7 draft/open/no merge. Corte 3 preservado. Corte 4 tiene provider bootstrap y protected CX.data smoke PASS. No hay datos TyA materializados ni producción; el único gate actual es Hosting DEV para validación visual.
+PR #7 draft/open/no merge. Corte 3 preservado. Corte 4 tiene bootstrap, protected smoke y Hosting DEV PASS. No hay datos TyA materializados ni producción. Gate vivo único: validación visual.
