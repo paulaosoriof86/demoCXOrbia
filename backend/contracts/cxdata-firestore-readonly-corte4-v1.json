@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "contractId": "cxdata-firestore-readonly-corte4-v1",
   "phase": "A",
   "cut": 4,
-  "status": "PROTECTED_SMOKE_PASSED_HOSTING_DEV_AUTH_PENDING",
+  "status": "HOSTING_DEV_PASSED_VISUAL_VALIDATION_PENDING",
   "provider": "firebase",
   "environment": "dev",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -20,9 +20,15 @@
   "authProvidersEnabled": false,
   "authUserCount": 0,
   "protectedReadSmokePassed": true,
+  "hostingDevAuthorized": true,
+  "hostingDevAuthorizationConsumed": true,
+  "hostingDevDeployed": true,
+  "hostingDevRemoteProofVerified": true,
+  "hostingDevEntrypointVerified": true,
+  "hostingDevDeployExecutions": 1,
   "activationAllowed": true,
   "hostingDevAllowed": false,
-  "activationBlocker": "HOSTING_DEV_REQUIRES_EXPLICIT_AUTHORIZATION",
+  "activationBlocker": "VISUAL_VALIDATION_REQUIRED_BEFORE_CORTE4_FREEZE",
   "excludedExistingProjects": [
     {
       "projectId": "cxorbia-backend-dev",
@@ -35,11 +41,15 @@
     "newEmptyPath": ".github/cxorbia-firebase-requests/corte4-new-empty.json",
     "bootstrapPath": ".github/cxorbia-firebase-requests/corte4-bootstrap-execute.json",
     "protectedSmokePath": ".github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json",
+    "hostingDevPath": ".github/cxorbia-firebase-requests/corte4-hosting-dev-visual.json",
     "bootstrapRevalidationCommit": "e524b968c0003c27351d5d5826e21ffcf7cbfdbe",
     "protectedSmokeCommit": "b698a925f5f6a7c8405afb7fb54a9f4c551e8498",
     "publisherFixCommit": "9967146e112322efcd043155ae05351bbbbd4e8a",
+    "hostingDeployedSourceCommit": "fabba5c76bb40f5105f8e10dd54be63e9b3eb783",
+    "hostingAuthorizationId": "c4-hosting-visual-20260729-01",
+    "hostingAuthorizationFreezeCommit": "cfca7726e69a3fb2f082a75a27c59c96e29f80fe",
     "resultObserved": true,
-    "decision": "PROTECTED_CXDATA_SMOKE_PASS_CLEANED",
+    "decision": "HOSTING_DEV_PASS_VISUAL_PENDING",
     "revalidationProviderWrites": 0,
     "publisherFalseNegativeCorrectedWithoutRerun": true
   },
@@ -47,7 +57,7 @@
     "firebasercCurrentProjectId": "cxorbia-backend-dev",
     "matchesCandidate": false,
     "mappingChangeAllowed": false,
-    "reason": "do not retarget Firebase CLI globally; Corte 4 uses explicit project-scoped runners until Hosting DEV gate is separately authorized"
+    "reason": "Corte 4 Hosting used an explicit temporary Hosting-only config scoped to cxorbia-tya-dev-260729-c4; repository-wide Firebase mapping was not retargeted"
   },
   "interface": {
     "name": "CX.data",
@@ -105,9 +115,32 @@
     "authUsersAfterCleanup": 0,
     "emailPasswordEnabledAfterCleanup": false,
     "firestoreDocumentWrites": 0,
-    "aggregateStatusWasFalseNegative": true,
-    "aggregateStatusFalseNegativeReason": "publisher required redundant cleanup.source-safe.json even though main executor had already verified cleanup.complete=true and removed private material",
     "publisherCorrectedWithoutRerun": true
+  },
+  "hostingDevEvidence": {
+    "authorizationText": "Autorizo Hosting DEV de Corte 4 para validación visual.",
+    "authorizationId": "c4-hosting-visual-20260729-01",
+    "deployedSourceCommit": "fabba5c76bb40f5105f8e10dd54be63e9b3eb783",
+    "status": "cxorbia/corte4-hosting-dev-visual=success",
+    "executionStatus": "cxorbia/c4hosting-deploys1=success",
+    "deployExecutions": 1,
+    "remoteProofVerified": true,
+    "entrypointVerified": true,
+    "hostingOnly": true,
+    "visualUrl": "https://cxorbia-tya-dev-260729-c4.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&c4visual=fabba5c76bb40f5105f8e10dd54be63e9b3eb783",
+    "firestoreDocumentWrites": 0,
+    "authUserWrites": 0,
+    "authConfigWrites": 0,
+    "storageWrites": 0,
+    "rulesDeploys": 0,
+    "functionsDeploys": 0,
+    "imports": 0,
+    "hrWrites": 0,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "merge": false,
+    "production": false
   },
   "rulesCandidate": {
     "path": "backend/rules/firestore.corte4-readonly.rules",
@@ -125,14 +158,7 @@
     "readOnlyCompatible": false,
     "reason": "current repository default rules contain authorized create/update/delete paths and are not the deployed Corte 4 rules"
   },
-  "requiredCollections": [
-    "tenants",
-    "projects",
-    "shoppers",
-    "visits",
-    "postulations",
-    "applications"
-  ],
+  "requiredCollections": ["tenants", "projects", "shoppers", "visits", "postulations", "applications"],
   "identityRules": {
     "tenantScoped": true,
     "projectScoped": true,
@@ -150,15 +176,18 @@
     "firestore_readonly_rules_deployed_and_verified",
     "bootstrap_idempotent_revalidation_passed",
     "temporary_authenticated_operator_explicitly_authorized",
-    "temporary_email_password_provider_enabled_only_for_smoke",
     "temporary_operator_claims_verified",
     "protected_cxdata_empty_read_smoke_passed",
     "temporary_principal_cleanup_verified",
     "email_password_disabled_after_smoke",
-    "auth_users_returned_to_zero"
+    "auth_users_returned_to_zero",
+    "hosting_dev_explicitly_authorized",
+    "hosting_dev_deployed_once",
+    "hosting_dev_remote_proof_verified",
+    "hosting_dev_entrypoint_verified",
+    "hosting_dev_authorization_consumed"
   ],
   "pendingGates": [
-    "hosting_dev_explicitly_authorized",
     "visual_validation",
     "corte4_freeze",
     "temporary_iam_removed_to_viewer"
@@ -167,7 +196,9 @@
   "safeState": {
     "merge": false,
     "production": false,
-    "hostingDeploy": false,
+    "hostingDeploy": true,
+    "hostingDeployExecutions": 1,
+    "hostingAuthorizationConsumed": true,
     "rulesDeploymentCompleted": true,
     "firestoreDocumentWrites": false,
     "authPermanentUsers": 0,
