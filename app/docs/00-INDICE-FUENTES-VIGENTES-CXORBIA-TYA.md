@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-29  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_PROTECTED_CXDATA_SMOKE_PASS__HOSTING_DEV_AUTH_PENDING__NO_DATA_WRITES`
+**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_HOSTING_DEV_PASS__VISUAL_VALIDATION_PENDING__NO_DATA_WRITES`
 
 ## 1. Repositorio
 
@@ -21,10 +21,10 @@
 5. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 6. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 7. `backend/contracts/cxdata-firestore-readonly-corte4-v1.json`;
-8. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE4-PROTECTED-SMOKE-PASS-20260729.md`;
-9. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE4-PROTECTED-SMOKE-PASS-20260729.md`;
-10. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE4-PROTECTED-SMOKE-PASS-20260729.md`;
-11. `app/docs/ACADEMIA-IMPACTO-CORTE4-PROTECTED-SMOKE-PASS-20260729.md`;
+8. `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE4-HOSTING-DEV-PASS-20260729.md`;
+9. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE4-HOSTING-DEV-PASS-20260729.md`;
+10. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE4-HOSTING-DEV-PASS-20260729.md`;
+11. `app/docs/ACADEMIA-IMPACTO-CORTE4-HOSTING-DEV-PASS-20260729.md`;
 12. `app/docs/ACTIVE-BASELINE-CORTE3-V182-20260729.json`;
 13. `app/docs/FREEZE-CORTE3-V182-APPROVED-20260729.md`;
 14. PR #7 y HEAD vivo.
@@ -46,13 +46,15 @@ Objetivo: Firebase nuevo/vacío, `CX.data` read-only, misma interfaz y cero data
 Hardening vigente:
 
 - interfaz `CX.data` preservada;
-- readOnly=true / writeMode=disabled;
+- `readOnly=true` / `writeMode=disabled`;
 - backend vacío visible como vacío;
 - error de lectura fail-closed;
 - no fallback mock/localStorage;
 - base legacy/preexistente prohibida.
 
-## 5. Firebase nuevo — Gates 1–3 PASS
+## 5. Gates 1–3 — PASS
+
+Firebase nuevo:
 
 - projectId `cxorbia-tya-dev-260729-c4`;
 - display name `CXOrbia TyA DEV Clean Corte 4`;
@@ -70,13 +72,7 @@ Bootstrap idempotente: `BOOTSTRAP_DEV_READONLY_COMPLETED_C4`.
 
 Autorización consumida: `Autorizo operador DEV temporal para smoke protegido de Corte 4`.
 
-Intento válido: commit `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`.
-
-Evidencia sanitizada:
-
-- `cxorbia/c4smoke-error-NONE`;
-- `cxorbia/c4smoke-srcfirestore-etrue-fbfalse-rotrue`;
-- `cxorbia/c4cleanup-u0-emailfalse`.
+Intento válido: `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`.
 
 Resultado comprobado:
 
@@ -85,37 +81,52 @@ Resultado comprobado:
 - `fallbackUsed=false`;
 - `readOnly=true` / `writeMode=disabled`;
 - interfaz pública `CX.data` preservada;
-- claims temporales `role=admin`, `tenantId=tya` verificados por el smoke exitoso;
+- claims temporales `role=admin`, `tenantId=tya` verificados;
+- write directo bloqueado;
 - Firestore document writes=0;
 - operador temporal eliminado;
 - Auth users final=0;
 - Email/Password final=deshabilitado.
 
-No hubo materialización de datos TyA.
+El falso negativo del publicador se corrigió en `9967146e112322efcd043155ae05351bbbbd4e8a` sin rerun ni nuevo Auth write.
 
-### Falso negativo de reporting — resuelto
+## 7. Gate 5 — Hosting DEV: PASS
 
-El status agregado del workflow quedó `error` porque el publicador exigía un segundo archivo de cleanup aun cuando el executor principal ya había ejecutado y verificado `cleanup.complete=true`. No fue fallo de Firebase ni del browser smoke.
+Autorización consumida: `Autorizo Hosting DEV de Corte 4 para validación visual.`
 
-Corrección de raíz: commit `9967146e112322efcd043155ae05351bbbbd4e8a`, sin volver a ejecutar el principal temporal. El publicador ahora acepta el cleanup verificado por el executor principal y no se auto-dispara al editar su propio workflow.
+- Authorization ID: `c4-hosting-visual-20260729-01`.
+- Deployed source commit: `fabba5c76bb40f5105f8e10dd54be63e9b3eb783`.
+- Status `cxorbia/corte4-hosting-dev-visual = success`.
+- Status `cxorbia/c4hosting-deploys1 = success`.
+- Hosting deploy executions: exactamente 1.
+- Remote proof: verificado.
+- Entrypoint `index-backend-dev.html`: verificado.
+- Deployment: Hosting-only sobre `cxorbia-tya-dev-260729-c4`.
+- Firestore/Auth/Storage/Rules/Functions/HR/import/Make/Gemini/payment/merge/production writes: 0.
 
-## 7. Seguridad actual
+Visual URL:
+
+`https://cxorbia-tya-dev-260729-c4.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&c4visual=fabba5c76bb40f5105f8e10dd54be63e9b3eb783`
+
+La autorización one-shot quedó consumida y congelada: workflow en HOLD y request con `hostingDeployExecutions=0`.
+
+## 8. Seguridad actual
 
 - Firestore document writes=0;
 - Auth users permanentes=0;
 - Email/Password=deshabilitado;
 - Storage writes=0;
-- Hosting deploy nuevo=0;
-- Functions/imports/HR/Make/Gemini/payments/merge/production=0.
+- Hosting DEV Corte 4: 1 deploy autorizado y consumido;
+- Rules/Functions/imports/HR/Make/Gemini/payments/merge/production adicionales=0.
 
-## 8. Siguiente acción exacta
+## 9. Siguiente acción exacta
 
-`AUTORIZACIÓN SEPARADA HOSTING DEV DEL BUILD READ-ONLY → DEPLOY DEV → VALIDACIÓN VISUAL → CORRECCIÓN SOLO SI P0 REPRODUCIBLE → FREEZE CORTE 4 → RETIRAR IAM TEMPORAL A VIEWER`.
+`VALIDACIÓN VISUAL PAULA → si P0 reproducible, corrección focalizada únicamente → si no P0, FREEZE CORTE 4 → retirar IAM temporal elevado y dejar runner en Viewer → CORTE 5 materialización DEV`.
 
-No se requiere PowerShell, nueva candidata, ZIP ni datos TyA.
+No se requiere PowerShell, nueva candidata, ZIP ni datos TyA para la validación visual.
 
-## 9. Claude/prototipo y Academia
+## 10. Claude/prototipo y Academia
 
 - Claude: sin nueva candidata; no tocar backend/contracts/adapters. Solo actuar si la validación visual demuestra P0 localizado.
-- Academia: distinguir ejecución del gate, cleanup y status agregado; documentar falso negativo de reporting y su corrección sin rerun.
-- Reusable CXOrbia: bootstrap idempotente/fail-closed, principal temporal reversible, smoke protegido, cleanup verificable y least privilege posterior.
+- Academia: distinguir Hosting DEV de producción, deployment de runtime, protected smoke y visual humana.
+- Reusable CXOrbia: autorización one-shot, deploy Hosting-only, proof remoto, antiredeploy por `authorizationId` y freeze posterior.
