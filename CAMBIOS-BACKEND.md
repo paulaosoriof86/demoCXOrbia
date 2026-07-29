@@ -1,5 +1,28 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-29 — Corte 3 congelado y Corte 4 read-only bloqueado por IAM
+
+- Corte 3 quedó `FROZEN_ACTIVE_BASELINE` con baseline `CXORBIA-TYA-CORTE3-V182-20260729`.
+- V182 está empalmada; no existe ni se requiere V183/R33.
+- R26–R32: 135/135 PASS; HR remota, Hosting DEV y smoke de pagos: PASS.
+- Mayo 2026: 44 pagadas, 0 pendientes, 42 vínculos exactos, 2 reviews, CxP GT Q0/HN L0.
+- Junio 2026: 2 pagadas, 42 pendientes, GT pagado Q451/HN L0.
+- Se inició Corte 4 con objetivo `FIREBASE NUEVO Y VACÍO → CX.data READ-ONLY → MISMA INTERFAZ → CERO WRITES`.
+- Se prepararon contrato/guard read-only, backend desactivado por defecto, fail-closed sin fallback mock/localStorage y Rules candidate no desplegado.
+- Gate estático Corte 4: `PASS_READONLY_POST_GATES` con providerReads=0, providerWrites=0 y dataWrites=0.
+- `cxorbia-backend-dev` quedó excluido por no ser nuevo/vacío; no se conecta, copia ni reutiliza.
+- Candidato: `cxorbia-tya-dev-260729-c4`.
+- Se corrigió el preflight para seleccionar una service account estructuralmente válida entre las rutas disponibles.
+- Probe read-only: `TARGET_PROJECT_PERMISSION_DENIED_C4`.
+- Creación atómica: `BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY`.
+- Resultado: projectCreated=false, firebaseAdded=false, existingDatabaseReused=false, Firestore/Auth/Storage/Rules/Hosting writes=0.
+- Causa raíz comprobada: IAM/proveedor. La service account válida disponible no tiene permiso para crear/verificar el proyecto nuevo.
+- Siguiente bloque: resolver IAM Project Creator, crear/verificar Firebase nuevo/vacío, config web DEV, Rules read-only, activar solo lectura, smoke `CX.data`, validación visual y freeze Corte 4.
+- Clasificación: **Reusable CXOrbia:** base nueva obligatoria, fail-closed, read-only, IAM separado de credencial; **Exclusivo TyA:** projectId candidato y datos HR/financieros; **Claude/prototipo:** sin cambio funcional requerido por Corte 4; **Academia:** diferenciar credencial, IAM, proyecto, Firebase, Rules, lectura y escritura; **Sin impacto Claude:** runner/provider/gates internos.
+- Estado seguro: PR #7 draft/open/no merge; sin producción, provider activation, Rules deploy, imports ni writes reales.
+
+## Histórico previo
+
 ## 2026-07-20 — Corte 1A lectura HR viva runtime y eliminación de snapshot como verdad operativa
 
 - La validación visual de Paula bloqueó el freeze de Corte 1 por inconsistencias entre KPI, detalle, reportes y cambio de periodo.
@@ -29,26 +52,10 @@
 - Se diagnosticó la causa raíz del reproceso recurrente de empalmes: una promoción podía aplicar parcialmente una candidata y conservar archivos runtime anteriores mediante exclusiones silenciosas.
 - Se eliminó `.github/workflows/finalize-unique-baseline.yml`, porque excluía archivos runtime y podía producir una baseline híbrida.
 - Se creó `app/docs/ADDENDUM-MAESTRO-FAST-LANE-EMPALME-ATOMICO-TYA-20260716.md` con la metodología obligatoria para futuras candidatas: árbol completo primero, overlays explícitos después, una sola identidad/manifest/source lock y gates fail-closed.
-- Se corrigió `app/core/tya-phase-a-source-safe-preview.js` para separar correctamente:
-  - proyecto padre `cinepolis`;
-  - periodo mensual con ID estable `cinepolis::<YYYY-MM>`;
-  - visitas y postulaciones vinculadas al periodo activo;
-  - `currentProjectId` y `currentPeriodId` independientes.
-- Causa funcional corregida: el bridge anterior asignaba el mismo ID `cinepolis` a los 14 periodos y a todas las visitas, impidiendo que el cambio de periodo cambiara el histórico y permitiendo que KPI/Finanzas mezclaran periodos.
-- Se creó `tools/qa/tya-project-period-kpi-history-gate.mjs` para comprobar automáticamente proyecto/periodo/contexto, 14 periodos, 616 visitas, 44 visitas por periodo, MAY/JUN/JUL distintos, KPI por periodo y junio ejecutado con control de pagos pendiente.
-- Se creó `tools/qa/verify-fast-lane-promotion-policy.mjs` para bloquear workflows que excluyan silenciosamente rutas runtime de candidatas.
-- Se actualizó `.github/workflows/cxorbia-phase-a-source-safe-visual-smoke-tya.yml` para ejecutar el gate nuevo de forma fail-closed junto con los smokes Admin/Shopper/Cliente.
-- Se actualizó `backend/contracts/prototype-baseline-registry-v1.json`: V131+R18D sigue como rollback físico actual y V156 queda `pending_audit`, no aceptada ni empalmada, hasta promoción atómica y PASS de gates.
+- Se corrigió `app/core/tya-phase-a-source-safe-preview.js` para separar correctamente proyecto padre `cinepolis`, periodo mensual con ID estable `cinepolis::<YYYY-MM>`, visitas/postulaciones del periodo activo y `currentProjectId`/`currentPeriodId` independientes.
+- Se creó `tools/qa/tya-project-period-kpi-history-gate.mjs` y `tools/qa/verify-fast-lane-promotion-policy.mjs`.
 - No se tocó ningún archivo en `app/modules/**` desde backend.
 - Estado seguro: sin deploy, producción, imports reales, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos.
-
-### Clasificación
-
-- **Reusable CXOrbia:** fast-lane atómico, política de propiedad de archivos, gate proyecto/periodo/contexto/KPI y bloqueo de exclusiones runtime.
-- **Exclusivo cliente:** 14 periodos TyA/Cinépolis, 44 visitas por periodo, 616 visitas y tratamiento operativo de junio.
-- **Claude/prototipo:** V156 continúa como única candidata frontend; no se solicita otra candidata por este incidente.
-- **Academia:** debe explicar proyecto vs periodo, cambio de contexto, histórico, KPI y estados honestos.
-- **Sin impacto Claude:** validadores, workflows, registro de baseline y controles de promoción.
 
 ## 2026-07-11 - Importadores source-safe operativos R4
 
@@ -60,45 +67,23 @@
 - Producen candidatos, `reviewQueue`, `auditEvents`, envelopes source-safe y reporte sin materialización.
 - Se agregaron contratos, plantillas CSV, fixtures sanitizados, validador JSON/XLSX y workflow CI.
 - Validación: 20 checks PASS; workflow `CXOrbia Phase A Source Safe Importers` success.
-- La documentación detallada está en `app/docs/CAMBIOS-BACKEND-ADDENDUM-SOURCE-SAFE-IMPORTERS-R4-20260711.md`.
 - Estado seguro: dry-run; sin import real, writes, deploy, proveedores, pagos ni producción.
 
 ## 2026-07-09 - Phase A human review and conflict queue TyA
 
-- Se agrego `backend/contracts/phase-a-human-review-conflict-queue-plan-v1.json`.
-- Se agrego `app/docs/PHASE-A-HUMAN-REVIEW-CONFLICT-QUEUE-TYA-20260709.md`.
-- Se agrego `app/docs/HUMAN-REVIEW-CONFLICT-NOTE-TYA-20260709.md`.
-- Objetivo: preparar el plan documental de cola de revision humana y conflictos para Phase A TyA antes de cualquier DEV, import, escritura o sincronizacion real.
-- Confirmacion de foco: seguimos en Phase A TyA con HR como fuente operacional, informacion real/source-safe, Cinépolis como primer proyecto configurable, junio como liquidaciones/pagos, certificaciones preservadas, shoppers historicos conservados y conflictos a revision humana.
-- Conflictos cubiertos: shopper asignado en HR y ausente en plataforma, identidad ambigua, plataforma vs HR, duplicados, certificaciones ya presentadas, liquidaciones/pagos, cuestionario/origen y configuracion de proyecto.
-- Llaves estables: tenantId, projectId, visitId/hrRowId, shopperId/referencia provisional, assignmentSource, assignmentSyncStatus y lastSyncedAt/sourceSnapshotAt.
-- Impacto backend reusable: patron por tenant/proyecto de reviewQueue, tipos de conflicto, acciones permitidas/bloqueadas, referencias opacas, auditoria y no resolucion silenciosa.
-- Impacto Claude/prototipo: mostrar conflicto visible, revision humana requerida, shopper HR asignado como pendiente de creacion/revision, certificacion preservada y liquidacion/pago como control, no pago real.
-- Impacto Academia: explicar cola de revision, conflictos, llaves estables, asignaciones HR/plataforma, certificaciones preservadas, junio liquidaciones/pagos y no datos privados en logs/manuales.
-- Estado seguro: documentacion/contrato solamente. Sin cambios en `/app/modules`, sin cambios en `/app/core`, sin DEV activo, sin runtime, sin builder, sin imports, sin writes, sin Firestore/Auth/Storage/HR, sin Make/Gemini, sin deploy, sin produccion, sin pagos reales y sin datos sensibles.
-- Commits: `5da0d027669bfb246c66e96d48719932ceb33286`, `a7db9f8ccea68b44e1b4be26dd638208473d069c`, `c4ba8d435f4f0d4d5f550db5db4dae31dfd4b4eb`.
+- Se agrego `backend/contracts/phase-a-human-review-conflict-queue-plan-v1.json` y documentación asociada.
+- Objetivo: preparar cola de revisión humana y conflictos antes de cualquier DEV, import, escritura o sincronización real.
+- Conflictos cubiertos: shopper asignado en HR y ausente en plataforma, identidad ambigua, plataforma vs HR, duplicados, certificaciones, liquidaciones/pagos, cuestionario/origen y configuración de proyecto.
+- Estado seguro: documentación/contrato solamente; sin runtime, imports, writes, proveedores, deploy, producción ni pagos reales.
 
 ## 2026-07-09 - Phase A DEV rollback and audit plan TyA
 
-- Se agrego `backend/contracts/phase-a-dev-rollback-audit-plan-v1.json`.
-- Se agrego `app/docs/PHASE-A-DEV-ROLLBACK-AUDIT-PLAN-TYA-20260709.md`.
-- Se agrego `app/docs/ROLLBACK-AUDIT-NOTE-TYA-20260709.md`.
-- Se agrego `app/docs/PENDIENTES-ADDENDUM-ROLLBACK-AUDIT-TYA-20260709.md`.
-- Objetivo: preparar plan documental de rollback y auditoria antes de cualquier paso DEV futuro de Phase A TyA, sin activar DEV, sin ejecutar rollback y sin escribir datos.
-- Confirmacion de foco: seguimos en Phase A TyA, con HR como fuente operacional, informacion real/source-safe, Cinépolis como primer proyecto configurable, junio como liquidaciones/pagos, certificaciones preservadas y conflictos a revision humana.
-- Requisitos antes de futuro DEV: flag unico de desactivacion, retorno a fuente local o estado previo de `CX.data`, gates apagados, dry-run antes de import, lotes detenibles antes de commit, evento de auditoria, cola de revision humana, logs sin datos privados, recuperacion manual para admins, copy honesto y manual Academia.
-- Impacto backend reusable: patron por tenant/proyecto para rollback antes de activacion, auditoria antes de escritura, referencias opacas, cola de revision humana, gates apagados, dry-run y estado degradado honesto.
-- Impacto Claude/prototipo: mostrar rollback preparado/no ejecutado, auditoria requerida, estados bloqueado/degradado/pendiente y revision humana; no afirmar sync/import/pago/proveedor real sin gate.
-- Impacto Academia: explicar rollback, auditoria, referencias opacas, datos que no van en logs, revision de conflictos, DEV/runtime/produccion y actuacion ante gate bloqueado.
-- Estado seguro: documentacion/contrato solamente. Sin cambios en `/app/modules`, sin cambios en `/app/core`, sin DEV activo, sin runtime, sin builder, sin imports, sin writes, sin Firestore/Auth/Storage/HR, sin Make/Gemini, sin deploy, sin produccion, sin pagos reales y sin datos sensibles.
-- Commits: `8e9cba435b8e4051be258eed6d01b1101fd3c36c`, `6de2292c8918bbcb6a060c4ffb2bbcaa89a3c01d`, `57a5f52c326a129a658ca071b5584caee5056c1d`, `a8055a1494600509ebf4d761f04a4809db49053d`.
+- Se agregaron contrato y documentación de rollback/auditoría DEV.
+- Requisitos: flag de desactivación, retorno a fuente previa de `CX.data`, gates apagados, dry-run, lotes detenibles, auditoría, reviewQueue, logs sin datos privados y copy honesto.
+- Estado seguro: documentación/contrato solamente; sin runtime, imports, writes, proveedores, deploy, producción ni pagos reales.
 
 ## 2026-07-09 - Phase A DEV conditions TyA
 
-- Se agrego `backend/contracts/phase-a-dev-conditions-v1.json`.
-- Se agrego `app/docs/PHASE-A-DEV-CONDITIONS-TYA-20260709.md`.
-- Se agrego `app/docs/DEV-CONDITIONS-NOTE-TYA-20260709.md`.
-- Objetivo: preparar condiciones documentales para un paso DEV futuro de Phase A TyA, empezando por Cinépolis como proyecto configurable, sin activar conexion, runtime, imports, writes, proveedores, deploy ni produccion.
-- Confirmacion de foco: seguimos en Phase A TyA, con HR como fuente operacional, informacion real/source-safe para implementacion controlada, junio como liquidaciones/pagos y certificaciones ya presentadas preservadas.
-- Condiciones antes de futuro DEV: decision de smoke aceptable, autorizacion explicita de Paula, base nueva limpia, secrets fuera del repo, punto unico `CX.data`, no reescritura de UI/core desde backend, fuente TyA source-safe, Cinépolis configurado por proyecto, rollback, auditoria, impacto Claude y Academia documentados.
-- Impacto backend reusable: patron por tenant/proyecto para separar smoke, DEV, runtime, import, proveedores y produccion; mantiene gates, rollback, auditoria y estados honestos.
+- Se agregaron contrato y documentación de condiciones DEV.
+- Condiciones: autorización explícita, base nueva limpia, secrets fuera del repo, punto único `CX.data`, fuente TyA source-safe, Cinépolis configurable, rollback, auditoría, impacto Claude/Academia documentados.
+- Estado seguro: documentación/contrato solamente; sin activación, imports, writes, proveedores, deploy ni producción.
