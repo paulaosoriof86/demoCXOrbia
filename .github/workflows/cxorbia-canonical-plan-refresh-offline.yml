@@ -1,0 +1,99 @@
+name: CXOrbia Canonical Plan Refresh Offline
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/canonical-plan-refresh-offline.json'
+
+permissions:
+  contents: write
+  statuses: write
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate request
+        run: |
+          node <<'NODE'
+          const r=require('./.github/cxorbia-firebase-requests/canonical-plan-refresh-offline.json');
+          if(r.enabled!==true||r.mode!=='OFFLINE_CANONICAL_PLAN_REFRESH'||r.providerCalls!==0||r.writes!==0||r.production!==false||r.merge!==false)process.exit(1);
+          NODE
+      - name: Validate existing materialization tooling
+        run: |
+          node --check tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs
+          node --check tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs
+          node -e "for(const p of ['backend/contracts/phase-a-firestore-materialization-plan-v1.json','backend/contracts/phase-a-r14c-financial-overlay-review-plan-r16d-v1.json'])JSON.parse(require('fs').readFileSync(p,'utf8'));"
+      - name: Build canonical base plan with existing tool
+        run: |
+          set -euo pipefail
+          rm -rf .tmp/canonical-plan-refresh
+          mkdir -p .tmp/canonical-plan-refresh app/docs/evidence
+          node tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs \
+            --hr app/data/tya-hr-source-safe-periods.js \
+            --financial app/data/tya-financial-control-source-safe.js \
+            --certifications app/data/tya-certification-carryover-source-safe.js \
+            --out .tmp/canonical-plan-refresh/base
+      - name: Apply existing R14C overlay/review logic
+        run: |
+          node tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs \
+            --plan .tmp/canonical-plan-refresh/base/firestore-materialization-plan.json \
+            --financial backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json \
+            --controlled-financial backend/config/phase-a-financial-workbook-source-safe-r14.json \
+            --out .tmp/canonical-plan-refresh/r16d
+      - name: Publish sanitized summary
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const base=JSON.parse(fs.readFileSync('.tmp/canonical-plan-refresh/base/firestore-materialization-plan.json','utf8'));
+          const overlay=JSON.parse(fs.readFileSync('.tmp/canonical-plan-refresh/r16d/r14c-financial-overlay-review-plan-r16d.json','utf8'));
+          const ops=overlay.operations||base.operations||[];
+          const countType=t=>ops.filter(o=>o.entityType===t).length;
+          const paths=ops.map(o=>o.documentPath);
+          const parentProjectPath='tenants/tya/projects/cinepolis';
+          const report={
+            schemaVersion:'cxorbia.canonical-plan-refresh-offline.v1',
+            generatedAt:new Date().toISOString(),
+            providerCalls:0,writes:0,production:false,merge:false,
+            basePlanId:base.planId||null,basePlanSha256:base.planSha256||null,
+            overlayPlanId:overlay.planId||null,overlayPlanSha256:overlay.planSha256||null,
+            counts:{operations:ops.length,tenants:countType('tenant'),projects:countType('project'),hrImports:countType('hr_import'),periods:countType('period'),shoppers:countType('shopper'),visits:countType('visit'),liquidations:countType('liquidation'),certifications:countType('certification'),payments:countType('payment')},
+            canonicalShape:{parentProjectPath,parentProjectPresentInPlan:paths.includes(parentProjectPath),periodPaths:paths.filter(p=>p.startsWith(parentProjectPath+'/periods/')).length,visitPaths:paths.filter(p=>p.includes('/visits/')).length},
+            reviewQueue:overlay.reviewQueue||null,
+            safety:{writes:false,imports:false,providerCalls:false,pii:false}
+          };
+          fs.writeFileSync('app/docs/evidence/CANONICAL-PLAN-REFRESH-OFFLINE-LATEST.json',JSON.stringify(report,null,2)+'\n');
+          const md=['# CXOrbia — refresh offline del plan canónico Phase A','',`- Fecha: ${report.generatedAt}`,'- Reutiliza los builders R6/R16D existentes; no crea una arquitectura nueva.','- Provider calls=0; writes=0; producción=false.','',`- Plan base: ${report.basePlanId}.`,`- Plan overlay: ${report.overlayPlanId}.`,`- Operaciones: ${report.counts.operations}.`,`- Tenant: ${report.counts.tenants}; proyecto padre: ${report.counts.projects}; periodos: ${report.counts.periods}; shoppers: ${report.counts.shoppers}; visitas: ${report.counts.visits}; liquidaciones: ${report.counts.liquidations}; certificaciones: ${report.counts.certifications}; pagos: ${report.counts.payments}.`,`- Ruta proyecto padre: \`${parentProjectPath}\`.`,'', '## Lectura operativa','', '- Este plan representa la arquitectura aprobada proyecto padre → periodos → visitas, no proyectos separados por mes/país.','- No se ejecuta contra Firestore en este gate.','- El siguiente comparador read-only debe clasificar create/update/noop/review contra `cxorbia-backend-dev` antes de autorizar cualquier write.',''];
+          fs.writeFileSync('app/docs/evidence/CANONICAL-PLAN-REFRESH-OFFLINE-LATEST.md',md.join('\n'));
+          NODE
+      - name: Commit evidence on latest head
+        run: |
+          set -euo pipefail
+          cp app/docs/evidence/CANONICAL-PLAN-REFRESH-OFFLINE-LATEST.json /tmp/plan.json
+          cp app/docs/evidence/CANONICAL-PLAN-REFRESH-OFFLINE-LATEST.md /tmp/plan.md
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/plan.json app/docs/evidence/CANONICAL-PLAN-REFRESH-OFFLINE-LATEST.json
+          cp /tmp/plan.md app/docs/evidence/CANONICAL-PLAN-REFRESH-OFFLINE-LATEST.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CANONICAL-PLAN-REFRESH-OFFLINE-LATEST.*
+          if ! git diff --cached --quiet; then git commit -m 'evidence: refresh canonical Phase A plan offline'; git push origin HEAD:docs-tya-v6-v71-audit; fi
+      - name: Publish status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          STATE=error; DESC='HOLD_CANONICAL_PLAN_REFRESH_OFFLINE'
+          if [ -f app/docs/evidence/CANONICAL-PLAN-REFRESH-OFFLINE-LATEST.json ]; then STATE=success; DESC='PASS_CANONICAL_PLAN_REFRESH_OFFLINE'; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/canonical-plan-refresh-offline' -f description="$DESC" >/dev/null
