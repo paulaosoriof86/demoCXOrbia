@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-29  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `CORTE3_FROZEN__CANONICAL_BACKEND_INVENTORY_PASS__INCREMENTAL_PHASEA_GAP_PASS__ANOMALY_PROBE_ACTIVE`
+**Estado vivo:** `CORTE3_FROZEN__ARCHITECTURE_CORRECTED__CANONICAL_INVENTORY_PASS__LIVE_HR_PASS_WITH_AUG_HN_HOLD__CANONICAL_PLAN_PASS__R16E_READONLY_AUTH_PENDING`
 
 ## 1. Objetivo
 Operar TyA/Cinépolis como primer tenant/proyecto configurable de CXOrbia con HR/histórico, shoppers, certificaciones, visitas, agenda, cuestionarios, liquidaciones/pagos, multi-tenant, multi-proyecto, roles, Academia y sincronización.
@@ -41,7 +41,7 @@ Conservar URL pública actual; cutover final reemplaza la app legacy por CXOrbia
 `FROZEN_ACTIVE_BASELINE`.
 
 - Baseline `CXORBIA-TYA-CORTE3-V182-20260729`.
-- Source lock: 14 periodos, junio 2025–julio 2026, 44 visitas por periodo = 616.
+- Source lock hasta julio: 14 periodos, junio 2025–julio 2026, GT34+HN10=44 por periodo = 616 visitas.
 - R26–R32: 135/135 PASS.
 - HR remota, Hosting DEV y smoke pagos: PASS.
 - Mayo: 44 pagadas / 0 pendientes / 2 reviews / CxP Q0-L0.
@@ -50,7 +50,7 @@ Conservar URL pública actual; cutover final reemplaza la app legacy por CXOrbia
 
 ## 6. Corte 4 — `CX.data` read-only / recuperación del backend canónico
 
-### 6.1 Sandbox técnico — aprendizaje cerrado
+### 6.1 Sandbox técnico — aprendizaje preservado
 En `cxorbia-tya-dev-260729-c4` se probaron/corrigieron:
 - fail-closed sin demo/localStorage;
 - backend vacío first-class;
@@ -82,37 +82,66 @@ El sandbox no se promueve a destino.
 Provider writes=0; no PII exportada.
 
 ### 6.3 Reconciliación contra source lock — PASS incremental
-Decisión: `PASS_GAP_RECONCILED_INCREMENTAL_PHASEA_REQUIRED`.
+- Faltan julio 2026 GT+HN en la materialización period-country anterior: 44 visitas.
+- Dos excesos ya quedaron localizados exactamente:
+  - Abril 2026: `sprint5-visit-mutation-no-real-data`, sintético y sin llaves HR.
+  - Junio 2026 HN: `hr-58fb469666080189`, sourceRow 12; HR actual solo tiene rows 2..11.
+- Pilotos/no canónicos `julio-pilot`, `r1`, `tya-piloto` se preservan separados; no delete automático.
 
-- Esperados: 28 proyectos país/periodo y 616 visitas.
-- Encontrados: 26 proyectos canónicos.
-- Faltan `cinepolis-julio-26` y `cinepolis-julio-26-hn`: 44 visitas.
-- Encontradas en proyectos canónicos: 574; esperado para esos 26: 572.
-- Excesos: `cinepolis-abril-26` +1 y `cinepolis-junio-26-hn` +1.
-- Pilotos/no canónicos: `julio-pilot`, `r1`, `tya-piloto` con 45 visitas en total; no borrar por inferencia.
-- Al resolver los 2 excesos y agregar julio 2026, el histórico canónico queda en 616.
+### 6.4 HR viva actual — PASS con HOLD focalizado
+HR source-safe actual:
+- 15 periodos;
+- 30 tabs;
+- 684 visitas;
+- 236 referencias shopper protegidas;
+- julio 2026 GT=34/HN=10 correcto.
 
-### 6.4 Gate activo
-Probe read-only de `sourceRow/sourceKey/sourceSheet` para los dos excesos, sin PII ni provider writes.
+`AGOSTO 26 HN` está bloqueado por inconsistencia de fuente: sus 34 filas tienen País=GT. Agosto HN no entra en materialización/sync hasta corregir o confirmar la fuente. El hallazgo no bloquea julio.
 
-### 6.5 Cierre Corte 4
-Se cierra cuando:
-1. probe de excesos clasificado;
-2. mapa exacto ya-existe/falta documentado;
-3. binding/read-path canónico de `CX.data` preparado sin reintroducir VIS-01/VIS-02/VIS-02B;
+### 6.5 Plan canónico aprobado — refresh offline PASS
+Se reutilizaron builders R6/R16D existentes, sin provider calls ni writes:
+- 1 tenant;
+- 1 proyecto padre `cinepolis`;
+- 14 periodos;
+- 210 shoppers en el plan histórico;
+- 616 visitas;
+- 572 controles de liquidación;
+- 0 certificaciones;
+- 0 pagos;
+- 1,415 operaciones.
+
+El modelo de producto aprobado es **proyecto padre `cinepolis` → periodos → visitas**. Los documentos period-country ya existentes en Firestore son estado/materialización previa a comparar y reutilizar, no el modelo semántico final por defecto.
+
+### 6.6 Gate activo para cerrar Corte 4
+Ejecutar **R16E provider compare read-only** contra `cxorbia-backend-dev` bajo autorización explícita.
+
+R16E debe:
+1. reconstruir/reusar el plan aprobado;
+2. leer solo documentos/fields allowlisted;
+3. clasificar `create/update/noop/review`;
+4. preservar extras, sin deletes;
+5. generar write plan exacto, sin ejecutarlo;
+6. hacer 0 writes.
+
+### 6.7 Cierre Corte 4
+Corte 4 se cierra cuando:
+1. R16E read-only PASS;
+2. mapa exacto `create/update/noop/review` documentado;
+3. binding/read-path canónico de `CX.data` queda preparado sin reintroducir VIS-01/VIS-02/VIS-02B;
 4. smoke read-only de `cxorbia-backend-dev` PASS;
 5. documentación reconciliada.
 
 No requiere poblar otra base.
 
 ## 7. Corte 5 — materialización DEV incremental
-Solo faltantes demostrados:
-- julio 2026 HR: 34 GT + 10 HN, sujeto a dry-run/idempotencia;
-- corregir únicamente duplicados/excesos demostrados por llave estable y autorización;
-- shoppers legacy: diff contra 215 existentes;
-- certificaciones legacy: materializar historial faltante (presentadas/aprobadas/reprobadas según fuente);
-- no reimportar visitas legacy si HR ya es fuente;
-- pilotos/no canónicos se revisan por separado, sin borrado automático;
+Solo faltantes demostrados y autorizados:
+- julio 2026 HR: 34 GT + 10 HN;
+- limpieza de los 2 extras solo si el write plan demuestra el delete/update correcto;
+- shoppers legacy: diff por llave estable contra 215 existentes;
+- certificaciones legacy: materializar historial faltante de presentadas/aprobadas/reprobadas según fuente;
+- no reimportar visitas legacy cuando HR es fuente;
+- pilotos/no canónicos se revisan por separado;
+- agosto HN permanece HOLD hasta corregir/confirmar fuente;
 - datos sensibles protegidos.
 
 Prompt legacy preparado: `PROMPT-REFRESH-DELTA-LEGACY-TYA-SHOPPERS-CERTIFICACIONES-20260729.md`.
@@ -134,10 +163,10 @@ HR→plataforma, plataforma→HR, no duplicación, reviewQueue, cuestionario con
 - no cambiar URL pública por rutina.
 
 ## 11. Claude/prototipo
-No nueva candidata por esta corrección. Preservar fixes core/entrypoint. No tocar `app/modules` en estos gates.
+No nueva candidata por esta corrección. Preservar fixes core/entrypoint. No tocar `app/modules` en estos gates. No convertir periodos en proyectos separados en UX/producto.
 
 ## 12. Academia
-Documentar separación legacy/backend/sandbox, migración incremental, cutover con rollback y patrones fail-closed/empty-backend/role-switch/asset-integrity.
+Documentar separación legacy/backend/sandbox, proyecto vs periodo, migración incremental, carryover de certificaciones, cutover con rollback y fail-closed ante fuente inconsistente.
 
 ## 13. Estado seguro
-Sin producción, merge, nuevos Hosting, Firestore/Auth/Storage/HR writes, imports, pagos/lotes, Make ni Gemini live durante inventario/reconciliación/dry-run.
+Sin producción, merge, nuevos Hosting, Firestore/Auth/Storage/HR writes, imports, pagos/lotes, Make ni Gemini live hasta autorización específica del gate correspondiente.
