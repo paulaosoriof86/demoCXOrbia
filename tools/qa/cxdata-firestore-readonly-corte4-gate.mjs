@@ -17,11 +17,15 @@ const count = (text, token) => text.split(token).length - 1;
 
 const contract = JSON.parse(read('backend/contracts/cxdata-firestore-readonly-corte4-v1.json'));
 const baseline = JSON.parse(read('app/docs/ACTIVE-BASELINE-CORTE3-V182-20260729.json'));
+const firebaserc = JSON.parse(read('.firebaserc'));
+const firebaseJson = JSON.parse(read('firebase.json'));
 const config = read('app/core/backend-config.js');
 const preview = read('app/core/backend-config-preview-dev.js');
 const guard = read('app/core/backend-cxdata-readonly-corte4.js');
 const devHtml = read('app/index-backend-dev.html');
 const prodHtml = read('app/index.html');
+const currentRules = read('firestore.rules');
+const candidateRules = read('backend/rules/firestore.corte4-readonly.rules');
 
 assert(baseline.status === 'FROZEN_ACTIVE_BASELINE', 'corte3_active_baseline_not_frozen');
 assert(baseline.nextBlock === 'CORTE4_CXDATA_FIRESTORE_READONLY_NEW_EMPTY', 'baseline_next_block_mismatch');
@@ -39,6 +43,15 @@ assert(contract.projectIdentityVerified === false && contract.emptyProjectVerifi
 assert(Object.values(contract.writePolicy).every(value => value === false), 'all_write_policy_flags_must_be_false');
 assert(contract.identityRules.noLegacyDatabaseConnection === true, 'legacy_database_connection_must_be_forbidden');
 assert(contract.identityRules.noLegacyDatabaseCopy === true, 'legacy_database_copy_must_be_forbidden');
+
+assert(firebaserc.projects?.default === contract.firebaseProjectId, 'firebaserc_default_project_mismatch');
+assert(firebaserc.projects?.dev === contract.firebaseProjectId, 'firebaserc_dev_project_mismatch');
+assert(firebaseJson.firestore?.rules === 'firestore.rules', 'firebase_json_rules_pointer_unexpected');
+assert(contract.rulesCandidate.path === 'backend/rules/firestore.corte4-readonly.rules', 'candidate_rules_path_mismatch');
+assert(contract.rulesCandidate.deployed === false, 'candidate_rules_must_not_be_deployed');
+assert(contract.rulesCandidate.firebaseJsonPointsToCandidate === false, 'firebase_json_must_not_point_to_candidate_yet');
+assert(contract.currentRepositoryRules.readOnlyCompatible === false, 'current_rules_must_be_classified_not_readonly');
+assert(currentRules.includes('allow create, update') || currentRules.includes('allow create, update, delete'), 'current_rules_write_paths_not_detected');
 
 [
   "enabled: false",
@@ -80,6 +93,16 @@ assert(contract.identityRules.noLegacyDatabaseCopy === true, 'legacy_database_co
   "fallbackUsed:false"
 ].forEach(token => assert(guard.includes(token), `readonly_guard_missing:${token}`));
 
+[
+  "allow read, write: if false;",
+  "allow create, update, delete: if false;",
+  "operator read only",
+  "No deployment or provider activation is authorized"
+].forEach(token => assert(candidateRules.includes(token), `candidate_rules_missing:${token}`));
+assert(!candidateRules.includes('allow create: if true'), 'candidate_rules_create_true_forbidden');
+assert(!candidateRules.includes('allow update: if true'), 'candidate_rules_update_true_forbidden');
+assert(!candidateRules.includes('allow delete: if true'), 'candidate_rules_delete_true_forbidden');
+
 const opTag = '<script src="core/backend-operational-actions.js"></script>';
 const guardTag = '<script src="core/backend-cxdata-readonly-corte4.js"></script>';
 const bridgeTag = '<script src="core/backend-ui-action-bridge.js"></script>';
@@ -90,7 +113,7 @@ assert(count(prodHtml, guardTag) === 0, 'readonly_preview_guard_must_not_be_load
 assert(!prodHtml.includes('core/backend-config-preview-dev.js'), 'preview_backend_config_must_not_be_loaded_in_production_entry');
 
 const report = {
-  decision: 'PASS_CORTE4_READONLY_HARDENING_ACTIVATION_HOLD_PROVIDER_IDENTITY',
+  decision: 'PASS_CORTE4_READONLY_HARDENING_ACTIVATION_HOLD_PROVIDER_IDENTITY_AND_RULES_DEPLOY',
   activeBaseline: baseline.baselineId,
   preserveCxDataInterface: true,
   readOnly: true,
@@ -101,10 +124,13 @@ const report = {
   providerProjectId: contract.firebaseProjectId,
   providerIdentityVerified: false,
   emptyProjectVerified: false,
+  currentRulesReadOnlyCompatible: false,
+  candidateRulesPrepared: true,
+  candidateRulesDeployed: false,
   activationAllowed: false,
   production: false,
   merge: false,
   writes: false,
-  nextGate: 'VERIFY_NEW_CLEAN_FIREBASE_PROJECT_IDENTITY_AND_EMPTY_STATE'
+  nextGate: 'VERIFY_NEW_CLEAN_FIREBASE_PROJECT_IDENTITY_EMPTY_STATE_AND_AUTHORIZE_DEV_RULES_DEPLOY'
 };
 console.log(JSON.stringify(report, null, 2));
