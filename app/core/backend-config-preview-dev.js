@@ -41,6 +41,32 @@ window.CX = window.CX || {};
     return '';
   }
 
+  /* P0-C4-VIS-01: el preview backend no puede presentarse como Demo aunque Auth temporal
+     ya haya sido limpiado. El modo de origen se fija en memoria como backend protegido
+     antes del primer render; no se persiste ni se altera el modo normal de app/index.html. */
+  function forceProtectedPreviewIdentity(){
+    if(CX.dataSource){
+      CX.dataSource.mode = 'connected';
+      CX.dataSource.status = 'loading';
+      CX.dataSource.sourceRef = 'firebase:protected-dev-corte4';
+      CX.dataSource.updatedAt = new Date().toISOString();
+      CX.dataSource.warnings = ['Preview DEV protegido: lectura únicamente; sin fallback a datos demo/localStorage.'];
+      CX.dataSource.blockers = [];
+    }
+    if(CX.BRAND) CX.BRAND.demoMode = false;
+  }
+
+  forceProtectedPreviewIdentity();
+  if(typeof CX.applyBrand === 'function' && !CX.__corte4PreviewApplyBrandWrapped){
+    const originalApplyBrand = CX.applyBrand;
+    CX.applyBrand = function(){
+      const result = originalApplyBrand.apply(this, arguments);
+      if(CX.BACKEND && CX.BACKEND.previewMode === true && CX.BACKEND.readOnly === true && CX.BRAND) CX.BRAND.demoMode = false;
+      return result;
+    };
+    CX.__corte4PreviewApplyBrandWrapped = true;
+  }
+
   CX.BACKEND = Object.assign(CX.BACKEND || {}, {
     enabled: true,
     previewMode: true,
@@ -60,5 +86,9 @@ window.CX = window.CX || {};
     },
   });
 
-  console.warn('[CX.backend-preview] Preview DEV autorizado en modo READ-ONLY estricto.');
+  /* Reaplicar después de construir CX.BACKEND para que el wrapper de marca reconozca
+     inequívocamente el contexto Corte 4. */
+  forceProtectedPreviewIdentity();
+
+  console.warn('[CX.backend-preview] Preview DEV autorizado en modo READ-ONLY estricto y sin fallback demo.');
 })();
