@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "contractId": "cxdata-firestore-readonly-corte4-v1",
   "phase": "A",
   "cut": 4,
-  "status": "HOSTING_DEV_PASSED_VISUAL_VALIDATION_PENDING",
+  "status": "VISUAL_P0_PROVEN_FREEZE_BLOCKED",
   "provider": "firebase",
   "environment": "dev",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -26,9 +26,12 @@
   "hostingDevRemoteProofVerified": true,
   "hostingDevEntrypointVerified": true,
   "hostingDevDeployExecutions": 1,
-  "activationAllowed": true,
+  "visualValidationPassed": false,
+  "visualP0Proven": true,
+  "visualP0Id": "P0-C4-VIS-01",
+  "activationAllowed": false,
   "hostingDevAllowed": false,
-  "activationBlocker": "VISUAL_VALIDATION_REQUIRED_BEFORE_CORTE4_FREEZE",
+  "activationBlocker": "FORBIDDEN_DEMO_FALLBACK_ON_AUTH_PENDING",
   "excludedExistingProjects": [
     {
       "projectId": "cxorbia-backend-dev",
@@ -49,7 +52,7 @@
     "hostingAuthorizationId": "c4-hosting-visual-20260729-01",
     "hostingAuthorizationFreezeCommit": "cfca7726e69a3fb2f082a75a27c59c96e29f80fe",
     "resultObserved": true,
-    "decision": "HOSTING_DEV_PASS_VISUAL_PENDING",
+    "decision": "VISUAL_P0_PROVEN_FREEZE_BLOCKED",
     "revalidationProviderWrites": 0,
     "publisherFalseNegativeCorrectedWithoutRerun": true
   },
@@ -142,6 +145,26 @@
     "merge": false,
     "production": false
   },
+  "visualValidationEvidence": {
+    "date": "2026-07-29",
+    "result": "P0_PROVEN",
+    "sourceVisible": "localStorage/demo",
+    "authVisible": "pending",
+    "demoBadgeVisible": true,
+    "visibleCounts": {
+      "projects": 3,
+      "visits": 108,
+      "shoppers": 18,
+      "postulations": 48
+    },
+    "visibleDemoProjects": ["Proyecto Retail", "Proyecto Banca", "Proyecto Restaurantes"],
+    "violatedRequirements": [
+      "fallbackToMockOnReadError=false",
+      "fallbackToLocalStorageOnEmpty=false",
+      "emptyBackendMustRenderAsEmpty=true"
+    ],
+    "rootCause": "preview auth remains logically required after the temporary smoke principal was correctly removed; backend-firebase.js explicitly marks localStorage/demo on missing preview credential instead of staying fail-closed"
+  },
   "rulesCandidate": {
     "path": "backend/rules/firestore.corte4-readonly.rules",
     "deployed": true,
@@ -185,10 +208,15 @@
     "hosting_dev_deployed_once",
     "hosting_dev_remote_proof_verified",
     "hosting_dev_entrypoint_verified",
-    "hosting_dev_authorization_consumed"
+    "hosting_dev_authorization_consumed",
+    "visual_validation_executed",
+    "visual_p0_proven"
   ],
   "pendingGates": [
-    "visual_validation",
+    "p0_c4_vis_01_explicit_fix_authorization",
+    "p0_c4_vis_01_backend_fix",
+    "hosting_dev_revalidation",
+    "visual_validation_pass",
     "corte4_freeze",
     "temporary_iam_removed_to_viewer"
   ],
