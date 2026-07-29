@@ -84,6 +84,23 @@ window.CX = window.CX || {};
     ns.readOnly = true;
   }
 
+  function syncDataSource(reason){
+    if(!CX.dataSource) return;
+    const verified = reason === 'verified-empty-read';
+    const failed = reason === 'read-error-fail-closed';
+    CX.dataSource.mode = 'connected';
+    CX.dataSource.status = verified ? 'ready' : (failed ? 'degraded' : 'loading');
+    CX.dataSource.sourceRef = 'firebase:protected-dev-corte4';
+    CX.dataSource.updatedAt = new Date().toISOString();
+    CX.dataSource.blockers = [];
+    CX.dataSource.warnings = verified
+      ? ['Firestore DEV verificado vacío; modo solo lectura.']
+      : failed
+        ? ['Lectura protegida no disponible en esta sesión; estado vacío fail-closed, sin fallback demo/localStorage.']
+        : ['Esperando lectura protegida de Firestore DEV; datos demo/localStorage deshabilitados.'];
+    emit('datasource', {mode:CX.dataSource.mode,status:CX.dataSource.status,sourceRef:CX.dataSource.sourceRef,reason});
+  }
+
   function clearToBackendEmpty(reason){
     if(!CX.data) return;
     CX.data.projects = [];
@@ -101,7 +118,8 @@ window.CX = window.CX || {};
       reason:reason || 'empty-new-backend',
       at:new Date().toISOString(),
       readOnly:true,
-      writes:false
+      writes:false,
+      fallbackUsed:false
     };
     window.CX_BACKEND_DATA_SOURCE = 'firestore';
     window.CX_BACKEND_LAST_STATE = Object.assign({}, window.CX_BACKEND_LAST_STATE || {}, {
@@ -112,6 +130,7 @@ window.CX = window.CX || {};
       fallbackUsed:false,
       reason:reason || 'empty-new-backend'
     });
+    syncDataSource(reason || 'empty-new-backend');
     emit('project', {source:'firestore', empty:true, readOnly:true});
     emit('shoppers', {source:'firestore', empty:true, readOnly:true});
     emit('visit-flow', {source:'firestore', empty:true, readOnly:true});
@@ -125,6 +144,15 @@ window.CX = window.CX || {};
     const counts = payload && payload.counts || {};
     const empty = payload && payload.empty === true || Number(counts.projects || 0) === 0;
     if(empty && cfg.allowEmptyBackend === true) clearToBackendEmpty('verified-empty-read');
+    else if(CX.dataSource){
+      CX.dataSource.mode='connected';
+      CX.dataSource.status='ready';
+      CX.dataSource.sourceRef='firebase:protected-dev-corte4';
+      CX.dataSource.updatedAt=new Date().toISOString();
+      CX.dataSource.warnings=[];
+      CX.dataSource.blockers=[];
+      emit('datasource',{mode:'connected',status:'ready',sourceRef:CX.dataSource.sourceRef});
+    }
     window.CX_CORTE4_READONLY = {
       ready:true,
       source:window.CX_BACKEND_DATA_SOURCE || 'pending',
@@ -159,6 +187,13 @@ window.CX = window.CX || {};
     restoreCxDataInterface();
     blockDirectBackendWrites();
     blockOperationalWrites();
+    /* P0-C4-VIS-01: vaciar seeds ANTES del primer render del shell. backend-firebase inicia
+       primero y puede quedar esperando/rechazar Auth; este bind ocurre en el mismo DOMContentLoaded
+       antes de app.js, así que el runtime nunca alcanza a pintar fixtures demo mientras se resuelve
+       la lectura protegida. */
+    if(cfg.previewMode === true && cfg.readOnly === true && cfg.failClosedOnReadError === true && cfg.allowEmptyBackend === true){
+      clearToBackendEmpty('awaiting-protected-read');
+    }
     if(!CX.bus || typeof CX.bus.on !== 'function') return;
     CX.bus.on('backend-loaded', payload=>enforce(payload));
     CX.bus.on('backend-ready', payload=>enforce(payload));
