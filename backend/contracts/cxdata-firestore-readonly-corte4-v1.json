@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "cxdata-firestore-readonly-corte4-v1",
+  "phase": "A",
+  "cut": 4,
+  "status": "READONLY_HARDENED_PROVIDER_IDENTITY_PENDING",
+  "provider": "firebase",
+  "environment": "dev",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "tenantId": "tya",
+  "projectId": null,
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "newCleanProjectRequired": true,
+  "projectIdentityVerified": false,
+  "emptyProjectVerified": false,
+  "activationAllowed": false,
+  "interface": {
+    "name": "CX.data",
+    "preserveExactPublicInterface": true,
+    "uiModulesMayDependOnBackend": false,
+    "backendLogicInsideUiModules": false
+  },
+  "readPolicy": {
+    "readOnly": true,
+    "writeMode": "disabled",
+    "allowEmptyBackend": true,
+    "failClosedOnReadError": true,
+    "fallbackToMockOnReadError": false,
+    "fallbackToLocalStorageOnEmpty": false,
+    "emptyBackendMustRenderAsEmpty": true
+  },
+  "writePolicy": {
+    "firestoreWrites": false,
+    "authWrites": false,
+    "storageWrites": false,
+    "hrWrites": false,
+    "operationalActionWrites": false,
+    "imports": false,
+    "payments": false,
+    "lots": false,
+    "make": false,
+    "gemini": false
+  },
+  "requiredCollections": [
+    "tenants",
+    "projects",
+    "shoppers",
+    "visits",
+    "postulations",
+    "applications"
+  ],
+  "identityRules": {
+    "tenantScoped": true,
+    "projectScoped": true,
+    "requiredKeys": ["tenantId", "projectId"],
+    "noNameOnlyDeduplication": true,
+    "noLegacyDatabaseConnection": true,
+    "noLegacyDatabaseCopy": true
+  },
+  "activationGates": [
+    "firebase_project_identity_verified",
+    "firebase_project_confirmed_new_and_clean",
+    "firebase_config_complete_without_secrets_in_repo",
+    "firestore_rules_readonly_verified",
+    "empty_backend_fail_closed_verified",
+    "cxdata_interface_compatibility_verified",
+    "zero_write_paths_verified",
+    "Paula_authorization_for_dev_read_activation"
+  ],
+  "activeBaseline": "CXORBIA-TYA-CORTE3-V182-20260729",
+  "safeState": {
+    "merge": false,
+    "production": false,
+    "deploy": false,
+    "providerActivation": false,
+    "writes": false
+  }
+}
