@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "corte4-cxdata-firestore-readonly-hardening-20260729-02",
+  "requestId": "corte4-cxdata-firestore-readonly-hardening-20260729-03",
   "enabled": true,
   "issuedAt": "2026-07-29",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "4d90bc1e5d58aaaec483ea4109669e30cad7be38",
+  "targetHeadSha": "3e4e88f06b6d0d517b5055d9955e8353eed5916c",
   "profile": "CORTE4_CXDATA_FIRESTORE_READONLY",
   "allowedProfiles": [
     "CORTE4_CXDATA_FIRESTORE_READONLY"
