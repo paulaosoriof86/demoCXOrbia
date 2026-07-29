@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-29  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `CORTE3_FROZEN__CORTE4_SANDBOX_TECHNICAL_LEARNINGS_PRESERVED__ARCHITECTURE_CORRECTED__CANONICAL_BACKEND_READONLY_INVENTORY_ACTIVE__NO_DATA_WRITES`
+**Estado vivo:** `CORTE3_FROZEN__ARCHITECTURE_CORRECTED__CANONICAL_BACKEND_INVENTORY_PASS__PHASEA_GAP_RECONCILED__ANOMALY_READONLY_PROBE_ACTIVE__NO_DATA_WRITES`
 
 ## 1. Repositorio
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -19,76 +19,106 @@
 5. addenda de Academia, patrones y antidesvío;
 6. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 7. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-8. evidencia `app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.md` cuando termine/refresque;
-9. CAMBIOS/RESUMEN-PARA-CLAUDE/PENDIENTES/Academia vigentes;
-10. baseline/freeze Corte 3;
-11. PR #7 y HEAD vivo.
+8. `app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.md`;
+9. `app/docs/evidence/CANONICAL-BACKEND-PHASEA-GAP-LATEST.md`;
+10. `app/docs/CAMBIOS-BACKEND-ADDENDUM-ARQUITECTURA-CANONICAL-BACKEND-20260729.md`;
+11. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-ARQUITECTURA-CANONICAL-BACKEND-20260729.md`;
+12. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-ARQUITECTURA-CANONICAL-BACKEND-20260729.md`;
+13. `app/docs/ACADEMIA-IMPACTO-ARQUITECTURA-CANONICAL-BACKEND-20260729.md`;
+14. baseline/freeze Corte 3;
+15. PR #7 y HEAD vivo.
 
-La corrección de arquitectura de este índice prevalece sobre documentos recientes que llamen a `cxorbia-backend-dev` “base anterior excluida”.
+La corrección de arquitectura de este índice prevalece sobre cualquier documento que llame a `cxorbia-backend-dev` “base anterior excluida”.
 
 ## 3. Distinción obligatoria de sistemas
 
 ### Legacy TyA Consultores — plataforma actual a retirar
 - Es la plataforma operativa anterior con parches/fixes.
-- Es el origen del que solo se recuperan datos útiles y limpios.
-- No se copia su arquitectura, código, dashboard, parches ni lógica defectuosa.
-- Refresh pendiente: shoppers y certificaciones nuevas/actualizadas; visitas siguen HR como fuente principal.
+- Es origen únicamente de datos útiles y limpios.
+- No se copia arquitectura, código, dashboard, parches ni lógica defectuosa.
+- Refresh pendiente: shoppers y certificaciones nuevas/actualizadas; visitas continúan HR-first.
 
 ### `cxorbia-backend-dev` — backend DEV canónico de CXOrbia / tenant TyA
-- Es el backend nuevo de CXOrbia que se venía construyendo desde junio.
+- Es el backend nuevo de CXOrbia trabajado desde junio.
 - TyA es el primer tenant real.
 - **No es la base legacy a excluir.**
-- Debe inventariarse read-only antes de decidir cualquier materialización adicional.
+- Debe reutilizarse y completar únicamente faltantes.
 
 ### `cxorbia-tya-dev-260729-c4` — sandbox técnico Corte 4
 - Se creó por una interpretación incorrecta de “base vieja”.
-- Sus pruebas fueron útiles para descubrir/corregir VIS-01/VIS-02/VIS-02B.
+- Fue útil para descubrir/corregir VIS-01/VIS-02/VIS-02B.
 - No es destino de materialización Phase A.
 - No se replica allí el tenant TyA existente.
 
 ### Hosting público TyA
-- La dirección pública actual de los shoppers se conserva para el cutover final.
-- Se reemplazará la app legacy por CXOrbia cuando Phase A y gates de producción estén completos.
-- No se asume la identidad del proyecto Firebase dueño de ese Hosting hasta verificarla antes del cutover.
+- Se conserva la dirección pública actual de los shoppers para el cutover final.
+- Se reemplazará la app legacy por CXOrbia cuando Phase A/gates estén completos.
+- Se verificará la identidad técnica del Hosting antes del cutover; no se asume.
 
 ## 4. Corte 3 — congelado
 - `FROZEN_ACTIVE_BASELINE`.
 - Baseline `CXORBIA-TYA-CORTE3-V182-20260729`.
-- 14 periodos / 616 visitas.
+- Source lock HR: 14 periodos, junio 2025–julio 2026, 44 por periodo = 616 visitas.
 - Mayo: 44 pagadas / 0 pendientes / CxP Q0-L0.
 - Junio: 2 pagadas / 42 pendientes / Q451-L0.
 - P1/P2 PDF/Excel/reportKit/copy no reabren Corte 3.
 
-## 5. Aprendizajes técnicos preservados del sandbox Corte 4
+## 5. Sandbox Corte 4 — aprendizajes preservados
 - no fallback demo/localStorage;
 - backend vacío first-class;
 - null-safety proyecto/período;
 - role-switch limpia DOM;
 - entrypoint sin scripts huérfanos;
 - gate anti-dangling-script;
-- remote diagnostic final PASS, 0 pageerrors y 0/0/0/0.
+- remote diagnostic PASS con 0 pageerrors;
+- visual humana Admin/Shopper vacío correcta.
 
-Estos resultados se preservan, pero ya no implican materializar TyA en `cxorbia-tya-dev-260729-c4`.
+Estos resultados se trasladan al camino canónico; no justifican otra base.
 
-## 6. Inventario canónico read-only
-Se inició inventario provider read-only sobre `cxorbia-backend-dev` con:
-- provider writes=0;
-- sin exportar valores sensibles;
-- Auth y árbol Firestore solo para conteos/esquema;
-- evidencia durable en `app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.*`.
+## 6. Inventario read-only canónico — PASS
+Evidencia: `CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.*`.
 
-Primer resultado ya comprobó:
-- projectId `cxorbia-backend-dev`;
-- Auth users=17;
-- root `tenants` existe;
-- el inventario debe recorrer subcolecciones antes de cerrar conclusiones.
+Confirmado en `cxorbia-backend-dev` sin provider writes ni PII:
+- Auth users: 17;
+- custom claims por tenant/proyecto/rol/shopper ya existen;
+- 83 rutas de colección, traversal completo/no truncado;
+- tenant: 1;
+- clients: 3;
+- projects: 29;
+- visits: 619;
+- questionnaires: 557;
+- shoppers: 215;
+- liquidations: 255;
+- postulations: 3;
+- applications: 1;
+- notifications: 20;
+- shopperBenefits: 572;
+- certifications: 0 colecciones localizadas;
+- shoppers con campos embebidos de certificación/curso/Academia: 0.
 
-## 7. Gate vivo único
-`COMPLETAR INVENTARIO READ-ONLY RECURSIVO DE cxorbia-backend-dev → REUTILIZAR LO YA EXISTENTE → REFRESH LEGACY SOLO SHOPPERS/CERTIFICACIONES → CONTINUAR PHASE A DESDE FALTANTE REAL → PREPROD/CUTOVER EN HOSTING PÚBLICO ACTUAL`.
+Conclusión: el backend canónico ya contiene una parte sustancial de Phase A. Reconstruirlo en otro Firebase sería reproceso.
+
+## 7. Reconciliación Phase A — PASS incremental
+Evidencia: `CANONICAL-BACKEND-PHASEA-GAP-LATEST.*` con decisión `PASS_GAP_RECONCILED_INCREMENTAL_PHASEA_REQUIRED`.
+
+- Proyectos canónicos esperados: 28; encontrados: 26.
+- Faltan `cinepolis-julio-26` y `cinepolis-julio-26-hn` = 44 visitas esperadas.
+- En los 26 proyectos encontrados hay 574 visitas; deberían ser 572.
+- Excesos localizados por conteo: `cinepolis-abril-26` 35/34 y `cinepolis-junio-26-hn` 11/10.
+- Hay 3 proyectos no canónicos/piloto con 45 visitas: `julio-pilot`, `r1`, `tya-piloto`.
+- Esas 45 visitas no se borran por inferencia; se separan del histórico HR canónico.
+- Si se revisan los 2 excesos y se materializan las 44 de julio 2026, el histórico canónico queda exactamente en 616.
+- Certificaciones están ausentes y requieren refresh legacy dirigido.
+- Los shoppers legacy deben compararse contra los 215 existentes; no recrearse.
+
+## 8. Gate vivo único
+`PROBE READ-ONLY DE LOS 2 EXCESOS → CERRAR MAPA YA-EXISTE/FALTA → REFRESH LEGACY SHOPPERS+CERTIFICACIONES → DRY-RUN DELTA/IDEMPOTENCIA → AUTORIZACIÓN DE WRITES SOLO PARA FALTANTES → SMOKE CX.data CANÓNICO → CORTES 6–8 / CUTOVER EN HOSTING PÚBLICO ACTUAL`.
+
+Prompt preparado: `PROMPT-REFRESH-DELTA-LEGACY-TYA-SHOPPERS-CERTIFICACIONES-20260729.md`.
 
 No nueva base, no nueva candidata, no PowerShell, no materialización duplicada.
 
-## 8. Claude/prototipo y Academia
+## 9. Claude/prototipo y Academia
 - Claude: no nueva candidata por esta corrección; preservar fixes core/entrypoint.
-- Academia: documentar diferencia entre legacy/origen, backend canónico, sandbox y Hosting/cutover.
-- Reusable CXOrbia: sí; migración incremental y sandbox no equivalen a backend destino.
+- Academia: distinguir legacy/origen, backend canónico, sandbox y Hosting/cutover; migración incremental.
+- Reusable CXOrbia: sí; inventario primero, delta después, sandbox no equivale a destino.
