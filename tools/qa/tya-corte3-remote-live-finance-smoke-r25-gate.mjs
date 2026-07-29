@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* CXOrbia TyA · Corte 3 remote live finance smoke R25.
-   Validates the deployed live-HR runtime where identity-exact financial rows
-   coexist with fail-closed operational rows pending financial reconciliation. */
+   Validates live HR, canonical finance and immutable source-safe historical
+   payments: May 2026 complete, June 2026 partial, no payment execution. */
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -12,12 +12,12 @@ const arg = (name, fallback) => {
   const index = args.indexOf(name);
   return index >= 0 && args[index + 1] ? args[index + 1] : fallback;
 };
-const baseUrl = arg('--base-url', 'https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1');
+const baseUrl = arg('--base-url', 'https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=3');
 const outDir = path.resolve(arg('--out', '.tmp/tya-corte3-remote-live-finance-smoke-r25'));
 fs.mkdirSync(outDir, { recursive: true });
 
 const report = {
-  schemaVersion: '1.0.0',
+  schemaVersion: '1.1.0',
   gateId: 'tya-corte3-remote-live-finance-smoke-r25',
   generatedAt: new Date().toISOString(),
   baseUrl,
@@ -36,7 +36,7 @@ const report = {
     merge: false,
     imports: false,
     paymentsExecuted: 0,
-    batchesImported: 0,
+    executableBatchesCreated: 0,
     writes: false
   }
 };
@@ -72,17 +72,22 @@ try {
     readiness = await page.evaluate(() => {
       const scripts = [...document.scripts].map(script => script.getAttribute('src')).filter(Boolean);
       const financial = window.CX_TYA_FINANCIAL_CANONICAL_SOURCE_SAFE || null;
+      const paymentHistory = window.CX_TYA_PAYMENT_HISTORY_SOURCE_SAFE || null;
       return {
         documentReadyState: document.readyState,
         cxPresent: !!window.CX,
         visibleReady: window.CX_TYA_VISIBLE_DATA_READY === true,
         financeReady: window.CX_TYA_FINANCIAL_CANONICAL_READY === true,
+        paymentHistoryReady: window.CX_TYA_PAYMENT_HISTORY_READY === true,
         hrSnapshotPresent: !!window.CX_TYA_HR_SOURCE_SAFE,
         financialSnapshotPresent: !!financial,
+        paymentHistoryPresent: !!paymentHistory,
         financialLiquidationCount: Array.isArray(financial?.liquidations) ? financial.liquidations.length : null,
         financialReviewCount: Array.isArray(financial?.reviewQueue) ? financial.reviewQueue.length : null,
         financialPaymentsCount: Array.isArray(financial?.payments) ? financial.payments.length : null,
         financialBatchesCount: Array.isArray(financial?.batches) ? financial.batches.length : null,
+        historicalPaidItemCount: Array.isArray(paymentHistory?.paidItems) ? paymentHistory.paidItems.length : null,
+        historicalPaymentGroupCount: Array.isArray(paymentHistory?.historicalPaymentGroups) ? paymentHistory.historicalPaymentGroups.length : null,
         projectCount: Array.isArray(window.CX?.data?.projects) ? window.CX.data.projects.length : null,
         visitCount: Array.isArray(window.CX?.data?._visitas) ? window.CX.data._visitas.length : null,
         currentProjectId: window.CX?.data?.currentProjectId || null,
@@ -90,10 +95,11 @@ try {
         liveHrScriptCount: scripts.filter(src => src.includes('/api/tya/cinepolis/hr-live')).length,
         liveAdapterCount: scripts.filter(src => src.includes('tya-phase-a-source-safe-dev-adapter-r18a.js')).length,
         financialAdapterCount: scripts.filter(src => src.includes('tya-financial-canonical-source-safe-adapter.js')).length,
-        financialFinalCount: scripts.filter(src => src.includes('tya-financial-canonical-source-safe-final.js')).length
+        financialFinalCount: scripts.filter(src => src.includes('tya-financial-canonical-source-safe-final.js')).length,
+        paymentHistoryScriptCount: scripts.filter(src => src.includes('tya-payment-history-source-safe.js')).length
       };
     });
-    if (readiness.visibleReady && readiness.financeReady) break;
+    if (readiness.visibleReady && readiness.financeReady && readiness.paymentHistoryReady) break;
     await page.waitForTimeout(250);
   } while (Date.now() < deadline);
 
@@ -101,8 +107,12 @@ try {
   fs.writeFileSync(path.join(outDir, 'readiness.json'), JSON.stringify(readiness, null, 2) + '\n', 'utf8');
   check(readiness?.visibleReady === true, 'live_source_safe_data_ready', JSON.stringify(readiness));
   check(readiness?.financeReady === true, 'canonical_finance_ready', JSON.stringify(readiness));
-  check(readiness?.liveHrScriptCount === 1 && readiness?.liveAdapterCount === 1, 'live_hr_binding_exact', `${readiness?.liveHrScriptCount}/${readiness?.liveAdapterCount}`);
-  check(readiness?.financialAdapterCount === 1 && readiness?.financialFinalCount === 1, 'canonical_finance_binding_exact', `${readiness?.financialAdapterCount}/${readiness?.financialFinalCount}`);
+  check(readiness?.paymentHistoryReady === true && readiness?.paymentHistoryPresent === true,
+    'historical_payment_truth_ready', JSON.stringify(readiness));
+  check(readiness?.liveHrScriptCount === 1 && readiness?.liveAdapterCount === 1,
+    'live_hr_binding_exact', `${readiness?.liveHrScriptCount}/${readiness?.liveAdapterCount}`);
+  check(readiness?.financialAdapterCount === 1 && readiness?.financialFinalCount === 1 && readiness?.paymentHistoryScriptCount === 1,
+    'canonical_finance_payment_binding_exact', `${readiness?.financialAdapterCount}/${readiness?.financialFinalCount}/${readiness?.paymentHistoryScriptCount}`);
 
   const adminBtn = page.locator('[data-role="admin"]');
   check(await adminBtn.count() === 1, 'admin_login_available');
@@ -112,50 +122,61 @@ try {
   const core = await page.evaluate(async () => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     const projects = Array.isArray(CX.data.projects) ? CX.data.projects : [];
-    const project = projects.find(item => String(item.periodKey || '') === '2026-05') ||
-      projects.find(item => String(item.id || '').includes('2026-05'));
-    if (!project) throw new Error('period_2026_05_not_found');
-    const changed = typeof CX.data.setProject === 'function' ? CX.data.setProject(project.id) : false;
-    if (changed === false && CX.data.period()?.id !== project.id) throw new Error('period_2026_05_not_selected');
+    const selectPeriod = async key => {
+      const project = projects.find(item => String(item.periodKey || '') === key) ||
+        projects.find(item => String(item.id || '').includes(key));
+      if (!project) throw new Error(`period_${key}_not_found`);
+      const changed = typeof CX.data.setProject === 'function' ? CX.data.setProject(project.id) : false;
+      if (changed === false && CX.data.period()?.id !== project.id) throw new Error(`period_${key}_not_selected`);
+      await sleep(80);
+      return project;
+    };
+    const isReview = item => item.reviewRequired === true ||
+      item.financialSourceStatus === 'pending_or_review' ||
+      item.liquidationState === 'pending_financial_source';
+    const isPaid = item => item.paymentConfirmed === true && !!(item.paymentSourceRef || item.paymentRef);
+    const summarizePeriod = async key => {
+      await selectPeriod(key);
+      const visits = typeof CX.data.visitas === 'function' ? CX.data.visitas() : [];
+      const liquidations = CX.liq.forProject(CX.data);
+      const exact = liquidations.filter(item => !isReview(item));
+      const reviews = liquidations.filter(isReview);
+      const paid = liquidations.filter(isPaid);
+      const pendingPayment = liquidations.filter(item => !isPaid(item));
+      const finance = CX.fin.porPais(CX.data);
+      return {
+        key,
+        visits: visits.length,
+        liquidationCount: liquidations.length,
+        exactCount: exact.length,
+        reviewCount: reviews.length,
+        paidCount: paid.length,
+        pendingPaymentCount: pendingPayment.length,
+        paidHrRowIds: paid.map(item => String(item.hrRowId || '')).filter(Boolean).sort(),
+        paidByCurrency: paid.reduce((out,item) => {
+          const currency = item.moneda || 'pending_currency';
+          out[currency] = (out[currency] || 0) + Number(item.total || 0);
+          return out;
+        }, {}),
+        reviewPaymentCoexist: reviews.every(item => item.paymentConfirmed === true && !!item.paymentSourceRef),
+        reviewStates: reviews.map(item => ({
+          hrRowId:item.hrRowId,
+          financialSourceStatus:item.financialSourceStatus,
+          reviewRequired:item.reviewRequired,
+          paymentConfirmed:item.paymentConfirmed,
+          paymentState:item.paymentState
+        })),
+        cxpByCountry: Object.fromEntries(Object.entries(finance || {}).map(([country,value]) => [country, Number(value?.cxp || 0)])),
+        paidRecordsByCountry: Object.fromEntries(Object.entries(finance || {}).map(([country,value]) => [country, Number(value?.pagosConfirmados || 0)]))
+      };
+    };
 
-    const visits = typeof CX.data.visitas === 'function' ? CX.data.visitas() : [];
     const snapshot = CX.data.financialSnapshot || {};
-    const allSnapshot = Array.isArray(snapshot.liquidations) ? snapshot.liquidations : [];
-    const periodSnapshot = allSnapshot.filter(item => item.periodKey === '2026-05');
-    const liquidations = CX.liq.forProject(CX.data);
-    const exact = liquidations.filter(item => item.financialSourceStatus === 'exact_reconciled_source_safe');
-    const pending = liquidations.filter(item => item.financialSourceStatus !== 'exact_reconciled_source_safe');
-    const paid = liquidations.filter(item => item.estado === 'pagada' || item.paymentConfirmed === true || item.paymentState === 'paid' || item.paymentState === 'confirmed');
-    const pendingSafe = pending.every(item =>
-      item.reviewRequired === true &&
-      item.paymentConfirmed === false &&
-      item.paymentState === 'pending_source_confirmation' &&
-      item.liquidationState === 'pending_financial_source' &&
-      item.financialSourceStatus === 'pending_or_review' &&
-      item.amountSource === 'hr_operational_amount_pending_financial_reconciliation'
-    );
+    const paymentHistory = CX.data.paymentHistorySnapshot || {};
+    const may = await summarizePeriod('2026-05');
 
-    const byPaymentItemId = new Map(periodSnapshot.filter(item => item.paymentItemId).map(item => [String(item.paymentItemId), item]));
-    const byHrRowId = new Map(periodSnapshot.filter(item => item.hrRowId).map(item => [String(item.hrRowId), item]));
-    const byVisitId = new Map(periodSnapshot.filter(item => item.visitId).map(item => [String(item.visitId), item]));
-    const sourceFor = item => byPaymentItemId.get(String(item?.paymentItemId || '')) ||
-      byHrRowId.get(String(item?.hrRowId || '')) ||
-      byVisitId.get(String(item?.visitaId || item?.visitId || '')) || null;
-    const amountMismatches = exact.filter(item => {
-      const source = sourceFor(item);
-      return !source || Number(item.honorario) !== Number(source.honorario) ||
-        Number(item.boleto) !== Number(source.boleto) ||
-        Number(item.combo) !== Number(source.combo) ||
-        Number(item.total) !== Number(source.total);
-    });
-
-    const exactVisitRow = exact.find(item => sourceFor(item));
-    const exactVisit = exactVisitRow ? (CX.data._visitas || []).find(visit =>
-      String(visit.id) === String(exactVisitRow.visitaId) ||
-      (visit.hrRowId && exactVisitRow.hrRowId && String(visit.hrRowId) === String(exactVisitRow.hrRowId))
-    ) : null;
-    const visitContract = exactVisit ? CX.data.visitContract(exactVisit) : null;
-    const financeByCountry = CX.fin.porPais(CX.data);
+    const mayVisit = (CX.data._visitas || []).find(visit => String(visit.periodKey || '') === '2026-05');
+    const mayVisitContract = mayVisit ? CX.data.visitContract(mayVisit) : null;
 
     CX.router.nav('financiero');
     await sleep(150);
@@ -170,14 +191,13 @@ try {
       CX.reportKit.openReport = original;
     }
 
-    const exactWithShopper = exact.find(item => {
-      const visit = (CX.data._visitas || []).find(row => String(row.id) === String(item.visitaId) ||
-        (row.hrRowId && item.hrRowId && String(row.hrRowId) === String(item.hrRowId)));
-      return visit && visit.shopperId;
+    const mayPaidWithShopper = CX.liq.forProject(CX.data).find(item => {
+      if (!isPaid(item)) return false;
+      const visit = (CX.data._visitas || []).find(row => String(row.id) === String(item.visitaId));
+      return !!visit?.shopperId;
     });
-    const shopperVisit = exactWithShopper ? (CX.data._visitas || []).find(row =>
-      String(row.id) === String(exactWithShopper.visitaId) ||
-      (row.hrRowId && exactWithShopper.hrRowId && String(row.hrRowId) === String(exactWithShopper.hrRowId))
+    const shopperVisit = mayPaidWithShopper ? (CX.data._visitas || []).find(row =>
+      String(row.id) === String(mayPaidWithShopper.visitaId)
     ) : null;
     if (shopperVisit) {
       CX.session.role = 'shopper';
@@ -193,84 +213,96 @@ try {
     const shopperId = shopperVisit?.shopperId || null;
     const shopperVisitIds = new Set(shopperId && CX.data.visitsForShopper ? CX.data.visitsForShopper(shopperId).map(visit => String(visit.id)) : []);
     const shopperLiquidations = CX.liq.forProject(CX.data).filter(item => shopperVisitIds.has(String(item.visitaId)));
-    const shopperPaid = shopperLiquidations.filter(item => item.estado === 'pagada' || item.paymentConfirmed === true);
-    const exactCountFromFinance = Object.values(financeByCountry || {}).reduce((sum, value) => sum + Number(value?.exactReconciledRecords || 0), 0);
+    const shopperPaid = shopperLiquidations.filter(isPaid);
+
+    const june = await summarizePeriod('2026-06');
+    const groups = typeof CX.data.historicalPaymentGroups === 'function' ? CX.data.historicalPaymentGroups() : [];
+    const confirmedPayments = typeof CX.data.confirmedPayments === 'function' ? CX.data.confirmedPayments() : [];
+    const paymentBatches = typeof CX.data.paymentBatches === 'function' ? CX.data.paymentBatches() : [];
 
     return {
-      currentPeriodKey: String(CX.data.period()?.periodKey || CX.data.period()?.id || '').replace(/^cinepolis(?:-|::)/, ''),
-      currentVisitCount: visits.length,
-      periodSnapshotCount: periodSnapshot.length,
-      liquidationCount: liquidations.length,
-      exactCount: exact.length,
-      pendingCount: pending.length,
-      pendingSafe,
-      pendingStates: pending.map(item => ({
-        estado: item.estado,
-        liquidationState: item.liquidationState,
-        paymentState: item.paymentState,
-        financialSourceStatus: item.financialSourceStatus,
-        reviewRequired: item.reviewRequired,
-        paymentConfirmed: item.paymentConfirmed
-      })),
-      paidCount: paid.length,
-      amountMismatchCount: amountMismatches.length,
-      snapshotSummary: snapshot.summary,
-      snapshotPayments: Array.isArray(snapshot.payments) ? snapshot.payments.length : null,
-      snapshotBatches: Array.isArray(snapshot.batches) ? snapshot.batches.length : null,
-      visitContract,
-      financeCountries: Object.keys(financeByCountry || {}),
-      financeExactCounts: Object.fromEntries(Object.entries(financeByCountry || {}).map(([country, value]) => [country, value.exactReconciledRecords || 0])),
-      exactCountFromFinance,
-      adminHasDashboard: adminText.includes('Dashboard Financiero'),
-      adminHasExport: adminHtml.includes('finExport'),
-      reportCaptured: !!capturedReport,
-      reportRows: capturedReport?.spec?.rows?.length || 0,
-      reportColumns: capturedReport?.spec?.columns?.length || 0,
-      reportChartRows: capturedReport?.spec?.chart?.data?.length || 0,
-      reportFilename: capturedReport?.spec?.filename || null,
+      snapshotSummary:snapshot.summary,
+      snapshotPayments:Array.isArray(snapshot.payments) ? snapshot.payments.length : null,
+      snapshotBatches:Array.isArray(snapshot.batches) ? snapshot.batches.length : null,
+      paymentHistorySourceSha:paymentHistory?.source?.workbookSha256 || null,
+      paymentHistorySummary:paymentHistory?.summary || null,
+      mayPolicy:paymentHistory?.periodPolicies?.['2026-05'] || null,
+      may,
+      june,
+      mayVisitContract,
+      historicalGroupCount:groups.length,
+      historicalGroupsExecutable:groups.filter(group => group.executionAllowed === true).length,
+      confirmedPaymentEvidenceCount:confirmedPayments.length,
+      paymentBatchCount:paymentBatches.length,
+      adminHasDashboard:adminText.includes('Dashboard Financiero'),
+      adminHasExport:adminHtml.includes('finExport'),
+      reportCaptured:!!capturedReport,
+      reportRows:capturedReport?.spec?.rows?.length || 0,
+      reportColumns:capturedReport?.spec?.columns?.length || 0,
+      reportChartRows:capturedReport?.spec?.chart?.data?.length || 0,
+      reportFilename:capturedReport?.spec?.filename || null,
       shopperId,
-      shopperLiquidationCount: shopperLiquidations.length,
-      shopperPaidCount: shopperPaid.length,
+      shopperLiquidationCount:shopperLiquidations.length,
+      shopperPaidCount:shopperPaid.length,
       benefitKpiKeys,
-      benefitsRows: (benefitsHtml.match(/<tr>/g) || []).length
+      benefitsRows:(benefitsHtml.match(/<tr>/g) || []).length
     };
   });
 
   report.summary = core;
-  await page.screenshot({ path: path.join(outDir, 'remote-live-corte3-final-state.png'), fullPage: true });
+  await page.screenshot({ path: path.join(outDir, 'remote-live-corte3-payment-history-final-state.png'), fullPage: true });
 
-  check(core.currentPeriodKey.includes('2026-05'), 'period_2026_05_active', core.currentPeriodKey);
-  check(core.currentVisitCount === 44, 'current_period_visit_inventory_44', String(core.currentVisitCount));
   check(core.snapshotSummary?.exactAcceptedLinks === 209, 'snapshot_exact_links_209', String(core.snapshotSummary?.exactAcceptedLinks));
   check(core.snapshotSummary?.canonicalAmountReady === 207, 'snapshot_amount_ready_207', String(core.snapshotSummary?.canonicalAmountReady));
   check(core.snapshotSummary?.amountReviewRequired === 2, 'snapshot_amount_review_2', String(core.snapshotSummary?.amountReviewRequired));
   check(core.snapshotSummary?.reviewQueue === 79, 'snapshot_link_review_79', String(core.snapshotSummary?.reviewQueue));
-  check(core.snapshotPayments === 0 && core.snapshotBatches === 0, 'snapshot_payments_batches_zero', `${core.snapshotPayments}/${core.snapshotBatches}`);
-  check(core.periodSnapshotCount === 42 && core.exactCount === 42, 'may_exact_financial_rows_42', `${core.periodSnapshotCount}/${core.exactCount}`);
-  check(core.pendingCount === 2 && core.liquidationCount === 44, 'may_non_exact_rows_visible_as_two_fail_closed_reviews', `${core.pendingCount}/${core.liquidationCount}`);
-  check(core.pendingSafe === true, 'pending_rows_fail_closed', JSON.stringify(core.pendingStates));
-  check(core.exactCount + core.pendingCount === core.liquidationCount, 'exact_plus_pending_equals_collection');
-  check(core.paidCount === 0, 'no_paid_rows');
-  check(core.amountMismatchCount === 0, 'canonical_amounts_match_snapshot', String(core.amountMismatchCount));
-  check(core.visitContract?.paymentConfirmed === false && core.visitContract?.paymentState === 'pending_source_confirmation',
-    'visit_contract_payment_fail_closed', JSON.stringify(core.visitContract));
-  check(core.exactCountFromFinance === 42 && core.financeExactCounts.GT === 32 && core.financeExactCounts.HN === 10,
-    'finance_country_exact_counts_32_10', JSON.stringify(core.financeExactCounts));
+  check(core.snapshotPayments === 0 && core.snapshotBatches === 0 && core.paymentBatchCount === 0,
+    'no_executable_payment_batches_imported', `${core.snapshotPayments}/${core.snapshotBatches}/${core.paymentBatchCount}`);
+  check(core.paymentHistorySourceSha === 'b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89',
+    'payment_history_source_sha_exact', String(core.paymentHistorySourceSha));
+  check(core.historicalGroupCount === 2 && core.historicalGroupsExecutable === 0,
+    'historical_groups_immutable_non_executable', `${core.historicalGroupCount}/${core.historicalGroupsExecutable}`);
+
+  check(core.may.visits === 44 && core.may.liquidationCount === 44, 'may_inventory_44', JSON.stringify(core.may));
+  check(core.may.exactCount === 42 && core.may.reviewCount === 2, 'may_exact_42_reviews_2', JSON.stringify(core.may));
+  check(core.may.paidCount === 44 && core.may.pendingPaymentCount === 0, 'may_paid_44_pending_0', JSON.stringify(core.may));
+  check(core.may.reviewPaymentCoexist === true, 'may_financial_reviews_preserved_with_payment_confirmed', JSON.stringify(core.may.reviewStates));
+  check(core.may.cxpByCountry.GT === 0 && core.may.cxpByCountry.HN === 0,
+    'may_cxp_zero_by_country', JSON.stringify(core.may.cxpByCountry));
+  check(core.mayPolicy?.countryTotals?.GT?.visitCount === 34 && core.mayPolicy?.countryTotals?.HN?.visitCount === 10,
+    'may_paid_country_counts_34_10', JSON.stringify(core.mayPolicy?.countryTotals));
+  check(core.mayPolicy?.countryTotals?.GT?.honorarioPaid === 2040 && core.mayPolicy?.countryTotals?.GT?.reimbursementPaid === 5448 && core.mayPolicy?.countryTotals?.GT?.totalPaid === 7488,
+    'may_gt_paid_totals_source_safe', JSON.stringify(core.mayPolicy?.countryTotals?.GT));
+  check(core.mayPolicy?.countryTotals?.HN?.honorarioPaid === 2000 && core.mayPolicy?.countryTotals?.HN?.reimbursementPaid === 3861 && core.mayPolicy?.countryTotals?.HN?.totalPaid === 5861,
+    'may_hn_paid_totals_source_safe', JSON.stringify(core.mayPolicy?.countryTotals?.HN));
+  check(core.mayVisitContract?.paymentConfirmed === true && core.mayVisitContract?.paymentState === 'payment_confirmed' && core.mayVisitContract?.paymentExecutionAllowed === false,
+    'may_visit_contract_historical_payment_confirmed_non_executable', JSON.stringify(core.mayVisitContract));
+
+  check(core.june.visits === 44 && core.june.liquidationCount === 44, 'june_inventory_44', JSON.stringify(core.june));
+  check(core.june.paidCount === 2 && core.june.pendingPaymentCount === 42,
+    'june_paid_2_pending_42', JSON.stringify(core.june));
+  check(JSON.stringify(core.june.paidHrRowIds) === JSON.stringify(['JUNIO 26!2','JUNIO 26!6']),
+    'june_paid_hrrowids_exact', JSON.stringify(core.june.paidHrRowIds));
+  check(core.june.paidByCurrency.Q === 451 && !core.june.paidByCurrency.L,
+    'june_paid_gt_451_hn_0', JSON.stringify(core.june.paidByCurrency));
+
   check(core.adminHasDashboard && core.adminHasExport, 'finance_ui_and_export_visible');
   check(core.reportCaptured && core.reportRows === 2 && core.reportColumns >= 8 && core.reportChartRows === 2,
     'finance_report_spec_complete', `${core.reportRows}/${core.reportColumns}/${core.reportChartRows}`);
   check(String(core.reportFilename || '').endsWith('.pdf'), 'finance_report_pdf_filename');
-  check(core.shopperId && core.shopperLiquidationCount > 0 && core.shopperPaidCount === 0, 'shopper_benefits_fail_closed', `${core.shopperLiquidationCount}/${core.shopperPaidCount}`);
+  check(core.shopperId && core.shopperLiquidationCount > 0 && core.shopperPaidCount > 0,
+    'shopper_benefits_show_confirmed_historical_payment', `${core.shopperLiquidationCount}/${core.shopperPaidCount}`);
   check(['hon','reemb','cobrar','pagado'].every(key => core.benefitKpiKeys.includes(key)),
     'benefits_four_canonical_kpis', core.benefitKpiKeys.join(','));
   check(core.benefitsRows > 1, 'benefits_detail_rows_rendered', String(core.benefitsRows));
 
-  report.warnings.push('May 2026 contains 44 HR visits: 42 identity-exact canonical financial rows and 2 explicit fail-closed operational review rows. The two review rows are not canonical, not paid and cannot enter a batch.');
+  report.warnings.push('May 2026 preserves 42 exact financial links and 2 financial reviews while all 44 payment states are historically confirmed. Payment truth does not erase financial review truth.');
+  report.warnings.push('June 2026 has exactly two source-confirmed payments (JUNIO 26!2 and JUNIO 26!6); the remaining 42 obligations stay pending without inference.');
   report.warnings.push('PDF chart rendering and Excel formatting remain visual P1/P2 checks for Paula.');
   report.status = 'PASS';
   fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
-  fs.writeFileSync(path.join(outDir, 'summary.txt'), 'PASS_TYA_CORTE3_REMOTE_LIVE_FINANCE_SMOKE_R25\n', 'utf8');
-  console.log('PASS_TYA_CORTE3_REMOTE_LIVE_FINANCE_SMOKE_R25');
+  fs.writeFileSync(path.join(outDir, 'summary.txt'), 'PASS_TYA_CORTE3_REMOTE_LIVE_PAYMENT_HISTORY_SMOKE_R25\n', 'utf8');
+  console.log('PASS_TYA_CORTE3_REMOTE_LIVE_PAYMENT_HISTORY_SMOKE_R25');
   console.log(JSON.stringify(core));
 } catch (error) {
   report.status = 'HOLD';
