@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-29  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_PROTECTED_CXDATA_SMOKE_PASS__HOSTING_DEV_AUTH_PENDING`
+**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_HOSTING_DEV_PASS__VISUAL_VALIDATION_PENDING`
 
 ## 1. Objetivo
 
@@ -45,7 +45,7 @@ P1/P2 de reportes/copy permanecen como backlog transversal y no reabren Corte 3.
 
 Objetivo: `CX.data READ-ONLY → FIREBASE NUEVO Y VACÍO → MISMA INTERFAZ → CERO WRITES`.
 
-Estado: `PROTECTED_CXDATA_SMOKE_PASS__HOSTING_DEV_AUTH_PENDING`.
+Estado: `HOSTING_DEV_PASS__VISUAL_VALIDATION_PENDING`.
 
 ### 5.1 Hardening completado
 
@@ -66,7 +66,8 @@ Estado: `PROTECTED_CXDATA_SMOKE_PASS__HOSTING_DEV_AUTH_PENDING`.
 
 - projectId `cxorbia-tya-dev-260729-c4`;
 - display name `CXOrbia TyA DEV Clean Corte 4`;
-- creado manualmente por Paula sin reutilizar base existente.
+- Firestore `us-central1`;
+- creado sin reutilizar base existente.
 
 ### 5.4 Gate 1 — identidad nueva: PASS
 
@@ -86,16 +87,12 @@ Estado: `PROTECTED_CXDATA_SMOKE_PASS__HOSTING_DEV_AUTH_PENDING`.
 
 Autorización consumida: `Autorizo bootstrap DEV read-only de Corte 4`.
 
-Resultado:
-
 - Web App DEV READY;
 - Firestore `(default)` READY, Native/Standard, `us-central1`, sin colecciones;
 - Rules read-only DEPLOYED + VERIFIED;
-- Authentication inicializado en consola, sin proveedor ni usuarios permanentes;
+- Authentication inicializado en consola;
 - revalidación idempotente `e524b968c0003c27351d5d5826e21ffcf7cbfdbe`;
-- `BOOTSTRAP_DEV_READONLY_COMPLETED_C4` PASS;
-- Web/DB/Auth/Rules=true;
-- provider config writes en revalidación=0.
+- `BOOTSTRAP_DEV_READONLY_COMPLETED_C4` PASS.
 
 ### 5.7 Gate 4 — protected CX.data smoke: PASS
 
@@ -103,37 +100,43 @@ Autorización consumida: `Autorizo operador DEV temporal para smoke protegido de
 
 Intento válido: `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`.
 
-Evidencia:
-
-- `c4smoke-error-NONE`;
-- `c4smoke-srcfirestore-etrue-fbfalse-rotrue`;
-- `c4cleanup-u0-emailfalse`.
-
-El smoke confirmó:
+Confirmado:
 
 - `source=firestore`;
 - `empty=true`;
 - `fallbackUsed=false`;
 - `readOnly=true` / `writeMode=disabled`;
 - interfaz `CX.data` preservada;
-- claims `role=admin`, `tenantId=tya`;
-- bloqueo de write directo;
-- Firestore data arrays vacíos;
+- claims temporales correctos;
+- write directo bloqueado;
 - Firestore document writes=0;
 - operador temporal eliminado;
 - Auth users final=0;
 - Email/Password final=deshabilitado.
 
-El status agregado quedó falsamente en error porque el publicador esperaba un segundo archivo de cleanup ya redundante. La corrección de raíz quedó en `9967146e112322efcd043155ae05351bbbbd4e8a` sin rerun ni nuevo Auth write.
+### 5.8 Gate 5 — Hosting DEV: PASS
 
-### 5.8 Gates restantes
+Autorización consumida: `Autorizo Hosting DEV de Corte 4 para validación visual.`
 
-5. autorización separada de Hosting DEV para el mismo build read-only;
-6. deploy Hosting DEV;
-7. validación visual;
-8. corrección focalizada solo si existe P0 reproducible;
-9. freeze Corte 4;
-10. retirar IAM temporal elevado y dejar runner en Viewer.
+- authorizationId `c4-hosting-visual-20260729-01`;
+- deployed source commit `fabba5c76bb40f5105f8e10dd54be63e9b3eb783`;
+- `cxorbia/corte4-hosting-dev-visual=success`;
+- `cxorbia/c4hosting-deploys1=success`;
+- exactamente 1 deploy Hosting-only;
+- remote proof y entrypoint verificados;
+- autorización one-shot consumida y congelada;
+- cero writes Firestore/Auth/Storage/Rules/Functions/HR/import/Make/Gemini/payment/merge/production.
+
+URL visual:
+
+`https://cxorbia-tya-dev-260729-c4.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&c4visual=fabba5c76bb40f5105f8e10dd54be63e9b3eb783`
+
+### 5.9 Gates restantes
+
+6. validación visual Paula;
+7. corrección focalizada solo si existe P0 reproducible;
+8. freeze Corte 4;
+9. retirar IAM temporal elevado y dejar runner en Viewer.
 
 ## 6. Cortes siguientes
 
@@ -151,8 +154,8 @@ Corte 3 está congelado. No preparar V183. No tocar backend/contratos/adapters d
 ## 8. Academia
 
 - Corte 3: fuente operacional/financiera/pago y monedas separadas.
-- Corte 4: backend vacío, fail-closed, interfaz estable y separación entre proyecto, IAM, Web App, Firestore, inicialización Auth, proveedor temporal, usuario temporal, claims, Rules, protected smoke, cleanup y reporting.
+- Corte 4: backend vacío, fail-closed, interfaz estable y separación entre proyecto, IAM, Web App, Firestore, Auth temporal, Rules, protected smoke, Hosting DEV, prueba remota, validación visual y producción.
 
 ## 9. Estado seguro
 
-Sin producción, merge, Firestore document writes, Auth users permanentes, Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live. Provider bootstrap y protected smoke de Corte 4 están completados; el siguiente gate es Hosting DEV con autorización separada.
+Sin producción, merge, Firestore document writes, Auth users permanentes, Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live. Hosting DEV de Corte 4 tuvo exactamente un deploy autorizado y ya consumido. Gate vivo: validación visual.
