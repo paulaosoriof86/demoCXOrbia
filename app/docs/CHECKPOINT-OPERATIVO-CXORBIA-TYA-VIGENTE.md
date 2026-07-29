@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-29  
-**Estado:** `CORTE3_PAYMENT_HISTORY_HOSTING_DEV_REMOTE_PASS_PENDING_PAULA_FINAL_VISUAL_NO_FREEZE_NO_PRODUCTION`
+**Estado:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_READONLY_HARDENED_PROVIDER_IDENTITY_PENDING_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -10,127 +10,94 @@
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
 - Producción, merge, imports, pagos ejecutados y Firestore/Auth/Storage/HR writes: 0.
-- Hosting DEV fue desplegado; Cloud Run no fue redeployado.
 
-## 2. Baseline y V182
+## 2. Corte 3 — FROZEN / ACTIVE_BASELINE
 
-- V174/M1/Corte 1/Corte 2A: FROZEN/APROBADOS.
-- V182: auditada GO y empalmada sobre V174.
+Paula autorizó el cierre con `Procede` en la conversación vigente.
+
+- Baseline: `CXORBIA-TYA-CORTE3-V182-20260729`.
+- Baseline head antes de documentos de freeze: `1b34c3998625a3f2402ceeada283ab57b56ffbf6`.
+- Manifest: `app/docs/ACTIVE-BASELINE-CORTE3-V182-20260729.json`.
+- Decisión: `app/docs/FREEZE-CORTE3-V182-APPROVED-20260729.md`.
+- V182 empalmada sobre V174.
 - Commit funcional V182: `e3cfe464fd80e5bd4ce273556cfd0021e22c0810`.
-- Delta V182: `app/app.js`, `app/core/finanzas-core.js`, `app/modules/beneficios.js`, `app/modules/finanzas.js`, `app/styles/layout.css`.
-- Identidad agregada V182: `62d85bace9276070bfc642df31da74abd684ab072f155eed3895c6e3926c57c9`.
-- R26–R32 post-apply: 135/135 PASS.
-- No V183. No R33.
-
-## 3. Fuente operacional y financiera preservada
-
-- 14 periodos / 616 visitas.
-- 247 filas financieras.
-- 209 vínculos exactos.
-- 207 montos canónicos.
-- 38 sin vínculo exacto.
-- 79 revisiones de vínculo.
-- 2 revisiones de monto.
-- 37 evidencias candidatas.
-- 0 lotes ejecutables importados o creados.
-
-## 4. P0 corregido — histórico de pagos omitido
-
-La validación visual de Paula demostró que el runtime anterior omitía pagos históricos: forzaba `paymentConfirmed=false`, `payments=[]` y `batches=[]`, aunque la fuente real confirma mayo completo y junio parcial.
-
-Fuente exacta procesada read-only:
-
-- archivo: `2026 Ingresos Egresos y Presupuesto Paula.xlsx`;
-- SHA-256: `b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89`;
-- hoja: `Liquidación May 26`;
-- rango fuente: `A1:AB57`;
-- Excel crudo y PII: no subidos al repo.
-
-## 5. Verdad de pagos vigente
-
-### Mayo 2026
-
-- 44 visitas.
-- 44 pagos históricamente confirmados.
-- 0 pendientes de pago.
-- 42 vínculos financieros exactos.
-- 2 revisiones financieras preservadas; revisión financiera y pago confirmado coexisten.
-- CxP GT: Q 0.
-- CxP HN: L 0.
-- GT source-safe: honorarios Q 2,040; reembolsos Q 5,448; total pagado Q 7,488.
-- HN source-safe: honorarios L 2,000; reembolsos L 3,861; total pagado L 5,861.
-
-### Junio 2026
-
-- 44 visitas.
-- 2 pagos confirmados.
-- 42 pendientes.
-- Identidades pagadas exactas: `JUNIO 26!2` y `JUNIO 26!6`.
-- Pagado GT: Q 451.
-- Pagado HN: L 0.
-- Ninguna fila adicional fue inferida como pagada.
-
-## 6. Implementación source-safe
-
-- Contrato: `backend/contracts/tya-payment-history-source-safe-v1.json`.
-- Proyección: `app/data/tya-payment-history-source-safe.js`.
-- Adapter único: `app/adapters/tya-financial-canonical-source-safe-adapter.js`.
-- Gate funcional: `tools/qa/tya-payment-history-source-safe-gate.mjs`; no es R33.
-- Builder Hosting DEV actualizado para cargar snapshot financiero → histórico de pagos → adapter.
-- R24 fail-closed actualizado con identidades exactas, sin comodines.
-- Dos grupos históricos inmutables/no ejecutables.
-- `paymentBatchId` real no fue inventado.
-- `paymentExecutionAllowed=false`.
-- Dashboard, Movimientos, Liquidaciones, Lotes y Beneficios consumen la misma verdad mediante `CX.data`/`CX.liq`.
-- Módulos UI no fueron reescritos en este bloque.
-
-## 7. Gates y Hosting DEV
-
-- Gate local de histórico: `PASS_TYA_PAYMENT_HISTORY_SOURCE_SAFE_GATE`.
-- Adapter harness local: `PASS_PAYMENT_HISTORY_ADAPTER_HARNESS`.
-- R24 remoto: `PASS_CORTE3_V174_RUNTIME_PRESERVATION_R24`.
-- Request final Hosting DEV: `7d314818e58c19e4332830d4c474ff3a6157b509`.
-- Workflow/run: `30416875149`.
-- Job final: `90468374816` — SUCCESS.
-- Deploy Hosting DEV: PASS.
-- Live HR endpoint: `PASS_REMOTE_LIVE_HR_ENDPOINT`.
+- R26–R32: 135/135 PASS.
+- R24: `PASS_CORTE3_V174_RUNTIME_PRESERVATION_R24`.
+- Gate pagos: `PASS_TYA_PAYMENT_HISTORY_SOURCE_SAFE_GATE`.
+- HR remota: `PASS_REMOTE_LIVE_HR_ENDPOINT`.
 - Smoke remoto: `PASS_TYA_CORTE3_REMOTE_LIVE_PAYMENT_HISTORY_SMOKE_R25`.
-- Mayo remoto: 44 pagadas / 0 pendientes / 2 reviews preservadas / CxP Q0-L0.
-- Junio remoto: 2 pagadas / 42 pendientes / IDs exactos / Q451-L0.
-- Shopper identificado: Beneficios con pagos históricos visibles.
-- Pagos ejecutados: 0.
-- Lotes ejecutables creados: 0.
+- Run `30416875149`, job `90468374816`: SUCCESS.
+- Artifact `8710831009`, digest `sha256:091f605b3cf8426262bb9fe4dd36f930a0f1e87fad8113287e905375b7126d76`.
 
-## 8. Hosting DEV vigente
+### Verdad congelada
 
-`https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=4`
+- HR: 14 periodos / 616 visitas.
+- Mayo 2026: 44 pagadas / 0 pendientes / 42 exactas / 2 reviews / CxP Q0-L0.
+- Junio 2026: 2 pagadas / 42 pendientes / IDs `JUNIO 26!2` y `JUNIO 26!6` / Q451-L0.
+- Pagos y lotes ejecutados por CXOrbia: 0.
 
-## 9. Estado Phase A
+### Backlog no bloqueante
 
-- M1 / Corte 1 / Corte 2A: FROZEN/APROBADOS.
-- Corte 3: V182 empalmada + fixes focales + histórico de pagos + Hosting DEV + smoke remoto PASS.
-- Corte 3 todavía NO está FROZEN/ACTIVE_BASELINE: falta validación visual final de Paula y `APROBADO`.
-- Corte 4 no inicia antes del freeze.
+- PDF sin gráfica visible al imprimir.
+- Excel con formato básico.
+- Mejora transversal de `reportKit`.
+- Refinamiento de copy genérico “Pendiente de fuente”.
+- Reconciliación del registry/gate histórico R20 antes de producción.
 
-## 10. Validación visual final mínima
+Corte 3 no se reabre por P1/P2. Solo un P0 reproducible puede modificar el baseline.
 
-1. Mayo, Liquidaciones: 44 pagadas, 0 pendientes, 2 revisiones financieras preservadas.
-2. Mayo, Movimientos: CxP Q0 y L0.
-3. Junio: 2 pagadas, 42 pendientes; Q451 pagado GT y L0 HN.
-4. Shopper identificado: Beneficios muestra registros pagados sin revelar otra identidad.
-5. Móvil: navegación básica sin regresión.
+## 3. Corte 4 — iniciado
 
-PDF sin gráfica y Excel con formato básico permanecen P2 transversal no bloqueante.
+Objetivo: `CX.data READ-ONLY → Firebase nuevo y vacío → misma interfaz → cero writes`.
 
-## 11. Claude/prototipo y Academia
+### Hardening aplicado
 
-- Claude: no V183; preservar histórico source-safe y separar revisión financiera, pago confirmado y lote. El copy estático que todavía asuma “0 pagos” se documenta por archivo/módulo para futura corrección frontend localizada.
-- Academia: explicar visita → liquidación → revisión → pago confirmado → grupo histórico/lote; precisión de fecha `source_day_only`; grupos históricos inmutables/no ejecutables.
+- `backend/contracts/cxdata-firestore-readonly-corte4-v1.json`.
+- `app/core/backend-config.js`:
+  - `enabled=false` por defecto;
+  - `readOnly=true`;
+  - `writeMode=disabled`;
+  - cero data/operational writes;
+  - backend vacío permitido;
+  - error de lectura fail-closed;
+  - identidad y vacío del proyecto todavía no verificados.
+- `app/core/backend-config-preview-dev.js`: preview autorizado permanece estrictamente read-only.
+- `app/core/backend-cxdata-readonly-corte4.js`:
+  - conserva los métodos públicos de `CX.data`;
+  - bloquea persistencia directa;
+  - bloquea acciones operativas públicas;
+  - un backend vacío se representa como vacío, sin volver al mock/localStorage;
+  - un error de lectura falla cerrado.
+- `app/index-backend-dev.html`: carga el guard después de acciones operativas y antes del bridge UI.
+- `tools/qa/cxdata-firestore-readonly-corte4-gate.mjs`: gate estático creado; no activa proveedor ni despliega.
 
-## 12. Siguiente bloque exacto
+### Hallazgo de causa raíz prevenido
 
-`VALIDACIÓN VISUAL FINAL PAULA → APROBADO → FREEZE CORTE 3 / ACTIVE_BASELINE → CORTE 4: CX.data READ-ONLY EN FIREBASE NUEVO Y VACÍO`.
+El adapter Firebase existente envolvía métodos `CX.data` con persistencia Firestore y, ante backend vacío/error, podía conservar el mock/localStorage visible. Corte 4 ahora bloquea esas dos rutas antes de conectar el proveedor.
 
-## 13. Estado seguro
+## 4. Gate actual
 
-Sin producción, merge, Firestore/Auth/Storage/HR writes, imports, ejecución de pagos, lotes reales, Make ni Gemini live.
+Estado: `READONLY_HARDENED_PROVIDER_IDENTITY_PENDING`.
+
+Todavía NO se activa Firebase porque faltan:
+
+1. verificar que `cxorbia-backend-dev` sea efectivamente la base nueva y limpia autorizada;
+2. verificar proyecto vacío y Rules read-only;
+3. completar config DEV sin secretos en repo;
+4. ejecutar el gate Corte 4;
+5. obtener autorización para activar lectura DEV.
+
+No se crearán ni conectarán bases preexistentes o legacy.
+
+## 5. Claude/prototipo y Academia
+
+- Claude: Corte 3 congelado; no V183/R33; no tocar módulos UI desde backend. Cualquier P1/P2 se documenta por archivo/módulo.
+- Academia: Corte 3 ya puede documentarse como baseline; Corte 4 debe explicar backend vacío fail-closed, interfaz estable y separación lectura/escritura.
+
+## 6. Siguiente bloque exacto
+
+`VERIFICAR IDENTIDAD FIREBASE NUEVA/LIMPIA → VERIFICAR VACÍO Y RULES READ-ONLY → EJECUTAR GATE CORTE 4 → ACTIVAR SOLO LECTURA DEV → SMOKE CX.data VACÍO/SOURCE-SAFE`.
+
+## 7. Estado seguro
+
+Sin producción, merge, provider activation, Firestore/Auth/Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live.
