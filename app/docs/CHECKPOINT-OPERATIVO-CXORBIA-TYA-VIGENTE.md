@@ -1,87 +1,100 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-29  
-**Estado:** `CORTE3_FROZEN__CORTE4_SANDBOX_LEARNINGS_PRESERVED__ARCHITECTURE_CORRECTED__CANONICAL_BACKEND_READONLY_INVENTORY_ACTIVE__NO_DATA_WRITES`
+**Estado:** `CORTE3_FROZEN__ARCHITECTURE_CORRECTED__CANONICAL_BACKEND_INVENTORY_PASS__PHASEA_GAP_RECONCILED__ANOMALY_READONLY_PROBE_ACTIVE__NO_DATA_WRITES`
 
 ## 1. Repositorio y seguridad
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
-- Producción/merge/imports/pagos y provider data writes reales: 0 en este bloque.
+- Producción/merge/imports/pagos y provider writes reales: 0 en este bloque.
 
 ## 2. Corrección de arquitectura vinculante
-La expresión histórica “base anterior/base vieja” corresponde a la **plataforma legacy TyA Consultores actualmente operativa y destinada a retiro**.
+“Base anterior/base vieja” = **plataforma legacy TyA Consultores actualmente operativa y destinada a retiro**. No significa `cxorbia-backend-dev`.
 
-No corresponde a `cxorbia-backend-dev`.
-
-Identidades canónicas:
-1. Legacy TyA Consultores: sistema actual a retirar; solo origen de datos útiles limpios.
-2. `cxorbia-backend-dev`: backend DEV de CXOrbia ya construido, con TyA como primer tenant; debe reutilizarse según inventario y no excluirse por estar poblado.
-3. `cxorbia-tya-dev-260729-c4`: sandbox técnico creado por interpretación incorrecta; no destino de materialización.
-4. Hosting público actual de TyA: se conserva como URL de cutover final; la app legacy será reemplazada por CXOrbia cuando Phase A esté lista.
+1. Legacy TyA: solo origen de datos útiles limpios.
+2. `cxorbia-backend-dev`: backend DEV canónico de CXOrbia, TyA primer tenant; reutilizar.
+3. `cxorbia-tya-dev-260729-c4`: sandbox de validación; no materializar Phase A allí.
+4. Hosting público actual TyA: conservar URL en cutover final.
 
 Prevalece `ADDENDUM-CORRECCION-ARQUITECTURA-LEGACY-VS-CXORBIA-BACKEND-DEV-20260729.md`.
 
 ## 3. Corte 3 — FROZEN / ACTIVE_BASELINE
 - Baseline `CXORBIA-TYA-CORTE3-V182-20260729`.
-- V182 empalmada.
-- 14 periodos / 616 visitas.
+- Source lock HR: 14 periodos, junio 2025–julio 2026, GT34+HN10=44 por periodo, total 616.
 - HR remota y finanzas/pagos técnicamente validados.
 - Mayo: 44 pagadas / 0 pendientes / CxP Q0-L0.
 - Junio: 2 pagadas / 42 pendientes / Q451-L0.
 - P1/P2 PDF/Excel/reportKit/copy no reabren Corte 3.
 
-## 4. Sandbox Corte 4 — propósito cerrado como validación técnica
-En `cxorbia-tya-dev-260729-c4` se demostraron y corrigieron:
-- VIS-01: fallback prohibido demo/localStorage;
-- VIS-02: Admin blanco/estado vacío y shell residual;
-- VIS-02B: script huérfano reescrito como HTML por Hosting;
-- 0 pageerrors remoto;
-- Admin vacío → logout → Shopper vacío → logout → Admin vacío: PASS automatizado;
-- visual humana mostró Admin vacío y Shopper vacío correctamente;
-- 0/0/0/0 y sin datos demo.
+## 4. Sandbox Corte 4 — aprendizaje técnico preservado
+En `cxorbia-tya-dev-260729-c4` se corrigieron VIS-01/VIS-02/VIS-02B: fail-closed sin demo, empty-backend, null-safety, role-switch limpio y asset-integrity. Remoto 0 pageerrors; visual humana Admin/Shopper vacío correcta.
 
-Estos fixes se preservan como aprendizaje/core reusable. **No se materializa TyA en este sandbox.**
+No se materializa TyA allí.
 
-## 5. Backend canónico recuperado: `cxorbia-backend-dev`
-La continuidad histórica confirma que este proyecto es el backend DEV de CXOrbia usado desde junio para el primer tenant TyA, no la plataforma legacy.
+## 5. Inventario canónico `cxorbia-backend-dev` — PASS
+Herramienta `tools/qa/cxorbia-canonical-backend-readonly-inventory.mjs`; evidencia `CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.*`.
 
-Se inició inventario read-only con herramienta `tools/qa/cxorbia-canonical-backend-readonly-inventory.mjs`.
+Sin provider writes ni PII:
+- Auth users=17, claims de tenant/proyecto/rol/shopper presentes;
+- 83 rutas de colección, traversal no truncado;
+- tenants=1;
+- clients=3;
+- projects=29;
+- visits=619;
+- questionnaires=557;
+- shoppers=215;
+- liquidations=255;
+- postulations=3;
+- applications=1;
+- notifications=20;
+- shopperBenefits=572;
+- certifications=0 colecciones;
+- shoppers con campos embebidos de certificación/curso/Academia=0.
 
-Primer inventario seguro comprobó:
-- projectId exacto `cxorbia-backend-dev`;
-- Auth users=17;
-- Firestore raíz `tenants` existe con 1 documento;
-- provider writes=0;
-- sin valores sensibles exportados.
+Conclusión: ya existe materialización sustancial de TyA; reconstruir en otro Firebase sería reproceso.
 
-El primer barrido solo vio raíz; se amplió el inventario a subcolecciones de manera read-only antes de concluir conteos de proyectos/shoppers/certificaciones/visitas.
+## 6. Reconciliación contra source lock Phase A — PASS incremental
+Gate `cxorbia/canonical-backend-phasea-gap=success`; decisión `PASS_GAP_RECONCILED_INCREMENTAL_PHASEA_REQUIRED`.
 
-## 6. Refresh legacy requerido, sin reproceso
-El extract/prompt legacy previo ya no es corte final porque la plataforma TyA continuó operando.
+- Esperado: 28 proyectos país/periodo y 616 visitas.
+- Encontrado: 26 proyectos canónicos.
+- Faltan `cinepolis-julio-26` y `cinepolis-julio-26-hn` = 44 visitas.
+- 26 proyectos encontrados: 574 visitas vs 572 esperadas.
+- Excesos: `cinepolis-abril-26` 35/34 (+1), `cinepolis-junio-26-hn` 11/10 (+1).
+- No canónicos/piloto: `julio-pilot` 1, `r1` 36, `tya-piloto` 8 = 45 visitas separadas.
+- No se borra nada por inferencia.
+- Resolver los 2 excesos + incorporar julio 2026 con 44 deja 616 canónicas, igual al source lock.
 
-Refresh limitado a:
-- shoppers nuevos/actualizados;
-- certificaciones nuevas presentadas/aprobadas;
-- no volver a tomar visitas como fuente principal si HR ya contiene la verdad operacional;
-- dedupe por llave estable;
-- conflictos a revisión;
-- no copiar fixes/parches/código legacy.
+## 7. Shoppers/certificaciones — faltante real
+- Backend canónico ya tiene 215 shoppers.
+- No hay colección de certificaciones materializada.
+- Ningún shopper tiene campos embebidos de certificación/curso/Academia.
 
-Para no depender de una fecha exacta, se prefiere export sanitizado de shoppers+certificaciones y diff contra el backend canónico, no reexport completo de toda la plataforma.
+Por ello:
+- no recrear shoppers;
+- obtener snapshot legacy sanitizado de shoppers + certificaciones;
+- calcular diff por llave estable;
+- importar únicamente shoppers faltantes/updates demostrables + certificaciones faltantes;
+- no usar legacy para reimportar visitas ya HR-first.
 
-## 7. Ruta real hacia producción
-`LEGACY TYA (delta útil) + HR VIVA → cxorbia-backend-dev / tenant tya → completar Phase A → preprod/smoke/rollback → cutover sobre Hosting público actual`.
+Prompt listo: `PROMPT-REFRESH-DELTA-LEGACY-TYA-SHOPPERS-CERTIFICACIONES-20260729.md`.
 
-No crear otro Firebase ni repetir materialización en el sandbox.
+## 8. Probe actual
+Se lanzó probe read-only específico sobre los dos excesos para revisar `sourceRow/sourceKey/sourceSheet` sin PII y sin writes.
 
-## 8. Gate siguiente exacto
-`CERRAR INVENTARIO READ-ONLY RECURSIVO DE cxorbia-backend-dev → MAPEAR QUÉ YA EXISTE/QUÉ FALTA → PREPARAR DELTA LEGACY SHOPPERS+CERTIFICACIONES → CONTINUAR PHASE A DESDE EL FALTANTE REAL`.
+No se corrige ni elimina ningún documento hasta tener evidencia de llave HR y autorización de write.
 
-No PowerShell para Paula, no nueva candidata, no nueva base, no Hosting/deploy ni producción en este gate.
+## 9. Ruta real hacia producción
+`LEGACY TYA (delta shoppers/certs) + HR VIVA → cxorbia-backend-dev / tenant tya → completar faltantes Phase A → smoke/Auth/sync → preprod/rollback → cutover sobre Hosting público actual`.
 
-## 9. Claude/prototipo y Academia
-- Claude: no nueva candidata por la corrección de arquitectura; preservar fixes core/entrypoint descubiertos en sandbox.
-- Academia: incorporar distinción legacy/origen vs backend canónico vs sandbox y estrategia de cutover sin cambio de URL pública.
-- Reusable CXOrbia: migración incremental y recuperación de backend canónico existente.
+## 10. Siguiente bloque exacto
+`CERRAR PROBE DE 2 EXCESOS → PREPARAR DRY-RUN DELTA JULIO 2026 + LEGACY SHOPPERS/CERTS → PEDIR AUTORIZACIÓN SOLO CUANDO HAYA WRITE PLAN EXACTO → CONTINUAR CORTES 5–8`.
+
+No PowerShell para Paula, nueva candidata, nueva base ni Hosting/deploy en este gate.
+
+## 11. Claude/prototipo y Academia
+- Claude: preservar fixes core/entrypoint; no nueva candidata por este hallazgo.
+- Academia: migración incremental, separación legacy/backend/sandbox, cutover sin cambio de URL.
+- Reusable CXOrbia: inventario previo + gap reconciliation + delta idempotente.
