@@ -1,129 +1,79 @@
 # PENDIENTES-PROTOTIPO.md
 
-Pendientes reales del prototipo/frontend para Claude. No incluir tareas de backend, reglas Firestore, Auth DEV, loaders, seeds, helpers locales, smoke tests, Hosting, Make real, correo real, WhatsApp real, Gemini backend ni Storage real.
+**Última actualización:** 2026-07-29  
+**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_READONLY_STATIC_PASS_PROVIDER_IAM_BLOCKED_NO_PRODUCTION`
 
-## Corte 1 — HR viva, coherencia y reportes — 2026-07-20
+Este archivo contiene únicamente pendientes reales de frontend/prototipo para Claude. Backend, Firebase, IAM, Rules, Auth, loaders, adapters, tools, workflows, Make/Gemini/Storage reales e importadores no son tareas de Claude.
 
-- El freeze está bloqueado por la validación visual de Paula.
-- KPI y detalle deben consumir la misma revisión HR y las mismas facets.
-- El cambio de periodo debe actualizar Dashboard, Panorama, Histórico, detalle y reportes.
-- En administración, exportar/imprimir debe generar el reporte específico, no imprimir la página.
-- La personalización debe permitir agregar, quitar, reordenar y renombrar columnas.
-- Reportes por rol deben usar logo, colores y tipografía del tenant, con gráficas cuando la fuente lo permita.
-- Fuente completa: `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE1-20260720.md`.
-- No solicitar una nueva candidata por rutina; primero se valida el mismo Corte 1 con lectura HR viva.
+## 1. No reabrir
 
-## Addendum R4 — importadores source-safe — 2026-07-11
+- M1: `FROZEN/APROBADO`.
+- Corte 1: `FROZEN/APROBADO`.
+- Corte 2A: `FROZEN/APROBADO`.
+- Corte 3: `FROZEN_ACTIVE_BASELINE`.
+- Baseline: `CXORBIA-TYA-CORTE3-V182-20260729`.
+- V182 empalmada; no crear V183/R33.
+- HR e histórico: 14 periodos / 616 visitas.
+- Finanzas canónicas y pagos históricos de mayo/junio quedan congelados.
 
-- Agregar vista de dry-run separada para pagos y certificaciones.
-- Mostrar archivo, formato, fuente, aceptados, duplicados, conflictos y blockers.
-- No mostrar fila cruda ni campos protegidos.
-- Materialización desactivada mientras el gate esté HOLD.
-- Finanzas debe usar `paymentState`; `liquidada` no equivale a `pagada`.
-- Certificación solo habilita visitas con `confirmed/published` o carryover materializado.
-- Dry-run ejecutado no significa datos importados.
-- Mantener pendientes acumulados V103 y smoke visual por rol sobre source-safe R4.
+Solo un P0 reproducible puede reabrir un corte congelado.
 
-Fuente detallada: `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-SOURCE-SAFE-IMPORTERS-R4-20260711.md`.
+## 2. Corte 4 no requiere nueva candidata frontend
 
-## Paquete acumulado Phase A TyA - 2026-07-09
+Corte 4 está bloqueado por IAM/proveedor al intentar crear/verificar el Firebase nuevo `cxorbia-tya-dev-260729-c4`.
 
-Fuente puente: `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
+No corresponde a Claude:
 
-### P0 - Copy honesto de gates e integraciones
+- crear proyecto Google Cloud/Firebase;
+- corregir IAM;
+- tocar `CX.data` backend;
+- desplegar Rules;
+- activar Firestore/Auth/Storage;
+- crear fallback mock/localStorage;
+- pedir otra candidata por este bloqueo.
 
-- Revisar modulos visibles que mencionen envio, sync, HR, Make, Gemini, correo, WhatsApp, pago, import, Storage, Firestore o produccion.
-- Reemplazar promesas de accion real por estados honestos: preparado, preview, pendiente backend, pendiente gate, pendiente fuente real, pendiente revision humana o bloqueado.
-- No mostrar como enviado/sincronizado/pagado/importado/publicado por IA/conectado si no hay evidencia backend y gate real activo.
+La UI futura debe mantener copy honesto: credencial válida, permiso IAM, proyecto creado, Firebase agregado, Rules activas, lectura y escritura son gates distintos.
 
-### P0 - Academia profunda, editable y accionable
+## 3. Backlog frontend no bloqueante post-Corte 3
 
-- Academia debe tener profundidad por rol y por modulo: manuales paso a paso, checklists, glosario, errores frecuentes, validaciones esperadas, estados y consecuencias operativas.
-- Debe existir administracion visible o pendiente exacto para cursos/manuales/checklists/glosario: crear, editar, archivar/soft-delete, duplicar, versionar, cambiar estado, asociar rol/proyecto/modulo, revision humana y auditoria.
-- No aceptar Academia como textos superficiales o solo descripcion.
+### Reportes
 
-### P0 - Phase A real TyA sin promesas falsas
+- PDF: corregir gráfica ausente/impresión del reporte cuando se atienda el bloque transversal.
+- Excel: mejorar formato manteniendo contenido y alcance canónicos.
+- `reportKit`: consolidación transversal pendiente.
+- Mantener mismo alcance/filas entre PDF, Excel y futuras exportaciones.
 
-- La UI debe representar que TyA/Cinépolis esta preparado como proyecto configurable y multi-proyecto, con HR fuente operacional y dominios de visitas/shoppers/certificaciones/liquidaciones documentados.
-- No debe mostrar que datos reales ya fueron importados, que Firestore ya esta conectado, que HR ya sincroniza o que Make/Gemini ya estan activos.
-- Junio debe verse como control de liquidaciones/pagos, no como visitas pendientes por ejecutar.
+### Copy
 
-### P1 - Readiness/dashboard source-safe
+- Refinar mensajes genéricos `Pendiente de fuente` para indicar qué fuente específica falta cuando sea posible.
+- No mostrar pago/import/sync/proveedor como ejecutado sin evidencia real.
 
-- Si existe dashboard o panel de readiness, debe mostrar area, validator/contrato, estado, sourceRef opaca, warnings/blockers, pendiente fuente real, pendiente gate real y revision humana.
-- No debe mostrar readiness como produccion lista, import real, sync real, envio real, pago real, provider activo, Storage activo, Firestore conectado, HR sincronizada ni deploy.
+### Academia
 
-### P1 - Proyecto configurable, no hardcode Cinépolis
+- Mantener profundidad por rol y módulo.
+- Diferenciar manual de curso.
+- Mantener administración visible: crear, editar, archivar/soft-delete, duplicar, versionar, estado, rol/proyecto/módulo y revisión humana.
+- Incluir en Corte 4 la explicación de credencial válida vs IAM vs proyecto vs Firebase vs Rules vs lectura vs escritura.
 
-- Cinépolis debe ser primer proyecto TyA, no logica global.
-- La UI debe poder sostener pais, moneda, HR, cuestionario, documentos, certificacion, agendamiento, reprogramacion/cancelacion, pagos e integraciones por tenant/proyecto.
+## 4. Pendientes transversales ya documentados y preservados
 
-### P1 - Mis beneficios / liquidaciones / pagos
+- Proyecto configurable y multi-proyecto; Cinépolis no es lógica global.
+- Mis beneficios/liquidaciones/pagos: honorario, boleto, combo/reembolso, total, moneda, estado y movimientos separados.
+- Postulaciones/asignaciones/conflictos: origen HR/plataforma, revisión humana y no dedupe por nombre.
+- Readiness/source-safe con estados honestos.
+- No llamar proveedores reales directamente desde módulos UI.
 
-- Mostrar separacion de honorario, boleto, combo/reembolso, total, moneda, estado, lote y movimientos individuales cuando aplique.
-- No marcar pago real ejecutado si solo esta preparado/controlado.
-- Debe permitir entender junio como corte inicial de pagos/liquidaciones.
+Estos puntos permanecen como backlog de producto y no deben confundirse con el bloqueo IAM de Corte 4.
 
-### P1 - Postulaciones/asignaciones/conflictos
+## 5. Siguiente intervención de Claude
 
-- Representar asignacion desde plataforma, asignacion desde HR, sync preparada, pendiente sync, conflicto y revision humana.
-- No resolver visualmente por nombre ni ocultar conflictos.
-- No duplicar por coincidencia visual simple.
+Ninguna por rutina en este momento.
 
-### P2 - Consolidacion post-RC
+Solo abrir una tarea frontend si:
 
-- Consolidar patches visuales recientes en sus modulos fuente solo si mejora mantenibilidad y no rompe gates.
-- Mantener `CX.data` como contrato estable.
-- No llamar proveedores reales desde modulos UI.
+1. el smoke DEV de Corte 4 muestra una diferencia visual/funcional reproducible localizada; o
+2. Paula decide atender el backlog P1/P2 transversal después del gate operativo correspondiente.
 
-## Hallazgo visual Academia - acciones administrativas faltantes - 2026-07-08
+## 6. Estado seguro
 
-- Captura compartida por Paula: en Academia se observan Manuales, selector de rol, Crear con IA, Cargar recurso y + Categoria, pero no se ve opcion visible para borrar, archivar, duplicar o versionar cursos.
-- Claude debe auditar `app/modules/academia.js` y datos/manuales relacionados para implementar o documentar administracion completa de cursos/manuales/checklists/glosario.
-- Acciones esperadas: crear, editar, borrar controlado o archivar, duplicar, versionar, cambiar estado borrador/en revision/publicado/archivado, asignar rol/proyecto/modulo, y registrar revision humana.
-- Borrar no debe eliminar contenido historico critico sin confirmacion; preferir archivar/bloquear/soft-delete con auditRef, motivo y permisos.
-- Si no puede implementarse sin tocar backend, Claude debe dejar UI pendiente honesta y documentarlo, no simular que el borrado real existe.
-- Academia debe explicar en manuales como administrar cursos y que diferencias hay entre borrar, archivar, duplicar y versionar.
-
-## Addendum readiness dashboard bridge runner - 2026-07-08
-
-- Backend agrego `tools/contracts/cxorbia-readiness-dashboard-bridge-runner.mjs` y documentos `app/docs/READINESS-DASHBOARD-BRIDGE-RUNNER-CXORBIA-20260708.md` / `app/docs/CAMBIOS-READINESS-DASHBOARD-BRIDGE-RUNNER-CXORBIA-20260708.md`.
-- Claude debe usar este patron si agrega dashboard/panel de readiness: convertir resultados de validadores en filas visuales con area, estado honesto, sourceRef opaca, gate apagado, revision humana y motivo.
-- El bridge no significa runtime real: no mostrar produccion lista, import real, sync real, envio real, pago real, provider activo, Firestore conectado, HR sincronizada, Make/Gemini activo o deploy.
-- Academia debe explicar como un reporte de validadores se convierte en dashboard, source-safe, fixture sintetico, input sanitizado, gates apagados, warnings/fails/blockers y revision humana.
-
-## Addendum readiness dashboard source-safe - 2026-07-08
-
-- Backend agrego `tools/contracts/cxorbia-readiness-dashboard-source-safe-contract.mjs` y documentos `app/docs/READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md` / `app/docs/CAMBIOS-READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md`.
-- Claude debe usar este patron si agrega dashboard/panel de readiness: area, estado preview, sourceRef opaca, gate apagado, revision humana, motivo y blocker/warning si aplica.
-- Estados permitidos: preview listo, diagnostico ejecutado, fixture sintetico, input sanitizado, warning, fail, pendiente fuente real, pendiente gate real, pendiente revision humana, produccion no autorizada, proveedor no activo, bloqueado por datos sensibles, bloqueado por conflicto, solo documental.
-- No mostrar readiness como produccion lista, import real, sync real, envio real, pago real, provider activo, Storage activo, Firestore conectado, HR sincronizada, Make/Gemini activo o deploy realizado.
-- Academia debe tener manuales/cursos sobre readiness dashboard, preview vs real, fixture sintetico, input sanitizado, source-safe report, gates apagados, errores, warnings, blockers y revision humana.
-
-## Addendum synthetic input pack expanded coverage - 2026-07-08
-
-- Backend actualizo `tools/contracts/cxorbia-synthetic-input-pack-runner.mjs` y agrego `app/docs/SYNTHETIC-INPUT-PACK-EXPANDED-COVERAGE-CXORBIA-20260708.md` / `app/docs/CAMBIOS-SYNTHETIC-INPUT-PACK-EXPANDED-COVERAGE-CXORBIA-20260708.md`.
-- Claude debe mostrar la cobertura expandida solo como diagnostico preview si se refleja en UI: area, validator, fixture sintetico/sanitizado, pass/fail/warning y gate real apagado.
-- Areas agregadas al diagnostico: assignment sync conflict, notification outbox, project/tenant rule versioning, rule change changelog notification y release readiness snapshot.
-- No mostrar esto como produccion lista ni como import real, sync real, envio real, pago real, provider activo, Storage activo o deploy.
-- Readiness/dashboard debe separar: contrato probado, fixture sintetico validado, preview listo, warning, fail, pendiente gate real, pendiente fuente real, pendiente revision humana y produccion no autorizada.
-- Academia debe tener manuales/cursos sobre coverage del runner, fixtures sinteticos, inputs sanitizados, preflight contractual, pass/fail/warnings, gates apagados y revision humana.
-
-## Pendientes no bloqueantes post-V110 — 2026-07-12
-
-- Normalizar espacios en país/moneda antes del backend real de pagos.
-- Deduplicar IDs dentro de una llamada directa a `payVisits()`.
-- Endurecer idempotencia ante llamadas repetidas.
-- Ajustar copy cuando cero visitas fueron procesadas.
-- Normalizar retorno futuro a `processed/reviewRequired`.
-
-## R14 Finanzas reales TyA — impacto Claude
-
-- Sin P0 frontend nuevo.
-- Mantener abiertos únicamente los P1 de pagos ya documentados; no convertir liquidación o día planificado en pago confirmado.
-
-## R14C Finanzas reales TyA — impacto Claude
-
-- Sin P0 nuevo.
-- Mantener copy honesto: liquidación y fecha planificada no confirman pago.
-- Los casos backend en reviewQueue no deben mostrarse como pagados.
+PR #7 draft/open/no merge. Sin producción, provider activation, Rules deploy, Firestore/Auth/Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live.
