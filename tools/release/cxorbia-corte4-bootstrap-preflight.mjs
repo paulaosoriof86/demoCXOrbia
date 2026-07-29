@@ -13,6 +13,7 @@ const arg=(name,fallback)=>{const i=args.indexOf(name);return i>=0&&args[i+1]?ar
 const outDir=path.resolve(arg('--out','.tmp/corte4-bootstrap-preflight'));
 const projectId=String(process.env.CXORBIA_NEW_PROJECT_ID||'').trim();
 const expectedDisplayName=String(process.env.CXORBIA_NEW_PROJECT_NAME||'').trim();
+const authorizedLocation=String(process.env.CXORBIA_FIRESTORE_LOCATION||'').trim();
 const credentialPath=process.env.GOOGLE_APPLICATION_CREDENTIALS;
 const REQUEST_TIMEOUT_MS=Math.max(2000,Number(process.env.CXORBIA_REQUEST_TIMEOUT_MS||8000));
 
@@ -44,11 +45,11 @@ const bootstrapServices=[
 ];
 
 const report={
-  schemaVersion:'1.0.0',
+  schemaVersion:'1.1.0',
   gate:'cxorbia-corte4-bootstrap-dev-readonly-capability-preflight',
   generatedAt:new Date().toISOString(),
   decision:'HOLD_NOT_EXECUTED',
-  target:{projectId,expectedDisplayName,projectExists:false,displayNameMatch:false,firebaseEnabled:false,locationId:null,locationSource:'firebase_project_resources'},
+  target:{projectId,expectedDisplayName,projectExists:false,displayNameMatch:false,firebaseEnabled:false,providerLocationId:null,authorizedLocationId:authorizedLocation||null,locationId:null,locationSource:null},
   credential:{typeValid:false,requiredFieldsPresent:false,identifierOutput:false},
   permissions:{required:requiredPermissions,granted:[],missing:[],writePermissionsMissing:[],serviceEnablePermissionRequired:false},
   services:{},
@@ -57,6 +58,7 @@ const report={
 };
 
 function validProjectId(v){return /^[a-z][a-z0-9-]{4,28}[a-z0-9]$/.test(v)&&!/--/.test(v);}
+function validLocation(v){return /^[a-z][a-z0-9-]{2,31}$/.test(v);}
 function base64url(v){return Buffer.from(v).toString('base64url');}
 function category(value){const raw=String(value?.category||value?.status||value?.code||value?.name||value?.message||value||'UNKNOWN');if(/404|not.found/i.test(raw))return'NOT_FOUND';if(/403|permission|denied|forbidden/i.test(raw))return'PERMISSION_DENIED';if(/401|unauth|invalid_grant/i.test(raw))return'UNAUTHENTICATED';if(/429|quota|rate/i.test(raw))return'QUOTA_OR_RATE_LIMIT';if(/timeout|abort/i.test(raw))return'TIMEOUT';return raw.replace(/[^A-Z0-9_.-]/gi,'_').slice(0,100)||'UNKNOWN';}
 function write(){fs.mkdirSync(outDir,{recursive:true});fs.writeFileSync(path.join(outDir,'corte4-bootstrap-preflight.source-safe.json'),JSON.stringify(report,null,2)+'\n','utf8');console.log(JSON.stringify(report,null,2));}
@@ -73,6 +75,7 @@ async function boundedFetch(url,options={},label='provider_request'){
 async function main(){
   if(process.env.CXORBIA_CONFIRM!==REQUIRED_CONFIRM)return stop('BLOCKED_MISSING_PREFLIGHT_CONFIRMATION');
   if(!validProjectId(projectId)||!expectedDisplayName)return stop('BLOCKED_INVALID_TARGET_IDENTITY');
+  if(!validLocation(authorizedLocation))return stop('BLOCKED_MISSING_OR_INVALID_AUTHORIZED_FIRESTORE_LOCATION');
   if(!credentialPath||!fs.existsSync(credentialPath))return stop('BLOCKED_MISSING_TEMPORARY_CREDENTIAL');
   let credential;
   try{credential=JSON.parse(fs.readFileSync(credentialPath,'utf8'));}catch{return stop('BLOCKED_INVALID_CREDENTIAL_JSON');}
@@ -112,9 +115,12 @@ async function main(){
   const firebaseProject=await request('GET',`https://firebase.googleapis.com/v1beta1/projects/${encodeURIComponent(projectId)}`);
   if(!firebaseProject.ok)return stop('BLOCKED_FIREBASE_PROJECT_NOT_VERIFIABLE');
   report.target.firebaseEnabled=Boolean(firebaseProject.payload?.projectId);
-  const locationId=String(firebaseProject.payload?.resources?.locationId||'').trim();
-  report.target.locationId=locationId||null;
-  report.summary.locationResolved=Boolean(locationId);
+  const providerLocation=String(firebaseProject.payload?.resources?.locationId||'').trim();
+  report.target.providerLocationId=providerLocation||null;
+  if(providerLocation&&providerLocation!==authorizedLocation)return stop('BLOCKED_PROVIDER_LOCATION_CONFLICTS_WITH_AUTHORIZED_LOCATION');
+  report.target.locationId=providerLocation||authorizedLocation;
+  report.target.locationSource=providerLocation?'firebase_project_resources':'current_conversation_authorized';
+  report.summary.locationResolved=Boolean(report.target.locationId);
 
   const iam=await request('POST',`https://cloudresourcemanager.googleapis.com/v1/projects/${encodeURIComponent(projectId)}:testIamPermissions`,{permissions:requiredPermissions});
   if(!iam.ok)return stop('BLOCKED_IAM_PERMISSION_TEST_UNAVAILABLE');
