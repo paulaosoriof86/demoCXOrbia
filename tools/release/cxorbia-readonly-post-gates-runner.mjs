@@ -14,7 +14,8 @@ const REPORT_MD = path.join(REPORT_DIR, 'report.md');
 const PROFILE_ALIASES = {
   'v174-r20-m1-corte2a': 'V174_R20_M1_CORTE2A',
   'corte3-financial-reconciliation-r20': 'CORTE3_FINANCIAL_RECONCILIATION_R20',
-  'corte3-canonical-finance-ui-export-r23': 'CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23'
+  'corte3-canonical-finance-ui-export-r23': 'CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23',
+  'corte4-cxdata-firestore-readonly': 'CORTE4_CXDATA_FIRESTORE_READONLY'
 };
 const EXPECTED_SAFE_STATE = {
   repositoryWrites: false,
@@ -33,7 +34,7 @@ const EXPECTED_SAFE_STATE = {
 };
 
 const report = {
-  schemaVersion: '1.3.0',
+  schemaVersion: '1.4.0',
   runner: 'CXORBIA_READONLY_POST_GATES_RUNNER',
   generatedAt: new Date().toISOString(),
   status: 'HOLD_NOT_RUN',
@@ -314,6 +315,52 @@ async function executeProfile(profile, definition) {
       warnings: gateReport?.warnings || [],
       providerWrites: false,
       dataWrites: false
+    };
+  } else if (profile === 'CORTE4_CXDATA_FIRESTORE_READONLY') {
+    const gate = 'tools/qa/cxdata-firestore-readonly-corte4-gate.mjs';
+    const scripts = [
+      gate,
+      'app/core/backend-config.js',
+      'app/core/backend-config-preview-dev.js',
+      'app/core/backend-cxdata-readonly-corte4.js'
+    ];
+    scripts.forEach(ensureNodeFile);
+    const output = run('node', [gate]);
+    let gateReport;
+    try {
+      gateReport = JSON.parse(output);
+    } catch (error) {
+      hold('corte4_gate_output_invalid_json', error.message);
+    }
+    const evidenceDir = '.tmp/cxdata-firestore-readonly-corte4-gate';
+    fs.mkdirSync(path.join(ROOT, evidenceDir), { recursive: true });
+    fs.writeFileSync(path.join(ROOT, evidenceDir, 'report.json'), `${JSON.stringify(gateReport, null, 2)}\n`, 'utf8');
+    evidenceFiles.push(`${evidenceDir}/report.json`);
+    check(String(gateReport?.decision || '').startsWith('PASS_CORTE4_READONLY_HARDENING'), 'corte4_readonly_gate_pass');
+    check(gateReport?.activationAllowed === false, 'corte4_provider_activation_still_blocked');
+    check(gateReport?.writes === false, 'corte4_writes_zero');
+    check(gateReport?.candidateRulesPrepared === true && gateReport?.candidateRulesDeployed === false, 'corte4_rules_candidate_not_deployed');
+    summary = {
+      status: 'PASS_READONLY_POST_GATES',
+      profile,
+      browserExecuted: false,
+      providerReads: false,
+      providerWrites: false,
+      dataWrites: false,
+      preserveCxDataInterface: gateReport.preserveCxDataInterface,
+      readOnly: gateReport.readOnly,
+      writeMode: gateReport.writeMode,
+      emptyBackendFailClosed: gateReport.emptyBackendFailClosed,
+      fallbackToMock: gateReport.fallbackToMock,
+      fallbackToLocalStorage: gateReport.fallbackToLocalStorage,
+      providerProjectId: gateReport.providerProjectId,
+      providerIdentityVerified: gateReport.providerIdentityVerified,
+      emptyProjectVerified: gateReport.emptyProjectVerified,
+      currentRulesReadOnlyCompatible: gateReport.currentRulesReadOnlyCompatible,
+      candidateRulesPrepared: gateReport.candidateRulesPrepared,
+      candidateRulesDeployed: gateReport.candidateRulesDeployed,
+      activationAllowed: gateReport.activationAllowed,
+      nextGate: gateReport.nextGate
     };
   } else {
     hold('unsupported_profile', profile);
