@@ -1,0 +1,216 @@
+name: CXOrbia Corte 4 P0 VIS-01 Revalidation
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/corte4-p0-vis01-revalidate.json'
+
+permissions:
+  contents: read
+  issues: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-corte4-p0-vis01-revalidate
+  cancel-in-progress: false
+
+env:
+  PROJECT_ID: cxorbia-tya-dev-260729-c4
+  AUTHORIZATION_ID: c4-p0-vis01-revalidate-20260729-01
+  CXORBIA_REQUEST_PATH: .github/cxorbia-firebase-requests/corte4-p0-vis01-revalidate.json
+  CXORBIA_OUT_DIR: .tmp/corte4-p0-vis01
+  CXORBIA_PRIVATE_DIR: .tmp/corte4-p0-vis01-private
+  PREPARE_SCRIPT: tools/release/cxorbia-corte4-p0-vis01-hosting-prepare.mjs
+
+jobs:
+  p0-vis01-revalidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout live branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate exact authorization and syntax
+        run: |
+          set -euo pipefail
+          node --check "$PREPARE_SCRIPT"
+          node --check app/core/backend-config-preview-dev.js
+          node --check app/core/backend-cxdata-readonly-corte4.js
+          node --check app/core/backend-preview-status.js
+          node <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(process.env.CXORBIA_REQUEST_PATH,'utf8'));
+          const exact={schemaVersion:'cxorbia.corte4-p0-vis01-revalidate.v1',enabled:true,authorizationSource:'current_conversation',authorizationText:'Autorizo corrección focalizada de P0-C4-VIS-01 y un único Hosting DEV de revalidación de Corte 4, sin data writes ni producción',authorizationId:'c4-p0-vis01-revalidate-20260729-01',repository:'paulaosoriof86/demoCXOrbia',branch:'docs-tya-v6-v71-audit',pullRequest:7,targetProjectId:'cxorbia-tya-dev-260729-c4',mode:'P0_C4_VIS01_FOCUSED_FIX_AND_ONE_HOSTING_REVALIDATION',hostingOnly:true,production:false,merge:false};
+          for(const [k,v] of Object.entries(exact)) if(r[k]!==v) throw new Error(`Request mismatch: ${k}`);
+          if(r.allowedProviderWrites?.hostingDeployExecutions!==1) throw new Error('Exactly one Hosting deploy execution must be authorized');
+          for(const k of ['firestoreDocuments','authUsers','authConfig','storage','rules','functions','imports','hr','make','gemini','payments']) if(Number(r.allowedProviderWrites?.[k]||0)!==0) throw new Error(`Forbidden provider write: ${k}`);
+          console.log('Exact P0-C4-VIS-01 authorization validated.');
+          NODE
+
+      - name: Load existing service account credential without exposing it
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$CXORBIA_PRIVATE_DIR" "$CXORBIA_OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw);}catch{}
+          if(!(p&&p.type==='service_account'&&p.client_email&&p.private_key&&p.token_uri)) process.exit(2);
+          fs.writeFileSync(process.env.CXORBIA_PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${CXORBIA_PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Provider preflight and prepare focused build
+        run: |
+          set -euo pipefail
+          node "$PREPARE_SCRIPT"
+          node <<'NODE'
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.CXORBIA_OUT_DIR+'/preflight.source-safe.json','utf8'));
+          if(r.decision!=='PASS_C4_P0_VIS01_PREFLIGHT_READY_FOR_ONE_DEPLOY') throw new Error(r.decision);
+          if(r.provider.firestoreEmpty!==true||r.provider.authUsers!==0||r.provider.emailPasswordEnabled!==false||r.provider.rulesVerified!==true||r.provider.previousHostingProofVerified!==true||r.build.prepared!==true) throw new Error('Preflight invariant failed');
+          const expected=['app/core/backend-config-preview-dev.js','app/core/backend-cxdata-readonly-corte4.js','app/core/backend-preview-status.js'].sort();
+          if(JSON.stringify((r.source.runtimeDelta||[]).slice().sort())!==JSON.stringify(expected)) throw new Error('Focused runtime delta mismatch');
+          console.log('P0-C4-VIS-01 provider preflight PASS.');
+          NODE
+
+      - name: Install transient browser
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.61.1
+          npx playwright install --with-deps chromium
+
+      - name: Local browser gate before deploy
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory "$CXORBIA_OUT_DIR/site" > "$CXORBIA_OUT_DIR/local-server.log" 2>&1 &
+          PID=$!
+          trap 'kill "$PID" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/index-backend-dev.html >/dev/null && break; sleep 1; done
+          node <<'NODE'
+          const {chromium}=require('playwright');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const page=await browser.newPage();
+            const url='http://127.0.0.1:4173/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&p0vis01=local';
+            await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
+            await page.waitForTimeout(1800);
+            const before=await page.evaluate(()=>({
+              source:window.CX_BACKEND_DATA_SOURCE||'',last:window.CX_BACKEND_LAST_STATE||{},ro:window.CX_CORTE4_READONLY||{},mode:CX.dataSource&&CX.dataSource.mode,status:CX.dataSource&&CX.dataSource.status,fixtures:CX.dataSource&&CX.dataSource.showFixtures&&CX.dataSource.showFixtures(),demo:CX.BRAND&&CX.BRAND.demoMode,
+              counts:{projects:(CX.data.projects||[]).length,visits:(CX.data._visitas||[]).length,shoppers:(CX.data.shoppers||[]).length,posts:(CX.data._posts||[]).length},
+              pill:(document.getElementById('cxBackendPreviewStatus')||{}).innerText||'',body:document.body.innerText||''
+            }));
+            const zero=Object.values(before.counts).every(v=>v===0);
+            if(!zero||before.mode!=='connected'||before.fixtures!==false||before.demo!==false||!String(before.source).startsWith('firestore')||before.last.fallbackUsed!==false||before.ro.fallbackUsed!==false) throw new Error('LOCAL_FAIL_CLOSED_STATE_MISMATCH '+JSON.stringify(before));
+            for(const forbidden of ['Proyecto Retail','Proyecto Banca','Proyecto Restaurantes','Demo comercial · datos ficticios']) if(before.body.includes(forbidden)||before.pill.includes(forbidden)) throw new Error('LOCAL_FORBIDDEN_DEMO_VISIBLE '+forbidden);
+            const btn=page.locator('.role-admin'); if(await btn.count()){await btn.first().click();await page.waitForTimeout(500);}
+            const after=await page.evaluate(()=>({body:document.body.innerText||'',counts:{projects:(CX.data.projects||[]).length,visits:(CX.data._visitas||[]).length,shoppers:(CX.data.shoppers||[]).length,posts:(CX.data._posts||[]).length},mode:CX.dataSource&&CX.dataSource.mode,demo:CX.BRAND&&CX.BRAND.demoMode}));
+            if(!Object.values(after.counts).every(v=>v===0)||after.mode!=='connected'||after.demo!==false) throw new Error('LOCAL_POST_ENTER_STATE_MISMATCH '+JSON.stringify(after));
+            for(const forbidden of ['Proyecto Retail','Proyecto Banca','Proyecto Restaurantes','Demo comercial · datos ficticios']) if(after.body.includes(forbidden)) throw new Error('LOCAL_POST_ENTER_DEMO_VISIBLE '+forbidden);
+            require('fs').writeFileSync(process.env.CXORBIA_OUT_DIR+'/local-browser-gate.source-safe.json',JSON.stringify({decision:'PASS_C4_P0_VIS01_LOCAL_BROWSER',before:{source:before.source,mode:before.mode,status:before.status,counts:before.counts,demo:before.demo,fixtures:before.fixtures,fallbackUsed:before.last.fallbackUsed},after:{mode:after.mode,counts:after.counts,demo:after.demo},production:false,writes:0},null,2)+'\n');
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+
+      - name: Enforce one actual deploy for this authorization
+        id: deploy_guard
+        run: |
+          set -euo pipefail
+          URL="https://${PROJECT_ID}.web.app/corte4-p0-vis01-proof.json?authorization=${AUTHORIZATION_ID}"
+          NEED=true
+          if curl -fsS --max-time 15 "$URL" -o "$CXORBIA_OUT_DIR/existing-p0-proof.json"; then
+            if node -e "const p=require('./$CXORBIA_OUT_DIR/existing-p0-proof.json'); process.exit(p.authorizationId===process.env.AUTHORIZATION_ID&&p.firebaseProjectId===process.env.PROJECT_ID?0:1)"; then NEED=false; fi
+          fi
+          echo "needed=$NEED" >> "$GITHUB_OUTPUT"
+
+      - name: Execute the single authorized Hosting-only redeploy
+        if: steps.deploy_guard.outputs.needed == 'true'
+        run: |
+          set -euo pipefail
+          npx -y firebase-tools@14.12.1 deploy --only hosting --project "$PROJECT_ID" --config "$CXORBIA_OUT_DIR/firebase.corte4-p0-vis01.json" --non-interactive
+          echo '1' > "$CXORBIA_OUT_DIR/deploy-executions.txt"
+
+      - name: Record idempotent no-redeploy path
+        if: steps.deploy_guard.outputs.needed != 'true'
+        run: echo '0' > "$CXORBIA_OUT_DIR/deploy-executions.txt"
+
+      - name: Remote proof and browser revalidation
+        run: |
+          set -euo pipefail
+          PROOF_URL="https://${PROJECT_ID}.web.app/corte4-p0-vis01-proof.json?authorization=${AUTHORIZATION_ID}&ts=$(date +%s)"
+          curl -fsS --retry 10 --retry-delay 2 --max-time 20 "$PROOF_URL" -o "$CXORBIA_OUT_DIR/remote-proof.json"
+          DEPLOYED_SHA=$(node -p "require('./$CXORBIA_OUT_DIR/remote-proof.json').sourceCommit")
+          export VISUAL_URL="https://${PROJECT_ID}.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&p0vis01=${DEPLOYED_SHA}"
+          node <<'NODE'
+          const {chromium}=require('playwright');const fs=require('fs');
+          (async()=>{
+            const p=JSON.parse(fs.readFileSync(process.env.CXORBIA_OUT_DIR+'/remote-proof.json','utf8'));
+            if(p.authorizationId!==process.env.AUTHORIZATION_ID||p.firebaseProjectId!==process.env.PROJECT_ID||p.p0!=='P0-C4-VIS-01'||p.hostingOnly!==true||p.readOnly!==true||p.expectedFallbackUsed!==false||p.production!==false) throw new Error('REMOTE_PROOF_MISMATCH');
+            const browser=await chromium.launch({headless:true});const page=await browser.newPage();
+            await page.goto(process.env.VISUAL_URL,{waitUntil:'domcontentloaded',timeout:30000});await page.waitForTimeout(2000);
+            const before=await page.evaluate(()=>({source:window.CX_BACKEND_DATA_SOURCE||'',last:window.CX_BACKEND_LAST_STATE||{},ro:window.CX_CORTE4_READONLY||{},mode:CX.dataSource&&CX.dataSource.mode,status:CX.dataSource&&CX.dataSource.status,fixtures:CX.dataSource&&CX.dataSource.showFixtures&&CX.dataSource.showFixtures(),demo:CX.BRAND&&CX.BRAND.demoMode,counts:{projects:(CX.data.projects||[]).length,visits:(CX.data._visitas||[]).length,shoppers:(CX.data.shoppers||[]).length,posts:(CX.data._posts||[]).length},pill:(document.getElementById('cxBackendPreviewStatus')||{}).innerText||'',body:document.body.innerText||''}));
+            if(!Object.values(before.counts).every(v=>v===0)||before.mode!=='connected'||before.fixtures!==false||before.demo!==false||!String(before.source).startsWith('firestore')||before.last.fallbackUsed!==false||before.ro.fallbackUsed!==false) throw new Error('REMOTE_FAIL_CLOSED_STATE_MISMATCH '+JSON.stringify(before));
+            for(const forbidden of ['Proyecto Retail','Proyecto Banca','Proyecto Restaurantes','Demo comercial · datos ficticios','Fuente: localStorage/demo']) if(before.body.includes(forbidden)||before.pill.includes(forbidden)) throw new Error('REMOTE_FORBIDDEN_DEMO_VISIBLE '+forbidden);
+            const btn=page.locator('.role-admin');if(await btn.count()){await btn.first().click();await page.waitForTimeout(600);}
+            const after=await page.evaluate(()=>({body:document.body.innerText||'',counts:{projects:(CX.data.projects||[]).length,visits:(CX.data._visitas||[]).length,shoppers:(CX.data.shoppers||[]).length,posts:(CX.data._posts||[]).length},mode:CX.dataSource&&CX.dataSource.mode,demo:CX.BRAND&&CX.BRAND.demoMode}));
+            if(!Object.values(after.counts).every(v=>v===0)||after.mode!=='connected'||after.demo!==false) throw new Error('REMOTE_POST_ENTER_STATE_MISMATCH '+JSON.stringify(after));
+            for(const forbidden of ['Proyecto Retail','Proyecto Banca','Proyecto Restaurantes','Demo comercial · datos ficticios']) if(after.body.includes(forbidden)) throw new Error('REMOTE_POST_ENTER_DEMO_VISIBLE '+forbidden);
+            const executions=Number(fs.readFileSync(process.env.CXORBIA_OUT_DIR+'/deploy-executions.txt','utf8').trim());
+            const report={schemaVersion:'1.0.0',decision:'PASS_C4_P0_VIS01_FIXED_AND_REMOTE_REVALIDATED',authorizationId:p.authorizationId,projectId:process.env.PROJECT_ID,deployedSourceCommit:p.sourceCommit,url:process.env.VISUAL_URL,deployExecutionsThisRun:executions,source:before.source,dataMode:before.mode,dataStatus:before.status,counts:before.counts,demoMode:before.demo,fixturesEnabled:before.fixtures,fallbackUsed:before.last.fallbackUsed,readOnly:true,writeMode:'disabled',hostingOnly:true,firestoreDocumentWrites:0,authUserWrites:0,authConfigWrites:0,storageWrites:0,rulesDeploys:0,functionsDeploys:0,imports:0,hrWrites:0,make:0,gemini:0,payments:0,merge:false,production:false};
+            fs.writeFileSync(process.env.CXORBIA_OUT_DIR+'/revalidation-result.source-safe.json',JSON.stringify(report,null,2)+'\n');
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+
+      - name: Publish sanitized status and PR evidence
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          RESULT="$CXORBIA_OUT_DIR/revalidation-result.source-safe.json"
+          if [ -f "$RESULT" ]; then STATE=success; DECISION=PASS_C4_P0_VIS01_FIXED_AND_REMOTE_REVALIDATED; EXEC=$(node -p "require('./$RESULT').deployExecutionsThisRun"); URL=$(node -p "require('./$RESULT').url"); DEPLOYED=$(node -p "require('./$RESULT').deployedSourceCommit"); SOURCE=$(node -p "require('./$RESULT').source"); else STATE=error; DECISION=HOLD_C4_P0_VIS01_NOT_VERIFIED; EXEC=-1; URL="https://${PROJECT_ID}.web.app/"; DEPLOYED=UNKNOWN; SOURCE=UNKNOWN; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/c4p0vis01-revalidation' -f description="$DECISION" >/dev/null 2>&1
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c4p0vis01-deploys${EXEC}" -f description='P0 VIS-01 Hosting-only deployment executions in this run' >/dev/null 2>&1
+          BODY=$(cat <<EOF
+          ## Corte 4 · P0-C4-VIS-01 · revalidación
+
+          - Decision: \`$DECISION\`
+          - Authorization: \`$AUTHORIZATION_ID\`
+          - Firebase DEV: \`$PROJECT_ID\`
+          - Deployed source commit: \`$DEPLOYED\`
+          - Hosting deploy executions in this run: \`$EXEC\`
+          - Runtime source after gate: \`$SOURCE\`
+          - Visual URL: $URL
+          - Firestore/Auth/Storage/Rules/Functions/imports/HR/Make/Gemini/payments/merge/production writes: \`0\`
+          EOF
+          )
+          gh issue comment 7 --repo "$GITHUB_REPOSITORY" --body "$BODY" >/dev/null 2>&1
+          printf '%s\n' "$BODY" >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: Upload sanitized evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-corte4-p0-vis01-revalidation
+          path: |
+            .tmp/corte4-p0-vis01/preflight.source-safe.json
+            .tmp/corte4-p0-vis01/local-browser-gate.source-safe.json
+            .tmp/corte4-p0-vis01/remote-proof.json
+            .tmp/corte4-p0-vis01/revalidation-result.source-safe.json
+            .tmp/corte4-p0-vis01/deploy-executions.txt
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove credentials and local build material
+        if: always()
+        run: rm -rf "$CXORBIA_PRIVATE_DIR" "$CXORBIA_OUT_DIR/site" "$CXORBIA_OUT_DIR/firebase.corte4-p0-vis01.json"
