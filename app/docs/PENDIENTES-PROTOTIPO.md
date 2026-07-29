@@ -1,3 +1,34 @@
+## 2026-07-29 — ESTADO VIGENTE CORTE 4
+
+Estado canónico: `CORTE4_PROTECTED_CXDATA_SMOKE_PASS__HOSTING_DEV_AUTH_PENDING`.
+
+### Cerrado / no reabrir
+
+- [PASS] Firebase nuevo `cxorbia-tya-dev-260729-c4` verificado nuevo/vacío.
+- [PASS] Web App DEV, Firestore `us-central1`, Auth inicializado y Rules read-only.
+- [PASS] Protected smoke `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`: `source=firestore`, `empty=true`, `fallbackUsed=false`, `readOnly=true`, interfaz `CX.data` preservada, claims temporales verificados, writes de documentos=0.
+- [PASS] Cleanup: Auth users=0 y Email/Password deshabilitado.
+- [PASS] Falso negativo del publicador identificado y corregido en `9967146e112322efcd043155ae05351bbbbd4e8a` sin rerun.
+- [PASS] No hay P0 frontend demostrado ni se requiere nueva candidata Claude.
+
+### Pendiente real inmediato
+
+- [GATE] autorización separada Hosting DEV del mismo build read-only.
+- [VISUAL] validación visual real.
+- [P0] corregir solo si aparece hallazgo reproducible que bloquee Phase A.
+- [FREEZE] congelar Corte 4 después de validación.
+- [IAM] retirar roles elevados temporales y dejar runner en Viewer.
+
+### P1/P2 no bloqueante
+
+- PDF sin gráfica visible en algunos reportes.
+- Excel con formato básico.
+- reportKit transversal/copy de fuentes.
+
+Fuente detallada: `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE4-PROTECTED-SMOKE-PASS-20260729.md`.
+
+---
+
 ## CORTE 2A — V174 empalmada con HOLD técnico
 
 Estado: `V174_FUNCTIONAL_EMPALMED_GATE_HOLD_NO_DEPLOY`.
