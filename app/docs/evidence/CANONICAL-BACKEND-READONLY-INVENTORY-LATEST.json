@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "cxorbia.canonical-backend-readonly-inventory.v1",
+  "generatedAt": "2026-07-29T22:58:26.736Z",
+  "projectId": "cxorbia-backend-dev",
+  "classification": "CXORBIA_CANONICAL_DEV_BACKEND_CANDIDATE__NOT_LEGACY_TYA_PLATFORM",
+  "readOnly": true,
+  "providerWrites": 0,
+  "auth": {
+    "totalUsers": 17,
+    "customClaimKeys": [
+      "isDev",
+      "projectId",
+      "projectIds",
+      "role",
+      "shopperId",
+      "tenantId",
+      "tenantIds",
+      "tenants"
+    ]
+  },
+  "rootCollectionCount": 1,
+  "collections": [
+    {
+      "name": "tenants",
+      "count": 1,
+      "sampleFieldKeys": [
+        "createdAt",
+        "name",
+        "source",
+        "status",
+        "tenantId",
+        "updatedAt"
+      ]
+    }
+  ],
+  "keyCounts": {
+    "tenants": 1,
+    "clients": null,
+    "projects": null,
+    "visits": null,
+    "shoppers": null,
+    "certifications": null,
+    "postulations": null,
+    "notifications": null,
+    "benefits": null,
+    "liquidations": null,
+    "finance": null
+  },
+  "safety": {
+    "documentWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "functionsWrites": 0,
+    "hostingDeploys": 0,
+    "production": false,
+    "merge": false,
+    "valuesExported": false,
+    "sensitiveValuesExported": false
+  }
+}
