@@ -43,7 +43,7 @@ const authorizedRuntimeOverlay = new Map([
   ['app/styles/layout.css', { size: 25234, sha256: 'efddab2779cc6873cdf05e42f7c8729c75fd58cac57e3bd947d532b4b5df2f27' }],
   ['app/index-backend-dev.html', { gitBlobSha: 'f41ce7cd926a7ed17d4fc78812e117f87feb84d0' }],
   ['app/data/tya-payment-history-source-safe.js', { gitBlobSha: '088c68680177c470a4539622e1694128dd211d85' }],
-  ['app/adapters/tya-financial-canonical-source-safe-adapter.js', { gitBlobSha: 'ef1c7930ed0fe315c18dc847337dc4d98d50cb78' }]
+  ['app/adapters/tya-financial-canonical-source-safe-adapter.js', { gitBlobSha: '931054b79a4b477e3f6732829ac02e476f6780ca' }]
 ]);
 const overlayMatch = path => {
   const expected = authorizedRuntimeOverlay.get(path);
@@ -85,7 +85,7 @@ const canonicalFinancePaths = [
 
 mkdirSync(outDir, { recursive: true });
 const report = {
-  schemaVersion: '1.2.0',
+  schemaVersion: '1.2.1',
   gateId: 'tya-corte3-v174-runtime-preservation-r24',
   generatedAt: new Date().toISOString(),
   decision: 'HOLD',
