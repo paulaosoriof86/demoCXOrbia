@@ -4,7 +4,6 @@
 **Estado:** `VIS02B_FINAL_HOSTING_DEPLOYED__REMOTE_DIAGNOSTIC_PASS__HUMAN_VISUAL_PENDING`
 
 ## Resultado
-
 La autorización expresa `Autorizo un único Hosting DEV final para revalidación de P0-C4-VIS-02B, sin data writes ni producción` fue ejecutada exactamente una vez.
 
 - authorizationId: `c4-p0-vis02b-final-20260729-01`;
@@ -41,8 +40,8 @@ No se ejecutó ningún segundo Hosting. La autorización one-shot quedó consumi
 - `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`: estado Corte 4 actualizado sin alterar secuencia de cortes.
 - PR #7: body/título actualizado; permanece draft/open/no merge.
 
-## Incidente de herramienta sin efecto
-Hubo un intento de actualización de `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md` con SHA vacío que GitHub rechazó `409`; no produjo commit ni cambio de archivo. Inmediatamente se hizo `fetch_file`, se obtuvo el blob SHA correcto y la actualización posterior quedó aplicada correctamente. No hubo impacto en runtime ni provider.
+## Incidentes de herramienta sin efecto
+Durante la reconciliación documental hubo cuatro llamadas incompletas a `update_file` con SHA/contenido vacío que GitHub rechazó con `409`. Afectaron intentos sobre el checkpoint, índice y este addendum; **ninguna produjo commit ni alteró archivos**. En cada caso se continuó usando `fetch_file`/blob SHA válido antes de las escrituras reales. No hubo impacto en runtime, Hosting, provider, datos ni producción.
 
 ## Seguridad
 - Firestore document writes: 0.
