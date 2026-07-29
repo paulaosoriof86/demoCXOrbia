@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 /* CXOrbia TyA · Corte 3 runtime preservation gate R24.
-   The original V174 manifest remains the baseline protection, while an audited
-   frontend overlay may be explicitly accepted only when every authorized path
-   matches its locked byte identity. Mutable documentation and the approved
-   DEV-only entry remain non-blocking drift. */
+   The original V174 manifest remains the baseline protection, while audited
+   frontend and source-safe backend overlays are accepted only when every
+   authorized path matches its locked byte identity. */
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve, relative } from 'node:path';
@@ -29,21 +28,22 @@ const runGit = args => {
   return String(result.stdout || '').trim();
 };
 const sha256 = data => createHash('sha256').update(data).digest('hex');
-const isAllowedManifestDrift = path => path === 'app/index-backend-dev.html' || path.startsWith('app/docs/');
+const isAllowedManifestDrift = path => path.startsWith('app/docs/');
 
-/* V182 was independently audited GO and empalmed atomically. Remote Hosting DEV
-   then reproduced focal finance defects, and Paula's visual validation exposed
-   two additional reproducible differences: finance-review consistency and
-   current-month-safe rollover. Every authorized runtime path remains locked by
-   SHA-256/size or by its exact Git blob identity. Any other runtime drift stays
-   blocked fail-closed. */
+/* V182 was independently audited GO and empalmed atomically. Remote validation
+   then proved focal finance, rollover and historical-payment differences.
+   Every authorized runtime path remains locked by SHA-256/size or exact Git
+   blob identity. Any other runtime drift stays blocked fail-closed. */
 const authorizedRuntimeOverlay = new Map([
   ['app/app.js', { size: 30467, sha256: '4bcb12c050ab69ff8551eb8a030004ad3ef0cf3a03cf75beccb28b251dd6559c' }],
   ['app/core/finanzas-core.js', { size: 14228, sha256: '72a599b7ed6fdc02bf4ca915ff2cb0f04a558a9597092b49b31f8112897c26af' }],
   ['app/core/tya-phase-a-source-safe-preview.js', { gitBlobSha: 'cec36da532208d80030f31ed3e26950d7f8f5427' }],
   ['app/modules/beneficios.js', { size: 9599, sha256: 'a8e330f6eb7eb9304eacdc1edff1ac83783011b883e3a3ddca2080eef918113c' }],
   ['app/modules/finanzas.js', { gitBlobSha: '623fab9ba1e06c39f83beda610bb771e23910a07' }],
-  ['app/styles/layout.css', { size: 25234, sha256: 'efddab2779cc6873cdf05e42f7c8729c75fd58cac57e3bd947d532b4b5df2f27' }]
+  ['app/styles/layout.css', { size: 25234, sha256: 'efddab2779cc6873cdf05e42f7c8729c75fd58cac57e3bd947d532b4b5df2f27' }],
+  ['app/index-backend-dev.html', { gitBlobSha: 'f41ce7cd926a7ed17d4fc78812e117f87feb84d0' }],
+  ['app/data/tya-payment-history-source-safe.js', { gitBlobSha: '088c68680177c470a4539622e1694128dd211d85' }],
+  ['app/adapters/tya-financial-canonical-source-safe-adapter.js', { gitBlobSha: 'ef1c7930ed0fe315c18dc847337dc4d98d50cb78' }]
 ]);
 const overlayMatch = path => {
   const expected = authorizedRuntimeOverlay.get(path);
@@ -72,6 +72,7 @@ const overlayMatch = path => {
 const canonicalFinancePaths = [
   'app/index-backend-dev.html',
   'app/adapters/tya-financial-canonical-source-safe-adapter.js',
+  'app/data/tya-payment-history-source-safe.js',
   'app/data/tya-financial-canonical-source-safe.js',
   'app/data/tya-financial-canonical-source-safe-liq-01.js',
   'app/data/tya-financial-canonical-source-safe-liq-02.js',
@@ -84,7 +85,7 @@ const canonicalFinancePaths = [
 
 mkdirSync(outDir, { recursive: true });
 const report = {
-  schemaVersion: '1.1.3',
+  schemaVersion: '1.2.0',
   gateId: 'tya-corte3-v174-runtime-preservation-r24',
   generatedAt: new Date().toISOString(),
   decision: 'HOLD',
@@ -99,8 +100,9 @@ const report = {
   missingCanonicalFinancePaths: [],
   appChangesSinceTechnicalPass: [],
   canonicalFinanceChangesSinceTechnicalPass: [],
+  forbiddenCanonicalFinanceChanges: [],
   legacyVerifierDiagnosis: 'STALE_FULL_APP_HASH_INCLUDED_MUTABLE_DOCS_AND_APPROVED_DEV_ENTRY',
-  runtimeOverlayDiagnosis: 'V182_EXACT_AUDITED_OVERLAY_PLUS_REPRODUCIBLE_CORTE3_FOCAL_FIXES_ALLOWED_FAIL_CLOSED',
+  runtimeOverlayDiagnosis: 'V182_PLUS_REPRODUCIBLE_FINANCE_ROLLOVER_AND_HISTORICAL_PAYMENT_FIXES_LOCKED_FAIL_CLOSED',
   safeState: {
     sourceSafe: true,
     deploy: false,
@@ -123,6 +125,7 @@ try {
   report.head = runGit(['rev-parse', 'HEAD']);
   runGit(['cat-file', '-e', `${technicalPassHead}^{commit}`]);
 
+  const overlayPathsSeen = new Set();
   for (const entry of manifest.files) {
     const filePath = resolve(root, entry.path);
     let data = null;
@@ -141,6 +144,7 @@ try {
     const authorized = overlayMatch(entry.path);
     if (authorized) {
       report.authorizedRuntimeOverlay.push(authorized);
+      overlayPathsSeen.add(entry.path);
       continue;
     }
     const item = {
@@ -154,6 +158,15 @@ try {
     else report.forbiddenManifestDrift.push(item);
   }
 
+  for (const path of authorizedRuntimeOverlay.keys()) {
+    if (overlayPathsSeen.has(path)) continue;
+    const authorized = overlayMatch(path);
+    if (authorized) {
+      report.authorizedRuntimeOverlay.push(authorized);
+      overlayPathsSeen.add(path);
+    }
+  }
+
   report.missingCanonicalFinancePaths = canonicalFinancePaths.filter(path => !existsSync(resolve(root, path)));
 
   const changedApp = runGit(['diff', '--name-only', technicalPassHead, 'HEAD', '--', 'app']);
@@ -162,23 +175,25 @@ try {
 
   const changedFinance = runGit(['diff', '--name-only', technicalPassHead, 'HEAD', '--', ...canonicalFinancePaths]);
   report.canonicalFinanceChangesSinceTechnicalPass = changedFinance ? changedFinance.split(/\r?\n/).filter(Boolean) : [];
+  report.forbiddenCanonicalFinanceChanges = report.canonicalFinanceChangesSinceTechnicalPass.filter(path => !overlayMatch(path));
 
   const devHtml = readFileSync(resolve(root, 'app/index-backend-dev.html'), 'utf8');
   const requiredDevTags = [
     'data/tya-hr-source-safe-periods.js',
     'adapters/tya-phase-a-source-safe-dev-adapter.js',
     'data/tya-financial-canonical-source-safe-final.js',
+    'data/tya-payment-history-source-safe.js',
     'adapters/tya-financial-canonical-source-safe-adapter.js',
     'app.js'
   ];
   const invalidTagCounts = requiredDevTags.filter(tag => devHtml.split(tag).length - 1 !== 1);
 
   const blockers = [];
-  if (report.authorizedRuntimeOverlay.length !== authorizedRuntimeOverlay.size) blockers.push(`authorized_v182_overlay_incomplete:${report.authorizedRuntimeOverlay.length}/${authorizedRuntimeOverlay.size}`);
+  if (overlayPathsSeen.size !== authorizedRuntimeOverlay.size) blockers.push(`authorized_runtime_overlay_incomplete:${overlayPathsSeen.size}/${authorizedRuntimeOverlay.size}`);
   if (report.forbiddenManifestDrift.length) blockers.push('forbidden_v174_manifest_drift');
   if (report.missingCanonicalFinancePaths.length) blockers.push('canonical_finance_path_missing');
   if (nonDocAppChanges.length) blockers.push(`app_runtime_changed_after_technical_pass:${nonDocAppChanges.join(',')}`);
-  if (report.canonicalFinanceChangesSinceTechnicalPass.length) blockers.push('canonical_finance_changed_after_technical_pass');
+  if (report.forbiddenCanonicalFinanceChanges.length) blockers.push(`canonical_finance_changed_without_exact_lock:${report.forbiddenCanonicalFinanceChanges.join(',')}`);
   if (invalidTagCounts.length) blockers.push(`dev_entry_tag_count_invalid:${invalidTagCounts.join(',')}`);
 
   report.blockers = blockers;
