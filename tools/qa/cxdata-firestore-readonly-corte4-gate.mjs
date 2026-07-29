@@ -81,7 +81,7 @@ assert(currentRules.includes('allow create, update') || currentRules.includes('a
 ].forEach(token => assert(preview.includes(token), `preview_config_missing:${token}`));
 
 [
-  "preservar exactamente la interfaz pública de CX.data",
+  "preserveCxDataInterface:true",
   "writeMode:'disabled'",
   "CX.data.__corte4Readonly = true",
   "CX.backend.writeProject = async function()",
