@@ -14,9 +14,10 @@ const targetProjectId=String(process.env.CXORBIA_NEW_PROJECT_ID||'').trim();
 const expectedDisplayName=String(process.env.CXORBIA_NEW_PROJECT_NAME||'').trim();
 const minimumCreateTime=String(process.env.CXORBIA_MIN_CREATE_TIME||'2026-07-29T03:45:00Z').trim();
 const credentialPath=process.env.GOOGLE_APPLICATION_CREDENTIALS;
+const REQUEST_TIMEOUT_MS=Math.max(2000,Number(process.env.CXORBIA_PROVIDER_REQUEST_TIMEOUT_MS||8000));
 
 const report={
-  schemaVersion:'1.0.0',
+  schemaVersion:'1.1.0',
   gate:'cxorbia-corte4-new-empty-firebase-dev-readonly-verify',
   generatedAt:new Date().toISOString(),
   decision:'HOLD_NOT_EXECUTED',
@@ -32,6 +33,7 @@ const report={
     createTimePresent:false,
     createdWithinAuthorizedWindow:false
   },
+  networkPolicy:{requestTimeoutMs:REQUEST_TIMEOUT_MS},
   checks:{},
   summary:{
     mandatoryChecks:0,
@@ -66,11 +68,12 @@ const report={
 };
 
 function category(value){
-  const raw=String(value?.category||value?.status||value?.code||value?.message||value||'UNKNOWN');
+  const raw=String(value?.category||value?.status||value?.code||value?.name||value?.message||value||'UNKNOWN');
   if(/404|not.found/i.test(raw))return'NOT_FOUND_OR_NOT_INITIALIZED';
   if(/403|permission|denied|forbidden/i.test(raw))return'PERMISSION_DENIED';
   if(/401|unauth/i.test(raw))return'UNAUTHENTICATED';
   if(/429|quota|rate/i.test(raw))return'QUOTA_OR_RATE_LIMIT';
+  if(/timeout|abort/i.test(raw))return'TIMEOUT';
   return raw.replace(/[^A-Z0-9_.-]/gi,'_').slice(0,100)||'UNKNOWN';
 }
 function write(){
@@ -80,6 +83,12 @@ function write(){
 }
 function stop(decision){report.decision=decision;write();process.exit(0);}
 function validProjectId(value){return /^[a-z][a-z0-9-]{4,28}[a-z0-9]$/.test(value)&&!/--/.test(value);}
+function timeoutError(label){return Object.assign(new Error(`${label} timeout`),{category:'TIMEOUT'});}
+async function withTimeout(promise,ms,label){
+  let timer;
+  try{return await Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(timeoutError(label)),ms);})]);}
+  finally{if(timer)clearTimeout(timer);}
+}
 
 async function main(){
   if(process.env.CXORBIA_CONFIRM!==REQUIRED_CONFIRM)return stop('BLOCKED_MISSING_READONLY_CONFIRMATION');
@@ -91,11 +100,16 @@ async function main(){
 
   const {GoogleAuth}=await import('google-auth-library');
   const client=await new GoogleAuth({credentials:credential,scopes:['https://www.googleapis.com/auth/cloud-platform.read-only','https://www.googleapis.com/auth/cloud-platform','https://www.googleapis.com/auth/identitytoolkit']}).getClient();
-  async function token(){const result=await client.getAccessToken();const value=typeof result==='string'?result:result?.token;if(!value)throw Object.assign(new Error('token unavailable'),{category:'UNAUTHENTICATED'});return value;}
+  async function token(){const result=await withTimeout(client.getAccessToken(),REQUEST_TIMEOUT_MS,'access_token');const value=typeof result==='string'?result:result?.token;if(!value)throw Object.assign(new Error('token unavailable'),{category:'UNAUTHENTICATED'});return value;}
   async function request(method,url,body){
-    const response=await fetch(url,{method,headers:{Authorization:`Bearer ${await token()}`,Accept:'application/json',...(body===undefined?{}:{'Content-Type':'application/json'})},body:body===undefined?undefined:JSON.stringify(body)});
-    const text=await response.text();let payload=null;if(text){try{payload=JSON.parse(text);}catch{payload=null;}}
-    return{ok:response.ok,status:response.status,payload};
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),REQUEST_TIMEOUT_MS);
+    try{
+      const response=await fetch(url,{method,signal:controller.signal,headers:{Authorization:`Bearer ${await token()}`,Accept:'application/json',...(body===undefined?{}:{'Content-Type':'application/json'})},body:body===undefined?undefined:JSON.stringify(body)});
+      const text=await withTimeout(response.text(),REQUEST_TIMEOUT_MS,'response_body');let payload=null;if(text){try{payload=JSON.parse(text);}catch{payload=null;}}
+      return{ok:response.ok,status:response.status,payload};
+    }catch(error){if(error?.name==='AbortError')throw timeoutError('provider_request');throw error;}
+    finally{clearTimeout(timer);}
   }
   async function mandatory(id,fn){
     report.summary.mandatoryChecks+=1;
