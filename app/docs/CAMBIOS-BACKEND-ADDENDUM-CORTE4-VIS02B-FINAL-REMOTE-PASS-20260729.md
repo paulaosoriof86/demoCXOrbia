@@ -11,7 +11,7 @@ La autorización expresa `Autorizo un único Hosting DEV final para revalidació
 - deployed source: `e9b7441fab4370ba455a77791b79b6e167cd33ac`;
 - `cxorbia/c4p0vis02b-final-deploys1=success`;
 - `cxorbia/c4p0vis02b-final-scripts=success`;
-- el primer status agregado `c4p0vis02b-final-revalidation=error` se debió al runner agregado, no a un segundo deploy ni a assets rotos;
+- el primer status agregado `c4p0vis02b-final-revalidation=error` no se interpretó como PASS; se diagnosticó por separado;
 - diagnóstico remoto independiente read-only posterior: `cxorbia/c4p0vis02b-diag-summary=success` y `cxorbia/c4p0vis02b-diag-pass=success`;
 - el diagnóstico confirmó proof correcto, cero pageerrors y secuencia Admin vacío → logout → Shopper vacío → logout → Admin vacío sin DOM Shopper residual.
 
@@ -33,15 +33,18 @@ No se ejecutó ningún segundo Hosting. La autorización one-shot quedó consumi
 ### Documentación
 - `app/docs/CAMBIOS-BACKEND-ADDENDUM-CORTE4-VIS02B-FINAL-REMOTE-PASS-20260729.md`.
 - `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-ADDENDUM-CORTE4-VIS02B-FINAL-REMOTE-PASS-20260729.md`.
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`: reconciliado al estado final VIS-02B remoto PASS.
 - `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE4-VIS02B-FINAL-REMOTE-PASS-20260729.md`.
 - `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE4-VIS02B-FINAL-REMOTE-PASS-20260729.md`.
 - `app/docs/ACADEMIA-IMPACTO-CORTE4-VIS02B-FINAL-REMOTE-PASS-20260729.md`.
-- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`: debe prevalecer con estado VIS02B remoto PASS / visual humana pendiente.
+- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`: prevalece con estado VIS02B remoto PASS / visual humana pendiente.
 - `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`: estado Corte 4 actualizado sin alterar secuencia de cortes.
 - PR #7: body/título actualizado; permanece draft/open/no merge.
 
-## Seguridad
+## Incidente de herramienta sin efecto
+Hubo un intento de actualización de `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md` con SHA vacío que GitHub rechazó `409`; no produjo commit ni cambio de archivo. Inmediatamente se hizo `fetch_file`, se obtuvo el blob SHA correcto y la actualización posterior quedó aplicada correctamente. No hubo impacto en runtime ni provider.
 
+## Seguridad
 - Firestore document writes: 0.
 - Auth user/config writes: 0.
 - Auth users permanentes: 0.
@@ -52,7 +55,6 @@ No se ejecutó ningún segundo Hosting. La autorización one-shot quedó consumi
 - Merge: false.
 
 ## Clasificación
-
 - **Reusable CXOrbia:** gate anti-dangling-script + empty-backend shell + role-switch limpio.
 - **Exclusivo cliente:** Firebase DEV `cxorbia-tya-dev-260729-c4` y evidencias de TyA.
 - **Claude/prototipo:** no nueva candidata; no tocar `app/modules`; preservar fix core/backend.
@@ -60,5 +62,4 @@ No se ejecutó ningún segundo Hosting. La autorización one-shot quedó consumi
 - **Sin impacto Claude:** provider, Firestore y Rules no cambiaron.
 
 ## Gate vivo
-
 `VALIDACIÓN VISUAL HUMANA DE LA URL FINAL → si no hay P0: FREEZE CORTE 4 → retirar IAM temporal a Viewer → CORTE 5 materialización DEV`.
