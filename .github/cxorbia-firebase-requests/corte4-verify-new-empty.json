@@ -1,11 +1,11 @@
 {
   "schemaVersion": "cxorbia.firebase-new-empty-verify-request.v1",
-  "requestId": "corte4-verify-new-empty-firebase-dev-20260729-03",
+  "requestId": "corte4-verify-new-empty-firebase-dev-20260729-04",
   "enabled": true,
   "issuedAt": "2026-07-29",
   "mode": "VERIFY_ONLY",
   "authorizationSource": "current_conversation",
-  "authorizationText": "Continúa",
+  "authorizationText": "Viewer IAM granted by Paula; continue Corte 4 read-only verification",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
