@@ -1,13 +1,13 @@
 {
   "schemaVersion": "2.1.0",
-  "requestId": "CXORBIA-TYA-V182-CORTE3-HOSTING-DEV-VISUAL-20260728-04",
+  "requestId": "CXORBIA-TYA-V182-CORTE3-HOSTING-DEV-VISUAL-20260728-05",
   "status": "authorized_pending",
   "scope": "hosting_dev_visual_only",
   "executionMode": "deploy_and_verify",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "expectedSourceHead": "2177ac6ef1ccddfc86546b46b9260887b492d25f",
+  "expectedSourceHead": "ad3ba5400dd956a192ea6bbe13545cc09bfc86b6",
   "runtimeVersion": "V174-CORTE3-CANONICAL-FINANCE-R23",
   "frontendCandidate": "V182",
   "functionalEmpalmeCommit": "e3cfe464fd80e5bd4ce273556cfd0021e22c0810",
@@ -15,15 +15,15 @@
     "27599aa534dff1b832340c67ee00ad4087485cd7",
     "3e508c2d883f2f57b2e5fb7276ff14eec0e983de",
     "f5457ad6f9430ee3fd91a732977c7efbb95d7bfe",
-    "91063ff8f6cd963b7361acbe371f27c4ce9e4870"
+    "91063ff8f6cd963b7361acbe371f27c4ce9e4870",
+    "dfcabaae913dc724379d3b50cdaa7da1ea67324a"
   ],
-  "r24PostFixLockCommit": "eeaf6be558aa98fc1a500c629f2b6fafc14992ea",
+  "r24PostFixLockCommit": "ad3ba5400dd956a192ea6bbe13545cc09bfc86b6",
   "localFinanceUiPostFixGate": {
-    "requestCommit": "2177ac6ef1ccddfc86546b46b9260887b492d25f",
-    "workflowRun": 30402106874,
-    "status": "PASS_READONLY_POST_GATES"
+    "focalFixCommit": "dfcabaae913dc724379d3b50cdaa7da1ea67324a",
+    "status": "PASS_LOCAL_R26_R32_AND_FOCAL_ROLLOVER"
   },
-  "documentedHeadBeforeDeployRequest": "2177ac6ef1ccddfc86546b46b9260887b492d25f",
+  "documentedHeadBeforeDeployRequest": "ad3ba5400dd956a192ea6bbe13545cc09bfc86b6",
   "originalV182AggregateSha256": "62d85bace9276070bfc642df31da74abd684ab072f155eed3895c6e3926c57c9",
   "postFixIdentities": {
     "app/core/finanzas-core.js": {
@@ -31,10 +31,11 @@
       "sha256": "72a599b7ed6fdc02bf4ca915ff2cb0f04a558a9597092b49b31f8112897c26af",
       "size": 14228
     },
+    "app/core/tya-phase-a-source-safe-preview.js": {
+      "gitBlobSha": "cec36da532208d80030f31ed3e26950d7f8f5427"
+    },
     "app/modules/finanzas.js": {
-      "gitBlobSha": "9cd2be619cd2ec433bed959918f86c2bf70cf31d",
-      "sha256": "560f25b6308bbe9ea96f16c1d94da6e47be7eb068e11aca809962cfcc7e8e72e",
-      "size": 100917
+      "gitBlobSha": "623fab9ba1e06c39f83beda610bb771e23910a07"
     }
   },
   "manifestFile": "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json",
@@ -98,6 +99,12 @@
       ],
       "localPostFixGateRun": 30402106874,
       "localPostFixGateResult": "PASS_READONLY_POST_GATES"
+    },
+    {
+      "attempt": 4,
+      "workflowRun": 30402212216,
+      "hostingDeployed": true,
+      "result": "PASS_TYA_CORTE3_REMOTE_LIVE_FINANCE_SMOKE_R25"
     }
   ],
   "authorization": {
