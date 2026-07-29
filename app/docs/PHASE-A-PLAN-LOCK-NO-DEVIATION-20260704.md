@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-29  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_NEW_EMPTY_FIREBASE_VERIFIED_PASS__PROVIDER_BOOTSTRAP_AUTHORIZATION_PENDING`
+**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_PROVIDER_BOOTSTRAP_COMPLETED__PROTECTED_CXDATA_SMOKE_AUTH_PRINCIPAL_PENDING`
 
 ## 1. Objetivo
 
@@ -45,7 +45,7 @@ P1/P2 de reportes/copy permanecen como backlog transversal y no reabren Corte 3.
 
 Objetivo: `CX.data READ-ONLY → FIREBASE NUEVO Y VACÍO → MISMA INTERFAZ → CERO WRITES`.
 
-Estado: `NEW_EMPTY_FIREBASE_VERIFIED_PASS__PROVIDER_BOOTSTRAP_AUTHORIZATION_PENDING`.
+Estado: `PROVIDER_BOOTSTRAP_COMPLETED__PROTECTED_CXDATA_SMOKE_AUTH_PRINCIPAL_PENDING`.
 
 ### 5.1 Hardening completado
 
@@ -55,8 +55,8 @@ Estado: `NEW_EMPTY_FIREBASE_VERIFIED_PASS__PROVIDER_BOOTSTRAP_AUTHORIZATION_PEND
 - guard `CX.data` que preserva interfaz y bloquea persistencia/acciones operativas;
 - backend vacío sin fallback demo;
 - errores de lectura fail-closed;
-- Rules read-only candidate preparado y no desplegado;
-- gate estático Corte 4 PASS con providerReads=0/providerWrites=0/dataWrites=0.
+- Rules read-only preparadas y desplegadas únicamente en Firebase DEV nuevo;
+- gate estático Corte 4 PASS.
 
 ### 5.2 Base existente descartada
 
@@ -66,8 +66,7 @@ Estado: `NEW_EMPTY_FIREBASE_VERIFIED_PASS__PROVIDER_BOOTSTRAP_AUTHORIZATION_PEND
 
 - projectId `cxorbia-tya-dev-260729-c4`;
 - display name `CXOrbia TyA DEV Clean Corte 4`;
-- creado manualmente por Paula sin reutilizar base existente;
-- service account del runner con rol `Viewer` únicamente para verificación read-only.
+- creado manualmente por Paula sin reutilizar base existente.
 
 ### 5.4 Gate 1 — identidad nueva: PASS
 
@@ -80,37 +79,50 @@ Estado: `NEW_EMPTY_FIREBASE_VERIFIED_PASS__PROVIDER_BOOTSTRAP_AUTHORIZATION_PEND
 
 - request `corte4-verify-new-empty-firebase-dev-20260729-05`;
 - commit `7b0e40f8607b80a4f37238314a66064af35c5e6d`;
-- statuses `cxorbia/corte4-verify-new-empty-firebase = success` y diagnóstico `id1-e1-u0-n0-a0-au0-f0-s0-h1`;
 - nueva identidad=true;
 - vacío verificado=true;
-- checks no disponibles=0;
-- señales no vacías=0;
-- apps=0;
-- Auth users=0;
-- Firestore databases=0;
-- Storage buckets=0;
-- Hosting=1 `DEFAULT_SITE` provider-managed, sin user sites/releases como señal de contenido;
-- provider writes=0.
+- apps=0, Auth users=0, Firestore databases=0, Storage buckets=0 antes del bootstrap;
+- provider writes del gate=0.
 
-### 5.6 Correcciones focalizadas del verificador
+### 5.6 Gate 3 — bootstrap provider DEV: PASS
 
-El primer intento integral reveló dos defectos del gate y no contaminación del proyecto:
+Autorización consumida: `Autorizo bootstrap DEV read-only de Corte 4`.
 
-1. query Auth count-only inválida; corregida para `returnUserInfo=false` sin límite incompatible;
-2. `DEFAULT_SITE` de Firebase Hosting se trataba erróneamente como contaminación; ahora se separa infraestructura provider-default de sitios/release de usuario.
+Resultado:
 
-Un typo intermedio de OAuth `grant_type` fue detectado y corregido en `a11191177d0c91c63c273dc731675772f5d0f5c9` antes de disparar ese intento; no produjo provider call ni write.
+- Web App DEV READY;
+- Firestore `(default)` READY, Native/Standard, `us-central1`, sin colecciones;
+- Rules read-only DEPLOYED + VERIFIED;
+- Authentication inicializado manualmente por Paula en consola, sin proveedor habilitado y sin usuarios;
+- revalidación idempotente commit `e524b968c0003c27351d5d5826e21ffcf7cbfdbe`;
+- `BOOTSTRAP_DEV_READONLY_COMPLETED_C4` PASS;
+- `web=true`, `db=true`, `auth=true`, `rules=true`;
+- provider config writes en revalidación=0;
+- Firestore document writes=0;
+- Auth user writes=0.
 
-### 5.7 Gates restantes
+### 5.7 Gate 4 — smoke protegido `CX.data`: pendiente de principal temporal
 
-3. registrar/configurar Web App DEV sin secretos en repo;
-4. con autorización expresa, inicializar únicamente el mínimo provider necesario para lectura DEV: Firestore + Auth bootstrap temporal de operador y desplegar `backend/rules/firestore.corte4-readonly.rules`;
-5. activar solo lectura DEV;
-6. smoke `source=firestore`, `empty=true`, `fallbackUsed=false`, interfaz preservada y writes=0;
-7. validación visual;
-8. freeze Corte 4.
+Las Rules actuales requieren usuario autenticado con rol de operador y tenant permitido. El Firebase nuevo sigue con Auth users=0 y sin proveedores habilitados.
 
-Los pasos 3–4 implican provider writes de configuración y requieren autorización separada. No autorizan import/materialización, Storage, Hosting deploy, Functions, Make/Gemini, pagos ni producción.
+No se crea usuario ni se habilita proveedor por inferencia. Para ejecutar el smoke real de cliente protegido se requiere autorización expresa y acotada para:
+
+1. habilitar Email/Password únicamente en DEV;
+2. crear exactamente un operador temporal con credencial aleatoria no expuesta y claims `role=admin`, `tenantId=tya`;
+3. ejecutar `CX.data` read-only contra el Firestore vacío;
+4. demostrar `source=firestore`, `empty=true`, `fallbackUsed=false`, interfaz preservada y Firestore document writes=0;
+5. eliminar el operador temporal;
+6. deshabilitar Email/Password;
+7. confirmar Auth users=0 nuevamente.
+
+Ese usuario temporal no se migra, no sustituye Corte 6 y no toca datos TyA.
+
+### 5.8 Gates restantes
+
+5. autorización separada de Hosting DEV para el mismo build read-only;
+6. validación visual;
+7. freeze Corte 4;
+8. retirar IAM temporal elevado y dejar runner en Viewer.
 
 ## 6. Cortes siguientes
 
@@ -119,7 +131,7 @@ Los pasos 3–4 implican provider writes de configuración y requieren autorizac
 - **Corte 7:** sincronización, evidencias y gates Make/Gemini.
 - **Corte 8:** preproducción/producción con autorización.
 
-El Auth de Corte 4, si se autoriza, es solo bootstrap DEV mínimo para demostrar lectura protegida; no sustituye el Auth/RBAC completo de Corte 6.
+El principal temporal de Corte 4, si se autoriza, existe únicamente durante el smoke y se elimina al terminar; no sustituye Auth/RBAC completo de Corte 6.
 
 ## 7. Claude/prototipo
 
@@ -128,8 +140,8 @@ Corte 3 está congelado. No preparar V183. No tocar backend/contratos/adapters d
 ## 8. Academia
 
 - Corte 3: fuente operacional/financiera/pago y monedas separadas.
-- Corte 4: backend vacío, fail-closed, interfaz estable y separación entre credencial, IAM, identidad, vacío, infraestructura provider-default, Web App, Auth bootstrap, Firestore, Rules, lectura y escritura.
+- Corte 4: backend vacío, fail-closed, interfaz estable y separación entre proyecto, IAM, Web App, Firestore, inicialización Auth, proveedor, usuario temporal, claims, Rules, lectura protegida y materialización.
 
 ## 9. Estado seguro
 
-Sin producción, merge, Rules deploy, Firestore/Auth/Storage/HR writes de datos, imports, pagos, lotes reales, Make ni Gemini live. Los únicos provider writes ya ocurridos en Corte 4 fueron la creación manual del proyecto y el grant IAM Viewer expresamente ejecutados por Paula; los probes/gates posteriores fueron read-only.
+Sin producción, merge, Firestore document writes, Auth users permanentes, Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live. Provider bootstrap de Corte 4 está completado; el siguiente gate requiere autorización específica antes de crear un principal Auth temporal.
