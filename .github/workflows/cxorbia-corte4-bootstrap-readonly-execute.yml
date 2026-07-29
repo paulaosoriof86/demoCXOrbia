@@ -158,6 +158,10 @@ jobs:
             -f description="Corte 4 bootstrap: ${DECISION}" >/dev/null
           gh api --method POST -H 'Accept: application/vnd.github+json' \
             "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" -f context="cxorbia/c4exec-${DECISION}" \
+            -f description='Sanitized Corte 4 bootstrap decision' >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
             -f state="$STATE" -f context="cxorbia/c4bootstrap-w${WRITES}-web${WEB}-db${DB}-auth${AUTH}-rules${RULES}" \
             -f description='Sanitized bootstrap execution evidence' >/dev/null
           body=$(cat <<EOF
