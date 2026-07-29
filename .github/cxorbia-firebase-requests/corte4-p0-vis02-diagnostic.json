@@ -3,7 +3,7 @@
   "enabled": true,
   "scope": "READ_ONLY_DIAGNOSTIC_NO_PROVIDER_WRITES",
   "authorizationRef": "c4-p0-vis02-revalidate-20260729-01",
-  "triggerNonce": 3,
+  "triggerNonce": 4,
   "production": false,
   "providerWrites": 0
 }
