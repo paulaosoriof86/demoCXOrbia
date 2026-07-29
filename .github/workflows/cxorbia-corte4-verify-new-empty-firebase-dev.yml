@@ -78,7 +78,7 @@ jobs:
             -f context='cxorbia/corte4-verify-new-empty-firebase' \
             -f description='Read-only Firebase identity and empty-state verification running' >/dev/null
 
-      - name: Select available read credential without exposing it
+      - name: Select first structurally valid read credential without exposing it
         continue-on-error: true
         env:
           DEDICATED_CREATOR_JSON: ${{ secrets.CXORBIA_GCP_PROJECT_CREATOR_JSON }}
@@ -87,20 +87,35 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .tmp/corte4-private .tmp/corte4-verify
-          route='none'; credential=''
-          if [ -n "$DEDICATED_CREATOR_JSON" ]; then route='dedicated_project_creator'; credential="$DEDICATED_CREATOR_JSON";
-          elif [ -n "$ALT_CREATOR_JSON" ]; then route='alternate_project_creator'; credential="$ALT_CREATOR_JSON";
-          elif [ -n "$EXISTING_DEV_JSON" ]; then route='existing_dev_service_account'; credential="$EXISTING_DEV_JSON";
-          fi
-          node -e "const fs=require('fs');fs.writeFileSync('.tmp/corte4-verify/credential-route.source-safe.json',JSON.stringify({route:'$route',secretValuesOutput:false},null,2)+'\n')"
-          if [ "$route" = 'none' ]; then exit 0; fi
-          printf '%s' "$credential" > .tmp/corte4-private/credentials.json
-          chmod 600 .tmp/corte4-private/credentials.json
           node <<'NODE'
           const fs=require('fs');
-          const c=JSON.parse(fs.readFileSync('.tmp/corte4-private/credentials.json','utf8'));
-          if(c.type!=='service_account'||!c.project_id||!c.client_email) throw new Error('Credential structure invalid.');
-          console.log('Credential structure validated; identifiers remain private.');
+          const candidates=[
+            ['dedicated_project_creator',process.env.DEDICATED_CREATOR_JSON||''],
+            ['alternate_project_creator',process.env.ALT_CREATOR_JSON||''],
+            ['existing_dev_service_account',process.env.EXISTING_DEV_JSON||'']
+          ];
+          const inspected=[];
+          let selected=null;
+          for(const [route,raw] of candidates){
+            if(!raw){inspected.push({route,present:false,shapeValid:false});continue;}
+            let parsed=null;
+            try{parsed=JSON.parse(raw);}catch{}
+            const shapeValid=Boolean(parsed&&parsed.type==='service_account'&&parsed.project_id&&parsed.client_email&&parsed.private_key);
+            inspected.push({route,present:true,shapeValid});
+            if(!selected&&shapeValid) selected={route,raw};
+          }
+          const report={
+            route:selected?.route||'none',
+            credentialAvailable:Boolean(selected),
+            credentialShapeValid:Boolean(selected),
+            presentCandidateCount:inspected.filter(x=>x.present).length,
+            invalidPresentCandidateCount:inspected.filter(x=>x.present&&!x.shapeValid).length,
+            inspected,
+            secretValuesOutput:false
+          };
+          fs.writeFileSync('.tmp/corte4-verify/credential-route.source-safe.json',JSON.stringify(report,null,2)+'\n');
+          if(selected) fs.writeFileSync('.tmp/corte4-private/credentials.json',selected.raw,{mode:0o600});
+          console.log(JSON.stringify(report,null,2));
           NODE
 
       - name: Install provider dependency with timeout
@@ -119,7 +134,7 @@ jobs:
           fallback(){
             DECISION="$1" node -e "const fs=require('fs');const r={decision:process.env.DECISION,target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},summary:{newIdentityConfirmed:false,emptyBaselineVerified:false,unavailableMandatoryCount:1,nonEmptySignalCount:0},safeState:{providerReads:false,providerWrites:false,production:false}};fs.writeFileSync('.tmp/corte4-verify/corte4-new-empty-firebase-verification.source-safe.json',JSON.stringify(r,null,2)+'\n');"
           }
-          if [ ! -s "$GOOGLE_APPLICATION_CREDENTIALS" ]; then fallback BLOCKED_NO_READ_CREDENTIAL_AVAILABLE; exit 0; fi
+          if [ ! -s "$GOOGLE_APPLICATION_CREDENTIALS" ]; then fallback BLOCKED_NO_VALID_READ_CREDENTIAL_AVAILABLE; exit 0; fi
           if [ ! -d node_modules/google-auth-library ]; then fallback BLOCKED_PROVIDER_DEPENDENCY_UNAVAILABLE; exit 0; fi
           set +e
           timeout --signal=TERM --kill-after=10s 120s \
@@ -140,25 +155,36 @@ jobs:
           set -euo pipefail
           mkdir -p .tmp/corte4-verify
           report='.tmp/corte4-verify/corte4-new-empty-firebase-verification.source-safe.json'
+          route_report='.tmp/corte4-verify/credential-route.source-safe.json'
           if [ ! -f "$report" ]; then
             node -e "const fs=require('fs');const r={decision:'BLOCKED_WORKFLOW_PRECONDITION',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},summary:{newIdentityConfirmed:false,emptyBaselineVerified:false,unavailableMandatoryCount:1,nonEmptySignalCount:0},safeState:{providerReads:false,providerWrites:false,production:false}};fs.writeFileSync('.tmp/corte4-verify/corte4-new-empty-firebase-verification.source-safe.json',JSON.stringify(r,null,2)+'\n');"
           fi
-          node - "$report" <<'NODE' > .tmp/corte4-verify/status.env
+          node - "$report" "$route_report" <<'NODE' > .tmp/corte4-verify/status.env
           const fs=require('fs');
           const r=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const route=fs.existsSync(process.argv[3])?JSON.parse(fs.readFileSync(process.argv[3],'utf8')):{route:'unknown'};
           const pass=r.decision==='NEW_EMPTY_FIREBASE_DEV_VERIFIED_C4';
           const s=r.summary||{};
+          const safeRoute=String(route.route||'unknown').replace(/[^a-z0-9_-]/gi,'_').slice(0,36);
+          const safeDecision=String(r.decision||'UNKNOWN').replace(/[^A-Z0-9_.-]/gi,'_').slice(0,48);
           console.log([
             `STATE=${pass?'success':'error'}`,
-            `DECISION=${String(r.decision||'UNKNOWN').replace(/[^A-Z0-9_.-]/gi,'_')}`,
+            `DECISION=${safeDecision}`,
+            `ROUTE=${safeRoute}`,
             `DESCRIPTION=${pass?'New empty Firebase DEV verified':'Firebase identity or empty-state verification blocked'}`,
             `EMPTY=${Boolean(s.emptyBaselineVerified)}`,
             `NEW_IDENTITY=${Boolean(s.newIdentityConfirmed)}`,
             `UNAVAILABLE=${Number(s.unavailableMandatoryCount||0)}`,
-            `NONEMPTY=${Number(s.nonEmptySignalCount||0)}`
+            `NONEMPTY=${Number(s.nonEmptySignalCount||0)}`,
+            `CONTEXT=cxorbia/corte4-verify-${safeRoute}-${safeDecision}`
           ].join('\n'));
           NODE
           source .tmp/corte4-verify/status.env
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" \
+            -f context="$CONTEXT" \
+            -f description="$DESCRIPTION" >/dev/null
           gh api --method POST -H 'Accept: application/vnd.github+json' \
             "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
             -f state="$STATE" \
@@ -168,6 +194,7 @@ jobs:
           ## Corte 4 · verificación read-only de Firebase DEV
 
           - Decision: \`$DECISION\`
+          - Ruta de credencial: \`$ROUTE\`
           - Nueva identidad confirmada: \`$NEW_IDENTITY\`
           - Vacío verificado: \`$EMPTY\`
           - Checks no disponibles: \`$UNAVAILABLE\`
