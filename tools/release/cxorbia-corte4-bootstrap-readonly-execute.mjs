@@ -36,7 +36,7 @@ const requiredPermissions=[
 ];
 
 const report={
-  schemaVersion:'1.0.0',
+  schemaVersion:'1.0.1',
   gate:'cxorbia-corte4-bootstrap-dev-readonly-execute',
   generatedAt:new Date().toISOString(),
   decision:'HOLD_NOT_EXECUTED',
@@ -102,7 +102,6 @@ async function main(){
     throw timeoutError(label);
   }
 
-  // Re-verify exact project/Firebase identity immediately before writes.
   const project=await request('GET',`https://cloudresourcemanager.googleapis.com/v3/projects/${encodeURIComponent(projectId)}`);
   if(!project.ok)return stop('BLOCKED_TARGET_PROJECT_NOT_VERIFIABLE');
   const displayName=String(project.payload?.displayName||project.payload?.name||'');
@@ -120,7 +119,6 @@ async function main(){
   report.preflight.permissionsGranted=report.preflight.missingPermissions.length===0;
   if(!report.preflight.permissionsGranted)return stop('BLOCKED_IAM_CHANGED_AFTER_PREFLIGHT');
 
-  // Enable only the exact services needed for this authorized bootstrap.
   for(const service of services){
     const number=report.target.projectNumber;
     if(!number)return stop('BLOCKED_PROJECT_NUMBER_UNAVAILABLE');
@@ -139,7 +137,6 @@ async function main(){
     report.services[service]={enabled,state,writePerformed:report.providerWrites.serviceEnable>0};
   }
 
-  // Web App: exactly one known DEV app; no silent reuse of unexpected apps.
   let appsResp=await request('GET',`https://firebase.googleapis.com/v1beta1/projects/${encodeURIComponent(projectId)}/webApps?pageSize=100`);
   if(!appsResp.ok)return stop('BLOCKED_WEB_APP_LIST_UNAVAILABLE');
   let apps=Array.isArray(appsResp.payload?.apps)?appsResp.payload.apps:[];
@@ -154,9 +151,7 @@ async function main(){
     apps=Array.isArray(appsResp.payload?.apps)?appsResp.payload.apps:[];
   } else if(apps.length===1&&String(apps[0]?.displayName||'')===webAppDisplayName){
     report.webApp.reused=true;
-  } else {
-    return stop('BLOCKED_UNEXPECTED_WEB_APP_STATE_DO_NOT_REUSE');
-  }
+  } else return stop('BLOCKED_UNEXPECTED_WEB_APP_STATE_DO_NOT_REUSE');
   report.webApp.appCount=apps.length;
   const app=apps.length===1?apps[0]:null;
   report.webApp.displayNameMatch=Boolean(app&&String(app.displayName||'')===webAppDisplayName);
@@ -164,18 +159,11 @@ async function main(){
   const appName=String(app.name||`projects/${projectId}/webApps/${app.appId||''}`);
   const configResp=await request('GET',`https://firebase.googleapis.com/v1beta1/${appName}/config`);
   if(!configResp.ok||!configResp.payload?.appId||configResp.payload?.projectId!==projectId)return stop('BLOCKED_WEB_APP_CONFIG_UNAVAILABLE');
-  const publicConfig={
-    apiKey:String(configResp.payload.apiKey||''),
-    authDomain:String(configResp.payload.authDomain||''),
-    projectId:String(configResp.payload.projectId||''),
-    appId:String(configResp.payload.appId||''),
-    messagingSenderId:String(configResp.payload.messagingSenderId||'')
-  };
+  const publicConfig={apiKey:String(configResp.payload.apiKey||''),authDomain:String(configResp.payload.authDomain||''),projectId:String(configResp.payload.projectId||''),appId:String(configResp.payload.appId||''),messagingSenderId:String(configResp.payload.messagingSenderId||'')};
   fs.mkdirSync(outDir,{recursive:true});
   fs.writeFileSync(path.join(outDir,'web-config.public.json'),JSON.stringify(publicConfig,null,2)+'\n','utf8');
   report.webApp.configWrittenToArtifact=true;report.webApp.configSha256=sha256(JSON.stringify(publicConfig));
 
-  // Firestore (default) database: create once, Standard Native, exact authorized location.
   const dbName=`projects/${projectId}/databases/(default)`;
   const dbUrl=`https://firestore.googleapis.com/v1/projects/${encodeURIComponent(projectId)}/databases/%28default%29`;
   let db=await request('GET',dbUrl);
@@ -186,26 +174,23 @@ async function main(){
     if(!create.ok)return stop(`BLOCKED_FIRESTORE_CREATE_${category(create.status)}`);
     await poll('https://firestore.googleapis.com/v1',create.payload?.name,'firestore_create');
     db=await request('GET',dbUrl);
-  } else if(db.ok){
-    report.firestore.reused=true;
-  } else return stop(`BLOCKED_FIRESTORE_GET_${category(db.status)}`);
+  } else if(db.ok){report.firestore.reused=true;}
+  else return stop(`BLOCKED_FIRESTORE_GET_${category(db.status)}`);
   if(!db.ok)return stop('BLOCKED_FIRESTORE_POSTCREATE_VERIFY');
   report.firestore.locationMatch=String(db.payload?.locationId||'')===firestoreLocation;
   report.firestore.typeMatch=String(db.payload?.type||'')==='FIRESTORE_NATIVE';
   if(!report.firestore.locationMatch||!report.firestore.typeMatch)return stop('BLOCKED_FIRESTORE_IDENTITY_OR_LOCATION_MISMATCH');
 
-  // Verify no collections/documents have appeared; bootstrap itself never writes documents.
   const collections=await request('POST',`https://firestore.googleapis.com/v1/${dbName}/documents:listCollectionIds`,{pageSize:1});
   if(!collections.ok)return stop(`BLOCKED_FIRESTORE_EMPTY_CHECK_${category(collections.status)}`);
   const collectionIds=Array.isArray(collections.payload?.collectionIds)?collections.payload.collectionIds:[];
   report.firestore.collectionIdCount=collectionIds.length;report.firestore.emptyVerified=collectionIds.length===0;
   if(!report.firestore.emptyVerified)return stop('BLOCKED_FIRESTORE_NOT_EMPTY_AFTER_BOOTSTRAP');
 
-  // Auth bootstrap: initialize only if project config does not exist. No users are created here.
   let authConfig=await request('GET',`https://identitytoolkit.googleapis.com/admin/v2/projects/${encodeURIComponent(projectId)}/config`);
   report.auth.beforeInitialized=authConfig.ok;
   if(authConfig.status===404){
-    const init=await request('POST',`https://identitytoolkit.googleapis.com/v2/projects/${encodeURIComponent(projectId)}/identityPlatform:initializeAuth`,{});
+    const init=await request('POST',`https://identitytoolkit.googleapis.com/v2/projects/${encodeURIComponent(projectId)}/identityPlatform:initializeAuth`);
     report.providerWrites.authInitialize+=1;report.auth.initialized=true;
     if(!init.ok)return stop(`BLOCKED_AUTH_INITIALIZE_${category(init.status)}`);
     authConfig=await request('GET',`https://identitytoolkit.googleapis.com/admin/v2/projects/${encodeURIComponent(projectId)}/config`);
@@ -214,7 +199,6 @@ async function main(){
   report.auth.configVerified=authConfig.ok;
   if(!report.auth.configVerified)return stop('BLOCKED_AUTH_CONFIG_NOT_VERIFIED');
 
-  // Rules: idempotent if current cloud.firestore release already references identical source.
   const releaseName=`projects/${projectId}/releases/cloud.firestore`;
   let release=await request('GET',`https://firebaserules.googleapis.com/v1/${releaseName}`);
   report.rules.releaseBeforeExists=release.ok;
