@@ -4,15 +4,21 @@
    Regla de oro:
    - No hardcodear T&A en módulos UI.
    - T&A entra como tenant inicial: tenantId = 'tya'.
-   - El adapter permanece desactivado hasta validar identidad, vacío y Rules.
-   - Corte 4 inicia en lectura estricta: cero escrituras y fail-closed.
+   - El adapter permanece desactivado hasta validar el gate del bloque activo.
+   - Corte 4 mantiene lectura estricta: cero escrituras y fail-closed.
    - No guardar API keys, secretos ni credenciales reales en repo.
-   - No reutilizar cxorbia-backend-dev: la evidencia vigente lo confirmó no vacío.
+   - `cxorbia-backend-dev` es el backend DEV canónico de CXOrbia/tenant TyA,
+     NO la plataforma legacy TyA a retirar.
+   - `cxorbia-tya-dev-260729-c4` queda como sandbox técnico de validación
+     y no como destino de materialización Phase A.
    ============================================================ */
 window.CX = window.CX || {};
 
 (function(){
   const firebaseConfig = {
+    // Se conserva el sandbox en este placeholder para reproducibilidad de las
+    // pruebas Corte 4 ya ejecutadas. El binding canónico se hará por gate
+    // específico después del inventario read-only de cxorbia-backend-dev.
     apiKey: null,
     authDomain: 'cxorbia-tya-dev-260729-c4.firebaseapp.com',
     projectId: 'cxorbia-tya-dev-260729-c4',
@@ -25,11 +31,11 @@ window.CX = window.CX || {};
   CX.BACKEND = Object.assign({
     provider: 'firebase',
     env: 'dev',
-    enabled: false, // Candidato DEV no activado; producción permanece intacta.
+    enabled: false, // No runtime switch ni producción desde este placeholder.
     tenantId: 'tya',
     defaultProjectId: null,
     firebaseConfig,
-    configSource: 'repo-placeholder-new-empty-candidate',
+    configSource: 'repo-placeholder-corte4-sandbox-preserved-after-architecture-correction',
     sdkVersion: '10.12.5',
     readOnly: true,
     writeMode: 'disabled',
@@ -38,8 +44,15 @@ window.CX = window.CX || {};
     allowEmptyBackend: true,
     failClosedOnReadError: true,
     preserveCxDataInterface: true,
-    newCleanProjectRequired: true,
-    excludedFirebaseProjectIds: ['cxorbia-backend-dev'],
+
+    // Identidades explícitas para evitar volver a confundir legacy, backend y sandbox.
+    canonicalBackendProjectId: 'cxorbia-backend-dev',
+    migrationTargetProjectId: 'cxorbia-backend-dev',
+    validationSandboxProjectId: 'cxorbia-tya-dev-260729-c4',
+    sandboxOnly: true,
+    newCleanProjectRequired: false,
+    excludedFirebaseProjectIds: [],
+
     projectIdentityVerified: false,
     emptyProjectVerified: false,
     collections: {
