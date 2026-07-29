@@ -4,6 +4,7 @@
    No se carga en app/index.html.
    Solo se carga en app/index-backend-dev.html.
    Activa el adapter únicamente con token de querystring.
+   Corte 4: lectura estricta, vacío permitido y cero escrituras.
    ============================================================ */
 window.CX = window.CX || {};
 
@@ -43,6 +44,13 @@ window.CX = window.CX || {};
   CX.BACKEND = Object.assign(CX.BACKEND || {}, {
     enabled: true,
     previewMode: true,
+    readOnly: true,
+    writeMode: 'disabled',
+    enableDataWrites: false,
+    enableOperationalWrites: false,
+    allowEmptyBackend: true,
+    failClosedOnReadError: true,
+    preserveCxDataInterface: true,
     defaultProjectId: params.get('cxProjectId') || null,
     hrSourceEndpoint: safeHrSourceEndpoint(),
     devPreviewAuth: {
@@ -52,5 +60,5 @@ window.CX = window.CX || {};
     },
   });
 
-  console.warn('[CX.backend-preview] Preview DEV autorizado. Adapter Firebase activo solo en esta pagina.');
+  console.warn('[CX.backend-preview] Preview DEV autorizado en modo READ-ONLY estricto.');
 })();
