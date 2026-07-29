@@ -32,15 +32,17 @@ const sha256 = data => createHash('sha256').update(data).digest('hex');
 const isAllowedManifestDrift = path => path === 'app/index-backend-dev.html' || path.startsWith('app/docs/');
 
 /* V182 was independently audited GO and empalmed atomically. Remote Hosting DEV
-   then reproduced two finance defects: an undefined canonicalPeriodId and an
-   incorrect classification of exact-but-unpaid rows as source review. The
-   resulting focal corrections are locked here by exact SHA/size. Any other
-   runtime drift remains blocked fail-closed. */
+   then reproduced focal finance defects, and Paula's visual validation exposed
+   two additional reproducible differences: finance-review consistency and
+   current-month-safe rollover. Every authorized runtime path remains locked by
+   SHA-256/size or by its exact Git blob identity. Any other runtime drift stays
+   blocked fail-closed. */
 const authorizedRuntimeOverlay = new Map([
   ['app/app.js', { size: 30467, sha256: '4bcb12c050ab69ff8551eb8a030004ad3ef0cf3a03cf75beccb28b251dd6559c' }],
   ['app/core/finanzas-core.js', { size: 14228, sha256: '72a599b7ed6fdc02bf4ca915ff2cb0f04a558a9597092b49b31f8112897c26af' }],
+  ['app/core/tya-phase-a-source-safe-preview.js', { gitBlobSha: 'cec36da532208d80030f31ed3e26950d7f8f5427' }],
   ['app/modules/beneficios.js', { size: 9599, sha256: 'a8e330f6eb7eb9304eacdc1edff1ac83783011b883e3a3ddca2080eef918113c' }],
-  ['app/modules/finanzas.js', { size: 100917, sha256: '560f25b6308bbe9ea96f16c1d94da6e47be7eb068e11aca809962cfcc7e8e72e' }],
+  ['app/modules/finanzas.js', { gitBlobSha: '623fab9ba1e06c39f83beda610bb771e23910a07' }],
   ['app/styles/layout.css', { size: 25234, sha256: 'efddab2779cc6873cdf05e42f7c8729c75fd58cac57e3bd947d532b4b5df2f27' }]
 ]);
 const overlayMatch = path => {
@@ -50,8 +52,20 @@ const overlayMatch = path => {
   if (!existsSync(filePath)) return null;
   const data = readFileSync(filePath);
   const actualSha256 = sha256(data);
-  return actualSha256 === expected.sha256 && data.length === expected.size
-    ? { path, expectedSha256: expected.sha256, actualSha256, expectedSize: expected.size, actualSize: data.length }
+  const actualGitBlobSha = runGit(['hash-object', path]);
+  const matchesShaSize = !!expected.sha256 && Number.isFinite(expected.size)
+    && actualSha256 === expected.sha256 && data.length === expected.size;
+  const matchesGitBlob = !!expected.gitBlobSha && actualGitBlobSha === expected.gitBlobSha;
+  return matchesShaSize || matchesGitBlob
+    ? {
+        path,
+        expectedSha256: expected.sha256 || null,
+        actualSha256,
+        expectedSize: Number.isFinite(expected.size) ? expected.size : null,
+        actualSize: data.length,
+        expectedGitBlobSha: expected.gitBlobSha || null,
+        actualGitBlobSha
+      }
     : null;
 };
 
@@ -70,7 +84,7 @@ const canonicalFinancePaths = [
 
 mkdirSync(outDir, { recursive: true });
 const report = {
-  schemaVersion: '1.1.2',
+  schemaVersion: '1.1.3',
   gateId: 'tya-corte3-v174-runtime-preservation-r24',
   generatedAt: new Date().toISOString(),
   decision: 'HOLD',
@@ -86,7 +100,7 @@ const report = {
   appChangesSinceTechnicalPass: [],
   canonicalFinanceChangesSinceTechnicalPass: [],
   legacyVerifierDiagnosis: 'STALE_FULL_APP_HASH_INCLUDED_MUTABLE_DOCS_AND_APPROVED_DEV_ENTRY',
-  runtimeOverlayDiagnosis: 'V182_EXACT_AUDITED_OVERLAY_PLUS_REMOTE_SMOKE_FOCAL_FINANCE_FIXES_ALLOWED_FAIL_CLOSED',
+  runtimeOverlayDiagnosis: 'V182_EXACT_AUDITED_OVERLAY_PLUS_REPRODUCIBLE_CORTE3_FOCAL_FIXES_ALLOWED_FAIL_CLOSED',
   safeState: {
     sourceSafe: true,
     deploy: false,
