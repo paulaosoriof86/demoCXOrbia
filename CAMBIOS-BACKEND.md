@@ -1,6 +1,42 @@
 # CAMBIOS-BACKEND.md
 
-## 2026-07-29 — Corte 3 congelado y Corte 4 read-only bloqueado por IAM
+## 2026-07-29 — Corte 4 identidad + Firebase nuevo/vacío verificados PASS
+
+- Paula creó manualmente `cxorbia-tya-dev-260729-c4` (`CXOrbia TyA DEV Clean Corte 4`) sin reutilizar `cxorbia-backend-dev`.
+- Se identificó la service account ya usada por el runner: `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com`.
+- Paula otorgó únicamente rol `Viewer` sobre el Firebase nuevo; no se entregó Editor/Owner.
+- Re-probe read-only en commit `b18f0b6cf74afb8b3ac770a73231c6cf1353b37c`: `TARGET_PROJECT_IDENTITY_VERIFIED_C4` PASS; provider writes=0.
+- Se activó el verificador integral read-only existente mediante request `corte4-verify-new-empty-firebase-dev-20260729-05`.
+- El primer intento reveló dos fallos del **gate**, no contaminación del proyecto: query Auth count-only incompatible y tratamiento incorrecto del `DEFAULT_SITE` administrado por Firebase como señal no vacía.
+- Se corrigió `tools/release/cxorbia-verify-new-empty-firebase-dev-corte4.mjs` para:
+  - consultar Auth count-only con contrato válido;
+  - distinguir Hosting `DEFAULT_SITE` provider-managed de `USER_SITE`/releases;
+  - exigir cero apps, cero Auth users, cero Firestore databases, cero Storage buckets, cero user Hosting sites y cero releases;
+  - mantener provider writes=0.
+- Se corrigió `.github/workflows/cxorbia-corte4-verify-new-empty-firebase-dev.yml` para publicar estados sanitizados shell-safe y diagnóstico de conteos sin secretos.
+- Incidente intermedio controlado: durante el hardening se introdujo un typo en `grant_type`; se detectó y corrigió en `a11191177d0c91c63c273dc731675772f5d0f5c9` **antes de disparar ese intento**, por lo que no generó provider call ni write.
+- Resultado final en commit `7b0e40f8607b80a4f37238314a66064af35c5e6d`:
+  - `cxorbia/corte4-verify-new-empty-firebase = success`;
+  - diagnóstico `id1-e1-u0-n0-a0-au0-f0-s0-h1-xnone-rnone = success`;
+  - nueva identidad=true;
+  - vacío verificado=true;
+  - unavailable=0;
+  - nonempty=0;
+  - apps=0, Auth users=0, Firestore databases=0, Storage buckets=0;
+  - Hosting=1 `DEFAULT_SITE` provider-managed sin user site/release como señal de contenido;
+  - provider writes=0.
+- Estado Corte 4: gates 1–2 PASS. Pendiente autorización expresa para registrar Web App DEV e inicializar únicamente Firestore/Auth bootstrap mínimo + desplegar Rules read-only.
+- No se ejecutó import, materialización, Storage, Hosting deploy, Functions, HR write, Make/Gemini, pago, lote, merge ni producción.
+
+### Clasificación
+
+- **Reusable CXOrbia:** verificación independiente de identidad/vacío, distinción entre infraestructura provider-default y datos/materialización, inventario read-only fail-closed.
+- **Exclusivo cliente:** projectId `cxorbia-tya-dev-260729-c4` y tenant inicial TyA.
+- **Claude/prototipo:** ninguna nueva candidata; solo atender hallazgos si el smoke visual posterior demuestra P0 localizado.
+- **Academia:** explicar identidad, vacío, `DEFAULT_SITE`, Web App, bootstrap Auth, Firestore, Rules, lectura y materialización como gates separados.
+- **Sin impacto Claude:** verifier/workflow/statuses/provider read-only.
+
+## 2026-07-29 — Corte 3 congelado y Corte 4 read-only bloqueado por IAM [HISTÓRICO SUPERADO]
 
 - Corte 3 quedó `FROZEN_ACTIVE_BASELINE` con baseline `CXORBIA-TYA-CORTE3-V182-20260729`.
 - V182 está empalmada; no existe ni se requiere V183/R33.
@@ -15,11 +51,8 @@
 - Se corrigió el preflight para seleccionar una service account estructuralmente válida entre las rutas disponibles.
 - Probe read-only: `TARGET_PROJECT_PERMISSION_DENIED_C4`.
 - Creación atómica: `BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY`.
-- Resultado: projectCreated=false, firebaseAdded=false, existingDatabaseReused=false, Firestore/Auth/Storage/Rules/Hosting writes=0.
-- Causa raíz comprobada: IAM/proveedor. La service account válida disponible no tiene permiso para crear/verificar el proyecto nuevo.
-- Siguiente bloque: resolver IAM Project Creator, crear/verificar Firebase nuevo/vacío, config web DEV, Rules read-only, activar solo lectura, smoke `CX.data`, validación visual y freeze Corte 4.
-- Clasificación: **Reusable CXOrbia:** base nueva obligatoria, fail-closed, read-only, IAM separado de credencial; **Exclusivo TyA:** projectId candidato y datos HR/financieros; **Claude/prototipo:** sin cambio funcional requerido por Corte 4; **Academia:** diferenciar credencial, IAM, proyecto, Firebase, Rules, lectura y escritura; **Sin impacto Claude:** runner/provider/gates internos.
-- Estado seguro: PR #7 draft/open/no merge; sin producción, provider activation, Rules deploy, imports ni writes reales.
+- Resultado histórico: projectCreated=false, firebaseAdded=false, existingDatabaseReused=false, Firestore/Auth/Storage/Rules/Hosting writes=0.
+- Este bloqueo fue superado posteriormente por creación manual + IAM Viewer + re-probe/empty verification PASS.
 
 ## Histórico previo
 
