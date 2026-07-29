@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-07-28  
-**Estado:** `V182_HOSTING_DEV_REMOTE_SMOKE_PASS_PENDING_PAULA_VISUAL_NO_FREEZE_NO_PRODUCTION`
+**Fecha:** 2026-07-29  
+**Estado:** `CORTE3_PAYMENT_HISTORY_HOSTING_DEV_REMOTE_PASS_PENDING_PAULA_FINAL_VISUAL_NO_FREEZE_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -9,144 +9,128 @@
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
-- Sin `main`, nueva rama/PR, force push, merge, producción, imports, pagos o writes reales.
-- Hosting DEV autorizado y ejecutado; Cloud Run no fue redeployado.
+- Producción, merge, imports, pagos ejecutados y Firestore/Auth/Storage/HR writes: 0.
+- Hosting DEV fue desplegado; Cloud Run no fue redeployado.
 
-## 2. Baseline y empalme V182
+## 2. Baseline y V182
 
-- V174/M1/Corte 1/Corte 2A permanecen FROZEN/APROBADOS.
-- V182 fue auditada GO y empalmada acumulativamente sobre V174.
-- HEAD_BEFORE del empalme: `2a4f93ecb8e5d309363cd7968f72947a61e2b754`.
+- V174/M1/Corte 1/Corte 2A: FROZEN/APROBADOS.
+- V182: auditada GO y empalmada sobre V174.
 - Commit funcional V182: `e3cfe464fd80e5bd4ce273556cfd0021e22c0810`.
-- Cinco archivos V182 empalmados: `app/app.js`, `app/core/finanzas-core.js`, `app/modules/beneficios.js`, `app/modules/finanzas.js`, `app/styles/layout.css`.
-- Identidad original V182: 5/5 SHA-256 y Git blob PASS; agregado `62d85bace9276070bfc642df31da74abd684ab072f155eed3895c6e3926c57c9`.
-- ZIP disponible reconciliado como `ZIP_CONTAINER_REPACKAGED` con contenido funcional byte-identical.
-- R26–R32 post-apply iniciales: `135/135 PASS`; Lotes PASS; CxP histórica PASS.
+- Delta V182: `app/app.js`, `app/core/finanzas-core.js`, `app/modules/beneficios.js`, `app/modules/finanzas.js`, `app/styles/layout.css`.
+- Identidad agregada V182: `62d85bace9276070bfc642df31da74abd684ab072f155eed3895c6e3926c57c9`.
+- R26–R32 post-apply: 135/135 PASS.
 - No V183. No R33.
 
-## 3. Verdad canónica preservada
+## 3. Fuente operacional y financiera preservada
 
-- 14 periodos y 616 visitas.
+- 14 periodos / 616 visitas.
 - 247 filas financieras.
 - 209 vínculos exactos.
 - 207 montos canónicos.
 - 38 sin vínculo exacto.
 - 79 revisiones de vínculo.
 - 2 revisiones de monto.
-- 37 evidencias candidatas de pago.
-- 0 pagos confirmados.
-- 0 lotes reales.
+- 37 evidencias candidatas.
+- 0 lotes ejecutables importados o creados.
 
-Mayo 2026:
+## 4. P0 corregido — histórico de pagos omitido
 
-- 44 visitas HR;
-- 42 filas financieras exactas;
-- 2 filas explícitas de revisión fail-closed;
-- 32 exactas GT y 10 exactas HN;
-- 0 pagadas.
+La validación visual de Paula demostró que el runtime anterior omitía pagos históricos: forzaba `paymentConfirmed=false`, `payments=[]` y `batches=[]`, aunque la fuente real confirma mayo completo y junio parcial.
 
-## 4. Correcciones focales post-empalme demostradas por Hosting DEV
+Fuente exacta procesada read-only:
 
-El empalme V182 no se reabrió ni se sustituyó. Los smoke remotos demostraron P0 reproducibles y se corrigieron focalmente sobre la rama viva:
+- archivo: `2026 Ingresos Egresos y Presupuesto Paula.xlsx`;
+- SHA-256: `b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89`;
+- hoja: `Liquidación May 26`;
+- rango fuente: `A1:AB57`;
+- Excel crudo y PII: no subidos al repo.
 
-1. `27599aa534dff1b832340c67ee00ad4087485cd7` — define `canonicalPeriodId` en el scope de Dashboard Financiero; elimina `ReferenceError` remoto.
-2. `3e508c2d883f2f57b2e5fb7276ff14eec0e983de` — una fila `exact_reconciled_source_safe` con pago aún no confirmado permanece en métricas/CxP; `pending_source_confirmation` por sí solo no significa revisión de fuente.
-3. `f5457ad6f9430ee3fd91a732977c7efbb95d7bfe` — la cola visible de revisión deja de clasificar como revisión de fuente las filas exactas solamente por estar impagas.
-4. `91063ff8f6cd963b7361acbe371f27c4ce9e4870` — copy visible alineado con la semántica anterior.
+## 5. Verdad de pagos vigente
 
-Identidades post-fix protegidas por R24:
+### Mayo 2026
 
-- `app/core/finanzas-core.js`: blob `6d3f46f003f3319f96cfd759b8b5ed52afc6a125`, SHA-256 `72a599b7ed6fdc02bf4ca915ff2cb0f04a558a9597092b49b31f8112897c26af`.
-- `app/modules/finanzas.js`: blob `9cd2be619cd2ec433bed959918f86c2bf70cf31d`, SHA-256 `560f25b6308bbe9ea96f16c1d94da6e47be7eb068e11aca809962cfcc7e8e72e`.
-- R24 lock post-fix: `eeaf6be558aa98fc1a500c629f2b6fafc14992ea`.
+- 44 visitas.
+- 44 pagos históricamente confirmados.
+- 0 pendientes de pago.
+- 42 vínculos financieros exactos.
+- 2 revisiones financieras preservadas; revisión financiera y pago confirmado coexisten.
+- CxP GT: Q 0.
+- CxP HN: L 0.
+- GT source-safe: honorarios Q 2,040; reembolsos Q 5,448; total pagado Q 7,488.
+- HN source-safe: honorarios L 2,000; reembolsos L 3,861; total pagado L 5,861.
 
-## 5. Gates post-fix
+### Junio 2026
 
-Read-only finance UI gate post-fix:
+- 44 visitas.
+- 2 pagos confirmados.
+- 42 pendientes.
+- Identidades pagadas exactas: `JUNIO 26!2` y `JUNIO 26!6`.
+- Pagado GT: Q 451.
+- Pagado HN: L 0.
+- Ninguna fila adicional fue inferida como pagada.
 
-- request commit: `2177ac6ef1ccddfc86546b46b9260887b492d25f`;
-- run: `30402106874`;
-- resultado: `PASS_READONLY_POST_GATES`.
+## 6. Implementación source-safe
 
-Hosting DEV + smoke remoto final:
+- Contrato: `backend/contracts/tya-payment-history-source-safe-v1.json`.
+- Proyección: `app/data/tya-payment-history-source-safe.js`.
+- Adapter único: `app/adapters/tya-financial-canonical-source-safe-adapter.js`.
+- Gate funcional: `tools/qa/tya-payment-history-source-safe-gate.mjs`; no es R33.
+- Builder Hosting DEV actualizado para cargar snapshot financiero → histórico de pagos → adapter.
+- R24 fail-closed actualizado con identidades exactas, sin comodines.
+- Dos grupos históricos inmutables/no ejecutables.
+- `paymentBatchId` real no fue inventado.
+- `paymentExecutionAllowed=false`.
+- Dashboard, Movimientos, Liquidaciones, Lotes y Beneficios consumen la misma verdad mediante `CX.data`/`CX.liq`.
+- Módulos UI no fueron reescritos en este bloque.
 
-- deploy request commit: `d550d2c5055d24e9032470f45243208130180804`;
-- run: `30402212216`;
-- Hosting DEV: PASS;
-- live HR endpoint: PASS;
-- remote finance smoke R25: `PASS_TYA_CORTE3_REMOTE_LIVE_FINANCE_SMOKE_R25`;
-- 14 periodos / 616 visitas: PASS;
-- mayo: 44 visitas / 42 exactas / 2 reviews / 32 GT / 10 HN: PASS;
-- filas review fail-closed: PASS;
-- pagos/lotes = 0: PASS;
-- Dashboard Financiero visible: PASS;
-- Export visible y spec capturado: PASS;
-- reporte: 2 filas / 10 columnas / 2 puntos de gráfica / nombre `.pdf`: PASS;
-- Beneficios Shopper: 3 liquidaciones canónicas / 0 pagadas / 4 KPI / detalle visible: PASS.
+## 7. Gates y Hosting DEV
 
-## 6. Hosting DEV vigente
+- Gate local de histórico: `PASS_TYA_PAYMENT_HISTORY_SOURCE_SAFE_GATE`.
+- Adapter harness local: `PASS_PAYMENT_HISTORY_ADAPTER_HARNESS`.
+- R24 remoto: `PASS_CORTE3_V174_RUNTIME_PRESERVATION_R24`.
+- Request final Hosting DEV: `7d314818e58c19e4332830d4c474ff3a6157b509`.
+- Workflow/run: `30416875149`.
+- Job final: `90468374816` — SUCCESS.
+- Deploy Hosting DEV: PASS.
+- Live HR endpoint: `PASS_REMOTE_LIVE_HR_ENDPOINT`.
+- Smoke remoto: `PASS_TYA_CORTE3_REMOTE_LIVE_PAYMENT_HISTORY_SMOKE_R25`.
+- Mayo remoto: 44 pagadas / 0 pendientes / 2 reviews preservadas / CxP Q0-L0.
+- Junio remoto: 2 pagadas / 42 pendientes / IDs exactos / Q451-L0.
+- Shopper identificado: Beneficios con pagos históricos visibles.
+- Pagos ejecutados: 0.
+- Lotes ejecutables creados: 0.
 
-- Firebase project: `cxorbia-backend-dev`.
-- Hosting target: `cxorbia-dev`.
-- URL visual: `https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1`.
-- Cloud Run existente solo se leyó/verificó; no hubo redeploy.
-- Producción no fue tocada.
+## 8. Hosting DEV vigente
 
-## 7. Estado Phase A
+`https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=4`
+
+## 9. Estado Phase A
 
 - M1 / Corte 1 / Corte 2A: FROZEN/APROBADOS.
-- Corte 3: empalmado + correcciones focales + gates + Hosting DEV + smoke remoto PASS.
-- Corte 3 todavía NO está FROZEN ni ACTIVE_BASELINE: falta validación visual de Paula y `APROBADO`.
+- Corte 3: V182 empalmada + fixes focales + histórico de pagos + Hosting DEV + smoke remoto PASS.
+- Corte 3 todavía NO está FROZEN/ACTIVE_BASELINE: falta validación visual final de Paula y `APROBADO`.
 - Corte 4 no inicia antes del freeze.
 
-## 8. Visualización pendiente de Paula
+## 10. Validación visual final mínima
 
-Validar en Hosting DEV:
+1. Mayo, Liquidaciones: 44 pagadas, 0 pendientes, 2 revisiones financieras preservadas.
+2. Mayo, Movimientos: CxP Q0 y L0.
+3. Junio: 2 pagadas, 42 pendientes; Q451 pagado GT y L0 HN.
+4. Shopper identificado: Beneficios muestra registros pagados sin revelar otra identidad.
+5. Móvil: navegación básica sin regresión.
 
-1. Admin → Finanzas, mayo 2026: métricas monetarias reales no deben quedar en cero por el solo hecho de estar pendientes de pago.
-2. Revisión de fuente: deben quedar 2 filas de mayo, no las 42 exactas impagas.
-3. Exportar reporte: vista previa debe contener GT/HN; probar PDF y XLSX y abrir ambos archivos.
-4. Shopper/Beneficios: valores por moneda correctos; pagado = 0 mientras no exista fuente de pago confirmada; sin `Q 0` para HNL.
-5. Vista móvil y navegación básica sin regresión.
+PDF sin gráfica y Excel con formato básico permanecen P2 transversal no bloqueante.
 
-## 9. Claude/prototipo y Academia
+## 11. Claude/prototipo y Academia
 
-- No preparar V183 ni R33.
-- Para Claude: registrar las cuatro correcciones focales post-empalme por archivo y causa reproducible; no reinterpretar reglas HR/financieras.
-- Academia: después de `APROBADO`, actualizar Manual de Finanzas, Movimientos/Tesorería, Liquidaciones/Lotes, Beneficios y errores frecuentes con la separación `fuente exacta / revisión / pago pendiente`.
+- Claude: no V183; preservar histórico source-safe y separar revisión financiera, pago confirmado y lote. El copy estático que todavía asuma “0 pagos” se documenta por archivo/módulo para futura corrección frontend localizada.
+- Academia: explicar visita → liquidación → revisión → pago confirmado → grupo histórico/lote; precisión de fecha `source_day_only`; grupos históricos inmutables/no ejecutables.
 
-## 10. Siguiente bloque exacto
+## 12. Siguiente bloque exacto
 
-`VALIDACIÓN VISUAL PAULA EN HOSTING DEV → PDF/XLSX + MÓVIL + BENEFICIOS → CORRECCIÓN FOCALIZADA SOLO SI HAY DIFERENCIA REPRODUCIBLE → APROBADO → FREEZE CORTE 3 → recién entonces CORTE 4`.
+`VALIDACIÓN VISUAL FINAL PAULA → APROBADO → FREEZE CORTE 3 / ACTIVE_BASELINE → CORTE 4: CX.data READ-ONLY EN FIREBASE NUEVO Y VACÍO`.
 
-## 11. Estado seguro
+## 13. Estado seguro
 
-Sin producción, merge, Firestore/Auth/Storage/HR writes, imports, pagos reales, lotes reales, Make ni Gemini live.
-# ADDENDUM CORTE 3 FOCAL FIX - 2026-07-28
-
-Estado local: `CORTE3_FOCAL_FIX_LOCAL_PASS_PENDING_HOSTING_DEV_REMOTE_SMOKE_NO_FREEZE_NO_PRODUCTION`.
-
-HEAD remoto de entrada: `a776e769b4ace5f1b4ec04039f820ae55cdeb6f9`.
-
-Archivos funcionales tocados:
-
-- `app/modules/finanzas.js`.
-- `app/core/tya-phase-a-source-safe-preview.js`.
-
-Cambios:
-
-- Reusable CXOrbia: fuente financiera exacta, revision financiera y pago pendiente quedan separados. `paymentState=pending_source_confirmation` ya no abre revision de fuente.
-- Reusable CXOrbia: Movimientos, Liquidaciones y export usan el mismo predicado financiero fail-closed.
-- Reusable CXOrbia: rollover current-month-safe: mes calendario actual si existe; si no, ultimo periodo no futuro; si no, primer periodo disponible.
-- Exclusivo TyA: se conserva nomenclatura mensual HR Cinepolis y monedas GT/HN sin sumar GTQ + HNL.
-- Claude/prototipo: KPIs de Liquidaciones muestran revision financiera, conciliadas con pago pendiente, candidatas para lote y pagadas confirmadas.
-- Academia: explicar fuente financiera exacta, revision financiera, pago pendiente y cambio automatico de periodo.
-
-Gates locales:
-
-- `node --check` JS tocados: PASS.
-- R26/R27/R28/R29/R30/R31/R32: PASS.
-- Focal mayo: 44 visitas HR / 42 exactas / 2 reviews / GT32 / HN10 / 0 pagos / 0 lotes / export 42 + 2 review / CxP GT Q 7,178 / CxP HN L 5,861: PASS.
-- Rollover focal: julio con agosto futuro no salta a futuro; agosto exacto activa agosto; agosto ausente conserva julio; guard de futuro con no-futuro disponible; Mi Dia/calendario alineado por `currentPeriodId`: PASS.
-
-Pendiente en este addendum local: push, Hosting DEV del nuevo HEAD y smoke remoto focal. Produccion, merge, writes reales, pagos, lotes reales, Make y Gemini siguen en 0.
+Sin producción, merge, Firestore/Auth/Storage/HR writes, imports, ejecución de pagos, lotes reales, Make ni Gemini live.
