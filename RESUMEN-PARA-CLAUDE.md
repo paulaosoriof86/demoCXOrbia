@@ -1,89 +1,96 @@
 # RESUMEN-PARA-CLAUDE.md
 
-## 2026-07-20 — Corte 1 live HR y reportes
+## ESTADO VIGENTE — 2026-07-29
 
-- La validación visual bloqueó el freeze de Corte 1.
-- Backend demostró que V164 usaba un snapshot congelado, no lectura HR runtime viva.
-- Se prepararon endpoint source-safe, revisión/frescura, watcher y binding al adapter canónico; probes read-only y predeploy PASS, sin deploy.
-- Claude debe atender únicamente los ajustes localizados de KPI/detalle, reportes Admin, branding/exportación y Panorama por periodo.
-- No solicitar otra candidata por rutina.
-- Fuente completa: `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE1-LIVE-HR-REPORTES-20260720.md`.
+### Baseline y cortes
 
-## 2026-07-11 - Importadores source-safe operativos R4
+- Repo: `paulaosoriof86/demoCXOrbia`.
+- Rama viva: `docs-tya-v6-v71-audit`.
+- PR #7: draft/open/no merge.
+- M1 / Corte 1 / Corte 2A: `FROZEN/APROBADO`.
+- Corte 3: `FROZEN_ACTIVE_BASELINE`.
+- Baseline: `CXORBIA-TYA-CORTE3-V182-20260729`.
+- V182 empalmada; **no crear V183/R33**.
+- R26–R32: 135/135 PASS; HR remota, Hosting DEV y smoke de pagos PASS.
 
-- Backend agregó importadores dry-run separados para pagos/movimientos y certificaciones presentadas, compatibles con JSON, CSV, XLSX y XLSM.
-- Reutilizan la HR y los shoppers ya validados; no reconstruyen periodos, visitas ni identidades.
-- Pagos: match estable por `visitId`, `paymentItemId` o `hrRowId`; certificaciones: `shopperId` o `shopperCode`.
-- No se acepta match por nombre, similitud visual o shopper+monto.
-- Producen candidatos, `reviewQueue`, `auditEvents`, envelopes source-safe y reporte, sin escritura ni materialización.
-- Validación: 20 checks JSON/XLSX PASS y dry-run sintético contra 616 visitas/213 shoppers PASS.
-- Claude no debe crear otro importador. Debe representar dry-run, aceptados, duplicados, conflictos, campos protegidos excluidos y `pending_backend`.
-- Finanzas debe usar `paymentState`; Certificación solo habilita con `confirmed/published` o carryover materializado.
-- Fuente detallada: `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-SOURCE-SAFE-IMPORTERS-R4-20260711.md`.
-- Estado seguro: sin deploy, import real, writes, proveedores, pagos ni producción.
+### Verdad financiera congelada
 
-## 2026-07-09 - Guardrail anti-regreso y anti-desvio Phase A TyA
+- Mayo 2026: 44 pagadas, 0 pendientes, 42 vínculos exactos, 2 reviews, CxP GT Q0 / HN L0.
+- Junio 2026: 2 pagadas, 42 pendientes, GT pagado Q451 / HN L0.
+- CXOrbia no ha ejecutado pagos ni lotes reales.
 
-- ChatGPT/backend agrego `app/docs/PHASE-A-ANTI-REGRESO-DESVIO-GUARDRAIL-TYA-20260709.md` y `backend/contracts/phase-a-anti-regreso-desvio-guardrail-v1.json`.
-- Objetivo: evitar que Claude, ChatGPT o cualquier bloque futuro marque como pendiente desde cero algo ya trabajado, reinicie Phase A, regrese a versiones anteriores o se desvie de TyA.
-- Antes de listar pendientes o proponer siguiente bloque se debe revisar: documento maestro/addenda, checkpoint acumulado, auditoria de efectuado/pendiente, CAMBIOS-BACKEND, RESUMEN-PARA-CLAUDE y PR #7 actual.
-- Toda actividad debe clasificarse como: hecho/documentado, preparado/no ejecutado, pendiente autorizacion, pendiente Claude/prototipo, pendiente backend real, bloqueado por gate o no corresponde a Phase A.
-- No reabrir desde cero: `CX.data` adapter, source-safe domain mapping, readiness pack, builder local, single-command pack, smoke precheck, GO/NO GO, DEV conditions, rollback/auditoria, reviewQueue/conflictos y checkpoints.
-- Reporte obligatorio por bloque: que hice, que ya estaba hecho y no se reabrio, avance Phase A, pendiente real por carril, siguiente bloque exacto, estado seguro y bloqueos/fallos.
+### Corte 4 — backend, no tarea frontend
 
-## 2026-07-09 - Cola de revision humana y conflictos Phase A TyA
+Objetivo: `FIREBASE NUEVO Y VACÍO → CX.data READ-ONLY → MISMA INTERFAZ → CERO WRITES`.
 
-- ChatGPT/backend agrego `backend/contracts/phase-a-human-review-conflict-queue-plan-v1.json` y `app/docs/PHASE-A-HUMAN-REVIEW-CONFLICT-QUEUE-TYA-20260709.md`.
-- Estado: documento/contrato solamente; no crea registros, no importa, no escribe HR, no activa proveedores, no ejecuta pagos, no deploy y no produccion.
-- Claude debe representar conflictos como visibles, accionables y pendientes de revision humana; no debe ocultarlos ni resolverlos por nombre visual.
-- Casos clave: shopper asignado en HR y ausente en plataforma, identidad ambigua, asignacion plataforma vs HR, visita duplicada, certificacion ya presentada, liquidacion/pago con estado conflictivo, cuestionario/origen y configuracion de proyecto.
-- Foco Phase A: HR fuente operacional, informacion real/source-safe, Cinépolis proyecto configurable, junio liquidaciones/pagos, certificaciones preservadas, shoppers historicos conservados y conflictos a revision humana.
-- No tocar desde Claude: backend/contracts, tools, workflows, secrets, reglas reales, `.tmp`, datos sensibles, proveedores reales, imports reales ni pagos reales.
-- Academia debe explicar cola de revision, conflictos, llaves estables, asignaciones HR/plataforma, preservacion de certificaciones, junio como liquidaciones/pagos y no datos privados en logs/manuales.
+Ya está preparado y validado técnicamente:
 
-## 2026-07-09 - Rollback y auditoria DEV Phase A TyA
+- interfaz pública `CX.data` preservada;
+- backend desactivado por defecto;
+- `readOnly=true` / `writeMode=disabled`;
+- persistencia y acciones operativas bloqueadas;
+- backend vacío = vacío;
+- error de lectura fail-closed;
+- no fallback mock/localStorage;
+- Rules candidate preparado, no desplegado;
+- gate `PASS_READONLY_POST_GATES`.
 
-- ChatGPT/backend agrego `backend/contracts/phase-a-dev-rollback-audit-plan-v1.json` y `app/docs/PHASE-A-DEV-ROLLBACK-AUDIT-PLAN-TYA-20260709.md`.
-- Estado: documento/contrato solamente; no hay DEV activo, runtime activo, import real, writes, proveedores live, deploy, produccion ni pagos reales.
-- Claude debe representar rollback como preparado/no ejecutado y auditoria como requisito previo, no como produccion lista.
-- Claude debe mantener estados honestos: bloqueado, degradado, pendiente, revision humana, source-safe o gate apagado cuando aplique.
-- Foco Phase A: HR fuente operacional, informacion real/source-safe, Cinépolis proyecto configurable, junio liquidaciones/pagos, certificaciones preservadas y conflictos a revision humana.
-- No tocar desde Claude: backend/contracts, tools, workflows, secrets, reglas reales, `.tmp`, datos sensibles, proveedores reales, imports reales ni pagos reales.
-- Academia debe cubrir rollback, auditoria, referencias opacas, datos que no van en logs, revision de conflictos, DEV/runtime/produccion y accion ante gate bloqueado.
+`cxorbia-backend-dev` está excluido por no ser nuevo/vacío. No copiarlo, conectarlo ni reutilizarlo.
 
-## 2026-07-09 - Condiciones DEV Phase A TyA
+Candidato nuevo: `cxorbia-tya-dev-260729-c4`.
 
-- ChatGPT/backend agrego `backend/contracts/phase-a-dev-conditions-v1.json` y `app/docs/PHASE-A-DEV-CONDITIONS-TYA-20260709.md`.
-- Estado: documento/contrato solamente; no hay conexion DEV activa, runtime activo, import real, writes, proveedores live, deploy, produccion ni pagos reales.
-- Claude debe mantener el foco Phase A TyA: HR como fuente operacional, informacion real/source-safe, Cinépolis como primer proyecto configurable, junio como liquidaciones/pagos y certificaciones presentadas preservadas.
-- Representacion esperada en UI: DEV pendiente hasta autorizacion explicita, Firestore/Auth/Storage pendientes, HR preparada pero no sincronizada live, Make/Gemini pendientes, datos TyA source-safe o pendientes y warnings/blockers visibles.
-- No tocar desde Claude: backend/contracts, tools, workflows, secrets, reglas reales, `.tmp`, datos sensibles ni proveedores reales.
-- Academia debe cubrir DEV vs staging vs produccion, base nueva limpia, `CX.data`, gates, fuente source-safe, certificaciones preservadas, conflictos, liquidaciones/pagos y no exponer datos privados.
+Bloqueo actual comprobado: `PROVIDER_IAM_BLOCKED_NEW_PROJECT_NOT_CREATED_NOT_CONNECTED`.
 
-## 2026-07-09 - Paquete acumulado Phase A TyA para Claude/Pendientes/Academia
+- probe: `TARGET_PROJECT_PERMISSION_DENIED_C4`;
+- creación atómica: `BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY`;
+- projectCreated=false;
+- firebaseAdded=false;
+- existingDatabaseReused=false.
 
-- ChatGPT/backend agrego `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
-- Objetivo: consolidar el paquete acumulado para Claude/prototipo despues de los checkpoints Phase A, sin reiniciar metodologia, sin pedir HR/reglas/shoppers/certificaciones ya documentadas y sin asumir runtime activo.
-- Claude debe tomar como estado base: PR #7 draft/open/no merge; sin deploy; sin produccion; sin runtime; sin import real; sin Firestore/Auth/Storage writes; sin HR writes; sin Make/Gemini live; sin pagos reales; sin output local source-safe commiteado.
-- Foco Phase A que debe respetar: HR fuente operacional, datos reales/sanitizados TyA, shoppers historicos, certificaciones ya presentadas, junio como liquidacion/pago, Cinépolis proyecto configurable, multi-proyecto, cuestionario configurable y conflictos a revision humana con llaves estables.
-- Pendientes P0 para Claude: copy honesto de gates, Academia profunda/administrable, representacion de Phase A real TyA sin prometer imports/runtime/integraciones reales.
-- Pendientes P1 para Claude: readiness dashboard source-safe, proyecto configurable sin hardcode Cinépolis, Mis beneficios/liquidaciones/pagos con honorario-boleto-combo-lote-movimientos, postulaciones/asignaciones con conflictos a revision.
-- Academia debe cubrir: Phase A vs produccion, preview/dry-run/gate/runtime/import, HR fuente operacional, shoppers/certificaciones preservadas, asignaciones/conflictos, liquidaciones/pagos, administracion de Academia, Gemini con revision humana, Make/HR preparado y readiness dashboard.
-- No tocar: `tools/`, `tools/migration/`, `tools/contracts/`, `backend/contracts/`, `.github/workflows/`, reglas reales, secrets, datos sensibles, `.tmp/` ni integraciones reales.
-- Estado seguro: documento puente solamente. No toca `/app/modules` ni `/app/core`, no activa runtime, no ejecuta builder, no importa datos, no escribe Firestore/Auth/Storage/HR, no activa Make/Gemini, no hace deploy, no hace pagos reales y no agrega datos sensibles.
+Este bloqueo es IAM/proveedor; no requiere cambios de Claude ni nueva candidata.
 
-## 2026-07-08 - Addendum readiness dashboard bridge runner
+### Lo que Claude NO debe hacer ahora
 
-- ChatGPT/backend agrego `tools/contracts/cxorbia-readiness-dashboard-bridge-runner.mjs` y documentos `app/docs/READINESS-DASHBOARD-BRIDGE-RUNNER-CXORBIA-20260708.md` / `app/docs/CAMBIOS-READINESS-DASHBOARD-BRIDGE-RUNNER-CXORBIA-20260708.md`.
-- El bridge convierte reportes del synthetic input pack runner en manifests de readiness dashboard source-safe y los valida; no toca `/app/modules` ni `/app/core`, no conecta runtime y no activa proveedores reales.
-- Claude debe usar este patron si implementa dashboard/panel de readiness: fila por area, estado honesto, sourceRef opaca, gate apagado, revision humana y motivo.
-- Copy honesto obligatorio: bridge/readiness no significa produccion lista, import real, sync real, envio real, pago real, provider activo, Storage activo, Firestore conectado, HR sincronizada, Make/Gemini activo ni deploy.
-- Hallazgo visual Academia: en la captura de Paula no se ve opcion visible de borrar/archivar/duplicar/versionar cursos. Esto queda como pendiente Claude/prototipo; backend no debe tocar `app/modules/academia.js`.
-- Academia debe explicar como un reporte de validadores se convierte en dashboard, source-safe, fixture sintetico, input sanitizado, gates apagados, warnings/fails/blockers y revision humana.
-- No tocar backend, contracts, tools, workflows, Firestore/Auth/Storage, Make, Gemini, imports, pagos reales ni datos reales.
+- no preparar V183/R33;
+- no reinterpretar HR;
+- no reabrir Finanzas/Corte 3;
+- no tocar `backend/contracts`, adapters, tools, workflows, Rules, secrets ni configuración provider;
+- no introducir persistencia local/mock para suplir Firestore;
+- no activar proveedores reales desde módulos UI.
 
-## 2026-07-08 - Addendum readiness dashboard source-safe
+### Backlog frontend no bloqueante preservado
 
-- ChatGPT/backend agrego `tools/contracts/cxorbia-readiness-dashboard-source-safe-contract.mjs` y documentos `app/docs/READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md` / `app/docs/CAMBIOS-READINESS-DASHBOARD-SOURCE-SAFE-CONTRACT-CXORBIA-20260708.md`.
-- El contrato no toca `/app/modules` ni `/app/core`, no conecta runtime, no activa Firestore/Auth/Storage/HR/Make/Gemini/correo/WhatsApp/import/pagos y no incluye datos sensibles.
-- Claude debe usar este patron si implementa dashboard/panel de readiness: area, estado preview, sourceRef opaca, gate apagado, revision humana y motivo.
+- PDF sin gráfica visible al imprimir;
+- Excel con formato básico;
+- mejora transversal de `reportKit`;
+- copy genérico de fuentes;
+- cualquier ajuste futuro se hará por archivo/módulo con evidencia reproducible y no reabre Corte 3.
+
+### Academia
+
+Debe reflejar la diferencia entre:
+
+1. credencial estructuralmente válida;
+2. permiso IAM;
+3. creación/verificación de proyecto;
+4. agregar Firebase;
+5. Rules;
+6. lectura read-only;
+7. escritura/materialización posterior.
+
+No presentar “credencial válida” como “Firebase conectado”.
+
+### Siguiente bloque exacto backend
+
+`RESOLVER IAM PROJECT CREATOR → CREAR/VERIFICAR FIREBASE NUEVO/VACÍO → CONFIG WEB DEV → RULES READ-ONLY → ACTIVAR LECTURA DEV → SMOKE CX.data → VALIDACIÓN VISUAL → FREEZE CORTE 4`.
+
+## Referencias históricas que siguen vigentes donde no contradigan este estado
+
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE1-LIVE-HR-REPORTES-20260720.md`.
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-SOURCE-SAFE-IMPORTERS-R4-20260711.md`.
+- `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
+- Addenda posteriores de candidatas/Corte 2A/Corte 3 quedan como trazabilidad histórica, pero el baseline vigente es V182 congelada.
+
+## Estado seguro
+
+Sin merge, producción, provider activation, Rules deploy, Firestore/Auth/Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live.
