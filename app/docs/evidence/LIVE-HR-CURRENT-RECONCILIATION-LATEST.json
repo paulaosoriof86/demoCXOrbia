@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "cxorbia.live-hr-current-reconcile.v1",
-  "generatedAt": "2026-07-29T23:28:05.932Z",
-  "sourceGeneratedAt": "2026-07-29T23:28:03.240Z",
+  "schemaVersion": "cxorbia.live-hr-current-reconcile.v2",
+  "generatedAt": "2026-07-29T23:31:02.540Z",
+  "sourceGeneratedAt": "2026-07-29T23:31:00.698Z",
   "accessMode": "public_gviz_csv_cache_busted",
   "cacheBustApplied": true,
   "counts": {
@@ -435,7 +435,627 @@
       "rows": 34,
       "headerRow": 1,
       "headerVariant": "full_identity"
-    }
+    },
+    "june2026HNSafeRows": [
+      {
+        "id": "hr_2026-06_hn_2_b76dae85c0",
+        "sourceRow": 2,
+        "hrRowId": "JUNIO 26 HN!2"
+      },
+      {
+        "id": "hr_2026-06_hn_3_30932ff2a6",
+        "sourceRow": 3,
+        "hrRowId": "JUNIO 26 HN!3"
+      },
+      {
+        "id": "hr_2026-06_hn_4_9402c9c858",
+        "sourceRow": 4,
+        "hrRowId": "JUNIO 26 HN!4"
+      },
+      {
+        "id": "hr_2026-06_hn_5_85265d5aa4",
+        "sourceRow": 5,
+        "hrRowId": "JUNIO 26 HN!5"
+      },
+      {
+        "id": "hr_2026-06_hn_6_49fa8eca21",
+        "sourceRow": 6,
+        "hrRowId": "JUNIO 26 HN!6"
+      },
+      {
+        "id": "hr_2026-06_hn_7_f718c70b90",
+        "sourceRow": 7,
+        "hrRowId": "JUNIO 26 HN!7"
+      },
+      {
+        "id": "hr_2026-06_hn_8_ec8c596efb",
+        "sourceRow": 8,
+        "hrRowId": "JUNIO 26 HN!8"
+      },
+      {
+        "id": "hr_2026-06_hn_9_79509dedc8",
+        "sourceRow": 9,
+        "hrRowId": "JUNIO 26 HN!9"
+      },
+      {
+        "id": "hr_2026-06_hn_10_b11f4e29dd",
+        "sourceRow": 10,
+        "hrRowId": "JUNIO 26 HN!10"
+      },
+      {
+        "id": "hr_2026-06_hn_11_bf4fe1684f",
+        "sourceRow": 11,
+        "hrRowId": "JUNIO 26 HN!11"
+      }
+    ],
+    "july2026GTSafeRows": [
+      {
+        "id": "hr_2026-07_gt_2_236daa2e30",
+        "sourceRow": 2,
+        "hrRowId": "JULIO 26!2"
+      },
+      {
+        "id": "hr_2026-07_gt_3_721920cea7",
+        "sourceRow": 3,
+        "hrRowId": "JULIO 26!3"
+      },
+      {
+        "id": "hr_2026-07_gt_4_880ae888c6",
+        "sourceRow": 4,
+        "hrRowId": "JULIO 26!4"
+      },
+      {
+        "id": "hr_2026-07_gt_5_03361f7387",
+        "sourceRow": 5,
+        "hrRowId": "JULIO 26!5"
+      },
+      {
+        "id": "hr_2026-07_gt_6_b020c98bf9",
+        "sourceRow": 6,
+        "hrRowId": "JULIO 26!6"
+      },
+      {
+        "id": "hr_2026-07_gt_7_d2419e2f18",
+        "sourceRow": 7,
+        "hrRowId": "JULIO 26!7"
+      },
+      {
+        "id": "hr_2026-07_gt_8_ed81a878f5",
+        "sourceRow": 8,
+        "hrRowId": "JULIO 26!8"
+      },
+      {
+        "id": "hr_2026-07_gt_9_f443083d7b",
+        "sourceRow": 9,
+        "hrRowId": "JULIO 26!9"
+      },
+      {
+        "id": "hr_2026-07_gt_10_e5aeb6327f",
+        "sourceRow": 10,
+        "hrRowId": "JULIO 26!10"
+      },
+      {
+        "id": "hr_2026-07_gt_11_8fe01c04f2",
+        "sourceRow": 11,
+        "hrRowId": "JULIO 26!11"
+      },
+      {
+        "id": "hr_2026-07_gt_12_79a52bcff3",
+        "sourceRow": 12,
+        "hrRowId": "JULIO 26!12"
+      },
+      {
+        "id": "hr_2026-07_gt_13_3e8d6f398f",
+        "sourceRow": 13,
+        "hrRowId": "JULIO 26!13"
+      },
+      {
+        "id": "hr_2026-07_gt_14_7f58175692",
+        "sourceRow": 14,
+        "hrRowId": "JULIO 26!14"
+      },
+      {
+        "id": "hr_2026-07_gt_15_47141778e6",
+        "sourceRow": 15,
+        "hrRowId": "JULIO 26!15"
+      },
+      {
+        "id": "hr_2026-07_gt_16_083c3bfe16",
+        "sourceRow": 16,
+        "hrRowId": "JULIO 26!16"
+      },
+      {
+        "id": "hr_2026-07_gt_17_292cd1aab7",
+        "sourceRow": 17,
+        "hrRowId": "JULIO 26!17"
+      },
+      {
+        "id": "hr_2026-07_gt_18_cc7ec75e07",
+        "sourceRow": 18,
+        "hrRowId": "JULIO 26!18"
+      },
+      {
+        "id": "hr_2026-07_gt_19_c8529abda1",
+        "sourceRow": 19,
+        "hrRowId": "JULIO 26!19"
+      },
+      {
+        "id": "hr_2026-07_gt_20_a6a92aad5b",
+        "sourceRow": 20,
+        "hrRowId": "JULIO 26!20"
+      },
+      {
+        "id": "hr_2026-07_gt_21_6689d25300",
+        "sourceRow": 21,
+        "hrRowId": "JULIO 26!21"
+      },
+      {
+        "id": "hr_2026-07_gt_22_e03f9f545a",
+        "sourceRow": 22,
+        "hrRowId": "JULIO 26!22"
+      },
+      {
+        "id": "hr_2026-07_gt_23_8ed01e4363",
+        "sourceRow": 23,
+        "hrRowId": "JULIO 26!23"
+      },
+      {
+        "id": "hr_2026-07_gt_24_c995093b96",
+        "sourceRow": 24,
+        "hrRowId": "JULIO 26!24"
+      },
+      {
+        "id": "hr_2026-07_gt_25_cc5ace594e",
+        "sourceRow": 25,
+        "hrRowId": "JULIO 26!25"
+      },
+      {
+        "id": "hr_2026-07_gt_26_6d973e479e",
+        "sourceRow": 26,
+        "hrRowId": "JULIO 26!26"
+      },
+      {
+        "id": "hr_2026-07_gt_27_7f17ee0657",
+        "sourceRow": 27,
+        "hrRowId": "JULIO 26!27"
+      },
+      {
+        "id": "hr_2026-07_gt_28_397cb43c42",
+        "sourceRow": 28,
+        "hrRowId": "JULIO 26!28"
+      },
+      {
+        "id": "hr_2026-07_gt_29_9271c2d8a9",
+        "sourceRow": 29,
+        "hrRowId": "JULIO 26!29"
+      },
+      {
+        "id": "hr_2026-07_gt_30_3aeecca2dd",
+        "sourceRow": 30,
+        "hrRowId": "JULIO 26!30"
+      },
+      {
+        "id": "hr_2026-07_gt_31_a114265210",
+        "sourceRow": 31,
+        "hrRowId": "JULIO 26!31"
+      },
+      {
+        "id": "hr_2026-07_gt_32_1dd804fa0f",
+        "sourceRow": 32,
+        "hrRowId": "JULIO 26!32"
+      },
+      {
+        "id": "hr_2026-07_gt_33_dec08b6bc8",
+        "sourceRow": 33,
+        "hrRowId": "JULIO 26!33"
+      },
+      {
+        "id": "hr_2026-07_gt_34_a3b88dfa26",
+        "sourceRow": 34,
+        "hrRowId": "JULIO 26!34"
+      },
+      {
+        "id": "hr_2026-07_gt_35_fb52f0860f",
+        "sourceRow": 35,
+        "hrRowId": "JULIO 26!35"
+      }
+    ],
+    "july2026HNSafeRows": [
+      {
+        "id": "hr_2026-07_hn_2_b76dae85c0",
+        "sourceRow": 2,
+        "hrRowId": "JULIO 26 HN!2"
+      },
+      {
+        "id": "hr_2026-07_hn_3_30932ff2a6",
+        "sourceRow": 3,
+        "hrRowId": "JULIO 26 HN!3"
+      },
+      {
+        "id": "hr_2026-07_hn_4_9402c9c858",
+        "sourceRow": 4,
+        "hrRowId": "JULIO 26 HN!4"
+      },
+      {
+        "id": "hr_2026-07_hn_5_85265d5aa4",
+        "sourceRow": 5,
+        "hrRowId": "JULIO 26 HN!5"
+      },
+      {
+        "id": "hr_2026-07_hn_6_49fa8eca21",
+        "sourceRow": 6,
+        "hrRowId": "JULIO 26 HN!6"
+      },
+      {
+        "id": "hr_2026-07_hn_7_f718c70b90",
+        "sourceRow": 7,
+        "hrRowId": "JULIO 26 HN!7"
+      },
+      {
+        "id": "hr_2026-07_hn_8_ec8c596efb",
+        "sourceRow": 8,
+        "hrRowId": "JULIO 26 HN!8"
+      },
+      {
+        "id": "hr_2026-07_hn_9_79509dedc8",
+        "sourceRow": 9,
+        "hrRowId": "JULIO 26 HN!9"
+      },
+      {
+        "id": "hr_2026-07_hn_10_b11f4e29dd",
+        "sourceRow": 10,
+        "hrRowId": "JULIO 26 HN!10"
+      },
+      {
+        "id": "hr_2026-07_hn_11_bf4fe1684f",
+        "sourceRow": 11,
+        "hrRowId": "JULIO 26 HN!11"
+      }
+    ],
+    "august2026GTSafeRows": [
+      {
+        "id": "hr_2026-08_gt_2_0bf8ebc0b9",
+        "sourceRow": 2,
+        "hrRowId": "AGOSTO 26!2"
+      },
+      {
+        "id": "hr_2026-08_gt_3_9ddb7002c1",
+        "sourceRow": 3,
+        "hrRowId": "AGOSTO 26!3"
+      },
+      {
+        "id": "hr_2026-08_gt_4_409c617039",
+        "sourceRow": 4,
+        "hrRowId": "AGOSTO 26!4"
+      },
+      {
+        "id": "hr_2026-08_gt_5_3194211114",
+        "sourceRow": 5,
+        "hrRowId": "AGOSTO 26!5"
+      },
+      {
+        "id": "hr_2026-08_gt_6_fee08855a5",
+        "sourceRow": 6,
+        "hrRowId": "AGOSTO 26!6"
+      },
+      {
+        "id": "hr_2026-08_gt_7_f11f23f7af",
+        "sourceRow": 7,
+        "hrRowId": "AGOSTO 26!7"
+      },
+      {
+        "id": "hr_2026-08_gt_8_d1763d86dd",
+        "sourceRow": 8,
+        "hrRowId": "AGOSTO 26!8"
+      },
+      {
+        "id": "hr_2026-08_gt_9_1851ae8082",
+        "sourceRow": 9,
+        "hrRowId": "AGOSTO 26!9"
+      },
+      {
+        "id": "hr_2026-08_gt_10_7c8f7235c6",
+        "sourceRow": 10,
+        "hrRowId": "AGOSTO 26!10"
+      },
+      {
+        "id": "hr_2026-08_gt_11_ebc90f1f2f",
+        "sourceRow": 11,
+        "hrRowId": "AGOSTO 26!11"
+      },
+      {
+        "id": "hr_2026-08_gt_12_9394d16148",
+        "sourceRow": 12,
+        "hrRowId": "AGOSTO 26!12"
+      },
+      {
+        "id": "hr_2026-08_gt_13_370b3770d5",
+        "sourceRow": 13,
+        "hrRowId": "AGOSTO 26!13"
+      },
+      {
+        "id": "hr_2026-08_gt_14_12470133f5",
+        "sourceRow": 14,
+        "hrRowId": "AGOSTO 26!14"
+      },
+      {
+        "id": "hr_2026-08_gt_15_d7637060a2",
+        "sourceRow": 15,
+        "hrRowId": "AGOSTO 26!15"
+      },
+      {
+        "id": "hr_2026-08_gt_16_2d1966fd6d",
+        "sourceRow": 16,
+        "hrRowId": "AGOSTO 26!16"
+      },
+      {
+        "id": "hr_2026-08_gt_17_20d2db2571",
+        "sourceRow": 17,
+        "hrRowId": "AGOSTO 26!17"
+      },
+      {
+        "id": "hr_2026-08_gt_18_c24e80c3f4",
+        "sourceRow": 18,
+        "hrRowId": "AGOSTO 26!18"
+      },
+      {
+        "id": "hr_2026-08_gt_19_b18e9f6377",
+        "sourceRow": 19,
+        "hrRowId": "AGOSTO 26!19"
+      },
+      {
+        "id": "hr_2026-08_gt_20_cf40f1eb58",
+        "sourceRow": 20,
+        "hrRowId": "AGOSTO 26!20"
+      },
+      {
+        "id": "hr_2026-08_gt_21_d143c8d1e2",
+        "sourceRow": 21,
+        "hrRowId": "AGOSTO 26!21"
+      },
+      {
+        "id": "hr_2026-08_gt_22_3ae89526fc",
+        "sourceRow": 22,
+        "hrRowId": "AGOSTO 26!22"
+      },
+      {
+        "id": "hr_2026-08_gt_23_1b6fab550b",
+        "sourceRow": 23,
+        "hrRowId": "AGOSTO 26!23"
+      },
+      {
+        "id": "hr_2026-08_gt_24_e0b73e03a7",
+        "sourceRow": 24,
+        "hrRowId": "AGOSTO 26!24"
+      },
+      {
+        "id": "hr_2026-08_gt_25_b2e61d8ad8",
+        "sourceRow": 25,
+        "hrRowId": "AGOSTO 26!25"
+      },
+      {
+        "id": "hr_2026-08_gt_26_8c2e149be5",
+        "sourceRow": 26,
+        "hrRowId": "AGOSTO 26!26"
+      },
+      {
+        "id": "hr_2026-08_gt_27_c72f5d4e18",
+        "sourceRow": 27,
+        "hrRowId": "AGOSTO 26!27"
+      },
+      {
+        "id": "hr_2026-08_gt_28_b9160d9a3d",
+        "sourceRow": 28,
+        "hrRowId": "AGOSTO 26!28"
+      },
+      {
+        "id": "hr_2026-08_gt_29_2e74897de5",
+        "sourceRow": 29,
+        "hrRowId": "AGOSTO 26!29"
+      },
+      {
+        "id": "hr_2026-08_gt_30_16dd6de722",
+        "sourceRow": 30,
+        "hrRowId": "AGOSTO 26!30"
+      },
+      {
+        "id": "hr_2026-08_gt_31_7869c3458c",
+        "sourceRow": 31,
+        "hrRowId": "AGOSTO 26!31"
+      },
+      {
+        "id": "hr_2026-08_gt_32_88b3eae67e",
+        "sourceRow": 32,
+        "hrRowId": "AGOSTO 26!32"
+      },
+      {
+        "id": "hr_2026-08_gt_33_1baa587e9c",
+        "sourceRow": 33,
+        "hrRowId": "AGOSTO 26!33"
+      },
+      {
+        "id": "hr_2026-08_gt_34_e7e0f6348f",
+        "sourceRow": 34,
+        "hrRowId": "AGOSTO 26!34"
+      },
+      {
+        "id": "hr_2026-08_gt_35_99dc1ed36c",
+        "sourceRow": 35,
+        "hrRowId": "AGOSTO 26!35"
+      }
+    ],
+    "august2026HNSafeRows": [
+      {
+        "id": "hr_2026-08_hn_2_0bf8ebc0b9",
+        "sourceRow": 2,
+        "hrRowId": "AGOSTO 26 HN!2"
+      },
+      {
+        "id": "hr_2026-08_hn_3_9ddb7002c1",
+        "sourceRow": 3,
+        "hrRowId": "AGOSTO 26 HN!3"
+      },
+      {
+        "id": "hr_2026-08_hn_4_409c617039",
+        "sourceRow": 4,
+        "hrRowId": "AGOSTO 26 HN!4"
+      },
+      {
+        "id": "hr_2026-08_hn_5_3194211114",
+        "sourceRow": 5,
+        "hrRowId": "AGOSTO 26 HN!5"
+      },
+      {
+        "id": "hr_2026-08_hn_6_fee08855a5",
+        "sourceRow": 6,
+        "hrRowId": "AGOSTO 26 HN!6"
+      },
+      {
+        "id": "hr_2026-08_hn_7_f11f23f7af",
+        "sourceRow": 7,
+        "hrRowId": "AGOSTO 26 HN!7"
+      },
+      {
+        "id": "hr_2026-08_hn_8_d1763d86dd",
+        "sourceRow": 8,
+        "hrRowId": "AGOSTO 26 HN!8"
+      },
+      {
+        "id": "hr_2026-08_hn_9_1851ae8082",
+        "sourceRow": 9,
+        "hrRowId": "AGOSTO 26 HN!9"
+      },
+      {
+        "id": "hr_2026-08_hn_10_7c8f7235c6",
+        "sourceRow": 10,
+        "hrRowId": "AGOSTO 26 HN!10"
+      },
+      {
+        "id": "hr_2026-08_hn_11_ebc90f1f2f",
+        "sourceRow": 11,
+        "hrRowId": "AGOSTO 26 HN!11"
+      },
+      {
+        "id": "hr_2026-08_hn_12_9394d16148",
+        "sourceRow": 12,
+        "hrRowId": "AGOSTO 26 HN!12"
+      },
+      {
+        "id": "hr_2026-08_hn_13_370b3770d5",
+        "sourceRow": 13,
+        "hrRowId": "AGOSTO 26 HN!13"
+      },
+      {
+        "id": "hr_2026-08_hn_14_12470133f5",
+        "sourceRow": 14,
+        "hrRowId": "AGOSTO 26 HN!14"
+      },
+      {
+        "id": "hr_2026-08_hn_15_d7637060a2",
+        "sourceRow": 15,
+        "hrRowId": "AGOSTO 26 HN!15"
+      },
+      {
+        "id": "hr_2026-08_hn_16_2d1966fd6d",
+        "sourceRow": 16,
+        "hrRowId": "AGOSTO 26 HN!16"
+      },
+      {
+        "id": "hr_2026-08_hn_17_20d2db2571",
+        "sourceRow": 17,
+        "hrRowId": "AGOSTO 26 HN!17"
+      },
+      {
+        "id": "hr_2026-08_hn_18_c24e80c3f4",
+        "sourceRow": 18,
+        "hrRowId": "AGOSTO 26 HN!18"
+      },
+      {
+        "id": "hr_2026-08_hn_19_b18e9f6377",
+        "sourceRow": 19,
+        "hrRowId": "AGOSTO 26 HN!19"
+      },
+      {
+        "id": "hr_2026-08_hn_20_cf40f1eb58",
+        "sourceRow": 20,
+        "hrRowId": "AGOSTO 26 HN!20"
+      },
+      {
+        "id": "hr_2026-08_hn_21_d143c8d1e2",
+        "sourceRow": 21,
+        "hrRowId": "AGOSTO 26 HN!21"
+      },
+      {
+        "id": "hr_2026-08_hn_22_3ae89526fc",
+        "sourceRow": 22,
+        "hrRowId": "AGOSTO 26 HN!22"
+      },
+      {
+        "id": "hr_2026-08_hn_23_1b6fab550b",
+        "sourceRow": 23,
+        "hrRowId": "AGOSTO 26 HN!23"
+      },
+      {
+        "id": "hr_2026-08_hn_24_e0b73e03a7",
+        "sourceRow": 24,
+        "hrRowId": "AGOSTO 26 HN!24"
+      },
+      {
+        "id": "hr_2026-08_hn_25_b2e61d8ad8",
+        "sourceRow": 25,
+        "hrRowId": "AGOSTO 26 HN!25"
+      },
+      {
+        "id": "hr_2026-08_hn_26_8c2e149be5",
+        "sourceRow": 26,
+        "hrRowId": "AGOSTO 26 HN!26"
+      },
+      {
+        "id": "hr_2026-08_hn_27_c72f5d4e18",
+        "sourceRow": 27,
+        "hrRowId": "AGOSTO 26 HN!27"
+      },
+      {
+        "id": "hr_2026-08_hn_28_b9160d9a3d",
+        "sourceRow": 28,
+        "hrRowId": "AGOSTO 26 HN!28"
+      },
+      {
+        "id": "hr_2026-08_hn_29_2e74897de5",
+        "sourceRow": 29,
+        "hrRowId": "AGOSTO 26 HN!29"
+      },
+      {
+        "id": "hr_2026-08_hn_30_16dd6de722",
+        "sourceRow": 30,
+        "hrRowId": "AGOSTO 26 HN!30"
+      },
+      {
+        "id": "hr_2026-08_hn_31_7869c3458c",
+        "sourceRow": 31,
+        "hrRowId": "AGOSTO 26 HN!31"
+      },
+      {
+        "id": "hr_2026-08_hn_32_88b3eae67e",
+        "sourceRow": 32,
+        "hrRowId": "AGOSTO 26 HN!32"
+      },
+      {
+        "id": "hr_2026-08_hn_33_1baa587e9c",
+        "sourceRow": 33,
+        "hrRowId": "AGOSTO 26 HN!33"
+      },
+      {
+        "id": "hr_2026-08_hn_34_e7e0f6348f",
+        "sourceRow": 34,
+        "hrRowId": "AGOSTO 26 HN!34"
+      },
+      {
+        "id": "hr_2026-08_hn_35_99dc1ed36c",
+        "sourceRow": 35,
+        "hrRowId": "AGOSTO 26 HN!35"
+      }
+    ]
   },
   "safeState": {
     "hrWrites": 0,
