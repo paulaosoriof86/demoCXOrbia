@@ -84,8 +84,60 @@ const pick = (...names) => {
   return null;
 };
 
+const tenantRef = db.collection('tenants').doc('tya');
+
+// Safe shopper reconciliation: counts and field names only; never values/identities.
+const shopperSnap = await tenantRef.collection('shoppers').get();
+const shopperFieldNames = new Set();
+const certificationLikeFieldCounts = {};
+const embeddedCertificationItemCounts = {};
+let shoppersWithCertificationLikeFields = 0;
+for (const doc of shopperSnap.docs) {
+  const data = doc.data() || {};
+  let hasCertLike = false;
+  for (const [key, value] of Object.entries(data)) {
+    shopperFieldNames.add(key);
+    if (/cert|curso|academy|academ/i.test(key)) {
+      hasCertLike = true;
+      certificationLikeFieldCounts[key] = (certificationLikeFieldCounts[key] || 0) + 1;
+      if (Array.isArray(value)) embeddedCertificationItemCounts[key] = (embeddedCertificationItemCounts[key] || 0) + value.length;
+    }
+  }
+  if (hasCertLike) shoppersWithCertificationLikeFields++;
+}
+
+// Safe project reconciliation: IDs + operational metadata only, no client/shopper PII.
+const projectSnap = await tenantRef.collection('projects').get();
+const projectReconciliation = [];
+const projectSubcollections = ['visits','questionnaires','liquidations','postulations','applications','periods','certifications'];
+const periodCountryPattern = /^cinepolis-(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre)-\d{2}(-hn)?$/i;
+for (const doc of projectSnap.docs.sort((a,b)=>a.id.localeCompare(b.id))) {
+  const data = doc.data() || {};
+  const childCounts = {};
+  for (const child of projectSubcollections) childCounts[child] = await collectionCount(doc.ref.collection(child));
+  projectReconciliation.push({
+    id: doc.id,
+    idPattern: periodCountryPattern.test(doc.id) ? 'period-country' : 'non-period-pattern',
+    country: data.country || data.pais || null,
+    periodKey: data.periodKey || data.periodId || null,
+    source: data.source || null,
+    sourceType: data.sourceType || null,
+    status: data.status || null,
+    isPeriodSelectable: data.isPeriodSelectable === true,
+    childCounts,
+  });
+}
+const projectPatternSummary = projectReconciliation.reduce((acc,p)=>{
+  const k=p.idPattern;
+  if(!acc[k]) acc[k]={projects:0,visits:0,questionnaires:0,liquidations:0,postulations:0,applications:0,periods:0,certifications:0,ids:[]};
+  acc[k].projects++;
+  acc[k].ids.push(p.id);
+  for (const key of ['visits','questionnaires','liquidations','postulations','applications','periods','certifications']) acc[k][key]+=Number(p.childCounts[key]||0);
+  return acc;
+},{});
+
 const report = {
-  schemaVersion: 'cxorbia.canonical-backend-readonly-inventory.v2',
+  schemaVersion: 'cxorbia.canonical-backend-readonly-inventory.v3',
   generatedAt: new Date().toISOString(),
   projectId: expectedProject,
   classification: 'CXORBIA_CANONICAL_DEV_BACKEND_CANDIDATE__NOT_LEGACY_TYA_PLATFORM',
@@ -106,10 +158,19 @@ const report = {
     certifications: pick('certifications','certs'),
     postulations: pick('postulations','posts'),
     notifications: pick('notifications'),
-    benefits: pick('benefits'),
+    shopperBenefits: pick('shopperBenefits','benefits'),
     liquidations: pick('liquidations'),
     finance: pick('finance','finances'),
   },
+  shopperReconciliation: {
+    total: shopperSnap.size,
+    allFieldNames: [...shopperFieldNames].sort(),
+    shoppersWithCertificationLikeFields,
+    certificationLikeFieldCounts,
+    embeddedCertificationItemCounts,
+  },
+  projectReconciliation,
+  projectPatternSummary,
   safety: {
     documentWrites: 0,
     authWrites: 0,
@@ -119,8 +180,8 @@ const report = {
     hostingDeploys: 0,
     production: false,
     merge: false,
-    valuesExported: false,
     sensitiveValuesExported: false,
+    shopperIdentityValuesExported: false,
   }
 };
 
@@ -142,6 +203,22 @@ const lines = [
   '',
   ...Object.entries(report.keyCounts).map(([k,v]) => `- ${k}: ${v === null ? 'no localizado' : v}`),
   '',
+  '## Reconciliación segura de shoppers/certificaciones',
+  '',
+  `- Shoppers: ${shopperSnap.size}`,
+  `- Shoppers con algún campo cuyo nombre parece de certificación/curso/Academia: ${shoppersWithCertificationLikeFields}`,
+  `- Campos de certificación/curso detectados: ${Object.keys(certificationLikeFieldCounts).length ? Object.entries(certificationLikeFieldCounts).map(([k,v])=>`${k}(${v})`).join(', ') : 'ninguno'}`,
+  `- Ítems embebidos contados en arrays de esos campos: ${Object.keys(embeddedCertificationItemCounts).length ? Object.entries(embeddedCertificationItemCounts).map(([k,v])=>`${k}:${v}`).join(', ') : '0'}`,
+  '- No se exportaron nombres, emails, teléfonos, documentos ni valores de shopper.',
+  '',
+  '## Reconciliación segura de proyectos',
+  '',
+  ...Object.entries(projectPatternSummary).map(([k,v])=>`- ${k}: proyectos=${v.projects}, visitas=${v.visits}, cuestionarios=${v.questionnaires}, liquidaciones=${v.liquidations}, postulaciones=${v.postulations}, applications=${v.applications}, periods=${v.periods}, certifications=${v.certifications}; ids=${v.ids.join(', ')}`),
+  '',
+  '| Project ID | Patrón | País | Period key | Source | Status | Visits | Questionnaires | Liquidations | Posts | Apps | Periods | Certs |',
+  '|---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|',
+  ...projectReconciliation.map(p => `| ${p.id} | ${p.idPattern} | ${p.country || ''} | ${p.periodKey || ''} | ${p.source || ''} | ${p.status || ''} | ${p.childCounts.visits} | ${p.childCounts.questionnaires} | ${p.childCounts.liquidations} | ${p.childCounts.postulations} | ${p.childCounts.applications} | ${p.childCounts.periods} | ${p.childCounts.certifications} |`),
+  '',
   '## Árbol de colecciones',
   '',
   '| Ruta | Docs | Campos observados (solo nombres, sin valores) |',
@@ -158,4 +235,4 @@ const lines = [
   ''
 ];
 fs.writeFileSync(outMd, lines.join('\n'));
-console.log(JSON.stringify({projectId: report.projectId, authUsers: authSummary.totalUsers, collectionPaths: collections.length, truncated, keyCounts: report.keyCounts}));
+console.log(JSON.stringify({projectId: report.projectId, authUsers: authSummary.totalUsers, collectionPaths: collections.length, keyCounts: report.keyCounts, shopperReconciliation: report.shopperReconciliation, projectPatternSummary}));
