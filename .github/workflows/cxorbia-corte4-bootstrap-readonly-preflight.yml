@@ -134,6 +134,21 @@ jobs:
             -f state="$STATE" \
             -f context='cxorbia/corte4-bootstrap-preflight' \
             -f description="Bootstrap preflight: ${DECISION}" >/dev/null
+
+          node - "$report" <<'NODE' > .tmp/corte4-bootstrap-preflight/prereq-statuses.tsv
+          const fs=require('fs'); const r=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const safe=s=>String(s||'unknown').replace(/[^A-Za-z0-9_.-]/g,'_').slice(0,70);
+          for(const p of (r.permissions?.missing||[])) console.log(`error\tcxorbia/c4boot-missing-${safe(p)}\tMissing bootstrap IAM permission`);
+          for(const [service,v] of Object.entries(r.services||{})) if(!v.enabled) console.log(`error\tcxorbia/c4boot-disabled-${safe(service)}\tRequired bootstrap service not enabled`);
+          if(!r.summary?.locationResolved) console.log('error\tcxorbia/c4boot-location-unset\tFirestore location requires explicit choice');
+          NODE
+          while IFS=$'\t' read -r item_state item_context item_desc; do
+            [ -n "$item_context" ] || continue
+            gh api --method POST -H 'Accept: application/vnd.github+json' \
+              "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+              -f state="$item_state" -f context="$item_context" -f description="$item_desc" >/dev/null
+          done < .tmp/corte4-bootstrap-preflight/prereq-statuses.tsv
+
           body=$(cat <<EOF
           ## Corte 4 · bootstrap DEV read-only · preflight
 
