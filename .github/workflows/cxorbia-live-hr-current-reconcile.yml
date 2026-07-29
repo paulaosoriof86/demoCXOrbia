@@ -1,0 +1,84 @@
+name: CXOrbia Live HR Current Reconcile
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/live-hr-current-reconcile.json'
+
+permissions:
+  contents: write
+  statuses: write
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate request
+        run: |
+          node <<'NODE'
+          const r=require('./.github/cxorbia-firebase-requests/live-hr-current-reconcile.json');
+          if(r.enabled!==true||r.mode!=='LIVE_HR_READ_ONLY_RECONCILIATION'||r.hrWrites!==0||r.firestoreWrites!==0||r.production!==false||r.merge!==false) process.exit(1);
+          NODE
+
+      - name: Build current HR source-safe snapshot read-only
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_HR_SOURCE_SAFE_OUT: .tmp/hr-current/tya-hr-source-safe.js
+          CXORBIA_GATE_OUT: .tmp/hr-current/gates
+          CXORBIA_HR_EARLIEST_PERIOD: '2025-06'
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: 'AI'
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/hr-current/gates app/docs/evidence
+          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs > .tmp/hr-current/build-output.json
+          node <<'NODE'
+          const fs=require('fs'); const vm=require('vm');
+          const js=fs.readFileSync('.tmp/hr-current/tya-hr-source-safe.js','utf8');
+          const ctx={window:{}}; vm.createContext(ctx); vm.runInContext(js,ctx); const s=ctx.window.CX_TYA_HR_SOURCE_SAFE;
+          if(!s||s.sourceSafe!==true||s.safeState?.writes!==false) throw new Error('source_safe_snapshot_invalid');
+          const periods=(s.periods||[]).map(p=>({key:p.key,visits:p.visits,byCountry:p.byCountry}));
+          const tabs=(s.tabsRead||[]).map(t=>({title:t.title,country:t.country,periodKey:t.periodKey,rows:t.rows,headerRow:t.headerRow,headerVariant:t.headerVariant}));
+          const report={schemaVersion:'cxorbia.live-hr-current-reconcile.v1',generatedAt:new Date().toISOString(),sourceGeneratedAt:s.generatedAt,accessMode:s.source?.accessMode||null,cacheBustApplied:s.source?.cacheBustApplied===true,counts:s.counts,periods,tabs,focus:{june2026HN:tabs.find(t=>t.periodKey==='2026-06'&&t.country==='HN')||null,july2026GT:tabs.find(t=>t.periodKey==='2026-07'&&t.country==='GT')||null,july2026HN:tabs.find(t=>t.periodKey==='2026-07'&&t.country==='HN')||null,august2026GT:tabs.find(t=>t.periodKey==='2026-08'&&t.country==='GT')||null,august2026HN:tabs.find(t=>t.periodKey==='2026-08'&&t.country==='HN')||null},safeState:{hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,production:false,merge:false,pii:false}};
+          fs.writeFileSync('app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json',JSON.stringify(report,null,2)+'\n');
+          const md=['# CXOrbia — reconciliación HR viva actual','',`- Fecha: ${report.generatedAt}`,`- Access mode: ${report.accessMode}`,'- Source-safe: sí; sin PII; HR writes=0; Firestore writes=0.','',`- Periodos detectados: ${report.counts?.periods}`,`- Tabs: ${report.counts?.tabs}`,`- Visitas: ${report.counts?.visits}`,`- Shoppers protegidos: ${report.counts?.shoppers}`,'','## Periodos','',...periods.map(p=>`- ${p.key}: ${p.visits} (GT ${p.byCountry?.GT||0} / HN ${p.byCountry?.HN||0})`),'','## Foco actual','',`- JUNIO 26 HN: ${report.focus.june2026HN?`${report.focus.june2026HN.rows} filas visitables; header row ${report.focus.june2026HN.headerRow}`:'no detectado'}.`,`- JULIO 26 GT: ${report.focus.july2026GT?`${report.focus.july2026GT.rows} filas visitables`:'no detectado'}.`,`- JULIO 26 HN: ${report.focus.july2026HN?`${report.focus.july2026HN.rows} filas visitables`:'no detectado'}.`,`- AGOSTO 26 GT: ${report.focus.august2026GT?`${report.focus.august2026GT.rows} filas visitables`:'no detectado'}.`,`- AGOSTO 26 HN: ${report.focus.august2026HN?`${report.focus.august2026HN.rows} filas visitables`:'no detectado'}.`,'','## Seguridad','','- No se exportan nombres, emails, teléfonos, DPI, bancos, observaciones ni workbook crudo.','- No writes HR/Firestore/Auth/Hosting; no producción/merge.',''];
+          fs.writeFileSync('app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md',md.join('\n'));
+          NODE
+
+      - name: Commit sanitized evidence on latest branch head
+        run: |
+          set -euo pipefail
+          cp app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json /tmp/hr-current.json
+          cp app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md /tmp/hr-current.md
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/hr-current.json app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json
+          cp /tmp/hr-current.md app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md
+          if ! git diff --cached --quiet; then git commit -m 'evidence: reconcile current live HR source-safe'; git push origin HEAD:docs-tya-v6-v71-audit; fi
+
+      - name: Publish status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          STATE=error; DESC='HOLD_LIVE_HR_CURRENT_RECONCILIATION'
+          if [ -f app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json ]; then STATE=success; DESC='PASS_LIVE_HR_CURRENT_RECONCILIATION'; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/live-hr-current-reconcile' -f description="$DESC" >/dev/null
+
+      - name: Cleanup
+        if: always()
+        run: rm -rf .tmp/hr-current
