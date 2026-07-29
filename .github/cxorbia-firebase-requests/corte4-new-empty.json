@@ -1,10 +1,10 @@
 {
   "schemaVersion": "cxorbia.firebase-new-empty-request.v1",
-  "requestId": "corte4-new-empty-firebase-dev-20260729-03",
+  "requestId": "corte4-new-empty-firebase-dev-20260729-04",
   "enabled": true,
   "issuedAt": "2026-07-29",
   "authorizationSource": "current_conversation",
-  "authorizationText": "Procede",
+  "authorizationText": "Continúa",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
