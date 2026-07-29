@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /* CXOrbia TyA · Corte 3 Hosting DEV build overlay R24.
-   Adds the already-approved canonical financial snapshot and adapter to the
-   V174 live-HR build copy. It modifies only the ephemeral checkout used for
-   Hosting DEV; no frontend module/core source is changed. */
+   Adds the approved canonical financial snapshot, source-safe historical-payment
+   projection and adapter to the V174 live-HR build copy. It modifies only the
+   ephemeral checkout used for Hosting DEV; no frontend module/core source is changed. */
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -30,12 +30,13 @@ const sources = [
   'data/tya-financial-canonical-source-safe-review-02.js',
   'data/tya-financial-canonical-source-safe-evidence.js',
   'data/tya-financial-canonical-source-safe-final.js',
+  'data/tya-payment-history-source-safe.js',
   'adapters/tya-financial-canonical-source-safe-adapter.js'
 ];
 
 if (!fs.existsSync(htmlPath)) fail(`HTML missing: ${htmlPath}`);
 for (const source of sources) {
-  if (!fs.existsSync(path.join(appDir, source))) fail(`Required canonical finance source missing: ${source}`);
+  if (!fs.existsSync(path.join(appDir, source))) fail(`Required canonical finance/payment source missing: ${source}`);
 }
 
 let html = fs.readFileSync(htmlPath, 'utf8');
@@ -48,32 +49,39 @@ if (!html.includes(anchor)) fail('core/finanzas-core.js anchor missing');
 if (!html.includes(appBoot)) fail('app.js boot tag missing');
 if (!html.includes('/api/tya/cinepolis/hr-live')) fail('R22 live HR binding missing before financial overlay');
 if (!html.includes('adapters/tya-live-source-refresh-watch.js')) fail('live HR refresh watcher missing');
-if (counts.some(count => count > 1)) fail(`Duplicate canonical finance tags detected: ${JSON.stringify(counts)}`);
-if (counts.some(count => count === 1) && counts.some(count => count === 0)) fail('Partial canonical finance overlay detected');
+if (counts.some(count => count > 1)) fail(`Duplicate canonical finance/payment tags detected: ${JSON.stringify(counts)}`);
+if (counts.some(count => count === 1) && counts.some(count => count === 0)) fail('Partial canonical finance/payment overlay detected');
 
 if (counts.every(count => count === 0)) {
   html = html.replace(anchor, `${anchor}\n${tags.join('\n')}`);
 }
 
 const afterCounts = tags.map(tag => html.split(tag).length - 1);
-if (!afterCounts.every(count => count === 1)) fail(`Canonical finance tag count invalid after build: ${JSON.stringify(afterCounts)}`);
+if (!afterCounts.every(count => count === 1)) fail(`Canonical finance/payment tag count invalid after build: ${JSON.stringify(afterCounts)}`);
 
 const positions = [anchor, ...tags, appBoot].map(tag => html.indexOf(tag));
 if (positions.some(position => position < 0)) fail('Required script position missing');
-if (!positions.every((position, index) => index === 0 || positions[index - 1] < position)) fail('Canonical finance script order invalid');
+if (!positions.every((position, index) => index === 0 || positions[index - 1] < position)) fail('Canonical finance/payment script order invalid');
+
+const paymentIndex = sources.indexOf('data/tya-payment-history-source-safe.js');
+const adapterIndex = sources.indexOf('adapters/tya-financial-canonical-source-safe-adapter.js');
+if (!(paymentIndex >= 0 && adapterIndex === paymentIndex + 1)) fail('Historical payment source must load immediately before financial adapter');
 
 fs.writeFileSync(htmlPath, html, 'utf8');
 fs.mkdirSync(outDir, { recursive: true });
 const report = {
-  schemaVersion: '1.0.0',
+  schemaVersion: '1.1.0',
   decision: 'PASS_CORTE3_HOSTING_DEV_BUILD_R24',
   html: path.relative(process.cwd(), htmlPath).replaceAll('\\', '/'),
   liveHrBindingPresent: true,
-  canonicalFinanceTagCount: tags.length,
-  financialAdapterAfterSnapshot: positions[positions.length - 2] > positions[positions.length - 3],
+  canonicalFinancePaymentTagCount: tags.length,
+  historicalPaymentOverlayPresent: true,
+  historicalPaymentBeforeAdapter: positions[paymentIndex + 1] < positions[adapterIndex + 1],
+  financialAdapterAfterSnapshotAndPayments: positions[positions.length - 2] > positions[positions.length - 3],
   financialOverlayBeforeAppBoot: positions[positions.length - 2] < positions[positions.length - 1],
   sameTruthForFinanzasAndBeneficios: true,
-  paymentState: 'pending_source_confirmation',
+  paymentHistoryMode: 'historical_source_safe',
+  executablePaymentBatches: 0,
   safeState: {
     sourceSafe: true,
     frontendModulesModified: false,
