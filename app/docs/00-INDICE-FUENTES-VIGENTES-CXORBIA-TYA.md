@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-29  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_READONLY_STATIC_PASS_PROVIDER_IAM_BLOCKED_NO_PRODUCTION`
+**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_NEW_FIREBASE_CREATED_VISUALLY__IAM_READ_ACCESS_PENDING_NO_PRODUCTION`
 
 ## 1. Repositorio
 
@@ -66,27 +66,30 @@ Reglas:
 
 ## 5. Estado del proveedor
 
-`PROVIDER_IAM_BLOCKED_NEW_PROJECT_NOT_CREATED_NOT_CONNECTED`
+`NEW_FIREBASE_CREATED__RUNNER_IAM_READ_ACCESS_PENDING`
 
-- `cxorbia-backend-dev` está excluido porque contiene datos DEV y no es nuevo/vacío.
-- Candidato: `cxorbia-tya-dev-260729-c4`.
+- `cxorbia-backend-dev` continúa excluido por no ser nuevo/vacío.
+- Proyecto nuevo creado manualmente por Paula: `cxorbia-tya-dev-260729-c4`.
+- Nombre visible: `CXOrbia TyA DEV Clean Corte 4`.
+- Firebase Console confirma cero apps registradas.
 - Gate estático Corte 4: PASS.
 - Única ruta de credencial estructuralmente válida: `existing_dev_service_account`.
-- Probe de identidad: `TARGET_PROJECT_PERMISSION_DENIED_C4`.
-- Creación atómica: `BLOCKED_PROJECT_CREATION_PERMISSION_OR_POLICY`.
-- Proyecto creado=false; Firebase agregado=false; base existente reutilizada=false.
+- Re-probe commit `691ec3c0c76ebc45a9d901b82dfb95d08f27daa6`: `TARGET_PROJECT_PERMISSION_DENIED_C4`.
+- Provider writes=0.
 - Rules deploy/provider activation=false.
+
+La creación ya no es el bloqueo. Falta IAM read-only de la service account del runner sobre el proyecto nuevo.
 
 ## 6. Desbloqueo mínimo
 
-Configurar una identidad dedicada con permiso para crear el proyecto y agregar Firebase, o crear el proyecto una sola vez con una identidad administradora y dar acceso de lectura a la service account existente.
+Otorgar a la service account existente rol `Viewer` sobre `cxorbia-tya-dev-260729-c4`; después repetir probe y verificar vacío integral.
 
 No se requiere PowerShell, nueva candidata, ZIP ni datos TyA.
 
 ## 7. Claude/prototipo y Academia
 
 - Claude: Corte 3 congelado; no tocar backend/contracts/adapters.
-- Academia: documentar credencial, IAM, proyecto, Firebase, Rules, lectura y escritura como gates distintos.
+- Academia: documentar creación del proyecto, IAM, Firebase apps, Rules, lectura y escritura como gates distintos.
 
 ## 8. Backlog no bloqueante
 
@@ -98,4 +101,4 @@ No se requiere PowerShell, nueva candidata, ZIP ni datos TyA.
 
 ## 9. Siguiente bloque exacto
 
-`RESOLVER IAM PROJECT CREATOR → CREAR/VERIFICAR FIREBASE NUEVO/VACÍO → CONFIG WEB DEV → RULES READ-ONLY → ACTIVAR LECTURA DEV → SMOKE CX.data`.
+`IAM READ-ONLY RUNNER → RE-PROBE IDENTIDAD → VERIFICAR VACÍO → CONFIG WEB DEV → RULES READ-ONLY → ACTIVAR LECTURA DEV → SMOKE CX.data`.
