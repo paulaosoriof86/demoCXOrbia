@@ -1,6 +1,7 @@
 {
   "schemaVersion": "cxorbia.corte4-p0-vis01-revalidate.v1",
-  "enabled": true,
+  "enabled": false,
+  "status": "consumed",
   "authorizationSource": "current_conversation",
   "authorizationText": "Autorizo corrección focalizada de P0-C4-VIS-01 y un único Hosting DEV de revalidación de Corte 4, sin data writes ni producción",
   "authorizationId": "c4-p0-vis01-revalidate-20260729-01",
@@ -11,6 +12,7 @@
   "targetDisplayName": "CXOrbia TyA DEV Clean Corte 4",
   "webAppDisplayName": "CXOrbia TyA DEV Corte 4",
   "deployedBaseCommit": "fabba5c76bb40f5105f8e10dd54be63e9b3eb783",
+  "deployedFixCommit": "424eca2ae5a7cd6f240dfc97b17048f3c124eb2c",
   "p0Id": "P0-C4-VIS-01",
   "mode": "P0_C4_VIS01_FOCUSED_FIX_AND_ONE_HOSTING_REVALIDATION",
   "hostingOnly": true,
@@ -18,7 +20,7 @@
   "merge": false,
   "triggerNonce": 3,
   "allowedProviderWrites": {
-    "hostingDeployExecutions": 1,
+    "hostingDeployExecutions": 0,
     "firestoreDocuments": 0,
     "authUsers": 0,
     "authConfig": 0,
