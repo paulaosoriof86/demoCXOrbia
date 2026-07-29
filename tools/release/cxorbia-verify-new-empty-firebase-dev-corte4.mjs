@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 /* CXOrbia · Corte 4 · sanitized new/empty Firebase DEV verification.
-   Provider READS only. No project creation, Firebase addition, API enablement,
-   Rules/Hosting deploy, Auth/Firestore/Storage writes, imports or production. */
+   Provider READS only. Native service-account OAuth; no npm dependency.
+   No project creation, Firebase addition, API enablement, Rules/Hosting deploy,
+   Auth/Firestore/Storage writes, imports or production. */
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import crypto from 'node:crypto';
 
 const REQUIRED_CONFIRM='VERIFY_NEW_EMPTY_FIREBASE_DEV_READ_ONLY';
 const args=process.argv.slice(2);
@@ -17,7 +19,7 @@ const credentialPath=process.env.GOOGLE_APPLICATION_CREDENTIALS;
 const REQUEST_TIMEOUT_MS=Math.max(2000,Number(process.env.CXORBIA_PROVIDER_REQUEST_TIMEOUT_MS||8000));
 
 const report={
-  schemaVersion:'1.1.0',
+  schemaVersion:'1.2.0',
   gate:'cxorbia-corte4-new-empty-firebase-dev-readonly-verify',
   generatedAt:new Date().toISOString(),
   decision:'HOLD_NOT_EXECUTED',
@@ -33,7 +35,8 @@ const report={
     createTimePresent:false,
     createdWithinAuthorizedWindow:false
   },
-  networkPolicy:{requestTimeoutMs:REQUEST_TIMEOUT_MS},
+  credential:{typeValid:false,requiredFieldsPresent:false,identifierOutput:false},
+  networkPolicy:{requestTimeoutMs:REQUEST_TIMEOUT_MS,oauthImplementation:'native-rs256-jwt'},
   checks:{},
   summary:{
     mandatoryChecks:0,
@@ -71,7 +74,7 @@ function category(value){
   const raw=String(value?.category||value?.status||value?.code||value?.name||value?.message||value||'UNKNOWN');
   if(/404|not.found/i.test(raw))return'NOT_FOUND_OR_NOT_INITIALIZED';
   if(/403|permission|denied|forbidden/i.test(raw))return'PERMISSION_DENIED';
-  if(/401|unauth/i.test(raw))return'UNAUTHENTICATED';
+  if(/401|unauth|invalid_grant/i.test(raw))return'UNAUTHENTICATED';
   if(/429|quota|rate/i.test(raw))return'QUOTA_OR_RATE_LIMIT';
   if(/timeout|abort/i.test(raw))return'TIMEOUT';
   return raw.replace(/[^A-Z0-9_.-]/gi,'_').slice(0,100)||'UNKNOWN';
@@ -83,11 +86,14 @@ function write(){
 }
 function stop(decision){report.decision=decision;write();process.exit(0);}
 function validProjectId(value){return /^[a-z][a-z0-9-]{4,28}[a-z0-9]$/.test(value)&&!/--/.test(value);}
+function base64url(value){return Buffer.from(value).toString('base64url');}
 function timeoutError(label){return Object.assign(new Error(`${label} timeout`),{category:'TIMEOUT'});}
-async function withTimeout(promise,ms,label){
-  let timer;
-  try{return await Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(timeoutError(label)),ms);})]);}
-  finally{if(timer)clearTimeout(timer);}
+async function boundedFetch(url,options={},label='provider_request'){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),REQUEST_TIMEOUT_MS);
+  try{return await fetch(url,{...options,signal:controller.signal});}
+  catch(error){if(error?.name==='AbortError')throw timeoutError(label);throw error;}
+  finally{clearTimeout(timer);}
 }
 
 async function main(){
@@ -96,20 +102,45 @@ async function main(){
   if(!credentialPath||!fs.existsSync(credentialPath))return stop('BLOCKED_MISSING_TEMPORARY_CREDENTIAL');
   let credential;
   try{credential=JSON.parse(fs.readFileSync(credentialPath,'utf8'));}catch{return stop('BLOCKED_INVALID_CREDENTIAL_JSON');}
-  if(credential.type!=='service_account'||!credential.project_id||!credential.client_email)return stop('BLOCKED_CREDENTIAL_STRUCTURE_MISMATCH');
+  report.credential.typeValid=credential.type==='service_account';
+  report.credential.requiredFieldsPresent=Boolean(credential.client_email&&credential.private_key&&credential.token_uri);
+  if(!report.credential.typeValid||!report.credential.requiredFieldsPresent)return stop('BLOCKED_CREDENTIAL_STRUCTURE_MISMATCH');
 
-  const {GoogleAuth}=await import('google-auth-library');
-  const client=await new GoogleAuth({credentials:credential,scopes:['https://www.googleapis.com/auth/cloud-platform.read-only','https://www.googleapis.com/auth/cloud-platform','https://www.googleapis.com/auth/identitytoolkit']}).getClient();
-  async function token(){const result=await withTimeout(client.getAccessToken(),REQUEST_TIMEOUT_MS,'access_token');const value=typeof result==='string'?result:result?.token;if(!value)throw Object.assign(new Error('token unavailable'),{category:'UNAUTHENTICATED'});return value;}
+  let cachedToken=null;
+  async function token(){
+    if(cachedToken)return cachedToken;
+    const now=Math.floor(Date.now()/1000);
+    const header=base64url(JSON.stringify({alg:'RS256',typ:'JWT'}));
+    const claims=base64url(JSON.stringify({
+      iss:credential.client_email,
+      scope:'https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/identitytoolkit',
+      aud:credential.token_uri||'https://oauth2.googleapis.com/token',
+      iat:now,
+      exp:now+3300
+    }));
+    const signingInput=`${header}.${claims}`;
+    const signature=crypto.sign('RSA-SHA256',Buffer.from(signingInput),credential.private_key).toString('base64url');
+    const assertion=`${signingInput}.${signature}`;
+    const response=await boundedFetch(credential.token_uri||'https://oauth2.googleapis.com/token',{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:new URLSearchParams({grant_type:'urn:ietf:params:oauth:grant-type:jwt-bearer',assertion}).toString()
+    },'oauth_token');
+    const text=await response.text();
+    let payload={};try{payload=text?JSON.parse(text):{};}catch{}
+    if(!response.ok||!payload.access_token)throw Object.assign(new Error('oauth token unavailable'),{category:String(payload.error||response.status)});
+    cachedToken=payload.access_token;
+    report.checks.oauth={available:true,implementation:'native-rs256-jwt',tokenOutput:false};
+    return cachedToken;
+  }
   async function request(method,url,body){
-    const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),REQUEST_TIMEOUT_MS);
-    try{
-      const response=await fetch(url,{method,signal:controller.signal,headers:{Authorization:`Bearer ${await token()}`,Accept:'application/json',...(body===undefined?{}:{'Content-Type':'application/json'})},body:body===undefined?undefined:JSON.stringify(body)});
-      const text=await withTimeout(response.text(),REQUEST_TIMEOUT_MS,'response_body');let payload=null;if(text){try{payload=JSON.parse(text);}catch{payload=null;}}
-      return{ok:response.ok,status:response.status,payload};
-    }catch(error){if(error?.name==='AbortError')throw timeoutError('provider_request');throw error;}
-    finally{clearTimeout(timer);}
+    const response=await boundedFetch(url,{
+      method,
+      headers:{Authorization:`Bearer ${await token()}`,Accept:'application/json',...(body===undefined?{}:{'Content-Type':'application/json'})},
+      body:body===undefined?undefined:JSON.stringify(body)
+    });
+    const text=await response.text();let payload=null;if(text){try{payload=JSON.parse(text);}catch{payload=null;}}
+    return{ok:response.ok,status:response.status,payload};
   }
   async function mandatory(id,fn){
     report.summary.mandatoryChecks+=1;
