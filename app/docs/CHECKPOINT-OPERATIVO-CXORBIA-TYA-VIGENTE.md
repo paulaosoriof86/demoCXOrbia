@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-29  
-**Estado:** `CORTE3_FROZEN__ARCHITECTURE_CORRECTED__CANONICAL_BACKEND_INVENTORY_PASS__PHASEA_GAP_RECONCILED__ANOMALY_READONLY_PROBE_ACTIVE__NO_DATA_WRITES`
+**Estado:** `CORTE3_FROZEN__ARCHITECTURE_CORRECTED__CANONICAL_INVENTORY_PASS__PHASEA_GAP_PASS__ANOMALIES_EXACT__LIVE_HR_PASS_WITH_AUG_HN_HOLD__CANONICAL_PLAN_OFFLINE_PASS__R16E_READONLY_AUTH_PENDING__NO_DATA_WRITES`
 
 ## 1. Repositorio y seguridad
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -22,7 +22,7 @@ Prevalece `ADDENDUM-CORRECCION-ARQUITECTURA-LEGACY-VS-CXORBIA-BACKEND-DEV-202607
 
 ## 3. Corte 3 — FROZEN / ACTIVE_BASELINE
 - Baseline `CXORBIA-TYA-CORTE3-V182-20260729`.
-- Source lock HR: 14 periodos, junio 2025–julio 2026, GT34+HN10=44 por periodo, total 616.
+- Source lock hasta julio: 14 periodos, junio 2025–julio 2026, GT34+HN10=44 por periodo, total 616.
 - HR remota y finanzas/pagos técnicamente validados.
 - Mayo: 44 pagadas / 0 pendientes / CxP Q0-L0.
 - Junio: 2 pagadas / 42 pendientes / Q451-L0.
@@ -34,7 +34,7 @@ En `cxorbia-tya-dev-260729-c4` se corrigieron VIS-01/VIS-02/VIS-02B: fail-closed
 No se materializa TyA allí.
 
 ## 5. Inventario canónico `cxorbia-backend-dev` — PASS
-Herramienta `tools/qa/cxorbia-canonical-backend-readonly-inventory.mjs`; evidencia `CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.*`.
+Evidencia `CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.*`.
 
 Sin provider writes ni PII:
 - Auth users=17, claims de tenant/proyecto/rol/shopper presentes;
@@ -50,51 +50,95 @@ Sin provider writes ni PII:
 - applications=1;
 - notifications=20;
 - shopperBenefits=572;
-- certifications=0 colecciones;
+- certifications=0;
 - shoppers con campos embebidos de certificación/curso/Academia=0.
 
 Conclusión: ya existe materialización sustancial de TyA; reconstruir en otro Firebase sería reproceso.
 
-## 6. Reconciliación contra source lock Phase A — PASS incremental
-Gate `cxorbia/canonical-backend-phasea-gap=success`; decisión `PASS_GAP_RECONCILED_INCREMENTAL_PHASEA_REQUIRED`.
+## 6. Reconciliación Phase A — PASS incremental
+`cxorbia/canonical-backend-phasea-gap=success`; decisión `PASS_GAP_RECONCILED_INCREMENTAL_PHASEA_REQUIRED`.
 
-- Esperado: 28 proyectos país/periodo y 616 visitas.
-- Encontrado: 26 proyectos canónicos.
+- Source lock esperado: 14 periodos / 616 visitas.
+- Materialización period-country previa: 28 proyectos esperados / 26 encontrados.
 - Faltan `cinepolis-julio-26` y `cinepolis-julio-26-hn` = 44 visitas.
 - 26 proyectos encontrados: 574 visitas vs 572 esperadas.
-- Excesos: `cinepolis-abril-26` 35/34 (+1), `cinepolis-junio-26-hn` 11/10 (+1).
-- No canónicos/piloto: `julio-pilot` 1, `r1` 36, `tya-piloto` 8 = 45 visitas separadas.
-- No se borra nada por inferencia.
-- Resolver los 2 excesos + incorporar julio 2026 con 44 deja 616 canónicas, igual al source lock.
+- Pilotos/no canónicos: `julio-pilot` 1, `r1` 36, `tya-piloto` 8 = 45 visitas separadas; no borrar por inferencia.
 
-## 7. Shoppers/certificaciones — faltante real
-- Backend canónico ya tiene 215 shoppers.
-- No hay colección de certificaciones materializada.
-- Ningún shopper tiene campos embebidos de certificación/curso/Academia.
+### Excesos localizados exactamente
+- Abril 2026: `sprint5-visit-mutation-no-real-data`; registro sintético sin sourceRow/sourceKey/sourceSheet.
+- Junio 2026 HN: Firestore `hr-58fb469666080189`, sourceRow 12; HR viva actual solo tiene sourceRows 2..11.
 
-Por ello:
-- no recrear shoppers;
-- obtener snapshot legacy sanitizado de shoppers + certificaciones;
-- calcular diff por llave estable;
-- importar únicamente shoppers faltantes/updates demostrables + certificaciones faltantes;
-- no usar legacy para reimportar visitas ya HR-first.
+No se ha borrado ni corregido ningún documento. Cualquier cleanup requiere autorización de write.
 
-Prompt listo: `PROMPT-REFRESH-DELTA-LEGACY-TYA-SHOPPERS-CERTIFICACIONES-20260729.md`.
+## 7. HR viva actual — PASS con HOLD focalizado agosto HN
+`cxorbia/live-hr-current-reconcile=success`.
 
-## 8. Probe actual
-Se lanzó probe read-only específico sobre los dos excesos para revisar `sourceRow/sourceKey/sourceSheet` sin PII y sin writes.
+Fuente source-safe actual:
+- periodos detectados=15;
+- tabs=30;
+- visitas=684;
+- referencias shopper protegidas=236;
+- junio 2026 HN=10;
+- julio 2026 GT=34;
+- julio 2026 HN=10;
+- agosto 2026 GT=34;
+- agosto 2026 HN=34 según la pestaña.
 
-No se corrige ni elimina ningún documento hasta tener evidencia de llave HR y autorización de write.
+Gate `cxorbia/live-hr-country-tab-consistency` dejó HOLD exclusivo para `AGOSTO 26 HN`:
+- 34 filas visitables;
+- columna País=GT en las 34;
+- filas 2..35 contradicen el país HN de la pestaña.
 
-## 9. Ruta real hacia producción
-`LEGACY TYA (delta shoppers/certs) + HR VIVA → cxorbia-backend-dev / tenant tya → completar faltantes Phase A → smoke/Auth/sync → preprod/rollback → cutover sobre Hosting público actual`.
+Regla: **agosto HN no se materializa ni sincroniza** hasta corregir o confirmar la fuente. Julio 2026 no queda bloqueado por este hallazgo.
 
-## 10. Siguiente bloque exacto
-`CERRAR PROBE DE 2 EXCESOS → PREPARAR DRY-RUN DELTA JULIO 2026 + LEGACY SHOPPERS/CERTS → PEDIR AUTORIZACIÓN SOLO CUANDO HAYA WRITE PLAN EXACTO → CONTINUAR CORTES 5–8`.
+## 8. Plan canónico existente — refresh offline PASS
+`cxorbia/canonical-plan-refresh-offline=success`; provider calls=0; writes=0.
 
-No PowerShell para Paula, nueva candidata, nueva base ni Hosting/deploy en este gate.
+Se reutilizaron los builders R6/R16D existentes:
+- plan base `phasea_2f71daec3e68dfa1`;
+- overlay `r16d_f471a6b486f3a269b0dd`;
+- operaciones=1,415;
+- tenant=1;
+- proyecto padre `cinepolis`=1;
+- periodos=14;
+- shoppers=210;
+- visitas=616;
+- liquidaciones=572;
+- certificaciones=0;
+- pagos=0.
 
-## 11. Claude/prototipo y Academia
-- Claude: preservar fixes core/entrypoint; no nueva candidata por este hallazgo.
-- Academia: migración incremental, separación legacy/backend/sandbox, cutover sin cambio de URL.
-- Reusable CXOrbia: inventario previo + gap reconciliation + delta idempotente.
+Esto confirma que el modelo aprobado es **proyecto padre `cinepolis` → periodos → visitas**, no 28 proyectos separados por mes/país. Los 29 project docs actuales se comparan/reutilizan donde corresponda; no se preservan automáticamente como modelo final solo porque estén poblados.
+
+## 9. Shoppers/certificaciones — faltante real
+- Backend canónico ya tiene 215 shoppers: no recrear.
+- HR viva protege 236 referencias shopper, pero la diferencia no equivale automáticamente a shoppers faltantes; requiere diff por llave estable.
+- Certificaciones materializadas=0 y no están embebidas en shopper.
+- Refresh legacy dirigido obligatorio para shoppers nuevos/actualizados + historial de certificaciones presentadas/aprobadas/reprobadas.
+- Prompt listo: `PROMPT-REFRESH-DELTA-LEGACY-TYA-SHOPPERS-CERTIFICACIONES-20260729.md`.
+
+## 10. Ruta real hacia producción
+`LEGACY TYA (delta shoppers/certs) + HR VIVA → cxorbia-backend-dev / tenant tya → materialización incremental/idempotente → smoke/Auth/sync → preprod/rollback → cutover sobre Hosting público actual`.
+
+## 11. Gate real siguiente
+El siguiente gate ya existe en repo: **R16E provider compare read-only** contra `cxorbia-backend-dev`.
+
+Debe:
+1. reconstruir/reusar el plan canónico aprobado;
+2. consultar únicamente documentos planificados y campos allowlisted;
+3. clasificar `create/update/noop/review`;
+4. preservar extras existentes, sin deletes;
+5. producir write plan/autorización posterior;
+6. ejecutar **0 writes**.
+
+El contrato histórico de R16E exige autorización read-only exacta antes de llamar al proveedor. No se ejecuta bajo una autorización ambigua.
+
+Siguiente estado esperado:
+`R16E READ-ONLY PASS → WRITE PLAN EXACTO SIN EJECUTAR → REFRESH LEGACY SHOPPERS/CERTS → DRY-RUN DELTA/IDEMPOTENCIA → AUTORIZACIÓN SOLO DE WRITES EXACTOS → SMOKE CX.data CANÓNICO → CORTES 6–8`.
+
+## 12. Estado seguro
+No PowerShell para Paula, nueva candidata, nueva base, Hosting/deploy, Firestore/Auth/Storage/HR writes, import, Make/Gemini, pagos, merge ni producción en este gate.
+
+## 13. Claude/prototipo y Academia
+- Claude: preservar fixes core/entrypoint; no nueva candidata por esta corrección.
+- Academia: migración incremental, separación legacy/backend/sandbox, proyecto vs periodo, carryover de certificaciones y fail-closed ante fuente inconsistente.
+- Reusable CXOrbia: inventario previo + provider compare + delta idempotente + writes solo autorizados.
