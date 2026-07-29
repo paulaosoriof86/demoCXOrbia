@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "tya-payment-history-source-safe-v1",
+  "scope": "historical_payment_truth_read_only",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "sourceSafe": true,
+  "production": false,
+  "executionAllowed": false,
+  "source": {
+    "workbookSha256": "b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sheetRef": "Liquidación May 26",
+    "rangeRef": "A1:AB57",
+    "rawWorkbookInRepo": false,
+    "piiInProjection": false
+  },
+  "identity": {
+    "requiredKeys": [
+      "tenantId",
+      "projectId",
+      "periodKey",
+      "hrRowId",
+      "visitId"
+    ],
+    "forbiddenMatching": [
+      "shopperNameOnly",
+      "storeNameOnly",
+      "visualCoincidenceOnly"
+    ]
+  },
+  "semantics": {
+    "financialReviewIndependentFromPayment": true,
+    "paymentPendingDoesNotCreateFinancialReview": true,
+    "paymentConfirmedMayCoexistWithFinancialReview": true,
+    "historicalPaymentGroupIsExecutableBatch": false,
+    "paidAtMayBeNullWhenSourceHasDayOnly": true,
+    "currenciesMustRemainSeparated": true
+  },
+  "requiredFields": [
+    "tenantId",
+    "projectId",
+    "periodKey",
+    "paymentState",
+    "paymentConfirmed",
+    "honorarioPaymentState",
+    "reimbursementPaymentState",
+    "paymentSourceRef",
+    "confirmationScope",
+    "auditRef",
+    "sourceSafe",
+    "executionAllowed"
+  ],
+  "historicalGroup": {
+    "groupType": "historical_payment_evidence",
+    "immutable": true,
+    "executionAllowed": false
+  },
+  "safeState": {
+    "firestoreWrites": false,
+    "authWrites": false,
+    "storageWrites": false,
+    "hrWrites": false,
+    "imports": false,
+    "paymentExecution": false,
+    "newPaymentLots": false,
+    "make": false,
+    "gemini": false,
+    "production": false,
+    "merge": false
+  }
+}
