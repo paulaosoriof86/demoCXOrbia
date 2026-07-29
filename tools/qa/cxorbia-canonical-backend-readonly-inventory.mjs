@@ -5,6 +5,8 @@ const expectedProject = process.env.CXORBIA_EXPECTED_PROJECT || 'cxorbia-backend
 const credentialPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 const outJson = process.env.CXORBIA_INVENTORY_JSON || 'app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.json';
 const outMd = process.env.CXORBIA_INVENTORY_MD || 'app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.md';
+const maxDepth = Number(process.env.CXORBIA_INVENTORY_MAX_DEPTH || 6);
+const maxCollectionPaths = Number(process.env.CXORBIA_INVENTORY_MAX_COLLECTION_PATHS || 300);
 
 if (!credentialPath || !fs.existsSync(credentialPath)) throw new Error('credential_missing');
 const sa = JSON.parse(fs.readFileSync(credentialPath, 'utf8'));
@@ -44,40 +46,69 @@ async function authInventory() {
   return { totalUsers: total, customClaimKeys: [...claimKeys].sort() };
 }
 
-const roots = await db.listCollections();
 const collections = [];
-for (const ref of roots.sort((a,b)=>a.id.localeCompare(b.id))) {
-  collections.push({
-    name: ref.id,
-    count: await collectionCount(ref),
-    sampleFieldKeys: await sampleFieldKeys(ref),
-  });
+const seen = new Set();
+let truncated = false;
+
+async function walkCollection(ref, depth = 0) {
+  if (seen.has(ref.path) || collections.length >= maxCollectionPaths) {
+    if (collections.length >= maxCollectionPaths) truncated = true;
+    return;
+  }
+  seen.add(ref.path);
+  const count = await collectionCount(ref);
+  const sampleFieldKeysList = await sampleFieldKeys(ref);
+  collections.push({ path: ref.path, name: ref.id, depth, count, sampleFieldKeys: sampleFieldKeysList });
+  if (depth >= maxDepth || count === 0) return;
+
+  const docs = await ref.listDocuments();
+  for (const docRef of docs) {
+    if (collections.length >= maxCollectionPaths) { truncated = true; break; }
+    const children = await docRef.listCollections();
+    for (const child of children.sort((a,b)=>a.path.localeCompare(b.path))) {
+      await walkCollection(child, depth + 1);
+      if (collections.length >= maxCollectionPaths) break;
+    }
+  }
 }
 
+const roots = await db.listCollections();
+for (const ref of roots.sort((a,b)=>a.id.localeCompare(b.id))) await walkCollection(ref, 0);
+collections.sort((a,b)=>a.path.localeCompare(b.path));
+
 const authSummary = await authInventory();
-const byName = Object.fromEntries(collections.map(c => [c.name, c.count]));
+const totalsByLeafName = {};
+for (const c of collections) totalsByLeafName[c.name] = (totalsByLeafName[c.name] || 0) + c.count;
+const pick = (...names) => {
+  for (const n of names) if (Object.prototype.hasOwnProperty.call(totalsByLeafName, n)) return totalsByLeafName[n];
+  return null;
+};
+
 const report = {
-  schemaVersion: 'cxorbia.canonical-backend-readonly-inventory.v1',
+  schemaVersion: 'cxorbia.canonical-backend-readonly-inventory.v2',
   generatedAt: new Date().toISOString(),
   projectId: expectedProject,
   classification: 'CXORBIA_CANONICAL_DEV_BACKEND_CANDIDATE__NOT_LEGACY_TYA_PLATFORM',
   readOnly: true,
   providerWrites: 0,
   auth: authSummary,
-  rootCollectionCount: collections.length,
+  rootCollectionCount: roots.length,
+  discoveredCollectionPaths: collections.length,
+  traversal: { maxDepth, maxCollectionPaths, truncated },
+  totalsByLeafName,
   collections,
   keyCounts: {
-    tenants: byName.tenants ?? null,
-    clients: byName.clients ?? byName.accounts ?? null,
-    projects: byName.projects ?? null,
-    visits: byName.visits ?? null,
-    shoppers: byName.shoppers ?? null,
-    certifications: byName.certifications ?? null,
-    postulations: byName.postulations ?? byName.posts ?? null,
-    notifications: byName.notifications ?? null,
-    benefits: byName.benefits ?? null,
-    liquidations: byName.liquidations ?? null,
-    finance: byName.finance ?? null,
+    tenants: pick('tenants'),
+    clients: pick('clients','accounts'),
+    projects: pick('projects'),
+    visits: pick('visits'),
+    shoppers: pick('shoppers'),
+    certifications: pick('certifications','certs'),
+    postulations: pick('postulations','posts'),
+    notifications: pick('notifications'),
+    benefits: pick('benefits'),
+    liquidations: pick('liquidations'),
+    finance: pick('finance','finances'),
   },
   safety: {
     documentWrites: 0,
@@ -103,13 +134,19 @@ const lines = [
   '- Clasificación: backend DEV de CXOrbia / tenant TyA; **no** plataforma legacy TyA a retirar.',
   '- Modo: read-only; provider writes=0; no valores sensibles exportados.',
   `- Auth users: ${authSummary.totalUsers}`,
-  `- Colecciones raíz: ${collections.length}`,
+  `- Colecciones raíz: ${roots.length}`,
+  `- Rutas de colección descubiertas: ${collections.length}`,
+  `- Traversal truncado: ${truncated ? 'sí' : 'no'}`,
   '',
-  '## Conteos por colección raíz',
+  '## Conteos clave por nombre de colección',
   '',
-  '| Colección | Docs | Campos observados (solo nombres, sin valores) |',
+  ...Object.entries(report.keyCounts).map(([k,v]) => `- ${k}: ${v === null ? 'no localizado' : v}`),
+  '',
+  '## Árbol de colecciones',
+  '',
+  '| Ruta | Docs | Campos observados (solo nombres, sin valores) |',
   '|---|---:|---|',
-  ...collections.map(c => `| ${c.name} | ${c.count} | ${c.sampleFieldKeys.join(', ')} |`),
+  ...collections.map(c => `| ${c.path} | ${c.count} | ${c.sampleFieldKeys.join(', ')} |`),
   '',
   '## Seguridad',
   '',
@@ -121,4 +158,4 @@ const lines = [
   ''
 ];
 fs.writeFileSync(outMd, lines.join('\n'));
-console.log(JSON.stringify({projectId: report.projectId, authUsers: authSummary.totalUsers, rootCollections: collections.length, keyCounts: report.keyCounts}));
+console.log(JSON.stringify({projectId: report.projectId, authUsers: authSummary.totalUsers, collectionPaths: collections.length, truncated, keyCounts: report.keyCounts}));
