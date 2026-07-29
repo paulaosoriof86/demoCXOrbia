@@ -130,6 +130,20 @@ window.CX = window.CX || {};
       fallbackUsed:false,
       reason:reason || 'empty-new-backend'
     });
+    /* P0-C4-VIS-01: el estado público del guard también existe desde el primer vaciado.
+       Así la UI y los gates no pueden observar una ventana intermedia con fallback indefinido
+       mientras Auth protegido todavía se está resolviendo. */
+    window.CX_CORTE4_READONLY = Object.assign({}, window.CX_CORTE4_READONLY || {}, {
+      ready: reason === 'verified-empty-read',
+      source:'firestore',
+      empty:true,
+      readOnly:true,
+      writeMode:'disabled',
+      preserveCxDataInterface:true,
+      fallbackUsed:false,
+      state:reason || 'empty-new-backend',
+      at:new Date().toISOString()
+    });
     syncDataSource(reason || 'empty-new-backend');
     emit('project', {source:'firestore', empty:true, readOnly:true});
     emit('shoppers', {source:'firestore', empty:true, readOnly:true});
