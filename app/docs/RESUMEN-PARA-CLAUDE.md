@@ -1,3 +1,17 @@
+## 2026-07-29 — ESTADO VIGENTE: Corte 4 protected smoke PASS
+
+Estado canónico: `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_PROTECTED_CXDATA_SMOKE_PASS__HOSTING_DEV_AUTH_PENDING`.
+
+- No pedir nueva candidata ni tocar frontend por este bloque.
+- Firebase nuevo, Firestore vacío, Rules read-only y Auth bootstrap: PASS.
+- Protected smoke válido `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`: `source=firestore`, `empty=true`, `fallbackUsed=false`, `readOnly=true`, interfaz `CX.data` preservada, claims temporales verificados, Firestore document writes=0.
+- Cleanup final: Auth users=0 y Email/Password deshabilitado.
+- El status agregado `error` fue falso negativo del publicador; corrección de reporting `9967146e112322efcd043155ae05351bbbbd4e8a`, sin rerun.
+- Siguiente gate fuera de Claude: autorización Hosting DEV → validación visual → freeze Corte 4.
+- Fuente detallada: `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE4-PROTECTED-SMOKE-PASS-20260729.md`.
+
+---
+
 ## 2026-07-22 — V174 aplicada; no enviar a Claude salvo corrección focalizada posterior
 
 Estado: `V174_FUNCTIONAL_EMPALMED_GATE_HOLD_NO_DEPLOY`.
@@ -118,34 +132,3 @@ Causa raíz metodológica documentada: `PRE_GATE_NOT_RECONCILED_WITH_EXACT_HEAD_
 - V156/V155: gates comerciales y de lenguaje técnico preservados.
 - V145/V131: separación proyecto-periodo, Finanzas y baseline histórica preservadas.
 - No reabrir sin evidencia nueva reproducible.
-# Resumen vigente — V172 HR in-place
-
-No enviar a Claude. Este bloque queda registrado solo como estado técnico de rama.
-
-Se aplicó exactamente `PAQUETE_EJECUCION_CODEX_CXORBIA_V172_HR_INPLACE_20260721.zip` en `docs-tya-v6-v71-audit`.
-
-Incluye:
-- 14 archivos acumulados V172 faltantes.
-- Runtime HR live con refresh in-place.
-- Adapter `tya-live-source-inplace-apply.js`.
-- R22 live binding actualizado.
-- Gate `tya-live-hr-inplace-refresh-gate.mjs`.
-
-Estado: `V172_HR_INPLACE_APPLIED_PENDING_REMOTE_DEV_GATES`.
-
-No producción, no writes, no merge.
-# ADDENDUM CORTE 3 FOCAL FIX - 2026-07-28
-
-No crear V183 ni R33. No reauditar V182. No proponer nueva rama/PR ni merge.
-
-Cambios que debe preservar Claude/prototipo:
-
-- `paymentState=pending_source_confirmation` es pago pendiente, no revision de fuente.
-- Predicado financiero canonico: reviewRequired, financialSourceStatus pending_or_review, liquidationState pending_financial_source, falta de pais o falta de moneda.
-- Liquidaciones exactas conciliadas con pago pendiente: cuentan en metricas, CxP y export; no habilitan lote/pago por si mismas.
-- KPIs Liquidaciones: revision financiera, conciliadas con pago pendiente, candidatas para lote, pagadas confirmadas.
-- Movimientos CxP: solo liquidaciones no pagadas y no-review; las reviews quedan visibles, no pagables.
-- Rollover: mes calendario actual si existe; si no, ultimo no futuro; si no, primero disponible. No hardcodear agosto ni inventario R20.
-- Reportes PDF/Excel quedan P2 transversal: no bloquear esta correccion por grafica/formato.
-
-Estado local: `CORTE3_FOCAL_FIX_LOCAL_PASS_PENDING_HOSTING_DEV_REMOTE_SMOKE_NO_FREEZE_NO_PRODUCTION`.
