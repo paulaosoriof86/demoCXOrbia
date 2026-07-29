@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "corte3-v182-postdeploy-finance-source-semantics-r23-20260728-02",
+  "requestId": "corte4-cxdata-firestore-readonly-hardening-20260729-01",
   "enabled": true,
-  "issuedAt": "2026-07-28",
+  "issuedAt": "2026-07-29",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "eeaf6be558aa98fc1a500c629f2b6fafc14992ea",
-  "profile": "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23",
+  "targetHeadSha": "baa93c97b21b60c412e3a8674022f61103d0172b",
+  "profile": "CORTE4_CXDATA_FIRESTORE_READONLY",
   "allowedProfiles": [
-    "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23"
+    "CORTE4_CXDATA_FIRESTORE_READONLY"
   ],
   "allowedExecutions": 1,
   "repositoryWrites": false,
