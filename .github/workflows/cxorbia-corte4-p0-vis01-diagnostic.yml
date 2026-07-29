@@ -85,9 +85,11 @@ jobs:
         run: |
           set -euo pipefail
           R="$CXORBIA_OUT_DIR/local-diag.json"
-          if [ ! -f "$R" ]; then DESC='LOCAL_DIAG_NO_REPORT'; STATE=error; else OK=$(node -p "require('./$R').ok===true?'yes':'no'"); if [ "$OK" = yes ]; then DESC='LOCAL_DIAG_PASS'; STATE=success; else ERR=$(node -p "(require('./$R').errors||[require('./$R').error||'unknown']).join(',')"); DESC="LOCAL_DIAG_${ERR}"; STATE=error; fi; fi
-          DESC=$(printf '%s' "$DESC" | cut -c1-140)
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/c4p0vis01-localdiag' -f description="$DESC" >/dev/null
+          if [ ! -f "$R" ]; then ERR='no_report'; STATE=error; else OK=$(node -p "require('./$R').ok===true?'yes':'no'"); if [ "$OK" = yes ]; then ERR='pass'; STATE=success; else ERR=$(node -p "(require('./$R').errors||[require('./$R').error||'unknown']).join(',')"); STATE=error; fi; fi
+          SAFE=$(printf '%s' "$ERR" | tr ' /:,·' '______' | tr -cd 'A-Za-z0-9_.-_' | cut -c1-62)
+          CTX="cxorbia/c4p0local-${SAFE}"
+          DESC=$(printf 'LOCAL_DIAG_%s' "$ERR" | cut -c1-140)
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="$CTX" -f description="$DESC" >/dev/null
       - name: Cleanup
         if: always()
         run: rm -rf "$CXORBIA_PRIVATE_DIR" "$CXORBIA_OUT_DIR/site" "$CXORBIA_OUT_DIR/firebase.corte4-p0-vis01.json"
