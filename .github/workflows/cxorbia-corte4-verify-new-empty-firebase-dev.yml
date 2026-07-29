@@ -128,7 +128,7 @@ jobs:
           set -euo pipefail
           mkdir -p .tmp/corte4-verify
           fallback(){
-            DECISION="$1" node -e "const fs=require('fs');const r={decision:process.env.DECISION,target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},summary:{newIdentityConfirmed:false,emptyBaselineVerified:false,unavailableMandatoryCount:1,nonEmptySignalCount:0},safeState:{providerReads:false,providerWrites:false,production:false}};fs.writeFileSync('.tmp/corte4-verify/corte4-new-empty-firebase-verification.source-safe.json',JSON.stringify(r,null,2)+'\n');"
+            DECISION="$1" node -e "const fs=require('fs');const r={decision:process.env.DECISION,target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},summary:{newIdentityConfirmed:false,emptyBaselineVerified:false,unavailableMandatoryCount:1,nonEmptySignalCount:0},safeState:{providerReads:false,providerWrites:false,production:false}};fs.writeFileSync('.tmp/corte4-verify/corte4-new-empty-firebase-verification.source-safe.json',JSON.stringify(r,null,2)+'\\n');"
           }
           if [ ! -s "$GOOGLE_APPLICATION_CREDENTIALS" ]; then fallback BLOCKED_NO_VALID_READ_CREDENTIAL_AVAILABLE; exit 0; fi
           set +e
@@ -152,7 +152,7 @@ jobs:
           report='.tmp/corte4-verify/corte4-new-empty-firebase-verification.source-safe.json'
           route_report='.tmp/corte4-verify/credential-route.source-safe.json'
           if [ ! -f "$report" ]; then
-            node -e "const fs=require('fs');const r={decision:'BLOCKED_WORKFLOW_PRECONDITION',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},summary:{newIdentityConfirmed:false,emptyBaselineVerified:false,unavailableMandatoryCount:1,nonEmptySignalCount:0},safeState:{providerReads:false,providerWrites:false,production:false}};fs.writeFileSync('.tmp/corte4-verify/corte4-new-empty-firebase-verification.source-safe.json',JSON.stringify(r,null,2)+'\n');"
+            node -e "const fs=require('fs');const r={decision:'BLOCKED_WORKFLOW_PRECONDITION',target:{projectId:process.env.CXORBIA_NEW_PROJECT_ID},summary:{newIdentityConfirmed:false,emptyBaselineVerified:false,unavailableMandatoryCount:1,nonEmptySignalCount:0},safeState:{providerReads:false,providerWrites:false,production:false}};fs.writeFileSync('.tmp/corte4-verify/corte4-new-empty-firebase-verification.source-safe.json',JSON.stringify(r,null,2)+'\\n');"
           fi
           node - "$report" "$route_report" <<'NODE' > .tmp/corte4-verify/status.env
           const fs=require('fs');
@@ -166,7 +166,7 @@ jobs:
             `STATE=${pass?'success':'error'}`,
             `DECISION=${safeDecision}`,
             `ROUTE=${safeRoute}`,
-            `DESCRIPTION=${pass?'New empty Firebase DEV verified':'Firebase identity or empty-state verification blocked'}`,
+            `DESCRIPTION=${pass?'New-empty-Firebase-DEV-verified':'Firebase-identity-or-empty-state-verification-blocked'}`,
             `EMPTY=${Boolean(s.emptyBaselineVerified)}`,
             `NEW_IDENTITY=${Boolean(s.newIdentityConfirmed)}`,
             `UNAVAILABLE=${Number(s.unavailableMandatoryCount||0)}`,
