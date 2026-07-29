@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "contractId": "cxdata-firestore-readonly-corte4-v1",
   "phase": "A",
   "cut": 4,
-  "status": "READONLY_HARDENED_NEW_PROJECT_REQUEST_PENDING",
+  "status": "PROVIDER_BOOTSTRAP_COMPLETED_PROTECTED_SMOKE_PENDING",
   "provider": "firebase",
   "environment": "dev",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -13,9 +13,14 @@
   "firebaseProjectId": "cxorbia-tya-dev-260729-c4",
   "firebaseDisplayName": "CXOrbia TyA DEV Clean Corte 4",
   "newCleanProjectRequired": true,
-  "projectIdentityVerified": false,
-  "emptyProjectVerified": false,
+  "projectIdentityVerified": true,
+  "emptyProjectVerified": true,
+  "providerBootstrapCompleted": true,
+  "authConfigInitialized": true,
+  "authProvidersEnabled": false,
+  "authUserCount": 0,
   "activationAllowed": false,
+  "activationBlocker": "PROTECTED_READ_REQUIRES_AUTHENTICATED_OPERATOR_PRINCIPAL",
   "excludedExistingProjects": [
     {
       "projectId": "cxorbia-backend-dev",
@@ -25,17 +30,18 @@
     }
   ],
   "request": {
-    "path": ".github/cxorbia-firebase-requests/corte4-new-empty.json",
-    "requestId": "corte4-new-empty-firebase-dev-20260729-01",
-    "atomicCreateRequired": true,
-    "reuseExistingProject": false,
-    "resultObserved": false
+    "newEmptyPath": ".github/cxorbia-firebase-requests/corte4-new-empty.json",
+    "bootstrapPath": ".github/cxorbia-firebase-requests/corte4-bootstrap-execute.json",
+    "bootstrapRevalidationCommit": "e524b968c0003c27351d5d5826e21ffcf7cbfdbe",
+    "resultObserved": true,
+    "decision": "BOOTSTRAP_DEV_READONLY_COMPLETED_C4",
+    "revalidationProviderWrites": 0
   },
   "repositoryMapping": {
     "firebasercCurrentProjectId": "cxorbia-backend-dev",
     "matchesCandidate": false,
     "mappingChangeAllowed": false,
-    "reason": "do not retarget Firebase CLI until new identity and empty baseline are verified"
+    "reason": "do not retarget Firebase CLI globally; Corte 4 uses explicit project-scoped runners until Hosting DEV gate is separately authorized"
   },
   "interface": {
     "name": "CX.data",
@@ -50,11 +56,11 @@
     "failClosedOnReadError": true,
     "fallbackToMockOnReadError": false,
     "fallbackToLocalStorageOnEmpty": false,
-    "emptyBackendMustRenderAsEmpty": true
+    "emptyBackendMustRenderAsEmpty": true,
+    "protectedReadRequired": true
   },
   "writePolicy": {
     "firestoreWrites": false,
-    "authWrites": false,
     "storageWrites": false,
     "hrWrites": false,
     "operationalActionWrites": false,
@@ -64,9 +70,23 @@
     "make": false,
     "gemini": false
   },
+  "authSmokePolicy": {
+    "permanentUsersAllowed": false,
+    "temporaryPrincipalRequiresExplicitAuthorization": true,
+    "temporaryProviderRequiresExplicitAuthorization": true,
+    "temporaryPrincipalMustBeDeletedAfterSmoke": true,
+    "providerMustBeDisabledAfterSmoke": true,
+    "credentialsInRepo": false,
+    "credentialsInLogs": false,
+    "requiredClaims": {
+      "role": "admin",
+      "tenantId": "tya"
+    }
+  },
   "rulesCandidate": {
     "path": "backend/rules/firestore.corte4-readonly.rules",
-    "deployed": false,
+    "deployed": true,
+    "releaseVerified": true,
     "firebaseJsonPointsToCandidate": false,
     "operatorReadOnlyBootstrap": true,
     "allCreatesDenied": true,
@@ -77,7 +97,7 @@
   "currentRepositoryRules": {
     "path": "firestore.rules",
     "readOnlyCompatible": false,
-    "reason": "current rules contain authorized create/update/delete paths and cannot be used for Corte 4 activation"
+    "reason": "current repository default rules contain authorized create/update/delete paths and are not the deployed Corte 4 rules"
   },
   "requiredCollections": [
     "tenants",
@@ -95,24 +115,34 @@
     "noLegacyDatabaseConnection": true,
     "noLegacyDatabaseCopy": true
   },
-  "activationGates": [
+  "completedGates": [
     "firebase_project_identity_verified",
     "firebase_project_confirmed_new_and_clean",
-    "firebase_config_complete_without_secrets_in_repo",
-    "firestore_readonly_candidate_rules_verified",
-    "firestore_readonly_candidate_rules_explicitly_authorized_for_dev_deploy",
-    "empty_backend_fail_closed_verified",
-    "cxdata_interface_compatibility_verified",
-    "zero_write_paths_verified",
-    "Paula_authorization_for_dev_read_activation"
+    "web_app_dev_registered",
+    "firestore_default_created_us_central1",
+    "firebase_auth_config_initialized",
+    "firestore_readonly_rules_deployed_and_verified",
+    "bootstrap_idempotent_revalidation_passed"
+  ],
+  "pendingGates": [
+    "temporary_authenticated_operator_explicitly_authorized",
+    "protected_cxdata_empty_read_smoke",
+    "temporary_principal_cleanup_verified",
+    "hosting_dev_explicitly_authorized",
+    "visual_validation",
+    "corte4_freeze",
+    "temporary_iam_removed_to_viewer"
   ],
   "activeBaseline": "CXORBIA-TYA-CORTE3-V182-20260729",
   "safeState": {
     "merge": false,
     "production": false,
-    "deploy": false,
-    "providerActivation": false,
-    "rulesDeployment": false,
-    "writes": false
+    "hostingDeploy": false,
+    "rulesDeploymentCompleted": true,
+    "firestoreDocumentWrites": false,
+    "authPermanentUsers": 0,
+    "storageWrites": false,
+    "imports": false,
+    "dataMigration": false
   }
 }
