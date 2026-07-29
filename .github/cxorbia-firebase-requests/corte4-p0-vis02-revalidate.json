@@ -16,7 +16,7 @@
   "hostingOnly": true,
   "production": false,
   "merge": false,
-  "triggerNonce": 1,
+  "triggerNonce": 2,
   "allowedProviderWrites": {
     "hostingDeployExecutions": 1,
     "firestoreDocuments": 0,
