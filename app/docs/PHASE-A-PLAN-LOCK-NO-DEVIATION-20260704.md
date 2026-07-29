@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-29  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_HOSTING_DEV_PASS__VISUAL_VALIDATION_PENDING`
+**Estado vivo:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_VISUAL_P0_PROVEN__FREEZE_BLOCKED`
 
 ## 1. Objetivo
 
@@ -45,9 +45,9 @@ P1/P2 de reportes/copy permanecen como backlog transversal y no reabren Corte 3.
 
 Objetivo: `CX.data READ-ONLY → FIREBASE NUEVO Y VACÍO → MISMA INTERFAZ → CERO WRITES`.
 
-Estado: `HOSTING_DEV_PASS__VISUAL_VALIDATION_PENDING`.
+Estado: `VISUAL_P0_PROVEN__FREEZE_BLOCKED`.
 
-### 5.1 Hardening completado
+### 5.1 Hardening exigido
 
 - contrato read-only;
 - backend desactivado por defecto;
@@ -55,12 +55,11 @@ Estado: `HOSTING_DEV_PASS__VISUAL_VALIDATION_PENDING`.
 - guard `CX.data` que preserva interfaz y bloquea persistencia/acciones operativas;
 - backend vacío sin fallback demo;
 - errores de lectura fail-closed;
-- Rules read-only desplegadas únicamente en Firebase DEV nuevo;
-- gate estático Corte 4 PASS.
+- Rules read-only desplegadas únicamente en Firebase DEV nuevo.
 
 ### 5.2 Base existente descartada
 
-`cxorbia-backend-dev` contiene datos DEV y no puede usarse como base nueva/vacía. Queda excluida y no se conecta, copia o reutiliza.
+`cxorbia-backend-dev` queda excluida y no se conecta, copia o reutiliza.
 
 ### 5.3 Firebase nuevo
 
@@ -69,74 +68,55 @@ Estado: `HOSTING_DEV_PASS__VISUAL_VALIDATION_PENDING`.
 - Firestore `us-central1`;
 - creado sin reutilizar base existente.
 
-### 5.4 Gate 1 — identidad nueva: PASS
+### 5.4 Gates 1–3 — PASS
 
-- commit `b18f0b6cf74afb8b3ac770a73231c6cf1353b37c`;
-- status `TARGET_PROJECT_IDENTITY_VERIFIED_C4`;
-- provider writes=0.
-
-### 5.5 Gate 2 — vacío integral: PASS
-
-- commit `7b0e40f8607b80a4f37238314a66064af35c5e6d`;
-- nueva identidad=true;
-- vacío verificado=true;
-- apps=0, Auth users=0, Firestore databases=0, Storage buckets=0 antes del bootstrap;
-- provider writes del gate=0.
-
-### 5.6 Gate 3 — bootstrap provider DEV: PASS
-
-Autorización consumida: `Autorizo bootstrap DEV read-only de Corte 4`.
-
+- identidad nueva: PASS;
+- vacío integral previo: PASS;
 - Web App DEV READY;
 - Firestore `(default)` READY, Native/Standard, `us-central1`, sin colecciones;
 - Rules read-only DEPLOYED + VERIFIED;
-- Authentication inicializado en consola;
-- revalidación idempotente `e524b968c0003c27351d5d5826e21ffcf7cbfdbe`;
-- `BOOTSTRAP_DEV_READONLY_COMPLETED_C4` PASS.
+- Authentication inicializado;
+- bootstrap idempotente `BOOTSTRAP_DEV_READONLY_COMPLETED_C4` PASS.
 
-### 5.7 Gate 4 — protected CX.data smoke: PASS
-
-Autorización consumida: `Autorizo operador DEV temporal para smoke protegido de Corte 4`.
+### 5.5 Gate 4 — protected CX.data smoke: PASS
 
 Intento válido: `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`.
 
-Confirmado:
+Confirmado: `source=firestore`, `empty=true`, `fallbackUsed=false`, `readOnly=true`, write directo bloqueado, Firestore writes=0, cleanup completo, Auth users=0 y Email/Password deshabilitado al final.
 
-- `source=firestore`;
-- `empty=true`;
-- `fallbackUsed=false`;
-- `readOnly=true` / `writeMode=disabled`;
-- interfaz `CX.data` preservada;
-- claims temporales correctos;
-- write directo bloqueado;
-- Firestore document writes=0;
-- operador temporal eliminado;
-- Auth users final=0;
-- Email/Password final=deshabilitado.
-
-### 5.8 Gate 5 — Hosting DEV: PASS
+### 5.6 Gate 5 — Hosting DEV: PASS técnico
 
 Autorización consumida: `Autorizo Hosting DEV de Corte 4 para validación visual.`
 
 - authorizationId `c4-hosting-visual-20260729-01`;
 - deployed source commit `fabba5c76bb40f5105f8e10dd54be63e9b3eb783`;
-- `cxorbia/corte4-hosting-dev-visual=success`;
-- `cxorbia/c4hosting-deploys1=success`;
 - exactamente 1 deploy Hosting-only;
 - remote proof y entrypoint verificados;
-- autorización one-shot consumida y congelada;
-- cero writes Firestore/Auth/Storage/Rules/Functions/HR/import/Make/Gemini/payment/merge/production.
+- cero writes de datos/proveedor fuera de Hosting.
 
-URL visual:
+### 5.7 Gate 6 — validación visual: P0 PROVEN
 
-`https://cxorbia-tya-dev-260729-c4.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&c4visual=fabba5c76bb40f5105f8e10dd54be63e9b3eb783`
+La validación de Paula mostró:
 
-### 5.9 Gates restantes
+- `Fuente: localStorage/demo`;
+- `Auth: pendiente`;
+- `Demo comercial · datos ficticios`;
+- 3 proyectos, 108 visitas, 18 shoppers y 48 postulaciones ficticias;
+- Proyecto Retail/Banca/Restaurantes y KPIs demo visibles.
 
-6. validación visual Paula;
-7. corrección focalizada solo si existe P0 reproducible;
-8. freeze Corte 4;
-9. retirar IAM temporal elevado y dejar runner en Viewer.
+P0: `P0-C4-VIS-01 — FORBIDDEN_DEMO_FALLBACK_ON_AUTH_PENDING`.
+
+Causa raíz localizada en backend: `backend-config-preview-dev.js` activa preview Auth; tras el cleanup correcto del principal temporal, `backend-firebase.js` no encuentra credencial y cae explícitamente a `localStorage/demo`, contradiciendo el contrato fail-closed/no-fallback.
+
+### 5.8 Gates restantes
+
+7. autorización expresa para corrección focalizada del P0;
+8. patch backend/core únicamente;
+9. gates de no-fallback y cero writes;
+10. Hosting DEV controlado para revalidación;
+11. validación visual PASS;
+12. freeze Corte 4;
+13. retirar IAM temporal elevado y dejar runner en Viewer.
 
 ## 6. Cortes siguientes
 
@@ -145,17 +125,17 @@ URL visual:
 - **Corte 7:** sincronización, evidencias y gates Make/Gemini.
 - **Corte 8:** preproducción/producción con autorización.
 
-El principal temporal de Corte 4 fue exclusivamente de smoke y ya fue eliminado; no sustituye Auth/RBAC completo de Corte 6.
+Corte 5 no inicia mientras P0-C4-VIS-01 permanezca abierto.
 
 ## 7. Claude/prototipo
 
-Corte 3 está congelado. No preparar V183. No tocar backend/contratos/adapters desde candidata. Corte 4 no requiere nueva candidata frontend salvo hallazgo visual P0 reproducible.
+Corte 3 está congelado. No preparar V183. No tocar módulos UI ni crear nueva candidata por este P0. La corrección pertenece a backend/core.
 
 ## 8. Academia
 
 - Corte 3: fuente operacional/financiera/pago y monedas separadas.
-- Corte 4: backend vacío, fail-closed, interfaz estable y separación entre proyecto, IAM, Web App, Firestore, Auth temporal, Rules, protected smoke, Hosting DEV, prueba remota, validación visual y producción.
+- Corte 4: distinguir provider smoke PASS, Hosting proof PASS y fuente efectiva del runtime visual. Patrón: backend real seleccionado + Auth ausente debe fail-close, nunca caer a demo.
 
 ## 9. Estado seguro
 
-Sin producción, merge, Firestore document writes, Auth users permanentes, Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live. Hosting DEV de Corte 4 tuvo exactamente un deploy autorizado y ya consumido. Gate vivo: validación visual.
+Sin producción, merge, Firestore document writes, Auth users permanentes, Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live. Corte 4 está correctamente detenido por P0 visual reproducible.
