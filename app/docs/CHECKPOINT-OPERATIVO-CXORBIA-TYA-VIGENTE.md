@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-29  
-**Estado:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_READONLY_HARDENED_PROVIDER_IDENTITY_PENDING_NO_PRODUCTION`
+**Estado:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_STATIC_GATE_PASS_NEW_FIREBASE_GATE_RUNNING_NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 
@@ -16,88 +16,121 @@
 Paula autorizó el cierre con `Procede` en la conversación vigente.
 
 - Baseline: `CXORBIA-TYA-CORTE3-V182-20260729`.
-- Baseline head antes de documentos de freeze: `1b34c3998625a3f2402ceeada283ab57b56ffbf6`.
+- Baseline head: `1b34c3998625a3f2402ceeada283ab57b56ffbf6`.
 - Manifest: `app/docs/ACTIVE-BASELINE-CORTE3-V182-20260729.json`.
-- Decisión: `app/docs/FREEZE-CORTE3-V182-APPROVED-20260729.md`.
-- V182 empalmada sobre V174.
-- Commit funcional V182: `e3cfe464fd80e5bd4ce273556cfd0021e22c0810`.
+- Freeze: `app/docs/FREEZE-CORTE3-V182-APPROVED-20260729.md`.
+- V182 empalmada; no V183/R33.
 - R26–R32: 135/135 PASS.
-- R24: `PASS_CORTE3_V174_RUNTIME_PRESERVATION_R24`.
-- Gate pagos: `PASS_TYA_PAYMENT_HISTORY_SOURCE_SAFE_GATE`.
-- HR remota: `PASS_REMOTE_LIVE_HR_ENDPOINT`.
-- Smoke remoto: `PASS_TYA_CORTE3_REMOTE_LIVE_PAYMENT_HISTORY_SMOKE_R25`.
+- R24, HR remota y smoke de pagos: PASS.
 - Run `30416875149`, job `90468374816`: SUCCESS.
-- Artifact `8710831009`, digest `sha256:091f605b3cf8426262bb9fe4dd36f930a0f1e87fad8113287e905375b7126d76`.
-
-### Verdad congelada
-
-- HR: 14 periodos / 616 visitas.
-- Mayo 2026: 44 pagadas / 0 pendientes / 42 exactas / 2 reviews / CxP Q0-L0.
-- Junio 2026: 2 pagadas / 42 pendientes / IDs `JUNIO 26!2` y `JUNIO 26!6` / Q451-L0.
+- Mayo: 44 pagadas / 0 pendientes / 42 exactas / 2 reviews / CxP Q0-L0.
+- Junio: 2 pagadas / 42 pendientes / `JUNIO 26!2`, `JUNIO 26!6` / Q451-L0.
 - Pagos y lotes ejecutados por CXOrbia: 0.
 
-### Backlog no bloqueante
+Backlog P1/P2 no reabre Corte 3: PDF, Excel, reportKit, copy de fuentes y registry R20.
 
-- PDF sin gráfica visible al imprimir.
-- Excel con formato básico.
-- Mejora transversal de `reportKit`.
-- Refinamiento de copy genérico “Pendiente de fuente”.
-- Reconciliación del registry/gate histórico R20 antes de producción.
+## 3. Corte 4 — objetivo
 
-Corte 3 no se reabre por P1/P2. Solo un P0 reproducible puede modificar el baseline.
+`CX.data READ-ONLY → Firebase nuevo y vacío → misma interfaz → cero writes`.
 
-## 3. Corte 4 — iniciado
+## 4. Proyecto existente excluido
 
-Objetivo: `CX.data READ-ONLY → Firebase nuevo y vacío → misma interfaz → cero writes`.
+La evidencia provider read-only vigente confirma que `cxorbia-backend-dev` NO es nuevo ni vacío:
 
-### Hardening aplicado
+- 17 usuarios Auth ficticios de DEV;
+- 1 colección raíz esperada;
+- tenant `tya` existente;
+- 3 clientes;
+- 29 proyectos;
+- 215 shoppers;
+- 20 notificaciones;
+- 572 beneficios shopper.
+
+Fuente: `backend/config/phase-a-firebase-existing-dev-provenance-r15c-result.source-safe.json`.
+
+Decisión:
+
+- `cxorbia-backend-dev` queda excluido para Corte 4;
+- no se conecta, no se copia y no se reutiliza;
+- `.firebaserc` continúa apuntando allí únicamente como configuración histórica existente y no se modifica antes de verificar el candidato nuevo.
+
+## 5. Candidato nuevo
+
+- Project ID solicitado: `cxorbia-tya-dev-260729-c4`.
+- Display name: `CXOrbia TyA DEV Clean Corte 4`.
+- Solicitud: `.github/cxorbia-firebase-requests/corte4-new-empty.json`.
+- Reutilización de proyecto existente: false.
+- Conexión/copia legacy: false.
+- Únicos provider writes autorizados en el gate: crear proyecto y agregar Firebase.
+- Billing, Auth, Firestore, Storage, Rules, Hosting, Functions, imports y migración: false.
+
+## 6. Hardening read-only aplicado
 
 - `backend/contracts/cxdata-firestore-readonly-corte4-v1.json`.
-- `app/core/backend-config.js`:
-  - `enabled=false` por defecto;
-  - `readOnly=true`;
-  - `writeMode=disabled`;
-  - cero data/operational writes;
-  - backend vacío permitido;
-  - error de lectura fail-closed;
-  - identidad y vacío del proyecto todavía no verificados.
-- `app/core/backend-config-preview-dev.js`: preview autorizado permanece estrictamente read-only.
+- `app/core/backend-config.js`: candidato nuevo, disabled, read-only, writes disabled, proyecto existente excluido.
+- `app/core/backend-config-preview-dev.js`: preview DEV solo lectura.
 - `app/core/backend-cxdata-readonly-corte4.js`:
-  - conserva los métodos públicos de `CX.data`;
-  - bloquea persistencia directa;
-  - bloquea acciones operativas públicas;
-  - un backend vacío se representa como vacío, sin volver al mock/localStorage;
-  - un error de lectura falla cerrado.
-- `app/index-backend-dev.html`: carga el guard después de acciones operativas y antes del bridge UI.
-- `tools/qa/cxdata-firestore-readonly-corte4-gate.mjs`: gate estático creado; no activa proveedor ni despliega.
+  - conserva interfaz pública `CX.data`;
+  - bloquea persistencia y acciones operativas;
+  - backend vacío se representa vacío;
+  - error de lectura falla cerrado;
+  - no fallback a mock/localStorage.
+- `backend/rules/firestore.corte4-readonly.rules`: candidato no desplegado; todo create/update/delete denegado.
+- `firestore.rules` actual no es compatible con Corte 4 porque contiene writes por rol.
 
-### Hallazgo de causa raíz prevenido
+## 7. Gate estático Corte 4
 
-El adapter Firebase existente envolvía métodos `CX.data` con persistencia Firestore y, ante backend vacío/error, podía conservar el mock/localStorage visible. Corte 4 ahora bloquea esas dos rutas antes de conectar el proveedor.
+Resultado vigente:
 
-## 4. Gate actual
+- request `corte4-cxdata-firestore-readonly-hardening-20260729-03`;
+- target `3e4e88f06b6d0d517b5055d9955e8353eed5916c`;
+- request commit `8b002f935535e623665ea7d5a8d04639267d25b8`;
+- run `30421675166`;
+- job `90479605890`: SUCCESS;
+- artifact `8712131903`;
+- digest `sha256:4b6599e5a1b792d8939faec54b9dc208a48c29972d26cc382fb0c5fc8fff8aa8`;
+- status `PASS_READONLY_POST_GATES`;
+- interfaz `CX.data` preservada;
+- readOnly=true / writeMode=disabled;
+- fail-closed=true;
+- fallback mock/localStorage=false;
+- providerReads=false / providerWrites=false / dataWrites=false;
+- Rules candidate preparado y no desplegado;
+- activación=false.
 
-Estado: `READONLY_HARDENED_PROVIDER_IDENTITY_PENDING`.
+## 8. Gate provider nuevo/vacío
 
-Todavía NO se activa Firebase porque faltan:
+Workflow existente endurecido para:
 
-1. verificar que `cxorbia-backend-dev` sea efectivamente la base nueva y limpia autorizada;
-2. verificar proyecto vacío y Rules read-only;
-3. completar config DEV sin secretos en repo;
-4. ejecutar el gate Corte 4;
-5. obtener autorización para activar lectura DEV.
+- validar una solicitud exacta;
+- publicar status observable al iniciar;
+- usar creación atómica como guard de no reutilización;
+- verificar identidad/fecha/estado y vacío con conteos sanitizados;
+- publicar evidencia en PR #7;
+- no revelar credenciales ni PII.
 
-No se crearán ni conectarán bases preexistentes o legacy.
+Solicitud observable vigente:
 
-## 5. Claude/prototipo y Academia
+- commit `836f8bec4f2aeb4fb03f696837bf415cb4d5c438`;
+- status `cxorbia/corte4-new-empty-firebase`: pending;
+- resultado final todavía no documentado ni asumido.
 
-- Claude: Corte 3 congelado; no V183/R33; no tocar módulos UI desde backend. Cualquier P1/P2 se documenta por archivo/módulo.
-- Academia: Corte 3 ya puede documentarse como baseline; Corte 4 debe explicar backend vacío fail-closed, interfaz estable y separación lectura/escritura.
+Mientras permanezca pending:
 
-## 6. Siguiente bloque exacto
+- provider identity=false;
+- empty baseline=false;
+- Rules deploy=false;
+- provider activation=false.
 
-`VERIFICAR IDENTIDAD FIREBASE NUEVA/LIMPIA → VERIFICAR VACÍO Y RULES READ-ONLY → EJECUTAR GATE CORTE 4 → ACTIVAR SOLO LECTURA DEV → SMOKE CX.data VACÍO/SOURCE-SAFE`.
+## 9. Claude/prototipo y Academia
 
-## 7. Estado seguro
+- Claude: Corte 3 congelado; no tocar backend/contracts/adapters desde candidata; no reintroducir persistencia ni fallback mock.
+- Academia: enseñar backend vacío real, fail-closed, interfaz estable, exclusión de base existente y diferencia entre crear proyecto, agregar Firebase, desplegar Rules y activar lectura.
 
-Sin producción, merge, provider activation, Firestore/Auth/Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live.
+## 10. Siguiente bloque exacto
+
+`OBSERVAR RESULTADO ATÓMICO → si PASS verificar vacío → preparar config web DEV sin secretos → autorizar/desplegar Rules read-only → activar solo lectura DEV → smoke CX.data source=firestore, empty=true, fallbackUsed=false, writes=0`.
+
+## 11. Estado seguro
+
+Sin producción, merge, provider activation, Rules deploy, Firestore/Auth/Storage/HR writes, imports, pagos, lotes reales, Make ni Gemini live.
