@@ -1,0 +1,45 @@
+name: CXOrbia Corte 4 P0 VIS-02 Remote Script Probe
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/corte4-p0-vis02-script-probe.json'
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Probe every deployed script response without browser or writes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const {execFileSync}=require('child_process');
+          const base='https://cxorbia-tya-dev-260729-c4.web.app/';
+          const htmlUrl=base+'index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&p0vis02=548e5f89c5d077686611d1904f4166d3188a2ccd&probe='+Date.now();
+          (async()=>{
+            const hr=await fetch(htmlUrl,{headers:{'Cache-Control':'no-cache'}}); const html=await hr.text();
+            const srcs=[...html.matchAll(/<script[^>]+src=["']([^"']+)["']/gi)].map(m=>m[1]).filter(s=>!/^https?:\/\//i.test(s));
+            const bad=[];
+            for(const src of [...new Set(srcs)]){
+              const u=new URL(src,base); u.searchParams.set('probe',Date.now().toString());
+              let status=0,ct='',first=''; try{const r=await fetch(u,{headers:{'Cache-Control':'no-cache'}});status=r.status;ct=String(r.headers.get('content-type')||'');const t=await r.text();first=t.trimStart().slice(0,24).replace(/\s+/g,' ');if(!r.ok||first.startsWith('<')||!/javascript|ecmascript/i.test(ct))bad.push(`${src}:${status}:${ct.split(';')[0]||'none'}:${first.slice(0,12)}`);}catch(e){bad.push(`${src}:FETCH:${String(e.message||e).slice(0,24)}`);}
+            }
+            const state=bad.length?'error':'success';
+            const raw=bad.length?bad.join('|'):'pass';
+            const safe=raw.replace(/[^A-Za-z0-9_.:/|-]/g,'_').slice(0,120);
+            const desc=('VIS02_SCRIPT_PROBE_'+raw).slice(0,140);
+            execFileSync('gh',['api','--method','POST','-H','Accept: application/vnd.github+json',`/repos/${process.env.GITHUB_REPOSITORY}/statuses/${process.env.GITHUB_SHA}`,'-f',`state=${state}`,'-f',`context=cxorbia/c4p0vis02-script-${safe}`,'-f',`description=${desc}`],{stdio:'inherit'});
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
