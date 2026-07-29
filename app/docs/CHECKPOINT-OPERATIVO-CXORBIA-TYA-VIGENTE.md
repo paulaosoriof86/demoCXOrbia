@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-29  
-**Estado:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_NEW_EMPTY_FIREBASE_VERIFIED_PASS__PROVIDER_BOOTSTRAP_AUTHORIZATION_PENDING_NO_PRODUCTION`
+**Estado:** `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_WEB_FIRESTORE_RULES_READY__AUTH_CONSOLE_INITIALIZATION_REQUIRED__NO_DATA_WRITES`
 
 ## 1. Repositorio y seguridad
 
@@ -9,152 +9,151 @@
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
-- Producción, merge, imports, pagos ejecutados y Firestore/Auth/Storage/HR data writes: 0.
+- Producción, merge, imports, pagos y Firestore/Auth/Storage/HR **data writes**: 0.
 
 ## 2. Corte 3 — FROZEN / ACTIVE_BASELINE
 
 - Baseline: `CXORBIA-TYA-CORTE3-V182-20260729`.
-- Baseline head: `1b34c3998625a3f2402ceeada283ab57b56ffbf6`.
 - V182 empalmada; no V183/R33.
 - R26–R32: 135/135 PASS.
-- R24, HR remota, Hosting DEV y smoke de pagos: PASS.
+- HR remota, Hosting DEV y smoke de pagos: PASS.
 - Mayo: 44 pagadas / 0 pendientes / 42 exactas / 2 reviews / CxP Q0-L0.
 - Junio: 2 pagadas / 42 pendientes / Q451-L0.
-- Pagos y lotes ejecutados por CXOrbia: 0.
+- Pagos/lotes ejecutados por CXOrbia: 0.
 
 Backlog P1/P2 de PDF, Excel, reportKit y copy no reabre Corte 3.
 
 ## 3. Corte 4 — objetivo
 
-`CX.data READ-ONLY → Firebase nuevo y vacío → misma interfaz → cero writes`.
+`CX.data READ-ONLY → Firebase nuevo y vacío → misma interfaz → cero data writes`.
 
-## 4. Base existente excluida
+## 4. Firebase nuevo / Gates 1–2
 
-`cxorbia-backend-dev` no es nueva ni vacía y permanece excluida como destino de Corte 4. No se conecta, copia o reutiliza.
+- Project ID: `cxorbia-tya-dev-260729-c4`.
+- Display name: `CXOrbia TyA DEV Clean Corte 4`.
+- `cxorbia-backend-dev` permanece excluido: no se conecta, copia o reutiliza.
+- Identidad nueva: PASS, commit `b18f0b6cf74afb8b3ac770a73231c6cf1353b37c`.
+- Vacío integral previo: PASS, commit `7b0e40f8607b80a4f37238314a66064af35c5e6d`.
+- Antes del bootstrap: apps=0, Auth users=0, Firestore databases=0, Storage buckets=0; `DEFAULT_SITE` provider-managed no cuenta como contaminación.
 
-## 5. Firebase nuevo y limpio
-
-Proyecto:
-
-- Project ID: `cxorbia-tya-dev-260729-c4`;
-- Display name: `CXOrbia TyA DEV Clean Corte 4`;
-- creado manualmente por Paula;
-- IAM otorgado posteriormente solo como `Viewer` a la service account de lectura ya existente;
-- no se reutilizó la base DEV histórica.
-
-## 6. Hardening read-only completado
+## 5. Hardening read-only
 
 - contrato `backend/contracts/cxdata-firestore-readonly-corte4-v1.json`;
-- backend desactivado por defecto;
-- `readOnly=true` y `writeMode=disabled`;
+- backend disabled por defecto;
+- `readOnly=true` / `writeMode=disabled`;
 - interfaz pública `CX.data` preservada;
-- persistencia y acciones operativas bloqueadas;
-- backend vacío se representa como vacío;
-- errores de lectura fallan cerrado;
-- no fallback a mock/localStorage;
-- Rules candidate `backend/rules/firestore.corte4-readonly.rules` preparado y no desplegado.
+- mutaciones/persistencia bloqueadas;
+- backend vacío = vacío;
+- errores fail-closed;
+- no fallback mock/localStorage.
 
-Gate estático:
+Gate estático: `PASS_READONLY_POST_GATES`.
 
-- request `corte4-cxdata-firestore-readonly-hardening-20260729-03`;
-- commit `8b002f935535e623665ea7d5a8d04639267d25b8`;
-- run `30421675166`, job `90479605890`: SUCCESS;
-- decisión `PASS_READONLY_POST_GATES`;
-- providerReads=0 / providerWrites=0 / dataWrites=0.
+## 6. Bootstrap DEV read-only — autorización e IAM
 
-## 7. Gate 1 — identidad nueva: PASS
+Paula autorizó expresamente: `Autorizo bootstrap DEV read-only de Corte 4`.
 
-La cadena inicial IAM falló de forma segura hasta que Paula otorgó `Viewer` al runner.
+Alcance autorizado:
 
-Re-probe final:
+- Web App DEV;
+- Firestore DEV mínimo;
+- Auth bootstrap mínimo para lectura protegida;
+- Rules read-only DEV;
+- activación de lectura/smoke posterior.
 
-- request `corte4-probe-project-identity-20260729-03`;
-- commit `b18f0b6cf74afb8b3ac770a73231c6cf1353b37c`;
-- status `cxorbia/corte4-project-identity-existing_dev_service_account-TARGET_PROJECT_IDENTITY_VERIFIED_C4 = success`;
-- status `cxorbia/corte4-project-identity = success`;
-- provider writes=0.
+Fuera de alcance: import/materialización, Storage, Hosting deploy, Functions, HR writes, Make/Gemini, pagos/lotes, merge y producción.
 
-## 8. Gate 2 — vacío integral: PASS
+IAM temporal confirmado por Paula sobre la service account del runner:
 
-### 8.1 Primer diagnóstico
+- Viewer;
+- Firebase Editor;
+- Cloud Datastore Owner;
+- Service Usage Admin.
 
-El primer verificador integral no pudo cerrar vacío por dos defectos del propio gate:
+Ubicación Firestore autorizada: `us-central1`.
 
-- Auth inventory count-only usaba una forma inválida;
-- un `DEFAULT_SITE` de Firebase Hosting se contaba como contaminación.
+Re-preflight commit `baadb8254fd70436b315992348405929b2cfd0db`:
 
-Diagnóstico sanitizado previo: identidad=1, vacío=0, unavailable=1, nonempty=1, apps=0, Auth=0, Firestore=0, Storage=0, Hosting=1.
+- decisión `BOOTSTRAP_PREFLIGHT_READY_FOR_AUTHORIZED_WRITES_C4`;
+- missing IAM permissions=0;
+- location=`us-central1`;
+- Firestore API era la única requerida deshabilitada y quedó habilitable dentro del alcance autorizado.
 
-### 8.2 Correcciones de raíz
+## 7. Bootstrap provider — avance real
 
-- Auth se corrige a query count-only válida con `returnUserInfo=false` sin límite incompatible.
-- Hosting distingue sitio `DEFAULT_SITE` administrado por Firebase de `USER_SITE` y releases/deployments.
-- El default site provider-managed no cuenta como dato/materialización.
-- Un typo intermedio de OAuth `grant_type` fue detectado y corregido en `a11191177d0c91c63c273dc731675772f5d0f5c9` antes de disparar ese intento; no produjo provider call ni write.
+Ejecutor:
 
-### 8.3 Resultado final
+- `tools/release/cxorbia-corte4-bootstrap-readonly-execute.mjs`;
+- workflow `.github/workflows/cxorbia-corte4-bootstrap-readonly-execute.yml`;
+- request `.github/cxorbia-firebase-requests/corte4-bootstrap-execute.json`.
 
-- request `corte4-verify-new-empty-firebase-dev-20260729-05`;
-- commit `7b0e40f8607b80a4f37238314a66064af35c5e6d`;
-- `cxorbia/corte4-verify-new-empty-firebase = success`;
-- diagnóstico `id1-e1-u0-n0-a0-au0-f0-s0-h1-xnone-rnone = success`;
-- identidad nueva=true;
-- vacío verificado=true;
-- checks no disponibles=0;
-- señales no vacías=0;
-- apps=0;
-- Auth users=0;
-- Firestore databases=0;
-- Storage buckets=0;
-- Hosting sites=1 provider-default, sin señal de user site/release;
-- provider writes=0.
+Resultado confirmado:
 
-Estado exacto:
+- Web App DEV `CXOrbia TyA DEV Corte 4`: **READY**;
+- Firestore `(default)`: **READY**, Native/Standard, `us-central1`, sin colecciones;
+- Rules `backend/rules/firestore.corte4-readonly.rules`: **DEPLOYED + VERIFIED**;
+- Auth config: **PENDING CONSOLE INITIALIZATION**;
+- estado sanitizado en commit `3acfaf9566f54e08e5a8db61247f445e90612ca5`: `BOOTSTRAP_DEV_READONLY_PROVIDER_READY_AUTH_CONSOLE_REQUIRED_C4`;
+- diagnóstico: `web=true`, `db=true`, `auth=false`, `rules=true`.
 
-`NEW_EMPTY_FIREBASE_DEV_VERIFIED_C4`
+Las Rules permiten únicamente lectura autenticada para operadores autorizados del tenant y niegan create/update/delete.
 
-## 9. Qué queda de Corte 4
+## 8. Causa raíz Auth
 
-Gates cerrados:
+El endpoint público `projects.identityPlatform.initializeAuth` devolvió HTTP 400 aun con request body vacío. La documentación oficial de Google indica que esa variante pública está disponible solo para proyectos con facturación habilitada. Este Firebase está en plan Spark.
 
-1. identidad nueva confirmada: PASS;
-2. vacío verificado: PASS.
+Corrección de raíz:
 
-Gates pendientes:
+- no seguir reintentando el endpoint incompatible;
+- mantener Auth fail-closed;
+- completar Web App/Firestore/Rules automáticamente;
+- inicializar Firebase Authentication una sola vez desde Firebase Console;
+- después revalidar automáticamente e idempotentemente.
 
-3. Web App DEV/config sin secretos en repo;
-4. autorización separada para provider bootstrap DEV mínimo: inicialización Firestore + Auth bootstrap temporal + Rules read-only;
-5. activación solo lectura DEV;
-6. smoke `CX.data`: `source=firestore`, `empty=true`, `fallbackUsed=false`, interfaz preservada y writes=0;
-7. validación visual;
-8. freeze Corte 4.
+No se habilitará ningún proveedor de inicio de sesión en este paso.
 
-El bootstrap Auth de Corte 4 solo sirve para probar lectura protegida y no sustituye Auth/RBAC completo de Corte 6.
+## 9. Seguridad comprobada
 
-## 10. Autorización pendiente
+- Firestore document writes: 0.
+- Auth user writes: 0.
+- Storage writes: 0.
+- Hosting deploy: 0.
+- Functions: 0.
+- imports/materialización: 0.
+- HR writes: 0.
+- Make/Gemini: 0.
+- pagos/lotes: 0.
+- merge/producción: 0.
 
-No se ejecutarán los provider writes de Web App/Firestore/Auth/Rules hasta autorización expresa de Paula en la conversación vigente.
+Hubo config writes autorizados exclusivamente para API/Web App/Firestore/Rules. Los intentos de inicialización Auth devolvieron 400 y no crearon usuarios ni datos.
 
-La autorización de este bloque NO incluirá:
+## 10. Siguiente acción humana mínima
 
-- import/materialización de datos;
-- Storage;
-- Hosting deploy;
-- Functions;
-- HR writes;
-- Make/Gemini;
-- pagos/lotes;
-- merge o producción.
+En `CXOrbia TyA DEV Clean Corte 4`:
+
+`Firebase Console → Authentication → Comenzar / Get started`.
+
+Detenerse cuando aparezca el panel de Authentication. **No habilitar Email/Password, Google ni ningún otro proveedor todavía.**
+
+Después ChatGPT:
+
+1. reejecuta el bootstrap idempotente;
+2. confirma Auth config;
+3. recupera/configura Web App DEV;
+4. activa únicamente lectura DEV;
+5. ejecuta smoke `CX.data` con `source=firestore`, `empty=true`, `fallbackUsed=false`, interfaz preservada y writes=0;
+6. valida visualmente;
+7. congela Corte 4;
+8. retira los tres roles IAM elevados temporales y deja al runner nuevamente en `Viewer`.
 
 ## 11. Claude/prototipo y Academia
 
-- Claude: sin nueva candidata; Corte 3 congelado; no tocar backend/contracts/adapters.
-- Academia: separar credencial, IAM, identidad, vacío, infraestructura provider-default, Web App, Auth bootstrap, Firestore, Rules, lectura y escritura/materialización.
+- Claude/prototipo: sin nueva candidata; no tocar backend/contracts/adapters. Solo abrir tarea si el smoke demuestra una diferencia reproducible localizada.
+- Academia: documentar separación entre proyecto, IAM, API, Web App, Firestore, Auth, Rules, lectura y materialización. El bloqueo de Auth por plan Spark es infraestructura, no cambio de flujo UI.
+- Reusable CXOrbia: preflight IAM/location, bootstrap idempotente, fail-closed y retiro de privilegios.
+- Exclusivo cliente: projectId DEV TyA y `us-central1` de este entorno.
+- Sin impacto Claude: runners, IAM y provider bootstrap.
 
-## 12. Siguiente bloque exacto
+## 12. Estado seguro
 
-`AUTORIZAR BOOTSTRAP DEV READ-ONLY → WEB APP DEV → FIRESTORE/AUTH BOOTSTRAP MÍNIMO → RULES READ-ONLY → ACTIVAR LECTURA DEV → SMOKE CX.data → VALIDACIÓN VISUAL → FREEZE CORTE 4`.
-
-## 13. Estado seguro
-
-PR #7 draft/open/no merge. Sin producción, merge, Rules deploy, Firestore/Auth/Storage/HR data writes, imports, pagos, lotes reales, Make ni Gemini live. Los probes/verificadores posteriores al IAM fueron read-only.
+PR #7 draft/open/no merge. Corte 3 preservado. Corte 4 está a una inicialización de Authentication en consola de completar el bootstrap provider; no hay datos TyA materializados y no hay producción.
