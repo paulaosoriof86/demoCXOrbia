@@ -1,0 +1,57 @@
+name: CXOrbia Corte 4 P0 VIS-01 Diagnostic Read-only
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/corte4-p0-vis01-diagnostic.json'
+
+permissions:
+  contents: read
+  statuses: write
+
+env:
+  CXORBIA_REQUEST_PATH: .github/cxorbia-firebase-requests/corte4-p0-vis01-revalidate.json
+  CXORBIA_OUT_DIR: .tmp/corte4-p0-vis01-diag
+  CXORBIA_PRIVATE_DIR: .tmp/corte4-p0-vis01-diag-private
+  PREPARE_SCRIPT: tools/release/cxorbia-corte4-p0-vis01-hosting-prepare.mjs
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Load credential
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$CXORBIA_PRIVATE_DIR" "$CXORBIA_OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw);}catch{}
+          if(!(p&&p.type==='service_account'&&p.client_email&&p.private_key&&p.token_uri)){fs.writeFileSync(process.env.CXORBIA_OUT_DIR+'/diag.json',JSON.stringify({stage:'credential',ok:false,error:'credential_invalid'})+'\n');process.exit(0)}
+          fs.writeFileSync(process.env.CXORBIA_PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${CXORBIA_PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
+      - name: Run provider preflight without deploy
+        continue-on-error: true
+        run: node "$PREPARE_SCRIPT"
+      - name: Publish exact preflight diagnosis
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          R="$CXORBIA_OUT_DIR/preflight.source-safe.json"
+          if [ ! -f "$R" ]; then DESC='DIAG_NO_PREFLIGHT_REPORT'; STATE=error; else DEC=$(node -p "require('./$R').decision||''"); ERR=$(node -p "require('./$R').error||''"); if [ "$DEC" = 'PASS_C4_P0_VIS01_PREFLIGHT_READY_FOR_ONE_DEPLOY' ]; then DESC='DIAG_PREFLIGHT_PASS'; STATE=success; else DESC="DIAG_${ERR:-$DEC}"; STATE=error; fi; fi
+          DESC=$(printf '%s' "$DESC" | cut -c1-140)
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/c4p0vis01-diagnostic' -f description="$DESC" >/dev/null
+      - name: Cleanup
+        if: always()
+        run: rm -rf "$CXORBIA_PRIVATE_DIR" "$CXORBIA_OUT_DIR/site" "$CXORBIA_OUT_DIR/firebase.corte4-p0-vis01.json"
