@@ -25,11 +25,10 @@ function values(v){
   if(typeof v === 'string') return v.split(',').map(x=>x.trim()).filter(Boolean);
   return [];
 }
-// Mirror firestore.rules exactly: tenantId OR tenants[]; tenantIds[] is legacy metadata but is not an authorization path.
+function inc(map, key){ if(!key) return; map[key] = (map[key] || 0) + 1; }
 function tenantAllowedByCurrentRules(claims, role){
   return role === 'super' || claims.tenantId === tenantId || values(claims.tenants).includes(tenantId);
 }
-// Mirror firestore.rules exactly: projectAssigned() only trusts projectIds[].
 function ruleProjectIds(claims){ return [...new Set(values(claims.projectIds))]; }
 function passwordProvider(u){ return (u.providerData || []).some(p => p.providerId === 'password'); }
 
@@ -37,6 +36,7 @@ const shopperDocs = await db.collection('tenants').doc(tenantId).collection('sho
 const shopperIds = new Set(shopperDocs.map(r=>r.id));
 
 const roleReadiness = {};
+const roleScopeValues = {};
 let totalUsers = 0;
 let activePasswordUsers = 0;
 let tenantUsers = 0;
@@ -56,6 +56,7 @@ do {
   for (const u of page.users) {
     const claims = u.customClaims || {};
     const role = typeof claims.role === 'string' ? claims.role : '';
+    const roleKey = role || 'missing';
     const activePassword = !u.disabled && passwordProvider(u);
     const tenantOk = tenantAllowedByCurrentRules(claims, role);
     const projects = ruleProjectIds(claims);
@@ -73,11 +74,13 @@ do {
     if(tenantIdsOnlyGap) usersWithTenantIdsOnlyGap++;
     if(projectIdOnlyGap) usersWithProjectIdOnlyGap++;
 
-    if(!roleReadiness[role || 'missing']) roleReadiness[role || 'missing'] = {
+    if(!roleReadiness[roleKey]) roleReadiness[roleKey] = {
       users:0, activePassword:0, tenantAllowedByRules:0, canonicalProjectAssignedByRules:0,
       shopperIdPresent:0, shopperProfileMatched:0, tenantIdsOnlyGap:0, projectIdOnlyGap:0, secureReadReady:0
     };
-    const r = roleReadiness[role || 'missing'];
+    if(!roleScopeValues[roleKey]) roleScopeValues[roleKey] = {projectId:{}, projectIds:{}, tenantId:{}, tenants:{}, tenantIds:{}};
+    const r = roleReadiness[roleKey];
+    const s = roleScopeValues[roleKey];
     r.users++;
     if(activePassword) r.activePassword++;
     if(tenantOk) r.tenantAllowedByRules++;
@@ -86,6 +89,11 @@ do {
     if(shopperProfileMatched) r.shopperProfileMatched++;
     if(tenantIdsOnlyGap) r.tenantIdsOnlyGap++;
     if(projectIdOnlyGap) r.projectIdOnlyGap++;
+    if(typeof claims.projectId === 'string') inc(s.projectId, claims.projectId);
+    projects.forEach(v=>inc(s.projectIds, v));
+    if(typeof claims.tenantId === 'string') inc(s.tenantId, claims.tenantId);
+    values(claims.tenants).forEach(v=>inc(s.tenants, v));
+    values(claims.tenantIds).forEach(v=>inc(s.tenantIds, v));
 
     let ready = false;
     if(operatorRoles.has(role)) ready = activePassword && tenantOk;
@@ -115,7 +123,7 @@ const readiness = {
 };
 
 const report = {
-  schemaVersion: 'cxorbia.corte6-auth-rbac-readonly-reconciliation.v2',
+  schemaVersion: 'cxorbia.corte6-auth-rbac-readonly-reconciliation.v3',
   generatedAt: new Date().toISOString(),
   projectId: expectedProject,
   tenantId,
@@ -137,6 +145,7 @@ const report = {
     usersWithProjectIdOnlyGap,
     unknownRoleUsers,
     roleReadiness,
+    roleScopeValues,
     readiness,
     piiExported: false,
   },
@@ -155,6 +164,9 @@ const report = {
 
 fs.mkdirSync(new URL('../../app/docs/evidence/', import.meta.url), {recursive:true});
 fs.writeFileSync(outJson, JSON.stringify(report, null, 2) + '\n', 'utf8');
+const scopeLines = Object.entries(roleScopeValues).sort(([a],[b])=>a.localeCompare(b)).flatMap(([role,s])=>[
+  `- ${role}: projectId=${JSON.stringify(s.projectId)}; projectIds=${JSON.stringify(s.projectIds)}; tenantId=${JSON.stringify(s.tenantId)}; tenants=${JSON.stringify(s.tenants)}; tenantIds=${JSON.stringify(s.tenantIds)}`
+]);
 const lines = [
   '# Corte 6 — reconciliación Auth/RBAC read-only source-safe',
   '',
@@ -186,12 +198,17 @@ const lines = [
   '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|',
   ...Object.entries(roleReadiness).sort(([a],[b])=>a.localeCompare(b)).map(([role,r])=>`| ${role} | ${r.users} | ${r.activePassword} | ${r.tenantAllowedByRules} | ${r.canonicalProjectAssignedByRules} | ${r.shopperIdPresent} | ${r.shopperProfileMatched} | ${r.tenantIdsOnlyGap} | ${r.projectIdOnlyGap} | ${r.secureReadReady} |`),
   '',
+  '## Distribución de scopes no PII',
+  '',
+  ...scopeLines,
+  '',
   '## Seguridad',
   '',
   '- Auth/Firestore/Rules/Hosting/Storage writes: 0.',
   '- Producción/merge: false.',
+  '- Los valores de scope aquí son IDs técnicos de tenant/proyecto, no identidades de personas.',
   '- No se exportaron email, UID, nombre, teléfono, DPI, banco, contraseña, token ni shopperId.',
   ''
 ];
 fs.writeFileSync(outMd, lines.join('\n'), 'utf8');
-console.log(JSON.stringify({projectId: expectedProject, readiness, roleReadiness, providerWrites:0, piiExported:false}));
+console.log(JSON.stringify({projectId: expectedProject, readiness, roleReadiness, roleScopeValues, providerWrites:0, piiExported:false}));
