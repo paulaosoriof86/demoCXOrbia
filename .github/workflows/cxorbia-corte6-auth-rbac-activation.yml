@@ -36,6 +36,7 @@ jobs:
           node-version: '24'
 
       - name: Validate static runtime syntax
+        id: syntax
         run: |
           set -euo pipefail
           node --check app/core/backend-browser-auth.js
@@ -59,6 +60,7 @@ jobs:
           NODE
 
       - name: Load canonical DEV credential
+        id: credential
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
@@ -75,9 +77,11 @@ jobs:
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/corte6-private/credentials.json" >> "$GITHUB_ENV"
 
       - name: Install transient provider tooling
+        id: tooling
         run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 firebase-tools@14.11.2 >/dev/null 2>&1
 
       - name: Dry-run exact claim target selection
+        id: dryrun
         env:
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
           CXORBIA_EXECUTE_AUTH_CLAIMS: 'false'
@@ -87,12 +91,14 @@ jobs:
         run: node tools/release/cxorbia-corte6-auth-claims-normalize.mjs
 
       - name: Deploy only Firestore rules
+        id: rules
         if: steps.req.outputs.execute == 'true'
         run: |
           set -euo pipefail
           npx firebase-tools deploy --only firestore:rules --project cxorbia-backend-dev --non-interactive
 
       - name: Execute exact existing-user claim normalization
+        id: claims
         if: steps.req.outputs.execute == 'true'
         env:
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
@@ -103,6 +109,7 @@ jobs:
         run: node tools/release/cxorbia-corte6-auth-claims-normalize.mjs
 
       - name: Reconcile Auth after provider change
+        id: reconcile
         if: steps.req.outputs.execute == 'true'
         env:
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
@@ -111,6 +118,7 @@ jobs:
         run: node tools/qa/cxorbia-auth-rbac-readonly-reconcile.mjs
 
       - name: Verify post-change readiness
+        id: verify
         if: steps.req.outputs.execute == 'true'
         run: |
           set -euo pipefail
@@ -121,6 +129,7 @@ jobs:
           NODE
 
       - name: Freeze one-shot request and commit sanitized evidence
+        id: freeze
         if: steps.req.outputs.execute == 'true'
         run: |
           set -euo pipefail
@@ -155,6 +164,20 @@ jobs:
           STATE=success
           DESC='PASS_CORTE6_AUTH_RBAC_PREPARED_NO_PROVIDER_WRITE'
           if [ '${{ steps.req.outputs.execute }}' = 'true' ]; then DESC='PASS_CORTE6_AUTH_RBAC_ACTIVATED'; fi
+          if [ '${{ job.status }}' != 'success' ]; then
+            STATE=error
+            DESC='FAIL_C6_UNKNOWN'
+            if [ '${{ steps.syntax.outcome }}' = 'failure' ]; then DESC='FAIL_C6_SYNTAX';
+            elif [ '${{ steps.req.outcome }}' = 'failure' ]; then DESC='FAIL_C6_REQUEST';
+            elif [ '${{ steps.credential.outcome }}' = 'failure' ]; then DESC='FAIL_C6_CREDENTIAL';
+            elif [ '${{ steps.tooling.outcome }}' = 'failure' ]; then DESC='FAIL_C6_TOOLING';
+            elif [ '${{ steps.dryrun.outcome }}' = 'failure' ]; then DESC='FAIL_C6_DRYRUN_SELECTION';
+            elif [ '${{ steps.rules.outcome }}' = 'failure' ]; then DESC='FAIL_C6_RULES_DEPLOY';
+            elif [ '${{ steps.claims.outcome }}' = 'failure' ]; then DESC='FAIL_C6_CLAIMS';
+            elif [ '${{ steps.reconcile.outcome }}' = 'failure' ]; then DESC='FAIL_C6_RECONCILE';
+            elif [ '${{ steps.verify.outcome }}' = 'failure' ]; then DESC='FAIL_C6_READINESS';
+            elif [ '${{ steps.freeze.outcome }}' = 'failure' ]; then DESC='FAIL_C6_FREEZE'; fi
+          fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/corte6-auth-rbac' -f description="$DESC" >/dev/null
 
       - name: Cleanup credential
