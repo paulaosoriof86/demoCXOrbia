@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.corte6.auth-mapping-capability-readonly-request.v1",
-  "requestId": "corte6-auth-mapping-capability-readonly-20260730-01",
-  "status": "consumed_readonly",
-  "enabled": false,
-  "consumed": true,
+  "requestId": "corte6-auth-mapping-capability-readonly-20260730-02",
+  "status": "ready",
+  "enabled": true,
+  "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "firebaseProjectId": "cxorbia-backend-dev",
   "tenantId": "tya",
-  "scope": "field_presence_counts_only",
+  "scope": "field_presence_and_stable_mapping_shape_counts_only",
   "providerWrites": 0,
   "authWrites": 0,
   "firestoreWrites": 0,
@@ -21,6 +21,5 @@
   "merge": false,
   "piiExported": false,
   "valuesExported": false,
-  "secretsExported": false,
-  "consumedAt": "2026-07-30T18:55:53.490Z"
+  "secretsExported": false
 }
