@@ -2,103 +2,62 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-30  
-**Estado:** `CORTE3_FROZEN__C5_MATERIALIZED1406_CXDATA_PASS__C6_AUTH91_READBACK_PASS_HOSTING_DEV_REMOTE_PASS__PENDING_VISUAL`
+**Estado:** `CORTE3_FROZEN__C5_MATERIALIZED1406_PASS__C6_AUTH91_RULES_PASS__AUTOENTRY_FIX_STATIC_PASS__PENDING_REDEPLOY_VISUAL`
 
 ## 1. Estado general
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge.
 - Baseline frontend `CXORBIA-TYA-CORTE3-V182-20260729` FROZEN.
-- Backend DEV canónico `cxorbia-backend-dev`.
-- Hosting DEV existente `cxorbia-backend-dev.web.app`, target `cxorbia-dev`.
-- Hosting público final futuro `tya-plataforma`.
-- No nueva candidata/base/rama/PR/Hosting.
+- Backend DEV `cxorbia-backend-dev`; mismo Hosting DEV/target `cxorbia-backend-dev`/`cxorbia-dev`.
+- Producción futura `tya-plataforma`: no tocada.
 
 ## 2. Bloques cerrados
-### Corte 1 /2A /3
-FROZEN/APROBADO. Corte3 conserva 14 periodos/616 visitas y baseline visual aprobada.
+- Corte1/2A/3: FROZEN/APROBADO.
+- Corte5: R17N 1,406/1,406,616 visitas,572 controles liquidación,77 certificaciones; CX.data Firestore project=`cinepolis`,periods14,visits616,currentPeriod=`2026-07`,fallback=false PASS.
+- Corte6 provider: claims5/5 + Rules PASS; Auth import/readback91/91 PASS (shopper88 + staff3); resets/deletes/overwrite0.
 
-### Corte 4 — mapping/preparación
-Cerrado para materialización: HR hasta julio,208/208 refs,194 perfiles canónicos,77 certificaciones y write plan idempotente.
+## 3. Validación visual Corte6 — secuencia real
+### P0 #1
+Gate separado `Acceso seguro` antes del login normal → NO APROBADO.
 
-### Corte 5 — materialización DEV + CX.data
-- 1,406/1,406 Firestore data writes/readback; mismatch0.
-- 616 visitas,572 controles liquidación,77 certificaciones.
-- P0 project/period corregido.
-- Re-smoke PASS: source=firestore, fallback=false, project=`cinepolis`, periods14, visits616, currentPeriod=`2026-07`.
-- No repetir materialización.
+### P0 #2
+Se eliminó el gate paralelo, pero el backend siguió interceptando la selección de rol y añadió `Usuario + Contraseña` dentro del login. La captura humana confirma que esto tampoco preserva el prototipo y que el formulario queda fuera del viewport.
 
-### Corte 6 — Auth/RBAC/Rules técnico previo
-- claims5/5 ejecutados;
-- Rules release/readback PASS;
-- Firestore data writes0;
-- Hosting DEV previo1/1 consumido y entrypoint remoto verificado.
+Contrato canónico comprobado: `app.js` selecciona perfil y entra automáticamente. No corresponde pedir credenciales desconocidas para validar visualmente DEV.
 
-## 3. Bloque intermedio P0 — continuidad de credenciales
-Causa raíz completa:
-- credenciales legacy no materializadas;
-- dedupe global de username mezclaba staff/shopper;
-- adapter browser necesitaba namespace.
+## 4. Fix vigente en rama
+- Human visual DEV conserva auto-entry del prototipo.
+- `humanCredentialPrompt=false`.
+- Dataset de validación: HR source-safe explícita, `cinepolis`,14 periodos,616 visitas.
+- Auth/RBAC/Rules permanecen separados como gates provider ya validados.
+- Mutaciones bloqueadas; no fallback demo.
+- Diagnóstico visible rotula source-safe y no simula Auth humano.
 
-Corrección reusable:
-- namespaces `staff`/`shopper`;
-- visible `Tipo de acceso + Usuario + Contraseña`;
-- Firebase interno por tenant+namespace+username;
-- fail-closed sin inferencia por nombre.
+## 5. Gate estático
+Commit `29b7f9404a9c2f144145fe24d5cf048f753c1e75`:
+`success · PREPARED_C6_PROTOTYPE_AUTO_ENTRY_NO_EXECUTE`.
 
-## 4. Fuente credential-continuity
-- shopper source282;
-- safe credential groups109;
-- exact duplicate records collapsed93;
-- ambiguous groups18 /records77 HOLD;
-- staff4 = superadmin1/coordinador2/demo1;
-- encrypted bundle113;
-- raw PII/credential material repo0.
+No hubo service account, deploy ni provider writes porque el request anterior ya está consumido.
 
-## 5. Provider activation — PASS
-### Auth
-`PASS_EXACT_AUTH_IMPORT_READBACK`.
-- eligible/imported/readback91/91;
-- shopper88 + super1 + coordinador2;
-- Auth17→108;
-- password resets0/deletes0/overwrite0;
-- Firestore/Rules/Hosting writes durante import0.
+## 6. Gate vivo
+`AUTORIZACIÓN FRESCA 1 REDEPLOY MISMO HOSTING DEV → PRECHECK → DEPLOY1 → REMOTE SMOKE AUTO-ENTRY/SOURCE-SAFE → VISUAL PAULA → FREEZE C6`.
 
-### Hosting DEV condicionado
-`PASS_EXISTING_HOSTING_DEV_CREDENTIAL_CONTINUITY_REMOTE_VERIFIED`.
-- ejecutado después de readback91/91;
-- mismo site/target;
-- deploy adicional1;
-- browserAuth/entrypoint/proof/namespaced login PASS;
-- preservedLegacyAuthUsers91;
-- nuevo Firebase/Hosting0;
-- Firestore/Rules/Storage/HR/legacy/payments/functions/Make/Gemini0.
+## 7. Agosto — siguiente bloque operativo
+Tras FREEZE C6: `refresh HR → resolver Agosto HN → validar periodo/visitas → materializar solo delta agosto → smoke → preprod/cutover`.
 
-El plan inicial12 queda superseded.
+No repetir los1,406 históricos.
 
-## 6. Bloque en progreso
-**Corte6 está técnicamente PASS y pendiente únicamente de validación visual humana con credenciales TyA existentes.**
+## 8. Claude/prototipo
+No nueva candidata y no tocar módulos. Conservar UX auto-entry del prototipo en validación humana; provider/Auth no debe convertirse en una pantalla técnica. P1/P2: PDF/gráficas, Excel/formato, reportKit/exportaciones, copy.
 
-No compartir passwords por chat. No pedir credenciales técnicas DEV.
+## 9. Academia
+DEV humano: selección de perfil → acceso automático. Producción: Auth real detrás del contrato operativo, recuperación/cambio y scopes; no enseñar provider interno como paso de usuario.
 
-## 7. Agosto — pendiente inmediato posterior
-- Fuente actual termina julio 2026.
-- `Agosto HN` HOLD por inconsistencia país/tab.
-- Después de FREEZE Corte6: refresh fuente → resolver HOLD → validar periodo/visitas → materializar solo delta agosto.
+## 10. Clasificación
+- **Reusable CXOrbia:** separación entre validación UX y gates provider; source-safe visual honesto.
+- **Exclusivo cliente:** HR/credenciales TyA y Agosto HN.
+- **Claude/prototipo:** preservar auto-entry; no introducir UI Auth técnica.
+- **Academia:** flujo real por rol y troubleshooting.
+- **Sin impacto Claude:** Auth91, Rules, evidencia/provider gates.
 
-## 8. Siguiente bloque exacto
-`VISUAL EXISTING TYA CREDENTIALS → FREEZE C6 → AUGUST DELTA → CORTE8 PREPROD/CUTOVER`.
-
-## 9. Claude/prototipo
-No nueva candidata. Login visible debe preservar producto y ocultar provider técnico. No tocar `app/modules/*`. Solo corregir ante P0 visual reproducible. P1/P2: PDF gráfica, Excel formato, reportKit/exportaciones y copy.
-
-## 10. Academia
-Auth91/91 y Hosting DEV remoto ya son caso práctico cerrado técnicamente. Actualizar identidad provider detrás del acceso, namespaces, usuario ≠ email, recuperación, scopes, shopperId, dedupe seguro, readback y fail-closed.
-
-## 11. Clasificación
-- `Reusable CXOrbia`: identity adapter namespaced, Auth hash import, no-overwrite, claims, readback y one-shot deploy.
-- `Exclusivo cliente`: credenciales legacy TyA y Agosto HN.
-- `Claude/prototipo`: login/registro focalizado solo ante P0 visual.
-- `Academia`: identidad/acceso/scopes/namespaces/troubleshooting.
-- `Sin impacto Claude`: cifrado, inventories, requests, gates y evidencia provider.
-
-## 12. Estado seguro
-R17N histórico1406 ya cerrado. Corte6 previo: claim writes5 + Rules1 + Hosting1. Continuidad: Auth imports91/readback91; password resets/deletes0; Hosting adicional1; Firestore data/Rules/Storage/HR/legacy/payments/functions/Make/Gemini0; merge=false; production=false; credenciales crudas0.
+## 11. Estado seguro
+Desde el segundo P0: Auth writes0; Firestore data writes0; Rules0; Hosting deploy0; Storage/HR/legacy/payments/Functions/Make/Gemini0; merge=false; producción=false.
