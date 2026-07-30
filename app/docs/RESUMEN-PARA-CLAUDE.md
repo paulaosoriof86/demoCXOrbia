@@ -1,63 +1,47 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-30  
-**Estado vivo:** `C6_AUTOENTRY_VISUAL_OBSERVED_PASS__PROTECTED_IDENTITY_READONLY_PASS__AUGUST_REFRESH_READONLY_NEXT__NO_PRODUCTION`
+**Estado vivo:** `C6_IDENTITY_PROTECTED_PASS__AUG_GT34_TECH_READY__HN_SOURCE_MISMATCH__NO_UNASSIGNED_VISITS__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge.
 - Corte3 `CXORBIA-TYA-CORTE3-V182-20260729`: FROZEN.
-- R17N FINAL:1,406/1,406 Firestore data writes/readback; no repetir.
+- R17N FINAL1,406/1,406; no repetir.
 - Corte5 `CX.data`: `cinepolis`,14 periodos,616 visitas,currentPeriod=`2026-07`,source=firestore/fallback=false PASS.
-- Auth legacy import/readback91/91 PASS: shopper88 + super1 + coordinador2; Auth17→108; resets/deletes/overwrite0.
-- claims5/5 + Firestore Rules PASS.
-- No nueva candidata/base/Hosting/rama/PR por rutina.
+- Auth legacy import/readback91/91 PASS; claims5/5 + Rules PASS.
 
-## 2. P0 visuales de login — corregidos
-- Build1 rechazado: gate separado `Acceso seguro`.
-- Build2 rechazado: `Usuario + Contraseña` inyectado al seleccionar perfil y fuera del viewport.
-- Contrato correcto: `app.js` mantiene perfil → `selectRole(...)` → `enter()` automático.
-- Build actual: captura humana demuestra auto-entry al shell Admin.
+## 2. Login/identidad — estado correcto
+Los P0 de login fueron corregidos y el auto-entry Admin funciona en el preview humano. `Shopper protegido` solo pertenece al source-safe público/read-only; no copiar PII allí.
 
-## 3. `Shopper protegido` — no es un bug de datos
-La visual humana actual usa HR source-safe estática/read-only. Esa capa pública debe enmascarar PII y por eso contiene `Shopper protegido`.
+Firestore protegido está sano:
+- shoppers340/340 con nombre real; placeholder0;
+- visitas616/616 con nombre real; placeholder0;
+- perfiles canónicos referenciados194/194 con nombre real;
+- Rules/adapter protegidos PASS.
 
-**No corregir esto poniendo nombres reales en `app/data/tya-hr-source-safe-periods.js`, módulos o Hosting público.**
+Claude no debe crear candidata ni tocar `app/modules/*` por este tema. Runtime autenticado futuro debe usar Firestore protegido y mostrar identidad según rol.
 
-La identidad real ya está materializada y protegida en Firestore DEV. Gate read-only final:
-`PASS_C6_PROTECTED_IDENTITY_READONLY_RUNTIME_READY`.
+## 3. Agosto — hallazgo de fuente, no de frontend
+Refresh HR actual:
+- `AGOSTO 26` GT=34 filas, país correcto;
+- `AGOSTO 26 HN`=34 filas pero las34 están marcadas GT → HOLD;
+- GT delta técnico:34 nuevas; mappings shopper28/28; perfiles target28/28 existentes;
+- periodo2026-08 todavía no existe.
 
-- shoppers protegidos340; nombres reales340; placeholders0; missing0;
-- visitas616; nombres reales616; placeholders0; missing0;
-- shopperIds canónicos referenciados194;
-- perfiles referenciados194/194 existentes y194/194 con nombre real;
-- Rules shopper/deny-by-default PASS;
-- adapter protegido de shoppers/nombre real PASS;
-- Rules desplegadas/hash PASS;
-- source-safe público permanece enmascarado PASS.
+Pero las34 GT de la fuente actual están assigned34/unassigned0/scheduled34/realized34;27 submitidas y7 en cuestionario. Por tanto **no son un lote de visitas disponibles publicable**.
 
-## 4. Regla Claude/prototipo
-No crear nueva candidata ni tocar `app/modules/*` por este tema. Preservar:
-- UX del producto manda;
-- preview humano source-safe puede enmascarar PII;
-- runtime autenticado protegido debe usar Firestore y mostrar identidad real según rol;
-- Admin/Operativo ve identidad operativa necesaria; shopper solo su perfil;
-- no reintroducir `Acceso seguro` ni formularios técnicos en preview humano;
-- producción mantiene autenticación real, recuperación/cambio y scopes.
+No corregir desde UI, no forzar `disponible`, no convertir por frontend filas GT en HN y no construir agosto manualmente copiando julio.
 
-Un placeholder source-safe nunca debe convertirse en identidad final de producción.
+## 4. Dependencia operativa externa
+La HR de agosto debe actualizarse/corregirse para reflejar el lote real a publicar: contrato GT34/HN10 y estados operativos correctos. Backend repetirá luego el refresh/delta de forma automática.
 
-P1/P2 preservados: PDF/gráficas, Excel/formato, reportKit/exportaciones y copy de fuentes.
+## 5. Próximo backend
+`HR AGOSTO CORREGIDA → REFRESH READ-ONLY → DELTA PLAN EXACTO → AUTORIZACIÓN WRITE SOLO DELTA → READBACK/SMOKE → PREPROD PROTEGIDA → CUTOVER`.
 
-## 5. Backend — siguiente bloque exacto
-`REFRESH HR READ-ONLY → RESOLVER/CLASIFICAR AGOSTO HN → VALIDAR AGOSTO → PREPARAR DELTA-ONLY WRITE PLAN`.
+P1/P2 preservados: PDF/gráficas, Excel/formato, reportKit/exportaciones y copy.
 
-No materializar agosto sin write plan/dry-run exacto y autorización explícita. No reabrir1,406 históricos.
+## 6. Academia/manuales
+Separar preview source-safe, identidad protegida y fuente operacional. Documentar que conflictos de país/estado pasan a HOLD; nunca se corrigen por inferencia visual.
 
-## 6. Después del delta agosto
-`WRITE DELTA AUTORIZADO → READBACK/SMOKE → PREPROD PROTEGIDA AUTENTICADA → VALIDAR IDENTIDAD REAL → CUTOVER tya-plataforma`.
-
-## 7. Academia/manuales
-Enseñar la diferencia entre anonimización de artefactos source-safe y visibilidad autorizada en runtime protegido; identidad provider queda detrás del contrato operativo; aplicar mínimo privilegio, shopperId exacto y troubleshooting por capa.
-
-## 8. Estado seguro
-Gate identidad: provider reads únicamente; Auth writes0; Firestore data writes0; Rules0; Hosting0; Storage/HR/legacy/payments/Functions/Make/Gemini0; nuevo Firebase/Hosting0; merge=false; producción=false; PII/IDs exportados0.
+## 7. Estado seguro
+Últimos bloques: solo lecturas HR/Firestore y repo/docs. HR/Firestore/Auth/Rules/Hosting/Storage/legacy/payments/Functions/Make/Gemini writes0; merge=false; producción=false; PII exportada0.
