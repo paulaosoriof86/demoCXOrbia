@@ -103,7 +103,7 @@ jobs:
           const code=[
             'RSC'+bit('firebaserules.rulesets.create'),
             'RST'+bit('firebaserules.rulesets.test'),
-            'RRG'+bit('firebaserules.releases.get'),
+            'RRG'+bit('firebaserules.rulesets.get'),
             'RRU'+bit('firebaserules.releases.update'),
             'SU'+bit('serviceusage.services.use'),
             'RPG'+bit('resourcemanager.projects.get'),
@@ -118,6 +118,7 @@ jobs:
 
       - name: Dry-run direct Firestore Rules deployment
         id: rulesdry
+        if: steps.req.outputs.execute == 'true'
         env:
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
           CXORBIA_EXECUTE_FIRESTORE_RULES: 'false'
