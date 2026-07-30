@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-30  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_P0_PROVEN_DOUBLE_LOGIN_FORCED_AUTH_GATE__AUTH91_PRESERVED__NO_NEW_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_P0_SINGLE_LOGIN_FIX_APPLIED_STATIC_PASS__PENDING_SINGLE_DEV_REDEPLOY_AUTH__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -12,7 +12,6 @@
 - Backend DEV canónico: `cxorbia-backend-dev`.
 - Hosting DEV existente: site `cxorbia-backend-dev`, target `cxorbia-dev`.
 - Hosting público final: `tya-plataforma`; no tocar todavía.
-- Sandbox C4: no destino.
 - No crear nuevo Firebase, Hosting, rama, PR o candidata por rutina.
 
 ## 2. Lectura obligatoria vigente
@@ -22,88 +21,75 @@
 4. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 5. `CORTE6-P0-DOBLE-LOGIN-AUTH-DEV-20260730.md`;
 6. `CORTE6-P0-CONTINUIDAD-CREDENCIALES-LEGACY-A-FIREBASE-20260730.md`;
-7. `CORTE6-CREDENTIAL-HANDOFF-SEGURO-PREPARADO-20260730.md`;
-8. `evidence/CORTE6-CREDENTIAL-INVENTORY-SOURCE-SAFE-V3.json`;
-9. `evidence/CORTE6-CREDENTIAL-HANDOFF-DRYRUN-LATEST.json`;
-10. `evidence/CORTE6-CREDENTIAL-IMPORT-LATEST.json`;
-11. `evidence/CORTE6-CREDENTIAL-CONTINUITY-HOSTING-DEPLOY-LATEST.json`;
-12. `app/core/backend-browser-auth.js`;
-13. `app/core/backend-config-preview-dev.js`;
-14. `app/core/backend-firebase.js`;
-15. `app/app.js`;
-16. `CAMBIOS-BACKEND.md`;
-17. `RESUMEN-PARA-CLAUDE.md`;
-18. `PENDIENTES-PROTOTIPO.md`;
-19. tracker Phase A;
-20. Academia Corte6;
-21. PR #7 y HEAD vivo.
+7. `evidence/CORTE6-CREDENTIAL-IMPORT-LATEST.json`;
+8. `app/core/backend-browser-auth.js`;
+9. `app/core/backend-config-preview-dev.js`;
+10. `app/core/backend-firebase.js`;
+11. `CAMBIOS-BACKEND.md`;
+12. `RESUMEN-PARA-CLAUDE.md`;
+13. `PENDIENTES-PROTOTIPO.md`;
+14. tracker Phase A;
+15. Academia Corte6;
+16. PR #7 y HEAD vivo.
 
 ## 3. Baseline protegida — no reabrir
-- Corte 3 `CXORBIA-TYA-CORTE3-V182-20260729`: FROZEN.
-- R17N FINAL: 1,406/1,406 Firestore data writes/readback; mismatch0.
-- Materializado: 616 visitas,572 controles de liquidación,77 certificaciones y perfiles previstos.
-- Corte 5 `CX.data`: `cinepolis`,14 periodos,616 visitas, `currentPeriodId=2026-07`, source=firestore, fallback=false PASS.
-- Corte 6 Auth import:91/91 PASS; no repetir.
-- No repetir materialización ni reabrir snapshots superados.
+- Corte3 `CXORBIA-TYA-CORTE3-V182-20260729`: FROZEN.
+- R17N FINAL:1,406/1,406 Firestore data writes/readback; mismatch0.
+- Materializado:616 visitas +572 controles liquidación +77 certificaciones + foundation/perfiles.
+- Corte5 `CX.data`: `cinepolis`,14 periodos,616 visitas, `currentPeriodId=2026-07`, source=firestore/fallback=false PASS.
+- Corte6 Auth import:91/91 PASS; no repetir.
 
 ## 4. Fuente real vigente
-- HR materializada hasta julio 2026:14 periodos/616 visitas/208 refs shopper.
-- 208/208 refs listas →194 perfiles canónicos únicos.
+- HR materializada hasta julio 2026:14 periodos/616 visitas.
 - 77 certificaciones materializadas.
 - 572 controles de liquidación.
 - Agosto HN continúa HOLD por inconsistencia país/tab.
 
-## 5. Credenciales/Auth — estado preservado
+## 5. Credenciales/Auth preservado
 - namespaces `staff` / `shopper`;
-- Firebase usa identidad interna determinística no visible;
+- identidad Firebase interna determinística no visible;
 - no password/token/UID persistido en UI;
-- no identidad inferida por nombre.
-
-Inventario source-safe:
-- shopper source282;
-- credential groups109;
-- exact duplicates collapsed93;
-- ambiguous groups18/77 HOLD;
-- bundle cifrado113;
-- PII/login/password/hash legibles repo0.
-
-Auth import exacto `PASS_EXACT_AUTH_IMPORT_READBACK`:
-- imported91;
-- readback91/91;
+- no identidad inferida por nombre;
+- imported91/readback91/91;
 - shopper88 + super1 + coordinador2;
-- Auth users17→108;
-- password resets0;
-- deletes0;
-- overwrite0.
+- Auth17→108;
+- reset/delete/overwrite0;
+- HOLD:21 shopper sin match exacto + demo1 + ambiguos18/77.
 
-## 6. Hosting DEV continuidad — PASS técnico preservado
-`PASS_EXISTING_HOSTING_DEV_CREDENTIAL_CONTINUITY_REMOTE_VERIFIED`:
-- mismo site `cxorbia-backend-dev`, target `cxorbia-dev`;
-- redeploy adicional1 ya consumido;
-- browserAuth/entrypoint/proof remoto PASS;
-- preservedLegacyAuthUsers91;
-- nuevo Firebase/Hosting0;
-- Firestore/Rules/Storage/HR/legacy/payments/functions/Make/Gemini0.
+## 6. P0 doble login — estado actualizado
+La visual humana rechazó correctamente el build Hosting DEV previo por mostrar `Acceso seguro` como segundo login.
 
-## 7. P0 actual — doble login
-La validación visual humana de Paula **NO aprobó** el flujo.
+La corrección ya está aplicada en la rama viva:
+- eliminado el gate paralelo;
+- login normal TyA/CXOrbia como único punto visible;
+- credenciales reales integradas dentro de la misma tarjeta cuando se necesitan;
+- sesión Firebase válida restaurada silenciosamente;
+- logout real;
+- config `product-login-session`;
+- gates anti-regresión para impedir que reaparezcan `cxBackendAuthGate`, `cxBackendAuthNamespace`, `cxBackendAuthLogin` o `interactive-session`.
 
-Está demostrado que `app/core/backend-browser-auth.js` agrega una pantalla `Acceso seguro` separada, intercepta `CX.app.showLogin`, limpia `CX.session` al cargar y fuerza el overlay en preview. `backend-config-preview-dev.js` exige `interactive-session`, y `backend-firebase.js` llama a esa autenticación antes de cargar datos. El login normal del proyecto sigue existiendo en `app/app.js`.
+## 7. Evidencia del fix y gate
+Commits:
+- `e95e8a9662373183ec17186831cf81b89094515a` — auth bridge single-login.
+- `32aee807d4c48760679267e1f8cd577d4681f4ea` — config.
+- `f3aa90cc0f765beafdfa90e5b55d953239488746` — preflight.
+- `e0b98140744135361f0d1d000ce31435b7ea59d2` — workflow/gates.
+- `790d4d514b8e7b4630063ebf2aebba5997e3ec26` — revalidación estática solicitada sin provider writes.
 
-Conclusión: el backend convirtió Auth en un segundo login visible. Esto contradice el diseño esperado de **Firebase detrás del adapter** y genera reproceso innecesario.
+Estado GitHub del gate: `success · PREPARED_C6_SINGLE_LOGIN_HOSTING_NO_EXECUTE`.
 
-No pedir a Paula que repita la prueba actual ni que entregue password.
+No hubo Hosting deploy ni provider writes en esta corrección. El Hosting DEV público continúa sirviendo el build anterior hasta nueva autorización.
 
 ## 8. Gate vivo único
-`P0 FOCAL SINGLE-LOGIN ROUTE → GATES → AUTORIZACIÓN ÚNICA DE REDEPLOY DEV SI PASS → SMOKE REMOTO → VALIDACIÓN VISUAL → FREEZE CORTE6`.
+`AUTORIZACIÓN ÚNICA DE REDEPLOY DEL MISMO HOSTING DEV → PRECHECK SINGLE-LOGIN → DEPLOY1 → SMOKE REMOTO → VALIDACIÓN VISUAL → FREEZE CORTE6`.
 
 Después:
 `REFRESH HR → RESOLVER HOLD AGOSTO HN → MATERIALIZAR SOLO DELTA AGOSTO → PREPROD/CUTOVER tya-plataforma`.
 
 ## 9. Claude / Academia
-- Claude: no nueva candidata; no tocar módulos; únicamente corrección focalizada del P0 de login ya reproducible.
-- Objetivo UX: un solo acceso visible; Firebase/Auth/claims detrás del producto.
-- Academia: documentar acceso único, recuperación, scopes, namespaces internos y troubleshooting sin doble autenticación.
+- Claude: no nueva candidata ni cambios de módulos por este P0; fix ya aplicado focalizadamente.
+- Patrón reusable: un solo acceso visible; Firebase/Auth/claims detrás del producto.
+- Academia: acceso único, recuperación, scopes, namespaces internos y troubleshooting sin doble autenticación.
 
 ## 10. Estado seguro
-R17N histórico cerrado; Auth91/91 preservado; desde el hallazgo P0 no se ejecutaron Auth writes, Firestore data writes, Rules, Hosting deploy, Storage/HR/legacy/payments/functions/Make/Gemini, merge ni producción.
+R17N histórico cerrado; Auth91/91 preservado; corrección P0: Auth writes0, Firestore data writes0, Rules0, Hosting deploy0, Storage/HR/legacy/payments/functions/Make/Gemini0, merge=false, producción=false.
