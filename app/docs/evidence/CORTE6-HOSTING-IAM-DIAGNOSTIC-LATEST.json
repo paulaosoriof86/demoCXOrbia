@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "cxorbia.corte6-hosting-iam-diagnostic.v2",
-  "generatedAt": "2026-07-30T17:17:32.794Z",
+  "schemaVersion": "cxorbia.corte6-hosting-iam-diagnostic.v3",
+  "generatedAt": "2026-07-30T17:19:27.195Z",
   "projectId": "cxorbia-backend-dev",
   "siteId": "cxorbia-backend-dev",
   "readOnly": true,
@@ -166,9 +166,59 @@
       "ok": true,
       "status": 200,
       "isCorte6Proof": true,
-      "textLength": 1086
+      "textLength": 1086,
+      "checks": {
+        "schema": true,
+        "firebaseProject": true,
+        "hostingTarget": true,
+        "entrypoint": true,
+        "authMode": true,
+        "readOnly": true,
+        "productionFalse": true,
+        "credentialsEmbeddedFalse": true
+      }
+    },
+    "remoteBackendConfig": {
+      "ok": true,
+      "status": 200,
+      "textLength": 2817
+    },
+    "remoteBrowserAuth": {
+      "ok": true,
+      "status": 200,
+      "textLength": 11685
+    },
+    "remoteRoot": {
+      "ok": true,
+      "status": 200,
+      "textLength": 5588
+    },
+    "remoteEntrypoint": {
+      "ok": true,
+      "status": 200,
+      "textLength": 7995
     }
   },
+  "remoteStaticChecks": {
+    "backendConfigHttp200": true,
+    "backendConfigCanonicalProject": true,
+    "backendConfigApiKeyInjected": true,
+    "backendConfigDefaultProjectCinepolis": true,
+    "browserAuthHttp200": true,
+    "browserAuthEmailPassword": true,
+    "browserAuthSessionPersistence": true,
+    "rootHttp200": true,
+    "rootPreviewTitle": false,
+    "rootLoadsBrowserAuth": false,
+    "entrypointHttp200": true,
+    "entrypointPreviewTitle": true,
+    "entrypointLoadsBrowserAuth": true
+  },
+  "remoteStaticCheckFailures": [
+    "rootPreviewTitle",
+    "rootLoadsBrowserAuth"
+  ],
+  "remoteStaticGatePass": false,
   "missingHostingCore": [],
   "missingFirebaseCliApiKeysViewerPermissions": [
     "apikeys.keys.get",
@@ -178,8 +228,8 @@
   ],
   "directHostingApiReadReady": true,
   "firebaseCliApiKeyReadReady": false,
-  "firstFailedCliAttemptDeployedCorte6Proof": true,
-  "diagnosis": "FIREBASE_CLI_API_KEYS_VIEWER_GAP",
+  "corte6ProofCurrentlyPublished": true,
+  "diagnosis": "REMOTE_STATIC_CHECK_MISMATCH",
   "safety": {
     "authWrites": 0,
     "firestoreDataWrites": 0,
@@ -191,6 +241,7 @@
     "piiExported": false,
     "secretsExported": false,
     "apiKeyValuesExported": false,
-    "principalIdentityExported": false
+    "principalIdentityExported": false,
+    "remoteContentValuesExported": false
   }
 }
