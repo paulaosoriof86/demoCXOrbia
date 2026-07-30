@@ -3,7 +3,8 @@
    ------------------------------------------------------------
    - Firebase Auth sigue siendo la autoridad real.
    - El contrato visible del producto se preserva como Usuario + Contraseña.
-   - El usuario operativo se traduce determinísticamente a un identificador
+   - El acceso visible conserva el perfil operativo (Equipo TyA / Evaluador).
+   - Usuario + perfil se traducen determinísticamente a un identificador
      Firebase interno; el correo técnico NO se expone al usuario final.
    - Usa persistencia de SESION y nunca guarda password/token/UID en localStorage.
    - La sesion CX se deriva de custom claims; el selector local de rol
@@ -14,6 +15,7 @@ window.CX = window.CX || {};
 (function(){
   const cfg = CX.BACKEND || {};
   const LEGACY_ROLES = new Set(['super','admin','ops','coordinador','cliente','client','shopper']);
+  const LOGIN_NAMESPACES = new Set(['staff','shopper']);
   let auth = null;
   let readyPromise = null;
   let currentContext = null;
@@ -64,13 +66,20 @@ window.CX = window.CX || {};
     return Array.from(new Uint8Array(digest)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
   }
 
-  async function internalFirebaseEmail(login){
+  function normalizeNamespace(value){
+    const ns = String(value || '').trim().toLowerCase();
+    if(!LOGIN_NAMESPACES.has(ns)) throw new Error('LOGIN_NAMESPACE_REQUIRED');
+    return ns;
+  }
+
+  async function internalFirebaseEmail(login, namespace){
     const normalized = normalizeLogin(login);
     if(!normalized) throw new Error('LOGIN_REQUIRED');
-    // Solo para soporte técnico DEV explícitamente habilitado; nunca es el contrato visible del producto.
+    // Soporte técnico DEV explícito y oculto al contrato normal del producto.
     if(cfg.devPreviewAuth && cfg.devPreviewAuth.allowTechnicalEmail === true && /@cxorbia-dev\.example\.com$/i.test(normalized)) return normalized;
     const tenant = cfg.tenantId || 'tya';
-    const digest = await sha256Hex(tenant + '\0' + normalized);
+    const ns = normalizeNamespace(namespace);
+    const digest = await sha256Hex(tenant + '\0' + ns + '\0' + normalized);
     return digest.slice(0,48) + '@auth.cxorbia.invalid';
   }
 
@@ -85,13 +94,26 @@ window.CX = window.CX || {};
     return Array.from(new Set(list(claims.projectIds)));
   }
 
-  async function contextFromUser(user){
+  function expectedNamespaceForRole(role){
+    return role === 'shopper' ? 'shopper' : 'staff';
+  }
+
+  async function contextFromUser(user, requestedNamespace){
     if(!user) throw new Error('AUTH_REQUIRED');
     const token = await user.getIdTokenResult(true);
     const claims = token && token.claims ? token.claims : {};
     const role = typeof claims.role === 'string' ? claims.role : '';
     if(!LEGACY_ROLES.has(role)) throw new Error('ROLE_NOT_ALLOWED');
     if(!tenantAllowed(claims, role)) throw new Error('TENANT_NOT_ALLOWED');
+
+    const claimNamespace = typeof claims.authNamespace === 'string' ? claims.authNamespace.trim().toLowerCase() : '';
+    const expectedNamespace = expectedNamespaceForRole(role);
+    if(requestedNamespace){
+      const requested = normalizeNamespace(requestedNamespace);
+      // Cuentas legacy importadas deben coincidir tanto por namespace de claim como por rol.
+      if(claimNamespace && claimNamespace !== requested) throw new Error('LOGIN_NAMESPACE_MISMATCH');
+      if(expectedNamespace !== requested) throw new Error('ROLE_NAMESPACE_MISMATCH');
+    }
 
     const projectIds = projectsOf(claims);
     if((role === 'cliente' || role === 'client' || role === 'shopper') && !projectIds.length) throw new Error('PROJECT_SCOPE_REQUIRED');
@@ -104,6 +126,7 @@ window.CX = window.CX || {};
       projectIds: projectIds,
       shopperId: shopperId || null,
       country: typeof claims.country === 'string' ? claims.country : null,
+      authNamespace: claimNamespace || expectedNamespace,
       authenticated: true,
       provider: 'firebase',
       source: 'custom-claims-current-rules',
@@ -147,7 +170,12 @@ window.CX = window.CX || {};
     overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:20px;background:#0d1b2e;font-family:Inter,Arial,sans-serif';
     overlay.innerHTML = '<form id="cxBackendAuthForm" style="width:min(420px,96vw);background:#fff;border-radius:16px;padding:28px;box-shadow:0 22px 70px rgba(0,0,0,.38)">'+
       '<div style="font:800 20px Manrope,Inter,sans-serif;color:#15243a;margin-bottom:5px">Acceso seguro</div>'+
-      '<div style="font-size:12.5px;color:#64748b;line-height:1.5;margin-bottom:18px">Ingresa con el usuario y la contraseña asignados para CXOrbia.</div>'+
+      '<div style="font-size:12.5px;color:#64748b;line-height:1.5;margin-bottom:18px">Ingresa con las mismas credenciales asignadas para TyA.</div>'+
+      '<label for="cxBackendAuthNamespace" style="display:block;font-size:12px;font-weight:700;color:#475569;margin:0 0 5px">Tipo de acceso</label>'+
+      '<select id="cxBackendAuthNamespace" required style="box-sizing:border-box;width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;margin-bottom:12px;font:14px Inter,Arial,sans-serif;background:#fff">'+
+        '<option value="staff">Administración / Coordinación</option>'+
+        '<option value="shopper">Shopper / Evaluador</option>'+
+      '</select>'+
       '<label for="cxBackendAuthLogin" style="display:block;font-size:12px;font-weight:700;color:#475569;margin:0 0 5px">Usuario</label>'+
       '<input id="cxBackendAuthLogin" type="text" autocomplete="username" required style="box-sizing:border-box;width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;margin-bottom:12px;font:14px Inter,Arial,sans-serif">'+
       '<label for="cxBackendAuthPassword" style="display:block;font-size:12px;font-weight:700;color:#475569;margin:0 0 5px">Contraseña</label>'+
@@ -160,6 +188,7 @@ window.CX = window.CX || {};
     const form = overlay.querySelector('#cxBackendAuthForm');
     form.addEventListener('submit', async function(ev){
       ev.preventDefault();
+      const namespaceEl = overlay.querySelector('#cxBackendAuthNamespace');
       const loginEl = overlay.querySelector('#cxBackendAuthLogin');
       const passEl = overlay.querySelector('#cxBackendAuthPassword');
       const btn = overlay.querySelector('#cxBackendAuthSubmit');
@@ -167,21 +196,22 @@ window.CX = window.CX || {};
       err.style.display = 'none';
       err.textContent = '';
       btn.disabled = true;
+      const namespace = normalizeNamespace(namespaceEl.value);
       const login = String(loginEl.value || '').trim();
       const password = String(passEl.value || '');
       passEl.value = '';
       try{
-        const providerEmail = await internalFirebaseEmail(login);
+        const providerEmail = await internalFirebaseEmail(login, namespace);
         await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
         const cred = await auth.signInWithEmailAndPassword(providerEmail, password);
         loginEl.value = '';
-        const ctx = await contextFromUser(cred.user);
+        const ctx = await contextFromUser(cred.user, namespace);
         currentContext = ctx;
         applyCxSession(ctx);
         if(resolveInteractive){ resolveInteractive(ctx); resolveInteractive = null; rejectInteractive = null; }
       }catch(e){
         try{await auth.signOut();}catch(_){ }
-        err.textContent = 'No fue posible validar estas credenciales o su alcance. Verifica tu usuario y contraseña o solicita revisión de acceso.';
+        err.textContent = 'No fue posible validar estas credenciales o su alcance. Verifica el tipo de acceso, usuario y contraseña.';
         err.style.display = 'block';
         btn.disabled = false;
       }
