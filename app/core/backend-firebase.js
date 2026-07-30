@@ -93,6 +93,29 @@ window.CX = window.CX || {};
     });
   }
 
+  function normalizePeriod(p, project){
+    if(!p || typeof p !== 'object') return p;
+    const id = p.periodId || p.key || p.id;
+    const status = p.state || p.status || 'closed';
+    return Object.assign({}, p, {
+      id:id,
+      periodId:id,
+      key:p.key || id,
+      name:p.label || p.name || p.periodName || id,
+      label:p.label || p.name || p.periodName || id,
+      year:p.year || '',
+      month:p.month || '',
+      country:p.country || '',
+      countries:p.countries || {},
+      projectId:project.id,
+      projectName:project.name,
+      sourceProjectId:project.id,
+      status:status,
+      state:status,
+      active:status === 'active'
+    });
+  }
+
   function normalizeShopper(s){
     if(!s || typeof s !== 'object') return s;
     const id = s.id || s.shopperId;
@@ -222,15 +245,15 @@ window.CX = window.CX || {};
     return active;
   }
 
-  function buildPeriods(allProjects, activeProjects){
-    const activeIds = new Set(activeProjects.map(function(p){return p.id;}));
-    return allProjects.map(function(p){
-      const period = inferPeriod(p);
-      period.active = activeIds.has(p.id);
-      period.projectId = p.id;
-      period.projectName = p.name;
-      return period;
-    });
+  async function loadCanonicalPeriods(activeProjects){
+    const buckets = await Promise.all(activeProjects.map(async function(project){
+      const raw = await getAll(subCol(project.id, 'periods'));
+      return raw.map(function(period){ return normalizePeriod(period, project); });
+    }));
+    const periods = [];
+    buckets.forEach(function(bucket){ (bucket || []).forEach(function(period){ periods.push(period); }); });
+    periods.sort(function(a,b){ return String(a.key || a.id || '').localeCompare(String(b.key || b.id || '')); });
+    return periods;
   }
 
   async function loadProjectData(project, shoppersById){
@@ -257,7 +280,7 @@ window.CX = window.CX || {};
     const result = await Promise.all([getAll(projectsCol()), getAll(shoppersCol())]);
     const allProjects = result[0].map(normalizeProject);
     const activeProjects = resolveActiveProjects(allProjects);
-    const periods = buildPeriods(allProjects, activeProjects);
+    const periods = await loadCanonicalPeriods(activeProjects);
     const shoppers = result[1].map(normalizeShopper);
     const shoppersById = {};
     shoppers.forEach(function(s){ shoppersById[s.id] = s; shoppersById[s.shopperId] = s; });
@@ -288,7 +311,10 @@ window.CX = window.CX || {};
     const keep = CX.data.currentProjectId;
     const exists = CX.data.projects.some(function(p){ return p.id === keep; });
     CX.data.currentProjectId = exists ? keep : (cfg.defaultProjectId && CX.data.projects.some(function(p){return p.id === cfg.defaultProjectId;}) ? cfg.defaultProjectId : CX.data.projects[0].id);
-    CX.data.currentPeriodId = CX.data.currentPeriodId || ((CX.data.periods.find(function(p){return p.active;}) || {}).id || '');
+    const keepPeriod = CX.data.currentPeriodId;
+    const periodExists = CX.data.periods.some(function(p){ return p.id === keepPeriod; });
+    const activePeriod = CX.data.periods.find(function(p){ return p.active; }) || CX.data.periods[CX.data.periods.length - 1] || null;
+    CX.data.currentPeriodId = periodExists ? keepPeriod : (activePeriod ? activePeriod.id : '');
     const counts = {projects:CX.data.projects.length, projectRecords:state.allProjects ? state.allProjects.length : CX.data.projects.length, periods:CX.data.periods.length, visits:CX.data._visitas.length, shoppers:CX.data.shoppers.length, posts:CX.data._posts.length, projectId:CX.data.currentProjectId, periodId:CX.data.currentPeriodId};
     markSource('firestore', {empty:false, counts:counts, scope:'adapter-pre-render'});
     emit('project', {source:'firebase'});
