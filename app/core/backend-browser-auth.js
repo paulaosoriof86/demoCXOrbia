@@ -1,12 +1,13 @@
 /* ============================================================
-   CXOrbia · Firebase browser Auth gate (DEV protegido)
+   CXOrbia · Firebase browser Auth gate (backend protegido)
    ------------------------------------------------------------
-   - Solo se carga desde index-backend-dev.html.
-   - Usa Firebase Auth Email/Password con persistencia de SESION.
-   - Nunca guarda password, token, email ni UID en localStorage.
+   - Firebase Auth sigue siendo la autoridad real.
+   - El contrato visible del producto se preserva como Usuario + Contraseña.
+   - El usuario operativo se traduce determinísticamente a un identificador
+     Firebase interno; el correo técnico NO se expone al usuario final.
+   - Usa persistencia de SESION y nunca guarda password/token/UID en localStorage.
    - La sesion CX se deriva de custom claims; el selector local de rol
      no concede acceso al backend protegido.
-   - Cero Auth/Firestore/Rules writes.
    ============================================================ */
 window.CX = window.CX || {};
 
@@ -50,6 +51,27 @@ window.CX = window.CX || {};
         reject(err);
       });
     });
+  }
+
+  function normalizeLogin(value){
+    return String(value || '').trim().toLowerCase();
+  }
+
+  async function sha256Hex(value){
+    if(!window.crypto || !crypto.subtle) throw new Error('WEB_CRYPTO_REQUIRED');
+    const bytes = new TextEncoder().encode(String(value));
+    const digest = await crypto.subtle.digest('SHA-256', bytes);
+    return Array.from(new Uint8Array(digest)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');
+  }
+
+  async function internalFirebaseEmail(login){
+    const normalized = normalizeLogin(login);
+    if(!normalized) throw new Error('LOGIN_REQUIRED');
+    // Solo para soporte técnico DEV explícitamente habilitado; nunca es el contrato visible del producto.
+    if(cfg.devPreviewAuth && cfg.devPreviewAuth.allowTechnicalEmail === true && /@cxorbia-dev\.example\.com$/i.test(normalized)) return normalized;
+    const tenant = cfg.tenantId || 'tya';
+    const digest = await sha256Hex(tenant + '\0' + normalized);
+    return digest.slice(0,48) + '@auth.cxorbia.invalid';
   }
 
   // Debe reflejar firestore.rules vigente: tenantId o tenants[]; tenantIds[] NO autoriza por sí solo.
@@ -125,40 +147,41 @@ window.CX = window.CX || {};
     overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:20px;background:#0d1b2e;font-family:Inter,Arial,sans-serif';
     overlay.innerHTML = '<form id="cxBackendAuthForm" style="width:min(420px,96vw);background:#fff;border-radius:16px;padding:28px;box-shadow:0 22px 70px rgba(0,0,0,.38)">'+
       '<div style="font:800 20px Manrope,Inter,sans-serif;color:#15243a;margin-bottom:5px">Acceso seguro</div>'+
-      '<div style="font-size:12.5px;color:#64748b;line-height:1.5;margin-bottom:18px">Ingresa con tu cuenta autorizada de CXOrbia. El perfil y el alcance se validan con Firebase Auth.</div>'+
-      '<label for="cxBackendAuthEmail" style="display:block;font-size:12px;font-weight:700;color:#475569;margin:0 0 5px">Correo</label>'+
-      '<input id="cxBackendAuthEmail" type="email" autocomplete="username" required style="box-sizing:border-box;width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;margin-bottom:12px;font:14px Inter,Arial,sans-serif">'+
+      '<div style="font-size:12.5px;color:#64748b;line-height:1.5;margin-bottom:18px">Ingresa con el usuario y la contraseña asignados para CXOrbia.</div>'+
+      '<label for="cxBackendAuthLogin" style="display:block;font-size:12px;font-weight:700;color:#475569;margin:0 0 5px">Usuario</label>'+
+      '<input id="cxBackendAuthLogin" type="text" autocomplete="username" required style="box-sizing:border-box;width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;margin-bottom:12px;font:14px Inter,Arial,sans-serif">'+
       '<label for="cxBackendAuthPassword" style="display:block;font-size:12px;font-weight:700;color:#475569;margin:0 0 5px">Contraseña</label>'+
       '<input id="cxBackendAuthPassword" type="password" autocomplete="current-password" required style="box-sizing:border-box;width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;margin-bottom:14px;font:14px Inter,Arial,sans-serif">'+
       '<div id="cxBackendAuthError" aria-live="polite" style="display:none;font-size:12px;color:#b42318;background:#fef3f2;border-radius:8px;padding:9px 10px;margin-bottom:12px"></div>'+
       '<button id="cxBackendAuthSubmit" type="submit" style="width:100%;border:0;border-radius:9px;padding:11px 14px;background:#176a96;color:#fff;font:700 13px Inter,Arial,sans-serif;cursor:pointer">Ingresar</button>'+
-      '<div style="font-size:10.5px;color:#94a3b8;text-align:center;margin-top:12px">DEV protegido · lectura únicamente</div>'+
+      '<div style="font-size:10.5px;color:#94a3b8;text-align:center;margin-top:12px">Acceso protegido</div>'+
       '</form>';
     document.body.appendChild(overlay);
     const form = overlay.querySelector('#cxBackendAuthForm');
     form.addEventListener('submit', async function(ev){
       ev.preventDefault();
-      const emailEl = overlay.querySelector('#cxBackendAuthEmail');
+      const loginEl = overlay.querySelector('#cxBackendAuthLogin');
       const passEl = overlay.querySelector('#cxBackendAuthPassword');
       const btn = overlay.querySelector('#cxBackendAuthSubmit');
       const err = overlay.querySelector('#cxBackendAuthError');
       err.style.display = 'none';
       err.textContent = '';
       btn.disabled = true;
-      const email = String(emailEl.value || '').trim();
+      const login = String(loginEl.value || '').trim();
       const password = String(passEl.value || '');
       passEl.value = '';
       try{
+        const providerEmail = await internalFirebaseEmail(login);
         await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
-        const cred = await auth.signInWithEmailAndPassword(email, password);
-        emailEl.value = '';
+        const cred = await auth.signInWithEmailAndPassword(providerEmail, password);
+        loginEl.value = '';
         const ctx = await contextFromUser(cred.user);
         currentContext = ctx;
         applyCxSession(ctx);
         if(resolveInteractive){ resolveInteractive(ctx); resolveInteractive = null; rejectInteractive = null; }
       }catch(e){
         try{await auth.signOut();}catch(_){ }
-        err.textContent = 'No fue posible validar esta cuenta o su alcance. Verifica tus credenciales o solicita revision de permisos.';
+        err.textContent = 'No fue posible validar estas credenciales o su alcance. Verifica tu usuario y contraseña o solicita revisión de acceso.';
         err.style.display = 'block';
         btn.disabled = false;
       }
