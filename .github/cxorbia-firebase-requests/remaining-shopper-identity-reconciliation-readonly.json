@@ -14,7 +14,7 @@
   "deploy": false,
   "merge": false,
   "production": false,
-  "requestedAt": "2026-07-30T02:45:00Z",
-  "attempt": 7,
-  "reason": "retry after replacing blocked Sheets API read with the same cache-busted GViz read-only fallback used by R20; same authorization and zero-write scope"
+  "requestedAt": "2026-07-30T02:50:00Z",
+  "attempt": 8,
+  "reason": "retry after recovering historical unresolved identities from current TyA real profiles by the same deterministic R20 identity hash, without persisting PII; same authorization and zero-write scope"
 }
