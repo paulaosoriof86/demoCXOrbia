@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.remaining-shopper-identity.diagnostic.v1",
-  "generatedAt": "2026-07-30T02:34:18.176Z",
-  "detail": "async function sheetsGet(path,token){const r=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}${pat",
+  "generatedAt": "2026-07-30T02:36:20.015Z",
+  "detail": "Error: sheets_read_failed_403 ",
   "sanitized": true,
   "rawPiiPersisted": false,
   "providerWrites": 0
