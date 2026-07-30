@@ -60,7 +60,16 @@ jobs:
         run: node --check tools/reconciliation/tya-remaining-shopper-identity-reconciliation-readonly.mjs
 
       - name: Run authorized real-identity reconciliation in memory only
-        run: node tools/reconciliation/tya-remaining-shopper-identity-reconciliation-readonly.mjs
+        run: |
+          set +e
+          node tools/reconciliation/tya-remaining-shopper-identity-reconciliation-readonly.mjs > /tmp/remaining-identity-run.out 2> /tmp/remaining-identity-run.err
+          rc=$?
+          if [ "$rc" -ne 0 ]; then
+            err=$(grep -E 'Error:|_failed_|_missing|expected_|wrong_|collision' /tmp/remaining-identity-run.err | head -n 1 | tr '\n' ' ' | cut -c1-120)
+            printf '%s' "${err:-reconciliation_script_failed}" > /tmp/remaining-identity-failure.txt
+            exit "$rc"
+          fi
+          cat /tmp/remaining-identity-run.out
 
       - name: Validate sanitized evidence and zero-write contract
         run: |
@@ -102,9 +111,14 @@ jobs:
         run: |
           set -euo pipefail
           STATE=error; DESC='HOLD_REMAINING_SHOPPER_IDENTITY_RECONCILIATION'
-          if [ -f app/docs/evidence/REMAINING-SHOPPER-IDENTITY-RECONCILIATION-READONLY-LATEST.json ]; then STATE=success; DESC='PASS_REMAINING_SHOPPER_IDENTITY_READONLY'; fi
+          if [ -f app/docs/evidence/REMAINING-SHOPPER-IDENTITY-RECONCILIATION-READONLY-LATEST.json ]; then
+            STATE=success; DESC='PASS_REMAINING_SHOPPER_IDENTITY_READONLY'
+          elif [ -f /tmp/remaining-identity-failure.txt ]; then
+            DETAIL=$(cat /tmp/remaining-identity-failure.txt | tr '\n' ' ' | cut -c1-110)
+            DESC="HOLD:${DETAIL}"
+          fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/remaining-shopper-identity-readonly' -f description="$DESC" >/dev/null
 
       - name: Cleanup private credential and transient PII surfaces
         if: always()
-        run: rm -rf .tmp/remaining-identity-private
+        run: rm -rf .tmp/remaining-identity-private /tmp/remaining-identity-run.err /tmp/remaining-identity-run.out /tmp/remaining-identity-failure.txt
