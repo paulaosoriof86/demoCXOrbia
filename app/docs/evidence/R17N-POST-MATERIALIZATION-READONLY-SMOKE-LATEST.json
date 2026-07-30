@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "cxorbia.r17n-post-materialization-readonly-smoke.v2",
+  "generatedAt": "2026-07-30T04:30:50.607Z",
+  "decision": "P0_PROVEN_C5_CXDATA_PERIOD_MODEL_MISMATCH",
+  "runId": 30514060348,
+  "artifactId": 8748181730,
+  "artifactDigest": "sha256:a23f06035043de8568a826aefb52cfce5df9781b3a9b86ccf8238f8fd1c8d3cf",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "canonicalProjectId": "cinepolis"
+  },
+  "postCompare": {
+    "expectedPaths": 1406,
+    "existingPaths": 1406,
+    "missing": 0,
+    "wrongAuthorization": 0,
+    "productionTrue": 0,
+    "rootProjectRecords": 30,
+    "tenantShoppers": 340,
+    "canonicalPeriods": 14,
+    "canonicalVisits": 616,
+    "canonicalLiquidations": 572,
+    "canonicalCertifications": 77,
+    "payments": 0,
+    "lots": 0,
+    "tenantUntouchedByAuthorization": true
+  },
+  "identity": {
+    "sourceRefs": 208,
+    "expectedSourceRefs": 208,
+    "canonicalTargetShopperIds": 194,
+    "expectedCanonicalTargetShopperIds": 194,
+    "visitsWithRealName": 616,
+    "visitsWithExistingShopper": 616,
+    "referencedProfilesWithRealName": 194,
+    "certificationsWithExistingShopper": 77,
+    "placeholderVisitNames": 0
+  },
+  "liquidation": {
+    "controls": 572,
+    "paymentControlOnly": 572,
+    "paidTrue": 0
+  },
+  "cxdataSmoke": {
+    "source": "firestore",
+    "fallbackUsed": false,
+    "interfacePreserved": true,
+    "projects": 1,
+    "periods": 30,
+    "visits": 616,
+    "shoppers": 340,
+    "posts": 0,
+    "currentProjectId": "cinepolis",
+    "currentPeriodId": "cinepolis",
+    "readOnly": true,
+    "writeMode": "disabled",
+    "readGuardAnomalies": 0,
+    "providerProjectRecords": 30,
+    "canonicalPeriods": 14,
+    "adapterPeriodIdsMatchCanonical": false,
+    "currentPeriodIsCanonical": false,
+    "canonicalParentProjectLoaded": true,
+    "demoProjectVisible": false
+  },
+  "blockers": [
+    "adapter_period_count:30",
+    "adapter_period_ids_do_not_match_canonical_subcollection",
+    "current_period_not_canonical:cinepolis"
+  ],
+  "rootCause": {
+    "file": "app/core/backend-firebase.js",
+    "summary": "loadTenantData/buildPeriods derives CX.data.periods from tenant project documents instead of reading tenants/tya/projects/cinepolis/periods; applyData therefore receives 30 inferred periods and currentPeriodId=cinepolis although the canonical materialization contains 14 period documents under the cinepolis parent project."
+  },
+  "safety": {
+    "providerReads": true,
+    "providerWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "legacyWrites": 0,
+    "deletes": 0,
+    "payments": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "rawPiiWrittenToRepo": false,
+    "rawPiiWrittenToArtifacts": false
+  }
+}
