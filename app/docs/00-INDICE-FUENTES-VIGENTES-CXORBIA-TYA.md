@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-30  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `CORTE3_FROZEN__R17N_FINAL_DEV_MATERIALIZED_1406__C5_CXDATA_PERIOD_MODEL_FIXED__READONLY_RESMOKE_PASS__OPERATIONAL_VISUAL_PENDING__NO_PRODUCTION`
+**Estado vivo:** `CORTE3_FROZEN__R17N_FINAL_DEV_MATERIALIZED_1406__C5_CXDATA_PERIOD_MODEL_FIXED__READONLY_RESMOKE_PASS__EXISTING_HOSTING_VISUAL_PREFLIGHT_AUTH_HOLD__DEPLOY0__NO_PRODUCTION`
 
 ## 1. Repositorio
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -10,24 +10,27 @@
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
 - Backend DEV canónico: `cxorbia-backend-dev`.
+- Hosting DEV de visualización existente: `cxorbia-backend-dev` / target `cxorbia-dev` / `https://cxorbia-backend-dev.web.app`.
 - Legacy/Hosting final: `tya-plataforma`.
 - Sandbox C4: no destino de materialización.
+- No crear nuevo Firebase ni nuevo Hosting por rutina.
 
 ## 2. Lectura obligatoria vigente
 1. este índice;
 2. reglas maestras + addenda de empalme/carril, Academia, patrones y antidesvío;
 3. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 4. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-5. `ADDENDUM-IDENTIDAD-REAL-SHOPPER-PII-SOURCE-SAFE-VS-PLATAFORMA-20260729.md`;
-6. `evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.json`;
-7. `evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json`;
-8. `evidence/CURRENT-UNRESOLVED-SHOPPER-IDENTITY-READONLY-LATEST.json`;
-9. `evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.json`;
-10. `evidence/R17N-FINAL-WRITE-PLAN-NO-EXECUTE-LATEST.json`;
-11. `evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.json`;
-12. `evidence/R17N-POST-MATERIALIZATION-READONLY-SMOKE-LATEST.json` + `.md`;
-13. addenda más recientes de CAMBIOS/Claude/PENDIENTES/Academia y tracker;
-14. PR #7 y HEAD vivo.
+5. `CORTE5-EXISTING-HOSTING-DEV-PREFLIGHT-AUTH-DEPENDENCY-20260730.md`;
+6. `ADDENDUM-IDENTIDAD-REAL-SHOPPER-PII-SOURCE-SAFE-VS-PLATAFORMA-20260729.md`;
+7. `evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.json`;
+8. `evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json`;
+9. `evidence/CURRENT-UNRESOLVED-SHOPPER-IDENTITY-READONLY-LATEST.json`;
+10. `evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.json`;
+11. `evidence/R17N-FINAL-WRITE-PLAN-NO-EXECUTE-LATEST.json`;
+12. `evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.json`;
+13. `evidence/R17N-POST-MATERIALIZATION-READONLY-SMOKE-LATEST.json` + `.md`;
+14. addenda más recientes de CAMBIOS/Claude/PENDIENTES/Academia y tracker;
+15. PR #7 y HEAD vivo.
 
 ## 3. Baseline no reabrir
 Corte 3 permanece `FROZEN_ACTIVE_BASELINE` en `CXORBIA-TYA-CORTE3-V182-20260729`:
@@ -108,17 +111,36 @@ CX.data:
 - read-only/writeMode disabled;
 - blockers 0.
 
-## 8. Gate vivo único
-Estado máximo actual: `CORTE5_TECHNICAL_PASS__OPERATIONAL_VISUAL_PENDING`.
+## 8. Hosting DEV existente — preflight Auth HOLD antes de deploy
+Paula autorizó un único redeploy del Hosting DEV **existente**, no la creación de otro.
+
+El preflight verificó el destino correcto y detuvo la ejecución antes de consumirla:
+- Hosting DEV existente = `cxorbia-backend-dev` / target `cxorbia-dev`;
+- new Hosting=false;
+- new Firebase project=false;
+- deploy ejecutado=0;
+- autorización de deploy consumida=false.
+
+Bloqueo seguro:
+- Firestore requiere usuario autenticado + claims para leer datos reales;
+- `index-backend-dev.html` requiere Firebase Auth para su preview real;
+- los botones visibles de rol en `app.js` no son autenticación Firebase;
+- el alcance autorizado excluye Auth writes/Rules deploy;
+- credenciales/tokens/PII no pueden publicarse en JS/URL/Hosting.
+
+La autorización del redeploy queda reservada; no se solicita otra autorización de Hosting mientras siga 0/1.
+
+## 9. Gate vivo único
+Estado máximo actual: `CORTE5_TECHNICAL_PASS__VISUAL_BLOCKED_BY_SECURE_AUTH_PREREQUISITE__DEPLOY_NOT_CONSUMED`.
 
 Siguiente gate:
-`AUTORIZACIÓN BIND DEV READ-ONLY A cxorbia-backend-dev + UN ÚNICO HOSTING DEV CONTROLADO → VALIDACIÓN VISUAL/OPERATIVA CON DATOS REALES → si no hay P0: FREEZE CORTE 5 → CORTE 6 AUTH/RBAC`.
+`CORTE6 AUTH/RBAC PREP READ-ONLY/OFFLINE → reconciliar Auth existente + claims + login seguro → autorización solo para cambios Auth/Rules mínimos → reutilizar el MISMO Hosting DEV y el redeploy ya autorizado → validación visual real → freeze`.
 
-No repetir materialización. No tocar UI por rutina. No nueva base/candidata/rama/PR. No producción ni cutover `tya-plataforma` todavía.
+No repetir materialización. No tocar UI por rutina. No nueva base/candidata/rama/PR/Hosting. No producción ni cutover `tya-plataforma` todavía.
 
-## 9. Claude / Academia
-- Claude: no nueva candidata; P0 backend cerrado técnicamente. Solo actuar si la validación visual demuestra un P0 frontend reproducible.
-- Academia: proyecto padre vs periodo, readback vs consumidor runtime, identidad real vs source-safe y liquidación ≠ pago.
+## 10. Claude / Academia
+- Claude: no nueva candidata. El login visible debe convertirse en autenticación real antes de producción; no usar selector de rol como sustituto de Auth.
+- Academia: selección de rol ≠ autenticación, Hosting con PII requiere RBAC, proyecto padre vs periodo, readback vs consumidor runtime e identidad real vs source-safe.
 
-## 10. Estado seguro
-R17N histórico: 1,406 writes autorizados ya ejecutados. Corrección/re-smoke actual: provider reads solamente; Firestore/Auth/Storage/HR/legacy writes=0; deletes=0; pagos=0; deploy=0; merge=false; producción=false; Make/Gemini=0; PII cruda repo/artifacts=0.
+## 11. Estado seguro
+R17N histórico: 1,406 writes autorizados ya ejecutados. Bloque actual: Hosting deploy=0; Firestore/Auth/Storage/HR/legacy writes=0; Rules/Functions deploy=0; deletes=0; pagos=0; merge=false; producción=false; Make/Gemini=0; PII cruda repo/artifacts=0.
