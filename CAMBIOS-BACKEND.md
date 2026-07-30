@@ -1,40 +1,70 @@
 # CAMBIOS-BACKEND.md
 
-## 2026-07-30 — Estado vigente: HR actual 208 refs + identidad 208/208 + R17N FINAL 1,406 NO EXECUTE
+## 2026-07-30 — R17N FINAL materialización DEV exacta PASS
 
-Fuentes prevalentes:
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-R17N-FINAL-CURRENT-HR-IDENTIDAD-20260730.md`;
-- `app/docs/ADDENDUM-IDENTIDAD-REAL-SHOPPER-PII-SOURCE-SAFE-VS-PLATAFORMA-20260729.md`;
-- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`.
+Estado vivo: `CORTE3_FROZEN__R17N_FINAL_DEV_MATERIALIZED_1406__READBACK_1406_PASS__POST_COMPARE_SMOKE_PENDING__NO_PRODUCTION`.
 
-Estado actual:
-- `cxorbia-backend-dev` = backend DEV canónico; reutilizar;
-- `tya-plataforma` = legacy actual a retirar + Hosting/URL pública final;
-- el snapshot HR del 13-jul (210 refs) quedó superado por la HR actual hasta julio: 208 refs, +2/-4/206 intersección;
-- crosswalk actual: 201/208 reuse existing, 7 inicialmente sin match transaccional;
-- reconciliación real de 7: 2 legacy-profile create +5 HR-current profile create; 0 HOLD de identidad actual;
-- identidad final debe ser real en la plataforma autorizada; source-safe solo sanitiza evidencia técnica;
-- legacy refresh: 149 shoppers únicos, 120 create, 22 existing update HOLD, 7 HOLD; 78 certs, 77 create +1 HOLD;
-- R17N FINAL no-execute: foundation16 + legacy profiles120 + HR profiles5 + certs77 + visits616 + liquidation controls572 = **1,406 exact ready writes**;
-- idempotencia offline PASS;
-- tenant update, 22 existing updates, 7 legacy holds, 1 cert hold, Agosto HN, deletes/pagos quedan fuera;
-- writes/imports/deploy/producción siguen en 0.
+### Archivos funcionales/gates creados o modificados
+- `tools/migration/tya-r17n-final-materialize-dev.mjs`: executor exacto DEV, preflight, relectura de identidad real en memoria, write por grupos autorizados y readback.
+- `.github/workflows/cxorbia-r17n-final-materialize-dev.yml`: gate one-shot de materialización DEV con diagnóstico fail-closed.
+- `.github/cxorbia-firebase-requests/r17n-final-materialize-dev.json`: autorización exacta `r17n-final-dev-20260730-01`.
+- `app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.json/.md`: evidencia sanitizada PASS.
+- `app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-HOLD-LATEST.json`: conserva trazabilidad de preflights HOLD previos sin writes.
 
-Correcciones metodológicas:
-- workflow offline ahora fail-closed por `job.status`, no por presencia de artefacto viejo;
-- validación `hrImports` corregida al path bajo proyecto;
-- R14C financiero viejo (210 shoppers) no se fuerza: se preservan 247 filas /196 links exactos por visitId /51 reviews.
+### Ejecución real autorizada
+Target: `cxorbia-backend-dev` / tenant `tya` / project `cinepolis`.
 
-## Clasificación vigente
-- **Reusable CXOrbia:** freshness gate, identidad real + evidencia sanitizada, crosswalk transaccional, fail-closed e idempotencia.
-- **Exclusivo cliente:** TyA/Cinépolis, `tya-plataforma`, HR 208 refs, 120+5 perfiles create, 77 certs.
-- **Claude/prototipo:** no nueva candidata; validar identidad real solo después de materialización/smoke.
-- **Academia:** snapshot vs fuente viva, privacidad técnica vs identidad operativa, stable-key y review.
-- **Sin impacto Claude:** workflows/read-only evidence/hashes.
+Preflight final:
+- 1,406 operaciones intended;
+- 1,406 absent;
+- 0 same / 0 conflict;
+- 208/208 identidades HR revalidadas;
+- 201/201 targets canónicos existentes verificados;
+- 201/201 con nombre real visible; 0 enriquecimientos adicionales;
+- 196 links financieros exactos R14C preservados.
+
+Writes ejecutados y readback:
+- foundation 16;
+- legacy profile creates 120;
+- current-HR profile creates 5;
+- certification creates 77;
+- visits 616;
+- liquidation controls 572;
+- **Firestore writes = 1,406**;
+- **readback = 1,406/1,406**;
+- mismatch = 0.
+
+### Exclusiones verificadas
+- tenant update 1: no ejecutado;
+- existing profile updates 22: HOLD;
+- legacy holds 7: HOLD;
+- certification hold 1: HOLD;
+- Agosto HN: HOLD;
+- deletes=0;
+- pagos/lotes=0;
+- Auth/Storage/HR/legacy writes=0;
+- deploy=0;
+- merge=false;
+- producción=false.
+
+### Causa raíz corregida antes del write
+Los dos primeros preflights del executor devolvieron `live_identity_207` y se detuvieron con Firestore writes=0. El problema era del gate: para reconstruir el shopperRef se colapsaban espacios internos antes del SHA, mientras el builder R20 usa exactamente `trim + lowercase`. Se corrigió el executor para usar la misma semántica R20. Después del fix, el preflight obtuvo 208/208 y recién entonces se ejecutó el write.
+
+### Documentación
+Actualizados índice vigente, checkpoint, Phase A, CAMBIOS, Claude/PENDIENTES/Academia y PR #7. Evidencia principal: `app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.json`.
+
+## Clasificación
+- **Reusable CXOrbia:** autorización exacta por grupos, preflight fail-closed, stable identity hashing compartido con source builder, no-overwrite, readback completo, PII fuente→backend protegido sin pasar por GitHub.
+- **Exclusivo cliente:** TyA/Cinépolis, `tya-plataforma`, 208 refs, 120+5 perfiles, 77 certs, 616 visitas y 572 controles.
+- **Claude/prototipo:** sin nueva candidata; validar UI solo después del smoke backend; P1/P2 de reportes siguen backlog.
+- **Academia:** explicar materialización, readback, identidad real/source-safe y liquidación ≠ pago.
+- **Sin impacto Claude:** executor/workflow/request/evidencia técnica.
+
+## Siguiente bloque exacto
+`POST-COMPARE READ-ONLY DEL BACKEND MATERIALIZADO → SMOKE CX.data CANÓNICO + IDENTIDAD REAL → VALIDACIÓN OPERATIVA → CORTE 6 AUTH/RBAC`.
 
 ## Estado seguro
-Firestore/Auth/Storage/HR/legacy writes=0; deletes=0; deploy=0; merge=false; producción=false; pagos/lotes/Make/Gemini=0.
+Firestore writes autorizados ejecutados: 1,406. Auth/Storage/HR/legacy writes=0; deletes=0; pagos=0; deploy=0; merge=false; producción=false; Make/Gemini=0.
 
 ## Histórico
-Addenda anteriores permanecen como trazabilidad. Estados de 210 refs/9 pendientes quedan históricos y no deben reactivarse.
+Los addenda previos permanecen como trazabilidad. Los estados de 210 refs/9 pendientes y R17N NO EXECUTE son históricos y no deben reactivarse.
