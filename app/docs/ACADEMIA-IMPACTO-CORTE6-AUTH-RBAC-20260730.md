@@ -1,84 +1,84 @@
-# Academia — impacto Corte 6 Auth/RBAC + Rules + Hosting DEV
+# Academia — impacto Corte 6 Auth/RBAC + continuidad de credenciales
 
 **Fecha:** 2026-07-30  
-**Estado:** Corte6 técnico PASS; pendiente validación visual humana autenticada; no producción.
+**Estado:** Corte6 técnico PASS; `P0_PROVEN_C6_CREDENTIAL_CONTINUITY_GAP`; no producción.
 
 ## Objetivo
-Registrar aprendizajes reutilizables del gate real de identidad, permisos y publicación DEV sin exponer seguridad técnica innecesaria en la UI normal.
+Registrar aprendizajes reutilizables del gate real de identidad, permisos y continuidad de acceso sin convertir detalles técnicos del proveedor en la experiencia normal del usuario.
 
 ## Resultado real que debe quedar reflejado
 - Firebase Auth real y claims sustituyen al selector visual de rol como autoridad de acceso.
-- 5 cuentas existentes fueron normalizadas de forma fail-closed: cliente2 + shopper3 con vínculo exacto.
+- 5 cuentas existentes fueron normalizadas fail-closed: cliente2 + shopper3 con vínculo exacto.
 - Shopper sin vínculo exacto no se corrigió por inferencia.
 - Rules canónicas de visita disponible usan `status` y conservan compatibilidad `estado` legacy.
-- Hosting DEV fue desplegado una sola vez sobre el sitio existente y verificado en `/index-backend-dev.html`.
-- No se creó nuevo Firebase/Hosting y no hubo Firestore data writes en Corte6.
+- Hosting DEV fue desplegado una sola vez sobre el sitio existente y verificado.
+- El formulario técnico DEV `Correo + Contraseña` no debe convertirse en el contrato final del producto.
+- Inventario read-only demostró que las credenciales legacy `Usuario + Contraseña` todavía no están materializadas en el backend canónico.
+- No se crea un Gmail nuevo para resolver una ausencia de migración de identidad.
 
 ## Contenido obligatorio por rol
 ### Admin / Operativo
-- autenticación real vs selección visual de rol;
+- autenticación real detrás del acceso del producto;
+- usuario visible no tiene por qué ser un email;
 - tenant y proyecto autorizados;
-- cómo identificar conflicto de acceso sin ampliar permisos silenciosamente;
-- diferencia entre usuario Auth, perfil shopper y referencia HR;
-- validación esperada: operar solo dentro del alcance autorizado.
+- cómo identificar conflicto de acceso sin ampliar permisos;
+- diferencia entre identidad Auth, usuario operativo, perfil shopper y referencia HR.
 
 ### Shopper
-- ingreso con cuenta autorizada;
-- vínculo de identidad por `shopperId`, sin exponer IDs técnicos en curso normal;
-- por qué solo aparecen proyectos/visitas permitidos;
-- visita disponible no equivale a visita asignada;
-- si falta una visita: solicitar revisión, no crear otra identidad ni cambiar rol localmente.
+- ingreso con su usuario operativo y contraseña cuando el adapter quede activado;
+- el proveedor Auth puede usar un identificador interno no visible;
+- vínculo de identidad por `shopperId` sin exponer IDs técnicos;
+- solo aparecen proyectos/visitas permitidos;
+- si falta acceso, solicitar revisión; nunca crear otra identidad para “hacer que funcione”.
 
 ### Cliente
-- ingreso autenticado;
+- ingreso autenticado con credencial asignada por la plataforma;
 - visibilidad limitada al proyecto autorizado;
-- no confundir acceso cliente con acceso administrativo;
-- escalamiento cuando falte acceso.
+- no confundir usuario de acceso con correo de contacto;
+- recuperación/cambio de contraseña por flujo controlado.
 
 ### Superadmin
 - scopes tenant/proyecto;
-- revisión de claims y conflictos;
+- mapping `usuario operativo ↔ identidad provider`;
+- revisión de conflictos;
 - mínimo privilegio;
 - nunca inferir permisos por nombre/email/coincidencia visual;
-- diferencias entre permiso real del API y dependencias adicionales de una herramienta CLI.
+- migración de credenciales solo por export/import controlado.
 
 ## Aprendizajes técnicos convertibles a material de Academia
-1. **Auth real ≠ selector de rol.** El rol visual puede cambiar la experiencia, pero no autoriza al proveedor.
-2. **Claims con scopes canónicos.** `tenantId` y `projectId/projectIds` deben representar el modelo real; un alias viejo no es equivalente.
-3. **Identidad shopper exacta.** El vínculo `shopperId`/perfil evita deduplicaciones o permisos por nombre.
-4. **Fail-closed.** Una cuenta incompleta queda en revisión; no se amplía acceso para “hacer que funcione”.
-5. **CLI vs API.** Un CLI puede requerir permisos adicionales para prechecks. Antes de ampliar IAM, separar dependencia de herramienta de permiso realmente requerido por el servicio.
-6. **Hosting exact-static vs rewrite.** Firebase Hosting atiende contenido estático exacto antes del rewrite; por eso un entrypoint explícito puede ser correcto aunque `/` sirva otro archivo estático.
-7. **Verificación por evidencia.** Deploy no equivale a éxito hasta comprobar release/version, estado FINALIZED y contenido remoto esperado.
+1. **Auth real ≠ selector de rol.** El rol visual no autoriza al proveedor.
+2. **Usuario ≠ email obligatorio.** El producto puede conservar un username mientras el adapter resuelve el identificador provider internamente.
+3. **Credencial de contacto ≠ credencial de acceso.** Un correo del perfil no debe convertirse automáticamente en login.
+4. **Continuidad de credenciales es parte de la migración.** Datos operativos completos no significan identidad migrada.
+5. **Claims con scopes canónicos.** tenant/proyecto/rol deben representar el modelo real.
+6. **Identidad shopper exacta.** `shopperId` evita permisos por coincidencia de nombre.
+7. **Fail-closed.** Conflicto o ausencia de fuente de identidad → HOLD/revisión, no credencial nueva improvisada.
+8. **Export/import, no conexión legacy.** La base vieja no se convierte en dependencia runtime.
+9. **CLI vs API.** Separar permisos realmente requeridos de dependencias extra de una herramienta.
+10. **Verificación por evidencia.** Import/deploy no equivale a éxito sin readback.
 
 ## Manuales/checklists a actualizar
-1. Manual de acceso/login: Firebase Auth como identidad real; selector local no es autorización.
-2. Manual de roles/permisos: tenant/proyecto determinan alcance.
-3. Manual Shopper: identidad única, historial propio y disponibles autorizadas.
-4. Checklist soporte: cuenta, rol, tenant, proyecto y vínculo shopper antes de escalar.
-5. Errores frecuentes: cuenta válida sin proyecto, shopper sin vínculo exacto, sesión expirada, permiso insuficiente.
-6. Validación: conflicto → revisión humana, nunca ampliación automática.
-7. Manual técnico/admin: distinguir dependencia CLI de permiso proveedor; preferir mínima superficie de permisos.
-8. Manual DEV: usar el entrypoint canónico validado y no convertir alias raíz en P0 si la ruta oficial funciona.
+1. Manual de acceso/login: `Usuario + Contraseña` visible con Auth provider detrás.
+2. Manual de recuperación/cambio de contraseña.
+3. Manual de roles/permisos: tenant/proyecto determinan alcance.
+4. Manual Shopper: identidad única, historial propio y disponibles autorizadas.
+5. Checklist soporte: usuario, identidad provider, rol, tenant, proyecto y vínculo shopper.
+6. Errores frecuentes: usuario no migrado, conflicto de username, cuenta sin proyecto, shopper sin vínculo exacto, sesión expirada.
+7. Validación: conflicto → revisión humana, nunca ampliación automática.
+8. Manual técnico/admin: import idempotente, hash-type, readback, mínimos permisos.
 
 ## Notificaciones / rutas
-- Ruta Admin/Ops: microlección de acceso seguro y troubleshooting.
-- Ruta Shopper: ingreso seguro + disponibilidad de visitas.
-- Ruta Cliente: alcance por proyecto.
-- Superadmin: claims/scopes, IAM mínimo, diagnóstico fail-closed.
-- Novedad de producto solo después de validación DEV humana y aprobación; no anunciar producción antes del cutover.
-
-## Estado operativo para Academia
-URL técnico de validación DEV documentado internamente:
-`https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis`
-
-No incluir emails/passwords/tokens en manuales, capturas públicas o chat.
+- Ruta Admin/Ops: acceso seguro + troubleshooting.
+- Ruta Shopper: ingreso, cambio/recuperación y disponibilidad de visitas.
+- Ruta Cliente: ingreso y alcance por proyecto.
+- Superadmin: identidad provider, adapter, claims/scopes y conflictos.
+- Novedad de producto solo después de cierre del P0 y aprobación; no anunciar producción antes del cutover.
 
 ## Reusable vs TyA
-- **Reusable CXOrbia:** Auth real, mínimo privilegio, scopes tenant/proyecto, shopperId exacto, conflicto a review, CLI vs API, exact-static vs rewrite y verificación remota.
-- **Exclusivo TyA:** tenant `tya`, proyecto `cinepolis`, scopes viejos `tya`/`tya-piloto`, Agosto HN HOLD.
-- **Claude/prototipo:** no requiere cambio hasta que la visual autenticada pruebe P0.
-- **Sin impacto Claude:** runners, requests, release/version IDs y evidencia source-safe.
+- **Reusable CXOrbia:** Auth real detrás de adapter, username visible, mínimo privilegio, scopes, import idempotente, fail-closed.
+- **Exclusivo TyA:** fuente legacy de credenciales, proyecto `cinepolis` y Agosto HN HOLD.
+- **Claude/prototipo:** ajuste focalizado login/registro; no nueva candidata.
+- **Sin impacto Claude:** inventarios source-safe, import/readback y gates provider.
 
 ## Estado seguro
-Corte6: Auth claim writes5 sobre usuarios existentes; usuarios nuevos/password/deletes0; Firestore data writes0; Rules release1 verificada; Hosting DEV1/1; Storage/HR/legacy0; pagos/Make/Gemini0; merge=false; producción=false; PII/secrets crudos0.
+Corte6: Auth claim writes5 ya autorizados; usuarios nuevos/password changes/deletes0; Firestore data writes0; Rules release1; Hosting DEV1/1; inventario credential-continuity provider writes0; Storage/HR/legacy0; pagos/Make/Gemini0; merge=false; producción=false; credenciales crudas0.
