@@ -1,70 +1,83 @@
 # CAMBIOS-BACKEND.md
 
-## 2026-07-30 — R17N FINAL materialización DEV exacta PASS
+## 2026-07-30 — Corte 5 post-materialización: provider/identidad PASS + P0 CX.data period model
 
-Estado vivo: `CORTE3_FROZEN__R17N_FINAL_DEV_MATERIALIZED_1406__READBACK_1406_PASS__POST_COMPARE_SMOKE_PENDING__NO_PRODUCTION`.
+Estado: `CORTE3_FROZEN__R17N_FINAL_DEV_MATERIALIZED_1406__PROVIDER_COMPARE_IDENTITY_PASS__P0_C5_CXDATA_PERIOD_MODEL__RUNTIME_FIX_AUTH_PENDING__NO_PRODUCTION`.
 
-### Archivos funcionales/gates creados o modificados
-- `tools/migration/tya-r17n-final-materialize-dev.mjs`: executor exacto DEV, preflight, relectura de identidad real en memoria, write por grupos autorizados y readback.
-- `.github/workflows/cxorbia-r17n-final-materialize-dev.yml`: gate one-shot de materialización DEV con diagnóstico fail-closed.
-- `.github/cxorbia-firebase-requests/r17n-final-materialize-dev.json`: autorización exacta `r17n-final-dev-20260730-01`.
-- `app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.json/.md`: evidencia sanitizada PASS.
-- `app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-HOLD-LATEST.json`: conserva trazabilidad de preflights HOLD previos sin writes.
+### Archivos creados/tocados en este bloque
+- `tools/qa/tya-r17n-post-materialization-readonly-smoke.mjs`: wrapper del gate hardened.
+- `tools/qa/tya-r17n-post-materialization-readonly-smoke-v2.mjs`: post-compare proveedor + identidad + smoke exacto CX.data, read-only.
+- `.github/workflows/cxorbia-r17n-post-materialization-readonly.yml`: ejecución controlada read-only, sin contents write/provider write.
+- `.github/cxorbia-firebase-requests/r17n-post-materialization-readonly.json`: request consumido/frozen después del diagnóstico.
+- `app/docs/evidence/R17N-POST-MATERIALIZATION-READONLY-SMOKE-LATEST.json`: evidencia sanitizada del P0.
+- índice/checkpoint/Phase A/CAMBIOS/Claude/PENDIENTES/Academia/tracker/PR actualizados.
 
-### Ejecución real autorizada
-Target: `cxorbia-backend-dev` / tenant `tya` / project `cinepolis`.
+### Resultado de proveedor
+Run `30514060348`, artifact `8748181730`:
+- 1,406/1,406 rutas R17N presentes;
+- 0 missing;
+- 0 authorization drift;
+- 0 `production=true`;
+- tenant sin update R17N;
+- project parent `cinepolis` presente;
+- 14 periodos canónicos;
+- 616 visitas;
+- 572 controles de liquidación;
+- 77 certificaciones;
+- payments/lots 0/0.
 
-Preflight final:
-- 1,406 operaciones intended;
-- 1,406 absent;
-- 0 same / 0 conflict;
-- 208/208 identidades HR revalidadas;
-- 201/201 targets canónicos existentes verificados;
-- 201/201 con nombre real visible; 0 enriquecimientos adicionales;
-- 196 links financieros exactos R14C preservados.
+### Resultado identidad
+- 208/208 referencias HR exactas;
+- 194/194 perfiles canónicos únicos esperados según mapping;
+- 616/616 visitas con nombre real y shopper existente;
+- 194/194 perfiles referenciados con nombre real;
+- 77/77 certificaciones con shopper existente;
+- placeholders demo 0.
 
-Writes ejecutados y readback:
-- foundation 16;
-- legacy profile creates 120;
-- current-HR profile creates 5;
-- certification creates 77;
+El primer intento del harness esperaba erróneamente 208 perfiles canónicos únicos. La evidencia R17N demuestra que 208 referencias HR pueden converger determinísticamente a 194 targets canónicos; se corrigió el gate para comparar el set exacto del mapping, no asumir unicidad 1:1. Ese intento fue read-only y tuvo cero writes.
+
+### P0 reproducible
+`P0_PROVEN_C5_CXDATA_PERIOD_MODEL_MISMATCH`.
+
+`app/core/backend-firebase.js` aún implementa el modelo pre-canónico:
+- lee todos los docs de `tenants/tya/projects`;
+- deriva `CX.data.periods` con `buildPeriods(allProjects, activeProjects)`;
+- no lee la subcolección `tenants/tya/projects/cinepolis/periods`.
+
+Smoke exacto del adapter con snapshot Firestore real en memoria:
+- `source=firestore`;
+- `fallbackUsed=false`;
+- interfaz `CX.data` preservada;
+- readOnly/writeMode disabled preservados;
+- parent project `cinepolis` cargado;
 - visits 616;
-- liquidation controls 572;
-- **Firestore writes = 1,406**;
-- **readback = 1,406/1,406**;
-- mismatch = 0.
+- **periods 30**, esperado 14;
+- **currentPeriodId=cinepolis**, esperado uno de los 14 IDs canónicos.
 
-### Exclusiones verificadas
-- tenant update 1: no ejecutado;
-- existing profile updates 22: HOLD;
-- legacy holds 7: HOLD;
-- certification hold 1: HOLD;
-- Agosto HN: HOLD;
-- deletes=0;
-- pagos/lotes=0;
-- Auth/Storage/HR/legacy writes=0;
-- deploy=0;
-- merge=false;
-- producción=false.
+No se aplicó runtime fix porque el lock exige autorización expresa de Paula ante P0 demostrado.
 
-### Causa raíz corregida antes del write
-Los dos primeros preflights del executor devolvieron `live_identity_207` y se detuvieron con Firestore writes=0. El problema era del gate: para reconstruir el shopperRef se colapsaban espacios internos antes del SHA, mientras el builder R20 usa exactamente `trim + lowercase`. Se corrigió el executor para usar la misma semántica R20. Después del fix, el preflight obtuvo 208/208 y recién entonces se ejecutó el write.
+### Clasificación
+- **Reusable CXOrbia:** provider post-compare, target-set identity semantics, adapter canonical parent/period contract, fail-closed.
+- **Exclusivo cliente:** TyA/Cinépolis, 14 periodos/616 visitas/208 refs/194 targets.
+- **Claude/prototipo:** sin nueva candidata; no tocar módulos UI por este P0.
+- **Academia:** proyecto padre vs periodo; referencia HR vs perfil canónico; readback vs runtime consumption.
+- **Sin impacto Claude:** workflow/request/artifact/hashes.
 
-### Documentación
-Actualizados índice vigente, checkpoint, Phase A, CAMBIOS, Claude/PENDIENTES/Academia y PR #7. Evidencia principal: `app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.json`.
+### Estado seguro
+R17N previo: 1,406 writes ya autorizados/materializados. Este bloque: provider reads únicamente; Firestore/Auth/Storage/HR/legacy writes=0; deletes/pagos/deploy/merge/producción=0; PII cruda en repo/artifact=0.
 
-## Clasificación
-- **Reusable CXOrbia:** autorización exacta por grupos, preflight fail-closed, stable identity hashing compartido con source builder, no-overwrite, readback completo, PII fuente→backend protegido sin pasar por GitHub.
-- **Exclusivo cliente:** TyA/Cinépolis, `tya-plataforma`, 208 refs, 120+5 perfiles, 77 certs, 616 visitas y 572 controles.
-- **Claude/prototipo:** sin nueva candidata; validar UI solo después del smoke backend; P1/P2 de reportes siguen backlog.
-- **Academia:** explicar materialización, readback, identidad real/source-safe y liquidación ≠ pago.
-- **Sin impacto Claude:** executor/workflow/request/evidencia técnica.
+### Siguiente bloque exacto
+`AUTORIZACIÓN P0-C5-CXDATA-PERIOD-MODEL → PATCH BACKEND ADAPTER FOCALIZADO → RE-SMOKE READ-ONLY → VALIDACIÓN OPERATIVA → FREEZE CORTE 5`.
 
-## Siguiente bloque exacto
-`POST-COMPARE READ-ONLY DEL BACKEND MATERIALIZADO → SMOKE CX.data CANÓNICO + IDENTIDAD REAL → VALIDACIÓN OPERATIVA → CORTE 6 AUTH/RBAC`.
+---
 
-## Estado seguro
-Firestore writes autorizados ejecutados: 1,406. Auth/Storage/HR/legacy writes=0; deletes=0; pagos=0; deploy=0; merge=false; producción=false; Make/Gemini=0.
+## 2026-07-30 — R17N FINAL materialización DEV exacta PASS
+- 1,406 Firestore writes autorizados y ejecutados.
+- Readback 1,406/1,406; mismatch 0.
+- Foundation16 + legacy profiles120 + HR profiles5 + certs77 + visits616 + liquidation controls572.
+- HR identity 208/208; existing canonical 201/201 con nombre real visible.
+- Tenant/update22/holds/agosto/deletes/pagos/Auth/Storage/HR/deploy/merge/producción excluidos.
+- Evidencia: `app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.json`.
 
-## Histórico
+## Histórico protegido
 Los addenda previos permanecen como trazabilidad. Los estados de 210 refs/9 pendientes y R17N NO EXECUTE son históricos y no deben reactivarse.
