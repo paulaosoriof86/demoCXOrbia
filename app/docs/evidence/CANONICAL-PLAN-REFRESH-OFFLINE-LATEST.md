@@ -1,6 +1,8 @@
-# CXOrbia — refresh offline del plan canónico Phase A
+# Canonical plan actual source-safe hasta julio
 
-- Fecha: 2026-07-30T02:51:36.064Z
-- Provider calls=0; writes=0; producción=false.
-- Operaciones: 1415.
-- Tenant: 1; proyecto padre: 1; HR import: 0; periodos: 14; shoppers: 210; visitas: 616; liquidaciones: 572.
+- Operaciones base: 1413.
+- Shopper refs HR actuales: 208.
+- Visitas: 616.
+- Liquidaciones/control: 572.
+- R14C financiero preservado aparte: 196 links exactos / 51 review.
+- Provider calls/writes: 0/0.

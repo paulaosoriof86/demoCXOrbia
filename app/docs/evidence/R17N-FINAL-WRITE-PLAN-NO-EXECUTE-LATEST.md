@@ -1,15 +1,14 @@
-# R17N FINAL — write plan · NO EXECUTE
+# R17N FINAL — plan actual hasta julio · NO EXECUTE
 
-- Ready writes exactos: 1387.
-- Foundation: 16.
-- Perfiles legacy create: 120.
-- Certificaciones create: 77.
-- Visitas create listas: 602; HOLD identidad: 14.
-- Controles liquidación listos: 572; HOLD identidad: 0.
-- Pagos: 0.
-- Firestore/Auth/Storage/HR/provider writes: 0.
+- Referencias shopper actuales: 208/208 con target.
+- 201 reutilizan shopper canónico existente; 2 enlazan perfil legacy a crear; 5 crean perfil desde identidad real HR vigente.
+- Perfiles legacy create: 120; perfiles HR current create: 5.
+- Certificaciones create: 77; hold: 1.
+- Visitas: 616/616 listas.
+- Controles liquidación: 572/572 listos; pagos=0.
+- Writes listos exactos: 1406.
+- Firestore/Auth/Storage/HR/provider writes ejecutados: 0.
 - Deploy/merge/producción: 0.
 
-- Identidad HR: 203/210 referencias con target; 7 HOLD.
-- Idempotence hash: 08fbc3e9dfae78a3220c70f75904099c64ff1d54de09a04758d4a497a4d96f7b PASS.
-- Siguiente gate: autorización explícita solo para los grupos/conteos exactos que se decida ejecutar.
+- Idempotence hash: f03cd3e5c225cac80525329c8c09775bd3dbbf24ace025b7a30f77c219404e2e PASS.
+- Siguiente gate: autorización explícita por grupos/conteos exactos; antes de los 5 perfiles HR-only se revalida la misma fuente viva en memoria.

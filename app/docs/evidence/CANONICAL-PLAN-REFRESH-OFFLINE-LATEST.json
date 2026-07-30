@@ -1,28 +1,31 @@
 {
-  "schemaVersion": "cxorbia.canonical-plan-refresh-offline.v2",
-  "generatedAt": "2026-07-30T02:51:36.064Z",
+  "schemaVersion": "cxorbia.canonical-plan-refresh-offline.v4",
+  "generatedAt": "2026-07-30T03:14:14.994Z",
+  "source": "CURRENT_HR_THROUGH_JULY",
   "providerCalls": 0,
   "writes": 0,
   "production": false,
   "merge": false,
-  "basePlanId": "phasea_2f71daec3e68dfa1",
-  "basePlanSha256": "54bc996c0d13741e330125c3ff2604d0e299cee25aa2412c5764c6ebf7885453",
-  "overlayPlanId": "r16d_f471a6b486f3a269b0dd",
-  "overlayPlanSha256": "8873a51b5f9072ceb5155a68b6de4c0691fd00430718635965e331a20705b30d",
+  "basePlanId": "phasea_7f2b22f496df4623",
+  "basePlanSha256": "143595c44691ce648204a005421a7ae6c6e9f259ab624db5f1a22f525dae350a",
   "counts": {
-    "operations": 1415,
+    "operations": 1413,
     "tenants": 1,
     "projects": 1,
-    "hrImports": 0,
+    "hrImports": 1,
     "periods": 14,
-    "shoppers": 210,
+    "shoppers": 208,
     "visits": 616,
     "liquidations": 572,
     "certifications": 0,
     "payments": 0
   },
-  "operationKinds": {
-    "create": 1415
+  "financialOverlayEvidence": {
+    "rows": 247,
+    "exactStableVisitLinks": 196,
+    "reviewRows": 51,
+    "appliedInThisGate": false,
+    "reason": "R14C contract fixed shopper count 210 is stale; preserve financial source evidence for later exact execution by visitId"
   },
   "canonicalShape": {
     "parentProjectPath": "tenants/tya/projects/cinepolis",
@@ -30,7 +33,6 @@
     "periodPaths": 14,
     "visitPaths": 616
   },
-  "reviewQueueSummary": null,
   "safety": {
     "writes": false,
     "imports": false,
