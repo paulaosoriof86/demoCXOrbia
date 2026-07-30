@@ -7,6 +7,7 @@ on:
     paths:
       - 'backend/config/phase-a-hosting-dev-execution-request-v1.json'
       - 'tools/release/cxorbia-existing-hosting-dev-corte6-prepare.mjs'
+      - 'tools/release/cxorbia-existing-hosting-dev-direct-deploy.mjs'
       - 'tools/qa/cxorbia-corte6-hosting-iam-diagnostic.mjs'
       - '.github/workflows/cxorbia-phase-a-r15g-dev-root-deploy.yml'
 
@@ -21,7 +22,7 @@ concurrency:
 jobs:
   hosting-dev:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Checkout active branch
         uses: actions/checkout@v4
@@ -32,6 +33,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+
+      - name: Static checks
+        id: syntax
+        run: |
+          set -euo pipefail
+          node --check tools/release/cxorbia-existing-hosting-dev-corte6-prepare.mjs
+          node --check tools/release/cxorbia-existing-hosting-dev-direct-deploy.mjs
+          node --check tools/qa/cxorbia-corte6-hosting-iam-diagnostic.mjs
 
       - name: Read reserved one-shot Hosting authorization
         id: req
@@ -82,7 +91,6 @@ jobs:
           CXORBIA_HOSTING_IAM_REPORT: app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json
         run: |
           set -euo pipefail
-          node --check tools/qa/cxorbia-corte6-hosting-iam-diagnostic.mjs
           node tools/qa/cxorbia-corte6-hosting-iam-diagnostic.mjs
           node <<'NODE' >> "$GITHUB_OUTPUT"
           const r=require('./app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json');
@@ -100,16 +108,27 @@ jobs:
             'SITE'+String(x.hostingSite?.status||0),
             'REL'+String(x.releasesList?.status||0),
             'VER'+String(x.versionsList?.status||0),
-            'KEY'+String(x.apiKeysList?.status||0)
+            'KEY'+String(x.apiKeysList?.status||0),
+            'PRF'+(x.remoteCorte6Proof?.isCorte6Proof?'1':'0')
           ].join('_');
           console.log('code='+code);
           console.log('diagnosis='+String(r.diagnosis||'UNKNOWN'));
           NODE
 
-      - name: Install transient Firebase CLI
-        id: cli_tooling
-        if: steps.req.outputs.execute == 'true'
-        run: npm install --no-save --ignore-scripts firebase-tools@14.11.2 >/dev/null 2>&1
+      - name: Persist sanitized Hosting diagnostic
+        id: diag_commit
+        if: steps.req.outputs.diagnose == 'true' && steps.hostingdiag.outcome == 'success'
+        run: |
+          set -euo pipefail
+          cp app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json /tmp/c6-hosting-iam.json
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/c6-hosting-iam.json app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json
+          if git diff --cached --quiet; then echo 'No diagnostic evidence delta'; else git commit -m 'evidence: persist Corte 6 Hosting IAM diagnostic'; git push origin HEAD:docs-tya-v6-v71-audit; fi
 
       - name: Build and preflight exact existing Hosting DEV site
         id: prepare
@@ -119,19 +138,19 @@ jobs:
           CXORBIA_HOSTING_OUT_DIR: .tmp/corte6-existing-hosting-dev
         run: |
           set -euo pipefail
-          node --check tools/release/cxorbia-existing-hosting-dev-corte6-prepare.mjs
           node tools/release/cxorbia-existing-hosting-dev-corte6-prepare.mjs
 
-      - name: Deploy one time to existing Hosting DEV only
+      - name: Deploy one time to existing Hosting DEV through official Hosting REST API
         id: deploy
         if: steps.req.outputs.execute == 'true'
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_EXPECTED_SITE: cxorbia-backend-dev
+          CXORBIA_HOSTING_OUT_DIR: .tmp/corte6-existing-hosting-dev
+          CXORBIA_EXECUTE_HOSTING: 'true'
         run: |
           set -euo pipefail
-          npx firebase-tools deploy \
-            --only hosting:cxorbia-dev \
-            --config .tmp/corte6-existing-hosting-dev/firebase.hosting.json \
-            --project cxorbia-backend-dev \
-            --non-interactive
+          node tools/release/cxorbia-existing-hosting-dev-direct-deploy.mjs
 
       - name: Verify remote propagation and protected entrypoint
         id: remote
@@ -165,7 +184,9 @@ jobs:
           if(!auth.includes('signInWithEmailAndPassword')||!auth.includes('Auth.Persistence.SESSION')) throw new Error('remote_interactive_auth_missing');
           if(!html.includes('CXOrbia · Preview Backend DEV')||!html.includes('core/backend-browser-auth.js')) throw new Error('remote_entrypoint_mismatch');
           const proof=JSON.parse(fs.readFileSync('.tmp/corte6-existing-hosting-dev/remote-proof.json','utf8'));
-          const report={schemaVersion:'cxorbia.corte6-existing-hosting-dev-deploy.v1',generatedAt:new Date().toISOString(),decision:'PASS_EXISTING_HOSTING_DEV_DEPLOY_REMOTE_STATIC_AUTH_GATE_READY',projectId:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',hostingSite:'cxorbia-backend-dev',rootUrl:'https://cxorbia-backend-dev.web.app',entrypoint:'index-backend-dev.html',sourceCommit:proof.sourceCommit,hostingDeployExecutions:1,remoteProofVerified:true,canonicalBackendConfigVerified:true,interactiveFirebaseAuthGateVerified:true,humanCredentialLoginStillRequired:true,firestoreDataWrites:0,authWrites:0,storageWrites:0,rulesDeploys:0,hrWrites:0,legacyWrites:0,payments:0,merge:false,production:false,piiExported:false,secretsExported:false};
+          const direct=JSON.parse(fs.readFileSync('.tmp/corte6-existing-hosting-dev/direct-deploy.source-safe.json','utf8'));
+          if(direct.decision!=='PASS_DIRECT_HOSTING_REST_API_RELEASE_VERIFIED'||direct.hostingDeployExecutions!==1) throw new Error('direct_deploy_evidence_mismatch');
+          const report={schemaVersion:'cxorbia.corte6-existing-hosting-dev-deploy.v1',generatedAt:new Date().toISOString(),decision:'PASS_EXISTING_HOSTING_DEV_DEPLOY_REMOTE_STATIC_AUTH_GATE_READY',projectId:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',hostingSite:'cxorbia-backend-dev',rootUrl:'https://cxorbia-backend-dev.web.app',entrypoint:'index-backend-dev.html',sourceCommit:proof.sourceCommit,hostingDeployExecutions:1,directHostingRestApiVerified:true,versionName:direct.versionName,releaseName:direct.releaseName,remoteProofVerified:true,canonicalBackendConfigVerified:true,interactiveFirebaseAuthGateVerified:true,humanCredentialLoginStillRequired:true,firestoreDataWrites:0,authWrites:0,storageWrites:0,rulesDeploys:0,hrWrites:0,legacyWrites:0,payments:0,merge:false,production:false,piiExported:false,secretsExported:false};
           fs.writeFileSync('.tmp/corte6-existing-hosting-dev/deploy-result.source-safe.json',JSON.stringify(report,null,2)+'\n','utf8');
           NODE
 
@@ -175,11 +196,13 @@ jobs:
         run: |
           set -euo pipefail
           cp .tmp/corte6-existing-hosting-dev/preflight.source-safe.json /tmp/c6-hosting-preflight.json
+          cp .tmp/corte6-existing-hosting-dev/direct-deploy.source-safe.json /tmp/c6-hosting-direct.json
           cp .tmp/corte6-existing-hosting-dev/deploy-result.source-safe.json /tmp/c6-hosting-result.json
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
           mkdir -p app/docs/evidence
           cp /tmp/c6-hosting-preflight.json app/docs/evidence/CORTE6-HOSTING-DEV-PREFLIGHT-LATEST.json
+          cp /tmp/c6-hosting-direct.json app/docs/evidence/CORTE6-HOSTING-DIRECT-DEPLOY-LATEST.json
           cp /tmp/c6-hosting-result.json app/docs/evidence/CORTE6-HOSTING-DEV-DEPLOY-LATEST.json
           node <<'NODE'
           const fs=require('fs');
@@ -189,14 +212,15 @@ jobs:
           r.enabled=false;
           r.consumed=true;
           r.hostingDeployExecutions=1;
+          r.executionPath='official_firebase_hosting_rest_api_after_cli_api_keys_viewer_gap';
           r.consumedAt=new Date().toISOString();
-          r.preflight=Object.assign({},r.preflight,{deployAllowedNow:false,reason:'Corte 6 Auth/RBAC passed and the single existing Hosting DEV redeploy was consumed successfully. Human authenticated visual validation is now the remaining gate.'});
+          r.preflight=Object.assign({},r.preflight,{deployAllowedNow:false,reason:'Corte 6 Auth/RBAC passed and the single existing Hosting DEV redeploy was consumed successfully through the official Hosting REST API after the Firebase CLI API Keys Viewer dependency was isolated. Human authenticated visual validation is now the remaining gate.'});
           r.nextGate='HUMAN_AUTHENTICATED_VISUAL_VALIDATION_ADMIN_OPS_CLIENT_SHOPPER__THEN_FREEZE_AND_AUGUST_DELTA';
           fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
           NODE
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add backend/config/phase-a-hosting-dev-execution-request-v1.json app/docs/evidence/CORTE6-HOSTING-DEV-PREFLIGHT-LATEST.json app/docs/evidence/CORTE6-HOSTING-DEV-DEPLOY-LATEST.json
+          git add backend/config/phase-a-hosting-dev-execution-request-v1.json app/docs/evidence/CORTE6-HOSTING-DEV-PREFLIGHT-LATEST.json app/docs/evidence/CORTE6-HOSTING-DIRECT-DEPLOY-LATEST.json app/docs/evidence/CORTE6-HOSTING-DEV-DEPLOY-LATEST.json
           git commit -m 'evidence: consume existing Hosting DEV redeploy after Corte 6'
           git push origin HEAD:docs-tya-v6-v71-audit
 
@@ -213,13 +237,14 @@ jobs:
           if [ '${{ job.status }}' != 'success' ]; then
             STATE=error
             DESC='FAIL_C6_HOSTING_UNKNOWN'
-            if [ '${{ steps.req.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_REQUEST';
+            if [ '${{ steps.syntax.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_SYNTAX';
+            elif [ '${{ steps.req.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_REQUEST';
             elif [ '${{ steps.credential.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_CREDENTIAL';
             elif [ '${{ steps.admin_tooling.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_ADMIN_TOOLING';
             elif [ '${{ steps.hostingdiag.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_IAM_DIAG';
-            elif [ '${{ steps.cli_tooling.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_CLI_TOOLING';
+            elif [ '${{ steps.diag_commit.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_DIAG_COMMIT';
             elif [ '${{ steps.prepare.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_PREFLIGHT';
-            elif [ '${{ steps.deploy.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_DEPLOY';
+            elif [ '${{ steps.deploy.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_DIRECT_DEPLOY';
             elif [ '${{ steps.remote.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_REMOTE';
             elif [ '${{ steps.freeze.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_FREEZE'; fi
           fi
