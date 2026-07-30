@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-30  
-**Estado:** `C6_AUTOENTRY_VISUAL_OBSERVED_PASS__PROTECTED_IDENTITY_READONLY_PASS__AUGUST_REFRESH_READONLY_NEXT__NO_PRODUCTION`
+**Estado:** `C6_IDENTITY_PROTECTED_PASS__AUG_GT34_TECH_READY__HN_SOURCE_MISMATCH__NO_UNASSIGNED_VISITS__NO_PRODUCTION`
 
 ## 1. Repositorio/destinos
 - Repo `paulaosoriof86/demoCXOrbia`.
@@ -18,58 +18,61 @@
 - Auth import/readback91/91: shopper88 + super1 + coordinador2; Auth17→108; resets/deletes/overwrite0.
 - claims5/5 + Rules PASS.
 
-## 3. Visual Corte6
-Build1 rechazado: `Acceso seguro` paralelo.
+## 3. Corte6 visual/identidad
+- P0 login1 y2 corregidos.
+- Captura humana actual confirma auto-entry al shell Admin.
+- `Shopper protegido` en el preview pertenece únicamente al source-safe público/read-only.
+- Firestore protegido:340/340 shoppers con nombre real, placeholders0;616/616 visitas con nombre real, placeholders0;194/194 perfiles canónicos referenciados existentes/con nombre real.
+- Rules/adapter protegidos PASS.
+- GitHub `PASS_C6_PROTECTED_IDENTITY_READONLY`.
 
-Build2 rechazado: al seleccionar Administración/Coordinación aparecía `Usuario + Contraseña`, además fuera del viewport.
+No publicar PII dentro del preview source-safe. La visual de identidad real se hará en preprod autenticada protegida.
 
-Build3 actual: la evidencia humana muestra que el perfil Administración/Coordinación entra automáticamente al shell, carga Cinépolis/JUL2026 y mantiene el preview source-safe. No pedir password, PowerShell ni volver a probar builds rechazados.
+## 4. Refresh HR vivo de agosto — ejecutado
+Fuente cache-busted actual:
+-15 periodos;
+- histórico hasta julio=616 visitas;
+- agosto aparente=68 filas;
+- `AGOSTO 26` GT=34;
+- `AGOSTO 26 HN`=34 aparentes.
 
-`Shopper protegido` en esa visual no es pérdida de datos: es el placeholder del snapshot source-safe público y read-only. No debe convertirse en la identidad final del runtime autenticado.
+Gate país/pestaña:
+- GT34/34 marcadas GT, mismatch0;
+- HN tab34/34 marcadas GT, mismatch34;
+- decisión `HOLD_COUNTRY_TAB_MISMATCH` para HN.
 
-## 4. Identidad protegida — gate read-only PASS
-Se verificó directamente Firestore DEV sin exportar valores personales.
+## 5. Delta-only técnico — GT PASS parcial
+`PASS_AUGUST_GT34_DELTA_TECH_READY__HN_HOLD_SOURCE_COUNTRY_MISMATCH`.
 
-`PASS_C6_PROTECTED_IDENTITY_READONLY_RUNTIME_READY`:
-- `tenants/tya/shoppers`:340 docs;
-- perfiles con nombre real340;
-- perfiles con `Shopper protegido`0;
-- perfiles sin nombre visible0;
-- visitas canónicas616;
-- visitas con nombre real616;
-- visitas placeholder0;
-- shopperId/nombre faltante0;
-- shopperIds canónicos referenciados194;
-- perfiles referenciados194/194 existentes y194/194 con nombre real;
-- Rules protegidas + deny-by-default PASS;
-- adapter Firestore de shoppers/nombre real PASS;
-- Rules desplegadas verificadas/hash consistente PASS;
-- source-safe público continúa enmascarado PASS.
+- Firestore actual616 visitas;
+- periodo2026-08 no existe;
+- GT candidatos34, nuevos34, existing0;
+- source shopper refs28;
+- mapping canónico28/28;
+- perfiles target existentes28/28;
+- identity blockers0;
+- histórico1,406 no se toca.
 
-GitHub status final: `PASS_C6_PROTECTED_IDENTITY_READONLY`.
+## 6. Bloqueo operacional de publicación
+Las34 filas GT aceptables técnicamente no son visitas disponibles en la fuente actual:
+- assigned34;
+- unassigned0;
+- scheduled34;
+- realized34;
+- submitted27;
+- questionnaire7.
 
-## 5. Corrección metodológica incorporada
-La ruta humana source-safe y la ruta autenticada protegida son capas distintas:
-- preview público: source-safe, PII enmascarada, lectura visual;
-- runtime protegido: Auth/RBAC/Rules + Firestore; Admin/Operativo ve identidad real, shopper solo la propia.
+`releaseReadiness=NO_UNASSIGNED_VISITS_IN_ACCEPTED_SOURCE`.
 
-Está prohibido solucionar la visual source-safe insertando nombres reales en archivos estáticos/Hosting público.
+No corresponde forzar estados a `disponible` ni inventar 10 HN. La fuente HR de agosto debe ser corregida/actualizada para representar el lote real que se desea publicar.
 
-## 6. Estado seguro del bloque
-Gate de identidad: provider reads únicamente. Auth writes0; Firestore data writes0; Rules deploy0; Hosting0; Storage0; HR0; legacy0; pagos0; Functions0; Make/Gemini0; merge=false; producción=false; PII/IDs/secrets exportados0.
+## 7. Estado seguro
+Todo el refresh/delta plan fue read-only. HR/Firestore/Auth/Rules/Hosting/Storage/legacy/payments/Functions/Make/Gemini writes0; merge=false; producción=false; PII exportada0.
 
-## 7. Gate vivo actual
-No se congela todavía una identidad final basada en el preview enmascarado. El próximo bloque operativo, permitido sin autorización de writes, es:
+## 8. Gate vivo exacto
+`CORREGIR/ACTUALIZAR FUENTE HR AGOSTO → REFRESH READ-ONLY → EXPECT GT34/HN10 Y ESTADOS PUBLICABLES → REGENERAR DELTA → AUTORIZACIÓN FIRESTORE WRITE SOLO DELTA`.
 
-`REFRESH HR READ-ONLY → RESOLVER/CLASIFICAR AGOSTO HN → VALIDAR PERIODO/VISITAS → PREPARAR DELTA-ONLY WRITE PLAN`.
+Después:
+`READBACK/SMOKE → PREPROD PROTEGIDA AUTENTICADA CON IDENTIDAD REAL → CUTOVER tya-plataforma`.
 
-La siguiente autorización requerida será únicamente si el delta de agosto queda exacto y listo para Firestore data writes.
-
-## 8. Después de agosto delta
-`MATERIALIZAR SOLO DELTA AGOSTO AUTORIZADO → READBACK/SMOKE → PREPROD PROTEGIDA AUTENTICADA CON IDENTIDAD REAL → CUTOVER tya-plataforma`.
-
-No rematerializar histórico.
-
-## 9. Claude / Academia
-- Claude: no nueva candidata, no `app/modules/*`; preservar auto-entry; source-safe no sustituye identidad protegida.
-- Academia: separar privacidad del artefacto público y visibilidad autorizada del runtime; documentar mínimo privilegio, scopes y gate anti-placeholder.
+No rematerializar histórico ni reabrir Auth91.
