@@ -12,7 +12,7 @@
   "deploy": false,
   "production": false,
   "merge": false,
-  "requestedAt": "2026-07-30T00:52:00Z",
-  "attempt": 2,
-  "reason": "collapse exact stable-ID duplicate storage representations before diff"
+  "requestedAt": "2026-07-30T01:00:00Z",
+  "attempt": 3,
+  "reason": "certification composite identity + recovered-mirror collapse + name-only review"
 }
