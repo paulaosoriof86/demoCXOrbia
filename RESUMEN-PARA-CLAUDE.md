@@ -1,65 +1,93 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-30  
-**Estado vivo:** `CORTE6_AUTH_RBAC_RULES_PASS__HOSTING_DEV_REDEPLOY1OF1_VERIFIED_DIRECT_ENTRYPOINT__WAITING_HUMAN_AUTH_VISUAL__NO_PRODUCTION`
+**Estado vivo:** `P0_C6_CREDENTIAL_CONTINUITY_ROOT_CAUSE_FIXED__NAMESPACED_DRYRUN91_PASS__IMPORT_AND_EXISTING_HOSTING_REDEPLOY_PREPARED_STATIC_PASS__WAITING_SINGLE_COMBINED_AUTHORIZATION__NO_PRODUCTION`
 
 ## 1. No reabrir
-- Corte 3 `CXORBIA-TYA-CORTE3-V182-20260729`: FROZEN.
-- R17N FINAL: 1,406/1,406 Firestore data writes/readback; no repetir.
-- Corte 5 `CX.data`: `cinepolis`, 14 periodos, 616 visitas, `currentPeriodId=2026-07`, source=firestore/fallback=false PASS.
+- Corte3 `CXORBIA-TYA-CORTE3-V182-20260729`: FROZEN.
+- R17N FINAL:1,406/1,406 Firestore data writes/readback; no repetir.
+- Corte5 `CX.data`: `cinepolis`,14 periodos,616 visitas, `currentPeriodId=2026-07`, source=firestore/fallback=false PASS.
+- Corte6 previo: claims5/5 + Rules PASS; Hosting DEV existente1/1 consumido.
 - No nueva candidata, rama, PR, Firebase o Hosting por rutina.
 
-## 2. Corte 6 backend — PASS
-- Firebase Auth real interactivo en `index-backend-dev.html`.
-- Claims son autoridad; selector visual de rol no concede acceso backend.
-- `CX.data` conserva su interfaz y carga por principal autenticado.
-- 5/5 claims actualizados sobre cuentas existentes: cliente2 + shopper3 exactos.
-- Cuarto shopper sin vínculo exacto: no tocado.
-- Readiness: operador7, cliente2, shopper3.
-- Usuario nuevo/password/delete: 0/0/0.
-- Firestore data writes Corte6: 0.
-- Firestore Rules `status` canónico + `estado` legacy: desplegada y readback PASS.
+## 2. P0 de acceso — causa raíz
+Firebase Auth real es obligatorio como autoridad backend, pero el formulario `Correo + Contraseña` no respeta el contrato de acceso existente de TyA.
 
-## 3. Hosting DEV existente — PASS técnico
-- `cxorbia-backend-dev`, target `cxorbia-dev`.
-- Nuevo Firebase/Hosting: 0/0.
-- Redeploy autorizado: 1/1 consumido.
-- Release `sites/cxorbia-backend-dev/releases/1785431702100000`.
-- Version `sites/cxorbia-backend-dev/versions/b00728c729452665`, FINALIZED.
-- Remote proof/config/browser Auth/entrypoint explícito: PASS.
-- Root `/` sigue sirviendo `app/index.html` por precedencia de contenido estático exacto; no bloquea y no justifica redeploy.
+Contrato correcto:
+- visible: `Tipo de acceso + Usuario + Contraseña`;
+- provider: Firebase Auth detrás del adapter;
+- namespaces: `staff` / `shopper`;
+- email Firebase interno determinístico y no visible;
+- claims determinan rol/tenant/project/shopperId;
+- no selección visual de rol como autorización.
 
-URL DEV canónico:
-`https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis`
+El parser legacy original también deduplicaba username globalmente. Se corrigió: staff y shopper no colisionan entre sí; solo se colapsa duplicado shopper si coinciden username normalizado + legacyId + mismo hash.
 
-No solicitar ni compartir credenciales por chat.
+## 3. Evidencia source-safe actual
+- shoppers fuente282;
+- grupos de credencial shopper seguros109;
+- exact duplicate records collapsed93;
+- ambiguous duplicate groups18 /records77 HOLD;
+- missing password2 /login1 HOLD;
+- staff4: superadmin1/coordinador2/demo1;
+- bundle cifrado113;
+- credencial/PII legible en repo0.
 
-## 4. Claude — regla actual
-**No nueva candidata. No intervención frontend por rutina.**
+Dry-run provider read-only corregido:
+- input113;
+- elegibles91 = shopper88 + super1 + coordinador2;
+- shopper exact legacy match88;
+- HOLD21 shopper sin perfil canónico exacto por `legacyShopperId`;
+- HOLD1 demo role;
+- UID/email collisions0/0;
+- `FAIL_CLOSED_NO_OVERWRITE`;
+- provider/Auth/Firestore/Rules/Hosting writes0.
 
-Abrir tarea focalizada solo si la validación humana autenticada demuestra P0 reproducible. No mover Auth/claims/Firestore/Rules a `app/modules/*`.
+El plan antiguo de12 está superseded; no usar.
 
-Validar:
-1. Admin/Ops ve proyecto/periodo/histórico correcto.
-2. Cliente solo proyecto autorizado.
-3. Shopper exacto ve identidad/historial/disponibles autorizadas.
-4. Shopper no vinculado no recibe acceso por inferencia.
-5. Sin regresiones en postulaciones, visitas, certificación, finanzas, Academia/manuales y navegación.
-6. Sin copy técnico de claims/provider/source-safe.
+## 4. Backend preparado — NO EXECUTE
+`app/core/backend-browser-auth.js` ya implementa el contrato visible namespaced sin tocar `app/modules/*`.
 
-## 5. P1/P2 preservado
+Import Auth preparado y apagado:
+- máximo91;
+- no reset de contraseñas;
+- no deletes/overwrite;
+- hash SHA256 rounds1;
+- readback91/91;
+- static/no-write PASS.
+
+Hosting DEV adicional preparado y apagado:
+- mismo project/site/target;
+- solo si Auth import readback PASS;
+- un único redeploy adicional;
+- remote verify;
+- static/no-write PASS.
+
+## 5. Claude — regla actual
+**No nueva candidata. No rediseñar login. No mover Auth/claims/Firestore/Rules a `app/modules/*`.**
+
+La corrección reusable de producto es:
+- el usuario no tiene por qué ver un email técnico;
+- el tipo de acceso puede resolver namespace;
+- `Usuario + Contraseña` se mantiene como contrato de TyA;
+- provider Auth queda encapsulado;
+- conflictos de identidad quedan HOLD, nunca automezcla.
+
+Solo abrir tarea adicional de frontend si la visual posterior al redeploy demuestra P0 reproducible localizado.
+
+## 6. P1/P2 preservado
 - PDF sin gráfica final;
 - Excel sin formato final;
 - reportKit/exportaciones transversales;
 - copy de fuentes/readiness.
 
-No bloquean Phase A salvo P0 demostrado.
+No bloquean Phase A salvo evidencia P0.
 
-## 6. Agosto
-Fuente materializada hasta julio. `Agosto HN` HOLD por inconsistencia país/tab. Tras PASS visual: freeze Corte6 → refresh HR → resolver HOLD → materializar solo delta agosto.
+## 7. Agosto
+Fuente materializada hasta julio. `Agosto HN` HOLD por inconsistencia país/tab. Tras FREEZE Corte6: refresh HR → resolver HOLD → materializar solo delta agosto → preprod/cutover.
 
-## 7. Academia/manuales
-Auth vs selector; tenant/proyecto; shopperId; mínimo privilegio; visitas disponibles protegidas; CLI vs API oficial; contenido estático exacto vs rewrite.
+## 8. Academia/manuales
+Actualizar: Auth real detrás del login, namespace staff/shopper, usuario ≠ email obligatorio, recuperación/cambio, tenant/proyecto/rol, shopperId exacto, dedupe seguro, import/readback y fail-closed.
 
-## 8. Estado seguro
-PR #7 draft/open/no merge. Corte6: Auth claim writes5; usuarios nuevos/password/deletes0; Firestore data writes0; Rules release1 verificada; Hosting DEV1/1; Storage/HR/legacy0; pagos/Make/Gemini0; producción=false.
+## 9. Estado seguro
+PR #7 draft/open/no merge. Bloque credential-continuity actual: Auth imports0; password resets0; deletes0; Firestore data writes0; Rules0; Hosting adicional0; Storage/HR/legacy/payments/Make/Gemini0; producción=false; PII/credenciales crudas0.
