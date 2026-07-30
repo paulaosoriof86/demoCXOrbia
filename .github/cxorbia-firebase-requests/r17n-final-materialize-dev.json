@@ -1,6 +1,7 @@
 {
   "schemaVersion": "cxorbia.r17n-final-dev-materialization.request.v1",
-  "enabled": true,
+  "enabled": false,
+  "consumed": true,
   "mode": "R17N_FINAL_DEV_MATERIALIZATION",
   "authorizationId": "r17n-final-dev-20260730-01",
   "authorization": "Autorizo materialización DEV exacta R17N FINAL en cxorbia-backend-dev, con preflight/readback y relectura de identidad real en memoria: máximo 1,406 writes = 16 foundation + 120 perfiles legacy con datos reales aplicables + 5 perfiles HR actuales con identidad real revalidada + 77 certificaciones + 616 visitas + 572 controles de liquidación; sin tenant update, sin los 22 updates conflictivos, sin los 7 legacy holds, sin la certificación HOLD, sin Agosto HN, deletes, pagos, Auth/Storage/HR writes, deploy, merge ni producción; PII únicamente fuente→backend protegido, nunca GitHub",
@@ -33,6 +34,10 @@
   "production": false,
   "rawPiiInGitHub": false,
   "requestedAt": "2026-07-30T03:40:37Z",
-  "attempt": 4,
-  "reason": "retry after root-cause fix: live identity hash now matches exact R20 trim+lower semantics instead of collapsing internal whitespace; all prior attempts stopped preflight with zero writes; authorization and write scope unchanged"
+  "consumedAt": "2026-07-30T03:50:46.887Z",
+  "attempts": 4,
+  "result": "PASS_R17N_FINAL_DEV_MATERIALIZATION",
+  "providerWritesActual": 1406,
+  "readbackVerified": 1406,
+  "reason": "authorization consumed and frozen after exact materialization PASS; workflow push trigger removed"
 }
