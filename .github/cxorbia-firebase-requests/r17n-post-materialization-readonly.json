@@ -1,10 +1,10 @@
 {
   "schemaVersion": "cxorbia.r17n-post-materialization-readonly.request.v1",
-  "requestId": "r17n-post-materialization-readonly-20260730-01",
-  "enabled": false,
-  "consumed": true,
+  "requestId": "r17n-post-materialization-readonly-20260730-02",
+  "enabled": true,
+  "consumed": false,
   "mode": "R17N_POST_MATERIALIZATION_READONLY",
-  "targetHeadSha": "ba456a4396f4e082938bf624dc8d09ca5bf98ca8",
+  "targetHeadSha": "96cb7601559a76595d6203724a4bcf2d0b35b390",
   "projectId": "cxorbia-backend-dev",
   "tenantId": "tya",
   "canonicalProjectId": "cinepolis",
@@ -21,9 +21,7 @@
   "sourceLockDocument": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
   "piiPolicy": "source-to-memory-only; sanitized evidence only",
   "issuedAt": "2026-07-30",
-  "attempts": 2,
-  "result": "P0_PROVEN_C5_CXDATA_PERIOD_MODEL_MISMATCH",
-  "runId": 30514060348,
-  "artifactId": 8748181730,
-  "reason": "provider post-compare and identity pass; exact CX.data adapter reads period model from tenant project documents instead of canonical cinepolis/periods subcollection; request consumed and frozen pending explicit focal runtime-fix authorization"
+  "attempts": 3,
+  "result": "PENDING_AUTHORIZED_P0_C5_PERIOD_MODEL_RESMOKE",
+  "reason": "Paula authorized focal app/core/backend-firebase.js correction and read-only Corte 5 re-smoke; no new data writes, deploy, Auth, Storage, HR, payments, merge or production"
 }
