@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "cxorbia.r17n-post-materialization-readonly.request.v1",
+  "requestId": "r17n-post-materialization-readonly-20260730-01",
+  "enabled": true,
+  "mode": "R17N_POST_MATERIALIZATION_READONLY",
+  "targetHeadSha": "60cdd78d9d5e91b598df484c560590bc0d2348fe",
+  "projectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "canonicalProjectId": "cinepolis",
+  "providerReads": true,
+  "providerWrites": 0,
+  "dataWrites": 0,
+  "authWrites": 0,
+  "storageWrites": 0,
+  "hrWrites": 0,
+  "legacyWrites": 0,
+  "deploy": false,
+  "merge": false,
+  "production": false,
+  "sourceLockDocument": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
+  "piiPolicy": "source-to-memory-only; sanitized evidence only",
+  "issuedAt": "2026-07-30"
+}
