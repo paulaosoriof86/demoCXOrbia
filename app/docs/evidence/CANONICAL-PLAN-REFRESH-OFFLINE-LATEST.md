@@ -1,6 +1,6 @@
 # CXOrbia — refresh offline del plan canónico Phase A
 
-- Fecha: 2026-07-29T23:45:19.923Z
+- Fecha: 2026-07-30T01:05:16.709Z
 - Reutiliza los builders R6/R16D existentes; no crea una arquitectura nueva.
 - Provider calls=0; writes=0; producción=false.
 
@@ -15,4 +15,3 @@
 - Este plan representa la arquitectura aprobada proyecto padre → periodos → visitas, no proyectos separados por mes/país.
 - Reproduce exactamente 14 periodos / 616 visitas y 572 controles de liquidación del source lock.
 - No se ejecuta contra Firestore en este gate.
-- El siguiente comparador read-only debe clasificar create/update/noop/review contra `cxorbia-backend-dev` antes de autorizar cualquier write.
