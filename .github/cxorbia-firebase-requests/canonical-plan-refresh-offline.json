@@ -6,6 +6,6 @@
   "writes": 0,
   "production": false,
   "merge": false,
-  "triggerNonce": 5,
-  "purpose": "R17N final current-HR-through-July no-execute plan + offline idempotence after current identity reconciliation"
+  "triggerNonce": 6,
+  "purpose": "R17N final current-HR-through-July no-execute plan + fail-closed offline idempotence after current identity reconciliation"
 }
