@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.remaining-shopper-identity.diagnostic.v1",
-  "generatedAt": "2026-07-30T02:38:59.295Z",
-  "detail": "Error: hr_real_identity_found_5_expected_9 ",
+  "generatedAt": "2026-07-30T02:43:02.139Z",
+  "detail": "Error: real_identity_sources_found_6_expected_9 ",
   "sanitized": true,
   "rawPiiPersisted": false,
   "providerWrites": 0
