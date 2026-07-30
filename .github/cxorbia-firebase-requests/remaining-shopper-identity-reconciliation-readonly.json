@@ -14,7 +14,7 @@
   "deploy": false,
   "merge": false,
   "production": false,
-  "requestedAt": "2026-07-30T02:14:00Z",
-  "attempt": 2,
-  "reason": "retry after workflow environment fix; same read-only authorization and scope"
+  "requestedAt": "2026-07-30T02:18:00Z",
+  "attempt": 3,
+  "reason": "retry with sanitized failure diagnostics; same authorization and zero-write scope"
 }
