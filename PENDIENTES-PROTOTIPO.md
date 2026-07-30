@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-07-30  
-**Estado vivo:** `C6_CREDENTIAL_CONTINUITY_AUTH91_READBACK_PASS__HOSTING_DEV_REDEPLOY1_REMOTE_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`
+**Estado vivo:** `C6_P0_PROVEN_DOUBLE_LOGIN_FORCED_AUTH_GATE__AUTH91_PRESERVED__NO_NEW_DEPLOY__NO_PRODUCTION`
 
 Este archivo registra pendientes frontend reales y dependencias backend que condicionan cuándo Claude debe intervenir.
 
@@ -10,46 +10,55 @@ Este archivo registra pendientes frontend reales y dependencias backend que cond
 - Corte3: `CXORBIA-TYA-CORTE3-V182-20260729`.
 - R17N FINAL:1,406/1,406 data writes/readback; no repetir.
 - Corte5: CX.data project/period resuelto y re-smoke PASS.
-- Corte6 previo: claims5/5 + Firestore Rules PASS + Hosting DEV previo1/1 consumido.
+- Auth legacy import91/readback91/91 PASS; no repetir/resetear.
+- Corte6 previo: claims5/5 + Firestore Rules PASS.
 - No nueva candidata/base/Hosting/rama/PR.
 
-## 2. P0 login — backend y provider ya corregidos
-El problema `Correo + Contraseña` se corrigió sin crear Gmail ni sistema paralelo.
+## 2. P0 ACTIVO — doble login Auth visible
+La corrección anterior resolvió el problema de `Correo + Contraseña` como identificador visible, pero introdujo otro P0: un **gate backend separado** antes del login normal.
 
-Contrato desplegado en DEV:
+Visual reproducida por Paula:
+- pantalla previa `Acceso seguro`;
 - `Tipo de acceso + Usuario + Contraseña`;
-- namespaces `staff` / `shopper`;
-- Firebase Auth interno;
-- provider/email técnico oculto;
-- no `app/modules/*` modificado.
+- error genérico posible;
+- después sigue existiendo el login normal del proyecto.
 
-## 3. Activación provider ya PASS
-Auth exacto:
+Causa raíz localizada:
+- `app/core/backend-browser-auth.js` crea y fuerza el overlay;
+- intercepta `CX.app.showLogin()`;
+- limpia la sesión al cargar;
+- `backend-config-preview-dev.js` exige auth interactiva;
+- `backend-firebase.js` llama auth antes del backend;
+- `app/app.js` mantiene el login normal.
+
+Documento: `app/docs/CORTE6-P0-DOBLE-LOGIN-AUTH-DEV-20260730.md`.
+
+## 3. Corrección requerida
+Debe quedar **un solo flujo visible**:
+1. Firebase Auth/claims detrás del adapter.
+2. Sin pantalla backend previa separada.
+3. Sesión Firebase válida restaurada silenciosamente.
+4. Credenciales reales, si son necesarias, dentro del mismo acceso normal del producto.
+5. No limpiar sesión por rutina en cada carga.
+6. No exponer email/provider técnico.
+7. Logout invalida sesión; refresh normal no exige reautenticación innecesaria.
+8. Error de credencial y error de scope/namespace deben distinguirse de forma segura.
+
+Paula no debe repetir la prueba actual, compartir password ni ejecutar PowerShell.
+
+## 4. Claude — intervención actual
+**Sí existe ahora un P0 frontend reproducible y localizado.**
+
+No crear nueva candidata general ni rediseñar módulos. La tarea es exclusivamente reconciliar el acceso normal con Auth real para eliminar el doble login. El patrón reusable sigue siendo identidad provider detrás del login del producto.
+
+## 5. Provider/backend preservado
 - imported91;
 - readback91/91;
 - Auth17→108;
 - shopper88 + staff3;
-- reset/delete/overwrite0.
-
-Hosting DEV condicionado:
-- ejecutado solo tras `PASS_EXACT_AUTH_IMPORT_READBACK`;
-- mismo site/target;
-- deploy adicional1;
-- remote browserAuth/entrypoint/proof/namespaced login PASS;
-- nuevo Firebase/Hosting0;
-- Firestore/Rules/Storage/HR/legacy/payments/functions/Make/Gemini0.
-
-## 4. Pendiente inmediato — visual humana
-Validar ingreso con credenciales TyA ya existentes en el DEV publicado. No pedir password por chat.
-
-Si PASS: `FREEZE CORTE6`.
-
-Si aparece un P0 visual reproducible: localizar archivo/módulo y corregir focalizadamente. No pedir nueva candidata por rutina.
-
-## 5. Claude — intervención actual
-**Ninguna nueva candidata.**
-
-No rediseñar el acceso ni crear un sistema paralelo. Solo intervenir si la visual demuestra un P0 frontend reproducible. El patrón reusable es adapter de identidad: login de producto separado del identificador provider.
+- reset/delete/overwrite0;
+- namespaces staff/shopper preservados;
+- no volver a importar ni tocar hashes.
 
 ## 6. P1/P2 no bloqueante
 - PDF/gráficas.
@@ -57,7 +66,7 @@ No rediseñar el acceso ni crear un sistema paralelo. Solo intervenir si la visu
 - `reportKit`/exportaciones transversales.
 - copy de fuentes/readiness.
 
-## 7. HOLD de identidad preservado
+## 7. HOLD identidad preservado
 - 21 shopper credentials sin perfil canónico exacto.
 - demo role1.
 - ambiguous groups18/77 registros.
@@ -71,7 +80,7 @@ No resolver por nombre o coincidencia visual; revisión humana.
 - No rematerializar histórico.
 
 ## 9. Academia/manuales
-Auth real detrás del adapter; tipo de acceso/namespace; usuario ≠ email obligatorio; tenant/proyecto; shopperId exacto; mínimo privilegio; dedupe seguro; conflictos a revisión; recuperación/cambio; readback y troubleshooting.
+Un único acceso visible; Auth detrás del adapter; namespace interno; tenant/proyecto; shopperId exacto; mínimo privilegio; recuperación/cambio; dedupe seguro y troubleshooting.
 
 ## 10. Estado seguro
-PR #7 draft/open/no merge. Auth imports91/readback91; password resets0; deletes0; Firestore data writes0; Rules0; Hosting adicional1; Storage/HR/legacy/payments/functions/Make/Gemini0; producción=false; PII/credenciales crudas0.
+PR #7 draft/open/no merge. Auth91/readback91 preservado. Desde el P0 visual: Auth writes0; Firestore data writes0; Rules0; Hosting deploy0; Storage/HR/legacy/payments/functions/Make/Gemini0; producción=false.
