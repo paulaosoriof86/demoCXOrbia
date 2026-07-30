@@ -12,7 +12,7 @@
   "deploy": false,
   "production": false,
   "merge": false,
-  "requestedAt": "2026-07-30T01:00:00Z",
-  "attempt": 3,
-  "reason": "certification composite identity + recovered-mirror collapse + name-only review"
+  "requestedAt": "2026-07-30T01:06:00Z",
+  "attempt": 4,
+  "reason": "deterministic normalized stable-ID reconciliation"
 }
