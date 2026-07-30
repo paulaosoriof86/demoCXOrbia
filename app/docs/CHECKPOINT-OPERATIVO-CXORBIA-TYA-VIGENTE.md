@@ -1,32 +1,29 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-29  
-**Estado:** `CORTE3_FROZEN__ARCHITECTURE_CORRECTED__CANONICAL_BACKEND_RECOVERED__R16E_PASS__R17M_WRITE_PLAN_READY_NO_EXECUTE__LEGACY_REFRESH_PENDING__NO_DATA_WRITES`
+**Estado:** `CORTE3_FROZEN__ARCHITECTURE_CORRECTED__CANONICAL_BACKEND_RECOVERED__R16E_PASS__LEGACY_REFRESH_PASS__R17N_IDEMPOTENCE_PASS__HR_SHOPPER_CROSSWALK_UNRESOLVED__NO_DATA_WRITES__NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
-- R17M provider calls/writes/deletes/imports/deploys/production/merge: 0.
+- Legacy/Firestore/Auth/Storage/HR writes=0; deploy=0; production=false; merge=false.
 
 ## 2. Arquitectura vinculante
 - Legacy TyA Consultores = plataforma actual a retirar; solo fuente de datos útiles limpios.
 - `cxorbia-backend-dev` = backend DEV canónico de CXOrbia/TyA; reutilizar.
 - `cxorbia-tya-dev-260729-c4` = sandbox técnico; no destino de materialización.
 - Repo legacy operativo: `paulaosoriof86/cxorbia-tya-plataforma`.
-- `.firebaserc` verificado: Firebase default `tya-plataforma`; ese Hosting público se conserva para el cutover final.
+- `.firebaserc` legacy: Firebase `tya-plataforma`; conservar su Hosting/URL pública para cutover final.
 
 ## 3. Corte 3 — FROZEN
 Baseline `CXORBIA-TYA-CORTE3-V182-20260729`: 14 periodos / 616 visitas hasta julio; 34 GT + 10 HN por periodo. Mayo 44 pagadas; junio 2 pagadas / 42 pendientes. P1/P2 reportes/copy no bloquean.
 
-## 4. Sandbox Corte 4 — aprendizaje preservado
-VIS-01/VIS-02/VIS-02B corregidos: fail-closed sin demo, backend vacío válido, null-safety, role-switch limpio y entrypoint íntegro. No se materializa TyA allí.
-
-## 5. Backend canónico / HR viva
+## 4. Backend canónico / HR viva
 Inventario read-only `cxorbia-backend-dev`: Auth 17, clients 3, projects 29, visits 619, questionnaires 557, shoppers 215, liquidations 255, postulations 3, applications 1, notifications 20, shopperBenefits 572, certifications 0.
 
-Gap:
+Gap preservado:
 - julio GT+HN faltante en topología period-country previa: 44 visitas;
 - `sprint5-visit-mutation-no-real-data`: HOLD_NO_DELETE;
 - `hr-58fb469666080189`: HOLD_NO_DELETE;
@@ -34,52 +31,76 @@ Gap:
 
 HR viva: 15 periodos / 30 tabs / 684 visitas / 236 referencias shopper; julio GT34/HN10 correcto; `AGOSTO 26 HN` HOLD por 34 filas País=GT.
 
-## 6. Plan canónico + R16E
-Plan R16D: 1,415 operaciones = tenant 1, proyecto padre `cinepolis` 1, HR import 1, periodos 14, shoppers 210, visitas 616, liquidaciones 572; certificaciones 0; pagos 0.
-
-R16E autorizado read-only:
+## 5. R16E — provider compare read-only PASS
 - run `29282169628` / job `90741969389`: SUCCESS;
 - artifact `8743659430`;
 - digest `sha256:290b2eb9f956bb8af422ffae8832aa617125d70eab244188f206bd682ad68584`;
-- decisión `PASS_WITH_REVIEW_CANONICAL_MATERIALIZATION_DRY_RUN_R16`;
-- create 1,414 / update 1 / noop 0 / review 0 / extras preservados 244 / deletes 0.
+- 1,415 operaciones canónicas;
+- create 1,414 / update 1 / noop 0 / review 0;
+- extras preservados 244; deletes 0.
 
-`create=1414` no significa base vacía: la topología canónica nueva no existe bajo esos paths; la materialización útil actual está en la topología DEV previa.
+`create=1414` no significa backend vacío: los nuevos canonical-shadow paths no existen, mientras la topología DEV previa sí contiene materialización útil.
 
-## 7. R17M — WRITE PLAN EXACTO NO EXECUTE
-Decisión: `PASS_R17M_WRITE_PLAN_NO_EXECUTE__LEGACY_SHOPPER_CERT_REFRESH_PENDING`.
+## 6. Legacy shoppers/certificaciones — READ-ONLY PASS
+Autorización de Paula ejecutada exclusivamente sobre shoppers/certificaciones de `tya-plataforma`; sin writes/Auth changes/deploy/producción.
 
-Estrategia aprobada para preparación: **canonical-shadow** sobre el mismo `cxorbia-backend-dev`, preservando topología DEV previa para rollback y sin switch de lectura antes de smoke.
+Resultado final v4:
+- 281 representaciones legacy crudas;
+- 149 shoppers únicos por stable ID;
+- 128 representaciones duplicadas colapsadas;
+- 1 conflicto interno de fuente;
+- 78 certificaciones útiles = 76 intentos históricos + 2 markers;
+- 30 recovery mirrors colapsados;
+- 22 perfiles enlazados por normalización determinística del mismo ID técnico;
+- 120 perfiles create candidates;
+- 7 perfiles HOLD = 6 name-only + 1 source conflict;
+- 77 certificaciones candidatas + 1 HOLD.
 
-Grupos exactos:
-- tenant update `op_00001`: HOLD por `configurable`, `name`, `schemaVersion`;
-- foundation `op_00002..op_00017`: 16 create candidates tras idempotencia;
-- shoppers `op_00018..op_00227`: 210 HOLD hasta refresh legacy + diff estable;
-- visits `op_00228..op_00843`: 616 HR-first canonical-shadow candidates;
-- liquidations `op_00844..op_01415`: 572 payment-control-only candidates, 0 pagos;
-- subtotal potencial excluyendo shoppers/tenant: 1,204, todavía NO autorizado;
-- 244 extras/pilotos + 2 cleanup candidates: preservar/HOLD_NO_DELETE;
-- Agosto HN: HOLD.
+No se exportó PII cruda y nunca se usó nombre para automerge.
 
-Evidencia: `app/docs/evidence/R17M-WRITE-PLAN-NO-EXECUTE-LATEST.json`.
-Validator: `tools/reconciliation/tya-r17m-write-plan-no-execute-validate.mjs`; validación offline equivalente PASS.
+## 7. Existing profile field diff — READ-ONLY
+Para los 22 stable-linked:
+- phone faltante en 22;
+- email faltante en 8;
+- diferencias no vacías: code 22, name 2, city 1.
 
-## 8. Shoppers/certificaciones
-- 215 shoppers existentes: no recrear por rutina.
-- 236 referencias HR: diff solo por llave estable; no nombre.
-- certifications=0: se requiere refresh actual desde legacy.
-- Prompt listo: `PROMPT-REFRESH-DELTA-LEGACY-TYA-SHOPPERS-CERTIFICACIONES-20260729.md`.
-- Visitas permanecen HR-first, no se refrescan desde legacy.
+Política: completar solo campos vacíos en un futuro write plan; nunca sobreescribir campos canónicos no vacíos por rutina. Los conflictos quedan preservados.
 
-## 9. Ruta a producción
-`LEGACY delta shoppers/certs + HR viva → rebuild R17M → dry-run/idempotencia → writes exactos autorizados → smoke CX.data/Auth/sync → preprod/rollback → cutover Firebase/Hosting tya-plataforma`.
+## 8. R17N — POST LEGACY NO EXECUTE
+`PASS_R17N_POST_LEGACY_PLAN_NO_EXECUTE`.
 
-## 10. Gate real siguiente
-`REFRESH LEGACY SHOPPERS/CERTIFICACIONES → DIFF POR LLAVE ESTABLE → REBUILD R17M → OFFLINE IDEMPOTENCE`.
+- Foundation 16.
+- HR protected refs 210 HOLD crosswalk.
+- Legacy profiles 149 = 120 create + 22 existing diff + 7 HOLD.
+- Certificaciones 78 = 77 candidatas + 1 HOLD.
+- Visitas 616 HR-first.
+- Liquidation controls 572; pagos 0.
+- Potencial antes de existing-profile updates: 1,401.
+- Máximo incluyendo hasta 22 updates: 1,423.
+- Idempotence hash: `979d45fa174b8d7aac9810a4a56fb234fffeaedac1442fc811bee55ea41e2e8e` PASS.
+- Writes autorizados: 0.
 
-Solo después se pide autorización para grupos/conteos exactos de write. No nueva base, nueva candidata, PowerShell, deploy ni producción.
+## 9. HR protected shopper crosswalk — resultado
+Se compararon las 210 refs HR contra 215 shoppers existentes solo por stable technical ID/code, name matching=false:
+- stable HR ID match 0;
+- stable HR code match 0;
+- unmapped 210;
+- collision 0.
+
+Por tanto no es seguro ni crear 210 perfiles duplicados ni omitir las referencias de las 616 visitas.
+
+## 10. Único bloqueo real / siguiente gate
+Resolver crosswalk usando evidencia transaccional exacta de las **visitas ya existentes en `cxorbia-backend-dev`** contra HR source-safe:
+- `hrRowId`;
+- `sourceSheet + sourceRow`;
+- `visitId` estable.
+
+No usar nombre. No leer visitas legacy. Este provider read necesita autorización separada porque el gate legado consumido estaba limitado a shoppers/certificaciones.
+
+Secuencia exacta:
+`VISIT-IDENTITY CROSSWALK READ-ONLY → R17N FINAL → IDEMPOTENCE → EXACT WRITE AUTHORIZATION → CX.data SMOKE → CORTES 6–8 → CUTOVER tya-plataforma`.
 
 ## 11. Claude/Academia
-- Claude: no P0 nuevo; no nueva candidata; preservar fixes core/entrypoint.
-- Academia: canonical path ausente ≠ backend vacío; shadow migration requiere read-path único y rollback; compare/plan ≠ write.
-- Reusable CXOrbia: inventario → compare → write plan → refresh/diff → idempotencia → write exacto → smoke → cutover.
+- Claude: no P0 nuevo, no nueva candidata, no reabrir V182.
+- Academia: perfil canónico ≠ referencia HR ≠ identidad Auth; carryover de certificación; stable key antes de dedupe; conflictos a review.
+- Reusable CXOrbia: identidad estable + evidencia transaccional exacta para crosswalk multi-source.
