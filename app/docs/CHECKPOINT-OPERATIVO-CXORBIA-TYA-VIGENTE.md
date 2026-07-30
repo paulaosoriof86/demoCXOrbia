@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-30  
-**Estado:** `CORTE3_FROZEN__R17N_FINAL_DEV_MATERIALIZED_1406__C5_CXDATA_PERIOD_MODEL_FIXED__READONLY_RESMOKE_PASS__OPERATIONAL_VISUAL_PENDING__NO_PRODUCTION`
+**Estado:** `CORTE3_FROZEN__R17N_FINAL_DEV_MATERIALIZED_1406__C5_CXDATA_PERIOD_MODEL_FIXED__READONLY_RESMOKE_PASS__EXISTING_HOSTING_VISUAL_PREFLIGHT_AUTH_HOLD__DEPLOY0__NO_PRODUCTION`
 
 ## 1. Repositorio y arquitectura
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -10,8 +10,9 @@
 - Base: `release/cxorbia-tya-rc-20260630`.
 - Backend DEV canónico: `cxorbia-backend-dev`.
 - Legacy a retirar / Hosting público final: `tya-plataforma`.
+- Hosting DEV de visualización existente: `cxorbia-backend-dev` / target `cxorbia-dev` / `https://cxorbia-backend-dev.web.app`.
 - Sandbox C4: no destino.
-- No nueva base Firebase.
+- No nueva base Firebase ni nuevo Hosting.
 
 ## 2. Corte 3 — FROZEN
 `CXORBIA-TYA-CORTE3-V182-20260729`: 14 periodos / 616 visitas hasta julio; mayo 44 pagadas; junio 2 pagadas / 42 pendientes. No V183/R33.
@@ -96,21 +97,39 @@ El primer intento post-fix `30544254033` mostró `periods=0` porque el snapshot 
 
 Se corrigió únicamente el harness QA para incluir en memoria la misma colección canónica ya leída del proveedor (`21ce464772bfe6543b3672ad4b6d7deafd564adc`). El rerun final pasó. No hubo data writes ni un segundo runtime fix.
 
-## 8. Decisión actual
-`CORTE5_TECHNICAL_PASS__OPERATIONAL_VISUAL_PENDING`.
+## 8. Preflight del Hosting DEV existente — HOLD antes de deploy
+Paula autorizó un único redeploy del **Hosting DEV ya existente**, no uno nuevo.
 
-No repetir los 1,406 writes. No reconstruir materialización. No nueva base/candidata/rama/PR. No UI patch.
+Verificado:
+- `.firebaserc` apunta `cxorbia-backend-dev` + target `cxorbia-dev` al sitio existente `cxorbia-backend-dev`;
+- el Hosting histórico de validación es `https://cxorbia-backend-dev.web.app`;
+- nuevo Hosting requerido: **no**;
+- nuevo proyecto Firebase requerido: **no**.
 
-El P0 queda técnicamente cerrado, pero Corte 5 aún no se congela porque el plan exige comprobar el consumidor en pantalla antes del freeze.
+El redeploy no se ejecutó porque el preflight fail-closed demostró una dependencia previa de Auth:
+- las reglas Firestore requieren `request.auth` + rol/tenant para leer la data real protegida;
+- `index-backend-dev.html` carga `backend-firebase.js` con preview Auth y el helper local de credenciales no puede publicarse;
+- el login visible actual selecciona rol de UI, pero no autentica ante Firebase;
+- la autorización vigente excluye Auth writes/Rules deploy;
+- publicar passwords/tokens/service account o PII en Hosting/URL está prohibido.
 
-## 9. Siguiente bloque exacto
-`BIND DEV READ-ONLY AL BACKEND CANÓNICO cxorbia-backend-dev → UN ÚNICO HOSTING DEV CONTROLADO → VALIDACIÓN VISUAL/OPERATIVA CON DATOS REALES → si no hay P0: FREEZE CORTE 5 → CORTE 6 AUTH/RBAC`.
+Request one-shot: `backend/config/phase-a-hosting-dev-execution-request-v1.json` = `preflight_hold_auth_required_no_deploy`, `hostingDeployExecutions=0`, `consumed=false`.
 
-Ese bloque implica binding/runtime config y Hosting DEV, por lo que requiere autorización expresa nueva. No autoriza producción ni el cutover de `tya-plataforma`.
+## 9. Decisión actual
+`CORTE5_TECHNICAL_PASS__VISUAL_BLOCKED_BY_SECURE_AUTH_PREREQUISITE__DEPLOY_NOT_CONSUMED`.
 
-## 10. Claude / Academia
-- Claude: sin nueva candidata. No hay tarea frontend derivada del P0 corregido salvo un hallazgo visual reproducible posterior.
-- Academia: proyecto padre y periodo son objetos distintos; readback de DB no sustituye smoke del consumidor; identidad real se muestra por rol; liquidación no equivale a pago.
+No repetir los 1,406 writes. No reconstruir materialización. No nueva base/candidata/rama/PR/Hosting. No UI patch inseguro.
 
-## 11. Estado seguro
-R17N histórico: 1,406 Firestore writes autorizados ya materializados. En la corrección/re-smoke actual: provider reads únicamente; Firestore/Auth/Storage/HR/legacy writes=0; deletes=0; pagos=0; deploy=0; merge=false; producción=false; Make/Gemini=0; PII cruda en repo/artifacts=0.
+La autorización del único redeploy queda reservada; no debe pedirse otra autorización de Hosting mientras permanezca sin consumir.
+
+## 10. Siguiente bloque exacto
+`CORTE 6 AUTH/RBAC PREPARATION READ-ONLY/OFFLINE → reconciliar 17 usuarios Auth existentes y claim taxonomy sin PII → definir cambios mínimos Auth/Rules/login seguro → autorización solo para cambios Auth/Rules estrictamente necesarios → reutilizar EL MISMO Hosting DEV y el redeploy ya autorizado → validación visual con datos reales → freeze`.
+
+No tocar `tya-plataforma` todavía.
+
+## 11. Claude / Academia
+- Claude: no nueva candidata. El login visible debe evolucionar a autenticación real para producción; no se parchea desde backend ni se exponen credenciales.
+- Academia: selección de rol ≠ autenticación; Hosting con PII requiere Auth/RBAC; proyecto padre y periodo son objetos distintos; liquidación no equivale a pago.
+
+## 12. Estado seguro
+R17N histórico: 1,406 Firestore writes autorizados ya materializados. En el bloque actual: Hosting deploy=0; nuevo Hosting/proyecto=0; Firestore/Auth/Storage/HR/legacy writes=0; Rules/Functions deploy=0; deletes=0; pagos=0; merge=false; producción=false; Make/Gemini=0; PII cruda en repo/artifacts=0.
