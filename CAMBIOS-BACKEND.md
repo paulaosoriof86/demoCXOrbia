@@ -1,8 +1,45 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-30 — P0 visual reproducible: doble login Auth DEV
+
+Estado: `C6_P0_PROVEN_DOUBLE_LOGIN_FORCED_AUTH_GATE__AUTH91_PRESERVED__NO_NEW_DEPLOY__NO_PRODUCTION`.
+
+### Qué se comprobó
+- La captura de Paula muestra un gate separado `Acceso seguro` antes del login normal del proyecto.
+- `app/core/backend-browser-auth.js` crea el overlay, intercepta `CX.app.showLogin()`, limpia `CX.session` al cargar y fuerza el gate en preview.
+- `app/core/backend-config-preview-dev.js` configura `interactive-session` sin fallback.
+- `app/core/backend-firebase.js` exige la autenticación antes de cargar el backend.
+- `app/app.js` conserva el login normal tenant-aware.
+
+### Causa raíz
+La corrección de continuidad de credenciales preservó Firebase/Auth y `Usuario + Contraseña`, pero implementó Auth como **segunda pantalla visible**. Eso contradice el objetivo aprobado: Firebase debe quedar detrás del adapter y el producto debe presentar un único flujo de acceso.
+
+### Decisión
+- Visual actual: **NO APROBADO / P0_PROVEN**.
+- No pedir a Paula otra prueba del gate actual, password ni PowerShell.
+- No reabrir Auth91/91, claims, Rules, R17N, Corte5 ni Corte3.
+- Corrección siguiente: single-login focalizado, sin nueva candidata general ni rediseño.
+- No hay autorización vigente para otro Hosting deploy; primero debe quedar el fix y los gates en PASS.
+
+### Documentación
+- Creado `app/docs/CORTE6-P0-DOBLE-LOGIN-AUTH-DEV-20260730.md`.
+- Actualizados índice vigente, checkpoint, `RESUMEN-PARA-CLAUDE.md` y `PENDIENTES-PROTOTIPO.md`.
+
+### Clasificación
+- **Reusable CXOrbia:** un solo login visible, sesión Firebase restaurable y Auth detrás del adapter.
+- **Exclusivo cliente:** credenciales legacy TyA.
+- **Claude/prototipo:** corrección focalizada del acceso normal.
+- **Academia:** acceso único y troubleshooting.
+- **Sin impacto Claude:** Auth91/91/import/readback permanecen cerrados.
+
+### Estado seguro
+Desde el hallazgo: Auth writes0; Firestore writes0; Rules0; Hosting deploy0; Storage/HR/legacy/payments/functions/Make/Gemini0; merge=false; producción=false.
+
+---
+
 ## 2026-07-30 — Corte 6 continuidad de credenciales: Auth91/91 PASS + Hosting DEV remoto PASS; pendiente visual humana
 
-Estado: `C6_CREDENTIAL_CONTINUITY_AUTH91_READBACK_PASS__HOSTING_DEV_REDEPLOY1_REMOTE_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`.
+Estado histórico previo: `C6_CREDENTIAL_CONTINUITY_AUTH91_READBACK_PASS__HOSTING_DEV_REDEPLOY1_REMOTE_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`.
 
 ### Qué se ejecutó con autorización expresa de Paula
 1. Se consumió la autorización combinada del Corte 6 para importar **máximo 91** identidades legacy elegibles a Firebase Auth en `cxorbia-backend-dev`.
@@ -62,24 +99,8 @@ El dry-run inicial de12 está superseded y no debe ejecutarse.
 - Corte5 `CX.data` PASS: `cinepolis`,14 periodos,616 visitas, periodo `2026-07`, source=firestore/fallback=false.
 - Corte6 previo: claim writes5 + Rules release1 + Hosting DEV1/1 ya ejecutados.
 
-### Claude/prototipo
-No nueva candidata. No se tocó `app/modules/*`. El login visible debe mantener el contrato namespaced; solo se abre una corrección frontend si la validación visual demuestra un P0 reproducible. P1/P2 preservados: PDF/gráficas, Excel/formato, reportKit/exportaciones y copy de fuentes.
-
-### Academia
-Actualizar el estado de la lección: import Auth por hash con readback obligatorio ya ejecutado 91/91; Hosting DEV de continuidad ya verificado; el siguiente gate es validación humana de ingreso con credenciales TyA existentes. Mantener namespaces, scopes, recuperación y fail-closed.
-
-### Siguiente bloque exacto
-`VALIDACIÓN VISUAL CON CREDENCIALES TYA EXISTENTES → si PASS, FREEZE CORTE6 → REFRESH HR → RESOLVER HOLD AGOSTO HN → MATERIALIZAR SOLO DELTA AGOSTO → PREPROD/CUTOVER`.
-
-### Clasificación
-- **Reusable CXOrbia:** identity adapter namespaced, hash import, claims, fail-closed, no-overwrite, readback obligatorio y one-shot deploy.
-- **Exclusivo cliente:** credenciales legacy TyA y Agosto HN HOLD.
-- **Claude/prototipo:** login/registro focalizado solo ante P0 visual reproducible.
-- **Academia:** acceso, namespaces, recuperación, scopes, import/readback y troubleshooting.
-- **Sin impacto Claude:** import provider, evidencias, requests/workflows y Hosting DEV one-shot.
-
-### Estado seguro
-Bloque credential-continuity ejecutado: Auth imports91/readback91; password resets0; deletes0; Firestore data writes0; Rules0; Hosting adicional1; nuevo Firebase/Hosting0; Storage/HR/legacy/payments/functions/Make/Gemini0; merge=false; producción=false; PII/credenciales crudas repo/artifacts0.
+### Estado seguro histórico
+Auth imports91/readback91; password resets0; deletes0; Firestore data writes0; Rules0; Hosting adicional1; nuevo Firebase/Hosting0; Storage/HR/legacy/payments/functions/Make/Gemini0; merge=false; producción=false; PII/credenciales crudas repo/artifacts0.
 
 ---
 
