@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "cxorbia.corte6.auth-mapping-capability-readonly.v1",
-  "generatedAt": "2026-07-30T18:55:52.927Z",
+  "schemaVersion": "cxorbia.corte6.auth-mapping-capability-readonly.v2",
+  "generatedAt": "2026-07-30T18:58:31.015Z",
   "projectId": "cxorbia-backend-dev",
   "tenantId": "tya",
   "shopperDocuments": 340,
@@ -52,6 +52,13 @@
     "shopperId": 126,
     "source": 313,
     "sourceKey": 125
+  },
+  "stableMappingShape": {
+    "legacyIdPresent": 120,
+    "legacyIdEqualsDocumentId": 0,
+    "legacyIdEqualsIdField": 0,
+    "legacyIdEqualsShopperIdField": 0,
+    "allLegacyIdsEqualDocumentId": false
   },
   "safety": {
     "providerWrites": 0,
