@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-07-30  
-**Estado vivo:** `C6_PROTOTYPE_AUTOENTRY_HOSTING_DEV_REMOTE_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTOENTRY_VISUAL_OBSERVED_PASS__PROTECTED_IDENTITY_READONLY_PASS__AUGUST_REFRESH_READONLY_NEXT__NO_PRODUCTION`
 
 ## 1. Cerrado / no reabrir
 - Corte1/2A/3 FROZEN/APROBADO; Corte3 `CXORBIA-TYA-CORTE3-V182-20260729`.
@@ -11,61 +11,58 @@
 - claims5/5 + Rules PASS.
 - No nueva candidata/base/Hosting/rama/PR.
 
-## 2. P0 visuales corregidos
-Build 1: `Acceso seguro` paralelo → rechazado.
+## 2. P0 visuales de acceso — corregidos
+Build1: `Acceso seguro` paralelo → rechazado.
 
-Build 2: formulario `Usuario + Contraseña` inyectado al elegir perfil y fuera del viewport → rechazado.
+Build2: formulario `Usuario + Contraseña` inyectado al elegir perfil y fuera del viewport → rechazado.
 
-Fix publicado en DEV:
-- auto-entry original del prototipo;
-- `humanCredentialPrompt=false`;
-- HR source-safe read-only como fuente visual;
-- baseline `cinepolis`,14 periodos,616 visitas;
-- Auth/RBAC/Rules separados como gates provider;
-- mutaciones bloqueadas;
-- no fallback demo.
+Build actual: auto-entry restaurado y observado funcionando en la captura humana del shell Admin.
 
-## 3. Gate técnico actual
-`PASS_EXISTING_HOSTING_DEV_PROTOTYPE_AUTO_ENTRY_SOURCE_SAFE_REMOTE_VERIFIED`.
+## 3. `Shopper protegido` en el preview — clasificación definitiva
+No corregirlo desde frontend ni insertar nombres reales en archivos source-safe. El preview humano está diseñado para ser público/read-only y PII-masked.
 
-- versión `95a1e49e5064c456`;
-- release `1785452689852000`;
-- prototypeAutoEntry=true;
-- humanCredentialPrompt=false;
-- sourceSafeVisual=true;
-- Hosting deploy executions1;
-- Auth/Firestore/Rules/Storage/HR/legacy/payments/Functions/Make/Gemini writes0;
-- producción=false.
+La capa protegida real quedó verificada por read-only gate:
+- 340/340 perfiles shopper protegidos tienen nombre real;
+- placeholder en Firestore protegido0;
+- 616/616 visitas canónicas tienen nombre real;
+- placeholder en visitas0;
+- 194/194 perfiles canónicos referenciados existen y tienen nombre real;
+- Rules y adapter protegidos PASS.
 
-La primera ejecución autorizada falló antes de deploy por un contrato interno de preflight desalineado. Se corrigió en `b9f5190babcc339735cda59291417df5aea6988f` y se reintentó con la misma autorización porque el request seguía sin consumir y deploy0.
+Estado: `PASS_C6_PROTECTED_IDENTITY_READONLY_RUNTIME_READY` / GitHub `PASS_C6_PROTECTED_IDENTITY_READONLY`.
 
-## 4. Pendiente bloqueante único de Corte6
-Una sola validación visual humana del build actual:
-- al seleccionar Administración/Coordinación debe entrar automáticamente;
-- no debe aparecer `Acceso seguro` ni Usuario/Contraseña;
-- debe verse HR source-safe con proyecto/conteos coherentes.
+Por tanto el pendiente no es “recuperar nombres”; el pendiente de release es que la **preproducción autenticada protegida** consuma Firestore real y no la capa source-safe como identidad.
 
-Si pasa: FREEZE Corte6. No pedir password, PowerShell ni otra prueba del build anterior.
+## 4. Regla de no regresión
+- Preview/source-safe: enmascarado, sin PII.
+- Runtime protegido: Admin/Operativo ve identidad real autorizada; shopper solo su perfil.
+- Si un runtime autenticado muestra `Shopper protegido` para un perfil canónico existente, es P0.
+- No tocar `app/modules/*` por esta separación.
 
-## 5. Claude/prototipo
-No nueva candidata. No tocar `app/modules/*` por este P0. No reintroducir UI Auth técnica en preview humano.
-
-## 6. P1/P2 no bloqueante
+## 5. P1/P2 no bloqueante
 - PDF sin gráfica final.
 - Excel sin formato final.
 - reportKit/exportaciones transversales.
 - copy de fuentes/readiness.
 
-## 7. HOLD preservado
+## 6. HOLD preservado
 - 21 shopper credentials sin match canónico exacto;
 - demo1;
 - ambiguos18/77;
-- Agosto HN por inconsistencia país/tab.
+- Agosto HN hasta refresh/reconciliación actual.
 
-No resolver por nombre/coincidencia visual.
+No resolver identidades por nombre/coincidencia visual.
 
-## 8. Agosto
-Después del FREEZE Corte6: `refresh HR → resolver HOLD Agosto HN → validar periodo/visitas → materializar solo delta agosto → smoke → preprod/cutover`. No rematerializar histórico.
+## 7. Agosto — bloque vivo
+`REFRESH HR READ-ONLY → RESOLVER/CLASIFICAR HOLD AGOSTO HN → VALIDAR PERIODO/VISITAS → PREPARAR DELTA-ONLY WRITE PLAN`.
+
+La materialización requiere autorización explícita posterior; no rematerializar histórico.
+
+## 8. Después de agosto
+`WRITE DELTA AUTORIZADO → READBACK/SMOKE → PREPROD PROTEGIDA CON IDENTIDAD REAL → VALIDACIÓN → CUTOVER`.
 
 ## 9. Academia/manuales
-Preview humano: perfil → entrada automática; provider/Auth no se enseña como paso del usuario. Producción: acceso real aprobado, recuperación/cambio, scopes y troubleshooting.
+Distinguir source-safe/anonimización de artefactos vs visibilidad autorizada en plataforma protegida; documentar Auth/RBAC, mínimo privilegio, recuperación, scopes y troubleshooting.
+
+## 10. Estado seguro
+Gate identidad actual: provider reads; Auth writes0; Firestore data writes0; Rules0; Hosting0; Storage/HR/legacy/payments/Functions/Make/Gemini0; merge=false; producción=false; PII exportada0.
