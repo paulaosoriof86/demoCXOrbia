@@ -1,4 +1,4 @@
-name: CXOrbia Existing Hosting DEV Corte 6 Post-Deploy Diagnostic
+name: CXOrbia Existing Hosting DEV Corte 6 Post-Deploy Gate
 
 on:
   push:
@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  remote-diagnostic:
+  post-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -41,13 +41,18 @@ jobs:
           if(r.schemaVersion!=='cxorbia.c5-existing-hosting-dev-visual.v1') throw new Error('bad_schema');
           if(r.requestId!=='c5-existing-hosting-dev-visual-20260730-01'||r.authorizedBy!=='Paula'||r.authorizationSource!=='current_conversation_2026-07-30') throw new Error('bad_authorization_identity');
           if(r.targetProject!=='cxorbia-backend-dev'||r.hostingTarget!=='cxorbia-dev'||r.existingHostingRootUrl!=='https://cxorbia-backend-dev.web.app') throw new Error('bad_target');
-          if(r.enabled!==false||r.consumed!==true||r.hostingDeployExecutions!==1||r.status!=='deployed_remote_validation_hold') throw new Error('postdeploy_state_not_fail_closed');
+          if(r.enabled!==false||r.consumed!==true||r.hostingDeployExecutions!==1) throw new Error('hosting_one_shot_not_consumed');
           if(r.firestoreWrites!==0||r.authWrites!==0||r.storageWrites!==0||r.hrWrites!==0||r.legacyWrites!==0||r.paymentsWrites!==0||r.functionsDeploy!==false||r.rulesDeploy!==false||r.merge!==false||r.production!==false) throw new Error('unsafe_scope');
-          console.log('diagnose=true');
+          const diagnose=r.status==='deployed_remote_validation_hold';
+          const waiting=r.status==='deployed_waiting_human_auth_visual_direct_entrypoint';
+          if(!diagnose&&!waiting) throw new Error('unknown_postdeploy_state:'+String(r.status||''));
+          console.log('diagnose='+(diagnose?'true':'false'));
+          console.log('waiting='+(waiting?'true':'false'));
           NODE
 
       - name: Load canonical DEV credential
         id: credential
+        if: steps.gate.outputs.diagnose == 'true'
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
@@ -65,10 +70,12 @@ jobs:
 
       - name: Install transient Firebase Admin
         id: tooling
+        if: steps.gate.outputs.diagnose == 'true'
         run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
 
       - name: Read-only remote Hosting diagnosis
         id: diag
+        if: steps.gate.outputs.diagnose == 'true'
         env:
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
           CXORBIA_EXPECTED_SITE: cxorbia-backend-dev
@@ -87,15 +94,17 @@ jobs:
             'REL'+String(x.releasesList?.status||0),
             'VER'+String(x.versionsList?.status||0),
             'PRF'+(x.remoteCorte6Proof?.isCorte6Proof?'1':'0'),
+            'ENT'+(r.remoteStaticChecks?.entrypointPreviewTitle&&r.remoteStaticChecks?.entrypointLoadsBrowserAuth?'1':'0'),
+            'ROOT'+(r.remoteStaticChecks?.rootPreviewTitle&&r.remoteStaticChecks?.rootLoadsBrowserAuth?'1':'0'),
             'VST'+String(latestVersion.status||'NONE').replace(/[^A-Z0-9]/gi,'').slice(0,12),
             'RT'+(latest.releaseTime?'1':'0')
           ].join('_');
           console.log('code='+code);
-          console.log('proof='+(x.remoteCorte6Proof?.isCorte6Proof?'true':'false'));
           NODE
 
       - name: Persist sanitized post-deploy diagnostic
         id: persist
+        if: steps.gate.outputs.diagnose == 'true' && steps.diag.outcome == 'success'
         run: |
           set -euo pipefail
           cp app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json /tmp/c6-hosting-iam.json
@@ -108,18 +117,19 @@ jobs:
           git add app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json
           if git diff --cached --quiet; then echo 'No diagnostic evidence delta'; else git commit -m 'evidence: persist post-deploy Corte 6 Hosting diagnostic'; git push origin HEAD:docs-tya-v6-v71-audit; fi
 
-      - name: Publish post-deploy diagnostic status
+      - name: Publish post-deploy status
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           STATE=success
-          DESC='DIAG_C6_HOSTING_POSTDEPLOY_${{ steps.diag.outputs.code }}'
+          DESC='PASS_C6_HOSTING_WAITING_HUMAN_VISUAL'
+          if [ '${{ steps.gate.outputs.diagnose }}' = 'true' ] && [ '${{ steps.diag.outcome }}' = 'success' ]; then DESC='DIAG_C6_HOSTING_POSTDEPLOY_${{ steps.diag.outputs.code }}'; fi
           if [ '${{ job.status }}' != 'success' ]; then
             STATE=error
-            DESC='FAIL_C6_HOSTING_POSTDEPLOY_DIAG'
-            if [ '${{ steps.gate.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_POSTDEPLOY_GATE';
+            DESC='FAIL_C6_HOSTING_POSTDEPLOY_GATE'
+            if [ '${{ steps.gate.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_POSTDEPLOY_STATE';
             elif [ '${{ steps.credential.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_POSTDEPLOY_CREDENTIAL';
             elif [ '${{ steps.tooling.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_POSTDEPLOY_TOOLING';
             elif [ '${{ steps.diag.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_POSTDEPLOY_REMOTE_READ';
