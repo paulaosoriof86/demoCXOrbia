@@ -12,7 +12,7 @@
   "deploy": false,
   "production": false,
   "merge": false,
-  "requestedAt": "2026-07-30T01:13:00Z",
-  "attempt": 5,
-  "reason": "authorized read-only refresh plus exact fill-missing/noop/conflict diff for 22 stable-linked canonical profiles"
+  "requestedAt": "2026-07-30T01:18:00Z",
+  "attempt": 6,
+  "reason": "authorized stable-ID/code crosswalk for 210 HR protected shopper references, name matching forbidden"
 }
