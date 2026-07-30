@@ -126,6 +126,7 @@ jobs:
 
       - name: Dry-run exact claim target selection
         id: dryrun
+        if: steps.req.outputs.execute == 'true'
         env:
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
           CXORBIA_EXECUTE_AUTH_CLAIMS: 'false'
