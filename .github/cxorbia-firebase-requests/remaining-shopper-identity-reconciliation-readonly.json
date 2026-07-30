@@ -14,7 +14,7 @@
   "deploy": false,
   "merge": false,
   "production": false,
-  "requestedAt": "2026-07-30T02:30:00Z",
-  "attempt": 5,
-  "reason": "retry with corrected sanitized diagnostic persistence; same authorization and zero-write scope"
+  "requestedAt": "2026-07-30T02:38:00Z",
+  "attempt": 6,
+  "reason": "retry with exact sanitized runtime-error capture; same authorization and zero-write scope"
 }
