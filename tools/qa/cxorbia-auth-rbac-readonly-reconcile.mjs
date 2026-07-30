@@ -25,7 +25,7 @@ function values(v){
   if(typeof v === 'string') return v.split(',').map(x=>x.trim()).filter(Boolean);
   return [];
 }
-function inc(map, key){ if(!key) return; map[key] = (map[key] || 0) + 1; }
+function inc(map, key){ if(key === undefined || key === null || key === '') return; const k=String(key); map[k] = (map[k] || 0) + 1; }
 function tenantAllowedByCurrentRules(claims, role){
   return role === 'super' || claims.tenantId === tenantId || values(claims.tenants).includes(tenantId);
 }
@@ -37,6 +37,7 @@ const shopperIds = new Set(shopperDocs.map(r=>r.id));
 
 const roleReadiness = {};
 const roleScopeValues = {};
+const shopperMatchedProjectScopes = {};
 let totalUsers = 0;
 let activePasswordUsers = 0;
 let tenantUsers = 0;
@@ -94,6 +95,7 @@ do {
     if(typeof claims.tenantId === 'string') inc(s.tenantId, claims.tenantId);
     values(claims.tenants).forEach(v=>inc(s.tenants, v));
     values(claims.tenantIds).forEach(v=>inc(s.tenantIds, v));
+    if(role === 'shopper' && shopperProfileMatched) projects.forEach(v=>inc(shopperMatchedProjectScopes, v));
 
     let ready = false;
     if(operatorRoles.has(role)) ready = activePassword && tenantOk;
@@ -109,6 +111,20 @@ do {
   token = page.pageToken;
 } while (token);
 
+// Source-safe aggregate only: prove whether canonical visits use status vs estado and which status enums exist.
+const canonicalVisits = await db.collection('tenants').doc(tenantId).collection('projects').doc(canonicalProjectId).collection('visits').select('status','estado','periodId').get();
+const visitStatus = {total:canonicalVisits.size, statusPresent:0, estadoPresent:0, statusValues:{}, estadoValues:{}, byPeriod:{}};
+for(const doc of canonicalVisits.docs){
+  const d=doc.data()||{};
+  if(d.status !== undefined){ visitStatus.statusPresent++; inc(visitStatus.statusValues,d.status); }
+  if(d.estado !== undefined){ visitStatus.estadoPresent++; inc(visitStatus.estadoValues,d.estado); }
+  const p=String(d.periodId||'missing');
+  if(!visitStatus.byPeriod[p]) visitStatus.byPeriod[p]={total:0,statusValues:{},estadoValues:{}};
+  visitStatus.byPeriod[p].total++;
+  if(d.status !== undefined) inc(visitStatus.byPeriod[p].statusValues,d.status);
+  if(d.estado !== undefined) inc(visitStatus.byPeriod[p].estadoValues,d.estado);
+}
+
 const allFamiliesReady = operatorLoginReady > 0 && clientLoginReady > 0 && shopperLoginReady > 0;
 const readiness = {
   operatorLoginReady,
@@ -116,14 +132,14 @@ const readiness = {
   shopperLoginReady,
   allRequiredRoleFamiliesHaveAtLeastOne: allFamiliesReady,
   legacyClaimsSufficientForSecureDevReadWithoutClaimMutation: allFamiliesReady,
-  rulesMutationRequiredForCanonicalVisitStatusField: true,
+  rulesMutationRequiredForCanonicalVisitStatusField: visitStatus.statusPresent > 0 && visitStatus.estadoPresent < visitStatus.statusPresent,
   claimMutationRequiredForDevVisualIfReady: !allFamiliesReady,
   usersWithTenantIdsOnlyGap,
   usersWithProjectIdOnlyGap,
 };
 
 const report = {
-  schemaVersion: 'cxorbia.corte6-auth-rbac-readonly-reconciliation.v3',
+  schemaVersion: 'cxorbia.corte6-auth-rbac-readonly-reconciliation.v4',
   generatedAt: new Date().toISOString(),
   projectId: expectedProject,
   tenantId,
@@ -141,6 +157,7 @@ const report = {
     tenantUsers,
     usersAssignedCanonicalProject,
     shopperWithMatchingProfile,
+    shopperMatchedProjectScopes,
     usersWithTenantIdsOnlyGap,
     usersWithProjectIdOnlyGap,
     unknownRoleUsers,
@@ -149,6 +166,7 @@ const report = {
     readiness,
     piiExported: false,
   },
+  canonicalVisitStatus: visitStatus,
   safety: {
     authWrites: 0,
     firestoreWrites: 0,
@@ -167,6 +185,7 @@ fs.writeFileSync(outJson, JSON.stringify(report, null, 2) + '\n', 'utf8');
 const scopeLines = Object.entries(roleScopeValues).sort(([a],[b])=>a.localeCompare(b)).flatMap(([role,s])=>[
   `- ${role}: projectId=${JSON.stringify(s.projectId)}; projectIds=${JSON.stringify(s.projectIds)}; tenantId=${JSON.stringify(s.tenantId)}; tenants=${JSON.stringify(s.tenants)}; tenantIds=${JSON.stringify(s.tenantIds)}`
 ]);
+const statusLines = Object.entries(visitStatus.byPeriod).sort(([a],[b])=>a.localeCompare(b)).map(([p,s])=>`- ${p}: total=${s.total}; status=${JSON.stringify(s.statusValues)}; estado=${JSON.stringify(s.estadoValues)}`);
 const lines = [
   '# Corte 6 — reconciliación Auth/RBAC read-only source-safe',
   '',
@@ -184,31 +203,36 @@ const lines = [
   `- Usuarios autorizables a tenant TyA por reglas actuales: ${tenantUsers}`,
   `- Usuarios con proyecto canónico por projectIds[] (super cuenta global): ${usersAssignedCanonicalProject}`,
   `- Shopper claims con shopperId que coincide con perfil Firestore: ${shopperWithMatchingProfile}`,
-  `- Gaps tenantIds[] sin tenantId/tenants[]: ${usersWithTenantIdsOnlyGap}`,
-  `- Gaps projectId sin projectIds[]: ${usersWithProjectIdOnlyGap}`,
+  `- Shopper con perfil exacto por scopes legacy: ${JSON.stringify(shopperMatchedProjectScopes)}`,
   `- Login operador listo bajo reglas actuales: ${operatorLoginReady}`,
   `- Login cliente listo bajo reglas actuales: ${clientLoginReady}`,
   `- Login shopper listo bajo reglas actuales: ${shopperLoginReady}`,
   `- Familias mínimas listas: ${readiness.allRequiredRoleFamiliesHaveAtLeastOne ? 'sí' : 'no'}`,
-  `- Claims legacy suficientes para visual DEV sin mutarlos: ${readiness.legacyClaimsSufficientForSecureDevReadWithoutClaimMutation ? 'sí' : 'no'}`,
   '',
   '## Por rol — solo conteos',
   '',
-  '| Rol | Users | Password activos | Tenant por reglas | Proyecto por reglas | shopperId | Perfil shopper coincide | Gap tenant alias | Gap project alias | Secure read ready |',
-  '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|',
-  ...Object.entries(roleReadiness).sort(([a],[b])=>a.localeCompare(b)).map(([role,r])=>`| ${role} | ${r.users} | ${r.activePassword} | ${r.tenantAllowedByRules} | ${r.canonicalProjectAssignedByRules} | ${r.shopperIdPresent} | ${r.shopperProfileMatched} | ${r.tenantIdsOnlyGap} | ${r.projectIdOnlyGap} | ${r.secureReadReady} |`),
+  '| Rol | Users | Password activos | Tenant por reglas | Proyecto por reglas | shopperId | Perfil shopper coincide | Secure read ready |',
+  '|---|---:|---:|---:|---:|---:|---:|---:|',
+  ...Object.entries(roleReadiness).sort(([a],[b])=>a.localeCompare(b)).map(([role,r])=>`| ${role} | ${r.users} | ${r.activePassword} | ${r.tenantAllowedByRules} | ${r.canonicalProjectAssignedByRules} | ${r.shopperIdPresent} | ${r.shopperProfileMatched} | ${r.secureReadReady} |`),
   '',
   '## Distribución de scopes no PII',
   '',
   ...scopeLines,
   '',
+  '## Status canónico de visitas — agregado no PII',
+  '',
+  `- Total: ${visitStatus.total}; status presente=${visitStatus.statusPresent}; estado presente=${visitStatus.estadoPresent}`,
+  `- status values: ${JSON.stringify(visitStatus.statusValues)}`,
+  `- estado values: ${JSON.stringify(visitStatus.estadoValues)}`,
+  ...statusLines,
+  '',
   '## Seguridad',
   '',
   '- Auth/Firestore/Rules/Hosting/Storage writes: 0.',
   '- Producción/merge: false.',
-  '- Los valores de scope aquí son IDs técnicos de tenant/proyecto, no identidades de personas.',
+  '- Los valores de scope/status son IDs/estados operativos, no identidades de personas.',
   '- No se exportaron email, UID, nombre, teléfono, DPI, banco, contraseña, token ni shopperId.',
   ''
 ];
 fs.writeFileSync(outMd, lines.join('\n'), 'utf8');
-console.log(JSON.stringify({projectId: expectedProject, readiness, roleReadiness, roleScopeValues, providerWrites:0, piiExported:false}));
+console.log(JSON.stringify({projectId: expectedProject, readiness, roleReadiness, roleScopeValues, shopperMatchedProjectScopes, visitStatus, providerWrites:0, piiExported:false}));
