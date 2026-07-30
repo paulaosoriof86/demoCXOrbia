@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.corte6-hosting-iam-diagnostic.v2",
-  "generatedAt": "2026-07-30T17:11:47.483Z",
+  "generatedAt": "2026-07-30T17:17:32.794Z",
   "projectId": "cxorbia-backend-dev",
   "siteId": "cxorbia-backend-dev",
   "readOnly": true,
@@ -44,6 +44,19 @@
       "status": 200,
       "count": 5,
       "latest": [
+        {
+          "name": "sites/cxorbia-backend-dev/releases/1785431702100000",
+          "type": "DEPLOY",
+          "releaseTime": "2026-07-30T17:15:02.100Z",
+          "version": {
+            "name": "sites/cxorbia-backend-dev/versions/b00728c729452665",
+            "status": "FINALIZED",
+            "createTime": "2026-07-30T17:13:15.787528Z",
+            "finalizeTime": "2026-07-30T17:15:02.367010Z",
+            "fileCount": 2161,
+            "versionBytes": 4592047
+          }
+        },
         {
           "name": "sites/cxorbia-backend-dev/releases/1785293495637000",
           "type": "DEPLOY",
@@ -95,19 +108,6 @@
             "fileCount": 2007,
             "versionBytes": 4297427
           }
-        },
-        {
-          "name": "sites/cxorbia-backend-dev/releases/1785292334455000",
-          "type": "DEPLOY",
-          "releaseTime": "2026-07-29T02:32:14.455Z",
-          "version": {
-            "name": "sites/cxorbia-backend-dev/versions/493586ef86cc26d1",
-            "status": "FINALIZED",
-            "createTime": "2026-07-29T02:32:08.675821Z",
-            "finalizeTime": "2026-07-29T02:32:14.604130Z",
-            "fileCount": 2007,
-            "versionBytes": 4297413
-          }
         }
       ]
     },
@@ -116,6 +116,14 @@
       "status": 200,
       "count": 5,
       "latest": [
+        {
+          "name": "sites/cxorbia-backend-dev/versions/b00728c729452665",
+          "status": "FINALIZED",
+          "createTime": "2026-07-30T17:13:15.787528Z",
+          "finalizeTime": "2026-07-30T17:15:02.367010Z",
+          "fileCount": 2161,
+          "versionBytes": 4592047
+        },
         {
           "name": "sites/cxorbia-backend-dev/versions/d1e1de1d4935f996",
           "status": "FINALIZED",
@@ -147,14 +155,6 @@
           "finalizeTime": "2026-07-29T02:40:52.208263Z",
           "fileCount": 2007,
           "versionBytes": 4297427
-        },
-        {
-          "name": "sites/cxorbia-backend-dev/versions/493586ef86cc26d1",
-          "status": "FINALIZED",
-          "createTime": "2026-07-29T02:32:08.675821Z",
-          "finalizeTime": "2026-07-29T02:32:14.604130Z",
-          "fileCount": 2007,
-          "versionBytes": 4297413
         }
       ]
     },
@@ -165,8 +165,8 @@
     "remoteCorte6Proof": {
       "ok": true,
       "status": 200,
-      "isCorte6Proof": false,
-      "textLength": 6878
+      "isCorte6Proof": true,
+      "textLength": 1086
     }
   },
   "missingHostingCore": [],
@@ -178,7 +178,7 @@
   ],
   "directHostingApiReadReady": true,
   "firebaseCliApiKeyReadReady": false,
-  "firstFailedCliAttemptDeployedCorte6Proof": false,
+  "firstFailedCliAttemptDeployedCorte6Proof": true,
   "diagnosis": "FIREBASE_CLI_API_KEYS_VIEWER_GAP",
   "safety": {
     "authWrites": 0,
