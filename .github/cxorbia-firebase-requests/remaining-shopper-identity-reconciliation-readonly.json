@@ -14,7 +14,7 @@
   "deploy": false,
   "merge": false,
   "production": false,
-  "requestedAt": "2026-07-30T02:50:00Z",
-  "attempt": 8,
-  "reason": "retry after recovering historical unresolved identities from current TyA real profiles by the same deterministic R20 identity hash, without persisting PII; same authorization and zero-write scope"
+  "requestedAt": "2026-07-30T02:58:00Z",
+  "attempt": 9,
+  "reason": "final read-only reconciliation pass includes current HR, all current legacy identity representations including deleted-name markers, and canonical identity surfaces; unresolved cases remain HOLD rather than forcing a merge"
 }
