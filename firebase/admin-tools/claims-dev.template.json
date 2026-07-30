@@ -1,0 +1,53 @@
+{
+  "project": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "projectId": "tya-piloto",
+  "users": [
+    {
+      "label": "admin-dev",
+      "emailPlaceholder": "admin-dev@example.invalid",
+      "claims": {
+        "role": "admin",
+        "tenantId": "tya",
+        "projectIds": ["tya-piloto"]
+      }
+    },
+    {
+      "label": "ops-dev",
+      "emailPlaceholder": "ops-dev@example.invalid",
+      "claims": {
+        "role": "ops",
+        "tenantId": "tya",
+        "projectIds": ["tya-piloto"]
+      }
+    },
+    {
+      "label": "shopper-dev",
+      "emailPlaceholder": "shopper-dev@example.invalid",
+      "claims": {
+        "role": "shopper",
+        "tenantId": "tya",
+        "projectIds": ["tya-piloto"],
+        "shopperId": "eval-01"
+      }
+    },
+    {
+      "label": "cliente-dev",
+      "emailPlaceholder": "cliente-dev@example.invalid",
+      "claims": {
+        "role": "cliente",
+        "tenantId": "tya",
+        "projectIds": ["tya-piloto"]
+      }
+    },
+    {
+      "label": "otro-tenant-dev",
+      "emailPlaceholder": "otro-tenant-dev@example.invalid",
+      "claims": {
+        "role": "admin",
+        "tenantId": "otro-tenant",
+        "projectIds": ["tya-piloto"]
+      }
+    }
+  ]
+}

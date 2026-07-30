@@ -1,0 +1,122 @@
+{
+  "schemaVersion": "cxorbia-smart-setup-v1",
+  "status": "draft-no-write",
+  "purpose": "Modelo para set-up inteligente de tenant/proyecto con recomendaciones revisables y write-plan, sin aplicar automaticamente.",
+  "collections": {
+    "setupSessions": {
+      "path": "tenants/{tenantId}/setupSessions/{sessionId}",
+      "purpose": "Sesión de configuración guiada para tenant o proyecto.",
+      "fields": {
+        "tenantId": "string",
+        "sessionId": "string",
+        "scope": "tenant|project|module",
+        "projectId": "string|null",
+        "status": "draft|analyzing|review|writePlanReady|applied|cancelled|failed",
+        "countryScope": "array",
+        "createdAt": "timestamp",
+        "createdBy": "uid|string",
+        "updatedAt": "timestamp",
+        "updatedBy": "uid|string"
+      }
+    },
+    "setupSources": {
+      "path": "tenants/{tenantId}/setupSources/{sourceId}",
+      "purpose": "Fuente usada para generar recomendaciones: formulario, Excel, HR, documento, manual, entrevista o plantilla.",
+      "fields": {
+        "tenantId": "string",
+        "sourceId": "string",
+        "sessionId": "string",
+        "sourceType": "form|excel|csv|document|hr|manual|interview|template|existingConfig",
+        "fileAssetId": "string|null",
+        "summarySanitized": "string|null",
+        "status": "uploaded|parsed|analyzed|failed|ignored",
+        "createdAt": "timestamp",
+        "createdBy": "uid|string"
+      }
+    },
+    "setupRecommendations": {
+      "path": "tenants/{tenantId}/setupRecommendations/{recommendationId}",
+      "purpose": "Recomendación generada por reglas o IA para configurar el sistema.",
+      "fields": {
+        "tenantId": "string",
+        "recommendationId": "string",
+        "sessionId": "string",
+        "area": "tenant|project|hr|finance|integrations|automations|legal|ai|storage|reports|academy|crm|roles",
+        "targetPath": "string|null",
+        "confidence": "number",
+        "sourceIds": "array",
+        "recommendationSanitized": "object",
+        "requiresHumanReview": "boolean",
+        "status": "pending|accepted|rejected|edited|superseded",
+        "createdAt": "timestamp",
+        "createdBy": "uid|string"
+      }
+    },
+    "setupDecisions": {
+      "path": "tenants/{tenantId}/setupDecisions/{decisionId}",
+      "purpose": "Decisión humana sobre una recomendación.",
+      "fields": {
+        "tenantId": "string",
+        "decisionId": "string",
+        "sessionId": "string",
+        "recommendationId": "string",
+        "decision": "accept|reject|edit|defer",
+        "reason": "string|null",
+        "editedValueSanitized": "object|null",
+        "createdAt": "timestamp",
+        "createdBy": "uid|string"
+      }
+    },
+    "setupWritePlans": {
+      "path": "tenants/{tenantId}/setupWritePlans/{writePlanId}",
+      "purpose": "Plan de escrituras propuesto a partir de decisiones aprobadas.",
+      "fields": {
+        "tenantId": "string",
+        "writePlanId": "string",
+        "sessionId": "string",
+        "status": "draft|validated|review|failed|applied",
+        "opsCount": "number",
+        "collectionsTouched": "array",
+        "validationSummary": "object|null",
+        "createdAt": "timestamp",
+        "createdBy": "uid|string"
+      }
+    },
+    "setupTasks": {
+      "path": "tenants/{tenantId}/setupTasks/{taskId}",
+      "purpose": "Pendientes derivados del set-up: credenciales, revisión legal, completar datos o validar reglas.",
+      "fields": {
+        "tenantId": "string",
+        "taskId": "string",
+        "sessionId": "string",
+        "area": "string",
+        "title": "string",
+        "status": "open|inProgress|done|cancelled",
+        "ownerUid": "uid|string|null",
+        "dueAt": "timestamp|null",
+        "createdAt": "timestamp",
+        "createdBy": "uid|string"
+      }
+    },
+    "setupAuditLogs": {
+      "path": "tenants/{tenantId}/setupAuditLogs/{auditId}",
+      "purpose": "Auditoría de análisis, recomendaciones, decisiones y write-plans del set-up.",
+      "fields": {
+        "tenantId": "string",
+        "auditId": "string",
+        "sessionId": "string",
+        "action": "createSession|addSource|analyze|recommend|decide|buildWritePlan|validate|apply|cancel",
+        "payloadSanitized": "object",
+        "createdAt": "timestamp",
+        "createdBy": "uid|string"
+      }
+    }
+  },
+  "rules": [
+    "Ninguna recomendacion se aplica sin decision humana.",
+    "Toda recomendacion debe tener sourceIds y confidence.",
+    "Integraciones, automatizaciones y legales arrancan inactivos si vienen del set-up.",
+    "Los textos, prompts y documentos completos no se guardan en logs si contienen informacion sensible.",
+    "El set-up genera write-plan, no escribe directo."
+  ]
+}

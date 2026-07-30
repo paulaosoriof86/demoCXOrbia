@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "cxorbia-ai-governance-consents-v1",
+  "status": "draft-no-write",
+  "purpose": "Gobernanza de uso de IA, avisos de responsabilidad, aceptaciones y trazabilidad de recomendaciones generadas.",
+  "collections": {
+    "aiUsagePolicies": {
+      "path": "tenants/{tenantId}/aiUsagePolicies/{policyId}",
+      "purpose": "Politicas por tenant/proyecto sobre uso permitido de IA.",
+      "fields": {
+        "tenantId": "string",
+        "policyId": "string",
+        "country": "CO|GT|GLOBAL",
+        "subjectTypes": "array",
+        "allowedFeatures": "array",
+        "requiresDisclaimerAcceptance": "boolean",
+        "requiresHumanReview": "boolean",
+        "forbiddenUseNotes": "array",
+        "active": "boolean",
+        "updatedAt": "timestamp",
+        "updatedBy": "uid"
+      }
+    },
+    "aiDisclaimers": {
+      "path": "tenants/{tenantId}/aiDisclaimers/{disclaimerId}",
+      "purpose": "Texto versionado que explica limites de IA y revision humana requerida.",
+      "fields": {
+        "tenantId": "string",
+        "disclaimerId": "string",
+        "country": "CO|GT|GLOBAL",
+        "version": "string",
+        "title": "string",
+        "status": "draft|published|archived|replaced",
+        "documentHash": "string",
+        "legalDocumentId": "string|null",
+        "printable": "boolean",
+        "createdAt": "timestamp",
+        "createdBy": "uid"
+      }
+    },
+    "aiDisclaimerAcceptances": {
+      "path": "tenants/{tenantId}/aiDisclaimerAcceptances/{acceptanceId}",
+      "purpose": "Aceptacion especifica de limites de IA por usuario, cliente, socio o aliado.",
+      "fields": {
+        "tenantId": "string",
+        "acceptanceId": "string",
+        "userId": "uid|string",
+        "subjectType": "clientUser|businessPartner|franchisee|admin|ops|shopper|other",
+        "country": "CO|GT|GLOBAL",
+        "disclaimerId": "string",
+        "version": "string",
+        "documentHash": "string",
+        "acceptedAt": "timestamp",
+        "acceptedFrom": "login|clientPortal|aiModule|settings",
+        "status": "accepted|rejected|replaced"
+      }
+    },
+    "aiRecommendationLogs": {
+      "path": "tenants/{tenantId}/aiRecommendationLogs/{logId}",
+      "purpose": "Bitacora de recomendaciones IA generadas para trazabilidad y auditoria.",
+      "fields": {
+        "tenantId": "string",
+        "logId": "string",
+        "projectId": "string|null",
+        "feature": "string",
+        "provider": "gemini|openai|anthropic|custom|unknown",
+        "model": "string|null",
+        "userId": "uid|string",
+        "subjectType": "string",
+        "inputSummary": "string|null",
+        "outputSummary": "string|null",
+        "requiresHumanReview": "boolean",
+        "disclaimerAccepted": "boolean",
+        "createdAt": "timestamp"
+      }
+    }
+  },
+  "rules": [
+    "Ningun modulo IA critico debe operar para clientes sin disclaimer aceptado.",
+    "Las salidas IA son apoyo y requieren criterio humano.",
+    "El proveedor y modelo usados deben quedar trazados cuando sea posible.",
+    "Los prompts o documentos completos no deben registrarse si contienen informacion sensible; guardar resumen sanitizado."
+  ],
+  "integrationWithLegal": {
+    "legalDocumentTypes": ["clientAiUsageDisclaimer", "partnerAiUsageDisclaimer"],
+    "acceptanceLink": "legalAcceptances puede referenciar disclaimerId o legalDocumentId"
+  }
+}

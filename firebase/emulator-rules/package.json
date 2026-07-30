@@ -1,0 +1,13 @@
+{
+  "name": "cxorbia-firestore-rules-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:rules": "firebase emulators:exec --only firestore \"node firestore.rules.test.js\""
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^3.0.0",
+    "firebase": "^10.12.5",
+    "firebase-tools": "^13.11.0"
+  }
+}

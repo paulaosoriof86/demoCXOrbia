@@ -1,0 +1,93 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // DRAFT ONLY — no publicar sin validación explícita.
+    // Reglas Storage para evidencias, logos y documentos.
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function tokenTenant() {
+      return request.auth.token.tenantId;
+    }
+
+    function sameTenant(tenantId) {
+      return signedIn() && tokenTenant() == tenantId;
+    }
+
+    function role() {
+      return request.auth.token.role;
+    }
+
+    function isAdmin() {
+      return role() in ['superAdmin', 'owner', 'admin'];
+    }
+
+    function isOps() {
+      return role() in ['superAdmin', 'owner', 'admin', 'ops', 'coordinator', 'coordinador', 'aliado'];
+    }
+
+    function isShopper(shopperId) {
+      return signedIn() && request.auth.token.shopperId == shopperId;
+    }
+
+    function isSafeSize(maxMb) {
+      return request.resource.size < maxMb * 1024 * 1024;
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function isAudio() {
+      return request.resource.contentType.matches('audio/.*');
+    }
+
+    function isVideo() {
+      return request.resource.contentType.matches('video/.*');
+    }
+
+    function isPdfOrOffice() {
+      return request.resource.contentType in [
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+      ];
+    }
+
+    match /tenants/{tenantId}/brand/logo/{fileId} {
+      allow read: if signedIn() && sameTenant(tenantId);
+      allow write: if sameTenant(tenantId) && isAdmin() && isImage() && isSafeSize(5);
+    }
+
+    match /tenants/{tenantId}/documents/{documentType}/{fileId} {
+      allow read: if sameTenant(tenantId) && (isAdmin() || isOps());
+      allow write: if sameTenant(tenantId) && isAdmin() && (isPdfOrOffice() || isImage()) && isSafeSize(25);
+    }
+
+    match /tenants/{tenantId}/projects/{projectId}/documents/{documentType}/{fileId} {
+      allow read: if sameTenant(tenantId) && (isAdmin() || isOps());
+      allow write: if sameTenant(tenantId) && (isAdmin() || isOps()) && (isPdfOrOffice() || isImage()) && isSafeSize(25);
+    }
+
+    match /tenants/{tenantId}/projects/{projectId}/visits/{visitId}/evidence/{fileId} {
+      allow read: if sameTenant(tenantId) && (isAdmin() || isOps());
+      allow write: if sameTenant(tenantId) && signedIn()
+        && (isImage() || isAudio() || isVideo() || isPdfOrOffice())
+        && isSafeSize(250);
+    }
+
+    match /tenants/{tenantId}/shoppers/{shopperId}/documents/{documentType}/{fileId} {
+      allow read: if sameTenant(tenantId) && (isAdmin() || isOps() || isShopper(shopperId));
+      allow write: if sameTenant(tenantId) && (isAdmin() || isOps() || isShopper(shopperId)) && (isPdfOrOffice() || isImage()) && isSafeSize(25);
+    }
+
+    match /tenants/{tenantId}/manuals/{manualId}/assets/{fileId} {
+      allow read: if sameTenant(tenantId);
+      allow write: if sameTenant(tenantId) && isAdmin() && (isPdfOrOffice() || isImage() || isVideo()) && isSafeSize(50);
+    }
+  }
+}

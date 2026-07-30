@@ -1,0 +1,97 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // DRAFT ONLY — no publicar sin autorización explícita.
+    // Gobernanza IA: políticas, avisos, aceptaciones y bitácora resumida.
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function tokenTenant() {
+      return request.auth.token.tenantId;
+    }
+
+    function sameTenant(tenantId) {
+      return signedIn() && tokenTenant() == tenantId;
+    }
+
+    function role() {
+      return request.auth.token.role;
+    }
+
+    function isAdmin() {
+      return role() in ['superAdmin', 'owner', 'admin'];
+    }
+
+    function isOps() {
+      return role() in ['superAdmin', 'owner', 'admin', 'ops', 'coordinator', 'coordinador', 'aliado'];
+    }
+
+    function canReadAi(tenantId) {
+      return sameTenant(tenantId) && (isAdmin() || isOps());
+    }
+
+    function canManageAi(tenantId) {
+      return sameTenant(tenantId) && isAdmin();
+    }
+
+    function statusOk(status) {
+      return status in ['draft', 'published', 'archived', 'replaced'];
+    }
+
+    function acceptanceOk(status) {
+      return status in ['accepted', 'rejected', 'replaced'];
+    }
+
+    function noPrivateFields(data) {
+      return !('apiKey' in data) &&
+             !('password' in data) &&
+             !('token' in data) &&
+             !('secret' in data) &&
+             !('rawPrompt' in data) &&
+             !('rawOutput' in data);
+    }
+
+    match /tenants/{tenantId}/aiUsagePolicies/{policyId} {
+      allow read: if canReadAi(tenantId);
+      allow create, update: if canManageAi(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.policyId == policyId
+        && noPrivateFields(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/aiDisclaimers/{disclaimerId} {
+      allow read: if sameTenant(tenantId);
+      allow create, update: if canManageAi(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.disclaimerId == disclaimerId
+        && statusOk(request.resource.data.status)
+        && noPrivateFields(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/aiDisclaimerAcceptances/{acceptanceId} {
+      allow read: if sameTenant(tenantId) && (isAdmin() || request.resource.data.userId == request.auth.uid);
+      allow create: if sameTenant(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.acceptanceId == acceptanceId
+        && request.resource.data.userId == request.auth.uid
+        && acceptanceOk(request.resource.data.status)
+        && noPrivateFields(request.resource.data);
+      allow update, delete: if false;
+    }
+
+    match /tenants/{tenantId}/aiRecommendationLogs/{logId} {
+      allow read: if canReadAi(tenantId);
+      allow create: if sameTenant(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.logId == logId
+        && request.resource.data.userId == request.auth.uid
+        && noPrivateFields(request.resource.data);
+      allow update, delete: if false;
+    }
+  }
+}

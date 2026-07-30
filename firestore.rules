@@ -1,0 +1,228 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function role() {
+      return signedIn() && request.auth.token.role is string
+        ? request.auth.token.role
+        : '';
+    }
+
+    function isSuper() {
+      return role() == 'super';
+    }
+
+    function isAdmin() {
+      return role() in ['super', 'admin'];
+    }
+
+    function isOps() {
+      return role() == 'ops';
+    }
+
+    function isOperator() {
+      return role() in ['super', 'admin', 'ops'];
+    }
+
+    function isClient() {
+      return role() in ['cliente', 'client'];
+    }
+
+    function isShopperRole() {
+      return role() == 'shopper';
+    }
+
+    function tenantAllowed(tenantId) {
+      return signedIn() && (
+        isSuper() ||
+        request.auth.token.tenantId == tenantId ||
+        (request.auth.token.tenants is list && tenantId in request.auth.token.tenants)
+      );
+    }
+
+    function projectAssigned(projectId) {
+      return request.auth.token.projectIds is list && projectId in request.auth.token.projectIds;
+    }
+
+    function canAccessProject(projectId) {
+      return isOperator() || projectAssigned(projectId);
+    }
+
+    function canReadProject(projectId) {
+      return isOperator() || isClient() && projectAssigned(projectId) || isShopperRole() && projectAssigned(projectId);
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function shopperId() {
+      return signedIn() && request.auth.token.shopperId is string
+        ? request.auth.token.shopperId
+        : '';
+    }
+
+    function isOwnShopper(shopperIdParam) {
+      return isShopperRole() && shopperId() == shopperIdParam;
+    }
+
+    function isOwnResource() {
+      return isShopperRole() && resource.data.shopperId == shopperId();
+    }
+
+    function isOwnIncomingResource() {
+      return isShopperRole() && request.resource.data.shopperId == shopperId();
+    }
+
+    function isAvailableVisitForShopper(projectId) {
+      return isShopperRole() && projectAssigned(projectId) && resource.data.estado == 'disponible';
+    }
+
+    // Deny by default. Every collection below must prove tenant, project and role.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /tenants/{tenantId} {
+      allow read: if tenantAllowed(tenantId) && (isOperator() || isClient() || isShopperRole());
+      allow create, update, delete: if tenantAllowed(tenantId) && isSuper();
+
+      match /users/{uid} {
+        allow read: if tenantAllowed(tenantId) && (isSelf(uid) || isAdmin());
+        allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+      }
+
+      match /clients/{clientId} {
+        allow read: if tenantAllowed(tenantId) && (isOperator() || isClient());
+        allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+      }
+
+      match /shoppers/{shopperIdParam} {
+        allow read: if tenantAllowed(tenantId) && (isOperator() || isOwnShopper(shopperIdParam));
+        allow create: if tenantAllowed(tenantId) && isOperator();
+        allow update: if tenantAllowed(tenantId) && (isOperator() || isOwnShopper(shopperIdParam));
+        allow delete: if tenantAllowed(tenantId) && isAdmin();
+      }
+
+      match /notifications/{notificationId} {
+        allow read: if tenantAllowed(tenantId) && (
+          isOperator() ||
+          resource.data.uid == request.auth.uid ||
+          resource.data.userId == request.auth.uid ||
+          resource.data.toRole == role()
+        );
+        allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
+      }
+
+      match /automations/{automationId} {
+        allow read: if tenantAllowed(tenantId) && isAdmin();
+        allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+      }
+
+      match /auditLogs/{logId} {
+        allow read: if tenantAllowed(tenantId) && isAdmin();
+        allow create: if tenantAllowed(tenantId) && signedIn();
+        allow update, delete: if false;
+      }
+
+      match /shopperBenefits/{benefitId} {
+        allow read: if tenantAllowed(tenantId) && (
+          isAdmin() ||
+          isOps() ||
+          isOwnResource()
+        );
+        allow create, update: if tenantAllowed(tenantId) && isAdmin();
+        allow delete: if tenantAllowed(tenantId) && isAdmin();
+      }
+
+      match /projects/{projectId} {
+        allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
+        allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+
+        match /visits/{visitId} {
+          allow read: if tenantAllowed(tenantId) && (
+            isOperator() ||
+            isClient() && projectAssigned(projectId) ||
+            isOwnResource() ||
+            isAvailableVisitForShopper(projectId)
+          );
+          allow create, delete: if tenantAllowed(tenantId) && isOperator();
+          allow update: if tenantAllowed(tenantId) && (
+            isOperator() ||
+            isOwnResource()
+          );
+        }
+
+        match /postulations/{postulationId} {
+          allow read: if tenantAllowed(tenantId) && (
+            isOperator() ||
+            isOwnResource()
+          );
+          allow create: if tenantAllowed(tenantId) && (
+            isOperator() ||
+            isOwnIncomingResource()
+          );
+          allow update, delete: if tenantAllowed(tenantId) && isOperator();
+        }
+
+        match /questionnaires/{questionnaireId} {
+          allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
+          allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
+        }
+
+        match /responses/{responseId} {
+          allow read: if tenantAllowed(tenantId) && (
+            isOperator() ||
+            isClient() && projectAssigned(projectId) ||
+            isOwnResource()
+          );
+          allow create: if tenantAllowed(tenantId) && (
+            isOperator() ||
+            isOwnIncomingResource()
+          );
+          allow update, delete: if tenantAllowed(tenantId) && isOperator();
+        }
+
+        match /liquidations/{liquidationId} {
+          allow read: if tenantAllowed(tenantId) && (
+            isAdmin() ||
+            isOps() ||
+            isOwnResource()
+          );
+          allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+        }
+
+        match /lots/{lotId} {
+          allow read: if tenantAllowed(tenantId) && isOperator();
+          allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+        }
+
+        match /finance/{movementId} {
+          allow read: if tenantAllowed(tenantId) && isAdmin();
+          allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
+        }
+
+        match /documents/{documentId} {
+          allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
+          allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
+        }
+
+        match /certifications/{certificationId} {
+          allow read: if tenantAllowed(tenantId) && (
+            isOperator() ||
+            isOwnResource()
+          );
+          allow create: if tenantAllowed(tenantId) && (
+            isOperator() ||
+            isOwnIncomingResource()
+          );
+          allow update, delete: if tenantAllowed(tenantId) && isOperator();
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "cxorbia-backend-dev",
+    "dev": "cxorbia-backend-dev"
+  },
+  "targets": {
+    "cxorbia-backend-dev": {
+      "hosting": {
+        "cxorbia-dev": [
+          "cxorbia-backend-dev"
+        ]
+      }
+    }
+  }
+}

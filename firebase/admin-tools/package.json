@@ -1,0 +1,9 @@
+{
+  "name": "cxorbia-admin-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate:seed": "node validate-seed.mjs ../../firebase/seed-tya-piloto.json",
+    "plan:claims": "node print-claims-plan.mjs claims-dev.template.json"
+  }
+}

@@ -1,0 +1,117 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // DRAFT ONLY — no publicar sin autorización explícita.
+    // Reglas para documentos legales, aceptaciones y evidencias.
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function tokenTenant() {
+      return request.auth.token.tenantId;
+    }
+
+    function sameTenant(tenantId) {
+      return signedIn() && tokenTenant() == tenantId;
+    }
+
+    function role() {
+      return request.auth.token.role;
+    }
+
+    function isAdmin() {
+      return role() in ['superAdmin', 'owner', 'admin'];
+    }
+
+    function isOps() {
+      return role() in ['superAdmin', 'owner', 'admin', 'ops', 'coordinator', 'coordinador', 'aliado'];
+    }
+
+    function canManageLegal(tenantId) {
+      return sameTenant(tenantId) && isAdmin();
+    }
+
+    function canReadLegal(tenantId) {
+      return sameTenant(tenantId) && (isAdmin() || isOps());
+    }
+
+    function publicLegalStatusOk(status) {
+      return status in ['draft', 'published', 'archived', 'replaced'];
+    }
+
+    function acceptanceStatusOk(status) {
+      return status in ['accepted', 'rejected', 'revoked', 'replaced'];
+    }
+
+    function noPrivateFields(data) {
+      return !('apiKey' in data) &&
+             !('password' in data) &&
+             !('token' in data) &&
+             !('secret' in data);
+    }
+
+    match /tenants/{tenantId}/legalTemplates/{templateId} {
+      allow read: if canReadLegal(tenantId);
+      allow create, update: if canManageLegal(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.templateId == templateId
+        && publicLegalStatusOk(request.resource.data.status)
+        && noPrivateFields(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/legalDocuments/{documentId} {
+      allow read: if sameTenant(tenantId);
+      allow create, update: if canManageLegal(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.documentId == documentId
+        && publicLegalStatusOk(request.resource.data.status)
+        && noPrivateFields(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/legalAcceptanceRequirements/{requirementId} {
+      allow read: if sameTenant(tenantId);
+      allow create, update: if canManageLegal(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.requirementId == requirementId
+        && noPrivateFields(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/legalAcceptances/{acceptanceId} {
+      allow read: if sameTenant(tenantId) && (isAdmin() || request.resource.data.userId == request.auth.uid);
+      allow create: if sameTenant(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.acceptanceId == acceptanceId
+        && request.resource.data.userId == request.auth.uid
+        && acceptanceStatusOk(request.resource.data.status)
+        && noPrivateFields(request.resource.data);
+      allow update, delete: if false;
+    }
+
+    match /tenants/{tenantId}/legalPrintJobs/{printJobId} {
+      allow read: if sameTenant(tenantId);
+      allow create: if sameTenant(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.printJobId == printJobId
+        && noPrivateFields(request.resource.data);
+      allow update: if canManageLegal(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.printJobId == printJobId
+        && noPrivateFields(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/legalAuditLogs/{auditId} {
+      allow read: if canManageLegal(tenantId);
+      allow create: if sameTenant(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.auditId == auditId
+        && noPrivateFields(request.resource.data);
+      allow update, delete: if false;
+    }
+  }
+}
