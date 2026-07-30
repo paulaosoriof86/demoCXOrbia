@@ -1,63 +1,64 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-30  
-**Estado vivo:** `C6_P0_PROTOTYPE_AUTOENTRY_FIX_STATIC_PASS__PENDING_SINGLE_DEV_REDEPLOY_AUTH__NO_PRODUCTION`
+**Estado vivo:** `C6_PROTOTYPE_AUTOENTRY_HOSTING_DEV_REMOTE_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge.
 - Corte3 `CXORBIA-TYA-CORTE3-V182-20260729`: FROZEN.
-- R17N FINAL: 1,406/1,406 Firestore data writes/readback; no repetir.
+- R17N FINAL:1,406/1,406 Firestore data writes/readback; no repetir.
 - Corte5 `CX.data`: `cinepolis`,14 periodos,616 visitas,currentPeriod=`2026-07`,source=firestore/fallback=false PASS.
 - Auth legacy import/readback91/91 PASS: shopper88 + super1 + coordinador2; Auth17→108; resets/deletes/overwrite0.
 - claims5/5 + Firestore Rules PASS.
 - No nueva candidata/base/Hosting/rama/PR por rutina.
 
-## 2. Dos P0 visuales consecutivos y causa definitiva
-1. Build anterior: gate separado `Acceso seguro` antes del producto → rechazado.
-2. Build posterior: el gate separado desapareció, pero al elegir `Administración / Coordinación` el backend añadía `Usuario + Contraseña` dentro de la misma tarjeta → también rechazado porque el prototipo siempre auto-entraba al seleccionar perfil; además el formulario quedaba fuera del viewport.
+## 2. P0 visuales y solución definitiva
+- Build 1 rechazado: gate separado `Acceso seguro`.
+- Build 2 rechazado: `Usuario + Contraseña` inyectado al seleccionar perfil y formulario fuera del viewport.
+- Contrato correcto: `app.js` mantiene perfil → `selectRole(...)` → `enter()` automático.
 
-El segundo P0 está localizado: `backend-browser-auth.js` intercepta `CX.app.selectRole()` únicamente cuando el backend/Auth preview está habilitado y llama `showCredentialStep(role)`. El contrato canónico de `app.js` sigue siendo botón de rol → `selectRole(...)` → `enter()`.
+La ruta humana DEV quedó corregida sin tocar módulos:
+- auto-entry del prototipo;
+- `humanCredentialPrompt=false`;
+- HR source-safe read-only como fuente visual;
+- baseline `cinepolis`,14 periodos,616 visitas;
+- Auth/RBAC/Rules validados por gates provider separados;
+- mutaciones bloqueadas y sin fallback demo.
 
-## 3. Corrección aplicada — el prototipo manda
-La ruta **humana** DEV vuelve al comportamiento aprobado:
-- selección de rol con acceso automático;
-- sin correo, usuario, contraseña ni gate técnico para la validación humana;
-- HR source-safe explícita como fuente visual, no demo y no falsa sesión Firestore;
-- baseline source-safe verificada: proyecto `cinepolis`,14 periodos,616 visitas;
-- writes bloqueados;
-- Auth/RBAC/Firebase permanece técnicamente validado por gates/provider separados y no se debilitan Rules.
+## 3. Gate/redeploy
+Gate estático: `29b7f9404a9c2f144145fe24d5cf048f753c1e75` → `PREPARED_C6_PROTOTYPE_AUTO_ENTRY_NO_EXECUTE` PASS.
 
-Archivos focales:
-- `app/core/backend-config-preview-dev.js`;
-- `app/core/backend-cxdata-readonly-corte4.js`;
-- `app/core/backend-preview-status.js`;
-- preflight/workflow Hosting existentes.
+La primera ejecución autorizada falló antes de deploy por incompatibilidad interna de nombres de decisión entre preflight y direct-deploy. Se corrigió en `b9f5190babcc339735cda59291417df5aea6988f`; el request seguía sin consumir y con deploy0, así que se reintentó bajo la misma autorización.
 
-No se tocó `app/modules/*`.
+Resultado final:
+`PASS_EXISTING_HOSTING_DEV_PROTOTYPE_AUTO_ENTRY_SOURCE_SAFE_REMOTE_VERIFIED`.
 
-## 4. Gate técnico del nuevo fix
-Commit de revalidación `29b7f9404a9c2f144145fe24d5cf048f753c1e75`:
-`success · PREPARED_C6_PROTOTYPE_AUTO_ENTRY_NO_EXECUTE`.
+- versión `sites/cxorbia-backend-dev/versions/95a1e49e5064c456`;
+- release `sites/cxorbia-backend-dev/releases/1785452689852000`;
+- prototypeAutoEntry=true;
+- humanCredentialPrompt=false;
+- sourceSafeVisual=true;
+- 14 periodos /616 visitas / proyecto `cinepolis`;
+- preservedLegacyAuthUsers91;
+- Hosting deploy executions1.
 
-Valida sintaxis, auto-entry del prototipo, `humanCredentialPrompt=false`, fuente source-safe y baseline14/616. No cargó service account ni hizo deploy/provider writes porque la autorización Hosting anterior ya estaba consumida.
-
-## 5. Claude/prototipo
-**No crear nueva candidata ni rehacer este fix.** Conservar como patrón reusable:
-- UX del producto manda; infraestructura Auth no crea pasos técnicos adicionales;
-- validaciones humanas y provider gates son capas distintas;
-- nunca pedir al usuario credenciales técnicas que no forman parte del flujo aprobado;
-- no reintroducir `Acceso seguro` ni formulario `Usuario + Contraseña` en el preview humano;
-- producción sí debe mantener Auth/RBAC real detrás del contrato operativo aprobado, con recuperación de acceso explícita.
+## 4. Claude/prototipo
+No crear nueva candidata ni rehacer este fix. No tocar `app/modules/*` por este tema. Conservar:
+- UX del producto manda;
+- preview humano no muestra infraestructura Auth;
+- Auth real queda detrás del contrato operativo y gates;
+- no reintroducir `Acceso seguro` ni formulario de credenciales en validación humana;
+- producción debe mantener autenticación real y recuperación/cambio de acceso.
 
 P1/P2 preservados: PDF/gráficas, Excel/formato, reportKit/exportaciones y copy de fuentes.
 
-## 6. Agosto
+## 5. Agosto
 Después de FREEZE Corte6: `refresh HR → resolver Agosto HN → materializar solo delta agosto → smoke → preprod/cutover`. No rematerializar histórico.
 
-## 7. Academia/manuales
-En DEV humano: selección de perfil y entrada automática; el diagnóstico debe rotular HR source-safe y Auth validado por gate separado. En operación/producción, enseñar el flujo de acceso real aprobado y recuperación; provider email/claims/namespaces permanecen internos.
+## 6. Academia/manuales
+Preview humano: perfil → entrada automática; HR source-safe visible; Auth validado por gate separado. Producción: acceso real aprobado, recuperación/cambio, scopes y provider interno oculto.
 
-## 8. Estado seguro / siguiente gate
-Desde el segundo P0: Auth writes0; Firestore data writes0; Rules0; Hosting deploy0; Storage/HR/legacy/payments/Functions/Make/Gemini0; merge=false; producción=false.
+## 7. Estado seguro / gate vivo
+Redeploy actual: Auth writes0; Firestore data writes0; Rules0; Storage/HR/legacy/payments/Functions/Make/Gemini0; nuevo Firebase/Hosting0; merge=false; producción=false.
 
-Siguiente gate: `AUTORIZACIÓN FRESCA DE 1 REDEPLOY MISMO HOSTING DEV → PRECHECK → DEPLOY1 → REMOTE SMOKE AUTO-ENTRY/SOURCE-SAFE → VISUAL PAULA → FREEZE C6`.
+Gate vivo: `VALIDACIÓN VISUAL HUMANA → SI APRUEBA FREEZE C6 → AGOSTO DELTA`.
