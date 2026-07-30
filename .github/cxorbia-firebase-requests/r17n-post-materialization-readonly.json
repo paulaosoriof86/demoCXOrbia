@@ -1,10 +1,10 @@
 {
   "schemaVersion": "cxorbia.r17n-post-materialization-readonly.request.v1",
-  "requestId": "r17n-post-materialization-readonly-20260730-02",
+  "requestId": "r17n-post-materialization-readonly-20260730-03",
   "enabled": true,
   "consumed": false,
   "mode": "R17N_POST_MATERIALIZATION_READONLY",
-  "targetHeadSha": "96cb7601559a76595d6203724a4bcf2d0b35b390",
+  "targetHeadSha": "21ce464772bfe6543b3672ad4b6d7deafd564adc",
   "projectId": "cxorbia-backend-dev",
   "tenantId": "tya",
   "canonicalProjectId": "cinepolis",
@@ -21,7 +21,7 @@
   "sourceLockDocument": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
   "piiPolicy": "source-to-memory-only; sanitized evidence only",
   "issuedAt": "2026-07-30",
-  "attempts": 3,
+  "attempts": 4,
   "result": "PENDING_AUTHORIZED_P0_C5_PERIOD_MODEL_RESMOKE",
-  "reason": "Paula authorized focal app/core/backend-firebase.js correction and read-only Corte 5 re-smoke; no new data writes, deploy, Auth, Storage, HR, payments, merge or production"
+  "reason": "Authorized read-only re-smoke after focal backend fix; QA in-memory provider snapshot now includes the already-read canonical periods collection so the adapter consumer is tested against the same provider snapshot; no provider/data/Auth/Storage/HR writes, deploy, payments, merge or production"
 }
