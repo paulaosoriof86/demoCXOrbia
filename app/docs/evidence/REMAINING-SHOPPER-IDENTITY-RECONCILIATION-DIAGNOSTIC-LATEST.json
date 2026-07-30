@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "cxorbia.remaining-shopper-identity.diagnostic.v1",
+  "generatedAt": "2026-07-30T02:32:36.538Z",
+  "detail": "unknown",
+  "sanitized": true,
+  "rawPiiPersisted": false,
+  "providerWrites": 0
+}
