@@ -22,19 +22,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+
       - name: Validate request
         run: |
+          set -euo pipefail
           node <<'NODE'
           const r=require('./.github/cxorbia-firebase-requests/canonical-plan-refresh-offline.json');
           if(r.enabled!==true||r.mode!=='OFFLINE_CANONICAL_PLAN_REFRESH'||r.providerCalls!==0||r.writes!==0||r.production!==false||r.merge!==false)process.exit(1);
           NODE
-      - name: Validate existing materialization tooling
+
+      - name: Validate current no-execute tooling
         run: |
+          set -euo pipefail
           node --check tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs
-          node --check tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs
           node --check tools/reconciliation/tya-r17n-post-legacy-plan-no-execute.mjs
           node --check tools/reconciliation/tya-r17n-final-write-plan-no-execute.mjs
-          node -e "for(const p of ['backend/contracts/phase-a-firestore-materialization-plan-v1.json','backend/contracts/phase-a-r14c-financial-overlay-review-plan-r16d-v1.json'])JSON.parse(require('fs').readFileSync(p,'utf8'));"
+          node -e "JSON.parse(require('fs').readFileSync('backend/contracts/phase-a-firestore-materialization-plan-v1.json','utf8'));"
+
       - name: Build canonical base plan from current live HR through July
         run: |
           set -euo pipefail
@@ -45,36 +49,58 @@ jobs:
             --financial app/data/tya-financial-control-source-safe.js \
             --certifications app/data/tya-certification-carryover-source-safe.js \
             --out .tmp/canonical-plan-refresh/base
-      - name: Apply existing R14C overlay/review logic
+
+      - name: Validate current base plan and preserve financial overlay evidence separately
         run: |
-          node tools/migration/tya-r14c-financial-overlay-review-plan-r16d.mjs \
-            --plan .tmp/canonical-plan-refresh/base/firestore-materialization-plan.json \
-            --financial backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json \
-            --controlled-financial backend/config/phase-a-financial-workbook-source-safe-r14.json \
-            --out .tmp/canonical-plan-refresh/r16d
-      - name: Publish sanitized current canonical summary
-        run: |
+          set -euo pipefail
           node <<'NODE'
           const fs=require('fs');
           const base=JSON.parse(fs.readFileSync('.tmp/canonical-plan-refresh/base/firestore-materialization-plan.json','utf8'));
-          const overlay=JSON.parse(fs.readFileSync('.tmp/canonical-plan-refresh/r16d/r14c-financial-overlay-review-plan-r16d.json','utf8'));
-          const ops=overlay.operations||base.operations||[],paths=ops.map(o=>o.documentPath),parentProjectPath='tenants/tya/projects/cinepolis',countPath=fn=>paths.filter(fn).length;
-          const counts={operations:ops.length,tenants:countPath(p=>p==='tenants/tya'),projects:countPath(p=>p===parentProjectPath),hrImports:countPath(p=>p.startsWith('tenants/tya/hrImports/')),periods:countPath(p=>p.startsWith(parentProjectPath+'/periods/')&&!p.includes('/visits/')&&!p.includes('/liquidations/')),shoppers:countPath(p=>p.startsWith('tenants/tya/shoppers/')),visits:countPath(p=>p.includes('/visits/')),liquidations:countPath(p=>p.includes('/liquidations/')),certifications:countPath(p=>p.includes('/certifications/')),payments:countPath(p=>p.includes('/payments/'))};
-          const report={schemaVersion:'cxorbia.canonical-plan-refresh-offline.v3',generatedAt:new Date().toISOString(),source:'CURRENT_HR_THROUGH_JULY',providerCalls:0,writes:0,production:false,merge:false,basePlanId:base.planId||null,basePlanSha256:base.planSha256||null,overlayPlanId:overlay.planId||null,overlayPlanSha256:overlay.planSha256||null,counts,canonicalShape:{parentProjectPath,parentProjectPresentInPlan:paths.includes(parentProjectPath),periodPaths:counts.periods,visitPaths:counts.visits},safety:{writes:false,imports:false,providerCalls:false,pii:false}};
-          if(counts.operations!==1413||counts.projects!==1||counts.periods!==14||counts.shoppers!==208||counts.visits!==616||counts.liquidations!==572||counts.certifications!==0||counts.payments!==0)throw new Error('current_canonical_plan_counts_unexpected:'+JSON.stringify(counts));
+          const ops=base.operations||[];
+          const paths=ops.map(o=>o.documentPath);
+          const parent='tenants/tya/projects/cinepolis';
+          const count=fn=>paths.filter(fn).length;
+          const counts={
+            operations:ops.length,
+            tenants:count(p=>p==='tenants/tya'),
+            projects:count(p=>p===parent),
+            hrImports:count(p=>p.startsWith('tenants/tya/hrImports/')),
+            periods:count(p=>p.startsWith(parent+'/periods/')&&!p.includes('/visits/')&&!p.includes('/liquidations/')),
+            shoppers:count(p=>p.startsWith('tenants/tya/shoppers/')),
+            visits:count(p=>p.includes('/visits/')),
+            liquidations:count(p=>p.includes('/liquidations/')),
+            certifications:count(p=>p.includes('/certifications/')),
+            payments:count(p=>p.includes('/payments/'))
+          };
+          if(counts.operations!==1413||counts.tenants!==1||counts.projects!==1||counts.hrImports!==1||counts.periods!==14||counts.shoppers!==208||counts.visits!==616||counts.liquidations!==572||counts.certifications!==0||counts.payments!==0)throw new Error('current_base_plan_counts_unexpected:'+JSON.stringify(counts));
+          const fin=JSON.parse(fs.readFileSync('backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json','utf8'));
+          const exact=(fin.liquidationCandidates||[]).filter(x=>x.reviewRequired===false&&String(x.matchStatus||'').includes('exact')).length;
+          const review=(fin.liquidationCandidates||[]).filter(x=>x.reviewRequired===true).length;
+          if((fin.liquidationCandidates||[]).length!==247||exact!==196||review!==51)throw new Error('financial_overlay_source_counts_drift');
+          const report={schemaVersion:'cxorbia.canonical-plan-refresh-offline.v4',generatedAt:new Date().toISOString(),source:'CURRENT_HR_THROUGH_JULY',providerCalls:0,writes:0,production:false,merge:false,basePlanId:base.planId||null,basePlanSha256:base.planSha256||null,counts,financialOverlayEvidence:{rows:247,exactStableVisitLinks:196,reviewRows:51,appliedInThisGate:false,reason:'R14C contract fixed shopper count 210 is stale; preserve financial source evidence for later exact execution by visitId instead of forcing stale shopper-gap assumptions'},canonicalShape:{parentProjectPath:parent,parentProjectPresentInPlan:paths.includes(parent),periodPaths:counts.periods,visitPaths:counts.visits},safety:{writes:false,imports:false,providerCalls:false,pii:false}};
           fs.writeFileSync('app/docs/evidence/CANONICAL-PLAN-REFRESH-OFFLINE-LATEST.json',JSON.stringify(report,null,2)+'\n');
-          fs.writeFileSync('app/docs/evidence/CANONICAL-PLAN-REFRESH-OFFLINE-LATEST.md',`# Canonical plan actual source-safe hasta julio\n\n- Operaciones base: ${counts.operations}.\n- Shoppers HR refs: ${counts.shoppers}.\n- Visitas: ${counts.visits}.\n- Liquidaciones/control: ${counts.liquidations}.\n- Provider calls/writes: 0/0.\n`);
+          fs.writeFileSync('app/docs/evidence/CANONICAL-PLAN-REFRESH-OFFLINE-LATEST.md',`# Canonical plan actual source-safe hasta julio\n\n- Operaciones base: ${counts.operations}.\n- Shopper refs HR actuales: ${counts.shoppers}.\n- Visitas: ${counts.visits}.\n- Liquidaciones/control: ${counts.liquidations}.\n- R14C financiero preservado aparte: 196 links exactos / 51 review; no se fuerza el contrato stale de 210 shoppers.\n- Provider calls/writes: 0/0.\n`);
           NODE
-      - name: Preserve post-legacy profile/certification plan
+
+      - name: Preserve post-legacy profile and certification plan
         run: |
           set -euo pipefail
           node tools/reconciliation/tya-r17n-post-legacy-plan-no-execute.mjs
-          node -e "const p=require('./app/docs/evidence/R17N-POST-LEGACY-WRITE-PLAN-NO-EXECUTE-LATEST.json');if(p.safety?.providerCalls!==0||p.safety?.firestoreWrites!==0||p.offlineIdempotence?.pass!==true)process.exit(1);"
+          node -e "const p=require('./app/docs/evidence/R17N-POST-LEGACY-WRITE-PLAN-NO-EXECUTE-LATEST.json');if(p.safety?.providerCalls!==0||p.safety?.firestoreWrites!==0||p.safety?.executeAllowed!==false||p.offlineIdempotence?.pass!==true)process.exit(1);"
+
       - name: Build R17N FINAL current-HR no-execute plan
         run: |
           set -euo pipefail
           node tools/reconciliation/tya-r17n-final-write-plan-no-execute.mjs
-          node -e "const p=require('./app/docs/evidence/R17N-FINAL-WRITE-PLAN-NO-EXECUTE-LATEST.json');if(p.safety?.providerCalls!==0||p.safety?.firestoreWrites!==0||p.safety?.executeAllowed!==false||p.offlineIdempotence?.pass!==true||p.identityResolution?.readyRefs!==208||p.identityResolution?.holdRefs!==0||p.groups?.visits?.readyCreate!==616||p.exactReadyWrites?.count!==1406)process.exit(1);"
+          node <<'NODE'
+          const p=require('./app/docs/evidence/R17N-FINAL-WRITE-PLAN-NO-EXECUTE-LATEST.json');
+          if(p.schemaVersion!=='cxorbia.r17n-final-write-plan-no-execute.v2')process.exit(1);
+          if(p.safety?.providerCalls!==0||p.safety?.firestoreWrites!==0||p.safety?.executeAllowed!==false||p.offlineIdempotence?.pass!==true)process.exit(1);
+          if(p.identityResolution?.totalHrRefs!==208||p.identityResolution?.readyRefs!==208||p.identityResolution?.holdRefs!==0)process.exit(1);
+          if(p.identityResolution?.reuseExistingRefs!==201||p.identityResolution?.linkToLegacyProfileCreateRefs!==2||p.identityResolution?.createFromCurrentHrRefs!==5)process.exit(1);
+          if(p.groups?.visits?.readyCreate!==616||p.groups?.liquidationControls?.readyCreate!==572||p.exactReadyWrites?.count!==1406)process.exit(1);
+          NODE
+
       - name: Commit evidence on latest head
         run: |
           set -euo pipefail
@@ -97,11 +123,13 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add app/docs/evidence/CANONICAL-PLAN-REFRESH-OFFLINE-LATEST.* app/docs/evidence/R17N-POST-LEGACY-WRITE-PLAN-NO-EXECUTE-LATEST.* app/docs/evidence/R17N-FINAL-WRITE-PLAN-NO-EXECUTE-LATEST.*
           if ! git diff --cached --quiet;then git commit -m 'evidence: build current-HR R17N final no-execute plan';git push origin HEAD:docs-tya-v6-v71-audit;fi
+
       - name: Publish status
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
         run: |
-          STATE=error;DESC='HOLD_CANONICAL_PLAN_REFRESH_OFFLINE'
-          if [ -f app/docs/evidence/R17N-FINAL-WRITE-PLAN-NO-EXECUTE-LATEST.json ];then STATE=success;DESC='PASS_R17N_FINAL_CURRENT_HR_NO_EXECUTE';fi
+          set -euo pipefail
+          if [ "$JOB_STATUS" = 'success' ];then STATE=success;DESC='PASS_R17N_FINAL_CURRENT_HR_NO_EXECUTE';else STATE=error;DESC='HOLD_R17N_FINAL_CURRENT_HR_NO_EXECUTE';fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/canonical-plan-refresh-offline' -f description="$DESC" >/dev/null
