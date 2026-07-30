@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import zlib from 'node:zlib';
 import admin from 'firebase-admin';
 
 const expectedProject=process.env.CXORBIA_EXPECTED_PROJECT||'cxorbia-backend-dev';
@@ -20,7 +21,7 @@ const encPriv=JSON.parse(fs.readFileSync(privatePath,'utf8'));
 const env=JSON.parse(fs.readFileSync(envelopePath,'utf8'));
 if(pub.projectId!==expectedProject||encPriv.projectId!==expectedProject||env.targetProjectId!==expectedProject)throw new Error('target_mismatch');
 if(pub.fingerprintSha256!==encPriv.fingerprintSha256||pub.fingerprintSha256!==env.keyFingerprintSha256)throw new Error('key_fingerprint_mismatch');
-if(!['cxorbia.corte6.credential-handoff-envelope.v1','cxorbia.corte6.credential-handoff-envelope.v2'].includes(env.schemaVersion))throw new Error('envelope_contract_mismatch');
+if(!['cxorbia.corte6.credential-handoff-envelope.v1','cxorbia.corte6.credential-handoff-envelope.v2','cxorbia.corte6.credential-handoff-envelope.v3'].includes(env.schemaVersion))throw new Error('envelope_contract_mismatch');
 
 const salt=Buffer.from(encPriv.saltBase64,'base64'),ivPriv=Buffer.from(encPriv.ivBase64,'base64'),tag=Buffer.from(encPriv.tagBase64,'base64'),ciphertextPriv=Buffer.from(encPriv.ciphertextBase64,'base64');
 const kek=crypto.hkdfSync('sha256',Buffer.from(sa.private_key,'utf8'),salt,Buffer.from('cxorbia-c6-credential-handoff-kek-v1','utf8'),32);
@@ -32,7 +33,9 @@ const encrypted=Buffer.from(env.ciphertextBase64,'base64');
 if(encrypted.length<17)throw new Error('ciphertext_too_short');
 const tagContent=encrypted.subarray(encrypted.length-16),ct=encrypted.subarray(0,encrypted.length-16);
 const dec=crypto.createDecipheriv('aes-256-gcm',rawAes,Buffer.from(env.ivBase64,'base64'));dec.setAAD(Buffer.from(env.aad,'utf8'));dec.setAuthTag(tagContent);
-const bundle=JSON.parse(Buffer.concat([dec.update(ct),dec.final()]).toString('utf8'));
+const decrypted=Buffer.concat([dec.update(ct),dec.final()]);
+const bundleBytes=env.algorithms?.compression==='gzip'?zlib.gunzipSync(decrypted):decrypted;
+const bundle=JSON.parse(bundleBytes.toString('utf8'));
 if(!['cxorbia.legacy-credential-hash-bundle.v1','cxorbia.legacy-credential-hash-bundle.v2'].includes(bundle.schemaVersion)||bundle.targetProjectId!==expectedProject||bundle.tenantId!==tenantId||bundle.canonicalProjectId!==canonicalProjectId)throw new Error('bundle_contract_mismatch');
 
 if(!admin.apps.length)admin.initializeApp({credential:admin.credential.cert(sa),projectId:expectedProject});
