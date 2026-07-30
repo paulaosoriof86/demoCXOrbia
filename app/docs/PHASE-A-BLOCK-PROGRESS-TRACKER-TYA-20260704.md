@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-30  
-**Estado:** `CORTE3_FROZEN__C5_MATERIALIZED1406_PASS__C6_AUTH91_RULES_PASS__AUTOENTRY_REMOTE_PASS__PENDING_VISUAL`
+**Estado:** `CORTE3_FROZEN__C5_MATERIALIZED1406_PASS__C6_AUTH91_RULES_PASS__AUTOENTRY_VISUAL_OBSERVED_PASS__PROTECTED_IDENTITY_READONLY_PASS__AUGUST_REFRESH_NEXT`
 
 ## 1. Estado general
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge.
@@ -19,40 +19,31 @@
 - P0 #1: gate `Acceso seguro` paralelo.
 - P0 #2: formulario Usuario+Contraseña inyectado al seleccionar rol y fuera del viewport.
 - Contrato correcto: perfil → `selectRole(...)` → `enter()` automático.
+- Captura humana actual: auto-entry ya funciona; shell Admin carga con Cinépolis/JUL2026.
 
-## 4. Fix y ejecución
-- Preview humano restaura auto-entry.
-- `humanCredentialPrompt=false`.
-- HR source-safe read-only; baseline `cinepolis`,14 periodos,616 visitas.
-- Auth/RBAC/Rules permanecen en gates provider separados.
-- Mutaciones bloqueadas; no fallback demo.
+## 4. Source-safe vs identidad real
+El preview humano actual usa HR source-safe, por lo que `Shopper protegido` es el placeholder deliberado de la capa pública/read-only. No debe copiarse PII a ese artefacto.
 
-Gate estático: `29b7f9404a9c2f144145fe24d5cf048f753c1e75` PASS.
-
-Primera ejecución autorizada: FAIL antes de deploy por mismatch de contrato preflight/direct-deploy. Corregido en `b9f5190babcc339735cda59291417df5aea6988f`; request seguía deploy0/consumed=false.
-
-Reintento bajo la misma autorización: `PASS_EXISTING_HOSTING_DEV_PROTOTYPE_AUTO_ENTRY_SOURCE_SAFE_REMOTE_VERIFIED`.
-- versión `95a1e49e5064c456`;
-- release `1785452689852000`;
-- prototypeAutoEntry=true;
-- humanCredentialPrompt=false;
-- sourceSafeVisual=true;
-- Hosting deploy executions1;
-- preservedLegacyAuthUsers91.
+La capa protegida se validó aparte y quedó PASS:
+- shoppers340 / nombres reales340 / placeholders0;
+- visitas616 / nombres reales616 / placeholders0;
+- perfiles canónicos referenciados194/194 con nombre real;
+- Rules y adapter protegidos PASS;
+- status `PASS_C6_PROTECTED_IDENTITY_READONLY`.
 
 ## 5. Gate vivo
-`VALIDACIÓN VISUAL HUMANA AUTO-ENTRY/SOURCE-SAFE → SI APRUEBA FREEZE CORTE6`.
+`REFRESH HR READ-ONLY → RESOLVER/CLASIFICAR AGOSTO HN → VALIDAR PERIODO/VISITAS → PREPARAR DELTA-ONLY WRITE PLAN`.
 
-## 6. Agosto — siguiente bloque operativo
-Tras FREEZE C6: `refresh HR → resolver Agosto HN → validar periodo/visitas → materializar solo delta agosto → smoke → preprod/cutover`.
+No provider writes en este bloque.
 
-No repetir los1,406 históricos.
+## 6. Agosto — siguiente write gate
+Tras plan/dry-run exacto: solicitar autorización explícita para materializar **solo delta agosto**. Luego readback/smoke y preprod protegida autenticada con identidad real. No repetir los1,406 históricos.
 
 ## 7. Claude/prototipo
-No nueva candidata ni cambios `app/modules/*`. Conservar auto-entry en validación humana; provider/Auth no se convierte en UI técnica. P1/P2: PDF/gráficas, Excel/formato, reportKit/exportaciones y copy.
+No nueva candidata ni cambios `app/modules/*`. Conservar auto-entry; no convertir provider/Auth en UI técnica; no tratar source-safe como identidad final. P1/P2: PDF/gráficas, Excel/formato, reportKit/exportaciones y copy.
 
 ## 8. Academia
-Preview humano: perfil → acceso automático. Producción: Auth real detrás del contrato operativo, recuperación/cambio y scopes.
+Preview humano source-safe puede enmascarar PII. Runtime autenticado protegido debe mostrar identidad según rol/scopes. Documentar mínimo privilegio, recuperación y troubleshooting.
 
 ## 9. Estado seguro
-Redeploy actual: Auth writes0; Firestore data writes0; Rules0; Storage/HR/legacy/payments/Functions/Make/Gemini0; nuevo Firebase/Hosting0; merge=false; producción=false.
+Gate identidad: provider reads; Auth writes0; Firestore data writes0; Rules0; Hosting0; Storage/HR/legacy/payments/Functions/Make/Gemini0; merge=false; producción=false; PII exportada0.
