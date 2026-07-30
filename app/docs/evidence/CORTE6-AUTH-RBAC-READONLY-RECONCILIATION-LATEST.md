@@ -1,6 +1,6 @@
 # Corte 6 — reconciliación Auth/RBAC read-only source-safe
 
-- Fecha: 2026-07-30T16:09:22.555Z
+- Fecha: 2026-07-30T16:55:22.337Z
 - Firebase DEV canónico: `cxorbia-backend-dev`
 - Tenant: `tya`
 - Proyecto canónico: `cinepolis`
@@ -12,34 +12,34 @@
 - Auth users totales: 17
 - Usuarios activos con password provider: 17
 - Usuarios autorizables a tenant TyA por reglas actuales: 13
-- Usuarios con proyecto canónico por projectIds[] (super cuenta global): 3
+- Usuarios con proyecto canónico por projectIds[] (super cuenta global): 8
 - Shopper claims con shopperId que coincide con perfil Firestore: 3
-- Shopper con perfil exacto por scopes legacy: {"tya":1,"tya-piloto":2}
+- Shopper con perfil exacto por scopes legacy: {"cinepolis":3}
 - Login operador listo bajo reglas actuales: 7
-- Login cliente listo bajo reglas actuales: 0
-- Login shopper listo bajo reglas actuales: 0
-- Familias mínimas listas: no
+- Login cliente listo bajo reglas actuales: 2
+- Login shopper listo bajo reglas actuales: 3
+- Familias mínimas listas: sí
 
 ## Por rol — solo conteos
 
 | Rol | Users | Password activos | Tenant por reglas | Proyecto por reglas | shopperId | Perfil shopper coincide | Secure read ready |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | admin | 3 | 3 | 2 | 0 | 0 | 0 | 2 |
-| cliente | 2 | 2 | 2 | 0 | 0 | 0 | 0 |
+| cliente | 2 | 2 | 2 | 2 | 0 | 0 | 2 |
 | externo | 1 | 1 | 0 | 0 | 0 | 0 | 0 |
 | missing | 2 | 2 | 0 | 0 | 0 | 0 | 0 |
 | ops | 2 | 2 | 2 | 0 | 0 | 0 | 2 |
-| shopper | 4 | 4 | 4 | 0 | 3 | 3 | 0 |
+| shopper | 4 | 4 | 4 | 3 | 3 | 3 | 3 |
 | super | 3 | 3 | 3 | 3 | 0 | 0 | 3 |
 
 ## Distribución de scopes no PII
 
 - admin: projectId={"tya":1}; projectIds={"tya":1,"tya-piloto":2}; tenantId={"tya":2,"otro-tenant":1}; tenants={}; tenantIds={"tya":1}
-- cliente: projectId={"tya":1}; projectIds={"tya":1,"tya-piloto":1}; tenantId={"tya":2}; tenants={}; tenantIds={"tya":1}
+- cliente: projectId={"cinepolis":2}; projectIds={"cinepolis":2}; tenantId={"tya":2}; tenants={}; tenantIds={"tya":1}
 - externo: projectId={"otro":1}; projectIds={"otro":1}; tenantId={"otro":1}; tenants={}; tenantIds={"otro":1}
 - missing: projectId={}; projectIds={}; tenantId={}; tenants={}; tenantIds={}
 - ops: projectId={"tya":1}; projectIds={"tya":1,"tya-piloto":1}; tenantId={"tya":2}; tenants={}; tenantIds={"tya":1}
-- shopper: projectId={"tya":1}; projectIds={"tya":1,"tya-piloto":3}; tenantId={"tya":4}; tenants={}; tenantIds={"tya":1}
+- shopper: projectId={"cinepolis":3}; projectIds={"cinepolis":3,"tya-piloto":1}; tenantId={"tya":4}; tenants={}; tenantIds={"tya":1}
 - super: projectId={"tya":1}; projectIds={"tya":1,"tya-piloto":2,"r1":1}; tenantId={"tya":3}; tenants={"tya":1}; tenantIds={"tya":1}
 
 ## Status canónico de visitas — agregado no PII

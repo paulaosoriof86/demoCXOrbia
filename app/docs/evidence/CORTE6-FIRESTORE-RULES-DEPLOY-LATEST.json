@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "cxorbia.corte6-firestore-rules-deploy.v1",
+  "generatedAt": "2026-07-30T16:55:16.005Z",
+  "projectId": "cxorbia-backend-dev",
+  "releaseName": "projects/cxorbia-backend-dev/releases/cloud.firestore",
+  "execute": true,
+  "authorizedScope": "firestore_rules_only",
+  "sourceSha256": "0c308d0f8b7c0fbd608ad412a9de35eacf66293f9a1fb8ec9ddc7dfb55c071b0",
+  "before": {
+    "rulesetName": "projects/cxorbia-backend-dev/rulesets/917c0b22-327b-499f-9f2b-3d8a5a02eb0c",
+    "sourceSha256": "fc04ca3bd05b546e1e2052ccb64968115bf770dde5fff98e41d525b2280c7b4f"
+  },
+  "iam": {
+    "directApiReady": true,
+    "rulesetsTestPermission": false
+  },
+  "diagnosis": {
+    "firebaseCliPretestBlocked": true
+  },
+  "alreadyCurrent": false,
+  "createdRuleset": true,
+  "releaseUpdated": true,
+  "verified": true,
+  "providerWrites": 2,
+  "after": {
+    "rulesetName": "projects/cxorbia-backend-dev/rulesets/8ef70a29-413e-4329-a410-7970f6b5ad9f",
+    "sourceSha256": "0c308d0f8b7c0fbd608ad412a9de35eacf66293f9a1fb8ec9ddc7dfb55c071b0"
+  },
+  "safety": {
+    "authWrites": 0,
+    "firestoreDataWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "production": false,
+    "merge": false,
+    "secretsExported": false
+  },
+  "decision": "PASS_DIRECT_FIRESTORE_RULES_DEPLOY_VERIFIED"
+}
