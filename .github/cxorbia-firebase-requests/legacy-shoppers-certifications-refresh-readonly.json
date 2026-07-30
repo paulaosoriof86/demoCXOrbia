@@ -12,7 +12,7 @@
   "deploy": false,
   "production": false,
   "merge": false,
-  "requestedAt": "2026-07-30T01:06:00Z",
-  "attempt": 4,
-  "reason": "deterministic normalized stable-ID reconciliation"
+  "requestedAt": "2026-07-30T01:13:00Z",
+  "attempt": 5,
+  "reason": "authorized read-only refresh plus exact fill-missing/noop/conflict diff for 22 stable-linked canonical profiles"
 }
