@@ -1,142 +1,17 @@
-name: CXOrbia R17N Final DEV Materialization
+name: CXOrbia R17N Final DEV Materialization — CONSUMED
 
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - '.github/cxorbia-firebase-requests/r17n-final-materialize-dev.json'
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   statuses: write
 
-concurrency:
-  group: cxorbia-r17n-final-dev-materialization
-  cancel-in-progress: false
-
 jobs:
-  materialize:
+  consumed:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Validate exact authorization
+      - name: Authorization consumed
         run: |
-          echo validate_request > /tmp/r17n-materialize-phase
-          node <<'NODE'
-          const r=require('./.github/cxorbia-firebase-requests/r17n-final-materialize-dev.json');
-          const exact='Autorizo materialización DEV exacta R17N FINAL en cxorbia-backend-dev, con preflight/readback y relectura de identidad real en memoria: máximo 1,406 writes = 16 foundation + 120 perfiles legacy con datos reales aplicables + 5 perfiles HR actuales con identidad real revalidada + 77 certificaciones + 616 visitas + 572 controles de liquidación; sin tenant update, sin los 22 updates conflictivos, sin los 7 legacy holds, sin la certificación HOLD, sin Agosto HN, deletes, pagos, Auth/Storage/HR writes, deploy, merge ni producción; PII únicamente fuente→backend protegido, nunca GitHub';
-          if(r.authorization!==exact||r.enabled!==true||r.mode!=='R17N_FINAL_DEV_MATERIALIZATION'||r.maxWrites!==1406)process.exit(1);
-          NODE
-      - name: Load canonical DEV credential
-        env:
-          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-        run: |
-          echo load_credential > /tmp/r17n-materialize-phase
-          set -euo pipefail
-          mkdir -p .tmp/r17n-materialize/private
-          node <<'NODE'
-          const fs=require('fs'),raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw)}catch{}
-          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.private_key&&p.client_email))process.exit(1);
-          fs.writeFileSync('.tmp/r17n-materialize/private/credentials.json',raw,{mode:0o600});
-          NODE
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/r17n-materialize/private/credentials.json" >> "$GITHUB_ENV"
-      - name: Install transient Firebase Admin and validate tools
-        run: |
-          echo validate_tooling > /tmp/r17n-materialize-phase
-          set -euo pipefail
-          npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
-          node --check tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs
-          node --check tools/migration/tya-r17n-final-materialize-dev.mjs
-      - name: Rebuild exact authorized base plan offline
-        run: |
-          echo build_base > /tmp/r17n-materialize-phase
-          set -euo pipefail
-          mkdir -p .tmp/r17n-materialize/base
-          node tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs \
-            --hr app/data/tya-hr-source-safe-current-through-july.js \
-            --financial app/data/tya-financial-control-source-safe.js \
-            --certifications app/data/tya-certification-carryover-source-safe.js \
-            --out .tmp/r17n-materialize/base >/tmp/r17n-base-summary.json
-          node -e "const p=require('./.tmp/r17n-materialize/base/firestore-materialization-plan.json');if(p.operations?.length!==1413||p.counts?.byDomain?.shopper!==208||p.counts?.byDomain?.visit!==616||p.counts?.byDomain?.liquidation!==572)process.exit(1)"
-      - name: Preflight read-only and bind intent
-        env:
-          CXORBIA_BASE_PLAN: .tmp/r17n-materialize/base/firestore-materialization-plan.json
-          CXORBIA_HR_SOURCE: app/data/tya-hr-source-safe-current-through-july.js
-        run: |
-          echo preflight > /tmp/r17n-materialize-phase
-          set +e
-          node tools/migration/tya-r17n-final-materialize-dev.mjs --mode=preflight > /tmp/r17n-preflight.out 2> /tmp/r17n-preflight.err
-          RC=$?
-          if [ "$RC" -ne 0 ]; then
-            DETAIL=$(grep -E '^(Error|TypeError|ReferenceError|SyntaxError|RangeError):' /tmp/r17n-preflight.err | tail -n 1 | sed -E 's/^[A-Za-z]+: *//' | tr -cd 'A-Za-z0-9_:\-/' | cut -c1-140)
-            printf '%s' "${DETAIL:-preflight_executor_failed}" > /tmp/r17n-error-code
-            exit "$RC"
-          fi
-          set -euo pipefail
-          node -e "const p=require('./.tmp/r17n-materialize/preflight.json');if(p.counts?.intended!==1406||p.counts?.conflict!==0||p.counts?.liveHrIdentityRechecked!==208||p.counts?.existingCanonicalTargetsVerified!==201||p.counts?.financialExactVisitLinks!==196)process.exit(1)" || { echo post_preflight_validation_failed > /tmp/r17n-error-code; exit 1; }
-      - name: Execute authorized Firestore DEV writes and readback
-        env:
-          CXORBIA_BASE_PLAN: .tmp/r17n-materialize/base/firestore-materialization-plan.json
-          CXORBIA_HR_SOURCE: app/data/tya-hr-source-safe-current-through-july.js
-        run: |
-          echo execute_and_readback > /tmp/r17n-materialize-phase
-          set -euo pipefail
-          node tools/migration/tya-r17n-final-materialize-dev.mjs --mode=execute > /tmp/r17n-execute.out
-          node <<'NODE'
-          const r=require('./app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.json'),s=r.safety||{};
-          if(r.decision!=='PASS_R17N_FINAL_DEV_MATERIALIZATION'||r.execution?.providerWritesActual>1406||r.execution?.readbackVerified!==1406||r.execution?.readbackMismatch!==0)process.exit(1);
-          if(r.groups?.foundation!==16||r.groups?.legacyProfileCreates!==120||r.groups?.currentHrProfileCreates!==5||r.groups?.certificationCreates!==77||r.groups?.visitCreates!==616||r.groups?.liquidationControlCreates!==572)process.exit(1);
-          if(s.authWrites!==0||s.storageWrites!==0||s.hrWrites!==0||s.legacyWrites!==0||s.deletes!==0||s.payments!==0||s.deploys!==0||s.merge!==false||s.production!==false)process.exit(1);
-          NODE
-      - name: Commit sanitized evidence
-        run: |
-          echo commit_evidence > /tmp/r17n-materialize-phase
-          set -euo pipefail
-          cp app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.json /tmp/r17n-materialization.json
-          cp app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.md /tmp/r17n-materialization.md
-          git fetch origin docs-tya-v6-v71-audit
-          git reset --hard origin/docs-tya-v6-v71-audit
-          mkdir -p app/docs/evidence
-          cp /tmp/r17n-materialization.json app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.json
-          cp /tmp/r17n-materialization.md app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.md
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.*
-          if ! git diff --cached --quiet;then git commit -m 'evidence: record exact R17N DEV materialization';git push origin HEAD:docs-tya-v6-v71-audit;fi
-      - name: Persist sanitized HOLD diagnostic
-        if: failure()
-        run: |
-          set -euo pipefail
-          PHASE=$(cat /tmp/r17n-materialize-phase 2>/dev/null || echo unknown)
-          WRITES=0
-          if [ -f .tmp/r17n-materialize/write-progress.json ];then WRITES=$(node -e "try{console.log(require('./.tmp/r17n-materialize/write-progress.json').writes||0)}catch{console.log(0)}");fi
-          DETAIL=$(cat /tmp/r17n-error-code 2>/dev/null || echo unavailable)
-          PHASE="$PHASE" WRITES="$WRITES" DETAIL="$DETAIL" node <<'NODE'
-          const fs=require('fs');const d={schemaVersion:'cxorbia.r17n-final-dev-materialization.hold.v1',generatedAt:new Date().toISOString(),decision:'HOLD_R17N_FINAL_DEV_MATERIALIZATION',phase:process.env.PHASE,detail:process.env.DETAIL||'unavailable',firestoreWritesObserved:Number(process.env.WRITES||0),maxAuthorizedWrites:1406,pii:false,deploys:0,merge:false,production:false};fs.writeFileSync('/tmp/r17n-hold.json',JSON.stringify(d,null,2)+'\n');
-          NODE
-          git fetch origin docs-tya-v6-v71-audit
-          git reset --hard origin/docs-tya-v6-v71-audit
-          mkdir -p app/docs/evidence
-          cp /tmp/r17n-hold.json app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-HOLD-LATEST.json
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-HOLD-LATEST.json
-          if ! git diff --cached --quiet;then git commit -m 'evidence: record R17N DEV materialization HOLD';git push origin HEAD:docs-tya-v6-v71-audit;fi
-      - name: Publish status
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-          JOB_STATUS: ${{ job.status }}
-        run: |
-          if [ "$JOB_STATUS" = success ];then STATE=success;DESC='PASS_R17N_FINAL_DEV_MATERIALIZATION';else STATE=error;DESC='HOLD_R17N_FINAL_DEV_MATERIALIZATION';fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/r17n-final-dev-materialization' -f description="$DESC" >/dev/null
-      - name: Cleanup credentials and private surfaces
-        if: always()
-        run: rm -rf .tmp/r17n-materialize/private /tmp/r17n-preflight.out /tmp/r17n-preflight.err /tmp/r17n-execute.out /tmp/r17n-base-summary.json /tmp/r17n-error-code
+          echo 'R17N final DEV materialization authorization r17n-final-dev-20260730-01 was consumed successfully.'
+          echo 'No provider write is permitted from this workflow after the PASS evidence was recorded.'
