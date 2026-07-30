@@ -6,78 +6,75 @@
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge.
 - Corte 3 FROZEN: `CXORBIA-TYA-CORTE3-V182-20260729`; no V183/R33.
 - `cxorbia-backend-dev` = backend DEV canónico; reutilizar.
-- `tya-plataforma` = legacy actual a retirar y Hosting/URL pública a conservar para cutover.
-- `cxorbia-tya-dev-260729-c4` = sandbox, no destino.
+- `tya-plataforma` = legacy a retirar + Hosting/URL pública final.
+- Sandbox C4 = no destino.
 - No nueva base Firebase.
 
-### Identidad real del shopper
-`source-safe` sanitiza repo/log/evidencia; NO anonimiza el producto.
+### R17N FINAL ya materializado
+La autorización `r17n-final-dev-20260730-01` fue consumida.
 
-La plataforma final debe mostrar identidad real y datos operativos reales a roles autorizados bajo Auth/RBAC/Rules. `Shopper protegido`/hash no es identidad permanente. Nombre visible sí; name-only automerge no.
+- 1,406 Firestore writes exactos ejecutados;
+- readback 1,406/1,406; mismatch 0;
+- foundation16 + legacy profiles120 + HR-current profiles5 + certifications77 + visits616 + liquidation controls572;
+- tenant update, updates22, holds7+1, Agosto HN, deletes, pagos/lotes, Auth/Storage/HR/legacy writes, deploy/merge/producción: excluidos.
 
-### HR viva actual hasta julio
-El snapshot del 13-jul con 210 refs quedó superado.
+### HR e identidad actual
+- HR actual hasta julio: 14 periodos /616 visitas /208 refs shopper.
+- Snapshot 210 refs quedó histórico.
+- 208/208 refs ready: 201 existing +2 legacy-create +5 HR-current create.
+- Las 208 refs resuelven a 194 perfiles canónicos únicos según mapping exacto; varias refs pueden converger determinísticamente al mismo perfil. No usar nombre como llave.
+- Post-compare: 616/616 visitas tienen nombre real y shopper target existente; 194/194 perfiles referenciados tienen nombre real; 77/77 certificaciones tienen shopper existente; placeholders demo 0.
 
-Fuente actual:
-- 14 periodos;
-- 616 visitas;
-- 208 refs shopper;
-- +2 / -4 / 206 intersección vs snapshot viejo;
-- PII en repo=0; writes=0.
-
-### Crosswalk actual
-- 201/208 refs → shopper canónico existente por identidad transaccional exacta.
-- 7/208 requerían reconciliación real.
-- Las 7 tienen identidad real en HR viva.
-- 2 → perfil legacy create-candidate.
-- 5 → perfil nuevo desde identidad HR actual.
-- 0 HOLD de identidad actual.
-
-### Legacy shoppers/certificaciones
-Read-only `tya-plataforma/tya_shoppers_extra`:
-- 149 shoppers únicos;
-- 120 profile create-candidates;
-- 22 stable-linked existing con updates HOLD;
-- 7 profile HOLD;
-- 78 certificaciones útiles;
-- 77 certification create-candidates +1 HOLD.
-
-### R17N FINAL — NO EXECUTE
-- identity: 208/208 ready = 201 existing +2 legacy-create link +5 HR-current create;
-- foundation 16;
-- legacy profile creates 120;
-- HR-current profile creates 5;
-- certification creates 77;
+### Provider post-compare
+Run `30514060348`:
+- 1,406/1,406 rutas presentes;
+- canonical parent `cinepolis` presente;
+- periods 14;
 - visits 616;
 - liquidation controls 572;
-- **exactReadyWrites = 1,406**;
-- idempotencia offline PASS;
-- `executeAllowed=false`;
-- writes ejecutados=0.
+- certifications 77;
+- payments/lots 0;
+- tenant sin update R17N.
 
-HOLD/excluido: tenant1, existing-profile updates22, legacy profile holds7, cert hold1, Agosto HN, deletes, pagos, Auth/Storage/HR writes, deploy, merge, producción.
+La materialización y la identidad están correctas.
 
-### Correcciones metodológicas
-- Status del offline gate ahora depende de `job.status`; artefacto viejo no puede producir PASS falso.
-- Path `hrImports` corregido al scope proyecto.
-- R14C financiero histórico tiene shoppers=210; no forzar. Conservar 247 filas, 196 links exactos por visitId y 51 reviews para ejecución posterior.
+### P0 demostrado — NO ES frontend
+`P0_PROVEN_C5_CXDATA_PERIOD_MODEL_MISMATCH`.
+
+Archivo localizado: `app/core/backend-firebase.js`.
+
+Causa:
+- el adapter lee todos los documentos `tenants/tya/projects`;
+- `buildPeriods()` convierte esos documentos de proyecto en periodos;
+- no lee `tenants/tya/projects/cinepolis/periods`, que contiene los 14 periodos canónicos.
+
+Smoke exacto:
+- source Firestore: PASS;
+- fallback demo: false;
+- interfaz CX.data preservada;
+- parent project `cinepolis`: PASS;
+- visitas: 616 PASS;
+- periodos: **30 observados vs 14 canónicos**;
+- `currentPeriodId=cinepolis`, que no es uno de los 14 IDs de periodo.
 
 ### Claude NO debe
 - crear candidata nueva;
+- tocar módulos UI por este P0;
 - reabrir V182/Corte 3;
-- volver a 210 refs/9 pendientes como verdad actual;
-- resolver identidad desde UI;
+- rehacer materialización;
+- volver a 210 refs/9 pendientes;
+- resolver periodos o identidad desde UI;
 - deduplicar por nombre;
 - crear nueva base;
 - activar providers/pagos/imports desde UI.
 
 ### Próxima intervención Claude
-Ninguna por rutina. Después de materialización/smoke, validar que Admin/Operativo y Shopper rendericen identidad real autorizada y no placeholders, sin duplicados.
+Ninguna por rutina. El fix actual corresponde a backend/core y requiere autorización expresa de Paula. Solo si el smoke posterior demuestra un P0 frontend reproducible se genera tarea localizada para Claude.
 
 Backlog P1/P2 preservado: PDF gráfica, Excel formato, reportKit, copy específico de fuentes.
 
 ### Siguiente bloque exacto backend
-`AUTORIZACIÓN EXACTA DE 1,406 WRITES DEV → MATERIALIZACIÓN IDEMPOTENTE → POST-COMPARE/SMOKE CX.data + IDENTIDAD REAL → CORTES 6–8 → CUTOVER tya-plataforma`.
+`AUTORIZACIÓN P0-C5-CXDATA-PERIOD-MODEL → PATCH BACKEND ADAPTER FOCALIZADO → RE-SMOKE READ-ONLY → VALIDACIÓN OPERATIVA → FREEZE CORTE 5 → CORTE 6 AUTH/RBAC`.
 
 ## Estado seguro
-Firestore/Auth/Storage/HR/legacy writes=0; deploy=0; merge=false; producción=false; pagos/lotes/Make/Gemini=0.
+R17N previo: 1,406 Firestore writes autorizados ya ejecutados. Post-compare: provider reads únicamente; Firestore/Auth/Storage/HR/legacy writes=0; deploy=0; merge=false; producción=false; pagos/lotes/Make/Gemini=0; PII cruda repo/artifact=0.
