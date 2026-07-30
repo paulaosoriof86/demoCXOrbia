@@ -1,0 +1,196 @@
+{
+  "schemaVersion": "cxorbia.corte6-hosting-iam-diagnostic.v2",
+  "generatedAt": "2026-07-30T17:11:47.483Z",
+  "projectId": "cxorbia-backend-dev",
+  "siteId": "cxorbia-backend-dev",
+  "readOnly": true,
+  "providerWrites": 0,
+  "iam": {
+    "ok": true,
+    "status": 200,
+    "permissions": {
+      "firebase.projects.get": true,
+      "firebase.clients.get": true,
+      "firebase.clients.list": true,
+      "firebasehosting.sites.get": true,
+      "firebasehosting.sites.list": true,
+      "firebasehosting.sites.update": true,
+      "resourcemanager.projects.get": true,
+      "serviceusage.services.get": true,
+      "serviceusage.services.list": true,
+      "serviceusage.services.use": true,
+      "apikeys.keys.get": false,
+      "apikeys.keys.getKeyString": false,
+      "apikeys.keys.list": false,
+      "apikeys.keys.lookup": false
+    }
+  },
+  "providerReads": {
+    "cloudResourceManager": {
+      "ok": true,
+      "status": 200,
+      "projectNumberPresent": true
+    },
+    "firebaseProject": {
+      "ok": true,
+      "status": 200
+    },
+    "hostingSite": {
+      "ok": true,
+      "status": 200
+    },
+    "releasesList": {
+      "ok": true,
+      "status": 200,
+      "count": 5,
+      "latest": [
+        {
+          "name": "sites/cxorbia-backend-dev/releases/1785293495637000",
+          "type": "DEPLOY",
+          "releaseTime": "2026-07-29T02:51:35.637Z",
+          "version": {
+            "name": "sites/cxorbia-backend-dev/versions/d1e1de1d4935f996",
+            "status": "FINALIZED",
+            "createTime": "2026-07-29T02:51:32.168125Z",
+            "finalizeTime": "2026-07-29T02:51:35.680774Z",
+            "fileCount": 2007,
+            "versionBytes": 4297628
+          }
+        },
+        {
+          "name": "sites/cxorbia-backend-dev/releases/1785293419961000",
+          "type": "DEPLOY",
+          "releaseTime": "2026-07-29T02:50:19.961Z",
+          "version": {
+            "name": "sites/cxorbia-backend-dev/versions/247cc9f446498714",
+            "status": "FINALIZED",
+            "createTime": "2026-07-29T02:50:16.222288Z",
+            "finalizeTime": "2026-07-29T02:50:20.073709Z",
+            "fileCount": 2007,
+            "versionBytes": 4297628
+          }
+        },
+        {
+          "name": "sites/cxorbia-backend-dev/releases/1785292966292000",
+          "type": "DEPLOY",
+          "releaseTime": "2026-07-29T02:42:46.292Z",
+          "version": {
+            "name": "sites/cxorbia-backend-dev/versions/7b8a7e644f50fd31",
+            "status": "FINALIZED",
+            "createTime": "2026-07-29T02:42:42.720606Z",
+            "finalizeTime": "2026-07-29T02:42:46.324867Z",
+            "fileCount": 2007,
+            "versionBytes": 4297427
+          }
+        },
+        {
+          "name": "sites/cxorbia-backend-dev/releases/1785292852193000",
+          "type": "DEPLOY",
+          "releaseTime": "2026-07-29T02:40:52.193Z",
+          "version": {
+            "name": "sites/cxorbia-backend-dev/versions/f00cff77cb4587ad",
+            "status": "FINALIZED",
+            "createTime": "2026-07-29T02:40:47.437271Z",
+            "finalizeTime": "2026-07-29T02:40:52.208263Z",
+            "fileCount": 2007,
+            "versionBytes": 4297427
+          }
+        },
+        {
+          "name": "sites/cxorbia-backend-dev/releases/1785292334455000",
+          "type": "DEPLOY",
+          "releaseTime": "2026-07-29T02:32:14.455Z",
+          "version": {
+            "name": "sites/cxorbia-backend-dev/versions/493586ef86cc26d1",
+            "status": "FINALIZED",
+            "createTime": "2026-07-29T02:32:08.675821Z",
+            "finalizeTime": "2026-07-29T02:32:14.604130Z",
+            "fileCount": 2007,
+            "versionBytes": 4297413
+          }
+        }
+      ]
+    },
+    "versionsList": {
+      "ok": true,
+      "status": 200,
+      "count": 5,
+      "latest": [
+        {
+          "name": "sites/cxorbia-backend-dev/versions/d1e1de1d4935f996",
+          "status": "FINALIZED",
+          "createTime": "2026-07-29T02:51:32.168125Z",
+          "finalizeTime": "2026-07-29T02:51:35.680774Z",
+          "fileCount": 2007,
+          "versionBytes": 4297628
+        },
+        {
+          "name": "sites/cxorbia-backend-dev/versions/247cc9f446498714",
+          "status": "FINALIZED",
+          "createTime": "2026-07-29T02:50:16.222288Z",
+          "finalizeTime": "2026-07-29T02:50:20.073709Z",
+          "fileCount": 2007,
+          "versionBytes": 4297628
+        },
+        {
+          "name": "sites/cxorbia-backend-dev/versions/7b8a7e644f50fd31",
+          "status": "FINALIZED",
+          "createTime": "2026-07-29T02:42:42.720606Z",
+          "finalizeTime": "2026-07-29T02:42:46.324867Z",
+          "fileCount": 2007,
+          "versionBytes": 4297427
+        },
+        {
+          "name": "sites/cxorbia-backend-dev/versions/f00cff77cb4587ad",
+          "status": "FINALIZED",
+          "createTime": "2026-07-29T02:40:47.437271Z",
+          "finalizeTime": "2026-07-29T02:40:52.208263Z",
+          "fileCount": 2007,
+          "versionBytes": 4297427
+        },
+        {
+          "name": "sites/cxorbia-backend-dev/versions/493586ef86cc26d1",
+          "status": "FINALIZED",
+          "createTime": "2026-07-29T02:32:08.675821Z",
+          "finalizeTime": "2026-07-29T02:32:14.604130Z",
+          "fileCount": 2007,
+          "versionBytes": 4297413
+        }
+      ]
+    },
+    "apiKeysList": {
+      "ok": false,
+      "status": 403
+    },
+    "remoteCorte6Proof": {
+      "ok": true,
+      "status": 200,
+      "isCorte6Proof": false,
+      "textLength": 6878
+    }
+  },
+  "missingHostingCore": [],
+  "missingFirebaseCliApiKeysViewerPermissions": [
+    "apikeys.keys.get",
+    "apikeys.keys.getKeyString",
+    "apikeys.keys.list",
+    "apikeys.keys.lookup"
+  ],
+  "directHostingApiReadReady": true,
+  "firebaseCliApiKeyReadReady": false,
+  "firstFailedCliAttemptDeployedCorte6Proof": false,
+  "diagnosis": "FIREBASE_CLI_API_KEYS_VIEWER_GAP",
+  "safety": {
+    "authWrites": 0,
+    "firestoreDataWrites": 0,
+    "rulesWrites": 0,
+    "hostingWrites": 0,
+    "storageWrites": 0,
+    "production": false,
+    "merge": false,
+    "piiExported": false,
+    "secretsExported": false,
+    "apiKeyValuesExported": false,
+    "principalIdentityExported": false
+  }
+}
