@@ -52,7 +52,6 @@ jobs:
           fs.writeFileSync('.tmp/remaining-identity-private/credentials.json',raw,{mode:0o600});
           NODE
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/remaining-identity-private/credentials.json" >> "$GITHUB_ENV"
-          echo "FIREBASE_SERVICE_ACCOUNT_JSON=${EXISTING_DEV_JSON}" >> "$GITHUB_ENV"
 
       - name: Install transient Firebase Admin
         run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
