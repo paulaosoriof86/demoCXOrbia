@@ -14,7 +14,7 @@
   "deploy": false,
   "merge": false,
   "production": false,
-  "requestedAt": "2026-07-30T02:38:00Z",
-  "attempt": 6,
-  "reason": "retry with exact sanitized runtime-error capture; same authorization and zero-write scope"
+  "requestedAt": "2026-07-30T02:45:00Z",
+  "attempt": 7,
+  "reason": "retry after replacing blocked Sheets API read with the same cache-busted GViz read-only fallback used by R20; same authorization and zero-write scope"
 }
