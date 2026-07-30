@@ -1,14 +1,15 @@
 /* ============================================================
-   CXOrbia · Firebase browser Auth gate (backend protegido)
+   CXOrbia · Firebase browser Auth bridge (backend protegido)
    ------------------------------------------------------------
+   Corte 6 P0 single-login:
    - Firebase Auth sigue siendo la autoridad real.
-   - El contrato visible del producto se preserva como Usuario + Contraseña.
-   - El acceso visible conserva el perfil operativo (Equipo TyA / Evaluador).
-   - Usuario + perfil se traducen determinísticamente a un identificador
-     Firebase interno; el correo técnico NO se expone al usuario final.
-   - Usa persistencia de SESION y nunca guarda password/token/UID en localStorage.
-   - La sesion CX se deriva de custom claims; el selector local de rol
-     no concede acceso al backend protegido.
+   - NO crea un gate/pantalla de autenticación separada.
+   - El login normal del tenant/proyecto sigue siendo el unico punto visible.
+   - Una sesión Firebase válida se restaura silenciosamente.
+   - Si hace falta autenticar, Usuario + Contraseña se solicitan dentro
+     del mismo flujo visible del login del producto.
+   - Usuario + namespace se traducen a un identificador Firebase interno.
+   - Nunca guarda password/token/UID en localStorage.
    ============================================================ */
 window.CX = window.CX || {};
 
@@ -16,10 +17,10 @@ window.CX = window.CX || {};
   const cfg = CX.BACKEND || {};
   const LEGACY_ROLES = new Set(['super','admin','ops','coordinador','cliente','client','shopper']);
   const LOGIN_NAMESPACES = new Set(['staff','shopper']);
+  const STAFF_ROLES = new Set(['super','admin','ops','coordinador']);
   let auth = null;
   let readyPromise = null;
   let currentContext = null;
-  let overlay = null;
   let resolveInteractive = null;
   let rejectInteractive = null;
 
@@ -75,7 +76,6 @@ window.CX = window.CX || {};
   async function internalFirebaseEmail(login, namespace){
     const normalized = normalizeLogin(login);
     if(!normalized) throw new Error('LOGIN_REQUIRED');
-    // Soporte técnico DEV explícito y oculto al contrato normal del producto.
     if(cfg.devPreviewAuth && cfg.devPreviewAuth.allowTechnicalEmail === true && /@cxorbia-dev\.example\.com$/i.test(normalized)) return normalized;
     const tenant = cfg.tenantId || 'tya';
     const ns = normalizeNamespace(namespace);
@@ -83,13 +83,11 @@ window.CX = window.CX || {};
     return digest.slice(0,48) + '@auth.cxorbia.invalid';
   }
 
-  // Debe reflejar firestore.rules vigente: tenantId o tenants[]; tenantIds[] NO autoriza por sí solo.
   function tenantAllowed(claims, role){
     const tenant = cfg.tenantId || 'tya';
     return role === 'super' || claims.tenantId === tenant || list(claims.tenants).includes(tenant);
   }
 
-  // Debe reflejar firestore.rules vigente: projectAssigned() confía exclusivamente en projectIds[].
   function projectsOf(claims){
     return Array.from(new Set(list(claims.projectIds)));
   }
@@ -110,7 +108,6 @@ window.CX = window.CX || {};
     const expectedNamespace = expectedNamespaceForRole(role);
     if(requestedNamespace){
       const requested = normalizeNamespace(requestedNamespace);
-      // Cuentas legacy importadas deben coincidir tanto por namespace de claim como por rol.
       if(claimNamespace && claimNamespace !== requested) throw new Error('LOGIN_NAMESPACE_MISMATCH');
       if(expectedNamespace !== requested) throw new Error('ROLE_NAMESPACE_MISMATCH');
     }
@@ -134,7 +131,7 @@ window.CX = window.CX || {};
   }
 
   function roleLabel(role){
-    return ({super:'Superadministracion',admin:'Administracion',ops:'Operacion',coordinador:'Coordinacion',cliente:'Cliente',client:'Cliente',shopper:'Evaluador'})[role] || 'Usuario';
+    return ({super:'Superadministración',admin:'Administración',ops:'Operación',coordinador:'Coordinación',cliente:'Cliente',client:'Cliente',shopper:'Evaluador'})[role] || 'Usuario';
   }
 
   function applyCxSession(ctx){
@@ -161,67 +158,74 @@ window.CX = window.CX || {};
     CX.session.save();
   }
 
-  function ensureOverlay(){
-    if(overlay && document.body.contains(overlay)) return overlay;
-    overlay = document.createElement('div');
-    overlay.id = 'cxBackendAuthGate';
-    overlay.setAttribute('role','dialog');
-    overlay.setAttribute('aria-modal','true');
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:20px;background:#0d1b2e;font-family:Inter,Arial,sans-serif';
-    overlay.innerHTML = '<form id="cxBackendAuthForm" style="width:min(420px,96vw);background:#fff;border-radius:16px;padding:28px;box-shadow:0 22px 70px rgba(0,0,0,.38)">'+
-      '<div style="font:800 20px Manrope,Inter,sans-serif;color:#15243a;margin-bottom:5px">Acceso seguro</div>'+
-      '<div style="font-size:12.5px;color:#64748b;line-height:1.5;margin-bottom:18px">Ingresa con las mismas credenciales asignadas para TyA.</div>'+
-      '<label for="cxBackendAuthNamespace" style="display:block;font-size:12px;font-weight:700;color:#475569;margin:0 0 5px">Tipo de acceso</label>'+
-      '<select id="cxBackendAuthNamespace" required style="box-sizing:border-box;width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;margin-bottom:12px;font:14px Inter,Arial,sans-serif;background:#fff">'+
-        '<option value="staff">Administración / Coordinación</option>'+
-        '<option value="shopper">Shopper / Evaluador</option>'+
-      '</select>'+
-      '<label for="cxBackendAuthLogin" style="display:block;font-size:12px;font-weight:700;color:#475569;margin:0 0 5px">Usuario</label>'+
-      '<input id="cxBackendAuthLogin" type="text" autocomplete="username" required style="box-sizing:border-box;width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;margin-bottom:12px;font:14px Inter,Arial,sans-serif">'+
-      '<label for="cxBackendAuthPassword" style="display:block;font-size:12px;font-weight:700;color:#475569;margin:0 0 5px">Contraseña</label>'+
-      '<input id="cxBackendAuthPassword" type="password" autocomplete="current-password" required style="box-sizing:border-box;width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;margin-bottom:14px;font:14px Inter,Arial,sans-serif">'+
-      '<div id="cxBackendAuthError" aria-live="polite" style="display:none;font-size:12px;color:#b42318;background:#fef3f2;border-radius:8px;padding:9px 10px;margin-bottom:12px"></div>'+
-      '<button id="cxBackendAuthSubmit" type="submit" style="width:100%;border:0;border-radius:9px;padding:11px 14px;background:#176a96;color:#fff;font:700 13px Inter,Arial,sans-serif;cursor:pointer">Ingresar</button>'+
-      '<div style="font-size:10.5px;color:#94a3b8;text-align:center;margin-top:12px">Acceso protegido</div>'+
-      '</form>';
-    document.body.appendChild(overlay);
-    const form = overlay.querySelector('#cxBackendAuthForm');
-    form.addEventListener('submit', async function(ev){
-      ev.preventDefault();
-      const namespaceEl = overlay.querySelector('#cxBackendAuthNamespace');
-      const loginEl = overlay.querySelector('#cxBackendAuthLogin');
-      const passEl = overlay.querySelector('#cxBackendAuthPassword');
-      const btn = overlay.querySelector('#cxBackendAuthSubmit');
-      const err = overlay.querySelector('#cxBackendAuthError');
-      err.style.display = 'none';
-      err.textContent = '';
-      btn.disabled = true;
-      const namespace = normalizeNamespace(namespaceEl.value);
-      const login = String(loginEl.value || '').trim();
-      const password = String(passEl.value || '');
-      passEl.value = '';
-      try{
-        const providerEmail = await internalFirebaseEmail(login, namespace);
-        await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
-        const cred = await auth.signInWithEmailAndPassword(providerEmail, password);
-        loginEl.value = '';
-        const ctx = await contextFromUser(cred.user, namespace);
-        currentContext = ctx;
-        applyCxSession(ctx);
-        if(resolveInteractive){ resolveInteractive(ctx); resolveInteractive = null; rejectInteractive = null; }
-      }catch(e){
-        try{await auth.signOut();}catch(_){ }
-        err.textContent = 'No fue posible validar estas credenciales o su alcance. Verifica el tipo de acceso, usuario y contraseña.';
-        err.style.display = 'block';
-        btn.disabled = false;
-      }
-    });
-    return overlay;
+  function namespaceForSelectedRole(role){
+    const r = String(role || '').trim().toLowerCase();
+    if(r === 'shopper') return 'shopper';
+    if(STAFF_ROLES.has(r)) return 'staff';
+    return '';
   }
 
-  function interactiveLogin(){
-    ensureOverlay();
-    return new Promise(function(resolve, reject){ resolveInteractive = resolve; rejectInteractive = reject; });
+  function selectedRoleLabel(role){
+    const r = String(role || '').trim().toLowerCase();
+    if(r === 'shopper') return 'Shopper / Evaluador';
+    if(STAFF_ROLES.has(r)) return 'Administración / Coordinación';
+    return roleLabel(r);
+  }
+
+  function authErrorMessage(err){
+    const code = String(err && (err.code || err.message) || '');
+    if(/auth\/(wrong-password|invalid-credential|user-not-found|invalid-email)/i.test(code) || /LOGIN_REQUIRED/i.test(code)){
+      return 'Usuario o contraseña no válidos.';
+    }
+    if(/LOGIN_NAMESPACE_MISMATCH|ROLE_NAMESPACE_MISMATCH/i.test(code)){
+      return 'La cuenta es válida, pero no corresponde al tipo de acceso seleccionado.';
+    }
+    if(/TENANT_NOT_ALLOWED|PROJECT_SCOPE_REQUIRED|SHOPPER_SCOPE_REQUIRED|ROLE_NOT_ALLOWED/i.test(code)){
+      return 'La cuenta es válida, pero no tiene el alcance necesario para este acceso. Solicita revisión al equipo TyA.';
+    }
+    return 'No fue posible validar el acceso. Verifica usuario y contraseña o solicita revisión al equipo TyA.';
+  }
+
+  function clearCredentialStep(){
+    const step = document.getElementById('cxIntegratedAuthStep');
+    if(step && step.parentNode) step.parentNode.removeChild(step);
+  }
+
+  function setCredentialError(message){
+    const err = document.getElementById('cxIntegratedAuthError');
+    if(!err) return;
+    err.textContent = message || '';
+    err.style.display = message ? 'block' : 'none';
+  }
+
+  async function signIn(login, password, namespace){
+    ensureFirebase();
+    const ns = normalizeNamespace(namespace);
+    const providerEmail = await internalFirebaseEmail(login, ns);
+    await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+    try{
+      const cred = await auth.signInWithEmailAndPassword(providerEmail, String(password || ''));
+      const ctx = await contextFromUser(cred.user, ns);
+      currentContext = ctx;
+      applyCxSession(ctx);
+      if(resolveInteractive){
+        resolveInteractive(ctx);
+        resolveInteractive = null;
+        rejectInteractive = null;
+      }
+      return ctx;
+    }catch(e){
+      try{await auth.signOut();}catch(_){ }
+      currentContext = null;
+      throw e;
+    }
+  }
+
+  function waitForInteractive(){
+    return new Promise(function(resolve, reject){
+      resolveInteractive = resolve;
+      rejectInteractive = reject;
+    });
   }
 
   async function ensureAuthenticated(){
@@ -238,22 +242,77 @@ window.CX = window.CX || {};
           return currentContext;
         }catch(_){
           try{await auth.signOut();}catch(__){ }
+          currentContext = null;
         }
       }
-      return interactiveLogin();
+      return waitForInteractive();
     })();
     return readyPromise;
   }
 
-  function removeOverlay(){
-    if(overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
-    overlay = null;
+  function showCredentialStep(selectedRole){
+    const namespace = namespaceForSelectedRole(selectedRole);
+    if(!namespace){
+      if(CX.ui && CX.ui.toast) CX.ui.toast('Este perfil aún no tiene una identidad Firebase habilitada en Corte 6.','warn');
+      return;
+    }
+    const loginRoot = document.getElementById('login');
+    const card = loginRoot && loginRoot.querySelector('.login-card');
+    if(!card) return;
+    clearCredentialStep();
+
+    const step = document.createElement('div');
+    step.id = 'cxIntegratedAuthStep';
+    step.style.cssText = 'margin-top:14px;padding-top:14px;border-top:1px solid var(--border);text-align:left';
+    step.innerHTML =
+      '<div style="font-size:12px;font-weight:800;color:var(--t1);margin-bottom:3px">'+selectedRoleLabel(selectedRole)+'</div>'+
+      '<div style="font-size:11.5px;color:var(--t3);line-height:1.45;margin-bottom:10px">Ingresa con tu usuario y contraseña habituales de TyA.</div>'+
+      '<label class="lbl" for="cxIntegratedAuthLogin">Usuario</label>'+
+      '<input class="inp" id="cxIntegratedAuthLogin" type="text" autocomplete="username" style="width:100%;margin-bottom:9px">'+
+      '<label class="lbl" for="cxIntegratedAuthPassword">Contraseña</label>'+
+      '<input class="inp" id="cxIntegratedAuthPassword" type="password" autocomplete="current-password" style="width:100%;margin-bottom:9px">'+
+      '<div id="cxIntegratedAuthError" aria-live="polite" style="display:none;font-size:11.5px;color:#b42318;background:#fef3f2;border-radius:8px;padding:8px 10px;margin-bottom:9px"></div>'+
+      '<div class="flex" style="justify-content:flex-end;gap:8px">'+
+        '<button class="btn btn-ghost btn-sm" type="button" id="cxIntegratedAuthBack">Volver</button>'+
+        '<button class="btn btn-pr btn-sm" type="button" id="cxIntegratedAuthSubmit">Ingresar</button>'+
+      '</div>';
+    card.appendChild(step);
+
+    const loginEl = step.querySelector('#cxIntegratedAuthLogin');
+    const passEl = step.querySelector('#cxIntegratedAuthPassword');
+    const submit = step.querySelector('#cxIntegratedAuthSubmit');
+    const back = step.querySelector('#cxIntegratedAuthBack');
+    loginEl.focus();
+
+    back.addEventListener('click', function(){ clearCredentialStep(); });
+    async function submitAuth(){
+      setCredentialError('');
+      const login = String(loginEl.value || '').trim();
+      const password = String(passEl.value || '');
+      if(!login || !password){ setCredentialError('Completa usuario y contraseña.'); return; }
+      submit.disabled = true;
+      submit.textContent = 'Validando...';
+      try{
+        await signIn(login, password, namespace);
+        passEl.value = '';
+        loginEl.value = '';
+        submit.textContent = 'Cargando...';
+      }catch(e){
+        passEl.value = '';
+        setCredentialError(authErrorMessage(e));
+        submit.disabled = false;
+        submit.textContent = 'Ingresar';
+        passEl.focus();
+      }
+    }
+    submit.addEventListener('click', submitAuth);
+    passEl.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); submitAuth(); } });
   }
 
   function enterAfterBackendReady(){
     if(!currentContext || !CX.app || typeof CX.app.enter !== 'function') return;
     applyCxSession(currentContext);
-    removeOverlay();
+    clearCredentialStep();
     CX.app.enter();
   }
 
@@ -261,49 +320,81 @@ window.CX = window.CX || {};
     if(!CX.app || CX.app.__firebaseBrowserAuthWrapped) return;
     const originalShowLogin = typeof CX.app.showLogin === 'function' ? CX.app.showLogin.bind(CX.app) : null;
     const originalLogout = typeof CX.app.logout === 'function' ? CX.app.logout.bind(CX.app) : null;
+    const originalSelectRole = typeof CX.app.selectRole === 'function' ? CX.app.selectRole.bind(CX.app) : null;
+    const originalEnter = typeof CX.app.enter === 'function' ? CX.app.enter.bind(CX.app) : null;
+
     CX.app.showLogin = function(){
-      if(cfg.enabled === true && cfg.previewMode === true){
-        if(CX.session) CX.session.clear();
-        ensureOverlay();
-        return;
-      }
+      clearCredentialStep();
       if(originalShowLogin) return originalShowLogin();
     };
+
+    CX.app.selectRole = function(role){
+      if(cfg.enabled === true && cfg.previewMode === true && cfg.devPreviewAuth && cfg.devPreviewAuth.enabled === true){
+        if(currentContext){
+          applyCxSession(currentContext);
+          return originalEnter ? originalEnter() : undefined;
+        }
+        showCredentialStep(role);
+        return;
+      }
+      if(originalSelectRole) return originalSelectRole.apply(null, arguments);
+    };
+
+    CX.app.enter = function(){
+      if(cfg.enabled === true && cfg.previewMode === true && cfg.devPreviewAuth && cfg.devPreviewAuth.enabled === true){
+        if(!currentContext){
+          if(originalShowLogin) originalShowLogin();
+          return;
+        }
+        applyCxSession(currentContext);
+      }
+      if(originalEnter) return originalEnter();
+    };
+
     CX.app.logout = async function(){
       if(cfg.enabled === true && cfg.previewMode === true){
         try{ ensureFirebase(); await auth.signOut(); }catch(_){ }
         currentContext = null;
         readyPromise = null;
+        resolveInteractive = null;
+        rejectInteractive = null;
+        clearCredentialStep();
         if(CX.session) CX.session.clear();
-        location.reload();
+        if(originalShowLogin) originalShowLogin();
+        if(CX.ui && CX.ui.toast) CX.ui.toast('Sesión cerrada','');
         return;
       }
       if(originalLogout) return originalLogout();
     };
+
     CX.app.__firebaseBrowserAuthWrapped = true;
   }
 
   CX.backendAuth = {
     ensureAuthenticated: ensureAuthenticated,
+    authenticate: signIn,
     context: function(){ return currentContext; },
-    signOut: async function(){ ensureFirebase(); await auth.signOut(); currentContext = null; readyPromise = null; if(CX.session) CX.session.clear(); },
-    show: function(){ ensureFirebase(); return ensureOverlay(); },
+    signOut: async function(){
+      ensureFirebase();
+      await auth.signOut();
+      currentContext = null;
+      readyPromise = null;
+      resolveInteractive = null;
+      rejectInteractive = null;
+      if(CX.session) CX.session.clear();
+    },
+    showForRole: showCredentialStep,
     isReady: function(){ return !!currentContext; },
   };
 
   if(CX.bus && typeof CX.bus.on === 'function'){
     CX.bus.on('backend-ready', enterAfterBackendReady);
-    CX.bus.on('backend-error', function(){ if(cfg.enabled === true && cfg.previewMode === true) ensureOverlay(); });
+    CX.bus.on('backend-error', function(payload){
+      const step = document.getElementById('cxIntegratedAuthStep');
+      if(step && payload && payload.message) setCredentialError('El acceso fue validado, pero no fue posible cargar el contexto autorizado. Solicita revisión al equipo TyA.');
+    });
   }
 
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){
-    if(CX.session) CX.session.clear();
-    wrapAppLoginAndLogout();
-    if(cfg.enabled === true && cfg.previewMode === true) ensureOverlay();
-  });
-  else {
-    if(CX.session) CX.session.clear();
-    wrapAppLoginAndLogout();
-    if(cfg.enabled === true && cfg.previewMode === true) ensureOverlay();
-  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wrapAppLoginAndLogout);
+  else wrapAppLoginAndLogout();
 })();
