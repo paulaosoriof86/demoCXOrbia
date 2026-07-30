@@ -2,114 +2,106 @@
 
 **Fecha:** 2026-07-30  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `CORTE3_FROZEN__CANONICAL_BACKEND_RECOVERED__CURRENT_HR_208_REFS__IDENTITY_208_OF_208_READY__R17N_FINAL_1406_NO_EXECUTE__NO_DATA_WRITES__NO_PRODUCTION`
+**Estado vivo:** `CORTE3_FROZEN__R17N_FINAL_DEV_MATERIALIZED_1406__READBACK_1406_PASS__POST_COMPARE_SMOKE_PENDING__NO_PRODUCTION`
 
 ## 1. Repositorio
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
-- Producción/merge/imports/pagos/provider data writes: 0 en el bloque vigente.
+- Backend DEV canónico: `cxorbia-backend-dev`.
+- Legacy/Hosting final: `tya-plataforma`.
+- Sandbox C4: no destino de materialización.
 
 ## 2. Lectura obligatoria vigente
 1. este índice;
-2. `ADDENDUM-CORRECCION-ARQUITECTURA-LEGACY-VS-CXORBIA-BACKEND-DEV-20260729.md`;
-3. reglas maestras + addenda de empalme/carril;
-4. addenda de Academia, patrones y antidesvío;
-5. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-6. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-7. `ADDENDUM-IDENTIDAD-REAL-SHOPPER-PII-SOURCE-SAFE-VS-PLATAFORMA-20260729.md`;
-8. `CAMBIOS-BACKEND-ADDENDUM-R17N-FINAL-CURRENT-HR-IDENTIDAD-20260730.md`;
-9. `evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.json`;
-10. `evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json`;
-11. `evidence/CURRENT-UNRESOLVED-SHOPPER-IDENTITY-READONLY-LATEST.json`;
-12. `evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.json`;
-13. `evidence/LEGACY-EXISTING-PROFILE-FIELD-DIFF-READONLY-LATEST.json`;
-14. `evidence/R17N-FINAL-WRITE-PLAN-NO-EXECUTE-LATEST.json`;
-15. CAMBIOS/Claude/PENDIENTES/Academia más recientes;
-16. baseline Corte 3, PR #7 y HEAD vivo.
+2. reglas maestras + addenda de empalme/carril, Academia, patrones y antidesvío;
+3. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+4. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+5. `ADDENDUM-IDENTIDAD-REAL-SHOPPER-PII-SOURCE-SAFE-VS-PLATAFORMA-20260729.md`;
+6. `evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.json`;
+7. `evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json`;
+8. `evidence/CURRENT-UNRESOLVED-SHOPPER-IDENTITY-READONLY-LATEST.json`;
+9. `evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.json`;
+10. `evidence/R17N-FINAL-WRITE-PLAN-NO-EXECUTE-LATEST.json`;
+11. `evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.json`;
+12. CAMBIOS/Claude/PENDIENTES/Academia/tracker más recientes;
+13. PR #7 y HEAD vivo.
 
-Prevalece: `cxorbia-backend-dev` NO es legacy y la fuente operativa de visitas es la HR viva, no un snapshot histórico.
+## 3. Baseline no reabrir
+Corte 3 permanece `FROZEN_ACTIVE_BASELINE` en `CXORBIA-TYA-CORTE3-V182-20260729`:
+- 14 periodos / 616 visitas hasta julio;
+- mayo 44 pagadas;
+- junio 2 pagadas / 42 pendientes;
+- no V183/R33.
 
-## 3. Arquitectura vinculante
-- Legacy actual: Firebase `tya-plataforma`; a retirar, solo fuente de datos útiles y Hosting/URL pública a preservar.
-- Backend canónico: `cxorbia-backend-dev`; reutilizar.
-- Sandbox `cxorbia-tya-dev-260729-c4`: no destino.
-- No crear otra base Firebase.
-- Proyecto padre `cinepolis`; meses=periodos.
-
-## 4. Corte 3 — FROZEN
-`CXORBIA-TYA-CORTE3-V182-20260729`: 14 periodos / 616 visitas hasta julio; mayo 44 pagadas; junio 2 pagadas / 42 pendientes. P1/P2 reportes/copy no reabren.
-
-## 5. Backend canónico / HR viva
-Inventario `cxorbia-backend-dev`: Auth 17, projects 29, visits 619, questionnaires 557, shoppers 215, liquidations 255, shopperBenefits 572, certifications 0.
-
-HR viva completa: 15 periodos / 684 visitas; Agosto HN sigue HOLD por país/tab inconsistente.
-
-Proyección **actual hasta julio** source-safe:
+## 4. Fuente e identidad vigentes
+HR viva actual hasta julio:
 - 14 periodos;
 - 616 visitas;
-- 208 refs shopper;
-- snapshot anterior: 210 refs;
-- delta de frescura: +2 / -4 / 206 intersección;
-- PII=0; writes=0.
+- 208 referencias shopper;
+- el snapshot previo de 210 refs / 9 pendientes quedó superado;
+- Agosto HN sigue HOLD por país/tab inconsistente.
 
-Por tanto, toda documentación de 210 refs/9 pendientes queda histórica y no debe reactivar ese set.
-
-## 6. Legacy shoppers/certificaciones — READ-ONLY PASS
-Lectura directa de `tya-plataforma`, nodo `tya_shoppers_extra`:
-- 149 shoppers únicos;
-- 120 legacy profile create-candidates;
-- 22 stable-linked existing con updates HOLD;
-- 7 legacy profile HOLD;
-- 78 certificaciones útiles;
-- 77 create-candidates +1 HOLD;
-- PII cruda en repo=0.
-
-## 7. Identidad real — política vinculante
-`source-safe` protege repo/log/evidencia; no anonimiza el producto. Admin/Operativo debe ver identidad real conforme RBAC/Rules. Nombre puede ser visible, pero nunca es llave única de automerge.
-
-## 8. Crosswalk actual — PASS
-Contra HR actual hasta julio:
-- 208 refs;
-- 201 → shopper canónico existente;
-- 7 sin match transaccional inicial;
-- 0 conflictos;
-- 571/616 visitas con evidencia exacta por visita;
-- 45 sin evidencia transaccional exacta.
-
-Reconciliación real de las 7:
-- 7/7 identidad presente en HR viva;
-- 2 → legacy profile create-candidate;
-- 5 → profile create-candidate desde identidad HR viva;
+Identidad actual:
+- 201 refs reutilizan shopper canónico existente;
+- 2 enlazan perfiles legacy create;
+- 5 crean perfil desde HR viva;
+- 208/208 ready;
 - 0 HOLD de identidad actual.
 
-## 9. R17N FINAL — PASS / NO EXECUTE
-Target `cxorbia-backend-dev` / tenant `tya` / project `cinepolis`.
+Legacy útil:
+- 149 shoppers únicos;
+- 120 perfiles create autorizados en este bloque;
+- 22 existing updates siguen HOLD;
+- 7 perfiles legacy HOLD;
+- 78 certificaciones útiles = 77 materializadas + 1 HOLD.
 
-- identidad: 208/208 refs ready;
-- 201 reuse existing +2 legacy-create link +5 HR-current create;
-- foundation 16;
-- legacy profile creates 120;
-- HR-current profile creates 5;
-- certification creates 77;
-- visits 616;
-- liquidation controls 572;
-- **exactReadyWrites=1,406**;
-- idempotencia offline PASS;
-- `executeAllowed=false`;
-- data writes ejecutados=0.
+## 5. R17N FINAL — MATERIALIZACIÓN DEV PASS
+Autorización `r17n-final-dev-20260730-01` consumida para máximo 1,406 writes exactos.
 
-HOLD fuera del write: tenant1, existing-profile updates22, legacy profile holds7, certification hold1, Agosto HN, deletes/pagos.
+Resultado:
+- preflight: 1,406 absent / 0 same / 0 conflict;
+- identidad HR revalidada en memoria: 208/208;
+- targets canónicos existentes verificados: 201/201;
+- 201/201 ya tienen nombre real visible; enriquecimiento adicional pendiente: 0;
+- links financieros R14C exactos preservados: 196;
+- Firestore writes ejecutados: **1,406/1,406**;
+- readback: **1,406/1,406**;
+- mismatch: 0.
 
-## 10. Financial overlay
-R14C preservado: 247 filas, 196 links exactos por `visitId`, 51 reviews. Su contrato histórico tiene shoppers=210 y no se fuerza sobre la fuente actual de 208; se conservará la evidencia financiera por visitId en la ejecución exacta.
+Grupos materializados:
+- foundation: 16;
+- perfiles legacy: 120;
+- perfiles HR actuales: 5;
+- certificaciones: 77;
+- visitas: 616;
+- controles de liquidación: 572.
 
-## 11. Gate vivo único
-`AUTORIZACIÓN EXACTA DE 1,406 WRITES DEV POR GRUPOS → MATERIALIZACIÓN IDEMPOTENTE EN cxorbia-backend-dev → POST-COMPARE/SMOKE CX.data + IDENTIDAD REAL → CORTE 6 AUTH/RBAC → CORTE 7 SYNC/EVIDENCIAS → CORTE 8 CUTOVER EN tya-plataforma`.
+Excluido y no tocado:
+- tenant update 1;
+- existing-profile updates 22;
+- legacy holds 7;
+- certification hold 1;
+- Agosto HN;
+- deletes;
+- pagos/lotes;
+- Auth/Storage/HR/legacy writes;
+- deploy/merge/producción.
 
-Fuera de la autorización: tenant update, 22 updates conflictivos, 7 legacy holds, 1 cert hold, deletes, pagos, Agosto HN, Auth/Storage/HR writes, deploy, merge, producción.
+Evidencia canónica: `app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.json`.
 
-## 12. Claude/Academia
-- Claude: no nueva candidata ni P0 actual; validar identidad real solo después del smoke backend.
-- Academia: fuente viva vs snapshot, privacidad técnica vs identidad operativa, stable-key crosswalk, fail-closed e idempotencia.
+## 6. Corrección de causa raíz durante el gate
+Los dos primeros preflights posteriores al armado del executor quedaron HOLD con `live_identity_207` y **0 writes**. El problema no era la HR: el executor colapsaba espacios internos antes de calcular el hash de identidad, mientras R20 usa `trim + lowercase` sin alterar espacios internos. Se alineó el cálculo exactamente con R20; el rerun obtuvo 208/208, ejecutó los 1,406 writes autorizados y pasó readback completo.
+
+## 7. Gate vivo único
+`POST-COMPARE READ-ONLY DEL BACKEND MATERIALIZADO → SMOKE CX.data CANÓNICO + IDENTIDAD REAL → VALIDACIÓN OPERATIVA → CORTE 6 AUTH/RBAC`.
+
+No repetir materialización, no crear otra base, candidata o Hosting de prueba. Cualquier write adicional requiere gate/autorización propia.
+
+## 8. Claude / Academia
+- Claude: no nueva candidata. Intervenir solo si el smoke demuestra P0 frontend reproducible o para backlog P1/P2.
+- Academia: documentar fuente viva vs snapshot, identidad real vs source-safe, preflight fail-closed, materialización idempotente/readback y separación liquidación/pago.
+
+## 9. Estado seguro
+Firestore writes autorizados ejecutados en este bloque: 1,406. Auth/Storage/HR/legacy writes=0; deletes=0; pagos=0; deploy=0; merge=false; producción=false; Make/Gemini=0.
