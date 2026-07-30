@@ -1,8 +1,46 @@
 # CAMBIOS-BACKEND.md
 
+## 2026-07-30 — Single-login publicado en Hosting DEV; precheck + deploy1 + smoke remoto PASS
+
+Estado: `C6_SINGLE_LOGIN_HOSTING_DEV_REMOTE_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`.
+
+### Ejecución autorizada y consumida
+- Autorización: un único redeploy focalizado del single-login corregido sobre el mismo Hosting DEV `cxorbia-backend-dev/cxorbia-dev`.
+- Request: `corte6-single-login-redeploy-20260730-02`.
+- Resultado: `PASS_EXISTING_HOSTING_DEV_SINGLE_LOGIN_REMOTE_VERIFIED`.
+- Versión: `sites/cxorbia-backend-dev/versions/a4b90bd224b28329`.
+- Release: `sites/cxorbia-backend-dev/releases/1785448336285000`.
+- Smoke remoto: browserAuth PASS, entrypoint PASS, proof PASS, username/password namespaced PASS, `singleVisibleLogin=true`, `parallelAuthGate=false`.
+- Identidades legacy preservadas:91.
+
+### Seguridad
+- nuevo Firebase0; nuevo Hosting0;
+- Auth writes durante Hosting0;
+- Firestore data writes0;
+- Rules0; Storage0; HR0; legacy0; pagos0; Functions0;
+- Make/Gemini0; merge=false; producción=false;
+- PII/secrets exportados0.
+
+### Documentación
+- Evidencia: `app/docs/evidence/CORTE6-CREDENTIAL-CONTINUITY-HOSTING-DEPLOY-LATEST.json`.
+- Resultado: `app/docs/CORTE6-SINGLE-LOGIN-HOSTING-DEV-REMOTE-PASS-20260730.md`.
+- Academia: `app/docs/ACADEMIA-IMPACTO-CORTE6-SINGLE-LOGIN-REMOTE-PASS-20260730.md`.
+
+### Clasificación
+- **Reusable CXOrbia:** single-login, sesión restaurable, logout real y Auth/claims detrás del producto.
+- **Exclusivo cliente:** continuidad de credenciales TyA ya migradas.
+- **Claude/prototipo:** no requiere nueva candidata ni cambios `app/modules/*`; preservar el patrón y no reintroducir gate paralelo.
+- **Academia:** acceso único, recuperación, scopes, sesión y troubleshooting.
+- **Sin impacto Claude:** Auth91/91, Rules, R17N, Corte5 y Corte3 permanecen cerrados.
+
+### Siguiente gate
+`VALIDACIÓN VISUAL HUMANA EN HOSTING DEV → SI APRUEBA: FREEZE CORTE6 → REFRESH HR → RESOLVER AGOSTO HN → MATERIALIZAR SOLO DELTA AGOSTO → PREPROD/CUTOVER`.
+
+---
+
 ## 2026-07-30 — P0 doble login corregido en rama; gate estático PASS; redeploy DEV no autorizado todavía
 
-Estado: `C6_P0_SINGLE_LOGIN_FIX_APPLIED_STATIC_PASS__PENDING_SINGLE_DEV_REDEPLOY_AUTH__NO_PRODUCTION`.
+Estado histórico: `C6_P0_SINGLE_LOGIN_FIX_APPLIED_STATIC_PASS__PENDING_SINGLE_DEV_REDEPLOY_AUTH__NO_PRODUCTION`.
 
 ### Qué se corrigió
 - `app/core/backend-browser-auth.js`: eliminado el overlay/pantalla backend `Acceso seguro`; Firebase Auth permanece detrás del adapter.
@@ -24,7 +62,7 @@ Estado: `C6_P0_SINGLE_LOGIN_FIX_APPLIED_STATIC_PASS__PENDING_SINGLE_DEV_REDEPLOY
 ### Gate ejecutado
 Commit `790d4d...` obtuvo estado GitHub `success` en `cxorbia/corte6-credential-continuity-hosting/PREPARED_C6_SINGLE_LOGIN_HOSTING_NO_EXECUTE`.
 
-El workflow ejecutó únicamente gate de request + checks estáticos. La autorización anterior permanece consumida; por tanto no cargó service account, no construyó paquete provider, no desplegó Hosting y no ejecutó provider writes.
+El workflow ejecutó únicamente gate de request + checks estáticos. La autorización anterior permanecía consumida; por tanto no cargó service account, no construyó paquete provider, no desplegó Hosting y no ejecutó provider writes.
 
 ### Qué NO se reabre
 - Auth import/readback91/91.
@@ -34,18 +72,12 @@ El workflow ejecutó únicamente gate de request + checks estáticos. La autoriz
 - Corte5 CX.data.
 - Corte3 frozen.
 
-### Siguiente gate
-`AUTORIZACIÓN ÚNICA DE REDEPLOY DEL MISMO HOSTING DEV → PRECHECK SINGLE-LOGIN → DEPLOY1 → SMOKE REMOTO → VISUAL PAULA → FREEZE CORTE6 → AGOSTO DELTA`.
-
 ### Clasificación
 - **Reusable CXOrbia:** Auth detrás del único login del producto; sesión restaurable; logout real; namespace interno.
 - **Exclusivo cliente:** credenciales legacy TyA.
 - **Claude/prototipo:** no requiere nueva candidata; el P0 ya fue corregido focalizadamente en el punto autorizado de integración.
 - **Academia:** actualizar a flujo único de acceso y troubleshooting.
 - **Sin impacto Claude:** Auth91/91, Rules, histórico y CX.data permanecen cerrados.
-
-### Estado seguro
-Desde el P0: Auth writes0; Firestore writes0; Rules0; Hosting deploy0; Storage/HR/legacy/payments/functions/Make/Gemini0; merge=false; producción=false.
 
 ---
 
@@ -70,9 +102,6 @@ La corrección de continuidad de credenciales preservó Firebase/Auth y `Usuario
 
 ### Documentación
 - `app/docs/CORTE6-P0-DOBLE-LOGIN-AUTH-DEV-20260730.md`.
-
-### Estado seguro histórico
-Desde el hallazgo: Auth writes0; Firestore writes0; Rules0; Hosting deploy0; Storage/HR/legacy/payments/functions/Make/Gemini0; merge=false; producción=false.
 
 ---
 
