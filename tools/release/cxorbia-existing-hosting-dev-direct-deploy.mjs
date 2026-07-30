@@ -23,7 +23,7 @@ if(!execute) throw new Error('direct_hosting_execute_flag_required');
 if(!credentialPath||!fs.existsSync(credentialPath)) throw new Error('credential_missing');
 if(!fs.existsSync(siteDir)||!fs.existsSync(configPath)||!fs.existsSync(preflightPath)) throw new Error('prepared_site_missing');
 const preflight=JSON.parse(fs.readFileSync(preflightPath,'utf8'));
-if(preflight.decision!=='PASS_READY_FOR_SINGLE_EXISTING_HOSTING_DEPLOY'||preflight.target?.projectId!==expectedProject||preflight.target?.hostingSite!==expectedSite||preflight.safety?.hostingDeployMax!==1) throw new Error('preflight_not_authorized');
+if(preflight.decision!=='PASS_READY_FOR_EXISTING_HOSTING_HUMAN_VISUAL_REDEPLOY'||preflight.target?.projectId!==expectedProject||preflight.target?.hostingSite!==expectedSite||preflight.safety?.hostingDeployMax!==1) throw new Error('preflight_not_authorized');
 const sa=JSON.parse(fs.readFileSync(credentialPath,'utf8'));
 if(sa.project_id!==expectedProject) throw new Error(`wrong_service_account_project:${sa.project_id||'missing'}`);
 const credential=admin.credential.cert(sa);
