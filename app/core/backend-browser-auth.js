@@ -52,13 +52,15 @@ window.CX = window.CX || {};
     });
   }
 
+  // Debe reflejar firestore.rules vigente: tenantId o tenants[]; tenantIds[] NO autoriza por sí solo.
   function tenantAllowed(claims, role){
     const tenant = cfg.tenantId || 'tya';
-    return role === 'super' || claims.tenantId === tenant || list(claims.tenants).includes(tenant) || list(claims.tenantIds).includes(tenant);
+    return role === 'super' || claims.tenantId === tenant || list(claims.tenants).includes(tenant);
   }
 
+  // Debe reflejar firestore.rules vigente: projectAssigned() confía exclusivamente en projectIds[].
   function projectsOf(claims){
-    return Array.from(new Set([claims.projectId].concat(list(claims.projectIds)).filter(Boolean).map(String)));
+    return Array.from(new Set(list(claims.projectIds)));
   }
 
   async function contextFromUser(user){
@@ -82,7 +84,7 @@ window.CX = window.CX || {};
       country: typeof claims.country === 'string' ? claims.country : null,
       authenticated: true,
       provider: 'firebase',
-      source: 'custom-claims',
+      source: 'custom-claims-current-rules',
     };
   }
 
