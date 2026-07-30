@@ -1,55 +1,39 @@
-# Academia — impacto Corte 6 · acceso, source-safe e identidad protegida
+# Academia — impacto Corte 6 · acceso, source-safe, identidad y fuente operacional
 
 **Fecha:** 2026-07-30  
-**Estado:** `AUTOENTRY_HUMAN_VISUAL_OBSERVED_PASS__PROTECTED_IDENTITY_READONLY_PASS__AUGUST_NEXT`
+**Estado:** `IDENTITY_PROTECTED_PASS__AUGUST_SOURCE_FAIL_CLOSED`
 
-## Criterio reusable
-La validación humana demostró que Firebase/Auth no debe transformarse en pasos visibles añadidos al prototipo:
-1. no debe existir una pantalla previa `Acceso seguro`;
-2. tampoco debe agregarse `Usuario + Contraseña` al seleccionar perfil cuando ese no es el flujo aprobado.
-
-Para el preview humano DEV, el flujo correcto es perfil → entrada automática. La evidencia visual actual confirma ese auto-entry.
+## Criterio reusable de acceso
+La validación humana demostró que Firebase/Auth no debe transformarse en pasos visibles añadidos al prototipo. Para el preview humano DEV, el flujo correcto es perfil → entrada automática.
 
 ## Source-safe no equivale a identidad final
-La HR source-safe es un artefacto de validación que deliberadamente enmascara PII. Por eso puede mostrar `Shopper protegido` sin que eso implique pérdida de identidad.
+La HR source-safe enmascara PII y puede mostrar `Shopper protegido`. El runtime protegido usa Auth/RBAC/Rules + Firestore: Admin/Operativo recibe la identidad necesaria; shopper solo la propia; cliente solo su alcance.
 
-La plataforma protegida debe aplicar otra regla: Auth/RBAC/Rules + Firestore protegido. Admin/Operativo recibe la identidad necesaria para operar; shopper únicamente su propia identidad; cliente solo el alcance autorizado.
+Gate protegido PASS: shoppers340/340 con nombre real, visitas616/616 con nombre real, placeholders0, perfiles referenciados194/194, Rules/adapter PASS.
 
-Nunca se deben publicar nombres reales dentro de un JS source-safe estático para “corregir” una visual de preview.
+## Nueva lección reusable — fuente operacional contradictoria
+El refresh de agosto mostró dos contradicciones que deben fallar cerrado:
+- pestaña `AGOSTO 26 HN`:34 filas cuyo campo país es GT; no se pueden convertir a HN solo por el nombre de la pestaña;
+- `AGOSTO 26` GT:34 filas ya aparecen assigned/scheduled/realized, con27 submitidas y7 en cuestionario; no se pueden convertir en “disponibles” solo porque el negocio necesita publicar agosto.
 
-## Evidencia de identidad protegida
-Gate read-only: `PASS_C6_PROTECTED_IDENTITY_READONLY_RUNTIME_READY`.
+El backend debe distinguir **dato técnicamente legible** de **dato operacionalmente publicable**. El delta GT está técnicamente identificable (34 nuevas, mapping28/28), pero su `releaseReadiness` es `NO_UNASSIGNED_VISITS_IN_ACCEPTED_SOURCE`.
 
-- shoppers Firestore protegidos340;
-- perfiles con nombre real340;
-- placeholders0;
-- visitas canónicas616;
-- visitas con nombre real616;
-- placeholders0;
-- shopperIds canónicos referenciados194;
-- perfiles referenciados existentes194/194 y con nombre real194/194;
-- Rules shopper protegidas y deny-by-default PASS;
-- adapter de lectura protegido/nombre real PASS;
-- Rules desplegadas verificadas/hash PASS;
-- source-safe público sigue enmascarado PASS.
+## Patrón de seguridad/release reusable
+- source-safe minimiza PII;
+- protected runtime aplica scopes reales;
+- discrepancia país↔pestaña o estado↔intención de negocio va a HOLD;
+- nunca corregir por inferencia visual, nombre de tab o conveniencia de release;
+- una fuente corregida se revalida antes de generar write plan;
+- write exacto siempre requiere autorización y readback.
 
-GitHub: `PASS_C6_PROTECTED_IDENTITY_READONLY`.
-
-## Patrón de seguridad reusable
-- **Source-safe:** minimiza datos para repo, logs, evidencias y previews públicos.
-- **Protected runtime:** revela únicamente lo requerido por el rol autenticado.
-- **Release gate:** debe comprobar que un Admin autenticado no recibe placeholders cuando existe identidad canónica real, sin exportar esa PII al artefacto de QA.
-- **Fail closed:** ausencia/conflicto de identidad debe ir a HOLD/revisión, nunca resolverse por coincidencia visual de nombre.
-
-## Contenido que Academia debe reflejar
-- diferencia entre validación UX DEV y autenticación real;
-- privacidad por capa: source-safe vs protected runtime;
-- acceso por rol sin pasos técnicos inventados;
-- recuperación/cambio de acceso;
-- tenant/proyecto/rol y shopperId exacto;
-- mínimo privilegio y conflictos a revisión humana;
-- troubleshooting separando UI, fuente, identidad, credencial y scope;
-- gates que validan identidad real por conteos/contratos sin exponer valores sensibles.
+## Contenido para manuales/cursos
+- UX DEV vs Auth real;
+- privacidad por capa;
+- identidad protegida y mínimo privilegio;
+- fuente operacional vs artefacto source-safe;
+- data-quality gates país/estado/periodo;
+- troubleshooting por UI, fuente, identidad, credencial y scope;
+- conflictos a revisión humana, no overwrite silencioso.
 
 ## Siguiente actualización
-El siguiente bloque operativo es refresh HR read-only de agosto y resolución del HOLD HN. Después de un delta write autorizado/readback, la preproducción autenticada deberá validar visualmente identidad real antes del cutover.
+Después de corregir la HR de agosto, repetir refresh/delta; luego write autorizado, preprod autenticada y validación final de identidad/operación antes de cutover.
