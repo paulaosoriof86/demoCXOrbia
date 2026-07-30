@@ -33,6 +33,6 @@
   "production": false,
   "rawPiiInGitHub": false,
   "requestedAt": "2026-07-30T03:40:37Z",
-  "attempt": 3,
-  "reason": "retry identical authorized preflight after transient live_identity_207; zero writes observed in prior attempts; authorization and write scope unchanged"
+  "attempt": 4,
+  "reason": "retry after root-cause fix: live identity hash now matches exact R20 trim+lower semantics instead of collapsing internal whitespace; all prior attempts stopped preflight with zero writes; authorization and write scope unchanged"
 }
