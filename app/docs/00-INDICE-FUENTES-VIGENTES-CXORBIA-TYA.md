@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-30  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_AUTOENTRY_VISUAL_OBSERVED_PASS__PROTECTED_IDENTITY_READONLY_PASS__AUGUST_REFRESH_READONLY_NEXT__NO_PRODUCTION`
+**Estado vivo:** `C6_IDENTITY_PROTECTED_PASS__AUG_GT34_TECH_READY__HN_SOURCE_MISMATCH__NO_UNASSIGNED_VISITS__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -19,24 +19,20 @@
 2. reglas maestras + addenda vigentes de empalme/carril, Academia, patrones y antidesvío;
 3. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 4. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-5. `CAMBIOS-BACKEND-ADDENDUM-C6-PROTOTYPE-AUTOENTRY-20260730.md`;
-6. `CAMBIOS-BACKEND-ADDENDUM-C6-PROTECTED-IDENTITY-READONLY-PASS-20260730.md`;
+5. `CAMBIOS-BACKEND-ADDENDUM-C6-PROTECTED-IDENTITY-READONLY-PASS-20260730.md`;
+6. `CAMBIOS-BACKEND-ADDENDUM-AUGUST-READONLY-DELTA-20260730.md`;
 7. `evidence/CORTE6-PROTECTED-SHOPPER-IDENTITY-READONLY-LATEST.json`;
-8. `evidence/CORTE6-CREDENTIAL-CONTINUITY-HOSTING-DEPLOY-LATEST.json`;
-9. `evidence/CORTE6-CREDENTIAL-IMPORT-LATEST.json`;
-10. `evidence/CORTE6-FIRESTORE-RULES-DEPLOY-LATEST.json`;
-11. `app/app.js`;
-12. `app/core/backend-config-preview-dev.js`;
-13. `app/core/backend-browser-auth.js`;
-14. `app/core/backend-firebase.js`;
-15. `app/core/backend-cxdata-readonly-corte4.js`;
-16. `app/core/backend-preview-status.js`;
-17. `app/data/tya-hr-source-safe-periods.js`;
-18. `RESUMEN-PARA-CLAUDE.md`;
-19. `PENDIENTES-PROTOTIPO.md`;
-20. tracker Phase A;
-21. Academia Corte6;
-22. PR #7 y HEAD vivo.
+8. `evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json`;
+9. `evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json`;
+10. `evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json`;
+11. `evidence/CORTE6-CREDENTIAL-IMPORT-LATEST.json`;
+12. `evidence/CORTE6-FIRESTORE-RULES-DEPLOY-LATEST.json`;
+13. `app/core/backend-firebase.js`;
+14. `RESUMEN-PARA-CLAUDE.md`;
+15. `PENDIENTES-PROTOTIPO.md`;
+16. tracker/plan Phase A;
+17. Academia Corte6;
+18. PR #7 y HEAD vivo.
 
 ## 3. Baseline protegida — no reabrir
 - Corte3 `CXORBIA-TYA-CORTE3-V182-20260729`: FROZEN.
@@ -46,37 +42,35 @@
 - Corte6 Auth import/readback91/91 PASS; no repetir/resetear.
 - claims5/5 + Rules PASS.
 
-## 4. Visual Corte6 y significado de `Shopper protegido`
-Los dos P0 de acceso están corregidos y la captura humana actual demuestra que el auto-entry del prototipo funciona. El preview humano sigue rotulado `Source-safe (preview)` y por diseño usa un snapshot público/read-only con PII enmascarada; por eso allí aparece `Shopper protegido`.
+## 4. Identidad protegida — PASS
+El preview source-safe puede mostrar `Shopper protegido`; Firestore protegido no. Gate directo:
+- shoppers340; nombres reales340; placeholder0;
+- visitas616; nombres reales616; placeholder0;
+- perfiles referenciados194/194 con nombre real;
+- Rules/adapter protegidos PASS.
 
-No convertir ese placeholder en identidad final ni insertar nombres reales en el JS público. La identidad real pertenece a Firestore protegido detrás de Auth/RBAC/Rules.
+Estado GitHub: `PASS_C6_PROTECTED_IDENTITY_READONLY`.
 
-## 5. Gate protegido de identidad — PASS
-`PASS_C6_PROTECTED_IDENTITY_READONLY_RUNTIME_READY`.
+## 5. Agosto — refresh real actual
+La HR viva cache-busted detecta agosto, pero no está lista para publicación:
+- contrato mensual esperado GT34/HN10;
+- `AGOSTO 26` GT:34 filas y country mismatch0;
+- `AGOSTO 26 HN`:34 filas, las34 vienen marcadas GT → `HOLD_COUNTRY_TAB_MISMATCH`;
+- delta GT técnico:34 nuevas,0 existentes,28 source shopper refs mapeadas28/28 a perfiles canónicos existentes;
+- periodo2026-08 aún no existe en Firestore;
+- estado operativo GT: assigned34, unassigned0, scheduled34, realized34, submitted27, questionnaire7;
+- `releaseReadiness=NO_UNASSIGNED_VISITS_IN_ACCEPTED_SOURCE`.
 
-Read-only directo en `cxorbia-backend-dev`:
-- shoppers protegidos340; con nombre real340; placeholder0; sin nombre0;
-- visitas canónicas616; con nombre real616; placeholder0; sin nombre/shopperId0;
-- shopperIds canónicos distintos referenciados194;
-- perfiles referenciados existentes194/194;
-- perfiles referenciados con nombre real194/194; placeholder/missing0;
-- Rules shopper protegidas y deny-by-default PASS;
-- adapter protegido carga shoppers y nombre real PASS;
-- source-safe público permanece enmascarado PASS;
-- Rules desplegadas verificadas/hash consistente PASS.
+Decisión: `PASS_AUGUST_GT34_DELTA_TECH_READY__HN_HOLD_SOURCE_COUNTRY_MISMATCH`, pero **no listo para publicar visitas disponibles**.
 
-GitHub status: `PASS_C6_PROTECTED_IDENTITY_READONLY`.
+## 6. Regla fail-closed
+No convertir filas GT de la pestaña HN en HN por inferencia. No convertir visitas asignadas/realizadas en disponibles. No copiar nombres reales al source-safe. La fuente HR de agosto debe corregirse/actualizarse antes del write.
 
-## 6. Regla de release desde este punto
-- Preview público/source-safe: puede y debe permanecer enmascarado.
-- Preproducción/producción autenticada: Admin/Operativo debe leer Firestore protegido y ver identidad real; shopper solo su propio perfil; no puede renderizar `Shopper protegido` cuando existe perfil canónico real.
-- La próxima validación de identidad real se hace en runtime protegido, no publicando PII en el preview source-safe.
+## 7. Gate vivo único
+`CORREGIR/ACTUALIZAR HR AGOSTO → REFRESH READ-ONLY → EXPECT GT34/HN10 + ESTADOS PUBLICABLES → DELTA PLAN EXACTO → AUTORIZACIÓN WRITE SOLO DELTA`.
 
-## 7. Siguiente bloque exacto
-`REFRESH HR READ-ONLY → RESOLVER/CLASIFICAR AGOSTO HN → VALIDAR AGOSTO → PREPARAR WRITE PLAN DELTA-ONLY`.
-
-Solo después, y con autorización explícita para Firestore data writes:
-`MATERIALIZAR SOLO DELTA AGOSTO → READBACK/SMOKE → PREPROD PROTEGIDA CON IDENTIDAD REAL → CUTOVER tya-plataforma`.
+Después:
+`MATERIALIZAR DELTA → READBACK/SMOKE → PREPROD PROTEGIDA CON IDENTIDAD REAL → CUTOVER tya-plataforma`.
 
 ## 8. Estado seguro
-Producción no tocada. PR #7 draft/open/no merge. Histórico/Auth91/Rules/CX.data preservados. Gate de identidad: provider reads únicamente; Auth/Firestore data/Rules/Hosting/Storage/HR/legacy/payments/Functions/Make/Gemini writes0; PII exportada0.
+Producción no tocada. PR #7 draft/open/no merge. Histórico/Auth91/Rules/CX.data preservados. Todo el bloque agosto fue read-only: HR/Firestore/Auth/Rules/Hosting/Storage/legacy/payments/Functions/Make/Gemini writes0; PII exportada0.
