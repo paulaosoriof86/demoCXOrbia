@@ -1,82 +1,67 @@
-# Corte 6 — P0 reproducible: doble login / gate Auth visible en DEV
+# Corte 6 — P0 doble login Auth DEV: causa raíz corregida en rama
 
 **Fecha:** 2026-07-30  
-**Estado:** `P0_PROVEN_C6_DOUBLE_LOGIN_FORCED_AUTH_GATE__NO_RUNTIME_WRITE__NO_DEPLOY`
+**Estado:** `P0_FIXED_IN_BRANCH_STATIC_PASS__PENDING_SINGLE_DEV_REDEPLOY_AUTH`
 
-## Hecho observado por Paula
+## Hecho observado y decisión
+El Hosting DEV publicado mostró una pantalla separada **“Acceso seguro”** antes del login normal TyA/CXOrbia. La visual de Paula fue evidencia suficiente para declarar ese build **NO APROBADO**. No se requiere repetir esa prueba ni compartir contraseña.
 
-En el Hosting DEV `cxorbia-backend-dev` aparece primero una pantalla separada **“Acceso seguro”** con `Tipo de acceso + Usuario + Contraseña`. Paula reporta que este paso no existía en el flujo habitual: anteriormente el acceso DEV llegaba directamente al login normal del proyecto. Al intentar las credenciales operativas conocidas, el gate puede mostrar el error genérico de validación y, además, el flujo termina exponiendo el login normal del producto como segundo paso.
+## Causa raíz histórica
+`app/core/backend-browser-auth.js` había convertido Firebase Auth en una UI paralela: creaba `#cxBackendAuthGate`, interceptaba `CX.app.showLogin()`, limpiaba `CX.session` y forzaba un flujo interactivo separado. `backend-config-preview-dev.js` usaba `interactive-session`. Firebase no requería esta segunda pantalla; fue un desvío de implementación.
 
-La captura humana de 2026-07-30 es evidencia suficiente para declarar **NO APROBADO** el gate visual actual. No se requiere pedir contraseña por chat ni repetir el intento para probar el problema de doble login.
+## Corrección aplicada
+La rama viva ya implementa la solución de raíz:
+1. se eliminó el gate/overlay backend separado;
+2. se conserva el login normal tenant-aware como único punto visible;
+3. si hace falta autenticación real, `Usuario + Contraseña` se inserta dentro de la misma tarjeta del producto;
+4. una sesión Firebase válida se restaura silenciosamente mediante `Auth.Persistence.SESSION` + estado Auth;
+5. no se limpia la sesión por rutina en carga;
+6. logout invalida Firebase y CX session;
+7. se preservan namespaces `staff/shopper`, claims y fail-closed por tenant/rol/proyecto/shopper;
+8. el identificador Firebase interno continúa oculto.
 
-## Evidencia de código — causa raíz
+Archivos corregidos:
+- `app/core/backend-browser-auth.js`;
+- `app/core/backend-config-preview-dev.js`;
+- `tools/release/cxorbia-corte6-credential-continuity-hosting-prepare.mjs`;
+- `.github/workflows/cxorbia-corte6-credential-continuity-hosting.yml`.
 
-### 1. `app/core/backend-browser-auth.js`
+Commits principales:
+- `e95e8a9662373183ec17186831cf81b89094515a`;
+- `32aee807d4c48760679267e1f8cd577d4681f4ea`;
+- `f3aa90cc0f765beafdfa90e5b55d953239488746`;
+- `e0b98140744135361f0d1d000ce31435b7ea59d2`.
 
-El archivo crea deliberadamente un overlay full-screen `#cxBackendAuthGate` con el formulario `Tipo de acceso + Usuario + Contraseña`.
+## Gate estático reproducible
+Se reutilizó el workflow existente sin abrir nueva ruta. El request de Hosting anterior permanece consumido y fue marcado únicamente para **revalidación estática sin provider writes**.
 
-Además:
+Commit `790d4d514b8e7b4630063ebf2aebba5997e3ec26` obtuvo:
+`success · cxorbia/corte6-credential-continuity-hosting/PREPARED_C6_SINGLE_LOGIN_HOSTING_NO_EXECUTE`.
 
-- reemplaza `CX.app.showLogin()` en preview para mostrar el overlay en lugar del login original;
-- limpia `CX.session` al cargar el DOM;
-- fuerza `ensureOverlay()` cuando `previewMode=true`;
-- autentica con Firebase antes de permitir el contexto protegido.
-
-Por tanto, el nuevo paso visual no viene de Firebase por obligación ni del navegador: fue introducido por la capa backend-browser.
-
-### 2. `app/core/backend-config-preview-dev.js`
-
-El preview fija `devPreviewAuth.mode='interactive-session'` y `storedCredentialFallback=false`, por lo que el flujo exige interacción visible cuando no existe una sesión Firebase restaurable.
-
-### 3. `app/core/backend-firebase.js`
-
-`start()` ejecuta `ensurePreviewAuth()` antes de `refresh()`. Como `ensurePreviewAuth()` delega en `CX.backendAuth.ensureAuthenticated()`, el gate Auth queda por delante del flujo normal del producto.
-
-### 4. El login normal sigue existiendo
-
-`app/index-backend-dev.html` conserva `<div id="login"></div>` y `app/app.js` conserva `CX.app.init() → CX.session.load() → enter()/showLogin()` con el login tenant-aware de Administración/Coordinación, Cliente, Shopper y roles configurados.
-
-Conclusión: hoy existen dos capas de acceso visual que compiten entre sí. El segundo gate es redundante desde UX y contradice el objetivo de mantener **Firebase Auth detrás del adapter**, no como una pantalla adicional.
+El gate valida sintaxis, marcadores del nuevo flujo, `product-login-session` y ausencia del gate antiguo. Como la autorización anterior estaba consumida, no cargó service account ni ejecutó deploy.
 
 ## Qué NO se reabre
+- import Auth91/91 + readback PASS;
+- hashes/passwords legacy;
+- namespaces staff/shopper;
+- claims/Rules;
+- R17N1,406/1,406;
+- Corte5 CX.data;
+- Corte3 frozen;
+- histórico hasta julio.
 
-Este P0 no invalida ni autoriza repetir:
-
-- import Auth `91/91` y readback PASS;
-- hashes/contraseñas legacy ya migrados;
-- namespaces `staff/shopper`;
-- claims/Rules ya validados;
-- 1,406 writes históricos R17N;
-- Corte 5 `CX.data` Firestore PASS;
-- Corte 3 frozen;
-- materialización histórica hasta julio.
-
-Tampoco autoriza reset de contraseña, nuevos usuarios, nuevo Firebase/Hosting, Firestore data writes, Rules, Storage, HR, legacy writes, Make/Gemini, pagos, merge ni producción.
-
-## Corrección de raíz requerida
-
-Debe existir **un solo flujo de acceso visible**.
-
-1. Firebase Auth continúa siendo la autoridad real y permanece detrás del adapter.
-2. Se elimina la obligación de atravesar una pantalla backend separada antes del login del proyecto.
-3. El acceso visible del tenant/proyecto debe ser el único punto de entrada y conservar la semántica aprobada de usuario/perfil.
-4. Una sesión Firebase válida debe restaurarse silenciosamente; no se debe limpiar por rutina al cargar la página.
-5. Si se requiere autenticación interactiva, debe integrarse en el mismo flujo normal de acceso del producto, no agregar un segundo login.
-6. El usuario no debe autenticar dos veces ni conocer identificadores/provider internos.
-7. El error de credenciales debe distinguir fallo de contraseña de fallo de namespace/scope sin revelar información sensible.
-
-## Responsabilidad
-
-- **Backend:** preservar Auth/claims/session y exponer contrato de autenticación sin UI paralela.
-- **Claude/prototipo:** ajuste focalizado del login normal si necesita incorporar el input de credenciales reales; no rediseñar módulos ni abrir nueva candidata por rutina.
-- **Academia:** documentar un único flujo de acceso; Firebase/provider no es un paso visible para el usuario.
+## Estado del Hosting
+El código corregido **todavía no está publicado**. El Hosting DEV actual sigue sirviendo el build rechazado. No pedir a Paula que lo pruebe otra vez antes del redeploy.
 
 ## Siguiente bloque exacto
+`AUTORIZACIÓN ÚNICA DE REDEPLOY DEL MISMO HOSTING DEV cxorbia-backend-dev/cxorbia-dev → PRECHECK SINGLE-LOGIN → DEPLOY1 → SMOKE REMOTO → VALIDACIÓN VISUAL PAULA → FREEZE CORTE6 → AGOSTO DELTA`.
 
-`P0 FOCAL LOGIN ROUTE → GATES LOCALES/ESTÁTICOS → AUTORIZACIÓN ÚNICA DE REDEPLOY DEV SI EL BUILD QUEDA PASS → SMOKE REMOTO → VALIDACIÓN VISUAL PAULA → FREEZE CORTE 6 → AGOSTO DELTA`.
-
-Paula no debe repetir la prueba del gate actual ni ejecutar PowerShell.
+## Clasificación
+- **Reusable CXOrbia:** un único login visible, Auth detrás del producto, sesión restaurable, logout real.
+- **Exclusivo cliente:** credenciales legacy TyA.
+- **Claude/prototipo:** no nueva candidata; conservar patrón y no reintroducir gate paralelo.
+- **Academia:** acceso único y troubleshooting.
+- **Sin impacto Claude:** Auth91/91, Rules, histórico y CX.data permanecen cerrados.
 
 ## Estado seguro
-
-Este diagnóstico/documento no ejecuta Auth writes, Firestore writes, Rules, Hosting deploy, Storage, HR/legacy writes, Make/Gemini, pagos, merge ni producción.
+Corrección hasta este punto: Auth writes0; Firestore writes0; Rules0; Hosting deploy0; Storage/HR/legacy/payments/functions/Make/Gemini0; merge=false; producción=false.
