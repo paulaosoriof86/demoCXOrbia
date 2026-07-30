@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-30  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `CORTE3_FROZEN__R17N_FINAL_DEV_MATERIALIZED_1406__PROVIDER_COMPARE_IDENTITY_PASS__P0_C5_CXDATA_PERIOD_MODEL__RUNTIME_FIX_AUTH_PENDING__NO_PRODUCTION`
+**Estado vivo:** `CORTE3_FROZEN__R17N_FINAL_DEV_MATERIALIZED_1406__C5_CXDATA_PERIOD_MODEL_FIXED__READONLY_RESMOKE_PASS__OPERATIONAL_VISUAL_PENDING__NO_PRODUCTION`
 
 ## 1. Repositorio
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -25,8 +25,8 @@
 9. `evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.json`;
 10. `evidence/R17N-FINAL-WRITE-PLAN-NO-EXECUTE-LATEST.json`;
 11. `evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.json`;
-12. `evidence/R17N-POST-MATERIALIZATION-READONLY-SMOKE-LATEST.json`;
-13. CAMBIOS/Claude/PENDIENTES/Academia/tracker más recientes;
+12. `evidence/R17N-POST-MATERIALIZATION-READONLY-SMOKE-LATEST.json` + `.md`;
+13. addenda más recientes de CAMBIOS/Claude/PENDIENTES/Academia y tracker;
 14. PR #7 y HEAD vivo.
 
 ## 3. Baseline no reabrir
@@ -41,91 +41,84 @@ HR viva actual hasta julio:
 - 14 periodos;
 - 616 visitas;
 - 208 referencias shopper;
-- el snapshot previo de 210 refs / 9 pendientes quedó superado;
-- Agosto HN sigue HOLD por país/tab inconsistente.
+- snapshot previo 210 refs /9 pendientes superado;
+- Agosto HN HOLD por país/tab inconsistente.
 
-Identidad actual:
-- 201 refs reutilizan shopper canónico existente;
-- 2 enlazan perfiles legacy create;
-- 5 crean perfil desde HR viva;
-- 208/208 ready;
-- 0 HOLD de identidad actual.
-
-Nota de crosswalk: las 208 referencias HR resuelven a 194 perfiles shopper canónicos únicos; varias referencias históricas pueden converger determinísticamente al mismo perfil. Esto no es conflicto ni dedupe por nombre.
+Identidad:
+- 208/208 refs listas;
+- resuelven a 194 perfiles canónicos únicos;
+- 616/616 visitas con nombre real y target existente;
+- 77/77 certificaciones con shopper existente;
+- placeholders demo 0.
 
 Legacy útil:
 - 149 shoppers únicos;
 - 120 perfiles create materializados;
-- 22 existing updates siguen HOLD;
+- 22 existing updates HOLD;
 - 7 perfiles legacy HOLD;
-- 78 certificaciones útiles = 77 materializadas + 1 HOLD.
+- 78 certificaciones útiles =77 materializadas +1 HOLD.
 
 ## 5. R17N FINAL — MATERIALIZACIÓN DEV PASS
-Autorización `r17n-final-dev-20260730-01` consumida.
+Autorización consumida `r17n-final-dev-20260730-01`.
 
-Resultado:
-- preflight: 1,406 absent / 0 same / 0 conflict;
-- identidad HR revalidada en memoria: 208/208;
-- targets canónicos existentes verificados: 201/201;
-- 201/201 ya tienen nombre real visible;
-- links financieros R14C exactos: 196;
 - Firestore writes: **1,406/1,406**;
 - readback: **1,406/1,406**;
-- mismatch: 0.
-
-Grupos:
-- foundation 16;
-- perfiles legacy 120;
-- perfiles HR actuales 5;
-- certificaciones 77;
-- visitas 616;
-- controles de liquidación 572.
+- mismatch: 0;
+- foundation16 + legacy profiles120 + HR profiles5 + certifications77 + visits616 + liquidation controls572.
 
 Excluido: tenant update1, existing updates22, legacy holds7, certification hold1, Agosto HN, deletes, pagos/lotes, Auth/Storage/HR/legacy writes, deploy/merge/producción.
 
-## 6. Post-compare read-only — PROVIDER + IDENTIDAD PASS
-Run `30514060348`, artifact `8748181730`, digest `sha256:a23f06035043de8568a826aefb52cfce5df9781b3a9b86ccf8238f8fd1c8d3cf`.
+## 6. Corte 5 — P0 de modelo proyecto/periodo corregido
+P0 histórico: `P0_PROVEN_C5_CXDATA_PERIOD_MODEL_MISMATCH`.
+
+Runtime fix:
+- archivo `app/core/backend-firebase.js`;
+- commit `96cb7601559a76595d6203724a4bcf2d0b35b390`;
+- `CX.data.periods` ya consume `tenants/tya/projects/<projectId>/periods`;
+- project docs raíz ya no son periodos;
+- `currentPeriodId` stale se sustituye por un ID canónico.
+
+Instrumentación QA:
+- primer post-fix `30544254033` dio `periods=0` porque el snapshot simulado no incluía `periods`, no por fallo del proveedor/runtime;
+- harness corregido en `21ce464772bfe6543b3672ad4b6d7deafd564adc` para incluir los periodos ya leídos del proveedor en el snapshot en memoria.
+
+## 7. Re-smoke read-only final — PASS
+Run `30544595440`; artifact `8760141578`; digest `sha256:337c4e8b07786effea5c326c77dfb31f9edc2fa49e09d7e46e18fa4c8dacbc98`.
 
 Provider:
-- 1,406/1,406 rutas materializadas presentes;
-- missing 0;
-- authorization drift 0;
-- production=true 0;
-- tenant sin update R17N;
-- proyecto padre `cinepolis` presente;
-- 14 periodos canónicos;
+- 1,406/1,406 rutas;
+- missing/auth drift/production drift 0/0/0;
+- parent project `cinepolis` presente;
+- 14 periodos;
 - 616 visitas;
-- 572 controles liquidación;
+- 572 controles;
 - 77 certificaciones;
-- payments 0 / lots 0.
+- payments/lots 0/0.
 
-Identidad:
-- 208/208 source refs esperadas;
-- 194/194 perfiles canónicos únicos esperados;
-- 616/616 visitas con nombre real y target shopper existente;
-- 194/194 perfiles referenciados con nombre real;
-- 77/77 certificaciones con shopper existente;
-- placeholders demo visibles: 0.
-
-## 7. P0 PROVEN — Corte 5 CX.data period model
-Decisión: `P0_PROVEN_C5_CXDATA_PERIOD_MODEL_MISMATCH`.
-
-El proveedor y la materialización están correctos; el fallo está localizado en `app/core/backend-firebase.js`:
-- `loadTenantData()` lee `tenants/tya/projects` y `buildPeriods()` transforma los documentos de proyecto en periodos;
-- no consume la subcolección canónica `tenants/tya/projects/cinepolis/periods`;
-- smoke exacto, incluso forzando el padre `cinepolis`, obtiene `projects=1`, `visits=616`, `source=firestore`, `fallback=false`, pero `periods=30` y `currentPeriodId=cinepolis`;
-- esperado: 14 periodos canónicos y `currentPeriodId` perteneciente a esos 14 IDs.
-
-Por tanto Corte 5 NO se congela y Corte 6 NO inicia todavía.
+CX.data:
+- `source=firestore`;
+- `fallbackUsed=false`;
+- interfaz preservada;
+- projects=1;
+- periods=14;
+- visits=616;
+- currentProjectId=`cinepolis`;
+- currentPeriodId=`2026-07`;
+- adapterPeriodIds = canonicalPeriodIds;
+- read-only/writeMode disabled;
+- blockers 0.
 
 ## 8. Gate vivo único
-`AUTORIZACIÓN EXPRESA DE CORRECCIÓN FOCAL P0-C5-CXDATA-PERIOD-MODEL → PATCH BACKEND ADAPTER SOLAMENTE → POST-COMPARE/SMOKE READ-ONLY → VALIDACIÓN OPERATIVA → FREEZE CORTE 5 → CORTE 6 AUTH/RBAC`.
+Estado máximo actual: `CORTE5_TECHNICAL_PASS__OPERATIONAL_VISUAL_PENDING`.
 
-No repetir materialización. No tocar datos ya escritos. No nueva base/candidata/PR. No UI patch. Cualquier runtime fix requiere autorización expresa por P0 demostrado.
+Siguiente gate:
+`AUTORIZACIÓN BIND DEV READ-ONLY A cxorbia-backend-dev + UN ÚNICO HOSTING DEV CONTROLADO → VALIDACIÓN VISUAL/OPERATIVA CON DATOS REALES → si no hay P0: FREEZE CORTE 5 → CORTE 6 AUTH/RBAC`.
+
+No repetir materialización. No tocar UI por rutina. No nueva base/candidata/rama/PR. No producción ni cutover `tya-plataforma` todavía.
 
 ## 9. Claude / Academia
-- Claude: no nueva candidata. El P0 está localizado en adapter backend; frontend no debe reinterpretar el modelo.
-- Academia: materialización/readback correctos, diferencia referencia HR vs perfil canónico, proyecto padre vs periodos y validación fail-closed post-write.
+- Claude: no nueva candidata; P0 backend cerrado técnicamente. Solo actuar si la validación visual demuestra un P0 frontend reproducible.
+- Academia: proyecto padre vs periodo, readback vs consumidor runtime, identidad real vs source-safe y liquidación ≠ pago.
 
 ## 10. Estado seguro
-R17N histórico: 1,406 Firestore writes autorizados ya ejecutados. En el bloque post-compare actual: provider reads únicamente; provider/data/Auth/Storage/HR/legacy writes=0; deletes=0; pagos=0; deploy=0; merge=false; producción=false; Make/Gemini=0; PII cruda en repo/artifacts=0.
+R17N histórico: 1,406 writes autorizados ya ejecutados. Corrección/re-smoke actual: provider reads solamente; Firestore/Auth/Storage/HR/legacy writes=0; deletes=0; pagos=0; deploy=0; merge=false; producción=false; Make/Gemini=0; PII cruda repo/artifacts=0.
