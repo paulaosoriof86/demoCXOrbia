@@ -2,57 +2,72 @@
 
 ## ESTADO VIGENTE — 2026-07-30
 
-### Baseline
-- Repo: `paulaosoriof86/demoCXOrbia`.
-- Rama: `docs-tya-v6-v71-audit`.
-- PR #7 draft/open/no merge.
-- Corte 3 `CXORBIA-TYA-CORTE3-V182-20260729` permanece FROZEN.
-- No V183/R33; no nueva candidata por rutina.
+**Estado:** `CORTE6_AUTH_RBAC_RULES_PASS__HOSTING_DEV_REDEPLOY1OF1_VERIFIED_DIRECT_ENTRYPOINT__WAITING_HUMAN_AUTH_VISUAL__NO_PRODUCTION`
 
-### Arquitectura
-- `cxorbia-backend-dev` = backend DEV canónico y reutilizado.
-- Hosting DEV de visualización existente = `cxorbia-backend-dev.web.app`, target `cxorbia-dev`.
-- `tya-plataforma` = legacy a retirar + Hosting/URL pública final.
-- sandbox C4 = no destino.
-- proyecto padre `cinepolis`; meses son periodos.
-- no crear otro Firebase/Hosting por rutina.
+### Baseline no reabrir
+- Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge.
+- Corte 3 `CXORBIA-TYA-CORTE3-V182-20260729` FROZEN.
+- R17N FINAL: 1,406/1,406 Firestore data writes/readback PASS; no repetir.
+- Corte 5 `CX.data`: project=`cinepolis`, periods=14, visits=616, currentPeriod=`2026-07`, source=firestore/fallback=false PASS.
+- No V183/R33, nueva candidata, base, Hosting, rama o PR por rutina.
 
-### Materialización y consumidor — PASS
-R17N FINAL: 1,406/1,406 Firestore writes y 1,406/1,406 readback, mismatch 0. Grupos: foundation16 + legacy profiles120 + HR-current profiles5 + certifications77 + visits616 + liquidation controls572.
+### Corte 6 backend — PASS
+Ya existe autenticación Firebase real en el entrypoint DEV protegido:
+- `app/core/backend-browser-auth.js`: Email/Password interactivo, SESSION, claims como autoridad;
+- `app/core/backend-config-preview-dev.js`: sin password/email persistidos;
+- `app/core/backend-firebase.js`: lecturas por principal autenticado;
+- `app/index-backend-dev.html`: carga Auth real antes del adapter;
+- `firestore.rules`: `status` canónico + compatibilidad `estado` legacy para disponible shopper.
 
-Identidad: 208/208 refs ready →194 perfiles canónicos únicos; 616/616 visitas con nombre real/target válido; 77/77 certificaciones con shopper válido.
+Proveedor:
+- claims 5/5 actualizados: 2 cliente +3 shopper exactos;
+- cuarto shopper sin vínculo: no tocado;
+- usuario nuevo/password/delete: 0/0/0;
+- readiness: operador7, cliente2, shopper3;
+- Firestore data writes Corte6: 0;
+- Rules deploy verificado por API oficial.
 
-P0 `P0_PROVEN_C5_CXDATA_PERIOD_MODEL_MISMATCH` corregido en `app/core/backend-firebase.js`. Re-smoke `30544595440`: source=firestore, fallback=false, projects=1, periods=14, visits=616, currentProjectId=cinepolis, currentPeriodId=2026-07, interface/read-only PASS, blockers=0.
+### Hosting DEV — desplegado y verificado
+Se reutilizó el Hosting DEV existente `cxorbia-backend-dev`, target `cxorbia-dev`.
+- nuevo Firebase/Hosting: 0/0;
+- único redeploy autorizado: 1/1, consumido;
+- release `sites/cxorbia-backend-dev/releases/1785431702100000`;
+- version `sites/cxorbia-backend-dev/versions/b00728c729452665`, FINALIZED;
+- remote proof/config/browser Auth y `/index-backend-dev.html`: PASS.
 
-### Preflight visual Corte 5
-Paula autorizó un único redeploy **del Hosting DEV ya existente**. El preflight confirmó el mismo proyecto/target pero detuvo antes de desplegar:
-- Hosting nuevo: no;
-- Firebase nuevo: no;
-- deploy: 0/1;
-- autorización Hosting consumida: no.
+Firebase CLI tenía dos dependencias de permisos que no reflejaban fallas del API real: Rules `firebaserules.rulesets.test` y Hosting API Keys Viewer. Se usaron APIs oficiales con permisos ya existentes, sin ampliar IAM.
 
-Causa: Firestore real protegido exige Firebase Auth/claims; el login visible actual es selector de rol/sesión local, no autenticación provider. Publicar credenciales/tokens o PII en Hosting está prohibido. La autorización vigente excluye Auth writes/Rules deploy.
+El root `/` sirve `app/index.html` por precedencia de contenido estático exacto antes de rewrites. Esto no bloquea; el URL DEV canónico es:
+`https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis`
 
-### Regla de identidad para producto/frontend
-- source-safe protege repo/log/evidencia; no anonimiza la plataforma;
-- Admin/Operativo deben ver identidad real conforme RBAC/Rules;
-- Shopper solo su propia identidad/visitas/certificaciones;
-- Cliente solo alcance permitido;
-- no usar nombre como llave única de merge;
-- no mostrar `Shopper protegido` como identidad permanente si backend ya expone nombre real.
+### Claude — intervención actual
+**Ninguna por rutina. No solicitar nueva candidata.**
 
-### Próxima intervención de Claude
-No nueva candidata.
+Ahora corresponde validación humana autenticada. Solo si aparece un P0 reproducible se abre tarea focalizada por archivo/módulo/flujo. No mover Auth/claims/Rules/backend a módulos UI.
 
-Pendiente real: login Firebase auténtico compatible con la sesión/rol/persona/scope de CXOrbia. El selector de perfiles/demo no puede conceder acceso a Firestore protegido. No hardcodear passwords/tokens ni simular Auth.
+Validar visualmente:
+1. Admin/Ops: `cinepolis`, periodos/histórico y navegación correcta.
+2. Cliente: solo proyecto autorizado.
+3. Shopper exacto: identidad real, historial propio y disponibles autorizadas.
+4. Shopper no vinculado: sin ampliación por inferencia.
+5. Sin regresión en postulaciones, visitas, certificación, finanzas, Academia/manuales.
+6. Sin copy técnico de claims/provider/source-safe.
 
-Backend prepara primero la reconciliación Auth/RBAC exacta. Claude interviene con tarea focalizada por archivo/flujo cuando esté cerrada la matriz o si aparece P0 frontend reproducible.
+No pedir ni recibir credenciales por chat; se ingresan directamente en navegador.
 
-### Backlog P1/P2
-PDF/gráficas, Excel/formato, reportKit/copy y equivalencia de exportaciones siguen no bloqueantes.
+### Backlog P1/P2 preservado
+- PDF/gráficas;
+- Excel/formato;
+- reportKit/exportaciones fuera de Dashboard;
+- copy de fuentes/readiness.
+
+No bloquean Corte6/agosto/cutover salvo que se demuestre P0 Phase A.
+
+### Agosto
+Fuente actual llega a julio. `Agosto HN` continúa HOLD por inconsistencia país/tab. Después de PASS visual: freeze Corte6 → refresh HR → resolver HOLD → materializar solo delta agosto.
 
 ### Academia/manuales
-Fuente viva vs snapshot; identidad real vs source-safe; autenticación vs selección de rol; proyecto padre vs periodo; readback vs consumidor runtime; preflight fail-closed; write/readback; liquidación/control ≠ pago; RBAC y PII por rol.
+Actualizar Auth real vs selector local; tenant/proyecto; shopperId exacto; mínimo privilegio; visitas disponibles protegidas; CLI vs API proveedor; exact-static vs rewrite.
 
 ### Estado seguro
-Firestore writes históricos autorizados: 1,406. Bloque actual: Hosting deploy=0; Auth/Storage/HR/legacy writes=0; Rules/Functions deploy=0; deletes=0; pagos=0; merge=false; producción=false; Make/Gemini=0.
+Corte6: Auth claim writes5; usuarios nuevos/password/deletes0; Firestore data writes0; Rules release1 verificada; Hosting DEV1/1; Storage/HR/legacy0; pagos/Make/Gemini0; merge=false; producción=false.
