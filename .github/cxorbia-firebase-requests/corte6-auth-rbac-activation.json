@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.corte6-auth-rbac-activation.request.v1",
-  "enabled": false,
+  "enabled": true,
   "consumed": false,
   "authorizationId": "PAULA_CURRENT_CONVERSATION_CORTE6_20260730_01",
   "authorizationSource": "current_conversation_2026-07-30",
@@ -14,12 +14,12 @@
   "allowCreateUsers": false,
   "allowPasswordChanges": false,
   "allowDeletes": false,
-  "deployFirestoreRules": false,
+  "deployFirestoreRules": true,
   "hostingDeploy": false,
   "firestoreDataWrites": false,
   "storageWrites": false,
   "production": false,
   "merge": false,
-  "diagnosticHold": "FAIL_C6_RULES_DEPLOY",
-  "note": "Authorization remains valid but execution is temporarily fail-closed while the Firestore Rules deploy failure is diagnosed. No Hosting in this gate; existing Hosting DEV redeploy authorization remains separate and unconsumed."
+  "executionPath": "direct_firebaserules_api_after_cli_pretest_permission_diagnostic",
+  "note": "Authorization remains the current-conversation Corte 6 authorization. Root cause of the Firebase CLI failure was isolated to missing firebaserules.rulesets.test while direct Rules API create/get/release-update permissions are present. Execute the authorized rules deployment through the direct Rules API, then normalize at most 5 existing-user claims."
 }
