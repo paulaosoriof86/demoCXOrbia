@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "cxorbia.r17n-final-write-plan-no-execute.v1",
+  "generatedAt": "2026-07-30T02:51:36.212Z",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "environment": "DEV_CANONICAL"
+  },
+  "status": "FINAL_PLAN_READY_NOT_AUTHORIZED_NOT_EXECUTABLE",
+  "strategy": {
+    "canonicalShadow": true,
+    "reuseExistingBackend": true,
+    "newFirebaseProject": false,
+    "deletePriorTopology": false,
+    "productionCutover": false
+  },
+  "identityResolution": {
+    "totalHrRefs": 210,
+    "reuseExistingRefs": 201,
+    "linkToLegacyProfileCreateRefs": 2,
+    "holdRefs": 7,
+    "readyRefs": 203,
+    "identitySourceNotFound": 3
+  },
+  "groups": {
+    "tenant": {
+      "count": 1,
+      "state": "HOLD_EXISTING_TENANT_FIELD_REVIEW",
+      "authorized": 0
+    },
+    "foundation": {
+      "count": 16,
+      "state": "READY_FOR_EXACT_WRITE_AUTHORIZATION",
+      "authorized": 0
+    },
+    "legacyProfileCreates": {
+      "count": 120,
+      "state": "READY_FOR_EXACT_WRITE_AUTHORIZATION",
+      "authorized": 0
+    },
+    "existingProfileUpdates": {
+      "count": 22,
+      "state": "HOLD_EXISTING_FIELD_CONFLICT_REVIEW",
+      "authorized": 0
+    },
+    "legacyProfileHolds": {
+      "count": 7,
+      "state": "HOLD_SOURCE_OR_IDENTITY_REVIEW",
+      "authorized": 0
+    },
+    "certifications": {
+      "readyCreate": 77,
+      "hold": 1,
+      "state": "READY_EXCEPT_HELD_PROFILE_CASES",
+      "authorized": 0
+    },
+    "visits": {
+      "total": 616,
+      "readyCreate": 602,
+      "holdIdentity": 14,
+      "unclassified": 0,
+      "source": "HR_FIRST",
+      "authorized": 0
+    },
+    "liquidationControls": {
+      "total": 572,
+      "readyCreate": 572,
+      "holdIdentity": 0,
+      "payments": 0,
+      "authorized": 0
+    }
+  },
+  "exactReadyWrites": {
+    "count": 1387,
+    "authorized": 0,
+    "breakdown": {
+      "foundation": 16,
+      "legacyProfileCreates": 120,
+      "certificationCreates": 77,
+      "visitCreates": 602,
+      "liquidationControlCreates": 572
+    }
+  },
+  "holds": {
+    "shopperRefs": [
+      "shopper_gt_0c0ba8856e",
+      "shopper_gt_1a6d9c9779",
+      "shopper_gt_319cd82eaf",
+      "shopper_gt_b23d8dedea",
+      "shopper_hn_1a6d9c9779",
+      "shopper_hn_7a5a21048b",
+      "shopper_hn_ba49cafa91"
+    ],
+    "holdVisitCount": 14,
+    "holdLiquidationCount": 0,
+    "tenant": true,
+    "existingProfileUpdates": 22,
+    "augustHN": "HOLD_COUNTRY_TAB_MISMATCH"
+  },
+  "sourceLocks": {
+    "legacySnapshotSha256": "a4988e2ad473f724248ac9999b6f8ba6edd94f8aba5c7145c09da88159a200c4",
+    "visitCrosswalkHash": "9221098951aa03d34301273c3adc8f7773a410a39901432ec6f6e3040ce4720f",
+    "remainingIdentityEvidenceSha256": "62c9a6126c2c5c454aeda392b6aabbff5a0c2f7a89da8983f86b14851b255ef8",
+    "baseR17nSha256": "df2f88c24046d6366e172b2bcad1cd120964bf3d10fcc7b9b3b26b38e357967c"
+  },
+  "safety": {
+    "providerCalls": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "deletes": 0,
+    "imports": 0,
+    "deploys": 0,
+    "production": false,
+    "merge": false,
+    "executeAllowed": false
+  },
+  "offlineIdempotence": {
+    "pass": true,
+    "planHashSha256": "08fbc3e9dfae78a3220c70f75904099c64ff1d54de09a04758d4a497a4d96f7b",
+    "rerunHashSha256": "08fbc3e9dfae78a3220c70f75904099c64ff1d54de09a04758d4a497a4d96f7b"
+  },
+  "holdVisitIdsSha256": "9edf17bcb4174f88fddd4fdbb2bfc20383f9ca08fcfb57ee9b81f3fec48b1660"
+}
