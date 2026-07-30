@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-30  
-**Estado:** `CORTE3_FROZEN__C5_DEV_MATERIALIZED_1406_CXDATA_PASS__C6_AUTH_RULES_HOSTING_TECH_PASS__HUMAN_VISUAL_PENDING`
+**Estado:** `CORTE3_FROZEN__C5_DEV_MATERIALIZED_1406_CXDATA_PASS__C6_AUTH_RULES_HOSTING_TECH_PASS__P0_CREDENTIAL_CONTINUITY`
 
 ## 1. Estado general
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge.
@@ -28,52 +28,49 @@ CERRADO para materialización: HR hasta julio, 208/208 refs, 194 perfiles canón
 
 ### Corte 6 — Auth/RBAC + Rules + Hosting DEV técnico
 **PASS técnico.**
-- Auth custom claims: 5/5 updates sobre cuentas existentes (cliente2 + shopper3 exactos).
-- Cuarto shopper sin vínculo: no tocado.
-- Usuario nuevo/password/delete: 0/0/0.
-- Readback: operador ready7, cliente ready2, shopper ready3.
-- Firestore data writes Corte6: 0.
-- Rules canónicas `status` + compatibilidad `estado`: desplegadas/readback PASS por API oficial.
-- Hosting DEV existente: 1/1 deploy consumido, sin nuevo Firebase/Hosting.
-- Release `sites/cxorbia-backend-dev/releases/1785431702100000`.
-- Version `sites/cxorbia-backend-dev/versions/b00728c729452665`, FINALIZED.
-- Remote proof/config/browser Auth/`index-backend-dev.html`: PASS.
-- Root `/` sirve `app/index.html` por precedencia exact-static; no bloqueante.
+- claims 5/5: cliente2 + shopper3 exactos;
+- readiness operador7/cliente2/shopper3;
+- Firestore Rules release/readback PASS;
+- Firestore data writes0;
+- Hosting DEV existente 1/1 consumido, sin nuevo Firebase/Hosting;
+- release/version remotos FINALIZED y entrypoint explícito PASS.
 
-## 3. Gate vivo — validación visual autenticada
-URL DEV canónico:
-`https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis`
+## 3. P0 vivo — continuidad de credenciales
+El login DEV visible `Correo + Contraseña` demostró una pérdida de continuidad funcional: la identidad provider es necesaria, pero el usuario final no debe ser forzado a adoptar correos/credenciales DEV nuevas.
 
-Validar Admin/Ops, Cliente y Shopper con cuentas DEV existentes. No compartir credenciales por chat.
+Inventario read-only:
+- shoppers canónicos inventariados: `user/username/login`=0; `pass/password`=0;
+- users canónicos: 0;
+- tenant login config: 0;
+- Firebase Auth: 17 cuentas técnicas email/password.
 
-Criterios:
-- alcance por proyecto correcto;
-- identidad shopper real y exacta;
-- disponibles autorizadas;
-- shopper no vinculado fail-closed;
-- no regresión en módulos Phase A/Academia;
-- no copy técnico en UI normal.
+Decisión: preservar `Usuario + Contraseña` como contrato visible y poner Firebase Auth detrás de un adapter. Fuente legacy solo por export/import controlado, sin conectar la base anterior.
 
-## 4. Agosto
+## 4. Gate actual exacto
+`EXPORT CREDENCIALES LEGACY CONTROLADO → INVENTARIO/HASH-TYPE → PLAN AUTH IMPORT IDEMPOTENTE → AUTORIZACIÓN ÚNICA → IMPORT/READBACK → LOGIN USUARIO+CONTRASEÑA → SMOKE ADMIN/OPS/CLIENTE/SHOPPER → FREEZE CORTE6`.
+
+No crear Gmail nuevo ni pedir credenciales DEV a Paula.
+
+## 5. Agosto
 - Fuente canónica materializada termina julio 2026.
 - Agosto HN HOLD por inconsistencia país/tab.
-- Después del PASS visual: FREEZE Corte6 → refresh fuente → resolver HOLD → validar periodo/visitas → materializar solo delta agosto.
+- Después de FREEZE Corte6: refresh fuente → resolver HOLD → validar periodo/visitas → materializar solo delta agosto.
 
-## 5. Siguiente bloque exacto
-`VISUAL AUTENTICADA → FREEZE CORTE6 → AGOSTO DELTA → CORTE8 PREPROD/CUTOVER`.
+## 6. Siguiente bloque exacto
+`CREDENTIAL CONTINUITY → FREEZE CORTE6 → AGOSTO DELTA → CORTE8 PREPROD/CUTOVER`.
 
-## 6. Claude/prototipo
-No nueva candidata. Solo tarea localizada si el smoke visual demuestra P0 frontend reproducible. P1/P2 preservados: PDF gráfica, Excel formato, reportKit/copy.
+## 7. Claude/prototipo
+No nueva candidata. Corrección focalizada login/registro: Usuario+Contraseña visible, Firebase detrás del adapter, sin mover lógica Auth/claims/Firestore a módulos. P1/P2 preservados: PDF gráfica, Excel formato, reportKit/copy.
 
-## 7. Academia
-Actualizar identidad autenticada vs selector de rol, tenant/proyecto/claims, shopperId exacto, mínimo privilegio, visitas disponibles protegidas, CLI vs API y exact-static vs rewrite.
+## 8. Academia
+Actualizar identidad provider detrás del login, usuario ≠ email obligatorio, recuperación de acceso, tenant/proyecto/rol, shopperId exacto y mínimo privilegio.
 
-## 8. Clasificación
-- `Reusable CXOrbia`: Auth browser, principal-scoped reads, claim migration fail-closed, Rules/Hosting API gates.
-- `Exclusivo cliente`: TyA/Cinépolis, scopes stale y agosto.
-- `Claude/prototipo`: sin tarea hasta visual.
-- `Academia`: Auth/RBAC/Hosting/Rules.
-- `Sin impacto Claude`: runners/requests/evidencia/release IDs.
+## 9. Clasificación
+- `Reusable CXOrbia`: credential adapter, Auth/claims, import idempotente y fail-closed.
+- `Exclusivo cliente`: fuente legacy TyA, credenciales históricas y Agosto HN.
+- `Claude/prototipo`: login/registro focalizado.
+- `Academia`: identidad/acceso/scopes.
+- `Sin impacto Claude`: inventarios, gates y readback.
 
-## 9. Estado seguro
-R17N previo: 1,406 data writes. Corte6: Auth claim writes5; Firestore data writes0; Rules release1 verificada; Hosting1/1; usuarios nuevos/password/deletes0; Storage/HR/legacy0; payments0; merge=false; production=false; Make/Gemini0; PII/secrets crudos0.
+## 10. Estado seguro
+R17N previo: 1,406 data writes. Corte6: Auth claim writes5 ya autorizados; Firestore data writes0; Rules release1; Hosting1/1; usuarios nuevos/password changes/deletes0; inventario credential-continuity provider writes0; Storage/HR/legacy0; payments0; merge=false; production=false; Make/Gemini0; credenciales crudas0.
