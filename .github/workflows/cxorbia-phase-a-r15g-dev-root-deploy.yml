@@ -7,6 +7,7 @@ on:
     paths:
       - 'backend/config/phase-a-hosting-dev-execution-request-v1.json'
       - 'tools/release/cxorbia-existing-hosting-dev-corte6-prepare.mjs'
+      - 'tools/qa/cxorbia-corte6-hosting-iam-diagnostic.mjs'
       - '.github/workflows/cxorbia-phase-a-r15g-dev-root-deploy.yml'
 
 permissions:
@@ -43,13 +44,15 @@ jobs:
           if(r.targetProject!=='cxorbia-backend-dev'||r.hostingTarget!=='cxorbia-dev'||r.existingHostingRootUrl!=='https://cxorbia-backend-dev.web.app') throw new Error('bad_target');
           if(r.singleHostingDeployMax!==1||r.createFirebaseProject!==false||r.createHostingSite!==false||r.firestoreWrites!==0||r.authWrites!==0||r.storageWrites!==0||r.hrWrites!==0||r.legacyWrites!==0||r.paymentsWrites!==0||r.functionsDeploy!==false||r.rulesDeploy!==false||r.merge!==false||r.production!==false) throw new Error('unsafe_scope');
           const execute=r.enabled===true&&r.consumed===false&&r.hostingDeployExecutions===0&&r.status==='ready_after_corte6_auth_rbac_pass';
+          const diagnose=r.enabled===false&&r.consumed===false&&r.hostingDeployExecutions===0&&r.status==='diagnostic_hold_after_hosting_deploy_failure';
           console.log('execute='+(execute?'true':'false'));
+          console.log('diagnose='+(diagnose?'true':'false'));
           console.log('request_id='+r.requestId);
           NODE
 
       - name: Load canonical DEV credential
         id: credential
-        if: steps.req.outputs.execute == 'true'
+        if: steps.req.outputs.execute == 'true' || steps.req.outputs.diagnose == 'true'
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
@@ -65,10 +68,48 @@ jobs:
           NODE
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/corte6-hosting-private/credentials.json" >> "$GITHUB_ENV"
 
-      - name: Install transient Firebase tooling
-        id: tooling
+      - name: Install transient Firebase Admin
+        id: admin_tooling
+        if: steps.req.outputs.execute == 'true' || steps.req.outputs.diagnose == 'true'
+        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Diagnose Hosting IAM and CLI prerequisites read-only
+        id: hostingdiag
+        if: steps.req.outputs.diagnose == 'true'
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_EXPECTED_SITE: cxorbia-backend-dev
+          CXORBIA_HOSTING_IAM_REPORT: app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json
+        run: |
+          set -euo pipefail
+          node --check tools/qa/cxorbia-corte6-hosting-iam-diagnostic.mjs
+          node tools/qa/cxorbia-corte6-hosting-iam-diagnostic.mjs
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const r=require('./app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json');
+          const p=r.iam?.permissions||{};
+          const x=r.providerReads||{};
+          const bit=k=>p[k]===true?'1':'0';
+          const code=[
+            'HG'+bit('firebasehosting.sites.get'),
+            'HL'+bit('firebasehosting.sites.list'),
+            'HU'+bit('firebasehosting.sites.update'),
+            'AKL'+bit('apikeys.keys.list'),
+            'AKG'+bit('apikeys.keys.get'),
+            'AKS'+bit('apikeys.keys.getKeyString'),
+            'SU'+bit('serviceusage.services.use'),
+            'SITE'+String(x.hostingSite?.status||0),
+            'REL'+String(x.releasesList?.status||0),
+            'VER'+String(x.versionsList?.status||0),
+            'KEY'+String(x.apiKeysList?.status||0)
+          ].join('_');
+          console.log('code='+code);
+          console.log('diagnosis='+String(r.diagnosis||'UNKNOWN'));
+          NODE
+
+      - name: Install transient Firebase CLI
+        id: cli_tooling
         if: steps.req.outputs.execute == 'true'
-        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 firebase-tools@14.11.2 >/dev/null 2>&1
+        run: npm install --no-save --ignore-scripts firebase-tools@14.11.2 >/dev/null 2>&1
 
       - name: Build and preflight exact existing Hosting DEV site
         id: prepare
@@ -122,7 +163,7 @@ jobs:
           const html=fs.readFileSync('.tmp/corte6-existing-hosting-dev/remote-entrypoint.html','utf8');
           if(!cfg.includes('projectId: "cxorbia-backend-dev"')||cfg.includes('apiKey: null')||!cfg.includes("defaultProjectId: 'cinepolis'")) throw new Error('remote_backend_config_mismatch');
           if(!auth.includes('signInWithEmailAndPassword')||!auth.includes('Auth.Persistence.SESSION')) throw new Error('remote_interactive_auth_missing');
-          if(!html.includes('CXOrbia · Preview Backend DEV')||!html.includes('core/backend-browser-auth.js')||!html.includes('index-backend-dev')&&html.includes('<title>')===false) throw new Error('remote_entrypoint_mismatch');
+          if(!html.includes('CXOrbia · Preview Backend DEV')||!html.includes('core/backend-browser-auth.js')) throw new Error('remote_entrypoint_mismatch');
           const proof=JSON.parse(fs.readFileSync('.tmp/corte6-existing-hosting-dev/remote-proof.json','utf8'));
           const report={schemaVersion:'cxorbia.corte6-existing-hosting-dev-deploy.v1',generatedAt:new Date().toISOString(),decision:'PASS_EXISTING_HOSTING_DEV_DEPLOY_REMOTE_STATIC_AUTH_GATE_READY',projectId:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',hostingSite:'cxorbia-backend-dev',rootUrl:'https://cxorbia-backend-dev.web.app',entrypoint:'index-backend-dev.html',sourceCommit:proof.sourceCommit,hostingDeployExecutions:1,remoteProofVerified:true,canonicalBackendConfigVerified:true,interactiveFirebaseAuthGateVerified:true,humanCredentialLoginStillRequired:true,firestoreDataWrites:0,authWrites:0,storageWrites:0,rulesDeploys:0,hrWrites:0,legacyWrites:0,payments:0,merge:false,production:false,piiExported:false,secretsExported:false};
           fs.writeFileSync('.tmp/corte6-existing-hosting-dev/deploy-result.source-safe.json',JSON.stringify(report,null,2)+'\n','utf8');
@@ -167,13 +208,16 @@ jobs:
           set -euo pipefail
           STATE=success
           DESC='PASS_HOSTING_REQUEST_INACTIVE'
-          if [ '${{ steps.req.outputs.execute }}' = 'true' ]; then DESC='PASS_C6_EXISTING_HOSTING_DEV_DEPLOYED'; fi
+          if [ '${{ steps.req.outputs.execute }}' = 'true' ]; then DESC='PASS_C6_EXISTING_HOSTING_DEV_DEPLOYED';
+          elif [ '${{ steps.req.outputs.diagnose }}' = 'true' ] && [ '${{ steps.hostingdiag.outcome }}' = 'success' ]; then DESC='DIAG_C6_HOSTING_${{ steps.hostingdiag.outputs.code }}'; fi
           if [ '${{ job.status }}' != 'success' ]; then
             STATE=error
             DESC='FAIL_C6_HOSTING_UNKNOWN'
             if [ '${{ steps.req.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_REQUEST';
             elif [ '${{ steps.credential.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_CREDENTIAL';
-            elif [ '${{ steps.tooling.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_TOOLING';
+            elif [ '${{ steps.admin_tooling.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_ADMIN_TOOLING';
+            elif [ '${{ steps.hostingdiag.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_IAM_DIAG';
+            elif [ '${{ steps.cli_tooling.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_CLI_TOOLING';
             elif [ '${{ steps.prepare.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_PREFLIGHT';
             elif [ '${{ steps.deploy.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_DEPLOY';
             elif [ '${{ steps.remote.outcome }}' = 'failure' ]; then DESC='FAIL_C6_HOSTING_REMOTE';
