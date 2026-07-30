@@ -19,6 +19,7 @@ const requestedPermissions = [
   'firebaserules.rulesets.create',
   'firebaserules.rulesets.get',
   'firebaserules.rulesets.list',
+  'firebaserules.rulesets.test',
   'firebaserules.releases.get',
   'firebaserules.releases.update',
   'serviceusage.services.use',
@@ -75,16 +76,18 @@ const firstError = errors.length ? {
   description:String(errors[0]?.description || '').replace(/[\r\n]+/g,' ').slice(0,240)
 } : null;
 
-const requiredForDeploy = [
+const directApiRequired = [
   'firebaserules.rulesets.create',
   'firebaserules.releases.get',
   'firebaserules.releases.update',
   'serviceusage.services.use',
   'resourcemanager.projects.get'
 ];
-const missingRequired = requiredForDeploy.filter(p => !granted.has(p));
+const cliValidationRequired = [...directApiRequired, 'firebaserules.rulesets.test'];
+const missingDirectApi = directApiRequired.filter(p => !granted.has(p));
+const missingCliValidation = cliValidationRequired.filter(p => !granted.has(p));
 const report = {
-  schemaVersion:'cxorbia.corte6-rules-iam-diagnostic.v2',
+  schemaVersion:'cxorbia.corte6-rules-iam-diagnostic.v3',
   generatedAt:new Date().toISOString(),
   projectId:expectedProject,
   readOnly:true,
@@ -92,13 +95,15 @@ const report = {
   iamTest:{ok:iam.ok,status:iam.status,permissions:permissionMap},
   firebaserulesRead:{releaseOk:release.ok,releaseStatus:release.status,rulesetsOk:rulesets.ok,rulesetsStatus:rulesets.status},
   sourceValidation:{ok:sourceTest.ok,status:sourceTest.status,errorCount:errors.length,warningCount:warnings.length,firstError},
-  requiredForDeploy,
-  missingRequired,
-  iamDeployReady:iam.ok && missingRequired.length === 0,
-  sourceDeployReady:sourceTest.ok && errors.length === 0,
+  directApiRequired,
+  cliValidationRequired,
+  missingDirectApi,
+  missingCliValidation,
+  directApiDeployReady:iam.ok && missingDirectApi.length === 0,
+  cliValidationReady:iam.ok && missingCliValidation.length === 0 && sourceTest.ok,
   safety:{authWrites:0,firestoreWrites:0,rulesWrites:0,hostingDeploys:0,production:false,merge:false,piiExported:false,secretsExported:false}
 };
 
 fs.mkdirSync(new URL('../../app/docs/evidence/', import.meta.url), {recursive:true});
 fs.writeFileSync(out, JSON.stringify(report,null,2)+'\n','utf8');
-console.log(JSON.stringify({projectId:expectedProject,iamStatus:iam.status,releaseStatus:release.status,rulesetsStatus:rulesets.status,sourceTestStatus:sourceTest.status,sourceErrors:errors.length,firstErrorLine:firstError?.line||0,missingRequired,iamDeployReady:report.iamDeployReady,sourceDeployReady:report.sourceDeployReady,providerWrites:0}));
+console.log(JSON.stringify({projectId:expectedProject,iamStatus:iam.status,releaseStatus:release.status,rulesetsStatus:rulesets.status,sourceTestStatus:sourceTest.status,rulesetsTestPermission:permissionMap['firebaserules.rulesets.test']===true,sourceErrors:errors.length,firstErrorLine:firstError?.line||0,missingDirectApi,missingCliValidation,directApiDeployReady:report.directApiDeployReady,cliValidationReady:report.cliValidationReady,providerWrites:0}));
