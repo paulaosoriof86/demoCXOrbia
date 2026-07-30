@@ -1,6 +1,6 @@
 # CXOrbia — inventario read-only del backend canónico DEV
 
-- Fecha: 2026-07-30T14:10:16.257Z
+- Fecha: 2026-07-30T15:48:05.707Z
 - Proyecto: `cxorbia-backend-dev`
 - Clasificación: backend DEV de CXOrbia / tenant TyA; **no** plataforma legacy TyA a retirar.
 - Modo: read-only; provider writes=0; no valores sensibles exportados.

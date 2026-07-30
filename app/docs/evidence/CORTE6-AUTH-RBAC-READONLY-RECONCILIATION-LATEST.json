@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "cxorbia.corte6-auth-rbac-readonly-reconciliation.v1",
+  "generatedAt": "2026-07-30T15:48:07.021Z",
+  "projectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "canonicalProjectId": "cinepolis",
+  "mode": "READ_ONLY_SOURCE_SAFE",
+  "providerWrites": 0,
+  "auth": {
+    "totalUsers": 17,
+    "activePasswordUsers": 17,
+    "tenantUsers": 13,
+    "usersAssignedCanonicalProject": 3,
+    "shopperWithMatchingProfile": 3,
+    "unknownRoleUsers": 1,
+    "roleReadiness": {
+      "missing": {
+        "users": 2,
+        "activePassword": 2,
+        "tenantAllowed": 0,
+        "canonicalProjectAssigned": 0,
+        "shopperIdPresent": 0,
+        "shopperProfileMatched": 0,
+        "secureReadReady": 0
+      },
+      "admin": {
+        "users": 3,
+        "activePassword": 3,
+        "tenantAllowed": 2,
+        "canonicalProjectAssigned": 0,
+        "shopperIdPresent": 0,
+        "shopperProfileMatched": 0,
+        "secureReadReady": 2
+      },
+      "cliente": {
+        "users": 2,
+        "activePassword": 2,
+        "tenantAllowed": 2,
+        "canonicalProjectAssigned": 0,
+        "shopperIdPresent": 0,
+        "shopperProfileMatched": 0,
+        "secureReadReady": 0
+      },
+      "externo": {
+        "users": 1,
+        "activePassword": 1,
+        "tenantAllowed": 0,
+        "canonicalProjectAssigned": 0,
+        "shopperIdPresent": 0,
+        "shopperProfileMatched": 0,
+        "secureReadReady": 0
+      },
+      "ops": {
+        "users": 2,
+        "activePassword": 2,
+        "tenantAllowed": 2,
+        "canonicalProjectAssigned": 0,
+        "shopperIdPresent": 0,
+        "shopperProfileMatched": 0,
+        "secureReadReady": 2
+      },
+      "shopper": {
+        "users": 4,
+        "activePassword": 4,
+        "tenantAllowed": 4,
+        "canonicalProjectAssigned": 0,
+        "shopperIdPresent": 3,
+        "shopperProfileMatched": 3,
+        "secureReadReady": 0
+      },
+      "super": {
+        "users": 3,
+        "activePassword": 3,
+        "tenantAllowed": 3,
+        "canonicalProjectAssigned": 3,
+        "shopperIdPresent": 0,
+        "shopperProfileMatched": 0,
+        "secureReadReady": 3
+      }
+    },
+    "readiness": {
+      "operatorLoginReady": 7,
+      "clientLoginReady": 0,
+      "shopperLoginReady": 0,
+      "allRequiredRoleFamiliesHaveAtLeastOne": false,
+      "legacyClaimsSufficientForSecureDevReadWithoutClaimMutation": false,
+      "rulesMutationRequiredForCurrentLegacyClaimReadiness": false,
+      "claimMutationRequiredForDevVisualIfReady": true
+    },
+    "piiExported": false
+  },
+  "safety": {
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "rulesDeploys": 0,
+    "hostingDeploys": 0,
+    "storageWrites": 0,
+    "production": false,
+    "merge": false,
+    "identitiesExported": false,
+    "sensitiveValuesExported": false
+  }
+}
