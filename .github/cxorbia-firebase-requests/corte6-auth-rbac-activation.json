@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.corte6-auth-rbac-activation.request.v1",
-  "enabled": true,
+  "enabled": false,
   "consumed": false,
   "authorizationId": "PAULA_CURRENT_CONVERSATION_CORTE6_20260730_01",
   "authorizationSource": "current_conversation_2026-07-30",
@@ -14,11 +14,12 @@
   "allowCreateUsers": false,
   "allowPasswordChanges": false,
   "allowDeletes": false,
-  "deployFirestoreRules": true,
+  "deployFirestoreRules": false,
   "hostingDeploy": false,
   "firestoreDataWrites": false,
   "storageWrites": false,
   "production": false,
   "merge": false,
-  "note": "Authorized in current conversation for exactly max 5 existing-user custom-claim updates plus Firestore Rules deploy. No Hosting in this gate; existing Hosting DEV redeploy authorization remains separate and unconsumed."
+  "diagnosticHold": "FAIL_C6_RULES_DEPLOY",
+  "note": "Authorization remains valid but execution is temporarily fail-closed while the Firestore Rules deploy failure is diagnosed. No Hosting in this gate; existing Hosting DEV redeploy authorization remains separate and unconsumed."
 }
