@@ -11,7 +11,7 @@ on:
       - '.github/workflows/cxorbia-phase-a-live-hr-read-probe.yml'
 
 permissions:
-  contents: read
+  contents: write
   statuses: write
 
 concurrency:
@@ -48,7 +48,11 @@ jobs:
           node --check tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs
           node --check tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs
           node --check tools/hr-source/tya-reapply-canonical-state-r20.mjs
-          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('backend/contracts/phase-a-live-hr-runtime-read-v1.json','utf8'));if(x.requirements?.noFixedOperationalCounts!==true||x.requirements?.serverSideRead!==true||x.requirements?.writesToHr!==false||x.requirements?.writesToFirestore!==false)process.exit(2);console.log('Live HR runtime-read contract valid.');"
+          node --check tools/reconciliation/tya-filter-current-hr-through-july-source-safe.mjs
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('backend/contracts/phase-a-live-hr-runtime-read-v1.json','utf8'));if(x.requirements?.noFixedOperationalCounts!==true||x.requirements?.serverSideRead!==true||x.requirements?.writesToHr!==false||x.requirements?.writesToFirestore!==false)process.exit(2);"
+
+      - name: Preserve pre-refresh source for freshness diff
+        run: cp app/data/tya-hr-source-safe-periods.js /tmp/tya-hr-source-safe-pre-refresh.js
 
       - name: Read HR now and build source-safe projection
         env:
@@ -84,10 +88,45 @@ jobs:
             --out .tmp/live-hr-read-probe/gate \
             --max-age-seconds 900
 
+      - name: Freeze current through-July source-safe candidate without PII
+        env:
+          CXORBIA_CURRENT_HR_FULL: app/data/tya-hr-source-safe-periods.js
+          CXORBIA_CURRENT_HR_THROUGH_JULY: app/data/tya-hr-source-safe-current-through-july.js
+          CXORBIA_STALE_HR_SOURCE: /tmp/tya-hr-source-safe-pre-refresh.js
+          CXORBIA_HR_CUTOFF: '2026-07'
+        run: |
+          set -euo pipefail
+          node tools/reconciliation/tya-filter-current-hr-through-july-source-safe.mjs
+          node - <<'NODE'
+          const fs=require('fs'),vm=require('vm');
+          const code=fs.readFileSync('app/data/tya-hr-source-safe-current-through-july.js','utf8');const s={window:{}};vm.createContext(s);vm.runInContext(code,s);
+          const h=s.window.CX_TYA_HR_SOURCE_SAFE;
+          if(!h||h.sourceSafe!==true||h.production===true||h.imported===true||h.periods?.length!==14||h.visits?.length!==616)process.exit(1);
+          const e=require('./app/docs/evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.json');
+          if(e.safety?.containsPii!==false||e.safety?.providerWrites!==0||e.safety?.hrWrites!==0||e.safety?.firestoreWrites!==0)process.exit(1);
+          NODE
+
       - name: Prove no provider writes or deploy occurred
         run: |
           set -euo pipefail
           printf '%s\n' '{"hrWrites":0,"firestoreWrites":0,"imports":0,"deploy":0,"production":false,"payments":0}' > .tmp/live-hr-read-probe/safe-state.json
+
+      - name: Commit only source-safe current-through-July evidence
+        run: |
+          set -euo pipefail
+          cp app/data/tya-hr-source-safe-current-through-july.js /tmp/current-through-july.js
+          cp app/docs/evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.json /tmp/current-through-july.json
+          cp app/docs/evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.md /tmp/current-through-july.md
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          cp /tmp/current-through-july.js app/data/tya-hr-source-safe-current-through-july.js
+          mkdir -p app/docs/evidence
+          cp /tmp/current-through-july.json app/docs/evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.json
+          cp /tmp/current-through-july.md app/docs/evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/data/tya-hr-source-safe-current-through-july.js app/docs/evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.*
+          if ! git diff --cached --quiet; then git commit -m 'evidence: freeze current HR source-safe through July'; git push origin HEAD:docs-tya-v6-v71-audit; fi
 
       - name: Upload source-safe probe evidence
         if: always()
