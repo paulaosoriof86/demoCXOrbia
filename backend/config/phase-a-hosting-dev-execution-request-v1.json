@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.c5-existing-hosting-dev-visual.v1",
   "requestId": "c5-existing-hosting-dev-visual-20260730-01",
-  "status": "ready_after_corte6_auth_rbac_pass",
-  "enabled": true,
+  "status": "diagnostic_hold_after_hosting_deploy_failure",
+  "enabled": false,
   "consumed": false,
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-07-30",
@@ -12,7 +12,7 @@
   "branch": "docs-tya-v6-v71-audit",
   "authorizedBaseHead": "a50b3005e70bf1377547d85611abb97a832c9eb2",
   "executionBaseHead": "45f956fd642ba4214df5d9bf16b35562fe2226a7",
-  "authorizationCarryForwardReason": "The reserved one-shot Hosting authorization explicitly remained unconsumed pending secure browser Auth. Corte 6 Auth/RBAC and Firestore Rules are now verified PASS, so the same existing Hosting DEV authorization is ready to execute without requesting another Hosting authorization.",
+  "authorizationCarryForwardReason": "The reserved one-shot Hosting authorization explicitly remained unconsumed pending secure browser Auth. Corte 6 Auth/RBAC and Firestore Rules are verified PASS. The first controlled Hosting deploy attempt failed before freeze; the authorization remains reserved and unconsumed while root cause is diagnosed read-only.",
   "targetProject": "cxorbia-backend-dev",
   "hostingTarget": "cxorbia-dev",
   "existingHostingRootUrl": "https://cxorbia-backend-dev.web.app",
@@ -41,6 +41,7 @@
   "production": false,
   "rawPiiInRepo": false,
   "rawPiiInArtifacts": false,
+  "lastFailure": "FAIL_C6_HOSTING_DEPLOY",
   "preflight": {
     "existingHostingVerified": true,
     "existingHostingProject": "cxorbia-backend-dev",
@@ -53,8 +54,8 @@
     "safePublicRealPiiPreviewWithoutAuth": false,
     "corte6AuthRbacPass": true,
     "corte6RulesPass": true,
-    "deployAllowedNow": true,
-    "reason": "Corte 6 verified secure Firebase Auth/RBAC readiness for operator, client and three linked shoppers, and the canonical Firestore Rules release is verified. The previously reserved existing Hosting DEV redeploy may now be consumed."
+    "deployAllowedNow": false,
+    "reason": "The controlled existing Hosting DEV deployment step failed. Request is fail-closed before any retry. Root cause must be diagnosed read-only; no additional Hosting deploy is allowed while this hold is active."
   },
-  "nextGate": "EXECUTE_SINGLE_EXISTING_HOSTING_DEV_REDEPLOY__VERIFY_REMOTE_STATIC_AUTH_GATE__HUMAN_AUTHENTICATED_VISUAL_VALIDATION"
+  "nextGate": "READONLY_HOSTING_DEPLOY_ROOT_CAUSE_DIAGNOSTIC__THEN_RESUME_SAME_RESERVED_ONE_SHOT_ONLY_IF_SAFE"
 }
