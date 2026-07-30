@@ -14,7 +14,7 @@
   "deploy": false,
   "merge": false,
   "production": false,
-  "requestedAt": "2026-07-30T02:25:00Z",
-  "attempt": 4,
-  "reason": "retry after aligning real-identity country derivation with the canonical R20 HR builder; same authorization and zero-write scope"
+  "requestedAt": "2026-07-30T02:30:00Z",
+  "attempt": 5,
+  "reason": "retry with corrected sanitized diagnostic persistence; same authorization and zero-write scope"
 }
