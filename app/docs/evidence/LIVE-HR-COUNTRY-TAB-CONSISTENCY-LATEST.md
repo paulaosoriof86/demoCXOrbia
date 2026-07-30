@@ -1,6 +1,6 @@
 # TyA HR — consistencia país vs pestaña
 
-- Fecha: 2026-07-29T23:35:28.461Z
+- Fecha: 2026-07-30T23:46:58.997Z
 - Decisión: `HOLD_COUNTRY_TAB_MISMATCH`
 - Solo lectura; no PII; no provider writes.
 
