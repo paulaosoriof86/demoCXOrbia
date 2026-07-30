@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.visit-identity-crosswalk.readonly.request.v1",
   "enabled": true,
   "mode": "READ_ONLY_VISIT_IDENTITY_CROSSWALK",
-  "authorization": "Autorizo crosswalk read-only por identidad de visita en cxorbia-backend-dev, usando únicamente HR source-safe + visitas existentes por hrRowId/sourceSheet+sourceRow/visitId estable, sin leer visitas legacy, sin writes, Auth changes, deploy ni producción.",
+  "authorization": "Autorizo reconciliación read-only de las 9 referencias shopper restantes usando la identidad real y la información aplicable de shoppers del proyecto actual tya-plataforma, junto con la HR viva y evidencia canónica disponible, exclusivamente para enlazar correctamente perfil, visitas y certificaciones; sin writes, Auth changes, deploy, merge ni producción, y sin guardar PII cruda en GitHub.",
   "projectId": "cxorbia-backend-dev",
   "tenantId": "tya",
   "hrSourceSafe": true,
@@ -14,7 +14,7 @@
   "deploy": false,
   "production": false,
   "merge": false,
-  "requestedAt": "2026-07-30T02:00:00Z",
-  "attempt": 2,
-  "reason": "preserve spaces in sourceSheet/hrRowId operational identity"
+  "requestedAt": "2026-07-30T03:05:00Z",
+  "attempt": 3,
+  "reason": "refresh crosswalk against current live HR source-safe through July after detecting 2 added and 4 removed shopper references versus the July-13 source snapshot"
 }
