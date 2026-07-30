@@ -22,9 +22,13 @@ const db = admin.firestore();
 const sha = value => crypto.createHash('sha256').update(String(value)).digest('hex');
 const norm = value => String(value ?? '').trim();
 const intOrNull = value => Number.isInteger(Number(value)) ? Number(value) : null;
-const safeTechnical = value => {
+const safeTechnicalId = value => {
   const s = norm(value);
   return s && s.length <= 160 && /^[A-Za-z0-9_.:!\/-]+$/.test(s) && !s.includes('@') ? s : null;
+};
+const safeSourceIdentity = value => {
+  const s = norm(value);
+  return s && s.length <= 160 && !s.includes('@') && !/[\r\n\t]/.test(s) ? s : null;
 };
 
 function readJsAssignment(file, globalName) {
@@ -54,13 +58,13 @@ for (const projectRef of projectRefs) {
     backendVisits.push({
       docId: doc.id,
       projectDocId: projectRef.id,
-      visitId: safeTechnical(d.visitId || d.id || doc.id),
-      hrRowId: safeTechnical(d.hrRowId),
-      sourceSheet: safeTechnical(d.sourceSheet),
+      visitId: safeTechnicalId(d.visitId || d.id || doc.id),
+      hrRowId: safeSourceIdentity(d.hrRowId),
+      sourceSheet: safeSourceIdentity(d.sourceSheet),
       sourceRow: intOrNull(d.sourceRow),
-      shopperId: safeTechnical(d.shopperId),
-      periodKey: safeTechnical(d.periodKey),
-      country: safeTechnical(d.country || d.pais)
+      shopperId: safeTechnicalId(d.shopperId),
+      periodKey: safeTechnicalId(d.periodKey),
+      country: safeTechnicalId(d.country || d.pais)
     });
   }
 }
@@ -88,15 +92,15 @@ let visitMatchesConflict = 0;
 let visitMatchesTargetMissing = 0;
 
 for (const v of hrVisits) {
-  const plannedShopperId = safeTechnical(v.shopperId);
+  const plannedShopperId = safeTechnicalId(v.shopperId);
   if (!plannedShopperId) continue;
   visitsWithShopperRef++;
   refVisitCounts.set(plannedShopperId, (refVisitCounts.get(plannedShopperId) || 0) + 1);
 
   const keys = [];
-  const visitId = safeTechnical(v.id || v.visitId);
-  const hrRowId = safeTechnical(v.hrRowId);
-  const sourceSheet = safeTechnical(v.sourceTab || v.sourceSheet);
+  const visitId = safeTechnicalId(v.id || v.visitId);
+  const hrRowId = safeSourceIdentity(v.hrRowId);
+  const sourceSheet = safeSourceIdentity(v.sourceTab || v.sourceSheet);
   const sourceRow = intOrNull(v.sourceRow);
   if (visitId) keys.push(`visit:${visitId}`);
   if (hrRowId) keys.push(`hrrow:${hrRowId}`);
@@ -147,7 +151,7 @@ for (const v of hrVisits) {
   });
 }
 
-const plannedRefs = [...new Set((Array.isArray(hr.shoppers) ? hr.shoppers : []).map(s => safeTechnical(s.id)).filter(Boolean))].sort();
+const plannedRefs = [...new Set((Array.isArray(hr.shoppers) ? hr.shoppers : []).map(s => safeTechnicalId(s.id)).filter(Boolean))].sort();
 const crosswalk = [];
 let resolvedRefs = 0;
 let conflictRefs = 0;
@@ -176,7 +180,7 @@ for (const plannedShopperId of plannedRefs) {
 
 const mappingHash = sha(JSON.stringify(crosswalk));
 const report = {
-  schemaVersion: 'tya.visit-identity-crosswalk.readonly.v1',
+  schemaVersion: 'tya.visit-identity-crosswalk.readonly.v2',
   generatedAt: new Date().toISOString(),
   authorizationScope: 'READ_ONLY_HR_SOURCE_SAFE_PLUS_CANONICAL_EXISTING_VISITS_IDENTITY_ONLY',
   target: { projectId: EXPECTED_PROJECT, tenantId: TENANT_ID, readOnly: true },
@@ -186,6 +190,7 @@ const report = {
   },
   policy: {
     allowedIdentityEvidence: ['visitId', 'hrRowId', 'sourceSheet+sourceRow'],
+    sourceIdentityMayContainSpaces: true,
     nameMatching: false,
     emailMatching: false,
     phoneMatching: false,
@@ -234,6 +239,7 @@ fs.writeFileSync(OUT_MD, [
   `- Firebase: \`${EXPECTED_PROJECT}\`, tenant \`${TENANT_ID}\`.` ,
   '- Fuentes: HR source-safe + visitas existentes del backend canónico.',
   '- Evidencia permitida: visitId, hrRowId o sourceSheet+sourceRow exactos.',
+  '- Los nombres de pestaña/HR row conservan espacios porque forman parte de la identidad operacional, no son PII de shopper.',
   '- No se leen visitas del legacy.',
   '- No se usa nombre, email ni teléfono para enlazar.',
   '',
@@ -253,7 +259,7 @@ fs.writeFileSync(OUT_MD, [
 ].join('\n'));
 
 console.log(JSON.stringify({
-  decision: 'PASS_VISIT_IDENTITY_CROSSWALK_READONLY',
+  decision: 'PASS_VISIT_IDENTITY_CROSSWALK_READONLY_V2',
   counts: report.counts,
   mappingHashSha256: mappingHash,
   safety: report.safety
