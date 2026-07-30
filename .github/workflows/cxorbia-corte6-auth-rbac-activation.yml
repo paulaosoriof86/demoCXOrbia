@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/cxorbia-firebase-requests/corte6-auth-rbac-activation.json'
       - 'tools/release/cxorbia-corte6-auth-claims-normalize.mjs'
+      - 'tools/qa/cxorbia-corte6-rules-iam-diagnostic.mjs'
       - 'app/core/backend-browser-auth.js'
       - 'app/core/backend-config-preview-dev.js'
       - 'app/core/backend-firebase.js'
@@ -43,6 +44,7 @@ jobs:
           node --check app/core/backend-config-preview-dev.js
           node --check app/core/backend-firebase.js
           node --check tools/release/cxorbia-corte6-auth-claims-normalize.mjs
+          node --check tools/qa/cxorbia-corte6-rules-iam-diagnostic.mjs
 
       - name: Read fail-closed request
         id: req
@@ -79,6 +81,31 @@ jobs:
       - name: Install transient provider tooling
         id: tooling
         run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 firebase-tools@14.11.2 >/dev/null 2>&1
+
+      - name: Read-only Firestore Rules IAM diagnostic
+        id: rulesdiag
+        if: steps.req.outputs.execute != 'true'
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_RULES_IAM_REPORT: app/docs/evidence/CORTE6-RULES-IAM-DIAGNOSTIC-LATEST.json
+        run: |
+          set -euo pipefail
+          node tools/qa/cxorbia-corte6-rules-iam-diagnostic.mjs
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const r=require('./app/docs/evidence/CORTE6-RULES-IAM-DIAGNOSTIC-LATEST.json');
+          const p=r.iamTest&&r.iamTest.permissions||{};
+          const bit=k=>p[k]===true?'1':'0';
+          const code=[
+            'RSC'+bit('firebaserules.rulesets.create'),
+            'RRG'+bit('firebaserules.releases.get'),
+            'RRU'+bit('firebaserules.releases.update'),
+            'SU'+bit('serviceusage.services.use'),
+            'RPG'+bit('resourcemanager.projects.get'),
+            'REL'+String(r.firebaserulesRead?.releaseStatus||0),
+            'RSL'+String(r.firebaserulesRead?.rulesetsStatus||0)
+          ].join('_');
+          console.log('code='+code);
+          NODE
 
       - name: Dry-run exact claim target selection
         id: dryrun
@@ -163,7 +190,8 @@ jobs:
           set -euo pipefail
           STATE=success
           DESC='PASS_CORTE6_AUTH_RBAC_PREPARED_NO_PROVIDER_WRITE'
-          if [ '${{ steps.req.outputs.execute }}' = 'true' ]; then DESC='PASS_CORTE6_AUTH_RBAC_ACTIVATED'; fi
+          if [ '${{ steps.req.outputs.execute }}' = 'true' ]; then DESC='PASS_CORTE6_AUTH_RBAC_ACTIVATED';
+          elif [ '${{ steps.rulesdiag.outcome }}' = 'success' ]; then DESC='DIAG_C6_${{ steps.rulesdiag.outputs.code }}'; fi
           if [ '${{ job.status }}' != 'success' ]; then
             STATE=error
             DESC='FAIL_C6_UNKNOWN'
@@ -171,6 +199,7 @@ jobs:
             elif [ '${{ steps.req.outcome }}' = 'failure' ]; then DESC='FAIL_C6_REQUEST';
             elif [ '${{ steps.credential.outcome }}' = 'failure' ]; then DESC='FAIL_C6_CREDENTIAL';
             elif [ '${{ steps.tooling.outcome }}' = 'failure' ]; then DESC='FAIL_C6_TOOLING';
+            elif [ '${{ steps.rulesdiag.outcome }}' = 'failure' ]; then DESC='FAIL_C6_RULES_IAM_DIAG';
             elif [ '${{ steps.dryrun.outcome }}' = 'failure' ]; then DESC='FAIL_C6_DRYRUN_SELECTION';
             elif [ '${{ steps.rules.outcome }}' = 'failure' ]; then DESC='FAIL_C6_RULES_DEPLOY';
             elif [ '${{ steps.claims.outcome }}' = 'failure' ]; then DESC='FAIL_C6_CLAIMS';
