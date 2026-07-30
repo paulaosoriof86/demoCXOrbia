@@ -1,68 +1,63 @@
 # RESUMEN-PARA-CLAUDE.md
 
-## ESTADO VIGENTE — 2026-07-30
+**Última actualización:** 2026-07-30  
+**Estado vivo:** `C6_P0_PROTOTYPE_AUTOENTRY_FIX_STATIC_PASS__PENDING_SINGLE_DEV_REDEPLOY_AUTH__NO_PRODUCTION`
 
-**Estado:** `P0_PROVEN_C6_CREDENTIAL_CONTINUITY_GAP__AUTH_RULES_HOSTING_TECH_PASS__NO_PRODUCTION`
-
-### Baseline no reabrir
+## 1. No reabrir
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge.
-- Corte 3 `CXORBIA-TYA-CORTE3-V182-20260729` FROZEN.
-- R17N FINAL: 1,406/1,406 Firestore data writes/readback PASS; no repetir.
-- Corte 5 `CX.data`: project=`cinepolis`, periods=14, visits=616, currentPeriod=`2026-07`, source=firestore/fallback=false PASS.
-- No nueva candidata, base, Hosting, rama o PR por rutina.
+- Corte3 `CXORBIA-TYA-CORTE3-V182-20260729`: FROZEN.
+- R17N FINAL: 1,406/1,406 Firestore data writes/readback; no repetir.
+- Corte5 `CX.data`: `cinepolis`,14 periodos,616 visitas,currentPeriod=`2026-07`,source=firestore/fallback=false PASS.
+- Auth legacy import/readback91/91 PASS: shopper88 + super1 + coordinador2; Auth17→108; resets/deletes/overwrite0.
+- claims5/5 + Firestore Rules PASS.
+- No nueva candidata/base/Hosting/rama/PR por rutina.
 
-### Corte 6 backend — PASS técnico preservado
-- Firebase Auth/claims reales activos en DEV.
-- claims 5/5 actualizados: 2 cliente +3 shopper exactos; cuarto shopper no vinculado no tocado.
-- readiness: operador7, cliente2, shopper3.
-- Firestore Rules canónicas desplegadas y verificadas.
-- Firestore data writes Corte6: 0.
-- Hosting DEV existente 1/1 consumido y verificado; no nuevo Firebase/Hosting.
+## 2. Dos P0 visuales consecutivos y causa definitiva
+1. Build anterior: gate separado `Acceso seguro` antes del producto → rechazado.
+2. Build posterior: el gate separado desapareció, pero al elegir `Administración / Coordinación` el backend añadía `Usuario + Contraseña` dentro de la misma tarjeta → también rechazado porque el prototipo siempre auto-entraba al seleccionar perfil; además el formulario quedaba fuera del viewport.
 
-### P0 nuevo demostrado — login/credenciales
-La pantalla DEV actual muestra `Correo + Contraseña`, pero Paula confirmó que ese flujo nunca había sido el acceso operativo esperado. El backend hizo bien en exigir una identidad provider real, pero el identificador visible por email no debe reemplazar el contrato funcional existente.
+El segundo P0 está localizado: `backend-browser-auth.js` intercepta `CX.app.selectRole()` únicamente cuando el backend/Auth preview está habilitado y llama `showCredentialStep(role)`. El contrato canónico de `app.js` sigue siendo botón de rol → `selectRole(...)` → `enter()`.
 
-Inventario backend read-only:
-- `tenants/tya/shoppers`: `user/username/login`=0 y `pass/password`=0;
-- `tenants/tya/users`: 0 docs;
-- tenant profile: 0 claves de login;
-- Firebase Auth: 17 cuentas técnicas, todas password provider con identificador email.
+## 3. Corrección aplicada — el prototipo manda
+La ruta **humana** DEV vuelve al comportamiento aprobado:
+- selección de rol con acceso automático;
+- sin correo, usuario, contraseña ni gate técnico para la validación humana;
+- HR source-safe explícita como fuente visual, no demo y no falsa sesión Firestore;
+- baseline source-safe verificada: proyecto `cinepolis`,14 periodos,616 visitas;
+- writes bloqueados;
+- Auth/RBAC/Firebase permanece técnicamente validado por gates/provider separados y no se debilitan Rules.
 
-Conclusión: las credenciales legacy aún no fueron migradas al backend canónico. No crear `paula.osorio.f86@gmail.com` ni convertir cuentas DEV técnicas en modelo final.
+Archivos focales:
+- `app/core/backend-config-preview-dev.js`;
+- `app/core/backend-cxdata-readonly-corte4.js`;
+- `app/core/backend-preview-status.js`;
+- preflight/workflow Hosting existentes.
 
-Documento rector: `CORTE6-P0-CONTINUIDAD-CREDENCIALES-LEGACY-A-FIREBASE-20260730.md`.
+No se tocó `app/modules/*`.
 
-### Claude — tarea focalizada, no nueva candidata
-No reescribir módulos. La corrección frontend futura es únicamente el contrato de acceso/registro:
-- preservar accesos configurables por rol/perfil;
-- login visible `Usuario + Contraseña`, no correo obligatorio;
-- Firebase Auth/claims siguen siendo la autoridad detrás del adapter;
-- no guardar password/token en localStorage;
-- recuperación/cambio de contraseña debe ser un flujo explícito;
-- no exponer IDs provider, claims ni correos internos técnicos;
-- registro/autogeneración de credenciales debe depender de una función real y validada, no de un helper inexistente.
+## 4. Gate técnico del nuevo fix
+Commit de revalidación `29b7f9404a9c2f144145fe24d5cf048f753c1e75`:
+`success · PREPARED_C6_PROTOTYPE_AUTO_ENTRY_NO_EXECUTE`.
 
-No tocar `app/modules/*`. Si el adapter puede resolverlo desde core/backend, limitar Claude a copy/flujo visible y contrato de formulario.
+Valida sintaxis, auto-entry del prototipo, `humanCredentialPrompt=false`, fuente source-safe y baseline14/616. No cargó service account ni hizo deploy/provider writes porque la autorización Hosting anterior ya estaba consumida.
 
-### Backend antes de Claude visible
-1. recuperar credenciales legacy únicamente por export/import controlado;
-2. inventariar username/credencial/hash-type y conflictos sin publicar valores;
-3. preparar import Auth idempotente y mapping `authUid`↔tenant/project/role/shopperId;
-4. autorizar una sola ejecución provider;
-5. readback;
-6. después validar el login visible `Usuario + Contraseña`.
+## 5. Claude/prototipo
+**No crear nueva candidata ni rehacer este fix.** Conservar como patrón reusable:
+- UX del producto manda; infraestructura Auth no crea pasos técnicos adicionales;
+- validaciones humanas y provider gates son capas distintas;
+- nunca pedir al usuario credenciales técnicas que no forman parte del flujo aprobado;
+- no reintroducir `Acceso seguro` ni formulario `Usuario + Contraseña` en el preview humano;
+- producción sí debe mantener Auth/RBAC real detrás del contrato operativo aprobado, con recuperación de acceso explícita.
 
-### Backlog P1/P2 preservado
-- PDF/gráficas;
-- Excel/formato;
-- reportKit/exportaciones fuera de Dashboard;
-- copy de fuentes/readiness.
+P1/P2 preservados: PDF/gráficas, Excel/formato, reportKit/exportaciones y copy de fuentes.
 
-### Agosto
-Fuente actual llega a julio. `Agosto HN` continúa HOLD por inconsistencia país/tab. Después de cerrar/freeze Corte6: refresh HR → resolver HOLD → materializar solo delta agosto.
+## 6. Agosto
+Después de FREEZE Corte6: `refresh HR → resolver Agosto HN → materializar solo delta agosto → smoke → preprod/cutover`. No rematerializar histórico.
 
-### Academia/manuales
-Actualizar: identidad provider detrás del login, usuario ≠ email obligatorio, tenant/proyecto/rol, shopperId exacto, recuperación de acceso, mínimo privilegio y conflicto a revisión humana.
+## 7. Academia/manuales
+En DEV humano: selección de perfil y entrada automática; el diagnóstico debe rotular HR source-safe y Auth validado por gate separado. En operación/producción, enseñar el flujo de acceso real aprobado y recuperación; provider email/claims/namespaces permanecen internos.
 
-### Estado seguro
-Auth claim writes5 ya autorizados; usuarios nuevos/password changes/deletes0; Firestore data writes0; Rules release1; Hosting DEV1/1; inventario credential-continuity provider writes0; Storage/HR/legacy0; pagos/Make/Gemini0; merge=false; producción=false; credenciales crudas repo/artifacts0.
+## 8. Estado seguro / siguiente gate
+Desde el segundo P0: Auth writes0; Firestore data writes0; Rules0; Hosting deploy0; Storage/HR/legacy/payments/Functions/Make/Gemini0; merge=false; producción=false.
+
+Siguiente gate: `AUTORIZACIÓN FRESCA DE 1 REDEPLOY MISMO HOSTING DEV → PRECHECK → DEPLOY1 → REMOTE SMOKE AUTO-ENTRY/SOURCE-SAFE → VISUAL PAULA → FREEZE C6`.
