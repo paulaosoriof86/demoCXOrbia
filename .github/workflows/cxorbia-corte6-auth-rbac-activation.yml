@@ -94,6 +94,7 @@ jobs:
           node <<'NODE' >> "$GITHUB_OUTPUT"
           const r=require('./app/docs/evidence/CORTE6-RULES-IAM-DIAGNOSTIC-LATEST.json');
           const p=r.iamTest&&r.iamTest.permissions||{};
+          const v=r.sourceValidation||{};
           const bit=k=>p[k]===true?'1':'0';
           const code=[
             'RSC'+bit('firebaserules.rulesets.create'),
@@ -102,7 +103,10 @@ jobs:
             'SU'+bit('serviceusage.services.use'),
             'RPG'+bit('resourcemanager.projects.get'),
             'REL'+String(r.firebaserulesRead?.releaseStatus||0),
-            'RSL'+String(r.firebaserulesRead?.rulesetsStatus||0)
+            'RSL'+String(r.firebaserulesRead?.rulesetsStatus||0),
+            'TST'+String(v.status||0),
+            'E'+String(v.errorCount||0),
+            'L'+String(v.firstError?.line||0)
           ].join('_');
           console.log('code='+code);
           NODE
