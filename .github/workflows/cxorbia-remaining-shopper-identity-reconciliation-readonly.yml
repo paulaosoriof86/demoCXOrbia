@@ -104,6 +104,26 @@ jobs:
             git push origin HEAD:docs-tya-v6-v71-audit
           fi
 
+      - name: Persist sanitized failure diagnostic
+        if: failure()
+        run: |
+          set -euo pipefail
+          DETAIL='unknown_failure_before_reconciliation_output'
+          if [ -f /tmp/remaining-identity-failure.txt ]; then DETAIL=$(cat /tmp/remaining-identity-failure.txt | tr '\n' ' ' | cut -c1-180); fi
+          node -e "const fs=require('fs');const detail=process.env.DETAIL||'unknown';fs.writeFileSync('/tmp/remaining-identity-diagnostic.json',JSON.stringify({schemaVersion:'cxorbia.remaining-shopper-identity.diagnostic.v1',generatedAt:new Date().toISOString(),detail,sanitized:true,rawPiiPersisted:false,providerWrites:0},null,2)+'\\n')" \
+            DETAIL="$DETAIL"
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/remaining-identity-diagnostic.json app/docs/evidence/REMAINING-SHOPPER-IDENTITY-RECONCILIATION-DIAGNOSTIC-LATEST.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '4189826+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/REMAINING-SHOPPER-IDENTITY-RECONCILIATION-DIAGNOSTIC-LATEST.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'evidence: persist sanitized remaining identity diagnostic'
+            git push origin HEAD:docs-tya-v6-v71-audit
+          fi
+
       - name: Publish status
         if: always()
         env:
@@ -121,4 +141,4 @@ jobs:
 
       - name: Cleanup private credential and transient PII surfaces
         if: always()
-        run: rm -rf .tmp/remaining-identity-private /tmp/remaining-identity-run.err /tmp/remaining-identity-run.out /tmp/remaining-identity-failure.txt
+        run: rm -rf .tmp/remaining-identity-private /tmp/remaining-identity-run.err /tmp/remaining-identity-run.out /tmp/remaining-identity-failure.txt /tmp/remaining-identity-diagnostic.json
