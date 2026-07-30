@@ -35,15 +35,64 @@ async function sampleFieldKeys(ref) {
 
 async function authInventory() {
   let total = 0;
+  let disabledUsers = 0;
+  let usersWithClaims = 0;
+  let tenantTyaUsers = 0;
+  let oldRuleOperatorUsers = 0;
+  let tenantTyaOldRuleOperatorUsers = 0;
+  let tenantTyaOldRuleOperatorPasswordUsers = 0;
+  let currentContractRoleUsers = 0;
+  let currentContractShapeUsers = 0;
+  let tenantTyaCurrentContractShapeUsers = 0;
   const claimKeys = new Set();
+  const providerIds = new Set();
+  const roleCounts = {};
   let token;
+  const oldRuleOperatorRoles = new Set(['super','admin','ops','coordinador']);
+  const currentContractRoles = new Set(['tenantAdmin','projectAdmin','financeAdmin','certificationAdmin','clientAdmin','clientViewer','shopper']);
   do {
     const page = await auth.listUsers(1000, token);
     total += page.users.length;
-    for (const u of page.users) Object.keys(u.customClaims || {}).forEach(k => claimKeys.add(k));
+    for (const u of page.users) {
+      if (u.disabled) disabledUsers++;
+      const claims = u.customClaims || {};
+      const keys = Object.keys(claims);
+      if (keys.length) usersWithClaims++;
+      keys.forEach(k => claimKeys.add(k));
+      for (const p of u.providerData || []) if (p.providerId) providerIds.add(p.providerId);
+      const role = typeof claims.role === 'string' ? claims.role : '';
+      if (role) roleCounts[role] = (roleCounts[role] || 0) + 1;
+      const tenantAllowed = role === 'super' || claims.tenantId === 'tya' || (Array.isArray(claims.tenants) && claims.tenants.includes('tya')) || (Array.isArray(claims.tenantIds) && claims.tenantIds.includes('tya'));
+      const oldRuleOperator = oldRuleOperatorRoles.has(role);
+      const hasPasswordProvider = (u.providerData || []).some(p => p.providerId === 'password');
+      const currentContractRole = currentContractRoles.has(role);
+      const currentShape = currentContractRole && typeof claims.tenantId === 'string' && typeof claims.personaType === 'string' && typeof claims.scope === 'string' && typeof claims.permissionsVersion === 'string';
+      if (tenantAllowed) tenantTyaUsers++;
+      if (oldRuleOperator) oldRuleOperatorUsers++;
+      if (tenantAllowed && oldRuleOperator) tenantTyaOldRuleOperatorUsers++;
+      if (!u.disabled && tenantAllowed && oldRuleOperator && hasPasswordProvider) tenantTyaOldRuleOperatorPasswordUsers++;
+      if (currentContractRole) currentContractRoleUsers++;
+      if (currentShape) currentContractShapeUsers++;
+      if (tenantAllowed && currentShape) tenantTyaCurrentContractShapeUsers++;
+    }
     token = page.pageToken;
   } while (token);
-  return { totalUsers: total, customClaimKeys: [...claimKeys].sort() };
+  return {
+    totalUsers: total,
+    disabledUsers,
+    usersWithClaims,
+    customClaimKeys: [...claimKeys].sort(),
+    providerIds: [...providerIds].sort(),
+    roleCounts,
+    tenantTyaUsers,
+    oldRuleOperatorUsers,
+    tenantTyaOldRuleOperatorUsers,
+    tenantTyaOldRuleOperatorPasswordUsers,
+    currentContractRoleUsers,
+    currentContractShapeUsers,
+    tenantTyaCurrentContractShapeUsers,
+    piiExported: false,
+  };
 }
 
 const collections = [];
@@ -137,7 +186,7 @@ const projectPatternSummary = projectReconciliation.reduce((acc,p)=>{
 },{});
 
 const report = {
-  schemaVersion: 'cxorbia.canonical-backend-readonly-inventory.v3',
+  schemaVersion: 'cxorbia.canonical-backend-readonly-inventory.v4',
   generatedAt: new Date().toISOString(),
   projectId: expectedProject,
   classification: 'CXORBIA_CANONICAL_DEV_BACKEND_CANDIDATE__NOT_LEGACY_TYA_PLATFORM',
@@ -195,6 +244,15 @@ const lines = [
   '- Clasificación: backend DEV de CXOrbia / tenant TyA; **no** plataforma legacy TyA a retirar.',
   '- Modo: read-only; provider writes=0; no valores sensibles exportados.',
   `- Auth users: ${authSummary.totalUsers}`,
+  `- Auth users disabled: ${authSummary.disabledUsers}`,
+  `- Auth users with claims: ${authSummary.usersWithClaims}`,
+  `- Auth users tenant TyA: ${authSummary.tenantTyaUsers}`,
+  `- Old-rules operator users for TyA: ${authSummary.tenantTyaOldRuleOperatorUsers}`,
+  `- Old-rules TyA operator users with password provider: ${authSummary.tenantTyaOldRuleOperatorPasswordUsers}`,
+  `- Current-contract claim-shape users: ${authSummary.currentContractShapeUsers}`,
+  `- Current-contract claim-shape users for TyA: ${authSummary.tenantTyaCurrentContractShapeUsers}`,
+  `- Auth provider IDs observed: ${authSummary.providerIds.join(', ') || 'none'}`,
+  `- Auth role counts (sanitized): ${Object.keys(authSummary.roleCounts).length ? Object.entries(authSummary.roleCounts).map(([k,v])=>`${k}:${v}`).join(', ') : 'none'}`,
   `- Colecciones raíz: ${roots.length}`,
   `- Rutas de colección descubiertas: ${collections.length}`,
   `- Traversal truncado: ${truncated ? 'sí' : 'no'}`,
@@ -235,4 +293,4 @@ const lines = [
   ''
 ];
 fs.writeFileSync(outMd, lines.join('\n'));
-console.log(JSON.stringify({projectId: report.projectId, authUsers: authSummary.totalUsers, collectionPaths: collections.length, keyCounts: report.keyCounts, shopperReconciliation: report.shopperReconciliation, projectPatternSummary}));
+console.log(JSON.stringify({projectId: report.projectId, authUsers: authSummary.totalUsers, auth: authSummary, collectionPaths: collections.length, keyCounts: report.keyCounts, shopperReconciliation: report.shopperReconciliation, projectPatternSummary}));
