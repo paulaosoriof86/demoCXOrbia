@@ -1,69 +1,70 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-07-30  
-**Estado vivo:** `P0_PROVEN_C6_CREDENTIAL_CONTINUITY_GAP__NO_NEW_CANDIDATE__NO_PRODUCTION`
+**Estado vivo:** `C6_P0_PROTOTYPE_AUTOENTRY_FIX_STATIC_PASS__PENDING_SINGLE_DEV_REDEPLOY_AUTH__NO_PRODUCTION`
 
 ## 1. Cerrado / no reabrir
-- M1 / Corte 1 / Corte 2A: FROZEN/APROBADO.
-- Corte 3: `CXORBIA-TYA-CORTE3-V182-20260729` FROZEN.
-- R17N FINAL: 1,406/1,406 Firestore data writes/readback; no repetir.
-- Corte 5 proyecto/periodo: corregido, re-smoke PASS.
-- Corte 6 Auth/RBAC: 5/5 claim updates PASS; operador7/cliente2/shopper3 ready.
-- Firestore Rules: desplegada/readback PASS.
-- Hosting DEV existente: deploy 1/1 consumido y entrypoint explícito remoto PASS.
-- No V183/R33, nueva base, Hosting, rama o PR.
+- Corte1/2A/3 FROZEN/APROBADO; Corte3 `CXORBIA-TYA-CORTE3-V182-20260729`.
+- R17N FINAL:1,406/1,406; no repetir.
+- Corte5 Firestore/CX.data: `cinepolis`,14 periodos,616 visitas,currentPeriod `2026-07`,fallback=false PASS.
+- Auth legacy import/readback91/91 PASS; no repetir/resetear.
+- claims5/5 + Rules PASS.
+- No nueva candidata/base/Hosting/rama/PR.
 
-## 2. P0 vivo — continuidad de credenciales/login
-La visual DEV actual muestra `Correo + Contraseña`, pero ese identificador visible no corresponde al contrato operativo que debe conservarse.
+## 2. P0 visual actual — build publicado NO aprobado
+La última captura humana demuestra que el build publicado todavía altera el prototipo: al elegir `Administración / Coordinación` agrega un formulario `Usuario + Contraseña` que antes no existía y que además queda parcialmente fuera del viewport.
 
-Inventario read-only comprobado:
-- `tenants/tya/shoppers`: `user/username/login`=0; `pass/password`=0;
-- `tenants/tya/users`: 0 docs;
-- tenant profile: sin configuración login persistida;
-- Firebase Auth: 17 cuentas técnicas con password provider + identificador email.
+No pedir a Paula que use esas credenciales, haga scroll, comparta password ni vuelva a probar ese build.
 
-Por tanto las credenciales legacy no están en el backend canónico. No crear Gmail nuevo, no pedir a Paula que adopte cuentas DEV y no presentar el correo Firebase como login final.
+Causa localizada:
+- `app.js` conserva el auto-entry de perfil;
+- `backend-browser-auth.js` intercepta `selectRole()` cuando Auth preview está habilitado y muestra el credential step.
 
-## 3. Corrección focalizada Claude/prototipo
-No nueva candidata. La tarea visible, cuando el backend cierre el import de identidad, es únicamente:
-- mantener accesos configurables por perfil/rol;
-- formulario `Usuario + Contraseña`;
-- Firebase Auth detrás del adapter;
-- sin passwords/tokens en localStorage;
-- recuperación/cambio de contraseña explícitos;
-- no exponer correo interno provider, UID, claims o IDs técnicos;
-- validar generación/registro de credenciales con función real existente.
+## 3. Fix ya aplicado en rama
+Para la **validación humana DEV**:
+- restaurado el auto-entry original al seleccionar perfil;
+- `humanCredentialPrompt=false`;
+- provider/Auth no participa en la UI humana;
+- HR source-safe se conserva explícitamente como dataset visual;
+- baseline verificada: `cinepolis`,14 periodos,616 visitas;
+- todas las mutaciones siguen bloqueadas;
+- diagnóstico rotula `HR source-safe · validación visual` y `Auth validado por gate separado`.
 
-No mover lógica Firestore/Auth/claims a `app/modules/*`.
+Auth/RBAC/Rules no se eliminan ni se debilitan: permanecen como gates técnicos separados para el backend real.
 
-## 4. Dependencia backend antes del smoke visual
-`EXPORT CREDENCIALES LEGACY CONTROLADO → INVENTARIO/HASH-TYPE → PLAN AUTH IMPORT IDEMPOTENTE → AUTORIZACIÓN ÚNICA → IMPORT/READBACK → LOGIN USUARIO+CONTRASEÑA`.
+## 4. Gate técnico PASS sin deploy
+`29b7f9404a9c2f144145fe24d5cf048f753c1e75` → `success · PREPARED_C6_PROTOTYPE_AUTO_ENTRY_NO_EXECUTE`.
 
-Solo después se hace smoke Admin/Ops/Cliente/Shopper y freeze Corte6.
+La autorización de Hosting previa está consumida; por eso el Hosting público DEV sigue mostrando el build rechazado hasta nueva autorización expresa.
 
-## 5. Pendientes P1/P2 no bloqueantes
-- PDF: gráfica ausente al imprimir/exportar.
-- Excel: formato básico/no final.
-- `reportKit`: consolidación transversal y exportaciones fuera de Dashboard.
-- copy de fuentes/readiness: mantener lenguaje humano, no técnico.
+## 5. Claude/prototipo
+No nueva candidata. No tocar `app/modules/*` por este P0. Patrón reusable:
+- no transformar Auth/backend en UI adicional;
+- conservar el comportamiento aprobado del prototipo;
+- separar test humano de UX y gate provider;
+- producción mantiene Auth real detrás del flujo operativo y recuperación de acceso.
 
-## 6. Agosto — dependencia backend/fuente
-- Fuente materializada termina julio 2026.
-- `Agosto HN` sigue HOLD por inconsistencia país/tab.
-- Después de FREEZE Corte6: refresh HR → resolver HOLD → validar visitas → materializar solo delta agosto.
-- No construir agosto manualmente desde frontend y no repetir histórico.
+## 6. P1/P2 no bloqueante
+- PDF sin gráfica final.
+- Excel sin formato final.
+- reportKit/exportaciones transversales.
+- copy de fuentes/readiness.
 
-## 7. Holds preservados
-- existing profile updates22;
-- legacy holds7;
-- certification hold1;
-- Agosto HN;
-- deletes;
-- pagos/lotes;
-- Make/Gemini/Storage reales.
+## 7. HOLD preservado
+- 21 shopper credentials sin match canónico exacto;
+- demo1;
+- ambiguos18/77;
+- Agosto HN por inconsistencia país/tab.
 
-## 8. Academia/manuales
-Actualizar: usuario ≠ email obligatorio; Firebase Auth como autoridad detrás del login; tenant/proyecto/rol; shopperId exacto; recuperación de acceso; mínimo privilegio; conflicto a revisión humana.
+No resolver por nombre/coincidencia visual.
 
-## 9. Estado seguro
-Corte6: Auth claim writes5 ya autorizados; usuarios nuevos/password changes/deletes0; Firestore data writes0; Rules release1; Hosting DEV1/1; inventario credential-continuity provider writes0; Storage/HR/legacy0; pagos/Make/Gemini0; merge=false; producción=false; credenciales crudas0.
+## 8. Agosto
+Después del FREEZE Corte6: refresh HR → resolver HOLD Agosto HN → validar periodo/visitas → materializar solo delta agosto. No rematerializar histórico.
+
+## 9. Academia/manuales
+DEV humano: perfil → entrada automática; proveedor/Auth no se enseña como paso de usuario. Producción: acceso real aprobado, recuperación/cambio, scopes y troubleshooting sin exponer provider técnico.
+
+## 10. Estado seguro / pendiente bloqueante único
+Desde este P0: Auth writes0; Firestore data writes0; Rules0; Hosting deploy0; Storage/HR/legacy/payments/Functions/Make/Gemini0; merge=false; producción=false.
+
+Pendiente único: `AUTORIZAR 1 REDEPLOY FOCAL DEL MISMO HOSTING DEV → REMOTE SMOKE → VISUAL → FREEZE C6`.
