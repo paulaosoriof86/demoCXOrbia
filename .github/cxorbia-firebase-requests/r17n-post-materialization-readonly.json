@@ -3,7 +3,7 @@
   "requestId": "r17n-post-materialization-readonly-20260730-01",
   "enabled": true,
   "mode": "R17N_POST_MATERIALIZATION_READONLY",
-  "targetHeadSha": "60cdd78d9d5e91b598df484c560590bc0d2348fe",
+  "targetHeadSha": "ba456a4396f4e082938bf624dc8d09ca5bf98ca8",
   "projectId": "cxorbia-backend-dev",
   "tenantId": "tya",
   "canonicalProjectId": "cinepolis",
@@ -19,5 +19,7 @@
   "production": false,
   "sourceLockDocument": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
   "piiPolicy": "source-to-memory-only; sanitized evidence only",
-  "issuedAt": "2026-07-30"
+  "issuedAt": "2026-07-30",
+  "attempt": 2,
+  "reason": "harness correction: 208 HR source references can deterministically collapse to fewer canonical shopper targets; validate exact target set from R17N mapping instead of assuming 208 unique target profiles"
 }
