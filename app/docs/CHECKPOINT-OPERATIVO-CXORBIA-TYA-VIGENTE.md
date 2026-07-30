@@ -1,95 +1,114 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-07-29  
-**Estado:** `CORTE3_FROZEN__CANONICAL_BACKEND_RECOVERED__LEGACY_REFRESH_PASS__VISIT_IDENTITY_CROSSWALK_201_OF_210__REAL_IDENTITY_POLICY_LOCKED__NO_DATA_WRITES__NO_PRODUCTION`
+**Fecha:** 2026-07-30  
+**Estado:** `CORTE3_FROZEN__CANONICAL_BACKEND_RECOVERED__CURRENT_HR_208_REFS__IDENTITY_208_OF_208_READY__R17N_FINAL_1406_NO_EXECUTE__NO_DATA_WRITES__NO_PRODUCTION`
 
 ## 1. Repositorio y seguridad
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
-- Legacy/Firestore/Auth/Storage/HR writes=0; deploy=0; production=false; merge=false.
+- Firestore/Auth/Storage/HR/legacy writes=0; deletes=0; deploy=0; producción=false; merge=false.
 
 ## 2. Arquitectura vinculante
-- Legacy TyA = Firebase `tya-plataforma`; plataforma actual a retirar, fuente de datos útiles limpios y Hosting/URL pública a preservar.
-- `cxorbia-backend-dev` = backend DEV canónico de CXOrbia/TyA; reutilizar.
-- `cxorbia-tya-dev-260729-c4` = sandbox técnico; no destino de materialización.
-- No nueva base Firebase por este bloque.
+- Legacy actual: Firebase `tya-plataforma`; a retirar; fuente de datos útiles y Hosting/URL pública a conservar.
+- `cxorbia-backend-dev`: backend DEV canónico; reutilizar.
+- `cxorbia-tya-dev-260729-c4`: sandbox técnico; no destino.
+- No nueva base Firebase.
 
 ## 3. Corte 3 — FROZEN
-Baseline `CXORBIA-TYA-CORTE3-V182-20260729`: 14 periodos / 616 visitas hasta julio; 34 GT + 10 HN por periodo. Mayo 44 pagadas; junio 2 pagadas / 42 pendientes. P1/P2 reportes/copy no bloquean.
+`CXORBIA-TYA-CORTE3-V182-20260729`: 14 periodos / 616 visitas hasta julio. Mayo 44 pagadas; junio 2 pagadas / 42 pendientes. No V183/R33.
 
-## 4. Backend canónico / HR viva
-Inventario read-only `cxorbia-backend-dev`: Auth 17, clients 3, projects 29, visits 619, questionnaires 557, shoppers 215, liquidations 255, postulations 3, applications 1, notifications 20, shopperBenefits 572, certifications 0.
+## 4. Backend canónico
+Read-only `cxorbia-backend-dev`: Auth 17, projects 29, visits 619, questionnaires 557, shoppers 215, liquidations 255, shopperBenefits 572, certifications 0.
 
-Gap preservado:
-- julio GT+HN faltante en topología period-country previa: 44 visitas;
-- `sprint5-visit-mutation-no-real-data`: HOLD_NO_DELETE;
-- `hr-58fb469666080189`: HOLD_NO_DELETE;
-- pilotos `julio-pilot`, `r1`, `tya-piloto`: preservar.
+Topología previa preservada para rollback; no deletes de pilotos/overages por rutina.
 
-HR viva: 15 periodos / 30 tabs / 684 visitas / 236 referencias shopper; julio GT34/HN10 correcto; `AGOSTO 26 HN` HOLD por país/tab incorrecto.
-
-## 5. Legacy shoppers/certificaciones — READ-ONLY PASS
-La lectura se ejecutó directamente contra Firebase RTDB del proyecto actual `tya-plataforma`, nodo `tya_shoppers_extra`.
-
-Resultado:
-- 281 representaciones crudas;
+## 5. Legacy shoppers/certificaciones — PASS
+Read-only directo contra `tya-plataforma/tya_shoppers_extra`:
 - 149 shoppers únicos;
-- 128 duplicados de almacenamiento colapsados;
-- 1 conflicto interno de fuente;
-- 78 certificaciones útiles = 76 intentos + 2 markers;
-- 30 recovery mirrors colapsados;
-- 22 perfiles stable-linked;
-- 120 perfiles create candidate;
-- 7 HOLD.
+- 120 legacy profile create-candidates;
+- 22 stable-linked existing con posibles updates en HOLD;
+- 7 legacy profile HOLD;
+- 78 certificaciones útiles;
+- 77 certification create-candidates +1 HOLD;
+- PII cruda en GitHub=0.
 
-La evidencia GitHub no contiene PII cruda, pero esa sanitización no significa que la identidad real deba perderse en la plataforma final.
+## 6. Fuente HR actual — corrección de frescura
+El snapshot source-safe del 13-jul con 210 refs quedó superado.
 
-## 6. Política de identidad real
-Vigente `ADDENDUM-IDENTIDAD-REAL-SHOPPER-PII-SOURCE-SAFE-VS-PLATAFORMA-20260729.md`.
+Fuente viva actual hasta julio:
+- 14 periodos;
+- 616 visitas;
+- 208 refs shopper;
+- vs snapshot viejo: +2 / -4 / 206 intersección;
+- PII=0; writes=0.
 
-- `source-safe` = protección de repo/log/evidencia.
-- perfil final = identidad real y datos útiles en backend protegido.
-- Admin/Operativo TyA debe poder ver identidad real conforme a RBAC/Rules.
-- Shopper ve su propio perfil/historial permitido.
-- Cliente solo ve el alcance autorizado.
-- DPI/banco/NDA/adjuntos se conservan solo si aplican y bajo controles adecuados.
-- no name-only automerge = integridad de dedupe, no anonimización.
+La HR completa ya contiene agosto, pero `AGOSTO 26 HN` permanece HOLD por país/tab inconsistente. Agosto no entra al write actual.
 
-## 7. Visit-identity crosswalk — READ-ONLY PASS
-Autorización ejecutada contra `cxorbia-backend-dev` usando HR source-safe + visitas canónicas existentes por `visitId`, `hrRowId` y `sourceSheet+sourceRow`; no se leyeron visitas legacy.
+## 7. Identidad shopper actual
+Crosswalk exacto con visitas existentes:
+- 208 refs actuales;
+- 201 resueltas hacia shopper canónico existente;
+- 7 sin match transaccional inicial;
+- 0 conflictos;
+- 571 visitas con match exacto; 45 sin evidencia histórica exacta.
 
-Resultado v2:
-- refs shopper HR: 210;
-- refs resueltas: 201;
-- refs pendientes: 9;
-- conflictos multi-shopper: 0;
-- visitas HR con shopperRef: 616;
-- visitas resueltas por identidad exacta: 571;
-- visitas sin evidencia canónica exacta: 45;
-- target canonical shopper inexistente: 0;
-- mapping hash: `9221098951aa03d34301273c3adc8f7773a410a39901432ec6f6e3040ce4720f`;
-- provider/data writes: 0.
+Reconciliación real read-only de las 7:
+- 7/7 identidad real presente en HR viva;
+- 2 → perfil legacy create-candidate;
+- 5 → perfil create-candidate desde HR actual;
+- 0 HOLD de identidad actual;
+- raw PII en GitHub=0.
 
-### Corrección de causa raíz del gate
-El primer intento dio 0/210 porque el sanitizador del crosswalk rechazaba espacios en `sourceSheet/hrRowId`, anulando las llaves reales. Se separaron `safeTechnicalId` y `safeSourceIdentity`; el rerun v2 resolvió 201/210. No fue un problema de datos TyA ni del backend.
+Regla: identidad real debe existir en plataforma autorizada; nombre no se usa como única llave de automerge.
 
-## 8. R17N
-El R17N previo mantiene idempotencia PASS y writes autorizados=0. Ya no se considera final: debe reconstruirse incorporando el crosswalk 201/210 y manteniendo las 9 referencias restantes en HOLD hasta resolver su identidad con evidencia suficiente.
+## 8. R17N FINAL — PASS / NO EXECUTE
+Evidencia: `evidence/R17N-FINAL-WRITE-PLAN-NO-EXECUTE-LATEST.json`.
 
-## 9. Bloqueo real actual
-Quedan **9 referencias shopper HR** sin enlace canónico y **45 visitas** sin una visita histórica exacta suficiente para derivar el shopper. No existen conflictos multi-shopper.
+Identity resolution:
+- total refs 208;
+- reuse existing 201;
+- link legacy create 2;
+- HR-current create 5;
+- hold 0;
+- ready 208.
 
-No corresponde crear duplicados ni ocultar nombres. Corresponde reconciliar esas 9 referencias con la **identidad real autorizada** de shopper, sin publicar PII en GitHub y sin sobrescribir conflictos.
+Grupos ready:
+- foundation 16;
+- legacy profile creates 120;
+- HR-current profile creates 5;
+- certification creates 77;
+- visits 616;
+- liquidation controls 572;
+- **total exactReadyWrites = 1,406**.
 
-## 10. Ruta a producción
-`RECONCILIAR 9 IDENTIDADES RESTANTES → R17N FINAL → IDEMPOTENCIA → WRITE PLAN EXACTO → AUTORIZACIÓN DE WRITES → MATERIALIZACIÓN DEV → SMOKE CX.data/Auth/RBAC → CORTES 6–8 → CUTOVER tya-plataforma`.
+HOLD/excluido:
+- tenant update 1;
+- existing-profile updates 22;
+- legacy profile holds 7;
+- certification hold 1;
+- Agosto HN;
+- deletes;
+- pagos/lotes;
+- Auth/Storage/HR writes;
+- deploy/merge/producción.
+
+Idempotencia offline PASS. `executeAllowed=false`. Writes autorizados/ejecutados=0.
+
+## 9. Gate/hardening corregido
+- El workflow offline ahora publica estado por `job.status`, no por presencia de artefacto previo.
+- Se corrigió el validador de `hrImports` al path real bajo proyecto.
+- R14C financiero viejo conserva shoppers=210; no se fuerza. Se preservan 247 filas, 196 links exactos por visitId y 51 reviews para la ejecución exacta sin reintroducir el snapshot stale.
+
+## 10. Siguiente bloque exacto
+`AUTORIZACIÓN DE 1,406 WRITES DEV POR GRUPOS → MATERIALIZACIÓN IDEMPOTENTE EN cxorbia-backend-dev → POST-COMPARE + SMOKE CX.data/IDENTIDAD REAL → CORTE 6 AUTH/RBAC → CORTE 7 SYNC/EVIDENCIAS → CORTE 8 CUTOVER tya-plataforma`.
+
+No hace falta otro refresh general, otra base, nueva candidata ni nuevo Hosting de prueba antes de este gate.
 
 ## 11. Claude/Academia
-- Claude: no nueva candidata, no P0 nuevo, no reabrir V182. Al existir perfil canónico real, la UI autorizada debe mostrar identidad real; `Shopper protegido` no es identidad final.
-- Academia: privacidad por rol, PII, perfil canónico, referencia HR, Auth, certificación y dedupe deben explicarse como capas distintas.
-- Reusable CXOrbia: proveedor real → backend protegido → artefacto source-safe → crosswalk por evidencia → review de conflictos.
+- Claude: no nueva candidata; intervención solo si smoke posterior demuestra P0 o para backlog P1/P2.
+- Academia: snapshot vs fuente viva, sanitización técnica vs identidad operativa, crosswalk transaccional, fail-closed e idempotencia.
 
 ## 12. Estado seguro
-Sin merge, producción, import real, Firestore/Auth/Storage/HR writes, deploy, pagos/lotes, Make ni Gemini.
+Sin data writes, import real, deploy, merge, producción, pagos/lotes, Make ni Gemini.
