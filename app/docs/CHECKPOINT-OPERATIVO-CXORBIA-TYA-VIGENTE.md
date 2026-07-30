@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-30  
-**Estado:** `C6_PROTOTYPE_AUTOENTRY_HOSTING_DEV_REMOTE_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`
+**Estado:** `C6_AUTOENTRY_VISUAL_OBSERVED_PASS__PROTECTED_IDENTITY_READONLY_PASS__AUGUST_REFRESH_READONLY_NEXT__NO_PRODUCTION`
 
 ## 1. Repositorio/destinos
 - Repo `paulaosoriof86/demoCXOrbia`.
@@ -21,50 +21,55 @@
 ## 3. Visual Corte6
 Build1 rechazado: `Acceso seguro` paralelo.
 
-Build2 rechazado: al seleccionar Administración/Coordinación aparecía `Usuario + Contraseña`, además fuera del viewport. El contrato canónico de `app.js` es perfil → `selectRole(...)` → `enter()` automático.
+Build2 rechazado: al seleccionar Administración/Coordinación aparecía `Usuario + Contraseña`, además fuera del viewport.
 
-## 4. Corrección publicada
-- preview humano restaura auto-entry;
-- `CX.BACKEND.enabled=false` en la ruta humana;
-- `humanVisualSourceSafe=true`;
-- `humanCredentialPrompt=false`;
-- HR source-safe read-only preservada;
-- baseline `cinepolis`,14 periodos,616 visitas;
-- Auth/RBAC/Rules permanecen en gates provider separados;
-- mutaciones bloqueadas.
+Build3 actual: la evidencia humana muestra que el perfil Administración/Coordinación entra automáticamente al shell, carga Cinépolis/JUL2026 y mantiene el preview source-safe. No pedir password, PowerShell ni volver a probar builds rechazados.
 
-## 5. Ejecución
-Gate estático: `29b7f9404a9c2f144145fe24d5cf048f753c1e75` → PASS.
+`Shopper protegido` en esa visual no es pérdida de datos: es el placeholder del snapshot source-safe público y read-only. No debe convertirse en la identidad final del runtime autenticado.
 
-Primer intento autorizado: fallo determinístico antes de deploy por mismatch de contrato entre decisión de preflight y direct-deploy. Se corrigió en `b9f5190babcc339735cda59291417df5aea6988f`; request seguía `hostingDeployExecutions=0`, `consumed=false`.
+## 4. Identidad protegida — gate read-only PASS
+Se verificó directamente Firestore DEV sin exportar valores personales.
 
-Reintento con la misma autorización:
-`PASS_EXISTING_HOSTING_DEV_PROTOTYPE_AUTO_ENTRY_SOURCE_SAFE_REMOTE_VERIFIED`.
+`PASS_C6_PROTECTED_IDENTITY_READONLY_RUNTIME_READY`:
+- `tenants/tya/shoppers`:340 docs;
+- perfiles con nombre real340;
+- perfiles con `Shopper protegido`0;
+- perfiles sin nombre visible0;
+- visitas canónicas616;
+- visitas con nombre real616;
+- visitas placeholder0;
+- shopperId/nombre faltante0;
+- shopperIds canónicos referenciados194;
+- perfiles referenciados194/194 existentes y194/194 con nombre real;
+- Rules protegidas + deny-by-default PASS;
+- adapter Firestore de shoppers/nombre real PASS;
+- Rules desplegadas verificadas/hash consistente PASS;
+- source-safe público continúa enmascarado PASS.
 
-- request `corte6-prototype-autoentry-redeploy-20260730-03` consumido PASS;
-- hosting deploy executions1;
-- versión `sites/cxorbia-backend-dev/versions/95a1e49e5064c456`;
-- release `sites/cxorbia-backend-dev/releases/1785452689852000`;
-- entrypoint=true;
-- prototypeAutoEntry=true;
-- humanCredentialPrompt=false;
-- sourceSafeVisual=true;
-- periods14;
-- visits616;
-- projectId=`cinepolis`;
-- Firebase Auth validated separately=true;
-- preservedLegacyAuthUsers91.
+GitHub status final: `PASS_C6_PROTECTED_IDENTITY_READONLY`.
 
-Seguridad: nuevo Firebase0; nuevo Hosting0; Auth writes0; Firestore data writes0; Rules0; Storage0; HR0; legacy0; pagos0; Functions0; Make/Gemini0; merge=false; producción=false.
+## 5. Corrección metodológica incorporada
+La ruta humana source-safe y la ruta autenticada protegida son capas distintas:
+- preview público: source-safe, PII enmascarada, lectura visual;
+- runtime protegido: Auth/RBAC/Rules + Firestore; Admin/Operativo ve identidad real, shopper solo la propia.
 
-## 6. Gate vivo actual
-`VALIDACIÓN VISUAL HUMANA DEL NUEVO BUILD AUTO-ENTRY/SOURCE-SAFE → SI APRUEBA: FREEZE CORTE6`.
+Está prohibido solucionar la visual source-safe insertando nombres reales en archivos estáticos/Hosting público.
 
-No pedir password, PowerShell, scroll ni volver a probar builds rechazados.
+## 6. Estado seguro del bloque
+Gate de identidad: provider reads únicamente. Auth writes0; Firestore data writes0; Rules deploy0; Hosting0; Storage0; HR0; legacy0; pagos0; Functions0; Make/Gemini0; merge=false; producción=false; PII/IDs/secrets exportados0.
 
-## 7. Agosto
-Después de FREEZE C6: `refresh HR → resolver Agosto HN → materializar solo delta agosto → smoke → preprod/cutover`. No rematerializar histórico.
+## 7. Gate vivo actual
+No se congela todavía una identidad final basada en el preview enmascarado. El próximo bloque operativo, permitido sin autorización de writes, es:
 
-## 8. Claude / Academia
-- Claude: no nueva candidata, no `app/modules/*`, preservar auto-entry; provider/Auth no es UI de preview humano.
-- Academia: DEV humano perfil→entrada automática; producción mantiene Auth real detrás del contrato operativo y recuperación de acceso.
+`REFRESH HR READ-ONLY → RESOLVER/CLASIFICAR AGOSTO HN → VALIDAR PERIODO/VISITAS → PREPARAR DELTA-ONLY WRITE PLAN`.
+
+La siguiente autorización requerida será únicamente si el delta de agosto queda exacto y listo para Firestore data writes.
+
+## 8. Después de agosto delta
+`MATERIALIZAR SOLO DELTA AGOSTO AUTORIZADO → READBACK/SMOKE → PREPROD PROTEGIDA AUTENTICADA CON IDENTIDAD REAL → CUTOVER tya-plataforma`.
+
+No rematerializar histórico.
+
+## 9. Claude / Academia
+- Claude: no nueva candidata, no `app/modules/*`; preservar auto-entry; source-safe no sustituye identidad protegida.
+- Academia: separar privacidad del artefacto público y visibilidad autorizada del runtime; documentar mínimo privilegio, scopes y gate anti-placeholder.
