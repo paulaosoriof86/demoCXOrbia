@@ -1,19 +1,18 @@
 # Academia — impacto Corte 6 Auth/RBAC + continuidad de credenciales
 
 **Fecha:** 2026-07-30  
-**Estado:** `CREDENTIAL_CONTINUITY_NAMESPACED_DRYRUN91_PASS__WAITING_PROVIDER_AUTHORIZATION`; no producción.
+**Estado:** `CREDENTIAL_CONTINUITY_AUTH91_READBACK_PASS__HOSTING_DEV_REMOTE_PASS__PENDING_HUMAN_VISUAL`; no producción.
 
 ## Objetivo
 Registrar aprendizajes reutilizables del gate real de identidad, permisos y continuidad de acceso sin convertir detalles técnicos del proveedor en la experiencia normal del usuario.
 
 ## Resultado real que debe quedar reflejado
 - Firebase Auth y claims son la autoridad backend; el selector visual de rol no concede permisos.
-- El producto no debe obligar a mostrar un email técnico para autenticar.
-- TyA conserva `Usuario + Contraseña` como contrato visible.
-- El acceso visible distingue `Administración / Coordinación` y `Shopper / Evaluador` para resolver namespaces `staff` y `shopper`.
+- TyA conserva `Tipo de acceso + Usuario + Contraseña` como contrato visible.
+- El acceso distingue `Administración / Coordinación` y `Shopper / Evaluador` para resolver namespaces `staff` y `shopper`.
 - Firebase usa un identificador interno determinístico no visible.
-- La migración de credenciales se hace por export/import controlado; nunca conectando la base legacy al runtime nuevo.
-- Dedupe de acceso no puede hacerse por username global: perfiles distintos pueden compartir username. Se deduplica dentro del namespace y solo con identidad estable/credencial compatible.
+- La migración de credenciales se hizo por export/import controlado; nunca conectando la base legacy al runtime nuevo.
+- Dedupe de acceso no puede hacerse por username global: perfiles distintos pueden compartir username.
 - Conflictos o falta de vínculo exacto quedan HOLD.
 
 ## Evidencia de migración de identidad
@@ -24,13 +23,17 @@ Inventario source-safe:
 - ambiguous groups18 /records77 HOLD;
 - staff4.
 
-Dry-run provider read-only:
-- eligible91 = shopper88 + super1 + coordinador2;
-- shopper exact legacy match88;
-- HOLD21 por ausencia de match canónico exacto;
-- HOLD1 demo role;
-- collisions0;
-- provider writes0.
+Provider activation:
+- Auth eligible/imported/readback91/91;
+- shopper88 + super1 + coordinador2;
+- Auth users17→108;
+- password resets0;
+- deletes0;
+- overwrite0;
+- Hosting DEV ejecutado solo después del readback PASS;
+- browserAuth/entrypoint/proof/namespaced login remoto PASS;
+- nuevo Firebase/Hosting0;
+- Firestore/Rules/Storage/HR/legacy/payments/functions/Make/Gemini0.
 
 ## Contenido obligatorio por rol
 ### Admin / Operativo
@@ -42,7 +45,7 @@ Dry-run provider read-only:
 - conflicto de acceso = revisión, no ampliación automática.
 
 ### Shopper
-- ingreso con su usuario y contraseña existentes cuando el adapter esté materializado;
+- ingreso con su usuario y contraseña existentes;
 - tipo de acceso `Shopper / Evaluador`;
 - provider interno invisible;
 - vínculo por `shopperId` exacto;
@@ -60,12 +63,12 @@ Dry-run provider read-only:
 - claims tenant/project/role;
 - conflictos/holds;
 - mínimo privilegio;
-- export/import idempotente y readback.
+- export/import idempotente, readback y evidencia.
 
 ## Aprendizajes técnicos convertibles a Academia
 1. **Auth real ≠ selector de rol.**
 2. **Usuario ≠ email obligatorio.**
-3. **Perfil/tipo de acceso forma parte de la identidad.** Un mismo username en namespaces diferentes no es automáticamente duplicado.
+3. **Perfil/tipo de acceso forma parte de la identidad.**
 4. **Credencial de contacto ≠ credencial de acceso.**
 5. **Continuidad de credenciales es parte de la migración.**
 6. **Dedupe de identidad requiere llave estable.** No nombre ni username global aislado.
@@ -73,8 +76,10 @@ Dry-run provider read-only:
 8. **ShopperId exacto.** No inferir acceso por coincidencia visual.
 9. **Fail-closed.** Conflicto/ausencia → HOLD/revisión.
 10. **Export/import, no conexión legacy.**
-11. **Import no equivale a éxito sin readback.**
-12. **Proveedor oculto tras adapter.** La UX no debe enseñar detalles técnicos innecesarios.
+11. **Import no equivale a éxito sin readback.** El caso real cerró 91/91.
+12. **Provider oculto tras adapter.** La UX no enseña detalles técnicos innecesarios.
+13. **Deploy condicionado.** Hosting solo se ejecuta después del gate de identidad requerido.
+14. **Evidencia remota.** Deploy no equivale a cierre sin browser-auth, entrypoint y proof verificados.
 
 ## Manuales/checklists a actualizar
 1. Manual de acceso: Tipo de acceso + Usuario + Contraseña.
@@ -84,7 +89,8 @@ Dry-run provider read-only:
 5. Checklist soporte: namespace, usuario, identity provider, rol, tenant, proyecto, shopperId.
 6. Errores frecuentes: namespace equivocado, usuario en HOLD, perfil sin vínculo, cuenta sin proyecto, sesión expirada.
 7. Validación: conflicto → revisión humana.
-8. Manual técnico/admin: export seguro, dedupe, hash import, no-overwrite, readback.
+8. Manual técnico/admin: export seguro, dedupe, hash import, no-overwrite, readback y deploy condicionado.
+9. Caso práctico Corte6: 91 identidades importadas/readback y un Hosting DEV one-shot remoto PASS.
 
 ## Notificaciones / rutas
 - Admin/Ops: acceso seguro + troubleshooting.
@@ -93,11 +99,14 @@ Dry-run provider read-only:
 - Superadmin: namespaces, adapter, claims/scopes, holds y readback.
 - No anunciar producción antes de cutover aprobado.
 
+## Gate pedagógico pendiente
+El cierre técnico ya pasó. Falta validación visual humana con credenciales TyA existentes; solo después se documenta Corte6 como FROZEN/APROBADO.
+
 ## Reusable vs TyA
-- **Reusable CXOrbia:** Auth detrás de adapter, username visible, namespaces, mínimo privilegio, scopes, hash import, no-overwrite y fail-closed.
+- **Reusable CXOrbia:** Auth detrás de adapter, username visible, namespaces, mínimo privilegio, scopes, hash import, no-overwrite, readback y deploy condicionado.
 - **Exclusivo TyA:** credenciales legacy, proyecto `cinepolis`, Agosto HN HOLD.
-- **Claude/prototipo:** login/registro focalizado; provider/email técnico no visible.
-- **Sin impacto Claude:** inventarios source-safe, cifrado, import/readback y gates.
+- **Claude/prototipo:** login/registro focalizado solo si aparece P0 visual reproducible; provider/email técnico no visible.
+- **Sin impacto Claude:** inventarios source-safe, cifrado, import/readback y gates/provider evidence.
 
 ## Estado seguro
-Corte6 previo: claim writes5 + Rules release1 + Hosting DEV1/1. Bloque credential-continuity actual: Auth imports0; password resets0; deletes0; Firestore data0; Rules0; Hosting adicional0; Storage/HR/legacy/payments/Make/Gemini0; merge=false; producción=false; credenciales crudas0.
+Corte6 previo: claim writes5 + Rules release1 + Hosting DEV1/1. Continuidad: Auth imports91/readback91; password resets0; deletes0; Firestore data0; Rules0; Hosting adicional1; Storage/HR/legacy/payments/functions/Make/Gemini0; merge=false; producción=false; credenciales crudas0.
