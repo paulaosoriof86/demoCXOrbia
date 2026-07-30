@@ -1,53 +1,63 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-07-30  
-**Estado vivo:** `CORTE6_TECH_PASS__HUMAN_AUTH_VISUAL_PENDING__NO_FRONTEND_P0_PROVEN__NO_PRODUCTION`
+**Estado vivo:** `P0_C6_CREDENTIAL_CONTINUITY_ROOT_CAUSE_FIXED__NAMESPACED_DRYRUN91_PASS__WAITING_COMBINED_AUTHORIZATION__NO_PRODUCTION`
 
 Este archivo registra pendientes frontend reales y dependencias backend que condicionan cuándo Claude debe intervenir.
 
 ## 1. No reabrir
-- M1 / Corte 1 / Corte 2A / Corte 3: FROZEN/APROBADO.
-- Corte 3: `CXORBIA-TYA-CORTE3-V182-20260729`.
-- R17N FINAL: 1,406/1,406 data writes/readback; no repetir.
-- Corte 5: P0 proyecto/periodo resuelto y re-smoke PASS.
-- Corte 6 Auth/RBAC: claims 5/5 PASS; operador7/cliente2/shopper3 ready.
-- Firestore Rules: deploy/readback PASS.
-- Hosting DEV existente: 1/1 deploy consumido, entrypoint remoto PASS.
+- Corte1 /2A /3: FROZEN/APROBADO.
+- Corte3: `CXORBIA-TYA-CORTE3-V182-20260729`.
+- R17N FINAL:1,406/1,406 data writes/readback; no repetir.
+- Corte5: CX.data project/period resuelto y re-smoke PASS.
+- Corte6 previo: claims5/5 + Firestore Rules PASS + Hosting DEV existente1/1 consumido.
 - No nueva candidata/base/Hosting/rama/PR.
 
-## 2. Dependencia viva — visual humana autenticada
-Usar el URL DEV canónico:
-`https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis`
+## 2. P0 de login — backend corregido en fuente, pendiente materialización Auth + redeploy
+Problema reproducible: el DEV mostró `Correo + Contraseña`, distinto del contrato histórico/funcional `Usuario + Contraseña`.
 
-Validar con cuentas DEV existentes:
-1. Admin/Ops: proyecto/periodo/histórico/navegación.
-2. Cliente: solo proyecto autorizado.
-3. Shopper exacto: identidad real, historial y disponibles autorizadas.
-4. Shopper no vinculado: sin acceso por inferencia.
-5. Sin regresiones de postulaciones, visitas, certificación, finanzas, Academia/manuales.
-6. Sin copy técnico de claims/provider/source-safe.
+Decisión:
+- no crear Gmail nuevo;
+- no obligar a usar cuentas técnicas DEV;
+- conservar Firebase Auth como autoridad interna;
+- visible: `Tipo de acceso + Usuario + Contraseña`;
+- namespaces `staff` / `shopper`;
+- provider/email técnico oculto.
 
-No compartir credenciales por chat.
+`app/core/backend-browser-auth.js` ya refleja este contrato; no se tocó `app/modules/*`.
 
-## 3. Claude — intervención actual
-**Ninguna por rutina. No solicitar nueva candidata.**
+## 3. Dependencia backend exacta antes de visual
+Dry-run source-safe:
+- elegibles Auth91 = shopper88 + super1 + coordinador2;
+- 21 shopper credentials sin perfil canónico exacto HOLD;
+- demo role HOLD;
+- collisions0;
+- no-overwrite.
 
-Solo abrir tarea si la visual demuestra P0 reproducible localizado en archivo/módulo/flujo. No mover Auth/claims/Firestore/Rules a UI.
+Pendiente únicamente por gate de proveedor:
+`AUTORIZAR → IMPORT AUTH MÁX91/READBACK → SI PASS REDEPLOY ADICIONAL MISMO HOSTING DEV → VISUAL CON CREDENCIALES EXISTENTES`.
 
-## 4. P1/P2 no bloqueante
+No pedir password por chat.
+
+## 4. Claude — intervención actual
+**Ninguna nueva candidata.**
+
+No rediseñar el acceso ni crear un sistema paralelo. Después del smoke, solo abrir tarea si aparece P0 visual reproducible. El patrón reusable a preservar es adapter de identidad: login del producto separado del identificador provider.
+
+## 5. P1/P2 no bloqueante
 - PDF/gráficas.
 - Excel/formato.
 - `reportKit`/exportaciones transversales.
 - copy de fuentes/readiness.
 
-## 5. Agosto
+## 6. Agosto
 - Fuente materializada hasta julio.
 - `Agosto HN` sigue HOLD por inconsistencia país/tab.
-- Después del PASS visual: FREEZE → refresh HR → resolver HOLD → materializar solo delta agosto.
+- Después del FREEZE Corte6: refresh HR → resolver HOLD → materializar solo delta agosto.
 - No rematerializar histórico.
 
-## 6. Academia/manuales
-Auth real vs selector; tenant/proyecto; shopperId exacto; mínimo privilegio; visita disponible segura; conflicto a revisión; CLI vs API; contenido estático exacto vs rewrite.
+## 7. Academia/manuales
+Auth real detrás del adapter; tipo de acceso/namespace; usuario ≠ email obligatorio; tenant/proyecto; shopperId exacto; mínimo privilegio; dedupe seguro; conflictos a revisión; recuperación y cambio de acceso.
 
-## 7. Estado seguro
-PR #7 draft/open/no merge. Corte6: Auth claim writes5; usuarios nuevos/password/deletes0; Firestore data writes0; Rules release1 verificada; Hosting DEV1/1; Storage/HR/legacy0; pagos/Make/Gemini0; producción=false.
+## 8. Estado seguro
+PR #7 draft/open/no merge. Bloque credential-continuity actual: Auth imports0; password resets0; deletes0; Firestore data writes0; Rules0; Hosting adicional0; Storage/HR/legacy/payments/Make/Gemini0; producción=false; PII/credenciales crudas0.
