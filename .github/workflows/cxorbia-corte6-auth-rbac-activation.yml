@@ -178,7 +178,8 @@ jobs:
             elif [ '${{ steps.verify.outcome }}' = 'failure' ]; then DESC='FAIL_C6_READINESS';
             elif [ '${{ steps.freeze.outcome }}' = 'failure' ]; then DESC='FAIL_C6_FREEZE'; fi
           fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/corte6-auth-rbac' -f description="$DESC" >/dev/null
+          CONTEXT="cxorbia/corte6-auth-rbac/${DESC}"
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="$CONTEXT" -f description="$DESC" >/dev/null
 
       - name: Cleanup credential
         if: always()
