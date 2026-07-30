@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.c5-existing-hosting-dev-visual.v1",
   "requestId": "c5-existing-hosting-dev-visual-20260730-01",
-  "status": "diagnostic_hold_after_hosting_deploy_failure",
-  "enabled": false,
+  "status": "ready_after_corte6_auth_rbac_pass",
+  "enabled": true,
   "consumed": false,
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-07-30",
@@ -11,8 +11,8 @@
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "authorizedBaseHead": "a50b3005e70bf1377547d85611abb97a832c9eb2",
-  "executionBaseHead": "45f956fd642ba4214df5d9bf16b35562fe2226a7",
-  "authorizationCarryForwardReason": "The reserved one-shot Hosting authorization explicitly remained unconsumed pending secure browser Auth. Corte 6 Auth/RBAC and Firestore Rules are verified PASS. The first controlled Hosting deploy attempt failed before freeze; the authorization remains reserved and unconsumed while root cause is diagnosed read-only.",
+  "executionBaseHead": "a34f51bcd5601f8b7854f455d4dbf9b03232a962",
+  "authorizationCarryForwardReason": "The reserved one-shot Hosting authorization remained unconsumed pending secure browser Auth. Corte 6 Auth/RBAC and Firestore Rules are verified PASS. The first Firebase CLI attempt failed because the service account lacks API Keys Viewer permissions required by the CLI; read-only evidence proves Hosting core permissions are present, no new Corte 6 version/release was published, and the remote Corte 6 proof was absent. The same reserved authorization is resumed through the official Firebase Hosting REST API without IAM mutation.",
   "targetProject": "cxorbia-backend-dev",
   "hostingTarget": "cxorbia-dev",
   "existingHostingRootUrl": "https://cxorbia-backend-dev.web.app",
@@ -41,7 +41,9 @@
   "production": false,
   "rawPiiInRepo": false,
   "rawPiiInArtifacts": false,
-  "lastFailure": "FAIL_C6_HOSTING_DEPLOY",
+  "lastFailure": "FAIL_C6_HOSTING_DEPLOY_FIREBASE_CLI_API_KEYS_VIEWER_GAP",
+  "executionPath": "official_firebase_hosting_rest_api_no_iam_change",
+  "diagnosticEvidence": "app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json",
   "preflight": {
     "existingHostingVerified": true,
     "existingHostingProject": "cxorbia-backend-dev",
@@ -54,8 +56,11 @@
     "safePublicRealPiiPreviewWithoutAuth": false,
     "corte6AuthRbacPass": true,
     "corte6RulesPass": true,
-    "deployAllowedNow": false,
-    "reason": "The controlled existing Hosting DEV deployment step failed. Request is fail-closed before any retry. Root cause must be diagnosed read-only; no additional Hosting deploy is allowed while this hold is active."
+    "hostingCoreIamPass": true,
+    "firebaseCliApiKeysViewerGap": true,
+    "firstFailedAttemptPublishedCorte6Proof": false,
+    "deployAllowedNow": true,
+    "reason": "Read-only root-cause evidence isolates the failure to the Firebase CLI API Keys Viewer dependency. Hosting site/read/update permissions are present and direct Hosting API reads pass. Resume the same reserved one-shot through the official Hosting REST API; no IAM change is required."
   },
-  "nextGate": "READONLY_HOSTING_DEPLOY_ROOT_CAUSE_DIAGNOSTIC__THEN_RESUME_SAME_RESERVED_ONE_SHOT_ONLY_IF_SAFE"
+  "nextGate": "EXECUTE_SINGLE_EXISTING_HOSTING_DEV_REDEPLOY_VIA_OFFICIAL_REST_API__VERIFY_REMOTE_STATIC_AUTH_GATE__HUMAN_AUTHENTICATED_VISUAL_VALIDATION"
 }
