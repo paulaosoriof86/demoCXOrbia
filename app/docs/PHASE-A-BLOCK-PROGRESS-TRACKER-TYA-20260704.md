@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-30  
-**Estado:** `CORTE3_FROZEN__CORTE5_R17N_MATERIALIZED_1406__CXDATA_PERIOD_P0_FIXED__READONLY_RESMOKE_PASS__OPERATIONAL_VISUAL_PENDING`
+**Estado:** `CORTE3_FROZEN__CORTE5_R17N_MATERIALIZED_1406__CXDATA_TECH_PASS__EXISTING_HOSTING_VISUAL_AUTH_PREREQUISITE__DEPLOY0`
 
 ## 1. Estado general
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -10,8 +10,9 @@
 - PR #7: draft/open/no merge.
 - Baseline frontend: `CXORBIA-TYA-CORTE3-V182-20260729` FROZEN.
 - Backend DEV canónico: `cxorbia-backend-dev`.
+- Hosting DEV visual existente: `cxorbia-backend-dev.web.app`, target `cxorbia-dev`.
 - Legacy/Hosting final: `tya-plataforma`.
-- No nueva candidata/base/rama/PR.
+- No nueva candidata/base/rama/PR/Hosting.
 
 ## 2. Bloques cerrados
 ### M1 / Corte 1 / Corte 2A
@@ -48,7 +49,8 @@ Autorización `r17n-final-dev-20260730-01` ejecutada y consumida.
 
 Grupos: foundation16 + legacy profiles120 + current-HR profiles5 + certifications77 + visits616 + liquidation controls572.
 
-### Post-compare proveedor/identidad completado
+### Post-compare proveedor/identidad
+PASS:
 - materialized paths 1,406/1,406;
 - canonical periods 14;
 - visits 616;
@@ -62,68 +64,56 @@ Grupos: foundation16 + legacy profiles120 + current-HR profiles5 + certification
 - certifications with valid shopper 77/77;
 - demo placeholders 0.
 
-### Bloque intermedio agregado — P0 runtime RESUELTO
-P0 histórico: `P0_PROVEN_C5_CXDATA_PERIOD_MODEL_MISMATCH`.
+### P0 runtime — resuelto
+`P0_PROVEN_C5_CXDATA_PERIOD_MODEL_MISMATCH` fue corregido focalmente en `app/core/backend-firebase.js`.
 
-Causa:
-- `app/core/backend-firebase.js` derivaba periodos de los 30 documentos raíz bajo `tenants/tya/projects`;
-- no consumía los 14 documentos canónicos de `tenants/tya/projects/cinepolis/periods`;
-- `currentPeriodId` podía quedar en `cinepolis`, que es ID de proyecto, no de periodo.
+Re-smoke final `30544595440`: source=firestore, fallback=false, projects=1, periods=14, visits=616, currentProjectId=cinepolis, currentPeriodId=2026-07, IDs canónicos exactos, read-only preservado, blockers 0.
 
-Fix autorizado:
-- commit runtime `96cb7601559a76595d6203724a4bcf2d0b35b390`;
-- adapter lee periodos desde la subcolección canónica del proyecto activo;
-- currentPeriodId se valida contra el conjunto canónico y usa active/último si está stale;
-- UI y datos no modificados.
+### Bloque intermedio agregado — preflight visual seguro
+Paula autorizó un único redeploy del Hosting DEV ya existente. El preflight verificó el mismo sitio/target y **detuvo antes del deploy** porque el navegador requiere Firebase Auth/claims para leer PII real protegida.
 
-### Re-smoke read-only final — PASS
-Run `30544595440`, artifact `8760141578`:
-- source=firestore;
-- fallback=false;
-- CX.data interface preserved;
-- projects=1;
-- periods=14;
-- visits=616;
-- currentProjectId=cinepolis;
-- currentPeriodId=2026-07;
-- period IDs adapter = canonical IDs;
-- readOnly/writeMode disabled;
-- provider/identity/adapter/period blockers=0.
+- new Hosting=false;
+- new Firebase project=false;
+- authorized deploy max=1;
+- deploy executed=0;
+- authorization consumed=false;
+- Firestore rules requieren `request.auth` + role/tenant;
+- login actual de UI = selector de rol, no Auth Firebase;
+- autorización actual prohíbe Auth writes/Rules deploy;
+- no se publican credenciales/tokens/PII como atajo.
 
-### Instrumentación QA
-Primer intento post-fix `30544254033` mostró periods=0 porque el fake Firestore del smoke omitía `periods`, aunque el mismo gate había leído 14 del proveedor. Se corrigió solo el harness en `21ce464772bfe6543b3672ad4b6d7deafd564adc`; no hubo un segundo runtime fix ni data writes.
+Esto no reabre materialización ni CX.data. Es una dependencia de seguridad de la visualización real.
 
 ### Preservado fuera del write
-Tenant update1, existing profile updates22, legacy holds7, cert hold1, Agosto HN, deletes, pagos/lotes, Auth/Storage/HR/legacy writes, merge/producción.
+Tenant update1, existing profile updates22, legacy holds7, cert hold1, Agosto HN, deletes, pagos/lotes, Auth/Storage/HR/legacy writes, producción.
 
-## 4. Estado actual / siguiente exacto
-Corte 5 está en:
-`TECHNICAL_PASS_PENDING_OPERATIONAL_VISUAL`.
+## 4. Bloque en progreso / siguiente exacto
+`CORTE 6 AUTH/RBAC PREPARATION READ-ONLY/OFFLINE → INVENTARIO/RECONCILIACIÓN DE AUTH EXISTENTE → CLAIMS/RULES/LOGIN SEGURO → autorización específica solo para cambios provider mínimos → REUTILIZAR EL MISMO HOSTING DEV + el redeploy ya autorizado → VALIDACIÓN VISUAL REAL → FREEZE`.
 
-Siguiente secuencia:
-`AUTORIZACIÓN BIND DEV READ-ONLY A cxorbia-backend-dev + UN ÚNICO HOSTING DEV CONTROLADO → VALIDACIÓN VISUAL/OPERATIVA CON DATOS REALES → si no aparece P0: FREEZE CORTE 5 → CORTE 6 AUTH/RBAC`.
+No pedir otra autorización de Hosting mientras `hostingDeployExecutions=0`.
 
-Criterios visuales mínimos:
-- un proyecto padre Cinépolis;
-- exactamente 14 periodos canónicos;
-- current period canónico;
-- histórico y 616 visitas coherentes;
-- identidad real por rol;
-- 77 certificaciones carryover;
-- 572 controles de liquidación sin inferir pago;
+## 5. Criterios para la visual posterior
+- usuario Firebase autenticado y claims válidos;
+- ninguna credencial en repo/URL/Hosting;
+- tenant `tya` y proyecto `cinepolis`;
+- 14 periodos /616 visitas;
+- 208 refs /194 canonical targets sin regresión;
+- identidad real visible solo por rol;
+- 77 certificaciones;
+- 572 controles, pagos no inferidos;
 - fallback demo/local=false;
-- sin fuga de PII.
+- data writes=0 durante validación.
 
-## 5. Cortes posteriores
-- Corte 6: Auth/RBAC, solo después de freeze Corte 5 y con autorización específica para cambios.
+## 6. Cortes posteriores
+- Corte 6: Auth/RBAC seguro, ahora prerequisito técnico de la visual real de Corte 5.
 - Corte 7: sync HR↔plataforma, evidencias, Make/Gemini con gates.
 - Corte 8: preproducción/cutover a Hosting `tya-plataforma`, con autorización específica.
 
-## 6. Claude/prototipo
-No nueva candidata. P0 backend está técnicamente cerrado. Claude solo entra ante P0 frontend reproducible posterior o backlog P1/P2.
+## 7. Claude/prototipo
+No nueva candidata. El pendiente relevante es login/Auth real; no se sustituye por selector de rol ni se parchea con credenciales embebidas. Claude solo entra con tarea focalizada o P0 frontend reproducible.
 
-## 7. Academia
-Actualizado con: fuente viva, referencia HR vs perfil canónico, identidad real/source-safe, proyecto padre vs periodo, readback vs consumidor, stable-key, preflight fail-closed, materialización/readback, certificación carryover y liquidación ≠ pago.
+## 8. Academia
+Actualizar: fuente viva, referencia HR vs perfil canónico, identidad real/source-safe, proyecto padre vs periodo, Auth vs selección de rol, preflight fail-closed, materialización/readback y liquidación ≠ pago.
 
-## 8. Estado seguro
-R17N: Firestore writes autorizados ejecutados 1,406. Fix/re-smoke: provider reads únicamente; Firestore/Auth/Storage/HR/legacy writes=0; deletes=0; pagos/lotes=0; deploy=0; merge=false; producción=false; Make/Gemini=0; PII cruda repo/artifact=0.
+## 9. Estado seguro
+R17N: Firestore writes autorizados ejecutados 1,406. Bloque actual: Hosting deploy=0; Firestore/Auth/Storage/HR/legacy writes=0; Rules/Functions deploy=0; deletes=0; pagos/lotes=0; merge=false; producción=false; Make/Gemini=0; PII cruda repo/artifact=0.
