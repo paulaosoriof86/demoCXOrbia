@@ -6,6 +6,6 @@
   "writes": 0,
   "production": false,
   "merge": false,
-  "triggerNonce": 3,
-  "purpose": "R17N post-legacy refresh no-execute plan + offline idempotence"
+  "triggerNonce": 4,
+  "purpose": "R17N final no-execute after real-identity reconciliation + offline idempotence"
 }
