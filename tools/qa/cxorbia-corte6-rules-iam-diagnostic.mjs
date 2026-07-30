@@ -4,8 +4,10 @@ import admin from 'firebase-admin';
 const expectedProject = process.env.CXORBIA_EXPECTED_PROJECT || 'cxorbia-backend-dev';
 const credentialPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 const out = process.env.CXORBIA_RULES_IAM_REPORT || 'app/docs/evidence/CORTE6-RULES-IAM-DIAGNOSTIC-LATEST.json';
+const rulesPath = process.env.CXORBIA_RULES_SOURCE || 'firestore.rules';
 
 if (!credentialPath || !fs.existsSync(credentialPath)) throw new Error('credential_missing');
+if (!fs.existsSync(rulesPath)) throw new Error('rules_source_missing');
 const sa = JSON.parse(fs.readFileSync(credentialPath, 'utf8'));
 if (sa.project_id !== expectedProject) throw new Error(`wrong_project:${sa.project_id || 'missing'}!=${expectedProject}`);
 
@@ -57,6 +59,22 @@ const rulesets = await request(
   `https://firebaserules.googleapis.com/v1/projects/${encodeURIComponent(expectedProject)}/rulesets?pageSize=1`
 );
 
+// Firebase Rules projects.test validates Source syntax/semantics without creating a Ruleset or Release.
+const rulesContent = fs.readFileSync(rulesPath, 'utf8');
+const sourceTest = await request(
+  'POST',
+  `https://firebaserules.googleapis.com/v1/projects/${encodeURIComponent(expectedProject)}:test`,
+  {source:{files:[{name:'firestore.rules',content:rulesContent}]}}
+);
+const sourceIssues = Array.isArray(sourceTest.payload?.issues) ? sourceTest.payload.issues : [];
+const errors = sourceIssues.filter(i => i?.severity === 'ERROR');
+const warnings = sourceIssues.filter(i => i?.severity === 'WARNING' || i?.severity === 'DEPRECATION');
+const firstError = errors.length ? {
+  line:Number(errors[0]?.sourcePosition?.line || 0),
+  column:Number(errors[0]?.sourcePosition?.column || 0),
+  description:String(errors[0]?.description || '').replace(/[\r\n]+/g,' ').slice(0,240)
+} : null;
+
 const requiredForDeploy = [
   'firebaserules.rulesets.create',
   'firebaserules.releases.get',
@@ -66,19 +84,21 @@ const requiredForDeploy = [
 ];
 const missingRequired = requiredForDeploy.filter(p => !granted.has(p));
 const report = {
-  schemaVersion:'cxorbia.corte6-rules-iam-diagnostic.v1',
+  schemaVersion:'cxorbia.corte6-rules-iam-diagnostic.v2',
   generatedAt:new Date().toISOString(),
   projectId:expectedProject,
   readOnly:true,
   providerWrites:0,
   iamTest:{ok:iam.ok,status:iam.status,permissions:permissionMap},
   firebaserulesRead:{releaseOk:release.ok,releaseStatus:release.status,rulesetsOk:rulesets.ok,rulesetsStatus:rulesets.status},
+  sourceValidation:{ok:sourceTest.ok,status:sourceTest.status,errorCount:errors.length,warningCount:warnings.length,firstError},
   requiredForDeploy,
   missingRequired,
   iamDeployReady:iam.ok && missingRequired.length === 0,
+  sourceDeployReady:sourceTest.ok && errors.length === 0,
   safety:{authWrites:0,firestoreWrites:0,rulesWrites:0,hostingDeploys:0,production:false,merge:false,piiExported:false,secretsExported:false}
 };
 
 fs.mkdirSync(new URL('../../app/docs/evidence/', import.meta.url), {recursive:true});
 fs.writeFileSync(out, JSON.stringify(report,null,2)+'\n','utf8');
-console.log(JSON.stringify({projectId:expectedProject,iamStatus:iam.status,releaseStatus:release.status,rulesetsStatus:rulesets.status,missingRequired,iamDeployReady:report.iamDeployReady,providerWrites:0}));
+console.log(JSON.stringify({projectId:expectedProject,iamStatus:iam.status,releaseStatus:release.status,rulesetsStatus:rulesets.status,sourceTestStatus:sourceTest.status,sourceErrors:errors.length,firstErrorLine:firstError?.line||0,missingRequired,iamDeployReady:report.iamDeployReady,sourceDeployReady:report.sourceDeployReady,providerWrites:0}));
