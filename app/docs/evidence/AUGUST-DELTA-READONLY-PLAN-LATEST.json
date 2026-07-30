@@ -1,7 +1,8 @@
 {
-  "schemaVersion": "cxorbia.august-delta-readonly-plan.v2",
-  "generatedAt": "2026-07-30T23:52:04.046Z",
-  "decision": "PASS_AUGUST_GT34_DELTA_READY__HN_HOLD_SOURCE_COUNTRY_MISMATCH",
+  "schemaVersion": "cxorbia.august-delta-readonly-plan.v3",
+  "generatedAt": "2026-07-30T23:54:27.325Z",
+  "decision": "PASS_AUGUST_GT34_DELTA_TECH_READY__HN_HOLD_SOURCE_COUNTRY_MISMATCH",
+  "releaseReadiness": "NO_UNASSIGNED_VISITS_IN_ACCEPTED_SOURCE",
   "target": {
     "firebaseProjectId": "cxorbia-backend-dev",
     "tenantId": "tya",
@@ -17,7 +18,7 @@
     "deltaOnly": true
   },
   "source": {
-    "generatedAt": "2026-07-30T23:52:01.550Z",
+    "generatedAt": "2026-07-30T23:54:24.928Z",
     "accessMode": "public_gviz_csv_cache_busted",
     "sourceSafe": true,
     "observedAugust": {
@@ -56,6 +57,17 @@
     "acceptedCandidates": 34,
     "newVisitWritesPlanned": 34,
     "alreadyExistingAccepted": 0
+  },
+  "operational": {
+    "acceptedStatusCounts": {
+      "submitida": 27,
+      "cuestionario": 7
+    },
+    "assigned": 34,
+    "unassigned": 0,
+    "scheduled": 34,
+    "realized": 34,
+    "submitted": 27
   },
   "holds": [
     {
