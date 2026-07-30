@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-30  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_PROTOTYPE_AUTOENTRY_HOSTING_DEV_REMOTE_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTOENTRY_VISUAL_OBSERVED_PASS__PROTECTED_IDENTITY_READONLY_PASS__AUGUST_REFRESH_READONLY_NEXT__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -11,7 +11,7 @@
 - Base: `release/cxorbia-tya-rc-20260630`.
 - Backend DEV: `cxorbia-backend-dev`.
 - Hosting DEV: site `cxorbia-backend-dev`, target `cxorbia-dev`.
-- Hosting público final: `tya-plataforma`; no tocar todavía.
+- Hosting público final: `tya-plataforma`; no tocar sin gate específico de producción.
 - No crear nuevo Firebase, Hosting, rama, PR o candidata por rutina.
 
 ## 2. Lectura obligatoria vigente
@@ -20,19 +20,23 @@
 3. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 4. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 5. `CAMBIOS-BACKEND-ADDENDUM-C6-PROTOTYPE-AUTOENTRY-20260730.md`;
-6. `evidence/CORTE6-CREDENTIAL-CONTINUITY-HOSTING-DEPLOY-LATEST.json`;
-7. `evidence/CORTE6-CREDENTIAL-IMPORT-LATEST.json`;
-8. `app/app.js`;
-9. `app/core/backend-config-preview-dev.js`;
-10. `app/core/backend-browser-auth.js`;
-11. `app/core/backend-cxdata-readonly-corte4.js`;
-12. `app/core/backend-preview-status.js`;
-13. `app/data/tya-hr-source-safe-periods.js`;
-14. `RESUMEN-PARA-CLAUDE.md`;
-15. `PENDIENTES-PROTOTIPO.md`;
-16. tracker Phase A;
-17. Academia Corte6;
-18. PR #7 y HEAD vivo.
+6. `CAMBIOS-BACKEND-ADDENDUM-C6-PROTECTED-IDENTITY-READONLY-PASS-20260730.md`;
+7. `evidence/CORTE6-PROTECTED-SHOPPER-IDENTITY-READONLY-LATEST.json`;
+8. `evidence/CORTE6-CREDENTIAL-CONTINUITY-HOSTING-DEPLOY-LATEST.json`;
+9. `evidence/CORTE6-CREDENTIAL-IMPORT-LATEST.json`;
+10. `evidence/CORTE6-FIRESTORE-RULES-DEPLOY-LATEST.json`;
+11. `app/app.js`;
+12. `app/core/backend-config-preview-dev.js`;
+13. `app/core/backend-browser-auth.js`;
+14. `app/core/backend-firebase.js`;
+15. `app/core/backend-cxdata-readonly-corte4.js`;
+16. `app/core/backend-preview-status.js`;
+17. `app/data/tya-hr-source-safe-periods.js`;
+18. `RESUMEN-PARA-CLAUDE.md`;
+19. `PENDIENTES-PROTOTIPO.md`;
+20. tracker Phase A;
+21. Academia Corte6;
+22. PR #7 y HEAD vivo.
 
 ## 3. Baseline protegida — no reabrir
 - Corte3 `CXORBIA-TYA-CORTE3-V182-20260729`: FROZEN.
@@ -42,38 +46,37 @@
 - Corte6 Auth import/readback91/91 PASS; no repetir/resetear.
 - claims5/5 + Rules PASS.
 
-## 4. P0 visual y corrección vigente
-Se rechazaron dos builds: gate separado `Acceso seguro` y luego formulario `Usuario + Contraseña` inyectado al seleccionar perfil.
+## 4. Visual Corte6 y significado de `Shopper protegido`
+Los dos P0 de acceso están corregidos y la captura humana actual demuestra que el auto-entry del prototipo funciona. El preview humano sigue rotulado `Source-safe (preview)` y por diseño usa un snapshot público/read-only con PII enmascarada; por eso allí aparece `Shopper protegido`.
 
-Contrato correcto del preview humano: perfil → entrada automática. El fix conserva HR source-safe read-only y mantiene Auth/RBAC/Rules como gates provider separados.
+No convertir ese placeholder en identidad final ni insertar nombres reales en el JS público. La identidad real pertenece a Firestore protegido detrás de Auth/RBAC/Rules.
 
-## 5. Evidencia técnica actual
-Gate estático `29b7f9404a9c2f144145fe24d5cf048f753c1e75` PASS.
+## 5. Gate protegido de identidad — PASS
+`PASS_C6_PROTECTED_IDENTITY_READONLY_RUNTIME_READY`.
 
-La primera ejecución autorizada falló antes de deploy por mismatch interno de decisión preflight/direct-deploy. Corregido en `b9f5190babcc339735cda59291417df5aea6988f`; el request seguía deploy0/consumed=false.
+Read-only directo en `cxorbia-backend-dev`:
+- shoppers protegidos340; con nombre real340; placeholder0; sin nombre0;
+- visitas canónicas616; con nombre real616; placeholder0; sin nombre/shopperId0;
+- shopperIds canónicos distintos referenciados194;
+- perfiles referenciados existentes194/194;
+- perfiles referenciados con nombre real194/194; placeholder/missing0;
+- Rules shopper protegidas y deny-by-default PASS;
+- adapter protegido carga shoppers y nombre real PASS;
+- source-safe público permanece enmascarado PASS;
+- Rules desplegadas verificadas/hash consistente PASS.
 
-Reintento bajo la misma autorización:
-`PASS_EXISTING_HOSTING_DEV_PROTOTYPE_AUTO_ENTRY_SOURCE_SAFE_REMOTE_VERIFIED`.
+GitHub status: `PASS_C6_PROTECTED_IDENTITY_READONLY`.
 
-- versión `sites/cxorbia-backend-dev/versions/95a1e49e5064c456`;
-- release `sites/cxorbia-backend-dev/releases/1785452689852000`;
-- prototypeAutoEntry=true;
-- humanCredentialPrompt=false;
-- sourceSafeVisual=true;
-- proyecto `cinepolis`;
-- periodos14;
-- visitas616;
-- Hosting deploy executions1;
-- preservedLegacyAuthUsers91;
-- Auth/Firestore/Rules/Storage/HR/legacy/payments/Functions/Make/Gemini writes adicionales0;
-- nuevo Firebase/Hosting0;
-- merge=false; producción=false.
+## 6. Regla de release desde este punto
+- Preview público/source-safe: puede y debe permanecer enmascarado.
+- Preproducción/producción autenticada: Admin/Operativo debe leer Firestore protegido y ver identidad real; shopper solo su propio perfil; no puede renderizar `Shopper protegido` cuando existe perfil canónico real.
+- La próxima validación de identidad real se hace en runtime protegido, no publicando PII en el preview source-safe.
 
-## 6. Gate vivo único
-`VALIDACIÓN VISUAL HUMANA DEL NUEVO BUILD DEV → SI APRUEBA: FREEZE CORTE6`.
+## 7. Siguiente bloque exacto
+`REFRESH HR READ-ONLY → RESOLVER/CLASIFICAR AGOSTO HN → VALIDAR AGOSTO → PREPARAR WRITE PLAN DELTA-ONLY`.
 
-Después:
-`REFRESH HR → RESOLVER HOLD AGOSTO HN → MATERIALIZAR SOLO DELTA AGOSTO → PREPROD/CUTOVER tya-plataforma`.
+Solo después, y con autorización explícita para Firestore data writes:
+`MATERIALIZAR SOLO DELTA AGOSTO → READBACK/SMOKE → PREPROD PROTEGIDA CON IDENTIDAD REAL → CUTOVER tya-plataforma`.
 
-## 7. Estado seguro
-Producción no tocada. PR #7 draft/open/no merge. Histórico/Auth91/Rules/CX.data preservados.
+## 8. Estado seguro
+Producción no tocada. PR #7 draft/open/no merge. Histórico/Auth91/Rules/CX.data preservados. Gate de identidad: provider reads únicamente; Auth/Firestore data/Rules/Hosting/Storage/HR/legacy/payments/Functions/Make/Gemini writes0; PII exportada0.
