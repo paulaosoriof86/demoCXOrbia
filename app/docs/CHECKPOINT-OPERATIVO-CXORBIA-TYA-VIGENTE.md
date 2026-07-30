@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-30  
-**Estado:** `CORTE6_AUTH_RBAC_RULES_PASS__HOSTING_DEV_REDEPLOY1OF1_VERIFIED_DIRECT_ENTRYPOINT__WAITING_HUMAN_AUTH_VISUAL__NO_PRODUCTION`
+**Estado:** `P0_PROVEN_C6_CREDENTIAL_CONTINUITY_GAP__AUTH_RULES_HOSTING_TECH_PASS__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos fijos
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -10,7 +10,6 @@
 - Base: `release/cxorbia-tya-rc-20260630`.
 - Backend DEV canónico: `cxorbia-backend-dev`.
 - Hosting DEV existente: site `cxorbia-backend-dev`, target `cxorbia-dev`.
-- URL visual DEV canónico: `https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis`.
 - Hosting público final: `tya-plataforma`; no tocar todavía.
 - No nueva base/Hosting/rama/PR/candidata.
 
@@ -21,91 +20,78 @@
 - Corte 5 `CX.data`: P0 proyecto/periodo corregido; re-smoke PASS source=firestore, fallback=false, projects1, periods14, visits616, currentProjectId=`cinepolis`, currentPeriodId=`2026-07`.
 - No repetir los 1,406 writes.
 
-## 3. Corte 6 Auth/RBAC — ejecutado y verificado
-Autorización consumida en conversación actual: `Autorizo Corte 6: máximo 5 claims Auth + deploy exclusivo de Firestore Rules.`
+## 3. Corte 6 Auth/RBAC/Rules — PASS técnico
+Autorización consumida: máximo 5 claim updates + deploy exclusivo de Firestore Rules.
 
 Resultado:
-- 5/5 custom-claim updates sobre usuarios existentes;
-- 2 cliente +3 shopper con vínculo exacto;
-- proyecto stale `tya`/`tya-piloto` normalizado a `cinepolis`;
+- 5/5 custom-claim updates sobre usuarios existentes: 2 cliente +3 shopper con vínculo exacto;
+- proyecto stale `tya`/`tya-piloto` → `cinepolis`;
 - cuarto shopper sin vínculo exacto: no tocado;
 - usuarios nuevos/password changes/deletes: 0/0/0;
-- Auth readback: operadores ready7, clientes ready2, shoppers ready3, familias requeridas PASS.
+- Auth readback: operadores ready7, clientes ready2, shoppers ready3;
+- Firestore Rules release/readback SHA exacto PASS;
+- Firestore data writes Corte6: 0.
 
-Runtime seguro activo en el entrypoint DEV:
-- `app/core/backend-browser-auth.js`: Firebase Email/Password interactivo, persistencia SESSION, claims como autoridad;
-- `app/core/backend-config-preview-dev.js`: sin credenciales persistidas/fallback;
-- `app/core/backend-firebase.js`: lecturas acotadas al principal autenticado;
-- interfaz `CX.data` preservada;
-- `app/modules/*` no reescrito por backend.
-
-## 4. Firestore Rules — PASS
-- Fuente desplegada reconoce `status='disponible'` y compatibilidad `estado` legacy.
-- Firebase CLI falló por falta de `firebaserules.rulesets.test`, no por falta de permisos de creación/actualización de Rules.
-- Se ejecutó por API oficial Firebase Rules sin ampliar IAM.
-- Ruleset/release/readback SHA exacto: PASS.
-- Firestore data writes en Corte 6: 0.
-
-## 5. Hosting DEV existente — único redeploy consumido
-La autorización previa del mismo Hosting DEV fue reutilizada, no solicitada nuevamente.
-
-Resultado:
-- nuevo Firebase: 0;
-- nuevo Hosting: 0;
-- Hosting deploy executions: **1/1**;
-- autorización consumida: true;
-- Firebase CLI quedó bloqueado por dependencia API Keys Viewer (`apikeys.keys.*`);
-- diagnóstico read-only confirmó Hosting core IAM PASS;
-- sin cambios IAM, el único deploy autorizado se ejecutó por API oficial Firebase Hosting;
+## 4. Hosting DEV — PASS técnico, autorización 1/1 consumida
+- mismo Firebase/Hosting existente;
+- nuevo Firebase/Hosting: 0/0;
 - release `sites/cxorbia-backend-dev/releases/1785431702100000`;
 - version `sites/cxorbia-backend-dev/versions/b00728c729452665`, FINALIZED;
-- remote Corte6 proof/config/browser-auth/`index-backend-dev.html`: PASS.
+- remote proof/config/browser-auth/`index-backend-dev.html`: PASS;
+- no redeploy adicional autorizado.
 
-El root `/` no es el entrypoint canónico porque Firebase Hosting prioriza el archivo estático exacto `app/index.html` sobre rewrites. Esto es no bloqueante; no autoriza otro deploy. La validación debe usar `/index-backend-dev.html`.
+## 5. P0 demostrado — continuidad de credenciales
+La visual DEV expuso un login nuevo `Correo + Contraseña`. Paula confirmó que ese flujo nunca había formado parte de su operación y que las pruebas anteriores no requerían conocer credenciales Firebase DEV.
 
-## 6. Gate vivo único — visual humana autenticada
-`HUMAN_AUTHENTICATED_VISUAL_VALIDATION_ADMIN_OPS_CLIENT_SHOPPER`.
+Se ejecutó inventario source-safe read-only `CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json`:
+- `tenants/tya/shoppers`: 340 docs inventariados agregadamente;
+- `user/username/login`: 0;
+- `pass/password`: 0;
+- `tenants/tya/users`: 0 docs;
+- claves tenant relacionadas con login: 0;
+- Firebase Auth: 17 users, 17 password provider, 17 con identificador email.
 
-Validaciones requeridas:
-1. Admin/Operativo ve `cinepolis`, 14 periodos/histórico correcto y navegación operativa.
-2. Cliente solo ve su proyecto autorizado.
-3. Shopper vinculado entra con identidad real, historial propio y disponibles autorizadas.
-4. Shopper no vinculado no recibe acceso por inferencia.
-5. Sin regresión en postulaciones, visitas, certificación, finanzas, Academia/manuales y navegación.
-6. Sin copy técnico de claims/provider/source-safe en UI normal.
+Conclusión: las 17 cuentas Auth actuales son identidades técnicas DEV; el backend canónico no recibió todavía la fuente legacy de `Usuario + Contraseña`. Forzar correo visible o crear `paula.osorio.f86@gmail.com` como solución generaría un segundo modelo de acceso y reproceso.
 
-Las credenciales se ingresan solo directamente en navegador. No enviarlas por chat.
+Documento rector: `CORTE6-P0-CONTINUIDAD-CREDENCIALES-LEGACY-A-FIREBASE-20260730.md`.
 
-## 7. Agosto
+## 6. Contrato de acceso que se preserva
+- Firebase Auth/claims siguen siendo necesarios como autoridad real.
+- El usuario final no debe estar obligado a usar correo como identificador visible.
+- Contrato objetivo: `Usuario + Contraseña`, con accesos/roles configurables y adapter interno a Firebase Auth.
+- No guardar passwords/tokens en localStorage.
+- No compartir credenciales por chat, repo, logs o artifacts.
+- La fuente legacy de credenciales se recupera solo mediante export/import controlado; nunca conectando la base antigua al backend nuevo.
+
+## 7. Gate vivo único
+`EXPORT/INVENTARIO CREDENCIALES LEGACY SOURCE-SAFE → PLAN AUTH IMPORT IDEMPOTENTE → AUTORIZACIÓN PROVIDER ÚNICA → IMPORT/READBACK → LOGIN USUARIO+CONTRASEÑA → SMOKE ADMIN/OPS/CLIENTE/SHOPPER → FREEZE CORTE6`.
+
+Hasta cerrar este P0 no corresponde pedir a Paula una credencial Firebase DEV ficticia ni crear una cuenta Gmail nueva.
+
+## 8. Agosto
 - Fuente materializada llega hasta julio 2026: 14 periodos/616 visitas.
 - `Agosto HN` sigue HOLD por inconsistencia país/tab.
-- Después de PASS visual: FREEZE Corte6 → refresh HR → resolver HOLD → materializar solo delta agosto.
+- Después de FREEZE Corte6: refresh HR → resolver HOLD → materializar solo delta agosto.
 - No rematerializar histórico.
 
-## 8. Claude / prototipo
+## 9. Claude / prototipo
 - No nueva candidata.
-- Solo abrir tarea localizada si la visual autenticada demuestra un P0 reproducible.
-- P1/P2 preservados: PDF sin gráfica, Excel sin formato final, reportKit/exportaciones y copy de fuentes.
+- Corrección focalizada pendiente en login/registro: preservar `Usuario + Contraseña` y dejar Firebase detrás del adapter.
+- No reescribir `app/modules/*`.
+- Backlog P1/P2 sigue no bloqueante: PDF sin gráfica, Excel sin formato final, reportKit/exportaciones y copy de fuentes.
 
-## 9. Academia
-Actualizar manuales/rutas con:
-- Auth real ≠ selector local de rol;
-- claims tenant/proyecto como autoridad;
-- `shopperId` exacto;
-- visita disponible protegida;
-- fail-closed y revisión humana;
-- diferencias entre dependencia CLI y permisos reales del API;
-- Hosting: contenido estático exacto precede rewrites.
+## 10. Academia
+Actualizar manuales/rutas con: autenticación provider real detrás del login del producto; usuario no equivale a email; tenant/proyecto/rol delimitan acceso; recuperación/cambio de contraseña; conflictos de identidad a revisión; nunca ampliar permisos silenciosamente.
 
-## 10. Clasificación
-- `Reusable CXOrbia`: browser Auth gate, principal-scoped reads, claims fail-closed, Rules canónicas, diagnóstico/API oficial Hosting.
-- `Exclusivo cliente`: tenant `tya`, proyecto `cinepolis`, scopes stale, Agosto HN.
-- `Claude/prototipo`: sin tarea hasta visual.
-- `Academia`: Auth/RBAC, mínimo privilegio, Hosting/Rules gates.
-- `Sin impacto Claude`: runners, requests, IDs release/version y evidencia source-safe.
+## 11. Clasificación
+- `Reusable CXOrbia`: adapter de identidad, Auth/claims, import idempotente, fail-closed.
+- `Exclusivo cliente`: fuente legacy TyA y credenciales históricas.
+- `Claude/prototipo`: UX focalizada login/registro.
+- `Academia`: acceso, recuperación y scopes.
+- `Sin impacto Claude`: inventarios source-safe, import/readback y gates.
 
-## 11. Estado seguro
-R17N previo: 1,406 Firestore data writes ya cerrados. Corte6: Auth claim writes5; usuarios nuevos/password/deletes0; Firestore data writes0; Rules release1 verificada; Hosting DEV1/1; Storage/HR/legacy0; payments0; Make/Gemini0; merge=false; producción=false; PII/secrets crudos0.
+## 12. Estado seguro
+R17N previo: 1,406 Firestore data writes cerrados. Corte6: Auth claim writes5 ya autorizados; usuarios nuevos0; password changes0; Firestore data writes0; Rules release1 verificada; Hosting DEV1/1; inventario adicional read-only provider writes0; Storage/HR/legacy writes0; payments0; Make/Gemini0; merge=false; producción=false; credenciales crudas exportadas0.
 
-## 12. Siguiente bloque exacto
-`VISUAL AUTENTICADA ADMIN/OPS/CLIENTE/SHOPPER → si PASS, FREEZE CORTE6 → REFRESH/RESOLVER AGOSTO → MATERIALIZAR SOLO DELTA AGOSTO → PREPROD/CUTOVER`.
+## 13. Siguiente bloque exacto
+`RECUPERAR FUENTE LEGACY DE CREDENCIALES POR EXPORT CONTROLADO, SIN CONECTAR BASE VIEJA → INVENTARIO/HASH-TYPE → PLAN AUTH IMPORT → AUTORIZACIÓN ÚNICA → IMPORT/READBACK → SMOKE → FREEZE → AGOSTO`.
