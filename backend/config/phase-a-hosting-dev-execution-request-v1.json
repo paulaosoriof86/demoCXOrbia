@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.c5-existing-hosting-dev-visual.v1",
   "requestId": "c5-existing-hosting-dev-visual-20260730-01",
-  "status": "preflight_hold_auth_required_no_deploy",
-  "enabled": false,
+  "status": "ready_after_corte6_auth_rbac_pass",
+  "enabled": true,
   "consumed": false,
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-07-30",
@@ -11,6 +11,8 @@
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "authorizedBaseHead": "a50b3005e70bf1377547d85611abb97a832c9eb2",
+  "executionBaseHead": "45f956fd642ba4214df5d9bf16b35562fe2226a7",
+  "authorizationCarryForwardReason": "The reserved one-shot Hosting authorization explicitly remained unconsumed pending secure browser Auth. Corte 6 Auth/RBAC and Firestore Rules are now verified PASS, so the same existing Hosting DEV authorization is ready to execute without requesting another Hosting authorization.",
   "targetProject": "cxorbia-backend-dev",
   "hostingTarget": "cxorbia-dev",
   "existingHostingRootUrl": "https://cxorbia-backend-dev.web.app",
@@ -49,8 +51,10 @@
     "previewEntrypointRequiresFirebaseAuth": true,
     "roleSelectorIsNotFirebaseAuth": true,
     "safePublicRealPiiPreviewWithoutAuth": false,
-    "deployAllowedNow": false,
-    "reason": "The existing DEV Hosting is correct, but direct browser reads of protected real Firestore data require Firebase Auth/claims. Current authorization explicitly forbids Auth writes; embedding credentials/tokens or exposing real PII publicly is forbidden. Fail-closed before consuming the single redeploy."
+    "corte6AuthRbacPass": true,
+    "corte6RulesPass": true,
+    "deployAllowedNow": true,
+    "reason": "Corte 6 verified secure Firebase Auth/RBAC readiness for operator, client and three linked shoppers, and the canonical Firestore Rules release is verified. The previously reserved existing Hosting DEV redeploy may now be consumed."
   },
-  "nextGate": "CORTE6_AUTH_RBAC_MINIMAL_ACTIVATION_PLAN_READONLY_FIRST__THEN_REUSE_THIS_EXISTING_HOSTING_REDEPLOY_AUTHORIZATION_IF_SECURE_BROWSER_AUTH_IS_AVAILABLE"
+  "nextGate": "EXECUTE_SINGLE_EXISTING_HOSTING_DEV_REDEPLOY__VERIFY_REMOTE_STATIC_AUTH_GATE__HUMAN_AUTHENTICATED_VISUAL_VALIDATION"
 }
