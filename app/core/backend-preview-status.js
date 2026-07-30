@@ -21,6 +21,7 @@ window.CX = window.CX || {};
       shoppers: Array.isArray(d.shoppers) ? d.shoppers.length : 0,
       posts: Array.isArray(d._posts) ? d._posts.length : 0,
       projectId: d.currentProjectId || '',
+      periodId: d.currentPeriodId || '',
     };
   }
 
@@ -35,16 +36,13 @@ window.CX = window.CX || {};
 
   function inferSource(status, eventName){
     const live = window.CX_BACKEND_DATA_SOURCE || '';
-    /* P0-C4-VIS-01: en modo fail-closed, backend-error NO significa demo. El guard Corte 4
-       establece Firestore como fuente objetivo y vacío seguro; priorizar ese estado evita
-       volver a rotular la UI como localStorage/demo después del cleanup correcto de Auth. */
     if(live && live !== 'localStorage/demo') return live;
     if(status === 'ready' || eventName === 'backend-ready' || eventName === 'backend-read-guard-ready') return 'firestore';
     if(status === 'error' || eventName === 'backend-error'){
       if(CX.BACKEND && CX.BACKEND.failClosedOnReadError === true) return 'firestore-read-error';
       return 'localStorage/demo';
     }
-    if(eventName === 'backend-disabled') return 'localStorage/demo';
+    if(eventName === 'backend-disabled') return (CX.BACKEND && CX.BACKEND.humanVisualSourceSafe) ? 'hr-source-safe' : 'localStorage/demo';
     if(live) return live;
     return 'pending';
   }
@@ -75,27 +73,30 @@ window.CX = window.CX || {};
     const c = counts();
     const f = firebaseState();
     const source = inferSource(status, eventName);
-    const tenant = (payload && payload.tenantId) || (CX.BACKEND && CX.BACKEND.tenantId) || (CX.backend && CX.backend.tenantId && CX.backend.tenantId()) || 'pendiente';
+    const tenant = (payload && payload.tenantId) || (CX.BACKEND && CX.BACKEND.tenantId) || (CX.backend && CX.backend.tenantId && CX.backend.tenantId()) || 'tya';
     const isFirestore = source.indexOf('firestore') === 0;
+    const isSourceSafe = source === 'hr-source-safe' || source.indexOf('source-safe') >= 0;
     const isError = status === 'error';
-    const tone = isFirestore ? (isError ? '#d97706' : '#16a05c') : isError ? '#c8232c' : '#d97706';
+    const tone = isFirestore ? (isError ? '#d97706' : '#16a05c') : isSourceSafe ? '#2a6fdb' : isError ? '#c8232c' : '#d97706';
     const label = isFirestore
       ? (isError ? 'Firestore protegido · sin fallback' : 'Firestore activo')
+      : isSourceSafe ? 'HR source-safe · validación visual'
       : isError ? 'Fuente no disponible' : 'Validando fuente';
-    const authLabel = f.email ? f.email : 'pendiente';
+    const authLabel = isSourceSafe ? 'validado por gate separado' : (f.email ? f.email : 'pendiente');
 
     STATE.status = status || STATE.status;
     STATE.source = source;
     STATE.tenantId = tenant;
     STATE.authEmail = f.email || '';
     STATE.lastEvent = eventName || STATE.lastEvent || '';
-    STATE.lastError = payload && payload.message ? payload.message : STATE.lastError;
+    STATE.lastError = payload && payload.message ? payload.message : (isSourceSafe ? '' : STATE.lastError);
     STATE.at = new Date().toISOString();
 
     const pill = ensurePill();
     pill.innerHTML = '<div style="display:flex;gap:8px;align-items:center;margin-bottom:3px"><span style="width:8px;height:8px;border-radius:99px;background:'+tone+';display:inline-block"></span><b>Backend DEV · '+label+'</b></div>'+ 
       '<div>Fuente: <b>'+source+'</b> · Tenant: <b>'+tenant+'</b> · Auth: <b>'+authLabel+'</b></div>'+ 
       '<div>Proyecto: <b>'+(c.projectId || 'pendiente')+'</b> · Proyectos: '+c.projects+' · Visitas: '+c.visits+' · Shoppers: '+c.shoppers+' · Postulaciones: '+c.posts+'</div>'+ 
+      (c.periodId ? '<div>Periodo activo: <b>'+c.periodId+'</b></div>' : '')+
       guardLine()+
       (STATE.lastError ? '<div style="opacity:.78;margin-top:2px">Último error: '+STATE.lastError+'</div>' : '');
 
@@ -109,8 +110,9 @@ window.CX = window.CX || {};
       'backend-auth-ready': 'starting',
       'backend-ready': 'ready',
       'backend-read-guard-ready': 'ready',
+      'backend-source-safe-ready': 'ready',
       'backend-error': 'error',
-      'backend-disabled': 'disabled',
+      'backend-disabled': 'ready',
       'finance-read-bridge-ready': 'starting',
     };
     Object.keys(map).forEach(function(evt){
