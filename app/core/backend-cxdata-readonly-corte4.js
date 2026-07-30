@@ -1,11 +1,12 @@
 /* ============================================================
-   CXOrbia · Corte 4 · CX.data Firestore READ-ONLY guard
+   CXOrbia · Corte 4 · CX.data READ-ONLY guard
    ------------------------------------------------------------
    Objetivo:
    - conservar exactamente la interfaz pública de CX.data;
-   - permitir lectura desde un Firebase nuevo y vacío;
-   - bloquear toda persistencia Firestore y toda acción operativa;
-   - fallar cerrado sin volver silenciosamente al mock/localStorage.
+   - bloquear toda persistencia y toda acción operativa;
+   - Firestore protegido: fail-closed, sin fallback demo;
+   - Validación humana DEV: preservar explícitamente el HR source-safe aprobado,
+     sin pedir credenciales ni presentarlo como Firestore autenticado.
    No toca módulos UI.
    ============================================================ */
 window.CX = window.CX || {};
@@ -38,8 +39,8 @@ window.CX = window.CX || {};
       status:'blocked',
       readOnly:true,
       action,
-      errors:['corte4-firestore-readonly'],
-      reason:'Corte 4 permite lectura únicamente. No se ejecutó ninguna escritura.'
+      errors:['corte4-readonly'],
+      reason:'Este entorno permite lectura/validación únicamente. No se ejecutó ninguna escritura.'
     };
     emit('backend-write-blocked', result);
     return result;
@@ -84,6 +85,64 @@ window.CX = window.CX || {};
     ns.readOnly = true;
   }
 
+  function isHumanVisualSourceSafe(){
+    return cfg.previewMode === true && cfg.humanVisualSourceSafe === true && window.CX_TYA_HR_VIVA_SOURCE_SAFE === true;
+  }
+
+  function counts(){
+    const d=CX.data||{};
+    return {
+      projects:Array.isArray(d.projects)?d.projects.length:0,
+      periods:Array.isArray(d.projects)?d.projects.length:0,
+      visits:Array.isArray(d._visitas)?d._visitas.length:0,
+      shoppers:Array.isArray(d.shoppers)?d.shoppers.length:0,
+      posts:Array.isArray(d._posts)?d._posts.length:0,
+      projectId:d.currentProjectId||'',
+      periodId:d.currentPeriodId||''
+    };
+  }
+
+  function applyHumanSourceSafe(reason){
+    restoreCxDataInterface();
+    blockDirectBackendWrites();
+    blockOperationalWrites();
+    const c=counts();
+    if(CX.dataSource){
+      CX.dataSource.mode='source_safe_preview';
+      CX.dataSource.status='ready';
+      CX.dataSource.sourceRef='hr:tya-source-safe-human-visual-dev';
+      CX.dataSource.updatedAt=new Date().toISOString();
+      CX.dataSource.warnings=['Validación visual DEV con HR source-safe. Auth/RBAC y Firestore se verifican por gates técnicos separados; no hay fallback demo ni escrituras.'];
+      CX.dataSource.blockers=[];
+      emit('datasource',{mode:'source_safe_preview',status:'ready',sourceRef:CX.dataSource.sourceRef,reason:reason||'human-visual-source-safe'});
+    }
+    window.CX_BACKEND_DATA_SOURCE='hr-source-safe';
+    window.CX_BACKEND_LAST_STATE={
+      source:'hr-source-safe',
+      empty:false,
+      readOnly:true,
+      writes:false,
+      fallbackUsed:false,
+      humanVisual:true,
+      auth:'validated-separately',
+      counts:c,
+      reason:reason||'human-visual-source-safe',
+      at:new Date().toISOString()
+    };
+    window.CX_CORTE4_READONLY={
+      ready:true,
+      source:'hr-source-safe',
+      empty:false,
+      readOnly:true,
+      writeMode:'disabled',
+      preserveCxDataInterface:true,
+      fallbackUsed:false,
+      humanVisual:true,
+      at:new Date().toISOString()
+    };
+    emit('backend-source-safe-ready',{provider:'source-safe',tenantId:(cfg.tenantId||'tya'),source:'hr-source-safe',counts:c,readOnly:true,humanVisual:true,authValidatedSeparately:true});
+  }
+
   function syncDataSource(reason){
     if(!CX.dataSource) return;
     const verified = reason === 'verified-empty-read';
@@ -96,7 +155,7 @@ window.CX = window.CX || {};
     CX.dataSource.warnings = verified
       ? ['Firestore DEV verificado vacío; modo solo lectura.']
       : failed
-        ? ['Lectura protegida no disponible en esta sesión; estado vacío fail-closed, sin fallback demo/localStorage.']
+        ? ['Lectura protegida no disponible; estado vacío fail-closed, sin fallback demo/localStorage.']
         : ['Esperando lectura protegida de Firestore DEV; datos demo/localStorage deshabilitados.'];
     emit('datasource', {mode:CX.dataSource.mode,status:CX.dataSource.status,sourceRef:CX.dataSource.sourceRef,reason});
   }
@@ -113,36 +172,16 @@ window.CX = window.CX || {};
     CX.data.currentProjectId = '';
     CX.data.currentPeriodId = '';
     CX.data.__backendReadOnlyEmpty = {
-      status:'empty',
-      source:'firestore',
-      reason:reason || 'empty-new-backend',
-      at:new Date().toISOString(),
-      readOnly:true,
-      writes:false,
-      fallbackUsed:false
+      status:'empty', source:'firestore', reason:reason || 'empty-new-backend', at:new Date().toISOString(),
+      readOnly:true, writes:false, fallbackUsed:false
     };
     window.CX_BACKEND_DATA_SOURCE = 'firestore';
     window.CX_BACKEND_LAST_STATE = Object.assign({}, window.CX_BACKEND_LAST_STATE || {}, {
-      source:'firestore',
-      empty:true,
-      readOnly:true,
-      writes:false,
-      fallbackUsed:false,
-      reason:reason || 'empty-new-backend'
+      source:'firestore', empty:true, readOnly:true, writes:false, fallbackUsed:false, reason:reason || 'empty-new-backend'
     });
-    /* P0-C4-VIS-01: el estado público del guard también existe desde el primer vaciado.
-       Así la UI y los gates no pueden observar una ventana intermedia con fallback indefinido
-       mientras Auth protegido todavía se está resolviendo. */
     window.CX_CORTE4_READONLY = Object.assign({}, window.CX_CORTE4_READONLY || {}, {
-      ready: reason === 'verified-empty-read',
-      source:'firestore',
-      empty:true,
-      readOnly:true,
-      writeMode:'disabled',
-      preserveCxDataInterface:true,
-      fallbackUsed:false,
-      state:reason || 'empty-new-backend',
-      at:new Date().toISOString()
+      ready: reason === 'verified-empty-read', source:'firestore', empty:true, readOnly:true, writeMode:'disabled',
+      preserveCxDataInterface:true, fallbackUsed:false, state:reason || 'empty-new-backend', at:new Date().toISOString()
     });
     syncDataSource(reason || 'empty-new-backend');
     emit('project', {source:'firestore', empty:true, readOnly:true});
@@ -155,8 +194,8 @@ window.CX = window.CX || {};
     restoreCxDataInterface();
     blockDirectBackendWrites();
     blockOperationalWrites();
-    const counts = payload && payload.counts || {};
-    const empty = payload && payload.empty === true || Number(counts.projects || 0) === 0;
+    const countsPayload = payload && payload.counts || {};
+    const empty = payload && payload.empty === true || Number(countsPayload.projects || 0) === 0;
     if(empty && cfg.allowEmptyBackend === true) clearToBackendEmpty('verified-empty-read');
     else if(CX.dataSource){
       CX.dataSource.mode='connected';
@@ -180,6 +219,10 @@ window.CX = window.CX || {};
   }
 
   function failClosed(payload){
+    if(isHumanVisualSourceSafe()){
+      applyHumanSourceSafe('provider-error-human-visual-source-safe-preserved');
+      return;
+    }
     restoreCxDataInterface();
     blockDirectBackendWrites();
     blockOperationalWrites();
@@ -201,13 +244,15 @@ window.CX = window.CX || {};
     restoreCxDataInterface();
     blockDirectBackendWrites();
     blockOperationalWrites();
-    /* P0-C4-VIS-01: vaciar seeds ANTES del primer render del shell. backend-firebase inicia
-       primero y puede quedar esperando/rechazar Auth; este bind ocurre en el mismo DOMContentLoaded
-       antes de app.js, así que el runtime nunca alcanza a pintar fixtures demo mientras se resuelve
-       la lectura protegida. */
-    if(cfg.previewMode === true && cfg.readOnly === true && cfg.failClosedOnReadError === true && cfg.allowEmptyBackend === true){
+
+    /* P0 visual 2026-07-30: en el entrypoint humano no se vacía el snapshot source-safe ni se
+       exige Auth interactivo. Es una ruta explícita y rotulada de validación visual; no un fallback. */
+    if(isHumanVisualSourceSafe()){
+      applyHumanSourceSafe('human-visual-source-safe');
+    } else if(cfg.previewMode === true && cfg.readOnly === true && cfg.failClosedOnReadError === true && cfg.allowEmptyBackend === true){
       clearToBackendEmpty('awaiting-protected-read');
     }
+
     if(!CX.bus || typeof CX.bus.on !== 'function') return;
     CX.bus.on('backend-loaded', payload=>enforce(payload));
     CX.bus.on('backend-ready', payload=>enforce(payload));
@@ -216,6 +261,7 @@ window.CX = window.CX || {};
 
   window.CX_CORTE4_BLOCKED_WRITE = blockedResult;
   window.CX_CORTE4_ENFORCE_READONLY = enforce;
+  window.CX_CORTE4_APPLY_HUMAN_SOURCE_SAFE = applyHumanSourceSafe;
 
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
   else bind();
