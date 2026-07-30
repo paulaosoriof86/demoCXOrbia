@@ -2,48 +2,36 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-30  
-**Estado:** `CORTE3_FROZEN__C5_MATERIALIZED1406_PASS__C6_AUTH91_RULES_PASS__AUTOENTRY_VISUAL_OBSERVED_PASS__PROTECTED_IDENTITY_READONLY_PASS__AUGUST_REFRESH_NEXT`
+**Estado:** `C3_FROZEN__C5_1406_PASS__C6_IDENTITY_PROTECTED_PASS__AUG_GT34_TECH_READY__HN_SOURCE_MISMATCH__NO_UNASSIGNED_VISITS`
 
-## 1. Estado general
-- Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge.
-- Baseline frontend `CXORBIA-TYA-CORTE3-V182-20260729` FROZEN.
-- Backend DEV `cxorbia-backend-dev`; Hosting/target `cxorbia-backend-dev`/`cxorbia-dev`.
-- Producción futura `tya-plataforma`: no tocada.
+## 1. Cerrado / protegido
+- Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
+- Corte3 FROZEN.
+- Corte5:1,406/1,406;616 visitas;572 controles liquidación;77 certificaciones; CX.data14 periodos/currentPeriod2026-07 PASS.
+- Corte6: Auth91/91; claims5/5; Rules PASS.
+- Auto-entry Admin observado PASS.
+- Identidad protegida read-only PASS: shoppers340/340 reales, visitas616/616 reales, placeholders0, perfiles referenciados194/194.
 
-## 2. Bloques cerrados
-- Corte1/2A/3: FROZEN/APROBADO.
-- Corte5: R17N1,406/1,406;616 visitas;572 controles liquidación;77 certificaciones; CX.data `cinepolis`,14 periodos,616 visitas,currentPeriod `2026-07`,fallback=false PASS.
-- Corte6 provider: claims5/5 + Rules PASS; Auth import/readback91/91 PASS; shopper88 + staff3; resets/deletes/overwrite0.
+## 2. Agosto refresh actual
+- Fuente detecta periodo2026-08.
+- GT34 con país correcto.
+- HN tab34 filas pero34 marcadas GT → HOLD.
+- Firestore aún616 visitas; periodo agosto ausente.
+- GT delta técnico34 nuevas; identity mapping28/28; perfiles target28/28.
+- Operación GT: assigned34,unassigned0,scheduled34,realized34,submitted27,questionnaire7.
+- `releaseReadiness=NO_UNASSIGNED_VISITS_IN_ACCEPTED_SOURCE`.
 
-## 3. P0 visuales Corte6
-- P0 #1: gate `Acceso seguro` paralelo.
-- P0 #2: formulario Usuario+Contraseña inyectado al seleccionar rol y fuera del viewport.
-- Contrato correcto: perfil → `selectRole(...)` → `enter()` automático.
-- Captura humana actual: auto-entry ya funciona; shell Admin carga con Cinépolis/JUL2026.
+## 3. Bloqueante real
+La HR de agosto no representa un lote nuevo de visitas disponibles. No se puede corregir por inferencia ni cambiando estados desde backend/UI. HN tampoco puede relabelarse silenciosamente.
 
-## 4. Source-safe vs identidad real
-El preview humano actual usa HR source-safe, por lo que `Shopper protegido` es el placeholder deliberado de la capa pública/read-only. No debe copiarse PII a ese artefacto.
+## 4. Siguiente bloque exacto
+`FUENTE HR AGOSTO CORREGIDA/ACTUALIZADA → REFRESH READ-ONLY → EXPECT GT34/HN10 + ESTADOS PUBLICABLES → DELTA PLAN → AUTORIZACIÓN WRITE SOLO DELTA`.
 
-La capa protegida se validó aparte y quedó PASS:
-- shoppers340 / nombres reales340 / placeholders0;
-- visitas616 / nombres reales616 / placeholders0;
-- perfiles canónicos referenciados194/194 con nombre real;
-- Rules y adapter protegidos PASS;
-- status `PASS_C6_PROTECTED_IDENTITY_READONLY`.
+Después: readback/smoke → preprod protegida con identidad real → cutover. No repetir histórico.
 
-## 5. Gate vivo
-`REFRESH HR READ-ONLY → RESOLVER/CLASIFICAR AGOSTO HN → VALIDAR PERIODO/VISITAS → PREPARAR DELTA-ONLY WRITE PLAN`.
+## 5. Claude / Academia
+- Claude: sin nueva candidata ni cambios de módulos; no inventar disponibilidad ni PII.
+- Academia: distinguir source-safe, identidad protegida y fuente operacional; conflicto de país/estado → HOLD.
 
-No provider writes en este bloque.
-
-## 6. Agosto — siguiente write gate
-Tras plan/dry-run exacto: solicitar autorización explícita para materializar **solo delta agosto**. Luego readback/smoke y preprod protegida autenticada con identidad real. No repetir los1,406 históricos.
-
-## 7. Claude/prototipo
-No nueva candidata ni cambios `app/modules/*`. Conservar auto-entry; no convertir provider/Auth en UI técnica; no tratar source-safe como identidad final. P1/P2: PDF/gráficas, Excel/formato, reportKit/exportaciones y copy.
-
-## 8. Academia
-Preview humano source-safe puede enmascarar PII. Runtime autenticado protegido debe mostrar identidad según rol/scopes. Documentar mínimo privilegio, recuperación y troubleshooting.
-
-## 9. Estado seguro
-Gate identidad: provider reads; Auth writes0; Firestore data writes0; Rules0; Hosting0; Storage/HR/legacy/payments/Functions/Make/Gemini0; merge=false; producción=false; PII exportada0.
+## 6. Estado seguro
+Últimos bloques: HR/Firestore reads únicamente. Auth/Firestore data/Rules/Hosting/HR/Storage/legacy/payments/Functions/Make/Gemini writes0; merge=false; producción=false.
