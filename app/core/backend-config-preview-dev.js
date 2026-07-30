@@ -4,7 +4,7 @@
    No se carga en app/index.html.
    Solo se carga en app/index-backend-dev.html.
    Activa el adapter únicamente con token de querystring.
-   Corte 6: lectura estricta + Firebase Auth interactivo seguro.
+   Corte 6: lectura estricta + Firebase Auth integrado al login del producto.
    ============================================================ */
 window.CX = window.CX || {};
 
@@ -70,7 +70,7 @@ window.CX = window.CX || {};
     hrSourceEndpoint: safeHrSourceEndpoint(),
     devPreviewAuth: {
       enabled: true,
-      mode: 'interactive-session',
+      mode: 'product-login-session',
       persist: 'session',
       storedCredentialFallback: false,
       requireCustomClaims: true,
@@ -78,5 +78,5 @@ window.CX = window.CX || {};
   });
 
   forceProtectedPreviewIdentity();
-  console.warn('[CX.backend-preview] Preview DEV autorizado en READ-ONLY estricto con Firebase Auth interactivo; sin credenciales persistidas ni fallback demo.');
+  console.warn('[CX.backend-preview] Preview DEV autorizado en READ-ONLY estricto con Firebase Auth integrado al login del producto; sin credenciales persistidas ni fallback demo.');
 })();
