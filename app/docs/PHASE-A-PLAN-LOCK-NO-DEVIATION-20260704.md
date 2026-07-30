@@ -3,95 +3,87 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-30  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_P0_SINGLE_LOGIN_FIX_APPLIED_STATIC_PASS__PENDING_SINGLE_DEV_REDEPLOY_AUTH__NO_PRODUCTION`
+**Estado vivo:** `C6_P0_PROTOTYPE_AUTOENTRY_FIX_STATIC_PASS__PENDING_SINGLE_DEV_REDEPLOY_AUTH__NO_PRODUCTION`
 
 ## 1. Objetivo
 Operar TyA/Cinépolis como primer tenant/proyecto configurable de CXOrbia con HR/histórico, shoppers reales, certificaciones, visitas, agenda, cuestionarios, liquidaciones/pagos, multi-tenant, multi-proyecto, roles, Academia y sincronización.
 
-Arquitectura vinculante:
-- `tya-plataforma` = legacy a retirar + Hosting/URL pública final;
-- `cxorbia-backend-dev` = backend DEV canónico;
-- Hosting DEV existente = `cxorbia-backend-dev.web.app`, target `cxorbia-dev`;
-- proyecto padre `cinepolis`; meses = periodos;
+Arquitectura fija:
+- `tya-plataforma` = URL/Hosting público final; no tocar sin gate de producción;
+- `cxorbia-backend-dev` = backend/Hosting DEV canónico;
+- proyecto padre `cinepolis`; meses=periodos;
 - no crear otro Firebase/Hosting/rama/PR por rutina.
 
 ## 2. Secuencia obligatoria
 `FUENTE VIVA → INVENTARIO/FRESCURA → MAPPING/IDENTIDAD → PROVIDER COMPARE → WRITE PLAN → DRY-RUN/IDEMPOTENCIA → WRITE EXACTO AUTORIZADO → READBACK → SMOKE → VALIDACIÓN VISUAL → FREEZE/CUTOVER`.
 
-Para candidatas frontend continúa `EXECUTION_LANE_READY → AUDITORÍA → GO/P0 → APPLY_DELTA_DIRECTLY`.
+Un PASS técnico no sustituye validación humana.
 
 ## 3. Cortes protegidos — no reabrir
-- Corte1 /2A: FROZEN/APROBADO.
-- Corte3: `CXORBIA-TYA-CORTE3-V182-20260729` FROZEN.
-- HR histórico canónico:14 periodos/616 visitas hasta julio 2026.
-- R17N FINAL DEV:1,406/1,406 data writes/readback; mismatch0.
-- Corte5 `CX.data`: project=`cinepolis`, periods14, visits616, currentPeriod=`2026-07`, source=firestore, fallback=false PASS.
-- Auth legacy import:91/91 readback PASS.
-- No repetir históricos ni reabrir snapshots superados.
+- Corte1/2A/3 FROZEN/APROBADO; Corte3 `CXORBIA-TYA-CORTE3-V182-20260729`.
+- HR histórico hasta julio:14 periodos/616 visitas.
+- R17N FINAL:1,406/1,406 Firestore data writes/readback; mismatch0.
+- Corte5 CX.data: project=`cinepolis`,periods14,visits616,currentPeriod=`2026-07`,source=firestore,fallback=false PASS.
+- Auth legacy import/readback91/91 PASS; no repetir/resetear.
+- claims5/5 + Rules PASS.
 
-## 4. Fuente/identidad materializada
-- HR hasta julio: perfiles, certificaciones y visitas materializados según R17N.
-- Certificaciones:77 materializadas + HOLD documentados.
-- 616 visitas,572 controles de liquidación.
-- Agosto HN HOLD por inconsistencia país/tab.
+## 4. Corte6 — lección de integración Auth
+Firebase Auth/RBAC/Rules continúa como autoridad backend real. Pero la infraestructura no puede reescribir el contrato visible del prototipo.
 
-## 5. Corte6 — Auth/RBAC/Rules preservado
-- claims autorizados5/5;
-- Rules canónicas desplegadas/readback PASS;
-- Auth legacy exacto91/readback91/91 PASS;
-- password resets/deletes/overwrite0;
-- namespaces `staff/shopper` preservados.
+Se demostraron dos P0 visuales:
+1. gate separado `Acceso seguro`;
+2. formulario `Usuario + Contraseña` inyectado dentro de la tarjeta al seleccionar rol.
 
-Firebase Auth sigue siendo la autoridad. El selector visual de rol nunca reemplaza Auth.
+El segundo P0 confirma que **single-login no era suficiente**: el comportamiento aprobado era **auto-entry del perfil en el preview humano**. `app.js` ya conserva ese contrato; el desvío provenía del wrapper backend/Auth.
 
-## 6. P0 doble login — causa raíz y resolución
-La validación humana rechazó el build DEV anterior porque mostraba `Acceso seguro` como una segunda pantalla antes del login normal. La migración Auth91/91 era válida; la integración visual estaba desviada.
+## 5. Corrección obligatoria vigente
+Para el **preview humano DEV**:
+1. selección de perfil → entrada automática, como el prototipo;
+2. no pedir credenciales desconocidas ni crear formularios técnicos;
+3. conservar HR source-safe explícita/read-only para recorrer la UI;
+4. baseline visual `cinepolis`,14 periodos,616 visitas;
+5. no fallback demo;
+6. Auth/RBAC/Rules se mantienen en gates técnicos separados;
+7. writes continúan bloqueados;
+8. diagnóstico visible debe decir source-safe y no simular una sesión Firebase humana.
 
-Fix ya aplicado en rama:
-1. eliminado el gate backend separado;
-2. login normal CXOrbia/TyA como único punto visible;
-3. credenciales reales dentro de la misma tarjeta cuando correspondan;
-4. sesión Firebase válida restaurada silenciosamente;
-5. no limpiar sesión por rutina;
-6. logout real;
-7. provider/email técnico oculto;
-8. errores de credencial vs scope/namespace seguros;
-9. config `product-login-session`;
-10. gates predeploy/remotos bloquean la reaparición del gate antiguo.
+Para producción, Auth real sigue siendo obligatorio detrás del contrato operativo aprobado y requiere recuperación/cambio de acceso; esta ruta humana DEV no es un bypass de producción.
 
-## 7. Gate técnico de la corrección
-Revalidación estática ejecutada sin provider writes:
-- commit `790d4d514b8e7b4630063ebf2aebba5997e3ec26`;
-- estado GitHub `success`;
-- contexto `PREPARED_C6_SINGLE_LOGIN_HOSTING_NO_EXECUTE`.
+## 6. Gate técnico del fix
+Revalidación estática:
+- commit `29b7f9404a9c2f144145fe24d5cf048f753c1e75`;
+- estado `success`;
+- contexto `PREPARED_C6_PROTOTYPE_AUTO_ENTRY_NO_EXECUTE`;
+- baseline source-safe14/616 PASS;
+- provider writes/deploy0.
 
-La autorización anterior está consumida. No hubo redeploy en esta corrección.
+La autorización de Hosting previa está consumida. El Hosting DEV público todavía sirve el build rechazado.
 
-## 8. Gate actual
-`AUTORIZACIÓN ÚNICA DE REDEPLOY DEL MISMO HOSTING DEV → PRECHECK SINGLE-LOGIN → DEPLOY1 → SMOKE REMOTO → VALIDACIÓN VISUAL → FREEZE CORTE6`.
+## 7. Gate actual
+`AUTORIZACIÓN FRESCA DE UN ÚNICO REDEPLOY DEL MISMO HOSTING DEV → PRECHECK → DEPLOY1 → SMOKE REMOTO AUTO-ENTRY/SOURCE-SAFE → VALIDACIÓN VISUAL → FREEZE CORTE6`.
 
-Paula no debe repetir la prueba del build viejo, compartir password ni ejecutar PowerShell.
+No pedir a Paula password, PowerShell, scroll ni nueva prueba del build viejo.
 
-## 9. Después de FREEZE Corte6
+## 8. Después de FREEZE Corte6
 `REFRESH HR → RESOLVER AGOSTO HN → VALIDAR PERIODO/VISITAS → MATERIALIZAR SOLO DELTA AGOSTO → SMOKE → PREPROD/CUTOVER`.
 
 No repetir los1,406 writes históricos.
 
-## 10. Corte7 — sincronización/evidencias
-HR↔plataforma con stable keys, no duplicación, reviewQueue, cuestionario configurable y evidencias protegidas. Make/Gemini solo con gate y revisión humana. No debe retrasar cutover si lo no activado no bloquea Phase A.
+## 9. Corte7 — sincronización/evidencias
+HR↔plataforma con stable keys, no duplicación, reviewQueue, cuestionario configurable y evidencias protegidas. Make/Gemini solo con gate/revisión humana y sin retrasar cutover si lo no activado no bloquea Phase A.
 
-## 11. Corte8 — preproducción/cutover
-Requiere cortes previos congelados, refresh delta final, rollback, smoke integral y autorización específica de producción. Cutover sobre el mismo Hosting/URL público `tya-plataforma`; no cambiar URL.
+## 10. Corte8 — preproducción/cutover
+Requiere cortes previos congelados, refresh delta final, rollback, smoke integral y autorización específica de producción. Cutover sobre `tya-plataforma`; no cambiar URL.
 
-## 12. Claude/prototipo
+## 11. Claude/prototipo
 - No nueva candidata general.
 - No tocar `app/modules/*` por este P0.
-- El fix single-login ya fue aplicado focalizadamente en el punto de integración autorizado.
-- Claude debe conservar el patrón reusable y no reintroducir un gate backend separado.
-- P1/P2 preservados: PDF/gráficas, Excel/formato, reportKit/exportaciones y copy de fuentes.
+- Conservar el auto-entry aprobado del preview humano.
+- Provider/Auth no debe convertirse en UI técnica.
+- P1/P2: PDF/gráficas, Excel/formato, reportKit/exportaciones, copy.
 
-## 13. Academia
-Actualizar manuales/cursos/rutas para enseñar un único acceso visible; Auth/provider detrás del adapter; recuperación/cambio, scopes tenant/proyecto/rol, shopperId exacto, dedupe seguro y troubleshooting.
+## 12. Academia
+Documentar separación entre UX/preview humano y autenticación provider; flujo por rol, recuperación/cambio, scopes, shopperId exacto, mínimo privilegio y troubleshooting.
 
-## 14. Estado seguro
-R17N cerrado; Auth91/91 preservado. Corrección P0 hasta este punto: Auth writes0; Firestore data writes0; Rules0; Hosting deploy0; Storage/HR/legacy/payments/functions/Make/Gemini0; merge=false; producción=false.
+## 13. Estado seguro
+Desde el segundo P0: Auth writes0; Firestore data writes0; Rules0; Hosting deploy0; Storage/HR/legacy/payments/Functions/Make/Gemini0; merge=false; producción=false.
