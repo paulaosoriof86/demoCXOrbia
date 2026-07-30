@@ -1,14 +1,16 @@
 {
   "schemaVersion": "cxorbia.c5-existing-hosting-dev-visual.v1",
   "requestId": "c5-existing-hosting-dev-visual-20260730-01",
-  "status": "authorized_once",
+  "status": "preflight_hold_auth_required_no_deploy",
+  "enabled": false,
+  "consumed": false,
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-07-30",
   "authorizationText": "Autorizo un único redeploy sobre el Hosting DEV de visualización ya existente, vinculando CXOrbia read-only a cxorbia-backend-dev para validar Corte 5 con datos reales; sin crear Hosting ni proyecto Firebase adicional, sin nuevos data writes, Auth/Storage/HR/legacy writes, pagos, merge ni producción.",
   "scope": "existing_hosting_dev_single_redeploy_readonly_visual",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
-  "baseHead": "a50b3005e70bf1377547d85611abb97a832c9eb2",
+  "authorizedBaseHead": "a50b3005e70bf1377547d85611abb97a832c9eb2",
   "targetProject": "cxorbia-backend-dev",
   "hostingTarget": "cxorbia-dev",
   "existingHostingRootUrl": "https://cxorbia-backend-dev.web.app",
@@ -21,6 +23,7 @@
   "expectedLiquidationControls": 572,
   "expectedPayments": 0,
   "singleHostingDeployMax": 1,
+  "hostingDeployExecutions": 0,
   "createFirebaseProject": false,
   "createHostingSite": false,
   "providerReads": true,
@@ -36,5 +39,18 @@
   "production": false,
   "rawPiiInRepo": false,
   "rawPiiInArtifacts": false,
-  "preflightPolicy": "fail_closed_before_deploy_if_existing_public_dev_host_cannot_safely_read_canonical_backend_without_auth_changes"
+  "preflight": {
+    "existingHostingVerified": true,
+    "existingHostingProject": "cxorbia-backend-dev",
+    "existingHostingTarget": "cxorbia-dev",
+    "newHostingRequired": false,
+    "newFirebaseProjectRequired": false,
+    "protectedFirestoreRequiresAuthenticatedPrincipal": true,
+    "previewEntrypointRequiresFirebaseAuth": true,
+    "roleSelectorIsNotFirebaseAuth": true,
+    "safePublicRealPiiPreviewWithoutAuth": false,
+    "deployAllowedNow": false,
+    "reason": "The existing DEV Hosting is correct, but direct browser reads of protected real Firestore data require Firebase Auth/claims. Current authorization explicitly forbids Auth writes; embedding credentials/tokens or exposing real PII publicly is forbidden. Fail-closed before consuming the single redeploy."
+  },
+  "nextGate": "CORTE6_AUTH_RBAC_MINIMAL_ACTIVATION_PLAN_READONLY_FIRST__THEN_REUSE_THIS_EXISTING_HOSTING_REDEPLOY_AUTHORIZATION_IF_SECURE_BROWSER_AUTH_IS_AVAILABLE"
 }
