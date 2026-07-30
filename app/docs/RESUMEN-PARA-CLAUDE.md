@@ -1,134 +1,75 @@
-## 2026-07-29 — ESTADO VIGENTE: Corte 4 protected smoke PASS
+# RESUMEN-PARA-CLAUDE.md
 
-Estado canónico: `CORTE3_FROZEN_ACTIVE_BASELINE__CORTE4_PROTECTED_CXDATA_SMOKE_PASS__HOSTING_DEV_AUTH_PENDING`.
+## ESTADO VIGENTE — 2026-07-30
 
-- No pedir nueva candidata ni tocar frontend por este bloque.
-- Firebase nuevo, Firestore vacío, Rules read-only y Auth bootstrap: PASS.
-- Protected smoke válido `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`: `source=firestore`, `empty=true`, `fallbackUsed=false`, `readOnly=true`, interfaz `CX.data` preservada, claims temporales verificados, Firestore document writes=0.
-- Cleanup final: Auth users=0 y Email/Password deshabilitado.
-- El status agregado `error` fue falso negativo del publicador; corrección de reporting `9967146e112322efcd043155ae05351bbbbd4e8a`, sin rerun.
-- Siguiente gate fuera de Claude: autorización Hosting DEV → validación visual → freeze Corte 4.
-- Fuente detallada: `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE4-PROTECTED-SMOKE-PASS-20260729.md`.
+### Baseline
+- Repo: `paulaosoriof86/demoCXOrbia`.
+- Rama: `docs-tya-v6-v71-audit`.
+- PR #7 draft/open/no merge.
+- Corte 3 `CXORBIA-TYA-CORTE3-V182-20260729` permanece FROZEN.
+- No V183/R33; no nueva candidata por rutina.
 
----
+### Arquitectura
+- `cxorbia-backend-dev` = backend DEV canónico y reutilizado.
+- `tya-plataforma` = legacy a retirar + Hosting/URL pública final.
+- sandbox C4 = no destino de materialización.
+- proyecto padre `cinepolis`; meses son periodos.
 
-## 2026-07-22 — V174 aplicada; no enviar a Claude salvo corrección focalizada posterior
+### Materialización backend — PASS
+R17N FINAL fue materializado en DEV con autorización exacta.
 
-Estado: `V174_FUNCTIONAL_EMPALMED_GATE_HOLD_NO_DEPLOY`.
+Resultado:
+- Firestore writes: 1,406/1,406 autorizados;
+- readback: 1,406/1,406;
+- mismatch: 0;
+- foundation 16;
+- perfiles legacy 120;
+- perfiles HR actuales 5;
+- certificaciones 77;
+- visitas 616;
+- controles liquidación 572;
+- identidad HR revalidada 208/208;
+- 201/201 shoppers canónicos existentes tienen nombre real visible;
+- 196 links financieros exactos preservados por visitId.
 
-La candidata V174 ya fue aplicada de forma atómica en `docs-tya-v6-v71-audit` mediante el commit `b21e494d127fb4b902de5576e3fab0292362b097`.
+No se tocaron tenant update, 22 updates de perfiles existentes, 7 legacy holds, 1 cert hold, Agosto HN, deletes, pagos/lotes, Auth, Storage, HR, legacy RTDB, Hosting, merge ni producción.
 
-No pedir otra candidata ni reabrir V174. Si se requiere un bloque posterior para Claude/prototipo, debe ser focalizado al HOLD real:
+### Causa raíz del preflight
+Dos intentos previos quedaron HOLD `live_identity_207` con writes=0. Era un bug del gate: colapsaba espacios internos antes del hash, distinto al algoritmo R20. Se alineó el executor con R20 (`trim + lowercase`) y el preflight pasó 208/208 antes de escribir.
 
-- overlay preservado `app/core/tya-phase-a-source-safe-preview.js` colapsa ausencias financieras a cero en honorario, boleto y combo;
-- el harness local de reportes debe simular `XLSX.utils.encode_range` si se mantiene el gate Node;
-- el entorno local de navegador necesita Playwright completo para ejecutar el gate R20.
+### Regla de identidad para producto/frontend
+- source-safe protege repo/log/evidencia; no anonimiza la plataforma;
+- Admin/Operativo deben ver identidad real conforme RBAC/Rules;
+- no usar nombre como llave única de merge;
+- no mostrar `Shopper protegido` como identidad permanente si backend ya expone nombre real;
+- en el materializado actual los 201 targets canónicos existentes ya tienen nombre real visible y los 120+5 perfiles nuevos se escribieron con identidad real aplicable desde fuente.
 
-Backend, adapters live, contratos, CX.data, herramientas y documentación viva fueron preservados. No hubo deploy, merge, producción ni writes reales.
+### Lo que Claude NO debe hacer ahora
+- no crear nueva candidata;
+- no tocar backend/contracts/tools/workflows;
+- no reabrir V182/Corte 3;
+- no hardcodear Cinépolis;
+- no crear fallback demo/local;
+- no activar providers, Auth, pagos o sincronización real;
+- no pedir recertificación a quien tenga carryover válido.
 
-## 2026-07-22 — HOLD focalizado corregido; no pedir nueva candidata
+### Próxima intervención de Claude
+Ninguna por rutina. Primero backend ejecutará `POST-COMPARE READ-ONLY → SMOKE CX.data CANÓNICO + IDENTIDAD REAL`.
 
-Estado: `V174_HOLD_FIX_APPLIED_R20_SOURCE_IDENTITY_HOLD_NO_DEPLOY`.
+Claude solo interviene si ese smoke demuestra un P0 frontend reproducible o después, para backlog P1/P2:
+- PDF/gráficas de impresión;
+- Excel con formato básico;
+- consolidación reportKit/copy;
+- cualquier ajuste visual exacto detectado en smoke.
 
-El bloqueo de ausencia financiera fue corregido en `app/core/tya-phase-a-source-safe-preview.js`: ausencia ya no se convierte en cero, y `0` real se conserva. El gate Corte 2A canonical pasa.
+### Academia/manuales
+Actualizar posteriormente con:
+- fuente viva vs snapshot;
+- identidad real vs artefacto source-safe;
+- preflight fail-closed;
+- write idempotente + readback;
+- liquidación/control ≠ pago;
+- RBAC y visibilidad de PII por rol.
 
-No enviar nueva ronda a Claude por V174. El pendiente restante es operativo/gate:
-
-- `tya-project-period-kpi-history-gate-r20.mjs` observa conteos correctos de HR viva/local, pero retiene HOLD porque `sourceAccessMode=public_gviz_csv_cache_busted`.
-- El builder por inventario verificado también queda en HOLD por `header_not_found` en `JULIO 26`.
-
-Causa raíz metodológica documentada: `PRE_GATE_NOT_RECONCILED_WITH_EXACT_HEAD_OVERLAY_COMPOSITE`.
-
-## 2026-07-21 - V172 empalmada; pendiente post-gates y visual
-
-- Se retracta el supuesto bloqueo por falta de checkout local; fue un desvío metodológico.
-- V172 deriva de V171b y corrige únicamente el P0 de identidad Shopper fail-open.
-- SHA-256: `2c7c7dec3a04847cb5b9a04456ebefca49f16ea037a24956dc7661cf67e99fd5`.
-- Delta funcional exacto: `app/app.js`, `app/modules/midia.js`, `app/modules/misvisitas.js`, `app/modules/reservas.js`.
-- Gate dinámico A/B/sin identidad: PASS.
-- 67 JS, referencias locales, hashes/bytes y UTF-8: PASS.
-- No existe P0 nuevo reproducible.
-- Decisión: `EMPALMED_PENDING_POST_GATES`.
-- No solicitar otra candidata ni reiniciar desde V164.
-- Preservar reportKit, reportes por rol, branding, gráficas, multiproyecto, Panorama canónico, add-ons aislados, geo-checkin honesto, `mireportes`, router `super` y Novedades por rol.
-- Empalme file-aware aplicado en `docs-tya-v6-v71-audit`.
-- Delta aplicado: `app/app.js`, `app/modules/midia.js`, `app/modules/misvisitas.js`, `app/modules/reservas.js`.
-- V164/Corte 1A, reportKit, PDF/XLSX/PPTX, backend live-HR, Cloud Run, Hosting, IAM y contratos preservados.
-- Manifest/build-lock/verificador V172 generados.
-- Siguiente acción: post-gates, Hosting DEV autorizado y validación visual.
-
-### Clasificación
-
-- `Reusable CXOrbia`: identidad Shopper fail-closed por `shopperId`.
-- `Exclusivo TyA`: validación posterior con shoppers reales; cero hardcode Cinépolis.
-- `Claude/prototipo`: V172 ya es la candidata corregida; no abrir otra ronda.
-- `Academia`: documentar selección de rol vs autenticación después de aprobación visual.
-- `Sin impacto Claude`: backend live-HR, Cloud Run, Hosting, IAM y contratos preservados.
-
----
-
-## 2026-07-20 - Corte 1A HR viva confirmada; estabilidad y reportes live redeploy PASS
-
-- V164 y Corte 1A continúan integrados en `docs-tya-v6-v71-audit`.
-- Paula confirmó con cambios reales que la HR se lee en vivo: fecha de cuestionario actualiza KPI y asignación HR retira la visita disponible del shopper.
-- No solicitar nueva candidata ni reabrir empalme, estados canónicos, multi-proyecto, Finanzas, shoppers o histórico.
-- Run `29794082358`: PASS completo; source HEAD `42f1c1f9c9f142c34ee92224af425712c7c1e396`.
-
-### Backend/adapters ya aplicados — no reabrir desde frontend
-
-- `backend/runtime/hr-live-service/server.mjs`: revisión estable, bootstrap rápido y actualización controlada.
-- `app/adapters/tya-live-source-refresh-watch.js`: recarga solo ante cambio real y evita bucles.
-- `app/adapters/tya-corte1-report-projection-live.js`: cuatro reportes operativos desde el snapshot live.
-- `tools/release/tya-source-safe-live-binding-build-r22.mjs`: carga la proyección live antes del watcher.
-
-### Pendientes localizados para Claude/prototipo
-
-#### Panorama por periodo
-
-- `app/core/cliente-data.js`: invalidar cache por periodo y revisión live.
-- `app/modules/cliente.js`: separar operación del periodo de score/NPS/secciones pendientes.
-- `app/modules/cliente-insights.js`, si interviene en comparativos.
-- Mostrar realizadas, cuestionarios, submitidas, cobertura y tendencia del periodo seleccionado.
-- Sin score validado, conservar `Pendiente de fuente` sin ceros aparentes.
-
-#### Reportes por rol y administración
-
-- `app/modules/cliente-extra.js`: portal cliente, exportaciones y presentación.
-- `app/modules/operacion-extra.js`: `Reportes & KPIs` administrativo y personalización visible.
-- Admin debe seleccionar columnas, notas, orden y alcance reales.
-- Imprimir/exportar debe generar el reporte, no la página completa.
-- PDF/Excel/PPT deben usar revisión live, periodo, país, sucursal y rol activos.
-
-#### Diseño reusable CXOrbia
-
-- logo del tenant;
-- colores y tipografía configurados;
-- encabezado, fuente, alcance, fecha, pie y paginación;
-- tablas legibles;
-- gráficas de avance, cobertura, tendencia y distribución;
-- fallback CXOrbia cuando no exista branding;
-- no fijar diseño o lógica a TyA/Cinépolis.
-
-#### Estados honestos
-
-- Planes de acción, brechas/capacitación y scorecard continúan pendientes hasta sus fuentes reales.
-- No inferir score, NPS, planes o brechas desde conteos operativos.
-
-### Academia
-
-- Actualizar después de la corrección visual: lectura viva, revisión, periodos, diferencia HR/resultados y exportación por rol.
-
-### Estado
-
-- HR viva real: CONFIRMADA.
-- Estabilidad y proyección live: DEV PASS.
-- Producción, imports, pagos e integraciones externas: HOLD.
-- Pendiente: validación visual, correcciones frontend focalizadas, retiro del workflow temporal y freeze solo con `APROBADO`.
-
----
-
-## Historial protegido
-
-- V156/V155: gates comerciales y de lenguaje técnico preservados.
-- V145/V131: separación proyecto-periodo, Finanzas y baseline histórica preservadas.
-- No reabrir sin evidencia nueva reproducible.
+### Estado seguro
+Firestore writes autorizados ejecutados: 1,406. Auth/Storage/HR/legacy writes=0; deletes=0; pagos=0; deploy=0; merge=false; producción=false; Make/Gemini=0.
