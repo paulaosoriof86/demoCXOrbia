@@ -1,6 +1,6 @@
 # Corte 6 — reconciliación Auth/RBAC read-only source-safe
 
-- Fecha: 2026-07-30T16:01:34.268Z
+- Fecha: 2026-07-30T16:09:22.555Z
 - Firebase DEV canónico: `cxorbia-backend-dev`
 - Tenant: `tya`
 - Proyecto canónico: `cinepolis`
@@ -14,25 +14,23 @@
 - Usuarios autorizables a tenant TyA por reglas actuales: 13
 - Usuarios con proyecto canónico por projectIds[] (super cuenta global): 3
 - Shopper claims con shopperId que coincide con perfil Firestore: 3
-- Gaps tenantIds[] sin tenantId/tenants[]: 0
-- Gaps projectId sin projectIds[]: 0
+- Shopper con perfil exacto por scopes legacy: {"tya":1,"tya-piloto":2}
 - Login operador listo bajo reglas actuales: 7
 - Login cliente listo bajo reglas actuales: 0
 - Login shopper listo bajo reglas actuales: 0
 - Familias mínimas listas: no
-- Claims legacy suficientes para visual DEV sin mutarlos: no
 
 ## Por rol — solo conteos
 
-| Rol | Users | Password activos | Tenant por reglas | Proyecto por reglas | shopperId | Perfil shopper coincide | Gap tenant alias | Gap project alias | Secure read ready |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| admin | 3 | 3 | 2 | 0 | 0 | 0 | 0 | 0 | 2 |
-| cliente | 2 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |
-| externo | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| missing | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| ops | 2 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 2 |
-| shopper | 4 | 4 | 4 | 0 | 3 | 3 | 0 | 0 | 0 |
-| super | 3 | 3 | 3 | 3 | 0 | 0 | 0 | 0 | 3 |
+| Rol | Users | Password activos | Tenant por reglas | Proyecto por reglas | shopperId | Perfil shopper coincide | Secure read ready |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| admin | 3 | 3 | 2 | 0 | 0 | 0 | 2 |
+| cliente | 2 | 2 | 2 | 0 | 0 | 0 | 0 |
+| externo | 1 | 1 | 0 | 0 | 0 | 0 | 0 |
+| missing | 2 | 2 | 0 | 0 | 0 | 0 | 0 |
+| ops | 2 | 2 | 2 | 0 | 0 | 0 | 2 |
+| shopper | 4 | 4 | 4 | 0 | 3 | 3 | 0 |
+| super | 3 | 3 | 3 | 3 | 0 | 0 | 3 |
 
 ## Distribución de scopes no PII
 
@@ -44,9 +42,29 @@
 - shopper: projectId={"tya":1}; projectIds={"tya":1,"tya-piloto":3}; tenantId={"tya":4}; tenants={}; tenantIds={"tya":1}
 - super: projectId={"tya":1}; projectIds={"tya":1,"tya-piloto":2,"r1":1}; tenantId={"tya":3}; tenants={"tya":1}; tenantIds={"tya":1}
 
+## Status canónico de visitas — agregado no PII
+
+- Total: 616; status presente=616; estado presente=0
+- status values: {"submitida":545,"cuestionario":61,"agendada":4,"realizada":3,"fuera_rango":3}
+- estado values: {}
+- 2025-06: total=44; status={"submitida":35,"cuestionario":9}; estado={}
+- 2025-07: total=44; status={"submitida":39,"cuestionario":5}; estado={}
+- 2025-08: total=44; status={"submitida":42,"cuestionario":1,"agendada":1}; estado={}
+- 2025-09: total=44; status={"submitida":42,"cuestionario":2}; estado={}
+- 2025-10: total=44; status={"submitida":30,"cuestionario":13,"realizada":1}; estado={}
+- 2025-11: total=44; status={"submitida":37,"cuestionario":7}; estado={}
+- 2025-12: total=44; status={"submitida":29,"cuestionario":14,"realizada":1}; estado={}
+- 2026-01: total=44; status={"submitida":42,"cuestionario":2}; estado={}
+- 2026-02: total=44; status={"submitida":43,"cuestionario":1}; estado={}
+- 2026-03: total=44; status={"submitida":44}; estado={}
+- 2026-04: total=44; status={"submitida":42,"cuestionario":2}; estado={}
+- 2026-05: total=44; status={"submitida":44}; estado={}
+- 2026-06: total=44; status={"submitida":44}; estado={}
+- 2026-07: total=44; status={"submitida":32,"cuestionario":5,"agendada":3,"fuera_rango":3,"realizada":1}; estado={}
+
 ## Seguridad
 
 - Auth/Firestore/Rules/Hosting/Storage writes: 0.
 - Producción/merge: false.
-- Los valores de scope aquí son IDs técnicos de tenant/proyecto, no identidades de personas.
+- Los valores de scope/status son IDs/estados operativos, no identidades de personas.
 - No se exportaron email, UID, nombre, teléfono, DPI, banco, contraseña, token ni shopperId.

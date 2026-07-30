@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "cxorbia.corte6-auth-rbac-readonly-reconciliation.v3",
-  "generatedAt": "2026-07-30T16:01:34.268Z",
+  "schemaVersion": "cxorbia.corte6-auth-rbac-readonly-reconciliation.v4",
+  "generatedAt": "2026-07-30T16:09:22.555Z",
   "projectId": "cxorbia-backend-dev",
   "tenantId": "tya",
   "canonicalProjectId": "cinepolis",
@@ -17,6 +17,10 @@
     "tenantUsers": 13,
     "usersAssignedCanonicalProject": 3,
     "shopperWithMatchingProfile": 3,
+    "shopperMatchedProjectScopes": {
+      "tya": 1,
+      "tya-piloto": 2
+    },
     "usersWithTenantIdsOnlyGap": 0,
     "usersWithProjectIdOnlyGap": 0,
     "unknownRoleUsers": 1,
@@ -219,6 +223,136 @@
       "usersWithProjectIdOnlyGap": 0
     },
     "piiExported": false
+  },
+  "canonicalVisitStatus": {
+    "total": 616,
+    "statusPresent": 616,
+    "estadoPresent": 0,
+    "statusValues": {
+      "submitida": 545,
+      "cuestionario": 61,
+      "agendada": 4,
+      "realizada": 3,
+      "fuera_rango": 3
+    },
+    "estadoValues": {},
+    "byPeriod": {
+      "2025-06": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 35,
+          "cuestionario": 9
+        },
+        "estadoValues": {}
+      },
+      "2025-07": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 39,
+          "cuestionario": 5
+        },
+        "estadoValues": {}
+      },
+      "2025-08": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 42,
+          "cuestionario": 1,
+          "agendada": 1
+        },
+        "estadoValues": {}
+      },
+      "2025-09": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 42,
+          "cuestionario": 2
+        },
+        "estadoValues": {}
+      },
+      "2025-10": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 30,
+          "cuestionario": 13,
+          "realizada": 1
+        },
+        "estadoValues": {}
+      },
+      "2025-11": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 37,
+          "cuestionario": 7
+        },
+        "estadoValues": {}
+      },
+      "2025-12": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 29,
+          "cuestionario": 14,
+          "realizada": 1
+        },
+        "estadoValues": {}
+      },
+      "2026-01": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 42,
+          "cuestionario": 2
+        },
+        "estadoValues": {}
+      },
+      "2026-02": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 43,
+          "cuestionario": 1
+        },
+        "estadoValues": {}
+      },
+      "2026-03": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 44
+        },
+        "estadoValues": {}
+      },
+      "2026-04": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 42,
+          "cuestionario": 2
+        },
+        "estadoValues": {}
+      },
+      "2026-05": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 44
+        },
+        "estadoValues": {}
+      },
+      "2026-06": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 44
+        },
+        "estadoValues": {}
+      },
+      "2026-07": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 32,
+          "cuestionario": 5,
+          "agendada": 3,
+          "fuera_rango": 3,
+          "realizada": 1
+        },
+        "estadoValues": {}
+      }
+    }
   },
   "safety": {
     "authWrites": 0,
