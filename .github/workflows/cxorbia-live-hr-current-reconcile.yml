@@ -30,6 +30,9 @@ jobs:
           if(r.enabled!==true||r.mode!=='LIVE_HR_READ_ONLY_RECONCILIATION'||r.hrWrites!==0||r.firestoreWrites!==0||r.production!==false||r.merge!==false) process.exit(1);
           NODE
 
+      - name: Install transient provider read tooling
+        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+
       - name: Build current HR source-safe snapshot read-only
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
@@ -69,20 +72,31 @@ jobs:
           fs.writeFileSync('app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md',md.join('\n'));
           NODE
 
+      - name: Build August delta-only provider compare read-only
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_CURRENT_SOURCE_SAFE: .tmp/hr-current/tya-hr-source-safe.js
+          CXORBIA_COUNTRY_EVIDENCE: app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json
+          CXORBIA_AUGUST_DELTA_PLAN: app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json
+        run: node tools/qa/cxorbia-august-delta-readonly-plan.mjs
+
       - name: Commit sanitized evidence on latest branch head
         run: |
           set -euo pipefail
           cp app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json /tmp/hr-current.json
           cp app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md /tmp/hr-current.md
+          cp app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json /tmp/august-delta.json
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
           mkdir -p app/docs/evidence
           cp /tmp/hr-current.json app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json
           cp /tmp/hr-current.md app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md
+          cp /tmp/august-delta.json app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md
-          if ! git diff --cached --quiet; then git commit -m 'evidence: reconcile current live HR source-safe'; git push origin HEAD:docs-tya-v6-v71-audit; fi
+          git add app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json
+          if ! git diff --cached --quiet; then git commit -m 'evidence: reconcile current live HR and August delta read-only'; git push origin HEAD:docs-tya-v6-v71-audit; fi
 
       - name: Publish status
         if: always()
@@ -90,7 +104,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           STATE=error; DESC='HOLD_LIVE_HR_CURRENT_RECONCILIATION'
-          if [ -f app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json ]; then STATE=success; DESC='PASS_LIVE_HR_CURRENT_RECONCILIATION'; fi
+          if [ -f app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json ] && [ -f app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json ]; then
+            STATE=success
+            D=$(node -p "require('./app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json').decision")
+            if [ "$D" = 'PASS_AUGUST_GT34_DELTA_READY__HN_HOLD_SOURCE_COUNTRY_MISMATCH' ]; then DESC='PASS_HR_CURRENT__AUG_GT34_READY_HN_HOLD';
+            elif [ "$D" = 'PASS_AUGUST_FULL_DELTA_READY' ]; then DESC='PASS_HR_CURRENT__AUG_FULL_READY';
+            else STATE=error; DESC='HOLD_HR_CURRENT__AUG_DELTA_PLAN'; fi
+          fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/live-hr-current-reconcile' -f description="$DESC" >/dev/null
 
       - name: Cleanup
