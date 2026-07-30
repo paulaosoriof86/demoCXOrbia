@@ -1,6 +1,6 @@
 # Legacy TyA — refresh read-only shoppers + certificaciones
 
-- Fecha: 2026-07-30T01:07:56.324Z
+- Fecha: 2026-07-30T01:12:24.573Z
 - Fuente: Firebase RTDB `tya-plataforma`, nodo `tya_shoppers_extra` únicamente.
 - Alcance: shoppers + `histCerts` + marcadores `certs`; visitas/finanzas/notificaciones no fueron leídos.
 - Snapshot hash: `a4988e2ad473f724248ac9999b6f8ba6edd94f8aba5c7145c09da88159a200c4`

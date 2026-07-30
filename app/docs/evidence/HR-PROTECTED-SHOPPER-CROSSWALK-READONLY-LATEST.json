@@ -1,0 +1,1504 @@
+{
+  "schemaVersion": "tya.hr-protected-shopper-crosswalk.readonly.v1",
+  "generatedAt": "2026-07-30T01:12:28.994Z",
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "tenantId": "tya"
+  },
+  "policy": {
+    "nameMatching": false,
+    "stableTechnicalIdOnly": true,
+    "stableCodeOnly": true,
+    "automaticMergeOnName": false
+  },
+  "counts": {
+    "planned": 210,
+    "canonicalExisting": 215,
+    "reuseByStableHrId": 0,
+    "reuseByStableHrCode": 0,
+    "reuseTotal": 0,
+    "unmapped": 210,
+    "collision": 0
+  },
+  "rows": [
+    {
+      "plannedShopperId": "shopper_gt_018ca3e794",
+      "plannedShopperCode": "TYA_GT_018CA3E794",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_0757b1eeb4",
+      "plannedShopperCode": "TYA_GT_0757B1EEB4",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_09c5128572",
+      "plannedShopperCode": "TYA_GT_09C5128572",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_0a363269ad",
+      "plannedShopperCode": "TYA_GT_0A363269AD",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_0b19085086",
+      "plannedShopperCode": "TYA_GT_0B19085086",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_0b2f66d821",
+      "plannedShopperCode": "TYA_GT_0B2F66D821",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_0c0ba8856e",
+      "plannedShopperCode": "TYA_GT_0C0BA8856E",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_0c198c1055",
+      "plannedShopperCode": "TYA_GT_0C198C1055",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_0c6f828e41",
+      "plannedShopperCode": "TYA_GT_0C6F828E41",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_0e5eac2a4a",
+      "plannedShopperCode": "TYA_GT_0E5EAC2A4A",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_117b1b39de",
+      "plannedShopperCode": "TYA_GT_117B1B39DE",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_13ff51fafd",
+      "plannedShopperCode": "TYA_GT_13FF51FAFD",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_1440137b73",
+      "plannedShopperCode": "TYA_GT_1440137B73",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_17c3a1dfeb",
+      "plannedShopperCode": "TYA_GT_17C3A1DFEB",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_19068e65cb",
+      "plannedShopperCode": "TYA_GT_19068E65CB",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_1a6d9c9779",
+      "plannedShopperCode": "TYA_GT_1A6D9C9779",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_1d3e8c0e83",
+      "plannedShopperCode": "TYA_GT_1D3E8C0E83",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_1f4e43db3d",
+      "plannedShopperCode": "TYA_GT_1F4E43DB3D",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_1f90bb8a75",
+      "plannedShopperCode": "TYA_GT_1F90BB8A75",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_2171dbe993",
+      "plannedShopperCode": "TYA_GT_2171DBE993",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_2275578b02",
+      "plannedShopperCode": "TYA_GT_2275578B02",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_233f657d7e",
+      "plannedShopperCode": "TYA_GT_233F657D7E",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_24e2b5c5b2",
+      "plannedShopperCode": "TYA_GT_24E2B5C5B2",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_24e70bc42c",
+      "plannedShopperCode": "TYA_GT_24E70BC42C",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_2889189d76",
+      "plannedShopperCode": "TYA_GT_2889189D76",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_2ace80aa68",
+      "plannedShopperCode": "TYA_GT_2ACE80AA68",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_2c6d1482e1",
+      "plannedShopperCode": "TYA_GT_2C6D1482E1",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_2e8200a26e",
+      "plannedShopperCode": "TYA_GT_2E8200A26E",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_2f37e9abcb",
+      "plannedShopperCode": "TYA_GT_2F37E9ABCB",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_3023959720",
+      "plannedShopperCode": "TYA_GT_3023959720",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_3106d9d44b",
+      "plannedShopperCode": "TYA_GT_3106D9D44B",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_319cd82eaf",
+      "plannedShopperCode": "TYA_GT_319CD82EAF",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_338ec57592",
+      "plannedShopperCode": "TYA_GT_338EC57592",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_3426ec3ff3",
+      "plannedShopperCode": "TYA_GT_3426EC3FF3",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_348d87d60f",
+      "plannedShopperCode": "TYA_GT_348D87D60F",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_34d33a3054",
+      "plannedShopperCode": "TYA_GT_34D33A3054",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_350d7b017d",
+      "plannedShopperCode": "TYA_GT_350D7B017D",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_3528b0fb90",
+      "plannedShopperCode": "TYA_GT_3528B0FB90",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_36c6c37b2a",
+      "plannedShopperCode": "TYA_GT_36C6C37B2A",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_37adac8f58",
+      "plannedShopperCode": "TYA_GT_37ADAC8F58",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_39d89a3db9",
+      "plannedShopperCode": "TYA_GT_39D89A3DB9",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_3afdb1d65f",
+      "plannedShopperCode": "TYA_GT_3AFDB1D65F",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_3c14073969",
+      "plannedShopperCode": "TYA_GT_3C14073969",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_3d5b842bad",
+      "plannedShopperCode": "TYA_GT_3D5B842BAD",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_3e7975b739",
+      "plannedShopperCode": "TYA_GT_3E7975B739",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_3f36ff81ad",
+      "plannedShopperCode": "TYA_GT_3F36FF81AD",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_40fa49770f",
+      "plannedShopperCode": "TYA_GT_40FA49770F",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_447020fa18",
+      "plannedShopperCode": "TYA_GT_447020FA18",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_4937b8216a",
+      "plannedShopperCode": "TYA_GT_4937B8216A",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_4ae6a03099",
+      "plannedShopperCode": "TYA_GT_4AE6A03099",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_4b7ab39880",
+      "plannedShopperCode": "TYA_GT_4B7AB39880",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_4dd893a7e7",
+      "plannedShopperCode": "TYA_GT_4DD893A7E7",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_4ef19f0e07",
+      "plannedShopperCode": "TYA_GT_4EF19F0E07",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_518a436a83",
+      "plannedShopperCode": "TYA_GT_518A436A83",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_5233bd64ee",
+      "plannedShopperCode": "TYA_GT_5233BD64EE",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_52524de362",
+      "plannedShopperCode": "TYA_GT_52524DE362",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_54b5ca83eb",
+      "plannedShopperCode": "TYA_GT_54B5CA83EB",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_55b1903f6e",
+      "plannedShopperCode": "TYA_GT_55B1903F6E",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_5818744fb0",
+      "plannedShopperCode": "TYA_GT_5818744FB0",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_5830743a5e",
+      "plannedShopperCode": "TYA_GT_5830743A5E",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_5eb6ba4913",
+      "plannedShopperCode": "TYA_GT_5EB6BA4913",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_5f3d6952c5",
+      "plannedShopperCode": "TYA_GT_5F3D6952C5",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_6036f7338d",
+      "plannedShopperCode": "TYA_GT_6036F7338D",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_61501eaff4",
+      "plannedShopperCode": "TYA_GT_61501EAFF4",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_634b09c120",
+      "plannedShopperCode": "TYA_GT_634B09C120",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_63882d59fd",
+      "plannedShopperCode": "TYA_GT_63882D59FD",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_64265e8115",
+      "plannedShopperCode": "TYA_GT_64265E8115",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_679ad8c992",
+      "plannedShopperCode": "TYA_GT_679AD8C992",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_6b67f2a89f",
+      "plannedShopperCode": "TYA_GT_6B67F2A89F",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_7155410e54",
+      "plannedShopperCode": "TYA_GT_7155410E54",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_736d3818e7",
+      "plannedShopperCode": "TYA_GT_736D3818E7",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_751194ffb8",
+      "plannedShopperCode": "TYA_GT_751194FFB8",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_7a034d9eab",
+      "plannedShopperCode": "TYA_GT_7A034D9EAB",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_7c8b7cbdbf",
+      "plannedShopperCode": "TYA_GT_7C8B7CBDBF",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_7dd9382c67",
+      "plannedShopperCode": "TYA_GT_7DD9382C67",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_7f23f9a093",
+      "plannedShopperCode": "TYA_GT_7F23F9A093",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_81de8fb0a2",
+      "plannedShopperCode": "TYA_GT_81DE8FB0A2",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_833dc86954",
+      "plannedShopperCode": "TYA_GT_833DC86954",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_8343bb7ba7",
+      "plannedShopperCode": "TYA_GT_8343BB7BA7",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_85800c7de1",
+      "plannedShopperCode": "TYA_GT_85800C7DE1",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_859e8c1810",
+      "plannedShopperCode": "TYA_GT_859E8C1810",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_86df37a5b3",
+      "plannedShopperCode": "TYA_GT_86DF37A5B3",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_8cd3f1ba2e",
+      "plannedShopperCode": "TYA_GT_8CD3F1BA2E",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_8fd7924a95",
+      "plannedShopperCode": "TYA_GT_8FD7924A95",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_919825bf47",
+      "plannedShopperCode": "TYA_GT_919825BF47",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_932b89edc7",
+      "plannedShopperCode": "TYA_GT_932B89EDC7",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_962096be36",
+      "plannedShopperCode": "TYA_GT_962096BE36",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_985acad843",
+      "plannedShopperCode": "TYA_GT_985ACAD843",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_98a1bb84ff",
+      "plannedShopperCode": "TYA_GT_98A1BB84FF",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_9905177db9",
+      "plannedShopperCode": "TYA_GT_9905177DB9",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_9a72c005e6",
+      "plannedShopperCode": "TYA_GT_9A72C005E6",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_9f113de0dd",
+      "plannedShopperCode": "TYA_GT_9F113DE0DD",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_9fe8184d1f",
+      "plannedShopperCode": "TYA_GT_9FE8184D1F",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_a03736edc5",
+      "plannedShopperCode": "TYA_GT_A03736EDC5",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_a092a0647f",
+      "plannedShopperCode": "TYA_GT_A092A0647F",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_a27341e5f2",
+      "plannedShopperCode": "TYA_GT_A27341E5F2",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_a40b00bbbd",
+      "plannedShopperCode": "TYA_GT_A40B00BBBD",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_a5fec782ee",
+      "plannedShopperCode": "TYA_GT_A5FEC782EE",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_a681381884",
+      "plannedShopperCode": "TYA_GT_A681381884",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_a8990876ea",
+      "plannedShopperCode": "TYA_GT_A8990876EA",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_a9b49aa1d4",
+      "plannedShopperCode": "TYA_GT_A9B49AA1D4",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_adb75b8d02",
+      "plannedShopperCode": "TYA_GT_ADB75B8D02",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_b05a031741",
+      "plannedShopperCode": "TYA_GT_B05A031741",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_b1d5a53d04",
+      "plannedShopperCode": "TYA_GT_B1D5A53D04",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_b23d8dedea",
+      "plannedShopperCode": "TYA_GT_B23D8DEDEA",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_b33aa2e641",
+      "plannedShopperCode": "TYA_GT_B33AA2E641",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_b7afe05305",
+      "plannedShopperCode": "TYA_GT_B7AFE05305",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_ba66e016c7",
+      "plannedShopperCode": "TYA_GT_BA66E016C7",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_bd74ace936",
+      "plannedShopperCode": "TYA_GT_BD74ACE936",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_bd89d3ecc6",
+      "plannedShopperCode": "TYA_GT_BD89D3ECC6",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_c139c5348e",
+      "plannedShopperCode": "TYA_GT_C139C5348E",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_c4dbcbe2ba",
+      "plannedShopperCode": "TYA_GT_C4DBCBE2BA",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_c521f29122",
+      "plannedShopperCode": "TYA_GT_C521F29122",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_c73b3f0753",
+      "plannedShopperCode": "TYA_GT_C73B3F0753",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_c80e9b53ec",
+      "plannedShopperCode": "TYA_GT_C80E9B53EC",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_c8391cf8d8",
+      "plannedShopperCode": "TYA_GT_C8391CF8D8",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_cbcd833740",
+      "plannedShopperCode": "TYA_GT_CBCD833740",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_cc094b28c2",
+      "plannedShopperCode": "TYA_GT_CC094B28C2",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_cd0270c9ca",
+      "plannedShopperCode": "TYA_GT_CD0270C9CA",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_ce6a976e54",
+      "plannedShopperCode": "TYA_GT_CE6A976E54",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_cf009f1d68",
+      "plannedShopperCode": "TYA_GT_CF009F1D68",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_d5ebad6b6c",
+      "plannedShopperCode": "TYA_GT_D5EBAD6B6C",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_d7b59dfd6a",
+      "plannedShopperCode": "TYA_GT_D7B59DFD6A",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_d8018a15d0",
+      "plannedShopperCode": "TYA_GT_D8018A15D0",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_dc08e0f710",
+      "plannedShopperCode": "TYA_GT_DC08E0F710",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_dc7098fd00",
+      "plannedShopperCode": "TYA_GT_DC7098FD00",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_dcb71fa55e",
+      "plannedShopperCode": "TYA_GT_DCB71FA55E",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_e10ba54cc7",
+      "plannedShopperCode": "TYA_GT_E10BA54CC7",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_e121686a7e",
+      "plannedShopperCode": "TYA_GT_E121686A7E",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_e24dff9781",
+      "plannedShopperCode": "TYA_GT_E24DFF9781",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_e2bac3644d",
+      "plannedShopperCode": "TYA_GT_E2BAC3644D",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_e41c7f3439",
+      "plannedShopperCode": "TYA_GT_E41C7F3439",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_e58ffad6cf",
+      "plannedShopperCode": "TYA_GT_E58FFAD6CF",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_e8ef4f7159",
+      "plannedShopperCode": "TYA_GT_E8EF4F7159",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_eaa6f8aa33",
+      "plannedShopperCode": "TYA_GT_EAA6F8AA33",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_ebc7c081b4",
+      "plannedShopperCode": "TYA_GT_EBC7C081B4",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_ec7b992054",
+      "plannedShopperCode": "TYA_GT_EC7B992054",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_ee24b84bc7",
+      "plannedShopperCode": "TYA_GT_EE24B84BC7",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_ee7c8b2ee8",
+      "plannedShopperCode": "TYA_GT_EE7C8B2EE8",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_ef38845c91",
+      "plannedShopperCode": "TYA_GT_EF38845C91",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_ef7eb475a9",
+      "plannedShopperCode": "TYA_GT_EF7EB475A9",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_f283ec69ad",
+      "plannedShopperCode": "TYA_GT_F283EC69AD",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_f340a8561f",
+      "plannedShopperCode": "TYA_GT_F340A8561F",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_f726f2eb34",
+      "plannedShopperCode": "TYA_GT_F726F2EB34",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_f8c101ded8",
+      "plannedShopperCode": "TYA_GT_F8C101DED8",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_fa80514323",
+      "plannedShopperCode": "TYA_GT_FA80514323",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_fc5d6fb927",
+      "plannedShopperCode": "TYA_GT_FC5D6FB927",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_fdf0826c58",
+      "plannedShopperCode": "TYA_GT_FDF0826C58",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_fe757bebcd",
+      "plannedShopperCode": "TYA_GT_FE757BEBCD",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_feca082d2d",
+      "plannedShopperCode": "TYA_GT_FECA082D2D",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_gt_ff7616913a",
+      "plannedShopperCode": "TYA_GT_FF7616913A",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_03156fc84c",
+      "plannedShopperCode": "TYA_HN_03156FC84C",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_0855faf907",
+      "plannedShopperCode": "TYA_HN_0855FAF907",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_08ca073ce4",
+      "plannedShopperCode": "TYA_HN_08CA073CE4",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_0b28347863",
+      "plannedShopperCode": "TYA_HN_0B28347863",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_1691aecc2c",
+      "plannedShopperCode": "TYA_HN_1691AECC2C",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_1a6d9c9779",
+      "plannedShopperCode": "TYA_HN_1A6D9C9779",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_1bd5e9bb8b",
+      "plannedShopperCode": "TYA_HN_1BD5E9BB8B",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_208c0bd271",
+      "plannedShopperCode": "TYA_HN_208C0BD271",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_23b1d3bb61",
+      "plannedShopperCode": "TYA_HN_23B1D3BB61",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_29685e0167",
+      "plannedShopperCode": "TYA_HN_29685E0167",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_2d5d71b664",
+      "plannedShopperCode": "TYA_HN_2D5D71B664",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_3010e08ed6",
+      "plannedShopperCode": "TYA_HN_3010E08ED6",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_365befab79",
+      "plannedShopperCode": "TYA_HN_365BEFAB79",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_37b727a4c5",
+      "plannedShopperCode": "TYA_HN_37B727A4C5",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_3b3c2f5cc1",
+      "plannedShopperCode": "TYA_HN_3B3C2F5CC1",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_4b248f33c4",
+      "plannedShopperCode": "TYA_HN_4B248F33C4",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_53881b45e1",
+      "plannedShopperCode": "TYA_HN_53881B45E1",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_54b47e1e8a",
+      "plannedShopperCode": "TYA_HN_54B47E1E8A",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_57821b348e",
+      "plannedShopperCode": "TYA_HN_57821B348E",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_59bbac6a32",
+      "plannedShopperCode": "TYA_HN_59BBAC6A32",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_5b8a9597e1",
+      "plannedShopperCode": "TYA_HN_5B8A9597E1",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_5ec302f7d5",
+      "plannedShopperCode": "TYA_HN_5EC302F7D5",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_634b09c120",
+      "plannedShopperCode": "TYA_HN_634B09C120",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_6a2b1aaac7",
+      "plannedShopperCode": "TYA_HN_6A2B1AAAC7",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_724509b250",
+      "plannedShopperCode": "TYA_HN_724509B250",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_7a5a21048b",
+      "plannedShopperCode": "TYA_HN_7A5A21048B",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_7dd50f15d7",
+      "plannedShopperCode": "TYA_HN_7DD50F15D7",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_7eb13548d4",
+      "plannedShopperCode": "TYA_HN_7EB13548D4",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_83460e68ba",
+      "plannedShopperCode": "TYA_HN_83460E68BA",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_88754eeaa2",
+      "plannedShopperCode": "TYA_HN_88754EEAA2",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_97aebe51ee",
+      "plannedShopperCode": "TYA_HN_97AEBE51EE",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_99cb2f9b05",
+      "plannedShopperCode": "TYA_HN_99CB2F9B05",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_9a6963fdf6",
+      "plannedShopperCode": "TYA_HN_9A6963FDF6",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_a5eb20c689",
+      "plannedShopperCode": "TYA_HN_A5EB20C689",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_a651f7c213",
+      "plannedShopperCode": "TYA_HN_A651F7C213",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_a766607e28",
+      "plannedShopperCode": "TYA_HN_A766607E28",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_a7da259c01",
+      "plannedShopperCode": "TYA_HN_A7DA259C01",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_a9d0f9ec63",
+      "plannedShopperCode": "TYA_HN_A9D0F9EC63",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_aa9c99ecbe",
+      "plannedShopperCode": "TYA_HN_AA9C99ECBE",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_ad3a67a97f",
+      "plannedShopperCode": "TYA_HN_AD3A67A97F",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_b1b94c1f96",
+      "plannedShopperCode": "TYA_HN_B1B94C1F96",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_b392e51c76",
+      "plannedShopperCode": "TYA_HN_B392E51C76",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_b46ec0b894",
+      "plannedShopperCode": "TYA_HN_B46EC0B894",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_b5aabb7d48",
+      "plannedShopperCode": "TYA_HN_B5AABB7D48",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_ba49cafa91",
+      "plannedShopperCode": "TYA_HN_BA49CAFA91",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_c76575f9a1",
+      "plannedShopperCode": "TYA_HN_C76575F9A1",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_cff256baeb",
+      "plannedShopperCode": "TYA_HN_CFF256BAEB",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_d2910831d4",
+      "plannedShopperCode": "TYA_HN_D2910831D4",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_d7025c0ded",
+      "plannedShopperCode": "TYA_HN_D7025C0DED",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_d9d4214283",
+      "plannedShopperCode": "TYA_HN_D9D4214283",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_db58c2a3ad",
+      "plannedShopperCode": "TYA_HN_DB58C2A3AD",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_e63fa70863",
+      "plannedShopperCode": "TYA_HN_E63FA70863",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_e88273a777",
+      "plannedShopperCode": "TYA_HN_E88273A777",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_ee7585b930",
+      "plannedShopperCode": "TYA_HN_EE7585B930",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_eea60b5eba",
+      "plannedShopperCode": "TYA_HN_EEA60B5EBA",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_f1a22d569e",
+      "plannedShopperCode": "TYA_HN_F1A22D569E",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_f417e005e2",
+      "plannedShopperCode": "TYA_HN_F417E005E2",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_fc52fabe94",
+      "plannedShopperCode": "TYA_HN_FC52FABE94",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    },
+    {
+      "plannedShopperId": "shopper_hn_ff2ec7a471",
+      "plannedShopperCode": "TYA_HN_FF2EC7A471",
+      "action": "UNMAPPED",
+      "basis": null,
+      "canonicalDocId": null
+    }
+  ],
+  "safety": {
+    "providerReads": true,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "deploys": 0,
+    "production": false,
+    "merge": false,
+    "pii": false
+  }
+}

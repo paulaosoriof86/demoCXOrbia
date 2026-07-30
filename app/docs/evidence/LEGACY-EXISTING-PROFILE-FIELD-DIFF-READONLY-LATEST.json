@@ -1,6 +1,6 @@
 {
   "schemaVersion": "tya.legacy-existing-profile-field-diff.readonly.v1",
-  "generatedAt": "2026-07-30T01:07:58.453Z",
+  "generatedAt": "2026-07-30T01:12:28.378Z",
   "authorizationScope": "READ_ONLY_LEGACY_TYA_SHOPPERS_CERTIFICATIONS_ONLY",
   "legacySnapshotSha256": "a4988e2ad473f724248ac9999b6f8ba6edd94f8aba5c7145c09da88159a200c4",
   "canonicalProjectId": "cxorbia-backend-dev",
