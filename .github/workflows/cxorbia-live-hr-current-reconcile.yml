@@ -107,8 +107,8 @@ jobs:
           if [ -f app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json ] && [ -f app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json ]; then
             STATE=success
             D=$(node -p "require('./app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json').decision")
-            if [ "$D" = 'PASS_AUGUST_GT34_DELTA_READY__HN_HOLD_SOURCE_COUNTRY_MISMATCH' ]; then DESC='PASS_HR_CURRENT__AUG_GT34_READY_HN_HOLD';
-            elif [ "$D" = 'PASS_AUGUST_FULL_DELTA_READY' ]; then DESC='PASS_HR_CURRENT__AUG_FULL_READY';
+            if [ "$D" = 'PASS_AUGUST_GT34_DELTA_TECH_READY__HN_HOLD_SOURCE_COUNTRY_MISMATCH' ]; then DESC='PASS_HR_CURRENT__AUG_GT34_TECH_READY_HN_HOLD';
+            elif [ "$D" = 'PASS_AUGUST_FULL_DELTA_TECH_READY' ]; then DESC='PASS_HR_CURRENT__AUG_FULL_TECH_READY';
             else STATE=error; DESC='HOLD_HR_CURRENT__AUG_DELTA_PLAN'; fi
           fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/live-hr-current-reconcile' -f description="$DESC" >/dev/null
