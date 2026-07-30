@@ -3,92 +3,76 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-30  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_AUTOENTRY_VISUAL_OBSERVED_PASS__PROTECTED_IDENTITY_READONLY_PASS__AUGUST_REFRESH_READONLY_NEXT__NO_PRODUCTION`
+**Estado vivo:** `C6_IDENTITY_PROTECTED_PASS__AUG_GT34_TECH_READY__HN_SOURCE_MISMATCH__NO_UNASSIGNED_VISITS__NO_PRODUCTION`
 
 ## 1. Objetivo
 Operar TyA/Cinépolis como primer tenant/proyecto configurable de CXOrbia con HR/histórico, shoppers reales, certificaciones, visitas, agenda, cuestionarios, liquidaciones/pagos, multi-tenant, multi-proyecto, roles, Academia y sincronización.
 
-Arquitectura fija:
-- `tya-plataforma` = URL/Hosting público final; no tocar sin gate de producción.
-- `cxorbia-backend-dev` = backend/Hosting DEV canónico.
-- proyecto padre `cinepolis`; meses=periodos.
-- no crear otro Firebase/Hosting/rama/PR por rutina.
+Arquitectura fija: `tya-plataforma`=Hosting público final; `cxorbia-backend-dev`=DEV canónico; proyecto padre `cinepolis`; meses=periodos; no crear Firebase/Hosting/rama/PR por rutina.
 
 ## 2. Secuencia obligatoria
 `FUENTE VIVA → INVENTARIO/FRESCURA → MAPPING/IDENTIDAD → PROVIDER COMPARE → WRITE PLAN → DRY-RUN/IDEMPOTENCIA → WRITE EXACTO AUTORIZADO → READBACK → SMOKE → VALIDACIÓN VISUAL → FREEZE/CUTOVER`.
 
-Un PASS técnico no sustituye validación humana; un preview source-safe tampoco sustituye el runtime autenticado protegido.
+Una fuente conflictiva no puede ser “corregida” por inferencia backend/frontend.
 
 ## 3. Cortes protegidos — no reabrir
-- Corte1/2A/3 FROZEN/APROBADO; Corte3 `CXORBIA-TYA-CORTE3-V182-20260729`.
-- HR histórico hasta julio:14 periodos/616 visitas.
-- R17N FINAL:1,406/1,406 Firestore data writes/readback; mismatch0.
-- Corte5 CX.data: project=`cinepolis`,periods14,visits616,currentPeriod=`2026-07`,source=firestore/fallback=false PASS.
-- Auth legacy import/readback91/91 PASS; no repetir/resetear.
-- claims5/5 + Rules PASS.
+- Corte1/2A/3 FROZEN/APROBADO.
+- Histórico hasta julio14 periodos/616 visitas.
+- R17N1,406/1,406 PASS; no repetir.
+- Corte5 CX.data Firestore PASS.
+- Auth legacy91/91, claims5/5 y Rules PASS.
 
-## 4. Corte6 — integración Auth, UX e identidad
-Firebase Auth/RBAC/Rules continúa como autoridad backend real, pero no puede reescribir el contrato visible del prototipo.
+## 4. Corte6 — UX e identidad
+- Auto-entry del preview humano restaurado y observado funcionando.
+- Source-safe público mantiene PII enmascarada; `Shopper protegido` solo es válido allí.
+- Firestore protegido: shoppers340/340 con nombre real, visitas616/616 con nombre real, placeholders0; perfiles referenciados194/194; Rules/adapter PASS.
+- Preprod/producción autenticada debe usar Firestore protegido y aplicar visibilidad por rol.
 
-P0 visuales demostrados:
-1. gate separado `Acceso seguro`;
-2. formulario `Usuario + Contraseña` inyectado dentro del login al seleccionar rol.
+## 5. Agosto — refresh fuente viva actual
+Read-only cache-busted:
+- `AGOSTO 26` GT=34 filas y país correcto;
+- `AGOSTO 26 HN`=34 filas pero34/34 marcadas GT → `HOLD_COUNTRY_TAB_MISMATCH`;
+- Firestore aún616 visitas y no tiene periodo2026-08;
+- delta GT técnico=34 nuevas;
+- identity mapping28/28 y perfiles target28/28 existentes.
 
-Contrato correcto del preview humano: perfil → entrada automática. La visual actual confirma que ese auto-entry volvió a funcionar.
+## 6. Gate operacional de publicación
+Las34 GT actuales están:
+- assigned34;
+- unassigned0;
+- scheduled34;
+- realized34;
+- submitted27;
+- questionnaire7.
 
-## 5. Preview humano source-safe
-El preview DEV humano usa HR source-safe explícita/read-only y mantiene PII enmascarada. Por eso puede mostrar `Shopper protegido`; ese placeholder es correcto solo para el artefacto público/source-safe.
+`releaseReadiness=NO_UNASSIGNED_VISITS_IN_ACCEPTED_SOURCE`.
 
-Está prohibido insertar nombres reales en el JS source-safe o convertir ese archivo estático en almacén de identidad.
+Por tanto no existe en la fuente actual un lote validado de visitas disponibles de agosto. Está prohibido forzar `disponible`, copiar julio o relabelar las34 GT de la pestaña HN como HN.
 
-## 6. Gate de identidad protegida — PASS
-`PASS_C6_PROTECTED_IDENTITY_READONLY_RUNTIME_READY`.
+## 7. Gate vivo obligatorio
+`CORREGIR/ACTUALIZAR HR AGOSTO → REFRESH READ-ONLY → EXPECT GT34/HN10 + ESTADOS PUBLICABLES → DELTA WRITE PLAN EXACTO`.
 
-Lectura directa del backend protegido:
-- shoppers protegidos340; nombres reales340; placeholder0; sin nombre0;
-- visitas canónicas616; con nombre real616; placeholder0; faltantes0;
-- shopperIds distintos referenciados194;
-- perfiles referenciados existentes194/194 y con nombre real194/194;
-- Rules shopper protegidas/deny-by-default PASS;
-- adapter Firestore carga shoppers/nombre real PASS;
-- Rules desplegadas verificadas/hash consistente PASS;
-- source-safe público permanece enmascarado PASS.
+Solo entonces solicitar autorización específica para Firestore data writes del delta agosto.
 
-GitHub status: `PASS_C6_PROTECTED_IDENTITY_READONLY`.
+## 8. Después del write autorizado
+`WRITE SOLO DELTA → READBACK → SMOKE → PREPROD PROTEGIDA AUTENTICADA → VALIDACIÓN IDENTIDAD REAL/OPERACIÓN → CUTOVER tya-plataforma`.
 
-Regla de release: Admin/Operativo autenticado debe leer Firestore protegido y ver identidad real; shopper autenticado solo la propia. El runtime protegido debe fallar si utiliza source-safe como identidad final o si renderiza `Shopper protegido` para un perfil canónico existente.
-
-## 7. Gate actual — Agosto read-only
-Ya no corresponde otra iteración de login/source-safe. El siguiente bloque exacto es:
-
-`REFRESH HR READ-ONLY → RESOLVER/CLASIFICAR AGOSTO HN → VALIDAR AGOSTO → PREPARAR WRITE PLAN DELTA-ONLY`.
-
-No requiere autorización de provider writes porque es lectura/reconciliación y documentación.
-
-## 8. Gate de materialización de agosto
-Solo si el plan delta queda exacto, idempotente y sin reabrir históricos, solicitar autorización específica para Firestore data writes del delta agosto.
-
-Después:
-`WRITE DELTA AGOSTO AUTORIZADO → READBACK → SMOKE → PREPROD PROTEGIDA AUTENTICADA → VALIDACIÓN IDENTIDAD REAL → FREEZE/CUTOVER`.
-
-No repetir los1,406 writes históricos.
+No repetir1,406 históricos.
 
 ## 9. Corte7 — sincronización/evidencias
-HR↔plataforma con stable keys, no duplicación, reviewQueue, cuestionario configurable y evidencias protegidas. Make/Gemini solo con gate/revisión humana y sin retrasar cutover si lo no activado no bloquea Phase A.
+HR↔plataforma con stable keys, assignmentSource/syncStatus, no duplicación y conflictos a review. Make/Gemini solo con gate y revisión humana.
 
 ## 10. Corte8 — preproducción/cutover
-Requiere cortes previos cerrados, refresh delta final, rollback, smoke integral y autorización específica de producción. Cutover sobre `tya-plataforma`; no cambiar URL.
+Requiere fuente agosto válida, delta materializado/readback, runtime protegido, rollback, smoke integral y autorización específica de producción. URL final `tya-plataforma`.
 
 ## 11. Claude/prototipo
-- No nueva candidata general.
-- No tocar `app/modules/*` por este bloque.
-- Conservar auto-entry aprobado del preview humano.
-- Source-safe enmascarado no reemplaza identidad real del runtime protegido.
-- Provider/Auth no debe convertirse en UI técnica.
+- No nueva candidata ni `app/modules/*`.
+- No inventar estados/países/identidades para compensar fuente.
+- Preservar auto-entry del preview humano y separación source-safe/protected runtime.
 - P1/P2: PDF/gráficas, Excel/formato, reportKit/exportaciones, copy.
 
 ## 12. Academia
-Documentar separación entre UX/preview humano, privacidad source-safe y autenticación/identidad provider protegida; flujo por rol, recuperación/cambio, scopes, shopperId exacto, mínimo privilegio y troubleshooting.
+Documentar separación UX/source-safe/protected runtime/fuente operacional y fail-closed ante contradicción de país o estado.
 
 ## 13. Estado seguro
-Gate identidad actual: provider reads únicamente; Auth writes0; Firestore data writes0; Rules0; Hosting0; Storage/HR/legacy/payments/Functions/Make/Gemini0; nuevo Firebase/Hosting0; merge=false; producción=false; PII exportada0.
+Últimos bloques: lecturas HR/Firestore y cambios de repo/docs únicamente. HR/Firestore/Auth/Rules/Hosting/Storage/legacy/payments/Functions/Make/Gemini writes0; merge=false; producción=false; PII exportada0.
