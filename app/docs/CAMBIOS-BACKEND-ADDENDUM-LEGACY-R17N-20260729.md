@@ -25,6 +25,17 @@ Fecha: 2026-07-29
 - 210 HR protected refs: 0 match por stable ID/code, 210 unmapped, 0 collision.
 - R17N idempotence PASS; writes autorizados=0.
 
+## Incidente de herramienta corregido y cerrado
+Durante una actualización documental se envió por error una escritura sin `branch`, lo que creó en `main` un archivo nuevo inexistente previamente: `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md` con contenido `dummy`, commit `45ffbf281c269be8331cb7417077332726eeb058`.
+
+Corrección inmediata:
+- se verificó que el archivo **no existía previamente en `main`** (el diff del commit fue `@@ -0,0 +1 @@`);
+- se eliminó exactamente ese archivo de `main` en commit `928bde911a2ce5dd56886b9e7b562801647fd0f4`;
+- relectura posterior de ese path en `main`: `404 Not Found`, restaurando el estado previo del árbol para ese archivo;
+- no se modificó código funcional, backend, provider, datos ni producción por este incidente.
+
+Prevención: toda mutación documental posterior de CXOrbia debe incluir explícitamente `branch=docs-tya-v6-v71-audit`; no se usa `main` como destino.
+
 ## Clasificación
 - Reusable CXOrbia: stable-key dedupe, recovery-mirror collapse, fill-missing-only, no overwrite, evidence-transaction crosswalk como siguiente gate.
 - Exclusivo cliente: nodo `tya_shoppers_extra`, nomenclatura legacy TyA, 210 refs HR y 78 certificaciones recuperadas.
@@ -33,4 +44,4 @@ Fecha: 2026-07-29
 - Sin impacto Claude: workflows/read-only evidence y hash de idempotencia.
 
 ## Seguridad
-Legacy/Firestore/Auth/Storage/HR writes=0; deploy=0; merge=false; producción=false; pagos/Make/Gemini=0.
+Legacy/Firestore/Auth/Storage/HR writes=0; deploy=0; merge=false; producción=false; pagos/Make/Gemini=0. El incidente documental de `main` quedó revertido completamente en el mismo bloque.
