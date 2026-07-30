@@ -65,7 +65,7 @@ jobs:
           node tools/reconciliation/tya-remaining-shopper-identity-reconciliation-readonly.mjs > /tmp/remaining-identity-run.out 2> /tmp/remaining-identity-run.err
           rc=$?
           if [ "$rc" -ne 0 ]; then
-            err=$(grep -E 'Error:|_failed_|_missing|expected_|wrong_|collision' /tmp/remaining-identity-run.err | head -n 1 | tr '\n' ' ' | cut -c1-120)
+            err=$(grep -E '^(Error|TypeError|ReferenceError|SyntaxError|RangeError):' /tmp/remaining-identity-run.err | tail -n 1 | tr '\n' ' ' | cut -c1-160)
             printf '%s' "${err:-reconciliation_script_failed}" > /tmp/remaining-identity-failure.txt
             exit "$rc"
           fi
