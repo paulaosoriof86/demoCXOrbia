@@ -6,9 +6,9 @@ import crypto from 'node:crypto';
 const input=process.env.CXORBIA_CURRENT_HR_FULL||'.tmp/current-hr-full.js';
 const output=process.env.CXORBIA_CURRENT_HR_THROUGH_JULY||'app/data/tya-hr-source-safe-current-through-july.js';
 const cutoff=process.env.CXORBIA_HR_CUTOFF||'2026-07';
-const code=fs.readFileSync(input,'utf8');
-const sb={window:{}};vm.createContext(sb);vm.runInContext(code,sb,{filename:input,timeout:5000});
-const src=JSON.parse(JSON.stringify(sb.window.CX_TYA_HR_SOURCE_SAFE));
+const staleFile=process.env.CXORBIA_STALE_HR_SOURCE||'app/data/tya-hr-source-safe-periods.js';
+const readAssignment=file=>{const sb={window:{}};vm.createContext(sb);vm.runInContext(fs.readFileSync(file,'utf8'),sb,{filename:file,timeout:5000});return JSON.parse(JSON.stringify(sb.window.CX_TYA_HR_SOURCE_SAFE));};
+const src=readAssignment(input);
 if(!src||src.sourceSafe!==true||src.imported===true||src.production===true)throw new Error('current_hr_source_not_safe');
 const periods=(src.periods||[]).filter(p=>String(p.key)<=cutoff);
 const visits=(src.visits||[]).filter(v=>String(v.periodKey)<=cutoff);
@@ -21,7 +21,7 @@ const out={...src,generatedAt:new Date().toISOString(),buildLabel:'tya-live-hr-s
 if(periods.length!==14||visits.length!==616)throw new Error(`through_july_counts_unexpected:${periods.length}/${visits.length}`);
 fs.mkdirSync(output.split('/').slice(0,-1).join('/'),{recursive:true});
 fs.writeFileSync(output,`/* CXOrbia TyA current live HR through July source-safe; no PII/raw workbook. */window.CX_TYA_HR_SOURCE_SAFE = ${JSON.stringify(out,null,2)};\n`,'utf8');
-const staleFile='app/data/tya-hr-source-safe-periods.js';let stale=null;if(fs.existsSync(staleFile)){const s={window:{}};vm.createContext(s);vm.runInContext(fs.readFileSync(staleFile,'utf8'),s,{filename:staleFile});stale=JSON.parse(JSON.stringify(s.window.CX_TYA_HR_SOURCE_SAFE));}
+let stale=null;if(fs.existsSync(staleFile))stale=readAssignment(staleFile);
 const staleRefs=new Set((stale?.shoppers||[]).map(s=>s.id));const currentRefs=new Set(shoppers.map(s=>s.id));
 const report={schemaVersion:'tya.current-hr-through-july.source-safe.v1',generatedAt:out.generatedAt,cutoff,counts,referenceDiff:{staleSourceGeneratedAt:stale?.generatedAt||null,staleRefs:staleRefs.size,currentRefs:currentRefs.size,added:[...currentRefs].filter(x=>!staleRefs.has(x)).length,removed:[...staleRefs].filter(x=>!currentRefs.has(x)).length,intersection:[...currentRefs].filter(x=>staleRefs.has(x)).length},sourceSha256:crypto.createHash('sha256').update(fs.readFileSync(output)).digest('hex'),safety:{containsPii:false,providerWrites:0,hrWrites:0,firestoreWrites:0,deploys:0,production:false}};
 fs.mkdirSync('app/docs/evidence',{recursive:true});fs.writeFileSync('app/docs/evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.json',JSON.stringify(report,null,2)+'\n');
