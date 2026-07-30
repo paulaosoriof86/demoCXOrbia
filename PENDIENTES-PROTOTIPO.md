@@ -1,97 +1,65 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-07-29  
-**Estado vivo:** `CORTE3_FROZEN__VISIT_IDENTITY_CROSSWALK_201_OF_210__REAL_IDENTITY_POLICY_LOCKED__NO_PRODUCTION`
+**Última actualización:** 2026-07-30  
+**Estado vivo:** `CORTE3_FROZEN__CURRENT_HR_208_REFS__IDENTITY_208_OF_208_READY__R17N_FINAL_1406_NO_EXECUTE__NO_PRODUCTION`
 
-Este archivo contiene pendientes reales de frontend/prototipo para Claude y dependencias backend que condicionan cuándo Claude debe intervenir. Backend, Firebase, adapters, tools, workflows y provider reads/writes no son tareas de Claude.
+Este archivo registra únicamente pendientes frontend reales y dependencias backend que condicionan cuándo Claude debe intervenir.
 
 ## 1. No reabrir
-- M1: `FROZEN/APROBADO`.
-- Corte 1: `FROZEN/APROBADO`.
-- Corte 2A: `FROZEN/APROBADO`.
-- Corte 3: `FROZEN_ACTIVE_BASELINE`.
-- Baseline: `CXORBIA-TYA-CORTE3-V182-20260729`.
-- V182 empalmada; no crear V183/R33.
-- Finanzas canónicas y pagos históricos mayo/junio congelados.
-
-Solo un P0 reproducible puede reabrir un corte congelado.
+- M1 / Corte 1 / Corte 2A: FROZEN/APROBADO.
+- Corte 3: FROZEN sobre `CXORBIA-TYA-CORTE3-V182-20260729`.
+- No crear V183/R33.
+- Finanzas mayo/junio congeladas salvo fuente nueva demostrable.
 
 ## 2. Arquitectura vigente
-- `cxorbia-backend-dev` = backend DEV canónico y reutilizable.
-- `tya-plataforma` = legacy actual a retirar y Hosting/URL a conservar para cutover final.
-- `cxorbia-tya-dev-260729-c4` = sandbox técnico, no destino de materialización.
-- No corresponde crear nueva base ni fallback local/mock.
+- `cxorbia-backend-dev` = backend DEV canónico.
+- `tya-plataforma` = legacy a retirar + Hosting/URL pública final.
+- sandbox C4 = no materializar.
+- no nueva base Firebase.
 
-## 3. Identidad real del shopper — regla de producto
-`source-safe` no significa anonimización del producto.
+## 3. Identidad shopper
+La plataforma final debe mostrar identidad real a roles autorizados. Hash/`Shopper protegido` solo en evidencia técnica. Nombre no es llave única de automerge.
 
-Cuando el perfil real esté materializado y autorizado:
-- Admin/Operativo debe ver identidad real necesaria para operar;
-- Shopper debe ver su propio perfil/historial permitido;
-- Cliente solo el alcance autorizado;
-- `Shopper protegido`/hash es placeholder técnico, no identidad permanente;
-- DPI/banco/NDA/adjuntos solo si aplican y con controles adecuados;
-- dedupe por nombre solamente sigue prohibido para evitar merges erróneos.
+## 4. Dependencia backend actual
+La brecha de identidad quedó resuelta a nivel plan:
+- HR actual hasta julio: 208 refs;
+- 201 → existing canonical;
+- 2 → legacy profile create;
+- 5 → HR-current profile create;
+- 0 HOLD de identidad actual;
+- 616/616 visitas listas;
+- 572/572 controles de liquidación listos.
 
-## 4. Dependencia backend bloqueante restante
-Visit-identity crosswalk read-only ejecutado:
-- 210 refs shopper HR;
-- 201 resueltas por visita exacta;
-- 9 pendientes;
-- 0 conflictos;
-- 571/616 visitas con identidad exacta recuperada;
-- 45 visitas sin evidencia canónica exacta suficiente.
+R17N FINAL no-execute: 1,406 writes potenciales exactos, todavía 0 autorizados/ejecutados.
 
-El primer 0/210 fue falso negativo del gate por espacios en `sourceSheet/hrRowId`; causa raíz corregida y rerun v2 PASS.
+HOLD backend fuera del próximo write: tenant1, 22 existing updates, 7 legacy holds, 1 certification hold, Agosto HN, deletes/pagos/Auth/Storage/HR writes/deploy/producción.
 
-Siguiente bloque backend: reconciliar las 9 refs restantes con identidad real autorizada, mantener PII fuera del repo, reconstruir R17N final e idempotencia antes de cualquier write.
+## 5. Próxima intervención Claude
+Ninguna por rutina.
 
-## 5. Shoppers/certificaciones recuperados
-- 149 shoppers legacy únicos;
-- 120 profile create candidates;
-- 22 stable-linked existing profiles;
-- 7 HOLD;
-- 78 certificaciones útiles;
-- 77 candidatas + 1 HOLD;
-- 30 recovery mirrors colapsados.
+Después de materialización y smoke, validar:
+1. Admin/Operativo ve identidad real autorizada.
+2. Shopper ve su perfil/historial permitido.
+3. No quedan placeholders/hash cuando existe perfil real.
+4. No hay duplicados entre referencia HR y perfil.
+5. Carryover de certificación queda en la persona correcta.
+6. Proyecto padre `cinepolis` y periodos se mantienen.
 
-No pedir al shopper repetir una certificación ya válida por un problema de crosswalk.
+Solo abrir frontend antes si aparece P0 reproducible.
 
-## 6. Próxima intervención de Claude
-Ninguna por rutina ahora.
-
-Solo abrir frontend si:
-1. un smoke posterior al write/read-path canónico demuestra P0 reproducible; o
-2. se atiende backlog P1/P2 transversal después del cierre operativo.
-
-Cuando el backend entregue perfiles reales, validar que las pantallas autorizadas rendericen nombre/identidad real y no placeholders técnicos.
-
-## 7. Backlog frontend no bloqueante
-### Reportes
-- PDF: gráfica ausente/impresión del reporte.
+## 6. Backlog P1/P2 no bloqueante
+- PDF: gráfica ausente al imprimir/exportar.
 - Excel: formato básico.
 - `reportKit`: consolidación transversal.
-- Mismo alcance/filas entre exportaciones.
+- copy de fuentes/readiness específico.
 
-### Copy
-- Especificar fuente faltante cuando sea posible.
-- No mostrar pago/import/sync/proveedor como ejecutado sin evidencia.
+## 7. Academia/manuales
+- fuente viva vs snapshot;
+- identidad real vs sanitización técnica;
+- referencia HR vs perfil vs Auth;
+- stable-key/crosswalk antes de merge;
+- conflicto a review;
+- carryover evita recertificación innecesaria.
 
-### Academia/manuales
-- Privacidad por rol ≠ anonimización.
-- Perfil real ≠ referencia HR ≠ identidad Auth.
-- PII backend protegido ≠ artefacto source-safe.
-- Stable key/evidencia antes de dedupe.
-- Conflictos pasan a review.
-- Carryover de certificación evita recertificación innecesaria.
-
-## 8. Pendientes transversales preservados
-- Multi-tenant/multi-proyecto; Cinépolis configurable, no global.
-- Beneficios/liquidaciones/pagos separados por honorario, reembolso, total, moneda y estado.
-- Postulaciones/asignaciones con `assignmentSource`, sync status y review.
-- Readiness/source-safe con estados honestos.
-- No proveedores reales desde UI.
-- `AGOSTO 26 HN` sigue HOLD por país/tab incorrecto.
-
-## 9. Estado seguro
-PR #7 draft/open/no merge. Legacy/Firestore/Auth/Storage/HR writes=0; deploy=0; producción=false; imports/pagos/lotes/Make/Gemini=0.
+## 8. Estado seguro
+PR #7 draft/open/no merge. Data writes=0; deploy=0; producción=false; imports/pagos/lotes/Make/Gemini=0.
