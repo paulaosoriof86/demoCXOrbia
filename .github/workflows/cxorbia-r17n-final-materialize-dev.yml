@@ -71,9 +71,16 @@ jobs:
           CXORBIA_HR_SOURCE: app/data/tya-hr-source-safe-current-through-july.js
         run: |
           echo preflight > /tmp/r17n-materialize-phase
+          set +e
+          node tools/migration/tya-r17n-final-materialize-dev.mjs --mode=preflight > /tmp/r17n-preflight.out 2> /tmp/r17n-preflight.err
+          RC=$?
+          if [ "$RC" -ne 0 ]; then
+            DETAIL=$(grep -E '^(Error|TypeError|ReferenceError|SyntaxError|RangeError):' /tmp/r17n-preflight.err | tail -n 1 | sed -E 's/^[A-Za-z]+: *//' | tr -cd 'A-Za-z0-9_:\-/' | cut -c1-140)
+            printf '%s' "${DETAIL:-preflight_executor_failed}" > /tmp/r17n-error-code
+            exit "$RC"
+          fi
           set -euo pipefail
-          node tools/migration/tya-r17n-final-materialize-dev.mjs --mode=preflight > /tmp/r17n-preflight.out
-          node -e "const p=require('./.tmp/r17n-materialize/preflight.json');if(p.counts?.intended!==1406||p.counts?.conflict!==0||p.counts?.liveHrIdentityRechecked!==208||p.counts?.existingCanonicalTargetsVerified!==201||p.counts?.financialExactVisitLinks!==196)process.exit(1)"
+          node -e "const p=require('./.tmp/r17n-materialize/preflight.json');if(p.counts?.intended!==1406||p.counts?.conflict!==0||p.counts?.liveHrIdentityRechecked!==208||p.counts?.existingCanonicalTargetsVerified!==201||p.counts?.financialExactVisitLinks!==196)process.exit(1)" || { echo post_preflight_validation_failed > /tmp/r17n-error-code; exit 1; }
       - name: Execute authorized Firestore DEV writes and readback
         env:
           CXORBIA_BASE_PLAN: .tmp/r17n-materialize/base/firestore-materialization-plan.json
@@ -110,8 +117,9 @@ jobs:
           PHASE=$(cat /tmp/r17n-materialize-phase 2>/dev/null || echo unknown)
           WRITES=0
           if [ -f .tmp/r17n-materialize/write-progress.json ];then WRITES=$(node -e "try{console.log(require('./.tmp/r17n-materialize/write-progress.json').writes||0)}catch{console.log(0)}");fi
-          PHASE="$PHASE" WRITES="$WRITES" node <<'NODE'
-          const fs=require('fs');const d={schemaVersion:'cxorbia.r17n-final-dev-materialization.hold.v1',generatedAt:new Date().toISOString(),decision:'HOLD_R17N_FINAL_DEV_MATERIALIZATION',phase:process.env.PHASE,firestoreWritesObserved:Number(process.env.WRITES||0),maxAuthorizedWrites:1406,pii:false,deploys:0,merge:false,production:false};fs.writeFileSync('/tmp/r17n-hold.json',JSON.stringify(d,null,2)+'\n');
+          DETAIL=$(cat /tmp/r17n-error-code 2>/dev/null || echo unavailable)
+          PHASE="$PHASE" WRITES="$WRITES" DETAIL="$DETAIL" node <<'NODE'
+          const fs=require('fs');const d={schemaVersion:'cxorbia.r17n-final-dev-materialization.hold.v1',generatedAt:new Date().toISOString(),decision:'HOLD_R17N_FINAL_DEV_MATERIALIZATION',phase:process.env.PHASE,detail:process.env.DETAIL||'unavailable',firestoreWritesObserved:Number(process.env.WRITES||0),maxAuthorizedWrites:1406,pii:false,deploys:0,merge:false,production:false};fs.writeFileSync('/tmp/r17n-hold.json',JSON.stringify(d,null,2)+'\n');
           NODE
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
@@ -131,4 +139,4 @@ jobs:
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/r17n-final-dev-materialization' -f description="$DESC" >/dev/null
       - name: Cleanup credentials and private surfaces
         if: always()
-        run: rm -rf .tmp/r17n-materialize/private /tmp/r17n-preflight.out /tmp/r17n-execute.out /tmp/r17n-base-summary.json
+        run: rm -rf .tmp/r17n-materialize/private /tmp/r17n-preflight.out /tmp/r17n-preflight.err /tmp/r17n-execute.out /tmp/r17n-base-summary.json /tmp/r17n-error-code
