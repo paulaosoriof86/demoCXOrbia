@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "tya.current-hr-through-july.source-safe.v1",
+  "generatedAt": "2026-07-30T02:57:43.364Z",
+  "cutoff": "2026-07",
+  "counts": {
+    "periods": 14,
+    "tabs": 0,
+    "visits": 616,
+    "shoppers": 208,
+    "byStatus": {
+      "submitida": 545,
+      "cuestionario": 61,
+      "agendada": 4,
+      "realizada": 3,
+      "fuera_rango": 3
+    },
+    "byCountry": {
+      "GT": 476,
+      "HN": 140
+    },
+    "assigned": 616,
+    "unassigned": 0,
+    "scheduled": 615,
+    "realized": 609,
+    "questionnaireCompleted": 606,
+    "submitted": 545
+  },
+  "referenceDiff": {
+    "staleSourceGeneratedAt": "2026-07-13T14:32:04.672Z",
+    "staleRefs": 210,
+    "currentRefs": 208,
+    "added": 2,
+    "removed": 4,
+    "intersection": 206
+  },
+  "sourceSha256": "0c55de81aa9a9177b0fb57770a6a76f2735611506a4a8c88a1600de5826d3c7c",
+  "safety": {
+    "containsPii": false,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "deploys": 0,
+    "production": false
+  }
+}
