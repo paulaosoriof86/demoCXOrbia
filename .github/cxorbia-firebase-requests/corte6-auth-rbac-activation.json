@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "cxorbia.corte6-auth-rbac-activation.request.v1",
+  "enabled": false,
+  "consumed": false,
+  "authorizationId": null,
+  "targetProjectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "canonicalProjectId": "cinepolis",
+  "expectedClientClaimUpdates": 2,
+  "expectedShopperClaimUpdates": 3,
+  "maxAuthClaimWrites": 5,
+  "allowCreateUsers": false,
+  "allowPasswordChanges": false,
+  "allowDeletes": false,
+  "deployFirestoreRules": false,
+  "hostingDeploy": false,
+  "firestoreDataWrites": false,
+  "storageWrites": false,
+  "production": false,
+  "merge": false,
+  "note": "NO EXECUTE until explicit current-conversation authorization. Existing Hosting DEV redeploy authorization remains separate and unconsumed."
+}
