@@ -110,8 +110,7 @@ jobs:
           set -euo pipefail
           DETAIL='unknown_failure_before_reconciliation_output'
           if [ -f /tmp/remaining-identity-failure.txt ]; then DETAIL=$(cat /tmp/remaining-identity-failure.txt | tr '\n' ' ' | cut -c1-180); fi
-          node -e "const fs=require('fs');const detail=process.env.DETAIL||'unknown';fs.writeFileSync('/tmp/remaining-identity-diagnostic.json',JSON.stringify({schemaVersion:'cxorbia.remaining-shopper-identity.diagnostic.v1',generatedAt:new Date().toISOString(),detail,sanitized:true,rawPiiPersisted:false,providerWrites:0},null,2)+'\\n')" \
-            DETAIL="$DETAIL"
+          DETAIL="$DETAIL" node -e "const fs=require('fs');const detail=process.env.DETAIL||'unknown';fs.writeFileSync('/tmp/remaining-identity-diagnostic.json',JSON.stringify({schemaVersion:'cxorbia.remaining-shopper-identity.diagnostic.v1',generatedAt:new Date().toISOString(),detail,sanitized:true,rawPiiPersisted:false,providerWrites:0},null,2)+'\\n')"
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
           mkdir -p app/docs/evidence
