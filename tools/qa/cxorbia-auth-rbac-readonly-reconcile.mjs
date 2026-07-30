@@ -25,12 +25,12 @@ function values(v){
   if(typeof v === 'string') return v.split(',').map(x=>x.trim()).filter(Boolean);
   return [];
 }
-function tenantAllowed(claims, role){
-  return role === 'super' || claims.tenantId === tenantId || values(claims.tenants).includes(tenantId) || values(claims.tenantIds).includes(tenantId);
+// Mirror firestore.rules exactly: tenantId OR tenants[]; tenantIds[] is legacy metadata but is not an authorization path.
+function tenantAllowedByCurrentRules(claims, role){
+  return role === 'super' || claims.tenantId === tenantId || values(claims.tenants).includes(tenantId);
 }
-function projectIds(claims){
-  return [...new Set([claims.projectId, ...values(claims.projectIds)].filter(Boolean).map(String))];
-}
+// Mirror firestore.rules exactly: projectAssigned() only trusts projectIds[].
+function ruleProjectIds(claims){ return [...new Set(values(claims.projectIds))]; }
 function passwordProvider(u){ return (u.providerData || []).some(p => p.providerId === 'password'); }
 
 const shopperDocs = await db.collection('tenants').doc(tenantId).collection('shoppers').listDocuments();
@@ -46,6 +46,8 @@ let clientLoginReady = 0;
 let shopperLoginReady = 0;
 let shopperWithMatchingProfile = 0;
 let usersAssignedCanonicalProject = 0;
+let usersWithTenantIdsOnlyGap = 0;
+let usersWithProjectIdOnlyGap = 0;
 let token;
 
 do {
@@ -55,28 +57,35 @@ do {
     const claims = u.customClaims || {};
     const role = typeof claims.role === 'string' ? claims.role : '';
     const activePassword = !u.disabled && passwordProvider(u);
-    const tenantOk = tenantAllowed(claims, role);
-    const projects = projectIds(claims);
+    const tenantOk = tenantAllowedByCurrentRules(claims, role);
+    const projects = ruleProjectIds(claims);
     const canonicalProjectAssigned = role === 'super' || projects.includes(canonicalProjectId);
     const shopperId = typeof claims.shopperId === 'string' ? claims.shopperId : '';
     const shopperProfileMatched = !!shopperId && shopperIds.has(shopperId);
+    const tenantIdsOnlyGap = role !== 'super' && !tenantOk && values(claims.tenantIds).includes(tenantId);
+    const projectIdOnlyGap = !projects.includes(canonicalProjectId) && claims.projectId === canonicalProjectId;
 
     if(activePassword) activePasswordUsers++;
     if(tenantOk) tenantUsers++;
     if(role && !allowedRoles.has(role)) unknownRoleUsers++;
     if(canonicalProjectAssigned) usersAssignedCanonicalProject++;
     if(shopperProfileMatched) shopperWithMatchingProfile++;
+    if(tenantIdsOnlyGap) usersWithTenantIdsOnlyGap++;
+    if(projectIdOnlyGap) usersWithProjectIdOnlyGap++;
 
     if(!roleReadiness[role || 'missing']) roleReadiness[role || 'missing'] = {
-      users:0, activePassword:0, tenantAllowed:0, canonicalProjectAssigned:0, shopperIdPresent:0, shopperProfileMatched:0, secureReadReady:0
+      users:0, activePassword:0, tenantAllowedByRules:0, canonicalProjectAssignedByRules:0,
+      shopperIdPresent:0, shopperProfileMatched:0, tenantIdsOnlyGap:0, projectIdOnlyGap:0, secureReadReady:0
     };
     const r = roleReadiness[role || 'missing'];
     r.users++;
     if(activePassword) r.activePassword++;
-    if(tenantOk) r.tenantAllowed++;
-    if(canonicalProjectAssigned) r.canonicalProjectAssigned++;
+    if(tenantOk) r.tenantAllowedByRules++;
+    if(canonicalProjectAssigned) r.canonicalProjectAssignedByRules++;
     if(shopperId) r.shopperIdPresent++;
     if(shopperProfileMatched) r.shopperProfileMatched++;
+    if(tenantIdsOnlyGap) r.tenantIdsOnlyGap++;
+    if(projectIdOnlyGap) r.projectIdOnlyGap++;
 
     let ready = false;
     if(operatorRoles.has(role)) ready = activePassword && tenantOk;
@@ -92,30 +101,40 @@ do {
   token = page.pageToken;
 } while (token);
 
+const allFamiliesReady = operatorLoginReady > 0 && clientLoginReady > 0 && shopperLoginReady > 0;
 const readiness = {
   operatorLoginReady,
   clientLoginReady,
   shopperLoginReady,
-  allRequiredRoleFamiliesHaveAtLeastOne: operatorLoginReady > 0 && clientLoginReady > 0 && shopperLoginReady > 0,
-  legacyClaimsSufficientForSecureDevReadWithoutClaimMutation: operatorLoginReady > 0 && clientLoginReady > 0 && shopperLoginReady > 0,
-  rulesMutationRequiredForCurrentLegacyClaimReadiness: false,
-  claimMutationRequiredForDevVisualIfReady: !(operatorLoginReady > 0 && clientLoginReady > 0 && shopperLoginReady > 0),
+  allRequiredRoleFamiliesHaveAtLeastOne: allFamiliesReady,
+  legacyClaimsSufficientForSecureDevReadWithoutClaimMutation: allFamiliesReady,
+  rulesMutationRequiredForCanonicalVisitStatusField: true,
+  claimMutationRequiredForDevVisualIfReady: !allFamiliesReady,
+  usersWithTenantIdsOnlyGap,
+  usersWithProjectIdOnlyGap,
 };
 
 const report = {
-  schemaVersion: 'cxorbia.corte6-auth-rbac-readonly-reconciliation.v1',
+  schemaVersion: 'cxorbia.corte6-auth-rbac-readonly-reconciliation.v2',
   generatedAt: new Date().toISOString(),
   projectId: expectedProject,
   tenantId,
   canonicalProjectId,
   mode: 'READ_ONLY_SOURCE_SAFE',
   providerWrites: 0,
+  authorizationSemantics: {
+    tenant: 'super OR tenantId==tya OR tenants[] contains tya',
+    project: 'projectIds[] contains cinepolis for client/shopper',
+    shopper: 'shopperId claim matches Firestore shopper document ID',
+  },
   auth: {
     totalUsers,
     activePasswordUsers,
     tenantUsers,
     usersAssignedCanonicalProject,
     shopperWithMatchingProfile,
+    usersWithTenantIdsOnlyGap,
+    usersWithProjectIdOnlyGap,
     unknownRoleUsers,
     roleReadiness,
     readiness,
@@ -144,14 +163,17 @@ const lines = [
   `- Tenant: \`${tenantId}\``,
   `- Proyecto canónico: \`${canonicalProjectId}\``,
   '- Modo: read-only; provider writes=0; sin identidades ni PII exportadas.',
+  '- Semántica evaluada: exactamente la de firestore.rules vigente, no aliases históricos no autorizadores.',
   '',
   '## Readiness agregado',
   '',
   `- Auth users totales: ${totalUsers}`,
   `- Usuarios activos con password provider: ${activePasswordUsers}`,
-  `- Usuarios con alcance tenant TyA: ${tenantUsers}`,
-  `- Usuarios con alcance proyecto canónico (super cuenta como alcance global): ${usersAssignedCanonicalProject}`,
+  `- Usuarios autorizables a tenant TyA por reglas actuales: ${tenantUsers}`,
+  `- Usuarios con proyecto canónico por projectIds[] (super cuenta global): ${usersAssignedCanonicalProject}`,
   `- Shopper claims con shopperId que coincide con perfil Firestore: ${shopperWithMatchingProfile}`,
+  `- Gaps tenantIds[] sin tenantId/tenants[]: ${usersWithTenantIdsOnlyGap}`,
+  `- Gaps projectId sin projectIds[]: ${usersWithProjectIdOnlyGap}`,
   `- Login operador listo bajo reglas actuales: ${operatorLoginReady}`,
   `- Login cliente listo bajo reglas actuales: ${clientLoginReady}`,
   `- Login shopper listo bajo reglas actuales: ${shopperLoginReady}`,
@@ -160,9 +182,9 @@ const lines = [
   '',
   '## Por rol — solo conteos',
   '',
-  '| Rol | Users | Password activos | Tenant TyA | Proyecto canónico | shopperId | Perfil shopper coincide | Secure read ready |',
-  '|---|---:|---:|---:|---:|---:|---:|---:|',
-  ...Object.entries(roleReadiness).sort(([a],[b])=>a.localeCompare(b)).map(([role,r])=>`| ${role} | ${r.users} | ${r.activePassword} | ${r.tenantAllowed} | ${r.canonicalProjectAssigned} | ${r.shopperIdPresent} | ${r.shopperProfileMatched} | ${r.secureReadReady} |`),
+  '| Rol | Users | Password activos | Tenant por reglas | Proyecto por reglas | shopperId | Perfil shopper coincide | Gap tenant alias | Gap project alias | Secure read ready |',
+  '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|',
+  ...Object.entries(roleReadiness).sort(([a],[b])=>a.localeCompare(b)).map(([role,r])=>`| ${role} | ${r.users} | ${r.activePassword} | ${r.tenantAllowedByRules} | ${r.canonicalProjectAssignedByRules} | ${r.shopperIdPresent} | ${r.shopperProfileMatched} | ${r.tenantIdsOnlyGap} | ${r.projectIdOnlyGap} | ${r.secureReadReady} |`),
   '',
   '## Seguridad',
   '',
