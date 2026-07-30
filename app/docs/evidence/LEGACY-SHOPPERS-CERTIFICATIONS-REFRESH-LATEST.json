@@ -1,0 +1,2798 @@
+{
+  "schemaVersion": "tya.legacy.shoppers-certifications-refresh.safe.v1",
+  "generatedAt": "2026-07-30T00:44:36.908Z",
+  "authorizationScope": "READ_ONLY_LEGACY_TYA_SHOPPERS_CERTIFICATIONS_ONLY",
+  "source": {
+    "system": "TyA Consultores legacy",
+    "projectId": "tya-plataforma",
+    "databaseType": "Firebase Realtime Database",
+    "node": "tya_shoppers_extra",
+    "readOnly": true,
+    "sourceSnapshotSha256": "7f47f967bb7e3aa867d1a089966b916456d1c76ade20dfdace56319a211b1f70"
+  },
+  "canonicalTarget": {
+    "projectId": "cxorbia-backend-dev",
+    "path": "tenants/tya/shoppers",
+    "readOnly": true,
+    "shoppers": 215
+  },
+  "summary": {
+    "legacyShopperRecords": 151,
+    "excludedDemo": 0,
+    "excludedDeleted": 0,
+    "certificationRecords": 25,
+    "historicalAttempts": 19,
+    "approvedMarkersWithoutAttempt": 6,
+    "reviewRequired": 130,
+    "shopperDiff": {
+      "exactStableMatch": 0,
+      "secondaryReviewMatch": 0,
+      "createCandidate": 151,
+      "reviewRequired": 0,
+      "unchangedFingerprintSurface": 0
+    }
+  },
+  "shopperDiff": [
+    {
+      "legacyShopperId": "S001",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "013b8b4319e0b7baa6e2fbe42392b0e4711e8a88c77163cc9290d5614d56c185",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 2
+    },
+    {
+      "legacyShopperId": "S002",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "6c402e6c333805d5059a5bd460ef6c9f7479a3db1eccdb1380841b34c81ed387",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 1
+    },
+    {
+      "legacyShopperId": "S3",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "a4df65a8f161c89a1ee2a58584ea73f34c7aacd4344a7f1bf508f62fc01229c9",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 3
+    },
+    {
+      "legacyShopperId": "S4",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "e50cb5ba0504d2c644eae54c3a9616334c4858dd02ae1807e434078d72b33d78",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721743_ef1r",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "ae31ea0bc1c543dc6f7c059cd20fc565e0f8a47ed9399b6179bac7a267af7f6a",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721746_4wh9",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "b14028fdec4688dd3eadf83d3c339251534729ad44a7eb6775ecfa0113634a97",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721746_32nl",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "64e1586a7c0a439e2d0736ec11e13be355cc0a53a0bc84f1d8c22aa99a5d1066",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721747_7qhm",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "f5c91777036b666d23b9258796e11e5667eb99593ac80699c7bce6d41c8a4bfc",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721747_9nzi",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "300a0a5238449ba3831c2451eb4989b27a01d054c2a02cc01cd085361831a174",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721748_qecj",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "adcf092b383ea00d491263e74e4a02fcc44c4879aecd447993b53c12bb11cf1f",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721748_5kk4",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "98a91376b12f63ed09268565ff88cc63ac64cd25408ab012ad84afac1f400244",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721749_irem",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "14c8fa558007685f45d1361c2fd136cf5a24c2620d850377630215ad09198402",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721749_46hw",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "a0c410b6049a053445442f40bb3085c51d11842e5e9e989afd803b428ca5cf82",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721749_2r1s",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "f482d15a8715bcdc08620c93da391f933388aa2e963ef96957b79bef18bcd007",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721750_1x5f",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "6ba6637f7751518dce2483a9084b5989f6c2440bfdaf1c96ccfc77ed9a7a304f",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721750_2b9f",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "61ef696dbac330dbbeabce2be52b00c484244367c090097cc80572e121f02308",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721751_tds7",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "cae73e84b851079a1b284d29ef76e69551c3fcfc731caaf8f5bd5f24607c0c40",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721751_kgcb",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "e7cfb8ac68962de965bdb7111111a70e9729f0a6ce7ed578727f652b739e473e",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721751_olb7",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "9d7f6657b0af8ca4d0a3044b88948f0b008363002097bccdfc48dd1b96b4e6af",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721752_i3ik",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "ab9a329d6edb44484ed2e1711e28771d33f8f199e099512092f71a4677b94f7e",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721752_zm8w",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "2fa9b1e3416c7b3d2381e6a8b0400b3dd8a2b91e6dac67a259141d7b2fc7498d",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721752_7v5a",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "1bbf707f8c9b3d270c6c2add0af5b7875870ec706f4460a08941bc69bdd362f4",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721752_leru",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "632da5cdcb9e92c4090541873b4e1afc7cacb2284d4fad731b14a405135e3a8a",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721753_guyg",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "fe458b41583d89dbada59da3b1f78c94b7d1c12bf8e8046b190263ffcf3131c6",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721753_d5xu",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "c6c2690bcf34f349fa33d47573c643a336601ff3dc10f00dad08e4681b1e0453",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721753_u7pc",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "98870a4cdeaee71b86b57eabe0c52319953e11e6fb5b51e0533dc067a8135485",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721754_imsa",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "3ad4a93afd81c301816f5aa432fe6eb3c00c7a19c695f30f022ca7e8274fb75d",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721754_d1pq",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "7697cde3ecbf83c578d9f53c2b6c1c018d2b786214f8f770bd955d81b1f06d78",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721754_8ifs",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "696a3f1c6aee73b00189f1a7d171fd1df95554a7708e3f1bdd6a3f0369c74d57",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721754_9uaz",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "10434e1c002a9efca20291f075c4a11ce332316816eac2c5cf03fba09491d1d9",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721755_jsb2",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "75dd147a59f5ed46bc9b2a1a56c5f0f9f3a72c09dabb93e4d13895dec6af3429",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721755_mqqe",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "c0db6e37ebe5046a927460e2f44a09f7dfc664777871eb5ff20fe557b7be0ebd",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721756_mjxq",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "22b05ca37306866ee4842ad432d3787910c2534e8a9bbabbd21a141324b88536",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721756_ji5z",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "70f32ff4a3f8d9187fa8d9ef06a6a69c54bd04a9d2ef6f0c3828f513e20e1a5b",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721756_xi9w",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "09715df28a33c07d6ce61295c0882ac5b7b5b19aa03c62096753d2cc5ab8bafb",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721757_0u64",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "472bc362bca90f8aeb9b7807d59754bd0d6a38c79e83acf9320b81e5e6b0e322",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721757_mqsz",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "d75468da646563e2b0b2b8911f0841ffe99a2d751b1c5a8945e25ef3272a41ce",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721757_3v40",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "5744edcd2e8cd8a3b1f5fc446f4f5143860014d097596058b9fdd26f58cf3d56",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721757_j04i",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "a9d39f83a17bddb31e5abd09177b8df163074e5353a538da156f74537c8419f6",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721758_foom",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "4bcbf1d5856c2989768e9816349c8814d38358aadd2a85cee130af0f383bdd7f",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721758_0eau",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "5483398547bbcab2f7ca421d6eb4653a330c4c7518659ea4f2dea926eed1871b",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926663_ear5",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "fa2a069d0cbf4c099fad1f205cdea2c49c0e4d3585a384216351f76be4e9a191",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926665_iyre",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "7844e06e5d59e4f37dbe3c662f5cb8d995393b45b34081a85538d4845b8bbdce",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926665_pwqe",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "488a2ad382fc5b305c1261723337f8ac7463179c9084878767fbe1edcbecd0a8",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926665_h0rk",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "7d439cccbc8ac83bb09be6fb6faa3816d34d09e442b5e5300eff1a574ee98bd9",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926665_7ftg",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "4b58094c492ecffd73ba650e5a63f90860e8bc05b2f9aef6813e0aedca570e33",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926665_tr83",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "c7cdefd288d9dcf175c38217cd99dbd956aa2b98ecece36985f6dacb6cc5e1ae",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926669_vklz",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "97a4965ceae9911034f20045021e166f3b41143d470500e6481f74b84eef24ea",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926669_cnl3",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "0706300d9bab69f454b63fa20cdd2ff123ed2e86b6b48019a8e22d13514111ea",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926671_dekr",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "e7b3c0fac1dcb5c1209ea196ea48384067b121c0a14ad0f699fcdf31b87f48ac",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926671_y1k4",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "99318355a8ac51a0a2e08d12eba78443cb7b91cd48f58092188b100adf1d7e98",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926671_4wzf",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "71aed2fca6d12e9a1c8f3da496f69ccbb13ee8cfc1dffd3e7f36d3f46ae1add3",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926671_kgdw",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "0266c8b259bd330f9af66e5ee0eac5afe5f9b8b1aceb06c88478f9f62ea580a6",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926671_3f1y",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "8117b3c32e037903f63e99f3b5f2718d3178e0dae4aa1af41f3085fdaf154ba7",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926671_fjtj",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "97d1b657f42699d79ba56447aef085f560b2de65f431153f3a3eda5cbf257e80",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926672_2u1g",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "fcb41599aa1c32a8878fd6dfa10a58f60cdbd15214ab63271c0527527d7fea2c",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926672_1ou9",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "a4d721bc924ae81ca9e9ad796479d652a8fc1753cc8cd3db6ca6e8d81f776942",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926672_nbf6",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "9b73914d5fe0b531f16dcd1929ee746e8dbcb0cfad9e760429c9373352301196",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780549926672_ivq9",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "caadad468633f1aa0dcbc617a0adba9fed6b7f10d06b0bdf9a81a1b6fbddb8e5",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985043_082m",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "ef07a08b019c1c8b0823407fd7e19cefa604165b5cac9f3fca5b1588690af24f",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985048_q896",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "1a17d67bac7531e38ee3397f8a57fab95b4c027d8cd254d02db7efdd12793968",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985051_uq4a",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "2fd205147077112286762679a896daea417e0bda50ae42a8170bbe897c5b166b",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985055_puee",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "aa2e68848ac3444d3112ac4fba06a9fb3f6bccffd5999d6a5a2286ee8c459b5c",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985059_49vr",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "049f5d67ccb39dee92a46529c5eac1ec71a7f800e7b48b7c43b651a134a96e5f",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985064_yytw",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "dbeb621ead0526990b40e165dcea448d96efc29209d6107568a0417651588993",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985067_d3cb",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "be51aef66d638d43352675e3c7a98888aa71999307534357c20a4bf63d724b29",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985070_u770",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "a12aa6d62a5632b0898c86f5c94e6894467ef31e391d65fa33fee11f5e294a12",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985074_aoz9",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "05b708cbba3f8d9d31aca1b74c3b1c90c43f759e3fc9d1be257101b70f621052",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985078_lfnz",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "2ef32baa410c3fd31755eab5e66976e91e181755a7a07a88fd6e45bab6eedf02",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985082_yjic",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "9e2b4af3a0d9587b41ce8d4eaa139993a20635473efd16d1b273e36010c30e47",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985086_mhnn",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "d520fa4508993fcfa8ddf21098ea013393fcca28b6c486027009bb20a34e78f1",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985088_vwxf",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "bc56ad3f126dcb422cf189ee5af22d378af5c2c934291014e45228a0941d360a",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985091_8rgd",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "d9a3407c24a26f5babf005866defb79bc9f074f57b74b7ac1c3b81ecfdb64d95",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985095_kvd1",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "60036bad3352607828ff2aa3ed4efa5f5a5e0ad033c056cc289d2c534d99a363",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985098_ials",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "a6c0b0ac9748fd540e10c1ffd6a4987c642efe0e26d16f6b1b7b874bce6b4fe8",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985101_75fz",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "d07b50893737a26d8707cdbb2131c6b43ee35a9cff23767759394c173dd09468",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985105_0jb8",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "2ab1216a92e9a72e24281d3370832262eed0cfffc2ff076398d38572b27e94c4",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985108_lypj",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "96b7166b17f0e16fff81ba19b446b2acadcd55eb2a02799ea8ffa0368f9300ed",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985114_df6k",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "619eb102209740a3abaa50ecc1f39ee9e171582f8f002e6a67b0b3553e39a847",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985118_05ny",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "3c841d60779fec09b13dceda1c60a3aceaa94edd4381fb1ab0fe84f773257176",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985121_f1et",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "b8cf36c01f931b1039e55db588d8bf8b874996c02e1930445d077d0f43fd7fae",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985125_j80i",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "e6b7f103c381270a41041fa36c05ab8375f9940988ecf01cdb9d19df62da2a64",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985128_oxty",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "4dd0aa24e8664dfecf4785730152e8a83567b7edabdd0cef378abde0d3371a14",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985131_ce0m",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "2e089915134a5b89124afcc64dee828fdf49f04b6bad08a8cbd2b23b0eb29210",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985134_jq88",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "920f35fbe618101d94b8d32cbf1855daae78b40bc179d969cba00e5fe63552dc",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985137_qv5f",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "5fe259a9200dca73fc7740f779bec4a012be89853f84f0708bfb6fa42d7fb336",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985141_8vob",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "cb48146103929c98e125fad402b770552b9577f6536042ad7a2e2e928b9e0abc",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985144_gvbr",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "66aceffd3a19e17bcbc86a974b1bbe35eb26f2f04441a93c34828502c989f18e",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985147_gwhm",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "4a0a70ebd711516c3970a6e6b498a3e8730aeee4090fe69172eac055ab49ac6b",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985150_b333",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "070a9d404eb18abc08c7b15d49995e724ab2275e3719647f3a4ecaf054246ff1",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985154_hu0d",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "9ba21c95b9f4f866ada32e69936721e636eb110fe2ef14b0d92ada4d6cd86382",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985157_2r5u",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "429f94abd2112d27179b11513f6c1ca6c09d2726fc5f7b891725ed345ea804b6",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985161_ari6",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "29506b48b099afbdcbcd5f9dd6311afcb2ba2589cc615cef3ae44f9f9e47402e",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985164_81sm",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "ee5512610b7eafb2a69604fc681f9d2c90dfee48d6757d72a8539262622b3d56",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985167_8a1j",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "9f24814ffb549ae9fac0c56351b456fa92fb45e361760d0e10df8a2a021b33b5",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985170_c4zb",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "80ee1e0fcb99a46611a80adef29a82390f766d65125ec5eed4c3fa091adc5c10",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985174_p0ed",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "0b8064ce03e4f403c39c951774e3bbce5a0238e77d1bd5a32a4937d51d9e2ef8",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985177_sawv",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "ba4e20feb78b2af24edaae68d525a450ea198e8e2d451893279e81e73b87d92f",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985181_ujz8",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "9fa50f073e08c84dd8ba1477f9c795eadfd215059ccd2b94187ec6ff2ecbffcc",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985184_dc8m",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "f27fb66e3e7dc67a5c5232372ac7a3a9ae1245db52a20cda94249268f4bd0724",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985188_qebk",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "d353ba850d163c0ac7a83130338a61148372cce086bedf67d052fe4c003ac943",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985191_3guk",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "21d087c4dc71f0a720399077a7e6308aefb7445f5b843c8e7fb6c162c931c597",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985195_sjph",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "4bd6735671e6ed96e0ad7a2935281b7501dcb9424c6bb4ee93c7c8b00a026f7f",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985198_id7k",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "18a73f0d5b7ae90899c4dc682153de0e1502f5b03868800b5f4dcc95fcf50698",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985206_a6va",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "bf57a46020cd48f0e52efc551406e47147797c6accc6140419120d87b6db8216",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985209_6eac",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "084f946be9d326d1a6fc654f0442e9140ed49bfebc40b6dcd8c7d383c4336531",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985212_goap",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "274ff2cbf9c283d1617be2755f098b8ab8a2960a9b7af935efbe85b7f7f8242e",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985216_jjiw",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "210b2cfe322883cf481815cf03055aede19e65e99954b710ce3af963e8fd84d0",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985220_jyfu",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "7161d949d40d942cb23bc12a399c505b73afa91a6915cc8523f6b639853f92f3",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780611985223_vwxb",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "3e8c016bc58b48fad4739649c8622dfab8257c30ee2cafe9a202b6438e3c59c3",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780813996102_cgs3",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "d4e24c35ad78c0733962d5115e8fc1c8dd687417c5cf6827c9c40f041ae3f07d",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780546721755_wung",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "6096d3d64ce63308d5556b2fa2385d32439586cada225bb114ab04d9bc513558",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "S_1780879642352_fern",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "51a2d3dcf0540d9c1c5367ae694bfde284a227c4abf18ba70f0d1dc7adb1cd52",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "S_1780775475009_herb",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "ed11ee23cd2adfe03dbbf7e6cc11a26dcbd6d9b8f15fae7df4c10ac9fd8a2e27",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "S_1780888491908_jali",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "3e100e4cb6e1103bb891cf6b0ef26b2bfed977dc0913131f3449608d93e69320",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "S_1780925364520_meil",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "771f274ce646aaa3a804d30a30a134c20a4be8fe902385b3a4355e7e3efa6b9a",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780960371920_iu30",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "1d36cedbfec9bfc0cce7dface777c1afa1ba878fbe4d4141269bdf812dd64716",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780960371984_s51a",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "bfc4679f0dfb56d187a1ab5edf4bea59befc5cd00ff605c78510f7b6f9d5f23a",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780960372012_vonh",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "1cf5a6c98710d51c19a178ed9f28c0d0ee38d2cd1e772c8a3352ba1482fc5411",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780960372038_cf4t",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "ce718b2c153daeb99854292f4685abc229f824582b172bc6a0fcf5b4f06e71fd",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780960372063_48th",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "8ce190575c46b5f6ed31b5c67deeaddd29e9ec01f101e73c58197c2e5ca29e46",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780960372089_re1c",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "2e2fdc5d5643fd1bce40a399b7430c47a8eeed8cabb6e6977cef4ee8be53858b",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780960372112_8b0g",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "0b40dd6049d0cc235df8f27b5e8aa63cf03218af65e47b367dde7e9001594656",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780960372138_1nga",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "b05135cf6eba72503f1615704db1ac2863007f0b861f4c1ec36181fd665af6dd",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780960372167_30hk",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "b9841af77ae7cf7cf049276b4d21765b133e2ee2b24d771db9555798313a36af",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780960372179_26gd",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "96a5b4e79c34b9afdb54de5467af40262d08e9397bf21b43f1445519d9ea98e9",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780960372191_ctt0",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "e41a9602449707e8f7e25042833f2af63e07245e207c95f932af1f6dc2a7c24e",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780960372216_k23x",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "45acd8800e80d3e5c041f4a5d1337ab6d17985676f3af30d1d9f251b7835a236",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780960372241_jg4h",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "98a9926fe1df98ca6dd8bb03f6b49a284afa36a8ec77ec4ca6188a207a65bc94",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1780960372260_h70b",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "0a08d8634d4e0762530411b22c3eadeeff09f25c180b5686eda8a4892714d0d5",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "HRSH_1C4E047C",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "8666ff05ea84e495d1053c64e8622d8e3db73fdb9779f814bc5882b1a0b03e3a",
+      "certificationAttemptCount": 2,
+      "approvedMarkerCount": 2
+    },
+    {
+      "legacyShopperId": "HRSH_205D3DD2",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "05475a209c8080021d5b12bf54698df84adabfae7bdba6f635f6b3e805e10fe3",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "HRSH_8865895E",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "e7b29c3a2ef295af38ad99853f138924e5419a6dc77a2f57550b93aa1a68bbd5",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "HRSH_A06597D5",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "9beef17db917a86609cd902200d3047cf49887472ab3dc4b440fe523a9662263",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "HRSH_BDE02D49",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "6dcfa22f67bdfa854679a3ffe90f4d2cc7dd52f96d531b30839b7324dec86f10",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "HRSH_CE214C77",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "8f0f4b27b7ef0667d74f13df8bcd4ad3fe94d5f1bdd159ff6cac67bf795df01b",
+      "certificationAttemptCount": 2,
+      "approvedMarkerCount": 2
+    },
+    {
+      "legacyShopperId": "HRSH_F3089F42",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "75b86b29cb3bb5a2bcf7af386c3ac34a450ed87168ebba172b6d85b1fd0791b6",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1781110700287_66hv7",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "dcd032f2e3d8251d4743b873ba5b6a8ea1a1e722203d95b964b0c130139b2da0",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1781301035970_935xm",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "8e7bb94af2a5b273a9ed8d48cfec0670187722fa5f206142eeb36c8c04094066",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1781452207740_q46ic",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "a83f733a261fc100382f2a65c01e333d94a884ef08377b7c20906eb44cfeb12f",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1783519013963_4koxm",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "32bc2316d6b7b88728a41f43272a689ea19cb1bebf002015548749c410e4b94e",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "SHR_1783724625562_fqt6p",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "166156ff9b2d4cf905b2ba2869917a20767da6965b85df08a00d463443bd884f",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "S_1780972584658_rola",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "1df433f5a7db5f40050a860d378006b49e87bb0cc7f2f647ac9a6a0c6c44b184",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    },
+    {
+      "legacyShopperId": "S_1780996249072_aria",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "3365ec7255a34a047910d7fca8dfe52ec1e34717220af223a2c3ebacdb86f399",
+      "certificationAttemptCount": 1,
+      "approvedMarkerCount": 2
+    },
+    {
+      "legacyShopperId": "S_1781281755508_milt",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "24329b507be88f269c613c00799ee7086342ac47e32d003917aeeaff20629654",
+      "certificationAttemptCount": 2,
+      "approvedMarkerCount": 2
+    },
+    {
+      "legacyShopperId": "S_1781281816805_guil",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "b480b2f92b774fa8cf8f26e7c0d76287ca08f72f7c745146336d4dee4d51450e",
+      "certificationAttemptCount": 2,
+      "approvedMarkerCount": 2
+    },
+    {
+      "legacyShopperId": "S_1781371665746_soni",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "0e4a5221217bd4dabb063052fc5e893ac518cca1474480b2c1669262aa4d5e40",
+      "certificationAttemptCount": 2,
+      "approvedMarkerCount": 2
+    },
+    {
+      "legacyShopperId": "S_1781396703216_gabr",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "13d6a56c8c2ec187a683648b2eea61e105c1eebd675d26aeaad28a3468a40d6e",
+      "certificationAttemptCount": 4,
+      "approvedMarkerCount": 2
+    },
+    {
+      "legacyShopperId": "S_1781404479139_cris",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "4464e307c28e480798729b80f33bb391cacd7823ae0f26f83bd50bd3416859f2",
+      "certificationAttemptCount": 2,
+      "approvedMarkerCount": 2
+    },
+    {
+      "legacyShopperId": "S_1782518588117_guil",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "97f71d793cd65ba71e3716798f6ab7260e301959caaa213861589249042e9aec",
+      "certificationAttemptCount": 2,
+      "approvedMarkerCount": 2
+    },
+    {
+      "legacyShopperId": "S_1783531888365_guil",
+      "action": "CREATE_CANDIDATE",
+      "basis": "no_stable_match",
+      "canonicalDocId": null,
+      "recordFingerprint": "89d501e89f6da3ac7c636b791414312816dda58d09c5cd82a371d9ccb70affe5",
+      "certificationAttemptCount": 0,
+      "approvedMarkerCount": 0
+    }
+  ],
+  "certifications": [
+    {
+      "attemptId": "marker:S001:general",
+      "legacyShopperId": "S001",
+      "projectId": null,
+      "certificationKey": "general",
+      "presentedAt": null,
+      "approvedAt": null,
+      "status": "approved_marker_only",
+      "score": null,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.certs"
+    },
+    {
+      "attemptId": "marker:S001:cinepolis",
+      "legacyShopperId": "S001",
+      "projectId": "cinepolis",
+      "certificationKey": "cinepolis",
+      "presentedAt": null,
+      "approvedAt": null,
+      "status": "approved_marker_only",
+      "score": null,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.certs"
+    },
+    {
+      "attemptId": "marker:S002:general",
+      "legacyShopperId": "S002",
+      "projectId": null,
+      "certificationKey": "general",
+      "presentedAt": null,
+      "approvedAt": null,
+      "status": "approved_marker_only",
+      "score": null,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.certs"
+    },
+    {
+      "attemptId": "marker:S3:general",
+      "legacyShopperId": "S3",
+      "projectId": null,
+      "certificationKey": "general",
+      "presentedAt": null,
+      "approvedAt": null,
+      "status": "approved_marker_only",
+      "score": null,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.certs"
+    },
+    {
+      "attemptId": "marker:S3:cinepolis",
+      "legacyShopperId": "S3",
+      "projectId": "cinepolis",
+      "certificationKey": "cinepolis",
+      "presentedAt": null,
+      "approvedAt": null,
+      "status": "approved_marker_only",
+      "score": null,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.certs"
+    },
+    {
+      "attemptId": "marker:S3:ms_general",
+      "legacyShopperId": "S3",
+      "projectId": "ms_general",
+      "certificationKey": "ms_general",
+      "presentedAt": null,
+      "approvedAt": null,
+      "status": "approved_marker_only",
+      "score": null,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.certs"
+    },
+    {
+      "attemptId": "ci_1784141564041",
+      "legacyShopperId": "HRSH_1C4E047C",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "15/7/2026",
+      "approvedAt": "15/7/2026",
+      "status": "approved",
+      "score": 80,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "rec_cert_1784141564152",
+      "legacyShopperId": "HRSH_1C4E047C",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "15/7/2026",
+      "approvedAt": "15/7/2026",
+      "status": "approved",
+      "score": 80,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "ci_1783728628086",
+      "legacyShopperId": "HRSH_CE214C77",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "10/7/2026",
+      "approvedAt": "10/7/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "rec_cert_1783728628268",
+      "legacyShopperId": "HRSH_CE214C77",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "10/7/2026",
+      "approvedAt": "10/7/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "rec_cert_1781273130167",
+      "legacyShopperId": "S_1780996249072_aria",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "12/6/2026",
+      "approvedAt": "12/6/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "ci_1783618954232",
+      "legacyShopperId": "S_1781281755508_milt",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "9/7/2026",
+      "approvedAt": "9/7/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "rec_cert_1783618954267",
+      "legacyShopperId": "S_1781281755508_milt",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "9/7/2026",
+      "approvedAt": "9/7/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "ci_1781284350119",
+      "legacyShopperId": "S_1781281816805_guil",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "12/6/2026",
+      "approvedAt": "12/6/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "rec_cert_1781284350153",
+      "legacyShopperId": "S_1781281816805_guil",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "12/6/2026",
+      "approvedAt": "12/6/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "ci_1781371841793",
+      "legacyShopperId": "S_1781371665746_soni",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "13/6/2026",
+      "approvedAt": "13/6/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "rec_cert_1781371841842",
+      "legacyShopperId": "S_1781371665746_soni",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "13/6/2026",
+      "approvedAt": "13/6/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "ci_1781448643200",
+      "legacyShopperId": "S_1781396703216_gabr",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "14/6/2026",
+      "approvedAt": "14/6/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "ci_1781448966023",
+      "legacyShopperId": "S_1781396703216_gabr",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "14/6/2026",
+      "approvedAt": "14/6/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "rec_cert_1781448643265",
+      "legacyShopperId": "S_1781396703216_gabr",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "14/6/2026",
+      "approvedAt": "14/6/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "rec_cert_1781448966100",
+      "legacyShopperId": "S_1781396703216_gabr",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "14/6/2026",
+      "approvedAt": "14/6/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "ci_1781415280517",
+      "legacyShopperId": "S_1781404479139_cris",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "13/6/2026",
+      "approvedAt": "13/6/2026",
+      "status": "approved",
+      "score": 93,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "rec_cert_1781415280546",
+      "legacyShopperId": "S_1781404479139_cris",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "13/6/2026",
+      "approvedAt": "13/6/2026",
+      "status": "approved",
+      "score": 93,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "ci_1782520215725",
+      "legacyShopperId": "S_1782518588117_guil",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "26/6/2026",
+      "approvedAt": "26/6/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    },
+    {
+      "attemptId": "rec_cert_1782520215804",
+      "legacyShopperId": "S_1782518588117_guil",
+      "projectId": "cinepolis",
+      "certificationKey": "proj_cinepolis",
+      "presentedAt": "26/6/2026",
+      "approvedAt": "26/6/2026",
+      "status": "approved",
+      "score": 100,
+      "attemptNumber": null,
+      "expiresAt": null,
+      "source": "legacy_rtdb.tya_shoppers_extra.histCerts"
+    }
+  ],
+  "reviewRequired": [
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "S001",
+      "nodeFingerprints": [
+        "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+        "c5e0e70cb9001fc326a9d5b3c39c1d3b48919bf3adacc633729bfff7c27f1d26"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "S002",
+      "nodeFingerprints": [
+        "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+        "c842f8af9e82946217a5f35c046c0470ce855b145a093448295d758810c68303"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "S3",
+      "nodeFingerprints": [
+        "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+        "44d6a8a73eddb284d49799fdbfa2919a004ece6d2df3546eaa4e246048bcdf81"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "S4",
+      "nodeFingerprints": [
+        "4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce",
+        "b1d3eb8f32936fa9cf89d2240bd10734270fd55ff4644ad254b3b237468bad88"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721743_ef1r",
+      "nodeFingerprints": [
+        "4b227777d4dd1fc61c6f884f48641d02b4d121d3fd328cb08b5531fcacdabf8a",
+        "3f914c703af9f8dd1719ca6b13093ff73f2280b3144e5e0f0429f1f38b9afcdd"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721746_32nl",
+      "nodeFingerprints": [
+        "e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683",
+        "bd53b7f0f225f4a17bc2a44cee2e5992b94a6fcad6eb193cf368386cdc8087ee"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721746_4wh9",
+      "nodeFingerprints": [
+        "ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d",
+        "5f73159702cee081211b79f688d42feb74f1bd4cf21acb5d6830b57e4fa5d03d"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721747_7qhm",
+      "nodeFingerprints": [
+        "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+        "f2c2cb9158ee27ee5ea63ef17d67a43e2ec4928632dd2f6e6df55b542433758d"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721747_9nzi",
+      "nodeFingerprints": [
+        "2c624232cdd221771294dfbb310aca000a0df6ac8b66b696d90ef06fdefb64a3",
+        "daad7d0b0249acdd4f5d8924b51aa4102b5d483eb203baed22a1e83fbb8fbe16"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721748_5kk4",
+      "nodeFingerprints": [
+        "4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5",
+        "b4a71cdd2c3fcf4ff1cc5276580bb9c78a7318ebcfca22462873ed0b46d887cc"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721748_qecj",
+      "nodeFingerprints": [
+        "19581e27de7ced00ff1ce50b2047e7a567c76b1cbaebabe5ef03f7c3017bb5b7",
+        "8b27d17cfc42ad1f1e2ec8cf99eb7e4c44f8326cf7d6fdee39ac215779178a58"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721749_2r1s",
+      "nodeFingerprints": [
+        "3fdba35f04dc8c462986c992bcf875546257113072a909c162f7e470e581e278",
+        "5f02bd0ff898b041019167cc870f09f629fe502ae502aa9b64404fecf5b883ca"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721749_46hw",
+      "nodeFingerprints": [
+        "6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918",
+        "93c3c43e3121d7eac9f59499a5fb108142db6be4e42902ea3b8ead18f99cf351"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721749_irem",
+      "nodeFingerprints": [
+        "4fc82b26aecb47d2868c4efbe3581732a3e7cbcc6c2efb32062c08170a05eeb8",
+        "c214afa8f8615a5074688782aa621fd0d3d3b20a004a663885a8e806b909c373"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721750_1x5f",
+      "nodeFingerprints": [
+        "8527a891e224136950ff32ca212b45bc93f69fbb801c3b1ebedac52775f99e61",
+        "9b9873b8969ca6ff386e1d636f436b955e0515076a75d549d017a7898f480a30"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721750_2b9f",
+      "nodeFingerprints": [
+        "e629fa6598d732768f7c726b4b621285f9c3b85303900aa912017db7617d8bdb",
+        "5cef2d1b6731e3d7e7d73b959b6d2ab4d4e48cec9b8ffacb21d92c3e68304647"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721751_kgcb",
+      "nodeFingerprints": [
+        "4523540f1504cd17100c4835e85b7eefd49911580f8efff0599a8f283be6b9e3",
+        "b9025079a82a9c6a930988d9f676198186286d464009811db6baed3b826c995c"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721751_olb7",
+      "nodeFingerprints": [
+        "4ec9599fc203d176a301536c2e091a19bc852759b255bd6818810a42c5fed14a",
+        "7c3ba2a23c21f1eddcd8103ad59b026f0242b54f391143cf915e5de8e16d486e"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721751_tds7",
+      "nodeFingerprints": [
+        "b17ef6d19c7a5b1ee83b907c595526dcb1eb06db8227d650d5dda0a9f4ce8cd9",
+        "d4f135b424517a7e07ed7f94e4924f3649ea5411d8a4e7a7e04127b1a0b516d2"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721752_7v5a",
+      "nodeFingerprints": [
+        "6f4b6612125fb3a0daecd2799dfd6c9c299424fd920f9b308110a2c1fbd8f443",
+        "34fb7031a709750f474c3abf7704b0e15276390384a5b2ff19c4653f14dabc62"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721752_i3ik",
+      "nodeFingerprints": [
+        "9400f1b21cb527d7fa3d3eabba93557a18ebe7a2ca4e471cfe5e4c5b4ca7f767",
+        "320c100c86cfd8ad7dbce02c9ed06708e50dc5e36e650f54a803ecb2c6d9bdc9"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721752_leru",
+      "nodeFingerprints": [
+        "785f3ec7eb32f30b90cd0fcf3657d388b5ff4297f2f9716ff66e9b69c05ddd09",
+        "02ec768c5f07236ae442823ea28ed2d4ac06ece7c3ff1e7bf6026258e698d02a"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721752_zm8w",
+      "nodeFingerprints": [
+        "f5ca38f748a1d6eaf726b8a42fb575c3c71f1864a8143301782de13da2d9202b",
+        "b04fa452dfbf0272b9614bd72ed4704103d2c5a1c245fb371273aff3e76021f7"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721753_d5xu",
+      "nodeFingerprints": [
+        "c2356069e9d1e79ca924378153cfbbfb4d4416b1f99d41a2940bfdb66c5319db",
+        "8ccd61d557e0b0e8d90896a6d17e4f7effbb109ae9f66b47f1d20889fa75f814"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721753_guyg",
+      "nodeFingerprints": [
+        "535fa30d7e25dd8a49f1536779734ec8286108d115da5045d77f3b4185d8f790",
+        "d91ccf3f9eb0712d650209bc518f43389d02d923567f64a3bd78ada82a2753bb"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721753_u7pc",
+      "nodeFingerprints": [
+        "b7a56873cd771f2c446d369b649430b65a756ba278ff97ec81bb6f55b2e73569",
+        "1ddce65efa876ad5f2f07cc88010e2ec44a6bbb744348f5cf4fd1d52d0241a8c"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721754_8ifs",
+      "nodeFingerprints": [
+        "59e19706d51d39f66711c2653cd7eb1291c94d9b55eb14bda74ce4dc636d015a",
+        "60220b2ca743b838f927d9167e63a12104965798bb48823dd110a468427a2633"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721754_9uaz",
+      "nodeFingerprints": [
+        "35135aaa6cc23891b40cb3f378c53a17a1127210ce60e125ccf03efcfdaec458",
+        "c237f4d2e4c1db73d98b5d0d541326726947e0134fe67af792b5300b6fc4b057"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721754_d1pq",
+      "nodeFingerprints": [
+        "670671cd97404156226e507973f2ab8330d3022ca96e0c93bdbdb320c41adcaf",
+        "cd8dd5fceafca18254e0492b554c09990f538b8b46b5adcc7c08d8ce1db65ae7"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721754_imsa",
+      "nodeFingerprints": [
+        "5f9c4ab08cac7457e9111a30e4664920607ea2c115a1433d7be98e97e64244ca",
+        "e87ee8ef8c833e0a29ab44e6448dd0dc52c9163d928042809d0496f4a1661f6b"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721755_jsb2",
+      "nodeFingerprints": [
+        "624b60c58c9d8bfb6ff1886c2fd605d2adeb6ea4da576068201b6c6958ce93f4",
+        "857fb2fac2f847319449e74c550bfd2a16a44dc022660faa77168706f419046f"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721755_mqqe",
+      "nodeFingerprints": [
+        "eb1e33e8a81b697b75855af6bfcdbcbf7cbbde9f94962ceaec1ed8af21f5a50f",
+        "9c4c68e90f8464dcd516080a56b54e03b303485a8262b1ee19ddab11a0913ed2"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721755_wung",
+      "nodeFingerprints": [
+        "f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae",
+        "07e59e6c7172c10c6cd6fe5514a8e6bb63105b7b4dd6b5e0e81b62b4ced11ecc"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721756_ji5z",
+      "nodeFingerprints": [
+        "c6f3ac57944a531490cd39902d0f777715fd005efac9a30622d5f5205e7f6894",
+        "68a9ec249614097c35ddb847cafa9c543828d901f26babd58adea34a376011c7"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721756_mjxq",
+      "nodeFingerprints": [
+        "e29c9c180c6279b0b02abd6a1801c7c04082cf486ec027aa13515e4f3884bb6b",
+        "2322ddc708fb8178fc6f51f71afb5c16ec37d5c9adb9a2e8ad09d98fe9c8c53a"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721756_xi9w",
+      "nodeFingerprints": [
+        "86e50149658661312a9e0b35558d84f6c6d3da797f552a9657fe0558ca40cdef",
+        "d47c5a4aa6f8e989c904ec4c8efe9cc003e7fb88bd0c2419b1e1739d7cde1ad2"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721757_0u64",
+      "nodeFingerprints": [
+        "9f14025af0065b30e47e23ebb3b491d39ae8ed17d33739e5ff3827ffb3634953",
+        "2400c5b0cebf449a4e452b5804f5797f372af24b889518f3c90542d307ef63ec"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721757_3v40",
+      "nodeFingerprints": [
+        "7a61b53701befdae0eeeffaecc73f14e20b537bb0f8b91ad7c2936dc63562b25",
+        "1dda49afef7035a9860bc84298100033012b6f769533da30340a8a7786ea3eca"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721757_j04i",
+      "nodeFingerprints": [
+        "aea92132c4cbeb263e6ac2bf6c183b5d81737f179f21efdc5863739672f0f470",
+        "6a49347851cf5fce3897c09fd8622e8ec3ac9e7dc91066b0ea59d5206f5b0583"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721757_mqsz",
+      "nodeFingerprints": [
+        "76a50887d8f1c2e9301755428990ad81479ee21c25b43215cf524541e0503269",
+        "d8c9efbf9bf941945821d592eec18eed85f1e486ab2f87c69127d6114d0af18c"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721758_0eau",
+      "nodeFingerprints": [
+        "d59eced1ded07f84c145592f65bdf854358e009c5cd705f5215bf18697fed103",
+        "5ab2c524f880d0d2859cb63bc24218d51ad7f5261e432deff1695bb10118c1df"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780546721758_foom",
+      "nodeFingerprints": [
+        "0b918943df0962bc7a1824c0555a389347b4febdc7cf9d1254406d80ce44e3f9",
+        "5e35c628e2e471fe5eac3d4b8545a11e46684fd011ba98d326690ea14bd4b778"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926663_ear5",
+      "nodeFingerprints": [
+        "3d914f9348c9cc0ff8a79716700b9fcd4d2f3e711608004eb8f138bcba7f14d9",
+        "636fc7d541ad4923747b7ba9bbc6b2d553cb63bceb3227dce73b8eea6da3b9ea"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926665_7ftg",
+      "nodeFingerprints": [
+        "811786ad1ae74adfdd20dd0372abaaebc6246e343aebd01da0bfc4c02bf0106c",
+        "5b17f32242c970bcd9d32d0c4ca8d58476ee8ee872e45df81bf5414fba70ac8d"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926665_h0rk",
+      "nodeFingerprints": [
+        "71ee45a3c0db9a9865f7313dd3372cf60dca6479d46261f3542eb9346e4a04d6",
+        "8518b0d126eb5081b3fb4ff6d8497780401731e95d85e97c7287eb10aa9eecd8"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926665_iyre",
+      "nodeFingerprints": [
+        "73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049",
+        "979b6d8fdf0b4e7dac45a8857a09d5331b557d5f01c3684c0587d6b5a4833cba"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926665_pwqe",
+      "nodeFingerprints": [
+        "44cb730c420480a0477b505ae68af508fb90f96cf0ec54c6ad16949dd427f13a",
+        "cdca0c2995e0761d2bd0b94b210fc11a7243440d870d3ad727ccf07d3ffef1b3"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926665_tr83",
+      "nodeFingerprints": [
+        "25fc0e7096fc653718202dc30b0c580b8ab87eac11a700cba03a7c021bc35b0c",
+        "324656ac3f8878e4058097a4d2948512d9f18de90bbcd459e3602dccf244b46c"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926669_cnl3",
+      "nodeFingerprints": [
+        "98010bd9270f9b100b6214a21754fd33bdc8d41b2bc9f9dd16ff54d3c34ffd71",
+        "efdee33ad496152e1b837a9d01f14b0dd896d8d6add0662f7818a5020b2ab68d"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926669_vklz",
+      "nodeFingerprints": [
+        "31489056e0916d59fe3add79e63f095af3ffb81604691f21cad442a85c7be617",
+        "1ed4b11c427b45c370490980724c8e1200bac92600b6f123b0fd28d8d6949ec7"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926671_3f1y",
+      "nodeFingerprints": [
+        "2858dcd1057d3eae7f7d5f782167e24b61153c01551450a628cee722509f6529",
+        "c446de89cbe10f97d92da771fb96e968d52ac1520beefa4c9db1311bdea397d9"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926671_4wzf",
+      "nodeFingerprints": [
+        "031b4af5197ec30a926f48cf40e11a7dbc470048a21e4003b7a3c07c5dab1baa",
+        "90399c3190106f8fea347909f2f1b13c45ef69f2b34620e48fa9002104b07dc0"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926671_dekr",
+      "nodeFingerprints": [
+        "0e17daca5f3e175f448bacace3bc0da47d0655a74c8dd0dc497a3afbdad95f1f",
+        "098f86cc3f31990f420c273fc856f6b1f4ced845df4aa4d74f2644700949aa6a"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926671_fjtj",
+      "nodeFingerprints": [
+        "2fca346db656187102ce806ac732e06a62df0dbb2829e511a770556d398e1a6e",
+        "2710bb083400925c87665961109aaf88fcc013333eaaf4d055fb1cd6034ed22d"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926671_kgdw",
+      "nodeFingerprints": [
+        "41cfc0d1f2d127b04555b7246d84019b4d27710a3f3aff6e7764375b1e06e05d",
+        "d05f3ddc6825eada345cc83f810ff68f007d2df9ea866765ece173ca84d02575"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926671_y1k4",
+      "nodeFingerprints": [
+        "1a6562590ef19d1045d06c4055742d38288e9e6dcd71ccde5cee80f1d5a774eb",
+        "d982fc48f24925ce4267267816c528f5fb29a61625ed22c0a72e25fe72e7a828"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926672_1ou9",
+      "nodeFingerprints": [
+        "7688b6ef52555962d008fff894223582c484517cea7da49ee67800adc7fc8866",
+        "aa48c46d50c1447e2f8c3a88706b953241f60ef64d056df0dd6cb9318e5af68f"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926672_2u1g",
+      "nodeFingerprints": [
+        "02d20bbd7e394ad5999a4cebabac9619732c343a4cac99470c03e23ba2bdc2bc",
+        "6ec51f650d1e1ca8594b4692192946bd92e1d264ea02cc9904fb849b6240c668"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926672_ivq9",
+      "nodeFingerprints": [
+        "6208ef0f7750c111548cf90b6ea1d0d0a66f6bff40dbef07cb45ec436263c7d6",
+        "e6b5e779be9069e07add3cf3cfb6182447fe1a8f68b327b567568b5a80aad616"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780549926672_nbf6",
+      "nodeFingerprints": [
+        "c837649cce43f2729138e72cc315207057ac82599a59be72765a477f22d14a54",
+        "e595be6a0af65c6b9dde14b65710d92be829978b019a2788ab56404b7a66f6c5"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985043_082m",
+      "nodeFingerprints": [
+        "3e1e967e9b793e908f8eae83c74dba9bcccce6a5535b4b462bd9994537bfe15c",
+        "f7d187d24495ca8c53181f347974b515765cf1031943f7320a5526ddad2f4b67"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985048_q896",
+      "nodeFingerprints": [
+        "39fa9ec190eee7b6f4dff1100d6343e10918d044c75eac8f9e9a2596173f80c9",
+        "b3c366f253e392f0cf7be3fa5cb80ffd61894f478444e51abb48b516f6eff1d8"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985051_uq4a",
+      "nodeFingerprints": [
+        "d029fa3a95e174a19934857f535eb9427d967218a36ea014b70ad704bc6c8d1c",
+        "a69138ac9c8986b0cea495c2c450379d4ba86f089443882e4f8b3c315b35d53d"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985055_puee",
+      "nodeFingerprints": [
+        "81b8a03f97e8787c53fe1a86bda042b6f0de9b0ec9c09357e107c99ba4d6948a",
+        "6b3aaba9021bb4339af6a548c02ae2ff374d5d18e945484026802b762360c208"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985059_49vr",
+      "nodeFingerprints": [
+        "da4ea2a5506f2693eae190d9360a1f31793c98a1adade51d93533a6f520ace1c",
+        "fb2f6b207c3a86679254ef915d62a0132107c69fe48c842c5ba21c072cc47166"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985064_yytw",
+      "nodeFingerprints": [
+        "a68b412c4282555f15546cf6e1fc42893b7e07f271557ceb021821098dd66c1b",
+        "abac4885e23d1f683f9dfcb4a3fb29063075ee683d602a1c0be2f7f91f681d6b"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985067_d3cb",
+      "nodeFingerprints": [
+        "108c995b953c8a35561103e2014cf828eb654a99e310f87fab94c2f4b7d2a04f",
+        "4cedc2978bd2c0ac6e45de7943f5e56104e34909ab92a997a9bd994d50bf4467"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985070_u770",
+      "nodeFingerprints": [
+        "3ada92f28b4ceda38562ebf047c6ff05400d4c572352a1142eedfef67d21e662",
+        "62cf1a9dcef4e9cbe0eecf71e2ee96161b1e5a9aa6eeba4377e59a532b497752"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985074_aoz9",
+      "nodeFingerprints": [
+        "49d180ecf56132819571bf39d9b7b342522a2ac6d23c1418d3338251bfe469c8",
+        "cf2a7021a4591ce0ea3921310e0134a66356e01f7a1680a5e224861b5143bce6"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985078_lfnz",
+      "nodeFingerprints": [
+        "a21855da08cb102d1d217c53dc5824a3a795c1c1a44e971bf01ab9da3a2acbbf",
+        "419b263d4c8e1260eb117f28db9fc4befecbb129aae991c4d66d32ad97f952e9"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985082_yjic",
+      "nodeFingerprints": [
+        "c75cb66ae28d8ebc6eded002c28a8ba0d06d3a78c6b5cbf9b2ade051f0775ac4",
+        "3705d51ad543d43f403614cd7894b0059c5cc81fa807882d8f502a36eae9efb1"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985086_mhnn",
+      "nodeFingerprints": [
+        "ff5a1ae012afa5d4c889c50ad427aaf545d31a4fac04ffc1c4d03d403ba4250a",
+        "1a6d776bf8e290187677b1576f4525ccc0fdc215b20ea049402f38d22b11be2b"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985088_vwxf",
+      "nodeFingerprints": [
+        "7f2253d7e228b22a08bda1f09c516f6fead81df6536eb02fa991a34bb38d9be8",
+        "9ef60c48088dbabf9b665759131358c4a3c56828d9a7b553e7155d01b88b6376"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985091_8rgd",
+      "nodeFingerprints": [
+        "8722616204217eddb39e7df969e0698aed8e599ba62ed2de1ce49b03ade0fede",
+        "1044f8c9878a0f25c39d8a5a20607e25cd04a6691bd10fd9f7c325993a05927e"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985095_kvd1",
+      "nodeFingerprints": [
+        "96061e92f58e4bdcdee73df36183fe3ac64747c81c26f6c83aada8d2aabb1864",
+        "c065db1388eb47141788f50c6f8c4b0c7a78e16efba32d5c16c127ccbc821e02"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985098_ials",
+      "nodeFingerprints": [
+        "eb624dbe56eb6620ae62080c10a273cab73ae8eca98ab17b731446a31c79393a",
+        "a36fb33a3b8480bb68a2c6b12fba8c18a7cf6d29d5823b9254050ef74a4213da"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985101_75fz",
+      "nodeFingerprints": [
+        "f369cb89fc627e668987007d121ed1eacdc01db9e28f8bb26f358b7d8c4f08ac",
+        "55192041e55f5931bd061119765c5140f36d6339922c2c10e2732eec23dfe39c"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985105_0jb8",
+      "nodeFingerprints": [
+        "f74efabef12ea619e30b79bddef89cffa9dda494761681ca862cff2871a85980",
+        "33d7a7957bc5260cb13cfd2808f784d42c8dea1d21f5c8d1d002acc22f05e52c"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985108_lypj",
+      "nodeFingerprints": [
+        "a88a7902cb4ef697ba0b6759c50e8c10297ff58f942243de19b984841bfe1f73",
+        "88bbd8befcc4ef43a645ed0e0e87e4bbc90fe8d0c5a5ad2387c5c312adbbd49b"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985114_df6k",
+      "nodeFingerprints": [
+        "349c41201b62db851192665c504b350ff98c6b45fb62a8a2161f78b6534d8de9",
+        "d33a239d64565b5cdd1b921c5514d9433ae88881e1b3051dc4945c510096d205"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985118_05ny",
+      "nodeFingerprints": [
+        "98a3ab7c340e8a033e7b37b6ef9428751581760af67bbab2b9e05d4964a8874a",
+        "4ae468742655b944b19f0bf98007166ebf5015af9878e846694bc18d17b370e0"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985121_f1et",
+      "nodeFingerprints": [
+        "48449a14a4ff7d79bb7a1b6f3d488eba397c36ef25634c111b49baf362511afc",
+        "7ac6682456c85a42057f05469657f076b7c230320981522fe8fa58817bf7280b"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985125_j80i",
+      "nodeFingerprints": [
+        "5316ca1c5ddca8e6ceccfce58f3b8540e540ee22f6180fb89492904051b3d531",
+        "d02a18f05afb77a5426f9e7a0aae010d39b8cbcf3246c137f223328a6f2d7615"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985128_oxty",
+      "nodeFingerprints": [
+        "a46e37632fa6ca51a13fe39a567b3c23b28c2f47d8af6be9bd63e030e214ba38",
+        "859f9a8420b0432cb80fb84ea09f9e0ba44f49cbb9269075c35fe328e5ebaa73"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985131_ce0m",
+      "nodeFingerprints": [
+        "bbb965ab0c80d6538cf2184babad2a564a010376712012bd07b0af92dcd3097d",
+        "5b89446d950a06546e2155ff77bb06649530f01a4da4401f948f0cd5531fe6e8"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985134_jq88",
+      "nodeFingerprints": [
+        "44c8031cb036a7350d8b9b8603af662a4b9cdbd2f96e8d5de5af435c9c35da69",
+        "449730b704d392bf32abd08c7af88919255d20be9fdc37f6a01dddd2251d18e9"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985137_qv5f",
+      "nodeFingerprints": [
+        "b4944c6ff08dc6f43da2e9c824669b7d927dd1fa976fadc7b456881f51bf5ccc",
+        "329ba39d7a861c775dfc555d4638fb4b4ef7ed653d5810ea4d291b8e5df67ae4"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985141_8vob",
+      "nodeFingerprints": [
+        "434c9b5ae514646bbd91b50032ca579efec8f22bf0b4aac12e65997c418e0dd6",
+        "630d4e30466bcb43c4380073ee8c48c39def39411b2350733fcd3fb74e0e0f6d"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985144_gvbr",
+      "nodeFingerprints": [
+        "bdd2d3af3a5a1213497d4f1f7bfcda898274fe9cb5401bbc0190885664708fc2",
+        "9ff80dc7b8b31624819f7726001c22cd055a5dd7169d7fabddf253dfd2aa17c0"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985147_gwhm",
+      "nodeFingerprints": [
+        "8b940be7fb78aaa6b6567dd7a3987996947460df1c668e698eb92ca77e425349",
+        "d644839d553431cb9f19724c8b6b922bc359bda605d1edc72987cf1f46b56639"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985150_b333",
+      "nodeFingerprints": [
+        "cd70bea023f752a0564abb6ed08d42c1440f2e33e29914e55e0be1595e24f45a",
+        "63cea21a45aed073e46a691bffd3b80e34b0d7d84f7a275908d529c5ec64b195"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985154_hu0d",
+      "nodeFingerprints": [
+        "69f59c273b6e669ac32a6dd5e1b2cb63333d8b004f9696447aee2d422ce63763",
+        "27656e1ad59a9c558b8ea1e34a74a3b41e0a9f74d8ecab259b38761c09a6c8c8"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985157_2r5u",
+      "nodeFingerprints": [
+        "1da51b8d8ff98f6a48f80ae79fe3ca6c26e1abb7b7d125259255d6d2b875ea08",
+        "f8dd8e33c482c98108ac0a30759faea09d2572422f703a46f70feed54ae905d3"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985161_ari6",
+      "nodeFingerprints": [
+        "8241649609f88ccd2a0a5b233a07a538ec313ff6adf695aa44a969dbca39f67d",
+        "892853b3a29e88547e0b1a1fdda613599a9bae2383dd23b043320ab5ab694333"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985164_81sm",
+      "nodeFingerprints": [
+        "6e4001871c0cf27c7634ef1dc478408f642410fd3a444e2a88e301f5c4a35a4d",
+        "ccb32d47be35683f1d974fc667ff3f1f2bc77b5c73016b2d40977c7999167344"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985167_8a1j",
+      "nodeFingerprints": [
+        "e3d6c4d4599e00882384ca981ee287ed961fa5f3828e2adb5e9ea890ab0d0525",
+        "43497f571d8b9daeafd57e1d60846a57124ddba1efc4bf3075ff6d44200bed1c"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985170_c4zb",
+      "nodeFingerprints": [
+        "ad48ff99415b2f007dc35b7eb553fd1eb35ebfa2f2f308acd9488eeb86f71fa8",
+        "5f554daa511a037bdaa9b45d74fe3c2815e4f3ab7ec111e0af335675e5b752c0"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985174_p0ed",
+      "nodeFingerprints": [
+        "7b1a278f5abe8e9da907fc9c29dfd432d60dc76e17b0fabab659d2a508bc65c4",
+        "239cb93722b9fcc4c92966905cfa0bd416ea93c79d4819479978578bc52167f1"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985177_sawv",
+      "nodeFingerprints": [
+        "d6d824abba4afde81129c71dea75b8100e96338da5f416d2f69088f1960cb091",
+        "cc37a1676a4ad6cbd820d22f6f98479ca8f875fde7897529cbdc108e2781db30"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985181_ujz8",
+      "nodeFingerprints": [
+        "29db0c6782dbd5000559ef4d9e953e300e2b479eed26d887ef3f92b921c06a67",
+        "05d25d03d1d0125d82ff5e6690c5836bb6d8ead96e772d31c4078e6e4c017fbd"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985184_dc8m",
+      "nodeFingerprints": [
+        "8c1f1046219ddd216a023f792356ddf127fce372a72ec9b4cdac989ee5b0b455",
+        "bced61935d63f7838ae51890054ef4037cd81ce0af85a6c5695445147aa06668"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985188_qebk",
+      "nodeFingerprints": [
+        "ad57366865126e55649ecb23ae1d48887544976efea46a48eb5d85a6eeb4d306",
+        "bc08a3ccdf07247a7cdeb3720166639b0e6f9d45a63e9c1f55afec0d9df042af"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985191_3guk",
+      "nodeFingerprints": [
+        "16dc368a89b428b2485484313ba67a3912ca03f2b2b42429174a4f8b3dc84e44",
+        "ff6db2b1b27372cbdaa89c9efb3d00224c9f6cf7df08ed4ed79ae1a208ce3beb"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985195_sjph",
+      "nodeFingerprints": [
+        "37834f2f25762f23e1f74a531cbe445db73d6765ebe60878a7dfbecd7d4af6e1",
+        "6b767f64da23765667ea1782919e0c7d2c326f1397cf887d1068c14fef8e41d3"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985198_id7k",
+      "nodeFingerprints": [
+        "454f63ac30c8322997ef025edff6abd23e0dbe7b8a3d5126a894e4a168c1b59b",
+        "dff7b4ad837aaf349ee7d916257e5aa9746110d7b79fb688c19a0de121c1f38d"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985206_a6va",
+      "nodeFingerprints": [
+        "5ef6fdf32513aa7cd11f72beccf132b9224d33f271471fff402742887a171edf",
+        "fd8d99542c46b97730c337bb58c796994111221a376e28591b43dd3bab701eab"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985209_6eac",
+      "nodeFingerprints": [
+        "1253e9373e781b7500266caa55150e08e210bc8cd8cc70d89985e3600155e860",
+        "61047ce2bcb01be533cc8914bdc8301ed81dbcd4270e5d22d4560e2a1196cb16"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985212_goap",
+      "nodeFingerprints": [
+        "482d9673cfee5de391f97fde4d1c84f9f8d6f2cf0784fcffb958b4032de7236c",
+        "0be1efe3ba555be85364812178923cc0f1306f627413e7230c7e68d3b1319f0d"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985216_jjiw",
+      "nodeFingerprints": [
+        "3346f2bbf6c34bd2dbe28bd1bb657d0e9c37392a1d5ec9929e6a5df4763ddc2d",
+        "b84e8d428a51751ce3d0af42de61f4b590eea54f9a2c2f1b9301a490e01f632f"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985220_jyfu",
+      "nodeFingerprints": [
+        "9537f32ec7599e1ae953af6c9f929fe747ff9dadf79a9beff1f304c550173011",
+        "db379f3f582d4b5a62fc9cd72b93a562c903061668c34c145c400af987edc405"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780611985223_vwxb",
+      "nodeFingerprints": [
+        "0fd42b3f73c448b34940b339f87d07adf116b05c0227aad72e8f0ee90533e699",
+        "f59deafa4ff690b0c9f89486cfb37ede647c256e1ed4814dbd7fa2ade042faab"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780813996102_cgs3",
+      "nodeFingerprints": [
+        "9bdb2af6799204a299c603994b8e400e4b1fd625efdb74066cc869fee42c9df3",
+        "a625c2fdf09266689b045e7692c2d60788497d50ae2a22251807df684df41608"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780960371920_iu30",
+      "nodeFingerprints": [
+        "e5b861a6d8a966dfca7e7341cd3eb6be9901688d547a72ebed0b1f5e14f3d08d",
+        "7192a98b6e87975cf2a0479224d551778dad1c4a9a60bda9f839a85ed74ada15"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780960371984_s51a",
+      "nodeFingerprints": [
+        "2ac878b0e2180616993b4b6aa71e61166fdc86c28d47e359d0ee537eb11d46d3",
+        "72c684f006f02350e41fbfa4606cb23954d3996c45f1761c0d8ca415a4a40de3"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780960372012_vonh",
+      "nodeFingerprints": [
+        "85daaf6f7055cd5736287faed9603d712920092c4f8fd0097ec3b650bf27530e",
+        "cdb2164eaa96c4a10e9d2d447401ad42bc7d342da93ee6b815c22a62a7c780a9"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780960372038_cf4t",
+      "nodeFingerprints": [
+        "3038bfb575bee6a0e61945eff8784835bb2c720634e42734678c083994b7f018",
+        "39b97e955665b0cef97bcb64ce909280fed1042bcee804eb37b5af240981d776"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780960372063_48th",
+      "nodeFingerprints": [
+        "2abaca4911e68fa9bfbf3482ee797fd5b9045b841fdff7253557c5fe15de6477",
+        "165f5704ae3a7ad28a77a2f2b59079516c744e442233bec6b66a12045666f7dc"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780960372089_re1c",
+      "nodeFingerprints": [
+        "89aa1e580023722db67646e8149eb246c748e180e34a1cf679ab0b41a416d904",
+        "155a1c748f33125f5440fc7b8b962d80d001ba8813c388d7620e11db9e2220f9"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780960372112_8b0g",
+      "nodeFingerprints": [
+        "1be00341082e25c4e251ca6713e767f7131a2823b0052caf9c9b006ec512f6cb",
+        "bb95735a89f923f2550f0fa59a7e7345ed03ef48b3d308fa4fc018e00205d401"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780960372138_1nga",
+      "nodeFingerprints": [
+        "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+        "3929936aeda532eea86bbfb1738742861fe76369b513be9a65d62f7547e96528"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780960372167_30hk",
+      "nodeFingerprints": [
+        "6affdae3b3c1aa6aa7689e9b6a7b3225a636aa1ac0025f490cca1285ceaf1487",
+        "2a096de84425cc32db653b01fbdc1811634060465e9d1870f4005e58a56459be"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780960372179_26gd",
+      "nodeFingerprints": [
+        "0f8ef3377b30fc47f96b48247f463a726a802f62f3faa03d56403751d2f66c67",
+        "f16a5d7d8ad9c68098e58acf08296ccb963d1a921d20d2793f4e35f1640a5ba6"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780960372191_ctt0",
+      "nodeFingerprints": [
+        "65a699905c02619370bcf9207f5a477c3d67130ca71ec6f750e07fe8d510b084",
+        "bcca5ccee53b65a6ee5d71203b6bcc88e1e83d585f13a256838e498ffae3f778"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780960372216_k23x",
+      "nodeFingerprints": [
+        "922c7954216ccfe7a61def609305ce1dc7c67e225f873f256d30d7a8ee4f404c",
+        "992c4685a1d64d13d13a65b9323078ac449292a5c4289eb67d978cffb29d17ca"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780960372241_jg4h",
+      "nodeFingerprints": [
+        "2747b7c718564ba5f066f0523b03e17f6a496b06851333d2d59ab6d863225848",
+        "793c22f63026a5a34e82e8efdda2d5cf22215dfbf62833f6ce9c8d46cb9e3708"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "SHR_1780960372260_h70b",
+      "nodeFingerprints": [
+        "6566230e3a3ce3774c1bbc7c18b590ae0f457bbcd511e90e3e7dca2a02e7addc",
+        "97cff2f5d323f4519f35cfdce270a130b4fc5a9252280a01426652be899b9d41"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "S_1780775475009_herb",
+      "nodeFingerprints": [
+        "6c658ee83fb7e812482494f3e416a876f63f418a0b8a1f5e76d47ee4177035cb",
+        "0065caab6b88dba9d1629695ebf6a7c18ff0391e6cf0ba5418416e2ff6363833"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "S_1780879642352_fern",
+      "nodeFingerprints": [
+        "b1556dea32e9d0cdbfed038fd7787275775ea40939c146a64e205bcb349ad02f",
+        "caa2e2fe06e2be7f89a4bc0dcf2f4a3f320fd86cc654b23ec6b8446dd5956490"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "S_1780888491908_jali",
+      "nodeFingerprints": [
+        "9f1f9dce319c4700ef28ec8c53bd3cc8e6abe64c68385479ab89215806a5bdd6",
+        "1eb5735068cc0b9a4d3db012fbe6a14142f4185460a2933f59bc976d3007bb14"
+      ]
+    },
+    {
+      "type": "DUPLICATE_LEGACY_SHOPPER_ID",
+      "legacyShopperId": "S_1780925364520_meil",
+      "nodeFingerprints": [
+        "28dae7c8bde2f3ca608f86d0e16a214dee74c74bee011cdfdd46bc04b655bc14",
+        "2b112170d0d7e9ef9202b788b22020d0148bbc2791d9767f68dabbcb186c5b47"
+      ]
+    }
+  ],
+  "discardedFields": [
+    "pass",
+    "password",
+    "passwordHash",
+    "dpi",
+    "cedula",
+    "documentoIdentidad",
+    "bank",
+    "bankAccount",
+    "cuentaBancaria",
+    "nda",
+    "attachments",
+    "incorrectas",
+    "detalle",
+    "apiKey",
+    "token",
+    "secret"
+  ],
+  "safety": {
+    "legacyProviderWrites": 0,
+    "canonicalProviderWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "production": false,
+    "merge": false,
+    "rawNamesExported": false,
+    "rawEmailsExported": false,
+    "rawPhonesExported": false,
+    "identityDocumentsExported": false,
+    "bankDataExported": false,
+    "questionByQuestionAnswersExported": false
+  }
+}
