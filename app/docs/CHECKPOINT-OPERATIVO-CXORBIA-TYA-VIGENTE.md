@@ -1,133 +1,85 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-29  
-**Estado:** `CORTE3_FROZEN__ARCHITECTURE_CORRECTED__CANONICAL_BACKEND_RECOVERED__R16E_READONLY_PASS_WITH_REVIEW__NO_DATA_WRITES__R17_WRITE_PLAN_PENDING`
+**Estado:** `CORTE3_FROZEN__ARCHITECTURE_CORRECTED__CANONICAL_BACKEND_RECOVERED__R16E_PASS__R17M_WRITE_PLAN_READY_NO_EXECUTE__LEGACY_REFRESH_PENDING__NO_DATA_WRITES`
 
 ## 1. Repositorio y seguridad
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Base: `release/cxorbia-tya-rc-20260630`.
-- Producción/merge/imports/pagos/provider writes: 0 en R16E.
+- R17M provider calls/writes/deletes/imports/deploys/production/merge: 0.
 
 ## 2. Arquitectura vinculante
-- Legacy TyA Consultores actual = plataforma a retirar; solo origen de datos útiles limpios.
-- `cxorbia-backend-dev` = backend DEV canónico de CXOrbia/tenant TyA; NO legacy.
-- `cxorbia-tya-dev-260729-c4` = sandbox técnico Corte 4; no destino de materialización.
-- Hosting público actual TyA = conservar URL para cutover final, previa verificación técnica.
+- Legacy TyA Consultores = plataforma actual a retirar; solo fuente de datos útiles limpios.
+- `cxorbia-backend-dev` = backend DEV canónico de CXOrbia/TyA; reutilizar.
+- `cxorbia-tya-dev-260729-c4` = sandbox técnico; no destino de materialización.
+- Repo legacy operativo: `paulaosoriof86/cxorbia-tya-plataforma`.
+- `.firebaserc` verificado: Firebase default `tya-plataforma`; ese Hosting público se conserva para el cutover final.
 
 ## 3. Corte 3 — FROZEN
-Baseline `CXORBIA-TYA-CORTE3-V182-20260729`.
-- 14 periodos / 616 visitas hasta julio; 34 GT + 10 HN por periodo.
-- Mayo: 44 pagadas / 0 pendientes.
-- Junio: 2 pagadas / 42 pendientes.
-- P1/P2 de reportes/copy no reabren Corte 3.
+Baseline `CXORBIA-TYA-CORTE3-V182-20260729`: 14 periodos / 616 visitas hasta julio; 34 GT + 10 HN por periodo. Mayo 44 pagadas; junio 2 pagadas / 42 pendientes. P1/P2 reportes/copy no bloquean.
 
-## 4. Sandbox Corte 4
-VIS-01/VIS-02/VIS-02B corregidos: fail-closed sin demo, backend vacío válido, null-safety, role-switch limpio, entrypoint sin asset huérfano. Remoto 0 pageerrors y visual Admin/Shopper vacío correcta.
+## 4. Sandbox Corte 4 — aprendizaje preservado
+VIS-01/VIS-02/VIS-02B corregidos: fail-closed sin demo, backend vacío válido, null-safety, role-switch limpio y entrypoint íntegro. No se materializa TyA allí.
 
-No se materializa TyA en ese sandbox.
+## 5. Backend canónico / HR viva
+Inventario read-only `cxorbia-backend-dev`: Auth 17, clients 3, projects 29, visits 619, questionnaires 557, shoppers 215, liquidations 255, postulations 3, applications 1, notifications 20, shopperBenefits 572, certifications 0.
 
-## 5. Backend canónico `cxorbia-backend-dev`
-Inventario read-only PASS, sin PII/provider writes:
-- Auth users 17;
-- clients 3;
-- projects 29;
-- visits 619;
-- questionnaires 557;
-- shoppers 215;
-- liquidations 255;
-- postulations 3;
-- applications 1;
-- notifications 20;
-- shopperBenefits 572;
-- certifications 0.
+Gap:
+- julio GT+HN faltante en topología period-country previa: 44 visitas;
+- `sprint5-visit-mutation-no-real-data`: HOLD_NO_DELETE;
+- `hr-58fb469666080189`: HOLD_NO_DELETE;
+- pilotos `julio-pilot`, `r1`, `tya-piloto`: preservar.
 
-Materialización sustancial ya existe; reconstruir en otro Firebase sería reproceso.
+HR viva: 15 periodos / 30 tabs / 684 visitas / 236 referencias shopper; julio GT34/HN10 correcto; `AGOSTO 26 HN` HOLD por 34 filas País=GT.
 
-## 6. Gap e HR viva
-Reconciliación incremental PASS:
-- faltan julio GT+HN en materialización period-country previa = 44 visitas;
-- exceso abril: `sprint5-visit-mutation-no-real-data`;
-- exceso junio HN: `hr-58fb469666080189`, sourceRow 12, inexistente en HR viva actual;
-- pilotos `julio-pilot`, `r1`, `tya-piloto` preservados; sin deletes automáticos.
+## 6. Plan canónico + R16E
+Plan R16D: 1,415 operaciones = tenant 1, proyecto padre `cinepolis` 1, HR import 1, periodos 14, shoppers 210, visitas 616, liquidaciones 572; certificaciones 0; pagos 0.
 
-HR viva actual:
-- 15 periodos / 30 tabs / 684 visitas / 236 referencias shopper protegidas;
-- julio GT34/HN10 correcto;
-- `AGOSTO 26 HN` en HOLD: sus 34 filas dicen País=GT.
-
-## 7. Plan canónico
-Refresh offline PASS, provider calls=0/writes=0:
-- base `phasea_2f71daec3e68dfa1`;
-- overlay `r16d_f471a6b486f3a269b0dd`;
-- 1,415 operaciones = tenant 1, proyecto padre `cinepolis` 1, HR import 1, periodos 14, shoppers 210, visitas 616, liquidaciones 572;
-- certificaciones 0 / pagos 0.
-
-Modelo aprobado: **proyecto padre `cinepolis` → periodos → visitas**.
-
-## 8. R16E — EJECUTADO Y PASS WITH REVIEW
-Autorización: `Autorizo R16E read-only provider compare contra cxorbia-backend-dev, sin writes, deploy ni producción.`
-
-Evidencia:
-- run `29282169628`;
-- job `90741969389`: SUCCESS;
+R16E autorizado read-only:
+- run `29282169628` / job `90741969389`: SUCCESS;
 - artifact `8743659430`;
 - digest `sha256:290b2eb9f956bb8af422ffae8832aa617125d70eab244188f206bd682ad68584`;
 - decisión `PASS_WITH_REVIEW_CANONICAL_MATERIALIZATION_DRY_RUN_R16`;
-- plan `r16d_f471a6b486f3a269b0dd`, 1,415 operaciones.
+- create 1,414 / update 1 / noop 0 / review 0 / extras preservados 244 / deletes 0.
 
-Clasificación:
-- create 1,414;
-- update 1;
-- noop 0;
-- record review 0;
-- extras existentes preservados 244 = 29 project docs + 215 shopper docs;
-- deletes 0.
+`create=1414` no significa base vacía: la topología canónica nueva no existe bajo esos paths; la materialización útil actual está en la topología DEV previa.
 
-Único update: tenant, campos `configurable`, `name`, `schemaVersion`.
+## 7. R17M — WRITE PLAN EXACTO NO EXECUTE
+Decisión: `PASS_R17M_WRITE_PLAN_NO_EXECUTE__LEGACY_SHOPPER_CERT_REFRESH_PENDING`.
 
-### Lectura correcta del resultado
-R16E compara por **paths canónicos**. Por eso 1,414 `create` no contradicen el inventario existente: la información actual vive principalmente en la topología DEV previa period-country/otros IDs. La base no está vacía.
+Estrategia aprobada para preparación: **canonical-shadow** sobre el mismo `cxorbia-backend-dev`, preservando topología DEV previa para rollback y sin switch de lectura antes de smoke.
 
-Consecuencia: **no ejecutar 1,415 writes a ciegas**. R16E es insumo del paquete R17/write plan, no autorización de materialización.
+Grupos exactos:
+- tenant update `op_00001`: HOLD por `configurable`, `name`, `schemaVersion`;
+- foundation `op_00002..op_00017`: 16 create candidates tras idempotencia;
+- shoppers `op_00018..op_00227`: 210 HOLD hasta refresh legacy + diff estable;
+- visits `op_00228..op_00843`: 616 HR-first canonical-shadow candidates;
+- liquidations `op_00844..op_01415`: 572 payment-control-only candidates, 0 pagos;
+- subtotal potencial excluyendo shoppers/tenant: 1,204, todavía NO autorizado;
+- 244 extras/pilotos + 2 cleanup candidates: preservar/HOLD_NO_DELETE;
+- Agosto HN: HOLD.
 
-Colas preservadas:
-- source review 265;
-- shopper 213 histórico / 210 live del plan;
-- finanzas 247 filas, 196 exactos, 51 review, cola 92;
-- certificaciones 213 candidatos / 0 registros materializables.
+Evidencia: `app/docs/evidence/R17M-WRITE-PLAN-NO-EXECUTE-LATEST.json`.
+Validator: `tools/reconciliation/tya-r17m-write-plan-no-execute-validate.mjs`; validación offline equivalente PASS.
 
-Safe state R16E:
-- provider reads ejecutados;
-- Firestore/Auth/Storage/HR writes 0;
-- deletes/imports/deploys 0;
-- producción/merge false;
-- credenciales/raw provider/PII persistidos: no.
-
-## 9. Shoppers/certificaciones
+## 8. Shoppers/certificaciones
 - 215 shoppers existentes: no recrear por rutina.
-- 236 referencias protegidas en HR: diff por llave estable antes de concluir faltantes.
-- certifications=0: refresh dirigido desde legacy para nuevas/actualizadas y presentadas/aprobadas/reprobadas.
+- 236 referencias HR: diff solo por llave estable; no nombre.
+- certifications=0: se requiere refresh actual desde legacy.
 - Prompt listo: `PROMPT-REFRESH-DELTA-LEGACY-TYA-SHOPPERS-CERTIFICACIONES-20260729.md`.
+- Visitas permanecen HR-first, no se refrescan desde legacy.
 
-## 10. Ruta a producción
-`LEGACY TYA delta shoppers/certs + HR VIVA → cxorbia-backend-dev → write plan/delta idempotente → writes exactos autorizados → smoke CX.data/Auth/sync → preprod/rollback → cutover Hosting público actual`.
+## 9. Ruta a producción
+`LEGACY delta shoppers/certs + HR viva → rebuild R17M → dry-run/idempotencia → writes exactos autorizados → smoke CX.data/Auth/sync → preprod/rollback → cutover Firebase/Hosting tya-plataforma`.
 
-## 11. Gate real siguiente
-`R17 WRITE PLAN EXACTO SIN EJECUTAR`.
+## 10. Gate real siguiente
+`REFRESH LEGACY SHOPPERS/CERTIFICACIONES → DIFF POR LLAVE ESTABLE → REBUILD R17M → OFFLINE IDEMPOTENCE`.
 
-Debe separar:
-1. topología canónica realmente a crear;
-2. materialización DEV previa a preservar/reutilizar;
-3. extras/pilotos que no se borran;
-4. review/noop fuera de writes;
-5. refresh legacy shoppers/certificaciones;
-6. dry-run/idempotencia antes de cualquier autorización de write.
+Solo después se pide autorización para grupos/conteos exactos de write. No nueva base, nueva candidata, PowerShell, deploy ni producción.
 
-No nueva base, nueva candidata, PowerShell, deploy ni producción.
-
-## 12. Claude/Academia
-- Claude: no P0 nuevo, no nueva candidata; preservar fixes core.
-- Academia: path canónico ausente ≠ backend vacío; compare read-only ≠ write autorizado.
-- Reusable CXOrbia: inventario → provider compare → write plan → dry-run/idempotencia → writes exactos autorizados.
+## 11. Claude/Academia
+- Claude: no P0 nuevo; no nueva candidata; preservar fixes core/entrypoint.
+- Academia: canonical path ausente ≠ backend vacío; shadow migration requiere read-path único y rollback; compare/plan ≠ write.
+- Reusable CXOrbia: inventario → compare → write plan → refresh/diff → idempotencia → write exacto → smoke → cutover.
