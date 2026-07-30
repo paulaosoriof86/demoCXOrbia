@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-07-29  
-**Estado vivo:** `CORTE3_FROZEN__LEGACY_REFRESH_PASS__R17N_PASS__HR_SHOPPER_CROSSWALK_PENDING__NO_PRODUCTION`
+**Estado vivo:** `CORTE3_FROZEN__VISIT_IDENTITY_CROSSWALK_201_OF_210__REAL_IDENTITY_POLICY_LOCKED__NO_PRODUCTION`
 
 Este archivo contiene pendientes reales de frontend/prototipo para Claude y dependencias backend que condicionan cuándo Claude debe intervenir. Backend, Firebase, adapters, tools, workflows y provider reads/writes no son tareas de Claude.
 
@@ -16,49 +16,57 @@ Este archivo contiene pendientes reales de frontend/prototipo para Claude y depe
 
 Solo un P0 reproducible puede reabrir un corte congelado.
 
-## 2. Arquitectura vigente — no crear nueva base
-El intento histórico de Corte 4 con Firebase nuevo/vacío quedó superado.
-
+## 2. Arquitectura vigente
 - `cxorbia-backend-dev` = backend DEV canónico y reutilizable.
-- `tya-plataforma` = legacy a retirar y Hosting/URL a conservar para cutover final.
+- `tya-plataforma` = legacy actual a retirar y Hosting/URL a conservar para cutover final.
 - `cxorbia-tya-dev-260729-c4` = sandbox técnico, no destino de materialización.
+- No corresponde crear nueva base ni fallback local/mock.
 
-Claude no debe proponer otra base, otra candidata ni fallback local/mock.
+## 3. Identidad real del shopper — regla de producto
+`source-safe` no significa anonimización del producto.
 
-## 3. Pendiente bloqueante backend antes de producción
-`HR_PROTECTED_SHOPPER_CROSSWALK_UNRESOLVED`.
+Cuando el perfil real esté materializado y autorizado:
+- Admin/Operativo debe ver identidad real necesaria para operar;
+- Shopper debe ver su propio perfil/historial permitido;
+- Cliente solo el alcance autorizado;
+- `Shopper protegido`/hash es placeholder técnico, no identidad permanente;
+- DPI/banco/NDA/adjuntos solo si aplican y con controles adecuados;
+- dedupe por nombre solamente sigue prohibido para evitar merges erróneos.
 
-- 210 refs shopper HR del plan canónico.
-- 215 shoppers existentes.
-- 0 matches por stable HR ID.
-- 0 matches por stable HR code.
-- 210 unmapped; 0 collisions.
-- Prohibido dedupe por nombre.
+## 4. Dependencia backend bloqueante restante
+Visit-identity crosswalk read-only ejecutado:
+- 210 refs shopper HR;
+- 201 resueltas por visita exacta;
+- 9 pendientes;
+- 0 conflictos;
+- 571/616 visitas con identidad exacta recuperada;
+- 45 visitas sin evidencia canónica exacta suficiente.
 
-Siguiente gate backend: crosswalk read-only por identidad exacta de visita (`hrRowId`, `sourceSheet/sourceRow`, `visitId`) entre HR source-safe y visitas existentes de `cxorbia-backend-dev`. No leer visitas legacy.
+El primer 0/210 fue falso negativo del gate por espacios en `sourceSheet/hrRowId`; causa raíz corregida y rerun v2 PASS.
 
-## 4. Shoppers/certificaciones recuperados
-Refresh read-only legacy ya cerrado:
-- 149 shoppers únicos;
+Siguiente bloque backend: reconciliar las 9 refs restantes con identidad real autorizada, mantener PII fuera del repo, reconstruir R17N final e idempotencia antes de cualquier write.
+
+## 5. Shoppers/certificaciones recuperados
+- 149 shoppers legacy únicos;
 - 120 profile create candidates;
 - 22 stable-linked existing profiles;
-- 7 HOLD = 6 name-only + 1 source conflict;
+- 7 HOLD;
 - 78 certificaciones útiles;
 - 77 candidatas + 1 HOLD;
 - 30 recovery mirrors colapsados.
 
-En 22 existing profiles: phone faltante en 22 y email en 8; code/name/city con diferencias no vacías se preservan, no overwrite.
-
 No pedir al shopper repetir una certificación ya válida por un problema de crosswalk.
 
-## 5. Próxima intervención de Claude
+## 6. Próxima intervención de Claude
 Ninguna por rutina ahora.
 
 Solo abrir frontend si:
 1. un smoke posterior al write/read-path canónico demuestra P0 reproducible; o
-2. Paula decide atender backlog P1/P2 transversal después del cierre operativo.
+2. se atiende backlog P1/P2 transversal después del cierre operativo.
 
-## 6. Backlog frontend no bloqueante
+Cuando el backend entregue perfiles reales, validar que las pantallas autorizadas rendericen nombre/identidad real y no placeholders técnicos.
+
+## 7. Backlog frontend no bloqueante
 ### Reportes
 - PDF: gráfica ausente/impresión del reporte.
 - Excel: formato básico.
@@ -70,18 +78,20 @@ Solo abrir frontend si:
 - No mostrar pago/import/sync/proveedor como ejecutado sin evidencia.
 
 ### Academia/manuales
-- Perfil canónico ≠ referencia HR ≠ identidad Auth.
-- Stable key/evidencia transaccional exacta antes de dedupe.
+- Privacidad por rol ≠ anonimización.
+- Perfil real ≠ referencia HR ≠ identidad Auth.
+- PII backend protegido ≠ artefacto source-safe.
+- Stable key/evidencia antes de dedupe.
 - Conflictos pasan a review.
-- Carryover de certificación debe evitar recertificación innecesaria.
+- Carryover de certificación evita recertificación innecesaria.
 
-## 7. Pendientes transversales preservados
+## 8. Pendientes transversales preservados
 - Multi-tenant/multi-proyecto; Cinépolis configurable, no global.
 - Beneficios/liquidaciones/pagos separados por honorario, reembolso, total, moneda y estado.
-- Postulaciones/asignaciones con `assignmentSource`, sync status y review; no dedupe por nombre.
+- Postulaciones/asignaciones con `assignmentSource`, sync status y review.
 - Readiness/source-safe con estados honestos.
 - No proveedores reales desde UI.
 - `AGOSTO 26 HN` sigue HOLD por país/tab incorrecto.
 
-## 8. Estado seguro
+## 9. Estado seguro
 PR #7 draft/open/no merge. Legacy/Firestore/Auth/Storage/HR writes=0; deploy=0; producción=false; imports/pagos/lotes/Make/Gemini=0.
