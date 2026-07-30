@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "cxorbia.visit-identity-crosswalk.readonly.request.v1",
+  "enabled": true,
+  "mode": "READ_ONLY_VISIT_IDENTITY_CROSSWALK",
+  "authorization": "Autorizo crosswalk read-only por identidad de visita en cxorbia-backend-dev, usando únicamente HR source-safe + visitas existentes por hrRowId/sourceSheet+sourceRow/visitId estable, sin leer visitas legacy, sin writes, Auth changes, deploy ni producción.",
+  "projectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "hrSourceSafe": true,
+  "legacyVisitsRead": false,
+  "allowedIdentityEvidence": "hrRowId|sourceSheet+sourceRow|visitId",
+  "nameMatching": false,
+  "providerWrites": 0,
+  "authChanges": false,
+  "deploy": false,
+  "production": false,
+  "merge": false,
+  "requestedAt": "2026-07-30T01:30:00Z"
+}
