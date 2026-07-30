@@ -1,6 +1,6 @@
 # CXOrbia — reconciliación HR viva actual
 
-- Fecha: 2026-07-30T23:50:23.656Z
+- Fecha: 2026-07-30T23:52:03.187Z
 - Access mode: public_gviz_csv_cache_busted
 - Source-safe: sí; sin PII; HR writes=0; Firestore writes=0.
 
