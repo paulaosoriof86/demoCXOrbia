@@ -1,126 +1,169 @@
 # CXOrbia TyA — Plan Phase A con validación visual continua
 
 **Fecha original:** 2026-07-04  
-**Última revisión:** 2026-07-29  
+**Última revisión:** 2026-07-30  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `CORTE3_FROZEN__ARCHITECTURE_CORRECTED__CANONICAL_BACKEND_RECOVERED__R16E_PASS__R17M_WRITE_PLAN_READY_NO_EXECUTE__LEGACY_REFRESH_PENDING`
+**Estado vivo:** `CORTE3_FROZEN__CANONICAL_BACKEND_RECOVERED__CURRENT_HR_208_REFS__IDENTITY_208_OF_208_READY__R17N_FINAL_1406_NO_EXECUTE__NO_DATA_WRITES__NO_PRODUCTION`
 
 ## 1. Objetivo
-Operar TyA/Cinépolis como primer tenant/proyecto configurable de CXOrbia con HR/histórico, shoppers, certificaciones, visitas, agenda, cuestionarios, liquidaciones/pagos, multi-tenant, multi-proyecto, roles, Academia y sincronización.
 
-La base legacy que será retirada es la plataforma TyA Consultores actual. `cxorbia-backend-dev` es el backend DEV canónico de CXOrbia y se reutiliza.
+Operar TyA/Cinépolis como primer tenant/proyecto configurable de CXOrbia con HR/histórico, shoppers reales, certificaciones, visitas, agenda, cuestionarios, liquidaciones/pagos, multi-tenant, multi-proyecto, roles, Academia y sincronización.
+
+Legacy a retirar = Firebase/plataforma actual `tya-plataforma`. Backend DEV canónico de CXOrbia = `cxorbia-backend-dev`, que se reutiliza. El Hosting público `tya-plataforma` se conserva para el cutover final.
 
 ## 2. Secuencia obligatoria
-`FUENTE → INVENTARIO → MAPPING/ADAPTER → PROVIDER COMPARE → WRITE PLAN → REFRESH/DIFF → DRY-RUN/IDEMPOTENCIA → WRITE AUTORIZADO → BUILD/SMOKE → VALIDACIÓN VISUAL → FREEZE`
 
-Para candidatas frontend continúa:
-`EXECUTION_LANE_READY → AUDITORÍA DELTA → P0_PROVEN o GO → APPLY_DELTA_DIRECTLY → COMMIT/PUSH → POST-GATES → VISUAL → FREEZE`.
+`FUENTE VIVA → INVENTARIO/FRESCURA → MAPPING/IDENTIDAD → PROVIDER COMPARE → WRITE PLAN → DRY-RUN/IDEMPOTENCIA → WRITE EXACTO AUTORIZADO → SMOKE → VALIDACIÓN VISUAL → FREEZE/CUTOVER`
 
-No nueva rama/PR, PowerShell, nueva candidata ni tareas manuales por rutina.
+Para candidatas frontend continúa el lock vigente `EXECUTION_LANE_READY → AUDITORÍA → GO/P0 → APPLY_DELTA_DIRECTLY`.
 
-## 3. Arquitectura — lock
-- Legacy TyA Consultores: plataforma actual a retirar; solo origen de shoppers/certificaciones y otros datos útiles demostrables.
+No nueva rama/PR, PowerShell, candidata, base Firebase ni tarea manual por rutina.
+
+## 3. Arquitectura vinculante
+
+- `tya-plataforma`: legacy operativo a retirar; solo fuente de datos útiles y Hosting/URL pública final.
 - `cxorbia-backend-dev`: backend DEV canónico; TyA primer tenant; reutilizar.
 - `cxorbia-tya-dev-260729-c4`: sandbox técnico; no destino de materialización.
-- Repo legacy operativo: `paulaosoriof86/cxorbia-tya-plataforma`.
-- `.firebaserc` del repo legacy confirma Firebase default `tya-plataforma`; ese Hosting público se conserva para cutover final.
+- Proyecto padre canónico: `cinepolis`; los meses son periodos, no proyectos globales.
+- UI final autorizada: identidad real shopper; hashes/placeholders solo en evidencia técnica.
 
 ## 4. Cortes cerrados
+
 ### M1 / Corte 1 / Corte 2A
 `FROZEN/APROBADO`.
 
-### Corte 3 — Finanzas e histórico
-`FROZEN_ACTIVE_BASELINE` sobre `CXORBIA-TYA-CORTE3-V182-20260729`.
+### Corte 3
+`FROZEN_ACTIVE_BASELINE` en `CXORBIA-TYA-CORTE3-V182-20260729`.
+
 - 14 periodos / 616 visitas hasta julio;
-- 34 GT + 10 HN por periodo;
-- Mayo 44 pagadas / 0 pendientes;
-- Junio 2 pagadas / 42 pendientes;
-- P1/P2 PDF/Excel/reportKit/copy siguen backlog.
+- Mayo: 44 pagadas / 0 pendientes;
+- Junio: 2 pagadas / 42 pendientes;
+- P1/P2 PDF/Excel/reportKit/copy no reabren Corte 3;
+- no V183/R33.
 
-## 5. Corte 4 — `CX.data` read-only / backend canónico
-### 5.1 Sandbox técnico
-VIS-01/VIS-02/VIS-02B resueltos: no demo fallback, empty-backend válido, null-safety, role-switch limpio, asset-integrity y 0 pageerrors. No se materializa TyA en el sandbox.
+## 5. Corte 4 — backend canónico / identidad / plan
 
-### 5.2 Inventario / gap / HR viva
-`cxorbia-backend-dev`: Auth 17, projects 29, visits 619, questionnaires 557, shoppers 215, liquidations 255, certifications 0.
+### 5.1 Sandbox técnico preservado
+VIS-01/VIS-02/VIS-02B resueltos: fail-closed sin demo, empty backend válido, null-safety, role-switch y assets. No materializar TyA allí.
 
-Gap: faltan julio GT+HN en topología period-country previa = 44 visitas; dos overages quedan HOLD_NO_DELETE; pilotos preservados.
+### 5.2 Backend canónico existente
+Inventario read-only `cxorbia-backend-dev`: Auth 17, projects 29, visits 619, questionnaires 557, shoppers 215, liquidations 255, shopperBenefits 572, certifications 0. Topología previa se preserva para rollback; no deletes por rutina.
 
-HR viva: 15 periodos / 30 tabs / 684 visitas / 236 referencias shopper; julio GT34/HN10 correcto; `AGOSTO 26 HN` HOLD porque 34 filas dicen País=GT.
+### 5.3 Legacy shoppers/certificaciones
+Refresh read-only directo a `tya-plataforma/tya_shoppers_extra`:
 
-### 5.3 Plan canónico
-`phasea_2f71daec3e68dfa1` + `r16d_f471a6b486f3a269b0dd`: 1,415 operaciones = tenant 1, proyecto padre `cinepolis` 1, HR import 1, periodos 14, shoppers 210, visitas 616, liquidaciones 572; certificaciones 0 / pagos 0.
+- 149 shoppers únicos;
+- 120 perfiles legacy create-candidate;
+- 22 stable-linked existing con update de campos en HOLD;
+- 7 perfiles legacy HOLD;
+- 78 certificaciones útiles;
+- 77 certificaciones create-candidate + 1 HOLD;
+- PII cruda en GitHub=0.
 
-Modelo: **proyecto padre `cinepolis` → periodos → visitas**.
+### 5.4 Frescura HR — corrección de raíz
+El snapshot del 13-jul con 210 refs quedó superado. La proyección actual source-safe hasta julio, generada desde la HR viva, contiene:
 
-### 5.4 R16E provider compare — CERRADO
-Autorización read-only ejecutada contra `cxorbia-backend-dev`.
-- run `29282169628`, job `90741969389`: SUCCESS;
-- decisión `PASS_WITH_REVIEW_CANONICAL_MATERIALIZATION_DRY_RUN_R16`;
-- create 1,414 / update 1 / noop 0 / review 0;
-- extras preservados 244;
-- deletes/writes/deploy/production 0.
+- 14 periodos;
+- 616 visitas;
+- 208 refs shopper;
+- contra snapshot previo: +2 refs / -4 refs / 206 intersección;
+- PII=0; provider/HR/Firestore writes=0.
 
-`create=1414` significa ausencia de la topología canónica bajo esos paths, no backend vacío.
+El set de 9 refs del snapshot viejo queda superado; nunca usarlo como verdad operativa futura.
 
-### 5.5 R17M write plan exacto — CERRADO, NO EXECUTE
-Decisión: `PASS_R17M_WRITE_PLAN_NO_EXECUTE__LEGACY_SHOPPER_CERT_REFRESH_PENDING`.
+### 5.5 Identidad shopper actual
+Crosswalk exacto por `visitId`, `hrRowId`, `sourceSheet+sourceRow`:
 
-Estrategia: canonical-shadow sobre `cxorbia-backend-dev`, preservando la topología DEV previa para rollback y manteniendo un único read-path activo después del smoke.
+- 201/208 refs → shopper canónico existente;
+- 7/208 sin match transaccional inicial;
+- 0 conflictos.
 
-Grupos:
-1. tenant update `op_00001`: HOLD por `configurable`, `name`, `schemaVersion`;
-2. foundation `op_00002..op_00017`: 16 create candidates tras idempotencia;
-3. shoppers `op_00018..op_00227`: 210 HOLD hasta refresh legacy + diff estable;
-4. visits `op_00228..op_00843`: 616 canonical-shadow candidates, HR-first;
-5. liquidations `op_00844..op_01415`: 572 control-only candidates, 0 pagos;
-6. subtotal potencial excluyendo shopper/tenant: 1,204, todavía NO autorizado;
-7. 244 extras/pilotos y 2 cleanup candidates: preservar/HOLD_NO_DELETE;
-8. Agosto HN: HOLD.
+Reconciliación read-only de esas 7 con identidad real en memoria:
 
-Evidencia: `app/docs/evidence/R17M-WRITE-PLAN-NO-EXECUTE-LATEST.json`.
-Validator: `tools/reconciliation/tya-r17m-write-plan-no-execute-validate.mjs`.
+- 7/7 identidad presente en HR viva;
+- 2 → perfil legacy create-candidate;
+- 5 → perfil nuevo desde identidad real HR vigente;
+- 0 HOLD de identidad actual.
 
-### 5.6 Gate activo para cerrar Corte 4 / entrar a Corte 5
-`REFRESH LEGACY SHOPPERS/CERTIFICACIONES → DIFF ESTABLE → REBUILD R17M → OFFLINE IDEMPOTENCE → CANONICAL READ-PATH BINDING/SMOKE`.
+No automerge por nombre. Al ejecutar, los 5 HR-only requieren relectura viva de identidad y escritura directa al backend protegido; no guardar PII en repo.
 
-Corte 4 se congela cuando el binding/read-path canónico sobre `cxorbia-backend-dev` quede PASS sin reintroducir VIS-01/VIS-02/VIS-02B. No requiere poblar otra base.
+### 5.6 R17N FINAL — PASS, NO EXECUTE
+Evidencia: `app/docs/evidence/R17N-FINAL-WRITE-PLAN-NO-EXECUTE-LATEST.json`.
+
+Target: `cxorbia-backend-dev`, tenant `tya`, proyecto `cinepolis`.
+
+Identity resolution:
+- 208 refs totales;
+- 201 reuse existing;
+- 2 link a legacy profile create;
+- 5 current-HR profile create;
+- 0 HOLD;
+- 208 ready.
+
+Writes potenciales exactos listos, todavía NO autorizados:
+- foundation: 16;
+- legacy profile creates: 120;
+- current-HR profile creates: 5;
+- certification creates: 77;
+- visits: 616;
+- liquidation controls: 572;
+- **total: 1,406**.
+
+HOLD fuera del write autorizado:
+- tenant update: 1;
+- existing profile updates: 22;
+- legacy profile holds: 7;
+- certification hold: 1;
+- `AGOSTO 26 HN`;
+- payments/lots.
+
+Idempotencia offline PASS. `executeAllowed=false`. Data writes=0.
+
+### 5.7 Financial overlay
+R14C conserva 247 filas, 196 enlaces financieros exactos por `visitId` y 51 reviews. Su contrato histórico contiene `shoppers=210`, por lo que no se fuerza sobre la HR actual de 208. La evidencia financiera se preserva por `visitId` para el write exacto sin reactivar el shopper-gap stale.
 
 ## 6. Corte 5 — materialización DEV incremental
-Solo después de refresh legacy + rebuild R17M + idempotencia + autorización explícita de grupos/conteos exactos.
 
-Alcance:
-- julio 2026 HR 34 GT + 10 HN;
-- shoppers legacy: diff estable contra 215 existentes;
-- certificaciones legacy: historial faltante según fuente;
-- visitas legacy no se importan porque HR es fuente;
-- no deletes de overages/pilotos salvo plan y autorización separados;
-- agosto HN HOLD;
-- datos sensibles protegidos.
+Siguiente gate único: **autorización explícita de los grupos exactos del R17N FINAL**.
 
-Prompt legacy: `PROMPT-REFRESH-DELTA-LEGACY-TYA-SHOPPERS-CERTIFICACIONES-20260729.md`.
+Alcance permitido si Paula autoriza:
+- 16 foundation;
+- 120 perfiles legacy reales;
+- 5 perfiles desde HR viva con relectura de identidad en memoria;
+- 77 certificaciones;
+- 616 visitas HR current through July;
+- 572 controles de liquidación;
+- total 1,406 operaciones máximo.
+
+Fuera de alcance: tenant update, 22 existing updates, 7 legacy holds, 1 cert hold, deletes, pagos, Agosto HN, Auth changes, Storage, HR writes, deploy, merge, producción.
+
+Después: provider compare/idempotencia post-write + smoke `CX.data` canónico + verificación identidad real/RBAC.
 
 ## 7. Corte 6 — Auth/RBAC
-Reutilizar Auth DEV existente cuando corresponda; claims por persona/rol/scope, países/proyectos/rutas/acciones/Academia/notificaciones. No importar Auth legacy a ciegas.
 
-## 8. Corte 7 — sincronización y evidencias
-HR→plataforma, plataforma→HR, dedupe por llave estable, reviewQueue, cuestionario configurable, evidencias protegidas, Make/Gemini con gates.
+Reutilizar Auth DEV existente cuando corresponda; claims por persona/rol/tenant/project/country. Proteger datos sensibles por rol/Rules. No importar Auth legacy a ciegas.
 
-## 9. Corte 8 — preproducción y producción
-- cortes previos congelados;
+## 8. Corte 7 — sincronización/evidencias
+
+HR→plataforma y plataforma→HR con llaves estables, reviewQueue, cuestionario configurable, evidencias protegidas; Make/Gemini solo con gates.
+
+## 9. Corte 8 — cutover
+
+- smoke integral y rollback preparados;
 - refresh final delta si aplica;
-- rollback;
-- smoke integral;
-- proyecto Hosting público verificado: `tya-plataforma`;
-- desplegar CXOrbia sobre la URL pública actual usada por shoppers;
-- autorización específica;
-- no cambiar URL pública.
+- Hosting público Firebase `tya-plataforma`;
+- desplegar CXOrbia sobre la URL actual usada por shoppers;
+- no cambiar URL pública;
+- autorización específica antes de deploy/producción.
 
 ## 10. Claude/prototipo
-No P0 frontend nuevo. No nueva candidata. Preservar fixes core/entrypoint y no convertir periodos en proyectos independientes en UX/producto.
+
+No nueva candidata ni P0 frontend actual. Después del write/smoke, validar identidad real visible por rol y ausencia de duplicados/ref placeholders. Backlog P1/P2 permanece.
 
 ## 11. Academia
-Documentar separación legacy/backend/sandbox, canonical-shadow, read-path único, carryover de certificaciones, compare vs write y cutover con rollback.
+
+Documentar frescura de fuente, snapshot vs verdad viva, identidad real vs sanitización de evidencia, crosswalk transaccional, no-name-only merge, idempotencia y cutover con rollback.
 
 ## 12. Estado seguro
-Sin producción, merge, nuevo Hosting, Firestore/Auth/Storage/HR writes, imports, pagos/lotes, Make ni Gemini live hasta autorización específica.
+
+PR #7 draft/open/no merge. Firestore/Auth/Storage/HR/legacy writes=0; deletes=0; deploy=0; producción=false; pagos/lotes/Make/Gemini=0 hasta autorización específica.
