@@ -1,153 +1,86 @@
-## 2026-07-29 — ESTADO VIGENTE CORTE 4
-
-Estado canónico: `CORTE4_PROTECTED_CXDATA_SMOKE_PASS__HOSTING_DEV_AUTH_PENDING`.
-
-### Cerrado / no reabrir
-
-- [PASS] Firebase nuevo `cxorbia-tya-dev-260729-c4` verificado nuevo/vacío.
-- [PASS] Web App DEV, Firestore `us-central1`, Auth inicializado y Rules read-only.
-- [PASS] Protected smoke `b698a925f5f6a7c8405afb7fb54a9f4c551e8498`: `source=firestore`, `empty=true`, `fallbackUsed=false`, `readOnly=true`, interfaz `CX.data` preservada, claims temporales verificados, writes de documentos=0.
-- [PASS] Cleanup: Auth users=0 y Email/Password deshabilitado.
-- [PASS] Falso negativo del publicador identificado y corregido en `9967146e112322efcd043155ae05351bbbbd4e8a` sin rerun.
-- [PASS] No hay P0 frontend demostrado ni se requiere nueva candidata Claude.
-
-### Pendiente real inmediato
-
-- [GATE] autorización separada Hosting DEV del mismo build read-only.
-- [VISUAL] validación visual real.
-- [P0] corregir solo si aparece hallazgo reproducible que bloquee Phase A.
-- [FREEZE] congelar Corte 4 después de validación.
-- [IAM] retirar roles elevados temporales y dejar runner en Viewer.
-
-### P1/P2 no bloqueante
-
-- PDF sin gráfica visible en algunos reportes.
-- Excel con formato básico.
-- reportKit transversal/copy de fuentes.
-
-Fuente detallada: `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CORTE4-PROTECTED-SMOKE-PASS-20260729.md`.
-
----
-
-## CORTE 2A — V174 empalmada con HOLD técnico
-
-Estado: `V174_FUNCTIONAL_EMPALMED_GATE_HOLD_NO_DEPLOY`.
-
-### Resuelto
-
-- [PASS] ZIP V174 correcto verificado por SHA-256.
-- [PASS] Aplicación atómica de los seis módulos auditados.
-- [PASS] Commit/push funcional a `docs-tya-v6-v71-audit`: `b21e494d127fb4b902de5576e3fab0292362b097`.
-- [PASS] Manifest/build-lock/verificador V174 generados.
-- [PASS] `tya-hr-header-variants-r20-gate.mjs`.
-- [PASS] `tya-live-hr-inplace-refresh-gate.mjs`.
-- [PASS] `tya-corte1-context-history-reports-gate.mjs`.
-
-### Pendiente real
-
-- [HOLD] `tya-corte2a-shopper-operation-canonical-gate.mjs`: corregir en bloque autorizado el overlay preservado `app/core/tya-phase-a-source-safe-preview.js` para no convertir ausencia financiera en cero.
-- [HOLD] `tya-corte1-report-frontend-runtime-gate.mjs`: completar stub/harness `XLSX.utils.encode_range` o validar con SheetJS real.
-- [HOLD] `tya-project-period-kpi-history-gate-r20.mjs`: completar dependencia local Playwright (`playwright-core`) antes de ejecutar navegador.
-- [HOLD] `tya-corte1-m1-regression-lock.mjs`: desbloquear después de los gates anteriores.
-
-### Prohibiciones preservadas
-
-Sin deploy, sin merge, sin producción, sin importaciones, sin HR/Firestore/Auth/Storage writes, sin Make/Gemini y sin pagos.
-
-## CORTE 2A — corrección focalizada aplicada
-
-Estado: `V174_HOLD_FIX_APPLIED_R20_SOURCE_IDENTITY_HOLD_NO_DEPLOY`.
-
-### Resuelto
-
-- [PASS] Ausencia financiera ya no se colapsa a cero en el overlay source-safe.
-- [PASS] `0` real se conserva para honorario, boleto y combo cuando la fuente lo confirma.
-- [PASS] Harness de reportes actualizado para autofiltro Excel y PPT V174.
-- [PASS] `tya-corte2a-shopper-operation-canonical-gate.mjs`.
-- [PASS] `tya-corte1-report-frontend-runtime-gate.mjs`.
-
-### Pendiente real
-
-- [HOLD] `tya-project-period-kpi-history-gate-r20.mjs`: `sourceAccessMode=public_gviz_csv_cache_busted`; se observaron 14 periodos, 616 visitas, GT/HN y conteos Julio 2026 correctos, pero no la identidad de fuente aceptada por el gate.
-- [HOLD] Builder por inventario verificado: `header_not_found` en `JULIO 26`.
-- [HOLD] M1 compuesto hasta resolver el punto anterior.
-
-### Regla reusable agregada
-
-Todo PASS pre-empalme debe registrar candidate SHA, HEAD SHA, SHA del overlay protegido, SHA del gate ejecutado, SHA/identidad del composite exacto y salida real del gate.
-
 # PENDIENTES-PROTOTIPO.md
 
-> Lista viva de mejoras del prototipo CXOrbia. Actualizada 2026-07-21.
-> P0 crítico · P1 importante · P2 posterior · [TyA] específico · [CX] reusable.
+**Última actualización:** 2026-07-30  
+**Estado vivo:** `R17N_FINAL_DEV_MATERIALIZED_1406__READBACK_PASS__POST_COMPARE_SMOKE_PENDING`
 
-## CORTE 1B — V172 EMPALMADA
+## 1. Cerrado / no reabrir
+- M1 / Corte 1 / Corte 2A: FROZEN/APROBADO.
+- Corte 3: `CXORBIA-TYA-CORTE3-V182-20260729` FROZEN.
+- No V183/R33; no nueva candidata por rutina.
+- HR actual hasta julio: 14 periodos /616 visitas /208 refs.
+- Identidad shopper actual: 208/208 con target.
+- R17N FINAL materialización DEV: 1,406 writes autorizados y 1,406/1,406 readback PASS.
 
-### Resuelto y preservado
+## 2. Backend materializado
+Grupos existentes ahora en `cxorbia-backend-dev` bajo topología canónica:
+- foundation 16;
+- perfiles legacy 120;
+- perfiles HR actuales 5;
+- certificaciones 77;
+- visitas 616;
+- controles de liquidación 572.
 
-- [Backend] HR viva read-only confirmada con cambios reales.
-- [Backend] Refresco al cargar, `pageshow` y sondeo de 15 segundos desplegados.
-- [Backend] Cuatro reportes operativos live preservados.
-- [Claude/CX] V172 conserva reportKit, reportes multiformato, branding, gráficas, multiproyecto, Panorama, add-ons, Novedades y las correcciones principales de V170/V171.
-- [Gobierno] Se retractó el supuesto bloqueo por falta de checkout local; no constituye P0 ni justifica nueva metodología.
+Identidad:
+- 201/201 shoppers canónicos existentes ya exponen nombre real visible;
+- 120+5 perfiles nuevos fueron creados con identidad real aplicable desde fuente;
+- source-safe sigue siendo solo protección del repo/log/evidencia.
 
-### P0 identidad Shopper — resuelto en V172
+## 3. Pendiente backend inmediato — no es tarea Claude
+`POST-COMPARE READ-ONLY → SMOKE CX.data CANÓNICO + IDENTIDAD REAL → VALIDACIÓN OPERATIVA`.
 
-- [PASS] `misvisitas.js`: sin fallback `sh1`; sin identidad, cero filas y cero acciones.
-- [PASS] Sin `visitsForShopper`, usa `[]`; nunca abre `data.visitas()` global.
-- [PASS] `reservas.js`: sin identidad, cero reservas y acciones.
-- [PASS] `midia.js`: Mi Día y cronograma filtran exclusivamente por `shopperId`.
-- [PASS] `app.js`: `sh1` únicamente bajo guard demo explícito; live/real conserva `shopperId:null`.
-- [PASS] Shopper A ve solo A; Shopper B ve solo B; sin identidad no existe fuga.
+Validar en el smoke:
+- única topología canónica activa;
+- 14 periodos /616 visitas hasta julio;
+- proyectos/periodos no confundidos;
+- shopperRef → perfil real correcto;
+- 77 certificaciones y carryover correcto;
+- 572 controles de liquidación;
+- 196 links financieros exactos preservados;
+- pagos no inferidos;
+- sin fallback demo/localStorage;
+- sin fuga de PII por rol.
 
-### Pendiente operativo inmediato
+## 4. HOLD preservado
+No resolver silenciosamente desde frontend:
+- tenant update 1;
+- existing profile updates 22;
+- legacy profile holds 7;
+- certification hold 1;
+- Agosto HN por inconsistencia país/tab;
+- deletes;
+- pagos/lotes;
+- Auth/RBAC changes hasta su corte;
+- Make/Gemini/Storage reales.
 
-- [PASS] `APPLY_DELTA_DIRECTLY` de V172 en `docs-tya-v6-v71-audit`.
-- [PASS] Manifest, build-lock y verificador del build empalmado.
-- [Empalme] Commit/push atómico y registro de `HEAD_AFTER`.
-- [QA] Post-gates de regresión y equivalencia PDF/XLSX/PPTX.
-- [DEV] Publicar Hosting DEV y ejecutar validación visual Admin/Cliente/Shopper.
-- [Gobierno] Retirar workflow temporal después del PASS y congelar Corte 1 solo con `APROBADO`.
+## 5. Próxima intervención de Claude
+Ninguna por rutina.
 
-### P1/P2 preservados
+Solo intervenir si el smoke demuestra P0 reproducible y localizado por archivo/módulo. Si no hay P0, continuar con backend/Auth/RBAC sin nueva candidata.
 
-- [QA visual] Verificar legibilidad y equivalencia final PDF/XLSX/PPTX.
-- [Academia] Documentar selección de rol vs autenticación y diferencia entre oportunidades y visitas privadas después de aprobación visual.
+Cuando se valide UI, asegurar:
+- Admin/Operativo ve identidad real autorizada;
+- Shopper ve su propio perfil/historial;
+- Cliente solo alcance permitido;
+- `Shopper protegido` no queda como identidad permanente;
+- Cinépolis sigue configurable, no hardcodeado.
 
-### Fuente vigente
+## 6. Backlog P1/P2 no bloqueante
+- PDF: gráfica/impresión de reportes.
+- Excel: formato básico.
+- `reportKit`: consistencia transversal.
+- copy de fuentes/estados honestos.
+- equivalencia de alcance entre exportaciones.
 
-- `app/docs/AUDITORIA-CANDIDATA-V172-CORTE1B-20260721.md`.
+## 7. Academia/manuales
+Pendiente actualizar rutas/contenido con:
+- snapshot vs HR viva;
+- perfil real vs referencia HR vs Auth;
+- source-safe vs PII protegida;
+- stable keys y review de conflictos;
+- preflight fail-closed;
+- materialización + readback;
+- certificación carryover;
+- liquidación/control de pago ≠ pago confirmado.
 
-### Cierre pendiente
-
-`COMMIT/PUSH ATÓMICO V172 → POST-GATES → HOSTING DEV → VALIDACIÓN VISUAL → RETIRAR WORKFLOW TEMPORAL → FREEZE CORTE 1`
-# Pendientes vigentes — V172 HR in-place
-
-Estado: `V172_HR_INPLACE_APPLIED_PENDING_REMOTE_DEV_GATES`.
-
-Completado localmente:
-- Aplicación exacta de `files/`.
-- Verificación SHA de los 14 archivos acumulados V172.
-- `node --check` de 21 JS/MJS.
-- PASS gate HR in-place local.
-- Manifest/build-lock/verificador V172 regenerados.
-
-Pendiente operativo:
-- Commit/push atómico.
-- Cloud Run DEV HR.
-- Hosting DEV R22.
-- Gate remoto con cambio HR ya existente reflejado sin `location.reload`, sin pantalla blanca y misma `sourceRevision` en Dashboard, KPI, Liquidaciones y Reportes.
-
-Prohibiciones vigentes: no producción, no merge, no writes, no Make/Gemini, no pagos.
-# CORTE 3 FOCAL FIX - PENDIENTES POST-GATE LOCAL 2026-07-28
-
-- Pendiente Hosting DEV del nuevo HEAD y smoke remoto focal.
-- Pendiente validacion visual minima Paula: Liquidaciones, Movimientos, periodo/agosto, Shopper/movil.
-- PDF sin grafica visible y Excel con formato basico quedan como mejora transversal P2, no bloqueo de esta correccion.
-- Mantener bloqueados: produccion, merge, writes reales, pagos reales, lotes reales, Make/Gemini.
-
-Listo localmente:
-
-- R26-R32 PASS.
-- Focal mayo PASS: 44 HR / 42 exactas / 2 reviews / GT32 / HN10 / 0 pagos / 0 lotes / CxP GT Q 7,178.
-- Rollover current-month-safe PASS.
+## 8. Estado seguro
+Firestore writes autorizados ejecutados: 1,406. Auth/Storage/HR/legacy writes=0; deletes=0; pagos/lotes=0; deploy=0; merge=false; producción=false; Make/Gemini=0.
