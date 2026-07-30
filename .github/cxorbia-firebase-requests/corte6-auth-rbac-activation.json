@@ -1,8 +1,10 @@
 {
   "schemaVersion": "cxorbia.corte6-auth-rbac-activation.request.v1",
-  "enabled": false,
+  "enabled": true,
   "consumed": false,
-  "authorizationId": null,
+  "authorizationId": "PAULA_CURRENT_CONVERSATION_CORTE6_20260730_01",
+  "authorizationSource": "current_conversation_2026-07-30",
+  "authorizationText": "Autorizo Corte 6: máximo 5 claims Auth + deploy exclusivo de Firestore Rules.",
   "targetProjectId": "cxorbia-backend-dev",
   "tenantId": "tya",
   "canonicalProjectId": "cinepolis",
@@ -12,11 +14,11 @@
   "allowCreateUsers": false,
   "allowPasswordChanges": false,
   "allowDeletes": false,
-  "deployFirestoreRules": false,
+  "deployFirestoreRules": true,
   "hostingDeploy": false,
   "firestoreDataWrites": false,
   "storageWrites": false,
   "production": false,
   "merge": false,
-  "note": "NO EXECUTE until explicit current-conversation authorization. Existing Hosting DEV redeploy authorization remains separate and unconsumed."
+  "note": "Authorized in current conversation for exactly max 5 existing-user custom-claim updates plus Firestore Rules deploy. No Hosting in this gate; existing Hosting DEV redeploy authorization remains separate and unconsumed."
 }
