@@ -33,6 +33,6 @@
   "production": false,
   "rawPiiInGitHub": false,
   "requestedAt": "2026-07-30T03:40:37Z",
-  "attempt": 2,
-  "reason": "retry to capture sanitized preflight detail after zero-write HOLD; authorization and write scope unchanged"
+  "attempt": 3,
+  "reason": "retry identical authorized preflight after transient live_identity_207; zero writes observed in prior attempts; authorization and write scope unchanged"
 }
