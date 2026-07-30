@@ -1,93 +1,72 @@
 # CAMBIOS-BACKEND.md
 
-## 2026-07-30 — Corte 6 Auth/RBAC: reconciliación read-only + delta mínimo preparado NO EXECUTE
+## 2026-07-30 — Corte 6 Auth/RBAC + Rules + Hosting DEV: PASS técnico, pendiente visual humana autenticada
 
-Estado: `CORTE6_AUTH_RBAC_READONLY_RECONCILED__MINIMAL_PROVIDER_DELTA_PREPARED_NO_EXECUTE__HOSTING_REDEPLOY_RESERVED_0OF1__NO_PRODUCTION`.
+Estado: `CORTE6_AUTH_RBAC_RULES_PASS__HOSTING_DEV_REDEPLOY1OF1_VERIFIED_DIRECT_ENTRYPOINT__WAITING_HUMAN_AUTH_VISUAL__NO_PRODUCTION`.
 
-### Archivos creados/tocados
-- `tools/qa/cxorbia-auth-rbac-readonly-reconcile.mjs`: inventario Auth/RBAC source-safe, sin PII ni writes; refleja la semántica real de `firestore.rules`.
-- `.github/workflows/cxorbia-canonical-backend-readonly-inventory.yml`: extiende el runner read-only existente para producir evidencia Corte 6.
-- `.github/cxorbia-firebase-requests/canonical-backend-readonly-inventory.json`: nonce de lectura; providerWrites=0.
-- `app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.json/.md`: evidencia sanitizada.
-- `app/core/backend-browser-auth.js`: gate Firebase Auth interactivo solo para `index-backend-dev.html`, sesión SESSION, claims como autoridad, sin credenciales persistidas.
-- `app/index-backend-dev.html`: carga el gate Auth antes del adapter Firebase; `app/index.html` no se tocó.
-- `app/core/backend-config-preview-dev.js`: elimina fallback de email/password almacenado; exige Auth interactivo.
-- `app/core/backend-firebase.js`: lecturas acotadas al principal autenticado; operador/cliente/shopper dejan de depender de queries globales no autorizadas.
-- `firestore.rules`: compatibilidad de lectura shopper disponible con campo canónico `status` y legacy `estado`; fuente preparada, NO desplegada todavía.
-- `tools/release/cxorbia-corte6-auth-claims-normalize.mjs`: normalización fail-closed de claims, dry-run por defecto.
-- `.github/cxorbia-firebase-requests/corte6-auth-rbac-activation.json`: request de proveedor creado apagado (`enabled=false`).
-- `.github/workflows/cxorbia-corte6-auth-rbac-activation.yml`: gate one-shot preparado; ejecuta static checks/dry-run y solo permite provider changes con autorización explícita vigente.
-- checkpoint/índice/Claude/PENDIENTES/Academia/tracker/PR: reconciliación documental del corte.
+### Resultado proveedor
+- Auth custom claims: **5/5** updates autorizados sobre cuentas existentes: 2 cliente +3 shopper con vínculo exacto.
+- Scope stale `tya`/`tya-piloto` normalizado a `cinepolis`; demás claims preservados.
+- Cuarto shopper sin vínculo exacto: no tocado.
+- Usuarios nuevos/password changes/deletes: 0/0/0.
+- Readback: operador ready7, cliente ready2, shopper ready3; familias requeridas PASS.
+- Firestore **data** writes en Corte6: 0.
 
-### Evidencia Auth/RBAC read-only
-- Auth users: 17; activos password: 17.
-- Alcance TyA válido bajo reglas actuales: 13.
-- Operador listo: 7.
-- Cliente listo: 0/2; ambos tienen tenant TyA pero scopes de proyecto legacy `tya`/`tya-piloto`, no `cinepolis`.
-- Shopper listo: 0/4; 3/4 tienen `shopperId` que coincide exactamente con perfil Firestore y son los únicos shoppers elegibles para normalización automática.
-- `projectIds` canónico requerido por reglas actuales: `cinepolis`.
-- Auth/Firestore/Rules/Hosting writes durante diagnóstico: 0/0/0/0.
-- PII/identidades exportadas: 0.
+### Firestore Rules
+- Regla canónica `status='disponible'` + compatibilidad `estado` legacy desplegada.
+- Firebase CLI falló por la dependencia `firebaserules.rulesets.test`; permisos efectivos de Rules create/release sí estaban presentes.
+- Se usó API oficial Firebase Rules sin ampliar IAM.
+- Ruleset/release/readback SHA exacto: PASS.
 
-### Delta mínimo de proveedor preparado, todavía NO autorizado/NO ejecutado
-1. Máximo 5 updates de custom claims sobre usuarios existentes: 2 cliente TyA + 3 shopper TyA con perfil exacto.
-2. Para esos targets únicamente: reemplazar scope de proyecto stale `tya`/`tya-piloto` por `projectId='cinepolis'`, `projectIds=['cinepolis']`; preservar resto de claims.
-3. No crear usuarios, no cambiar contraseñas, no borrar cuentas y no tocar el cuarto shopper sin perfil exacto.
-4. Desplegar únicamente `firestore.rules` ya preparada para `status/estado` en visita disponible.
-5. Firestore data writes=0; Hosting=0 en este gate; Storage/HR=0; producción=0; merge=0.
+### Hosting DEV existente
+- Mismo Firebase/Hosting `cxorbia-backend-dev`, target `cxorbia-dev`; nuevo Firebase/Hosting: 0/0.
+- El único redeploy previamente autorizado fue consumido: **1/1**.
+- Firebase CLI Hosting quedó bloqueado por API Keys Viewer (`apikeys.keys.*`), no por Hosting core IAM.
+- Sin modificar IAM, el mismo one-shot se ejecutó por API oficial Firebase Hosting.
+- Release: `sites/cxorbia-backend-dev/releases/1785431702100000`.
+- Version: `sites/cxorbia-backend-dev/versions/b00728c729452665`, FINALIZED.
+- Remote proof/config/browser Auth/entrypoint explícito: PASS.
+- Root `/` sirve `app/index.html` por precedencia de contenido estático exacto antes de rewrite. Es no bloqueante; no se autoriza segundo deploy.
 
-### Runtime/seguridad
-- El selector local de rol deja de ser autoridad en el entrypoint backend DEV; Firebase Auth + claims determinan el principal real.
-- Cliente/shopper cargan solo proyectos autorizados; shopper carga su perfil, visitas propias/disponibles y postulaciones propias mediante queries compatibles con reglas.
-- El cambio preserva la interfaz `CX.data` y no modifica `app/modules/*`.
-- No se publican password, token, email, UID ni secretos en repo/Hosting.
+URL DEV canónico:
+`https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis`
 
-### Hosting
-La autorización previa de redeploy al Hosting DEV existente sigue reservada 0/1 y no se vuelve a solicitar. Se consumirá solo después de PASS del gate Auth/RBAC.
+### Archivos principales creados/tocados
+- `app/core/backend-browser-auth.js`;
+- `app/index-backend-dev.html`;
+- `app/core/backend-config-preview-dev.js`;
+- `app/core/backend-firebase.js`;
+- `firestore.rules`;
+- `tools/release/cxorbia-corte6-auth-claims-normalize.mjs`;
+- `tools/release/cxorbia-corte6-firestore-rules-deploy.mjs`;
+- `tools/release/cxorbia-existing-hosting-dev-corte6-prepare.mjs`;
+- `tools/release/cxorbia-existing-hosting-dev-direct-deploy.mjs`;
+- `tools/qa/cxorbia-auth-rbac-readonly-reconcile.mjs`;
+- `tools/qa/cxorbia-corte6-rules-iam-diagnostic.mjs`;
+- `tools/qa/cxorbia-corte6-hosting-iam-diagnostic.mjs`;
+- requests/workflows/evidencias source-safe de Corte6;
+- índice/checkpoint/Claude/PENDIENTES/tracker/Academia/PR #7.
 
-### Clasificación
-- **Reusable CXOrbia:** Firebase browser Auth gate, principal-scoped reads, claim normalization fail-closed, canonical/legacy status compatibility.
-- **Exclusivo cliente:** tenant TyA, proyecto `cinepolis`, scopes stale `tya`/`tya-piloto`.
-- **Claude/prototipo:** no intervención aún; smoke post-Hosting decidirá si existe P0 frontend localizado.
-- **Academia:** identidad autenticada vs selector de rol, scopes de proyecto, shopperId y manejo de permisos.
-- **Sin impacto Claude:** requests/runners/evidencia source-safe.
+### Claude/prototipo
+No nueva candidata. No se tocó `app/modules/*` desde backend. Solo abrir tarea focalizada si la visual autenticada demuestra P0 reproducible. P1/P2 preservados: PDF/gráficas, Excel/formato, reportKit/exportaciones y copy de fuentes.
 
-### Estado seguro
-Auth writes=0; Firestore data writes=0; Rules deploy=0; Hosting deploy=0; Storage/HR/legacy writes=0; pagos=0; Make/Gemini=0; merge=false; producción=false.
+### Academia
+Registrar Auth real vs selector local, scopes tenant/proyecto, `shopperId` exacto, mínimo privilegio, Rules/Hosting CLI vs API oficial y precedencia exact-static vs rewrite.
 
 ### Siguiente bloque exacto
-`AUTORIZACIÓN CORTE6 AUTH CLAIMS MÁX5 + FIRESTORE RULES → EJECUTAR/VERIFY READINESS → CONSUMIR HOSTING DEV YA AUTORIZADO → SMOKE REAL → FREEZE → AGOSTO DELTA`.
+`VISUAL AUTENTICADA ADMIN/OPS/CLIENTE/SHOPPER → si PASS, FREEZE CORTE6 → REFRESH/RESOLVER AGOSTO → MATERIALIZAR SOLO DELTA AGOSTO → PREPROD/CUTOVER`.
+
+### Clasificación
+- **Reusable CXOrbia:** browser Auth, principal-scoped reads, claims fail-closed, Rules canónicas, deploy/diagnóstico API oficial.
+- **Exclusivo cliente:** tenant `tya`, proyecto `cinepolis`, scopes stale y Agosto HN HOLD.
+- **Claude/prototipo:** sin nueva candidata; observar smoke.
+- **Academia:** Auth/RBAC, mínimo privilegio y gates de proveedor.
+- **Sin impacto Claude:** runners, requests, IDs release/version y evidencia source-safe.
+
+### Estado seguro
+R17N histórico: 1,406 data writes cerrado. Corte6: Auth claim writes5; Firestore data writes0; Rules release1 verificada; Hosting DEV1/1; usuarios nuevos/password/deletes0; Storage/HR/legacy0; pagos/Make/Gemini0; merge=false; producción=false; PII/secrets crudos0.
 
 ---
-
-## 2026-07-30 — Corte 5 post-materialización: provider/identidad PASS + P0 CX.data period model
-
-Estado histórico de inicio de Corte 5: `CORTE3_FROZEN__R17N_FINAL_DEV_MATERIALIZED_1406__PROVIDER_COMPARE_IDENTITY_PASS__P0_C5_CXDATA_PERIOD_MODEL__RUNTIME_FIX_AUTH_PENDING__NO_PRODUCTION`.
-
-### Archivos creados/tocados en ese bloque
-- `tools/qa/tya-r17n-post-materialization-readonly-smoke.mjs`: wrapper del gate hardened.
-- `tools/qa/tya-r17n-post-materialization-readonly-smoke-v2.mjs`: post-compare proveedor + identidad + smoke exacto CX.data, read-only.
-- `.github/workflows/cxorbia-r17n-post-materialization-readonly.yml`: ejecución controlada read-only, sin contents write/provider write.
-- `.github/cxorbia-firebase-requests/r17n-post-materialization-readonly.json`: request consumido/frozen después del diagnóstico.
-- `app/docs/evidence/R17N-POST-MATERIALIZATION-READONLY-SMOKE-LATEST.json`: evidencia sanitizada del P0.
-
-### Resultado proveedor/identidad
-- 1,406/1,406 rutas R17N presentes; 0 missing; 0 authorization drift; 0 `production=true`.
-- parent `cinepolis`, 14 periodos, 616 visitas, 572 controles, 77 certificaciones, payments/lots 0/0.
-- 208/208 referencias HR exactas; 194 perfiles canónicos únicos esperados; 616/616 visitas con shopper existente; placeholders demo 0.
-
-### P0 histórico y resolución posterior
-`P0_PROVEN_C5_CXDATA_PERIOD_MODEL_MISMATCH` fue localizado en `app/core/backend-firebase.js`: el adapter interpretaba project docs como periodos. Posteriormente quedó corregido y el re-smoke final pasó con `source=firestore`, `fallback=false`, projects=1, periods=14, visits=616, currentProjectId=`cinepolis`, currentPeriodId=`2026-07`.
-
----
-
-## 2026-07-30 — R17N FINAL materialización DEV exacta PASS
-- 1,406 Firestore writes autorizados y ejecutados.
-- Readback 1,406/1,406; mismatch 0.
-- Foundation16 + legacy profiles120 + HR profiles5 + certs77 + visits616 + liquidation controls572.
-- HR identity 208/208; existing canonical 201/201 con nombre real visible.
-- Tenant/update22/holds/agosto/deletes/pagos/Auth/Storage/HR/deploy/merge/producción excluidos.
-- Evidencia: `app/docs/evidence/R17N-FINAL-DEV-MATERIALIZATION-LATEST.json`.
 
 ## Histórico protegido
-Los addenda previos permanecen como trazabilidad. Los estados de 210 refs/9 pendientes y R17N NO EXECUTE son históricos y no deben reactivarse. No reabrir Corte 3 ni repetir la materialización.
+Los bloques previos permanecen en Git y en `app/docs/`. No reabrir Corte 3, no repetir R17N y no crear nueva candidata/base/Hosting/rama/PR por rutina.
