@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-07-30  
-**Estado vivo:** `CORTE6_TECH_PASS__HUMAN_AUTH_VISUAL_PENDING__NO_FRONTEND_P0_PROVEN__NO_PRODUCTION`
+**Estado vivo:** `P0_PROVEN_C6_CREDENTIAL_CONTINUITY_GAP__NO_NEW_CANDIDATE__NO_PRODUCTION`
 
 ## 1. Cerrado / no reabrir
 - M1 / Corte 1 / Corte 2A: FROZEN/APROBADO.
@@ -13,40 +13,47 @@
 - Hosting DEV existente: deploy 1/1 consumido y entrypoint explícito remoto PASS.
 - No V183/R33, nueva base, Hosting, rama o PR.
 
-## 2. Pendiente vivo único — validación visual autenticada
-No hay P0 frontend demostrado. Antes de abrir tarea Claude debe validarse con cuentas DEV existentes en:
-`https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis`
+## 2. P0 vivo — continuidad de credenciales/login
+La visual DEV actual muestra `Correo + Contraseña`, pero ese identificador visible no corresponde al contrato operativo que debe conservarse.
 
-Validar:
-1. Admin/Ops: proyecto, periodos/histórico y navegación correcta.
-2. Cliente: solo proyecto autorizado.
-3. Shopper exacto: identidad real, historial propio y disponibles autorizadas.
-4. Shopper no vinculado: no obtiene acceso por inferencia.
-5. Sin regresión en postulaciones, visitas, certificación, finanzas, Academia/manuales y navegación.
-6. Sin copy técnico de claims/provider/source-safe.
+Inventario read-only comprobado:
+- `tenants/tya/shoppers`: `user/username/login`=0; `pass/password`=0;
+- `tenants/tya/users`: 0 docs;
+- tenant profile: sin configuración login persistida;
+- Firebase Auth: 17 cuentas técnicas con password provider + identificador email.
 
-Las credenciales se ingresan solo en navegador; no se pegan en chat.
+Por tanto las credenciales legacy no están en el backend canónico. No crear Gmail nuevo, no pedir a Paula que adopte cuentas DEV y no presentar el correo Firebase como login final.
 
-## 3. Claude — intervención actual
-**Ninguna por rutina. No solicitar nueva candidata.**
+## 3. Corrección focalizada Claude/prototipo
+No nueva candidata. La tarea visible, cuando el backend cierre el import de identidad, es únicamente:
+- mantener accesos configurables por perfil/rol;
+- formulario `Usuario + Contraseña`;
+- Firebase Auth detrás del adapter;
+- sin passwords/tokens en localStorage;
+- recuperación/cambio de contraseña explícitos;
+- no exponer correo interno provider, UID, claims o IDs técnicos;
+- validar generación/registro de credenciales con función real existente.
 
-Solo abrir tarea si la visual demuestra P0 reproducible y localizado. No mover Auth/claims/Rules/backend a módulos UI.
+No mover lógica Firestore/Auth/claims a `app/modules/*`.
 
-## 4. Pendientes P1/P2 no bloqueantes
+## 4. Dependencia backend antes del smoke visual
+`EXPORT CREDENCIALES LEGACY CONTROLADO → INVENTARIO/HASH-TYPE → PLAN AUTH IMPORT IDEMPOTENTE → AUTORIZACIÓN ÚNICA → IMPORT/READBACK → LOGIN USUARIO+CONTRASEÑA`.
+
+Solo después se hace smoke Admin/Ops/Cliente/Shopper y freeze Corte6.
+
+## 5. Pendientes P1/P2 no bloqueantes
 - PDF: gráfica ausente al imprimir/exportar.
 - Excel: formato básico/no final.
 - `reportKit`: consolidación transversal y exportaciones fuera de Dashboard.
 - copy de fuentes/readiness: mantener lenguaje humano, no técnico.
 
-No bloquear Corte6/agosto/cutover por estos puntos salvo P0 demostrado.
-
-## 5. Agosto — dependencia backend/fuente
+## 6. Agosto — dependencia backend/fuente
 - Fuente materializada termina julio 2026.
 - `Agosto HN` sigue HOLD por inconsistencia país/tab.
-- Después del PASS visual: FREEZE Corte6 → refresh HR → resolver HOLD → validar visitas → materializar solo delta agosto.
+- Después de FREEZE Corte6: refresh HR → resolver HOLD → validar visitas → materializar solo delta agosto.
 - No construir agosto manualmente desde frontend y no repetir histórico.
 
-## 6. Holds preservados
+## 7. Holds preservados
 - existing profile updates22;
 - legacy holds7;
 - certification hold1;
@@ -55,8 +62,8 @@ No bloquear Corte6/agosto/cutover por estos puntos salvo P0 demostrado.
 - pagos/lotes;
 - Make/Gemini/Storage reales.
 
-## 7. Academia/manuales
-Actualizar Auth real vs selector visual, claims tenant/proyecto, shopperId exacto, mínimo privilegio, visita disponible protegida, conflicto a revisión, CLI vs API y exact-static vs rewrite.
+## 8. Academia/manuales
+Actualizar: usuario ≠ email obligatorio; Firebase Auth como autoridad detrás del login; tenant/proyecto/rol; shopperId exacto; recuperación de acceso; mínimo privilegio; conflicto a revisión humana.
 
-## 8. Estado seguro
-Corte6: Auth claim writes5; usuarios nuevos/password/deletes0; Firestore data writes0; Rules release1 verificada; Hosting DEV1/1; Storage/HR/legacy0; pagos/Make/Gemini0; merge=false; producción=false.
+## 9. Estado seguro
+Corte6: Auth claim writes5 ya autorizados; usuarios nuevos/password changes/deletes0; Firestore data writes0; Rules release1; Hosting DEV1/1; inventario credential-continuity provider writes0; Storage/HR/legacy0; pagos/Make/Gemini0; merge=false; producción=false; credenciales crudas0.
