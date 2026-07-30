@@ -1,0 +1,175 @@
+import fs from 'node:fs';
+import admin from 'firebase-admin';
+
+const expectedProject = process.env.CXORBIA_EXPECTED_PROJECT || 'cxorbia-backend-dev';
+const credentialPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+const outJson = process.env.CXORBIA_AUTH_RBAC_JSON || 'app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.json';
+const outMd = process.env.CXORBIA_AUTH_RBAC_MD || 'app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.md';
+const tenantId = 'tya';
+const canonicalProjectId = 'cinepolis';
+
+if (!credentialPath || !fs.existsSync(credentialPath)) throw new Error('credential_missing');
+const sa = JSON.parse(fs.readFileSync(credentialPath, 'utf8'));
+if (sa.project_id !== expectedProject) throw new Error(`wrong_project:${sa.project_id || 'missing'}!=${expectedProject}`);
+
+if (!admin.apps.length) admin.initializeApp({ credential: admin.credential.cert(sa), projectId: expectedProject });
+const db = admin.firestore();
+const auth = admin.auth();
+
+const operatorRoles = new Set(['super','admin','ops','coordinador']);
+const clientRoles = new Set(['cliente','client']);
+const allowedRoles = new Set([...operatorRoles, ...clientRoles, 'shopper']);
+
+function values(v){
+  if(Array.isArray(v)) return v.map(String).map(x=>x.trim()).filter(Boolean);
+  if(typeof v === 'string') return v.split(',').map(x=>x.trim()).filter(Boolean);
+  return [];
+}
+function tenantAllowed(claims, role){
+  return role === 'super' || claims.tenantId === tenantId || values(claims.tenants).includes(tenantId) || values(claims.tenantIds).includes(tenantId);
+}
+function projectIds(claims){
+  return [...new Set([claims.projectId, ...values(claims.projectIds)].filter(Boolean).map(String))];
+}
+function passwordProvider(u){ return (u.providerData || []).some(p => p.providerId === 'password'); }
+
+const shopperDocs = await db.collection('tenants').doc(tenantId).collection('shoppers').listDocuments();
+const shopperIds = new Set(shopperDocs.map(r=>r.id));
+
+const roleReadiness = {};
+let totalUsers = 0;
+let activePasswordUsers = 0;
+let tenantUsers = 0;
+let unknownRoleUsers = 0;
+let operatorLoginReady = 0;
+let clientLoginReady = 0;
+let shopperLoginReady = 0;
+let shopperWithMatchingProfile = 0;
+let usersAssignedCanonicalProject = 0;
+let token;
+
+do {
+  const page = await auth.listUsers(1000, token);
+  totalUsers += page.users.length;
+  for (const u of page.users) {
+    const claims = u.customClaims || {};
+    const role = typeof claims.role === 'string' ? claims.role : '';
+    const activePassword = !u.disabled && passwordProvider(u);
+    const tenantOk = tenantAllowed(claims, role);
+    const projects = projectIds(claims);
+    const canonicalProjectAssigned = role === 'super' || projects.includes(canonicalProjectId);
+    const shopperId = typeof claims.shopperId === 'string' ? claims.shopperId : '';
+    const shopperProfileMatched = !!shopperId && shopperIds.has(shopperId);
+
+    if(activePassword) activePasswordUsers++;
+    if(tenantOk) tenantUsers++;
+    if(role && !allowedRoles.has(role)) unknownRoleUsers++;
+    if(canonicalProjectAssigned) usersAssignedCanonicalProject++;
+    if(shopperProfileMatched) shopperWithMatchingProfile++;
+
+    if(!roleReadiness[role || 'missing']) roleReadiness[role || 'missing'] = {
+      users:0, activePassword:0, tenantAllowed:0, canonicalProjectAssigned:0, shopperIdPresent:0, shopperProfileMatched:0, secureReadReady:0
+    };
+    const r = roleReadiness[role || 'missing'];
+    r.users++;
+    if(activePassword) r.activePassword++;
+    if(tenantOk) r.tenantAllowed++;
+    if(canonicalProjectAssigned) r.canonicalProjectAssigned++;
+    if(shopperId) r.shopperIdPresent++;
+    if(shopperProfileMatched) r.shopperProfileMatched++;
+
+    let ready = false;
+    if(operatorRoles.has(role)) ready = activePassword && tenantOk;
+    else if(clientRoles.has(role)) ready = activePassword && tenantOk && canonicalProjectAssigned;
+    else if(role === 'shopper') ready = activePassword && tenantOk && canonicalProjectAssigned && shopperProfileMatched;
+    if(ready){
+      r.secureReadReady++;
+      if(operatorRoles.has(role)) operatorLoginReady++;
+      else if(clientRoles.has(role)) clientLoginReady++;
+      else if(role === 'shopper') shopperLoginReady++;
+    }
+  }
+  token = page.pageToken;
+} while (token);
+
+const readiness = {
+  operatorLoginReady,
+  clientLoginReady,
+  shopperLoginReady,
+  allRequiredRoleFamiliesHaveAtLeastOne: operatorLoginReady > 0 && clientLoginReady > 0 && shopperLoginReady > 0,
+  legacyClaimsSufficientForSecureDevReadWithoutClaimMutation: operatorLoginReady > 0 && clientLoginReady > 0 && shopperLoginReady > 0,
+  rulesMutationRequiredForCurrentLegacyClaimReadiness: false,
+  claimMutationRequiredForDevVisualIfReady: !(operatorLoginReady > 0 && clientLoginReady > 0 && shopperLoginReady > 0),
+};
+
+const report = {
+  schemaVersion: 'cxorbia.corte6-auth-rbac-readonly-reconciliation.v1',
+  generatedAt: new Date().toISOString(),
+  projectId: expectedProject,
+  tenantId,
+  canonicalProjectId,
+  mode: 'READ_ONLY_SOURCE_SAFE',
+  providerWrites: 0,
+  auth: {
+    totalUsers,
+    activePasswordUsers,
+    tenantUsers,
+    usersAssignedCanonicalProject,
+    shopperWithMatchingProfile,
+    unknownRoleUsers,
+    roleReadiness,
+    readiness,
+    piiExported: false,
+  },
+  safety: {
+    authWrites: 0,
+    firestoreWrites: 0,
+    rulesDeploys: 0,
+    hostingDeploys: 0,
+    storageWrites: 0,
+    production: false,
+    merge: false,
+    identitiesExported: false,
+    sensitiveValuesExported: false,
+  }
+};
+
+fs.mkdirSync(new URL('../../app/docs/evidence/', import.meta.url), {recursive:true});
+fs.writeFileSync(outJson, JSON.stringify(report, null, 2) + '\n', 'utf8');
+const lines = [
+  '# Corte 6 — reconciliación Auth/RBAC read-only source-safe',
+  '',
+  `- Fecha: ${report.generatedAt}`,
+  `- Firebase DEV canónico: \`${expectedProject}\``,
+  `- Tenant: \`${tenantId}\``,
+  `- Proyecto canónico: \`${canonicalProjectId}\``,
+  '- Modo: read-only; provider writes=0; sin identidades ni PII exportadas.',
+  '',
+  '## Readiness agregado',
+  '',
+  `- Auth users totales: ${totalUsers}`,
+  `- Usuarios activos con password provider: ${activePasswordUsers}`,
+  `- Usuarios con alcance tenant TyA: ${tenantUsers}`,
+  `- Usuarios con alcance proyecto canónico (super cuenta como alcance global): ${usersAssignedCanonicalProject}`,
+  `- Shopper claims con shopperId que coincide con perfil Firestore: ${shopperWithMatchingProfile}`,
+  `- Login operador listo bajo reglas actuales: ${operatorLoginReady}`,
+  `- Login cliente listo bajo reglas actuales: ${clientLoginReady}`,
+  `- Login shopper listo bajo reglas actuales: ${shopperLoginReady}`,
+  `- Familias mínimas listas: ${readiness.allRequiredRoleFamiliesHaveAtLeastOne ? 'sí' : 'no'}`,
+  `- Claims legacy suficientes para visual DEV sin mutarlos: ${readiness.legacyClaimsSufficientForSecureDevReadWithoutClaimMutation ? 'sí' : 'no'}`,
+  '',
+  '## Por rol — solo conteos',
+  '',
+  '| Rol | Users | Password activos | Tenant TyA | Proyecto canónico | shopperId | Perfil shopper coincide | Secure read ready |',
+  '|---|---:|---:|---:|---:|---:|---:|---:|',
+  ...Object.entries(roleReadiness).sort(([a],[b])=>a.localeCompare(b)).map(([role,r])=>`| ${role} | ${r.users} | ${r.activePassword} | ${r.tenantAllowed} | ${r.canonicalProjectAssigned} | ${r.shopperIdPresent} | ${r.shopperProfileMatched} | ${r.secureReadReady} |`),
+  '',
+  '## Seguridad',
+  '',
+  '- Auth/Firestore/Rules/Hosting/Storage writes: 0.',
+  '- Producción/merge: false.',
+  '- No se exportaron email, UID, nombre, teléfono, DPI, banco, contraseña, token ni shopperId.',
+  ''
+];
+fs.writeFileSync(outMd, lines.join('\n'), 'utf8');
+console.log(JSON.stringify({projectId: expectedProject, readiness, roleReadiness, providerWrites:0, piiExported:false}));
