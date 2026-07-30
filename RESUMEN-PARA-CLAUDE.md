@@ -3,7 +3,6 @@
 ## ESTADO VIGENTE — 2026-07-29
 
 ### Baseline y cortes
-
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
@@ -13,111 +12,98 @@
 - V182 empalmada; **no crear V183/R33**.
 - R26–R32: 135/135 PASS; HR remota, Hosting DEV y smoke de pagos PASS.
 
-### Verdad financiera congelada
+### Corrección arquitectónica prevalente
+El tramo de Corte 4 que intentó forzar Firebase nuevo/vacío quedó superado por la recuperación forense posterior.
 
-- Mayo 2026: 44 pagadas, 0 pendientes, 42 vínculos exactos, 2 reviews, CxP GT Q0 / HN L0.
-- Junio 2026: 2 pagadas, 42 pendientes, GT pagado Q451 / HN L0.
-- CXOrbia no ha ejecutado pagos ni lotes reales.
+- Legacy operativo a retirar: Firebase `tya-plataforma`; solo fuente de datos útiles limpios.
+- Backend DEV canónico: `cxorbia-backend-dev`; contiene materialización sustancial y se **reutiliza**.
+- `cxorbia-tya-dev-260729-c4`: sandbox técnico de Corte 4; no destino de materialización.
+- Hosting/URL pública actual `tya-plataforma` se conserva para el cutover final.
 
-### Corte 4 — backend, no tarea frontend
+No volver a proponer otra base Firebase por este bloque.
 
-Objetivo: `FIREBASE NUEVO Y VACÍO → CX.data READ-ONLY → MISMA INTERFAZ → CERO WRITES`.
+### Backend canónico confirmado
+Inventario read-only de `cxorbia-backend-dev`:
+- Auth 17;
+- projects 29;
+- visits 619;
+- questionnaires 557;
+- shoppers 215;
+- liquidations 255;
+- shopperBenefits 572;
+- certifications 0.
 
-Hardening ya validado:
+R16E provider compare read-only: PASS; plan 1,415 operaciones; create 1,414 / update 1 / noop 0 / review 0; 244 extras preservados; deletes 0. `create=1414` significa paths canónicos-shadow ausentes, no backend vacío.
 
-- interfaz pública `CX.data` preservada;
-- backend desactivado por defecto;
-- `readOnly=true` / `writeMode=disabled`;
-- persistencia y acciones operativas bloqueadas;
-- backend vacío = vacío;
-- error de lectura fail-closed;
-- no fallback mock/localStorage;
-- Rules candidate preparado, no desplegado;
-- gate `PASS_READONLY_POST_GATES`.
+### Legacy shoppers/certificaciones — refresh ejecutado PASS
+Autorización de Paula consumida exclusivamente para read-only de shoppers/certificaciones en `tya-plataforma`; writes/Auth/deploy/producción=0.
 
-`cxorbia-backend-dev` continúa excluido por no ser nuevo/vacío. No copiarlo, conectarlo ni reutilizarlo.
+Resultado vigente:
+- 281 representaciones crudas;
+- 149 shoppers únicos por stable ID;
+- 128 duplicados de almacenamiento colapsados;
+- 1 conflicto real dentro del mismo stable ID;
+- 78 certificaciones útiles = 76 intentos + 2 markers;
+- 30 recovery mirrors colapsados;
+- 22 perfiles ya existentes enlazados por normalización determinística del mismo ID técnico;
+- 120 perfiles create-candidate;
+- 7 perfiles HOLD = 6 coincidencias solo por nombre + 1 conflicto de fuente;
+- 77 certificaciones candidatas + 1 HOLD.
 
-Firebase nuevo: `cxorbia-tya-dev-260729-c4`.
+Nombre nunca se usa como llave de deduplicación.
 
-### Corte 4 — gates cerrados
+### Diff de perfiles existentes
+En los 22 stable-linked:
+- phone faltante: 22;
+- email faltante: 8;
+- diferencias no vacías preservadas: code 22, name 2, city 1.
 
-**Gate 1 · identidad nueva: PASS**
+Regla de producto: fill-missing-only puede planificarse; nunca sobrescribir silenciosamente un valor canónico no vacío. `code` legacy y `code` canónico no deben asumirse semánticamente equivalentes solo por nombre de campo.
 
-- commit `b18f0b6cf74afb8b3ac770a73231c6cf1353b37c`;
-- `TARGET_PROJECT_IDENTITY_VERIFIED_C4`;
-- provider writes=0.
+### R17N post-legacy — PASS NO EXECUTE
+- Foundation: 16.
+- HR protected refs: 210 HOLD crosswalk.
+- Legacy profiles: 120 create + 22 existing diff + 7 HOLD.
+- Certificaciones: 77 candidatas + 1 HOLD.
+- Visitas HR-first: 616.
+- Liquidation controls: 572; pagos 0.
+- Potencial antes de resolver existing profile updates: 1,401.
+- Máximo incluyendo hasta 22 updates: 1,423.
+- Offline idempotence hash: `979d45fa174b8d7aac9810a4a56fb234fffeaedac1442fc811bee55ea41e2e8e` PASS.
+- Autorización de writes: 0.
 
-**Gate 2 · vacío integral: PASS**
+### Bloqueo semántico único pendiente
+Las 210 referencias shopper protegidas generadas desde HR no coinciden por stable ID ni stable code con los 215 shoppers existentes:
+- reuse stable HR ID: 0;
+- reuse stable HR code: 0;
+- unmapped: 210;
+- collision: 0.
 
-- request `corte4-verify-new-empty-firebase-dev-20260729-05`;
-- commit `7b0e40f8607b80a4f37238314a66064af35c5e6d`;
-- identidad=true / vacío=true / unavailable=0 / nonempty=0;
-- apps=0 / Auth users=0 / Firestore DB=0 / Storage buckets=0;
-- Hosting=1 `DEFAULT_SITE` administrado por Firebase, sin `USER_SITE`/release como señal de contenido;
-- provider writes=0.
+No resolver por nombre. Crear 210 perfiles adicionales arriesga duplicación; omitirlos deja visitas canónicas apuntando a referencias sin perfil.
 
-El verificador requirió dos correcciones focalizadas de backend: query Auth count-only válida y separación entre infraestructura Hosting provider-default y contenido/despliegue real. No es trabajo de Claude.
+La siguiente solución correcta es un crosswalk read-only usando **identidad exacta de visita ya materializada** en `cxorbia-backend-dev` contra HR source-safe: `hrRowId`, `sourceSheet/sourceRow` o `visitId`. No leer visitas legacy. Este nuevo provider read necesita autorización separada porque el refresh autorizado estaba limitado a shoppers/certificaciones.
 
 ### Lo que Claude NO debe hacer ahora
-
 - no preparar V183/R33;
-- no reinterpretar HR;
-- no reabrir Finanzas/Corte 3;
-- no tocar `backend/contracts`, adapters, tools, workflows, Rules, secrets ni configuración provider;
-- no introducir persistencia local/mock para suplir Firestore;
-- no activar proveedores reales desde módulos UI;
-- no crear otra candidata por Corte 4.
-
-### Siguiente gate backend, no frontend
-
-Pendiente autorización expresa para:
-
-1. registrar/configurar una Web App DEV sin secretos en repo;
-2. inicializar únicamente Firestore + Auth bootstrap mínimo temporal para lectura protegida;
-3. desplegar `backend/rules/firestore.corte4-readonly.rules` solo en DEV;
-4. activar solo lectura;
-5. smoke `CX.data` con `source=firestore`, `empty=true`, `fallbackUsed=false`, interfaz preservada, writes=0;
-6. validación visual y freeze Corte 4.
-
-El Auth bootstrap de Corte 4 es temporal/mínimo para la prueba read-only. Auth/RBAC completo continúa en Corte 6.
+- no reabrir Corte 3/Finanzas;
+- no crear nueva base;
+- no tocar backend/contracts/tools/workflows;
+- no deduplicar shoppers por nombre;
+- no crear UI temporal para solucionar identidad;
+- no pedir recertificación a shoppers con carryover válido;
+- no activar providers reales.
 
 ### Backlog frontend no bloqueante preservado
-
 - PDF sin gráfica visible al imprimir;
 - Excel con formato básico;
 - mejora transversal de `reportKit`;
-- copy genérico de fuentes;
-- cualquier ajuste futuro se hará por archivo/módulo con evidencia reproducible y no reabre Corte 3.
+- copy genérico de fuentes.
 
-### Academia
-
-Debe reflejar la diferencia entre:
-
-1. credencial estructuralmente válida;
-2. permiso IAM;
-3. identidad nueva verificada;
-4. vacío integral verificado;
-5. infraestructura provider-default (`DEFAULT_SITE`) vs contenido/despliegue;
-6. Web App;
-7. Auth bootstrap;
-8. Firestore;
-9. Rules;
-10. lectura read-only;
-11. escritura/materialización posterior.
-
-No presentar “proyecto vacío verificado” como “CX.data ya conectado”.
+### Academia/manuales
+Distinguir: perfil de shopper, referencia de asignación HR, identidad Auth, certificación histórica, stable key y review. Una referencia HR pendiente de crosswalk no significa error del shopper ni obliga recertificación.
 
 ### Siguiente bloque exacto backend
-
-`AUTORIZAR BOOTSTRAP DEV READ-ONLY → WEB APP DEV → FIRESTORE/AUTH BOOTSTRAP MÍNIMO → RULES READ-ONLY → ACTIVAR LECTURA DEV → SMOKE CX.data → VALIDACIÓN VISUAL → FREEZE CORTE 4`.
-
-## Referencias históricas que siguen vigentes donde no contradigan este estado
-
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-CORTE1-LIVE-HR-REPORTES-20260720.md`.
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-SOURCE-SAFE-IMPORTERS-R4-20260711.md`.
-- `app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md`.
-- Addenda posteriores de candidatas/Corte 2A/Corte 3 quedan como trazabilidad histórica, pero el baseline vigente es V182 congelada.
+`AUTORIZAR VISIT-IDENTITY CROSSWALK READ-ONLY EN cxorbia-backend-dev → RESOLVER HR shopperRef POR hrRowId/sourceSheet/sourceRow/visitId → REBUILD R17N FINAL → IDEMPOTENCIA → AUTORIZACIÓN SOLO DE WRITES EXACTOS → SMOKE CX.data → CORTES 6–8 → CUTOVER tya-plataforma`.
 
 ## Estado seguro
-
-Sin merge, producción, Rules deploy, Firestore/Auth/Storage/HR data writes, imports, pagos, lotes reales, Make ni Gemini live.
+Legacy/Firestore/Auth/Storage/HR writes=0; deploy=0; merge=false; producción=false; pagos/lotes/Make/Gemini=0.
