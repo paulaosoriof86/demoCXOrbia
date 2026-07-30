@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.c5-existing-hosting-dev-visual.v1",
   "requestId": "c5-existing-hosting-dev-visual-20260730-01",
-  "status": "deployed_remote_validation_hold",
+  "status": "deployed_waiting_human_auth_visual_direct_entrypoint",
   "enabled": false,
   "consumed": true,
   "authorizedBy": "Paula",
@@ -16,6 +16,7 @@
   "targetProject": "cxorbia-backend-dev",
   "hostingTarget": "cxorbia-dev",
   "existingHostingRootUrl": "https://cxorbia-backend-dev.web.app",
+  "canonicalVisualEntrypoint": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis",
   "entrypoint": "index-backend-dev.html",
   "tenantId": "tya",
   "canonicalProjectId": "cinepolis",
@@ -41,11 +42,16 @@
   "production": false,
   "rawPiiInRepo": false,
   "rawPiiInArtifacts": false,
-  "lastFailure": "FAIL_C6_HOSTING_REMOTE",
   "executionPath": "official_firebase_hosting_rest_api_no_iam_change",
-  "diagnosticEvidence": "app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json",
   "providerDeploySucceededByWorkflowPhase": true,
-  "remoteVerificationPassed": false,
+  "remoteVerificationPassed": true,
+  "remoteExplicitEntrypointVerified": true,
+  "rootAliasServesBackendEntrypoint": false,
+  "rootAliasBlocking": false,
+  "rootAliasReason": "Firebase Hosting serves exact static content before rewrites. Because app/index.html exists, root / resolves to that exact static file. The dedicated /index-backend-dev.html entrypoint is deployed, HTTP 200, uses the canonical backend config and loads the real Firebase browser Auth gate; it is the canonical DEV visual URL.",
+  "lastResolvedVerificationIssue": "ROOT_ALIAS_EXACT_STATIC_PRECEDENCE__NONBLOCKING",
+  "diagnosticEvidence": "app/docs/evidence/CORTE6-HOSTING-IAM-DIAGNOSTIC-LATEST.json",
+  "deployEvidence": "app/docs/evidence/CORTE6-HOSTING-DEV-DEPLOY-LATEST.json",
   "preflight": {
     "existingHostingVerified": true,
     "existingHostingProject": "cxorbia-backend-dev",
@@ -60,9 +66,11 @@
     "corte6RulesPass": true,
     "hostingCoreIamPass": true,
     "firebaseCliApiKeysViewerGap": true,
-    "firstFailedAttemptPublishedCorte6Proof": false,
+    "corte6ProofPublished": true,
+    "canonicalBackendConfigVerified": true,
+    "interactiveFirebaseAuthGateVerified": true,
     "deployAllowedNow": false,
-    "reason": "The official Hosting REST deployment step completed, but the subsequent remote verification step failed. The single Hosting authorization is therefore treated as consumed immediately to prevent any redeploy. Only read-only remote diagnosis is allowed now."
+    "reason": "The single existing Hosting DEV redeploy is consumed and verified on the explicit backend DEV entrypoint. No redeploy is allowed. The remaining gate is human authenticated visual validation with existing authorized DEV accounts."
   },
-  "nextGate": "READONLY_REMOTE_HOSTING_RELEASE_AND_CONTENT_DIAGNOSTIC__NO_REDEPLOY__THEN_HUMAN_AUTH_VISUAL_IF_REMOTE_CONTENT_IS_CORRECT"
+  "nextGate": "HUMAN_AUTHENTICATED_VISUAL_VALIDATION_ADMIN_OPS_CLIENT_SHOPPER__THEN_FREEZE__THEN_AUGUST_DELTA"
 }
