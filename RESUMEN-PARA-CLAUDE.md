@@ -1,80 +1,75 @@
 # RESUMEN-PARA-CLAUDE.md
 
-## ESTADO VIGENTE — 2026-07-30
+**Última actualización:** 2026-07-30  
+**Estado vivo:** `CORTE6_AUTH_RBAC_READONLY_RECONCILED__BACKEND_FIX_PREPARED__NO_FRONTEND_CANDIDATE_REQUIRED__NO_PRODUCTION`
 
-### Baseline / arquitectura
-- Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge.
-- Corte 3 FROZEN: `CXORBIA-TYA-CORTE3-V182-20260729`; no V183/R33.
-- `cxorbia-backend-dev` = backend DEV canónico; reutilizar.
-- `tya-plataforma` = legacy a retirar + Hosting/URL pública final.
-- Sandbox C4 = no destino.
-- No nueva base Firebase.
+## 1. No reabrir
+- Corte 3 está FROZEN/APROBADO sobre `CXORBIA-TYA-CORTE3-V182-20260729`.
+- R17N FINAL DEV ya materializó 1,406/1,406 escrituras y verificó 1,406/1,406 readback; no repetir.
+- P0 Corte 5 proyecto/periodo ya fue corregido en backend; re-smoke PASS con 14 periodos/616 visitas y `currentPeriodId=2026-07`.
+- No crear nueva candidata, rama, PR, Firebase ni Hosting por rutina.
 
-### R17N FINAL ya materializado
-La autorización `r17n-final-dev-20260730-01` fue consumida.
+## 2. Estado backend actual
+Destino canónico:
+- Firebase DEV: `cxorbia-backend-dev`.
+- Hosting DEV existente: `https://cxorbia-backend-dev.web.app`.
+- Hosting público final futuro: `tya-plataforma`.
 
-- 1,406 Firestore writes exactos ejecutados;
-- readback 1,406/1,406; mismatch 0;
-- foundation16 + legacy profiles120 + HR-current profiles5 + certifications77 + visits616 + liquidation controls572;
-- tenant update, updates22, holds7+1, Agosto HN, deletes, pagos/lotes, Auth/Storage/HR/legacy writes, deploy/merge/producción: excluidos.
+Corte 6 demostró que el bloqueo de visual real no es frontend sino Auth/RBAC:
+- 17 usuarios Auth activos con password.
+- 7 operadores ya cumplen reglas actuales.
+- 2 clientes TyA: 0 tienen scope canónico `cinepolis`.
+- 4 shoppers TyA: 0 tienen scope canónico; 3 tienen `shopperId` que coincide exactamente con perfil Firestore y son elegibles para corrección segura.
+- scopes viejos observados: `tya` / `tya-piloto`.
 
-### HR e identidad actual
-- HR actual hasta julio: 14 periodos /616 visitas /208 refs shopper.
-- Snapshot 210 refs quedó histórico.
-- 208/208 refs ready: 201 existing +2 legacy-create +5 HR-current create.
-- Las 208 refs resuelven a 194 perfiles canónicos únicos según mapping exacto; varias refs pueden converger determinísticamente al mismo perfil. No usar nombre como llave.
-- Post-compare: 616/616 visitas tienen nombre real y shopper target existente; 194/194 perfiles referenciados tienen nombre real; 77/77 certificaciones tienen shopper existente; placeholders demo 0.
+No se ejecutaron Auth writes ni Rules/Hosting deploy durante el diagnóstico.
 
-### Provider post-compare
-Run `30514060348`:
-- 1,406/1,406 rutas presentes;
-- canonical parent `cinepolis` presente;
-- periods 14;
-- visits 616;
-- liquidation controls 572;
-- certifications 77;
-- payments/lots 0;
-- tenant sin update R17N.
+## 3. Backend preparado — Claude NO debe replicarlo en UI
+Se preparó en backend/core:
+- `app/core/backend-browser-auth.js`: login Firebase real, sesión temporal, claims como autoridad.
+- `app/index-backend-dev.html`: carga el gate Auth solo en el entrypoint DEV.
+- `app/core/backend-config-preview-dev.js`: elimina credencial DEV persistida/fallback.
+- `app/core/backend-firebase.js`: queries acotadas por principal autenticado para operador/cliente/shopper.
+- `firestore.rules`: compatibilidad `status` canónico / `estado` legacy para visita disponible shopper; aún no desplegada.
 
-La materialización y la identidad están correctas.
+No se modificó `app/index.html` ni `app/modules/*`.
 
-### P0 demostrado — NO ES frontend
-`P0_PROVEN_C5_CXDATA_PERIOD_MODEL_MISMATCH`.
+## 4. Regla frontend obligatoria
+El selector visible de rol NO es autenticación y no debe presentarse como seguridad real.
 
-Archivo localizado: `app/core/backend-firebase.js`.
+Cuando el backend Auth quede desplegado y se haga smoke:
+- si todo renderiza correctamente, Claude no tiene tarea;
+- si aparece una diferencia reproducible, documentar archivo/módulo/flujo exacto y solo entonces generar correctiva frontend;
+- no mover lógica de Auth/claims/Firestore a módulos UI.
 
-Causa:
-- el adapter lee todos los documentos `tenants/tya/projects`;
-- `buildPeriods()` convierte esos documentos de proyecto en periodos;
-- no lee `tenants/tya/projects/cinepolis/periods`, que contiene los 14 periodos canónicos.
+## 5. Validaciones visuales post-Auth que interesan a Claude
+Solo después del Hosting DEV ya autorizado:
+1. Admin/Operativo entra y ve proyecto/periodo/histórico correctos.
+2. Cliente entra solo a proyecto autorizado.
+3. Shopper entra con su identidad real, ve su historial y visitas disponibles autorizadas.
+4. El shopper sin perfil exacto NO recibe acceso ampliado por inferencia.
+5. Selector proyecto/periodo no regresa a modelo pre-canónico.
+6. Academia y manuales siguen accesibles según rol.
+7. No aparece copy técnico de `source_safe`, claims, provider o IDs internos en UI normal.
 
-Smoke exacto:
-- source Firestore: PASS;
-- fallback demo: false;
-- interfaz CX.data preservada;
-- parent project `cinepolis`: PASS;
-- visitas: 616 PASS;
-- periodos: **30 observados vs 14 canónicos**;
-- `currentPeriodId=cinepolis`, que no es uno de los 14 IDs de periodo.
+## 6. Pendientes frontend P1/P2 preservados
+No bloquean Auth ni la salida operativa inmediata:
+- PDF: gráfica ausente en impresión/exportación.
+- Excel: formato básico/no final.
+- exportaciones/reportKit fuera de Dashboard necesitan consolidación.
+- copy de fuentes/readiness debe seguir siendo humano y no técnico.
 
-### Claude NO debe
-- crear candidata nueva;
-- tocar módulos UI por este P0;
-- reabrir V182/Corte 3;
-- rehacer materialización;
-- volver a 210 refs/9 pendientes;
-- resolver periodos o identidad desde UI;
-- deduplicar por nombre;
-- crear nueva base;
-- activar providers/pagos/imports desde UI.
+## 7. Academia/manuales
+El siguiente contenido debe reflejarse cuando se actualicen cursos/manuales:
+- elegir rol no equivale a autenticar identidad;
+- el acceso real depende de Firebase Auth + claims;
+- tenant/proyecto limitan qué puede ver cada persona;
+- shopper requiere vínculo exacto con `shopperId`;
+- visita disponible se muestra solo si la regla lo permite;
+- conflicto de identidad/permisos pasa a revisión, nunca a asignación silenciosa.
 
-### Próxima intervención Claude
-Ninguna por rutina. El fix actual corresponde a backend/core y requiere autorización expresa de Paula. Solo si el smoke posterior demuestra un P0 frontend reproducible se genera tarea localizada para Claude.
+## 8. Agosto
+La fuente materializada llega hasta julio. `Agosto HN` está HOLD por inconsistencia país/tab. Esto es backend/fuente, no frontend. Después del smoke Auth se resolverá la fuente y se materializará solo el delta de agosto.
 
-Backlog P1/P2 preservado: PDF gráfica, Excel formato, reportKit, copy específico de fuentes.
-
-### Siguiente bloque exacto backend
-`AUTORIZACIÓN P0-C5-CXDATA-PERIOD-MODEL → PATCH BACKEND ADAPTER FOCALIZADO → RE-SMOKE READ-ONLY → VALIDACIÓN OPERATIVA → FREEZE CORTE 5 → CORTE 6 AUTH/RBAC`.
-
-## Estado seguro
-R17N previo: 1,406 Firestore writes autorizados ya ejecutados. Post-compare: provider reads únicamente; Firestore/Auth/Storage/HR/legacy writes=0; deploy=0; merge=false; producción=false; pagos/lotes/Make/Gemini=0; PII cruda repo/artifact=0.
+## 9. Estado seguro
+PR #7 draft/open/no merge. Auth writes=0; Rules deploy=0; Hosting deploy=0 en Corte 6; Firestore data writes=0; producción=false. La autorización previa del mismo Hosting DEV sigue reservada 0/1 y no debe sustituirse por otro Hosting.
