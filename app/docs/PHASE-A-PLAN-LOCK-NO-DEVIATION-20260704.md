@@ -3,15 +3,15 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-30  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_P0_PROTOTYPE_AUTOENTRY_FIX_STATIC_PASS__PENDING_SINGLE_DEV_REDEPLOY_AUTH__NO_PRODUCTION`
+**Estado vivo:** `C6_PROTOTYPE_AUTOENTRY_HOSTING_DEV_REMOTE_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`
 
 ## 1. Objetivo
 Operar TyA/Cinépolis como primer tenant/proyecto configurable de CXOrbia con HR/histórico, shoppers reales, certificaciones, visitas, agenda, cuestionarios, liquidaciones/pagos, multi-tenant, multi-proyecto, roles, Academia y sincronización.
 
 Arquitectura fija:
-- `tya-plataforma` = URL/Hosting público final; no tocar sin gate de producción;
-- `cxorbia-backend-dev` = backend/Hosting DEV canónico;
-- proyecto padre `cinepolis`; meses=periodos;
+- `tya-plataforma` = URL/Hosting público final; no tocar sin gate de producción.
+- `cxorbia-backend-dev` = backend/Hosting DEV canónico.
+- proyecto padre `cinepolis`; meses=periodos.
 - no crear otro Firebase/Hosting/rama/PR por rutina.
 
 ## 2. Secuencia obligatoria
@@ -27,63 +27,65 @@ Un PASS técnico no sustituye validación humana.
 - Auth legacy import/readback91/91 PASS; no repetir/resetear.
 - claims5/5 + Rules PASS.
 
-## 4. Corte6 — lección de integración Auth
-Firebase Auth/RBAC/Rules continúa como autoridad backend real. Pero la infraestructura no puede reescribir el contrato visible del prototipo.
+## 4. Corte6 — integración Auth y UX
+Firebase Auth/RBAC/Rules continúa como autoridad backend real, pero no puede reescribir el contrato visible del prototipo.
 
-Se demostraron dos P0 visuales:
+P0 visuales demostrados:
 1. gate separado `Acceso seguro`;
-2. formulario `Usuario + Contraseña` inyectado dentro de la tarjeta al seleccionar rol.
+2. formulario `Usuario + Contraseña` inyectado dentro del login al seleccionar rol.
 
-El segundo P0 confirma que **single-login no era suficiente**: el comportamiento aprobado era **auto-entry del perfil en el preview humano**. `app.js` ya conserva ese contrato; el desvío provenía del wrapper backend/Auth.
+Contrato correcto del preview humano: perfil → entrada automática. Para producción, Auth real sigue obligatorio detrás del contrato operativo aprobado.
 
-## 5. Corrección obligatoria vigente
-Para el **preview humano DEV**:
-1. selección de perfil → entrada automática, como el prototipo;
-2. no pedir credenciales desconocidas ni crear formularios técnicos;
-3. conservar HR source-safe explícita/read-only para recorrer la UI;
-4. baseline visual `cinepolis`,14 periodos,616 visitas;
-5. no fallback demo;
-6. Auth/RBAC/Rules se mantienen en gates técnicos separados;
-7. writes continúan bloqueados;
-8. diagnóstico visible debe decir source-safe y no simular una sesión Firebase humana.
+## 5. Corrección y gates
+Preview humano DEV:
+- auto-entry del prototipo;
+- `humanCredentialPrompt=false`;
+- HR source-safe explícita/read-only;
+- baseline `cinepolis`,14 periodos,616 visitas;
+- no fallback demo;
+- Auth/RBAC/Rules en gates separados;
+- writes bloqueados.
 
-Para producción, Auth real sigue siendo obligatorio detrás del contrato operativo aprobado y requiere recuperación/cambio de acceso; esta ruta humana DEV no es un bypass de producción.
+Gate estático `29b7f9404a9c2f144145fe24d5cf048f753c1e75`: PASS.
 
-## 6. Gate técnico del fix
-Revalidación estática:
-- commit `29b7f9404a9c2f144145fe24d5cf048f753c1e75`;
-- estado `success`;
-- contexto `PREPARED_C6_PROTOTYPE_AUTO_ENTRY_NO_EXECUTE`;
-- baseline source-safe14/616 PASS;
-- provider writes/deploy0.
+La primera ejecución autorizada falló antes de deploy por un mismatch interno entre la decisión emitida por preflight y la esperada por direct-deploy. Se corrigió en `b9f5190babcc339735cda59291417df5aea6988f`; el request seguía deploy0/consumed=false, por lo que el reintento utilizó la misma autorización.
 
-La autorización de Hosting previa está consumida. El Hosting DEV público todavía sirve el build rechazado.
+Resultado remoto:
+`PASS_EXISTING_HOSTING_DEV_PROTOTYPE_AUTO_ENTRY_SOURCE_SAFE_REMOTE_VERIFIED`.
+- versión `95a1e49e5064c456`;
+- release `1785452689852000`;
+- prototypeAutoEntry=true;
+- humanCredentialPrompt=false;
+- sourceSafeVisual=true;
+- 14 periodos /616 visitas;
+- Hosting deploy executions1;
+- preservedLegacyAuthUsers91.
 
-## 7. Gate actual
-`AUTORIZACIÓN FRESCA DE UN ÚNICO REDEPLOY DEL MISMO HOSTING DEV → PRECHECK → DEPLOY1 → SMOKE REMOTO AUTO-ENTRY/SOURCE-SAFE → VALIDACIÓN VISUAL → FREEZE CORTE6`.
+## 6. Gate actual
+`VALIDACIÓN VISUAL HUMANA DEL BUILD DEV AUTO-ENTRY/SOURCE-SAFE → SI APRUEBA: FREEZE CORTE6`.
 
-No pedir a Paula password, PowerShell, scroll ni nueva prueba del build viejo.
+No pedir password, PowerShell, scroll ni volver a probar builds rechazados.
 
-## 8. Después de FREEZE Corte6
+## 7. Después de FREEZE Corte6
 `REFRESH HR → RESOLVER AGOSTO HN → VALIDAR PERIODO/VISITAS → MATERIALIZAR SOLO DELTA AGOSTO → SMOKE → PREPROD/CUTOVER`.
 
 No repetir los1,406 writes históricos.
 
-## 9. Corte7 — sincronización/evidencias
+## 8. Corte7 — sincronización/evidencias
 HR↔plataforma con stable keys, no duplicación, reviewQueue, cuestionario configurable y evidencias protegidas. Make/Gemini solo con gate/revisión humana y sin retrasar cutover si lo no activado no bloquea Phase A.
 
-## 10. Corte8 — preproducción/cutover
+## 9. Corte8 — preproducción/cutover
 Requiere cortes previos congelados, refresh delta final, rollback, smoke integral y autorización específica de producción. Cutover sobre `tya-plataforma`; no cambiar URL.
 
-## 11. Claude/prototipo
+## 10. Claude/prototipo
 - No nueva candidata general.
 - No tocar `app/modules/*` por este P0.
-- Conservar el auto-entry aprobado del preview humano.
+- Conservar auto-entry aprobado del preview humano.
 - Provider/Auth no debe convertirse en UI técnica.
 - P1/P2: PDF/gráficas, Excel/formato, reportKit/exportaciones, copy.
 
-## 12. Academia
+## 11. Academia
 Documentar separación entre UX/preview humano y autenticación provider; flujo por rol, recuperación/cambio, scopes, shopperId exacto, mínimo privilegio y troubleshooting.
 
-## 13. Estado seguro
-Desde el segundo P0: Auth writes0; Firestore data writes0; Rules0; Hosting deploy0; Storage/HR/legacy/payments/Functions/Make/Gemini0; merge=false; producción=false.
+## 12. Estado seguro
+Redeploy actual: Auth writes0; Firestore data writes0; Rules0; Storage/HR/legacy/payments/Functions/Make/Gemini0; nuevo Firebase/Hosting0; merge=false; producción=false.
