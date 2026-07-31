@@ -1,16 +1,17 @@
 /* CXOrbia TyA Phase A — live source in-place freshness watcher.
    No UI module is modified. No document reload is permitted.
 
-   Corte 6 P0: el watcher source-safe NO puede sobrescribir CX.data cuando el
-   entrypoint está en runtime protegido Firebase/Auth/Rules ni cuando la
-   validación humana full-profile server-side es dueña de CX.data. */
+   Corte 6:
+   - protected Firebase/Auth runtime owns CX.data and keeps watcher disabled;
+   - human full visual is CUMULATIVE: live HR stays active and protected profile
+     is re-applied after each HR refresh. */
 window.CX = window.CX || {};
 (function(){
   const params=new URLSearchParams(window.location.search||'');
   const protectedRuntimeRequested=params.get('cxProtectedRuntime')==='YES_PAULA_20260730_PROTECTED_DEV';
   const fullVisualRequested=params.get('cxHumanFullVisual')==='YES_PAULA_20260731_FULL_PROFILE_DEV';
-  if(protectedRuntimeRequested||fullVisualRequested){
-    const reason=protectedRuntimeRequested?'protected-runtime-owns-cxdata':'full-visual-server-proxy-owns-cxdata';
+  if(protectedRuntimeRequested){
+    const reason='protected-runtime-owns-cxdata';
     window.CX_TYA_LIVE_SOURCE_WATCH_DISABLED_REASON=reason;
     window.CX_TYA_CHECK_LIVE_SOURCE=async function(){return {ok:false,skipped:true,reason};};
     console.warn('[CX.live-source] Watcher source-safe omitido: '+reason+'.');
@@ -30,27 +31,25 @@ window.CX = window.CX || {};
     }catch(e){}
   }
 
-  function markUpdating(){
-    if(CX.dataSource){CX.dataSource.updating=true;CX.dataSource.runtimeReadActive=true;}
-    refreshBadge();
-  }
+  function markUpdating(){if(CX.dataSource){CX.dataSource.updating=true;CX.dataSource.runtimeReadActive=true;}refreshBadge();}
 
   function markLive(meta){
     window.CX_TYA_HR_VIVA_SOURCE_SAFE=true;
     window.CX_TYA_HR_SNAPSHOT_SOURCE_SAFE=false;
     if(CX.data){
-      CX.data.sourceMode='tya_hr_live_runtime_source_safe_dev';
+      CX.data.sourceMode=fullVisualRequested?'tya_hr_live_plus_firestore_full_profile_dev':'tya_hr_live_runtime_source_safe_dev';
       CX.data.previewMeta=Object.assign({},CX.data.previewMeta||{}, {
         generatedAt:meta.generatedAt||null,sourceReadAt:meta.sourceReadAt||null,
-        runtimeReadActive:true,runtimeSyncActive:false,sourceRevision:meta.revision||null,
-        revisionStable:meta.revisionStable===true,note:'Lectura HR viva source-safe en runtime, aplicada sin recargar la página.'
+        runtimeReadActive:true,runtimeSyncActive:false,sourceRevision:meta.revision||null,revisionStable:meta.revisionStable===true,
+        fullProfileVisual:fullVisualRequested||CX.data.previewMeta&&CX.data.previewMeta.fullProfileVisual===true,
+        note:fullVisualRequested?'HR viva activa y auto-refrescable; perfil Firestore se conserva como overlay acumulativo.':'Lectura HR viva source-safe en runtime, aplicada sin recargar la página.'
       });
     }
     if(CX.dataSource){
-      CX.dataSource.mode='connected';CX.dataSource.status='ready';CX.dataSource.sourceRef='hr-live-runtime:tya:cinepolis';
+      CX.dataSource.mode='connected';CX.dataSource.status='ready';
+      CX.dataSource.sourceRef=fullVisualRequested?'hr-live+firestore-full-profile+canonical-finance':'hr-live-runtime:tya:cinepolis';
       CX.dataSource.updatedAt=meta.sourceReadAt||meta.generatedAt||new Date().toISOString();
-      CX.dataSource.runtimeSyncActive=false;CX.dataSource.runtimeReadActive=true;CX.dataSource.updating=false;
-      CX.dataSource.warnings=[];CX.dataSource.blockers=[];
+      CX.dataSource.runtimeSyncActive=false;CX.dataSource.runtimeReadActive=true;CX.dataSource.updating=false;CX.dataSource.warnings=[];CX.dataSource.blockers=[];
       try{localStorage.setItem('cx_data_mode','connected');}catch(e){}
     }
     refreshBadge();
@@ -59,12 +58,7 @@ window.CX = window.CX || {};
   function markFailure(error){
     consecutiveFailures++;
     const message='Lectura HR viva no disponible: '+String(error&&error.message||error);
-    if(CX.dataSource){
-      CX.dataSource.updating=false;
-      CX.dataSource.runtimeReadActive=consecutiveFailures<3;
-      CX.dataSource.warnings=[message+' · Se conserva el último dato válido.'];
-      if(consecutiveFailures>=3)CX.dataSource.status='degraded';
-    }
+    if(CX.dataSource){CX.dataSource.updating=false;CX.dataSource.runtimeReadActive=consecutiveFailures<3;CX.dataSource.warnings=[message+' · Se conserva el último dato válido.'];if(consecutiveFailures>=3)CX.dataSource.status='degraded';}
     refreshBadge();
   }
 
@@ -74,6 +68,12 @@ window.CX = window.CX || {};
     const json=await response.json().catch(()=>null);
     if(!response.ok)throw new Error('HTTP '+response.status+(json&&json.message?': '+json.message:''));
     return json;
+  }
+
+  function reapplyFullVisual(reason){
+    if(!fullVisualRequested)return;
+    const fn=window.CX_TYA_REAPPLY_FULL_VISUAL_OVERLAY;
+    if(typeof fn==='function')fn(reason||'live_hr_refresh');
   }
 
   async function check(reason){
@@ -91,15 +91,13 @@ window.CX = window.CX || {};
         if(snapshot&&snapshot._runtime)delete snapshot._runtime;
         apply(snapshot,runtime,{reason:reason||'live_refresh'});
         currentRevision=meta.revision;
+        reapplyFullVisual('after_live_hr_change');
       }else{
         markLive(meta);
+        if(fullVisualRequested&&!window.CX_TYA_FULL_VISUAL_READY)reapplyFullVisual('after_live_hr_same_revision');
       }
       consecutiveFailures=0;
-    }catch(error){
-      markFailure(error);
-    }finally{
-      checking=false;
-    }
+    }catch(error){markFailure(error);}finally{checking=false;}
   }
 
   if(window.CX_TYA_HR_LIVE_META&&window.CX_TYA_HR_LIVE_META.runtimeRead===true)markLive(window.CX_TYA_HR_LIVE_META);
