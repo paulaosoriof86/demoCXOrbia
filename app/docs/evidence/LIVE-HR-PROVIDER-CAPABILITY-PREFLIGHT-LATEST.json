@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.live-hr-provider-capability-preflight.v1",
-  "generatedAt": "2026-07-31T02:06:59.600Z",
+  "generatedAt": "2026-07-31T02:24:59.466Z",
   "decision": "READONLY_PROVIDER_CAPABILITY_PREFLIGHT",
   "target": {
     "projectId": "cxorbia-backend-dev",
@@ -9,8 +9,8 @@
   },
   "googleSheetsApi": {
     "httpStatus": 200,
-    "state": "DISABLED",
-    "enabled": false,
+    "state": "ENABLED",
+    "enabled": true,
     "errorReason": null
   },
   "spreadsheetAccess": {
