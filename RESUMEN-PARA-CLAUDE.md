@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_PROFILE_FULL_READONLY_PASS__31_IDENTITY_HOLD_PROVEN__WRITE_GATE_READY__WAITING_EXPLICIT_FIRESTORE_AUTHORIZATION__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_PROFILE_FULL_FIRESTORE_WRITE_READBACK_PASS__31_IDENTITY_HOLD_PROVEN__WAITING_SEPARATE_PROTECTED_DEV_REDEPLOY_AUTHORIZATION__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Corte3 FROZEN; R17N1,406/1,406 no repetir.
@@ -10,46 +10,37 @@
 - HR live/auto-month PASS.
 - PR#7 draft/open/no merge; producción intacta.
 
-## 2. P0 visual
-La visual anterior probó Shopper `shopperId=null`, Admin sobre `display_name_only` e histórico/KPI incompletos. Corte6 sigue abierto hasta write/readback + redeploy protegido + visual humana.
+## 2. Corte6 visual
+La visual anterior falló por Shopper sin shopperId en source-safe y Admin sin perfil protegido completo. El write de perfil ya quedó cerrado; falta redeploy protegido DEV + visual humana.
 
-## 3. Protected runtime
-Firestore shoppers340; Auth shopper claims con shopperId91 y perfil existente91/91; histórico616/616 con shopperId; perfiles referenciados194/194. Runtime fix preparado sin deploy para protected lane, perfil real e histórico/KPI por shopperId incluyendo `submitida`.
+## 3. Perfil completo Firestore — PASS
+AuthorizationId `chat-20260731-c6-profile-full-firestore-write-01` consumida.
 
-## 4. Perfil completo operativo
-La consola autenticada debe mostrar toda la información disponible del shopper proveniente del export vigente, incluidos datos personales, username y password legado real. No sintetizar password. Firebase Auth sigue siendo autoridad de autenticación. PII/password nunca en repo/logs/evidencia source-safe.
+Resultado exacto:
+-120 Firestore document writes sobre perfiles existentes con `legacyShopperId` exacto;
+-118 documentos con cambios reales +2 marker-only;
+-329 valores escritos;
+- readback120 docs/329 campos;
+- mismatches0;
+-31 sin canonical permanecen HOLD.
 
-## 5. V2 full-profile read-only — PASS
-151 registros fuente;120 match exactos `legacyShopperId`;31 sin canonical; ambiguos0; badRecord0;329 valores de perfil planificados.
+Campos escritos: username113, pass118, depto2, dpi17, direccion1, fecha_nac2, accepted_terms72, aprobacionCuenta2, registroOrigen2.
 
-Campos a escribir sobre los120 exactos: username113, pass118, depto2, dpi17, direccion1, fecha_nac2, accepted_terms72, aprobacionCuenta2, registroOrigen2. Nombre/WhatsApp/email/país/ciudad ya coinciden.
+Auth writes0; Firebase Auth password changes0; deploys0; producción=false.
 
-## 6. Los31 faltantes fueron investigados antes de pedir write
-Se ejecutaron dos bridges read-only adicionales para evitar autorizaciones sucesivas:
-- Auth bridge exacto `username único → UID determinístico → custom claim shopperId → Firestore`:0 resueltos. De31:2 sin username,10 usernames duplicados,19 sin Auth user determinístico.
-- V3 technical-key exacto/único (`docId/sourceKey/shopperId/legacyId/externalId/externalShopperId/sourceId`) y luego Auth bridge:0 resueltos;0 candidatos técnicos únicos/ambiguos/colisiones.
+## 4. Identidad HOLD
+Los31 faltantes fueron investigados por bridge técnico exacto/único y Auth determinístico + custom claim;0 resueltos. No dedupe por nombre/teléfono/email ni creación silenciosa. Requieren alta/conciliación explícita.
 
-Conclusión: los31 no tienen vínculo canónico reproducible hoy. Permanecen HOLD; no se deduplican por nombre/teléfono/email ni se crean silenciosamente.
+## 5. Precedencia
+Export vigente manda para perfil actual; password visible solo desde valor legacy real; Firebase Auth sigue siendo autoridad de login. Las616 visitas y77 certificaciones canónicas permanecen autoridad y no fueron sobrescritas.
 
-## 7. Primer intento V2 — causa raíz corregida
-El primer read-only falló antes del provider por checksum de `part-007.txt`. Se restauró exactamente el blob original; request seguía no consumida. Retry PASS; provider writes0 en el FAIL.
+## 6. Runtime protegido
+Fix preparado sin deploy: protected lane no se degrada a source-safe, watcher no sobrescribe CX.data protegido y histórico/KPI usa shopperId + estados canónicos incluido `submitida`.
 
-## 8. Write gate completo preparado — NO autorizado
-Listos:
-- plan rebasado sobre V3;
-- request disabled/sin authorizationId;
-- executor fail-closed;
-- workflow one-shot.
+## 7. Claude/prototipo
+No nueva candidata ni rediseño. La UI ya contempla usuario/contraseña; backend protegido debe entregar valores reales cuando existan. Tocar módulos UI solo si el adapter entrega correctamente el dato y la UI aun no lo refleja.
 
-V3 confirmó118 documentos con cambios reales de campos +2 marker-only =120 documentos máximos. El executor fue corregido para reflejar exactamente ese contrato. Antes de escribir revalida bundle SHA,151/120/31,118+2 y329 valores; cualquier drift falla antes de mutation. Readback obligatorio de todos los documentos/campos.
+## 8. Siguiente gate
+`AUTORIZACIÓN SEPARADA REDEPLOY DEV PROTEGIDO → HUMAN VISUAL ADMIN+SHOPPER → ALTA/CONCILIACIÓN EXPLÍCITA31 HOLD → FREEZE C6 → AGOSTO`.
 
-Auth/password reset0; Rules/Hosting/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos0; producción=false; merge=false.
-
-## 9. Precedencia
-Export vigente manda para perfil actual. Las616 visitas y77 certificaciones canónicas siguen siendo autoridad; `certs/histCerts/visitas/activo/rating` legacy no las sustituyen.
-
-## 10. Claude/prototipo
-No nueva candidata ni rediseño. La UI ya contempla usuario/contraseña; backend protegido debe entregar valores reales cuando existan. Tocar módulos UI solo si el adapter entrega el dato correctamente y la UI aun no lo refleja.
-
-## 11. Siguiente gate
-`AUTORIZACIÓN FIRESTORE EXACTA MÁX120 DOC WRITES → WRITE+READBACK → REDEPLOY DEV PROTEGIDO AUTORIZADO → HUMAN VISUAL ADMIN+SHOPPER → BLOQUE EXPLÍCITO DE ALTA/CONCILIACIÓN DE31 HOLD → FREEZE C6 → AGOSTO`.
+La autorización Firestore ya fue consumida y no puede reutilizarse para Hosting/Cloud Run.
