@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-31  
-**Estado:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_AND_HR_READER_PASS__OPEN_READ_VALID__DEV_GATE_CORRECTED__REDEPLOY_AUTH_NOT_CONSUMED__NO_PRODUCTION`
+**Estado:** `C6_LIVE_HR_AUTOMONTH_AND_SHOPPER_DISPLAY_DEV_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`
 
 ## 1. Repositorio/destinos
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge.
@@ -9,61 +9,71 @@
 - DEV `cxorbia-backend-dev`; Hosting `cxorbia-backend-dev` target `cxorbia-dev`.
 - Producción `tya-plataforma`: no tocada.
 
-## 2. No reabrir
+## 2. Baseline protegida — no reabrir
 - Corte3 FROZEN.
-- R17N1,406/1,406;616 visitas +572 controles liquidación +77 certificaciones.
-- Corte5 CX.data Firestore: cinepolis,14 periodos,616 visitas,currentPeriod2026-07,fallback=false PASS.
-- Auth91/91; claims5/5; Rules PASS.
-- Identidad protegida: shoppers340/340 y visitas616/616 con nombre real; placeholders0; perfiles referenciados194/194.
+- R17N 1,406/1,406; 616 visitas +572 controles liquidación +77 certificaciones. No repetir.
+- Corte5 CX.data: cinepolis,14 periodos,616 visitas,currentPeriod2026-07,Firestore/fallback=false PASS.
+- Auth91/91; claims5/5; Rules PASS. No reimportar.
+- Firestore protegido: shoppers340/340 y visitas616/616 con nombre real; placeholders0; perfiles referenciados194/194.
 
-## 3. Regla operacional confirmada
+## 3. Regla operacional definitiva
 - HR se lee en vivo.
-- Lectura abierta/source-safe de HR es válida y ya formaba parte del diseño histórico mediante GViz fallback.
-- Cada nueva pestaña mensual válida debe generar/detectar automáticamente el periodo sin configuración por chat.
-- Julio puede continuar ejecutándose mientras el siguiente mes ya tiene visitas disponibles de origen plataforma.
-- Plataforma-origin puede anteceder a HR; luego se reconcilia por IDs estables + `assignmentSource`/`assignmentSyncStatus`, sin duplicar.
-- Dedupe por nombre: prohibido.
+- HR abierta/read-only es válida; no exige `Restricted` para lectura DEV.
+- Una pestaña mensual válida nueva se detecta automáticamente y genera/incorpora periodo sin configuración por chat.
+- Julio puede seguir ejecutándose mientras agosto/mes siguiente ya tiene visitas platform-origin.
+- Plataforma-origin puede anteceder HR; al aparecer HR se reconcilia por IDs estables + `assignmentSource`/`assignmentSyncStatus`; nunca por nombre.
 
-## 4. Provider/autodiscovery — PASS
-Revalidación read-only:
-- Google Sheets API `ENABLED`.
-- Service account puede leer la HR canónica por Sheets API: HTTP 200.
-- HR canónica: 30 tabs / 28 mensuales / último `JULIO 26 HN`.
-- Runtime `fresh=1` y auto-month preparados; fallback público GViz permanece read-only/fail-closed.
+## 4. Corte 6 — redeploy DEV PASS
+Autorización `chat-20260731-c6-live-hr-shopper-display-dev-redeploy-01`: **consumida**.
 
-## 5. Corrección metodológica
-Fue incorrecto convertir el sharing `Restricted` en requisito de lectura/despliegue DEV. Se mezclaron dos planos:
-- **lectura viva**: abierta/source-safe o service account; válida y actualmente PASS;
-- **política de edición**: Drive reporta `anyone=writer`; se revisa separadamente antes de producción si implica edición pública no deseada.
+Exactamente:
+- Cloud Run DEV redeploy: `1`;
+- Hosting DEV redeploy: `1`.
 
-El finding de escritura pública ya no bloquea el redeploy DEV read-only.
+Cloud Run:
+- revisión `cxorbia-live-hr-dev-00008-8mf`.
 
-## 6. Autorización DEV
-Paula había autorizado 1x redeploy Cloud Run DEV + 1x redeploy Hosting DEV, pero la frase incluía la condición `HR restringido` sugerida por ChatGPT. Como esa condición cambia al corregir el gate, la autorización previa permanece **no consumida** y no se amplía por inferencia.
+Hosting:
+- release `sites/cxorbia-backend-dev/releases/1785467713768000`;
+- version `sites/cxorbia-backend-dev/versions/22e81c2b783f697a`.
 
-Gate técnico correcto:
-`SHEETS API ENABLED + HR CANÓNICA READABLE + SERVICE ACCOUNT READER → 1x CLOUD RUN DEV REDEPLOY → 1x HOSTING DEV REDEPLOY → READBACK/SMOKE`.
+Decisión remota: `PASS_C6_LIVE_HR_AUTOMONTH_AND_SHOPPER_DISPLAY_DEV`.
 
-No Firestore/HR/Auth/Rules/Storage/Make/Gemini/pagos/merge/producción.
+## 5. HR live / auto-month — PASS remoto
+Smoke:
+- 14 periodos;
+- 616 visitas;
+- último HR `2026-07`;
+- `tabRegistryAutoDiscovery=true`;
+- `tabRegistryMode=live_provider_metadata_auto_refresh`.
 
-## 7. Shopper real
-Firestore protegido sí tiene los datos. Ruta DEV autenticada preparada:
-- `app/core/backend-protected-dev-mode.js`;
-- `index-backend-dev.html` con Firebase Hosting init;
-- Auth + custom claims + Rules;
-- Admin/Coordinación ve identidad real, shopper solo su scope;
-- read-only; sin PII en source-safe.
+La metadata mensual se refresca desde Google Sheets en cada lectura fresca. En Cloud Run se usa ADC con el runtime service account; no se incrusta llave privada.
 
-## 8. Julio/agosto
-HR aún no tiene tabs de agosto. Julio puede continuar en ejecución y agosto puede existir como disponibilidad platform-origin antes de HR. El origen exacto de esas visitas se conecta antes del delta Firestore; no clonar julio ni inferir IDs/ubicaciones/estado.
+## 6. Shopper visible para validación humana
+El preview aprobado mantiene auto-entry y `humanCredentialPrompt=false`.
 
-## 9. Siguiente gate exacto
-Confirmación expresa del **gate DEV corregido sin exigir `Restricted`** → ejecutar los dos redeploys ya acotados → readback/smoke → validación visual shopper real.
+La ruta DEV muestra únicamente identidad operativa mínima procedente de HR viva:
+- nombre operativo;
+- shopperId estable;
+- país y métricas source-safe.
 
-Después: fuente operacional exacta agosto → delta-only autorizado → preprod/cutover.
+Remote smoke: `operationalDisplayIdentityCount=208`.
 
-## 10. Academia
-Patrón reusable: distinguir lectura pública, escritura pública y autenticación provider; nunca convertir una política de hardening en bloqueo técnico de lectura si el producto no lo exige.
+Siguen excluidos teléfono/WhatsApp, correo, DPI/ID, banco/cuentas, credenciales, observaciones privadas y workbook crudo. El endpoint source-safe normal sigue enmascarado.
 
-## 11. Estado seguro
-Desde este bloque: provider reads + repo/docs. Cloud Run/Hosting deploy0; HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; merge=false; producción=false. Histórico/Auth91 preservados.
+Esto permite validar lista de shoppers y flujo Shopper sin volver a introducir el P0 de credenciales.
+
+## 7. Julio/agosto
+HR aún no tiene tabs agosto. Eso no bloquea la arquitectura: agosto puede existir platform-origin y luego conciliarse cuando HR aparezca.
+
+Pendiente real: recuperar/conectar el source-of-truth exacto de las visitas agosto disponibles antes de cualquier Firestore delta. No copiar julio ni inventar IDs/ubicaciones/estado.
+
+## 8. Gate inmediato
+`HUMAN VISUAL ADMIN: NOMBRES SHOPPER + SHOPPER ROLE PICKER/MÓDULOS`.
+
+Si PASS: `FREEZE CORTE 6 → FUENTE EXACTA AGOSTO PLATFORM-ORIGIN → DELTA-ONLY → AUTORIZACIÓN FIRESTORE ESPECÍFICA → READBACK/SMOKE → PREPROD/CUTOVER`.
+
+La autorización de redeploy ya está consumida y no puede reutilizarse.
+
+## 9. Estado seguro
+Firestore/HR/Auth/Rules/Storage/Make/Gemini/pagos writes0; proyectos/Hosting nuevos0; merge=false; producción=false. Histórico/Auth91 preservados.
