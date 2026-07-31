@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "cxorbia.live-hr-provider-capability-preflight.v1",
-  "generatedAt": "2026-07-31T02:24:59.466Z",
-  "decision": "READONLY_PROVIDER_CAPABILITY_PREFLIGHT",
+  "schemaVersion": "cxorbia.live-hr-provider-capability-preflight.v2",
+  "generatedAt": "2026-07-31T02:26:46.862Z",
+  "decision": "PASS_SHEETS_API_AND_CANONICAL_HR_READER",
   "target": {
     "projectId": "cxorbia-backend-dev",
     "projectNumber": "87461567267",
@@ -14,10 +14,21 @@
     "errorReason": null
   },
   "spreadsheetAccess": {
-    "driveHttpStatus": 403,
+    "httpStatus": 200,
+    "accessible": true,
+    "title": "HR Guatemala - Sincronizacion Google Sheets",
+    "totalTabs": 30,
+    "monthlyTabs": 28,
+    "latestMonthlyTab": "JULIO 26 HN",
+    "errorStatus": null,
+    "errorReason": null
+  },
+  "driveMetadataAccess": {
+    "httpStatus": 403,
     "accessible": false,
     "errorStatus": "PERMISSION_DENIED",
-    "errorReason": "accessNotConfigured"
+    "errorReason": "accessNotConfigured",
+    "note": "Drive API is not required for HR runtime reads; sharing is validated separately through Drive permission metadata."
   },
   "iam": {
     "testHttpStatus": 200,
