@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "cxorbia.corte6.cumulative-human-visual-hosting-evidence.v1",
+  "generatedAt": "2026-07-31T19:45:09.858Z",
+  "decision": "PASS_EXISTING_HOSTING_DEV_CUMULATIVE_HR_PROFILE_FINANCE_REMOTE_READY",
+  "authorizationId": "chat-20260731-c6-cumulative-human-visual-hosting-01",
+  "requestId": "corte6-cumulative-human-visual-hosting-20260731-01",
+  "projectId": "cxorbia-backend-dev",
+  "hostingSite": "cxorbia-backend-dev",
+  "hostingTarget": "cxorbia-dev",
+  "hostingDeployExecutions": 1,
+  "remote": {
+    "liveHrAutoRefreshAsset": true,
+    "hrProviderFreshMeta": true,
+    "hrVisits616": true,
+    "autoMonthDiscovery": true,
+    "protectedProfileCumulativeOverlay": true,
+    "exactLegacyAliasSuppression": true,
+    "canonicalFinanceAssetPreserved": true,
+    "fullVisualGateFailClosed": true,
+    "humanFirebaseCredentialPromptRequired": false
+  },
+  "safety": {
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "authResets": 0,
+    "rulesDeploys": 0,
+    "cloudRunDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "legacyWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "newFirebaseProjects": 0,
+    "newHostingSites": 0,
+    "production": false,
+    "merge": false
+  }
+}

@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.corte6.cumulative-human-visual-hosting-execute.v1",
   "requestId": "corte6-cumulative-human-visual-hosting-20260731-01",
-  "status": "execute_authorized_once",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_pass",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -28,5 +28,8 @@
   "newFirebaseProjects": 0,
   "newHostingSites": 0,
   "merge": false,
-  "production": false
+  "production": false,
+  "consumedAt": "2026-07-31T19:45:09.858Z",
+  "decision": "PASS_EXISTING_HOSTING_DEV_CUMULATIVE_HR_PROFILE_FINANCE_REMOTE_READY",
+  "nextGate": "HUMAN_VISUAL_CUMULATIVE_HR_PROFILE_FINANCE"
 }
