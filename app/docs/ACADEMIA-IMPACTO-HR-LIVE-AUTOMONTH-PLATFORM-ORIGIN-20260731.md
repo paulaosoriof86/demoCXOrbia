@@ -1,7 +1,7 @@
 # Academia — HR viva, periodos automáticos y origen plataforma
 
 **Fecha:** 2026-07-31  
-**Estado:** `REUSABLE_PATTERN_DOCUMENTED__HR_SHARING_P0_INCLUDED__NO_PRODUCTION`
+**Estado:** `REUSABLE_PATTERN_DOCUMENTED__SHEETS_PROVIDER_PASS__CANONICAL_SHARING_P0_INCLUDED__NO_PRODUCTION`
 
 ## Patrón reusable
 Una operación de campo no debe exigir configuración técnica mensual cuando el calendario operativo ya existe en una fuente viva.
@@ -14,9 +14,9 @@ Para CXOrbia:
 - cuando HR aparece, la conciliación usa IDs estables, origen y estado de sincronización; nunca nombre visual.
 
 ## Caso TyA/Cinépolis
-Julio puede mantener visitas pendientes en ejecución y agosto puede tener visitas disponibles originadas en plataforma aunque aún no existan pestañas HR de agosto. Esto no es contradicción: son dos momentos del flujo bidireccional.
+Julio puede mantener visitas pendientes en ejecución y agosto puede tener visitas disponibles originadas en plataforma aunque aún no existan pestañas HR de agosto.
 
-La regla correcta es:
+Regla:
 `PLATAFORMA ORIGINA → MARCA assignmentSource=platform → HR APARECE/REFLEJA → RECONCILIA → NO DUPLICA`.
 
 Y en sentido inverso:
@@ -28,23 +28,31 @@ Un preview source-safe puede mostrar un placeholder para proteger PII. Eso no de
 - runtime protegido: Auth + claims/RBAC + Firestore Rules; muestra la identidad necesaria según rol;
 - Admin/Operación ve identidad operativa;
 - shopper solo su propio scope;
-- nunca copiar PII a JS estático para “arreglar” una pantalla de prueba.
+- nunca copiar PII a JS estático para arreglar una pantalla de prueba.
 
 ## Gate provider
-La automatización depende de una capacidad real del proveedor. Si Google Sheets API está deshabilitada, el sistema debe declararlo y no simular metadata mediante GViz. La activación de API es infraestructura de una sola vez; no forma parte del trabajo mensual del usuario.
+La automatización depende de una capacidad real del proveedor. Google Sheets API ya fue habilitada en DEV y la service account puede leer la HR canónica por Sheets API.
 
-La cuenta técnica que lee HR debe tener mínimo privilegio: `reader` sobre el archivo, no editor. En TyA ese reader ya existe.
+La cuenta técnica que lee HR debe tener mínimo privilegio: `reader` sobre el archivo, no editor.
 
 ## P0 de sharing reusable
-Una fuente operativa con `anyone=writer` viola mínimo privilegio y debe bloquear producción, aunque el código y los datos sean correctos. El gate de cutover debe verificar también el sharing del sistema de origen, no solo Firebase/Firestore.
+Una fuente operativa con `anyone=writer` viola mínimo privilegio y debe bloquear producción, aunque el código y los datos sean correctos.
 
 Lección reusable:
 `PROVIDER READY = API CAPABILITY + FILE ACCESS MINIMO + NO PUBLIC WRITE + READ FRESHNESS + FAIL-CLOSED`.
 
-## Separación de fuente mensual y origen operativo
-Que HR aún no tenga la pestaña del mes no implica que no puedan existir visitas del mes siguiente si el flujo permitido es plataforma→HR. El sistema debe conservar explícitamente la procedencia de esos registros y reconciliar cuando aparezca HR.
+## Identidad canónica de fuente
+Se detectaron dos archivos con el mismo título. Uno es la HR canónica de 30 tabs/28 mensuales y otro es una copia de una sola pestaña.
 
-No se debe inferir el contenido concreto del nuevo mes copiando el anterior: el contrato técnico puede estar listo, pero la materialización requiere el source-of-truth exacto de las visitas platform-origin.
+Por tanto, un sistema serio no debe resolver fuentes por nombre visual. Debe usar provider ID/configuración estable y validar estructura esperada. Si el título coincide pero la identidad/estructura no, se trata como fuente distinta.
+
+Regla reusable:
+`CANONICAL SOURCE = STABLE PROVIDER ID + EXPECTED STRUCTURE + ACCESS POLICY`, no solo nombre.
+
+## Separación de fuente mensual y origen operativo
+Que HR aún no tenga la pestaña del mes no implica que no puedan existir visitas del mes siguiente si el flujo permitido es plataforma→HR. El sistema conserva procedencia y reconcilia cuando aparezca HR.
+
+No se debe inferir contenido concreto del nuevo mes copiando el anterior: la materialización requiere el source-of-truth exacto de las visitas platform-origin.
 
 ## Contenido para manuales/cursos
 - fuente viva vs snapshot;
@@ -55,8 +63,9 @@ No se debe inferir el contenido concreto del nuevo mes copiando el anterior: el 
 - `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`;
 - privacidad source-safe vs identidad runtime;
 - permisos mínimos del archivo fuente;
+- identificación canónica por provider ID/estructura;
 - fail-closed y revisión de conflictos;
 - diferencia entre activación inicial de proveedor y operación mensual autónoma.
 
 ## Seguridad
-Documentación únicamente. Sin cambios de sharing, provider writes, deploy, Firestore/HR/Auth/Rules/Storage/Make/Gemini, merge ni producción.
+Documentación únicamente. Desde este bloque no hubo cambios de sharing, deploy, Firestore/HR/Auth/Rules/Storage/Make/Gemini, merge ni producción.
