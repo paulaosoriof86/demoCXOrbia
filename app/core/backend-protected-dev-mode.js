@@ -9,7 +9,9 @@
    - source-safe watcher must not own CX.data in this lane;
    - normalize existing protected profile aliases without inventing data;
    - derive shopper KPIs from canonical facets/history, not a narrow legacy
-     list of presentation-state strings.
+     list of presentation-state strings;
+   - preserve a validated Firebase Auth session across visual reloads so
+     QA does not repeat the credential gate on every visualization.
    ============================================================ */
 window.CX = window.CX || {};
 
@@ -41,7 +43,8 @@ window.CX = window.CX || {};
     devPreviewAuth:{
       enabled:true,
       mode:'integrated-product-login-protected-dev',
-      persist:'session',
+      persist:'local',
+      reuseAuthenticatedSession:true,
       storedCredentialFallback:false,
       requireCustomClaims:true,
       humanCredentialPrompt:true,
@@ -54,7 +57,7 @@ window.CX = window.CX || {};
     CX.dataSource.status='loading';
     CX.dataSource.sourceRef='firebase:cxorbia-backend-dev:protected-readonly';
     CX.dataSource.updatedAt=new Date().toISOString();
-    CX.dataSource.warnings=['DEV protegido: perfil real solo después de Firebase Auth/claims/Rules. Escrituras deshabilitadas.'];
+    CX.dataSource.warnings=['DEV protegido: perfil real solo después de Firebase Auth/claims/Rules. La sesión validada se conserva entre visualizaciones; escrituras deshabilitadas.'];
     CX.dataSource.blockers=[];
   }
 
@@ -85,7 +88,8 @@ window.CX = window.CX || {};
       s.sexo = firstValue(s,['sexo','sex']);
       s.user = firstValue(s,['user','username','login']);
       s.username = firstValue(s,['username','user','login']);
-      // Never synthesize or persist a password. Firebase Auth cannot read it back.
+      // Never synthesize a password. If the protected profile already contains
+      // the legacy value materialized under the exact write gate, preserve it.
       if(!Object.prototype.hasOwnProperty.call(s,'pass')) s.pass='';
       s.__protectedProfileRuntime=true;
     }
@@ -142,5 +146,5 @@ window.CX = window.CX || {};
   window.CX_PROTECTED_DEV_RUNTIME=true;
   window.CX_BACKEND_PREVIEW_LANE='protected-runtime';
 
-  console.warn('[CX.backend-protected-dev] Authenticated Firestore DEV validation enabled; writes remain disabled.');
+  console.warn('[CX.backend-protected-dev] Authenticated Firestore DEV validation enabled; persisted session reuse active; writes remain disabled.');
 })();
