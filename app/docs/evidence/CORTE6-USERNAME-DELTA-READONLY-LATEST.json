@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "cxorbia.corte6.username-delta-readonly.v1",
+  "generatedAt": "2026-07-31T04:26:19.968Z",
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "canonicalProjectId": "cinepolis"
+  },
+  "source": {
+    "encryptedCredentialBundle": true,
+    "plaintextCredentialValuesPersisted": false
+  },
+  "policy": {
+    "stableLegacyIdRequired": true,
+    "authClaimBindingRequired": true,
+    "nameMatchAllowed": false,
+    "phoneMatchAllowed": false,
+    "fillMissingUsernameOnly": true,
+    "overwriteExistingUsername": false,
+    "passwordToFirestore": false
+  },
+  "counts": {
+    "bundleShopperRecords": 109,
+    "exactCanonicalLegacyMatch": 88,
+    "exactAuthClaimBinding": 88,
+    "plannedUsernameFillMissingExact": 88,
+    "usernameAlreadySame": 0,
+    "passwordHashEvidenceOnly": 109,
+    "holds": {
+      "badRecord": 0,
+      "canonicalLegacyMissing": 21,
+      "canonicalLegacyAmbiguous": 0,
+      "authUserMissing": 0,
+      "authClaimMismatch": 0,
+      "existingUsernameConflict": 0
+    }
+  },
+  "decision": "READY_USERNAME_FILL_MISSING_EXACT_FOR_SEPARATE_FIRESTORE_AUTHORIZATION",
+  "passwordConclusion": "Firebase Auth and the encrypted handoff prove password-hash continuity but do not provide a retrievable current plaintext password. No password value is planned for Firestore.",
+  "safety": {
+    "providerReads": true,
+    "providerWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "rulesDeploys": 0,
+    "hostingDeploys": 0,
+    "hrWrites": 0,
+    "legacyWrites": 0,
+    "storageWrites": 0,
+    "production": false,
+    "merge": false,
+    "piiExported": false,
+    "usernameValuesExported": false,
+    "passwordValuesExported": false,
+    "passwordHashesExported": false,
+    "secretsExported": false
+  }
+}
