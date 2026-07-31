@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-31  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_DISABLED__HR_PUBLIC_WRITE_P0__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__DEV_REDEPLOY_AUTH_RETAINED__SHEETS_API_DISABLED__HR_PUBLIC_WRITE_P0__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -19,17 +19,18 @@
 2. reglas maestras + addenda vigentes;
 3. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 4. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-5. `CAMBIOS-BACKEND-ADDENDUM-C6-LIVE-HR-AUTOMONTH-PROTECTED-SHOPPERS-20260731.md`;
-6. `CAMBIOS-BACKEND-ADDENDUM-C6-PROTECTED-IDENTITY-READONLY-PASS-20260730.md`;
-7. `ACADEMIA-IMPACTO-HR-LIVE-AUTOMONTH-PLATFORM-ORIGIN-20260731.md`;
-8. `evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json`;
-9. `evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json`;
-10. `evidence/CORTE6-PROTECTED-SHOPPER-IDENTITY-READONLY-LATEST.json`;
-11. `backend/runtime/hr-live-service/server.mjs`;
-12. `app/core/backend-protected-dev-mode.js`;
-13. `app/index-backend-dev.html`;
-14. `backend/config/tya-phase-a-platform-project-config.source-safe.json`;
-15. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A y PR #7.
+5. `CAMBIOS-BACKEND-ADDENDUM-C6-DEV-REDEPLOY-AUTH-PRECONDITIONS-HOLD-20260731.md`;
+6. `CAMBIOS-BACKEND-ADDENDUM-C6-LIVE-HR-AUTOMONTH-PROTECTED-SHOPPERS-20260731.md`;
+7. `CAMBIOS-BACKEND-ADDENDUM-C6-PROTECTED-IDENTITY-READONLY-PASS-20260730.md`;
+8. `ACADEMIA-IMPACTO-HR-LIVE-AUTOMONTH-PLATFORM-ORIGIN-20260731.md`;
+9. `evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json`;
+10. `evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json`;
+11. `evidence/CORTE6-PROTECTED-SHOPPER-IDENTITY-READONLY-LATEST.json`;
+12. `backend/runtime/hr-live-service/server.mjs`;
+13. `app/core/backend-protected-dev-mode.js`;
+14. `app/index-backend-dev.html`;
+15. `backend/config/tya-phase-a-platform-project-config.source-safe.json`;
+16. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A y PR #7.
 
 ## 3. Baseline protegida — no reabrir
 - Corte3 FROZEN.
@@ -45,38 +46,44 @@
 - Plataforma→HR y HR→plataforma se concilian con IDs estables + `assignmentSource`/`assignmentSyncStatus`; no duplicar y nunca deduplicar por nombre.
 - Una visita/periodo de plataforma puede existir antes de la pestaña HR; la llegada posterior de HR reconcilia, no reemplaza silenciosamente.
 
-## 5. Auto-month runtime — código PASS, provider bloqueado
+## 5. Auto-month runtime — código PASS
 El runtime ya no queda limitado por inventario mensual estático. Con Sheets API activa, `fresh=1` descubre tabs desde metadata provider y el watcher refresca periódicamente/focus. En fallback GViz conserva registry provider fail-closed.
 
 Predeploy: PASS sin deploy.
 
-Provider preflight:
-- Sheets API en `cxorbia-backend-dev`: `DISABLED`;
-- service account no tiene `serviceusage.services.enable`;
-- service account **ya es reader del HR canónico**;
-- sí tiene capacidad de actualizar Cloud Run/actAs/iniciar Cloud Build.
+## 6. Autorización DEV vigente retenida
+Paula autorizó un único redeploy del Cloud Run DEV existente `cxorbia-live-hr-dev` y un único redeploy del Hosting DEV existente `cxorbia-backend-dev/cxorbia-dev`, condicionados a verificar primero:
+- Google Sheets API habilitada en `cxorbia-backend-dev`;
+- HR canónico restringido;
+- service account existente preservada como reader.
 
-Por tanto no hace falta crear nueva cuenta ni compartir de nuevo el HR; hace falta habilitar Sheets API una sola vez y revalidar.
+Revalidación read-only `2026-07-31T02:06:59.600Z`:
+- Sheets API: `DISABLED`;
+- service account sin `serviceusage.services.enable`;
+- HR todavía `anyone=writer`;
+- service account continúa `reader`.
 
-## 6. P0 de seguridad HR
+Por fail-closed no se ejecutó ninguno de los dos redeploys. **La autorización queda retenida/no consumida**; no debe pedirse otra vez si el alcance no cambia.
+
+## 7. P0 de seguridad HR
 Permisos reales del HR canónico muestran `anyone=writer`. Esto permite edición del HR a cualquier persona con el enlace y bloquea cutover productivo.
 
-Debe quedar `Restricted`/restringido a usuarios autorizados, manteniendo la service account existente como `reader`. El cambio de sharing no se ejecutó porque requiere acción/autorización provider específica.
+Debe quedar `Restricted`/restringido a usuarios autorizados, manteniendo la service account existente como `reader`.
 
-## 7. Shopper real — preparado para validación DEV protegida
+## 8. Shopper real — preparado para validación DEV protegida
 El dato real ya existe en Firestore protegido. Se preparó ruta autenticada DEV separada del preview público con Firebase Auth/custom claims/Rules, read-only y `humanVisualSourceSafe=false` solo allí.
 
-Aún no se desplegó esta ruta; requiere un único redeploy Hosting DEV autorizado. No se copia PII al source-safe.
+Aún no se desplegó esta ruta porque las precondiciones autorizadas no pasan. No se copia PII al source-safe.
 
-## 8. Julio/agosto
+## 9. Julio/agosto
 No existen todavía tabs HR de agosto. La arquitectura acepta que agosto disponible sea de origen plataforma y que después se concilie contra HR cuando aparezca.
 
 Las fuentes inspeccionadas aún no contienen el registro exacto source-of-truth de esas visitas de agosto platform-origin. No fabricar agosto copiando julio ni inferir IDs/ubicaciones/estado. Ese origen exacto se recupera/conecta después del gate DEV y antes del write delta-only.
 
-## 9. Gate vivo único
-`CORREGIR SHARING HR P0 + ENABLE SHEETS API EXISTENTE → REVALIDAR HR READER → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
+## 10. Gate vivo único
+`SHEETS API ENABLED + HR RESTRICTED (SERVICE ACCOUNT READER PRESERVED) → READ-ONLY REVALIDATION PASS → 1x CLOUD RUN DEV REDEPLOY → 1x HOSTING DEV REDEPLOY → READBACK/SMOKE`.
 
-Requiere autorización explícita de provider/deploy. Después: fuente exacta agosto platform-origin → delta-only autorizado. No producción ni Firestore data writes en este gate.
+Después: fuente exacta agosto platform-origin → delta-only autorizado. No producción ni Firestore data writes en este gate.
 
-## 10. Estado seguro
+## 11. Estado seguro
 Producción no tocada. PR#7 draft/open/no merge. Histórico/Auth91/Rules/CX.data preservados. API enable0, sharing changes0, Cloud Run deploy0, Hosting deploy0, HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; PII exportada0.
