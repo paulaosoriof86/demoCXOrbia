@@ -64,6 +64,8 @@ Por tanto:
 - no clonar julio para fabricar agosto;
 - conflictos pasan a review.
 
+El registro exacto source-of-truth de esas visitas agosto platform-origin no está en las fuentes inspeccionadas. El contrato ya soporta el caso, pero la materialización requiere recuperar/conectar ese origen exacto antes del write delta-only.
+
 ## 8. Gate vivo inmediato
 `CORREGIR SHARING HR P0 + ENABLE SHEETS API EN cxorbia-backend-dev → REVALIDAR SERVICE ACCOUNT READER → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
 
@@ -72,7 +74,7 @@ Los redeploys requieren autorización explícita. Este bloque no incluye producc
 ## 9. Después del gate DEV
 1. validar HR live automática y transición de mes sin configuración manual;
 2. validar Admin/Coordinación y shopper con identidad real en runtime protegido;
-3. resolver fuente operacional exacta de agosto disponible/origen plataforma;
+3. recuperar/conectar fuente operacional exacta de agosto platform-origin;
 4. generar delta-only exacto e idempotente;
 5. solicitar autorización Firestore solo para ese delta;
 6. readback/smoke → preprod → cutover `tya-plataforma`.
