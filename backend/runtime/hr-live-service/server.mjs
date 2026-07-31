@@ -12,6 +12,7 @@ const ROOT=path.resolve(HERE,'../../..');
 const PORT=Number(process.env.PORT||8080);
 const CACHE_MS=Math.max(15000,Number(process.env.CXORBIA_LIVE_HR_CACHE_MS||55000));
 const BOOTSTRAP_FILE=path.join(ROOT,'app/data/tya-hr-source-safe-periods.js');
+const REGISTRY_FILE=path.join(ROOT,'backend/config/tya-live-hr-tab-registry.source-safe.json');
 const ENDPOINT_PATHS=new Set([
   '/v1/tenants/tya/projects/cinepolis/hr-live',
   '/api/tya/cinepolis/hr-live'
@@ -47,7 +48,7 @@ function runNode(args,env){
 
 function parseSnapshot(file){
   const text=fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'');
-  const match=text.match(/window\.CX_TYA_HR_SOURCE_SAFE\s*=\s*([\s\S]*);\s*$/);
+  const match=text.match(/window\.CX_TYA_HR_SOURCE_SAFE\s*=\s*([\s\S]*?);\s*(?:window\.CX_TYA_HR_VIVA_SOURCE_SAFE\s*=\s*true\s*;\s*)?$/);
   if(!match)throw new Error('Source-safe payload wrapper invalid.');
   const snapshot=JSON.parse(match[1]);
   if(snapshot?.sourceSafe!==true||snapshot?.imported===true||Number(snapshot?.firestoreWrites||0)!==0)throw new Error('Unsafe snapshot state.');
@@ -92,16 +93,25 @@ async function refreshSnapshot(){
   inFlight=(async()=>{
     const dir=fs.mkdtempSync(path.join(os.tmpdir(),'cxorbia-hr-live-'));
     const payload=path.join(dir,'snapshot.js');
+    const runtimeRegistry=path.join(dir,'tab-registry.source-safe.json');
+    const registryEvidence=path.join(dir,'tab-registry-evidence.source-safe.json');
+    if(fs.existsSync(REGISTRY_FILE))fs.copyFileSync(REGISTRY_FILE,runtimeRegistry);
     const env={
       CXORBIA_HR_SOURCE_SAFE_OUT:payload,
       CXORBIA_HR_LIVE_MAX_ROW:process.env.CXORBIA_HR_LIVE_MAX_ROW||'140',
       CXORBIA_HR_LIVE_MAX_COL:process.env.CXORBIA_HR_LIVE_MAX_COL||'AI',
       CXORBIA_HR_EARLIEST_PERIOD:process.env.CXORBIA_HR_EARLIEST_PERIOD||'2025-06',
-      CXORBIA_GATE_OUT:path.join(dir,'source-gates')
+      CXORBIA_GATE_OUT:path.join(dir,'source-gates'),
+      CXORBIA_HR_TAB_REGISTRY:runtimeRegistry,
+      CXORBIA_HR_TAB_REGISTRY_EVIDENCE:registryEvidence
     };
     try{
       await runNode(['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs'],env);
-      await runNode(['tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs','--input',payload,'--out',payload,'--inventory','backend/contracts/tya-hr-tab-inventory-r20-v1.json','--report-dir',path.join(dir,'inventory')],env);
+      /* Critical product rule: never cap runtime at a static month inventory.
+         When Sheets API metadata is available, the enforcer derives the monthly
+         registry from the provider on every fresh read. The checked-in registry
+         is used only as a fail-closed fallback if provider metadata is unavailable. */
+      await runNode(['tools/hr-source/tya-enforce-live-tab-registry.mjs'],env);
       await runNode(['tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'canonical')],env);
       await runNode(['tools/hr-source/tya-reapply-canonical-state-r20.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'state')],env);
       await runNode(['tools/qa/tya-live-hr-read-probe-gate.mjs','--payload',payload,'--out',path.join(dir,'probe'),'--max-age-seconds','600'],env);
@@ -126,8 +136,9 @@ async function refreshSnapshot(){
   }
 }
 
-/* P0 fix: forceFresh bypasses CACHE_MS completely. A request with fresh=1 never
-   returns build_bootstrap or a still-valid stale cache as if it were a fresh read. */
+/* forceFresh bypasses CACHE_MS completely. A request with fresh=1 waits for a
+   real HR read, so a newly created monthly tab becomes visible on the next
+   runtime freshness check without chat/manual configuration. */
 async function buildSnapshot({forceFresh=false}={}){
   if(forceFresh)return inFlight||refreshSnapshot();
   const age=cache?Date.now()-cache.loadedAt:Infinity;
@@ -148,6 +159,10 @@ function runtimeMeta(current){
     sourceReadAt:new Date(current.loadedAt).toISOString(),
     runtimeRead:true,
     sourceSafe:true,
+    sourceAccessMode:current.snapshot.source?.accessMode||null,
+    tabRegistryMode:current.snapshot.source?.tabRegistryMode||null,
+    tabRegistryAutoDiscovery:current.snapshot.source?.tabRegistryAutoDiscovery===true,
+    tabRegistryObservedAt:current.snapshot.source?.tabRegistryObservedAt||null,
     cacheOrigin:current.origin||null,
     cacheAgeMs:Math.max(0,Date.now()-current.loadedAt),
     cacheMs:CACHE_MS,
