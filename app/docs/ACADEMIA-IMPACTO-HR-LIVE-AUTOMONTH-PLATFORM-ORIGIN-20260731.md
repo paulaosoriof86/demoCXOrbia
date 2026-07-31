@@ -41,6 +41,11 @@ Una fuente operativa con `anyone=writer` viola mínimo privilegio y debe bloquea
 Lección reusable:
 `PROVIDER READY = API CAPABILITY + FILE ACCESS MINIMO + NO PUBLIC WRITE + READ FRESHNESS + FAIL-CLOSED`.
 
+## Separación de fuente mensual y origen operativo
+Que HR aún no tenga la pestaña del mes no implica que no puedan existir visitas del mes siguiente si el flujo permitido es plataforma→HR. El sistema debe conservar explícitamente la procedencia de esos registros y reconciliar cuando aparezca HR.
+
+No se debe inferir el contenido concreto del nuevo mes copiando el anterior: el contrato técnico puede estar listo, pero la materialización requiere el source-of-truth exacto de las visitas platform-origin.
+
 ## Contenido para manuales/cursos
 - fuente viva vs snapshot;
 - detección automática de periodos;
