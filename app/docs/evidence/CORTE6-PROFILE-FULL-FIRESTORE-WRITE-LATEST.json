@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "cxorbia.corte6.profile-full-firestore-write-evidence.v2",
+  "generatedAt": "2026-07-31T15:11:56.511Z",
+  "authorizationId": "chat-20260731-c6-profile-full-firestore-write-01",
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "canonicalProjectId": "cinepolis"
+  },
+  "source": {
+    "encrypted": true,
+    "plaintextPersisted": false,
+    "keyFingerprintSha256": "c767f9d0413ff7547f5a2e95ae6d210f4fd1cc0ea34484c62320681ce9fb0ecd",
+    "records": 151
+  },
+  "identity": {
+    "exact": 120,
+    "missingCanonicalHold": 31,
+    "ambiguousCanonical": 0,
+    "badRecord": 0
+  },
+  "executed": {
+    "firestoreDocumentWrites": 120,
+    "profileFieldChangeDocs": 118,
+    "markerOnlyDocs": 2,
+    "profileFieldValuesWritten": 329,
+    "readbackDocs": 120,
+    "readbackFields": 329,
+    "mismatches": 0
+  },
+  "fieldCounts": {
+    "name": 0,
+    "username": 113,
+    "password": 118,
+    "phone": 0,
+    "email": 0,
+    "country": 0,
+    "city": 0,
+    "department": 2,
+    "document": 17,
+    "address": 1,
+    "birthDate": 2,
+    "acceptedTerms": 72,
+    "accountApproval": 2,
+    "registrationOrigin": 2
+  },
+  "decision": "PASS_C6_PROFILE_FULL_FIRESTORE_WRITE_READBACK",
+  "safety": {
+    "authWrites": 0,
+    "firebaseAuthPasswordChanges": 0,
+    "rulesDeploys": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "legacyWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "production": false,
+    "merge": false,
+    "piiExported": false,
+    "passwordValuesExported": false,
+    "profileValuesExported": false,
+    "secretsExported": false
+  }
+}

@@ -14,10 +14,10 @@
   "identityKey": "legacyShopperId exact",
   "authorizationId": "chat-20260731-c6-profile-full-firestore-write-01",
   "authorizedAt": "2026-07-31T09:09:26-06:00",
-  "enabled": true,
-  "authorized": true,
-  "consumed": false,
-  "status": "authorized_pending_execution",
+  "enabled": false,
+  "authorized": false,
+  "consumed": true,
+  "status": "consumed_pass",
   "firestoreDocumentWritesMax": 120,
   "documentsWithPlannedChanges": 120,
   "documentsWithProfileFieldChanges": 118,
@@ -64,8 +64,8 @@
     "missingIdentityResolutionAttemptedByUniqueTechnicalKeysAndValidatedAuthClaim": true
   },
   "safety": {
-    "providerWritesAuthorized": true,
-    "firestoreWritesAuthorized": true,
+    "providerWritesAuthorized": false,
+    "firestoreWritesAuthorized": false,
     "authWrites": 0,
     "passwordChangesInFirebaseAuth": 0,
     "rulesDeploys": 0,
@@ -80,5 +80,11 @@
     "production": false,
     "merge": false
   },
-  "nextGate": "CREATE_ONE_SHOT_EXECUTE_MARKER_AND_RUN_EXACT_FIRESTORE_WRITE_THEN_READBACK"
+  "nextGate": "REQUEST_SEPARATE_PROTECTED_DEV_REDEPLOY_AUTHORIZATION_FOR_HUMAN_VISUAL",
+  "consumedAt": "2026-07-31T15:11:57.197Z",
+  "decision": "PASS_C6_PROFILE_FULL_FIRESTORE_WRITE_READBACK",
+  "firestoreDocumentWritesExecuted": 120,
+  "profileFieldValuesWritten": 329,
+  "readbackDocs": 120,
+  "readbackMismatches": 0
 }
