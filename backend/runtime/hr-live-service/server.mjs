@@ -13,6 +13,8 @@ const PORT=Number(process.env.PORT||8080);
 const CACHE_MS=Math.max(15000,Number(process.env.CXORBIA_LIVE_HR_CACHE_MS||55000));
 const BOOTSTRAP_FILE=path.join(ROOT,'app/data/tya-hr-source-safe-periods.js');
 const REGISTRY_FILE=path.join(ROOT,'backend/config/tya-live-hr-tab-registry.source-safe.json');
+const DEV_OPERATIONAL_NAMES=process.env.CXORBIA_DEV_OPERATIONAL_NAMES==='true';
+const DEV_OPERATIONAL_TOKEN='YES_PAULA_20260731_NAMES_DEV';
 const ENDPOINT_PATHS=new Set([
   '/v1/tenants/tya/projects/cinepolis/hr-live',
   '/api/tya/cinepolis/hr-live'
@@ -56,6 +58,13 @@ function parseSnapshot(file){
   return snapshot;
 }
 
+function parseIdentity(file){
+  if(!file||!fs.existsSync(file))return new Map();
+  const x=JSON.parse(fs.readFileSync(file,'utf8'));
+  if(x?.schemaVersion!=='cxorbia.tya-dev-operational-display-identity.v1'||x?.displayIdentityOnly!==true||x?.containsContactData!==false||x?.containsGovernmentId!==false||x?.containsBankData!==false||x?.containsCredentials!==false)throw new Error('Operational display identity overlay invalid.');
+  return new Map((x.identities||[]).filter(i=>i?.shopperId&&i?.displayName).map(i=>[String(i.shopperId),String(i.displayName)]));
+}
+
 function stableRevisionValue(value){
   if(Array.isArray(value))return value.map(stableRevisionValue);
   if(value&&typeof value==='object'){
@@ -69,11 +78,28 @@ function stableRevisionValue(value){
   return value;
 }
 
-function materialize(snapshot,origin){
+function materialize(snapshot,origin,identity=new Map()){
   const json=JSON.stringify(snapshot);
   const stableJson=JSON.stringify(stableRevisionValue(snapshot));
   const revision=crypto.createHash('sha256').update(stableJson).digest('hex');
-  return {snapshot,json,revision,loadedAt:Date.now(),origin};
+  return {snapshot,json,revision,loadedAt:Date.now(),origin,identity};
+}
+
+function operationalSnapshot(current){
+  const snapshot=JSON.parse(JSON.stringify(current.snapshot));
+  const identity=current.identity||new Map();
+  for(const shopper of snapshot.shoppers||[]){
+    const name=identity.get(String(shopper.shopperId||shopper.id||''));
+    if(name){shopper.nombre=name;shopper.operationalDisplayName=true;shopper.dataLevel=shopper.dataLevel||'protected_reference';}
+  }
+  for(const visit of snapshot.visits||[]){
+    const name=identity.get(String(visit.shopperId||''));
+    if(name){visit.shopper=name;visit.operationalDisplayName=true;}
+  }
+  snapshot.operationalIdentityPreview=true;
+  snapshot.operationalIdentityScope='display_name_only';
+  snapshot.source={...(snapshot.source||{}),operationalIdentityPreview:true,operationalIdentityScope:'display_name_only',sensitivePiiExcluded:['telefono','mail','dpi','banco','direccion_shopper','observaciones','hr_url_privada','workbook_crudo','credenciales']};
+  return snapshot;
 }
 
 function loadBootstrap(){
@@ -95,6 +121,7 @@ async function refreshSnapshot(){
     const payload=path.join(dir,'snapshot.js');
     const runtimeRegistry=path.join(dir,'tab-registry.source-safe.json');
     const registryEvidence=path.join(dir,'tab-registry-evidence.source-safe.json');
+    const identityFile=path.join(dir,'operational-display-identity.dev.json');
     if(fs.existsSync(REGISTRY_FILE))fs.copyFileSync(REGISTRY_FILE,runtimeRegistry);
     const env={
       CXORBIA_HR_SOURCE_SAFE_OUT:payload,
@@ -103,19 +130,21 @@ async function refreshSnapshot(){
       CXORBIA_HR_EARLIEST_PERIOD:process.env.CXORBIA_HR_EARLIEST_PERIOD||'2025-06',
       CXORBIA_GATE_OUT:path.join(dir,'source-gates'),
       CXORBIA_HR_TAB_REGISTRY:runtimeRegistry,
-      CXORBIA_HR_TAB_REGISTRY_EVIDENCE:registryEvidence
+      CXORBIA_HR_TAB_REGISTRY_EVIDENCE:registryEvidence,
+      CXORBIA_HR_OPERATIONAL_IDENTITY_OUT:identityFile
     };
     try{
+      /* Provider metadata is refreshed first. In GitHub gates this uses the
+         explicit DEV service-account secret; in Cloud Run it uses the runtime
+         service-account metadata token. This is what makes new monthly tabs
+         discoverable without chat/manual configuration. */
+      await runNode(['tools/hr-source/tya-live-provider-registry-identity-dev.mjs'],env);
       await runNode(['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs'],env);
-      /* Critical product rule: never cap runtime at a static month inventory.
-         When Sheets API metadata is available, the enforcer derives the monthly
-         registry from the provider on every fresh read. The checked-in registry
-         is used only as a fail-closed fallback if provider metadata is unavailable. */
       await runNode(['tools/hr-source/tya-enforce-live-tab-registry.mjs'],env);
       await runNode(['tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'canonical')],env);
       await runNode(['tools/hr-source/tya-reapply-canonical-state-r20.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'state')],env);
       await runNode(['tools/qa/tya-live-hr-read-probe-gate.mjs','--payload',payload,'--out',path.join(dir,'probe'),'--max-age-seconds','600'],env);
-      cache=materialize(parseSnapshot(payload),'runtime_refresh');
+      cache=materialize(parseSnapshot(payload),'runtime_refresh',parseIdentity(identityFile));
       lastRefreshError=null;
       lastRefreshFinishedAt=new Date().toISOString();
       lastRefreshDurationMs=Date.now()-started;
@@ -136,9 +165,6 @@ async function refreshSnapshot(){
   }
 }
 
-/* forceFresh bypasses CACHE_MS completely. A request with fresh=1 waits for a
-   real HR read, so a newly created monthly tab becomes visible on the next
-   runtime freshness check without chat/manual configuration. */
 async function buildSnapshot({forceFresh=false}={}){
   if(forceFresh)return inFlight||refreshSnapshot();
   const age=cache?Date.now()-cache.loadedAt:Infinity;
@@ -163,6 +189,8 @@ function runtimeMeta(current){
     tabRegistryMode:current.snapshot.source?.tabRegistryMode||null,
     tabRegistryAutoDiscovery:current.snapshot.source?.tabRegistryAutoDiscovery===true,
     tabRegistryObservedAt:current.snapshot.source?.tabRegistryObservedAt||null,
+    operationalDisplayIdentityReady:DEV_OPERATIONAL_NAMES&&Number(current.identity?.size||0)>0,
+    operationalDisplayIdentityCount:DEV_OPERATIONAL_NAMES?Number(current.identity?.size||0):0,
     cacheOrigin:current.origin||null,
     cacheAgeMs:Math.max(0,Date.now()-current.loadedAt),
     cacheMs:CACHE_MS,
@@ -205,22 +233,27 @@ const server=http.createServer(async(req,res)=>{
   }
   if(req.method!=='GET')return sendJson(res,405,{ok:false,error:'method_not_allowed'});
   const url=new URL(req.url||'/',`http://${req.headers.host||'localhost'}`);
-  if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,lastRefreshError,writes:false,production:false});
+  if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,autoMonthProviderRegistry:true,operationalDisplayIdentityDev:DEV_OPERATIONAL_NAMES,lastRefreshError,writes:false,production:false});
   if(!ENDPOINT_PATHS.has(url.pathname))return sendJson(res,404,{ok:false,error:'not_found'});
   try{
     const forceFresh=url.searchParams.get('fresh')==='1';
     const current=await buildSnapshot({forceFresh});
     const format=url.searchParams.get('format')||'json';
+    const operational=DEV_OPERATIONAL_NAMES&&url.searchParams.get('view')==='operational-names'&&url.searchParams.get('cxOperationalPreview')===DEV_OPERATIONAL_TOKEN;
     const meta=runtimeMeta(current);
+    const snapshot=operational?operationalSnapshot(current):current.snapshot;
+    const json=operational?JSON.stringify(snapshot):current.json;
     res.setHeader('ETag',`"${current.revision}"`);
     res.setHeader('X-CXOrbia-Source-Revision',current.revision);
     res.setHeader('X-CXOrbia-Generated-At',current.snapshot.generatedAt||'');
     res.setHeader('X-CXOrbia-Source-Read-At',meta.sourceReadAt||'');
     res.setHeader('X-CXOrbia-Cache-Origin',current.origin||'unknown');
+    res.setHeader('X-CXOrbia-Operational-Identity',operational?'display-name-only':'masked');
     if(format==='meta'){
       return sendJson(res,200,{
         ok:true,
         ...meta,
+        operationalView:operational,
         periods:current.snapshot.counts?.periods??current.snapshot.periods.length,
         visits:current.snapshot.counts?.visits??current.snapshot.visits.length,
         latestPeriodKey:[...(current.snapshot.periods||[])].map(p=>p.key).filter(Boolean).sort().at(-1)||null
@@ -229,9 +262,9 @@ const server=http.createServer(async(req,res)=>{
     if(format==='js'){
       res.statusCode=200;
       res.setHeader('Content-Type','application/javascript; charset=utf-8');
-      return res.end(`window.CX_TYA_HR_SOURCE_SAFE=${current.json};window.CX_TYA_HR_LIVE_META=${JSON.stringify(meta)};`);
+      return res.end(`window.CX_TYA_HR_SOURCE_SAFE=${json};window.CX_TYA_HR_LIVE_META=${JSON.stringify({...meta,operationalView:operational})};`);
     }
-    return sendJson(res,200,{...current.snapshot,_runtime:meta});
+    return sendJson(res,200,{...snapshot,_runtime:{...meta,operationalView:operational}});
   }catch(error){
     console.error(error.stack||error.message||String(error));
     return sendJson(res,503,{ok:false,error:'live_hr_read_failed',message:String(error.message||error).slice(0,500),sourceSafe:true,lastRefreshError,writes:false,production:false});
