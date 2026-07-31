@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-31  
-**Estado:** `C6_STABLE_COMPOSER_CODE_PASS__LOCAL_REGRESSION_3X_PASS__PENDING_ONE_HOSTING_DEV_AUTH__NO_PRODUCTION`
+**Estado:** `C6_STABLE_COMPOSER_HOSTING_DEV_REMOTE_PASS__PENDING_HUMAN_CUMULATIVE_VISUAL__NO_PRODUCTION`
 
 ## 1. Repo/destinos
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge.
@@ -22,17 +22,17 @@ La visual anterior mostró 88→44 visitas, badge1,232/546, scroll movido, dupli
 
 La HR canónica revalidada mantiene30 tabs/28 mensuales, sin agosto 2026, y julio=34 GT+10 HN. La causa fue composición no idempotente: el overlay reutilizaba arrays ya compuestos y podía anexar historia Firestore sobre la misma visita HR.
 
-## 4. Root fix aplicado en rama viva
-- nuevo `app/adapters/tya-cumulative-read-model.js`;
-- `app/adapters/tya-dev-full-visual-bridge.js` recompone siempre desde baseline HR inmutable por revision;
-- protected visits solo empatan por `hrRowId`, `sourceTab+sourceRow` o `visitId` exacto y nunca se anexan a la base HR;
+## 4. Root fix estable
+- `app/adapters/tya-cumulative-read-model.js` es el composer puro/idempotente;
+- `app/adapters/tya-dev-full-visual-bridge.js` recompone desde baseline HR inmutable por revision;
+- protected visits solo empatan por `hrRowId`, `sourceTab+sourceRow` o `visitId` exacto y nunca se anexan a HR;
 - crosswalk Shopper nace de evidencia técnica exacta;
-- username/password también se leen de rutas anidadas conocidas cuando existen;
-- `app/adapters/tya-live-source-refresh-watch.js` no reaplica ni rerenderiza si la revision no cambió; con cambio aplica1 vez y preserva scroll/controles/modal/foco;
-- `/app/modules/*` y `/app/core/*` intactos.
+- username/password/PII se agregan como overlay solo cuando la fuente protegida exacta los contiene;
+- `app/adapters/tya-live-source-refresh-watch.js`: misma revisión=no apply/no overlay/no rerender; cambio real=1 apply+1 compose, preservando scroll/controles/modal/foco;
+- `/app/modules/*` y `/app/core/*` permanecieron intactos en el root fix.
 
-## 5. Regression gate local PASS
-`PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE` sobre baseline 14/616/208 +120 perfiles protegidos +616 protected visits con IDs distintos:
+## 5. Regression gate local — PASS
+`PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE`:
 - reapply1=616 visitas/208 shoppers;
 - reapply2=616/208;
 - reapply3=616/208;
@@ -42,26 +42,50 @@ La HR canónica revalidada mantiene30 tabs/28 mensuales, sin agosto 2026, y juli
 - estado operacional HR preservado;
 - perfil protegido visible.
 
-Sintaxis de composer/bridge/watcher/gate PASS. CI automático: no ejecutado/no disponible para este commit; evidencia local declarada como tal en `evidence/CORTE6-STABLE-COMPOSER-REGRESSION-GATE-LATEST.json`.
+## 6. Hosting DEV autorizado — ejecutado y consumido PASS
+AuthorizationId: `chat-20260731-c6-stable-cumulative-hosting-02`.
 
-## 6. Lock permanente
+Ejecución:
+- Hosting DEV `cxorbia-backend-dev/cxorbia-dev`: 1 redeploy;
+- Cloud Run:0;
+- Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes:0;
+- nuevos Firebase/Hosting:0;
+- merge:false;
+- producción:false.
+
+Request/execute quedaron `consumed_pass`; decisión `PASS_EXISTING_HOSTING_DEV_STABLE_C6_REMOTE_READY`.
+
+## 7. Remote smoke — PASS
+Evidencia: `evidence/CORTE6-STABLE-CUMULATIVE-HUMAN-VISUAL-HOSTING-LATEST.json`.
+
+Confirmado remotamente:
+- stable composer/bridge/watcher/finance exactos al repo;
+- 3x regression gate PASS sobre composer remoto;
+- HR provider fresh meta PASS, histórico616 y auto-month discovery activo;
+- protectedVisitAppendZero;
+- full-profile fail-closed sin sesión visual;
+- no prompt de credenciales Firebase humanas requerido.
+
+## 8. Lock permanente
 Sigue prevalente `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`. Ninguna etapa futura puede saltarse el regression gate acumulativo.
 
-## 7. 31 identity HOLD
+## 9. 31 identity HOLD
 Siguen31 sin vínculo canónico reproducible; no crear ni emparejar por nombre/teléfono/email.
 
-## 8. Gate exacto ahora
-El root fix está en GitHub pero aún no está publicado en Hosting DEV. La autorización anterior de Hosting fue consumida y no se reutiliza.
+## 10. Gate exacto ahora
+No ejecutar otro deploy: la autorización fue consumida.
 
-Siguiente operación, solo con autorización fresca:
-`1x redeploy del Hosting DEV existente cxorbia-backend-dev/cxorbia-dev`.
+Siguiente paso: validación humana acumulativa del Hosting DEV ya publicado:
+- Dashboard/HR estable durante 3 refresh/focus cycles;
+- sin salto de scroll ni cambio transitorio de conteos;
+- Shopper/perfil/credenciales/histórico unidos por identidad técnica exacta;
+- comparativo histórico preservado;
+- Beneficios y Finanzas canónicos preservados;
+- estados de cuestionario/submitido coherentes.
 
-No requiere Cloud Run redeploy. Después: remote smoke + human visual acumulativa con 3 refresh y validación Dashboard/HR, Shopper/perfil/credenciales/histórico, comparativo, Beneficios y Finanzas.
+Solo PASS humano permite `FREEZE C6 → AGOSTO`.
 
-## 9. Estado seguro
-En este bloque: provider/data writes0; Hosting0; Cloud Run0; nuevos Firebase/Hosting0; merge=false; producción=false.
-
-## 10. Documentación transversal
-- CAMBIOS: `CAMBIOS-BACKEND-ADDENDUM-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`.
-- Academia: `ACADEMIA-IMPACTO-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`.
-- Claude/Pendientes/Tracker/Índice: reconciliados con este estado.
+## 11. Documentación transversal
+- CAMBIOS: `CAMBIOS-BACKEND-ADDENDUM-C6-STABLE-COMPOSER-HOSTING-DEV-REMOTE-PASS-20260731.md`.
+- Evidencia remote: `evidence/CORTE6-STABLE-CUMULATIVE-HUMAN-VISUAL-HOSTING-LATEST.json`.
+- Academia/Claude/Pendientes/Tracker/Índice: actualizados a este gate.
