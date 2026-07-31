@@ -24,12 +24,13 @@
 11. `evidence/CORTE6-PROTECTED-RUNTIME-HOSTING-DEPLOY-LATEST.json`;
 12. `backend/config/corte6-profile-full-firestore-write-request-v2.json`;
 13. `backend/config/corte6-credential-continuity-hosting-request.json`;
-14. `app/core/backend-config-preview-dev.js`;
-15. `app/core/backend-protected-dev-mode.js`;
-16. `app/core/backend-browser-auth.js`;
-17. `app/core/backend-firebase.js`;
-18. `app/adapters/tya-live-source-refresh-watch.js`;
-19. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A, Academia y PR#7.
+14. `.github/workflows/cxorbia-corte6-credential-continuity-hosting.yml`;
+15. `app/core/backend-config-preview-dev.js`;
+16. `app/core/backend-protected-dev-mode.js`;
+17. `app/core/backend-browser-auth.js`;
+18. `app/core/backend-firebase.js`;
+19. `app/adapters/tya-live-source-refresh-watch.js`;
+20. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A, Academia y PR#7.
 
 ## 3. Baseline protegida — no reabrir
 - Corte3 FROZEN; R17N1,406/1,406;616 visitas +572 liquidaciones +77 certificaciones.
