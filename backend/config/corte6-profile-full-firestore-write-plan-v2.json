@@ -8,7 +8,9 @@
   "tenantId": "tya",
   "projectId": "cinepolis",
   "sourceEvidence": "app/docs/evidence/CORTE6-PROFILE-FULL-HANDOFF-READONLY-LATEST.json",
+  "identityBridgeEvidence": "app/docs/evidence/CORTE6-PROFILE-FULL-IDENTITY-BRIDGE-V3-READONLY-LATEST.json",
   "sourceEvidenceDecision": "READY_PROFILE_FULL_WRITE_PLAN_EXACT_MATCH_WITH_SEPARATE_FIRESTORE_AUTHORIZATION",
+  "identityBridgeDecision": "READY_FULL_PROFILE_PARTIAL_EXACT_WITH_REMAINING_IDENTITY_HOLD",
   "identityKey": "legacyShopperId exact",
   "enabled": false,
   "authorized": false,
@@ -16,9 +18,13 @@
   "status": "prepared_waiting_explicit_firestore_authorization",
   "firestoreDocumentWritesMax": 120,
   "documentsWithPlannedChanges": 120,
+  "documentsWithProfileFieldChanges": 118,
+  "markerOnlyDocuments": 2,
   "profileFieldWritesPlanned": 329,
   "exactProfiles": 120,
   "missingCanonicalHold": 31,
+  "technicalBridgeResolved": 0,
+  "authClaimBridgeResolved": 0,
   "ambiguousCanonical": 0,
   "badRecord": 0,
   "fieldPlan": {
@@ -52,7 +58,8 @@
     "storeLegacyProfileCurrentMarker": true,
     "storeLegacyPasswordInProtectedProfileForOperationalParity": true,
     "plaintextValuesInRepoOrLogs": false,
-    "missingCanonicalRecordsRemainHold": true
+    "missingCanonicalRecordsRemainHold": true,
+    "missingIdentityResolutionAttemptedByUniqueTechnicalKeysAndValidatedAuthClaim": true
   },
   "safety": {
     "providerWritesAuthorized": false,
