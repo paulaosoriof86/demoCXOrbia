@@ -41,6 +41,7 @@ window.CX = window.CX || {};
       cuestFecha:v.cuestFecha||null,submit:Boolean(v.submit||v.submittedAt||v.submissionState==='confirmed_hr'),submittedAt:v.submittedAt||null,
       assignmentSource:v.assignmentSource||(v.hasShopper?'hr':null),assignmentSyncStatus:v.assignmentSyncStatus||'hr_live_source_safe_preview',
       lastSyncedAt:v.lastSyncedAt||null,reviewRequired:v.reviewRequired===true,reviewReasons:safeArray(v.reviewReasons),
+      operationalDisplayName:v.operationalDisplayName===true,
       sourceSafe:true,piiProtected:true
     }));
   }
@@ -52,10 +53,12 @@ window.CX = window.CX || {};
       estado:s.estado??null,status:s.status??null,rating:s.rating??null,honorarioPref:s.honorarioPref??null,
       perfilCompleto:s.perfilCompleto===true,firstName:s.firstName||'',lastName:s.lastName||'',whatsapp:'',phone:'',email:'',dpi:'',banco:'',ctaNum:'',
       dataLevel:s.dataLevel||'protected_reference',operationalProfileAvailable:s.operationalProfileAvailable===true,
+      operationalDisplayName:s.operationalDisplayName===true,
       sourceHistoricalVisitCount:Number(s.sourceHistoricalVisitCount??s.visitas??0),
       sourceHistoricalRealizedCount:Number(s.sourceHistoricalRealizedCount??s.realizadas??0),
       sourceHistoricalLiquidatedCount:Number(s.sourceHistoricalLiquidatedCount??s.liquidadas??0),
-      visitas:undefined,realizadas:undefined,liquidadas:undefined,postulaciones:undefined,promCuest:null,certs:Number(s.certs||0),
+      visitas:Number(s.visitas??0),realizadas:Number(s.realizadas??0),liquidadas:Number(s.liquidadas??0),pagadas:Number(s.pagadas??0),
+      postulaciones:undefined,promCuest:null,certs:Number(s.certs||0),
       sourceSafe:true,piiProtected:true
     }));
   }
@@ -100,24 +103,25 @@ window.CX = window.CX || {};
     CX.data.currentProjectId='cinepolis';
     CX.data.currentPeriodId=preferred&&preferred.id;
     CX.data.periodOperationalSummary=safeArray(snapshot.periodOperationalSummary);
-    CX.data.sourceMode='tya_hr_live_runtime_source_safe_dev';
+    CX.data.sourceMode=snapshot.operationalIdentityPreview===true?'tya_hr_live_runtime_operational_display_dev':'tya_hr_live_runtime_source_safe_dev';
     CX.data.previewMeta=Object.assign({},CX.data.previewMeta||{}, {
       tenantId:'tya',projectId:'cinepolis',projectName:'Cinépolis',sourceTitle:snapshot.source&&snapshot.source.title,
       generatedAt:snapshot.generatedAt||meta.generatedAt||null,sourceReadAt:meta.sourceReadAt||null,sourceRevision:meta.revision||null,
       periods:periods.length,tabs:snapshot.counts&&snapshot.counts.tabs,totalVisits:visits.length,countries:snapshot.counts&&snapshot.counts.byCountry,
       production:false,imported:false,sourceSafe:true,piiProtected:true,runtimeSyncActive:false,runtimeReadActive:true,revisionStable:true,
-      note:'Lectura HR viva source-safe aplicada en memoria sin recargar la aplicación.'
+      operationalIdentityPreview:snapshot.operationalIdentityPreview===true,operationalIdentityScope:snapshot.operationalIdentityScope||null,
+      note:snapshot.operationalIdentityPreview===true?'Lectura HR viva DEV con nombre operativo visible; contacto, DPI, banco y credenciales siguen excluidos.':'Lectura HR viva source-safe aplicada en memoria sin recargar la aplicación.'
     });
 
     if(CX.dataSource){
       CX.dataSource.mode='connected';
       CX.dataSource.status='ready';
-      CX.dataSource.sourceRef='hr-live-runtime:tya:cinepolis';
+      CX.dataSource.sourceRef=snapshot.operationalIdentityPreview===true?'hr-live-runtime:tya:cinepolis:display-name-only':'hr-live-runtime:tya:cinepolis';
       CX.dataSource.updatedAt=meta.sourceReadAt||meta.generatedAt||new Date().toISOString();
       CX.dataSource.runtimeSyncActive=false;
       CX.dataSource.runtimeReadActive=true;
       CX.dataSource.updating=false;
-      CX.dataSource.warnings=[];
+      CX.dataSource.warnings=snapshot.operationalIdentityPreview===true?['DEV operativo: nombre shopper visible desde HR viva; contacto, DPI, banco y credenciales permanecen protegidos.']:[];
       CX.dataSource.blockers=[];
       try{localStorage.setItem('cx_data_mode','connected');localStorage.setItem('cx_demo_mode','off');}catch(e){}
     }
@@ -128,7 +132,7 @@ window.CX = window.CX || {};
       currentPeriodId:CX.data.currentPeriodId,currentPeriodVisits:CX.data.visitas?CX.data.visitas().length:0,
       sourceRevision:meta.revision||null,sourceReadAt:meta.sourceReadAt||null,
       genericProjectCount:periods.filter(p=>['retail','banca','food'].includes(p.id)).length,
-      sourceSafe:true,imported:false,production:false,runtimeSyncActive:false,runtimeReadActive:true
+      sourceSafe:true,operationalIdentityPreview:snapshot.operationalIdentityPreview===true,imported:false,production:false,runtimeSyncActive:false,runtimeReadActive:true
     };
 
     if(typeof window.CX_TYA_BUILD_CORTE1_REPORTS==='function')window.CX_TYA_BUILD_CORTE1_REPORTS(snapshot,meta);
@@ -139,7 +143,7 @@ window.CX = window.CX || {};
     document.documentElement.setAttribute('data-cx-source','hr-live');
     if(CX.bus&&typeof CX.bus.emit==='function')CX.bus.emit('visit-flow',{sourceRevision:meta.revision||null,reason:options.reason||'live_refresh'});
     try{window.dispatchEvent(new CustomEvent('cx:live-source-updated',{detail:{revision:meta.revision||null,sourceReadAt:meta.sourceReadAt||null,reason:options.reason||'live_refresh'}}));}catch(e){}
-    return {ok:true,revision:meta.revision||null,periods:periods.length,visits:visits.length,currentPeriodId:CX.data.currentPeriodId};
+    return {ok:true,revision:meta.revision||null,periods:periods.length,visits:visits.length,currentPeriodId:CX.data.currentPeriodId,operationalIdentityPreview:snapshot.operationalIdentityPreview===true};
   }
 
   window.CX_TYA_APPLY_LIVE_SNAPSHOT=applySnapshot;
