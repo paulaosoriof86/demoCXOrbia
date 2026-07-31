@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.corte6.cumulative-human-visual-hosting-request.v1",
   "requestId": "corte6-stable-cumulative-human-visual-hosting-20260731-02",
-  "status": "authorized_waiting_execute",
+  "status": "hosting_deployed_smoke_pending",
   "enabled": true,
   "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -23,7 +23,7 @@
   "exactIdentityOnly": true,
   "namePhoneEmailDedupeAllowed": false,
   "singleHostingDeployMax": 1,
-  "hostingDeployExecutions": 0,
+  "hostingDeployExecutions": 1,
   "authorizedBy": "Paula",
   "authorizationId": "chat-20260731-c6-stable-cumulative-hosting-02",
   "authorizationText": "Autorizo un único redeploy del Hosting DEV existente cxorbia-backend-dev/cxorbia-dev para publicar el root fix estable de Corte 6 y ejecutar después remote smoke y validación visual acumulativa; sin Cloud Run, Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos, sin merge y sin producción.",
@@ -42,5 +42,6 @@
   "newHostingSites": 0,
   "merge": false,
   "production": false,
-  "nextGate": "EXECUTE_STABLE_C6_HOSTING_ONCE"
+  "nextGate": "EXECUTE_STABLE_C6_HOSTING_ONCE",
+  "hostingDeployedAt": "2026-07-31T22:45:58.190Z"
 }
