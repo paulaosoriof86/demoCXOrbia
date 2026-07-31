@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-31  
-**Estado:** `C6_P0_OPEN__PROTECTED_READONLY_PASS__USERNAME88_READY__PASSWORD68_PATTERN_VERIFIED_20_NONPATTERN__RUNTIME_FIX_PREPARED__NO_WRITE__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_P0_OPEN__EXPORT_RECOVERED__PROFILE_HANDOFF_READY__USERNAME88_READY__RUNTIME_FIX_PREPARED__NO_WRITE__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Repositorio/destinos
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge.
@@ -51,7 +51,7 @@ Visitas616:
 - `shopperStats/visitsForShopper` protegidos reconocen `submitida` y todo el histórico exacto por shopperId;
 - no se sintetiza password.
 
-Node syntax + marcadores anti-regresión: PASS.
+Gate estático previo: PASS. No deploy nuevo autorizado.
 
 ## 6. Username exacto — dry-run PASS
 Desde el mismo handoff cifrado de credenciales:
@@ -67,22 +67,51 @@ Plan Firestore `fill-missing-only` creado y deshabilitado; requiere autorizació
 ## 7. Contraseña inicial — verificación criptográfica read-only
 Comparación SHA256 contra el patrón histórico `CapitalizedFirstName + 123*`:
 - exactos evaluables88;
-- patrón verificado: **68**;
-- patrón NO verificado: **20**;
-- missing name0; hashes inválidos0.
+- patrón verificado68;
+- patrón NO verificado20.
 
-Conclusión: no se puede mostrar `Nombre123*` como contraseña universal. Para 68 puede rotularse `patrón inicial verificado`; los 20 deben preservar su credencial histórica o pasar por reset Auth autorizado. Firebase Auth no devuelve plaintext vigente.
+No mostrar `Nombre123*` como contraseña universal. Firebase Auth no devuelve plaintext vigente. No resetear los 20 por rutina.
 
-## 8. Datos extra del perfil
-Teléfono/email ya existentes se verán al entrar por protected runtime.
+## 8. Export perfil extra — RECUPERADO
+File Library volvió a responder y se localizó/abrió el export vigente ya entregado `tya-plataforma-default-rtdb-export (6).json`, fecha 2026-07-30. No pedirlo nuevamente.
 
-El export vigente de `tya_shoppers_extra` conserva campos operativos adicionales como WhatsApp/email/país/ciudad/DPI y credenciales históricas para parte de los registros. La File Library actualmente falla al recuperar el archivo ya entregado; no se pide reenvío mientras se intenta recuperar ese insumo. No conectar RTDB vieja.
+El schema real confirma campos adicionales de perfil: username/user, WhatsApp, email, país, ciudad, departamento y, según registro, DPI, dirección, fecha de nacimiento, certs/histCerts, términos y metadata de cuenta.
 
-## 9. Julio/agosto
+La fuente vieja continúa desacoplada: no se conecta la RTDB.
+
+## 9. Reconciliación v2
+`tools/qa/cxorbia-corte6-profile-extra-export-readonly.mjs` quedó endurecido:
+- ID estable exacto → `legacyShopperId`;
+- no nombre/teléfono/email como llave;
+- fill-missing-only;
+- no overwrite;
+- `_eliminados` excluido;
+- pass/password y UID legacy excluidos.
+
+Separación de seguridad:
+- operativos candidatos: username, phone, email, country, city, department;
+- sensibles HOLD: document/DPI, address, birthDate;
+- evidence-only: certs/histCerts, visitas, estado, términos, aprobación/origen y rating.
+
+Las 77 certificaciones y 616 visitas canónicas siguen siendo autoridad; no duplicar con metadata legacy.
+
+## 10. Gate seguro de handoff preparado
+La File Library puede mostrar/consultar el export, pero no expone bytes/filesystem path reutilizable por el runner. Para no transcribir PII ni conectar la base vieja se preparó un handoff cifrado único:
+- `tools/local/cxorbia-corte6-profile-extra-handoff.html` — OFFLINE; excluye password y UID legacy; cifra valores antes de disco;
+- `tools/qa/cxorbia-corte6-profile-extra-handoff-dryrun.mjs` — descifra solo en memoria y compara contra Firestore;
+- `.github/workflows/cxorbia-corte6-profile-extra-readonly.yml` — provider read-only; evidencia de salida source-safe;
+- `backend/config/corte6-profile-extra-readonly-request.json` — esperando el bundle cifrado, con writes/deploys0.
+
+No se ha ejecutado provider read mediante este nuevo gate porque aún no existe el bundle cifrado.
+
+## 11. Seguridad sensible
+Las Rules actuales permiten leer `/tenants/{tenantId}/shoppers/{shopperId}` a roles operador (`super/admin/ops/coordinador`) además del propio shopper. Por eso DPI/dirección/fecha de nacimiento no se materializan en ese documento sin una política protegida explícita. La UI no sustituye la seguridad de Rules.
+
+## 12. Julio/agosto
 HR viva y auto-month permanecen PASS. No ejecutar delta agosto hasta cerrar este P0 y congelar Corte6.
 
-## 10. Siguiente bloque exacto
-`RECUPERAR/RECONCILIAR EXPORT PERFIL EXTRA → COMBINAR CON USERNAME88 EN DELTA FIRESTORE EXACTO → AUTORIZACIÓN ESPECÍFICA → READBACK → REDEPLOY DEV AUTORIZADO → VISUAL PROTEGIDA → FREEZE C6`.
+## 13. Siguiente bloque exacto
+`BUNDLE CIFRADO DEL EXPORT EXISTENTE → READ-ONLY RECONCILIATION AUTOMÁTICA → DELTA OPERATIVO COMBINADO CON USERNAME88 → AUTORIZACIÓN FIRESTORE EXACTA → READBACK → REDEPLOY DEV AUTORIZADO → VISUAL PROTEGIDA → FREEZE C6`.
 
-## 11. Estado seguro
-Provider reads sí; Firestore/Auth/HR/legacy writes0; password changes0; Rules/Hosting/Cloud Run deploys nuevos0; Storage/Make/Gemini/pagos0; merge=false; producción=false.
+## 14. Estado seguro
+Provider writes0; Firestore/Auth/HR/legacy writes0; password changes0; Rules/Hosting/Cloud Run deploys nuevos0; Storage/Make/Gemini/pagos0; merge=false; producción=false.
