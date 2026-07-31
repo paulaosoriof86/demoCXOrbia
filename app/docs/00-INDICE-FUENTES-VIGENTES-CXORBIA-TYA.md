@@ -21,14 +21,15 @@
 4. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 5. `CAMBIOS-BACKEND-ADDENDUM-C6-LIVE-HR-AUTOMONTH-PROTECTED-SHOPPERS-20260731.md`;
 6. `CAMBIOS-BACKEND-ADDENDUM-C6-PROTECTED-IDENTITY-READONLY-PASS-20260730.md`;
-7. `evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json`;
-8. `evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json`;
-9. `evidence/CORTE6-PROTECTED-SHOPPER-IDENTITY-READONLY-LATEST.json`;
-10. `backend/runtime/hr-live-service/server.mjs`;
-11. `app/core/backend-protected-dev-mode.js`;
-12. `app/index-backend-dev.html`;
-13. `backend/config/tya-phase-a-platform-project-config.source-safe.json`;
-14. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A, Academia y PR #7.
+7. `ACADEMIA-IMPACTO-HR-LIVE-AUTOMONTH-PLATFORM-ORIGIN-20260731.md`;
+8. `evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json`;
+9. `evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json`;
+10. `evidence/CORTE6-PROTECTED-SHOPPER-IDENTITY-READONLY-LATEST.json`;
+11. `backend/runtime/hr-live-service/server.mjs`;
+12. `app/core/backend-protected-dev-mode.js`;
+13. `app/index-backend-dev.html`;
+14. `backend/config/tya-phase-a-platform-project-config.source-safe.json`;
+15. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A y PR #7.
 
 ## 3. Baseline protegida — no reabrir
 - Corte3 FROZEN.
