@@ -87,7 +87,7 @@ No iniciar materialización agosto mientras Corte6 no quede visualmente estable 
 El mismo regression lock aplica a toda candidata futura. Claude no reinterpreta HR/identidad/finanzas y no puede reintroducir fixtures, fallbacks o estados antiguos.
 
 ## 12. Academia
-Documentar ownership, composer idempotente, crosswalk técnico, revision gate y refresh que no interrumpe al usuario.
+Documentar ownership, composer idempotente, crosswalk técnico, revision gate y refresh que no interrumpe al usuario. Fuente vigente: `ACADEMIA-IMPACTO-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`.
 
 ## 13. Gate vivo inmediato
 `AUTORIZACIÓN FRESCA 1x HOSTING DEV → REMOTE SMOKE → HUMAN VISUAL 3x REFRESH + DASHBOARD/HISTÓRICO/SHOPPER/BENEFICIOS/FINANZAS → PASS/FAIL → FREEZE C6 → AGOSTO`.
