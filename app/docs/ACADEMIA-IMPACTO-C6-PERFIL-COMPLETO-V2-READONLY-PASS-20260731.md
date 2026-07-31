@@ -17,10 +17,21 @@
 ## Caso Corte6
 Perfil:151 registros;120 exactos;31 HOLD;329 valores. Write PASS:120 documentos,118 field-change +2 marker-only, readback120/329, mismatches0.
 
-Protected Hosting DEV anterior: deploy técnico PASS. Sin embargo, la validación humana reveló un nuevo P0 de flujo: Administración/Coordinación volvió a pedir Usuario/Contraseña porque el runtime y browser-auth utilizaban persistencia `SESSION`.
+La validación humana detectó un P0 de flujo: Administración/Coordinación volvía a pedir Usuario/Contraseña porque el runtime y browser-auth utilizaban persistencia `SESSION`.
 
-## Corrección reusable
-Se preparó `backend-protected-dev-session-continuity.js`, protected-only, que fuerza Firebase Auth `LOCAL` y permite restaurar silenciosamente una sesión ya validada. No contiene usuario/password/token/UID, no bypass claims/Rules y no cambia el logout explícito.
+## Corrección reusable aplicada
+`backend-protected-dev-session-continuity.js`, protected-only, fuerza Firebase Auth `LOCAL` y permite restaurar silenciosamente una sesión ya validada. No contiene usuario/password/token/UID, no bypass claims/Rules y no cambia el logout explícito.
+
+Authorization `chat-20260731-corte6-protected-session-continuity-redeploy-02` consumida PASS.
+
+Resultado técnico:
+- exactamente1 redeploy del Hosting DEV existente;
+- decisión `PASS_EXISTING_HOSTING_DEV_PROTECTED_SESSION_CONTINUITY_REMOTE_VERIFIED`;
+- version `1e8c37163e7451be`;
+- release `1785515981786000`;
+- persistencia LOCAL y continuity asset verificados remotamente;
+- protected runtime/Auth bridge/Firestore adapter/profile bridge/history KPI PASS;
+- provider writes/deploys adicionales0; producción=false; merge=false.
 
 ## Impacto en manuales/cursos/rutas
 - Admin/operación: autenticarse una vez y mantener sesión entre refresh de validación, salvo logout explícito.
@@ -29,5 +40,12 @@ Se preparó `backend-protected-dev-session-continuity.js`, protected-only, que f
 - Seguridad: persistencia no significa exposición de credenciales; la autoridad sigue siendo Firebase Auth.
 - QA: evitar que la mecánica del gate técnico se convierta en reproceso de cada validación visual.
 
+## Clasificación
+- **Reusable CXOrbia:** persistencia protected QA + execute marker one-shot.
+- **Exclusivo cliente:** 31 identidades HOLD TyA.
+- **Claude/prototipo:** sin rediseño; mantener UI aprobada.
+- **Academia:** actualizar ruta de autenticación inicial vs continuidad de sesión.
+- **Sin impacto Claude:** evidencia, workflow y Hosting DEV.
+
 ## Siguiente hito didáctico
-Redeploy DEV one-shot del fix de continuidad → remote smoke → autenticación una vez → refresh sin re-prompt → validación humana Admin+Shopper. Todavía no producción.
+Una autenticación real → refresh sin re-prompt → validación humana Admin+Shopper. Todavía no producción.
