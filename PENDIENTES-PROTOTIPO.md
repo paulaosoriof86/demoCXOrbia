@@ -1,82 +1,85 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-07-30  
-**Estado vivo:** `C6_SINGLE_LOGIN_HOSTING_DEV_REMOTE_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`
+**Última actualización:** 2026-07-31  
+**Estado vivo:** `C6_HUMAN_VISUAL_FAIL__P0_SHOPPER_IDENTITY_NULL__ADMIN_PROFILE_INCOMPLETE__NO_NEW_DEPLOY__NO_PRODUCTION`
 
-Este archivo registra pendientes frontend reales y dependencias backend que condicionan cuándo Claude debe intervenir.
+## 1. Cerrado / no reabrir
+- Corte1/2A/3 FROZEN.
+- R17N FINAL 1,406/1,406; no repetir.
+- Corte5 `CX.data`: cinepolis /14 periodos /616 visitas /current2026-07 PASS.
+- Auth import/readback91/91; claims5/5; Rules PASS. No reimportar/resetear por rutina.
+- HR live auto-month remote PASS.
+- One-shot Cloud Run + Hosting DEV anterior consumido; no reutilizar.
 
-## 1. No reabrir
-- Corte1 /2A /3: FROZEN/APROBADO.
-- Corte3: `CXORBIA-TYA-CORTE3-V182-20260729`.
-- R17N FINAL:1,406/1,406 data writes/readback; no repetir.
-- Corte5: CX.data project/period resuelto y re-smoke PASS.
-- Auth legacy import91/readback91/91 PASS; no repetir/resetear.
-- Corte6 claims5/5 + Firestore Rules PASS.
-- No nueva candidata/base/Hosting/rama/PR.
+## 2. P0 PROVEN — acceso Shopper sin identidad
+Visual real: el portal entra como `Evaluador (sin identidad)` y `shopperId=null`; Mi Perfil y Mis Visitas quedan bloqueados.
 
-## 2. P0 doble login — CORREGIDO Y PUBLICADO EN DEV
-El build anterior fue rechazado por el gate separado `Acceso seguro`. El fix single-login ya fue publicado mediante un único redeploy autorizado al mismo Hosting DEV.
+Causa en `app/app.js`: la ruta humana alojada en `cxorbia-backend-dev.web.app` no entra a `_isDevAccess()` y por tanto no ejecuta el selector DEV; cae a `selectRole('shopper')` sin identidad.
 
-Resultado remoto: `PASS_EXISTING_HOSTING_DEV_SINGLE_LOGIN_REMOTE_VERIFIED`.
+Reglas:
+- no fallback `sh1`;
+- no dedupe/match por nombre;
+- identidad real = Auth/claims + shopperId estable;
+- mantener fail-closed si falta identidad.
 
-- browserAuth PASS;
-- entrypoint PASS;
-- proof PASS;
-- username/password namespaced PASS;
-- `singleVisibleLogin=true`;
-- `parallelAuthGate=false`;
-- versión `sites/cxorbia-backend-dev/versions/a4b90bd224b28329`;
-- release `sites/cxorbia-backend-dev/releases/1785448336285000`.
+## 3. P0 operativo — perfil Admin no está listo para producción
+La visual actual usa HR source-safe `display_name_only`. Admin ve nombres, pero faltan campos necesarios para operación: username/credencial, WhatsApp/teléfono, correo y datos adicionales completados por shopper. El histórico individual visible es parcial.
 
-## 3. Pendiente bloqueante único de Corte6
-**Validación visual humana del nuevo build DEV.**
+La validación final debe hacerse sobre runtime protegido Firestore/Auth/Rules, no sobre una ruta pública source-safe.
 
-Comprobar únicamente:
-1. no aparece una pantalla previa `Acceso seguro`;
-2. el login normal TyA/CXOrbia es el único punto visible;
-3. Usuario + Contraseña aparecen dentro del mismo acceso cuando se selecciona un perfil habilitado;
-4. no hay doble autenticación;
-5. refresh con sesión válida no vuelve a pedir credenciales;
-6. logout sí devuelve al único login.
+Superadmin debe poder ver los datos operativos completos autorizados. La separación source-safe no es una restricción al Superadmin: evita exponer PII a una URL pública.
 
-No pedir a Paula PowerShell ni contraseña por chat.
+## 4. Credenciales
+Regla TyA vigente: `nombre.apellido` + contraseña inicial tipo `Nombre123*`.
 
-## 4. Claude — intervención actual
-No requiere nueva candidata ni cambio adicional de frontend. El fix ya fue aplicado y desplegado focalizadamente. Claude solo debe preservar el patrón reusable y no reintroducir el gate backend separado.
+Pendiente de producto:
+- mostrar username en perfil protegido;
+- mostrar estado de credencial;
+- solo mostrar contraseña inicial/legacy si existe evidencia segura de que es la vigente;
+- si no, ofrecer reset controlado al patrón (requiere Auth write autorizado);
+- nunca guardar passwords en JS/repo/Firestore público.
 
-## 5. Provider/backend preservado
-- imported91;
-- readback91/91;
-- Auth17→108;
-- shopper88 + staff3;
-- reset/delete/overwrite0;
-- namespaces staff/shopper preservados;
-- Auth writes durante el redeploy0;
-- Firestore data writes0;
-- Rules0;
-- nuevo Firebase/Hosting0.
+## 5. Fuente de datos adicionales del shopper
+Existe export reciente de la plataforma vigente con `tya_shoppers_extra`. Recuperar por export/import, sin conexión a la base vieja.
 
-## 6. P1/P2 no bloqueante
-- PDF/gráficas.
-- Excel/formato.
-- `reportKit`/exportaciones transversales.
+Incluir únicamente datos reales útiles con trazabilidad: contacto, ubicación, documento, perfil, datos de pago y demás campos efectivamente guardados por el shopper. Conflictos/duplicados → review, nunca overwrite silencioso.
+
+## 6. Histórico completo
+El perfil debe cruzar con las 616 visitas canónicas por shopperId. No construir el histórico por nombre visual.
+
+Validar:
+- todas las visitas históricas del shopper;
+- proyecto/periodo correctos;
+- realizada/cuestionario/submitida/liquidada/pagada según semántica canónica;
+- postulaciones y asignaciones vinculadas sin duplicar.
+
+## 7. KPI shoppers
+Los KPI superiores y del perfil deben abrir detalle útil y consistente. El detalle actual depende de `shopperStats` y filtros de estado demasiado estrechos para parte del histórico.
+
+Pendiente focalizado:
+- consolidar facetas canónicas de visita para KPI;
+- drill con filas completas;
+- no contar `submitida` como inexistente por un filtro legacy;
+- perfiles completos/incompletos basados en backend protegido, no en overlay display-only.
+
+## 8. P1/P2 no bloqueante
+- PDF sin gráfica final;
+- Excel sin formato final;
+- reportKit/exportaciones transversales;
 - copy de fuentes/readiness.
 
-## 7. HOLD identidad preservado
-- 21 shopper credentials sin perfil canónico exacto.
-- demo role1.
-- ambiguous groups18/77 registros.
+## 9. Julio/agosto
+No iniciar delta agosto hasta cerrar este P0 y recuperar/conectar source-of-truth exacto platform-origin. No copiar julio ni repetir histórico.
 
-No resolver por nombre o coincidencia visual; revisión humana.
+## 10. Academia/manuales
+Actualizar:
+- login Shopper real y resolución de identidad;
+- username/contraseña inicial y reset;
+- diferencia entre source-safe y consola protegida;
+- permisos Superadmin vs Shopper;
+- lectura de KPI e histórico.
 
-## 8. Agosto
-- Fuente materializada hasta julio.
-- `Agosto HN` sigue HOLD por inconsistencia país/tab.
-- Después del FREEZE Corte6: refresh HR → resolver HOLD → materializar solo delta agosto.
-- No rematerializar histórico.
+## 11. Siguiente bloque exacto
+`PROTECTED-RUNTIME READ-ONLY VALIDATION → PROFILE FIELD INVENTORY + LEGACY EXPORT RECONCILIATION → DELTA PLAN → AUTH/FIRESTORE GATES → REDEPLOY DEV CON AUTORIZACIÓN NUEVA → VISUAL`.
 
-## 9. Academia/manuales
-Sincronizado: un único acceso visible; Auth detrás del adapter; namespace interno; tenant/proyecto; shopperId exacto; sesión/refresh/logout; recuperación/cambio y troubleshooting.
-
-## 10. Estado seguro
-PR #7 draft/open/no merge. Producción `tya-plataforma` no tocada. Redeploy focalizado DEV consumido1; Auth/Firestore/Rules/Storage/HR/legacy/payments/Functions/Make/Gemini writes adicionales0.
+Producción/merge siguen bloqueados.
