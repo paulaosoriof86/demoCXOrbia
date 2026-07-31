@@ -54,6 +54,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<!-- Firebase Hosting initializes the canonical project automatically. On local files this may 404; backend remains disabled unless protected DEV mode is explicitly requested. -->
+<script src="/__/firebase/init.js"></script>
 
 <!-- CORE + V174 SOURCE-SAFE BINDING -->
 <script src="data/tya-hr-source-safe-periods.js"></script>
@@ -96,6 +98,7 @@
 <!-- BACKEND DEV CONTROLADO -->
 <script src="core/backend-config.js"></script>
 <script src="core/backend-config-preview-dev.js"></script>
+<script src="core/backend-protected-dev-mode.js"></script>
 <script src="core/backend-v57-extra-config.js"></script>
 <!-- Optional local-only auth helper. Ignored by git. Safe if missing. -->
 <script src="core/backend-dev-auth.local.js"></script>
