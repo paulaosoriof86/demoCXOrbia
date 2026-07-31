@@ -1,13 +1,15 @@
 # CXOrbia — reconciliación HR viva actual
 
-- Fecha: 2026-07-30T23:54:26.293Z
+- Fecha: 2026-07-31T00:05:04.492Z
 - Access mode: public_gviz_csv_cache_busted
-- Source-safe: sí; sin PII; HR writes=0; Firestore writes=0.
+- Registry provider: aplicado; GViz no puede crear tabs fantasma.
+- Source-safe: sí; sin PII; writes=0.
 
-- Periodos detectados: 15
-- Tabs: 30
-- Visitas: 684
-- Shoppers protegidos: 236
+- Periodos reales detectados: 14
+- Tabs mensuales reales procesados: 28
+- Visitas: 616
+- Agosto real detectado: GT 0 / HN 0
+- Tabs fantasma rechazados: AGOSTO 26, AGOSTO 26 HN
 
 ## Periodos
 
@@ -25,18 +27,8 @@
 - 2026-05: 44 (GT 34 / HN 10)
 - 2026-06: 44 (GT 34 / HN 10)
 - 2026-07: 44 (GT 34 / HN 10)
-- 2026-08: 68 (GT 34 / HN 34)
-
-## Foco actual
-
-- JUNIO 26 HN: 10 filas visitables; sourceRows 2, 3, 4, 5, 6, 7, 8, 9, 10, 11.
-- JULIO 26 GT: 34 filas visitables; sourceRows 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35.
-- JULIO 26 HN: 10 filas visitables; sourceRows 2, 3, 4, 5, 6, 7, 8, 9, 10, 11.
-- AGOSTO 26 GT: 34 filas visitables.
-- AGOSTO 26 HN: 34 filas visitables.
 
 ## Seguridad
 
-- No se exportan nombres, emails, teléfonos, DPI, bancos, observaciones ni workbook crudo.
-- IDs de visita HR son hashes source-safe; sourceRow/hrRowId se incluyen solo para reconciliación técnica.
-- No writes HR/Firestore/Auth/Hosting; no producción/merge.
+- No se exporta PII ni workbook crudo.
+- No HR/Firestore/Auth/Hosting writes; no producción/merge.

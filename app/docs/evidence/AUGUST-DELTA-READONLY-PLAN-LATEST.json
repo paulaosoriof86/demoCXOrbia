@@ -1,8 +1,8 @@
 {
-  "schemaVersion": "cxorbia.august-delta-readonly-plan.v3",
-  "generatedAt": "2026-07-30T23:54:27.325Z",
-  "decision": "PASS_AUGUST_GT34_DELTA_TECH_READY__HN_HOLD_SOURCE_COUNTRY_MISMATCH",
-  "releaseReadiness": "NO_UNASSIGNED_VISITS_IN_ACCEPTED_SOURCE",
+  "schemaVersion": "cxorbia.august-delta-readonly-plan.v4",
+  "generatedAt": "2026-07-31T00:05:05.588Z",
+  "decision": "HOLD_AUGUST_REQUIRED_PROVIDER_TABS_MISSING",
+  "releaseReadiness": "SOURCE_TABS_MISSING",
   "target": {
     "firebaseProjectId": "cxorbia-backend-dev",
     "tenantId": "tya",
@@ -14,292 +14,86 @@
       "GT": 34,
       "HN": 10
     },
+    "requiredTabs": {
+      "GT": "AGOSTO 26",
+      "HN": "AGOSTO 26 HN"
+    },
     "doNotRepeatHistoricalWrites": 1406,
     "deltaOnly": true
   },
+  "providerTabRegistry": {
+    "observedAt": "2026-07-30T23:58:00Z",
+    "monthlyTabs": 28,
+    "tabPresence": {
+      "GT": false,
+      "HN": false
+    },
+    "requiredAugustTabsPresent": false
+  },
   "source": {
-    "generatedAt": "2026-07-30T23:54:24.928Z",
+    "generatedAt": "2026-07-31T00:05:02.788Z",
     "accessMode": "public_gviz_csv_cache_busted",
     "sourceSafe": true,
+    "tabRegistryEnforced": true,
+    "phantomTabsRejected": [
+      "AGOSTO 26",
+      "AGOSTO 26 HN"
+    ],
     "observedAugust": {
-      "GT": 34,
-      "HN": 34,
-      "total": 68
+      "GT": 0,
+      "HN": 0,
+      "total": 0
     }
   },
   "countryGate": {
-    "decision": "HOLD_COUNTRY_TAB_MISMATCH",
-    "GT": {
-      "mismatchCount": 0,
-      "countryCounts": {
-        "GT": 34
-      }
-    },
-    "HN": {
-      "mismatchCount": 34,
-      "countryCounts": {
-        "GT": 34
-      }
-    }
+    "status": "NOT_APPLICABLE_UNTIL_PROVIDER_TABS_EXIST"
   },
   "identityResolution": {
     "canonicalMappingEntries": 208,
-    "requiredSourceShopperRefs": 28,
-    "mappedSourceShopperRefs": 28,
+    "requiredSourceShopperRefs": 0,
+    "mappedSourceShopperRefs": 0,
     "unmappedSourceShopperRefs": 0,
-    "targetShopperProfiles": 28,
-    "existingTargetShopperProfiles": 28,
+    "targetShopperProfiles": 0,
+    "existingTargetShopperProfiles": 0,
     "missingTargetShopperProfiles": 0
   },
   "providerCompare": {
     "currentCanonicalVisits": 616,
     "periodAlreadyExists": false,
-    "acceptedCandidates": 34,
-    "newVisitWritesPlanned": 34,
+    "acceptedCandidates": 0,
+    "newVisitWritesPlanned": 0,
     "alreadyExistingAccepted": 0
   },
   "operational": {
-    "acceptedStatusCounts": {
-      "submitida": 27,
-      "cuestionario": 7
-    },
-    "assigned": 34,
+    "acceptedStatusCounts": {},
+    "assigned": 0,
     "unassigned": 0,
-    "scheduled": 34,
-    "realized": 34,
-    "submitted": 27
+    "scheduled": 0,
+    "realized": 0,
+    "submitted": 0
   },
   "holds": [
     {
+      "country": "GT",
+      "reason": "required_provider_tab_missing",
+      "tab": "AGOSTO 26",
+      "sourceRows": 0
+    },
+    {
       "country": "HN",
-      "reason": "country_tab_mismatch",
-      "sourceRows": 34,
-      "mismatchCount": 34,
-      "sourceCountryCounts": {
-        "GT": 34
-      }
+      "reason": "required_provider_tab_missing",
+      "tab": "AGOSTO 26 HN",
+      "sourceRows": 0
     }
   ],
   "blockers": [],
   "exactDelta": {
-    "acceptedCountries": [
-      "GT"
-    ],
-    "visitIds": [
-      "hr_2026-08_gt_10_7c8f7235c6",
-      "hr_2026-08_gt_11_ebc90f1f2f",
-      "hr_2026-08_gt_12_9394d16148",
-      "hr_2026-08_gt_13_370b3770d5",
-      "hr_2026-08_gt_14_12470133f5",
-      "hr_2026-08_gt_15_d7637060a2",
-      "hr_2026-08_gt_16_2d1966fd6d",
-      "hr_2026-08_gt_17_20d2db2571",
-      "hr_2026-08_gt_18_c24e80c3f4",
-      "hr_2026-08_gt_19_b18e9f6377",
-      "hr_2026-08_gt_20_cf40f1eb58",
-      "hr_2026-08_gt_21_d143c8d1e2",
-      "hr_2026-08_gt_22_3ae89526fc",
-      "hr_2026-08_gt_23_1b6fab550b",
-      "hr_2026-08_gt_24_e0b73e03a7",
-      "hr_2026-08_gt_25_b2e61d8ad8",
-      "hr_2026-08_gt_26_8c2e149be5",
-      "hr_2026-08_gt_27_c72f5d4e18",
-      "hr_2026-08_gt_28_b9160d9a3d",
-      "hr_2026-08_gt_29_2e74897de5",
-      "hr_2026-08_gt_2_0bf8ebc0b9",
-      "hr_2026-08_gt_30_16dd6de722",
-      "hr_2026-08_gt_31_7869c3458c",
-      "hr_2026-08_gt_32_88b3eae67e",
-      "hr_2026-08_gt_33_1baa587e9c",
-      "hr_2026-08_gt_34_e7e0f6348f",
-      "hr_2026-08_gt_35_99dc1ed36c",
-      "hr_2026-08_gt_3_9ddb7002c1",
-      "hr_2026-08_gt_4_409c617039",
-      "hr_2026-08_gt_5_3194211114",
-      "hr_2026-08_gt_6_fee08855a5",
-      "hr_2026-08_gt_7_f11f23f7af",
-      "hr_2026-08_gt_8_d1763d86dd",
-      "hr_2026-08_gt_9_1851ae8082"
-    ],
-    "hrRowIds": [
-      "AGOSTO 26!10",
-      "AGOSTO 26!11",
-      "AGOSTO 26!12",
-      "AGOSTO 26!13",
-      "AGOSTO 26!14",
-      "AGOSTO 26!15",
-      "AGOSTO 26!16",
-      "AGOSTO 26!17",
-      "AGOSTO 26!18",
-      "AGOSTO 26!19",
-      "AGOSTO 26!2",
-      "AGOSTO 26!20",
-      "AGOSTO 26!21",
-      "AGOSTO 26!22",
-      "AGOSTO 26!23",
-      "AGOSTO 26!24",
-      "AGOSTO 26!25",
-      "AGOSTO 26!26",
-      "AGOSTO 26!27",
-      "AGOSTO 26!28",
-      "AGOSTO 26!29",
-      "AGOSTO 26!3",
-      "AGOSTO 26!30",
-      "AGOSTO 26!31",
-      "AGOSTO 26!32",
-      "AGOSTO 26!33",
-      "AGOSTO 26!34",
-      "AGOSTO 26!35",
-      "AGOSTO 26!4",
-      "AGOSTO 26!5",
-      "AGOSTO 26!6",
-      "AGOSTO 26!7",
-      "AGOSTO 26!8",
-      "AGOSTO 26!9"
-    ],
-    "shopperMappings": [
-      {
-        "sourceShopperRef": "shopper_gt_0757b1eeb4",
-        "targetShopperId": "shp-f7a50a8d12b0",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_13ff51fafd",
-        "targetShopperId": "shp-2e82d0061f27",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_1440137b73",
-        "targetShopperId": "shp-cdbf95dccaa6",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_17c3a1dfeb",
-        "targetShopperId": "shp-617c03c14233",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_2275578b02",
-        "targetShopperId": "shp-15208cd3e67b",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_24e2b5c5b2",
-        "targetShopperId": "shp-bdbe920ac716",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_24e70bc42c",
-        "targetShopperId": "shp-4b448db5f831",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_3426ec3ff3",
-        "targetShopperId": "shp-ebc05156bb0c",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_37adac8f58",
-        "targetShopperId": "shp-a62b398318b2",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_4dd893a7e7",
-        "targetShopperId": "shp-4e16da85ac63",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_52524de362",
-        "targetShopperId": "shp-fbeeed1ba734",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_6b67f2a89f",
-        "targetShopperId": "shp-32aa3767add3",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_7a034d9eab",
-        "targetShopperId": "shp-5091cd4e782a",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_7f23f9a093",
-        "targetShopperId": "shp-b2e3d7bef69b",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_833dc86954",
-        "targetShopperId": "shp-4f1e8e2a732d",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_8343bb7ba7",
-        "targetShopperId": "shp-4f6467bd2086",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_a27341e5f2",
-        "targetShopperId": "shp-3c2353c661eb",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_a40b00bbbd",
-        "targetShopperId": "shp-bdf00a861e1f",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_a681381884",
-        "targetShopperId": "shp-df07ee633cc2",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_bd89d3ecc6",
-        "targetShopperId": "shp-9ac573af142d",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_c8391cf8d8",
-        "targetShopperId": "shp-c65978730f87",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_ce6a976e54",
-        "targetShopperId": "shp-58a449f10a07",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_d8018a15d0",
-        "targetShopperId": "shp-532c51ff2394",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_e41c7f3439",
-        "targetShopperId": "shp-6b3c4480bacd",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_ebc7c081b4",
-        "targetShopperId": "shp-6e5f7546e7e0",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_ee7c8b2ee8",
-        "targetShopperId": "shp-02fc264de8d6",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_f340a8561f",
-        "targetShopperId": "shp-170131d4c50c",
-        "targetKind": "existing"
-      },
-      {
-        "sourceShopperRef": "shopper_gt_fe757bebcd",
-        "targetShopperId": "shp-0463570db99b",
-        "targetKind": "existing"
-      }
-    ],
+    "acceptedCountries": [],
+    "visitIds": [],
+    "hrRowIds": [],
+    "shopperMappings": [],
     "excludedCountries": [
+      "GT",
       "HN"
     ]
   },
