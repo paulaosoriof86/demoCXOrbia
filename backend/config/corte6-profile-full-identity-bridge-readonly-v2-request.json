@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.corte6.profile-full-identity-bridge-readonly-request.v2",
   "requestId": "corte6-profile-full-identity-bridge-readonly-20260731-01",
-  "status": "authorized_readonly_pending_execution",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_readonly",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -34,5 +34,14 @@
   "emailMatchAllowed": false,
   "usernameAloneMatchAllowed": false,
   "authClaimRequired": true,
-  "nextGate": "RUN_AUTH_CLAIM_IDENTITY_BRIDGE_READONLY_THEN_REBASE_SINGLE_WRITE_PLAN"
+  "nextGate": "REBASE_EXACT_FIRESTORE_WRITE_PLAN_ON_IDENTITY_BRIDGE_RESULT_BEFORE_REQUESTING_USER_WRITE_AUTHORIZATION",
+  "consumedAt": "2026-07-31T14:25:02.568Z",
+  "decision": "READY_FULL_PROFILE_PARTIAL_EXACT_WITH_REMAINING_IDENTITY_HOLD",
+  "legacyExact": 120,
+  "authBridgeResolved": 0,
+  "finalExactProfiles": 120,
+  "remainingHold": 31,
+  "docsWithPlannedChanges": 118,
+  "profileFieldValuesPlanned": 329,
+  "identityLinksPlanned": 0
 }
