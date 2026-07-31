@@ -46,14 +46,14 @@
 - Julio puede seguir ejecutándose mientras el siguiente mes tiene visitas disponibles originadas en plataforma.
 - Plataforma→HR y HR→plataforma se concilian con IDs estables + `assignmentSource`/`assignmentSyncStatus`; no duplicar y nunca deduplicar por nombre.
 
-## 5. Provider HR — PASS parcial
+## 5. Provider HR — PASS
 Revalidación `2026-07-31T02:26:46.862Z`:
 - Google Sheets API `ENABLED`;
 - service account puede leer la HR canónica por Sheets API: PASS;
 - HR canónica: 30 tabs / 28 mensuales / último `JULIO 26 HN`;
 - decisión: `PASS_SHEETS_API_AND_CANONICAL_HR_READER`.
 
-El preflight fue corregido para validar la HR por Sheets API directamente; Drive API no es requisito del runtime.
+El preflight valida la HR por Sheets API directamente; Drive API no es requisito del runtime.
 
 ## 6. P0 de seguridad HR aún vivo
 Metadata Drive de la HR canónica de 30 tabs sigue mostrando `anyone=writer`. La service account permanece `reader`.
