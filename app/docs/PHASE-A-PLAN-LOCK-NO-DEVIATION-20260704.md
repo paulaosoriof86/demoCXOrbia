@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-31  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_STABLE_COMPOSER_CODE_PASS__LOCAL_REGRESSION_3X_PASS__PENDING_ONE_HOSTING_DEV_AUTH__NO_PRODUCTION`
+**Estado vivo:** `C6_STABLE_COMPOSER_HOSTING_DEV_REMOTE_PASS__PENDING_HUMAN_CUMULATIVE_VISUAL__NO_PRODUCTION`
 
 ## 1. Objetivo/arquitectura
 TyA/Cinépolis como tenant/proyecto configurable de CXOrbia. `cxorbia-backend-dev`=DEV canónico; `tya-plataforma`=Hosting final. No crear Firebase/Hosting/rama/PR por rutina.
@@ -34,7 +34,7 @@ Ownership:
 4. Auth/RBAC: acceso/scope.
 5. Plataforma-origin: delta reconciliado, nunca duplicación HR.
 
-## 5. Composer estable ya implementado
+## 5. Composer estable implementado y publicado en DEV
 `app/adapters/tya-cumulative-read-model.js` es el composer canónico del visual DEV acumulativo:
 - baseline HR inmutable por `sourceRevision`;
 - match de protected visit solo por `hrRowId`, `sourceTab+sourceRow` o `visitId` exacto;
@@ -43,7 +43,7 @@ Ownership:
 - HR conserva estado operacional;
 - perfil protegido enriquece identidad/credenciales sin reescribir HR.
 
-`tya-dev-full-visual-bridge.js` ya usa este composer y `tya-live-source-refresh-watch.js` aplica revision gate + preservación UI.
+`tya-dev-full-visual-bridge.js` usa este composer y `tya-live-source-refresh-watch.js` aplica revision gate + preservación UI.
 
 ## 6. Refresh estable
 - `fresh=1` consulta en background.
@@ -58,27 +58,32 @@ Resolver solo por llaves técnicas exactas/crosswalk: `shopperId/id`, `legacySho
 
 Las visitas históricas se atribuyen a la identidad canónica antes de KPI/perfil. Conflictos quedan HOLD.
 
-## 8. Regression gate ejecutado localmente
-`PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE`:
-- baseline14/616/208;
--120 perfiles protegidos;
--616 protected visits con identificador alterno pero misma evidencia HR;
-- tres reaplicaciones:616 visitas/208 shoppers en las tres;
-- duplicateVisitKeys0;
-- duplicateShopperIds0;
-- protectedVisitsAppended0;
-- estado HR preservado;
-- perfil protegido visible.
+## 8. Regression gate local y remoto — PASS técnico
+Local: `PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE`.
 
-La evidencia declara explícitamente que fue ejecución local de los mismos sources, no CI remoto.
+Hosting DEV autorizado y ejecutado exactamente1 vez. Remote smoke: `PASS_EXISTING_HOSTING_DEV_STABLE_C6_REMOTE_READY`.
 
-## 9. Gate remoto pendiente
-El código todavía no está publicado en Hosting DEV. La autorización anterior fue consumida.
+Confirmaciones remotas:
+- composer/bridge/watcher/finance exactos al repo;
+- 3 reaplicaciones del composer remoto sin crecimiento;
+- protectedVisitAppendZero;
+- HR fresh meta PASS con histórico616 y auto-month activo;
+- full-profile fail-closed sin sesión visual;
+- Cloud Run0 y demás providers/writes0.
 
-Con autorización fresca se permite únicamente:
-`1x redeploy del Hosting DEV existente cxorbia-backend-dev/cxorbia-dev`.
+## 9. Gate humano pendiente
+El código ya está publicado; no ejecutar otro deploy bajo la autorización consumida.
 
-No Cloud Run. Después se ejecuta remote smoke y human visual con 3 refresh y validación completa. Solo PASS completo congela Corte6.
+Antes de congelar Corte6 se exige una validación humana acumulativa del mismo Hosting DEV:
+- 3 refresh/focus cycles sin 88→44 ni otros cambios transitorios;
+- scroll/ruta/filtros/modal estables;
+- identidad Shopper única cuando exista crosswalk exacto;
+- perfil/credenciales/histórico correctos;
+- comparativo histórico preservado;
+- Beneficios y Finanzas canónicos preservados;
+- estados operativos iguales en Dashboard/Visitas/histórico.
+
+PASS técnico remoto ≠ freeze visual.
 
 ## 10. Julio/agosto
 No iniciar materialización agosto mientras Corte6 no quede visualmente estable y congelado. HR live/auto-month sigue activa. Después: identificar/reconciliar fuente agosto plataforma-origin y materializar solo delta autorizado.
@@ -87,10 +92,10 @@ No iniciar materialización agosto mientras Corte6 no quede visualmente estable 
 El mismo regression lock aplica a toda candidata futura. Claude no reinterpreta HR/identidad/finanzas y no puede reintroducir fixtures, fallbacks o estados antiguos.
 
 ## 12. Academia
-Documentar ownership, composer idempotente, crosswalk técnico, revision gate y refresh que no interrumpe al usuario. Fuente vigente: `ACADEMIA-IMPACTO-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`.
+Documentar ownership, composer idempotente, crosswalk técnico, revision gate, deploy seguro y refresh que no interrumpe al usuario.
 
 ## 13. Gate vivo inmediato
-`AUTORIZACIÓN FRESCA 1x HOSTING DEV → REMOTE SMOKE → HUMAN VISUAL 3x REFRESH + DASHBOARD/HISTÓRICO/SHOPPER/BENEFICIOS/FINANZAS → PASS/FAIL → FREEZE C6 → AGOSTO`.
+`HUMAN VISUAL ACUMULATIVA 3x REFRESH + DASHBOARD/HISTÓRICO/SHOPPER/BENEFICIOS/FINANZAS → PASS/FAIL → FREEZE C6 → AGOSTO`.
 
 ## 14. Estado seguro
-En el bloque actual: Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes0; Cloud Run0; Hosting0; nuevos Firebase/Hosting0; merge=false; producción=false.
+Acumulado del deploy autorizado actual: Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes0; Cloud Run0; Hosting1 consumido; nuevos Firebase/Hosting0; merge=false; producción=false.
