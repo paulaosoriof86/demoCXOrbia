@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-31  
-**Estado:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_DISABLED__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_DISABLED__HR_PUBLIC_WRITE_P0__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Repositorio/destinos
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge.
@@ -20,54 +20,53 @@
 - La HR debe leerse en vivo.
 - Cada nueva pestaña mensual válida debe generar/detectar automáticamente el periodo sin configuración por chat.
 - Julio puede continuar ejecutándose mientras el siguiente mes ya tiene visitas disponibles de origen plataforma.
-- Una visita/periodo `assignmentSource=platform` puede existir antes de la pestaña HR. Cuando HR aparezca se reconcilia por `tenantId/projectId/visitId/hrRowId/shopperId`, sin duplicar ni sobrescribir conflictos.
+- Una visita/periodo `assignmentSource=platform` puede existir antes de la pestaña HR. Cuando HR aparezca se reconcilia por IDs estables, sin duplicar ni sobrescribir conflictos.
 - Dedupe por nombre: prohibido.
 
-## 4. Auto-month — causa de raíz y fix
-El runtime tenía dos problemas: fallback GViz podía aparentar tabs inexistentes y el servicio runtime se filtraba contra inventario estático hasta julio.
-
+## 4. Auto-month — implementado y prevalidado
 Corregido:
-- tabs GViz solo se aceptan si figuran en registry provider;
-- el runtime ya no usa el inventario estático como límite mensual;
-- con Sheets API disponible, cada `fresh=1` regenera registry desde metadata provider y descubre tabs nuevas automáticamente;
-- watcher del navegador refresca periódicamente y al volver a foco;
-- predeploy `cxorbia/live-hr-runtime-predeploy` PASS, sin deploy.
+- runtime no se limita por inventario estático hasta julio;
+- `fresh=1` usa metadata Sheets para descubrir meses automáticamente cuando API está disponible;
+- fallback GViz conserva último registry provider fail-closed;
+- watcher refresca periódicamente y al volver a foco;
+- `cxorbia/live-hr-runtime-predeploy` PASS sin deploy.
 
-## 5. Bloqueo provider exacto
-Preflight read-only:
+## 5. Provider capability
+Read-only preflight:
 - proyecto `cxorbia-backend-dev`, projectNumber `87461567267`;
 - Google Sheets API `DISABLED`;
-- service account `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com`;
-- no tiene `serviceusage.services.enable`;
-- sí tiene `run.services.update`, `iam.serviceAccounts.actAs`, `cloudbuild.builds.create`;
-- acceso Drive desde esa identidad devuelve 403 `accessNotConfigured` mientras la capacidad provider no está activada.
+- service account `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com` no tiene `serviceusage.services.enable`;
+- sí tiene `run.services.update`, `iam.serviceAccounts.actAs`, `cloudbuild.builds.create`.
 
-Por tanto la automatización mensual está implementada, pero no puede quedar operativa de punta a punta hasta habilitar Sheets API una sola vez en el proyecto existente.
+Drive metadata adicional confirma que **esa misma service account ya es reader del HR canónico**, así que no hace falta una nueva cuenta ni compartir de nuevo; tras habilitar Sheets API solo corresponde revalidar acceso.
 
-## 6. Shopper real
-El problema no es ausencia de datos: Firestore protegido tiene identidad real. El preview público los enmascara por diseño.
+## 6. P0 de seguridad HR
+El HR canónico tiene permiso `anyone=writer`. Cualquier persona con el enlace puede editar la fuente operativa.
 
-Preparado, aún no desplegado:
+Clasificación: `P0_PROVEN_SECURITY_SOURCE_SHARING`.
+
+Antes de producción debe removerse el acceso público writer y quedar restringido a usuarios autorizados, manteniendo la service account como reader. No se cambió sharing porque no existe autorización provider específica y la herramienta disponible no expone eliminación de ese permiso.
+
+## 7. Shopper real
+Firestore protegido sí tiene los datos. El preview público los enmascara deliberadamente.
+
+Preparado, no desplegado:
 - `app/core/backend-protected-dev-mode.js`;
-- `index-backend-dev.html` usa Firebase Hosting init y activa modo protegido solo con flag DEV explícito;
+- `index-backend-dev.html` con Firebase Hosting init;
 - Auth + custom claims + Rules obligatorios;
-- Admin/Coordinación podrá validar nombres y módulos; shopper queda restringido por rol;
-- writes deshabilitados;
-- source-safe público permanece sin PII.
+- Admin/Coordinación ve identidad real, shopper solo su scope;
+- read-only, writes bloqueados;
+- sin PII en source-safe.
 
-## 7. Agosto hoy
-HR no tiene tabs de agosto. La afirmación operativa vigente es que julio aún tiene visitas ejecutándose y agosto ya tiene visitas disponibles fuera de HR/plataforma-origin. El sistema debe soportar esa coexistencia y reconciliar cuando aparezcan tabs HR.
+Un redeploy Hosting DEV autorizado hará visible esta ruta para la comprobación de módulos shopper.
 
-No crear agosto por clonación ciega de julio ni escribir Firestore sin la fuente operacional exacta de esas visitas.
+## 8. Agosto hoy
+HR todavía no tiene tabs de agosto. Operativamente julio puede continuar en ejecución y agosto puede existir como disponibilidad platform-origin antes de HR. El sistema ya tiene este contrato configurado; la materialización de esas visitas requiere su fuente operacional exacta y un write gate separado.
 
-## 8. Gate vivo exacto
-Un único bloque de activación posterior a autorización:
-`ENABLE SHEETS API EN PROYECTO EXISTENTE → VERIFICAR/OTORGAR SOLO LECTURA HR SI HACE FALTA → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
+## 9. Gate vivo exacto
+`CORREGIR SHARING HR P0 + HABILITAR SHEETS API EN PROYECTO EXISTENTE → REVALIDAR SERVICE ACCOUNT READER → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
 
-Sin producción ni Firestore data writes.
+Después: fuente operacional exacta agosto → delta-only autorizado → preprod/cutover.
 
-## 9. Estado seguro
-No API enable, no share, no Cloud Run/Hosting deploy, no HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes, no merge/producción. Histórico/Auth91 preservados.
-
-## 10. Siguiente autorización requerida
-Solo una autorización combinada para activación provider DEV + dos redeploys existentes. La habilitación de Sheets API requiere además una identidad propietaria con `serviceusage.services.enable`; la service account disponible no posee ese permiso.
+## 10. Estado seguro
+No API enable, no sharing change, no Cloud Run/Hosting deploy, no HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes, no merge/producción. Histórico/Auth91 preservados.
