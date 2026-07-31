@@ -5,7 +5,7 @@ on:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - 'backend/private-inbox/corte6-profile-full-bundle-v2.enc.json'
+      - 'backend/private-inbox/corte6-profile-full-v2-parts/READY.json'
 
 permissions:
   contents: write
@@ -24,6 +24,34 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Assemble encrypted bundle from connector-safe chunks
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/c6-profile-full-v2
+          node <<'NODE'
+          const fs=require('fs');
+          const crypto=require('crypto');
+          const base='backend/private-inbox/corte6-profile-full-v2-parts';
+          const m=JSON.parse(fs.readFileSync(base+'/READY.json','utf8'));
+          if(m.schemaVersion!=='cxorbia.corte6.profile-full-v2-chunk-manifest.v1')throw new Error('bad_chunk_manifest_schema');
+          if(!Array.isArray(m.partFiles)||m.partFiles.length!==Number(m.partCount)||m.partFiles.length<1)throw new Error('bad_chunk_manifest_parts');
+          if(m.safety?.encryptedOnly!==true||m.safety?.plaintextProfileValues!==false||Number(m.safety?.providerWrites)!==0)throw new Error('unsafe_chunk_manifest');
+          let assembled='';
+          for(const name of m.partFiles){
+            if(!/^part-\d{3}\.txt$/.test(name))throw new Error('unsafe_part_name:'+name);
+            const p=base+'/'+name;
+            if(!fs.existsSync(p))throw new Error('missing_part:'+name);
+            assembled+=fs.readFileSync(p,'utf8');
+          }
+          if(assembled.length!==Number(m.totalChars))throw new Error('assembled_length_mismatch');
+          const sha=crypto.createHash('sha256').update(Buffer.from(assembled,'utf8')).digest('hex');
+          if(sha!==m.sourceSha256)throw new Error('assembled_sha256_mismatch');
+          const env=JSON.parse(assembled);
+          if(env.schemaVersion!=='cxorbia.corte6.profile-full-handoff-envelope.v2'||env.targetProjectId!=='cxorbia-backend-dev'||env.tenantId!=='tya')throw new Error('assembled_envelope_target_mismatch');
+          fs.writeFileSync('.tmp/c6-profile-full-v2/corte6-profile-full-bundle-v2.enc.json',assembled,{mode:0o600});
+          console.log(JSON.stringify({assembled:true,partCount:m.partCount,totalChars:m.totalChars,sha256:sha,schemaVersion:env.schemaVersion,targetProjectId:env.targetProjectId,tenantId:env.tenantId}));
+          NODE
 
       - name: Validate read-only request
         run: |
@@ -64,7 +92,7 @@ jobs:
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
           CXORBIA_TENANT_ID: tya
           CXORBIA_PROJECT_ID: cinepolis
-          CXORBIA_PROFILE_FULL_ENVELOPE: backend/private-inbox/corte6-profile-full-bundle-v2.enc.json
+          CXORBIA_PROFILE_FULL_ENVELOPE: .tmp/c6-profile-full-v2/corte6-profile-full-bundle-v2.enc.json
           CXORBIA_PROFILE_FULL_OUT: app/docs/evidence/CORTE6-PROFILE-FULL-HANDOFF-READONLY-LATEST.json
         run: |
           set -euo pipefail
@@ -117,6 +145,6 @@ jobs:
           if [ '${{ job.status }}' != 'success' ]; then STATE=error;DESC='FAIL_C6_PROFILE_FULL_V2_READONLY'; fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/corte6-profile-full-v2/${DESC}" -f description="$DESC" >/dev/null
 
-      - name: Cleanup credential
+      - name: Cleanup credential and assembled envelope
         if: always()
         run: rm -rf .tmp/c6-profile-full-v2
