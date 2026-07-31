@@ -1,4 +1,4 @@
-# Academia — impacto Corte 6 perfil Shopper + human visual sin credenciales técnicas
+# Academia — impacto Corte 6 perfil Shopper + visual acumulativa
 
 **Fecha:** 2026-07-31
 
@@ -7,38 +7,55 @@
 - transportar PII/credenciales cifradas y descifrarlas solo en memoria;
 - validar identidad por llave estable antes de cualquier write;
 - provider compare read-only → write-plan → autorización one-shot → drift gate → write → readback;
-- separar human visual de provider Auth cuando el usuario de QA no dispone de credenciales técnicas;
-- preservar el auto-entry del prototipo para validación humana;
-- usar proxy server-side read-only con sesión visual temporal opaca para exponer únicamente en DEV el perfil completo autorizado;
-- mantener Firebase Auth/claims/Rules como gate técnico separado;
+- separar human visual de provider Auth cuando QA no dispone de credenciales técnicas;
+- preservar auto-entry del prototipo;
 - mantener identidades no resolubles en HOLD;
-- un PASS técnico no reemplaza validación visual humana.
+- un PASS técnico no reemplaza validación visual humana;
+- **una nueva capa de datos debe superponerse de forma acumulativa y no reemplazar una fuente ya validada.**
 
 ## Caso Corte6
 Perfil:151 registros;120 exactos;31 HOLD;329 valores. Write PASS:120 documentos,118 field-change +2 marker-only, readback120/329, mismatches0.
 
-## Human full visual no-credential — ejecutado PASS
-Authorization `chat-20260731-corte6-human-full-visual-no-credential-01` consumida.
--1 Cloud Run DEV redeploy existente, revisión `cxorbia-live-hr-dev-00009-xs8`.
--1 Hosting DEV redeploy existente.
--Decisión `PASS_EXISTING_DEV_CLOUD_RUN_HOSTING_NO_CREDENTIAL_FULL_VISUAL_REMOTE_READY`.
--Full-profile falla cerrado401 sin sesión visual.
--Auto-entry Admin, picker Shopper DEV y source-safe default preservados.
--Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes0 durante el gate.
+El acceso human visual sin credenciales quedó técnico PASS, pero la visual real mostró un P0 de composición: Dashboard0, HR live/auto-refresh ausente, identidad Shopper mezclada, perfiles/histórico incompletos y Finanzas/Beneficios vacíos.
+
+## Causa didáctica
+La capa full-profile sustituyó `CX.data` en vez de enriquecer la fuente operacional. Además se deshabilitó el watcher HR y coexistieron dos representaciones de period ID, por lo que el periodo activo dejó de encontrar sus visitas aunque el histórico de616 seguía cargado.
+
+Esto demuestra que validar cada capa aislada no garantiza una aplicación acumulativamente correcta.
+
+## Precedencia reusable de fuentes
+Para CXOrbia/TyA:
+1. **HR viva** manda sobre periodos, periodo activo, visitas operativas y descubrimiento automático de meses.
+2. **Firestore protegido** manda sobre perfil/PII/credenciales legacy materializadas y facetas/histórico, como overlay por llave técnica exacta.
+3. **Finanzas/pagos canónicos** mandan sobre liquidaciones, beneficios, movimientos y pago histórico.
+
+Ninguna fuente sustituye a otra por conveniencia de QA.
+
+## Exact identity y aliases
+- unir solo por `id/shopperId/legacyShopperId` exacto;
+- no dedupe por nombre, teléfono ni email;
+- un alias legacy puede ocultarse únicamente si otro perfil canónico declara ese mismo alias en `legacyShopperId` de forma exacta;
+- fixtures/demo y referencias técnicas sin identidad operacional no deben convertirse en personas visibles en una prueba real.
+
+## Corrección reusable preparada
+- full visual pasa de replace a overlay acumulativo;
+- watcher HR sigue activo y reaplica el overlay protegido tras refresh;
+- project/period IDs de HR se preservan;
+- snapshots financieros canónicos no se reemplazan;
+- módulos UI no se tocan.
 
 ## Impacto en manuales/cursos/rutas
-- Admin/operación QA: entrar por rol sin credenciales técnicas y revisar perfil completo mediante sesión visual temporal.
-- Shopper QA: elegir identidad real existente desde el picker DEV y validar módulos propios.
-- Backend: human visual token → proxy server-side → Firestore read-only → bridge CX.data.
-- Seguridad: token crudo no se commitea, expira y el endpoint falla cerrado sin él.
-- Auth: Firebase Auth/claims/Rules siguen siendo autoridad del producto y se prueban en gate técnico separado.
+- Admin QA: una sola visual debe demostrar simultáneamente fuente viva, perfil, histórico y finanzas.
+- Shopper QA: la misma identidad debe conservar perfil, histórico y beneficios.
+- Backend: HR live → protected overlay → canonical finance, con precedencia explícita.
+- QA: un smoke debe medir invariantes acumulativas, no solo presencia de assets.
 
 ## Clasificación
-- **Reusable CXOrbia:** separación human QA/provider Auth + proxy read-only con sesión temporal.
-- **Exclusivo cliente:** 31 identidades HOLD TyA.
-- **Claude/prototipo:** sin rediseño; mantener UI aprobada.
-- **Academia:** actualizar material sobre autenticación técnica vs acceso humano QA.
-- **Sin impacto Claude:** runtime/backend/adapters DEV, deploy y evidencia.
+- **Reusable CXOrbia:** composición acumulativa y precedencia de fuentes.
+- **Exclusivo cliente:**31 identidades HOLD TyA.
+- **Claude/prototipo:** no rediseño; solo documentar gap frontend si persiste después de corregir composición.
+- **Academia:** incorporar anti-regresión acumulativa y stable-ID overlay.
+- **Sin impacto Claude:** bridge/watcher/gates DEV.
 
 ## Siguiente hito didáctico
-Human visual Admin+Shopper sin credenciales → PASS/FAIL → resolver/decidir31 HOLD → freeze Corte6. Todavía no producción.
+Hosting DEV del fix acumulativo → smoke HR616/auto-month/full-profile fail-closed → human visual conjunta Dashboard+Shopper+Beneficios+Finanzas → freeze Corte6. Todavía no producción.
