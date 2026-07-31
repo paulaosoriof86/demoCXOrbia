@@ -1,0 +1,48 @@
+# Academia — HR viva, periodos automáticos y origen plataforma
+
+**Fecha:** 2026-07-31  
+**Estado:** `REUSABLE_PATTERN_DOCUMENTED__NO_PRODUCTION`
+
+## Patrón reusable
+Una operación de campo no debe exigir configuración técnica mensual cuando el calendario operativo ya existe en una fuente viva.
+
+Para CXOrbia:
+- una pestaña mensual nueva validada por metadata provider crea/detecta el periodo automáticamente;
+- el navegador refresca la fuente viva periódicamente y al recuperar foco;
+- una fuente fallback no puede inventar existencia: si la metadata provider no está disponible, el sistema conserva el último estado válido y falla cerrado;
+- el periodo operativo no depende exclusivamente de HR: plataforma puede originar disponibilidad antes de que la pestaña HR exista;
+- cuando HR aparece, la conciliación usa IDs estables, origen y estado de sincronización; nunca nombre visual.
+
+## Caso TyA/Cinépolis
+Julio puede mantener visitas pendientes en ejecución y agosto puede tener visitas disponibles originadas en plataforma aunque aún no existan pestañas HR de agosto. Esto no es contradicción: son dos momentos del flujo bidireccional.
+
+La regla correcta es:
+`PLATAFORMA ORIGINA → MARCA assignmentSource=platform → HR APARECE/REFLEJA → RECONCILIA → NO DUPLICA`.
+
+Y en sentido inverso:
+`HR ASIGNA → PLATAFORMA DETECTA → RETIRA DE DISPONIBLES → RECONCILIA → NO DUPLICA`.
+
+## Privacidad e identidad shopper
+Un preview source-safe puede mostrar un placeholder para proteger PII. Eso no debe confundirse con el runtime autenticado:
+- artefacto público/source-safe: mínimo dato, identidad enmascarada;
+- runtime protegido: Auth + claims/RBAC + Firestore Rules; muestra la identidad necesaria según rol;
+- Admin/Operación ve identidad operativa;
+- shopper solo su propio scope;
+- nunca copiar PII a JS estático para “arreglar” una pantalla de prueba.
+
+## Gate provider
+La automatización depende de una capacidad real del proveedor. Si Google Sheets API está deshabilitada, el sistema debe declararlo y no simular metadata mediante GViz. La activación de API es infraestructura de una sola vez; no forma parte del trabajo mensual del usuario.
+
+## Contenido para manuales/cursos
+- fuente viva vs snapshot;
+- detección automática de periodos;
+- existencia de tab antes de interpretar contenido;
+- platform-origin antes de HR;
+- conciliación bidireccional y anti-duplicación;
+- `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`;
+- privacidad source-safe vs identidad runtime;
+- fail-closed y revisión de conflictos;
+- diferencia entre activación inicial de proveedor y operación mensual autónoma.
+
+## Seguridad
+Documentación únicamente. Sin provider writes, deploy, Firestore/HR/Auth/Rules/Storage/Make/Gemini, merge ni producción.
