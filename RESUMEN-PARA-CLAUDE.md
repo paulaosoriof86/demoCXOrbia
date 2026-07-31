@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_PROFILE_WRITE_PASS__PROTECTED_SESSION_CONTINUITY_HOSTING_PASS__WAITING_ONE_REAL_LOGIN_REFRESH_NO_REPROMPT_HUMAN_VISUAL__31_IDENTITY_HOLD__NO_PRODUCTION`
+**Estado vivo:** `C6_PROFILE_WRITE_PASS__HUMAN_VISUAL_AUTH_DESVIO_CONFIRMED__NO_CREDENTIAL_FULL_VISUAL_FIX_PREPARED__WAITING_1X_CLOUD_RUN_1X_HOSTING_AUTH__31_HOLD__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Corte3 FROZEN; R17N1,406/1,406 no repetir.
@@ -11,39 +11,44 @@
 - Perfil completo Firestore120 docs/329 campos WRITE+READBACK PASS, mismatches0.
 - PR#7 draft/open/no merge; producción intacta.
 
-## 2. Login repetitivo — causa y corrección
-La visual protegida del31-jul volvió a mostrar Usuario/Contraseña al seleccionar Administración/Coordinación. Causa raíz: protected runtime + browser-auth usaban persistencia `SESSION`, por lo que cada ciclo visual podía regresar al gate interactivo.
+## 2. Corrección metodológica human visual
+Paula no dispone de credenciales técnicas Firebase y la human visual nunca debía exigirlas. El contrato correcto ya existente separa:
+- human visual DEV: auto-entry del prototipo;
+- Auth/claims/Rules: validación técnica/provider separada.
 
-Fix aplicado:
-- `app/core/backend-protected-dev-session-continuity.js` fuerza Firebase Auth `LOCAL` solo en protected DEV;
-- `backend-protected-dev-mode.js`: `persist:'local'` + `reuseAuthenticatedSession:true`;
-- `index-backend-dev.html`: continuidad cargada antes de browser-auth;
-- ninguna credencial/token/UID embebida; no bypass claims/Rules; logout explícito sigue siendo real.
+La persistencia LOCAL del protected runtime queda válida para pruebas técnicas, pero no es requisito para la visual humana.
 
-Claude no debe rediseñar login ni módulos UI por este hallazgo. Es corrección backend/core de continuidad de sesión.
+## 3. Fix preparado — no desplegado
+Backend/core/adapters únicamente:
+- `backend/runtime/hr-live-service/dev-visual.mjs`: lectura Firestore server-side read-only bajo token temporal opaco; sin token falla401;
+- `server.mjs` enruta `view=full-profile`;
+- `app/adapters/tya-dev-full-visual-bridge.js`: carga perfil completo en memoria sin pedir credenciales Firebase al humano;
+- `tya-live-source-refresh-watch.js`: no pisa ese carril;
+- `index-backend-dev.html`: carga el bridge;
+- `app.js` no se modifica y conserva auto-entry Admin + picker DEV de shopper real.
 
-## 3. Protected session continuity Hosting DEV — PASS
-Authorization `chat-20260731-corte6-protected-session-continuity-redeploy-02` consumida.
+No rediseñar ni tocar `/app/modules/*` por este punto.
 
-- exactamente1 redeploy del Hosting DEV existente;
-- decisión `PASS_EXISTING_HOSTING_DEV_PROTECTED_SESSION_CONTINUITY_REMOTE_VERIFIED`;
-- version `sites/cxorbia-backend-dev/versions/1e8c37163e7451be`;
-- release `sites/cxorbia-backend-dev/releases/1785515981786000`;
-- session continuity asset + persistencia LOCAL verificados remotamente;
-- protected runtime/Auth bridge/Firestore adapter/profile bridge/history KPI PASS;
-- Firestore/Auth/Rules/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos writes/deploys0.
+## 4. Contrato visual después del próximo gate
+Un enlace temporal DEV permitirá:
+- click Administración/Coordinación → entrada directa, sin usuario/contraseña Firebase;
+- Shoppers → perfil completo real, incluido username/password legacy cuando exista, teléfonos/WhatsApp, DPI y campos materializados;
+- KPI con detalle + histórico completo;
+- click Shopper/Evaluador → picker DEV de shopper real ya existente → portal con shopperId real de QA.
 
-## 4. Contrato visual vigente
-Primera autenticación real válida una sola vez por navegador. Después, refresh/nuevas visualizaciones deben restaurar sesión sin re-prompt mientras no se haga logout.
+Firebase Auth/claims/Rules siguen siendo autoridad/gate técnico y no se eliminan.
 
-Luego validar:
-- Admin/Coordinación con perfil completo, username/password legacy real cuando exista y teléfonos/WhatsApp;
-- KPI de shoppers con detalle;
-- histórico completo por shopperId incluyendo `submitida`;
-- Shopper con Auth + custom claim shopperId real y módulos propios.
+## 5. Provider gate pendiente
+Request `backend/config/corte6-human-full-visual-redeploy-request.json` está `enabled=false`, sin autorización.
 
-## 5. 31 identity HOLD
+Solo requiere, si Paula autoriza:
+-1 Cloud Run DEV existente `cxorbia-live-hr-dev`;
+-1 Hosting DEV existente `cxorbia-backend-dev/cxorbia-dev`;
+-0 Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes;
+-sin nuevo proyecto/Hosting, merge ni producción.
+
+## 6. 31 identity HOLD
 Continúan31 sin vínculo canónico reproducible. No usar nombre/teléfono/email ni creación silenciosa.
 
-## 6. Siguiente gate
-`1 LOGIN REAL → REFRESH SIN RE-PROMPT → HUMAN VISUAL ADMIN+SHOPPER → PASS/FAIL → 31 HOLD → FREEZE C6 → AGOSTO`.
+## 7. Siguiente gate
+`AUTORIZACIÓN 1x CLOUD RUN + 1x HOSTING DEV NO-CREDENTIAL VISUAL → REMOTE SMOKE → HUMAN VISUAL ADMIN+SHOPPER → PASS/FAIL → 31 HOLD → FREEZE C6 → AGOSTO`.
