@@ -1,7 +1,7 @@
 # CAMBIOS-BACKEND — Corte 6 · HR live automática + shopper protegido
 
 **Fecha:** 2026-07-31  
-**Estado:** `AUTOMONTH_CODE_PASS__SHEETS_API_DISABLED_PROVIDER_BLOCK__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `AUTOMONTH_CODE_PASS__SHEETS_API_DISABLED_PROVIDER_BLOCK__HR_PUBLIC_WRITE_P0__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
 
 ## Regla operacional confirmada
 - La HR se lee en vivo.
@@ -28,10 +28,21 @@ Evidencia read-only `LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json`:
 - `serviceusage.services.enable`: **no concedido**;
 - `run.services.update`: concedido;
 - `iam.serviceAccounts.actAs`: concedido;
-- `cloudbuild.builds.create`: concedido;
-- Drive metadata desde esa identidad: 403 `accessNotConfigured` mientras la capacidad provider no está activada.
+- `cloudbuild.builds.create`: concedido.
 
-Consecuencia: el código automático está preparado y validado, pero con Sheets API deshabilitada el runtime debe mantener fallback fail-closed; no puede afirmar que una pestaña nueva existe a partir de GViz.
+Verificación adicional desde Google Drive con la identidad de la propietaria:
+- el HR canónico `1h307t...8vU4` **ya comparte acceso `reader`** con `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com`;
+- por tanto no hace falta crear otra cuenta ni otorgar un permiso de lectura nuevo después de habilitar Sheets API; solo se debe revalidar;
+- metadata actual sigue sin tabs `AGOSTO 26` / `AGOSTO 26 HN`.
+
+Consecuencia: el único bloqueo técnico para metadata Sheets es la activación de Google Sheets API; la service account ya está autorizada en el archivo.
+
+## P0 de seguridad detectado en HR
+La metadata de permisos del mismo HR devuelve además `type=anyone, role=writer`: **cualquier persona con el enlace puede editar el HR**.
+
+Esto es un P0 de seguridad para producción porque la HR contiene operación y puede contener datos personales/operativos. Debe eliminarse el acceso público de escritura y dejar el archivo restringido a usuarios autorizados + service account reader antes de cutover.
+
+No se modificaron permisos en este bloque porque cambiar sharing es un provider write y no estaba autorizado.
 
 ## Shopper real — preparación segura
 Firestore protegido ya fue validado read-only:
@@ -64,26 +75,25 @@ No se copiaron nombres al JS source-safe. El preview público puede seguir mostr
 PASS read-only:
 - `cxorbia/live-hr-current-reconcile`;
 - `cxorbia/live-hr-runtime-predeploy`;
-- protected identity gate previo.
-
-Provider capability preflight: lectura completada; Sheets API deshabilitada y la identidad disponible no puede habilitarla.
+- protected identity gate previo;
+- provider capability preflight ejecutado sin writes.
 
 ## Clasificación
-- **Reusable CXOrbia:** auto-discovery de periodos por metadata provider; runtime polling; fail-closed contra tabs fantasma; separación source-safe/protected runtime; plataforma→HR y HR→plataforma sin duplicación.
+- **Reusable CXOrbia:** auto-discovery de periodos por metadata provider; runtime polling; fail-closed contra tabs fantasma; separación source-safe/protected runtime; plataforma→HR y HR→plataforma sin duplicación; gate de sharing de fuente operativa.
 - **Exclusivo TyA:** workbook HR Cinépolis, patrón de tabs `<MES> <YY>` / `<MES> <YY> HN`, proyecto `cinepolis`.
 - **Claude/prototipo:** no tocar `app/modules/*`; conservar UX; shopper real debe verse solo en runtime protegido, no en source-safe.
-- **Academia:** enseñar fuente viva, origen de asignación, conciliación bidireccional, privacidad por capa y gate provider.
+- **Academia:** enseñar fuente viva, origen de asignación, conciliación bidireccional, privacidad por capa, permisos mínimos y gate provider.
 - **Sin impacto Claude:** Service Usage/Cloud Run/Hosting DEV gates y preflights.
 
 ## Estado seguro
-No se ejecutó enable de API, share, Cloud Run deploy, Hosting deploy, Firestore data write, HR write, Auth write, Rules deploy, Storage, Make, Gemini, pagos, merge ni producción. Histórico 1,406/Auth91 preservados.
+No se ejecutó enable de API, cambio de sharing, Cloud Run deploy, Hosting deploy, Firestore data write, HR write, Auth write, Rules deploy, Storage, Make, Gemini, pagos, merge ni producción. Histórico 1,406/Auth91 preservados.
 
 ## Siguiente bloque exacto
-Un único bloque de activación, con autorización específica:
-1. habilitar Google Sheets API en el proyecto existente `cxorbia-backend-dev` mediante una identidad con `serviceusage.services.enable`;
-2. verificar/otorgar solo lectura del HR a la service account existente si fuera necesario;
-3. redeploy único del Cloud Run existente `cxorbia-live-hr-dev` con auto-month runtime;
-4. redeploy único del Hosting DEV existente `cxorbia-backend-dev/cxorbia-dev` para publicar la ruta protegida de shoppers;
-5. readback/smoke: detectar HR viva, validar July en curso, validar identidad shopper real y módulos por rol.
+1. eliminar el acceso `anyone=writer` del HR y dejarlo restringido;
+2. habilitar Google Sheets API en el proyecto existente `cxorbia-backend-dev` mediante una identidad con `serviceusage.services.enable`;
+3. revalidar que la service account reader puede leer metadata/valores;
+4. con autorización explícita, redeploy único del Cloud Run existente `cxorbia-live-hr-dev` con auto-month runtime;
+5. con la misma autorización, redeploy único del Hosting DEV existente `cxorbia-backend-dev/cxorbia-dev` para publicar la ruta protegida de shoppers;
+6. readback/smoke: HR viva automática, julio en curso, identidad shopper real y módulos por rol.
 
 No producción ni Firestore data writes en ese bloque.
