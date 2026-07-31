@@ -1,7 +1,19 @@
 /* CXOrbia TyA Phase A — live source in-place freshness watcher.
-   No UI module is modified. No document reload is permitted. */
+   No UI module is modified. No document reload is permitted.
+
+   Corte 6 P0: el watcher source-safe NO puede sobrescribir CX.data cuando el
+   entrypoint está en runtime protegido Firebase/Auth/Rules. */
 window.CX = window.CX || {};
 (function(){
+  const params=new URLSearchParams(window.location.search||'');
+  const protectedRuntimeRequested=params.get('cxProtectedRuntime')==='YES_PAULA_20260730_PROTECTED_DEV';
+  if(protectedRuntimeRequested){
+    window.CX_TYA_LIVE_SOURCE_WATCH_DISABLED_REASON='protected-runtime-owns-cxdata';
+    window.CX_TYA_CHECK_LIVE_SOURCE=async function(){return {ok:false,skipped:true,reason:'protected-runtime-owns-cxdata'};};
+    console.warn('[CX.live-source] Watcher source-safe omitido: runtime protegido es dueño de CX.data.');
+    return;
+  }
+
   const endpoint=window.CX_TYA_LIVE_SOURCE_URL||'/api/tya/cinepolis/hr-live';
   const pollMs=Math.max(15000,Number(window.CX_TYA_LIVE_POLL_MS||20000));
   let currentRevision=window.CX_TYA_HR_LIVE_META&&window.CX_TYA_HR_LIVE_META.revision||null;
@@ -53,8 +65,8 @@ window.CX = window.CX || {};
     refreshBadge();
   }
 
-  async function getJson(format,params={}){
-    const query=new URLSearchParams({format,...params,ts:String(Date.now())});
+  async function getJson(format,paramsInput={}){
+    const query=new URLSearchParams({format,...paramsInput,ts:String(Date.now())});
     const response=await fetch(endpoint+(endpoint.includes('?')?'&':'?')+query.toString(),{cache:'no-store',headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});
     const json=await response.json().catch(()=>null);
     if(!response.ok)throw new Error('HTTP '+response.status+(json&&json.message?': '+json.message:''));
@@ -65,7 +77,6 @@ window.CX = window.CX || {};
     if(checking)return;
     checking=true;markUpdating();
     try{
-      /* fresh=1 now bypasses TTL on the server and waits for a real HR read. */
       const meta=await getJson('meta',{fresh:'1'});
       if(meta.sourceSafe!==true||meta.runtimeRead!==true||!meta.revision)throw new Error('Respuesta live inválida');
       const changed=!currentRevision||meta.revision!==currentRevision;
