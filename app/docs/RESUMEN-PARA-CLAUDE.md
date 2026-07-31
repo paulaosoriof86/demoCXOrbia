@@ -1,55 +1,70 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_AND_HR_READER_PASS__OPEN_READ_VALID__DEV_GATE_CORRECTED__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_LIVE_HR_AUTOMONTH_AND_SHOPPER_DISPLAY_DEV_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
 - Corte3 FROZEN; R17N1,406/1,406 no repetir.
 - Corte5 cinepolis14 periodos/616 visitas/current2026-07 Firestore PASS.
-- Auth91/91; claims5/5; Rules PASS.
+- Auth91/91; claims5/5; Rules PASS. No reimportar.
 - Firestore protegido: shoppers340/340 y visitas616/616 con nombre real; placeholders0.
 
 ## 2. Regla producto
-- HR es fuente viva y las pestañas mensuales nuevas se incorporan automáticamente, sin configuración mensual por chat.
-- Lectura abierta/source-safe de HR es válida; el builder mantiene fallback GViz público read-only.
-- Sheets API ya está habilitada y la service account lee la HR canónica.
-- Julio puede seguir en ejecución mientras el siguiente mes tiene visitas platform-origin.
-- Plataforma-origin puede anteceder a HR; reconciliar por IDs estables + `assignmentSource`/`assignmentSyncStatus`; nunca deduplicar por nombre.
+- HR viva; nueva pestaña mensual válida entra automáticamente, sin configuración mensual por chat.
+- HR abierta/read-only es válida. No exigir `Restricted` para lectura DEV.
+- Julio puede seguir en ejecución mientras agosto/mes siguiente tiene visitas platform-origin.
+- Plataforma-origin antecede HR si aplica; luego reconciliar por IDs + `assignmentSource`/`assignmentSyncStatus`; nunca por nombre.
 
-## 3. Corrección metodológica
-No volver a exigir `Restricted` como condición para lectura HR o redeploy DEV. Fue una mezcla incorrecta entre:
-- capacidad de lectura viva;
-- política de edición/sharing.
+## 3. Corte 6 DEV ya desplegado
+Autorización one-shot consumida.
 
-Drive sigue reportando `anyone=writer` en la HR canónica. Ese finding debe revisarse separadamente como hardening/cutover de producción si implica edición pública no deseada, pero **no bloquea el DEV read-only**.
+PASS remoto:
+- Cloud Run revision `cxorbia-live-hr-dev-00008-8mf`;
+- Hosting version `22e81c2b783f697a`;
+- 14 periodos / 616 visitas / último 2026-07;
+- auto-discovery mensual activo;
+- 208 identidades operativas shopper disponibles para DEV;
+- `humanCredentialPrompt=false`.
 
-## 4. Shopper real
-`Shopper protegido` es máscara source-safe. La identidad real ya existe en Firestore.
+No pedir ni recrear este redeploy.
 
-Backend tiene preparada ruta DEV protegida:
-- `app/core/backend-protected-dev-mode.js`;
-- `app/index-backend-dev.html` con Firebase Hosting init;
-- Auth/custom claims/Rules obligatorios;
-- Admin/Coordinación ve identidad real; shopper solo su scope;
-- read-only; no PII en JS público.
+## 4. Shopper visual DEV
+No insertar PII sensible en módulos ni JS estático.
 
-No tocar `app/modules/*` por este bloque.
+La ruta humana DEV ahora recibe de HR viva solo:
+- nombre operativo shopper;
+- shopperId estable;
+- país y métricas source-safe.
 
-## 5. Autorización DEV
-La autorización previa de 1x Cloud Run DEV + 1x Hosting DEV no fue consumida. Como incluía la condición `HR restringido` sugerida por ChatGPT y esa condición fue corregida, no ejecutar bajo un alcance inferido.
+Teléfono, correo, DPI, banco/cuenta, credenciales y observaciones privadas continúan excluidos. `app/modules/**` no fue modificado.
 
-Gate correcto:
-`SHEETS API ENABLED + HR CANÓNICA READABLE + SERVICE ACCOUNT READER → CONFIRMACIÓN EXPRESA DEL GATE CORREGIDO → 1x CLOUD RUN DEV REDEPLOY → 1x HOSTING DEV REDEPLOY → READBACK/SMOKE`.
+La lista shopper puede mostrar nombre real operativo y el flujo DEV de Shopper puede seleccionar identidad existente; los perfiles sensibles siguen protegidos.
+
+## 5. Archivos de empalme backend relevantes
+- `backend/runtime/hr-live-service/server.mjs`;
+- `tools/hr-source/tya-live-provider-registry-identity-dev.mjs`;
+- `tools/hr-source/tya-enforce-live-tab-registry.mjs`;
+- `app/adapters/tya-live-source-inplace-apply.js`;
+- `app/adapters/tya-live-source-refresh-watch.js`;
+- `app/index-backend-dev.html`.
+
+No rediseñar ni compensar esto desde frontend.
 
 ## 6. Julio/agosto
-HR aún no tiene tabs de agosto. Agosto puede existir como platform-origin antes de HR. Recuperar/conectar source-of-truth exacto antes del delta Firestore; no copiar julio.
+HR aún no tiene agosto. Agosto puede existir platform-origin antes de HR, pero el source-of-truth exacto de esas visitas todavía debe recuperarse/conectarse. No copiar julio ni inventar IDs/ubicaciones/estados.
 
-## 7. P1/P2
-PDF/gráficas, Excel/formato, reportKit/exportaciones y copy siguen documentados y no bloquean este gate DEV.
+## 7. Siguiente gate
+Validación humana únicamente:
+`ADMIN: nombres shopper visibles + SHOPPER: selector de identidad/módulos`.
 
-## 8. Academia/manuales
-Documentar diferencia entre public read, public write, provider auth y mínimo privilegio; no convertir hardening de permisos en requisito técnico de lectura.
+Si PASS: freeze Corte6 → fuente exacta agosto → delta-only Firestore con autorización nueva → preprod/cutover.
 
-## 9. Estado seguro
-Provider reads + repo/docs. Cloud Run/Hosting deploy0; HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; merge=false; producción=false.
+## 8. P1/P2
+PDF/gráficas, Excel/formato, reportKit/exportaciones y copy continúan documentados; no confundir con este gate.
+
+## 9. Academia/manuales
+Documentar auto-month real, ADC/runtime provider, open-read ≠ open-write, display identity mínima DEV y separación entre identidad operativa y PII sensible.
+
+## 10. Estado seguro
+Firestore/HR/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0 en este bloque; proyectos/Hosting nuevos0; merge=false; producción=false.
