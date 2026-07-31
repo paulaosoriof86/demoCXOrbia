@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-31  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_PROFILE_WRITE_PASS__PROTECTED_HOSTING_REDEPLOY_PASS__WAITING_HUMAN_VISUAL_ADMIN_SHOPPER__31_IDENTITY_HOLD__NO_PRODUCTION`
+**Estado vivo:** `C6_PROFILE_WRITE_PASS__PROTECTED_HOSTING_PASS__VISUAL_LOGIN_REPRO_P0__SESSION_CONTINUITY_FIX_PREPARED__WAITING_ONE_HOSTING_REDEPLOY_AUTH__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 - Repo `paulaosoriof86/demoCXOrbia`; rama viva `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge.
@@ -20,42 +20,49 @@
 7. `CAMBIOS-BACKEND-ADDENDUM-C6-PERFIL-COMPLETO-AUTORIZADO-V2-20260731.md`;
 8. `CAMBIOS-BACKEND-ADDENDUM-C6-PERFIL-COMPLETO-V2-READONLY-PASS-20260731.md`;
 9. `CAMBIOS-BACKEND-ADDENDUM-C6-PROTECTED-HOSTING-DEV-REDEPLOY-PASS-20260731.md`;
-10. `evidence/CORTE6-PROFILE-FULL-FIRESTORE-WRITE-LATEST.json`;
-11. `evidence/CORTE6-PROTECTED-RUNTIME-HOSTING-DEPLOY-LATEST.json`;
-12. `backend/config/corte6-profile-full-firestore-write-request-v2.json`;
-13. `backend/config/corte6-credential-continuity-hosting-request.json`;
-14. `.github/workflows/cxorbia-corte6-credential-continuity-hosting.yml`;
-15. `app/core/backend-config-preview-dev.js`;
-16. `app/core/backend-protected-dev-mode.js`;
-17. `app/core/backend-browser-auth.js`;
-18. `app/core/backend-firebase.js`;
-19. `app/adapters/tya-live-source-refresh-watch.js`;
-20. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A, Academia y PR#7.
+10. `CAMBIOS-BACKEND-ADDENDUM-C6-LOGIN-REPROCESO-ROOT-FIX-20260731.md`;
+11. `evidence/CORTE6-PROFILE-FULL-FIRESTORE-WRITE-LATEST.json`;
+12. `evidence/CORTE6-PROTECTED-RUNTIME-HOSTING-DEPLOY-LATEST.json`;
+13. `backend/config/corte6-profile-full-firestore-write-request-v2.json`;
+14. `backend/config/corte6-credential-continuity-hosting-request.json`;
+15. `.github/workflows/cxorbia-corte6-credential-continuity-hosting.yml`;
+16. `app/core/backend-config-preview-dev.js`;
+17. `app/core/backend-protected-dev-mode.js`;
+18. `app/core/backend-protected-dev-session-continuity.js`;
+19. `app/core/backend-browser-auth.js`;
+20. `app/core/backend-firebase.js`;
+21. `app/adapters/tya-live-source-refresh-watch.js`;
+22. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A, Academia y PR#7.
 
 ## 3. Baseline protegida — no reabrir
 - Corte3 FROZEN; R17N1,406/1,406;616 visitas +572 liquidaciones +77 certificaciones.
 - Corte5 cinepolis/14 periodos/616 visitas/current2026-07 PASS.
 - Auth91/91; claims5/5; Rules PASS.
 - HR live/auto-month PASS.
+- Perfil completo:120 Firestore docs/329 campos WRITE+READBACK PASS, mismatches0.
 
-## 4. Perfil completo — WRITE/READBACK PASS
-120 Firestore doc writes exactos;118 con cambios +2 marker-only;329 valores; readback120/329; mismatches0. La autorización está consumida.
+## 4. Protected Hosting DEV anterior — PASS técnico
+Un redeploy protegido quedó verificado remotamente: versión `sites/cxorbia-backend-dev/versions/df3b5ce0359bcadd`, release `sites/cxorbia-backend-dev/releases/1785513222990000`.
 
-## 5. Protected Hosting DEV — PASS
-Un único redeploy del Hosting DEV existente quedó ejecutado y verificado remotamente. Decisión `PASS_EXISTING_HOSTING_DEV_PROTECTED_RUNTIME_REMOTE_VERIFIED`; autorización consumida.
+## 5. Nuevo P0 visual — reproceso de login
+La captura humana demostró que Administración/Coordinación vuelve a abrir Usuario/Contraseña. Causa raíz: el carril protegido usaba persistencia Firebase Auth `SESSION` y el bridge de navegador también la forzaba. El gate de autenticación real estaba contaminando cada iteración visual.
 
-Version `sites/cxorbia-backend-dev/versions/df3b5ce0359bcadd`; release `sites/cxorbia-backend-dev/releases/1785513222990000`.
+## 6. Corrección de raíz preparada — sin deploy nuevo
+- `backend-protected-dev-session-continuity.js` fuerza persistencia `LOCAL` exclusivamente en protected DEV;
+- no embebe credenciales/tokens/UID;
+- no bypass claims/Rules;
+- `backend-protected-dev-mode.js` declara `persist:'local'` + `reuseAuthenticatedSession:true`;
+- `index-backend-dev.html` carga continuidad antes de `backend-browser-auth.js`.
 
-No hubo Firestore/Auth/Rules/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos writes/deploys adicionales; producción=false; merge=false.
+Resultado esperado: primera autenticación real válida una sola vez por navegador; refresh/redeploy posteriores restauran silenciosamente la sesión mientras no se haga logout explícito.
 
-## 6. Gate vivo
-`HUMAN VISUAL ADMIN+SHOPPER PROTECTED RUNTIME → PASS/FAIL → si PASS, ALTA/CONCILIACIÓN31 HOLD → FREEZE C6 → AGOSTO`.
+## 7. Gate vivo
+`AUTORIZACIÓN ONE-SHOT 1x HOSTING DEV PARA SESSION CONTINUITY → REMOTE SMOKE → 1 LOGIN REAL → REFRESH SIN RE-PROMPT → HUMAN VISUAL ADMIN+SHOPPER → 31 HOLD → FREEZE C6 → AGOSTO`.
 
-URL protegida:
-`https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV`
+No reutilizar la autorización Hosting anterior: ya está consumida.
 
-## 7. 31 identity HOLD
+## 8. 31 identity HOLD
 Persisten31 perfiles sin vínculo canónico reproducible. No dedupe por nombre/teléfono/email ni creación silenciosa.
 
-## 8. Estado seguro
-PR#7 draft/open/no merge; producción no tocada. Ambas autorizaciones one-shot del perfil y Hosting protegido están consumidas.
+## 9. Estado seguro
+PR#7 draft/open/no merge; producción no tocada. Desde el último deploy: Firestore/Auth/Rules/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos writes/deploys0. Corrección de continuidad preparada solamente en repo.
