@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.corte6.cumulative-human-visual-hosting-execute.v1",
-  "requestId": "corte6-cumulative-human-visual-hosting-20260731-01",
-  "status": "consumed_pass",
-  "enabled": false,
-  "consumed": true,
+  "requestId": "corte6-stable-cumulative-human-visual-hosting-20260731-02",
+  "status": "execute_authorized_once",
+  "enabled": true,
+  "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -12,8 +12,7 @@
   "hostingTarget": "cxorbia-dev",
   "tenantId": "tya",
   "projectId": "cinepolis",
-  "authorizationId": "chat-20260731-c6-cumulative-human-visual-hosting-01",
-  "retryAfterPredeployGateFix": true,
+  "authorizationId": "chat-20260731-c6-stable-cumulative-hosting-02",
   "firestoreWrites": 0,
   "authWrites": 0,
   "authResets": 0,
@@ -29,7 +28,5 @@
   "newHostingSites": 0,
   "merge": false,
   "production": false,
-  "consumedAt": "2026-07-31T19:45:09.858Z",
-  "decision": "PASS_EXISTING_HOSTING_DEV_CUMULATIVE_HR_PROFILE_FINANCE_REMOTE_READY",
-  "nextGate": "HUMAN_VISUAL_CUMULATIVE_HR_PROFILE_FINANCE"
+  "nextGate": "RUN_EXISTING_STABLE_C6_HOSTING_WORKFLOW_ONCE"
 }
