@@ -71,6 +71,11 @@ No se copiaron nombres al JS source-safe. El preview público puede seguir mostr
 - `platformOriginAllowedBeforeHrTab=true`;
 - dedupe por nombre prohibido; conflictos a revisión.
 
+## Julio y agosto
+La operación reportada requiere coexistencia real: julio todavía puede tener visitas en ejecución y agosto ya puede tener visitas disponibles originadas en plataforma aunque HR no tenga pestañas de agosto.
+
+El contrato backend ya admite esa coexistencia. Sin embargo, este bloque **no materializa todavía visitas de agosto** porque no existe en las fuentes inspeccionadas un registro exacto source-of-truth de esas visitas platform-origin que permita construir IDs/ubicaciones/estado sin inferir o clonar julio. Esa fuente debe recuperarse/conectarse antes de un write gate de agosto.
+
 ## Gates
 PASS read-only:
 - `cxorbia/live-hr-current-reconcile`;
@@ -94,6 +99,7 @@ No se ejecutó enable de API, cambio de sharing, Cloud Run deploy, Hosting deplo
 3. revalidar que la service account reader puede leer metadata/valores;
 4. con autorización explícita, redeploy único del Cloud Run existente `cxorbia-live-hr-dev` con auto-month runtime;
 5. con la misma autorización, redeploy único del Hosting DEV existente `cxorbia-backend-dev/cxorbia-dev` para publicar la ruta protegida de shoppers;
-6. readback/smoke: HR viva automática, julio en curso, identidad shopper real y módulos por rol.
+6. readback/smoke: HR viva automática, julio en curso, identidad shopper real y módulos por rol;
+7. recuperar/conectar fuente operacional exacta de agosto platform-origin y construir delta-only separado.
 
 No producción ni Firestore data writes en ese bloque.
