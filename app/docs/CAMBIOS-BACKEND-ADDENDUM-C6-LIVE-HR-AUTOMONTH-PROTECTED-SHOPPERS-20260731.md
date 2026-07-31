@@ -30,19 +30,19 @@ Evidencia read-only `LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json`:
 - `iam.serviceAccounts.actAs`: concedido;
 - `cloudbuild.builds.create`: concedido.
 
-Verificación adicional desde Google Drive con la identidad de la propietaria:
-- el HR canónico `1h307t...8vU4` **ya comparte acceso `reader`** con `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com`;
-- por tanto no hace falta crear otra cuenta ni otorgar un permiso de lectura nuevo después de habilitar Sheets API; solo se debe revalidar;
+Verificación adicional desde Google Drive con la identidad propietaria:
+- el HR canónico `1h307t...8vU4` **ya comparte acceso `reader`** con la service account existente;
+- no hace falta crear otra cuenta ni otorgar un permiso de lectura nuevo después de habilitar Sheets API; solo revalidar;
 - metadata actual sigue sin tabs `AGOSTO 26` / `AGOSTO 26 HN`.
 
-Consecuencia: el único bloqueo técnico para metadata Sheets es la activación de Google Sheets API; la service account ya está autorizada en el archivo.
+Consecuencia: el bloqueo técnico para metadata Sheets es la activación de Google Sheets API; la service account ya está autorizada en el archivo.
 
 ## P0 de seguridad detectado en HR
-La metadata de permisos del mismo HR devuelve además `type=anyone, role=writer`: **cualquier persona con el enlace puede editar el HR**.
+La metadata de permisos del mismo HR devuelve `type=anyone, role=writer`: **cualquier persona con el enlace puede editar el HR**.
 
-Esto es un P0 de seguridad para producción porque la HR contiene operación y puede contener datos personales/operativos. Debe eliminarse el acceso público de escritura y dejar el archivo restringido a usuarios autorizados + service account reader antes de cutover.
+Esto es un P0 de seguridad para producción. Debe eliminarse el acceso público de escritura y dejar el archivo restringido a usuarios autorizados + service account reader antes de cutover.
 
-No se modificaron permisos en este bloque porque cambiar sharing es un provider write y no estaba autorizado.
+No se modificaron permisos en este bloque porque cambiar sharing es un provider write y no estaba autorizado; además el conector disponible no expone eliminación de un permiso existente.
 
 ## Shopper real — preparación segura
 Firestore protegido ya fue validado read-only:
@@ -72,9 +72,9 @@ No se copiaron nombres al JS source-safe. El preview público puede seguir mostr
 - dedupe por nombre prohibido; conflictos a revisión.
 
 ## Julio y agosto
-La operación reportada requiere coexistencia real: julio todavía puede tener visitas en ejecución y agosto ya puede tener visitas disponibles originadas en plataforma aunque HR no tenga pestañas de agosto.
+La operación requiere coexistencia: julio todavía puede tener visitas en ejecución y agosto ya puede tener visitas disponibles originadas en plataforma aunque HR no tenga pestañas de agosto.
 
-El contrato backend ya admite esa coexistencia. Sin embargo, este bloque **no materializa todavía visitas de agosto** porque no existe en las fuentes inspeccionadas un registro exacto source-of-truth de esas visitas platform-origin que permita construir IDs/ubicaciones/estado sin inferir o clonar julio. Esa fuente debe recuperarse/conectarse antes de un write gate de agosto.
+El contrato backend ya admite esa coexistencia. Este bloque no materializa todavía visitas de agosto porque no existe en las fuentes inspeccionadas un registro exacto source-of-truth de esas visitas platform-origin que permita construir IDs/ubicaciones/estado sin inferir o clonar julio. Esa fuente debe recuperarse/conectarse antes de un write gate de agosto.
 
 ## Gates
 PASS read-only:
