@@ -1,17 +1,22 @@
 # CXOrbia TyA — Plan Phase A con validación visual continua
 
 **Fecha original:** 2026-07-04  
-**Última revisión:** 2026-07-30  
+**Última revisión:** 2026-07-31  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_IDENTITY_PROTECTED_PASS__AUGUST_PROVIDER_TABS_MISSING__GVIZ_PHANTOM_FIXED__NO_PRODUCTION`
+**Estado vivo:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_DISABLED__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Objetivo/arquitectura
 TyA/Cinépolis como tenant/proyecto configurable de CXOrbia. `cxorbia-backend-dev`=DEV canónico; `tya-plataforma`=Hosting final. No crear Firebase/Hosting/rama/PR por rutina.
 
 ## 2. Secuencia obligatoria
-`FUENTE VIVA → EXISTENCIA/FRESCURA DE TABS → MAPPING/IDENTIDAD → PROVIDER COMPARE → WRITE PLAN → DRY-RUN → WRITE EXACTO AUTORIZADO → READBACK → SMOKE → VALIDACIÓN → CUTOVER`.
+`FUENTE VIVA/ORIGEN PLATAFORMA → EXISTENCIA/FRESCURA → MAPPING/IDENTIDAD → PROVIDER COMPARE/CONCILIACIÓN → WRITE PLAN → DRY-RUN → WRITE EXACTO AUTORIZADO → READBACK → SMOKE → VALIDACIÓN → CUTOVER`.
 
-**Nueva regla de raíz:** en fallback GViz, una respuesta con datos no demuestra que el tab solicitado exista. La existencia del tab debe validarse contra metadata provider/registry antes de interpretar contenido.
+Reglas prevalentes:
+- HR se lee en vivo.
+- Una pestaña mensual válida nueva genera/detecta automáticamente el periodo; no existe configuración mensual por chat.
+- En fallback GViz, contenido no prueba existencia del tab; metadata provider/registry manda.
+- Plataforma puede originar disponibilidad antes de HR. La llegada posterior de HR concilia por IDs estables y `assignmentSource`/`assignmentSyncStatus`; no duplica.
+- Nunca deduplicar por nombre.
 
 ## 3. Cortes protegidos
 - Corte1/2A/3 FROZEN.
@@ -19,42 +24,57 @@ TyA/Cinépolis como tenant/proyecto configurable de CXOrbia. `cxorbia-backend-de
 - R17N1,406/1,406; no repetir.
 - Corte5 CX.data PASS.
 - Auth91/91, claims5/5 y Rules PASS.
+- Identidad protegida: shoppers340/340 y visitas616/616 con nombres reales; placeholders0; perfiles referenciados194/194.
 
 ## 4. Corte6 UX/identidad
 - Auto-entry Admin restaurado y observado.
-- Preview source-safe mantiene PII enmascarada.
-- Firestore protegido: shoppers340/340 y visitas616/616 con identidad real, placeholders0; Rules/adapter PASS.
-- Identidad real se valida en runtime autenticado, no publicando PII en source-safe.
+- Preview público/source-safe mantiene PII enmascarada.
+- Firestore protegido contiene identidad real.
+- Se preparó ruta DEV autenticada separada (`backend-protected-dev-mode.js` + Hosting init) para validar módulos con datos reales según Auth/claims/Rules; read-only y aún no desplegada.
+- No insertar PII en source-safe ni tocar `app/modules/*` para resolver identidad.
 
-## 5. Agosto — diagnóstico real vigente
-Metadata provider del Google Sheet confirma tabs mensuales solo hasta `JULIO 26`/`JULIO 26 HN`. **No existen `AGOSTO 26` ni `AGOSTO 26 HN`.**
+## 5. HR live y auto-month
+Se corrigió la causa estructural:
+- runtime ya no queda limitado por inventario mensual estático;
+- `fresh=1` reconstruye desde HR viva;
+- con Sheets API activa, registry mensual se deriva automáticamente de metadata provider;
+- con fallback GViz, se usa último registry provider fail-closed;
+- watcher refresca periódicamente y al recuperar foco;
+- predeploy `cxorbia/live-hr-runtime-predeploy` PASS sin deploy.
 
-El supuesto agosto GT34/HN34 fue un phantom causado por GViz al consultar nombres inexistentes y queda superseded.
+Bloqueo externo exacto: Google Sheets API está `DISABLED` en el proyecto DEV existente y la service account disponible no tiene `serviceusage.services.enable`. Activarla es un gate provider de una sola vez, no una configuración mensual.
 
-Fix de raíz:
-- `tya-live-hr-tab-registry.source-safe.json` desde metadata provider;
-- enforcement de registry sobre output GViz;
-- planner valida tab existence antes de país/estado/mapping.
+## 6. Julio/agosto coexistentes
+La operación puede tener visitas pendientes de julio ejecutándose mientras agosto ya está disponible desde plataforma aunque HR aún no tenga tabs de agosto.
 
-Re-read:14 periodos,28 tabs,616 visitas,agosto0; Firestore periodo2026-08 inexistente; delta0.
+Por tanto:
+- `platformOriginMayExistBeforeHrTab=true`;
+- no exigir pestaña HR para que una visita plataforma-origin exista;
+- al aparecer HR, conciliar y no duplicar;
+- no clonar julio para fabricar agosto;
+- conflictos pasan a review.
 
-Decisión `HOLD_AUGUST_REQUIRED_PROVIDER_TABS_MISSING`.
+## 7. Gate vivo inmediato
+Con autorización explícita:
+`ENABLE SHEETS API EN cxorbia-backend-dev → VERIFICAR/OTORGAR SOLO LECTURA HR SI HACE FALTA → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
 
-## 6. Gate vivo
-`FUENTE AUTORIZADA AGOSTO DISPONIBLE EN HR → REFRESH METADATA + SOURCE-SAFE → VALIDAR GT/HN/ESTADOS → DELTA PLAN EXACTO`.
+Este bloque no incluye producción ni Firestore data writes.
 
-Solo entonces solicitar autorización para Firestore data writes del delta real.
+## 8. Después del gate DEV
+1. validar HR live automática y transición de mes sin configuración manual;
+2. validar Admin/Coordinación y shopper con identidad real en runtime protegido;
+3. resolver fuente operacional exacta de agosto disponible/origen plataforma;
+4. generar delta-only exacto e idempotente;
+5. solicitar autorización Firestore solo para ese delta;
+6. readback/smoke → preprod → cutover `tya-plataforma`.
 
-## 7. Después del write
-`WRITE SOLO DELTA → READBACK → SMOKE → PREPROD PROTEGIDA AUTENTICADA → VALIDAR IDENTIDAD/OPERACIÓN → CUTOVER tya-plataforma`.
+No repetir histórico/Auth91.
 
-No copiar julio para fabricar agosto ni repetir histórico.
+## 9. Claude/prototipo
+No nueva candidata ni `app/modules/*`. UX del prototipo manda. No convertir provider/Auth en UI técnica. Source-safe no es identidad final. P1/P2 preservados: PDF/gráficas, Excel/formato, reportKit/exportaciones, copy.
 
-## 8. Claude/prototipo
-No nueva candidata ni `app/modules/*`. No compensar fuente inexistente desde UI/backend. Source-safe no es identidad final. P1/P2 preservados: PDF/gráficas, Excel/formato, reportKit/exportaciones, copy.
+## 10. Academia
+Documentar auto-discovery mensual, fuente viva, platform-origin antes de HR, conciliación bidireccional, tab-existence gate, source-safe vs protected runtime, scopes y fail-closed.
 
-## 9. Academia
-Documentar tab-existence gate, GViz fallback risk, source-safe vs protected runtime, scopes y fail-closed.
-
-## 10. Estado seguro
-Últimos bloques: provider reads y repo/docs. HR/Firestore/Auth/Rules/Hosting/Storage/legacy/payments/Functions/Make/Gemini writes0; merge=false; producción=false; PII exportada0.
+## 11. Estado seguro
+API enable0; share0; Cloud Run deploy0; Hosting deploy0; HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; merge=false; producción=false.
