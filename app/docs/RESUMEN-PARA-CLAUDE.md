@@ -1,58 +1,55 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_AND_HR_READER_PASS__CANONICAL_HR_PUBLIC_WRITE_P0__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_AND_HR_READER_PASS__OPEN_READ_VALID__DEV_GATE_CORRECTED__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
 - Corte3 FROZEN; R17N1,406/1,406 no repetir.
 - Corte5 cinepolis14 periodos/616 visitas/current2026-07 Firestore PASS.
 - Auth91/91; claims5/5; Rules PASS.
-- Firestore protegido: shoppers340/340 y visitas616/616 con nombre real; placeholders0; perfiles referenciados194/194.
+- Firestore protegido: shoppers340/340 y visitas616/616 con nombre real; placeholders0.
 
-## 2. Regla producto que Claude debe preservar
+## 2. Regla producto
 - HR es fuente viva y las pestañas mensuales nuevas se incorporan automáticamente, sin configuración mensual por chat.
-- Julio puede seguir en ejecución mientras el siguiente mes tiene visitas disponibles originadas en plataforma.
-- Plataforma-origin puede anteceder a HR; luego se reconcilia por IDs estables + `assignmentSource`/`assignmentSyncStatus`, sin duplicar.
-- Nunca deduplicar por nombre ni fabricar visitas copiando un mes anterior.
+- Lectura abierta/source-safe de HR es válida; el builder mantiene fallback GViz público read-only.
+- Sheets API ya está habilitada y la service account lee la HR canónica.
+- Julio puede seguir en ejecución mientras el siguiente mes tiene visitas platform-origin.
+- Plataforma-origin puede anteceder a HR; reconciliar por IDs estables + `assignmentSource`/`assignmentSyncStatus`; nunca deduplicar por nombre.
 
-## 3. Provider HR
-Google Sheets API ya está `ENABLED` y la service account puede leer la HR canónica por Sheets API. La fuente canónica tiene 30 tabs, 28 mensuales y último `JULIO 26 HN`.
+## 3. Corrección metodológica
+No volver a exigir `Restricted` como condición para lectura HR o redeploy DEV. Fue una mezcla incorrecta entre:
+- capacidad de lectura viva;
+- política de edición/sharing.
 
-El preflight ahora valida la HR por Sheets API directamente; Drive API no es requisito del runtime.
+Drive sigue reportando `anyone=writer` en la HR canónica. Ese finding debe revisarse separadamente como hardening/cutover de producción si implica edición pública no deseada, pero **no bloquea el DEV read-only**.
 
-## 4. P0 seguridad HR aún vivo
-La HR canónica de 30 tabs todavía tiene `anyone=writer`. Existe otra hoja homónima con una sola pestaña `Hoja 1` que sí está restringida; no confundirla con la fuente canónica.
+## 4. Shopper real
+`Shopper protegido` es máscara source-safe. La identidad real ya existe en Firestore.
 
-Claude no debe ocultar ni compensar este P0 desde UI. La identidad de la fuente debe resolverse por provider ID/estructura, no por título.
-
-## 5. Shopper real
-`Shopper protegido` es únicamente máscara source-safe. La identidad real ya existe en Firestore.
-
-Backend tiene preparada ruta DEV protegida separada:
+Backend tiene preparada ruta DEV protegida:
 - `app/core/backend-protected-dev-mode.js`;
-- `app/index-backend-dev.html` usa Firebase Hosting init;
-- Auth/custom claims/Firestore Rules obligatorios;
+- `app/index-backend-dev.html` con Firebase Hosting init;
+- Auth/custom claims/Rules obligatorios;
 - Admin/Coordinación ve identidad real; shopper solo su scope;
-- read-only; sin PII en JS público.
+- read-only; no PII en JS público.
 
-No tocar `app/modules/*` por este bloque. Hosting DEV no se redeploya hasta cerrar sharing P0.
+No tocar `app/modules/*` por este bloque.
+
+## 5. Autorización DEV
+La autorización previa de 1x Cloud Run DEV + 1x Hosting DEV no fue consumida. Como incluía la condición `HR restringido` sugerida por ChatGPT y esa condición fue corregida, no ejecutar bajo un alcance inferido.
+
+Gate correcto:
+`SHEETS API ENABLED + HR CANÓNICA READABLE + SERVICE ACCOUNT READER → CONFIRMACIÓN EXPRESA DEL GATE CORREGIDO → 1x CLOUD RUN DEV REDEPLOY → 1x HOSTING DEV REDEPLOY → READBACK/SMOKE`.
 
 ## 6. Julio/agosto
-HR aún no tiene `AGOSTO 26`/`AGOSTO 26 HN`. Agosto puede existir como platform-origin antes de HR; el source-of-truth exacto debe recuperarse/conectarse antes del delta Firestore. No copiar julio.
+HR aún no tiene tabs de agosto. Agosto puede existir como platform-origin antes de HR. Recuperar/conectar source-of-truth exacto antes del delta Firestore; no copiar julio.
 
-## 7. Siguiente bloque exacto
-`HR CANÓNICA 30 TABS RESTRICTED + SERVICE ACCOUNT READER PRESERVED → READ-ONLY REVALIDATION PASS → 1x CLOUD RUN DEV REDEPLOY → 1x HOSTING DEV REDEPLOY → READBACK/SMOKE`.
+## 7. P1/P2
+PDF/gráficas, Excel/formato, reportKit/exportaciones y copy siguen documentados y no bloquean este gate DEV.
 
-La autorización de esos dos redeploys ya existe y está retenida/no consumida; no pedirla otra vez si el alcance no cambia.
+## 8. Academia/manuales
+Documentar diferencia entre public read, public write, provider auth y mínimo privilegio; no convertir hardening de permisos en requisito técnico de lectura.
 
-Después: fuente exacta agosto platform-origin → delta-only idempotente → autorización Firestore data write → preprod/cutover.
-
-## 8. P1/P2
-PDF/gráficas, Excel/formato, reportKit/exportaciones y copy de fuentes/readiness continúan documentados y no bloquean este gate.
-
-## 9. Academia/manuales
-Documentar: HR viva/autodescubrimiento; plataforma-origin; sharing mínimo; source-safe vs runtime protegido; provider capability; distinguir fuente canónica de homónimos por identidad/estructura.
-
-## 10. Estado seguro
-Desde este bloque: provider reads + repo/docs. Cloud Run/Hosting deploy0; HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; merge=false; producción=false.
+## 9. Estado seguro
+Provider reads + repo/docs. Cloud Run/Hosting deploy0; HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; merge=false; producción=false.
