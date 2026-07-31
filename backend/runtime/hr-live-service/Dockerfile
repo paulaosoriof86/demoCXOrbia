@@ -5,6 +5,7 @@ WORKDIR /workspace
 
 COPY backend/runtime/hr-live-service/package.json ./backend/runtime/hr-live-service/package.json
 COPY backend/runtime/hr-live-service/server.mjs ./backend/runtime/hr-live-service/server.mjs
+COPY backend/runtime/hr-live-service/dev-visual.mjs ./backend/runtime/hr-live-service/dev-visual.mjs
 COPY backend/contracts ./backend/contracts
 COPY backend/config/tya-live-hr-tab-registry.source-safe.json ./backend/config/tya-live-hr-tab-registry.source-safe.json
 COPY tools/hr-source ./tools/hr-source
