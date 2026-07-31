@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
+import { maybeHandleDevVisualRequest } from './dev-visual.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
@@ -228,13 +229,14 @@ const server=http.createServer(async(req,res)=>{
   if(req.method==='OPTIONS'){
     res.statusCode=204;
     res.setHeader('Access-Control-Allow-Methods','GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers','Content-Type');
+    res.setHeader('Access-Control-Allow-Headers','Authorization, Content-Type');
     return res.end();
   }
   if(req.method!=='GET')return sendJson(res,405,{ok:false,error:'method_not_allowed'});
   const url=new URL(req.url||'/',`http://${req.headers.host||'localhost'}`);
-  if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,autoMonthProviderRegistry:true,operationalDisplayIdentityDev:DEV_OPERATIONAL_NAMES,lastRefreshError,writes:false,production:false});
+  if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,autoMonthProviderRegistry:true,operationalDisplayIdentityDev:DEV_OPERATIONAL_NAMES,devFullVisualEndpoint:true,lastRefreshError,writes:false,production:false});
   if(!ENDPOINT_PATHS.has(url.pathname))return sendJson(res,404,{ok:false,error:'not_found'});
+  if(await maybeHandleDevVisualRequest(req,res,url,{sendJson}))return;
   try{
     const forceFresh=url.searchParams.get('fresh')==='1';
     const current=await buildSnapshot({forceFresh});
