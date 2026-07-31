@@ -60,13 +60,15 @@ Preparado, no desplegado:
 
 Un redeploy Hosting DEV autorizado hará visible esta ruta para la comprobación de módulos shopper.
 
-## 8. Agosto hoy
-HR todavía no tiene tabs de agosto. Operativamente julio puede continuar en ejecución y agosto puede existir como disponibilidad platform-origin antes de HR. El sistema ya tiene este contrato configurado; la materialización de esas visitas requiere su fuente operacional exacta y un write gate separado.
+## 8. Julio/agosto
+HR todavía no tiene tabs de agosto. Operativamente julio puede continuar en ejecución y agosto puede existir como disponibilidad platform-origin antes de HR. El sistema ya tiene este contrato configurado.
+
+Las fuentes inspeccionadas todavía no contienen el registro exacto source-of-truth de las visitas agosto platform-origin. Ese origen exacto debe recuperarse/conectarse antes de materializar el delta; no clonar julio ni inferir IDs/ubicaciones/estado.
 
 ## 9. Gate vivo exacto
 `CORREGIR SHARING HR P0 + HABILITAR SHEETS API EN PROYECTO EXISTENTE → REVALIDAR SERVICE ACCOUNT READER → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
 
-Después: fuente operacional exacta agosto → delta-only autorizado → preprod/cutover.
+Después: recuperar/conectar fuente operacional exacta agosto → delta-only autorizado → preprod/cutover.
 
 ## 10. Academia
 Fuente: `ACADEMIA-IMPACTO-HR-LIVE-AUTOMONTH-PLATFORM-ORIGIN-20260731.md`. Patrón reusable: auto-month + platform-origin + conciliación + sharing mínimo + source-safe/protected runtime.
