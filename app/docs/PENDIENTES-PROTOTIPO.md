@@ -43,7 +43,7 @@ No hay acción automática disponible en este conector para eliminar ese permiso
 ## 6. Julio y agosto coexistentes
 Julio puede seguir con visitas en ejecución mientras agosto ya tiene visitas disponibles originadas en plataforma, aunque HR aún no tenga tabs de agosto. El sistema debe soportar `platformOriginMayExistBeforeHrTab` y reconciliar al aparecer HR.
 
-No copiar julio ni inventar filas de agosto. Para materializar disponibilidad agosto hace falta su fuente operacional exacta/plataforma-origin y un write gate separado.
+Las fuentes inspeccionadas todavía no muestran el registro exacto platform-origin de esas visitas de agosto. No copiar julio ni inventar IDs/ubicaciones/estados. Pendiente recuperar/conectar ese source-of-truth y luego generar el delta-only.
 
 ## 7. Siguiente gate
 `CORREGIR SHARING HR P0 + ENABLE SHEETS API EXISTENTE → REVALIDAR HR READER → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
