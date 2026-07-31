@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-31  
-**Estado:** `C6_HUMAN_VISUAL_FAIL_PARTIAL__CUMULATIVE_HR_PROFILE_FINANCE_FIX_PREPARED__HOSTING_GATE_WAITING_AUTH__31_HOLD__NO_PRODUCTION`
+**Estado:** `C6_CUMULATIVE_HOSTING_PASS__WAITING_HUMAN_VISUAL_CUMULATIVE__31_HOLD__NO_PRODUCTION`
 
 ## 1. Repositorio/destinos
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge.
@@ -17,52 +17,44 @@
 - Perfil completo Firestore:120 docs/329 campos WRITE+READBACK PASS, mismatches0.
 - Finanzas/pagos canónicos source-safe previamente aprobados permanecen autoridad.
 
-## 3. Resultado real de la visual humana
-### PASS
-- acceso Admin sin credenciales Firebase;
-- picker DEV Shopper real visible y navegable.
+## 3. Visual humana anterior — FAIL acumulativo
+PASS de acceso: auto-entry Admin y picker Shopper real. FAIL funcional: Dashboard JUL0, watcher HR deshabilitado, identidades/aliases/fixtures mezclados, perfiles parciales, Beneficios/Finanzas vacíos. Causa raíz: replace de `CX.data`, period IDs desalineados y watcher desactivado en full visual.
 
-### FAIL/P0 acumulativo
-- Dashboard JUL2026 mostró0 aunque `_visitas` conserva616;
-- full visual deshabilitó watcher HR viva;
-- lista Shopper mezcló identidades correctas con fixtures, aliases y referencias técnicas;
-- perfiles correctos no siempre recibieron campos/credenciales/histórico esperados;
-- Beneficios y Finanzas aparecieron vacíos.
+## 4. Corrección acumulativa — Hosting DEV PASS
+Autorización `chat-20260731-c6-cumulative-human-visual-hosting-01` consumida PASS.
 
-Corte6 no se congela.
-
-## 4. Causa raíz
-- full visual reemplazaba `CX.data` en vez de superponer;
-- period IDs de la capa protegida podían no coincidir con el periodo activo HR, dejando `CX.data.visitas()` en0;
-- watcher HR estaba expresamente deshabilitado para `cxHumanFullVisual`;
-- los340 documentos Shopper Firestore se trataban como listado humano crudo, incluyendo aliases/fixtures/referencias técnicas;
-- la base financiera canónica no se perdió: quedó sin visitas del periodo activo por la ruptura anterior.
-
-## 5. Fix acumulativo preparado — no desplegado
-- `tya-dev-full-visual-bridge.js`: HR viva conserva periodos/visitas; Firestore es overlay exacto por IDs; preserva alias de perfil, username/pass, PII, historial y facetas sin nombre-matching.
-- aliases legacy se ocultan únicamente por vínculo exacto `legacyShopperId` hacia otro perfil canónico.
-- fixtures demo y referencias técnicas sin identidad operacional se excluyen del append humano.
-- visitas protegidas enriquecen por `visitId` y preservan el `projectId/periodId` HR.
-- certificaciones/liquidaciones protected no reemplazan las fuentes canónicas ya aprobadas.
-- `tya-live-source-refresh-watch.js`: human full visual vuelve a mantener `fresh=1`, polling, foco y visibility; reaplica perfil después del refresh.
-- `/app/modules/*` intacto.
-
-## 6. Gate preparado
-`backend/config/corte6-cumulative-human-visual-hosting-request.json` está `enabled=false`, `consumed=false`, sin autorización.
-
-Si se autoriza, máximo:
+Ejecutado:
 - 1 redeploy del Hosting DEV existente `cxorbia-backend-dev/cxorbia-dev`;
-- Cloud Run redeploy0;
-- Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes0;
-- nuevo Firebase/Hosting0; merge=false; producción=false.
+- Cloud Run redeploys0;
+- decisión `PASS_EXISTING_HOSTING_DEV_CUMULATIVE_HR_PROFILE_FINANCE_REMOTE_READY`.
 
-El workflow dedicado valida antes del deploy que HR `fresh=1` conserve616 visitas + auto-discovery y que full-profile siga401 sin sesión visual.
+Preflight y remote smoke confirmaron:
+- HR `fresh=1`, runtimeRead y sourceSafe activos;
+- 616 visitas preservadas;
+- auto-discovery mensual activo;
+- overlay perfil/histórico Firestore por identidad técnica exacta;
+- alias legacy suprimidos solo por `legacyShopperId` exacto;
+- asset financiero canónico preservado;
+- full-profile 401 sin sesión visual;
+- sin credenciales Firebase humanas.
 
-## 7. Siguiente bloque exacto
-`1x HOSTING DEV CUMULATIVO → REMOTE SMOKE → UNA SOLA HUMAN VISUAL ACUMULATIVA: DASHBOARD HR + SHOPPER LIST/FICHA/HISTÓRICO + SHOPPER PORTAL + BENEFICIOS + FINANZAS → PASS/FAIL → 31 HOLD → FREEZE C6 → AGOSTO`.
+El primer disparo falló antes de provider mutation por un grep literal frágil del workflow. `hostingDeployExecutions` permaneció0; se corrigió el gate al marcador semántico real y se reejecutó bajo la misma autorización aún no consumida. No hubo deploy duplicado.
 
-## 8. 31 identity HOLD
+## 5. Gate humano actual
+Una sola validación acumulativa debe comprobar conjuntamente:
+1. Dashboard JUL con HR viva y auto-mes;
+2. Shoppers con identidad humana correcta, perfil/username/pass/datos completos materializados cuando existan e histórico por shopperId;
+3. portal Shopper usando la misma identidad seleccionada;
+4. Beneficios con verdad financiera aprobada;
+5. Finanzas Admin con verdad canónica restaurada.
+
+La sesión visual temporal existente es válida hasta `2026-08-02T00:29:13Z`; no requiere otro deploy para este gate.
+
+## 6. 31 identity HOLD
 Siguen31 sin vínculo canónico reproducible; no crear ni emparejar por nombre/teléfono/email.
 
-## 9. Estado seguro
-Desde la visual fallida no hubo provider mutation adicional. PR#7 draft/open/no merge; producción intacta.
+## 7. Siguiente bloque exacto
+`HUMAN VISUAL ACUMULATIVA → PASS/FAIL → resolver/decidir 31 HOLD → FREEZE C6 → AGOSTO`.
+
+## 8. Estado seguro
+Durante este gate: Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes0; Cloud Run deploys0; Hosting deploys1 autorizado; nuevos Firebase/Hosting0; PR#7 draft/open/no merge; producción intacta.
