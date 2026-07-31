@@ -18,12 +18,20 @@ function recalcCounts(source){const visits=source.visits||[],shoppers=source.sho
 const source=loadSource();
 if(!source||source.sourceSafe!==true)throw new Error('source_safe_missing');
 const accessMode=String(source.source?.accessMode||'');
-const providerMetadataLive=accessMode==='sheets_api_service_account';
+const sourceCarriesProviderMetadata=accessMode==='sheets_api_service_account';
 let registry=fs.existsSync(registryPath)?JSON.parse(fs.readFileSync(registryPath,'utf8')):null;
 if(registry&&(registry.schemaVersion!=='cxorbia.tya-live-hr-tab-registry.v1'||registry.sourceSafe!==true))throw new Error('tab_registry_invalid');
 
-let registryMode='last_provider_metadata_fail_closed';
-if(providerMetadataLive){
+/* Auto-month provider metadata can arrive in either of two safe ways:
+   1) the source builder itself used Sheets API; or
+   2) the runtime refreshed the registry immediately beforehand through the
+      provider metadata probe using Cloud Run ADC. In both cases the registry
+      is provider-authoritative; GViz may still be used only for row values. */
+const externalProviderRegistry=Boolean(registry&&registry.autoDiscovery===true&&registry.providerMetadataReadOnly===true&&registry.registryMode==='live_provider_metadata_auto_refresh');
+let providerMetadataLive=sourceCarriesProviderMetadata||externalProviderRegistry;
+let registryMode=providerMetadataLive?'live_provider_metadata_auto_refresh':'last_provider_metadata_fail_closed';
+
+if(sourceCarriesProviderMetadata){
   const monthlyTabs=uniq((source.tabsRead||[]).map(t=>String(t.title||t.tabTitle||'')));
   if(!monthlyTabs.length)throw new Error('live_provider_metadata_has_no_monthly_tabs');
   registry={
@@ -42,11 +50,13 @@ if(providerMetadataLive){
   };
   fs.mkdirSync(path.dirname(registryPath),{recursive:true});
   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n','utf8');
+  providerMetadataLive=true;
   registryMode='live_provider_metadata_auto_refresh';
 }
 if(!registry)throw new Error('tab_registry_missing_and_live_metadata_unavailable');
 
 const allowed=new Set(registry.monthlyTabs||[]);
+if(!allowed.size)throw new Error('tab_registry_has_no_monthly_tabs');
 const before={tabs:(source.tabsRead||[]).length,periods:(source.periods||[]).length,visits:(source.visits||[]).length,shoppers:(source.shoppers||[]).length};
 const removedTabs=(source.tabsRead||[]).filter(t=>!allowed.has(String(t.title||t.tabTitle||''))).map(t=>String(t.title||t.tabTitle||''));
 source.tabsRead=(source.tabsRead||[]).filter(t=>allowed.has(String(t.title||t.tabTitle||'')));
@@ -63,13 +73,13 @@ source.periods=[...periods.values()].sort((a,b)=>a.key.localeCompare(b.key)).map
 const refs=new Set(source.visits.map(v=>String(v.shopperId||'')).filter(Boolean));
 source.shoppers=(source.shoppers||[]).filter(s=>refs.has(String(s.id||s.shopperId||'')));
 source.counts=recalcCounts(source);
-source.source={...(source.source||{}),tabRegistryEnforced:true,tabRegistryMode:registryMode,tabRegistryAutoDiscovery:providerMetadataLive,tabRegistryObservedAt:registry.observedAt,phantomTabsRejected:uniq(removedTabs)};
+source.source={...(source.source||{}),tabRegistryEnforced:true,tabRegistryMode:registryMode,tabRegistryAutoDiscovery:providerMetadataLive,tabRegistryObservedAt:registry.observedAt,tabRegistryProviderAuthority:providerMetadataLive?'google_sheets_metadata':'last_valid_provider_registry',phantomTabsRejected:uniq(removedTabs)};
 source.safeState={...(source.safeState||{}),writes:false,tabRegistryEnforced:true};
 const after={tabs:source.tabsRead.length,periods:source.periods.length,visits:source.visits.length,shoppers:source.shoppers.length};
-const payload=`/* CXOrbia TyA live HR source-safe DEV payload. Provider tab registry enforced; no PII/raw workbook. */window.CX_TYA_HR_SOURCE_SAFE = ${JSON.stringify(source,null,2)};\nwindow.CX_TYA_HR_VIVA_SOURCE_SAFE = true;\n`;
+const payload=`/* CXOrbia TyA live HR source-safe DEV payload. Provider tab registry enforced; no sensitive PII/raw workbook. */window.CX_TYA_HR_SOURCE_SAFE = ${JSON.stringify(source,null,2)};\nwindow.CX_TYA_HR_VIVA_SOURCE_SAFE = true;\n`;
 fs.writeFileSync(sourcePath,payload,'utf8');
 
-const evidence={schemaVersion:'cxorbia.tya-live-tab-registry-enforcement.v2',generatedAt:new Date().toISOString(),decision:'PASS_PROVIDER_TAB_REGISTRY_ENFORCED',accessMode,registryMode,autoDiscovery:providerMetadataLive,providerMetadataFallbackReason:providerMetadataLive?null:(source.source?.fallbackReason||null),registryObservedAt:registry.observedAt,monthlyTabs:(registry.monthlyTabs||[]).length,requiredAugustTabsPresent:registry.requiredAugustTabsPresent===true,before,after,phantomTabsRejected:uniq(removedTabs),counts:source.counts,safety:{providerReads:true,hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,production:false,merge:false,pii:false,secrets:false}};
+const evidence={schemaVersion:'cxorbia.tya-live-tab-registry-enforcement.v3',generatedAt:new Date().toISOString(),decision:'PASS_PROVIDER_TAB_REGISTRY_ENFORCED',accessMode,registryMode,autoDiscovery:providerMetadataLive,providerMetadataSource:sourceCarriesProviderMetadata?'source_builder_sheets_api':externalProviderRegistry?'adc_registry_probe':'last_valid_registry',providerMetadataFallbackReason:providerMetadataLive?null:(source.source?.fallbackReason||null),registryObservedAt:registry.observedAt,monthlyTabs:(registry.monthlyTabs||[]).length,requiredAugustTabsPresent:registry.requiredAugustTabsPresent===true,before,after,phantomTabsRejected:uniq(removedTabs),counts:source.counts,safety:{providerReads:true,hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,production:false,merge:false,pii:false,secrets:false}};
 fs.mkdirSync(path.dirname(evidencePath),{recursive:true});
 fs.writeFileSync(evidencePath,JSON.stringify(evidence,null,2)+'\n','utf8');
 console.log(JSON.stringify(evidence));
