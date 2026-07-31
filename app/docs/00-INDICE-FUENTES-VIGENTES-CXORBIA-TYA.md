@@ -1,8 +1,8 @@
 # 00 - ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-07-30  
+**Fecha:** 2026-07-31  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_IDENTITY_PROTECTED_PASS__AUGUST_PROVIDER_TABS_MISSING__GVIZ_PHANTOM_FIXED__NO_PRODUCTION`
+**Estado vivo:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_DISABLED__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -19,55 +19,61 @@
 2. reglas maestras + addenda vigentes;
 3. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 4. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-5. `CAMBIOS-BACKEND-ADDENDUM-C6-PROTECTED-IDENTITY-READONLY-PASS-20260730.md`;
-6. `CAMBIOS-BACKEND-ADDENDUM-AUGUST-READONLY-DELTA-20260730.md`;
-7. `backend/config/tya-live-hr-tab-registry.source-safe.json`;
-8. `evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json`;
-9. `evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json`;
-10. `evidence/CORTE6-PROTECTED-SHOPPER-IDENTITY-READONLY-LATEST.json`;
-11. `evidence/CORTE6-CREDENTIAL-IMPORT-LATEST.json`;
-12. `evidence/CORTE6-FIRESTORE-RULES-DEPLOY-LATEST.json`;
-13. `RESUMEN-PARA-CLAUDE.md`;
-14. `PENDIENTES-PROTOTIPO.md`;
-15. tracker/plan Phase A, Academia y PR #7.
+5. `CAMBIOS-BACKEND-ADDENDUM-C6-LIVE-HR-AUTOMONTH-PROTECTED-SHOPPERS-20260731.md`;
+6. `CAMBIOS-BACKEND-ADDENDUM-C6-PROTECTED-IDENTITY-READONLY-PASS-20260730.md`;
+7. `evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json`;
+8. `evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json`;
+9. `evidence/CORTE6-PROTECTED-SHOPPER-IDENTITY-READONLY-LATEST.json`;
+10. `backend/runtime/hr-live-service/server.mjs`;
+11. `app/core/backend-protected-dev-mode.js`;
+12. `app/index-backend-dev.html`;
+13. `backend/config/tya-phase-a-platform-project-config.source-safe.json`;
+14. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A, Academia y PR #7.
 
 ## 3. Baseline protegida — no reabrir
-- Corte3 FROZEN `CXORBIA-TYA-CORTE3-V182-20260729`.
-- R17N FINAL1,406/1,406;616 visitas +572 controles liquidación +77 certificaciones.
+- Corte3 FROZEN.
+- R17N FINAL 1,406/1,406; 616 visitas +572 controles liquidación +77 certificaciones.
 - Corte5 CX.data: `cinepolis`,14 periodos,616 visitas,currentPeriod `2026-07`,Firestore/fallback=false PASS.
 - Auth legacy91/91; claims5/5; Rules PASS.
+- Firestore protegido: shoppers340/340 con nombre real; visitas616/616 con nombre real; placeholders0; perfiles referenciados194/194.
 
-## 4. Corte6 identidad — PASS
-- Auto-entry Admin observado funcionando.
-- Source-safe público puede enmascarar nombres.
-- Firestore protegido: shoppers340/340 con nombre real; visitas616/616 con nombre real; placeholders0; perfiles referenciados194/194; Rules/adapter PASS.
-- GitHub: `PASS_C6_PROTECTED_IDENTITY_READONLY`.
+## 4. Regla operacional viva
+- La HR se lee en vivo.
+- Una pestaña mensual nueva válida debe incorporarse automáticamente como periodo, sin configuración mensual por chat.
+- Julio puede seguir ejecutándose mientras el siguiente mes ya tiene visitas disponibles originadas en plataforma.
+- Plataforma→HR y HR→plataforma se concilian con IDs estables + `assignmentSource`/`assignmentSyncStatus`; no duplicar y nunca deduplicar por nombre.
+- Una visita/periodo de plataforma puede existir antes de la pestaña HR; la llegada posterior de HR reconcilia, no reemplaza silenciosamente.
 
-## 5. Agosto — causa raíz vigente
-Metadata real de Google Sheets confirmó que el workbook `HR Guatemala - Sincronizacion Google Sheets` tiene tabs mensuales solo hasta `JULIO 26` / `JULIO 26 HN`.
+## 5. Auto-month runtime — código PASS, provider bloqueado
+Se eliminó el límite operativo del inventario mensual estático. El runtime `fresh=1` ya está preparado para descubrir tabs desde metadata Google Sheets y el watcher refresca periódicamente/focus.
 
-**No existen `AGOSTO 26` ni `AGOSTO 26 HN`.**
+Predeploy: `PASS` sin deploy.
 
-La evidencia anterior que aparentaba GT34/HN34 provenía de una falla metodológica: GViz puede devolver otra hoja cuando se consulta un tab inexistente. Se corrigió con registro de tabs observado directamente del provider y enforcement fail-closed.
+Bloqueo exacto read-only:
+- Google Sheets API en `cxorbia-backend-dev`: `DISABLED`;
+- service account existente no tiene `serviceusage.services.enable`;
+- sí tiene `run.services.update`, `iam.serviceAccounts.actAs` y `cloudbuild.builds.create`;
+- mientras API siga deshabilitada, fallback usa último registry provider fail-closed y rechaza tabs fantasma GViz.
 
-Re-read final:
-- periodos reales14;
-- tabs mensuales reales28;
-- visitas616;
-- agosto GT0/HN0;
-- `AGOSTO 26` y `AGOSTO 26 HN` rechazados como tabs fantasma;
-- Firestore periodo2026-08 inexistente;
-- delta agosto0.
+## 6. Shopper real — preparado para validación DEV protegida
+El dato real ya existe en Firestore protegido. Se preparó ruta autenticada DEV separada del preview público:
+- `backend-protected-dev-mode.js`;
+- Firebase Hosting canonical init en `index-backend-dev.html`;
+- Auth/custom claims/Rules obligatorios;
+- backend read-only, `humanVisualSourceSafe=false` solo en ruta protegida;
+- no PII en JS source-safe.
 
-Planner final: `HOLD_AUGUST_REQUIRED_PROVIDER_TABS_MISSING` / `SOURCE_TABS_MISSING`.
+Aún **no se desplegó** esta ruta; requiere un único redeploy Hosting DEV autorizado.
 
-## 6. Regla fail-closed
-No fabricar agosto copiando julio, no aceptar GViz como prueba de existencia del tab y no escribir Firestore sin fuente real autorizada. Cuando existan los tabs reales, primero se refresca metadata/source-safe y luego se valida país/estado/mapping.
+## 7. Agosto hoy
+No existen todavía tabs HR de agosto. Por tanto HR no puede ser fuente de esas visitas hoy. La arquitectura acepta que agosto disponible sea de origen plataforma y que después se concilie contra HR cuando aparezca.
 
-## 7. Gate vivo único
-`FUENTE AUTORIZADA AGOSTO DISPONIBLE EN HR → REFRESH PROVIDER METADATA + SOURCE-SAFE → VALIDAR GT/HN/ESTADOS → DELTA PLAN EXACTO → AUTORIZACIÓN WRITE SOLO DELTA`.
+No fabricar agosto copiando julio ni declarar datos exactos que no provengan de una fuente operacional real.
 
-Después: `READBACK/SMOKE → PREPROD PROTEGIDA CON IDENTIDAD REAL → CUTOVER tya-plataforma`.
+## 8. Gate vivo único
+`ACTIVAR SHEETS API EXISTENTE + VERIFICAR READ-ONLY HR → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
 
-## 8. Estado seguro
-Producción no tocada. PR#7 draft/open/no merge. Histórico/Auth91/Rules/CX.data preservados. Bloques identidad/agosto: provider reads y repo/docs; HR/Firestore/Auth/Rules/Hosting/Storage/legacy/payments/Functions/Make/Gemini writes0; PII exportada0.
+Requiere autorización explícita de provider/deploy. No producción ni Firestore data writes.
+
+## 9. Estado seguro
+Producción no tocada. PR#7 draft/open/no merge. Histórico/Auth91/Rules/CX.data preservados. Últimos bloques: provider reads + repo/docs; API enable0, Cloud Run deploy0, Hosting deploy0, HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; PII exportada0.
