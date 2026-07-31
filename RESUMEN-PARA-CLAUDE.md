@@ -65,5 +65,10 @@ El fix está en GitHub, no desplegado. Requiere autorización fresca para exacta
 
 Después: remote smoke + human visual con 3 refresh y validación Dashboard/HR, Shoppers/perfil/credenciales/histórico, comparativo, Beneficios y Finanzas.
 
-## 9. Siguiente bloque Phase A
+## 9. Documentación asociada
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`.
+- `app/docs/ACADEMIA-IMPACTO-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`.
+- `app/docs/evidence/CORTE6-STABLE-COMPOSER-REGRESSION-GATE-LATEST.json`.
+
+## 10. Siguiente bloque Phase A
 `1x HOSTING DEV AUTORIZADO → REMOTE/HUMAN REGRESSION PASS → FREEZE C6 → AGOSTO`.
