@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.corte6.human-full-visual-redeploy.v1",
   "requestId": "corte6-human-full-visual-no-credential-20260731-01",
-  "status": "authorized_waiting_cloud_run",
+  "status": "cloud_run_deployed_smoke_pending",
   "enabled": true,
   "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -25,7 +25,7 @@
   "visualTokenRawCommitted": false,
   "singleCloudRunDeployMax": 1,
   "singleHostingDeployMax": 1,
-  "cloudRunDeployExecutions": 0,
+  "cloudRunDeployExecutions": 1,
   "hostingDeployExecutions": 0,
   "authorizedBy": "Paula",
   "authorizationId": "chat-20260731-corte6-human-full-visual-no-credential-01",
@@ -47,5 +47,8 @@
   "production": false,
   "previousProtectedSessionAuthorizationId": "chat-20260731-corte6-protected-session-continuity-redeploy-02",
   "previousProtectedSessionAuthorizationConsumed": true,
-  "nextGate": "EXECUTE_ONE_CLOUD_RUN_PLUS_ONE_HOSTING_DEV_NO_CREDENTIAL_VISUAL"
+  "nextGate": "EXECUTE_ONE_CLOUD_RUN_PLUS_ONE_HOSTING_DEV_NO_CREDENTIAL_VISUAL",
+  "cloudRunDeployedAt": "2026-07-31T18:31:56.246Z",
+  "cloudRunRevision": "cxorbia-live-hr-dev-00009-xs8",
+  "cloudRunUrl": "https://cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app"
 }
