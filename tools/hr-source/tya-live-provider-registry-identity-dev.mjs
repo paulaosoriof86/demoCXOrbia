@@ -93,11 +93,11 @@ async function main(){
         const tab=batch[idx];const values=Array.isArray(vr.values)?vr.values:[];const header=findHeader(values);if(!header)return;
         const col=shopperColumn(header);
         for(let r=header.index+1;r<values.length;r++){
-          const displayName=String(values[r]?.[col]??'').trim();if(!assigned(displayName))continue;
+          const displayName=String(values[r]?.[col]??'').trim().replace(/\s+/g,' ');if(!assigned(displayName))continue;
           const shopperId=safeHash(displayName,`shopper_${tab.country.toLowerCase()}`);if(!shopperId)continue;
           const prior=identities.get(shopperId);
-          if(prior&&prior.displayName!==displayName)throw new Error(`shopper_hash_identity_conflict:${shopperId}`);
-          identities.set(shopperId,{shopperId,displayName,country:tab.country});
+          if(prior&&normalized(prior.displayName)!==normalized(displayName))throw new Error(`shopper_hash_identity_conflict:${shopperId}`);
+          if(!prior)identities.set(shopperId,{shopperId,displayName,country:tab.country});
         }
       });
     }
