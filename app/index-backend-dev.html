@@ -57,7 +57,7 @@
 <!-- Firebase Hosting initializes the canonical project automatically. On local files this may 404; backend remains disabled unless protected DEV mode is explicitly requested. -->
 <script src="/__/firebase/init.js"></script>
 
-<!-- CORE + V174 SOURCE-SAFE BINDING -->
+<!-- CORE + V174 SOURCE-SAFE BOOTSTRAP -->
 <script src="data/tya-hr-source-safe-periods.js"></script>
 <script src="core/build-lock.js"></script>
 <script src="core/config.js"></script>
@@ -94,6 +94,14 @@
 <script src="core/liquidacion.js"></script>
 <script src="core/finanzas-core.js"></script>
 <script src="core/notif.js"></script>
+
+<!-- HR VIVA DEV · nombres operativos mínimos, sin contacto/DPI/banco/credenciales -->
+<script>
+window.CX_TYA_LIVE_SOURCE_URL='/api/tya/cinepolis/hr-live?view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV';
+window.CX_TYA_LIVE_POLL_MS=20000;
+</script>
+<script src="adapters/tya-live-source-inplace-apply.js"></script>
+<script src="adapters/tya-live-source-refresh-watch.js"></script>
 
 <!-- BACKEND DEV CONTROLADO -->
 <script src="core/backend-config.js"></script>
