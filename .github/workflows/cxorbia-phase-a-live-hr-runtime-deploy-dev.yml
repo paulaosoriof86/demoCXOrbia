@@ -1,18 +1,19 @@
-name: CXOrbia Phase A Corte 3 Hosting DEV Visual
+name: CXOrbia Corte 6 Live HR + Shopper Display DEV Redeploy
 
 on:
   push:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - backend/config/phase-a-live-hr-runtime-deploy-request-v1.json
+      - 'backend/config/phase-a-live-hr-runtime-deploy-request-v1.json'
 
 permissions:
-  contents: read
+  contents: write
   statuses: write
+  id-token: write
 
 concurrency:
-  group: cxorbia-corte3-hosting-dev-visual
+  group: cxorbia-c6-live-hr-shopper-display-dev
   cancel-in-progress: false
 
 defaults:
@@ -23,19 +24,18 @@ env:
   GCP_PROJECT_ID: cxorbia-backend-dev
   GCP_REGION: us-central1
   CLOUD_RUN_SERVICE: cxorbia-live-hr-dev
+  CLOUD_RUN_RUNTIME_SA: firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
   FIREBASE_HOSTING_TARGET: cxorbia-dev
+  HOSTING_SITE: cxorbia-backend-dev
   LIVE_ENDPOINT_PATH: /api/tya/cinepolis/hr-live
   DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
   DEPLOY_REQUEST: backend/config/phase-a-live-hr-runtime-deploy-request-v1.json
-  OUT_DIR: .tmp/corte3-hosting-dev-visual
+  OUT_DIR: .tmp/c6-live-hr-shopper-display-dev
 
 jobs:
-  deploy-hosting-dev:
-    name: Deploy or verify locked Corte 3 Hosting DEV build
-    if: ${{ github.event_name == 'push' }}
+  deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-
+    timeout-minutes: 55
     steps:
       - name: Checkout exact live branch
         uses: actions/checkout@v4
@@ -43,197 +43,250 @@ jobs:
           ref: docs-tya-v6-v71-audit
           fetch-depth: 0
 
-      - name: Read request status
-        id: request
-        run: |
-          node <<'NODE'
-          const fs=require('fs');
-          const x=JSON.parse(fs.readFileSync(process.env.DEPLOY_REQUEST,'utf8'));
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`active=${x.status==='authorized_pending'?'true':'false'}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`mode=${x.executionMode||'deploy_and_verify'}\n`);
-          NODE
-
-      - name: Stop safely when request is not active
-        if: steps.request.outputs.active != 'true'
-        run: echo 'Hosting DEV request is not active; no deployment or smoke executed.'
-
-      - name: Validate explicit Hosting DEV authorization and exact source head
-        if: steps.request.outputs.active == 'true'
+      - name: Validate one-shot authorization and resolve state
+        id: gate
         run: |
           set -euo pipefail
           mkdir -p "$OUT_DIR"
-          node <<'NODE'
+          node <<'NODE' >> "$GITHUB_OUTPUT"
           const fs=require('fs');
-          const {spawnSync}=require('child_process');
-          const p=process.env.DEPLOY_REQUEST;
-          const x=JSON.parse(fs.readFileSync(p,'utf8'));
-          const run=(args)=>{const r=spawnSync('git',args,{encoding:'utf8'});if(r.status!==0)throw new Error(r.stderr);return r.stdout.trim();};
-          if(x.schemaVersion!=='2.1.0')throw new Error('request_schema_invalid');
-          if(x.status!=='authorized_pending')throw new Error('request_not_authorized_pending');
-          if(x.scope!=='hosting_dev_visual_only')throw new Error('scope_invalid');
-          if(!['deploy_and_verify','remote_smoke_only'].includes(x.executionMode))throw new Error('execution_mode_invalid');
-          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('target_invalid');
-          if(x.targetProject!=='cxorbia-backend-dev'||x.hostingTarget!=='cxorbia-dev')throw new Error('hosting_target_invalid');
-          if(x.runtimeVersion!=='V174-CORTE3-CANONICAL-FINANCE-R23')throw new Error('runtime_version_invalid');
-          const gate=x.technicalGate||{};
-          if(gate.profile!=='CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23'||Number(gate.run)!==30074835544||gate.status!=='PASS_READONLY_POST_GATES')throw new Error('technical_gate_not_locked');
-          if(gate.artifactDigest!=='sha256:06188dc26dcba0a4e0b9b6fc4119ed32ca31d38462a6e513f177ab84cdba0deb')throw new Error('technical_gate_digest_invalid');
-          const a=x.authorization||{};
-          if(a.paulaExplicitInCurrentConversation!==true||a.hostingDevRedeploy!==true||a.cloudRunDeploy!==false)throw new Error('authorization_invalid');
-          if(a.production!==false||a.writes!==false||a.imports!==false||a.payments!==false||a.merge!==false)throw new Error('unsafe_authorization');
-          const parent=run(['rev-parse','HEAD^']);
-          if(parent!==x.expectedSourceHead)throw new Error(`source_head_mismatch:${parent}/${x.expectedSourceHead}`);
-          const changed=run(['diff','--name-only','HEAD^','HEAD']).split(/\r?\n/).filter(Boolean);
-          if(changed.length!==1||changed[0]!==p)throw new Error(`request_commit_scope_invalid:${changed.join(',')}`);
-          console.log(JSON.stringify({decision:'PASS_CORTE3_HOSTING_DEV_AUTHORIZATION',executionMode:x.executionMode,sourceHead:parent,requestCommit:run(['rev-parse','HEAD']),production:false,writes:false,cloudRunDeploy:false}));
+          const r=JSON.parse(fs.readFileSync(process.env.DEPLOY_REQUEST,'utf8'));
+          const exactText='Autorizo ejecutar ahora el único redeploy Cloud Run DEV cxorbia-live-hr-dev y el único redeploy Hosting DEV cxorbia-backend-dev/cxorbia-dev, manteniendo la HR con lectura abierta; Google Sheets API y lectura de la HR canónica ya están PASS. Sin Firestore/HR/Auth/Rules writes, Storage, Make/Gemini, pagos, nuevo proyecto/Hosting, merge ni producción.';
+          if(r.schemaVersion!=='cxorbia.c6.live-hr-shopper-display-dev-redeploy.v1'||r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||r.pullRequest!==7)throw new Error('request_identity_mismatch');
+          if(r.targetProject!=='cxorbia-backend-dev'||r.cloudRunService!=='cxorbia-live-hr-dev'||r.cloudRunRegion!=='us-central1'||r.hostingSite!=='cxorbia-backend-dev'||r.hostingTarget!=='cxorbia-dev')throw new Error('provider_target_mismatch');
+          if(r.authorizedBy!=='Paula'||r.authorizationSource!=='current_conversation_2026-07-31'||r.authorizationText!==exactText)throw new Error('authorization_text_mismatch');
+          if(r.hrOpenReadPreserved!==true||r.preconditions?.googleSheetsApi!=='PASS'||r.preconditions?.canonicalHrRead!=='PASS'||r.preconditions?.providerDecision!=='PASS_SHEETS_API_AND_CANONICAL_HR_READER')throw new Error('provider_preconditions_not_locked');
+          for(const k of ['firestoreWrites','hrWrites','authWrites','rulesWrites','storageWrites','makeWrites','geminiCalls','paymentsWrites','newProjects','newHostingSites'])if(Number(r[k])!==0)throw new Error('unsafe_scope:'+k);
+          if(r.merge!==false||r.production!==false||r.singleCloudRunDeployMax!==1||r.singleHostingDeployMax!==1)throw new Error('unsafe_scope');
+          const cr=Number(r.cloudRunDeployExecutions||0),ho=Number(r.hostingDeployExecutions||0);
+          if(cr<0||cr>1||ho<0||ho>1)throw new Error('execution_counter_invalid');
+          let mode='invalid';
+          if(r.enabled===true&&r.consumed===false&&r.status==='authorized_waiting_cloud_run'&&cr===0&&ho===0)mode='full';
+          else if(r.enabled===true&&r.consumed===false&&r.status==='cloud_run_deployed_smoke_pending'&&cr===1&&ho===0)mode='cloud_smoke_then_hosting';
+          else if(r.enabled===true&&r.consumed===false&&r.status==='cloud_run_pass_hosting_pending'&&cr===1&&ho===0)mode='hosting';
+          else if(r.enabled===true&&r.consumed===false&&r.status==='hosting_deployed_smoke_pending'&&cr===1&&ho===1)mode='hosting_smoke';
+          else if(r.enabled===false&&r.consumed===true&&r.status==='consumed_pass'&&cr===1&&ho===1)mode='noop_consumed';
+          if(mode==='invalid')throw new Error(`one_shot_state_invalid:${r.status}:${cr}:${ho}`);
+          console.log(`mode=${mode}`);
+          console.log(`active=${mode==='noop_consumed'?'false':'true'}`);
+          console.log(`cloud_deploy=${mode==='full'?'true':'false'}`);
+          console.log(`cloud_smoke=${['full','cloud_smoke_then_hosting'].includes(mode)?'true':'false'}`);
+          console.log(`hosting_deploy=${['full','cloud_smoke_then_hosting','hosting'].includes(mode)?'true':'false'}`);
+          console.log(`hosting_smoke=${['full','cloud_smoke_then_hosting','hosting','hosting_smoke'].includes(mode)?'true':'false'}`);
           NODE
 
+      - name: Stop safely when one-shot is already consumed
+        if: steps.gate.outputs.active != 'true'
+        run: echo 'One-shot DEV redeploy already consumed; no provider mutation executed.'
+
       - name: Setup Node
-        if: steps.request.outputs.active == 'true'
+        if: steps.gate.outputs.active == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Verify V174 runtime preservation and Corte 3 sources
-        if: steps.request.outputs.active == 'true'
-        run: |
-          set -euo pipefail
-          node --check tools/qa/tya-corte3-v174-runtime-preservation-r24-gate.mjs
-          node tools/qa/tya-corte3-v174-runtime-preservation-r24-gate.mjs --out "$OUT_DIR/runtime-preservation" 2>&1 | tee "$OUT_DIR/runtime-preservation.log"
-          node --check tools/release/tya-source-safe-live-binding-build-r22.mjs
-          node --check tools/release/tya-corte3-hosting-dev-build-r24.mjs
-          node --check tools/qa/tya-corte3-canonical-finance-ui-export-r23-gate.mjs
-          node --check tools/qa/tya-corte3-remote-live-finance-smoke-r25-gate.mjs
-          for file in \
-            app/data/tya-financial-canonical-source-safe.js \
-            app/data/tya-financial-canonical-source-safe-liq-01.js \
-            app/data/tya-financial-canonical-source-safe-liq-02.js \
-            app/data/tya-financial-canonical-source-safe-liq-03.js \
-            app/data/tya-financial-canonical-source-safe-review-01.js \
-            app/data/tya-financial-canonical-source-safe-review-02.js \
-            app/data/tya-financial-canonical-source-safe-evidence.js \
-            app/data/tya-financial-canonical-source-safe-final.js \
-            app/adapters/tya-financial-canonical-source-safe-adapter.js; do
-            node --check "$file"
-          done
-          sha256sum app/core/build-lock.js > "$OUT_DIR/local-build-lock.sha256"
-
-      - name: Verify existing live HR endpoint
-        if: steps.request.outputs.active == 'true'
-        run: |
-          set -euo pipefail
-          url="$DEV_ROOT_URL$LIVE_ENDPOINT_PATH?format=meta&fresh=1&ts=$(date +%s)"
-          curl -fsS -H 'Cache-Control: no-cache' "$url" > "$OUT_DIR/precheck-live-meta.json"
-          node <<'NODE'
-          const fs=require('fs');
-          const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/precheck-live-meta.json','utf8'));
-          if(x.ok!==true||x.runtimeRead!==true||x.sourceSafe!==true||!x.revision)throw new Error('existing_live_hr_endpoint_not_ready');
-          if(x.periods!==14||x.visits!==616)throw new Error('existing_live_hr_counts_invalid');
-          console.log('PASS_EXISTING_LIVE_HR_ENDPOINT');
-          NODE
-
-      - name: Build exact Corte 3 deployment overlay
-        if: steps.request.outputs.active == 'true' && steps.request.outputs.mode == 'deploy_and_verify'
-        run: |
-          set -euo pipefail
-          node tools/release/tya-source-safe-live-binding-build-r22.mjs --html app/index.html --live-endpoint "$LIVE_ENDPOINT_PATH" --out "$OUT_DIR/live-binding"
-          node tools/release/tya-corte3-hosting-dev-build-r24.mjs --html app/index.html --out "$OUT_DIR/corte3-build"
-          grep -q "$LIVE_ENDPOINT_PATH" app/index.html
-          grep -q 'adapters/tya-live-source-refresh-watch.js' app/index.html
-          grep -q 'data/tya-financial-canonical-source-safe-final.js' app/index.html
-          grep -q 'adapters/tya-financial-canonical-source-safe-adapter.js' app/index.html
-          cp firebase.json "$OUT_DIR/firebase.before.json"
-          node <<'NODE'
-          const fs=require('fs');
-          const p='firebase.json';
-          const x=JSON.parse(fs.readFileSync(p,'utf8'));
-          const rewrites=Array.isArray(x.hosting?.rewrites)?x.hosting.rewrites:[];
-          const live={source:process.env.LIVE_ENDPOINT_PATH,run:{serviceId:process.env.CLOUD_RUN_SERVICE,region:process.env.GCP_REGION}};
-          x.hosting.rewrites=[live,...rewrites.filter(r=>r.source!==process.env.LIVE_ENDPOINT_PATH)];
-          fs.writeFileSync(p,JSON.stringify(x,null,2)+'\n','utf8');
-          NODE
-          git diff -- app/index.html firebase.json > "$OUT_DIR/ephemeral-deploy-delta.patch"
-
-      - name: Deploy Hosting DEV only
-        if: steps.request.outputs.active == 'true' && steps.request.outputs.mode == 'deploy_and_verify'
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Authenticate to existing Google Cloud DEV
+        if: steps.gate.outputs.active == 'true'
+        uses: google-github-actions/auth@v2
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-          projectId: cxorbia-backend-dev
-          channelId: live
-          target: cxorbia-dev
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
 
-      - name: Record smoke-only no-redeploy decision
-        if: steps.request.outputs.active == 'true' && steps.request.outputs.mode == 'remote_smoke_only'
-        run: printf '%s\n' '{"executionMode":"remote_smoke_only","hostingRedeployed":false,"reason":"authorized build already deployed successfully in prior run; verifying same remote bytes only"}' > "$OUT_DIR/smoke-only-decision.json"
-
-      - name: Install transient browser for remote verification
-        if: steps.request.outputs.active == 'true'
-        run: |
-          npm install --no-save --ignore-scripts playwright@1.55.0
-          npx playwright install --with-deps chromium
-
-      - name: Verify deployed Corte 3 build and live HR
-        if: steps.request.outputs.active == 'true'
-        run: |
-          set -euo pipefail
-          remote_index="$DEV_ROOT_URL/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1&ts=$(date +%s)"
-          verified=0
-          for attempt in $(seq 1 24); do
-            if curl -fsS -H 'Cache-Control: no-cache' "$remote_index&attempt=$attempt" > "$OUT_DIR/remote-index.html"; then
-              if grep -q "$LIVE_ENDPOINT_PATH" "$OUT_DIR/remote-index.html" && \
-                 grep -q 'adapters/tya-live-source-refresh-watch.js' "$OUT_DIR/remote-index.html" && \
-                 grep -q 'data/tya-financial-canonical-source-safe-final.js' "$OUT_DIR/remote-index.html" && \
-                 grep -q 'adapters/tya-financial-canonical-source-safe-adapter.js' "$OUT_DIR/remote-index.html"; then
-                verified=1
-                break
-              fi
-            fi
-            sleep 5
-          done
-          test "$verified" -eq 1
-          curl -fsS -H 'Cache-Control: no-cache' "$DEV_ROOT_URL/core/build-lock.js?fresh=1&ts=$(date +%s)" > "$OUT_DIR/remote-build-lock.js"
-          sha256sum "$OUT_DIR/remote-build-lock.js" > "$OUT_DIR/remote-build-lock.sha256"
-          test "$(cut -d' ' -f1 "$OUT_DIR/local-build-lock.sha256")" = "$(cut -d' ' -f1 "$OUT_DIR/remote-build-lock.sha256")"
-          curl -fsS -H 'Cache-Control: no-cache' "$DEV_ROOT_URL$LIVE_ENDPOINT_PATH?format=meta&fresh=1&ts=$(date +%s)" > "$OUT_DIR/remote-live-meta.json"
-          node <<'NODE'
-          const fs=require('fs');
-          const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/remote-live-meta.json','utf8'));
-          if(x.ok!==true||x.runtimeRead!==true||x.sourceSafe!==true||!x.revision||x.periods!==14||x.visits!==616)throw new Error('remote_live_hr_endpoint_invalid');
-          console.log('PASS_REMOTE_LIVE_HR_ENDPOINT');
-          NODE
-          node tools/qa/tya-corte3-remote-live-finance-smoke-r25-gate.mjs --base-url "$remote_index" --out "$OUT_DIR/remote-corte3-live-smoke"
-          node tools/qa/tya-project-period-kpi-history-gate-r20.mjs --base-url "$remote_index" --out "$OUT_DIR/remote-r20" || true
-          node <<'NODE'
-          const fs=require('fs');
-          const request=JSON.parse(fs.readFileSync(process.env.DEPLOY_REQUEST,'utf8'));
-          const status={
-            decision:'PASS_CORTE3_HOSTING_DEV_AND_REMOTE_LIVE_SMOKE',
-            executionMode:request.executionMode,
-            hostingRedeployed:request.executionMode==='deploy_and_verify',
-            environment:'DEV',
-            url:'https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible&fresh=1',
-            production:false,cloudRunDeploy:false,hrWrites:0,firestoreWrites:0,authWrites:0,storageWrites:0,imports:0,payments:0
-          };
-          fs.writeFileSync(process.env.OUT_DIR+'/final-status.json',JSON.stringify(status,null,2)+'\n','utf8');
-          NODE
-
-      - name: Upload sanitized Hosting DEV evidence
-        if: always() && steps.request.outputs.active == 'true'
-        uses: actions/upload-artifact@v4
+      - name: Setup gcloud
+        if: steps.gate.outputs.active == 'true'
+        uses: google-github-actions/setup-gcloud@v2
         with:
-          name: cxorbia-corte3-hosting-dev-visual-${{ github.run_id }}
-          path: ${{ env.OUT_DIR }}
-          if-no-files-found: error
-          retention-days: 14
+          project_id: cxorbia-backend-dev
 
-      - name: Publish Hosting DEV status
-        if: always() && steps.request.outputs.active == 'true'
-        uses: actions/github-script@v7
+      - name: Revalidate provider and source gates before any mutation
+        if: steps.gate.outputs.active == 'true'
         env:
-          JOB_STATE: ${{ job.status }}
-        with:
-          script: |
-            const state=process.env.JOB_STATE==='success'?'success':'failure';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/corte3-hosting-dev-visual',description:state==='success'?'Corte 3 Hosting DEV and remote live smoke PASS':'Corte 3 Hosting DEV or remote live smoke HOLD',target_url:`${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`});
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_HR_SOURCE_SAFE_OUT: ${{ env.OUT_DIR }}/source-safe.js
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
+          CXORBIA_HR_EARLIEST_PERIOD: '2025-06'
+          CXORBIA_GATE_OUT: ${{ env.OUT_DIR }}/source-gates
+          CXORBIA_HR_TAB_REGISTRY: ${{ env.OUT_DIR }}/tab-registry.source-safe.json
+          CXORBIA_HR_TAB_REGISTRY_EVIDENCE: ${{ env.OUT_DIR }}/tab-registry-evidence.source-safe.json
+          CXORBIA_HR_OPERATIONAL_IDENTITY_OUT: ${{ env.OUT_DIR }}/operational-display-identity.dev.json
+        run: |
+          set -euo pipefail
+          node --check backend/runtime/hr-live-service/server.mjs
+          node --check tools/hr-source/tya-live-provider-registry-identity-dev.mjs
+          node --check tools/hr-source/tya-enforce-live-tab-registry.mjs
+          node --check app/adapters/tya-live-source-inplace-apply.js
+          node --check app/adapters/tya-live-source-refresh-watch.js
+          cp backend/config/tya-live-hr-tab-registry.source-safe.json "$OUT_DIR/tab-registry.source-safe.json"
+          node tools/hr-source/tya-live-provider-registry-identity-dev.mjs
+          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
+          node tools/hr-source/tya-enforce-live-tab-registry.mjs
+          node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs --input "$OUT_DIR/source-safe.js" --out "$OUT_DIR/source-safe.js" --report-dir "$OUT_DIR/canonical"
+          node tools/hr-source/tya-reapply-canonical-state-r20.mjs --input "$OUT_DIR/source-safe.js" --out "$OUT_DIR/source-safe.js" --report-dir "$OUT_DIR/state"
+          node tools/qa/tya-live-hr-read-probe-gate.mjs --payload "$OUT_DIR/source-safe.js" --out "$OUT_DIR/live-probe" --max-age-seconds 600
+          node <<'NODE'
+          const fs=require('fs'),vm=require('vm');
+          const reg=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/tab-registry.source-safe.json','utf8'));
+          const ids=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/operational-display-identity.dev.json','utf8'));
+          const code=fs.readFileSync(process.env.OUT_DIR+'/source-safe.js','utf8');const box={window:{}};vm.createContext(box);vm.runInContext(code,box);const s=box.window.CX_TYA_HR_SOURCE_SAFE;
+          if(reg.autoDiscovery!==true||reg.registryMode!=='live_provider_metadata_auto_refresh'||reg.monthlyTabs?.length<28)throw new Error('provider_registry_not_live');
+          if(!ids.identities?.length||ids.displayIdentityOnly!==true||ids.containsContactData!==false||ids.containsGovernmentId!==false||ids.containsBankData!==false||ids.containsCredentials!==false)throw new Error('display_identity_scope_invalid');
+          if(!s||s.periods?.length!==14||s.visits?.length!==616||s.sourceSafe!==true||s.source?.tabRegistryAutoDiscovery!==true)throw new Error('canonical_source_baseline_invalid');
+          if((s.shoppers||[]).some(x=>x.nombre&&x.nombre!=='Shopper protegido'))throw new Error('source_safe_default_contains_real_names');
+          console.log(JSON.stringify({decision:'PASS_PREDEPLOY_PROVIDER_AND_BASELINE',periods:s.periods.length,visits:s.visits.length,monthlyTabs:reg.monthlyTabs.length,displayIdentityCount:ids.identities.length,augustTabsPresent:reg.requiredAugustTabsPresent,writes:0,production:false}));
+          NODE
+          enabled="$(gcloud services list --enabled --project "$GCP_PROJECT_ID" --format='value(config.name)')"
+          for api in run.googleapis.com cloudbuild.googleapis.com firebasehosting.googleapis.com sheets.googleapis.com; do echo "$enabled" | grep -qx "$api" || { echo "Required API not enabled: $api"; exit 2; }; done
+          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT_DIR/cloud-run-before.json"
+
+      - name: Build Cloud Run image once
+        if: steps.gate.outputs.cloud_deploy == 'true'
+        run: |
+          set -euo pipefail
+          IMAGE_URI="gcr.io/${GCP_PROJECT_ID}/${CLOUD_RUN_SERVICE}:c6-${GITHUB_SHA}"
+          echo "$IMAGE_URI" > "$OUT_DIR/image-uri.txt"
+          gcloud builds submit . --project "$GCP_PROJECT_ID" --config backend/runtime/hr-live-service/cloudbuild.yaml --substitutions "_IMAGE=$IMAGE_URI" --quiet
+
+      - name: Update existing Cloud Run DEV service once
+        id: cloud_deploy
+        if: steps.gate.outputs.cloud_deploy == 'true'
+        run: |
+          set -euo pipefail
+          IMAGE_URI="$(cat "$OUT_DIR/image-uri.txt")"
+          gcloud run services update "$CLOUD_RUN_SERVICE" \
+            --project "$GCP_PROJECT_ID" \
+            --region "$GCP_REGION" \
+            --image "$IMAGE_URI" \
+            --service-account "$CLOUD_RUN_RUNTIME_SA" \
+            --update-env-vars "CXORBIA_LIVE_HR_CACHE_MS=15000,CXORBIA_HR_LIVE_MAX_ROW=140,CXORBIA_HR_LIVE_MAX_COL=AI,CXORBIA_HR_EARLIEST_PERIOD=2025-06,CXORBIA_DEV_OPERATIONAL_NAMES=true" \
+            --quiet
+          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT_DIR/cloud-run-after-deploy.json"
+
+      - name: Persist Cloud Run provider mutation immediately
+        if: steps.cloud_deploy.outcome == 'success'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');const p=process.env.DEPLOY_REQUEST;const r=JSON.parse(fs.readFileSync(p,'utf8'));const svc=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/cloud-run-after-deploy.json','utf8'));
+          r.cloudRunDeployExecutions=1;r.status='cloud_run_deployed_smoke_pending';r.cloudRunDeployedAt=new Date().toISOString();r.cloudRunRevision=svc.status?.latestReadyRevisionName||svc.status?.latestCreatedRevisionName||null;r.cloudRunUrl=svc.status?.url||null;
+          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEPLOY_REQUEST"; git commit -m 'gate: record Corte 6 Cloud Run DEV one-shot execution'; git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Smoke Cloud Run auto-month and display identity
+        id: cloud_smoke
+        if: steps.gate.outputs.cloud_smoke == 'true'
+        run: |
+          set -euo pipefail
+          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format='value(status.url)' > "$OUT_DIR/cloud-run-url.txt"
+          base="$(cat "$OUT_DIR/cloud-run-url.txt")"
+          op='view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV'
+          curl -fsS --retry 8 --retry-delay 3 "$base/health" > "$OUT_DIR/cloud-run-health.json"
+          curl -fsS --retry 8 --retry-delay 3 -H 'Cache-Control: no-cache' "$base/v1/tenants/tya/projects/cinepolis/hr-live?format=meta&fresh=1&$op&ts=$(date +%s)" > "$OUT_DIR/cloud-run-meta.json"
+          curl -fsS --retry 8 --retry-delay 3 -H 'Cache-Control: no-cache' "$base/v1/tenants/tya/projects/cinepolis/hr-live?$op&ts=$(date +%s)" > "$OUT_DIR/cloud-run-operational.json"
+          curl -fsS --retry 8 --retry-delay 3 -H 'Cache-Control: no-cache' "$base/v1/tenants/tya/projects/cinepolis/hr-live?ts=$(date +%s)" > "$OUT_DIR/cloud-run-source-safe.json"
+          node <<'NODE'
+          const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/cloud-run-meta.json','utf8'));const o=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/cloud-run-operational.json','utf8'));const s=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/cloud-run-source-safe.json','utf8'));
+          if(m.ok!==true||m.runtimeRead!==true||m.sourceSafe!==true||m.periods!==14||m.visits!==616||m.latestPeriodKey!=='2026-07'||m.tabRegistryAutoDiscovery!==true||m.tabRegistryMode!=='live_provider_metadata_auto_refresh'||m.operationalDisplayIdentityReady!==true||m.operationalDisplayIdentityCount<1||m.operationalView!==true)throw new Error('cloud_run_meta_invalid');
+          if(o.operationalIdentityPreview!==true||o.operationalIdentityScope!=='display_name_only'||!(o.shoppers||[]).some(x=>x.operationalDisplayName===true&&x.nombre&&x.nombre!=='Shopper protegido'))throw new Error('cloud_run_operational_identity_invalid');
+          if((o.shoppers||[]).some(x=>x.email||x.phone||x.whatsapp||x.dpi||x.banco||x.ctaNum||x.pass))throw new Error('cloud_run_sensitive_data_leak');
+          if(s.operationalIdentityPreview===true||(s.shoppers||[]).some(x=>x.nombre&&x.nombre!=='Shopper protegido'))throw new Error('cloud_run_default_source_safe_leak');
+          console.log(JSON.stringify({decision:'PASS_CLOUD_RUN_DEV_AUTO_MONTH_AND_DISPLAY_IDENTITY',periods:m.periods,visits:m.visits,displayIdentityCount:m.operationalDisplayIdentityCount,latestPeriodKey:m.latestPeriodKey,writes:0,production:false}));
+          NODE
+
+      - name: Persist Cloud Run smoke PASS and unlock Hosting one-shot
+        if: steps.cloud_smoke.outcome == 'success' && steps.gate.outputs.hosting_deploy == 'true'
+        run: |
+          set -euo pipefail
+          git pull --rebase origin docs-tya-v6-v71-audit
+          node <<'NODE'
+          const fs=require('fs');const p=process.env.DEPLOY_REQUEST;const r=JSON.parse(fs.readFileSync(p,'utf8'));if(Number(r.cloudRunDeployExecutions)!==1)throw new Error('cloud_run_execution_not_recorded');r.status='cloud_run_pass_hosting_pending';r.cloudRunSmokePassedAt=new Date().toISOString();fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git add "$DEPLOY_REQUEST"; git commit -m 'gate: Cloud Run DEV smoke PASS, Hosting pending'; git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Prepare exact existing Hosting DEV config
+        if: steps.gate.outputs.hosting_deploy == 'true' && (steps.cloud_smoke.outcome == 'success' || steps.gate.outputs.mode == 'hosting')
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const config={hosting:{target:'cxorbia-dev',public:'app',ignore:['firebase.json','**/.*','**/node_modules/**'],rewrites:[{source:'/api/tya/cinepolis/hr-live',run:{serviceId:'cxorbia-live-hr-dev',region:'us-central1'}},{source:'**',destination:'/index.html'}],headers:[{source:'**',headers:[{key:'Cache-Control',value:'no-store'}]},{source:'**/*.html',headers:[{key:'Content-Type',value:'text/html; charset=utf-8'}]},{source:'**/*.js',headers:[{key:'Content-Type',value:'application/javascript; charset=utf-8'}]},{source:'**/*.css',headers:[{key:'Content-Type',value:'text/css; charset=utf-8'}]},{source:'**/*.json',headers:[{key:'Content-Type',value:'application/json; charset=utf-8'}]},{source:'**/*.webmanifest',headers:[{key:'Content-Type',value:'application/manifest+json; charset=utf-8'}]}]}};
+          fs.writeFileSync(process.env.OUT_DIR+'/firebase.hosting.json',JSON.stringify(config,null,2)+'\n','utf8');
+          NODE
+          grep -q 'adapters/tya-live-source-inplace-apply.js' app/index-backend-dev.html
+          grep -q 'adapters/tya-live-source-refresh-watch.js' app/index-backend-dev.html
+          grep -q 'view=operational-names' app/index-backend-dev.html
+          grep -q 'humanCredentialPrompt: false' app/core/backend-config-preview-dev.js
+          ! grep -q 'cxBackendAuthGate' app/core/backend-browser-auth.js
+
+      - name: Deploy existing Hosting DEV once
+        id: hosting_deploy
+        if: steps.gate.outputs.hosting_deploy == 'true' && (steps.cloud_smoke.outcome == 'success' || steps.gate.outputs.mode == 'hosting')
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts firebase-tools@latest >/dev/null 2>&1
+          cp "$OUT_DIR/firebase.hosting.json" firebase.c6-dev.json
+          npx firebase deploy --config firebase.c6-dev.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive
+          rm -f firebase.c6-dev.json
+
+      - name: Persist Hosting provider mutation immediately
+        if: steps.hosting_deploy.outcome == 'success'
+        run: |
+          set -euo pipefail
+          git pull --rebase origin docs-tya-v6-v71-audit
+          node <<'NODE'
+          const fs=require('fs');const p=process.env.DEPLOY_REQUEST;const r=JSON.parse(fs.readFileSync(p,'utf8'));if(Number(r.cloudRunDeployExecutions)!==1)throw new Error('cloud_run_not_pass_before_hosting');r.hostingDeployExecutions=1;r.status='hosting_deployed_smoke_pending';r.hostingDeployedAt=new Date().toISOString();fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git add "$DEPLOY_REQUEST"; git commit -m 'gate: record Corte 6 Hosting DEV one-shot execution'; git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Smoke same-origin Hosting DEV and human preview contract
+        id: hosting_smoke
+        if: steps.gate.outputs.hosting_smoke == 'true' && (steps.hosting_deploy.outcome == 'success' || steps.gate.outputs.mode == 'hosting_smoke')
+        run: |
+          set -euo pipefail
+          op='view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV'
+          curl -fsS --retry 12 --retry-delay 3 -H 'Cache-Control: no-cache' "$DEV_ROOT_URL$LIVE_ENDPOINT_PATH?format=meta&fresh=1&$op&ts=$(date +%s)" > "$OUT_DIR/hosting-live-meta.json"
+          curl -fsS --retry 12 --retry-delay 3 -H 'Cache-Control: no-cache' "$DEV_ROOT_URL$LIVE_ENDPOINT_PATH?$op&ts=$(date +%s)" > "$OUT_DIR/hosting-operational.json"
+          curl -fsS --retry 12 --retry-delay 3 -H 'Cache-Control: no-cache' "$DEV_ROOT_URL/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&ts=$(date +%s)" > "$OUT_DIR/index-backend-dev.remote.html"
+          node <<'NODE'
+          const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/hosting-live-meta.json','utf8'));const o=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/hosting-operational.json','utf8'));const h=fs.readFileSync(process.env.OUT_DIR+'/index-backend-dev.remote.html','utf8');
+          if(m.ok!==true||m.periods!==14||m.visits!==616||m.latestPeriodKey!=='2026-07'||m.tabRegistryAutoDiscovery!==true||m.operationalDisplayIdentityReady!==true||m.operationalView!==true)throw new Error('hosting_live_meta_invalid');
+          if(!(o.shoppers||[]).some(x=>x.operationalDisplayName===true&&x.nombre&&x.nombre!=='Shopper protegido'))throw new Error('hosting_real_display_names_missing');
+          if((o.shoppers||[]).some(x=>x.email||x.phone||x.whatsapp||x.dpi||x.banco||x.ctaNum||x.pass))throw new Error('hosting_sensitive_data_leak');
+          for(const marker of ['adapters/tya-live-source-inplace-apply.js','adapters/tya-live-source-refresh-watch.js','view=operational-names','YES_PAULA_20260731_NAMES_DEV','core/backend-config-preview-dev.js'])if(!h.includes(marker))throw new Error('human_preview_marker_missing:'+marker);
+          console.log(JSON.stringify({decision:'PASS_HOSTING_DEV_LIVE_HR_AND_SHOPPER_DISPLAY',periods:m.periods,visits:m.visits,displayIdentityCount:m.operationalDisplayIdentityCount,latestPeriodKey:m.latestPeriodKey,humanCredentialPrompt:false,writes:0,production:false}));
+          NODE
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/releases?pageSize=1" > "$OUT_DIR/hosting-release.json" || true
+
+      - name: Consume exact authorization after both remote smokes PASS
+        if: steps.hosting_smoke.outcome == 'success'
+        run: |
+          set -euo pipefail
+          git pull --rebase origin docs-tya-v6-v71-audit
+          node <<'NODE'
+          const fs=require('fs');const p=process.env.DEPLOY_REQUEST;const r=JSON.parse(fs.readFileSync(p,'utf8'));const m=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/hosting-live-meta.json','utf8'));
+          if(Number(r.cloudRunDeployExecutions)!==1||Number(r.hostingDeployExecutions)!==1)throw new Error('one_shot_execution_counts_invalid');
+          let release=null;try{const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/hosting-release.json','utf8'));release=(x.releases||[])[0]||null;}catch{}
+          const evidence={schemaVersion:'cxorbia.c6-live-hr-shopper-display-dev-deploy.v1',generatedAt:new Date().toISOString(),decision:'PASS_C6_LIVE_HR_AUTOMONTH_AND_SHOPPER_DISPLAY_DEV',requestId:r.requestId,target:{projectId:r.targetProject,cloudRunService:r.cloudRunService,cloudRunRegion:r.cloudRunRegion,hostingSite:r.hostingSite,hostingTarget:r.hostingTarget},cloudRun:{deployExecutions:1,revision:r.cloudRunRevision||null,url:r.cloudRunUrl||null},hosting:{deployExecutions:1,releaseName:release?.name||null,versionName:release?.version?.name||null,url:'https://cxorbia-backend-dev.web.app'},remote:{periods:m.periods,visits:m.visits,latestPeriodKey:m.latestPeriodKey,tabRegistryAutoDiscovery:m.tabRegistryAutoDiscovery===true,tabRegistryMode:m.tabRegistryMode,operationalDisplayIdentityReady:m.operationalDisplayIdentityReady===true,operationalDisplayIdentityCount:m.operationalDisplayIdentityCount,humanCredentialPrompt:false,displayIdentityScope:'display_name_only'},safety:{hrOpenReadPreserved:true,firestoreWrites:0,hrWrites:0,authWrites:0,rulesWrites:0,storageWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,newProjects:0,newHostingSites:0,merge:false,production:false,sensitiveShopperFieldsExposed:false}};
+          fs.mkdirSync('app/docs/evidence',{recursive:true});fs.writeFileSync('app/docs/evidence/CORTE6-LIVE-HR-SHOPPER-DISPLAY-DEV-DEPLOY-LATEST.json',JSON.stringify(evidence,null,2)+'\n','utf8');
+          r.status='consumed_pass';r.enabled=false;r.consumed=true;r.consumedAt=new Date().toISOString();r.decision=evidence.decision;r.nextGate='HUMAN_VISUAL_ADMIN_SHOPPER_NAMES_AND_SHOPPER_ROLE_MODULES';r.hostingReleaseName=evidence.hosting.releaseName;r.hostingVersionName=evidence.hosting.versionName;
+          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git add "$DEPLOY_REQUEST" app/docs/evidence/CORTE6-LIVE-HR-SHOPPER-DISPLAY-DEV-DEPLOY-LATEST.json
+          git commit -m 'evidence: Corte 6 live HR and shopper display DEV PASS'; git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Publish execution status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ '${{ steps.gate.outputs.active }}' != 'true' ]; then STATE=success;DESC='C6_DEV_REDEPLOY_ALREADY_CONSUMED_NOOP';
+          elif [ '${{ job.status }}' = 'success' ]; then STATE=success;DESC='PASS_C6_LIVE_HR_SHOPPER_DISPLAY_DEV';
+          else STATE=error;DESC='FAIL_C6_LIVE_HR_SHOPPER_DISPLAY_DEV';fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c6-live-hr-shopper-display-dev" -f description="$DESC" >/dev/null
+
+      - name: Cleanup transient files
+        if: always()
+        run: rm -rf "$OUT_DIR" firebase.c6-dev.json
