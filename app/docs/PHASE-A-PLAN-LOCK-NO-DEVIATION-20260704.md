@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-31  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_PROFILE_FULL_READONLY_PASS__31_IDENTITY_HOLD_PROVEN__WRITE_GATE_READY__WAITING_EXPLICIT_FIRESTORE_AUTHORIZATION__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_PROFILE_FULL_FIRESTORE_WRITE_READBACK_PASS__31_IDENTITY_HOLD_PROVEN__WAITING_SEPARATE_PROTECTED_DEV_REDEPLOY_AUTHORIZATION__NO_PRODUCTION`
 
 ## 1. Objetivo/arquitectura
 TyA/Cinépolis como tenant/proyecto configurable de CXOrbia. `cxorbia-backend-dev`=DEV canónico; `tya-plataforma`=Hosting final. No crear Firebase/Hosting/rama/PR por rutina.
@@ -18,51 +18,45 @@ El prototipo manda. Un PASS técnico sin validación visual no congela un corte.
 - R17N1,406/1,406; no repetir.
 - Corte5 CX.data PASS.
 - Auth91/91, claims5/5 y Rules PASS; no reimportar/resetear por rutina.
-- Firestore protegido: shoppers340; visitas616/616 enlazadas por shopperId; perfiles referenciados194/194.
+- HR live/auto-month PASS.
 
-## 4. HR live y auto-month
-HR se lee en vivo; autodiscovery mensual y fallback read-only PASS. Último periodo HR:2026-07. Nuevos meses nacen automáticamente al aparecer tabs mensuales válidas.
+## 4. Corte6 perfil completo — WRITE/READBACK PASS
+El bundle cifrado fue conciliado por identidad estable. Los120 perfiles exactos fueron materializados bajo autorización one-shot consumida.
 
-## 5. Corte6 human visual — P0 abierto
-Visual anterior: Shopper sin shopperId en ruta source-safe y Admin sin perfil protegido completo. No restaurar `sh1`; identidad real se resuelve por Auth/claims + shopperId estable.
+Resultado:
+-120 Firestore document writes exactos;
+-118 documentos con cambios reales de campos +2 marker-only;
+-329 valores escritos;
+- readback120 docs/329 campos;
+- mismatches0;
+-31 missing canonical permanecen HOLD probado.
 
-## 6. Protected runtime preparado
-Protected lane no se degrada a source-safe; watcher no sobrescribe CX.data; histórico/KPI usa shopperId y ciclo canónico incluido `submitida`. Sin redeploy nuevo autorizado.
+Campos escritos: username113, pass118, depto2, dpi17, direccion1, fecha_nac2, accepted_terms72, aprobacionCuenta2, registroOrigen2.
 
-## 7. Perfil completo — read-only PASS
-Bundle cifrado del export vigente:151 registros;120 exactos `legacyShopperId`;31 sin canonical;0 ambiguos/invalid;329 valores de perfil. En los120 exactos,118 docs cambian campos y2 solo marker de procedencia.
+Auth writes/password resets0; Rules/Hosting/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos0; producción=false; merge=false.
 
-Campos: username113, pass118, depto2, dpi17, direccion1, fecha_nac2, accepted_terms72, aprobacionCuenta2, registroOrigen2. Nombre/WhatsApp/email/país/ciudad ya coinciden.
+## 5. Identidad pendiente31
+Investigada por legacyShopperId exact, bridge técnico exacto/único y Auth determinístico + custom claim.0 resueltos. No crear/deduplicar por nombre/teléfono/email. Requiere bloque explícito posterior de alta/conciliación.
 
-## 8. Identidad pendiente31 — investigada antes del write
-No se dejó el HOLD para después sin diagnóstico:
-- bridge Auth determinístico + custom claim shopperId:0 resueltos;2 sin username,10 username duplicado,19 sin Auth user;
-- bridge V3 por llave técnica exacta/única (`docId/sourceKey/shopperId/legacyId/externalId/externalShopperId/sourceId`) y luego Auth:0 resueltos;0 candidatos técnicos.
+## 6. Fuente, password e histórico
+Export vigente = source-of-truth para perfil actual; password visible solo desde valor legacy real; Firebase Auth = autoridad de autenticación; PII/password nunca en repo/logs.616 visitas y77 certificaciones canónicas prevalecen.
 
-Por tanto los31 no tienen vínculo canónico reproducible. No crear/deduplicar por nombre/teléfono/email. Requieren bloque explícito posterior de alta/conciliación.
+## 7. Corte6 human visual — aún abierto
+La visual anterior falló por ruta source-safe. Runtime protegido ya está preparado: no se degrada a source-safe, no permite que watcher sobrescriba CX.data y usa shopperId + ciclo canónico incluido `submitida`.
 
-## 9. Transporte V2 y causa raíz
-Primer read-only FAIL por checksum antes del provider: `part-007.txt` no era el chunk exacto. Se restauró el blob correcto y retry PASS con request aún no consumida. Provider writes0.
+Falta un redeploy DEV protegido separado y nueva validación humana Admin+Shopper. La autorización Firestore consumida no cubre Hosting/Cloud Run.
 
-## 10. Fuente, password e histórico
-Export vigente = source-of-truth para perfil actual; password visible solo desde valor legacy real; Firebase Auth = autoridad de autenticación; PII/password nunca en repo/logs. Las616 visitas y77 certificaciones canónicas prevalecen y no se sobrescriben con arrays/contadores legacy.
+## 8. Gate vivo inmediato
+`AUTORIZACIÓN SEPARADA REDEPLOY DEV PROTEGIDO → HUMAN VISUAL ADMIN+SHOPPER → ALTA/CONCILIACIÓN EXPLÍCITA31 HOLD → FREEZE C6`.
 
-## 11. Write gate completo — NO autorizado
-Plan/request rebasados sobre evidencia V3, executor y workflow one-shot listos. Antes del provider revalidan autorización, destino, SHA,151/120/31,118+2 docs y329 valores. Cualquier drift previo falla sin mutation. Readback obligatorio de todos los documentos/campos.
+## 9. Julio/agosto coexistentes
+No iniciar materialización agosto mientras Corte6 siga abierto. Después del freeze: refresh HR → resolver agosto HN si corresponde → materializar solo delta agosto.
 
-Máximo futuro:120 Firestore document writes sobre perfiles existentes exactos. Auth/password reset0; Rules/Hosting/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos0; producción=false; merge=false.
-
-## 12. Gate vivo inmediato
-`AUTORIZACIÓN FIRESTORE EXACTA MÁX120 DOC WRITES → WRITE+READBACK → REDEPLOY DEV PROTEGIDO AUTORIZADO → HUMAN VISUAL ADMIN+SHOPPER → ALTA/CONCILIACIÓN EXPLÍCITA31 HOLD → FREEZE C6`.
-
-## 13. Julio/agosto coexistentes
-No iniciar materialización agosto mientras Corte6 siga P0 abierto. Después del freeze: refresh HR → resolver agosto HN si corresponde → materializar solo delta agosto.
-
-## 14. Claude/prototipo
+## 10. Claude/prototipo
 No rediseñar. Mantener UI aprobada. Backend/protected runtime debe entregar perfil real, incluido username/password legado cuando exista. No tocar módulos UI si el adapter puede cumplir el contrato.
 
-## 15. Academia
-Documentar source-safe vs protected, identidad/claims/shopperId, bridges técnicos/Auth reproducibles, perfil completo operativo, secreto legacy vs Auth, validación read-only antes de writes, histórico/certificación canónicos y hardening posterior.
+## 11. Academia
+Documentar source-safe vs protected, identidad/claims/shopperId, bridges reproducibles, autorización one-shot, write/readback, perfil completo operativo, secreto legacy vs Auth y histórico/certificación canónicos.
 
-## 16. Estado seguro
-Read-only gates PASS; Firestore/HR/Auth/legacy writes0; Auth password changes0; Rules/Hosting/Cloud Run deploys nuevos0; Storage/Make/Gemini/pagos0; merge=false; producción=false.
+## 12. Estado seguro
+Firestore one-shot consumido PASS; Auth/HR/legacy writes0; Auth password changes0; Rules/Hosting/Cloud Run/Storage/Make/Gemini/pagos0; merge=false; producción=false.
