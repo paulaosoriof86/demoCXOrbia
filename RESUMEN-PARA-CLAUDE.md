@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_PROFILE_FULL_V2_READONLY_PASS__WRITE_PLAN_PREPARED__WAITING_EXPLICIT_FIRESTORE_AUTHORIZATION__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_PROFILE_FULL_V2_READONLY_PASS__WRITE_GATE_READY__WAITING_EXPLICIT_FIRESTORE_AUTHORIZATION__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Corte3 FROZEN; R17N1,406/1,406 no repetir.
@@ -24,47 +24,31 @@ La consola autenticada debe mostrar el perfil completo disponible hoy en la plat
 No exponer PII/password en repo, logs ni evidencia source-safe.
 
 ## 5. V2 read-only — PASS
-Bundle V2 cifrado recibido y reconciliado automáticamente contra DEV. Gate final `PASS_C6_PROFILE_FULL_V2_READONLY`.
+Bundle V2 cifrado reconciliado contra DEV. Gate `PASS_C6_PROFILE_FULL_V2_READONLY`.
 
-Resultado:
-- registros V2:151;
-- match exacto `legacyShopperId`:120;
-- missing canonical:31 HOLD;
-- ambiguos0; badRecord0;
-- perfiles exactos con cambios:120;
-- campos planificados:329;
-- password presente en fuente149;
-- perfiles fuente con DPI/dirección/fecha nacimiento27.
+Resultado:151 registros;120 match exactos `legacyShopperId`;31 missing canonical HOLD; ambiguos0; badRecord0;120 perfiles exactos con cambios;329 valores planificados.
 
-Campos a escribir en los120 exactos:
-- username113;
-- pass118;
-- depto2;
-- dpi17;
-- direccion1;
-- fecha_nac2;
-- accepted_terms72;
-- aprobacionCuenta2;
-- registroOrigen2.
-
-Nombre, teléfono/WhatsApp, email, país y ciudad ya coinciden en esos120 y no requieren write.
+Campos a escribir: username113, pass118, depto2, dpi17, direccion1, fecha_nac2, accepted_terms72, aprobacionCuenta2, registroOrigen2. Nombre, teléfono/WhatsApp, email, país y ciudad ya coinciden y no requieren write.
 
 ## 6. Primer intento V2 — causa raíz corregida
-El primer read-only falló antes del provider por checksum. `part-007.txt` no coincidía con el chunk cifrado original. Se restauró exactamente el blob esperado; la request seguía no consumida. El retry terminó PASS. No hubo provider writes en el FAIL.
+El primer read-only falló antes del provider por checksum de `part-007.txt`. Se restauró exactamente el blob original; la request seguía no consumida. Retry PASS; provider writes0 en el FAIL.
 
-## 7. Write plan preparado — NO autorizado
-`backend/config/corte6-profile-full-firestore-write-plan-v2.json`:
-- máximo120 Firestore document writes sobre perfiles existentes exactos;
--329 valores de perfil;
--31 missing canonical quedan HOLD, no se crean ni emparejan silenciosamente;
-- Auth/password reset0;
-- Rules/Hosting/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos0;
-- producción=false; merge=false.
+## 7. Write gate completo preparado — NO autorizado
+Listos en rama viva:
+- `backend/config/corte6-profile-full-firestore-write-plan-v2.json`;
+- `backend/config/corte6-profile-full-firestore-write-request-v2.json` disabled;
+- `tools/release/cxorbia-corte6-profile-full-firestore-write-v2.mjs`;
+- `.github/workflows/cxorbia-corte6-profile-full-firestore-write-v2.yml`.
 
+El workflow solo puede avanzar si request+plan contienen autorización exacta. Antes de escribir revalida destino, bundle SHA,151/120/31,329 valores y desglose por campo. Máximo120 Firestore document writes sobre perfiles existentes exactos, seguido de readback de todos los documentos/campos. Cualquier drift previo = FAIL sin mutation.
+
+Los31 missing canonical permanecen HOLD. Auth/password reset0; Rules/Hosting/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos0; producción=false; merge=false.
+
+## 8. Precedencia
 El export vigente manda para perfil actual. Las616 visitas y77 certificaciones canónicas siguen siendo autoridad; `certs/histCerts/visitas/activo/rating` legacy no las sustituyen.
 
-## 8. Claude/prototipo
+## 9. Claude/prototipo
 No nueva candidata ni rediseño. La UI ya contempla usuario/contraseña; backend protegido debe entregar valores reales cuando existan. Tocar módulos UI solo si el adapter entrega el dato correctamente y la UI aun no lo refleja.
 
-## 9. Siguiente gate
-`AUTORIZACIÓN FIRESTORE EXACTA MÁX120 DOCUMENT WRITES → WRITE IN-MEMORY DESDE BUNDLE CIFRADO → READBACK → REDEPLOY DEV PROTEGIDO AUTORIZADO → HUMAN VISUAL ADMIN+SHOPPER → RESOLVER 31 HOLD → FREEZE C6 → AGOSTO`.
+## 10. Siguiente gate
+`AUTORIZACIÓN FIRESTORE EXACTA MÁX120 DOCUMENT WRITES → WRITE IN-MEMORY DESDE BUNDLE CIFRADO → READBACK → REDEPLOY DEV PROTEGIDO AUTORIZADO → HUMAN VISUAL ADMIN+SHOPPER → RESOLVER31 HOLD → FREEZE C6 → AGOSTO`.
