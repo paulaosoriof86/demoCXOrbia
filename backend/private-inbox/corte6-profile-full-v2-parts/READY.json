@@ -26,6 +26,7 @@
   "sourceSha256": "80a95a523fb3db925b90ff829d7d6939a9c1166dd443b245d82d84350b7214ed",
   "targetProjectId": "cxorbia-backend-dev",
   "tenantId": "tya",
+  "retryReason": "exact_part_007_blob_restored_after_pre_provider_sha_gate_failure",
   "safety": {
     "encryptedOnly": true,
     "plaintextProfileValues": false,
