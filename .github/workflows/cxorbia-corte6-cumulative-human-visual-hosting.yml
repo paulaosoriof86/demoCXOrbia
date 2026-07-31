@@ -57,19 +57,22 @@ jobs:
           if(r.merge!==false||r.production!==false||x.merge!==false||x.production!==false)throw new Error('unsafe_scope');
           NODE
 
-      - name: Static cumulative contract before provider mutation
+      - name: Stable cumulative regression contract before provider mutation
         run: |
           set -euo pipefail
+          node --check app/adapters/tya-cumulative-read-model.js
           node --check app/adapters/tya-dev-full-visual-bridge.js
           node --check app/adapters/tya-live-source-refresh-watch.js
-          grep -q "cumulativeVisual:true" app/adapters/tya-dev-full-visual-bridge.js
-          grep -q "legacyShopperId" app/adapters/tya-dev-full-visual-bridge.js
-          grep -q "canonicalLegacyIds" app/adapters/tya-dev-full-visual-bridge.js
-          grep -q "canonicalFinancePreserved" app/adapters/tya-dev-full-visual-bridge.js
-          grep -q "CX_TYA_REAPPLY_FULL_VISUAL_OVERLAY" app/adapters/tya-dev-full-visual-bridge.js
-          grep -q "if(protectedRuntimeRequested)" app/adapters/tya-live-source-refresh-watch.js
-          grep -q "reapplyFullVisual" app/adapters/tya-live-source-refresh-watch.js
-          ! grep -q "protectedRuntimeRequested||fullVisualRequested" app/adapters/tya-live-source-refresh-watch.js
+          node --check tools/qa/tya-cumulative-read-model-regression-gate.mjs
+          node tools/qa/tya-cumulative-read-model-regression-gate.mjs
+          grep -q "stableComposer:true" app/adapters/tya-dev-full-visual-bridge.js
+          grep -q "STABLE_COMPOSER_ENGINE_MISSING" app/adapters/tya-dev-full-visual-bridge.js
+          grep -q "tya-cumulative-read-model.js" app/adapters/tya-dev-full-visual-bridge.js
+          grep -q "protectedVisitsAppended:0" app/adapters/tya-cumulative-read-model.js
+          grep -q "identityConflicts" app/adapters/tya-cumulative-read-model.js
+          grep -q "currentRevision" app/adapters/tya-live-source-refresh-watch.js
+          grep -q "captureUiState" app/adapters/tya-live-source-refresh-watch.js
+          grep -q "CX_TYA_REQUEST_STABLE_RERENDER" app/adapters/tya-live-source-refresh-watch.js
           grep -q "CX_TYA_FINANCIAL_CANONICAL_READY" app/adapters/tya-financial-canonical-source-safe-adapter.js
           grep -q "tya-financial-canonical-source-safe-adapter.js" app/index-backend-dev.html
           grep -q "tya-dev-full-visual-bridge.js" app/index-backend-dev.html
@@ -121,22 +124,31 @@ jobs:
           r.hostingDeployExecutions=1;r.status='hosting_deployed_smoke_pending';r.hostingDeployedAt=new Date().toISOString();fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
           NODE
           git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add "$REQUEST"; git commit -m 'gate: record cumulative C6 Hosting DEV one-shot'; git push origin HEAD:docs-tya-v6-v71-audit
+          git add "$REQUEST"; git commit -m 'gate: record stable C6 Hosting DEV one-shot'; git push origin HEAD:docs-tya-v6-v71-audit
 
-      - name: Remote cumulative smoke
+      - name: Remote stable cumulative smoke
         id: smoke
         run: |
           set -euo pipefail
+          curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-cumulative-read-model.js" -o "$OUT_DIR/composer.js"
           curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-dev-full-visual-bridge.js" -o "$OUT_DIR/full.js"
           curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-live-source-refresh-watch.js" -o "$OUT_DIR/watcher.js"
           curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-financial-canonical-source-safe-adapter.js" -o "$OUT_DIR/finance.js"
+          curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/index-backend-dev.html" -o "$OUT_DIR/index-backend-dev.html"
           curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/api/tya/cinepolis/hr-live?format=meta&fresh=1" -o "$OUT_DIR/hr-meta-after.json"
-          grep -q "cumulativeVisual:true" "$OUT_DIR/full.js"
-          grep -q "canonicalLegacyIds" "$OUT_DIR/full.js"
-          grep -q "CX_TYA_REAPPLY_FULL_VISUAL_OVERLAY" "$OUT_DIR/full.js"
-          grep -q "reapplyFullVisual" "$OUT_DIR/watcher.js"
-          ! grep -q "protectedRuntimeRequested||fullVisualRequested" "$OUT_DIR/watcher.js"
+          cmp app/adapters/tya-cumulative-read-model.js "$OUT_DIR/composer.js"
+          cmp app/adapters/tya-dev-full-visual-bridge.js "$OUT_DIR/full.js"
+          cmp app/adapters/tya-live-source-refresh-watch.js "$OUT_DIR/watcher.js"
+          cmp app/adapters/tya-financial-canonical-source-safe-adapter.js "$OUT_DIR/finance.js"
+          node --check "$OUT_DIR/composer.js"
+          node --check "$OUT_DIR/full.js"
+          node --check "$OUT_DIR/watcher.js"
+          grep -q "stableComposer:true" "$OUT_DIR/full.js"
+          grep -q "protectedVisitsAppended:0" "$OUT_DIR/composer.js"
+          grep -q "CX_TYA_REQUEST_STABLE_RERENDER" "$OUT_DIR/watcher.js"
           grep -q "CX_TYA_FINANCIAL_CANONICAL_READY" "$OUT_DIR/finance.js"
+          grep -q "tya-dev-full-visual-bridge.js" "$OUT_DIR/index-backend-dev.html"
+          node tools/qa/tya-cumulative-read-model-regression-gate.mjs "$OUT_DIR/composer.js"
           code="$(curl -sS -o "$OUT_DIR/full-unauthorized-after.json" -w '%{http_code}' "$DEV_ROOT_URL/api/tya/cinepolis/hr-live?view=full-profile&scope=admin")"
           test "$code" = '401'
           node <<'NODE'
@@ -155,14 +167,14 @@ jobs:
           node <<'NODE'
           const fs=require('fs');const rp=process.env.REQUEST,xp=process.env.EXECUTE;const r=JSON.parse(fs.readFileSync(rp,'utf8')),x=JSON.parse(fs.readFileSync(xp,'utf8'));
           if(r.hostingDeployExecutions!==1)throw new Error('hosting_execution_count_mismatch');
-          const e={schemaVersion:'cxorbia.corte6.cumulative-human-visual-hosting-evidence.v1',generatedAt:new Date().toISOString(),decision:'PASS_EXISTING_HOSTING_DEV_CUMULATIVE_HR_PROFILE_FINANCE_REMOTE_READY',authorizationId:r.authorizationId,requestId:r.requestId,projectId:'cxorbia-backend-dev',hostingSite:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',hostingDeployExecutions:1,remote:{liveHrAutoRefreshAsset:true,hrProviderFreshMeta:true,hrVisits616:true,autoMonthDiscovery:true,protectedProfileCumulativeOverlay:true,exactLegacyAliasSuppression:true,canonicalFinanceAssetPreserved:true,fullVisualGateFailClosed:true,humanFirebaseCredentialPromptRequired:false},safety:{firestoreWrites:0,authWrites:0,authResets:0,rulesDeploys:0,cloudRunDeploys:0,storageWrites:0,hrWrites:0,legacyWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,newFirebaseProjects:0,newHostingSites:0,production:false,merge:false}};
-          fs.writeFileSync('app/docs/evidence/CORTE6-CUMULATIVE-HUMAN-VISUAL-HOSTING-LATEST.json',JSON.stringify(e,null,2)+'\n','utf8');
-          for(const o of [r,x]){o.status='consumed_pass';o.enabled=false;o.consumed=true;o.consumedAt=new Date().toISOString();o.decision=e.decision;o.nextGate='HUMAN_VISUAL_CUMULATIVE_HR_PROFILE_FINANCE';}
+          const e={schemaVersion:'cxorbia.corte6.stable-cumulative-human-visual-hosting-evidence.v1',generatedAt:new Date().toISOString(),decision:'PASS_EXISTING_HOSTING_DEV_STABLE_C6_REMOTE_READY',authorizationId:r.authorizationId,requestId:r.requestId,projectId:'cxorbia-backend-dev',hostingSite:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',hostingDeployExecutions:1,remote:{stableComposerAssetExact:true,stableBridgeAssetExact:true,stableWatcherAssetExact:true,canonicalFinanceAssetExact:true,threeReapplyRegressionGate:true,liveHrAutoRefreshAsset:true,hrProviderFreshMeta:true,hrVisits616:true,autoMonthDiscovery:true,protectedProfileExactOverlay:true,protectedVisitAppendZero:true,fullVisualGateFailClosed:true,humanFirebaseCredentialPromptRequired:false},safety:{firestoreWrites:0,authWrites:0,authResets:0,rulesDeploys:0,cloudRunDeploys:0,storageWrites:0,hrWrites:0,legacyWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,newFirebaseProjects:0,newHostingSites:0,production:false,merge:false}};
+          fs.writeFileSync('app/docs/evidence/CORTE6-STABLE-CUMULATIVE-HUMAN-VISUAL-HOSTING-LATEST.json',JSON.stringify(e,null,2)+'\n','utf8');
+          for(const o of [r,x]){o.status='consumed_pass';o.enabled=false;o.consumed=true;o.consumedAt=new Date().toISOString();o.decision=e.decision;o.nextGate='HUMAN_VISUAL_STABLE_C6_3X_REFRESH_AND_DOMAIN_CHECK';}
           fs.writeFileSync(rp,JSON.stringify(r,null,2)+'\n','utf8');fs.writeFileSync(xp,JSON.stringify(x,null,2)+'\n','utf8');
           NODE
           git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/CORTE6-CUMULATIVE-HUMAN-VISUAL-HOSTING-LATEST.json "$REQUEST" "$EXECUTE"
-          git commit -m 'evidence: cumulative C6 Hosting DEV PASS'; git push origin HEAD:docs-tya-v6-v71-audit
+          git add app/docs/evidence/CORTE6-STABLE-CUMULATIVE-HUMAN-VISUAL-HOSTING-LATEST.json "$REQUEST" "$EXECUTE"
+          git commit -m 'evidence: stable C6 Hosting DEV PASS'; git push origin HEAD:docs-tya-v6-v71-audit
 
       - name: Publish status
         if: always()
@@ -170,9 +182,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          STATE=success;DESC='PASS_C6_CUMULATIVE_HUMAN_VISUAL_HOSTING'
-          if [ '${{ job.status }}' != 'success' ]; then STATE=error;DESC='FAIL_C6_CUMULATIVE_HUMAN_VISUAL_HOSTING'; fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/corte6-cumulative-human-visual-hosting/$DESC" -f description="$DESC" >/dev/null
+          STATE=success;DESC='PASS_C6_STABLE_CUMULATIVE_HOSTING'
+          if [ '${{ job.status }}' != 'success' ]; then STATE=error;DESC='FAIL_C6_STABLE_CUMULATIVE_HOSTING'; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/corte6-stable-cumulative-hosting/$DESC" -f description="$DESC" >/dev/null
 
       - name: Cleanup
         if: always()
