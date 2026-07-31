@@ -1,44 +1,58 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-07-30  
-**Estado vivo:** `C6_IDENTITY_PROTECTED_PASS__AUGUST_PROVIDER_TABS_MISSING__GVIZ_PHANTOM_FIXED__NO_PRODUCTION`
+**Última actualización:** 2026-07-31  
+**Estado vivo:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_DISABLED__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
 - Corte3 FROZEN; R17N1,406/1,406 no repetir.
 - Corte5 cinepolis14 periodos/616 visitas/current2026-07 Firestore PASS.
 - Auth91/91; claims5/5; Rules PASS.
+- Firestore protegido: shoppers340/340 y visitas616/616 con nombre real; placeholders0; perfiles referenciados194/194.
 
-## 2. UX/identidad
-- P0s de login corregidos; auto-entry Admin observado funcionando.
-- `Shopper protegido` solo es máscara del preview source-safe.
-- Firestore protegido: shoppers340/340 con nombre real; visitas616/616 con nombre real; placeholders0; perfiles referenciados194/194; Rules/adapter PASS.
-- No poner PII en source-safe ni tocar `app/modules/*`.
+## 2. Regla producto que Claude debe preservar
+- HR es fuente viva y las pestañas mensuales nuevas deben incorporarse automáticamente, sin configuración mensual por chat.
+- Julio puede seguir en ejecución mientras el siguiente mes ya tiene visitas disponibles originadas en plataforma.
+- Un periodo/visita de origen plataforma puede anteceder a HR; cuando HR aparezca debe reconciliarse por IDs estables y `assignmentSource`/`assignmentSyncStatus`, sin duplicar.
+- Nunca deduplicar por nombre ni fabricar visitas copiando un mes anterior.
 
-## 3. Agosto — corrección crítica de causa raíz
-La metadata real del Google Sheet confirma que **no existen `AGOSTO 26` ni `AGOSTO 26 HN`**. El workbook mensual llega hasta julio.
+## 3. Auto-month backend
+Se corrigió la dependencia del inventario estático de meses. El runtime live:
+- pide HR con `fresh=1`;
+- si Sheets API está disponible, descubre tabs mensuales desde metadata provider en cada refresh;
+- si cae a GViz, usa último registry provider fail-closed y rechaza tabs fantasma;
+- watcher existente refresca ~20 s/focus/visibility;
+- predeploy PASS sin deploy.
 
-La lectura anterior que parecía devolver agosto era falsa: GViz puede responder con otra hoja cuando se pide un tab inexistente. Queda superseded cualquier conclusión previa de GT34/HN34, mismatch de país o estados de esas filas.
+Bloqueo actual: Google Sheets API está `DISABLED` en `cxorbia-backend-dev` y la service account disponible no tiene `serviceusage.services.enable`. No resolver esto desde UI.
 
-Fix reusable:
-- registry de tabs desde provider metadata;
-- GViz output se filtra contra registry;
-- planner valida existencia antes de filas/país/estado/mapping.
+## 4. Shopper real
+`Shopper protegido` es únicamente máscara source-safe. No insertar PII en JS estático.
 
-Re-read final:14 periodos,28 tabs,616 visitas,agosto0; Firestore periodo2026-08 inexistente; delta0; `HOLD_AUGUST_REQUIRED_PROVIDER_TABS_MISSING`.
+Backend preparó una ruta DEV protegida separada:
+- `app/core/backend-protected-dev-mode.js`;
+- `app/index-backend-dev.html` usa Firebase Hosting init;
+- Auth/custom claims/Firestore Rules siguen siendo obligatorios;
+- Admin/Coordinación podrá ver identidad real; shopper solo su scope;
+- read-only; no writes.
 
-## 4. Claude/prototipo
-No crear candidata, no copiar julio, no fabricar agosto, no mostrar datos sintéticos como reales y no resolver ausencia de fuente desde UI.
+No tocar `app/modules/*` por este bloque. La ruta aún no está desplegada; requiere un redeploy Hosting DEV autorizado.
 
-P1/P2 siguen documentados: PDF/gráficas, Excel/formato, reportKit/exportaciones, copy.
+## 5. Agosto
+HR todavía no tiene `AGOSTO 26` ni `AGOSTO 26 HN`. Operativamente julio puede seguir ejecutándose y agosto puede existir como disponibilidad de origen plataforma antes de HR. La plataforma debe soportarlo y luego reconciliar.
 
-## 5. Backend siguiente
-`FUENTE AUTORIZADA AGOSTO DISPONIBLE → REFRESH METADATA/SOURCE-SAFE → VALIDAR PAÍS/ESTADO → DELTA EXACTO → AUTORIZACIÓN WRITE SOLO DELTA`.
+No hay autorización ni fuente exacta para crear Firestore agosto en este bloque.
 
-Después: readback/smoke → preprod protegida con identidad real → cutover.
+## 6. Siguiente bloque exacto
+`ENABLE SHEETS API EXISTENTE → VERIFICAR/OTORGAR SOLO LECTURA HR SI HACE FALTA → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
 
-## 6. Academia/manuales
-Documentar riesgo GViz sobre tabs inexistentes, gate de existencia provider-first, source-safe vs identidad protegida y fail-closed.
+Requiere autorización provider/deploy. Sin producción ni Firestore data writes.
 
-## 7. Estado seguro
-Todo read-only/provider + repo/docs. HR/Firestore/Auth/Rules/Hosting/Storage/legacy/payments/Functions/Make/Gemini writes0; merge=false; producción=false; PII exportada0.
+## 7. P1/P2
+PDF/gráficas, Excel/formato, reportKit/exportaciones, copy de fuentes/readiness continúan documentados y no deben confundirse con este gate.
+
+## 8. Academia/manuales
+Documentar: HR viva/autodescubrimiento de periodos; plataforma-origin antes de HR; conciliación bidireccional; source-safe vs runtime protegido; provider capability gate; fail-closed contra tabs inexistentes.
+
+## 9. Estado seguro
+API enable0; share0; Cloud Run deploy0; Hosting deploy0; HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; merge=false; producción=false.
