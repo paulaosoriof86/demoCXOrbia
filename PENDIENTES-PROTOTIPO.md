@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_PROFILE_WRITE_PASS__PROTECTED_HOSTING_PASS__VISUAL_LOGIN_REPRO_P0__SESSION_CONTINUITY_FIX_PREPARED__WAITING_ONE_HOSTING_REDEPLOY_AUTH__NO_PRODUCTION`
+**Estado vivo:** `C6_PROFILE_WRITE_PASS__PROTECTED_SESSION_CONTINUITY_HOSTING_PASS__WAITING_ONE_REAL_LOGIN_REFRESH_NO_REPROMPT_HUMAN_VISUAL__31_IDENTITY_HOLD__NO_PRODUCTION`
 
 ## 1. Cerrado / no reabrir
 - Corte1/2A/3 FROZEN; R17N1,406/1,406 no repetir.
@@ -9,38 +9,34 @@
 - Auth91/91, claims5/5, Rules PASS.
 - HR live/auto-month PASS.
 - Perfil completo Firestore120 docs/329 campos WRITE+READBACK PASS.
+- Protected session continuity Hosting DEV redeploy PASS.
 
-## 2. P0 visual actual — reproceso de login
-La visual protegida volvió a pedir Usuario/Contraseña para Administración/Coordinación. No es un problema de datos ni de Firestore. Causa raíz: persistencia Auth `SESSION` en el carril protegido y en browser-auth.
+## 2. Login repetitivo — corregido técnicamente
+La causa raíz fue persistencia Auth `SESSION` en el carril protegido/browser-auth. El runtime protegido ahora fuerza Firebase Auth `LOCAL` mediante `backend-protected-dev-session-continuity.js`, conserva claims/Rules reales y logout explícito.
 
-## 3. Fix preparado
-- nuevo `backend-protected-dev-session-continuity.js` protected-only;
-- Firebase Auth persistence `LOCAL` para reutilizar sesión ya validada;
-- config protegida alineada con `persist:'local'` y `reuseAuthenticatedSession:true`;
-- carga antes de browser-auth;
-- sin credenciales embebidas, sin bypass claims/Rules y sin provider writes.
+Authorization `chat-20260731-corte6-protected-session-continuity-redeploy-02` consumida PASS. Version `1e8c37163e7451be`; release `1785515981786000`. No hubo otros provider writes/deploys.
 
-Después del próximo redeploy: autenticación real una sola vez por navegador y refresh sucesivos sin re-prompt mientras no haya logout explícito.
-
-## 4. Validación visual que sigue pendiente
+## 3. Validación visual aún pendiente
+- ejecutar una primera autenticación real válida en el navegador;
+- hacer refresh sobre la misma URL y confirmar que no reaparece usuario/contraseña;
 - Admin/Coordinación: perfil completo, username/password legacy real cuando exista, teléfonos/WhatsApp, DPI y demás campos materializados;
 - KPI de shoppers con drill/detail;
 - histórico completo por shopperId incluyendo `submitida`;
 - Shopper real con shopperId claim y módulos propios.
 
-## 5. 31 perfiles sin canonical — HOLD probado
+## 4. 31 perfiles sin canonical — HOLD probado
 No resolvibles por legacy exacto, llaves técnicas ni Auth determinístico+claim. No emparejar por nombre/teléfono/email. Requieren alta/conciliación explícita.
 
-## 6. P1/P2 preservado
+## 5. P1/P2 preservado
 - PDF/gráficas;
 - Excel/formato;
 - reportKit/exportaciones;
 - copy/readiness.
 
-## 7. Agosto
+## 6. Agosto
 No ejecutar delta agosto hasta cerrar/freeze Corte6.
 
-## 8. Siguiente bloque
-`NUEVA AUTORIZACIÓN 1x HOSTING DEV SESSION CONTINUITY → REMOTE SMOKE → LOGIN REAL 1 VEZ → REFRESH SIN RE-PROMPT → HUMAN VISUAL ADMIN+SHOPPER → 31 HOLD → FREEZE C6 → AGOSTO`.
+## 7. Siguiente bloque
+`1 LOGIN REAL → REFRESH SIN RE-PROMPT → HUMAN VISUAL ADMIN+SHOPPER → PASS/FAIL → 31 HOLD → FREEZE C6 → AGOSTO`.
 
 Producción/merge siguen bloqueados.
