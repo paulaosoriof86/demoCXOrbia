@@ -50,7 +50,7 @@ No resueltos por llaves estables. No usar nombre/teléfono/email.
 
 ## 7. Claude/Academia
 - Claude/prototipo: consumir el read model estable, no reconstruir fuentes/estados en módulos.
-- Academia: ownership, idempotencia, revision gate, crosswalk y refresh sin interrumpir al usuario.
+- Academia: ownership, idempotencia, revision gate, crosswalk y refresh sin interrumpir al usuario. Ver `ACADEMIA-IMPACTO-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`.
 
 ## 8. Gate pendiente
 Código todavía no desplegado. Autorización Hosting anterior consumida.
