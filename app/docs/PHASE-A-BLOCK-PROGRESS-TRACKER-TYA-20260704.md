@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-31  
-**Estado:** `C3_FROZEN__C5_1406_PASS__C6_PROFILE_WRITE_PASS__C6_STABLE_COMPOSER_LOCAL_3X_PASS__PENDING_HOSTING_DEV`
+**Estado:** `C3_FROZEN__C5_1406_PASS__C6_PROFILE_WRITE_PASS__C6_STABLE_COMPOSER_REMOTE_PASS__PENDING_HUMAN_VISUAL`
 
 ## 1. Cerrado/protegido
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
@@ -13,7 +13,7 @@
 - Perfil completo Firestore120 docs/329 campos WRITE+READBACK PASS.
 - Finanzas/pagos canónicos source-safe preservados.
 
-## 2. Regresión C6 reproducida
+## 2. Regresión C6 anterior
 Visual anterior:88→44 visitas, badge1,232/546, scroll movido, shoppers duplicados, perfil/histórico fragmentado y comparativo incompleto.
 
 HR read-only verificada:30 tabs/28 mensuales; julio34 GT+10 HN; sin agosto 2026. El P0 fue de composición.
@@ -40,25 +40,37 @@ Aplicado en rama viva:
 - HR state preservado;
 - profile overlay visible.
 
-CI remoto no ejecutado; evidencia local declarada explícitamente.
+## 5. Hosting DEV + remote regression — PASS
+Autorización `chat-20260731-c6-stable-cumulative-hosting-02` consumida.
 
-## 5. Lock permanente
+Exactamente1 redeploy del Hosting DEV existente; Cloud Run0.
+
+Decisión: `PASS_EXISTING_HOSTING_DEV_STABLE_C6_REMOTE_READY`.
+
+Remote PASS:
+- composer/bridge/watcher/finance exactos al repo;
+- regression gate 3x sobre composer remoto;
+- HR fresh meta/616 histórico/auto-month PASS;
+- protectedVisitAppendZero;
+- full-profile fail-closed sin sesión visual;
+- demás provider/data writes0.
+
+## 6. Lock permanente
 Activo `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`. Toda etapa futura hereda el regression gate.
 
-## 6. 31 identity HOLD
+## 7. 31 identity HOLD
 No resueltos por llaves estables. No usar nombre/teléfono/email.
 
-## 7. Claude/Academia
+## 8. Claude/Academia
 - Claude/prototipo: consumir el read model estable, no reconstruir fuentes/estados en módulos.
-- Academia: ownership, idempotencia, revision gate, crosswalk y refresh sin interrumpir al usuario. Ver `ACADEMIA-IMPACTO-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`.
+- Academia: ownership, idempotencia, revision gate, crosswalk, deploy seguro y refresh sin interrumpir al usuario.
 
-## 8. Gate pendiente
-Código todavía no desplegado. Autorización Hosting anterior consumida.
+## 9. Gate pendiente
+No otro deploy. Falta human visual del Hosting DEV ya publicado:
+`3x refresh/focus + Dashboard/HR + Shopper/perfil/credenciales/histórico + comparativo + Beneficios + Finanzas`.
 
-Siguiente acción autorizable: exactamente `1x redeploy Hosting DEV existente cxorbia-backend-dev/cxorbia-dev`; Cloud Run0. Después remote smoke + human visual3x refresh + Dashboard/Shopper/histórico/comparativo/Beneficios/Finanzas.
+## 10. Siguiente bloque
+`HUMAN VISUAL PASS → FREEZE C6 → AGOSTO`.
 
-## 9. Siguiente bloque
-`1x HOSTING DEV AUTORIZADO → REMOTE/HUMAN REGRESSION PASS → FREEZE C6 → AGOSTO`.
-
-## 10. Estado seguro
-Provider/data writes0; Hosting0; Cloud Run0; merge=false; producción=false.
+## 11. Estado seguro
+En el deploy autorizado actual: Hosting1; Cloud Run0; Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos0; merge=false; producción=false.
