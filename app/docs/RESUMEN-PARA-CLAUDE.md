@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_DISABLED__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_DISABLED__HR_PUBLIC_WRITE_P0__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
@@ -24,9 +24,14 @@ Se corrigió la dependencia del inventario estático de meses. El runtime live:
 - watcher existente refresca ~20 s/focus/visibility;
 - predeploy PASS sin deploy.
 
-Bloqueo actual: Google Sheets API está `DISABLED` en `cxorbia-backend-dev` y la service account disponible no tiene `serviceusage.services.enable`. No resolver esto desde UI.
+Provider actual: Sheets API está `DISABLED` en `cxorbia-backend-dev`; la service account no puede habilitarla, pero **ya tiene rol reader en el HR canónico**. No crear nueva cuenta/HR por este tema.
 
-## 4. Shopper real
+## 4. P0 seguridad HR
+El HR canónico tiene permiso Drive `anyone=writer`. Esto es P0 para producción. Debe quitarse el acceso público de edición y quedar restringido a usuarios autorizados, preservando la service account reader.
+
+No resolver esto desde frontend ni ocultarlo como copy.
+
+## 5. Shopper real
 `Shopper protegido` es únicamente máscara source-safe. No insertar PII en JS estático.
 
 Backend preparó una ruta DEV protegida separada:
@@ -38,21 +43,21 @@ Backend preparó una ruta DEV protegida separada:
 
 No tocar `app/modules/*` por este bloque. La ruta aún no está desplegada; requiere un redeploy Hosting DEV autorizado.
 
-## 5. Agosto
+## 6. Agosto
 HR todavía no tiene `AGOSTO 26` ni `AGOSTO 26 HN`. Operativamente julio puede seguir ejecutándose y agosto puede existir como disponibilidad de origen plataforma antes de HR. La plataforma debe soportarlo y luego reconciliar.
 
 No hay autorización ni fuente exacta para crear Firestore agosto en este bloque.
 
-## 6. Siguiente bloque exacto
-`ENABLE SHEETS API EXISTENTE → VERIFICAR/OTORGAR SOLO LECTURA HR SI HACE FALTA → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
+## 7. Siguiente bloque exacto
+`CORREGIR SHARING HR P0 + ENABLE SHEETS API EXISTENTE → REVALIDAR HR READER → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
 
 Requiere autorización provider/deploy. Sin producción ni Firestore data writes.
 
-## 7. P1/P2
+## 8. P1/P2
 PDF/gráficas, Excel/formato, reportKit/exportaciones, copy de fuentes/readiness continúan documentados y no deben confundirse con este gate.
 
-## 8. Academia/manuales
-Documentar: HR viva/autodescubrimiento de periodos; plataforma-origin antes de HR; conciliación bidireccional; source-safe vs runtime protegido; provider capability gate; fail-closed contra tabs inexistentes.
+## 9. Academia/manuales
+Documentar: HR viva/autodescubrimiento de periodos; plataforma-origin antes de HR; conciliación bidireccional; sharing mínimo; source-safe vs runtime protegido; provider capability gate; fail-closed contra tabs inexistentes.
 
-## 9. Estado seguro
-API enable0; share0; Cloud Run deploy0; Hosting deploy0; HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; merge=false; producción=false.
+## 10. Estado seguro
+API enable0; sharing changes0; Cloud Run deploy0; Hosting deploy0; HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; merge=false; producción=false.
