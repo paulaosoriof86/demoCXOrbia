@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-31  
-**Estado:** `C6_HUMAN_VISUAL_FAIL__P0_SHOPPER_IDENTITY_NULL__ADMIN_PROFILE_INCOMPLETE__NO_NEW_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_P0_OPEN__PROTECTED_PROFILE_AUTH_HISTORY_READONLY_PASS__88_USERNAME_DELTA_READY__RUNTIME_FIX_PREPARED__NO_WRITE__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Repositorio/destinos
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge.
@@ -9,74 +9,83 @@
 - DEV `cxorbia-backend-dev`; Cloud Run `cxorbia-live-hr-dev`; Hosting `cxorbia-backend-dev` target `cxorbia-dev`.
 - Producción `tya-plataforma`: no tocada.
 
-## 2. Baseline protegida — no reabrir
+## 2. No reabrir
 - Corte3 FROZEN.
 - R17N 1,406/1,406;616 visitas +572 controles liquidación +77 certificaciones. No repetir.
-- Corte5 CX.data: cinepolis,14 periodos,616 visitas,currentPeriod2026-07,Firestore/fallback=false PASS.
+- Corte5 cinepolis/14 periodos/616 visitas/current2026-07 PASS.
 - Auth91/91; claims5/5; Rules PASS. No reimportar/resetear por rutina.
-- Firestore protegido: shoppers340/340, nombres reales340/340; visitas616/616 con shopperId/nombre real; perfiles referenciados194/194.
+- último one-shot Cloud Run+Hosting consumido; no reutilizar.
 
-## 3. Último redeploy DEV — PASS técnico
-Autorización `chat-20260731-c6-live-hr-shopper-display-dev-redeploy-01`: consumida.
+## 3. Human visual P0 — sigue abierto
+La visual anterior probó `shopperId=null` en portal Shopper y perfil Admin incompleto porque se estaba usando `display_name_only` source-safe. Corte6 no está congelado.
 
-- Cloud Run redeploy1; revisión `cxorbia-live-hr-dev-00008-8mf`.
-- Hosting redeploy1; version `sites/cxorbia-backend-dev/versions/22e81c2b783f697a`; release `sites/cxorbia-backend-dev/releases/1785467713768000`.
-- Remote:14 periodos,616 visitas,auto-month PASS,208 identidades display-only.
+## 4. Read-only protegido — PASS
+Gate `PASS_C6_PROTECTED_PROFILE_AUTH_HISTORY_READONLY`.
 
-No reutilizar autorización.
+Firestore shoppers340:
+- nombre313;
+- phone123;
+- email39;
+- username0;
+- documento0;
+- banco/pago0;
+- certs embebidos0;
+- legacyShopperId120.
 
-## 4. Human visual — FAIL
-Las capturas de Paula prueban:
+Auth108:
+- rol shopper92;
+- shopper claims con shopperId91;
+- claims→perfil existente91/91;
+- missing profile0.
 
-### Admin
-- nombres reales operativos visibles;
-- 208 shoppers display-only;
-- `Usuario` y `Contraseña` vacíos;
-- teléfono/correo y otros campos faltantes;
-- perfiles aparecen incompletos;
-- histórico individual visible incompleto;
-- KPI/drill no satisface el detalle operativo requerido.
+Visitas616:
+- con shopperId616/616;
+- IDs shopper distintos194;
+- perfiles existentes194/194;
+- estados: submitida545, cuestionario61, agendada4, realizada3, fuera_rango3.
 
-### Shopper
-- sesión entra como `Evaluador (sin identidad)`;
-- `shopperId=null`;
-- Mi Perfil: identidad no verificable;
-- Mis Visitas: fail-closed por ausencia de shopperId.
+Conclusión: login shopper e histórico completo pueden resolverse por IDs estables. El subconteo KPI estaba demostrado por la semántica legacy estrecha.
 
-Resultado: **P0_PROVEN** y Corte6 NO FROZEN.
+## 5. Fix de runtime preparado — sin deploy
+- protected preview ya no es degradado a source-safe;
+- watcher HR source-safe no sobrescribe CX.data en protected runtime;
+- aliases de teléfono/WhatsApp/email/documento/banco/username solo desde datos reales existentes;
+- `shopperStats/visitsForShopper` en protected runtime reconocen `submitida` y todo el histórico exacto por shopperId;
+- no se sintetiza password.
 
-## 5. Causa raíz Shopper
-En `app/app.js`, el botón Shopper usa `pickShopperDev()` solo si `_isDevAccess()` es true. La ruta alojada `cxorbia-backend-dev.web.app` no satisface la allowlist/flags actuales del human preview; el flujo cae a `selectRole('shopper')` sin ID y, correctamente, no inventa `sh1` fuera de demo.
+Node syntax + marcadores anti-regresión: PASS dentro del gate read-only.
 
-La corrección no es restaurar fallback ficticio: debe resolver identidad real por Auth/claims + shopperId estable.
+## 6. Username exacto — dry-run PASS
+Desde el mismo handoff cifrado de credenciales:
+- shopper records109;
+- match canónico exacto88;
+- binding exacto Auth claim→perfil88/88;
+- delta `fill-missing username`88;
+- conflicto existente0;
+- 21 sin perfil exacto siguen HOLD.
 
-## 6. Causa raíz perfil Admin
-La ruta visual actual es HR source-safe y fue desplegada con scope `display_name_only`. No puede ser la consola final de Superadmin para PII/perfil completo.
+No hubo Firestore write. Esos 88 requieren autorización Firestore específica antes de materializar.
 
-La vista operativa final debe usar runtime protegido Firestore/Auth/Rules. Superadmin ve los datos reales autorizados; Shopper solo su propio scope; Cliente no ve PII de shoppers.
+## 7. Password
+Auth y el handoff prueban continuidad mediante hash, no plaintext recuperable. No guardar password en Firestore/JS/repo. Contraseña inicial solo si se prueba criptográficamente o mediante fuente segura; si no, reset controlado con autorización Auth.
 
-## 7. Perfil requerido
-Consolidar, si la fuente los contiene: nombre, username, estado de credencial, WhatsApp/teléfono, correo, ubicación, edad/sexo, documento, datos de pago, estado/certificación, datos agregados por shopper, postulaciones, histórico completo, liquidaciones/pagos.
+## 8. Datos extra del perfil
+Teléfono/email ya existentes se verán al entrar por protected runtime.
 
-La plataforma vigente tiene export de `tya_shoppers_extra`; migrar solo mediante export/import, nunca conectar base vieja. Conflictos a review; no match solo por nombre/teléfono.
+Documento, banco/pago y otros datos aportados por shopper que existan en la plataforma vigente requieren reconciliación segura desde el export ya entregado, por export/import cifrado; nunca conexión a la RTDB vieja.
 
-## 8. Credenciales
-Regla TyA: username `nombre.apellido`; contraseña inicial histórica tipo `Nombre123*`.
+## 9. Julio/agosto
+HR viva y auto-month permanecen PASS. No ejecutar delta agosto hasta cerrar este P0 y congelar Corte6.
 
-Firebase Auth no permite recuperar la contraseña actual. Mostrar username + estado de credencial; contraseña legacy/inicial solo con evidencia segura. Reset al patrón requiere autorización Auth separada. Nunca contraseña en claro en repo/JS público.
+## 10. Documentación viva
+- `CAMBIOS-BACKEND-ADDENDUM-C6-VISUAL-FAIL-SHOPPER-IDENTITY-PROFILE-20260731.md`.
+- `CAMBIOS-BACKEND-ADDENDUM-C6-PROTECTED-PROFILE-AUTH-HISTORY-READONLY-PASS-20260731.md`.
+- `CAMBIOS-BACKEND-ADDENDUM-C6-USERNAME-DELTA-READONLY-PASS-20260731.md`.
+- evidencias `CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json` y `CORTE6-USERNAME-DELTA-READONLY-LATEST.json`.
+- root `RESUMEN-PARA-CLAUDE.md` / `PENDIENTES-PROTOTIPO.md` sincronizados.
 
-## 9. Histórico/KPI
-Histórico = 616 visitas canónicas enlazadas por shopperId. KPI debe usar estados/facetas canónicas y drill real, no filtros legacy estrechos.
-
-## 10. Siguiente bloque exacto
-`PROTECTED-RUNTIME READ-ONLY VALIDATION → PROFILE FIELD INVENTORY / LEGACY EXPORT RECONCILIATION → DELTA PLAN EXACTO → AUTH/FIRESTORE GATES SI APLICAN → NUEVO REDEPLOY DEV SOLO CON AUTORIZACIÓN → HUMAN VISUAL → FREEZE C6`.
-
-No iniciar agosto antes de cerrar este P0.
-
-## 11. Documentación
-Causa raíz y alcance: `CAMBIOS-BACKEND-ADDENDUM-C6-VISUAL-FAIL-SHOPPER-IDENTITY-PROFILE-20260731.md`.
-
-Root `RESUMEN-PARA-CLAUDE.md` y `PENDIENTES-PROTOTIPO.md` sincronizados.
+## 11. Siguiente bloque exacto
+`PREPARAR WRITE PLAN USERNAME88 SIN EJECUTAR + RECONCILIAR PERFIL EXTRA DEL EXPORT DE FORMA CIFRADA → AUTORIZACIONES EXACTAS SI APLICAN → REDEPLOY HOSTING DEV NUEVO → HUMAN VISUAL PROTEGIDA → FREEZE C6`.
 
 ## 12. Estado seguro
-Desde esta visual: provider writes/deploys nuevos0; Firestore/HR/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; merge=false; producción=false. Histórico/Auth91 preservados.
+Provider reads sí; Firestore/Auth/HR/legacy writes0; password changes0; Rules/Hosting/Cloud Run deploys nuevos0; Storage/Make/Gemini/pagos0; merge=false; producción=false.
