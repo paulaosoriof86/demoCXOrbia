@@ -1,76 +1,95 @@
-# CAMBIOS BACKEND — Addendum Corte 6 perfil Shopper completo V2 READ-ONLY PASS
+# CAMBIOS BACKEND — Addendum Corte 6 perfil Shopper completo V2/V3 READ-ONLY PASS
 
 **Fecha:** 2026-07-31  
-**Estado:** `C6_PROFILE_FULL_V2_READONLY_PASS__WRITE_GATE_READY__WAITING_EXPLICIT_FIRESTORE_AUTHORIZATION__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_PROFILE_FULL_READONLY_PASS__31_IDENTITY_HOLD_PROVEN__WRITE_GATE_READY__WAITING_EXPLICIT_FIRESTORE_AUTHORIZATION__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Resultado
-Se recibió el bundle V2 cifrado del export vigente de la plataforma anterior y se ejecutó la reconciliación DEV exclusivamente read-only contra `cxorbia-backend-dev`.
+## 1. Resultado V2
+El bundle cifrado del export vigente fue reconciliado contra `cxorbia-backend-dev` exclusivamente read-only.
 
 Resultado sanitizado:
 - registros V2:151;
 - match exacto por `legacyShopperId`:120;
-- canonical faltante:31 HOLD;
-- ambiguos:0;
-- registros inválidos:0;
-- documentos existentes con cambios planificados:120;
-- campos de perfil planificados:329;
-- perfiles fuente con password:149;
-- perfiles fuente con DPI/dirección/fecha nacimiento:27.
+- canonical faltante:31;
+- ambiguos0; inválidos0;
+-120 documentos exactos requieren write de perfil/metadata;
+-118 tienen cambios reales de campos de perfil y2 solo requieren marcador de procedencia;
+-329 valores de perfil planificados;
+- password presente en fuente149;
+- perfiles fuente con DPI/dirección/fecha nacimiento27.
 
-Campos planificados en los120 perfiles exactos: username113, password legado real118, departamento2, DPI17, dirección1, fecha nacimiento2, términos aceptados72, aprobación cuenta2 y origen registro2. Nombre, teléfono/WhatsApp, email, país y ciudad ya coinciden con Firestore y no requieren write.
+Campos planificados en los120 exactos: username113, password legado real118, departamento2, DPI17, dirección1, fecha nacimiento2, términos aceptados72, aprobación cuenta2 y origen registro2. Nombre, teléfono/WhatsApp, email, país y ciudad ya coinciden y no requieren write.
 
-## 2. Causa del primer FAIL y corrección
-El primer intento read-only falló antes del provider por checksum del bundle ensamblado. La causa exacta fue `part-007.txt`: su blob no coincidía con el chunk original cifrado. Se restauró exactamente el blob esperado y se reintentó usando la misma request, que seguía no consumida. El segundo gate terminó `PASS_C6_PROFILE_FULL_V2_READONLY`.
+## 2. Primer FAIL de transporte — causa raíz corregida
+El primer intento V2 falló antes del provider por checksum: `part-007.txt` no coincidía con el chunk cifrado original. Se restauró exactamente el blob esperado y se reintentó usando la misma request, aún no consumida. El retry terminó `PASS_C6_PROFILE_FULL_V2_READONLY`. Provider writes en el FAIL:0.
 
-No hubo provider mutation durante el intento fallido.
+## 3. Investigación adicional de los31 faltantes — sin pedir write prematuramente
+Antes de pedir autorización Firestore se ejecutaron dos gates adicionales read-only para intentar reducir los31 HOLD y evitar autorizaciones sucesivas.
 
-## 3. Fuente y contrato
-- export vigente manda únicamente para perfil actual legacy;
-- identidad automática solo `legacyShopperId exact`;
-- nunca match automático por nombre/teléfono/email;
+### V2 Auth-claim bridge
+Se probó únicamente la cadena estable `username único del export → UID Auth determinístico → custom claim shopperId → perfil Firestore existente`.
+
+Resultado sobre31:
+-2 sin username utilizable;
+-10 con username duplicado en la propia fuente;
+-19 sin Auth user determinístico existente;
+-0 claims inválidos;
+-0 perfiles destino faltantes después de claim;
+-0 resueltos.
+
+### V3 technical-key + Auth bridge
+Se añadió antes de Auth un bridge por llave técnica exacta y única contra `document id/sourceKey/shopperId/legacyId/externalId/externalShopperId/sourceId`. Nunca se utilizó nombre, teléfono o email como identidad.
+
+Resultado:
+-31 considerados;
+-0 candidato técnico único;
+-0 candidato técnico ambiguo;
+-0 colisiones con otro legacyId;
+-0 resueltos por technical bridge;
+-0 resueltos por Auth bridge;
+-31 HOLD confirmados.
+
+Conclusión: los31 no tienen vínculo canónico reproducible hoy. No es seguro emparejarlos silenciosamente. Esto ya fue comprobado por dos rutas estables; no se volverá a iterar sobre nombre/coincidencia visual.
+
+## 4. Fuente y precedencia
+- export vigente manda para campos actuales de perfil legacy;
+- identidad automática solo por llaves técnicas reproducibles;
+- nunca dedupe por nombre/teléfono/email;
 -616 visitas y77 certificaciones canónicas permanecen autoridad;
 - `certs`, `histCerts`, `visitas`, `activo`, `rating` legacy no sobrescriben histórico canónico;
-- password visible será únicamente el valor real recuperado del export, no patrón sintetizado.
+- password visible será únicamente el valor real del export, no patrón sintetizado;
+- Firebase Auth continúa siendo autoridad de autenticación.
 
-## 4. Write gate completo preparado — NO autorizado
-Archivos preparados directamente en rama viva:
-- `backend/config/corte6-profile-full-firestore-write-plan-v2.json` — plan exacto, disabled;
-- `backend/config/corte6-profile-full-firestore-write-request-v2.json` — request disabled, sin authorizationId;
+## 5. Write gate completo preparado — NO autorizado
+Archivos vigentes:
+- `backend/config/corte6-profile-full-firestore-write-plan-v2.json` — rebasado sobre evidencia V3, disabled;
+- `backend/config/corte6-profile-full-firestore-write-request-v2.json` — disabled, sin authorizationId;
 - `tools/release/cxorbia-corte6-profile-full-firestore-write-v2.mjs` — executor fail-closed;
-- `.github/workflows/cxorbia-corte6-profile-full-firestore-write-v2.yml` — workflow que solo puede llegar al provider si request+plan contienen autorización explícita exacta.
+- `.github/workflows/cxorbia-corte6-profile-full-firestore-write-v2.yml` — workflow gateado;
+- `tools/qa/cxorbia-corte6-profile-full-identity-bridge-readonly-v2.mjs` + workflow/request consumida;
+- `tools/qa/cxorbia-corte6-profile-full-identity-bridge-readonly-v3.mjs` + workflow/request consumida.
 
-El executor vuelve a comprobar antes de escribir:
-- bundle SHA-256 exacto;
--151 source records;
--120 matches exactos;
--31 missing canonical HOLD;
--0 ambiguos/invalid;
--329 valores y el desglose exacto por campo.
+El executor fue corregido después de V3 para reflejar exactamente la evidencia:118 documentos con cambios de campos +2 documentos marker-only =120 document writes máximos. Antes de escribir vuelve a comprobar151/120/31,0 ambiguos/invalid,329 valores y desglose exacto por campo. Cualquier drift previo al write falla sin mutation.
 
 Alcance máximo futuro:
--120 document writes Firestore únicamente sobre perfiles existentes exactos;
+-120 Firestore document writes únicamente sobre perfiles existentes exactos;
 -329 valores de perfil;
-- readback obligatorio de los120 documentos y de cada campo escrito;
-- cualquier drift previo al write = FAIL sin provider mutation;
--31 missing canonical nunca se crean ni emparejan silenciosamente;
-- Auth writes / Firebase password resets0;
-- HR/legacy writes0;
-- Rules/Storage/Hosting/Cloud Run/Make/Gemini/pagos0;
+- readback obligatorio de los120 documentos y cada campo escrito;
+-31 missing canonical permanecen HOLD y no se crean en este gate;
+- Auth writes/password resets0;
+- Rules/Hosting/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos0;
 - producción=false; merge=false.
 
-No se ejecutará ningún Firestore write hasta recibir autorización exacta nueva. La mera creación del workflow no ejecuta la request ya existente porque permanece disabled.
+## 6. P0 visual y siguiente gate
+Tras un write exacto PASS + readback deberá existir una autorización separada para redeploy del runtime protegido DEV. Solo entonces se repite visual Admin + Shopper con datos reales, histórico/KPI completo e identidad shopper real.
 
-## 5. P0 visual y siguiente gate
-Corte6 sigue abierto. Tras el write exacto y readback deberá publicarse el runtime protegido ya preparado bajo un redeploy DEV separado y autorizado, y repetirse visual Admin + Shopper con perfil/histórico/KPI completo.
+Los31 HOLD no se consideran migrados. Se resolverán por un bloque de alta/conciliación explícito —no por dedupe— antes de declarar migración legacy completa/freeze final.
 
-Los31 perfiles legacy sin vínculo canónico exacto se conservan como HOLD de identidad; no bloquean la actualización segura de los120 matches, pero deben resolverse antes de afirmar migración total del universo legacy o congelar definitivamente el corte.
-
-## 6. Clasificación
-- **Reusable CXOrbia:** handoff cifrado, stable-ID compare, write-plan exacto, executor con drift gate y readback, fail-closed ante identidad faltante.
-- **Exclusivo cliente:** datos TyA y perfil legacy real.
+## 7. Clasificación
+- **Reusable CXOrbia:** handoff cifrado, stable-ID compare, bridge técnico/Auth exacto, write-plan, drift gate y readback.
+- **Exclusivo cliente:** datos TyA y31 perfiles legacy sin vínculo canónico.
 - **Claude/prototipo:** no rediseño; runtime protegido ya preparado.
-- **Academia:** migración segura, segregación identidad/perfil/histórico y validación read-only antes de write.
+- **Academia:** identidad reproducible vs señales de colisión, perfil vs histórico canónico, compare read-only antes de write.
 - **Sin impacto Claude:** scripts/gates/evidencia backend.
 
-## 7. Seguridad
-El bundle permanece cifrado. Evidencia/documentación solo contiene conteos. No se persistieron valores PII/password en documentación ni logs. Firestore/Auth/HR/legacy writes0; deploys nuevos0; producción no fue tocada.
+## 8. Seguridad
+El bundle permanece cifrado. Evidencia/documentación solo contiene conteos. PII/password no fueron persistidos en documentación/logs. Firestore/Auth/HR/legacy writes0; deploys nuevos0; producción intacta.
