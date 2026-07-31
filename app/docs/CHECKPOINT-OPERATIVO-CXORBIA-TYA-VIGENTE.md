@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-31  
-**Estado:** `C6_P0_OPEN__PROTECTED_PROFILE_AUTH_HISTORY_READONLY_PASS__88_USERNAME_DELTA_READY__RUNTIME_FIX_PREPARED__NO_WRITE__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_P0_OPEN__PROTECTED_READONLY_PASS__USERNAME88_READY__PASSWORD68_PATTERN_VERIFIED_20_NONPATTERN__RUNTIME_FIX_PREPARED__NO_WRITE__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Repositorio/destinos
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge.
@@ -44,16 +44,14 @@ Visitas616:
 - perfiles existentes194/194;
 - estados: submitida545, cuestionario61, agendada4, realizada3, fuera_rango3.
 
-Conclusión: login shopper e histórico completo pueden resolverse por IDs estables. El subconteo KPI estaba demostrado por la semántica legacy estrecha.
-
 ## 5. Fix de runtime preparado — sin deploy
 - protected preview ya no es degradado a source-safe;
 - watcher HR source-safe no sobrescribe CX.data en protected runtime;
 - aliases de teléfono/WhatsApp/email/documento/banco/username solo desde datos reales existentes;
-- `shopperStats/visitsForShopper` en protected runtime reconocen `submitida` y todo el histórico exacto por shopperId;
+- `shopperStats/visitsForShopper` protegidos reconocen `submitida` y todo el histórico exacto por shopperId;
 - no se sintetiza password.
 
-Node syntax + marcadores anti-regresión: PASS dentro del gate read-only.
+Node syntax + marcadores anti-regresión: PASS.
 
 ## 6. Username exacto — dry-run PASS
 Desde el mismo handoff cifrado de credenciales:
@@ -64,28 +62,27 @@ Desde el mismo handoff cifrado de credenciales:
 - conflicto existente0;
 - 21 sin perfil exacto siguen HOLD.
 
-No hubo Firestore write. Esos 88 requieren autorización Firestore específica antes de materializar.
+Plan Firestore `fill-missing-only` creado y deshabilitado; requiere autorización específica antes de escribir.
 
-## 7. Password
-Auth y el handoff prueban continuidad mediante hash, no plaintext recuperable. No guardar password en Firestore/JS/repo. Contraseña inicial solo si se prueba criptográficamente o mediante fuente segura; si no, reset controlado con autorización Auth.
+## 7. Contraseña inicial — verificación criptográfica read-only
+Comparación SHA256 contra el patrón histórico `CapitalizedFirstName + 123*`:
+- exactos evaluables88;
+- patrón verificado: **68**;
+- patrón NO verificado: **20**;
+- missing name0; hashes inválidos0.
+
+Conclusión: no se puede mostrar `Nombre123*` como contraseña universal. Para 68 puede rotularse `patrón inicial verificado`; los 20 deben preservar su credencial histórica o pasar por reset Auth autorizado. Firebase Auth no devuelve plaintext vigente.
 
 ## 8. Datos extra del perfil
 Teléfono/email ya existentes se verán al entrar por protected runtime.
 
-Documento, banco/pago y otros datos aportados por shopper que existan en la plataforma vigente requieren reconciliación segura desde el export ya entregado, por export/import cifrado; nunca conexión a la RTDB vieja.
+El export vigente de `tya_shoppers_extra` conserva campos operativos adicionales como WhatsApp/email/país/ciudad/DPI y credenciales históricas para parte de los registros. La File Library actualmente falla al recuperar el archivo ya entregado; no se pide reenvío mientras se intenta recuperar ese insumo. No conectar RTDB vieja.
 
 ## 9. Julio/agosto
 HR viva y auto-month permanecen PASS. No ejecutar delta agosto hasta cerrar este P0 y congelar Corte6.
 
-## 10. Documentación viva
-- `CAMBIOS-BACKEND-ADDENDUM-C6-VISUAL-FAIL-SHOPPER-IDENTITY-PROFILE-20260731.md`.
-- `CAMBIOS-BACKEND-ADDENDUM-C6-PROTECTED-PROFILE-AUTH-HISTORY-READONLY-PASS-20260731.md`.
-- `CAMBIOS-BACKEND-ADDENDUM-C6-USERNAME-DELTA-READONLY-PASS-20260731.md`.
-- evidencias `CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json` y `CORTE6-USERNAME-DELTA-READONLY-LATEST.json`.
-- root `RESUMEN-PARA-CLAUDE.md` / `PENDIENTES-PROTOTIPO.md` sincronizados.
+## 10. Siguiente bloque exacto
+`RECUPERAR/RECONCILIAR EXPORT PERFIL EXTRA → COMBINAR CON USERNAME88 EN DELTA FIRESTORE EXACTO → AUTORIZACIÓN ESPECÍFICA → READBACK → REDEPLOY DEV AUTORIZADO → VISUAL PROTEGIDA → FREEZE C6`.
 
-## 11. Siguiente bloque exacto
-`PREPARAR WRITE PLAN USERNAME88 SIN EJECUTAR + RECONCILIAR PERFIL EXTRA DEL EXPORT DE FORMA CIFRADA → AUTORIZACIONES EXACTAS SI APLICAN → REDEPLOY HOSTING DEV NUEVO → HUMAN VISUAL PROTEGIDA → FREEZE C6`.
-
-## 12. Estado seguro
+## 11. Estado seguro
 Provider reads sí; Firestore/Auth/HR/legacy writes0; password changes0; Rules/Hosting/Cloud Run deploys nuevos0; Storage/Make/Gemini/pagos0; merge=false; producción=false.
