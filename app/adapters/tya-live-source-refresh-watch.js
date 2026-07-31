@@ -2,15 +2,18 @@
    No UI module is modified. No document reload is permitted.
 
    Corte 6 P0: el watcher source-safe NO puede sobrescribir CX.data cuando el
-   entrypoint está en runtime protegido Firebase/Auth/Rules. */
+   entrypoint está en runtime protegido Firebase/Auth/Rules ni cuando la
+   validación humana full-profile server-side es dueña de CX.data. */
 window.CX = window.CX || {};
 (function(){
   const params=new URLSearchParams(window.location.search||'');
   const protectedRuntimeRequested=params.get('cxProtectedRuntime')==='YES_PAULA_20260730_PROTECTED_DEV';
-  if(protectedRuntimeRequested){
-    window.CX_TYA_LIVE_SOURCE_WATCH_DISABLED_REASON='protected-runtime-owns-cxdata';
-    window.CX_TYA_CHECK_LIVE_SOURCE=async function(){return {ok:false,skipped:true,reason:'protected-runtime-owns-cxdata'};};
-    console.warn('[CX.live-source] Watcher source-safe omitido: runtime protegido es dueño de CX.data.');
+  const fullVisualRequested=params.get('cxHumanFullVisual')==='YES_PAULA_20260731_FULL_PROFILE_DEV';
+  if(protectedRuntimeRequested||fullVisualRequested){
+    const reason=protectedRuntimeRequested?'protected-runtime-owns-cxdata':'full-visual-server-proxy-owns-cxdata';
+    window.CX_TYA_LIVE_SOURCE_WATCH_DISABLED_REASON=reason;
+    window.CX_TYA_CHECK_LIVE_SOURCE=async function(){return {ok:false,skipped:true,reason};};
+    console.warn('[CX.live-source] Watcher source-safe omitido: '+reason+'.');
     return;
   }
 
