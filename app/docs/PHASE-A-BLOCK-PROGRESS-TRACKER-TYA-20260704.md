@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-31  
-**Estado:** `C3_FROZEN__C5_1406_PASS__C6_PROFILE_WRITE_PASS__C6_P0_COMPOSITION_REGRESSION__STABILITY_LOCK_ACTIVE`
+**Estado:** `C3_FROZEN__C5_1406_PASS__C6_PROFILE_WRITE_PASS__C6_STABLE_COMPOSER_LOCAL_3X_PASS__PENDING_HOSTING_DEV`
 
 ## 1. Cerrado/protegido
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
@@ -13,50 +13,52 @@
 - Perfil completo Firestore120 docs/329 campos WRITE+READBACK PASS.
 - Finanzas/pagos canónicos source-safe preservados.
 
-## 2. Hosting acumulativo anterior
-Provider deploy PASS histórico:1 Hosting DEV,0 Cloud Run bajo autorización ya consumida. No autoriza otro deploy.
+## 2. Regresión C6 reproducida
+Visual anterior:88→44 visitas, badge1,232/546, scroll movido, shoppers duplicados, perfil/histórico fragmentado y comparativo incompleto.
 
-## 3. Human visual actual — P0
-La prueba acumulativa posterior mostró:
--88→44 visitas;
--1,232 visitas/546 shoppers en badge;
--scroll reposicionado;
--identidades Shopper duplicadas;
--perfil/credenciales/histórico fragmentados;
--comparativo histórico incompleto;
--estados variables entre primer render y refresh.
+HR read-only verificada:30 tabs/28 mensuales; julio34 GT+10 HN; sin agosto 2026. El P0 fue de composición.
 
-La HR actual fue revalidada:30 tabs/28 mensuales; julio34 GT+10 HN. El error es de composición, no de disponibilidad de la fuente.
+## 3. Root fix estable — CODE PASS
+Aplicado en rama viva:
+- composer puro/idempotente `tya-cumulative-read-model.js`;
+- full visual usa baseline HR inmutable por revision;
+- no append protected visits;
+- crosswalk por evidencia técnica exacta;
+- HR mantiene estado operacional;
+- watcher revision-gated y preserva UI state;
+- módulos/core frontend intactos.
 
-## 4. Lock permanente añadido
-Activo `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`.
+## 4. Regression gate local — PASS
+`PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE`:
+- reapply1=616 visitas/208 shoppers;
+- reapply2=616/208;
+- reapply3=616/208;
+- duplicateVisitKeys0;
+- duplicateShopperIds0;
+- protectedVisitsAppended0;
+- visit/shopper IDs estables;
+- HR state preservado;
+- profile overlay visible.
 
-Reglas nuevas obligatorias para todo bloque futuro:
-- ownership explícito por fuente;
-- composer idempotente;
-- baseline HR inmutable por revision;
-- crosswalk técnico exacto;
-- refresh sin mover ruta/filtros/modal/scroll;
-- regression gate acumulativo antes de cada transición/deploy.
+CI remoto no ejecutado; evidencia local declarada explícitamente.
 
-## 5. Corrección en progreso
-Siguiente implementación debe resolver en raíz:
-1. no reutilizar arrays ya compuestos;
-2. reconciliar visitas por llaves técnicas exactas;
-3. impedir append histórico duplicado;
-4. converger Shopper a una identidad canónica cuando exista crosswalk exacto;
-5. mantener UI state al refrescar;
-6. probar3 reaplicaciones consecutivas sin crecimiento.
+## 5. Lock permanente
+Activo `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`. Toda etapa futura hereda el regression gate.
 
 ## 6. 31 identity HOLD
 No resueltos por llaves estables. No usar nombre/teléfono/email.
 
 ## 7. Claude/Academia
-- Claude/prototipo: mismo regression lock, no reinterpretar backend ni reintroducir fallas de etapas previas.
-- Academia: ownership, idempotencia, crosswalk y no-regresión.
+- Claude/prototipo: consumir el read model estable, no reconstruir fuentes/estados en módulos.
+- Academia: ownership, idempotencia, revision gate, crosswalk y refresh sin interrumpir al usuario.
 
-## 8. Siguiente bloque
-`ROOT FIX IDEMPOTENTE + CROSSWALK + UI STATE STABILITY → REGRESSION GATE ACUMULATIVO → solo si PASS 1x DEV DEPLOY → HUMAN VISUAL → FREEZE C6 → AGOSTO`.
+## 8. Gate pendiente
+Código todavía no desplegado. Autorización Hosting anterior consumida.
 
-## 9. Estado seguro
-Proveedor/data writes0; deploys0 en este bloque; merge=false; producción=false.
+Siguiente acción autorizable: exactamente `1x redeploy Hosting DEV existente cxorbia-backend-dev/cxorbia-dev`; Cloud Run0. Después remote smoke + human visual3x refresh + Dashboard/Shopper/histórico/comparativo/Beneficios/Finanzas.
+
+## 9. Siguiente bloque
+`1x HOSTING DEV AUTORIZADO → REMOTE/HUMAN REGRESSION PASS → FREEZE C6 → AGOSTO`.
+
+## 10. Estado seguro
+Provider/data writes0; Hosting0; Cloud Run0; merge=false; producción=false.
