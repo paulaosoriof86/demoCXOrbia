@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-31  
-**Estado:** `C3_FROZEN__C5_1406_PASS__C6_PROFILE_WRITE_PASS__PROTECTED_HOSTING_PASS__WAITING_HUMAN_VISUAL__31_HOLD`
+**Estado:** `C3_FROZEN__C5_1406_PASS__C6_PROFILE_WRITE_PASS__PROTECTED_HOSTING_PASS__LOGIN_REPRO_P0__SESSION_CONTINUITY_FIX_PREPARED__WAITING_HOSTING_AUTH__31_HOLD`
 
 ## 1. Cerrado/protegido
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
@@ -10,27 +10,35 @@
 - Corte5 CX.data14 periodos/current2026-07 PASS.
 - Auth91/91, claims5/5, Rules PASS.
 - HR live/auto-month PASS.
+- Perfil completo Firestore120 docs/329 campos WRITE+READBACK PASS.
 
-## 2. Corte6 perfil completo — Firestore PASS
-120 doc writes exactos;118 field-change +2 marker-only;329 valores; readback120/329; mismatches0. Authorization consumida.
+## 2. Protected Hosting DEV anterior
+Redeploy protegido anterior PASS técnico; autorización consumida.
 
-## 3. Protected Hosting DEV — PASS
-Un único redeploy existente `cxorbia-backend-dev/cxorbia-dev` ejecutado y verificado remotamente. Protected runtime/Auth bridge/Firestore adapter/profile bridge/history KPI PASS; source-safe default preservado. Authorization consumida.
+## 3. P0 visual detectado
+La validación humana volvió a mostrar Usuario/Contraseña al seleccionar Administración/Coordinación. Causa raíz: persistencia Auth `SESSION` repetía el gate interactivo dentro del ciclo de QA.
 
-## 4. P0 visual — gate actual
-Falta validación humana Admin+Shopper del carril protegido. No congelar Corte6 antes de esa validación.
+## 4. Corrección preparada
+- overlay protected-only para persistencia Firebase Auth `LOCAL`;
+- config `persist:'local'` + `reuseAuthenticatedSession:true`;
+- carga antes de browser-auth;
+- sin credenciales embebidas ni bypass claims/Rules;
+- logout explícito sigue cerrando sesión.
 
-Validar perfil completo, username/password legacy real cuando exista, teléfonos, KPI/drill, histórico completo incluido `submitida` y shopperId real.
+No hay redeploy nuevo todavía.
 
-## 5. 31 identity HOLD
+## 5. Validación objetivo
+Después de 1x Hosting DEV autorizado: login real una sola vez → refresh sin nuevo prompt → Admin perfil completo/KPI/histórico → Shopper real.
+
+## 6. 31 identity HOLD
 No resueltos por llaves estables ni Auth claims. No usar nombre/teléfono/email. Requieren alta/conciliación explícita posterior.
 
-## 6. Julio/agosto
-No materializar agosto hasta cerrar/freeze Corte6. Después: refresh HR → resolver agosto HN si corresponde → materializar solo delta agosto.
+## 7. Julio/agosto
+No materializar agosto hasta cerrar/freeze Corte6.
 
-## 7. Claude/Academia
-- Claude: preservar diseño; si el adapter entrega datos y la UI no los muestra, documentar ajuste por archivo.
-- Academia: source-safe vs protected, write/readback, one-shot deploy, validación humana y HOLD explícito.
+## 8. Claude/Academia
+- Claude: no rediseño ni cambio de módulos por este P0; fix backend/core.
+- Academia: separar autenticación inicial de continuidad de sesión QA protegida.
 
-## 8. Estado seguro
-Durante redeploy: Firestore/Auth/Rules/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos writes/deploys0; merge=false; producción=false.
+## 9. Gate actual
+`NUEVA AUTORIZACIÓN 1x HOSTING DEV SESSION CONTINUITY → REMOTE SMOKE → LOGIN REAL 1 VEZ → REFRESH SIN RE-PROMPT → HUMAN VISUAL → 31 HOLD → FREEZE C6 → AGOSTO`.
