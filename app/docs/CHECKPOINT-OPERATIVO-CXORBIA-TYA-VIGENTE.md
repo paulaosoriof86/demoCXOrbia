@@ -38,7 +38,7 @@ Read-only preflight:
 - service account `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com` no tiene `serviceusage.services.enable`;
 - sí tiene `run.services.update`, `iam.serviceAccounts.actAs`, `cloudbuild.builds.create`.
 
-Drive metadata adicional confirma que **esa misma service account ya es reader del HR canónico**, así que no hace falta una nueva cuenta ni compartir de nuevo; tras habilitar Sheets API solo corresponde revalidar acceso.
+Drive metadata confirma que **esa misma service account ya es reader del HR canónico**, así que no hace falta una nueva cuenta ni compartir de nuevo; tras habilitar Sheets API solo corresponde revalidar acceso.
 
 ## 6. P0 de seguridad HR
 El HR canónico tiene permiso `anyone=writer`. Cualquier persona con el enlace puede editar la fuente operativa.
@@ -68,5 +68,8 @@ HR todavía no tiene tabs de agosto. Operativamente julio puede continuar en eje
 
 Después: fuente operacional exacta agosto → delta-only autorizado → preprod/cutover.
 
-## 10. Estado seguro
+## 10. Academia
+Fuente: `ACADEMIA-IMPACTO-HR-LIVE-AUTOMONTH-PLATFORM-ORIGIN-20260731.md`. Patrón reusable: auto-month + platform-origin + conciliación + sharing mínimo + source-safe/protected runtime.
+
+## 11. Estado seguro
 No API enable, no sharing change, no Cloud Run/Hosting deploy, no HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes, no merge/producción. Histórico/Auth91 preservados.
