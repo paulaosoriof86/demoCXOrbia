@@ -1,7 +1,7 @@
 # Academia — HR viva, periodos automáticos y origen plataforma
 
 **Fecha:** 2026-07-31  
-**Estado:** `REUSABLE_PATTERN_DOCUMENTED__NO_PRODUCTION`
+**Estado:** `REUSABLE_PATTERN_DOCUMENTED__HR_SHARING_P0_INCLUDED__NO_PRODUCTION`
 
 ## Patrón reusable
 Una operación de campo no debe exigir configuración técnica mensual cuando el calendario operativo ya existe en una fuente viva.
@@ -33,6 +33,14 @@ Un preview source-safe puede mostrar un placeholder para proteger PII. Eso no de
 ## Gate provider
 La automatización depende de una capacidad real del proveedor. Si Google Sheets API está deshabilitada, el sistema debe declararlo y no simular metadata mediante GViz. La activación de API es infraestructura de una sola vez; no forma parte del trabajo mensual del usuario.
 
+La cuenta técnica que lee HR debe tener mínimo privilegio: `reader` sobre el archivo, no editor. En TyA ese reader ya existe.
+
+## P0 de sharing reusable
+Una fuente operativa con `anyone=writer` viola mínimo privilegio y debe bloquear producción, aunque el código y los datos sean correctos. El gate de cutover debe verificar también el sharing del sistema de origen, no solo Firebase/Firestore.
+
+Lección reusable:
+`PROVIDER READY = API CAPABILITY + FILE ACCESS MINIMO + NO PUBLIC WRITE + READ FRESHNESS + FAIL-CLOSED`.
+
 ## Contenido para manuales/cursos
 - fuente viva vs snapshot;
 - detección automática de periodos;
@@ -41,8 +49,9 @@ La automatización depende de una capacidad real del proveedor. Si Google Sheets
 - conciliación bidireccional y anti-duplicación;
 - `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`;
 - privacidad source-safe vs identidad runtime;
+- permisos mínimos del archivo fuente;
 - fail-closed y revisión de conflictos;
 - diferencia entre activación inicial de proveedor y operación mensual autónoma.
 
 ## Seguridad
-Documentación únicamente. Sin provider writes, deploy, Firestore/HR/Auth/Rules/Storage/Make/Gemini, merge ni producción.
+Documentación únicamente. Sin cambios de sharing, provider writes, deploy, Firestore/HR/Auth/Rules/Storage/Make/Gemini, merge ni producción.
