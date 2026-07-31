@@ -26,7 +26,9 @@
 La identidad real ya existe. Se preparó ruta DEV autenticada separada del preview source-safe para probar módulos con datos reales según Auth/claims/Rules. Pendiente de un único redeploy Hosting DEV autorizado; no se tocó `app/modules/*`.
 
 ## 5. Julio/agosto
-Julio puede seguir ejecutándose mientras agosto ya está disponible como origen plataforma antes de HR. La llegada futura de tabs HR debe conciliar por IDs estables y no duplicar. No copiar julio ni fabricar datos de agosto.
+Julio puede seguir ejecutándose mientras agosto ya está disponible como origen plataforma antes de HR. La llegada futura de tabs HR debe conciliar por IDs estables y no duplicar.
+
+El source-of-truth exacto de las visitas agosto platform-origin todavía no aparece en las fuentes inspeccionadas. No copiar julio ni inferir datos. Ese origen se recupera/conecta antes del delta Firestore.
 
 ## 6. Siguiente bloque
 `CORREGIR SHARING HR P0 + ENABLE SHEETS API EXISTENTE → REVALIDAR HR READER → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
