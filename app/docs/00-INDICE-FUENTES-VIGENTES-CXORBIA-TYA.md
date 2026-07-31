@@ -24,21 +24,22 @@
 7. `CAMBIOS-BACKEND-ADDENDUM-C6-USERNAME-DELTA-READONLY-PASS-20260731.md`;
 8. `CAMBIOS-BACKEND-ADDENDUM-C6-PASSWORD-PATTERN-READONLY-PASS-20260731.md`;
 9. `CAMBIOS-BACKEND-ADDENDUM-C6-PROFILE-EXTRA-RECONCILIATION-PREPARED-20260731.md`;
-10. `evidence/CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json`;
-11. `evidence/CORTE6-USERNAME-DELTA-READONLY-LATEST.json`;
-12. `evidence/CORTE6-INITIAL-PASSWORD-PATTERN-READONLY-LATEST.json`;
-13. `backend/config/corte6-username-firestore-write-plan.json`;
-14. `backend/config/corte6-profile-extra-readonly-request.json`;
-15. `tools/qa/cxorbia-corte6-profile-extra-export-readonly.mjs`;
-16. `tools/local/cxorbia-corte6-profile-extra-handoff.html`;
-17. `tools/qa/cxorbia-corte6-profile-extra-handoff-dryrun.mjs`;
-18. `.github/workflows/cxorbia-corte6-profile-extra-readonly.yml`;
-19. `app/core/backend-config-preview-dev.js`;
-20. `app/core/backend-protected-dev-mode.js`;
-21. `app/adapters/tya-live-source-refresh-watch.js`;
-22. `app/core/backend-browser-auth.js`;
-23. `app/core/backend-firebase.js`;
-24. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A y PR #7.
+10. `ACADEMIA-IMPACTO-C6-PROFILE-EXTRA-EXPORT-HANDOFF-20260731.md`;
+11. `evidence/CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json`;
+12. `evidence/CORTE6-USERNAME-DELTA-READONLY-LATEST.json`;
+13. `evidence/CORTE6-INITIAL-PASSWORD-PATTERN-READONLY-LATEST.json`;
+14. `backend/config/corte6-username-firestore-write-plan.json`;
+15. `backend/config/corte6-profile-extra-readonly-request.json`;
+16. `tools/qa/cxorbia-corte6-profile-extra-export-readonly.mjs`;
+17. `tools/local/cxorbia-corte6-profile-extra-handoff.html`;
+18. `tools/qa/cxorbia-corte6-profile-extra-handoff-dryrun.mjs`;
+19. `.github/workflows/cxorbia-corte6-profile-extra-readonly.yml`;
+20. `app/core/backend-config-preview-dev.js`;
+21. `app/core/backend-protected-dev-mode.js`;
+22. `app/adapters/tya-live-source-refresh-watch.js`;
+23. `app/core/backend-browser-auth.js`;
+24. `app/core/backend-firebase.js`;
+25. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A y PR #7.
 
 ## 3. Baseline protegida — no reabrir
 - Corte3 FROZEN.
