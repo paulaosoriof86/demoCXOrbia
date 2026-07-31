@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-31  
-**Estado:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_DISABLED__HR_PUBLIC_WRITE_P0__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__DEV_REDEPLOY_AUTH_RETAINED__SHEETS_API_DISABLED__HR_PUBLIC_WRITE_P0__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Repositorio/destinos
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge.
@@ -31,21 +31,24 @@ Corregido:
 - watcher refresca periódicamente y al volver a foco;
 - `cxorbia/live-hr-runtime-predeploy` PASS sin deploy.
 
-## 5. Provider capability
-Read-only preflight:
-- proyecto `cxorbia-backend-dev`, projectNumber `87461567267`;
-- Google Sheets API `DISABLED`;
-- service account `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com` no tiene `serviceusage.services.enable`;
-- sí tiene `run.services.update`, `iam.serviceAccounts.actAs`, `cloudbuild.builds.create`.
+## 5. Autorización DEV y preflight actual
+Paula autorizó un único redeploy del Cloud Run DEV existente y un único redeploy del Hosting DEV existente, condicionados a verificar primero Sheets API habilitada y HR restringido con la service account como reader.
 
-Drive metadata confirma que **esa misma service account ya es reader del HR canónico**, así que no hace falta una nueva cuenta ni compartir de nuevo; tras habilitar Sheets API solo corresponde revalidar acceso.
+Revalidación read-only ejecutada `2026-07-31T02:06:59.600Z`:
+- Google Sheets API: `DISABLED`, `enabled=false`;
+- service account sin `serviceusage.services.enable`;
+- sí conserva `run.services.update`, `iam.serviceAccounts.actAs`, `cloudbuild.builds.create`;
+- Drive metadata directa: HR todavía tiene `anyone=writer`;
+- la service account existente continúa como `reader` del HR.
+
+Las precondiciones fallaron, por lo que Cloud Run deploy=0 y Hosting deploy=0. La autorización queda **retenida/no consumida** para ejecutarse una sola vez cuando ambas precondiciones pasen y el alcance no cambie.
 
 ## 6. P0 de seguridad HR
-El HR canónico tiene permiso `anyone=writer`. Cualquier persona con el enlace puede editar la fuente operativa.
+El HR canónico mantiene permiso `anyone=writer`. Cualquier persona con el enlace puede editar la fuente operativa.
 
 Clasificación: `P0_PROVEN_SECURITY_SOURCE_SHARING`.
 
-Antes de producción debe removerse el acceso público writer y quedar restringido a usuarios autorizados, manteniendo la service account como reader. No se cambió sharing porque no existe autorización provider específica y la herramienta disponible no expone eliminación de ese permiso.
+Debe removerse el acceso público writer y quedar restringido a usuarios autorizados, manteniendo la service account como reader. No se ejecutó cambio de sharing en este bloque.
 
 ## 7. Shopper real
 Firestore protegido sí tiene los datos. El preview público los enmascara deliberadamente.
@@ -58,7 +61,7 @@ Preparado, no desplegado:
 - read-only, writes bloqueados;
 - sin PII en source-safe.
 
-Un redeploy Hosting DEV autorizado hará visible esta ruta para la comprobación de módulos shopper.
+El redeploy Hosting DEV autorizado se ejecutará únicamente después del PASS de las dos precondiciones.
 
 ## 8. Julio/agosto
 HR todavía no tiene tabs de agosto. Operativamente julio puede continuar en ejecución y agosto puede existir como disponibilidad platform-origin antes de HR. El sistema ya tiene este contrato configurado.
@@ -66,12 +69,14 @@ HR todavía no tiene tabs de agosto. Operativamente julio puede continuar en eje
 Las fuentes inspeccionadas todavía no contienen el registro exacto source-of-truth de las visitas agosto platform-origin. Ese origen exacto debe recuperarse/conectarse antes de materializar el delta; no clonar julio ni inferir IDs/ubicaciones/estado.
 
 ## 9. Gate vivo exacto
-`CORREGIR SHARING HR P0 + HABILITAR SHEETS API EN PROYECTO EXISTENTE → REVALIDAR SERVICE ACCOUNT READER → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
+`SHEETS API ENABLED + HR RESTRICTED (SERVICE ACCOUNT READER PRESERVED) → READ-ONLY REVALIDATION PASS → 1x CLOUD RUN DEV REDEPLOY → 1x HOSTING DEV REDEPLOY → READBACK/SMOKE`.
+
+No pedir nueva autorización para esos dos redeploys si el alcance no cambia: la autorización vigente está retenida y no consumida.
 
 Después: recuperar/conectar fuente operacional exacta agosto → delta-only autorizado → preprod/cutover.
 
 ## 10. Academia
-Fuente: `ACADEMIA-IMPACTO-HR-LIVE-AUTOMONTH-PLATFORM-ORIGIN-20260731.md`. Patrón reusable: auto-month + platform-origin + conciliación + sharing mínimo + source-safe/protected runtime.
+Fuentes: `ACADEMIA-IMPACTO-HR-LIVE-AUTOMONTH-PLATFORM-ORIGIN-20260731.md` y addendum de autorización/precondiciones. Patrón reusable: auto-month + platform-origin + conciliación + sharing mínimo + precondition-first deploy.
 
 ## 11. Estado seguro
 No API enable, no sharing change, no Cloud Run/Hosting deploy, no HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes, no merge/producción. Histórico/Auth91 preservados.
