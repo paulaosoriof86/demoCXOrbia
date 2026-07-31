@@ -1,11 +1,12 @@
 {
   "schemaVersion": "cxorbia.corte6.profile-full-firestore-write-request.v2",
   "requestId": "corte6-profile-full-firestore-write-20260731-01",
-  "status": "prepared_waiting_explicit_user_authorization",
-  "enabled": false,
-  "authorized": false,
+  "status": "authorized_pending_execution",
+  "enabled": true,
+  "authorized": true,
   "consumed": false,
-  "authorizationId": null,
+  "authorizationId": "chat-20260731-c6-profile-full-firestore-write-01",
+  "authorizedAt": "2026-07-31T09:09:26-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -25,8 +26,8 @@
   "technicalBridgeResolved": 0,
   "authClaimBridgeResolved": 0,
   "providerWrites": 0,
-  "providerWritesAuthorized": false,
-  "firestoreWritesAuthorized": false,
+  "providerWritesAuthorized": true,
+  "firestoreWritesAuthorized": true,
   "authWrites": 0,
   "firebaseAuthPasswordChanges": 0,
   "rulesDeploys": 0,
@@ -40,5 +41,5 @@
   "paymentsWrites": 0,
   "production": false,
   "merge": false,
-  "nextGate": "WAIT_EXPLICIT_USER_AUTHORIZATION"
+  "nextGate": "CREATE_ONE_SHOT_EXECUTE_MARKER_AND_RUN_EXACT_FIRESTORE_WRITE_THEN_READBACK"
 }
