@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.august-delta-readonly-plan.v4",
-  "generatedAt": "2026-07-31T00:05:05.588Z",
+  "generatedAt": "2026-07-31T01:04:09.365Z",
   "decision": "HOLD_AUGUST_REQUIRED_PROVIDER_TABS_MISSING",
   "releaseReadiness": "SOURCE_TABS_MISSING",
   "target": {
@@ -31,7 +31,7 @@
     "requiredAugustTabsPresent": false
   },
   "source": {
-    "generatedAt": "2026-07-31T00:05:02.788Z",
+    "generatedAt": "2026-07-31T01:04:05.892Z",
     "accessMode": "public_gviz_csv_cache_busted",
     "sourceSafe": true,
     "tabRegistryEnforced": true,
