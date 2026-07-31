@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.corte6.human-full-visual-redeploy.v1",
   "requestId": "corte6-human-full-visual-no-credential-20260731-01",
-  "status": "hosting_deployed_smoke_pending",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_pass",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -47,10 +47,12 @@
   "production": false,
   "previousProtectedSessionAuthorizationId": "chat-20260731-corte6-protected-session-continuity-redeploy-02",
   "previousProtectedSessionAuthorizationConsumed": true,
-  "nextGate": "EXECUTE_ONE_CLOUD_RUN_PLUS_ONE_HOSTING_DEV_NO_CREDENTIAL_VISUAL",
+  "nextGate": "HUMAN_VISUAL_ADMIN_SHOPPER_NO_CREDENTIALS",
   "cloudRunDeployedAt": "2026-07-31T18:31:56.246Z",
   "cloudRunRevision": "cxorbia-live-hr-dev-00009-xs8",
   "cloudRunUrl": "https://cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app",
   "cloudRunSmokePassedAt": "2026-07-31T18:32:04.989Z",
-  "hostingDeployedAt": "2026-07-31T18:32:29.664Z"
+  "hostingDeployedAt": "2026-07-31T18:32:29.664Z",
+  "consumedAt": "2026-07-31T18:32:32.343Z",
+  "decision": "PASS_EXISTING_DEV_CLOUD_RUN_HOSTING_NO_CREDENTIAL_FULL_VISUAL_REMOTE_READY"
 }

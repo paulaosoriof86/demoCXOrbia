@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.corte6.human-full-visual-execute.v1",
-  "status": "authorized_execute_once",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_pass",
+  "enabled": false,
+  "consumed": true,
   "requestId": "corte6-human-full-visual-no-credential-20260731-01",
   "authorizationId": "chat-20260731-corte6-human-full-visual-no-credential-01",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -26,5 +26,7 @@
   "paymentsWrites": 0,
   "merge": false,
   "production": false,
-  "nextGate": "ONE_CLOUD_RUN_THEN_ONE_HOSTING_DEV_NO_CREDENTIAL_VISUAL"
+  "nextGate": "HUMAN_VISUAL_ADMIN_SHOPPER_NO_CREDENTIALS",
+  "consumedAt": "2026-07-31T18:32:32.343Z",
+  "decision": "PASS_EXISTING_DEV_CLOUD_RUN_HOSTING_NO_CREDENTIAL_FULL_VISUAL_REMOTE_READY"
 }
