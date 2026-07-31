@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "cxorbia.corte6-protected-runtime-hosting-deploy.v1",
+  "generatedAt": "2026-07-31T15:53:46.998Z",
+  "decision": "PASS_EXISTING_HOSTING_DEV_PROTECTED_RUNTIME_REMOTE_VERIFIED",
+  "authorizationId": "chat-20260731-corte6-protected-runtime-redeploy-01",
+  "projectId": "cxorbia-backend-dev",
+  "hostingSite": "cxorbia-backend-dev",
+  "hostingTarget": "cxorbia-dev",
+  "versionName": "sites/cxorbia-backend-dev/versions/df3b5ce0359bcadd",
+  "releaseName": "sites/cxorbia-backend-dev/releases/1785513222990000",
+  "hostingDeployExecutions": 1,
+  "remote": {
+    "protectedRuntimeAssets": true,
+    "authBridge": true,
+    "firestoreAdapter": true,
+    "shopperScopeFailClosed": true,
+    "profileBridge": true,
+    "historyKpiIncludesSubmitted": true,
+    "sourceSafeDefaultPreserved": true
+  },
+  "safety": {
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesDeploys": 0,
+    "cloudRunDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "legacyWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "production": false,
+    "merge": false,
+    "piiExported": false,
+    "secretsExported": false
+  }
+}
