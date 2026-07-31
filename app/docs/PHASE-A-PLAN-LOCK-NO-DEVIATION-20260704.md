@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-31  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_LIVE_HR_AUTOMONTH_AND_SHOPPER_DISPLAY_DEV_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`
+**Estado vivo:** `C6_HUMAN_VISUAL_FAIL__P0_SHOPPER_IDENTITY_NULL__ADMIN_PROFILE_INCOMPLETE__NO_NEW_DEPLOY__NO_PRODUCTION`
 
 ## 1. Objetivo/arquitectura
 TyA/Cinépolis como tenant/proyecto configurable de CXOrbia. `cxorbia-backend-dev`=DEV canónico; `tya-plataforma`=Hosting final. No crear Firebase/Hosting/rama/PR por rutina.
@@ -11,74 +11,82 @@ TyA/Cinépolis como tenant/proyecto configurable de CXOrbia. `cxorbia-backend-de
 ## 2. Secuencia obligatoria
 `FUENTE VIVA/ORIGEN PLATAFORMA → EXISTENCIA/FRESCURA → MAPPING/IDENTIDAD → PROVIDER COMPARE/CONCILIACIÓN → WRITE PLAN → DRY-RUN → WRITE EXACTO AUTORIZADO → READBACK → SMOKE → VALIDACIÓN → CUTOVER`.
 
-Reglas prevalentes:
-- HR se lee en vivo.
-- Lectura abierta/read-only es válida; no exigir `Restricted` para lectura DEV.
-- Nueva pestaña mensual válida genera/detecta periodo automáticamente; no configuración mensual por chat.
-- Fallback de filas no prueba existencia de tab; metadata provider/registry manda.
-- Plataforma puede originar disponibilidad antes de HR; conciliación posterior por IDs estables + `assignmentSource`/`assignmentSyncStatus`.
-- Nunca deduplicar por nombre.
+El prototipo manda. Un PASS técnico sin validación visual no congela un corte.
 
 ## 3. Cortes protegidos
 - Corte1/2A/3 FROZEN.
 - Histórico14 periodos/616 visitas hasta julio.
 - R17N1,406/1,406; no repetir.
 - Corte5 CX.data PASS.
-- Auth91/91, claims5/5 y Rules PASS; no reimportar.
-- Identidad protegida: shoppers340/340 y visitas616/616 con nombres reales; placeholders0.
+- Auth91/91, claims5/5 y Rules PASS; no reimportar/resetear por rutina.
+- Firestore protegido: shoppers340/340 y visitas616/616 con identidad real; perfiles referenciados194/194.
 
-## 4. Corte6 — estado actual
-Auto-entry Admin preservado. El redeploy DEV de HR viva + visual shopper se ejecutó exactamente una vez por destino y terminó PASS:
-- Cloud Run revision `cxorbia-live-hr-dev-00008-8mf`;
-- Hosting version `22e81c2b783f697a`;
-- 14 periodos / 616 visitas / último 2026-07;
-- `tabRegistryAutoDiscovery=true`;
-- 208 identidades operativas shopper disponibles;
-- `humanCredentialPrompt=false`.
+## 4. HR live y auto-month
+- HR se lee en vivo.
+- Lectura abierta/read-only es válida; `Restricted` no es requisito técnico de lectura DEV.
+- `fresh=1` y metadata provider descubren tabs mensuales válidas.
+- Nueva pestaña mensual debe crear/detectar periodo automáticamente.
+- Fallback GViz permanece read-only/fail-closed.
+- Sheets API + HR canónica reader: PASS.
+- último periodo HR actual:2026-07.
 
-La autorización quedó consumida y no puede reutilizarse.
+## 5. Último redeploy DEV
+One-shot `chat-20260731-c6-live-hr-shopper-display-dev-redeploy-01` consumido:
+- Cloud Run1/1, revisión `cxorbia-live-hr-dev-00008-8mf`;
+- Hosting1/1, version `sites/cxorbia-backend-dev/versions/22e81c2b783f697a`;
+- remote technical PASS:14 periodos/616 visitas/auto-month/208 identidades display-only.
 
-## 5. HR live y auto-month
-- metadata mensual se consulta en runtime;
-- Cloud Run usa ADC/runtime service account para metadata provider;
-- GViz puede servir valores/fallback, pero registry provider elimina tabs fantasma;
-- `fresh=1` fuerza lectura real;
-- watcher refresca periódicamente/focus;
-- una futura pestaña agosto/septiembre entra automáticamente.
+No reutilizar autorización.
 
-## 6. Shopper DEV sin PII sensible
-Para validación humana se expone únicamente `display_name_only`:
-- nombre operativo;
-- shopperId estable;
-- país y métricas source-safe.
+## 6. Corte6 human visual — FAIL/P0
+La validación humana demostró un P0 que impide Phase A Shopper:
+- sesión Shopper entra sin shopperId;
+- Mi Perfil/Mis Visitas fallan cerrado;
+- Admin source-safe muestra nombres pero no perfil operativo completo;
+- username/credencial/contacto/campos adicionales faltan;
+- histórico por shopper visible incompleto;
+- KPI/drill no satisface operación.
 
-Se excluyen teléfono, correo, DPI, banco/cuenta, credenciales y observaciones privadas. El endpoint source-safe normal permanece enmascarado. No tocar `app/modules/*` para este empalme.
+Causa Shopper reproducible: `app/app.js::_isDevAccess()` no habilita el flujo de identidad en el host alojado de la ruta source-safe y el click cae a `selectRole('shopper')` sin ID.
 
-## 7. Julio/agosto coexistentes
-Julio puede seguir en ejecución mientras agosto existe como platform-origin antes de HR. Al aparecer HR, conciliar por IDs estables; no duplicar, no copiar julio y conflictos a review.
+No restaurar `sh1`; identidad real debe resolverse por Auth/claims + shopperId estable.
 
-El source-of-truth exacto de las visitas agosto platform-origin aún debe recuperarse/conectarse antes del delta Firestore.
+## 7. Regla de datos de shopper
+- source-safe público puede enmascarar PII;
+- Superadmin/Admin autenticado debe ver los datos necesarios para operar;
+- Shopper autenticado solo su propio perfil/scope;
+- Cliente no hereda PII shopper.
 
-## 8. Gate vivo inmediato
-`VALIDACIÓN HUMANA ADMIN: NOMBRES SHOPPER + SHOPPER: SELECTOR DE IDENTIDAD/MÓDULOS`.
+Perfil consolidado desde backend protegido: nombre, username, estado credencial, WhatsApp/teléfono, correo, ubicación, documento, datos de pago si existen, certificaciones, historial, postulaciones, liquidaciones/pagos y datos agregados por shopper.
 
-Si PASS: congelar Corte6 sin otro redeploy.
+## 8. Credenciales
+TyA conserva username `nombre.apellido` y contraseña inicial histórica tipo `Nombre123*`.
 
-## 9. Después del freeze Corte6
-1. recuperar/conectar fuente exacta de agosto platform-origin;
-2. generar delta-only idempotente;
-3. solicitar autorización Firestore únicamente para ese delta;
-4. readback/smoke;
-5. preprod;
-6. cutover `tya-plataforma` con autorización específica de producción.
+Firebase Auth no devuelve contraseña vigente. No almacenar password recuperable en JS/repo/Firestore público. Mostrar username + estado de credencial; legacy/inicial solo con evidencia segura. Reset requiere autorización Auth específica.
 
-Nunca repetir histórico/Auth91.
+## 9. Migración desde plataforma vigente
+La plataforma actual/legacy puede aportar datos adicionales de `tya_shoppers_extra`, pero solo mediante export/import.
 
-## 10. Claude/prototipo
-No nueva candidata ni `app/modules/*`. UX del prototipo manda. P1/P2 (PDF/gráficas, Excel/formato, reportKit/exportaciones/copy) permanecen documentados y no bloquean este gate visual.
+`EXPORT → PARSER POR CONTRATO → MATCH POR ID/EVIDENCIA ESTABLE → REVIEW CONFLICTOS → DELTA → WRITE GATED`.
 
-## 11. Academia
-Documentar: provider registry vivo, ADC, open-read vs open-write, platform-origin antes de HR, identidad operativa mínima vs PII sensible y state machine one-shot.
+No conectar base vieja. No dedupe solo por nombre/teléfono. No overwrite silencioso.
 
-## 12. Estado seguro
-Firestore/HR/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0 en este bloque; proyectos/Hosting nuevos0; merge=false; producción=false.
+## 10. Histórico/KPI
+- histórico individual sale de las616 visitas canónicas por shopperId;
+- KPI usa facetas/estados canónicos y drill a filas reales;
+- estados legacy estrechos no deben subcontar `submitida` u otras etapas canónicas.
+
+## 11. Julio/agosto coexistentes
+Julio puede seguir operando, pero no iniciar materialización agosto mientras el P0 Shopper/perfil siga abierto. Agosto platform-origin se conectará por source-of-truth exacto; no copiar julio.
+
+## 12. Gate vivo inmediato
+`PROTECTED-RUNTIME READ-ONLY VALIDATION → PROFILE FIELD INVENTORY / LEGACY EXPORT RECONCILIATION → EXACT DELTA PLAN → AUTH/FIRESTORE WRITE GATES SEPARADOS SI APLICAN → NUEVO REDEPLOY DEV SOLO CON AUTORIZACIÓN → HUMAN VISUAL → FREEZE C6`.
+
+## 13. Claude/prototipo
+No rediseñar. Cambios frontend solo focalizados y documentados si el backend protegido ya entrega los datos pero la UI no los refleja. Mantener fail-closed sin shopperId.
+
+## 14. Academia
+Documentar source-safe vs consola protegida, identidad/claims/shopperId, credencial inicial vs vigente, permisos por rol, perfil consolidado, histórico y KPI drill.
+
+## 15. Estado seguro
+Después de la visual: provider writes/deploys nuevos0; Firestore/HR/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; merge=false; producción=false.
