@@ -8,6 +8,7 @@ on:
     paths:
       - 'backend/runtime/hr-live-service/**'
       - 'app/adapters/tya-live-source-refresh-watch.js'
+      - 'tools/hr-source/tya-enforce-live-tab-registry.mjs'
       - 'tools/release/tya-source-safe-live-binding-build-r22.mjs'
       - 'tools/qa/tya-live-hr-read-probe-gate.mjs'
       - 'backend/contracts/phase-a-live-hr-runtime-read-v1.json'
@@ -27,7 +28,7 @@ defaults:
 
 jobs:
   predeploy:
-    name: Validate live endpoint and canonical build binding without deploy
+    name: Validate live endpoint and automatic month discovery without deploy
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
@@ -48,10 +49,11 @@ jobs:
           set -euo pipefail
           node --check backend/runtime/hr-live-service/server.mjs
           node --check app/adapters/tya-live-source-refresh-watch.js
+          node --check tools/hr-source/tya-enforce-live-tab-registry.mjs
           node --check tools/release/tya-source-safe-live-binding-build-r22.mjs
           node --check tools/qa/tya-live-hr-read-probe-gate.mjs
 
-      - name: Prepare current source-safe payload for canonical adapter generation
+      - name: Prepare bootstrap with same provider-registry policy
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
           CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
@@ -59,15 +61,14 @@ jobs:
           CXORBIA_HR_LIVE_MAX_COL: AI
           CXORBIA_HR_EARLIEST_PERIOD: '2025-06'
           CXORBIA_GATE_OUT: .tmp/live-runtime-predeploy/source
+          CXORBIA_HR_TAB_REGISTRY: .tmp/live-runtime-predeploy/tab-registry.source-safe.json
+          CXORBIA_HR_TAB_REGISTRY_EVIDENCE: .tmp/live-runtime-predeploy/tab-registry-evidence.source-safe.json
         run: |
           set -euo pipefail
           mkdir -p .tmp/live-runtime-predeploy
+          cp backend/config/tya-live-hr-tab-registry.source-safe.json .tmp/live-runtime-predeploy/tab-registry.source-safe.json
           node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
-          node tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs \
-            --input app/data/tya-hr-source-safe-periods.js \
-            --out app/data/tya-hr-source-safe-periods.js \
-            --inventory backend/contracts/tya-hr-tab-inventory-r20-v1.json \
-            --report-dir .tmp/live-runtime-predeploy/inventory
+          node tools/hr-source/tya-enforce-live-tab-registry.mjs
           node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
             --input app/data/tya-hr-source-safe-periods.js \
             --out app/data/tya-hr-source-safe-periods.js \
@@ -96,11 +97,11 @@ jobs:
           cat .tmp/live-runtime-predeploy/service.log
           exit 1
 
-      - name: Validate live endpoint formats and freshness
+      - name: Validate live endpoint freshness and automatic monthly discovery
         run: |
           set -euo pipefail
           base='http://127.0.0.1:4182/v1/tenants/tya/projects/cinepolis/hr-live'
-          curl -fsS -H 'Cache-Control: no-cache' "$base?format=meta&ts=$(date +%s)" > .tmp/live-runtime-predeploy/meta.json
+          curl -fsS -H 'Cache-Control: no-cache' "$base?format=meta&fresh=1&ts=$(date +%s)" > .tmp/live-runtime-predeploy/meta.json
           curl -fsS -H 'Cache-Control: no-cache' "$base?format=js&ts=$(date +%s)" > .tmp/live-runtime-predeploy/live-source.js
           curl -fsS -H 'Cache-Control: no-cache' "$base?ts=$(date +%s)" > .tmp/live-runtime-predeploy/snapshot.json
           node - <<'NODE'
@@ -113,7 +114,13 @@ jobs:
           if(!js.includes('window.CX_TYA_HR_SOURCE_SAFE=')||!js.includes('window.CX_TYA_HR_LIVE_META='))throw new Error('javascript format failed');
           const age=(Date.now()-Date.parse(meta.generatedAt))/1000;
           if(!Number.isFinite(age)||age>600)throw new Error('endpoint source is stale: '+age);
-          fs.writeFileSync('.tmp/live-runtime-predeploy/endpoint-pass.json',JSON.stringify({ok:true,decision:'PASS_LIVE_HR_ENDPOINT_LOCAL',revision:meta.revision,generatedAt:meta.generatedAt,periods:meta.periods,visits:meta.visits,fixedCounts:false,writes:false,deploy:false,production:false},null,2));
+          if(meta.sourceAccessMode==='sheets_api_service_account'){
+            if(meta.tabRegistryAutoDiscovery!==true||meta.tabRegistryMode!=='live_provider_metadata_auto_refresh')throw new Error('provider metadata available but auto month discovery is not active');
+          }else{
+            if(meta.tabRegistryAutoDiscovery===true)throw new Error('auto-discovery cannot be asserted on fallback source');
+            if(!meta.tabRegistryMode)throw new Error('fail-closed registry mode missing');
+          }
+          fs.writeFileSync('.tmp/live-runtime-predeploy/endpoint-pass.json',JSON.stringify({ok:true,decision:'PASS_LIVE_HR_ENDPOINT_LOCAL_AUTO_MONTH_DISCOVERY',revision:meta.revision,generatedAt:meta.generatedAt,periods:meta.periods,visits:meta.visits,sourceAccessMode:meta.sourceAccessMode,tabRegistryMode:meta.tabRegistryMode,tabRegistryAutoDiscovery:meta.tabRegistryAutoDiscovery,writes:false,deploy:false,production:false},null,2));
           NODE
 
       - name: Build canonical app binding against local live endpoint
@@ -150,4 +157,4 @@ jobs:
         with:
           script: |
             const state=process.env.JOB_STATE==='success'?'success':'failure';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/live-hr-runtime-predeploy',description:state==='success'?'Live HR endpoint and build binding PASS without deploy':'Live HR runtime predeploy failed'});
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/live-hr-runtime-predeploy',description:state==='success'?'Live HR auto-month discovery PASS without deploy':'Live HR auto-month discovery predeploy failed'});
