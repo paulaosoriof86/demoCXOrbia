@@ -1,39 +1,41 @@
 # Phase A block progress tracker TyA
 
 **Fecha original:** 2026-07-04  
-**Última actualización:** 2026-07-30  
-**Estado:** `C3_FROZEN__C5_1406_PASS__C6_IDENTITY_PASS__AUGUST_PROVIDER_TABS_MISSING__GVIZ_PHANTOM_FIXED`
+**Última actualización:** 2026-07-31  
+**Estado:** `C3_FROZEN__C5_1406_PASS__C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_DISABLED__PROTECTED_SHOPPER_PREPARED`
 
 ## 1. Cerrado/protegido
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
 - Corte3 FROZEN.
-- Corte5:1,406/1,406;616 visitas;572 controles liquidación;77 certificaciones; CX.data14 periodos/currentPeriod2026-07 PASS.
-- Corte6: Auth91/91, claims5/5, Rules PASS; auto-entry Admin observado; identidad protegida shoppers340/340 y visitas616/616 reales, placeholders0.
+- Corte5:1,406/1,406;616 visitas;572 controles liquidación;77 certificaciones; CX.data14 periodos/current2026-07 PASS.
+- Corte6: Auth91/91, claims5/5, Rules PASS; auto-entry Admin observado; Firestore protegido shoppers340/340 y visitas616/616 con identidad real, placeholders0.
 
-## 2. Agosto — corrección de diagnóstico
-Metadata real de la HR confirma que `AGOSTO 26` y `AGOSTO 26 HN` **no existen**. GViz estaba devolviendo datos de otra hoja al consultar tabs inexistentes; la inferencia GT34/HN34 queda superseded.
+## 2. HR auto-month — implementado en código
+- runtime live ya no se limita al inventario estático de meses;
+- una lectura `fresh=1` usa metadata provider para descubrir tabs mensuales nuevas cuando Sheets API está disponible;
+- fallback GViz usa registry provider fail-closed y no acepta tabs fantasma;
+- watcher refresca ~20 s/focus/visibility;
+- predeploy `cxorbia/live-hr-runtime-predeploy` PASS sin deploy.
 
-Fix aplicado: provider tab registry + enforcement + planner tab-first.
+## 3. Bloqueo provider
+Google Sheets API del proyecto existente `cxorbia-backend-dev` está `DISABLED`. La service account disponible no tiene `serviceusage.services.enable`; sí tiene capacidad de actualizar Cloud Run/actAs/iniciar Cloud Build.
 
-## 3. Re-read final
--14 periodos reales;
--28 tabs mensuales;
--616 visitas;
-- último periodo2026-07;
-- agosto GT0/HN0;
-- Firestore periodo2026-08 no existe;
-- delta agosto0;
-- decisión `HOLD_AUGUST_REQUIRED_PROVIDER_TABS_MISSING`.
+Esto es una activación provider de una sola vez, no configuración mensual.
 
-## 4. Bloqueante real
-Falta la fuente autorizada de agosto. No corresponde copiar julio, inventar GT34/HN10 ni materializar Firestore sin las filas reales.
+## 4. Shopper real
+La identidad real ya existe. Se preparó ruta DEV autenticada separada del preview source-safe para probar módulos con datos reales según Auth/claims/Rules. Pendiente de un único redeploy Hosting DEV autorizado; no se tocó `app/modules/*`.
 
-## 5. Siguiente bloque
-`AGOSTO DISPONIBLE EN HR → REFRESH METADATA/SOURCE-SAFE → VALIDAR PAÍS/ESTADO → DELTA EXACTO → AUTORIZACIÓN WRITE SOLO DELTA → READBACK/SMOKE → PREPROD → CUTOVER`.
+## 5. Julio/agosto
+Julio puede seguir ejecutándose mientras agosto ya está disponible como origen plataforma antes de HR. La llegada futura de tabs HR debe conciliar por IDs estables y no duplicar. No copiar julio ni fabricar datos de agosto.
 
-## 6. Claude/Academia
-- Claude: no nueva candidata ni cambios de módulos por esta ausencia de fuente.
-- Academia: gate de existencia de tab antes de interpretar GViz; source-safe vs protected runtime.
+## 6. Siguiente bloque
+`ENABLE SHEETS API EXISTENTE → VERIFICAR READ-ONLY HR → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
 
-## 7. Estado seguro
-Provider reads únicamente; HR/Firestore/Auth/Rules/Hosting/Storage/legacy/payments/Functions/Make/Gemini writes0; merge=false; producción=false.
+Luego: fuente operacional exacta agosto → delta-only autorizado → readback/preprod/cutover.
+
+## 7. Claude/Academia
+- Claude: preservar UX, no nueva candidata, no `app/modules/*`; source-safe no sustituye identidad real.
+- Academia: auto-month, plataforma-origin antes de HR, conciliación, provider capability, privacidad por capa.
+
+## 8. Estado seguro
+API enable0; share0; Cloud Run/Hosting deploy0; HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; merge=false; producción=false.
