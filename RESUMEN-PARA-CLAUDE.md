@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_P0_OPEN__EXPORT_RECOVERED__PROFILE_HANDOFF_READY__USERNAME88_READY__RUNTIME_FIX_PREPARED__NO_WRITE__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_P0_OPEN__FULL_PROFILE_SCOPE_AUTHORIZED__V2_HANDOFF_READY__WAITING_V2_ENCRYPTED_BUNDLE__NO_PROVIDER_WRITE__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Corte3 FROZEN; R17N1,406/1,406 no repetir.
@@ -13,77 +13,40 @@
 La visual anterior probó Shopper `shopperId=null`, Admin sobre `display_name_only` e histórico/KPI incompletos. Corte6 sigue abierto.
 
 ## 3. Protected read-only PASS
-Firestore shoppers340: phone123, email39, username0, documento0, banco/pago0.
-
-Auth108: claims Shopper con shopperId91; perfil existente91/91; missing0.
-
-Histórico: 616/616 visitas con shopperId; 194 perfiles referenciados194/194; submitida545, cuestionario61, agendada4, realizada3, fuera_rango3.
+Firestore shoppers340; phone123; email39. Auth shopper claims con shopperId91 y perfil existente91/91. Histórico616/616 con shopperId; perfiles referenciados194/194.
 
 ## 4. Runtime fix preparado — no deploy
-- protected lane no se degrada a source-safe;
-- watcher source-safe no sobrescribe CX.data protegido;
-- aliases de perfil toman solo datos reales;
-- `visitsForShopper/shopperStats` protegidos usan histórico exacto y contemplan `submitida`;
-- no sintetizar password.
+Protected lane no se degrada a source-safe; watcher no sobrescribe CX.data protegido; `visitsForShopper/shopperStats` usa histórico exacto e incluye `submitida`. No deploy nuevo autorizado.
 
-Syntax/anti-regression PASS previo. No deploy nuevo autorizado.
+## 5. Username/Auth
+Handoff cifrado previo: shopper109; stable-ID exact88; Auth claim binding88/88; username plan88; conflictos0;21 HOLD. Auth91/91 permanece cerrado.
 
-## 5. Username exacto
-Handoff cifrado:
-- shopper109;
-- stable-ID exact88;
-- Auth claim binding88/88;
-- fill-missing username88;
-- conflictos0;
-- 21 sin perfil exacto HOLD.
+## 6. Alcance de perfil actualizado por Paula
+El perfil operativo autenticado debe mostrar la información completa disponible hoy en la plataforma anterior, incluyendo datos personales, username y password legado visible. El hardening puede hacerse después y no bloquea este corte.
 
-Plan Firestore existe pero está disabled/unauthorized. No ejecutar sin autorización.
+No exponer valores personales/credenciales en repo, logs o evidencia. El transporte sigue cifrado y el provider write continúa sujeto a gate exacto.
 
-## 6. Password
-Verificación source-safe de hash contra patrón inicial `CapitalizedFirstName + 123*`:
-- exactos88;
-- patrón verificado68;
-- no patrón20.
+## 7. Export vigente
+File Library recuperó `tya-plataforma-default-rtdb-export (6).json` del 2026-07-30. No pedirlo otra vez y nunca conectar la RTDB legacy.
 
-No mostrar `Nombre123*` universalmente. Firebase Auth no devuelve plaintext vigente. Los 20 no patrón no se deben resetear por rutina.
+## 8. V1 recibido — no usar para write
+El bundle V1 recibido está cifrado, pero el resumen source-safe reportó 282 filas,151 registros cifrados y130 IDs estables duplicados; además V1 excluía pass/password. No materializar desde ese bundle porque dejaría el perfil incompleto y podría conservar una variante antigua.
 
-## 7. Export perfil extra — recuperado
-File Library volvió a responder y se recuperó el export vigente ya entregado `tya-plataforma-default-rtdb-export (6).json` del 2026-07-30. No pedirlo de nuevo.
+## 9. V2 listo
+- `tools/local/cxorbia-corte6-profile-full-handoff-v2.html`: procesa el mismo export offline, fusiona duplicados por ID estable y cifra perfil completo incluidos PII/username/password.
+- `tools/qa/cxorbia-corte6-profile-full-handoff-dryrun-v2.mjs`: descifra solo en memoria y compara Firestore por `legacyShopperId exact`.
+- `.github/workflows/cxorbia-corte6-profile-full-readonly-v2.yml`: provider read-only; persiste solo evidencia sin valores.
+- `backend/config/corte6-profile-full-readonly-v2-request.json`: espera el bundle V2; provider writes/deploys0.
 
-El schema real contiene, según cada registro: username/user, WhatsApp, email, país, ciudad, departamento, DPI, dirección, fecha de nacimiento, certs/histCerts, términos, aprobación/origen de cuenta y metadata histórica.
+El export vigente es source-of-truth para campos de perfil. Las616 visitas y77 certificaciones canónicas no se sustituyen con contadores/arrays legacy.
 
-No conectar RTDB legacy.
+## 10. Password
+Puede migrarse el password legado real del export para mostrarlo en el perfil protegido. Firebase Auth sigue siendo la autoridad de autenticación. No inferir ni sintetizar password; no poner valores en código/docs/logs.
 
-## 8. Reconciliación v2
-`tools/qa/cxorbia-corte6-profile-extra-export-readonly.mjs`:
-- match solo ID técnico estable → `legacyShopperId`;
-- no nombre/teléfono/email como llave;
-- fill-missing, nunca overwrite;
-- excluye metadata `_eliminados`;
-- password/UID legacy excluidos;
-- separa operacional / sensible / evidence-only.
+## 11. Claude/prototipo
+No nueva candidata ni rediseño. La UI actual ya contempla usuario/contraseña en la ficha Shopper; el backend debe entregar el valor real cuando exista. Tocar módulos UI solo si el adapter protegido entrega correctamente el dato y aun así no se refleja.
 
-Operacionales candidatos: username, phone, email, country, city, department.
-
-Sensibles HOLD: document/DPI, address, birthDate. No colocarlos en `/shoppers/{id}` mientras las Rules actuales permitan leer ese documento a todos los roles operador.
-
-Evidence-only: certs/histCerts, visitas, activo/estado, términos, aprobación/origen, rating. Las 77 certificaciones y 616 visitas canónicas siguen siendo autoridad.
-
-## 9. Handoff cifrado listo
-Se preparó el puente sin PII cruda:
-- `tools/local/cxorbia-corte6-profile-extra-handoff.html` procesa OFFLINE y cifra el perfil; excluye password/pass y UID legacy;
-- `tools/qa/cxorbia-corte6-profile-extra-handoff-dryrun.mjs` descifra solo en memoria y compara Firestore read-only;
-- `.github/workflows/cxorbia-corte6-profile-extra-readonly.yml` se dispara únicamente cuando exista el bundle cifrado;
-- `backend/config/corte6-profile-extra-readonly-request.json` espera el bundle y prohíbe todos los writes/deploys.
-
-La frontera pendiente es File Library → bytes ejecutables: File Library permite inspeccionar el export, pero no entrega filesystem path al runner. No transcribir PII ni conectar legacy para sortearlo.
-
-## 10. Claude/prototipo
-No nueva candidata ni rediseño. Cambios actuales son backend/tools/integración. Tocar módulo UI solo si protected runtime entrega bien el dato y la UI no lo refleja.
-
-El módulo actual muestra `Contraseña`; no llenar ese campo con un valor inventado. Si se requiere un ajuste de copy/estado de credencial, documentarlo focalizadamente.
-
-## 11. Siguiente bloque
-`BUNDLE CIFRADO DEL EXPORT EXISTENTE → READ-ONLY RECONCILIATION AUTOMÁTICA → DELTA OPERATIVO COMBINADO CON USERNAME88 → AUTORIZACIÓN FIRESTORE EXACTA → READBACK → REDEPLOY DEV AUTORIZADO → VISUAL PROTEGIDA → FREEZE C6`.
+## 12. Siguiente bloque
+`GENERAR BUNDLE V2 COMPLETO DEL MISMO EXPORT → READ-ONLY V2 AUTOMÁTICO → WRITE PLAN EXACTO PERFIL COMPLETO + USERNAME → AUTORIZACIÓN FIRESTORE → READBACK → REDEPLOY DEV AUTORIZADO → VISUAL PROTEGIDA → FREEZE C6`.
 
 No avanzar a agosto antes del freeze.
