@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.corte6.cumulative-human-visual-hosting-request.v1",
   "requestId": "corte6-cumulative-human-visual-hosting-20260731-01",
-  "status": "authorized_waiting_execute",
+  "status": "hosting_deployed_smoke_pending",
   "enabled": true,
   "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -23,7 +23,7 @@
   "exactIdentityOnly": true,
   "namePhoneEmailDedupeAllowed": false,
   "singleHostingDeployMax": 1,
-  "hostingDeployExecutions": 0,
+  "hostingDeployExecutions": 1,
   "authorizedBy": "Paula",
   "authorizationId": "chat-20260731-c6-cumulative-human-visual-hosting-01",
   "authorizationText": "Autorizo un único redeploy del Hosting DEV existente cxorbia-backend-dev/cxorbia-dev para publicar la corrección acumulativa de Corte 6 que preserva HR viva y auto-mes, superpone perfil e histórico Firestore por identidad técnica exacta y conserva Finanzas y Beneficios canónicos. Sin Firestore/Auth/Rules/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos writes, sin nuevo Firebase/Hosting, merge ni producción.",
@@ -42,5 +42,6 @@
   "newHostingSites": 0,
   "merge": false,
   "production": false,
-  "nextGate": "CREATE_EXECUTE_MARKER_ONCE"
+  "nextGate": "CREATE_EXECUTE_MARKER_ONCE",
+  "hostingDeployedAt": "2026-07-31T19:45:03.474Z"
 }
