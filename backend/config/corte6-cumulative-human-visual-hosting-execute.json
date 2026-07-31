@@ -13,6 +13,7 @@
   "tenantId": "tya",
   "projectId": "cinepolis",
   "authorizationId": "chat-20260731-c6-cumulative-human-visual-hosting-01",
+  "retryAfterPredeployGateFix": true,
   "firestoreWrites": 0,
   "authWrites": 0,
   "authResets": 0,
