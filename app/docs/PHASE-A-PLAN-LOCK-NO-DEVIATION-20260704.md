@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-31  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_HUMAN_VISUAL_FAIL_PARTIAL__CUMULATIVE_HR_PROFILE_FINANCE_FIX_PREPARED__HOSTING_GATE_WAITING_AUTH__31_HOLD__NO_PRODUCTION`
+**Estado vivo:** `C6_CUMULATIVE_HOSTING_PASS__WAITING_HUMAN_VISUAL_CUMULATIVE__31_HOLD__NO_PRODUCTION`
 
 ## 1. Objetivo/arquitectura
 TyA/Cinépolis como tenant/proyecto configurable de CXOrbia. `cxorbia-backend-dev`=DEV canónico; `tya-plataforma`=Hosting final. No crear Firebase/Hosting/rama/PR por rutina.
@@ -26,58 +26,59 @@ El prototipo manda. Un PASS técnico sin validación visual acumulativa no conge
 La validación humana no requiere credenciales técnicas Firebase. Human visual DEV usa auto-entry del prototipo; Firebase Auth/claims/Rules permanece como gate técnico/provider separado.
 
 ## 5. Regla de acumulación — prevalente
-Agregar una fuente/capa nueva **nunca puede reemplazar una fuente ya aprobada**. Para TyA Phase A la precedencia es:
+Agregar una fuente/capa nueva nunca puede reemplazar una fuente ya aprobada. Precedencia Phase A:
 1. HR viva: periodos, periodo activo, visitas operativas, auto-mes y refresh.
 2. Firestore protegido: perfil/PII/username/pass legacy materializado + facetas/histórico, como overlay por identidad técnica exacta.
 3. Finanzas/pagos canónicos: autoridad de liquidaciones, beneficios, movimientos y pagos históricos.
 
-Toda visual/gate debe conservar simultáneamente lo ya aprobado. Si una capa nueva hace desaparecer datos previos, es FAIL/P0 de composición.
+Si una capa nueva hace desaparecer datos previos, es FAIL/P0 de composición.
 
-## 6. Resultado Human full visual no-credential
-El acceso sin credenciales quedó PASS, pero la prueba humana acumulativa quedó FAIL:
-- Dashboard JUL2026 mostró0 visitas aunque el baseline conserva616;
-- watcher HR viva estaba deshabilitado;
-- listado Shopper mezclaba reales con fixtures/aliases/referencias técnicas;
-- datos completos/histórico no se reflejaban consistentemente;
-- Beneficios y Finanzas aparecían vacíos.
+## 6. Resultado Human full visual previo
+Acceso sin credenciales PASS; composición acumulativa FAIL reproducida: Dashboard0, watcher HR deshabilitado, aliases/fixtures visibles, perfil/histórico parcial y Beneficios/Finanzas vacíos.
 
-## 7. Fix acumulativo preparado
-Sin provider mutation:
-- full visual ahora superpone Firestore sobre HR viva, no reemplaza `CX.data`;
-- unión solo por `id/shopperId/legacyShopperId`, nunca nombre/teléfono/email;
-- stale alias solo se suprime por vínculo exacto `legacyShopperId`;
-- fixtures demo y refs técnicas sin identidad operacional no se agregan como personas nuevas;
-- histórico protegido se superpone por `visitId` y conserva period/project mapping HR;
-- watcher HR sigue activo con `fresh=1`, polling/focus/visibility y reaplica overlay;
-- finanzas/pagos canónicos no se reemplazan;
+## 7. Fix acumulativo publicado PASS
+Autorización `chat-20260731-c6-cumulative-human-visual-hosting-01` consumida.
+
+- 1 redeploy del Hosting DEV existente `cxorbia-backend-dev/cxorbia-dev`;
+- Cloud Run redeploys0;
+- decisión `PASS_EXISTING_HOSTING_DEV_CUMULATIVE_HR_PROFILE_FINANCE_REMOTE_READY`.
+
+Preflight/remote smoke:
+- HR fresh/runtimeRead/sourceSafe PASS;
+- 616 visitas preservadas;
+- auto-discovery mensual PASS;
+- Firestore como overlay exacto por identidad técnica;
+- alias legacy solo por `legacyShopperId` exacto;
+- finance asset canónico preservado;
+- full-profile fail-closed401;
 - `/app/modules/*` intacto.
 
-## 8. Próximo gate provider
-Request Hosting acumulativo preparado disabled. Solo con autorización nueva:
-- máximo1 Hosting DEV redeploy existente;
-- Cloud Run0;
-- Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes0;
-- sin nuevo proyecto/Hosting, merge ni producción.
+El primer disparo falló antes de provider mutation por validación textual frágil. Se corrigió el gate a marcador semántico real y se reejecutó la misma autorización con deploy count0. No hubo deploy duplicado.
 
-Preflight antes de mutation debe confirmar HR runtime read,616 visitas, auto-discovery y full-profile fail-closed401.
+## 8. Human visual objetivo inmediato
+Una sola prueba acumulativa debe validar simultáneamente:
+- Dashboard JUL + HR viva + auto-mes;
+- Shoppers identidad/perfil/username/pass/PII/histórico;
+- portal Shopper con la misma identidad;
+- Beneficios con verdad financiera aprobada;
+- Finanzas Admin con datos canónicos.
 
-## 9. Human visual objetivo
-Una sola prueba acumulativa posterior al deploy debe validar Dashboard HR, Shoppers/perfil/histórico, portal Shopper, Beneficios y Finanzas. No volver a validar capas parciales aisladas.
+La sesión visual temporal existente es válida hasta `2026-08-02T00:29:13Z`; no requiere otro deploy.
 
-## 10. 31 identity HOLD
+## 9. 31 identity HOLD
 No resueltos por legacyShopperId, llaves técnicas exactas/únicas ni Auth claim. No crear/deduplicar por nombre/teléfono/email.
 
-## 11. Julio/agosto
+## 10. Julio/agosto
 No iniciar materialización agosto mientras Corte6 siga abierto. HR live/auto-month debe seguir activo. Después del freeze: identificar/reconciliar fuente agosto plataforma-origin y materializar solo delta autorizado.
 
-## 12. Claude/prototipo
-No rediseñar ni reescribir módulos por este P0. La corrección es backend/adapters DEV. Si después del overlay acumulativo persiste un gap frontend reproducible, documentar archivo/módulo exacto para Claude.
+## 11. Claude/prototipo
+No rediseñar ni reescribir módulos por este P0. Si después del overlay acumulativo persiste un gap frontend reproducible, documentar archivo/módulo exacto para Claude.
 
-## 13. Academia
-Documentar composición acumulativa de fuentes, precedencia y exact identity overlays.
+## 12. Academia
+Documentar composición acumulativa de fuentes, precedencia, exact identity overlays y gates semánticos reutilizables.
 
-## 14. Gate vivo inmediato
-`AUTORIZACIÓN 1x HOSTING DEV ACUMULATIVO → READ-ONLY PREFLIGHT → DEPLOY/SMOKE → HUMAN VISUAL ACUMULATIVA → PASS/FAIL → 31 HOLD → FREEZE C6 → AGOSTO`.
+## 13. Gate vivo inmediato
+`HUMAN VISUAL ACUMULATIVA → PASS/FAIL → 31 HOLD → FREEZE C6 → AGOSTO`.
 
-## 15. Estado seguro
-Fix solo en repo. Desde la visual fallida no hay nuevos provider writes/deploys; merge=false; producción=false.
+## 14. Estado seguro
+Durante el gate acumulativo: Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes0; Cloud Run0; Hosting1 autorizado; nuevos Firebase/Hosting0; merge=false; producción=false.
