@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-31  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_P0_OPEN__FULL_PROFILE_SCOPE_AUTHORIZED__V2_HANDOFF_READY__WAITING_V2_ENCRYPTED_BUNDLE__NO_PROVIDER_WRITE__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_PROFILE_FULL_V2_READONLY_PASS__WRITE_PLAN_PREPARED__WAITING_EXPLICIT_FIRESTORE_AUTHORIZATION__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -21,86 +21,73 @@
 4. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 5. `CAMBIOS-BACKEND-ADDENDUM-C6-VISUAL-FAIL-SHOPPER-IDENTITY-PROFILE-20260731.md`;
 6. `CAMBIOS-BACKEND-ADDENDUM-C6-PROTECTED-PROFILE-AUTH-HISTORY-READONLY-PASS-20260731.md`;
-7. `CAMBIOS-BACKEND-ADDENDUM-C6-USERNAME-DELTA-READONLY-PASS-20260731.md`;
-8. `CAMBIOS-BACKEND-ADDENDUM-C6-PASSWORD-PATTERN-READONLY-PASS-20260731.md`;
-9. `CAMBIOS-BACKEND-ADDENDUM-C6-PROFILE-EXTRA-RECONCILIATION-PREPARED-20260731.md`;
-10. `CAMBIOS-BACKEND-ADDENDUM-C6-PERFIL-COMPLETO-AUTORIZADO-V2-20260731.md`;
-11. `ACADEMIA-IMPACTO-C6-PROFILE-EXTRA-EXPORT-HANDOFF-20260731.md`;
-12. `evidence/CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json`;
-13. `evidence/CORTE6-USERNAME-DELTA-READONLY-LATEST.json`;
-14. `evidence/CORTE6-INITIAL-PASSWORD-PATTERN-READONLY-LATEST.json`;
-15. `backend/config/corte6-username-firestore-write-plan.json`;
-16. `backend/config/corte6-profile-full-readonly-v2-request.json`;
-17. `tools/local/cxorbia-corte6-profile-full-handoff-v2.html`;
-18. `tools/qa/cxorbia-corte6-profile-full-handoff-dryrun-v2.mjs`;
-19. `.github/workflows/cxorbia-corte6-profile-full-readonly-v2.yml`;
-20. `app/core/backend-config-preview-dev.js`;
-21. `app/core/backend-protected-dev-mode.js`;
-22. `app/adapters/tya-live-source-refresh-watch.js`;
-23. `app/core/backend-browser-auth.js`;
-24. `app/core/backend-firebase.js`;
-25. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A y PR #7.
+7. `CAMBIOS-BACKEND-ADDENDUM-C6-PERFIL-COMPLETO-AUTORIZADO-V2-20260731.md`;
+8. `CAMBIOS-BACKEND-ADDENDUM-C6-PERFIL-COMPLETO-V2-READONLY-PASS-20260731.md`;
+9. `evidence/CORTE6-PROFILE-FULL-HANDOFF-READONLY-LATEST.json`;
+10. `backend/config/corte6-profile-full-firestore-write-plan-v2.json`;
+11. `backend/config/corte6-profile-full-firestore-write-request-v2.json`;
+12. `backend/config/corte6-profile-full-readonly-v2-request.json`;
+13. `tools/local/cxorbia-corte6-profile-full-handoff-v2.html`;
+14. `tools/qa/cxorbia-corte6-profile-full-handoff-dryrun-v2.mjs`;
+15. `.github/workflows/cxorbia-corte6-profile-full-readonly-v2.yml`;
+16. `app/core/backend-config-preview-dev.js`;
+17. `app/core/backend-protected-dev-mode.js`;
+18. `app/adapters/tya-live-source-refresh-watch.js`;
+19. `app/core/backend-browser-auth.js`;
+20. `app/core/backend-firebase.js`;
+21. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A, Academia y PR #7.
 
 ## 3. Baseline protegida — no reabrir
 - Corte3 FROZEN.
 - R17N FINAL 1,406/1,406; 616 visitas +572 controles liquidación +77 certificaciones. No repetir.
 - Corte5 cinepolis/14 periodos/616 visitas/current2026-07 PASS.
 - Auth91/91; claims5/5; Rules PASS. No reimportar/resetear por rutina.
+- HR live/auto-month PASS.
 - último one-shot Cloud Run+Hosting consumido; no reutilizar.
 
 ## 4. P0 visual
-Corte6 sigue abierto porque la visual anterior usó `display_name_only` y el acceso Shopper terminó con `shopperId=null`.
+Corte6 sigue abierto porque la visual anterior usó `display_name_only` y el acceso Shopper terminó con `shopperId=null`. No usar `sh1`, selector anónimo ni match por nombre como solución final.
 
-No usar `sh1`, selector anónimo ni match por nombre como solución final.
+## 5. Full profile V2 read-only — PASS
+Gate final `PASS_C6_PROFILE_FULL_V2_READONLY`.
 
-## 5. Provider protected read-only — PASS
-Firestore: shoppers340; phone123; email39; username0; documento0; banco/pago0.
+- registros151;
+- exactos `legacyShopperId`120;
+- missing canonical31 HOLD;
+- ambiguos0; badRecord0;
+- docs existentes con cambio120;
+- campos planificados329;
+- password fuente149;
+- perfiles fuente con datos personales sensibles27.
 
-Auth: users108; shopper claim con shopperId91; perfil existente91/91; missing0.
+Plan por campo en los120 exactos: username113, pass118, depto2, dpi17, direccion1, fecha_nac2, accepted_terms72, aprobacionCuenta2, registroOrigen2. Nombre, WhatsApp/teléfono, email, país y ciudad ya coinciden y no requieren write.
 
-Histórico: visitas616; 616/616 con shopperId; 194 perfiles referenciados y existentes194/194; submitida545, cuestionario61, agendada4, realizada3, fuera_rango3.
+## 6. Corrección de transporte V2
+El primer intento read-only falló antes del provider por checksum. Solo `part-007.txt` no coincidía con el blob exacto esperado; fue restaurado y el retry terminó PASS. La request seguía no consumida. Provider writes0 en el FAIL.
 
-## 6. Fix protegido preparado
-Sin deploy:
-- protected lane ya no es sobreescrito por `forceHumanVisualSourceSafe()`;
-- watcher source-safe se desactiva cuando protected runtime posee CX.data;
-- aliases de perfil usan datos reales;
-- KPI/histórico reconocen el ciclo canónico, incluyendo `submitida`.
+## 7. Perfil, identidad e histórico
+- perfil export vigente = source-of-truth para campos actuales de perfil;
+- password visible únicamente desde valor legacy real;
+- Firebase Auth continúa siendo autoridad de login;
+- identidad automática solo `legacyShopperId exact`;
+- los31 missing canonical quedan HOLD y no se deduplican por nombre/teléfono/email;
+- las616 visitas y77 certificaciones canónicas permanecen autoridad; no sustituir con contadores/arrays legacy.
 
-Gate estático previo: PASS. No deploy nuevo autorizado.
+## 8. Write gate preparado — NO autorizado
+`corte6-profile-full-firestore-write-plan-v2.json` + request disabled.
 
-## 7. Username/Auth
-Username desde handoff cifrado previo: records shopper109; match exacto88; Auth claim binding88/88; delta username88; conflictos0; 21 sin perfil exacto HOLD.
+Alcance futuro máximo:
+-120 Firestore document writes sobre perfiles existentes exactos;
+-329 valores de perfil;
+- Auth/password reset0;
+- Rules/Hosting/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos0;
+- producción=false; merge=false.
 
-Auth91/91 permanece protegido y no se reabre.
+## 9. Gate vivo
+`AUTORIZACIÓN FIRESTORE EXACTA MÁX120 DOC WRITES → WRITE DESDE BUNDLE CIFRADO + READBACK → REDEPLOY DEV PROTEGIDO AUTORIZADO → HUMAN VISUAL ADMIN+SHOPPER → RESOLVER31 HOLD → FREEZE C6 → AGOSTO`.
 
-## 8. Export perfil completo — alcance actualizado
-File Library recuperó el export vigente ya entregado `tya-plataforma-default-rtdb-export (6).json`, fecha 2026-07-30. No pedirlo nuevamente.
-
-Por decisión operativa vigente, el perfil autenticado de operación debe conservar la información completa disponible en esa plataforma, incluyendo datos personales, username y password legado visible. El endurecimiento de acceso se difiere y no bloquea este corte.
-
-Nunca conectar RTDB legacy. La migración sigue siendo export/import.
-
-## 9. Handoff V1 rechazado como fuente de write
-El V1 recibido estaba cifrado pero reportó rawRows282, encryptedRecords151 y duplicateStableIds130; además excluía password. Por tanto no se usa para write: podría perder variantes y dejar el perfil incompleto.
-
-## 10. Handoff/reconciliación V2
-V2:
-- agrupa por ID técnico estable y fusiona duplicados del mismo ID;
-- prioriza llave RTDB exacta al ID y luego mayor completitud;
-- conserva conflictos dentro del cifrado;
-- incluye PII, username y password dentro del bundle cifrado;
-- evidencia source-safe nunca contiene valores;
-- runner descifra solo en memoria;
-- match de identidad únicamente `legacyShopperId exact`;
-- perfil export vigente = source-of-truth para campos de perfil;
-- las 616 visitas y77 certificaciones canónicas permanecen autoridad y no son reemplazadas por contadores/arrays legacy.
-
-## 11. Gate vivo
-`GENERAR BUNDLE V2 COMPLETO DEL MISMO EXPORT → READ-ONLY V2 AUTOMÁTICO → WRITE PLAN EXACTO PERFIL COMPLETO + USERNAME → AUTORIZACIÓN FIRESTORE → READBACK → REDEPLOY DEV AUTORIZADO → HUMAN VISUAL PROTEGIDA → FREEZE C6`.
-
-## 12. Julio/agosto
+## 10. Julio/agosto
 HR live/auto-month permanece PASS. No iniciar delta agosto hasta cerrar P0 y congelar Corte6.
 
-## 13. Estado seguro
-Producción no tocada; PR#7 draft/open/no merge. Provider writes0; Firestore/Auth/HR/legacy writes0; password changes0; Rules/Hosting/Cloud Run deploys nuevos0; Storage/Make/Gemini/pagos0.
+## 11. Estado seguro
+Read-only PASS; producción no tocada; PR#7 draft/open/no merge. Firestore/Auth/HR/legacy writes0; Auth password changes0; Rules/Hosting/Cloud Run deploys nuevos0; Storage/Make/Gemini/pagos0.
