@@ -1,7 +1,7 @@
 # Academia — HR viva, periodos automáticos y origen plataforma
 
 **Fecha:** 2026-07-31  
-**Estado:** `REUSABLE_PATTERN_DOCUMENTED__C6_SHOPPER_IDENTITY_P0_ADDED__NO_PRODUCTION`
+**Estado:** `REUSABLE_PATTERN_DOCUMENTED__C6_PROTECTED_PROFILE_AUTH_HISTORY_READONLY_PASS__NO_PRODUCTION`
 
 ## 1. HR viva y periodos automáticos
 Una operación de campo no debe exigir configuración técnica mensual cuando el calendario operativo ya existe en una fuente viva.
@@ -9,90 +9,80 @@ Una operación de campo no debe exigir configuración técnica mensual cuando el
 Para CXOrbia:
 - una pestaña mensual nueva validada por metadata provider crea/detecta el periodo automáticamente;
 - metadata de tabs y lectura de filas son responsabilidades separables;
-- el navegador refresca periódicamente y al recuperar foco;
-- fallback de filas no puede probar por sí solo que una pestaña existe: registry provider manda;
 - plataforma puede originar disponibilidad antes de HR;
 - al aparecer HR, conciliar por IDs estables + origen/estado de sincronización; nunca por nombre.
 
-## 2. Implementación validada en TyA
-Remote DEV PASS técnico:
+## 2. Implementación TyA validada
+DEV técnico:
 - 14 periodos /616 visitas /último2026-07;
-- `tabRegistryAutoDiscovery=true`;
-- `live_provider_metadata_auto_refresh`;
-- Cloud Run/Hosting existentes redeployados una vez;
+- autodiscovery mensual activo;
 - producción intacta.
 
-Ese PASS no cierra Corte6 porque la validación humana posterior detectó un P0 de identidad Shopper.
+Corte6 sigue abierto porque la validación humana detectó P0 Shopper/perfil.
 
-## 3. Julio/agosto
-Julio puede mantener visitas pendientes en ejecución mientras agosto tiene visitas platform-origin antes de que existan tabs HR agosto.
+## 3. Patrón reusable: source-safe vs runtime protegido
+`SOURCE-SAFE PUBLICO != CONSOLA OPERATIVA AUTENTICADA`.
 
-`PLATAFORMA ORIGINA → assignmentSource=platform → HR APARECE/REFLEJA → RECONCILIA → NO DUPLICA`.
+- source-safe puede ocultar PII;
+- Superadmin/Admin autenticado recibe los datos necesarios para operar;
+- Shopper recibe solo su identidad/scope;
+- Cliente no hereda PII shopper.
 
-`HR ASIGNA → PLATAFORMA DETECTA → RETIRA DE DISPONIBLES → RECONCILIA → NO DUPLICA`.
+La protección de una URL pública nunca debe convertirse en ocultamiento artificial al rol autorizado.
 
-## 4. Lectura vs edición
-`READ CAPABILITY != WRITE POLICY`.
+## 4. Identidad Shopper
+Cadena obligatoria:
+`CREDENCIAL → FIREBASE AUTH → CLAIMS → TENANT/PROJECT → SHOPPER ID ESTABLE → PERFIL/HISTORICO PROPIO`.
 
-- Public read puede ser una decisión operativa válida.
-- Provider authenticated read puede coexistir y ser preferente.
-- Public write es un riesgo separado.
-- Un gate de hardening productivo no debe bloquear artificialmente DEV read-only.
+Read-only TyA confirmó 91 claims Shopper con `shopperId`, y 91/91 resuelven perfil Firestore existente. No usar fallback ficticio ni matching por nombre.
 
-## 5. Lección nueva: source-safe no sustituye identidad autenticada
-La visual demostró que un preview `display_name_only` puede validar nombres y seguir siendo insuficiente para validar el ciclo Shopper.
+## 5. Perfil consolidado
+Read-only Firestore muestra shoppers340, phone123 y email39; otros campos no materializados hoy deben recuperarse por export/import exacto y trazable.
 
-Regla reusable:
-`CREDENCIAL → AUTH → CLAIMS/SCOPE → SHOPPER ID ESTABLE → PERFIL/ASIGNACIONES PROPIAS`.
+Patrón reusable:
+`EXPORT → PARSER/PAQUETE SEGURO → MATCH ESTABLE → REVIEW → DELTA → WRITE GATED`.
 
-No declarar listo un portal si entra con `shopperId=null`, aunque el shell y los datos agregados carguen.
+Nunca conectar el legacy como dependencia runtime.
 
-## 6. Privacidad por rol
-- preview source-safe: puede enmascarar PII;
-- Superadmin/Admin autenticado: recibe datos operativos completos necesarios para su función;
-- Shopper: solo su propio perfil/scope;
-- Cliente/marca: no recibe PII shopper.
-
-Proteger una fuente pública no equivale a ocultar datos al Superadmin autorizado.
-
-## 7. Credenciales
-Separar:
+## 6. Credencial visible vs secreto
+Separar conceptualmente:
 - username operativo;
 - contraseña inicial/temporal;
+- hash de continuidad;
 - contraseña vigente;
-- recuperación/reset.
+- reset/recuperación.
 
-Firebase Auth no devuelve la contraseña vigente. No conservar passwords recuperables solo para mostrarlos. Un patrón inicial TyA puede preservarse, pero reset/rotación se audita y se gatea.
+Firebase Auth no devuelve plaintext de la contraseña vigente. Un sistema no debe guardar una contraseña recuperable solo para poder mostrarla a un administrador.
 
-## 8. Perfil, histórico y KPI
-Un perfil operativo consolidado puede combinar fuentes autorizadas mediante contratos y trazabilidad. El histórico se une por identificador estable, no por nombre.
+TyA tiene 88 usernames exactos recuperables desde el handoff cifrado por stable-ID + claim binding, sin exportar los valores a evidencia. Los 21 sin match exacto permanecen HOLD.
 
-KPI operacional requiere drill a la evidencia que lo compone y facetas canónicas de estado.
+## 7. Histórico y KPI
+Read-only canónico: 616/616 visitas tienen shopperId y 194/194 perfiles referenciados existen.
 
-## 9. Legacy/current platform
-Recuperar datos útiles mediante:
-`EXPORT → PARSER → NORMALIZACIÓN → MATCH ESTABLE → REVIEW → DELTA → WRITE GATED`.
+Distribución actual: submitida545, cuestionario61, agendada4, realizada3, fuera_rango3.
 
-Nunca conectar la base vieja como dependencia de runtime.
+Lección reusable: un KPI no debe derivarse de una lista histórica parcial de strings. Debe usar facetas/estados canónicos y permitir drill a la evidencia subyacente.
 
-## 10. One-shot de infraestructura
-El gate de deploy mantiene contadores persistidos; una autorización consumida no puede reutilizarse. El P0 humano posterior requiere un nuevo gate si hace falta otro deploy.
+## 8. Julio/agosto
+Julio puede mantener ejecución mientras agosto nace platform-origin antes de HR. Después, HR y plataforma se reconcilian por IDs estables y estado de sincronización.
 
-## 11. Contenido para manuales/cursos
-- fuente viva vs snapshot;
-- detección automática de periodos;
-- provider registry vs lectura de filas;
-- public read/public write;
-- source-safe vs consola autenticada;
-- login Shopper y shopperId estable;
-- credencial inicial vs vigente/reset;
-- perfil consolidado;
-- KPI drill e histórico;
-- platform-origin antes de HR;
-- conciliación bidireccional;
+## 9. Seguridad de gates
+- provider read-only puede avanzar sin writes;
+- username/profile delta requiere autorización Firestore específica;
+- reset de password requiere autorización Auth separada;
+- Hosting/producción tiene gate propio;
+- una autorización consumida no se reutiliza.
+
+## 10. Contenido para manuales/cursos
+- HR viva y auto-month;
+- source-safe vs protected runtime;
+- Auth/claims/shopperId;
+- perfil consolidado y mínimo privilegio;
+- credential status vs password actual;
+- export/import legacy seguro;
+- KPI por facetas canónicas;
+- reconciliación bidireccional HR/plataforma;
 - fail-closed y revisión de conflictos.
 
-Complemento: `ACADEMIA-IMPACTO-C6-SHOPPER-PROFILE-IDENTITY-VISUAL-FAIL-20260731.md`.
-
-## 12. Seguridad
-Documentación únicamente en este ajuste. Sin provider writes, deploy, merge ni producción.
+## 11. Seguridad actual
+Solo provider reads + cambios de repo/docs. Firestore/Auth/HR/legacy writes0; deploys nuevos0; merge=false; producción=false.
