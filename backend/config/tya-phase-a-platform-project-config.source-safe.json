@@ -37,14 +37,33 @@
         "tabPattern": "<MES> <YY> and <MES> <YY> HN",
         "periodsFromTabs": true,
         "countriesFromTabs": true,
+        "autoDiscoverNewMonthlyTabs": true,
+        "autoCreatePeriodFromDetectedTab": true,
+        "monthlyManualConfigurationRequired": false,
+        "freshnessPolicy": "runtime_poll_and_focus_refresh",
+        "metadataAuthority": "google_sheets_api_when_available_fail_closed_registry_on_fallback",
         "serviceAccountEmailMasked": "***@cxorbia-backend-dev.iam.gserviceaccount.com",
         "publicXlsxFallbackAllowedForSourceSafePreview": true
       },
       "periods": {
-        "source": "derived_from_hr_live_tabs",
-        "defaultStrategy": "latest_non_empty_period",
+        "source": "hr_live_tabs_plus_platform_origin_operational_periods",
+        "defaultStrategy": "current_operational_period_else_latest_non_empty_period",
         "selectorOwner": "period_selector_only",
-        "projectSelectorMustNotContainPeriod": true
+        "projectSelectorMustNotContainPeriod": true,
+        "autoDiscovery": true,
+        "newHrTabCreatesPeriodWithoutChatOrManualConfig": true,
+        "platformOriginMayExistBeforeHrTab": true,
+        "hrArrivalReconcilesExistingPlatformOriginPeriod": true
+      },
+      "visitAvailability": {
+        "platformOriginAllowedBeforeHrTab": true,
+        "hrTabRequiredToCreatePlatformOriginVisit": false,
+        "assignmentSourceFieldRequired": true,
+        "assignmentSyncStatusFieldRequired": true,
+        "dedupeByNameForbidden": true,
+        "reconcileOnHrArrival": true,
+        "conflictsGoToReview": true,
+        "currentOperationalNote": "July may remain in execution while the next month already has platform-origin available visits. A later HR tab must reconcile, not duplicate or overwrite silently."
       },
       "questionnaire": {
         "mode": "configurable_by_project_or_visit",
