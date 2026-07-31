@@ -1,37 +1,28 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-07-30  
-**Estado vivo:** `C6_IDENTITY_PROTECTED_PASS__AUG_GT34_TECH_READY__HN_SOURCE_MISMATCH__NO_UNASSIGNED_VISITS__NO_PRODUCTION`
+**Estado vivo:** `C6_IDENTITY_PROTECTED_PASS__AUGUST_PROVIDER_TABS_MISSING__GVIZ_PHANTOM_FIXED__NO_PRODUCTION`
 
 ## 1. Cerrado / no reabrir
-- Corte1/2A/3 FROZEN/APROBADO; Corte3 `CXORBIA-TYA-CORTE3-V182-20260729`.
-- R17N FINAL1,406/1,406; no repetir.
-- Corte5 Firestore/CX.data: `cinepolis`,14 periodos,616 visitas,currentPeriod `2026-07`,fallback=false PASS.
-- Auth legacy import/readback91/91 PASS; claims5/5 + Rules PASS.
-
-## 2. Acceso/identidad
-- P0 `Acceso seguro` y P0 formulario Usuario+Contraseña: corregidos.
+- Corte1/2A/3 FROZEN; R17N1,406/1,406 no repetir.
+- Corte5 cinepolis14 periodos/616 visitas/current2026-07 PASS.
+- Auth91/91, claims5/5, Rules PASS.
 - Auto-entry Admin observado funcionando.
-- `Shopper protegido` es correcto únicamente en preview source-safe; Firestore protegido tiene340/340 nombres reales, placeholder0; visitas616/616 reales, placeholder0.
-- Preprod autenticada debe consumir identidad protegida; no meter PII en source-safe.
+- Identidad protegida: shoppers340/340 y visitas616/616 con nombre real; placeholders0.
 
-## 3. Bloqueante vivo — fuente HR Agosto
-Refresh actual:
-- GT `AGOSTO 26`:34 filas con país GT, técnicamente identificables como delta;
-- HN `AGOSTO 26 HN`:34 filas pero34/34 marcadas GT → HOLD;
-- GT identity mapping28/28 y perfiles target28/28 PASS;
-- periodo2026-08 no existe, visitas GT nuevas34.
+## 2. `Shopper protegido`
+Correcto solo en preview source-safe público. Preprod/producción autenticada debe usar Firestore protegido. No insertar PII en JS público ni tocar `app/modules/*`.
 
-Sin embargo esas34 GT están assigned34, unassigned0, scheduled34, realized34;27 submitidas y7 cuestionario. No representan visitas nuevas disponibles.
+## 3. P0 metodológico de fuente — corregido
+GViz devolvía datos aunque se consultaran tabs de agosto inexistentes. Metadata provider confirmó que el workbook llega solo hasta `JULIO 26`/`JULIO 26 HN`.
 
-## 4. Prohibiciones de corrección falsa
-- No cambiar GT→HN por nombre de pestaña.
-- No cambiar asignadas/realizadas→disponibles desde backend/frontend.
-- No copiar julio para fabricar agosto.
-- No crear nueva candidata ni tocar `app/modules/*`.
+Se agregó registry provider + enforcement fail-closed. Re-read final:14 periodos,28 tabs,616 visitas,agosto0. `AGOSTO 26` y `AGOSTO 26 HN` no existen. Evidencia previa GT34/HN34 queda superseded.
 
-## 5. Acción operativa requerida
-La HR de agosto debe contener el lote real que se quiere publicar: contrato GT34/HN10 y estados correctos. Después el refresh/delta se recalcula automáticamente.
+## 4. Bloqueante vivo
+Falta la fuente autorizada de agosto. No copiar julio, no fabricar44 visitas y no escribir Firestore hasta que existan datos reales de agosto.
+
+## 5. Siguiente gate
+`AGOSTO DISPONIBLE EN HR → REFRESH PROVIDER METADATA/SOURCE-SAFE → VALIDAR GT/HN/ESTADOS → DELTA EXACTO → AUTORIZACIÓN WRITE SOLO DELTA → READBACK/SMOKE → PREPROD → CUTOVER`.
 
 ## 6. P1/P2 no bloqueante
 - PDF sin gráfica final.
@@ -46,11 +37,8 @@ La HR de agosto debe contener el lote real que se quiere publicar: contrato GT34
 
 No resolver por nombre/coincidencia visual.
 
-## 8. Siguiente gate
-`HR AGOSTO CORREGIDA → REFRESH READ-ONLY → DELTA EXACTO → AUTORIZACIÓN WRITE SOLO DELTA → READBACK/SMOKE → PREPROD PROTEGIDA → CUTOVER`.
+## 8. Academia/manuales
+Añadir gate de existencia de tab antes de GViz, privacidad por capa e identidad protegida.
 
-## 9. Academia/manuales
-Separar source-safe, identidad protegida y fuente operacional; conflictos de país/estado siempre a HOLD.
-
-## 10. Estado seguro
-Últimos bloques fueron read-only. HR/Firestore/Auth/Rules/Hosting/Storage/legacy/payments/Functions/Make/Gemini writes0; merge=false; producción=false; PII exportada0.
+## 9. Estado seguro
+Provider reads y repo/docs únicamente; HR/Firestore/Auth/Rules/Hosting/Storage/legacy/payments/Functions/Make/Gemini writes0; merge=false; producción=false.
