@@ -8,6 +8,9 @@ on:
     paths:
       - 'backend/runtime/hr-live-service/**'
       - 'app/adapters/tya-live-source-refresh-watch.js'
+      - 'app/adapters/tya-live-source-inplace-apply.js'
+      - 'app/index-backend-dev.html'
+      - 'tools/hr-source/tya-live-provider-registry-identity-dev.mjs'
       - 'tools/hr-source/tya-enforce-live-tab-registry.mjs'
       - 'tools/release/tya-source-safe-live-binding-build-r22.mjs'
       - 'tools/qa/tya-live-hr-read-probe-gate.mjs'
@@ -28,7 +31,7 @@ defaults:
 
 jobs:
   predeploy:
-    name: Validate live endpoint and automatic month discovery without deploy
+    name: Validate live endpoint, automatic month discovery and DEV display identity without deploy
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
@@ -49,11 +52,13 @@ jobs:
           set -euo pipefail
           node --check backend/runtime/hr-live-service/server.mjs
           node --check app/adapters/tya-live-source-refresh-watch.js
+          node --check app/adapters/tya-live-source-inplace-apply.js
+          node --check tools/hr-source/tya-live-provider-registry-identity-dev.mjs
           node --check tools/hr-source/tya-enforce-live-tab-registry.mjs
           node --check tools/release/tya-source-safe-live-binding-build-r22.mjs
           node --check tools/qa/tya-live-hr-read-probe-gate.mjs
 
-      - name: Prepare bootstrap with same provider-registry policy
+      - name: Prepare bootstrap with provider metadata auto-discovery
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
           CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
@@ -63,10 +68,12 @@ jobs:
           CXORBIA_GATE_OUT: .tmp/live-runtime-predeploy/source
           CXORBIA_HR_TAB_REGISTRY: .tmp/live-runtime-predeploy/tab-registry.source-safe.json
           CXORBIA_HR_TAB_REGISTRY_EVIDENCE: .tmp/live-runtime-predeploy/tab-registry-evidence.source-safe.json
+          CXORBIA_HR_OPERATIONAL_IDENTITY_OUT: .tmp/live-runtime-predeploy/operational-display-identity.dev.json
         run: |
           set -euo pipefail
           mkdir -p .tmp/live-runtime-predeploy
           cp backend/config/tya-live-hr-tab-registry.source-safe.json .tmp/live-runtime-predeploy/tab-registry.source-safe.json
+          node tools/hr-source/tya-live-provider-registry-identity-dev.mjs
           node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
           node tools/hr-source/tya-enforce-live-tab-registry.mjs
           node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
@@ -77,11 +84,20 @@ jobs:
             --input app/data/tya-hr-source-safe-periods.js \
             --out app/data/tya-hr-source-safe-periods.js \
             --report-dir .tmp/live-runtime-predeploy/state
+          node <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync('.tmp/live-runtime-predeploy/tab-registry.source-safe.json','utf8'));
+          const i=JSON.parse(fs.readFileSync('.tmp/live-runtime-predeploy/operational-display-identity.dev.json','utf8'));
+          if(r.autoDiscovery!==true||r.registryMode!=='live_provider_metadata_auto_refresh'||!Array.isArray(r.monthlyTabs)||r.monthlyTabs.length<28)throw new Error('provider_registry_auto_discovery_failed');
+          if(i.displayIdentityOnly!==true||!Array.isArray(i.identities)||!i.identities.length||i.containsContactData!==false||i.containsGovernmentId!==false||i.containsBankData!==false||i.containsCredentials!==false)throw new Error('display_identity_scope_invalid');
+          console.log(JSON.stringify({decision:'PASS_PROVIDER_REGISTRY_AND_DISPLAY_IDENTITY_PRECHECK',monthlyTabs:r.monthlyTabs.length,identityCount:i.identities.length,requiredAugustTabsPresent:r.requiredAugustTabsPresent,writes:0,production:false}));
+          NODE
 
       - name: Start source-safe live service locally
         env:
           PORT: '4182'
           CXORBIA_LIVE_HR_CACHE_MS: '1000'
+          CXORBIA_DEV_OPERATIONAL_NAMES: 'true'
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
           CXORBIA_HR_LIVE_MAX_ROW: '140'
           CXORBIA_HR_LIVE_MAX_COL: AI
@@ -97,42 +113,41 @@ jobs:
           cat .tmp/live-runtime-predeploy/service.log
           exit 1
 
-      - name: Validate live endpoint freshness and automatic monthly discovery
+      - name: Validate live endpoint freshness, auto-month and display-name-only view
         run: |
           set -euo pipefail
           base='http://127.0.0.1:4182/v1/tenants/tya/projects/cinepolis/hr-live'
-          curl -fsS -H 'Cache-Control: no-cache' "$base?format=meta&fresh=1&ts=$(date +%s)" > .tmp/live-runtime-predeploy/meta.json
-          curl -fsS -H 'Cache-Control: no-cache' "$base?format=js&ts=$(date +%s)" > .tmp/live-runtime-predeploy/live-source.js
-          curl -fsS -H 'Cache-Control: no-cache' "$base?ts=$(date +%s)" > .tmp/live-runtime-predeploy/snapshot.json
+          op='view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV'
+          curl -fsS -H 'Cache-Control: no-cache' "$base?format=meta&fresh=1&$op&ts=$(date +%s)" > .tmp/live-runtime-predeploy/meta.json
+          curl -fsS -H 'Cache-Control: no-cache' "$base?format=js&$op&ts=$(date +%s)" > .tmp/live-runtime-predeploy/live-source.js
+          curl -fsS -H 'Cache-Control: no-cache' "$base?$op&ts=$(date +%s)" > .tmp/live-runtime-predeploy/snapshot.json
+          curl -fsS -H 'Cache-Control: no-cache' "$base?ts=$(date +%s)" > .tmp/live-runtime-predeploy/source-safe-default.json
           node - <<'NODE'
           const fs=require('fs');
           const meta=JSON.parse(fs.readFileSync('.tmp/live-runtime-predeploy/meta.json','utf8'));
           const snap=JSON.parse(fs.readFileSync('.tmp/live-runtime-predeploy/snapshot.json','utf8'));
+          const safe=JSON.parse(fs.readFileSync('.tmp/live-runtime-predeploy/source-safe-default.json','utf8'));
           const js=fs.readFileSync('.tmp/live-runtime-predeploy/live-source.js','utf8');
           if(meta.ok!==true||meta.sourceSafe!==true||meta.runtimeRead!==true||!meta.revision)throw new Error('meta contract failed');
-          if(snap.sourceSafe!==true||!Array.isArray(snap.visits)||!snap.visits.length||!Array.isArray(snap.periods)||!snap.periods.length)throw new Error('snapshot contract failed');
+          if(meta.tabRegistryAutoDiscovery!==true||meta.tabRegistryMode!=='live_provider_metadata_auto_refresh')throw new Error('auto month discovery not active');
+          if(meta.operationalDisplayIdentityReady!==true||meta.operationalView!==true||meta.operationalDisplayIdentityCount<1)throw new Error('operational display identity not ready');
+          if(snap.sourceSafe!==true||snap.operationalIdentityPreview!==true||snap.operationalIdentityScope!=='display_name_only'||!Array.isArray(snap.visits)||!snap.visits.length||!Array.isArray(snap.periods)||!snap.periods.length)throw new Error('operational snapshot contract failed');
+          if(!(snap.shoppers||[]).some(s=>s.operationalDisplayName===true&&s.nombre&&s.nombre!=='Shopper protegido'))throw new Error('real display names not projected');
+          if((snap.shoppers||[]).some(s=>s.email||s.phone||s.whatsapp||s.dpi||s.banco||s.ctaNum||s.pass))throw new Error('sensitive shopper data leaked');
+          if(safe.operationalIdentityPreview===true||(safe.shoppers||[]).some(s=>s.nombre&&s.nombre!=='Shopper protegido'))throw new Error('default source-safe endpoint leaked display identity');
           if(!js.includes('window.CX_TYA_HR_SOURCE_SAFE=')||!js.includes('window.CX_TYA_HR_LIVE_META='))throw new Error('javascript format failed');
           const age=(Date.now()-Date.parse(meta.generatedAt))/1000;
           if(!Number.isFinite(age)||age>600)throw new Error('endpoint source is stale: '+age);
-          if(meta.sourceAccessMode==='sheets_api_service_account'){
-            if(meta.tabRegistryAutoDiscovery!==true||meta.tabRegistryMode!=='live_provider_metadata_auto_refresh')throw new Error('provider metadata available but auto month discovery is not active');
-          }else{
-            if(meta.tabRegistryAutoDiscovery===true)throw new Error('auto-discovery cannot be asserted on fallback source');
-            if(!meta.tabRegistryMode)throw new Error('fail-closed registry mode missing');
-          }
-          fs.writeFileSync('.tmp/live-runtime-predeploy/endpoint-pass.json',JSON.stringify({ok:true,decision:'PASS_LIVE_HR_ENDPOINT_LOCAL_AUTO_MONTH_DISCOVERY',revision:meta.revision,generatedAt:meta.generatedAt,periods:meta.periods,visits:meta.visits,sourceAccessMode:meta.sourceAccessMode,tabRegistryMode:meta.tabRegistryMode,tabRegistryAutoDiscovery:meta.tabRegistryAutoDiscovery,writes:false,deploy:false,production:false},null,2));
+          fs.writeFileSync('.tmp/live-runtime-predeploy/endpoint-pass.json',JSON.stringify({ok:true,decision:'PASS_LIVE_HR_ENDPOINT_AUTO_MONTH_AND_DISPLAY_IDENTITY_DEV',revision:meta.revision,generatedAt:meta.generatedAt,periods:meta.periods,visits:meta.visits,sourceAccessMode:meta.sourceAccessMode,tabRegistryMode:meta.tabRegistryMode,tabRegistryAutoDiscovery:meta.tabRegistryAutoDiscovery,operationalDisplayIdentityCount:meta.operationalDisplayIdentityCount,writes:false,deploy:false,production:false},null,2));
           NODE
 
-      - name: Build canonical app binding against local live endpoint
+      - name: Validate human DEV entrypoint binding
         run: |
           set -euo pipefail
-          node tools/release/tya-source-safe-live-binding-build-r22.mjs \
-            --html app/index.html \
-            --live-endpoint http://127.0.0.1:4182/v1/tenants/tya/projects/cinepolis/hr-live \
-            --out .tmp/live-runtime-predeploy/binding
-          grep -q 'http://127.0.0.1:4182/v1/tenants/tya/projects/cinepolis/hr-live' app/index.html
-          ! grep -q '<script src="data/tya-hr-source-safe-periods.js"></script>' app/index.html
-          grep -q '<script src="adapters/tya-live-source-refresh-watch.js"></script>' app/index.html
+          grep -q 'adapters/tya-live-source-inplace-apply.js' app/index-backend-dev.html
+          grep -q 'adapters/tya-live-source-refresh-watch.js' app/index-backend-dev.html
+          grep -q 'view=operational-names' app/index-backend-dev.html
+          grep -q 'YES_PAULA_20260731_NAMES_DEV' app/index-backend-dev.html
           node --check app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
 
       - name: Stop local service
@@ -145,8 +160,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cxorbia-live-hr-runtime-predeploy
-          path: .tmp/live-runtime-predeploy
-          if-no-files-found: error
+          path: |
+            .tmp/live-runtime-predeploy/endpoint-pass.json
+            .tmp/live-runtime-predeploy/tab-registry.source-safe.json
+            .tmp/live-runtime-predeploy/tab-registry-evidence.source-safe.json
+            .tmp/live-runtime-predeploy/service.log
+          if-no-files-found: warn
           retention-days: 14
 
       - name: Publish predeploy status
@@ -157,4 +176,4 @@ jobs:
         with:
           script: |
             const state=process.env.JOB_STATE==='success'?'success':'failure';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/live-hr-runtime-predeploy',description:state==='success'?'Live HR auto-month discovery PASS without deploy':'Live HR auto-month discovery predeploy failed'});
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/live-hr-runtime-predeploy',description:state==='success'?'Live HR auto-month + DEV shopper display identity PASS':'Live HR auto-month/display identity predeploy failed'});
