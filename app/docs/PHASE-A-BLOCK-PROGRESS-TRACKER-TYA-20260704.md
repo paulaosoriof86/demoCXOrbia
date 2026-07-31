@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-31  
-**Estado:** `C3_FROZEN__C5_1406_PASS__C6_PROFILE_WRITE_PASS__PROTECTED_HOSTING_PASS__LOGIN_REPRO_P0__SESSION_CONTINUITY_FIX_PREPARED__WAITING_HOSTING_AUTH__31_HOLD`
+**Estado:** `C3_FROZEN__C5_1406_PASS__C6_PROFILE_WRITE_PASS__PROTECTED_SESSION_CONTINUITY_HOSTING_PASS__WAITING_HUMAN_VISUAL_REFRESH_NO_REPROMPT__31_HOLD`
 
 ## 1. Cerrado/protegido
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
@@ -12,33 +12,30 @@
 - HR live/auto-month PASS.
 - Perfil completo Firestore120 docs/329 campos WRITE+READBACK PASS.
 
-## 2. Protected Hosting DEV anterior
-Redeploy protegido anterior PASS técnico; autorización consumida.
+## 2. Login repetitivo — root fix + Hosting PASS
+La causa raíz fue persistencia Auth `SESSION` dentro del protected runtime/browser-auth. Se aplicó persistencia Firebase Auth `LOCAL` protected-only, sin credenciales embebidas ni bypass claims/Rules y con logout explícito real.
 
-## 3. P0 visual detectado
-La validación humana volvió a mostrar Usuario/Contraseña al seleccionar Administración/Coordinación. Causa raíz: persistencia Auth `SESSION` repetía el gate interactivo dentro del ciclo de QA.
+Authorization `chat-20260731-corte6-protected-session-continuity-redeploy-02` consumida PASS.
 
-## 4. Corrección preparada
-- overlay protected-only para persistencia Firebase Auth `LOCAL`;
-- config `persist:'local'` + `reuseAuthenticatedSession:true`;
-- carga antes de browser-auth;
-- sin credenciales embebidas ni bypass claims/Rules;
-- logout explícito sigue cerrando sesión.
+-1 Hosting DEV redeploy exacto;
+- decisión `PASS_EXISTING_HOSTING_DEV_PROTECTED_SESSION_CONTINUITY_REMOTE_VERIFIED`;
+- version `1e8c37163e7451be`;
+- release `1785515981786000`;
+- continuity asset/persistence LOCAL/protected runtime/Auth bridge/Firestore adapter/profile bridge/history KPI remote PASS;
+- provider writes/deploys adicionales0; producción=false; merge=false.
 
-No hay redeploy nuevo todavía.
+## 3. Validación objetivo
+Ahora corresponde: login real una sola vez → refresh sin nuevo prompt → Admin perfil completo/KPI/histórico → Shopper real.
 
-## 5. Validación objetivo
-Después de 1x Hosting DEV autorizado: login real una sola vez → refresh sin nuevo prompt → Admin perfil completo/KPI/histórico → Shopper real.
-
-## 6. 31 identity HOLD
+## 4. 31 identity HOLD
 No resueltos por llaves estables ni Auth claims. No usar nombre/teléfono/email. Requieren alta/conciliación explícita posterior.
 
-## 7. Julio/agosto
+## 5. Julio/agosto
 No materializar agosto hasta cerrar/freeze Corte6.
 
-## 8. Claude/Academia
+## 6. Claude/Academia
 - Claude: no rediseño ni cambio de módulos por este P0; fix backend/core.
 - Academia: separar autenticación inicial de continuidad de sesión QA protegida.
 
-## 9. Gate actual
-`NUEVA AUTORIZACIÓN 1x HOSTING DEV SESSION CONTINUITY → REMOTE SMOKE → LOGIN REAL 1 VEZ → REFRESH SIN RE-PROMPT → HUMAN VISUAL → 31 HOLD → FREEZE C6 → AGOSTO`.
+## 7. Gate actual
+`1 LOGIN REAL → REFRESH SIN RE-PROMPT → HUMAN VISUAL ADMIN+SHOPPER → PASS/FAIL → 31 HOLD → FREEZE C6 → AGOSTO`.
