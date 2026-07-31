@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-31  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_P0_COMPOSITION_REGRESSION__PERMANENT_STABILITY_LOCK_ACTIVE__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_STABLE_COMPOSER_CODE_PASS__LOCAL_REGRESSION_3X_PASS__PENDING_ONE_HOSTING_DEV_AUTH__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 - Repo `paulaosoriof86/demoCXOrbia`; rama viva `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge.
@@ -12,61 +12,70 @@
 
 ## 2. Lectura obligatoria vigente
 1. este índice;
-2. reglas maestras + addenda vigentes;
-3. `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md` **prevalece para toda transición futura**;
-4. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-5. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-6. `CAMBIOS-BACKEND-ADDENDUM-C6-CUMULATIVE-HOSTING-DEPLOY-PASS-20260731.md` como evidencia histórica del deploy previo;
-7. `CAMBIOS-BACKEND-ADDENDUM-C6-HUMAN-VISUAL-CUMULATIVE-ROOT-FIX-20260731.md`;
-8. `CAMBIOS-BACKEND-ADDENDUM-C6-HUMAN-VISUAL-NO-CREDENTIALS-ROOT-FIX-20260731.md`;
-9. `CAMBIOS-BACKEND-ADDENDUM-C6-HUMAN-FULL-VISUAL-REDEPLOY-PASS-20260731.md`;
-10. `evidence/CORTE6-PROFILE-FULL-FIRESTORE-WRITE-LATEST.json`;
-11. `evidence/CORTE6-HUMAN-FULL-VISUAL-REDEPLOY-LATEST.json`;
-12. `evidence/CORTE6-CUMULATIVE-HUMAN-VISUAL-HOSTING-LATEST.json`;
+2. `00-REGLAS-MAESTRAS-CONTEXTO-CONTINUIDAD-CXORBIA-TYA-ACTUALIZADO-20260704.md`;
+3. `ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`;
+4. `ADDENDUM-MAESTRO-ACADEMIA-PROFUNDA-INTERACTIVA-CXORBIA-TYA-20260704.md`;
+5. `ADDENDUM-MAESTRO-PATRONES-REUTILIZABLES-CXORBIA-20260707.md`;
+6. `ADDENDUM-MAESTRO-ANTIDESVIO-PRODUCCION-REAL-LEGACY-CLAUDE-CXORBIA-TYA-20260709.md`;
+7. `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md` — prevalece para toda transición futura;
+8. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+9. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+10. `CAMBIOS-BACKEND-ADDENDUM-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`;
+11. `evidence/CORTE6-STABLE-COMPOSER-REGRESSION-GATE-LATEST.json`;
+12. `app/adapters/tya-cumulative-read-model.js`;
 13. `app/adapters/tya-dev-full-visual-bridge.js`;
-14. `app/adapters/tya-live-source-inplace-apply.js`;
-15. `app/adapters/tya-live-source-refresh-watch.js`;
-16. `app/adapters/tya-financial-canonical-source-safe-adapter.js`;
-17. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A, Academia y PR#7.
+14. `app/adapters/tya-live-source-refresh-watch.js`;
+15. `tools/qa/tya-cumulative-read-model-regression-gate.mjs`;
+16. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/Academia, PR#7 y HEAD vivo.
+
+Los addenda anteriores de Corte6 permanecen como evidencia histórica; el checkpoint vigente manda para estado operativo actual.
 
 ## 3. Baseline protegida — no reabrir
-- Corte3 FROZEN; R17N 1,406/1,406; 616 visitas + 572 liquidaciones + 77 certificaciones.
+- Corte3 FROZEN; R17N1,406/1,406;616 visitas +572 liquidaciones +77 certificaciones.
 - Corte5 cinepolis/14 periodos/616 visitas/current2026-07 PASS.
 - Auth91/91; claims5/5; Rules PASS.
 - HR live/auto-month PASS.
-- Perfil completo:120 Firestore docs/329 campos WRITE+READBACK PASS, mismatches0.
-- Fuente financiera/pagos canónica source-safe previamente aprobada: preservar.
+- Perfil completo Firestore120 docs/329 campos WRITE+READBACK PASS, mismatches0.
+- Finanzas/pagos canónicos source-safe preservados.
 
-## 4. Human visual acumulativa — P0 reproducido
-La validación humana posterior al deploy acumulativo NO congela Corte6. Se observaron regresiones estructurales:
-- primer render JUL con 88 visitas y posterior estabilización en44;
-- badge llegó a 1,232 visitas y546 shoppers;
-- scroll/pantalla se mueve al refrescar;
-- shoppers repetidos y perfil/histórico dividido;
-- username/password/PII no asociados consistentemente;
-- comparativo histórico incompleto;
-- estados cambian entre primer render y refresh.
+## 4. Regresión C6 y causa raíz
+Visual reproducida:88→44 visitas, badge1,232/546, scroll movido, duplicados Shopper, perfil/histórico fragmentado y comparativo incompleto.
 
-La HR viva sí responde; el problema es la composición/reaplicación del estado en browser.
+HR read-only verificada:30 tabs/28 mensuales, sin agosto 2026, julio=34 GT+10 HN. La causa fue un overlay no idempotente que reutilizaba arrays ya compuestos y podía anexar visitas Firestore sobre HR.
 
-## 5. Causa raíz confirmada
-`tya-dev-full-visual-bridge.js` toma `CX.data.shoppers`, `CX.data._visitas` y `CX.data._posts` actuales como base de cada reapply. Como esos arreglos ya pueden estar enriquecidos, el overlay deja de ser idempotente y puede volver a anexar historia protegida sobre HR viva.
+## 5. Root fix vigente
+El nuevo composer:
+- usa HR inmutable por `sourceRevision`;
+- no agrega protected visits;
+- empata solo por evidencia técnica exacta;
+- crea crosswalk Shopper técnico;
+- preserva estados HR;
+- deja perfil/credenciales como overlay;
+- watcher no recompone si la revisión no cambió y preserva contexto visual cuando cambia.
 
-El watcher re-aplica el overlay después de un cambio HR. La solución permanente exige baseline HR inmutable por revisión + composer idempotente + exact technical crosswalk + preservación de estado UI.
+## 6. Regression gate local PASS
+`PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE`:
+- tres reaplicaciones =616 visitas/208 shoppers;
+- duplicateVisitKeys0;
+- duplicateShopperIds0;
+- protectedVisitsAppended0;
+- estado HR e identidad estable.
 
-## 6. Lock de estabilidad permanente
-Queda activo `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`.
+La evidencia aclara que fue ejecución local de los mismos sources; no existe CI remoto ejecutado para este commit.
 
-Ningún bloque, candidata, overlay o etapa posterior puede avanzar si no pasa una regression suite acumulativa que conserve simultáneamente HR, histórico, identidades, perfiles, portal Shopper, Beneficios, Finanzas y cortes previos.
-
-## 7. Estado HR canónico verificado hoy
-La HR canónica sigue siendo el archivo de30 tabs /28 mensuales, sin agosto 2026. `JULIO 26` contiene34 filas operativas y `JULIO 26 HN`10. La lectura actual muestra 44 visitas del periodo; cualquier conteo 88/1232 es duplicación de composición, no verdad de fuente.
+## 7. Lock de estabilidad permanente
+Ningún bloque, candidata, overlay o etapa puede avanzar si no conserva simultáneamente HR, histórico, identidades, perfiles, portal Shopper, Beneficios, Finanzas y cortes previos.
 
 ## 8. 31 identity HOLD
 Persisten31 perfiles sin vínculo canónico reproducible. No dedupe por nombre/teléfono/email ni creación silenciosa.
 
 ## 9. Gate vivo
-`ROOT FIX IDEMPOTENTE + CROSSWALK TÉCNICO + PRESERVACIÓN UI STATE → REGRESSION GATE 3x REAPPLY + HISTÓRICO + SHOPPER + BENEFICIOS + FINANZAS → SOLO SI PASS: 1x DEV DEPLOY → HUMAN VISUAL → FREEZE C6 → AGOSTO`.
+El código está en GitHub, todavía no en Hosting DEV. La autorización Hosting anterior fue consumida.
+
+Siguiente operación requiere autorización fresca para exactamente:
+`1x redeploy del Hosting DEV existente cxorbia-backend-dev/cxorbia-dev`.
+
+Cloud Run0. Después remote smoke + human visual3x refresh + validación completa. Solo PASS habilita freeze C6 y agosto.
 
 ## 10. Estado seguro
-No se autoriza ni ejecuta en este lock: Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes, Cloud Run/Hosting deploy, nuevos Firebase/Hosting, merge o producción.
+En el bloque actual: Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes0; Cloud Run0; Hosting0; nuevos Firebase/Hosting0; merge=false; producción=false.
