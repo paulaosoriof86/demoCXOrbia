@@ -12,10 +12,12 @@
   "sourceEvidenceDecision": "READY_PROFILE_FULL_WRITE_PLAN_EXACT_MATCH_WITH_SEPARATE_FIRESTORE_AUTHORIZATION",
   "identityBridgeDecision": "READY_FULL_PROFILE_PARTIAL_EXACT_WITH_REMAINING_IDENTITY_HOLD",
   "identityKey": "legacyShopperId exact",
-  "enabled": false,
-  "authorized": false,
+  "authorizationId": "chat-20260731-c6-profile-full-firestore-write-01",
+  "authorizedAt": "2026-07-31T09:09:26-06:00",
+  "enabled": true,
+  "authorized": true,
   "consumed": false,
-  "status": "prepared_waiting_explicit_firestore_authorization",
+  "status": "authorized_pending_execution",
   "firestoreDocumentWritesMax": 120,
   "documentsWithPlannedChanges": 120,
   "documentsWithProfileFieldChanges": 118,
@@ -62,8 +64,8 @@
     "missingIdentityResolutionAttemptedByUniqueTechnicalKeysAndValidatedAuthClaim": true
   },
   "safety": {
-    "providerWritesAuthorized": false,
-    "firestoreWritesAuthorized": false,
+    "providerWritesAuthorized": true,
+    "firestoreWritesAuthorized": true,
     "authWrites": 0,
     "passwordChangesInFirebaseAuth": 0,
     "rulesDeploys": 0,
@@ -78,5 +80,5 @@
     "production": false,
     "merge": false
   },
-  "nextGate": "EXPLICIT_ONE_SHOT_FIRESTORE_AUTHORIZATION_FOR_MAX_120_EXISTING_PROFILE_DOCUMENT_WRITES_THEN_READBACK"
+  "nextGate": "CREATE_ONE_SHOT_EXECUTE_MARKER_AND_RUN_EXACT_FIRESTORE_WRITE_THEN_READBACK"
 }
