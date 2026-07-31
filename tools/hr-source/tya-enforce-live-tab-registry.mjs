@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import vm from 'node:vm';
 
 const sourcePath=process.env.CXORBIA_HR_SOURCE_SAFE_OUT||'.tmp/hr-current/tya-hr-source-safe.js';
@@ -39,7 +40,7 @@ if(providerMetadataLive){
     requiredAugustTabsPresent:monthlyTabs.includes('AGOSTO 26')&&monthlyTabs.includes('AGOSTO 26 HN'),
     safety:{pii:false,hrWrites:0,firestoreWrites:0,production:false,merge:false}
   };
-  fs.mkdirSync(require('node:path').dirname(registryPath),{recursive:true});
+  fs.mkdirSync(path.dirname(registryPath),{recursive:true});
   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n','utf8');
   registryMode='live_provider_metadata_auto_refresh';
 }
@@ -69,6 +70,6 @@ const payload=`/* CXOrbia TyA live HR source-safe DEV payload. Provider tab regi
 fs.writeFileSync(sourcePath,payload,'utf8');
 
 const evidence={schemaVersion:'cxorbia.tya-live-tab-registry-enforcement.v2',generatedAt:new Date().toISOString(),decision:'PASS_PROVIDER_TAB_REGISTRY_ENFORCED',accessMode,registryMode,autoDiscovery:providerMetadataLive,providerMetadataFallbackReason:providerMetadataLive?null:(source.source?.fallbackReason||null),registryObservedAt:registry.observedAt,monthlyTabs:(registry.monthlyTabs||[]).length,requiredAugustTabsPresent:registry.requiredAugustTabsPresent===true,before,after,phantomTabsRejected:uniq(removedTabs),counts:source.counts,safety:{providerReads:true,hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,production:false,merge:false,pii:false,secrets:false}};
-fs.mkdirSync(require('node:path').dirname(evidencePath),{recursive:true});
+fs.mkdirSync(path.dirname(evidencePath),{recursive:true});
 fs.writeFileSync(evidencePath,JSON.stringify(evidence,null,2)+'\n','utf8');
 console.log(JSON.stringify(evidence));
