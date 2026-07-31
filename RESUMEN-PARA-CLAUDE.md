@@ -1,46 +1,38 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_PROFILE_FULL_FIRESTORE_WRITE_READBACK_PASS__31_IDENTITY_HOLD_PROVEN__WAITING_SEPARATE_PROTECTED_DEV_REDEPLOY_AUTHORIZATION__NO_PRODUCTION`
+**Estado vivo:** `C6_PROFILE_WRITE_PASS__PROTECTED_HOSTING_REDEPLOY_PASS__WAITING_HUMAN_VISUAL_ADMIN_SHOPPER__31_IDENTITY_HOLD__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Corte3 FROZEN; R17N1,406/1,406 no repetir.
 - Corte5 cinepolis/14 periodos/616 visitas/current2026-07 PASS.
-- Auth91/91; claims5/5; Rules PASS. No reimportar/resetear por rutina.
+- Auth91/91; claims5/5; Rules PASS.
 - HR live/auto-month PASS.
 - PR#7 draft/open/no merge; producción intacta.
 
-## 2. Corte6 visual
-La visual anterior falló por Shopper sin shopperId en source-safe y Admin sin perfil protegido completo. El write de perfil ya quedó cerrado; falta redeploy protegido DEV + visual humana.
+## 2. Perfil completo Firestore — PASS
+120 perfiles exactos materializados bajo one-shot consumido:118 con cambios +2 marker-only;329 valores; readback120 docs/329 campos; mismatches0. Los31 sin canonical quedan HOLD.
 
-## 3. Perfil completo Firestore — PASS
-AuthorizationId `chat-20260731-c6-profile-full-firestore-write-01` consumida.
+## 3. Protected Hosting DEV — PASS
+Un único redeploy del Hosting DEV existente quedó ejecutado bajo autorización separada consumida. Protected runtime/Auth bridge/Firestore adapter/profile bridge/history KPI remoto PASS; carril source-safe por defecto preservado.
 
-Resultado exacto:
--120 Firestore document writes sobre perfiles existentes con `legacyShopperId` exacto;
--118 documentos con cambios reales +2 marker-only;
--329 valores escritos;
-- readback120 docs/329 campos;
-- mismatches0;
--31 sin canonical permanecen HOLD.
+No hubo Firestore/Auth/Rules/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos writes/deploys en este redeploy.
 
-Campos escritos: username113, pass118, depto2, dpi17, direccion1, fecha_nac2, accepted_terms72, aprobacionCuenta2, registroOrigen2.
+## 4. Contrato visual vigente
+No rediseñar. Validar la UI existente con el carril protegido:
+- Admin/Coordinación: perfil completo real del shopper, incluidos datos personales, username y password legacy real cuando exista;
+- teléfono/WhatsApp y demás datos actuales;
+- KPI con drill/detail;
+- histórico completo por shopperId incluyendo `submitida`;
+- Shopper: Auth + custom claims + shopperId real y acceso solo a su propio alcance.
 
-Auth writes0; Firebase Auth password changes0; deploys0; producción=false.
+Si el adapter entrega el dato y la UI no lo muestra, documentar el ajuste por archivo para Claude; no reescribir módulos desde backend.
 
-## 4. Identidad HOLD
-Los31 faltantes fueron investigados por bridge técnico exacto/único y Auth determinístico + custom claim;0 resueltos. No dedupe por nombre/teléfono/email ni creación silenciosa. Requieren alta/conciliación explícita.
+## 5. URL protegida
+`https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV`
 
-## 5. Precedencia
-Export vigente manda para perfil actual; password visible solo desde valor legacy real; Firebase Auth sigue siendo autoridad de login. Las616 visitas y77 certificaciones canónicas permanecen autoridad y no fueron sobrescritas.
+## 6. 31 identity HOLD
+No resueltos por llaves técnicas ni Auth determinístico+claim. No usar nombre/teléfono/email como identidad. Requieren alta/conciliación explícita.
 
-## 6. Runtime protegido
-Fix preparado sin deploy: protected lane no se degrada a source-safe, watcher no sobrescribe CX.data protegido y histórico/KPI usa shopperId + estados canónicos incluido `submitida`.
-
-## 7. Claude/prototipo
-No nueva candidata ni rediseño. La UI ya contempla usuario/contraseña; backend protegido debe entregar valores reales cuando existan. Tocar módulos UI solo si el adapter entrega correctamente el dato y la UI aun no lo refleja.
-
-## 8. Siguiente gate
-`AUTORIZACIÓN SEPARADA REDEPLOY DEV PROTEGIDO → HUMAN VISUAL ADMIN+SHOPPER → ALTA/CONCILIACIÓN EXPLÍCITA31 HOLD → FREEZE C6 → AGOSTO`.
-
-La autorización Firestore ya fue consumida y no puede reutilizarse para Hosting/Cloud Run.
+## 7. Siguiente gate
+`HUMAN VISUAL ADMIN+SHOPPER → PASS/FAIL → si PASS, ALTA/CONCILIACIÓN31 HOLD → FREEZE C6 → AGOSTO`.
