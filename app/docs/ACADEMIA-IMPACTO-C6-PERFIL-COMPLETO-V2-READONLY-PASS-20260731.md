@@ -1,4 +1,4 @@
-# Academia — impacto Corte 6 perfil Shopper completo V2/V3 + Firestore WRITE/READBACK PASS
+# Academia — impacto Corte 6 perfil Shopper + protected Hosting DEV PASS
 
 **Fecha:** 2026-07-31
 
@@ -6,41 +6,29 @@
 - separar fuente de perfil actual de fuentes canónicas de histórico/certificación;
 - transportar PII/credenciales cifradas y descifrarlas solo en memoria;
 - validar identidad por llave estable antes de cualquier write;
-- usar bridges secundarios solo si son reproducibles: llave técnica exacta/única o UID Auth determinístico + custom claim validado;
+- usar bridges secundarios solo si son reproducibles;
 - tratar nombre/teléfono/email como señales de revisión, no identidad automática;
-- hacer provider compare read-only y write-plan cuantificado antes de autorizar mutaciones;
-- usar autorización one-shot con alcance máximo explícito;
-- revalidar drift antes de provider mutation;
-- hacer readback completo después del write;
-- mantener missing identities en HOLD en lugar de inventar vínculos;
-- distinguir password legado visible para continuidad operativa de Firebase Auth como autoridad real de autenticación;
+- provider compare read-only → write-plan → autorización one-shot → drift gate → write → readback;
+- separar carril source-safe del carril autenticado/protegido;
+- ejecutar deploy one-shot únicamente al destino DEV existente;
+- hacer smoke remoto antes de validación humana;
+- mantener identidades no resolubles en HOLD;
+- distinguir password legacy visible de Firebase Auth como autoridad de autenticación;
 - un PASS técnico no reemplaza validación visual humana.
 
 ## Caso Corte6
-V2/V3:151 registros fuente;120 matches exactos;31 HOLD sin vínculo reproducible;0 ambiguos/invalid;329 valores de perfil.
+Perfil:151 registros;120 exactos;31 HOLD;329 valores. Write PASS:120 documentos,118 field-change +2 marker-only, readback120/329, mismatches0.
 
-Write autorizado y consumido:
--120 Firestore document writes;
--118 documentos con cambios reales +2 marker-only;
--329 valores escritos;
-- readback120 docs/329 campos;
-- mismatches0;
-- Auth/password resets0; deploys0; producción=false.
+Protected Hosting DEV: un único redeploy autorizado y consumido sobre `cxorbia-backend-dev/cxorbia-dev`. Smoke remoto confirmó protected runtime, Auth bridge, Firestore adapter, shopper scope fail-closed, profile bridge e histórico/KPI con `submitida`; source-safe por defecto permanece separado.
 
-La autorización quedó consumida y no puede reutilizarse para el siguiente redeploy DEV.
+Durante el redeploy no hubo Firestore/Auth/Rules/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos writes/deploys; producción=false; merge=false.
 
 ## Impacto en manuales/cursos/rutas
-- Admin/operación: perfil protegido completo y diferencia entre credencial legacy y login Auth.
-- Shopper: identidad por claims/shopperId; no selector anónimo.
-- Backend: encrypted handoff → read-only compare → identity bridge reproducible → plan → autorización exacta → write → readback → visual.
-- Seguridad: ningún valor PII/password en repo, logs o evidencia source-safe.
-- Migración: un registro sin vínculo exacto pasa a alta/conciliación explícita, no a deduplicación heurística.
+- Admin/operación: perfil completo autenticado y diferencia entre password legacy visible y login Auth.
+- Shopper: identidad por custom claims + shopperId.
+- Backend: encrypted handoff → compare → write/readback → protected deploy → smoke remoto → validación humana.
+- Seguridad: source-safe no expone perfil; protected runtime sí entrega información según RBAC.
+- Migración:31 registros sin identidad exacta pasan a alta/conciliación explícita.
 
-## Clasificación
-- **Reusable CXOrbia:** autorización one-shot, drift gate, readback, HOLD explícito.
-- **Exclusivo cliente:** universo TyA y31 identidades pendientes.
-- **Claude/prototipo:** sin rediseño; mostrar perfil real bajo runtime protegido.
-- **Academia:** actualizar flujo técnico/operativo de migración y seguridad.
-- **Sin impacto Claude:** evidencia backend y consumo del gate.
-
-Siguiente hito didáctico: redeploy DEV protegido y validación visual humana; todavía no producción.
+## Siguiente hito didáctico
+Validación humana Admin + Shopper. Si PASS, resolver31 HOLD explícitamente y congelar Corte6 antes de Agosto.
