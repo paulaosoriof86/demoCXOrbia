@@ -2,52 +2,60 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-31  
-**Estado:** `C3_FROZEN__C5_1406_PASS__C6_LIVE_HR_AUTOMONTH_SHOPPER_DISPLAY_DEV_PASS__PENDING_HUMAN_VISUAL`
+**Estado:** `C3_FROZEN__C5_1406_PASS__C6_TECH_REMOTE_PASS__HUMAN_VISUAL_FAIL_SHOPPER_IDENTITY_PROFILE_P0`
 
 ## 1. Cerrado/protegido
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
 - Corte3 FROZEN.
 - R17N:1,406/1,406;616 visitas;572 controles liquidación;77 certificaciones. No repetir.
 - Corte5 CX.data14 periodos/current2026-07 PASS.
-- Auth91/91, claims5/5, Rules PASS. No reimportar.
-- Firestore protegido shoppers340/340 y visitas616/616 con identidad real, placeholders0.
+- Auth91/91, claims5/5, Rules PASS. No reimportar/resetear por rutina.
+- Firestore protegido shoppers340/340 y visitas616/616 con identidad real; perfiles referenciados194/194.
 
 ## 2. HR live / auto-month — PASS remoto
-- Google Sheets API y lectura HR canónica PASS.
-- runtime refresca metadata mensual automáticamente;
-- 14 periodos / 616 visitas / último `2026-07`;
-- `tabRegistryAutoDiscovery=true`;
-- `tabRegistryMode=live_provider_metadata_auto_refresh`;
-- nueva pestaña mensual válida entra sin configuración mensual por chat.
+- Sheets API + lectura HR canónica PASS.
+- 14 periodos /616 visitas /último2026-07.
+- autodiscovery mensual provider activo.
+- nueva pestaña válida se detecta sin configuración mensual manual.
 
-## 3. Corte 6 redeploy DEV — cerrado técnicamente
-Autorización one-shot consumida:
-- Cloud Run DEV `1/1`, revisión `cxorbia-live-hr-dev-00008-8mf`;
-- Hosting DEV `1/1`, version `22e81c2b783f697a`;
-- decisión `PASS_C6_LIVE_HR_AUTOMONTH_AND_SHOPPER_DISPLAY_DEV`.
+## 3. Último one-shot DEV — consumido
+- Cloud Run1/1, revisión `cxorbia-live-hr-dev-00008-8mf`.
+- Hosting1/1, version `22e81c2b783f697a`.
+- Remote technical decision `PASS_C6_LIVE_HR_AUTOMONTH_AND_SHOPPER_DISPLAY_DEV`.
 
-No reutilizar esta autorización.
+No reutilizar autorización.
 
-## 4. Shopper DEV
-- auto-entry preservado;
-- `humanCredentialPrompt=false`;
-- 208 identidades operativas display-name-only disponibles;
-- sin teléfono/correo/DPI/banco/credenciales;
-- `app/modules/*` sin cambios.
+## 4. Human visual — FAIL / P0
+Capturas confirman:
+- Admin source-safe ve 208 nombres, pero perfil carece de username/credencial, contacto y datos adicionales;
+- histórico visible por shopper parcial;
+- KPI no entrega el nivel de detalle operativo requerido;
+- Shopper entra como `Evaluador (sin identidad)`;
+- `shopperId=null` bloquea Mi Perfil y Mis Visitas.
 
-Pendiente: validación humana de nombres en Administración y selector/módulos del rol Shopper.
+Causa raíz Shopper: `app/app.js::_isDevAccess()` no habilita el flujo de identidad en el host alojado de la ruta source-safe; `selectRole('shopper')` queda sin ID y fail-closed.
 
-## 5. Julio/agosto
-Julio sigue operable mientras agosto puede existir platform-origin antes de HR. HR aún no tiene tabs agosto.
+Causa de perfil: se intentó validar información completa sobre un overlay `display_name_only`. Esa ruta no es la consola protegida final.
 
-Pendiente operacional: conectar source-of-truth exacto de agosto; luego delta-only Firestore con autorización nueva. No copiar julio.
+## 5. Corrección requerida
+- validar runtime protegido Auth/claims/Rules;
+- Superadmin recibe perfil real completo según fuentes;
+- Shopper solo su propio scope;
+- recuperar datos adicionales de la plataforma vigente por export/import;
+- username `nombre.apellido` preservado;
+- contraseña inicial histórica tipo `Nombre123*`, sin almacenar password vigente en claro;
+- histórico desde 616 visitas canónicas por shopperId;
+- KPI por facetas/estados canónicos con drill.
 
-## 6. Siguiente bloque
-`VALIDACIÓN HUMANA SHOPPER → FREEZE CORTE 6 SI PASS → FUENTE EXACTA AGOSTO → DELTA-ONLY AUTORIZADO → READBACK/SMOKE → PREPROD/CUTOVER`.
+## 6. Julio/agosto
+No avanzar a materialización agosto hasta cerrar el P0 shopper/perfil. No copiar julio ni repetir histórico.
 
-## 7. Claude/Academia
-- Claude: preservar UX, no nueva candidata, no `app/modules/*`; integración actual es adapters/runtime/entrypoint DEV.
-- Academia: auto-month, ADC provider, open-read vs open-write, identidad operativa mínima vs PII sensible, one-shot deploy.
+## 7. Siguiente bloque
+`PROTECTED-RUNTIME READ-ONLY VALIDATION → PROFILE FIELD INVENTORY / LEGACY EXPORT RECONCILIATION → DELTA PLAN → AUTH/FIRESTORE GATES SEPARADOS → NUEVO REDEPLOY DEV CON AUTORIZACIÓN → HUMAN VISUAL → FREEZE C6`.
 
-## 8. Estado seguro
-Firestore/HR/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; proyectos/Hosting nuevos0; merge=false; producción=false.
+## 8. Claude/Academia
+- Claude: corrección focalizada únicamente si el backend protegido entrega campos y la UI no los refleja; preservar fail-closed sin shopperId.
+- Academia: login/identidad, credencial inicial vs vigente, Superadmin vs Shopper, perfil consolidado, historial y KPI drill.
+
+## 9. Estado seguro
+Después de la visual: provider writes/deploys nuevos0; Firestore/HR/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; merge=false; producción=false.
