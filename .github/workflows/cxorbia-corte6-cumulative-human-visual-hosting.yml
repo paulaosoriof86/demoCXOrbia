@@ -62,7 +62,7 @@ jobs:
           set -euo pipefail
           node --check app/adapters/tya-dev-full-visual-bridge.js
           node --check app/adapters/tya-live-source-refresh-watch.js
-          grep -q "cumulative overlay" app/adapters/tya-dev-full-visual-bridge.js
+          grep -q "cumulativeVisual:true" app/adapters/tya-dev-full-visual-bridge.js
           grep -q "legacyShopperId" app/adapters/tya-dev-full-visual-bridge.js
           grep -q "canonicalLegacyIds" app/adapters/tya-dev-full-visual-bridge.js
           grep -q "canonicalFinancePreserved" app/adapters/tya-dev-full-visual-bridge.js
@@ -131,7 +131,7 @@ jobs:
           curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-live-source-refresh-watch.js" -o "$OUT_DIR/watcher.js"
           curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-financial-canonical-source-safe-adapter.js" -o "$OUT_DIR/finance.js"
           curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/api/tya/cinepolis/hr-live?format=meta&fresh=1" -o "$OUT_DIR/hr-meta-after.json"
-          grep -q "cumulative overlay" "$OUT_DIR/full.js"
+          grep -q "cumulativeVisual:true" "$OUT_DIR/full.js"
           grep -q "canonicalLegacyIds" "$OUT_DIR/full.js"
           grep -q "CX_TYA_REAPPLY_FULL_VISUAL_OVERLAY" "$OUT_DIR/full.js"
           grep -q "reapplyFullVisual" "$OUT_DIR/watcher.js"
