@@ -43,15 +43,15 @@ Backend preparó una ruta DEV protegida separada:
 
 No tocar `app/modules/*` por este bloque. La ruta aún no está desplegada; requiere un redeploy Hosting DEV autorizado.
 
-## 6. Agosto
-HR todavía no tiene `AGOSTO 26` ni `AGOSTO 26 HN`. Operativamente julio puede seguir ejecutándose y agosto puede existir como disponibilidad de origen plataforma antes de HR. La plataforma debe soportarlo y luego reconciliar.
+## 6. Julio/agosto
+HR todavía no tiene `AGOSTO 26` ni `AGOSTO 26 HN`. Operativamente julio puede seguir ejecutándose y agosto puede existir como disponibilidad de origen plataforma antes de HR. La plataforma ya tiene configurado este contrato de coexistencia/reconciliación.
 
-No hay autorización ni fuente exacta para crear Firestore agosto en este bloque.
+No obstante, las fuentes inspeccionadas todavía no contienen un registro exacto source-of-truth de esas visitas disponibles de agosto platform-origin. No clonar julio ni materializar ubicaciones/IDs/estados por inferencia. Ese origen exacto debe recuperarse/conectarse para el delta de agosto.
 
 ## 7. Siguiente bloque exacto
 `CORREGIR SHARING HR P0 + ENABLE SHEETS API EXISTENTE → REVALIDAR HR READER → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
 
-Requiere autorización provider/deploy. Sin producción ni Firestore data writes.
+Después: recuperar/conectar fuente exacta agosto platform-origin → delta-only idempotente → autorización Firestore data write → preprod/cutover.
 
 ## 8. P1/P2
 PDF/gráficas, Excel/formato, reportKit/exportaciones, copy de fuentes/readiness continúan documentados y no deben confundirse con este gate.
