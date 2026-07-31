@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_P0_COMPOSITION_REGRESSION__PERMANENT_STABILITY_LOCK_ACTIVE__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_STABLE_COMPOSER_CODE_PASS__LOCAL_REGRESSION_3X_PASS__PENDING_ONE_HOSTING_DEV_AUTH__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Corte3 FROZEN; R17N1,406/1,406 no repetir.
@@ -12,47 +12,58 @@
 - Finanzas/pagos canónicos source-safe aprobados se preservan.
 - PR#7 draft/open/no merge; producción intacta.
 
-## 2. P0 actual reproducido
-La visual acumulativa posterior al último Hosting DEV mostró un fallo estructural de composición:
-- primer render JUL con88 visitas y posterior44;
-- badge1,232 visitas/546 shoppers;
-- scroll/pantalla cambia al refrescar;
-- shoppers repetidos;
-- perfil/username/password/PII e histórico divididos entre identidades;
-- comparativo histórico incompleto;
-- estados cambian entre render inicial y refresh.
+## 2. P0 visual anterior
+La visual acumulativa mostró 88→44 visitas, badge1,232/546, scroll movido, shoppers repetidos, perfil/credenciales/histórico fragmentados y comparativo incompleto.
 
-La HR viva sí responde y la HR canónica actual mantiene34 GT +10 HN en julio. El fallo no es falta de HR, sino un overlay no idempotente.
+La HR canónica sigue30 tabs/28 mensuales y julio=34 GT+10 HN. El fallo era composición, no fuente.
 
-## 3. Causa raíz técnica
-`app/adapters/tya-dev-full-visual-bridge.js` usa los arrays actuales de `CX.data` como nueva base en cada reapply. Si ya contienen un overlay anterior, la siguiente composición puede volver a anexar visitas/perfiles.
+## 3. Root fix estable aplicado
+Backend adapters ya implementan:
+- baseline HR inmutable por `sourceRevision`;
+- composer puro `app/adapters/tya-cumulative-read-model.js`;
+- no append de protected visits sobre HR;
+- match exacto por `hrRowId`, `sourceTab+sourceRow` o `visitId`;
+- crosswalk Shopper solo por evidencia técnica;
+- HR mantiene estado operacional;
+- perfil protegido agrega username/password/PII cuando el perfil realmente los contiene;
+- same revision=no reapply/no rerender;
+- changed revision=1 apply +1 compose;
+- scroll/selects/foco preservados; modal/form activo difiere rerender.
 
-## 4. Lock permanente obligatorio
-Leer y respetar:
-`app/docs/ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`.
+## 4. Regression gate local PASS
+`PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE`:
+-14 periodos/616 visitas/208 shoppers;
+-120 perfiles protegidos;
+-616 protected visits de prueba con IDs alternos;
+-reapply1=616/208;
+-reapply2=616/208;
+-reapply3=616/208;
+-duplicates visita0;
+-duplicates shopper0;
+-protected visits appended0;
+-operational HR state preservado;
+-profile overlay visible.
 
-Ninguna candidata futura puede romper un corte anterior. Toda etapa debe pasar una regression suite acumulativa antes de considerarse válida.
+CI remoto no se ejecutó; evidencia local está documentada como tal.
 
-## 5. Ownership de datos
-1. HR viva: periodos, visitas, auto-mes y estado operacional.
-2. Firestore protegido: identidad/perfil/PII/username/pass como overlay exacto.
-3. Finanzas/pagos canónicos: Beneficios, liquidaciones, movimientos y pagos.
-4. Auth/RBAC: acceso/scope.
-5. Plataforma-origin: delta reconciliado, no duplicado con HR.
-
-## 6. Qué NO debe hacer Claude
-- no reconstruir lógica HR, identidad o finanzas en módulos;
-- no rediseñar login por este P0;
+## 5. Qué NO debe hacer Claude
+- no reconstruir HR, identidad o finanzas en módulos;
+- no dedupe por nombre/teléfono/email;
 - no volver a fixtures/demo;
-- no resolver identidades por nombre/teléfono/email;
 - no reemplazar HR viva ni finanzas canónicas;
-- no reintroducir estados superados al cambiar de etapa.
+- no reintroducir estados superados;
+- no crear su propio watcher o su propia máquina de estados.
 
-## 7. Regla de estabilidad para prototipo
-Toda candidata futura debe conservar la matriz de invariantes ya aprobada. Si una nueva pantalla o etapa altera Dashboard, Shoppers, histórico, Beneficios, Finanzas, periodos o source behavior, es regresión y no se acepta aunque el delta nuevo funcione aisladamente.
+## 6. Regla de estabilidad para prototipo
+Toda candidata futura debe conservar el read-model contract y pasar regression gate acumulativo. La función nueva no compensa una regresión en Dashboard, Shoppers, histórico, Beneficios, Finanzas, periodos o fuente.
 
-## 8. 31 identity HOLD
-Continúan31 sin vínculo canónico reproducible. Requieren conciliación/alta explícita posterior; no emparejar por similitud.
+## 7. 31 identity HOLD
+Continúan31 sin vínculo canónico reproducible. Requieren conciliación explícita posterior; no emparejar por similitud.
 
-## 9. Siguiente bloque
-`ROOT FIX IDEMPOTENTE + CROSSWALK TÉCNICO + PRESERVACIÓN UI STATE → REGRESSION GATE ACUMULATIVO → solo si PASS deploy DEV y human visual → FREEZE C6 → AGOSTO`.
+## 8. Gate pendiente
+El fix está en GitHub, no desplegado. Requiere autorización fresca para exactamente1 redeploy del Hosting DEV existente `cxorbia-backend-dev/cxorbia-dev`; no Cloud Run.
+
+Después: remote smoke + human visual con 3 refresh y validación Dashboard/HR, Shoppers/perfil/credenciales/histórico, comparativo, Beneficios y Finanzas.
+
+## 9. Siguiente bloque Phase A
+`1x HOSTING DEV AUTORIZADO → REMOTE/HUMAN REGRESSION PASS → FREEZE C6 → AGOSTO`.
