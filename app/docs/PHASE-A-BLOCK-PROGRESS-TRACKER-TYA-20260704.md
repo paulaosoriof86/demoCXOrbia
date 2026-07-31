@@ -2,36 +2,38 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-30  
-**Estado:** `C3_FROZEN__C5_1406_PASS__C6_IDENTITY_PROTECTED_PASS__AUG_GT34_TECH_READY__HN_SOURCE_MISMATCH__NO_UNASSIGNED_VISITS`
+**Estado:** `C3_FROZEN__C5_1406_PASS__C6_IDENTITY_PASS__AUGUST_PROVIDER_TABS_MISSING__GVIZ_PHANTOM_FIXED`
 
-## 1. Cerrado / protegido
+## 1. Cerrado/protegido
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
 - Corte3 FROZEN.
 - Corte5:1,406/1,406;616 visitas;572 controles liquidación;77 certificaciones; CX.data14 periodos/currentPeriod2026-07 PASS.
-- Corte6: Auth91/91; claims5/5; Rules PASS.
-- Auto-entry Admin observado PASS.
-- Identidad protegida read-only PASS: shoppers340/340 reales, visitas616/616 reales, placeholders0, perfiles referenciados194/194.
+- Corte6: Auth91/91, claims5/5, Rules PASS; auto-entry Admin observado; identidad protegida shoppers340/340 y visitas616/616 reales, placeholders0.
 
-## 2. Agosto refresh actual
-- Fuente detecta periodo2026-08.
-- GT34 con país correcto.
-- HN tab34 filas pero34 marcadas GT → HOLD.
-- Firestore aún616 visitas; periodo agosto ausente.
-- GT delta técnico34 nuevas; identity mapping28/28; perfiles target28/28.
-- Operación GT: assigned34,unassigned0,scheduled34,realized34,submitted27,questionnaire7.
-- `releaseReadiness=NO_UNASSIGNED_VISITS_IN_ACCEPTED_SOURCE`.
+## 2. Agosto — corrección de diagnóstico
+Metadata real de la HR confirma que `AGOSTO 26` y `AGOSTO 26 HN` **no existen**. GViz estaba devolviendo datos de otra hoja al consultar tabs inexistentes; la inferencia GT34/HN34 queda superseded.
 
-## 3. Bloqueante real
-La HR de agosto no representa un lote nuevo de visitas disponibles. No se puede corregir por inferencia ni cambiando estados desde backend/UI. HN tampoco puede relabelarse silenciosamente.
+Fix aplicado: provider tab registry + enforcement + planner tab-first.
 
-## 4. Siguiente bloque exacto
-`FUENTE HR AGOSTO CORREGIDA/ACTUALIZADA → REFRESH READ-ONLY → EXPECT GT34/HN10 + ESTADOS PUBLICABLES → DELTA PLAN → AUTORIZACIÓN WRITE SOLO DELTA`.
+## 3. Re-read final
+-14 periodos reales;
+-28 tabs mensuales;
+-616 visitas;
+- último periodo2026-07;
+- agosto GT0/HN0;
+- Firestore periodo2026-08 no existe;
+- delta agosto0;
+- decisión `HOLD_AUGUST_REQUIRED_PROVIDER_TABS_MISSING`.
 
-Después: readback/smoke → preprod protegida con identidad real → cutover. No repetir histórico.
+## 4. Bloqueante real
+Falta la fuente autorizada de agosto. No corresponde copiar julio, inventar GT34/HN10 ni materializar Firestore sin las filas reales.
 
-## 5. Claude / Academia
-- Claude: sin nueva candidata ni cambios de módulos; no inventar disponibilidad ni PII.
-- Academia: distinguir source-safe, identidad protegida y fuente operacional; conflicto de país/estado → HOLD.
+## 5. Siguiente bloque
+`AGOSTO DISPONIBLE EN HR → REFRESH METADATA/SOURCE-SAFE → VALIDAR PAÍS/ESTADO → DELTA EXACTO → AUTORIZACIÓN WRITE SOLO DELTA → READBACK/SMOKE → PREPROD → CUTOVER`.
 
-## 6. Estado seguro
-Últimos bloques: HR/Firestore reads únicamente. Auth/Firestore data/Rules/Hosting/HR/Storage/legacy/payments/Functions/Make/Gemini writes0; merge=false; producción=false.
+## 6. Claude/Academia
+- Claude: no nueva candidata ni cambios de módulos por esta ausencia de fuente.
+- Academia: gate de existencia de tab antes de interpretar GViz; source-safe vs protected runtime.
+
+## 7. Estado seguro
+Provider reads únicamente; HR/Firestore/Auth/Rules/Hosting/Storage/legacy/payments/Functions/Make/Gemini writes0; merge=false; producción=false.
