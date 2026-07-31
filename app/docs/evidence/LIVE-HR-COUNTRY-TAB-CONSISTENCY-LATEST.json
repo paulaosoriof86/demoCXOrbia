@@ -1,27 +1,11 @@
 {
   "schemaVersion": "tya.hr-country-tab-consistency.v2",
-  "generatedAt": "2026-07-31T00:12:00Z",
+  "generatedAt": "2026-07-31T00:11:19.790Z",
   "sourceSafe": true,
   "pii": false,
   "providerWrites": 0,
   "providerTabRegistryObservedAt": "2026-07-30T23:58:00Z",
-  "previousGvizEvidenceSuperseded": true,
-  "supersedeReason": "Google Visualization CSV returned content for requested August tab names that do not exist in provider metadata. Tab existence must precede country-content validation.",
   "results": [
-    {
-      "title": "JUNIO 26 HN",
-      "expectedCountry": "HN",
-      "tabExists": true,
-      "lastKnownValidatedVisitRows": 10,
-      "lastKnownMismatchCount": 0
-    },
-    {
-      "title": "JULIO 26 HN",
-      "expectedCountry": "HN",
-      "tabExists": true,
-      "lastKnownValidatedVisitRows": 10,
-      "lastKnownMismatchCount": 0
-    },
     {
       "title": "AGOSTO 26",
       "expectedCountry": "GT",
