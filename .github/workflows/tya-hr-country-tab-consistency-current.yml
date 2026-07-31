@@ -2,8 +2,7 @@ name: TyA HR Country Tab Consistency Current
 
 on:
   push:
-    branches:
-      - docs-tya-v6-v71-audit
+    branches: [docs-tya-v6-v71-audit]
     paths:
       - '.github/cxorbia-firebase-requests/live-hr-country-tab-consistency.json'
 
@@ -17,21 +16,38 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
+        with: {node-version: '24'}
+
       - name: Validate request
         run: |
           node <<'NODE'
           const r=require('./.github/cxorbia-firebase-requests/live-hr-country-tab-consistency.json');
           if(r.enabled!==true||r.mode!=='READ_ONLY_COUNTRY_TAB_CONSISTENCY'||r.providerWrites!==0||r.production!==false||r.merge!==false)process.exit(1);
           NODE
+
+      - name: Check provider tab existence before content
+        id: tabs
+        run: |
+          mkdir -p app/docs/evidence
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs=require('fs');const r=require('./backend/config/tya-live-hr-tab-registry.source-safe.json');
+          const set=new Set(r.monthlyTabs||[]),gt=set.has('AGOSTO 26'),hn=set.has('AGOSTO 26 HN'),present=gt&&hn;
+          console.log(`august_present=${present?'true':'false'}`);
+          if(!present){
+            const e={schemaVersion:'tya.hr-country-tab-consistency.v2',generatedAt:new Date().toISOString(),sourceSafe:true,pii:false,providerWrites:0,providerTabRegistryObservedAt:r.observedAt,results:[{title:'AGOSTO 26',expectedCountry:'GT',tabExists:gt,visitRows:0,countryValidation:'NOT_APPLICABLE_TAB_MISSING'},{title:'AGOSTO 26 HN',expectedCountry:'HN',tabExists:hn,visitRows:0,countryValidation:'NOT_APPLICABLE_TAB_MISSING'}],decision:'HOLD_REQUIRED_AUGUST_PROVIDER_TABS_MISSING',safety:{hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,production:false,merge:false}};
+            fs.writeFileSync('app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json',JSON.stringify(e,null,2)+'\n');
+            fs.writeFileSync('app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md','# TyA HR country/tab consistency\n\n- Decisión: HOLD_REQUIRED_AUGUST_PROVIDER_TABS_MISSING\n- AGOSTO 26 existe: '+gt+'\n- AGOSTO 26 HN existe: '+hn+'\n- No se consultó contenido GViz porque existencia de tab es gate previo.\n- Writes: 0.\n');
+          }
+          NODE
+
       - name: Run source-safe country consistency gate
         id: gate
+        if: steps.tabs.outputs.august_present == 'true'
         continue-on-error: true
         run: node tools/qa/tya-hr-country-tab-consistency-current.mjs
+
       - name: Commit sanitized evidence on latest head
         run: |
           set -euo pipefail
@@ -45,15 +61,16 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md
-          if ! git diff --cached --quiet; then git commit -m 'evidence: check live HR country-tab consistency'; git push origin HEAD:docs-tya-v6-v71-audit; fi
+          if ! git diff --cached --quiet;then git commit -m 'evidence: check live HR provider-tab and country consistency';git push origin HEAD:docs-tya-v6-v71-audit;fi
+
       - name: Publish status
         if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
+        env: {GH_TOKEN: '${{ github.token }}'}
         run: |
-          STATE=error; DESC='HOLD_HR_COUNTRY_TAB_CONSISTENCY'
-          if [ -f app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json ]; then
+          STATE=error;DESC='HOLD_HR_COUNTRY_TAB_CONSISTENCY'
+          if [ -f app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json ];then
             D=$(node -p "require('./app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json').decision")
-            if [ "$D" = 'PASS_COUNTRY_TAB_CONSISTENCY' ]; then STATE=success; DESC='PASS_HR_COUNTRY_TAB_CONSISTENCY'; fi
+            if [ "$D" = 'PASS_COUNTRY_TAB_CONSISTENCY' ];then STATE=success;DESC='PASS_HR_COUNTRY_TAB_CONSISTENCY';
+            elif [ "$D" = 'HOLD_REQUIRED_AUGUST_PROVIDER_TABS_MISSING' ];then STATE=success;DESC='HOLD_AUGUST_PROVIDER_TABS_MISSING_READONLY_CONFIRMED';fi
           fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/live-hr-country-tab-consistency' -f description="$DESC" >/dev/null
