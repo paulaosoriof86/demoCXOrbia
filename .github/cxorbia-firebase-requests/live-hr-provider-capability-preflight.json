@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0.0",
+  "request": "revalidate_existing_provider_capabilities_read_only",
+  "reason": "Precondition check before the explicitly authorized DEV Cloud Run and Hosting redeploy block.",
+  "targetProject": "cxorbia-backend-dev",
+  "hrSpreadsheetIdMasked": "1h307t...8vU4",
+  "expected": {
+    "googleSheetsApiEnabled": true,
+    "serviceAccountKeepsReaderAccess": true,
+    "publicAnyoneWriterRemoved": true
+  },
+  "safety": {
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "production": false,
+    "merge": false
+  }
+}
