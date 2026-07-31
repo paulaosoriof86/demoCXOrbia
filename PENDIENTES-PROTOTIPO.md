@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_P0_OPEN__FULL_PROFILE_SCOPE_AUTHORIZED__V2_HANDOFF_READY__WAITING_V2_ENCRYPTED_BUNDLE__NO_PROVIDER_WRITE__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_PROFILE_FULL_V2_READONLY_PASS__WRITE_PLAN_PREPARED__WAITING_EXPLICIT_FIRESTORE_AUTHORIZATION__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Cerrado / no reabrir
 - Corte1/2A/3 FROZEN; R17N1,406/1,406 no repetir.
@@ -11,36 +11,50 @@
 - último one-shot Cloud Run+Hosting consumido; no reutilizar.
 
 ## 2. P0 Shopper/perfil
-La visual anterior falló porque Shopper quedó sin shopperId y Admin estaba usando display-only source-safe. Read-only protegido confirma que91/91 shopper claims resuelven perfil real.
+La visual anterior falló porque Shopper quedó sin shopperId y Admin usó display-only source-safe. Corte6 sigue abierto hasta write/readback + runtime protegido + validación visual.
 
 ## 3. Histórico/KPI
 616/616 visitas con shopperId;194 perfiles referenciados194/194. Runtime fix preparado para ciclo canónico incluyendo `submitida`. No rediseñar módulo.
 
-## 4. Username/Auth
-Dry-run previo:109 registros shopper;88 exactos stable-ID + Auth claim; username plan88; conflictos0;21 HOLD. Auth91/91 no se reabre.
+## 4. Perfil completo — V2 read-only PASS
+Gate `PASS_C6_PROFILE_FULL_V2_READONLY`.
 
-## 5. Perfil completo requerido
-Paula confirmó que la parte operativa debe ver toda la información disponible del shopper en la plataforma anterior, incluidos datos personales, username y password. El hardening se posterga y no bloquea el cierre actual.
+- registros fuente151;
+- exactos `legacyShopperId`120;
+- missing canonical31 HOLD;
+- ambiguos0; badRecord0;
+- docs existentes con cambio120;
+- campos planificados329;
+- password presente149;
+- PII sensible presente27.
 
-El perfil completo debe provenir del export vigente, nunca de valores sintetizados.
+Campos planificados sobre los120 exactos: username113, pass118, depto2, dpi17, direccion1, fecha_nac2, accepted_terms72, aprobacionCuenta2, registroOrigen2.
 
-## 6. V1 recibido — pendiente corregido
-El bundle V1 está cifrado pero no sirve como fuente final de write: rawRows282; encryptedRecords151; duplicateStableIds130; password excluido. No usarlo para materializar.
+Nombre, WhatsApp/teléfono, email, país y ciudad ya coinciden para esos120 y no necesitan write.
 
-## 7. V2 preparado
-V2 fusiona duplicados por ID estable, conserva conflictos cifrados e incluye perfil completo, PII, username y password. Runner provider read-only compara solo por `legacyShopperId exact` y produce conteos exactos de cambios sin exportar valores.
+## 5. 31 perfiles sin canonical — HOLD real
+No crear ni emparejar automáticamente por nombre/teléfono/email. Deben resolverse por identidad estable en bloque posterior. No impiden actualizar de forma segura los120 perfiles exactos, pero sí impiden declarar migración legacy total.
 
-Archivos:
-- `tools/local/cxorbia-corte6-profile-full-handoff-v2.html`;
-- `tools/qa/cxorbia-corte6-profile-full-handoff-dryrun-v2.mjs`;
-- `.github/workflows/cxorbia-corte6-profile-full-readonly-v2.yml`;
-- `backend/config/corte6-profile-full-readonly-v2-request.json`.
+## 6. Primer intento V2
+El primer read-only falló antes del provider por un chunk cifrado incorrecto (`part-007`). Se restauró el blob exacto y el retry terminó PASS. Request read-only consumida correctamente; provider writes0.
+
+## 7. Write plan — preparado, NO autorizado
+`backend/config/corte6-profile-full-firestore-write-plan-v2.json` y `backend/config/corte6-profile-full-firestore-write-request-v2.json` preparados.
+
+Alcance máximo futuro:
+-120 Firestore document writes sobre perfiles existentes exactos;
+-329 valores de perfil;
+- Auth/password reset0;
+- Rules/Hosting/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos0;
+- producción=false; merge=false.
+
+No ejecutar hasta autorización explícita.
 
 ## 8. Fuente y precedencia
-El export `tya-plataforma-default-rtdb-export (6).json` del2026-07-30 es source-of-truth para campos de perfil. Las616 visitas y77 certificaciones canónicas siguen siendo autoridad y no deben sobrescribirse con contadores/arrays legacy.
+El export `tya-plataforma-default-rtdb-export (6).json` del2026-07-30 manda para campos actuales de perfil. Las616 visitas y77 certificaciones canónicas siguen siendo autoridad y no se sustituyen con `certs/histCerts/visitas/activo/rating` legacy.
 
 ## 9. Password
-Mostrar únicamente el password real presente en el export vigente. Firebase Auth sigue siendo autoridad de login. No inferir patrón, no resetear por rutina y no escribir credenciales en repo/docs/logs.
+Mostrar únicamente el password legado real proveniente del export protegido. Firebase Auth sigue siendo autoridad del login. No inferir patrón ni resetear Auth por rutina; nunca publicar credenciales en repo/docs/logs.
 
 ## 10. P1/P2 preservado
 - PDF/gráficas;
@@ -52,6 +66,6 @@ Mostrar únicamente el password real presente en el export vigente. Firebase Aut
 No ejecutar delta agosto hasta cerrar P0 y congelar Corte6.
 
 ## 12. Siguiente bloque
-`GENERAR BUNDLE V2 COMPLETO → READ-ONLY V2 AUTOMÁTICO → WRITE PLAN EXACTO PERFIL COMPLETO + USERNAME → AUTORIZACIÓN FIRESTORE → READBACK → REDEPLOY DEV → VISUAL PROTEGIDA`.
+`AUTORIZACIÓN FIRESTORE EXACTA MÁX120 DOC WRITES → WRITE+READBACK → REDEPLOY DEV PROTEGIDO AUTORIZADO → VISUAL ADMIN+SHOPPER → RESOLVER31 HOLD → FREEZE C6 → AGOSTO`.
 
 Producción/merge siguen bloqueados.
