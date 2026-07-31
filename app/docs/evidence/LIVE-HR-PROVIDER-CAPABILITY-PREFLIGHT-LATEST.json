@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.live-hr-provider-capability-preflight.v1",
-  "generatedAt": "2026-07-31T01:15:12.531Z",
+  "generatedAt": "2026-07-31T02:06:59.600Z",
   "decision": "READONLY_PROVIDER_CAPABILITY_PREFLIGHT",
   "target": {
     "projectId": "cxorbia-backend-dev",
