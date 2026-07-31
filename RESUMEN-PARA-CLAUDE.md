@@ -1,89 +1,71 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-07-30  
-**Estado vivo:** `C6_SINGLE_LOGIN_HOSTING_DEV_REMOTE_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`
+**Última actualización:** 2026-07-31  
+**Estado vivo:** `C6_HUMAN_VISUAL_FAIL__P0_SHOPPER_IDENTITY_NULL__ADMIN_PROFILE_INCOMPLETE__NO_NEW_DEPLOY__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Corte3 `CXORBIA-TYA-CORTE3-V182-20260729`: FROZEN.
-- R17N FINAL:1,406/1,406 Firestore data writes/readback; no repetir.
-- Corte5 `CX.data`: `cinepolis`,14 periodos,616 visitas, `currentPeriodId=2026-07`, source=firestore/fallback=false PASS.
-- Auth legacy import91/readback91/91 PASS; no repetir ni resetear passwords.
+- R17N FINAL: 1,406/1,406 Firestore data writes/readback; no repetir.
+- Corte5 `CX.data`: `cinepolis`, 14 periodos, 616 visitas, `currentPeriodId=2026-07`, Firestore/fallback=false PASS.
+- Auth import/readback 91/91 PASS; no repetir ni resetear por rutina.
 - Corte6 claims5/5 + Rules PASS.
-- No nueva candidata, rama, PR, Firebase o Hosting por rutina.
+- PR #7 sigue draft/open/no merge; producción `tya-plataforma` no tocada.
 
-## 2. P0 doble login — corregido y publicado en DEV
-La visual humana de Paula rechazó el build anterior porque mostraba `Acceso seguro` como gate separado antes del login normal.
+## 2. Último redeploy DEV — PASS técnico, FAIL visual
+El one-shot autorizado de Cloud Run + Hosting DEV fue ejecutado y consumido:
+- Cloud Run revisión `cxorbia-live-hr-dev-00008-8mf`;
+- Hosting version `sites/cxorbia-backend-dev/versions/22e81c2b783f697a`;
+- release `sites/cxorbia-backend-dev/releases/1785467713768000`;
+- remote smoke: 14 periodos, 616 visitas, auto-month PASS, 208 identidades display-name-only.
 
-La corrección focalizada ya está en el mismo Hosting DEV:
-- único login visible TyA/CXOrbia;
-- Auth real detrás del producto;
-- `Usuario + Contraseña` dentro de la misma tarjeta cuando no existe sesión restaurable;
-- sesión Firebase válida restaurada silenciosamente;
-- logout invalida Firebase + CX session;
-- `product-login-session`;
-- gate paralelo antiguo bloqueado por checks anti-regresión.
+La validación humana posterior encontró un P0 real. Por tanto, **no congelar Corte 6**.
 
-## 3. Redeploy autorizado — PASS
-Autorización de Paula consumida: un único redeploy focalizado sobre `cxorbia-backend-dev/cxorbia-dev`.
+## 3. P0 PROVEN — Shopper entra sin shopperId
+En `app/app.js`, `_isDevAccess()` no reconoce el host `cxorbia-backend-dev.web.app` en la ruta humana source-safe. El botón Shopper cae a `selectRole('shopper')` sin `shopperId`; fuera de demo la sesión queda `Evaluador (sin identidad)` y Mi Perfil/Mis Visitas fallan cerrado.
 
-Resultado: `PASS_EXISTING_HOSTING_DEV_SINGLE_LOGIN_REMOTE_VERIFIED`.
+No corregir inventando `sh1` ni por nombre. La identidad debe venir de login/Auth + shopperId estable.
 
-- versión `sites/cxorbia-backend-dev/versions/a4b90bd224b28329`;
-- release `sites/cxorbia-backend-dev/releases/1785448336285000`;
-- browserAuth remoto PASS;
-- entrypoint PASS;
-- proof PASS;
-- username/password namespaced PASS;
-- `singleVisibleLogin=true`;
-- `parallelAuthGate=false`;
-- preservedLegacyAuthUsers91.
+## 4. Perfil Admin incompleto
+La ruta usada en la visual es HR source-safe y su overlay remoto es `display_name_only`. Sirvió para probar nombres, pero no es la ruta operativa final para perfiles completos.
 
-Seguridad: Auth writes0, Firestore data writes0, Rules0, nuevo Firebase/Hosting0, Storage0, HR0, legacy0, pagos0, Functions0, Make/Gemini0, merge=false, producción=false.
+Superadmin debe recibir desde backend protegido todos los campos autorizados existentes: nombre, username, teléfono/WhatsApp, correo, ubicación, documento, datos de pago cuando existan, certificaciones, liquidaciones/pagos, campos agregados por shopper y el histórico completo enlazado por `shopperId`.
 
-Evidencia: `app/docs/evidence/CORTE6-CREDENTIAL-CONTINUITY-HOSTING-DEPLOY-LATEST.json` y `app/docs/CORTE6-SINGLE-LOGIN-HOSTING-DEV-REMOTE-PASS-20260730.md`.
+Shopper solo ve su propio perfil/scope. Cliente no hereda datos personales de shoppers.
 
-## 4. Claude/prototipo
-**No nueva candidata general. No tocar `app/modules/*` por este tema.**
+## 5. Credenciales TyA
+Regla funcional preservada: username `nombre.apellido`; contraseña inicial histórica tipo `Nombre123*`.
 
-El P0 ya fue corregido focalizadamente en el punto autorizado de integración. Claude debe preservar como patrón reusable:
-- un único acceso visible;
-- provider/Auth detrás del producto;
-- sesión restaurable;
-- logout real;
-- namespaces internos `staff/shopper`;
-- error seguro de credencial vs scope/namespace;
-- no reintroducir `cxBackendAuthGate`, `cxBackendAuthNamespace`, `cxBackendAuthLogin` ni `interactive-session`.
+Firebase Auth no permite recuperar la contraseña actual. No guardar passwords en claro en JS/repo/Firestore público. El perfil protegido debe mostrar username y estado de credencial; la contraseña inicial/legacy solo si está comprobada por fuente segura. Si no puede comprobarse, corresponde reset controlado al patrón, sujeto a autorización Auth específica.
 
-## 5. Gate vivo
-Ahora corresponde **una única validación visual humana** del Hosting DEV publicado.
+Auth91/91 no se reimporta.
 
-Validar:
-1. no aparece `Acceso seguro` como pantalla separada;
-2. aparece el login normal TyA/CXOrbia;
-3. al seleccionar perfil habilitado, Usuario + Contraseña aparecen dentro del mismo acceso;
-4. la autenticación entra una sola vez;
-5. refresh con sesión válida no repite login;
-6. logout sí vuelve al único login.
+## 6. Plataforma vigente / legacy útil
+Existe export reciente de la plataforma actual con `tya_shoppers_extra` y más datos de perfil. Recuperar esos datos solo por export/import; nunca conectar la base vieja.
 
-Si la visual aprueba: `FREEZE CORTE6 → REFRESH HR → RESOLVER AGOSTO HN → MATERIALIZAR SOLO DELTA AGOSTO → PREPROD/CUTOVER`.
+Conciliar por IDs/evidencia estable. Hay duplicados/conflictos históricos, por lo que nombre/teléfono no pueden ser llave única. Conflictos → revisión humana.
 
-## 6. P1/P2 preservado
-- PDF sin gráfica final;
-- Excel sin formato final;
+## 7. Histórico y KPI
+El historial del perfil debe derivarse de las 616 visitas canónicas y enlazarse por `shopperId` estable.
+
+`app/core/shoppers-store.js::shopperStats` usa hoy una lista estrecha de estados y puede subcontar históricos `submitida`/otros estados canónicos. Claude debe preservar el diseño de KPI/drill, pero la semántica debe venir del contrato/adaptador canónico, sin inferir estados.
+
+## 8. Claude/prototipo
+No generar candidata general ahora. Corrección focalizada requerida solamente si el backend protegido entrega los datos y la UI no los refleja:
+- `app/modules/shoppers.js`: perfil completo autorizado; username/estado de credencial; campos reales; drill de KPI; histórico completo.
+- `app/modules/misvisitas.js` / `miperfil`: mantener fail-closed sin shopperId; nunca fallback `sh1`.
+- `app/app.js`: login Shopper debe resolver identidad real, no autoentrar como sesión anónima.
+
+El prototipo manda; no rediseñar.
+
+## 9. P1/P2 preservado
+- PDF/gráficas;
+- Excel/formato;
 - reportKit/exportaciones transversales;
 - copy de fuentes/readiness.
 
-No mezclar estos pendientes con el gate visual de Corte6.
+No mezclar estos pendientes con el P0 Shopper.
 
-## 7. HOLD preservado
-- 21 shopper credentials sin perfil canónico exacto;
-- demo role1;
-- ambiguous groups18/77 registros.
+## 10. Siguiente bloque
+`PROTECTED-RUNTIME READ-ONLY VALIDATION → INVENTARIO DE CAMPOS PERFIL + CONCILIACIÓN EXPORT LEGACY → PLAN DELTA EXACTO → GATES AUTH/FIRESTORE SEPARADOS → REDEPLOY DEV SOLO CON NUEVA AUTORIZACIÓN → VISUAL → FREEZE C6`.
 
-No resolver por nombre/coincidencia visual.
-
-## 8. Academia/manuales
-Sincronizado en `app/docs/ACADEMIA-IMPACTO-CORTE6-SINGLE-LOGIN-REMOTE-PASS-20260730.md`: acceso único, recuperación/cambio, scopes, sesión/refresh/logout, namespace interno, shopperId exacto y troubleshooting.
-
-## 9. Estado seguro
-PR #7 permanece draft/open/no merge. Producción `tya-plataforma` no fue tocada.
+Documento de causa raíz: `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-VISUAL-FAIL-SHOPPER-IDENTITY-PROFILE-20260731.md`.
