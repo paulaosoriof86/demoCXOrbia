@@ -37,7 +37,12 @@ jobs:
           if(sa.type!=='service_account'||sa.project_id!=='cxorbia-backend-dev')throw new Error('wrong_service_account');
           const b64=v=>Buffer.from(v).toString('base64url');
           const now=Math.floor(Date.now()/1000);
-          const unsigned=`${b64(JSON.stringify({alg:'RS256',typ:'JWT'}))}.${b64(JSON.stringify({iss:sa.client_email,scope:'https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/drive.metadata.readonly',aud:'https://oauth2.googleapis.com/token',iat:now,exp:now+1800}))}`;
+          const scopes=[
+            'https://www.googleapis.com/auth/cloud-platform',
+            'https://www.googleapis.com/auth/spreadsheets.readonly',
+            'https://www.googleapis.com/auth/drive.metadata.readonly'
+          ].join(' ');
+          const unsigned=`${b64(JSON.stringify({alg:'RS256',typ:'JWT'}))}.${b64(JSON.stringify({iss:sa.client_email,scope:scopes,aud:'https://oauth2.googleapis.com/token',iat:now,exp:now+1800}))}`;
           const signer=crypto.createSign('RSA-SHA256');signer.update(unsigned);signer.end();
           const assertion=`${unsigned}.${signer.sign(sa.private_key).toString('base64url')}`;
           async function json(url,options={}){const r=await fetch(url,options);let body=null;try{body=await r.json()}catch{}return {status:r.status,ok:r.ok,body};}
@@ -52,16 +57,22 @@ jobs:
             const perm=await json('https://cloudresourcemanager.googleapis.com/v1/projects/cxorbia-backend-dev:testIamPermissions',{method:'POST',headers:h,body:JSON.stringify({permissions:permissionList})});
             const granted=new Set(perm.body?.permissions||[]);
             const serviceName=`projects/${projectNumber||'cxorbia-backend-dev'}/services/sheets.googleapis.com`;
-            const sheets=await json(`https://serviceusage.googleapis.com/v1/${serviceName}`,{headers:h});
+            const sheetsService=await json(`https://serviceusage.googleapis.com/v1/${serviceName}`,{headers:h});
             const sheetId='1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4';
+            const sheetsDoc=await json(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?includeGridData=false&fields=spreadsheetId,properties(title),sheets(properties(sheetId,title,index))`,{headers:h});
             const drive=await json(`https://www.googleapis.com/drive/v3/files/${sheetId}?fields=id,name,mimeType&supportsAllDrives=true`,{headers:h});
+            const titles=(sheetsDoc.body?.sheets||[]).map(s=>s?.properties?.title).filter(Boolean);
+            const monthlyTitles=titles.filter(t=>!/^(DASHBOARD|DASHBOARD HN)$/i.test(t));
+            const apiEnabled=sheetsService.body?.state==='ENABLED';
+            const sheetAccessible=sheetsDoc.ok&&sheetsDoc.body?.spreadsheetId===sheetId;
             const report={
-              schemaVersion:'cxorbia.live-hr-provider-capability-preflight.v1',
+              schemaVersion:'cxorbia.live-hr-provider-capability-preflight.v2',
               generatedAt:new Date().toISOString(),
-              decision:'READONLY_PROVIDER_CAPABILITY_PREFLIGHT',
+              decision:apiEnabled&&sheetAccessible?'PASS_SHEETS_API_AND_CANONICAL_HR_READER':'HOLD_PROVIDER_CAPABILITY_OR_HR_READER',
               target:{projectId:'cxorbia-backend-dev',projectNumber:projectNumber||null,serviceAccountEmail:sa.client_email},
-              googleSheetsApi:{httpStatus:sheets.status,state:sheets.body?.state||null,enabled:sheets.body?.state==='ENABLED',errorReason:sheets.body?.error?.status||sheets.body?.error?.details?.[0]?.reason||null},
-              spreadsheetAccess:{driveHttpStatus:drive.status,accessible:drive.ok&&drive.body?.id===sheetId,errorStatus:drive.body?.error?.status||null,errorReason:drive.body?.error?.errors?.[0]?.reason||drive.body?.error?.details?.[0]?.reason||null},
+              googleSheetsApi:{httpStatus:sheetsService.status,state:sheetsService.body?.state||null,enabled:apiEnabled,errorReason:sheetsService.body?.error?.status||sheetsService.body?.error?.details?.[0]?.reason||null},
+              spreadsheetAccess:{httpStatus:sheetsDoc.status,accessible:sheetAccessible,title:sheetsDoc.body?.properties?.title||null,totalTabs:titles.length,monthlyTabs:monthlyTitles.length,latestMonthlyTab:monthlyTitles.at(-1)||null,errorStatus:sheetsDoc.body?.error?.status||null,errorReason:sheetsDoc.body?.error?.details?.[0]?.reason||null},
+              driveMetadataAccess:{httpStatus:drive.status,accessible:drive.ok&&drive.body?.id===sheetId,errorStatus:drive.body?.error?.status||null,errorReason:drive.body?.error?.errors?.[0]?.reason||drive.body?.error?.details?.[0]?.reason||null,note:'Drive API is not required for HR runtime reads; sharing is validated separately through Drive permission metadata.'},
               iam:{testHttpStatus:perm.status,granted:[...granted].sort(),missing:permissionList.filter(p=>!granted.has(p)).sort(),canEnableSheetsApi:granted.has('serviceusage.services.enable'),canUpdateCloudRun:granted.has('run.services.update'),canActAs:granted.has('iam.serviceAccounts.actAs'),canStartCloudBuild:granted.has('cloudbuild.builds.create')},
               safety:{providerReads:true,providerWrites:0,hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,cloudRunDeploys:0,production:false,merge:false,secretsExported:false}
             };
@@ -89,5 +100,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           STATE=error;DESC='HOLD_LIVE_HR_PROVIDER_PREFLIGHT'
-          if [ -f app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json ];then STATE=success;DESC='PASS_LIVE_HR_PROVIDER_PREFLIGHT_READONLY';fi
+          if [ -f app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json ]; then
+            DECISION=$(node -e "const x=require('./app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json');process.stdout.write(x.decision||'')")
+            if [ "$DECISION" = 'PASS_SHEETS_API_AND_CANONICAL_HR_READER' ]; then STATE=success;DESC='PASS_SHEETS_API_AND_CANONICAL_HR_READER'; fi
+          fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/live-hr-provider-capability-preflight' -f description="$DESC" >/dev/null
