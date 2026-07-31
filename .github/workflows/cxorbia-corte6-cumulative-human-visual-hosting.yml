@@ -1,0 +1,179 @@
+name: CXOrbia Corte 6 Cumulative Human Visual Hosting DEV
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/corte6-cumulative-human-visual-hosting-execute.json'
+
+permissions:
+  contents: write
+  statuses: write
+  id-token: write
+
+concurrency:
+  group: cxorbia-c6-cumulative-human-visual-hosting
+  cancel-in-progress: false
+
+env:
+  GCP_PROJECT_ID: cxorbia-backend-dev
+  FIREBASE_HOSTING_TARGET: cxorbia-dev
+  HOSTING_SITE: cxorbia-backend-dev
+  DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+  REQUEST: backend/config/corte6-cumulative-human-visual-hosting-request.json
+  EXECUTE: backend/config/corte6-cumulative-human-visual-hosting-execute.json
+  OUT_DIR: .tmp/c6-cumulative-human-visual-hosting
+
+jobs:
+  hosting:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate exact one-shot authorization
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
+          const x=JSON.parse(fs.readFileSync(process.env.EXECUTE,'utf8'));
+          if(r.schemaVersion!=='cxorbia.corte6.cumulative-human-visual-hosting-request.v1')throw new Error('request_schema_mismatch');
+          if(x.schemaVersion!=='cxorbia.corte6.cumulative-human-visual-hosting-execute.v1')throw new Error('execute_schema_mismatch');
+          for(const o of [r,x])if(o.repository!=='paulaosoriof86/demoCXOrbia'||o.branch!=='docs-tya-v6-v71-audit'||o.firebaseProjectId!=='cxorbia-backend-dev'||o.hostingSite!=='cxorbia-backend-dev'||o.hostingTarget!=='cxorbia-dev'||o.tenantId!=='tya'||o.projectId!=='cinepolis')throw new Error('target_identity_mismatch');
+          if(r.scope!=='single_existing_dev_hosting_redeploy_for_cumulative_hr_profile_finance_visual'||r.singleHostingDeployMax!==1||r.hostingDeployExecutions!==0||r.cloudRunAlreadyReady!==true||r.liveHrAutoRefreshRequired!==true||r.protectedProfileOverlayRequired!==true||r.canonicalFinancePreservedRequired!==true||r.exactIdentityOnly!==true||r.namePhoneEmailDedupeAllowed!==false)throw new Error('scope_contract_mismatch');
+          if(r.enabled!==true||r.consumed!==false||r.status!=='authorized_waiting_execute'||r.authorizedBy!=='Paula'||!r.authorizationId||!r.authorizationText)throw new Error('authorization_missing');
+          if(x.enabled!==true||x.consumed!==false||x.status!=='execute_authorized_once'||x.requestId!==r.requestId||x.authorizationId!==r.authorizationId)throw new Error('execute_marker_invalid');
+          for(const k of ['firestoreWrites','authWrites','authResets','rulesDeploys','cloudRunDeploys','storageWrites','hrWrites','legacyWrites','makeWrites','geminiCalls','paymentsWrites','newFirebaseProjects','newHostingSites'])if(Number(r[k]||0)!==0||Number(x[k]||0)!==0)throw new Error('unsafe_scope:'+k);
+          if(r.merge!==false||r.production!==false||x.merge!==false||x.production!==false)throw new Error('unsafe_scope');
+          NODE
+
+      - name: Static cumulative contract before provider mutation
+        run: |
+          set -euo pipefail
+          node --check app/adapters/tya-dev-full-visual-bridge.js
+          node --check app/adapters/tya-live-source-refresh-watch.js
+          grep -q "cumulative overlay" app/adapters/tya-dev-full-visual-bridge.js
+          grep -q "legacyShopperId" app/adapters/tya-dev-full-visual-bridge.js
+          grep -q "canonicalLegacyIds" app/adapters/tya-dev-full-visual-bridge.js
+          grep -q "canonicalFinancePreserved" app/adapters/tya-dev-full-visual-bridge.js
+          grep -q "CX_TYA_REAPPLY_FULL_VISUAL_OVERLAY" app/adapters/tya-dev-full-visual-bridge.js
+          grep -q "if(protectedRuntimeRequested)" app/adapters/tya-live-source-refresh-watch.js
+          grep -q "reapplyFullVisual" app/adapters/tya-live-source-refresh-watch.js
+          ! grep -q "protectedRuntimeRequested||fullVisualRequested" app/adapters/tya-live-source-refresh-watch.js
+          grep -q "CX_TYA_FINANCIAL_CANONICAL_READY" app/adapters/tya-financial-canonical-source-safe-adapter.js
+          grep -q "tya-financial-canonical-source-safe-adapter.js" app/index-backend-dev.html
+          grep -q "tya-dev-full-visual-bridge.js" app/index-backend-dev.html
+          if git diff --name-only 89b23567f10e3d299d3b32d3ffcf1bcd4f0bee83..HEAD | grep -q '^app/modules/'; then echo 'Unexpected module mutation'; exit 2; fi
+
+      - name: Authenticate existing Google Cloud DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+
+      - name: Provider read-only preflight
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 6 --retry-delay 2 "$DEV_ROOT_URL/api/tya/cinepolis/hr-live?format=meta&fresh=1" -o "$OUT_DIR/hr-meta-before.json"
+          code="$(curl -sS -o "$OUT_DIR/full-unauthorized-before.json" -w '%{http_code}' "$DEV_ROOT_URL/api/tya/cinepolis/hr-live?view=full-profile&scope=admin")"
+          test "$code" = '401'
+          node <<'NODE'
+          const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/hr-meta-before.json','utf8'));const u=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/full-unauthorized-before.json','utf8'));
+          if(m.runtimeRead!==true||m.sourceSafe!==true||m.visits!==616||m.tabRegistryAutoDiscovery!==true)throw new Error('live_hr_baseline_not_preserved');
+          if(u.error!=='dev_visual_authorization_required')throw new Error('full_visual_gate_not_fail_closed');
+          NODE
+
+      - name: Prepare exact existing Hosting DEV config
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const config={hosting:{target:'cxorbia-dev',public:'app',ignore:['firebase.json','**/.*','**/node_modules/**'],rewrites:[{source:'/api/tya/cinepolis/hr-live',run:{serviceId:'cxorbia-live-hr-dev',region:'us-central1'}},{source:'**',destination:'/index.html'}],headers:[{source:'**',headers:[{key:'Cache-Control',value:'no-store'}]},{source:'**/*.html',headers:[{key:'Content-Type',value:'text/html; charset=utf-8'}]},{source:'**/*.js',headers:[{key:'Content-Type',value:'application/javascript; charset=utf-8'}]},{source:'**/*.css',headers:[{key:'Content-Type',value:'text/css; charset=utf-8'}]},{source:'**/*.json',headers:[{key:'Content-Type',value:'application/json; charset=utf-8'}]}]}};
+          fs.writeFileSync(process.env.OUT_DIR+'/firebase.hosting.json',JSON.stringify(config,null,2)+'\n','utf8');
+          NODE
+
+      - name: Deploy existing Hosting DEV once
+        id: deploy
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts firebase-tools@latest >/dev/null 2>&1
+          cp "$OUT_DIR/firebase.hosting.json" firebase.c6-cumulative.json
+          npx firebase deploy --config firebase.c6-cumulative.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive
+          rm -f firebase.c6-cumulative.json
+
+      - name: Persist provider mutation immediately
+        if: steps.deploy.outcome == 'success'
+        run: |
+          set -euo pipefail
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          node <<'NODE'
+          const fs=require('fs');const p=process.env.REQUEST;const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          r.hostingDeployExecutions=1;r.status='hosting_deployed_smoke_pending';r.hostingDeployedAt=new Date().toISOString();fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$REQUEST"; git commit -m 'gate: record cumulative C6 Hosting DEV one-shot'; git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Remote cumulative smoke
+        id: smoke
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-dev-full-visual-bridge.js" -o "$OUT_DIR/full.js"
+          curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-live-source-refresh-watch.js" -o "$OUT_DIR/watcher.js"
+          curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-financial-canonical-source-safe-adapter.js" -o "$OUT_DIR/finance.js"
+          curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/api/tya/cinepolis/hr-live?format=meta&fresh=1" -o "$OUT_DIR/hr-meta-after.json"
+          grep -q "cumulative overlay" "$OUT_DIR/full.js"
+          grep -q "canonicalLegacyIds" "$OUT_DIR/full.js"
+          grep -q "CX_TYA_REAPPLY_FULL_VISUAL_OVERLAY" "$OUT_DIR/full.js"
+          grep -q "reapplyFullVisual" "$OUT_DIR/watcher.js"
+          ! grep -q "protectedRuntimeRequested||fullVisualRequested" "$OUT_DIR/watcher.js"
+          grep -q "CX_TYA_FINANCIAL_CANONICAL_READY" "$OUT_DIR/finance.js"
+          code="$(curl -sS -o "$OUT_DIR/full-unauthorized-after.json" -w '%{http_code}' "$DEV_ROOT_URL/api/tya/cinepolis/hr-live?view=full-profile&scope=admin")"
+          test "$code" = '401'
+          node <<'NODE'
+          const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/hr-meta-after.json','utf8'));const u=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/full-unauthorized-after.json','utf8'));
+          if(m.runtimeRead!==true||m.sourceSafe!==true||m.visits!==616||m.tabRegistryAutoDiscovery!==true)throw new Error('remote_live_hr_not_preserved');
+          if(u.error!=='dev_visual_authorization_required')throw new Error('remote_full_visual_gate_not_fail_closed');
+          NODE
+
+      - name: Persist sanitized PASS evidence and consume authorization
+        if: steps.smoke.outcome == 'success'
+        run: |
+          set -euo pipefail
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          node <<'NODE'
+          const fs=require('fs');const rp=process.env.REQUEST,xp=process.env.EXECUTE;const r=JSON.parse(fs.readFileSync(rp,'utf8')),x=JSON.parse(fs.readFileSync(xp,'utf8'));
+          if(r.hostingDeployExecutions!==1)throw new Error('hosting_execution_count_mismatch');
+          const e={schemaVersion:'cxorbia.corte6.cumulative-human-visual-hosting-evidence.v1',generatedAt:new Date().toISOString(),decision:'PASS_EXISTING_HOSTING_DEV_CUMULATIVE_HR_PROFILE_FINANCE_REMOTE_READY',authorizationId:r.authorizationId,requestId:r.requestId,projectId:'cxorbia-backend-dev',hostingSite:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',hostingDeployExecutions:1,remote:{liveHrAutoRefreshAsset:true,hrProviderFreshMeta:true,hrVisits616:true,autoMonthDiscovery:true,protectedProfileCumulativeOverlay:true,exactLegacyAliasSuppression:true,canonicalFinanceAssetPreserved:true,fullVisualGateFailClosed:true,humanFirebaseCredentialPromptRequired:false},safety:{firestoreWrites:0,authWrites:0,authResets:0,rulesDeploys:0,cloudRunDeploys:0,storageWrites:0,hrWrites:0,legacyWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,newFirebaseProjects:0,newHostingSites:0,production:false,merge:false}};
+          fs.writeFileSync('app/docs/evidence/CORTE6-CUMULATIVE-HUMAN-VISUAL-HOSTING-LATEST.json',JSON.stringify(e,null,2)+'\n','utf8');
+          for(const o of [r,x]){o.status='consumed_pass';o.enabled=false;o.consumed=true;o.consumedAt=new Date().toISOString();o.decision=e.decision;o.nextGate='HUMAN_VISUAL_CUMULATIVE_HR_PROFILE_FINANCE';}
+          fs.writeFileSync(rp,JSON.stringify(r,null,2)+'\n','utf8');fs.writeFileSync(xp,JSON.stringify(x,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CORTE6-CUMULATIVE-HUMAN-VISUAL-HOSTING-LATEST.json "$REQUEST" "$EXECUTE"
+          git commit -m 'evidence: cumulative C6 Hosting DEV PASS'; git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Publish status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          STATE=success;DESC='PASS_C6_CUMULATIVE_HUMAN_VISUAL_HOSTING'
+          if [ '${{ job.status }}' != 'success' ]; then STATE=error;DESC='FAIL_C6_CUMULATIVE_HUMAN_VISUAL_HOSTING'; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/corte6-cumulative-human-visual-hosting/$DESC" -f description="$DESC" >/dev/null
+
+      - name: Cleanup
+        if: always()
+        run: rm -rf "$OUT_DIR" firebase.c6-cumulative.json
