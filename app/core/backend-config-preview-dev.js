@@ -3,30 +3,36 @@
    ------------------------------------------------------------
    No se carga en app/index.html.
    Solo se carga en app/index-backend-dev.html.
-   Activa el preview únicamente con token de querystring.
 
-   Corte 6 · P0 visual 2026-07-30:
-   - EL PROTOTIPO MANDA: la validación humana no agrega credenciales ni un login paralelo.
-   - Admin/Cliente/Shopper conservan el acceso automático aprobado del producto.
-   - La validación humana consume el snapshot HR source-safe ya cargado y rotulado.
-   - Firebase Auth/RBAC permanece validado por gates/provider separados; no se degrada ni se abre Rules.
-   - Si existe una sesión Firebase válida puede restaurarse en futuros gates, pero esta pantalla no la exige.
+   Dos carriles DEV explícitos y mutuamente excluyentes:
+   1) human visual source-safe: prototipo sin Auth visible;
+   2) protected runtime: Firebase Auth + claims + Rules + Firestore real.
+
+   El carril protegido nunca puede ser degradado después a source-safe.
    ============================================================ */
 window.CX = window.CX || {};
 
 (function(){
   const TOKEN = 'YES_PAULA_20260628_PREVIEW_DEV';
+  const PROTECTED_TOKEN = 'YES_PAULA_20260730_PROTECTED_DEV';
   const params = new URLSearchParams(window.location.search || '');
   const token = params.get('cxBackendPreview');
+  const protectedRequested = params.get('cxProtectedRuntime') === PROTECTED_TOKEN;
   const stored = sessionStorage.getItem('CXORBIA_PREVIEW_DEV_APPROVED');
   const approved = token === TOKEN || stored === TOKEN;
 
-  if(token === TOKEN){
-    sessionStorage.setItem('CXORBIA_PREVIEW_DEV_APPROVED', TOKEN);
-  }
+  if(token === TOKEN) sessionStorage.setItem('CXORBIA_PREVIEW_DEV_APPROVED', TOKEN);
 
   if(!approved){
     console.warn('[CX.backend-preview] Preview DEV no autorizado. Adapter sigue desactivado.');
+    return;
+  }
+
+  /* P0 Corte6: si se pidió runtime protegido, este archivo NO toca CX.dataSource ni desactiva
+     backend. backend-protected-dev-mode.js es el único dueño de esa configuración. */
+  if(protectedRequested){
+    window.CX_BACKEND_PREVIEW_LANE = 'protected-runtime';
+    console.warn('[CX.backend-preview] Carril protegido solicitado; se omite forceHumanVisualSourceSafe().');
     return;
   }
 
@@ -44,21 +50,15 @@ window.CX = window.CX || {};
       CX.dataSource.sourceRef = 'hr:tya-source-safe-human-visual-dev';
       CX.dataSource.updatedAt = new Date().toISOString();
       CX.dataSource.warnings = [
-        'Validación humana DEV: acceso UX del prototipo + HR source-safe. Firebase Auth/RBAC se valida por gates separados; no se solicitan credenciales en esta pantalla.'
+        'Validación humana DEV source-safe. Para identidad/perfil real usar el carril protegido autenticado.'
       ];
       CX.dataSource.blockers = [];
     }
     if(CX.BRAND) CX.BRAND.demoMode = false;
     window.CX_BACKEND_DATA_SOURCE = 'hr-source-safe';
     window.CX_BACKEND_LAST_STATE = {
-      source:'hr-source-safe',
-      at:new Date().toISOString(),
-      tenantId:'tya',
-      humanVisual:true,
-      auth:'validated-separately',
-      readOnly:true,
-      writes:false,
-      production:false
+      source:'hr-source-safe', at:new Date().toISOString(), tenantId:'tya',
+      humanVisual:true, auth:'validated-separately', readOnly:true, writes:false, production:false
     };
   }
 
@@ -74,8 +74,6 @@ window.CX = window.CX || {};
   }
 
   CX.BACKEND = Object.assign(CX.BACKEND || {}, {
-    /* Deliberadamente false en el entrypoint HUMANO: evita convertir Auth en UI o bloquear el prototipo.
-       Los gates técnicos de Firestore/Auth permanecen separados y ya tienen evidencia propia. */
     enabled: false,
     previewMode: true,
     humanVisualSourceSafe: true,
@@ -94,10 +92,11 @@ window.CX = window.CX || {};
       persist: 'session',
       storedCredentialFallback: false,
       requireCustomClaims: true,
-      humanCredentialPrompt: false,
-    },
+      humanCredentialPrompt: false
+    }
   });
 
+  window.CX_BACKEND_PREVIEW_LANE = 'source-safe-human-visual';
   forceHumanVisualSourceSafe();
-  console.warn('[CX.backend-preview] Human visual DEV: prototipo intacto + HR source-safe; Auth/RBAC provider se valida por gates separados; writes deshabilitados.');
+  console.warn('[CX.backend-preview] Carril source-safe humano activo; writes deshabilitados.');
 })();
