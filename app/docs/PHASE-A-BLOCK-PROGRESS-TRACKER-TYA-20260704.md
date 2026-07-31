@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-31  
-**Estado:** `C3_FROZEN__C5_1406_PASS__C6_PROFILE_WRITE_PASS__NO_CREDENTIAL_FULL_VISUAL_REDEPLOY_PASS__WAITING_HUMAN_VISUAL__31_HOLD`
+**Estado:** `C3_FROZEN__C5_1406_PASS__C6_PROFILE_WRITE_PASS__HUMAN_VISUAL_PARTIAL_FAIL__CUMULATIVE_FIX_PREPARED__WAITING_HOSTING_AUTH__31_HOLD`
 
 ## 1. Cerrado/protegido
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
@@ -11,28 +11,38 @@
 - Auth91/91, claims5/5, Rules PASS.
 - HR live/auto-month PASS.
 - Perfil completo Firestore120 docs/329 campos WRITE+READBACK PASS.
+- Finanzas/pagos canónicos source-safe preservados.
 
-## 2. Human visual no-credential — PASS técnico
-Autorización `chat-20260731-corte6-human-full-visual-no-credential-01` consumida.
-- Cloud Run DEV redeploys1; revisión `cxorbia-live-hr-dev-00009-xs8`.
-- Hosting DEV redeploys1.
-- Decisión `PASS_EXISTING_DEV_CLOUD_RUN_HOSTING_NO_CREDENTIAL_FULL_VISUAL_REMOTE_READY`.
-- Full-profile fail-closed401 sin sesión visual.
-- Auto-entry Admin + picker Shopper DEV preservados.
-- Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes0 durante este gate.
+## 2. Human visual no-credential
+Acceso PASS: auto-entry Admin + picker Shopper real.
 
-## 3. Validación objetivo
-`ENLACE TEMPORAL SIN CREDENCIALES → ADMIN PERFIL COMPLETO/KPI/HISTÓRICO → SHOPPER PICKER REAL/MÓDULOS → PASS/FAIL`.
+Composición FAIL/P0: Dashboard JUL0, watcher HR deshabilitado, lista Shopper con aliases/fixtures/refs, perfil/histórico incompleto, Beneficios/Finanzas vacíos.
 
-## 4. 31 identity HOLD
-No resueltos por llaves estables ni Auth claims. No usar nombre/teléfono/email. Requieren alta/conciliación explícita posterior.
+## 3. Causa/fix preparado
+- full visual reemplazaba CX.data; ahora será overlay acumulativo;
+- HR viva conserva periodo/visitas/auto-mes;
+- Firestore agrega perfil/histórico por ID exacto;
+- finanzas/pagos canónicos siguen autoridad;
+- watcher HR vuelve a estar activo y reaplica overlay;
+- aliases solo se suprimen por `legacyShopperId` exacto;
+- módulos UI intactos.
 
-## 5. Julio/agosto
-No materializar agosto hasta cerrar/freeze Corte6.
+No hay nuevo provider deploy todavía.
 
-## 6. Claude/Academia
-- Claude: no rediseño ni cambio de módulos; fix backend/core/adapters DEV.
-- Academia: separar human QA auto-entry de Auth provider y documentar sesión visual temporal server-side.
+## 4. Gate pendiente
+`AUTORIZACIÓN MÁXIMO1 HOSTING DEV EXISTENTE → PREFLIGHT HR616/AUTO-MONTH + FULL-PROFILE401 → DEPLOY → REMOTE SMOKE → HUMAN VISUAL ACUMULATIVA`.
 
-## 7. Gate actual
-`HUMAN VISUAL ADMIN+SHOPPER SIN CREDENCIALES → PASS/FAIL → 31 HOLD → FREEZE C6 → AGOSTO`.
+Cloud Run0; Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes0.
+
+## 5. 31 identity HOLD
+No resueltos por llaves estables ni Auth claims. No usar nombre/teléfono/email. Requieren decisión/conciliación explícita posterior.
+
+## 6. Julio/agosto
+No materializar agosto hasta cerrar/freeze Corte6. HR live/auto-month continúa siendo requisito acumulativo.
+
+## 7. Claude/Academia
+- Claude: no cambio de módulos; fix backend/adapters DEV.
+- Academia: composición acumulativa HR viva + perfil protegido + finanzas canónicas.
+
+## 8. Gate actual
+`1x HOSTING DEV ACUMULATIVO → HUMAN VISUAL ÚNICA HR+SHOPPER+BENEFICIOS+FINANZAS → PASS/FAIL → 31 HOLD → FREEZE C6 → AGOSTO`.
