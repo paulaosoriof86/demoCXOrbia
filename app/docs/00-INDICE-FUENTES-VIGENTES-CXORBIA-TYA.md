@@ -23,13 +23,14 @@
 7. `ACADEMIA-IMPACTO-HR-LIVE-AUTOMONTH-PLATFORM-ORIGIN-20260731.md`;
 8. `evidence/CORTE6-LIVE-HR-SHOPPER-DISPLAY-DEV-DEPLOY-LATEST.json`;
 9. `evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json`;
-10. `backend/runtime/hr-live-service/server.mjs`;
-11. `tools/hr-source/tya-live-provider-registry-identity-dev.mjs`;
-12. `tools/hr-source/tya-enforce-live-tab-registry.mjs`;
-13. `app/adapters/tya-live-source-inplace-apply.js`;
-14. `app/adapters/tya-live-source-refresh-watch.js`;
-15. `app/index-backend-dev.html`;
-16. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A y PR #7.
+10. `backend/config/phase-a-live-hr-runtime-deploy-request-v1.json`;
+11. `backend/runtime/hr-live-service/server.mjs`;
+12. `tools/hr-source/tya-live-provider-registry-identity-dev.mjs`;
+13. `tools/hr-source/tya-enforce-live-tab-registry.mjs`;
+14. `app/adapters/tya-live-source-inplace-apply.js`;
+15. `app/adapters/tya-live-source-refresh-watch.js`;
+16. `app/index-backend-dev.html`;
+17. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A y PR #7.
 
 ## 3. Baseline protegida — no reabrir
 - Corte3 FROZEN.
