@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.c6.live-hr-shopper-display-dev-redeploy.v1",
   "requestId": "c6-live-hr-shopper-display-dev-redeploy-20260731-01",
-  "status": "cloud_run_pass_hosting_pending",
+  "status": "hosting_deployed_smoke_pending",
   "enabled": true,
   "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -30,7 +30,7 @@
   "singleCloudRunDeployMax": 1,
   "singleHostingDeployMax": 1,
   "cloudRunDeployExecutions": 1,
-  "hostingDeployExecutions": 0,
+  "hostingDeployExecutions": 1,
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-07-31",
   "authorizationId": "chat-20260731-c6-live-hr-shopper-display-dev-redeploy-01",
@@ -51,5 +51,6 @@
   "cloudRunDeployedAt": "2026-07-31T03:14:34.705Z",
   "cloudRunRevision": "cxorbia-live-hr-dev-00008-8mf",
   "cloudRunUrl": "https://cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app",
-  "cloudRunSmokePassedAt": "2026-07-31T03:14:45.849Z"
+  "cloudRunSmokePassedAt": "2026-07-31T03:14:45.849Z",
+  "hostingDeployedAt": "2026-07-31T03:15:14.747Z"
 }
