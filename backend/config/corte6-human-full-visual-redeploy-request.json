@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.corte6.human-full-visual-redeploy.v1",
   "requestId": "corte6-human-full-visual-no-credential-20260731-01",
-  "status": "cloud_run_pass_hosting_pending",
+  "status": "hosting_deployed_smoke_pending",
   "enabled": true,
   "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -26,7 +26,7 @@
   "singleCloudRunDeployMax": 1,
   "singleHostingDeployMax": 1,
   "cloudRunDeployExecutions": 1,
-  "hostingDeployExecutions": 0,
+  "hostingDeployExecutions": 1,
   "authorizedBy": "Paula",
   "authorizationId": "chat-20260731-corte6-human-full-visual-no-credential-01",
   "authorizationText": "Autorizo un único redeploy del Cloud Run DEV existente cxorbia-live-hr-dev y un único redeploy del Hosting DEV existente cxorbia-backend-dev/cxorbia-dev para activar la visual humana de Corte 6 sin credenciales Firebase, conservando el auto-entry del prototipo y usando un proxy server-side read-only con sesión visual temporal para mostrar el perfil completo de shoppers. Sin Firestore writes, Auth writes ni resets, Rules, Storage, HR/legacy writes, Make/Gemini, pagos, nuevo Firebase/Hosting, merge ni producción.",
@@ -51,5 +51,6 @@
   "cloudRunDeployedAt": "2026-07-31T18:31:56.246Z",
   "cloudRunRevision": "cxorbia-live-hr-dev-00009-xs8",
   "cloudRunUrl": "https://cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app",
-  "cloudRunSmokePassedAt": "2026-07-31T18:32:04.989Z"
+  "cloudRunSmokePassedAt": "2026-07-31T18:32:04.989Z",
+  "hostingDeployedAt": "2026-07-31T18:32:29.664Z"
 }
