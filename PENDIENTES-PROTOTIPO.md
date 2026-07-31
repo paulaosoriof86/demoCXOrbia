@@ -33,9 +33,9 @@ Tres reaplicaciones consecutivas conservaron exactamente616 visitas/208 shoppers
 Pendiente: validar el mismo contrato ya publicado en Hosting DEV y en human visual real.
 
 ## 5. Lock prototipo/Claude
-Sigue activo `app/docs/ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`.
+Activo `app/docs/ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`.
 
-Toda candidata futura debe pasar el regression gate acumulativo y no puede reintroducir fuentes/estados/fixtures superados.
+Toda candidata futura debe preservar funcionalidades ya aprobadas; no puede reintroducir fuentes/estados/fixtures superados.
 
 ## 6. 31 perfiles sin canonical — HOLD
 No resolvibles por vínculo técnico actual. No usar nombre/teléfono/email para emparejar.
@@ -49,5 +49,8 @@ No resolvibles por vínculo técnico actual. No usar nombre/teléfono/email para
 ## 8. Agosto
 No ejecutar delta agosto hasta cerrar/freeze Corte6 mediante validación remota/humana del root fix.
 
-## 9. Siguiente bloque
+## 9. Gate inmediato
 Se necesita autorización fresca para `1x Hosting DEV cxorbia-backend-dev/cxorbia-dev`; después remote smoke + human visual3x refresh. No Cloud Run, no producción.
+
+## 10. Documentación
+- CAMBIOS root fix, evidencia regression gate, Academia, checkpoint, plan, tracker, índice y Claude ya reconciliados.
