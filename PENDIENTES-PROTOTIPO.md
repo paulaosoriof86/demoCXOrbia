@@ -1,85 +1,93 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_HUMAN_VISUAL_FAIL__P0_SHOPPER_IDENTITY_NULL__ADMIN_PROFILE_INCOMPLETE__NO_NEW_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_P0_OPEN__PROTECTED_PROFILE_AUTH_HISTORY_READONLY_PASS__88_USERNAME_DELTA_READY__RUNTIME_FIX_PREPARED__NO_WRITE__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Cerrado / no reabrir
+## 1. No reabrir
 - Corte1/2A/3 FROZEN.
 - R17N FINAL 1,406/1,406; no repetir.
-- Corte5 `CX.data`: cinepolis /14 periodos /616 visitas /current2026-07 PASS.
-- Auth import/readback91/91; claims5/5; Rules PASS. No reimportar/resetear por rutina.
-- HR live auto-month remote PASS.
-- One-shot Cloud Run + Hosting DEV anterior consumido; no reutilizar.
+- Corte5 cinepolis/14 periodos/616 visitas/current2026-07 PASS.
+- Auth91/91, claims5/5, Rules PASS; no reimportar por rutina.
+- HR live auto-month PASS.
+- último one-shot Cloud Run+Hosting consumido; no reutilizar.
 
-## 2. P0 PROVEN — acceso Shopper sin identidad
-Visual real: el portal entra como `Evaluador (sin identidad)` y `shopperId=null`; Mi Perfil y Mis Visitas quedan bloqueados.
+## 2. P0 Shopper — diagnóstico actualizado
+El fallo visual `Evaluador (sin identidad)` no se resuelve con selector demo ni `sh1`.
 
-Causa en `app/app.js`: la ruta humana alojada en `cxorbia-backend-dev.web.app` no entra a `_isDevAccess()` y por tanto no ejecuta el selector DEV; cae a `selectRole('shopper')` sin identidad.
+Read-only provider ahora prueba:
+- 91 cuentas Shopper tienen claim `shopperId`;
+- 91/91 resuelven un perfil Firestore existente;
+- 0 claims shopper apuntan a perfil faltante.
 
-Reglas:
-- no fallback `sh1`;
-- no dedupe/match por nombre;
-- identidad real = Auth/claims + shopperId estable;
-- mantener fail-closed si falta identidad.
+La ruta correcta es Auth real → claim shopperId → perfil propio → módulos shopper.
 
-## 3. P0 operativo — perfil Admin no está listo para producción
-La visual actual usa HR source-safe `display_name_only`. Admin ve nombres, pero faltan campos necesarios para operación: username/credencial, WhatsApp/teléfono, correo y datos adicionales completados por shopper. El histórico individual visible es parcial.
+## 3. P0 Admin — datos protegidos
+Firestore actual contiene:
+- shoppers340;
+- identidad visible313;
+- teléfono123;
+- email39;
+- username0;
+- documento0;
+- datos banco/pago0;
+- certs embebidos0.
 
-La validación final debe hacerse sobre runtime protegido Firestore/Auth/Rules, no sobre una ruta pública source-safe.
+La ruta `display_name_only` descartaba teléfono/email aunque sí existían. La siguiente visual debe ser protected runtime.
 
-Superadmin debe poder ver los datos operativos completos autorizados. La separación source-safe no es una restricción al Superadmin: evita exponer PII a una URL pública.
+## 4. Username
+Dry-run desde bundle cifrado:
+- 109 registros shopper;
+- 88 exactos por `legacyShopperId` + binding Auth claim;
+- delta username `fill-missing-only`:88;
+- conflictos0;
+- 21 sin perfil exacto: HOLD.
 
-## 4. Credenciales
-Regla TyA vigente: `nombre.apellido` + contraseña inicial tipo `Nombre123*`.
+Pendiente: write plan idempotente y autorización Firestore específica. No ejecutar todavía.
+
+## 5. Password
+No existe password recuperable desde Firebase Auth. El bundle seguro contiene hashes.
 
 Pendiente de producto:
-- mostrar username en perfil protegido;
-- mostrar estado de credencial;
-- solo mostrar contraseña inicial/legacy si existe evidencia segura de que es la vigente;
-- si no, ofrecer reset controlado al patrón (requiere Auth write autorizado);
-- nunca guardar passwords en JS/repo/Firestore público.
+- username visible a Superadmin;
+- estado de credencial;
+- contraseña inicial solo si se verifica contra fuente segura;
+- reset al patrón solo con autorización Auth específica;
+- nunca password en JS/repo/Firestore.
 
-## 5. Fuente de datos adicionales del shopper
-Existe export reciente de la plataforma vigente con `tya_shoppers_extra`. Recuperar por export/import, sin conexión a la base vieja.
+## 6. Histórico/KPI
+Read-only canónico:
+- 616 visitas;
+- 616/616 con shopperId;
+- 194 shopperId distintos;
+- perfiles194/194;
+- submitida545, cuestionario61, agendada4, realizada3, fuera_rango3.
 
-Incluir únicamente datos reales útiles con trazabilidad: contacto, ubicación, documento, perfil, datos de pago y demás campos efectivamente guardados por el shopper. Conflictos/duplicados → review, nunca overwrite silencioso.
+El filtro legacy de `shopperStats` subcontaba `submitida`. Runtime protegido ya tiene bridge preparado para histórico completo/KPI canónico sin rediseñar módulos.
 
-## 6. Histórico completo
-El perfil debe cruzar con las 616 visitas canónicas por shopperId. No construir el histórico por nombre visual.
+## 7. Fix preparado, no desplegado
+- protected lane ya no es sobreescrito por source-safe;
+- watcher HR source-safe queda desactivado en protected runtime;
+- aliases phone/WhatsApp/email/documento/banco/username solo toman valores reales existentes;
+- KPI/histórico usa todos los estados canónicos relevantes;
+- password nunca se sintetiza.
 
-Validar:
-- todas las visitas históricas del shopper;
-- proyecto/periodo correctos;
-- realizada/cuestionario/submitida/liquidada/pagada según semántica canónica;
-- postulaciones y asignaciones vinculadas sin duplicar.
+Node syntax + marcadores anti-regresión: PASS en gate read-only.
 
-## 7. KPI shoppers
-Los KPI superiores y del perfil deben abrir detalle útil y consistente. El detalle actual depende de `shopperStats` y filtros de estado demasiado estrechos para parte del histórico.
+## 8. Datos extra de plataforma vigente
+El export vigente debe reconciliarse por export/import cifrado. No conectar RTDB vieja.
 
-Pendiente focalizado:
-- consolidar facetas canónicas de visita para KPI;
-- drill con filas completas;
-- no contar `submitida` como inexistente por un filtro legacy;
-- perfiles completos/incompletos basados en backend protegido, no en overlay display-only.
+Objetivo: traer solo campos reales útiles aún ausentes en Firestore, con exact stable-ID match. Conflictos → review; no overwrite silencioso.
 
-## 8. P1/P2 no bloqueante
-- PDF sin gráfica final;
-- Excel sin formato final;
-- reportKit/exportaciones transversales;
-- copy de fuentes/readiness.
+## 9. P1/P2 preservado
+- PDF/gráficas;
+- Excel/formato;
+- reportKit/exportaciones;
+- copy/readiness.
 
-## 9. Julio/agosto
-No iniciar delta agosto hasta cerrar este P0 y recuperar/conectar source-of-truth exacto platform-origin. No copiar julio ni repetir histórico.
-
-## 10. Academia/manuales
-Actualizar:
-- login Shopper real y resolución de identidad;
-- username/contraseña inicial y reset;
-- diferencia entre source-safe y consola protegida;
-- permisos Superadmin vs Shopper;
-- lectura de KPI e histórico.
+## 10. Agosto
+No ejecutar delta agosto hasta cerrar P0 Shopper/perfil y congelar Corte6.
 
 ## 11. Siguiente bloque exacto
-`PROTECTED-RUNTIME READ-ONLY VALIDATION → PROFILE FIELD INVENTORY + LEGACY EXPORT RECONCILIATION → DELTA PLAN → AUTH/FIRESTORE GATES → REDEPLOY DEV CON AUTORIZACIÓN NUEVA → VISUAL`.
+`PREPARAR USERNAME88 FIRESTORE WRITE PLAN SIN EJECUTAR → PERFIL EXTRA EXPORT CIFRADO/RECONCILIADO → AUTORIZACIONES EXACTAS → REDEPLOY DEV → VISUAL PROTEGIDA`.
 
 Producción/merge siguen bloqueados.
