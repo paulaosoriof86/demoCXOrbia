@@ -68,13 +68,15 @@ El dato real ya existe en Firestore protegido. Se preparó ruta autenticada DEV 
 
 Aún no se desplegó esta ruta; requiere un único redeploy Hosting DEV autorizado. No se copia PII al source-safe.
 
-## 8. Agosto hoy
-No existen todavía tabs HR de agosto. La arquitectura acepta que agosto disponible sea de origen plataforma y que después se concilie contra HR cuando aparezca. No fabricar agosto copiando julio.
+## 8. Julio/agosto
+No existen todavía tabs HR de agosto. La arquitectura acepta que agosto disponible sea de origen plataforma y que después se concilie contra HR cuando aparezca.
+
+Las fuentes inspeccionadas aún no contienen el registro exacto source-of-truth de esas visitas de agosto platform-origin. No fabricar agosto copiando julio ni inferir IDs/ubicaciones/estado. Ese origen exacto se recupera/conecta después del gate DEV y antes del write delta-only.
 
 ## 9. Gate vivo único
 `CORREGIR SHARING HR P0 + ENABLE SHEETS API EXISTENTE → REVALIDAR HR READER → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
 
-Requiere autorización explícita de provider/deploy. No producción ni Firestore data writes.
+Requiere autorización explícita de provider/deploy. Después: fuente exacta agosto platform-origin → delta-only autorizado. No producción ni Firestore data writes en este gate.
 
 ## 10. Estado seguro
 Producción no tocada. PR#7 draft/open/no merge. Histórico/Auth91/Rules/CX.data preservados. API enable0, sharing changes0, Cloud Run deploy0, Hosting deploy0, HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; PII exportada0.
