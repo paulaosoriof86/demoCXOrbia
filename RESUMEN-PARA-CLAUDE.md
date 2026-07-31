@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_P0_OPEN__PROTECTED_READONLY_PASS__USERNAME88_READY__PASSWORD68_PATTERN_VERIFIED_20_NONPATTERN__RUNTIME_FIX_PREPARED__NO_WRITE__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_P0_OPEN__EXPORT_RECOVERED__PROFILE_HANDOFF_READY__USERNAME88_READY__RUNTIME_FIX_PREPARED__NO_WRITE__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Corte3 FROZEN; R17N1,406/1,406 no repetir.
@@ -26,7 +26,7 @@ Histórico: 616/616 visitas con shopperId; 194 perfiles referenciados194/194; su
 - `visitsForShopper/shopperStats` protegidos usan histórico exacto y contemplan `submitida`;
 - no sintetizar password.
 
-Syntax/anti-regression PASS.
+Syntax/anti-regression PASS previo. No deploy nuevo autorizado.
 
 ## 5. Username exacto
 Handoff cifrado:
@@ -39,23 +39,51 @@ Handoff cifrado:
 
 Plan Firestore existe pero está disabled/unauthorized. No ejecutar sin autorización.
 
-## 6. Password — dato nuevo
+## 6. Password
 Verificación source-safe de hash contra patrón inicial `CapitalizedFirstName + 123*`:
 - exactos88;
 - patrón verificado68;
 - no patrón20.
 
-Claude no debe mostrar `Nombre123*` universalmente. Para 68 puede mostrarse estado `patrón inicial verificado`; los 20 deben preservar credencial histórica o pasar por reset Auth autorizado. Firebase Auth no devuelve plaintext vigente.
+No mostrar `Nombre123*` universalmente. Firebase Auth no devuelve plaintext vigente. Los 20 no patrón no se deben resetear por rutina.
 
-## 7. Perfil extra
-La plataforma vigente guarda `tya_shoppers_extra` con datos como WhatsApp, email, país, ciudad, DPI y credenciales históricas. Recuperar valores reales solo desde el export ya entregado, mediante export/import seguro y match estable; nunca conectar RTDB legacy.
+## 7. Export perfil extra — recuperado
+File Library volvió a responder y se recuperó el export vigente ya entregado `tya-plataforma-default-rtdb-export (6).json` del 2026-07-30. No pedirlo de nuevo.
 
-Teléfono/email ya existentes en Firestore deben aparecer en protected runtime.
+El schema real contiene, según cada registro: username/user, WhatsApp, email, país, ciudad, departamento, DPI, dirección, fecha de nacimiento, certs/histCerts, términos, aprobación/origen de cuenta y metadata histórica.
 
-## 8. Claude/prototipo
-No nueva candidata ni rediseño. Cambios actuales son de integración `core/adapters`. Tocar módulo UI solo si protected runtime entrega bien el dato y la UI no lo refleja.
+No conectar RTDB legacy.
 
-## 9. Siguiente bloque
-`RECUPERAR/RECONCILIAR EXPORT PERFIL EXTRA → DELTA COMBINADO CON USERNAME88 → AUTORIZACIÓN FIRESTORE EXACTA → READBACK → REDEPLOY DEV AUTORIZADO → VISUAL PROTEGIDA → FREEZE C6`.
+## 8. Reconciliación v2
+`tools/qa/cxorbia-corte6-profile-extra-export-readonly.mjs`:
+- match solo ID técnico estable → `legacyShopperId`;
+- no nombre/teléfono/email como llave;
+- fill-missing, nunca overwrite;
+- excluye metadata `_eliminados`;
+- password/UID legacy excluidos;
+- separa operacional / sensible / evidence-only.
+
+Operacionales candidatos: username, phone, email, country, city, department.
+
+Sensibles HOLD: document/DPI, address, birthDate. No colocarlos en `/shoppers/{id}` mientras las Rules actuales permitan leer ese documento a todos los roles operador.
+
+Evidence-only: certs/histCerts, visitas, activo/estado, términos, aprobación/origen, rating. Las 77 certificaciones y 616 visitas canónicas siguen siendo autoridad.
+
+## 9. Handoff cifrado listo
+Se preparó el puente sin PII cruda:
+- `tools/local/cxorbia-corte6-profile-extra-handoff.html` procesa OFFLINE y cifra el perfil; excluye password/pass y UID legacy;
+- `tools/qa/cxorbia-corte6-profile-extra-handoff-dryrun.mjs` descifra solo en memoria y compara Firestore read-only;
+- `.github/workflows/cxorbia-corte6-profile-extra-readonly.yml` se dispara únicamente cuando exista el bundle cifrado;
+- `backend/config/corte6-profile-extra-readonly-request.json` espera el bundle y prohíbe todos los writes/deploys.
+
+La frontera pendiente es File Library → bytes ejecutables: File Library permite inspeccionar el export, pero no entrega filesystem path al runner. No transcribir PII ni conectar legacy para sortearlo.
+
+## 10. Claude/prototipo
+No nueva candidata ni rediseño. Cambios actuales son backend/tools/integración. Tocar módulo UI solo si protected runtime entrega bien el dato y la UI no lo refleja.
+
+El módulo actual muestra `Contraseña`; no llenar ese campo con un valor inventado. Si se requiere un ajuste de copy/estado de credencial, documentarlo focalizadamente.
+
+## 11. Siguiente bloque
+`BUNDLE CIFRADO DEL EXPORT EXISTENTE → READ-ONLY RECONCILIATION AUTOMÁTICA → DELTA OPERATIVO COMBINADO CON USERNAME88 → AUTORIZACIÓN FIRESTORE EXACTA → READBACK → REDEPLOY DEV AUTORIZADO → VISUAL PROTEGIDA → FREEZE C6`.
 
 No avanzar a agosto antes del freeze.
