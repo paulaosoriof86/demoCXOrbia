@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-31  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_PROFILE_FULL_V2_READONLY_PASS__WRITE_PLAN_PREPARED__WAITING_EXPLICIT_FIRESTORE_AUTHORIZATION__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_PROFILE_FULL_V2_READONLY_PASS__WRITE_GATE_READY__WAITING_EXPLICIT_FIRESTORE_AUTHORIZATION__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -26,20 +26,22 @@
 9. `evidence/CORTE6-PROFILE-FULL-HANDOFF-READONLY-LATEST.json`;
 10. `backend/config/corte6-profile-full-firestore-write-plan-v2.json`;
 11. `backend/config/corte6-profile-full-firestore-write-request-v2.json`;
-12. `backend/config/corte6-profile-full-readonly-v2-request.json`;
-13. `tools/local/cxorbia-corte6-profile-full-handoff-v2.html`;
-14. `tools/qa/cxorbia-corte6-profile-full-handoff-dryrun-v2.mjs`;
-15. `.github/workflows/cxorbia-corte6-profile-full-readonly-v2.yml`;
-16. `app/core/backend-config-preview-dev.js`;
-17. `app/core/backend-protected-dev-mode.js`;
-18. `app/adapters/tya-live-source-refresh-watch.js`;
-19. `app/core/backend-browser-auth.js`;
-20. `app/core/backend-firebase.js`;
-21. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A, Academia y PR #7.
+12. `tools/release/cxorbia-corte6-profile-full-firestore-write-v2.mjs`;
+13. `.github/workflows/cxorbia-corte6-profile-full-firestore-write-v2.yml`;
+14. `backend/config/corte6-profile-full-readonly-v2-request.json`;
+15. `tools/local/cxorbia-corte6-profile-full-handoff-v2.html`;
+16. `tools/qa/cxorbia-corte6-profile-full-handoff-dryrun-v2.mjs`;
+17. `.github/workflows/cxorbia-corte6-profile-full-readonly-v2.yml`;
+18. `app/core/backend-config-preview-dev.js`;
+19. `app/core/backend-protected-dev-mode.js`;
+20. `app/adapters/tya-live-source-refresh-watch.js`;
+21. `app/core/backend-browser-auth.js`;
+22. `app/core/backend-firebase.js`;
+23. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A, Academia y PR #7.
 
 ## 3. Baseline protegida — no reabrir
 - Corte3 FROZEN.
-- R17N FINAL 1,406/1,406; 616 visitas +572 controles liquidación +77 certificaciones. No repetir.
+- R17N FINAL 1,406/1,406;616 visitas +572 controles liquidación +77 certificaciones. No repetir.
 - Corte5 cinepolis/14 periodos/616 visitas/current2026-07 PASS.
 - Auth91/91; claims5/5; Rules PASS. No reimportar/resetear por rutina.
 - HR live/auto-month PASS.
@@ -73,15 +75,21 @@ El primer intento read-only falló antes del provider por checksum. Solo `part-0
 - los31 missing canonical quedan HOLD y no se deduplican por nombre/teléfono/email;
 - las616 visitas y77 certificaciones canónicas permanecen autoridad; no sustituir con contadores/arrays legacy.
 
-## 8. Write gate preparado — NO autorizado
-`corte6-profile-full-firestore-write-plan-v2.json` + request disabled.
+## 8. Write gate completo preparado — NO autorizado
+Plan + request disabled + executor + workflow están listos.
+
+Antes de cualquier mutation, el gate vuelve a validar autorización, destino, SHA del bundle,151/120/31,329 valores y desglose exacto. Cualquier drift falla antes del write.
 
 Alcance futuro máximo:
--120 Firestore document writes sobre perfiles existentes exactos;
+-120 Firestore document writes únicamente sobre perfiles existentes exactos;
 -329 valores de perfil;
+- readback obligatorio de los120 documentos y cada campo escrito;
+-31 missing canonical quedan HOLD;
 - Auth/password reset0;
 - Rules/Hosting/Cloud Run/Storage/HR/legacy/Make/Gemini/pagos0;
 - producción=false; merge=false.
+
+La request sigue `enabled=false`, `authorized=false`; crear el workflow no ejecutó provider writes.
 
 ## 9. Gate vivo
 `AUTORIZACIÓN FIRESTORE EXACTA MÁX120 DOC WRITES → WRITE DESDE BUNDLE CIFRADO + READBACK → REDEPLOY DEV PROTEGIDO AUTORIZADO → HUMAN VISUAL ADMIN+SHOPPER → RESOLVER31 HOLD → FREEZE C6 → AGOSTO`.
