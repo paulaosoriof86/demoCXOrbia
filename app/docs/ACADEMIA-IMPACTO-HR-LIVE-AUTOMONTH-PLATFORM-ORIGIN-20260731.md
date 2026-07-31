@@ -1,47 +1,65 @@
 # Academia — HR viva, periodos automáticos y origen plataforma
 
 **Fecha:** 2026-07-31  
-**Estado:** `REUSABLE_PATTERN_DOCUMENTED__OPEN_READ_VALID__DEV_VS_PROD_GATE_SEPARATED__NO_PRODUCTION`
+**Estado:** `REUSABLE_PATTERN_DOCUMENTED__AUTO_MONTH_REMOTE_PASS__DISPLAY_IDENTITY_MINIMUM_DEV__NO_PRODUCTION`
 
 ## Patrón reusable
 Una operación de campo no debe exigir configuración técnica mensual cuando el calendario operativo ya existe en una fuente viva.
 
 Para CXOrbia:
 - una pestaña mensual nueva validada por metadata provider crea/detecta el periodo automáticamente;
-- el navegador refresca la fuente viva periódicamente y al recuperar foco;
-- una fuente fallback no puede inventar existencia: se conserva último estado válido y se falla cerrado;
+- metadata de tabs y lectura de filas son responsabilidades separables;
+- el navegador refresca periódicamente y al recuperar foco;
+- fallback de filas no puede probar por sí solo que una pestaña existe: registry provider manda;
 - plataforma puede originar disponibilidad antes de HR;
-- al aparecer HR, conciliar por IDs estables, origen y estado de sincronización; nunca por nombre visual.
+- al aparecer HR, conciliar por IDs estables + origen/estado de sincronización; nunca por nombre.
 
-## Caso TyA/Cinépolis
-Julio puede mantener visitas pendientes en ejecución y agosto puede tener visitas disponibles platform-origin aunque aún no existan pestañas HR de agosto.
+## Implementación validada en TyA
+Remote DEV PASS:
+- 14 periodos / 616 visitas / último `2026-07`;
+- `tabRegistryAutoDiscovery=true`;
+- `live_provider_metadata_auto_refresh`;
+- Cloud Run y Hosting existentes redeployados exactamente una vez;
+- producción intacta.
+
+En Cloud Run, el runtime usa Application Default Credentials del service account para leer metadata de Google Sheets. Esto evita incrustar una llave privada en el contenedor.
+
+## Caso Julio/agosto
+Julio puede mantener visitas pendientes en ejecución mientras agosto tiene visitas platform-origin antes de que existan tabs HR agosto.
 
 `PLATAFORMA ORIGINA → assignmentSource=platform → HR APARECE/REFLEJA → RECONCILIA → NO DUPLICA`.
 
 `HR ASIGNA → PLATAFORMA DETECTA → RETIRA DE DISPONIBLES → RECONCILIA → NO DUPLICA`.
 
-## Privacidad e identidad shopper
-- preview source-safe: identidad enmascarada;
-- runtime protegido: Auth + claims/RBAC + Firestore Rules;
-- Admin/Operación ve identidad operativa;
-- shopper solo su scope;
-- no copiar PII a JS estático.
-
-## Corrección reusable: lectura vs edición
-La lectura abierta de una fuente no equivale a permitir escritura pública.
-
-TyA ya utilizaba lectura pública/source-safe mediante GViz como fallback. Por tanto, exigir `Restricted` para que DEV pudiera leer la HR fue una mezcla metodológica incorrecta.
-
+## Lectura vs edición
 Regla reusable:
 `READ CAPABILITY != WRITE POLICY`.
 
-- **Public read** puede ser una decisión operativa válida si la fuente expuesta está prevista para lectura.
-- **Provider authenticated read** puede coexistir y ser preferente para metadata/frescura.
-- **Public write** es un riesgo distinto que debe evaluarse según el entorno y antes de cutover productivo.
-- Un gate de hardening de producción no debe bloquear innecesariamente una validación DEV read-only.
+- Public read puede ser una decisión operativa válida.
+- Provider authenticated read puede coexistir y ser preferente para metadata/frescura.
+- Public write es un riesgo separado para hardening/cutover.
+- Un gate de hardening de producción no debe convertirse artificialmente en bloqueo DEV read-only.
 
-## Provider actual
-Google Sheets API está habilitada y la service account puede leer la HR canónica de 30 tabs/28 mensuales. El fallback GViz público read-only permanece como contingencia fail-closed.
+## Identidad shopper: mínima exposición útil
+La validación humana necesita reconocer al shopper sin publicar su perfil sensible.
+
+Patrón aplicado:
+- endpoint source-safe normal: nombre enmascarado;
+- vista operacional DEV: `display_name_only`;
+- visible: nombre operativo + ID estable + país/métricas source-safe;
+- excluido: teléfono, correo, DPI, banco/cuentas, credenciales, observaciones privadas y workbook crudo;
+- módulos UI no se modifican para compensar backend;
+- auto-entry de validación se preserva; no se introduce login técnico adicional.
+
+Este patrón permite probar navegación, listas y módulos por identidad sin confundir “necesito reconocer el registro” con “debo exponer toda la PII”.
+
+## One-shot de infraestructura
+El gate de deploy usa contador persistido por proveedor:
+- registrar inmediatamente la mutación Cloud Run;
+- smoke antes de permitir Hosting;
+- registrar inmediatamente la mutación Hosting;
+- consumir autorización solo con ambos smokes PASS;
+- nunca reejecutar un proveedor ya consumido por un fallo posterior.
 
 ## Fuente canónica
 Archivos homónimos se distinguen por provider ID y estructura, no por título visual.
@@ -49,14 +67,15 @@ Archivos homónimos se distinguen por provider ID y estructura, no por título v
 ## Contenido para manuales/cursos
 - fuente viva vs snapshot;
 - detección automática de periodos;
+- provider registry vs lectura de filas;
+- ADC/runtime service account;
 - public read vs public write;
-- provider auth y mínimo privilegio;
-- gates separados DEV/producción;
 - platform-origin antes de HR;
 - conciliación bidireccional;
 - `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`;
-- source-safe vs runtime protegido;
+- identidad operativa mínima vs PII sensible;
+- state machine one-shot de deploy;
 - fail-closed y revisión de conflictos.
 
 ## Seguridad
-Documentación únicamente. Sin deploy, Firestore/HR/Auth/Rules/Storage/Make/Gemini, merge ni producción.
+DEV únicamente. Firestore/HR/Auth/Rules/Storage/Make/Gemini/pagos writes0; merge=false; producción=false.
