@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "cxorbia.live-hr-provider-capability-preflight.v1",
+  "generatedAt": "2026-07-31T01:13:19.528Z",
+  "decision": "READONLY_PROVIDER_CAPABILITY_PREFLIGHT",
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "projectNumber": "87461567267",
+    "serviceAccountEmail": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com"
+  },
+  "googleSheetsApi": {
+    "httpStatus": 200,
+    "state": "DISABLED",
+    "enabled": false,
+    "errorReason": null
+  },
+  "spreadsheetAccess": {
+    "driveHttpStatus": 403,
+    "accessible": false,
+    "errorStatus": "PERMISSION_DENIED",
+    "errorReason": "accessNotConfigured"
+  },
+  "iam": {
+    "testHttpStatus": 200,
+    "granted": [
+      "cloudbuild.builds.create",
+      "iam.serviceAccounts.actAs",
+      "run.services.get",
+      "run.services.update",
+      "serviceusage.services.get"
+    ],
+    "missing": [
+      "artifactregistry.repositories.uploadArtifacts",
+      "serviceusage.services.enable"
+    ],
+    "canEnableSheetsApi": false,
+    "canUpdateCloudRun": true,
+    "canActAs": true,
+    "canStartCloudBuild": true
+  },
+  "safety": {
+    "providerReads": true,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "production": false,
+    "merge": false,
+    "secretsExported": false
+  }
+}
