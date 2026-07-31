@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_PROFILE_WRITE_PASS__HUMAN_VISUAL_AUTH_DESVIO_CONFIRMED__NO_CREDENTIAL_FULL_VISUAL_FIX_PREPARED__WAITING_1X_CLOUD_RUN_1X_HOSTING_AUTH__31_HOLD__NO_PRODUCTION`
+**Estado vivo:** `C6_PROFILE_WRITE_PASS__NO_CREDENTIAL_FULL_VISUAL_REDEPLOY_PASS__WAITING_HUMAN_VISUAL_ADMIN_SHOPPER__31_HOLD__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Corte3 FROZEN; R17N1,406/1,406 no repetir.
@@ -11,44 +11,36 @@
 - Perfil completo Firestore120 docs/329 campos WRITE+READBACK PASS, mismatches0.
 - PR#7 draft/open/no merge; producción intacta.
 
-## 2. Corrección metodológica human visual
-Paula no dispone de credenciales técnicas Firebase y la human visual nunca debía exigirlas. El contrato correcto ya existente separa:
-- human visual DEV: auto-entry del prototipo;
-- Auth/claims/Rules: validación técnica/provider separada.
+## 2. Regla human visual
+Paula no usa credenciales técnicas Firebase para QA. Human visual conserva auto-entry del prototipo; Auth/claims/Rules siguen siendo gate técnico/provider separado.
 
-La persistencia LOCAL del protected runtime queda válida para pruebas técnicas, pero no es requisito para la visual humana.
+Claude no debe rediseñar login ni módulos por este punto.
 
-## 3. Fix preparado — no desplegado
-Backend/core/adapters únicamente:
-- `backend/runtime/hr-live-service/dev-visual.mjs`: lectura Firestore server-side read-only bajo token temporal opaco; sin token falla401;
-- `server.mjs` enruta `view=full-profile`;
-- `app/adapters/tya-dev-full-visual-bridge.js`: carga perfil completo en memoria sin pedir credenciales Firebase al humano;
-- `tya-live-source-refresh-watch.js`: no pisa ese carril;
-- `index-backend-dev.html`: carga el bridge;
-- `app.js` no se modifica y conserva auto-entry Admin + picker DEV de shopper real.
+## 3. No-credential full visual — desplegado PASS
+Authorization `chat-20260731-corte6-human-full-visual-no-credential-01` consumida.
 
-No rediseñar ni tocar `/app/modules/*` por este punto.
+- 1 Cloud Run DEV redeploy existente `cxorbia-live-hr-dev`, revisión `cxorbia-live-hr-dev-00009-xs8`;
+- 1 Hosting DEV redeploy existente `cxorbia-backend-dev/cxorbia-dev`;
+- decisión `PASS_EXISTING_DEV_CLOUD_RUN_HOSTING_NO_CREDENTIAL_FULL_VISUAL_REMOTE_READY`;
+- proxy Firestore server-side read-only + token temporal;
+- sin token:401;
+- bridge full visual publicado;
+- auto-entry Admin + picker DEV Shopper real preservados;
+- `/app/modules/*` intactos.
 
-## 4. Contrato visual después del próximo gate
-Un enlace temporal DEV permitirá:
-- click Administración/Coordinación → entrada directa, sin usuario/contraseña Firebase;
-- Shoppers → perfil completo real, incluido username/password legacy cuando exista, teléfonos/WhatsApp, DPI y campos materializados;
-- KPI con detalle + histórico completo;
-- click Shopper/Evaluador → picker DEV de shopper real ya existente → portal con shopperId real de QA.
+## 4. Contrato visual actual
+Con enlace temporal DEV:
+- Administración/Coordinación entra sin username/password Firebase;
+- Shoppers muestra perfil completo materializado, incluido username/password legacy real cuando exista, teléfonos/WhatsApp, DPI y demás campos;
+- KPI debe abrir detalle;
+- histórico completo por shopperId debe incluir `submitida`;
+- Shopper/Evaluador usa picker DEV de identidad real y navega módulos propios.
 
-Firebase Auth/claims/Rules siguen siendo autoridad/gate técnico y no se eliminan.
-
-## 5. Provider gate pendiente
-Request `backend/config/corte6-human-full-visual-redeploy-request.json` está `enabled=false`, sin autorización.
-
-Solo requiere, si Paula autoriza:
--1 Cloud Run DEV existente `cxorbia-live-hr-dev`;
--1 Hosting DEV existente `cxorbia-backend-dev/cxorbia-dev`;
--0 Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes;
--sin nuevo proyecto/Hosting, merge ni producción.
+## 5. Seguridad
+Durante el gate: Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes0; nuevos proyectos/Hosting0; merge=false; producción=false. Token crudo no commiteado.
 
 ## 6. 31 identity HOLD
 Continúan31 sin vínculo canónico reproducible. No usar nombre/teléfono/email ni creación silenciosa.
 
 ## 7. Siguiente gate
-`AUTORIZACIÓN 1x CLOUD RUN + 1x HOSTING DEV NO-CREDENTIAL VISUAL → REMOTE SMOKE → HUMAN VISUAL ADMIN+SHOPPER → PASS/FAIL → 31 HOLD → FREEZE C6 → AGOSTO`.
+`HUMAN VISUAL ADMIN+SHOPPER SIN CREDENCIALES → PASS/FAIL → 31 HOLD → FREEZE C6 → AGOSTO`.
