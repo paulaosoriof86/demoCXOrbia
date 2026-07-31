@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-31  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_P0_OPEN__PROTECTED_PROFILE_AUTH_HISTORY_READONLY_PASS__88_USERNAME_DELTA_READY__RUNTIME_FIX_PREPARED__NO_WRITE__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_P0_OPEN__PROTECTED_READONLY_PASS__USERNAME88_READY__PASSWORD68_PATTERN_VERIFIED_20_NONPATTERN__RUNTIME_FIX_PREPARED__NO_WRITE__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -22,15 +22,17 @@
 5. `CAMBIOS-BACKEND-ADDENDUM-C6-VISUAL-FAIL-SHOPPER-IDENTITY-PROFILE-20260731.md`;
 6. `CAMBIOS-BACKEND-ADDENDUM-C6-PROTECTED-PROFILE-AUTH-HISTORY-READONLY-PASS-20260731.md`;
 7. `CAMBIOS-BACKEND-ADDENDUM-C6-USERNAME-DELTA-READONLY-PASS-20260731.md`;
-8. `evidence/CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json`;
-9. `evidence/CORTE6-USERNAME-DELTA-READONLY-LATEST.json`;
-10. `evidence/CORTE6-CREDENTIAL-IMPORT-LATEST.json`;
-11. `app/core/backend-config-preview-dev.js`;
-12. `app/core/backend-protected-dev-mode.js`;
-13. `app/adapters/tya-live-source-refresh-watch.js`;
-14. `app/core/backend-browser-auth.js`;
-15. `app/core/backend-firebase.js`;
-16. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A y PR #7.
+8. `CAMBIOS-BACKEND-ADDENDUM-C6-PASSWORD-PATTERN-READONLY-PASS-20260731.md`;
+9. `evidence/CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json`;
+10. `evidence/CORTE6-USERNAME-DELTA-READONLY-LATEST.json`;
+11. `evidence/CORTE6-INITIAL-PASSWORD-PATTERN-READONLY-LATEST.json`;
+12. `backend/config/corte6-username-firestore-write-plan.json`;
+13. `app/core/backend-config-preview-dev.js`;
+14. `app/core/backend-protected-dev-mode.js`;
+15. `app/adapters/tya-live-source-refresh-watch.js`;
+16. `app/core/backend-browser-auth.js`;
+17. `app/core/backend-firebase.js`;
+18. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A y PR #7.
 
 ## 3. Baseline protegida — no reabrir
 - Corte3 FROZEN.
@@ -54,7 +56,7 @@ Firestore:
 - banco/pago0.
 
 Auth:
-- usuarios108;
+- users108;
 - shopper claim con shopperId91;
 - perfil existente91/91;
 - missing0.
@@ -75,24 +77,29 @@ Sin deploy:
 
 Syntax + marcadores P0: PASS en GitHub read-only.
 
-## 7. Username exacto
-Desde el handoff cifrado:
-- shopper records109;
+## 7. Username y password
+Username desde handoff cifrado:
+- records shopper109;
 - match exacto88;
 - Auth claim binding88/88;
 - delta username `fill-missing-only`88;
 - conflictos0;
-- 21 sin perfil exacto: HOLD.
+- 21 sin perfil exacto HOLD.
 
-No hubo write. Materializar esos 88 requiere autorización Firestore específica.
+Password pattern read-only:
+- exactos evaluables88;
+- patrón `CapitalizedFirstName + 123*` verificado68;
+- no coincide con patrón20.
 
-## 8. Password / perfil extra
-Firebase Auth no permite recuperar la contraseña vigente. No guardar password en Firestore/JS/repo.
+Por tanto `Nombre123*` no es universal. No persistir password en Firestore/JS/repo. Reset requiere gate Auth.
 
-Los datos adicionales de la plataforma vigente se recuperan únicamente desde export/import cifrado y matching estable. Nunca conectar la RTDB vieja.
+## 8. Perfil extra vigente
+Teléfono/email ya materializados se sirven por protected runtime. El resto se recupera únicamente desde el export ya entregado, por export/import seguro y match estable. Nunca conectar la RTDB vieja.
+
+File Library está devolviendo un error temporal al recuperar ese archivo; no pedir reenvío mientras se pueda recuperar el insumo existente.
 
 ## 9. Gate vivo
-`WRITE PLAN USERNAME88 SIN EJECUTAR + RECONCILIACIÓN CIFRADA DEL PERFIL EXTRA → AUTORIZACIONES EXACTAS SI APLICAN → NUEVO REDEPLOY DEV → HUMAN VISUAL PROTEGIDA → FREEZE C6`.
+`RECUPERAR/RECONCILIAR EXPORT PERFIL EXTRA → COMBINAR CON USERNAME88 EN DELTA FIRESTORE EXACTO → AUTORIZACIÓN ESPECÍFICA → READBACK → REDEPLOY DEV AUTORIZADO → HUMAN VISUAL PROTEGIDA → FREEZE C6`.
 
 ## 10. Julio/agosto
 HR live/auto-month permanece PASS. No iniciar delta agosto hasta cerrar P0 y congelar Corte6.
