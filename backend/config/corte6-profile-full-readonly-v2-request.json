@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.corte6.profile-full-readonly-request.v2",
   "requestId": "corte6-profile-full-encrypted-readonly-20260731-02",
-  "status": "waiting_encrypted_full_profile_bundle_v2",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_readonly",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -35,5 +35,13 @@
   "profileValuesExported": false,
   "passwordValuesExported": false,
   "secretsExported": false,
-  "nextGate": "WAIT_FULL_PROFILE_V2_BUNDLE_THEN_READONLY_COMPARE_AND_EXACT_WRITE_PLAN"
+  "nextGate": "PREPARE_EXACT_FULL_PROFILE_FIRESTORE_WRITE_PLAN_AND_REQUEST_EXPLICIT_AUTHORIZATION",
+  "consumedAt": "2026-07-31T14:02:41.195Z",
+  "decision": "READY_PROFILE_FULL_WRITE_PLAN_EXACT_MATCH_WITH_SEPARATE_FIRESTORE_AUTHORIZATION",
+  "exactProfiles": 120,
+  "missingCanonical": 31,
+  "docsWithPlannedChanges": 120,
+  "fieldWritesPlanned": 329,
+  "passwordProfilesPresent": 149,
+  "sensitiveProfilesPresent": 27
 }
