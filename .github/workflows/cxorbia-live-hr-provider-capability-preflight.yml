@@ -1,0 +1,98 @@
+name: CXOrbia Live HR Provider Capability Preflight
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/workflows/cxorbia-live-hr-provider-capability-preflight.yml'
+      - '.github/cxorbia-firebase-requests/live-hr-provider-capability-preflight.json'
+
+permissions:
+  contents: write
+  statuses: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Probe existing project capabilities read-only
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          mkdir -p app/docs/evidence
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');
+          const raw=process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'';
+          if(!raw)throw new Error('service_account_secret_missing');
+          const sa=JSON.parse(raw);
+          if(sa.type!=='service_account'||sa.project_id!=='cxorbia-backend-dev')throw new Error('wrong_service_account');
+          const b64=v=>Buffer.from(v).toString('base64url');
+          const now=Math.floor(Date.now()/1000);
+          const unsigned=`${b64(JSON.stringify({alg:'RS256',typ:'JWT'}))}.${b64(JSON.stringify({iss:sa.client_email,scope:'https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/drive.metadata.readonly',aud:'https://oauth2.googleapis.com/token',iat:now,exp:now+1800}))}`;
+          const signer=crypto.createSign('RSA-SHA256');signer.update(unsigned);signer.end();
+          const assertion=`${unsigned}.${signer.sign(sa.private_key).toString('base64url')}`;
+          async function json(url,options={}){const r=await fetch(url,options);let body=null;try{body=await r.json()}catch{}return {status:r.status,ok:r.ok,body};}
+          (async()=>{
+            const tokenResp=await json('https://oauth2.googleapis.com/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'urn:ietf:params:oauth-type:jwt-bearer'.replace('oauth-type','oauth-type'),assertion})});
+            // OAuth grant string above is normalized below if provider rejects typo guard.
+            let token=tokenResp.body?.access_token||null;
+            if(!token){
+              const retry=await json('https://oauth2.googleapis.com/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'urn:ietf:params:oauth:grant-type:jwt-bearer',assertion})});
+              if(!retry.ok||!retry.body?.access_token)throw new Error(`oauth_failed:${retry.status}:${JSON.stringify(retry.body).slice(0,300)}`);
+              token=retry.body.access_token;
+            }
+            const h={Authorization:`Bearer ${token}`,'Content-Type':'application/json'};
+            const crm=await json('https://cloudresourcemanager.googleapis.com/v1/projects/cxorbia-backend-dev',{headers:h});
+            const projectNumber=String(crm.body?.projectNumber||'');
+            const permissionList=['serviceusage.services.enable','serviceusage.services.get','run.services.get','run.services.update','iam.serviceAccounts.actAs','cloudbuild.builds.create','artifactregistry.repositories.uploadArtifacts'];
+            const perm=await json('https://cloudresourcemanager.googleapis.com/v1/projects/cxorbia-backend-dev:testIamPermissions',{method:'POST',headers:h,body:JSON.stringify({permissions:permissionList})});
+            const granted=new Set(perm.body?.permissions||[]);
+            const serviceName=`projects/${projectNumber||'cxorbia-backend-dev'}/services/sheets.googleapis.com`;
+            const sheets=await json(`https://serviceusage.googleapis.com/v1/${serviceName}`,{headers:h});
+            const sheetId='1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4';
+            const drive=await json(`https://www.googleapis.com/drive/v3/files/${sheetId}?fields=id,name,mimeType&supportsAllDrives=true`,{headers:h});
+            const report={
+              schemaVersion:'cxorbia.live-hr-provider-capability-preflight.v1',
+              generatedAt:new Date().toISOString(),
+              decision:'READONLY_PROVIDER_CAPABILITY_PREFLIGHT',
+              target:{projectId:'cxorbia-backend-dev',projectNumber:projectNumber||null,serviceAccountEmail:sa.client_email},
+              googleSheetsApi:{httpStatus:sheets.status,state:sheets.body?.state||null,enabled:sheets.body?.state==='ENABLED',errorReason:sheets.body?.error?.status||sheets.body?.error?.details?.[0]?.reason||null},
+              spreadsheetAccess:{driveHttpStatus:drive.status,accessible:drive.ok&&drive.body?.id===sheetId,errorStatus:drive.body?.error?.status||null,errorReason:drive.body?.error?.errors?.[0]?.reason||drive.body?.error?.details?.[0]?.reason||null},
+              iam:{testHttpStatus:perm.status,granted:[...granted].sort(),missing:permissionList.filter(p=>!granted.has(p)).sort(),canEnableSheetsApi:granted.has('serviceusage.services.enable'),canUpdateCloudRun:granted.has('run.services.update'),canActAs:granted.has('iam.serviceAccounts.actAs'),canStartCloudBuild:granted.has('cloudbuild.builds.create')},
+              safety:{providerReads:true,providerWrites:0,hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,cloudRunDeploys:0,production:false,merge:false,secretsExported:false}
+            };
+            fs.writeFileSync('app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json',JSON.stringify(report,null,2)+'\n');
+            console.log(JSON.stringify({...report,target:{...report.target,serviceAccountEmail:'<sanitized-in-console>'}}));
+          })().catch(e=>{console.error(e.stack||e);process.exit(1)});
+          NODE
+
+      - name: Commit sanitized capability evidence
+        run: |
+          set -euo pipefail
+          cp app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json /tmp/cap.json
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/cap.json app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json
+          if ! git diff --cached --quiet; then git commit -m 'evidence: live HR provider capability preflight'; git push origin HEAD:docs-tya-v6-v71-audit; fi
+
+      - name: Publish status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          STATE=error;DESC='HOLD_LIVE_HR_PROVIDER_PREFLIGHT'
+          if [ -f app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json ];then STATE=success;DESC='PASS_LIVE_HR_PROVIDER_PREFLIGHT_READONLY';fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/live-hr-provider-capability-preflight' -f description="$DESC" >/dev/null
