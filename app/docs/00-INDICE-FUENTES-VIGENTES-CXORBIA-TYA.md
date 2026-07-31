@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-31  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_P0_OPEN__PROTECTED_READONLY_PASS__USERNAME88_READY__PASSWORD68_PATTERN_VERIFIED_20_NONPATTERN__RUNTIME_FIX_PREPARED__NO_WRITE__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_P0_OPEN__EXPORT_RECOVERED__PROFILE_HANDOFF_READY__USERNAME88_READY__RUNTIME_FIX_PREPARED__NO_WRITE__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -23,16 +23,22 @@
 6. `CAMBIOS-BACKEND-ADDENDUM-C6-PROTECTED-PROFILE-AUTH-HISTORY-READONLY-PASS-20260731.md`;
 7. `CAMBIOS-BACKEND-ADDENDUM-C6-USERNAME-DELTA-READONLY-PASS-20260731.md`;
 8. `CAMBIOS-BACKEND-ADDENDUM-C6-PASSWORD-PATTERN-READONLY-PASS-20260731.md`;
-9. `evidence/CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json`;
-10. `evidence/CORTE6-USERNAME-DELTA-READONLY-LATEST.json`;
-11. `evidence/CORTE6-INITIAL-PASSWORD-PATTERN-READONLY-LATEST.json`;
-12. `backend/config/corte6-username-firestore-write-plan.json`;
-13. `app/core/backend-config-preview-dev.js`;
-14. `app/core/backend-protected-dev-mode.js`;
-15. `app/adapters/tya-live-source-refresh-watch.js`;
-16. `app/core/backend-browser-auth.js`;
-17. `app/core/backend-firebase.js`;
-18. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A y PR #7.
+9. `CAMBIOS-BACKEND-ADDENDUM-C6-PROFILE-EXTRA-RECONCILIATION-PREPARED-20260731.md`;
+10. `evidence/CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json`;
+11. `evidence/CORTE6-USERNAME-DELTA-READONLY-LATEST.json`;
+12. `evidence/CORTE6-INITIAL-PASSWORD-PATTERN-READONLY-LATEST.json`;
+13. `backend/config/corte6-username-firestore-write-plan.json`;
+14. `backend/config/corte6-profile-extra-readonly-request.json`;
+15. `tools/qa/cxorbia-corte6-profile-extra-export-readonly.mjs`;
+16. `tools/local/cxorbia-corte6-profile-extra-handoff.html`;
+17. `tools/qa/cxorbia-corte6-profile-extra-handoff-dryrun.mjs`;
+18. `.github/workflows/cxorbia-corte6-profile-extra-readonly.yml`;
+19. `app/core/backend-config-preview-dev.js`;
+20. `app/core/backend-protected-dev-mode.js`;
+21. `app/adapters/tya-live-source-refresh-watch.js`;
+22. `app/core/backend-browser-auth.js`;
+23. `app/core/backend-firebase.js`;
+24. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/plan Phase A y PR #7.
 
 ## 3. Baseline protegida — no reabrir
 - Corte3 FROZEN.
@@ -75,7 +81,7 @@ Sin deploy:
 - KPI/histórico protegidos reconocen todo el ciclo canónico, incluyendo `submitida`;
 - password nunca se sintetiza.
 
-Syntax + marcadores P0: PASS en GitHub read-only.
+Gate estático previo: PASS. No deploy nuevo autorizado.
 
 ## 7. Username y password
 Username desde handoff cifrado:
@@ -91,18 +97,43 @@ Password pattern read-only:
 - patrón `CapitalizedFirstName + 123*` verificado68;
 - no coincide con patrón20.
 
-Por tanto `Nombre123*` no es universal. No persistir password en Firestore/JS/repo. Reset requiere gate Auth.
+`Nombre123*` no es universal. No persistir password en Firestore/JS/repo. Reset requiere gate Auth.
 
-## 8. Perfil extra vigente
-Teléfono/email ya materializados se sirven por protected runtime. El resto se recupera únicamente desde el export ya entregado, por export/import seguro y match estable. Nunca conectar la RTDB vieja.
+## 8. Export perfil extra — recuperado
+File Library volvió a responder y se recuperó el export vigente ya entregado `tya-plataforma-default-rtdb-export (6).json`, fecha 2026-07-30. No pedirlo de nuevo.
 
-File Library está devolviendo un error temporal al recuperar ese archivo; no pedir reenvío mientras se pueda recuperar el insumo existente.
+Schema confirmado: username/user, teléfono/WhatsApp, email, país, ciudad, departamento y, según registro, DPI, dirección, fecha de nacimiento, certs/histCerts, términos y metadata de cuenta.
 
-## 9. Gate vivo
-`RECUPERAR/RECONCILIAR EXPORT PERFIL EXTRA → COMBINAR CON USERNAME88 EN DELTA FIRESTORE EXACTO → AUTORIZACIÓN ESPECÍFICA → READBACK → REDEPLOY DEV AUTORIZADO → HUMAN VISUAL PROTEGIDA → FREEZE C6`.
+Nunca conectar RTDB legacy.
 
-## 10. Julio/agosto
+## 9. Reconciliación y seguridad
+Reconciliador v2:
+- ID técnico estable exacto → `legacyShopperId`;
+- no nombre/teléfono/email como llave;
+- fill-missing-only;
+- no overwrite;
+- pass/password y UID legacy excluidos.
+
+Operativos candidatos: username, phone, email, country, city, department.
+
+Sensibles HOLD: DPI/documento, dirección, fecha de nacimiento. Las Rules actuales permiten leer `/shoppers/{id}` a roles operador, por lo que esos campos no pueden agregarse ahí sin storage/RBAC protegido real.
+
+Evidence-only: certs/histCerts, visitas, estado, términos, aprobación/origen y rating. Las 77 certificaciones y 616 visitas canónicas siguen siendo autoridad.
+
+## 10. Handoff cifrado listo
+File Library permite inspeccionar el export pero no entrega bytes/filesystem path al runner. Para superar esa frontera sin PII cruda:
+- tool OFFLINE cifra el perfil y excluye password/UID;
+- runner DEV descifra solo en memoria;
+- workflow solo lee provider y persiste evidencia source-safe;
+- request espera únicamente el bundle cifrado.
+
+Todavía no se ejecutó este nuevo provider read porque el bundle no existe.
+
+## 11. Gate vivo
+`BUNDLE CIFRADO DEL EXPORT EXISTENTE → READ-ONLY RECONCILIATION AUTOMÁTICA → DELTA OPERATIVO COMBINADO CON USERNAME88 → AUTORIZACIÓN FIRESTORE EXACTA → READBACK → REDEPLOY DEV AUTORIZADO → HUMAN VISUAL PROTEGIDA → FREEZE C6`.
+
+## 12. Julio/agosto
 HR live/auto-month permanece PASS. No iniciar delta agosto hasta cerrar P0 y congelar Corte6.
 
-## 11. Estado seguro
-Producción no tocada; PR#7 draft/open/no merge. Provider reads sí; Firestore/Auth/HR/legacy writes0; password changes0; Rules/Hosting/Cloud Run deploys nuevos0; Storage/Make/Gemini/pagos0.
+## 13. Estado seguro
+Producción no tocada; PR#7 draft/open/no merge. Provider writes0; Firestore/Auth/HR/legacy writes0; password changes0; Rules/Hosting/Cloud Run deploys nuevos0; Storage/Make/Gemini/pagos0.
