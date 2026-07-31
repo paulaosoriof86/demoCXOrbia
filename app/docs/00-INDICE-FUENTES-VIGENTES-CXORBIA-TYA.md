@@ -22,11 +22,12 @@
 9. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 10. `CAMBIOS-BACKEND-ADDENDUM-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`;
 11. `evidence/CORTE6-STABLE-COMPOSER-REGRESSION-GATE-LATEST.json`;
-12. `app/adapters/tya-cumulative-read-model.js`;
-13. `app/adapters/tya-dev-full-visual-bridge.js`;
-14. `app/adapters/tya-live-source-refresh-watch.js`;
-15. `tools/qa/tya-cumulative-read-model-regression-gate.mjs`;
-16. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker/Academia, PR#7 y HEAD vivo.
+12. `ACADEMIA-IMPACTO-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`;
+13. `app/adapters/tya-cumulative-read-model.js`;
+14. `app/adapters/tya-dev-full-visual-bridge.js`;
+15. `app/adapters/tya-live-source-refresh-watch.js`;
+16. `tools/qa/tya-cumulative-read-model-regression-gate.mjs`;
+17. root `RESUMEN-PARA-CLAUDE.md`, root `PENDIENTES-PROTOTIPO.md`, tracker, PR#7 y HEAD vivo.
 
 Los addenda anteriores de Corte6 permanecen como evidencia histórica; el checkpoint vigente manda para estado operativo actual.
 
