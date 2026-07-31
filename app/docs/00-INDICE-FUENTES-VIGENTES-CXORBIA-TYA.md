@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-31  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_DISABLED__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_IDENTITY_PASS__HR_AUTOMONTH_CODE_PASS__SHEETS_API_DISABLED__HR_PUBLIC_WRITE_P0__PROTECTED_SHOPPER_RUNTIME_PREPARED__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 - Repo: `paulaosoriof86/demoCXOrbia`.
@@ -45,35 +45,35 @@
 - Una visita/periodo de plataforma puede existir antes de la pestaña HR; la llegada posterior de HR reconcilia, no reemplaza silenciosamente.
 
 ## 5. Auto-month runtime — código PASS, provider bloqueado
-Se eliminó el límite operativo del inventario mensual estático. El runtime `fresh=1` ya está preparado para descubrir tabs desde metadata Google Sheets y el watcher refresca periódicamente/focus.
+El runtime ya no queda limitado por inventario mensual estático. Con Sheets API activa, `fresh=1` descubre tabs desde metadata provider y el watcher refresca periódicamente/focus. En fallback GViz conserva registry provider fail-closed.
 
-Predeploy: `PASS` sin deploy.
+Predeploy: PASS sin deploy.
 
-Bloqueo exacto read-only:
-- Google Sheets API en `cxorbia-backend-dev`: `DISABLED`;
-- service account existente no tiene `serviceusage.services.enable`;
-- sí tiene `run.services.update`, `iam.serviceAccounts.actAs` y `cloudbuild.builds.create`;
-- mientras API siga deshabilitada, fallback usa último registry provider fail-closed y rechaza tabs fantasma GViz.
+Provider preflight:
+- Sheets API en `cxorbia-backend-dev`: `DISABLED`;
+- service account no tiene `serviceusage.services.enable`;
+- service account **ya es reader del HR canónico**;
+- sí tiene capacidad de actualizar Cloud Run/actAs/iniciar Cloud Build.
 
-## 6. Shopper real — preparado para validación DEV protegida
-El dato real ya existe en Firestore protegido. Se preparó ruta autenticada DEV separada del preview público:
-- `backend-protected-dev-mode.js`;
-- Firebase Hosting canonical init en `index-backend-dev.html`;
-- Auth/custom claims/Rules obligatorios;
-- backend read-only, `humanVisualSourceSafe=false` solo en ruta protegida;
-- no PII en JS source-safe.
+Por tanto no hace falta crear nueva cuenta ni compartir de nuevo el HR; hace falta habilitar Sheets API una sola vez y revalidar.
 
-Aún **no se desplegó** esta ruta; requiere un único redeploy Hosting DEV autorizado.
+## 6. P0 de seguridad HR
+Permisos reales del HR canónico muestran `anyone=writer`. Esto permite edición del HR a cualquier persona con el enlace y bloquea cutover productivo.
 
-## 7. Agosto hoy
-No existen todavía tabs HR de agosto. Por tanto HR no puede ser fuente de esas visitas hoy. La arquitectura acepta que agosto disponible sea de origen plataforma y que después se concilie contra HR cuando aparezca.
+Debe quedar `Restricted`/restringido a usuarios autorizados, manteniendo la service account existente como `reader`. El cambio de sharing no se ejecutó porque requiere acción/autorización provider específica.
 
-No fabricar agosto copiando julio ni declarar datos exactos que no provengan de una fuente operacional real.
+## 7. Shopper real — preparado para validación DEV protegida
+El dato real ya existe en Firestore protegido. Se preparó ruta autenticada DEV separada del preview público con Firebase Auth/custom claims/Rules, read-only y `humanVisualSourceSafe=false` solo allí.
 
-## 8. Gate vivo único
-`ACTIVAR SHEETS API EXISTENTE + VERIFICAR READ-ONLY HR → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
+Aún no se desplegó esta ruta; requiere un único redeploy Hosting DEV autorizado. No se copia PII al source-safe.
+
+## 8. Agosto hoy
+No existen todavía tabs HR de agosto. La arquitectura acepta que agosto disponible sea de origen plataforma y que después se concilie contra HR cuando aparezca. No fabricar agosto copiando julio.
+
+## 9. Gate vivo único
+`CORREGIR SHARING HR P0 + ENABLE SHEETS API EXISTENTE → REVALIDAR HR READER → REDEPLOY CLOUD RUN DEV AUTO-MONTH → REDEPLOY HOSTING DEV PROTECTED SHOPPER → READBACK/SMOKE`.
 
 Requiere autorización explícita de provider/deploy. No producción ni Firestore data writes.
 
-## 9. Estado seguro
-Producción no tocada. PR#7 draft/open/no merge. Histórico/Auth91/Rules/CX.data preservados. Últimos bloques: provider reads + repo/docs; API enable0, Cloud Run deploy0, Hosting deploy0, HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; PII exportada0.
+## 10. Estado seguro
+Producción no tocada. PR#7 draft/open/no merge. Histórico/Auth91/Rules/CX.data preservados. API enable0, sharing changes0, Cloud Run deploy0, Hosting deploy0, HR/Firestore/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0; PII exportada0.
