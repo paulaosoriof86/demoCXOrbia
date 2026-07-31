@@ -1,9 +1,11 @@
 {
   "schemaVersion": "1.0.0",
   "request": "revalidate_existing_provider_capabilities_read_only",
-  "reason": "Precondition check before the explicitly authorized DEV Cloud Run and Hosting redeploy block.",
+  "reason": "Precondition check after Paula confirmed the one-time provider setup was completed; required before the already-authorized DEV Cloud Run and Hosting redeploy block.",
   "targetProject": "cxorbia-backend-dev",
   "hrSpreadsheetIdMasked": "1h307t...8vU4",
+  "revalidationRequestedAt": "2026-07-31T02:22:30Z",
+  "authorizationState": "retained_not_consumed",
   "expected": {
     "googleSheetsApiEnabled": true,
     "serviceAccountKeepsReaderAccess": true,
