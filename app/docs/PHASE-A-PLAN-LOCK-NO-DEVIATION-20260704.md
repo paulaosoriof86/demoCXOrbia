@@ -3,15 +3,15 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-31  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_CUMULATIVE_HOSTING_PASS__WAITING_HUMAN_VISUAL_CUMULATIVE__31_HOLD__NO_PRODUCTION`
+**Estado vivo:** `C6_P0_COMPOSITION_REGRESSION__PERMANENT_STABILITY_LOCK_ACTIVE__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Objetivo/arquitectura
 TyA/Cinépolis como tenant/proyecto configurable de CXOrbia. `cxorbia-backend-dev`=DEV canónico; `tya-plataforma`=Hosting final. No crear Firebase/Hosting/rama/PR por rutina.
 
 ## 2. Secuencia obligatoria
-`FUENTE VIVA/ORIGEN PLATAFORMA → EXISTENCIA/FRESCURA → MAPPING/IDENTIDAD → PROVIDER COMPARE/CONCILIACIÓN → WRITE PLAN → DRY-RUN → WRITE EXACTO AUTORIZADO → READBACK → SMOKE → VALIDACIÓN ACUMULATIVA → CUTOVER`.
+`FUENTE VIVA/ORIGEN PLATAFORMA → EXISTENCIA/FRESCURA → MAPPING/IDENTIDAD → COMPOSER IDÉMPOTENTE → REGRESSION GATE ACUMULATIVO → WRITE PLAN → DRY-RUN → WRITE EXACTO AUTORIZADO → READBACK → SMOKE → VALIDACIÓN ACUMULATIVA → CUTOVER`.
 
-El prototipo manda. Un PASS técnico sin validación visual acumulativa no congela un corte.
+El prototipo manda. Un PASS técnico sin validación acumulativa estable no congela un corte.
 
 ## 3. Cortes protegidos
 - Corte1/2A/3 FROZEN; histórico14 periodos/616 visitas hasta julio.
@@ -22,63 +22,74 @@ El prototipo manda. Un PASS técnico sin validación visual acumulativa no conge
 - Perfil completo Firestore120 docs/329 campos WRITE+READBACK PASS.
 - Finanzas/pagos canónicos source-safe aprobados permanecen protegidos.
 
-## 4. Regla human visual — prevalente
-La validación humana no requiere credenciales técnicas Firebase. Human visual DEV usa auto-entry del prototipo; Firebase Auth/claims/Rules permanece como gate técnico/provider separado.
+## 4. Lock permanente de estabilidad
+Prevalece `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`.
 
-## 5. Regla de acumulación — prevalente
-Agregar una fuente/capa nueva nunca puede reemplazar una fuente ya aprobada. Precedencia Phase A:
-1. HR viva: periodos, periodo activo, visitas operativas, auto-mes y refresh.
-2. Firestore protegido: perfil/PII/username/pass legacy materializado + facetas/histórico, como overlay por identidad técnica exacta.
-3. Finanzas/pagos canónicos: autoridad de liquidaciones, beneficios, movimientos y pagos históricos.
+Toda etapa nueva debe ser aditiva. Ningún overlay, candidata, refresh o proveedor puede reemplazar o degradar un slice previamente aprobado.
 
-Si una capa nueva hace desaparecer datos previos, es FAIL/P0 de composición.
+Ownership obligatorio:
+1. HR viva: periodos/visitas/auto-mes/estado operativo.
+2. Firestore protegido: identidad/perfil/PII/username/pass como overlay exacto.
+3. Finanzas/pagos canónicos: liquidaciones/beneficios/movimientos/pagos.
+4. Auth/RBAC: acceso/scope, no datos operativos.
+5. Plataforma-origin: delta propio reconciliado, nunca duplicación HR.
 
-## 6. Resultado Human full visual previo
-Acceso sin credenciales PASS; composición acumulativa FAIL reproducida: Dashboard0, watcher HR deshabilitado, aliases/fixtures visibles, perfil/histórico parcial y Beneficios/Finanzas vacíos.
+## 5. Regla de composición
+Todo composer debe ser idempotente: `compose(base,overlay) === compose(compose(base,overlay),overlay)`.
 
-## 7. Fix acumulativo publicado PASS
-Autorización `chat-20260731-c6-cumulative-human-visual-hosting-01` consumida.
+La base es una copia inmutable de la revisión HR vigente. No se permite usar arrays ya compuestos como nueva base.
 
-- 1 redeploy del Hosting DEV existente `cxorbia-backend-dev/cxorbia-dev`;
-- Cloud Run redeploys0;
-- decisión `PASS_EXISTING_HOSTING_DEV_CUMULATIVE_HR_PROFILE_FINANCE_REMOTE_READY`.
+## 6. Refresh estable
+- `fresh=1` puede consultar en background.
+- revisión igual: no apply, no overlay, no rerender funcional.
+- revisión distinta: una sola aplicación.
+- preservar periodo, ruta, filtros, modal y scroll.
+- nunca reload de documento por polling.
 
-Preflight/remote smoke:
-- HR fresh/runtimeRead/sourceSafe PASS;
-- 616 visitas preservadas;
-- auto-discovery mensual PASS;
-- Firestore como overlay exacto por identidad técnica;
-- alias legacy solo por `legacyShopperId` exacto;
-- finance asset canónico preservado;
-- full-profile fail-closed401;
-- `/app/modules/*` intacto.
+## 7. Identidad Shopper
+Resolver solo por llaves técnicas exactas y crosswalk auditado: `shopperId/id`, `legacyShopperId`, `visitId`, `hrRowId`, `sourceTab+sourceRow`. No nombre/teléfono/email.
 
-El primer disparo falló antes de provider mutation por validación textual frágil. Se corrigió el gate a marcador semántico real y se reejecutó la misma autorización con deploy count0. No hubo deploy duplicado.
+Las visitas históricas deben atribuirse a la identidad canónica antes de KPI/perfil. Conflictos pasan a HOLD.
 
-## 8. Human visual objetivo inmediato
-Una sola prueba acumulativa debe validar simultáneamente:
-- Dashboard JUL + HR viva + auto-mes;
-- Shoppers identidad/perfil/username/pass/PII/histórico;
-- portal Shopper con la misma identidad;
-- Beneficios con verdad financiera aprobada;
-- Finanzas Admin con datos canónicos.
+## 8. P0 actual
+La visual acumulativa posterior al último Hosting DEV mostró:
+-88→44 visitas durante estabilización;
+- badge1,232 visitas/546 shoppers;
+- scroll movido por refresh;
+- duplicados Shopper;
+- perfil/credenciales/histórico divididos;
+- comparativo histórico incompleto;
+- estados variables entre render inicial y refresh.
 
-La sesión visual temporal existente es válida hasta `2026-08-02T00:29:13Z`; no requiere otro deploy.
+La HR viva sí está accesible; julio actual sigue siendo34 GT +10 HN. El P0 es de composición no idempotente.
 
-## 9. 31 identity HOLD
-No resueltos por legacyShopperId, llaves técnicas exactas/únicas ni Auth claim. No crear/deduplicar por nombre/teléfono/email.
+## 9. Regression gate obligatorio antes de cada etapa/deploy
+Debe validar conjuntamente:
+- fuente HR actual vs read model;
+- uniqueVisitKeys==visitCount;
+- 3 reaplicaciones consecutivas sin crecimiento;
+- identidad Shopper única por crosswalk exacto;
+- histórico/KPI iguales antes y después de refresh;
+- estados canónicos coherentes en Dashboard/Visitas/histórico;
+- comparativo conserva meses anteriores;
+- Beneficios y Finanzas conservan su fuente canónica;
+- portal Shopper/Admin comparten identidad;
+- `/app/modules/*` intacto desde backend;
+- writes/proveedores solo según gate exacto autorizado.
+
+PASS parcial = FAIL del corte.
 
 ## 10. Julio/agosto
-No iniciar materialización agosto mientras Corte6 siga abierto. HR live/auto-month debe seguir activo. Después del freeze: identificar/reconciliar fuente agosto plataforma-origin y materializar solo delta autorizado.
+No iniciar materialización agosto mientras Corte6 tenga este P0. HR live/auto-month sigue siendo requerida. Tras freeze: identificar/reconciliar fuente agosto plataforma-origin y materializar solo delta autorizado.
 
 ## 11. Claude/prototipo
-No rediseñar ni reescribir módulos por este P0. Si después del overlay acumulativo persiste un gap frontend reproducible, documentar archivo/módulo exacto para Claude.
+El mismo regression lock aplica a toda candidata futura. Claude no reinterpreta HR/identidad/finanzas en módulos y no puede reintroducir fixtures o fallbacks superados.
 
 ## 12. Academia
-Documentar composición acumulativa de fuentes, precedencia, exact identity overlays y gates semánticos reutilizables.
+Documentar ownership de fuentes, composer idempotente, crosswalk técnico, no-regresión y refresh que no interrumpe al usuario.
 
 ## 13. Gate vivo inmediato
-`HUMAN VISUAL ACUMULATIVA → PASS/FAIL → 31 HOLD → FREEZE C6 → AGOSTO`.
+`ROOT FIX IDEMPOTENTE + CROSSWALK TÉCNICO + UI STATE STABILITY → REGRESSION GATE 3x + HISTÓRICO + SHOPPER + BENEFICIOS + FINANZAS → solo si PASS 1x DEV DEPLOY → HUMAN VISUAL → FREEZE C6 → AGOSTO`.
 
 ## 14. Estado seguro
-Durante el gate acumulativo: Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes0; Cloud Run0; Hosting1 autorizado; nuevos Firebase/Hosting0; merge=false; producción=false.
+En el bloque actual: Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes0; Cloud Run0; Hosting0; nuevos Firebase/Hosting0; merge=false; producción=false.
