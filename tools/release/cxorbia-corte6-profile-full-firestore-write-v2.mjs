@@ -93,7 +93,7 @@ const fields={
 const expectedByField={name:0,username:113,password:118,phone:0,email:0,country:0,city:0,department:2,document:17,address:1,birthDate:2,acceptedTerms:72,accountApproval:2,registrationOrigin:2};
 const plannedByField=Object.fromEntries(Object.keys(fields).map(k=>[k,0]));
 const updates=[];
-let input=0,exact=0,missing=0,ambiguous=0,bad=0;
+let input=0,exact=0,missing=0,ambiguous=0,bad=0,profileFieldChangeDocs=0,markerOnlyDocs=0;
 for(const rec of Array.isArray(bundle.records)?bundle.records:[]){
   input++;
   if(!rec||typeof rec!=='object'||!text(rec.legacyShopperId)||!rec.profile||typeof rec.profile!=='object'){bad++;continue;}
@@ -109,17 +109,19 @@ for(const rec of Array.isArray(bundle.records)?bundle.records:[]){
     plannedByField[name]++;
     sourceChanges++;
   }
-  if(sourceChanges>0){
+  const metadataChanged=current.legacyProfileCurrent!==true||current.legacyProfileSource!=='tya-plataforma-export-20260730';
+  if(sourceChanges>0||metadataChanged){
     patch.legacyProfileCurrent=true;
     patch.legacyProfileSource='tya-plataforma-export-20260730';
     patch.legacyProfileCurrentAt=admin.firestore.FieldValue.serverTimestamp();
+    if(sourceChanges>0)profileFieldChangeDocs++;else markerOnlyDocs++;
     updates.push({legacyShopperId:id,ref:matches[0].ref,patch,sourceChanges,profile});
   }
 }
 if(input!==151||exact!==120||missing!==31||ambiguous!==0||bad!==0)fail(`identity_counts_drift:${JSON.stringify({input,exact,missing,ambiguous,bad})}`);
 for(const [k,v] of Object.entries(expectedByField))if(Number(plannedByField[k]||0)!==v)fail(`field_plan_drift:${k}:${plannedByField[k]}!=${v}`);
 const fieldChanges=sum(plannedByField);
-if(updates.length!==120||fieldChanges!==329)fail(`write_plan_drift:${updates.length}:${fieldChanges}`);
+if(updates.length!==120||profileFieldChangeDocs!==118||markerOnlyDocs!==2||fieldChanges!==329)fail(`write_plan_drift:${JSON.stringify({updates:updates.length,profileFieldChangeDocs,markerOnlyDocs,fieldChanges})}`);
 if(updates.length>Number(request.maxFirestoreDocumentWrites))fail('write_limit_exceeded');
 
 const batch=db.batch();
@@ -152,7 +154,7 @@ const result={
   target:{projectId:expectedProject,tenantId,canonicalProjectId},
   source:{encrypted:true,plaintextPersisted:false,keyFingerprintSha256:pub.fingerprintSha256,records:input},
   identity:{exact,missingCanonicalHold:missing,ambiguousCanonical:ambiguous,badRecord:bad},
-  executed:{firestoreDocumentWrites:updates.length,profileFieldValuesWritten:fieldChanges,readbackDocs,readbackFields,mismatches},
+  executed:{firestoreDocumentWrites:updates.length,profileFieldChangeDocs,markerOnlyDocs,profileFieldValuesWritten:fieldChanges,readbackDocs,readbackFields,mismatches},
   fieldCounts:plannedByField,
   decision,
   safety:{authWrites:0,firebaseAuthPasswordChanges:0,rulesDeploys:0,hostingDeploys:0,cloudRunDeploys:0,storageWrites:0,hrWrites:0,legacyWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,production:false,merge:false,piiExported:false,passwordValuesExported:false,profileValuesExported:false,secretsExported:false}
