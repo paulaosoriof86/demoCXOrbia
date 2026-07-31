@@ -60,3 +60,8 @@ No requiere Cloud Run redeploy. Después: remote smoke + human visual acumulativ
 
 ## 9. Estado seguro
 En este bloque: provider/data writes0; Hosting0; Cloud Run0; nuevos Firebase/Hosting0; merge=false; producción=false.
+
+## 10. Documentación transversal
+- CAMBIOS: `CAMBIOS-BACKEND-ADDENDUM-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`.
+- Academia: `ACADEMIA-IMPACTO-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`.
+- Claude/Pendientes/Tracker/Índice: reconciliados con este estado.
