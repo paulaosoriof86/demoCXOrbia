@@ -13,17 +13,13 @@ function assert(condition, message){ if(!condition) throw new Error(message); }
 function persistCheckpoint(){
   if(!stageFile) return;
   const safe = String(checkpoint || 'unknown').replace(/[^a-z0-9_-]+/gi,'_').slice(0,80);
-  try{ fs.writeFileSync(stageFile, 'local_browser__' + safe + '\n', 'utf8'); }catch(_){ }
+  try{ fs.writeFileSync(stageFile, 'entry_shell__' + safe + '\n', 'utf8'); }catch(_){ }
 }
 
 try{
   mark('launch_chromium');
   browser = await chromium.launch({headless:true});
-  const context = await browser.newContext({
-    viewport:{width:1440,height:1000},
-    ignoreHTTPSErrors:true,
-    serviceWorkers:'block'
-  });
+  const context = await browser.newContext({viewport:{width:1440,height:1000},ignoreHTTPSErrors:true,serviceWorkers:'block'});
 
   await context.addInitScript(() => {
     try{
@@ -57,8 +53,6 @@ try{
   await page.waitForSelector('#cxDevEntryLogin', {state:'visible', timeout:30000});
   mark('wait_password');
   await page.waitForSelector('#cxDevEntryPassword', {state:'visible', timeout:30000});
-  mark('wait_access_type');
-  await page.waitForSelector('#cxDevEntryAccessType', {state:'visible', timeout:30000});
   mark('wait_submit');
   await page.waitForSelector('#cxDevEntrySubmit', {state:'visible', timeout:30000});
 
@@ -77,25 +71,29 @@ try{
   assert(!bodyText.includes('Acceso seguro'), 'technical_second_login_visible');
   mark('assert_no_generic_copy');
   assert(!bodyText.includes('Selecciona un perfil para entrar'), 'generic_role_picker_copy_visible');
+  mark('assert_no_access_type');
+  assert(!bodyText.includes('TIPO DE ACCESO') && !bodyText.includes('Tipo de acceso'), 'visible_access_type_present');
+  assert(await page.locator('#cxDevEntryAccessType').count() === 0, 'access_type_control_present');
 
   mark('assert_no_generic_roles');
-  const visibleGenericRoles = await page.locator('.role-btn:visible,.role-alt:visible').count();
-  assert(visibleGenericRoles === 0, 'generic_role_picker_visible');
+  assert(await page.locator('.role-btn,.role-alt').count() === 0, 'generic_role_picker_present');
+  mark('assert_no_technical_status');
+  assert(await page.locator('#cxBackendPreviewStatus').count() === 0, 'technical_preview_status_visible');
 
   mark('assert_password_type');
-  const type = await page.locator('#cxDevEntryPassword').getAttribute('type');
-  assert(type === 'password', 'password_field_not_protected');
+  assert(await page.locator('#cxDevEntryPassword').getAttribute('type') === 'password', 'password_field_not_protected');
   mark('assert_autocomplete');
-  const userAutocomplete = await page.locator('#cxDevEntryLogin').getAttribute('autocomplete');
-  const passAutocomplete = await page.locator('#cxDevEntryPassword').getAttribute('autocomplete');
-  assert(userAutocomplete === 'username', 'username_autocomplete_missing');
-  assert(passAutocomplete === 'current-password', 'password_autocomplete_missing');
+  assert(await page.locator('#cxDevEntryLogin').getAttribute('autocomplete') === 'username', 'username_autocomplete_missing');
+  assert(await page.locator('#cxDevEntryPassword').getAttribute('autocomplete') === 'current-password', 'password_autocomplete_missing');
 
   mark('assert_gate_state');
   const gate = await page.evaluate(() => window.CX_DEV_ENTRY_AUTH_GATE || null);
   assert(gate && gate.applied === true, 'entry_auth_gate_not_applied');
-  assert(gate.mode === 'single-product-login', 'entry_auth_gate_wrong_mode');
-  assert(gate.genericRolePickerHidden === true, 'generic_role_picker_not_hidden');
+  assert(gate.mode === 'username-password-claims-derived', 'entry_auth_gate_wrong_mode');
+  assert(gate.visibleRoleSelector === false, 'visible_role_selector_not_disabled');
+  assert(gate.namespaceAutoResolution === true, 'namespace_auto_resolution_missing');
+  assert(gate.dualChoiceOnlyAfterCredentialValidation === true, 'dual_choice_contract_missing');
+  assert(gate.technicalStatusVisible === false, 'technical_status_contract_invalid');
   assert(gate.credentialsEmbedded === false, 'credentials_embedded_flag_invalid');
   assert(gate.writes === false && gate.production === false, 'unsafe_entry_gate_scope');
 
@@ -106,7 +104,7 @@ try{
   mark('pass');
   await browser.close();
   browser = null;
-  console.log('PASS_C6_DEV_ENTRY_BROWSER_SMOKE');
+  console.log('PASS_C6_DEV_ENTRY_USERNAME_PASSWORD_ONLY_BROWSER_SHELL');
 }catch(error){
   persistCheckpoint();
   try{ if(browser) await browser.close(); }catch(_){ }
