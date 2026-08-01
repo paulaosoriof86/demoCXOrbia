@@ -21,7 +21,9 @@ for(const marker of [
   'cxDevEntryCanonicalBootstrap',
   'YES_PAULA_20260628_PREVIEW_DEV',
   'YES_PAULA_20260730_PROTECTED_DEV',
+  'YES_PAULA_20260731_FULL_PROFILE_DEV',
   'cxProjectId',
+  'cxHumanFullVisual',
   'cinepolis'
 ]) assert(index.includes(marker), 'missing_entry_bootstrap_marker:'+marker);
 
@@ -78,13 +80,17 @@ const bare = runBootstrap('');
 assert(bare.location.search.includes('cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV'), 'bare_entry_missing_preview_token');
 assert(bare.location.search.includes('cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV'), 'bare_entry_missing_protected_token');
 assert(bare.location.search.includes('cxProjectId=cinepolis'), 'bare_entry_missing_project');
-assert(bare.state && bare.state.canonical === true, 'bare_entry_not_canonical');
+assert(bare.location.search.includes('cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV'), 'bare_entry_missing_full_visual_identity_bridge');
+assert(bare.state && bare.state.canonical === true && bare.state.fullVisual === true, 'bare_entry_not_canonical_full_visual');
 
 const sourceSafe = runBootstrap('?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV');
 assert(!sourceSafe.location.search.includes('cxProtectedRuntime='), 'explicit_source_safe_lane_was_overridden');
+assert(!sourceSafe.location.search.includes('cxHumanFullVisual='), 'explicit_source_safe_lane_received_protected_full_visual');
 
 const protectedOnly = runBootstrap('?cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV');
 assert(protectedOnly.location.search.includes('cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV'), 'protected_entry_missing_preview_companion');
 assert(protectedOnly.location.search.includes('cxProjectId=cinepolis'), 'protected_entry_missing_project');
+assert(protectedOnly.location.search.includes('cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV'), 'protected_entry_missing_full_visual_identity_bridge');
+assert(protectedOnly.state && protectedOnly.state.fullVisual === true, 'protected_entry_full_visual_state_false');
 
-console.log('PASS_C6_DEV_ENTRY_USERNAME_PASSWORD_CLAIMS_DERIVED_GATE');
+console.log('PASS_C6_DEV_ENTRY_USERNAME_PASSWORD_CLAIMS_DERIVED_FULL_VISUAL_GATE');
