@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Última actualización:** 2026-07-31  
-**Estado:** `C3_FROZEN__C5_1406_PASS__C6_PROFILE_WRITE_PASS__C6_STABLE_COMPOSER_REMOTE_PASS__PENDING_HUMAN_VISUAL`
+**Estado:** `C3_FROZEN__C5_1406_PASS__C6_PROFILE_WRITE_PASS__C6_HUMAN_P0__DOMAIN_FIX_CODE_PASS__LIVE_HR_AUDIT_PASS__PENDING_HOSTING_DEV`
 
 ## 1. Cerrado/protegido
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
@@ -10,67 +10,73 @@
 - Corte5 CX.data14 periodos/current2026-07 PASS.
 - Auth91/91, claims5/5, Rules PASS.
 - HR live/auto-month PASS.
-- Perfil completo Firestore120 docs/329 campos WRITE+READBACK PASS.
+- Perfil protegido Firestore120 docs/329 campos WRITE+READBACK PASS.
 - Finanzas/pagos canónicos source-safe preservados.
 
-## 2. Regresión C6 anterior
-Visual anterior:88→44 visitas, badge1,232/546, scroll movido, shoppers duplicados, perfil/histórico fragmentado y comparativo incompleto.
+## 2. Hosting anterior
+Se ejecutó1 Hosting DEV autorizado; Cloud Run/data/provider writes0. Asset parity e idempotencia sintética PASS. La validación humana posterior demostró que este gate no cubría coherencia semántica transversal.
 
-HR read-only verificada:30 tabs/28 mensuales; julio34 GT+10 HN; sin agosto 2026. El P0 fue de composición.
+## 3. Human visual C6 — FAIL P0
+Probado:
+- KPIs superiores correctos y flujo de fases incorrecto;
+- comparativo histórico vacío;
+- saltos de scroll/sidebar;
+- shoppers duplicados visualmente y conteos210/219;
+- perfil/credenciales/WA/certificación/histórico incompletos;
+- portal Shopper y Beneficios sin el histórico de Admin;
+- periodos financieros desincronizados;
+- Movimientos/Liquidaciones incompletos.
 
-## 3. Root fix estable — CODE PASS
-Aplicado en rama viva:
-- composer puro/idempotente `tya-cumulative-read-model.js`;
-- full visual usa baseline HR inmutable por revision;
-- no append protected visits;
-- crosswalk por evidencia técnica exacta;
-- HR mantiene estado operacional;
-- watcher revision-gated y preserva UI state;
-- módulos/core frontend intactos.
+Corte6 no se congela.
 
-## 4. Regression gate local — PASS
-`PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE`:
-- reapply1=616 visitas/208 shoppers;
-- reapply2=616/208;
-- reapply3=616/208;
-- duplicateVisitKeys0;
-- duplicateShopperIds0;
-- protectedVisitsAppended0;
-- visit/shopper IDs estables;
-- HR state preservado;
-- profile overlay visible.
+## 4. Diagnóstico raíz — cerrado
+- múltiples máquinas de estado;
+- perfiles protegidos sin crosswalk anexados a operación;
+- watcher con timestamps, scroll incorrecto y select DOM independiente;
+- completitud heredada no verificada;
+- `Mis Visitas` reduciendo el histórico;
+- identidad/periodo/finanzas sin una proyección única.
 
-## 5. Hosting DEV + remote regression — PASS
-Autorización `chat-20260731-c6-stable-cumulative-hosting-02` consumida.
+## 5. Root fix canónico — CODE PASS
+En rama viva:
+- composer v2;
+- semántica estado accionable vs evidencia histórica;
+- watcher v2 por firma de contenido;
+- domain consistency bridge DEV;
+- gate de dominio;
+- wiring en `index-backend-dev.html`.
 
-Exactamente1 redeploy del Hosting DEV existente; Cloud Run0.
+Módulos/core frontend intactos.
 
-Decisión: `PASS_EXISTING_HOSTING_DEV_STABLE_C6_REMOTE_READY`.
+## 6. HR viva row-level — PASS
+`PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE`:
+-14 periodos;
+-616 visitas;
+-208 shoppers HR;
+-JUL44 = GT34/HN10;
+-realizadas40;
+-cuestionario38;
+-submitidas33;
+-fuera de rango accionable1;
+-evidencias históricas fuera de rango7;
+-duplicate visit/shopper IDs0.
 
-Remote PASS:
-- composer/bridge/watcher/finance exactos al repo;
-- regression gate 3x sobre composer remoto;
-- HR fresh meta/616 histórico/auto-month PASS;
-- protectedVisitAppendZero;
-- full-profile fail-closed sin sesión visual;
-- demás provider/data writes0.
-
-## 6. Lock permanente
-Activo `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`. Toda etapa futura hereda el regression gate.
-
-## 7. 31 identity HOLD
-No resueltos por llaves estables. No usar nombre/teléfono/email.
+## 7. Identidad y perfil
+- no dedupe por nombre/teléfono/email;
+- unmatched profiles fuera de operación y en review queue;
+- perfil completo exige campos mínimos reales;
+- credenciales derivables en lectura solo con identidad exacta;
+- WhatsApp requiere fuente real;
+- persistencia futura exige write plan+autorización.
 
 ## 8. Claude/Academia
-- Claude/prototipo: consumir el read model estable, no reconstruir fuentes/estados en módulos.
-- Academia: ownership, idempotencia, revision gate, crosswalk, deploy seguro y refresh sin interrumpir al usuario.
+- Claude: máquina de estados única, identity review queue, perfil completo real, histórico Shopper completo, certificación visible, periodo financiero único y gate transversal.
+- Academia: ownership, progresión acumulativa, evidencia histórica vs estado accionable y refresh no intrusivo.
 
 ## 9. Gate pendiente
-No otro deploy. Falta human visual del Hosting DEV ya publicado:
-`3x refresh/focus + Dashboard/HR + Shopper/perfil/credenciales/histórico + comparativo + Beneficios + Finanzas`.
+El código v2 no está desplegado. La autorización anterior está consumida.
 
-## 10. Siguiente bloque
-`HUMAN VISUAL PASS → FREEZE C6 → AGOSTO`.
+`GATES FINALES PASS → AUTORIZACIÓN FRESCA 1x HOSTING DEV → REMOTE SMOKE SEMÁNTICO → HUMAN VISUAL PASS → FREEZE C6 → AGOSTO`.
 
-## 11. Estado seguro
-En el deploy autorizado actual: Hosting1; Cloud Run0; Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos0; merge=false; producción=false.
+## 10. Estado seguro
+Bloque correctivo: Hosting0; Cloud Run0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos0; merge=false; producción=false.
