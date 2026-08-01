@@ -1,6 +1,6 @@
-/* CXOrbia TyA Corte 6 — stable cumulative human visual bridge (DEV only).
+/* CXOrbia TyA Corte 6 — stable cumulative human visual bridge v2 (DEV only).
    HR is the immutable operational baseline per revision. Protected Firestore enriches exact identities only.
-   No provider writes, no browser Firebase credentials, no module patches. */
+   Protected overlay failures must never erase or block a valid 14/616/208 HR baseline. */
 window.CX = window.CX || {};
 (function(){
   'use strict';
@@ -20,6 +20,31 @@ window.CX = window.CX || {};
   let protectedPayload=null;
   let hrBaseline=null;
   let lastCompose=null;
+
+  function canonicalHrReady(){
+    return !!(CX.data&&Array.isArray(CX.data.projects)&&CX.data.projects.length===14&&Array.isArray(CX.data._visitas)&&CX.data._visitas.length===616&&Array.isArray(CX.data.shoppers)&&CX.data.shoppers.length===208&&CX.data.currentProjectId&&CX.data.currentPeriodId);
+  }
+  function preserveHrFallback(reason,error){
+    window.CX_TYA_FULL_VISUAL_READY=false;
+    window.CX_TYA_FULL_VISUAL_FALLBACK={
+      active:true,reason:reason||'protected-overlay-unavailable',error:error?String(error.message||error):null,
+      canonicalHrReady:canonicalHrReady(),periods:Array.isArray(CX.data?.projects)?CX.data.projects.length:0,
+      visits:Array.isArray(CX.data?._visitas)?CX.data._visitas.length:0,shoppers:Array.isArray(CX.data?.shoppers)?CX.data.shoppers.length:0,
+      protectedOverlay:false,sourceSafe:true,writes:false,production:false,at:new Date().toISOString()
+    };
+    if(CX.dataSource&&canonicalHrReady()){
+      CX.dataSource.mode='source_safe_preview';
+      CX.dataSource.status='ready';
+      CX.dataSource.sourceRef='hr-live-runtime:tya:cinepolis';
+      CX.dataSource.updatedAt=new Date().toISOString();
+      CX.dataSource.runtimeReadActive=true;
+      CX.dataSource.runtimeSyncActive=false;
+      CX.dataSource.updating=false;
+      CX.dataSource.blockers=[];
+      CX.dataSource.warnings=['Perfil protegido no disponible en esta sesión; se conserva la HR canónica 14/616/208 en modo solo lectura.'];
+    }
+    return {ok:false,fallback:true,reason:reason||'protected-overlay-unavailable',canonicalHrReady:canonicalHrReady()};
+  }
 
   function takeTokenFromFragment(){
     let token='';
@@ -162,6 +187,7 @@ window.CX = window.CX || {};
       activePeriodVisits:activeVisits,visits:CX.data._visitas.length,shoppers:CX.data.shoppers.length,posts:CX.data._posts.length
     };
     window.CX_TYA_FULL_VISUAL_READY=true;
+    window.CX_TYA_FULL_VISUAL_FALLBACK=null;
     window.CX_TYA_FULL_VISUAL_CONTRACT=Object.assign({
       tenantId:'tya',projectId:'cinepolis',hrLivePreserved:true,canonicalFinancePreserved:!!window.CX_TYA_FINANCIAL_CANONICAL_READY,
       browserFirebaseCredentialsRequired:false,providerWrites:0,production:false
@@ -174,15 +200,14 @@ window.CX = window.CX || {};
     try{return applyComposition(reason||'stable_reapply');}
     catch(error){
       console.error('[CX.full-visual-stable]',error);
-      if(CX.dataSource){CX.dataSource.status='blocked';CX.dataSource.blockers=['Composición acumulativa estable bloqueada por invariante. Se conserva la HR base.'];}
-      return {ok:false,error:String(error&&error.message||error)};
+      return preserveHrFallback('stable-composer-invariant-failed',error);
     }
   }
   async function load(){
     const token=takeTokenFromFragment();
     window.CX_TYA_FULL_VISUAL_REQUESTED=true;
     CX.tenantProfile=Object.assign({},CX.tenantProfile||{}, {devShopperAccess:true,devHostAllowlist:['cxorbia-backend-dev.web.app','cxorbia-backend-dev.firebaseapp.com']});
-    if(!token){if(CX.dataSource){CX.dataSource.status='blocked';CX.dataSource.blockers=['Sesión visual DEV no disponible. Usa el enlace temporal generado para esta validación.'];}return;}
+    if(!token){preserveHrFallback('visual-session-not-available');return;}
     try{
       await ensureEngine();
       if(CX.dataSource){CX.dataSource.status='loading';CX.dataSource.warnings=['Sincronizando HR viva antes de componer perfil protegido…'];}
@@ -199,7 +224,8 @@ window.CX = window.CX || {};
       if(CX.ui&&CX.ui.toast&&composed.ok)CX.ui.toast('HR viva + perfil protegido estables','');
     }catch(error){
       console.error('[CX.full-visual-stable]',error);
-      if(CX.dataSource){CX.dataSource.status='blocked';CX.dataSource.warnings=[];CX.dataSource.blockers=['No fue posible componer el perfil protegido sobre HR viva. La HR base se conserva sin duplicar datos.'];}
+      try{sessionStorage.removeItem(TOKEN_KEY);}catch(_){ }
+      preserveHrFallback('protected-overlay-load-failed',error);
     }
   }
   window.CX_TYA_REAPPLY_FULL_VISUAL_OVERLAY=reapply;
