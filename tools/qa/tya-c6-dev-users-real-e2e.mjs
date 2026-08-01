@@ -51,6 +51,7 @@ async function authProgress(page){
       return style.display!=='none'&&style.visibility!=='hidden'&&Number(style.opacity)!==0&&rect.width>0&&rect.height>0;
     };
     const ctx=window.CX?.backendAuth?.context?.()||null;
+    const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||null;
     const error=document.getElementById('cxDevEntryError');
     const errorText=String(error?.textContent||'').toLowerCase();
     let errorClass='none';
@@ -66,6 +67,8 @@ async function authProgress(page){
       appOn:Boolean(document.getElementById('app')?.classList.contains('on')),
       firebaseReady:Boolean(window.firebase&&firebase.auth&&firebase.auth().currentUser),
       visits:Array.isArray(window.CX?.data?._visitas)?window.CX.data._visitas.length:0,
+      authorityApplied:Boolean(authority?.applied),
+      authorityOwnVisits:Number(authority?.ownVisits||0),
       loginVisible:isVisible(document.getElementById('cxDevEntryAuth')),
       dualVisible:isVisible(document.getElementById('cxDevDualAccess')),
       errorVisible:isVisible(error),
@@ -82,6 +85,8 @@ function authProgressCode(state){
     `APP${state.appOn?1:0}`,
     `FB${state.firebaseReady?1:0}`,
     `V${Number(state.visits||0)}`,
+    `AUTHORITY${state.authorityApplied?1:0}`,
+    `OWN${Number(state.authorityOwnVisits||0)}`,
     `LOGIN${state.loginVisible?1:0}`,
     `DUAL${state.dualVisible?1:0}`,
     `ERR${safeFailureCode(state.errorClass||'none')}`,
@@ -89,19 +94,20 @@ function authProgressCode(state){
   ].join('_');
 }
 
-async function waitAuthenticated(page,expectedNamespace,expectedVisibleVisits){
+async function waitAuthenticated(page,expectedNamespace){
   try{
-    await page.waitForFunction(({namespace,expectedVisits})=>{
+    await page.waitForFunction(({namespace})=>{
       const cx=window.CX;
       const ctx=cx&&cx.backendAuth&&typeof cx.backendAuth.context==='function'?cx.backendAuth.context():null;
       const appOn=document.getElementById('app')?.classList.contains('on');
       const firebaseReady=Boolean(window.firebase&&firebase.auth&&firebase.auth().currentUser);
       const visits=Array.isArray(cx?.data?._visitas)?cx.data._visitas.length:0;
-      return Boolean(ctx&&ctx.authenticated===true&&ctx.authNamespace===namespace&&appOn&&firebaseReady&&visits===expectedVisits);
-    },{namespace:expectedNamespace,expectedVisits:expectedVisibleVisits},{timeout:90000});
+      const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY;
+      return Boolean(ctx&&ctx.authenticated===true&&ctx.authNamespace===namespace&&appOn&&firebaseReady&&visits===616&&authority&&authority.applied===true);
+    },{namespace:expectedNamespace},{timeout:90000});
   }catch(_){
     const state=await authProgress(page);
-    throw new Error(`AUTH_WAIT_TIMEOUT_${safeFailureCode(expectedNamespace)}_EXP${Number(expectedVisibleVisits||0)}_${authProgressCode(state)}`);
+    throw new Error(`AUTH_WAIT_TIMEOUT_${safeFailureCode(expectedNamespace)}_EXP616_${authProgressCode(state)}`);
   }
 }
 
@@ -138,6 +144,7 @@ async function snapshot(page,expectedCanonicalShopperId=''){
       return style.display!=='none'&&style.visibility!=='hidden'&&Number(style.opacity)!==0&&rect.width>0&&rect.height>0;
     };
     const ctx=window.CX?.backendAuth?.context?.()||null;
+    const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||null;
     const d=window.CX?.data||{};
     const rawShopperId=String(ctx?.shopperId||'').trim();
     const identityMap=d.__identityMap||{};
@@ -159,6 +166,9 @@ async function snapshot(page,expectedCanonicalShopperId=''){
       visits:Array.isArray(d._visitas)?d._visitas.length:0,
       shoppers:Array.isArray(d.shoppers)?d.shoppers.length:0,
       ownVisits:own,
+      authorityApplied:Boolean(authority?.applied),
+      authorityHrVisits:Number(authority?.hrVisits||0),
+      authorityOwnVisits:Number(authority?.ownVisits||0),
       appOn:Boolean(document.getElementById('app')?.classList.contains('on')),
       loginVisible:isVisible(document.getElementById('cxDevEntryAuth')),
       technicalPillPresent:Boolean(document.getElementById('cxBackendPreviewStatus')),
@@ -175,6 +185,9 @@ async function assertAuthenticatedState(page,kind,credential){
   const state=await snapshot(page,expectedCanonicalShopperId);
   assert(state.tenantId==='tya',kind+'_tenant_mismatch');
   assert(state.projectIds.includes('cinepolis')||state.role==='super',kind+'_project_scope_missing');
+  assert(state.visits===616,kind+`_hr_authority_visits_mismatch_OBS${state.visits}_EXP616`);
+  assert(state.authorityApplied===true,kind+'_hr_authority_bridge_not_applied');
+  assert(state.authorityHrVisits===616,kind+`_hr_authority_diagnostic_mismatch_OBS${state.authorityHrVisits}_EXP616`);
   assert(state.appOn===true,kind+'_app_not_entered');
   assert(state.loginVisible===false,kind+'_credential_form_still_visible');
   assert(state.technicalPillPresent===false,kind+'_technical_status_visible');
@@ -182,26 +195,23 @@ async function assertAuthenticatedState(page,kind,credential){
   assert(state.genericRolesPresent===0,kind+'_generic_role_picker_present');
   assert(state.dualChoicePresent===false,kind+'_unexpected_dual_choice');
   if(kind==='staff'){
-    assert(state.visits===616,kind+`_canonical_visits_mismatch_OBS${state.visits}_EXP616`);
     assert(state.authNamespace==='staff',kind+'_namespace_mismatch');
     assert(['super','admin','ops','coordinador'].includes(state.role),kind+'_role_mismatch');
   }else{
     assert(expectedOwnVisits>0,kind+'_expected_own_visits_missing');
-    assert(state.visits===expectedOwnVisits,kind+`_least_privilege_visit_scope_mismatch_OBS${state.visits}_EXP${expectedOwnVisits}`);
     assert(state.authNamespace==='shopper',kind+'_namespace_mismatch');
     assert(state.role==='shopper',kind+'_role_mismatch');
     assert(state.shopperIdPresent===true,kind+'_shopper_scope_missing');
     assert(state.expectedCanonicalMatch===true,kind+'_identity_map_does_not_resolve_claim_to_canonical');
     assert(state.ownVisits>0,kind+'_own_history_empty');
     assert(state.ownVisits===expectedOwnVisits,kind+`_own_history_count_mismatch_OBS${state.ownVisits}_EXP${expectedOwnVisits}`);
+    assert(state.authorityOwnVisits===expectedOwnVisits,kind+`_authority_own_history_mismatch_OBS${state.authorityOwnVisits}_EXP${expectedOwnVisits}`);
   }
   return state;
 }
 
 async function runPrincipal(browser,kind,credential){
   const expectedNamespace=kind==='staff'?'staff':'shopper';
-  const expectedVisibleVisits=kind==='staff'?616:Number(credential?.expectedOwnVisits||0);
-  assert(expectedVisibleVisits>0,kind+'_expected_visible_visits_invalid');
   const context=await browser.newContext({viewport:{width:1440,height:1000},ignoreHTTPSErrors:true,serviceWorkers:'block'});
   await configureLocalRoutes(context);
   const page=await context.newPage();
@@ -216,25 +226,25 @@ async function runPrincipal(browser,kind,credential){
   await page.fill('#cxDevEntryPassword',credential.password);
   await page.click('#cxDevEntrySubmit');
   await resolvePostCredentialChoice(page,expectedNamespace);
-  await waitAuthenticated(page,expectedNamespace,expectedVisibleVisits);
+  await waitAuthenticated(page,expectedNamespace);
   const first=await assertAuthenticatedState(page,kind,credential);
 
   await page.reload({waitUntil:'domcontentloaded',timeout:60000});
-  await waitAuthenticated(page,expectedNamespace,expectedVisibleVisits);
+  await waitAuthenticated(page,expectedNamespace);
   const refresh=await assertAuthenticatedState(page,kind,credential);
 
   const second=await context.newPage();
   await second.goto(root+'/index-backend-dev.html',{waitUntil:'domcontentloaded',timeout:60000});
-  await waitAuthenticated(second,expectedNamespace,expectedVisibleVisits);
+  await waitAuthenticated(second,expectedNamespace);
   const newTab=await assertAuthenticatedState(second,kind,credential);
 
-  const entryErrors=errors.filter(message=>/cxDevEntry|tya-dev-entry|invalid-credential|namespace/i.test(message));
+  const entryErrors=errors.filter(message=>/cxDevEntry|tya-dev-entry|invalid-credential|namespace|protected-auth-hr-authority/i.test(message));
   assert(entryErrors.length===0,kind+'_entry_runtime_error');
 
   await second.close();
   await page.evaluate(async()=>{ try{ await window.CX?.backendAuth?.signOut?.(); }catch(_){} });
   await context.close();
-  return {role:first.role,namespace:first.authNamespace,visits:first.visits,shoppers:first.shoppers,ownVisits:first.ownVisits,leastPrivilegeScope:kind==='shopper'?first.visits===expectedVisibleVisits:true,identityMapResolved:first.identityMapResolved||first.rawShopperId===first.canonicalShopperId,refreshPreserved:refresh.appOn===true,newTabPreserved:newTab.appOn===true};
+  return {role:first.role,namespace:first.authNamespace,visits:first.visits,shoppers:first.shoppers,ownVisits:first.ownVisits,hrAuthorityPreserved:first.authorityApplied&&first.visits===616,identityMapResolved:first.identityMapResolved||first.rawShopperId===first.canonicalShopperId,refreshPreserved:refresh.appOn===true&&refresh.visits===616,newTabPreserved:newTab.appOn===true&&newTab.visits===616};
 }
 
 const browser=await chromium.launch({headless:true});
@@ -245,7 +255,7 @@ try{
   let shopper;
   try{shopper=await runPrincipal(browser,'shopper',credentials.shopper);}
   catch(error){persistFailure('shopper',error);throw error;}
-  console.log(JSON.stringify({decision:'PASS_C6_REAL_USERS_END_TO_END',staff,shopper,credentialsExposed:false,tokensExposed:false,writes:0,production:false}));
+  console.log(JSON.stringify({decision:'PASS_C6_REAL_USERS_END_TO_END',staff,shopper,hrAuthorityVisits:616,credentialsExposed:false,tokensExposed:false,writes:0,production:false}));
 }finally{
   await browser.close();
 }
