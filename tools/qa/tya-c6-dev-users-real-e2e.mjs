@@ -42,15 +42,91 @@ async function configureLocalRoutes(context){
   });
 }
 
+async function authProgress(page){
+  return page.evaluate(()=>{
+    const isVisible=element=>{
+      if(!element)return false;
+      const style=getComputedStyle(element);
+      const rect=element.getBoundingClientRect();
+      return style.display!=='none'&&style.visibility!=='hidden'&&Number(style.opacity)!==0&&rect.width>0&&rect.height>0;
+    };
+    const ctx=window.CX?.backendAuth?.context?.()||null;
+    const error=document.getElementById('cxDevEntryError');
+    const errorText=String(error?.textContent||'').toLowerCase();
+    let errorClass='none';
+    if(isVisible(error)&&errorText){
+      if(/usuario o contraseña no válidos/.test(errorText))errorClass='invalid-credential';
+      else if(/no tiene un acceso habilitado/.test(errorText))errorClass='scope-not-enabled';
+      else if(/no fue posible validar/.test(errorText))errorClass='validation-failed';
+      else errorClass='other';
+    }
+    return {
+      authenticated:Boolean(ctx?.authenticated),
+      namespace:String(ctx?.authNamespace||''),
+      appOn:Boolean(document.getElementById('app')?.classList.contains('on')),
+      firebaseReady:Boolean(window.firebase&&firebase.auth&&firebase.auth().currentUser),
+      visits:Array.isArray(window.CX?.data?._visitas)?window.CX.data._visitas.length:0,
+      loginVisible:isVisible(document.getElementById('cxDevEntryAuth')),
+      dualVisible:isVisible(document.getElementById('cxDevDualAccess')),
+      errorVisible:isVisible(error),
+      errorClass,
+      submitText:String(document.getElementById('cxDevEntrySubmit')?.textContent||'').trim().toLowerCase()
+    };
+  });
+}
+
+function authProgressCode(state){
+  return [
+    `CTX${state.authenticated?1:0}`,
+    `NS${safeFailureCode(state.namespace||'none')}`,
+    `APP${state.appOn?1:0}`,
+    `FB${state.firebaseReady?1:0}`,
+    `V${Number(state.visits||0)}`,
+    `LOGIN${state.loginVisible?1:0}`,
+    `DUAL${state.dualVisible?1:0}`,
+    `ERR${safeFailureCode(state.errorClass||'none')}`,
+    `BTN${safeFailureCode(state.submitText||'none')}`
+  ].join('_');
+}
+
 async function waitAuthenticated(page,expectedNamespace){
-  await page.waitForFunction(({namespace})=>{
-    const cx=window.CX;
-    const ctx=cx&&cx.backendAuth&&typeof cx.backendAuth.context==='function'?cx.backendAuth.context():null;
-    const appOn=document.getElementById('app')?.classList.contains('on');
-    const firebaseReady=Boolean(window.firebase&&firebase.auth&&firebase.auth().currentUser);
-    const visits=Array.isArray(cx?.data?._visitas)?cx.data._visitas.length:0;
-    return Boolean(ctx&&ctx.authenticated===true&&ctx.authNamespace===namespace&&appOn&&firebaseReady&&visits===616);
-  },{namespace:expectedNamespace},{timeout:90000});
+  try{
+    await page.waitForFunction(({namespace})=>{
+      const cx=window.CX;
+      const ctx=cx&&cx.backendAuth&&typeof cx.backendAuth.context==='function'?cx.backendAuth.context():null;
+      const appOn=document.getElementById('app')?.classList.contains('on');
+      const firebaseReady=Boolean(window.firebase&&firebase.auth&&firebase.auth().currentUser);
+      const visits=Array.isArray(cx?.data?._visitas)?cx.data._visitas.length:0;
+      return Boolean(ctx&&ctx.authenticated===true&&ctx.authNamespace===namespace&&appOn&&firebaseReady&&visits===616);
+    },{namespace:expectedNamespace},{timeout:90000});
+  }catch(_){
+    const state=await authProgress(page);
+    throw new Error(`AUTH_WAIT_TIMEOUT_${safeFailureCode(expectedNamespace)}_${authProgressCode(state)}`);
+  }
+}
+
+async function resolvePostCredentialChoice(page,expectedNamespace){
+  try{
+    await page.waitForFunction(({namespace})=>{
+      const ctx=window.CX?.backendAuth?.context?.()||null;
+      const dual=document.getElementById('cxDevDualAccess');
+      const error=document.getElementById('cxDevEntryError');
+      const style=error?getComputedStyle(error):null;
+      const errorVisible=Boolean(error&&style&&style.display!=='none'&&String(error.textContent||'').trim());
+      return Boolean((ctx?.authenticated===true&&ctx?.authNamespace===namespace)||dual||errorVisible);
+    },{namespace:expectedNamespace},{timeout:30000});
+  }catch(_){
+    const state=await authProgress(page);
+    throw new Error(`CREDENTIAL_OUTCOME_TIMEOUT_${safeFailureCode(expectedNamespace)}_${authProgressCode(state)}`);
+  }
+  const state=await authProgress(page);
+  if(state.errorVisible)throw new Error(`CREDENTIAL_REJECTED_${safeFailureCode(expectedNamespace)}_${authProgressCode(state)}`);
+  if(state.dualVisible){
+    const selector=`#cxDevDualAccess button[data-namespace="${expectedNamespace}"]`;
+    const target=page.locator(selector);
+    assert(await target.count()===1,`DUAL_PROFILE_TARGET_MISSING_${safeFailureCode(expectedNamespace)}`);
+    await target.click();
+  }
 }
 
 async function snapshot(page,expectedCanonicalShopperId=''){
@@ -121,6 +197,7 @@ async function assertAuthenticatedState(page,kind,credential){
 }
 
 async function runPrincipal(browser,kind,credential){
+  const expectedNamespace=kind==='staff'?'staff':'shopper';
   const context=await browser.newContext({viewport:{width:1440,height:1000},ignoreHTTPSErrors:true,serviceWorkers:'block'});
   await configureLocalRoutes(context);
   const page=await context.newPage();
@@ -134,16 +211,17 @@ async function runPrincipal(browser,kind,credential){
   await page.fill('#cxDevEntryLogin',credential.login);
   await page.fill('#cxDevEntryPassword',credential.password);
   await page.click('#cxDevEntrySubmit');
-  await waitAuthenticated(page,kind==='staff'?'staff':'shopper');
+  await resolvePostCredentialChoice(page,expectedNamespace);
+  await waitAuthenticated(page,expectedNamespace);
   const first=await assertAuthenticatedState(page,kind,credential);
 
   await page.reload({waitUntil:'domcontentloaded',timeout:60000});
-  await waitAuthenticated(page,kind==='staff'?'staff':'shopper');
+  await waitAuthenticated(page,expectedNamespace);
   const refresh=await assertAuthenticatedState(page,kind,credential);
 
   const second=await context.newPage();
   await second.goto(root+'/index-backend-dev.html',{waitUntil:'domcontentloaded',timeout:60000});
-  await waitAuthenticated(second,kind==='staff'?'staff':'shopper');
+  await waitAuthenticated(second,expectedNamespace);
   const newTab=await assertAuthenticatedState(second,kind,credential);
 
   const entryErrors=errors.filter(message=>/cxDevEntry|tya-dev-entry|invalid-credential|namespace/i.test(message));
