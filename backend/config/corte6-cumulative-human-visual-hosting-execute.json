@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "cxorbia.corte6.canonical-root-fix-hosting-execute.v2",
-  "requestId": "corte6-canonical-root-fix-hosting-20260801-01",
-  "status": "consumed_pass",
-  "enabled": false,
-  "consumed": true,
+  "schemaVersion": "cxorbia.corte6.dev-entry-p0-hosting-execute.v3",
+  "requestId": "corte6-dev-entry-p0-hosting-20260801-01",
+  "status": "execute_authorized_once",
+  "enabled": true,
+  "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -13,7 +13,8 @@
   "tenantId": "tya",
   "projectId": "cinepolis",
   "rootFixCommit": "1889c7ef080c88c7db6eca56cb26fa2e0ad1466f",
-  "authorizationId": "chat-20260801-c6-canonical-root-fix-hosting-01",
+  "entryFixCommit": "82696922fa15996cd41b396c531f98062c6ef58f",
+  "authorizationId": "chat-20260801-c6-dev-entry-p0-hosting-01",
   "firestoreWrites": 0,
   "authWrites": 0,
   "authResets": 0,
@@ -30,7 +31,5 @@
   "newHostingSites": 0,
   "merge": false,
   "production": false,
-  "nextGate": "HUMAN_VISUAL_ACCUMULATIVE_C6_FREEZE",
-  "consumedAt": "2026-08-01T14:06:08.376Z",
-  "decision": "PASS_C6_CANONICAL_ROOT_FIX_EXISTING_HOSTING_DEV_REMOTE_SMOKE"
+  "nextGate": "HUMAN_VISUAL_ACCUMULATIVE_C6_FREEZE"
 }
