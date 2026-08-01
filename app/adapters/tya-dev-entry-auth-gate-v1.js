@@ -39,22 +39,28 @@ window.CX = window.CX || {};
     return 'No fue posible validar el acceso. Verifica usuario y contraseña o solicita revisión al equipo TyA.';
   }
 
-  function hideGenericRolePicker(card){
-    card.querySelectorAll('.role-btn,.role-alt,#goReg').forEach(function(el){
-      el.hidden = true;
-      el.setAttribute('aria-hidden','true');
-      el.setAttribute('tabindex','-1');
+  function removeGenericRolePicker(card){
+    const containers = new Set();
+
+    card.querySelectorAll('.role-alt').forEach(function(el){
+      const section = el.closest('div[style*="border-top"]') || el.parentElement;
+      if(section) containers.add(section);
+      else el.remove();
     });
-    const alt = card.querySelector('.role-alt');
-    if(alt){
-      const section = alt.closest('div[style*="border-top"]') || alt.parentElement;
-      if(section) section.hidden = true;
-    }
+
     const guestSelect = card.querySelector('#loginUserSel');
     if(guestSelect){
       const section = guestSelect.closest('div[style*="border-top"]') || guestSelect.parentElement;
-      if(section) section.hidden = true;
+      if(section) containers.add(section);
     }
+
+    containers.forEach(function(section){
+      if(section && section.parentNode) section.remove();
+    });
+
+    card.querySelectorAll('.role-btn,#goReg').forEach(function(el){
+      if(el && el.parentNode) el.remove();
+    });
   }
 
   function renderDirectProductLogin(){
@@ -62,7 +68,7 @@ window.CX = window.CX || {};
     const card = loginRoot && loginRoot.querySelector('.login-card');
     if(!card || !window.CX || !CX.backendAuth) return false;
 
-    hideGenericRolePicker(card);
+    removeGenericRolePicker(card);
     const oldIntegrated = card.querySelector('#cxIntegratedAuthStep');
     if(oldIntegrated) oldIntegrated.remove();
     const old = card.querySelector('#cxDevEntryAuth');
@@ -135,6 +141,7 @@ window.CX = window.CX || {};
       applied:true,
       mode:'single-product-login',
       genericRolePickerHidden:true,
+      genericRolePickerRemoved:true,
       firebaseAuthAuthorityPreserved:true,
       sessionReuse:true,
       credentialsEmbedded:false,
