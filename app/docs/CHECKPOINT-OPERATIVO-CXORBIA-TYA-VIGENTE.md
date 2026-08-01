@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-31  
-**Estado:** `C6_HUMAN_VISUAL_P0_PROVEN__CANONICAL_DOMAIN_FIX_CODE_PASS__LIVE_HR_ROW_AUDIT_PASS__PENDING_DEV_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_HUMAN_VISUAL_P0_PROVEN__CANONICAL_DOMAIN_AND_FINANCE_FIX_CODE_PASS__LIVE_HR_ROW_AUDIT_PASS__PENDING_DEV_DEPLOY__NO_PRODUCTION`
 
 ## 1. Repo/destinos
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge.
@@ -18,7 +18,7 @@
 - Finanzas/pagos canónicos source-safe preservados.
 
 ## 3. Hosting anterior y reclassificación
-La autorización `chat-20260731-c6-stable-cumulative-hosting-02` fue consumida con exactamente1 Hosting DEV y provider/data writes0. El remote smoke confirmó paridad de assets e idempotencia sintética, pero **no probó consistencia semántica transversal**. Por ello permanece como evidencia técnica, no como cierre de Corte6.
+La autorización `chat-20260731-c6-stable-cumulative-hosting-02` fue consumida con exactamente1 Hosting DEV y provider/data writes0. El remote smoke confirmó paridad de assets e idempotencia sintética, pero **no probó consistencia semántica transversal**. Permanece como evidencia técnica, no como cierre de Corte6.
 
 ## 4. Human visual — P0 probado
 Las capturas posteriores al deploy demostraron:
@@ -31,17 +31,19 @@ Las capturas posteriores al deploy demostraron:
 - certificación no visible en Admin;
 - Shopper Paula: Activas1/Historial0/Beneficios vacío pese a histórico visible en Admin;
 - periodo MAY visible con contenido financiero/liquidaciones de JUL;
-- Finanzas históricas sin proyección coherente a Movimientos/Liquidaciones/Beneficios.
+- Finanzas históricas sin proyección coherente a Movimientos/Liquidaciones/Beneficios;
+- Liquidaciones mostrando solo7 filas porque33 visitas submitidas eran omitidas por un switch literal.
 
 Corte6 continúa FAIL y no se congela.
 
-## 5. Causa raíz
+## 5. Causas raíz
 - varias máquinas de estado antiguas coexistían con `canonicalFacets`;
 - el composer anterior anexaba perfiles protegidos no vinculados exactamente al listado HR;
 - el watcher restauraba selects DOM fuera del modelo y preservaba contenedores de scroll equivocados;
 - “perfil completo” dependía de flags, no de campos reales;
-- `Mis Visitas` reducía el universo a una visita por estado literal;
-- periodo, identidad y finanzas no compartían una única proyección canónica.
+- `Mis Visitas` elegía como máximo una visita por estado literal;
+- periodo, identidad y finanzas no compartían una única proyección canónica;
+- `CX.liq.estadoFromVisita` no reconocía `submitida`, por lo que la mayoría del ciclo financiero desaparecía.
 
 ## 6. Root fix en rama viva — todavía no desplegado
 Nuevos:
@@ -49,7 +51,9 @@ Nuevos:
 - `app/adapters/tya-canonical-state-semantics-v2.js`;
 - `app/adapters/tya-live-source-refresh-watch-v2.js`;
 - `app/adapters/tya-c6-domain-consistency-bridge.js`;
-- `tools/qa/tya-c6-domain-consistency-regression-gate.mjs`.
+- `app/adapters/tya-canonical-finance-read-model-v2.js`;
+- `tools/qa/tya-c6-domain-consistency-regression-gate.mjs`;
+- `tools/qa/tya-c6-canonical-finance-read-model-gate.mjs`.
 
 Tocado:
 - `app/index-backend-dev.html` para cargar el nuevo runtime DEV.
@@ -64,10 +68,16 @@ Contratos:
 - perfil completo exige nombre+contacto+usuario+contraseña;
 - mismo contenido HR no produce render;
 - cambio real produce un apply+compose+render preservando `.content`, `#rail`, periodo, proyecto y vista;
-- fuera de rango histórico y accionable son conceptos separados.
+- fuera de rango histórico y accionable son conceptos separados;
+- toda visita realizada entra a Liquidaciones; una submitida sin cruce queda visible y bloqueada para lote/pago.
 
-## 7. Auditoría real read-only sobre HR viva — PASS
-`PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE` con engine `c6-canonical-domain-composer-v2+actionable-state-v2`:
+## 7. Gates finales — PASS
+La evidencia read-only v4 registra:
+- `PASS_C6_CANONICAL_DOMAIN_CONSISTENCY`;
+- `PASS_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS`;
+- `PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE`.
+
+Sobre HR viva:
 -14 periodos;
 -616 visitas;
 -208 shoppers HR;
@@ -75,10 +85,13 @@ Contratos:
 -realizadas40;
 -cuestionario38;
 -submitidas33;
+-liquidationCandidates33;
 -fuera de rango accionable1;
 -evidencias históricas fuera de rango7;
 -duplicateVisitKeys0;
 -duplicateShopperIds0.
+
+El gate financiero representativo prueba40 visitas realizadas presentes en Liquidaciones,33 submitidas no omitidas,5 pendientes de submit,2 pendientes de cuestionario, fuentes exactas preservadas y ejecución de pagos deshabilitada.
 
 Evidencia: `app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json`.
 
@@ -91,7 +104,7 @@ WhatsApp debe venir de HR/perfil protegido; no se fabrica. Complementar/material
 El código correctivo está en GitHub, no en Hosting DEV. La autorización anterior está consumida y no se reutiliza.
 
 Secuencia:
-`GATES ESTÁTICOS FINALES PASS → AUTORIZACIÓN FRESCA 1x HOSTING DEV → REMOTE SMOKE SEMÁNTICO → HUMAN VISUAL ACUMULATIVA → FREEZE C6 → AGOSTO`.
+`AUTORIZACIÓN FRESCA 1x HOSTING DEV → REMOTE SMOKE SEMÁNTICO → HUMAN VISUAL ACUMULATIVA → FREEZE C6 → AGOSTO`.
 
 No Cloud Run previsto para este root fix. Ningún deploy se ejecuta sin autorización fresca.
 
@@ -100,6 +113,7 @@ Bloque actual: Hosting0; Cloud Run0; Firestore/Auth/Rules/Storage/HR/Make/Gemini
 
 ## 11. Documentación vigente
 - `CAMBIOS-BACKEND-ADDENDUM-C6-HUMAN-P0-CANONICAL-DOMAIN-ROOT-FIX-20260731.md`;
+- `CAMBIOS-BACKEND-ADDENDUM-C6-FINANZAS-LIQUIDACIONES-CANONICAS-20260731.md`;
 - `ACADEMIA-IMPACTO-C6-DOMINIO-CANONICO-Y-ESTADOS-ACCIONABLES-20260731.md`;
-- evidencias P0, gate de dominio y auditoría HR viva;
-- índice, Phase A, tracker, Claude y pendientes reconciliados con este estado.
+- evidencias P0, dominio, finanzas y auditoría HR viva;
+- índice, Phase A, tracker, Claude y pendientes reconciliados.
