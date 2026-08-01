@@ -3,7 +3,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-const script=fileURLToPath(new URL('./cxorbia-c6-existing-users-e2e-credentials-v4.mjs',import.meta.url));
+const script=fileURLToPath(new URL('./cxorbia-c6-existing-users-e2e-credentials-v5.mjs',import.meta.url));
 const original=process.env.CXORBIA_CREDENTIAL_ENVELOPE||'backend/private-inbox/corte6-credential-bundle.enc.json';
 const privateDir=process.env.PRIVATE_DIR||'.tmp/c6-real-users-e2e-private';
 const normalizedEnvelope=path.join(privateDir,'credential-envelope-target-normalized.json');
@@ -21,6 +21,6 @@ if(run.status!==0){
 }
 const lines=String(run.stdout||'').trim().split(/\r?\n/).filter(Boolean);
 const result=JSON.parse(lines.at(-1)||'{}');
-if(result.decision!=='PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V4') throw new Error('credential_selector_v4_not_pass');
+if(result.decision!=='PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V5') throw new Error('credential_selector_v5_not_pass');
 result.decision='PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION';
 console.log(JSON.stringify(result));
