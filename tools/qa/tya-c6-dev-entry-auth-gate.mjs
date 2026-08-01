@@ -3,8 +3,10 @@ import vm from 'node:vm';
 
 const indexPath = process.argv[2] || 'app/index-backend-dev.html';
 const adapterPath = process.argv[3] || 'app/adapters/tya-dev-entry-auth-gate-v1.js';
+const authorityPath = process.argv[4] || 'app/adapters/tya-protected-auth-hr-authority-bridge-v1.js';
 const index = fs.readFileSync(indexPath, 'utf8');
 const adapter = fs.readFileSync(adapterPath, 'utf8');
+const authority = fs.readFileSync(authorityPath, 'utf8');
 
 function assert(condition, message){ if(!condition) throw new Error(message); }
 
@@ -12,6 +14,8 @@ const order = [
   'core/backend-browser-auth.js',
   'adapters/tya-dev-entry-auth-gate-v1.js',
   'core/backend-firebase.js',
+  'adapters/tya-protected-auth-hr-authority-bridge-v1.js',
+  'core/backend-cxdata-read-guard.js',
   'app.js'
 ].map(marker => ({marker, pos:index.indexOf(marker)}));
 for(const item of order) assert(item.pos >= 0, 'missing_index_marker:'+item.marker);
@@ -28,40 +32,31 @@ for(const marker of [
 ]) assert(index.includes(marker), 'missing_entry_bootstrap_marker:'+marker);
 
 for(const marker of [
-  'cxDevEntryLogin',
-  'cxDevEntryPassword',
-  'cxDevEntrySubmit',
-  'resolveNamespaces',
-  'probeNamespace',
-  'claimsMatch',
-  'CX.backendAuth.authenticate',
-  "mode:'username-password-claims-derived'",
-  'visibleRoleSelector:false',
-  'namespaceAutoResolution:true',
-  'dualChoiceOnlyAfterCredentialValidation:true',
-  'technicalStatusVisible:false',
-  'firebaseAuthAuthorityPreserved:true',
-  'credentialsEmbedded:false',
-  'writes:false',
-  'production:false'
+  'cxDevEntryLogin','cxDevEntryPassword','cxDevEntrySubmit','resolveNamespaces','probeNamespace','claimsMatch',
+  'CX.backendAuth.authenticate',"mode:'username-password-claims-derived'",'visibleRoleSelector:false',
+  'namespaceAutoResolution:true','dualChoiceOnlyAfterCredentialValidation:true','technicalStatusVisible:false',
+  'firebaseAuthAuthorityPreserved:true','credentialsEmbedded:false','writes:false','production:false'
 ]) assert(adapter.includes(marker), 'missing_adapter_marker:'+marker);
 
 for(const forbidden of [
-  'cxDevEntryAccessType',
-  'Tipo de acceso',
-  '<option value="staff"',
-  '<option value="shopper"',
-  'localStorage.setItem(',
-  'sessionStorage.setItem(',
-  'passwordStorageKey',
-  'FIREBASE_SERVICE_ACCOUNT',
-  'console.log(password',
-  'console.log(login'
+  'cxDevEntryAccessType','Tipo de acceso','<option value="staff"','<option value="shopper"',
+  'localStorage.setItem(','sessionStorage.setItem(','passwordStorageKey','FIREBASE_SERVICE_ACCOUNT',
+  'console.log(password','console.log(login'
 ]) assert(!adapter.includes(forbidden), 'forbidden_adapter_pattern:'+forbidden);
 
 assert(adapter.includes("document.getElementById('cxBackendPreviewStatus')"), 'technical_status_suppression_missing');
 assert(adapter.includes("card.querySelectorAll('.role-btn,#goReg')"), 'generic_role_removal_missing');
 assert(adapter.includes("matches.length > 1"), 'dual_identity_post_auth_branch_missing');
+
+for(const marker of [
+  'CX_TYA_CUMULATIVE_READ_MODEL','CX_TYA_APPLY_LIVE_SNAPSHOT','backend-ready','protected_auth_hr_restore',
+  'hr-live-authority+firestore-authenticated-overlay','hrAuthority:true','protectedOverlay:true',
+  'd.outputVisits !== 616','d.protectedVisitsAppended !== 0','CX_PROTECTED_AUTH_HR_AUTHORITY',
+  'providerWrites:0','authWrites:0','rulesDeploys:0','production:false'
+]) assert(authority.includes(marker), 'missing_hr_authority_marker:'+marker);
+for(const forbidden of ['setDoc(','addDoc(','updateDoc(','deleteDoc(','createUser(','setCustomUserClaims(','updateUser(','setPassword(']){
+  assert(!authority.includes(forbidden), 'forbidden_hr_authority_write_pattern:'+forbidden);
+}
 
 const bootstrapMatch = index.match(/<script id="cxDevEntryCanonicalBootstrap">([\s\S]*?)<\/script>/);
 assert(bootstrapMatch, 'entry_bootstrap_script_not_found');
@@ -93,4 +88,4 @@ assert(protectedOnly.location.search.includes('cxProjectId=cinepolis'), 'protect
 assert(protectedOnly.location.search.includes('cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV'), 'protected_entry_missing_full_visual_identity_bridge');
 assert(protectedOnly.state && protectedOnly.state.fullVisual === true, 'protected_entry_full_visual_state_false');
 
-console.log('PASS_C6_DEV_ENTRY_USERNAME_PASSWORD_CLAIMS_DERIVED_FULL_VISUAL_GATE');
+console.log('PASS_C6_DEV_ENTRY_CLAIMS_DERIVED_HR_AUTHORITY_GATE');
