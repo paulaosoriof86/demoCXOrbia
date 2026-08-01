@@ -45,14 +45,16 @@ jobs:
           if(r.merge!==false||r.production!==false)throw new Error('unsafe_scope');
           NODE
 
-      - name: Static canonical domain gate
+      - name: Static canonical domain and finance gates
         run: |
           set -euo pipefail
           node --check app/adapters/tya-cumulative-read-model-v2.js
           node --check app/adapters/tya-canonical-state-semantics-v2.js
           node --check app/adapters/tya-live-source-refresh-watch-v2.js
           node --check app/adapters/tya-c6-domain-consistency-bridge.js
+          node --check app/adapters/tya-canonical-finance-read-model-v2.js
           node tools/qa/tya-c6-domain-consistency-regression-gate.mjs > "$OUT/local-gate.json"
+          node tools/qa/tya-c6-canonical-finance-read-model-gate.mjs > "$OUT/finance-gate.json"
 
       - name: Fetch current live HR source read-only
         run: |
@@ -78,7 +80,9 @@ jobs:
           const assertions={periods14:periods.length===14,visits616:visits.length===616,runtimeRead:runtime.runtimeRead===true,sourceSafe:runtime.sourceSafe===true,julyPresent:!!july,julyTotal:observed.total===expected.total,julyGT:observed.GT===expected.GT,julyHN:observed.HN===expected.HN,julyRealized:observed.realized===expected.realized,julyQuestionnaire:observed.questionnaireCompleted===expected.questionnaireCompleted,julySubmitted:observed.submitted===expected.submitted,julyActionableOutOfRange:observed.outOfRange===expected.outOfRange,julyOutOfRangeEvidencePreserved:Number(observed.outOfRangeEvidence)>=Number(observed.outOfRange),duplicateVisitKeys:idDup===0,duplicateShopperIds:shopperIdDup===0};
           const failedAssertions=Object.entries(assertions).filter(([,ok])=>!ok).map(([name])=>name);
           const pass=failedAssertions.length===0;
-          const evidence={schemaVersion:'cxorbia.c6.live-hr-domain-readonly-audit.v3',generatedAt:new Date().toISOString(),decision:pass?'PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE':'FAIL_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE',engineVersion:engine.version,semantics:{outOfRange:'actionable_unresolved_only',outOfRangeEvidence:'historical_evidence_preserved'},source:{runtimeRead:runtime.runtimeRead===true,sourceSafe:runtime.sourceSafe===true,revision:runtime.revision||null,periods:periods.length,visits:visits.length,shoppers:shoppers.length},expectedFromApprovedHumanBaseline:expected,observedJuly:observed,july,assertions,failedAssertions,safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,merge:false,production:false}};
+          const localGate=JSON.parse(fs.readFileSync(process.env.OUT+'/local-gate.json','utf8'));
+          const financeGate=JSON.parse(fs.readFileSync(process.env.OUT+'/finance-gate.json','utf8'));
+          const evidence={schemaVersion:'cxorbia.c6.live-hr-domain-readonly-audit.v4',generatedAt:new Date().toISOString(),decision:pass?'PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE':'FAIL_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE',engineVersion:engine.version,staticGates:{domain:localGate.decision,finance:financeGate.decision},semantics:{outOfRange:'actionable_unresolved_only',outOfRangeEvidence:'historical_evidence_preserved'},source:{runtimeRead:runtime.runtimeRead===true,sourceSafe:runtime.sourceSafe===true,revision:runtime.revision||null,periods:periods.length,visits:visits.length,shoppers:shoppers.length},expectedFromApprovedHumanBaseline:expected,observedJuly:observed,july,assertions,failedAssertions,safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,merge:false,production:false}};
           fs.writeFileSync(process.env.OUT+'/evidence.json',JSON.stringify(evidence,null,2)+'\n');fs.writeFileSync(process.env.OUT+'/decision.txt',evidence.decision+'\n');
           console.log(JSON.stringify(evidence,null,2));
           NODE
@@ -98,7 +102,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json "$REQUEST"
-          git commit -m "evidence: C6 live HR row-level audit ${DECISION}"
+          git commit -m "evidence: C6 live HR/domain/finance audit ${DECISION}"
           git push origin HEAD:docs-tya-v6-v71-audit
 
       - name: Enforce audit decision
