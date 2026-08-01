@@ -11,6 +11,21 @@ if(!credentials?.staff?.login||!credentials?.staff?.password||!credentials?.shop
 const isLocal=/127\.0\.0\.1|localhost/i.test(root);
 
 function assert(condition,message){ if(!condition) throw new Error(message); }
+function safeFailureCode(value){
+  return String(value||'unknown')
+    .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/g,'REDACTED_EMAIL')
+    .replace(/[^A-Z0-9_:-]/gi,'_')
+    .replace(/_+/g,'_')
+    .slice(0,180);
+}
+function persistFailure(kind,error){
+  const lane=isLocal?'local':'remote';
+  const code=`${lane}_real_users_e2e__${kind}__${safeFailureCode(error?.message||error)}`;
+  if(process.env.OUT_DIR){
+    try{fs.mkdirSync(process.env.OUT_DIR,{recursive:true});fs.writeFileSync(process.env.OUT_DIR+'/stage',code+'\n','utf8');}catch{}
+  }
+  return code;
+}
 
 async function configureLocalRoutes(context){
   if(!isLocal) return;
@@ -73,7 +88,7 @@ async function assertAuthenticatedState(page,kind,expectedOwnVisits=0){
   const state=await snapshot(page);
   assert(state.tenantId==='tya',kind+'_tenant_mismatch');
   assert(state.projectIds.includes('cinepolis')||state.role==='super',kind+'_project_scope_missing');
-  assert(state.visits===616,kind+'_canonical_visits_mismatch');
+  assert(state.visits===616,kind+`_canonical_visits_mismatch_OBS${state.visits}_EXP616`);
   assert(state.appOn===true,kind+'_app_not_entered');
   assert(state.loginVisible===false,kind+'_credential_form_still_visible');
   assert(state.technicalPillPresent===false,kind+'_technical_status_visible');
@@ -88,7 +103,7 @@ async function assertAuthenticatedState(page,kind,expectedOwnVisits=0){
     assert(state.role==='shopper',kind+'_role_mismatch');
     assert(state.shopperIdPresent===true,kind+'_shopper_scope_missing');
     assert(state.ownVisits>0,kind+'_own_history_empty');
-    if(expectedOwnVisits>0) assert(state.ownVisits===expectedOwnVisits,kind+'_own_history_count_mismatch');
+    if(expectedOwnVisits>0) assert(state.ownVisits===expectedOwnVisits,kind+`_own_history_count_mismatch_OBS${state.ownVisits}_EXP${expectedOwnVisits}`);
   }
   return state;
 }
@@ -130,8 +145,12 @@ async function runPrincipal(browser,kind,credential){
 
 const browser=await chromium.launch({headless:true});
 try{
-  const staff=await runPrincipal(browser,'staff',credentials.staff);
-  const shopper=await runPrincipal(browser,'shopper',credentials.shopper);
+  let staff;
+  try{staff=await runPrincipal(browser,'staff',credentials.staff);}
+  catch(error){persistFailure('staff',error);throw error;}
+  let shopper;
+  try{shopper=await runPrincipal(browser,'shopper',credentials.shopper);}
+  catch(error){persistFailure('shopper',error);throw error;}
   console.log(JSON.stringify({decision:'PASS_C6_REAL_USERS_END_TO_END',staff,shopper,credentialsExposed:false,tokensExposed:false,writes:0,production:false}));
 }finally{
   await browser.close();
