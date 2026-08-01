@@ -36,6 +36,7 @@ jobs:
       - name: Validate read-only request
         run: |
           set -euo pipefail
+          mkdir -p "$OUT"
           node <<'NODE'
           const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
           if(r.schemaVersion!=='cxorbia.c6.live-domain-readonly-audit-request.v1'||r.enabled!==true||r.consumed!==false)throw new Error('request_invalid');
@@ -47,7 +48,6 @@ jobs:
       - name: Static canonical domain gate
         run: |
           set -euo pipefail
-          mkdir -p "$OUT"
           node --check app/adapters/tya-cumulative-read-model-v2.js
           node --check app/adapters/tya-live-source-refresh-watch-v2.js
           node --check app/adapters/tya-c6-domain-consistency-bridge.js
@@ -64,35 +64,45 @@ jobs:
           node <<'NODE'
           const fs=require('fs'),vm=require('vm');
           const sandbox={window:{}};vm.createContext(sandbox);vm.runInContext(fs.readFileSync('app/adapters/tya-cumulative-read-model-v2.js','utf8'),sandbox);
-          const engine=sandbox.window.CX_TYA_CUMULATIVE_READ_MODEL;const raw=JSON.parse(fs.readFileSync(process.env.OUT+'/hr.json','utf8'));delete raw._runtime;
+          const engine=sandbox.window.CX_TYA_CUMULATIVE_READ_MODEL;const raw=JSON.parse(fs.readFileSync(process.env.OUT+'/hr.json','utf8'));const runtime=raw._runtime||{};delete raw._runtime;
           const visits=Array.isArray(raw.visits)?raw.visits:[],periods=Array.isArray(raw.periods)?raw.periods:[],shoppers=Array.isArray(raw.shoppers)?raw.shoppers:[];
           const summary=engine.periodSummary(visits),july=summary.find(x=>x.periodKey==='2026-07');
           const idDup=visits.length-new Set(visits.map(v=>String(v.hrRowId||v.visitId||v.id||''))).size;
-          const shopperIdDup=shoppers.length-new Set(shoppers.map(s=>String(s.shopperId||s.id||''))).size;
+          const shopperIds=shoppers.map(s=>String(s.shopperId||s.id||'')).filter(Boolean);
+          const shopperIdDup=shopperIds.length-new Set(shopperIds).size;
           const expected={total:44,GT:34,HN:10,realized:40,questionnaireCompleted:38,submitted:33,outOfRange:1};
-          const assertions={periods14:periods.length===14,visits616:visits.length===616,julyPresent:!!july,julyTotal:july?.total===expected.total,julyGT:july?.byCountry?.GT===expected.GT,julyHN:july?.byCountry?.HN===expected.HN,julyRealized:july?.realized===expected.realized,julyQuestionnaire:july?.questionnaireCompleted===expected.questionnaireCompleted,julySubmitted:july?.submitted===expected.submitted,julyOutOfRange:july?.outOfRange===expected.outOfRange,duplicateVisitKeys:idDup===0,duplicateShopperIds:shopperIdDup===0};
-          const pass=Object.values(assertions).every(Boolean);
-          const evidence={schemaVersion:'cxorbia.c6.live-hr-domain-readonly-audit.v1',generatedAt:new Date().toISOString(),decision:pass?'PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE':'FAIL_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE',source:{runtimeRead:true,sourceSafe:true,periods:periods.length,visits:visits.length,shoppers:shoppers.length},expectedFromHumanVisual:expected,july,assertions,safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,merge:false,production:false}};
-          fs.writeFileSync(process.env.OUT+'/evidence.json',JSON.stringify(evidence,null,2)+'\n');if(!pass){console.error(JSON.stringify(evidence,null,2));process.exit(1);}
+          const observed={total:july?.total??null,GT:july?.byCountry?.GT??null,HN:july?.byCountry?.HN??null,realized:july?.realized??null,questionnaireCompleted:july?.questionnaireCompleted??null,submitted:july?.submitted??null,outOfRange:july?.outOfRange??null};
+          const assertions={periods14:periods.length===14,visits616:visits.length===616,runtimeRead:runtime.runtimeRead===true,sourceSafe:runtime.sourceSafe===true,julyPresent:!!july,julyTotal:observed.total===expected.total,julyGT:observed.GT===expected.GT,julyHN:observed.HN===expected.HN,julyRealized:observed.realized===expected.realized,julyQuestionnaire:observed.questionnaireCompleted===expected.questionnaireCompleted,julySubmitted:observed.submitted===expected.submitted,julyOutOfRange:observed.outOfRange===expected.outOfRange,duplicateVisitKeys:idDup===0,duplicateShopperIds:shopperIdDup===0};
+          const failedAssertions=Object.entries(assertions).filter(([,ok])=>!ok).map(([name])=>name);
+          const pass=failedAssertions.length===0;
+          const evidence={schemaVersion:'cxorbia.c6.live-hr-domain-readonly-audit.v2',generatedAt:new Date().toISOString(),decision:pass?'PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE':'FAIL_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE',source:{runtimeRead:runtime.runtimeRead===true,sourceSafe:runtime.sourceSafe===true,revision:runtime.revision||null,periods:periods.length,visits:visits.length,shoppers:shoppers.length},expectedFromApprovedHumanBaseline:expected,observedJuly:observed,july,assertions,failedAssertions,safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,merge:false,production:false}};
+          fs.writeFileSync(process.env.OUT+'/evidence.json',JSON.stringify(evidence,null,2)+'\n');fs.writeFileSync(process.env.OUT+'/decision.txt',evidence.decision+'\n');
+          console.log(JSON.stringify(evidence,null,2));
           NODE
 
-      - name: Persist sanitized evidence and consume request
-        if: success()
+      - name: Persist sanitized PASS or FAIL evidence and consume request
         run: |
           set -euo pipefail
+          DECISION="$(cat "$OUT/decision.txt")"
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
           mkdir -p app/docs/evidence
           cp "$OUT/evidence.json" app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json
           node <<'NODE'
-          const fs=require('fs'),p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8'));
-          r.enabled=false;r.consumed=true;r.status='consumed_pass';r.consumedAt=new Date().toISOString();r.decision='PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE';fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n');
+          const fs=require('fs'),p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8')),decision=fs.readFileSync(process.env.OUT+'/decision.txt','utf8').trim();
+          r.enabled=false;r.consumed=true;r.status=decision.startsWith('PASS_')?'consumed_pass':'consumed_fail';r.consumedAt=new Date().toISOString();r.decision=decision;fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n');
           NODE
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json "$REQUEST"
-          git commit -m 'evidence: C6 live HR row-level canonical state PASS'
+          git commit -m "evidence: C6 live HR row-level audit ${DECISION}"
           git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Enforce audit decision
+        run: |
+          set -euo pipefail
+          DECISION="$(cat "$OUT/decision.txt")"
+          test "$DECISION" = 'PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE'
 
       - name: Publish status
         if: always()
