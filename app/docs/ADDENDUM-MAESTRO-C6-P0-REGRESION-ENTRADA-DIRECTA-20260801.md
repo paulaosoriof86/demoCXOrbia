@@ -1,75 +1,101 @@
 # ADDENDUM MAESTRO — C6 P0 · regresión de entrada directa por perfiles
 
 **Fecha:** 2026-08-01  
-**Estado:** `P0_PROVEN__TECHNICAL_AUTH_FORM_REPLACED_APPROVED_DIRECT_ROLE_ENTRY__DEV_NOT_APPROVED__NO_PRODUCTION`
+**Estado:** `P0_TECHNICALLY_RESOLVED_IN_HOSTING_DEV__PENDING_HUMAN_VISUAL_ACCUMULATIVE__NO_PRODUCTION`
 
 ## 1. Hallazgo autoritativo
-La pantalla publicada con `Usuario + Contraseña` NO corresponde al acceso funcional aprobado para la visualización CXOrbia/TyA.
+La pantalla publicada con `Usuario + Contraseña` no correspondía al acceso funcional aprobado para la visualización CXOrbia/TyA.
 
-El acceso aprobado y utilizado durante la construcción del prototipo es la entrada directa por perfiles visibles:
+El acceso aprobado es la entrada directa por perfiles visibles:
 - Administración / Coordinación;
 - Portal del Cliente;
 - Shopper / Evaluador;
 - roles adicionales configurados cuando corresponda.
 
-No se debe pedir usuario ni contraseña para entrar al carril humano de visualización DEV utilizado por Paula.
+No se solicita usuario ni contraseña en el carril humano de visualización DEV utilizado por Paula.
 
-## 2. Evidencia reproducible en el código vivo
-`app/app.js` conserva nativamente el contrato correcto:
-- copy `Selecciona un perfil para entrar`;
+## 2. Causa raíz completa
+`app/app.js` conservaba nativamente el contrato correcto:
+- `Selecciona un perfil para entrar`;
 - botones `.role-btn` para `admin`, `cliente` y `shopper`;
-- selección directa mediante `CX.app.selectRole(...)` y el flujo visible ya aprobado.
+- selección directa mediante `CX.app.selectRole(...)`.
 
-`app/adapters/tya-dev-entry-auth-gate-v1.js` introdujo la regresión:
-- ejecuta `removeGenericRolePicker(card)`;
-- elimina `.role-btn` y `#goReg`;
-- cambia el copy;
-- inserta el formulario `cxDevEntryAuth` con Usuario + Contraseña.
+La regresión tuvo dos capas:
+1. el adapter técnico eliminaba los botones e insertaba `cxDevEntryAuth`;
+2. después de restaurar los botones, `backend-browser-auth.js` seguía interceptando `selectRole()` cuando backend/Auth preview estaban habilitados y abría un paso integrado de credenciales.
 
-Por tanto, el backend/adaptador sustituyó indebidamente el acceso del prototipo. No fue una decisión funcional nueva aprobada.
+El problema era una confusión entre experiencia humana, autenticación y autorización, no una decisión funcional aprobada.
 
-## 3. Error metodológico
-Se confundieron dos carriles distintos:
-1. **Carril humano de visualización:** debe conservar la entrada directa por Administración, Cliente, Shopper y demás perfiles configurados.
-2. **Carril técnico de autenticación real:** puede probar cuentas Firebase existentes, claims, namespace, refresh y nueva pestaña, pero debe estar oculto detrás de un gate técnico explícito y nunca reemplazar la interfaz humana del producto.
+## 3. Root fix aplicado
+Sin modificar `app/modules/*` ni `app/core/*`:
+- `app.js` permanece como autoridad visual;
+- el carril humano conserva Administración, Cliente y Shopper;
+- backend Firebase/Auth integrada se deshabilitan solo para esa visualización antes de `DOMContentLoaded`;
+- HR viva y adapters canónicos permanecen como fuente operacional;
+- Usuario + Contraseña se limita al carril técnico explícito;
+- el carril técnico reactiva Firebase Auth y mantiene claims, identidad, HR authority, refresh y nueva pestaña;
+- smoke humano y E2E técnico son gates separados.
 
-El PASS `PASS_C6_REAL_STAFF_SHOPPER_E2E_EXISTING_HOSTING_DEV` sigue siendo evidencia válida del carril técnico Auth, pero NO valida la entrada humana aprobada ni autoriza el freeze visual de Corte 6.
+## 4. Evidencia de cierre técnico
+Decisión:
+`PASS_C6_HUMAN_DIRECT_ROLE_ENTRY_AND_ISOLATED_AUTH_EXISTING_HOSTING_DEV`.
 
-## 4. Efecto sobre el estado vigente
-- La captura humana demuestra un P0 reproducible en Hosting DEV.
-- Corte 6 vuelve a `BLOCKED_PENDING_DIRECT_ROLE_ENTRY_RESTORE_AND_HUMAN_VISUAL`.
-- El freeze C6 anterior queda invalidado/no alcanzado.
-- Producción continúa intacta y no fue modificada.
-- No se pierde HR, histórico, shoppers, Finanzas, Reportes ni el trabajo acumulativo; el defecto está localizado en el mecanismo visible de entrada y en la metodología de validación.
+Evidencia:
+`app/docs/evidence/CORTE6-DIRECT-ROLE-ENTRY-HOSTING-LATEST.json`.
 
-## 5. Root fix obligatorio
-Sin tocar `app/modules/*` ni `app/core/*`:
-- restaurar el `showLogin()` nativo del prototipo para el carril humano;
-- mantener visibles Administración / Coordinación, Cliente y Shopper según `tenantProfile.visibleLoginRoles`;
-- impedir que el adapter técnico elimine `.role-btn` en la entrada humana;
-- activar Usuario + Contraseña únicamente con un parámetro/gate técnico E2E explícito;
-- separar smoke humano y E2E Auth;
-- el smoke humano debe fallar si aparece `cxDevEntryAuth` o si faltan los perfiles aprobados;
-- el E2E técnico debe seguir validando cuentas reales sin aparecer en la experiencia de Paula.
+Resultado:
+- admin visible: true;
+- cliente visible: true;
+- shopper visible: true;
+- usuario/contraseña humana: false;
+- browser humano local/remoto: PASS;
+- Auth técnica staff/shopper local/remota: PASS;
+- 616 visitas preservadas;
+- shopper técnico con 1 visita propia;
+- refresh y nueva pestaña preservados;
+- un único deploy al Hosting DEV existente.
 
-## 6. Secuencia exacta
-`RESTORE NATIVE DIRECT ROLE ENTRY → STATIC CONTRACT → LOCAL HUMAN BROWSER SMOKE → TECHNICAL AUTH E2E ISOLATED → GOLDEN ACCUMULATIVE GATES → 1x HOSTING DEV WITH NEW EXPLICIT AUTHORIZATION → HUMAN VISUAL → FREEZE C6`.
+## 5. Seguridad y consumo
+- autorización: `consumed_pass`;
+- Hosting deploy executions: 1;
+- usuarios creados: 0;
+- Auth writes/cambios de contraseña: 0;
+- Firestore/Rules/Cloud Run/HR writes: 0;
+- nuevos proyectos Firebase/sitios Hosting: 0;
+- merge=false;
+- producción=false.
 
-No crear proyecto, Hosting, rama, PR, candidata ni plataforma nuevos. No pedir a Paula ejecutar PowerShell.
+## 6. Prevención permanente
+Todo gate de entrada debe probar dos contratos independientes:
 
-## 7. Prevención permanente
-Todo gate de entrada debe probar ambos contratos por separado:
-- **Human entry contract:** perfiles directos visibles y cero credenciales solicitadas.
-- **Technical Auth contract:** credenciales reales únicamente en el carril técnico oculto.
+### Human entry contract
+- perfiles directos visibles;
+- cero credenciales;
+- clic directo activa el perfil;
+- backend/Auth integrada no intercepta.
+
+### Technical Auth contract
+- cuentas reales únicamente en carril técnico oculto;
+- claims y scope correctos;
+- HR canónica preservada;
+- refresh y nueva pestaña;
+- cero exposición de credenciales.
 
 Un PASS técnico no puede volver a sustituir ni redefinir la interfaz aprobada.
 
+## 7. Gate pendiente
+El cierre técnico no equivale al freeze. Falta:
+`VALIDACIÓN HUMANA ACUMULATIVA DEL BUILD PUBLICADO → APROBADO C6 → FREEZE`.
+
+Después:
+`AGOSTO → DISPONIBLES → POSTULACIONES → GATE MULTIROL → CUTOVER → PRODUCCIÓN`.
+
 ## 8. Clasificación
-- **Reusable CXOrbia:** separación entre UX de entrada y autenticación técnica; prevención de falsos PASS por confusión de carriles.
-- **Exclusivo TyA:** etiquetas y perfiles visibles configurados para este tenant.
-- **Claude/prototipo:** conservar `app.js` como autoridad visual; no reemplazar tarjetas de rol por formulario.
-- **Academia/manuales:** distinguir autenticación, autorización, selector de rol de demo y experiencia final.
+- **Reusable CXOrbia:** separación UX/Auth/autorización y gates independientes.
+- **Exclusivo TyA:** etiquetas y perfiles configurados para este tenant.
+- **Claude/prototipo:** conservar `app.js`; no sustituir tarjetas por formulario.
+- **Academia/manuales:** distinguir selector, autenticación, autorización y fuente operacional.
 - **Sin impacto Claude:** credenciales privadas, service account y E2E técnico.
 
 ## 9. Estado seguro
-Hosting DEV contiene el P0 visible; producción intacta. No hubo writes nuevos, merge ni producción en este diagnóstico.
+El P0 está técnicamente resuelto en Hosting DEV. Producción permanece intacta. La autorización quedó consumida y no habilita nuevos deploys ni mutaciones.
