@@ -40,6 +40,12 @@ async function waitAuthenticated(page,expectedNamespace){
 
 async function snapshot(page){
   return page.evaluate(()=>{
+    const isVisible=element=>{
+      if(!element) return false;
+      const style=getComputedStyle(element);
+      const rect=element.getBoundingClientRect();
+      return style.display!=='none'&&style.visibility!=='hidden'&&Number(style.opacity)!==0&&rect.width>0&&rect.height>0;
+    };
     const ctx=window.CX?.backendAuth?.context?.()||null;
     const d=window.CX?.data||{};
     const own=ctx?.shopperId&&typeof d.visitsForShopper==='function'?d.visitsForShopper(ctx.shopperId,false).length:0;
@@ -54,7 +60,7 @@ async function snapshot(page){
       shoppers:Array.isArray(d.shoppers)?d.shoppers.length:0,
       ownVisits:own,
       appOn:Boolean(document.getElementById('app')?.classList.contains('on')),
-      loginVisible:Boolean(document.querySelector('#cxDevEntryAuth:visible')),
+      loginVisible:isVisible(document.getElementById('cxDevEntryAuth')),
       technicalPillPresent:Boolean(document.getElementById('cxBackendPreviewStatus')),
       accessSelectorPresent:Boolean(document.getElementById('cxDevEntryAccessType')),
       genericRolesPresent:document.querySelectorAll('.role-btn,.role-alt').length,
@@ -69,6 +75,7 @@ async function assertAuthenticatedState(page,kind,expectedOwnVisits=0){
   assert(state.projectIds.includes('cinepolis')||state.role==='super',kind+'_project_scope_missing');
   assert(state.visits===616,kind+'_canonical_visits_mismatch');
   assert(state.appOn===true,kind+'_app_not_entered');
+  assert(state.loginVisible===false,kind+'_credential_form_still_visible');
   assert(state.technicalPillPresent===false,kind+'_technical_status_visible');
   assert(state.accessSelectorPresent===false,kind+'_access_selector_visible');
   assert(state.genericRolesPresent===0,kind+'_generic_role_picker_present');
@@ -106,13 +113,11 @@ async function runPrincipal(browser,kind,credential){
   await page.reload({waitUntil:'domcontentloaded',timeout:60000});
   await waitAuthenticated(page,kind==='staff'?'staff':'shopper');
   const refresh=await assertAuthenticatedState(page,kind,kind==='shopper'?Number(credential.expectedOwnVisits||0):0);
-  assert(await page.locator('#cxDevEntryAuth:visible').count()===0,kind+'_refresh_reprompted_credentials');
 
   const second=await context.newPage();
   await second.goto(root+'/index-backend-dev.html',{waitUntil:'domcontentloaded',timeout:60000});
   await waitAuthenticated(second,kind==='staff'?'staff':'shopper');
   const newTab=await assertAuthenticatedState(second,kind,kind==='shopper'?Number(credential.expectedOwnVisits||0):0);
-  assert(await second.locator('#cxDevEntryAuth:visible').count()===0,kind+'_new_tab_reprompted_credentials');
 
   const entryErrors=errors.filter(message=>/cxDevEntry|tya-dev-entry|invalid-credential|namespace/i.test(message));
   assert(entryErrors.length===0,kind+'_entry_runtime_error');
