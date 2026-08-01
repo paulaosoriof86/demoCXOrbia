@@ -1,7 +1,8 @@
 {
   "schemaVersion": "cxorbia.c6.live-domain-readonly-audit-request.v1",
-  "requestId": "c6-live-domain-readonly-audit-20260731-01",
-  "status": "requested",
+  "requestId": "c6-live-domain-readonly-audit-20260731-02",
+  "attempt": 2,
+  "status": "retry_requested_with_persisted_fail_evidence",
   "enabled": true,
   "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
