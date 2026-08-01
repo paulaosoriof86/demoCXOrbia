@@ -1,11 +1,11 @@
 import fs from 'node:fs';
-import vm from 'node:vm';
 import path from 'node:path';
 import { chromium } from 'playwright';
 
 const root=String(process.argv[2]||'').replace(/\/$/,'');
 if(!root) throw new Error('DEV_ROOT_URL_REQUIRED');
 const isLocal=/127\.0\.0\.1|localhost/i.test(root);
+const remoteRoot=String(process.env.CXORBIA_DEV_ROOT_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
 const stageFile=process.env.OUT_DIR?process.env.OUT_DIR+'/stage':'';
 const outputFile=String(process.env.CXORBIA_HUMAN_GATE_OUTPUT||'').trim();
 let checkpoint='bootstrap';
@@ -17,24 +17,12 @@ function safe(value){return String(value||'unknown').replace(/[^A-Za-z0-9_.:/-]+
 function persist(error){ if(!stageFile)return; try{fs.writeFileSync(stageFile,'human_data__'+String(checkpoint).replace(/[^a-z0-9_-]+/gi,'_')+'__'+safe(error?.message||error)+'\n','utf8');}catch{} }
 function writeOutput(payload){ if(!outputFile)return; fs.mkdirSync(path.dirname(outputFile),{recursive:true}); fs.writeFileSync(outputFile,JSON.stringify(payload,null,2)+'\n','utf8'); }
 
-function loadLocalSnapshot(){
-  const source=fs.readFileSync('app/data/tya-hr-source-safe-periods.js','utf8');
-  const sandbox={window:{}};
-  vm.runInNewContext(source,sandbox,{filename:'tya-hr-source-safe-periods.js'});
-  const snapshot=sandbox.window.CX_TYA_HR_SOURCE_SAFE;
-  assert(snapshot&&snapshot.sourceSafe===true,'local_snapshot_missing');
-  assert(snapshot.periods?.length===14,'local_snapshot_periods_mismatch');
-  assert(snapshot.visits?.length===616,'local_snapshot_visits_mismatch');
-  assert(snapshot.shoppers?.length===208,'local_snapshot_shoppers_mismatch');
-  return snapshot;
-}
-
 async function waitCanonical(page){
   await page.waitForFunction(()=>{
     const d=window.CX&&window.CX.data;
     const ds=window.CX&&window.CX.dataSource;
     return !!(d&&Array.isArray(d.projects)&&d.projects.length===14&&Array.isArray(d._visitas)&&d._visitas.length===616&&Array.isArray(d.shoppers)&&d.shoppers.length===208&&d.currentPeriodId&&d.currentProjectId&&ds&&ds.status==='ready');
-  },{timeout:45000});
+  },{timeout:60000});
 }
 
 async function readState(page,label){
@@ -87,18 +75,13 @@ try{
   const page=await context.newPage();
 
   if(isLocal){
-    const snapshot=loadLocalSnapshot();
-    const revision='local-c6-14-616-208';
     await page.route('**/__/firebase/init.js',route=>route.fulfill({status:200,contentType:'application/javascript; charset=utf-8',body:"window.firebase&&firebase.apps&&!firebase.apps.length&&firebase.initializeApp({apiKey:'local-human-entry',authDomain:'localhost',projectId:'cxorbia-backend-dev',appId:'1:1:web:local'});"}));
-    await page.route('**/api/tya/cinepolis/hr-live**',route=>{
-      const url=new URL(route.request().url());
-      const format=url.searchParams.get('format');
-      if(format==='meta'){
-        return route.fulfill({status:200,contentType:'application/json; charset=utf-8',body:JSON.stringify({runtimeRead:true,sourceSafe:true,revision,revisionStable:true,visits:616,periods:14,shoppers:208,tabRegistryAutoDiscovery:true,generatedAt:snapshot.generatedAt,sourceReadAt:new Date().toISOString()})});
-      }
-      const payload=JSON.parse(JSON.stringify(snapshot));
-      payload._runtime={runtimeRead:true,sourceSafe:true,revision,revisionStable:true,sourceReadAt:new Date().toISOString()};
-      return route.fulfill({status:200,contentType:'application/json; charset=utf-8',body:JSON.stringify(payload)});
+    await page.route('**/api/tya/cinepolis/hr-live**',async route=>{
+      const incoming=new URL(route.request().url());
+      const target=remoteRoot+'/api/tya/cinepolis/hr-live'+incoming.search;
+      const response=await fetch(target,{headers:{'cache-control':'no-cache','pragma':'no-cache'}});
+      const body=Buffer.from(await response.arrayBuffer());
+      await route.fulfill({status:response.status,headers:{'content-type':response.headers.get('content-type')||'application/json; charset=utf-8','cache-control':'no-store'},body});
     });
   }
 
