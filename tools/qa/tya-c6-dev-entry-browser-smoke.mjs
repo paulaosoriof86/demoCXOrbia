@@ -50,28 +50,34 @@ try{
   assert(bodyText.includes('Shopper / Evaluador'),'shopper_role_label_missing');
 
   mark('assert_no_credentials');
-  assert(await page.locator('#cxDevEntryAuth,#cxDevEntryLogin,#cxDevEntryPassword,#cxDevEntrySubmit').count()===0,'credential_form_visible_in_human_entry');
+  assert(await page.locator('#cxDevEntryAuth,#cxDevEntryLogin,#cxDevEntryPassword,#cxDevEntrySubmit,#cxIntegratedAuthStep,#cxIntegratedAuthLogin,#cxIntegratedAuthPassword').count()===0,'credential_form_visible_in_human_entry');
   assert(!bodyText.includes('Ingresa con tu usuario y contraseña'),'credential_copy_visible_in_human_entry');
   assert(!bodyText.includes('Fuente de datos no disponible'),'blocked_data_source_card_visible');
   assert(await page.locator('#cxBackendPreviewStatus').count()===0,'technical_status_visible');
 
   mark('assert_role_count');
   assert(await page.locator('.role-btn').count()>=3,'direct_role_buttons_missing');
-  const gate=await page.evaluate(()=>window.CX_DEV_ENTRY_AUTH_GATE||null);
+  const state=await page.evaluate(()=>({gate:window.CX_DEV_ENTRY_AUTH_GATE||null,backend:window.CX?.BACKEND||null}));
+  const gate=state.gate;
   assert(gate?.mode==='native-direct-role-entry','human_entry_gate_wrong_mode');
   assert(gate?.visibleRoleSelector===true,'human_role_selector_not_preserved');
   assert(gate?.usernamePasswordVisible===false,'human_entry_credentials_contract_invalid');
   assert(gate?.technicalAuthEnabled===false,'technical_auth_enabled_in_human_lane');
+  assert(gate?.integratedFirebaseLoginDisabled===true,'integrated_firebase_login_not_disabled');
+  assert(gate?.backendFirebaseDisabledForHumanVisual===true,'backend_firebase_not_disabled_for_human_lane');
+  assert(state.backend?.enabled===false,'backend_config_enabled_in_human_lane');
+  assert(state.backend?.devPreviewAuth?.enabled===false,'dev_preview_auth_enabled_in_human_lane');
   assert(gate?.writes===false&&gate?.production===false,'unsafe_human_entry_scope');
 
   mark('click_admin');
   await page.click('.role-btn[data-role="admin"]');
   await page.waitForFunction(()=>document.getElementById('app')?.classList.contains('on')===true,{timeout:30000});
-  const session=await page.evaluate(()=>({role:window.CX?.session?.role||null,appOn:document.getElementById('app')?.classList.contains('on')===true}));
+  const session=await page.evaluate(()=>({role:window.CX?.session?.role||null,appOn:document.getElementById('app')?.classList.contains('on')===true,integratedAuth:Boolean(document.getElementById('cxIntegratedAuthStep'))}));
   assert(session.appOn===true,'admin_direct_entry_failed');
   assert(session.role==='admin','admin_direct_entry_role_mismatch');
+  assert(session.integratedAuth===false,'integrated_auth_intercepted_admin_click');
 
-  const entryErrors=errors.filter(message=>/tya-dev-entry|cxDevEntry|native-direct-role-entry/i.test(message));
+  const entryErrors=errors.filter(message=>/tya-dev-entry|cxDevEntry|native-direct-role-entry|cxIntegratedAuth/i.test(message));
   assert(entryErrors.length===0,'human_entry_runtime_error:'+entryErrors.join(' | '));
 
   mark('pass');
