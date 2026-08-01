@@ -1,70 +1,74 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_LIVE_HR_AUTOMONTH_AND_SHOPPER_DISPLAY_DEV_PASS__PENDING_HUMAN_VISUAL__NO_PRODUCTION`
+**Última actualización:** 2026-08-01  
+**Estado vivo:** `C6_CANONICAL_ROOT_FIX_HOSTING_DEV_REMOTE_PASS__PENDING_HUMAN_VISUAL_ACCUMULATIVE__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
 - Corte3 FROZEN; R17N1,406/1,406 no repetir.
-- Corte5 cinepolis14 periodos/616 visitas/current2026-07 Firestore PASS.
-- Auth91/91; claims5/5; Rules PASS. No reimportar.
-- Firestore protegido: shoppers340/340 y visitas616/616 con nombre real; placeholders0.
+- Corte5:14 periodos/616 visitas/current2026-07 PASS.
+- Auth/claims/Rules PASS; HR live/auto-month PASS; perfil protegido y finanzas canónicas preservados.
+- Producción `tya-plataforma` intacta.
 
-## 2. Regla producto
-- HR viva; nueva pestaña mensual válida entra automáticamente, sin configuración mensual por chat.
-- HR abierta/read-only es válida. No exigir `Restricted` para lectura DEV.
-- Julio puede seguir en ejecución mientras agosto/mes siguiente tiene visitas platform-origin.
-- Plataforma-origin antecede HR si aplica; luego reconciliar por IDs + `assignmentSource`/`assignmentSyncStatus`; nunca por nombre.
+## 2. P0 visual que no debe reintroducirse
+El build anterior mostró KPIs/fases contradictorios, comparativo vacío, refresh con saltos, identidades Shopper divididas, perfil/histórico/certificación incompletos, portal Shopper parcial, periodo financiero divergente,33 submitidas omitidas de Liquidaciones y Reservas apoyadas en localStorage/fixtures.
 
-## 3. Corte 6 DEV ya desplegado
-Autorización one-shot consumida.
+Este P0 es evidencia histórica y originó el root fix canónico. No debe reinterpretarse como tareas frontend aisladas ni corregirse recreando reglas dentro de módulos.
 
-PASS remoto:
-- Cloud Run revision `cxorbia-live-hr-dev-00008-8mf`;
-- Hosting version `22e81c2b783f697a`;
-- 14 periodos / 616 visitas / último 2026-07;
-- auto-discovery mensual activo;
-- 208 identidades operativas shopper disponibles para DEV;
-- `humanCredentialPrompt=false`.
+## 3. Root fix publicado en Hosting DEV
+Autorización one-shot consumida. Deploy ejecutado1/1 sobre el Hosting DEV existente `cxorbia-backend-dev`, target `cxorbia-dev`.
 
-No pedir ni recrear este redeploy.
+Decisión remota:
+`PASS_C6_CANONICAL_ROOT_FIX_EXISTING_HOSTING_DEV_REMOTE_SMOKE`.
 
-## 4. Shopper visual DEV
-No insertar PII sensible en módulos ni JS estático.
+El Hosting sirve exactamente:
+- `tya-cumulative-read-model-v2.js`;
+- `tya-canonical-state-semantics-v2.js`;
+- `tya-live-source-refresh-watch-v2.js`;
+- `tya-c6-domain-consistency-bridge.js`;
+- `tya-canonical-finance-read-model-v2.js`;
+- `tya-canonical-shopper-portal-v2.js`;
+- `tya-canonical-reservations-guard-v2.js`;
+- `index-backend-dev.html` con wiring v2.
 
-La ruta humana DEV ahora recibe de HR viva solo:
-- nombre operativo shopper;
-- shopperId estable;
-- país y métricas source-safe.
+No pedir otro deploy antes de la validación humana del build actual.
 
-Teléfono, correo, DPI, banco/cuenta, credenciales y observaciones privadas continúan excluidos. `app/modules/**` no fue modificado.
+## 4. Contratos de producto que Claude debe incorporar nativamente
+- HR es autoridad para periodos, visitas y estado operativo.
+- Una sola faceta canónica alimenta Dashboard, fases, detalle, histórico, portal y Finanzas.
+- Identidad Shopper solo por llaves técnicas exactas y crosswalk auditable.
+- Conflictos sin match exacto pasan a review queue; nunca dedupe por nombre, teléfono o email.
+- Perfil completo se calcula por campos reales.
+- Portal Shopper muestra todas las visitas e histórico de la identidad canónica, no una visita por estado.
+- Toda visita realizada entra a Liquidaciones; sin cruce financiero exacto no hay lote ni pago.
+- Refresh de la misma revisión no aplica, no recompone y no rerenderiza.
+- Periodo, proyecto, vista, filtros y scroll se preservan desde el modelo.
+- Reservas usa fuente backend configurable o queda fail-closed; localStorage/fixtures nunca se presentan como backend.
 
-La lista shopper puede mostrar nombre real operativo y el flujo DEV de Shopper puede seleccionar identidad existente; los perfiles sensibles siguen protegidos.
+## 5. Baseline técnica
+HR:14 periodos/616 visitas/208 shoppers; JUL44=GT34+HN10; realizadas40; cuestionario38; submitidas33; liquidationCandidates33; fuera de rango accionable1; evidencia histórica7; duplicados técnicos0.
 
-## 5. Archivos de empalme backend relevantes
-- `backend/runtime/hr-live-service/server.mjs`;
-- `tools/hr-source/tya-live-provider-registry-identity-dev.mjs`;
-- `tools/hr-source/tya-enforce-live-tab-registry.mjs`;
-- `app/adapters/tya-live-source-inplace-apply.js`;
-- `app/adapters/tya-live-source-refresh-watch.js`;
-- `app/index-backend-dev.html`.
+## 6. Regla frontend
+`/app/modules/*` y `/app/core/*` no fueron modificados por el root fix. Claude debe consumir el read model estable y no duplicar semántica HR, identidad o Finanzas en módulos.
 
-No rediseñar ni compensar esto desde frontend.
+## 7. Validación humana pendiente
+Comprobar acumulativamente:
+- Dashboard y fases coherentes44/40/38/33/1;
+- comparativo histórico visible;
+- tres refresh/focus sin crecimiento ni salto de scroll/periodo;
+- una identidad Shopper por persona;
+- perfil, certificación, histórico y beneficios coherentes por identidad;
+- Finanzas, Movimientos y Liquidaciones en el mismo periodo e incluyendo40 realizadas/33 submitidas;
+- Reportes sin pérdida de información;
+- Reservas read-only/fuente pendiente, sin datos demo ni mutaciones.
 
-## 6. Julio/agosto
-HR aún no tiene agosto. Agosto puede existir platform-origin antes de HR, pero el source-of-truth exacto de esas visitas todavía debe recuperarse/conectarse. No copiar julio ni inventar IDs/ubicaciones/estados.
+Solo con `APROBADO` se congela Corte6.
 
-## 7. Siguiente gate
-Validación humana únicamente:
-`ADMIN: nombres shopper visibles + SHOPPER: selector de identidad/módulos`.
-
-Si PASS: freeze Corte6 → fuente exacta agosto → delta-only Firestore con autorización nueva → preprod/cutover.
-
-## 8. P1/P2
-PDF/gráficas, Excel/formato, reportKit/exportaciones y copy continúan documentados; no confundir con este gate.
+## 8. Agosto y Reservas
+Después del freeze, conectar la fuente exacta de agosto y/o la fuente real de Reservas según prioridad. No copiar julio, inventar IDs/ubicaciones/estados ni activar writes sin autorización y gate específicos.
 
 ## 9. Academia/manuales
-Documentar auto-month real, ADC/runtime provider, open-read ≠ open-write, display identity mínima DEV y separación entre identidad operativa y PII sensible.
+Actualizar manuales y cursos con autoridad de fuentes, facetas canónicas, identidad exacta, diferencia entre realizada/submitida/liquidable/pagada, refresh idempotente y comportamiento fail-closed de Reservas.
 
 ## 10. Estado seguro
-Firestore/HR/Auth/Rules/Storage/legacy/payments/Make/Gemini writes0 en este bloque; proyectos/Hosting nuevos0; merge=false; producción=false.
+Hosting DEV deploy1; Cloud Run deploys0; Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos/reservas writes0; nuevos Firebase/Hosting0; merge=false; producción=false.
