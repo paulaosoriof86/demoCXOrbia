@@ -11,6 +11,37 @@
 <link rel="stylesheet" href="styles/layout.css">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#2196d3">
+<script id="cxDevEntryCanonicalBootstrap">
+(function(){
+  const path=String(location.pathname||'');
+  if(!/\/index-backend-dev\.html$/.test(path)) return;
+  const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV';
+  const PROTECTED='YES_PAULA_20260730_PROTECTED_DEV';
+  const params=new URLSearchParams(location.search||'');
+  let changed=false;
+  const noLane=!params.has('cxBackendPreview')&&!params.has('cxProtectedRuntime');
+  if(noLane){
+    params.set('cxBackendPreview',PREVIEW);
+    params.set('cxProtectedRuntime',PROTECTED);
+    changed=true;
+  }else if(params.get('cxProtectedRuntime')===PROTECTED&&params.get('cxBackendPreview')!==PREVIEW){
+    params.set('cxBackendPreview',PREVIEW);
+    changed=true;
+  }
+  if(params.get('cxProtectedRuntime')===PROTECTED&&!params.get('cxProjectId')){
+    params.set('cxProjectId','cinepolis');
+    changed=true;
+  }
+  if(changed) history.replaceState(null,'',path+'?'+params.toString()+(location.hash||''));
+  window.CX_DEV_ENTRY_CANONICAL={
+    canonical:true,
+    lane:params.get('cxProtectedRuntime')===PROTECTED?'protected-runtime':'source-safe-human-visual',
+    projectId:params.get('cxProjectId')||null,
+    bareEntryNormalized:noLane,
+    at:new Date().toISOString()
+  };
+})();
+</script>
 </head>
 <body>
 <template id="__bundler_thumbnail"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="14" fill="#0d2740"></rect><circle cx="50" cy="50" r="20" fill="none" stroke="#4ab4e6" stroke-width="5" stroke-dasharray="80 30"></circle><circle cx="66" cy="36" r="4.5" fill="#fff"></circle></svg></template>
@@ -67,6 +98,7 @@
 <script src="core/backend-v57-extra-config.js"></script>
 <script src="core/backend-dev-auth.local.js"></script>
 <script src="core/backend-browser-auth.js"></script>
+<script src="adapters/tya-dev-entry-auth-gate-v1.js"></script>
 <script src="core/backend-firebase.js"></script>
 <script src="core/backend-cxdata-read-guard.js"></script>
 <script src="core/backend-finance-benefits.js"></script>
