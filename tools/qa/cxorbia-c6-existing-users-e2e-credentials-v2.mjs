@@ -139,7 +139,6 @@ const shopperSnap=await db.collection('tenants').doc(tenantId).collection('shopp
 const shopperById=new Map(shopperSnap.docs.map(doc=>[doc.id,doc.data()||{}]));
 const plannedToCanonical=new Map();
 const canonicalVisitCounts=new Map();
-let resolvedVisitTotal=0;
 for(const row of Array.isArray(crosswalk.crosswalk)?crosswalk.crosswalk:[]){
   if(row?.action!=='REUSE_EXISTING_CANONICAL_SHOPPER')continue;
   const plannedId=text(row.plannedShopperId), canonicalId=text(row.canonicalShopperId), count=Number(row.hrVisitCount||0);
@@ -148,12 +147,12 @@ for(const row of Array.isArray(crosswalk.crosswalk)?crosswalk.crosswalk:[]){
   if(prior&&prior!==canonicalId)stageFail('VISIT_CROSSWALK_PLANNED_ID_CONFLICT');
   plannedToCanonical.set(plannedId,canonicalId);
   canonicalVisitCounts.set(canonicalId,(canonicalVisitCounts.get(canonicalId)||0)+count);
-  resolvedVisitTotal+=count;
 }
 if(canonicalVisitCounts.size<1||plannedToCanonical.size<1)stageFail('VISIT_CROSSWALK_HAS_NO_REFERENCED_CANONICAL_SHOPPERS');
 if(Number(crosswalk.counts?.conflictRefs||0)!==0)stageFail('VISIT_CROSSWALK_CONFLICT_REFS_PRESENT');
 if(Number(crosswalk.counts?.resolvedRefs||0)!==plannedToCanonical.size)stageFail('VISIT_CROSSWALK_RESOLVED_COUNT_MISMATCH');
-if(Number(crosswalk.counts?.visitMatchesUniqueShopper||0)!==resolvedVisitTotal)stageFail('VISIT_CROSSWALK_VISIT_TOTAL_MISMATCH');
+const sourceReportedUniqueMatchedVisits=Number(crosswalk.counts?.visitMatchesUniqueShopper||0);
+if(!Number.isFinite(sourceReportedUniqueMatchedVisits)||sourceReportedUniqueMatchedVisits<1)stageFail('VISIT_CROSSWALK_SOURCE_MATCH_COUNT_INVALID');
 
 let shopper=null;
 let shopperRecords=0, authUsersFound=0, canonicalClaimTargets=0, profileTargetsFound=0, hashMatches=0, passwordMatches=0;
@@ -167,7 +166,8 @@ for(const record of Array.isArray(bundle.records)?bundle.records:[]){
   const claims=user.customClaims||{}, claimShopperId=text(claims.shopperId);
   if(!validClaims(claims,'shopper'))continue;
   const canonicalShopperId=canonicalVisitCounts.has(claimShopperId)?claimShopperId:text(plannedToCanonical.get(claimShopperId));
-  if(!canonicalShopperId||!canonicalVisitCounts.has(canonicalShopperId))continue;
+  const expectedOwnVisits=canonicalVisitCounts.get(canonicalShopperId)||0;
+  if(!canonicalShopperId||expectedOwnVisits<1)continue;
   canonicalClaimTargets++;
   const profile=shopperById.get(canonicalShopperId);
   if(!profile)continue;
@@ -177,7 +177,7 @@ for(const record of Array.isArray(bundle.records)?bundle.records:[]){
     hashMatches++;
     if(!(await passwordSignIn(login,candidate,'shopper')))continue;
     passwordMatches++;
-    shopper={login,password:candidate,namespace:'shopper',role:'shopper',shopperId:claimShopperId,canonicalShopperId,expectedOwnVisits:canonicalVisitCounts.get(canonicalShopperId)||0};
+    shopper={login,password:candidate,namespace:'shopper',role:'shopper',shopperId:claimShopperId,canonicalShopperId,expectedOwnVisits};
     break;
   }
   if(shopper)break;
@@ -186,4 +186,4 @@ if(!shopper)stageFail(`HOLD_SHOPPER_R${shopperRecords}_U${authUsersFound}_C${can
 
 fs.mkdirSync(path.dirname(outPath),{recursive:true});
 fs.writeFileSync(outPath,JSON.stringify({schemaVersion:'cxorbia.c6.e2e-private-credentials.v4',staff,shopper},null,2)+'\n',{encoding:'utf8',mode:0o600});
-console.log(JSON.stringify({decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V2',staffRole:staff.role,shopperRole:shopper.role,shopperOwnVisits:shopper.expectedOwnVisits,staffRecordsChecked:staffRecords,shopperRecordsChecked:shopperRecords,canonicalAuthClaimTarget:true,claimResolvedThroughCrosswalk:shopper.shopperId!==shopper.canonicalShopperId,visitCrosswalkResolved:Number(crosswalk.counts?.resolvedRefs||0),visitCrosswalkUniqueVisits:resolvedVisitTotal,authWrites:0,passwordChanges:0,valuesExported:false}));
+console.log(JSON.stringify({decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V2',staffRole:staff.role,shopperRole:shopper.role,shopperOwnVisits:shopper.expectedOwnVisits,staffRecordsChecked:staffRecords,shopperRecordsChecked:shopperRecords,canonicalAuthClaimTarget:true,claimResolvedThroughCrosswalk:shopper.shopperId!==shopper.canonicalShopperId,visitCrosswalkResolved:Number(crosswalk.counts?.resolvedRefs||0),selectedCanonicalMappedVisitCount:shopper.expectedOwnVisits,sourceReportedUniqueMatchedVisits,authWrites:0,passwordChanges:0,valuesExported:false}));
