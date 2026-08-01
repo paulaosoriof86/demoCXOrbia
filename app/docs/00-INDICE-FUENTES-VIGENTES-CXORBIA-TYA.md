@@ -2,85 +2,53 @@
 
 **Fecha:** 2026-08-01  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_REAL_STAFF_SHOPPER_E2E_HOSTING_DEV_PASS__PENDING_HUMAN_VISUAL_ACCUMULATIVE__NO_PRODUCTION`
+**Estado vivo:** `P0_PROVEN__DIRECT_ROLE_ENTRY_REPLACED_BY_TECHNICAL_AUTH_FORM__DEV_BLOCKED__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
-- Repo `paulaosoriof86/demoCXOrbia`; rama viva `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge.
-- Backend/Hosting DEV existente `cxorbia-backend-dev`, target `cxorbia-dev`.
-- Producción `tya-plataforma`: no tocar sin gate explícito.
+- Repo `paulaosoriof86/demoCXOrbia`; rama viva `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge.
+- Hosting DEV existente `cxorbia-backend-dev`, target `cxorbia-dev`.
+- Producción `tya-plataforma`: intacta; no tocar sin gate explícito.
 
 ## 2. Fuentes obligatorias vigentes
 1. maestros y addenda activos;
 2. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 3. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 4. `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`;
-5. `ADDENDUM-MAESTRO-C6-BASELINE-CANONICA-UNICA-Y-CUTOVER-20260801.md`, prevalente para baseline acumulativa y continuidad hacia agosto/producción;
-6. addenda C6 de dominio, Finanzas/Liquidaciones, Portal Shopper, Reservas y Entrada/Usuarios;
-7. `evidence/CORTE6-HUMAN-CUMULATIVE-VISUAL-P0-LATEST.json` como evidencia histórica;
-8. `evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json`;
-9. `evidence/CORTE6-CANONICAL-ROOT-FIX-HOSTING-LATEST.json`;
-10. `evidence/CORTE6-REAL-USERS-E2E-HOSTING-LATEST.json` como evidencia autoritativa vigente de staff y shopper reales;
-11. `evidence/CORTE6-REAL-USERS-E2E-FAILURE-LATEST.json` solo como clasificación del trigger duplicado bloqueado después del PASS;
-12. adapters canónicos, `tya-dev-entry-auth-gate-v1.js`, `tya-protected-auth-hr-authority-bridge-v1.js` y gates E2E;
-13. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker, PR#7 y HEAD vivo.
+5. `ADDENDUM-MAESTRO-C6-BASELINE-CANONICA-UNICA-Y-CUTOVER-20260801.md`;
+6. `ADDENDUM-MAESTRO-C6-P0-REGRESION-ENTRADA-DIRECTA-20260801.md`, prevalente para la entrada visible;
+7. `app/app.js` como autoridad visual del selector directo por perfiles;
+8. `app/adapters/tya-dev-entry-auth-gate-v1.js` como evidencia de la regresión que eliminó los perfiles e insertó credenciales;
+9. evidencia C6 de HR, dominio, Finanzas, Shopper y Auth real;
+10. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, CAMBIOS-BACKEND, PR #7 y HEAD vivo.
 
-Los PASS de carcasa anteriores al E2E real son evidencia histórica y no deben usarse como estado de release. El PASS E2E tampoco sustituye la aprobación visual humana acumulativa requerida para freeze.
+## 3. Baseline protegida que no se reabre
+- Corte 3 FROZEN; R17N 1,406/1,406.
+- Corte 5: 14 periodos/616 visitas PASS.
+- HR viva, histórico, shoppers, identidad, Finanzas/Liquidaciones, portal Shopper y Reservas fail-closed preservados.
+- Conteos canónicos: julio 44 = GT 34 + HN 10; realizadas 40; cuestionario 38; submitidas 33; fuera de rango accionable 1.
 
-## 3. Baseline protegida
-Corte3 FROZEN; R17N 1,406/1,406; Corte5 14/616 PASS; Auth/claims/Rules PASS; HR live/auto-month PASS; perfil protegido y finanzas/pagos canónicos preservados.
+## 4. P0 vigente — entrada humana incorrecta
+La visualización publicada muestra Usuario + Contraseña. Eso contradice el contrato funcional aprobado y usado durante el desarrollo:
+- Administración / Coordinación;
+- Portal del Cliente;
+- Shopper / Evaluador;
+- perfiles adicionales configurados cuando corresponda.
 
-La única baseline válida desde este punto es el build C6 publicado que pasó E2E real. No se permite reconstruir secciones desde versiones anteriores, crear una plataforma paralela ni aprobar módulos aisladamente.
+`app/app.js` conserva ese selector directo. El adapter técnico lo elimina mediante `removeGenericRolePicker(card)` y reemplaza la experiencia por `cxDevEntryAuth`.
 
-## 4. Root fix de dominio publicado
-Decisión preservada:
-`PASS_C6_CANONICAL_ROOT_FIX_EXISTING_HOSTING_DEV_REMOTE_SMOKE`.
+## 5. Prevalencia de evidencia
+- El PASS con staff/shopper reales demuestra que el carril técnico de Firebase Auth funciona.
+- Ese PASS NO valida la experiencia humana de entrada.
+- La captura de Paula demuestra un P0 visual reproducible en DEV.
+- Corte 6 no puede congelarse hasta restaurar los perfiles directos y repetir la validación humana acumulativa.
 
-HR: 14 periodos/616 visitas/208 shoppers; julio 44=GT34+HN10, realizadas 40, cuestionario 38, submitidas 33, fuera de rango accionable 1 y duplicados técnicos 0.
+## 6. Root fix obligatorio
+`RESTORE DIRECT ROLE ENTRY FOR HUMAN VISUAL → ISOLATE USER/PASSWORD TO EXPLICIT TECHNICAL E2E → LOCAL HUMAN SMOKE → TECHNICAL AUTH E2E → GOLDEN ACCUMULATIVE GATES → NEW EXPLICIT HOSTING DEV AUTHORIZATION → HUMAN VISUAL → FREEZE C6`.
 
-## 5. Entrada/usuarios P0 — estado vigente
-La validación humana demostró tres defectos sucesivos:
-- URL base con `Conectado · Bloqueado`;
-- selector genérico antes del login;
-- selector `Tipo de acceso` que seguía obligando al usuario a declarar su rol.
+No crear nueva plataforma, rama, PR, proyecto Firebase, Hosting, candidata ni metodología. No tocar `app/modules/*` ni `app/core/*` para este fix.
 
-La prueba E2E real añadió la causa estructural: un shopper autenticado recibía una vista Firestore de una visita y esa vista reemplazaba temporalmente la HR de 616 visitas.
+## 7. Después del freeze
+Fuente exacta de agosto → visitas disponibles → postulaciones → gate multirol → autorización específica de writes/cutover → readback → producción.
 
-La corrección vigente:
-- muestra solo Usuario + Contraseña;
-- deriva namespace, rol, tenant y proyecto desde claims;
-- solo una identidad realmente dual puede elegir perfil después de validar credenciales;
-- elimina panel técnico y login paralelo del flujo humano;
-- HR viva conserva 616 visitas y Firestore autenticado funciona únicamente como overlay exacto de identidad/perfil;
-- valida cuentas DEV existentes staff y shopper, refresh y nueva pestaña, local y remoto.
-
-Decisión autoritativa:
-`PASS_C6_REAL_STAFF_SHOPPER_E2E_EXISTING_HOSTING_DEV`.
-
-## 6. Contratos vigentes
-- HR es autoridad operacional incluso después de autenticar un shopper.
-- Firestore/Auth aportan principal, claims, alcance, perfil y overlay; no reemplazan HR.
-- Una faceta canónica alimenta todas las superficies.
-- Identidad por llaves técnicas exactas; nunca por nombre/teléfono/email.
-- Perfil completo por campos reales.
-- 40 realizadas y 33 submitidas deben aparecer en Liquidaciones sin inferir pagos.
-- Refresh y nueva pestaña preservan principal, proyecto, HR y navegación.
-- Reservas permanece fail-closed hasta fuente real.
-- El carril protegido usa un único login Usuario + Contraseña.
-- `/app/modules/*` y `/app/core/*` no fueron modificados por este root fix.
-
-## 7. Gate vivo
-`HUMAN VISUAL ACUMULATIVA DEL BUILD PUBLICADO → APROBADO → FREEZE C6`.
-
-Abrir la URL base; comprobar entrada/sesión, Dashboard/fases, comparativo, tres refresh, Shoppers, portal Shopper, Finanzas/Movimientos/Liquidaciones/Beneficios, Reportes y Reservas.
-
-No solicitar otro deploy: la autorización fue consumida 1/1 con PASS. Un trigger duplicado posterior fue bloqueado sin segundo deploy.
-
-## 8. Después del freeze — prioridad 1 de agosto
-El siguiente bloque exacto y urgente es:
-
-`FUENTE EXACTA AGOSTO O VISITAS PLATFORM-ORIGIN → RECONCILIACIÓN HR → DISPONIBLES/POSTULACIONES → GATE MULTIROL → AUTORIZACIÓN ESPECÍFICA → READBACK/REMOTE SMOKE → CUTOVER`.
-
-Objetivo: habilitar visitas de agosto para que los shoppers puedan postularse. No copiar julio ni inventar datos. La autorización DEV ya consumida no autoriza writes, merge ni producción.
-
-## 9. Seguridad
-Hosting DEV deploy 1; usuarios creados 0; Auth writes 0; cambios/resets de contraseña 0; Firestore/Rules/Storage/HR/legacy/Make/Gemini/pagos/Reservas writes 0; Cloud Run deploys 0; nuevos Firebase/Hosting 0; credenciales/tokens exportados 0; merge=false; producción=false.
+## 8. Seguridad
+Diagnóstico y documentación sin writes de proveedor, sin merge y sin producción. El Hosting DEV actual contiene el P0 visible; producción permanece intacta.
