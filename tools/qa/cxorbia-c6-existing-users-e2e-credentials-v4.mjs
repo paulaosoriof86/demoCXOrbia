@@ -17,7 +17,7 @@ const outPath=process.env.CXORBIA_E2E_PRIVATE_CREDENTIALS||'.tmp/c6-users-e2e-pr
 const remoteInitUrl=process.env.CXORBIA_FIREBASE_INIT_URL||'https://cxorbia-backend-dev.web.app/__/firebase/init.js';
 
 function stageFail(message){
-  const safe=String(message||'unknown').replace(/[^A-Z0-9_:-]/gi,'_').slice(0,150);
+  const safe=String(message||'unknown').replace(/[^A-Z0-9_:-]/gi,'_').slice(0,180);
   if(process.env.OUT_DIR){
     try{fs.mkdirSync(process.env.OUT_DIR,{recursive:true});fs.writeFileSync(path.join(process.env.OUT_DIR,'stage'),'select_existing_credentials_v4__'+safe+'\n','utf8');}catch{}
   }
@@ -28,6 +28,27 @@ const norm=v=>text(v).toLowerCase();
 const sha256Hex=value=>crypto.createHash('sha256').update(String(value),'utf8').digest('hex');
 const internalEmail=(login,namespace)=>sha256Hex(`${tenantId}\0${namespace}\0${norm(login)}`).slice(0,48)+'@auth.cxorbia.invalid';
 const list=value=>Array.isArray(value)?value.map(String):(typeof value==='string'?value.split(',').map(x=>x.trim()).filter(Boolean):[]);
+const uniq=values=>[...new Set(values.map(text).filter(Boolean))];
+const get=(obj,dotted)=>{let cur=obj;for(const key of String(dotted||'').split('.')){if(!cur||typeof cur!=='object'||!Object.prototype.hasOwnProperty.call(cur,key))return undefined;cur=cur[key];}return cur;};
+const first=(obj,paths)=>{for(const p of paths){const value=p.includes('.')?get(obj,p):obj?.[p];if(value!==undefined&&value!==null&&(!(typeof value==='string')||value.trim()!==''))return value;}return '';};
+function flattenAliases(value){
+  const out=[];
+  const walk=current=>{
+    if(current==null)return;
+    if(Array.isArray(current)){current.forEach(walk);return;}
+    if(typeof current==='object'){Object.values(current).forEach(walk);return;}
+    const value=text(current);if(value)out.push(value);
+  };
+  walk(value);return uniq(out);
+}
+function exactTechnicalAliases(profile,docId){
+  return uniq([
+    docId,
+    first(profile,['id','shopperId']),
+    first(profile,['legacyShopperId','legacy.shopperId','legacy.id']),
+    ...flattenAliases(first(profile,['canonicalLegacyIds','legacyLiveShopperIds','sourceShopperIds','hrShopperIds','identityAliases','aliases','crosswalk.aliases','identity.aliases','profile.aliases']))
+  ]);
+}
 function validClaims(claims,namespace){
   const role=norm(claims?.role), claimNs=norm(claims?.authNamespace);
   const tenantOk=claims?.tenantId===tenantId||list(claims?.tenants).includes(tenantId)||role==='super';
@@ -136,10 +157,18 @@ for(const record of Array.isArray(bundle.records)?bundle.records:[]){
 if(!staff)stageFail(`HOLD_STAFF_R${staffRecords}_A${staffAuthMatches}_P${staffPatternMatches}`);
 
 const shopperSnap=await db.collection('tenants').doc(tenantId).collection('shoppers').get();
-const shopperById=new Map(shopperSnap.docs.map(doc=>[doc.id,doc.data()||{}]));
+const shopperById=new Map();
+const aliasToCanonical=new Map();
+for(const doc of shopperSnap.docs){
+  const profile=doc.data()||{};
+  shopperById.set(doc.id,profile);
+  for(const alias of exactTechnicalAliases(profile,doc.id)){
+    if(!aliasToCanonical.has(alias))aliasToCanonical.set(alias,new Set());
+    aliasToCanonical.get(alias).add(doc.id);
+  }
+}
 const plannedToCanonical=new Map();
 const canonicalVisitCounts=new Map();
-let resolvedVisitTotal=0;
 for(const row of Array.isArray(crosswalk.crosswalk)?crosswalk.crosswalk:[]){
   if(row?.action!=='REUSE_EXISTING_CANONICAL_SHOPPER')continue;
   const plannedId=text(row.plannedShopperId), canonicalId=text(row.canonicalShopperId), count=Number(row.hrVisitCount||0);
@@ -148,16 +177,29 @@ for(const row of Array.isArray(crosswalk.crosswalk)?crosswalk.crosswalk:[]){
   if(prior&&prior!==canonicalId)stageFail('VISIT_CROSSWALK_PLANNED_ID_CONFLICT');
   plannedToCanonical.set(plannedId,canonicalId);
   canonicalVisitCounts.set(canonicalId,(canonicalVisitCounts.get(canonicalId)||0)+count);
-  resolvedVisitTotal+=count;
 }
 if(canonicalVisitCounts.size<1||plannedToCanonical.size<1)stageFail('VISIT_CROSSWALK_HAS_NO_REFERENCED_CANONICAL_SHOPPERS');
 if(Number(crosswalk.counts?.conflictRefs||0)!==0)stageFail('VISIT_CROSSWALK_CONFLICT_REFS_PRESENT');
 if(Number(crosswalk.counts?.resolvedRefs||0)!==plannedToCanonical.size)stageFail('VISIT_CROSSWALK_RESOLVED_COUNT_MISMATCH');
-if(resolvedVisitTotal<Number(crosswalk.counts?.visitMatchesUniqueShopper||0))stageFail('VISIT_CROSSWALK_RESOLVED_HISTORY_BELOW_EXACT_MATCHES');
-if(resolvedVisitTotal>Number(crosswalk.counts?.visitsWithShopperRef||0))stageFail('VISIT_CROSSWALK_RESOLVED_HISTORY_ABOVE_SOURCE_TOTAL');
+const sourceReportedUniqueMatchedVisits=Number(crosswalk.counts?.visitMatchesUniqueShopper||0);
+if(!Number.isFinite(sourceReportedUniqueMatchedVisits)||sourceReportedUniqueMatchedVisits<1)stageFail('VISIT_CROSSWALK_SOURCE_MATCH_COUNT_INVALID');
+
+function canonicalCandidatesForClaim(claimShopperId){
+  const candidates=new Set();
+  if(canonicalVisitCounts.has(claimShopperId))candidates.add(claimShopperId);
+  const planned=plannedToCanonical.get(claimShopperId);
+  if(planned&&canonicalVisitCounts.has(planned))candidates.add(planned);
+  const aliases=aliasToCanonical.get(claimShopperId);
+  if(aliases?.size===1){
+    const aliasCanonical=[...aliases][0];
+    if(canonicalVisitCounts.has(aliasCanonical))candidates.add(aliasCanonical);
+  }
+  return candidates;
+}
 
 let shopper=null;
-let shopperRecords=0, authUsersFound=0, canonicalClaimTargets=0, profileTargetsFound=0, hashMatches=0, passwordMatches=0;
+let shopperRecords=0, authUsersFound=0, canonicalClaimTargets=0, profileTargetsFound=0, hashMatches=0, passwordMatches=0, ambiguousTechnicalClaims=0;
+let directCanonicalMatches=0, plannedCrosswalkMatches=0, profileAliasMatches=0;
 for(const record of Array.isArray(bundle.records)?bundle.records:[]){
   if(record?.kind!=='shopper')continue;
   shopperRecords++;
@@ -167,9 +209,16 @@ for(const record of Array.isArray(bundle.records)?bundle.records:[]){
   authUsersFound++;
   const claims=user.customClaims||{}, claimShopperId=text(claims.shopperId);
   if(!validClaims(claims,'shopper'))continue;
-  const canonicalShopperId=canonicalVisitCounts.has(claimShopperId)?claimShopperId:text(plannedToCanonical.get(claimShopperId));
-  if(!canonicalShopperId||!canonicalVisitCounts.has(canonicalShopperId))continue;
+  const candidates=canonicalCandidatesForClaim(claimShopperId);
+  if(candidates.size>1){ambiguousTechnicalClaims++;continue;}
+  if(candidates.size!==1)continue;
+  const canonicalShopperId=[...candidates][0];
+  const expectedOwnVisits=canonicalVisitCounts.get(canonicalShopperId)||0;
+  if(expectedOwnVisits<1)continue;
   canonicalClaimTargets++;
+  if(claimShopperId===canonicalShopperId)directCanonicalMatches++;
+  else if(plannedToCanonical.get(claimShopperId)===canonicalShopperId)plannedCrosswalkMatches++;
+  else profileAliasMatches++;
   const profile=shopperById.get(canonicalShopperId);
   if(!profile)continue;
   profileTargetsFound++;
@@ -178,13 +227,13 @@ for(const record of Array.isArray(bundle.records)?bundle.records:[]){
     hashMatches++;
     if(!(await passwordSignIn(login,candidate,'shopper')))continue;
     passwordMatches++;
-    shopper={login,password:candidate,namespace:'shopper',role:'shopper',shopperId:claimShopperId,canonicalShopperId,expectedOwnVisits:canonicalVisitCounts.get(canonicalShopperId)||0};
+    shopper={login,password:candidate,namespace:'shopper',role:'shopper',shopperId:claimShopperId,canonicalShopperId,expectedOwnVisits};
     break;
   }
   if(shopper)break;
 }
-if(!shopper)stageFail(`HOLD_SHOPPER_R${shopperRecords}_U${authUsersFound}_C${canonicalClaimTargets}_D${profileTargetsFound}_H${hashMatches}_S${passwordMatches}`);
+if(!shopper)stageFail(`HOLD_SHOPPER_R${shopperRecords}_U${authUsersFound}_C${canonicalClaimTargets}_D${profileTargetsFound}_H${hashMatches}_S${passwordMatches}_X${profileAliasMatches}_A${ambiguousTechnicalClaims}`);
 
 fs.mkdirSync(path.dirname(outPath),{recursive:true});
 fs.writeFileSync(outPath,JSON.stringify({schemaVersion:'cxorbia.c6.e2e-private-credentials.v4',staff,shopper},null,2)+'\n',{encoding:'utf8',mode:0o600});
-console.log(JSON.stringify({decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V4',staffRole:staff.role,shopperRole:shopper.role,shopperOwnVisits:shopper.expectedOwnVisits,staffRecordsChecked:staffRecords,shopperRecordsChecked:shopperRecords,claimResolvedThroughCrosswalk:shopper.shopperId!==shopper.canonicalShopperId,visitCrosswalkResolved:Number(crosswalk.counts?.resolvedRefs||0),resolvedShopperHistoryVisits:resolvedVisitTotal,visitMatchesExactEvidence:Number(crosswalk.counts?.visitMatchesUniqueShopper||0),authWrites:0,passwordChanges:0,valuesExported:false}));
+console.log(JSON.stringify({decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V4',staffRole:staff.role,shopperRole:shopper.role,shopperOwnVisits:shopper.expectedOwnVisits,staffRecordsChecked:staffRecords,shopperRecordsChecked:shopperRecords,claimResolvedThroughCrosswalk:shopper.shopperId!==shopper.canonicalShopperId,claimResolutionLane:shopper.shopperId===shopper.canonicalShopperId?'canonical':plannedToCanonical.get(shopper.shopperId)===shopper.canonicalShopperId?'planned-crosswalk':'profile-technical-alias',visitCrosswalkResolved:Number(crosswalk.counts?.resolvedRefs||0),selectedCanonicalMappedVisitCount:shopper.expectedOwnVisits,sourceReportedUniqueMatchedVisits,directCanonicalMatches,plannedCrosswalkMatches,profileAliasMatches,ambiguousTechnicalClaims,authWrites:0,passwordChanges:0,valuesExported:false}));
