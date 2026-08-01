@@ -1,90 +1,70 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-01  
-**Estado:** `C6_REAL_STAFF_SHOPPER_E2E_HOSTING_DEV_PASS__PENDING_HUMAN_VISUAL_ACCUMULATIVE__NO_PRODUCTION`
+**Estado:** `P0_PROVEN__DIRECT_ROLE_ENTRY_REPLACED_BY_TECHNICAL_AUTH_FORM__DEV_BLOCKED__NO_PRODUCTION`
 
 ## 1. Estado protegido
-- Repo `paulaosoriof86/demoCXOrbia`; rama viva `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge.
-- Corte3 FROZEN; R17N1,406/1,406 no repetir.
-- Corte5 14 periodos/616 visitas PASS.
-- Auth/claims/Rules, HR live/auto-month, perfil protegido y finanzas/pagos canónicos preservados.
+- Repo `paulaosoriof86/demoCXOrbia`; rama viva `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge.
+- Corte 3 FROZEN; R17N 1,406/1,406 no repetir.
+- Corte 5: 14 periodos/616 visitas PASS.
+- HR viva, histórico, shoppers, identidad, Finanzas/Liquidaciones, portal Shopper y Reservas fail-closed preservados.
 - Producción `tya-plataforma` intacta.
 
-## 2. P0 de usuarios reproducido y causa raíz
-La revisión humana probó que el PASS anterior era incompleto:
-1. la ruta base podía quedar `Conectado · Bloqueado`;
-2. después apareció el selector genérico de perfiles;
-3. al sustituirlo por `Tipo de acceso`, la interfaz seguía obligando al usuario a declarar su rol;
-4. el smoke anterior solo comprobaba la carcasa del formulario, no autenticaba cuentas reales;
-5. al autenticar un shopper real, Firestore devolvía su vista protegida de una visita y `backend-firebase.js` reemplazaba temporalmente la HR canónica de616 visitas.
+## 2. P0 humano vigente
+La captura de Paula reproduce que el Hosting DEV abre un formulario Usuario + Contraseña.
 
-El defecto transversal era: `Auth/Firestore scoped state` estaba actuando como fuente operacional en vez de overlay exacto sobre HR.
+Ese comportamiento contradice el acceso funcional aprobado y utilizado durante el desarrollo: entrada directa por perfiles visibles de Administración / Coordinación, Portal del Cliente y Shopper / Evaluador.
 
-## 3. Root fix aplicado
-Sin modificar `app/modules/*` ni `app/core/*`:
-- `tya-dev-entry-auth-gate-v1.js` muestra únicamente Usuario + Contraseña;
-- namespace, rol, tenant y proyecto se derivan de Auth/claims;
-- una opción de perfil solo puede aparecer después de validar credenciales y únicamente para una identidad realmente dual;
-- selector genérico, `Tipo de acceso`, login técnico paralelo y panel diagnóstico quedan fuera del flujo humano;
-- `tya-protected-auth-hr-authority-bridge-v1.js` captura el estado Firestore autenticado, restaura la HR viva y recompone con el composer v2 por llaves técnicas exactas;
-- HR conserva siempre las616 visitas; Firestore solo enriquece identidad, perfil, claims y alcance;
-- duplicados, anexos sin match exacto y dedupe por nombre/teléfono/email permanecen bloqueados.
+## 3. Causa raíz verificada
+`app/app.js` conserva el contrato correcto:
+- `Selecciona un perfil para entrar`;
+- `.role-btn` para `admin`, `cliente` y `shopper`;
+- entrada directa mediante `CX.app.selectRole(...)`.
 
-## 4. E2E real antes y después del deploy
-Se seleccionaron de forma privada cuentas DEV existentes; no se crearon usuarios, no se cambiaron contraseñas y ningún valor sensible salió a logs o evidencias.
+`app/adapters/tya-dev-entry-auth-gate-v1.js` introdujo la regresión:
+- `removeGenericRolePicker(card)`;
+- eliminación de `.role-btn,#goReg`;
+- inserción del formulario `cxDevEntryAuth`.
 
-### Local predeploy
-- staff real: rol `coordinador`, namespace `staff`,616 visitas,194 shoppers;
-- shopper real: rol `shopper`, namespace `shopper`,616 visitas,208 shoppers,1 visita propia;
-- HR authority preservada;
-- identidad exacta resuelta;
-- refresh y nueva pestaña preservan sesión.
+Se confundió el carril humano de visualización con el carril técnico de Firebase Auth.
 
-### Remoto después del deploy
-Los mismos casos repitieron PASS en `cxorbia-backend-dev`:
-- staff real:616 visitas, refresh PASS, nueva pestaña PASS;
-- shopper real:616 visitas, histórico propio visible, refresh PASS, nueva pestaña PASS;
-- formulario de credenciales desaparece después de entrar;
-- sin selector de acceso, sin selector genérico y sin panel técnico.
+## 4. Reinterpretación del PASS anterior
+`PASS_C6_REAL_STAFF_SHOPPER_E2E_EXISTING_HOSTING_DEV` sigue demostrando:
+- cuentas Firebase DEV existentes válidas;
+- claims, namespace, tenant y proyecto;
+- HR 616 preservada después de Auth;
+- refresh y nueva pestaña;
+- cero exposición de credenciales.
 
-Decisión autoritativa:
-`PASS_C6_REAL_STAFF_SHOPPER_E2E_EXISTING_HOSTING_DEV`.
+No demuestra que la interfaz humana de entrada sea correcta. Por tanto no habilita el freeze visual de Corte 6.
 
-Evidencia:
-`app/docs/evidence/CORTE6-REAL-USERS-E2E-HOSTING-LATEST.json`.
+## 5. Baseline canónica preservada
+No se reabren:
+- julio 44 = GT 34 + HN 10;
+- realizadas 40;
+- cuestionario 38;
+- submitidas 33;
+- fuera de rango accionable 1;
+- histórico 14 periodos/616 visitas;
+- identidad Shopper y portal;
+- Finanzas/Movimientos/Liquidaciones/Beneficios;
+- Reportes;
+- Reservas fail-closed.
 
-## 5. Deploy y consumo
-- Hosting DEV existente `cxorbia-backend-dev/cxorbia-dev`;
-- deploy ejecutado: `1/1`;
-- autorización consumida con PASS;
-- una ejecución duplicada que llegó después fue bloqueada en autorización y no ejecutó otro deploy; no es una falla del producto y quedó clasificada como `SUPERSEDED_DUPLICATE_TRIGGER_AFTER_CONSUMED_PASS`.
+El P0 está focalizado en el mecanismo visible de entrada y en el gate que lo validó incorrectamente.
 
-## 6. Root fix canónico preservado
-Siguen PASS:
-- dominio canónico;
-- Finanzas/Liquidaciones;
-- portal Shopper;
-- Reservas fail-closed;
-- HR viva row-level.
+## 6. Root fix exacto
+Sin tocar `app/modules/*` ni `app/core/*`:
+1. restaurar el selector directo nativo para el carril humano;
+2. mantener Usuario + Contraseña únicamente detrás de un parámetro técnico E2E explícito;
+3. separar smoke humano y E2E Auth;
+4. hacer fallar el smoke humano si aparece `cxDevEntryAuth` o faltan Administración, Cliente o Shopper;
+5. repetir gates acumulativos;
+6. solicitar una nueva autorización exacta únicamente para el redeploy DEV;
+7. repetir validación humana y congelar C6 solo con aprobación.
 
-Baseline:14 periodos/616 visitas/208 shoppers; JUL44=GT34+HN10; realizadas40; cuestionario38; submitidas33; liquidationCandidates33; fuera de rango accionable1; evidencia histórica7; duplicados técnicos0.
+## 7. Siguiente secuencia
+`RESTORE DIRECT ROLE ENTRY → LOCAL HUMAN SMOKE → ISOLATED TECHNICAL AUTH E2E → GOLDEN ACCUMULATIVE GATES → NEW DEV DEPLOY AUTHORIZATION → HUMAN VISUAL → FREEZE C6 → AGOSTO/POSTULACIONES`.
 
-## 7. Pendiente exacto para congelar Corte6
-Validación humana acumulativa del build publicado:
-1. abrir la URL base; debe aparecer solo Usuario + Contraseña o restaurarse la sesión;
-2. entrar con una cuenta habitual y confirmar que no aparece `Tipo de acceso`, selector de perfiles ni panel técnico;
-3. Dashboard/fases44/40/38/33/1;
-4. comparativo histórico;
-5. tres refresh/focus sin crecimiento, cambio de periodo o salto de scroll;
-6. identidad, perfil, certificación e histórico Shopper coherentes;
-7. Finanzas/Movimientos/Liquidaciones/Beneficios en el mismo periodo, incluyendo40 realizadas y33 submitidas;
-8. Reportes sin pérdida;
-9. Reservas read-only/fuente pendiente, sin datos demo ni mutaciones.
-
-Solo con resultado humano `APROBADO` se congela Corte6.
-
-## 8. Después del freeze
-Fuente exacta de agosto y/o Reservas real según prioridad operativa, con contratos y gates separados. No copiar julio ni activar writes sin autorización específica.
-
-## 9. Seguridad
-Hosting DEV deploy1; usuarios creados0; Auth writes0; cambios/resets de contraseña0; Firestore/Rules/Storage/HR/legacy/Make/Gemini/pagos/Reservas writes0; Cloud Run deploys0; nuevos Firebase/Hosting0; credenciales/tokens exportados0; merge=false; producción=false.
+## 8. Seguridad
+Diagnóstico y documentación sin provider writes, sin merge y sin producción. El Hosting DEV actual continúa bloqueado por este P0 visible.
