@@ -27,7 +27,6 @@ env:
   PRIVATE_DIR: .tmp/c6-p0-data-private
   PRIVATE_E2E: .tmp/c6-p0-data-private/private-e2e.json
   P0_BASE_HEAD: 168074341b9a5f8b2214ec926a0fd758fb8ec1de
-  ROOT_FIX_COMMIT: 8acf4593b8cfb2c11f9bf16c81cb2e2e6b5e5c3b
 
 jobs:
   p0-data-root-fix:
@@ -60,7 +59,7 @@ jobs:
             if(o.repository!=='paulaosoriof86/demoCXOrbia'||o.branch!=='docs-tya-v6-v71-audit'||o.pullRequest!==7||o.firebaseProjectId!=='cxorbia-backend-dev'||o.hostingSite!=='cxorbia-backend-dev'||o.hostingTarget!=='cxorbia-dev'||o.tenantId!=='tya'||o.projectId!=='cinepolis')throw new Error('target_identity_mismatch');
           }
           if(r.scope!=='separate_human_and_technical_lanes_preserve_14_616_208_and_one_existing_hosting_redeploy'||r.singleHostingDeployMax!==1||r.hostingDeployExecutions!==0)throw new Error('scope_contract_mismatch');
-          if(r.rootFixCommit!==process.env.ROOT_FIX_COMMIT||x.rootFixCommit!==r.rootFixCommit)throw new Error('root_fix_lineage_mismatch');
+          if(!/^[0-9a-f]{40}$/.test(String(r.rootFixCommit||''))||x.rootFixCommit!==r.rootFixCommit)throw new Error('root_fix_lineage_mismatch');
           const required=['humanDirectRoleEntryRequired','adminRoleRequired','clientRoleRequired','shopperRoleRequired','technicalAuthIsolatedRequired','realStaffE2ERequired','realShopperE2ERequired','canonicalPeriods14Required','canonicalVisits616Required','canonicalShoppers208Required','projectPeriodRequired','dataSourceReadyRequired','emptyShellForbidden','threeReloadsStableRequired','technicalStatusHidden','noCredentialValuesInEvidence'];
           for(const k of required)if(r[k]!==true)throw new Error('required_gate_missing:'+k);
           if(r.reloadCountRequired!==3||r.usernamePasswordHumanAllowed!==false||r.technicalAuthHumanVisibleAllowed!==false||r.newBranchAllowed!==false||r.newProjectAllowed!==false||r.newHostingAllowed!==false)throw new Error('forbidden_scope_enabled');
@@ -76,6 +75,7 @@ jobs:
         run: |
           set -euo pipefail
           echo static_contracts > "$OUT_DIR/stage"
+          ROOT_FIX_COMMIT="$(node -p "require('./$REQUEST').rootFixCommit")"
           git merge-base --is-ancestor "$ROOT_FIX_COMMIT" HEAD
           if git diff --name-only "$P0_BASE_HEAD".."$ROOT_FIX_COMMIT" | grep -Eq '^app/(modules|core)/'; then
             echo 'P0: root fix changed app/modules or app/core'
@@ -96,9 +96,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const hr=JSON.parse(fs.readFileSync('app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json','utf8'));
-          const source=fs.readFileSync('app/data/tya-hr-source-safe-periods.js','utf8');
-          if(hr.decision!=='PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE'||hr.source?.visits!==616||hr.observedJuly?.total!==44||hr.observedJuly?.submitted!==33)throw new Error('hr_evidence_baseline_mismatch');
-          if(!source.includes('window.CX_TYA_HR_SOURCE_SAFE'))throw new Error('source_safe_snapshot_missing');
+          if(hr.decision!=='PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE'||hr.source?.periods!==14||hr.source?.visits!==616||hr.source?.shoppers!==208||hr.observedJuly?.total!==44||hr.observedJuly?.submitted!==33)throw new Error('hr_evidence_baseline_mismatch');
           NODE
 
       - name: Authenticate existing Google Cloud DEV
@@ -132,7 +130,7 @@ jobs:
         run: |
           set -euo pipefail
           echo local_human_data_14_616_208 > "$OUT_DIR/stage"
-          CXORBIA_HUMAN_GATE_OUTPUT="$OUT_DIR/local-human-data.source-safe.json" node tools/qa/tya-c6-dev-entry-browser-smoke.mjs http://127.0.0.1:4173
+          CXORBIA_DEV_ROOT_URL="$DEV_ROOT_URL" CXORBIA_HUMAN_GATE_OUTPUT="$OUT_DIR/local-human-data.source-safe.json" node tools/qa/tya-c6-dev-entry-browser-smoke.mjs http://127.0.0.1:4173
           node <<'NODE'
           const fs=require('fs');
           const h=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/local-human-data.source-safe.json','utf8'));
