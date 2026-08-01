@@ -1,11 +1,16 @@
 {
-  "schemaVersion": "cxorbia.c6.live-hr-domain-readonly-audit.v2",
-  "generatedAt": "2026-08-01T01:28:22.682Z",
-  "decision": "FAIL_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE",
+  "schemaVersion": "cxorbia.c6.live-hr-domain-readonly-audit.v3",
+  "generatedAt": "2026-08-01T01:33:44.119Z",
+  "decision": "PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE",
+  "engineVersion": "c6-canonical-domain-composer-v2+actionable-state-v2",
+  "semantics": {
+    "outOfRange": "actionable_unresolved_only",
+    "outOfRangeEvidence": "historical_evidence_preserved"
+  },
   "source": {
     "runtimeRead": true,
     "sourceSafe": true,
-    "revision": "52841f08fc4da0d0d92685164bdbda7351b4e7a0ce31c80b4dc9a0e15b9a3483",
+    "revision": "976134e69c49fab1b56f8ebc306d8876fa12ecc8481c2c202f703f4da3244b3d",
     "periods": 14,
     "visits": 616,
     "shoppers": 208
@@ -26,7 +31,8 @@
     "realized": 40,
     "questionnaireCompleted": 38,
     "submitted": 33,
-    "outOfRange": 7
+    "outOfRange": 1,
+    "outOfRangeEvidence": 7
   },
   "july": {
     "periodKey": "2026-07",
@@ -40,7 +46,8 @@
     "liquidationCandidates": 33,
     "liquidationConfirmed": 0,
     "paymentConfirmed": 0,
-    "outOfRange": 7,
+    "outOfRange": 1,
+    "outOfRangeEvidence": 7,
     "reviewRequired": 0,
     "byCountry": {
       "GT": 34,
@@ -59,13 +66,12 @@
     "julyRealized": true,
     "julyQuestionnaire": true,
     "julySubmitted": true,
-    "julyOutOfRange": false,
+    "julyActionableOutOfRange": true,
+    "julyOutOfRangeEvidencePreserved": true,
     "duplicateVisitKeys": true,
     "duplicateShopperIds": true
   },
-  "failedAssertions": [
-    "julyOutOfRange"
-  ],
+  "failedAssertions": [],
   "safety": {
     "hostingDeploys": 0,
     "cloudRunDeploys": 0,
