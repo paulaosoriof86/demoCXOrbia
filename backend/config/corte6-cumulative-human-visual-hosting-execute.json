@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "cxorbia.corte6.real-users-e2e-hosting-execute.v4",
-  "requestId": "corte6-real-users-e2e-hosting-20260801-01",
-  "status": "consumed_pass",
-  "enabled": false,
-  "consumed": true,
+  "schemaVersion": "cxorbia.corte6.direct-role-entry-hosting-execute.v5",
+  "requestId": "corte6-direct-role-entry-hosting-20260801-01",
+  "status": "execute_authorized_once",
+  "enabled": true,
+  "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -12,9 +12,9 @@
   "hostingTarget": "cxorbia-dev",
   "tenantId": "tya",
   "projectId": "cinepolis",
-  "entryRootFixCommit": "3cb1c8a1adf2eddddbc1d0ba670af041a8d3c5fe",
-  "authorizationId": "chat-20260801-c6-real-users-e2e-hosting-01",
-  "triggerNonce": "20260801T122000-0600-real-users-e2e-r19-hr-authority-exact-latest",
+  "directRoleRootFixCommit": "d3018f3aa20faec9bf83d1d151029479f41e2afa",
+  "authorizationId": "chat-20260801-c6-direct-role-entry-hosting-01",
+  "triggerNonce": "20260801T142200-0600-direct-role-entry-root-fix",
   "authUserCreates": 0,
   "authWrites": 0,
   "passwordChanges": 0,
@@ -33,7 +33,5 @@
   "newHostingSites": 0,
   "merge": false,
   "production": false,
-  "nextGate": "HUMAN_VISUAL_ACCUMULATIVE_C6_FREEZE",
-  "consumedAt": "2026-08-01T17:21:16.589Z",
-  "decision": "PASS_C6_REAL_STAFF_SHOPPER_E2E_EXISTING_HOSTING_DEV"
+  "nextGate": "LOCAL_HUMAN_DIRECT_ROLE_BROWSER_SMOKE"
 }
