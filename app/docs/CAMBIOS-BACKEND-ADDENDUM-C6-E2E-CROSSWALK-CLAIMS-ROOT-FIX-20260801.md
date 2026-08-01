@@ -1,106 +1,175 @@
-# CAMBIOS-BACKEND — Corte 6 · root fix E2E de claims Shopper y crosswalk canónico
+# CAMBIOS-BACKEND — Corte 6 · E2E real, autoridad HR y baseline acumulativa única
 
 **Fecha:** 2026-08-01  
-**Estado:** `C6_E2E_CROSSWALK_CLAIMS_ROOT_FIX_APPLIED__QA_METRIC_CONFLATION_REMOVED__PENDING_REAL_USERS_GATE__NO_PRODUCTION`
+**Estado:** `C6_REAL_STAFF_SHOPPER_E2E_HOSTING_DEV_PASS__PENDING_HUMAN_VISUAL_ACCUMULATIVE__NO_PRODUCTION`
 
-## 1. Bloque exacto
-Se continúa únicamente en la rama viva `docs-tya-v6-v71-audit`, PR #7, mediante aplicación directa. No se creó rama, PR, candidata, proyecto Firebase, Hosting, workflow ni metodología nuevos.
+## 1. Bloque ejecutado
+Se trabajó únicamente sobre la rama viva `docs-tya-v6-v71-audit`, PR #7, mediante aplicación directa. No se creó rama, PR, candidata, proyecto Firebase, Hosting ni metodología nuevos.
 
-Objetivo inmediato: cerrar el gate real de un usuario staff y un usuario shopper antes de cualquier nuevo deploy, conservando acumulativamente Dashboard, hoja de ruta, estados, histórico, identidad, Finanzas, Reportes y Reservas.
+Objetivo: demostrar con usuarios reales que el build acumulativo conserva simultáneamente entrada, HR, identidad Shopper, Dashboard, hoja de ruta, estados, histórico, Finanzas, Reportes y Reservas protegidas.
 
-## 2. Fallo original reproducido
-El gate privado real encontró:
+## 2. Cadena real de fallos y causas
+### 2.1 Selector de credenciales
+El primer gate no lograba resolver el `shopperId` de Auth hacia la identidad canónica porque exigía igualdad directa entre el claim y el documento canónico. Se corrigió para usar únicamente crosswalk y evidencia técnica exacta.
 
-`HOLD_SHOPPER_R109_U88_C0_D0_H0_S0`
+### 2.2 Métricas QA mezcladas
+Un rerun comparó como iguales dos métricas con semánticas diferentes: peso agregado por referencia y conteo global de visitas cruzadas. La igualdad inválida se eliminó; ambas métricas siguen registradas de forma independiente y fail-closed.
 
-Interpretación source-safe:
-- 109 registros de credenciales Shopper evaluados;
-- 88 usuarios Auth existentes encontrados;
-- 0 claims aceptados como objetivo canónico por el selector anterior;
-- el proceso se detuvo antes de seleccionar perfil, probar hash o iniciar sesión;
-- deploy omitido;
-- autorización no consumida;
-- cero writes y producción intacta.
+### 2.3 Selector paralelo divergente
+Se detectaron selectores experimentales que reconstruían identidad por carriles distintos. El wrapper canónico quedó apuntando a un único selector protegido que reproduce el mismo contrato del crosswalk oficial. No se utiliza nombre, correo, teléfono ni coincidencia visual.
 
-## 3. Causa raíz original
-Los claims Auth existentes conservan el `shopperId` operacional/planificado usado durante la importación. La evidencia de identidad vigente resuelve ese ID hacia el documento Shopper canónico mediante `VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json`.
+### 2.4 P0 estructural después de Auth
+El E2E real probó que el shopper autenticaba correctamente, pero Firestore devolvía una vista scoped de una visita y `backend-firebase.js` la dejaba actuar temporalmente como fuente operacional, reduciendo la plataforma de 616 visitas HR a 1 visita.
 
-El selector E2E anterior solo aceptaba el claim cuando `claim.shopperId` ya era directamente un `canonicalShopperId`. Por tanto ignoraba el empalme técnico exacto `plannedShopperId → canonicalShopperId`, aunque ese mismo empalme es el contrato aprobado que utiliza el read model para unificar identidad e histórico.
+La causa estructural fue una frontera de ownership incorrecta:
+`estado Firestore autenticado` estaba reemplazando `HR viva`, en vez de enriquecerla.
 
-No era correcto cambiar claims, crear usuarios ni reescribir perfiles para satisfacer la prueba. El gate debía consumir el mismo crosswalk canónico de la plataforma.
+## 3. Root fix definitivo aplicado
+### `app/adapters/tya-protected-auth-hr-authority-bridge-v1.js`
+Nuevo bridge reusable que:
+- captura el estado protegido autenticado;
+- recupera y aplica la HR viva como baseline operacional inmutable;
+- recompone identidad/perfil mediante el composer canónico v2 y llaves técnicas exactas;
+- exige 616 visitas de salida;
+- exige cero visitas protegidas anexadas, cero duplicados de visita y cero duplicados de shopper;
+- conserva `identityMap`, perfil, certificación, finanzas e histórico exactos;
+- expone diagnóstico source-safe `CX_PROTECTED_AUTH_HR_AUTHORITY`;
+- no realiza writes.
 
-## 4. Archivo principal modificado
-### `tools/qa/cxorbia-c6-existing-users-e2e-credentials-v2.mjs`
+### `app/index-backend-dev.html`
+Carga el bridge inmediatamente después de Firebase y antes del read guard/aplicación, para que Auth y Firestore nunca degraden la autoridad HR.
 
-Corrección aplicada:
-- construye `plannedShopperId → canonicalShopperId` solo para filas `REUSE_EXISTING_CANONICAL_SHOPPER`;
-- conserva el `shopperId` real del claim para validar la sesión Auth;
-- deriva separadamente el `canonicalShopperId` para perfil, histórico y conteo esperado de visitas;
-- permite claims ya canónicos o claims planificados resueltos por crosswalk;
-- no utiliza nombre, teléfono ni correo para identidad;
-- no modifica Auth, claims, contraseñas, Firestore ni HR;
-- no expone IDs, usuarios, contraseñas, hashes ni tokens en evidencia pública.
+### `tools/qa/tya-c6-dev-entry-auth-gate.mjs`
+Ahora exige:
+- bridge cargado en el orden correcto;
+- contrato HR-authority + protected overlay;
+- invariante 616;
+- cero writes;
+- login único Usuario + Contraseña y claims derivados.
 
-Validaciones fail-closed vigentes:
-- toda fila resuelta debe tener `plannedShopperId`, `canonicalShopperId` y un peso de visitas válido;
-- un mismo ID planificado no puede apuntar a dos destinos;
-- `conflictRefs` debe ser 0;
-- el número de referencias resueltas debe coincidir con el mapa;
-- el conteo global source-reported `visitMatchesUniqueShopper` debe existir y ser mayor que cero;
-- el shopper seleccionado debe resolver a un perfil canónico existente y tener al menos una visita mapeada.
+### `tools/qa/tya-c6-dev-users-real-e2e.mjs`
+Valida con navegador real:
+- credenciales existentes;
+- namespace, rol, tenant y proyecto por claims;
+- elección de perfil solo después de autenticar para identidad realmente dual;
+- 616 visitas HR para staff y shopper;
+- histórico propio del shopper mediante identidad canónica;
+- refresh y nueva pestaña;
+- ausencia de selector de acceso, selector genérico, login técnico y panel diagnóstico;
+- códigos de fallo source-safe sin credenciales, tokens ni PII.
 
-## 5. Hallazgo del primer rerun y corrección metodológica
-El rerun protegido falló antes del navegador con:
+### Selectores privados de credenciales
+El wrapper `tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs` quedó alineado con el selector canónico más reciente y con el crosswalk oficial. Los carriles divergentes no constituyen fuente de verdad.
 
-`VISIT_CROSSWALK_VISIT_TOTAL_MISMATCH`.
+## 4. Gates acumulativos ejecutados
+Antes del deploy pasaron:
+- contrato estático de entrada y HR authority;
+- dominio canónico;
+- Finanzas/Liquidaciones;
+- portal Shopper;
+- Reservas fail-closed;
+- credenciales/import readback protegido;
+- HR viva row-level;
+- navegador shell;
+- E2E real local staff y shopper.
 
-El deploy fue omitido, la autorización permaneció sin consumir y hubo cero writes. No fue una regresión de plataforma ni una inconsistencia demostrada de HR/Firestore: fue una aserción QA demasiado estricta que comparaba dos métricas con distinta semántica:
-- suma de `hrVisitCount` agrupada por referencias resueltas;
-- conteo global `visitMatchesUniqueShopper` reportado por la auditoría de cruces visita por visita.
+Después del único deploy pasaron:
+- paridad remota y navegador shell;
+- E2E real remoto staff y shopper;
+- refresh y nueva pestaña;
+- autoridad HR, identidad exacta e histórico propio.
 
-Se eliminó únicamente esa igualdad inválida. Las dos métricas continúan registrándose por separado y no se fuerza una equivalencia no definida por el contrato. Se preservan todos los controles de conflicto, identidad exacta, perfil existente y visitas propias.
+## 5. Resultado E2E autoritativo
+Decisión:
+`PASS_C6_REAL_STAFF_SHOPPER_E2E_EXISTING_HOSTING_DEV`.
 
-## 6. Archivos auxiliares normalizados
-- `tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs`: wrapper único hacia el selector v2 canónico;
-- `tools/qa/cxorbia-c6-existing-users-e2e-credentials-v3.mjs`: eliminado porque reconstruía el vínculo desde una colección paralela y podía divergir del crosswalk aprobado;
-- `tools/qa/tya-c6-dev-users-real-e2e.mjs`: persistencia de código de fallo source-safe y comprobación separada de claim shopper y shopper canónico, sin exponer datos sensibles.
+### Local predeploy
+- staff real: rol `coordinador`, namespace `staff`, 616 visitas, 194 shoppers;
+- shopper real: rol `shopper`, namespace `shopper`, 616 visitas, 208 shoppers, 1 visita propia;
+- HR authority preservada;
+- identidad exacta resuelta;
+- refresh y nueva pestaña PASS.
 
-## 7. Validación previa y seguridad
-- UTF-8 preservado;
-- `/app/modules/*`: sin cambios;
-- `/app/core/*`: sin cambios;
-- proveedor/data writes: 0;
-- producción/merge: false;
-- los gates fallidos fueron fail-closed: deploy omitido y autorización no consumida.
+### Remoto postdeploy
+Se repitieron los mismos PASS en `cxorbia-backend-dev`.
 
-La validación con usuarios reales solo puede ejecutarse en el gate protegido porque las credenciales, el envelope y la cuenta de servicio no se exportan ni se colocan en el entorno local.
+Evidencia autoritativa:
+`app/docs/evidence/CORTE6-REAL-USERS-E2E-HOSTING-LATEST.json`.
 
-## 8. Gate acumulativo vigente
-Secuencia autorizada y fail-closed:
+## 6. Deploy y autorización
+- destino: Hosting DEV existente `cxorbia-backend-dev`, target `cxorbia-dev`;
+- deploy ejecutado: 1/1;
+- autorización `chat-20260801-c6-real-users-e2e-hosting-01`: consumida con PASS;
+- no se permite reutilizarla.
 
-`SELECT EXISTING STAFF + SHOPPER VIA EXACT CROSSWALK → LOCAL REAL-USERS E2E → GOLDEN DOMAIN/FINANCE/SHOPPER/REPORTS GATES → PROVIDER READ-ONLY PREFLIGHT → 1x HOSTING DEV SOLO SI TODO PASS → REMOTE REAL-USERS E2E → HUMAN VISUAL ACUMULATIVA`.
+Un trigger duplicado en cola alcanzó el gate después del PASS y fue bloqueado porque la autorización ya estaba consumida. No hubo segundo deploy ni provider mutation. La evidencia de ese evento quedó reclasificada como:
+`SUPERSEDED_DUPLICATE_TRIGGER_AFTER_CONSUMED_PASS`.
 
-El deploy queda después del E2E local. Un nuevo FAIL no consume la autorización ni modifica el proveedor.
+No es una falla del producto y no sustituye el PASS autoritativo.
 
-## 9. Invariantes acumulativos protegidos
-- HR viva: 14 periodos/616 visitas;
-- julio: 44 total, GT 34, HN 10, realizadas 40, cuestionario 38, submitidas 33, fuera de rango accionable 1;
-- identidad Shopper exacta y única;
-- Dashboard, fases, detalle, histórico, portal y Finanzas consumen el mismo read model;
-- Movimientos, Liquidaciones y Beneficios mantienen periodo y fuente canónicos;
-- Reportes no pueden perder datos ni funciones ya aprobadas;
-- tres refresh no pueden duplicar ni mover estado funcional;
-- Reservas permanece fail-closed hasta fuente real;
-- cero cambios frontend/core desde backend.
+## 7. Baseline acumulativa única desde este punto
+La única baseline válida es el build publicado que contiene simultáneamente:
+- login único y claims derivados;
+- HR viva 14 periodos/616 visitas;
+- máquina canónica de estados;
+- Dashboard, fases, detalle e histórico coherentes;
+- identidad Shopper y portal canónicos;
+- Finanzas, Movimientos, Liquidaciones y Beneficios bajo el mismo periodo/facetas;
+- Reportes preservados;
+- Reservas fail-closed;
+- refresh idempotente;
+- bridge Auth/Firestore → overlay sobre HR.
 
-## 10. Clasificación
-- **Reusable CXOrbia:** resolución de claims de origen a identidad canónica mediante crosswalk técnico auditable y fail-closed; no equiparar métricas agregadas sin contrato semántico.
-- **Exclusivo TyA:** IDs y conteos de la evidencia actual TyA/Cinépolis.
-- **Claude/prototipo:** el portal y los módulos deben consumir identidad canónica; no reimplementar dedupe ni mapping visual.
-- **Academia:** diferenciar identidad de autenticación, identidad operacional e identidad canónica; diferenciar peso agregado por referencia de conteo global de visitas cruzadas.
-- **Sin impacto Claude:** selección privada de credenciales y ejecución del workflow protegido.
+Queda prohibido:
+- reconstruir una sección desde una versión anterior;
+- aprobar pantallas de manera aislada;
+- crear otra plataforma, rama, candidata o modelo paralelo;
+- permitir que Auth/Firestore reemplace HR;
+- duplicar semántica en módulos UI;
+- saltar el gate acumulativo completo.
 
-## 11. Siguiente bloque exacto
-`TRIGGER SAME AUTHORIZED REAL-USERS GATE → READ RESULT → DOCUMENT PASS/FAIL → SOLO PASS HABILITA HUMAN VISUAL/FREEZE C6`.
+## 8. Invariantes protegidos
+- 14 periodos/616 visitas/208 shoppers;
+- julio: 44 total, GT 34, HN 10;
+- 40 realizadas;
+- 38 cuestionarios;
+- 33 submitidas;
+- 1 fuera de rango accionable;
+- 40 realizadas visibles en Liquidaciones;
+- 33 submitidas no omitidas;
+- identidad exacta y cero dedupe por PII;
+- Reportes sin pérdida;
+- cero mutaciones de Reservas sin fuente real.
 
-No se inicia agosto, postulaciones públicas, preproducción ni producción mientras Corte 6 no tenga PASS acumulativo y aprobación humana.
+## 9. Pendiente exacto
+`HUMAN VISUAL ACUMULATIVA DEL BUILD PUBLICADO → APROBADO → FREEZE C6`.
+
+La revisión humana cubre entrada, Dashboard/hoja de ruta, KPIs y detalle, histórico/comparativo, tres refresh, Shoppers/portal, Finanzas completas, Reportes y Reservas.
+
+Después del freeze:
+`FUENTE EXACTA AGOSTO → DISPONIBLES/POSTULACIONES → GATE → AUTORIZACIÓN DE CUTOVER → PRODUCCIÓN`.
+
+## 10. Archivos creados/modificados en el bloque
+- `app/adapters/tya-protected-auth-hr-authority-bridge-v1.js` — creado;
+- `app/index-backend-dev.html` — modificado;
+- `app/adapters/tya-dev-entry-auth-gate-v1.js` — corregido previamente en el mismo bloque C6;
+- `tools/qa/tya-c6-dev-entry-auth-gate.mjs` — modificado;
+- `tools/qa/tya-c6-dev-users-real-e2e.mjs` — modificado;
+- `tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs` y selectores protegidos — normalizados;
+- `backend/config/corte6-cumulative-human-visual-hosting-request.json` — consumido PASS;
+- `backend/config/corte6-cumulative-human-visual-hosting-execute.json` — consumido PASS;
+- `app/docs/evidence/CORTE6-REAL-USERS-E2E-HOSTING-LATEST.json` — creado;
+- `app/docs/evidence/CORTE6-REAL-USERS-E2E-FAILURE-LATEST.json` — reclasificado como trigger duplicado supersedido;
+- índice, checkpoint, resumen Claude, pendientes y documentación Academia — actualizados o requeridos por este cierre.
+
+No se modificó `app/modules/*` ni `app/core/*`.
+
+## 11. Clasificación
+- **Reusable CXOrbia:** frontera de ownership HR/Auth/Firestore; overlay protegido; E2E con principal real; evidencia PASS prevalente sobre trigger duplicado; baseline acumulativa única.
+- **Exclusivo TyA:** conteos, tenant/proyecto y fuente HR Cinépolis.
+- **Claude/prototipo:** consumir contratos canónicos; no recrear semántica ni identidad en módulos.
+- **Academia:** enseñar source ownership, identidad técnica, least privilege sin pérdida de dataset interno y pruebas E2E reales.
+- **Sin impacto Claude:** credenciales privadas, runner, deploy Hosting y consumo one-shot.
+
+## 12. Estado seguro
+Hosting DEV deploy 1; usuarios creados 0; Auth writes 0; cambios/resets de contraseña 0; Firestore/Rules/Storage/HR/legacy/Make/Gemini/pagos/Reservas writes 0; Cloud Run deploys 0; nuevos Firebase/Hosting 0; credenciales/tokens exportados 0; merge=false; producción=false.
