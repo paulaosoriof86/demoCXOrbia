@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.corte6.dev-entry-p0-hosting-request.v3",
   "requestId": "corte6-dev-entry-p0-hosting-20260801-01",
-  "status": "authorized_waiting_execute",
+  "status": "hosting_deployed_browser_smoke_pending",
   "enabled": true,
   "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -26,7 +26,7 @@
   "exactIdentityOnly": true,
   "namePhoneEmailDedupeAllowed": false,
   "singleHostingDeployMax": 1,
-  "hostingDeployExecutions": 0,
+  "hostingDeployExecutions": 1,
   "authorizedBy": "Paula",
   "authorizationId": "chat-20260801-c6-dev-entry-p0-hosting-01",
   "authorizationText": "Autorizo fix P0 de entrada visual DEV y un solo redeploy del Hosting DEV existente cxorbia-backend-dev; sin datos, Auth, Rules, Cloud Run, merge ni producción.",
@@ -46,5 +46,6 @@
   "newHostingSites": 0,
   "merge": false,
   "production": false,
-  "nextGate": "HUMAN_VISUAL_ACCUMULATIVE_C6_FREEZE"
+  "nextGate": "HUMAN_VISUAL_ACCUMULATIVE_C6_FREEZE",
+  "hostingDeployedAt": "2026-08-01T15:41:06.474Z"
 }
