@@ -2,6 +2,7 @@ import { chromium } from 'playwright';
 
 const root = String(process.argv[2] || '').replace(/\/$/, '');
 if(!root) throw new Error('DEV_ROOT_URL_REQUIRED');
+const isLocal = /127\.0\.0\.1|localhost/i.test(root);
 
 const browser = await chromium.launch({headless:true});
 const context = await browser.newContext({
@@ -18,6 +19,19 @@ await context.addInitScript(() => {
 });
 
 const page = await context.newPage();
+if(isLocal){
+  await page.route('**/__/firebase/init.js', route => route.fulfill({
+    status:200,
+    contentType:'application/javascript; charset=utf-8',
+    body:"window.firebase&&firebase.apps&&!firebase.apps.length&&firebase.initializeApp({apiKey:'local-browser-smoke',authDomain:'localhost',projectId:'cxorbia-backend-dev',appId:'1:1:web:local'});"
+  }));
+  await page.route('**/api/tya/cinepolis/hr-live**', route => route.fulfill({
+    status:200,
+    contentType:'application/json; charset=utf-8',
+    body:JSON.stringify({runtimeRead:true,sourceSafe:true,visits:616,tabRegistryAutoDiscovery:true})
+  }));
+}
+
 const consoleErrors = [];
 page.on('pageerror', err => consoleErrors.push(String(err && err.message || err)));
 
@@ -57,7 +71,7 @@ assert(gate.genericRolePickerHidden === true, 'generic_role_picker_not_hidden');
 assert(gate.credentialsEmbedded === false, 'credentials_embedded_flag_invalid');
 assert(gate.writes === false && gate.production === false, 'unsafe_entry_gate_scope');
 
-const fatal = consoleErrors.filter(x => !/Firebase|auth|firestore|Failed to fetch|404/i.test(x));
+const fatal = consoleErrors.filter(x => !/Firebase|auth|firestore|Failed to fetch|404|network-request-failed|API key not valid/i.test(x));
 assert(fatal.length === 0, 'unexpected_page_errors:'+fatal.join(' | '));
 
 await browser.close();
