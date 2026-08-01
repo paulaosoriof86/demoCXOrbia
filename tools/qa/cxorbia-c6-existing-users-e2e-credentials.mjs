@@ -146,13 +146,11 @@ for(const record of Array.isArray(bundle.records)?bundle.records:[]){
 if(!staff) fail(`HOLD_NO_EXISTING_STAFF_PLAINTEXT_CREDENTIAL_MATCH_R${eligibleStaffRecords}_A${staffAuthMatches}_P${staffPatternMatches}`);
 
 const shopperSnap=await db.collection('tenants').doc(tenantId).collection('shoppers').get();
-const visitSnap=await db.collection('tenants').doc(tenantId).collection('visits').select('shopperId','projectId','rootProjectId').get();
+const visitSnap=await db.collection('tenants').doc(tenantId).collection('visits').select('shopperId').get();
 const visitCounts=new Map();
 for(const doc of visitSnap.docs){
-  const data=doc.data()||{};
-  const shopperId=String(data.shopperId||'');
+  const shopperId=String(doc.data()?.shopperId||'');
   if(!shopperId) continue;
-  if(data.projectId&&data.projectId!==canonicalProjectId&&data.rootProjectId!==canonicalProjectId) continue;
   visitCounts.set(shopperId,(visitCounts.get(shopperId)||0)+1);
 }
 
