@@ -17,6 +17,7 @@
   if(!/\/index-backend-dev\.html$/.test(path)) return;
   const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV';
   const PROTECTED='YES_PAULA_20260730_PROTECTED_DEV';
+  const FULL_VISUAL='YES_PAULA_20260731_FULL_PROFILE_DEV';
   const params=new URLSearchParams(location.search||'');
   let changed=false;
   const noLane=!params.has('cxBackendPreview')&&!params.has('cxProtectedRuntime');
@@ -32,11 +33,16 @@
     params.set('cxProjectId','cinepolis');
     changed=true;
   }
+  if(params.get('cxProtectedRuntime')===PROTECTED&&params.get('cxHumanFullVisual')!==FULL_VISUAL){
+    params.set('cxHumanFullVisual',FULL_VISUAL);
+    changed=true;
+  }
   if(changed) history.replaceState(null,'',path+'?'+params.toString()+(location.hash||''));
   window.CX_DEV_ENTRY_CANONICAL={
     canonical:true,
     lane:params.get('cxProtectedRuntime')===PROTECTED?'protected-runtime':'source-safe-human-visual',
     projectId:params.get('cxProjectId')||null,
+    fullVisual:params.get('cxHumanFullVisual')===FULL_VISUAL,
     bareEntryNormalized:noLane,
     at:new Date().toISOString()
   };
