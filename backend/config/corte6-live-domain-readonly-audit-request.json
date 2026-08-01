@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.c6.live-domain-readonly-audit-request.v1",
-  "requestId": "c6-live-domain-readonly-audit-20260731-06",
-  "attempt": 6,
-  "status": "consumed_pass",
-  "enabled": false,
-  "consumed": true,
+  "requestId": "c6-live-domain-readonly-audit-20260731-07",
+  "attempt": 7,
+  "status": "requested_domain_finance_shopper_reservations_contract",
+  "enabled": true,
+  "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "environment": "DEV",
-  "scope": "row_level_live_hr_readonly_canonical_domain_finance_and_shopper_portal_audit",
+  "scope": "row_level_live_hr_readonly_canonical_domain_finance_shopper_and_reservations_audit",
   "hostingDeploys": 0,
   "cloudRunDeploys": 0,
   "firestoreWrites": 0,
@@ -21,7 +21,5 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false,
-  "consumedAt": "2026-08-01T02:01:17.249Z",
-  "decision": "PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE"
+  "production": false
 }
