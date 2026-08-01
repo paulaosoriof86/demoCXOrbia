@@ -1,21 +1,23 @@
 {
-  "schemaVersion": "cxorbia.c6.live-hr-domain-readonly-audit.v5",
-  "generatedAt": "2026-08-01T02:01:16.731Z",
+  "schemaVersion": "cxorbia.c6.live-hr-domain-readonly-audit.v6",
+  "generatedAt": "2026-08-01T02:10:54.029Z",
   "decision": "PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE",
   "engineVersion": "c6-canonical-domain-composer-v2+actionable-state-v2",
   "staticGates": {
     "domain": "PASS_C6_CANONICAL_DOMAIN_CONSISTENCY",
     "finance": "PASS_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS",
-    "shopperPortal": "PASS_C6_CANONICAL_SHOPPER_PORTAL_CONTRACT"
+    "shopperPortal": "PASS_C6_CANONICAL_SHOPPER_PORTAL_CONTRACT",
+    "reservations": "PASS_C6_CANONICAL_RESERVATIONS_SOURCE_GUARD"
   },
   "semantics": {
     "outOfRange": "actionable_unresolved_only",
-    "outOfRangeEvidence": "historical_evidence_preserved"
+    "outOfRangeEvidence": "historical_evidence_preserved",
+    "reservations": "canonical_source_or_fail_closed"
   },
   "source": {
     "runtimeRead": true,
     "sourceSafe": true,
-    "revision": "86c00d087f2504cce4b35c0921c7c56b7a2cc4416e3ff0fbed57740ba940d7e8",
+    "revision": "e1defdcf7327adda170d08136332f95d28adea808d489972e6978fb087762b72",
     "periods": 14,
     "visits": 616,
     "shoppers": 208
@@ -77,6 +79,7 @@
     "duplicateShopperIds": true
   },
   "failedAssertions": [],
+  "failedGates": [],
   "safety": {
     "hostingDeploys": 0,
     "cloudRunDeploys": 0,
