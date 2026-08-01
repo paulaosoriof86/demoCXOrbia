@@ -1,8 +1,19 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const script=fileURLToPath(new URL('./cxorbia-c6-existing-users-e2e-credentials-v2.mjs',import.meta.url));
-const run=spawnSync(process.execPath,[script],{env:process.env,encoding:'utf8'});
+const original=process.env.CXORBIA_CREDENTIAL_ENVELOPE||'backend/private-inbox/corte6-credential-bundle.enc.json';
+const privateDir=process.env.PRIVATE_DIR||'.tmp/c6-real-users-e2e-private';
+const normalizedEnvelope=path.join(privateDir,'credential-envelope-target-normalized.json');
+fs.mkdirSync(privateDir,{recursive:true});
+const envelope=JSON.parse(fs.readFileSync(original,'utf8'));
+if(!envelope.tenantId) envelope.tenantId='tya';
+fs.writeFileSync(normalizedEnvelope,JSON.stringify(envelope)+'\n',{encoding:'utf8',mode:0o600});
+const env={...process.env,CXORBIA_CREDENTIAL_ENVELOPE:normalizedEnvelope};
+const run=spawnSync(process.execPath,[script],{env,encoding:'utf8'});
+try{fs.rmSync(normalizedEnvelope,{force:true});}catch{}
 if(run.status!==0){
   if(run.stderr) process.stderr.write(run.stderr);
   if(run.stdout) process.stderr.write(run.stdout);
