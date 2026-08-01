@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "cxorbia.c6.live-hr-domain-readonly-audit.v2",
+  "generatedAt": "2026-08-01T01:28:22.682Z",
+  "decision": "FAIL_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE",
+  "source": {
+    "runtimeRead": true,
+    "sourceSafe": true,
+    "revision": "52841f08fc4da0d0d92685164bdbda7351b4e7a0ce31c80b4dc9a0e15b9a3483",
+    "periods": 14,
+    "visits": 616,
+    "shoppers": 208
+  },
+  "expectedFromApprovedHumanBaseline": {
+    "total": 44,
+    "GT": 34,
+    "HN": 10,
+    "realized": 40,
+    "questionnaireCompleted": 38,
+    "submitted": 33,
+    "outOfRange": 1
+  },
+  "observedJuly": {
+    "total": 44,
+    "GT": 34,
+    "HN": 10,
+    "realized": 40,
+    "questionnaireCompleted": 38,
+    "submitted": 33,
+    "outOfRange": 7
+  },
+  "july": {
+    "periodKey": "2026-07",
+    "total": 44,
+    "available": 0,
+    "assigned": 44,
+    "scheduled": 44,
+    "realized": 40,
+    "questionnaireCompleted": 38,
+    "submitted": 33,
+    "liquidationCandidates": 33,
+    "liquidationConfirmed": 0,
+    "paymentConfirmed": 0,
+    "outOfRange": 7,
+    "reviewRequired": 0,
+    "byCountry": {
+      "GT": 34,
+      "HN": 10
+    }
+  },
+  "assertions": {
+    "periods14": true,
+    "visits616": true,
+    "runtimeRead": true,
+    "sourceSafe": true,
+    "julyPresent": true,
+    "julyTotal": true,
+    "julyGT": true,
+    "julyHN": true,
+    "julyRealized": true,
+    "julyQuestionnaire": true,
+    "julySubmitted": true,
+    "julyOutOfRange": false,
+    "duplicateVisitKeys": true,
+    "duplicateShopperIds": true
+  },
+  "failedAssertions": [
+    "julyOutOfRange"
+  ],
+  "safety": {
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "merge": false,
+    "production": false
+  }
+}
