@@ -1,10 +1,13 @@
 /* ============================================================
-   CXOrbia · Corte 6 DEV entry lane split v3
+   CXOrbia · Corte 6 DEV entry lane split v4
    ------------------------------------------------------------
    Human visual lane (default):
    - preserves the native app.js direct role cards;
    - Administration / Client / Shopper remain visible by tenant config;
-   - never asks Paula for username or password.
+   - never asks Paula for username or password;
+   - disables the protected Firebase adapter only in this human
+     visualization lane so backend-browser-auth cannot replace the
+     approved role entry or wrap CX.data write methods.
 
    Technical Auth lane (explicit query gate only):
    - validates existing Firebase users without changing the human UX;
@@ -27,6 +30,7 @@ window.CX = window.CX || {};
 
   const technicalAuthEnabled = params.get('cxTechnicalAuthE2E') === TECHNICAL_TOKEN;
   const technicalNamespace = params.get('cxTechnicalAuthNamespace') === 'shopper' ? 'shopper' : 'staff';
+  const backendCfg = CX.BACKEND || {};
   let patched = false;
   let statusObserver = null;
 
@@ -41,7 +45,14 @@ window.CX = window.CX || {};
     statusObserver.observe(document.body,{childList:true,subtree:true});
   }
 
-  function setHumanLaneState(){
+  function configureHumanLane(){
+    /* backend-browser-auth captures CX.BACKEND by reference. Disabling the
+       protected adapter before DOMContentLoaded makes its wrapper pass
+       through to app.js and prevents backend-firebase from wrapping write
+       methods in the human visualization lane. HR/live canonical adapters
+       remain the operational source for this lane. */
+    backendCfg.enabled = false;
+    if(backendCfg.devPreviewAuth) backendCfg.devPreviewAuth.enabled = false;
     window.CX_DEV_ENTRY_AUTH_GATE = {
       applied:true,
       mode:'native-direct-role-entry',
@@ -49,11 +60,19 @@ window.CX = window.CX || {};
       visibleRoleSelector:true,
       usernamePasswordVisible:false,
       technicalAuthEnabled:false,
-      firebaseAuthAuthorityPreserved:true,
+      integratedFirebaseLoginDisabled:true,
+      backendFirebaseDisabledForHumanVisual:true,
+      hrCanonicalAuthorityPreserved:true,
+      providerWrites:0,
       writes:false,
       production:false,
       at:new Date().toISOString()
     };
+  }
+
+  function configureTechnicalLane(){
+    backendCfg.enabled = true;
+    if(backendCfg.devPreviewAuth) backendCfg.devPreviewAuth.enabled = true;
   }
 
   function authErrorMessage(err){
@@ -183,10 +202,11 @@ window.CX = window.CX || {};
   suppressTechnicalStatus();
 
   if(!technicalAuthEnabled){
-    setHumanLaneState();
+    configureHumanLane();
     return;
   }
 
+  configureTechnicalLane();
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', patchTechnicalLane);
   else patchTechnicalLane();
 })();
