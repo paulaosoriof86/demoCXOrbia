@@ -27,7 +27,7 @@ env:
   PRIVATE_DIR: .tmp/c6-p0-data-private
   PRIVATE_E2E: .tmp/c6-p0-data-private/private-e2e.json
   P0_BASE_HEAD: 168074341b9a5f8b2214ec926a0fd758fb8ec1de
-  ROOT_FIX_COMMIT: dbb8b5f71a92f16f4d8a5db15df65e09c0d90f58
+  ROOT_FIX_COMMIT: 8acf4593b8cfb2c11f9bf16c81cb2e2e6b5e5c3b
 
 jobs:
   p0-data-root-fix:
@@ -112,6 +112,9 @@ jobs:
           echo install_tooling > "$OUT_DIR/stage"
           npm install --no-save --ignore-scripts firebase-admin@13.4.0 firebase-tools@latest playwright@1.54.2 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null
+          node - <<'NODE'
+          const fs=require('fs');const {chromium}=require('playwright');const p=chromium.executablePath();if(!p||!fs.existsSync(p))throw new Error('chromium_not_installed');console.log('chromium_ready');
+          NODE
 
       - name: Start local application server
         run: |
