@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_HUMAN_VISUAL_P0_PROVEN__CANONICAL_DOMAIN_FIX_CODE_PASS__LIVE_HR_ROW_AUDIT_PASS__PENDING_DEV_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_HUMAN_VISUAL_P0_PROVEN__CANONICAL_DOMAIN_AND_FINANCE_FIX_CODE_PASS__LIVE_HR_ROW_AUDIT_PASS__PENDING_DEV_DEPLOY__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Corte3 FROZEN; R17N1,406/1,406 no repetir.
@@ -12,88 +12,104 @@
 - Finanzas/pagos canónicos source-safe preservados.
 - PR#7 draft/open/no merge; producción intacta.
 
-## 2. Qué falló en la validación humana
-El remote smoke anterior fue técnico, no semántico. Las capturas probaron:
-- Dashboard:44/40 correctos, pero fases mostraban7 realizadas;
+## 2. Human visual FAIL P0
+El smoke anterior fue técnico, no semántico. Las capturas probaron:
+- Dashboard44/40 correcto, pero fases con7 realizadas;
 - comparativo MAY/JUN sin histórico;
-- refresh moviendo contenido y sidebar;
-- fuente210 shoppers frente a219 filas y personas divididas en dos identidades;
-- perfiles “completos” sin username, contraseña, WhatsApp o histórico;
-- certificación invisible para Admin;
-- portal Shopper Activas1/Historial0/Beneficios vacío pese al histórico de Admin;
-- periodo MAY visible con contenido financiero/liquidaciones JUL;
-- Movimientos y Liquidaciones sin la misma fuente histórica del Dashboard Financiero.
+- refresh moviendo contenido/sidebar;
+- fuente210 shoppers frente a219 filas y personas divididas;
+- perfiles “completos” sin credenciales, WA, certificación o histórico;
+- portal Shopper Activas1/Historial0/Beneficios vacío;
+- periodo MAY con contenido financiero JUL;
+- Movimientos/Liquidaciones/Beneficios fragmentados;
+-33 visitas submitidas omitidas de Liquidaciones.
 
 Corte6 permanece FAIL; no se congela.
 
-## 3. Causas raíz que Claude no debe reintroducir
+## 3. Causas que Claude no debe reintroducir
 - máquinas de estado locales por módulo;
 - dedupe visual o append de perfiles sin crosswalk exacto;
 - completitud por flag heredado;
 - selects DOM como segunda fuente de periodo;
 - watchers que rerenderizan por timestamps;
-- portal Shopper que reduce historial a una visita por estado;
+- portal Shopper limitado a una visita por estado;
 - finanzas separadas de identidad/periodo canónicos;
-- gates que solo validan sintaxis/assets sin comparar tile, drill y portal.
+- liquidaciones derivadas de un `switch` que ignora estados posteriores;
+- gates que solo validan sintaxis/assets.
 
-## 4. Contrato backend reusable ya preparado
-- `tya-cumulative-read-model-v2.js`: HR manda; identidad/perfil/certificación/finanzas enriquecen solo por llave exacta; unmatched va a review queue.
-- `tya-canonical-state-semantics-v2.js`: estado accionable separado de evidencia histórica.
+## 4. Contratos backend reusable preparados
+- `tya-cumulative-read-model-v2.js`: HR manda; perfil/certificación/finanzas enriquecen solo por llave exacta; unmatched va a review queue.
+- `tya-canonical-state-semantics-v2.js`: evidencia histórica separada de estado accionable.
 - `tya-live-source-refresh-watch-v2.js`: misma información=no render; cambio real=1 render; preserva content/rail/modelo.
 - `tya-c6-domain-consistency-bridge.js`: validación DEV transversal sin modificar módulos/core.
+- `tya-canonical-finance-read-model-v2.js`: toda visita realizada entra al ciclo de liquidación; fuente exacta conserva autoridad y ausencia de cruce bloquea lote/pago.
 
 ## 5. Máquina de estados única
-Todos los módulos deben consumir una sola faceta canónica:
+Todos los módulos deben consumir:
 `asignada → agendada → realizada → cuestionario → submitida → liquidada → pagada`.
 
-Una visita submitida también cuenta como realizada y con cuestionario, pero no permanece en las colas pendientes anteriores.
+Una visita submitida cuenta como realizada y con cuestionario, pero no permanece en colas pendientes anteriores.
 
 Fuera de rango:
 - evidencia histórica puede permanecer;
-- KPI operativo solo cuenta casos todavía no resueltos.
+- KPI operativo solo cuenta casos no resueltos.
 
 ## 6. Identidad Shopper
 - resolver por ID/crosswalk técnico exacto;
 - no fusionar por nombre, teléfono o email;
 - perfil sin crosswalk no entra como segunda fila operacional;
-- histórico, credenciales, certificación y beneficios convergen en la identidad canónica;
-- “perfil completo” exige nombre+contacto+usuario+contraseña reales;
+- histórico, credenciales, certificación y beneficios convergen en identidad canónica;
+- perfil completo exige nombre+contacto+usuario+contraseña reales;
 - WhatsApp nunca se inventa.
 
-## 7. Cambios que corresponden al prototipo
-Claude debe incorporar de forma nativa, no como hotfix:
-1. Dashboard/fases/drill/listados desde una sola máquina de estados.
-2. Comparativo histórico desde el resumen real de periodos; métricas no disponibles se muestran honestamente.
-3. Refresh sin saltos y sin segundo estado DOM del periodo.
-4. Shoppers con una fila por identidad canónica y review queue separada.
-5. Perfil completo calculado por campos y certificación visible según rol.
-6. Portal Shopper con todas las visitas activas/históricas y beneficios por la misma identidad.
-7. Finanzas/Movimientos/Liquidaciones/Beneficios con periodo e identidad canónicos.
-8. Gate de release que compare cifras entre tile, detalle, listado y portal.
+## 7. Finanzas y Liquidaciones
+El prototipo debe:
+- incluir las40 visitas realizadas de julio;
+- reconocer33 submitidas,5 pendientes de submit y2 pendientes de cuestionario;
+- no omitir `submitida`;
+- mostrar sin fuente exacta como revisión, no como listo para lote/pago;
+- conservar pago confirmado solo con evidencia source-safe/real;
+- usar el mismo periodo e identidad en Dashboard Financiero, Movimientos, Liquidaciones y Beneficios.
 
-## 8. Gate real HR viva — PASS
-Sobre las616 visitas:
--14 periodos/208 shoppers HR;
+## 8. Cambios nativos requeridos en prototipo
+1. Dashboard/fases/drill/listados desde una sola máquina de estados.
+2. Comparativo histórico desde resumen real.
+3. Refresh sin saltos ni segundo estado DOM.
+4. Shoppers con una fila por identidad canónica y review queue separada.
+5. Perfil completo por campos y certificación visible.
+6. Portal Shopper con todas las visitas activas/históricas.
+7. Finanzas/Movimientos/Liquidaciones/Beneficios con periodo e identidad únicos.
+8. Liquidaciones derivadas de facetas canónicas, no literales.
+9. Gate de release que compare tile, drill, listado, portal y finanzas.
+
+## 9. Gates PASS
+Evidencia v4:
+- `PASS_C6_CANONICAL_DOMAIN_CONSISTENCY`;
+- `PASS_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS`;
+- `PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE`.
+
+HR viva:
+-14 periodos/616 visitas/208 shoppers;
 -JUL44 GT34/HN10;
 -realizadas40;
 -cuestionario38;
 -submitidas33;
+-liquidationCandidates33;
 -fuera de rango accionable1;
--evidencia fuera de rango7;
+-evidencia histórica7;
 -duplicados de llaves0.
 
-## 9. Estado de publicación
-El código v2 está en GitHub, todavía no en Hosting DEV. No ejecutar otro deploy con la autorización consumida.
+## 10. Estado de publicación
+El código v2 está en GitHub, no en Hosting DEV. La autorización anterior está consumida.
 
 Gate siguiente:
-`GATES FINALES → AUTORIZACIÓN FRESCA 1x HOSTING DEV → REMOTE/HUMAN SEMANTIC PASS → FREEZE C6 → AGOSTO`.
+`AUTORIZACIÓN FRESCA 1x HOSTING DEV → REMOTE/HUMAN SEMANTIC PASS → FREEZE C6 → AGOSTO`.
 
-## 10. Documentación asociada
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-HUMAN-P0-CANONICAL-DOMAIN-ROOT-FIX-20260731.md`;
-- `app/docs/ACADEMIA-IMPACTO-C6-DOMINIO-CANONICO-Y-ESTADOS-ACCIONABLES-20260731.md`;
-- `app/docs/evidence/CORTE6-HUMAN-CUMULATIVE-VISUAL-P0-LATEST.json`;
-- `app/docs/evidence/CORTE6-CANONICAL-DOMAIN-CONSISTENCY-GATE-LATEST.json`;
-- `app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json`.
+## 11. Documentación
+- addendum P0/domain root fix;
+- addendum Finanzas/Liquidaciones canónicas;
+- Academia dominio/estados accionables;
+- evidencias P0 y auditoría v4.
 
-## 11. Seguridad
-No se modificó `/app/modules/*` ni `/app/core/*` en este root fix. Hosting/Cloud Run/data/provider writes0; merge=false; producción=false.
+## 12. Seguridad
+No se modificó `/app/modules/*` ni `/app/core/*`. Hosting/Cloud Run/data/provider writes0; merge=false; producción=false.
