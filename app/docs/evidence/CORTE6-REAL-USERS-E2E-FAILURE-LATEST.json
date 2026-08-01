@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.corte6.real-users-e2e-failure.v4",
-  "generatedAt": "2026-08-01T16:50:13.029Z",
+  "generatedAt": "2026-08-01T16:53:08.095Z",
   "decision": "FAIL_C6_REAL_USERS_E2E_GATE",
-  "failedStage": "local_real_users_e2e",
+  "failedStage": "select_existing_credentials_v2__VISIT_CROSSWALK_VISIT_TOTAL_MISMATCH",
   "deployStepOutcome": "skipped",
   "hostingDeployExecutions": 0,
   "authorizationConsumed": false,
