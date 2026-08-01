@@ -13,7 +13,8 @@ let browser=null;
 
 function mark(name){ checkpoint=name; }
 function assert(condition,message){ if(!condition) throw new Error(message); }
-function persist(){ if(!stageFile)return; try{fs.writeFileSync(stageFile,'human_data__'+String(checkpoint).replace(/[^a-z0-9_-]+/gi,'_')+'\n','utf8');}catch{} }
+function safe(value){return String(value||'unknown').replace(/[^A-Za-z0-9_.:/-]+/g,'_').replace(/_+/g,'_').slice(0,220);}
+function persist(error){ if(!stageFile)return; try{fs.writeFileSync(stageFile,'human_data__'+String(checkpoint).replace(/[^a-z0-9_-]+/gi,'_')+'__'+safe(error?.message||error)+'\n','utf8');}catch{} }
 function writeOutput(payload){ if(!outputFile)return; fs.mkdirSync(path.dirname(outputFile),{recursive:true}); fs.writeFileSync(outputFile,JSON.stringify(payload,null,2)+'\n','utf8'); }
 
 function loadLocalSnapshot(){
@@ -79,7 +80,9 @@ async function readState(page,label){
 
 try{
   mark('launch');
-  browser=await chromium.launch({headless:true});
+  const executablePath=chromium.executablePath();
+  assert(Boolean(executablePath)&&fs.existsSync(executablePath),'chromium_executable_missing:'+safe(executablePath));
+  browser=await chromium.launch({headless:true,executablePath,chromiumSandbox:false,args:['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage']});
   const context=await browser.newContext({viewport:{width:1440,height:1000},ignoreHTTPSErrors:true,serviceWorkers:'block'});
   const page=await context.newPage();
 
@@ -187,7 +190,7 @@ try{
   browser=null;
   console.log('PASS_C6_HUMAN_DIRECT_ROLE_AND_CANONICAL_DATA_14_616_208');
 }catch(error){
-  persist();
+  persist(error);
   try{if(browser)await browser.close();}catch{}
   console.error('FAIL_C6_HUMAN_DATA_PRESERVATION checkpoint='+checkpoint+' error='+(error?.message||String(error)));
   throw error;
