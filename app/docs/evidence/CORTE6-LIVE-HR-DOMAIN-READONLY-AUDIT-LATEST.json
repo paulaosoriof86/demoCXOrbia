@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.c6.live-hr-domain-readonly-audit.v3",
-  "generatedAt": "2026-08-01T01:33:44.119Z",
+  "generatedAt": "2026-08-01T01:35:57.627Z",
   "decision": "PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE",
   "engineVersion": "c6-canonical-domain-composer-v2+actionable-state-v2",
   "semantics": {
@@ -10,7 +10,7 @@
   "source": {
     "runtimeRead": true,
     "sourceSafe": true,
-    "revision": "976134e69c49fab1b56f8ebc306d8876fa12ecc8481c2c202f703f4da3244b3d",
+    "revision": "cfe452ba0a8eb2d163f492200bdb12dfcfb7312adfb3c0b86a88aff3181baa0c",
     "periods": 14,
     "visits": 616,
     "shoppers": 208
