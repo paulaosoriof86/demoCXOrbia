@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.corte6.real-users-e2e-failure.v4",
-  "generatedAt": "2026-08-01T17:02:38.772Z",
+  "generatedAt": "2026-08-01T17:07:56.194Z",
   "decision": "FAIL_C6_REAL_USERS_E2E_GATE",
-  "failedStage": "select_existing_credentials_v5__HOLD_SHOPPER_R109_U88_D88_C0_H0_S0_K187_X0",
+  "failedStage": "local_real_users_e2e__shopper__page_waitForFunction:_Timeout_90000ms_exceeded_",
   "deployStepOutcome": "skipped",
   "hostingDeployExecutions": 0,
   "authorizationConsumed": false,
