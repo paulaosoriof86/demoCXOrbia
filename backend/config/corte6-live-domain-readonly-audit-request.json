@@ -2,9 +2,9 @@
   "schemaVersion": "cxorbia.c6.live-domain-readonly-audit-request.v1",
   "requestId": "c6-live-domain-readonly-audit-20260731-05",
   "attempt": 5,
-  "status": "requested_domain_and_finance_completeness",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_pass",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -21,5 +21,7 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false
+  "production": false,
+  "consumedAt": "2026-08-01T01:50:19.206Z",
+  "decision": "PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE"
 }
