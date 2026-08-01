@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.corte6.canonical-root-fix-hosting-request.v2",
   "requestId": "corte6-canonical-root-fix-hosting-20260801-01",
-  "status": "authorized_waiting_execute",
+  "status": "hosting_deployed_smoke_pending",
   "enabled": true,
   "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -22,7 +22,7 @@
   "exactIdentityOnly": true,
   "namePhoneEmailDedupeAllowed": false,
   "singleHostingDeployMax": 1,
-  "hostingDeployExecutions": 0,
+  "hostingDeployExecutions": 1,
   "authorizedBy": "Paula",
   "authorizationId": "chat-20260801-c6-canonical-root-fix-hosting-01",
   "authorizationText": "Continúa. Se interpreta únicamente como autorización fresca para ejecutar el siguiente gate exacto ya informado: un solo deploy del Hosting DEV existente cxorbia-backend-dev/cxorbia-dev con el root fix canónico de Corte 6, seguido de remote smoke semántico; sin Cloud Run, Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos/reservas writes, sin nuevo proyecto, sin nuevo Hosting, sin merge y sin producción.",
@@ -42,5 +42,6 @@
   "newHostingSites": 0,
   "merge": false,
   "production": false,
-  "nextGate": "EXECUTE_ONCE_THEN_REMOTE_SEMANTIC_SMOKE"
+  "nextGate": "EXECUTE_ONCE_THEN_REMOTE_SEMANTIC_SMOKE",
+  "hostingDeployedAt": "2026-08-01T14:06:00.459Z"
 }
