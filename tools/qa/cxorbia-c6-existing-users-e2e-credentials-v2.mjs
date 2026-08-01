@@ -128,9 +128,12 @@ for(const record of Array.isArray(bundle.records)?bundle.records:[]){
 if(!staff)stageFail(`HOLD_STAFF_R${staffRecords}_A${staffAuthMatches}_P${staffPatternMatches}`);
 
 const shopperSnap=await db.collection('tenants').doc(tenantId).collection('shoppers').get();
+const shopperDocs=[];
 const byLegacy=new Map();
 for(const doc of shopperSnap.docs){
-  const data=doc.data()||{}, legacy=text(data.legacyShopperId);
+  const data=doc.data()||{};
+  shopperDocs.push({id:doc.id,data});
+  const legacy=text(data.legacyShopperId);
   if(!legacy)continue;
   if(!byLegacy.has(legacy))byLegacy.set(legacy,[]);
   byLegacy.get(legacy).push({id:doc.id,data});
@@ -144,8 +147,38 @@ for(const row of Array.isArray(crosswalk.crosswalk)?crosswalk.crosswalk:[]){
 }
 if(canonicalVisitCounts.size<1)stageFail('VISIT_CROSSWALK_HAS_NO_REFERENCED_CANONICAL_SHOPPERS');
 
+const aliasToCanonical=new Map();
+for(const shopperDoc of shopperDocs){
+  if(!canonicalVisitCounts.has(shopperDoc.id))continue;
+  const data=shopperDoc.data||{};
+  const aliases=new Set([
+    ...list(data.legacyLiveShopperIds),
+    ...list(data.legacyShopperIds),
+    ...list(data.identityAliases),
+    ...list(data.sourceShopperIds),
+    text(data.legacyShopperId),
+    text(data.profileShopperId)
+  ].filter(Boolean));
+  for(const alias of aliases){
+    if(aliasToCanonical.has(alias)&&aliasToCanonical.get(alias)!==shopperDoc.id)stageFail('CANONICAL_ALIAS_CONFLICT');
+    aliasToCanonical.set(alias,shopperDoc.id);
+  }
+}
+function exactCanonicalTarget(profile,legacy){
+  const candidates=[
+    canonicalVisitCounts.has(profile.id)?profile.id:'',
+    text(profile.data?.canonicalShopperId),
+    text(profile.data?.canonicalId),
+    text(profile.data?.liveShopperId),
+    aliasToCanonical.get(profile.id)||'',
+    aliasToCanonical.get(legacy)||''
+  ].filter(id=>id&&canonicalVisitCounts.has(id));
+  const unique=[...new Set(candidates)];
+  return unique.length===1?unique[0]:'';
+}
+
 let shopper=null;
-let shopperRecords=0, exactLegacy=0, referencedExact=0, patternMatches=0, authMatches=0, passwordMatches=0;
+let shopperRecords=0, exactLegacy=0, exactCanonicalBridge=0, patternMatches=0, authMatches=0, passwordMatches=0;
 for(const record of Array.isArray(bundle.records)?bundle.records:[]){
   if(record?.kind!=='shopper')continue;
   shopperRecords++;
@@ -154,23 +187,26 @@ for(const record of Array.isArray(bundle.records)?bundle.records:[]){
   const matches=byLegacy.get(legacy)||[];
   if(matches.length!==1)continue;
   exactLegacy++;
-  const profile=matches[0], ownVisits=canonicalVisitCounts.get(profile.id)||0;
-  if(ownVisits<1)continue;
-  referencedExact++;
+  const profile=matches[0], canonicalTarget=exactCanonicalTarget(profile,legacy);
+  if(!canonicalTarget)continue;
+  exactCanonicalBridge++;
+  const ownVisits=canonicalVisitCounts.get(canonicalTarget)||0;
   const candidate=initialPassword(firstNameOf(profile.data));
   if(!candidate||sha256Hex(candidate)!==hash)continue;
   patternMatches++;
   let user; try{user=await auth.getUserByEmail(internalEmail(login,'shopper'));}catch{continue;}
-  const claims=user.customClaims||{};
-  if(!validClaims(claims,'shopper')||text(claims.shopperId)!==profile.id)continue;
+  const claims=user.customClaims||{}, claimShopperId=text(claims.shopperId);
+  if(!validClaims(claims,'shopper'))continue;
+  const claimExact=claimShopperId===canonicalTarget||claimShopperId===profile.id||aliasToCanonical.get(claimShopperId)===canonicalTarget;
+  if(!claimExact)continue;
   authMatches++;
   if(!(await passwordSignIn(login,candidate,'shopper')))continue;
   passwordMatches++;
-  shopper={login,password:candidate,namespace:'shopper',role:'shopper',shopperId:profile.id,expectedOwnVisits:ownVisits};
+  shopper={login,password:candidate,namespace:'shopper',role:'shopper',shopperId:claimShopperId,canonicalShopperId:canonicalTarget,expectedOwnVisits:ownVisits};
   break;
 }
-if(!shopper)stageFail(`HOLD_SHOPPER_R${shopperRecords}_L${exactLegacy}_V${referencedExact}_P${patternMatches}_A${authMatches}_S${passwordMatches}`);
+if(!shopper)stageFail(`HOLD_SHOPPER_R${shopperRecords}_L${exactLegacy}_C${exactCanonicalBridge}_P${patternMatches}_A${authMatches}_S${passwordMatches}`);
 
 fs.mkdirSync(path.dirname(outPath),{recursive:true});
-fs.writeFileSync(outPath,JSON.stringify({schemaVersion:'cxorbia.c6.e2e-private-credentials.v2',staff,shopper},null,2)+'\n',{encoding:'utf8',mode:0o600});
-console.log(JSON.stringify({decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V2',staffRole:staff.role,shopperRole:shopper.role,shopperOwnVisits:shopper.expectedOwnVisits,staffRecordsChecked:staffRecords,shopperRecordsChecked:shopperRecords,exactLegacyProfiles:exactLegacy,referencedExactProfiles:referencedExact,visitCrosswalkResolved:Number(crosswalk.counts?.resolvedRefs||0),authWrites:0,passwordChanges:0,valuesExported:false}));
+fs.writeFileSync(outPath,JSON.stringify({schemaVersion:'cxorbia.c6.e2e-private-credentials.v3',staff,shopper},null,2)+'\n',{encoding:'utf8',mode:0o600});
+console.log(JSON.stringify({decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V2',staffRole:staff.role,shopperRole:shopper.role,shopperOwnVisits:shopper.expectedOwnVisits,staffRecordsChecked:staffRecords,shopperRecordsChecked:shopperRecords,exactLegacyProfiles:exactLegacy,exactCanonicalIdentityBridges:exactCanonicalBridge,visitCrosswalkResolved:Number(crosswalk.counts?.resolvedRefs||0),authWrites:0,passwordChanges:0,valuesExported:false}));
