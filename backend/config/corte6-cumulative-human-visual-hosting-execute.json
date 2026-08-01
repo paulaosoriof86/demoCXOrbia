@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.corte6.direct-role-entry-hosting-execute.v5",
   "requestId": "corte6-direct-role-entry-hosting-20260801-01",
-  "status": "execute_authorized_once",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_pass",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -33,5 +33,8 @@
   "newHostingSites": 0,
   "merge": false,
   "production": false,
-  "nextGate": "LOCAL_HUMAN_DIRECT_ROLE_BROWSER_SMOKE"
+  "nextGate": "HUMAN_VISUAL_ACCUMULATIVE_C6_FREEZE",
+  "hostingDeployExecutions": 1,
+  "consumedAt": "2026-08-01T21:12:47.302Z",
+  "decision": "PASS_C6_HUMAN_DIRECT_ROLE_ENTRY_AND_ISOLATED_AUTH_EXISTING_HOSTING_DEV"
 }
