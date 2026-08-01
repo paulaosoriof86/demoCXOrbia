@@ -1,51 +1,63 @@
-# PHASE A — TRACKER C6 USUARIOS E2E REAL PASS
+# PHASE A — TRACKER C6 ENTRADA DIRECTA + AUTH E2E AISLADA PASS
 
 **Fecha:** 2026-08-01  
-**Estado:** `C6_REAL_STAFF_SHOPPER_E2E_HOSTING_DEV_PASS__PENDING_HUMAN_VISUAL_ACCUMULATIVE`
+**Estado:** `C6_DIRECT_ROLE_ENTRY_HOSTING_DEV_PASS__PENDING_HUMAN_VISUAL_ACCUMULATIVE`
 
 ## Bloque atendido
-Corte6 · Entrada, Auth, identidad y preservación de HR después de autenticación.
+Corte 6 · Entrada humana, Auth técnica, identidad y preservación de HR.
 
 ## Avance Phase A
-- Login visible reducido a Usuario + Contraseña.
-- Rol, namespace, tenant y proyecto derivados de claims.
+- Entrada humana directa restaurada: Administración, Cliente y Shopper.
+- Usuario + Contraseña eliminado del carril humano.
+- `app.js` preservado como autoridad visual.
+- Auth real aislada detrás de gate técnico privado.
 - Staff real DEV validado local y remoto.
 - Shopper real DEV validado local y remoto.
-- HR viva preservada en616 visitas para ambos roles.
-- Histórico propio Shopper validado.
-- Refresh y nueva pestaña preservan sesión/contexto.
+- HR viva preservada en 616 visitas para ambos principales técnicos.
+- Histórico propio Shopper validado con 1 visita.
+- Refresh y nueva pestaña preservan sesión/contexto técnico.
 - Hosting DEV existente actualizado una sola vez.
+- Autorización consumida con PASS.
 
-## Hallazgo intermedio que cambió la solución
-El shopper autenticaba correctamente, pero el read Firestore scoped de1 visita reemplazaba el modelo HR. El bloque no se cerró con la autenticación: se corrigió el ownership de fuentes mediante HR authority + protected overlay.
+## Hallazgos intermedios que cambiaron la solución
+1. El formulario técnico había sustituido directamente los botones nativos.
+2. Después de restaurar los botones, `backend-browser-auth.js` seguía interceptando `selectRole()` y abría credenciales integradas.
+3. El carril humano debía deshabilitar backend Firebase/Auth integrada antes de `DOMContentLoaded`, sin modificar core.
+4. El carril técnico debía reactivarlos explícitamente para conservar el E2E real.
+
+## Decisión autoritativa
+`PASS_C6_HUMAN_DIRECT_ROLE_ENTRY_AND_ISOLATED_AUTH_EXISTING_HOSTING_DEV`.
 
 ## Preservado
-- Corte3 FROZEN.
-- Corte5 14/616.
-- dominio, finanzas, portal Shopper y Reservas fail-closed.
-- interfaces de `CX.data`.
+- Corte 3 FROZEN.
+- Corte 5: 14 periodos/616 visitas.
+- Dominio, Finanzas, portal Shopper, Reportes y Reservas fail-closed.
+- Interfaces de `CX.data`.
 - `/app/modules/*` y `/app/core/*` sin cambios en este root fix.
-- producción intacta.
+- Producción intacta.
 
 ## Documentado para Claude
-- no selector de rol previo;
-- claims como autoridad de acceso;
-- HR como autoridad operacional posterior a Auth;
-- Firestore scoped como overlay;
-- E2E real obligatorio.
+- conservar selector directo de perfiles;
+- no insertar Auth visible dentro del frontend;
+- diferenciar experiencia humana, Auth y claims;
+- HR como autoridad operacional;
+- gates humano y técnico separados.
 
 ## Documentado para Academia
-- smoke vs E2E;
+- selector de perfil vs autenticación vs autorización;
+- smoke humano vs E2E técnico;
 - autoridad de fuentes;
 - identidad exacta;
-- persistencia;
-- seguridad de evidencias.
+- persistencia y seguridad de evidencias.
 
 ## Pendiente real
-Validación humana acumulativa del build publicado y `APROBADO → FREEZE C6`.
+Validación humana acumulativa del build publicado y `APROBADO C6 → FREEZE`.
 
 ## Siguiente bloque exacto
-`HUMAN VISUAL ACUMULATIVA: entrada → Dashboard/fases → histórico/refresh → Shoppers/portal → Finanzas → Reportes → Reservas`.
+`HUMAN VISUAL ACUMULATIVA: entrada → Dashboard/hoja de ruta → histórico/refresh → Shoppers/portales → Finanzas → Reportes → Reservas`.
+
+Después:
+`AGOSTO → DISPONIBLES → POSTULACIONES → GATE MULTIROL → CUTOVER → PRODUCCIÓN`.
 
 ## Estado seguro
-Hosting DEV deploy1; usuarios/Auth/contraseñas/datos/Rules/Cloud Run writes0; merge=false; producción=false.
+Hosting DEV deploy 1; usuarios/Auth/contraseñas/datos/Rules/Cloud Run writes 0; merge=false; producción=false.
