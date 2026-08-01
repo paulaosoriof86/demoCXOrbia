@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.corte6.real-users-e2e-failure.v4",
-  "generatedAt": "2026-08-01T17:07:56.194Z",
+  "generatedAt": "2026-08-01T17:12:38.066Z",
   "decision": "FAIL_C6_REAL_USERS_E2E_GATE",
-  "failedStage": "local_real_users_e2e__shopper__page_waitForFunction:_Timeout_90000ms_exceeded_",
+  "failedStage": "local_real_users_e2e__shopper__AUTH_WAIT_TIMEOUT_shopper_CTX1_NSshopper_APP1_FB1_V1_LOGIN0_DUAL0_ERRnone_BTNcargando_",
   "deployStepOutcome": "skipped",
   "hostingDeployExecutions": 0,
   "authorizationConsumed": false,
