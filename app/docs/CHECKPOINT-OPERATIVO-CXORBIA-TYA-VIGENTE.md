@@ -1,84 +1,58 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-01  
-**Estado:** `C6_DIRECT_ROLE_ENTRY_HOSTING_DEV_PASS__PENDING_HUMAN_VISUAL_ACCUMULATIVE__NO_PRODUCTION`
+**Estado:** `P0_DATOS_DIRECT_ROLE_ROOT_FIX_APPLIED_PENDING_CUMULATIVE_GATES_AND_SINGLE_DEV_REDEPLOY__NO_PRODUCTION`
 
 ## 1. Estado protegido
-- Repo `paulaosoriof86/demoCXOrbia`; rama viva `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge.
+- Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge.
 - Corte 3 FROZEN; R17N 1,406/1,406 no repetir.
-- Corte 5: 14 periodos/616 visitas PASS.
-- HR viva, histórico, shoppers, identidad, Finanzas/Liquidaciones, portal Shopper, Reportes y Reservas fail-closed preservados.
+- Baseline histórica protegida: 14 periodos/616 visitas/208 shoppers.
 - Producción `tya-plataforma` intacta.
 
-## 2. P0 humano cerrado técnicamente
-El Hosting DEV ya no presenta Usuario + Contraseña en el carril humano. La entrada aprobada fue restaurada:
-- Administración / Coordinación;
-- Portal del Cliente;
-- Shopper / Evaluador;
-- perfiles adicionales configurados.
+## 2. P0 demostrado
+La entrada directa del build anterior sí activaba Administración, pero el runtime quedaba vacío. La pantalla humana mostró cero proyectos y cero periodos. Esto invalida el PASS anterior y bloquea Corte 6.
 
-La causa raíz final fue doble:
-1. un adapter sustituyó inicialmente los botones por un formulario técnico;
-2. al restaurar los botones, `backend-browser-auth.js` todavía interceptaba `selectRole()` y abría el paso integrado de credenciales.
+Causa raíz acumulativa:
+1. la entrada humana fue normalizada como runtime protegido;
+2. el watcher HR se desactivó por presencia de `cxProtectedRuntime`;
+3. el bridge full-visual rechazó la mezcla de carriles;
+4. el guard read-only ejecutó el estado vacío de espera protegida;
+5. el smoke no verificaba 14/616/208 después del clic.
 
-El root fix focal deshabilita backend Firebase/Auth integrada únicamente en el carril humano antes de `DOMContentLoaded`. El carril técnico explícito conserva Firebase Auth, claims, HR authority y E2E real.
+## 3. Corrección aplicada
+- Human lane: `source-safe-human-visual`, sin protected runtime.
+- Technical lane: `protected-technical-e2e`, solo con token E2E explícito.
+- `humanVisualSourceSafe=true` y backend Firebase desactivado solo en la visual humana.
+- Watcher HR activo en humano.
+- Overlay protegido con fallback seguro a HR 14/616/208; nunca bloquea ni borra la baseline válida.
+- Gate browser exige entrada directa, 14/616/208, proyecto/periodo, datasource listo, ausencia de shell vacío y tres recargas estables.
 
-## 3. Resultado autoritativo
-`PASS_C6_HUMAN_DIRECT_ROLE_ENTRY_AND_ISOLATED_AUTH_EXISTING_HOSTING_DEV`.
+## 4. Archivos focales
+- `app/index-backend-dev.html`.
+- `app/adapters/tya-dev-entry-auth-gate-v1.js`.
+- `app/adapters/tya-live-source-refresh-watch-v2.js`.
+- `app/adapters/tya-dev-full-visual-bridge.js`.
+- `tools/qa/tya-c6-dev-entry-auth-gate.mjs`.
+- `tools/qa/tya-c6-dev-entry-browser-smoke.mjs`.
+- documentación obligatoria y workflow/config one-shot.
 
-Evidencia:
-`app/docs/evidence/CORTE6-DIRECT-ROLE-ENTRY-HOSTING-LATEST.json`.
+No se tocaron módulos UI ni producción.
 
-### Entrada humana
-- Administración visible: PASS.
-- Cliente visible: PASS.
-- Shopper visible: PASS.
-- Usuario + Contraseña: ausente.
-- Smoke local: PASS.
-- Smoke remoto: PASS.
+## 5. Autorización
+Autorización exacta recibida para aplicar el root fix, ejecutar gates acumulativos y, solo con PASS local 14/616/208, realizar un único redeploy del Hosting DEV existente. Sin writes de datos/Auth/Rules/Cloud Run, sin merge y sin producción.
 
-### Auth técnica aislada
-- Staff real local/remoto: PASS.
-- Shopper real local/remoto: PASS.
-- Staff: 616 visitas; refresh y nueva pestaña preservados.
-- Shopper: 616 visitas; 1 visita propia; refresh y nueva pestaña preservados.
+## 6. Gate inmediato
+1. sintaxis y separación estática de carriles;
+2. dominio/finanzas/shopper/reservas acumulativos;
+3. browser humano local 14/616/208 + 3 recargas;
+4. E2E técnico staff/shopper local;
+5. preflight proveedor read-only;
+6. un deploy Hosting DEV;
+7. paridad y browser remoto 14/616/208 + 3 recargas;
+8. E2E técnico remoto;
+9. evidencia y consumo one-shot.
 
-## 4. Baseline canónica preservada
-- 14 periodos/616 visitas.
-- Julio: 44 total = GT 34 + HN 10.
-- Realizadas: 40.
-- Cuestionario: 38.
-- Submitidas: 33.
-- Fuera de rango accionable: 1.
-- Dominio, Finanzas/Liquidaciones, portal Shopper y Reservas fail-closed: PASS.
-- No se modificaron `app/modules/*` ni `app/core/*`.
+Cualquier falla antes del deploy conserva autorización no consumida. Una falla después del deploy consume la autorización y se registra fail-closed.
 
-## 5. Deploy y autorización
-- Hosting DEV existente `cxorbia-backend-dev/cxorbia-dev`.
-- Deploy: exactamente 1.
-- Autorización: `consumed_pass`.
-- Usuarios creados: 0.
-- Auth writes/cambios de contraseña: 0.
-- Firestore/Rules/Cloud Run/HR writes: 0.
-- Proyectos Firebase/sitios Hosting nuevos: 0.
-- Merge=false; producción=false.
-
-## 6. Gate pendiente para congelar Corte 6
-Paula debe validar acumulativamente el mismo build publicado:
-1. entrada directa por perfiles;
-2. Dashboard y hoja de ruta 44/40/38/33/1;
-3. comparativo histórico;
-4. tres refresh/focus sin crecimiento, reducción, cambio de periodo o salto;
-5. Shoppers, perfil, certificación e histórico;
-6. Portal Cliente y Portal Shopper;
-7. Finanzas, Movimientos, Liquidaciones y Beneficios;
-8. Reportes;
-9. Reservas read-only/fuente pendiente.
-
-Solo con `APROBADO C6` se congela la baseline.
-
-## 7. Siguiente bloque después del freeze
-`FUENTE EXACTA AGOSTO → RECONCILIACIÓN HR/PLATAFORMA → DISPONIBLES → POSTULACIONES → GATE MULTIROL → AUTORIZACIÓN DE WRITES/CUTOVER → READBACK → PRODUCCIÓN`.
-
-## 8. Estado seguro
-DEV técnicamente PASS y pendiente de validación humana acumulativa. Producción intacta. La autorización DEV ya fue consumida y no habilita nuevas mutaciones.
+## 7. Estado seguro
+No hay merge, producción, writes de Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos/Reservas ni proyectos/sitios nuevos.
