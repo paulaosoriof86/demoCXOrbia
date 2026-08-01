@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-07-31  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_HUMAN_VISUAL_P0_PROVEN__CANONICAL_DOMAIN_FIX_CODE_PASS__LIVE_HR_ROW_AUDIT_PASS__PENDING_DEV_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_HUMAN_VISUAL_P0_PROVEN__CANONICAL_DOMAIN_AND_FINANCE_FIX_CODE_PASS__LIVE_HR_ROW_AUDIT_PASS__PENDING_DEV_DEPLOY__NO_PRODUCTION`
 
 ## 1. Objetivo/arquitectura
 TyA/Cinépolis es el primer tenant/proyecto configurable de CXOrbia. `cxorbia-backend-dev` es DEV canónico y `tya-plataforma` el Hosting final. No crear Firebase, Hosting, rama o PR por rutina.
@@ -34,11 +34,12 @@ El Hosting anterior pasó paridad de assets e idempotencia sintética, pero fall
 - Dashboard superior correcto y flujo por fases incorrecto;
 - comparativo sin histórico;
 - refresh moviendo contenido/sidebar;
-- identidades Shopper divididas y conteos 210/219;
+- identidades Shopper divididas y conteos210/219;
 - perfiles completos sin mínimos, credenciales, WA, certificación o histórico;
 - portal Shopper y Beneficios sin el histórico de Admin;
 - periodo visible separado del contenido financiero;
-- Movimientos/Liquidaciones/Beneficios fragmentados.
+- Movimientos/Liquidaciones/Beneficios fragmentados;
+-33 visitas submitidas omitidas de Liquidaciones por el switch literal anterior.
 
 Corte6 no está congelado. El remote smoke anterior se conserva como evidencia técnica, no como release PASS.
 
@@ -72,22 +73,39 @@ Corte6 no está congelado. El remote smoke anterior se conserva como evidencia t
 - credenciales se derivan con el patrón configurable solo para identidad exacta y sin writes;
 - Finanzas usa periodo/identidad canónicos y proyecta historia source-safe read-only.
 
-Este bridge es el carril DEV de validación. Claude debe incorporar el patrón de producto; no copiarlo como parche permanente de UI.
+`app/adapters/tya-canonical-finance-read-model-v2.js` completa el ciclo financiero:
+- toda visita realizada aparece en Liquidaciones;
+- las33 submitidas de julio ya no se omiten;
+-5 pendientes de submit y2 pendientes de cuestionario conservan su etapa;
+- fuente financiera/pago exactos siguen siendo autoridad;
+- sin cruce exacto la fila queda visible y `reviewRequired`, sin habilitar lote/pago.
+
+Estos adapters son el carril DEV de validación. Claude debe incorporar el patrón de producto; no copiarlos como parches permanentes de UI.
 
 ## 9. Gates actuales
-### Local
-`PASS_C6_CANONICAL_DOMAIN_CONSISTENCY` cubre identidad, historial, facetas, perfil, scroll, periodo y finanzas.
+La evidencia v4 registra tres PASS simultáneos:
+- `PASS_C6_CANONICAL_DOMAIN_CONSISTENCY`;
+- `PASS_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS`;
+- `PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE`.
 
-### HR viva real
-`PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE`:
+HR viva:
 -14 periodos/616 visitas/208 shoppers;
 -JUL44 = GT34+HN10;
 -realizadas40;
 -cuestionario38;
 -submitidas33;
+-liquidationCandidates33;
 -fuera de rango accionable1;
 -evidencia histórica fuera de rango7;
 -duplicados de llaves0.
+
+Gate financiero representativo:
+-40 realizadas presentes en Liquidaciones;
+-33 submitidas no omitidas;
+-5 pendientes de submit;
+-2 pendientes de cuestionario;
+-fuente exacta/pago confirmado preservados;
+-ejecución de pagos deshabilitada.
 
 ## 10. Identidad y materialización
 En lectura puede derivarse username/password según el patrón configurable cuando existe vínculo canónico exacto. WhatsApp debe provenir de una fuente real.
@@ -101,7 +119,7 @@ No hacerlo por similitud ni bajo una autorización de Hosting.
 El nuevo código está en GitHub, no desplegado. La autorización anterior está consumida.
 
 Secuencia exacta:
-`GATES ESTÁTICOS FINALES PASS → AUTORIZACIÓN FRESCA 1x HOSTING DEV EXISTENTE → REMOTE SMOKE SEMÁNTICO → HUMAN VISUAL COMPLETA → FREEZE C6`.
+`AUTORIZACIÓN FRESCA 1x HOSTING DEV EXISTENTE → REMOTE SMOKE SEMÁNTICO → HUMAN VISUAL COMPLETA → FREEZE C6`.
 
 No Cloud Run previsto. Si la visual falla, no se añade otro parche: se corrige el contrato/gate que permitió la regresión.
 
@@ -110,7 +128,7 @@ No iniciar materialización agosto hasta congelar Corte6. Después:
 - identificar fuente exacta de agosto plataforma-origin;
 - reconciliar con HR cuando aparezcan tabs;
 - materializar únicamente delta bajo autorización fresca de data write;
-- no repetir histórico 1,406.
+- no repetir histórico1,406.
 
 ## 13. Claude/prototipo
 Claude debe incorporar como contratos reutilizables:
@@ -120,10 +138,13 @@ Claude debe incorporar como contratos reutilizables:
 - historial Shopper completo;
 - certificación visible por rol;
 - periodo canónico único;
-- gate transversal que compara tile, drill, listado y portal.
+- liquidaciones completas derivadas de facetas, no de un switch literal;
+- gate transversal que compare tile, drill, listado, portal y finanzas.
 
 ## 14. Academia
-Fuente vigente: `ACADEMIA-IMPACTO-C6-DOMINIO-CANONICO-Y-ESTADOS-ACCIONABLES-20260731.md`.
+Fuentes vigentes:
+- `ACADEMIA-IMPACTO-C6-DOMINIO-CANONICO-Y-ESTADOS-ACCIONABLES-20260731.md`;
+- `CAMBIOS-BACKEND-ADDENDUM-C6-FINANZAS-LIQUIDACIONES-CANONICAS-20260731.md`.
 
 ## 15. Estado seguro
 Bloque correctivo actual: Hosting0; Cloud Run0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos writes0; nuevos Firebase/Hosting0; merge=false; producción=false.
