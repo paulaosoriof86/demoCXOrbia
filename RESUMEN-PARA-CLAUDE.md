@@ -1,92 +1,99 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_STABLE_COMPOSER_HOSTING_DEV_REMOTE_PASS__PENDING_HUMAN_CUMULATIVE_VISUAL__NO_PRODUCTION`
+**Estado vivo:** `C6_HUMAN_VISUAL_P0_PROVEN__CANONICAL_DOMAIN_FIX_CODE_PASS__LIVE_HR_ROW_AUDIT_PASS__PENDING_DEV_DEPLOY__NO_PRODUCTION`
 
 ## 1. No reabrir
 - Corte3 FROZEN; R17N1,406/1,406 no repetir.
 - Corte5 cinepolis/14 periodos/616 visitas/current2026-07 PASS.
 - Auth91/91; claims5/5; Rules PASS.
 - HR live/auto-month PASS.
-- Perfil completo Firestore120 docs/329 campos WRITE+READBACK PASS, mismatches0.
-- Finanzas/pagos canónicos source-safe aprobados se preservan.
+- Perfil protegido Firestore120 docs/329 campos WRITE+READBACK PASS.
+- Finanzas/pagos canónicos source-safe preservados.
 - PR#7 draft/open/no merge; producción intacta.
 
-## 2. Regresión C6 anterior
-La visual acumulativa mostró 88→44 visitas, badge1,232/546, scroll movido, shoppers repetidos, perfil/credenciales/histórico fragmentados y comparativo incompleto.
+## 2. Qué falló en la validación humana
+El remote smoke anterior fue técnico, no semántico. Las capturas probaron:
+- Dashboard:44/40 correctos, pero fases mostraban7 realizadas;
+- comparativo MAY/JUN sin histórico;
+- refresh moviendo contenido y sidebar;
+- fuente210 shoppers frente a219 filas y personas divididas en dos identidades;
+- perfiles “completos” sin username, contraseña, WhatsApp o histórico;
+- certificación invisible para Admin;
+- portal Shopper Activas1/Historial0/Beneficios vacío pese al histórico de Admin;
+- periodo MAY visible con contenido financiero/liquidaciones JUL;
+- Movimientos y Liquidaciones sin la misma fuente histórica del Dashboard Financiero.
 
-La HR canónica sigue30 tabs/28 mensuales y julio=34 GT+10 HN. El fallo era composición, no fuente.
+Corte6 permanece FAIL; no se congela.
 
-## 3. Root fix estable aplicado y publicado
-Backend adapters implementan:
-- baseline HR inmutable por `sourceRevision`;
-- composer puro `app/adapters/tya-cumulative-read-model.js`;
-- no append de protected visits sobre HR;
-- match exacto por `hrRowId`, `sourceTab+sourceRow` o `visitId`;
-- crosswalk Shopper solo por evidencia técnica;
-- HR mantiene estado operacional;
-- perfil protegido agrega username/password/PII cuando el perfil exacto realmente los contiene;
-- same revision=no reapply/no rerender;
-- changed revision=1 apply +1 compose;
-- scroll/selects/foco preservados; modal/form activo difiere rerender.
+## 3. Causas raíz que Claude no debe reintroducir
+- máquinas de estado locales por módulo;
+- dedupe visual o append de perfiles sin crosswalk exacto;
+- completitud por flag heredado;
+- selects DOM como segunda fuente de periodo;
+- watchers que rerenderizan por timestamps;
+- portal Shopper que reduce historial a una visita por estado;
+- finanzas separadas de identidad/periodo canónicos;
+- gates que solo validan sintaxis/assets sin comparar tile, drill y portal.
 
-## 4. Regression gate local — PASS
-`PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE`:
--14 periodos/616 visitas/208 shoppers;
--120 perfiles protegidos;
--reapply1=616/208;
--reapply2=616/208;
--reapply3=616/208;
--duplicates visita0;
--duplicates shopper0;
--protected visits appended0;
--operational HR state preservado;
--profile overlay visible.
+## 4. Contrato backend reusable ya preparado
+- `tya-cumulative-read-model-v2.js`: HR manda; identidad/perfil/certificación/finanzas enriquecen solo por llave exacta; unmatched va a review queue.
+- `tya-canonical-state-semantics-v2.js`: estado accionable separado de evidencia histórica.
+- `tya-live-source-refresh-watch-v2.js`: misma información=no render; cambio real=1 render; preserva content/rail/modelo.
+- `tya-c6-domain-consistency-bridge.js`: validación DEV transversal sin modificar módulos/core.
 
-## 5. Hosting DEV + remote smoke — PASS
-Autorización fresca consumida: `chat-20260731-c6-stable-cumulative-hosting-02`.
+## 5. Máquina de estados única
+Todos los módulos deben consumir una sola faceta canónica:
+`asignada → agendada → realizada → cuestionario → submitida → liquidada → pagada`.
 
-Se ejecutó exactamente1 redeploy del Hosting DEV existente `cxorbia-backend-dev/cxorbia-dev`; Cloud Run0.
+Una visita submitida también cuenta como realizada y con cuestionario, pero no permanece en las colas pendientes anteriores.
 
-Decisión: `PASS_EXISTING_HOSTING_DEV_STABLE_C6_REMOTE_READY`.
+Fuera de rango:
+- evidencia histórica puede permanecer;
+- KPI operativo solo cuenta casos todavía no resueltos.
 
-Remote gate confirmó:
-- composer/bridge/watcher/finance exactos al repo;
-- regression 3x PASS sobre composer remoto;
-- HR fresh meta + histórico616 + auto-month PASS;
-- protectedVisitAppendZero;
-- full-profile fail-closed sin sesión visual;
-- Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes0;
-- merge=false; producción=false.
+## 6. Identidad Shopper
+- resolver por ID/crosswalk técnico exacto;
+- no fusionar por nombre, teléfono o email;
+- perfil sin crosswalk no entra como segunda fila operacional;
+- histórico, credenciales, certificación y beneficios convergen en la identidad canónica;
+- “perfil completo” exige nombre+contacto+usuario+contraseña reales;
+- WhatsApp nunca se inventa.
 
-## 6. Qué NO debe hacer Claude
-- no reconstruir HR, identidad o finanzas en módulos;
-- no dedupe por nombre/teléfono/email;
-- no volver a fixtures/demo;
-- no reemplazar HR viva ni finanzas canónicas;
-- no reintroducir estados superados;
-- no crear su propio watcher o máquina de estados;
-- no eliminar el regression lock al cambiar de etapa.
+## 7. Cambios que corresponden al prototipo
+Claude debe incorporar de forma nativa, no como hotfix:
+1. Dashboard/fases/drill/listados desde una sola máquina de estados.
+2. Comparativo histórico desde el resumen real de periodos; métricas no disponibles se muestran honestamente.
+3. Refresh sin saltos y sin segundo estado DOM del periodo.
+4. Shoppers con una fila por identidad canónica y review queue separada.
+5. Perfil completo calculado por campos y certificación visible según rol.
+6. Portal Shopper con todas las visitas activas/históricas y beneficios por la misma identidad.
+7. Finanzas/Movimientos/Liquidaciones/Beneficios con periodo e identidad canónicos.
+8. Gate de release que compare cifras entre tile, detalle, listado y portal.
 
-## 7. Regla de estabilidad para prototipo
-Toda candidata futura debe conservar el read-model contract y pasar regression gate acumulativo. Una función nueva no compensa regresiones en Dashboard, Shoppers, histórico, Beneficios, Finanzas, periodos o fuente.
+## 8. Gate real HR viva — PASS
+Sobre las616 visitas:
+-14 periodos/208 shoppers HR;
+-JUL44 GT34/HN10;
+-realizadas40;
+-cuestionario38;
+-submitidas33;
+-fuera de rango accionable1;
+-evidencia fuera de rango7;
+-duplicados de llaves0.
 
-## 8. 31 identity HOLD
-Continúan31 sin vínculo canónico reproducible. Requieren conciliación explícita posterior; no emparejar por similitud.
+## 9. Estado de publicación
+El código v2 está en GitHub, todavía no en Hosting DEV. No ejecutar otro deploy con la autorización consumida.
 
-## 9. Gate pendiente
-No ejecutar otro deploy bajo la autorización consumida.
-
-Falta validación humana acumulativa del Hosting DEV ya publicado:3 refresh/focus cycles + Dashboard/HR + Shoppers/perfil/credenciales/histórico + comparativo + Beneficios + Finanzas.
-
-Solo PASS humano permite congelar Corte6 y pasar a agosto.
+Gate siguiente:
+`GATES FINALES → AUTORIZACIÓN FRESCA 1x HOSTING DEV → REMOTE/HUMAN SEMANTIC PASS → FREEZE C6 → AGOSTO`.
 
 ## 10. Documentación asociada
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`.
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-STABLE-COMPOSER-HOSTING-DEV-REMOTE-PASS-20260731.md`.
-- `app/docs/ACADEMIA-IMPACTO-C6-STABLE-COMPOSER-ROOT-FIX-20260731.md`.
-- `app/docs/evidence/CORTE6-STABLE-COMPOSER-REGRESSION-GATE-LATEST.json`.
-- `app/docs/evidence/CORTE6-STABLE-CUMULATIVE-HUMAN-VISUAL-HOSTING-LATEST.json`.
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-HUMAN-P0-CANONICAL-DOMAIN-ROOT-FIX-20260731.md`;
+- `app/docs/ACADEMIA-IMPACTO-C6-DOMINIO-CANONICO-Y-ESTADOS-ACCIONABLES-20260731.md`;
+- `app/docs/evidence/CORTE6-HUMAN-CUMULATIVE-VISUAL-P0-LATEST.json`;
+- `app/docs/evidence/CORTE6-CANONICAL-DOMAIN-CONSISTENCY-GATE-LATEST.json`;
+- `app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json`.
 
-## 11. Siguiente bloque Phase A
-`HUMAN VISUAL ACUMULATIVA PASS → FREEZE C6 → AGOSTO`.
+## 11. Seguridad
+No se modificó `/app/modules/*` ni `/app/core/*` en este root fix. Hosting/Cloud Run/data/provider writes0; merge=false; producción=false.
