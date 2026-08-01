@@ -15,7 +15,13 @@ const privatePath = 'backend/secure/corte6-credential-handoff-private.enc.json';
 const outPath = process.env.CXORBIA_E2E_PRIVATE_CREDENTIALS || '.tmp/c6-users-e2e/private-e2e.json';
 const remoteInitUrl = process.env.CXORBIA_FIREBASE_INIT_URL || 'https://cxorbia-backend-dev.web.app/__/firebase/init.js';
 
-function fail(message){ throw new Error(message); }
+function fail(message){
+  const safe=String(message||'unknown').replace(/[^A-Z0-9_:-]/gi,'_').slice(0,120);
+  if(process.env.OUT_DIR){
+    try{fs.mkdirSync(process.env.OUT_DIR,{recursive:true});fs.writeFileSync(path.join(process.env.OUT_DIR,'stage'),'select_existing_credentials__'+safe+'\n','utf8');}catch{}
+  }
+  throw new Error(safe);
+}
 function sha256Hex(value){ return crypto.createHash('sha256').update(String(value),'utf8').digest('hex'); }
 function internalEmail(login, namespace){
   const normalized = String(login || '').trim().toLowerCase();
@@ -77,7 +83,7 @@ async function firebaseWebConfig(){
   const source=await response.text();
   let captured=null;
   const fakeFirebase={apps:[],initializeApp(config){captured=config;this.apps.push({});return{};},app(){return{options:captured};}};
-  vm.runInNewContext(source,{firebase:fakeFirebase,window:{},self:{}},{timeout:2000});
+  try{vm.runInNewContext(source,{firebase:fakeFirebase,window:{},self:{}},{timeout:2000});}catch{fail('firebase_init_parse_failed');}
   if(!captured?.apiKey||captured.projectId!==expectedProject) fail('firebase_web_config_mismatch');
   return captured;
 }
@@ -93,10 +99,9 @@ async function passwordSignIn(login,password,namespace){
   return Boolean(result?.idToken);
 }
 
-function passwordCandidates(login){
-  const local=String(login||'').trim().toLowerCase().split('@')[0];
+function addPatternCandidates(values,raw){
+  const local=String(raw||'').trim().toLowerCase().split('@')[0];
   const tokens=local.split(/[^a-záéíóúüñ]+/i).filter(Boolean);
-  const values=new Set();
   for(const token of tokens){
     const clean=token.replace(/\d+$/,'');
     if(!clean) continue;
@@ -108,27 +113,37 @@ function passwordCandidates(login){
     const cap=joined.charAt(0).toUpperCase()+joined.slice(1).toLowerCase();
     values.add(cap+'123*');
   }
+}
+function passwordCandidates(record,user,login){
+  const values=new Set();
+  [login,record?.name,record?.nombre,record?.displayName,record?.firstName,record?.legacyName,record?.personName,user?.displayName].forEach(v=>addPatternCandidates(values,v));
   return [...values];
 }
 
 let staff=null;
+let eligibleStaffRecords=0;
+let staffAuthMatches=0;
+let staffPatternMatches=0;
 for(const record of Array.isArray(bundle.records)?bundle.records:[]){
   if(record?.kind!=='user'||String(record.authNamespace||'staff').toLowerCase()!=='staff') continue;
+  eligibleStaffRecords++;
   const login=String(record.normalizedLogin||record.loginIdentifier||'').trim().toLowerCase();
   const hash=String(record.passwordHashHex||'').toLowerCase();
   if(!login||!/^[a-f0-9]{64}$/.test(hash)) continue;
   let user;
   try{ user=await auth.getUserByEmail(internalEmail(login,'staff')); }catch{ continue; }
   if(!validClaims(user.customClaims||{},'staff')) continue;
-  for(const candidate of passwordCandidates(login)){
+  staffAuthMatches++;
+  for(const candidate of passwordCandidates(record,user,login)){
     if(sha256Hex(candidate)!==hash) continue;
+    staffPatternMatches++;
     if(!(await passwordSignIn(login,candidate,'staff'))) continue;
     staff={login,password:candidate,namespace:'staff',role:String(user.customClaims?.role||'')};
     break;
   }
   if(staff) break;
 }
-if(!staff) fail('HOLD_NO_EXISTING_STAFF_PLAINTEXT_CREDENTIAL_MATCH');
+if(!staff) fail(`HOLD_NO_EXISTING_STAFF_PLAINTEXT_CREDENTIAL_MATCH_R${eligibleStaffRecords}_A${staffAuthMatches}_P${staffPatternMatches}`);
 
 const shopperSnap=await db.collection('tenants').doc(tenantId).collection('shoppers').get();
 const visitSnap=await db.collection('tenants').doc(tenantId).collection('visits').select('shopperId','projectId','rootProjectId').get();
@@ -143,6 +158,8 @@ for(const doc of visitSnap.docs){
 
 let shopper=null;
 const shopperCandidates=[];
+let shopperAuthMatches=0;
+let shopperPasswordMatches=0;
 for(const doc of shopperSnap.docs){
   const data=doc.data()||{};
   const login=String(data.username||data.user||data.login||'').trim();
@@ -156,12 +173,14 @@ for(const candidate of shopperCandidates){
   try{ user=await auth.getUserByEmail(internalEmail(candidate.login,'shopper')); }catch{ continue; }
   const claims=user.customClaims||{};
   if(!validClaims(claims,'shopper')||claims.shopperId!==candidate.id) continue;
+  shopperAuthMatches++;
   if(!(await passwordSignIn(candidate.login,candidate.password,'shopper'))) continue;
+  shopperPasswordMatches++;
   shopper={login:candidate.login,password:candidate.password,namespace:'shopper',role:'shopper',shopperId:candidate.id,expectedOwnVisits:candidate.visits};
   break;
 }
-if(!shopper) fail('HOLD_NO_EXISTING_SHOPPER_PLAINTEXT_CREDENTIAL_MATCH');
+if(!shopper) fail(`HOLD_NO_EXISTING_SHOPPER_PLAINTEXT_CREDENTIAL_MATCH_C${shopperCandidates.length}_A${shopperAuthMatches}_P${shopperPasswordMatches}`);
 
 fs.mkdirSync(path.dirname(outPath),{recursive:true});
 fs.writeFileSync(outPath,JSON.stringify({schemaVersion:'cxorbia.c6.e2e-private-credentials.v1',staff,shopper},null,2)+'\n',{encoding:'utf8',mode:0o600});
-console.log(JSON.stringify({decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION',staffRole:staff.role,shopperRole:shopper.role,shopperOwnVisits:shopper.expectedOwnVisits,authWrites:0,passwordChanges:0,valuesExported:false}));
+console.log(JSON.stringify({decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION',staffRole:staff.role,shopperRole:shopper.role,shopperOwnVisits:shopper.expectedOwnVisits,staffRecordsChecked:eligibleStaffRecords,authWrites:0,passwordChanges:0,valuesExported:false}));
