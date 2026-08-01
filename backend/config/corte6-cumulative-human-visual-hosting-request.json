@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.corte6.canonical-root-fix-hosting-request.v2",
   "requestId": "corte6-canonical-root-fix-hosting-20260801-01",
-  "status": "hosting_deployed_smoke_pending",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_pass",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -42,6 +42,8 @@
   "newHostingSites": 0,
   "merge": false,
   "production": false,
-  "nextGate": "EXECUTE_ONCE_THEN_REMOTE_SEMANTIC_SMOKE",
-  "hostingDeployedAt": "2026-08-01T14:06:00.459Z"
+  "nextGate": "HUMAN_VISUAL_ACCUMULATIVE_C6_FREEZE",
+  "hostingDeployedAt": "2026-08-01T14:06:00.459Z",
+  "consumedAt": "2026-08-01T14:06:08.376Z",
+  "decision": "PASS_C6_CANONICAL_ROOT_FIX_EXISTING_HOSTING_DEV_REMOTE_SMOKE"
 }
