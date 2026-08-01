@@ -63,6 +63,8 @@ try{
   assert(url.searchParams.get('cxProtectedRuntime') === 'YES_PAULA_20260730_PROTECTED_DEV', 'canonical_protected_token_missing');
   mark('assert_project');
   assert(url.searchParams.get('cxProjectId') === 'cinepolis', 'canonical_project_missing');
+  mark('assert_full_visual_identity_bridge');
+  assert(url.searchParams.get('cxHumanFullVisual') === 'YES_PAULA_20260731_FULL_PROFILE_DEV', 'canonical_full_visual_identity_bridge_missing');
 
   const bodyText = await page.locator('body').innerText();
   mark('assert_no_blocked_card');
@@ -104,7 +106,7 @@ try{
   mark('pass');
   await browser.close();
   browser = null;
-  console.log('PASS_C6_DEV_ENTRY_USERNAME_PASSWORD_ONLY_BROWSER_SHELL');
+  console.log('PASS_C6_DEV_ENTRY_USERNAME_PASSWORD_FULL_VISUAL_BROWSER_SHELL');
 }catch(error){
   persistCheckpoint();
   try{ if(browser) await browser.close(); }catch(_){ }
