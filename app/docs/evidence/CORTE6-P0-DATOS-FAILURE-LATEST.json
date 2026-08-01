@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.corte6.p0-data-hosting-failure.v1",
-  "generatedAt": "2026-08-01T23:45:23.914Z",
+  "generatedAt": "2026-08-01T23:52:05.546Z",
   "decision": "FAIL_C6_P0_DATA_PRESERVATION_GATE",
   "failedStage": "human_data__reload_1__page.waitForFunction:_Timeout_30000ms_exceeded.",
   "hostingDeployExecutions": 0,
