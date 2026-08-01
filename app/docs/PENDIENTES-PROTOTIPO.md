@@ -1,71 +1,90 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-01  
-**Estado vivo:** `P0_PROVEN__DIRECT_ROLE_ENTRY_REPLACED_BY_TECHNICAL_AUTH_FORM__DEV_BLOCKED__NO_PRODUCTION`
+**Estado vivo:** `C6_DIRECT_ROLE_ENTRY_HOSTING_DEV_PASS__PENDING_HUMAN_VISUAL_ACCUMULATIVE__NO_PRODUCTION`
 
 ## 1. Cerrado técnicamente / no reabrir
 - Corte 1/2A/3 FROZEN; R17N 1,406/1,406 no repetir.
 - Corte 5: 14 periodos/616 visitas/current 2026-07 PASS.
-- HR viva, histórico, shoppers, identidad, Finanzas/Liquidaciones, portal Shopper y Reservas fail-closed preservados.
-- E2E técnico con cuentas DEV existentes staff y shopper PASS local y remoto.
-- HR conserva 616 visitas después de Auth; Firestore funciona como overlay protegido.
-- Refresh y nueva pestaña preservan sesión y contexto en el carril técnico.
+- HR viva, histórico, shoppers, identidad, Finanzas/Liquidaciones, portal Shopper, Reportes y Reservas fail-closed preservados.
+- Entrada humana directa por Administración, Cliente y Shopper: PASS local y remoto.
+- Usuario + Contraseña en el carril humano: eliminado.
+- Firebase Auth real aislado en carril técnico: PASS staff/shopper local y remoto.
+- HR conserva 616 visitas después de Auth; Firestore funciona como overlay técnico protegido.
+- Refresh y nueva pestaña preservan sesión/contexto en el carril técnico.
+- Hosting DEV actualizado exactamente una vez.
+- Autorización de deploy consumida con PASS.
 
-## 2. P0 bloqueante inmediato — restaurar entrada directa por perfiles
-La pantalla actual Usuario + Contraseña es una regresión.
+Decisión:
+`PASS_C6_HUMAN_DIRECT_ROLE_ENTRY_AND_ISOLATED_AUTH_EXISTING_HOSTING_DEV`.
 
-El acceso humano aprobado debe mostrar directamente:
-- Administración / Coordinación;
-- Portal del Cliente;
-- Shopper / Evaluador;
-- roles adicionales configurados cuando corresponda.
-
-La causa está localizada en `app/adapters/tya-dev-entry-auth-gate-v1.js`, que elimina `.role-btn` y sustituye el selector nativo de `app/app.js` por `cxDevEntryAuth`.
-
-### Corrección exacta
-- conservar `app/app.js` como autoridad visual;
-- no modificar `app/modules/*` ni `app/core/*`;
-- hacer que el adapter técnico no se ejecute en el carril humano;
-- habilitar Usuario + Contraseña solo con un gate técnico E2E explícito;
-- smoke humano: perfiles directos visibles y cero campos de credenciales;
-- E2E técnico: credenciales reales, claims, HR 616, refresh y nueva pestaña.
-
-## 3. Validación humana acumulativa después del root fix
+## 2. Pendiente bloqueante inmediato — validación humana acumulativa
 Abrir:
 `https://cxorbia-backend-dev.web.app/index-backend-dev.html`
 
-Debe aparecer el selector directo aprobado. Después revisar:
-- Dashboard/hoja de ruta: julio 44, GT 34, HN 10, realizadas 40, cuestionario 38, submitidas 33 y fuera de rango accionable 1;
-- histórico MAY/JUN/JUL;
-- tres refresh/focus sin crecimiento, reducción ni salto;
-- Shoppers, perfil, certificación e histórico;
-- Portal Cliente y Portal Shopper;
-- Finanzas, Movimientos, Liquidaciones y Beneficios;
-- Reportes;
-- Reservas read-only/fuente pendiente.
+### Entrada
+- deben aparecer directamente Administración / Coordinación, Portal del Cliente y Shopper / Evaluador;
+- no deben aparecer campos de Usuario/Contraseña ni panel técnico;
+- cada botón debe entrar directamente al perfil correspondiente.
 
-Solo después de esa revisión corresponde `APROBADO → FREEZE C6`.
+### Dashboard, hoja de ruta y estados
+- julio 44 total, GT 34/HN 10;
+- 40 realizadas;
+- 38 cuestionarios;
+- 33 submitidas;
+- 1 fuera de rango accionable;
+- tiles, fases, drill-down y listados deben coincidir.
 
-## 4. Agosto y postulaciones — siguiente bloque operacional urgente
+### Histórico y estabilidad
+- comparativo MAY/JUN/JUL según fuente;
+- tres refresh/focus sin crecimiento o reducción de visitas/shoppers;
+- periodo, proyecto, vista, filtros, sidebar, modal y scroll estables.
+
+### Shoppers y portales
+- una identidad canónica por persona;
+- perfil, certificación e histórico reales;
+- Portal Cliente y Portal Shopper sin pérdida;
+- Beneficios coherentes con Liquidaciones/pagos.
+
+### Finanzas
+- Dashboard financiero, Movimientos, Liquidaciones y Beneficios en el mismo periodo;
+- 40 realizadas presentes;
+- 33 submitidas no omitidas;
+- sin fuente exacta no hay lote ni pago.
+
+### Reportes y Reservas
+- Reportes conserva datos, gráficas y funciones disponibles;
+- Reservas muestra fuente pendiente/read-only;
+- cero fixtures/localStorage presentados como backend;
+- mutaciones bloqueadas.
+
+Solo después corresponde `APROBADO C6 → FREEZE`.
+
+## 3. Agosto y postulaciones — siguiente bloque operacional urgente
 Después del freeze:
-`FUENTE EXACTA AGOSTO → RECONCILIACIÓN HR/PLATAFORMA → DISPONIBLES → POSTULACIONES → GATE MULTIROL → AUTORIZACIÓN ESPECÍFICA → READBACK → REMOTE SMOKE → PRODUCCIÓN`.
+`FUENTE EXACTA AGOSTO → RECONCILIACIÓN HR/PLATAFORMA → DISPONIBLES → POSTULACIONES → GATE MULTIROL → AUTORIZACIÓN ESPECÍFICA DE WRITES/CUTOVER → READBACK → REMOTE SMOKE → PRODUCCIÓN`.
 
-No copiar julio ni inventar visitas. La autorización anterior de Hosting DEV quedó consumida y no cubre este root fix, writes ni producción.
+No copiar julio ni inventar visitas. La autorización DEV ya fue consumida y no cubre writes ni producción.
 
-## 5. P1/P2 preservado
+## 4. P1/P2 preservado
 - PDF sin todas las gráficas finales.
 - Excel sin formato final.
 - reportKit/exportaciones transversales.
 - copy de fuentes/readiness.
 
-## 6. HOLD de identidad
+## 5. HOLD de identidad
 Casos sin match canónico exacto permanecen en review queue. Nunca resolver por nombre, teléfono, correo o similitud visual.
 
-## 7. Regla de continuidad
-El PASS técnico no puede volver a redefinir la UX humana. Todo cambio parte de la misma baseline acumulativa y pasa gates separados de entrada humana, Auth técnico y dominio transversal.
+## 6. Regla de continuidad
+Todo cambio futuro debe pasar por separado:
+- gate de entrada humana;
+- gate técnico Auth;
+- gate acumulativo de dominio/Finanzas/Shopper/Reportes.
 
-## 8. Siguiente secuencia
-`ROOT FIX ENTRADA DIRECTA → QA LOCAL → AUTORIZACIÓN DEV → REDEPLOY ÚNICO → VALIDACIÓN HUMANA → FREEZE C6 → AGOSTO/POSTULACIONES`.
+Un PASS técnico no puede volver a redefinir la UX humana.
 
-## 9. Estado seguro
-Hosting DEV actual bloqueado por el P0 visible; producción intacta; sin writes nuevos, merge ni producción.
+## 7. Siguiente secuencia
+`VALIDACIÓN HUMANA ACUMULATIVA → APROBADO/FREEZE C6 → AGOSTO/DISPONIBLES/POSTULACIONES → CUTOVER/PRODUCCIÓN`.
+
+## 8. Estado seguro
+Hosting DEV PASS; producción intacta; cero writes no autorizados; merge=false; autorización de redeploy consumida.
