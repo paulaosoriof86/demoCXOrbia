@@ -1,5 +1,5 @@
 /* ============================================================
-   CXOrbia · Corte 6 DEV entry lane split v7
+   CXOrbia · Corte 6 DEV entry lane split v8
    ------------------------------------------------------------
    Human visual lane:
    - preserves native direct role cards;
@@ -7,8 +7,8 @@
    - never activates protected Firebase replacement semantics;
    - never clears CX.data while the 14/616/208 baseline is valid;
    - explicitly disables the empty-backend shell contract;
-   - restores an already selected human profile after reload without
-     introducing technical Auth or credentials.
+   - restores an already selected human profile after reload only
+     after the live 14/616/208 baseline is ready.
 
    Technical Auth lane (explicit query gate only):
    - validates existing Firebase users;
@@ -38,7 +38,8 @@ window.CX = window.CX || {};
   const backendCfg = CX.BACKEND || {};
   let patched = false;
   let statusObserver = null;
-  let humanRestoreScheduled = false;
+  let humanRestoreTimer = null;
+  let humanRestoreStartedAt = 0;
 
   function suppressTechnicalStatus(){
     const remove = function(){
@@ -55,7 +56,8 @@ window.CX = window.CX || {};
     try{
       return !!(CX.data && Array.isArray(CX.data.projects) && CX.data.projects.length === 14 &&
         Array.isArray(CX.data._visitas) && CX.data._visitas.length === 616 &&
-        Array.isArray(CX.data.shoppers) && CX.data.shoppers.length === 208);
+        Array.isArray(CX.data.shoppers) && CX.data.shoppers.length === 208 &&
+        CX.data.currentProjectId && CX.data.currentPeriodId);
     }catch(_){ return false; }
   }
 
@@ -134,8 +136,9 @@ window.CX = window.CX || {};
     if(app && !app.classList.contains('on') && typeof CX.app.enter==='function'){
       CX.app.enter();
     }
+    const restored=!!(document.getElementById('app')&&document.getElementById('app').classList.contains('on'));
     window.CX_HUMAN_SESSION_CONTINUITY={
-      restored:true,
+      restored,
       role:CX.session.role,
       canonicalData:true,
       credentials:false,
@@ -143,16 +146,28 @@ window.CX = window.CX || {};
       reason:reason||'restore-human-session',
       at:new Date().toISOString()
     };
-    return true;
+    return restored;
   }
 
-  function scheduleHumanRestore(reason){
-    if(humanRestoreScheduled) return;
-    humanRestoreScheduled=true;
-    setTimeout(function(){
-      humanRestoreScheduled=false;
-      restoreHumanSessionAndEnter(reason||'scheduled-human-restore');
-    },0);
+  function stopHumanRestoreLoop(){
+    if(humanRestoreTimer){clearInterval(humanRestoreTimer);humanRestoreTimer=null;}
+  }
+
+  function startHumanRestoreLoop(reason){
+    if(!humanVisualEnabled || humanRestoreTimer || !savedHumanSession()) return;
+    humanRestoreStartedAt=Date.now();
+    const attempt=function(){
+      if(restoreHumanSessionAndEnter(reason||'human-restore-loop')){
+        stopHumanRestoreLoop();
+        return;
+      }
+      if(Date.now()-humanRestoreStartedAt>60000){
+        stopHumanRestoreLoop();
+        window.CX_HUMAN_SESSION_CONTINUITY={restored:false,timeout:true,canonicalData:validCanonicalBaseline(),reason:reason||'human-restore-loop',at:new Date().toISOString()};
+      }
+    };
+    attempt();
+    if(!humanRestoreTimer) humanRestoreTimer=setInterval(attempt,250);
   }
 
   function configureHumanLane(){
@@ -170,7 +185,7 @@ window.CX = window.CX || {};
     window.CX_BACKEND_PREVIEW_LANE = 'source-safe-human-visual';
     window.CX_DEV_ENTRY_AUTH_GATE = {
       applied:true,
-      version:7,
+      version:8,
       mode:'native-direct-role-entry',
       humanVisual:true,
       visibleRoleSelector:true,
@@ -180,6 +195,7 @@ window.CX = window.CX || {};
       backendFirebaseDisabledForHumanVisual:true,
       emptyBackendShellDisabled:true,
       humanSessionContinuity:true,
+      humanSessionRestoreWaitsForCanonicalData:true,
       hrCanonicalAuthorityPreserved:true,
       canonicalBaselineRequired:{periods:14,visits:616,shoppers:208},
       providerWrites:0,
@@ -191,16 +207,17 @@ window.CX = window.CX || {};
     if(document.readyState === 'loading'){
       document.addEventListener('DOMContentLoaded', function(){
         preserveHumanDataSource('dom-ready-human-lane');
-        scheduleHumanRestore('dom-ready-human-lane');
+        startHumanRestoreLoop('dom-ready-human-lane');
       }, {once:true});
     }else{
       preserveHumanDataSource('immediate-human-lane');
-      scheduleHumanRestore('immediate-human-lane');
+      startHumanRestoreLoop('immediate-human-lane');
     }
     window.addEventListener('cx:live-source-updated', function(){
       preserveHumanDataSource('live-source-updated');
-      scheduleHumanRestore('live-source-updated');
+      startHumanRestoreLoop('live-source-updated');
     });
+    window.addEventListener('load', function(){startHumanRestoreLoop('window-load-human-lane');}, {once:true});
   }
 
   function configureTechnicalLane(){
@@ -295,7 +312,7 @@ window.CX = window.CX || {};
 
     window.CX_DEV_ENTRY_AUTH_GATE = {
       applied:true,
-      version:7,
+      version:8,
       mode:'technical-auth-e2e-isolated',
       humanVisual:false,
       visibleRoleSelector:false,
