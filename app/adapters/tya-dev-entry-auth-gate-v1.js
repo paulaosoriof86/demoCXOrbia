@@ -1,18 +1,16 @@
 /* ============================================================
-   CXOrbia · Corte 6 DEV entry lane split v4
+   CXOrbia · Corte 6 DEV entry lane split v5
    ------------------------------------------------------------
-   Human visual lane (default):
-   - preserves the native app.js direct role cards;
-   - Administration / Client / Shopper remain visible by tenant config;
-   - never asks Paula for username or password;
-   - disables the protected Firebase adapter only in this human
-     visualization lane so backend-browser-auth cannot replace the
-     approved role entry or wrap CX.data write methods.
+   Human visual lane:
+   - preserves native direct role cards;
+   - keeps HR/source-safe as canonical data authority;
+   - never activates protected Firebase replacement semantics;
+   - never clears CX.data while the 14/616/208 baseline is valid.
 
    Technical Auth lane (explicit query gate only):
-   - validates existing Firebase users without changing the human UX;
-   - role, tenant, project and shopper scope still come from claims;
-   - namespace is supplied by the private E2E harness, never by a user control;
+   - validates existing Firebase users;
+   - role, tenant, project and shopper scope come from claims;
+   - namespace is supplied by the private E2E harness;
    - no credentials, tokens or UIDs are persisted or logged;
    - no writes and no production.
 
@@ -23,12 +21,16 @@ window.CX = window.CX || {};
 (function(){
   'use strict';
 
+  const PREVIEW_TOKEN = 'YES_PAULA_20260628_PREVIEW_DEV';
   const PROTECTED_TOKEN = 'YES_PAULA_20260730_PROTECTED_DEV';
   const TECHNICAL_TOKEN = 'YES_PAULA_20260801_REAL_USERS_E2E';
   const params = new URLSearchParams(window.location.search || '');
-  if(params.get('cxProtectedRuntime') !== PROTECTED_TOKEN) return;
+  const previewApproved = params.get('cxBackendPreview') === PREVIEW_TOKEN;
+  const protectedRequested = params.get('cxProtectedRuntime') === PROTECTED_TOKEN;
+  const technicalAuthEnabled = protectedRequested && params.get('cxTechnicalAuthE2E') === TECHNICAL_TOKEN;
+  const humanVisualEnabled = previewApproved && !technicalAuthEnabled;
+  if(!humanVisualEnabled && !technicalAuthEnabled) return;
 
-  const technicalAuthEnabled = params.get('cxTechnicalAuthE2E') === TECHNICAL_TOKEN;
   const technicalNamespace = params.get('cxTechnicalAuthNamespace') === 'shopper' ? 'shopper' : 'staff';
   const backendCfg = CX.BACKEND || {};
   let patched = false;
@@ -45,16 +47,59 @@ window.CX = window.CX || {};
     statusObserver.observe(document.body,{childList:true,subtree:true});
   }
 
+  function validCanonicalBaseline(){
+    try{
+      return !!(CX.data && Array.isArray(CX.data.projects) && CX.data.projects.length === 14 &&
+        Array.isArray(CX.data._visitas) && CX.data._visitas.length === 616 &&
+        Array.isArray(CX.data.shoppers) && CX.data.shoppers.length === 208);
+    }catch(_){ return false; }
+  }
+
+  function preserveHumanDataSource(reason){
+    if(!CX.dataSource || !validCanonicalBaseline()) return;
+    CX.dataSource.mode = 'source_safe_preview';
+    CX.dataSource.status = 'ready';
+    CX.dataSource.sourceRef = CX.dataSource.sourceRef || 'hr:tya-source-safe-human-visual-dev';
+    CX.dataSource.updatedAt = new Date().toISOString();
+    CX.dataSource.runtimeReadActive = true;
+    CX.dataSource.runtimeSyncActive = false;
+    CX.dataSource.updating = false;
+    CX.dataSource.blockers = [];
+    CX.dataSource.warnings = Array.isArray(CX.dataSource.warnings) ? CX.dataSource.warnings.filter(function(msg){
+      return !/fuente de datos no disponible|esperando lectura protegida|firestore dev verificado vac[ií]o/i.test(String(msg || ''));
+    }) : [];
+    window.CX_BACKEND_DATA_SOURCE = 'hr-source-safe';
+    window.CX_BACKEND_PREVIEW_LANE = 'source-safe-human-visual';
+    window.CX_BACKEND_LAST_STATE = {
+      source:'hr-source-safe',
+      empty:false,
+      readOnly:true,
+      writes:false,
+      fallbackUsed:false,
+      humanVisual:true,
+      auth:'validated-separately',
+      counts:{projects:14,periods:14,visits:616,shoppers:208},
+      reason:reason || 'human-lane-preserved',
+      at:new Date().toISOString()
+    };
+  }
+
   function configureHumanLane(){
-    /* backend-browser-auth captures CX.BACKEND by reference. Disabling the
-       protected adapter before DOMContentLoaded makes its wrapper pass
-       through to app.js and prevents backend-firebase from wrapping write
-       methods in the human visualization lane. HR/live canonical adapters
-       remain the operational source for this lane. */
     backendCfg.enabled = false;
+    backendCfg.previewMode = true;
+    backendCfg.humanVisualSourceSafe = true;
+    backendCfg.readOnly = true;
+    backendCfg.writeMode = 'disabled';
+    backendCfg.enableDataWrites = false;
+    backendCfg.enableOperationalWrites = false;
+    backendCfg.allowEmptyBackend = true;
+    backendCfg.failClosedOnReadError = true;
+    backendCfg.preserveCxDataInterface = true;
     if(backendCfg.devPreviewAuth) backendCfg.devPreviewAuth.enabled = false;
+    window.CX_BACKEND_PREVIEW_LANE = 'source-safe-human-visual';
     window.CX_DEV_ENTRY_AUTH_GATE = {
       applied:true,
+      version:5,
       mode:'native-direct-role-entry',
       humanVisual:true,
       visibleRoleSelector:true,
@@ -63,16 +108,26 @@ window.CX = window.CX || {};
       integratedFirebaseLoginDisabled:true,
       backendFirebaseDisabledForHumanVisual:true,
       hrCanonicalAuthorityPreserved:true,
+      canonicalBaselineRequired:{periods:14,visits:616,shoppers:208},
       providerWrites:0,
       writes:false,
       production:false,
       at:new Date().toISOString()
     };
+    preserveHumanDataSource('configure-human-lane');
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', function(){ preserveHumanDataSource('dom-ready-human-lane'); }, {once:true});
+    }else{
+      preserveHumanDataSource('immediate-human-lane');
+    }
+    window.addEventListener('cx:live-source-updated', function(){ preserveHumanDataSource('live-source-updated'); });
   }
 
   function configureTechnicalLane(){
     backendCfg.enabled = true;
+    backendCfg.humanVisualSourceSafe = false;
     if(backendCfg.devPreviewAuth) backendCfg.devPreviewAuth.enabled = true;
+    window.CX_BACKEND_PREVIEW_LANE = 'protected-technical-e2e';
   }
 
   function authErrorMessage(err){
@@ -159,6 +214,7 @@ window.CX = window.CX || {};
 
     window.CX_DEV_ENTRY_AUTH_GATE = {
       applied:true,
+      version:5,
       mode:'technical-auth-e2e-isolated',
       humanVisual:false,
       visibleRoleSelector:false,
@@ -201,7 +257,7 @@ window.CX = window.CX || {};
 
   suppressTechnicalStatus();
 
-  if(!technicalAuthEnabled){
+  if(humanVisualEnabled){
     configureHumanLane();
     return;
   }
