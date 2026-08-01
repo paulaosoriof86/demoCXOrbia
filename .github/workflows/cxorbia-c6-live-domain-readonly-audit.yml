@@ -49,6 +49,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check app/adapters/tya-cumulative-read-model-v2.js
+          node --check app/adapters/tya-canonical-state-semantics-v2.js
           node --check app/adapters/tya-live-source-refresh-watch-v2.js
           node --check app/adapters/tya-c6-domain-consistency-bridge.js
           node tools/qa/tya-c6-domain-consistency-regression-gate.mjs > "$OUT/local-gate.json"
@@ -63,7 +64,9 @@ jobs:
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs'),vm=require('vm');
-          const sandbox={window:{}};vm.createContext(sandbox);vm.runInContext(fs.readFileSync('app/adapters/tya-cumulative-read-model-v2.js','utf8'),sandbox);
+          const sandbox={window:{}};vm.createContext(sandbox);
+          vm.runInContext(fs.readFileSync('app/adapters/tya-cumulative-read-model-v2.js','utf8'),sandbox);
+          vm.runInContext(fs.readFileSync('app/adapters/tya-canonical-state-semantics-v2.js','utf8'),sandbox);
           const engine=sandbox.window.CX_TYA_CUMULATIVE_READ_MODEL;const raw=JSON.parse(fs.readFileSync(process.env.OUT+'/hr.json','utf8'));const runtime=raw._runtime||{};delete raw._runtime;
           const visits=Array.isArray(raw.visits)?raw.visits:[],periods=Array.isArray(raw.periods)?raw.periods:[],shoppers=Array.isArray(raw.shoppers)?raw.shoppers:[];
           const summary=engine.periodSummary(visits),july=summary.find(x=>x.periodKey==='2026-07');
@@ -71,11 +74,11 @@ jobs:
           const shopperIds=shoppers.map(s=>String(s.shopperId||s.id||'')).filter(Boolean);
           const shopperIdDup=shopperIds.length-new Set(shopperIds).size;
           const expected={total:44,GT:34,HN:10,realized:40,questionnaireCompleted:38,submitted:33,outOfRange:1};
-          const observed={total:july?.total??null,GT:july?.byCountry?.GT??null,HN:july?.byCountry?.HN??null,realized:july?.realized??null,questionnaireCompleted:july?.questionnaireCompleted??null,submitted:july?.submitted??null,outOfRange:july?.outOfRange??null};
-          const assertions={periods14:periods.length===14,visits616:visits.length===616,runtimeRead:runtime.runtimeRead===true,sourceSafe:runtime.sourceSafe===true,julyPresent:!!july,julyTotal:observed.total===expected.total,julyGT:observed.GT===expected.GT,julyHN:observed.HN===expected.HN,julyRealized:observed.realized===expected.realized,julyQuestionnaire:observed.questionnaireCompleted===expected.questionnaireCompleted,julySubmitted:observed.submitted===expected.submitted,julyOutOfRange:observed.outOfRange===expected.outOfRange,duplicateVisitKeys:idDup===0,duplicateShopperIds:shopperIdDup===0};
+          const observed={total:july?.total??null,GT:july?.byCountry?.GT??null,HN:july?.byCountry?.HN??null,realized:july?.realized??null,questionnaireCompleted:july?.questionnaireCompleted??null,submitted:july?.submitted??null,outOfRange:july?.outOfRange??null,outOfRangeEvidence:july?.outOfRangeEvidence??null};
+          const assertions={periods14:periods.length===14,visits616:visits.length===616,runtimeRead:runtime.runtimeRead===true,sourceSafe:runtime.sourceSafe===true,julyPresent:!!july,julyTotal:observed.total===expected.total,julyGT:observed.GT===expected.GT,julyHN:observed.HN===expected.HN,julyRealized:observed.realized===expected.realized,julyQuestionnaire:observed.questionnaireCompleted===expected.questionnaireCompleted,julySubmitted:observed.submitted===expected.submitted,julyActionableOutOfRange:observed.outOfRange===expected.outOfRange,julyOutOfRangeEvidencePreserved:Number(observed.outOfRangeEvidence)>=Number(observed.outOfRange),duplicateVisitKeys:idDup===0,duplicateShopperIds:shopperIdDup===0};
           const failedAssertions=Object.entries(assertions).filter(([,ok])=>!ok).map(([name])=>name);
           const pass=failedAssertions.length===0;
-          const evidence={schemaVersion:'cxorbia.c6.live-hr-domain-readonly-audit.v2',generatedAt:new Date().toISOString(),decision:pass?'PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE':'FAIL_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE',source:{runtimeRead:runtime.runtimeRead===true,sourceSafe:runtime.sourceSafe===true,revision:runtime.revision||null,periods:periods.length,visits:visits.length,shoppers:shoppers.length},expectedFromApprovedHumanBaseline:expected,observedJuly:observed,july,assertions,failedAssertions,safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,merge:false,production:false}};
+          const evidence={schemaVersion:'cxorbia.c6.live-hr-domain-readonly-audit.v3',generatedAt:new Date().toISOString(),decision:pass?'PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE':'FAIL_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE',engineVersion:engine.version,semantics:{outOfRange:'actionable_unresolved_only',outOfRangeEvidence:'historical_evidence_preserved'},source:{runtimeRead:runtime.runtimeRead===true,sourceSafe:runtime.sourceSafe===true,revision:runtime.revision||null,periods:periods.length,visits:visits.length,shoppers:shoppers.length},expectedFromApprovedHumanBaseline:expected,observedJuly:observed,july,assertions,failedAssertions,safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,merge:false,production:false}};
           fs.writeFileSync(process.env.OUT+'/evidence.json',JSON.stringify(evidence,null,2)+'\n');fs.writeFileSync(process.env.OUT+'/decision.txt',evidence.decision+'\n');
           console.log(JSON.stringify(evidence,null,2));
           NODE
