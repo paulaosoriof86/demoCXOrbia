@@ -1,91 +1,105 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-07-31  
-**Estado:** `C6_STABLE_COMPOSER_HOSTING_DEV_REMOTE_PASS__PENDING_HUMAN_CUMULATIVE_VISUAL__NO_PRODUCTION`
+**Estado:** `C6_HUMAN_VISUAL_P0_PROVEN__CANONICAL_DOMAIN_FIX_CODE_PASS__LIVE_HR_ROW_AUDIT_PASS__PENDING_DEV_DEPLOY__NO_PRODUCTION`
 
 ## 1. Repo/destinos
 - Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge.
 - Base `release/cxorbia-tya-rc-20260630`.
-- DEV `cxorbia-backend-dev`; Hosting DEV `cxorbia-backend-dev` target `cxorbia-dev`.
+- DEV `cxorbia-backend-dev`; Hosting DEV site `cxorbia-backend-dev`, target `cxorbia-dev`.
 - Producción `tya-plataforma`: no tocada.
 
 ## 2. Baseline protegida — no reabrir
-- Corte3 FROZEN; R17N 1,406/1,406; 616 visitas + 572 controles liquidación + 77 certificaciones. No repetir.
-- Corte5 cinepolis/14 periodos/616 visitas/current2026-07 PASS.
+- Corte3 FROZEN; R17N 1,406/1,406;616 visitas +572 liquidaciones +77 certificaciones. No repetir.
+- Corte5: cinepolis/14 periodos/616 visitas/current2026-07 PASS.
 - Auth91/91; claims5/5; Rules PASS.
 - HR live/auto-month PASS.
-- Perfil completo Firestore:120 docs/329 campos WRITE+READBACK PASS, mismatches0.
-- Finanzas/pagos canónicos source-safe permanecen autoridad.
+- Perfil protegido Firestore120 docs/329 campos WRITE+READBACK PASS, mismatches0.
+- Finanzas/pagos canónicos source-safe preservados.
 
-## 3. P0 humano reproducido y causa raíz
-La visual anterior mostró 88→44 visitas, badge1,232/546, scroll movido, duplicados Shopper, perfil/histórico fragmentado y comparativo incompleto.
+## 3. Hosting anterior y reclassificación
+La autorización `chat-20260731-c6-stable-cumulative-hosting-02` fue consumida con exactamente1 Hosting DEV y provider/data writes0. El remote smoke confirmó paridad de assets e idempotencia sintética, pero **no probó consistencia semántica transversal**. Por ello permanece como evidencia técnica, no como cierre de Corte6.
 
-La HR canónica revalidada mantiene30 tabs/28 mensuales, sin agosto 2026, y julio=34 GT+10 HN. La causa fue composición no idempotente: el overlay reutilizaba arrays ya compuestos y podía anexar historia Firestore sobre la misma visita HR.
+## 4. Human visual — P0 probado
+Las capturas posteriores al deploy demostraron:
+- KPIs superiores JUL correctos:44 visitas, GT34/HN10, realizadas40, cuestionario38, submitidas33, fuera de rango accionable1;
+- flujo por fases mostrando solo7 realizadas;
+- comparativo MAY/JUN vacío;
+- salto de contenido y sidebar durante refresh;
+- fuente210 shoppers frente a219 filas, con identidad/histórico dividido;
+- perfiles completos sin campos mínimos, credenciales/WA/histórico;
+- certificación no visible en Admin;
+- Shopper Paula: Activas1/Historial0/Beneficios vacío pese a histórico visible en Admin;
+- periodo MAY visible con contenido financiero/liquidaciones de JUL;
+- Finanzas históricas sin proyección coherente a Movimientos/Liquidaciones/Beneficios.
 
-## 4. Root fix estable
-- `app/adapters/tya-cumulative-read-model.js` es el composer puro/idempotente;
-- `app/adapters/tya-dev-full-visual-bridge.js` recompone desde baseline HR inmutable por revision;
-- protected visits solo empatan por `hrRowId`, `sourceTab+sourceRow` o `visitId` exacto y nunca se anexan a HR;
-- crosswalk Shopper nace de evidencia técnica exacta;
-- username/password/PII se agregan como overlay solo cuando la fuente protegida exacta los contiene;
-- `app/adapters/tya-live-source-refresh-watch.js`: misma revisión=no apply/no overlay/no rerender; cambio real=1 apply+1 compose, preservando scroll/controles/modal/foco;
-- `/app/modules/*` y `/app/core/*` permanecieron intactos en el root fix.
+Corte6 continúa FAIL y no se congela.
 
-## 5. Regression gate local — PASS
-`PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE`:
-- reapply1=616 visitas/208 shoppers;
-- reapply2=616/208;
-- reapply3=616/208;
-- duplicateVisitKeys0;
-- duplicateShopperIds0;
-- protectedVisitsAppended0;
-- estado operacional HR preservado;
-- perfil protegido visible.
+## 5. Causa raíz
+- varias máquinas de estado antiguas coexistían con `canonicalFacets`;
+- el composer anterior anexaba perfiles protegidos no vinculados exactamente al listado HR;
+- el watcher restauraba selects DOM fuera del modelo y preservaba contenedores de scroll equivocados;
+- “perfil completo” dependía de flags, no de campos reales;
+- `Mis Visitas` reducía el universo a una visita por estado literal;
+- periodo, identidad y finanzas no compartían una única proyección canónica.
 
-## 6. Hosting DEV autorizado — ejecutado y consumido PASS
-AuthorizationId: `chat-20260731-c6-stable-cumulative-hosting-02`.
+## 6. Root fix en rama viva — todavía no desplegado
+Nuevos:
+- `app/adapters/tya-cumulative-read-model-v2.js`;
+- `app/adapters/tya-canonical-state-semantics-v2.js`;
+- `app/adapters/tya-live-source-refresh-watch-v2.js`;
+- `app/adapters/tya-c6-domain-consistency-bridge.js`;
+- `tools/qa/tya-c6-domain-consistency-regression-gate.mjs`.
 
-Ejecución:
-- Hosting DEV `cxorbia-backend-dev/cxorbia-dev`: 1 redeploy;
-- Cloud Run:0;
-- Firestore/Auth/Rules/Storage/HR/legacy/Make/Gemini/pagos writes:0;
-- nuevos Firebase/Hosting:0;
-- merge:false;
-- producción:false.
+Tocado:
+- `app/index-backend-dev.html` para cargar el nuevo runtime DEV.
 
-Request/execute quedaron `consumed_pass`; decisión `PASS_EXISTING_HOSTING_DEV_STABLE_C6_REMOTE_READY`.
+No se modificó `/app/modules/*` ni `/app/core/*`.
 
-## 7. Remote smoke — PASS
-Evidencia: `evidence/CORTE6-STABLE-CUMULATIVE-HUMAN-VISUAL-HOSTING-LATEST.json`.
+Contratos:
+- HR manda periodos/visitas/estado operativo;
+- una sola faceta canónica alimenta KPIs, fases, detalle, portal Shopper y liquidaciones;
+- perfiles sin crosswalk exacto quedan fuera del listado operacional y pasan a revisión;
+- no dedupe por nombre/teléfono/email;
+- perfil completo exige nombre+contacto+usuario+contraseña;
+- mismo contenido HR no produce render;
+- cambio real produce un apply+compose+render preservando `.content`, `#rail`, periodo, proyecto y vista;
+- fuera de rango histórico y accionable son conceptos separados.
 
-Confirmado remotamente:
-- stable composer/bridge/watcher/finance exactos al repo;
-- 3x regression gate PASS sobre composer remoto;
-- HR provider fresh meta PASS, histórico616 y auto-month discovery activo;
-- protectedVisitAppendZero;
-- full-profile fail-closed sin sesión visual;
-- no prompt de credenciales Firebase humanas requerido.
+## 7. Auditoría real read-only sobre HR viva — PASS
+`PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE` con engine `c6-canonical-domain-composer-v2+actionable-state-v2`:
+-14 periodos;
+-616 visitas;
+-208 shoppers HR;
+-JUL44: GT34/HN10;
+-realizadas40;
+-cuestionario38;
+-submitidas33;
+-fuera de rango accionable1;
+-evidencias históricas fuera de rango7;
+-duplicateVisitKeys0;
+-duplicateShopperIds0.
 
-## 8. Lock permanente
-Sigue prevalente `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`. Ninguna etapa futura puede saltarse el regression gate acumulativo.
+Evidencia: `app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json`.
 
-## 9. 31 identity HOLD
-Siguen31 sin vínculo canónico reproducible; no crear ni emparejar por nombre/teléfono/email.
+## 8. Identidad, credenciales y WhatsApp
+El patrón configurable existente permite derivar username/password en la vista DEV únicamente para identidades canónicas exactas. Esto no crea Auth ni persiste contraseñas.
 
-## 10. Gate exacto ahora
-No ejecutar otro deploy: la autorización fue consumida.
+WhatsApp debe venir de HR/perfil protegido; no se fabrica. Complementar/materializar perfiles, credenciales, contacto, historial o certificación en Firestore/Auth requiere un write plan y autorización futura específica.
 
-Siguiente paso: validación humana acumulativa del Hosting DEV ya publicado:
-- Dashboard/HR estable durante 3 refresh/focus cycles;
-- sin salto de scroll ni cambio transitorio de conteos;
-- Shopper/perfil/credenciales/histórico unidos por identidad técnica exacta;
-- comparativo histórico preservado;
-- Beneficios y Finanzas canónicos preservados;
-- estados de cuestionario/submitido coherentes.
+## 9. Gate exacto
+El código correctivo está en GitHub, no en Hosting DEV. La autorización anterior está consumida y no se reutiliza.
 
-Solo PASS humano permite `FREEZE C6 → AGOSTO`.
+Secuencia:
+`GATES ESTÁTICOS FINALES PASS → AUTORIZACIÓN FRESCA 1x HOSTING DEV → REMOTE SMOKE SEMÁNTICO → HUMAN VISUAL ACUMULATIVA → FREEZE C6 → AGOSTO`.
 
-## 11. Documentación transversal
-- CAMBIOS: `CAMBIOS-BACKEND-ADDENDUM-C6-STABLE-COMPOSER-HOSTING-DEV-REMOTE-PASS-20260731.md`.
-- Evidencia remote: `evidence/CORTE6-STABLE-CUMULATIVE-HUMAN-VISUAL-HOSTING-LATEST.json`.
-- Academia/Claude/Pendientes/Tracker/Índice: actualizados a este gate.
+No Cloud Run previsto para este root fix. Ningún deploy se ejecuta sin autorización fresca.
+
+## 10. Estado seguro
+Bloque actual: Hosting0; Cloud Run0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos writes0; nuevos Firebase/Hosting0; merge=false; producción=false.
+
+## 11. Documentación vigente
+- `CAMBIOS-BACKEND-ADDENDUM-C6-HUMAN-P0-CANONICAL-DOMAIN-ROOT-FIX-20260731.md`;
+- `ACADEMIA-IMPACTO-C6-DOMINIO-CANONICO-Y-ESTADOS-ACCIONABLES-20260731.md`;
+- evidencias P0, gate de dominio y auditoría HR viva;
+- índice, Phase A, tracker, Claude y pendientes reconciliados con este estado.
