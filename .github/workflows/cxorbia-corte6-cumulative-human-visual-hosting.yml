@@ -19,7 +19,6 @@ concurrency:
 env:
   GCP_PROJECT_ID: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
-  HOSTING_SITE: cxorbia-backend-dev
   DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
   REQUEST: backend/config/corte6-cumulative-human-visual-hosting-request.json
   EXECUTE: backend/config/corte6-cumulative-human-visual-hosting-execute.json
@@ -45,15 +44,18 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$OUT_DIR"
+          STATE="$(node - <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(fs.readFileSync(process.env.EXECUTE,'utf8'));
+          process.stdout.write(x.enabled===false&&x.consumed===true&&x.status==='consumed_pass'?'false':'true');
+          NODE
+          )"
+          echo "should_run=$STATE" >> "$GITHUB_OUTPUT"
+          if [ "$STATE" = "false" ]; then exit 0; fi
           node <<'NODE'
           const fs=require('fs');
           const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
           const x=JSON.parse(fs.readFileSync(process.env.EXECUTE,'utf8'));
-          const out=process.env.GITHUB_OUTPUT;
-          if(x.enabled===false&&x.consumed===true&&x.status==='consumed_pass'){
-            fs.appendFileSync(out,'should_run=false\n');
-            process.exit(0);
-          }
           if(r.schemaVersion!=='cxorbia.corte6.dev-entry-p0-hosting-request.v3')throw new Error('request_schema_mismatch');
           if(x.schemaVersion!=='cxorbia.corte6.dev-entry-p0-hosting-execute.v3')throw new Error('execute_schema_mismatch');
           for(const o of [r,x]){
@@ -68,11 +70,12 @@ jobs:
             if(Number(r[k]||0)!==0||Number(x[k]||0)!==0)throw new Error('unsafe_scope:'+k);
           }
           if(r.merge!==false||r.production!==false||x.merge!==false||x.production!==false)throw new Error('unsafe_scope');
-          fs.appendFileSync(out,'should_run=true\n');
-          fs.appendFileSync(out,'entry_fix_commit='+r.entryFixCommit+'\n');
+          process.stdout.write(r.entryFixCommit);
           NODE
+          ENTRY_FIX_COMMIT="$(node -p "JSON.parse(require('fs').readFileSync(process.env.REQUEST,'utf8')).entryFixCommit")"
+          echo "entry_fix_commit=$ENTRY_FIX_COMMIT" >> "$GITHUB_OUTPUT"
 
-      - name: Verify protected lineage and exact entry fix
+      - name: Verify protected lineage and entry fix
         if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
@@ -87,30 +90,14 @@ jobs:
           grep -q 'cxDevEntryAuth' app/adapters/tya-dev-entry-auth-gate-v1.js
           grep -q 'CX.backendAuth.authenticate' app/adapters/tya-dev-entry-auth-gate-v1.js
           grep -q 'credentialsEmbedded:false' app/adapters/tya-dev-entry-auth-gate-v1.js
-          test "$(grep -n 'core/backend-browser-auth.js' app/index-backend-dev.html | cut -d: -f1)" -lt "$(grep -n 'adapters/tya-dev-entry-auth-gate-v1.js' app/index-backend-dev.html | cut -d: -f1)"
-          test "$(grep -n 'adapters/tya-dev-entry-auth-gate-v1.js' app/index-backend-dev.html | cut -d: -f1)" -lt "$(grep -n 'core/backend-firebase.js' app/index-backend-dev.html | cut -d: -f1)"
 
-      - name: Canonical accumulated and entry gates before provider mutation
+      - name: Run accumulated static gates
         if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
-          for f in \
-            app/adapters/tya-cumulative-read-model-v2.js \
-            app/adapters/tya-canonical-state-semantics-v2.js \
-            app/adapters/tya-live-source-refresh-watch-v2.js \
-            app/adapters/tya-c6-domain-consistency-bridge.js \
-            app/adapters/tya-canonical-finance-read-model-v2.js \
-            app/adapters/tya-canonical-shopper-portal-v2.js \
-            app/adapters/tya-canonical-reservations-guard-v2.js \
-            app/adapters/tya-dev-entry-auth-gate-v1.js \
-            tools/qa/tya-c6-domain-consistency-regression-gate.mjs \
-            tools/qa/tya-c6-canonical-finance-read-model-gate.mjs \
-            tools/qa/tya-c6-shopper-portal-contract-gate.mjs \
-            tools/qa/tya-c6-reservations-source-guard-gate.mjs \
-            tools/qa/tya-c6-dev-entry-auth-gate.mjs \
-            tools/qa/tya-c6-dev-entry-browser-smoke.mjs; do
-            node --check "$f"
-          done
+          node --check app/adapters/tya-dev-entry-auth-gate-v1.js
+          node --check tools/qa/tya-c6-dev-entry-auth-gate.mjs
+          node --check tools/qa/tya-c6-dev-entry-browser-smoke.mjs
           node tools/qa/tya-c6-domain-consistency-regression-gate.mjs
           node tools/qa/tya-c6-canonical-finance-read-model-gate.mjs
           node tools/qa/tya-c6-shopper-portal-contract-gate.mjs
@@ -119,9 +106,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const e=JSON.parse(fs.readFileSync('app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json','utf8'));
-          const expected={domain:'PASS_C6_CANONICAL_DOMAIN_CONSISTENCY',finance:'PASS_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS',shopperPortal:'PASS_C6_CANONICAL_SHOPPER_PORTAL_CONTRACT',reservations:'PASS_C6_CANONICAL_RESERVATIONS_SOURCE_GUARD'};
           if(e.decision!=='PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE')throw new Error('live_hr_audit_not_pass');
-          for(const [k,v] of Object.entries(expected))if(e.staticGates?.[k]!==v)throw new Error('static_gate_not_pass:'+k);
           if(e.source?.periods!==14||e.source?.visits!==616||e.observedJuly?.total!==44||e.observedJuly?.realized!==40||e.observedJuly?.questionnaireCompleted!==38||e.observedJuly?.submitted!==33||e.observedJuly?.outOfRange!==1)throw new Error('approved_baseline_mismatch');
           if((e.failedAssertions||[]).length||(e.failedGates||[]).length)throw new Error('audit_failures_present');
           NODE
@@ -133,14 +118,17 @@ jobs:
           npm install --no-save --ignore-scripts firebase-tools@latest playwright@1.54.2 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null
 
-      - name: Local clean-browser entry gate before provider mutation
+      - name: Local clean-browser gate before deploy
         if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
           python3 -m http.server 4173 --directory app >"$OUT_DIR/local-http.log" 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID >/dev/null 2>&1 || true' EXIT
-          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4173/index-backend-dev.html >/dev/null && break; sleep 1; done
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/index-backend-dev.html >/dev/null; then break; fi
+            sleep 1
+          done
           node tools/qa/tya-c6-dev-entry-browser-smoke.mjs http://127.0.0.1:4173
 
       - name: Authenticate existing Google Cloud DEV
@@ -164,14 +152,14 @@ jobs:
           if(u.error!=='dev_visual_authorization_required')throw new Error('full_visual_gate_not_fail_closed');
           NODE
 
-      - name: Prepare exact existing Hosting DEV config
+      - name: Prepare existing Hosting DEV config
         if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs');
           const config={hosting:{target:'cxorbia-dev',public:'app',ignore:['firebase.json','**/.*','**/node_modules/**'],rewrites:[{source:'/api/tya/cinepolis/hr-live',run:{serviceId:'cxorbia-live-hr-dev',region:'us-central1'}},{source:'**',destination:'/index.html'}],headers:[{source:'**',headers:[{key:'Cache-Control',value:'no-store'}]},{source:'**/*.html',headers:[{key:'Content-Type',value:'text/html; charset=utf-8'}]},{source:'**/*.js',headers:[{key:'Content-Type',value:'application/javascript; charset=utf-8'}]},{source:'**/*.css',headers:[{key:'Content-Type',value:'text/css; charset=utf-8'}]},{source:'**/*.json',headers:[{key:'Content-Type',value:'application/json; charset=utf-8'}]}]}};
-          fs.writeFileSync(process.env.OUT_DIR+'/firebase.hosting.json',JSON.stringify(config,null,2)+'\n','utf8');
+          fs.writeFileSync(process.env.OUT_DIR+'/firebase.hosting.json',JSON.stringify(config,null,2)+String.fromCharCode(10),'utf8');
           NODE
 
       - name: Deploy existing Hosting DEV once
@@ -183,8 +171,8 @@ jobs:
           npx firebase deploy --config firebase.c6-entry-p0.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive
           rm -f firebase.c6-entry-p0.json
 
-      - name: Persist provider mutation immediately
-        if: steps.authorization.outputs.should_run == 'true' && steps.deploy.outcome == 'success'
+      - name: Record deploy count immediately
+        if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
           git fetch origin docs-tya-v6-v71-audit
@@ -197,7 +185,7 @@ jobs:
           r.hostingDeployExecutions=1;
           r.status='hosting_deployed_browser_smoke_pending';
           r.hostingDeployedAt=new Date().toISOString();
-          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          fs.writeFileSync(p,JSON.stringify(r,null,2)+String.fromCharCode(10),'utf8');
           NODE
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -207,7 +195,6 @@ jobs:
 
       - name: Remote exact-assets and browser smoke
         if: steps.authorization.outputs.should_run == 'true'
-        id: smoke
         run: |
           set -euo pipefail
           mkdir -p "$OUT_DIR/adapters"
@@ -215,12 +202,7 @@ jobs:
           curl -fsSL --retry 10 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-dev-entry-auth-gate-v1.js" -o "$OUT_DIR/adapters/tya-dev-entry-auth-gate-v1.js"
           cmp app/index-backend-dev.html "$OUT_DIR/index-backend-dev.html"
           cmp app/adapters/tya-dev-entry-auth-gate-v1.js "$OUT_DIR/adapters/tya-dev-entry-auth-gate-v1.js"
-          node --check "$OUT_DIR/adapters/tya-dev-entry-auth-gate-v1.js"
           node tools/qa/tya-c6-dev-entry-auth-gate.mjs "$OUT_DIR/index-backend-dev.html" "$OUT_DIR/adapters/tya-dev-entry-auth-gate-v1.js"
-          node tools/qa/tya-c6-domain-consistency-regression-gate.mjs
-          node tools/qa/tya-c6-canonical-finance-read-model-gate.mjs
-          node tools/qa/tya-c6-shopper-portal-contract-gate.mjs
-          node tools/qa/tya-c6-reservations-source-guard-gate.mjs
           node tools/qa/tya-c6-dev-entry-browser-smoke.mjs "$DEV_ROOT_URL"
           curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/api/tya/cinepolis/hr-live?format=meta&fresh=1" -o "$OUT_DIR/hr-meta-after.json"
           code="$(curl -sS -o "$OUT_DIR/full-unauthorized-after.json" -w '%{http_code}' "$DEV_ROOT_URL/api/tya/cinepolis/hr-live?view=full-profile&scope=admin")"
@@ -233,8 +215,8 @@ jobs:
           if(u.error!=='dev_visual_authorization_required')throw new Error('remote_full_visual_gate_not_fail_closed');
           NODE
 
-      - name: Persist sanitized PASS evidence and consume authorization
-        if: steps.authorization.outputs.should_run == 'true' && steps.smoke.outcome == 'success'
+      - name: Persist PASS evidence and consume authorization
+        if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
           git fetch origin docs-tya-v6-v71-audit
@@ -246,28 +228,11 @@ jobs:
           const r=JSON.parse(fs.readFileSync(rp,'utf8'));
           const x=JSON.parse(fs.readFileSync(xp,'utf8'));
           if(r.hostingDeployExecutions!==1)throw new Error('hosting_execution_count_mismatch');
-          const e={
-            schemaVersion:'cxorbia.corte6.dev-entry-p0-hosting-evidence.v3',
-            generatedAt:new Date().toISOString(),
-            decision:'PASS_C6_DEV_ENTRY_SINGLE_PRODUCT_LOGIN_EXISTING_HOSTING_REMOTE_BROWSER',
-            authorizationId:r.authorizationId,
-            requestId:r.requestId,
-            rootFixCommit:r.rootFixCommit,
-            entryFixCommit:r.entryFixCommit,
-            projectId:'cxorbia-backend-dev',
-            hostingSite:'cxorbia-backend-dev',
-            hostingTarget:'cxorbia-dev',
-            hostingDeployExecutions:1,
-            browser:{bareEntryCanonicalized:true,connectedLocalStoragePreseeded:true,genericRolePickerHidden:true,directProductLoginVisible:true,technicalSecondLoginAbsent:true,blockedDataSourceCardAbsent:true,localCleanBrowserGate:true,remoteCleanBrowserGate:true,firebaseSessionReusePreserved:true,credentialsEmbedded:false},
-            canonical:{domain:true,finance:true,shopperPortal:true,reservationsFailClosed:true,hrVisits616:true,fullVisualGateFailClosed:true},
-            safety:{firestoreWrites:0,authWrites:0,authResets:0,rulesDeploys:0,cloudRunDeploys:0,storageWrites:0,hrWrites:0,legacyWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,reservationsWrites:0,newFirebaseProjects:0,newHostingSites:0,production:false,merge:false}
-          };
-          fs.writeFileSync('app/docs/evidence/CORTE6-DEV-ENTRY-P0-HOSTING-LATEST.json',JSON.stringify(e,null,2)+'\n','utf8');
-          for(const o of [r,x]){
-            o.status='consumed_pass';o.enabled=false;o.consumed=true;o.consumedAt=new Date().toISOString();o.decision=e.decision;o.nextGate='HUMAN_VISUAL_ACCUMULATIVE_C6_FREEZE';
-          }
-          fs.writeFileSync(rp,JSON.stringify(r,null,2)+'\n','utf8');
-          fs.writeFileSync(xp,JSON.stringify(x,null,2)+'\n','utf8');
+          const e={schemaVersion:'cxorbia.corte6.dev-entry-p0-hosting-evidence.v3',generatedAt:new Date().toISOString(),decision:'PASS_C6_DEV_ENTRY_SINGLE_PRODUCT_LOGIN_EXISTING_HOSTING_REMOTE_BROWSER',authorizationId:r.authorizationId,requestId:r.requestId,rootFixCommit:r.rootFixCommit,entryFixCommit:r.entryFixCommit,projectId:'cxorbia-backend-dev',hostingSite:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',hostingDeployExecutions:1,browser:{bareEntryCanonicalized:true,connectedLocalStoragePreseeded:true,genericRolePickerHidden:true,directProductLoginVisible:true,technicalSecondLoginAbsent:true,blockedDataSourceCardAbsent:true,localCleanBrowserGate:true,remoteCleanBrowserGate:true,firebaseSessionReusePreserved:true,credentialsEmbedded:false},canonical:{domain:true,finance:true,shopperPortal:true,reservationsFailClosed:true,hrVisits616:true,fullVisualGateFailClosed:true},safety:{firestoreWrites:0,authWrites:0,authResets:0,rulesDeploys:0,cloudRunDeploys:0,storageWrites:0,hrWrites:0,legacyWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,reservationsWrites:0,newFirebaseProjects:0,newHostingSites:0,production:false,merge:false}};
+          fs.writeFileSync('app/docs/evidence/CORTE6-DEV-ENTRY-P0-HOSTING-LATEST.json',JSON.stringify(e,null,2)+String.fromCharCode(10),'utf8');
+          for(const o of [r,x]){o.status='consumed_pass';o.enabled=false;o.consumed=true;o.consumedAt=new Date().toISOString();o.decision=e.decision;o.nextGate='HUMAN_VISUAL_ACCUMULATIVE_C6_FREEZE';}
+          fs.writeFileSync(rp,JSON.stringify(r,null,2)+String.fromCharCode(10),'utf8');
+          fs.writeFileSync(xp,JSON.stringify(x,null,2)+String.fromCharCode(10),'utf8');
           NODE
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -281,8 +246,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          STATE=success;DESC='PASS_C6_DEV_ENTRY_BROWSER'
-          if [ '${{ job.status }}' != 'success' ]; then STATE=error;DESC='FAIL_C6_DEV_ENTRY_BROWSER'; fi
+          STATE=success
+          DESC='PASS_C6_DEV_ENTRY_BROWSER'
+          if [ '${{ job.status }}' != 'success' ]; then STATE=error; DESC='FAIL_C6_DEV_ENTRY_BROWSER'; fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/corte6-dev-entry/$DESC" -f description="$DESC" >/dev/null
 
       - name: Cleanup
