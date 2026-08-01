@@ -15,7 +15,7 @@
   "rootFixCommit": "1889c7ef080c88c7db6eca56cb26fa2e0ad1466f",
   "entryFixCommit": "82696922fa15996cd41b396c531f98062c6ef58f",
   "authorizationId": "chat-20260801-c6-dev-entry-p0-hosting-01",
-  "triggerNonce": "20260801T093000-0600-r3-stage-diagnostic",
+  "triggerNonce": "20260801T093600-0600-r4-browser-checkpoint",
   "firestoreWrites": 0,
   "authWrites": 0,
   "authResets": 0,
