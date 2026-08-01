@@ -30,6 +30,8 @@ for(const marker of [
 
 for(const marker of [
   "mode:'native-direct-role-entry'","visibleRoleSelector:true","usernamePasswordVisible:false","technicalAuthEnabled:false",
+  'integratedFirebaseLoginDisabled:true','backendFirebaseDisabledForHumanVisual:true','hrCanonicalAuthorityPreserved:true',
+  'backendCfg.enabled = false','backendCfg.devPreviewAuth.enabled = false',
   'YES_PAULA_20260801_REAL_USERS_E2E','cxTechnicalAuthE2E','cxTechnicalAuthNamespace',
   "mode:'technical-auth-e2e-isolated'","namespaceUserSelectable:false",'CX.backendAuth.authenticate',
   'credentialsEmbedded:false','writes:false','production:false'
@@ -46,7 +48,8 @@ for(const marker of [
 
 assert(!adapter.includes("mode:'username-password-claims-derived'"),'obsolete_default_credential_mode_present');
 assert(adapter.includes("if(!technicalAuthEnabled)"),'human_lane_guard_missing');
-assert(adapter.includes('setHumanLaneState();'),'human_lane_state_missing');
+assert(adapter.includes('configureHumanLane();'),'human_lane_configuration_missing');
+assert(adapter.includes('configureTechnicalLane();'),'technical_lane_configuration_missing');
 assert(adapter.includes('patchTechnicalLane'),'technical_lane_patch_missing');
 
 for(const marker of [
