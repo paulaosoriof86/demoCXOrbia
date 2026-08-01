@@ -22,13 +22,8 @@ for(const item of order) assert(item.pos >= 0, 'missing_index_marker:'+item.mark
 for(let i=1;i<order.length;i++) assert(order[i-1].pos < order[i].pos, 'invalid_script_order:'+order[i-1].marker+':'+order[i].marker);
 
 for(const marker of [
-  'cxDevEntryCanonicalBootstrap',
-  'YES_PAULA_20260628_PREVIEW_DEV',
-  'YES_PAULA_20260730_PROTECTED_DEV',
-  'YES_PAULA_20260731_FULL_PROFILE_DEV',
-  'cxProjectId',
-  'cxHumanFullVisual',
-  'cinepolis'
+  'cxDevEntryCanonicalBootstrap','YES_PAULA_20260628_PREVIEW_DEV','YES_PAULA_20260730_PROTECTED_DEV',
+  'YES_PAULA_20260731_FULL_PROFILE_DEV','cxProjectId','cxHumanFullVisual','cinepolis'
 ]) assert(index.includes(marker), 'missing_entry_bootstrap_marker:'+marker);
 
 for(const marker of [
@@ -87,5 +82,13 @@ assert(protectedOnly.location.search.includes('cxBackendPreview=YES_PAULA_202606
 assert(protectedOnly.location.search.includes('cxProjectId=cinepolis'), 'protected_entry_missing_project');
 assert(protectedOnly.location.search.includes('cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV'), 'protected_entry_missing_full_visual_identity_bridge');
 assert(protectedOnly.state && protectedOnly.state.fullVisual === true, 'protected_entry_full_visual_state_false');
+
+if(indexPath.includes('/remote/') && process.env.DEV_ROOT_URL){
+  const remoteUrl = String(process.env.DEV_ROOT_URL).replace(/\/$/,'') + '/adapters/tya-protected-auth-hr-authority-bridge-v1.js';
+  const response = await fetch(remoteUrl,{headers:{'cache-control':'no-cache'}});
+  assert(response.ok, 'remote_hr_authority_http_'+response.status);
+  const remoteAuthority = await response.text();
+  assert(remoteAuthority === authority, 'remote_hr_authority_asset_mismatch');
+}
 
 console.log('PASS_C6_DEV_ENTRY_CLAIMS_DERIVED_HR_AUTHORITY_GATE');
