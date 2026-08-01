@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import crypto from 'node:crypto';
 import zlib from 'node:zlib';
 import vm from 'node:vm';
@@ -30,7 +31,7 @@ function validClaims(claims, namespace){
   const ns=String(claims?.authNamespace||'').toLowerCase();
   const tenantOk=claims?.tenantId===tenantId||list(claims?.tenants).includes(tenantId)||role==='super';
   const projectOk=claims?.projectId===canonicalProjectId||list(claims?.projectIds).includes(canonicalProjectId)||role==='super';
-  const namespaceOk=(ns|| (role==='shopper'?'shopper':'staff'))===namespace;
+  const namespaceOk=(ns||(role==='shopper'?'shopper':'staff'))===namespace;
   const roleOk=namespace==='shopper'
     ? role==='shopper'&&typeof claims?.shopperId==='string'&&claims.shopperId.trim()
     : ['super','admin','ops','coordinador'].includes(role);
@@ -75,11 +76,7 @@ async function firebaseWebConfig(){
   if(!response.ok) fail(`firebase_init_http_${response.status}`);
   const source=await response.text();
   let captured=null;
-  const fakeFirebase={
-    apps:[],
-    initializeApp(config){ captured=config; this.apps.push({}); return {}; },
-    app(){ return {options:captured}; }
-  };
+  const fakeFirebase={apps:[],initializeApp(config){captured=config;this.apps.push({});return{};},app(){return{options:captured};}};
   vm.runInNewContext(source,{firebase:fakeFirebase,window:{},self:{}},{timeout:2000});
   if(!captured?.apiKey||captured.projectId!==expectedProject) fail('firebase_web_config_mismatch');
   return captured;
@@ -89,9 +86,7 @@ const webConfig=await firebaseWebConfig();
 async function passwordSignIn(login,password,namespace){
   const email=internalEmail(login,namespace);
   const response=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(webConfig.apiKey)}`,{
-    method:'POST',
-    headers:{'content-type':'application/json'},
-    body:JSON.stringify({email,password,returnSecureToken:true})
+    method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,password,returnSecureToken:true})
   });
   if(!response.ok) return false;
   const result=await response.json();
@@ -167,6 +162,6 @@ for(const candidate of shopperCandidates){
 }
 if(!shopper) fail('HOLD_NO_EXISTING_SHOPPER_PLAINTEXT_CREDENTIAL_MATCH');
 
-fs.mkdirSync(new URL('../',`file://${process.cwd()}/${outPath}`).pathname,{recursive:true});
+fs.mkdirSync(path.dirname(outPath),{recursive:true});
 fs.writeFileSync(outPath,JSON.stringify({schemaVersion:'cxorbia.c6.e2e-private-credentials.v1',staff,shopper},null,2)+'\n',{encoding:'utf8',mode:0o600});
 console.log(JSON.stringify({decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION',staffRole:staff.role,shopperRole:shopper.role,shopperOwnVisits:shopper.expectedOwnVisits,authWrites:0,passwordChanges:0,valuesExported:false}));
