@@ -1,4 +1,4 @@
-name: CXOrbia Corte 6 DEV Entry P0 Hosting
+name: CXOrbia Corte 6 Real Users E2E Hosting DEV
 
 on:
   push:
@@ -13,22 +13,26 @@ permissions:
   id-token: write
 
 concurrency:
-  group: cxorbia-c6-dev-entry-p0-hosting
+  group: cxorbia-c6-real-users-e2e-hosting
   cancel-in-progress: false
 
 env:
   GCP_PROJECT_ID: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
+  HOSTING_SITE: cxorbia-backend-dev
   DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
   REQUEST: backend/config/corte6-cumulative-human-visual-hosting-request.json
   EXECUTE: backend/config/corte6-cumulative-human-visual-hosting-execute.json
-  OUT_DIR: .tmp/c6-dev-entry-p0-hosting
-  ROOT_FIX_COMMIT: 1889c7ef080c88c7db6eca56cb26fa2e0ad1466f
+  OUT_DIR: .tmp/c6-real-users-e2e
+  PRIVATE_DIR: .tmp/c6-real-users-e2e-private
+  PRIVATE_E2E: .tmp/c6-real-users-e2e-private/private-e2e.json
+  PREVIOUS_FALSE_PASS_HEAD: 3906cd6760315b9883296a7fcac9ce847f242d61
+  ENTRY_ROOT_FIX_COMMIT: 3cb1c8a1adf2eddddbc1d0ba670af041a8d3c5fe
 
 jobs:
-  hosting:
+  real-users-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,113 +43,118 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Validate exact one-shot authorization
+      - name: Validate exact current authorization
         id: authorization
         run: |
           set -euo pipefail
-          mkdir -p "$OUT_DIR"
-          echo auth_contract > "$OUT_DIR/stage"
-          STATE="$(node - <<'NODE'
-          const fs=require('fs');
-          const x=JSON.parse(fs.readFileSync(process.env.EXECUTE,'utf8'));
-          process.stdout.write(x.enabled===false&&x.consumed===true&&x.status==='consumed_pass'?'false':'true');
-          NODE
-          )"
-          echo "should_run=$STATE" >> "$GITHUB_OUTPUT"
-          if [ "$STATE" = "false" ]; then exit 0; fi
+          mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
+          echo authorization > "$OUT_DIR/stage"
           node <<'NODE'
           const fs=require('fs');
           const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
           const x=JSON.parse(fs.readFileSync(process.env.EXECUTE,'utf8'));
-          if(r.schemaVersion!=='cxorbia.corte6.dev-entry-p0-hosting-request.v3')throw new Error('request_schema_mismatch');
-          if(x.schemaVersion!=='cxorbia.corte6.dev-entry-p0-hosting-execute.v3')throw new Error('execute_schema_mismatch');
+          if(r.schemaVersion!=='cxorbia.corte6.real-users-e2e-hosting-request.v4')throw new Error('request_schema_mismatch');
+          if(x.schemaVersion!=='cxorbia.corte6.real-users-e2e-hosting-execute.v4')throw new Error('execute_schema_mismatch');
           for(const o of [r,x]){
-            if(o.repository!=='paulaosoriof86/demoCXOrbia'||o.branch!=='docs-tya-v6-v71-audit'||o.firebaseProjectId!=='cxorbia-backend-dev'||o.hostingSite!=='cxorbia-backend-dev'||o.hostingTarget!=='cxorbia-dev'||o.tenantId!=='tya'||o.projectId!=='cinepolis')throw new Error('target_identity_mismatch');
+            if(o.repository!=='paulaosoriof86/demoCXOrbia'||o.branch!=='docs-tya-v6-v71-audit'||o.pullRequest!==7||o.firebaseProjectId!=='cxorbia-backend-dev'||o.hostingSite!=='cxorbia-backend-dev'||o.hostingTarget!=='cxorbia-dev'||o.tenantId!=='tya'||o.projectId!=='cinepolis')throw new Error('target_identity_mismatch');
           }
-          if(r.scope!=='single_existing_dev_hosting_deploy_for_c6_visual_entry_and_single_product_login_p0'||r.singleHostingDeployMax!==1||r.hostingDeployExecutions!==0)throw new Error('scope_contract_mismatch');
-          for(const k of ['canonicalBareEntryRequired','directProductLoginRequired','genericRolePickerForbiddenInProtectedEntry','firebaseSessionReuseRequired','browserSmokeRequired','localBrowserGateRequired','remoteBrowserGateRequired','existingCanonicalRootFixRequired'])if(r[k]!==true)throw new Error('required_gate_missing:'+k);
-          if(r.exactIdentityOnly!==true||r.namePhoneEmailDedupeAllowed!==false||!r.entryFixCommit||r.rootFixCommit!==process.env.ROOT_FIX_COMMIT)throw new Error('lineage_contract_mismatch');
-          if(r.enabled!==true||r.consumed!==false||r.status!=='authorized_waiting_execute'||r.authorizedBy!=='Paula'||!r.authorizationId||!r.authorizationText)throw new Error('authorization_missing');
-          if(x.enabled!==true||x.consumed!==false||x.status!=='execute_authorized_once'||x.requestId!==r.requestId||x.authorizationId!==r.authorizationId||x.entryFixCommit!==r.entryFixCommit||x.rootFixCommit!==r.rootFixCommit)throw new Error('execute_marker_invalid');
-          for(const k of ['firestoreWrites','authWrites','authResets','rulesDeploys','cloudRunDeploys','storageWrites','hrWrites','legacyWrites','makeWrites','geminiCalls','paymentsWrites','reservationsWrites','newFirebaseProjects','newHostingSites']){
+          if(r.scope!=='root_fix_users_dev_real_staff_shopper_e2e_and_one_existing_hosting_redeploy'||r.singleHostingDeployMax!==1||r.hostingDeployExecutions!==0)throw new Error('scope_contract_mismatch');
+          if(r.entryRootFixCommit!==process.env.ENTRY_ROOT_FIX_COMMIT||x.entryRootFixCommit!==r.entryRootFixCommit)throw new Error('root_fix_lineage_mismatch');
+          for(const k of ['usernamePasswordOnly','claimsDerivedRole','claimsDerivedProject','realStaffE2ERequired','realShopperE2ERequired','refreshPersistenceRequired','newTabPersistenceRequired','canonicalVisits616Required','technicalStatusHidden','noCredentialValuesInEvidence'])if(r[k]!==true)throw new Error('required_gate_missing:'+k);
+          if(r.visibleAccessSelectorAllowed!==false||r.genericRolePickerAllowed!==false||r.parallelTechnicalLoginAllowed!==false)throw new Error('forbidden_ui_contract');
+          if(r.enabled!==true||r.consumed!==false||r.status!=='authorized_waiting_execute'||r.authorizedBy!=='Paula'||r.authorizationId!=='chat-20260801-c6-real-users-e2e-hosting-01')throw new Error('authorization_missing');
+          if(x.enabled!==true||x.consumed!==false||x.status!=='execute_authorized_once'||x.requestId!==r.requestId||x.authorizationId!==r.authorizationId)throw new Error('execute_marker_invalid');
+          for(const k of ['authUserCreates','authWrites','passwordChanges','passwordResets','firestoreWrites','rulesDeploys','cloudRunDeploys','storageWrites','hrWrites','legacyWrites','makeWrites','geminiCalls','paymentsWrites','reservationsWrites','newFirebaseProjects','newHostingSites']){
             if(Number(r[k]||0)!==0||Number(x[k]||0)!==0)throw new Error('unsafe_scope:'+k);
           }
           if(r.merge!==false||r.production!==false||x.merge!==false||x.production!==false)throw new Error('unsafe_scope');
           NODE
-          ENTRY_FIX_COMMIT="$(node -p "JSON.parse(require('fs').readFileSync(process.env.REQUEST,'utf8')).entryFixCommit")"
-          echo "entry_fix_commit=$ENTRY_FIX_COMMIT" >> "$GITHUB_OUTPUT"
 
-      - name: Verify lineage and protected files
-        if: steps.authorization.outputs.should_run == 'true'
+      - name: Verify protected lineage and static contracts
         run: |
           set -euo pipefail
-          echo lineage > "$OUT_DIR/stage"
-          git merge-base --is-ancestor "$ROOT_FIX_COMMIT" HEAD
-          git merge-base --is-ancestor "${{ steps.authorization.outputs.entry_fix_commit }}" HEAD
-          if git diff --name-only "$ROOT_FIX_COMMIT"..HEAD | grep -Eq '^app/(modules|core)/'; then
-            echo 'P0: protected frontend/core changed after root-fix lock'
+          echo static_contracts > "$OUT_DIR/stage"
+          git merge-base --is-ancestor "$ENTRY_ROOT_FIX_COMMIT" HEAD
+          if git diff --name-only "$PREVIOUS_FALSE_PASS_HEAD"..HEAD | grep -Eq '^app/(modules|core)/'; then
+            echo 'P0: app/modules or app/core changed in focal entry fix'
             exit 2
           fi
-          grep -q 'id="cxDevEntryCanonicalBootstrap"' app/index-backend-dev.html
-          grep -q 'adapters/tya-dev-entry-auth-gate-v1.js' app/index-backend-dev.html
-          grep -q 'CX.backendAuth.authenticate' app/adapters/tya-dev-entry-auth-gate-v1.js
-          grep -q 'credentialsEmbedded:false' app/adapters/tya-dev-entry-auth-gate-v1.js
-
-      - name: Run accumulated static gates
-        if: steps.authorization.outputs.should_run == 'true'
-        run: |
-          set -euo pipefail
-          echo static_gates > "$OUT_DIR/stage"
           node --check app/adapters/tya-dev-entry-auth-gate-v1.js
           node --check tools/qa/tya-c6-dev-entry-auth-gate.mjs
           node --check tools/qa/tya-c6-dev-entry-browser-smoke.mjs
+          node --check tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs
+          node --check tools/qa/tya-c6-dev-users-real-e2e.mjs
+          node tools/qa/tya-c6-dev-entry-auth-gate.mjs
           node tools/qa/tya-c6-domain-consistency-regression-gate.mjs
           node tools/qa/tya-c6-canonical-finance-read-model-gate.mjs
           node tools/qa/tya-c6-shopper-portal-contract-gate.mjs
           node tools/qa/tya-c6-reservations-source-guard-gate.mjs
-          node tools/qa/tya-c6-dev-entry-auth-gate.mjs
           node <<'NODE'
           const fs=require('fs');
-          const e=JSON.parse(fs.readFileSync('app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json','utf8'));
-          if(e.decision!=='PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE')throw new Error('live_hr_audit_not_pass');
-          if(e.source?.periods!==14||e.source?.visits!==616||e.observedJuly?.total!==44||e.observedJuly?.realized!==40||e.observedJuly?.questionnaireCompleted!==38||e.observedJuly?.submitted!==33||e.observedJuly?.outOfRange!==1)throw new Error('approved_baseline_mismatch');
-          if((e.failedAssertions||[]).length||(e.failedGates||[]).length)throw new Error('audit_failures_present');
+          const imp=JSON.parse(fs.readFileSync('app/docs/evidence/CORTE6-CREDENTIAL-IMPORT-LATEST.json','utf8'));
+          const hr=JSON.parse(fs.readFileSync('app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json','utf8'));
+          if(imp.decision!=='PASS_EXACT_AUTH_IMPORT_READBACK'||imp.imported!==91||imp.readback!==91||imp.authUsersAfter!==108)throw new Error('credential_baseline_mismatch');
+          if(hr.decision!=='PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE'||hr.source?.visits!==616||hr.observedJuly?.total!==44||hr.observedJuly?.submitted!==33)throw new Error('hr_baseline_mismatch');
           NODE
 
-      - name: Install browser gate and Firebase CLI
-        if: steps.authorization.outputs.should_run == 'true'
-        run: |
-          set -euo pipefail
-          echo browser_install > "$OUT_DIR/stage"
-          npm install --no-save --ignore-scripts firebase-tools@latest playwright@1.54.2 >/dev/null 2>&1
-          npx playwright install --with-deps chromium >/dev/null
-
-      - name: Local clean-browser gate before deploy
-        if: steps.authorization.outputs.should_run == 'true'
-        run: |
-          set -euo pipefail
-          echo local_browser > "$OUT_DIR/stage"
-          python3 -m http.server 4173 --directory app >"$OUT_DIR/local-http.log" 2>&1 &
-          SERVER_PID=$!
-          trap 'kill $SERVER_PID >/dev/null 2>&1 || true' EXIT
-          for i in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:4173/index-backend-dev.html >/dev/null; then break; fi
-            sleep 1
-          done
-          node tools/qa/tya-c6-dev-entry-browser-smoke.mjs http://127.0.0.1:4173
-
-      - name: Mark Google authentication stage
-        if: steps.authorization.outputs.should_run == 'true'
-        run: echo gcp_auth > "$OUT_DIR/stage"
-
       - name: Authenticate existing Google Cloud DEV
-        if: steps.authorization.outputs.should_run == 'true'
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
 
+      - name: Install transient protected test tooling
+        run: |
+          set -euo pipefail
+          echo install_tooling > "$OUT_DIR/stage"
+          npm install --no-save --ignore-scripts firebase-admin@13.4.0 firebase-tools@latest playwright@1.54.2 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Select existing staff and shopper credentials privately
+        run: |
+          set -euo pipefail
+          echo select_existing_credentials > "$OUT_DIR/stage"
+          export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
+          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
+          node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs > "$OUT_DIR/credential-selection.source-safe.json"
+          chmod 600 "$PRIVATE_E2E"
+          node <<'NODE'
+          const fs=require('fs');
+          const s=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection.source-safe.json','utf8'));
+          if(s.decision!=='PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION'||s.authWrites!==0||s.passwordChanges!==0||s.valuesExported!==false)throw new Error('credential_selection_not_safe_pass');
+          NODE
+
+      - name: Start local application server
+        run: |
+          set -euo pipefail
+          echo start_local_server > "$OUT_DIR/stage"
+          nohup python3 -m http.server 4173 --directory app > "$OUT_DIR/local-http.log" 2>&1 &
+          echo $! > "$OUT_DIR/local-http.pid"
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/index-backend-dev.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          exit 2
+
+      - name: Local browser shell gate
+        run: |
+          set -euo pipefail
+          echo local_shell > "$OUT_DIR/stage"
+          node tools/qa/tya-c6-dev-entry-browser-smoke.mjs http://127.0.0.1:4173
+
+      - name: Local real staff and shopper E2E before deploy
+        run: |
+          set -euo pipefail
+          echo local_real_users_e2e > "$OUT_DIR/stage"
+          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
+          export CXORBIA_DEV_ROOT_URL="$DEV_ROOT_URL"
+          node tools/qa/tya-c6-dev-users-real-e2e.mjs http://127.0.0.1:4173 > "$OUT_DIR/local-real-users-e2e.source-safe.json"
+          node <<'NODE'
+          const fs=require('fs');
+          const e=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/local-real-users-e2e.source-safe.json','utf8'));
+          if(e.decision!=='PASS_C6_REAL_USERS_END_TO_END'||e.staff?.namespace!=='staff'||e.shopper?.namespace!=='shopper'||e.staff?.visits!==616||e.shopper?.visits!==616||e.shopper?.ownVisits<1||e.staff?.refreshPreserved!==true||e.staff?.newTabPreserved!==true||e.shopper?.refreshPreserved!==true||e.shopper?.newTabPreserved!==true||e.credentialsExposed!==false||e.tokensExposed!==false)throw new Error('local_real_users_e2e_not_pass');
+          NODE
+
       - name: Provider read-only preflight
-        if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
           echo provider_preflight > "$OUT_DIR/stage"
@@ -160,29 +169,27 @@ jobs:
           if(u.error!=='dev_visual_authorization_required')throw new Error('full_visual_gate_not_fail_closed');
           NODE
 
-      - name: Prepare existing Hosting DEV config
-        if: steps.authorization.outputs.should_run == 'true'
+      - name: Prepare exact existing Hosting DEV config
         run: |
           set -euo pipefail
           echo prepare_hosting > "$OUT_DIR/stage"
           node <<'NODE'
           const fs=require('fs');
           const config={hosting:{target:'cxorbia-dev',public:'app',ignore:['firebase.json','**/.*','**/node_modules/**'],rewrites:[{source:'/api/tya/cinepolis/hr-live',run:{serviceId:'cxorbia-live-hr-dev',region:'us-central1'}},{source:'**',destination:'/index.html'}],headers:[{source:'**',headers:[{key:'Cache-Control',value:'no-store'}]},{source:'**/*.html',headers:[{key:'Content-Type',value:'text/html; charset=utf-8'}]},{source:'**/*.js',headers:[{key:'Content-Type',value:'application/javascript; charset=utf-8'}]},{source:'**/*.css',headers:[{key:'Content-Type',value:'text/css; charset=utf-8'}]},{source:'**/*.json',headers:[{key:'Content-Type',value:'application/json; charset=utf-8'}]}]}};
-          fs.writeFileSync(process.env.OUT_DIR+'/firebase.hosting.json',JSON.stringify(config,null,2)+String.fromCharCode(10),'utf8');
+          fs.writeFileSync(process.env.OUT_DIR+'/firebase.hosting.json',JSON.stringify(config,null,2)+'\n','utf8');
           NODE
 
-      - name: Deploy existing Hosting DEV once
-        if: steps.authorization.outputs.should_run == 'true'
+      - name: Deploy existing Hosting DEV exactly once
         id: deploy
         run: |
           set -euo pipefail
           echo deploy_hosting > "$OUT_DIR/stage"
-          cp "$OUT_DIR/firebase.hosting.json" firebase.c6-entry-p0.json
-          npx firebase deploy --config firebase.c6-entry-p0.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive
-          rm -f firebase.c6-entry-p0.json
+          cp "$OUT_DIR/firebase.hosting.json" firebase.c6-real-users.json
+          npx firebase deploy --config firebase.c6-real-users.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive
+          rm -f firebase.c6-real-users.json
 
       - name: Record deploy count immediately
-        if: steps.authorization.outputs.should_run == 'true'
+        if: steps.deploy.outcome == 'success'
         run: |
           set -euo pipefail
           echo record_deploy > "$OUT_DIR/stage"
@@ -194,44 +201,47 @@ jobs:
           const r=JSON.parse(fs.readFileSync(p,'utf8'));
           if(r.hostingDeployExecutions!==0)throw new Error('unexpected_prior_deploy_count');
           r.hostingDeployExecutions=1;
-          r.status='hosting_deployed_browser_smoke_pending';
+          r.status='hosting_deployed_remote_real_users_e2e_pending';
           r.hostingDeployedAt=new Date().toISOString();
-          fs.writeFileSync(p,JSON.stringify(r,null,2)+String.fromCharCode(10),'utf8');
+          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
           NODE
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add "$REQUEST"
-          git commit -m 'gate: record C6 DEV entry P0 Hosting deploy'
+          git commit -m 'gate: record C6 real-users Hosting DEV deploy'
           git push origin HEAD:docs-tya-v6-v71-audit
 
-      - name: Remote exact-assets and browser smoke
-        if: steps.authorization.outputs.should_run == 'true'
+      - name: Remote asset parity and browser shell
         run: |
           set -euo pipefail
-          echo remote_browser > "$OUT_DIR/stage"
-          mkdir -p "$OUT_DIR/adapters"
-          curl -fsSL --retry 10 --retry-delay 3 "$DEV_ROOT_URL/index-backend-dev.html" -o "$OUT_DIR/index-backend-dev.html"
-          curl -fsSL --retry 10 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-dev-entry-auth-gate-v1.js" -o "$OUT_DIR/adapters/tya-dev-entry-auth-gate-v1.js"
-          cmp app/index-backend-dev.html "$OUT_DIR/index-backend-dev.html"
-          cmp app/adapters/tya-dev-entry-auth-gate-v1.js "$OUT_DIR/adapters/tya-dev-entry-auth-gate-v1.js"
-          node tools/qa/tya-c6-dev-entry-auth-gate.mjs "$OUT_DIR/index-backend-dev.html" "$OUT_DIR/adapters/tya-dev-entry-auth-gate-v1.js"
+          echo remote_shell > "$OUT_DIR/stage"
+          mkdir -p "$OUT_DIR/remote/adapters"
+          curl -fsSL --retry 10 --retry-delay 3 "$DEV_ROOT_URL/index-backend-dev.html" -o "$OUT_DIR/remote/index-backend-dev.html"
+          curl -fsSL --retry 10 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-dev-entry-auth-gate-v1.js" -o "$OUT_DIR/remote/adapters/tya-dev-entry-auth-gate-v1.js"
+          cmp app/index-backend-dev.html "$OUT_DIR/remote/index-backend-dev.html"
+          cmp app/adapters/tya-dev-entry-auth-gate-v1.js "$OUT_DIR/remote/adapters/tya-dev-entry-auth-gate-v1.js"
+          node tools/qa/tya-c6-dev-entry-auth-gate.mjs "$OUT_DIR/remote/index-backend-dev.html" "$OUT_DIR/remote/adapters/tya-dev-entry-auth-gate-v1.js"
           node tools/qa/tya-c6-dev-entry-browser-smoke.mjs "$DEV_ROOT_URL"
-          curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/api/tya/cinepolis/hr-live?format=meta&fresh=1" -o "$OUT_DIR/hr-meta-after.json"
-          code="$(curl -sS -o "$OUT_DIR/full-unauthorized-after.json" -w '%{http_code}' "$DEV_ROOT_URL/api/tya/cinepolis/hr-live?view=full-profile&scope=admin")"
-          test "$code" = '401'
+
+      - name: Remote real staff and shopper E2E
+        run: |
+          set -euo pipefail
+          echo remote_real_users_e2e > "$OUT_DIR/stage"
+          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
+          export CXORBIA_DEV_ROOT_URL="$DEV_ROOT_URL"
+          node tools/qa/tya-c6-dev-users-real-e2e.mjs "$DEV_ROOT_URL" > "$OUT_DIR/remote-real-users-e2e.source-safe.json"
           node <<'NODE'
           const fs=require('fs');
-          const m=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/hr-meta-after.json','utf8'));
-          const u=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/full-unauthorized-after.json','utf8'));
-          if(m.runtimeRead!==true||m.sourceSafe!==true||m.visits!==616||m.tabRegistryAutoDiscovery!==true)throw new Error('remote_live_hr_not_preserved');
-          if(u.error!=='dev_visual_authorization_required')throw new Error('remote_full_visual_gate_not_fail_closed');
+          const e=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/remote-real-users-e2e.source-safe.json','utf8'));
+          if(e.decision!=='PASS_C6_REAL_USERS_END_TO_END'||e.staff?.namespace!=='staff'||e.shopper?.namespace!=='shopper'||e.staff?.visits!==616||e.shopper?.visits!==616||e.shopper?.ownVisits<1||e.staff?.refreshPreserved!==true||e.staff?.newTabPreserved!==true||e.shopper?.refreshPreserved!==true||e.shopper?.newTabPreserved!==true||e.credentialsExposed!==false||e.tokensExposed!==false)throw new Error('remote_real_users_e2e_not_pass');
           NODE
 
-      - name: Persist PASS evidence and consume authorization
-        if: steps.authorization.outputs.should_run == 'true'
+      - name: Persist sanitized PASS evidence and consume authorization
         run: |
           set -euo pipefail
           echo persist_pass > "$OUT_DIR/stage"
+          cp "$OUT_DIR/local-real-users-e2e.source-safe.json" /tmp/local-e2e.json
+          cp "$OUT_DIR/remote-real-users-e2e.source-safe.json" /tmp/remote-e2e.json
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
           mkdir -p app/docs/evidence
@@ -240,21 +250,23 @@ jobs:
           const rp=process.env.REQUEST,xp=process.env.EXECUTE;
           const r=JSON.parse(fs.readFileSync(rp,'utf8'));
           const x=JSON.parse(fs.readFileSync(xp,'utf8'));
+          const local=JSON.parse(fs.readFileSync('/tmp/local-e2e.json','utf8'));
+          const remote=JSON.parse(fs.readFileSync('/tmp/remote-e2e.json','utf8'));
           if(r.hostingDeployExecutions!==1)throw new Error('hosting_execution_count_mismatch');
-          const e={schemaVersion:'cxorbia.corte6.dev-entry-p0-hosting-evidence.v3',generatedAt:new Date().toISOString(),decision:'PASS_C6_DEV_ENTRY_SINGLE_PRODUCT_LOGIN_EXISTING_HOSTING_REMOTE_BROWSER',authorizationId:r.authorizationId,requestId:r.requestId,rootFixCommit:r.rootFixCommit,entryFixCommit:r.entryFixCommit,projectId:'cxorbia-backend-dev',hostingSite:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',hostingDeployExecutions:1,browser:{bareEntryCanonicalized:true,connectedLocalStoragePreseeded:true,genericRolePickerHidden:true,directProductLoginVisible:true,technicalSecondLoginAbsent:true,blockedDataSourceCardAbsent:true,localCleanBrowserGate:true,remoteCleanBrowserGate:true,firebaseSessionReusePreserved:true,credentialsEmbedded:false},canonical:{domain:true,finance:true,shopperPortal:true,reservationsFailClosed:true,hrVisits616:true,fullVisualGateFailClosed:true},safety:{firestoreWrites:0,authWrites:0,authResets:0,rulesDeploys:0,cloudRunDeploys:0,storageWrites:0,hrWrites:0,legacyWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,reservationsWrites:0,newFirebaseProjects:0,newHostingSites:0,production:false,merge:false}};
-          fs.writeFileSync('app/docs/evidence/CORTE6-DEV-ENTRY-P0-HOSTING-LATEST.json',JSON.stringify(e,null,2)+String.fromCharCode(10),'utf8');
+          const e={schemaVersion:'cxorbia.corte6.real-users-e2e-hosting-evidence.v4',generatedAt:new Date().toISOString(),decision:'PASS_C6_REAL_STAFF_SHOPPER_E2E_EXISTING_HOSTING_DEV',authorizationId:r.authorizationId,requestId:r.requestId,entryRootFixCommit:r.entryRootFixCommit,projectId:'cxorbia-backend-dev',hostingSite:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',hostingDeployExecutions:1,entry:{usernamePasswordOnly:true,visibleAccessSelector:false,genericRolePicker:false,parallelTechnicalLogin:false,technicalStatusHidden:true,roleDerivedFromClaims:true,projectDerivedFromClaims:true,dualChoiceOnlyAfterCredentialValidation:true},localE2E:local,remoteE2E:remote,canonical:{visits616:true,domain:true,finance:true,shopperPortal:true,reservationsFailClosed:true},safety:{existingUsersOnly:true,authUserCreates:0,authWrites:0,passwordChanges:0,passwordResets:0,firestoreWrites:0,rulesDeploys:0,cloudRunDeploys:0,storageWrites:0,hrWrites:0,legacyWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,reservationsWrites:0,newFirebaseProjects:0,newHostingSites:0,credentialValuesExported:false,tokensExported:false,production:false,merge:false}};
+          fs.writeFileSync('app/docs/evidence/CORTE6-REAL-USERS-E2E-HOSTING-LATEST.json',JSON.stringify(e,null,2)+'\n','utf8');
           for(const o of [r,x]){o.status='consumed_pass';o.enabled=false;o.consumed=true;o.consumedAt=new Date().toISOString();o.decision=e.decision;o.nextGate='HUMAN_VISUAL_ACCUMULATIVE_C6_FREEZE';}
-          fs.writeFileSync(rp,JSON.stringify(r,null,2)+String.fromCharCode(10),'utf8');
-          fs.writeFileSync(xp,JSON.stringify(x,null,2)+String.fromCharCode(10),'utf8');
+          fs.writeFileSync(rp,JSON.stringify(r,null,2)+'\n','utf8');
+          fs.writeFileSync(xp,JSON.stringify(x,null,2)+'\n','utf8');
           NODE
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/CORTE6-DEV-ENTRY-P0-HOSTING-LATEST.json "$REQUEST" "$EXECUTE"
-          git commit -m 'evidence: C6 DEV entry browser PASS'
+          git add app/docs/evidence/CORTE6-REAL-USERS-E2E-HOSTING-LATEST.json "$REQUEST" "$EXECUTE"
+          git commit -m 'evidence: C6 real staff and shopper E2E Hosting DEV PASS'
           git push origin HEAD:docs-tya-v6-v71-audit
 
-      - name: Persist failure stage
-        if: failure() && steps.authorization.outputs.should_run == 'true'
+      - name: Persist exact failure stage and freeze after any deploy
+        if: failure()
         env:
           DEPLOY_OUTCOME: ${{ steps.deploy.outcome }}
         run: |
@@ -265,14 +277,24 @@ jobs:
           mkdir -p app/docs/evidence
           STAGE="$STAGE" node <<'NODE'
           const fs=require('fs');
-          const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
-          const e={schemaVersion:'cxorbia.corte6.dev-entry-p0-failure.v1',generatedAt:new Date().toISOString(),decision:'FAIL_C6_DEV_ENTRY_P0_GATE',failedStage:process.env.STAGE||'unknown',deployStepOutcome:process.env.DEPLOY_OUTCOME||'unknown',hostingDeployExecutions:Number(r.hostingDeployExecutions||0),authorizationConsumed:r.consumed===true,providerMutationPossible:(process.env.DEPLOY_OUTCOME==='success'&&Number(r.hostingDeployExecutions||0)===0),safety:{production:false,merge:false,firestoreWrites:0,authWrites:0,rulesDeploys:0,cloudRunDeploys:0}};
-          fs.writeFileSync('app/docs/evidence/CORTE6-DEV-ENTRY-P0-FAILURE-LATEST.json',JSON.stringify(e,null,2)+String.fromCharCode(10),'utf8');
+          const rp=process.env.REQUEST,xp=process.env.EXECUTE;
+          const r=JSON.parse(fs.readFileSync(rp,'utf8'));
+          const x=JSON.parse(fs.readFileSync(xp,'utf8'));
+          const deployed=process.env.DEPLOY_OUTCOME==='success'||Number(r.hostingDeployExecutions||0)===1;
+          const e={schemaVersion:'cxorbia.corte6.real-users-e2e-failure.v4',generatedAt:new Date().toISOString(),decision:'FAIL_C6_REAL_USERS_E2E_GATE',failedStage:process.env.STAGE||'unknown',deployStepOutcome:process.env.DEPLOY_OUTCOME||'unknown',hostingDeployExecutions:Number(r.hostingDeployExecutions||0),authorizationConsumed:deployed,providerMutationPossible:false,safety:{production:false,merge:false,authUserCreates:0,authWrites:0,passwordChanges:0,firestoreWrites:0,rulesDeploys:0,cloudRunDeploys:0,credentialValuesExported:false}};
+          fs.writeFileSync('app/docs/evidence/CORTE6-REAL-USERS-E2E-FAILURE-LATEST.json',JSON.stringify(e,null,2)+'\n','utf8');
+          if(deployed){
+            for(const o of [r,x]){o.status='consumed_fail_after_hosting_deploy';o.enabled=false;o.consumed=true;o.consumedAt=new Date().toISOString();o.decision=e.decision;o.nextGate='ROOT_CAUSE_FROM_FAILED_STAGE_NO_REDEPLOY_WITHOUT_NEW_AUTHORIZATION';}
+            r.hostingDeployExecutions=1;
+            fs.writeFileSync(rp,JSON.stringify(r,null,2)+'\n','utf8');
+            fs.writeFileSync(xp,JSON.stringify(x,null,2)+'\n','utf8');
+          }
           NODE
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/CORTE6-DEV-ENTRY-P0-FAILURE-LATEST.json
-          git commit -m "evidence: C6 DEV entry failure stage $STAGE" || true
+          git add app/docs/evidence/CORTE6-REAL-USERS-E2E-FAILURE-LATEST.json
+          if [ "$DEPLOY_OUTCOME" = 'success' ]; then git add "$REQUEST" "$EXECUTE"; fi
+          git commit -m "evidence: C6 real-users E2E failure at $STAGE" || true
           git push origin HEAD:docs-tya-v6-v71-audit
 
       - name: Publish status
@@ -282,15 +304,17 @@ jobs:
         run: |
           set -euo pipefail
           STATE=success
-          DESC='PASS_C6_DEV_ENTRY_BROWSER'
+          DESC='PASS_C6_REAL_USERS_E2E'
           if [ '${{ job.status }}' != 'success' ]; then
             STATE=error
             STAGE="$(cat "$OUT_DIR/stage" 2>/dev/null || echo unknown)"
-            DESC="FAIL_C6_DEV_ENTRY_${STAGE}"
+            DESC="FAIL_C6_REAL_USERS_${STAGE}"
             DESC="${DESC:0:140}"
           fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/corte6-dev-entry" -f description="$DESC" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/corte6-real-users-e2e' -f description="$DESC" >/dev/null
 
-      - name: Cleanup
+      - name: Cleanup private material
         if: always()
-        run: rm -rf "$OUT_DIR" firebase.c6-entry-p0.json
+        run: |
+          if [ -f "$OUT_DIR/local-http.pid" ]; then kill "$(cat "$OUT_DIR/local-http.pid")" >/dev/null 2>&1 || true; fi
+          rm -rf "$PRIVATE_DIR" "$OUT_DIR" firebase.c6-real-users.json /tmp/local-e2e.json /tmp/remote-e2e.json
