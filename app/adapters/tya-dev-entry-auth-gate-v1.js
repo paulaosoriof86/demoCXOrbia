@@ -1,12 +1,14 @@
 /* ============================================================
-   CXOrbia · Corte 6 DEV entry lane split v6
+   CXOrbia · Corte 6 DEV entry lane split v7
    ------------------------------------------------------------
    Human visual lane:
    - preserves native direct role cards;
    - keeps HR/source-safe as canonical data authority;
    - never activates protected Firebase replacement semantics;
    - never clears CX.data while the 14/616/208 baseline is valid;
-   - explicitly disables the empty-backend shell contract.
+   - explicitly disables the empty-backend shell contract;
+   - restores an already selected human profile after reload without
+     introducing technical Auth or credentials.
 
    Technical Auth lane (explicit query gate only):
    - validates existing Firebase users;
@@ -36,6 +38,7 @@ window.CX = window.CX || {};
   const backendCfg = CX.BACKEND || {};
   let patched = false;
   let statusObserver = null;
+  let humanRestoreScheduled = false;
 
   function suppressTechnicalStatus(){
     const remove = function(){
@@ -108,6 +111,50 @@ window.CX = window.CX || {};
     return true;
   }
 
+  function savedHumanSession(){
+    try{
+      const saved=JSON.parse(localStorage.getItem('cx_session')||'null');
+      if(!saved||!['admin','cliente','shopper'].includes(saved.role)) return null;
+      return saved;
+    }catch(_){ return null; }
+  }
+
+  function restoreHumanSessionAndEnter(reason){
+    if(!humanVisualEnabled || !validCanonicalBaseline() || !CX.session || !CX.app) return false;
+    const saved=savedHumanSession();
+    if(!saved) return false;
+    if(!CX.session.role){
+      CX.session.role=saved.role;
+      CX.session.user=saved.user||null;
+      CX.session.view=saved.view||null;
+      CX.session.testRole=saved.testRole||null;
+    }
+    preserveHumanDataSource(reason||'restore-human-session');
+    const app=document.getElementById('app');
+    if(app && !app.classList.contains('on') && typeof CX.app.enter==='function'){
+      CX.app.enter();
+    }
+    window.CX_HUMAN_SESSION_CONTINUITY={
+      restored:true,
+      role:CX.session.role,
+      canonicalData:true,
+      credentials:false,
+      technicalAuth:false,
+      reason:reason||'restore-human-session',
+      at:new Date().toISOString()
+    };
+    return true;
+  }
+
+  function scheduleHumanRestore(reason){
+    if(humanRestoreScheduled) return;
+    humanRestoreScheduled=true;
+    setTimeout(function(){
+      humanRestoreScheduled=false;
+      restoreHumanSessionAndEnter(reason||'scheduled-human-restore');
+    },0);
+  }
+
   function configureHumanLane(){
     backendCfg.enabled = false;
     backendCfg.previewMode = true;
@@ -123,7 +170,7 @@ window.CX = window.CX || {};
     window.CX_BACKEND_PREVIEW_LANE = 'source-safe-human-visual';
     window.CX_DEV_ENTRY_AUTH_GATE = {
       applied:true,
-      version:6,
+      version:7,
       mode:'native-direct-role-entry',
       humanVisual:true,
       visibleRoleSelector:true,
@@ -132,6 +179,7 @@ window.CX = window.CX || {};
       integratedFirebaseLoginDisabled:true,
       backendFirebaseDisabledForHumanVisual:true,
       emptyBackendShellDisabled:true,
+      humanSessionContinuity:true,
       hrCanonicalAuthorityPreserved:true,
       canonicalBaselineRequired:{periods:14,visits:616,shoppers:208},
       providerWrites:0,
@@ -141,11 +189,18 @@ window.CX = window.CX || {};
     };
     preserveHumanDataSource('configure-human-lane');
     if(document.readyState === 'loading'){
-      document.addEventListener('DOMContentLoaded', function(){ preserveHumanDataSource('dom-ready-human-lane'); }, {once:true});
+      document.addEventListener('DOMContentLoaded', function(){
+        preserveHumanDataSource('dom-ready-human-lane');
+        scheduleHumanRestore('dom-ready-human-lane');
+      }, {once:true});
     }else{
       preserveHumanDataSource('immediate-human-lane');
+      scheduleHumanRestore('immediate-human-lane');
     }
-    window.addEventListener('cx:live-source-updated', function(){ preserveHumanDataSource('live-source-updated'); });
+    window.addEventListener('cx:live-source-updated', function(){
+      preserveHumanDataSource('live-source-updated');
+      scheduleHumanRestore('live-source-updated');
+    });
   }
 
   function configureTechnicalLane(){
@@ -240,7 +295,7 @@ window.CX = window.CX || {};
 
     window.CX_DEV_ENTRY_AUTH_GATE = {
       applied:true,
-      version:6,
+      version:7,
       mode:'technical-auth-e2e-isolated',
       humanVisual:false,
       visibleRoleSelector:false,
