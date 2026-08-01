@@ -1,11 +1,12 @@
 {
-  "schemaVersion": "cxorbia.c6.live-hr-domain-readonly-audit.v4",
-  "generatedAt": "2026-08-01T01:50:18.757Z",
+  "schemaVersion": "cxorbia.c6.live-hr-domain-readonly-audit.v5",
+  "generatedAt": "2026-08-01T02:01:16.731Z",
   "decision": "PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE",
   "engineVersion": "c6-canonical-domain-composer-v2+actionable-state-v2",
   "staticGates": {
     "domain": "PASS_C6_CANONICAL_DOMAIN_CONSISTENCY",
-    "finance": "PASS_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS"
+    "finance": "PASS_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS",
+    "shopperPortal": "PASS_C6_CANONICAL_SHOPPER_PORTAL_CONTRACT"
   },
   "semantics": {
     "outOfRange": "actionable_unresolved_only",
@@ -14,7 +15,7 @@
   "source": {
     "runtimeRead": true,
     "sourceSafe": true,
-    "revision": "e186df828680ec6e0f2ef62f5cbe984777e8efb15d26ab022d617f81b77cbb6d",
+    "revision": "86c00d087f2504cce4b35c0921c7c56b7a2cc4416e3ff0fbed57740ba940d7e8",
     "periods": 14,
     "visits": 616,
     "shoppers": 208
