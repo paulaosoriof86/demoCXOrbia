@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "cxorbia.corte6.dev-entry-p0-hosting-evidence.v3",
+  "generatedAt": "2026-08-01T15:41:13.751Z",
+  "decision": "PASS_C6_DEV_ENTRY_SINGLE_PRODUCT_LOGIN_EXISTING_HOSTING_REMOTE_BROWSER",
+  "authorizationId": "chat-20260801-c6-dev-entry-p0-hosting-01",
+  "requestId": "corte6-dev-entry-p0-hosting-20260801-01",
+  "rootFixCommit": "1889c7ef080c88c7db6eca56cb26fa2e0ad1466f",
+  "entryFixCommit": "3c6cca240e4b7c4b27334f982c426dc4c710becd",
+  "projectId": "cxorbia-backend-dev",
+  "hostingSite": "cxorbia-backend-dev",
+  "hostingTarget": "cxorbia-dev",
+  "hostingDeployExecutions": 1,
+  "browser": {
+    "bareEntryCanonicalized": true,
+    "connectedLocalStoragePreseeded": true,
+    "genericRolePickerHidden": true,
+    "directProductLoginVisible": true,
+    "technicalSecondLoginAbsent": true,
+    "blockedDataSourceCardAbsent": true,
+    "localCleanBrowserGate": true,
+    "remoteCleanBrowserGate": true,
+    "firebaseSessionReusePreserved": true,
+    "credentialsEmbedded": false
+  },
+  "canonical": {
+    "domain": true,
+    "finance": true,
+    "shopperPortal": true,
+    "reservationsFailClosed": true,
+    "hrVisits616": true,
+    "fullVisualGateFailClosed": true
+  },
+  "safety": {
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "authResets": 0,
+    "rulesDeploys": 0,
+    "cloudRunDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "legacyWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "reservationsWrites": 0,
+    "newFirebaseProjects": 0,
+    "newHostingSites": 0,
+    "production": false,
+    "merge": false
+  }
+}

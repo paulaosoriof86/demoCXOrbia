@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.corte6.dev-entry-p0-hosting-execute.v3",
   "requestId": "corte6-dev-entry-p0-hosting-20260801-01",
-  "status": "execute_authorized_once",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_pass",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -32,5 +32,7 @@
   "newHostingSites": 0,
   "merge": false,
   "production": false,
-  "nextGate": "HUMAN_VISUAL_ACCUMULATIVE_C6_FREEZE"
+  "nextGate": "HUMAN_VISUAL_ACCUMULATIVE_C6_FREEZE",
+  "consumedAt": "2026-08-01T15:41:13.751Z",
+  "decision": "PASS_C6_DEV_ENTRY_SINGLE_PRODUCT_LOGIN_EXISTING_HOSTING_REMOTE_BROWSER"
 }
