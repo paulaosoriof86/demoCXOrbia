@@ -12,6 +12,7 @@ const credentialPath=process.env.GOOGLE_APPLICATION_CREDENTIALS;
 const envelopePath=process.env.CXORBIA_CREDENTIAL_ENVELOPE||'backend/private-inbox/corte6-credential-bundle.enc.json';
 const publicPath='backend/secure/corte6-credential-handoff-public.json';
 const privatePath='backend/secure/corte6-credential-handoff-private.enc.json';
+const crosswalkPath='app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json';
 const outPath=process.env.CXORBIA_E2E_PRIVATE_CREDENTIALS||'.tmp/c6-users-e2e-private/private-e2e.json';
 const remoteInitUrl=process.env.CXORBIA_FIREBASE_INIT_URL||'https://cxorbia-backend-dev.web.app/__/firebase/init.js';
 
@@ -72,7 +73,7 @@ function staffPasswordCandidates(record,user,login){
   return [...values];
 }
 
-for(const p of [credentialPath,envelopePath,publicPath,privatePath])if(!p||!fs.existsSync(p))stageFail(`REQUIRED_FILE_MISSING:${p||'undefined'}`);
+for(const p of [credentialPath,envelopePath,publicPath,privatePath,crosswalkPath])if(!p||!fs.existsSync(p))stageFail(`REQUIRED_FILE_MISSING:${p||'undefined'}`);
 const sa=JSON.parse(fs.readFileSync(credentialPath,'utf8'));
 if(sa.project_id!==expectedProject||typeof sa.private_key!=='string')stageFail('WRONG_SERVICE_ACCOUNT');
 const pub=JSON.parse(fs.readFileSync(publicPath,'utf8'));
@@ -81,6 +82,9 @@ const env=JSON.parse(fs.readFileSync(envelopePath,'utf8'));
 if(env.targetProjectId!==expectedProject||env.tenantId!==tenantId)stageFail('ENVELOPE_TARGET_MISMATCH');
 const bundle=decryptEnvelope(sa,env,pub,encPriv);
 if(!['cxorbia.legacy-credential-hash-bundle.v1','cxorbia.legacy-credential-hash-bundle.v2'].includes(bundle.schemaVersion))stageFail('BUNDLE_CONTRACT_MISMATCH');
+const crosswalk=JSON.parse(fs.readFileSync(crosswalkPath,'utf8'));
+if(crosswalk.schemaVersion!=='tya.visit-identity-crosswalk.readonly.v2'||crosswalk.target?.projectId!==expectedProject||crosswalk.target?.tenantId!==tenantId)stageFail('VISIT_CROSSWALK_CONTRACT_MISMATCH');
+if(crosswalk.policy?.nameMatching!==false||crosswalk.policy?.emailMatching!==false||crosswalk.policy?.phoneMatching!==false)stageFail('VISIT_CROSSWALK_UNSAFE_POLICY');
 
 if(!admin.apps.length)admin.initializeApp({credential:admin.credential.cert(sa),projectId:expectedProject});
 const auth=admin.auth();
@@ -131,9 +135,14 @@ for(const doc of shopperSnap.docs){
   if(!byLegacy.has(legacy))byLegacy.set(legacy,[]);
   byLegacy.get(legacy).push({id:doc.id,data});
 }
-const visitSnap=await db.collection('tenants').doc(tenantId).collection('visits').select('shopperId').get();
-const visitCounts=new Map();
-for(const doc of visitSnap.docs){const id=text(doc.data()?.shopperId);if(id)visitCounts.set(id,(visitCounts.get(id)||0)+1);}
+const canonicalVisitCounts=new Map();
+for(const row of Array.isArray(crosswalk.crosswalk)?crosswalk.crosswalk:[]){
+  if(row?.action!=='REUSE_EXISTING_CANONICAL_SHOPPER')continue;
+  const canonicalId=text(row.canonicalShopperId), count=Number(row.hrVisitCount||0);
+  if(!canonicalId||!Number.isFinite(count)||count<1)continue;
+  canonicalVisitCounts.set(canonicalId,(canonicalVisitCounts.get(canonicalId)||0)+count);
+}
+if(canonicalVisitCounts.size<1)stageFail('VISIT_CROSSWALK_HAS_NO_REFERENCED_CANONICAL_SHOPPERS');
 
 let shopper=null;
 let shopperRecords=0, exactLegacy=0, referencedExact=0, patternMatches=0, authMatches=0, passwordMatches=0;
@@ -145,7 +154,7 @@ for(const record of Array.isArray(bundle.records)?bundle.records:[]){
   const matches=byLegacy.get(legacy)||[];
   if(matches.length!==1)continue;
   exactLegacy++;
-  const profile=matches[0], ownVisits=visitCounts.get(profile.id)||0;
+  const profile=matches[0], ownVisits=canonicalVisitCounts.get(profile.id)||0;
   if(ownVisits<1)continue;
   referencedExact++;
   const candidate=initialPassword(firstNameOf(profile.data));
@@ -164,4 +173,4 @@ if(!shopper)stageFail(`HOLD_SHOPPER_R${shopperRecords}_L${exactLegacy}_V${refere
 
 fs.mkdirSync(path.dirname(outPath),{recursive:true});
 fs.writeFileSync(outPath,JSON.stringify({schemaVersion:'cxorbia.c6.e2e-private-credentials.v2',staff,shopper},null,2)+'\n',{encoding:'utf8',mode:0o600});
-console.log(JSON.stringify({decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V2',staffRole:staff.role,shopperRole:shopper.role,shopperOwnVisits:shopper.expectedOwnVisits,staffRecordsChecked:staffRecords,shopperRecordsChecked:shopperRecords,exactLegacyProfiles:exactLegacy,referencedExactProfiles:referencedExact,authWrites:0,passwordChanges:0,valuesExported:false}));
+console.log(JSON.stringify({decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V2',staffRole:staff.role,shopperRole:shopper.role,shopperOwnVisits:shopper.expectedOwnVisits,staffRecordsChecked:staffRecords,shopperRecordsChecked:shopperRecords,exactLegacyProfiles:exactLegacy,referencedExactProfiles:referencedExact,visitCrosswalkResolved:Number(crosswalk.counts?.resolvedRefs||0),authWrites:0,passwordChanges:0,valuesExported:false}));
