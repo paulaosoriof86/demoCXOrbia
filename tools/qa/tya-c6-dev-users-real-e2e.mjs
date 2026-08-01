@@ -53,8 +53,8 @@ async function waitAuthenticated(page,expectedNamespace){
   },{namespace:expectedNamespace},{timeout:90000});
 }
 
-async function snapshot(page){
-  return page.evaluate(()=>{
+async function snapshot(page,expectedCanonicalShopperId=''){
+  return page.evaluate(({expectedCanonicalShopperId})=>{
     const isVisible=element=>{
       if(!element) return false;
       const style=getComputedStyle(element);
@@ -63,13 +63,22 @@ async function snapshot(page){
     };
     const ctx=window.CX?.backendAuth?.context?.()||null;
     const d=window.CX?.data||{};
-    const own=ctx?.shopperId&&typeof d.visitsForShopper==='function'?d.visitsForShopper(ctx.shopperId,false).length:0;
+    const rawShopperId=String(ctx?.shopperId||'').trim();
+    const identityMap=d.__identityMap||{};
+    const mappedShopperId=String(identityMap[rawShopperId]||rawShopperId).trim();
+    const canonicalShopperId=String(expectedCanonicalShopperId||mappedShopperId).trim();
+    const own=canonicalShopperId&&typeof d.visitsForShopper==='function'?d.visitsForShopper(canonicalShopperId,false).length:0;
     return {
       role:ctx?.role||null,
       authNamespace:ctx?.authNamespace||null,
       tenantId:ctx?.tenantId||null,
       projectIds:Array.isArray(ctx?.projectIds)?ctx.projectIds.slice():[],
-      shopperIdPresent:Boolean(ctx?.shopperId),
+      shopperIdPresent:Boolean(rawShopperId),
+      rawShopperId,
+      mappedShopperId,
+      canonicalShopperId,
+      identityMapResolved:Boolean(rawShopperId&&mappedShopperId&&mappedShopperId!==rawShopperId),
+      expectedCanonicalMatch:!expectedCanonicalShopperId||mappedShopperId===expectedCanonicalShopperId||rawShopperId===expectedCanonicalShopperId,
       currentProjectId:d.currentProjectId||null,
       visits:Array.isArray(d._visitas)?d._visitas.length:0,
       shoppers:Array.isArray(d.shoppers)?d.shoppers.length:0,
@@ -81,11 +90,13 @@ async function snapshot(page){
       genericRolesPresent:document.querySelectorAll('.role-btn,.role-alt').length,
       dualChoicePresent:Boolean(document.getElementById('cxDevDualAccess'))
     };
-  });
+  },{expectedCanonicalShopperId});
 }
 
-async function assertAuthenticatedState(page,kind,expectedOwnVisits=0){
-  const state=await snapshot(page);
+async function assertAuthenticatedState(page,kind,credential){
+  const expectedOwnVisits=kind==='shopper'?Number(credential?.expectedOwnVisits||0):0;
+  const expectedCanonicalShopperId=kind==='shopper'?String(credential?.canonicalShopperId||''):'';
+  const state=await snapshot(page,expectedCanonicalShopperId);
   assert(state.tenantId==='tya',kind+'_tenant_mismatch');
   assert(state.projectIds.includes('cinepolis')||state.role==='super',kind+'_project_scope_missing');
   assert(state.visits===616,kind+`_canonical_visits_mismatch_OBS${state.visits}_EXP616`);
@@ -102,6 +113,7 @@ async function assertAuthenticatedState(page,kind,expectedOwnVisits=0){
     assert(state.authNamespace==='shopper',kind+'_namespace_mismatch');
     assert(state.role==='shopper',kind+'_role_mismatch');
     assert(state.shopperIdPresent===true,kind+'_shopper_scope_missing');
+    assert(state.expectedCanonicalMatch===true,kind+'_identity_map_does_not_resolve_claim_to_canonical');
     assert(state.ownVisits>0,kind+'_own_history_empty');
     if(expectedOwnVisits>0) assert(state.ownVisits===expectedOwnVisits,kind+`_own_history_count_mismatch_OBS${state.ownVisits}_EXP${expectedOwnVisits}`);
   }
@@ -123,16 +135,16 @@ async function runPrincipal(browser,kind,credential){
   await page.fill('#cxDevEntryPassword',credential.password);
   await page.click('#cxDevEntrySubmit');
   await waitAuthenticated(page,kind==='staff'?'staff':'shopper');
-  const first=await assertAuthenticatedState(page,kind,kind==='shopper'?Number(credential.expectedOwnVisits||0):0);
+  const first=await assertAuthenticatedState(page,kind,credential);
 
   await page.reload({waitUntil:'domcontentloaded',timeout:60000});
   await waitAuthenticated(page,kind==='staff'?'staff':'shopper');
-  const refresh=await assertAuthenticatedState(page,kind,kind==='shopper'?Number(credential.expectedOwnVisits||0):0);
+  const refresh=await assertAuthenticatedState(page,kind,credential);
 
   const second=await context.newPage();
   await second.goto(root+'/index-backend-dev.html',{waitUntil:'domcontentloaded',timeout:60000});
   await waitAuthenticated(second,kind==='staff'?'staff':'shopper');
-  const newTab=await assertAuthenticatedState(second,kind,kind==='shopper'?Number(credential.expectedOwnVisits||0):0);
+  const newTab=await assertAuthenticatedState(second,kind,credential);
 
   const entryErrors=errors.filter(message=>/cxDevEntry|tya-dev-entry|invalid-credential|namespace/i.test(message));
   assert(entryErrors.length===0,kind+'_entry_runtime_error');
@@ -140,7 +152,7 @@ async function runPrincipal(browser,kind,credential){
   await second.close();
   await page.evaluate(async()=>{ try{ await window.CX?.backendAuth?.signOut?.(); }catch(_){} });
   await context.close();
-  return {role:first.role,namespace:first.authNamespace,visits:first.visits,shoppers:first.shoppers,ownVisits:first.ownVisits,refreshPreserved:refresh.appOn===true,newTabPreserved:newTab.appOn===true};
+  return {role:first.role,namespace:first.authNamespace,visits:first.visits,shoppers:first.shoppers,ownVisits:first.ownVisits,identityMapResolved:first.identityMapResolved||first.rawShopperId===first.canonicalShopperId,refreshPreserved:refresh.appOn===true,newTabPreserved:newTab.appOn===true};
 }
 
 const browser=await chromium.launch({headless:true});
