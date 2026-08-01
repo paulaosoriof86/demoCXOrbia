@@ -6,9 +6,7 @@ const adapterPath = process.argv[3] || 'app/adapters/tya-dev-entry-auth-gate-v1.
 const index = fs.readFileSync(indexPath, 'utf8');
 const adapter = fs.readFileSync(adapterPath, 'utf8');
 
-function assert(condition, message){
-  if(!condition) throw new Error(message);
-}
+function assert(condition, message){ if(!condition) throw new Error(message); }
 
 const order = [
   'core/backend-browser-auth.js',
@@ -28,28 +26,40 @@ for(const marker of [
 ]) assert(index.includes(marker), 'missing_entry_bootstrap_marker:'+marker);
 
 for(const marker of [
-  'cxDevEntryAccessType',
   'cxDevEntryLogin',
   'cxDevEntryPassword',
   'cxDevEntrySubmit',
-  "CX.backendAuth.authenticate",
-  "'staff'",
-  "'shopper'",
-  'genericRolePickerHidden:true',
+  'resolveNamespaces',
+  'probeNamespace',
+  'claimsMatch',
+  'CX.backendAuth.authenticate',
+  "mode:'username-password-claims-derived'",
+  'visibleRoleSelector:false',
+  'namespaceAutoResolution:true',
+  'dualChoiceOnlyAfterCredentialValidation:true',
+  'technicalStatusVisible:false',
+  'firebaseAuthAuthorityPreserved:true',
   'credentialsEmbedded:false',
   'writes:false',
   'production:false'
 ]) assert(adapter.includes(marker), 'missing_adapter_marker:'+marker);
 
 for(const forbidden of [
-  '@cxorbia-dev.example.com',
-  '@auth.cxorbia.invalid',
-  'signInWithEmailAndPassword(',
+  'cxDevEntryAccessType',
+  'Tipo de acceso',
+  '<option value="staff"',
+  '<option value="shopper"',
   'localStorage.setItem(',
   'sessionStorage.setItem(',
   'passwordStorageKey',
-  'FIREBASE_SERVICE_ACCOUNT'
+  'FIREBASE_SERVICE_ACCOUNT',
+  'console.log(password',
+  'console.log(login'
 ]) assert(!adapter.includes(forbidden), 'forbidden_adapter_pattern:'+forbidden);
+
+assert(adapter.includes("document.getElementById('cxBackendPreviewStatus')"), 'technical_status_suppression_missing');
+assert(adapter.includes("card.querySelectorAll('.role-btn,#goReg')"), 'generic_role_removal_missing');
+assert(adapter.includes("matches.length > 1"), 'dual_identity_post_auth_branch_missing');
 
 const bootstrapMatch = index.match(/<script id="cxDevEntryCanonicalBootstrap">([\s\S]*?)<\/script>/);
 assert(bootstrapMatch, 'entry_bootstrap_script_not_found');
@@ -57,22 +67,11 @@ const bootstrap = bootstrapMatch[1];
 
 function runBootstrap(search){
   let replaced = '';
-  const location = {
-    pathname:'/index-backend-dev.html',
-    search,
-    hash:'',
-    origin:'https://cxorbia-backend-dev.web.app'
-  };
-  const history = {
-    replaceState(_a,_b,next){
-      replaced = next;
-      const q = next.indexOf('?');
-      location.search = q >= 0 ? next.slice(q) : '';
-    }
-  };
+  const location = {pathname:'/index-backend-dev.html',search,hash:'',origin:'https://cxorbia-backend-dev.web.app'};
+  const history = {replaceState(_a,_b,next){replaced=next;const q=next.indexOf('?');location.search=q>=0?next.slice(q):'';}};
   const window = {};
-  vm.runInNewContext(bootstrap, {window, location, history, URLSearchParams});
-  return {location, replaced, state:window.CX_DEV_ENTRY_CANONICAL};
+  vm.runInNewContext(bootstrap, {window, location, history, URLSearchParams, Date});
+  return {location,replaced,state:window.CX_DEV_ENTRY_CANONICAL};
 }
 
 const bare = runBootstrap('');
@@ -88,4 +87,4 @@ const protectedOnly = runBootstrap('?cxProtectedRuntime=YES_PAULA_20260730_PROTE
 assert(protectedOnly.location.search.includes('cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV'), 'protected_entry_missing_preview_companion');
 assert(protectedOnly.location.search.includes('cxProjectId=cinepolis'), 'protected_entry_missing_project');
 
-console.log('PASS_C6_DEV_ENTRY_SINGLE_PRODUCT_LOGIN_GATE');
+console.log('PASS_C6_DEV_ENTRY_USERNAME_PASSWORD_CLAIMS_DERIVED_GATE');
