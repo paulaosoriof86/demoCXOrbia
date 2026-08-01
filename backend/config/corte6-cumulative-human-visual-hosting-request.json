@@ -14,7 +14,7 @@
   "projectId": "cinepolis",
   "scope": "single_existing_dev_hosting_deploy_for_c6_visual_entry_and_single_product_login_p0",
   "rootFixCommit": "1889c7ef080c88c7db6eca56cb26fa2e0ad1466f",
-  "entryFixCommit": "82696922fa15996cd41b396c531f98062c6ef58f",
+  "entryFixCommit": "3c6cca240e4b7c4b27334f982c426dc4c710becd",
   "canonicalBareEntryRequired": true,
   "directProductLoginRequired": true,
   "genericRolePickerForbiddenInProtectedEntry": true,
