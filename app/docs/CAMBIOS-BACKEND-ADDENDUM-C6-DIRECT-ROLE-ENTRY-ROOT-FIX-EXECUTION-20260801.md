@@ -4,7 +4,7 @@
 **Repo:** `paulaosoriof86/demoCXOrbia`  
 **Rama:** `docs-tya-v6-v71-audit`  
 **PR:** #7 draft/open/no merge  
-**Estado:** `ROOT_FIX_FOCAL_APPLIED__AUTHORIZED_GATES_RERUN_IN_PROGRESS__NO_DEPLOY_CONFIRMED`
+**Estado:** `PASS_C6_HUMAN_DIRECT_ROLE_ENTRY_AND_ISOLATED_AUTH_EXISTING_HOSTING_DEV__PENDING_HUMAN_VISUAL`
 
 ## 1. Motivo
 
@@ -12,103 +12,110 @@ La validación humana reprodujo un P0: el carril visible de Paula mostraba Usuar
 
 La causa no estaba en `app/app.js`: ese archivo conservaba correctamente los botones y `CX.app.selectRole(...)`. La sustitución se originó en la integración de Auth protegida, que interceptaba `selectRole()` y `enter()` cuando `CX.BACKEND.enabled` y `devPreviewAuth.enabled` estaban activos.
 
-## 2. Primera corrección y primer gate válido
+## 2. Primera corrección y gate fail-closed
 
 Se separaron dos carriles:
-
 - **humano:** perfiles directos y cero credenciales;
 - **técnico E2E:** Firebase Auth real detrás de parámetros técnicos privados.
 
-El primer workflow ejecutable pasó:
-
-- autorización/destino;
-- contratos estáticos y sintaxis;
-- dominio canónico;
-- Finanzas/Liquidaciones;
-- portal Shopper;
-- Reservas fail-closed;
-- autenticación GCP;
-- selección privada de credenciales existentes;
-- servidor local.
-
-Falló antes de cualquier deploy en:
+El primer workflow ejecutable pasó autorización, contratos estáticos, dominio, Finanzas, portal Shopper, Reservas, GCP, selección privada de credenciales y servidor local. Falló antes del deploy en:
 
 `FAIL_C6_HUMAN_DIRECT_ROLE_ENTRY checkpoint=click_admin`
 
-El botón estaba visible, pero `backend-browser-auth.js` interceptaba el clic y abría su paso integrado de credenciales. El fail-closed funcionó: `hostingDeployExecutions=0`, autorización no consumida, sin writes, sin merge y sin producción.
+El botón estaba visible, pero `backend-browser-auth.js` interceptaba el clic y abría su paso integrado de credenciales. El fail-closed funcionó:
+- `hostingDeployExecutions=0`;
+- autorización no consumida;
+- sin writes;
+- sin merge;
+- sin producción.
 
 ## 3. Root fix focal aplicado
 
 ### `app/adapters/tya-dev-entry-auth-gate-v1.js`
 
-Modificado sin tocar módulos ni core:
-
-- carril humano predeterminado conserva `app.js` como autoridad visual;
-- en ese carril se desactivan antes de `DOMContentLoaded`:
+Sin tocar módulos ni core:
+- el carril humano conserva `app.js` como autoridad visual;
+- antes de `DOMContentLoaded` desactiva únicamente para esa visualización:
   - `CX.BACKEND.enabled`;
   - `CX.BACKEND.devPreviewAuth.enabled`;
-- esto impide que `backend-browser-auth.js` reemplace la entrada aprobada;
-- también impide que `backend-firebase.js` envuelva mutaciones de `CX.data` en la visualización humana;
-- HR viva y los adapters canónicos continúan como autoridad operacional del carril humano;
-- el carril técnico explícito vuelve a habilitar backend/Auth y conserva el E2E real.
+- impide que `backend-browser-auth.js` reemplace la entrada aprobada;
+- impide que `backend-firebase.js` envuelva mutaciones de `CX.data` en el carril humano;
+- HR viva y adapters canónicos permanecen como autoridad operacional;
+- el carril técnico explícito reactiva backend/Auth y conserva E2E real.
 
 ### `tools/qa/tya-c6-dev-entry-browser-smoke.mjs`
 
-Modificado para exigir:
-
+Ahora exige:
 - admin, cliente y shopper visibles;
 - ausencia de `cxDevEntryAuth` y `cxIntegratedAuthStep`;
-- backend Firebase y Auth integrada deshabilitados en carril humano;
+- backend Firebase/Auth integrada deshabilitados en carril humano;
 - clic directo en Administración activa la app;
 - cero formulario de credenciales después del clic.
 
 ### `tools/qa/tya-c6-dev-entry-auth-gate.mjs`
 
-Modificado para bloquear futuras regresiones:
-
+Bloquea futuras regresiones:
 - exige separación humana/técnica;
 - exige bypass de Auth integrada en carril humano;
 - exige backend Firebase deshabilitado solo para esa visualización;
-- preserva los contratos de HR canónica y cero writes.
+- preserva HR canónica y cero writes.
 
-### Workflow autorizado
-
-`.github/workflows/cxorbia-corte6-cumulative-human-visual-hosting.yml`:
+### `.github/workflows/cxorbia-corte6-cumulative-human-visual-hosting.yml`
 
 - se corrigió una condición YAML que inicialmente producía ejecuciones sin jobs;
-- el workflow válido ejecuta gates antes del deploy;
-- solo permite un deploy al Hosting DEV existente si todo pasa;
-- persiste evidencia source-safe y consume la autorización únicamente después del deploy PASS.
+- ejecutó gates antes del deploy;
+- permitió un único deploy al Hosting DEV existente;
+- persistió evidencia source-safe;
+- consumió la autorización únicamente después de PASS remoto.
 
-## 4. Autorización vigente
+## 4. Resultado autoritativo
 
-Autorización de Paula, ya registrada y no repetible para el mismo alcance:
+`PASS_C6_HUMAN_DIRECT_ROLE_ENTRY_AND_ISOLATED_AUTH_EXISTING_HOSTING_DEV`.
 
-> Ejecutar gates del root fix y, solo si todos pasan, un único redeploy del Hosting DEV existente `cxorbia-backend-dev`; sin proyectos/sitios nuevos, sin writes de datos, sin cambios Auth/Rules/Cloud Run, sin merge y sin producción.
+Evidencia:
+`app/docs/evidence/CORTE6-DIRECT-ROLE-ENTRY-HOSTING-LATEST.json`.
 
-Al fallar el primer gate humano antes del deploy:
+### Carril humano
+- modo `native-direct-role-entry`;
+- Administración visible;
+- Cliente visible;
+- Shopper visible;
+- Usuario + Contraseña ausente;
+- browser local PASS;
+- browser remoto PASS.
 
-- `consumed=false`;
-- `hostingDeployExecutions=0`;
-- la misma autorización continúa vigente para la corrección focal y rerun.
+### Carril técnico
+- Auth aislada: true;
+- staff local/remoto PASS;
+- shopper local/remoto PASS;
+- staff: 616 visitas, refresh y nueva pestaña preservados;
+- shopper: 616 visitas, 1 visita propia, refresh y nueva pestaña preservados.
 
-## 5. Baseline acumulativa preservada
-
-No se reabren ni sustituyen:
-
-- 14 periodos / 616 visitas;
+### Baseline canónica
+- 14 periodos;
+- 616 visitas;
 - julio 44 = GT 34 + HN 10;
 - 40 realizadas;
 - 38 cuestionarios;
 - 33 submitidas;
-- 1 fuera de rango accionable;
-- identidad/crosswalk Shopper;
-- Finanzas, Movimientos, Liquidaciones y Beneficios;
-- portal Shopper;
-- Reportes;
-- Reservas fail-closed.
+- 1 fuera de rango accionable.
 
-## 6. Archivos tocados en este bloque
+## 5. Deploy, consumo y seguridad
+
+- Hosting DEV existente: `cxorbia-backend-dev/cxorbia-dev`.
+- Deploy ejecutado: exactamente 1.
+- Autorización: `consumed_pass`.
+- Usuarios creados: 0.
+- Auth writes: 0.
+- Cambios de contraseña: 0.
+- Firestore/Rules/Cloud Run/HR writes: 0.
+- Proyectos Firebase nuevos: 0.
+- Sitios Hosting nuevos: 0.
+- Credenciales/tokens expuestos: no.
+- Merge=false.
+- Producción=false.
+
+## 6. Archivos tocados
 
 - `app/adapters/tya-dev-entry-auth-gate-v1.js`
 - `tools/qa/tya-c6-dev-entry-browser-smoke.mjs`
@@ -117,19 +124,27 @@ No se reabren ni sustituyen:
 - `.github/workflows/cxorbia-corte6-cumulative-human-visual-hosting.yml`
 - `backend/config/corte6-cumulative-human-visual-hosting-request.json`
 - `backend/config/corte6-cumulative-human-visual-hosting-execute.json`
-- documentos vigentes de índice, checkpoint, Claude, pendientes y P0;
-- este addendum.
+- `app/docs/evidence/CORTE6-DIRECT-ROLE-ENTRY-HOSTING-LATEST.json`
+- índice, checkpoint, Claude, pendientes, tracker, Academia y este addendum.
 
 No se modificaron `app/modules/*` ni `app/core/*`.
 
 ## 7. Clasificación
 
-- **Reusable CXOrbia:** separar navegación/selección humana de rol, autenticación técnica y autorización por claims.
-- **Exclusivo TyA:** etiquetas de acceso y alcance del tenant/proyecto.
-- **Claude/prototipo:** preservar `app.js` como autoridad de la entrada visual aprobada.
-- **Academia:** explicar selector de perfil, Auth real y autorización como conceptos diferentes.
-- **Sin impacto Claude:** credenciales privadas E2E, service account y consumo del gate.
+- **Reusable CXOrbia:** separación entre selector humano, autenticación y autorización; gates independientes.
+- **Exclusivo TyA:** etiquetas de perfiles y alcance del tenant/proyecto.
+- **Claude/prototipo:** preservar `app.js` y no insertar Auth visible.
+- **Academia:** diferenciar selección de perfil, Auth real, claims y fuente operacional.
+- **Sin impacto Claude:** credenciales privadas E2E, service account y consumo de autorización.
 
-## 8. Estado seguro
+## 8. Pendiente real y siguiente bloque
 
-El rerun autorizado fue activado después del root fix focal. Este documento no declara todavía PASS, deploy ni consumo de autorización. El resultado final debe completarse únicamente con evidencia del workflow, paridad remota y smoke remoto.
+Pendiente:
+`VALIDACIÓN HUMANA ACUMULATIVA DEL BUILD PUBLICADO → APROBADO C6 → FREEZE`.
+
+Después:
+`FUENTE EXACTA AGOSTO → DISPONIBLES → POSTULACIONES → GATE MULTIROL → AUTORIZACIÓN DE WRITES/CUTOVER → PRODUCCIÓN`.
+
+## 9. Estado seguro
+
+DEV técnicamente PASS. Producción intacta. La autorización de redeploy quedó consumida y no habilita nuevas mutaciones.
