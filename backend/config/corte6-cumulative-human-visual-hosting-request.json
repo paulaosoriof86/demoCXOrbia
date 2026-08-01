@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.corte6.real-users-e2e-hosting-request.v4",
   "requestId": "corte6-real-users-e2e-hosting-20260801-01",
-  "status": "authorized_waiting_execute",
+  "status": "hosting_deployed_remote_real_users_e2e_pending",
   "enabled": true,
   "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -28,7 +28,7 @@
   "genericRolePickerAllowed": false,
   "parallelTechnicalLoginAllowed": false,
   "singleHostingDeployMax": 1,
-  "hostingDeployExecutions": 0,
+  "hostingDeployExecutions": 1,
   "authorizedBy": "Paula",
   "authorizationId": "chat-20260801-c6-real-users-e2e-hosting-01",
   "authorizationText": "Autorizo root fix P0 de usuarios DEV, prueba end-to-end con cuentas DEV reales protegidas y un solo redeploy del Hosting DEV existente; sin crear usuarios, cambiar contraseñas, escribir datos, modificar Rules, Cloud Run, merge ni producción.",
@@ -50,5 +50,6 @@
   "newHostingSites": 0,
   "merge": false,
   "production": false,
-  "nextGate": "LOCAL_REAL_USERS_E2E_BEFORE_DEPLOY"
+  "nextGate": "LOCAL_REAL_USERS_E2E_BEFORE_DEPLOY",
+  "hostingDeployedAt": "2026-08-01T17:20:20.574Z"
 }
