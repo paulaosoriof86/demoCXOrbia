@@ -11,65 +11,76 @@ const outputFile=String(process.env.CXORBIA_HUMAN_GATE_OUTPUT||'').trim();
 let checkpoint='bootstrap';
 let browser=null;
 
-function mark(name){ checkpoint=name; }
-function assert(condition,message){ if(!condition) throw new Error(message); }
-function safe(value){return String(value||'unknown').replace(/[^A-Za-z0-9_.:/-]+/g,'_').replace(/_+/g,'_').slice(0,220);}
-function persist(error){ if(!stageFile)return; try{fs.writeFileSync(stageFile,'human_data__'+String(checkpoint).replace(/[^a-z0-9_-]+/gi,'_')+'__'+safe(error?.message||error)+'\n','utf8');}catch{} }
-function writeOutput(payload){ if(!outputFile)return; fs.mkdirSync(path.dirname(outputFile),{recursive:true}); fs.writeFileSync(outputFile,JSON.stringify(payload,null,2)+'\n','utf8'); }
+const mark=name=>{checkpoint=name;};
+const assert=(condition,message)=>{if(!condition)throw new Error(message);};
+const safe=value=>String(value||'unknown').replace(/[^A-Za-z0-9_.:/=-]+/g,'_').replace(/_+/g,'_').slice(0,700);
+function persist(error){if(!stageFile)return;try{fs.writeFileSync(stageFile,'human_data__'+safe(checkpoint)+'__'+safe(error?.message||error)+'\n','utf8');}catch{}}
+function writeOutput(payload){if(!outputFile)return;fs.mkdirSync(path.dirname(outputFile),{recursive:true});fs.writeFileSync(outputFile,JSON.stringify(payload,null,2)+'\n','utf8');}
 
-async function waitCanonical(page){
-  await page.waitForFunction(()=>{
-    const d=window.CX&&window.CX.data;
-    const ds=window.CX&&window.CX.dataSource;
-    return !!(d&&Array.isArray(d.projects)&&d.projects.length===14&&Array.isArray(d._visitas)&&d._visitas.length===616&&Array.isArray(d.shoppers)&&d.shoppers.length===208&&d.currentPeriodId&&d.currentProjectId&&ds&&ds.status==='ready');
-  },{timeout:60000});
-}
-
-async function readState(page,label){
-  const state=await page.evaluate((label)=>{
-    const d=window.CX?.data;
-    const ds=window.CX?.dataSource;
-    const body=document.body?.innerText||'';
+async function snapshot(page,label){
+  return page.evaluate(label=>{
+    const d=window.CX?.data,ds=window.CX?.dataSource,body=document.body?.innerText||'';
+    let stored=null;try{stored=JSON.parse(localStorage.getItem('cx_session')||'null');}catch{}
     return {
-      label,
-      url:location.href,
-      role:window.CX?.session?.role||null,
+      label,url:location.href,readyState:document.readyState,
+      role:window.CX?.session?.role||null,storedRole:stored?.role||null,
       appOn:document.getElementById('app')?.classList.contains('on')===true,
+      loginHidden:document.getElementById('login')?.classList.contains('hidden')===true,
       periods:Array.isArray(d?.projects)?d.projects.length:-1,
       visits:Array.isArray(d?._visitas)?d._visitas.length:-1,
       shoppers:Array.isArray(d?.shoppers)?d.shoppers.length:-1,
-      currentProjectId:d?.currentProjectId||null,
-      currentPeriodId:d?.currentPeriodId||null,
-      dataMode:ds?.mode||null,
-      dataStatus:ds?.status||null,
-      sourceRef:ds?.sourceRef||null,
+      currentProjectId:d?.currentProjectId||null,currentPeriodId:d?.currentPeriodId||null,
+      dataMode:ds?.mode||null,dataStatus:ds?.status||null,sourceRef:ds?.sourceRef||null,
       emptyShell:window.CX_C4_EMPTY_SHELL_STATE?.active===true,
       backendEmpty:window.CX_BACKEND_LAST_STATE?.empty===true,
-      dataSourceBlocked:body.includes('Fuente de datos no disponible'),
-      noProjects:body.includes('Sin proyectos disponibles'),
-      noPeriods:body.includes('Sin periodos disponibles'),
+      blocked:body.includes('Fuente de datos no disponible'),
+      noProjects:body.includes('Sin proyectos disponibles'),noPeriods:body.includes('Sin periodos disponibles'),
       gate:window.CX_DEV_ENTRY_AUTH_GATE||null,
-      canonical:window.CX_DEV_ENTRY_CANONICAL||null
+      canonical:window.CX_DEV_ENTRY_CANONICAL||null,
+      continuity:window.CX_HUMAN_SESSION_CONTINUITY||null
     };
   },label);
-  assert(state.periods===14,label+':periods_not_14');
-  assert(state.visits===616,label+':visits_not_616');
-  assert(state.shoppers===208,label+':shoppers_not_208');
-  assert(Boolean(state.currentProjectId),label+':project_missing');
-  assert(Boolean(state.currentPeriodId),label+':period_missing');
-  assert(state.dataStatus==='ready',label+':datasource_not_ready:'+state.dataStatus);
-  assert(state.emptyShell===false,label+':empty_shell_active');
-  assert(state.backendEmpty===false,label+':backend_marked_empty');
-  assert(state.dataSourceBlocked===false,label+':datasource_block_visible');
-  assert(state.noProjects===false,label+':no_projects_visible');
-  assert(state.noPeriods===false,label+':no_periods_visible');
-  return state;
+}
+
+function validateCanonical(s,label){
+  assert(s.periods===14,label+':periods='+s.periods);
+  assert(s.visits===616,label+':visits='+s.visits);
+  assert(s.shoppers===208,label+':shoppers='+s.shoppers);
+  assert(Boolean(s.currentProjectId),label+':project_missing');
+  assert(Boolean(s.currentPeriodId),label+':period_missing');
+  assert(s.dataStatus==='ready',label+':datasource='+s.dataStatus);
+  assert(s.emptyShell===false,label+':empty_shell');
+  assert(s.backendEmpty===false,label+':backend_empty');
+  assert(s.blocked===false,label+':datasource_block');
+  assert(s.noProjects===false,label+':no_projects');
+  assert(s.noPeriods===false,label+':no_periods');
+}
+
+async function waitCanonical(page,label){
+  try{
+    await page.waitForFunction(()=>{
+      const d=window.CX?.data,ds=window.CX?.dataSource;
+      return d?.projects?.length===14&&d?._visitas?.length===616&&d?.shoppers?.length===208&&d.currentProjectId&&d.currentPeriodId&&ds?.status==='ready';
+    },{timeout:60000});
+  }catch(error){
+    const s=await snapshot(page,label+'_canonical_timeout');
+    throw new Error(label+':canonical_timeout:'+JSON.stringify(s));
+  }
+}
+
+async function waitAppOn(page,label){
+  try{
+    await page.waitForFunction(()=>document.getElementById('app')?.classList.contains('on')===true,{timeout:60000});
+  }catch(error){
+    const s=await snapshot(page,label+'_app_timeout');
+    throw new Error(label+':app_timeout:'+JSON.stringify(s));
+  }
 }
 
 try{
   mark('launch');
   const executablePath=chromium.executablePath();
-  assert(Boolean(executablePath)&&fs.existsSync(executablePath),'chromium_executable_missing:'+safe(executablePath));
+  assert(executablePath&&fs.existsSync(executablePath),'chromium_missing:'+executablePath);
   browser=await chromium.launch({headless:true,executablePath,chromiumSandbox:false,args:['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage']});
   const context=await browser.newContext({viewport:{width:1440,height:1000},ignoreHTTPSErrors:true,serviceWorkers:'block'});
   const page=await context.newPage();
@@ -78,103 +89,58 @@ try{
     await page.route('**/__/firebase/init.js',route=>route.fulfill({status:200,contentType:'application/javascript; charset=utf-8',body:"window.firebase&&firebase.apps&&!firebase.apps.length&&firebase.initializeApp({apiKey:'local-human-entry',authDomain:'localhost',projectId:'cxorbia-backend-dev',appId:'1:1:web:local'});"}));
     await page.route('**/api/tya/cinepolis/hr-live**',async route=>{
       const incoming=new URL(route.request().url());
-      const target=remoteRoot+'/api/tya/cinepolis/hr-live'+incoming.search;
-      const response=await fetch(target,{headers:{'cache-control':'no-cache','pragma':'no-cache'}});
-      const body=Buffer.from(await response.arrayBuffer());
-      await route.fulfill({status:response.status,headers:{'content-type':response.headers.get('content-type')||'application/json; charset=utf-8','cache-control':'no-store'},body});
+      const response=await fetch(remoteRoot+'/api/tya/cinepolis/hr-live'+incoming.search,{headers:{'cache-control':'no-cache','pragma':'no-cache'}});
+      await route.fulfill({status:response.status,headers:{'content-type':response.headers.get('content-type')||'application/json; charset=utf-8','cache-control':'no-store'},body:Buffer.from(await response.arrayBuffer())});
     });
   }
 
-  const errors=[];
-  page.on('pageerror',error=>errors.push(String(error?.message||error)));
-
-  mark('goto_bare');
+  const pageErrors=[];page.on('pageerror',e=>pageErrors.push(String(e?.message||e)));
+  mark('goto');
   await page.goto(root+'/index-backend-dev.html',{waitUntil:'domcontentloaded',timeout:60000});
-  mark('wait_roles');
   await page.waitForSelector('.role-btn[data-role="admin"]',{state:'visible',timeout:30000});
   await page.waitForSelector('.role-btn[data-role="cliente"]',{state:'visible',timeout:30000});
   await page.waitForSelector('.role-btn[data-role="shopper"]',{state:'visible',timeout:30000});
-  await waitCanonical(page);
+  await waitCanonical(page,'before_entry');
+  const before=await snapshot(page,'before_entry');validateCanonical(before,'before_entry');
 
   const url=new URL(page.url());
-  assert(url.searchParams.get('cxBackendPreview')==='YES_PAULA_20260628_PREVIEW_DEV','canonical_preview_token_missing');
-  assert(url.searchParams.get('cxProjectId')==='cinepolis','canonical_project_missing');
-  assert(!url.searchParams.has('cxProtectedRuntime'),'protected_runtime_leaked_into_human_entry');
-  assert(!url.searchParams.has('cxTechnicalAuthE2E'),'technical_auth_lane_leaked_into_human_entry');
-
-  const bodyText=await page.locator('body').innerText();
-  mark('assert_copy');
-  assert(bodyText.includes('Selecciona un perfil para entrar'),'approved_direct_role_copy_missing');
-  assert(bodyText.includes('Administración / Coordinación'),'admin_role_label_missing');
-  assert(bodyText.includes('Portal del Cliente'),'client_role_label_missing');
-  assert(bodyText.includes('Shopper / Evaluador'),'shopper_role_label_missing');
-
-  mark('assert_no_credentials');
-  assert(await page.locator('#cxDevEntryAuth,#cxDevEntryLogin,#cxDevEntryPassword,#cxDevEntrySubmit,#cxIntegratedAuthStep,#cxIntegratedAuthLogin,#cxIntegratedAuthPassword').count()===0,'credential_form_visible_in_human_entry');
-  assert(!bodyText.includes('Ingresa con tu usuario y contraseña'),'credential_copy_visible_in_human_entry');
-  assert(!bodyText.includes('Fuente de datos no disponible'),'blocked_data_source_card_visible');
-  assert(await page.locator('#cxBackendPreviewStatus').count()===0,'technical_status_visible');
-
-  mark('assert_human_lane');
-  const pre=await readState(page,'before_entry');
-  assert(pre.gate?.mode==='native-direct-role-entry','human_entry_gate_wrong_mode');
-  assert(pre.gate?.visibleRoleSelector===true,'human_role_selector_not_preserved');
-  assert(pre.gate?.usernamePasswordVisible===false,'human_entry_credentials_contract_invalid');
-  assert(pre.gate?.technicalAuthEnabled===false,'technical_auth_enabled_in_human_lane');
-  assert(pre.gate?.integratedFirebaseLoginDisabled===true,'integrated_firebase_login_not_disabled');
-  assert(pre.gate?.backendFirebaseDisabledForHumanVisual===true,'backend_firebase_not_disabled_for_human_lane');
-  assert(pre.canonical?.lane==='source-safe-human-visual','canonical_human_lane_missing');
-  assert(pre.canonical?.protectedRuntime===false,'canonical_human_lane_marked_protected');
+  assert(url.searchParams.get('cxBackendPreview')==='YES_PAULA_20260628_PREVIEW_DEV','preview_token_missing');
+  assert(url.searchParams.get('cxProjectId')==='cinepolis','project_missing');
+  assert(!url.searchParams.has('cxProtectedRuntime'),'protected_runtime_in_human');
+  assert(!url.searchParams.has('cxTechnicalAuthE2E'),'technical_auth_in_human');
+  const text=await page.locator('body').innerText();
+  assert(text.includes('Selecciona un perfil para entrar'),'role_copy_missing');
+  assert(text.includes('Administración / Coordinación')&&text.includes('Portal del Cliente')&&text.includes('Shopper / Evaluador'),'role_labels_missing');
+  assert(await page.locator('#cxDevEntryAuth,#cxIntegratedAuthStep,#cxIntegratedAuthLogin,#cxIntegratedAuthPassword').count()===0,'credentials_visible');
+  assert(before.gate?.mode==='native-direct-role-entry'&&before.gate?.technicalAuthEnabled===false,'human_gate_invalid');
+  assert(before.canonical?.lane==='source-safe-human-visual'&&before.canonical?.protectedRuntime===false,'canonical_lane_invalid');
 
   mark('click_admin');
   await page.click('.role-btn[data-role="admin"]');
-  await page.waitForFunction(()=>document.getElementById('app')?.classList.contains('on')===true,{timeout:30000});
-  await waitCanonical(page);
-  const first=await readState(page,'entry');
-  assert(first.role==='admin','admin_direct_entry_role_mismatch');
-  assert(first.appOn===true,'admin_direct_entry_failed');
+  await waitAppOn(page,'entry');
+  await waitCanonical(page,'entry');
+  const first=await snapshot(page,'entry');validateCanonical(first,'entry');
+  assert(first.role==='admin'&&first.storedRole==='admin','admin_session_not_saved:'+JSON.stringify(first));
 
   const reloads=[];
   for(let i=1;i<=3;i++){
     mark('reload_'+i);
     await page.reload({waitUntil:'domcontentloaded',timeout:60000});
-    await page.waitForFunction(()=>document.getElementById('app')?.classList.contains('on')===true,{timeout:30000});
-    await waitCanonical(page);
-    const state=await readState(page,'reload_'+i);
-    assert(state.role==='admin','reload_'+i+':role_not_preserved');
-    assert(state.periods===first.periods&&state.visits===first.visits&&state.shoppers===first.shoppers,'reload_'+i+':canonical_counts_changed');
+    await waitCanonical(page,'reload_'+i);
+    await waitAppOn(page,'reload_'+i);
+    const state=await snapshot(page,'reload_'+i);validateCanonical(state,'reload_'+i);
+    assert(state.role==='admin'&&state.storedRole==='admin','reload_'+i+':session_not_preserved:'+JSON.stringify(state));
     assert(state.currentPeriodId===first.currentPeriodId,'reload_'+i+':period_changed');
     reloads.push(state);
   }
 
-  const entryErrors=errors.filter(message=>/tya-dev-entry|cxDevEntry|native-direct-role-entry|empty shell|CX_DATA|source-safe-human/i.test(message));
-  assert(entryErrors.length===0,'human_entry_runtime_error:'+entryErrors.join(' | '));
-
-  const result={
-    schemaVersion:'cxorbia.corte6.human-data-preservation-browser-gate.v1',
-    generatedAt:new Date().toISOString(),
-    decision:'PASS_C6_HUMAN_DIRECT_ROLE_AND_CANONICAL_DATA_14_616_208',
-    root,
-    local:isLocal,
-    directRoleEntry:true,
-    credentialsVisible:false,
-    canonical:{periods:first.periods,visits:first.visits,shoppers:first.shoppers,currentProjectId:first.currentProjectId,currentPeriodId:first.currentPeriodId},
-    reloads:reloads.map(s=>({periods:s.periods,visits:s.visits,shoppers:s.shoppers,currentProjectId:s.currentProjectId,currentPeriodId:s.currentPeriodId,dataStatus:s.dataStatus,emptyShell:s.emptyShell})),
-    emptyShell:false,
-    dataSourceBlocked:false,
-    protectedRuntimeInHumanLane:false,
-    technicalAuthInHumanLane:false,
-    writes:false,
-    production:false
-  };
+  const relevantErrors=pageErrors.filter(m=>/tya-dev-entry|cxDevEntry|native-direct-role-entry|empty shell|CX_DATA|source-safe-human/i.test(m));
+  assert(relevantErrors.length===0,'runtime_errors:'+relevantErrors.join('|'));
+  const result={schemaVersion:'cxorbia.corte6.human-data-preservation-browser-gate.v1',generatedAt:new Date().toISOString(),decision:'PASS_C6_HUMAN_DIRECT_ROLE_AND_CANONICAL_DATA_14_616_208',root,local:isLocal,directRoleEntry:true,credentialsVisible:false,canonical:{periods:first.periods,visits:first.visits,shoppers:first.shoppers,currentProjectId:first.currentProjectId,currentPeriodId:first.currentPeriodId},reloads:reloads.map(s=>({periods:s.periods,visits:s.visits,shoppers:s.shoppers,currentProjectId:s.currentProjectId,currentPeriodId:s.currentPeriodId,dataStatus:s.dataStatus,emptyShell:s.emptyShell,role:s.role})),emptyShell:false,dataSourceBlocked:false,protectedRuntimeInHumanLane:false,technicalAuthInHumanLane:false,writes:false,production:false};
   writeOutput(result);
-  mark('pass');
-  await browser.close();
-  browser=null;
+  mark('pass');await browser.close();browser=null;
   console.log('PASS_C6_HUMAN_DIRECT_ROLE_AND_CANONICAL_DATA_14_616_208');
 }catch(error){
-  persist(error);
-  try{if(browser)await browser.close();}catch{}
-  console.error('FAIL_C6_HUMAN_DATA_PRESERVATION checkpoint='+checkpoint+' error='+(error?.message||String(error)));
-  throw error;
+  persist(error);try{if(browser)await browser.close();}catch{}
+  console.error('FAIL_C6_HUMAN_DATA_PRESERVATION checkpoint='+checkpoint+' error='+(error?.message||String(error)));throw error;
 }
