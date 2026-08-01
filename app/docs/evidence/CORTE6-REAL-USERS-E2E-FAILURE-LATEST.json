@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.corte6.real-users-e2e-failure.v4",
-  "generatedAt": "2026-08-01T16:19:22.106Z",
+  "generatedAt": "2026-08-01T16:24:27.066Z",
   "decision": "FAIL_C6_REAL_USERS_E2E_GATE",
-  "failedStage": "select_existing_credentials__HOLD_NO_EXISTING_SHOPPER_PLAINTEXT_CREDENTIAL_MATCH_C0_A0_P0",
+  "failedStage": "select_existing_credentials_v2__ENVELOPE_TARGET_MISMATCH",
   "deployStepOutcome": "skipped",
   "hostingDeployExecutions": 0,
   "authorizationConsumed": false,
