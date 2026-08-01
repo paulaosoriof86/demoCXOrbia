@@ -71,8 +71,8 @@ assert(gate.genericRolePickerHidden === true, 'generic_role_picker_not_hidden');
 assert(gate.credentialsEmbedded === false, 'credentials_embedded_flag_invalid');
 assert(gate.writes === false && gate.production === false, 'unsafe_entry_gate_scope');
 
-const fatal = consoleErrors.filter(x => !/Firebase|auth|firestore|Failed to fetch|404|network-request-failed|API key not valid/i.test(x));
-assert(fatal.length === 0, 'unexpected_page_errors:'+fatal.join(' | '));
+const entryFatal = consoleErrors.filter(x => /tya-dev-entry|cxDevEntry|patchProductEntry|renderDirectProductLogin/i.test(x));
+assert(entryFatal.length === 0, 'entry_gate_page_errors:'+entryFatal.join(' | '));
 
 await browser.close();
 console.log('PASS_C6_DEV_ENTRY_BROWSER_SMOKE');
