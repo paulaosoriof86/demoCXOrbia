@@ -1,108 +1,96 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-01  
-**Estado vivo:** `C6_REAL_STAFF_SHOPPER_E2E_HOSTING_DEV_PASS__PENDING_HUMAN_VISUAL_ACCUMULATIVE__NO_PRODUCTION`
+**Estado vivo:** `P0_PROVEN__DIRECT_ROLE_ENTRY_REPLACED_BY_TECHNICAL_AUTH_FORM__DEV_BLOCKED__NO_PRODUCTION`
 
 ## 1. No reabrir
-- Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR#7 draft/open/no merge.
-- Corte3 FROZEN; R17N1,406/1,406 no repetir.
-- Corte5:14 periodos/616 visitas/current2026-07 PASS.
-- Auth/claims/Rules, HR live/auto-month, perfil protegido y finanzas canónicas preservados.
+- Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR #7 draft/open/no merge.
+- Corte 3 FROZEN; R17N 1,406/1,406 no repetir.
+- Corte 5: 14 periodos/616 visitas/current 2026-07 PASS.
+- HR viva, histórico, shoppers, identidad, Finanzas/Liquidaciones, portal Shopper y Reservas fail-closed preservados.
 - Producción `tya-plataforma` intacta.
 
-## 2. P0 que Claude no debe reintroducir
-Se probaron cuatro errores acumulados:
-- URL base con fuente `connected` bloqueada;
-- selector genérico antes del login;
-- selector `Tipo de acceso` antes de autenticar;
-- shopper autenticado con Firestore scoped de una visita reemplazando la HR de616 visitas.
+## 2. P0 vigente que Claude no debe reintroducir
+El acceso funcional aprobado para la visualización no usa Usuario + Contraseña. Debe entrar directamente mediante perfiles visibles:
+- Administración / Coordinación;
+- Portal del Cliente;
+- Shopper / Evaluador;
+- roles adicionales configurados cuando corresponda.
 
-Los PASS anteriores de carcasa quedaron invalidados porque no ejecutaban credenciales reales, claims, hidratación ni persistencia.
+`app/app.js` conserva este contrato nativo con `Selecciona un perfil para entrar` y `.role-btn` por rol.
 
-## 3. Root fix canónico preservado
-Decisión:
-`PASS_C6_CANONICAL_ROOT_FIX_EXISTING_HOSTING_DEV_REMOTE_SMOKE`.
+El adapter `app/adapters/tya-dev-entry-auth-gate-v1.js` reemplazó indebidamente esa interfaz:
+- elimina `.role-btn,#goReg`;
+- inserta `cxDevEntryAuth`;
+- pide Usuario + Contraseña.
 
-Adapters v2 vigentes:
-- composer/semántica/watcher;
-- consistencia transversal;
-- Finanzas/Liquidaciones;
-- portal Shopper;
-- Reservas fail-closed.
+No repetir ni consolidar este reemplazo.
 
-## 4. Entrada y usuarios — contrato vigente
-Decisión autoritativa:
-`PASS_C6_REAL_STAFF_SHOPPER_E2E_EXISTING_HOSTING_DEV`.
+## 3. Distinción obligatoria de carriles
+### Carril humano de visualización
+- entrada directa por perfiles;
+- cero usuario/contraseña;
+- usa la UX nativa del prototipo;
+- permite revisar Administración, Cliente y Shopper.
 
-Implementación:
-- `index-backend-dev.html` normaliza la URL base al carril protegido;
-- `tya-dev-entry-auth-gate-v1.js` muestra solo Usuario + Contraseña;
-- namespace, rol, tenant y proyecto se derivan de Firebase claims;
-- solo una identidad realmente dual puede elegir perfil, después de validar credenciales;
-- no hay selector genérico, `Tipo de acceso`, segunda pantalla técnica ni panel diagnóstico visible;
-- `tya-protected-auth-hr-authority-bridge-v1.js` restaura la HR viva después del read Firestore y compone el overlay protegido con llaves técnicas exactas;
-- HR mantiene616 visitas para staff y shopper; Firestore no reemplaza la operación;
-- credenciales, tokens y UIDs no se guardan ni se publican.
+### Carril técnico Firebase Auth
+- cuentas DEV reales;
+- claims, namespace, tenant, proyecto y shopperId;
+- HR 616 preservada después de Auth;
+- refresh y nueva pestaña;
+- oculto detrás de un gate/parámetro técnico explícito;
+- nunca reemplaza la interfaz humana.
 
-## 5. Evidencia E2E real
-Pruebas local predeploy y remota postdeploy con cuentas DEV existentes:
+El PASS `PASS_C6_REAL_STAFF_SHOPPER_E2E_EXISTING_HOSTING_DEV` es válido únicamente para el carril técnico.
 
-### Staff
-- rol real `coordinador`;
-- namespace `staff`;
--616 visitas;
--194 shoppers;
-- refresh y nueva pestaña preservan sesión y contexto.
-
-### Shopper
-- rol `shopper`;
-- namespace `shopper`;
--616 visitas canónicas preservadas;
--208 shoppers en el modelo compuesto;
--1 visita propia en la identidad probada;
-- identidad exacta resuelta;
-- refresh y nueva pestaña preservan sesión, claims, proyecto e histórico.
-
-No se crearon usuarios ni se cambiaron contraseñas.
-
-## 6. Contratos que Claude debe incorporar nativamente
-- HR manda periodos, visitas y estado operativo antes y después de Auth.
-- Auth/Firestore aportan principal, claims, alcance y overlay protegido; nunca sustituyen HR.
-- Una sola faceta canónica alimenta Dashboard, fases, detalle, histórico, portal y Finanzas.
-- Identidad Shopper solo por llaves técnicas exactas y crosswalk auditable.
+## 4. Contratos canónicos preservados
+- HR manda periodos, visitas y estado operativo.
+- Auth/Firestore aportan principal, claims, alcance y overlay; nunca sustituyen HR.
+- Una sola faceta alimenta Dashboard, fases, detalle, histórico, portal y Finanzas.
+- Identidad Shopper solo por llaves técnicas exactas.
 - Conflictos sin match exacto pasan a review queue.
-- Perfil completo por campos reales.
-- Portal Shopper muestra todas las visitas de la identidad canónica.
+- Portal Shopper muestra las visitas de la identidad canónica.
 - Toda realizada entra a Liquidaciones; sin cruce exacto no hay lote/pago.
-- Refresh y nueva pestaña no recomp ponen desde estado ya enriquecido ni degradan HR.
-- Reservas usa backend configurable o queda fail-closed.
-- El login del producto es único y no pide al usuario declarar su rol.
+- Reservas queda fail-closed hasta fuente real.
 
-## 7. Baseline técnica
-HR:14 periodos/616 visitas/208 shoppers; JUL44=GT34+HN10; realizadas40; cuestionario38; submitidas33; liquidationCandidates33; fuera de rango accionable1; evidencia histórica7; duplicados técnicos0.
+Baseline: 14 periodos/616 visitas/208 shoppers; julio 44=GT34+HN10; realizadas 40; cuestionario 38; submitidas 33; fuera de rango accionable 1.
 
-## 8. Regla frontend
-`/app/modules/*` y `/app/core/*` no fueron modificados por este root fix. Claude debe consumir adapters/contratos y no duplicar semántica HR, identidad, finanzas o autenticación dentro de módulos.
+## 5. Root fix requerido
+Sin modificar `app/modules/*` ni `app/core/*`:
+- preservar `app.js` como autoridad visual;
+- impedir que el adapter técnico remueva los perfiles en el carril humano;
+- activar el formulario técnico solo mediante parámetro E2E explícito;
+- crear gates separados de entrada humana y Auth técnico;
+- el gate humano debe fallar si aparece `cxDevEntryAuth` o faltan admin/cliente/shopper.
 
-## 9. Validación humana pendiente
-Comprobar acumulativamente:
-- URL base muestra solo Usuario + Contraseña o restaura sesión;
-- no aparece selector genérico, `Tipo de acceso` ni panel técnico;
-- Dashboard/fases44/40/38/33/1;
+## 6. Validación humana pendiente
+Después del redeploy corregido:
+- selector directo visible;
+- Dashboard/hoja de ruta 44/40/38/33/1;
 - comparativo histórico;
-- tres refresh/focus sin crecimiento ni salto;
-- identidad/perfil/certificación/histórico Shopper coherentes;
-- Finanzas, Movimientos, Liquidaciones y Beneficios consistentes;
-- Reportes sin pérdida;
-- Reservas read-only/fuente pendiente.
+- tres refresh/focus sin crecimiento, reducción ni salto;
+- Shoppers, perfil, certificación e histórico;
+- Portal Cliente y Portal Shopper;
+- Finanzas, Movimientos, Liquidaciones y Beneficios;
+- Reportes;
+- Reservas read-only.
 
-Solo con `APROBADO` se congela Corte6.
+Solo con `APROBADO` se congela Corte 6.
 
-## 10. Agosto y Reservas
-Después del freeze, conectar fuente exacta de agosto y/o Reservas real. No copiar julio ni activar writes sin autorización y gate específicos.
+## 7. Regla frontend
+Claude debe conservar el selector de perfiles de `app.js`. No debe insertar autenticación visible desde módulos ni duplicar semántica de HR, identidad, Finanzas o estados.
 
-## 11. Academia/manuales
-Incorporar login único sin selector previo, derivación por claims, HR como autoridad después de Auth, overlay protegido, restauración de sesión, pruebas E2E con principal real y bloqueo de PASS de carcasa.
+## 8. Academia/manuales
+Documentar la diferencia entre:
+- selector de perfil para visualización/experiencia;
+- autenticación real;
+- autorización por claims;
+- alcance de datos y fuente operacional.
 
-## 12. Estado seguro
-Hosting DEV deploy1; usuarios creados0; Auth writes0; cambios/resets de contraseña0; Firestore/Rules/Storage/HR/legacy/Make/Gemini/pagos/Reservas writes0; Cloud Run deploys0; nuevos Firebase/Hosting0; credenciales/tokens exportados0; merge=false; producción=false.
+Un PASS de autenticación no valida automáticamente la UX de entrada.
+
+## 9. Después del freeze
+Fuente exacta de agosto → disponibles → postulaciones → gate multirol → autorización de writes/cutover → producción.
+
+## 10. Estado seguro
+Hosting DEV actual bloqueado por el P0 visible; producción intacta; sin provider writes nuevos, merge ni producción.
