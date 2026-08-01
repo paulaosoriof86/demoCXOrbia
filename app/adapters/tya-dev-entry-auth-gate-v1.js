@@ -1,11 +1,12 @@
 /* ============================================================
-   CXOrbia · Corte 6 DEV entry lane split v5
+   CXOrbia · Corte 6 DEV entry lane split v6
    ------------------------------------------------------------
    Human visual lane:
    - preserves native direct role cards;
    - keeps HR/source-safe as canonical data authority;
    - never activates protected Firebase replacement semantics;
-   - never clears CX.data while the 14/616/208 baseline is valid.
+   - never clears CX.data while the 14/616/208 baseline is valid;
+   - explicitly disables the empty-backend shell contract.
 
    Technical Auth lane (explicit query gate only):
    - validates existing Firebase users;
@@ -56,11 +57,12 @@ window.CX = window.CX || {};
   }
 
   function preserveHumanDataSource(reason){
-    if(!CX.dataSource || !validCanonicalBaseline()) return;
+    if(!CX.dataSource || !validCanonicalBaseline()) return false;
+    const now = new Date().toISOString();
     CX.dataSource.mode = 'source_safe_preview';
     CX.dataSource.status = 'ready';
     CX.dataSource.sourceRef = CX.dataSource.sourceRef || 'hr:tya-source-safe-human-visual-dev';
-    CX.dataSource.updatedAt = new Date().toISOString();
+    CX.dataSource.updatedAt = now;
     CX.dataSource.runtimeReadActive = true;
     CX.dataSource.runtimeSyncActive = false;
     CX.dataSource.updating = false;
@@ -80,8 +82,30 @@ window.CX = window.CX || {};
       auth:'validated-separately',
       counts:{projects:14,periods:14,visits:616,shoppers:208},
       reason:reason || 'human-lane-preserved',
-      at:new Date().toISOString()
+      at:now
     };
+    window.CX_CORTE4_READONLY = {
+      ready:true,
+      source:'hr-source-safe',
+      empty:false,
+      readOnly:true,
+      writeMode:'disabled',
+      preserveCxDataInterface:true,
+      fallbackUsed:false,
+      humanVisual:true,
+      state:'canonical-data-preserved',
+      at:now
+    };
+    window.CX_C4_EMPTY_SHELL_STATE = {
+      active:false,
+      role:CX.session && CX.session.role || null,
+      projects:14,
+      periodId:CX.data.currentPeriodId || null,
+      projectId:CX.data.currentProjectId || null,
+      staleShell:false,
+      reason:reason || 'human-lane-preserved'
+    };
+    return true;
   }
 
   function configureHumanLane(){
@@ -92,14 +116,14 @@ window.CX = window.CX || {};
     backendCfg.writeMode = 'disabled';
     backendCfg.enableDataWrites = false;
     backendCfg.enableOperationalWrites = false;
-    backendCfg.allowEmptyBackend = true;
+    backendCfg.allowEmptyBackend = false;
     backendCfg.failClosedOnReadError = true;
     backendCfg.preserveCxDataInterface = true;
     if(backendCfg.devPreviewAuth) backendCfg.devPreviewAuth.enabled = false;
     window.CX_BACKEND_PREVIEW_LANE = 'source-safe-human-visual';
     window.CX_DEV_ENTRY_AUTH_GATE = {
       applied:true,
-      version:5,
+      version:6,
       mode:'native-direct-role-entry',
       humanVisual:true,
       visibleRoleSelector:true,
@@ -107,6 +131,7 @@ window.CX = window.CX || {};
       technicalAuthEnabled:false,
       integratedFirebaseLoginDisabled:true,
       backendFirebaseDisabledForHumanVisual:true,
+      emptyBackendShellDisabled:true,
       hrCanonicalAuthorityPreserved:true,
       canonicalBaselineRequired:{periods:14,visits:616,shoppers:208},
       providerWrites:0,
@@ -126,6 +151,7 @@ window.CX = window.CX || {};
   function configureTechnicalLane(){
     backendCfg.enabled = true;
     backendCfg.humanVisualSourceSafe = false;
+    backendCfg.allowEmptyBackend = true;
     if(backendCfg.devPreviewAuth) backendCfg.devPreviewAuth.enabled = true;
     window.CX_BACKEND_PREVIEW_LANE = 'protected-technical-e2e';
   }
@@ -214,7 +240,7 @@ window.CX = window.CX || {};
 
     window.CX_DEV_ENTRY_AUTH_GATE = {
       applied:true,
-      version:5,
+      version:6,
       mode:'technical-auth-e2e-isolated',
       humanVisual:false,
       visibleRoleSelector:false,
