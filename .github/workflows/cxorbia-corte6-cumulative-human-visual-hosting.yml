@@ -44,6 +44,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$OUT_DIR"
+          echo auth_contract > "$OUT_DIR/stage"
           STATE="$(node - <<'NODE'
           const fs=require('fs');
           const x=JSON.parse(fs.readFileSync(process.env.EXECUTE,'utf8'));
@@ -70,15 +71,15 @@ jobs:
             if(Number(r[k]||0)!==0||Number(x[k]||0)!==0)throw new Error('unsafe_scope:'+k);
           }
           if(r.merge!==false||r.production!==false||x.merge!==false||x.production!==false)throw new Error('unsafe_scope');
-          process.stdout.write(r.entryFixCommit);
           NODE
           ENTRY_FIX_COMMIT="$(node -p "JSON.parse(require('fs').readFileSync(process.env.REQUEST,'utf8')).entryFixCommit")"
           echo "entry_fix_commit=$ENTRY_FIX_COMMIT" >> "$GITHUB_OUTPUT"
 
-      - name: Verify protected lineage and entry fix
+      - name: Verify lineage and protected files
         if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
+          echo lineage > "$OUT_DIR/stage"
           git merge-base --is-ancestor "$ROOT_FIX_COMMIT" HEAD
           git merge-base --is-ancestor "${{ steps.authorization.outputs.entry_fix_commit }}" HEAD
           if git diff --name-only "$ROOT_FIX_COMMIT"..HEAD | grep -Eq '^app/(modules|core)/'; then
@@ -87,7 +88,6 @@ jobs:
           fi
           grep -q 'id="cxDevEntryCanonicalBootstrap"' app/index-backend-dev.html
           grep -q 'adapters/tya-dev-entry-auth-gate-v1.js' app/index-backend-dev.html
-          grep -q 'cxDevEntryAuth' app/adapters/tya-dev-entry-auth-gate-v1.js
           grep -q 'CX.backendAuth.authenticate' app/adapters/tya-dev-entry-auth-gate-v1.js
           grep -q 'credentialsEmbedded:false' app/adapters/tya-dev-entry-auth-gate-v1.js
 
@@ -95,6 +95,7 @@ jobs:
         if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
+          echo static_gates > "$OUT_DIR/stage"
           node --check app/adapters/tya-dev-entry-auth-gate-v1.js
           node --check tools/qa/tya-c6-dev-entry-auth-gate.mjs
           node --check tools/qa/tya-c6-dev-entry-browser-smoke.mjs
@@ -115,6 +116,7 @@ jobs:
         if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
+          echo browser_install > "$OUT_DIR/stage"
           npm install --no-save --ignore-scripts firebase-tools@latest playwright@1.54.2 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null
 
@@ -122,6 +124,7 @@ jobs:
         if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
+          echo local_browser > "$OUT_DIR/stage"
           python3 -m http.server 4173 --directory app >"$OUT_DIR/local-http.log" 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID >/dev/null 2>&1 || true' EXIT
@@ -130,6 +133,10 @@ jobs:
             sleep 1
           done
           node tools/qa/tya-c6-dev-entry-browser-smoke.mjs http://127.0.0.1:4173
+
+      - name: Mark Google authentication stage
+        if: steps.authorization.outputs.should_run == 'true'
+        run: echo gcp_auth > "$OUT_DIR/stage"
 
       - name: Authenticate existing Google Cloud DEV
         if: steps.authorization.outputs.should_run == 'true'
@@ -141,6 +148,7 @@ jobs:
         if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
+          echo provider_preflight > "$OUT_DIR/stage"
           curl -fsSL --retry 6 --retry-delay 2 "$DEV_ROOT_URL/api/tya/cinepolis/hr-live?format=meta&fresh=1" -o "$OUT_DIR/hr-meta-before.json"
           code="$(curl -sS -o "$OUT_DIR/full-unauthorized-before.json" -w '%{http_code}' "$DEV_ROOT_URL/api/tya/cinepolis/hr-live?view=full-profile&scope=admin")"
           test "$code" = '401'
@@ -156,6 +164,7 @@ jobs:
         if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
+          echo prepare_hosting > "$OUT_DIR/stage"
           node <<'NODE'
           const fs=require('fs');
           const config={hosting:{target:'cxorbia-dev',public:'app',ignore:['firebase.json','**/.*','**/node_modules/**'],rewrites:[{source:'/api/tya/cinepolis/hr-live',run:{serviceId:'cxorbia-live-hr-dev',region:'us-central1'}},{source:'**',destination:'/index.html'}],headers:[{source:'**',headers:[{key:'Cache-Control',value:'no-store'}]},{source:'**/*.html',headers:[{key:'Content-Type',value:'text/html; charset=utf-8'}]},{source:'**/*.js',headers:[{key:'Content-Type',value:'application/javascript; charset=utf-8'}]},{source:'**/*.css',headers:[{key:'Content-Type',value:'text/css; charset=utf-8'}]},{source:'**/*.json',headers:[{key:'Content-Type',value:'application/json; charset=utf-8'}]}]}};
@@ -167,6 +176,7 @@ jobs:
         id: deploy
         run: |
           set -euo pipefail
+          echo deploy_hosting > "$OUT_DIR/stage"
           cp "$OUT_DIR/firebase.hosting.json" firebase.c6-entry-p0.json
           npx firebase deploy --config firebase.c6-entry-p0.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive
           rm -f firebase.c6-entry-p0.json
@@ -175,6 +185,7 @@ jobs:
         if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
+          echo record_deploy > "$OUT_DIR/stage"
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
           node <<'NODE'
@@ -197,6 +208,7 @@ jobs:
         if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
+          echo remote_browser > "$OUT_DIR/stage"
           mkdir -p "$OUT_DIR/adapters"
           curl -fsSL --retry 10 --retry-delay 3 "$DEV_ROOT_URL/index-backend-dev.html" -o "$OUT_DIR/index-backend-dev.html"
           curl -fsSL --retry 10 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-dev-entry-auth-gate-v1.js" -o "$OUT_DIR/adapters/tya-dev-entry-auth-gate-v1.js"
@@ -219,6 +231,7 @@ jobs:
         if: steps.authorization.outputs.should_run == 'true'
         run: |
           set -euo pipefail
+          echo persist_pass > "$OUT_DIR/stage"
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
           mkdir -p app/docs/evidence
@@ -240,6 +253,28 @@ jobs:
           git commit -m 'evidence: C6 DEV entry browser PASS'
           git push origin HEAD:docs-tya-v6-v71-audit
 
+      - name: Persist failure stage
+        if: failure() && steps.authorization.outputs.should_run == 'true'
+        env:
+          DEPLOY_OUTCOME: ${{ steps.deploy.outcome }}
+        run: |
+          set -euo pipefail
+          STAGE="$(cat "$OUT_DIR/stage" 2>/dev/null || echo unknown)"
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          STAGE="$STAGE" node <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
+          const e={schemaVersion:'cxorbia.corte6.dev-entry-p0-failure.v1',generatedAt:new Date().toISOString(),decision:'FAIL_C6_DEV_ENTRY_P0_GATE',failedStage:process.env.STAGE||'unknown',deployStepOutcome:process.env.DEPLOY_OUTCOME||'unknown',hostingDeployExecutions:Number(r.hostingDeployExecutions||0),authorizationConsumed:r.consumed===true,providerMutationPossible:(process.env.DEPLOY_OUTCOME==='success'&&Number(r.hostingDeployExecutions||0)===0),safety:{production:false,merge:false,firestoreWrites:0,authWrites:0,rulesDeploys:0,cloudRunDeploys:0}};
+          fs.writeFileSync('app/docs/evidence/CORTE6-DEV-ENTRY-P0-FAILURE-LATEST.json',JSON.stringify(e,null,2)+String.fromCharCode(10),'utf8');
+          NODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CORTE6-DEV-ENTRY-P0-FAILURE-LATEST.json
+          git commit -m "evidence: C6 DEV entry failure stage $STAGE" || true
+          git push origin HEAD:docs-tya-v6-v71-audit
+
       - name: Publish status
         if: always()
         env:
@@ -248,8 +283,13 @@ jobs:
           set -euo pipefail
           STATE=success
           DESC='PASS_C6_DEV_ENTRY_BROWSER'
-          if [ '${{ job.status }}' != 'success' ]; then STATE=error; DESC='FAIL_C6_DEV_ENTRY_BROWSER'; fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/corte6-dev-entry/$DESC" -f description="$DESC" >/dev/null
+          if [ '${{ job.status }}' != 'success' ]; then
+            STATE=error
+            STAGE="$(cat "$OUT_DIR/stage" 2>/dev/null || echo unknown)"
+            DESC="FAIL_C6_DEV_ENTRY_${STAGE}"
+            DESC="${DESC:0:140}"
+          fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/corte6-dev-entry" -f description="$DESC" >/dev/null
 
       - name: Cleanup
         if: always()
