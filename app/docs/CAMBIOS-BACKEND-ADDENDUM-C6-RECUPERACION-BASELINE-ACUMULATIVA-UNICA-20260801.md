@@ -6,7 +6,7 @@
 
 ## 1. P0 humano que supersede el cierre anterior
 
-La validación humana del Hosting DEV demostró que el último build no era la baseline acumulativa aprobada. La entrada directa mantenía la HR, pero abría una experiencia reducida y fragmentada:
+La validación humana del Hosting DEV demostró que el último build no era la baseline acumulativa aprobada. La entrada directa mantenía parte de la HR, pero abría una experiencia reducida y fragmentada:
 
 - Shopper sin identidad autenticada;
 - Dashboard con julio seleccionado y agosto fabricado por reloj;
@@ -28,7 +28,7 @@ La recuperación no selecciona pantallas aisladas ni crea otra candidata. Parte 
 | Login | `PASS_EXISTING_HOSTING_DEV_SINGLE_LOGIN_REMOTE_VERIFIED` · commit `c6f1638e...` |
 | Histórico completo | R20 `all_verified_or_detected_hr_periods` · commit `f9e7f65b...` |
 | Dominio/Finanzas/Shopper | `PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE` · commit `e8cc8301...` |
-| Operación | HR viva, todos los periodos detectados; no cifras congeladas |
+| Operación | HR viva, todos los periodos detectados; nunca cifras congeladas |
 | Perfil/certificación | Firestore protegido como overlay por crosswalk exacto |
 | Honorarios | configuración del proyecto Cinépolis: GT Q60 / HN L200 |
 | UI | módulos aprobados existentes; sin reescritura de `app/modules/*` |
@@ -56,11 +56,30 @@ Por eso los archivos correctos podían existir en la rama y, simultáneamente, n
   - `adapters/tya-dev-full-visual-bridge.js`.
 - Conserva:
   - login visible integrado del producto;
-  - `tya-protected-auth-hr-authority-bridge-v1.js`;
+  - `tya-protected-auth-hr-authority-bridge-v2.js`;
   - dominio canónico;
   - Portal Shopper canónico;
   - Finanzas canónicas;
   - módulos frontend vigentes.
+- Sustituye los conteos congelados como requisito de runtime por el contrato dinámico:
+  - todos los periodos detectados;
+  - todas las visitas con llave única;
+  - identidad Shopper por crosswalk exacto.
+
+### `app/adapters/tya-protected-auth-hr-authority-bridge-v2.js`
+
+Nuevo bridge dinámico que:
+
+- valida que la revisión HR sea source-safe y no vacía;
+- acepta cualquier cantidad vigente de periodos, visitas y shoppers;
+- exige llaves de visita completas y únicas;
+- exige que cada visita pertenezca a un periodo detectado;
+- conserva exactamente la cantidad de periodos y visitas de esa revisión;
+- prohíbe append de visitas protegidas y duplicados técnicos;
+- permite que agosto se incorpore automáticamente cuando exista realmente en HR;
+- nunca usa 14/616/208 como invariantes permanentes.
+
+Los conteos 14/616/208 quedan registrados solo como fotografía de la fuente actual previa a agosto.
 
 ### `app/adapters/tya-c6-unified-human-runtime-v1.js`
 
@@ -84,10 +103,11 @@ Gate estático/read-only que exige:
 - una sola entrada humana autenticada;
 - ausencia del override de rol directo;
 - ausencia del token visual oculto como requisito funcional;
-- Auth integrada + HR authority bridge;
+- Auth integrada + HR authority bridge dinámico;
 - dominio/Shopper/Finanzas canónicos;
-- 14 periodos HR desde 2025-06 hasta 2026-07;
-- ausencia de agosto sin tab de fuente;
+- fotografía actual desde 2025-06 hasta 2026-07;
+- ausencia de agosto mientras no exista en la fuente;
+- cero conteos históricos congelados como contrato de runtime;
 - honorario Q60/L200;
 - cero writes y producción.
 
@@ -110,7 +130,7 @@ Solo con PASS corresponde solicitar autorización fresca para un único deploy d
 
 ## 7. Clasificación
 
-- **Reusable CXOrbia:** runtime humano único, Auth integrada, ownership de fuente, gate acumulativo.
+- **Reusable CXOrbia:** runtime humano único, Auth integrada, ownership de fuente dinámico, gate acumulativo.
 - **Exclusivo TyA:** periodos HR, contrato Q60/L200, proyecto Cinépolis.
 - **Claude/prototipo:** conservar módulos y consumir el read model; no reimplementar reglas por pantalla.
 - **Academia:** trazabilidad de versiones aprobadas, fuente viva y no regresión acumulativa.
