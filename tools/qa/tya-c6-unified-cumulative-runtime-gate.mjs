@@ -21,7 +21,7 @@ const index = read('app/index-backend-dev.html');
 const preview = read('app/core/backend-config-preview-dev.js');
 const protectedMode = read('app/core/backend-protected-dev-mode.js');
 const auth = read('app/core/backend-browser-auth.js');
-const hrBridge = read('app/adapters/tya-protected-auth-hr-authority-bridge-v1.js');
+const hrBridge = read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
 const domain = read('app/adapters/tya-c6-domain-consistency-bridge.js');
 const shopperPortal = read('app/adapters/tya-canonical-shopper-portal-v2.js');
 const unified = read('app/adapters/tya-c6-unified-human-runtime-v1.js');
@@ -33,12 +33,14 @@ must(index.includes("lane:technical?'protected-technical-e2e':'authenticated-hum
 must(index.includes("params.set('cxProtectedRuntime',PROTECTED)") &&
      index.includes("params.set('cxHumanFullVisual',FULL_VISUAL)"),
   'C6_NORMAL_ENTRY_CANONICAL_FLAGS');
+must(index.includes("canonicalDataRequired:{source:'live-hr',allDetectedPeriods:true,uniqueVisitKeys:true,shopperIdentity:'exact-crosswalk'}"),
+  'C6_NO_FROZEN_RUNTIME_COUNTS');
 must(!index.includes('src="adapters/tya-dev-entry-auth-gate-v1.js"'),
   'C6_NO_DIRECT_ROLE_OVERRIDE');
 must(!index.includes('src="adapters/tya-dev-full-visual-bridge.js"'),
   'C6_NO_HIDDEN_VISUAL_SESSION_OVERLAY');
 must(index.includes('src="core/backend-browser-auth.js"') &&
-     index.includes('src="adapters/tya-protected-auth-hr-authority-bridge-v1.js"'),
+     index.includes('src="adapters/tya-protected-auth-hr-authority-bridge-v2.js"'),
   'C6_PRODUCT_LOGIN_AND_HR_AUTHORITY');
 must(index.includes('src="adapters/tya-c6-domain-consistency-bridge.js"') &&
      index.includes('src="adapters/tya-canonical-shopper-portal-v2.js"') &&
@@ -52,10 +54,12 @@ must(preview.includes('if(protectedRequested)') &&
 must(auth.includes('NO crea un gate/pantalla de autenticación separada') &&
      auth.includes('Usuario + Contraseña'),
   'C6_SINGLE_VISIBLE_PRODUCT_LOGIN');
-must(hrBridge.includes('HR live remains the immutable authority for all 616 operational visits') &&
-     hrBridge.includes('duplicateShopperIds !== 0') &&
-     hrBridge.includes('protectedVisitsAppended !== 0'),
-  'C6_HR_AUTHORITY_EXACT_COMPOSITION');
+must(hrBridge.includes('No historical count is hardcoded as a runtime invariant') &&
+     hrBridge.includes('d.outputVisits!==hrState.visits.length') &&
+     hrBridge.includes('d.duplicateShopperIds!==0') &&
+     hrBridge.includes('d.protectedVisitsAppended!==0') &&
+     hrBridge.includes('result.projects.length!==hrState.projects.length'),
+  'C6_HR_AUTHORITY_DYNAMIC_EXACT_COMPOSITION');
 must(domain.includes('periodOperationalSummary') &&
      domain.includes('CX.data.phaseFlow') &&
      domain.includes('certificationForShopper'),
@@ -80,9 +84,9 @@ must(!projectConfig.includes('honorario:{GT:0,HN:0}'),
 
 const periodKeys = [...sourceData.matchAll(/"key":\s*"(\d{4}-\d{2})"/g)].map(m => m[1]);
 const uniquePeriods = [...new Set(periodKeys)];
-must(uniquePeriods.length === 14, 'C6_ALL_HR_PERIODS', `${uniquePeriods.length}`);
+must(uniquePeriods.length >= 14, 'C6_CURRENT_HR_PERIOD_SNAPSHOT', `${uniquePeriods.length}`);
 must(uniquePeriods[0] === '2025-06' && uniquePeriods.at(-1) === '2026-07',
-  'C6_HR_RANGE_2025_06_TO_2026_07',
+  'C6_CURRENT_HR_RANGE_2025_06_TO_2026_07',
   `${uniquePeriods[0] || 'none'}..${uniquePeriods.at(-1) || 'none'}`);
 must(!uniquePeriods.includes('2026-08'), 'C6_NO_AUGUST_WITHOUT_SOURCE');
 
