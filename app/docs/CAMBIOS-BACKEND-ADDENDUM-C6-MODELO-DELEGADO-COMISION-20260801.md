@@ -12,11 +12,15 @@ Los proyectos delegados no tienen regalías locales. Su ingreso corresponde a un
 
 Cinépolis está configurado como proyecto delegado. Esta clasificación proviene de su `projectConfig`; no se hardcodea por nombre en el contrato reusable.
 
+Un proyecto sin modelo explícito queda `unconfigured` y fail-closed. No se asume directo, delegado ni regional.
+
 ## 2. Hallazgo adicional de causa raíz
 
 Aunque el motor existente ya calculaba ISR y regalías solo para `modelo==='directo'`, `CX.fin.honRecibe()` usaba el honorario del shopper como fallback cuando `honRecibe` no estaba configurado.
 
 En un proyecto delegado eso podía convertir indebidamente el honorario pagado al shopper en ingreso recibido y producir margen falso.
+
+También se detectó que asumir `directo` como modelo por defecto violaba la regla de no inferir configuraciones ausentes.
 
 ## 3. Delta aplicado
 
@@ -30,6 +34,11 @@ En un proyecto delegado eso podía convertir indebidamente el honorario pagado a
   - `royaltyApplicable=false`;
   - comisión/distribución configurable;
   - cero valores inventados.
+- Un proyecto sin modelo queda:
+  - `modelo:'unconfigured'`;
+  - `billingModel:'project_configuration_required'`;
+  - `financialModelReviewRequired:true`;
+  - ingresos, regalías y margen bloqueados.
 - Envuelve `CX.data.addProject` para preservar y normalizar el modelo seleccionado.
 - Cinépolis no se reconoce por nombre; su fuente vigente ya declara `modelo:'delegado'`.
 
@@ -41,10 +50,11 @@ Nuevo guard reusable que:
 - obtiene la comisión únicamente de configuración explícita por periodo/país, país, total o tarifa por visita declarada;
 - conserva `honRecibe` solo cuando existe como configuración explícita;
 - fija ISR y regalías locales en cero para delegado/regional;
+- trata `unconfigured` como fail-closed;
 - mantiene honorarios y reembolsos del shopper como obligaciones separadas;
 - calcula margen solo cuando comisión y monto distribuido tienen fuente exacta;
 - si falta alguna fuente, marca `financialReviewRequired` y no fabrica margen;
-- nunca infiere participantes ni porcentajes.
+- nunca infiere participantes, porcentajes ni modelo por defecto.
 
 ### `app/index-backend-dev.html`
 
@@ -56,10 +66,12 @@ El gate exige ahora:
 
 - clasificación por configuración, no por nombre;
 - soporte backend Local/Delegado/Regional;
+- ausencia de modelo asumido por defecto;
 - Cinépolis delegado desde su fuente de proyecto;
 - regalías 0 para no locales;
 - ausencia del fallback honorario Shopper → ingreso;
 - margen delegado solo con comisión y distribución exactas;
+- `unconfigured` bloqueado;
 - cero valores inventados;
 - orden de carga correcto.
 
@@ -83,7 +95,7 @@ No se afirma todavía PASS Node, browser, remoto ni humano.
 
 ## 6. Clasificación
 
-- **Reusable CXOrbia:** modelo financiero configurable y guard de comisión delegada.
+- **Reusable CXOrbia:** modelo financiero configurable, fail-closed sin modelo y guard de comisión delegada.
 - **Exclusivo TyA:** Cinépolis delegado y Q60/L200 al shopper.
 - **Claude/prototipo:** opción Regional y copy financiero por archivo, sin reimplementar cálculo.
 - **Academia:** diferencia entre ingreso de coordinación y obligación al shopper.
