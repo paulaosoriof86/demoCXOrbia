@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import crypto from 'node:crypto';
 
 const root = String(process.argv[2] || process.env.CXORBIA_DEV_ROOT_URL || '').replace(/\/$/, '');
@@ -42,6 +43,8 @@ async function fetchBuffer(url) {
   });
   return { response, body: Buffer.from(await response.arrayBuffer()) };
 }
+
+fs.mkdirSync(path.dirname(output), { recursive: true });
 
 let result = null;
 
@@ -151,7 +154,6 @@ for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     }
   };
 
-  fs.mkdirSync(new URL('.', `file://${process.cwd()}/${output}`).pathname, { recursive: true });
   fs.writeFileSync(output, `${JSON.stringify(result, null, 2)}\n`);
 
   if (allCriticalAssetsMatch && liveEndpointResult.ok) {
