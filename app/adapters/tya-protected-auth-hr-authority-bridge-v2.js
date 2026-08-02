@@ -5,6 +5,8 @@
    - No historical count is hardcoded as a runtime invariant.
    - Firestore enriches exact identity/profile/certification/finance only.
    - Composition never appends protected visits or deduplicates by name.
+   - Restored authenticated sessions in reloads/new tabs reconcile automatically.
+   - Transient live-HR failures retry with a bounded fail-closed policy.
    - Read-only DEV; no provider writes, deploy, merge or production.
 */
 window.CX=window.CX||{};
@@ -18,14 +20,33 @@ window.CX=window.CX||{};
   const arr=v=>Array.isArray(v)?v:[];
   const clone=v=>v==null?v:JSON.parse(JSON.stringify(v));
   const str=v=>String(v==null?'':v).trim();
+  const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   let reconciling=false;
   let lastProtectedState=null;
+  let bootTimer=null;
+  let bootAttempt=0;
+  let bootReason='initial';
+  const BOOT_MAX_ATTEMPTS=180;
+  const HR_MAX_ATTEMPTS=6;
 
   function context(){
     try{return CX.backendAuth?.context?.()||null;}catch(_){return null;}
   }
   function authorized(ctx){
     return !!(ctx&&ctx.authenticated===true&&ctx.tenantId==='tya'&&arr(ctx.projectIds).includes('cinepolis'));
+  }
+  function protectedBackendReady(){
+    const source=str(window.CX_BACKEND_LAST_STATE?.source||window.CX_BACKEND_DATA_SOURCE).toLowerCase();
+    const ref=str(CX.dataSource?.sourceRef).toLowerCase();
+    return source==='firestore'||source.startsWith('firestore/')||ref.includes('firestore');
+  }
+  function runtimeDependenciesReady(){
+    return !!(
+      CX.data&&
+      typeof window.CX_TYA_APPLY_LIVE_SNAPSHOT==='function'&&
+      window.CX_TYA_CUMULATIVE_READ_MODEL&&
+      typeof window.CX_TYA_CUMULATIVE_READ_MODEL.compose==='function'
+    );
   }
   function captureProtectedState(){
     const ctx=context();
@@ -65,16 +86,35 @@ window.CX=window.CX||{};
       uniqueVisitKeys:keys.length
     };
   }
-  async function fetchHrSnapshot(){
-    const response=await fetch(queryUrl(),{cache:'no-store',headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});
-    const payload=await response.json().catch(()=>null);
-    if(!response.ok)throw new Error(`HR_LIVE_HTTP_${response.status}`);
-    const snapshot=payload&&(payload.snapshot||payload.data||payload);
-    const runtime=Object.assign({},payload&&payload._runtime||{},snapshot&&snapshot._runtime||{});
-    if(snapshot&&snapshot._runtime)delete snapshot._runtime;
-    return {snapshot,runtime,counts:validateSnapshot(snapshot)};
+  function retryableStatus(status){
+    return status===429||status>=500;
   }
-  function applyComposition(hrState,protectedState,reason,counts){
+  async function fetchHrSnapshot(){
+    let lastError=null;
+    for(let attempt=1;attempt<=HR_MAX_ATTEMPTS;attempt++){
+      try{
+        const response=await fetch(queryUrl(),{cache:'no-store',headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});
+        const payload=await response.json().catch(()=>null);
+        if(!response.ok){
+          const error=new Error(`HR_LIVE_HTTP_${response.status}`);
+          error.status=response.status;
+          throw error;
+        }
+        const snapshot=payload&&(payload.snapshot||payload.data||payload);
+        const runtime=Object.assign({},payload&&payload._runtime||{},snapshot&&snapshot._runtime||{});
+        if(snapshot&&snapshot._runtime)delete snapshot._runtime;
+        return {snapshot,runtime,counts:validateSnapshot(snapshot),attempt};
+      }catch(error){
+        lastError=error;
+        const status=Number(error?.status||0);
+        const transient=status===0||retryableStatus(status)||/fetch|network|load failed/i.test(str(error?.message));
+        if(!transient||attempt===HR_MAX_ATTEMPTS)break;
+        await sleep(Math.min(10000,1200*attempt));
+      }
+    }
+    throw lastError||new Error('HR_LIVE_UNAVAILABLE');
+  }
+  function applyComposition(hrState,protectedState,reason,counts,fetchAttempt){
     const engine=window.CX_TYA_CUMULATIVE_READ_MODEL;
     if(!engine||typeof engine.compose!=='function')throw new Error('CANONICAL_COMPOSER_V2_MISSING');
     const result=engine.compose({
@@ -134,7 +174,7 @@ window.CX=window.CX||{};
     const ownVisits=canonicalShopper&&typeof CX.data.visitsForShopper==='function'
       ?CX.data.visitsForShopper(canonicalShopper,false).length:null;
     window.CX_PROTECTED_AUTH_HR_AUTHORITY={
-      applied:true,version:'v2-dynamic-live-source',reason:reason||'backend_ready',
+      applied:true,version:'v2-dynamic-live-source-new-tab-recovery',reason:reason||'backend_ready',
       role:protectedState.role,authNamespace:protectedState.authNamespace,
       periods:CX.data.projects.length,hrVisits:CX.data._visitas.length,hrShoppers:counts.shoppers,
       firstPeriod:counts.firstPeriod,latestPeriod:counts.latestPeriod,
@@ -142,7 +182,13 @@ window.CX=window.CX||{};
       protectedProfiles:protectedState.shoppers.length,identityMapSize:Object.keys(result.identityMap||{}).length,
       identityReviewCount:arr(result.identityReviewQueue).length,ownVisits,
       duplicateVisitKeys:d.duplicateVisitKeys,duplicateShopperIds:d.duplicateShopperIds,
+      liveHrFetchAttempt:Number(fetchAttempt||1),restoredSessionRecovery:true,
       providerWrites:0,authWrites:0,rulesDeploys:0,production:false,at:new Date().toISOString()
+    };
+    window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE={
+      ready:true,completed:true,attempts:bootAttempt,reason:reason||bootReason,
+      authorized:true,protectedBackendReady:true,runtimeDependenciesReady:true,
+      providerWrites:0,production:false,at:new Date().toISOString()
     };
     try{window.dispatchEvent(new CustomEvent('cx:protected-auth-hr-authority-ready',{detail:clone(window.CX_PROTECTED_AUTH_HR_AUTHORITY)}));}catch(_){}
     if(CX.bus?.emit)CX.bus.emit('visit-flow',{reason:'protected_auth_hr_authority_dynamic_ready',preserveUiState:true});
@@ -152,6 +198,8 @@ window.CX=window.CX||{};
     if(reconciling)return {ok:true,skipped:true,reason:'reconcile_in_progress'};
     const ctx=context();
     if(!authorized(ctx))return {ok:false,skipped:true,reason:'principal_not_ready'};
+    if(!protectedBackendReady())return {ok:false,skipped:true,reason:'protected_backend_not_ready'};
+    if(!runtimeDependenciesReady())return {ok:false,skipped:true,reason:'runtime_dependencies_not_ready'};
     const protectedState=captureProtectedState()||lastProtectedState||{
       role:str(ctx.role),authNamespace:str(ctx.authNamespace),shopperId:str(ctx.shopperId),
       projects:[],visits:[],shoppers:[],posts:[],certifications:[],liquidations:[],
@@ -161,7 +209,6 @@ window.CX=window.CX||{};
     reconciling=true;
     try{
       const fetched=await fetchHrSnapshot();
-      if(typeof window.CX_TYA_APPLY_LIVE_SNAPSHOT!=='function')throw new Error('HR_INPLACE_ADAPTER_MISSING');
       window.CX_TYA_APPLY_LIVE_SNAPSHOT(fetched.snapshot,fetched.runtime,{reason:'protected_auth_hr_restore_dynamic'});
       const hrState={
         projects:clone(CX.data.projects||[]),visits:clone(CX.data._visitas||[]),
@@ -170,7 +217,7 @@ window.CX=window.CX||{};
         currentProjectId:CX.data.currentProjectId||'cinepolis',currentPeriodId:CX.data.currentPeriodId||'',
         sourceRevision:CX.data.previewMeta?.sourceRevision||fetched.runtime.revision||null
       };
-      return {ok:true,result:applyComposition(hrState,protectedState,reason,fetched.counts)};
+      return {ok:true,result:applyComposition(hrState,protectedState,reason,fetched.counts,fetched.attempt)};
     }catch(error){
       console.error('[CX.protected-auth-hr-authority-v2]',error);
       if(CX.dataSource){
@@ -178,26 +225,78 @@ window.CX=window.CX||{};
         CX.dataSource.blockers=['No fue posible componer la revisión HR viva completa con el principal autenticado.'];
       }
       window.CX_PROTECTED_AUTH_HR_AUTHORITY={
-        applied:false,version:'v2-dynamic-live-source',error:str(error?.message||error),
+        applied:false,version:'v2-dynamic-live-source-new-tab-recovery',error:str(error?.message||error),
+        retryable:/HR_LIVE_HTTP_(429|5\d\d)|fetch|network|load failed/i.test(str(error?.message)),
         providerWrites:0,production:false,at:new Date().toISOString()
       };
       return {ok:false,error:str(error?.message||error)};
     }finally{reconciling=false;}
   }
+  function bootDelay(attempt){
+    return Math.min(2000,250+attempt*75);
+  }
+  function scheduleBootReconcile(reason,reset){
+    bootReason=reason||bootReason;
+    if(reset===true)bootAttempt=0;
+    if(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true)return;
+    if(bootTimer)return;
+    const run=async()=>{
+      bootTimer=null;
+      if(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true)return;
+      bootAttempt++;
+      const ctx=context();
+      const authReady=authorized(ctx);
+      const backendReady=protectedBackendReady();
+      const dependenciesReady=runtimeDependenciesReady();
+      window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE={
+        ready:false,completed:false,attempts:bootAttempt,reason:bootReason,
+        authorized:authReady,protectedBackendReady:backendReady,runtimeDependenciesReady:dependenciesReady,
+        providerWrites:0,production:false,at:new Date().toISOString()
+      };
+      if(authReady&&backendReady&&dependenciesReady){
+        const state=await reconcile(bootReason||'authenticated_context_restore_dynamic');
+        if(state?.ok&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true)return;
+      }
+      if(bootAttempt<BOOT_MAX_ATTEMPTS){
+        bootTimer=setTimeout(run,bootDelay(bootAttempt));
+      }else{
+        window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE=Object.assign({},window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||{}, {
+          ready:false,completed:true,exhausted:true,attempts:bootAttempt,
+          lastAuthorityError:str(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.error),
+          providerWrites:0,production:false,at:new Date().toISOString()
+        });
+      }
+    };
+    bootTimer=setTimeout(run,0);
+  }
   function bind(){
-    if(CX.bus?.on)CX.bus.on('backend-ready',payload=>{
-      if(payload&&payload.source==='firestore')setTimeout(()=>reconcile('backend_ready_firestore_dynamic'),0);
-    });
+    if(CX.bus?.on){
+      CX.bus.on('backend-auth-ready',()=>scheduleBootReconcile('backend_auth_ready_restored_session'));
+      CX.bus.on('backend-ready',payload=>{
+        if(payload&&payload.source==='firestore')scheduleBootReconcile('backend_ready_firestore_dynamic',true);
+        else scheduleBootReconcile('backend_ready_dynamic');
+      });
+    }
     if(CX.backend&&typeof CX.backend.refresh==='function'&&!CX.backend.__hrAuthorityDynamicRefreshWrapped){
       const original=CX.backend.refresh.bind(CX.backend);
       CX.backend.refresh=async function(){
         const state=await original();
-        await reconcile('backend_refresh_dynamic');
+        scheduleBootReconcile('backend_refresh_dynamic',true);
         return state;
       };
       CX.backend.__hrAuthorityDynamicRefreshWrapped=true;
     }
+    window.addEventListener('focus',()=>scheduleBootReconcile('window_focus_restored_session'));
+    document.addEventListener('visibilitychange',()=>{
+      if(document.visibilityState==='visible')scheduleBootReconcile('visibility_restored_session');
+    });
   }
   window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY=reconcile;
+  window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE=scheduleBootReconcile;
   bind();
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',()=>scheduleBootReconcile('dom_ready_authenticated_context_restore',true),{once:true});
+  }else{
+    scheduleBootReconcile('script_ready_authenticated_context_restore',true);
+  }
 })();
