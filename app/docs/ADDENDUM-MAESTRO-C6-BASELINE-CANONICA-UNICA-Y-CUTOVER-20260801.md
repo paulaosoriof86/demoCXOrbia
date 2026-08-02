@@ -2,29 +2,29 @@
 
 **Fecha:** 2026-08-02  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_AUTH_ALL_ROLES_PASS__HOSTING_DEV_COMMAND_FAILED_BEFORE_RELEASE__ROOT_CAUSE_FIXED__FRESH_AUTH_REQUIRED__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_ALL_ROLES_PASS__SECOND_HOSTING_DEV_COMMAND_FAILED_BEFORE_RELEASE__EXECUTION_PATH_FIXED__FRESH_AUTH_REQUIRED__NO_PRODUCTION`
 
 ## 1. Propósito
 
-Este addendum impide que CXOrbia/TyA vuelva a fragmentarse por módulo, etapa, fuente, carril de login o conversación. Solo puede existir una baseline acumulativa construida sobre el HEAD vivo de `docs-tya-v6-v71-audit`.
+Este addendum impide que CXOrbia/TyA vuelva a fragmentarse por módulo, etapa, fuente, carril de acceso o conversación. Solo puede existir una baseline acumulativa construida sobre el HEAD vivo de `docs-tya-v6-v71-audit`.
 
 ## 2. Baseline acumulativa comprobada
 
-PASS local/read-only:
+PASS:
 
 - frontend aprobado vigente;
-- entrada humana única `authenticated-human-canonical`;
-- Firebase Auth/claims para Staff, Cliente y Shopper;
+- entrada humana única;
+- acceso validado para Staff, Cliente y Shopper;
 - HR viva como autoridad operacional dinámica;
 - Firestore protegido como overlay exacto;
 - read model y máquina de estados canónicos;
 - Dashboard, fases, detalle, histórico y comparativo;
 - Portal Shopper con identidad exacta;
-- Portal Cliente con principal y alcance exactos;
+- Portal Cliente con alcance exclusivo;
 - Finanzas y Reservas canónicas;
 - tres recargas y nueva pestaña;
 - carril técnico Staff/Shopper aislado;
-- materialización, idempotencia, readback y rollback Cliente.
+- materialización Cliente idempotente, readback y rollback exacto.
 
 Decisión funcional:
 
@@ -59,24 +59,13 @@ Cinépolis:
 - regalías 0;
 - comisión y reparto configurables;
 - honorario Shopper nunca usado como ingreso;
-- margen solo con comisión/distribución exactas.
+- margen solo con comisión y distribución exactas.
 
-## 5. Credencial Cliente materializada
+## 5. Segundo intento autorizado de Hosting DEV
 
-Existe una única credencial Cliente DEV con:
+El request `c6-hosting-dev-deploy-remote-gates-20260802-03` comprobó source lock, gate estático, acceso read-only y destino DEV.
 
-- `role=cliente`;
-- `authNamespace=staff`;
-- `tenantId=tya`;
-- alcance exclusivo `cinepolis`.
-
-La creación y claims consumieron 2 Auth writes autorizados. La segunda aplicación fue idempotente con 0 writes. Password changes/resets y secretos expuestos: 0.
-
-## 6. Resultado del intento de deploy DEV
-
-El predeploy pasó source lock, gate estático y credenciales read-only.
-
-El comando del deploy autorizado fue iniciado una vez y terminó antes de crear una release:
+El comando fue iniciado una vez y terminó antes de crear una release:
 
 - `deployAttempted=true`;
 - `deploySucceeded=false`;
@@ -84,26 +73,29 @@ El comando del deploy autorizado fue iniciado una vez y terminó antes de crear 
 - Cloud Run deploys: 0;
 - gates remotos: no ejecutados.
 
-La autorización anterior queda consumida. No existe reintento automático.
+La autorización quedó consumida. Se respetó la prohibición de un segundo deploy automático.
 
-## 7. Causa raíz y corrección de Hosting
+## 6. Causa raíz metodológica comprobada
 
-Causa reproducible:
+`RUNNER_AUTHORIZED_ROOT_CONFIG_NOT_APPLIED`.
 
-`FIREBASE_CLI_ALTERNATE_CONFIG_PATH_RESOLUTION`.
+La autorización exigía `firebase.deploy.json` en la raíz. El workflow todavía generaba una copia dentro de `.tmp/c6-hosting-dev-deploy` y ejecutaba Firebase CLI con esa ruta temporal.
 
-El runner escribía la configuración alternativa únicamente dentro de `.tmp`. Firebase CLI resuelve el basename indicado por `--config` dentro de la raíz del proyecto. Como `firebase.deploy.json` no existía allí, el comando terminó antes de publicar.
+El fix documentado existía, pero no estaba conectado al paso ejecutable. El runner tampoco preservó el error exacto del CLI. No se atribuye el fallo a IAM, proveedor, aplicación, HR, Auth, Cloud Run o producción sin evidencia.
 
-Corrección aplicada sin otro deploy:
+## 7. Correctivo aplicado sin otro deploy
 
-- `firebase.json` conserva el rewrite HR vivo canónico;
-- `firebase.deploy.json` existe en la raíz;
-- target `cxorbia-dev`;
-- public `app`;
-- `/api/tya/cinepolis/hr-live` apunta al servicio existente `cxorbia-live-hr-dev` en `us-central1`;
-- el wildcard SPA permanece después del endpoint dinámico;
-- no se despliega Cloud Run;
-- no se modificaron módulos UI/core por este fix.
+Se actualizó el workflow existente:
+
+- valida `rootResolvedConfigRequired=true`;
+- exige `deployConfigPath=firebase.deploy.json`;
+- exige `noAutomaticSecondDeploy=true`;
+- valida el archivo raíz, target, public y orden de rewrites;
+- ejecutará `--config firebase.deploy.json`;
+- registra la versión de Firebase CLI;
+- persiste tails sanitizados de logs ante fallo.
+
+No se creó otro workflow y no se ejecutó otro deploy.
 
 ## 8. Operaciones prohibidas
 
@@ -112,10 +104,11 @@ Queda prohibido:
 - crear otra plataforma, candidata, rama, PR, Firebase o Hosting;
 - reintentar el deploy sin autorización fresca;
 - ejecutar más de un deploy por autorización;
+- usar una configuración distinta de la raíz autorizada;
 - omitir el rewrite HR vivo;
 - desplegar Cloud Run junto con Hosting;
-- permitir `pickShopperDev()` en ruta protegida;
-- mover Auth a módulos UI;
+- permitir selección Shopper DEV en ruta protegida;
+- mover autenticación a módulos UI;
 - deduplicar por nombre/correo/teléfono;
 - aplicar regalías globales;
 - abrir agosto/postulaciones, merge o producción sin gates específicos.
@@ -124,7 +117,7 @@ Queda prohibido:
 
 Solo con autorización fresca:
 
-`SOURCE LOCK ACTUAL → STATIC GATE → CREDENCIALES READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → AUTH STAFF/CLIENTE/SHOPPER → DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA → APROBADO C6 → FREEZE`.
+`SOURCE LOCK ACTUAL → STATIC GATE → ROOT CONFIG firebase.deploy.json → ACCESO READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → STAFF/CLIENTE/SHOPPER → DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA → APROBADO C6 → FREEZE`.
 
 Ante cualquier fallo no existe segundo deploy automático.
 
@@ -144,6 +137,7 @@ Después del freeze:
 
 - `CAMBIOS-BACKEND-ADDENDUM-C6-CREDENCIAL-CLIENTE-MATERIALIZADA-20260802.md`;
 - `CAMBIOS-BACKEND-ADDENDUM-C6-DEPLOY-DEV-INTENTO-FALLIDO-Y-CAUSA-RAIZ-20260802.md`;
+- `CAMBIOS-BACKEND-ADDENDUM-C6-SEGUNDO-INTENTO-DEPLOY-DEV-Y-FIX-EJECUTABLE-20260802.md`;
 - `CORTE6-CLIENT-AUTH-MATERIALIZATION-LATEST.json`;
 - `CORTE6-HOSTING-DEV-DEPLOY-REMOTE-GATES-FAILURE-LATEST.json`;
 - `CORTE6-HOSTING-DEV-DEPLOY-ROOT-CAUSE-FIX-LATEST.json`;
@@ -151,10 +145,10 @@ Después del freeze:
 
 ## 12. Clasificación
 
-- **Reusable CXOrbia:** baseline acumulativa, source lock, configuración Hosting raíz y distinción intento/release/paridad.
+- **Reusable CXOrbia:** baseline acumulativa, source lock, configuración raíz y evidencia exacta de errores.
 - **Exclusivo TyA:** tenant `tya`, proyecto `cinepolis`, endpoint HR y site DEV actuales.
 - **Claude/prototipo:** sin cambios frontend por el incidente Hosting.
-- **Academia:** intento de comando no equivale a release ni aprobación.
+- **Academia:** fix documentado no equivale a fix conectado al runner.
 - **Sin impacto proveedor después del fix:** cero nuevo deploy y cero writes.
 
 ## 13. Estado seguro
