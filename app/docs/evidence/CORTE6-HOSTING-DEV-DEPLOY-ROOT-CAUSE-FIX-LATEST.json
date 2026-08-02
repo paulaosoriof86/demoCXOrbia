@@ -1,46 +1,48 @@
 {
-  "schemaVersion": "cxorbia.c6.hosting-dev-deploy-root-cause-fix.v2",
-  "generatedAt": "2026-08-02T10:22:00-06:00",
-  "decision": "PASS_C6_HOSTING_DEPLOY_FAILURE_ROOT_CAUSE_FIXED_PENDING_FRESH_AUTHORIZATION",
-  "priorAttempt": {
-    "requestId": "c6-hosting-dev-deploy-remote-gates-20260802-02",
+  "schemaVersion": "cxorbia.c6.hosting-dev-deploy-root-cause-fix.v3",
+  "generatedAt": "2026-08-02T12:18:47-06:00",
+  "decision": "PASS_C6_REPEAT_FAILURE_EXECUTION_PATH_ROOT_CAUSE_FIXED_NO_REDEPLOY_AUTHORIZED",
+  "failedAuthorizedAttempt": {
+    "requestId": "c6-hosting-dev-deploy-remote-gates-20260802-03",
     "decision": "FAIL_C6_PREDEPLOY_OR_HOSTING_DEPLOY",
     "failedStage": "deploy_hosting_once",
+    "sourceLockHead": "2075490470dc8c136279009a77b4cd8ddba771cd",
+    "triggerHead": "12fed21a71a12486aba408afeb14eec229f99e7b",
+    "runtimeSourceExact": true,
     "deployAttempted": true,
     "deploySucceeded": false,
-    "hostingDeploys": 0,
-    "hostingDeployAttempts": 1,
+    "hostingReleasesCreated": 0,
     "remoteGatesExecuted": false
   },
-  "sourceLock": {
-    "sourceLockHeadAtAttempt": "62ec2ee7b2644f4f914a1af9ef17c374f1f32410",
-    "lockedAppTree": "b2f83041cc81e6357d606d617f17438f0f0aff35",
-    "currentAppTreeAtAttempt": "b2f83041cc81e6357d606d617f17438f0f0aff35",
-    "runtimeSourceExact": true
-  },
-  "rootCause": {
-    "classification": "FIREBASE_CLI_ALTERNATE_CONFIG_PATH_RESOLUTION",
-    "runnerBehavior": "workflow wrote firebase.deploy.json only under .tmp/c6-hosting-dev-deploy and passed that nested path through --config",
-    "firebaseCliBehavior": "alternate configuration is resolved by basename inside the detected Firebase project root",
-    "reproducibleConflict": "firebase.deploy.json did not exist in the repository project root when the deploy command started",
+  "provenRootCause": {
+    "classification": "RUNNER_AUTHORIZED_ROOT_CONFIG_NOT_APPLIED",
+    "authorizationRequired": "firebase.deploy.json in repository root",
+    "actualRunnerBehavior": "the workflow still generated .tmp/c6-hosting-dev-deploy/firebase.deploy.json and invoked Firebase CLI with --config $OUT/firebase.deploy.json",
+    "methodologicalFailure": "the previously documented root fix existed in the repository but was not wired into the executable deploy step",
+    "sameFailedStageAsPriorAttempt": true,
+    "exactFirebaseCliStderrPersistedByFailedRunner": false,
     "providerOrIamFailureProven": false,
-    "applicationSourceFailureProven": false
+    "applicationSourceFailureProven": false,
+    "productionFailureProven": false
   },
-  "fix": {
-    "canonicalFirebaseJsonUpdated": true,
-    "rootResolvedDeployConfigCreated": true,
-    "canonicalConfigPath": "firebase.json",
-    "deployConfigPath": "firebase.deploy.json",
-    "hostingTarget": "cxorbia-dev",
-    "hostingSite": "cxorbia-backend-dev",
-    "publicDirectory": "app",
-    "liveHrRewrite": {
+  "fixAppliedWithoutDeploy": {
+    "existingWorkflowUpdated": true,
+    "newWorkflowCreated": false,
+    "deployCommandNowUses": "--config firebase.deploy.json",
+    "rootConfigExistenceValidated": true,
+    "rootConfigTargetValidated": "cxorbia-dev",
+    "rootConfigSiteValidated": "cxorbia-backend-dev",
+    "rootConfigPublicValidated": "app",
+    "liveHrRewriteValidated": {
       "source": "/api/tya/cinepolis/hr-live",
       "serviceId": "cxorbia-live-hr-dev",
       "region": "us-central1",
       "orderedBeforeSpaWildcard": true
     },
-    "cloudRunDeployRequired": false,
+    "noAutomaticSecondDeployContractValidated": true,
+    "firebaseCliVersionWillBePersisted": true,
+    "sanitizedDeployLogTailWillBePersisted": true,
+    "sanitizedFirebaseDebugTailWillBePersisted": true,
     "runtimeAppFilesModified": false,
     "newDeployExecutedAfterFix": false
   },
@@ -60,6 +62,11 @@
     "tokensExposed": false,
     "merge": false,
     "production": false
+  },
+  "authorizationState": {
+    "attemptAuthorizationConsumed": true,
+    "automaticRedeployAuthorized": false,
+    "nextDeployRequiresFreshAuthorization": true
   },
   "nextGate": "FRESH_SINGLE_HOSTING_DEV_DEPLOY_AUTHORIZATION_THEN_REMOTE_CUMULATIVE_GATES"
 }
