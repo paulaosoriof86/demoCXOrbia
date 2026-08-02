@@ -5,96 +5,99 @@
 
 ## Lección central
 
-Una aplicación puede tener Auth correcto y aun así fallar en la experiencia final si la transición posterior a autenticar no completa la entrada al producto. Del mismo modo, un comando de despliegue puede ser intentado sin producir una release.
+Una solución no está corregida solo porque el cambio exista en el repositorio o esté documentado. Debe estar conectado al carril ejecutable que realmente usa el sistema.
 
 El control de calidad debe separar:
 
-1. credencial válida;
-2. claims válidos;
-3. contexto autenticado;
-4. transición visual completada;
-5. continuidad después de recargas y nueva pestaña;
-6. predeploy aprobado;
-7. comando de deploy iniciado;
+1. acceso válido;
+2. contexto correcto por rol;
+3. transición visual completada;
+4. continuidad después de recargas y nueva pestaña;
+5. predeploy aprobado;
+6. configuración exacta usada por el runner;
+7. comando iniciado;
 8. release creada;
-9. paridad remota comprobada;
-10. validación humana aprobada.
+9. paridad remota;
+10. validación humana.
 
 ## Contratos que deben enseñarse
 
 1. La fuente viva gobierna periodos históricos y actuales.
 2. El reloj del dispositivo nunca crea un periodo operativo.
-3. Auth identifica al usuario; HR no autentica.
-4. Una tarjeta visible de rol no demuestra que el principal esté autenticado.
-5. Un handler DEV no puede saltarse Auth en una ruta protegida.
-6. Staff, Shopper y Cliente requieren gates separados.
-7. Tres recargas y una nueva pestaña forman parte del gate.
-8. HR conserva operación; Firestore enriquece identidad y certificación.
-9. KPI, fase, detalle, histórico y Finanzas consumen el mismo read model.
-10. Una autorización consumida no se reutiliza.
-11. Un PASS técnico parcial no equivale a aprobación humana acumulativa.
-12. Una materialización segura requiere snapshot, alcance exacto, idempotencia, readback y rollback.
-13. La contraseña no debe aparecer en repo, evidencias o logs.
-14. El modelo financiero se obtiene de la configuración del proyecto, no de su nombre.
-15. Local, Delegado, Regional y Unconfigured son contratos distintos.
-16. Las regalías solo aplican con facturación local y configuración explícita.
-17. El honorario del shopper es una obligación, no ingreso delegado.
-18. El margen delegado solo se calcula con comisión y distribución exactas.
-19. Un intento de deploy no debe registrarse como deploy exitoso.
-20. Una release no debe registrarse como validada hasta pasar paridad y gates remotos.
-21. La configuración alternativa del CLI debe existir en la raíz que el CLI resuelve.
-22. El endpoint dinámico debe aparecer antes del wildcard SPA.
-23. Un deploy Hosting no autoriza desplegar Cloud Run.
-24. Un fallo después de iniciar el comando exige evidencia y autorización fresca antes de otro intento.
+3. HR conserva operación; el sistema de acceso no la sustituye.
+4. Staff, Shopper y Cliente requieren gates separados.
+5. Tres recargas y una nueva pestaña forman parte del gate.
+6. KPI, fase, detalle, histórico y Finanzas consumen el mismo read model.
+7. Una autorización consumida no se reutiliza.
+8. Un PASS técnico parcial no equivale a aprobación humana acumulativa.
+9. Un intento de deploy no equivale a release creada.
+10. Una release no equivale a paridad remota ni aprobación humana.
+11. Un fix documentado no equivale a un fix conectado al runner.
+12. El runner debe validar la configuración autorizada antes del comando.
+13. La configuración raíz debe coincidir con target, public y rewrites esperados.
+14. El endpoint dinámico debe preceder al wildcard SPA.
+15. Un deploy Hosting no autoriza desplegar Cloud Run.
+16. Ante un fallo deben persistirse versión de CLI y logs sanitizados.
+17. Un segundo deploy requiere una nueva autorización.
+18. El modelo financiero se obtiene de la configuración del proyecto, no de su nombre.
+19. Local, Delegado, Regional y Unconfigured son contratos distintos.
+20. Las regalías solo aplican con facturación local y configuración explícita.
+21. El honorario del shopper es una obligación, no ingreso delegado.
+22. El margen delegado solo se calcula con comisión y distribución exactas.
 
 ## Caso de aprendizaje Auth C6
 
 El gate comprobó:
 
-- Staff humano autenticado y estable;
-- Shopper humano autenticado con identidad exacta;
-- Cliente humano autenticado con alcance exclusivo `cinepolis`;
+- Staff humano estable;
+- Shopper con identidad exacta;
+- Cliente con alcance exclusivo `cinepolis`;
 - carril técnico Staff/Shopper aislado;
 - HR viva completa;
 - tres recargas y nueva pestaña.
 
-La primera materialización Cliente creó correctamente la cuenta y los claims, pero el portal no se abrió. El workflow eliminó la cuenta y restauró el estado previo. Después del root fix, la segunda materialización quedó PASS.
+La materialización Cliente quedó idempotente, con readback y rollback exacto.
 
 ## Caso de aprendizaje Hosting C6
 
-El predeploy comprobó source lock, gate estático y credenciales. El comando de Hosting se inició, pero no creó una release.
+El segundo intento autorizado comprobó source lock, gate estático, acceso read-only y destino DEV. El comando se inició, pero no creó una release.
 
-Causa:
+La autorización exigía `firebase.deploy.json` en la raíz. Sin embargo, el workflow todavía generaba una copia en `.tmp` y ejecutaba el comando con esa ruta temporal.
 
-- el runner escribió `firebase.deploy.json` solo dentro de `.tmp`;
-- Firebase CLI resolvió el basename dentro de la raíz del proyecto;
-- el archivo raíz no existía;
-- la ejecución terminó antes de publicar.
+Conclusión:
 
-Corrección:
+`RUNNER_AUTHORIZED_ROOT_CONFIG_NOT_APPLIED`.
 
-- rewrite HR vivo incorporado a `firebase.json`;
-- `firebase.deploy.json` creado en la raíz;
-- target, public, región y servicio documentados;
-- cero nuevo deploy después de corregir;
-- autorización fresca obligatoria.
+El fix existía en documentación y archivos, pero no estaba conectado al paso ejecutable.
+
+## Correctivo incorporado
+
+El workflow existente ahora:
+
+- valida la configuración raíz autorizada;
+- valida target, public y orden de rewrites;
+- ejecutará `--config firebase.deploy.json`;
+- valida la prohibición de un segundo deploy automático;
+- registra la versión de Firebase CLI;
+- persiste logs sanitizados ante cualquier fallo.
+
+No se creó otro workflow ni se ejecutó otro deploy.
 
 ## Rutas por rol
 
 - Administración: fuente, operación, Shoppers, certificación, configuración, Finanzas y revisión.
-- Cliente: Panorama, KPIs, sucursales, detalle y planes de acción; requiere principal Cliente autenticado.
-- Shopper: identidad, perfil, certificación, oportunidades, visitas, histórico y pagos; nunca selector DEV en ruta protegida.
+- Cliente: Panorama, KPIs, sucursales, detalle y planes de acción.
+- Shopper: identidad, perfil, certificación, oportunidades, visitas, histórico y pagos.
 
 ## Impacto en manuales y cursos
 
 Los materiales deben explicar:
 
-- diferencia entre principal autenticado y entrada completada;
+- diferencia entre fix documentado y fix ejecutable;
+- diferencia entre intento, release, paridad y aprobación;
 - cómo probar cada rol, recargas y nueva pestaña;
-- cómo distinguir intento, release, paridad y aprobación;
-- cómo validar `firebase.json`, target, public y rewrites;
+- cómo validar configuración raíz, target, public y rewrites;
 - por qué un endpoint dinámico debe preceder al wildcard;
-- cómo materializar credenciales con idempotencia y rollback;
 - cómo diferenciar facturación local, coordinación delegada y obligaciones al shopper;
 - cuándo una autorización nueva es obligatoria.
 
