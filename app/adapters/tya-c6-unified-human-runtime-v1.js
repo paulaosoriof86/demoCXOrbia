@@ -7,6 +7,7 @@
    - protected Firestore enriches exact identity/profile/certification only;
    - canonical domain/Shopper/finance adapters remain active in the same runtime;
    - project financial configuration fills operational honoraria when HR has no amount;
+   - delegated projects never receive local-invoicing royalties;
    - no provider writes, deploys, merge or production.
 */
 (function(){
@@ -24,7 +25,7 @@
   const arr=v=>Array.isArray(v)?v:[];
   const str=v=>String(v==null?'':v).trim();
   const num=v=>Number.isFinite(Number(v))?Number(v):null;
-  const esc=v=>str(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc=v=>str(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
   const monthLabel=key=>{
     const m=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
     const s=str(key),n=Number(s.slice(5,7)),y=s.slice(2,4);
@@ -82,6 +83,7 @@
 
   function applyProjectFinancialConfiguration(reason){
     if(!CX.data)return {applied:false,reason:'data_not_ready'};
+    try{CX.projectFinancialModel?.normalizeAll?.('unified_runtime_financial_configuration');}catch(_){}
     let visits=0,posts=0;
     for(const v of arr(CX.data._visitas)){
       const country=str(v.pais||v.country),p=projectForVisit(v),configured=configuredHonorarium(p,country);
@@ -105,7 +107,15 @@
     }
     window.CX_TYA_PROJECT_FINANCIAL_CONFIGURATION={
       applied:true,reason:reason||'runtime',visitsUpdated:visits,postsUpdated:posts,
-      honorarium:{GT:60,HN:200},model:'directo',isr:5,royalty:10,
+      honorarium:{GT:60,HN:200},
+      model:'delegado',
+      billingModel:'delegated_coordination',
+      localBilling:false,
+      royaltyApplicable:false,
+      royalty:0,
+      compensationModel:'coordination_commission_shared',
+      commissionSplit:{status:'project_configuration_required',valuesInvented:false},
+      taxTreatment:'project_specific_not_inferred',
       source:'project_configuration',providerWrites:0,production:false,
       at:new Date().toISOString()
     };
@@ -246,6 +256,8 @@
       identityOverlay:'firestore-exact-crosswalk',
       canonicalDomain:true,canonicalShopperPortal:true,canonicalFinance:true,
       projectHonorarium:{GT:60,HN:200},
+      projectFinancialModel:'delegated_coordination',
+      projectRoyaltyApplicable:false,
       providerWrites:0,deploys:0,merge:false,production:false,
       reason:reason||'activate',at:new Date().toISOString()
     };
