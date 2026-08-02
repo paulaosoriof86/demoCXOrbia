@@ -58,15 +58,7 @@ La autorización queda consumida. No existe reintento automático.
 
 El runner guardaba la configuración alternativa únicamente dentro de `.tmp`. Firebase CLI resuelve el basename del archivo indicado por `--config` dentro de la raíz detectada del proyecto. Como `firebase.deploy.json` no existía en la raíz, el comando terminó antes de publicar.
 
-No se demostró fallo de:
-
-- source lock;
-- aplicación;
-- HR;
-- Auth;
-- IAM;
-- Cloud Run;
-- producción.
+No se demostró fallo de source lock, aplicación, HR, Auth, IAM, Cloud Run o producción.
 
 ## 6. Corrección aplicada sin nuevo deploy
 
