@@ -1,20 +1,36 @@
 {
-  "schemaVersion": "cxorbia.c6.unified-cumulative-runtime-root-fix.v1",
-  "generatedAt": "2026-08-01T20:39:00-06:00",
+  "schemaVersion": "cxorbia.c6.unified-cumulative-runtime-root-fix.v2",
+  "generatedAt": "2026-08-01T21:06:00-06:00",
   "decision": "PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_CODE_STATIC_CONTRACT",
   "remoteRuntimeValidated": false,
   "humanValidated": false,
   "sourceAuthority": {
     "operational": "live_hr_all_detected_periods",
+    "runtimeCountContract": "dynamic_from_current_hr_revision",
+    "historicalCountsFrozen": false,
     "identityProfileCertification": "firestore_exact_crosswalk_overlay",
     "auth": "firebase_auth_custom_claims",
     "finance": "canonical_financial_source_plus_project_configuration"
   },
-  "historicalRange": {
+  "currentSourceSnapshot": {
+    "observationalOnly": true,
     "periods": 14,
-    "first": "2025-06",
-    "last": "2026-07",
-    "august2026Present": false
+    "visits": 616,
+    "shoppers": 208,
+    "firstPeriod": "2025-06",
+    "lastPeriod": "2026-07",
+    "august2026Present": false,
+    "note": "Estos conteos describen la revisión actual previa a agosto; no son invariantes permanentes del runtime."
+  },
+  "runtimeInvariants": {
+    "allDetectedPeriodsPreserved": true,
+    "allCurrentRevisionVisitsPreserved": true,
+    "uniqueTechnicalVisitKeysRequired": true,
+    "everyVisitBelongsToDetectedPeriod": true,
+    "protectedVisitsAppended": 0,
+    "duplicateVisitKeys": 0,
+    "duplicateShopperIds": 0,
+    "shopperIdentityResolution": "exact_crosswalk_only"
   },
   "projectConfiguration": {
     "projectId": "cinepolis",
@@ -26,10 +42,12 @@
   "codeChecks": {
     "bootstrapSyntax": "PASS",
     "unifiedAdapterSyntax": "PASS",
+    "dynamicHrAuthorityBridgeSyntax": "PASS",
+    "staticGateSyntax": "PASS",
     "singleAuthenticatedHumanLane": "PASS",
     "directRoleOverrideLoaded": false,
     "hiddenVisualSessionBridgeLoaded": false,
-    "protectedAuthHrAuthorityLoaded": true,
+    "protectedAuthHrAuthorityBridge": "v2-dynamic-live-source",
     "canonicalDomainLoaded": true,
     "canonicalShopperPortalLoaded": true,
     "canonicalFinanceLoaded": true
@@ -47,5 +65,5 @@
     "merge": false,
     "production": false
   },
-  "nextGate": "READONLY_RUNTIME_STAFF_CLIENT_SHOPPER_ALL_PERIODS_DOMAIN_PROFILE_CLIENT_FINANCE_THREE_RELOADS"
+  "nextGate": "READONLY_RUNTIME_STAFF_CLIENT_SHOPPER_ALL_DETECTED_PERIODS_DOMAIN_PROFILE_CLIENT_FINANCE_THREE_RELOADS"
 }
