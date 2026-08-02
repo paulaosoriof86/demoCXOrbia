@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-01  
-**Estado:** `C6_READONLY_RUNTIME_PASS_EXCEPT_CLIENT_CREDENTIAL__HOLD_NO_AUTH_WRITE_NO_DEPLOY_NO_PRODUCTION`
+**Fecha:** 2026-08-02  
+**Estado:** `C6_AUTH_RUNTIME_ALL_ROLES_PASS__CLIENT_CREDENTIAL_MATERIALIZED__PENDING_FRESH_DEV_DEPLOY_AUTHORIZATION__NO_PRODUCTION`
 
 ## 1. Estado protegido
 
@@ -10,8 +10,6 @@
 - HR viva observada: 14 periodos, junio 2025–julio 2026, 616 visitas y 208 shoppers.
 - Agosto 2026 todavía no existe en HR.
 - Producción intacta.
-
-Los conteos son una fotografía de la revisión viva, no invariantes permanentes.
 
 ## 2. Contratos prevalentes
 
@@ -23,20 +21,21 @@ HR viva gobierna periodos, visitas, estados y asignaciones. Firestore protegido 
 
 - directo/local: regalías únicamente si se configuran;
 - delegado: regalías 0 y comisión de coordinación compartida;
-- regional: distribución regional configurable, sin regalías locales por defecto;
-- sin modelo: `unconfigured`, fail-closed.
+- regional: distribución regional configurable;
+- `unconfigured`: fail-closed.
 
-Cinépolis se declara delegado desde su `projectConfig`, con Q60 GT/L200 HN al shopper y regalías 0. El honorario del shopper nunca se usa como ingreso delegado.
+Cinépolis conserva Q60 GT/L200 HN al shopper, modelo delegado y regalías 0.
 
 ## 3. Root fixes acumulativos comprobados
 
 - entrada humana única `authenticated-human-canonical`;
 - guard contra clic antes del wrapper oficial de Auth;
-- guard específico para que la tarjeta Shopper protegida no ejecute `pickShopperDev()`;
+- guard Shopper contra `pickShopperDev()`;
+- transición Cliente post-Auth completada con `CX.app.enter()`;
 - HR dinámica y read model canónico;
-- modelo financiero por configuración, no por nombre;
+- modelo financiero por configuración;
 - guard de comisión delegada fail-closed;
-- carril técnico estable con `cxDevEntryAuth` y `technical-auth-e2e-isolated`;
+- carril técnico estable;
 - módulos UI y `app.js` preservados.
 
 ## 4. Gates PASS
@@ -47,40 +46,55 @@ Cinépolis se declara delegado desde su `projectConfig`, con Q60 GT/L200 HN al s
 - domain/finance/shopper/reservations;
 - Staff humano con Auth/claims;
 - Shopper humano con Auth/claims e identidad exacta;
+- Cliente humano con Auth/claims y alcance exacto;
 - carril técnico Staff/Shopper aislado;
 - tres recargas y nueva pestaña;
-- ruta integrada Cliente Usuario + Contraseña.
+- idempotencia y readback Cliente;
+- rollback exacto probado.
 
-Resultados humanos:
+Decisión acumulativa:
 
-- Staff: rol `coordinador`, namespace `staff`, 14 periodos, 616 visitas, reloads y nueva pestaña estables.
-- Shopper: rol `shopper`, namespace `shopper`, una visita propia comprobada, 14 periodos, 616 visitas, reloads y nueva pestaña estables.
-- Credenciales/tokens expuestos: 0.
+`PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES`.
 
-Julio observado: 44 visitas, 43 realizadas, 41 cuestionarios, 37 submitidas y 1 fuera de rango.
+## 5. Credencial Cliente
 
-## 5. HOLD exacto
+Autorización ejecutada:
 
-Decisión vigente:
+- una única credencial Cliente DEV;
+- 2 Auth writes: creación + claims;
+- `role=cliente`;
+- `authNamespace=staff`;
+- `tenantId=tya`;
+- alcance exclusivo `cinepolis`;
+- cuenta habilitada;
+- sign-in por contraseña PASS;
+- password changes/resets 0;
+- credenciales/tokens expuestos 0.
 
-`HOLD_C6_EXISTING_CLIENT_CREDENTIAL_NOT_FOUND`.
+La segunda aplicación fue idempotente con 0 writes.
 
-La búsqueda read-only encontró:
+## 6. Runtime Cliente
 
-- 4 registros candidatos;
-- 3 usuarios Auth correspondientes;
-- 0 cuentas con claims válidos `cliente/client` para tenant `tya` y proyecto `cinepolis`;
-- 0 hashes válidos;
-- 0 sign-ins Cliente.
+- 14 periodos;
+- 616 visitas;
+- junio 2025 a julio 2026;
+- proyecto `cinepolis`;
+- periodo `cinepolis-2026-07`;
+- tres recargas estables;
+- nueva pestaña estable.
 
-No se creó ni modificó ninguna cuenta. Auth writes, cambios y resets de contraseña permanecen en cero.
+## 7. Primer intento y rollback
 
-## 6. Siguiente bloque exacto bloqueado por autorización
+El primer intento creó y leyó correctamente la cuenta, pero no completó la transición visual al Portal Cliente. El workflow ejecutó rollback real y eliminó el usuario, restaurando el preestado.
 
-`SNAPSHOT AUTH CLIENT → MATERIALIZE ONE CLIENT CREDENTIAL DEV → CLAIMS TENANT/PROJECT/ROLE → IDEMPOTENCY → CLIENT AUTH HUMAN → 3 RELOADS + NEW TAB → READBACK → ROLLBACK PROOF → EVIDENCE`.
+Se corrigió la causa raíz y el segundo intento quedó PASS.
 
-Este bloque implica Auth write y requiere autorización específica de Paula. Hasta entonces no corresponde deployar, congelar Corte 6, abrir agosto ni habilitar postulaciones.
+## 8. Siguiente bloque exacto
 
-## 7. Estado seguro
+`AUTORIZACIÓN FRESCA PARA UN ÚNICO DEPLOY DEL HOSTING DEV EXISTENTE → PARIDAD REMOTA → GATE ACUMULATIVO REMOTO STAFF/CLIENTE/SHOPPER → VALIDACIÓN HUMANA → APROBADO C6 → FREEZE`.
 
-Hosting deploys 0; Cloud Run 0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos writes 0; password changes/resets 0; merge=false; producción=false.
+No existe autorización vigente para deploy.
+
+## 9. Estado seguro
+
+Credenciales Cliente creadas 1; Auth writes autorizados 2; password changes/resets 0; Hosting/Cloud Run deploys 0; Firestore/Rules/Storage/HR/Make/Gemini/pagos writes 0; merge=false; producción=false.
