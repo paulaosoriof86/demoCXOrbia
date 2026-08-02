@@ -1,4 +1,4 @@
-name: CXOrbia C6 Unified Human Auth Runtime Readonly Diagnostic
+name: CXOrbia C6 Human Login Wrapper Readonly Diagnostic
 
 on:
   push:
@@ -10,22 +10,18 @@ on:
 permissions:
   contents: write
   statuses: write
-  id-token: write
 
 concurrency:
-  group: cxorbia-c6-unified-human-auth-runtime-readonly
+  group: cxorbia-c6-human-login-wrapper-readonly
   cancel-in-progress: false
 
 jobs:
-  audit:
+  diagnostic:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 20
     env:
-      GCP_PROJECT_ID: cxorbia-backend-dev
       ROOT_URL: https://cxorbia-backend-dev.web.app
-      OUT: .tmp/c6-unified-human-auth
-      PRIVATE_DIR: .tmp/c6-unified-human-auth-private
-      PRIVATE_E2E: .tmp/c6-unified-human-auth-private/private-e2e.json
+      OUT: .tmp/c6-human-login-wrapper
       REQUEST: backend/config/corte6-live-domain-readonly-audit-request.json
     steps:
       - uses: actions/checkout@v4
@@ -40,9 +36,7 @@ jobs:
       - name: Validate request and prerequisites
         run: |
           set -euo pipefail
-          mkdir -p "$OUT" "$PRIVATE_DIR"
-          chmod 700 "$PRIVATE_DIR"
-          echo validate_and_prerequisites > "$OUT/stage"
+          mkdir -p "$OUT"
           node <<'NODE'
           const fs=require('fs');
           const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
@@ -53,36 +47,18 @@ jobs:
           const live=JSON.parse(fs.readFileSync('app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json','utf8'));
           if(live.decision!=='PASS_C6_LIVE_HR_DYNAMIC_CANONICAL_STATE')throw new Error('live_hr_dynamic_prerequisite_not_pass');
           NODE
-          node --check tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs
+          node --check tools/qa/tya-c6-human-login-wrapper-diagnostic.mjs
           node tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs > "$OUT/unified-gate.log" 2>&1
-
-      - name: Prepare existing DEV identity read-only
-        run: echo google_auth_readonly > "$OUT/stage"
-      - uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
 
       - name: Install transient browser tooling
         run: |
           set -euo pipefail
-          echo install_browser_tooling > "$OUT/stage"
-          npm install --no-save --ignore-scripts firebase-admin@13.4.0 playwright@1.54.2 >/dev/null 2>&1
+          npm install --no-save --ignore-scripts playwright@1.54.2 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null
-
-      - name: Select existing credentials privately
-        run: |
-          set -euo pipefail
-          echo select_existing_credentials > "$OUT/stage"
-          export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
-          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
-          export CXORBIA_DEV_ROOT_URL="$ROOT_URL"
-          node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs > "$OUT/credential-selection.source-safe.json"
-          chmod 600 "$PRIVATE_E2E"
 
       - name: Start local server
         run: |
           set -euo pipefail
-          echo start_local_server > "$OUT/stage"
           nohup python3 -m http.server 4173 --directory app > "$OUT/local-http.log" 2>&1 &
           echo $! > "$OUT/local-http.pid"
           for i in $(seq 1 30); do
@@ -91,81 +67,50 @@ jobs:
           done
           exit 2
 
-      - name: Run human Auth browser and retain raw source-safe result
+      - name: Execute wrapper diagnostic
+        id: diagnostic
         run: |
-          set -euo pipefail
-          echo unified_human_auth_runtime > "$OUT/stage"
-          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
-          export CXORBIA_DEV_ROOT_URL="$ROOT_URL"
-          export CXORBIA_HUMAN_GATE_OUTPUT="$OUT/unified-human-auth.source-safe.json"
           set +e
-          node tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs http://127.0.0.1:4173 > "$OUT/human-browser.log" 2>&1
+          export CXORBIA_DEV_ROOT_URL="$ROOT_URL"
+          export CXORBIA_LOGIN_DIAGNOSTIC_OUTPUT="$OUT/login-wrapper-diagnostic.json"
+          node tools/qa/tya-c6-human-login-wrapper-diagnostic.mjs http://127.0.0.1:4173 > "$OUT/diagnostic.log" 2>&1
           code=$?
-          set -e
-          node <<'NODE'
-          const fs=require('fs');
-          const raw=fs.existsSync(process.env.OUT+'/human-browser.log')?fs.readFileSync(process.env.OUT+'/human-browser.log','utf8'):'';
-          const safe=raw.replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/g,'REDACTED_EMAIL').replace(/(password|token|credential)(\s*[:=]\s*)[^\s,}\]]+/gi,'$1$2REDACTED').slice(-7000);
-          fs.writeFileSync(process.env.OUT+'/human-browser-log.source-safe.txt',safe,'utf8');
-          NODE
-          if [ "$code" -ne 0 ]; then exit "$code"; fi
-          test -s "$OUT/unified-human-auth.source-safe.json"
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          test -s "$OUT/login-wrapper-diagnostic.json"
+          exit 0
 
-      - name: Persist raw human runtime evidence
+      - name: Persist exact diagnostic
         run: |
           set -euo pipefail
-          echo persist_human_runtime > "$OUT/stage"
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
           mkdir -p app/docs/evidence
-          cp "$OUT/unified-human-auth.source-safe.json" app/docs/evidence/CORTE6-UNIFIED-HUMAN-AUTH-RUNTIME-LATEST.json
+          cp "$OUT/login-wrapper-diagnostic.json" app/docs/evidence/CORTE6-HUMAN-LOGIN-WRAPPER-DIAGNOSTIC-LATEST.json
           node <<'NODE'
           const fs=require('fs'),p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8'));
-          const h=JSON.parse(fs.readFileSync('app/docs/evidence/CORTE6-UNIFIED-HUMAN-AUTH-RUNTIME-LATEST.json','utf8'));
-          r.enabled=false;r.consumed=true;r.status='consumed_runtime_result';r.consumedAt=new Date().toISOString();r.decision=h.decision||'UNKNOWN_C6_HUMAN_RUNTIME_RESULT';r.nextGate='EVALUATE_RAW_HUMAN_RUNTIME_RESULT';
+          const e=JSON.parse(fs.readFileSync('app/docs/evidence/CORTE6-HUMAN-LOGIN-WRAPPER-DIAGNOSTIC-LATEST.json','utf8'));
+          r.enabled=false;r.consumed=true;r.status=e.decision.startsWith('PASS_')?'consumed_pass':'consumed_fail';r.consumedAt=new Date().toISOString();r.decision=e.decision;r.nextGate=e.decision.startsWith('PASS_')?'UNIFIED_HUMAN_AUTH_STAFF_SHOPPER':'APPLY_FOCAL_LOGIN_WRAPPER_ROOT_FIX';
           fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n');
           NODE
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/CORTE6-UNIFIED-HUMAN-AUTH-RUNTIME-LATEST.json "$REQUEST"
-          git commit -m 'evidence: C6 raw unified human Auth runtime result'
+          git add app/docs/evidence/CORTE6-HUMAN-LOGIN-WRAPPER-DIAGNOSTIC-LATEST.json "$REQUEST"
+          git commit -m 'evidence: C6 human login wrapper diagnostic'
           git push origin HEAD:docs-tya-v6-v71-audit
-
-      - name: Persist diagnostic failure with sanitized log
-        if: failure()
-        run: |
-          set -euo pipefail
-          stage="$(cat "$OUT/stage" 2>/dev/null || echo unknown)"
-          STAGE="$stage" node <<'NODE'
-          const fs=require('fs');
-          const safe=fs.existsSync(process.env.OUT+'/human-browser-log.source-safe.txt')?fs.readFileSync(process.env.OUT+'/human-browser-log.source-safe.txt','utf8'):null;
-          const evidence={schemaVersion:'cxorbia.c6.unified-human-auth-browser-diagnostic-failure.v3',generatedAt:new Date().toISOString(),decision:'FAIL_C6_UNIFIED_HUMAN_AUTH_BROWSER_DIAGNOSTIC',failedStage:String(process.env.STAGE||'unknown'),errorTail:safe,safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,passwordChanges:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,credentialsExposed:false,tokensExposed:false,merge:false,production:false}};
-          fs.writeFileSync(process.env.OUT+'/failure-evidence.json',JSON.stringify(evidence,null,2)+'\n');
-          NODE
-          git fetch origin docs-tya-v6-v71-audit
-          git reset --hard origin/docs-tya-v6-v71-audit
-          mkdir -p app/docs/evidence
-          cp "$OUT/failure-evidence.json" app/docs/evidence/CORTE6-UNIFIED-AUTH-RUNTIME-READONLY-FAILURE-LATEST.json
-          node <<'NODE'
-          const fs=require('fs'),p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8'));
-          r.enabled=false;r.consumed=true;r.status='consumed_fail';r.consumedAt=new Date().toISOString();r.decision='FAIL_C6_UNIFIED_HUMAN_AUTH_BROWSER_DIAGNOSTIC';
-          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n');
-          NODE
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/CORTE6-UNIFIED-AUTH-RUNTIME-READONLY-FAILURE-LATEST.json "$REQUEST"
-          git commit -m 'evidence: C6 human Auth diagnostic raw failure' || true
-          git push origin HEAD:docs-tya-v6-v71-audit || true
 
       - name: Publish status
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
+          EXIT_CODE: ${{ steps.diagnostic.outputs.exit_code }}
         run: |
-          STATE=success; DESC=PASS_C6_HUMAN_AUTH_RAW_RESULT
-          if [ '${{ job.status }}' != 'success' ]; then STATE=error; DESC=FAIL_C6_HUMAN_AUTH_DIAGNOSTIC; fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c6-human-auth-runtime/$DESC" -f description="$DESC" >/dev/null
+          STATE=success; DESC=PASS_C6_HUMAN_LOGIN_WRAPPER
+          if [ "$EXIT_CODE" != '0' ]; then STATE=error; DESC=FAIL_C6_HUMAN_LOGIN_WRAPPER; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c6-human-login-wrapper/$DESC" -f description="$DESC" >/dev/null
+
+      - name: Enforce diagnostic
+        run: test "${{ steps.diagnostic.outputs.exit_code }}" = '0'
 
       - name: Cleanup
         if: always()
-        run: rm -rf "$PRIVATE_DIR" "$OUT"
+        run: rm -rf "$OUT"
