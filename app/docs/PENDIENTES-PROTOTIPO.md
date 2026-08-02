@@ -1,100 +1,116 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-01  
-**Estado vivo:** `C6_ROOT_FIX_AND_PROJECT_FINANCE_GUARD_APPLIED_PENDING_READONLY_RUNTIME_VALIDATION`
+**Estado vivo:** `C6_RUNTIME_PASS_EXCEPT_CLIENT_CREDENTIAL__HOLD_NO_AUTH_WRITE`
 
-## 1. P0 bloqueante
+## 1. P0 bloqueante único
 
-Validar que la baseline acumulativa y el modelo financiero por proyecto funcionan en runtime. Hasta entonces no hay freeze, agosto, deploy ni producción.
+Materializar y validar una credencial Cliente DEV con claims correctos para tenant `tya` y proyecto `cinepolis`.
 
-## 2. P0 que debe cerrar el gate
+La búsqueda read-only comprobó que no existe actualmente una credencial utilizable. Crear o resetearla implica Auth write y requiere autorización específica.
 
-- login real en la entrada humana;
-- Cliente, staff y Shopper con principal/claims correctos;
-- Shopper nunca “sin identidad”;
-- HR viva completa desde 2025;
-- julio como último periodo mientras no exista agosto;
-- KPI/fases/drill con una sola máquina de estados;
-- comparativo con todos los periodos detectados;
-- perfiles, WA, credenciales y certificaciones por ID exacto;
-- review queue para conflictos; cero fusión por nombre;
-- Portal Cliente con Panorama/KPIs/detalles aprobados;
-- Finanzas con fuente financiera canónica;
-- Cinépolis configurado como delegado, no por hardcode de nombre;
-- honorario Shopper GT Q60 / HN L200;
-- regalías Cinépolis 0;
-- ingreso delegado obtenido únicamente de comisión explícita;
-- honorario Shopper nunca utilizado como ingreso delegado;
-- comisión y distribución sin valores inventados;
-- margen solo con ambas fuentes exactas;
-- alta de proyecto conserva selección directo/delegado;
-- soporte backend regional preservado;
-- tres reloads sin cambio ni duplicación;
-- carga dentro de umbral medido.
+Hasta entonces no hay freeze, deploy, agosto, postulaciones, merge ni producción.
 
-## 3. Estado del código
+## 2. Gates cerrados
 
-Aplicado:
+PASS:
 
-- runtime humano autenticado único;
-- Auth + HR authority + adapters canónicos en la misma URL;
-- contrato `tya-project-financial-model-contract-v1.js` para Local/Delegado/Regional;
-- clasificación por projectConfig, no por nombre;
-- configuración Cinépolis delegada y regalías 0;
-- guard `tya-delegated-coordination-finance-guard-v1.js`;
-- eliminación del fallback honorario Shopper → ingreso;
-- margen delegado fail-closed sin comisión/reparto exactos;
-- gate estático acumulativo ampliado;
-- documentación y evidencia corregidas.
+- gate estático acumulativo;
+- HR viva dinámica desde junio 2025 hasta julio 2026;
+- dominio, Finanzas, Portal Shopper y Reservas;
+- Staff humano autenticado;
+- Shopper humano autenticado con identidad exacta;
+- carril técnico Staff/Shopper aislado;
+- tres recargas y nueva pestaña;
+- ruta integrada Cliente Usuario + Contraseña;
+- Cinépolis delegado, regalías 0 y Q60/L200;
+- ingreso delegado separado del honorario Shopper.
 
-Pendiente técnico:
+## 3. Root fixes aplicados
 
-- ejecutar el gate Node en checkout del HEAD vivo;
-- ejecutar runtime/browser read-only;
-- comprobar comisión y reparto desde configuración real;
-- documentar PASS/FAIL;
-- solicitar autorización fresca solo si PASS.
+- guard de clic temprano antes del wrapper oficial de Auth;
+- guard específico para impedir `pickShopperDev()` en la tarjeta Shopper protegida;
+- formulario técnico estable `cxDevEntryAuth`;
+- metadata `technical-auth-e2e-isolated`;
+- modelo financiero Local/Delegado/Regional/Unconfigured;
+- guard de comisión delegada fail-closed.
 
-## 4. Pendientes Claude/prototipo por archivo
+## 4. Evidencia del HOLD Cliente
+
+- registros candidatos examinados: 4;
+- usuarios Auth existentes relacionados: 3;
+- claims válidos Cliente para `tya/cinepolis`: 0;
+- hashes válidos: 0;
+- sign-ins Cliente: 0;
+- Auth writes: 0;
+- cambios/resets de contraseña: 0.
+
+Decisión:
+
+`HOLD_C6_EXISTING_CLIENT_CREDENTIAL_NOT_FOUND`.
+
+## 5. Siguiente bloque técnico condicionado
+
+Con autorización específica:
+
+1. snapshot de usuarios/claims Cliente;
+2. materialización de una única credencial Cliente DEV;
+3. claims `role=cliente`, `authNamespace=staff`, `tenantId=tya`, alcance `cinepolis`;
+4. idempotencia;
+5. Auth humana Cliente;
+6. tres recargas y nueva pestaña;
+7. readback;
+8. rollback exacto probado;
+9. gate acumulativo completo;
+10. evidencia PASS/FAIL.
+
+No crear cuenta ni resetear contraseña por inferencia.
+
+## 6. Pendientes Claude/prototipo por archivo
 
 ### `app/modules/proyecto-wizard.js`
 
-- agregar opción `Regional` sin cambiar el contrato backend;
+- agregar opción `Regional`;
 - conservar directo/delegado;
 - ocultar regalías para delegado/regional;
-- no duplicar cálculos.
+- no duplicar contratos backend.
 
 ### `app/modules/finanzas.js`
 
 - sustituir el texto “honorario recibido menos lo pagado al shopper”;
 - explicar comisión de coordinación y distribución configurable;
-- mostrar estado de revisión cuando falte comisión o reparto exactos;
-- no presentar margen 0 como margen confirmado.
+- mostrar revisión cuando falte fuente exacta.
 
-## 5. No reabrir
+### `app/app.js`
 
-- no nueva candidata;
-- no nueva rama/PR;
+- preservar UI aprobada;
+- no volver a usar `pickShopperDev()` en una ruta protegida;
+- cualquier cambio frontend debe pasar el gate multirol.
+
+## 7. No reabrir
+
+- no nueva candidata, rama o PR;
+- no nuevo Firebase o Hosting;
 - no restauración manual de pantallas;
-- no números de cortes antiguos;
+- no bypass de Auth por estar en DEV;
 - no dedupe por nombre/teléfono;
 - no regalías globales;
-- no clasificación por nombre de proyecto;
-- no tratar honorario Shopper como ingreso delegado;
-- no inventar comisión o reparto;
+- no clasificación por nombre;
+- no honorario Shopper como ingreso delegado;
+- no comisión/reparto inventados;
 - no PowerShell para Paula;
 - no deploy por ensayo.
 
-## 6. P1/P2 después del P0
+## 8. P1/P2 después del P0
 
 - PDF con gráficas;
 - Excel con formato;
 - exportaciones transversales;
 - copy final de fuentes/estados;
 - visualización de comisión/reparto con fuente real;
-- optimización de carga por módulo;
-- refinamiento visual de review queue y certificaciones.
+- optimización de carga;
+- refinamiento de review queue y certificaciones.
 
-## 7. Agosto
+## 9. Agosto
 
-Paula agregará agosto solo después de aprobar el estado actual. El sistema debe detectarlo desde HR y nunca crearlo por fecha del sistema.
+Paula agregará agosto solo después del freeze de Corte 6. El sistema debe detectarlo desde HR y nunca crearlo por fecha del sistema.
