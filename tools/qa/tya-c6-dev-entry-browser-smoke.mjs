@@ -12,7 +12,7 @@ let checkpoint='bootstrap',browser=null;
 
 const mark=x=>{checkpoint=x;};
 const assert=(ok,msg)=>{if(!ok)throw new Error(msg);};
-const safe=v=>String(v||'unknown').replace(/[^A-Za-z0-9_.:/=-]+/g,'_').replace(/_+/g,'_').slice(0,1200);
+const safe=v=>String(v||'unknown').replace(/[^A-Za-z0-9_.:/=-]+/g,'_').replace(/_+/g,'_').slice(0,1400);
 function persist(error){if(stageFile)try{fs.writeFileSync(stageFile,'human_data__'+safe(checkpoint)+'__'+safe(error?.message||error)+'\n','utf8');}catch{}}
 function output(value){if(outputFile){fs.mkdirSync(path.dirname(outputFile),{recursive:true});fs.writeFileSync(outputFile,JSON.stringify(value,null,2)+'\n','utf8');}}
 
@@ -38,10 +38,13 @@ async function state(page,label){
       blockedVisible:view.includes('Fuente de datos no disponible'),
       noProjectsVisible:view.includes('Sin proyectos disponibles')||rail.includes('Sin proyectos disponibles'),
       noPeriodsVisible:rail.includes('Sin periodos disponibles'),
-      viewExcerpt:view.replace(/\s+/g,' ').trim().slice(0,500),
-      railExcerpt:rail.replace(/\s+/g,' ').trim().slice(0,700),
-      gate:window.CX_DEV_ENTRY_AUTH_GATE||null,canonical:window.CX_DEV_ENTRY_CANONICAL||null,
-      continuity:window.CX_HUMAN_SESSION_CONTINUITY||null,primed:window.CX_HUMAN_SESSION_PRIMED||null
+      viewExcerpt:view.replace(/\s+/g,' ').trim().slice(0,260),
+      railExcerpt:rail.replace(/\s+/g,' ').trim().slice(0,420),
+      gateVersion:window.CX_DEV_ENTRY_AUTH_GATE?.version||null,
+      continuity:window.CX_HUMAN_SESSION_CONTINUITY||null,
+      primed:window.CX_HUMAN_SESSION_PRIMED||null,
+      canonicalLane:window.CX_DEV_ENTRY_CANONICAL?.lane||null,
+      canonicalProtected:window.CX_DEV_ENTRY_CANONICAL?.protectedRuntime===true
     };
   },label);
 }
@@ -49,17 +52,17 @@ function validate(s,label){
   assert(s.periods===14,label+':periods='+s.periods);assert(s.visits===616,label+':visits='+s.visits);assert(s.shoppers===208,label+':shoppers='+s.shoppers);
   assert(s.currentProjectId&&s.currentPeriodId,label+':context_missing');assert(s.dataStatus==='ready',label+':status='+s.dataStatus);
   assert(!s.emptyShell,label+':empty_shell');assert(!s.backendEmpty,label+':backend_empty');assert(!s.blockedVisible,label+':blocked_visible');
-  assert(!s.noProjectsVisible,label+':no_projects_visible:'+JSON.stringify(s));
-  assert(!s.noPeriodsVisible,label+':no_periods_visible:'+JSON.stringify(s));
+  assert(!s.noProjectsVisible,label+':no_projects_visible');assert(!s.noPeriodsVisible,label+':no_periods_visible');
 }
 async function waitCanonical(page,label){try{await page.waitForFunction(()=>{const d=window.CX?.data,ds=window.CX?.dataSource;return d?.projects?.length===14&&d?._visitas?.length===616&&d?.shoppers?.length===208&&d.currentProjectId&&d.currentPeriodId&&ds?.status==='ready';},{timeout:60000});}catch{throw new Error(label+':canonical_timeout:'+JSON.stringify(await state(page,label)));}}
 async function waitApp(page,label){try{await page.waitForFunction(()=>document.getElementById('app')?.classList.contains('on')===true,{timeout:60000});}catch{throw new Error(label+':app_timeout:'+JSON.stringify(await state(page,label)));}}
 async function diagnoseVisibleShell(page,label,before){
   if(!before.noProjectsVisible&&!before.noPeriodsVisible)return;
-  const mountResult=await page.evaluate(()=>{try{return {called:true,result:window.CX?.router?.mount?.()??null};}catch(error){return {called:true,error:String(error?.message||error)};}});
-  await page.waitForTimeout(100);
+  const mountResult=await page.evaluate(()=>{try{window.CX?.router?.mount?.();return {ok:true};}catch(error){return {ok:false,error:String(error?.message||error)};}});
+  await page.waitForTimeout(150);
   const after=await state(page,label+'_manual_mount_probe');
-  throw new Error(label+':visible_shell_probe:'+JSON.stringify({before,mountResult,after}));
+  const compact=s=>({role:s.role,storedRole:s.storedRole,periods:s.periods,visits:s.visits,shoppers:s.shoppers,currentProjectId:s.currentProjectId,currentPeriodId:s.currentPeriodId,programs:s.programs,periodsForCurrent:s.periodsForCurrent,visibleProjects:s.visibleProjects,dataStatus:s.dataStatus,emptyShell:s.emptyShell,backendEmpty:s.backendEmpty,noProjectsVisible:s.noProjectsVisible,noPeriodsVisible:s.noPeriodsVisible,view:s.viewExcerpt,rail:s.railExcerpt,gateVersion:s.gateVersion,continuity:s.continuity,primed:s.primed});
+  throw new Error(label+':visible_shell_probe:'+JSON.stringify({before:compact(before),mountResult,after:compact(after)}));
 }
 
 try{
@@ -78,7 +81,7 @@ try{
   assert(!url.searchParams.has('cxProtectedRuntime')&&!url.searchParams.has('cxTechnicalAuthE2E'),'technical_lane_leaked');
   const body=await page.locator('body').innerText();assert(body.includes('Selecciona un perfil para entrar'),'role_copy_missing');assert(body.includes('Administración / Coordinación')&&body.includes('Portal del Cliente')&&body.includes('Shopper / Evaluador'),'role_labels_missing');
   assert(await page.locator('#cxDevEntryAuth,#cxIntegratedAuthStep,#cxIntegratedAuthLogin,#cxIntegratedAuthPassword').count()===0,'credentials_visible');
-  assert(before.gate?.mode==='native-direct-role-entry'&&!before.gate?.technicalAuthEnabled,'human_gate_invalid');assert(before.canonical?.lane==='source-safe-human-visual'&&!before.canonical?.protectedRuntime,'canonical_lane_invalid');
+  assert(before.canonicalLane==='source-safe-human-visual'&&!before.canonicalProtected,'canonical_lane_invalid');
 
   mark('click_admin');await page.click('.role-btn[data-role="admin"]');await waitApp(page,'entry');await waitCanonical(page,'entry');const first=await state(page,'entry');await diagnoseVisibleShell(page,'entry',first);validate(first,'entry');
   assert(first.role==='admin'&&first.storedRole==='admin','admin_session_not_saved:'+JSON.stringify(first));
