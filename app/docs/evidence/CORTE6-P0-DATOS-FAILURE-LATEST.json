@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.corte6.p0-data-hosting-failure.v1",
-  "generatedAt": "2026-08-02T00:14:09.582Z",
+  "generatedAt": "2026-08-02T00:18:57.853Z",
   "decision": "FAIL_C6_P0_DATA_PRESERVATION_GATE",
-  "failedStage": "human_data__reload_1__reload_1:no_projects_visible",
+  "failedStage": "human_data__reload_1__reload_1:no_projects_visible:_view_:_Sin_proyectos_disponibles_No_hay_proyectos_materializados_en_este_entorno_todav_a._La_conexi_n_al_backend_est_activa_y_no_se_est_n_usando_datos_de_demostraci_n._rail_:_CXOrbia_Field_Operations_Platform_PROYECTO_Sin_proyectos_disponibles_PERIODO_Sin_periodos_disponibles_Datos:_Conectado_Cargando_AD_Administraci_n_Sin_proyecto_asignado_Cerrar_sesi_n_role_:_admin_storedRole_:_admin_continuity_:null_",
   "hostingDeployExecutions": 0,
   "authorizationConsumed": false,
   "providerMutationPossible": false,
