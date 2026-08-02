@@ -1,138 +1,128 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-02  
-**Estado:** `RECONSTRUCTION_ACTIVE__FAMILY_A_TECHNICAL_CONTRACT_DEFINED__A_PLUS_B_NEXT__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `RECONSTRUCTION_ACTIVE__FAMILY_A_CONTRACT_DEFINED__FAMILY_B_INVENTORY_ACTIVE__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Decisión prevalente
 
-Se reconstruye una única candidata acumulativa con la mejor versión demostrable de cada módulo. No se ejecutarán diagnósticos C6 aislados, shells paralelos, nuevas candidatas ni correcciones sintomáticas fuera de la composición acumulativa.
+Se reconstruye una única candidata acumulativa con la mejor versión demostrable de cada módulo. No se permiten diagnósticos C6 aislados, shells paralelos, nuevas candidatas ni correcciones fuera de la composición acumulativa.
 
-Fuentes vivas principales:
+Fuentes vivas:
 
-- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
-- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-SHELL-RUNTIME.md`;
 - `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-CONTRATO-Y-PRECEDENCIA-20260802.md`;
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-B-INVENTARIO-INICIAL-20260802.md`;
 - `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`.
 
 ## 2. Estado protegido
 
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR #7 draft/open/no merge.
 - HEAD de arranque de reconstrucción: `c646af04b8fba0ca8685fa4d6ce0a46e62221276`.
-- Contrato Familia A documentado: `92651f41acc423841d909487558d68be5d10b2b6`.
-- Índice vigente actualizado: `d5c39df0084890b5b50a8920e16cd74030eea8f2`.
+- Familia A contrato: `92651f41acc423841d909487558d68be5d10b2b6`.
+- Familia B inventario: `06fbfac28a1971d229ab121778ee6babdd1fd904`.
+- Índice vigente: `b13e0354aa02dee1dcd0182be668e2168adffaea`.
 - Producción `tya-plataforma`: intacta.
 - Agosto 2026 todavía no existe en HR.
 
-## 3. Causa raíz de las regresiones acumulativas
+## 3. Causa raíz corregida metodológicamente
 
-No existía una autoridad ejecutable por módulo ni una precedencia única entre:
+El problema no era únicamente seleccionar archivos. Varias capas podían reemplazar en memoria:
 
-- `CX.data` base;
-- demo/localStorage;
-- HR source-safe;
-- Firestore protegido;
-- read guards;
-- read model;
-- semántica canónica;
-- bridges que modifican métodos o DOM;
-- módulos UI.
+- tenant/proyecto/periodo;
+- colecciones y métodos de `CX.data`;
+- estados/KPIs;
+- Dashboard;
+- Finanzas;
+- login/sesión.
 
-Por eso un archivo aprobado podía quedar visualmente degradado por un overlay posterior sin que el source lock detectara la pérdida funcional.
+Por eso se fijó una precedencia técnica de Familia A y se inició Familia B sobre esa única autoridad.
 
-## 4. Familia A — avance real
+## 4. Familia A — contrato técnico
 
-### Interfaz base
+- tenant `tya`;
+- proyecto `cinepolis`;
+- periodos `cinepolis-YYYY-MM`;
+- HR viva gobierna periodos, visitas y estado operacional;
+- Firestore solo enriquece por llaves exactas;
+- `CX.data` conserva su interfaz;
+- read model + canonical semantics gobiernan estados/KPIs;
+- localStorage no concede Auth, rol o scope;
+- guards bloquean writes sin sustituir datos;
+- bridges DOM no son autoridad final;
+- build-lock V174 y caché se reemplazan al ensamblar.
 
-`app/core/data.js` permanece como contrato público de `CX.data`. Los adapters pueden hidratar y proteger la implementación, pero no reducir ni cambiar silenciosamente sus métodos, colecciones o semántica.
+## 5. Familia B — inventario real
 
-### Identidad canónica
+### Dashboard
 
-- tenant: `tya`;
-- proyecto: `cinepolis`;
-- periodo: `cinepolis-YYYY-MM`;
-- Proyecto y Periodo separados;
-- marca visual no sustituye la llave técnica.
+UI y drilldowns se preservan. Requiere reconciliar `phaseFlow`, comparativos y overlays para consumir una sola semántica canónica.
 
-### Precedencia definida
+### CRM Ops Leads
 
-`SHELL/INTERFAZ → TENANT/PROYECTO → HR VIVA → READ MODEL → SEMÁNTICA CANÓNICA → AUTH/OVERLAYS EXACTOS → FINANZAS → WRITE GUARDS → ROUTER/MÓDULOS → BUILD-LOCK/SW`.
+Suite funcional amplia, pero store local/demo. Se preserva experiencia y se exige pending-source honesto hasta disponer de fuente CRM real.
 
-### Clasificaciones principales
+### Clientes
 
-- `app.js`: preservar V182 exacta;
-- `layout.css`: preservar y validar visualmente;
-- `config.js`: reconciliar tenant/marca/modo conectado;
-- `data.js`: preservar interfaz, impedir autoridad demo en carril conectado;
-- `store.js`: conservar bus/continuidad UI, no autoridad de Auth;
-- `router.js`: preservar como navegación única con scopes autenticados;
-- `backend-firebase.js`: reconciliar normalizadores para no inventar datos;
-- read guards: solo compatibilidad/seguridad, no autoridad semántica;
-- read model + canonical semantics: autoridad de composición/estados;
-- domain consistency bridge: migrar lógica y retirar como autoridad DOM final;
-- financial model contract: preservar precedencia `tya::cinepolis`;
-- `build-lock.js`: reemplazar en ensamblaje;
-- `sw.js`: conservar network-first y renovar cache ID con el build final.
+El módulo fabrica contactos, correos y prospectos. Deben excluirse en modo conectado; se conserva ficha y relación Cliente→Proyecto.
 
-## 5. PASS técnicos preservados
+### Comercial
 
-No reabrir sin regresión reproducible:
+La calculadora/propuestas deben consumir el contrato financiero por proyecto. Cinépolis: delegado, localBilling false, regalía 0, Q60/L200.
 
-- HR: 14 periodos, 616 visitas, junio 2025–julio 2026;
-- Staff, Shopper y Cliente con recargas/nueva pestaña estables;
+### Marketing
+
+Contenido, fechas y métricas actuales son fixtures. La UI se preserva, pero Gemini/Make y métricas quedan gateadas y sin datos inventados.
+
+### Hojas de Ruta
+
+Se preserva HR viva y la interfaz. IA/import/Google Sheets y writes quedan gateados.
+
+## 6. PASS técnicos preservados
+
+- HR: 14 periodos y 616 visitas;
+- Staff/Shopper/Cliente remoto estable;
 - identidad Shopper exacta y `ownVisits=1`;
-- Cliente con scope `tya/cinepolis`;
+- Cliente `tya/cinepolis`;
 - modelo financiero delegado;
 - facturación local false;
 - regalía 0;
 - Q60 GT / L200 HN;
 - 14 delegados, 0 directos, 0 sin configurar y 0 violaciones.
 
-Estos PASS no sustituyen validación visual.
+No equivalen a aprobación visual.
 
-## 6. Validación visual vinculante
+## 7. Checkpoint Visual 1
 
-El primer build que revisará Paula será el Checkpoint Visual 1 acumulativo A+B:
+Paula revisará en un solo build A+B:
 
-- login, shell, tenant, proyecto, periodo, fuente y navegación;
+- login/shell/tenant/proyecto/periodo/fuente/navegación;
 - CRM Ops Leads;
 - Dashboard;
-- hoja de ruta;
-- Clientes/Comercial/Marketing cuando sean dependencias;
+- Hojas de Ruta;
+- Clientes;
+- Comercial;
+- Marketing;
 - indicadores y drilldowns.
 
-No se avanzará al Checkpoint 2 sin revisión visual de ese mismo build.
+No se avanza a Operación/Shopper sin esa validación.
 
-## 7. Pendiente real inmediato
+## 8. Pendiente real inmediato
 
-1. recuperar aprobaciones/commits históricos restantes de Familia A;
-2. inventariar Familia B módulo por módulo;
-3. determinar SHAs objetivo y dependencias de A+B;
-4. construir delta completo contra HEAD vivo;
-5. crear gates de interfaz, precedencia, no-demo, semántica y caché;
-6. ejecutar gates source-only;
-7. solicitar autorización para un único Hosting DEV del Checkpoint Visual 1.
-
-## 8. Criterio de salida A+B
-
-- cero archivos/dependencias `UNKNOWN`;
-- una sola autoridad de tenant/proyecto/periodo/fuente/semántica;
-- un solo delta acumulativo;
-- manifest y build-lock nuevos;
-- service worker vinculado al mismo build ID;
-- gates PASS;
-- una sola URL DEV;
-- validación visual de Paula módulo por módulo.
+1. inspeccionar overlays/extras que alteran Dashboard, Cliente y CRM;
+2. recuperar aprobaciones/commits históricos de A+B;
+3. definir SHA objetivo por archivo;
+4. construir delta completo;
+5. crear gates source-only de fixtures, semántica, autoridad, finanzas e integraciones;
+6. ejecutar gates;
+7. solicitar un único deploy DEV para Checkpoint Visual 1.
 
 ## 9. Siguiente bloque exacto
 
-`PROVENIENCIA RESTANTE FAMILIA A → INVENTARIO CRM OPS LEADS/DASHBOARD/HOJA DE RUTA → MATRIZ A+B → DELTA Y GATES SOURCE-ONLY`.
+`OPERACION-EXTRA/CLIENTE-INSIGHTS/OVERLAYS B → PROVENIENCIA Y APROBACIONES → MATRIZ SHA A+B → DELTA Y GATES SOURCE-ONLY`.
 
 ## 10. Estado seguro
 
 - cambios funcionales: 0;
-- deploy durante reconstrucción: 0;
+- deploy: 0;
 - Cloud Run/Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos: 0;
-- password changes/resets: 0;
-- credenciales/tokens expuestos: 0;
 - merge: false;
 - producción: false.
