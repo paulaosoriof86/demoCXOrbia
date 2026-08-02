@@ -9,7 +9,9 @@
    Contrato crítico:
    - projectId identifica el proyecto padre (p. ej. cinepolis);
    - periodId identifica un mes/ronda único dentro del proyecto;
-   - las visitas se enlazan al periodId para que Histórico/KPI/Finanzas no mezclen periodos.
+   - las visitas se enlazan al periodId para que Histórico/KPI/Finanzas no mezclen periodos;
+   - el modelo financiero se configura por proyecto: local o delegado;
+   - Cinépolis es delegado: comisión de coordinación compartida, sin regalías locales.
    ============================================================ */
 window.CX = window.CX || {};
 
@@ -85,9 +87,25 @@ window.CX = window.CX || {};
       nVisitas:p.total || 0,
       honorario:{GT:60,HN:200},
       honRecibe:{GT:null,HN:null},
-      modelo:'directo',
-      isr:5,
-      regalias:10,
+      modelo:'delegado',
+      billingModel:'delegated_coordination',
+      projectModel:'delegated',
+      localBilling:false,
+      isr:0,
+      taxTreatment:'project_specific_not_inferred',
+      regalias:0,
+      royaltyApplicable:false,
+      compensationModel:'coordination_commission_shared',
+      coordinationCommission:{
+        enabled:true,
+        shared:true,
+        amount:null,
+        currencyByCountry:{},
+        splitRule:'project_configuration',
+        participants:[],
+        percentages:null,
+        sourceStatus:'project_configuration_required'
+      },
       boleto:{GT:0,HN:0},
       combo:'Configurable por visita HR',
       comboAmt:{GT:0,HN:0},
@@ -101,7 +119,7 @@ window.CX = window.CX || {};
       pago:{logica:'Pagos y liquidaciones se controlan por submitido y cruce financiero.', diasPago:null, moneda:'local'},
       hrMap:{fuente:'HR TyA viva multihoja source-safe', cols:['País','ID cinema','Shopping','Quincena','Franja','Disponible desde','Agendada','Realizada','Cuestionario','Submitido','Liquidación']},
       geoloc:false,
-      conocimiento:'TyA/Cinépolis Phase A. Proyecto normal configurable dentro del tenant TyA.',
+      conocimiento:'TyA/Cinépolis Phase A. Proyecto delegado configurable dentro del tenant TyA.',
       sourceSafe:true,
       importStatus:'hr_live_source_safe_snapshot_not_imported',
       snapshotCounts:p.countries || {GT:0,HN:0,total:p.total || 0}
@@ -227,11 +245,13 @@ window.CX = window.CX || {};
     tabs:data.counts && data.counts.tabs,
     totalVisits:data.counts && data.counts.visits,
     countries:data.counts && data.counts.byCountry,
+    projectFinancialModel:'delegated_coordination',
+    royaltyApplicable:false,
     production:false,
     imported:false,
     sourceSafe:true,
     piiProtected:true,
-    note:'HR viva multihoja source-safe. Proyecto y periodo separados; datos personales protegidos hasta Auth/roles.'
+    note:'HR viva multihoja source-safe. Proyecto y periodo separados; Cinépolis delegado sin regalías locales; datos personales protegidos hasta Auth/roles.'
   };
 
   CX.data.programBase = function(p){ return (p && (p.programLabel || p.baseName)) || parentProjectName; };
