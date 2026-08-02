@@ -7,9 +7,9 @@
   "priorDecision": "FAIL_C6_PREDEPLOY_OR_HOSTING_DEPLOY",
   "priorDeployAttempted": false,
   "priorDeploySucceeded": false,
-  "status": "authorized_retry_before_any_deploy",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_fail",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -51,5 +51,8 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false
+  "production": false,
+  "consumedAt": "2026-08-02T16:13:18.498Z",
+  "decision": "FAIL_C6_PREDEPLOY_OR_HOSTING_DEPLOY",
+  "nextGate": "ROOT_CAUSE_REVIEW_NO_AUTOMATIC_REDEPLOY"
 }
