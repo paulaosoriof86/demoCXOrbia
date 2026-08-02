@@ -77,11 +77,30 @@
         submit.disabled=false;submit.textContent='Validar';
       }
     });
+    const at=new Date().toISOString();
+    window.CX_DEV_ENTRY_AUTH_GATE={
+      applied:true,
+      version:'technical-auth-e2e-v1',
+      mode:'technical-auth-e2e-isolated',
+      humanVisual:false,
+      visibleRoleSelector:false,
+      usernamePasswordVisible:true,
+      technicalAuthEnabled:true,
+      technicalNamespace:namespace,
+      namespaceUserSelectable:false,
+      firebaseAuthAuthorityPreserved:true,
+      credentialsEmbedded:false,
+      writes:false,
+      providerWrites:0,
+      production:false,
+      at
+    };
     window.CX_TYA_TECHNICAL_AUTH_E2E={
       ready:true,version:'technical-auth-e2e-v1',namespace,
       formId:'cxDevEntryAuth',
+      gateMode:'technical-auth-e2e-isolated',
       humanRouteAffected:false,credentialsEmbedded:false,
-      providerWrites:0,production:false,at:new Date().toISOString()
+      providerWrites:0,production:false,at
     };
     return true;
   }
