@@ -2,117 +2,182 @@
 
 **Fecha:** 2026-08-01  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_REAL_STAFF_SHOPPER_E2E_HOSTING_DEV_PASS__PENDING_HUMAN_VISUAL_ACCUMULATIVE__NO_PRODUCTION`
+**Estado vivo:** `C6_P0_FRAGMENTED_HUMAN_RUNTIME_PROVEN__UNIFIED_CUMULATIVE_ROOT_FIX_CODE_APPLIED__PENDING_READONLY_RUNTIME_GATES__NO_DEPLOY_NO_PRODUCTION`
 
 ## 1. Propósito
-Este addendum impide que CXOrbia/TyA vuelva a fragmentarse en versiones aisladas por módulo, etapa, fuente o conversación. Desde este corte existe una sola baseline acumulativa autorizada para continuar.
 
-## 2. Baseline canónica única
-La única baseline válida es el build publicado en el Hosting DEV existente `cxorbia-backend-dev/cxorbia-dev` que obtuvo:
+Este addendum impide que CXOrbia/TyA vuelva a fragmentarse en versiones aisladas por módulo, etapa, fuente, carril de login o conversación. Solo puede existir una baseline acumulativa construida sobre el HEAD vivo.
 
-`PASS_C6_REAL_STAFF_SHOPPER_E2E_EXISTING_HOSTING_DEV`.
+## 2. Corrección de la declaración anterior
 
-Ese build contiene acumulativamente:
+La validación humana demostró que el build publicado que había obtenido PASS técnico no contenía simultáneamente la experiencia acumulativa completa.
+
+El PASS anterior comprobó Auth/E2E y estabilidad parcial, pero no demostró en la misma URL humana:
+
+- principal autenticado;
+- todos los periodos históricos vivos;
+- KPI/fases/drill coherentes;
+- perfiles, WhatsApp, certificación e histórico;
+- Portal Cliente completo;
+- Finanzas con configuración del proyecto.
+
+Por tanto:
+
+- el PASS técnico se conserva como evidencia parcial;
+- queda supersedido como release PASS;
+- Corte 6 no está congelado;
+- el Hosting publicado no es la baseline autorizada para cutover.
+
+## 3. Baseline canónica única en recuperación
+
+La única baseline válida para continuar es el HEAD vivo de `docs-tya-v6-v71-audit`, con el root fix acumulativo aplicado y pendiente de gates read-only.
+
+Debe contener simultáneamente:
+
 - frontend aprobado vigente;
 - login único Usuario + Contraseña;
-- claims derivados para namespace, rol, tenant y proyecto;
-- HR viva como autoridad operacional;
-- Firestore/Auth como principal y overlay protegido, nunca reemplazo de HR;
+- claims para namespace, rol, tenant y proyecto;
+- HR viva como autoridad operacional para todos los periodos detectados;
+- Firestore como overlay exacto de identidad, perfil y certificación;
 - read model canónico v2;
 - máquina única de estados y periodo;
-- Dashboard, hoja de ruta, fases, detalle e histórico;
-- identidad Shopper y portal canónicos;
+- Dashboard, hoja de ruta, fases, detalle, histórico y comparativo completos;
+- identidad Shopper y Portal Shopper canónicos;
+- Portal Cliente con Panorama, KPIs, sucursales y detalle aprobados;
 - Finanzas, Movimientos, Liquidaciones y Beneficios coherentes;
+- configuración del proyecto Cinépolis: Q60 GT, L200 HN, modelo directo, ISR 5 %, regalías 10 %;
 - Reportes preservados;
 - Reservas fail-closed;
-- refresh y nueva pestaña idempotentes;
-- 14 periodos/616 visitas/208 shoppers como baseline histórica vigente.
+- refresh y nueva pestaña idempotentes.
 
-## 3. Prevalencia de evidencia
+## 4. Fuente viva y conteos dinámicos
+
+La revisión actual previa a agosto contiene 14 periodos, 616 visitas y 208 shoppers, desde junio 2025 hasta julio 2026.
+
+Estos valores son una fotografía de fuente, no invariantes permanentes. Queda prohibido:
+
+- hardcodearlos como condición futura;
+- conservar KPIs de cortes anteriores;
+- crear agosto por reloj del sistema;
+- copiar julio a agosto;
+- rechazar crecimiento válido de la HR.
+
+`tya-protected-auth-hr-authority-bridge-v2.js` debe preservar dinámicamente:
+
+- todos los periodos detectados;
+- todas las visitas de la revisión;
+- llaves técnicas únicas;
+- relación visita-periodo válida;
+- cero append protegido;
+- cero duplicados técnicos.
+
+## 5. Prevalencia de evidencia
+
 Orden obligatorio para determinar el estado:
-1. request/execute consumidos con decisión PASS;
-2. `evidence/CORTE6-REAL-USERS-E2E-HOSTING-LATEST.json`;
-3. checkpoint e índice vigentes;
-4. este addendum y lock de estabilidad acumulativa;
-5. evidencias históricas anteriores.
 
-Un trigger duplicado posterior a un PASS consumido no puede degradar el estado del producto. `CORTE6-REAL-USERS-E2E-FAILURE-LATEST.json` está clasificado como evento supersedido y no sustituye la evidencia PASS.
+1. índice y checkpoint vigentes;
+2. evidencia `CORTE6-UNIFIED-CUMULATIVE-RUNTIME-ROOT-FIX-LATEST.json`;
+3. este addendum y el lock de estabilidad acumulativa;
+4. CAMBIOS-BACKEND de recuperación;
+5. evidencias históricas de single-login, R20 full-history y C6 domain/finance/shopper;
+6. evidencias técnicas anteriores, solo para los contratos que realmente probaron.
 
-## 4. Operaciones prohibidas
+Ningún PASS anterior puede prevalecer sobre una regresión humana reproducible posterior.
+
+## 6. Operaciones prohibidas
+
 Queda prohibido:
-- crear otra plataforma, candidata, rama, PR, Firebase o Hosting para continuar Phase A;
-- restaurar una sección desde una versión anterior;
-- seleccionar “la mejor pantalla” y copiarla fuera del build canónico;
+
+- crear otra plataforma, candidata, rama, PR, Firebase o Hosting;
+- restaurar una sección desde una versión anterior fuera del HEAD vivo;
+- seleccionar “la mejor pantalla” y copiarla de manera aislada;
 - aprobar una sección o smoke de carcasa como release completo;
+- mantener carriles separados para humano y Auth real;
 - permitir que Auth/Firestore reemplace HR;
-- recalcular estados, KPIs, identidad o Finanzas de forma separada en módulos UI;
+- recalcular estados, KPIs, identidad o Finanzas en módulos UI;
 - deduplicar identidad por nombre, correo, teléfono o similitud visual;
+- congelar números de una revisión anterior;
 - saltar el gate acumulativo por urgencia;
 - reutilizar una autorización consumida;
 - publicar agosto o producción sin fuente y gate específicos.
 
-## 5. Regla para todo cambio futuro
-Todo cambio parte del HEAD vivo y de esta baseline. Debe clasificarse como delta focal y pasar, como mínimo:
+## 7. Root fix acumulativo
 
-`SINTAXIS/CONTRATO → DOMINIO CANÓNICO → FINANZAS → SHOPPER/IDENTIDAD → REPORTES → REFRESH/SESIÓN → E2E REAL SEGÚN ALCANCE → VALIDACIÓN HUMANA`.
+El HEAD vivo recupera una sola entrada `authenticated-human-canonical`:
 
-Una regresión en cualquier superficie bloquea el cambio completo. No se crea un segundo carril funcional para resolverla.
+- el índice activa Auth, HR viva y adapters canónicos en la misma URL;
+- se retiró el override directo de rol;
+- se retiró el bridge visual condicionado por token oculto;
+- `tya-protected-auth-hr-authority-bridge-v2.js` compone la fuente dinámicamente;
+- `tya-c6-unified-human-runtime-v1.js` recupera login Cliente, comparativo completo y configuración financiera;
+- `app/modules/*` permanece intacto.
 
-## 6. Freeze de Corte6
-El único pendiente para congelar Corte6 es la validación humana acumulativa del build publicado:
-- entrada y restauración de sesión;
-- Dashboard/hoja de ruta y KPIs 44/40/38/33/1;
-- detalle e histórico/comparativo;
-- tres refresh/focus;
-- Shoppers, perfiles, certificación y portal;
-- Finanzas, Movimientos, Liquidaciones y Beneficios;
-- Reportes;
-- Reservas read-only.
+## 8. Gate de freeze de Corte 6
 
-Resultado requerido:
-`APROBADO → C6_BASELINE_CANONICA_ACUMULATIVA_FROZEN`.
+Secuencia exacta:
 
-## 7. Carril urgente de agosto y postulaciones
-Después del freeze, el siguiente bloque exacto es:
+`STATIC ROOT CONTRACT → READ-ONLY RUNTIME → AUTH REAL STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → COMPARATIVE ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE CONFIG → REPORTS/RESERVATIONS → 3 RELOADS + NEW TAB → EVIDENCE`.
 
-`FUENTE EXACTA AGOSTO O VISITAS PLATFORM-ORIGIN → IDENTIDAD/MAPPING → DISPONIBLES → POSTULACIONES → GATE MULTIROL → WRITE PLAN → AUTORIZACIÓN ESPECÍFICA → READBACK → REMOTE SMOKE → CUTOVER`.
+Solo después de PASS local/read-only se solicita autorización fresca para un único deploy del Hosting DEV existente.
 
-Objetivo operacional: permitir que los shoppers consulten visitas de agosto y se postulen sin duplicar HR, sin inventar datos y sin degradar el histórico.
+Después del deploy autorizado:
 
-La autorización de Hosting DEV consumida en Corte6 no autoriza writes, apertura de postulaciones, merge ni producción.
+- paridad remota;
+- mismo gate acumulativo;
+- validación humana;
+- `APROBADO → C6_BASELINE_CANONICA_ACUMULATIVA_FROZEN`.
 
-## 8. Invariantes mínimas
-- julio 44 = GT 34 + HN 10;
-- realizadas 40;
-- cuestionario 38;
-- submitidas 33;
-- fuera de rango accionable 1;
-- 40 realizadas en Liquidaciones;
-- 33 submitidas no omitidas;
-- HR interna 616 para staff y shopper autenticado;
-- portal Shopper filtra por identidad canónica sin destruir el dataset interno;
+## 9. Carril urgente de agosto y postulaciones
+
+Después del freeze:
+
+1. Paula agrega agosto a HR;
+2. el runtime lo detecta por fuente;
+3. se reconcilia cualquier visita platform-origin;
+4. se habilitan disponibles;
+5. se habilitan postulaciones;
+6. gate multirol;
+7. write plan y autorización específica;
+8. readback, remote smoke y cutover.
+
+La autorización de Hosting consumida anteriormente no autoriza deploy nuevo, writes, apertura de postulaciones, merge ni producción.
+
+## 10. Invariantes de producto
+
+- todos los periodos HR visibles en histórico/comparativo;
+- último periodo = último periodo detectado, no mes del reloj;
+- KPI = fase = detalle;
+- Portal Cliente y Admin comparten periodo y read model;
+- Portal Shopper usa identidad exacta y conserva el dataset interno;
 - cero duplicados técnicos;
+- conflictos de identidad en review queue;
+- honorarios desde configuración cuando HR no trae monto;
+- fuente financiera exacta y pagos confirmados preservados;
 - Reportes sin pérdida;
 - Reservas sin mutaciones mientras no exista fuente real.
 
-## 9. Documentación obligatoria por bloque
+## 11. Documentación obligatoria
+
 Cada bloque debe actualizar:
+
 - `CAMBIOS-BACKEND.md` o addendum;
 - `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 - `RESUMEN-PARA-CLAUDE.md`;
 - `PENDIENTES-PROTOTIPO.md`;
 - impacto Academia/manuales;
-- PR #7 mediante cuerpo o comentario autoritativo;
+- PR #7;
 - evidencia source-safe reproducible.
 
 Si un commit, gate, deploy o herramienta falla, se declara. No se afirma éxito sin evidencia.
 
-## 10. Clasificación
-- **Reusable CXOrbia:** baseline acumulativa única, ownership de fuente, evidencia prevalente y gate transversal.
-- **Exclusivo TyA:** conteos y operación Cinépolis/agosto.
+## 12. Clasificación
+
+- **Reusable CXOrbia:** baseline acumulativa única, ownership dinámico de fuente, evidencia prevalente y gate transversal.
+- **Exclusivo TyA:** operación Cinépolis, configuración Q60/L200 y futura incorporación de agosto.
 - **Claude/prototipo:** consumir contratos canónicos sin reimplementar lógica.
 - **Academia:** versionado acumulativo, trazabilidad, source ownership y validación E2E real.
 - **Sin impacto Claude:** runners, credenciales privadas y consumo one-shot.
 
-## 11. Estado seguro
-Hosting DEV deploy 1; usuarios creados 0; Auth/Firestore/HR/Rules/Storage/legacy/Make/Gemini/pagos/Reservas writes 0; Cloud Run deploys 0; nuevos proyectos/sites 0; credenciales/tokens exportados 0; merge=false; producción=false.
+## 13. Estado seguro
+
+Root fix aplicado en código; Hosting DEV deploys nuevos 0; Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos/Reservas writes 0; Cloud Run deploys 0; nuevos proyectos/sites 0; credenciales/tokens exportados 0; merge=false; producción=false.
