@@ -8,9 +8,10 @@
 
 La prioridad vigente es reconstruir una única candidata acumulativa con la mejor versión demostrable de cada módulo.
 
-Fuente operativa principal nueva:
+Fuentes operativas principales nuevas:
 
-- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`.
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-SHELL-RUNTIME.md`.
 
 Hasta cerrar la matriz quedan suspendidos nuevos diagnósticos C6 aislados, deploys, shells reducidos, candidatas paralelas y correcciones de síntomas que no pertenezcan a la composición acumulativa.
 
@@ -20,23 +21,24 @@ Hasta cerrar la matriz quedan suspendidos nuevos diagnósticos C6 aislados, depl
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - HEAD de arranque de reconstrucción: `c646af04b8fba0ca8685fa4d6ce0a46e62221276`.
-- Primer commit documental de la matriz: `cbf777bbbd9d3172323db18d5b6f854c3e5ab8ff`.
+- Matriz maestra: commit `cbf777bbbd9d3172323db18d5b6f854c3e5ab8ff`.
+- Familia A shell/runtime: commit `3fa660673c8331062e99df176b8aa2f570354149`.
 - Hosting DEV existente: `cxorbia-backend-dev`, target `cxorbia-dev`.
 - Producción `tya-plataforma`: intacta.
 
 ## 2. Fuentes maestras obligatorias
 
 1. `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
-2. reglas maestras y addenda activos;
-3. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-4. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-5. `ADDENDUM-MAESTRO-C6-BASELINE-CANONICA-UNICA-Y-CUTOVER-20260801.md` como historial técnico a preservar, subordinado al lock de reconstrucción;
-6. `CAMBIOS-BACKEND-ADDENDUM-C6-CANONICAL-HEAD-DEPLOY-SHOPPER-PASS-FINANCE-STOP-RETRY-20260802.md`;
-7. `CAMBIOS-BACKEND-ADDENDUM-C6-FINANCE-ROOT-FIX-SOURCE-ONLY-20260802.md`;
-8. `CAMBIOS-BACKEND-ADDENDUM-C6-FINANCE-REMOTE-PASS-SEMANTIC-STOP-RETRY-20260802.md`;
+2. `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-SHELL-RUNTIME.md` mientras Familia A permanezca abierta;
+3. reglas maestras y addenda activos;
+4. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+5. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+6. `ADDENDUM-MAESTRO-C6-BASELINE-CANONICA-UNICA-Y-CUTOVER-20260801.md` como historial técnico a preservar, subordinado al lock de reconstrucción;
+7. `CAMBIOS-BACKEND-ADDENDUM-RECONSTRUCCION-CANDIDATA-ACUMULATIVA-INICIO-20260802.md`;
+8. addenda C6 de Shopper/Finanzas/STOP_RETRY como evidencia histórica preservada;
 9. `RESUMEN-PARA-CLAUDE.md`;
 10. `PENDIENTES-PROTOTIPO.md`;
-11. Academia vigente;
+11. `ACADEMIA-IMPACTO-RECONSTRUCCION-CANDIDATA-ACUMULATIVA-20260802.md`;
 12. PR #7 y HEAD vivo.
 
 ## 3. Fuentes técnicas preservadas
@@ -91,13 +93,15 @@ Diagnóstico remoto:
 
 La causa de precedencia financiera queda cerrada remotamente y debe preservarse durante la reconstrucción.
 
-## 7. Hallazgo de reconstrucción inicial
+## 7. Hallazgos de reconstrucción iniciales
 
 - `app/index.html` carga el conjunto actual completo, pero presencia no equivale a aprobación.
+- `app/index-backend-dev.html` carga el mismo conjunto de módulos más la cadena Auth/HR/Firestore/Finanzas/adapters; no es un shell reducido por inventario, pero requiere reconciliación por orden de carga.
 - `app/core/build-lock.js` todavía declara V174/R20 y está obsoleto como identidad de la composición actual.
 - El paquete V182 es incremental de cinco archivos.
 - `app/app.js`, `app/modules/beneficios.js` y `app/styles/layout.css` coinciden exactamente con V182.
 - `app/core/finanzas-core.js` y `app/modules/finanzas.js` contienen cambios posteriores y requieren reconciliación, no restauración ciega.
+- `app/adapters/tya-live-source-inplace-apply.js` conserva defaults heredados `directo/isr5/regalía10`; el contrato posterior delegado/regalía0 prevalece en el runtime remoto PASS, pero la contradicción física debe eliminarse o neutralizarse en la composición final.
 
 ## 8. Secuencia vigente
 
@@ -107,7 +111,7 @@ La causa de precedencia financiera queda cerrada remotamente y debe preservarse 
 
 Source-only, sin deploy:
 
-`CERRAR FAMILIA A: SHELL/LOGIN/TENANT/NAVEGACIÓN/CX.DATA/HR/ADAPTERS/AUTH/PROYECTO-PERIODO → TRAZAR APROBACIONES Y COMMITS → CLASIFICAR PRESERVAR/RESTAURAR/RECONCILIAR`.
+`COMPLETAR FAMILIA A: CX.DATA/HR/ADAPTERS/AUTH/TENANT/PROYECTO-PERIODO → TRAZAR APROBACIONES Y COMMITS → DEFINIR ORDEN CANÓNICO → CLASIFICAR PRESERVAR/RESTAURAR/RECONCILIAR`.
 
 Después: Familia B, empezando por CRM Ops Leads, Dashboard y hoja de ruta.
 
