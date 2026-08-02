@@ -25,7 +25,7 @@
   const arr=v=>Array.isArray(v)?v:[];
   const str=v=>String(v==null?'':v).trim();
   const num=v=>Number.isFinite(Number(v))?Number(v):null;
-  const esc=v=>str(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+  const esc=v=>str(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const monthLabel=key=>{
     const m=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
     const s=str(key),n=Number(s.slice(5,7)),y=s.slice(2,4);
@@ -49,6 +49,47 @@
     });
     window.CX_BACKEND_PREVIEW_LANE='authenticated-human-canonical';
     window.CX_BACKEND_DATA_SOURCE='hr-live-authority+firestore-authenticated-overlay';
+  }
+
+  /*
+    C6 login race root fix:
+    app.js can paint the role cards before DOMContentLoaded installs the official
+    backend-browser-auth wrapper. A very fast click in that interval used the
+    prototype's direct-role handler. Capture the click before it reaches the
+    card and route it into the same integrated Auth bridge. Once the official
+    wrapper is installed this guard becomes a no-op; it never authenticates,
+    persists credentials or enters the app by itself.
+  */
+  function installEarlyRoleClickGuard(){
+    if(window.CX_C6_EARLY_AUTH_CLICK_GUARD?.installed===true)return;
+    const earlyRoleClickGuard=event=>{
+      const target=event.target&&event.target.closest?event.target.closest('.role-btn[data-role]'):null;
+      if(!target)return;
+      const protectedLogin=CX.BACKEND?.enabled===true
+        && CX.BACKEND?.previewMode===true
+        && CX.BACKEND?.devPreviewAuth?.enabled===true;
+      const officialWrapperReady=CX.app?.__firebaseBrowserAuthWrapped===true;
+      const authenticated=CX.backendAuth?.isReady?.()===true;
+      if(!protectedLogin||officialWrapperReady||authenticated||typeof CX.backendAuth?.showForRole!=='function')return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const role=str(target.dataset&&target.dataset.role);
+      CX.backendAuth.showForRole(role);
+      window.CX_C6_EARLY_AUTH_CLICK_GUARD.lastInterceptedRole=role||null;
+      window.CX_C6_EARLY_AUTH_CLICK_GUARD.intercepts+=1;
+      window.CX_C6_EARLY_AUTH_CLICK_GUARD.lastInterceptedAt=new Date().toISOString();
+    };
+    document.addEventListener('click',earlyRoleClickGuard,true);
+    window.CX_C6_EARLY_AUTH_CLICK_GUARD={
+      installed:true,
+      mode:'capture-until-official-auth-wrapper',
+      intercepts:0,
+      directRoleEntryAllowed:false,
+      credentialValuesStored:false,
+      providerWrites:0,
+      production:false,
+      at:new Date().toISOString()
+    };
   }
 
   function clearSyntheticSession(){
@@ -240,10 +281,12 @@
   }
 
   forceUnifiedConfig();
+  installEarlyRoleClickGuard();
   clearSyntheticSession();
 
   const activate=reason=>{
     forceUnifiedConfig();
+    installEarlyRoleClickGuard();
     clearSyntheticSession();
     patchClientLogin();
     wrapDashboard();
@@ -252,6 +295,8 @@
       ready:true,version:'c6-unified-human-runtime-v1',
       lane:'authenticated-human-canonical',
       singleVisibleProductLogin:true,
+      earlyAuthClickGuard:true,
+      directRoleEntryAllowed:false,
       hrAuthority:'live-all-detected-periods',
       identityOverlay:'firestore-exact-crosswalk',
       canonicalDomain:true,canonicalShopperPortal:true,canonicalFinance:true,
