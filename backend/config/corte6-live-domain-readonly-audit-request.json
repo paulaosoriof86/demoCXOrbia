@@ -1,10 +1,15 @@
 {
   "schemaVersion": "cxorbia.c6.live-domain-readonly-audit-request.v1",
-  "requestId": "c6-hosting-dev-deploy-remote-gates-20260802-01",
-  "attempt": 23,
-  "status": "consumed_fail",
-  "enabled": false,
-  "consumed": true,
+  "requestId": "c6-hosting-dev-deploy-remote-gates-20260802-02",
+  "attempt": 24,
+  "retryOf": "c6-hosting-dev-deploy-remote-gates-20260802-01",
+  "retryReason": "predeploy_envelope_v3_missing_tenant_metadata_compatibility_fixed_before_any_deploy",
+  "priorDecision": "FAIL_C6_PREDEPLOY_OR_HOSTING_DEPLOY",
+  "priorDeployAttempted": false,
+  "priorDeploySucceeded": false,
+  "status": "authorized_retry_before_any_deploy",
+  "enabled": true,
+  "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -13,7 +18,8 @@
   "targetProjectId": "cxorbia-backend-dev",
   "hostingTarget": "cxorbia-dev",
   "hostingSite": "cxorbia-backend-dev",
-  "sourceLockHead": "847541bedca1b569e9ca59c4a906ebd0ba91088f",
+  "sourceLockHead": "62ec2ee7b2644f4f914a1af9ef17c374f1f32410",
+  "functionalRuntimeSourceHead": "847541bedca1b569e9ca59c4a906ebd0ba91088f",
   "authorization": {
     "authorizedBy": "Paula",
     "authorizedAt": "2026-08-02T09:55:00-06:00",
@@ -31,7 +37,7 @@
     "threeReloadsRequired": true,
     "newTabRequired": true
   },
-  "triggerReason": "deploy_exact_c6_multi_role_pass_runtime_to_existing_dev_hosting_and_validate_same_remote_experience",
+  "triggerReason": "retry_same_unused_single_deploy_authorization_after_predeploy_compatibility_fix",
   "expectedOutcome": "single_hosting_dev_deploy_then_remote_cumulative_pass_or_exact_fail_evidence",
   "hostingDeploys": 1,
   "maxHostingDeploys": 1,
@@ -45,8 +51,5 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false,
-  "consumedAt": "2026-08-02T16:06:48.337Z",
-  "decision": "FAIL_C6_PREDEPLOY_OR_HOSTING_DEPLOY",
-  "nextGate": "ROOT_CAUSE_REVIEW_NO_AUTOMATIC_REDEPLOY"
+  "production": false
 }
