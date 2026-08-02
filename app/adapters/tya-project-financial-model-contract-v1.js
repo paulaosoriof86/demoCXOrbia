@@ -18,6 +18,80 @@
   const str=v=>String(v==null?'':v).trim();
   const num=v=>Number.isFinite(Number(v))?Number(v):0;
   const arr=v=>Array.isArray(v)?v:[];
+  const clone=v=>v==null?v:JSON.parse(JSON.stringify(v));
+  const registry=new Map();
+  const MATERIALIZER_VERSION='cxorbia.project-financial-configuration-materializer.v1';
+
+  function technicalKey(tenantId,projectId){
+    const tenant=str(tenantId).toLowerCase();
+    const project=str(projectId).toLowerCase();
+    return tenant&&project?`${tenant}::${project}`:'';
+  }
+  function projectTechnicalId(project){
+    return str(project&&(project.parentProjectId||project.program||project.baseProjectId||project.clientProjectId||project.canonicalProjectId));
+  }
+  function tenantTechnicalId(project){
+    return str(project&&project.tenantId||CX.BACKEND&&CX.BACKEND.tenantId||CX.data&&CX.data.previewMeta&&CX.data.previewMeta.tenantId);
+  }
+  function registerProjectConfig(config){
+    const source=clone(config||{});
+    const key=technicalKey(source.tenantId,source.projectId);
+    if(!key)throw new Error('PROJECT_FINANCIAL_CONFIG_TECHNICAL_KEY_REQUIRED');
+    source.tenantId=str(source.tenantId).toLowerCase();
+    source.projectId=str(source.projectId).toLowerCase();
+    source.configurationKey=key;
+    source.configurationVersion=MATERIALIZER_VERSION;
+    registry.set(key,source);
+    return clone(source);
+  }
+  function resolveProjectConfig(project){
+    const key=technicalKey(tenantTechnicalId(project),projectTechnicalId(project));
+    return key&&registry.has(key)?clone(registry.get(key)):null;
+  }
+  function materializeProjectConfig(project,config,reason){
+    if(!project||typeof project!=='object'||!config)return {matched:false,reason:'exact_project_config_not_found'};
+    const configKey=technicalKey(config.tenantId,config.projectId);
+    const projectKey=technicalKey(tenantTechnicalId(project),projectTechnicalId(project));
+    if(!configKey||projectKey!==configKey)return {matched:false,reason:'technical_key_mismatch',projectKey,configKey};
+    project.tenantId=config.tenantId;
+    project.parentProjectId=project.parentProjectId||config.projectId;
+    project.program=project.program||config.projectId;
+    project.modelo=config.model;
+    project.billingModel=config.billingModel;
+    project.projectModel=config.projectModel;
+    project.localBilling=config.localBilling;
+    project.royaltyApplicable=config.royaltyApplicable;
+    project.regalias=Number(config.royalty||0);
+    project.compensationModel=config.compensationModel;
+    project.honorario=Object.assign({},project.honorario||{},clone(config.honorarium||{}));
+    project.coordinationCommission=Object.assign({},clone(config.coordinationCommission||{}),project.coordinationCommission||{});
+    project.coordinationCommission.enabled=config.coordinationCommission&&config.coordinationCommission.enabled===true;
+    project.coordinationCommission.shared=config.coordinationCommission&&config.coordinationCommission.shared===true;
+    project.coordinationCommission.model=config.model;
+    project.coordinationCommission.splitRule=config.coordinationCommission&&config.coordinationCommission.splitRule||'project_configuration';
+    project.coordinationCommission.sourceStatus=config.coordinationCommission&&config.coordinationCommission.sourceStatus||'project_configuration_required';
+    project.taxTreatment=config.taxTreatment||'project_specific_not_inferred';
+    project.financialModelReviewRequired=false;
+    project.financialConfigurationKey=configKey;
+    project.financialConfigurationSource='exact_tenant_project_registry';
+    project.financialConfigurationMaterialized=true;
+    project.financialConfigurationVersion=MATERIALIZER_VERSION;
+    project.financialConfigurationReason=reason||'runtime';
+    return {matched:true,projectKey,configKey};
+  }
+  function materializeAll(reason){
+    if(!CX.data)return {ready:false,reason:'data_not_ready',matched:0,unresolved:0};
+    let matched=0,unresolved=0;
+    const unresolvedKeys=[];
+    for(const project of arr(CX.data.projects)){
+      const result=materializeProjectConfig(project,resolveProjectConfig(project),reason);
+      if(result.matched)matched++;
+      else{unresolved++;unresolvedKeys.push(technicalKey(tenantTechnicalId(project),projectTechnicalId(project))||'missing_technical_key');}
+    }
+    const status={ready:true,version:MATERIALIZER_VERSION,reason:reason||'runtime',projects:arr(CX.data.projects).length,matched,unresolved,unresolvedKeys:[...new Set(unresolvedKeys)],exactTechnicalKeysOnly:true,displayNameMatching:false,valuesInvented:false,providerWrites:0,production:false,at:new Date().toISOString()};
+    window.CX_PROJECT_FINANCIAL_CONFIGURATION_MATERIALIZATION=status;
+    return status;
+  }
   const delegatedValues=new Set([
     'delegado','delegated','delegated_coordination','franquicia_delegada',
     'franchise_delegated','coordination_commission','coordination_commission_shared'
@@ -150,11 +224,20 @@
     return status;
   }
 
+  registerProjectConfig({
+    tenantId:'tya',projectId:'cinepolis',model:'delegado',billingModel:'delegated_coordination',projectModel:'delegated',
+    localBilling:false,royaltyApplicable:false,royalty:0,compensationModel:'coordination_commission_shared',honorarium:{GT:60,HN:200},
+    coordinationCommission:{enabled:true,shared:true,amount:null,amountByCountry:{},amountByPeriodCountry:{},calculationMode:null,currencyByCountry:{},splitRule:'project_configuration',participants:[],percentages:null,distributedAmount:null,distributedAmountByCountry:{},distributedAmountByPeriodCountry:{},sourceStatus:'project_configuration_required',valuesInvented:false},
+    taxTreatment:'project_specific_not_inferred'
+  });
+
   function wrapAddProject(){
     if(!CX.data||typeof CX.data.addProject!=='function'||CX.data.addProject.__financialModelContractV1)return false;
     const original=CX.data.addProject.bind(CX.data);
     const wrapped=function(config){
-      const normalized=normalize(Object.assign({},config||{}));
+      const incoming=Object.assign({},config||{});
+      materializeProjectConfig(incoming,resolveProjectConfig(incoming),'add_project_before_normalization');
+      const normalized=normalize(incoming);
       const created=original(normalized);
       normalize(created);
       return created;
@@ -166,13 +249,22 @@
 
   function activate(reason){
     wrapAddProject();
-    return normalizeAll(reason||'activate');
+    const why=reason||'activate';
+    materializeAll(`${why}_before_normalization`);
+    return normalizeAll(why);
   }
 
   CX.projectFinancialModel=Object.assign(CX.projectFinancialModel||{}, {
     normalize,
     normalizeAll,
     resolveModel,
+    materializeAll,
+    materializeProjectConfig,
+    resolveProjectConfig,
+    registerProjectConfig,
+    technicalKeyFor:project=>technicalKey(tenantTechnicalId(project),projectTechnicalId(project)),
+    registrySnapshot:()=>[...registry.values()].map(clone),
+    materializerVersion:MATERIALIZER_VERSION,
     contractVersion:'cxorbia.project-financial-model.v1'
   });
 
