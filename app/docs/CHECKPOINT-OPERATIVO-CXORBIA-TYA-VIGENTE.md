@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-02  
-**Estado:** `C6_AUTH_RUNTIME_ALL_ROLES_PASS__CLIENT_CREDENTIAL_MATERIALIZED__PENDING_FRESH_DEV_DEPLOY_AUTHORIZATION__NO_PRODUCTION`
+**Estado:** `C6_AUTH_ALL_ROLES_PASS__HOSTING_DEV_COMMAND_FAILED_BEFORE_RELEASE__ROOT_CAUSE_FIXED__FRESH_AUTH_REQUIRED__NO_PRODUCTION`
 
 ## 1. Estado protegido
 
@@ -11,90 +11,83 @@
 - Agosto 2026 todavía no existe en HR.
 - Producción intacta.
 
-## 2. Contratos prevalentes
+## 2. Baseline acumulativa PASS
 
-### Fuente
+- HR viva dinámica y read model canónico.
+- Staff humano autenticado.
+- Shopper humano autenticado con identidad exacta.
+- Cliente humano autenticado con alcance exclusivo `cinepolis`.
+- Carril técnico Staff/Shopper aislado.
+- Dominio, Finanzas, Portal Cliente, Portal Shopper y Reservas.
+- Tres recargas y nueva pestaña.
+- Credencial Cliente idempotente, readback PASS y rollback exacto probado.
 
-HR viva gobierna periodos, visitas, estados y asignaciones. Firestore protegido solo enriquece identidad, perfil y certificación por crosswalk exacto.
-
-### Finanzas
-
-- directo/local: regalías únicamente si se configuran;
-- delegado: regalías 0 y comisión de coordinación compartida;
-- regional: distribución regional configurable;
-- `unconfigured`: fail-closed.
-
-Cinépolis conserva Q60 GT/L200 HN al shopper, modelo delegado y regalías 0.
-
-## 3. Root fixes acumulativos comprobados
-
-- entrada humana única `authenticated-human-canonical`;
-- guard contra clic antes del wrapper oficial de Auth;
-- guard Shopper contra `pickShopperDev()`;
-- transición Cliente post-Auth completada con `CX.app.enter()`;
-- HR dinámica y read model canónico;
-- modelo financiero por configuración;
-- guard de comisión delegada fail-closed;
-- carril técnico estable;
-- módulos UI y `app.js` preservados.
-
-## 4. Gates PASS
-
-- static cumulative contract;
-- immediate-click login guard;
-- live HR dynamic canonical state;
-- domain/finance/shopper/reservations;
-- Staff humano con Auth/claims;
-- Shopper humano con Auth/claims e identidad exacta;
-- Cliente humano con Auth/claims y alcance exacto;
-- carril técnico Staff/Shopper aislado;
-- tres recargas y nueva pestaña;
-- idempotencia y readback Cliente;
-- rollback exacto probado.
-
-Decisión acumulativa:
+Decisión funcional:
 
 `PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES`.
 
-## 5. Credencial Cliente
+## 3. Configuración financiera preservada
 
-Autorización ejecutada:
+Cinépolis:
 
-- una única credencial Cliente DEV;
-- 2 Auth writes: creación + claims;
-- `role=cliente`;
-- `authNamespace=staff`;
-- `tenantId=tya`;
-- alcance exclusivo `cinepolis`;
-- cuenta habilitada;
-- sign-in por contraseña PASS;
-- password changes/resets 0;
-- credenciales/tokens expuestos 0.
+- modelo delegado por `projectConfig`;
+- Q60 GT / L200 HN al shopper;
+- regalías 0;
+- comisión y reparto configurables;
+- honorario Shopper nunca usado como ingreso delegado;
+- margen solo con fuente exacta.
 
-La segunda aplicación fue idempotente con 0 writes.
+## 4. Resultado del intento de deploy DEV
 
-## 6. Runtime Cliente
+La ejecución autorizada comprobó source lock, gate estático y credenciales read-only. El comando de deploy fue iniciado una vez y falló antes de crear una release.
 
-- 14 periodos;
-- 616 visitas;
-- junio 2025 a julio 2026;
-- proyecto `cinepolis`;
-- periodo `cinepolis-2026-07`;
-- tres recargas estables;
-- nueva pestaña estable.
+Evidencia:
 
-## 7. Primer intento y rollback
+- `failedStage=deploy_hosting_once`;
+- `deployAttempted=true`;
+- `deploySucceeded=false`;
+- Hosting releases creadas: 0;
+- Cloud Run deploys: 0;
+- gates remotos: no ejecutados.
 
-El primer intento creó y leyó correctamente la cuenta, pero no completó la transición visual al Portal Cliente. El workflow ejecutó rollback real y eliminó el usuario, restaurando el preestado.
+La autorización queda consumida. No existe reintento automático.
 
-Se corrigió la causa raíz y el segundo intento quedó PASS.
+## 5. Causa raíz reproducible
 
-## 8. Siguiente bloque exacto
+`FIREBASE_CLI_ALTERNATE_CONFIG_PATH_RESOLUTION`.
 
-`AUTORIZACIÓN FRESCA PARA UN ÚNICO DEPLOY DEL HOSTING DEV EXISTENTE → PARIDAD REMOTA → GATE ACUMULATIVO REMOTO STAFF/CLIENTE/SHOPPER → VALIDACIÓN HUMANA → APROBADO C6 → FREEZE`.
+El runner guardaba la configuración alternativa únicamente dentro de `.tmp`. Firebase CLI resuelve el basename del archivo indicado por `--config` dentro de la raíz detectada del proyecto. Como `firebase.deploy.json` no existía en la raíz, el comando terminó antes de publicar.
 
-No existe autorización vigente para deploy.
+No se demostró fallo de:
 
-## 9. Estado seguro
+- source lock;
+- aplicación;
+- HR;
+- Auth;
+- IAM;
+- Cloud Run;
+- producción.
 
-Credenciales Cliente creadas 1; Auth writes autorizados 2; password changes/resets 0; Hosting/Cloud Run deploys 0; Firestore/Rules/Storage/HR/Make/Gemini/pagos writes 0; merge=false; producción=false.
+## 6. Corrección aplicada sin nuevo deploy
+
+- `firebase.json` incorpora de forma canónica el rewrite HR vivo.
+- `firebase.deploy.json` existe ahora en la raíz resoluble por Firebase CLI.
+- target `cxorbia-dev` y public `app` preservados.
+- `/api/tya/cinepolis/hr-live` mantiene el servicio existente `cxorbia-live-hr-dev` en `us-central1`.
+- wildcard SPA permanece después del endpoint HR.
+- cero cambios de módulos UI/core por este bloque.
+- cero writes o deploys posteriores al fix.
+
+Evidencia:
+
+`CORTE6-HOSTING-DEV-DEPLOY-ROOT-CAUSE-FIX-LATEST.json`.
+
+## 7. Siguiente bloque exacto
+
+Requiere autorización fresca:
+
+`SOURCE LOCK ACTUAL → STATIC GATE → CREDENCIALES READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → STAFF/CLIENTE/SHOPPER → DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA`.
+
+## 8. Estado seguro
+
+Credencial Cliente vigente: 1. Auth writes autorizados previos: 2. Password changes/resets: 0. Hosting releases nuevas: 0. Cloud Run/Firestore/Rules/Storage/HR/Make/Gemini/pagos: 0. Credenciales/tokens expuestos: 0. Merge=false. Producción=false.
