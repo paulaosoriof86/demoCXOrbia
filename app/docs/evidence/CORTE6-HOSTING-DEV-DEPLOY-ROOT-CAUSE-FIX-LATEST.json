@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "cxorbia.c6.hosting-dev-deploy-root-cause-fix.v1",
-  "generatedAt": "2026-08-02T10:18:00-06:00",
+  "schemaVersion": "cxorbia.c6.hosting-dev-deploy-root-cause-fix.v2",
+  "generatedAt": "2026-08-02T10:22:00-06:00",
   "decision": "PASS_C6_HOSTING_DEPLOY_FAILURE_ROOT_CAUSE_FIXED_PENDING_FRESH_AUTHORIZATION",
   "priorAttempt": {
     "requestId": "c6-hosting-dev-deploy-remote-gates-20260802-02",
@@ -9,10 +9,11 @@
     "deployAttempted": true,
     "deploySucceeded": false,
     "hostingDeploys": 0,
-    "hostingDeployAttempts": 1
+    "hostingDeployAttempts": 1,
+    "remoteGatesExecuted": false
   },
   "sourceLock": {
-    "sourceLockHead": "62ec2ee7b2644f4f914a1af9ef17c374f1f32410",
+    "sourceLockHeadAtAttempt": "62ec2ee7b2644f4f914a1af9ef17c374f1f32410",
     "lockedAppTree": "b2f83041cc81e6357d606d617f17438f0f0aff35",
     "currentAppTreeAtAttempt": "b2f83041cc81e6357d606d617f17438f0f0aff35",
     "runtimeSourceExact": true
@@ -20,7 +21,7 @@
   "rootCause": {
     "classification": "FIREBASE_CLI_ALTERNATE_CONFIG_PATH_RESOLUTION",
     "runnerBehavior": "workflow wrote firebase.deploy.json only under .tmp/c6-hosting-dev-deploy and passed that nested path through --config",
-    "firebaseCliBehavior": "the CLI resolves the alternate configuration basename inside the detected Firebase project root",
+    "firebaseCliBehavior": "alternate configuration is resolved by basename inside the detected Firebase project root",
     "reproducibleConflict": "firebase.deploy.json did not exist in the repository project root when the deploy command started",
     "providerOrIamFailureProven": false,
     "applicationSourceFailureProven": false
@@ -28,6 +29,7 @@
   "fix": {
     "canonicalFirebaseJsonUpdated": true,
     "rootResolvedDeployConfigCreated": true,
+    "canonicalConfigPath": "firebase.json",
     "deployConfigPath": "firebase.deploy.json",
     "hostingTarget": "cxorbia-dev",
     "hostingSite": "cxorbia-backend-dev",
@@ -35,10 +37,12 @@
     "liveHrRewrite": {
       "source": "/api/tya/cinepolis/hr-live",
       "serviceId": "cxorbia-live-hr-dev",
-      "region": "us-central1"
+      "region": "us-central1",
+      "orderedBeforeSpaWildcard": true
     },
     "cloudRunDeployRequired": false,
-    "runtimeAppFilesModified": false
+    "runtimeAppFilesModified": false,
+    "newDeployExecutedAfterFix": false
   },
   "safety": {
     "hostingDeploysAfterFix": 0,
