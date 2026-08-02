@@ -24,7 +24,7 @@ El runner comprobó antes del deploy:
 - source lock exacto;
 - árbol `app` sin deriva;
 - gate estático acumulativo;
-- credenciales Staff, Shopper y Cliente en modo read-only;
+- acceso Staff, Shopper y Cliente en modo read-only;
 - destino DEV correcto.
 
 El comando de deploy fue iniciado una vez y falló en `deploy_hosting_once` antes de producir una release.
@@ -47,13 +47,13 @@ La autorización exigía usar `firebase.deploy.json` en la raíz. Sin embargo, e
 1. generaba `.tmp/c6-hosting-dev-deploy/firebase.deploy.json`;
 2. ejecutaba Firebase CLI con `--config $OUT/firebase.deploy.json`.
 
-Por tanto, el fix previamente documentado existía en el repositorio, pero no estaba conectado al paso ejecutable. El segundo intento repitió el mismo carril defectuoso.
+El fix previamente documentado existía en el repositorio, pero no estaba conectado al paso ejecutable. El segundo intento repitió el mismo carril defectuoso.
 
 Clasificación:
 
 `RUNNER_AUTHORIZED_ROOT_CONFIG_NOT_APPLIED`.
 
-No se preservó el stderr exacto del CLI en la evidencia anterior, de modo que no se atribuye el fallo a IAM, proveedor, aplicación, HR, Auth o Cloud Run sin prueba.
+El runner anterior no preservó el stderr exacto del CLI. Por ello no se atribuye el fallo a IAM, proveedor, aplicación, HR, Auth o Cloud Run sin prueba.
 
 ## 4. Correctivo aplicado sin deploy
 
@@ -63,7 +63,7 @@ Se modificó únicamente el workflow existente `.github/workflows/cxorbia-c6-liv
 - exige `deployConfigPath=firebase.deploy.json`;
 - exige `noAutomaticSecondDeploy=true`;
 - valida que el archivo raíz exista;
-- valida target `cxorbia-dev`, public `app` y sitio `cxorbia-backend-dev`;
+- valida target `cxorbia-dev`, public `app` y site `cxorbia-backend-dev`;
 - valida el rewrite HR vivo antes del wildcard SPA;
 - ejecutará exactamente `--config firebase.deploy.json`;
 - registrará la versión de Firebase CLI;
@@ -76,7 +76,14 @@ No se creó un workflow nuevo. La modificación del workflow no dispara deploy p
 - `.github/workflows/cxorbia-c6-live-domain-readonly-audit.yml`.
 - `app/docs/evidence/CORTE6-HOSTING-DEV-DEPLOY-ROOT-CAUSE-FIX-LATEST.json`.
 - `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-SEGUNDO-INTENTO-DEPLOY-DEV-Y-FIX-EJECUTABLE-20260802.md`.
-- índice, checkpoint, Phase A, addendum maestro C6, resumen Claude, pendientes, Academia y PR #7.
+- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`.
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`.
+- `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`.
+- `app/docs/ADDENDUM-MAESTRO-C6-BASELINE-CANONICA-UNICA-Y-CUTOVER-20260801.md`.
+- `app/docs/RESUMEN-PARA-CLAUDE.md`.
+- `app/docs/PENDIENTES-PROTOTIPO.md`.
+- `app/docs/ACADEMIA-IMPACTO-C6-RECUPERACION-RUNTIME-ACUMULATIVO-20260801.md`.
+- PR #7.
 
 ## 6. Baseline preservada
 
@@ -95,13 +102,13 @@ Continúa vigente:
 
 Requiere autorización fresca porque la anterior quedó consumida:
 
-`SOURCE LOCK ACTUAL → STATIC GATE → ROOT CONFIG firebase.deploy.json → CREDENCIALES READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → STAFF/CLIENTE/SHOPPER → DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA`.
+`SOURCE LOCK ACTUAL → STATIC GATE → ROOT CONFIG firebase.deploy.json → ACCESO READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → STAFF/CLIENTE/SHOPPER → DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA`.
 
 Ante cualquier fallo no existe segundo deploy automático.
 
 ## 8. Clasificación
 
-- **Reusable CXOrbia:** validación de ruta de configuración autorizada y evidencia exacta de stderr sanitizado.
+- **Reusable CXOrbia:** validación de ruta autorizada y evidencia exacta de errores sanitizados.
 - **Exclusivo TyA:** destino `cxorbia-backend-dev`, target `cxorbia-dev` y proyecto `cinepolis`.
 - **Claude/prototipo:** sin cambios en módulos UI/core.
 - **Academia:** diferencia entre fix documentado y fix conectado al carril ejecutable.
