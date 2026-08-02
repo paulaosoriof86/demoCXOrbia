@@ -2,19 +2,20 @@
 
 **Fecha:** 2026-08-02  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `RECONSTRUCTION_ACTIVE_SOURCE_ONLY__VISUAL_CHECKPOINTS_REQUIRED__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `RECONSTRUCTION_ACTIVE__FAMILY_A_TECHNICAL_CONTRACT_DEFINED__VISUAL_A_PLUS_B_PENDING__NO_DEPLOY__NO_PRODUCTION`
 
-## 0. Lock nuevo de continuidad
+## 0. Lock de continuidad prevalente
 
 La prioridad vigente es reconstruir una única candidata acumulativa con la mejor versión demostrable de cada módulo.
 
-Fuentes operativas principales nuevas:
+Fuentes operativas principales:
 
 - `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
 - `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-SHELL-RUNTIME.md`;
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-CONTRATO-Y-PRECEDENCIA-20260802.md`;
 - `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`.
 
-Hasta cerrar la matriz quedan suspendidos nuevos diagnósticos C6 aislados, deploys, shells reducidos, candidatas paralelas y correcciones de síntomas que no pertenezcan a la composición acumulativa.
+Hasta cerrar la composición A+B quedan suspendidos nuevos diagnósticos C6 aislados, deploys, shells reducidos, candidatas paralelas y correcciones de síntomas que no pertenezcan a la candidata acumulativa.
 
 Ninguna familia se declara funcionalmente aprobada por PASS técnico. Paula debe validarla visualmente sobre el build acumulativo exacto correspondiente.
 
@@ -27,29 +28,37 @@ Ninguna familia se declara funcionalmente aprobada por PASS técnico. Paula debe
 - Matriz maestra: commit `cbf777bbbd9d3172323db18d5b6f854c3e5ab8ff`.
 - Familia A shell/runtime: commit `3fa660673c8331062e99df176b8aa2f570354149`.
 - Protocolo visual acumulativo: commit `a8bc2251641754251ab573c92ca4973a5dc49575`.
-- Addendum CAMBIOS visual: commit `a813b7518a103c74a5d9326a57bc74915408b5b4`.
+- Contrato y precedencia Familia A: commit `92651f41acc423841d909487558d68be5d10b2b6`.
+- CAMBIOS de precedencia Familia A: commit `d4a208870652524499e4e578d843084fc8f83d50`.
 - Hosting DEV existente: `cxorbia-backend-dev`, target `cxorbia-dev`.
 - Producción `tya-plataforma`: intacta.
 
 ## 2. Fuentes maestras obligatorias
 
 1. `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
-2. `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-SHELL-RUNTIME.md` mientras Familia A permanezca abierta;
-3. `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`;
-4. reglas maestras y addenda activos;
-5. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-6. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-7. `ADDENDUM-MAESTRO-C6-BASELINE-CANONICA-UNICA-Y-CUTOVER-20260801.md` como historial técnico a preservar, subordinado al lock de reconstrucción;
-8. `CAMBIOS-BACKEND-ADDENDUM-RECONSTRUCCION-CANDIDATA-ACUMULATIVA-INICIO-20260802.md`;
-9. `CAMBIOS-BACKEND-ADDENDUM-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`;
-10. addenda C6 de Shopper/Finanzas/STOP_RETRY como evidencia histórica preservada;
-11. `RESUMEN-PARA-CLAUDE.md`;
-12. `PENDIENTES-PROTOTIPO.md`;
-13. `ACADEMIA-IMPACTO-RECONSTRUCCION-CANDIDATA-ACUMULATIVA-20260802.md`;
-14. PR #7 y HEAD vivo.
+2. `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-SHELL-RUNTIME.md`;
+3. `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-CONTRATO-Y-PRECEDENCIA-20260802.md`;
+4. `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`;
+5. reglas maestras y addenda activos;
+6. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+7. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+8. `ADDENDUM-MAESTRO-C6-BASELINE-CANONICA-UNICA-Y-CUTOVER-20260801.md` como historial técnico preservado, subordinado al lock de reconstrucción;
+9. `CAMBIOS-BACKEND-ADDENDUM-RECONSTRUCCION-CANDIDATA-ACUMULATIVA-INICIO-20260802.md`;
+10. `CAMBIOS-BACKEND-ADDENDUM-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`;
+11. `CAMBIOS-BACKEND-ADDENDUM-FAMILIA-A-CONTRATO-PRECEDENCIA-20260802.md`;
+12. addenda C6 de Shopper/Finanzas/STOP_RETRY como evidencia histórica preservada;
+13. `RESUMEN-PARA-CLAUDE.md`;
+14. `PENDIENTES-PROTOTIPO.md`;
+15. `ACADEMIA-IMPACTO-RECONSTRUCCION-CANDIDATA-ACUMULATIVA-20260802.md`;
+16. PR #7 y HEAD vivo.
 
 ## 3. Fuentes técnicas preservadas
 
+- `app/core/data.js` como interfaz base de `CX.data`;
+- `app/core/store.js` como bus/continuidad UI, no autoridad de Auth;
+- `app/core/router.js` como resolver único de navegación;
+- `app/adapters/tya-cumulative-read-model-v2.js`;
+- `app/adapters/tya-canonical-state-semantics-v2.js`;
 - `app/adapters/tya-protected-auth-hr-authority-bridge-v2.js`;
 - `app/adapters/tya-project-financial-model-contract-v1.js`;
 - `app/adapters/tya-c6-unified-human-runtime-v1.js`;
@@ -102,22 +111,36 @@ Diagnóstico remoto:
 
 La causa de precedencia financiera queda cerrada remotamente y debe preservarse durante la reconstrucción.
 
-## 7. Hallazgos de reconstrucción iniciales
+## 7. Contrato técnico Familia A definido
 
-- `app/index.html` carga el conjunto actual completo, pero presencia no equivale a aprobación.
-- `app/index-backend-dev.html` carga el mismo conjunto de módulos más la cadena Auth/HR/Firestore/Finanzas/adapters; no es un shell reducido por inventario, pero requiere reconciliación por orden de carga.
-- `app/core/build-lock.js` todavía declara V174/R20 y está obsoleto como identidad de la composición actual.
-- El paquete V182 es incremental de cinco archivos.
-- `app/app.js`, `app/modules/beneficios.js` y `app/styles/layout.css` coinciden exactamente con V182.
-- `app/core/finanzas-core.js` y `app/modules/finanzas.js` contienen cambios posteriores y requieren reconciliación, no restauración ciega.
-- `app/adapters/tya-live-source-inplace-apply.js` conserva defaults heredados `directo/isr5/regalía10`; el contrato posterior delegado/regalía0 prevalece en el runtime remoto PASS, pero la contradicción física debe eliminarse o neutralizarse en la composición final.
-- `backend-protected-dev-mode.js` y `tya-c6-domain-consistency-bridge.js` reemplazan métodos de `CX.data` en memoria; deben quedar inventariados como overlays funcionales y pasar gate de interfaz/comportamiento.
-- `backend-cxdata-read-guard.js` normaliza y sustituye estructuras/estados en memoria; su precedencia debe conciliarse con la semántica canónica posterior.
-- `backend-cxdata-readonly-corte4.js` conserva carriles anteriores source-safe/empty; debe demostrarse que no degrada el runtime C6 acumulativo.
+Precedencia obligatoria:
 
-## 8. Validación visual acumulativa obligatoria
+`SHELL/INTERFAZ CX.DATA → TENANT/PROYECTO CONFIGURADO → HR VIVA → READ MODEL ACUMULATIVO → SEMÁNTICA CANÓNICA → AUTH/CLAIMS Y OVERLAYS EXACTOS → CONFIGURACIÓN FINANCIERA → WRITE GUARDS → ROUTER/MÓDULOS → BUILD-LOCK/SW`.
 
-Se utilizan checkpoints sobre una sola candidata y un solo linaje de build:
+Decisiones centrales:
+
+- tenant operativo `tya`, no marca ni ID local;
+- proyecto `cinepolis` separado de periodos `cinepolis-YYYY-MM`;
+- HR gobierna periodos, visitas y estado operacional;
+- Firestore solo enriquece por llaves exactas;
+- read model + canonical semantics gobiernan estados/KPIs;
+- guards bloquean writes sin cambiar la verdad canónica;
+- bridges DOM no pueden quedar como única autoridad;
+- `build-lock.js` V174 y `sw.js` deben recibir identidad de la candidata final.
+
+## 8. Hallazgos que deben reconciliarse
+
+- `app/core/config.js` mezcla marca/tenant local con runtime conectado;
+- `backend-firebase.js` y read guards tienen normalizadores que pueden inventar defaults;
+- `backend-cxdata-readonly-corte4.js` conserva carriles antiguos source-safe/empty;
+- `backend-protected-dev-mode.js` redefine métodos Shopper;
+- `tya-c6-domain-consistency-bridge.js` modifica `CX.data`, Dashboard y Finanzas desde un overlay;
+- `tya-live-source-inplace-apply.js` conserva defaults directo/ISR5/regalía10;
+- `sw.js` usa un build ID todavía V174.
+
+## 9. Validación visual acumulativa obligatoria
+
+Checkpoints sobre una sola candidata y un solo linaje:
 
 1. A+B: shell/runtime + CRM Ops Leads, Dashboard y hoja de ruta.
 2. +C+D: operación, histórico y experiencia Shopper.
@@ -126,19 +149,17 @@ Se utilizan checkpoints sobre una sola candidata y un solo linaje de build:
 
 Paula revisa los módulos uno por uno dentro del mismo build. Cada build posterior ejecuta smoke visual antirretroceso de lo ya aprobado.
 
-## 9. Secuencia vigente
+## 10. Secuencia vigente
 
-`INVENTARIO COMPLETO → PROVENIENCIA/APROBACIÓN POR MÓDULO → CLASIFICACIÓN → COMPOSICIÓN OBJETIVO → DELTA COMPLETO CONTRA HEAD → APLICACIÓN ATÓMICA → MANIFEST/BUILD-LOCK/VERIFICADOR → GATES ACUMULATIVOS → CHECKPOINT VISUAL 1 A+B → CHECKPOINTS ACUMULATIVOS → FREEZE → CUTOVER`.
+`PROVENIENCIA HISTÓRICA RESTANTE FAMILIA A → INVENTARIO FAMILIA B → COMPOSICIÓN OBJETIVO A+B → DELTA COMPLETO → GATES SOURCE-ONLY → ÚNICO DEV → CHECKPOINT VISUAL 1 → CORRECCIÓN SOBRE MISMA CANDIDATA → SIGUIENTES CHECKPOINTS → FREEZE → CUTOVER`.
 
-## 10. Gate inmediato
+## 11. Gate inmediato
 
 Source-only, sin deploy:
 
-`COMPLETAR FAMILIA A: CX.DATA/HR/ADAPTERS/AUTH/TENANT/PROYECTO-PERIODO → TRAZAR APROBACIONES Y COMMITS → DEFINIR ORDEN CANÓNICO → CLASIFICAR PRESERVAR/RESTAURAR/RECONCILIAR`.
+`RECUPERAR APROBACIONES/COMMITS RESTANTES DE FAMILIA A → INVENTARIAR CRM OPS LEADS/DASHBOARD/HOJA DE RUTA → DEFINIR SHA OBJETIVO Y DEPENDENCIAS A+B`.
 
-Después: Familia B, empezando por CRM Ops Leads, Dashboard y hoja de ruta, para preparar el primer checkpoint visual A+B.
-
-## 11. Estado seguro
+## 12. Estado seguro
 
 - cambios funcionales: 0;
 - Hosting DEV durante reconstrucción: 0;
