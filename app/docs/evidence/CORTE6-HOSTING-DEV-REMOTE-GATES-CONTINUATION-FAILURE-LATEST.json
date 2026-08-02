@@ -1,13 +1,13 @@
 {
   "schemaVersion": "cxorbia.c6.existing-hosting-remote-gates-failure.v3",
-  "generatedAt": "2026-08-02T19:10:28.641Z",
+  "generatedAt": "2026-08-02T19:14:43.356Z",
   "decision": "FAIL_C6_REMOTE_GATES_AFTER_EXISTING_DEV_HOSTING_DEPLOY",
   "failedStage": "remote_staff_shopper",
   "sourceLock": {
     "schemaVersion": "cxorbia.c6.existing-hosting-remote-gates-source-lock.v2",
-    "generatedAt": "2026-08-02T19:07:12.251Z",
+    "generatedAt": "2026-08-02T19:11:28.881Z",
     "sourceLockHead": "b118ac16b8fb3b9126cdfd01de980f31c994f8f5",
-    "triggerHead": "ab7bf8016aeaac8b744aaa0bf471ce2fc874a791",
+    "triggerHead": "da6f1a6134f4179d82bf5c0f40d32af152d0d9f6",
     "runtimeSurfaceExact": true,
     "runtimeChangedFiles": [],
     "documentationDriftFiles": [
@@ -96,7 +96,7 @@
   },
   "parity": {
     "schemaVersion": "cxorbia.c6.hosting-dev-remote-parity.v4",
-    "generatedAt": "2026-08-02T19:07:58.191Z",
+    "generatedAt": "2026-08-02T19:12:17.754Z",
     "decision": "PASS_C6_HOSTING_DEV_REMOTE_PARITY_AND_LIVE_HR",
     "root": "https://cxorbia-backend-dev.web.app",
     "attempt": 1,
@@ -235,7 +235,7 @@
     "liveEndpoint": {
       "status": 200,
       "ok": true,
-      "revision": "a6d6b3ca1388209085ae887197177f7f6500410241d1597d0d974b922be8f5b9",
+      "revision": "7942a0253eba6c34ae6a7763a2684befcb09c1d3635480a399fc62a4cf0e0807",
       "runtimeRead": true,
       "sourceSafe": true,
       "contentType": "application/json; charset=utf-8",
