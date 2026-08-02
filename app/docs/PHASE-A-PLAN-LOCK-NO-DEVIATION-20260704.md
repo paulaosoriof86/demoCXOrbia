@@ -31,9 +31,16 @@ Un asset-smoke o prueba sintética aislada no congela un corte. Todo gate futuro
 1. **HR viva:** todos los periodos detectados, visitas, estados, asignación HR, fechas y evidencias operativas.
 2. **Firestore protegido:** identidad, perfil, PII, credenciales materializadas y certificación como overlay exacto; nunca reemplaza HR.
 3. **Finanzas/pagos canónicos:** liquidaciones, movimientos, beneficios y pagos.
-4. **Configuración del proyecto:** honorarios, impuestos, regalías, reglas y parámetros que no deben repetirse en cada fila HR.
+4. **Configuración del proyecto:** países, monedas, honorarios, modelo de facturación, comisión de coordinación, reparto, impuestos, regalías y reglas que no deben repetirse en cada fila HR.
 5. **Auth/RBAC:** acceso y alcance, no fuente operacional.
 6. **Plataforma-origin:** delta reconciliado, nunca duplicación HR.
+
+Regla financiera prevalente:
+
+- el modelo se selecciona al crear cada proyecto;
+- `directo/local_invoicing`: la operación factura localmente y puede tener regalías según configuración;
+- `delegado/delegated_coordination`: no factura localmente el proyecto, no aplica regalías y administra una comisión de coordinación compartida;
+- nunca se inventan el monto de la comisión, los porcentajes ni sus participantes.
 
 ## 5. Regla dinámica de la HR
 
@@ -69,7 +76,7 @@ La visual publicada mostró:
 - identidades repetidas/no reconciliadas;
 - Portal Cliente y Finanzas sin su mejor estado aprobado.
 
-Causa raíz: el bootstrap separó un carril humano source-safe de un carril protegido y condicionó los adapters canónicos a un token visual oculto.
+Causa: el bootstrap separó un carril humano source-safe de un carril protegido y condicionó los adapters canónicos a un token visual oculto.
 
 El PASS técnico anterior queda como evidencia parcial y no habilita freeze.
 
@@ -125,13 +132,25 @@ La fuente financiera canónica no se sustituye por cero ni por “pendiente” g
 
 Cinépolis conserva en configuración:
 
-- honorario GT: Q60;
-- honorario HN: L200;
-- modelo directo;
-- ISR 5 %;
-- regalías 10 %.
+- modelo: `delegado`;
+- billing model: `delegated_coordination`;
+- honorario al shopper GT: Q60;
+- honorario al shopper HN: L200;
+- facturación local del proyecto: no;
+- regalías: no aplican, 0 %;
+- compensación: comisión de coordinación compartida;
+- monto, participantes y porcentajes de reparto: configurables por proyecto y no inventados;
+- tratamiento tributario de la comisión: específico del proyecto y no inferido automáticamente.
 
-Cuando HR no repite el honorario, el read model usa la configuración del proyecto. Los montos financieros exactos y pagos confirmados conservan autoridad y nunca se sobrescriben.
+Cuando HR no repite el honorario del shopper, el read model usa la configuración del proyecto. Los montos financieros exactos, la comisión configurada y los pagos confirmados conservan autoridad y nunca se sobrescriben.
+
+`app/adapters/tya-project-financial-model-contract-v1.js` debe:
+
+- normalizar proyectos existentes;
+- preservar la selección directo/delegado al crear proyectos;
+- forzar `regalias=0` y `royaltyApplicable=false` en todo proyecto delegado;
+- permitir regalías únicamente en proyectos facturados localmente;
+- impedir que Cinépolis vuelva a clasificarse como directo.
 
 ## 11. Identidad, perfiles y certificación
 
@@ -159,7 +178,15 @@ El perfil debe proyectar, según rol y fuente autorizada:
 
 Secuencia exacta:
 
-`STATIC ROOT CONTRACT → READ-ONLY RUNTIME → AUTH REAL STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → COMPARATIVE ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE CONFIG → 3 RELOADS + NEW TAB → EVIDENCE`.
+`STATIC ROOT CONTRACT → READ-ONLY RUNTIME → AUTH REAL STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → COMPARATIVE ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE SOURCE + PROJECT MODEL → 3 RELOADS + NEW TAB → EVIDENCE`.
+
+El gate financiero debe demostrar:
+
+- Cinépolis = delegado;
+- regalías Cinépolis = 0;
+- comisión de coordinación compartida sin valores inventados;
+- creación de proyecto permite seleccionar directo o delegado;
+- regalías solo participan en cálculo cuando `modelo==='directo'`.
 
 Solo después del PASS local/read-only:
 
@@ -179,7 +206,8 @@ Después del freeze:
 - Paula agrega agosto a HR;
 - el runtime lo detecta dinámicamente;
 - se reconcilia cualquier visita platform-origin;
-- se habilitan disponibles y postulaciones;
+- se habilitan disponibles;
+- se habilitan postulaciones;
 - se ejecuta gate multirol;
 - cualquier write/cutover requiere autorización específica.
 
@@ -195,10 +223,13 @@ Claude debe preservar como contratos reutilizables:
 - histórico Shopper completo;
 - certificación visible por rol;
 - honorarios desde configuración del proyecto;
+- selección por proyecto entre facturación local y delegado;
+- regalías únicamente para facturación local;
+- comisión de coordinación compartida en proyectos delegados;
 - liquidaciones completas derivadas de facetas;
 - gate transversal entre tile, fase, drill, portal y Finanzas.
 
-No debe copiar lógica backend a módulos UI ni reintroducir fixtures, carriles alternos o conteos congelados.
+No debe copiar lógica backend a módulos UI ni reintroducir fixtures, carriles alternos, conteos congelados o regalías globales.
 
 ## 15. Academia
 
@@ -209,4 +240,4 @@ Fuentes vigentes:
 
 ## 16. Estado seguro
 
-Bloque correctivo actual: Hosting deploys 0; Cloud Run 0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos writes 0; nuevos Firebase/Hosting 0; merge=false; producción=false.
+Bloque correctivo actual: Hosting deploys 0; Cloud Run 0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos 0; nuevos Firebase/Hosting 0; merge=false; producción=false.
