@@ -1,47 +1,34 @@
 {
-  "schemaVersion": "cxorbia.c6.live-hr-domain-readonly-audit.v6",
-  "generatedAt": "2026-08-02T04:06:28.059Z",
-  "decision": "FAIL_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE",
+  "schemaVersion": "cxorbia.c6.live-hr-domain-readonly-audit.v7",
+  "generatedAt": "2026-08-02T04:08:37.864Z",
+  "decision": "PASS_C6_LIVE_HR_DYNAMIC_CANONICAL_STATE",
   "engineVersion": "c6-canonical-domain-composer-v2+actionable-state-v2",
   "staticGates": {
+    "unified": "PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_STATIC_GATE_WITH_DOCUMENTED_FRONTEND_WARNINGS",
     "domain": "PASS_C6_CANONICAL_DOMAIN_CONSISTENCY",
     "finance": "PASS_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS",
     "shopperPortal": "PASS_C6_CANONICAL_SHOPPER_PORTAL_CONTRACT",
     "reservations": "PASS_C6_CANONICAL_RESERVATIONS_SOURCE_GUARD"
   },
-  "semantics": {
-    "outOfRange": "actionable_unresolved_only",
-    "outOfRangeEvidence": "historical_evidence_preserved",
-    "reservations": "canonical_source_or_fail_closed"
-  },
   "source": {
     "runtimeRead": true,
     "sourceSafe": true,
-    "revision": "2db13f4be014218d5d19078b31b22f100fee0f9508497faae9aa029c14ea930d",
+    "revision": "8aa9dece269b987d83f2a598020ff5efb3ed03eddb1f836e2506a3abf4b5dffb",
     "periods": 14,
     "visits": 616,
-    "shoppers": 208
+    "shoppers": 208,
+    "firstPeriod": "2025-06",
+    "latestPeriod": "2026-07"
   },
-  "expectedFromApprovedHumanBaseline": {
-    "total": 44,
-    "GT": 34,
-    "HN": 10,
-    "realized": 40,
-    "questionnaireCompleted": 38,
-    "submitted": 33,
-    "outOfRange": 1
+  "dynamicContract": {
+    "frozenOperationalCounts": false,
+    "allDetectedPeriodsRequired": true,
+    "allRevisionVisitsRequired": true,
+    "completeUniqueVisitKeysRequired": true,
+    "everyVisitBelongsToDetectedPeriod": true,
+    "canonicalStateOrderingRequired": true
   },
-  "observedJuly": {
-    "total": 44,
-    "GT": 34,
-    "HN": 10,
-    "realized": 43,
-    "questionnaireCompleted": 41,
-    "submitted": 37,
-    "outOfRange": 1,
-    "outOfRangeEvidence": 44
-  },
-  "july": {
+  "observedLatestPeriod": {
     "periodKey": "2026-07",
     "total": 44,
     "available": 0,
@@ -62,27 +49,21 @@
     }
   },
   "assertions": {
-    "periods14": true,
-    "visits616": true,
     "runtimeRead": true,
     "sourceSafe": true,
-    "julyPresent": true,
-    "julyTotal": true,
-    "julyGT": true,
-    "julyHN": true,
-    "julyRealized": false,
-    "julyQuestionnaire": false,
-    "julySubmitted": false,
-    "julyActionableOutOfRange": true,
-    "julyOutOfRangeEvidencePreserved": true,
-    "duplicateVisitKeys": true,
-    "duplicateShopperIds": true
+    "periodsNonEmpty": true,
+    "visitsNonEmpty": true,
+    "periodKeysComplete": true,
+    "periodKeysUnique": true,
+    "visitKeysComplete": true,
+    "visitKeysUnique": true,
+    "everyVisitBelongsToDetectedPeriod": true,
+    "shopperIdsUnique": true,
+    "summariesCoverDetectedPeriods": true,
+    "latestPeriodPresent": true
   },
-  "failedAssertions": [
-    "julyRealized",
-    "julyQuestionnaire",
-    "julySubmitted"
-  ],
+  "periodInvariantFailures": [],
+  "failedAssertions": [],
   "failedGates": [],
   "safety": {
     "hostingDeploys": 0,
