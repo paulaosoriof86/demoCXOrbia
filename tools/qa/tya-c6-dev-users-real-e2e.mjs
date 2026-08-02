@@ -134,9 +134,6 @@ async function runPrincipal(browser,kind,credential){
   const first=await snapshot(page,kind==='shopper'?String(credential?.canonicalShopperId||''):'');
   assertState(first,kind,credential);
 
-  /* A remote reload may finish the document while one Firebase/Hosting subresource
-     remains pending. Waiting for navigation commit is sufficient; the authenticated
-     product contract below remains the actual readiness gate. */
   await page.reload({waitUntil:'commit',timeout:60000});
   await waitAuthenticated(page,namespace);
   const refresh=await snapshot(page,kind==='shopper'?String(credential?.canonicalShopperId||''):'');
