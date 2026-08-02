@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `C6_FINANCE_ROOT_FIX_SOURCE_ONLY_PASS__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_FINANCE_ROOT_FIX_REMOTE_PASS__SEMANTIC_ASSERTION_PENDING_STOP_RETRY__NO_PRODUCTION`
 
 ## 1. Baseline única
 
@@ -9,72 +9,94 @@ Continuar exclusivamente sobre `docs-tya-v6-v71-audit`. No crear candidata, shel
 
 HR observada: 14 periodos, junio 2025–julio 2026, 616 visitas. Agosto 2026 no existe todavía en HR.
 
-## 2. PASS remoto preservado
+## 2. PASS remoto preservado y revalidado
 
-- Staff estable en tres recargas y nueva pestaña;
+- paridad de assets críticos y endpoint HR source-safe;
+- Staff con tres recargas y nueva pestaña;
 - Shopper con identidad exacta, 208 shoppers, `ownVisits=1`, tres recargas y nueva pestaña;
-- Cliente existente con scope exclusivo `cinepolis`, tres recargas y nueva pestaña;
-- paridad remota y endpoint HR.
+- Cliente existente, tenant `tya`, scope exclusivo `cinepolis`, tres recargas y nueva pestaña.
 
-No reabrir login o Shopper sin regresión reproducible.
+No reabrir login, reconciliación Shopper ni selección de credenciales sin una regresión nueva y reproducible.
 
-## 3. Root fix financiero source-only
+## 3. Root fix financiero cerrado remotamente
 
-Causa corregida:
+Causa cerrada:
 
 `PROJECT_FINANCIAL_CONFIGURATION_METADATA_NOT_MATERIALIZED_IN_CANONICAL_PROJECTS_BEFORE_NORMALIZATION`.
 
-Archivo modificado:
+El Hosting DEV vigente demuestra que `period`, `project` y `currentById` coinciden:
 
-`app/adapters/tya-project-financial-model-contract-v1.js`.
-
-Ahora:
-
-- registra projectConfig por llave técnica `tenantId::projectId`;
-- resuelve por `parentProjectId`, `program`, `baseProjectId`, `clientProjectId` o `canonicalProjectId`;
-- no usa nombre visual ni similitud;
-- materializa la configuración antes de `normalizeAll()`;
-- aplica el orden en script load, HR viva, autoridad protegida, backend-ready y cambio de proyecto;
-- conserva directo/delegado/regional y fail-closed.
-
-Configuración `tya::cinepolis`:
-
-- delegado;
-- `delegated_coordination`;
-- facturación local false;
-- regalía 0;
+- `modelo=delegado`;
+- `billingModel=delegated_coordination`;
+- `projectModel=delegado`;
+- `localBilling=false`;
+- `royaltyApplicable=false`;
+- `regalias=0`;
 - Q60 GT / L200 HN;
 - comisión/reparto configurables;
-- valores no inventados.
+- honorario Shopper separado del ingreso.
 
-## 4. Gate nuevo
+El contrato financiero reporta 14 delegados, 0 directos, 0 sin configurar y 0 violaciones de regalías.
 
-`tools/qa/tya-c6-finance-root-fix-gate.mjs`.
+No volver a parchar este punto desde UI ni duplicar el registro `tya::cinepolis`.
 
-Decisión ejecutada:
+## 4. Macro-bloque ejecutado
 
-`PASS_C6_FINANCE_ROOT_FIX_SOURCE_ONLY_GATE`.
+Request:
 
-El smoke local read-only comprobó una sola verdad en objetos canónicos, `period()`, `project()` y salida financiera para script load, actualización HR y autoridad protegida.
+`c6-finance-root-fix-remote-revalidation-20260802-08`
 
-## 5. Instrucción para Claude/prototipo
+Se ejecutó:
 
-No tocar UI para resolver este punto. No duplicar el registro ni la precedencia financiera en módulos. No hardcodear por nombre visual.
+- source lock exacto;
+- gates estáticos;
+- un único Hosting DEV deploy;
+- paridad y HR;
+- Staff;
+- Shopper;
+- Cliente;
+- diagnóstico financiero remoto;
+- gate combinado semántico;
+- STOP_RETRY.
 
-Pendientes frontend posteriores:
+No hubo segundo deploy ni provider writes.
 
-- `app/modules/proyecto-wizard.js`: agregar Regional y limitar regalías a facturación local;
+## 5. Bloqueo actual
+
+El gate combinado se detuvo en:
+
+`remote_domain_finance_portals_reservations`
+
+La evidencia persistida tiene `semantic=null`. El script terminó antes de guardar su JSON final y el flujo no conservó stdout/stderr sanitizado. No existe evidencia para nombrar la aserción exacta.
+
+No atribuir el fallo al root fix financiero: su diagnóstico remoto es consistente y PASS.
+
+## 6. Estado de dominio y portales
+
+Todavía no declarar cerrados:
+
+- dominio semántico final;
+- salida financiera por país;
+- Portal Cliente;
+- Portal Shopper;
+- Reservas.
+
+Sus contratos previos permanecen, pero falta evidencia de ejecución completa.
+
+## 7. Instrucción para Claude/prototipo
+
+No tocar módulos UI para ocultar el fallo. No reabrir dashboard, roadmap, login, Shopper o Finanzas canónicas. El siguiente diagnóstico debe capturar etapa y aserción exactas antes de proponer cambios.
+
+Pendientes frontend posteriores y no relacionados con este STOP_RETRY:
+
+- `app/modules/proyecto-wizard.js`: opción Regional y regalías solo para facturación local;
 - `app/modules/finanzas.js`: copy de comisión/reparto configurable y estado de revisión;
 - `app/app.js`: preservar entrada humana única y Auth protegida.
 
-## 6. Estado no cerrado
+## 8. Siguiente bloque
 
-El root fix pasó solo en fuente/local. No afirmar todavía PASS remoto de Finanzas, Portal Cliente, Portal Shopper o Reservas.
+Read-only, sobre el Hosting DEV vigente y sin deploy:
 
-## 7. Siguiente bloque
+`CAPTURA DE STDOUT/STDERR Y CHECKPOINT POR ASERCIÓN → GATE SEMÁNTICO REMOTO → IDENTIFICAR FALLO EXACTO → EVIDENCIA → DOCUMENTACIÓN → STOP`
 
-Solo con autorización fresca:
-
-`SOURCE LOCK → FINANCE ROOT-FIX GATE → GATE ACUMULATIVO → UN DEPLOY HOSTING DEV → PARIDAD/HR/STAFF/SHOPPER/CLIENTE → DOMINIO/FINANZAS/PORTALES/RESERVAS → EVIDENCIA → VALIDACIÓN HUMANA`.
-
-Cero merge o producción antes del PASS acumulativo.
+Cero merge o producción antes del PASS acumulativo y validación humana.
