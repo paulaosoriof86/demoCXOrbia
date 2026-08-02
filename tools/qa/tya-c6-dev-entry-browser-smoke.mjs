@@ -33,6 +33,8 @@ async function state(page,label){
       blockedVisible:view.includes('Fuente de datos no disponible'),
       noProjectsVisible:view.includes('Sin proyectos disponibles')||rail.includes('Sin proyectos disponibles'),
       noPeriodsVisible:rail.includes('Sin periodos disponibles'),
+      viewExcerpt:view.replace(/\s+/g,' ').trim().slice(0,500),
+      railExcerpt:rail.replace(/\s+/g,' ').trim().slice(0,700),
       gate:window.CX_DEV_ENTRY_AUTH_GATE||null,canonical:window.CX_DEV_ENTRY_CANONICAL||null,
       continuity:window.CX_HUMAN_SESSION_CONTINUITY||null,primed:window.CX_HUMAN_SESSION_PRIMED||null
     };
@@ -42,7 +44,8 @@ function validate(s,label){
   assert(s.periods===14,label+':periods='+s.periods);assert(s.visits===616,label+':visits='+s.visits);assert(s.shoppers===208,label+':shoppers='+s.shoppers);
   assert(s.currentProjectId&&s.currentPeriodId,label+':context_missing');assert(s.dataStatus==='ready',label+':status='+s.dataStatus);
   assert(!s.emptyShell,label+':empty_shell');assert(!s.backendEmpty,label+':backend_empty');assert(!s.blockedVisible,label+':blocked_visible');
-  assert(!s.noProjectsVisible,label+':no_projects_visible');assert(!s.noPeriodsVisible,label+':no_periods_visible');
+  assert(!s.noProjectsVisible,label+':no_projects_visible:'+JSON.stringify({view:s.viewExcerpt,rail:s.railExcerpt,role:s.role,storedRole:s.storedRole,continuity:s.continuity}));
+  assert(!s.noPeriodsVisible,label+':no_periods_visible:'+JSON.stringify({rail:s.railExcerpt,currentProjectId:s.currentProjectId,currentPeriodId:s.currentPeriodId}));
 }
 async function waitCanonical(page,label){try{await page.waitForFunction(()=>{const d=window.CX?.data,ds=window.CX?.dataSource;return d?.projects?.length===14&&d?._visitas?.length===616&&d?.shoppers?.length===208&&d.currentProjectId&&d.currentPeriodId&&ds?.status==='ready';},{timeout:60000});}catch{throw new Error(label+':canonical_timeout:'+JSON.stringify(await state(page,label)));}}
 async function waitApp(page,label){try{await page.waitForFunction(()=>document.getElementById('app')?.classList.contains('on')===true,{timeout:60000});}catch{throw new Error(label+':app_timeout:'+JSON.stringify(await state(page,label)));}}
