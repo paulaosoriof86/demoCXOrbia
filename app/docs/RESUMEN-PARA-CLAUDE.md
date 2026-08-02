@@ -1,93 +1,96 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `RECONSTRUCTION_ACTIVE_SOURCE_ONLY__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `RECONSTRUCTION_ACTIVE__FAMILY_A_CONTRACT_DEFINED__FAMILY_B_INVENTORY_ACTIVE__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Baseline única y lock nuevo
+## 1. Baseline única
 
-Continuar exclusivamente sobre `docs-tya-v6-v71-audit`.
+Continuar exclusivamente sobre `docs-tya-v6-v71-audit`. No crear candidata, shell reducido, nueva rama, PR, Firebase, Hosting o workflow paralelo.
 
-La prioridad vigente ya no es ejecutar otro gate C6 aislado. Se está reconstruyendo una única candidata acumulativa con la mejor versión demostrable de cada módulo.
+Fuentes nuevas obligatorias:
 
-Fuente principal:
-
-- `app/docs/RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`.
-
-No crear candidata, shell reducido, nueva rama, PR, Firebase, Hosting o workflow paralelo.
-
-## 2. Regla para Claude/prototipo
-
-No solicitar ni producir una nueva candidata por rutina. Primero se recupera del historial, repo y paquetes existentes la mejor versión aprobada de cada módulo.
-
-Cada módulo terminará como:
-
-- `APPROVED_AND_PRESENT`;
-- `BEST_APPROVED_RESTORE`;
-- `RECONCILIATION_REQUIRED`;
-- `BEST_TECHNICAL_PENDING_VISUAL`;
-- `RETIRED_BY_EXPLICIT_DECISION`.
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-CONTRATO-Y-PRECEDENCIA-20260802.md`;
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-B-INVENTARIO-INICIAL-20260802.md`;
+- `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`.
 
 Una versión técnica sin aprobación humana no se presenta como aprobada.
 
-## 3. Hallazgo inicial
+## 2. Contrato Familia A que no puede romperse
 
-`app/core/build-lock.js` todavía declara V174/R20 y no representa la composición posterior. No debe editarse todavía; se sustituirá al ensamblar la candidata acumulativa final.
+- una sola entrada humana;
+- tenant técnico `tya`;
+- proyecto `cinepolis`;
+- periodos `cinepolis-YYYY-MM` separados del proyecto;
+- HR viva gobierna periodos, visitas y estado operacional;
+- Firestore solo enriquece por llaves exactas;
+- `CX.data` conserva su interfaz pública;
+- read model + canonical semantics gobiernan estados/KPIs;
+- localStorage no concede Auth, rol, tenant ni scope;
+- modelo financiero `tya::cinepolis` delegado, localBilling false, regalía 0;
+- bridges DOM/adapters no pueden quedar como única autoridad final;
+- build-lock V174 se sustituye solo al ensamblar la candidata acumulativa.
 
-El paquete V182 es incremental de cinco archivos:
+## 3. Familia B — decisiones frontend
 
-- `app/app.js`, `app/modules/beneficios.js` y `app/styles/layout.css` coinciden exactamente con la rama viva;
-- `app/core/finanzas-core.js` y `app/modules/finanzas.js` contienen fixes posteriores y deben reconciliarse, no restaurarse ciegamente.
+### Dashboard
 
-## 4. Orden de reconstrucción
+Preservar UI, KPIs clickeables, drilldowns y desglose por país. Reconciliar `phaseFlow()` y comparativos para consumir directamente read model/canonical semantics. No depender de un bridge DOM posterior para corregir el resultado.
 
-1. shell, login, tenant, navegación, `CX.data`, HR, Auth y proyecto/periodo;
-2. CRM Ops Leads, Dashboard y hoja de ruta;
-3. operación e histórico;
-4. experiencia Shopper y certificaciones;
-5. Finanzas;
-6. Portal Cliente, Portal Shopper y reportes;
-7. configuración, administrabilidad, integraciones y Academia.
+### CRM Ops Leads
 
-Academia debe quedar acumulada y documentada, pero no bloquear CRM Ops Leads/Phase A salvo P0 demostrado.
+Preservar pipeline, leads, cuentas, contactos, actividades, ficha 360, metas y reportes. El store actual es local/demo; en modo conectado debe mostrar vacío/pending-source honesto hasta que exista fuente real. No rellenar con prospectos ficticios.
 
-## 5. PASS que deben preservarse
+### Clientes
 
-No reabrir sin regresión reproducible:
+Mantener ficha, relación Cliente→Proyecto y navegación. Retirar en modo conectado contactos, correos y prospectos sintéticos. No deduplicar por nombre visual.
+
+### Comercial
+
+Mantener calculadora y propuestas, pero consumir configuración financiera por proyecto. Para Cinépolis: delegado, localBilling false, regalía 0, Q60/L200. No usar defaults genéricos ni prometer IA/web sin gate.
+
+### Marketing
+
+Preservar diseño/calendario, pero no mostrar contenido, alcance, interacciones o leads ficticios en modo conectado. Gemini/Make solo con autorización y gate real.
+
+### Hojas de Ruta
+
+Preservar interfaz y HR viva. Proyecto/Periodo deben ser correctos. IA/import/Google Sheets requieren gate; no prometer sincronización no activada.
+
+## 4. PASS que deben preservarse
 
 - 14 periodos y 616 visitas;
 - Staff/Shopper/Cliente remoto estable;
 - identidad Shopper exacta y `ownVisits=1`;
 - entrada humana única;
-- configuración financiera `tya::cinepolis` delegada;
+- configuración financiera delegada;
 - facturación local false;
 - regalía 0;
 - Q60 GT / L200 HN;
 - 14 delegados, 0 directos, 0 sin configurar y 0 violaciones.
 
-## 6. Pendientes frontend ya conocidos
+## 5. Validación visual
 
-No se pierden durante la reconstrucción:
+El primer build visible será acumulativo A+B. Paula validará módulo por módulo:
 
-- CRM Ops Leads y hoja de ruta deben conservar el mejor estado aceptado;
-- Dashboard no puede recuperar indicadores fabricados;
-- Reportes deben recuperar la mejor versión por rol;
-- PDF/XLSX/PPTX y branding permanecen en la matriz de portales/reportes;
-- `proyecto-wizard.js` conserva pendiente de Regional y regalías solo con facturación local;
-- Finanzas debe explicar comisión/reparto configurable sin alterar el contrato remoto PASS;
-- entrada humana única no puede volver a convertirse en formulario técnico paralelo.
+- login/shell/tenant/proyecto/periodo/fuente/navegación;
+- CRM Ops Leads;
+- Dashboard;
+- Hojas de Ruta;
+- Clientes;
+- Comercial;
+- Marketing;
+- indicadores y drilldowns.
 
-## 7. Próximo bloque
+No se avanza a Operación/Shopper por PASS técnico solamente.
 
-Cerrar Familia A:
+## 6. Próximo bloque
 
-`STORE/CX.DATA/HR/ADAPTERS/AUTH/TENANT/PROYECTO-PERIODO → APROBACIONES/COMMITS → PRESERVAR/RESTAURAR/RECONCILIAR`.
+`INSPECCIONAR OVERLAYS/EXTRAS B → RECUPERAR APROBACIONES Y COMMITS → DEFINIR SHAS OBJETIVO A+B → DELTA COMPLETO → GATES SOURCE-ONLY`.
 
-Después iniciar Familia B con prioridad CRM Ops Leads.
+## 7. Prohibiciones
 
-## 8. Prohibiciones
-
-- no parchear UI para ocultar inconsistencias;
-- no seleccionar por número de versión solamente;
-- no asumir que un delta incremental contiene todo lo anterior;
-- no deploy durante inventario/proveniencia;
-- no merge ni producción antes de candidata única, gates y aprobación humana.
+- no parchear UI desde backend para esconder inconsistencias;
+- no agregar seeds o métricas falsas;
+- no seleccionar por número de versión;
+- no despliegue durante inventario;
+- no merge ni producción antes de candidata única y aprobación visual.
