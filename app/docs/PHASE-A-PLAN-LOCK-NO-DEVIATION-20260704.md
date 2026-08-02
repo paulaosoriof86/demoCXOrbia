@@ -1,150 +1,212 @@
 # CXOrbia TyA — Plan Phase A con validación visual continua
 
 **Fecha original:** 2026-07-04  
-**Última revisión:** 2026-07-31  
+**Última revisión:** 2026-08-01  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_HUMAN_VISUAL_P0_PROVEN__CANONICAL_DOMAIN_AND_FINANCE_FIX_CODE_PASS__LIVE_HR_ROW_AUDIT_PASS__PENDING_DEV_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_UNIFIED_CUMULATIVE_RUNTIME_ROOT_FIX_CODE_APPLIED_PENDING_READONLY_RUNTIME_GATES__NO_DEPLOY_NO_PRODUCTION`
 
-## 1. Objetivo/arquitectura
+## 1. Objetivo y arquitectura
+
 TyA/Cinépolis es el primer tenant/proyecto configurable de CXOrbia. `cxorbia-backend-dev` es DEV canónico y `tya-plataforma` el Hosting final. No crear Firebase, Hosting, rama o PR por rutina.
 
+La baseline funcional debe ser una sola, acumulativa y construida sobre el HEAD vivo. Quedan prohibidos shells reducidos, carriles humanos paralelos, versiones por módulo y restauraciones manuales de pantallas.
+
 ## 2. Secuencia obligatoria
+
 `FUENTE VIVA/ORIGEN PLATAFORMA → EXISTENCIA/FRESCURA → MAPPING/IDENTIDAD → READ MODEL CANÓNICO → REGRESSION GATE SEMÁNTICO → WRITE PLAN → DRY-RUN → WRITE EXACTO AUTORIZADO → READBACK → REMOTE SMOKE → VALIDACIÓN HUMANA ACUMULATIVA → CUTOVER`.
 
-Un asset-smoke o prueba sintética aislada no congela un corte. Todo gate futuro debe comprobar igualdad entre KPIs, detalles, perfiles, portal Shopper, Finanzas y periodos.
+Un asset-smoke o prueba sintética aislada no congela un corte. Todo gate futuro debe comprobar igualdad entre KPIs, fases, detalles, perfiles, Portal Cliente, Portal Shopper, histórico, Finanzas y periodos.
 
 ## 3. Cortes protegidos
-- Corte1/2A/3 FROZEN; histórico14 periodos/616 visitas hasta julio.
-- R17N1,406/1,406; no repetir.
-- Corte5 CX.data PASS.
-- Auth91/91, claims5/5 y Rules PASS.
-- HR live/auto-month PASS.
-- Perfil protegido Firestore120 docs/329 campos WRITE+READBACK PASS.
-- Finanzas/pagos canónicos source-safe aprobados permanecen protegidos.
+
+- Corte 1/2A/3 FROZEN.
+- R17N 1,406/1,406; no repetir.
+- Corte 5 CX.data PASS.
+- Auth, claims y Rules previamente validados; no reabrir su diseño.
+- Perfil protegido, certificación, histórico, finanzas y pagos canónicos se conservan como contratos aprobados.
+- Corte 6 no está congelado porque la visual humana probó una regresión de composición.
 
 ## 4. Ownership canónico
-1. HR viva: periodos, visitas, auto-mes y estado operativo.
-2. Firestore protegido: identidad, perfil, PII, credenciales y certificación solo como overlay exacto.
-3. Finanzas/pagos canónicos: liquidaciones, movimientos, beneficios y pagos.
-4. Auth/RBAC: acceso y scope, no fuente operativa.
-5. Plataforma-origin: delta reconciliado, nunca duplicación HR.
 
-## 5. Human visual P0 — estado actual
-El Hosting anterior pasó paridad de assets e idempotencia sintética, pero falló la validación humana transversal:
-- Dashboard superior correcto y flujo por fases incorrecto;
-- comparativo sin histórico;
-- refresh moviendo contenido/sidebar;
-- identidades Shopper divididas y conteos210/219;
-- perfiles completos sin mínimos, credenciales, WA, certificación o histórico;
-- portal Shopper y Beneficios sin el histórico de Admin;
-- periodo visible separado del contenido financiero;
-- Movimientos/Liquidaciones/Beneficios fragmentados;
--33 visitas submitidas omitidas de Liquidaciones por el switch literal anterior.
+1. **HR viva:** todos los periodos detectados, visitas, estados, asignación HR, fechas y evidencias operativas.
+2. **Firestore protegido:** identidad, perfil, PII, credenciales materializadas y certificación como overlay exacto; nunca reemplaza HR.
+3. **Finanzas/pagos canónicos:** liquidaciones, movimientos, beneficios y pagos.
+4. **Configuración del proyecto:** honorarios, impuestos, regalías, reglas y parámetros que no deben repetirse en cada fila HR.
+5. **Auth/RBAC:** acceso y alcance, no fuente operacional.
+6. **Plataforma-origin:** delta reconciliado, nunca duplicación HR.
 
-Corte6 no está congelado. El remote smoke anterior se conserva como evidencia técnica, no como release PASS.
+## 5. Regla dinámica de la HR
 
-## 6. Read model canónico v2
+No existen cifras operacionales congeladas por corte.
+
+La revisión actual previa a agosto contiene:
+
+- 14 periodos desde junio 2025 hasta julio 2026;
+- 616 visitas;
+- 208 shoppers;
+- agosto 2026 ausente.
+
+Estos conteos son una fotografía, no invariantes permanentes. Cada revisión válida puede crecer cuando la HR agregue periodos o filas nuevas, siempre que:
+
+- cada periodo tenga llave única;
+- cada visita tenga llave técnica única;
+- cada visita pertenezca a un periodo detectado;
+- no exista append de historia protegida;
+- no existan duplicados técnicos.
+
+Agosto solo aparece cuando exista realmente en HR o como fuente platform-origin autorizada y reconciliada. Nunca se genera por reloj del sistema ni copiando julio.
+
+## 6. P0 humano demostrado
+
+La visual publicada mostró:
+
+- entrada directa sin principal autenticado;
+- Shopper sin identidad;
+- julio mezclado con agosto;
+- KPIs y fases divergentes;
+- comparativo sin todos los periodos;
+- perfiles, WhatsApp, credenciales y certificaciones no proyectados;
+- identidades repetidas/no reconciliadas;
+- Portal Cliente y Finanzas sin su mejor estado aprobado.
+
+Causa raíz: el bootstrap separó un carril humano source-safe de un carril protegido y condicionó los adapters canónicos a un token visual oculto.
+
+El PASS técnico anterior queda como evidencia parcial y no habilita freeze.
+
+## 7. Runtime humano unificado
+
+La única entrada humana válida es `authenticated-human-canonical`:
+
+- selección de perfil y Usuario + Contraseña dentro del mismo login del producto;
+- Firebase Auth/claims como autoridad del principal;
+- HR viva completa como autoridad operacional;
+- Firestore como overlay exacto de identidad/perfil/certificación;
+- read model canónico;
+- Dashboard, fases, detalle e histórico coherentes;
+- Portal Cliente y Portal Shopper completos;
+- Finanzas canónicas;
+- cero writes mientras el corte permanezca en validación.
+
+El índice ya no carga el override directo de rol ni el bridge visual dependiente de sesión oculta.
+
+## 8. Read model y composición
+
 `app/adapters/tya-cumulative-read-model-v2.js`:
-- compone desde HR, nunca desde arrays ya compuestos;
+
+- compone desde HR, nunca desde arreglos ya compuestos;
 - protected visits solo hacen overlay por llave técnica exacta;
 - perfiles sin crosswalk no se anexan a operación y pasan a review queue;
 - no dedupe por nombre/teléfono/email;
 - identidad, certificación, histórico y completitud se calculan desde evidencia real;
-- genera resumen por periodo y facetas canónicas.
+- genera resumen por todos los periodos detectados.
 
-`app/adapters/tya-canonical-state-semantics-v2.js` separa:
-- evidencia histórica fuera de rango;
-- estado fuera de rango actualmente accionable.
+`app/adapters/tya-protected-auth-hr-authority-bridge-v2.js`:
 
-## 7. Refresh estable v2
-`app/adapters/tya-live-source-refresh-watch-v2.js`:
-- usa firma de contenido sin timestamps volátiles;
-- mismo contenido = cero trabajo funcional;
-- cambio real = un apply + un compose + un render;
-- preserva `.content`, `#rail`, periodo, proyecto y vista;
-- nunca restaura valores DOM aparte de `CX.data`;
-- modal/form activo difiere el render.
+- valida dinámicamente la revisión viva;
+- conserva exactamente sus periodos y visitas;
+- prohíbe pérdida de periodos, append protegido y duplicados;
+- no hardcodea 14/616/208.
 
-## 8. Consistencia transversal DEV
-`app/adapters/tya-c6-domain-consistency-bridge.js` adapta el prototipo sin tocar módulos/core:
-- Dashboard, fases, detalle y Visitas comparten facetas;
-- portal Shopper usa histórico completo;
-- Admin ve certificación y completitud real;
-- credenciales se derivan con el patrón configurable solo para identidad exacta y sin writes;
-- Finanzas usa periodo/identidad canónicos y proyecta historia source-safe read-only.
+## 9. Consistencia transversal
 
-`app/adapters/tya-canonical-finance-read-model-v2.js` completa el ciclo financiero:
-- toda visita realizada aparece en Liquidaciones;
-- las33 submitidas de julio ya no se omiten;
--5 pendientes de submit y2 pendientes de cuestionario conservan su etapa;
-- fuente financiera/pago exactos siguen siendo autoridad;
-- sin cruce exacto la fila queda visible y `reviewRequired`, sin habilitar lote/pago.
+`app/adapters/tya-c6-domain-consistency-bridge.js` y adapters relacionados deben garantizar:
 
-Estos adapters son el carril DEV de validación. Claude debe incorporar el patrón de producto; no copiarlos como parches permanentes de UI.
+- KPI = fase = detalle para cada periodo;
+- máquina de estados única;
+- Portal Shopper con identidad, perfil, certificación e histórico completos;
+- Admin y Shopper leyendo la misma identidad canónica;
+- comparativo de todos los periodos vivos;
+- periodo seleccionado único para operación y Finanzas;
+- liquidaciones derivadas de facetas canónicas, no de literales aislados.
 
-## 9. Gates actuales
-La evidencia v4 registra tres PASS simultáneos:
-- `PASS_C6_CANONICAL_DOMAIN_CONSISTENCY`;
-- `PASS_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS`;
-- `PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE`.
+## 10. Finanzas y configuración del proyecto
 
-HR viva:
--14 periodos/616 visitas/208 shoppers;
--JUL44 = GT34+HN10;
--realizadas40;
--cuestionario38;
--submitidas33;
--liquidationCandidates33;
--fuera de rango accionable1;
--evidencia histórica fuera de rango7;
--duplicados de llaves0.
+La fuente financiera canónica no se sustituye por cero ni por “pendiente” general cuando ya existe información aprobada.
 
-Gate financiero representativo:
--40 realizadas presentes en Liquidaciones;
--33 submitidas no omitidas;
--5 pendientes de submit;
--2 pendientes de cuestionario;
--fuente exacta/pago confirmado preservados;
--ejecución de pagos deshabilitada.
+Cinépolis conserva en configuración:
 
-## 10. Identidad y materialización
-En lectura puede derivarse username/password según el patrón configurable cuando existe vínculo canónico exacto. WhatsApp debe provenir de una fuente real.
+- honorario GT: Q60;
+- honorario HN: L200;
+- modelo directo;
+- ISR 5 %;
+- regalías 10 %.
 
-Crear/complementar shoppers, persistir contacto/credenciales/certificación/histórico o crear Auth requiere:
-`INVENTARIO EXACTO → WRITE PLAN → DRY-RUN → AUTORIZACIÓN ESPECÍFICA → WRITE → READBACK`.
+Cuando HR no repite el honorario, el read model usa la configuración del proyecto. Los montos financieros exactos y pagos confirmados conservan autoridad y nunca se sobrescriben.
 
-No hacerlo por similitud ni bajo una autorización de Hosting.
+## 11. Identidad, perfiles y certificación
 
-## 11. Gate de publicación DEV
-El nuevo código está en GitHub, no desplegado. La autorización anterior está consumida.
+La resolución Shopper usa únicamente:
+
+- `shopperId`/`id`;
+- `legacyShopperId`;
+- `hrRowId`;
+- `visitId`;
+- `sourceTab + sourceRow`;
+- crosswalk persistido y auditado.
+
+Conflictos pasan a review queue. Nunca se fusionan por nombre, teléfono, correo, mayúsculas o tildes.
+
+El perfil debe proyectar, según rol y fuente autorizada:
+
+- identidad;
+- usuario/estado de credencial;
+- WhatsApp existente;
+- histórico;
+- certificación presentada/aprobada;
+- datos adicionales aportados por el shopper.
+
+## 12. Gate de Corte 6
 
 Secuencia exacta:
-`AUTORIZACIÓN FRESCA 1x HOSTING DEV EXISTENTE → REMOTE SMOKE SEMÁNTICO → HUMAN VISUAL COMPLETA → FREEZE C6`.
 
-No Cloud Run previsto. Si la visual falla, no se añade otro parche: se corrige el contrato/gate que permitió la regresión.
+`STATIC ROOT CONTRACT → READ-ONLY RUNTIME → AUTH REAL STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → COMPARATIVE ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE CONFIG → 3 RELOADS + NEW TAB → EVIDENCE`.
 
-## 12. Julio/agosto
-No iniciar materialización agosto hasta congelar Corte6. Después:
-- identificar fuente exacta de agosto plataforma-origin;
-- reconciliar con HR cuando aparezcan tabs;
-- materializar únicamente delta bajo autorización fresca de data write;
-- no repetir histórico1,406.
+Solo después del PASS local/read-only:
 
-## 13. Claude/prototipo
-Claude debe incorporar como contratos reutilizables:
+1. solicitar autorización fresca para un único deploy del Hosting DEV existente;
+2. ejecutar el mismo gate remoto;
+3. validación humana acumulativa;
+4. `APROBADO C6 → FREEZE`.
+
+No se reutiliza autorización consumida.
+
+## 13. Julio y agosto
+
+No iniciar materialización de agosto antes del freeze.
+
+Después del freeze:
+
+- Paula agrega agosto a HR;
+- el runtime lo detecta dinámicamente;
+- se reconcilia cualquier visita platform-origin;
+- se habilitan disponibles y postulaciones;
+- se ejecuta gate multirol;
+- cualquier write/cutover requiere autorización específica.
+
+## 14. Claude/prototipo
+
+Claude debe preservar como contratos reutilizables:
+
+- baseline acumulativa única;
 - máquina de estados única;
+- periodo vivo único;
 - perfil completo calculado por campos;
 - identity review queue;
-- historial Shopper completo;
+- histórico Shopper completo;
 - certificación visible por rol;
-- periodo canónico único;
-- liquidaciones completas derivadas de facetas, no de un switch literal;
-- gate transversal que compare tile, drill, listado, portal y finanzas.
+- honorarios desde configuración del proyecto;
+- liquidaciones completas derivadas de facetas;
+- gate transversal entre tile, fase, drill, portal y Finanzas.
 
-## 14. Academia
+No debe copiar lógica backend a módulos UI ni reintroducir fixtures, carriles alternos o conteos congelados.
+
+## 15. Academia
+
 Fuentes vigentes:
-- `ACADEMIA-IMPACTO-C6-DOMINIO-CANONICO-Y-ESTADOS-ACCIONABLES-20260731.md`;
-- `CAMBIOS-BACKEND-ADDENDUM-C6-FINANZAS-LIQUIDACIONES-CANONICAS-20260731.md`.
 
-## 15. Estado seguro
-Bloque correctivo actual: Hosting0; Cloud Run0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos writes0; nuevos Firebase/Hosting0; merge=false; producción=false.
+- `ACADEMIA-IMPACTO-C6-RECUPERACION-RUNTIME-ACUMULATIVO-20260801.md`;
+- `CAMBIOS-BACKEND-ADDENDUM-C6-RECUPERACION-BASELINE-ACUMULATIVA-UNICA-20260801.md`.
+
+## 16. Estado seguro
+
+Bloque correctivo actual: Hosting deploys 0; Cloud Run 0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos writes 0; nuevos Firebase/Hosting 0; merge=false; producción=false.
