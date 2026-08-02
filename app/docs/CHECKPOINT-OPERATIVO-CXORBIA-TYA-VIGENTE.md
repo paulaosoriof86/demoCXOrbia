@@ -1,108 +1,86 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-01  
-**Estado:** `C6_UNIFIED_CUMULATIVE_RUNTIME_ROOT_FIX_AND_PROJECT_FINANCE_GUARD_APPLIED_PENDING_READONLY_RUNTIME_GATES__NO_DEPLOY_NO_PRODUCTION`
+**Estado:** `C6_READONLY_RUNTIME_PASS_EXCEPT_CLIENT_CREDENTIAL__HOLD_NO_AUTH_WRITE_NO_DEPLOY_NO_PRODUCTION`
 
 ## 1. Estado protegido
 
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR #7 draft/open/no merge.
 - Corte 3 FROZEN; R17N 1,406/1,406 no repetir.
-- HR viva actual: 14 periodos, junio 2025–julio 2026, 616 visitas y 208 shoppers.
-- Agosto 2026 todavía no existe en la HR.
+- HR viva observada: 14 periodos, junio 2025–julio 2026, 616 visitas y 208 shoppers.
+- Agosto 2026 todavía no existe en HR.
 - Producción intacta.
 
-Los conteos actuales son una fotografía de la revisión previa a agosto. No se usan como invariantes permanentes ni como límite para revisiones futuras.
+Los conteos son una fotografía de la revisión viva, no invariantes permanentes.
 
-## 2. Correcciones de criterio prevalentes
+## 2. Contratos prevalentes
 
-Queda prohibido usar números de cortes anteriores como verdad operacional. Los periodos históricos permanecen, pero sus indicadores se leen de la HR viva y de su revisión vigente.
+### Fuente
 
-El modelo financiero también pertenece a la configuración de cada proyecto:
+HR viva gobierna periodos, visitas, estados y asignaciones. Firestore protegido solo enriquece identidad, perfil y certificación por crosswalk exacto.
 
-- directo/local: existe facturación local y las regalías solo aplican si se configuran;
-- delegado: no existe facturación local del proyecto, regalías 0 y compensación por comisión de coordinación compartida;
-- regional: distribución regional configurable, sin regalías locales por defecto.
+### Finanzas
 
-Cinépolis es delegado porque su configuración vigente así lo declara. No existe una regla global por nombre. El monto de la comisión, sus participantes y porcentajes no se inventan.
+- directo/local: regalías únicamente si se configuran;
+- delegado: regalías 0 y comisión de coordinación compartida;
+- regional: distribución regional configurable, sin regalías locales por defecto;
+- sin modelo: `unconfigured`, fail-closed.
 
-## 3. P0 demostrado
+Cinépolis se declara delegado desde su `projectConfig`, con Q60 GT/L200 HN al shopper y regalías 0. El honorario del shopper nunca se usa como ingreso delegado.
 
-La visual humana publicada no consumía la baseline acumulativa:
+## 3. Root fixes acumulativos comprobados
 
-- rol directo sin Auth real;
-- Shopper sin identidad;
-- julio mezclado con agosto por reloj;
-- fases distintas a KPIs;
-- comparativo sin todos los periodos;
-- perfiles/certificaciones sin overlay;
-- duplicación de identidades;
-- Cliente y Finanzas degradados.
+- entrada humana única `authenticated-human-canonical`;
+- guard contra clic antes del wrapper oficial de Auth;
+- guard específico para que la tarjeta Shopper protegida no ejecute `pickShopperDev()`;
+- HR dinámica y read model canónico;
+- modelo financiero por configuración, no por nombre;
+- guard de comisión delegada fail-closed;
+- carril técnico estable con `cxDevEntryAuth` y `technical-auth-e2e-isolated`;
+- módulos UI y `app.js` preservados.
 
-Causa: separación artificial entre carril humano source-safe y carril protegido, más adapters funcionales condicionados por token oculto.
+## 4. Gates PASS
 
-Se detectaron y corrigieron dos regresiones financieras adicionales:
+- static cumulative contract;
+- immediate-click login guard;
+- live HR dynamic canonical state;
+- domain/finance/shopper/reservations;
+- Staff humano con Auth/claims;
+- Shopper humano con Auth/claims e identidad exacta;
+- carril técnico Staff/Shopper aislado;
+- tres recargas y nueva pestaña;
+- ruta integrada Cliente Usuario + Contraseña.
 
-1. Cinépolis documentado/configurado temporalmente como directo con regalías;
-2. fallback de `honRecibe` que podía convertir el honorario del shopper en ingreso delegado.
+Resultados humanos:
 
-## 4. Root fix aplicado al código
+- Staff: rol `coordinador`, namespace `staff`, 14 periodos, 616 visitas, reloads y nueva pestaña estables.
+- Shopper: rol `shopper`, namespace `shopper`, una visita propia comprobada, 14 periodos, 616 visitas, reloads y nueva pestaña estables.
+- Credenciales/tokens expuestos: 0.
 
-- Entrada humana única `authenticated-human-canonical`.
-- Login real integrado del producto.
-- HR live authority + Firestore exact overlay.
-- Dominio/Shopper/Finanzas canónicos activos en la URL normal.
-- `tya-protected-auth-hr-authority-bridge-v2.js` conserva dinámicamente todos los periodos y visitas.
-- `tya-project-financial-model-contract-v1.js`:
-  - normaliza proyectos existentes;
-  - soporta directo, delegado y regional;
-  - preserva el modelo seleccionado en nuevas altas;
-  - bloquea regalías en modelos no locales;
-  - clasifica por projectConfig, no por nombre;
-  - deja comisión y reparto como configuración real, sin inventar datos.
-- `tya-delegated-coordination-finance-guard-v1.js`:
-  - elimina el fallback honorario Shopper → ingreso;
-  - usa únicamente comisión configurada;
-  - mantiene obligaciones al shopper separadas;
-  - calcula margen solo con comisión y distribución exactas;
-  - marca revisión cuando falta fuente.
-- `tya-phase-a-source-safe-preview.js` declara Cinépolis delegado, Q60/L200 al shopper y regalías 0.
-- Adapter unificado conserva login Cliente, comparativo completo y metadata financiera corregida.
+Julio observado: 44 visitas, 43 realizadas, 41 cuestionarios, 37 submitidas y 1 fuera de rango.
 
-El wizard se preservó. Ya contiene directo/delegado; la opción Regional y el copy correcto de Finanzas quedaron documentados para Claude por archivo.
+## 5. HOLD exacto
 
-## 5. Validación alcanzada sin proveedor
+Decisión vigente:
 
-Comprobado por revisión directa del HEAD en GitHub:
+`HOLD_C6_EXISTING_CLIENT_CREDENTIAL_NOT_FOUND`.
 
-- contratos financieros creados;
-- orden de carga correcto;
-- configuración Cinépolis corregida;
-- cero hardcode por nombre en el contrato reusable;
-- guard contra ingreso delegado falso cargado antes de módulos;
-- gate estático actualizado;
-- cálculo base de ISR/regalías condicionado a `modelo==='directo'`;
-- cero deploys y provider writes.
+La búsqueda read-only encontró:
 
-No se afirma todavía ejecución del gate Node, runtime/browser PASS ni validación remota. El entorno disponible no tiene checkout local autenticado ni workflow ejecutado para el HEAD actual.
+- 4 registros candidatos;
+- 3 usuarios Auth correspondientes;
+- 0 cuentas con claims válidos `cliente/client` para tenant `tya` y proyecto `cinepolis`;
+- 0 hashes válidos;
+- 0 sign-ins Cliente.
 
-## 6. Gate inmediato
+No se creó ni modificó ninguna cuenta. Auth writes, cambios y resets de contraseña permanecen en cero.
 
-1. ejecutar gate estático acumulativo en checkout del HEAD vivo;
-2. runtime local/read-only;
-3. login real staff, cliente y shopper;
-4. lectura viva de todos los periodos detectados;
-5. igualdad KPI/fases/drill;
-6. comparativo histórico completo;
-7. identidad, WA, credenciales, certificación e histórico;
-8. Portal Cliente completo;
-9. Finanzas con fuente canónica y modelo de proyecto correcto;
-10. comprobar Cinépolis delegado, regalías 0 y comisión sin valores inventados;
-11. comprobar que honorario Shopper nunca se use como ingreso delegado;
-12. comprobar margen solo con comisión/reparto exactos;
-13. comprobar creación directo/delegado y soporte backend regional;
-14. tres recargas y nueva pestaña;
-15. evidencia PASS/FAIL.
+## 6. Siguiente bloque exacto bloqueado por autorización
 
-## 7. Restricciones
+`SNAPSHOT AUTH CLIENT → MATERIALIZE ONE CLIENT CREDENTIAL DEV → CLAIMS TENANT/PROJECT/ROLE → IDEMPOTENCY → CLIENT AUTH HUMAN → 3 RELOADS + NEW TAB → READBACK → ROLLBACK PROOF → EVIDENCE`.
 
-No deploy, Auth/Firestore/Rules/HR writes, merge, agosto ni producción hasta PASS y autorización fresca específica.
+Este bloque implica Auth write y requiere autorización específica de Paula. Hasta entonces no corresponde deployar, congelar Corte 6, abrir agosto ni habilitar postulaciones.
+
+## 7. Estado seguro
+
+Hosting deploys 0; Cloud Run 0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos writes 0; password changes/resets 0; merge=false; producción=false.
