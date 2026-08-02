@@ -7,7 +7,9 @@
 
 Claude debe continuar sobre el HEAD vivo de `docs-tya-v6-v71-audit`. No puede crear una versión paralela, un shell reducido ni escoger módulos aislados.
 
-La HR viva contiene todos los periodos de junio 2025 a julio 2026. Agosto todavía no existe. Ninguna UI puede usar el reloj del sistema para inventar un periodo.
+La HR viva contiene todos los periodos detectados desde junio 2025 hasta julio 2026 en la revisión actual. Agosto todavía no existe. Ninguna UI puede usar el reloj del sistema para inventar un periodo.
+
+Los conteos actuales 14 periodos / 616 visitas / 208 shoppers son una fotografía de la revisión vigente, no un contrato permanente. El runtime debe aceptar automáticamente el crecimiento legítimo cuando la HR agregue nuevos periodos o filas con llaves técnicas únicas.
 
 ## 2. Regresión que no se puede repetir
 
@@ -25,10 +27,10 @@ La URL humana normal debe contener una sola experiencia:
 
 - selección de perfil + Usuario/Contraseña en el mismo login;
 - Firebase Auth/claims;
-- HR viva para periodos/visitas/estados;
+- HR viva para todos los periodos, visitas y estados de la revisión actual;
 - Firestore exacto para perfil/PII/certificación;
 - read model canónico;
-- comparativo de todos los periodos;
+- comparativo de todos los periodos detectados;
 - Portal Shopper exacto;
 - Portal Cliente completo;
 - Finanzas canónicas;
@@ -38,7 +40,7 @@ La URL humana normal debe contener una sola experiencia:
 
 - `app/index-backend-dev.html`;
 - `app/adapters/tya-c6-unified-human-runtime-v1.js`;
-- `app/adapters/tya-protected-auth-hr-authority-bridge-v1.js`;
+- `app/adapters/tya-protected-auth-hr-authority-bridge-v2.js`;
 - `app/adapters/tya-cumulative-read-model-v2.js`;
 - `app/adapters/tya-c6-domain-consistency-bridge.js`;
 - `app/adapters/tya-canonical-shopper-portal-v2.js`;
@@ -46,11 +48,26 @@ La URL humana normal debe contener una sola experiencia:
 
 Claude no debe mover estas reglas a los módulos UI ni reintroducir carriles alternos.
 
-## 5. Frontend preservado
+## 5. Contrato dinámico de HR
+
+`tya-protected-auth-hr-authority-bridge-v2.js` exige:
+
+- fuente source-safe y no vacía;
+- periodos detectados con llave única;
+- cada visita con llave técnica única;
+- cada visita vinculada a un periodo existente;
+- salida con la misma cantidad de periodos y visitas que la revisión HR;
+- cero append de visitas protegidas;
+- cero duplicados técnicos;
+- identidad Shopper únicamente por crosswalk exacto.
+
+Queda prohibido volver a hardcodear 14/616/208 como límite o condición de validez futura.
+
+## 6. Frontend preservado
 
 `app/modules/*` no fue modificado. Las mejoras ya aceptadas de Dashboard, Histórico, Shoppers, Cliente, Academia y Finanzas deben consumir el runtime canónico; no deben reconstruirse desde cero.
 
-## 6. Ajustes frontend pendientes solo si el runtime PASS los demuestra
+## 7. Ajustes frontend pendientes solo si el runtime PASS los demuestra
 
 - copy de estados financieros;
 - presentación de review queue de identidades;
@@ -59,12 +76,12 @@ Claude no debe mover estas reglas a los módulos UI ni reintroducir carriles alt
 
 No corregirlos antes de comprobar la composición real.
 
-## 7. Gate antes de otra candidata o deploy
+## 8. Gate antes de otra candidata o deploy
 
 Debe probar en la misma URL y sesión:
 
 - staff/cliente/shopper autenticados;
-- todos los periodos HR;
+- todos los periodos detectados en la HR vigente;
 - KPI = fase = detalle;
 - comparativo completo;
 - identidad única;
@@ -74,6 +91,6 @@ Debe probar en la misma URL y sesión:
 - tres recargas;
 - cero writes.
 
-## 8. Academia
+## 9. Academia
 
 Actualizar manuales para enseñar que la fuente viva gobierna todos los periodos y que una pantalla visible no es PASS si no comparte identidad, periodo y read model con el resto del producto.
