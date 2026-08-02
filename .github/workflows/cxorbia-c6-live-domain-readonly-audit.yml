@@ -27,6 +27,7 @@ jobs:
       LIVE_ENDPOINT: /api/tya/cinepolis/hr-live
       LIVE_RUN_SERVICE: cxorbia-live-hr-dev
       LIVE_RUN_REGION: us-central1
+      DEPLOY_CONFIG: firebase.deploy.json
       REQUEST: backend/config/corte6-live-domain-readonly-audit-request.json
       OUT: .tmp/c6-hosting-dev-deploy
       PRIVATE_DIR: .tmp/c6-hosting-dev-private
@@ -45,7 +46,7 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Validate authorization, source lock and prior gates
+      - name: Validate authorization source lock root config and prior gates
         run: |
           set -euo pipefail
           mkdir -p "$OUT" "$PRIVATE_DIR"
@@ -58,7 +59,10 @@ jobs:
           if(r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||r.pullRequest!==7||r.environment!=='DEV')throw new Error('target_invalid');
           if(r.scope!=='single_existing_hosting_dev_deploy_and_remote_cumulative_gates')throw new Error('scope_invalid');
           if(r.targetProjectId!=='cxorbia-backend-dev'||r.hostingTarget!=='cxorbia-dev'||r.hostingSite!=='cxorbia-backend-dev')throw new Error('hosting_target_invalid');
-          if(r.authorization?.paulaExplicitInCurrentConversation!==true||r.authorization?.singleHostingDevDeploy!==true)throw new Error('authorization_missing');
+          const a=r.authorization||{};
+          if(a.paulaExplicitInCurrentConversation!==true||a.singleHostingDevDeploy!==true)throw new Error('authorization_missing');
+          if(a.rootResolvedConfigRequired!==true||a.deployConfigPath!=='firebase.deploy.json')throw new Error('root_deploy_config_authorization_missing');
+          if(a.noAutomaticSecondDeploy!==true)throw new Error('no_automatic_second_deploy_contract_missing');
           if(Number(r.hostingDeploys)!==1||Number(r.maxHostingDeploys)!==1)throw new Error('single_deploy_contract_invalid');
           for(const k of ['cloudRunDeploys','firestoreWrites','authWrites','rulesDeploys','storageWrites','hrWrites','makeWrites','geminiCalls','paymentsWrites'])if(Number(r[k]||0)!==0)throw new Error('unsafe_scope:'+k);
           if(r.merge!==false||r.production!==false)throw new Error('unsafe_scope');
@@ -68,9 +72,19 @@ jobs:
           const lockedTree=cp.execFileSync('git',['rev-parse',r.sourceLockHead+':app'],{encoding:'utf8'}).trim();
           const currentTree=cp.execFileSync('git',['rev-parse','HEAD:app'],{encoding:'utf8'}).trim();
           if(lockedTree!==currentTree)throw new Error('app_tree_lock_mismatch');
+          if(!fs.existsSync(process.env.DEPLOY_CONFIG))throw new Error('root_deploy_config_missing');
           const fb=JSON.parse(fs.readFileSync('firebase.json','utf8'));
+          const deploy=JSON.parse(fs.readFileSync(process.env.DEPLOY_CONFIG,'utf8'));
           const rc=JSON.parse(fs.readFileSync('.firebaserc','utf8'));
-          if(fb.hosting?.target!=='cxorbia-dev'||fb.hosting?.public!=='app')throw new Error('firebase_hosting_config_invalid');
+          const validateHosting=(h,label)=>{
+            if(h?.target!=='cxorbia-dev'||h?.public!=='app')throw new Error(label+'_hosting_target_invalid');
+            const rewrites=Array.isArray(h.rewrites)?h.rewrites:[];
+            const liveIndex=rewrites.findIndex(x=>x?.source==='/api/tya/cinepolis/hr-live'&&x?.run?.serviceId==='cxorbia-live-hr-dev'&&x?.run?.region==='us-central1');
+            const spaIndex=rewrites.findIndex(x=>x?.source==='**'&&x?.destination==='/index.html');
+            if(liveIndex<0||spaIndex<0||liveIndex>=spaIndex)throw new Error(label+'_rewrite_order_invalid');
+          };
+          validateHosting(fb.hosting,'canonical');
+          validateHosting(deploy.hosting,'root_deploy');
           if(rc.projects?.default!=='cxorbia-backend-dev'||!rc.targets?.['cxorbia-backend-dev']?.hosting?.['cxorbia-dev']?.includes('cxorbia-backend-dev'))throw new Error('firebaserc_target_invalid');
           const auth=JSON.parse(fs.readFileSync('app/docs/evidence/CORTE6-CLIENT-AUTH-MATERIALIZATION-LATEST.json','utf8'));
           if(auth.decision!=='PASS_C6_CLIENT_AUTH_MATERIALIZED_AND_RUNTIME_VALIDATED'||auth.cumulativeDecision!=='PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES')throw new Error('auth_multi_role_pass_missing');
@@ -85,7 +99,7 @@ jobs:
             return out;
           }
           const files=walk('app');
-          const lock={schemaVersion:'cxorbia.c6.hosting-dev-source-lock.v2',generatedAt:new Date().toISOString(),sourceLockHead:r.sourceLockHead,triggerHead:cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),lockedAppTree:lockedTree,currentAppTree:currentTree,appFiles:files.length,appBytes:files.reduce((n,x)=>n+x.bytes,0),manifestSha256:crypto.createHash('sha256').update(JSON.stringify(files)).digest('hex'),runtimeSourceExact:true,production:false};
+          const lock={schemaVersion:'cxorbia.c6.hosting-dev-source-lock.v3',generatedAt:new Date().toISOString(),sourceLockHead:r.sourceLockHead,triggerHead:cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),lockedAppTree:lockedTree,currentAppTree:currentTree,appFiles:files.length,appBytes:files.reduce((n,x)=>n+x.bytes,0),manifestSha256:crypto.createHash('sha256').update(JSON.stringify(files)).digest('hex'),deployConfigPath:process.env.DEPLOY_CONFIG,deployConfigSha256:crypto.createHash('sha256').update(fs.readFileSync(process.env.DEPLOY_CONFIG)).digest('hex'),runtimeSourceExact:true,production:false};
           fs.writeFileSync(process.env.OUT+'/source-lock.json',JSON.stringify(lock,null,2)+'\n');
           NODE
           node --check tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs
@@ -108,6 +122,7 @@ jobs:
           set -euo pipefail
           echo install_tooling > "$OUT/stage"
           npm install --no-save --ignore-scripts firebase-admin@13.4.0 playwright@1.54.2 firebase-tools@latest >/dev/null 2>&1
+          npx firebase --version | tee "$OUT/firebase-cli-version.txt"
           npx playwright install --with-deps chromium >/dev/null
 
       - name: Verify Staff Shopper and Client credentials read-only
@@ -133,31 +148,16 @@ jobs:
           if(!ss.staff||!ss.shopper||!cl.client)throw new Error('private_credentials_incomplete');
           if(a.decision!=='PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V6'||b.decision!=='PASS_C6_CLIENT_AUTH_READBACK')throw new Error('credential_readback_not_pass');
           if(Number(a.authWrites||0)!==0||Number(b.authWrites||0)!==0||b.credentialsExposed!==false||b.tokensExposed!==false)throw new Error('credential_safety_invalid');
-          fs.writeFileSync(process.env.COMBINED_PRIVATE,JSON.stringify({schemaVersion:'cxorbia.c6.e2e-private-credentials.remote-deploy.v2',staff:ss.staff,shopper:ss.shopper,client:cl.client},null,2)+'\n',{encoding:'utf8',mode:0o600});
+          fs.writeFileSync(process.env.COMBINED_PRIVATE,JSON.stringify({schemaVersion:'cxorbia.c6.e2e-private-credentials.remote-deploy.v3',staff:ss.staff,shopper:ss.shopper,client:cl.client},null,2)+'\n',{encoding:'utf8',mode:0o600});
           NODE
           chmod 600 "$STAFF_SHOPPER_PRIVATE" "$CLIENT_PRIVATE" "$CLIENT_SNAPSHOT_PRIVATE" "$COMBINED_PRIVATE"
 
-      - name: Prepare Hosting-only configuration
-        run: |
-          set -euo pipefail
-          echo prepare_hosting_config > "$OUT/stage"
-          node <<'NODE'
-          const fs=require('fs');
-          const x=JSON.parse(fs.readFileSync('firebase.json','utf8'));
-          const h=x.hosting||{};
-          const existing=Array.isArray(h.rewrites)?h.rewrites:[];
-          h.rewrites=[{source:process.env.LIVE_ENDPOINT,run:{serviceId:process.env.LIVE_RUN_SERVICE,region:process.env.LIVE_RUN_REGION}},...existing.filter(r=>r.source!==process.env.LIVE_ENDPOINT)];
-          x.hosting=h;
-          fs.writeFileSync(process.env.OUT+'/firebase.deploy.json',JSON.stringify(x,null,2)+'\n');
-          if(h.target!=='cxorbia-dev'||h.public!=='app'||h.rewrites[0].run.serviceId!=='cxorbia-live-hr-dev')throw new Error('temporary_hosting_config_invalid');
-          NODE
-
-      - name: Execute exactly one Hosting DEV deploy
+      - name: Execute exactly one Hosting DEV deploy using root config
         run: |
           set -euo pipefail
           echo deploy_hosting_once > "$OUT/stage"
           printf '1\n' > "$OUT/deploy-attempted"
-          npx firebase deploy --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --config "$OUT/firebase.deploy.json" --non-interactive 2>&1 | tee "$OUT/firebase-deploy.log"
+          npx firebase deploy --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --config "$DEPLOY_CONFIG" --non-interactive 2>&1 | tee "$OUT/firebase-deploy.log"
           printf '1\n' > "$OUT/deploy-succeeded"
           grep -q 'Deploy complete' "$OUT/firebase-deploy.log"
 
@@ -181,7 +181,7 @@ jobs:
             const live=await fetch(root+process.env.LIVE_ENDPOINT+'?format=meta&fresh=1&ts='+Date.now(),{headers:{'cache-control':'no-cache','pragma':'no-cache'}});
             const txt=await live.text();let json=null;try{json=JSON.parse(txt)}catch{}
             const liveOk=live.ok&&!!json&&(json.ok===true||json.sourceSafe===true||json.runtimeRead===true||!!json.revision||!!json.meta?.revision);
-            result={schemaVersion:'cxorbia.c6.hosting-dev-remote-parity.v2',generatedAt:new Date().toISOString(),attempt,allCriticalAssetsMatch:all,files:rows,liveEndpoint:{status:live.status,ok:liveOk,revision:json?.revision||json?.meta?.revision||null,runtimeRead:json?.runtimeRead??json?.meta?.runtimeRead??null,sourceSafe:json?.sourceSafe??json?.meta?.sourceSafe??null}};
+            result={schemaVersion:'cxorbia.c6.hosting-dev-remote-parity.v3',generatedAt:new Date().toISOString(),attempt,allCriticalAssetsMatch:all,files:rows,liveEndpoint:{status:live.status,ok:liveOk,revision:json?.revision||json?.meta?.revision||null,runtimeRead:json?.runtimeRead??json?.meta?.runtimeRead??null,sourceSafe:json?.sourceSafe??json?.meta?.sourceSafe??null}};
             if(all&&liveOk)break;
             await sleep(5000);
           }
@@ -224,12 +224,8 @@ jobs:
           echo persist_pass > "$OUT/stage"
           node <<'NODE'
           const fs=require('fs');
-          const source=JSON.parse(fs.readFileSync(process.env.OUT+'/source-lock.json','utf8'));
-          const parity=JSON.parse(fs.readFileSync(process.env.OUT+'/remote-parity.json','utf8'));
-          const staffShopper=JSON.parse(fs.readFileSync(process.env.OUT+'/remote-staff-shopper.json','utf8'));
-          const client=JSON.parse(fs.readFileSync(process.env.OUT+'/remote-client.json','utf8'));
-          const semantic=JSON.parse(fs.readFileSync(process.env.OUT+'/remote-semantic.json','utf8'));
-          const evidence={schemaVersion:'cxorbia.c6.hosting-dev-deploy-remote-gates.v2',generatedAt:new Date().toISOString(),decision:'PASS_C6_SINGLE_DEV_HOSTING_DEPLOY_AND_REMOTE_GATES',sourceLock:source,deployment:{environment:'DEV',projectId:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',hostingSite:'cxorbia-backend-dev',hostingDeploys:1,cloudRunDeploys:0,liveRewritePreserved:true},parity,staffShopper,client,semantic,completedGates:['SOURCE_LOCK','STATIC_CUMULATIVE','SINGLE_HOSTING_DEV_DEPLOY','REMOTE_CRITICAL_PARITY','LIVE_HR_REMOTE','REMOTE_STAFF_AUTH','REMOTE_SHOPPER_AUTH','REMOTE_CLIENT_AUTH','THREE_RELOADS','NEW_TAB','REMOTE_DOMAIN','REMOTE_FINANCE','REMOTE_CLIENT_PORTAL','REMOTE_SHOPPER_PORTAL','REMOTE_RESERVATIONS'],safety:{hostingDeploys:1,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,passwordChanges:0,passwordResets:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,credentialsExposed:false,tokensExposed:false,merge:false,production:false},nextGate:'HUMAN_VISUAL_VALIDATION_C6_THEN_FREEZE'};
+          const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+          const evidence={schemaVersion:'cxorbia.c6.hosting-dev-deploy-remote-gates.v3',generatedAt:new Date().toISOString(),decision:'PASS_C6_SINGLE_DEV_HOSTING_DEPLOY_AND_REMOTE_GATES',sourceLock:read(process.env.OUT+'/source-lock.json'),deployment:{environment:'DEV',projectId:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',hostingSite:'cxorbia-backend-dev',deployConfigPath:process.env.DEPLOY_CONFIG,hostingDeploys:1,cloudRunDeploys:0,liveRewritePreserved:true},parity:read(process.env.OUT+'/remote-parity.json'),staffShopper:read(process.env.OUT+'/remote-staff-shopper.json'),client:read(process.env.OUT+'/remote-client.json'),semantic:read(process.env.OUT+'/remote-semantic.json'),completedGates:['SOURCE_LOCK','STATIC_CUMULATIVE','ROOT_DEPLOY_CONFIG','SINGLE_HOSTING_DEV_DEPLOY','REMOTE_CRITICAL_PARITY','LIVE_HR_REMOTE','REMOTE_STAFF_AUTH','REMOTE_SHOPPER_AUTH','REMOTE_CLIENT_AUTH','THREE_RELOADS','NEW_TAB','REMOTE_DOMAIN','REMOTE_FINANCE','REMOTE_CLIENT_PORTAL','REMOTE_SHOPPER_PORTAL','REMOTE_RESERVATIONS'],safety:{hostingDeploys:1,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,passwordChanges:0,passwordResets:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,credentialsExposed:false,tokensExposed:false,merge:false,production:false},nextGate:'HUMAN_VISUAL_VALIDATION_C6_THEN_FREEZE'};
           fs.writeFileSync(process.env.OUT+'/final-evidence.json',JSON.stringify(evidence,null,2)+'\n');
           NODE
           git fetch origin docs-tya-v6-v71-audit
@@ -255,8 +251,11 @@ jobs:
           attempted="$(cat "$OUT/deploy-attempted" 2>/dev/null || echo 0)"
           succeeded="$(cat "$OUT/deploy-succeeded" 2>/dev/null || echo 0)"
           STAGE="$stage" ATTEMPTED="$attempted" SUCCEEDED="$succeeded" node <<'NODE'
-          const fs=require('fs');const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return null}};
-          const evidence={schemaVersion:'cxorbia.c6.hosting-dev-deploy-remote-gates-failure.v2',generatedAt:new Date().toISOString(),decision:Number(process.env.SUCCEEDED||0)===1?'FAIL_C6_REMOTE_GATES_AFTER_SINGLE_DEV_HOSTING_DEPLOY':'FAIL_C6_PREDEPLOY_OR_HOSTING_DEPLOY',failedStage:String(process.env.STAGE||'unknown'),sourceLock:read(process.env.OUT+'/source-lock.json'),deployAttempted:Number(process.env.ATTEMPTED||0)===1,deploySucceeded:Number(process.env.SUCCEEDED||0)===1,parity:read(process.env.OUT+'/remote-parity.json'),staffShopperDecision:read(process.env.OUT+'/remote-staff-shopper.json')?.decision||null,clientDecision:read(process.env.OUT+'/remote-client.json')?.decision||null,semanticDecision:read(process.env.OUT+'/remote-semantic.json')?.decision||null,safety:{hostingDeploys:Number(process.env.SUCCEEDED||0)===1?1:0,hostingDeployAttempts:Number(process.env.ATTEMPTED||0),cloudRunDeploys:0,firestoreWrites:0,authWrites:0,passwordChanges:0,passwordResets:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,credentialsExposed:false,tokensExposed:false,merge:false,production:false}};
+          const fs=require('fs');
+          const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return null}};
+          const redact=s=>String(s||'').replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/g,'REDACTED_EMAIL').replace(/(token|password|private[_ -]?key|authorization)\s*[:=]\s*[^\s]+/gi,'$1=REDACTED').replace(/[A-Za-z0-9_-]{80,}/g,'REDACTED_LONG_VALUE');
+          const tail=p=>{try{return redact(fs.readFileSync(p,'utf8').split(/\r?\n/).slice(-80).join('\n')).slice(-12000)}catch{return null}};
+          const evidence={schemaVersion:'cxorbia.c6.hosting-dev-deploy-remote-gates-failure.v3',generatedAt:new Date().toISOString(),decision:Number(process.env.SUCCEEDED||0)===1?'FAIL_C6_REMOTE_GATES_AFTER_SINGLE_DEV_HOSTING_DEPLOY':'FAIL_C6_PREDEPLOY_OR_HOSTING_DEPLOY',failedStage:String(process.env.STAGE||'unknown'),sourceLock:read(process.env.OUT+'/source-lock.json'),firebaseCliVersion:tail(process.env.OUT+'/firebase-cli-version.txt'),deployAttempted:Number(process.env.ATTEMPTED||0)===1,deploySucceeded:Number(process.env.SUCCEEDED||0)===1,deployConfigPath:process.env.DEPLOY_CONFIG,deployLogTail:tail(process.env.OUT+'/firebase-deploy.log'),firebaseDebugTail:tail('firebase-debug.log'),parity:read(process.env.OUT+'/remote-parity.json'),staffShopperDecision:read(process.env.OUT+'/remote-staff-shopper.json')?.decision||null,clientDecision:read(process.env.OUT+'/remote-client.json')?.decision||null,semanticDecision:read(process.env.OUT+'/remote-semantic.json')?.decision||null,safety:{hostingDeploys:Number(process.env.SUCCEEDED||0)===1?1:0,hostingDeployAttempts:Number(process.env.ATTEMPTED||0),cloudRunDeploys:0,firestoreWrites:0,authWrites:0,passwordChanges:0,passwordResets:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,credentialsExposed:false,tokensExposed:false,merge:false,production:false}};
           fs.writeFileSync(process.env.OUT+'/failure-evidence.json',JSON.stringify(evidence,null,2)+'\n');
           NODE
           git fetch origin docs-tya-v6-v71-audit
