@@ -19,7 +19,7 @@ El PASS anterior comprobó Auth/E2E y estabilidad parcial, pero no demostró en 
 - KPI/fases/drill coherentes;
 - perfiles, WhatsApp, certificación e histórico;
 - Portal Cliente completo;
-- Finanzas con configuración del proyecto.
+- Finanzas con configuración correcta por proyecto.
 
 Por tanto:
 
@@ -45,7 +45,7 @@ Debe contener simultáneamente:
 - identidad Shopper y Portal Shopper canónicos;
 - Portal Cliente con Panorama, KPIs, sucursales y detalle aprobados;
 - Finanzas, Movimientos, Liquidaciones y Beneficios coherentes;
-- configuración del proyecto Cinépolis: Q60 GT, L200 HN, modelo directo, ISR 5 %, regalías 10 %;
+- configuración del proyecto Cinépolis: Q60 GT, L200 HN, modelo delegado, sin facturación local ni regalías, comisión de coordinación compartida configurable;
 - Reportes preservados;
 - Reservas fail-closed;
 - refresh y nueva pestaña idempotentes.
@@ -71,7 +71,26 @@ Estos valores son una fotografía de fuente, no invariantes permanentes. Queda p
 - cero append protegido;
 - cero duplicados técnicos.
 
-## 5. Prevalencia de evidencia
+## 5. Modelo financiero por proyecto
+
+Cada proyecto debe seleccionar al crearse uno de estos modelos:
+
+- `directo/local_invoicing`: existe facturación local y las regalías pueden configurarse cuando correspondan;
+- `delegado/delegated_coordination`: no existe facturación local del proyecto, las regalías son 0 y la compensación se registra como comisión de coordinación compartida.
+
+Cinépolis pertenece al segundo modelo.
+
+Queda prohibido:
+
+- aplicar regalías globales a todos los proyectos;
+- clasificar Cinépolis como directo;
+- descontar regalías a un proyecto delegado;
+- inventar el monto de la comisión, participantes o porcentajes de reparto;
+- tratar la comisión de coordinación como honorario facturado localmente por visita.
+
+`app/adapters/tya-project-financial-model-contract-v1.js` normaliza el modelo existente y también envuelve la creación de proyectos para preservar esta selección.
+
+## 6. Prevalencia de evidencia
 
 Orden obligatorio para determinar el estado:
 
@@ -84,7 +103,7 @@ Orden obligatorio para determinar el estado:
 
 Ningún PASS anterior puede prevalecer sobre una regresión humana reproducible posterior.
 
-## 6. Operaciones prohibidas
+## 7. Operaciones prohibidas
 
 Queda prohibido:
 
@@ -97,11 +116,12 @@ Queda prohibido:
 - recalcular estados, KPIs, identidad o Finanzas en módulos UI;
 - deduplicar identidad por nombre, correo, teléfono o similitud visual;
 - congelar números de una revisión anterior;
+- aplicar regalías sin comprobar facturación local;
 - saltar el gate acumulativo por urgencia;
 - reutilizar una autorización consumida;
 - publicar agosto o producción sin fuente y gate específicos.
 
-## 7. Root fix acumulativo
+## 8. Root fix acumulativo
 
 El HEAD vivo recupera una sola entrada `authenticated-human-canonical`:
 
@@ -109,14 +129,23 @@ El HEAD vivo recupera una sola entrada `authenticated-human-canonical`:
 - se retiró el override directo de rol;
 - se retiró el bridge visual condicionado por token oculto;
 - `tya-protected-auth-hr-authority-bridge-v2.js` compone la fuente dinámicamente;
-- `tya-c6-unified-human-runtime-v1.js` recupera login Cliente, comparativo completo y configuración financiera;
-- `app/modules/*` permanece intacto.
+- `tya-project-financial-model-contract-v1.js` distingue local/delegado y bloquea regalías en delegados;
+- `tya-c6-unified-human-runtime-v1.js` recupera login Cliente, comparativo completo y configuración financiera correcta;
+- `app/modules/*` permanece preservado salvo el comportamiento ya aprobado del wizard, que conserva la selección de modelo.
 
-## 8. Gate de freeze de Corte 6
+## 9. Gate de freeze de Corte 6
 
 Secuencia exacta:
 
-`STATIC ROOT CONTRACT → READ-ONLY RUNTIME → AUTH REAL STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → COMPARATIVE ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE CONFIG → REPORTS/RESERVATIONS → 3 RELOADS + NEW TAB → EVIDENCE`.
+`STATIC ROOT CONTRACT → READ-ONLY RUNTIME → AUTH REAL STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → COMPARATIVE ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE SOURCE + PROJECT MODEL → REPORTS/RESERVATIONS → 3 RELOADS + NEW TAB → EVIDENCE`.
+
+El gate financiero debe demostrar:
+
+- Cinépolis = delegado;
+- regalías Cinépolis = 0;
+- comisión de coordinación compartida sin valores inventados;
+- creación de proyecto permite elegir directo o delegado;
+- Finanzas aplica regalías únicamente cuando `modelo==='directo'`.
 
 Solo después de PASS local/read-only se solicita autorización fresca para un único deploy del Hosting DEV existente.
 
@@ -127,7 +156,7 @@ Después del deploy autorizado:
 - validación humana;
 - `APROBADO → C6_BASELINE_CANONICA_ACUMULATIVA_FROZEN`.
 
-## 9. Carril urgente de agosto y postulaciones
+## 10. Carril urgente de agosto y postulaciones
 
 Después del freeze:
 
@@ -142,7 +171,7 @@ Después del freeze:
 
 La autorización de Hosting consumida anteriormente no autoriza deploy nuevo, writes, apertura de postulaciones, merge ni producción.
 
-## 10. Invariantes de producto
+## 11. Invariantes de producto
 
 - todos los periodos HR visibles en histórico/comparativo;
 - último periodo = último periodo detectado, no mes del reloj;
@@ -152,11 +181,14 @@ La autorización de Hosting consumida anteriormente no autoriza deploy nuevo, wr
 - cero duplicados técnicos;
 - conflictos de identidad en review queue;
 - honorarios desde configuración cuando HR no trae monto;
+- proyecto delegado = regalías 0;
+- proyecto local = regalías solo si se configuran;
+- comisión de coordinación y reparto pertenecen a la configuración del proyecto;
 - fuente financiera exacta y pagos confirmados preservados;
 - Reportes sin pérdida;
 - Reservas sin mutaciones mientras no exista fuente real.
 
-## 11. Documentación obligatoria
+## 12. Documentación obligatoria
 
 Cada bloque debe actualizar:
 
@@ -170,14 +202,14 @@ Cada bloque debe actualizar:
 
 Si un commit, gate, deploy o herramienta falla, se declara. No se afirma éxito sin evidencia.
 
-## 12. Clasificación
+## 13. Clasificación
 
-- **Reusable CXOrbia:** baseline acumulativa única, ownership dinámico de fuente, evidencia prevalente y gate transversal.
-- **Exclusivo TyA:** operación Cinépolis, configuración Q60/L200 y futura incorporación de agosto.
+- **Reusable CXOrbia:** baseline acumulativa única, ownership dinámico de fuente, modelo financiero por proyecto, evidencia prevalente y gate transversal.
+- **Exclusivo TyA:** operación Cinépolis, Q60/L200, modelo delegado y futura incorporación de agosto.
 - **Claude/prototipo:** consumir contratos canónicos sin reimplementar lógica.
 - **Academia:** versionado acumulativo, trazabilidad, source ownership y validación E2E real.
 - **Sin impacto Claude:** runners, credenciales privadas y consumo one-shot.
 
-## 13. Estado seguro
+## 14. Estado seguro
 
 Root fix aplicado en código; Hosting DEV deploys nuevos 0; Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos/Reservas writes 0; Cloud Run deploys 0; nuevos proyectos/sites 0; credenciales/tokens exportados 0; merge=false; producción=false.
