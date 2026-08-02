@@ -1,117 +1,112 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `C6_DEV_HOSTING_RELEASED__REMOTE_PARITY_HR_STAFF_CLIENT_PASS__SHOPPER_NEW_TAB_ROOT_FIX_PENDING_DEPLOY`
+**Estado vivo:** `C6_SHOPPER_ROOT_FIX_REMOTE_PASS__FINANCE_CANONICAL_PRECEDENCE_STOP_RETRY`
 
-## 1. P0 bloqueante actual
+## 1. P0 Shopper anterior — cerrado
 
-P0 único:
+El P0:
 
-`SHOPPER NEW TAB RESTORES AUTH AND HR BASE BUT DOES NOT APPLY PROTECTED AUTHORITY`.
+`SHOPPER NEW TAB RESTORES AUTH AND HR BASE BUT DOES NOT APPLY PROTECTED AUTHORITY`
 
-Dos gates remotos reprodujeron:
+quedó corregido y comprobado remotamente en el Hosting DEV vigente:
 
-- rol/namespace/tenant/proyecto correctos;
-- 14 periodos, 616 visitas y 208 shoppers visibles;
-- app activa;
-- autoridad protegida no aplicada;
-- visitas propias 0.
+- autoridad protegida aplicada;
+- identidad exacta;
+- 14 periodos;
+- 616 visitas;
+- 208 shoppers;
+- `ownVisits=1`;
+- tres recargas estables;
+- nueva pestaña estable.
 
-El root fix está aplicado en fuente, pero todavía no fue desplegado.
+No reabrir login/Shopper sin una regresión reproducible nueva.
 
-## 2. Deploy DEV y gates cerrados
+## 2. PASS acumulado actual
 
-PASS:
+- source lock exacto del HEAD autorizado;
+- gate estático acumulativo;
+- gate estático root fix nueva pestaña;
+- un deploy Hosting DEV exitoso;
+- paridad remota;
+- endpoint HR vivo;
+- Staff;
+- Shopper;
+- Cliente existente con alcance exclusivo `cinepolis`.
 
-- una release Hosting DEV publicada desde `firebase.deploy.json` raíz;
-- 2,293 archivos publicados;
-- paridad remota exacta de 16 assets;
-- endpoint HR remoto;
-- Staff remoto;
-- Cliente remoto;
-- credencial Cliente idempotente, readback y rollback;
-- Cinépolis delegado, regalías 0 y Q60/L200.
+## 3. Bloqueante actual
 
-No cerrado:
+`PROJECT_FINANCIAL_CONFIGURATION_METADATA_NOT_MATERIALIZED_IN_CANONICAL_PROJECTS_BEFORE_NORMALIZATION`
 
-- Shopper nueva pestaña con overlay exacto y visitas propias;
-- gate semántico remoto de Finanzas/portales/Reservas posterior al P0;
-- validación humana acumulativa;
+El runtime mantiene dos verdades:
+
+- objetos canónicos: directo, facturación local, regalía 10;
+- configuración vigente: delegado, coordinación, regalía 0.
+
+Esto bloquea el cierre de Finanzas y, por orden del gate combinado, la validación final de dominio, Portal Cliente, Portal Shopper y Reservas.
+
+## 4. Correctivo backend focalizado
+
+Archivo principal:
+
+`app/adapters/tya-c6-unified-human-runtime-v1.js`
+
+Debe:
+
+1. resolver projectConfig por llaves técnicas, nunca por nombre visual;
+2. aplicar delegado/coordination/regalía 0 a cada periodo canónico correspondiente antes de `normalizeAll()`;
+3. conservar Q60 GT y L200 HN como obligación al shopper, no como ingreso;
+4. mantener comisión y reparto como configuración requerida, sin inventar valores;
+5. agregar gate que compare configuración, `d.period()`, `d.project()` y salida financiera.
+
+## 5. Pendiente de validación después del source fix
+
+Primero, sin deploy:
+
+- sintaxis;
+- gate de consistencia financiera;
+- gate acumulativo;
+- smoke local/read-only;
+- documentación.
+
+Solo con PASS source-only:
+
+- autorización nueva para un único deploy DEV;
+- paridad remota;
+- Staff/Shopper/Cliente;
+- dominio/Finanzas/portales/Reservas;
+- validación humana;
 - freeze C6.
 
-## 3. Causa raíz
-
-`RESTORED_SESSION_NEW_TAB_PROTECTED_AUTHORITY_RECONCILIATION_NOT_RESILIENT`.
-
-El bridge dependía de una conciliación puntual. No tenía recuperación independiente para una sesión ya restaurada ni reintento HR acotado.
-
-## 4. Root fix listo
-
-`app/adapters/tya-protected-auth-hr-authority-bridge-v2.js` incorpora:
-
-- seis reintentos HR vivos para fallos transitorios;
-- scheduler de sesión restaurada;
-- eventos Auth/backend/DOM/foco/visibilidad/refresh;
-- guardas de principal, Firestore y dependencias canónicas;
-- idempotencia;
-- cero writes.
-
-Gate estático:
-
-`tools/qa/tya-c6-shopper-new-tab-authority-root-fix-gate.mjs`.
-
-## 5. Siguiente bloque técnico
-
-Con autorización fresca:
-
-1. source lock nuevo;
-2. gate estático acumulativo;
-3. gate estático new-tab;
-4. un único deploy del Hosting DEV existente;
-5. paridad remota;
-6. HR viva;
-7. Staff;
-8. Shopper: tres recargas, nueva pestaña, autoridad aplicada y visitas propias;
-9. Cliente;
-10. dominio, Finanzas, Portal Cliente, Portal Shopper y Reservas;
-11. evidencia PASS/FAIL;
-12. validación humana;
-13. `APROBADO C6 → FREEZE`.
-
-Ante fallo no existe segundo deploy automático.
-
-## 6. Pendientes Claude/prototipo
+## 6. Pendientes Claude/prototipo no bloqueantes del root fix
 
 ### `app/modules/proyecto-wizard.js`
 
-- agregar opción `Regional`;
+- agregar `Regional`;
 - conservar directo/delegado;
-- ocultar regalías para delegado/regional.
+- mostrar regalías exclusivamente para facturación local.
 
 ### `app/modules/finanzas.js`
 
-- corregir texto delegado;
 - explicar comisión de coordinación y distribución configurable;
 - mostrar revisión cuando falte fuente exacta.
 
 ### `app/app.js`
 
-- preservar UI aprobada;
-- no usar `pickShopperDev()` en rutas protegidas;
-- no implementar reconciliación protegida en UI.
+- preservar UI aprobada y entrada humana única;
+- no reimplementar Auth, reconciliación o precedencia financiera desde UI.
 
-## 7. No reabrir
+## 7. Prohibiciones
 
-- no nueva candidata, rama, PR, Firebase, Hosting o workflow;
-- no bypass de Auth;
-- no aceptar HR base como prueba del overlay protegido;
-- no dedupe por nombre/teléfono;
+- no segunda candidata, rama, PR, Firebase, Hosting o workflow paralelo;
+- no parche visual para ocultar la contradicción financiera;
+- no hardcodear Cinépolis por nombre;
 - no regalías globales;
-- no honorario Shopper como ingreso delegado;
-- no PowerShell para Paula;
-- no deploy por ensayo.
+- no usar honorario Shopper como ingreso;
+- no segundo deploy bajo la autorización consumida;
+- no producción antes del PASS acumulativo y aprobación humana.
 
-## 8. P1/P2 después del freeze
+## 8. P1/P2 posteriores al freeze
 
 - PDF con gráficas;
 - Excel con formato;
@@ -123,4 +118,4 @@ Ante fallo no existe segundo deploy automático.
 
 ## 9. Agosto
 
-Paula agregará agosto solo después del freeze de Corte 6. El sistema debe detectarlo desde HR y nunca crearlo por fecha del sistema.
+Agosto solo debe aparecer cuando exista en HR. No se crea por la fecha del sistema. Su activación operativa ocurre después del freeze C6.
