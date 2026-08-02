@@ -18,16 +18,15 @@
 1. reglas maestras y addenda activos;
 2. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 3. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-4. `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`;
-5. `ADDENDUM-MAESTRO-C6-BASELINE-CANONICA-UNICA-Y-CUTOVER-20260801.md`;
-6. `CAMBIOS-BACKEND-ADDENDUM-C6-DEPLOY-DEV-EXITOSO-Y-P0-SHOPPER-NUEVA-PESTANA-20260802.md`;
-7. evidencia `CORTE6-HOSTING-DEV-DEPLOY-REMOTE-GATES-FAILURE-LATEST.json`;
-8. evidencia `CORTE6-HOSTING-DEV-REMOTE-GATES-CONTINUATION-FAILURE-LATEST.json`;
-9. evidencia `CORTE6-SHOPPER-NEW-TAB-AUTHORITY-ROOT-FIX-LATEST.json`;
-10. `app/adapters/tya-protected-auth-hr-authority-bridge-v2.js`;
-11. `tools/qa/tya-c6-shopper-new-tab-authority-root-fix-gate.mjs`;
-12. `firebase.json`, `firebase.deploy.json`, `.firebaserc`;
-13. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, PR #7 y HEAD vivo.
+4. `ADDENDUM-MAESTRO-C6-BASELINE-CANONICA-UNICA-Y-CUTOVER-20260801.md`;
+5. `CAMBIOS-BACKEND-ADDENDUM-C6-DEPLOY-DEV-EXITOSO-Y-P0-SHOPPER-NUEVA-PESTANA-20260802.md`;
+6. evidencia `CORTE6-HOSTING-DEV-DEPLOY-REMOTE-GATES-FAILURE-LATEST.json`;
+7. evidencia `CORTE6-HOSTING-DEV-REMOTE-GATES-CONTINUATION-FAILURE-LATEST.json`;
+8. evidencia `CORTE6-SHOPPER-NEW-TAB-AUTHORITY-ROOT-FIX-LATEST.json`;
+9. `app/adapters/tya-protected-auth-hr-authority-bridge-v2.js`;
+10. `tools/qa/tya-c6-shopper-new-tab-authority-root-fix-gate.mjs`;
+11. `firebase.json`, `firebase.deploy.json`, `.firebaserc`;
+12. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, Academia, PR #7 y HEAD vivo.
 
 ## 3. Baseline funcional preservada
 
@@ -74,7 +73,7 @@ Resultado:
 - demás provider writes: 0;
 - producción: intacta.
 
-El fallo inmediatamente posterior fue del runner QA inline bajo Node 24, no del deploy. Las continuaciones posteriores fueron estrictamente read-only y no desplegaron otra release.
+Las continuaciones posteriores fueron estrictamente read-only y no desplegaron otra release.
 
 ## 6. P0 vigente reproducible
 
