@@ -1,16 +1,16 @@
 {
   "schemaVersion": "cxorbia.c6.live-domain-readonly-audit-request.v1",
-  "requestId": "c6-live-domain-readonly-audit-20260801-14",
-  "attempt": 14,
-  "status": "consumed_pass",
-  "enabled": false,
-  "consumed": true,
+  "requestId": "c6-live-domain-readonly-audit-20260801-15",
+  "attempt": 15,
+  "status": "requested_immediate_click_login_guard",
+  "enabled": true,
+  "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "environment": "DEV",
-  "scope": "human_login_wrapper_state_readonly_no_credentials",
-  "triggerReason": "prove_exact_reason_integrated_credential_step_is_not_visible",
+  "scope": "immediate_role_click_integrated_auth_guard_readonly_no_credentials",
+  "triggerReason": "verify_focal_root_fix_prevents_click_before_domcontentloaded_auth_wrapper",
   "hostingDeploys": 0,
   "cloudRunDeploys": 0,
   "firestoreWrites": 0,
@@ -22,8 +22,5 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false,
-  "consumedAt": "2026-08-02T04:27:32.286Z",
-  "decision": "PASS_C6_HUMAN_LOGIN_WRAPPER_ACTIVE",
-  "nextGate": "UNIFIED_HUMAN_AUTH_STAFF_SHOPPER"
+  "production": false
 }
