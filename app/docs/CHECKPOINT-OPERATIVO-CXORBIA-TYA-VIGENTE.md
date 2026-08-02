@@ -39,7 +39,7 @@ Cinépolis:
 
 ## 4. Segundo intento autorizado de deploy DEV
 
-El request `c6-hosting-dev-deploy-remote-gates-20260802-03` comprobó source lock, gate estático, credenciales read-only y destino DEV. El comando fue iniciado una vez y falló antes de crear una release.
+El request `c6-hosting-dev-deploy-remote-gates-20260802-03` comprobó source lock, gate estático, acceso read-only y destino DEV. El comando fue iniciado una vez y falló antes de crear una release.
 
 Evidencia:
 
@@ -56,9 +56,9 @@ La autorización quedó consumida. Se respetó `noAutomaticSecondDeploy=true`.
 
 `RUNNER_AUTHORIZED_ROOT_CONFIG_NOT_APPLIED`.
 
-La autorización exigía la configuración raíz `firebase.deploy.json`, pero el workflow aún generaba una copia en `.tmp` y ejecutaba `--config $OUT/firebase.deploy.json`. El fix documentado no estaba conectado al paso ejecutable.
+La autorización exigía la configuración raíz `firebase.deploy.json`, pero el workflow aún generaba una copia en `.tmp` y ejecutaba el comando con esa ruta temporal.
 
-El runner no persistió el stderr exacto del CLI. No se demostró fallo de source lock, aplicación, HR, Auth, IAM, Cloud Run o producción.
+El fix documentado no estaba conectado al paso ejecutable. El runner no preservó el stderr exacto del CLI. No se demostró fallo de source lock, aplicación, HR, Auth, IAM, Cloud Run o producción.
 
 ## 6. Corrección aplicada sin nuevo deploy
 
@@ -81,7 +81,7 @@ Evidencia:
 
 Requiere autorización fresca:
 
-`SOURCE LOCK ACTUAL → STATIC GATE → ROOT CONFIG firebase.deploy.json → CREDENCIALES READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → STAFF/CLIENTE/SHOPPER → DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA`.
+`SOURCE LOCK ACTUAL → STATIC GATE → ROOT CONFIG firebase.deploy.json → ACCESO READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → STAFF/CLIENTE/SHOPPER → DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA`.
 
 ## 8. Estado seguro
 
