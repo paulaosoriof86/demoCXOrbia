@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "cxorbia.c6.unified-auth-runtime-readonly-failure.v1",
+  "generatedAt": "2026-08-02T04:18:44.459Z",
+  "decision": "FAIL_C6_UNIFIED_AUTH_RUNTIME_READONLY",
+  "failedStage": "unified_human_auth_runtime",
+  "credentialSelectionDecision": "PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION",
+  "humanRuntimeDecision": null,
+  "technicalAuthDecision": null,
+  "safety": {
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "rulesDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "merge": false,
+    "production": false
+  }
+}
