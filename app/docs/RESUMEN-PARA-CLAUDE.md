@@ -1,81 +1,75 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `C6_AUTH_ALL_ROLES_PASS__SECOND_HOSTING_DEV_COMMAND_FAILED_BEFORE_RELEASE__EXECUTION_PATH_FIXED__FRESH_AUTH_REQUIRED`
+**Estado vivo:** `C6_DEV_HOSTING_RELEASED__REMOTE_PARITY_HR_STAFF_CLIENT_PASS__SHOPPER_NEW_TAB_ROOT_FIX_PENDING_DEPLOY`
 
 ## 1. Baseline única
 
-Continuar únicamente sobre el HEAD vivo de `docs-tya-v6-v71-audit`. No crear una versión paralela, shell reducido, nueva rama o nuevo PR.
+Continuar únicamente sobre el HEAD vivo de `docs-tya-v6-v71-audit`. No crear versión paralela, shell reducido, nueva rama, PR, Firebase, Hosting o workflow.
 
-La HR viva observada contiene 14 periodos desde junio 2025 hasta julio 2026, 616 visitas y 208 shoppers. Agosto todavía no existe. Estos conteos son una fotografía y no un contrato permanente.
+La HR viva observada contiene 14 periodos desde junio 2025 hasta julio 2026, 616 visitas y 208 shoppers. Agosto todavía no existe. Son conteos observados, no invariantes permanentes.
 
-## 2. Contrato acumulativo comprobado
+## 2. Release DEV y gates alcanzados
 
-PASS:
+El request `c6-hosting-dev-deploy-remote-gates-20260802-04` publicó correctamente una release en `cxorbia-backend-dev` usando `firebase.deploy.json` raíz.
 
-- entrada humana canónica;
-- acceso validado para Staff, Cliente y Shopper;
-- HR viva dinámica;
-- identidad y certificación por vínculo exacto;
-- dominio, Finanzas, Portal Cliente, Portal Shopper y Reservas;
-- tres recargas y nueva pestaña;
-- carril técnico Staff/Shopper aislado;
-- materialización Cliente idempotente, readback y rollback exacto.
+PASS remoto demostrado:
 
-Decisión funcional:
+- paridad exacta de 16 assets críticos;
+- endpoint HR vivo;
+- Staff;
+- Cliente;
+- 14 periodos, 616 visitas y 208 shoppers.
 
-`PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES`.
+No hubo Cloud Run, Firestore, Auth, HR, Rules, Storage, Make, Gemini, pagos, merge ni producción.
 
-## 3. Segundo intento autorizado de deploy
+## 3. P0 Shopper nueva pestaña
 
-El request `c6-hosting-dev-deploy-remote-gates-20260802-03` pasó source lock, gate estático, acceso read-only y destino DEV.
+Dos ejecuciones reprodujeron:
 
-El comando fue iniciado una vez y falló antes de crear una release:
+- principal Shopper restaurado;
+- tenant `tya` y proyecto `cinepolis` correctos;
+- app y HR base listas;
+- autoridad protegida no aplicada;
+- visitas propias 0.
 
-- deploy attempted: 1;
-- deploy succeeded: 0;
-- Hosting releases: 0;
-- gates remotos: no ejecutados.
+Causa:
 
-La autorización quedó consumida y no hubo segundo deploy automático.
+`RESTORED_SESSION_NEW_TAB_PROTECTED_AUTHORITY_RECONCILIATION_NOT_RESILIENT`.
 
-## 4. Causa raíz metodológica comprobada
+No confundir datos HR visibles con overlay protegido aplicado.
 
-`RUNNER_AUTHORIZED_ROOT_CONFIG_NOT_APPLIED`.
+## 4. Root fix backend protegido
 
-La autorización exigía `firebase.deploy.json` en la raíz. El workflow todavía generaba una copia bajo `.tmp/c6-hosting-dev-deploy` y ejecutaba el comando con esa ruta temporal.
+`app/adapters/tya-protected-auth-hr-authority-bridge-v2.js` ahora:
 
-El fix documentado no estaba conectado al paso ejecutable. El runner tampoco preservó el error exacto del CLI, por lo que no se atribuye el fallo a IAM, proveedor, aplicación, HR, Auth, Finanzas o UI sin evidencia.
+- reintenta HR viva de forma acotada ante 429/5xx/red;
+- reconcilia sesiones restauradas en reload/nueva pestaña;
+- escucha Auth/backend/DOM/foco/visibilidad/refresh;
+- espera principal, Firestore y dependencias canónicas;
+- mantiene una conciliación y un timer;
+- permanece fail-closed y read-only.
 
-## 5. Correctivo protegido
+Gate:
 
-El workflow existente ahora:
+`tools/qa/tya-c6-shopper-new-tab-authority-root-fix-gate.mjs`.
 
-- valida la configuración raíz autorizada;
-- exige `deployConfigPath=firebase.deploy.json`;
-- exige `noAutomaticSecondDeploy=true`;
-- valida target, public y orden de rewrites;
-- ejecutará `--config firebase.deploy.json`;
-- registra la versión de Firebase CLI;
-- persiste logs sanitizados ante cualquier fallo.
+El fix está en fuente, no desplegado. No afirmar PASS remoto hasta el siguiente deploy autorizado.
 
-No se creó otro workflow ni se ejecutó otro deploy.
+## 5. Regresiones que no se pueden repetir
 
-## 6. Regresiones que no se pueden repetir
-
-- entrada humana sin autenticación real;
+- entrada sin autenticación real;
 - Shopper protegido usando selección DEV directa;
-- autenticación Cliente sin completar la entrada a la app;
+- sesión restaurada con HR base pero sin overlay exacto;
+- nueva pestaña con `ownVisits=0` por autoridad no aplicada;
 - KPI y fases divergentes;
 - histórico incompleto;
 - regalías globales;
 - clasificación por nombre;
 - honorario Shopper usado como ingreso delegado;
-- fix documentado pero no conectado al runner;
-- deploy que no use la configuración raíz autorizada;
-- deploy que omita el rewrite HR vivo.
+- lógica Auth/reconciliación dentro de módulos UI.
 
-## 7. Modelo financiero por proyecto
+## 6. Modelo financiero por proyecto
 
 Cinépolis:
 
@@ -86,7 +80,9 @@ Cinépolis:
 - honorario Shopper nunca es ingreso delegado;
 - margen solo con comisión y distribución exactas.
 
-## 8. Ajustes frontend exactos para Claude
+El gate semántico remoto final quedó después del P0 Shopper; no presentar Finanzas remotas como cerradas todavía.
+
+## 7. Ajustes frontend exactos para Claude
 
 ### `app/modules/proyecto-wizard.js`
 
@@ -96,7 +92,7 @@ Cinépolis:
 
 ### `app/modules/finanzas.js`
 
-- corregir el texto delegado;
+- corregir texto delegado;
 - describir comisión de coordinación y distribución configurable;
 - mostrar revisión cuando falte fuente exacta.
 
@@ -104,12 +100,12 @@ Cinépolis:
 
 - preservar UI aprobada;
 - no usar selección Shopper DEV en rutas protegidas;
-- no mover autenticación a módulos UI.
+- no mover autenticación o reconciliación protegida a módulos UI.
 
-## 9. Gate pendiente
+## 8. Gate pendiente
 
 Requiere autorización fresca:
 
-`SOURCE LOCK ACTUAL → STATIC GATE → ROOT CONFIG firebase.deploy.json → ACCESO READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → STAFF/CLIENTE/SHOPPER → HR/DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → VALIDACIÓN HUMANA → FREEZE`.
+`SOURCE LOCK NUEVO → STATIC CUMULATIVE + NEW-TAB ROOT-FIX GATE → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → STAFF → SHOPPER 3 RELOADS + NEW TAB + OWN VISITS → CLIENTE → HR/DOMINIO/FINANZAS/PORTALES/RESERVAS → VALIDACIÓN HUMANA → FREEZE`.
 
-No nueva candidata, rama, PR, Firebase, Hosting, merge ni producción.
+No merge ni producción.
