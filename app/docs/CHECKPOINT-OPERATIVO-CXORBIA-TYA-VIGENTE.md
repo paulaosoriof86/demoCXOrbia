@@ -6,7 +6,7 @@
 ## 1. Estado protegido
 
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR #7 draft/open/no merge.
-- HEAD documental posterior a evidencia: `88b9119b46d8b6c75d2d71c7f49f0acdfd66d1ff`.
+- HEAD documental posterior a evidencia: `bb357056d0fac00cb86971c41bc9bdb435d1186d`.
 - Source lock runtime/QA: `69afc8227762cbb16ac5a3af87072c2f1cc88198`.
 - Producción `tya-plataforma` permanece intacta.
 - Agosto 2026 todavía no existe en HR.
