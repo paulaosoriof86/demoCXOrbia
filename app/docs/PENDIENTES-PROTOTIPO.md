@@ -1,13 +1,13 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `C6_AUTH_RUNTIME_ALL_ROLES_PASS__PENDING_FRESH_DEV_DEPLOY_AUTHORIZATION`
+**Estado vivo:** `C6_AUTH_ALL_ROLES_PASS__DEPLOY_COMMAND_FAILED_BEFORE_RELEASE__ROOT_CAUSE_FIXED__FRESH_AUTH_REQUIRED`
 
 ## 1. P0 bloqueante actual
 
-No queda pendiente una credencial Cliente.
+No queda pendiente una credencial Cliente ni una corrección funcional del runtime.
 
-El único bloqueante para continuar Corte 6 es obtener autorización fresca para un único deploy del Hosting DEV existente y repetir el gate acumulativo remoto.
+El único bloqueante para continuar Corte 6 es una autorización fresca para un único deploy del Hosting DEV existente. La autorización anterior quedó consumida porque el comando de deploy fue intentado, aunque no creó una release.
 
 Hasta entonces no hay freeze, agosto, postulaciones, merge ni producción.
 
@@ -17,55 +17,60 @@ PASS:
 
 - gate estático acumulativo;
 - HR viva dinámica desde junio 2025 hasta julio 2026;
-- dominio, Finanzas, Portal Shopper y Reservas;
-- Staff humano autenticado;
-- Shopper humano autenticado con identidad exacta;
-- Cliente humano autenticado con alcance exclusivo `cinepolis`;
+- dominio, Finanzas, Portal Cliente, Portal Shopper y Reservas;
+- Staff, Cliente y Shopper humanos autenticados;
+- identidad Shopper exacta;
 - carril técnico Staff/Shopper aislado;
 - tres recargas y nueva pestaña;
-- idempotencia y readback Cliente;
+- credencial Cliente idempotente y readback PASS;
 - rollback exacto probado;
 - Cinépolis delegado, regalías 0 y Q60/L200.
 
-## 3. Credencial Cliente
+## 3. Incidente de deploy DEV
 
-Cerrado:
+Resultado:
 
-- una credencial Cliente DEV creada;
-- claims exactos `cliente/staff/tya/cinepolis`;
-- sign-in PASS;
-- segunda ejecución idempotente con 0 writes;
-- password changes/resets 0;
-- secretos no expuestos.
+- source lock: PASS;
+- gate estático: PASS;
+- credenciales read-only: PASS;
+- deploy command attempted: 1;
+- deploy succeeded: 0;
+- Hosting releases: 0;
+- gates remotos: no ejecutados.
 
-El primer intento fue revertido automáticamente porque Auth no completaba la entrada visual. Se corrigió la causa raíz y el segundo intento quedó PASS.
+Causa raíz:
 
-## 4. Root fixes aplicados
+`FIREBASE_CLI_ALTERNATE_CONFIG_PATH_RESOLUTION`.
 
-- guard de clic temprano antes del wrapper oficial;
-- guard Shopper contra `pickShopperDev()`;
-- transición Cliente post-Auth con `CX.app.enter()`;
-- formulario técnico estable `cxDevEntryAuth`;
-- metadata `technical-auth-e2e-isolated`;
-- modelo financiero Local/Delegado/Regional/Unconfigured;
-- guard de comisión delegada fail-closed.
+El archivo de configuración alternativo existía solo dentro de `.tmp`, pero Firebase CLI lo resolvía por basename en la raíz del proyecto.
+
+## 4. Corrección cerrada antes de otro intento
+
+- `firebase.json` conserva el rewrite HR vivo.
+- `firebase.deploy.json` existe en la raíz.
+- target `cxorbia-dev`.
+- public `app`.
+- endpoint HR vivo hacia `cxorbia-live-hr-dev/us-central1`.
+- wildcard SPA posterior.
+- cero nuevo deploy después del fix.
 
 ## 5. Siguiente bloque técnico
 
 Con autorización fresca:
 
-1. un único deploy al Hosting DEV existente;
-2. comprobación de paridad build/source;
-3. Auth remota Staff;
-4. Auth remota Cliente;
-5. Auth remota Shopper;
-6. HR viva, dominio, Finanzas, portales y Reservas;
-7. tres recargas y nueva pestaña;
-8. evidencia PASS/FAIL;
-9. validación humana acumulativa;
-10. `APROBADO C6 → FREEZE`.
+1. source lock actual;
+2. gate estático;
+3. credenciales read-only;
+4. un único deploy al Hosting DEV existente;
+5. paridad remota;
+6. Auth remota Staff/Cliente/Shopper;
+7. HR viva, dominio, Finanzas, portales y Reservas;
+8. tres recargas y nueva pestaña;
+9. evidencia PASS/FAIL;
+10. validación humana acumulativa;
+11. `APROBADO C6 → FREEZE`.
 
-No reutilizar autorizaciones anteriores.
+Ante un nuevo fallo no existe segundo deploy automático.
 
 ## 6. Pendientes Claude/prototipo por archivo
 
@@ -73,31 +78,28 @@ No reutilizar autorizaciones anteriores.
 
 - agregar opción `Regional`;
 - conservar directo/delegado;
-- ocultar regalías para delegado/regional;
-- no duplicar contratos backend.
+- ocultar regalías para delegado/regional.
 
 ### `app/modules/finanzas.js`
 
-- sustituir “honorario recibido menos lo pagado al shopper”;
+- corregir el texto delegado;
 - explicar comisión de coordinación y distribución configurable;
 - mostrar revisión cuando falte fuente exacta.
 
 ### `app/app.js`
 
 - preservar UI aprobada;
-- no volver a usar `pickShopperDev()` en una ruta protegida;
-- cualquier cambio frontend debe pasar el gate multirol.
+- no usar `pickShopperDev()` en rutas protegidas.
 
 ## 7. No reabrir
 
 - no nueva candidata, rama o PR;
 - no nuevo Firebase o Hosting;
-- no bypass de Auth por estar en DEV;
+- no bypass de Auth;
 - no dedupe por nombre/teléfono;
 - no regalías globales;
-- no clasificación por nombre;
 - no honorario Shopper como ingreso delegado;
-- no comisión/reparto inventados;
+- no configuración de deploy fuera de la raíz resoluble;
 - no PowerShell para Paula;
 - no deploy por ensayo.
 
@@ -107,9 +109,9 @@ No reutilizar autorizaciones anteriores.
 - Excel con formato;
 - exportaciones transversales;
 - copy final de fuentes/estados;
-- visualización de comisión/reparto con fuente real;
+- visualización de comisión/reparto;
 - optimización de carga;
-- refinamiento de review queue y certificaciones.
+- review queue y certificaciones.
 
 ## 9. Agosto
 
