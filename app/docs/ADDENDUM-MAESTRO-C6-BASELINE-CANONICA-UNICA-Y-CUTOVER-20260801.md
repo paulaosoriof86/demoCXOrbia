@@ -1,8 +1,8 @@
 # ADDENDUM MAESTRO — C6 baseline canónica única y carril de cutover
 
-**Fecha:** 2026-08-01  
+**Fecha:** 2026-08-02  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_RUNTIME_PASS_EXCEPT_CLIENT_CREDENTIAL__HOLD_NO_AUTH_WRITE_NO_DEPLOY_NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_RUNTIME_ALL_ROLES_PASS__CLIENT_CREDENTIAL_MATERIALIZED__PENDING_FRESH_DEV_DEPLOY_AUTHORIZATION__NO_PRODUCTION`
 
 ## 1. Propósito
 
@@ -10,26 +10,29 @@ Este addendum impide que CXOrbia/TyA vuelva a fragmentarse por módulo, etapa, f
 
 ## 2. Baseline acumulativa comprobada
 
-El HEAD vivo contiene y ha comprobado read-only:
+El HEAD vivo contiene y ha comprobado:
 
 - frontend aprobado vigente;
 - entrada humana única `authenticated-human-canonical`;
-- Firebase Auth/claims para Staff y Shopper;
+- Firebase Auth/claims para Staff, Cliente y Shopper;
 - HR viva como autoridad operacional dinámica;
 - Firestore protegido como overlay exacto;
 - read model y máquina de estados canónicos;
 - Dashboard, fases, detalle, histórico y comparativo;
 - Portal Shopper con identidad exacta;
+- Portal Cliente con principal autenticado y alcance exclusivo;
 - Finanzas y Reservas canónicas;
 - tres recargas y nueva pestaña;
 - carril técnico Staff/Shopper aislado;
-- ruta Cliente integrada Usuario + Contraseña.
+- materialización, idempotencia, readback y rollback Cliente.
 
-Corte 6 no está congelado porque falta un principal Cliente autenticado con claims correctos.
+Decisión acumulativa local:
+
+`PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES`.
+
+Corte 6 aún no está congelado porque falta deploy DEV fresco, gate remoto idéntico y validación humana acumulativa.
 
 ## 3. Fuente viva observada
-
-Revisión del gate vigente:
 
 - 14 periodos, junio 2025–julio 2026;
 - 616 visitas;
@@ -45,7 +48,7 @@ Julio observado:
 - 1 fuera de rango;
 - GT 34 / HN 10.
 
-Estos valores son fotografía de fuente, no invariantes permanentes. Queda prohibido crear agosto por reloj, copiar julio o congelar KPIs de cortes anteriores.
+Los valores son fotografía, no invariantes permanentes. Queda prohibido crear agosto por reloj, copiar julio o congelar KPIs de cortes anteriores.
 
 ## 4. Modelo financiero por proyecto
 
@@ -56,7 +59,7 @@ El modelo proviene exclusivamente de `projectConfig`:
 - `regional/regional_coordination`: distribución regional configurable;
 - `unconfigured`: fail-closed.
 
-Cinépolis es delegado desde su configuración:
+Cinépolis:
 
 - Q60 GT / L200 HN al shopper;
 - regalías 0;
@@ -70,51 +73,55 @@ Cinépolis es delegado desde su configuración:
 
 `tya-c6-unified-human-runtime-v1.js` impide que un clic antes del wrapper oficial use el handler directo.
 
-PASS: `PASS_C6_HUMAN_LOGIN_IMMEDIATE_CLICK_GUARDED`.
-
 ### Shopper DEV
 
-`app.js` ejecuta `pickShopperDev()` directamente para la tarjeta Shopper DEV. `tya-c6-shopper-auth-click-guard-v1.js`, cargado antes de `app.js`, intercepta únicamente esa tarjeta en la ruta protegida y abre Firebase Auth.
+`tya-c6-shopper-auth-click-guard-v1.js` impide que una ruta protegida ejecute `pickShopperDev()`.
 
-Queda prohibido eliminar este guard o reintroducir selección directa de Shopper en una ruta protegida.
+### Cliente post-Auth
+
+El mismo adapter completa `CX.app.enter()` únicamente después de una autenticación Cliente válida con namespace `staff`.
 
 ### Carril técnico
 
 `tya-dev-technical-auth-e2e-v1.js` usa:
 
 - formulario `cxDevEntryAuth`;
-- `CX_DEV_ENTRY_AUTH_GATE.mode='technical-auth-e2e-isolated'`;
+- `technical-auth-e2e-isolated`;
 - namespaces staff/shopper;
 - ruta humana no afectada.
 
-## 6. Gates PASS
+## 6. Credencial Cliente materializada
+
+Autorización específica ejecutada:
+
+- snapshot previo con 0 cuentas Cliente válidas;
+- una credencial Cliente DEV creada;
+- 2 Auth writes: creación + claims;
+- `role=cliente`;
+- `authNamespace=staff`;
+- `tenantId=tya`;
+- alcance exclusivo `cinepolis`;
+- sign-in PASS;
+- segunda aplicación idempotente con 0 writes;
+- readback PASS;
+- password changes/resets 0;
+- credenciales/tokens expuestos 0.
+
+El primer intento fue revertido automáticamente porque Auth no completaba la transición visual. El rollback eliminó el usuario creado y restauró el preestado. Después del root fix, el segundo intento quedó PASS.
+
+## 7. Gates PASS
 
 - static cumulative contract;
 - live HR dynamic canonical state;
 - domain/finance/shopper/reservations;
 - Auth humana Staff;
-- Auth humana Shopper con identidad exacta y una visita propia;
+- Auth humana Shopper con identidad exacta;
+- Auth humana Cliente con alcance exacto;
 - tres recargas y nueva pestaña;
 - Auth técnica Staff/Shopper aislada;
-- ruta Cliente integrada;
-- cero credenciales/tokens expuestos;
-- cero writes.
-
-## 7. HOLD exacto de Cliente
-
-La búsqueda read-only obtuvo:
-
-- 4 registros candidatos;
-- 3 usuarios Auth existentes;
-- 0 cuentas con claims válidos `cliente/client` para tenant `tya` y proyecto `cinepolis`;
-- 0 hashes válidos;
-- 0 sign-ins Cliente.
-
-Decisión:
-
-`HOLD_C6_EXISTING_CLIENT_CREDENTIAL_NOT_FOUND`.
-
-No se creó ni modificó ninguna cuenta. Auth writes, cambios y resets de contraseña permanecen en cero.
+- idempotencia y readback Cliente;
+- rollback exacto probado;
+- cero exposición de secretos.
 
 ## 8. Operaciones prohibidas
 
@@ -123,7 +130,7 @@ Queda prohibido:
 - crear otra plataforma, candidata, rama, PR, Firebase o Hosting;
 - mantener carriles humanos paralelos;
 - permitir `pickShopperDev()` en ruta protegida;
-- crear/resetear credencial Cliente sin autorización;
+- mover Auth a módulos UI;
 - permitir que Auth/Firestore reemplace HR;
 - deduplicar por nombre/correo/teléfono;
 - aplicar regalías globales;
@@ -134,16 +141,14 @@ Queda prohibido:
 
 ## 9. Gate restante de Corte 6
 
-Requiere autorización específica porque implica Auth write:
+Solo con autorización fresca:
 
-`SNAPSHOT AUTH CLIENT SCOPE → MATERIALIZE ONE CLIENT CREDENTIAL DEV → CLAIMS TENANT/PROJECT/ROLE → IDEMPOTENCY → CLIENT HUMAN AUTH → 3 RELOADS + NEW TAB → READBACK → ROLLBACK PROOF → CUMULATIVE EVIDENCE`.
-
-Solo después de PASS Cliente y repetición acumulativa corresponde solicitar autorización fresca para un único deploy del Hosting DEV existente.
+`UN ÚNICO DEPLOY HOSTING DEV EXISTENTE → PARIDAD REMOTA → AUTH STAFF/CLIENTE/SHOPPER → HR/DOMINIO/FINANZAS/PORTALES → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA → APROBADO C6 → FREEZE`.
 
 Después del deploy autorizado:
 
-- paridad remota;
-- mismo gate acumulativo;
+- comprobar que el build remoto corresponde exactamente al HEAD aprobado;
+- ejecutar el mismo gate acumulativo;
 - validación humana;
 - `APROBADO → C6_BASELINE_CANONICA_ACUMULATIVA_FROZEN`.
 
@@ -166,33 +171,34 @@ Después del freeze:
 - KPI = fase = detalle;
 - Admin, Cliente y Shopper comparten periodo/read model según alcance;
 - Shopper usa identidad exacta;
+- Cliente usa claims exactos de tenant/proyecto;
+- autenticar no basta: debe completarse la entrada visual;
 - cero duplicados técnicos;
 - conflictos en review queue;
 - modelos financieros por configuración;
 - delegado/regional = regalías 0;
 - ingreso de coordinación separado de obligaciones al shopper;
-- margen no confirmado sin fuentes exactas;
-- credencial ausente = HOLD, no permiso para inventarla.
+- margen no confirmado sin fuentes exactas.
 
 ## 12. Documentación obligatoria
 
 Fuentes vivas de este bloque:
 
-- `CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-RUNTIME-Y-HOLD-CLIENTE-20260801.md`;
-- `CORTE6-UNIFIED-AUTH-RUNTIME-READONLY-LATEST.json`;
-- `CORTE6-EXISTING-CLIENT-CREDENTIAL-SELECTION-LATEST.json`;
+- `CAMBIOS-BACKEND-ADDENDUM-C6-CREDENCIAL-CLIENTE-MATERIALIZADA-20260802.md`;
+- `CORTE6-CLIENT-AUTH-MATERIALIZATION-LATEST.json`;
+- evidencias de snapshot, apply, idempotencia, readback, runtime y rollback;
 - índice, checkpoint, Phase A, resumen Claude, pendientes, Academia y PR #7.
 
 No se afirma éxito sin evidencia.
 
 ## 13. Clasificación
 
-- **Reusable CXOrbia:** baseline acumulativa, guards Auth, modelo financiero configurable y gate multirol.
-- **Exclusivo TyA:** tenant `tya`, proyecto `cinepolis`, Q60/L200 y credencial Cliente pendiente.
-- **Claude/prototipo:** preservar UI; no reimplementar Auth o cálculo en módulos.
-- **Academia:** principal autenticado, fuente viva, gate por rol y HOLD con cero mutación.
-- **Sin impacto proveedor:** todo el bloque ejecutado fue read-only.
+- **Reusable CXOrbia:** baseline acumulativa, guards Auth, materialización idempotente y gate multirol.
+- **Exclusivo TyA:** tenant `tya`, proyecto `cinepolis` y credencial Cliente.
+- **Claude/prototipo:** preservar UI y transición post-Auth; no reimplementar Auth o cálculo en módulos.
+- **Academia:** principal autenticado, transición visual, snapshot, idempotencia, readback y rollback.
+- **Sin impacto proveedor adicional:** fuera de los dos Auth writes autorizados, todos los demás contadores permanecen en cero.
 
 ## 14. Estado seguro
 
-Hosting deploys 0; Cloud Run 0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos writes 0; password changes/resets 0; nuevos proyectos/sites 0; merge=false; producción=false.
+Credenciales Cliente creadas 1; Auth writes autorizados 2; password changes/resets 0; Hosting/Cloud Run deploys 0; Firestore/Rules/Storage/HR/Make/Gemini/pagos writes 0; nuevos proyectos/sites 0; merge=false; producción=false.
