@@ -32,6 +32,7 @@ const delegatedGuard = read('app/adapters/tya-delegated-coordination-finance-gua
 const domain = read('app/adapters/tya-c6-domain-consistency-bridge.js');
 const shopperPortal = read('app/adapters/tya-canonical-shopper-portal-v2.js');
 const unified = read('app/adapters/tya-c6-unified-human-runtime-v1.js');
+const shopperAuthGuard = read('app/adapters/tya-c6-shopper-auth-click-guard-v1.js');
 const projectConfig = read('app/core/tya-phase-a-source-safe-preview.js');
 const projectWizard = read('app/modules/proyecto-wizard.js');
 const financeModule = read('app/modules/finanzas.js');
@@ -68,10 +69,14 @@ const financePos=index.indexOf('src="core/finanzas-core.js"');
 const canonicalFinancePos=index.indexOf('src="adapters/tya-canonical-finance-read-model-v2.js"');
 const delegatedGuardPos=index.indexOf('src="adapters/tya-delegated-coordination-finance-guard-v1.js"');
 const modulePos=index.indexOf('src="modules/finanzas.js"');
+const shopperAuthGuardPos=index.indexOf('src="adapters/tya-c6-shopper-auth-click-guard-v1.js"');
+const appBootPos=index.indexOf('src="app.js"');
 must(previewPos>=0 && modelPos>previewPos && financePos>modelPos,
   'C6_PROJECT_FINANCIAL_MODEL_LOAD_ORDER');
 must(canonicalFinancePos>=0 && delegatedGuardPos>canonicalFinancePos && modulePos>delegatedGuardPos,
   'C6_DELEGATED_GUARD_LOAD_ORDER');
+must(shopperAuthGuardPos>=0 && appBootPos>shopperAuthGuardPos,
+  'C6_SHOPPER_AUTH_GUARD_LOAD_ORDER');
 
 must(preview.includes('if(protectedRequested)') &&
      protectedMode.includes("mode:'integrated-product-login-protected-dev'"),
@@ -100,11 +105,17 @@ must(unified.includes("role==='cliente'") &&
   'C6_UNIFIED_CLIENT_HISTORY_PROJECT_CONFIG');
 must(unified.includes('installEarlyRoleClickGuard') &&
      unified.includes("document.addEventListener('click',earlyRoleClickGuard,true)") &&
-     unified.includes("event.stopImmediatePropagation()") &&
+     unified.includes('event.stopImmediatePropagation()') &&
      unified.includes('CX.backendAuth.showForRole(role)') &&
      unified.includes('directRoleEntryAllowed:false') &&
      unified.includes('credentialValuesStored:false'),
   'C6_EARLY_ROLE_CLICK_CANNOT_BYPASS_AUTH');
+must(shopperAuthGuard.includes('.role-btn[data-role="shopper"]') &&
+     shopperAuthGuard.includes('event.stopImmediatePropagation()') &&
+     shopperAuthGuard.includes("CX.backendAuth.showForRole('shopper')") &&
+     shopperAuthGuard.includes('directDevShopperPickerAllowed:false') &&
+     shopperAuthGuard.includes('credentialValuesStored:false'),
+  'C6_PROTECTED_SHOPPER_CARD_CANNOT_USE_DEV_PICKER');
 
 must(projectWizard.includes('value="directo"') &&
      projectWizard.includes('value="delegado"') &&
@@ -116,7 +127,7 @@ warn(projectWizard.includes('value="regional"'),
   'backend contract supports regional; wizard option remains a documented frontend delta');
 must(projectModel.includes("return 'regional'") &&
      projectModel.includes("return 'unconfigured'") &&
-     projectModel.includes("project.modelo=model") &&
+     projectModel.includes('project.modelo=model') &&
      projectModel.includes("project.modelo='unconfigured'") &&
      projectModel.includes('project.regalias=0') &&
      projectModel.includes("project.compensationModel=model==='regional'") &&
@@ -188,7 +199,7 @@ const forbiddenWriteSignals = [
 ];
 const touched = [
   index,preview,protectedMode,auth,technical,hrBridge,projectModel,delegatedGuard,
-  domain,shopperPortal,unified,projectConfig,projectWizard,financeModule,financeCore
+  domain,shopperPortal,unified,shopperAuthGuard,projectConfig,projectWizard,financeModule,financeCore
 ].join('\n');
 must(forbiddenWriteSignals.every(re => !re.test(touched)), 'C6_READONLY_NO_PRODUCTION');
 
