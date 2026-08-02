@@ -30,28 +30,42 @@
     if(params.get('cxProtectedRuntime')!==PROTECTED){params.set('cxProtectedRuntime',PROTECTED);changed=true;}
     if(params.has('cxHumanFullVisual')){params.delete('cxHumanFullVisual');changed=true;}
   }else{
-    if(params.has('cxProtectedRuntime')){params.delete('cxProtectedRuntime');changed=true;}
+    /*
+      Corte 6 P0 root recovery:
+      the normal human route is the authenticated canonical runtime.
+      It uses the same visible product login validated in C6 single-login,
+      HR live as operational authority, and protected Firestore only as
+      exact identity/profile/certification overlay. No reduced source-safe
+      shell and no hidden visual-session token are allowed.
+    */
+    if(params.get('cxProtectedRuntime')!==PROTECTED){params.set('cxProtectedRuntime',PROTECTED);changed=true;}
+    if(params.get('cxHumanFullVisual')!==FULL_VISUAL){params.set('cxHumanFullVisual',FULL_VISUAL);changed=true;}
     if(params.has('cxTechnicalAuthNamespace')){params.delete('cxTechnicalAuthNamespace');changed=true;}
-    let visualToken=false;
+    if(params.has('cxTechnicalAuthE2E')){params.delete('cxTechnicalAuthE2E');changed=true;}
     try{
-      const hash=new URLSearchParams(String(location.hash||'').replace(/^#/,''));
-      visualToken=!!String(hash.get('cxVisualSession')||'').trim()||!!String(sessionStorage.getItem('CXORBIA_C6_FULL_VISUAL_TOKEN')||'').trim();
-    }catch(_){visualToken=false;}
-    if(visualToken){
-      if(params.get('cxHumanFullVisual')!==FULL_VISUAL){params.set('cxHumanFullVisual',FULL_VISUAL);changed=true;}
-    }else if(params.has('cxHumanFullVisual')){
-      params.delete('cxHumanFullVisual');changed=true;
-    }
+      sessionStorage.removeItem('CXORBIA_C6_FULL_VISUAL_TOKEN');
+      const stale=JSON.parse(localStorage.getItem('cx_session')||'null');
+      const synthetic=stale&&(
+        stale.user?.name==='Admin Demo'||
+        stale.user?.name==='Cliente Demo'||
+        stale.user?.name==='Evaluador (sin identidad)'||
+        (stale.role==='shopper'&&!stale.user?.shopperId)
+      );
+      if(synthetic)localStorage.removeItem('cx_session');
+    }catch(_){}
   }
 
-  if(changed) history.replaceState(null,'',path+'?'+params.toString()+(location.hash||''));
+  if(changed) history.replaceState(null,'',path+'?'+params.toString());
   window.CX_DEV_ENTRY_CANONICAL={
     canonical:true,
-    lane:technical?'protected-technical-e2e':'source-safe-human-visual',
+    lane:technical?'protected-technical-e2e':'authenticated-human-canonical',
     projectId:params.get('cxProjectId')||null,
-    fullVisual:params.get('cxHumanFullVisual')===FULL_VISUAL,
+    fullVisual:!technical&&params.get('cxHumanFullVisual')===FULL_VISUAL,
     technicalAuth:technical,
     protectedRuntime:params.get('cxProtectedRuntime')===PROTECTED,
+    singleVisibleProductLogin:!technical,
+    hrAuthority:'live-all-periods',
+    protectedOverlay:'exact-identity-profile-certification',
     canonicalDataRequired:{periods:14,visits:616,shoppers:208},
     at:new Date().toISOString()
   };
@@ -105,7 +119,6 @@
 <script src="adapters/tya-live-source-refresh-watch-v2.js"></script>
 <script src="adapters/tya-cumulative-read-model-v2.js"></script>
 <script src="adapters/tya-canonical-state-semantics-v2.js"></script>
-<script src="adapters/tya-dev-full-visual-bridge.js"></script>
 <script src="core/backend-config.js"></script>
 <script src="core/backend-config-preview-dev.js"></script>
 <script src="core/backend-protected-dev-mode.js"></script>
@@ -113,7 +126,6 @@
 <script src="core/backend-v57-extra-config.js"></script>
 <script src="core/backend-dev-auth.local.js"></script>
 <script src="core/backend-browser-auth.js"></script>
-<script src="adapters/tya-dev-entry-auth-gate-v1.js"></script>
 <script src="core/backend-firebase.js"></script>
 <script src="adapters/tya-protected-auth-hr-authority-bridge-v1.js"></script>
 <script src="core/backend-cxdata-read-guard.js"></script>
@@ -135,6 +147,7 @@
 <script src="adapters/tya-c6-domain-consistency-bridge.js"></script>
 <script src="adapters/tya-canonical-shopper-portal-v2.js"></script>
 <script src="adapters/tya-canonical-reservations-guard-v2.js"></script>
+<script src="adapters/tya-c6-unified-human-runtime-v1.js"></script>
 <script src="core/backend-corte4-empty-shell-guard.js"></script>
 <script src="app.js"></script>
 </body>
