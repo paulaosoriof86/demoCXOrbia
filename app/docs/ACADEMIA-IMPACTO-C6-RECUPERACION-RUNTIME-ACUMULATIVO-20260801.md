@@ -5,121 +5,68 @@
 
 ## Lección central
 
-Una plataforma acumulativa debe demostrar por separado autenticación, fuente operativa, overlay protegido, identidad exacta, estabilidad de sesión y coherencia del dominio. Un PASS de login o HR no prueba por sí solo que Finanzas, portales y Reservas consuman una única verdad.
+Una plataforma acumulativa debe demostrar autenticación, fuente operativa, overlay protegido, identidad exacta y coherencia semántica. Un marcador global correcto no compensa objetos canónicos incorrectos.
 
-## Caso Shopper nueva pestaña — aprendizaje cerrado
+## Caso Shopper nueva pestaña — cerrado
 
-El P0 anterior reproducía:
+Queda como gate permanente de regresión:
 
-- sesión Shopper restaurada;
-- tenant/proyecto y HR base correctos;
-- overlay protegido no aplicado;
-- visitas propias 0.
-
-Causa:
-
-`RESTORED_SESSION_NEW_TAB_PROTECTED_AUTHORITY_RECONCILIATION_NOT_RESILIENT`.
-
-El macro-bloque posterior demostró remotamente:
-
-- overlay aplicado;
+- overlay protegido aplicado;
 - identidad exacta;
-- 14 periodos y 616 visitas;
-- 208 shoppers;
 - `ownVisits=1`;
-- tres recargas estables;
-- nueva pestaña estable.
+- tres recargas y nueva pestaña estables.
 
-La lección ya no debe presentarse como fix pendiente: queda como caso resuelto y gate de regresión permanente.
-
-## Caso financiero — nuevo aprendizaje bloqueante
-
-El gate detectó dos verdades simultáneas:
-
-### Objeto canónico consumido por dominio/Finanzas
-
-- modelo directo;
-- facturación local;
-- regalía 10;
-- regalías aplicables.
-
-### Configuración vigente del proyecto
-
-- modelo delegado;
-- coordinación delegada;
-- regalía 0;
-- honorarios Q60 GT y L200 HN;
-- comisión/reparto configurables y no inventados.
+## Caso financiero — causa raíz corregida en fuente
 
 Causa:
 
-`PROJECT_FINANCIAL_CONFIGURATION_METADATA_NOT_MATERIALIZED_IN_CANONICAL_PROJECTS_BEFORE_NORMALIZATION`
+`PROJECT_FINANCIAL_CONFIGURATION_METADATA_NOT_MATERIALIZED_IN_CANONICAL_PROJECTS_BEFORE_NORMALIZATION`.
+
+Correctivo:
+
+- registro multi-tenant por llave técnica `tenantId::projectId`;
+- resolución por identificadores técnicos, nunca por nombre visible;
+- materialización de projectConfig en cada periodo canónico antes de `normalizeAll()`;
+- ejecución del orden en script load, actualización HR, autoridad protegida, backend-ready y cambio de proyecto;
+- gate predeploy con smoke local read-only.
+
+Resultado source-only:
+
+`PASS_C6_FINANCE_ROOT_FIX_SOURCE_ONLY_GATE`.
+
+El smoke partió de objetos `directo/local/regalía 10` y demostró una salida única `delegado/coordinación/regalía 0` para `period()`, `project()` y Finanzas.
 
 ## Contratos que deben enseñarse
 
-1. HR viva gobierna periodos, visitas y estados operativos.
+1. HR viva gobierna periodos, visitas y estados.
 2. Firestore protegido enriquece identidad, perfil y certificación.
 3. Auth restaurada no equivale a overlay aplicado.
 4. Reload y nueva pestaña son gates distintos.
-5. El Shopper se resuelve por identidad exacta y debe recuperar visitas propias.
-6. El modelo financiero nace de configuración explícita del proyecto.
-7. La configuración debe materializarse en objetos canónicos antes de normalizar.
-8. Un marcador global no sustituye los campos que consumen módulos y reportes.
-9. Las regalías solo aplican con facturación local explícita.
-10. El honorario Shopper es una obligación, no ingreso delegado.
-11. Comisión y reparto no se inventan cuando falta fuente.
-12. Dos verdades simultáneas constituyen un bloqueo.
-13. El orden correcto es configuración → materialización → normalización → consumo → gate.
-14. Un fallo posterior a deploy exige STOP_RETRY, no segundo deploy automático.
-15. Paridad de assets no sustituye coherencia semántica.
-16. Producción requiere PASS técnico acumulativo y aprobación humana.
-
-## Checklist de validación por rol y dominio
-
-### Staff
-
-- principal autenticado;
-- tenant/proyecto correctos;
-- HR y overlay aplicados;
-- tres recargas y nueva pestaña;
-- KPIs/fases/histórico coherentes;
-- modelo financiero canónico coherente con projectConfig.
-
-### Shopper
-
-- identidad exacta;
-- visitas propias mayores que cero cuando existen asignaciones;
-- perfil, certificación, histórico y pagos dentro del scope;
-- tres recargas y nueva pestaña.
-
-### Cliente
-
-- credencial existente;
-- alcance exclusivo a proyectos autorizados;
-- Panorama y KPIs sin fuga de otros proyectos;
-- tres recargas y nueva pestaña.
-
-### Finanzas y Reservas
-
-- configuración y objeto canónico idénticos;
-- regalías según modelo;
-- honorario separado de ingreso;
-- comisión/reparto sin inferencias;
-- mutaciones bloqueadas mientras la fuente canónica no esté conectada.
+5. La configuración financiera nace de una llave técnica exacta.
+6. El orden correcto es configuración → materialización → normalización → consumo → gate.
+7. No se clasifica un proyecto por nombre visible.
+8. Un marcador global no sustituye los objetos canónicos.
+9. Las regalías solo aplican a facturación local explícita.
+10. El honorario Shopper es obligación, no ingreso delegado.
+11. Comisión y reparto no se inventan.
+12. Dos verdades simultáneas son un bloqueo.
+13. Un PASS source-only no equivale a PASS remoto.
+14. Un fallo después de deploy exige STOP_RETRY.
+15. Producción requiere PASS acumulativo y aprobación humana.
 
 ## Impacto en manuales y cursos
 
 Actualizar:
 
-- manual de Auth y recuperación de sesión;
-- curso de gates remotos por rol;
 - manual de configuración financiera por proyecto;
-- lección de precedencia y materialización canónica;
-- checklist de coherencia configuración/objeto/reporte;
-- caso práctico directo vs delegado vs regional;
-- errores frecuentes: marcador correcto con objeto canónico incorrecto;
-- protocolo STOP_RETRY y autorización de deploy.
+- lección de llaves técnicas multi-tenant;
+- diagrama de precedencia configuración/materialización/normalización;
+- checklist `projectConfig` vs `period()` vs `project()` vs Finanzas;
+- caso directo, delegado y regional;
+- protocolo de gate source-only y gate remoto;
+- caso de error: marcador delegado con objeto directo;
+- protocolo STOP_RETRY.
 
 ## Estado seguro
 
-El macro-bloque ejecutó un único Hosting DEV deploy. No hubo segundo deploy, Cloud Run, Firestore/Auth/HR/Rules/Storage writes, Make, Gemini, pagos, merge ni producción. El contenido de Academia permanece documental y pendiente de publicación humana.
+Este bloque no ejecutó deploy, Cloud Run, Firestore/Auth/HR/Rules/Storage writes, Make, Gemini, pagos, merge o producción. La publicación de Academia requiere revisión humana posterior.
