@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "cxorbia.c6.shopper-new-tab-authority-root-fix.v1",
-  "generatedAt": "2026-08-02T13:20:00-06:00",
+  "schemaVersion": "cxorbia.c6.shopper-new-tab-authority-root-fix.v2",
+  "generatedAt": "2026-08-02T13:24:00-06:00",
   "decision": "PASS_C6_SHOPPER_NEW_TAB_AUTHORITY_ROOT_FIX_SOURCE_READY_PENDING_FRESH_DEV_DEPLOY",
   "provenFailure": {
     "decision": "FAIL_C6_REMOTE_GATES_AFTER_EXISTING_DEV_HOSTING_DEPLOY",
@@ -77,6 +77,7 @@
   "preservedEvidence": {
     "successfulHostingReleaseExists": true,
     "successfulHostingReleaseRequestId": "c6-hosting-dev-deploy-remote-gates-20260802-04",
+    "successfulHostingReleaseTriggerHead": "405d8d405e2bf69918d0124b61c179171d5c678a",
     "remoteCriticalParityPassed": true,
     "liveHrRemotePassed": true,
     "staffRemotePassedInPriorAttempt": true,
@@ -90,6 +91,7 @@
     "automaticRedeployAuthorized": false
   },
   "safety": {
+    "hostingDeploysCumulativeAuthorizedSequence": 1,
     "hostingDeploysAfterRootFix": 0,
     "cloudRunDeploys": 0,
     "firestoreWrites": 0,
