@@ -1,8 +1,8 @@
 # 00 - ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-01  
+**Fecha:** 2026-08-02  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_STATIC_LIVE_HR_STAFF_SHOPPER_TECHNICAL_AUTH_PASS__CLIENT_ROUTE_PASS__NO_EXISTING_CLIENT_CREDENTIAL__HOLD_NO_DEPLOY_NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_RUNTIME_ALL_ROLES_PASS__CLIENT_CREDENTIAL_MATERIALIZED__PENDING_FRESH_DEV_DEPLOY_AUTHORIZATION__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 
@@ -22,22 +22,24 @@
 6. `CAMBIOS-BACKEND-ADDENDUM-C6-RECUPERACION-BASELINE-ACUMULATIVA-UNICA-20260801.md`;
 7. `CAMBIOS-BACKEND-ADDENDUM-C6-MODELO-DELEGADO-COMISION-20260801.md`;
 8. `CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-RUNTIME-Y-HOLD-CLIENTE-20260801.md`;
-9. evidencia `CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json`;
-10. evidencia `CORTE6-HUMAN-LOGIN-WRAPPER-DIAGNOSTIC-LATEST.json`;
-11. evidencia `CORTE6-UNIFIED-AUTH-RUNTIME-READONLY-LATEST.json`;
-12. evidencia `CORTE6-EXISTING-CLIENT-CREDENTIAL-SELECTION-LATEST.json`;
-13. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker, PR #7 y HEAD vivo.
+9. `CAMBIOS-BACKEND-ADDENDUM-C6-CREDENCIAL-CLIENTE-MATERIALIZADA-20260802.md`;
+10. evidencia `CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json`;
+11. evidencia `CORTE6-HUMAN-LOGIN-WRAPPER-DIAGNOSTIC-LATEST.json`;
+12. evidencia `CORTE6-UNIFIED-AUTH-RUNTIME-READONLY-LATEST.json` como estado previo read-only;
+13. evidencia prevalente `CORTE6-CLIENT-AUTH-MATERIALIZATION-LATEST.json`;
+14. evidencias de snapshot, apply, idempotencia, readback, runtime y rollback Cliente;
+15. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker, PR #7 y HEAD vivo.
 
 ## 3. Regla prevalente de fuente
 
-La HR viva es autoridad para **todos los periodos detectados**, no únicamente el mes actual y nunca números congelados de cortes anteriores.
+La HR viva es autoridad para todos los periodos detectados.
 
-Fotografía observada en el gate vigente:
+Fotografía observada:
 
 - 14 periodos desde junio 2025 hasta julio 2026;
 - 616 visitas;
 - 208 shoppers;
-- no existe agosto 2026 en HR.
+- agosto 2026 ausente.
 
 Julio 2026 observado:
 
@@ -48,30 +50,24 @@ Julio 2026 observado:
 - 1 fuera de rango;
 - GT 34 / HN 10.
 
-Estos conteos describen la revisión actual y no son límites permanentes. Agosto solo puede aparecer cuando exista en HR o como fuente platform-origin autorizada y reconciliada.
+Los conteos son fotografía, no invariantes. Agosto solo puede aparecer desde HR o como fuente platform-origin autorizada y reconciliada.
 
-## 4. Regla prevalente de modelo financiero
+## 4. Modelo financiero prevalente
 
-El modelo se selecciona por configuración de cada proyecto, nunca por el nombre del cliente o del proyecto:
+- `directo/local_invoicing`: regalías solo si el proyecto las configura;
+- `delegado/delegated_coordination`: regalías 0 y comisión de coordinación compartida;
+- `regional/regional_coordination`: distribución regional configurable;
+- `unconfigured`: fail-closed.
 
-- `directo/local_invoicing`: facturación local; regalías solo si el proyecto las configura;
-- `delegado/delegated_coordination`: sin facturación local; regalías 0; comisión de coordinación compartida;
-- `regional/regional_coordination`: distribución regional configurable; regalías locales 0 por defecto;
-- `unconfigured`: fail-closed; no se calculan ingresos, regalías ni margen.
+Cinépolis:
 
-Cinépolis es delegado por su `projectConfig` vigente:
+- modelo delegado desde `projectConfig`;
+- honorario Shopper GT Q60 / HN L200;
+- regalías 0;
+- comisión y reparto configurables;
+- honorario Shopper nunca usado como ingreso delegado.
 
-- honorario Shopper GT: Q60;
-- honorario Shopper HN: L200;
-- regalías: 0;
-- comisión y reparto: configurables, sin valores inventados.
-
-Contratos reusables:
-
-- `app/adapters/tya-project-financial-model-contract-v1.js`;
-- `app/adapters/tya-delegated-coordination-finance-guard-v1.js`.
-
-## 5. Gates de Corte 6 ya comprobados
+## 5. Gates de Corte 6 comprobados
 
 PASS:
 
@@ -84,53 +80,67 @@ PASS:
 - Reservas fail-closed;
 - Auth humana Staff;
 - Auth humana Shopper;
+- Auth humana Cliente;
 - Auth técnica Staff/Shopper aislada;
 - tres recargas y nueva pestaña;
-- ruta integrada de Cliente Usuario + Contraseña.
-
-Root fixes de Auth incorporados:
-
-- guard temporal contra clic antes del wrapper oficial;
-- guard específico para impedir que la tarjeta Shopper protegida ejecute `pickShopperDev()`;
-- contrato técnico estable `cxDevEntryAuth` + `technical-auth-e2e-isolated`.
-
-## 6. HOLD exacto vigente
+- idempotencia y readback Cliente;
+- rollback exacto probado.
 
 Decisión acumulativa:
 
-`HOLD_C6_EXISTING_CLIENT_CREDENTIAL_NOT_FOUND`.
+`PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES`.
 
-La búsqueda read-only examinó cuatro registros candidatos y tres usuarios Auth existentes, pero encontró cero cuentas con claims válidos de Cliente para tenant `tya` y proyecto `cinepolis`; no hubo hash ni sign-in Cliente válido.
+## 6. Credencial Cliente materializada
 
-Se preservó:
+La autorización específica produjo:
 
-- Auth writes 0;
-- cambios de contraseña 0;
-- resets 0;
-- credenciales/tokens expuestos 0.
+- snapshot previo con 0 cuentas Cliente válidas;
+- 1 credencial Cliente creada;
+- 2 Auth writes autorizados: creación de usuario + claims;
+- `role=cliente`;
+- `authNamespace=staff`;
+- `tenantId=tya`;
+- alcance exclusivo `cinepolis`;
+- contraseña y tokens no expuestos;
+- password changes/resets 0.
 
-No corresponde crear o resetear una credencial Cliente sin autorización específica.
+La repetición idempotente produjo 0 writes.
 
-## 7. Gate vivo restante
+El runtime Cliente comprobó:
 
-Con autorización separada:
+- 14 periodos;
+- 616 visitas;
+- junio 2025 a julio 2026;
+- tres recargas estables;
+- nueva pestaña estable.
 
-`SNAPSHOT AUTH CLIENT SCOPE → MATERIALIZE ONE CLIENT CREDENTIAL IN DEV → CLAIMS TENANT/PROJECT/ROLE → IDEMPOTENCY → CLIENT HUMAN AUTH → 3 RELOADS + NEW TAB → READBACK → ROLLBACK PROOF → CUMULATIVE EVIDENCE`.
+## 7. Incidente y rollback del primer intento
 
-Hasta entonces:
+El primer intento autenticó correctamente, pero no completó `CX.app.enter()`. El workflow eliminó el usuario creado y restauró el preestado.
 
-- Corte 6 no se congela;
-- no se solicita ni ejecuta deploy DEV;
-- no se abre agosto;
-- no se habilitan postulaciones;
-- no merge ni producción.
+Se corrigió la causa raíz en `app/adapters/tya-c6-shopper-auth-click-guard-v1.js`, sin modificar `app.js` ni módulos UI.
 
-## 8. Warnings frontend documentados para Claude
+El segundo intento quedó PASS.
+
+## 8. Gate vivo restante
+
+`SOLICITAR AUTORIZACIÓN FRESCA DE UN ÚNICO DEPLOY HOSTING DEV → PARIDAD REMOTA → AUTH STAFF/CLIENTE/SHOPPER → HR/DATABASE/FINANCE/SHOPPER/CLIENTE → 3 RELOADS + NEW TAB → VALIDACIÓN HUMANA → APROBADO C6 → FREEZE`.
+
+Hasta nueva autorización:
+
+- no deploy DEV;
+- no agosto;
+- no postulaciones;
+- no merge;
+- no producción.
+
+## 9. Warnings frontend para Claude
 
 1. incorporar `Regional` en `app/modules/proyecto-wizard.js`;
 2. corregir el copy delegado en `app/modules/finanzas.js`;
-3. nunca permitir que una ruta protegida Shopper vuelva a usar `pickShopperDev()`.
+3. nunca permitir que una ruta protegida Shopper vuelva a usar `pickShopperDev()`;
+4. preservar la transición Cliente post-Auth sin mover Auth a módulos UI.
 
-## 9. Estado seguro
+## 10. Estado seguro
 
-Hosting deploys 0; Cloud Run 0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos writes 0; password changes/resets 0; merge false; producción false.
+Credenciales Cliente creadas 1; Auth writes autorizados 2; password changes/resets 0; Hosting/Cloud Run deploys 0; Firestore/Rules/Storage/HR/Make/Gemini/pagos writes 0; credenciales/tokens expuestos 0; merge false; producción false.
