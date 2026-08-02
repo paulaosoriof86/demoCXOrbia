@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "cxorbia.c6.unified-cumulative-runtime-root-fix.v3",
-  "generatedAt": "2026-08-01T21:34:00-06:00",
-  "decision": "PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_CODE_STATIC_CONTRACT_PENDING_RUNTIME",
+  "schemaVersion": "cxorbia.c6.unified-cumulative-runtime-root-fix.v4",
+  "generatedAt": "2026-08-01T21:52:00-06:00",
+  "decision": "PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_CODE_STATIC_CONTRACT_PENDING_EXECUTION",
   "remoteRuntimeValidated": false,
   "humanValidated": false,
   "sourceAuthority": {
@@ -34,6 +34,7 @@
   },
   "projectConfiguration": {
     "projectId": "cinepolis",
+    "configurationSource": "projectConfig_not_name_hardcode",
     "honorarium": {"GT": 60, "HN": 200},
     "model": "delegado",
     "billingModel": "delegated_coordination",
@@ -48,17 +49,23 @@
     "taxTreatment": "project_specific_not_inferred"
   },
   "projectModelRules": {
-    "modelSelectableAtProjectCreation": true,
+    "projectClassificationSource": "project_configuration_not_name",
+    "directLocalSupported": true,
+    "delegatedSupported": true,
+    "regionalBackendSupported": true,
+    "regionalFrontendOptionStatus": "documented_for_claude",
     "localInvoicingMayConfigureRoyalties": true,
-    "delegatedProjectRoyaltyPct": 0,
+    "nonLocalRoyaltyPct": 0,
     "delegatedCommissionSplitRequired": true,
-    "cinepolisForcedModel": "delegado"
+    "shopperHonorariumUsedAsDelegatedIncomeFallback": false,
+    "marginRequiresExactCommissionAndDistribution": true
   },
   "codeChecks": {
     "bootstrapSyntax": "PASS_BY_SOURCE_REVIEW",
     "unifiedAdapterSyntax": "PASS_BY_SOURCE_REVIEW",
     "dynamicHrAuthorityBridgeSyntax": "PASS_BY_SOURCE_REVIEW",
     "projectFinancialModelAdapterSyntax": "PASS_BY_SOURCE_REVIEW",
+    "delegatedCoordinationFinanceGuardSyntax": "PASS_BY_SOURCE_REVIEW",
     "technicalAuthE2EAdapterSyntax": "PASS_BY_SOURCE_REVIEW",
     "staticGateSyntax": "PASS_BY_SOURCE_REVIEW",
     "singleAuthenticatedHumanLane": "PASS",
@@ -67,10 +74,15 @@
     "technicalAuthE2E": "isolated_private_lane_human_unaffected",
     "protectedAuthHrAuthorityBridge": "v2-dynamic-live-source",
     "projectFinancialModelContract": "cxorbia.project-financial-model.v1",
+    "delegatedFinanceGuard": "delegated-coordination-finance-guard-v1",
     "canonicalDomainLoaded": true,
     "canonicalShopperPortalLoaded": true,
     "canonicalFinanceLoaded": true
   },
+  "documentedFrontendWarnings": [
+    "Add Regional option to app/modules/proyecto-wizard.js without changing backend contracts.",
+    "Replace delegated Finance copy that says received honorarium minus shopper payment with coordination commission and configurable distribution."
+  ],
   "safety": {
     "hostingDeploys": 0,
     "authWrites": 0,
@@ -84,5 +96,5 @@
     "merge": false,
     "production": false
   },
-  "nextGate": "READONLY_RUNTIME_STAFF_CLIENT_SHOPPER_TECHNICAL_E2E_ALL_DETECTED_PERIODS_DOMAIN_PROFILE_CLIENT_FINANCE_PROJECT_MODEL_THREE_RELOADS"
+  "nextGate": "EXECUTE_STATIC_GATE_THEN_READONLY_RUNTIME_STAFF_CLIENT_SHOPPER_ALL_PERIODS_DOMAIN_PROFILE_CLIENT_FINANCE_PROJECT_MODEL_THREE_RELOADS"
 }
