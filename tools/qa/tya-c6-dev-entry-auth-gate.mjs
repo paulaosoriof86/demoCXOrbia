@@ -35,8 +35,9 @@ for(const marker of [
 for(const marker of [
   "mode:'native-direct-role-entry'","visibleRoleSelector:true","usernamePasswordVisible:false","technicalAuthEnabled:false",
   'integratedFirebaseLoginDisabled:true','backendFirebaseDisabledForHumanVisual:true','hrCanonicalAuthorityPreserved:true',
-  'backendCfg.enabled = false','backendCfg.humanVisualSourceSafe = true','preserveHumanDataSource',
-  'validCanonicalBaseline','CX_BACKEND_PREVIEW_LANE = \'source-safe-human-visual\'',
+  'backendCfg.enabled=false','backendCfg.humanVisualSourceSafe=true','preserveHumanDataSource',
+  'validCanonicalBaseline',"window.CX_BACKEND_PREVIEW_LANE='source-safe-human-visual'",
+  'repairVisibleHumanShell','emptyShellMutationObserver:true','CX.router.mount()',
   'YES_PAULA_20260801_REAL_USERS_E2E','cxTechnicalAuthE2E','cxTechnicalAuthNamespace',
   "mode:'technical-auth-e2e-isolated'","namespaceUserSelectable:false",'CX.backendAuth.authenticate',
   'credentialsEmbedded:false','writes:false','production:false'
