@@ -13,7 +13,7 @@
   "tenantId": "tya",
   "projectId": "cinepolis",
   "scope": "separate_human_and_technical_lanes_preserve_14_616_208_and_one_existing_hosting_redeploy",
-  "rootFixCommit": "8ef1061fe94181fb52b84d5cc383dc910b6eef9a",
+  "rootFixCommit": "f642b2143c102e4b9b375680072c52545b607ba9",
   "humanDirectRoleEntryRequired": true,
   "adminRoleRequired": true,
   "clientRoleRequired": true,
