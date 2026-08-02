@@ -66,7 +66,7 @@
     singleVisibleProductLogin:!technical,
     hrAuthority:'live-all-periods',
     protectedOverlay:'exact-identity-profile-certification',
-    canonicalDataRequired:{periods:14,visits:616,shoppers:208},
+    canonicalDataRequired:{source:'live-hr',allDetectedPeriods:true,uniqueVisitKeys:true,shopperIdentity:'exact-crosswalk'},
     at:new Date().toISOString()
   };
 })();
@@ -127,7 +127,7 @@
 <script src="core/backend-dev-auth.local.js"></script>
 <script src="core/backend-browser-auth.js"></script>
 <script src="core/backend-firebase.js"></script>
-<script src="adapters/tya-protected-auth-hr-authority-bridge-v1.js"></script>
+<script src="adapters/tya-protected-auth-hr-authority-bridge-v2.js"></script>
 <script src="core/backend-cxdata-read-guard.js"></script>
 <script src="core/backend-finance-benefits.js"></script>
 <script src="core/backend-cxdata-finance-read.js"></script>
