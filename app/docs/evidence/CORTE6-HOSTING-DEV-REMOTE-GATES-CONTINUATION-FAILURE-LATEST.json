@@ -1,13 +1,13 @@
 {
   "schemaVersion": "cxorbia.c6.existing-hosting-remote-gates-failure.v2",
-  "generatedAt": "2026-08-02T18:54:58.795Z",
+  "generatedAt": "2026-08-02T19:00:27.800Z",
   "decision": "FAIL_C6_REMOTE_GATES_AFTER_EXISTING_DEV_HOSTING_DEPLOY",
-  "failedStage": "remote_staff_shopper",
+  "failedStage": "remote_semantic",
   "sourceLock": {
     "schemaVersion": "cxorbia.c6.existing-hosting-remote-gates-source-lock.v2",
-    "generatedAt": "2026-08-02T18:53:09.377Z",
+    "generatedAt": "2026-08-02T18:58:18.207Z",
     "sourceLockHead": "b118ac16b8fb3b9126cdfd01de980f31c994f8f5",
-    "triggerHead": "63b6785448484a1185520067ba21df4bad36d33a",
+    "triggerHead": "5de8d7a7cf60654ea37484eee5d645927b6b89dd",
     "runtimeSurfaceExact": true,
     "runtimeChangedFiles": [],
     "documentationDriftFiles": [
@@ -96,7 +96,7 @@
   },
   "parity": {
     "schemaVersion": "cxorbia.c6.hosting-dev-remote-parity.v4",
-    "generatedAt": "2026-08-02T18:54:01.731Z",
+    "generatedAt": "2026-08-02T18:59:04.826Z",
     "decision": "PASS_C6_HOSTING_DEV_REMOTE_PARITY_AND_LIVE_HR",
     "root": "https://cxorbia-backend-dev.web.app",
     "attempt": 1,
@@ -235,7 +235,7 @@
     "liveEndpoint": {
       "status": 200,
       "ok": true,
-      "revision": "c20e66dec739af63d42c58b3e4b569807ed34ebf67257b31fd86d523894e6d54",
+      "revision": "047062bc8ffcf9c28da5eea4c90db655f8d6846e23daa10fc233f09a9072b29b",
       "runtimeRead": true,
       "sourceSafe": true,
       "contentType": "application/json; charset=utf-8",
@@ -256,12 +256,12 @@
     }
   },
   "staffShopperDecision": "PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY",
-  "clientDecision": null,
+  "clientDecision": "PASS_C6_CLIENT_AUTH_EXISTING_CREDENTIAL_RUNTIME",
   "semanticDecision": null,
   "remoteParityLogTail": "DECISION PASS_C6_HOSTING_DEV_REMOTE_PARITY_AND_LIVE_HR\n",
-  "staffShopperLogTail": "{\"schemaVersion\":\"cxorbia.c6.unified-human-auth-browser-smoke.v3\",\"generatedAt\":\"2026-08-02T18:54:58.699Z\",\"decision\":\"PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY\",\"root\":\"https://cxorbia-backend-dev.web.app\",\"local\":false,\"principalIsolation\":\"fresh_browser_per_principal\",\"lane\":\"authenticated-human-canonical\",\"staff\":{\"role\":\"coordinador\",\"namespace\":\"staff\",\"periods\":14,\"visits\":616,\"shoppers\":194,\"firstPeriod\":\"2025-06\",\"latestPeriod\":\"2026-07\",\"ownVisits\":null,\"projectId\":\"cinepolis\",\"periodId\":\"cinepolis-2026-07\",\"loginProtectedBy\":\"official_wrapper\",\"reloadsStable\":true,\"newTabStable\":true,\"credentialsExposed\":false,\"tokensExposed\":false},\"shopper\":{\"role\":\"shopper\",\"namespace\":\"shopper\",\"periods\":14,\"visits\":616,\"shoppers\":208,\"firstPeriod\":\"2025-06\",\"latestPeriod\":\"2026-07\",\"ownVisits\":1,\"projectId\":\"cinepolis\",\"periodId\":\"cinepolis-2026-07\",\"loginProtectedBy\":\"official_wrapper\",\"reloadsStable\":true,\"newTabStable\":true,\"credentialsExposed\":false,\"tokensExposed\":false},\"client\":{\"integratedCredentialRoute\":true,\"authenticated\":false,\"loginProtectedBy\":\"official_wrapper\",\"reason\":\"existing_client_credential_not_selected_by_current_private_selector\"},\"fullClientAuthenticationGatePassed\":false,\"remainingBlocker\":\"EXISTING_CLIENT_CREDENTIAL_NOT_SELECTED\",\"hostingDeploys\":0,\"providerWrites\":0,\"authWrites\":0,\"firestoreWrites\":0,\"hrWrites\":0,\"credentialsExposed\":false,\"tokensExposed\":false,\"merge\":false,\"production\":false}\n",
-  "clientLogTail": null,
-  "semanticLogTail": null,
+  "staffShopperLogTail": "{\"schemaVersion\":\"cxorbia.c6.unified-human-auth-browser-smoke.v3\",\"generatedAt\":\"2026-08-02T18:59:57.288Z\",\"decision\":\"PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY\",\"root\":\"https://cxorbia-backend-dev.web.app\",\"local\":false,\"principalIsolation\":\"fresh_browser_per_principal\",\"lane\":\"authenticated-human-canonical\",\"staff\":{\"role\":\"coordinador\",\"namespace\":\"staff\",\"periods\":14,\"visits\":616,\"shoppers\":194,\"firstPeriod\":\"2025-06\",\"latestPeriod\":\"2026-07\",\"ownVisits\":null,\"projectId\":\"cinepolis\",\"periodId\":\"cinepolis-2026-07\",\"loginProtectedBy\":\"official_wrapper\",\"reloadsStable\":true,\"newTabStable\":true,\"credentialsExposed\":false,\"tokensExposed\":false},\"shopper\":{\"role\":\"shopper\",\"namespace\":\"shopper\",\"periods\":14,\"visits\":616,\"shoppers\":208,\"firstPeriod\":\"2025-06\",\"latestPeriod\":\"2026-07\",\"ownVisits\":1,\"projectId\":\"cinepolis\",\"periodId\":\"cinepolis-2026-07\",\"loginProtectedBy\":\"official_wrapper\",\"reloadsStable\":true,\"newTabStable\":true,\"credentialsExposed\":false,\"tokensExposed\":false},\"client\":{\"integratedCredentialRoute\":true,\"authenticated\":false,\"loginProtectedBy\":\"official_wrapper\",\"reason\":\"existing_client_credential_not_selected_by_current_private_selector\"},\"fullClientAuthenticationGatePassed\":false,\"remainingBlocker\":\"EXISTING_CLIENT_CREDENTIAL_NOT_SELECTED\",\"hostingDeploys\":0,\"providerWrites\":0,\"authWrites\":0,\"firestoreWrites\":0,\"hrWrites\":0,\"credentialsExposed\":false,\"tokensExposed\":false,\"merge\":false,\"production\":false}\n",
+  "clientLogTail": "{\"schemaVersion\":\"cxorbia.c6.client-auth-browser-smoke.v1\",\"generatedAt\":\"2026-08-02T19:00:22.153Z\",\"decision\":\"PASS_C6_CLIENT_AUTH_EXISTING_CREDENTIAL_RUNTIME\",\"authenticated\":true,\"existingCredentialSelected\":true,\"role\":\"cliente\",\"namespace\":\"staff\",\"tenantId\":\"tya\",\"projectIds\":[\"cinepolis\"],\"periods\":14,\"visits\":616,\"firstPeriod\":\"2025-06\",\"latestPeriod\":\"2026-07\",\"projectId\":\"cinepolis\",\"periodId\":\"cinepolis-2026-07\",\"reloadsStable\":true,\"newTabStable\":true,\"authWrites\":0,\"passwordChanges\":0,\"passwordResets\":0,\"credentialsExposed\":false,\"tokensExposed\":false,\"hostingDeploys\":0,\"providerWrites\":0,\"merge\":false,\"production\":false}\n",
+  "semanticLogTail": "file:///home/runner/work/demoCXOrbia/demoCXOrbia/tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs:14\nconst assert=(ok,message)=>{if(!ok)throw new Error(message);};\n                                         ^\n\nError: CINEPOLIS_FINANCIAL_MODEL_INVALID\n    at assert (file:///home/runner/work/demoCXOrbia/demoCXOrbia/tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs:14:42)\n    at file:///home/runner/work/demoCXOrbia/demoCXOrbia/tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs:78:3\n\nNode.js v24.18.0\n",
   "safety": {
     "hostingDeploysThisRun": 0,
     "hostingDeploysCumulativeAuthorizedSequence": 1,
