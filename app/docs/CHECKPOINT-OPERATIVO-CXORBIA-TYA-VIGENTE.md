@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-02  
-**Estado:** `C6_AUTH_ALL_ROLES_PASS__HOSTING_DEV_COMMAND_FAILED_BEFORE_RELEASE__ROOT_CAUSE_FIXED__FRESH_AUTH_REQUIRED__NO_PRODUCTION`
+**Estado:** `C6_AUTH_ALL_ROLES_PASS__SECOND_HOSTING_DEV_COMMAND_FAILED_BEFORE_RELEASE__EXECUTION_PATH_FIXED__FRESH_AUTH_REQUIRED__NO_PRODUCTION`
 
 ## 1. Estado protegido
 
@@ -37,9 +37,9 @@ Cinépolis:
 - honorario Shopper nunca usado como ingreso delegado;
 - margen solo con fuente exacta.
 
-## 4. Resultado del intento de deploy DEV
+## 4. Segundo intento autorizado de deploy DEV
 
-La ejecución autorizada comprobó source lock, gate estático y credenciales read-only. El comando de deploy fue iniciado una vez y falló antes de crear una release.
+El request `c6-hosting-dev-deploy-remote-gates-20260802-03` comprobó source lock, gate estático, credenciales read-only y destino DEV. El comando fue iniciado una vez y falló antes de crear una release.
 
 Evidencia:
 
@@ -50,25 +50,28 @@ Evidencia:
 - Cloud Run deploys: 0;
 - gates remotos: no ejecutados.
 
-La autorización queda consumida. No existe reintento automático.
+La autorización quedó consumida. Se respetó `noAutomaticSecondDeploy=true`.
 
-## 5. Causa raíz reproducible
+## 5. Causa raíz metodológica comprobada
 
-`FIREBASE_CLI_ALTERNATE_CONFIG_PATH_RESOLUTION`.
+`RUNNER_AUTHORIZED_ROOT_CONFIG_NOT_APPLIED`.
 
-El runner guardaba la configuración alternativa únicamente dentro de `.tmp`. Firebase CLI resuelve el basename del archivo indicado por `--config` dentro de la raíz detectada del proyecto. Como `firebase.deploy.json` no existía en la raíz, el comando terminó antes de publicar.
+La autorización exigía la configuración raíz `firebase.deploy.json`, pero el workflow aún generaba una copia en `.tmp` y ejecutaba `--config $OUT/firebase.deploy.json`. El fix documentado no estaba conectado al paso ejecutable.
 
-No se demostró fallo de source lock, aplicación, HR, Auth, IAM, Cloud Run o producción.
+El runner no persistió el stderr exacto del CLI. No se demostró fallo de source lock, aplicación, HR, Auth, IAM, Cloud Run o producción.
 
 ## 6. Corrección aplicada sin nuevo deploy
 
-- `firebase.json` incorpora de forma canónica el rewrite HR vivo.
-- `firebase.deploy.json` existe ahora en la raíz resoluble por Firebase CLI.
-- target `cxorbia-dev` y public `app` preservados.
-- `/api/tya/cinepolis/hr-live` mantiene el servicio existente `cxorbia-live-hr-dev` en `us-central1`.
-- wildcard SPA permanece después del endpoint HR.
-- cero cambios de módulos UI/core por este bloque.
-- cero writes o deploys posteriores al fix.
+El workflow existente ahora:
+
+- exige la configuración raíz autorizada;
+- valida target `cxorbia-dev`, public `app` y orden de rewrites;
+- ejecutará `--config firebase.deploy.json`;
+- valida la prohibición de segundo deploy automático;
+- registra versión de Firebase CLI;
+- preserva tails sanitizados de logs ante fallo.
+
+No se creó otro workflow. No se ejecutó un nuevo deploy después del correctivo.
 
 Evidencia:
 
@@ -78,7 +81,7 @@ Evidencia:
 
 Requiere autorización fresca:
 
-`SOURCE LOCK ACTUAL → STATIC GATE → CREDENCIALES READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → STAFF/CLIENTE/SHOPPER → DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA`.
+`SOURCE LOCK ACTUAL → STATIC GATE → ROOT CONFIG firebase.deploy.json → CREDENCIALES READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → STAFF/CLIENTE/SHOPPER → DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA`.
 
 ## 8. Estado seguro
 
