@@ -23,10 +23,13 @@ const protectedMode = read('app/core/backend-protected-dev-mode.js');
 const auth = read('app/core/backend-browser-auth.js');
 const technical = read('app/adapters/tya-dev-technical-auth-e2e-v1.js');
 const hrBridge = read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
+const projectModel = read('app/adapters/tya-project-financial-model-contract-v1.js');
 const domain = read('app/adapters/tya-c6-domain-consistency-bridge.js');
 const shopperPortal = read('app/adapters/tya-canonical-shopper-portal-v2.js');
 const unified = read('app/adapters/tya-c6-unified-human-runtime-v1.js');
 const projectConfig = read('app/core/tya-phase-a-source-safe-preview.js');
+const projectWizard = read('app/modules/proyecto-wizard.js');
+const financeCore = read('app/core/finanzas-core.js');
 const sourceData = read('app/data/tya-hr-source-safe-periods.js');
 
 must(index.includes("lane:technical?'protected-technical-e2e':'authenticated-human-canonical'"),
@@ -52,6 +55,12 @@ must(index.includes('src="adapters/tya-c6-domain-consistency-bridge.js"') &&
      index.includes('src="adapters/tya-canonical-finance-read-model-v2.js"') &&
      index.includes('src="adapters/tya-c6-unified-human-runtime-v1.js"'),
   'C6_CANONICAL_DOMAIN_SHOPPER_FINANCE');
+
+const previewPos=index.indexOf('src="core/tya-phase-a-source-safe-preview.js"');
+const modelPos=index.indexOf('src="adapters/tya-project-financial-model-contract-v1.js"');
+const financePos=index.indexOf('src="core/finanzas-core.js"');
+must(previewPos>=0 && modelPos>previewPos && financePos>modelPos,
+  'C6_PROJECT_FINANCIAL_MODEL_LOAD_ORDER');
 
 must(preview.includes('if(protectedRequested)') &&
      protectedMode.includes("mode:'integrated-product-login-protected-dev'"),
@@ -79,11 +88,40 @@ must(unified.includes("role==='cliente'") &&
      unified.includes('honorarium:{GT:60,HN:200}'),
   'C6_UNIFIED_CLIENT_HISTORY_PROJECT_CONFIG');
 
+must(projectWizard.includes('value="directo"') &&
+     projectWizard.includes('value="delegado"') &&
+     projectWizard.includes("st.modelo==='directo'") &&
+     projectWizard.includes('Regalías (%)'),
+  'C6_PROJECT_CREATION_MODEL_SELECTABLE');
+must(projectModel.includes("project.modelo='delegado'") &&
+     projectModel.includes('project.regalias=0') &&
+     projectModel.includes("project.compensationModel='coordination_commission_shared'") &&
+     projectModel.includes('wrapAddProject') &&
+     projectModel.includes('splitValuesInvented:false'),
+  'C6_DELEGATED_PROJECT_CONTRACT_ENFORCED');
+must(financeCore.includes("const regal=p.modelo==='directo'?") &&
+     financeCore.includes("const isr=p.modelo==='directo'?"),
+  'C6_ROYALTIES_AND_LOCAL_TAX_DIRECT_ONLY');
 must(projectConfig.includes('honorario:{GT:60,HN:200}') &&
-     projectConfig.includes("modelo:'directo'") &&
-     projectConfig.includes('isr:5') &&
-     projectConfig.includes('regalias:10'),
-  'C6_PROJECT_FINANCIAL_CONFIGURATION');
+     projectConfig.includes("modelo:'delegado'") &&
+     projectConfig.includes("billingModel:'delegated_coordination'") &&
+     projectConfig.includes('localBilling:false') &&
+     projectConfig.includes('regalias:0') &&
+     projectConfig.includes('royaltyApplicable:false') &&
+     projectConfig.includes("compensationModel:'coordination_commission_shared'"),
+  'C6_CINEPOLIS_DELEGATED_CONFIGURATION');
+must(!projectConfig.includes("modelo:'directo'") &&
+     !projectConfig.includes('regalias:10'),
+  'C6_CINEPOLIS_NO_LOCAL_ROYALTY_REGRESSION');
+must(unified.includes("model:'delegado'") &&
+     unified.includes("billingModel:'delegated_coordination'") &&
+     unified.includes('royaltyApplicable:false') &&
+     unified.includes('royalty:0') &&
+     unified.includes("compensationModel:'coordination_commission_shared'") &&
+     unified.includes('valuesInvented:false'),
+  'C6_UNIFIED_RUNTIME_DELEGATED_COMMISSION_MODEL');
+must(!unified.includes("model:'directo'") && !unified.includes('royalty:10'),
+  'C6_NO_DELEGATED_ROYALTY_IN_RUNTIME_METADATA');
 must(!projectConfig.includes('honorario:{GT:0,HN:0}'),
   'C6_NO_ZERO_HONORARIO_CONFIG');
 
@@ -102,7 +140,10 @@ const forbiddenWriteSignals = [
   /paymentsWrites\s*:\s*[1-9]/,
   /hrWrites\s*:\s*[1-9]/
 ];
-const touched = [index, preview, protectedMode, auth, technical, hrBridge, domain, shopperPortal, unified, projectConfig].join('\n');
+const touched = [
+  index,preview,protectedMode,auth,technical,hrBridge,projectModel,
+  domain,shopperPortal,unified,projectConfig,projectWizard,financeCore
+].join('\n');
 must(forbiddenWriteSignals.every(re => !re.test(touched)), 'C6_READONLY_NO_PRODUCTION');
 
 if (process.exitCode) {
