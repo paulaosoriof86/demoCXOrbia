@@ -21,6 +21,8 @@ La entrada humana source-safe deshabilitó Auth y dejó inactivos adapters ya ap
 - perfiles/certificaciones ausentes;
 - Cliente y Finanzas degradados.
 
+También queda prohibido volver a tratar regalías como porcentaje global. El modelo financiero pertenece a cada proyecto.
+
 ## 3. Contrato recuperado
 
 La URL humana normal debe contener una sola experiencia:
@@ -34,11 +36,36 @@ La URL humana normal debe contener una sola experiencia:
 - Portal Shopper exacto;
 - Portal Cliente completo;
 - Finanzas canónicas;
-- honorario Cinépolis Q60 GT / L200 HN desde configuración cuando HR no trae monto.
+- honorario Cinépolis Q60 GT / L200 HN desde configuración cuando HR no trae monto;
+- Cinépolis clasificado como proyecto delegado;
+- regalías Cinépolis = 0;
+- comisión de coordinación compartida con monto y reparto configurables, nunca inventados.
 
-## 4. Archivos backend protegidos
+## 4. Modelo financiero por proyecto
+
+El wizard ya contiene la selección aprobada:
+
+- `Facturado directamente`;
+- `Delegado (franquicia)`.
+
+No eliminar, simplificar ni reemplazar esa selección.
+
+Contratos obligatorios:
+
+- directo/local: puede registrar ISR/impuestos y regalías según configuración;
+- delegado: no aplica regalías y usa comisión de coordinación compartida;
+- al cambiar de directo a delegado, cualquier regalía previamente digitada debe quedar anulada en el objeto creado;
+- la persistencia debe guardar el modelo seleccionado;
+- no inventar comisión, porcentajes ni participantes;
+- Cinépolis siempre se resuelve como delegado.
+
+El enforcement backend/runtime está en `app/adapters/tya-project-financial-model-contract-v1.js`, que envuelve `CX.data.addProject` y normaliza proyectos existentes.
+
+## 5. Archivos backend protegidos
 
 - `app/index-backend-dev.html`;
+- `app/core/tya-phase-a-source-safe-preview.js`;
+- `app/adapters/tya-project-financial-model-contract-v1.js`;
 - `app/adapters/tya-c6-unified-human-runtime-v1.js`;
 - `app/adapters/tya-protected-auth-hr-authority-bridge-v2.js`;
 - `app/adapters/tya-cumulative-read-model-v2.js`;
@@ -48,7 +75,7 @@ La URL humana normal debe contener una sola experiencia:
 
 Claude no debe mover estas reglas a los módulos UI ni reintroducir carriles alternos.
 
-## 5. Contrato dinámico de HR
+## 6. Contrato dinámico de HR
 
 `tya-protected-auth-hr-authority-bridge-v2.js` exige:
 
@@ -63,20 +90,30 @@ Claude no debe mover estas reglas a los módulos UI ni reintroducir carriles alt
 
 Queda prohibido volver a hardcodear 14/616/208 como límite o condición de validez futura.
 
-## 6. Frontend preservado
+## 7. Frontend preservado
 
-`app/modules/*` no fue modificado. Las mejoras ya aceptadas de Dashboard, Histórico, Shoppers, Cliente, Academia y Finanzas deben consumir el runtime canónico; no deben reconstruirse desde cero.
+`app/modules/proyecto-wizard.js` se preserva porque ya contiene la selección directo/delegado y muestra los campos de regalías solo para directo.
 
-## 7. Ajustes frontend pendientes solo si el runtime PASS los demuestra
+No requiere rediseño. Solo debe conservarse y validarse que:
+
+- el modelo elegido llegue al contrato;
+- delegado termine con `regalias=0` aunque exista un valor residual anterior;
+- el resumen no muestre regalías para delegados;
+- no se presente la comisión delegada como facturación local por visita.
+
+Las mejoras ya aceptadas de Dashboard, Histórico, Shoppers, Cliente, Academia y Finanzas deben consumir el runtime canónico; no deben reconstruirse desde cero.
+
+## 8. Ajustes frontend pendientes solo si el runtime PASS los demuestra
 
 - copy de estados financieros;
+- visualización de comisión y reparto delegado cuando exista configuración real;
 - presentación de review queue de identidades;
 - detalle administrativo de certificación;
 - formato final de PDF/Excel/exportaciones.
 
-No corregirlos antes de comprobar la composición real.
+No inventar datos ni corregir pantallas antes de comprobar la composición real.
 
-## 8. Gate antes de otra candidata o deploy
+## 9. Gate antes de otra candidata o deploy
 
 Debe probar en la misma URL y sesión:
 
@@ -87,10 +124,13 @@ Debe probar en la misma URL y sesión:
 - identidad única;
 - perfil/certificación/histórico;
 - Cliente;
-- Finanzas;
+- Finanzas con fuente canónica;
+- Cinépolis delegado y regalías 0;
+- selector directo/delegado en alta de proyecto;
+- comisión compartida sin valores inventados;
 - tres recargas;
 - cero writes.
 
-## 9. Academia
+## 10. Academia
 
-Actualizar manuales para enseñar que la fuente viva gobierna todos los periodos y que una pantalla visible no es PASS si no comparte identidad, periodo y read model con el resto del producto.
+Actualizar manuales para enseñar que la fuente viva gobierna todos los periodos, que una pantalla visible no es PASS si no comparte identidad, periodo y read model, y que las regalías dependen del modelo financiero de cada proyecto.
