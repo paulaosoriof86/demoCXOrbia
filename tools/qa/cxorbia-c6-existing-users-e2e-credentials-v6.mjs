@@ -30,6 +30,7 @@ const sha256Hex=value=>crypto.createHash('sha256').update(String(value),'utf8').
 const internalEmail=(login,namespace)=>sha256Hex(`${tenantId}\0${namespace}\0${norm(login)}`).slice(0,48)+'@auth.cxorbia.invalid';
 const list=value=>Array.isArray(value)?value.map(String):(typeof value==='string'?value.split(',').map(x=>x.trim()).filter(Boolean):[]);
 const sourceCoord=v=>{const tab=text(v?.sourceTab),row=text(v?.sourceRow);return tab&&row?`${tab}::${row}`:'';};
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 function validClaims(claims,namespace){
   const role=norm(claims?.role),claimNs=norm(claims?.authNamespace);
   const tenantOk=claims?.tenantId===tenantId||list(claims?.tenants).includes(tenantId)||role==='super';
@@ -122,6 +123,23 @@ async function passwordSignIn(login,password,namespace){
   if(!response.ok)return false;
   const result=await response.json();return Boolean(result?.idToken);
 }
+async function fetchLiveHrWithRetry(){
+  const maxAttempts=Number(process.env.CXORBIA_LIVE_HR_RETRY_ATTEMPTS||6);
+  let lastStatus=0;
+  for(let attempt=1;attempt<=maxAttempts;attempt++){
+    try{
+      const response=await fetch(liveUrl,{headers:{'cache-control':'no-cache','pragma':'no-cache'}});
+      lastStatus=response.status;
+      if(response.ok)return response;
+      if(response.status<500&&response.status!==429)stageFail(`LIVE_HR_HTTP_${response.status}`);
+    }catch(error){
+      lastStatus=0;
+      if(attempt===maxAttempts)stageFail(`LIVE_HR_FETCH_${String(error?.message||error).replace(/[^A-Z0-9_:-]/gi,'_').slice(0,80)}`);
+    }
+    if(attempt<maxAttempts)await sleep(Math.min(10000,1500*attempt));
+  }
+  stageFail(`LIVE_HR_HTTP_${lastStatus||'UNAVAILABLE'}_AFTER_${maxAttempts}_ATTEMPTS`);
+}
 
 let staff=null,staffRecords=0,staffAuthMatches=0,staffHashMatches=0;
 for(const record of Array.isArray(bundle.records)?bundle.records:[]){
@@ -141,8 +159,7 @@ for(const record of Array.isArray(bundle.records)?bundle.records:[]){
 }
 if(!staff)stageFail(`HOLD_STAFF_R${staffRecords}_A${staffAuthMatches}_H${staffHashMatches}`);
 
-const liveResponse=await fetch(liveUrl,{headers:{'cache-control':'no-cache'}});
-if(!liveResponse.ok)stageFail(`LIVE_HR_HTTP_${liveResponse.status}`);
+const liveResponse=await fetchLiveHrWithRetry();
 const liveJson=await liveResponse.json();
 const liveSnapshot=liveJson?.snapshot||liveJson?.data||liveJson;
 const baseVisits=Array.isArray(liveSnapshot?.visits)?liveSnapshot.visits:[];
