@@ -1,16 +1,16 @@
 {
   "schemaVersion": "cxorbia.c6.live-domain-readonly-audit-request.v1",
-  "requestId": "c6-live-domain-readonly-audit-20260801-12",
-  "attempt": 12,
-  "status": "consumed_fail",
-  "enabled": false,
-  "consumed": true,
+  "requestId": "c6-live-domain-readonly-audit-20260801-13",
+  "attempt": 13,
+  "status": "requested_raw_human_runtime_result",
+  "enabled": true,
+  "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "environment": "DEV",
-  "scope": "unified_human_staff_shopper_auth_browser_readonly_diagnostic",
-  "triggerReason": "capture_exact_sanitized_browser_failure_and_apply_focal_root_fix",
+  "scope": "unified_human_auth_browser_raw_readonly_result_without_post_shape_assumptions",
+  "triggerReason": "determine_exact_runtime_result_before_any_further_fix",
   "hostingDeploys": 0,
   "cloudRunDeploys": 0,
   "firestoreWrites": 0,
@@ -22,7 +22,5 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false,
-  "consumedAt": "2026-08-02T04:22:10.242Z",
-  "decision": "FAIL_C6_UNIFIED_HUMAN_AUTH_BROWSER_DIAGNOSTIC"
+  "production": false
 }
