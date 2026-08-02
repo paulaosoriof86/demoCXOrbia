@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-08-01  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_P0_FRAGMENTED_HUMAN_RUNTIME_PROVEN__UNIFIED_CUMULATIVE_ROOT_FIX_CODE_APPLIED__PENDING_READONLY_RUNTIME_GATES__NO_DEPLOY_NO_PRODUCTION`
+**Estado vivo:** `C6_P0_FRAGMENTED_HUMAN_RUNTIME_PROVEN__UNIFIED_CUMULATIVE_ROOT_FIX_AND_PROJECT_FINANCE_GUARD_APPLIED__PENDING_READONLY_RUNTIME_GATES__NO_DEPLOY_NO_PRODUCTION`
 
 ## 1. Propósito
 
@@ -45,7 +45,7 @@ Debe contener simultáneamente:
 - identidad Shopper y Portal Shopper canónicos;
 - Portal Cliente con Panorama, KPIs, sucursales y detalle aprobados;
 - Finanzas, Movimientos, Liquidaciones y Beneficios coherentes;
-- configuración del proyecto Cinépolis: Q60 GT, L200 HN, modelo delegado, sin facturación local ni regalías, comisión de coordinación compartida configurable;
+- configuración Cinépolis: Q60 GT, L200 HN, modelo delegado, sin facturación local ni regalías, comisión de coordinación compartida configurable;
 - Reportes preservados;
 - Reservas fail-closed;
 - refresh y nueva pestaña idempotentes.
@@ -73,22 +73,27 @@ Estos valores son una fotografía de fuente, no invariantes permanentes. Queda p
 
 ## 5. Modelo financiero por proyecto
 
-Cada proyecto debe seleccionar al crearse uno de estos modelos:
+Cada proyecto obtiene su modelo exclusivamente de `projectConfig`, nunca del nombre:
 
 - `directo/local_invoicing`: existe facturación local y las regalías pueden configurarse cuando correspondan;
-- `delegado/delegated_coordination`: no existe facturación local del proyecto, las regalías son 0 y la compensación se registra como comisión de coordinación compartida.
+- `delegado/delegated_coordination`: no existe facturación local del proyecto, regalías 0 y comisión de coordinación compartida;
+- `regional/regional_coordination`: distribución regional configurable, sin regalías locales por defecto.
 
-Cinépolis pertenece al segundo modelo.
+Cinépolis pertenece al modelo delegado porque su configuración vigente así lo declara. No se hardcodea como excepción global.
 
 Queda prohibido:
 
-- aplicar regalías globales a todos los proyectos;
-- clasificar Cinépolis como directo;
-- descontar regalías a un proyecto delegado;
-- inventar el monto de la comisión, participantes o porcentajes de reparto;
-- tratar la comisión de coordinación como honorario facturado localmente por visita.
+- aplicar regalías globales;
+- clasificar por nombre de cliente/proyecto;
+- descontar regalías a delegado/regional;
+- inventar comisión, participantes o porcentajes;
+- tratar la comisión de coordinación como honorario del shopper;
+- utilizar el honorario del shopper como fallback de ingreso delegado;
+- calcular margen sin comisión y distribución exactas.
 
-`app/adapters/tya-project-financial-model-contract-v1.js` normaliza el modelo existente y también envuelve la creación de proyectos para preservar esta selección.
+`app/adapters/tya-project-financial-model-contract-v1.js` normaliza Local/Delegado/Regional y envuelve la creación de proyectos.
+
+`app/adapters/tya-delegated-coordination-finance-guard-v1.js` separa ingreso por coordinación de obligaciones al shopper y aplica fail-closed cuando falta fuente.
 
 ## 6. Prevalencia de evidencia
 
@@ -97,7 +102,7 @@ Orden obligatorio para determinar el estado:
 1. índice y checkpoint vigentes;
 2. evidencia `CORTE6-UNIFIED-CUMULATIVE-RUNTIME-ROOT-FIX-LATEST.json`;
 3. este addendum y el lock de estabilidad acumulativa;
-4. CAMBIOS-BACKEND de recuperación;
+4. addenda CAMBIOS-BACKEND de recuperación y modelo delegado;
 5. evidencias históricas de single-login, R20 full-history y C6 domain/finance/shopper;
 6. evidencias técnicas anteriores, solo para los contratos que realmente probaron.
 
@@ -117,6 +122,7 @@ Queda prohibido:
 - deduplicar identidad por nombre, correo, teléfono o similitud visual;
 - congelar números de una revisión anterior;
 - aplicar regalías sin comprobar facturación local;
+- inferir ingreso delegado desde honorarios del shopper;
 - saltar el gate acumulativo por urgencia;
 - reutilizar una autorización consumida;
 - publicar agosto o producción sin fuente y gate específicos.
@@ -129,23 +135,32 @@ El HEAD vivo recupera una sola entrada `authenticated-human-canonical`:
 - se retiró el override directo de rol;
 - se retiró el bridge visual condicionado por token oculto;
 - `tya-protected-auth-hr-authority-bridge-v2.js` compone la fuente dinámicamente;
-- `tya-project-financial-model-contract-v1.js` distingue local/delegado y bloquea regalías en delegados;
+- `tya-project-financial-model-contract-v1.js` clasifica por configuración y bloquea regalías en modelos no locales;
+- `tya-delegated-coordination-finance-guard-v1.js` evita ingreso/margen delegado inventado;
 - `tya-c6-unified-human-runtime-v1.js` recupera login Cliente, comparativo completo y configuración financiera correcta;
-- `app/modules/*` permanece preservado salvo el comportamiento ya aprobado del wizard, que conserva la selección de modelo.
+- `app/modules/*` permanece sin parche backend.
 
 ## 9. Gate de freeze de Corte 6
 
 Secuencia exacta:
 
-`STATIC ROOT CONTRACT → READ-ONLY RUNTIME → AUTH REAL STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → COMPARATIVE ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE SOURCE + PROJECT MODEL → REPORTS/RESERVATIONS → 3 RELOADS + NEW TAB → EVIDENCE`.
+`STATIC ROOT CONTRACT → READ-ONLY RUNTIME → AUTH REAL STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → COMPARATIVE ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE SOURCE + PROJECT MODEL + COMMISSION → REPORTS/RESERVATIONS → 3 RELOADS + NEW TAB → EVIDENCE`.
 
 El gate financiero debe demostrar:
 
-- Cinépolis = delegado;
-- regalías Cinépolis = 0;
-- comisión de coordinación compartida sin valores inventados;
-- creación de proyecto permite elegir directo o delegado;
-- Finanzas aplica regalías únicamente cuando `modelo==='directo'`.
+- Cinépolis delegado desde configuración;
+- regalías Cinépolis 0;
+- comisión compartida sin valores inventados;
+- honorario Shopper nunca usado como ingreso;
+- margen solo con comisión/distribución exactas;
+- creación permite directo/delegado;
+- backend soporta regional;
+- regalías solo cuando `modelo==='directo'`.
+
+Warnings frontend documentados para Claude:
+
+- agregar `Regional` en `app/modules/proyecto-wizard.js`;
+- corregir copy delegado y estado de fuente en `app/modules/finanzas.js`.
 
 Solo después de PASS local/read-only se solicita autorización fresca para un único deploy del Hosting DEV existente.
 
@@ -181,9 +196,11 @@ La autorización de Hosting consumida anteriormente no autoriza deploy nuevo, wr
 - cero duplicados técnicos;
 - conflictos de identidad en review queue;
 - honorarios desde configuración cuando HR no trae monto;
-- proyecto delegado = regalías 0;
+- proyecto delegado/regional = regalías 0;
 - proyecto local = regalías solo si se configuran;
-- comisión de coordinación y reparto pertenecen a la configuración del proyecto;
+- ingreso de coordinación separado de obligaciones al shopper;
+- comisión y distribución pertenecen a projectConfig;
+- margen no confirmado sin fuentes exactas;
 - fuente financiera exacta y pagos confirmados preservados;
 - Reportes sin pérdida;
 - Reservas sin mutaciones mientras no exista fuente real.
@@ -204,10 +221,10 @@ Si un commit, gate, deploy o herramienta falla, se declara. No se afirma éxito 
 
 ## 13. Clasificación
 
-- **Reusable CXOrbia:** baseline acumulativa única, ownership dinámico de fuente, modelo financiero por proyecto, evidencia prevalente y gate transversal.
-- **Exclusivo TyA:** operación Cinépolis, Q60/L200, modelo delegado y futura incorporación de agosto.
-- **Claude/prototipo:** consumir contratos canónicos sin reimplementar lógica.
-- **Academia:** versionado acumulativo, trazabilidad, source ownership y validación E2E real.
+- **Reusable CXOrbia:** baseline acumulativa, ownership dinámico, modelo Local/Delegado/Regional y guard de comisión.
+- **Exclusivo TyA:** operación Cinépolis, Q60/L200, configuración delegada y futura incorporación de agosto.
+- **Claude/prototipo:** opciones/copy por archivo sin reimplementar cálculo.
+- **Academia:** trazabilidad, source ownership, diferencias entre ingreso y obligación, validación E2E.
 - **Sin impacto Claude:** runners, credenciales privadas y consumo one-shot.
 
 ## 14. Estado seguro
