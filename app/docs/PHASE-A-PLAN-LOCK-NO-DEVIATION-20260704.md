@@ -9,7 +9,7 @@
 
 TyA/Cinépolis es el primer tenant/proyecto configurable de CXOrbia. `cxorbia-backend-dev` es DEV canónico y `tya-plataforma` el Hosting final.
 
-La baseline es única y acumulativa sobre `docs-tya-v6-v71-audit`. No crear plataforma, candidata, rama, PR, Firebase o Hosting alternos.
+La baseline es única y acumulativa sobre `docs-tya-v6-v71-audit`. No crear plataforma, candidata, rama, PR, Firebase, Hosting o workflow alternos.
 
 ## 2. Secuencia obligatoria
 
