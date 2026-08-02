@@ -1,86 +1,78 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `C6_AUTH_ALL_ROLES_PASS__HOSTING_DEV_COMMAND_FAILED_BEFORE_RELEASE__ROOT_CAUSE_FIXED__FRESH_AUTH_REQUIRED`
+**Estado vivo:** `C6_AUTH_ALL_ROLES_PASS__SECOND_HOSTING_DEV_COMMAND_FAILED_BEFORE_RELEASE__EXECUTION_PATH_FIXED__FRESH_AUTH_REQUIRED`
 
 ## 1. Baseline única
 
-Claude debe continuar sobre el HEAD vivo de `docs-tya-v6-v71-audit`. No puede crear una versión paralela, shell reducido ni escoger módulos aislados.
+Continuar únicamente sobre el HEAD vivo de `docs-tya-v6-v71-audit`. No crear una versión paralela, shell reducido, nueva rama o nuevo PR.
 
-La HR viva observada contiene 14 periodos desde junio 2025 hasta julio 2026, 616 visitas y 208 shoppers. Agosto todavía no existe. Los conteos son fotografía, no contrato permanente.
+La HR viva observada contiene 14 periodos desde junio 2025 hasta julio 2026, 616 visitas y 208 shoppers. Agosto todavía no existe. Estos conteos son una fotografía y no un contrato permanente.
 
 ## 2. Contrato acumulativo comprobado
 
 PASS:
 
-- entrada humana `authenticated-human-canonical`;
-- Firebase Auth/claims para Staff, Cliente y Shopper;
+- entrada humana canónica;
+- acceso validado para Staff, Cliente y Shopper;
 - HR viva dinámica;
-- Firestore exacto para identidad/perfil/certificación;
-- dominio/Finanzas/Portal Cliente/Portal Shopper/Reservas canónicos;
+- identidad y certificación por vínculo exacto;
+- dominio, Finanzas, Portal Cliente, Portal Shopper y Reservas;
 - tres recargas y nueva pestaña;
 - carril técnico Staff/Shopper aislado;
-- materialización, idempotencia, readback y rollback Cliente.
+- materialización Cliente idempotente, readback y rollback exacto.
 
 Decisión funcional:
 
 `PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES`.
 
-## 3. Credencial Cliente vigente
+## 3. Segundo intento autorizado de deploy
 
-Existe una única credencial Cliente DEV con:
+El request `c6-hosting-dev-deploy-remote-gates-20260802-03` pasó source lock, gate estático, acceso read-only y destino DEV.
 
-- `role=cliente`;
-- `authNamespace=staff`;
-- `tenantId=tya`;
-- alcance exclusivo `cinepolis`.
+El comando fue iniciado una vez y falló antes de crear una release:
 
-La contraseña no se almacena en repo/evidencias y no debe incorporarse a UI, fixtures o documentación.
-
-## 4. Resultado del intento de deploy
-
-El comando del único deploy autorizado fue iniciado, pero no creó release:
-
-- source lock: PASS;
-- gate estático: PASS;
-- credenciales read-only: PASS;
-- deploy command attempted: 1;
+- deploy attempted: 1;
 - deploy succeeded: 0;
 - Hosting releases: 0;
 - gates remotos: no ejecutados.
 
-No atribuir este fallo a la aplicación, HR, Auth, Finanzas o UI.
+La autorización quedó consumida y no hubo segundo deploy automático.
 
-## 5. Causa raíz de Hosting
+## 4. Causa raíz metodológica comprobada
 
-El runner escribía la configuración alternativa solo en `.tmp/c6-hosting-dev-deploy/firebase.deploy.json`.
+`RUNNER_AUTHORIZED_ROOT_CONFIG_NOT_APPLIED`.
 
-Firebase CLI resuelve el basename de `--config` dentro de la raíz del proyecto. Al no existir `<root>/firebase.deploy.json`, el comando terminó antes de publicar.
+La autorización exigía `firebase.deploy.json` en la raíz. El workflow todavía generaba una copia bajo `.tmp/c6-hosting-dev-deploy` y ejecutaba el comando con esa ruta temporal.
 
-Corrección protegida:
+El fix documentado no estaba conectado al paso ejecutable. El runner tampoco preservó el error exacto del CLI, por lo que no se atribuye el fallo a IAM, proveedor, aplicación, HR, Auth, Finanzas o UI sin evidencia.
 
-- `firebase.json` conserva el rewrite HR vivo;
-- `firebase.deploy.json` existe en la raíz;
-- target `cxorbia-dev`;
-- public `app`;
-- endpoint `/api/tya/cinepolis/hr-live` hacia `cxorbia-live-hr-dev` en `us-central1`;
-- wildcard SPA posterior;
-- no Cloud Run deploy.
+## 5. Correctivo protegido
 
-Claude no debe eliminar, duplicar o cambiar estos rewrites desde frontend.
+El workflow existente ahora:
+
+- valida la configuración raíz autorizada;
+- exige `deployConfigPath=firebase.deploy.json`;
+- exige `noAutomaticSecondDeploy=true`;
+- valida target, public y orden de rewrites;
+- ejecutará `--config firebase.deploy.json`;
+- registra la versión de Firebase CLI;
+- persiste logs sanitizados ante cualquier fallo.
+
+No se creó otro workflow ni se ejecutó otro deploy.
 
 ## 6. Regresiones que no se pueden repetir
 
-- entrada humana sin Auth real;
-- clic rápido que use handler directo;
-- Shopper protegido ejecutando `pickShopperDev()`;
+- entrada humana sin autenticación real;
+- Shopper protegido usando selección DEV directa;
 - autenticación Cliente sin completar la entrada a la app;
-- KPI/fases divergentes;
+- KPI y fases divergentes;
 - histórico incompleto;
 - regalías globales;
 - clasificación por nombre;
 - honorario Shopper usado como ingreso delegado;
-- configuración Firebase alternativa fuera de la raíz esperada por CLI;
+- fix documentado pero no conectado al runner;
+- deploy que no use la configuración raíz autorizada;
 - deploy que omita el rewrite HR vivo.
 
 ## 7. Modelo financiero por proyecto
@@ -92,7 +84,7 @@ Cinépolis:
 - regalías 0;
 - comisión y reparto configurables;
 - honorario Shopper nunca es ingreso delegado;
-- margen solo con comisión/distribución exactas.
+- margen solo con comisión y distribución exactas.
 
 ## 8. Ajustes frontend exactos para Claude
 
@@ -104,20 +96,20 @@ Cinépolis:
 
 ### `app/modules/finanzas.js`
 
-- sustituir “honorario recibido menos lo pagado al shopper”;
+- corregir el texto delegado;
 - describir comisión de coordinación y distribución configurable;
-- mostrar `pending_or_review` cuando falte fuente exacta.
+- mostrar revisión cuando falte fuente exacta.
 
 ### `app/app.js`
 
 - preservar UI aprobada;
-- no usar `pickShopperDev()` en rutas protegidas;
-- no mover Auth a módulos UI.
+- no usar selección Shopper DEV en rutas protegidas;
+- no mover autenticación a módulos UI.
 
 ## 9. Gate pendiente
 
-Requiere autorización fresca porque el comando anterior sí fue intentado:
+Requiere autorización fresca:
 
-`SOURCE LOCK ACTUAL → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → STAFF/CLIENTE/SHOPPER → HR/DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → VALIDACIÓN HUMANA → FREEZE`.
+`SOURCE LOCK ACTUAL → STATIC GATE → ROOT CONFIG firebase.deploy.json → ACCESO READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → STAFF/CLIENTE/SHOPPER → HR/DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → VALIDACIÓN HUMANA → FREEZE`.
 
 No nueva candidata, rama, PR, Firebase, Hosting, merge ni producción.
