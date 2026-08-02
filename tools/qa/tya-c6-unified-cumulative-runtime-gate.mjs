@@ -1,0 +1,103 @@
+#!/usr/bin/env node
+/**
+ * CXOrbia TyA — Corte 6 unified cumulative runtime gate.
+ * Static/read-only. No provider calls, no deploys, no writes.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+
+const root = path.resolve(process.cwd());
+const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
+const must = (ok, code, detail='') => {
+  if (!ok) {
+    console.error(`FAIL ${code}${detail ? ` · ${detail}` : ''}`);
+    process.exitCode = 1;
+  } else {
+    console.log(`PASS ${code}${detail ? ` · ${detail}` : ''}`);
+  }
+};
+
+const index = read('app/index-backend-dev.html');
+const preview = read('app/core/backend-config-preview-dev.js');
+const protectedMode = read('app/core/backend-protected-dev-mode.js');
+const auth = read('app/core/backend-browser-auth.js');
+const hrBridge = read('app/adapters/tya-protected-auth-hr-authority-bridge-v1.js');
+const domain = read('app/adapters/tya-c6-domain-consistency-bridge.js');
+const shopperPortal = read('app/adapters/tya-canonical-shopper-portal-v2.js');
+const unified = read('app/adapters/tya-c6-unified-human-runtime-v1.js');
+const projectConfig = read('app/core/tya-phase-a-source-safe-preview.js');
+const sourceData = read('app/data/tya-hr-source-safe-periods.js');
+
+must(index.includes("lane:technical?'protected-technical-e2e':'authenticated-human-canonical'"),
+  'C6_UNIFIED_NORMAL_ENTRY');
+must(index.includes("params.set('cxProtectedRuntime',PROTECTED)") &&
+     index.includes("params.set('cxHumanFullVisual',FULL_VISUAL)"),
+  'C6_NORMAL_ENTRY_CANONICAL_FLAGS');
+must(!index.includes('src="adapters/tya-dev-entry-auth-gate-v1.js"'),
+  'C6_NO_DIRECT_ROLE_OVERRIDE');
+must(!index.includes('src="adapters/tya-dev-full-visual-bridge.js"'),
+  'C6_NO_HIDDEN_VISUAL_SESSION_OVERLAY');
+must(index.includes('src="core/backend-browser-auth.js"') &&
+     index.includes('src="adapters/tya-protected-auth-hr-authority-bridge-v1.js"'),
+  'C6_PRODUCT_LOGIN_AND_HR_AUTHORITY');
+must(index.includes('src="adapters/tya-c6-domain-consistency-bridge.js"') &&
+     index.includes('src="adapters/tya-canonical-shopper-portal-v2.js"') &&
+     index.includes('src="adapters/tya-canonical-finance-read-model-v2.js"') &&
+     index.includes('src="adapters/tya-c6-unified-human-runtime-v1.js"'),
+  'C6_CANONICAL_DOMAIN_SHOPPER_FINANCE');
+
+must(preview.includes('if(protectedRequested)') &&
+     protectedMode.includes("mode:'integrated-product-login-protected-dev'"),
+  'C6_AUTHENTICATED_PREVIEW_CONFIG');
+must(auth.includes('NO crea un gate/pantalla de autenticación separada') &&
+     auth.includes('Usuario + Contraseña'),
+  'C6_SINGLE_VISIBLE_PRODUCT_LOGIN');
+must(hrBridge.includes('HR live remains the immutable authority for all 616 operational visits') &&
+     hrBridge.includes('duplicateShopperIds !== 0') &&
+     hrBridge.includes('protectedVisitsAppended !== 0'),
+  'C6_HR_AUTHORITY_EXACT_COMPOSITION');
+must(domain.includes('periodOperationalSummary') &&
+     domain.includes('CX.data.phaseFlow') &&
+     domain.includes('certificationForShopper'),
+  'C6_LIVE_KPI_PHASE_HISTORY_CERTIFICATION');
+must(shopperPortal.includes('exact identity') &&
+     shopperPortal.includes('certification') &&
+     shopperPortal.includes('fullHistory:true'),
+  'C6_SHOPPER_PROFILE_HISTORY_CONTRACT');
+must(unified.includes("role==='cliente'") &&
+     unified.includes("authenticate(user,pass,'staff')") &&
+     unified.includes('Comparativo histórico — todos los periodos HR') &&
+     unified.includes('honorarium:{GT:60,HN:200}'),
+  'C6_UNIFIED_CLIENT_HISTORY_PROJECT_CONFIG');
+
+must(projectConfig.includes('honorario:{GT:60,HN:200}') &&
+     projectConfig.includes("modelo:'directo'") &&
+     projectConfig.includes('isr:5') &&
+     projectConfig.includes('regalias:10'),
+  'C6_PROJECT_FINANCIAL_CONFIGURATION');
+must(!projectConfig.includes('honorario:{GT:0,HN:0}'),
+  'C6_NO_ZERO_HONORARIO_CONFIG');
+
+const periodKeys = [...sourceData.matchAll(/"key":\s*"(\d{4}-\d{2})"/g)].map(m => m[1]);
+const uniquePeriods = [...new Set(periodKeys)];
+must(uniquePeriods.length === 14, 'C6_ALL_HR_PERIODS', `${uniquePeriods.length}`);
+must(uniquePeriods[0] === '2025-06' && uniquePeriods.at(-1) === '2026-07',
+  'C6_HR_RANGE_2025_06_TO_2026_07',
+  `${uniquePeriods[0] || 'none'}..${uniquePeriods.at(-1) || 'none'}`);
+must(!uniquePeriods.includes('2026-08'), 'C6_NO_AUGUST_WITHOUT_SOURCE');
+
+const forbiddenWriteSignals = [
+  /enableDataWrites\s*:\s*true/,
+  /enableOperationalWrites\s*:\s*true/,
+  /production\s*:\s*true/,
+  /paymentsWrites\s*:\s*[1-9]/,
+  /hrWrites\s*:\s*[1-9]/
+];
+const touched = [index, preview, protectedMode, auth, hrBridge, domain, shopperPortal, unified, projectConfig].join('\n');
+must(forbiddenWriteSignals.every(re => !re.test(touched)), 'C6_READONLY_NO_PRODUCTION');
+
+if (process.exitCode) {
+  console.error('DECISION FAIL_C6_UNIFIED_CUMULATIVE_RUNTIME_STATIC_GATE');
+  process.exit(process.exitCode);
+}
+console.log('DECISION PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_STATIC_GATE');
