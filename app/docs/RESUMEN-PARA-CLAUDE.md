@@ -1,102 +1,93 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `C6_FINANCE_ROOT_FIX_REMOTE_PASS__SEMANTIC_ASSERTION_PENDING_STOP_RETRY__NO_PRODUCTION`
+**Estado vivo:** `RECONSTRUCTION_ACTIVE_SOURCE_ONLY__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Baseline única
+## 1. Baseline única y lock nuevo
 
-Continuar exclusivamente sobre `docs-tya-v6-v71-audit`. No crear candidata, shell reducido, nueva rama, PR, Firebase, Hosting o workflow paralelo.
+Continuar exclusivamente sobre `docs-tya-v6-v71-audit`.
 
-HR observada: 14 periodos, junio 2025–julio 2026, 616 visitas. Agosto 2026 no existe todavía en HR.
+La prioridad vigente ya no es ejecutar otro gate C6 aislado. Se está reconstruyendo una única candidata acumulativa con la mejor versión demostrable de cada módulo.
 
-## 2. PASS remoto preservado y revalidado
+Fuente principal:
 
-- paridad de assets críticos y endpoint HR source-safe;
-- Staff con tres recargas y nueva pestaña;
-- Shopper con identidad exacta, 208 shoppers, `ownVisits=1`, tres recargas y nueva pestaña;
-- Cliente existente, tenant `tya`, scope exclusivo `cinepolis`, tres recargas y nueva pestaña.
+- `app/docs/RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`.
 
-No reabrir login, reconciliación Shopper ni selección de credenciales sin una regresión nueva y reproducible.
+No crear candidata, shell reducido, nueva rama, PR, Firebase, Hosting o workflow paralelo.
 
-## 3. Root fix financiero cerrado remotamente
+## 2. Regla para Claude/prototipo
 
-Causa cerrada:
+No solicitar ni producir una nueva candidata por rutina. Primero se recupera del historial, repo y paquetes existentes la mejor versión aprobada de cada módulo.
 
-`PROJECT_FINANCIAL_CONFIGURATION_METADATA_NOT_MATERIALIZED_IN_CANONICAL_PROJECTS_BEFORE_NORMALIZATION`.
+Cada módulo terminará como:
 
-El Hosting DEV vigente demuestra que `period`, `project` y `currentById` coinciden:
+- `APPROVED_AND_PRESENT`;
+- `BEST_APPROVED_RESTORE`;
+- `RECONCILIATION_REQUIRED`;
+- `BEST_TECHNICAL_PENDING_VISUAL`;
+- `RETIRED_BY_EXPLICIT_DECISION`.
 
-- `modelo=delegado`;
-- `billingModel=delegated_coordination`;
-- `projectModel=delegado`;
-- `localBilling=false`;
-- `royaltyApplicable=false`;
-- `regalias=0`;
+Una versión técnica sin aprobación humana no se presenta como aprobada.
+
+## 3. Hallazgo inicial
+
+`app/core/build-lock.js` todavía declara V174/R20 y no representa la composición posterior. No debe editarse todavía; se sustituirá al ensamblar la candidata acumulativa final.
+
+El paquete V182 es incremental de cinco archivos:
+
+- `app/app.js`, `app/modules/beneficios.js` y `app/styles/layout.css` coinciden exactamente con la rama viva;
+- `app/core/finanzas-core.js` y `app/modules/finanzas.js` contienen fixes posteriores y deben reconciliarse, no restaurarse ciegamente.
+
+## 4. Orden de reconstrucción
+
+1. shell, login, tenant, navegación, `CX.data`, HR, Auth y proyecto/periodo;
+2. CRM Ops Leads, Dashboard y hoja de ruta;
+3. operación e histórico;
+4. experiencia Shopper y certificaciones;
+5. Finanzas;
+6. Portal Cliente, Portal Shopper y reportes;
+7. configuración, administrabilidad, integraciones y Academia.
+
+Academia debe quedar acumulada y documentada, pero no bloquear CRM Ops Leads/Phase A salvo P0 demostrado.
+
+## 5. PASS que deben preservarse
+
+No reabrir sin regresión reproducible:
+
+- 14 periodos y 616 visitas;
+- Staff/Shopper/Cliente remoto estable;
+- identidad Shopper exacta y `ownVisits=1`;
+- entrada humana única;
+- configuración financiera `tya::cinepolis` delegada;
+- facturación local false;
+- regalía 0;
 - Q60 GT / L200 HN;
-- comisión/reparto configurables;
-- honorario Shopper separado del ingreso.
+- 14 delegados, 0 directos, 0 sin configurar y 0 violaciones.
 
-El contrato financiero reporta 14 delegados, 0 directos, 0 sin configurar y 0 violaciones de regalías.
+## 6. Pendientes frontend ya conocidos
 
-No volver a parchar este punto desde UI ni duplicar el registro `tya::cinepolis`.
+No se pierden durante la reconstrucción:
 
-## 4. Macro-bloque ejecutado
+- CRM Ops Leads y hoja de ruta deben conservar el mejor estado aceptado;
+- Dashboard no puede recuperar indicadores fabricados;
+- Reportes deben recuperar la mejor versión por rol;
+- PDF/XLSX/PPTX y branding permanecen en la matriz de portales/reportes;
+- `proyecto-wizard.js` conserva pendiente de Regional y regalías solo con facturación local;
+- Finanzas debe explicar comisión/reparto configurable sin alterar el contrato remoto PASS;
+- entrada humana única no puede volver a convertirse en formulario técnico paralelo.
 
-Request:
+## 7. Próximo bloque
 
-`c6-finance-root-fix-remote-revalidation-20260802-08`
+Cerrar Familia A:
 
-Se ejecutó:
+`STORE/CX.DATA/HR/ADAPTERS/AUTH/TENANT/PROYECTO-PERIODO → APROBACIONES/COMMITS → PRESERVAR/RESTAURAR/RECONCILIAR`.
 
-- source lock exacto;
-- gates estáticos;
-- un único Hosting DEV deploy;
-- paridad y HR;
-- Staff;
-- Shopper;
-- Cliente;
-- diagnóstico financiero remoto;
-- gate combinado semántico;
-- STOP_RETRY.
+Después iniciar Familia B con prioridad CRM Ops Leads.
 
-No hubo segundo deploy ni provider writes.
+## 8. Prohibiciones
 
-## 5. Bloqueo actual
-
-El gate combinado se detuvo en:
-
-`remote_domain_finance_portals_reservations`
-
-La evidencia persistida tiene `semantic=null`. El script terminó antes de guardar su JSON final y el flujo no conservó stdout/stderr sanitizado. No existe evidencia para nombrar la aserción exacta.
-
-No atribuir el fallo al root fix financiero: su diagnóstico remoto es consistente y PASS.
-
-## 6. Estado de dominio y portales
-
-Todavía no declarar cerrados:
-
-- dominio semántico final;
-- salida financiera por país;
-- Portal Cliente;
-- Portal Shopper;
-- Reservas.
-
-Sus contratos previos permanecen, pero falta evidencia de ejecución completa.
-
-## 7. Instrucción para Claude/prototipo
-
-No tocar módulos UI para ocultar el fallo. No reabrir dashboard, roadmap, login, Shopper o Finanzas canónicas. El siguiente diagnóstico debe capturar etapa y aserción exactas antes de proponer cambios.
-
-Pendientes frontend posteriores y no relacionados con este STOP_RETRY:
-
-- `app/modules/proyecto-wizard.js`: opción Regional y regalías solo para facturación local;
-- `app/modules/finanzas.js`: copy de comisión/reparto configurable y estado de revisión;
-- `app/app.js`: preservar entrada humana única y Auth protegida.
-
-## 8. Siguiente bloque
-
-Read-only, sobre el Hosting DEV vigente y sin deploy:
-
-`CAPTURA DE STDOUT/STDERR Y CHECKPOINT POR ASERCIÓN → GATE SEMÁNTICO REMOTO → IDENTIFICAR FALLO EXACTO → EVIDENCIA → DOCUMENTACIÓN → STOP`
-
-Cero merge o producción antes del PASS acumulativo y validación humana.
+- no parchear UI para ocultar inconsistencias;
+- no seleccionar por número de versión solamente;
+- no asumir que un delta incremental contiene todo lo anterior;
+- no deploy durante inventario/proveniencia;
+- no merge ni producción antes de candidata única, gates y aprobación humana.
