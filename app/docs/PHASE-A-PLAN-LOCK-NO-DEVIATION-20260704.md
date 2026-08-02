@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-08-02  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_DEV_HOSTING_RELEASED__REMOTE_PARITY_HR_STAFF_CLIENT_PASS__SHOPPER_NEW_TAB_ROOT_FIX_PENDING_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_FINANCE_ROOT_FIX_SOURCE_ONLY_PASS__REMOTE_REVALIDATION_PENDING__NO_PRODUCTION`
 
 ## 1. Objetivo y arquitectura
 
@@ -13,141 +13,77 @@ La baseline es única y acumulativa sobre `docs-tya-v6-v71-audit`. No crear plat
 
 ## 2. Secuencia obligatoria
 
-`FUENTE VIVA → IDENTIDAD → READ MODEL → GATE SEMÁNTICO → SOURCE LOCK → AUTORIZACIÓN → DEPLOY EXACTO → PARIDAD → GATE REMOTO → VALIDACIÓN HUMANA → FREEZE/CUTOVER`.
+`FUENTE VIVA → IDENTIDAD → READ MODEL → CONFIGURACIÓN FINANCIERA → MATERIALIZACIÓN → NORMALIZACIÓN → GATE SEMÁNTICO → SOURCE LOCK → AUTORIZACIÓN → DEPLOY EXACTO → PARIDAD → GATE REMOTO → VALIDACIÓN HUMANA → FREEZE/CUTOVER`.
 
 Debe distinguirse siempre:
 
+- correctivo aplicado en fuente;
+- gate local PASS;
 - release publicada;
 - paridad remota;
-- principal restaurado;
-- overlay protegido aplicado;
-- visitas propias visibles;
+- gate remoto acumulativo;
 - aprobación humana.
 
 ## 3. Baseline funcional preservada
 
-- HR viva: 14 periodos, junio 2025–julio 2026, 616 visitas y 208 shoppers en la fotografía observada.
+- HR viva: 14 periodos, junio 2025–julio 2026, 616 visitas.
 - Agosto ausente.
-- Staff, Cliente y Shopper autenticados en baseline previa.
-- Cliente con alcance exclusivo `cinepolis`.
-- Dominio, Finanzas, Portal Cliente, Portal Shopper y Reservas en baseline local/read-only.
-- Credencial Cliente idempotente, readback PASS y rollback exacto.
+- Staff remoto PASS.
+- Shopper remoto PASS con identidad exacta, 208 shoppers, `ownVisits=1`, tres recargas y nueva pestaña.
+- Cliente remoto PASS con alcance exclusivo `cinepolis`, tres recargas y nueva pestaña.
+- Producción intacta.
 
 ## 4. Ownership canónico
 
 1. HR viva: operación e historia.
 2. Firestore protegido: identidad/perfil/certificación por crosswalk exacto.
-3. Finanzas/pagos: liquidaciones, movimientos y pagos confirmados.
-4. ProjectConfig: países, monedas, honorarios, modelo, comisión y regalías.
-5. Auth/RBAC: acceso y alcance.
-6. Platform-origin: delta reconciliado.
+3. ProjectConfig: modelo financiero por llave técnica `tenantId::projectId`.
+4. Objetos canónicos: materializan projectConfig antes de normalizar.
+5. Finanzas/pagos: consumen únicamente el objeto canónico coherente.
 
-## 5. Modelo financiero
+## 5. Root fix financiero vigente
 
-Cinépolis:
+Causa corregida en fuente:
 
-- delegado desde `projectConfig`;
-- Q60 GT / L200 HN al shopper;
-- regalías 0;
-- comisión y reparto configurables;
-- honorario Shopper nunca usado como ingreso delegado;
-- margen únicamente con fuentes exactas.
+`PROJECT_FINANCIAL_CONFIGURATION_METADATA_NOT_MATERIALIZED_IN_CANONICAL_PROJECTS_BEFORE_NORMALIZATION`.
 
-## 6. Hosting DEV publicado
+El contrato financiero ahora:
 
-El request `c6-hosting-dev-deploy-remote-gates-20260802-04` ejecutó un único deploy exitoso desde `firebase.deploy.json` raíz:
+- resuelve por llaves técnicas, nunca por nombre;
+- materializa antes de `normalizeAll()`;
+- conserva directo/delegado/regional;
+- mantiene fail-closed cuando falta configuración;
+- materializa `tya::cinepolis` como delegado, regalía 0, Q60 GT/L200 HN;
+- no inventa comisión ni reparto.
 
-- 2,293 archivos publicados;
-- release Hosting finalizada;
-- paridad remota exacta de 16 assets: PASS;
-- endpoint HR remoto: PASS;
-- Cloud Run y demás provider writes: 0;
-- producción intacta.
+Gate:
 
-## 7. Gates remotos alcanzados
+`PASS_C6_FINANCE_ROOT_FIX_SOURCE_ONLY_GATE`.
 
-PASS demostrado en la release publicada:
+## 6. Siguiente bloque exacto
 
-- paridad crítica;
-- HR viva remota;
-- Staff remoto;
-- Cliente remoto;
-- 14 periodos, 616 visitas y 208 shoppers.
+Solo con autorización fresca:
 
-Bloqueado:
+1. source lock nuevo;
+2. gate finance root fix;
+3. gate acumulativo;
+4. un único deploy Hosting DEV;
+5. paridad y HR;
+6. Staff, Shopper y Cliente;
+7. dominio, Finanzas, Portal Cliente, Portal Shopper y Reservas;
+8. evidencia;
+9. validación humana;
+10. freeze C6.
 
-- Shopper en nueva pestaña con autoridad protegida aplicada;
-- cierre semántico posterior de Finanzas/portales/Reservas.
+## 7. Prohibiciones
 
-## 8. P0 Shopper en nueva pestaña
+- no segunda candidata, rama, PR, Firebase, Hosting o workflow;
+- no clasificación por nombre visual;
+- no parche UI;
+- no writes Firestore/Auth/HR/Rules/Storage;
+- no Make/Gemini/pagos;
+- no merge ni producción antes del PASS acumulativo.
 
-Dos ejecuciones reprodujeron:
+## 8. Estado seguro
 
-`AUTH SHOPPER RESTORED → APP + HR BASE READY → PROTECTED AUTHORITY NOT APPLIED → OWN VISITS 0`.
-
-El principal, tenant, proyecto, app y HR base eran correctos. Fallaba la reconciliación resiliente del overlay protegido.
-
-Causa raíz:
-
-`RESTORED_SESSION_NEW_TAB_PROTECTED_AUTHORITY_RECONCILIATION_NOT_RESILIENT`.
-
-## 9. Root fix listo en fuente
-
-`tya-protected-auth-hr-authority-bridge-v2.js` ahora incorpora:
-
-- reintento HR vivo acotado y fail-closed;
-- reconciliación de arranque para sesión restaurada;
-- eventos Auth/backend, DOM, foco, visibilidad y refresh;
-- guardas de principal, Firestore y dependencias canónicas;
-- idempotencia de conciliación y timer;
-- metadata de recuperación;
-- cero writes.
-
-Gate dedicado:
-
-`tya-c6-shopper-new-tab-authority-root-fix-gate.mjs`.
-
-El fix no fue desplegado; no se afirma PASS remoto.
-
-## 10. Gate restante de Corte 6
-
-Requiere autorización fresca:
-
-`SOURCE LOCK NUEVO → STATIC CUMULATIVE + NEW-TAB ROOT-FIX GATE → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → STAFF → SHOPPER 3 RELOADS + NEW TAB + OWN VISITS → CLIENTE → DOMINIO/FINANZAS/PORTALES/RESERVAS → EVIDENCIA → VALIDACIÓN HUMANA`.
-
-Ante cualquier fallo:
-
-- no segundo deploy automático;
-- evidencia durable;
-- diagnóstico de raíz;
-- autorización fresca para otro intento.
-
-## 11. Freeze, agosto y producción
-
-Solo después del PASS remoto y aprobación visual humana:
-
-1. `APROBADO C6 → FREEZE`;
-2. Paula agrega agosto a HR;
-3. reconciliación agosto;
-4. disponibles y postulaciones;
-5. gate multirol;
-6. autorización de cutover.
-
-No merge ni producción antes de esos gates.
-
-## 12. Claude/prototipo
-
-Pendientes frontend:
-
-- `app/modules/proyecto-wizard.js`: opción Regional;
-- `app/modules/finanzas.js`: copy delegado y fuente exacta.
-
-No mover Auth, reconciliación protegida, Finanzas o configuración Hosting a módulos UI.
-
-## 13. Academia
-
-Enseñar que una sesión restaurada y datos HR visibles no prueban que el overlay protegido y la identidad exacta estén aplicados.
-
-## 14. Estado seguro
-
-Hosting releases acumuladas en la autorización ejecutada: 1. Hosting deploys posteriores al root fix: 0. Cloud Run/Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos: 0. Merge=false. Producción=false.
+El bloque C6-FINANCE-ROOT-FIX fue source-only: cero deploys, cero provider writes, merge false y producción false.
