@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-08-02  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_AUTH_ALL_ROLES_PASS__SECOND_HOSTING_DEV_COMMAND_FAILED_BEFORE_RELEASE__EXECUTION_PATH_FIXED__FRESH_AUTH_REQUIRED__NO_PRODUCTION`
+**Estado vivo:** `C6_DEV_HOSTING_RELEASED__REMOTE_PARITY_HR_STAFF_CLIENT_PASS__SHOPPER_NEW_TAB_AUTHORITY_ROOT_FIX_READY_NOT_DEPLOYED__FRESH_DEPLOY_AUTH_REQUIRED__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 
@@ -10,7 +10,7 @@
 - Rama viva `docs-tya-v6-v71-audit`.
 - PR #7 draft/open/no merge.
 - Hosting DEV existente `cxorbia-backend-dev`, target `cxorbia-dev`.
-- Servicio HR vivo existente `cxorbia-live-hr-dev`, región `us-central1`.
+- Servicio HR vivo `cxorbia-live-hr-dev`, región `us-central1`.
 - Producción `tya-plataforma`: intacta.
 
 ## 2. Fuentes obligatorias vigentes
@@ -20,37 +20,32 @@
 3. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 4. `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`;
 5. `ADDENDUM-MAESTRO-C6-BASELINE-CANONICA-UNICA-Y-CUTOVER-20260801.md`;
-6. `CAMBIOS-BACKEND-ADDENDUM-C6-CREDENCIAL-CLIENTE-MATERIALIZADA-20260802.md`;
-7. `CAMBIOS-BACKEND-ADDENDUM-C6-DEPLOY-DEV-INTENTO-FALLIDO-Y-CAUSA-RAIZ-20260802.md`;
-8. `CAMBIOS-BACKEND-ADDENDUM-C6-SEGUNDO-INTENTO-DEPLOY-DEV-Y-FIX-EJECUTABLE-20260802.md`;
-9. evidencia `CORTE6-CLIENT-AUTH-MATERIALIZATION-LATEST.json`;
-10. evidencia `CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json`;
-11. evidencia `CORTE6-HOSTING-DEV-DEPLOY-REMOTE-GATES-FAILURE-LATEST.json`;
-12. evidencia `CORTE6-HOSTING-DEV-DEPLOY-ROOT-CAUSE-FIX-LATEST.json`;
-13. `.github/workflows/cxorbia-c6-live-domain-readonly-audit.yml`;
-14. `firebase.json`, `firebase.deploy.json`, `.firebaserc`;
-15. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, PR #7 y HEAD vivo.
+6. `CAMBIOS-BACKEND-ADDENDUM-C6-DEPLOY-DEV-EXITOSO-Y-P0-SHOPPER-NUEVA-PESTANA-20260802.md`;
+7. evidencia `CORTE6-HOSTING-DEV-DEPLOY-REMOTE-GATES-FAILURE-LATEST.json`;
+8. evidencia `CORTE6-HOSTING-DEV-REMOTE-GATES-CONTINUATION-FAILURE-LATEST.json`;
+9. evidencia `CORTE6-SHOPPER-NEW-TAB-AUTHORITY-ROOT-FIX-LATEST.json`;
+10. `app/adapters/tya-protected-auth-hr-authority-bridge-v2.js`;
+11. `tools/qa/tya-c6-shopper-new-tab-authority-root-fix-gate.mjs`;
+12. `firebase.json`, `firebase.deploy.json`, `.firebaserc`;
+13. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, PR #7 y HEAD vivo.
 
 ## 3. Baseline funcional preservada
 
-PASS acumulativo:
+PASS acumulativo previo y remoto parcial:
 
-- HR viva dinámica;
-- 14 periodos desde junio 2025 hasta julio 2026;
-- 616 visitas;
-- 208 shoppers;
+- HR viva dinámica: 14 periodos, junio 2025–julio 2026;
+- 616 visitas y 208 shoppers en la fotografía observada;
 - Auth humana Staff, Shopper y Cliente;
-- Auth técnica Staff/Shopper aislada;
 - Cliente con alcance exclusivo `cinepolis`;
-- tres recargas y nueva pestaña;
-- dominio, Finanzas, Portal Cliente, Portal Shopper y Reservas;
-- idempotencia, readback y rollback exacto de la credencial Cliente.
+- dominio, Finanzas, Portal Cliente, Portal Shopper y Reservas en baseline local/read-only;
+- credencial Cliente idempotente, readback y rollback exacto;
+- una release Hosting DEV publicada desde la configuración raíz autorizada;
+- paridad remota exacta de 16 assets críticos;
+- endpoint HR remoto PASS;
+- Staff remoto PASS;
+- Cliente remoto PASS.
 
-Decisión funcional:
-
-`PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES`.
-
-Agosto 2026 todavía no existe en HR y no puede aparecer por reloj o copia de julio.
+Agosto 2026 no existe en HR y no puede aparecer por reloj o copia de julio.
 
 ## 4. Modelo financiero prevalente
 
@@ -63,58 +58,70 @@ Cinépolis continúa configurado como proyecto delegado:
 - honorario Shopper nunca usado como ingreso delegado;
 - margen solo con comisión y distribución exactas.
 
-## 5. Segundo intento autorizado de Hosting DEV
+## 5. Deploy DEV ejecutado
 
-El request `c6-hosting-dev-deploy-remote-gates-20260802-03` pasó source lock, gate estático, credenciales read-only y destino DEV. El comando fue iniciado una vez y falló antes de crear una release:
+Request:
 
-- etapa: `deploy_hosting_once`;
-- comando intentado: 1;
-- deploy exitoso: 0;
-- releases Hosting creadas: 0;
-- gates remotos ejecutados: 0;
-- Cloud Run deploys: 0.
+`c6-hosting-dev-deploy-remote-gates-20260802-04`.
 
-Decisión:
+Resultado:
 
-`FAIL_C6_PREDEPLOY_OR_HOSTING_DEPLOY`.
+- configuración raíz `firebase.deploy.json`: usada;
+- 2,293 archivos publicados;
+- release Hosting finalizada: sí;
+- Hosting deploys: 1;
+- Cloud Run deploys: 0;
+- demás provider writes: 0;
+- producción: intacta.
 
-La autorización quedó consumida. Se respetó la prohibición de un segundo deploy automático.
+El fallo inmediatamente posterior fue del runner QA inline bajo Node 24, no del deploy. Las continuaciones posteriores fueron estrictamente read-only y no desplegaron otra release.
 
-## 6. Causa raíz metodológica comprobada
+## 6. P0 vigente reproducible
 
-`RUNNER_AUTHORIZED_ROOT_CONFIG_NOT_APPLIED`.
+El gate Shopper falló dos veces en nueva pestaña:
 
-La autorización exigía `firebase.deploy.json` en la raíz, pero el workflow todavía generaba una copia en `.tmp/c6-hosting-dev-deploy` y ejecutaba `--config $OUT/firebase.deploy.json`. El fix documentado no estaba conectado al paso ejecutable.
+- principal Shopper restaurado correctamente;
+- 14 periodos, 616 visitas y 208 shoppers visibles;
+- aplicación y carril canónico activos;
+- autoridad protegida no aplicada;
+- overlay exacto sin componer;
+- visitas propias: 0.
 
-El runner anterior no persistió el stderr exacto del CLI. Por tanto, no se atribuye el fallo a IAM, proveedor, aplicación, HR, Auth o Cloud Run sin evidencia.
+Clasificación:
 
-## 7. Correctivo aplicado sin deploy
+`RESTORED_SESSION_NEW_TAB_PROTECTED_AUTHORITY_RECONCILIATION_NOT_RESILIENT`.
 
-El workflow existente ahora:
+## 7. Root fix en fuente, todavía no desplegado
 
-- valida la configuración raíz autorizada;
-- exige `deployConfigPath=firebase.deploy.json`;
-- exige `noAutomaticSecondDeploy=true`;
-- valida target, public y orden de rewrites;
-- ejecutará `--config firebase.deploy.json`;
-- registrará la versión de Firebase CLI;
-- persistirá tails sanitizados de los logs ante cualquier fallo.
+`tya-protected-auth-hr-authority-bridge-v2.js` ahora incorpora:
 
-No se creó workflow nuevo y no se ejecutó otro deploy.
+- reintento HR vivo acotado y fail-closed;
+- reconciliación de arranque para sesión restaurada;
+- eventos Auth/backend, DOM, foco, visibilidad y refresh;
+- guardas de principal, Firestore y dependencias canónicas;
+- idempotencia de conciliación/timer;
+- cero writes.
+
+Gate estático dedicado:
+
+`tya-c6-shopper-new-tab-authority-root-fix-gate.mjs`.
+
+No se afirma PASS remoto del fix porque todavía no fue desplegado.
 
 ## 8. Gate vivo restante
 
 Requiere autorización fresca:
 
-`SOURCE LOCK ACTUAL → STATIC GATE → ROOT CONFIG firebase.deploy.json → CREDENCIALES READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → STAFF/CLIENTE/SHOPPER → DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA`.
+`SOURCE LOCK NUEVO → STATIC CUMULATIVE + NEW-TAB ROOT-FIX GATE → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → STAFF → SHOPPER 3 RELOADS + NEW TAB + OWN VISITS → CLIENTE → DOMINIO/FINANZAS/PORTALES/RESERVAS → EVIDENCIA → VALIDACIÓN HUMANA`.
 
 Hasta entonces:
 
 - no otro deploy;
+- no freeze;
 - no agosto ni postulaciones;
 - no merge;
 - no producción.
 
 ## 9. Estado seguro
 
-Credencial Cliente vigente: 1. Auth writes autorizados previos: 2. Password changes/resets: 0. Hosting releases nuevas: 0. Cloud Run/Firestore/Rules/Storage/HR/Make/Gemini/pagos: 0. Credenciales/tokens expuestos: 0. Merge false. Producción false.
+Hosting releases acumuladas en la autorización ejecutada: 1. Hosting deploys posteriores al root fix: 0. Cloud Run/Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos: 0. Credenciales/tokens expuestos: 0. Merge=false. Producción=false.
