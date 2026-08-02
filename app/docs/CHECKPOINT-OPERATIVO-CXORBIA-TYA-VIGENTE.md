@@ -7,9 +7,11 @@
 
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR #7 draft/open/no merge.
 - Corte 3 FROZEN; R17N 1,406/1,406 no repetir.
-- HR viva: 14 periodos, junio 2025–julio 2026, 616 visitas y 208 shoppers.
+- HR viva actual: 14 periodos, junio 2025–julio 2026, 616 visitas y 208 shoppers.
 - Agosto 2026 todavía no existe en la HR.
 - Producción intacta.
+
+Los conteos actuales son una fotografía de la revisión previa a agosto. No se usan como invariantes permanentes ni como límite para revisiones futuras.
 
 ## 2. Corrección de criterio
 
@@ -45,10 +47,16 @@ Causa: separación artificial entre carril humano source-safe y carril protegido
 - Override directo de rol eliminado del índice.
 - Bridge visual oculto eliminado del índice.
 - Dominio/Shopper/Finanzas canónicos activos en la URL normal.
+- `tya-protected-auth-hr-authority-bridge-v2.js` sustituye el contrato congelado por uno dinámico:
+  - conserva todos los periodos detectados;
+  - conserva todas las visitas de la revisión;
+  - exige llaves técnicas únicas;
+  - prohíbe append de historia protegida;
+  - permite que agosto aparezca únicamente cuando exista en HR.
 - Adapter unificado agrega:
   - login Cliente;
   - honorario Q60/L200 desde configuración;
-  - comparativo con los 14 periodos HR;
+  - comparativo con todos los periodos HR;
   - reaplicación después de Auth/refresh.
 
 No se tocaron módulos UI.
@@ -57,6 +65,8 @@ No se tocaron módulos UI.
 
 - Sintaxis del bootstrap: PASS.
 - Sintaxis del adapter unificado: PASS.
+- Sintaxis del bridge dinámico v2: PASS.
+- Sintaxis del gate acumulativo: PASS.
 - Ausencia de scripts de carril reducido en el índice: PASS.
 - Presencia de Auth/HR/domain/shopper/finance canónicos: PASS.
 - Cero deploys y provider writes: PASS por alcance del bloque.
@@ -68,9 +78,9 @@ Esto no equivale todavía a runtime/browser PASS.
 1. gate estático acumulativo;
 2. runtime local/read-only;
 3. login real staff, cliente y shopper;
-4. revisión viva de todos los periodos;
+4. lectura viva de todos los periodos detectados;
 5. igualdad KPI/fases/drill;
-6. comparativo de 14 periodos;
+6. comparativo histórico completo;
 7. identidad, WA, credenciales, certificación e histórico;
 8. Portal Cliente completo;
 9. Finanzas con configuración contractual y fuente canónica;
