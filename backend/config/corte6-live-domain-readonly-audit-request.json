@@ -9,9 +9,9 @@
   "priorRemoteParityDecision": "PASS_C6_HOSTING_DEV_REMOTE_PARITY_AND_LIVE_HR",
   "priorStaffShopperDecision": "PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY",
   "priorClientDecision": "PASS_C6_CLIENT_AUTH_EXISTING_CREDENTIAL_RUNTIME",
-  "status": "authorized_remote_gates_only_no_hosting_deploy",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_fail",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -57,5 +57,8 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false
+  "production": false,
+  "consumedAt": "2026-08-02T19:05:07.486Z",
+  "decision": "FAIL_C6_REMOTE_GATES_AFTER_EXISTING_DEV_HOSTING_DEPLOY",
+  "nextGate": "REMOTE_GATE_ROOT_CAUSE_REVIEW_NO_DEPLOY"
 }
