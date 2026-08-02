@@ -7,6 +7,7 @@
    - un proyecto delegado o regional nunca descuenta regalías locales;
    - delegado/regional registra la comisión de coordinación y su reparto
      como configuración propia, sin inventar montos, porcentajes ni participantes;
+   - un proyecto sin modelo explícito queda fail-closed y requiere configuración;
    - Cinépolis se mantiene delegado por su projectConfig vigente, no por hardcode global;
    - no modifica módulos UI, proveedores, HR, pagos ni producción.
 */
@@ -38,7 +39,7 @@
     if(candidates.some(v=>regionalValues.has(v)))return 'regional';
     if(candidates.some(v=>delegatedValues.has(v)))return 'delegado';
     if(candidates.some(v=>directValues.has(v)))return 'directo';
-    return 'directo';
+    return 'unconfigured';
   }
 
   function sharedCommissionDefaults(model){
@@ -83,10 +84,11 @@
       project.coordinationCommission.model=model;
       if(project.coordinationCommission.splitRule==null)project.coordinationCommission.splitRule='project_configuration';
       if(project.coordinationCommission.sourceStatus==null)project.coordinationCommission.sourceStatus='project_configuration_required';
+      project.financialModelReviewRequired=false;
       project.financialModelNote=model==='regional'
         ?'Proyecto regional: distribución de comisión configurable; no aplica regalía local.'
         :'Proyecto delegado: comisión de coordinación compartida; no aplica regalía local.';
-    }else{
+    }else if(model==='directo'){
       const royalty=num(project.regalias);
       project.modelo='directo';
       project.billingModel='local_invoicing';
@@ -95,7 +97,18 @@
       project.royaltyApplicable=royalty>0;
       project.regalias=royalty;
       project.compensationModel='local_project_margin';
+      project.financialModelReviewRequired=false;
       project.financialModelNote='Proyecto facturado localmente: impuestos y regalías se aplican solo según su configuración.';
+    }else{
+      project.modelo='unconfigured';
+      project.billingModel='project_configuration_required';
+      project.projectModel='unconfigured';
+      project.localBilling=null;
+      project.royaltyApplicable=false;
+      project.regalias=0;
+      project.compensationModel='project_configuration_required';
+      project.financialModelReviewRequired=true;
+      project.financialModelNote='Modelo financiero pendiente de configuración; no se calculan ingresos, regalías ni margen.';
     }
     project.financialModelContractVersion='cxorbia.project-financial-model.v1';
     project.financialModelNormalizedAt=options.timestamp||new Date().toISOString();
@@ -104,12 +117,13 @@
 
   function normalizeAll(reason){
     if(!CX.data)return {ready:false,reason:'data_not_ready'};
-    let delegated=0,regional=0,direct=0,royaltyViolations=0;
+    let delegated=0,regional=0,direct=0,unconfigured=0,royaltyViolations=0;
     for(const project of arr(CX.data.projects)){
       normalize(project);
       if(project.modelo==='delegado')delegated++;
       else if(project.modelo==='regional')regional++;
-      else direct++;
+      else if(project.modelo==='directo')direct++;
+      else unconfigured++;
       if(project.modelo!=='directo'&&(num(project.regalias)!==0||project.royaltyApplicable!==false))royaltyViolations++;
     }
     const status={
@@ -120,11 +134,13 @@
       delegated,
       regional,
       direct,
+      unconfigured,
       royaltyViolations,
       nonLocalRoyaltyPct:0,
       delegatedCompensation:'coordination_commission_shared',
       regionalCompensation:'regional_coordination_distribution',
       projectClassificationSource:'project_configuration_not_name',
+      defaultModelAssumed:false,
       splitValuesInvented:false,
       providerWrites:0,
       production:false,
