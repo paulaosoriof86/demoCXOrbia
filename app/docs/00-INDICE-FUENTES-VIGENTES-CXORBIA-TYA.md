@@ -25,17 +25,18 @@
 
 ## 3. Regla prevalente de fuente
 
-La HR viva es autoridad para **todos los periodos detectados**, no únicamente el mes actual y no números congelados de cortes anteriores.
+La HR viva es autoridad para **todos los periodos detectados**, no únicamente el mes actual y nunca números congelados de cortes anteriores.
 
-Estado de fuente verificado:
+Fotografía de la revisión vigente previa a agosto:
 
 - 14 periodos desde junio 2025 hasta julio 2026;
-- 616 visitas históricas en el corte actual;
+- 616 visitas;
 - 208 shoppers;
-- no existe agosto 2026 en HR;
-- agosto no puede aparecer ni heredarse de julio hasta que Paula agregue la fuente.
+- no existe agosto 2026 en HR.
 
-Cuando la HR cambia, KPIs, fases, detalle, histórico, comparativo, Portal Cliente, Portal Shopper y Finanzas deben recomponerse desde la misma revisión.
+Estos conteos describen la revisión actual y no son límites permanentes. El runtime debe aceptar crecimiento legítimo cuando la HR agregue periodos o filas nuevas, siempre que las llaves técnicas sean completas y únicas.
+
+Agosto no puede aparecer ni heredarse de julio hasta que Paula agregue la fuente. Cuando aparezca, debe incorporarse por detección de HR, no por reloj del sistema ni por copia de otro mes.
 
 ## 4. P0 humano vigente
 
@@ -54,8 +55,9 @@ El HEAD vivo recupera una sola entrada `authenticated-human-canonical`:
 
 - login visible Usuario + Contraseña;
 - Auth/claims para principal y alcance;
-- HR viva como autoridad operacional;
+- HR viva como autoridad operacional dinámica;
 - Firestore protegido como overlay exacto;
+- `tya-protected-auth-hr-authority-bridge-v2.js` preserva todos los periodos y visitas de cada revisión;
 - dominio, Shopper y Finanzas canónicos;
 - comparativo de todos los periodos HR;
 - honorario contractual Q60 GT / L200 HN;
@@ -65,7 +67,7 @@ No se tocaron `app/modules/*`. No hubo deploy ni writes.
 
 ## 6. Gate vivo
 
-`STATIC ROOT CONTRACT → READ-ONLY AUTH STAFF/CLIENT/SHOPPER → HR ALL PERIODS → KPI=PHASE=DRILL → HISTORICAL ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE CONFIG → 3 RELOADS → EVIDENCE`.
+`STATIC ROOT CONTRACT → READ-ONLY AUTH STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → HISTORICAL ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE CONFIG → 3 RELOADS → EVIDENCE`.
 
 ## 7. Después del PASS
 
