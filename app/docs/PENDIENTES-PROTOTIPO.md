@@ -1,86 +1,86 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `C6_AUTH_ALL_ROLES_PASS__SECOND_DEPLOY_COMMAND_FAILED_BEFORE_RELEASE__EXECUTION_PATH_FIXED__FRESH_AUTH_REQUIRED`
+**Estado vivo:** `C6_DEV_HOSTING_RELEASED__REMOTE_PARITY_HR_STAFF_CLIENT_PASS__SHOPPER_NEW_TAB_ROOT_FIX_PENDING_DEPLOY`
 
 ## 1. P0 bloqueante actual
 
-No queda pendiente una credencial Cliente ni una corrección funcional del runtime.
+P0 único:
 
-El único bloqueante para continuar Corte 6 es una autorización fresca para un único deploy del Hosting DEV existente. La autorización anterior quedó consumida porque el comando fue iniciado, aunque no creó una release.
+`SHOPPER NEW TAB RESTORES AUTH AND HR BASE BUT DOES NOT APPLY PROTECTED AUTHORITY`.
 
-Hasta entonces no hay freeze, agosto, postulaciones, merge ni producción.
+Dos gates remotos reprodujeron:
 
-## 2. Gates cerrados
+- rol/namespace/tenant/proyecto correctos;
+- 14 periodos, 616 visitas y 208 shoppers visibles;
+- app activa;
+- autoridad protegida no aplicada;
+- visitas propias 0.
+
+El root fix está aplicado en fuente, pero todavía no fue desplegado.
+
+## 2. Deploy DEV y gates cerrados
 
 PASS:
 
-- gate estático acumulativo;
-- HR viva dinámica desde junio 2025 hasta julio 2026;
-- dominio, Finanzas, Portal Cliente, Portal Shopper y Reservas;
-- Staff, Cliente y Shopper humanos autenticados;
-- identidad Shopper exacta;
-- carril técnico Staff/Shopper aislado;
-- tres recargas y nueva pestaña;
-- credencial Cliente idempotente y readback PASS;
-- rollback exacto probado;
+- una release Hosting DEV publicada desde `firebase.deploy.json` raíz;
+- 2,293 archivos publicados;
+- paridad remota exacta de 16 assets;
+- endpoint HR remoto;
+- Staff remoto;
+- Cliente remoto;
+- credencial Cliente idempotente, readback y rollback;
 - Cinépolis delegado, regalías 0 y Q60/L200.
 
-## 3. Segundo incidente de deploy DEV
+No cerrado:
 
-Request: `c6-hosting-dev-deploy-remote-gates-20260802-03`.
+- Shopper nueva pestaña con overlay exacto y visitas propias;
+- gate semántico remoto de Finanzas/portales/Reservas posterior al P0;
+- validación humana acumulativa;
+- freeze C6.
 
-Resultado:
+## 3. Causa raíz
 
-- source lock: PASS;
-- gate estático: PASS;
-- credenciales read-only: PASS;
-- deploy command attempted: 1;
-- deploy succeeded: 0;
-- Hosting releases: 0;
-- gates remotos: no ejecutados.
+`RESTORED_SESSION_NEW_TAB_PROTECTED_AUTHORITY_RECONCILIATION_NOT_RESILIENT`.
 
-Se respetó `noAutomaticSecondDeploy=true`.
+El bridge dependía de una conciliación puntual. No tenía recuperación independiente para una sesión ya restaurada ni reintento HR acotado.
 
-## 4. Causa raíz metodológica
+## 4. Root fix listo
 
-`RUNNER_AUTHORIZED_ROOT_CONFIG_NOT_APPLIED`.
+`app/adapters/tya-protected-auth-hr-authority-bridge-v2.js` incorpora:
 
-La autorización exigía la configuración raíz `firebase.deploy.json`, pero el workflow todavía generaba una copia dentro de `.tmp` y la usaba en el comando.
+- seis reintentos HR vivos para fallos transitorios;
+- scheduler de sesión restaurada;
+- eventos Auth/backend/DOM/foco/visibilidad/refresh;
+- guardas de principal, Firestore y dependencias canónicas;
+- idempotencia;
+- cero writes.
 
-El fix documentado no estaba conectado al paso ejecutable. El runner tampoco preservó el error exacto del CLI, por lo que no se atribuye el fallo a IAM, proveedor, aplicación, HR, Auth o Cloud Run sin evidencia.
+Gate estático:
 
-## 5. Corrección cerrada antes de otro intento
+`tools/qa/tya-c6-shopper-new-tab-authority-root-fix-gate.mjs`.
 
-- el workflow existente valida la configuración raíz autorizada;
-- ejecutará `--config firebase.deploy.json`;
-- valida target `cxorbia-dev`, public `app` y orden de rewrites;
-- valida que no exista segundo deploy automático;
-- registra versión de Firebase CLI;
-- persiste logs sanitizados ante fallo;
-- no se creó workflow nuevo;
-- no se ejecutó otro deploy después del fix.
-
-## 6. Siguiente bloque técnico
+## 5. Siguiente bloque técnico
 
 Con autorización fresca:
 
-1. source lock actual;
-2. gate estático;
-3. validación de `firebase.deploy.json` raíz;
-4. credenciales read-only;
-5. un único deploy al Hosting DEV existente;
-6. paridad remota;
-7. Auth remota Staff/Cliente/Shopper;
-8. HR viva, dominio, Finanzas, portales y Reservas;
-9. tres recargas y nueva pestaña;
-10. evidencia PASS/FAIL;
-11. validación humana acumulativa;
-12. `APROBADO C6 → FREEZE`.
+1. source lock nuevo;
+2. gate estático acumulativo;
+3. gate estático new-tab;
+4. un único deploy del Hosting DEV existente;
+5. paridad remota;
+6. HR viva;
+7. Staff;
+8. Shopper: tres recargas, nueva pestaña, autoridad aplicada y visitas propias;
+9. Cliente;
+10. dominio, Finanzas, Portal Cliente, Portal Shopper y Reservas;
+11. evidencia PASS/FAIL;
+12. validación humana;
+13. `APROBADO C6 → FREEZE`.
 
-Ante un nuevo fallo no existe segundo deploy automático.
+Ante fallo no existe segundo deploy automático.
 
-## 7. Pendientes Claude/prototipo por archivo
+## 6. Pendientes Claude/prototipo
 
 ### `app/modules/proyecto-wizard.js`
 
@@ -90,28 +90,28 @@ Ante un nuevo fallo no existe segundo deploy automático.
 
 ### `app/modules/finanzas.js`
 
-- corregir el texto delegado;
+- corregir texto delegado;
 - explicar comisión de coordinación y distribución configurable;
 - mostrar revisión cuando falte fuente exacta.
 
 ### `app/app.js`
 
 - preservar UI aprobada;
-- no usar `pickShopperDev()` en rutas protegidas.
+- no usar `pickShopperDev()` en rutas protegidas;
+- no implementar reconciliación protegida en UI.
 
-## 8. No reabrir
+## 7. No reabrir
 
-- no nueva candidata, rama o PR;
-- no nuevo Firebase o Hosting;
+- no nueva candidata, rama, PR, Firebase, Hosting o workflow;
 - no bypass de Auth;
+- no aceptar HR base como prueba del overlay protegido;
 - no dedupe por nombre/teléfono;
 - no regalías globales;
 - no honorario Shopper como ingreso delegado;
-- no fix únicamente documental sin conexión al runner;
 - no PowerShell para Paula;
 - no deploy por ensayo.
 
-## 9. P1/P2 después del freeze
+## 8. P1/P2 después del freeze
 
 - PDF con gráficas;
 - Excel con formato;
@@ -121,6 +121,6 @@ Ante un nuevo fallo no existe segundo deploy automático.
 - optimización de carga;
 - review queue y certificaciones.
 
-## 10. Agosto
+## 9. Agosto
 
 Paula agregará agosto solo después del freeze de Corte 6. El sistema debe detectarlo desde HR y nunca crearlo por fecha del sistema.
