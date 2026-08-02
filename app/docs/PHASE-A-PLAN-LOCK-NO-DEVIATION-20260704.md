@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-08-01  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_UNIFIED_CUMULATIVE_RUNTIME_ROOT_FIX_CODE_APPLIED_PENDING_READONLY_RUNTIME_GATES__NO_DEPLOY_NO_PRODUCTION`
+**Estado vivo:** `C6_UNIFIED_CUMULATIVE_RUNTIME_AND_PROJECT_FINANCE_GUARD_APPLIED_PENDING_READONLY_RUNTIME_GATES__NO_DEPLOY_NO_PRODUCTION`
 
 ## 1. Objetivo y arquitectura
 
@@ -31,16 +31,18 @@ Un asset-smoke o prueba sintética aislada no congela un corte. Todo gate futuro
 1. **HR viva:** todos los periodos detectados, visitas, estados, asignación HR, fechas y evidencias operativas.
 2. **Firestore protegido:** identidad, perfil, PII, credenciales materializadas y certificación como overlay exacto; nunca reemplaza HR.
 3. **Finanzas/pagos canónicos:** liquidaciones, movimientos, beneficios y pagos.
-4. **Configuración del proyecto:** países, monedas, honorarios, modelo de facturación, comisión de coordinación, reparto, impuestos, regalías y reglas que no deben repetirse en cada fila HR.
+4. **Configuración del proyecto:** países, monedas, honorarios, modelo financiero, comisión, distribución, impuestos, regalías y reglas que no deben repetirse en cada fila HR.
 5. **Auth/RBAC:** acceso y alcance, no fuente operacional.
 6. **Plataforma-origin:** delta reconciliado, nunca duplicación HR.
 
 Regla financiera prevalente:
 
-- el modelo se selecciona al crear cada proyecto;
+- el modelo se selecciona al crear cada proyecto y se persiste como configuración;
 - `directo/local_invoicing`: la operación factura localmente y puede tener regalías según configuración;
-- `delegado/delegated_coordination`: no factura localmente el proyecto, no aplica regalías y administra una comisión de coordinación compartida;
-- nunca se inventan el monto de la comisión, los porcentajes ni sus participantes.
+- `delegado/delegated_coordination`: no factura localmente el proyecto, no aplica regalías y administra comisión de coordinación compartida;
+- `regional/regional_coordination`: distribución regional configurable, sin regalías locales por defecto;
+- el contrato reusable nunca clasifica proyectos por su nombre;
+- nunca se inventan monto de comisión, porcentajes, participantes ni tratamiento tributario.
 
 ## 5. Regla dinámica de la HR
 
@@ -128,9 +130,9 @@ El índice ya no carga el override directo de rol ni el bridge visual dependient
 
 ## 10. Finanzas y configuración del proyecto
 
-La fuente financiera canónica no se sustituye por cero ni por “pendiente” general cuando ya existe información aprobada.
+La fuente financiera canónica no se sustituye por ceros ni por inferencias de otro concepto.
 
-Cinépolis conserva en configuración:
+Cinépolis conserva en su configuración específica:
 
 - modelo: `delegado`;
 - billing model: `delegated_coordination`;
@@ -139,18 +141,29 @@ Cinépolis conserva en configuración:
 - facturación local del proyecto: no;
 - regalías: no aplican, 0 %;
 - compensación: comisión de coordinación compartida;
-- monto, participantes y porcentajes de reparto: configurables por proyecto y no inventados;
-- tratamiento tributario de la comisión: específico del proyecto y no inferido automáticamente.
+- monto, participantes y porcentajes de reparto: configurables y no inventados;
+- tratamiento tributario: específico del proyecto y no inferido automáticamente.
+
+Cinépolis no se hardcodea por nombre en el contrato reusable. Su `projectConfig` es la autoridad de esta clasificación.
 
 Cuando HR no repite el honorario del shopper, el read model usa la configuración del proyecto. Los montos financieros exactos, la comisión configurada y los pagos confirmados conservan autoridad y nunca se sobrescriben.
 
 `app/adapters/tya-project-financial-model-contract-v1.js` debe:
 
 - normalizar proyectos existentes;
-- preservar la selección directo/delegado al crear proyectos;
-- forzar `regalias=0` y `royaltyApplicable=false` en todo proyecto delegado;
+- preservar Local/Delegado/Regional al crear proyectos;
+- fijar `regalias=0` y `royaltyApplicable=false` en modelos no locales;
 - permitir regalías únicamente en proyectos facturados localmente;
-- impedir que Cinépolis vuelva a clasificarse como directo.
+- clasificar por configuración, nunca por nombre.
+
+`app/adapters/tya-delegated-coordination-finance-guard-v1.js` debe:
+
+- impedir el fallback honorario Shopper → ingreso delegado/regional;
+- usar comisión explícita por periodo/país, país, total o tarifa por visita declarada;
+- conservar honorarios y reembolsos del shopper como obligaciones separadas;
+- calcular margen solo con comisión y distribución exactas;
+- marcar `pending_or_review` cuando falte fuente;
+- mantener valores inventados en cero.
 
 ## 11. Identidad, perfiles y certificación
 
@@ -178,15 +191,23 @@ El perfil debe proyectar, según rol y fuente autorizada:
 
 Secuencia exacta:
 
-`STATIC ROOT CONTRACT → READ-ONLY RUNTIME → AUTH REAL STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → COMPARATIVE ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE SOURCE + PROJECT MODEL → 3 RELOADS + NEW TAB → EVIDENCE`.
+`STATIC ROOT CONTRACT → READ-ONLY RUNTIME → AUTH REAL STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → COMPARATIVE ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE SOURCE + PROJECT MODEL + COMMISSION → 3 RELOADS + NEW TAB → EVIDENCE`.
 
 El gate financiero debe demostrar:
 
-- Cinépolis = delegado;
-- regalías Cinépolis = 0;
-- comisión de coordinación compartida sin valores inventados;
-- creación de proyecto permite seleccionar directo o delegado;
-- regalías solo participan en cálculo cuando `modelo==='directo'`.
+- Cinépolis delegado desde configuración;
+- regalías Cinépolis 0;
+- comisión compartida sin valores inventados;
+- honorario Shopper nunca usado como ingreso;
+- margen solo con comisión/distribución exactas;
+- creación de proyecto permite seleccionar directo/delegado;
+- soporte backend regional preservado;
+- regalías solo participan cuando `modelo==='directo'`.
+
+Warnings frontend no bloqueantes para el cutover Cinépolis, pero obligatorios para Claude:
+
+- agregar opción Regional en `app/modules/proyecto-wizard.js`;
+- corregir el copy delegado en `app/modules/finanzas.js`.
 
 Solo después del PASS local/read-only:
 
@@ -223,20 +244,22 @@ Claude debe preservar como contratos reutilizables:
 - histórico Shopper completo;
 - certificación visible por rol;
 - honorarios desde configuración del proyecto;
-- selección por proyecto entre facturación local y delegado;
+- selección Local/Delegado/Regional;
 - regalías únicamente para facturación local;
-- comisión de coordinación compartida en proyectos delegados;
+- comisión/distribución configurable para modelos no locales;
+- separación ingreso de coordinación vs obligación al shopper;
 - liquidaciones completas derivadas de facetas;
 - gate transversal entre tile, fase, drill, portal y Finanzas.
 
-No debe copiar lógica backend a módulos UI ni reintroducir fixtures, carriles alternos, conteos congelados o regalías globales.
+No debe copiar lógica backend a módulos UI ni reintroducir fixtures, carriles alternos, conteos congelados, regalías globales o clasificación por nombre.
 
 ## 15. Academia
 
 Fuentes vigentes:
 
 - `ACADEMIA-IMPACTO-C6-RECUPERACION-RUNTIME-ACUMULATIVO-20260801.md`;
-- `CAMBIOS-BACKEND-ADDENDUM-C6-RECUPERACION-BASELINE-ACUMULATIVA-UNICA-20260801.md`.
+- `CAMBIOS-BACKEND-ADDENDUM-C6-RECUPERACION-BASELINE-ACUMULATIVA-UNICA-20260801.md`;
+- `CAMBIOS-BACKEND-ADDENDUM-C6-MODELO-DELEGADO-COMISION-20260801.md`.
 
 ## 16. Estado seguro
 
