@@ -3,7 +3,7 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-08-02  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_AUTH_ALL_ROLES_PASS__HOSTING_DEV_COMMAND_FAILED_BEFORE_RELEASE__ROOT_CAUSE_FIXED__FRESH_AUTH_REQUIRED__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_ALL_ROLES_PASS__SECOND_HOSTING_DEV_COMMAND_FAILED_BEFORE_RELEASE__EXECUTION_PATH_FIXED__FRESH_AUTH_REQUIRED__NO_PRODUCTION`
 
 ## 1. Objetivo y arquitectura
 
@@ -17,6 +17,7 @@ La baseline funcional es única y acumulativa sobre `docs-tya-v6-v71-audit`. No 
 
 Debe distinguirse siempre:
 
+- autorización concedida;
 - comando de deploy intentado;
 - release Hosting creada;
 - paridad remota;
@@ -26,7 +27,7 @@ Ninguno sustituye al siguiente.
 
 ## 3. Baseline acumulativa PASS
 
-- HR viva: 14 periodos, junio 2025–julio 2026, 616 visitas, 208 shoppers.
+- HR viva: 14 periodos, junio 2025–julio 2026, 616 visitas y 208 shoppers en la fotografía observada.
 - Agosto ausente.
 - Staff, Cliente y Shopper autenticados.
 - Cliente con alcance exclusivo `cinepolis`.
@@ -58,16 +59,17 @@ Cinépolis:
 - honorario Shopper nunca usado como ingreso delegado;
 - margen únicamente con fuentes exactas.
 
-## 6. Resultado del deploy DEV autorizado
+## 6. Segundo intento autorizado de Hosting DEV
 
-El predeploy pasó:
+El request `c6-hosting-dev-deploy-remote-gates-20260802-03` pasó:
 
-- source lock;
+- source lock exacto;
+- árbol `app` sin deriva;
 - gate estático;
 - credenciales Staff/Shopper/Cliente read-only;
-- destino DEV.
+- destino DEV correcto.
 
-El comando de deploy fue intentado una vez y falló antes de crear release:
+El comando fue iniciado una vez y falló en `deploy_hosting_once` antes de crear una release:
 
 - deploy attempted: true;
 - deploy succeeded: false;
@@ -75,37 +77,49 @@ El comando de deploy fue intentado una vez y falló antes de crear release:
 - gates remotos: 0;
 - Cloud Run deploys: 0.
 
-La autorización quedó consumida. No hay reintento automático.
+La autorización quedó consumida. Se respetó la prohibición de un segundo deploy automático.
 
-## 7. Causa raíz de Hosting
+## 7. Causa raíz metodológica comprobada
 
-`FIREBASE_CLI_ALTERNATE_CONFIG_PATH_RESOLUTION`.
+Clasificación:
 
-El workflow generaba `firebase.deploy.json` solo en `.tmp`. Firebase CLI resuelve la configuración alternativa por basename dentro de la raíz del proyecto. El archivo raíz no existía al iniciar el comando.
+`RUNNER_AUTHORIZED_ROOT_CONFIG_NOT_APPLIED`.
 
-Corrección aplicada:
+La autorización exigía `firebase.deploy.json` en la raíz, pero el workflow todavía:
 
-- rewrite HR vivo persistido en `firebase.json`;
-- `firebase.deploy.json` creado en la raíz;
-- target `cxorbia-dev`;
-- public `app`;
-- rewrite a `cxorbia-live-hr-dev/us-central1` antes del wildcard;
-- cero nuevo deploy después del fix.
+1. generaba una copia dentro de `.tmp/c6-hosting-dev-deploy`;
+2. invocaba Firebase CLI con `--config $OUT/firebase.deploy.json`.
 
-## 8. Gate restante de Corte 6
+El fix documentado existía en el repositorio, pero no estaba conectado al paso ejecutable. El stderr exacto del CLI no fue persistido por ese runner; por tanto no se atribuye el fallo a IAM, proveedor, aplicación, HR, Auth o Cloud Run sin evidencia.
+
+## 8. Correctivo aplicado sin deploy
+
+Se corrigió el workflow existente, sin crear otro:
+
+- valida `rootResolvedConfigRequired=true`;
+- exige `deployConfigPath=firebase.deploy.json`;
+- exige `noAutomaticSecondDeploy=true`;
+- valida el archivo raíz, target, public y rewrites;
+- ejecutará `--config firebase.deploy.json`;
+- registrará la versión de Firebase CLI;
+- persistirá tails sanitizados de `firebase-deploy.log` y `firebase-debug.log` ante fallo.
+
+La modificación del workflow no dispara deploy porque el trigger permanece limitado al archivo de request.
+
+## 9. Gate restante de Corte 6
 
 Requiere autorización fresca:
 
-`SOURCE LOCK ACTUAL → STATIC GATE → CREDENCIALES READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → STAFF/CLIENTE/SHOPPER → DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA`.
+`SOURCE LOCK ACTUAL → STATIC GATE → ROOT CONFIG firebase.deploy.json → CREDENCIALES READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → STAFF/CLIENTE/SHOPPER → DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA`.
 
 Ante cualquier fallo:
 
 - no segundo deploy automático;
-- evidencia durable;
+- evidencia durable con error sanitizado;
 - diagnóstico de raíz;
-- autorización fresca para un intento posterior.
+- autorización fresca para cualquier intento posterior.
 
-## 9. Freeze, agosto y producción
+## 10. Freeze, agosto y producción
 
 Solo después del PASS remoto y aprobación visual humana:
 
@@ -118,7 +132,7 @@ Solo después del PASS remoto y aprobación visual humana:
 
 No merge ni producción antes de esos gates.
 
-## 10. Claude/prototipo
+## 11. Claude/prototipo
 
 Pendientes frontend:
 
@@ -127,10 +141,10 @@ Pendientes frontend:
 
 No mover Auth, Finanzas o configuración Hosting a módulos UI.
 
-## 11. Academia
+## 12. Academia
 
-Enseñar diferencia entre intento de comando, release creada, paridad remota y aprobación humana, además de fuente viva, Auth por rol y modelos financieros por proyecto.
+Enseñar la diferencia entre fix documentado y fix conectado al carril ejecutable, además de intento de comando, release creada, paridad remota y aprobación humana.
 
-## 12. Estado seguro
+## 13. Estado seguro
 
 Credencial Cliente vigente: 1. Auth writes autorizados previos: 2. Password changes/resets: 0. Hosting releases nuevas: 0. Cloud Run/Firestore/Rules/Storage/HR/Make/Gemini/pagos: 0. Merge=false. Producción=false.
