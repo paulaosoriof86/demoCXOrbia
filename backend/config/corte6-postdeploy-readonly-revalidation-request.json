@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.corte6.postdeploy-readonly-revalidation.v1",
   "requestId": "corte6-p0-postdeploy-readonly-revalidation-20260801-01",
-  "status": "prepared_disabled",
-  "enabled": false,
+  "status": "ready_readonly_revalidation",
+  "enabled": true,
   "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -40,5 +40,5 @@
   "piiExported": false,
   "merge": false,
   "production": false,
-  "triggerNonce": "prepared-disabled"
+  "triggerNonce": "20260801T183800-0600-postdeploy-readonly"
 }
