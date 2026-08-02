@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.corte6.p0-data-hosting-execute.v6",
   "requestId": "corte6-p0-data-hosting-20260801-02",
-  "status": "execute_authorized_once",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_fail_after_deploy",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -34,5 +34,7 @@
   "merge": false,
   "production": false,
   "nextGate": "LOCAL_HUMAN_DATA_14_616_208_BEFORE_DEPLOY",
-  "hostingDeployExecutions": 0
+  "hostingDeployExecutions": 1,
+  "consumedAt": "2026-08-02T00:34:22.399Z",
+  "decision": "FAIL_C6_P0_DATA_PRESERVATION_GATE"
 }

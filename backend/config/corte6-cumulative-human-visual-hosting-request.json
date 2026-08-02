@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.corte6.p0-data-hosting-request.v6",
   "requestId": "corte6-p0-data-hosting-20260801-02",
-  "status": "authorized_waiting_execute",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_fail_after_deploy",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -37,7 +37,7 @@
   "newProjectAllowed": false,
   "newHostingAllowed": false,
   "singleHostingDeployMax": 1,
-  "hostingDeployExecutions": 0,
+  "hostingDeployExecutions": 1,
   "authorizedBy": "Paula",
   "authorizationId": "chat-20260801-c6-p0-datos-hosting-02",
   "authorizationText": "AUTORIZO P0 DATOS: aplicar el root fix de separación de carriles, ejecutar gates acumulativos y, solo con PASS 14/616/208 y entrada directa, realizar un único redeploy del Hosting DEV existente cxorbia-backend-dev; sin writes de datos/Auth/Rules/Cloud Run, sin merge y sin producción.",
@@ -60,5 +60,7 @@
   "newHostingSites": 0,
   "merge": false,
   "production": false,
-  "nextGate": "LOCAL_HUMAN_DATA_14_616_208_BEFORE_DEPLOY"
+  "nextGate": "LOCAL_HUMAN_DATA_14_616_208_BEFORE_DEPLOY",
+  "consumedAt": "2026-08-02T00:34:22.399Z",
+  "decision": "FAIL_C6_P0_DATA_PRESERVATION_GATE"
 }
