@@ -2,9 +2,9 @@
   "schemaVersion": "cxorbia.c6.live-domain-readonly-audit-request.v1",
   "requestId": "c6-live-domain-readonly-audit-20260801-14",
   "attempt": 14,
-  "status": "requested_login_wrapper_diagnostic",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_pass",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -22,5 +22,8 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false
+  "production": false,
+  "consumedAt": "2026-08-02T04:27:32.286Z",
+  "decision": "PASS_C6_HUMAN_LOGIN_WRAPPER_ACTIVE",
+  "nextGate": "UNIFIED_HUMAN_AUTH_STAFF_SHOPPER"
 }
