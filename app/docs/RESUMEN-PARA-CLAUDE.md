@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `C6_AUTH_RUNTIME_ALL_ROLES_PASS__CLIENT_CREDENTIAL_MATERIALIZED__PENDING_FRESH_DEV_DEPLOY_AUTHORIZATION`
+**Estado vivo:** `C6_AUTH_ALL_ROLES_PASS__HOSTING_DEV_COMMAND_FAILED_BEFORE_RELEASE__ROOT_CAUSE_FIXED__FRESH_AUTH_REQUIRED`
 
 ## 1. Baseline única
 
@@ -17,12 +17,12 @@ PASS:
 - Firebase Auth/claims para Staff, Cliente y Shopper;
 - HR viva dinámica;
 - Firestore exacto para identidad/perfil/certificación;
-- dominio/Finanzas/Portal Shopper/Reservas canónicos;
+- dominio/Finanzas/Portal Cliente/Portal Shopper/Reservas canónicos;
 - tres recargas y nueva pestaña;
 - carril técnico Staff/Shopper aislado;
 - materialización, idempotencia, readback y rollback Cliente.
 
-Decisión:
+Decisión funcional:
 
 `PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES`.
 
@@ -37,40 +37,53 @@ Existe una única credencial Cliente DEV con:
 
 La contraseña no se almacena en repo/evidencias y no debe incorporarse a UI, fixtures o documentación.
 
-La creación produjo 2 Auth writes autorizados. La segunda aplicación fue idempotente con 0 writes. Password changes/resets: 0.
+## 4. Resultado del intento de deploy
 
-## 4. Regresiones que no se pueden repetir
+El comando del único deploy autorizado fue iniciado, pero no creó release:
+
+- source lock: PASS;
+- gate estático: PASS;
+- credenciales read-only: PASS;
+- deploy command attempted: 1;
+- deploy succeeded: 0;
+- Hosting releases: 0;
+- gates remotos: no ejecutados.
+
+No atribuir este fallo a la aplicación, HR, Auth, Finanzas o UI.
+
+## 5. Causa raíz de Hosting
+
+El runner escribía la configuración alternativa solo en `.tmp/c6-hosting-dev-deploy/firebase.deploy.json`.
+
+Firebase CLI resuelve el basename de `--config` dentro de la raíz del proyecto. Al no existir `<root>/firebase.deploy.json`, el comando terminó antes de publicar.
+
+Corrección protegida:
+
+- `firebase.json` conserva el rewrite HR vivo;
+- `firebase.deploy.json` existe en la raíz;
+- target `cxorbia-dev`;
+- public `app`;
+- endpoint `/api/tya/cinepolis/hr-live` hacia `cxorbia-live-hr-dev` en `us-central1`;
+- wildcard SPA posterior;
+- no Cloud Run deploy.
+
+Claude no debe eliminar, duplicar o cambiar estos rewrites desde frontend.
+
+## 6. Regresiones que no se pueden repetir
 
 - entrada humana sin Auth real;
-- clic rápido que use el handler directo antes del wrapper oficial;
-- tarjeta Shopper protegida ejecutando `pickShopperDev()`;
-- autenticación Cliente exitosa sin completar `CX.app.enter()`;
-- Shopper sin identidad;
-- carril técnico sin `cxDevEntryAuth` o `technical-auth-e2e-isolated`;
+- clic rápido que use handler directo;
+- Shopper protegido ejecutando `pickShopperDev()`;
+- autenticación Cliente sin completar la entrada a la app;
 - KPI/fases divergentes;
-- histórico/comparativo incompleto;
-- Cliente y Finanzas degradados;
+- histórico incompleto;
 - regalías globales;
 - clasificación por nombre;
-- honorario Shopper usado como ingreso delegado.
+- honorario Shopper usado como ingreso delegado;
+- configuración Firebase alternativa fuera de la raíz esperada por CLI;
+- deploy que omita el rewrite HR vivo.
 
-## 5. Contratos Auth protegidos
-
-- `app/adapters/tya-c6-unified-human-runtime-v1.js`: guard temporal contra clic antes del wrapper oficial.
-- `app/adapters/tya-c6-shopper-auth-click-guard-v1.js`: impide `pickShopperDev()` y completa la transición Cliente después de Auth.
-- `app/adapters/tya-dev-technical-auth-e2e-v1.js`: carril técnico aislado.
-- `app/core/backend-browser-auth.js`: autoridad del login visible.
-
-Claude no debe mover Auth a módulos UI, crear otro login ni reintroducir selección directa de Shopper.
-
-## 6. Modelo financiero por proyecto
-
-Backend soporta:
-
-- `directo/local_invoicing`;
-- `delegado/delegated_coordination`;
-- `regional/regional_coordination`;
-- `unconfigured` fail-closed.
+## 7. Modelo financiero por proyecto
 
 Cinépolis:
 
@@ -81,14 +94,13 @@ Cinépolis:
 - honorario Shopper nunca es ingreso delegado;
 - margen solo con comisión/distribución exactas.
 
-## 7. Ajustes frontend exactos para Claude
+## 8. Ajustes frontend exactos para Claude
 
 ### `app/modules/proyecto-wizard.js`
 
 - conservar directo/delegado;
 - agregar `Regional`;
-- mostrar regalías solo para directo;
-- no duplicar contratos backend.
+- mostrar regalías solo para directo.
 
 ### `app/modules/finanzas.js`
 
@@ -99,23 +111,13 @@ Cinépolis:
 ### `app/app.js`
 
 - preservar UI aprobada;
-- no volver a usar `pickShopperDev()` en una ruta protegida;
-- no asumir que autenticar equivale a completar la transición visual.
+- no usar `pickShopperDev()` en rutas protegidas;
+- no mover Auth a módulos UI.
 
-## 8. Gate antes de freeze
+## 9. Gate pendiente
 
-Pendiente únicamente:
+Requiere autorización fresca porque el comando anterior sí fue intentado:
 
-`AUTORIZACIÓN FRESCA DE UN ÚNICO DEPLOY HOSTING DEV → PARIDAD REMOTA → GATE ACUMULATIVO STAFF/CLIENTE/SHOPPER → VALIDACIÓN HUMANA → APROBADO C6 → FREEZE`.
+`SOURCE LOCK ACTUAL → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → STAFF/CLIENTE/SHOPPER → HR/DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → VALIDACIÓN HUMANA → FREEZE`.
 
-No nueva candidata, rama, PR, Firebase, Hosting, deploy, merge ni producción sin autorización.
-
-## 9. Academia
-
-Actualizar manuales para enseñar:
-
-- diferencia entre rol visible, principal autenticado y transición visual completada;
-- Staff, Cliente y Shopper tienen gates separados;
-- DEV no autoriza bypass de Auth;
-- materialización idempotente, readback y rollback;
-- fuente viva y modelo financiero por proyecto.
+No nueva candidata, rama, PR, Firebase, Hosting, merge ni producción.
