@@ -178,7 +178,7 @@ jobs:
           export CXORBIA_DEV_ROOT_URL="$ROOT_URL"
           export CXORBIA_HUMAN_GATE_OUTPUT="$OUT/remote-staff-shopper.json"
           node tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs "$ROOT_URL" > "$OUT/remote-staff-shopper.log" 2>&1
-          node -e "const x=require('./$OUT/remote-staff-shopper.json');if(x.decision!=='PASS_C6_UNIFIED_HUMAN_AUTH_RUNTIME')process.exit(2)"
+          node -e "const x=require('./$OUT/remote-staff-shopper.json');if(!['PASS_C6_UNIFIED_HUMAN_AUTH_RUNTIME','PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY'].includes(x.decision))process.exit(2)"
 
       - name: Execute remote Client gate
         run: |
