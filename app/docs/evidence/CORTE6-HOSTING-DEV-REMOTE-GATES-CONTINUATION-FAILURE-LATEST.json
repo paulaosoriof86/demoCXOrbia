@@ -1,9 +1,92 @@
 {
-  "schemaVersion": "cxorbia.c6.existing-hosting-remote-gates-failure.v1",
-  "generatedAt": "2026-08-02T18:49:13.005Z",
+  "schemaVersion": "cxorbia.c6.existing-hosting-remote-gates-failure.v2",
+  "generatedAt": "2026-08-02T18:54:58.795Z",
   "decision": "FAIL_C6_REMOTE_GATES_AFTER_EXISTING_DEV_HOSTING_DEPLOY",
-  "failedStage": "validate_remote_continuation",
-  "sourceLock": null,
+  "failedStage": "remote_staff_shopper",
+  "sourceLock": {
+    "schemaVersion": "cxorbia.c6.existing-hosting-remote-gates-source-lock.v2",
+    "generatedAt": "2026-08-02T18:53:09.377Z",
+    "sourceLockHead": "b118ac16b8fb3b9126cdfd01de980f31c994f8f5",
+    "triggerHead": "63b6785448484a1185520067ba21df4bad36d33a",
+    "runtimeSurfaceExact": true,
+    "runtimeChangedFiles": [],
+    "documentationDriftFiles": [
+      "app/docs/evidence/CORTE6-HOSTING-DEV-DEPLOY-REMOTE-GATES-FAILURE-LATEST.json",
+      "app/docs/evidence/CORTE6-HOSTING-DEV-REMOTE-GATES-CONTINUATION-FAILURE-LATEST.json"
+    ],
+    "criticalRuntimeManifestSha256": "71d8cb4aa71d825ad1b4f971fae32136b9ac1aca655acfa5d13a0430648651c4",
+    "criticalRuntimeFiles": [
+      {
+        "path": "index-backend-dev.html",
+        "sha256": "3f4ab6a01772ba54a32461c6c165410c464e3a5e74094fe8a803cfa04c96d47c"
+      },
+      {
+        "path": "core/backend-browser-auth.js",
+        "sha256": "541451e5e8a20b8d08f62e2ab63a5796ec1d4f2dba0ba24cf95f471ef3293e3d"
+      },
+      {
+        "path": "core/tya-phase-a-source-safe-preview.js",
+        "sha256": "009f968ce8221db4fe1a26cf2b6020ffe6b0b157b6e2ae10b133ec9a0e0dfceb"
+      },
+      {
+        "path": "adapters/tya-c6-unified-human-runtime-v1.js",
+        "sha256": "afd9f0a2bce52fe5943772232b4633af7c881884d4da2d6ec2e1535f82c88f6b"
+      },
+      {
+        "path": "adapters/tya-c6-shopper-auth-click-guard-v1.js",
+        "sha256": "b084c9ed045b855dd92b6018688eca896dbb138f81fe6ab6443dc9ed254bea06"
+      },
+      {
+        "path": "adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "sha256": "4069f22967f3fc5cebddec990116f05df552e30e42ffd507b803717c2ed7f946"
+      },
+      {
+        "path": "adapters/tya-cumulative-read-model-v2.js",
+        "sha256": "107e071e8a34e17111dd9eccd53fa78878d75f12ef47cf6b03b0ed704d45ee12"
+      },
+      {
+        "path": "adapters/tya-c6-domain-consistency-bridge.js",
+        "sha256": "a9ec50eecb5dc3625363f6f65c40b79cf863129b2f3a48607ca5026e9ded93b4"
+      },
+      {
+        "path": "adapters/tya-canonical-shopper-portal-v2.js",
+        "sha256": "71987e67011c384a331f739a362375dc32e20f898cd7b73bd1abe3d111d9a907"
+      },
+      {
+        "path": "adapters/tya-canonical-finance-read-model-v2.js",
+        "sha256": "993d3edb51ce5d087b2248366ea7d4efc16108517721f03317fb6433fa70114c"
+      },
+      {
+        "path": "adapters/tya-project-financial-model-contract-v1.js",
+        "sha256": "d7d0aa568dff14fdf53ca989c659a773c7d6f7d4473596e7d06e2ccc229cf26b"
+      },
+      {
+        "path": "adapters/tya-delegated-coordination-finance-guard-v1.js",
+        "sha256": "4a0342d67d14c3d7681326f5aeb7fdf27f1aa13a9999c6e85df5b7c4f9357cb3"
+      },
+      {
+        "path": "adapters/tya-canonical-reservations-guard-v2.js",
+        "sha256": "bc762625bb830bde6b4d64f384f0bc58ae20fdba3e8e5e7fa74702b2aa6a42a0"
+      },
+      {
+        "path": "modules/cliente.js",
+        "sha256": "7efcc315a8e2f0f7f66c97e089d1e3f3aebf6ecc4d91a17177ead0390a041ffd"
+      },
+      {
+        "path": "modules/finanzas.js",
+        "sha256": "3228420f225c083d2077bbbe3d5a21fd79738569b4b483eb120950bd50583a98"
+      },
+      {
+        "path": "app.js",
+        "sha256": "4bcb12c050ab69ff8551eb8a030004ad3ef0cf3a03cf75beccb28b251dd6559c"
+      }
+    ],
+    "deployedRequestId": "c6-hosting-dev-deploy-remote-gates-20260802-04",
+    "deployedTriggerHead": "405d8d405e2bf69918d0124b61c179171d5c678a",
+    "existingHostingReleaseConfirmed": true,
+    "hostingDeploysThisRun": 0,
+    "production": false
+  },
   "deployment": {
     "deployedRequestId": "c6-hosting-dev-deploy-remote-gates-20260802-04",
     "deployedTriggerHead": "405d8d405e2bf69918d0124b61c179171d5c678a",
@@ -11,12 +94,172 @@
     "hostingDeploysThisRun": 0,
     "hostingDeploysCumulativeAuthorizedSequence": 1
   },
-  "parity": null,
-  "staffShopperDecision": null,
+  "parity": {
+    "schemaVersion": "cxorbia.c6.hosting-dev-remote-parity.v4",
+    "generatedAt": "2026-08-02T18:54:01.731Z",
+    "decision": "PASS_C6_HOSTING_DEV_REMOTE_PARITY_AND_LIVE_HR",
+    "root": "https://cxorbia-backend-dev.web.app",
+    "attempt": 1,
+    "maxAttempts": 30,
+    "allCriticalAssetsMatch": true,
+    "files": [
+      {
+        "path": "index-backend-dev.html",
+        "status": 200,
+        "localSha256": "3f4ab6a01772ba54a32461c6c165410c464e3a5e74094fe8a803cfa04c96d47c",
+        "remoteSha256": "3f4ab6a01772ba54a32461c6c165410c464e3a5e74094fe8a803cfa04c96d47c",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "core/backend-browser-auth.js",
+        "status": 200,
+        "localSha256": "541451e5e8a20b8d08f62e2ab63a5796ec1d4f2dba0ba24cf95f471ef3293e3d",
+        "remoteSha256": "541451e5e8a20b8d08f62e2ab63a5796ec1d4f2dba0ba24cf95f471ef3293e3d",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "core/tya-phase-a-source-safe-preview.js",
+        "status": 200,
+        "localSha256": "009f968ce8221db4fe1a26cf2b6020ffe6b0b157b6e2ae10b133ec9a0e0dfceb",
+        "remoteSha256": "009f968ce8221db4fe1a26cf2b6020ffe6b0b157b6e2ae10b133ec9a0e0dfceb",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-c6-unified-human-runtime-v1.js",
+        "status": 200,
+        "localSha256": "afd9f0a2bce52fe5943772232b4633af7c881884d4da2d6ec2e1535f82c88f6b",
+        "remoteSha256": "afd9f0a2bce52fe5943772232b4633af7c881884d4da2d6ec2e1535f82c88f6b",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-c6-shopper-auth-click-guard-v1.js",
+        "status": 200,
+        "localSha256": "b084c9ed045b855dd92b6018688eca896dbb138f81fe6ab6443dc9ed254bea06",
+        "remoteSha256": "b084c9ed045b855dd92b6018688eca896dbb138f81fe6ab6443dc9ed254bea06",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "status": 200,
+        "localSha256": "4069f22967f3fc5cebddec990116f05df552e30e42ffd507b803717c2ed7f946",
+        "remoteSha256": "4069f22967f3fc5cebddec990116f05df552e30e42ffd507b803717c2ed7f946",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-cumulative-read-model-v2.js",
+        "status": 200,
+        "localSha256": "107e071e8a34e17111dd9eccd53fa78878d75f12ef47cf6b03b0ed704d45ee12",
+        "remoteSha256": "107e071e8a34e17111dd9eccd53fa78878d75f12ef47cf6b03b0ed704d45ee12",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-c6-domain-consistency-bridge.js",
+        "status": 200,
+        "localSha256": "a9ec50eecb5dc3625363f6f65c40b79cf863129b2f3a48607ca5026e9ded93b4",
+        "remoteSha256": "a9ec50eecb5dc3625363f6f65c40b79cf863129b2f3a48607ca5026e9ded93b4",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-canonical-shopper-portal-v2.js",
+        "status": 200,
+        "localSha256": "71987e67011c384a331f739a362375dc32e20f898cd7b73bd1abe3d111d9a907",
+        "remoteSha256": "71987e67011c384a331f739a362375dc32e20f898cd7b73bd1abe3d111d9a907",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-canonical-finance-read-model-v2.js",
+        "status": 200,
+        "localSha256": "993d3edb51ce5d087b2248366ea7d4efc16108517721f03317fb6433fa70114c",
+        "remoteSha256": "993d3edb51ce5d087b2248366ea7d4efc16108517721f03317fb6433fa70114c",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-project-financial-model-contract-v1.js",
+        "status": 200,
+        "localSha256": "d7d0aa568dff14fdf53ca989c659a773c7d6f7d4473596e7d06e2ccc229cf26b",
+        "remoteSha256": "d7d0aa568dff14fdf53ca989c659a773c7d6f7d4473596e7d06e2ccc229cf26b",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-delegated-coordination-finance-guard-v1.js",
+        "status": 200,
+        "localSha256": "4a0342d67d14c3d7681326f5aeb7fdf27f1aa13a9999c6e85df5b7c4f9357cb3",
+        "remoteSha256": "4a0342d67d14c3d7681326f5aeb7fdf27f1aa13a9999c6e85df5b7c4f9357cb3",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-canonical-reservations-guard-v2.js",
+        "status": 200,
+        "localSha256": "bc762625bb830bde6b4d64f384f0bc58ae20fdba3e8e5e7fa74702b2aa6a42a0",
+        "remoteSha256": "bc762625bb830bde6b4d64f384f0bc58ae20fdba3e8e5e7fa74702b2aa6a42a0",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "modules/cliente.js",
+        "status": 200,
+        "localSha256": "7efcc315a8e2f0f7f66c97e089d1e3f3aebf6ecc4d91a17177ead0390a041ffd",
+        "remoteSha256": "7efcc315a8e2f0f7f66c97e089d1e3f3aebf6ecc4d91a17177ead0390a041ffd",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "modules/finanzas.js",
+        "status": 200,
+        "localSha256": "3228420f225c083d2077bbbe3d5a21fd79738569b4b483eb120950bd50583a98",
+        "remoteSha256": "3228420f225c083d2077bbbe3d5a21fd79738569b4b483eb120950bd50583a98",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "app.js",
+        "status": 200,
+        "localSha256": "4bcb12c050ab69ff8551eb8a030004ad3ef0cf3a03cf75beccb28b251dd6559c",
+        "remoteSha256": "4bcb12c050ab69ff8551eb8a030004ad3ef0cf3a03cf75beccb28b251dd6559c",
+        "match": true,
+        "error": null
+      }
+    ],
+    "liveEndpoint": {
+      "status": 200,
+      "ok": true,
+      "revision": "c20e66dec739af63d42c58b3e4b569807ed34ebf67257b31fd86d523894e6d54",
+      "runtimeRead": true,
+      "sourceSafe": true,
+      "contentType": "application/json; charset=utf-8",
+      "responseBytes": 826,
+      "parseableJson": true,
+      "error": null
+    },
+    "safety": {
+      "hostingDeploys": 0,
+      "cloudRunDeploys": 0,
+      "firestoreWrites": 0,
+      "authWrites": 0,
+      "rulesDeploys": 0,
+      "storageWrites": 0,
+      "hrWrites": 0,
+      "merge": false,
+      "production": false
+    }
+  },
+  "staffShopperDecision": "PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY",
   "clientDecision": null,
   "semanticDecision": null,
-  "remoteParityLogTail": null,
-  "staffShopperLogTail": null,
+  "remoteParityLogTail": "DECISION PASS_C6_HOSTING_DEV_REMOTE_PARITY_AND_LIVE_HR\n",
+  "staffShopperLogTail": "{\"schemaVersion\":\"cxorbia.c6.unified-human-auth-browser-smoke.v3\",\"generatedAt\":\"2026-08-02T18:54:58.699Z\",\"decision\":\"PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY\",\"root\":\"https://cxorbia-backend-dev.web.app\",\"local\":false,\"principalIsolation\":\"fresh_browser_per_principal\",\"lane\":\"authenticated-human-canonical\",\"staff\":{\"role\":\"coordinador\",\"namespace\":\"staff\",\"periods\":14,\"visits\":616,\"shoppers\":194,\"firstPeriod\":\"2025-06\",\"latestPeriod\":\"2026-07\",\"ownVisits\":null,\"projectId\":\"cinepolis\",\"periodId\":\"cinepolis-2026-07\",\"loginProtectedBy\":\"official_wrapper\",\"reloadsStable\":true,\"newTabStable\":true,\"credentialsExposed\":false,\"tokensExposed\":false},\"shopper\":{\"role\":\"shopper\",\"namespace\":\"shopper\",\"periods\":14,\"visits\":616,\"shoppers\":208,\"firstPeriod\":\"2025-06\",\"latestPeriod\":\"2026-07\",\"ownVisits\":1,\"projectId\":\"cinepolis\",\"periodId\":\"cinepolis-2026-07\",\"loginProtectedBy\":\"official_wrapper\",\"reloadsStable\":true,\"newTabStable\":true,\"credentialsExposed\":false,\"tokensExposed\":false},\"client\":{\"integratedCredentialRoute\":true,\"authenticated\":false,\"loginProtectedBy\":\"official_wrapper\",\"reason\":\"existing_client_credential_not_selected_by_current_private_selector\"},\"fullClientAuthenticationGatePassed\":false,\"remainingBlocker\":\"EXISTING_CLIENT_CREDENTIAL_NOT_SELECTED\",\"hostingDeploys\":0,\"providerWrites\":0,\"authWrites\":0,\"firestoreWrites\":0,\"hrWrites\":0,\"credentialsExposed\":false,\"tokensExposed\":false,\"merge\":false,\"production\":false}\n",
   "clientLogTail": null,
   "semanticLogTail": null,
   "safety": {
