@@ -1,122 +1,167 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `C6_FINANCE_REMOTE_PASS__SEMANTIC_GATE_EXACT_ASSERTION_PENDING__STOP_RETRY`
+**Estado vivo:** `RECONSTRUCTION_ACTIVE_SOURCE_ONLY__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Cerrado remotamente
+## 1. Bloqueante principal actual
 
-### Shopper nueva pestaña
+No existe todavía una matriz autoritativa que pruebe para cada módulo:
 
-- autoridad protegida aplicada;
-- identidad exacta;
-- `ownVisits=1`;
-- tres recargas y nueva pestaña estables.
+`última aprobación humana → candidata/commit → archivos/dependencias → SHA aprobado → SHA actual → acción`.
 
-### Precedencia financiera canónica
+Por tanto, la prioridad es reconstruir la candidata acumulativa única. El gate semántico C6 aislado queda suspendido hasta cerrar la composición.
 
-Causa cerrada:
+Fuente viva:
 
-`PROJECT_FINANCIAL_CONFIGURATION_METADATA_NOT_MATERIALIZED_IN_CANONICAL_PROJECTS_BEFORE_NORMALIZATION`.
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`.
 
-Remote PASS:
+## 2. Familia A abierta
 
-- `period`, `project` y `currentById` delegados;
-- `delegated_coordination`;
-- facturación local false;
-- regalía 0;
-- 14 periodos delegados;
-- 0 directos;
-- 0 sin configurar;
-- 0 violaciones de regalías;
-- Q60 GT / L200 HN;
-- valores no inventados.
+Pendiente inventariar y trazar completamente:
 
-## 2. Bloqueante actual
+- shell y entrada;
+- tenant/marca;
+- navegación y rutas por rol;
+- Proyecto y Periodo;
+- `store` y la interfaz exacta `CX.data`;
+- HR y read model canónico;
+- adapters de Auth, HR y runtime;
+- overlays de Hosting;
+- service worker/cache;
+- dependencias que cambian comportamiento sin modificar `app.js`.
 
-El gate combinado terminó en:
+## 3. Hallazgos ya confirmados
 
-`remote_domain_finance_portals_reservations`
+### Build-lock obsoleto
 
-con:
+`app/core/build-lock.js` todavía declara V174/R20. Debe reemplazarse al final con el manifest de la candidata acumulativa, no antes.
 
-`FAIL_C6_REMOTE_GATES_AFTER_SINGLE_DEV_HOSTING_DEPLOY_STOP_RETRY`.
+### V182 incremental
 
-La evidencia muestra `semantic=null`; no se persistió la aserción exacta ni el stdout/stderr del script. Por eso el pendiente actual no es volver a corregir Finanzas, sino identificar con evidencia cuál validación posterior falló.
+Coincidencia exacta con rama:
 
-## 3. Pendiente inmediato read-only
+- `app/app.js`;
+- `app/modules/beneficios.js`;
+- `app/styles/layout.css`.
 
-Sin deploy:
+Reconciliación requerida por fixes posteriores:
 
-1. persistir etapa antes de cada aserción del gate semántico;
-2. conservar stdout/stderr sanitizado aun cuando falle;
-3. ejecutar contra el Hosting DEV ya publicado;
-4. identificar la aserción exacta;
-5. capturar snapshots parciales de Staff, salida financiera, Reservas, Cliente y Shopper;
-6. documentar;
-7. detenerse.
+- `app/core/finanzas-core.js`;
+- `app/modules/finanzas.js`.
 
-## 4. No cerrado todavía
+## 4. Familias pendientes después de A
 
-- dominio semántico final;
-- filas financieras por país;
+### B — CRM Ops Leads
+
+- Dashboard;
+- hoja de ruta;
+- CRM;
+- Comercial;
+- Clientes;
+- Marketing;
+- indicadores y drilldowns sin métricas fabricadas.
+
+### C — Operación e histórico
+
+- proyectos;
+- periodos;
+- HR;
+- histórico;
+- visitas;
+- postulaciones;
+- reservas;
+- shoppers;
+- novedades.
+
+### D — Shopper
+
+- Mi Día;
+- disponibles;
+- Mis Visitas;
+- Reservas;
+- Mi Perfil;
+- cuestionario;
+- Beneficios;
+- Certificaciones;
+- documentos y tablón.
+
+### E — Finanzas
+
+- Finanzas;
+- Liquidaciones;
+- Movimientos;
+- Costos;
+- Beneficios;
+- pagos y lotes;
+- alcance por país/moneda/proyecto.
+
+### F — Portales y reportes
+
 - Portal Cliente;
 - Portal Shopper;
-- Reservas;
-- validación humana acumulativa;
-- freeze C6.
+- reportes Admin/Cliente/Shopper;
+- PDF/XLSX/PPTX;
+- branding y gráficas;
+- mismas filas, alcance, periodo y `sourceRevision`.
 
-## 5. Contrato financiero que debe preservarse
+### G — Administración y Academia
 
-Llave `tya::cinepolis`:
+- Configuración;
+- Administrabilidad;
+- Importador;
+- Integraciones;
+- Automatizaciones;
+- Correo;
+- Soporte;
+- Marca;
+- Diagnóstico;
+- Academia.
 
-- modelo delegado;
-- coordinación delegada;
+## 5. Cerrado y protegido
+
+No reabrir sin regresión nueva:
+
+- Shopper nueva pestaña e identidad exacta;
+- `ownVisits=1` para el caso técnico probado;
+- Staff/Shopper/Cliente remoto estable;
+- 14 periodos y 616 visitas;
+- precedencia financiera canónica;
+- `tya::cinepolis` delegado;
 - facturación local false;
 - regalía 0;
-- Q60 GT / L200 HN;
-- comisión y reparto configurables;
-- honorario Shopper no usado como ingreso;
-- valores no inventados.
+- 14 delegados, 0 directos, 0 sin configurar y 0 violaciones;
+- producción intacta.
 
-## 6. Pendientes Claude/prototipo no bloqueantes
+## 6. Pendientes funcionales que deben sobrevivir la reconstrucción
 
-### `app/modules/proyecto-wizard.js`
-
-- agregar `Regional`;
-- conservar directo/delegado;
-- regalías solo para facturación local.
-
-### `app/modules/finanzas.js`
-
-- explicar comisión de coordinación y distribución configurable;
-- mostrar revisión cuando falte fuente exacta.
-
-### `app/app.js`
-
-- preservar UI aprobada y entrada humana única;
-- no mover Auth, reconciliación o precedencia financiera a UI.
-
-## 7. Prohibiciones
-
-- no nuevo deploy para diagnosticar;
-- no segunda candidata, rama, PR, Firebase, Hosting o workflow paralelo;
-- no reabrir login/Shopper o precedencia financiera sin regresión demostrada;
-- no parche UI;
-- no clasificación por nombre visual;
-- no regalías globales;
-- no honorario Shopper como ingreso;
-- no producción antes del PASS acumulativo y aprobación humana.
-
-## 8. P1/P2 posteriores al freeze
-
+- CRM Ops Leads como prioridad de salida;
+- Dashboard y hoja de ruta sin retrocesos;
 - PDF con gráficas;
-- Excel con formato;
+- Excel con formato real;
 - exportaciones transversales;
-- copy final de fuentes/estados;
-- visualización de comisión/reparto;
-- optimización de carga;
-- review queue y certificaciones.
+- comisión/reparto configurable visible;
+- Regional en wizard cuando corresponda;
+- review queue y certificaciones;
+- Agosto solo cuando exista en HR y después del freeze correspondiente.
 
-## 9. Agosto
+## 7. Criterios de cierre
 
-Agosto debe aparecer únicamente cuando exista en HR y después del freeze de Corte 6.
+- cero módulos `UNKNOWN`;
+- dependencias completas;
+- SHA objetivo por archivo;
+- un solo commit funcional;
+- un manifest;
+- un build-lock;
+- un verificador;
+- un solo Hosting DEV;
+- validación humana del mismo build;
+- freeze antes de cutover.
+
+## 8. Prohibiciones
+
+- no nuevo deploy durante inventario;
+- no nueva candidata, rama, PR, Firebase o Hosting;
+- no shell reducido;
+- no parche UI para esconder diferencias;
+- no restaurar V182 ciegamente sobre fixes financieros posteriores;
+- no merge ni producción antes de composición y aprobación humana.
