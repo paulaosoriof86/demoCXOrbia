@@ -1,12 +1,15 @@
 {
   "schemaVersion": "cxorbia.c6.client-auth-materialization-request.v1",
-  "requestId": "c6-client-auth-materialization-20260802-01",
+  "requestId": "c6-client-auth-materialization-20260802-02",
   "authorizationId": "C6_CLIENT_AUTH_DEV_ONE_CREDENTIAL_20260802",
+  "retryOf": "c6-client-auth-materialization-20260802-01",
+  "retryReason": "first_attempt_rolled_back_exactly_after_client_authenticated_transition_did_not_enter_app",
   "authorizedAt": "2026-08-02T09:36:00-06:00",
   "authorizedBy": "Paula",
-  "status": "consumed_fail_rolled_back",
-  "enabled": false,
-  "consumed": true,
+  "status": "authorized_retry_after_exact_rollback",
+  "enabled": true,
+  "consumed": false,
+  "attempt": 2,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -18,9 +21,7 @@
     "role": "cliente",
     "authNamespace": "staff",
     "tenantId": "tya",
-    "projectIds": [
-      "cinepolis"
-    ]
+    "projectIds": ["cinepolis"]
   },
   "maxCredentialCreates": 1,
   "idempotencyRequired": true,
@@ -42,7 +43,5 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false,
-  "consumedAt": "2026-08-02T15:44:00.372Z",
-  "decision": "FAIL_C6_CLIENT_AUTH_MATERIALIZATION_ROLLED_BACK"
+  "production": false
 }
