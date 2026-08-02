@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.corte6.p0-data-hosting-failure.v1",
-  "generatedAt": "2026-08-02T00:24:26.617Z",
+  "generatedAt": "2026-08-02T00:26:51.654Z",
   "decision": "FAIL_C6_P0_DATA_PRESERVATION_GATE",
-  "failedStage": "human_data__reload_2__reload_2:visible_shell_probe:_before_:_role_:_admin_storedRole_:_admin_periods_:14_visits_:616_shoppers_:208_currentProjectId_:_cinepolis_currentPeriodId_:_cinepolis-2026-07_programs_:1_periodsForCurrent_:14_visibleProjects_:14_dataStatus_:_ready_emptyShell_:false_backendEmpty_:false_noProjectsVisible_:true_noPeriodsVisible_:true_view_:_Sin_proyectos_disponibles_No_hay_proyectos_materializados_en_este_entorno_todav_a._La_conexi_n_al_backend_est_activa_y_no_se_est_n_usando_datos_de_demostraci_n._rail_:_CXOrbia_Field_Operations_Platform_PROYECTO_Sin_proyectos_disponibles_PERIODO_Sin_periodos_disponibles_Datos:_Conectado_Cargando_AD_Administraci_n_Sin_proyecto_asignado_Cerrar_sesi_n_gateVersion_:10_continuity_:null_primed_:_role_:_admin_beforeProjectEvents_:true_credentials_:false_technicalAuth_:false_at_:_2026-08-02T00:24:25.740Z_mountResult_:_ok_:true_after_:_role_:_admin_storedRole_:_admin_periods_:14_visits_:616_shoppers_:208_currentProjectId_:_cinepolis_currentPeriodId_:_cinepolis-2026-07_programs_:1_periodsForCurrent_:14_visibleProjects_:14_dataStatus_:_ready_emptyShell_:false_backendEmpty_:false_noProjectsVisible_:false_noPeriodsVisible_:false_view_:_Mi_D_a_Buen_d_a_Admin_Cin_polis_JUL_periodo_JUL_2026_AGENDADAS_4_POR_APROBAR_0_REALIZADAS_40_SIN_ASIGNAR_0_Notificaciones_Ver_todas_Sin_notificaciones_Cronograma_periodo_activo_Este_periodo_Todos_los_periodos_vista_agregada_Jul",
+  "failedStage": "static_contracts",
   "hostingDeployExecutions": 0,
   "authorizationConsumed": false,
   "providerMutationPossible": false,
