@@ -15,11 +15,17 @@ Validar que la recuperación de la baseline acumulativa funciona en runtime. Has
 - HR viva completa desde 2025;
 - julio como último periodo mientras no exista agosto;
 - KPI/fases/drill con una sola máquina de estados;
-- comparativo con los 14 periodos;
+- comparativo con todos los periodos detectados;
 - perfiles mínimos, WA, credenciales y certificaciones por ID exacto;
 - review queue para conflictos; cero fusión por nombre;
 - Portal Cliente con Panorama/KPIs/detalles aprobados;
-- Finanzas con configuración Q60/L200 y fuente financiera canónica;
+- Finanzas con fuente financiera canónica;
+- Cinépolis clasificado como delegado;
+- honorario Shopper GT Q60 / HN L200;
+- regalías Cinépolis 0;
+- comisión de coordinación compartida sin monto, participantes ni porcentajes inventados;
+- alta de proyecto conserva selección directo/delegado;
+- regalías participan únicamente en proyectos con facturación local;
 - tres reloads sin cambio ni duplicación;
 - carga dentro de umbral medido.
 
@@ -32,11 +38,18 @@ Aplicado:
 - eliminación del bridge visual por token oculto;
 - Auth + HR authority + adapters canónicos en la misma URL;
 - adapter unificado de Cliente, configuración financiera e histórico completo;
-- gate estático acumulativo.
+- contrato `tya-project-financial-model-contract-v1.js`;
+- configuración Cinépolis corregida a delegado y regalías 0;
+- wrapper de `CX.data.addProject` que normaliza el modelo seleccionado;
+- gate estático acumulativo ampliado para modelo financiero;
+- documentación y evidencia corregidas.
 
 Pendiente:
 
+- ejecutar el gate Node en checkout del HEAD vivo;
 - ejecutar runtime/browser read-only;
+- comprobar selector directo/delegado y persistencia efectiva;
+- comprobar comisión delegada sin datos inventados;
 - documentar PASS/FAIL;
 - solicitar autorización fresca solo si PASS.
 
@@ -47,6 +60,9 @@ Pendiente:
 - no restauración manual de pantallas;
 - no números de cortes antiguos;
 - no dedupe por nombre/teléfono;
+- no regalías globales;
+- no tratar Cinépolis como proyecto directo;
+- no inventar comisión o reparto;
 - no PowerShell para Paula;
 - no deploy por ensayo.
 
@@ -56,6 +72,7 @@ Pendiente:
 - Excel con formato;
 - exportaciones transversales;
 - copy final de fuentes/estados;
+- visualización de comisión/reparto cuando exista configuración real;
 - optimización de carga por módulo;
 - refinamiento visual de review queue y certificaciones.
 
