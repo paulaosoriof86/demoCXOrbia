@@ -6,9 +6,9 @@
   "continuationReason": "transient_live_hr_http_503_during_readonly_credential_selection_now_retried_fail_closed_without_redeploy",
   "priorDecision": "FAIL_C6_REMOTE_GATES_AFTER_EXISTING_DEV_HOSTING_DEPLOY",
   "priorFailedStage": "select_existing_credentials_v6__LIVE_HR_HTTP_503",
-  "status": "authorized_remote_gates_only_no_hosting_deploy",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_fail",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -54,5 +54,8 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false
+  "production": false,
+  "consumedAt": "2026-08-02T19:10:29.087Z",
+  "decision": "FAIL_C6_REMOTE_GATES_AFTER_EXISTING_DEV_HOSTING_DEPLOY",
+  "nextGate": "REMOTE_GATE_ROOT_CAUSE_REVIEW_NO_DEPLOY"
 }
