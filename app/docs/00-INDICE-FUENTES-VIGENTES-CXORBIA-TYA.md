@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-08-01  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_P0_FRAGMENTED_HUMAN_RUNTIME_PROVEN__UNIFIED_CUMULATIVE_ROOT_FIX_CODE_APPLIED__PENDING_READONLY_RUNTIME_GATES__NO_DEPLOY_NO_PRODUCTION`
+**Estado vivo:** `C6_P0_FRAGMENTED_HUMAN_RUNTIME_PROVEN__UNIFIED_CUMULATIVE_ROOT_FIX_CODE_APPLIED__PROJECT_FINANCE_GUARD_APPLIED__PENDING_READONLY_RUNTIME_GATES__NO_DEPLOY_NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 
@@ -20,9 +20,10 @@
 4. `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`;
 5. `ADDENDUM-MAESTRO-C6-BASELINE-CANONICA-UNICA-Y-CUTOVER-20260801.md`;
 6. `CAMBIOS-BACKEND-ADDENDUM-C6-RECUPERACION-BASELINE-ACUMULATIVA-UNICA-20260801.md`;
-7. evidencia `CORTE6-UNIFIED-CUMULATIVE-RUNTIME-ROOT-FIX-LATEST.json`;
-8. evidencias aprobadas de login, R20 full-history y auditoría C6 live domain/finance/shopper;
-9. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker, PR #7 y HEAD vivo.
+7. `CAMBIOS-BACKEND-ADDENDUM-C6-MODELO-DELEGADO-COMISION-20260801.md`;
+8. evidencia `CORTE6-UNIFIED-CUMULATIVE-RUNTIME-ROOT-FIX-LATEST.json`;
+9. evidencias aprobadas de login, R20 full-history y auditoría C6 live domain/finance/shopper;
+10. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker, PR #7 y HEAD vivo.
 
 ## 3. Regla prevalente de fuente
 
@@ -41,22 +42,28 @@ Agosto no puede aparecer ni heredarse de julio hasta que Paula agregue la fuente
 
 ## 4. Regla prevalente de modelo financiero
 
-El modelo se selecciona por proyecto al crearlo:
+El modelo se selecciona por configuración de cada proyecto, nunca por el nombre del cliente o del proyecto:
 
 - `directo/local_invoicing`: facturación local; las regalías solo aplican si el proyecto las configura;
-- `delegado/delegated_coordination`: sin facturación local del proyecto; regalías 0; compensación mediante comisión de coordinación compartida.
+- `delegado/delegated_coordination`: sin facturación local del proyecto; regalías 0; comisión de coordinación compartida;
+- `regional/regional_coordination`: distribución regional configurable; regalías locales 0 por defecto.
 
-Cinépolis es proyecto delegado.
+Cinépolis es delegado porque su `projectConfig` vigente así lo declara, no por una regla global hardcodeada.
 
 Configuración vigente:
 
 - honorario Shopper GT: Q60;
 - honorario Shopper HN: L200;
 - regalías: 0;
-- comisión y reparto: configurables por proyecto, sin montos ni porcentajes inventados;
+- comisión y reparto: configurables por periodo/país o proyecto, sin montos ni porcentajes inventados;
 - tratamiento tributario: específico del proyecto, no inferido.
 
-El contrato reusable es `app/adapters/tya-project-financial-model-contract-v1.js`.
+Contratos reusables:
+
+- `app/adapters/tya-project-financial-model-contract-v1.js`;
+- `app/adapters/tya-delegated-coordination-finance-guard-v1.js`.
+
+El guard prohíbe usar el honorario del shopper como fallback del ingreso de un proyecto delegado/regional. El margen solo se calcula cuando existen fuentes exactas de comisión y distribución.
 
 ## 5. P0 humano vigente
 
@@ -79,8 +86,9 @@ El HEAD vivo recupera una sola entrada `authenticated-human-canonical`:
 - Firestore protegido como overlay exacto;
 - todos los periodos y visitas de cada revisión;
 - dominio, Shopper y Finanzas canónicos;
-- modelo financiero directo/delegado por proyecto;
+- modelo financiero Local/Delegado/Regional por configuración;
 - Cinépolis delegado, sin regalías;
+- comisión separada de las obligaciones al shopper;
 - comparativo de todos los periodos HR;
 - sin módulos paralelos ni shell reducido.
 
@@ -88,15 +96,23 @@ No hubo deploy ni writes de proveedor.
 
 ## 7. Gate vivo
 
-`STATIC ROOT CONTRACT → READ-ONLY AUTH STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → HISTORICAL ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE SOURCE + PROJECT MODEL → 3 RELOADS → EVIDENCE`.
+`STATIC ROOT CONTRACT → READ-ONLY AUTH STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → HISTORICAL ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE SOURCE + PROJECT MODEL + COMMISSION → 3 RELOADS → EVIDENCE`.
 
 El gate financiero debe demostrar:
 
 - selector directo/delegado al crear proyecto;
-- Cinépolis delegado;
+- soporte backend de regional;
+- Cinépolis delegado desde configuración;
 - regalías Cinépolis 0;
 - comisión compartida sin valores inventados;
+- cero fallback honorario Shopper → ingreso delegado;
+- margen únicamente con comisión y distribución exactas;
 - regalías calculadas únicamente para proyectos directos.
+
+Warnings frontend documentados para Claude:
+
+1. incorporar la opción `Regional` en `app/modules/proyecto-wizard.js`;
+2. corregir en `app/modules/finanzas.js` el texto delegado que todavía describe “honorario recibido menos pagado al shopper”.
 
 ## 8. Después del PASS
 
