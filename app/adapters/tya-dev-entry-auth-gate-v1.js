@@ -1,5 +1,5 @@
 /* ============================================================
-   CXOrbia · Corte 6 DEV entry lane split v8
+   CXOrbia · Corte 6 DEV entry lane split v9
    ------------------------------------------------------------
    Human visual lane:
    - preserves native direct role cards;
@@ -7,8 +7,9 @@
    - never activates protected Firebase replacement semantics;
    - never clears CX.data while the 14/616/208 baseline is valid;
    - explicitly disables the empty-backend shell contract;
-   - restores an already selected human profile after reload only
-     after the live 14/616/208 baseline is ready.
+   - captures and primes the selected human profile before any
+     project event can overwrite cx_session with a null role;
+   - restores the human profile after live 14/616/208 is ready.
 
    Technical Auth lane (explicit query gate only):
    - validates existing Firebase users;
@@ -41,6 +42,18 @@ window.CX = window.CX || {};
   let humanRestoreTimer = null;
   let humanRestoreStartedAt = 0;
 
+  function parseHumanSession(raw){
+    try{
+      const saved=typeof raw==='string'?JSON.parse(raw||'null'):raw;
+      if(!saved||!['admin','cliente','shopper'].includes(saved.role)) return null;
+      return {role:saved.role,user:saved.user||null,view:saved.view||null,testRole:saved.testRole||null};
+    }catch(_){ return null; }
+  }
+
+  const initialHumanSession = humanVisualEnabled ? (function(){
+    try{return parseHumanSession(localStorage.getItem('cx_session'));}catch(_){return null;}
+  })() : null;
+
   function suppressTechnicalStatus(){
     const remove = function(){
       const pill = document.getElementById('cxBackendPreviewStatus');
@@ -61,6 +74,32 @@ window.CX = window.CX || {};
     }catch(_){ return false; }
   }
 
+  function currentOrInitialHumanSession(){
+    let current=null;
+    try{current=parseHumanSession(localStorage.getItem('cx_session'));}catch(_){current=null;}
+    return current||initialHumanSession;
+  }
+
+  function applySession(session){
+    if(!session||!CX.session) return false;
+    CX.session.role=session.role;
+    CX.session.user=session.user||null;
+    CX.session.view=session.view||null;
+    CX.session.testRole=session.testRole||null;
+    if(typeof CX.session.save==='function') CX.session.save();
+    return true;
+  }
+
+  function primeHumanSession(){
+    const session=currentOrInitialHumanSession();
+    if(!session) return false;
+    const applied=applySession(session);
+    if(applied){
+      window.CX_HUMAN_SESSION_PRIMED={role:session.role,beforeProjectEvents:true,credentials:false,technicalAuth:false,at:new Date().toISOString()};
+    }
+    return applied;
+  }
+
   function preserveHumanDataSource(reason){
     if(!CX.dataSource || !validCanonicalBaseline()) return false;
     const now = new Date().toISOString();
@@ -78,73 +117,34 @@ window.CX = window.CX || {};
     window.CX_BACKEND_DATA_SOURCE = 'hr-source-safe';
     window.CX_BACKEND_PREVIEW_LANE = 'source-safe-human-visual';
     window.CX_BACKEND_LAST_STATE = {
-      source:'hr-source-safe',
-      empty:false,
-      readOnly:true,
-      writes:false,
-      fallbackUsed:false,
-      humanVisual:true,
-      auth:'validated-separately',
-      counts:{projects:14,periods:14,visits:616,shoppers:208},
-      reason:reason || 'human-lane-preserved',
-      at:now
+      source:'hr-source-safe',empty:false,readOnly:true,writes:false,fallbackUsed:false,humanVisual:true,
+      auth:'validated-separately',counts:{projects:14,periods:14,visits:616,shoppers:208},
+      reason:reason || 'human-lane-preserved',at:now
     };
     window.CX_CORTE4_READONLY = {
-      ready:true,
-      source:'hr-source-safe',
-      empty:false,
-      readOnly:true,
-      writeMode:'disabled',
-      preserveCxDataInterface:true,
-      fallbackUsed:false,
-      humanVisual:true,
-      state:'canonical-data-preserved',
-      at:now
+      ready:true,source:'hr-source-safe',empty:false,readOnly:true,writeMode:'disabled',
+      preserveCxDataInterface:true,fallbackUsed:false,humanVisual:true,state:'canonical-data-preserved',at:now
     };
     window.CX_C4_EMPTY_SHELL_STATE = {
-      active:false,
-      role:CX.session && CX.session.role || null,
-      projects:14,
-      periodId:CX.data.currentPeriodId || null,
-      projectId:CX.data.currentProjectId || null,
-      staleShell:false,
-      reason:reason || 'human-lane-preserved'
+      active:false,role:CX.session && CX.session.role || null,projects:14,
+      periodId:CX.data.currentPeriodId || null,projectId:CX.data.currentProjectId || null,
+      staleShell:false,reason:reason || 'human-lane-preserved'
     };
     return true;
   }
 
-  function savedHumanSession(){
-    try{
-      const saved=JSON.parse(localStorage.getItem('cx_session')||'null');
-      if(!saved||!['admin','cliente','shopper'].includes(saved.role)) return null;
-      return saved;
-    }catch(_){ return null; }
-  }
-
   function restoreHumanSessionAndEnter(reason){
     if(!humanVisualEnabled || !validCanonicalBaseline() || !CX.session || !CX.app) return false;
-    const saved=savedHumanSession();
+    const saved=currentOrInitialHumanSession();
     if(!saved) return false;
-    if(!CX.session.role){
-      CX.session.role=saved.role;
-      CX.session.user=saved.user||null;
-      CX.session.view=saved.view||null;
-      CX.session.testRole=saved.testRole||null;
-    }
+    applySession(saved);
     preserveHumanDataSource(reason||'restore-human-session');
     const app=document.getElementById('app');
-    if(app && !app.classList.contains('on') && typeof CX.app.enter==='function'){
-      CX.app.enter();
-    }
+    if(app && !app.classList.contains('on') && typeof CX.app.enter==='function') CX.app.enter();
     const restored=!!(document.getElementById('app')&&document.getElementById('app').classList.contains('on'));
     window.CX_HUMAN_SESSION_CONTINUITY={
-      restored,
-      role:CX.session.role,
-      canonicalData:true,
-      credentials:false,
-      technicalAuth:false,
-      reason:reason||'restore-human-session',
-      at:new Date().toISOString()
+      restored,role:CX.session.role,canonicalData:true,credentials:false,technicalAuth:false,
+      reason:reason||'restore-human-session',at:new Date().toISOString()
     };
     return restored;
   }
@@ -154,13 +154,10 @@ window.CX = window.CX || {};
   }
 
   function startHumanRestoreLoop(reason){
-    if(!humanVisualEnabled || humanRestoreTimer || !savedHumanSession()) return;
+    if(!humanVisualEnabled || humanRestoreTimer || !currentOrInitialHumanSession()) return;
     humanRestoreStartedAt=Date.now();
     const attempt=function(){
-      if(restoreHumanSessionAndEnter(reason||'human-restore-loop')){
-        stopHumanRestoreLoop();
-        return;
-      }
+      if(restoreHumanSessionAndEnter(reason||'human-restore-loop')){stopHumanRestoreLoop();return;}
       if(Date.now()-humanRestoreStartedAt>60000){
         stopHumanRestoreLoop();
         window.CX_HUMAN_SESSION_CONTINUITY={restored:false,timeout:true,canonicalData:validCanonicalBaseline(),reason:reason||'human-restore-loop',at:new Date().toISOString()};
@@ -183,41 +180,27 @@ window.CX = window.CX || {};
     backendCfg.preserveCxDataInterface = true;
     if(backendCfg.devPreviewAuth) backendCfg.devPreviewAuth.enabled = false;
     window.CX_BACKEND_PREVIEW_LANE = 'source-safe-human-visual';
+    primeHumanSession();
     window.CX_DEV_ENTRY_AUTH_GATE = {
-      applied:true,
-      version:8,
-      mode:'native-direct-role-entry',
-      humanVisual:true,
-      visibleRoleSelector:true,
-      usernamePasswordVisible:false,
-      technicalAuthEnabled:false,
-      integratedFirebaseLoginDisabled:true,
-      backendFirebaseDisabledForHumanVisual:true,
-      emptyBackendShellDisabled:true,
-      humanSessionContinuity:true,
-      humanSessionRestoreWaitsForCanonicalData:true,
-      hrCanonicalAuthorityPreserved:true,
-      canonicalBaselineRequired:{periods:14,visits:616,shoppers:208},
-      providerWrites:0,
-      writes:false,
-      production:false,
-      at:new Date().toISOString()
+      applied:true,version:9,mode:'native-direct-role-entry',humanVisual:true,visibleRoleSelector:true,
+      usernamePasswordVisible:false,technicalAuthEnabled:false,integratedFirebaseLoginDisabled:true,
+      backendFirebaseDisabledForHumanVisual:true,emptyBackendShellDisabled:true,humanSessionContinuity:true,
+      humanSessionPrimedBeforeProjectEvents:true,humanSessionRestoreWaitsForCanonicalData:true,
+      hrCanonicalAuthorityPreserved:true,canonicalBaselineRequired:{periods:14,visits:616,shoppers:208},
+      providerWrites:0,writes:false,production:false,at:new Date().toISOString()
     };
     preserveHumanDataSource('configure-human-lane');
     if(document.readyState === 'loading'){
       document.addEventListener('DOMContentLoaded', function(){
-        preserveHumanDataSource('dom-ready-human-lane');
-        startHumanRestoreLoop('dom-ready-human-lane');
+        primeHumanSession();preserveHumanDataSource('dom-ready-human-lane');startHumanRestoreLoop('dom-ready-human-lane');
       }, {once:true});
     }else{
-      preserveHumanDataSource('immediate-human-lane');
-      startHumanRestoreLoop('immediate-human-lane');
+      primeHumanSession();preserveHumanDataSource('immediate-human-lane');startHumanRestoreLoop('immediate-human-lane');
     }
     window.addEventListener('cx:live-source-updated', function(){
-      preserveHumanDataSource('live-source-updated');
-      startHumanRestoreLoop('live-source-updated');
+      primeHumanSession();preserveHumanDataSource('live-source-updated');startHumanRestoreLoop('live-source-updated');
     });
-    window.addEventListener('load', function(){startHumanRestoreLoop('window-load-human-lane');}, {once:true});
+    window.addEventListener('load', function(){primeHumanSession();startHumanRestoreLoop('window-load-human-lane');}, {once:true});
   }
 
   function configureTechnicalLane(){
@@ -230,12 +213,8 @@ window.CX = window.CX || {};
 
   function authErrorMessage(err){
     const code = String(err && (err.code || err.message) || '');
-    if(/auth\/(wrong-password|invalid-credential|user-not-found|invalid-email)/i.test(code)){
-      return 'Usuario o contraseña no válidos.';
-    }
-    if(/TENANT_NOT_ALLOWED|PROJECT_SCOPE_REQUIRED|SHOPPER_SCOPE_REQUIRED|ROLE_NOT_ALLOWED|LOGIN_NAMESPACE_MISMATCH|ROLE_NAMESPACE_MISMATCH/i.test(code)){
-      return 'La cuenta es válida, pero no tiene alcance para este proyecto.';
-    }
+    if(/auth\/(wrong-password|invalid-credential|user-not-found|invalid-email)/i.test(code)) return 'Usuario o contraseña no válidos.';
+    if(/TENANT_NOT_ALLOWED|PROJECT_SCOPE_REQUIRED|SHOPPER_SCOPE_REQUIRED|ROLE_NOT_ALLOWED|LOGIN_NAMESPACE_MISMATCH|ROLE_NAMESPACE_MISMATCH/i.test(code)) return 'La cuenta es válida, pero no tiene alcance para este proyecto.';
     return 'No fue posible validar el acceso técnico.';
   }
 
@@ -244,123 +223,41 @@ window.CX = window.CX || {};
     const loginRoot = document.getElementById('login');
     const card = loginRoot && loginRoot.querySelector('.login-card');
     if(!card || !window.CX || !CX.backendAuth) return false;
-
-    card.querySelectorAll('.role-btn,.role-alt,#goReg').forEach(function(el){
-      if(el && el.parentNode) el.remove();
+    card.querySelectorAll('.role-btn,.role-alt,#goReg').forEach(function(el){if(el&&el.parentNode)el.remove();});
+    const guest=card.querySelector('#loginUserSel');
+    if(guest){const section=guest.closest('div[style*="border-top"]')||guest.parentElement;if(section&&section.parentNode)section.remove();}
+    const title=card.querySelector('.login-title');if(title)title.textContent='Validación técnica protegida';
+    const sub=card.querySelector('.login-sub');if(sub)sub.textContent='Carril E2E privado; no corresponde a la entrada humana del producto.';
+    const old=card.querySelector('#cxDevEntryAuth');if(old)old.remove();
+    const form=document.createElement('form');
+    form.id='cxDevEntryAuth';form.autocomplete='off';form.style.cssText='margin-top:14px;padding-top:14px;border-top:1px solid var(--border);text-align:left';
+    form.innerHTML='<label class="lbl" for="cxDevEntryLogin">Usuario técnico</label><input class="inp" id="cxDevEntryLogin" type="text" autocomplete="off" style="width:100%;margin-bottom:9px"><label class="lbl" for="cxDevEntryPassword">Contraseña técnica</label><input class="inp" id="cxDevEntryPassword" type="password" autocomplete="off" style="width:100%;margin-bottom:9px"><div id="cxDevEntryError" aria-live="polite" style="display:none;font-size:11.5px;color:#b42318;background:#fef3f2;border-radius:8px;padding:8px 10px;margin-bottom:9px"></div><button class="btn btn-pr" id="cxDevEntrySubmit" type="submit" style="width:100%">Validar</button>';
+    const footer=card.querySelector('.login-devfor')||card.querySelector('.login-poweredby');card.insertBefore(form,footer||null);
+    const login=form.querySelector('#cxDevEntryLogin'),password=form.querySelector('#cxDevEntryPassword'),error=form.querySelector('#cxDevEntryError'),submit=form.querySelector('#cxDevEntrySubmit');
+    form.addEventListener('submit',async function(ev){
+      ev.preventDefault();error.style.display='none';error.textContent='';
+      const userValue=String(login.value||'').trim(),passwordValue=String(password.value||'');
+      if(!userValue||!passwordValue){error.textContent='Completa las credenciales técnicas.';error.style.display='block';return;}
+      submit.disabled=true;submit.textContent='Validando...';
+      try{await CX.backendAuth.authenticate(userValue,passwordValue,technicalNamespace);password.value='';login.value='';submit.textContent='Cargando...';if(CX.app&&typeof CX.app.enter==='function')CX.app.enter();}
+      catch(err){password.value='';error.textContent=authErrorMessage(err);error.style.display='block';submit.disabled=false;submit.textContent='Validar';}
     });
-    const guest = card.querySelector('#loginUserSel');
-    if(guest){
-      const section = guest.closest('div[style*="border-top"]') || guest.parentElement;
-      if(section && section.parentNode) section.remove();
-    }
-
-    const title = card.querySelector('.login-title');
-    if(title) title.textContent = 'Validación técnica protegida';
-    const sub = card.querySelector('.login-sub');
-    if(sub) sub.textContent = 'Carril E2E privado; no corresponde a la entrada humana del producto.';
-
-    const old = card.querySelector('#cxDevEntryAuth');
-    if(old) old.remove();
-
-    const form = document.createElement('form');
-    form.id = 'cxDevEntryAuth';
-    form.autocomplete = 'off';
-    form.style.cssText = 'margin-top:14px;padding-top:14px;border-top:1px solid var(--border);text-align:left';
-    form.innerHTML =
-      '<label class="lbl" for="cxDevEntryLogin">Usuario técnico</label>'+
-      '<input class="inp" id="cxDevEntryLogin" type="text" autocomplete="off" style="width:100%;margin-bottom:9px">'+
-      '<label class="lbl" for="cxDevEntryPassword">Contraseña técnica</label>'+
-      '<input class="inp" id="cxDevEntryPassword" type="password" autocomplete="off" style="width:100%;margin-bottom:9px">'+
-      '<div id="cxDevEntryError" aria-live="polite" style="display:none;font-size:11.5px;color:#b42318;background:#fef3f2;border-radius:8px;padding:8px 10px;margin-bottom:9px"></div>'+
-      '<button class="btn btn-pr" id="cxDevEntrySubmit" type="submit" style="width:100%">Validar</button>';
-
-    const footer = card.querySelector('.login-devfor') || card.querySelector('.login-poweredby');
-    card.insertBefore(form, footer || null);
-
-    const login = form.querySelector('#cxDevEntryLogin');
-    const password = form.querySelector('#cxDevEntryPassword');
-    const error = form.querySelector('#cxDevEntryError');
-    const submit = form.querySelector('#cxDevEntrySubmit');
-
-    form.addEventListener('submit', async function(ev){
-      ev.preventDefault();
-      error.style.display = 'none';
-      error.textContent = '';
-      const userValue = String(login.value || '').trim();
-      const passwordValue = String(password.value || '');
-      if(!userValue || !passwordValue){
-        error.textContent = 'Completa las credenciales técnicas.';
-        error.style.display = 'block';
-        return;
-      }
-      submit.disabled = true;
-      submit.textContent = 'Validando...';
-      try{
-        await CX.backendAuth.authenticate(userValue, passwordValue, technicalNamespace);
-        password.value = '';
-        login.value = '';
-        submit.textContent = 'Cargando...';
-        if(CX.app && typeof CX.app.enter === 'function') CX.app.enter();
-      }catch(err){
-        password.value = '';
-        error.textContent = authErrorMessage(err);
-        error.style.display = 'block';
-        submit.disabled = false;
-        submit.textContent = 'Validar';
-      }
-    });
-
-    window.CX_DEV_ENTRY_AUTH_GATE = {
-      applied:true,
-      version:8,
-      mode:'technical-auth-e2e-isolated',
-      humanVisual:false,
-      visibleRoleSelector:false,
-      usernamePasswordVisible:true,
-      technicalAuthEnabled:true,
-      technicalNamespace:technicalNamespace,
-      namespaceUserSelectable:false,
-      firebaseAuthAuthorityPreserved:true,
-      credentialsEmbedded:false,
-      writes:false,
-      production:false,
-      at:new Date().toISOString()
-    };
+    window.CX_DEV_ENTRY_AUTH_GATE={applied:true,version:9,mode:'technical-auth-e2e-isolated',humanVisual:false,visibleRoleSelector:false,usernamePasswordVisible:true,technicalAuthEnabled:true,technicalNamespace,namespaceUserSelectable:false,firebaseAuthAuthorityPreserved:true,credentialsEmbedded:false,writes:false,production:false,at:new Date().toISOString()};
     return true;
   }
 
   function patchTechnicalLane(){
     suppressTechnicalStatus();
-    if(patched || !CX.app || !CX.backendAuth) return false;
-    const priorShowLogin = typeof CX.app.showLogin === 'function' ? CX.app.showLogin.bind(CX.app) : null;
-    const priorEnter = typeof CX.app.enter === 'function' ? CX.app.enter.bind(CX.app) : null;
-
-    CX.app.showLogin = function(){
-      const result = priorShowLogin ? priorShowLogin() : undefined;
-      renderTechnicalAuth();
-      return result;
-    };
-    CX.app.enter = function(){
-      suppressTechnicalStatus();
-      const result = priorEnter ? priorEnter() : undefined;
-      if(!(CX.backendAuth && CX.backendAuth.isReady && CX.backendAuth.isReady())){
-        setTimeout(renderTechnicalAuth,0);
-      }
-      return result;
-    };
-
-    patched = true;
-    return true;
+    if(patched||!CX.app||!CX.backendAuth)return false;
+    const priorShowLogin=typeof CX.app.showLogin==='function'?CX.app.showLogin.bind(CX.app):null;
+    const priorEnter=typeof CX.app.enter==='function'?CX.app.enter.bind(CX.app):null;
+    CX.app.showLogin=function(){const result=priorShowLogin?priorShowLogin():undefined;renderTechnicalAuth();return result;};
+    CX.app.enter=function(){suppressTechnicalStatus();const result=priorEnter?priorEnter():undefined;if(!(CX.backendAuth&&CX.backendAuth.isReady&&CX.backendAuth.isReady()))setTimeout(renderTechnicalAuth,0);return result;};
+    patched=true;return true;
   }
 
   suppressTechnicalStatus();
-
-  if(humanVisualEnabled){
-    configureHumanLane();
-    return;
-  }
-
+  if(humanVisualEnabled){configureHumanLane();return;}
   configureTechnicalLane();
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', patchTechnicalLane);
-  else patchTechnicalLane();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',patchTechnicalLane);else patchTechnicalLane();
 })();
