@@ -8,9 +8,9 @@
   "priorFailedStage": "remote_domain_finance_portals_reservations",
   "priorRootCause": "PROJECT_FINANCIAL_CONFIGURATION_METADATA_NOT_MATERIALIZED_IN_CANONICAL_PROJECTS_BEFORE_NORMALIZATION",
   "financeRootFixSourceDecision": "PASS_C6_FINANCE_ROOT_FIX_SOURCE_ONLY_GATE",
-  "status": "authorized_execute_once_stop_retry",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_fail_stop_retry",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -65,5 +65,9 @@
   "paymentsWrites": 0,
   "merge": false,
   "production": false,
-  "stopRetryOnFailure": true
+  "stopRetryOnFailure": true,
+  "consumedAt": "2026-08-02T22:49:18.782Z",
+  "decision": "FAIL_C6_REMOTE_GATES_AFTER_SINGLE_DEV_HOSTING_DEPLOY_STOP_RETRY",
+  "nextGate": "ROOT_CAUSE_REVIEW_NO_AUTOMATIC_REDEPLOY",
+  "stopRetry": true
 }
