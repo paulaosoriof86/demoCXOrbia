@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-08-02  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_FINANCE_ROOT_FIX_SOURCE_ONLY_PASS__FRESH_REMOTE_REVALIDATION_REQUIRED__NO_PRODUCTION`
+**Estado vivo:** `C6_FINANCE_ROOT_FIX_REMOTE_PASS__SEMANTIC_GATE_STOP_RETRY_EXACT_ASSERTION_PENDING__NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 
@@ -20,10 +20,11 @@
 4. `ADDENDUM-MAESTRO-C6-BASELINE-CANONICA-UNICA-Y-CUTOVER-20260801.md`;
 5. `CAMBIOS-BACKEND-ADDENDUM-C6-CANONICAL-HEAD-DEPLOY-SHOPPER-PASS-FINANCE-STOP-RETRY-20260802.md`;
 6. `CAMBIOS-BACKEND-ADDENDUM-C6-FINANCE-ROOT-FIX-SOURCE-ONLY-20260802.md`;
-7. `RESUMEN-PARA-CLAUDE.md`;
-8. `PENDIENTES-PROTOTIPO.md`;
-9. Academia vigente;
-10. PR #7 y HEAD vivo.
+7. `CAMBIOS-BACKEND-ADDENDUM-C6-FINANCE-REMOTE-PASS-SEMANTIC-STOP-RETRY-20260802.md`;
+8. `RESUMEN-PARA-CLAUDE.md`;
+9. `PENDIENTES-PROTOTIPO.md`;
+10. Academia vigente;
+11. PR #7 y HEAD vivo.
 
 ## 3. Fuentes técnicas vigentes
 
@@ -33,6 +34,7 @@
 - `tools/qa/tya-c6-shopper-new-tab-authority-root-fix-gate.mjs`;
 - `tools/qa/tya-c6-finance-root-fix-gate.mjs`;
 - `tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs`;
+- `tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs`;
 - `firebase.json`, `firebase.deploy.json`, `.firebaserc`.
 
 ## 4. Evidencia vigente
@@ -42,17 +44,17 @@
 - `CORTE6-SHOPPER-NEW-TAB-AUTHORITY-ROOT-FIX-LATEST.json`;
 - `CORTE6-FINANCE-ROOT-FIX-SOURCE-ONLY-LATEST.json`.
 
-## 5. Baseline preservada
+## 5. Baseline remota revalidada
 
 - HR viva: 14 periodos, junio 2025–julio 2026;
 - 616 visitas;
 - agosto 2026 ausente;
-- Staff remoto PASS;
-- Shopper remoto PASS con identidad exacta, `ownVisits=1`, tres recargas y nueva pestaña;
-- Cliente remoto PASS con scope exclusivo `cinepolis`;
+- Staff remoto PASS con tres recargas y nueva pestaña;
+- Shopper remoto PASS con identidad exacta, 208 shoppers, `ownVisits=1`, tres recargas y nueva pestaña;
+- Cliente remoto PASS con scope exclusivo `cinepolis`, tres recargas y nueva pestaña;
 - producción intacta.
 
-## 6. Modelo financiero prevalente
+## 6. Modelo financiero remoto prevalente
 
 Llave técnica `tya::cinepolis`:
 
@@ -65,28 +67,36 @@ Llave técnica `tya::cinepolis`:
 - valores no inventados;
 - honorario Shopper no usado como ingreso.
 
-La configuración se materializa antes de `normalizeAll()`.
+Diagnóstico remoto:
 
-## 7. Gate source-only vigente
+- 14 delegados;
+- 0 directos;
+- 0 sin configurar;
+- 0 violaciones de regalías.
+
+La causa de precedencia financiera queda cerrada remotamente.
+
+## 7. STOP_RETRY vigente
+
+Request consumido:
+
+`c6-finance-root-fix-remote-revalidation-20260802-08`.
 
 Decisión:
 
-`PASS_C6_FINANCE_ROOT_FIX_SOURCE_ONLY_GATE`.
+`FAIL_C6_REMOTE_GATES_AFTER_SINGLE_DEV_HOSTING_DEPLOY_STOP_RETRY`.
 
-Comprobó:
+Etapa:
 
-- resolución por llaves técnicas;
-- ausencia de clasificación por nombre;
-- materialización antes de normalización;
-- consistencia de `period()`, `project()` y Finanzas;
-- script load, actualización HR y autoridad protegida;
-- cero provider writes.
+`remote_domain_finance_portals_reservations`.
+
+La evidencia contiene `semantic=null`; la aserción exacta no fue persistida. No se permite inferirla ni ejecutar otro deploy.
 
 ## 8. Gate restante
 
-Solo con autorización fresca:
+Read-only y sin deploy:
 
-`SOURCE LOCK NUEVO → FINANCE ROOT-FIX GATE → GATE ACUMULATIVO → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD → HR → STAFF → SHOPPER → CLIENTE → DOMINIO/FINANZAS/PORTALES/RESERVAS → EVIDENCIA → VALIDACIÓN HUMANA`.
+`PERSISTIR LOG/CHECKPOINT POR ASERCIÓN → EJECUTAR GATE SEMÁNTICO CONTRA HOSTING DEV VIGENTE → IDENTIFICAR FALLO EXACTO → EVIDENCIA → DOCUMENTACIÓN → STOP`.
 
 Hasta entonces:
 
@@ -95,3 +105,12 @@ Hasta entonces:
 - no agosto/postulaciones;
 - no merge;
 - no producción.
+
+## 9. Estado seguro
+
+- Hosting DEV del macro-bloque: 1.
+- Segundo deploy: 0.
+- Cloud Run/Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos: 0.
+- Credenciales/tokens expuestos: 0.
+- Merge: false.
+- Producción: false.
