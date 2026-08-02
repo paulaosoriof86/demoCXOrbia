@@ -98,6 +98,13 @@ must(unified.includes("role==='cliente'") &&
      unified.includes('Comparativo histórico — todos los periodos HR') &&
      unified.includes('honorarium:{GT:60,HN:200}'),
   'C6_UNIFIED_CLIENT_HISTORY_PROJECT_CONFIG');
+must(unified.includes('installEarlyRoleClickGuard') &&
+     unified.includes("document.addEventListener('click',earlyRoleClickGuard,true)") &&
+     unified.includes("event.stopImmediatePropagation()") &&
+     unified.includes('CX.backendAuth.showForRole(role)') &&
+     unified.includes('directRoleEntryAllowed:false') &&
+     unified.includes('credentialValuesStored:false'),
+  'C6_EARLY_ROLE_CLICK_CANNOT_BYPASS_AUTH');
 
 must(projectWizard.includes('value="directo"') &&
      projectWizard.includes('value="delegado"') &&
