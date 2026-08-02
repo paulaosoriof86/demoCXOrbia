@@ -1,131 +1,121 @@
 # ACADEMIA — IMPACTO DE LA RECONSTRUCCIÓN DE CANDIDATA ACUMULATIVA
 
 **Fecha:** 2026-08-02  
-**Estado:** `DOCUMENTED_NON_BLOCKING_PRIORITY_PHASE_A`
+**Estado:** `DOCUMENTED_NON_BLOCKING_PRIORITY_PHASE_A__FAMILIES_A_B_ACTIVE`
 
 ## 1. Regla
 
-Academia debe quedar alineada con la versión realmente seleccionada de cada módulo, pero no bloqueará la prioridad operativa CRM Ops Leads/Phase A salvo que exista un P0 demostrado.
+Academia debe quedar alineada con la versión realmente seleccionada de cada módulo, pero no bloqueará CRM Ops Leads/Phase A salvo P0 demostrado.
 
-## 2. Problema que se corrige
+No se actualizan cursos o manuales a partir de PASS técnicos solamente. Deben corresponder al build visualmente aprobado por Paula.
 
-Cuando diferentes módulos provienen de candidatas o fixes distintos, cursos, manuales, rutas por rol y troubleshooting pueden describir botones, estados o flujos que ya no corresponden al runtime visible.
+## 2. Familia A — impacto documentado
 
-La reconstrucción por módulo permite vincular:
+Los contenidos futuros deben explicar una sola versión de:
 
-- versión funcional seleccionada;
-- rol que la usa;
-- ruta y pantalla real;
-- reglas y estados vigentes;
-- manual relacionado;
-- curso/lección relacionada;
-- errores frecuentes y solución;
-- notificaciones asociadas.
+- acceso humano y Auth protegida;
+- sesión y nueva pestaña;
+- tenant, proyecto y periodo;
+- fuente HR viva;
+- `CX.data` como interfaz estable;
+- roles, permisos y scopes;
+- diferencia entre marca visual y llave técnica;
+- estados canónicos;
+- modo read-only y acciones bloqueadas;
+- troubleshooting de caché/build.
 
-## 3. Requisito por familia
+No deben enseñar:
 
-### Familia A
+- un segundo login técnico;
+- `tenant-demo` como autoridad;
+- Proyecto y Periodo mezclados;
+- localStorage como permiso;
+- un bridge DOM como flujo funcional oficial.
 
-Actualizar después de cerrar:
+## 3. Familia B — impacto documentado
 
-- acceso y sesión;
-- entrada humana vs Auth técnica;
-- selección de tenant/proyecto/periodo;
-- fuente de datos;
-- roles, permisos y navegación;
-- troubleshooting de sesión, scopes y nueva pestaña.
+### Dashboard
 
-### Familia B
+- lectura de KPIs y drilldowns desde la misma fuente;
+- diferencia entre dato exacto, pendiente de fuente y no disponible;
+- comparativo histórico real;
+- cero métricas fabricadas.
 
-Actualizar:
+### CRM Ops Leads
 
-- CRM Ops Leads;
-- Dashboard;
-- hoja de ruta;
-- lectura de indicadores;
-- drilldowns;
-- diferencia entre dato exacto, pendiente de fuente y métrica no disponible.
+- pipeline, leads, cuentas, contactos, actividades y ficha 360;
+- estado vacío/pending-source cuando no exista backend CRM;
+- diferencia entre modo demo y datos reales;
+- gates de edición y trazabilidad.
 
-### Familia C
+### Clientes
 
-Actualizar:
+- relación Cliente→Proyecto;
+- contactos reales vs información no disponible;
+- no enseñar prospectos o correos de fixture como datos operativos.
 
-- HR;
-- histórico;
-- visitas;
-- postulaciones;
-- reservas;
-- shoppers;
-- conflictos y revisión humana.
+### Comercial
 
-### Familia D
-
-Actualizar:
-
-- Mi Día;
-- visitas disponibles;
-- Mis Visitas;
-- cuestionario;
-- Beneficios;
-- Certificaciones;
-- rutas y acciones Shopper.
-
-### Familia E
-
-Actualizar:
-
-- modelo financiero por proyecto;
+- calculadora por configuración de proyecto;
 - honorario vs ingreso;
-- liquidación vs pago;
-- revisión financiera;
-- monedas y países;
-- lotes y confirmaciones.
+- regalías solo cuando apliquen;
+- delegado/localBilling false para Cinépolis;
+- propuestas y plantillas con gates.
 
-### Familia F
+### Marketing
 
-Actualizar:
+- calendario y estados;
+- métricas solo con fuente;
+- Gemini/Make como integraciones futuras y gateadas, no activas por defecto.
 
-- portales;
-- reportes;
-- alcance de filas;
-- periodo y fuente;
-- PDF/XLSX/PPTX;
-- interpretación de gráficas.
+### Hojas de Ruta
 
-### Familia G
+- HR como autoridad;
+- proyecto/periodo;
+- lectura, importación y sincronización;
+- qué acciones están habilitadas y cuáles requieren gate.
 
-Reconciliar el propio módulo Academia, manuales, cursos, certificaciones, administrabilidad, soporte e integraciones.
-
-## 4. Criterio de cierre de Academia
-
-Por cada módulo seleccionado debe existir:
+## 4. Requisito por módulo seleccionado
 
 - manual separado del curso;
 - audiencia/rol correcto;
+- ruta y botones reales;
+- fuente y estado de datos;
 - pasos concretos;
-- botones y rutas reales;
-- estados y gates honestos;
 - checklist;
 - errores frecuentes;
 - troubleshooting;
-- impacto comercial o de valor cuando aplique;
-- actualización de notificaciones y certificaciones relacionadas.
+- notificaciones relacionadas;
+- evidencia del build visualmente aprobado.
 
 ## 5. Estado actual
 
-- No se modifica todavía `app/modules/academia.js`.
-- No se declara Academia acumulativa cerrada.
-- Se conserva todo el contenido existente hasta completar la matriz.
-- Los cambios requeridos se documentarán por módulo y se aplicarán en la composición final o quedarán como tarea focalizada de Claude, según corresponda.
+- no se modifica todavía `app/modules/academia.js`;
+- no se declara Academia acumulativa cerrada;
+- se preserva el contenido existente;
+- los cambios se aplicarán después de la validación visual de cada checkpoint;
+- Academia no bloquea el ensamblaje A+B salvo P0 real.
 
-## 6. Clasificación
+## 6. Próximo impacto
 
-- **Reusable CXOrbia:** Academia vinculada a versión y contrato de cada módulo.
-- **Exclusivo cliente:** reglas operativas TyA/Cinépolis.
+Después del Checkpoint Visual 1 se compararán los cursos/manuales existentes contra:
+
+- shell y acceso aprobado;
+- CRM Ops Leads;
+- Dashboard;
+- Hojas de Ruta;
+- Clientes;
+- Comercial;
+- Marketing.
+
+## 7. Clasificación
+
+- **Reusable CXOrbia:** Academia vinculada a build, fuente y contrato real.
+- **Exclusivo cliente:** reglas TyA/Cinépolis.
 - **Claude/prototipo:** contenido, interacción y UX de cursos/manuales.
 - **Academia:** impacto directo.
-- **Sin impacto Claude:** hashes y manifest de proveniencia.
+- **Sin impacto Claude:** hashes, manifests y gates.
 
-## 7. Estado seguro
+## 8. Estado seguro
 
 Sin cambios UI, deploy, proveedores, writes, merge o producción.
