@@ -3,182 +3,134 @@
 **Fecha original:** 2026-07-04  
 **Última revisión:** 2026-08-02  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_AUTH_RUNTIME_ALL_ROLES_PASS__CLIENT_CREDENTIAL_MATERIALIZED__PENDING_FRESH_DEV_DEPLOY_AUTHORIZATION__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_ALL_ROLES_PASS__HOSTING_DEV_COMMAND_FAILED_BEFORE_RELEASE__ROOT_CAUSE_FIXED__FRESH_AUTH_REQUIRED__NO_PRODUCTION`
 
 ## 1. Objetivo y arquitectura
 
 TyA/Cinépolis es el primer tenant/proyecto configurable de CXOrbia. `cxorbia-backend-dev` es DEV canónico y `tya-plataforma` el Hosting final.
 
-La baseline debe ser única, acumulativa y construida sobre el HEAD vivo. Quedan prohibidos shells reducidos, carriles humanos paralelos, versiones por módulo, nuevas ramas/PR y restauraciones manuales de pantallas.
+La baseline funcional es única y acumulativa sobre `docs-tya-v6-v71-audit`. No crear plataforma, candidata, rama, PR, Firebase o Hosting alternos.
 
 ## 2. Secuencia obligatoria
 
-`FUENTE VIVA → FRESCURA → IDENTIDAD → READ MODEL CANÓNICO → GATE SEMÁNTICO → WRITE PLAN → AUTORIZACIÓN → WRITE EXACTO → READBACK → REMOTE SMOKE → VALIDACIÓN HUMANA ACUMULATIVA → CUTOVER`.
+`FUENTE VIVA → IDENTIDAD → READ MODEL → GATE SEMÁNTICO → SOURCE LOCK → AUTORIZACIÓN → WRITE/DEPLOY EXACTO → READBACK/PARIDAD → GATE REMOTO → VALIDACIÓN HUMANA → CUTOVER`.
 
-Un asset-smoke o prueba aislada no congela un corte. El gate debe comprobar principal autenticado, periodos, KPIs, fases, detalle, perfiles, Cliente, Shopper, Finanzas, recargas y nueva pestaña.
+Debe distinguirse siempre:
 
-## 3. Cortes protegidos
+- comando de deploy intentado;
+- release Hosting creada;
+- paridad remota;
+- aprobación humana.
 
-- Corte 1/2A/3 FROZEN.
-- R17N 1,406/1,406; no repetir.
-- Corte 5 CX.data PASS.
-- Perfil, certificación, histórico, Finanzas y pagos canónicos se preservan.
-- Corte 6 alcanzó PASS acumulativo local/read-only para Staff, Cliente y Shopper.
-- Corte 6 aún no está congelado porque falta deploy DEV fresco, gate remoto idéntico y validación humana acumulativa.
+Ninguno sustituye al siguiente.
 
-## 4. Ownership canónico
+## 3. Baseline acumulativa PASS
 
-1. **HR viva:** periodos, visitas, estados, asignación, fechas y evidencia operacional.
-2. **Firestore protegido:** identidad, perfil, PII y certificación por overlay exacto; nunca sustituye HR.
-3. **Finanzas/pagos:** liquidaciones, movimientos, beneficios y pagos confirmados.
-4. **ProjectConfig:** países, monedas, honorarios, modelo financiero, comisión, distribución, impuestos y regalías.
-5. **Auth/RBAC:** acceso y alcance; no fuente operacional.
-6. **Platform-origin:** delta reconciliado, nunca duplicación HR.
+- HR viva: 14 periodos, junio 2025–julio 2026, 616 visitas, 208 shoppers.
+- Agosto ausente.
+- Staff, Cliente y Shopper autenticados.
+- Cliente con alcance exclusivo `cinepolis`.
+- Tres recargas y nueva pestaña.
+- Dominio, Finanzas, Portal Cliente, Portal Shopper y Reservas.
+- Credencial Cliente idempotente, readback PASS y rollback exacto.
 
-## 5. Fuente viva observada
-
-Gate vigente:
-
-- 14 periodos, junio 2025–julio 2026;
-- 616 visitas;
-- 208 shoppers;
-- agosto 2026 ausente.
-
-Julio observado:
-
-- 44 total;
-- 43 realizadas;
-- 41 cuestionarios;
-- 37 submitidas;
-- 1 fuera de rango;
-- GT 34 / HN 10.
-
-Son valores observacionales, no invariantes. Agosto solo aparece cuando exista en HR o como fuente platform-origin autorizada y reconciliada.
-
-## 6. Modelo financiero prevalente
-
-- `directo/local_invoicing`: facturación local y regalías solo si se configuran.
-- `delegado/delegated_coordination`: regalías 0 y comisión de coordinación compartida.
-- `regional/regional_coordination`: distribución regional configurable.
-- `unconfigured`: fail-closed.
-
-Cinépolis:
-
-- Q60 GT / L200 HN al shopper;
-- modelo delegado;
-- regalías 0;
-- comisión y reparto configurables;
-- honorario Shopper nunca usado como ingreso;
-- margen únicamente con comisión/distribución exactas.
-
-## 7. Runtime humano unificado
-
-La única entrada humana válida es `authenticated-human-canonical`:
-
-- selección de perfil + Usuario/Contraseña en el mismo login;
-- Firebase Auth/claims como autoridad del principal;
-- HR viva como autoridad operacional;
-- Firestore exacto como overlay;
-- dominio, Shopper, Cliente y Finanzas canónicos;
-- cero writes durante validaciones, salvo writes explícitamente autorizados.
-
-## 8. Root fixes Auth comprobados
-
-### Clic temprano
-
-`tya-c6-unified-human-runtime-v1.js` bloquea el clic antes del wrapper oficial.
-
-### Shopper DEV
-
-`tya-c6-shopper-auth-click-guard-v1.js` impide `pickShopperDev()` en la ruta protegida.
-
-### Cliente post-Auth
-
-El mismo adapter completa `CX.app.enter()` únicamente después de que Firebase Auth devuelve un contexto Cliente autenticado con namespace `staff`.
-
-### Carril técnico
-
-`tya-dev-technical-auth-e2e-v1.js` conserva `cxDevEntryAuth`, `technical-auth-e2e-isolated` y namespaces staff/shopper.
-
-## 9. Credencial Cliente materializada
-
-Autorización ejecutada:
-
-- snapshot previo;
-- una credencial Cliente DEV;
-- 2 Auth writes: creación + claims;
-- claims exactos `cliente/staff/tya/cinepolis`;
-- sign-in PASS;
-- idempotencia PASS con 0 writes;
-- readback PASS;
-- rollback exacto probado;
-- password changes/resets 0;
-- credenciales/tokens expuestos 0.
-
-El primer intento fue revertido automáticamente porque la autenticación no completó la entrada visual. Después del root fix, el segundo intento quedó PASS.
-
-## 10. Gates PASS de Corte 6
-
-- static cumulative contract;
-- HR viva dinámica;
-- dominio/Finanzas/Portal Shopper/Reservas;
-- Staff humano autenticado;
-- Shopper humano autenticado con identidad exacta;
-- Cliente humano autenticado con alcance exclusivo `cinepolis`;
-- tres recargas y nueva pestaña;
-- carril técnico Staff/Shopper aislado;
-- idempotencia, readback y rollback Cliente;
-- cero exposición de secretos.
-
-Decisión acumulativa:
+Decisión funcional:
 
 `PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES`.
 
-## 11. Gate restante de Corte 6
+## 4. Ownership canónico
 
-Solo con autorización fresca:
+1. HR viva: operación e historia.
+2. Firestore protegido: identidad/perfil/certificación por crosswalk exacto.
+3. Finanzas/pagos: liquidaciones, movimientos y pagos confirmados.
+4. ProjectConfig: países, monedas, honorarios, modelo, comisión y regalías.
+5. Auth/RBAC: acceso y alcance.
+6. Platform-origin: delta reconciliado.
 
-`UN ÚNICO DEPLOY HOSTING DEV EXISTENTE → PARIDAD REMOTA → AUTH STAFF/CLIENTE/SHOPPER → HR/DOMINIO/FINANZAS/PORTALES → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA → APROBADO C6 → FREEZE`.
+## 5. Modelo financiero
 
-No se reutiliza autorización consumida.
+Cinépolis:
 
-## 12. Julio y agosto
+- delegado desde `projectConfig`;
+- Q60 GT / L200 HN al shopper;
+- regalías 0;
+- comisión y reparto configurables;
+- honorario Shopper nunca usado como ingreso delegado;
+- margen únicamente con fuentes exactas.
 
-No iniciar agosto antes del freeze. Después:
+## 6. Resultado del deploy DEV autorizado
 
-- Paula agrega agosto a HR;
-- el runtime lo detecta;
-- se reconcilia platform-origin;
-- se habilitan disponibles y postulaciones;
-- gate multirol;
-- writes/cutover requieren autorización específica.
+El predeploy pasó:
 
-## 13. Claude/prototipo
+- source lock;
+- gate estático;
+- credenciales Staff/Shopper/Cliente read-only;
+- destino DEV.
 
-Claude debe preservar:
+El comando de deploy fue intentado una vez y falló antes de crear release:
 
-- baseline única;
-- máquina de estados y periodo únicos;
-- identidad exacta y review queue;
-- Auth real sin `pickShopperDev()` en ruta protegida;
-- transición Cliente post-Auth;
-- Local/Delegado/Regional/Unconfigured;
-- regalías solo para facturación local;
-- comisión separada de obligaciones al shopper;
-- gate transversal entre tile, fase, drill, portal y Finanzas.
+- deploy attempted: true;
+- deploy succeeded: false;
+- Hosting releases nuevas: 0;
+- gates remotos: 0;
+- Cloud Run deploys: 0.
+
+La autorización quedó consumida. No hay reintento automático.
+
+## 7. Causa raíz de Hosting
+
+`FIREBASE_CLI_ALTERNATE_CONFIG_PATH_RESOLUTION`.
+
+El workflow generaba `firebase.deploy.json` solo en `.tmp`. Firebase CLI resuelve la configuración alternativa por basename dentro de la raíz del proyecto. El archivo raíz no existía al iniciar el comando.
+
+Corrección aplicada:
+
+- rewrite HR vivo persistido en `firebase.json`;
+- `firebase.deploy.json` creado en la raíz;
+- target `cxorbia-dev`;
+- public `app`;
+- rewrite a `cxorbia-live-hr-dev/us-central1` antes del wildcard;
+- cero nuevo deploy después del fix.
+
+## 8. Gate restante de Corte 6
+
+Requiere autorización fresca:
+
+`SOURCE LOCK ACTUAL → STATIC GATE → CREDENCIALES READ-ONLY → UN ÚNICO HOSTING DEV DEPLOY → PARIDAD REMOTA → HR VIVA → STAFF/CLIENTE/SHOPPER → DOMINIO/FINANZAS/PORTALES/RESERVAS → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA`.
+
+Ante cualquier fallo:
+
+- no segundo deploy automático;
+- evidencia durable;
+- diagnóstico de raíz;
+- autorización fresca para un intento posterior.
+
+## 9. Freeze, agosto y producción
+
+Solo después del PASS remoto y aprobación visual humana:
+
+1. `APROBADO C6 → FREEZE`;
+2. Paula agrega agosto a HR;
+3. reconciliación agosto;
+4. disponibles y postulaciones;
+5. gate multirol;
+6. autorización de cutover.
+
+No merge ni producción antes de esos gates.
+
+## 10. Claude/prototipo
 
 Pendientes frontend:
 
-- `app/modules/proyecto-wizard.js`: agregar Regional;
-- `app/modules/finanzas.js`: corregir copy delegado y estado de fuente.
+- `app/modules/proyecto-wizard.js`: opción Regional;
+- `app/modules/finanzas.js`: copy delegado y fuente exacta.
 
-## 14. Academia
+No mover Auth, Finanzas o configuración Hosting a módulos UI.
 
-Fuentes vigentes:
+## 11. Academia
 
-- `ACADEMIA-IMPACTO-C6-RECUPERACION-RUNTIME-ACUMULATIVO-20260801.md`;
-- `CAMBIOS-BACKEND-ADDENDUM-C6-CREDENCIAL-CLIENTE-MATERIALIZADA-20260802.md`.
+Enseñar diferencia entre intento de comando, release creada, paridad remota y aprobación humana, además de fuente viva, Auth por rol y modelos financieros por proyecto.
 
-## 15. Estado seguro
+## 12. Estado seguro
 
-Credenciales Cliente creadas 1; Auth writes autorizados 2; password changes/resets 0; Hosting/Cloud Run deploys 0; Firestore/Rules/Storage/HR/Make/Gemini/pagos writes 0; nuevos Firebase/Hosting 0; merge=false; producción=false.
+Credencial Cliente vigente: 1. Auth writes autorizados previos: 2. Password changes/resets: 0. Hosting releases nuevas: 0. Cloud Run/Firestore/Rules/Storage/HR/Make/Gemini/pagos: 0. Merge=false. Producción=false.
