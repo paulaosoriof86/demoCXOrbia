@@ -1,9 +1,9 @@
 # CXOrbia TyA — Plan Phase A con validación visual continua
 
 **Fecha original:** 2026-07-04  
-**Última revisión:** 2026-08-01  
+**Última revisión:** 2026-08-02  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_RUNTIME_PASS_EXCEPT_CLIENT_CREDENTIAL__HOLD_NO_AUTH_WRITE_NO_DEPLOY_NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_RUNTIME_ALL_ROLES_PASS__CLIENT_CREDENTIAL_MATERIALIZED__PENDING_FRESH_DEV_DEPLOY_AUTHORIZATION__NO_PRODUCTION`
 
 ## 1. Objetivo y arquitectura
 
@@ -23,7 +23,8 @@ Un asset-smoke o prueba aislada no congela un corte. El gate debe comprobar prin
 - R17N 1,406/1,406; no repetir.
 - Corte 5 CX.data PASS.
 - Perfil, certificación, histórico, Finanzas y pagos canónicos se preservan.
-- Corte 6 todavía no está congelado porque falta Auth real de Cliente.
+- Corte 6 alcanzó PASS acumulativo local/read-only para Staff, Cliente y Shopper.
+- Corte 6 aún no está congelado porque falta deploy DEV fresco, gate remoto idéntico y validación humana acumulativa.
 
 ## 4. Ownership canónico
 
@@ -36,7 +37,7 @@ Un asset-smoke o prueba aislada no congela un corte. El gate debe comprobar prin
 
 ## 5. Fuente viva observada
 
-Gate read-only vigente:
+Gate vigente:
 
 - 14 periodos, junio 2025–julio 2026;
 - 616 visitas;
@@ -58,21 +59,17 @@ Son valores observacionales, no invariantes. Agosto solo aparece cuando exista e
 
 - `directo/local_invoicing`: facturación local y regalías solo si se configuran.
 - `delegado/delegated_coordination`: regalías 0 y comisión de coordinación compartida.
-- `regional/regional_coordination`: distribución regional configurable, sin regalías locales por defecto.
+- `regional/regional_coordination`: distribución regional configurable.
 - `unconfigured`: fail-closed.
 
-Cinépolis es delegado desde su `projectConfig`:
+Cinépolis:
 
 - Q60 GT / L200 HN al shopper;
+- modelo delegado;
 - regalías 0;
 - comisión y reparto configurables;
 - honorario Shopper nunca usado como ingreso;
 - margen únicamente con comisión/distribución exactas.
-
-Contratos:
-
-- `tya-project-financial-model-contract-v1.js`;
-- `tya-delegated-coordination-finance-guard-v1.js`.
 
 ## 7. Runtime humano unificado
 
@@ -83,84 +80,69 @@ La única entrada humana válida es `authenticated-human-canonical`:
 - HR viva como autoridad operacional;
 - Firestore exacto como overlay;
 - dominio, Shopper, Cliente y Finanzas canónicos;
-- cero writes durante validación.
+- cero writes durante validaciones, salvo writes explícitamente autorizados.
 
 ## 8. Root fixes Auth comprobados
 
 ### Clic temprano
 
-`tya-c6-unified-human-runtime-v1.js` bloquea el clic antes de que el wrapper oficial termine de instalarse.
-
-PASS: `PASS_C6_HUMAN_LOGIN_IMMEDIATE_CLICK_GUARDED`.
+`tya-c6-unified-human-runtime-v1.js` bloquea el clic antes del wrapper oficial.
 
 ### Shopper DEV
 
-`app.js` llama `pickShopperDev()` directamente para Shopper DEV. `tya-c6-shopper-auth-click-guard-v1.js`, cargado antes de `app.js`, intercepta únicamente la tarjeta Shopper protegida y abre Firebase Auth.
+`tya-c6-shopper-auth-click-guard-v1.js` impide `pickShopperDev()` en la ruta protegida.
 
-No se modificó `app.js` ni módulos UI.
+### Cliente post-Auth
+
+El mismo adapter completa `CX.app.enter()` únicamente después de que Firebase Auth devuelve un contexto Cliente autenticado con namespace `staff`.
 
 ### Carril técnico
 
-`tya-dev-technical-auth-e2e-v1.js` conserva:
+`tya-dev-technical-auth-e2e-v1.js` conserva `cxDevEntryAuth`, `technical-auth-e2e-isolated` y namespaces staff/shopper.
 
-- `cxDevEntryAuth`;
-- `technical-auth-e2e-isolated`;
-- namespaces staff/shopper;
-- ruta humana no afectada.
+## 9. Credencial Cliente materializada
 
-## 9. Gates PASS de Corte 6
+Autorización ejecutada:
+
+- snapshot previo;
+- una credencial Cliente DEV;
+- 2 Auth writes: creación + claims;
+- claims exactos `cliente/staff/tya/cinepolis`;
+- sign-in PASS;
+- idempotencia PASS con 0 writes;
+- readback PASS;
+- rollback exacto probado;
+- password changes/resets 0;
+- credenciales/tokens expuestos 0.
+
+El primer intento fue revertido automáticamente porque la autenticación no completó la entrada visual. Después del root fix, el segundo intento quedó PASS.
+
+## 10. Gates PASS de Corte 6
 
 - static cumulative contract;
 - HR viva dinámica;
 - dominio/Finanzas/Portal Shopper/Reservas;
 - Staff humano autenticado;
-- Shopper humano autenticado con identidad exacta y una visita propia;
+- Shopper humano autenticado con identidad exacta;
+- Cliente humano autenticado con alcance exclusivo `cinepolis`;
 - tres recargas y nueva pestaña;
 - carril técnico Staff/Shopper aislado;
-- ruta Cliente integrada Usuario + Contraseña;
-- cero credenciales/tokens expuestos;
-- cero writes.
+- idempotencia, readback y rollback Cliente;
+- cero exposición de secretos.
 
-Staff observado: rol `coordinador`, namespace `staff`.
+Decisión acumulativa:
 
-Shopper observado: rol `shopper`, namespace `shopper`.
+`PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES`.
 
-## 10. HOLD Cliente
+## 11. Gate restante de Corte 6
 
-La búsqueda read-only de credencial Cliente obtuvo:
+Solo con autorización fresca:
 
-- 4 registros candidatos;
-- 3 usuarios Auth existentes;
-- 0 cuentas con claims válidos `cliente/client` para tenant `tya` y proyecto `cinepolis`;
-- 0 hashes válidos;
-- 0 sign-ins.
-
-Decisión:
-
-`HOLD_C6_EXISTING_CLIENT_CREDENTIAL_NOT_FOUND`.
-
-Auth writes, password changes y resets permanecen en cero.
-
-## 11. Gate restante condicionado
-
-Requiere autorización específica porque implica Auth write:
-
-`SNAPSHOT AUTH CLIENT → MATERIALIZE ONE CLIENT CREDENTIAL DEV → CLAIMS TENANT/PROJECT/ROLE → IDEMPOTENCY → CLIENT HUMAN AUTH → 3 RELOADS + NEW TAB → READBACK → ROLLBACK PROOF → CUMULATIVE EVIDENCE`.
-
-Sin autorización no se crea ni resetea credencial.
-
-## 12. Freeze y deploy
-
-Solo después de PASS Cliente y repetición acumulativa:
-
-1. solicitar autorización fresca para un único deploy del Hosting DEV existente;
-2. ejecutar paridad y gate remoto idéntico;
-3. validación humana acumulativa;
-4. `APROBADO C6 → FREEZE`.
+`UN ÚNICO DEPLOY HOSTING DEV EXISTENTE → PARIDAD REMOTA → AUTH STAFF/CLIENTE/SHOPPER → HR/DOMINIO/FINANZAS/PORTALES → 3 RELOADS + NEW TAB → EVIDENCIA → VALIDACIÓN HUMANA → APROBADO C6 → FREEZE`.
 
 No se reutiliza autorización consumida.
 
-## 13. Julio y agosto
+## 12. Julio y agosto
 
 No iniciar agosto antes del freeze. Después:
 
@@ -168,18 +150,18 @@ No iniciar agosto antes del freeze. Después:
 - el runtime lo detecta;
 - se reconcilia platform-origin;
 - se habilitan disponibles y postulaciones;
-- se ejecuta gate multirol;
+- gate multirol;
 - writes/cutover requieren autorización específica.
 
-## 14. Claude/prototipo
+## 13. Claude/prototipo
 
 Claude debe preservar:
 
 - baseline única;
 - máquina de estados y periodo únicos;
 - identidad exacta y review queue;
-- histórico/certificación por rol;
 - Auth real sin `pickShopperDev()` en ruta protegida;
+- transición Cliente post-Auth;
 - Local/Delegado/Regional/Unconfigured;
 - regalías solo para facturación local;
 - comisión separada de obligaciones al shopper;
@@ -190,15 +172,13 @@ Pendientes frontend:
 - `app/modules/proyecto-wizard.js`: agregar Regional;
 - `app/modules/finanzas.js`: corregir copy delegado y estado de fuente.
 
-## 15. Academia
+## 14. Academia
 
 Fuentes vigentes:
 
 - `ACADEMIA-IMPACTO-C6-RECUPERACION-RUNTIME-ACUMULATIVO-20260801.md`;
-- `CAMBIOS-BACKEND-ADDENDUM-C6-RECUPERACION-BASELINE-ACUMULATIVA-UNICA-20260801.md`;
-- `CAMBIOS-BACKEND-ADDENDUM-C6-MODELO-DELEGADO-COMISION-20260801.md`;
-- `CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-RUNTIME-Y-HOLD-CLIENTE-20260801.md`.
+- `CAMBIOS-BACKEND-ADDENDUM-C6-CREDENCIAL-CLIENTE-MATERIALIZADA-20260802.md`.
 
-## 16. Estado seguro
+## 15. Estado seguro
 
-Hosting deploys 0; Cloud Run 0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos writes 0; password changes/resets 0; nuevos Firebase/Hosting 0; merge=false; producción=false.
+Credenciales Cliente creadas 1; Auth writes autorizados 2; password changes/resets 0; Hosting/Cloud Run deploys 0; Firestore/Rules/Storage/HR/Make/Gemini/pagos writes 0; nuevos Firebase/Hosting 0; merge=false; producción=false.
