@@ -16,7 +16,6 @@ Este addendum impide que CXOrbia/TyA vuelva a fragmentarse por módulo, etapa, f
 - HR viva como autoridad operacional dinámica;
 - Firestore protegido como overlay exacto;
 - read model y máquina de estados canónicos;
-- Dashboard, fases, detalle, histórico y comparativo;
 - Portal Cliente, Portal Shopper, Finanzas y Reservas en baseline local/read-only;
 - credencial Cliente idempotente, readback y rollback exacto.
 
