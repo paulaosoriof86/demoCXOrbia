@@ -56,6 +56,7 @@ Por eso los archivos correctos podían existir en la rama y, simultáneamente, n
   - `adapters/tya-dev-full-visual-bridge.js`.
 - Conserva:
   - login visible integrado del producto;
+  - `tya-dev-technical-auth-e2e-v1.js`, aislado y solo técnico;
   - `tya-protected-auth-hr-authority-bridge-v2.js`;
   - dominio canónico;
   - Portal Shopper canónico;
@@ -96,6 +97,17 @@ Nuevo adapter reusable que:
 - reactiva la proyección después de Auth, refresh HR y recomposición;
 - mantiene provider writes, deploys, merge y producción en cero.
 
+### `app/adapters/tya-dev-technical-auth-e2e-v1.js`
+
+Nuevo adapter exclusivamente técnico que:
+
+- solo se activa con el token privado E2E;
+- preserva la validación staff/shopper por Usuario + Contraseña, Auth y claims;
+- mantiene los IDs esperados por las pruebas técnicas;
+- no se ejecuta en la ruta humana;
+- no reintroduce el antiguo override de roles directos;
+- no contiene credenciales ni habilita writes.
+
 ### `tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs`
 
 Gate estático/read-only que exige:
@@ -104,6 +116,7 @@ Gate estático/read-only que exige:
 - ausencia del override de rol directo;
 - ausencia del token visual oculto como requisito funcional;
 - Auth integrada + HR authority bridge dinámico;
+- carril E2E técnico aislado sin afectar la ruta humana;
 - dominio/Shopper/Finanzas canónicos;
 - fotografía actual desde 2025-06 hasta 2026-07;
 - ausencia de agosto mientras no exista en la fuente;
@@ -124,7 +137,7 @@ Gate estático/read-only que exige:
 
 Secuencia obligatoria:
 
-`STATIC ROOT CONTRACT → LOCAL/READ-ONLY RUNTIME → AUTH REAL STAFF/CLIENT/SHOPPER → HR ALL PERIODS → KPI=PHASE=DRILL → COMPARATIVE ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE CONFIG → 3 RELOADS → EVIDENCE`.
+`STATIC ROOT CONTRACT → LOCAL/READ-ONLY RUNTIME → AUTH REAL STAFF/CLIENT/SHOPPER → TECHNICAL E2E ISOLATED → HR ALL PERIODS → KPI=PHASE=DRILL → COMPARATIVE ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE CONFIG → 3 RELOADS → EVIDENCE`.
 
 Solo con PASS corresponde solicitar autorización fresca para un único deploy del Hosting DEV existente. No se reutiliza ninguna autorización consumida.
 
