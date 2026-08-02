@@ -1,13 +1,13 @@
 /* CXOrbia — contrato canónico de modelo financiero por proyecto v1.
-   Reusable multi-tenant, con regla TyA/Cinépolis explícita.
+   Reusable multi-tenant; ningún cliente/proyecto se clasifica por nombre.
 
    Contrato:
-   - cada proyecto selecciona su modelo al crearse: facturación local o delegado;
+   - cada proyecto selecciona su modelo al crearse: facturación local, delegado o regional;
    - las regalías solo pueden aplicar a proyectos con facturación local;
-   - un proyecto delegado nunca descuenta regalías;
-   - el proyecto delegado registra la comisión de coordinación y su reparto
+   - un proyecto delegado o regional nunca descuenta regalías locales;
+   - delegado/regional registra la comisión de coordinación y su reparto
      como configuración propia, sin inventar montos, porcentajes ni participantes;
-   - Cinépolis/TyA es delegado;
+   - Cinépolis se mantiene delegado por su projectConfig vigente, no por hardcode global;
    - no modifica módulos UI, proveedores, HR, pagos ni producción.
 */
 (function(){
@@ -21,65 +21,71 @@
     'delegado','delegated','delegated_coordination','franquicia_delegada',
     'franchise_delegated','coordination_commission','coordination_commission_shared'
   ]);
+  const regionalValues=new Set([
+    'regional','regional_coordination','regional_distribution','regional_commission_shared'
+  ]);
   const directValues=new Set([
     'directo','direct','local','local_invoicing','facturado_directamente','local_billing'
   ]);
 
-  function projectIdentity(project){
-    return [
-      project&&project.parentProjectId,
-      project&&project.program,
-      project&&project.projectId,
-      project&&project.id,
-      project&&project.name,
-      project&&project.programLabel
-    ].map(str).join('|').toLowerCase();
-  }
-
-  function isCinepolis(project){
-    const identity=projectIdentity(project);
-    return identity.split('|').some(value=>value==='cinepolis'||value.startsWith('cinepolis::'))
-      || identity.includes('|cinépolis|')
-      || identity.startsWith('cinépolis|')
-      || identity.endsWith('|cinépolis');
-  }
-
   function resolveModel(project){
-    if(isCinepolis(project))return 'delegado';
-    const candidates=[project&&project.modelo,project&&project.billingModel,project&&project.projectModel,project&&project.compensationModel]
-      .map(v=>str(v).toLowerCase())
-      .filter(Boolean);
+    const candidates=[
+      project&&project.modelo,
+      project&&project.billingModel,
+      project&&project.projectModel,
+      project&&project.compensationModel
+    ].map(v=>str(v).toLowerCase()).filter(Boolean);
+    if(candidates.some(v=>regionalValues.has(v)))return 'regional';
     if(candidates.some(v=>delegatedValues.has(v)))return 'delegado';
     if(candidates.some(v=>directValues.has(v)))return 'directo';
     return 'directo';
   }
 
+  function sharedCommissionDefaults(model){
+    return {
+      enabled:true,
+      shared:true,
+      amount:null,
+      amountByCountry:{},
+      amountByPeriodCountry:{},
+      calculationMode:null,
+      currencyByCountry:{},
+      splitRule:'project_configuration',
+      participants:[],
+      percentages:null,
+      distributedAmount:null,
+      distributedAmountByCountry:{},
+      distributedAmountByPeriodCountry:{},
+      sourceStatus:'project_configuration_required',
+      model
+    };
+  }
+
   function normalize(project,options={}){
     if(!project||typeof project!=='object')return project;
     const model=resolveModel(project);
-    if(model==='delegado'){
-      project.modelo='delegado';
-      project.billingModel='delegated_coordination';
-      project.projectModel='delegated';
+    if(model==='delegado'||model==='regional'){
+      project.modelo=model;
+      project.billingModel=model==='regional'?'regional_coordination':'delegated_coordination';
+      project.projectModel=model;
       project.localBilling=false;
       project.royaltyApplicable=false;
       project.regalias=0;
-      project.compensationModel='coordination_commission_shared';
-      project.coordinationCommission=Object.assign({
-        enabled:true,
-        shared:true,
-        amount:null,
-        currencyByCountry:{},
-        splitRule:'project_configuration',
-        participants:[],
-        percentages:null,
-        sourceStatus:'project_configuration_required'
-      },project.coordinationCommission||{});
+      project.compensationModel=model==='regional'
+        ?'regional_coordination_distribution'
+        :'coordination_commission_shared';
+      project.coordinationCommission=Object.assign(
+        sharedCommissionDefaults(model),
+        project.coordinationCommission||{}
+      );
       project.coordinationCommission.enabled=true;
       project.coordinationCommission.shared=true;
+      project.coordinationCommission.model=model;
       if(project.coordinationCommission.splitRule==null)project.coordinationCommission.splitRule='project_configuration';
       if(project.coordinationCommission.sourceStatus==null)project.coordinationCommission.sourceStatus='project_configuration_required';
-      project.financialModelNote='Proyecto delegado: comisión de coordinación compartida; no aplica regalía sobre facturación local.';
+      project.financialModelNote=model==='regional'
+        ?'Proyecto regional: distribución de comisión configurable; no aplica regalía local.'
+        :'Proyecto delegado: comisión de coordinación compartida; no aplica regalía local.';
     }else{
       const royalty=num(project.regalias);
       project.modelo='directo';
@@ -98,12 +104,13 @@
 
   function normalizeAll(reason){
     if(!CX.data)return {ready:false,reason:'data_not_ready'};
-    let delegated=0,direct=0,cinepolis=0,royaltyViolations=0;
+    let delegated=0,regional=0,direct=0,royaltyViolations=0;
     for(const project of arr(CX.data.projects)){
       normalize(project);
-      if(project.modelo==='delegado')delegated++;else direct++;
-      if(isCinepolis(project))cinepolis++;
-      if(project.modelo==='delegado'&&(num(project.regalias)!==0||project.royaltyApplicable!==false))royaltyViolations++;
+      if(project.modelo==='delegado')delegated++;
+      else if(project.modelo==='regional')regional++;
+      else direct++;
+      if(project.modelo!=='directo'&&(num(project.regalias)!==0||project.royaltyApplicable!==false))royaltyViolations++;
     }
     const status={
       ready:true,
@@ -111,12 +118,13 @@
       reason:reason||'runtime',
       projects:arr(CX.data.projects).length,
       delegated,
+      regional,
       direct,
-      cinepolis,
       royaltyViolations,
-      cinepolisModel:'delegado',
-      delegatedRoyaltyPct:0,
+      nonLocalRoyaltyPct:0,
       delegatedCompensation:'coordination_commission_shared',
+      regionalCompensation:'regional_coordination_distribution',
+      projectClassificationSource:'project_configuration_not_name',
       splitValuesInvented:false,
       providerWrites:0,
       production:false,
@@ -149,7 +157,6 @@
     normalize,
     normalizeAll,
     resolveModel,
-    isCinepolis,
     contractVersion:'cxorbia.project-financial-model.v1'
   });
 
