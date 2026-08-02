@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "cxorbia.c6.unified-cumulative-runtime-root-fix.v2",
-  "generatedAt": "2026-08-01T21:18:00-06:00",
-  "decision": "PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_CODE_STATIC_CONTRACT",
+  "schemaVersion": "cxorbia.c6.unified-cumulative-runtime-root-fix.v3",
+  "generatedAt": "2026-08-01T21:34:00-06:00",
+  "decision": "PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_CODE_STATIC_CONTRACT_PENDING_RUNTIME",
   "remoteRuntimeValidated": false,
   "humanValidated": false,
   "sourceAuthority": {
@@ -35,21 +35,38 @@
   "projectConfiguration": {
     "projectId": "cinepolis",
     "honorarium": {"GT": 60, "HN": 200},
-    "model": "directo",
-    "isrPct": 5,
-    "royaltyPct": 10
+    "model": "delegado",
+    "billingModel": "delegated_coordination",
+    "localBilling": false,
+    "royaltyApplicable": false,
+    "royaltyPct": 0,
+    "compensationModel": "coordination_commission_shared",
+    "commissionSplit": {
+      "status": "project_configuration_required",
+      "valuesInvented": false
+    },
+    "taxTreatment": "project_specific_not_inferred"
+  },
+  "projectModelRules": {
+    "modelSelectableAtProjectCreation": true,
+    "localInvoicingMayConfigureRoyalties": true,
+    "delegatedProjectRoyaltyPct": 0,
+    "delegatedCommissionSplitRequired": true,
+    "cinepolisForcedModel": "delegado"
   },
   "codeChecks": {
-    "bootstrapSyntax": "PASS",
-    "unifiedAdapterSyntax": "PASS",
-    "dynamicHrAuthorityBridgeSyntax": "PASS",
-    "technicalAuthE2EAdapterSyntax": "PASS",
-    "staticGateSyntax": "PASS",
+    "bootstrapSyntax": "PASS_BY_SOURCE_REVIEW",
+    "unifiedAdapterSyntax": "PASS_BY_SOURCE_REVIEW",
+    "dynamicHrAuthorityBridgeSyntax": "PASS_BY_SOURCE_REVIEW",
+    "projectFinancialModelAdapterSyntax": "PASS_BY_SOURCE_REVIEW",
+    "technicalAuthE2EAdapterSyntax": "PASS_BY_SOURCE_REVIEW",
+    "staticGateSyntax": "PASS_BY_SOURCE_REVIEW",
     "singleAuthenticatedHumanLane": "PASS",
     "directRoleOverrideLoaded": false,
     "hiddenVisualSessionBridgeLoaded": false,
     "technicalAuthE2E": "isolated_private_lane_human_unaffected",
     "protectedAuthHrAuthorityBridge": "v2-dynamic-live-source",
+    "projectFinancialModelContract": "cxorbia.project-financial-model.v1",
     "canonicalDomainLoaded": true,
     "canonicalShopperPortalLoaded": true,
     "canonicalFinanceLoaded": true
@@ -67,5 +84,5 @@
     "merge": false,
     "production": false
   },
-  "nextGate": "READONLY_RUNTIME_STAFF_CLIENT_SHOPPER_TECHNICAL_E2E_ALL_DETECTED_PERIODS_DOMAIN_PROFILE_CLIENT_FINANCE_THREE_RELOADS"
+  "nextGate": "READONLY_RUNTIME_STAFF_CLIENT_SHOPPER_TECHNICAL_E2E_ALL_DETECTED_PERIODS_DOMAIN_PROFILE_CLIENT_FINANCE_PROJECT_MODEL_THREE_RELOADS"
 }
