@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-08-01  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `C6_P0_FRAGMENTED_HUMAN_RUNTIME_PROVEN__UNIFIED_CUMULATIVE_ROOT_FIX_CODE_APPLIED__PROJECT_FINANCE_GUARD_APPLIED__PENDING_READONLY_RUNTIME_GATES__NO_DEPLOY_NO_PRODUCTION`
+**Estado vivo:** `C6_STATIC_LIVE_HR_STAFF_SHOPPER_TECHNICAL_AUTH_PASS__CLIENT_ROUTE_PASS__NO_EXISTING_CLIENT_CREDENTIAL__HOLD_NO_DEPLOY_NO_PRODUCTION`
 
 ## 1. Repositorio y destinos
 
@@ -21,110 +21,116 @@
 5. `ADDENDUM-MAESTRO-C6-BASELINE-CANONICA-UNICA-Y-CUTOVER-20260801.md`;
 6. `CAMBIOS-BACKEND-ADDENDUM-C6-RECUPERACION-BASELINE-ACUMULATIVA-UNICA-20260801.md`;
 7. `CAMBIOS-BACKEND-ADDENDUM-C6-MODELO-DELEGADO-COMISION-20260801.md`;
-8. evidencia `CORTE6-UNIFIED-CUMULATIVE-RUNTIME-ROOT-FIX-LATEST.json`;
-9. evidencias aprobadas de login, R20 full-history y auditoría C6 live domain/finance/shopper;
-10. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker, PR #7 y HEAD vivo.
+8. `CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-RUNTIME-Y-HOLD-CLIENTE-20260801.md`;
+9. evidencia `CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json`;
+10. evidencia `CORTE6-HUMAN-LOGIN-WRAPPER-DIAGNOSTIC-LATEST.json`;
+11. evidencia `CORTE6-UNIFIED-AUTH-RUNTIME-READONLY-LATEST.json`;
+12. evidencia `CORTE6-EXISTING-CLIENT-CREDENTIAL-SELECTION-LATEST.json`;
+13. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker, PR #7 y HEAD vivo.
 
 ## 3. Regla prevalente de fuente
 
 La HR viva es autoridad para **todos los periodos detectados**, no únicamente el mes actual y nunca números congelados de cortes anteriores.
 
-Fotografía de la revisión vigente previa a agosto:
+Fotografía observada en el gate vigente:
 
 - 14 periodos desde junio 2025 hasta julio 2026;
 - 616 visitas;
 - 208 shoppers;
 - no existe agosto 2026 en HR.
 
-Estos conteos describen la revisión actual y no son límites permanentes. El runtime debe aceptar crecimiento legítimo cuando la HR agregue periodos o filas nuevas, siempre que las llaves técnicas sean completas y únicas.
+Julio 2026 observado:
 
-Agosto no puede aparecer ni heredarse de julio hasta que Paula agregue la fuente. Cuando aparezca, debe incorporarse por detección de HR, no por reloj del sistema ni por copia de otro mes.
+- 44 visitas;
+- 43 realizadas;
+- 41 cuestionarios completados;
+- 37 submitidas;
+- 1 fuera de rango;
+- GT 34 / HN 10.
+
+Estos conteos describen la revisión actual y no son límites permanentes. Agosto solo puede aparecer cuando exista en HR o como fuente platform-origin autorizada y reconciliada.
 
 ## 4. Regla prevalente de modelo financiero
 
 El modelo se selecciona por configuración de cada proyecto, nunca por el nombre del cliente o del proyecto:
 
-- `directo/local_invoicing`: facturación local; las regalías solo aplican si el proyecto las configura;
-- `delegado/delegated_coordination`: sin facturación local del proyecto; regalías 0; comisión de coordinación compartida;
-- `regional/regional_coordination`: distribución regional configurable; regalías locales 0 por defecto.
+- `directo/local_invoicing`: facturación local; regalías solo si el proyecto las configura;
+- `delegado/delegated_coordination`: sin facturación local; regalías 0; comisión de coordinación compartida;
+- `regional/regional_coordination`: distribución regional configurable; regalías locales 0 por defecto;
+- `unconfigured`: fail-closed; no se calculan ingresos, regalías ni margen.
 
-Cinépolis es delegado porque su `projectConfig` vigente así lo declara, no por una regla global hardcodeada.
-
-Configuración vigente:
+Cinépolis es delegado por su `projectConfig` vigente:
 
 - honorario Shopper GT: Q60;
 - honorario Shopper HN: L200;
 - regalías: 0;
-- comisión y reparto: configurables por periodo/país o proyecto, sin montos ni porcentajes inventados;
-- tratamiento tributario: específico del proyecto, no inferido.
+- comisión y reparto: configurables, sin valores inventados.
 
 Contratos reusables:
 
 - `app/adapters/tya-project-financial-model-contract-v1.js`;
 - `app/adapters/tya-delegated-coordination-finance-guard-v1.js`.
 
-El guard prohíbe usar el honorario del shopper como fallback del ingreso de un proyecto delegado/regional. El margen solo se calcula cuando existen fuentes exactas de comisión y distribución.
+## 5. Gates de Corte 6 ya comprobados
 
-## 5. P0 humano vigente
+PASS:
 
-El build publicado abrió un carril reducido que:
+- static cumulative contract;
+- click inmediato protegido por Auth;
+- HR viva dinámica;
+- dominio y máquina canónica de estados;
+- Finanzas contractuales;
+- Portal Shopper;
+- Reservas fail-closed;
+- Auth humana Staff;
+- Auth humana Shopper;
+- Auth técnica Staff/Shopper aislada;
+- tres recargas y nueva pestaña;
+- ruta integrada de Cliente Usuario + Contraseña.
 
-- deshabilitó el login real en la entrada humana;
-- permitió Shopper sin identidad;
-- dejó inactivos los adapters canónicos salvo token oculto;
-- fragmentó KPIs, fases, comparativo, perfil, certificación, Cliente y Finanzas.
+Root fixes de Auth incorporados:
 
-El PASS técnico anterior queda supersedido como release PASS. Corte 6 no está congelado.
+- guard temporal contra clic antes del wrapper oficial;
+- guard específico para impedir que la tarjeta Shopper protegida ejecute `pickShopperDev()`;
+- contrato técnico estable `cxDevEntryAuth` + `technical-auth-e2e-isolated`.
 
-## 6. Root fix de código
+## 6. HOLD exacto vigente
 
-El HEAD vivo recupera una sola entrada `authenticated-human-canonical`:
+Decisión acumulativa:
 
-- login visible Usuario + Contraseña;
-- Auth/claims para principal y alcance;
-- HR viva como autoridad operacional dinámica;
-- Firestore protegido como overlay exacto;
-- todos los periodos y visitas de cada revisión;
-- dominio, Shopper y Finanzas canónicos;
-- modelo financiero Local/Delegado/Regional por configuración;
-- Cinépolis delegado, sin regalías;
-- comisión separada de las obligaciones al shopper;
-- comparativo de todos los periodos HR;
-- sin módulos paralelos ni shell reducido.
+`HOLD_C6_EXISTING_CLIENT_CREDENTIAL_NOT_FOUND`.
 
-No hubo deploy ni writes de proveedor.
+La búsqueda read-only examinó cuatro registros candidatos y tres usuarios Auth existentes, pero encontró cero cuentas con claims válidos de Cliente para tenant `tya` y proyecto `cinepolis`; no hubo hash ni sign-in Cliente válido.
 
-## 7. Gate vivo
+Se preservó:
 
-`STATIC ROOT CONTRACT → READ-ONLY AUTH STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → HISTORICAL ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE SOURCE + PROJECT MODEL + COMMISSION → 3 RELOADS → EVIDENCE`.
+- Auth writes 0;
+- cambios de contraseña 0;
+- resets 0;
+- credenciales/tokens expuestos 0.
 
-El gate financiero debe demostrar:
+No corresponde crear o resetear una credencial Cliente sin autorización específica.
 
-- selector directo/delegado al crear proyecto;
-- soporte backend de regional;
-- Cinépolis delegado desde configuración;
-- regalías Cinépolis 0;
-- comisión compartida sin valores inventados;
-- cero fallback honorario Shopper → ingreso delegado;
-- margen únicamente con comisión y distribución exactas;
-- regalías calculadas únicamente para proyectos directos.
+## 7. Gate vivo restante
 
-Warnings frontend documentados para Claude:
+Con autorización separada:
 
-1. incorporar la opción `Regional` en `app/modules/proyecto-wizard.js`;
-2. corregir en `app/modules/finanzas.js` el texto delegado que todavía describe “honorario recibido menos pagado al shopper”.
+`SNAPSHOT AUTH CLIENT SCOPE → MATERIALIZE ONE CLIENT CREDENTIAL IN DEV → CLAIMS TENANT/PROJECT/ROLE → IDEMPOTENCY → CLIENT HUMAN AUTH → 3 RELOADS + NEW TAB → READBACK → ROLLBACK PROOF → CUMULATIVE EVIDENCE`.
 
-## 8. Después del PASS
+Hasta entonces:
 
-Solo después del PASS local/read-only:
+- Corte 6 no se congela;
+- no se solicita ni ejecuta deploy DEV;
+- no se abre agosto;
+- no se habilitan postulaciones;
+- no merge ni producción.
 
-1. solicitar autorización fresca de un único deploy DEV;
-2. ejecutar paridad y gate remoto idéntico;
-3. validación humana acumulativa;
-4. `APROBADO C6 → FREEZE`;
-5. Paula agrega agosto a HR;
-6. reconciliación agosto → disponibles → postulaciones → gate multirol → cutover autorizado.
+## 8. Warnings frontend documentados para Claude
+
+1. incorporar `Regional` en `app/modules/proyecto-wizard.js`;
+2. corregir el copy delegado en `app/modules/finanzas.js`;
+3. nunca permitir que una ruta protegida Shopper vuelva a usar `pickShopperDev()`.
 
 ## 9. Estado seguro
 
-Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos writes 0; Hosting deploy 0 en este bloque; merge false; producción false.
+Hosting deploys 0; Cloud Run 0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos writes 0; password changes/resets 0; merge false; producción false.
