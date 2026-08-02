@@ -2,9 +2,9 @@
   "schemaVersion": "cxorbia.c6.live-domain-readonly-audit-request.v1",
   "requestId": "c6-live-domain-readonly-audit-20260801-17",
   "attempt": 17,
-  "status": "requested_unified_auth_runtime_detailed",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_fail",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -22,5 +22,7 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false
+  "production": false,
+  "consumedAt": "2026-08-02T04:41:13.766Z",
+  "decision": "FAIL_C6_UNIFIED_AUTH_RUNTIME_READONLY"
 }
