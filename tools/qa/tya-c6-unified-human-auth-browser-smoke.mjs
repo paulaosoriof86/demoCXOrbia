@@ -290,18 +290,22 @@ async function validateClientRoute(browser){
   return client;
 }
 
-let browser;
+async function launchIsolated(run){
+  const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage']});
+  try{return await run(browser);}finally{await browser.close();}
+}
+
 try{
-  browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage']});
-  const staff=await loginPrincipal(browser,'staff','admin',credentials.staff,'staff');
-  const shopper=await loginPrincipal(browser,'shopper','shopper',credentials.shopper,'shopper');
-  const client=await validateClientRoute(browser);
+  const staff=await launchIsolated(browser=>loginPrincipal(browser,'staff','admin',credentials.staff,'staff'));
+  const shopper=await launchIsolated(browser=>loginPrincipal(browser,'shopper','shopper',credentials.shopper,'shopper'));
+  const client=await launchIsolated(browser=>validateClientRoute(browser));
   const evidence={
-    schemaVersion:'cxorbia.c6.unified-human-auth-browser-smoke.v2',
+    schemaVersion:'cxorbia.c6.unified-human-auth-browser-smoke.v3',
     generatedAt:new Date().toISOString(),
     decision:'PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY',
     root,
     local:isLocal,
+    principalIsolation:'fresh_browser_per_principal',
     lane:'authenticated-human-canonical',
     staff,
     shopper,
@@ -323,9 +327,10 @@ try{
 }catch(error){
   if(!outputFile||!fs.existsSync(outputFile)){
     persist({
-      schemaVersion:'cxorbia.c6.unified-human-auth-browser-smoke-failure.v2',
+      schemaVersion:'cxorbia.c6.unified-human-auth-browser-smoke-failure.v3',
       generatedAt:new Date().toISOString(),
       decision:'FAIL_C6_UNIFIED_HUMAN_AUTH_RUNTIME',
+      principalIsolation:'fresh_browser_per_principal',
       error:clean(error&&error.message),
       progress,
       credentialsExposed:false,
@@ -340,6 +345,4 @@ try{
     });
   }
   throw error;
-}finally{
-  if(browser)await browser.close();
 }
