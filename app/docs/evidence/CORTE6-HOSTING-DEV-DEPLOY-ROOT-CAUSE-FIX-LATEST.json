@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "cxorbia.c6.hosting-dev-deploy-root-cause-fix.v1",
+  "generatedAt": "2026-08-02T10:18:00-06:00",
+  "decision": "PASS_C6_HOSTING_DEPLOY_FAILURE_ROOT_CAUSE_FIXED_PENDING_FRESH_AUTHORIZATION",
+  "priorAttempt": {
+    "requestId": "c6-hosting-dev-deploy-remote-gates-20260802-02",
+    "decision": "FAIL_C6_PREDEPLOY_OR_HOSTING_DEPLOY",
+    "failedStage": "deploy_hosting_once",
+    "deployAttempted": true,
+    "deploySucceeded": false,
+    "hostingDeploys": 0,
+    "hostingDeployAttempts": 1
+  },
+  "sourceLock": {
+    "sourceLockHead": "62ec2ee7b2644f4f914a1af9ef17c374f1f32410",
+    "lockedAppTree": "b2f83041cc81e6357d606d617f17438f0f0aff35",
+    "currentAppTreeAtAttempt": "b2f83041cc81e6357d606d617f17438f0f0aff35",
+    "runtimeSourceExact": true
+  },
+  "rootCause": {
+    "classification": "FIREBASE_CLI_ALTERNATE_CONFIG_PATH_RESOLUTION",
+    "runnerBehavior": "workflow wrote firebase.deploy.json only under .tmp/c6-hosting-dev-deploy and passed that nested path through --config",
+    "firebaseCliBehavior": "the CLI resolves the alternate configuration basename inside the detected Firebase project root",
+    "reproducibleConflict": "firebase.deploy.json did not exist in the repository project root when the deploy command started",
+    "providerOrIamFailureProven": false,
+    "applicationSourceFailureProven": false
+  },
+  "fix": {
+    "canonicalFirebaseJsonUpdated": true,
+    "rootResolvedDeployConfigCreated": true,
+    "deployConfigPath": "firebase.deploy.json",
+    "hostingTarget": "cxorbia-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "publicDirectory": "app",
+    "liveHrRewrite": {
+      "source": "/api/tya/cinepolis/hr-live",
+      "serviceId": "cxorbia-live-hr-dev",
+      "region": "us-central1"
+    },
+    "cloudRunDeployRequired": false,
+    "runtimeAppFilesModified": false
+  },
+  "safety": {
+    "hostingDeploysAfterFix": 0,
+    "hostingDeployAttemptsAfterFix": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "FRESH_SINGLE_HOSTING_DEV_DEPLOY_AUTHORIZATION_THEN_REMOTE_CUMULATIVE_GATES"
+}
