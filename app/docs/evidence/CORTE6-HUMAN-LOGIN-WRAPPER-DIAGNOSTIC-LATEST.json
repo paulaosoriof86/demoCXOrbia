@@ -1,9 +1,10 @@
 {
-  "schemaVersion": "cxorbia.c6.human-login-wrapper-diagnostic.v1",
-  "generatedAt": "2026-08-02T04:27:30.838Z",
-  "decision": "PASS_C6_HUMAN_LOGIN_WRAPPER_ACTIVE",
+  "schemaVersion": "cxorbia.c6.human-login-wrapper-diagnostic.v2",
+  "generatedAt": "2026-08-02T04:32:58.220Z",
+  "decision": "PASS_C6_HUMAN_LOGIN_IMMEDIATE_CLICK_GUARDED",
+  "testMode": "immediate_click_after_first_visible_role_card",
   "before": {
-    "label": "before_admin_click",
+    "label": "before_immediate_admin_click",
     "url": "http://127.0.0.1:4173/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
     "readyState": "complete",
     "backendEnabled": true,
@@ -16,6 +17,10 @@
     "appPresent": true,
     "firebaseWrapper": true,
     "unifiedClientWrapper": true,
+    "earlyGuardInstalled": true,
+    "earlyGuardIntercepts": 0,
+    "earlyGuardLastRole": null,
+    "directRoleEntryAllowed": false,
     "integratedStep": false,
     "integratedLogin": false,
     "technicalForm": false,
@@ -28,7 +33,7 @@
     "loginText": "CXOrbia Field Operations Platform Selecciona un perfil para entrar al demo GT HN 🖥️ Administración / Coordinación Operación, proyectos, finanzas y configuración 📈 Portal del Cliente (marca evaluada) Resultados, score por sucursal, acciones y reportes 📱 Shopper / Evaluador Portal móvil: visitas, certificación y pagos ¿Eres evaluador nuevo? Regístrate aquí → Accesos de validación 👥 Operativo 🌎 Coordinador 🤝 Aliado Desarrollado por CXOrbia 📲 Instalar como app ● Demo comercial · datos ficticios"
   },
   "after": {
-    "label": "after_admin_click",
+    "label": "after_immediate_admin_click",
     "url": "http://127.0.0.1:4173/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
     "readyState": "complete",
     "backendEnabled": true,
@@ -41,6 +46,10 @@
     "appPresent": true,
     "firebaseWrapper": true,
     "unifiedClientWrapper": true,
+    "earlyGuardInstalled": true,
+    "earlyGuardIntercepts": 0,
+    "earlyGuardLastRole": null,
+    "directRoleEntryAllowed": false,
     "integratedStep": true,
     "integratedLogin": true,
     "technicalForm": false,
@@ -52,6 +61,7 @@
     "canonicalProtected": true,
     "loginText": "CXOrbia Field Operations Platform Selecciona un perfil para entrar al demo GT HN 🖥️ Administración / Coordinación Operación, proyectos, finanzas y configuración 📈 Portal del Cliente (marca evaluada) Resultados, score por sucursal, acciones y reportes 📱 Shopper / Evaluador Portal móvil: visitas, certificación y pagos ¿Eres evaluador nuevo? Regístrate aquí → Accesos de validación 👥 Operativo 🌎 Coordinador 🤝 Aliado Desarrollado por CXOrbia 📲 Instalar como app ● Demo comercial · datos ficticios Administración / Coordinación Ingresa con tu usuario y contraseña habituales de TyA. USUARIO CONT"
   },
+  "protectedBy": "official_firebase_wrapper",
   "inference": null,
   "hostingDeploys": 0,
   "providerWrites": 0,
