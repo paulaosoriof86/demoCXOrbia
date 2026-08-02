@@ -1,11 +1,10 @@
 {
-  "schemaVersion": "cxorbia.c6.unified-auth-runtime-readonly-failure.v1",
-  "generatedAt": "2026-08-02T04:18:44.459Z",
-  "decision": "FAIL_C6_UNIFIED_AUTH_RUNTIME_READONLY",
+  "schemaVersion": "cxorbia.c6.unified-human-auth-browser-diagnostic-failure.v2",
+  "generatedAt": "2026-08-02T04:22:09.908Z",
+  "decision": "FAIL_C6_UNIFIED_HUMAN_AUTH_BROWSER_DIAGNOSTIC",
   "failedStage": "unified_human_auth_runtime",
   "credentialSelectionDecision": "PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION",
-  "humanRuntimeDecision": null,
-  "technicalAuthDecision": null,
+  "errorTail": null,
   "safety": {
     "hostingDeploys": 0,
     "cloudRunDeploys": 0,
