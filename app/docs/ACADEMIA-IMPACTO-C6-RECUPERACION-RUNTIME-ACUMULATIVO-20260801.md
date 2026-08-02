@@ -48,8 +48,6 @@ Se publicó correctamente una release DEV usando `firebase.deploy.json` raíz:
 - endpoint HR remoto PASS;
 - cero Cloud Run y cero writes adicionales.
 
-Esto confirmó que el carril de publicación estaba corregido.
-
 ## Caso de aprendizaje Shopper nueva pestaña
 
 El gate reprodujo dos veces:
