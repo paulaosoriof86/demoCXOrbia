@@ -5,7 +5,7 @@
 
 ## Lección central
 
-Una plataforma acumulativa debe demostrar autenticación, fuente operativa, overlay protegido, identidad exacta y coherencia semántica. Un marcador global correcto no compensa objetos canónicos incorrectos.
+Una plataforma acumulativa debe demostrar autenticación, fuente operativa, overlay protegido, identidad exacta, coherencia financiera y cierre semántico. Un root fix puede pasar remotamente y aun así un gate combinado detenerse después; ambos resultados deben separarse.
 
 ## Caso Shopper nueva pestaña — cerrado
 
@@ -16,25 +16,41 @@ Queda como gate permanente de regresión:
 - `ownVisits=1`;
 - tres recargas y nueva pestaña estables.
 
-## Caso financiero — causa raíz corregida en fuente
+## Caso financiero — cerrado remotamente
 
-Causa:
+Causa corregida:
 
 `PROJECT_FINANCIAL_CONFIGURATION_METADATA_NOT_MATERIALIZED_IN_CANONICAL_PROJECTS_BEFORE_NORMALIZATION`.
 
-Correctivo:
+El Hosting DEV vigente demuestra:
 
-- registro multi-tenant por llave técnica `tenantId::projectId`;
-- resolución por identificadores técnicos, nunca por nombre visible;
-- materialización de projectConfig en cada periodo canónico antes de `normalizeAll()`;
-- ejecución del orden en script load, actualización HR, autoridad protegida, backend-ready y cambio de proyecto;
-- gate predeploy con smoke local read-only.
+- `period`, `project` y `currentById` con modelo delegado;
+- `delegated_coordination`;
+- facturación local false;
+- regalía 0;
+- 14 periodos delegados;
+- 0 directos;
+- 0 sin configurar;
+- 0 violaciones de regalías;
+- Q60 GT / L200 HN;
+- comisión y reparto configurables;
+- honorario Shopper separado del ingreso.
 
-Resultado source-only:
+El caso ya no debe presentarse como root fix pendiente. Queda como ejemplo de precedencia correcta:
 
-`PASS_C6_FINANCE_ROOT_FIX_SOURCE_ONLY_GATE`.
+`CONFIGURACIÓN → MATERIALIZACIÓN → NORMALIZACIÓN → CONSUMO`.
 
-El smoke partió de objetos `directo/local/regalía 10` y demostró una salida única `delegado/coordinación/regalía 0` para `period()`, `project()` y Finanzas.
+## Caso semántico — STOP_RETRY vigente
+
+El gate combinado de dominio, Finanzas, portales y Reservas terminó antes de generar su JSON final. La evidencia persistida contiene `semantic=null` y no conserva el stdout/stderr del script.
+
+No existe soporte para afirmar cuál aserción posterior falló. La enseñanza correcta es:
+
+- no inferir el punto de fallo;
+- no reabrir una causa ya cerrada;
+- no usar un segundo deploy para diagnosticar;
+- persistir etapa, aserción y snapshots parciales antes de cada validación;
+- conservar logs sanitizados aun ante excepción.
 
 ## Contratos que deben enseñarse
 
@@ -43,30 +59,50 @@ El smoke partió de objetos `directo/local/regalía 10` y demostró una salida �
 3. Auth restaurada no equivale a overlay aplicado.
 4. Reload y nueva pestaña son gates distintos.
 5. La configuración financiera nace de una llave técnica exacta.
-6. El orden correcto es configuración → materialización → normalización → consumo → gate.
-7. No se clasifica un proyecto por nombre visible.
-8. Un marcador global no sustituye los objetos canónicos.
-9. Las regalías solo aplican a facturación local explícita.
-10. El honorario Shopper es obligación, no ingreso delegado.
-11. Comisión y reparto no se inventan.
-12. Dos verdades simultáneas son un bloqueo.
-13. Un PASS source-only no equivale a PASS remoto.
-14. Un fallo después de deploy exige STOP_RETRY.
+6. No se clasifica un proyecto por nombre visible.
+7. La materialización ocurre antes de normalizar.
+8. Las regalías solo aplican a facturación local explícita.
+9. El honorario Shopper es obligación, no ingreso delegado.
+10. Comisión y reparto no se inventan.
+11. Un diagnóstico focalizado PASS puede cerrar una causa aunque el macro-gate falle después.
+12. Un gate combinado debe publicar evidencia parcial por etapa.
+13. `semantic=null` no autoriza a inventar la aserción fallida.
+14. STOP_RETRY impide redeploy automático.
 15. Producción requiere PASS acumulativo y aprobación humana.
+
+## Checklist de evidencia resiliente
+
+Antes de cada aserción registrar:
+
+- etapa;
+- principal y scope;
+- snapshot mínimo sanitizado;
+- contrato evaluado;
+- código de aserción;
+- resultado;
+- cero writes;
+- siguiente etapa.
+
+Ante fallo conservar:
+
+- stdout/stderr sanitizado;
+- último checkpoint;
+- snapshots ya obtenidos;
+- deploys ejecutados;
+- proveedores no tocados.
 
 ## Impacto en manuales y cursos
 
 Actualizar:
 
 - manual de configuración financiera por proyecto;
-- lección de llaves técnicas multi-tenant;
-- diagrama de precedencia configuración/materialización/normalización;
-- checklist `projectConfig` vs `period()` vs `project()` vs Finanzas;
-- caso directo, delegado y regional;
-- protocolo de gate source-only y gate remoto;
-- caso de error: marcador delegado con objeto directo;
-- protocolo STOP_RETRY.
+- caso práctico de root fix remoto PASS;
+- diferencia entre diagnóstico focalizado y gate combinado;
+- diseño de evidencia parcial;
+- logs sanitizados y códigos de aserción;
+- protocolo de diagnóstico remoto sin deploy;
+- STOP_RETRY y autorización por gates.
 
 ## Estado seguro
 
-Este bloque no ejecutó deploy, Cloud Run, Firestore/Auth/HR/Rules/Storage writes, Make, Gemini, pagos, merge o producción. La publicación de Academia requiere revisión humana posterior.
+El macro-bloque ejecutó un único Hosting DEV deploy. No hubo segundo deploy, Cloud Run, Firestore/Auth/HR/Rules/Storage writes, Make, Gemini, pagos, merge o producción. La publicación de Academia requiere revisión humana posterior.
