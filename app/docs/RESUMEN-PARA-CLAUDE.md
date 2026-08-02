@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-01  
-**Estado vivo:** `C6_UNIFIED_CUMULATIVE_RUNTIME_ROOT_FIX_CODE_APPLIED_PENDING_READONLY_RUNTIME_GATES`
+**Estado vivo:** `C6_UNIFIED_CUMULATIVE_RUNTIME_AND_PROJECT_FINANCE_GUARD_APPLIED_PENDING_READONLY_RUNTIME_GATES`
 
 ## 1. Baseline única
 
@@ -9,19 +9,19 @@ Claude debe continuar sobre el HEAD vivo de `docs-tya-v6-v71-audit`. No puede cr
 
 La HR viva contiene todos los periodos detectados desde junio 2025 hasta julio 2026 en la revisión actual. Agosto todavía no existe. Ninguna UI puede usar el reloj del sistema para inventar un periodo.
 
-Los conteos actuales 14 periodos / 616 visitas / 208 shoppers son una fotografía de la revisión vigente, no un contrato permanente. El runtime debe aceptar automáticamente el crecimiento legítimo cuando la HR agregue nuevos periodos o filas con llaves técnicas únicas.
+Los conteos actuales 14 periodos / 616 visitas / 208 shoppers son una fotografía de la revisión vigente, no un contrato permanente.
 
-## 2. Regresión que no se puede repetir
+## 2. Regresiones que no se pueden repetir
 
-La entrada humana source-safe deshabilitó Auth y dejó inactivos adapters ya aprobados. Resultado:
-
+- entrada humana sin Auth real;
 - Shopper sin identidad;
 - KPI/fases divergentes;
 - histórico/comparativo incompleto;
 - perfiles/certificaciones ausentes;
-- Cliente y Finanzas degradados.
-
-También queda prohibido volver a tratar regalías como porcentaje global. El modelo financiero pertenece a cada proyecto.
+- Cliente y Finanzas degradados;
+- regalías tratadas como regla global;
+- clasificación de proyecto por nombre;
+- honorario del shopper usado como fallback de ingreso delegado.
 
 ## 3. Contrato recuperado
 
@@ -29,43 +29,52 @@ La URL humana normal debe contener una sola experiencia:
 
 - selección de perfil + Usuario/Contraseña en el mismo login;
 - Firebase Auth/claims;
-- HR viva para todos los periodos, visitas y estados de la revisión actual;
+- HR viva para todos los periodos, visitas y estados;
 - Firestore exacto para perfil/PII/certificación;
 - read model canónico;
 - comparativo de todos los periodos detectados;
 - Portal Shopper exacto;
 - Portal Cliente completo;
-- Finanzas canónicas;
-- honorario Cinépolis Q60 GT / L200 HN desde configuración cuando HR no trae monto;
-- Cinépolis clasificado como proyecto delegado;
-- regalías Cinépolis = 0;
-- comisión de coordinación compartida con monto y reparto configurables, nunca inventados.
+- Finanzas canónicas.
+
+Cinépolis conserva:
+
+- honorario Shopper Q60 GT / L200 HN;
+- modelo delegado desde su `projectConfig`;
+- facturación local: no;
+- regalías: 0;
+- comisión de coordinación compartida;
+- monto, participantes, reparto y tratamiento tributario solo desde configuración real.
 
 ## 4. Modelo financiero por proyecto
 
-El wizard ya contiene la selección aprobada:
+Backend soporta:
 
-- `Facturado directamente`;
-- `Delegado (franquicia)`.
+- `directo/local_invoicing`;
+- `delegado/delegated_coordination`;
+- `regional/regional_coordination`.
 
-No eliminar, simplificar ni reemplazar esa selección.
+Reglas:
 
-Contratos obligatorios:
+- directo puede tener regalías si se configuran;
+- delegado/regional siempre normalizan regalías locales a 0;
+- la clasificación sale de los campos del proyecto, nunca del nombre;
+- el honorario del shopper no es ingreso delegado;
+- el ingreso delegado/regional sale de comisión explícita;
+- el margen solo se calcula con comisión y distribución exactas;
+- si falta fuente, pasa a revisión; no se inventan valores.
 
-- directo/local: puede registrar ISR/impuestos y regalías según configuración;
-- delegado: no aplica regalías y usa comisión de coordinación compartida;
-- al cambiar de directo a delegado, cualquier regalía previamente digitada debe quedar anulada en el objeto creado;
-- la persistencia debe guardar el modelo seleccionado;
-- no inventar comisión, porcentajes ni participantes;
-- Cinépolis siempre se resuelve como delegado.
+Contratos protegidos:
 
-El enforcement backend/runtime está en `app/adapters/tya-project-financial-model-contract-v1.js`, que envuelve `CX.data.addProject` y normaliza proyectos existentes.
+- `app/adapters/tya-project-financial-model-contract-v1.js`;
+- `app/adapters/tya-delegated-coordination-finance-guard-v1.js`.
 
 ## 5. Archivos backend protegidos
 
 - `app/index-backend-dev.html`;
 - `app/core/tya-phase-a-source-safe-preview.js`;
 - `app/adapters/tya-project-financial-model-contract-v1.js`;
+- `app/adapters/tya-delegated-coordination-finance-guard-v1.js`;
 - `app/adapters/tya-c6-unified-human-runtime-v1.js`;
 - `app/adapters/tya-protected-auth-hr-authority-bridge-v2.js`;
 - `app/adapters/tya-cumulative-read-model-v2.js`;
@@ -88,37 +97,42 @@ Claude no debe mover estas reglas a los módulos UI ni reintroducir carriles alt
 - cero duplicados técnicos;
 - identidad Shopper únicamente por crosswalk exacto.
 
-Queda prohibido volver a hardcodear 14/616/208 como límite o condición de validez futura.
+## 7. Ajustes frontend exactos para Claude
 
-## 7. Frontend preservado
+### `app/modules/proyecto-wizard.js`
 
-`app/modules/proyecto-wizard.js` se preserva porque ya contiene la selección directo/delegado y muestra los campos de regalías solo para directo.
+El wizard ya tiene `Facturado directamente` y `Delegado (franquicia)`. Debe:
 
-No requiere rediseño. Solo debe conservarse y validarse que:
+- conservar esas opciones;
+- agregar `Regional` como tercera opción aprobada;
+- enviar `modelo:'regional'` al mismo `CX.data.addProject`;
+- mostrar regalías solo para directo;
+- no pedir regalías a delegado/regional;
+- no duplicar el cálculo del adapter.
 
-- el modelo elegido llegue al contrato;
-- delegado termine con `regalias=0` aunque exista un valor residual anterior;
-- el resumen no muestre regalías para delegados;
-- no se presente la comisión delegada como facturación local por visita.
+### `app/modules/finanzas.js`
 
-Las mejoras ya aceptadas de Dashboard, Histórico, Shoppers, Cliente, Academia y Finanzas deben consumir el runtime canónico; no deben reconstruirse desde cero.
+Reemplazar el copy delegado:
 
-## 8. Ajustes frontend pendientes solo si el runtime PASS los demuestra
+- incorrecto: “honorario recibido menos lo pagado al shopper”;
+- correcto: comisión de coordinación recibida y distribución configurada; honorarios/reembolsos del shopper son obligaciones separadas.
 
+La UI debe mostrar `pending_or_review` cuando falten comisión o distribución exactas, no presentar margen inventado.
+
+## 8. Otros ajustes frontend solo si runtime los demuestra
+
+- visualización de comisión y reparto cuando exista fuente real;
 - copy de estados financieros;
-- visualización de comisión y reparto delegado cuando exista configuración real;
-- presentación de review queue de identidades;
+- presentation de review queue de identidades;
 - detalle administrativo de certificación;
 - formato final de PDF/Excel/exportaciones.
-
-No inventar datos ni corregir pantallas antes de comprobar la composición real.
 
 ## 9. Gate antes de otra candidata o deploy
 
 Debe probar en la misma URL y sesión:
 
 - staff/cliente/shopper autenticados;
-- todos los periodos detectados en la HR vigente;
+- todos los periodos HR;
 - KPI = fase = detalle;
 - comparativo completo;
 - identidad única;
@@ -126,11 +140,12 @@ Debe probar en la misma URL y sesión:
 - Cliente;
 - Finanzas con fuente canónica;
 - Cinépolis delegado y regalías 0;
-- selector directo/delegado en alta de proyecto;
-- comisión compartida sin valores inventados;
+- honorario Shopper nunca usado como ingreso;
+- margen solo con comisión/reparto exactos;
+- selector directo/delegado y soporte regional;
 - tres recargas;
 - cero writes.
 
 ## 10. Academia
 
-Actualizar manuales para enseñar que la fuente viva gobierna todos los periodos, que una pantalla visible no es PASS si no comparte identidad, periodo y read model, y que las regalías dependen del modelo financiero de cada proyecto.
+Actualizar manuales para enseñar fuente viva, baseline acumulativa y diferencia entre facturación local, coordinación delegada, distribución regional e importes del shopper.
