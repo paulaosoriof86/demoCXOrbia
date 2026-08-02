@@ -1,167 +1,122 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `RECONSTRUCTION_ACTIVE_SOURCE_ONLY__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `RECONSTRUCTION_ACTIVE__FAMILY_A_CONTRACT_DEFINED__FAMILY_B_INVENTORY_ACTIVE__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Bloqueante principal actual
+## 1. Bloqueante principal
 
-No existe todavía una matriz autoritativa que pruebe para cada módulo:
+Todavía no existe la composición objetivo A+B con SHA final por archivo y dependencias reconciliadas. No se publicará un nuevo build hasta cerrar esa matriz y sus gates source-only.
 
-`última aprobación humana → candidata/commit → archivos/dependencias → SHA aprobado → SHA actual → acción`.
+Fuentes vivas:
 
-Por tanto, la prioridad es reconstruir la candidata acumulativa única. El gate semántico C6 aislado queda suspendido hasta cerrar la composición.
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-CONTRATO-Y-PRECEDENCIA-20260802.md`;
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-B-INVENTARIO-INICIAL-20260802.md`.
 
-Fuente viva:
+## 2. Familia A — pendiente real
 
-- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`.
+- recuperar última aprobación/commit de shell, config, router y Proyecto/Periodo;
+- neutralizar tenant/identidad local en modo conectado;
+- preservar interfaz completa `CX.data`;
+- decidir retiro/delegación de read guards y bridges duplicados;
+- neutralizar defaults directo/ISR5/regalía10 del live apply;
+- reemplazar build-lock V174 y cache ID solo al ensamblar;
+- crear gates de interfaz, precedencia, no-demo, Auth y caché.
 
-## 2. Familia A abierta
+## 3. Familia B — hallazgos pendientes
 
-Pendiente inventariar y trazar completamente:
+### Dashboard
 
-- shell y entrada;
-- tenant/marca;
-- navegación y rutas por rol;
-- Proyecto y Periodo;
-- `store` y la interfaz exacta `CX.data`;
-- HR y read model canónico;
-- adapters de Auth, HR y runtime;
-- overlays de Hosting;
-- service worker/cache;
-- dependencias que cambian comportamiento sin modificar `app.js`.
+- eliminar divergencia entre tiles, fases, comparativo y bridges;
+- consumir read model/canonical semantics;
+- cero históricos, porcentajes, márgenes o scores fabricados.
 
-## 3. Hallazgos ya confirmados
+### CRM Ops Leads
 
-### Build-lock obsoleto
+- recuperar mejor aprobación visual;
+- preservar suite completa;
+- definir estado conectado sin fuente real;
+- evitar fixtures fuera de demo;
+- no activar writes backend todavía.
 
-`app/core/build-lock.js` todavía declara V174/R20. Debe reemplazarse al final con el manifest de la candidata acumulativa, no antes.
+### Clientes
 
-### V182 incremental
+- retirar contactos/correos/prospectos sintéticos en modo conectado;
+- conservar ficha y Cliente→Proyecto por IDs estables;
+- no generar score desde rating Shopper cuando no exista fuente.
 
-Coincidencia exacta con rama:
+### Comercial
 
-- `app/app.js`;
-- `app/modules/beneficios.js`;
-- `app/styles/layout.css`.
+- reconciliar calculadora con modelo financiero por proyecto;
+- Cinépolis delegado, regalía 0 y localBilling false;
+- IA, investigación web y plantillas con gates honestos.
 
-Reconciliación requerida por fixes posteriores:
+### Marketing
 
-- `app/core/finanzas-core.js`;
-- `app/modules/finanzas.js`.
+- retirar mes/contenido/métricas ficticias en modo conectado;
+- Gemini/Make/integraciones inactivas hasta su bloque real;
+- conservar la UI y mostrar pending-source.
 
-## 4. Familias pendientes después de A
+### Hojas de Ruta
 
-### B — CRM Ops Leads
+- comprobar proyecto/periodo correcto;
+- HR viva como autoridad;
+- gatear IA/import/Google Sheets y writes.
 
-- Dashboard;
-- hoja de ruta;
-- CRM;
-- Comercial;
-- Clientes;
-- Marketing;
-- indicadores y drilldowns sin métricas fabricadas.
+## 4. Familias posteriores
 
-### C — Operación e histórico
-
-- proyectos;
-- periodos;
-- HR;
-- histórico;
-- visitas;
-- postulaciones;
-- reservas;
-- shoppers;
-- novedades.
-
-### D — Shopper
-
-- Mi Día;
-- disponibles;
-- Mis Visitas;
-- Reservas;
-- Mi Perfil;
-- cuestionario;
-- Beneficios;
-- Certificaciones;
-- documentos y tablón.
-
-### E — Finanzas
-
-- Finanzas;
-- Liquidaciones;
-- Movimientos;
-- Costos;
-- Beneficios;
-- pagos y lotes;
-- alcance por país/moneda/proyecto.
-
-### F — Portales y reportes
-
-- Portal Cliente;
-- Portal Shopper;
-- reportes Admin/Cliente/Shopper;
-- PDF/XLSX/PPTX;
-- branding y gráficas;
-- mismas filas, alcance, periodo y `sourceRevision`.
-
-### G — Administración y Academia
-
-- Configuración;
-- Administrabilidad;
-- Importador;
-- Integraciones;
-- Automatizaciones;
-- Correo;
-- Soporte;
-- Marca;
-- Diagnóstico;
-- Academia.
+- C: operación e histórico;
+- D: experiencia Shopper y certificaciones;
+- E: Finanzas, liquidaciones, movimientos, beneficios y pagos;
+- F: portales y reportes;
+- G: administración, integraciones y Academia.
 
 ## 5. Cerrado y protegido
 
 No reabrir sin regresión nueva:
 
-- Shopper nueva pestaña e identidad exacta;
-- `ownVisits=1` para el caso técnico probado;
 - Staff/Shopper/Cliente remoto estable;
+- Shopper nueva pestaña e identidad exacta;
+- `ownVisits=1` para el caso probado;
 - 14 periodos y 616 visitas;
-- precedencia financiera canónica;
 - `tya::cinepolis` delegado;
 - facturación local false;
 - regalía 0;
 - 14 delegados, 0 directos, 0 sin configurar y 0 violaciones;
 - producción intacta.
 
-## 6. Pendientes funcionales que deben sobrevivir la reconstrucción
+## 6. Checkpoint Visual 1
 
-- CRM Ops Leads como prioridad de salida;
-- Dashboard y hoja de ruta sin retrocesos;
-- PDF con gráficas;
-- Excel con formato real;
-- exportaciones transversales;
-- comisión/reparto configurable visible;
-- Regional en wizard cuando corresponda;
-- review queue y certificaciones;
-- Agosto solo cuando exista en HR y después del freeze correspondiente.
+Paula debe revisar sobre un solo build A+B:
 
-## 7. Criterios de cierre
+- acceso, shell, tenant, proyecto, periodo, fuente y navegación;
+- CRM Ops Leads;
+- Dashboard;
+- Hojas de Ruta;
+- Clientes;
+- Comercial;
+- Marketing;
+- indicadores y drilldowns.
 
-- cero módulos `UNKNOWN`;
-- dependencias completas;
+## 7. Criterios de cierre A+B
+
+- cero dependencias `UNKNOWN`;
 - SHA objetivo por archivo;
-- un solo commit funcional;
-- un manifest;
-- un build-lock;
-- un verificador;
-- un solo Hosting DEV;
-- validación humana del mismo build;
-- freeze antes de cutover.
+- una sola fuente/semántica;
+- delta completo contra HEAD;
+- gates source-only PASS;
+- un manifest y build-lock;
+- una sola URL DEV;
+- aprobación visual de Paula.
 
-## 8. Prohibiciones
+## 8. Siguiente bloque exacto
 
-- no nuevo deploy durante inventario;
+`OVERLAYS/EXTRAS B → PROVENIENCIA/APROBACIONES → MATRIZ SHA A+B → DELTA Y GATES SOURCE-ONLY`.
+
+## 9. Prohibiciones
+
+- no deploy durante inventario;
 - no nueva candidata, rama, PR, Firebase o Hosting;
 - no shell reducido;
-- no parche UI para esconder diferencias;
-- no restaurar V182 ciegamente sobre fixes financieros posteriores;
+- no seeds ni métricas falsas en modo conectado;
+- no parche UI desde backend como autoridad final;
 - no merge ni producción antes de composición y aprobación humana.
