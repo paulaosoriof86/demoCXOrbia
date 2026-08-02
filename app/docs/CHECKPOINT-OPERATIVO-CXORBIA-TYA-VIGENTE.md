@@ -20,10 +20,6 @@
 - Dominio, Finanzas, Portal Cliente, Portal Shopper y Reservas en baseline local/read-only.
 - Credencial Cliente idempotente, readback PASS y rollback exacto.
 
-Decisión funcional previa:
-
-`PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES`.
-
 ## 3. Release Hosting DEV publicada
 
 El request `c6-hosting-dev-deploy-remote-gates-20260802-04` ejecutó un único deploy exitoso:
@@ -44,8 +40,7 @@ PASS:
 - endpoint HR remoto;
 - 14 periodos, 616 visitas y 208 shoppers;
 - Staff remoto;
-- Cliente remoto;
-- tres recargas en los escenarios completados.
+- Cliente remoto.
 
 Pendiente:
 
