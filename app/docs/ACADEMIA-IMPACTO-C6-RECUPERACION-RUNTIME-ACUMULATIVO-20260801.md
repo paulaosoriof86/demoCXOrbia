@@ -5,83 +5,78 @@
 
 ## Lección central
 
-Una solución no está corregida solo porque el cambio exista en el repositorio o esté documentado. Debe estar conectado al carril ejecutable que realmente usa el sistema.
+Una sesión autenticada y una pantalla con datos operativos no prueban por sí solas que el contexto protegido esté completo. En un sistema con fuente HR más overlay de identidad, el gate debe demostrar ambos componentes.
 
 El control de calidad debe separar:
 
-1. acceso válido;
-2. contexto correcto por rol;
-3. transición visual completada;
-4. continuidad después de recargas y nueva pestaña;
-5. predeploy aprobado;
-6. configuración exacta usada por el runner;
-7. comando iniciado;
-8. release creada;
+1. principal autenticado;
+2. tenant y proyecto correctos;
+3. HR base cargada;
+4. overlay protegido aplicado;
+5. identidad exacta resuelta;
+6. visitas propias visibles;
+7. tres recargas;
+8. nueva pestaña;
 9. paridad remota;
-10. validación humana.
+10. aprobación humana.
 
 ## Contratos que deben enseñarse
 
-1. La fuente viva gobierna periodos históricos y actuales.
-2. El reloj del dispositivo nunca crea un periodo operativo.
-3. HR conserva operación; el sistema de acceso no la sustituye.
-4. Staff, Shopper y Cliente requieren gates separados.
-5. Tres recargas y una nueva pestaña forman parte del gate.
-6. KPI, fase, detalle, histórico y Finanzas consumen el mismo read model.
-7. Una autorización consumida no se reutiliza.
-8. Un PASS técnico parcial no equivale a aprobación humana acumulativa.
-9. Un intento de deploy no equivale a release creada.
-10. Una release no equivale a paridad remota ni aprobación humana.
-11. Un fix documentado no equivale a un fix conectado al runner.
-12. El runner debe validar la configuración autorizada antes del comando.
-13. La configuración raíz debe coincidir con target, public y rewrites esperados.
-14. El endpoint dinámico debe preceder al wildcard SPA.
-15. Un deploy Hosting no autoriza desplegar Cloud Run.
-16. Ante un fallo deben persistirse versión de CLI y logs sanitizados.
-17. Un segundo deploy requiere una nueva autorización.
-18. El modelo financiero se obtiene de la configuración del proyecto, no de su nombre.
-19. Local, Delegado, Regional y Unconfigured son contratos distintos.
-20. Las regalías solo aplican con facturación local y configuración explícita.
-21. El honorario del shopper es una obligación, no ingreso delegado.
-22. El margen delegado solo se calcula con comisión y distribución exactas.
-
-## Caso de aprendizaje Auth C6
-
-El gate comprobó:
-
-- Staff humano estable;
-- Shopper con identidad exacta;
-- Cliente con alcance exclusivo `cinepolis`;
-- carril técnico Staff/Shopper aislado;
-- HR viva completa;
-- tres recargas y nueva pestaña.
-
-La materialización Cliente quedó idempotente, con readback y rollback exacto.
+1. HR viva gobierna periodos, visitas y estados.
+2. Firestore protegido enriquece identidad, perfil y certificación.
+3. Auth restaurada no equivale a overlay aplicado.
+4. `appOn=true` no equivale a runtime acumulativo completo.
+5. Una nueva pestaña es un gate distinto de una recarga.
+6. Un Shopper debe recuperar sus visitas por identidad exacta.
+7. `ownVisits=0` con visitas asignadas es un bloqueo, no un estado aceptable.
+8. Una conciliación de arranque debe ser idempotente.
+9. Los eventos puntuales requieren una recuperación independiente cuando el orden de carga puede variar.
+10. Las lecturas externas transitorias deben reintentarse de forma acotada y fail-closed.
+11. Un reintento nunca debe convertirse en write o deploy automático.
+12. Una release publicada no equivale a gate remoto completo.
+13. La paridad de assets no sustituye la prueba por rol.
+14. El modelo financiero se obtiene de configuración del proyecto.
+15. Las regalías solo aplican con facturación local explícita.
+16. El honorario Shopper no es ingreso delegado.
 
 ## Caso de aprendizaje Hosting C6
 
-El segundo intento autorizado comprobó source lock, gate estático, acceso read-only y destino DEV. El comando se inició, pero no creó una release.
+Se publicó correctamente una release DEV usando `firebase.deploy.json` raíz:
 
-La autorización exigía `firebase.deploy.json` en la raíz. Sin embargo, el workflow todavía generaba una copia en `.tmp` y ejecutaba el comando con esa ruta temporal.
+- 2,293 archivos;
+- paridad exacta de 16 assets;
+- endpoint HR remoto PASS;
+- cero Cloud Run y cero writes adicionales.
 
-Conclusión:
+Esto confirmó que el carril de publicación estaba corregido.
 
-`RUNNER_AUTHORIZED_ROOT_CONFIG_NOT_APPLIED`.
+## Caso de aprendizaje Shopper nueva pestaña
 
-El fix existía en documentación y archivos, pero no estaba conectado al paso ejecutable.
+El gate reprodujo dos veces:
+
+- principal Shopper restaurado;
+- tenant y proyecto correctos;
+- HR base con 14 periodos, 616 visitas y 208 shoppers;
+- aplicación activa;
+- overlay protegido no aplicado;
+- visitas propias 0.
+
+Causa:
+
+`RESTORED_SESSION_NEW_TAB_PROTECTED_AUTHORITY_RECONCILIATION_NOT_RESILIENT`.
 
 ## Correctivo incorporado
 
-El workflow existente ahora:
+El bridge protegido ahora:
 
-- valida la configuración raíz autorizada;
-- valida target, public y orden de rewrites;
-- ejecutará `--config firebase.deploy.json`;
-- valida la prohibición de un segundo deploy automático;
-- registra la versión de Firebase CLI;
-- persiste logs sanitizados ante cualquier fallo.
+- reintenta HR viva de forma acotada;
+- espera principal, Firestore y composer canónico;
+- se activa por Auth, backend, DOM, foco, visibilidad y refresh;
+- impide conciliaciones simultáneas;
+- publica metadata de recuperación;
+- permanece read-only.
 
-No se creó otro workflow ni se ejecutó otro deploy.
+El fix no se considera validado remotamente hasta un deploy autorizado y un nuevo gate Shopper.
 
 ## Rutas por rol
 
@@ -93,14 +88,14 @@ No se creó otro workflow ni se ejecutó otro deploy.
 
 Los materiales deben explicar:
 
-- diferencia entre fix documentado y fix ejecutable;
-- diferencia entre intento, release, paridad y aprobación;
-- cómo probar cada rol, recargas y nueva pestaña;
-- cómo validar configuración raíz, target, public y rewrites;
-- por qué un endpoint dinámico debe preceder al wildcard;
-- cómo diferenciar facturación local, coordinación delegada y obligaciones al shopper;
-- cuándo una autorización nueva es obligatoria.
+- diferencia entre HR base y overlay protegido;
+- diferencia entre reload y nueva pestaña;
+- cómo comprobar identidad exacta y visitas propias;
+- cómo diseñar recuperación idempotente ante carreras de inicialización;
+- por qué un error transitorio no autoriza writes ni redeploy;
+- diferencia entre release, paridad, gate por rol y aprobación humana;
+- cómo diferenciar facturación local, coordinación delegada y obligaciones al shopper.
 
 ## Sin impacto adicional de proveedor
 
-Además de los dos Auth writes previamente autorizados, este bloque no creó release Hosting, no desplegó Cloud Run y no activó Firestore, HR, Rules, Storage, Gemini, Make, pagos, merge ni producción.
+Después de aplicar el root fix en fuente no se ejecutó otro deploy ni se activaron Firestore, Auth, HR, Rules, Storage, Cloud Run, Gemini, Make, pagos, merge o producción.
