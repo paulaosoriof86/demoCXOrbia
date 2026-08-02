@@ -1,14 +1,16 @@
 {
   "schemaVersion": "cxorbia.c6.live-domain-readonly-audit-request.v1",
-  "requestId": "c6-existing-hosting-dev-remote-gates-20260802-05",
-  "attempt": 31,
-  "continuationOf": "c6-existing-hosting-dev-remote-gates-20260802-04",
-  "continuationReason": "transient_live_hr_http_503_during_readonly_credential_selection_now_retried_fail_closed_without_redeploy",
+  "requestId": "c6-existing-hosting-dev-remote-gates-20260802-06",
+  "attempt": 32,
+  "continuationOf": "c6-existing-hosting-dev-remote-gates-20260802-05",
+  "continuationReason": "remote_parity_passed_transient_shopper_new_tab_authority_marker_not_applied_retry_readonly_without_redeploy",
   "priorDecision": "FAIL_C6_REMOTE_GATES_AFTER_EXISTING_DEV_HOSTING_DEPLOY",
-  "priorFailedStage": "select_existing_credentials_v6__LIVE_HR_HTTP_503",
-  "status": "consumed_fail",
-  "enabled": false,
-  "consumed": true,
+  "priorFailedStage": "remote_staff_shopper",
+  "priorRemoteParityDecision": "PASS_C6_HOSTING_DEV_REMOTE_PARITY_AND_LIVE_HR",
+  "priorFailure": "shopper_new_tab_AUTH_RUNTIME_TIMEOUT_authority_not_applied",
+  "status": "authorized_remote_gates_only_no_hosting_deploy",
+  "enabled": true,
+  "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -40,7 +42,7 @@
     "newTabRequired": true,
     "noAutomaticSecondDeploy": true
   },
-  "triggerReason": "continue_authorized_readonly_remote_gates_on_existing_DEV_release_with_transient_live_HR_retry_and_finance_diagnostic_without_redeploy",
+  "triggerReason": "retry_authorized_readonly_remote_gates_on_existing_DEV_release_after_transient_shopper_new_tab_authority_timeout_without_redeploy",
   "expectedOutcome": "remote_cumulative_pass_or_exact_readonly_finance_diagnostic",
   "hostingDeploys": 0,
   "maxHostingDeploys": 0,
@@ -54,8 +56,5 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false,
-  "consumedAt": "2026-08-02T19:10:29.087Z",
-  "decision": "FAIL_C6_REMOTE_GATES_AFTER_EXISTING_DEV_HOSTING_DEPLOY",
-  "nextGate": "REMOTE_GATE_ROOT_CAUSE_REVIEW_NO_DEPLOY"
+  "production": false
 }
