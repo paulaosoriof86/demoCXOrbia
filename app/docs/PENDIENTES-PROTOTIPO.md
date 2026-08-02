@@ -1,15 +1,15 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-01  
-**Estado vivo:** `C6_RUNTIME_PASS_EXCEPT_CLIENT_CREDENTIAL__HOLD_NO_AUTH_WRITE`
+**Última actualización:** 2026-08-02  
+**Estado vivo:** `C6_AUTH_RUNTIME_ALL_ROLES_PASS__PENDING_FRESH_DEV_DEPLOY_AUTHORIZATION`
 
-## 1. P0 bloqueante único
+## 1. P0 bloqueante actual
 
-Materializar y validar una credencial Cliente DEV con claims correctos para tenant `tya` y proyecto `cinepolis`.
+No queda pendiente una credencial Cliente.
 
-La búsqueda read-only comprobó que no existe actualmente una credencial utilizable. Crear o resetearla implica Auth write y requiere autorización específica.
+El único bloqueante para continuar Corte 6 es obtener autorización fresca para un único deploy del Hosting DEV existente y repetir el gate acumulativo remoto.
 
-Hasta entonces no hay freeze, deploy, agosto, postulaciones, merge ni producción.
+Hasta entonces no hay freeze, agosto, postulaciones, merge ni producción.
 
 ## 2. Gates cerrados
 
@@ -20,51 +20,52 @@ PASS:
 - dominio, Finanzas, Portal Shopper y Reservas;
 - Staff humano autenticado;
 - Shopper humano autenticado con identidad exacta;
+- Cliente humano autenticado con alcance exclusivo `cinepolis`;
 - carril técnico Staff/Shopper aislado;
 - tres recargas y nueva pestaña;
-- ruta integrada Cliente Usuario + Contraseña;
-- Cinépolis delegado, regalías 0 y Q60/L200;
-- ingreso delegado separado del honorario Shopper.
+- idempotencia y readback Cliente;
+- rollback exacto probado;
+- Cinépolis delegado, regalías 0 y Q60/L200.
 
-## 3. Root fixes aplicados
+## 3. Credencial Cliente
 
-- guard de clic temprano antes del wrapper oficial de Auth;
-- guard específico para impedir `pickShopperDev()` en la tarjeta Shopper protegida;
+Cerrado:
+
+- una credencial Cliente DEV creada;
+- claims exactos `cliente/staff/tya/cinepolis`;
+- sign-in PASS;
+- segunda ejecución idempotente con 0 writes;
+- password changes/resets 0;
+- secretos no expuestos.
+
+El primer intento fue revertido automáticamente porque Auth no completaba la entrada visual. Se corrigió la causa raíz y el segundo intento quedó PASS.
+
+## 4. Root fixes aplicados
+
+- guard de clic temprano antes del wrapper oficial;
+- guard Shopper contra `pickShopperDev()`;
+- transición Cliente post-Auth con `CX.app.enter()`;
 - formulario técnico estable `cxDevEntryAuth`;
 - metadata `technical-auth-e2e-isolated`;
 - modelo financiero Local/Delegado/Regional/Unconfigured;
 - guard de comisión delegada fail-closed.
 
-## 4. Evidencia del HOLD Cliente
+## 5. Siguiente bloque técnico
 
-- registros candidatos examinados: 4;
-- usuarios Auth existentes relacionados: 3;
-- claims válidos Cliente para `tya/cinepolis`: 0;
-- hashes válidos: 0;
-- sign-ins Cliente: 0;
-- Auth writes: 0;
-- cambios/resets de contraseña: 0.
+Con autorización fresca:
 
-Decisión:
+1. un único deploy al Hosting DEV existente;
+2. comprobación de paridad build/source;
+3. Auth remota Staff;
+4. Auth remota Cliente;
+5. Auth remota Shopper;
+6. HR viva, dominio, Finanzas, portales y Reservas;
+7. tres recargas y nueva pestaña;
+8. evidencia PASS/FAIL;
+9. validación humana acumulativa;
+10. `APROBADO C6 → FREEZE`.
 
-`HOLD_C6_EXISTING_CLIENT_CREDENTIAL_NOT_FOUND`.
-
-## 5. Siguiente bloque técnico condicionado
-
-Con autorización específica:
-
-1. snapshot de usuarios/claims Cliente;
-2. materialización de una única credencial Cliente DEV;
-3. claims `role=cliente`, `authNamespace=staff`, `tenantId=tya`, alcance `cinepolis`;
-4. idempotencia;
-5. Auth humana Cliente;
-6. tres recargas y nueva pestaña;
-7. readback;
-8. rollback exacto probado;
-9. gate acumulativo completo;
-10. evidencia PASS/FAIL.
-
-No crear cuenta ni resetear contraseña por inferencia.
+No reutilizar autorizaciones anteriores.
 
 ## 6. Pendientes Claude/prototipo por archivo
 
@@ -77,7 +78,7 @@ No crear cuenta ni resetear contraseña por inferencia.
 
 ### `app/modules/finanzas.js`
 
-- sustituir el texto “honorario recibido menos lo pagado al shopper”;
+- sustituir “honorario recibido menos lo pagado al shopper”;
 - explicar comisión de coordinación y distribución configurable;
 - mostrar revisión cuando falte fuente exacta.
 
@@ -91,7 +92,6 @@ No crear cuenta ni resetear contraseña por inferencia.
 
 - no nueva candidata, rama o PR;
 - no nuevo Firebase o Hosting;
-- no restauración manual de pantallas;
 - no bypass de Auth por estar en DEV;
 - no dedupe por nombre/teléfono;
 - no regalías globales;
@@ -101,7 +101,7 @@ No crear cuenta ni resetear contraseña por inferencia.
 - no PowerShell para Paula;
 - no deploy por ensayo.
 
-## 8. P1/P2 después del P0
+## 8. P1/P2 después del freeze
 
 - PDF con gráficas;
 - Excel con formato;
