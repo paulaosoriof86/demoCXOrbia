@@ -8,9 +8,9 @@
   "priorFailedStage": "remote_staff_shopper",
   "priorRootCause": "RESTORED_SESSION_NEW_TAB_PROTECTED_AUTHORITY_RECONCILIATION_NOT_RESILIENT",
   "rootFixSourceDecision": "PASS_C6_SHOPPER_NEW_TAB_AUTHORITY_ROOT_FIX_SOURCE_READY_PENDING_FRESH_DEV_DEPLOY",
-  "status": "authorized_execute_once_stop_retry",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_fail_stop_retry",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -64,5 +64,9 @@
   "paymentsWrites": 0,
   "merge": false,
   "production": false,
-  "stopRetryOnFailure": true
+  "stopRetryOnFailure": true,
+  "consumedAt": "2026-08-02T21:12:20.649Z",
+  "decision": "FAIL_C6_REMOTE_GATES_AFTER_SINGLE_DEV_HOSTING_DEPLOY_STOP_RETRY",
+  "nextGate": "ROOT_CAUSE_REVIEW_NO_AUTOMATIC_REDEPLOY",
+  "stopRetry": true
 }
