@@ -28,6 +28,7 @@ async function state(page,label){
     const ctx=window.CX?.backendAuth?.context?.()||null;
     const login=document.getElementById('login');
     const app=document.getElementById('app');
+    const early=window.CX_C6_EARLY_AUTH_CLICK_GUARD||null;
     return {
       label,
       url:location.href,
@@ -42,6 +43,10 @@ async function state(page,label){
       appPresent:Boolean(window.CX?.app),
       firebaseWrapper:Boolean(window.CX?.app?.__firebaseBrowserAuthWrapped),
       unifiedClientWrapper:Boolean(window.CX?.app?.__c6UnifiedClientLogin),
+      earlyGuardInstalled:early?.installed===true,
+      earlyGuardIntercepts:Number(early?.intercepts||0),
+      earlyGuardLastRole:early?.lastInterceptedRole||null,
+      directRoleEntryAllowed:early?.directRoleEntryAllowed??null,
       integratedStep:Boolean(document.getElementById('cxIntegratedAuthStep')),
       integratedLogin:Boolean(document.getElementById('cxIntegratedAuthLogin')),
       technicalForm:Boolean(document.getElementById('cxDevEntryAuth')),
@@ -61,21 +66,23 @@ try{
   const context=await browser.newContext({viewport:{width:1440,height:1000},ignoreHTTPSErrors:true,serviceWorkers:'block'});
   await configure(context);
   const page=await context.newPage();
-  await page.goto(root+'/index-backend-dev.html',{waitUntil:'domcontentloaded',timeout:60000});
+  await page.goto(root+'/index-backend-dev.html',{waitUntil:'commit',timeout:60000});
   await page.waitForSelector('.role-btn[data-role="admin"]',{state:'visible',timeout:30000});
-  await page.waitForTimeout(500);
-  const before=await state(page,'before_admin_click');
+  const before=await state(page,'before_immediate_admin_click');
   await page.click('.role-btn[data-role="admin"]');
-  await page.waitForTimeout(2500);
-  const after=await state(page,'after_admin_click');
-  const pass=after.integratedStep&&after.integratedLogin&&!after.technicalForm&&!after.appOn;
+  await page.waitForSelector('#cxIntegratedAuthStep',{state:'visible',timeout:5000});
+  const after=await state(page,'after_immediate_admin_click');
+  const wrapperProtected=before.firebaseWrapper||before.earlyGuardInstalled;
+  const pass=wrapperProtected&&after.integratedStep&&after.integratedLogin&&!after.technicalForm&&!after.appOn&&after.directRoleEntryAllowed===false;
   const evidence={
-    schemaVersion:'cxorbia.c6.human-login-wrapper-diagnostic.v1',
+    schemaVersion:'cxorbia.c6.human-login-wrapper-diagnostic.v2',
     generatedAt:new Date().toISOString(),
-    decision:pass?'PASS_C6_HUMAN_LOGIN_WRAPPER_ACTIVE':'FAIL_C6_HUMAN_LOGIN_WRAPPER_NOT_ACTIVE',
+    decision:pass?'PASS_C6_HUMAN_LOGIN_IMMEDIATE_CLICK_GUARDED':'FAIL_C6_HUMAN_LOGIN_IMMEDIATE_CLICK_BYPASS',
+    testMode:'immediate_click_after_first_visible_role_card',
     before,
     after,
-    inference:pass?null:(after.appOn?'direct_role_entry_bypassed_integrated_auth':(!before.firebaseWrapper?'firebase_browser_auth_wrapper_not_installed':'integrated_auth_step_not_rendered')),
+    protectedBy:before.firebaseWrapper?'official_firebase_wrapper':before.earlyGuardInstalled?'early_capture_guard':'none',
+    inference:pass?null:(after.appOn?'direct_role_entry_bypassed_integrated_auth':(!wrapperProtected?'no_auth_guard_installed':'integrated_auth_step_not_rendered')),
     hostingDeploys:0,
     providerWrites:0,
     authWrites:0,
