@@ -13,16 +13,16 @@
 
 Los conteos actuales son una fotografía de la revisión previa a agosto. No se usan como invariantes permanentes ni como límite para revisiones futuras.
 
-## 2. Corrección de criterio
+## 2. Correcciones de criterio prevalentes
 
 Queda prohibido usar números de cortes anteriores como verdad operacional. Los periodos históricos permanecen, pero sus indicadores se leen de la HR viva y de su revisión vigente.
 
-Las evidencias anteriores válidas se usan para recuperar contratos, no para congelar datos:
+El modelo financiero también es por proyecto:
 
-- single-login aprobado;
-- R20 full-history;
-- dominio/Finanzas/Shopper canónicos;
-- configuración del proyecto.
+- directo/local: existe facturación local y las regalías solo aplican si se configuran;
+- delegado: no existe facturación local del proyecto, regalías 0 y compensación por comisión de coordinación compartida.
+
+Cinépolis es delegado. El monto de la comisión, sus participantes y porcentajes no se inventan.
 
 ## 3. P0 demostrado
 
@@ -39,6 +39,8 @@ La visual humana publicada no consumía la baseline acumulativa:
 
 Causa: separación artificial entre carril humano source-safe y carril protegido, más adapters funcionales condicionados por token oculto.
 
+Se añadió una contradicción financiera posterior al documentar Cinépolis como directo con regalías. Esa contradicción fue corregida en código, evidencia y fuentes vigentes.
+
 ## 4. Root fix aplicado al código
 
 - Entrada humana única `authenticated-human-canonical`.
@@ -47,35 +49,38 @@ Causa: separación artificial entre carril humano source-safe y carril protegido
 - Override directo de rol eliminado del índice.
 - Bridge visual oculto eliminado del índice.
 - Dominio/Shopper/Finanzas canónicos activos en la URL normal.
-- `tya-protected-auth-hr-authority-bridge-v2.js` sustituye el contrato congelado por uno dinámico:
-  - conserva todos los periodos detectados;
-  - conserva todas las visitas de la revisión;
-  - exige llaves técnicas únicas;
-  - prohíbe append de historia protegida;
-  - permite que agosto aparezca únicamente cuando exista en HR.
-- Adapter unificado agrega:
-  - login Cliente;
-  - honorario Q60/L200 desde configuración;
-  - comparativo con todos los periodos HR;
-  - reaplicación después de Auth/refresh.
+- `tya-protected-auth-hr-authority-bridge-v2.js` conserva dinámicamente todos los periodos y visitas.
+- `tya-project-financial-model-contract-v1.js`:
+  - normaliza proyectos existentes;
+  - preserva la selección directo/delegado en nuevas altas;
+  - bloquea regalías en delegados;
+  - fuerza Cinépolis como delegado;
+  - deja comisión y reparto como configuración real pendiente, sin inventar datos.
+- `tya-phase-a-source-safe-preview.js` ahora configura Cinépolis como:
+  - delegado;
+  - Q60 GT / L200 HN al shopper;
+  - regalías 0;
+  - comisión de coordinación compartida.
+- Adapter unificado conserva login Cliente, comparativo completo y metadata financiera corregida.
 
-No se tocaron módulos UI.
+El wizard ya contenía la selección directo/delegado y no fue rediseñado.
 
-## 5. Gates ya comprobados sin proveedor
+## 5. Validación alcanzada sin proveedor
 
-- Sintaxis del bootstrap: PASS.
-- Sintaxis del adapter unificado: PASS.
-- Sintaxis del bridge dinámico v2: PASS.
-- Sintaxis del gate acumulativo: PASS.
-- Ausencia de scripts de carril reducido en el índice: PASS.
-- Presencia de Auth/HR/domain/shopper/finance canónicos: PASS.
-- Cero deploys y provider writes: PASS por alcance del bloque.
+Comprobado por revisión directa del HEAD en GitHub:
 
-Esto no equivale todavía a runtime/browser PASS.
+- adapter financiero creado y cargado antes del motor de Finanzas;
+- configuración Cinépolis corregida;
+- metadata runtime corregida;
+- gate estático actualizado;
+- cálculo existente de Finanzas aplica ISR/regalías solo cuando `modelo==='directo'`;
+- cero deploys y provider writes en este bloque.
+
+No se afirma todavía ejecución del gate Node, runtime/browser PASS ni validación remota. El entorno disponible no tiene checkout local autenticado ni workflow ejecutado para el HEAD actual.
 
 ## 6. Gate inmediato
 
-1. gate estático acumulativo;
+1. ejecutar gate estático acumulativo en checkout del HEAD vivo;
 2. runtime local/read-only;
 3. login real staff, cliente y shopper;
 4. lectura viva de todos los periodos detectados;
@@ -83,9 +88,11 @@ Esto no equivale todavía a runtime/browser PASS.
 6. comparativo histórico completo;
 7. identidad, WA, credenciales, certificación e histórico;
 8. Portal Cliente completo;
-9. Finanzas con configuración contractual y fuente canónica;
-10. tres recargas y nueva pestaña;
-11. evidencia PASS/FAIL.
+9. Finanzas con fuente canónica y modelo de proyecto correcto;
+10. comprobar Cinépolis delegado, regalías 0 y comisión sin valores inventados;
+11. comprobar creación directo/delegado;
+12. tres recargas y nueva pestaña;
+13. evidencia PASS/FAIL.
 
 ## 7. Restricciones
 
