@@ -2,167 +2,143 @@
 
 **Fecha:** 2026-08-01  
 **Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_P0_FRAGMENTED_HUMAN_RUNTIME_PROVEN__UNIFIED_CUMULATIVE_ROOT_FIX_AND_PROJECT_FINANCE_GUARD_APPLIED__PENDING_READONLY_RUNTIME_GATES__NO_DEPLOY_NO_PRODUCTION`
+**Estado vivo:** `C6_RUNTIME_PASS_EXCEPT_CLIENT_CREDENTIAL__HOLD_NO_AUTH_WRITE_NO_DEPLOY_NO_PRODUCTION`
 
 ## 1. Propósito
 
-Este addendum impide que CXOrbia/TyA vuelva a fragmentarse en versiones aisladas por módulo, etapa, fuente, carril de login o conversación. Solo puede existir una baseline acumulativa construida sobre el HEAD vivo.
+Este addendum impide que CXOrbia/TyA vuelva a fragmentarse por módulo, etapa, fuente, carril de login o conversación. Solo puede existir una baseline acumulativa construida sobre el HEAD vivo de `docs-tya-v6-v71-audit`.
 
-## 2. Corrección de la declaración anterior
+## 2. Baseline acumulativa comprobada
 
-La validación humana demostró que el build publicado que había obtenido PASS técnico no contenía simultáneamente la experiencia acumulativa completa.
-
-El PASS anterior comprobó Auth/E2E y estabilidad parcial, pero no demostró en la misma URL humana:
-
-- principal autenticado;
-- todos los periodos históricos vivos;
-- KPI/fases/drill coherentes;
-- perfiles, WhatsApp, certificación e histórico;
-- Portal Cliente completo;
-- Finanzas con configuración correcta por proyecto.
-
-Por tanto:
-
-- el PASS técnico se conserva como evidencia parcial;
-- queda supersedido como release PASS;
-- Corte 6 no está congelado;
-- el Hosting publicado no es la baseline autorizada para cutover.
-
-## 3. Baseline canónica única en recuperación
-
-La única baseline válida para continuar es el HEAD vivo de `docs-tya-v6-v71-audit`, con el root fix acumulativo aplicado y pendiente de gates read-only.
-
-Debe contener simultáneamente:
+El HEAD vivo contiene y ha comprobado read-only:
 
 - frontend aprobado vigente;
-- login único Usuario + Contraseña;
-- claims para namespace, rol, tenant y proyecto;
-- HR viva como autoridad operacional para todos los periodos detectados;
-- Firestore como overlay exacto de identidad, perfil y certificación;
-- read model canónico v2;
-- máquina única de estados y periodo;
-- Dashboard, hoja de ruta, fases, detalle, histórico y comparativo completos;
-- identidad Shopper y Portal Shopper canónicos;
-- Portal Cliente con Panorama, KPIs, sucursales y detalle aprobados;
-- Finanzas, Movimientos, Liquidaciones y Beneficios coherentes;
-- configuración Cinépolis: Q60 GT, L200 HN, modelo delegado, sin facturación local ni regalías, comisión de coordinación compartida configurable;
-- Reportes preservados;
-- Reservas fail-closed;
-- refresh y nueva pestaña idempotentes.
+- entrada humana única `authenticated-human-canonical`;
+- Firebase Auth/claims para Staff y Shopper;
+- HR viva como autoridad operacional dinámica;
+- Firestore protegido como overlay exacto;
+- read model y máquina de estados canónicos;
+- Dashboard, fases, detalle, histórico y comparativo;
+- Portal Shopper con identidad exacta;
+- Finanzas y Reservas canónicas;
+- tres recargas y nueva pestaña;
+- carril técnico Staff/Shopper aislado;
+- ruta Cliente integrada Usuario + Contraseña.
 
-## 4. Fuente viva y conteos dinámicos
+Corte 6 no está congelado porque falta un principal Cliente autenticado con claims correctos.
 
-La revisión actual previa a agosto contiene 14 periodos, 616 visitas y 208 shoppers, desde junio 2025 hasta julio 2026.
+## 3. Fuente viva observada
 
-Estos valores son una fotografía de fuente, no invariantes permanentes. Queda prohibido:
+Revisión del gate vigente:
 
-- hardcodearlos como condición futura;
-- conservar KPIs de cortes anteriores;
-- crear agosto por reloj del sistema;
-- copiar julio a agosto;
-- rechazar crecimiento válido de la HR.
+- 14 periodos, junio 2025–julio 2026;
+- 616 visitas;
+- 208 shoppers;
+- agosto 2026 ausente.
 
-`tya-protected-auth-hr-authority-bridge-v2.js` debe preservar dinámicamente:
+Julio observado:
 
-- todos los periodos detectados;
-- todas las visitas de la revisión;
-- llaves técnicas únicas;
-- relación visita-periodo válida;
-- cero append protegido;
-- cero duplicados técnicos.
+- 44 total;
+- 43 realizadas;
+- 41 cuestionarios;
+- 37 submitidas;
+- 1 fuera de rango;
+- GT 34 / HN 10.
 
-## 5. Modelo financiero por proyecto
+Estos valores son fotografía de fuente, no invariantes permanentes. Queda prohibido crear agosto por reloj, copiar julio o congelar KPIs de cortes anteriores.
 
-Cada proyecto obtiene su modelo exclusivamente de `projectConfig`, nunca del nombre:
+## 4. Modelo financiero por proyecto
 
-- `directo/local_invoicing`: existe facturación local y las regalías pueden configurarse cuando correspondan;
-- `delegado/delegated_coordination`: no existe facturación local del proyecto, regalías 0 y comisión de coordinación compartida;
-- `regional/regional_coordination`: distribución regional configurable, sin regalías locales por defecto.
+El modelo proviene exclusivamente de `projectConfig`:
 
-Cinépolis pertenece al modelo delegado porque su configuración vigente así lo declara. No se hardcodea como excepción global.
+- `directo/local_invoicing`: regalías solo si se configuran;
+- `delegado/delegated_coordination`: regalías 0 y comisión de coordinación compartida;
+- `regional/regional_coordination`: distribución regional configurable;
+- `unconfigured`: fail-closed.
 
-Queda prohibido:
+Cinépolis es delegado desde su configuración:
 
-- aplicar regalías globales;
-- clasificar por nombre de cliente/proyecto;
-- descontar regalías a delegado/regional;
-- inventar comisión, participantes o porcentajes;
-- tratar la comisión de coordinación como honorario del shopper;
-- utilizar el honorario del shopper como fallback de ingreso delegado;
-- calcular margen sin comisión y distribución exactas.
+- Q60 GT / L200 HN al shopper;
+- regalías 0;
+- comisión y reparto configurables;
+- honorario Shopper nunca usado como ingreso;
+- margen solo con comisión/distribución exactas.
 
-`app/adapters/tya-project-financial-model-contract-v1.js` normaliza Local/Delegado/Regional y envuelve la creación de proyectos.
+## 5. Root fixes Auth prevalentes
 
-`app/adapters/tya-delegated-coordination-finance-guard-v1.js` separa ingreso por coordinación de obligaciones al shopper y aplica fail-closed cuando falta fuente.
+### Click temprano
 
-## 6. Prevalencia de evidencia
+`tya-c6-unified-human-runtime-v1.js` impide que un clic antes del wrapper oficial use el handler directo.
 
-Orden obligatorio para determinar el estado:
+PASS: `PASS_C6_HUMAN_LOGIN_IMMEDIATE_CLICK_GUARDED`.
 
-1. índice y checkpoint vigentes;
-2. evidencia `CORTE6-UNIFIED-CUMULATIVE-RUNTIME-ROOT-FIX-LATEST.json`;
-3. este addendum y el lock de estabilidad acumulativa;
-4. addenda CAMBIOS-BACKEND de recuperación y modelo delegado;
-5. evidencias históricas de single-login, R20 full-history y C6 domain/finance/shopper;
-6. evidencias técnicas anteriores, solo para los contratos que realmente probaron.
+### Shopper DEV
 
-Ningún PASS anterior puede prevalecer sobre una regresión humana reproducible posterior.
+`app.js` ejecuta `pickShopperDev()` directamente para la tarjeta Shopper DEV. `tya-c6-shopper-auth-click-guard-v1.js`, cargado antes de `app.js`, intercepta únicamente esa tarjeta en la ruta protegida y abre Firebase Auth.
 
-## 7. Operaciones prohibidas
+Queda prohibido eliminar este guard o reintroducir selección directa de Shopper en una ruta protegida.
+
+### Carril técnico
+
+`tya-dev-technical-auth-e2e-v1.js` usa:
+
+- formulario `cxDevEntryAuth`;
+- `CX_DEV_ENTRY_AUTH_GATE.mode='technical-auth-e2e-isolated'`;
+- namespaces staff/shopper;
+- ruta humana no afectada.
+
+## 6. Gates PASS
+
+- static cumulative contract;
+- live HR dynamic canonical state;
+- domain/finance/shopper/reservations;
+- Auth humana Staff;
+- Auth humana Shopper con identidad exacta y una visita propia;
+- tres recargas y nueva pestaña;
+- Auth técnica Staff/Shopper aislada;
+- ruta Cliente integrada;
+- cero credenciales/tokens expuestos;
+- cero writes.
+
+## 7. HOLD exacto de Cliente
+
+La búsqueda read-only obtuvo:
+
+- 4 registros candidatos;
+- 3 usuarios Auth existentes;
+- 0 cuentas con claims válidos `cliente/client` para tenant `tya` y proyecto `cinepolis`;
+- 0 hashes válidos;
+- 0 sign-ins Cliente.
+
+Decisión:
+
+`HOLD_C6_EXISTING_CLIENT_CREDENTIAL_NOT_FOUND`.
+
+No se creó ni modificó ninguna cuenta. Auth writes, cambios y resets de contraseña permanecen en cero.
+
+## 8. Operaciones prohibidas
 
 Queda prohibido:
 
 - crear otra plataforma, candidata, rama, PR, Firebase o Hosting;
-- restaurar una sección desde una versión anterior fuera del HEAD vivo;
-- seleccionar “la mejor pantalla” y copiarla de manera aislada;
-- aprobar una sección o smoke de carcasa como release completo;
-- mantener carriles separados para humano y Auth real;
+- mantener carriles humanos paralelos;
+- permitir `pickShopperDev()` en ruta protegida;
+- crear/resetear credencial Cliente sin autorización;
 - permitir que Auth/Firestore reemplace HR;
-- recalcular estados, KPIs, identidad o Finanzas en módulos UI;
-- deduplicar identidad por nombre, correo, teléfono o similitud visual;
-- congelar números de una revisión anterior;
-- aplicar regalías sin comprobar facturación local;
+- deduplicar por nombre/correo/teléfono;
+- aplicar regalías globales;
 - inferir ingreso delegado desde honorarios del shopper;
-- saltar el gate acumulativo por urgencia;
-- reutilizar una autorización consumida;
-- publicar agosto o producción sin fuente y gate específicos.
+- saltar el gate por urgencia;
+- reutilizar autorización consumida;
+- desplegar, abrir agosto/postulaciones, merge o producción sin gates y autorizaciones específicos.
 
-## 8. Root fix acumulativo
+## 9. Gate restante de Corte 6
 
-El HEAD vivo recupera una sola entrada `authenticated-human-canonical`:
+Requiere autorización específica porque implica Auth write:
 
-- el índice activa Auth, HR viva y adapters canónicos en la misma URL;
-- se retiró el override directo de rol;
-- se retiró el bridge visual condicionado por token oculto;
-- `tya-protected-auth-hr-authority-bridge-v2.js` compone la fuente dinámicamente;
-- `tya-project-financial-model-contract-v1.js` clasifica por configuración y bloquea regalías en modelos no locales;
-- `tya-delegated-coordination-finance-guard-v1.js` evita ingreso/margen delegado inventado;
-- `tya-c6-unified-human-runtime-v1.js` recupera login Cliente, comparativo completo y configuración financiera correcta;
-- `app/modules/*` permanece sin parche backend.
+`SNAPSHOT AUTH CLIENT SCOPE → MATERIALIZE ONE CLIENT CREDENTIAL DEV → CLAIMS TENANT/PROJECT/ROLE → IDEMPOTENCY → CLIENT HUMAN AUTH → 3 RELOADS + NEW TAB → READBACK → ROLLBACK PROOF → CUMULATIVE EVIDENCE`.
 
-## 9. Gate de freeze de Corte 6
-
-Secuencia exacta:
-
-`STATIC ROOT CONTRACT → READ-ONLY RUNTIME → AUTH REAL STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → COMPARATIVE ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE SOURCE + PROJECT MODEL + COMMISSION → REPORTS/RESERVATIONS → 3 RELOADS + NEW TAB → EVIDENCE`.
-
-El gate financiero debe demostrar:
-
-- Cinépolis delegado desde configuración;
-- regalías Cinépolis 0;
-- comisión compartida sin valores inventados;
-- honorario Shopper nunca usado como ingreso;
-- margen solo con comisión/distribución exactas;
-- creación permite directo/delegado;
-- backend soporta regional;
-- regalías solo cuando `modelo==='directo'`.
-
-Warnings frontend documentados para Claude:
-
-- agregar `Regional` en `app/modules/proyecto-wizard.js`;
-- corregir copy delegado y estado de fuente en `app/modules/finanzas.js`.
-
-Solo después de PASS local/read-only se solicita autorización fresca para un único deploy del Hosting DEV existente.
+Solo después de PASS Cliente y repetición acumulativa corresponde solicitar autorización fresca para un único deploy del Hosting DEV existente.
 
 Después del deploy autorizado:
 
@@ -171,62 +147,52 @@ Después del deploy autorizado:
 - validación humana;
 - `APROBADO → C6_BASELINE_CANONICA_ACUMULATIVA_FROZEN`.
 
-## 10. Carril urgente de agosto y postulaciones
+## 10. Agosto y postulaciones
 
 Después del freeze:
 
 1. Paula agrega agosto a HR;
-2. el runtime lo detecta por fuente;
-3. se reconcilia cualquier visita platform-origin;
+2. el runtime lo detecta;
+3. se reconcilia platform-origin;
 4. se habilitan disponibles;
 5. se habilitan postulaciones;
 6. gate multirol;
-7. write plan y autorización específica;
+7. write plan y autorización;
 8. readback, remote smoke y cutover.
-
-La autorización de Hosting consumida anteriormente no autoriza deploy nuevo, writes, apertura de postulaciones, merge ni producción.
 
 ## 11. Invariantes de producto
 
-- todos los periodos HR visibles en histórico/comparativo;
 - último periodo = último periodo detectado, no mes del reloj;
 - KPI = fase = detalle;
-- Portal Cliente y Admin comparten periodo y read model;
-- Portal Shopper usa identidad exacta y conserva el dataset interno;
+- Admin, Cliente y Shopper comparten periodo/read model según alcance;
+- Shopper usa identidad exacta;
 - cero duplicados técnicos;
-- conflictos de identidad en review queue;
-- honorarios desde configuración cuando HR no trae monto;
-- proyecto delegado/regional = regalías 0;
-- proyecto local = regalías solo si se configuran;
+- conflictos en review queue;
+- modelos financieros por configuración;
+- delegado/regional = regalías 0;
 - ingreso de coordinación separado de obligaciones al shopper;
-- comisión y distribución pertenecen a projectConfig;
 - margen no confirmado sin fuentes exactas;
-- fuente financiera exacta y pagos confirmados preservados;
-- Reportes sin pérdida;
-- Reservas sin mutaciones mientras no exista fuente real.
+- credencial ausente = HOLD, no permiso para inventarla.
 
 ## 12. Documentación obligatoria
 
-Cada bloque debe actualizar:
+Fuentes vivas de este bloque:
 
-- `CAMBIOS-BACKEND.md` o addendum;
-- `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-- `RESUMEN-PARA-CLAUDE.md`;
-- `PENDIENTES-PROTOTIPO.md`;
-- impacto Academia/manuales;
-- PR #7;
-- evidencia source-safe reproducible.
+- `CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-RUNTIME-Y-HOLD-CLIENTE-20260801.md`;
+- `CORTE6-UNIFIED-AUTH-RUNTIME-READONLY-LATEST.json`;
+- `CORTE6-EXISTING-CLIENT-CREDENTIAL-SELECTION-LATEST.json`;
+- índice, checkpoint, Phase A, resumen Claude, pendientes, Academia y PR #7.
 
-Si un commit, gate, deploy o herramienta falla, se declara. No se afirma éxito sin evidencia.
+No se afirma éxito sin evidencia.
 
 ## 13. Clasificación
 
-- **Reusable CXOrbia:** baseline acumulativa, ownership dinámico, modelo Local/Delegado/Regional y guard de comisión.
-- **Exclusivo TyA:** operación Cinépolis, Q60/L200, configuración delegada y futura incorporación de agosto.
-- **Claude/prototipo:** opciones/copy por archivo sin reimplementar cálculo.
-- **Academia:** trazabilidad, source ownership, diferencias entre ingreso y obligación, validación E2E.
-- **Sin impacto Claude:** runners, credenciales privadas y consumo one-shot.
+- **Reusable CXOrbia:** baseline acumulativa, guards Auth, modelo financiero configurable y gate multirol.
+- **Exclusivo TyA:** tenant `tya`, proyecto `cinepolis`, Q60/L200 y credencial Cliente pendiente.
+- **Claude/prototipo:** preservar UI; no reimplementar Auth o cálculo en módulos.
+- **Academia:** principal autenticado, fuente viva, gate por rol y HOLD con cero mutación.
+- **Sin impacto proveedor:** todo el bloque ejecutado fue read-only.
 
 ## 14. Estado seguro
 
-Root fix aplicado en código; Hosting DEV deploys nuevos 0; Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos/Reservas writes 0; Cloud Run deploys 0; nuevos proyectos/sites 0; credenciales/tokens exportados 0; merge=false; producción=false.
+Hosting deploys 0; Cloud Run 0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos writes 0; password changes/resets 0; nuevos proyectos/sites 0; merge=false; producción=false.
