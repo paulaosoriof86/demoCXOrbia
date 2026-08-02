@@ -16,6 +16,10 @@ const must = (ok, code, detail='') => {
     console.log(`PASS ${code}${detail ? ` · ${detail}` : ''}`);
   }
 };
+const warn = (ok, code, detail='') => {
+  if (!ok) console.warn(`WARN ${code}${detail ? ` · ${detail}` : ''}`);
+  else console.log(`PASS ${code}${detail ? ` · ${detail}` : ''}`);
+};
 
 const index = read('app/index-backend-dev.html');
 const preview = read('app/core/backend-config-preview-dev.js');
@@ -24,11 +28,13 @@ const auth = read('app/core/backend-browser-auth.js');
 const technical = read('app/adapters/tya-dev-technical-auth-e2e-v1.js');
 const hrBridge = read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
 const projectModel = read('app/adapters/tya-project-financial-model-contract-v1.js');
+const delegatedGuard = read('app/adapters/tya-delegated-coordination-finance-guard-v1.js');
 const domain = read('app/adapters/tya-c6-domain-consistency-bridge.js');
 const shopperPortal = read('app/adapters/tya-canonical-shopper-portal-v2.js');
 const unified = read('app/adapters/tya-c6-unified-human-runtime-v1.js');
 const projectConfig = read('app/core/tya-phase-a-source-safe-preview.js');
 const projectWizard = read('app/modules/proyecto-wizard.js');
+const financeModule = read('app/modules/finanzas.js');
 const financeCore = read('app/core/finanzas-core.js');
 const sourceData = read('app/data/tya-hr-source-safe-periods.js');
 
@@ -59,8 +65,13 @@ must(index.includes('src="adapters/tya-c6-domain-consistency-bridge.js"') &&
 const previewPos=index.indexOf('src="core/tya-phase-a-source-safe-preview.js"');
 const modelPos=index.indexOf('src="adapters/tya-project-financial-model-contract-v1.js"');
 const financePos=index.indexOf('src="core/finanzas-core.js"');
+const canonicalFinancePos=index.indexOf('src="adapters/tya-canonical-finance-read-model-v2.js"');
+const delegatedGuardPos=index.indexOf('src="adapters/tya-delegated-coordination-finance-guard-v1.js"');
+const modulePos=index.indexOf('src="modules/finanzas.js"');
 must(previewPos>=0 && modelPos>previewPos && financePos>modelPos,
   'C6_PROJECT_FINANCIAL_MODEL_LOAD_ORDER');
+must(canonicalFinancePos>=0 && delegatedGuardPos>canonicalFinancePos && modulePos>delegatedGuardPos,
+  'C6_DELEGATED_GUARD_LOAD_ORDER');
 
 must(preview.includes('if(protectedRequested)') &&
      protectedMode.includes("mode:'integrated-product-login-protected-dev'"),
@@ -92,16 +103,34 @@ must(projectWizard.includes('value="directo"') &&
      projectWizard.includes('value="delegado"') &&
      projectWizard.includes("st.modelo==='directo'") &&
      projectWizard.includes('Regalías (%)'),
-  'C6_PROJECT_CREATION_MODEL_SELECTABLE');
-must(projectModel.includes("project.modelo='delegado'") &&
+  'C6_PROJECT_CREATION_DIRECT_DELEGATED_SELECTABLE');
+warn(projectWizard.includes('value="regional"'),
+  'C6_REGIONAL_FRONTEND_OPTION_PENDING_CLAUDE',
+  'backend contract supports regional; wizard option remains a documented frontend delta');
+must(projectModel.includes("return 'regional'") &&
+     projectModel.includes("project.modelo=model") &&
      projectModel.includes('project.regalias=0') &&
-     projectModel.includes("project.compensationModel='coordination_commission_shared'") &&
+     projectModel.includes("project.compensationModel=model==='regional'") &&
      projectModel.includes('wrapAddProject') &&
-     projectModel.includes('splitValuesInvented:false'),
-  'C6_DELEGATED_PROJECT_CONTRACT_ENFORCED');
+     projectModel.includes("projectClassificationSource:'project_configuration_not_name'") &&
+     !projectModel.includes('if(isCinepolis(project))'),
+  'C6_PROJECT_MODEL_CONFIGURABLE_NOT_NAME_HARDCODED');
+must(projectModel.includes("'delegado','delegated'") &&
+     projectModel.includes("'regional','regional_coordination'") &&
+     projectModel.includes("'directo','direct','local'"),
+  'C6_LOCAL_DELEGATED_REGIONAL_BACKEND_CONTRACT');
+
 must(financeCore.includes("const regal=p.modelo==='directo'?") &&
      financeCore.includes("const isr=p.modelo==='directo'?"),
   'C6_ROYALTIES_AND_LOCAL_TAX_DIRECT_ONLY');
+must(delegatedGuard.includes('shopperHonorariumUsedAsIncomeFallback:false') &&
+     delegatedGuard.includes('row.regal=0') &&
+     delegatedGuard.includes('row.isr=0') &&
+     delegatedGuard.includes("source:'project.honRecibe.explicit_per_visit'") &&
+     delegatedGuard.includes("source:'project_configuration_required'") &&
+     delegatedGuard.includes('row.financialReviewRequired=!ready') &&
+     delegatedGuard.includes('row.valuesInvented=false'),
+  'C6_DELEGATED_INCOME_FROM_COMMISSION_NOT_SHOPPER_FALLBACK');
 must(projectConfig.includes('honorario:{GT:60,HN:200}') &&
      projectConfig.includes("modelo:'delegado'") &&
      projectConfig.includes("billingModel:'delegated_coordination'") &&
@@ -124,6 +153,9 @@ must(!unified.includes("model:'directo'") && !unified.includes('royalty:10'),
   'C6_NO_DELEGATED_ROYALTY_IN_RUNTIME_METADATA');
 must(!projectConfig.includes('honorario:{GT:0,HN:0}'),
   'C6_NO_ZERO_HONORARIO_CONFIG');
+warn(!financeModule.includes('solo se netea el honorario recibido menos lo pagado al shopper'),
+  'C6_DELEGATED_FINANCE_COPY_PENDING_CLAUDE',
+  'frontend text must describe coordination commission and configurable split');
 
 const periodKeys = [...sourceData.matchAll(/"key":\s*"(\d{4}-\d{2})"/g)].map(m => m[1]);
 const uniquePeriods = [...new Set(periodKeys)];
@@ -141,8 +173,8 @@ const forbiddenWriteSignals = [
   /hrWrites\s*:\s*[1-9]/
 ];
 const touched = [
-  index,preview,protectedMode,auth,technical,hrBridge,projectModel,
-  domain,shopperPortal,unified,projectConfig,projectWizard,financeCore
+  index,preview,protectedMode,auth,technical,hrBridge,projectModel,delegatedGuard,
+  domain,shopperPortal,unified,projectConfig,projectWizard,financeModule,financeCore
 ].join('\n');
 must(forbiddenWriteSignals.every(re => !re.test(touched)), 'C6_READONLY_NO_PRODUCTION');
 
@@ -150,4 +182,4 @@ if (process.exitCode) {
   console.error('DECISION FAIL_C6_UNIFIED_CUMULATIVE_RUNTIME_STATIC_GATE');
   process.exit(process.exitCode);
 }
-console.log('DECISION PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_STATIC_GATE');
+console.log('DECISION PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_STATIC_GATE_WITH_DOCUMENTED_FRONTEND_WARNINGS');
