@@ -13,12 +13,13 @@ if(!credentials?.staff?.login||!credentials?.staff?.password||!credentials?.shop
 const isLocal=/127\.0\.0\.1|localhost/i.test(root);
 
 const assert=(ok,message)=>{if(!ok)throw new Error(message);};
-const clean=v=>String(v??'').replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/g,'REDACTED_EMAIL').replace(/[^A-Za-z0-9_.:/=-]+/g,'_').replace(/_+/g,'_').slice(0,400);
+const clean=v=>String(v??'').replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/g,'REDACTED_EMAIL').replace(/[^A-Za-z0-9_.:/=-]+/g,'_').replace(/_+/g,'_').slice(0,1200);
 const persist=value=>{
   if(!outputFile)return;
   fs.mkdirSync(path.dirname(outputFile),{recursive:true});
   fs.writeFileSync(outputFile,JSON.stringify(value,null,2)+'\n','utf8');
 };
+const progress={staff:null,shopper:null,client:null};
 
 async function configureLocalRoutes(context){
   if(!isLocal)return;
@@ -31,6 +32,40 @@ async function configureLocalRoutes(context){
     const response=await fetch(remoteRoot+'/api/tya/cinepolis/hr-live'+incoming.search,{headers:{'cache-control':'no-cache','pragma':'no-cache'}});
     await route.fulfill({status:response.status,headers:{'content-type':response.headers.get('content-type')||'application/json; charset=utf-8','cache-control':'no-store'},body:Buffer.from(await response.arrayBuffer())});
   });
+}
+
+async function loginUiSnapshot(page,label){
+  return page.evaluate(label=>{
+    const early=window.CX_C6_EARLY_AUTH_CLICK_GUARD||null;
+    const login=document.getElementById('login');
+    return {
+      label,
+      readyState:document.readyState,
+      url:location.href,
+      backendEnabled:window.CX?.BACKEND?.enabled===true,
+      previewMode:window.CX?.BACKEND?.previewMode===true,
+      devPreviewAuthEnabled:window.CX?.BACKEND?.devPreviewAuth?.enabled===true,
+      backendAuthPresent:Boolean(window.CX?.backendAuth),
+      backendAuthReady:Boolean(window.CX?.backendAuth?.isReady?.()),
+      appPresent:Boolean(window.CX?.app),
+      firebaseWrapper:Boolean(window.CX?.app?.__firebaseBrowserAuthWrapped),
+      clientWrapper:Boolean(window.CX?.app?.__c6UnifiedClientLogin),
+      earlyGuardInstalled:early?.installed===true,
+      earlyGuardIntercepts:Number(early?.intercepts||0),
+      earlyGuardLastRole:early?.lastInterceptedRole||null,
+      directRoleEntryAllowed:early?.directRoleEntryAllowed??null,
+      integratedStep:Boolean(document.getElementById('cxIntegratedAuthStep')),
+      integratedLogin:Boolean(document.getElementById('cxIntegratedAuthLogin')),
+      technicalForm:Boolean(document.getElementById('cxDevEntryAuth')),
+      appOn:document.getElementById('app')?.classList.contains('on')===true,
+      loginHidden:login?.classList.contains('hidden')===true,
+      sessionRole:window.CX?.session?.role||null,
+      roleButtons:[...document.querySelectorAll('.role-btn[data-role]')].map(x=>({role:x.dataset.role||null,visible:!!(x.offsetWidth||x.offsetHeight||x.getClientRects().length)})),
+      canonicalLane:window.CX_DEV_ENTRY_CANONICAL?.lane||null,
+      protectedRuntime:window.CX_DEV_ENTRY_CANONICAL?.protectedRuntime===true,
+      loginText:(login?.innerText||'').replace(/\s+/g,' ').trim().slice(0,700)
+    };
+  },label);
 }
 
 async function waitReady(page,expectedNamespace,label){
@@ -134,11 +169,40 @@ async function openEntry(browser){
   return {context,page};
 }
 
+async function openCredentialStep(page,kind,roleButton){
+  const before=await loginUiSnapshot(page,kind+'_before_role_click');
+  await page.click(`.role-btn[data-role="${roleButton}"]`);
+  await page.waitForTimeout(500);
+  const after=await loginUiSnapshot(page,kind+'_after_role_click');
+  if(!after.integratedStep||!after.integratedLogin){
+    const failure={
+      schemaVersion:'cxorbia.c6.unified-human-auth-browser-smoke-failure.v2',
+      generatedAt:new Date().toISOString(),
+      decision:'FAIL_C6_UNIFIED_HUMAN_AUTH_CREDENTIAL_STEP',
+      failedPrincipal:kind,
+      before,
+      after,
+      progress,
+      credentialsExposed:false,
+      tokensExposed:false,
+      hostingDeploys:0,
+      providerWrites:0,
+      authWrites:0,
+      firestoreWrites:0,
+      hrWrites:0,
+      merge:false,
+      production:false
+    };
+    persist(failure);
+    throw new Error(kind+'_INTEGRATED_CREDENTIAL_STEP_MISSING_'+clean(JSON.stringify({before,after})));
+  }
+  assert(!after.technicalForm,kind+'_PARALLEL_TECHNICAL_LOGIN_VISIBLE');
+  return {before,after};
+}
+
 async function loginPrincipal(browser,kind,roleButton,credential,expectedNamespace){
   const {context,page}=await openEntry(browser);
-  await page.click(`.role-btn[data-role="${roleButton}"]`);
-  await page.waitForSelector('#cxIntegratedAuthStep',{state:'visible',timeout:30000});
-  assert(await page.locator('#cxDevEntryAuth').count()===0,kind+'_PARALLEL_TECHNICAL_LOGIN_VISIBLE');
+  const loginUi=await openCredentialStep(page,kind,roleButton);
   await page.fill('#cxIntegratedAuthLogin',credential.login);
   await page.fill('#cxIntegratedAuthPassword',credential.password);
   await page.click('#cxIntegratedAuthSubmit');
@@ -170,7 +234,7 @@ async function loginPrincipal(browser,kind,roleButton,credential,expectedNamespa
   await second.close();
   await page.evaluate(async()=>{try{await window.CX?.backendAuth?.signOut?.();}catch{}});
   await context.close();
-  return {
+  const result={
     role:first.role,
     namespace:first.namespace,
     periods:first.periods,
@@ -181,17 +245,34 @@ async function loginPrincipal(browser,kind,roleButton,credential,expectedNamespa
     ownVisits:first.ownVisits,
     projectId:first.currentProjectId,
     periodId:first.currentPeriodId,
+    loginProtectedBy:loginUi.before.firebaseWrapper?'official_wrapper':loginUi.before.earlyGuardInstalled?'early_guard':'unknown',
     reloadsStable:reloads.length===3,
     newTabStable:newTab.appOn===true,
     credentialsExposed:false,
     tokensExposed:false
   };
+  progress[kind]=result;
+  persist({
+    schemaVersion:'cxorbia.c6.unified-human-auth-browser-smoke-progress.v1',
+    generatedAt:new Date().toISOString(),
+    decision:'HOLD_C6_UNIFIED_HUMAN_AUTH_IN_PROGRESS',
+    progress,
+    credentialsExposed:false,
+    tokensExposed:false,
+    hostingDeploys:0,
+    providerWrites:0,
+    authWrites:0,
+    firestoreWrites:0,
+    hrWrites:0,
+    merge:false,
+    production:false
+  });
+  return result;
 }
 
 async function validateClientRoute(browser){
   const {context,page}=await openEntry(browser);
-  await page.click('.role-btn[data-role="cliente"]');
-  await page.waitForSelector('#cxIntegratedAuthStep',{state:'visible',timeout:30000});
+  const loginUi=await openCredentialStep(page,'client_route','cliente');
   const result=await page.evaluate(()=>({
     heading:document.getElementById('cxIntegratedAuthStep')?.innerText||'',
     loginPresent:Boolean(document.getElementById('cxIntegratedAuthLogin')),
@@ -204,7 +285,9 @@ async function validateClientRoute(browser){
   assert(result.loginPresent&&result.passwordPresent&&!result.technicalFormPresent,'CLIENT_ROUTE_NOT_SINGLE_INTEGRATED_LOGIN');
   assert(result.canonicalLane==='authenticated-human-canonical'&&result.protectedRuntime,'CLIENT_ROUTE_NOT_CANONICAL');
   await context.close();
-  return {integratedCredentialRoute:true,authenticated:false,reason:'existing_client_credential_not_selected_by_current_private_selector'};
+  const client={integratedCredentialRoute:true,authenticated:false,loginProtectedBy:loginUi.before.firebaseWrapper?'official_wrapper':loginUi.before.earlyGuardInstalled?'early_guard':'unknown',reason:'existing_client_credential_not_selected_by_current_private_selector'};
+  progress.client=client;
+  return client;
 }
 
 let browser;
@@ -214,7 +297,7 @@ try{
   const shopper=await loginPrincipal(browser,'shopper','shopper',credentials.shopper,'shopper');
   const client=await validateClientRoute(browser);
   const evidence={
-    schemaVersion:'cxorbia.c6.unified-human-auth-browser-smoke.v1',
+    schemaVersion:'cxorbia.c6.unified-human-auth-browser-smoke.v2',
     generatedAt:new Date().toISOString(),
     decision:'PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY',
     root,
@@ -237,6 +320,26 @@ try{
   };
   persist(evidence);
   console.log(JSON.stringify(evidence));
+}catch(error){
+  if(!outputFile||!fs.existsSync(outputFile)){
+    persist({
+      schemaVersion:'cxorbia.c6.unified-human-auth-browser-smoke-failure.v2',
+      generatedAt:new Date().toISOString(),
+      decision:'FAIL_C6_UNIFIED_HUMAN_AUTH_RUNTIME',
+      error:clean(error&&error.message),
+      progress,
+      credentialsExposed:false,
+      tokensExposed:false,
+      hostingDeploys:0,
+      providerWrites:0,
+      authWrites:0,
+      firestoreWrites:0,
+      hrWrites:0,
+      merge:false,
+      production:false
+    });
+  }
+  throw error;
 }finally{
   if(browser)await browser.close();
 }
