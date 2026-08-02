@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.corte6.p0-data-hosting-failure.v1",
-  "generatedAt": "2026-08-02T00:00:51.241Z",
+  "generatedAt": "2026-08-02T00:05:44.945Z",
   "decision": "FAIL_C6_P0_DATA_PRESERVATION_GATE",
-  "failedStage": "human_data__reload_1__reload_1:app_timeout:_label_:_reload_1_app_timeout_url_:_http://127.0.0.1:4173/index-backend-dev.html_cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV_cxProjectId=cinepolis_readyState_:_complete_role_:null_storedRole_:null_appOn_:false_loginHidden_:false_periods_:14_visits_:616_shoppers_:208_currentProjectId_:_cinepolis_currentPeriodId_:_cinepolis-2026-07_dataMode_:_source_safe_preview_dataStatus_:_ready_sourceRef_:_hr-live-runtime:tya:cinepolis_emptyShell_:false_backendEmpty_:false_blocked_:false_noProjects_:false_noPeriods_:false_gate_:_applied_:true_version_:8_mode_:_native-direct-role-entry_humanVisual_:true_visibleRoleSelector_:true_usernamePasswordVisible_:false_technicalAuthEnabled_:fa",
+  "failedStage": "human_data__reload_1__reload_1:no_projects",
   "hostingDeployExecutions": 0,
   "authorizationConsumed": false,
   "providerMutationPossible": false,
