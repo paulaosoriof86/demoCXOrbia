@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "cxorbia.c6.unified-cumulative-runtime-root-fix.v4",
-  "generatedAt": "2026-08-01T21:52:00-06:00",
+  "schemaVersion": "cxorbia.c6.unified-cumulative-runtime-root-fix.v5",
+  "generatedAt": "2026-08-01T22:03:00-06:00",
   "decision": "PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_CODE_STATIC_CONTRACT_PENDING_EXECUTION",
   "remoteRuntimeValidated": false,
   "humanValidated": false,
@@ -53,6 +53,8 @@
     "directLocalSupported": true,
     "delegatedSupported": true,
     "regionalBackendSupported": true,
+    "unconfiguredModelFailClosed": true,
+    "defaultModelAssumed": false,
     "regionalFrontendOptionStatus": "documented_for_claude",
     "localInvoicingMayConfigureRoyalties": true,
     "nonLocalRoyaltyPct": 0,
