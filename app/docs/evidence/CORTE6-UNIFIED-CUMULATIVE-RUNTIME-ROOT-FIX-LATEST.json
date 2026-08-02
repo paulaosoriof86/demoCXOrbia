@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "cxorbia.c6.unified-cumulative-runtime-root-fix.v1",
+  "generatedAt": "2026-08-01T20:39:00-06:00",
+  "decision": "PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_CODE_STATIC_CONTRACT",
+  "remoteRuntimeValidated": false,
+  "humanValidated": false,
+  "sourceAuthority": {
+    "operational": "live_hr_all_detected_periods",
+    "identityProfileCertification": "firestore_exact_crosswalk_overlay",
+    "auth": "firebase_auth_custom_claims",
+    "finance": "canonical_financial_source_plus_project_configuration"
+  },
+  "historicalRange": {
+    "periods": 14,
+    "first": "2025-06",
+    "last": "2026-07",
+    "august2026Present": false
+  },
+  "projectConfiguration": {
+    "projectId": "cinepolis",
+    "honorarium": {"GT": 60, "HN": 200},
+    "model": "directo",
+    "isrPct": 5,
+    "royaltyPct": 10
+  },
+  "codeChecks": {
+    "bootstrapSyntax": "PASS",
+    "unifiedAdapterSyntax": "PASS",
+    "singleAuthenticatedHumanLane": "PASS",
+    "directRoleOverrideLoaded": false,
+    "hiddenVisualSessionBridgeLoaded": false,
+    "protectedAuthHrAuthorityLoaded": true,
+    "canonicalDomainLoaded": true,
+    "canonicalShopperPortalLoaded": true,
+    "canonicalFinanceLoaded": true
+  },
+  "safety": {
+    "hostingDeploys": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "rulesDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "READONLY_RUNTIME_STAFF_CLIENT_SHOPPER_ALL_PERIODS_DOMAIN_PROFILE_CLIENT_FINANCE_THREE_RELOADS"
+}
