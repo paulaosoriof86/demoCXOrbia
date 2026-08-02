@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "cxorbia.c6.existing-hosting-remote-gates-failure.v1",
+  "generatedAt": "2026-08-02T18:49:13.005Z",
+  "decision": "FAIL_C6_REMOTE_GATES_AFTER_EXISTING_DEV_HOSTING_DEPLOY",
+  "failedStage": "validate_remote_continuation",
+  "sourceLock": null,
+  "deployment": {
+    "deployedRequestId": "c6-hosting-dev-deploy-remote-gates-20260802-04",
+    "deployedTriggerHead": "405d8d405e2bf69918d0124b61c179171d5c678a",
+    "existingHostingReleasePreserved": true,
+    "hostingDeploysThisRun": 0,
+    "hostingDeploysCumulativeAuthorizedSequence": 1
+  },
+  "parity": null,
+  "staffShopperDecision": null,
+  "clientDecision": null,
+  "semanticDecision": null,
+  "remoteParityLogTail": null,
+  "staffShopperLogTail": null,
+  "clientLogTail": null,
+  "semanticLogTail": null,
+  "safety": {
+    "hostingDeploysThisRun": 0,
+    "hostingDeploysCumulativeAuthorizedSequence": 1,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "rulesDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "merge": false,
+    "production": false
+  }
+}
