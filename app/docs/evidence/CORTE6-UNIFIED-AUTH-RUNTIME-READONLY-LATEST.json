@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "cxorbia.c6.unified-auth-runtime-readonly.v2",
-  "generatedAt": "2026-08-02T04:58:25.672Z",
-  "decision": "HOLD_C6_CLIENT_AUTH_EXISTING_CREDENTIAL_REQUIRED",
+  "schemaVersion": "cxorbia.c6.unified-auth-runtime-readonly.v3",
+  "generatedAt": "2026-08-02T05:02:46.257Z",
+  "decision": "HOLD_C6_EXISTING_CLIENT_CREDENTIAL_NOT_FOUND",
   "completedGates": [
     "STATIC_CUMULATIVE",
     "IMMEDIATE_CLICK_LOGIN_GUARD",
@@ -140,9 +140,9 @@
     "writes": 0,
     "production": false
   },
-  "remainingGate": "CLIENT_AUTH_WITH_EXISTING_CREDENTIAL",
-  "blocker": "EXISTING_CLIENT_CREDENTIAL_NOT_SELECTED_BY_CURRENT_PRIVATE_SELECTOR",
-  "blockerClassification": "P0_GATE_INCOMPLETE_NOT_PROVIDER_FAILURE",
+  "remainingGate": "CLIENT_CREDENTIAL_MATERIALIZATION_REQUIRES_SEPARATE_AUTHORIZATION",
+  "blocker": "NO_EXISTING_CLIENT_CREDENTIAL_WITH_VALID_CLAIMS_AND_PASSWORD_FOUND",
+  "blockerClassification": "P0_GATE_INCOMPLETE_NO_MUTATION_AUTHORIZED",
   "safety": {
     "hostingDeploys": 0,
     "cloudRunDeploys": 0,
@@ -158,6 +158,32 @@
     "paymentsWrites": 0,
     "credentialsExposed": false,
     "tokensExposed": false,
+    "merge": false,
+    "production": false
+  },
+  "clientCredentialSelection": {
+    "decision": "HOLD_C6_EXISTING_CLIENT_CREDENTIAL_NOT_FOUND",
+    "reason": "HOLD_CLIENT_R4_A3_C0_H0_S0",
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "valuesExported": false,
+    "credentialsExposed": false,
+    "production": false
+  },
+  "clientAuthRuntime": {
+    "schemaVersion": "cxorbia.c6.client-auth-browser-smoke.v1",
+    "generatedAt": "2026-08-02T05:02:46.173Z",
+    "decision": "HOLD_C6_EXISTING_CLIENT_CREDENTIAL_NOT_FOUND",
+    "authenticated": false,
+    "existingCredentialSelected": false,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "hostingDeploys": 0,
+    "providerWrites": 0,
     "merge": false,
     "production": false
   }

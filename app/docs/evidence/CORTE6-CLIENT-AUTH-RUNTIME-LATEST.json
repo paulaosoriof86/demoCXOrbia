@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "cxorbia.c6.client-auth-browser-smoke.v1",
+  "generatedAt": "2026-08-02T05:02:46.173Z",
+  "decision": "HOLD_C6_EXISTING_CLIENT_CREDENTIAL_NOT_FOUND",
+  "authenticated": false,
+  "existingCredentialSelected": false,
+  "authWrites": 0,
+  "passwordChanges": 0,
+  "passwordResets": 0,
+  "credentialsExposed": false,
+  "tokensExposed": false,
+  "hostingDeploys": 0,
+  "providerWrites": 0,
+  "merge": false,
+  "production": false
+}
