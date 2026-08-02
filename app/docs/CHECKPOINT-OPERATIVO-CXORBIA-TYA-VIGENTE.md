@@ -1,125 +1,136 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-02  
-**Estado:** `RECONSTRUCTION_ACTIVE_SOURCE_ONLY__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `RECONSTRUCTION_ACTIVE__FAMILY_A_TECHNICAL_CONTRACT_DEFINED__A_PLUS_B_NEXT__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Decisión prevalente
 
-Se detiene el bucle de diagnósticos C6 aislados y se inicia la reconstrucción de una única candidata acumulativa con la mejor versión demostrable de cada módulo.
+Se reconstruye una única candidata acumulativa con la mejor versión demostrable de cada módulo. No se ejecutarán diagnósticos C6 aislados, shells paralelos, nuevas candidatas ni correcciones sintomáticas fuera de la composición acumulativa.
 
-Fuente viva principal:
+Fuentes vivas principales:
 
-- `app/docs/RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`.
-
-No se ejecutará otro deploy, nueva candidata, shell paralelo, corrección sintomática ni freeze hasta cerrar la matriz de proveniencia y composición.
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-SHELL-RUNTIME.md`;
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-CONTRATO-Y-PRECEDENCIA-20260802.md`;
+- `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`.
 
 ## 2. Estado protegido
 
 - Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR #7 draft/open/no merge.
 - HEAD de arranque de reconstrucción: `c646af04b8fba0ca8685fa4d6ce0a46e62221276`.
-- Commit inicial de matriz: `cbf777bbbd9d3172323db18d5b6f854c3e5ab8ff`.
-- Índice actualizado al lock de reconstrucción: `c7b563f4a69941204570b121926c77bbafcf4bec`.
-- Producción `tya-plataforma` intacta.
+- Contrato Familia A documentado: `92651f41acc423841d909487558d68be5d10b2b6`.
+- Índice vigente actualizado: `d5c39df0084890b5b50a8920e16cd74030eea8f2`.
+- Producción `tya-plataforma`: intacta.
 - Agosto 2026 todavía no existe en HR.
 
-## 3. Causa raíz que se corrige
+## 3. Causa raíz de las regresiones acumulativas
 
-No existía una autoridad ejecutable por módulo:
+No existía una autoridad ejecutable por módulo ni una precedencia única entre:
 
-`módulo → última aprobación humana → candidata/commit → dependencias → SHA aprobado → SHA actual → decisión`.
+- `CX.data` base;
+- demo/localStorage;
+- HR source-safe;
+- Firestore protegido;
+- read guards;
+- read model;
+- semántica canónica;
+- bridges que modifican métodos o DOM;
+- módulos UI.
 
-Por ello, los source locks anteriores podían demostrar integridad del árbol presente, pero no que cada módulo fuera su mejor versión aprobada.
+Por eso un archivo aprobado podía quedar visualmente degradado por un overlay posterior sin que el source lock detectara la pérdida funcional.
 
-## 4. Reconstrucción iniciada
+## 4. Familia A — avance real
 
-### Inventario físico
+### Interfaz base
 
-`app/index.html` blob `3855486bdddcfcdc2c702f08b2a640d99717d980` carga el shell, core y módulos actuales.
+`app/core/data.js` permanece como contrato público de `CX.data`. Los adapters pueden hidratar y proteger la implementación, pero no reducir ni cambiar silenciosamente sus métodos, colecciones o semántica.
 
-### Drift de identidad
+### Identidad canónica
 
-`app/core/build-lock.js` blob `717dd4a40e3a24c380089cf22596e04fc8c25da1` todavía declara V174/R20 y referencia el manifest V174. No representa la composición posterior y deberá reemplazarse únicamente al ensamblar la candidata final.
+- tenant: `tya`;
+- proyecto: `cinepolis`;
+- periodo: `cinepolis-YYYY-MM`;
+- Proyecto y Periodo separados;
+- marca visual no sustituye la llave técnica.
 
-### Ancla V182
+### Precedencia definida
 
-El paquete `CANDIDATA_V182_CORTE3_20260725` es incremental de cinco archivos.
+`SHELL/INTERFAZ → TENANT/PROYECTO → HR VIVA → READ MODEL → SEMÁNTICA CANÓNICA → AUTH/OVERLAYS EXACTOS → FINANZAS → WRITE GUARDS → ROUTER/MÓDULOS → BUILD-LOCK/SW`.
 
-Coincidencia exacta actual:
+### Clasificaciones principales
 
-- `app/app.js` = V182;
-- `app/modules/beneficios.js` = V182;
-- `app/styles/layout.css` = V182.
+- `app.js`: preservar V182 exacta;
+- `layout.css`: preservar y validar visualmente;
+- `config.js`: reconciliar tenant/marca/modo conectado;
+- `data.js`: preservar interfaz, impedir autoridad demo en carril conectado;
+- `store.js`: conservar bus/continuidad UI, no autoridad de Auth;
+- `router.js`: preservar como navegación única con scopes autenticados;
+- `backend-firebase.js`: reconciliar normalizadores para no inventar datos;
+- read guards: solo compatibilidad/seguridad, no autoridad semántica;
+- read model + canonical semantics: autoridad de composición/estados;
+- domain consistency bridge: migrar lógica y retirar como autoridad DOM final;
+- financial model contract: preservar precedencia `tya::cinepolis`;
+- `build-lock.js`: reemplazar en ensamblaje;
+- `sw.js`: conservar network-first y renovar cache ID con el build final.
 
-Cambios posteriores que requieren reconciliación:
+## 5. PASS técnicos preservados
 
-- `app/core/finanzas-core.js`;
-- `app/modules/finanzas.js`.
-
-No se restaurarán ciegamente porque los fixes posteriores de precedencia financiera tienen PASS remoto.
-
-## 5. Familia A abierta
-
-Estado inicial:
-
-- `index.html`: inventariado;
-- `app.js`: base V182 exacta presente, overlays posteriores pendientes de proveniencia;
-- `layout.css`: V182 exacta presente;
-- `build-lock.js`: obsoleto, reemplazo final requerido;
-- `config.js`, `router.js`, `data-source.js`, `permissions.js`: proveniencia en revisión;
-- `data.js`: conservar solo como fallback/demo no autoritativo;
-- pendientes de inventario: store, `CX.data`, HR, tenant/proyecto/periodo, adapters Auth y runtime, overlays de Hosting y dependencias de shell.
-
-## 6. PASS técnicos preservados
-
-No se pierden ni se reabren sin regresión nueva:
+No reabrir sin regresión reproducible:
 
 - HR: 14 periodos, 616 visitas, junio 2025–julio 2026;
-- Staff, Shopper y Cliente remotos con recargas/nueva pestaña estables;
+- Staff, Shopper y Cliente con recargas/nueva pestaña estables;
 - identidad Shopper exacta y `ownVisits=1`;
 - Cliente con scope `tya/cinepolis`;
-- root fix financiero remoto:
-  - modelo delegado;
-  - `delegated_coordination`;
-  - facturación local false;
-  - regalía 0;
-  - Q60 GT / L200 HN;
-  - 14 delegados, 0 directos, 0 sin configurar y 0 violaciones.
+- modelo financiero delegado;
+- facturación local false;
+- regalía 0;
+- Q60 GT / L200 HN;
+- 14 delegados, 0 directos, 0 sin configurar y 0 violaciones.
 
-## 7. Orden obligatorio
+Estos PASS no sustituyen validación visual.
 
-1. Familia A — shell/login/tenant/navegación/CX.data/HR/Auth/proyecto-periodo.
-2. Familia B — CRM Ops Leads, Dashboard y hoja de ruta.
-3. Familia C — proyectos, periodos, HR, histórico, visitas, postulaciones, reservas y shoppers.
-4. Familia D — experiencia Shopper y certificaciones.
-5. Familia E — Finanzas, liquidaciones, movimientos, beneficios y pagos.
-6. Familia F — portales y reportes.
-7. Familia G — configuración, administrabilidad, integraciones y Academia.
+## 6. Validación visual vinculante
 
-## 8. Criterio de salida
+El primer build que revisará Paula será el Checkpoint Visual 1 acumulativo A+B:
 
-No se considera candidata acumulativa hasta tener:
+- login, shell, tenant, proyecto, periodo, fuente y navegación;
+- CRM Ops Leads;
+- Dashboard;
+- hoja de ruta;
+- Clientes/Comercial/Marketing cuando sean dependencias;
+- indicadores y drilldowns.
 
-- cero módulos `UNKNOWN`;
-- matriz módulo/archivo/SHA/aprobación cerrada;
-- dependencias reconciliadas;
-- delta completo contra HEAD vivo;
-- un único commit funcional;
-- manifest, build-lock y verificador nuevos;
-- gates acumulativos sobre el mismo build;
-- un único Hosting DEV;
-- aprobación visual de Paula sobre ese build;
-- freeze.
+No se avanzará al Checkpoint 2 sin revisión visual de ese mismo build.
 
-## 9. Próximo bloque exacto
+## 7. Pendiente real inmediato
 
-`INVENTARIAR Y TRAZAR STORE/CX.DATA/HR/ADAPTERS/AUTH/TENANT/PROYECTO-PERIODO → CERRAR FAMILIA A → DOCUMENTAR MATRIZ Y DIFERENCIAS`.
+1. recuperar aprobaciones/commits históricos restantes de Familia A;
+2. inventariar Familia B módulo por módulo;
+3. determinar SHAs objetivo y dependencias de A+B;
+4. construir delta completo contra HEAD vivo;
+5. crear gates de interfaz, precedencia, no-demo, semántica y caché;
+6. ejecutar gates source-only;
+7. solicitar autorización para un único Hosting DEV del Checkpoint Visual 1.
 
-Después se inicia Familia B con prioridad CRM Ops Leads.
+## 8. Criterio de salida A+B
+
+- cero archivos/dependencias `UNKNOWN`;
+- una sola autoridad de tenant/proyecto/periodo/fuente/semántica;
+- un solo delta acumulativo;
+- manifest y build-lock nuevos;
+- service worker vinculado al mismo build ID;
+- gates PASS;
+- una sola URL DEV;
+- validación visual de Paula módulo por módulo.
+
+## 9. Siguiente bloque exacto
+
+`PROVENIENCIA RESTANTE FAMILIA A → INVENTARIO CRM OPS LEADS/DASHBOARD/HOJA DE RUTA → MATRIZ A+B → DELTA Y GATES SOURCE-ONLY`.
 
 ## 10. Estado seguro
 
 - cambios funcionales: 0;
-- deploys durante reconstrucción: 0;
+- deploy durante reconstrucción: 0;
 - Cloud Run/Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos: 0;
 - password changes/resets: 0;
 - credenciales/tokens expuestos: 0;
