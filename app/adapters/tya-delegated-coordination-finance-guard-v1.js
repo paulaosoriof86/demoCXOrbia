@@ -2,7 +2,8 @@
    Reusable y read-only.
 
    Evita la regresión donde Finanzas usaba el honorario del shopper como
-   fallback de ingreso recibido. Para proyectos sin facturación local:
+   fallback de ingreso recibido. Para proyectos sin facturación local o
+   todavía sin modelo explícito:
    - ingreso = comisión de coordinación/distribución configurada;
    - regalías locales = 0;
    - no se inventan comisión, reparto, participantes ni porcentajes;
@@ -16,8 +17,8 @@
 
   const str=v=>String(v==null?'':v).trim();
   const numOrNull=v=>v!==''&&v!=null&&Number.isFinite(Number(v))?Number(v):null;
-  const modelOf=p=>CX.projectFinancialModel?.resolveModel?.(p)||str(p&&p.modelo).toLowerCase()||'directo';
-  const isNonLocal=p=>['delegado','regional'].includes(modelOf(p));
+  const modelOf=p=>CX.projectFinancialModel?.resolveModel?.(p)||str(p&&p.modelo).toLowerCase()||'unconfigured';
+  const isFailClosedModel=p=>['delegado','regional','unconfigured'].includes(modelOf(p));
   const own=(obj,key)=>obj&&Object.prototype.hasOwnProperty.call(obj,key);
 
   function context(data,project){
@@ -42,6 +43,7 @@
   }
 
   function resolveCommission(project,data,country,visitCount){
+    if(modelOf(project)==='unconfigured')return {exact:false,amount:0,source:'project_model_configuration_required'};
     const cfg=project?.coordinationCommission||{};
     const ctx=context(data,project);
     let value=nestedValue(cfg.amountByPeriodCountry,ctx.periodId,country);
@@ -71,6 +73,7 @@
   }
 
   function resolveDistributedAmount(project,data,country){
+    if(modelOf(project)==='unconfigured')return {exact:false,amount:0,source:'project_model_configuration_required'};
     const cfg=project?.coordinationCommission||{};
     const ctx=context(data,project);
     let value=nestedValue(cfg.distributedAmountByPeriodCountry,ctx.periodId,country);
@@ -99,7 +102,8 @@
 
   const previousHonRecibe=typeof CX.fin.honRecibe==='function'?CX.fin.honRecibe.bind(CX.fin):()=>0;
   CX.fin.honRecibe=function(project,country){
-    if(!isNonLocal(project))return previousHonRecibe(project,country);
+    if(!isFailClosedModel(project))return previousHonRecibe(project,country);
+    if(modelOf(project)==='unconfigured')return 0;
     const explicit=project?.honRecibe&&own(project.honRecibe,country)
       ?numOrNull(project.honRecibe[country]):null;
     return explicit==null?0:explicit;
@@ -111,7 +115,7 @@
   CX.fin.porPais=function(data){
     const project=typeof data?.project==='function'?data.project():data?.period?.();
     const output=previousPorPais(data);
-    if(!project||!isNonLocal(project))return output;
+    if(!project||!isFailClosedModel(project))return output;
 
     let pendingCountries=0,readyCountries=0;
     for(const country of project.countries||[]){
@@ -122,7 +126,7 @@
       const otherCosts=resolveOtherCosts(project,data,country);
       const includeShopperCosts=project.coordinationCommission?.includeShopperCosts===true;
       const shopperCosts=includeShopperCosts?Number(row.honorarioDevengado||0):0;
-      const ready=commission.exact&&distribution.exact;
+      const ready=modelOf(project)!=='unconfigured'&&commission.exact&&distribution.exact;
       const margin=ready?commission.amount-distribution.amount-otherCosts-shopperCosts:0;
 
       row.ingreso=commission.amount;
@@ -131,16 +135,16 @@
       row.fijos=otherCosts;
       row.margen=margin;
       row.margenPct=ready&&commission.amount?Math.round(margin/commission.amount*100):0;
-      row.cxc=project.coordinationCommission?.receivableConfirmed===true?commission.amount:0;
+      row.cxc=ready&&project.coordinationCommission?.receivableConfirmed===true?commission.amount:0;
       row.financialModel=modelOf(project);
-      row.localBilling=false;
+      row.localBilling=modelOf(project)==='unconfigured'?null:false;
       row.royaltyApplicable=false;
       row.commissionAmount=commission.amount;
       row.commissionSource=commission.source;
-      row.commissionSourceStatus=commission.exact?'confirmed_project_configuration':'project_configuration_required';
+      row.commissionSourceStatus=commission.exact?'confirmed_project_configuration':commission.source;
       row.distributedAmount=distribution.amount;
       row.distributionSource=distribution.source;
-      row.distributionSourceStatus=distribution.exact?'confirmed_project_configuration':'project_configuration_required';
+      row.distributionSourceStatus=distribution.exact?'confirmed_project_configuration':distribution.source;
       row.marginSourceStatus=ready?'confirmed_project_configuration':'pending_or_review';
       row.financialReviewRequired=!ready;
       row.shopperCostsIncludedInCommissionMargin=includeShopperCosts;
@@ -153,10 +157,11 @@
       version:'delegated-coordination-finance-guard-v1',
       projectId:project.id||null,
       projectModel:modelOf(project),
-      localBilling:false,
+      localBilling:modelOf(project)==='unconfigured'?null:false,
       royaltyPct:0,
       readyCountries,
       pendingCountries,
+      defaultModelAssumed:false,
       shopperHonorariumUsedAsIncomeFallback:false,
       splitValuesInvented:false,
       providerWrites:0,
@@ -170,6 +175,7 @@
     ready:true,
     version:'delegated-coordination-finance-guard-v1',
     installed:true,
+    defaultModelAssumed:false,
     shopperHonorariumUsedAsIncomeFallback:false,
     splitValuesInvented:false,
     providerWrites:0,
