@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.c6.unified-cumulative-runtime-root-fix.v2",
-  "generatedAt": "2026-08-01T21:06:00-06:00",
+  "generatedAt": "2026-08-01T21:18:00-06:00",
   "decision": "PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_CODE_STATIC_CONTRACT",
   "remoteRuntimeValidated": false,
   "humanValidated": false,
@@ -43,10 +43,12 @@
     "bootstrapSyntax": "PASS",
     "unifiedAdapterSyntax": "PASS",
     "dynamicHrAuthorityBridgeSyntax": "PASS",
+    "technicalAuthE2EAdapterSyntax": "PASS",
     "staticGateSyntax": "PASS",
     "singleAuthenticatedHumanLane": "PASS",
     "directRoleOverrideLoaded": false,
     "hiddenVisualSessionBridgeLoaded": false,
+    "technicalAuthE2E": "isolated_private_lane_human_unaffected",
     "protectedAuthHrAuthorityBridge": "v2-dynamic-live-source",
     "canonicalDomainLoaded": true,
     "canonicalShopperPortalLoaded": true,
@@ -65,5 +67,5 @@
     "merge": false,
     "production": false
   },
-  "nextGate": "READONLY_RUNTIME_STAFF_CLIENT_SHOPPER_ALL_DETECTED_PERIODS_DOMAIN_PROFILE_CLIENT_FINANCE_THREE_RELOADS"
+  "nextGate": "READONLY_RUNTIME_STAFF_CLIENT_SHOPPER_TECHNICAL_E2E_ALL_DETECTED_PERIODS_DOMAIN_PROFILE_CLIENT_FINANCE_THREE_RELOADS"
 }
