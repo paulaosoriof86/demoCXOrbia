@@ -1,17 +1,16 @@
 {
   "schemaVersion": "cxorbia.c6.live-domain-readonly-audit-request.v1",
-  "requestId": "c6-live-domain-readonly-audit-20260801-16",
-  "attempt": 16,
-  "status": "consumed_fail",
-  "enabled": false,
-  "consumed": true,
+  "requestId": "c6-live-domain-readonly-audit-20260801-17",
+  "attempt": 17,
+  "status": "requested_unified_auth_runtime_detailed",
+  "enabled": true,
+  "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "environment": "DEV",
-  "scope": "human_staff_shopper_three_reloads_new_tab_plus_isolated_technical_auth_readonly",
-  "triggerReason": "continue_exact_gate_after_immediate_click_root_fix_pass",
-  "expectedOutcome": "staff_shopper_runtime_pass_then_explicit_client_credential_hold",
+  "scope": "human_staff_shopper_three_reloads_new_tab_plus_isolated_technical_auth_readonly_with_principal_diagnostics",
+  "triggerReason": "identify_exact_principal_and_runtime_state_or_complete_gate",
   "hostingDeploys": 0,
   "cloudRunDeploys": 0,
   "firestoreWrites": 0,
@@ -23,7 +22,5 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false,
-  "consumedAt": "2026-08-02T04:36:35.530Z",
-  "decision": "FAIL_C6_UNIFIED_AUTH_RUNTIME_READONLY"
+  "production": false
 }
