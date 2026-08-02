@@ -5,57 +5,14 @@
 
 ## Lección central
 
-Una sesión autenticada y una pantalla con datos operativos no prueban por sí solas que el contexto protegido esté completo. En un sistema con fuente HR más overlay de identidad, el gate debe demostrar ambos componentes.
+Una plataforma acumulativa debe demostrar por separado autenticación, fuente operativa, overlay protegido, identidad exacta, estabilidad de sesión y coherencia del dominio. Un PASS de login o HR no prueba por sí solo que Finanzas, portales y Reservas consuman una única verdad.
 
-El control de calidad debe separar:
+## Caso Shopper nueva pestaña — aprendizaje cerrado
 
-1. principal autenticado;
-2. tenant y proyecto correctos;
-3. HR base cargada;
-4. overlay protegido aplicado;
-5. identidad exacta resuelta;
-6. visitas propias visibles;
-7. tres recargas;
-8. nueva pestaña;
-9. paridad remota;
-10. aprobación humana.
+El P0 anterior reproducía:
 
-## Contratos que deben enseñarse
-
-1. HR viva gobierna periodos, visitas y estados.
-2. Firestore protegido enriquece identidad, perfil y certificación.
-3. Auth restaurada no equivale a overlay aplicado.
-4. `appOn=true` no equivale a runtime acumulativo completo.
-5. Una nueva pestaña es un gate distinto de una recarga.
-6. Un Shopper debe recuperar sus visitas por identidad exacta.
-7. `ownVisits=0` con visitas asignadas es un bloqueo, no un estado aceptable.
-8. Una conciliación de arranque debe ser idempotente.
-9. Los eventos puntuales requieren recuperación independiente cuando el orden de carga puede variar.
-10. Las lecturas externas transitorias deben reintentarse de forma acotada y fail-closed.
-11. Un reintento nunca debe convertirse en write o deploy automático.
-12. Una release publicada no equivale a gate remoto completo.
-13. La paridad de assets no sustituye la prueba por rol.
-14. El modelo financiero se obtiene de la configuración del proyecto.
-15. Las regalías solo aplican con facturación local explícita.
-16. El honorario Shopper no es ingreso delegado.
-
-## Caso de aprendizaje Hosting C6
-
-Se publicó correctamente una release DEV usando `firebase.deploy.json` raíz:
-
-- 2,293 archivos;
-- paridad exacta de 16 assets;
-- endpoint HR remoto PASS;
-- cero Cloud Run y cero writes adicionales.
-
-## Caso de aprendizaje Shopper nueva pestaña
-
-El gate reprodujo dos veces:
-
-- principal Shopper restaurado;
-- tenant y proyecto correctos;
-- HR base con 14 periodos, 616 visitas y 208 shoppers;
-- aplicación activa;
+- sesión Shopper restaurada;
+- tenant/proyecto y HR base correctos;
 - overlay protegido no aplicado;
 - visitas propias 0.
 
@@ -63,37 +20,106 @@ Causa:
 
 `RESTORED_SESSION_NEW_TAB_PROTECTED_AUTHORITY_RECONCILIATION_NOT_RESILIENT`.
 
-## Correctivo incorporado
+El macro-bloque posterior demostró remotamente:
 
-El bridge protegido ahora:
+- overlay aplicado;
+- identidad exacta;
+- 14 periodos y 616 visitas;
+- 208 shoppers;
+- `ownVisits=1`;
+- tres recargas estables;
+- nueva pestaña estable.
 
-- reintenta HR viva de forma acotada;
-- espera principal, Firestore y composer canónico;
-- se activa por Auth, backend, DOM, foco, visibilidad y refresh;
-- impide conciliaciones simultáneas;
-- publica metadata de recuperación;
-- permanece read-only.
+La lección ya no debe presentarse como fix pendiente: queda como caso resuelto y gate de regresión permanente.
 
-El fix no se considera validado remotamente hasta un deploy autorizado y un nuevo gate Shopper.
+## Caso financiero — nuevo aprendizaje bloqueante
 
-## Rutas por rol
+El gate detectó dos verdades simultáneas:
 
-- Administración: fuente, operación, Shoppers, certificación, configuración, Finanzas y revisión.
-- Cliente: Panorama, KPIs, sucursales, detalle y planes de acción.
-- Shopper: identidad, perfil, certificación, oportunidades, visitas, histórico y pagos.
+### Objeto canónico consumido por dominio/Finanzas
+
+- modelo directo;
+- facturación local;
+- regalía 10;
+- regalías aplicables.
+
+### Configuración vigente del proyecto
+
+- modelo delegado;
+- coordinación delegada;
+- regalía 0;
+- honorarios Q60 GT y L200 HN;
+- comisión/reparto configurables y no inventados.
+
+Causa:
+
+`PROJECT_FINANCIAL_CONFIGURATION_METADATA_NOT_MATERIALIZED_IN_CANONICAL_PROJECTS_BEFORE_NORMALIZATION`
+
+## Contratos que deben enseñarse
+
+1. HR viva gobierna periodos, visitas y estados operativos.
+2. Firestore protegido enriquece identidad, perfil y certificación.
+3. Auth restaurada no equivale a overlay aplicado.
+4. Reload y nueva pestaña son gates distintos.
+5. El Shopper se resuelve por identidad exacta y debe recuperar visitas propias.
+6. El modelo financiero nace de configuración explícita del proyecto.
+7. La configuración debe materializarse en objetos canónicos antes de normalizar.
+8. Un marcador global no sustituye los campos que consumen módulos y reportes.
+9. Las regalías solo aplican con facturación local explícita.
+10. El honorario Shopper es una obligación, no ingreso delegado.
+11. Comisión y reparto no se inventan cuando falta fuente.
+12. Dos verdades simultáneas constituyen un bloqueo.
+13. El orden correcto es configuración → materialización → normalización → consumo → gate.
+14. Un fallo posterior a deploy exige STOP_RETRY, no segundo deploy automático.
+15. Paridad de assets no sustituye coherencia semántica.
+16. Producción requiere PASS técnico acumulativo y aprobación humana.
+
+## Checklist de validación por rol y dominio
+
+### Staff
+
+- principal autenticado;
+- tenant/proyecto correctos;
+- HR y overlay aplicados;
+- tres recargas y nueva pestaña;
+- KPIs/fases/histórico coherentes;
+- modelo financiero canónico coherente con projectConfig.
+
+### Shopper
+
+- identidad exacta;
+- visitas propias mayores que cero cuando existen asignaciones;
+- perfil, certificación, histórico y pagos dentro del scope;
+- tres recargas y nueva pestaña.
+
+### Cliente
+
+- credencial existente;
+- alcance exclusivo a proyectos autorizados;
+- Panorama y KPIs sin fuga de otros proyectos;
+- tres recargas y nueva pestaña.
+
+### Finanzas y Reservas
+
+- configuración y objeto canónico idénticos;
+- regalías según modelo;
+- honorario separado de ingreso;
+- comisión/reparto sin inferencias;
+- mutaciones bloqueadas mientras la fuente canónica no esté conectada.
 
 ## Impacto en manuales y cursos
 
-Los materiales deben explicar:
+Actualizar:
 
-- diferencia entre HR base y overlay protegido;
-- diferencia entre reload y nueva pestaña;
-- cómo comprobar identidad exacta y visitas propias;
-- cómo diseñar recuperación idempotente ante carreras de inicialización;
-- por qué un error transitorio no autoriza writes ni redeploy;
-- diferencia entre release, paridad, gate por rol y aprobación humana;
-- cómo diferenciar facturación local, coordinación delegada y obligaciones al shopper.
+- manual de Auth y recuperación de sesión;
+- curso de gates remotos por rol;
+- manual de configuración financiera por proyecto;
+- lección de precedencia y materialización canónica;
+- checklist de coherencia configuración/objeto/reporte;
+- caso práctico directo vs delegado vs regional;
+- errores frecuentes: marcador correcto con objeto canónico incorrecto;
+- protocolo STOP_RETRY y autorización de deploy.
 
-## Sin impacto adicional de proveedor
+## Estado seguro
 
-Después de aplicar el root fix en fuente no se ejecutó otro deploy ni se activaron Firestore, Auth, HR, Rules, Storage, Cloud Run, Gemini, Make, pagos, merge o producción.
+El macro-bloque ejecutó un único Hosting DEV deploy. No hubo segundo deploy, Cloud Run, Firestore/Auth/HR/Rules/Storage writes, Make, Gemini, pagos, merge ni producción. El contenido de Academia permanece documental y pendiente de publicación humana.
