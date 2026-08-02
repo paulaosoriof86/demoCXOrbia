@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.c6.live-hr-domain-readonly-audit.v6",
-  "generatedAt": "2026-08-01T02:10:54.029Z",
-  "decision": "PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE",
+  "generatedAt": "2026-08-02T04:06:28.059Z",
+  "decision": "FAIL_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE",
   "engineVersion": "c6-canonical-domain-composer-v2+actionable-state-v2",
   "staticGates": {
     "domain": "PASS_C6_CANONICAL_DOMAIN_CONSISTENCY",
@@ -17,7 +17,7 @@
   "source": {
     "runtimeRead": true,
     "sourceSafe": true,
-    "revision": "e1defdcf7327adda170d08136332f95d28adea808d489972e6978fb087762b72",
+    "revision": "2db13f4be014218d5d19078b31b22f100fee0f9508497faae9aa029c14ea930d",
     "periods": 14,
     "visits": 616,
     "shoppers": 208
@@ -35,11 +35,11 @@
     "total": 44,
     "GT": 34,
     "HN": 10,
-    "realized": 40,
-    "questionnaireCompleted": 38,
-    "submitted": 33,
+    "realized": 43,
+    "questionnaireCompleted": 41,
+    "submitted": 37,
     "outOfRange": 1,
-    "outOfRangeEvidence": 7
+    "outOfRangeEvidence": 44
   },
   "july": {
     "periodKey": "2026-07",
@@ -47,14 +47,14 @@
     "available": 0,
     "assigned": 44,
     "scheduled": 44,
-    "realized": 40,
-    "questionnaireCompleted": 38,
-    "submitted": 33,
-    "liquidationCandidates": 33,
+    "realized": 43,
+    "questionnaireCompleted": 41,
+    "submitted": 37,
+    "liquidationCandidates": 37,
     "liquidationConfirmed": 0,
     "paymentConfirmed": 0,
     "outOfRange": 1,
-    "outOfRangeEvidence": 7,
+    "outOfRangeEvidence": 44,
     "reviewRequired": 0,
     "byCountry": {
       "GT": 34,
@@ -70,15 +70,19 @@
     "julyTotal": true,
     "julyGT": true,
     "julyHN": true,
-    "julyRealized": true,
-    "julyQuestionnaire": true,
-    "julySubmitted": true,
+    "julyRealized": false,
+    "julyQuestionnaire": false,
+    "julySubmitted": false,
     "julyActionableOutOfRange": true,
     "julyOutOfRangeEvidencePreserved": true,
     "duplicateVisitKeys": true,
     "duplicateShopperIds": true
   },
-  "failedAssertions": [],
+  "failedAssertions": [
+    "julyRealized",
+    "julyQuestionnaire",
+    "julySubmitted"
+  ],
   "failedGates": [],
   "safety": {
     "hostingDeploys": 0,
