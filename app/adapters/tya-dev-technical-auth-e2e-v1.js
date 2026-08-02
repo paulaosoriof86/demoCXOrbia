@@ -44,10 +44,10 @@
     if(title)title.textContent='Validación técnica protegida';
     const sub=card.querySelector('.login-sub');
     if(sub)sub.textContent='Carril E2E privado; no corresponde a la entrada humana del producto.';
-    card.querySelector('#cxDevTechnicalAuth')?.remove();
+    card.querySelector('#cxDevEntryAuth')?.remove();
 
     const form=document.createElement('form');
-    form.id='cxDevTechnicalAuth';
+    form.id='cxDevEntryAuth';
     form.autocomplete='off';
     form.style.cssText='margin-top:14px;padding-top:14px;border-top:1px solid var(--border);text-align:left';
     form.innerHTML=
@@ -79,6 +79,7 @@
     });
     window.CX_TYA_TECHNICAL_AUTH_E2E={
       ready:true,version:'technical-auth-e2e-v1',namespace,
+      formId:'cxDevEntryAuth',
       humanRouteAffected:false,credentialsEmbedded:false,
       providerWrites:0,production:false,at:new Date().toISOString()
     };
