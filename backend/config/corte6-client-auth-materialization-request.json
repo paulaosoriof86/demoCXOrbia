@@ -6,9 +6,9 @@
   "retryReason": "first_attempt_rolled_back_exactly_after_client_authenticated_transition_did_not_enter_app",
   "authorizedAt": "2026-08-02T09:36:00-06:00",
   "authorizedBy": "Paula",
-  "status": "authorized_retry_after_exact_rollback",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_pass",
+  "enabled": false,
+  "consumed": true,
   "attempt": 2,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -21,7 +21,9 @@
     "role": "cliente",
     "authNamespace": "staff",
     "tenantId": "tya",
-    "projectIds": ["cinepolis"]
+    "projectIds": [
+      "cinepolis"
+    ]
   },
   "maxCredentialCreates": 1,
   "idempotencyRequired": true,
@@ -43,5 +45,8 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false
+  "production": false,
+  "consumedAt": "2026-08-02T15:48:00.200Z",
+  "decision": "PASS_C6_CLIENT_AUTH_MATERIALIZED_AND_RUNTIME_VALIDATED",
+  "nextGate": "UPDATE_CANONICAL_DOCS_THEN_REQUEST_FRESH_SINGLE_DEV_HOSTING_DEPLOY_AUTHORIZATION"
 }
