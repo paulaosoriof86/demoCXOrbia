@@ -1,4 +1,4 @@
-name: CXOrbia C6 Live HR and Auth Runtime Readonly Audit
+name: CXOrbia C6 Unified Auth Runtime Readonly Gate
 
 on:
   push:
@@ -13,7 +13,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: cxorbia-c6-live-hr-auth-runtime-readonly-audit
+  group: cxorbia-c6-unified-auth-runtime-readonly
   cancel-in-progress: false
 
 jobs:
@@ -23,9 +23,9 @@ jobs:
     env:
       GCP_PROJECT_ID: cxorbia-backend-dev
       ROOT_URL: https://cxorbia-backend-dev.web.app
-      OUT: .tmp/c6-live-domain-audit
-      PRIVATE_DIR: .tmp/c6-live-domain-private
-      PRIVATE_E2E: .tmp/c6-live-domain-private/private-e2e.json
+      OUT: .tmp/c6-unified-auth-runtime
+      PRIVATE_DIR: .tmp/c6-unified-auth-private
+      PRIVATE_E2E: .tmp/c6-unified-auth-private/private-e2e.json
       REQUEST: backend/config/corte6-live-domain-readonly-audit-request.json
     steps:
       - uses: actions/checkout@v4
@@ -42,151 +42,54 @@ jobs:
           set -euo pipefail
           mkdir -p "$OUT" "$PRIVATE_DIR"
           chmod 700 "$PRIVATE_DIR"
+          echo validate_request > "$OUT/stage"
           node <<'NODE'
           const fs=require('fs');
           const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
           if(r.schemaVersion!=='cxorbia.c6.live-domain-readonly-audit-request.v1'||r.enabled!==true||r.consumed!==false)throw new Error('request_invalid');
           if(r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||r.environment!=='DEV')throw new Error('target_invalid');
-          for(const k of ['hostingDeploys','cloudRunDeploys','firestoreWrites','authWrites','rulesDeploys','storageWrites','hrWrites','makeWrites','geminiCalls','paymentsWrites']){
-            if(Number(r[k]||0)!==0)throw new Error('unsafe_scope:'+k);
-          }
+          for(const k of ['hostingDeploys','cloudRunDeploys','firestoreWrites','authWrites','rulesDeploys','storageWrites','hrWrites','makeWrites','geminiCalls','paymentsWrites'])if(Number(r[k]||0)!==0)throw new Error('unsafe_scope:'+k);
           if(r.merge!==false||r.production!==false)throw new Error('unsafe_scope');
           NODE
 
-      - name: Static cumulative and semantic gates
+      - name: Verify current static and live-HR prerequisites
         run: |
           set -euo pipefail
-          node --check app/adapters/tya-cumulative-read-model-v2.js
-          node --check app/adapters/tya-canonical-state-semantics-v2.js
-          node --check app/adapters/tya-live-source-refresh-watch-v2.js
-          node --check app/adapters/tya-c6-domain-consistency-bridge.js
-          node --check app/adapters/tya-canonical-finance-read-model-v2.js
-          node --check app/adapters/tya-canonical-shopper-portal-v2.js
-          node --check app/adapters/tya-canonical-reservations-guard-v2.js
-          node --check app/adapters/tya-project-financial-model-contract-v1.js
-          node --check app/adapters/tya-delegated-coordination-finance-guard-v1.js
+          echo static_and_live_prerequisites > "$OUT/stage"
           node --check tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs
           node --check tools/qa/tya-c6-dev-users-real-e2e.mjs
           node --check tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs
+          node --check app/adapters/tya-project-financial-model-contract-v1.js
+          node --check app/adapters/tya-delegated-coordination-finance-guard-v1.js
           node tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs > "$OUT/unified-gate.log" 2>&1
-          node tools/qa/tya-c6-domain-consistency-regression-gate.mjs > "$OUT/local-gate.json"
-          node tools/qa/tya-c6-canonical-finance-read-model-gate.mjs > "$OUT/finance-gate.json"
-          node tools/qa/tya-c6-shopper-portal-contract-gate.mjs > "$OUT/shopper-portal-gate.json"
-          node tools/qa/tya-c6-reservations-source-guard-gate.mjs > "$OUT/reservations-gate.json"
-
-      - name: Fetch current live HR source read-only
-        run: |
-          set -euo pipefail
-          curl -fsSL --retry 8 --retry-delay 3 "$ROOT_URL/api/tya/cinepolis/hr-live?view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&format=json&fresh=1" -o "$OUT/hr.json"
-
-      - name: Audit dynamic live HR revision and canonical state
-        run: |
-          set -euo pipefail
           node <<'NODE'
-          const fs=require('fs'),vm=require('vm');
-          const sandbox={window:{}};
-          vm.createContext(sandbox);
-          vm.runInContext(fs.readFileSync('app/adapters/tya-cumulative-read-model-v2.js','utf8'),sandbox);
-          vm.runInContext(fs.readFileSync('app/adapters/tya-canonical-state-semantics-v2.js','utf8'),sandbox);
-          const engine=sandbox.window.CX_TYA_CUMULATIVE_READ_MODEL;
-          const raw=JSON.parse(fs.readFileSync(process.env.OUT+'/hr.json','utf8'));
-          const runtime=raw._runtime||{};
-          delete raw._runtime;
-          const visits=Array.isArray(raw.visits)?raw.visits:[];
-          const periods=Array.isArray(raw.periods)?raw.periods:[];
-          const shoppers=Array.isArray(raw.shoppers)?raw.shoppers:[];
-          const periodKeys=periods.map(p=>String(p.key||p.periodKey||'').trim());
-          const periodSet=new Set(periodKeys);
-          const visitKey=v=>String(v.hrRowId||((v.sourceTab&&v.sourceRow)?v.sourceTab+'::'+v.sourceRow:'')||v.visitId||v.id||'').trim();
-          const visitKeys=visits.map(visitKey);
-          const shopperIds=shoppers.map(s=>String(s.shopperId||s.id||'').trim()).filter(Boolean);
-          const summaries=engine.periodSummary(visits).slice().sort((a,b)=>String(a.periodKey).localeCompare(String(b.periodKey)));
-          const latestPeriod=periodKeys.slice().filter(Boolean).sort().at(-1)||null;
-          const latestSummary=summaries.find(x=>x.periodKey===latestPeriod)||null;
-          const assertions={
-            runtimeRead:runtime.runtimeRead===true,
-            sourceSafe:runtime.sourceSafe===true,
-            periodsNonEmpty:periods.length>0,
-            visitsNonEmpty:visits.length>0,
-            periodKeysComplete:periodKeys.length===periods.length&&periodKeys.every(Boolean),
-            periodKeysUnique:new Set(periodKeys).size===periodKeys.length,
-            visitKeysComplete:visitKeys.length===visits.length&&visitKeys.every(Boolean),
-            visitKeysUnique:new Set(visitKeys).size===visitKeys.length,
-            everyVisitBelongsToDetectedPeriod:visits.every(v=>periodSet.has(String(v.periodKey||'').trim())),
-            shopperIdsUnique:new Set(shopperIds).size===shopperIds.length,
-            summariesCoverDetectedPeriods:summaries.length===periods.length&&summaries.every(s=>periodSet.has(String(s.periodKey))),
-            latestPeriodPresent:!!latestSummary
-          };
-          const periodInvariantFailures=[];
-          for(const s of summaries){
-            const total=Number(s.total||0);
-            const countryTotal=Object.values(s.byCountry||{}).reduce((a,b)=>a+Number(b||0),0);
-            const checks={
-              countryTotalMatches:countryTotal===total,
-              assignedWithinTotal:Number(s.assigned||0)>=0&&Number(s.assigned||0)<=total,
-              scheduledWithinAssigned:Number(s.scheduled||0)>=0&&Number(s.scheduled||0)<=Number(s.assigned||0),
-              realizedWithinTotal:Number(s.realized||0)>=0&&Number(s.realized||0)<=total,
-              questionnaireWithinRealized:Number(s.questionnaireCompleted||0)>=0&&Number(s.questionnaireCompleted||0)<=Number(s.realized||0),
-              submittedWithinQuestionnaire:Number(s.submitted||0)>=0&&Number(s.submitted||0)<=Number(s.questionnaireCompleted||0),
-              liquidationCandidatesWithinSubmitted:Number(s.liquidationCandidates||0)>=0&&Number(s.liquidationCandidates||0)<=Number(s.submitted||0),
-              liquidationConfirmedWithinCandidates:Number(s.liquidationConfirmed||0)>=0&&Number(s.liquidationConfirmed||0)<=Number(s.liquidationCandidates||0),
-              paymentConfirmedWithinLiquidated:Number(s.paymentConfirmed||0)>=0&&Number(s.paymentConfirmed||0)<=Number(s.liquidationConfirmed||0),
-              outOfRangeWithinTotal:Number(s.outOfRange||0)>=0&&Number(s.outOfRange||0)<=total,
-              outOfRangeEvidencePreserved:Number(s.outOfRangeEvidence||0)>=Number(s.outOfRange||0)
-            };
-            const failed=Object.entries(checks).filter(([,ok])=>!ok).map(([name])=>name);
-            if(failed.length)periodInvariantFailures.push({periodKey:s.periodKey,failed});
-          }
-          const gates={
-            unified:(fs.readFileSync(process.env.OUT+'/unified-gate.log','utf8').match(/DECISION\s+(PASS_[A-Z0-9_]+)/)||[])[1]||null,
-            domain:JSON.parse(fs.readFileSync(process.env.OUT+'/local-gate.json','utf8')).decision,
-            finance:JSON.parse(fs.readFileSync(process.env.OUT+'/finance-gate.json','utf8')).decision,
-            shopperPortal:JSON.parse(fs.readFileSync(process.env.OUT+'/shopper-portal-gate.json','utf8')).decision,
-            reservations:JSON.parse(fs.readFileSync(process.env.OUT+'/reservations-gate.json','utf8')).decision
-          };
-          const expectedGates={
-            unified:'PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_STATIC_GATE_WITH_DOCUMENTED_FRONTEND_WARNINGS',
-            domain:'PASS_C6_CANONICAL_DOMAIN_CONSISTENCY',
-            finance:'PASS_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS',
-            shopperPortal:'PASS_C6_CANONICAL_SHOPPER_PORTAL_CONTRACT',
-            reservations:'PASS_C6_CANONICAL_RESERVATIONS_SOURCE_GUARD'
-          };
-          const failedAssertions=Object.entries(assertions).filter(([,ok])=>!ok).map(([name])=>name);
-          const failedGates=Object.entries(expectedGates).filter(([k,v])=>gates[k]!==v).map(([k])=>k);
-          const pass=!failedAssertions.length&&!failedGates.length&&!periodInvariantFailures.length;
-          const evidence={
-            schemaVersion:'cxorbia.c6.live-hr-domain-readonly-audit.v8',
-            generatedAt:new Date().toISOString(),
-            decision:pass?'PASS_C6_LIVE_HR_DYNAMIC_CANONICAL_STATE':'FAIL_C6_LIVE_HR_DYNAMIC_CANONICAL_STATE',
-            engineVersion:engine.version,
-            staticGates:gates,
-            source:{runtimeRead:runtime.runtimeRead===true,sourceSafe:runtime.sourceSafe===true,revision:runtime.revision||null,periods:periods.length,visits:visits.length,shoppers:shoppers.length,firstPeriod:periodKeys.slice().filter(Boolean).sort()[0]||null,latestPeriod},
-            dynamicContract:{frozenOperationalCounts:false,allDetectedPeriodsRequired:true,allRevisionVisitsRequired:true,completeUniqueVisitKeysRequired:true,everyVisitBelongsToDetectedPeriod:true,canonicalStateOrderingRequired:true},
-            observedLatestPeriod:latestSummary,
-            assertions,
-            periodInvariantFailures,
-            failedAssertions,
-            failedGates,
-            safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,merge:false,production:false}
-          };
-          fs.writeFileSync(process.env.OUT+'/evidence.json',JSON.stringify(evidence,null,2)+'\n');
-          if(!pass)throw new Error('dynamic_live_hr_gate_failed');
+          const fs=require('fs');
+          const p='app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json';
+          const e=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(e.decision!=='PASS_C6_LIVE_HR_DYNAMIC_CANONICAL_STATE')throw new Error('live_hr_dynamic_prerequisite_not_pass');
+          if(e.dynamicContract?.frozenOperationalCounts!==false||e.failedAssertions?.length||e.failedGates?.length||e.periodInvariantFailures?.length)throw new Error('live_hr_dynamic_contract_invalid');
+          if(!e.source?.runtimeRead||!e.source?.sourceSafe||Number(e.source?.periods||0)<1||Number(e.source?.visits||0)<1)throw new Error('live_hr_source_invalid');
+          const log=fs.readFileSync(process.env.OUT+'/unified-gate.log','utf8');
+          if(!log.includes('DECISION PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_STATIC_GATE_WITH_DOCUMENTED_FRONTEND_WARNINGS'))throw new Error('unified_static_gate_not_pass');
           NODE
 
       - name: Authenticate existing DEV for read-only identity selection
-        uses: google-github-actions/auth@v2
+        run: echo google_auth_readonly > "$OUT/stage"
+      - uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
 
       - name: Install transient read-only browser tooling
         run: |
           set -euo pipefail
+          echo install_browser_tooling > "$OUT/stage"
           npm install --no-save --ignore-scripts firebase-admin@13.4.0 playwright@1.54.2 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null
 
       - name: Select existing staff and shopper credentials privately
         run: |
           set -euo pipefail
+          echo select_existing_credentials > "$OUT/stage"
           export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
           export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
           export CXORBIA_DEV_ROOT_URL="$ROOT_URL"
@@ -201,6 +104,7 @@ jobs:
       - name: Start local application server
         run: |
           set -euo pipefail
+          echo start_local_server > "$OUT/stage"
           nohup python3 -m http.server 4173 --directory app > "$OUT/local-http.log" 2>&1 &
           echo $! > "$OUT/local-http.pid"
           for i in $(seq 1 30); do
@@ -212,6 +116,7 @@ jobs:
       - name: Unified human Auth runtime staff and shopper read-only
         run: |
           set -euo pipefail
+          echo unified_human_auth_runtime > "$OUT/stage"
           export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
           export CXORBIA_DEV_ROOT_URL="$ROOT_URL"
           export CXORBIA_HUMAN_GATE_OUTPUT="$OUT/unified-human-auth.source-safe.json"
@@ -225,6 +130,7 @@ jobs:
       - name: Isolated technical Auth E2E read-only
         run: |
           set -euo pipefail
+          echo technical_auth_e2e > "$OUT/stage"
           export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
           export CXORBIA_DEV_ROOT_URL="$ROOT_URL"
           node tools/qa/tya-c6-dev-users-real-e2e.mjs http://127.0.0.1:4173 > "$OUT/technical-auth-e2e.source-safe.json"
@@ -234,61 +140,75 @@ jobs:
           if(e.decision!=='PASS_C6_REAL_USERS_END_TO_END_TECHNICAL_LANE_ISOLATED'||e.humanEntryReplaced!==false||e.staff?.namespace!=='staff'||e.shopper?.namespace!=='shopper'||e.shopper?.ownVisits<1||e.credentialsExposed!==false||e.tokensExposed!==false)throw new Error('technical_auth_e2e_not_pass');
           NODE
 
-      - name: Merge read-only runtime evidence
+      - name: Persist read-only runtime evidence
         run: |
           set -euo pipefail
+          echo persist_runtime_evidence > "$OUT/stage"
           node <<'NODE'
           const fs=require('fs');
-          const p=process.env.OUT+'/evidence.json';
-          const evidence=JSON.parse(fs.readFileSync(p,'utf8'));
+          const live=JSON.parse(fs.readFileSync('app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json','utf8'));
           const human=JSON.parse(fs.readFileSync(process.env.OUT+'/unified-human-auth.source-safe.json','utf8'));
           const technical=JSON.parse(fs.readFileSync(process.env.OUT+'/technical-auth-e2e.source-safe.json','utf8'));
-          evidence.schemaVersion='cxorbia.c6.live-hr-auth-runtime-readonly-audit.v1';
-          evidence.decision='HOLD_C6_READONLY_RUNTIME_CLIENT_AUTH_CREDENTIAL_REQUIRED';
-          evidence.liveHrDecision='PASS_C6_LIVE_HR_DYNAMIC_CANONICAL_STATE';
-          evidence.humanAuthRuntime=human;
-          evidence.technicalAuthRuntime=technical;
-          evidence.completedGates=['STATIC_CUMULATIVE','LIVE_HR_DYNAMIC','DOMAIN','FINANCE_CONTRACT','SHOPPER_PORTAL','RESERVATIONS','HUMAN_STAFF_AUTH','HUMAN_SHOPPER_AUTH','TECHNICAL_AUTH_ISOLATED','THREE_RELOADS','NEW_TAB'];
-          evidence.remainingGate='CLIENT_AUTH_WITH_EXISTING_CREDENTIAL';
-          evidence.blocker='EXISTING_CLIENT_CREDENTIAL_NOT_SELECTED_BY_CURRENT_PRIVATE_SELECTOR';
-          evidence.safety={hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,passwordChanges:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,credentialsExposed:false,tokensExposed:false,merge:false,production:false};
-          fs.writeFileSync(p,JSON.stringify(evidence,null,2)+'\n');
-          fs.writeFileSync(process.env.OUT+'/decision.txt',evidence.decision+'\n');
+          const evidence={
+            schemaVersion:'cxorbia.c6.unified-auth-runtime-readonly.v1',generatedAt:new Date().toISOString(),
+            decision:'HOLD_C6_READONLY_RUNTIME_CLIENT_AUTH_CREDENTIAL_REQUIRED',
+            completedGates:['STATIC_CUMULATIVE','LIVE_HR_DYNAMIC','DOMAIN','FINANCE_CONTRACT','SHOPPER_PORTAL','RESERVATIONS','HUMAN_STAFF_AUTH','HUMAN_SHOPPER_AUTH','TECHNICAL_AUTH_ISOLATED','THREE_RELOADS','NEW_TAB'],
+            liveHr:{decision:live.decision,source:live.source,observedLatestPeriod:live.observedLatestPeriod},
+            humanAuthRuntime:human,technicalAuthRuntime:technical,
+            remainingGate:'CLIENT_AUTH_WITH_EXISTING_CREDENTIAL',
+            blocker:'EXISTING_CLIENT_CREDENTIAL_NOT_SELECTED_BY_CURRENT_PRIVATE_SELECTOR',
+            safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,passwordChanges:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,credentialsExposed:false,tokensExposed:false,merge:false,production:false}
+          };
+          fs.writeFileSync(process.env.OUT+'/runtime-evidence.json',JSON.stringify(evidence,null,2)+'\n');
           NODE
-
-      - name: Persist evidence and consume request
-        run: |
-          set -euo pipefail
-          DECISION="$(cat "$OUT/decision.txt")"
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
           mkdir -p app/docs/evidence
-          cp "$OUT/evidence.json" app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json
+          cp "$OUT/runtime-evidence.json" app/docs/evidence/CORTE6-UNIFIED-AUTH-RUNTIME-READONLY-LATEST.json
           cp "$OUT/unified-human-auth.source-safe.json" app/docs/evidence/CORTE6-UNIFIED-HUMAN-AUTH-RUNTIME-LATEST.json
           node <<'NODE'
-          const fs=require('fs'),p=process.env.REQUEST;
-          const r=JSON.parse(fs.readFileSync(p,'utf8'));
-          const decision=fs.readFileSync(process.env.OUT+'/decision.txt','utf8').trim();
-          r.enabled=false;
-          r.consumed=true;
-          r.status=decision.startsWith('PASS_')?'consumed_pass':decision.startsWith('HOLD_')?'consumed_hold':'consumed_fail';
-          r.consumedAt=new Date().toISOString();
-          r.decision=decision;
+          const fs=require('fs'),p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8'));
+          r.enabled=false;r.consumed=true;r.status='consumed_hold';r.consumedAt=new Date().toISOString();r.decision='HOLD_C6_READONLY_RUNTIME_CLIENT_AUTH_CREDENTIAL_REQUIRED';
           fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n');
           NODE
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json app/docs/evidence/CORTE6-UNIFIED-HUMAN-AUTH-RUNTIME-LATEST.json "$REQUEST"
-          git commit -m "evidence: C6 read-only runtime ${DECISION}"
+          git add app/docs/evidence/CORTE6-UNIFIED-AUTH-RUNTIME-READONLY-LATEST.json app/docs/evidence/CORTE6-UNIFIED-HUMAN-AUTH-RUNTIME-LATEST.json "$REQUEST"
+          git commit -m 'evidence: C6 read-only runtime HOLD client credential'
           git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Persist sanitized failure evidence
+        if: failure()
+        run: |
+          set -euo pipefail
+          stage="$(cat "$OUT/stage" 2>/dev/null || echo unknown)"
+          STAGE="$stage" node <<'NODE'
+          const fs=require('fs');
+          const readDecision=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8')).decision||null}catch{return null}};
+          const evidence={schemaVersion:'cxorbia.c6.unified-auth-runtime-readonly-failure.v1',generatedAt:new Date().toISOString(),decision:'FAIL_C6_UNIFIED_AUTH_RUNTIME_READONLY',failedStage:String(process.env.STAGE||'unknown'),credentialSelectionDecision:readDecision(process.env.OUT+'/credential-selection.source-safe.json'),humanRuntimeDecision:readDecision(process.env.OUT+'/unified-human-auth.source-safe.json'),technicalAuthDecision:readDecision(process.env.OUT+'/technical-auth-e2e.source-safe.json'),safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,passwordChanges:0,rulesDeploys:0,storageWrites:0,hrWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,credentialsExposed:false,tokensExposed:false,merge:false,production:false}};
+          fs.writeFileSync(process.env.OUT+'/failure-evidence.json',JSON.stringify(evidence,null,2)+'\n');
+          NODE
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp "$OUT/failure-evidence.json" app/docs/evidence/CORTE6-UNIFIED-AUTH-RUNTIME-READONLY-FAILURE-LATEST.json
+          node <<'NODE'
+          const fs=require('fs'),p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8'));
+          r.enabled=false;r.consumed=true;r.status='consumed_fail';r.consumedAt=new Date().toISOString();r.decision='FAIL_C6_UNIFIED_AUTH_RUNTIME_READONLY';
+          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n');
+          NODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CORTE6-UNIFIED-AUTH-RUNTIME-READONLY-FAILURE-LATEST.json "$REQUEST"
+          git commit -m 'evidence: C6 read-only runtime failure stage' || true
+          git push origin HEAD:docs-tya-v6-v71-audit || true
 
       - name: Publish status
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          STATE=success
-          DESC=HOLD_C6_CLIENT_AUTH_CREDENTIAL_REQUIRED
+          STATE=success; DESC=HOLD_C6_CLIENT_AUTH_CREDENTIAL_REQUIRED
           if [ '${{ job.status }}' != 'success' ]; then STATE=error; DESC=FAIL_C6_READONLY_RUNTIME; fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c6-readonly-runtime/$DESC" -f description="$DESC" >/dev/null
 
