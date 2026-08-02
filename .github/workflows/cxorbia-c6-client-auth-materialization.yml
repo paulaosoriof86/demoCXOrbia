@@ -1,0 +1,317 @@
+name: CXOrbia C6 Client Auth Materialization
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/corte6-client-auth-materialization-request.json'
+
+permissions:
+  contents: write
+  statuses: write
+  id-token: write
+
+concurrency:
+  group: cxorbia-c6-client-auth-materialization
+  cancel-in-progress: false
+
+jobs:
+  materialize-client-auth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      GCP_PROJECT_ID: cxorbia-backend-dev
+      ROOT_URL: https://cxorbia-backend-dev.web.app
+      REQUEST: backend/config/corte6-client-auth-materialization-request.json
+      OUT: .tmp/c6-client-auth-materialization
+      PRIVATE_SNAPSHOT: .tmp/c6-client-auth-materialization/private-snapshot.json
+      PRIVATE_E2E: .tmp/c6-client-auth-materialization/private-e2e.json
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate authorization and immutable scope
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          chmod 700 "$OUT"
+          echo validate_authorization > "$OUT/stage"
+          node <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
+          if(r.schemaVersion!=='cxorbia.c6.client-auth-materialization-request.v1'||r.enabled!==true||r.consumed!==false)throw new Error('request_invalid');
+          if(r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||r.environment!=='DEV')throw new Error('target_invalid');
+          if(r.targetProjectId!=='cxorbia-backend-dev'||r.tenantId!=='tya'||r.projectId!=='cinepolis')throw new Error('scope_invalid');
+          if(r.claims?.role!=='cliente'||r.claims?.authNamespace!=='staff'||r.claims?.tenantId!=='tya'||JSON.stringify(r.claims?.projectIds)!=='["cinepolis"]')throw new Error('claims_invalid');
+          if(r.maxCredentialCreates!==1||r.idempotencyRequired!==true||r.readbackRequired!==true||r.rollbackRequired!==true)throw new Error('gates_invalid');
+          if(r.passwordExposureAllowed!==false||r.repositorySecretStorageAllowed!==false||r.evidenceSecretStorageAllowed!==false)throw new Error('secret_policy_invalid');
+          const zero=['firestoreWrites','hrWrites','rulesDeploys','storageWrites','hostingDeploys','cloudRunDeploys','makeWrites','geminiCalls','paymentsWrites'];
+          for(const k of zero)if(Number(r[k]||0)!==0)throw new Error('unsafe_scope:'+k);
+          if(r.merge!==false||r.production!==false)throw new Error('unsafe_scope');
+          const prior=JSON.parse(fs.readFileSync('app/docs/evidence/CORTE6-UNIFIED-AUTH-RUNTIME-READONLY-LATEST.json','utf8'));
+          if(prior.decision!=='HOLD_C6_EXISTING_CLIENT_CREDENTIAL_NOT_FOUND')throw new Error('prior_client_hold_not_current');
+          if(prior.safety?.authWrites!==0||prior.safety?.hostingDeploys!==0||prior.safety?.production!==false)throw new Error('prior_safety_invalid');
+          NODE
+          node --check tools/qa/cxorbia-c6-client-auth-materialization.mjs
+          node --check tools/qa/tya-c6-client-auth-browser-smoke.mjs
+
+      - name: Authenticate DEV service account
+        run: echo authenticate_dev > "$OUT/stage"
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+
+      - name: Install transient Auth and browser tooling
+        run: |
+          set -euo pipefail
+          echo install_tooling > "$OUT/stage"
+          npm install --no-save --ignore-scripts firebase-admin@13.4.0 playwright@1.54.2 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Capture pre-write Auth snapshot
+        run: |
+          set -euo pipefail
+          echo snapshot_auth > "$OUT/stage"
+          export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
+          export CXORBIA_DEV_ROOT_URL="$ROOT_URL"
+          export CXORBIA_CLIENT_AUTH_PRIVATE_SNAPSHOT="$PRIVATE_SNAPSHOT"
+          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
+          node tools/qa/cxorbia-c6-client-auth-materialization.mjs --mode=snapshot > "$OUT/snapshot.source-safe.json"
+          chmod 600 "$PRIVATE_SNAPSHOT"
+          node <<'NODE'
+          const fs=require('fs');const s=JSON.parse(fs.readFileSync(process.env.OUT+'/snapshot.source-safe.json','utf8'));
+          if(s.decision!=='PASS_C6_CLIENT_AUTH_PREWRITE_SNAPSHOT'||s.authWrites!==0||s.credentialsExposed!==false||s.production!==false)throw new Error('snapshot_not_safe_pass');
+          NODE
+
+      - name: Materialize exactly one Client credential
+        run: |
+          set -euo pipefail
+          echo apply_client_auth > "$OUT/stage"
+          export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
+          export CXORBIA_DEV_ROOT_URL="$ROOT_URL"
+          export CXORBIA_CLIENT_AUTH_PRIVATE_SNAPSHOT="$PRIVATE_SNAPSHOT"
+          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
+          node tools/qa/cxorbia-c6-client-auth-materialization.mjs --mode=apply > "$OUT/apply.source-safe.json"
+          touch "$OUT/apply-completed"
+          node <<'NODE'
+          const fs=require('fs');const a=JSON.parse(fs.readFileSync(process.env.OUT+'/apply.source-safe.json','utf8'));
+          if(!['PASS_C6_CLIENT_AUTH_MATERIALIZED','PASS_C6_CLIENT_AUTH_IDEMPOTENT_NOOP'].includes(a.decision))throw new Error('apply_decision_invalid');
+          if(Number(a.credentialCreates||0)>1||Number(a.passwordChanges||0)!==0||Number(a.passwordResets||0)!==0||a.passwordSignIn!==true)throw new Error('apply_contract_invalid');
+          if(a.credentialsExposed!==false||a.tokensExposed!==false||a.firestoreWrites!==0||a.hostingDeploys!==0||a.production!==false)throw new Error('apply_safety_invalid');
+          NODE
+
+      - name: Prove idempotency with second application
+        run: |
+          set -euo pipefail
+          echo prove_idempotency > "$OUT/stage"
+          export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
+          export CXORBIA_DEV_ROOT_URL="$ROOT_URL"
+          export CXORBIA_CLIENT_AUTH_PRIVATE_SNAPSHOT="$PRIVATE_SNAPSHOT"
+          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
+          node tools/qa/cxorbia-c6-client-auth-materialization.mjs --mode=apply > "$OUT/idempotency.source-safe.json"
+          node <<'NODE'
+          const fs=require('fs');const i=JSON.parse(fs.readFileSync(process.env.OUT+'/idempotency.source-safe.json','utf8'));
+          if(i.decision!=='PASS_C6_CLIENT_AUTH_IDEMPOTENT_NOOP'||Number(i.authWrites)!==0||Number(i.credentialCreates)!==0||i.passwordSignIn!==true)throw new Error('idempotency_not_pass');
+          NODE
+
+      - name: Read back claims and prepare private browser input
+        run: |
+          set -euo pipefail
+          echo auth_readback > "$OUT/stage"
+          export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
+          export CXORBIA_DEV_ROOT_URL="$ROOT_URL"
+          export CXORBIA_CLIENT_AUTH_PRIVATE_SNAPSHOT="$PRIVATE_SNAPSHOT"
+          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
+          node tools/qa/cxorbia-c6-client-auth-materialization.mjs --mode=readback > "$OUT/readback.source-safe.json"
+          chmod 600 "$PRIVATE_E2E"
+          node <<'NODE'
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT+'/readback.source-safe.json','utf8'));
+          if(r.decision!=='PASS_C6_CLIENT_AUTH_READBACK'||r.passwordSignIn!==true||r.target?.claimsExact!==true||r.target?.disabled!==false)throw new Error('readback_not_pass');
+          if(Number(r.authWrites)!==0||r.credentialsExposed!==false||r.tokensExposed!==false)throw new Error('readback_safety_invalid');
+          NODE
+
+      - name: Start local application server
+        run: |
+          set -euo pipefail
+          echo start_local_server > "$OUT/stage"
+          nohup python3 -m http.server 4173 --directory app > "$OUT/local-http.log" 2>&1 &
+          echo $! > "$OUT/local-http.pid"
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/index-backend-dev.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          exit 2
+
+      - name: Validate human Client runtime with three reloads and new tab
+        run: |
+          set -euo pipefail
+          echo client_human_runtime > "$OUT/stage"
+          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
+          export CXORBIA_DEV_ROOT_URL="$ROOT_URL"
+          export CXORBIA_CLIENT_GATE_OUTPUT="$OUT/client-runtime.source-safe.json"
+          node tools/qa/tya-c6-client-auth-browser-smoke.mjs http://127.0.0.1:4173 > "$OUT/client-runtime.log" 2>&1
+          node <<'NODE'
+          const fs=require('fs');const c=JSON.parse(fs.readFileSync(process.env.OUT+'/client-runtime.source-safe.json','utf8'));
+          if(c.decision!=='PASS_C6_CLIENT_AUTH_EXISTING_CREDENTIAL_RUNTIME'||c.authenticated!==true||c.role!=='cliente'||c.namespace!=='staff')throw new Error('client_runtime_not_pass');
+          if(c.tenantId!=='tya'||JSON.stringify(c.projectIds)!=='["cinepolis"]'||c.reloadsStable!==true||c.newTabStable!==true)throw new Error('client_runtime_scope_or_stability_invalid');
+          if(c.credentialsExposed!==false||c.tokensExposed!==false||c.authWrites!==0||c.hostingDeploys!==0||c.production!==false)throw new Error('client_runtime_safety_invalid');
+          NODE
+
+      - name: Prove exact rollback plan without executing it
+        run: |
+          set -euo pipefail
+          echo rollback_dry_run > "$OUT/stage"
+          export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
+          export CXORBIA_DEV_ROOT_URL="$ROOT_URL"
+          export CXORBIA_CLIENT_AUTH_PRIVATE_SNAPSHOT="$PRIVATE_SNAPSHOT"
+          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
+          node tools/qa/cxorbia-c6-client-auth-materialization.mjs --mode=rollback-dry-run > "$OUT/rollback-proof.source-safe.json"
+          node <<'NODE'
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT+'/rollback-proof.source-safe.json','utf8'));
+          if(r.decision!=='PASS_C6_CLIENT_AUTH_ROLLBACK_EXACT_DRY_RUN'||r.canRollbackExactly!==true||Number(r.authWrites)!==0)throw new Error('rollback_proof_not_pass');
+          NODE
+
+      - name: Build cumulative source-safe evidence
+        run: |
+          set -euo pipefail
+          echo build_evidence > "$OUT/stage"
+          node <<'NODE'
+          const fs=require('fs');
+          const read=n=>JSON.parse(fs.readFileSync(process.env.OUT+'/'+n,'utf8'));
+          const prior=JSON.parse(fs.readFileSync('app/docs/evidence/CORTE6-UNIFIED-AUTH-RUNTIME-READONLY-LATEST.json','utf8'));
+          const snapshot=read('snapshot.source-safe.json');
+          const apply=read('apply.source-safe.json');
+          const idempotency=read('idempotency.source-safe.json');
+          const readback=read('readback.source-safe.json');
+          const clientRuntime=read('client-runtime.source-safe.json');
+          const rollbackProof=read('rollback-proof.source-safe.json');
+          const evidence={
+            schemaVersion:'cxorbia.c6.client-auth-materialization-evidence.v1',
+            generatedAt:new Date().toISOString(),
+            decision:'PASS_C6_CLIENT_AUTH_MATERIALIZED_AND_RUNTIME_VALIDATED',
+            authorizationId:'C6_CLIENT_AUTH_DEV_ONE_CREDENTIAL_20260802',
+            priorDecision:prior.decision,
+            snapshot,
+            apply,
+            idempotency,
+            readback,
+            clientRuntime,
+            rollbackProof,
+            cumulativeDecision:'PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES',
+            completedGates:[...(prior.completedGates||[]),'CLIENT_AUTH_MATERIALIZATION','CLIENT_AUTH_READBACK','HUMAN_CLIENT_AUTH','CLIENT_THREE_RELOADS','CLIENT_NEW_TAB','ROLLBACK_EXACT_PROOF'],
+            safety:{
+              credentialCreates:Number(apply.credentialCreates||0),
+              authWrites:Number(apply.authWrites||0),
+              passwordChanges:0,passwordResets:0,
+              firestoreWrites:0,hrWrites:0,rulesDeploys:0,storageWrites:0,
+              hostingDeploys:0,cloudRunDeploys:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,
+              credentialsExposed:false,tokensExposed:false,merge:false,production:false
+            }
+          };
+          fs.writeFileSync(process.env.OUT+'/materialization-evidence.json',JSON.stringify(evidence,null,2)+'\n');
+          NODE
+
+      - name: Persist PASS evidence and consume authorization
+        run: |
+          set -euo pipefail
+          echo persist_pass > "$OUT/stage"
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp "$OUT/snapshot.source-safe.json" app/docs/evidence/CORTE6-CLIENT-AUTH-PREWRITE-SNAPSHOT-LATEST.json
+          cp "$OUT/apply.source-safe.json" app/docs/evidence/CORTE6-CLIENT-AUTH-APPLY-LATEST.json
+          cp "$OUT/idempotency.source-safe.json" app/docs/evidence/CORTE6-CLIENT-AUTH-IDEMPOTENCY-LATEST.json
+          cp "$OUT/readback.source-safe.json" app/docs/evidence/CORTE6-CLIENT-AUTH-READBACK-LATEST.json
+          cp "$OUT/client-runtime.source-safe.json" app/docs/evidence/CORTE6-CLIENT-AUTH-RUNTIME-LATEST.json
+          cp "$OUT/rollback-proof.source-safe.json" app/docs/evidence/CORTE6-CLIENT-AUTH-ROLLBACK-PROOF-LATEST.json
+          cp "$OUT/materialization-evidence.json" app/docs/evidence/CORTE6-CLIENT-AUTH-MATERIALIZATION-LATEST.json
+          node <<'NODE'
+          const fs=require('fs'),p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8'));
+          r.enabled=false;r.consumed=true;r.status='consumed_pass';r.consumedAt=new Date().toISOString();
+          r.decision='PASS_C6_CLIENT_AUTH_MATERIALIZED_AND_RUNTIME_VALIDATED';
+          r.nextGate='UPDATE_CANONICAL_DOCS_THEN_REQUEST_FRESH_SINGLE_DEV_HOSTING_DEPLOY_AUTHORIZATION';
+          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n');
+          NODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CORTE6-CLIENT-AUTH-*-LATEST.json "$REQUEST"
+          git commit -m 'evidence: C6 Client Auth materialized and runtime PASS'
+          git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Roll back exact Auth write on any failure
+        if: failure()
+        run: |
+          set +e
+          echo rollback_after_failure > "$OUT/stage"
+          if [ -f "$PRIVATE_SNAPSHOT" ] && [ -f "$OUT/apply-completed" ]; then
+            export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
+            export CXORBIA_DEV_ROOT_URL="$ROOT_URL"
+            export CXORBIA_CLIENT_AUTH_PRIVATE_SNAPSHOT="$PRIVATE_SNAPSHOT"
+            export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
+            node tools/qa/cxorbia-c6-client-auth-materialization.mjs --mode=rollback > "$OUT/rollback-after-failure.source-safe.json" 2> "$OUT/rollback-after-failure.log"
+            echo $? > "$OUT/rollback-code"
+          else
+            echo '{"decision":"PASS_C6_CLIENT_AUTH_ROLLBACK_NOT_REQUIRED","restoredPreState":true,"authWrites":0,"credentialsExposed":false,"tokensExposed":false,"production":false}' > "$OUT/rollback-after-failure.source-safe.json"
+            echo 0 > "$OUT/rollback-code"
+          fi
+          exit 0
+
+      - name: Persist sanitized failure and rollback evidence
+        if: failure()
+        run: |
+          set -euo pipefail
+          stage="$(cat "$OUT/stage" 2>/dev/null || echo unknown)"
+          STAGE="$stage" node <<'NODE'
+          const fs=require('fs');
+          const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return null}};
+          const rollback=read(process.env.OUT+'/rollback-after-failure.source-safe.json');
+          const evidence={
+            schemaVersion:'cxorbia.c6.client-auth-materialization-failure.v1',generatedAt:new Date().toISOString(),
+            decision:rollback?.restoredPreState===true?'FAIL_C6_CLIENT_AUTH_MATERIALIZATION_ROLLED_BACK':'FAIL_C6_CLIENT_AUTH_MATERIALIZATION_ROLLBACK_UNPROVEN',
+            failedStage:String(process.env.STAGE||'unknown'),
+            snapshotDecision:read(process.env.OUT+'/snapshot.source-safe.json')?.decision||null,
+            applyDecision:read(process.env.OUT+'/apply.source-safe.json')?.decision||null,
+            idempotencyDecision:read(process.env.OUT+'/idempotency.source-safe.json')?.decision||null,
+            readbackDecision:read(process.env.OUT+'/readback.source-safe.json')?.decision||null,
+            clientRuntimeDecision:read(process.env.OUT+'/client-runtime.source-safe.json')?.decision||null,
+            rollback,
+            safety:{firestoreWrites:0,hrWrites:0,rulesDeploys:0,storageWrites:0,hostingDeploys:0,cloudRunDeploys:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,credentialsExposed:false,tokensExposed:false,merge:false,production:false}
+          };
+          fs.writeFileSync(process.env.OUT+'/failure-evidence.json',JSON.stringify(evidence,null,2)+'\n');
+          NODE
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp "$OUT/failure-evidence.json" app/docs/evidence/CORTE6-CLIENT-AUTH-MATERIALIZATION-FAILURE-LATEST.json
+          cp "$OUT/rollback-after-failure.source-safe.json" app/docs/evidence/CORTE6-CLIENT-AUTH-ROLLBACK-AFTER-FAILURE-LATEST.json
+          node <<'NODE'
+          const fs=require('fs'),p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8'));
+          const e=JSON.parse(fs.readFileSync(process.env.OUT+'/failure-evidence.json','utf8'));
+          r.enabled=false;r.consumed=true;r.status=e.decision.endsWith('ROLLED_BACK')?'consumed_fail_rolled_back':'consumed_fail_rollback_unproven';r.consumedAt=new Date().toISOString();r.decision=e.decision;
+          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n');
+          NODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CORTE6-CLIENT-AUTH-MATERIALIZATION-FAILURE-LATEST.json app/docs/evidence/CORTE6-CLIENT-AUTH-ROLLBACK-AFTER-FAILURE-LATEST.json "$REQUEST"
+          git commit -m 'evidence: C6 Client Auth materialization failure and rollback' || true
+          git push origin HEAD:docs-tya-v6-v71-audit || true
+
+      - name: Publish status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          STATE=success; DESC=PASS_C6_CLIENT_AUTH_MATERIALIZED
+          if [ '${{ job.status }}' != 'success' ]; then STATE=error; DESC=FAIL_C6_CLIENT_AUTH_MATERIALIZATION; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c6-client-auth/$DESC" -f description="$DESC" >/dev/null
+
+      - name: Cleanup private material
+        if: always()
+        run: rm -rf "$OUT"
