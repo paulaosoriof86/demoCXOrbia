@@ -20,8 +20,9 @@
 4. `ADDENDUM-MAESTRO-LOCK-ESTABILIDAD-ACUMULATIVA-CXORBIA-TYA-20260731.md`;
 5. `ADDENDUM-MAESTRO-C6-BASELINE-CANONICA-UNICA-Y-CUTOVER-20260801.md`;
 6. `CAMBIOS-BACKEND-ADDENDUM-C6-RECUPERACION-BASELINE-ACUMULATIVA-UNICA-20260801.md`;
-7. evidencias aprobadas de login, R20 full-history y auditoría C6 live domain/finance/shopper;
-8. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker, PR #7 y HEAD vivo.
+7. evidencia `CORTE6-UNIFIED-CUMULATIVE-RUNTIME-ROOT-FIX-LATEST.json`;
+8. evidencias aprobadas de login, R20 full-history y auditoría C6 live domain/finance/shopper;
+9. `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker, PR #7 y HEAD vivo.
 
 ## 3. Regla prevalente de fuente
 
@@ -38,7 +39,26 @@ Estos conteos describen la revisión actual y no son límites permanentes. El ru
 
 Agosto no puede aparecer ni heredarse de julio hasta que Paula agregue la fuente. Cuando aparezca, debe incorporarse por detección de HR, no por reloj del sistema ni por copia de otro mes.
 
-## 4. P0 humano vigente
+## 4. Regla prevalente de modelo financiero
+
+El modelo se selecciona por proyecto al crearlo:
+
+- `directo/local_invoicing`: facturación local; las regalías solo aplican si el proyecto las configura;
+- `delegado/delegated_coordination`: sin facturación local del proyecto; regalías 0; compensación mediante comisión de coordinación compartida.
+
+Cinépolis es proyecto delegado.
+
+Configuración vigente:
+
+- honorario Shopper GT: Q60;
+- honorario Shopper HN: L200;
+- regalías: 0;
+- comisión y reparto: configurables por proyecto, sin montos ni porcentajes inventados;
+- tratamiento tributario: específico del proyecto, no inferido.
+
+El contrato reusable es `app/adapters/tya-project-financial-model-contract-v1.js`.
+
+## 5. P0 humano vigente
 
 El build publicado abrió un carril reducido que:
 
@@ -49,7 +69,7 @@ El build publicado abrió un carril reducido que:
 
 El PASS técnico anterior queda supersedido como release PASS. Corte 6 no está congelado.
 
-## 5. Root fix de código
+## 6. Root fix de código
 
 El HEAD vivo recupera una sola entrada `authenticated-human-canonical`:
 
@@ -57,19 +77,28 @@ El HEAD vivo recupera una sola entrada `authenticated-human-canonical`:
 - Auth/claims para principal y alcance;
 - HR viva como autoridad operacional dinámica;
 - Firestore protegido como overlay exacto;
-- `tya-protected-auth-hr-authority-bridge-v2.js` preserva todos los periodos y visitas de cada revisión;
+- todos los periodos y visitas de cada revisión;
 - dominio, Shopper y Finanzas canónicos;
+- modelo financiero directo/delegado por proyecto;
+- Cinépolis delegado, sin regalías;
 - comparativo de todos los periodos HR;
-- honorario contractual Q60 GT / L200 HN;
 - sin módulos paralelos ni shell reducido.
 
-No se tocaron `app/modules/*`. No hubo deploy ni writes.
+No hubo deploy ni writes de proveedor.
 
-## 6. Gate vivo
+## 7. Gate vivo
 
-`STATIC ROOT CONTRACT → READ-ONLY AUTH STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → HISTORICAL ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE CONFIG → 3 RELOADS → EVIDENCE`.
+`STATIC ROOT CONTRACT → READ-ONLY AUTH STAFF/CLIENT/SHOPPER → HR ALL DETECTED PERIODS → KPI=PHASE=DRILL → HISTORICAL ALL PERIODS → PROFILE/CERT/HISTORY → CLIENT → FINANCE SOURCE + PROJECT MODEL → 3 RELOADS → EVIDENCE`.
 
-## 7. Después del PASS
+El gate financiero debe demostrar:
+
+- selector directo/delegado al crear proyecto;
+- Cinépolis delegado;
+- regalías Cinépolis 0;
+- comisión compartida sin valores inventados;
+- regalías calculadas únicamente para proyectos directos.
+
+## 8. Después del PASS
 
 Solo después del PASS local/read-only:
 
@@ -80,6 +109,6 @@ Solo después del PASS local/read-only:
 5. Paula agrega agosto a HR;
 6. reconciliación agosto → disponibles → postulaciones → gate multirol → cutover autorizado.
 
-## 8. Estado seguro
+## 9. Estado seguro
 
 Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos writes 0; Hosting deploy 0 en este bloque; merge false; producción false.
