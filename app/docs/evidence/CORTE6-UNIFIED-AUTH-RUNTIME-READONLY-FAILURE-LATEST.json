@@ -1,10 +1,9 @@
 {
-  "schemaVersion": "cxorbia.c6.unified-human-auth-browser-diagnostic-failure.v2",
-  "generatedAt": "2026-08-02T04:22:09.908Z",
+  "schemaVersion": "cxorbia.c6.unified-human-auth-browser-diagnostic-failure.v3",
+  "generatedAt": "2026-08-02T04:25:35.937Z",
   "decision": "FAIL_C6_UNIFIED_HUMAN_AUTH_BROWSER_DIAGNOSTIC",
   "failedStage": "unified_human_auth_runtime",
-  "credentialSelectionDecision": "PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION",
-  "errorTail": null,
+  "errorTail": "node:internal/modules/run_main:107\n    triggerUncaughtException(\n    ^\n\npage.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#cxIntegratedAuthStep') to be visible\n\n    at loginPrincipal (/home/runner/work/demoCXOrbia/demoCXOrbia/tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs:140:14)\n    at async file:///home/runner/work/demoCXOrbia/demoCXOrbia/tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs:214:17 {\n  name: 'TimeoutError'\n}\n\nNode.js v24.18.0\n",
   "safety": {
     "hostingDeploys": 0,
     "cloudRunDeploys": 0,
