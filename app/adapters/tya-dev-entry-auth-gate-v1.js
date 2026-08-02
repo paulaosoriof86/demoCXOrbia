@@ -1,4 +1,4 @@
-/* CXOrbia Corte 6 — DEV entry lane split v10.
+/* CXOrbia Corte 6 — DEV entry lane split v11.
    Human visual keeps native role cards and HR 14/616/208 authority.
    Technical Auth exists only behind the explicit private E2E query gate.
    No module/core patches, provider writes, merge or production. */
@@ -18,6 +18,7 @@ window.CX=window.CX||{};
   const technicalNamespace=params.get('cxTechnicalAuthNamespace')==='shopper'?'shopper':'staff';
   const backendCfg=CX.BACKEND||{};
   let patched=false,statusObserver=null,humanRestoreTimer=null,humanRestoreStartedAt=0;
+  let humanShellObserver=null,humanRepairScheduled=false;
 
   function parseHumanSession(raw){
     try{const s=typeof raw==='string'?JSON.parse(raw||'null'):raw;if(!s||!['admin','cliente','shopper'].includes(s.role))return null;return {role:s.role,user:s.user||null,view:s.view||null,testRole:s.testRole||null};}catch(_){return null;}
@@ -57,13 +58,32 @@ window.CX=window.CX||{};
     window.CX_C4_EMPTY_SHELL_STATE={active:false,role:CX.session?.role||null,projects:14,periodId:CX.data.currentPeriodId||null,projectId:CX.data.currentProjectId||null,staleShell:false,reason:reason||'human-lane-preserved'};
     return true;
   }
+  function repairVisibleHumanShell(reason){
+    if(!humanVisualEnabled||!validCanonicalBaseline()||!currentOrInitialHumanSession()||!visibleEmptyShell()||typeof CX.router?.mount!=='function')return false;
+    primeHumanSession();preserveHumanDataSource(reason||'repair-visible-human-shell');
+    let error=null;
+    try{CX.router.mount();}catch(e){error=String(e?.message||e);}
+    const repaired=!visibleEmptyShell();
+    window.CX_HUMAN_SESSION_CONTINUITY={restored:repaired,repairAttempt:true,role:CX.session?.role||null,canonicalData:true,emptyShellVisible:visibleEmptyShell(),credentials:false,technicalAuth:false,error,reason:reason||'repair-visible-human-shell',at:new Date().toISOString()};
+    return repaired;
+  }
+  function scheduleHumanShellRepair(reason){
+    if(humanRepairScheduled)return;humanRepairScheduled=true;
+    setTimeout(()=>{humanRepairScheduled=false;repairVisibleHumanShell(reason||'scheduled-visible-shell-repair');},0);
+  }
+  function installHumanShellObserver(){
+    if(!humanVisualEnabled||humanShellObserver||!document.body)return;
+    humanShellObserver=new MutationObserver(()=>{if(visibleEmptyShell())scheduleHumanShellRepair('empty-shell-mutation');});
+    humanShellObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
+    scheduleHumanShellRepair('observer-installed');
+  }
   function restoreHumanSessionAndEnter(reason){
     if(!humanVisualEnabled||!validCanonicalBaseline()||!CX.session||!CX.app)return false;
     const saved=currentOrInitialHumanSession();if(!saved)return false;
     applySession(saved);preserveHumanDataSource(reason||'restore-human-session');
     const app=document.getElementById('app');
-    const stale=visibleEmptyShell();
-    if(app&&(!app.classList.contains('on')||stale)&&typeof CX.app.enter==='function')CX.app.enter();
+    if(app&&!app.classList.contains('on')&&typeof CX.app.enter==='function')CX.app.enter();
+    if(visibleEmptyShell())repairVisibleHumanShell((reason||'restore-human-session')+'-router-remount');
     const restored=!!(document.getElementById('app')?.classList.contains('on'))&&!visibleEmptyShell();
     window.CX_HUMAN_SESSION_CONTINUITY={restored,role:CX.session.role,canonicalData:true,emptyShellVisible:visibleEmptyShell(),credentials:false,technicalAuth:false,reason:reason||'restore-human-session',at:new Date().toISOString()};
     return restored;
@@ -72,24 +92,25 @@ window.CX=window.CX||{};
   function startHumanRestoreLoop(reason){
     if(!humanVisualEnabled||humanRestoreTimer||!currentOrInitialHumanSession())return;
     humanRestoreStartedAt=Date.now();
-    const attempt=()=>{if(restoreHumanSessionAndEnter(reason||'human-restore-loop')){stopHumanRestoreLoop();return;}if(Date.now()-humanRestoreStartedAt>60000){stopHumanRestoreLoop();window.CX_HUMAN_SESSION_CONTINUITY={restored:false,timeout:true,canonicalData:validCanonicalBaseline(),emptyShellVisible:visibleEmptyShell(),reason:reason||'human-restore-loop',at:new Date().toISOString()};}};
+    const attempt=()=>{repairVisibleHumanShell((reason||'human-restore-loop')+'-pre');if(restoreHumanSessionAndEnter(reason||'human-restore-loop')){stopHumanRestoreLoop();return;}if(Date.now()-humanRestoreStartedAt>60000){stopHumanRestoreLoop();window.CX_HUMAN_SESSION_CONTINUITY={restored:false,timeout:true,canonicalData:validCanonicalBaseline(),emptyShellVisible:visibleEmptyShell(),reason:reason||'human-restore-loop',at:new Date().toISOString()};}};
     attempt();if(!humanRestoreTimer)humanRestoreTimer=setInterval(attempt,250);
   }
 
   function configureHumanLane(){
-    backendCfg.enabled = false;
+    backendCfg.enabled=false;
     backendCfg.previewMode=true;
-    backendCfg.humanVisualSourceSafe = true;
+    backendCfg.humanVisualSourceSafe=true;
     backendCfg.readOnly=true;backendCfg.writeMode='disabled';backendCfg.enableDataWrites=false;backendCfg.enableOperationalWrites=false;backendCfg.allowEmptyBackend=false;backendCfg.failClosedOnReadError=true;backendCfg.preserveCxDataInterface=true;
-    if(backendCfg.devPreviewAuth) backendCfg.devPreviewAuth.enabled = false;
-    window.CX_BACKEND_PREVIEW_LANE = 'source-safe-human-visual';
+    if(backendCfg.devPreviewAuth)backendCfg.devPreviewAuth.enabled=false;
+    window.CX_BACKEND_PREVIEW_LANE='source-safe-human-visual';
     primeHumanSession();
-    window.CX_DEV_ENTRY_AUTH_GATE={applied:true,version:10,mode:'native-direct-role-entry',humanVisual:true,visibleRoleSelector:true,usernamePasswordVisible:false,technicalAuthEnabled:false,integratedFirebaseLoginDisabled:true,backendFirebaseDisabledForHumanVisual:true,emptyBackendShellDisabled:true,staleEmptyShellRemounted:true,humanSessionContinuity:true,humanSessionPrimedBeforeProjectEvents:true,humanSessionRestoreWaitsForCanonicalData:true,hrCanonicalAuthorityPreserved:true,canonicalBaselineRequired:{periods:14,visits:616,shoppers:208},providerWrites:0,writes:false,production:false,at:new Date().toISOString()};
+    window.CX_DEV_ENTRY_AUTH_GATE={applied:true,version:11,mode:'native-direct-role-entry',humanVisual:true,visibleRoleSelector:true,usernamePasswordVisible:false,technicalAuthEnabled:false,integratedFirebaseLoginDisabled:true,backendFirebaseDisabledForHumanVisual:true,emptyBackendShellDisabled:true,staleEmptyShellRemounted:true,emptyShellMutationObserver:true,humanSessionContinuity:true,humanSessionPrimedBeforeProjectEvents:true,humanSessionRestoreWaitsForCanonicalData:true,hrCanonicalAuthorityPreserved:true,canonicalBaselineRequired:{periods:14,visits:616,shoppers:208},providerWrites:0,writes:false,production:false,at:new Date().toISOString()};
     preserveHumanDataSource('configure-human-lane');
-    const ready=reason=>{primeHumanSession();preserveHumanDataSource(reason);startHumanRestoreLoop(reason);};
+    const ready=reason=>{primeHumanSession();preserveHumanDataSource(reason);installHumanShellObserver();startHumanRestoreLoop(reason);scheduleHumanShellRepair(reason+'-repair');};
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>ready('dom-ready-human-lane'),{once:true});else ready('immediate-human-lane');
     window.addEventListener('cx:live-source-updated',()=>ready('live-source-updated'));
     window.addEventListener('load',()=>ready('window-load-human-lane'),{once:true});
+    if(document.body)installHumanShellObserver();
   }
 
   function configureTechnicalLane(){backendCfg.enabled=true;backendCfg.humanVisualSourceSafe=false;backendCfg.allowEmptyBackend=true;if(backendCfg.devPreviewAuth)backendCfg.devPreviewAuth.enabled=true;window.CX_BACKEND_PREVIEW_LANE='protected-technical-e2e';}
@@ -102,7 +123,7 @@ window.CX=window.CX||{};
     card.insertBefore(form,card.querySelector('.login-devfor')||card.querySelector('.login-poweredby')||null);
     const login=form.querySelector('#cxDevEntryLogin'),password=form.querySelector('#cxDevEntryPassword'),error=form.querySelector('#cxDevEntryError'),submit=form.querySelector('#cxDevEntrySubmit');
     form.addEventListener('submit',async ev=>{ev.preventDefault();error.style.display='none';const u=String(login.value||'').trim(),p=String(password.value||'');if(!u||!p){error.textContent='Completa las credenciales técnicas.';error.style.display='block';return;}submit.disabled=true;submit.textContent='Validando...';try{await CX.backendAuth.authenticate(u,p,technicalNamespace);password.value='';login.value='';submit.textContent='Cargando...';CX.app?.enter?.();}catch(err){password.value='';error.textContent=authErrorMessage(err);error.style.display='block';submit.disabled=false;submit.textContent='Validar';}});
-    window.CX_DEV_ENTRY_AUTH_GATE={applied:true,version:10,mode:'technical-auth-e2e-isolated',humanVisual:false,visibleRoleSelector:false,usernamePasswordVisible:true,technicalAuthEnabled:true,technicalNamespace,namespaceUserSelectable:false,firebaseAuthAuthorityPreserved:true,credentialsEmbedded:false,writes:false,production:false,at:new Date().toISOString()};return true;
+    window.CX_DEV_ENTRY_AUTH_GATE={applied:true,version:11,mode:'technical-auth-e2e-isolated',humanVisual:false,visibleRoleSelector:false,usernamePasswordVisible:true,technicalAuthEnabled:true,technicalNamespace,namespaceUserSelectable:false,firebaseAuthAuthorityPreserved:true,credentialsEmbedded:false,writes:false,production:false,at:new Date().toISOString()};return true;
   }
   function patchTechnicalLane(){suppressTechnicalStatus();if(patched||!CX.app||!CX.backendAuth)return false;const show=typeof CX.app.showLogin==='function'?CX.app.showLogin.bind(CX.app):null,enter=typeof CX.app.enter==='function'?CX.app.enter.bind(CX.app):null;CX.app.showLogin=function(){const r=show?.();renderTechnicalAuth();return r;};CX.app.enter=function(){suppressTechnicalStatus();const r=enter?.();if(!CX.backendAuth?.isReady?.())setTimeout(renderTechnicalAuth,0);return r;};patched=true;return true;}
 
