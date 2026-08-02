@@ -108,13 +108,17 @@ warn(projectWizard.includes('value="regional"'),
   'C6_REGIONAL_FRONTEND_OPTION_PENDING_CLAUDE',
   'backend contract supports regional; wizard option remains a documented frontend delta');
 must(projectModel.includes("return 'regional'") &&
+     projectModel.includes("return 'unconfigured'") &&
      projectModel.includes("project.modelo=model") &&
+     projectModel.includes("project.modelo='unconfigured'") &&
      projectModel.includes('project.regalias=0') &&
      projectModel.includes("project.compensationModel=model==='regional'") &&
+     projectModel.includes("project.compensationModel='project_configuration_required'") &&
      projectModel.includes('wrapAddProject') &&
      projectModel.includes("projectClassificationSource:'project_configuration_not_name'") &&
+     projectModel.includes('defaultModelAssumed:false') &&
      !projectModel.includes('if(isCinepolis(project))'),
-  'C6_PROJECT_MODEL_CONFIGURABLE_NOT_NAME_HARDCODED');
+  'C6_PROJECT_MODEL_CONFIGURABLE_FAIL_CLOSED_NOT_NAME_HARDCODED');
 must(projectModel.includes("'delegado','delegated'") &&
      projectModel.includes("'regional','regional_coordination'") &&
      projectModel.includes("'directo','direct','local'"),
@@ -123,14 +127,17 @@ must(projectModel.includes("'delegado','delegated'") &&
 must(financeCore.includes("const regal=p.modelo==='directo'?") &&
      financeCore.includes("const isr=p.modelo==='directo'?"),
   'C6_ROYALTIES_AND_LOCAL_TAX_DIRECT_ONLY');
-must(delegatedGuard.includes('shopperHonorariumUsedAsIncomeFallback:false') &&
+must(delegatedGuard.includes("['delegado','regional','unconfigured']") &&
+     delegatedGuard.includes('defaultModelAssumed:false') &&
+     delegatedGuard.includes('shopperHonorariumUsedAsIncomeFallback:false') &&
      delegatedGuard.includes('row.regal=0') &&
      delegatedGuard.includes('row.isr=0') &&
      delegatedGuard.includes("source:'project.honRecibe.explicit_per_visit'") &&
      delegatedGuard.includes("source:'project_configuration_required'") &&
+     delegatedGuard.includes("source:'project_model_configuration_required'") &&
      delegatedGuard.includes('row.financialReviewRequired=!ready') &&
      delegatedGuard.includes('row.valuesInvented=false'),
-  'C6_DELEGATED_INCOME_FROM_COMMISSION_NOT_SHOPPER_FALLBACK');
+  'C6_DELEGATED_AND_UNCONFIGURED_INCOME_FAIL_CLOSED');
 must(projectConfig.includes('honorario:{GT:60,HN:200}') &&
      projectConfig.includes("modelo:'delegado'") &&
      projectConfig.includes("billingModel:'delegated_coordination'") &&
