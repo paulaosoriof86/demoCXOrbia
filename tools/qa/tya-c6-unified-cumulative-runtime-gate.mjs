@@ -21,6 +21,7 @@ const index = read('app/index-backend-dev.html');
 const preview = read('app/core/backend-config-preview-dev.js');
 const protectedMode = read('app/core/backend-protected-dev-mode.js');
 const auth = read('app/core/backend-browser-auth.js');
+const technical = read('app/adapters/tya-dev-technical-auth-e2e-v1.js');
 const hrBridge = read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
 const domain = read('app/adapters/tya-c6-domain-consistency-bridge.js');
 const shopperPortal = read('app/adapters/tya-canonical-shopper-portal-v2.js');
@@ -42,6 +43,10 @@ must(!index.includes('src="adapters/tya-dev-full-visual-bridge.js"'),
 must(index.includes('src="core/backend-browser-auth.js"') &&
      index.includes('src="adapters/tya-protected-auth-hr-authority-bridge-v2.js"'),
   'C6_PRODUCT_LOGIN_AND_HR_AUTHORITY');
+must(index.includes('src="adapters/tya-dev-technical-auth-e2e-v1.js"') &&
+     technical.includes("params.get('cxTechnicalAuthE2E')===TECHNICAL") &&
+     technical.includes('humanRouteAffected:false'),
+  'C6_TECHNICAL_E2E_PRESERVED_HUMAN_UNAFFECTED');
 must(index.includes('src="adapters/tya-c6-domain-consistency-bridge.js"') &&
      index.includes('src="adapters/tya-canonical-shopper-portal-v2.js"') &&
      index.includes('src="adapters/tya-canonical-finance-read-model-v2.js"') &&
@@ -97,7 +102,7 @@ const forbiddenWriteSignals = [
   /paymentsWrites\s*:\s*[1-9]/,
   /hrWrites\s*:\s*[1-9]/
 ];
-const touched = [index, preview, protectedMode, auth, hrBridge, domain, shopperPortal, unified, projectConfig].join('\n');
+const touched = [index, preview, protectedMode, auth, technical, hrBridge, domain, shopperPortal, unified, projectConfig].join('\n');
 must(forbiddenWriteSignals.every(re => !re.test(touched)), 'C6_READONLY_NO_PRODUCTION');
 
 if (process.exitCode) {
