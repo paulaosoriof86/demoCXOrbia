@@ -12,7 +12,7 @@ let checkpoint='bootstrap',browser=null;
 
 const mark=x=>{checkpoint=x;};
 const assert=(ok,msg)=>{if(!ok)throw new Error(msg);};
-const safe=v=>String(v||'unknown').replace(/[^A-Za-z0-9_.:/=-]+/g,'_').replace(/_+/g,'_').slice(0,900);
+const safe=v=>String(v||'unknown').replace(/[^A-Za-z0-9_.:/=-]+/g,'_').replace(/_+/g,'_').slice(0,1200);
 function persist(error){if(stageFile)try{fs.writeFileSync(stageFile,'human_data__'+safe(checkpoint)+'__'+safe(error?.message||error)+'\n','utf8');}catch{}}
 function output(value){if(outputFile){fs.mkdirSync(path.dirname(outputFile),{recursive:true});fs.writeFileSync(outputFile,JSON.stringify(value,null,2)+'\n','utf8');}}
 
@@ -23,11 +23,16 @@ async function state(page,label){
     const rail=document.getElementById('rail')?.innerText||'';
     const app=document.getElementById('app'),login=document.getElementById('login');
     let stored=null;try{stored=JSON.parse(localStorage.getItem('cx_session')||'null');}catch{}
+    let programs=-1,periodsForCurrent=-1,visibleProjects=-1;
+    try{programs=window.CX?.data?.programs?.().length??-1;}catch{}
+    try{periodsForCurrent=window.CX?.data?.periodsForProgram?.(window.CX?.data?.currentProjectId)?.length??-1;}catch{}
+    try{visibleProjects=window.CX?.router?.resolveVisibleProjects?.(window.CX?.session?.role)?.length??-1;}catch{}
     return {
       label,url:location.href,role:window.CX?.session?.role||null,storedRole:stored?.role||null,
       appOn:app?.classList.contains('on')===true,loginHidden:login?.classList.contains('hidden')===true,
       periods:Array.isArray(d?.projects)?d.projects.length:-1,visits:Array.isArray(d?._visitas)?d._visitas.length:-1,
       shoppers:Array.isArray(d?.shoppers)?d.shoppers.length:-1,currentProjectId:d?.currentProjectId||null,currentPeriodId:d?.currentPeriodId||null,
+      programs,periodsForCurrent,visibleProjects,
       dataStatus:ds?.status||null,dataMode:ds?.mode||null,sourceRef:ds?.sourceRef||null,
       emptyShell:window.CX_C4_EMPTY_SHELL_STATE?.active===true,backendEmpty:window.CX_BACKEND_LAST_STATE?.empty===true,
       blockedVisible:view.includes('Fuente de datos no disponible'),
@@ -44,11 +49,18 @@ function validate(s,label){
   assert(s.periods===14,label+':periods='+s.periods);assert(s.visits===616,label+':visits='+s.visits);assert(s.shoppers===208,label+':shoppers='+s.shoppers);
   assert(s.currentProjectId&&s.currentPeriodId,label+':context_missing');assert(s.dataStatus==='ready',label+':status='+s.dataStatus);
   assert(!s.emptyShell,label+':empty_shell');assert(!s.backendEmpty,label+':backend_empty');assert(!s.blockedVisible,label+':blocked_visible');
-  assert(!s.noProjectsVisible,label+':no_projects_visible:'+JSON.stringify({view:s.viewExcerpt,rail:s.railExcerpt,role:s.role,storedRole:s.storedRole,continuity:s.continuity}));
-  assert(!s.noPeriodsVisible,label+':no_periods_visible:'+JSON.stringify({rail:s.railExcerpt,currentProjectId:s.currentProjectId,currentPeriodId:s.currentPeriodId}));
+  assert(!s.noProjectsVisible,label+':no_projects_visible:'+JSON.stringify(s));
+  assert(!s.noPeriodsVisible,label+':no_periods_visible:'+JSON.stringify(s));
 }
 async function waitCanonical(page,label){try{await page.waitForFunction(()=>{const d=window.CX?.data,ds=window.CX?.dataSource;return d?.projects?.length===14&&d?._visitas?.length===616&&d?.shoppers?.length===208&&d.currentProjectId&&d.currentPeriodId&&ds?.status==='ready';},{timeout:60000});}catch{throw new Error(label+':canonical_timeout:'+JSON.stringify(await state(page,label)));}}
 async function waitApp(page,label){try{await page.waitForFunction(()=>document.getElementById('app')?.classList.contains('on')===true,{timeout:60000});}catch{throw new Error(label+':app_timeout:'+JSON.stringify(await state(page,label)));}}
+async function diagnoseVisibleShell(page,label,before){
+  if(!before.noProjectsVisible&&!before.noPeriodsVisible)return;
+  const mountResult=await page.evaluate(()=>{try{return {called:true,result:window.CX?.router?.mount?.()??null};}catch(error){return {called:true,error:String(error?.message||error)};}});
+  await page.waitForTimeout(100);
+  const after=await state(page,label+'_manual_mount_probe');
+  throw new Error(label+':visible_shell_probe:'+JSON.stringify({before,mountResult,after}));
+}
 
 try{
   mark('launch');const executablePath=chromium.executablePath();assert(executablePath&&fs.existsSync(executablePath),'chromium_missing');
@@ -61,19 +73,19 @@ try{
   const errors=[];page.on('pageerror',e=>errors.push(String(e?.message||e)));
   mark('goto');await page.goto(root+'/index-backend-dev.html',{waitUntil:'domcontentloaded',timeout:60000});
   for(const role of ['admin','cliente','shopper'])await page.waitForSelector(`.role-btn[data-role="${role}"]`,{state:'visible',timeout:30000});
-  await waitCanonical(page,'before_entry');const before=await state(page,'before_entry');validate(before,'before_entry');
+  await waitCanonical(page,'before_entry');const before=await state(page,'before_entry');await diagnoseVisibleShell(page,'before_entry',before);validate(before,'before_entry');
   const url=new URL(page.url());assert(url.searchParams.get('cxBackendPreview')==='YES_PAULA_20260628_PREVIEW_DEV','preview_missing');assert(url.searchParams.get('cxProjectId')==='cinepolis','project_missing');
   assert(!url.searchParams.has('cxProtectedRuntime')&&!url.searchParams.has('cxTechnicalAuthE2E'),'technical_lane_leaked');
   const body=await page.locator('body').innerText();assert(body.includes('Selecciona un perfil para entrar'),'role_copy_missing');assert(body.includes('Administración / Coordinación')&&body.includes('Portal del Cliente')&&body.includes('Shopper / Evaluador'),'role_labels_missing');
   assert(await page.locator('#cxDevEntryAuth,#cxIntegratedAuthStep,#cxIntegratedAuthLogin,#cxIntegratedAuthPassword').count()===0,'credentials_visible');
   assert(before.gate?.mode==='native-direct-role-entry'&&!before.gate?.technicalAuthEnabled,'human_gate_invalid');assert(before.canonical?.lane==='source-safe-human-visual'&&!before.canonical?.protectedRuntime,'canonical_lane_invalid');
 
-  mark('click_admin');await page.click('.role-btn[data-role="admin"]');await waitApp(page,'entry');await waitCanonical(page,'entry');const first=await state(page,'entry');validate(first,'entry');
+  mark('click_admin');await page.click('.role-btn[data-role="admin"]');await waitApp(page,'entry');await waitCanonical(page,'entry');const first=await state(page,'entry');await diagnoseVisibleShell(page,'entry',first);validate(first,'entry');
   assert(first.role==='admin'&&first.storedRole==='admin','admin_session_not_saved:'+JSON.stringify(first));
   const reloads=[];
   for(let i=1;i<=3;i++){
     mark('reload_'+i);await page.reload({waitUntil:'domcontentloaded',timeout:60000});await waitCanonical(page,'reload_'+i);await waitApp(page,'reload_'+i);
-    const s=await state(page,'reload_'+i);validate(s,'reload_'+i);assert(s.role==='admin'&&s.storedRole==='admin','reload_'+i+':session_not_preserved:'+JSON.stringify(s));assert(s.currentPeriodId===first.currentPeriodId,'reload_'+i+':period_changed');reloads.push(s);
+    const s=await state(page,'reload_'+i);await diagnoseVisibleShell(page,'reload_'+i,s);validate(s,'reload_'+i);assert(s.role==='admin'&&s.storedRole==='admin','reload_'+i+':session_not_preserved:'+JSON.stringify(s));assert(s.currentPeriodId===first.currentPeriodId,'reload_'+i+':period_changed');reloads.push(s);
   }
   const relevant=errors.filter(m=>/tya-dev-entry|cxDevEntry|native-direct-role-entry|empty shell|CX_DATA|source-safe-human/i.test(m));assert(!relevant.length,'runtime_errors:'+relevant.join('|'));
   const result={schemaVersion:'cxorbia.corte6.human-data-preservation-browser-gate.v1',generatedAt:new Date().toISOString(),decision:'PASS_C6_HUMAN_DIRECT_ROLE_AND_CANONICAL_DATA_14_616_208',root,local:isLocal,directRoleEntry:true,credentialsVisible:false,canonical:{periods:first.periods,visits:first.visits,shoppers:first.shoppers,currentProjectId:first.currentProjectId,currentPeriodId:first.currentPeriodId},reloads:reloads.map(s=>({periods:s.periods,visits:s.visits,shoppers:s.shoppers,currentProjectId:s.currentProjectId,currentPeriodId:s.currentPeriodId,dataStatus:s.dataStatus,emptyShell:s.emptyShell,role:s.role})),emptyShell:false,dataSourceBlocked:false,protectedRuntimeInHumanLane:false,technicalAuthInHumanLane:false,writes:false,production:false};
