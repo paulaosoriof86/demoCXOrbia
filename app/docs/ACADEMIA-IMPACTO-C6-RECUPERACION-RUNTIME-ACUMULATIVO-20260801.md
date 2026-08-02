@@ -30,12 +30,12 @@ El control de calidad debe separar:
 6. Un Shopper debe recuperar sus visitas por identidad exacta.
 7. `ownVisits=0` con visitas asignadas es un bloqueo, no un estado aceptable.
 8. Una conciliación de arranque debe ser idempotente.
-9. Los eventos puntuales requieren una recuperación independiente cuando el orden de carga puede variar.
+9. Los eventos puntuales requieren recuperación independiente cuando el orden de carga puede variar.
 10. Las lecturas externas transitorias deben reintentarse de forma acotada y fail-closed.
 11. Un reintento nunca debe convertirse en write o deploy automático.
 12. Una release publicada no equivale a gate remoto completo.
 13. La paridad de assets no sustituye la prueba por rol.
-14. El modelo financiero se obtiene de configuración del proyecto.
+14. El modelo financiero se obtiene de la configuración del proyecto.
 15. Las regalías solo aplican con facturación local explícita.
 16. El honorario Shopper no es ingreso delegado.
 
