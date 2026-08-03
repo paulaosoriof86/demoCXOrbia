@@ -1,7 +1,7 @@
 # COMPARACIÓN DE SHAS PHASE A — BLOQUE 2 C6 DEPLOY TÉCNICO
 
 **Fecha:** 2026-08-03  
-**Estado:** `PASS_11_LIVE_BLOBS_MATCH_C6_DEPLOYED_SOURCE_LOCK__VISUAL_COMPOSITION_STILL_PENDING`
+**Estado:** `PASS_13_LIVE_BLOBS_MATCH_C6_DEPLOYED_SOURCE_LOCK__VISUAL_COMPOSITION_STILL_PENDING`
 
 ## 1. Autoridad técnica
 
@@ -38,8 +38,6 @@ Esta comparación demuestra identidad fuente con el deploy técnico. No sustituy
 | `app/core/finanzas-core.js` | `6d3f46f003f3319f96cfd759b8b5ed52afc6a125` | `6d3f46f003f3319f96cfd759b8b5ed52afc6a125` | EXACTO | `PRESERVAR_C6_DEPLOYED_SHA` |
 | `app/core/liquidacion.js` | `dde322890eb8821b822215905b82a22102d73d2c` | `dde322890eb8821b822215905b82a22102d73d2c` | EXACTO | `PRESERVAR_C6_DEPLOYED_SHA` |
 | `app/modules/cliente.js` | `4e5981081bdd01de368c4f412ed476244426634e` | `4e5981081bdd01de368c4f412ed476244426634e` | EXACTO | `PRESERVAR_C6_DEPLOYED_SHA` |
-
-El título del estado se mantiene conservador aunque la tabla contiene trece comparaciones exactas; ninguna se convierte automáticamente en aprobación humana final.
 
 ## 3. Dictamen
 
