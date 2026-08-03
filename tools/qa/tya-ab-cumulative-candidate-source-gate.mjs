@@ -77,7 +77,8 @@ const requiredMarkers=[
   'fixtureAuthority:false','localStorageAuthority:false','makeEnabled:false','geminiEnabled:false',
   'providerWrites:0','production:false',
   "new Set(['cl-prospecto-norte','cl-prospecto-salud'])",
-  's.seed=()=>[]','PRESERVE'
+  's.seed=()=>[]',
+  "modulePolicy:'preserve-approved-ui-compose-canonical-runtime'"
 ];
 for(const marker of requiredMarkers){adapter.includes(marker)?pass('ADAPTER_MARKER',marker):fail('ADAPTER_MARKER_MISSING',marker);}
 const forbidden=[
@@ -87,8 +88,8 @@ const forbidden=[
   /localStorage\.(setItem|removeItem|clear)\s*\(/,
   /location\.reload\s*\(/,
   /\.deploy\s*\(/,
-  /make\.com/i,
-  /gemini/i
+  /https?:\/\/[^'"\s]*make\.com/i,
+  /(?:GoogleGenerativeAI|generativelanguage\.googleapis|CX\.gemini\s*[.(])/i
 ];
 for(const pattern of forbidden){
   if(pattern.test(adapter))fail('ADAPTER_FORBIDDEN_EXECUTABLE',String(pattern));
