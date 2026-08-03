@@ -1,137 +1,115 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-02  
-**Estado:** `A_PLUS_B_SOURCE_ASSEMBLED__PRECHECK_PASS__EXACT_CHECKOUT_GATE_PENDING__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `A_PLUS_B_VISIBLE_ON_SINGLE_DEV__SOURCE_AND_REMOTE_CORE_PASS__SEMANTIC_GATE_FALSE_NEGATIVE_FIXED_SOURCE_ONLY__VISUAL_REVIEW_OPEN`
 
 ## 1. Decisión prevalente
 
-La candidata acumulativa A+B ya fue ensamblada sobre la rama viva. No se abre otra candidata, rama, PR, shell o metodología. El siguiente paso no es continuar a C+D: primero se ejecutan los gates exactos y Paula valida visualmente A+B sobre un único DEV.
+La candidata acumulativa única ya está visible en el Hosting DEV existente. No se crea otra candidata, rama, PR, shell ni metodología.
 
-Fuentes vivas obligatorias:
+URL exacta:
 
-- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
-- `MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json`;
-- `EVIDENCE-A-B-CUMULATIVE-SOURCE-PRECHECK-20260802.json`;
-- `CAMBIOS-BACKEND-ADDENDUM-A-B-COMPOSICION-MANIFEST-GATES-20260802.md`;
-- `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`.
+`https://cxorbia-backend-dev.web.app/index-backend-dev.html`
 
-## 2. Repositorio y estado protegido
+La revisión humana se realiza sobre este mismo build. No se avanza a Operación/Shopper ni se congela producción antes de cerrar el Checkpoint Visual 1.
+
+## 2. Repositorio y build
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- HEAD anterior al delta funcional: `754639e0c0682c638cc799fd26bfcd2c744b0b6a`;
-- producción `tya-plataforma`: intacta;
-- Hosting DEV durante este bloque: 0;
-- agosto 2026: ausente en HR, no inventado.
+- source lock desplegado: `b908daa8c9cce0bd1c06cb05e3aceb9ff1b98beb`;
+- trigger del macro: `32506d18507ed7b9b6729eca89137f37f83d78ee`;
+- evidencia STOP_RETRY: `7f5b06a98403d9140a75c81ff656cd2321091f68`;
+- root fix QA source-only: `68f1b49b3c03d53e0d9c74d15d0f55e286653a0e`;
+- archivos publicados: 2320;
+- Hosting DEV deploys: 1;
+- segundo deploy: 0;
+- producción `tya-plataforma`: intacta.
 
-## 3. Proveniencia recuperada
+## 3. PASS demostrados
 
-- M1/Corte 1 visual aprobado: `67c0943260f076f5686284ac509458ed5fd34dbd`;
-- Corte 2A/V174 no cambió módulos A+B;
-- V182 frozen preservado en `app/app.js` y `app/styles/layout.css`;
-- módulos Dashboard/CRM/Clientes/Comercial/Marketing/Rutas conservan sus blobs históricos, sin reescritura durante la reconstrucción;
-- fixes C6 de Auth, HR, Shopper, Cliente y Finanzas se preservan como dependencias técnicas.
+### Source/predeploy
 
-## 4. Delta funcional aplicado
+- manifest A+B y 23 Git blobs;
+- orden de carga;
+- sintaxis;
+- unit gate 23/23;
+- adapter sin provider calls;
+- static cumulative;
+- Shopper new-tab root fix static.
 
-### `app/adapters/tya-ab-cumulative-composition-v1.js`
+### Remoto sobre el build publicado
 
-Git blob final:
+- paridad exacta de activos críticos;
+- endpoint HR vivo;
+- 14 periodos y 616 visitas;
+- Staff estable en recargas y nueva pestaña;
+- Shopper: 208 perfiles, identidad exacta, `ownVisits=1`, recargas y nueva pestaña estables;
+- Cliente: tenant `tya`, proyecto `cinepolis`, 14 periodos y 616 visitas;
+- Finanzas: delegado, `localBilling=false`, regalía 0, Q60 GT/L200 HN, 14 delegados y cero violaciones.
 
-`9c0d76382531b8393cc0866ec694935a2a5e25a6`.
+## 4. STOP_RETRY y causa raíz
 
-Responsabilidad:
+El macro cerró con:
 
-- carril humano autenticado canónico;
-- HR viva y `CX.data` preservados;
-- prospectos sintéticos y contactos placeholder retirados en conectado;
-- fixtures CRM/Marketing ocultos;
-- registros creados por usuario preservados y marcados `platform_user`;
-- Marketing alineado al periodo activo;
-- modelo delegado/localBilling false/regalía 0/Q60-L200 preservado;
-- cero provider writes.
+`FAIL_C6_REMOTE_GATES_AFTER_SINGLE_DEV_HOSTING_DEPLOY_STOP_RETRY`
 
-### `app/index-backend-dev.html`
+Stage:
 
-Git blob:
+`remote_domain_finance_portals_reservations`
 
-`b9a4aaf063d97305c3f4f53eba8f02b526d61761`.
+La evidencia quedó `semantic:null`; por eso no se atribuye el fallo a un módulo funcional sin prueba.
 
-Carga el adapter una sola vez después de los módulos y antes de los bridges C6.
+Sí quedó demostrado un error del gate:
 
-## 5. Manifest ejecutable
+- el módulo financiero real se registra como `financiero`;
+- el gate buscaba `finanzas`;
+- esto hacía fallar `CANONICAL_MODULE_MISSING` aunque el módulo estuviera cargado.
 
-`app/docs/MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json`
+El gate fue corregido en source-only y ahora persiste `failedStage`, `errorCode` y snapshots parciales sanitizados. No se alteró `app/` y no hubo segundo deploy.
 
-Contiene 23 archivos con:
+## 5. Estado de la candidata
 
-- Git blob;
-- origen/aprobación;
-- estado honesto;
-- acción;
-- facts preservados.
+- físicamente disponible y con paridad remota;
+- única y acumulativa sobre la rama viva;
+- no frozen;
+- no aprobada visualmente todavía;
+- no lista para producción hasta revisión humana y revalidación semántica read-only del mismo build.
 
-Estado:
+## 6. Checkpoint Visual 1
 
-`SOURCE_ASSEMBLED_PENDING_GATES_AND_VISUAL`.
+Paula revisará:
 
-## 6. Gates
-
-### Ejecutado
-
-`tools/qa/tya-ab-cumulative-composition-unit.mjs`
-
-Resultado:
-
-`PASS` — 23 verificaciones sobre copia exacta del blob del adapter.
-
-### Preparado, pendiente de checkout exacto
-
-`tools/qa/tya-ab-cumulative-candidate-source-gate.mjs`
-
-Valida manifest, blobs, orden, sintaxis, unit, ausencia de proveedores y estado honesto por módulo.
-
-No se declara ejecutado en esta sesión porque el conector GitHub no ofrece shell checkout ni dispatch. Esto no autoriza deploy ni se maquilla como PASS.
-
-## 7. PASS técnicos que permanecen protegidos
-
-- HR: 14 periodos y 616 visitas;
-- Staff/Shopper/Cliente remoto estable;
-- identidad Shopper exacta y `ownVisits=1`;
-- Cliente `tya/cinepolis`;
-- modelo financiero delegado;
-- localBilling false;
-- regalía 0;
-- Q60 GT / L200 HN;
-- 14 delegados, 0 directos, 0 sin configurar y 0 violaciones.
-
-No equivalen a aprobación visual A+B.
-
-## 8. Checkpoint Visual 1
-
-Paula debe revisar el mismo build:
-
-- login/shell/tenant/proyecto/periodo/fuente/navegación;
+- login/shell;
+- tenant, proyecto, periodo y fuente;
+- navegación;
 - CRM Ops Leads;
-- Dashboard;
+- Dashboard y drilldowns;
 - Hojas de Ruta;
 - Clientes;
 - Comercial;
-- Marketing;
-- indicadores y drilldowns.
+- Marketing.
 
-No se avanza a Operación/Shopper sin esa validación.
+Toda observación se corrige sobre el mismo linaje acumulativo, sin nueva candidata.
 
-## 9. Pendiente real y siguiente bloque exacto
+## 7. Fuentes vigentes
 
-`EXACT CHECKOUT A+B SOURCE GATE → STATIC/CUMULATIVE GATES → STOP_RETRY SI FALLA → SOLO SI PASS, AUTORIZACIÓN DE UN HOSTING DEV → CHECKPOINT VISUAL 1`.
+- `CAMBIOS-BACKEND-ADDENDUM-A-B-DEV-VISIBLE-GATE-FALSE-NEGATIVE-20260802.md`;
+- `MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json`;
+- `EVIDENCE-A-B-CUMULATIVE-SOURCE-PRECHECK-20260802.json`;
+- `app/docs/evidence/CORTE6-CANONICAL-HEAD-DEV-DEPLOY-GATES-FAILURE-LATEST.json`;
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
+- `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`.
 
-## 10. Estado seguro
+## 8. Siguiente bloque exacto
 
-- módulos frontend reescritos: 0;
-- deploy: 0;
-- Cloud Run/Firestore/Auth/Rules/Storage/HR writes: 0;
+`PAULA CHECKPOINT VISUAL 1 SOBRE EL DEV EXISTENTE + REVALIDACIÓN SEMÁNTICA READ-ONLY DEL MISMO BUILD SIN REDEPLOY`.
+
+## 9. Estado seguro
+
+- Cloud Run deploys: 0;
+- Firestore/Auth/Rules/Storage/HR writes: 0;
 - Make/Gemini/pagos: 0;
 - merge: false;
 - producción: false.
