@@ -1,89 +1,149 @@
-# CXOrbia TyA — Plan Phase A con validación visual continua
+# CXOrbia TyA — PLAN PHASE A SIN DESVIACIÓN
 
 **Fecha original:** 2026-07-04  
-**Última revisión:** 2026-08-02  
-**Estado:** ACTIVO, OBLIGATORIO Y PREVALENTE  
-**Estado vivo:** `C6_FINANCE_ROOT_FIX_SOURCE_ONLY_PASS__REMOTE_REVALIDATION_PENDING__NO_PRODUCTION`
+**Corrección prevalente:** 2026-08-03  
+**Estado:** `ACTIVE_COMPLETE_PHASE_A_CUMULATIVE_RECONSTRUCTION__NO_FRAGMENTED_AB_GATE`
 
-## 1. Objetivo y arquitectura
+## 1. Objetivo
 
-TyA/Cinépolis es el primer tenant/proyecto configurable de CXOrbia. `cxorbia-backend-dev` es DEV canónico y `tya-plataforma` el Hosting final.
+Cerrar y poner en producción Phase A sobre una sola baseline acumulativa, preservando todo lo ya aprobado y probado.
 
-La baseline es única y acumulativa sobre `docs-tya-v6-v71-audit`. No crear plataforma, candidata, rama, PR, Firebase, Hosting o workflow alternos.
+Baseline:
+
+- repo `paulaosoriof86/demoCXOrbia`;
+- rama `docs-tya-v6-v71-audit`;
+- PR #7 draft/open/no merge;
+- DEV canónico `cxorbia-backend-dev`;
+- producción `tya-plataforma`, intacta hasta cutover autorizado.
 
 ## 2. Secuencia obligatoria
 
-`FUENTE VIVA → IDENTIDAD → READ MODEL → CONFIGURACIÓN FINANCIERA → MATERIALIZACIÓN → NORMALIZACIÓN → GATE SEMÁNTICO → SOURCE LOCK → AUTORIZACIÓN → DEPLOY EXACTO → PARIDAD → GATE REMOTO → VALIDACIÓN HUMANA → FREEZE/CUTOVER`.
+`FUENTES Y APROBACIONES → MATRIZ SHA COMPLETA → COMPOSICIÓN PHASE A → GATES SOURCE/STATIC → RUNTIME MULTIROL → DEV ÚNICO → VALIDACIÓN HUMANA COMPLETA → FREEZE → AGOSTO/DISPONIBLES/POSTULACIONES → CUTOVER`.
 
-Debe distinguirse siempre:
+No se divide la aprobación en A+B/C+D/E+F/G. Ese esquema queda superado.
 
-- correctivo aplicado en fuente;
-- gate local PASS;
-- release publicada;
-- paridad remota;
-- gate remoto acumulativo;
-- aprobación humana.
+## 3. Phase A indispensable
 
-## 3. Baseline funcional preservada
+### Base transversal
 
-- HR viva: 14 periodos, junio 2025–julio 2026, 616 visitas.
-- Agosto ausente.
-- Staff remoto PASS.
-- Shopper remoto PASS con identidad exacta, 208 shoppers, `ownVisits=1`, tres recargas y nueva pestaña.
-- Cliente remoto PASS con alcance exclusivo `cinepolis`, tres recargas y nueva pestaña.
-- Producción intacta.
+- entrada directa por Administración/Coordinación, Portal Cliente y Shopper/Evaluador;
+- Auth técnica aislada;
+- tenant/proyecto/periodo;
+- HR viva y refresh in-place;
+- `CX.data` canónico;
+- navegación y permisos por rol;
+- cache/build-lock/service worker coherentes.
 
-## 4. Ownership canónico
+### Operación
 
-1. HR viva: operación e historia.
-2. Firestore protegido: identidad/perfil/certificación por crosswalk exacto.
-3. ProjectConfig: modelo financiero por llave técnica `tenantId::projectId`.
-4. Objetos canónicos: materializan projectConfig antes de normalizar.
-5. Finanzas/pagos: consumen únicamente el objeto canónico coherente.
+- Dashboard Operativo y drilldowns;
+- Mi Día/hoja de ruta;
+- Proyectos, Periodos, HR e Histórico;
+- Visitas, detalle y Revisión Admin;
+- Postulaciones;
+- Reservas/asignación;
+- Shoppers y notificaciones operativas.
 
-## 5. Root fix financiero vigente
+### Shopper/perfiles
 
-Causa corregida en fuente:
+- Disponibles;
+- Mis Visitas;
+- Reservas;
+- Mi Día;
+- Mi Perfil;
+- cuestionario;
+- certificaciones e histórico;
+- documentos;
+- beneficios;
+- aislamiento exacto por shopper.
 
-`PROJECT_FINANCIAL_CONFIGURATION_METADATA_NOT_MATERIALIZED_IN_CANONICAL_PROJECTS_BEFORE_NORMALIZATION`.
+### Finanzas
 
-El contrato financiero ahora:
+- Dashboard Financiero;
+- liquidaciones;
+- movimientos;
+- costos;
+- CxP/CxC;
+- lotes/pagos en estado real;
+- multi-país/multi-moneda;
+- revisión financiera separada de conciliación y pago;
+- modelo delegado, localBilling false, regalía 0, Q60 GT/L200 HN.
 
-- resuelve por llaves técnicas, nunca por nombre;
-- materializa antes de `normalizeAll()`;
-- conserva directo/delegado/regional;
-- mantiene fail-closed cuando falta configuración;
-- materializa `tya::cinepolis` como delegado, regalía 0, Q60 GT/L200 HN;
-- no inventa comisión ni reparto.
+### Portales/reportes
 
-Gate:
+- Portal Cliente;
+- Portal Shopper;
+- Reportes Admin/Cliente/Shopper;
+- PDF/XLSX/PPTX donde corresponda;
+- periodo, alcance, fuente, filas, branding y gráficas coherentes;
+- cero métricas, NPS, porcentajes o hallazgos fabricados.
 
-`PASS_C6_FINANCE_ROOT_FIX_SOURCE_ONLY_GATE`.
+## 4. Aprobaciones históricas preservadas
 
-## 6. Siguiente bloque exacto
+- RC Phase A smoke técnico y visual/consola PASS;
+- M1/Corte 1 aprobado/frozen;
+- Corte 2A/V174 aprobado/frozen;
+- Corte 3/V182 frozen active baseline;
+- C6 entrada/HR/roles/perfiles/Finanzas/Reservas técnicamente PASS.
 
-Solo con autorización fresca:
+Estas autoridades se validan por SHA y smoke antirretroceso. No se reinicia cada módulo desde cero.
 
-1. source lock nuevo;
-2. gate finance root fix;
-3. gate acumulativo;
-4. un único deploy Hosting DEV;
-5. paridad y HR;
-6. Staff, Shopper y Cliente;
-7. dominio, Finanzas, Portal Cliente, Portal Shopper y Reservas;
-8. evidencia;
-9. validación humana;
-10. freeze C6.
+## 5. CRM y módulos posteriores
 
-## 7. Prohibiciones
+CRM Ops Leads, Clientes comerciales, Comercial y Marketing:
 
-- no segunda candidata, rama, PR, Firebase, Hosting o workflow;
-- no clasificación por nombre visual;
-- no parche UI;
+- se preservan;
+- continúan después del freeze Phase A;
+- no sustituyen ni bloquean la reconstrucción de Operación/Finanzas/Reportes/perfiles;
+- solo bloquean si demuestran un P0 transversal.
+
+## 6. Gate visual correcto
+
+`CHECKPOINT_VISUAL_PHASE_A_COMPLETA`
+
+Orden:
+
+1. entrada/contexto/navegación;
+2. Dashboard/hoja de ruta/Histórico/refresh;
+3. Visitas/Postulaciones/Reservas;
+4. Shoppers/perfiles;
+5. Finanzas completa;
+6. portales;
+7. Reportes/exportaciones;
+8. smoke multirol y nueva pestaña.
+
+## 7. Post-freeze urgente
+
+Después de `FINAL_HUMAN_VISUAL_APPROVED`:
+
+1. fuente exacta agosto;
+2. rollover actual seguro;
+3. disponibles;
+4. postulaciones;
+5. gate multirol;
+6. autorización de cutover;
+7. producción.
+
+## 8. Prohibiciones
+
+- no candidata, rama, PR, shell, Firebase o Hosting paralelos;
+- no aprobación fragmentada centrada en CRM;
+- no selección por número de versión;
+- no nombre visual como llave;
+- no parche UI desde backend;
 - no writes Firestore/Auth/HR/Rules/Storage;
 - no Make/Gemini/pagos;
-- no merge ni producción antes del PASS acumulativo.
+- no merge/producción antes del PASS acumulativo y humano.
 
-## 8. Estado seguro
+## 9. Estado vigente
 
-El bloque C6-FINANCE-ROOT-FIX fue source-only: cero deploys, cero provider writes, merge false y producción false.
+- matriz Phase A completa iniciada;
+- blobs vivos de módulos indispensables registrados;
+- recuperación de SHA aprobado/source lock en curso;
+- DEV actual clasificado como comparación técnica, no candidato final;
+- deploy nuevo: 0;
+- producción: intacta.
+
+## 10. Siguiente bloque exacto
+
+`RECUPERAR SHAS APROBADOS PHASE A → COMPARAR CON BLOBS VIVOS → PRESERVAR/RESTAURAR/RECONCILIAR → MANIFEST COMPLETO → GATES ACUMULATIVOS`.
