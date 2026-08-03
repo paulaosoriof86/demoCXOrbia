@@ -30,7 +30,7 @@ Ninguna familia se declara aprobada por PASS técnico. Paula debe validarla visu
 - Inventario Familia B: `06fbfac28a1971d229ab121778ee6babdd1fd904`.
 - Scope lock A+B: `94c440a06212dd194c34b43df00197d5d56c6024`.
 - Matriz maestra A+B: `8d2f59a9ea8854f91efe3fb9532b35d04992fd64`.
-- Checkpoint vigente: `ff26ec4411aa9469b4d29b63ed90558d197116a3`.
+- Checkpoint vigente: `7e25e9f9b50be1630592dd3974b45fc9bc532a44`.
 - Claude: `dc61347b0e2d22ec3f9bf30fb6d6e4bb21baf934`.
 - Pendientes: `16dd9d726a8267a866418d7519ecaa47ae42c17e`.
 - Academia: `cefa222d7f14fc6187129603888abd0c72d5c323`.
