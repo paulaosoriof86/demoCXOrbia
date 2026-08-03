@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-08-03  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `PHASE_A_COMPLETE_CUMULATIVE_RECONSTRUCTION_ACTIVE__FRAGMENTED_AB_VISUAL_REVIEW_CANCELLED`
+**Estado vivo:** `PHASE_A_COMPLETE_RECONSTRUCTION__24_EXACT_OR_JUSTIFIED_BLOB_DECISIONS__REMAINING_COMPOSITION_RECOVERY_ACTIVE`
 
 ## 0. Lock prevalente
 
@@ -19,19 +19,22 @@ No crear candidata, shell, rama, PR, Firebase, Hosting o metodología paralela.
 ## 1. Leer primero y en este orden
 
 1. `ADDENDUM-MAESTRO-CORRECCION-RECONSTRUCCION-PHASE-A-COMPLETA-20260803.md`;
-2. `MATRIZ-CANDIDATA-ACUMULATIVA-PHASE-A-COMPLETA-20260803.md`;
-3. `MANIFEST-PHASE-A-COMPLETA-INVENTARIO-VIVO-20260803.json`;
-4. `CAMBIOS-BACKEND-ADDENDUM-CORRECCION-RECONSTRUCCION-PHASE-A-COMPLETA-20260803.md`;
-5. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-6. `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md` corregido;
-7. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-8. `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`, solo como trazabilidad del error A+B;
-9. `MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json`, clasificado como manifest parcial no suficiente;
-10. `RESUMEN-PARA-CLAUDE.md`;
-11. `PENDIENTES-PROTOTIPO.md`;
-12. `ACADEMIA-IMPACTO-RECONSTRUCCION-CANDIDATA-ACUMULATIVA-20260802.md`;
-13. reglas maestras/addenda activos;
-14. PR #7 y HEAD vivo.
+2. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+3. `MATRIZ-CANDIDATA-ACUMULATIVA-PHASE-A-COMPLETA-20260803.md`;
+4. `MANIFEST-PHASE-A-COMPLETA-INVENTARIO-VIVO-20260803.json`;
+5. `COMPARACION-SHAS-APROBADOS-PHASE-A-BLOQUE1-M1-CORTE2A-20260803.md`;
+6. `COMPARACION-SHAS-PHASE-A-BLOQUE2-C6-DEPLOY-TECNICO-20260803.md`;
+7. `COMPARACION-SHAS-PHASE-A-BLOQUE3-V182-CORTE3-Y-C6-20260803.md`;
+8. `CAMBIOS-BACKEND-ADDENDUM-CORRECCION-RECONSTRUCCION-PHASE-A-COMPLETA-20260803.md`;
+9. `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md` corregido;
+10. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+11. `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`, solo como trazabilidad del error A+B;
+12. `MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json`, manifest parcial superseded;
+13. `RESUMEN-PARA-CLAUDE.md`;
+14. `PENDIENTES-PROTOTIPO.md`;
+15. `ACADEMIA-IMPACTO-RECONSTRUCCION-CANDIDATA-ACUMULATIVA-20260802.md`;
+16. reglas maestras/addenda activos;
+17. PR #7 y HEAD vivo.
 
 ## 2. Autoridades históricas que no se reabren
 
@@ -43,23 +46,52 @@ No crear candidata, shell, rama, PR, Firebase, Hosting o metodología paralela.
 
 Estas aprobaciones se someten a comparación de SHA y smoke antirretroceso, no a reauditoría desde cero.
 
-## 3. Inventario Phase A activo
+## 3. Recuperación de SHAs alcanzada
 
-El manifest de inventario vivo contiene 30 archivos de:
+### M1/Corte 2A
 
-- base transversal;
-- operación administrativa;
-- experiencia Shopper/perfiles;
-- Finanzas completa;
-- portales y reportes.
+Ocho blobs vivos coinciden exactamente con su autoridad aprobada/frozen:
+
+- Dashboard;
+- Configuración;
+- Router;
+- Visitas;
+- Postulaciones;
+- Novedades;
+- Mi Perfil/Reportes Shopper;
+- Reportes Cliente.
+
+### C6 desplegado
+
+Trece blobs vivos coinciden con el source lock técnico desplegado, incluyendo:
+
+- app/shell;
+- Mi Día e Histórico;
+- Reservas;
+- Shoppers/Mis Visitas/Certificación/Cuestionario/Beneficios;
+- Finanzas UI/core/liquidación;
+- Portal Cliente.
+
+### V182/Corte 3
+
+- `app.js`, Beneficios y `layout.css`: exactos V182;
+- `finanzas-core.js` y `finanzas.js`: diferencias posteriores justificadas por root fixes C6; no restaurar V182.
+
+Resultado:
+
+`24_UNIQUE_PRESERVE_OR_RECONCILE_DECISIONS_CLOSED__0_RESTORE_REQUIRED_SO_FAR`.
+
+## 4. Inventario Phase A activo
+
+El manifest de inventario vivo contiene 30 archivos de base, operación, perfiles, Finanzas, portales y Reportes.
 
 Estado:
 
 `INVENTORY_ONLY_APPROVED_SHA_RECOVERY_PENDING`.
 
-No es todavía el manifest final. Un blob vivo no se convierte en aprobado sin recuperar su linaje.
+No es todavía el manifest final. Un blob vivo no se convierte en aprobado sin recuperar su linaje y probar su composición.
 
-## 4. Alcance Phase A obligatorio
+## 5. Alcance Phase A obligatorio
 
 - entrada/shell/contexto/navegación;
 - Dashboard Operativo/hoja de ruta/Histórico/refresh;
@@ -73,9 +105,7 @@ No es todavía el manifest final. Un blob vivo no se convierte en aprobado sin r
 
 CRM Ops Leads, Clientes comerciales, Comercial y Marketing se preservan, pero no bloquean el freeze Phase A.
 
-## 5. DEV actual
-
-URL técnica existente:
+## 6. DEV actual
 
 `https://cxorbia-backend-dev.web.app/index-backend-dev.html`
 
@@ -83,15 +113,15 @@ Clasificación:
 
 `TECHNICAL_COMPARISON_BUILD__NOT_FINAL_PHASE_A_CANDIDATE`.
 
-No se solicita revisión humana fragmentada sobre este build. Solo se reutilizará si la comparación completa demuestra que no falta ningún delta; si cambia `app/`, se publicará un único reemplazo autorizado.
+No se solicita revisión humana fragmentada. Se reutilizará solo si el manifest final demuestra que no requiere delta; si cambia `app/`, se publicará un único reemplazo autorizado.
 
-## 6. Siguiente bloque exacto
+## 7. Siguiente bloque exacto
 
-`RECUPERAR SHAS APROBADOS/SOURCE LOCKS DE TODA PHASE A → COMPARAR CONTRA BLOBS VIVOS → RESTAURAR/RECONCILIAR SOLO DIFERENCIAS → MANIFEST COMPLETO → GATES MULTIROL/FINANZAS/REPORTES/RESERVAS`.
+`CERRAR AUTORIDAD DE FICHA/REVISIÓN/DOCUMENTOS/COSTOS/CLIENTE-DATA + INVENTARIAR REPORT KIT/EXPORTADORES/OVERLAYS/NAVEGACIÓN MULTIROL → MANIFEST FINAL PHASE A → GATES ACUMULATIVOS`.
 
-## 7. Estado seguro
+## 8. Estado seguro
 
-- cambios funcionales: 0;
+- archivos funcionales modificados: 0;
 - deploy nuevo: 0;
 - provider writes: 0;
 - Make/Gemini/pagos: 0;
