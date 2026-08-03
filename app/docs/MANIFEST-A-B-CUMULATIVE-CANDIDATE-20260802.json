@@ -1,222 +1,23 @@
 {
   "schema": "cxorbia.cumulative-candidate-provenance.v1",
   "candidateId": "CXORBIA-TYA-A-B-CUMULATIVE-20260802",
-  "status": "SOURCE_ASSEMBLED_PENDING_GATES_AND_VISUAL",
+  "status": "SUPERSEDED_PARTIAL_MANIFEST_NOT_SUFFICIENT_FOR_PHASE_A_FREEZE",
+  "supersededBy": "app/docs/MANIFEST-PHASE-A-COMPLETA-INVENTARIO-VIVO-20260803.json",
+  "supersedingContract": "app/docs/ADDENDUM-MAESTRO-CORRECCION-RECONSTRUCCION-PHASE-A-COMPLETA-20260803.md",
+  "reason": "The A+B scope prioritized post-Phase-A CRM/commercial modules and did not certify the complete approved Phase A operation, profiles, finance, portals and reports composition.",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
-  "headBeforeFunctionalDelta": "754639e0c0682c638cc799fd26bfcd2c744b0b6a",
-  "functionalCommits": [
-    "b8c5323b9887fc97375f805cec9320dfc8b9afa7",
-    "90d6c045c9ad7aaee284ad69bbbb146fbbd09326",
-    "4c5f0d829efe0094707235fab1472539d950b81e"
-  ],
-  "approvalAuthorities": {
-    "m1VisualFreeze": {
-      "build": "67c0943260f076f5686284ac509458ed5fd34dbd",
-      "status": "CORTE_1_M1_APROBADO_CON_P1_P2_DOCUMENTADOS",
-      "source": "app/docs/VALIDACION-VISUAL-Y-LOCK-ANTI-REGRESION-CORTE1-M1-20260722.md"
-    },
-    "corte2a": {
-      "status": "FROZEN_APROBADO",
-      "manifest": "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json",
-      "changedFilesOutsideAB": true
-    },
-    "corte3": {
-      "status": "FROZEN_ACTIVE_BASELINE",
-      "candidate": "CXORBIA-TYA-CORTE3-V182-20260729",
-      "impactOnAB": ["app/app.js", "app/styles/layout.css"]
-    }
+  "preservation": {
+    "deleteAppliedABWork": false,
+    "treatAsPostPhaseAWorkstream": true,
+    "useAsFinalCandidate": false,
+    "useAsVisualApprovalGate": false
   },
-  "compositionRules": {
-    "singleCandidate": true,
-    "singleBranch": true,
-    "moduleSelectionByVersionNumberOnly": false,
-    "technicalPassEqualsVisualApproval": false,
-    "humanVisualCheckpointRequired": true,
-    "providerWrites": false,
-    "deployAuthorized": false,
+  "safeState": {
+    "functionalChanges": 0,
+    "deploys": 0,
+    "providerWrites": 0,
+    "merge": false,
     "production": false
-  },
-  "files": [
-    {
-      "path": "app/index.html",
-      "gitBlob": "3855486bdddcfcdc2c702f08b2a640d99717d980",
-      "origin": "M1_APPROVED_BUILD_67c094",
-      "status": "APPROVED_AND_PRESENT",
-      "action": "PRESERVE"
-    },
-    {
-      "path": "app/index-backend-dev.html",
-      "gitBlob": "b9a4aaf063d97305c3f4f53eba8f02b526d61761",
-      "origin": "CURRENT_CANONICAL_RUNTIME_PLUS_AB_COMPOSITION",
-      "status": "BEST_TECHNICAL_PENDING_VISUAL",
-      "action": "VALIDATE"
-    },
-    {
-      "path": "app/app.js",
-      "gitBlob": "d509d08bd20dd2e44fa414e0b4d2819dd18f7c36",
-      "origin": "V182_FROZEN_LINEAGE",
-      "status": "APPROVED_BASE_PRESENT_RUNTIME_REVALIDATION_REQUIRED",
-      "action": "PRESERVE_AND_VALIDATE"
-    },
-    {
-      "path": "app/styles/layout.css",
-      "gitBlob": "2cea8372cad099cb4610b93744824e4596b04adc",
-      "origin": "V182_FROZEN_LINEAGE",
-      "status": "APPROVED_AND_PRESENT",
-      "action": "PRESERVE"
-    },
-    {
-      "path": "app/core/config.js",
-      "gitBlob": "0bf7b6c1daded062806d90e03ba2c5d67ac1fe63",
-      "origin": "M1_APPROVED_BUILD_67c094",
-      "status": "APPROVED_AND_PRESENT_RUNTIME_REVALIDATION_REQUIRED",
-      "action": "PRESERVE_AND_VALIDATE"
-    },
-    {
-      "path": "app/core/router.js",
-      "gitBlob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
-      "origin": "M1_APPROVED_BUILD_67c094",
-      "status": "APPROVED_AND_PRESENT_RUNTIME_REVALIDATION_REQUIRED",
-      "action": "PRESERVE_AND_VALIDATE"
-    },
-    {
-      "path": "app/core/store.js",
-      "gitBlob": "c6921e26773c866ba0b0ac0b725f4660e47742a5",
-      "origin": "M1_APPROVED_BUILD_67c094",
-      "status": "APPROVED_AND_PRESENT_AUTH_OVERLAY_REQUIRED",
-      "action": "PRESERVE"
-    },
-    {
-      "path": "app/core/data.js",
-      "gitBlob": "3a679020205617e44126ec586e0022edc70b0512",
-      "origin": "M1_APPROVED_BUILD_67c094",
-      "status": "APPROVED_INTERFACE_PRESENT_CANONICAL_OVERLAYS_REQUIRED",
-      "action": "PRESERVE_INTERFACE"
-    },
-    {
-      "path": "app/core/data-source.js",
-      "gitBlob": "6149dff1d91b83af007badbaafdef63f00c34d1f",
-      "origin": "M1_APPROVED_BUILD_67c094",
-      "status": "APPROVED_AND_PRESENT_RUNTIME_STATUS_OVERLAY_REQUIRED",
-      "action": "PRESERVE"
-    },
-    {
-      "path": "app/core/permissions.js",
-      "gitBlob": "bedc4f8bbc80dba9f03e34ec6bbcf9cfeeb2a1d5",
-      "origin": "M1_APPROVED_BUILD_67c094",
-      "status": "APPROVED_AND_PRESENT_CLAIMS_REVALIDATION_REQUIRED",
-      "action": "PRESERVE"
-    },
-    {
-      "path": "app/modules/dashboard.js",
-      "gitBlob": "e879fc3f1dd5a7486762b197346cadd086e1d99d",
-      "origin": "M1_APPROVED_BUILD_67c094",
-      "status": "APPROVED_UI_PRESENT_RUNTIME_RECONCILIATION_REQUIRED",
-      "action": "PRESERVE_MODULE_VALIDATE_COMPOSED_RESULT"
-    },
-    {
-      "path": "app/modules/crm.js",
-      "gitBlob": "6a6ff1c964eff4f25ecaf33b028335bfc62810ee",
-      "origin": "M1_ANCESTOR_UNCHANGED",
-      "status": "BEST_TECHNICAL_PENDING_VISUAL",
-      "action": "PRESERVE_UI_SUPPRESS_UNPROVEN_FIXTURES"
-    },
-    {
-      "path": "app/modules/clientes.js",
-      "gitBlob": "9c3c98605f4fb2e22d66b241607c9dd70c45d159",
-      "origin": "M1_ANCESTOR_UNCHANGED",
-      "status": "BEST_TECHNICAL_PENDING_VISUAL",
-      "action": "PRESERVE_UI_SUPPRESS_SYNTHETIC_CLIENTS_CONTACTS"
-    },
-    {
-      "path": "app/modules/comercial.js",
-      "gitBlob": "61aaee6432e4a4206b07f8633d158b8d2b2c2271",
-      "origin": "M1_ANCESTOR_UNCHANGED",
-      "status": "BEST_TECHNICAL_PENDING_VISUAL",
-      "action": "PRESERVE_AS_PLANNING_TOOL_VALIDATE_COPY_AND_PROJECT_CONTRACT"
-    },
-    {
-      "path": "app/modules/marketing.js",
-      "gitBlob": "6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83",
-      "origin": "M1_ANCESTOR_UNCHANGED",
-      "status": "BEST_TECHNICAL_PENDING_VISUAL",
-      "action": "PRESERVE_UI_SUPPRESS_UNPROVEN_FIXTURES_GATE_INTEGRATIONS"
-    },
-    {
-      "path": "app/modules/rutas.js",
-      "gitBlob": "1da95ce4a808dafd7553ad9082056da7009e4920",
-      "origin": "M1_ANCESTOR_UNCHANGED",
-      "status": "BEST_TECHNICAL_PENDING_VISUAL",
-      "action": "PRESERVE_UI_USE_HR_AUTHORITY_GATE_ACTIONS"
-    },
-    {
-      "path": "app/adapters/tya-ab-cumulative-composition-v1.js",
-      "gitBlob": "9c0d76382531b8393cc0866ec694935a2a5e25a6",
-      "origin": "AB_RECONSTRUCTION_20260802",
-      "status": "NEW_SOURCE_PENDING_GATE",
-      "action": "VALIDATE"
-    },
-    {
-      "path": "app/adapters/tya-c6-domain-consistency-bridge.js",
-      "gitBlob": "81f1e5807dfe18e0f53a348813b98fe353eeb7a1",
-      "origin": "C6_CANONICAL_DOMAIN_ROOT_FIX",
-      "status": "RECONCILIATION_REQUIRED_VISUAL_DEPENDENCY",
-      "action": "PRESERVE_FOR_CHECKPOINT_AND_VALIDATE"
-    },
-    {
-      "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
-      "gitBlob": "7c00752d9a34209366f3c328ea3e5f5fddb4e1db",
-      "origin": "C6_AUTHENTICATED_CUMULATIVE_RUNTIME",
-      "status": "TECHNICAL_PASS_VISUAL_REVALIDATION_REQUIRED",
-      "action": "PRESERVE_AND_VALIDATE"
-    },
-    {
-      "path": "app/core/backend-protected-dev-mode.js",
-      "gitBlob": "83b262c0fc0a42be5c2f5e2b42381c884d50ee5c",
-      "origin": "C6_PROTECTED_RUNTIME",
-      "status": "TECHNICAL_PASS_VISUAL_REVALIDATION_REQUIRED",
-      "action": "PRESERVE_AND_VALIDATE"
-    },
-    {
-      "path": "app/core/backend-cxdata-read-guard.js",
-      "gitBlob": "0ad6d8bdaade9a6a8b494297df7b7ddd3187d805",
-      "origin": "BACKEND_READ_GUARD",
-      "status": "RECONCILIATION_REQUIRED_PRECEDENCE",
-      "action": "PRESERVE_FOR_GATE"
-    },
-    {
-      "path": "app/adapters/tya-project-financial-model-contract-v1.js",
-      "gitBlob": "333f5fd204cba2c53eefe8f98acb27a4502da166",
-      "origin": "C6_FINANCE_ROOT_FIX",
-      "status": "REMOTE_TECHNICAL_PASS",
-      "action": "PRESERVE"
-    },
-    {
-      "path": "app/core/build-lock.js",
-      "gitBlob": "717dd4a40e3a24c380089cf22596e04fc8c25da1",
-      "origin": "V174_R20_OBSOLETE_IDENTITY",
-      "status": "REPLACE_AFTER_SOURCE_GATES",
-      "action": "DO_NOT_FREEZE_YET"
-    }
-  ],
-  "knownPreservedFacts": {
-    "hrPeriods": 14,
-    "hrVisits": 616,
-    "periodRange": "2025-06/2026-07",
-    "augustPresent": false,
-    "shopperExactIdentityTechnicalPass": true,
-    "clientScope": "tya/cinepolis",
-    "financialModel": "delegado",
-    "localBilling": false,
-    "royalty": 0,
-    "honorarium": {"GT": 60, "HN": 200}
-  },
-  "pending": [
-    "source-only gate execution",
-    "runtime smoke on exact assembled head",
-    "one Hosting DEV authorization",
-    "Paula visual validation of Checkpoint 1",
-    "final build-lock and freeze only after visual PASS"
-  ]
+  }
 }
