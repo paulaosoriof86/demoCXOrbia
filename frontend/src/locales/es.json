@@ -1,0 +1,94 @@
+{
+    "brand": { "poweredBy": "Desarrollado por Gravicentra CX" },
+    "nav": {
+        "dashboard": "Dashboard",
+        "projects": "Proyectos",
+        "campaigns": "Campañas",
+        "visits": "Visitas",
+        "postulations": "Postulaciones",
+        "shoppers": "Shoppers",
+        "forms": "Formularios",
+        "evaluations": "Evaluaciones",
+        "reports": "Reportes",
+        "documents": "IA · Documentos",
+        "hrSync": "Sincronización HR",
+        "clients": "Clientes",
+        "users": "Usuarios",
+        "logout": "Cerrar sesión"
+    },
+    "login": {
+        "title": "Iniciá sesión",
+        "subtitle": "Accedé a la plataforma con tu cuenta corporativa.",
+        "email": "Email",
+        "password": "Contraseña",
+        "submit": "Ingresar",
+        "demo": "Cuentas demo",
+        "tagline": "Auditoría de campo, con precisión de consultora.",
+        "description": "Gestión de campañas, planificación de visitas, evaluaciones y reportería asistida por inteligencia artificial. Diseñado para operar con rigor en cada punto de venta."
+    },
+    "dashboard": {
+        "greeting": "Buenas, {{name}}.",
+        "subtitle": "Panorama operativo de campañas activas, visitas en ejecución y cumplimiento en tiempo real.",
+        "kpi": {
+            "campaigns": "Campañas activas",
+            "completed": "Visitas completadas",
+            "inProgress": "En curso",
+            "compliance": "Cumplimiento",
+            "shoppers": "Shoppers activos",
+            "postulations": "Postulaciones pendientes"
+        },
+        "recent": "Últimas visitas",
+        "alertsTitle": "Puntos críticos",
+        "noAlerts": "Sin alertas críticas."
+    },
+    "postulations": {
+        "title": "Postulaciones",
+        "subtitle": "Aplicaciones de shoppers a visitas disponibles. Revisión y aprobación por coordinación.",
+        "columns": {
+            "shopper": "Shopper",
+            "branch": "Sucursal",
+            "proposedDate": "Fecha propuesta",
+            "slot": "Franja",
+            "status": "Estado",
+            "reviewer": "Revisado por"
+        },
+        "actions": { "approve": "Aprobar", "reject": "Rechazar", "review": "Revisar" },
+        "empty": "Sin postulaciones para los filtros seleccionados."
+    },
+    "shoppers": {
+        "title": "Shoppers",
+        "subtitle": "Directorio de auditores/shoppers con coverage, certificaciones y actividad.",
+        "search": "Buscar por nombre, email o ciudad",
+        "columns": {
+            "name": "Nombre",
+            "country": "País",
+            "city": "Ciudad",
+            "visits": "Visitas",
+            "email": "Email",
+            "phone": "Teléfono"
+        }
+    },
+    "projects": {
+        "title": "Proyectos",
+        "subtitle": "Configuración por tenant · cada proyecto define su cuestionario, HR, pagos y dashboards.",
+        "config": {
+            "hr": "Fuente HR",
+            "questionnaire": "Cuestionario",
+            "payments": "Pagos",
+            "countries": "Países",
+            "periods": "Periodos"
+        },
+        "syncNow": "Sincronizar ahora"
+    },
+    "common": {
+        "loading": "Cargando…",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "create": "Crear",
+        "back": "Volver",
+        "actions": "Acciones",
+        "all": "Todos",
+        "search": "Buscar",
+        "empty": "Sin datos"
+    }
+}

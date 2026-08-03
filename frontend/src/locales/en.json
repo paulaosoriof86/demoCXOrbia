@@ -1,0 +1,94 @@
+{
+    "brand": { "poweredBy": "Powered by Gravicentra CX" },
+    "nav": {
+        "dashboard": "Dashboard",
+        "projects": "Projects",
+        "campaigns": "Campaigns",
+        "visits": "Visits",
+        "postulations": "Applications",
+        "shoppers": "Shoppers",
+        "forms": "Forms",
+        "evaluations": "Reviews",
+        "reports": "Reports",
+        "documents": "AI · Documents",
+        "hrSync": "HR Sync",
+        "clients": "Clients",
+        "users": "Users",
+        "logout": "Sign out"
+    },
+    "login": {
+        "title": "Sign in",
+        "subtitle": "Access the platform with your corporate account.",
+        "email": "Email",
+        "password": "Password",
+        "submit": "Sign in",
+        "demo": "Demo accounts",
+        "tagline": "Field audits, with consultancy-grade precision.",
+        "description": "Campaign management, visit planning, evaluations and AI-powered reporting. Designed to operate with rigor at every point of sale."
+    },
+    "dashboard": {
+        "greeting": "Hi, {{name}}.",
+        "subtitle": "Operational overview of active campaigns, in-flight visits and real-time compliance.",
+        "kpi": {
+            "campaigns": "Active campaigns",
+            "completed": "Completed visits",
+            "inProgress": "In progress",
+            "compliance": "Compliance",
+            "shoppers": "Active shoppers",
+            "postulations": "Pending applications"
+        },
+        "recent": "Recent visits",
+        "alertsTitle": "Critical points",
+        "noAlerts": "No critical alerts."
+    },
+    "postulations": {
+        "title": "Applications",
+        "subtitle": "Shopper applications to available visits. Reviewed and approved by coordination.",
+        "columns": {
+            "shopper": "Shopper",
+            "branch": "Branch",
+            "proposedDate": "Proposed date",
+            "slot": "Slot",
+            "status": "Status",
+            "reviewer": "Reviewed by"
+        },
+        "actions": { "approve": "Approve", "reject": "Reject", "review": "Review" },
+        "empty": "No applications for the selected filters."
+    },
+    "shoppers": {
+        "title": "Shoppers",
+        "subtitle": "Directory of auditors/shoppers with coverage, certifications and activity.",
+        "search": "Search by name, email or city",
+        "columns": {
+            "name": "Name",
+            "country": "Country",
+            "city": "City",
+            "visits": "Visits",
+            "email": "Email",
+            "phone": "Phone"
+        }
+    },
+    "projects": {
+        "title": "Projects",
+        "subtitle": "Per-tenant configuration · each project defines its questionnaire, HR source, payments and dashboards.",
+        "config": {
+            "hr": "HR source",
+            "questionnaire": "Questionnaire",
+            "payments": "Payments",
+            "countries": "Countries",
+            "periods": "Periods"
+        },
+        "syncNow": "Sync now"
+    },
+    "common": {
+        "loading": "Loading…",
+        "save": "Save",
+        "cancel": "Cancel",
+        "create": "Create",
+        "back": "Back",
+        "actions": "Actions",
+        "all": "All",
+        "search": "Search",
+        "empty": "No data"
+    }
+}

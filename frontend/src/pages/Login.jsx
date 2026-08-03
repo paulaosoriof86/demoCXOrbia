@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { Loader2 } from "lucide-react";
+import TyALogo from "@/components/branding/TyALogo";
+import GravicentraLogo from "@/components/branding/GravicentraLogo";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function Login() {
     const { login } = useAuth();
     const nav = useNavigate();
+    const { t } = useTranslation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [err, setErr] = useState("");
@@ -29,29 +34,34 @@ export default function Login() {
             <div className="hidden md:flex flex-col justify-between bg-slate-900 text-white p-12 relative overflow-hidden">
                 <div className="absolute inset-0 grid-bg opacity-30" />
                 <div className="relative">
-                    <div className="eyebrow text-slate-400">Consultores</div>
-                    <div className="font-display text-5xl font-bold mt-2">TyA<span className="text-brand">.</span></div>
+                    <div className="eyebrow text-slate-400">Tenant activo</div>
+                    <div className="mt-3 bg-white p-3 inline-block"><TyALogo className="h-14" /></div>
                 </div>
                 <div className="relative">
                     <h1 className="font-display text-3xl leading-tight font-semibold max-w-md">
-                        Auditoría de campo,<br />
-                        con precisión de consultora.
+                        {t("login.tagline")}
                     </h1>
                     <p className="text-sm text-slate-400 mt-4 max-w-md leading-relaxed">
-                        Gestión de campañas, planificación de visitas, evaluaciones y reportería asistida por inteligencia artificial. Diseñado para operar con rigor en cada punto de venta.
+                        {t("login.description")}
                     </p>
                 </div>
-                <div className="relative text-xs text-slate-500 font-mono">
-                    v1.0 · MVP · {new Date().getFullYear()}
+                <div className="relative flex items-center justify-between text-xs text-slate-400">
+                    <div className="flex items-center gap-2 text-slate-300">
+                        <GravicentraLogo className="h-4 w-4 text-slate-300" withText={true} textClass="text-xs" />
+                    </div>
+                    <div className="font-mono text-[10px] text-slate-500">v1.0 · MVP · {new Date().getFullYear()}</div>
                 </div>
             </div>
 
             {/* Right form */}
             <div className="flex items-center justify-center px-6 py-12 bg-white">
                 <form onSubmit={submit} className="w-full max-w-sm" data-testid="login-form">
-                    <div className="eyebrow">Ingreso</div>
-                    <h2 className="font-display text-3xl font-bold text-slate-900 mt-2">Iniciá sesión</h2>
-                    <p className="text-sm text-slate-500 mt-2">Accedé a la plataforma con tu cuenta corporativa.</p>
+                    <div className="flex items-center justify-between">
+                        <div className="eyebrow">Ingreso</div>
+                        <LanguageSwitcher />
+                    </div>
+                    <h2 className="font-display text-3xl font-bold text-slate-900 mt-2">{t("login.title")}</h2>
+                    <p className="text-sm text-slate-500 mt-2">{t("login.subtitle")}</p>
 
                     {err && (
                         <div className="mt-6 border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700" data-testid="login-error">
@@ -73,7 +83,7 @@ export default function Login() {
                             />
                         </label>
                         <label className="block">
-                            <div className="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Contraseña</div>
+                            <div className="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">{t("login.password")}</div>
                             <input
                                 data-testid="login-password"
                                 type="password"
@@ -93,11 +103,11 @@ export default function Login() {
                         className="mt-6 w-full bg-brand hover:bg-brand-hover text-white py-3 text-sm font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-70"
                     >
                         {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                        Ingresar
+                        {t("login.submit")}
                     </button>
 
                     <div className="mt-8 border-t border-slate-100 pt-4">
-                        <div className="eyebrow mb-2">Cuentas demo</div>
+                        <div className="eyebrow mb-2">{t("login.demo")}</div>
                         <div className="text-xs text-slate-500 space-y-1 font-mono">
                             <div>paula.osorio.f86@gmail.com · TyA2026!</div>
                             <div>coordinador@tya.com · Coord2026!</div>

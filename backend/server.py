@@ -22,6 +22,9 @@ from models import (
     ClientIn, Client, PointOfSaleIn, PointOfSale, FormIn, Form,
     CampaignIn, Campaign, VisitIn, VisitUpdate, Visit,
     FileRecord, ChatRequest, DocAnalysisRequest, User,
+    Tenant, TenantIn, Project, ProjectIn, Period, PeriodIn,
+    Shopper, ShopperIn, ProjectShopper, Postulation, PostulationIn,
+    Assignment, Liquidation, LiquidationIn,
     new_id, now_iso,
 )
 from auth import (
@@ -454,6 +457,222 @@ async def test_email(user=Depends(require_roles("admin"))):
         to, "Test - Plataforma TyA",
         welcome_html("Paula", to, "(test - no aplica)"),
     )
+
+
+# =========================================================================
+# GRAVICENTRA CX — Multi-tenant routes (Fase A)
+# =========================================================================
+@api.get("/tenants", response_model=List[Tenant])
+async def list_tenants(user=Depends(get_current_user)):
+    docs = await db.tenants.find({}, {"_id": 0}).to_list(100)
+    return [Tenant(**d) for d in docs]
+
+
+@api.get("/tenants/{tid}", response_model=Tenant)
+async def get_tenant(tid: str, user=Depends(get_current_user)):
+    doc = await db.tenants.find_one({"id": tid}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Tenant no encontrado")
+    return Tenant(**doc)
+
+
+@api.post("/tenants", response_model=Tenant)
+async def create_tenant(body: TenantIn, _=Depends(require_roles("super_admin"))):
+    t = Tenant(**body.model_dump())
+    await db.tenants.insert_one(t.model_dump())
+    return t
+
+
+@api.get("/projects", response_model=List[Project])
+async def list_projects(tenant_id: Optional[str] = None, user=Depends(get_current_user)):
+    q = {"tenant_id": tenant_id} if tenant_id else {}
+    docs = await db.projects.find(q, {"_id": 0}).to_list(200)
+    return [Project(**d) for d in docs]
+
+
+@api.get("/projects/{pid}", response_model=Project)
+async def get_project(pid: str, user=Depends(get_current_user)):
+    doc = await db.projects.find_one({"id": pid}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+    return Project(**doc)
+
+
+@api.post("/projects", response_model=Project)
+async def create_project(body: ProjectIn, user=Depends(require_roles("admin"))):
+    p = Project(**body.model_dump(), created_by=user["sub"])
+    await db.projects.insert_one(p.model_dump())
+    return p
+
+
+@api.patch("/projects/{pid}", response_model=Project)
+async def update_project(pid: str, body: ProjectIn, _=Depends(require_roles("admin"))):
+    await db.projects.update_one({"id": pid}, {"$set": body.model_dump()})
+    doc = await db.projects.find_one({"id": pid}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="No encontrado")
+    return Project(**doc)
+
+
+@api.get("/periods", response_model=List[Period])
+async def list_periods(project_id: Optional[str] = None, tenant_id: Optional[str] = None,
+                       user=Depends(get_current_user)):
+    q = {}
+    if project_id: q["project_id"] = project_id
+    if tenant_id: q["tenant_id"] = tenant_id
+    docs = await db.periods.find(q, {"_id": 0}).sort("start_date", -1).to_list(500)
+    return [Period(**d) for d in docs]
+
+
+@api.post("/periods", response_model=Period)
+async def create_period(body: PeriodIn, _=Depends(require_roles("admin", "coordinador"))):
+    p = Period(**body.model_dump())
+    await db.periods.insert_one(p.model_dump())
+    return p
+
+
+# ---------- SHOPPERS ----------
+@api.get("/shoppers", response_model=List[Shopper])
+async def list_shoppers(tenant_id: Optional[str] = None, country: Optional[str] = None,
+                        q: Optional[str] = None, user=Depends(get_current_user)):
+    query = {}
+    if tenant_id: query["tenant_id"] = tenant_id
+    if country: query["country"] = country
+    if q:
+        query["$or"] = [
+            {"full_name": {"$regex": q, "$options": "i"}},
+            {"email": {"$regex": q, "$options": "i"}},
+            {"city": {"$regex": q, "$options": "i"}},
+        ]
+    docs = await db.shoppers.find(query, {"_id": 0}).sort("full_name", 1).to_list(500)
+    return [Shopper(**d) for d in docs]
+
+
+@api.get("/shoppers/{sid}")
+async def get_shopper(sid: str, user=Depends(get_current_user)):
+    doc = await db.shoppers.find_one({"id": sid}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Shopper no encontrado")
+    # Enriched: include ProjectShopper links + recent postulations
+    links = await db.project_shoppers.find({"shopper_id": sid}, {"_id": 0}).to_list(50)
+    postulations = await db.postulations.find({"shopper_id": sid}, {"_id": 0}).sort("created_at", -1).to_list(20)
+    return {"shopper": doc, "project_links": links, "postulations": postulations}
+
+
+@api.post("/shoppers", response_model=Shopper)
+async def create_shopper(body: ShopperIn, _=Depends(require_roles("admin", "coordinador"))):
+    s = Shopper(**body.model_dump())
+    await db.shoppers.insert_one(s.model_dump())
+    return s
+
+
+# ---------- POSTULATIONS ----------
+@api.get("/postulations")
+async def list_postulations(
+    tenant_id: Optional[str] = None, project_id: Optional[str] = None,
+    period_id: Optional[str] = None, shopper_id: Optional[str] = None,
+    status: Optional[str] = None, user=Depends(get_current_user),
+):
+    query = {}
+    for k, v in [("tenant_id", tenant_id), ("project_id", project_id),
+                 ("period_id", period_id), ("shopper_id", shopper_id), ("status", status)]:
+        if v: query[k] = v
+    docs = await db.postulations.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    # enrich with shopper name
+    shopper_ids = list({d["shopper_id"] for d in docs})
+    shoppers = await db.shoppers.find({"id": {"$in": shopper_ids}}, {"_id": 0}).to_list(500)
+    smap = {s["id"]: s for s in shoppers}
+    for d in docs:
+        s = smap.get(d["shopper_id"])
+        d["shopper_name"] = s["full_name"] if s else None
+        d["shopper_country"] = s.get("country") if s else None
+        d["shopper_city"] = s.get("city") if s else None
+    return docs
+
+
+@api.post("/postulations", response_model=Postulation)
+async def create_postulation(body: PostulationIn, user=Depends(get_current_user)):
+    p = Postulation(**body.model_dump())
+    await db.postulations.insert_one(p.model_dump())
+    return p
+
+
+@api.patch("/postulations/{pid}", response_model=Postulation)
+async def review_postulation(
+    pid: str, decision: str, reason: Optional[str] = None,
+    user=Depends(require_roles("admin", "coordinador", "supervisor")),
+):
+    if decision not in ("approved", "rejected", "under_review"):
+        raise HTTPException(status_code=400, detail="Decisión inválida")
+    update = {
+        "status": decision,
+        "reviewed_by": user["sub"],
+        "reviewed_at": now_iso(),
+        "rejection_reason": reason if decision == "rejected" else None,
+    }
+    await db.postulations.update_one({"id": pid}, {"$set": update})
+    doc = await db.postulations.find_one({"id": pid}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="No encontrada")
+    return Postulation(**doc)
+
+
+# ---------- HR SYNC (stub read-only) ----------
+@api.post("/hr/sync/{project_id}")
+async def hr_sync(project_id: str, user=Depends(require_roles("admin", "coordinador"))):
+    project = await db.projects.find_one({"id": project_id}, {"_id": 0})
+    if not project:
+        raise HTTPException(status_code=404, detail="Proyecto no encontrado")
+    cfg = project.get("hr_config", {})
+    if cfg.get("source_type") != "google_sheets" or not cfg.get("sheet_id"):
+        return {
+            "status": "not_configured",
+            "message": "El proyecto no tiene Google Sheet configurado en hr_config.sheet_id",
+            "project_id": project_id,
+            "hint": "PATCH /api/projects/{id} con hr_config.sheet_id",
+        }
+    # In production this would read the actual sheet via Google API using service account creds.
+    # For now we record the sync attempt as syncEvent (audit-friendly stub).
+    ev_id = new_id()
+    await db.sync_events.insert_one({
+        "id": ev_id, "direction": "hr_to_platform", "entity": "visits",
+        "project_id": project_id, "tenant_id": project["tenant_id"],
+        "sheet_id": cfg["sheet_id"], "sheet_tabs": cfg.get("sheet_tabs", {}),
+        "status": "simulated_ok", "rows_processed": 0,
+        "created_at": now_iso(),
+    })
+    return {
+        "status": "simulated_ok",
+        "sync_event_id": ev_id,
+        "project_id": project_id,
+        "message": "Sincronización simulada. Configurar credenciales Google API en fase de deployment real.",
+    }
+
+
+@api.get("/hr/sync-events")
+async def list_sync_events(project_id: Optional[str] = None, user=Depends(get_current_user)):
+    q = {"project_id": project_id} if project_id else {}
+    docs = await db.sync_events.find(q, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return docs
+
+
+# ---------- LIQUIDATIONS ----------
+@api.get("/liquidations")
+async def list_liquidations(project_id: Optional[str] = None, period_id: Optional[str] = None,
+                            status: Optional[str] = None, user=Depends(get_current_user)):
+    q = {}
+    for k, v in [("project_id", project_id), ("period_id", period_id), ("status", status)]:
+        if v: q[k] = v
+    docs = await db.liquidations.find(q, {"_id": 0}).to_list(500)
+    return docs
+
+
+@api.post("/liquidations", response_model=Liquidation)
+async def create_liquidation(body: LiquidationIn, _=Depends(require_roles("admin"))):
+    total = body.honorarium + sum((body.reimbursements or {}).values())
+    liq = Liquidation(**body.model_dump(), total=total)
+    await db.liquidations.insert_one(liq.model_dump())
+    return liq
 
 
 # Wire router
