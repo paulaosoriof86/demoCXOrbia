@@ -23,7 +23,7 @@ Fuentes vivas:
 - Inventario Familia B: `06fbfac28a1971d229ab121778ee6babdd1fd904`.
 - Scope lock A+B: `94c440a06212dd194c34b43df00197d5d56c6024`.
 - Matriz maestra A+B: `8d2f59a9ea8854f91efe3fb9532b35d04992fd64`.
-- Índice vigente: `bd74b166b6c78b291486885ef15aac16cb51c888`.
+- Índice vigente: `9fbbb5178913d9ba525ebe46b7dcac23b9a0ef51`.
 - Producción `tya-plataforma`: intacta.
 - Agosto 2026 todavía no existe en HR.
 
