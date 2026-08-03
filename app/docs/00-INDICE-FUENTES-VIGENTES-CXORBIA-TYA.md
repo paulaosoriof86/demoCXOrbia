@@ -1,14 +1,12 @@
 # 00 - ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-02  
+**Fecha:** 2026-08-03  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `A_PLUS_B_VISIBLE_ON_SINGLE_DEV__SOURCE_AND_REMOTE_CORE_PASS__SEMANTIC_GATE_FALSE_NEGATIVE_FIXED_SOURCE_ONLY__VISUAL_REVIEW_OPEN`
+**Estado vivo:** `PHASE_A_COMPLETE_CUMULATIVE_RECONSTRUCTION_ACTIVE__FRAGMENTED_AB_VISUAL_REVIEW_CANCELLED`
 
 ## 0. Lock prevalente
 
-Existe una sola candidata acumulativa visible:
-
-`https://cxorbia-backend-dev.web.app/index-backend-dev.html`
+La revisión fragmentada A+B queda anulada. La única candidata válida para nueva revisión humana será la composición completa de Phase A.
 
 Repo/rama/PR:
 
@@ -16,94 +14,67 @@ Repo/rama/PR:
 - `docs-tya-v6-v71-audit`;
 - PR #7 draft/open/no merge.
 
-No crear candidata, shell, rama, PR, Firebase, Hosting o metodología paralela. Toda observación continúa sobre este mismo linaje.
+No crear candidata, shell, rama, PR, Firebase, Hosting o metodología paralela.
 
-## 1. Fuentes vigentes — leer en este orden
+## 1. Leer primero y en este orden
 
-1. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `CAMBIOS-BACKEND-ADDENDUM-A-B-DEV-VISIBLE-GATE-FALSE-NEGATIVE-20260802.md`;
-3. `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
-4. `MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json`;
-5. `EVIDENCE-A-B-CUMULATIVE-SOURCE-PRECHECK-20260802.json`;
-6. `app/docs/evidence/CORTE6-CANONICAL-HEAD-DEV-DEPLOY-GATES-FAILURE-LATEST.json`;
-7. `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`;
-8. reglas maestras, addenda activos y `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-9. `RESUMEN-PARA-CLAUDE.md`;
-10. `PENDIENTES-PROTOTIPO.md`;
-11. `ACADEMIA-IMPACTO-RECONSTRUCCION-CANDIDATA-ACUMULATIVA-20260802.md`;
+1. `ADDENDUM-MAESTRO-CORRECCION-RECONSTRUCCION-PHASE-A-COMPLETA-20260803.md`;
+2. `MATRIZ-CANDIDATA-ACUMULATIVA-PHASE-A-COMPLETA-20260803.md`;
+3. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+4. `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md` corregido;
+5. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+6. `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`, solo como trazabilidad del error A+B;
+7. `MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json`, clasificado como manifest parcial no suficiente;
+8. `RESUMEN-PARA-CLAUDE.md`;
+9. `PENDIENTES-PROTOTIPO.md`;
+10. `ACADEMIA-IMPACTO-RECONSTRUCCION-CANDIDATA-ACUMULATIVA-20260802.md`;
+11. reglas maestras/addenda activos;
 12. PR #7 y HEAD vivo.
 
-## 2. Build publicado
+## 2. Autoridades históricas que no se reabren
 
-- source lock: `b908daa8c9cce0bd1c06cb05e3aceb9ff1b98beb`;
-- trigger: `32506d18507ed7b9b6729eca89137f37f83d78ee`;
-- archivos: 2320;
-- deploy Hosting DEV: 1;
-- segundo deploy: 0;
-- producción: intacta.
+- RC Phase A smoke técnico y visual/consola PASS;
+- M1/Corte 1: FROZEN/APROBADO con P1/P2 documentados;
+- Corte 2A/V174: FROZEN/APROBADO;
+- Corte 3/V182: `FROZEN_ACTIVE_BASELINE`;
+- C6: entrada por perfiles, HR, Staff, Shopper, Cliente, Finanzas, Portal Shopper y Reservas técnicamente preservados.
 
-## 3. Gates PASS
+Estas aprobaciones se someten a comparación de SHA y smoke antirretroceso, no a reauditoría desde cero.
 
-- A+B source gate completo;
-- 23 blobs del manifest;
-- unit gate 23/23;
-- orden/sintaxis/no-provider;
-- C6 static cumulative;
-- Shopper new-tab static;
-- paridad remota;
-- HR viva;
-- Staff, Shopper y Cliente;
-- Finanzas delegada.
+## 3. Alcance Phase A obligatorio
 
-Facts preservados:
+- entrada/shell/contexto/navegación;
+- Dashboard Operativo/hoja de ruta/Histórico/refresh;
+- Visitas, ficha, Revisión, Postulaciones y Reservas;
+- Shoppers y experiencia transversal por perfiles;
+- Mi Día, Disponibles, Mis Visitas, Mi Perfil, cuestionario, certificaciones, documentos y beneficios;
+- Finanzas completa;
+- Portal Cliente y Portal Shopper;
+- Reportes Admin/Cliente/Shopper y exportaciones;
+- smoke multirol y nueva pestaña.
 
-- 14 periodos;
-- 616 visitas;
-- 208 shoppers en el carril Shopper;
-- `ownVisits=1`;
-- Cliente `tya/cinepolis`;
-- localBilling false;
-- regalía 0;
-- Q60 GT/L200 HN;
-- 14 delegados, cero violaciones.
+CRM Ops Leads, Clientes comerciales, Comercial y Marketing se preservan, pero no bloquean el freeze Phase A.
 
-## 4. Gate final y root fix
+## 4. DEV actual
 
-El gate semántico final cerró STOP_RETRY con `semantic:null`.
+URL técnica existente:
 
-Causa de gate reproducible:
+`https://cxorbia-backend-dev.web.app/index-backend-dev.html`
 
-- módulo real: `financiero`;
-- nombre buscado por el gate: `finanzas`.
+Clasificación:
 
-Root fix QA:
+`TECHNICAL_COMPARISON_BUILD__NOT_FINAL_PHASE_A_CANDIDATE`.
 
-`68f1b49b3c03d53e0d9c74d15d0f55e286653a0e`
+No se solicita revisión humana fragmentada sobre este build. Solo se reutilizará si la comparación completa demuestra que no falta ningún delta; si cambia `app/`, se publicará un único reemplazo autorizado.
 
-Ahora usa `financiero` y persiste error exacto. No cambió `app/` y no produjo un segundo deploy.
+## 5. Siguiente bloque exacto
 
-## 5. Checkpoint Visual 1
+`RECUPERAR SHAS APROBADOS/SOURCE LOCKS DE TODA PHASE A → COMPARAR CONTRA BLOBS VIVOS → RESTAURAR/RECONCILIAR SOLO DIFERENCIAS → MANIFEST COMPLETO → GATES MULTIROL/FINANZAS/REPORTES/RESERVAS`.
 
-Revisar en el mismo build:
+## 6. Estado seguro
 
-- acceso/shell/contexto;
-- CRM Ops Leads;
-- Dashboard;
-- Hojas de Ruta;
-- Clientes;
-- Comercial;
-- Marketing;
-- indicadores y drilldowns.
-
-No avanzar a C+D por PASS técnico solamente.
-
-## 6. Siguiente bloque exacto
-
-`PAULA CHECKPOINT VISUAL 1 + REVALIDACIÓN SEMÁNTICA READ-ONLY DEL BUILD EXISTENTE SIN REDEPLOY`.
-
-## 7. Estado seguro
-
-- Cloud Run/Firestore/Auth/Rules/Storage/HR writes: 0;
+- deploy nuevo: 0;
+- provider writes: 0;
 - Make/Gemini/pagos: 0;
 - merge: false;
-- producción: false.
+- producción: intacta.
