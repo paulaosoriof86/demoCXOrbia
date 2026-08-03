@@ -1,17 +1,17 @@
 # RECONSTRUCCIÓN DE CANDIDATA ACUMULATIVA — MATRIZ MAESTRA VIVA
 
 **Inicio:** 2026-08-02  
-**Estado:** `RECONSTRUCTION_ACTIVE__FAMILY_A_CONTRACT_DEFINED__FAMILY_B_INVENTORY_ACTIVE__NO_DEPLOY__NO_PRODUCTION`  
+**Estado:** `RECONSTRUCTION_ACTIVE__A_PLUS_B_SCOPE_LOCKED__TARGET_SHAS_AND_DELTA_PENDING__NO_DEPLOY__NO_PRODUCTION`  
 **Repo:** `paulaosoriof86/demoCXOrbia`  
 **Rama única:** `docs-tya-v6-v71-audit`  
 **PR:** #7 draft/open/no merge  
 **HEAD de arranque:** `c646af04b8fba0ca8685fa4d6ce0a46e62221276`
 
-## 1. Propósito vinculante
+## 1. Propósito
 
-Reconstruir una sola candidata acumulativa con la mejor versión demostrable de cada módulo y todas sus dependencias. La selección no se hace por número nominal, último deploy ni estado actual del HEAD. Cada módulo debe quedar conectado a evidencia de proveniencia, aprobación, SHA, fuente y compatibilidad.
+Reconstruir una sola candidata acumulativa con la mejor versión demostrable de cada módulo y todas sus dependencias. La selección no se hace por número nominal, último deploy ni estado actual del HEAD.
 
-Hasta cerrar A+B quedan suspendidos los diagnósticos C6 aislados, nuevos deploys, nuevas candidatas, shells reducidos, ramas/PR paralelos y correcciones de síntomas no vinculadas a la composición acumulativa.
+Hasta cerrar A+B quedan suspendidos diagnósticos C6 aislados, nuevos deploys, nuevas candidatas, shells reducidos, ramas/PR paralelos y correcciones no vinculadas al primer checkpoint.
 
 ## 2. Estados permitidos
 
@@ -23,22 +23,7 @@ Hasta cerrar A+B quedan suspendidos los diagnósticos C6 aislados, nuevos deploy
 
 No se permite estado final `UNKNOWN`.
 
-## 3. Campos mínimos por módulo
-
-1. módulo funcional;
-2. ruta principal;
-3. core/estilos/adapters relacionados;
-4. SHA/blob actual;
-5. candidata/commit de origen;
-6. última evidencia humana/freeze;
-7. dependencias;
-8. estado de proveniencia;
-9. acción;
-10. SHA objetivo;
-11. gate técnico;
-12. gate visual.
-
-## 4. Familias
+## 3. Familias
 
 - **A:** shell, login, tenant, navegación, `CX.data`, HR, Auth, Proyecto/Periodo, build y caché.
 - **B:** CRM Ops Leads, Dashboard, Hojas de Ruta, Clientes, Comercial y Marketing.
@@ -48,9 +33,7 @@ No se permite estado final `UNKNOWN`.
 - **F:** portales y reportes.
 - **G:** administración, integraciones y Academia.
 
-Academia se documenta, pero no bloquea CRM Ops Leads/Phase A salvo P0 demostrado.
-
-## 5. Anclas preservadas
+## 4. Anclas preservadas
 
 ### V182 incremental
 
@@ -73,24 +56,18 @@ Academia se documenta, pero no bloquea CRM Ops Leads/Phase A salvo P0 demostrado
 - Q60/L200;
 - 14 delegados, 0 directos, 0 sin configurar, 0 violaciones.
 
-## 6. Familia A — contrato definido
+## 5. Familia A — contrato definido
 
-Fuente detallada:
-
-`RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-CONTRATO-Y-PRECEDENCIA-20260802.md`.
-
-### Precedencia
+Precedencia:
 
 `SHELL/INTERFAZ CX.DATA → TENANT/PROYECTO → HR VIVA → READ MODEL → SEMÁNTICA CANÓNICA → AUTH/OVERLAYS EXACTOS → FINANZAS → WRITE GUARDS → ROUTER/MÓDULOS → BUILD-LOCK/SW`.
 
-### Identidades
+Identidades:
 
-- tenant: `tya`;
-- proyecto: `cinepolis`;
-- periodo: `cinepolis-YYYY-MM`;
+- tenant `tya`;
+- proyecto `cinepolis`;
+- periodo `cinepolis-YYYY-MM`;
 - marca visual separada de la llave técnica.
-
-### Decisiones principales
 
 | Componente | Estado |
 |---|---|
@@ -113,11 +90,7 @@ Fuente detallada:
 | build-lock V174 | `REPLACE_AT_ASSEMBLY` |
 | `sw.js` | `PRESERVE_NETWORK_FIRST_REBUILD_CACHE_ID` |
 
-## 7. Familia B — inventario inicial
-
-Fuente detallada:
-
-`RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-B-INVENTARIO-INICIAL-20260802.md`.
+## 6. Familia B — inventario
 
 | Módulo | Blob actual | Estado provisional | Acción |
 |---|---|---|---|
@@ -128,20 +101,44 @@ Fuente detallada:
 | Marketing | `6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83` | `RECONCILIATION_REQUIRED_DEMO_AND_INTEGRATION_GATES` | no fixtures ni Gemini/Make sin gate |
 | Hojas de Ruta | `1da95ce4a808dafd7553ad9082056da7009e4920` | `PRESERVE_UI_RECONCILE_SOURCE_AND_ACTION_GATES` | HR viva y proyecto/periodo canónicos |
 
-## 8. Causa raíz transversal A+B
+## 7. Scope lock A+B
+
+No se modifican durante el primer checkpoint:
+
+| Archivo/superficie | Familia | Decisión |
+|---|---|---|
+| `app/modules/operacion-extra.js` | D | preservar sin cambios |
+| `app/modules/cliente-extra.js` | F/G | preservar sin cambios |
+| `app/modules/cliente-insights.js` | F | reconciliar después |
+| Portal Cliente/reportes/Insights | F | diferir |
+| experiencia Shopper | D | diferir |
+| Finanzas completa | E | diferir |
+| Academia/integraciones | G | diferir |
+
+Solo una dependencia transversal P0 demostrada permite abrirlos.
+
+Overlays que sí afectan A+B:
+
+- domain consistency bridge;
+- unified human runtime;
+- read guards/normalizadores;
+- configuración tenant/proyecto/periodo;
+- build-lock/service worker.
+
+## 8. Causa raíz A+B
 
 - varias autoridades redefinen datos y métodos después de cargar módulos;
-- Dashboard puede depender de bridges para corregir su propia semántica;
+- Dashboard depende de bridges para corregir semántica;
 - CRM/Comercial son localStorage-first;
-- Clientes/Marketing contienen seeds que parecen reales;
-- Hojas de Ruta mezcla fuente real con acciones no activadas;
+- Clientes/Marketing contienen seeds aparentes;
+- Hojas de Ruta combina fuente real con acciones no activadas;
 - build-lock/caché no identifican el estado acumulativo actual.
 
-La composición objetivo debe conservar la mejor UI y eliminar únicamente la autoridad falsa, duplicada o no gateada.
+La candidata conserva la mejor UI y elimina únicamente autoridad falsa, duplicada o no gateada.
 
 ## 9. Checkpoint Visual 1
 
-Paula revisará sobre un solo build A+B:
+Paula revisará sobre un solo build:
 
 - login, shell, tenant, proyecto, periodo, fuente y navegación;
 - CRM Ops Leads;
@@ -166,17 +163,17 @@ No se avanza a C+D sin aprobación visual del build exacto.
 - Hojas de Ruta con HR viva;
 - build-lock/manifest/SW mismo build ID.
 
-## 11. Pendientes inmediatos
+## 11. Pendiente inmediato
 
 - recuperar aprobaciones/commits históricos A+B;
-- inspeccionar `operacion-extra.js`, `cliente-insights.js` y overlays que alteran Dashboard/Cliente/CRM;
-- identificar mejoras posteriores no cargadas o reemplazadas;
 - fijar SHA objetivo por archivo;
-- producir delta completo y gates.
+- producir delta acumulativo focalizado;
+- crear y ejecutar gates source-only;
+- solicitar un único DEV para Checkpoint Visual 1.
 
 ## 12. Secuencia vigente
 
-`OVERLAYS/EXTRAS B → PROVENIENCIA/APROBACIONES → SHAS OBJETIVO A+B → DELTA COMPLETO → GATES SOURCE-ONLY → ÚNICO DEV → CHECKPOINT VISUAL 1`.
+`PROVENIENCIA/APROBACIONES A+B → SHAS OBJETIVO → DELTA COMPLETO → GATES SOURCE-ONLY → ÚNICO DEV → CHECKPOINT VISUAL 1`.
 
 ## 13. Estado seguro
 
@@ -189,8 +186,8 @@ No se avanza a C+D sin aprobación visual del build exacto.
 
 ## 14. Clasificación
 
-- **Reusable CXOrbia:** matriz por SHA, autoridad única y fail-closed por fuente.
+- **Reusable CXOrbia:** matriz por SHA, autoridad única y scope lock.
 - **Exclusivo cliente:** TyA/Cinépolis, HR y configuración financiera.
 - **Claude/prototipo:** mejor UI por módulo y retiro de autoridad demo/bridge.
-- **Academia:** contenido alineado al build visualmente aprobado.
+- **Academia:** contenido alineado al build aprobado.
 - **Sin impacto Claude:** hashes, gates, manifest, build-lock y caché.
