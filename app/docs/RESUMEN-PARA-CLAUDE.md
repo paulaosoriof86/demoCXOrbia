@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-02  
-**Estado vivo:** `A_PLUS_B_VISIBLE_ON_SINGLE_DEV__VISUAL_REVIEW_OPEN__NO_NEW_CANDIDATE__NO_PRODUCTION`
+**Última actualización:** 2026-08-03  
+**Estado vivo:** `PHASE_A_COMPLETE_CUMULATIVE_RECONSTRUCTION_ACTIVE__NO_FRAGMENTED_AB_GATE`
 
 ## 1. Baseline única
 
@@ -9,90 +9,127 @@ Continuar exclusivamente sobre:
 
 - repo `paulaosoriof86/demoCXOrbia`;
 - rama `docs-tya-v6-v71-audit`;
-- PR #7 draft/open/no merge;
-- DEV exacto: `https://cxorbia-backend-dev.web.app/index-backend-dev.html`.
+- PR #7 draft/open/no merge.
 
-No crear candidata, shell reducido, rama, PR, Firebase, Hosting o workflow paralelo.
+No crear otra candidata, shell, rama, PR, Firebase, Hosting o metodología.
 
-## 2. Qué ya está publicado
+Leer primero:
 
-La candidata A+B fue desplegada una vez con 2320 archivos y paridad remota exacta.
+- `ADDENDUM-MAESTRO-CORRECCION-RECONSTRUCCION-PHASE-A-COMPLETA-20260803.md`;
+- `MATRIZ-CANDIDATA-ACUMULATIVA-PHASE-A-COMPLETA-20260803.md`;
+- `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+- `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`.
 
-Componentes acumulativos:
+## 2. Corrección metodológica vinculante
 
-- `app/adapters/tya-ab-cumulative-composition-v1.js`;
-- `app/index-backend-dev.html`;
-- módulos Dashboard, CRM, Clientes, Comercial, Marketing y Rutas preservados;
-- runtime/Auth/HR/Shopper/Cliente/Finanzas C6 preservados.
+El checkpoint A+B centrado en CRM/Clientes/Comercial/Marketing quedó anulado. Esos módulos pertenecen al trabajo posterior y no pueden desplazar:
 
-El adapter:
+- Dashboard Operativo;
+- Visitas;
+- Revisión Admin;
+- Postulaciones;
+- Reservas;
+- Histórico;
+- Shoppers y perfiles;
+- Finanzas completa;
+- Portal Cliente/Shopper;
+- Reportes y exportaciones.
 
-- retira prospectos sintéticos y contactos placeholder;
-- oculta fixtures CRM/Marketing;
-- conserva altas con `platform_user`;
-- preserva HR, `CX.data`, Auth y finanzas canónicas;
-- no escribe proveedores.
+## 3. Qué debe preservarse
 
-## 3. PASS demostrados
+Autoridades históricas:
 
-- source gate A+B;
-- manifest de 23 blobs;
-- unit gate 23/23;
-- static cumulative;
-- paridad remota;
-- HR 14 periodos/616 visitas;
-- Staff estable;
-- Shopper 208 perfiles, identidad exacta y `ownVisits=1`;
-- Cliente `tya/cinepolis`;
-- Finanzas delegada, localBilling false, regalía 0, Q60/L200.
+- RC Phase A smoke técnico y visual PASS;
+- M1/Corte 1 frozen/aprobado;
+- Corte 2A/V174 frozen/aprobado;
+- Corte 3/V182 frozen active baseline;
+- C6 entrada por perfiles, HR, Staff, Shopper, Cliente, Finanzas y Reservas técnicamente PASS.
 
-## 4. False negative del gate semántico
+No reescribir módulos aprobados por rutina. Primero comparar SHA aprobado contra SHA vivo y restaurar/reconciliar solo diferencias demostradas.
 
-El cierre STOP_RETRY no demostró una regresión del módulo financiero. El gate buscaba `CX.modules.finanzas`, pero el módulo se registra como `CX.module('financiero', ...)`.
+## 4. Alcance mínimo antes de nueva visualización
 
-Root fix QA:
+### Admin/operación
 
-`68f1b49b3c03d53e0d9c74d15d0f55e286653a0e`
+- Dashboard Operativo y drilldowns;
+- Mi Día/hoja de ruta;
+- Histórico y refresh;
+- Visitas/ficha/Revisión;
+- Postulaciones;
+- Reservas;
+- Shoppers.
 
-Ahora:
+### Shopper/perfiles
 
-- valida `financiero`;
-- persiste `failedStage`, `errorCode` y snapshots parciales;
-- no toca `app/`;
-- no requiere otra candidata.
+- entrada directa;
+- Disponibles;
+- Mis Visitas;
+- Reservas;
+- Mi Día;
+- Mi Perfil;
+- cuestionario;
+- certificaciones;
+- documentos;
+- beneficios;
+- reportes Shopper.
 
-## 5. Checkpoint Visual 1
+### Finanzas
 
-Paula revisará en el mismo build:
+- Dashboard Financiero;
+- Movimientos;
+- Liquidaciones;
+- Costos;
+- CxP/CxC;
+- lotes/pagos reales o pendientes de fuente;
+- delegado, regalía 0, localBilling false, Q60/L200.
 
-- login/shell/tenant/proyecto/periodo/fuente;
-- navegación;
-- CRM Ops Leads;
-- Dashboard y drilldowns;
-- Hojas de Ruta;
-- Clientes;
-- Comercial;
-- Marketing.
+### Portales/reportes
 
-No presentar como aprobado visualmente antes de su respuesta.
+- Portal Cliente;
+- Portal Shopper;
+- Reportes Admin/Cliente/Shopper;
+- PDF/XLSX/PPTX;
+- mismo periodo, alcance, fuente y filas;
+- cero métricas/NPS/hallazgos fabricados.
 
-## 6. Reglas para ajustes frontend
+## 5. Estado de los módulos posteriores
 
-- corregir sobre la misma rama/candidata;
-- no restaurar versiones por número;
-- no insertar seeds o métricas ficticias;
-- no parchear desde backend lo que corresponda al módulo UI;
-- preservar IDs, contratos y PASS técnicos;
-- no abrir Operación/Shopper/Finanzas completa/Portales/Academia hasta cerrar el checkpoint, salvo P0 transversal reproducible.
+CRM Ops Leads, Clientes comerciales, Comercial y Marketing:
 
-## 7. Próximo bloque
+`PRESENT_POST_PHASE_A_WORKSTREAM_PENDING_VISUAL`.
 
-`OBSERVACIONES VISUALES DE PAULA SOBRE EL DEV EXISTENTE → DELTA FOCALIZADO EN LA MISMA CANDIDATA → REVALIDACIÓN READ-ONLY SIN REDEPLOY INNECESARIO`.
+Se preservan físicamente. No bloquean el freeze Phase A salvo P0 transversal.
 
-## 8. Estado seguro
+## 6. Validación humana
 
-- Hosting DEV deploys del macro: 1;
-- segundo deploy: 0;
-- provider writes: 0;
-- merge: false;
-- producción: false.
+La próxima revisión válida es una sola:
+
+`CHECKPOINT_VISUAL_PHASE_A_COMPLETA`.
+
+No solicitar a Paula una revisión A+B fragmentada. No repetir capturas antiguas salvo smoke antirretroceso de un área modificada.
+
+## 7. Estado del DEV actual
+
+`https://cxorbia-backend-dev.web.app/index-backend-dev.html`
+
+Se usa como comparación técnica. No se presenta como candidata definitiva hasta cerrar matriz, manifest y gates completos.
+
+## 8. Siguiente trabajo exacto para frontend/Claude
+
+No iniciar desarrollo nuevo. Esperar clasificación por módulo:
+
+- `PRESERVAR`;
+- `RESTAURAR SHA APROBADO`;
+- `RECONCILIAR RESULTADO APROBADO`.
+
+Toda corrección debe ser focal, por archivo, sin alterar backend/adapters ni inventar nueva UX.
+
+## 9. Prohibiciones
+
+- no priorizar CRM sobre Phase A;
+- no reauditar módulos frozen sin regresión;
+- no datos demo/semillas visibles en conectado;
+- no métricas fabricadas;
+- no hardcodear agosto;
+- no `location.reload()` para refresh HR;
+- no writes, deploy, merge o producción sin gate/autorización.
