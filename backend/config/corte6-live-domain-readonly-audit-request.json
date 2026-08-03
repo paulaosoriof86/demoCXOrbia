@@ -10,9 +10,9 @@
   "abManifest": "app/docs/MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json",
   "abSourceGate": "tools/qa/tya-ab-cumulative-candidate-source-gate.mjs",
   "abUnitGateDecision": "PASS_23_CHECKS",
-  "status": "authorized_waiting_execute",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_fail_stop_retry",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -70,7 +70,8 @@
   "merge": false,
   "production": false,
   "stopRetryOnFailure": true,
-  "decision": "PENDING_EXECUTION",
-  "nextGate": "AB_SOURCE_STATIC_PREDEPLOY_THEN_SINGLE_DEV_AND_REMOTE_READONLY",
-  "stopRetry": false
+  "decision": "FAIL_C6_REMOTE_GATES_AFTER_SINGLE_DEV_HOSTING_DEPLOY_STOP_RETRY",
+  "nextGate": "ROOT_CAUSE_REVIEW_NO_AUTOMATIC_REDEPLOY",
+  "stopRetry": true,
+  "consumedAt": "2026-08-03T00:55:17.355Z"
 }

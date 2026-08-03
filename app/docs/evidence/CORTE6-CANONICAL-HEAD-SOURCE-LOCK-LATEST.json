@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.c6.canonical-head-source-lock.v1",
-  "generatedAt": "2026-08-02T22:46:07.904Z",
-  "sourceLockHead": "aad5caed269fd7156b786775cc7e35c8108e00ca",
-  "triggerHead": "c2e3ec5cf8b7848787033bffc516e4ea2acc3e08",
-  "lockedAppTree": "412f4e7848276a58d7305bd573d9dbfbd37fe3f0",
-  "currentAppTree": "412f4e7848276a58d7305bd573d9dbfbd37fe3f0",
-  "lockedQaTree": "dcbdac277715a5cd09009356b5ca56cb04ff51f2",
-  "currentQaTree": "dcbdac277715a5cd09009356b5ca56cb04ff51f2",
-  "appFiles": 2302,
-  "appBytes": 15750379,
-  "appManifestSha256": "325213a1ea3df7d75d0c70a97eabecf9e0890c53b8920649d1ed59b2dfbe0d3f",
+  "generatedAt": "2026-08-03T00:52:21.748Z",
+  "sourceLockHead": "b908daa8c9cce0bd1c06cb05e3aceb9ff1b98beb",
+  "triggerHead": "32506d18507ed7b9b6729eca89137f37f83d78ee",
+  "lockedAppTree": "ef0b80be9ff828f7e5d29f8b5732a3d6e8a284aa",
+  "currentAppTree": "ef0b80be9ff828f7e5d29f8b5732a3d6e8a284aa",
+  "lockedQaTree": "db41d3a201387a7e33c099f71defba65fb8acf1e",
+  "currentQaTree": "db41d3a201387a7e33c099f71defba65fb8acf1e",
+  "appFiles": 2321,
+  "appBytes": 15864403,
+  "appManifestSha256": "3e3526a071da1a176f89db3fa44c8b3579a9b95954144433aeb80c737004b6e3",
   "criticalQa": [
     {
       "path": "tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs",
-      "sha256": "42cb0c69695e823054e5a82dc3f2f618554906b1220b0e0588e2949a32d8bc92"
+      "sha256": "7871abe84858140851d6e58f2a2691939770e42f57c9ee340f2fa8f6abfef2d8"
     },
     {
       "path": "tools/qa/tya-c6-shopper-new-tab-authority-root-fix-gate.mjs",

@@ -1,24 +1,24 @@
 {
   "schemaVersion": "cxorbia.c6.canonical-head-single-dev-deploy-failure.v1",
-  "generatedAt": "2026-08-02T22:49:18.329Z",
+  "generatedAt": "2026-08-03T00:55:16.925Z",
   "decision": "FAIL_C6_REMOTE_GATES_AFTER_SINGLE_DEV_HOSTING_DEPLOY_STOP_RETRY",
   "failedStage": "remote_domain_finance_portals_reservations",
   "sourceLock": {
     "schemaVersion": "cxorbia.c6.canonical-head-source-lock.v1",
-    "generatedAt": "2026-08-02T22:46:07.904Z",
-    "sourceLockHead": "aad5caed269fd7156b786775cc7e35c8108e00ca",
-    "triggerHead": "c2e3ec5cf8b7848787033bffc516e4ea2acc3e08",
-    "lockedAppTree": "412f4e7848276a58d7305bd573d9dbfbd37fe3f0",
-    "currentAppTree": "412f4e7848276a58d7305bd573d9dbfbd37fe3f0",
-    "lockedQaTree": "dcbdac277715a5cd09009356b5ca56cb04ff51f2",
-    "currentQaTree": "dcbdac277715a5cd09009356b5ca56cb04ff51f2",
-    "appFiles": 2302,
-    "appBytes": 15750379,
-    "appManifestSha256": "325213a1ea3df7d75d0c70a97eabecf9e0890c53b8920649d1ed59b2dfbe0d3f",
+    "generatedAt": "2026-08-03T00:52:21.748Z",
+    "sourceLockHead": "b908daa8c9cce0bd1c06cb05e3aceb9ff1b98beb",
+    "triggerHead": "32506d18507ed7b9b6729eca89137f37f83d78ee",
+    "lockedAppTree": "ef0b80be9ff828f7e5d29f8b5732a3d6e8a284aa",
+    "currentAppTree": "ef0b80be9ff828f7e5d29f8b5732a3d6e8a284aa",
+    "lockedQaTree": "db41d3a201387a7e33c099f71defba65fb8acf1e",
+    "currentQaTree": "db41d3a201387a7e33c099f71defba65fb8acf1e",
+    "appFiles": 2321,
+    "appBytes": 15864403,
+    "appManifestSha256": "3e3526a071da1a176f89db3fa44c8b3579a9b95954144433aeb80c737004b6e3",
     "criticalQa": [
       {
         "path": "tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs",
-        "sha256": "42cb0c69695e823054e5a82dc3f2f618554906b1220b0e0588e2949a32d8bc92"
+        "sha256": "7871abe84858140851d6e58f2a2691939770e42f57c9ee340f2fa8f6abfef2d8"
       },
       {
         "path": "tools/qa/tya-c6-shopper-new-tab-authority-root-fix-gate.mjs",
@@ -62,25 +62,25 @@
   },
   "deployAttempted": true,
   "deploySucceeded": true,
-  "staticCumulativeLogTail": "PASS C6_UNIFIED_NORMAL_ENTRY\nPASS C6_NORMAL_ENTRY_CANONICAL_FLAGS\nPASS C6_NO_FROZEN_RUNTIME_COUNTS\nPASS C6_NO_DIRECT_ROLE_OVERRIDE\nPASS C6_NO_HIDDEN_VISUAL_SESSION_OVERLAY\nPASS C6_PRODUCT_LOGIN_AND_HR_AUTHORITY\nPASS C6_TECHNICAL_E2E_PRESERVED_HUMAN_UNAFFECTED\nPASS C6_CANONICAL_DOMAIN_SHOPPER_FINANCE\nPASS C6_PROJECT_FINANCIAL_MODEL_LOAD_ORDER\nPASS C6_DELEGATED_GUARD_LOAD_ORDER\nPASS C6_SHOPPER_AUTH_GUARD_LOAD_ORDER\nPASS C6_AUTHENTICATED_PREVIEW_CONFIG\nPASS C6_SINGLE_VISIBLE_PRODUCT_LOGIN\nPASS C6_HR_AUTHORITY_DYNAMIC_EXACT_COMPOSITION\nPASS C6_LIVE_KPI_PHASE_HISTORY_CERTIFICATION\nPASS C6_SHOPPER_PROFILE_HISTORY_CONTRACT\nPASS C6_UNIFIED_CLIENT_HISTORY_PROJECT_CONFIG\nPASS C6_EARLY_ROLE_CLICK_CANNOT_BYPASS_AUTH\nPASS C6_PROTECTED_SHOPPER_CARD_CANNOT_USE_DEV_PICKER\nPASS C6_PROJECT_CREATION_DIRECT_DELEGATED_SELECTABLE\nPASS C6_PROJECT_MODEL_CONFIGURABLE_FAIL_CLOSED_NOT_NAME_HARDCODED\nPASS C6_LOCAL_DELEGATED_REGIONAL_BACKEND_CONTRACT\nPASS C6_ROYALTIES_AND_LOCAL_TAX_DIRECT_ONLY\nPASS C6_DELEGATED_AND_UNCONFIGURED_INCOME_FAIL_CLOSED\nPASS C6_CINEPOLIS_DELEGATED_CONFIGURATION\nPASS C6_CINEPOLIS_NO_LOCAL_ROYALTY_REGRESSION\nPASS C6_UNIFIED_RUNTIME_DELEGATED_COMMISSION_MODEL\nPASS C6_NO_DELEGATED_ROYALTY_IN_RUNTIME_METADATA\nPASS C6_NO_ZERO_HONORARIO_CONFIG\nPASS C6_CURRENT_HR_PERIOD_SNAPSHOT · 14\nPASS C6_CURRENT_HR_RANGE_2025_06_TO_2026_07 · 2025-06..2026-07\nPASS C6_NO_AUGUST_WITHOUT_SOURCE\nPASS C6_READONLY_NO_PRODUCTION\nDECISION REDACTED_LONG_VALUE\n",
+  "staticCumulativeLogTail": "    },\n    {\n      \"id\": \"ADAPTER_FORBIDDEN_EXECUTABLE_ABSENT\",\n      \"detail\": \"/localStorage\\\\.(setItem|removeItem|clear)\\\\s*\\\\(/\"\n    },\n    {\n      \"id\": \"ADAPTER_FORBIDDEN_EXECUTABLE_ABSENT\",\n      \"detail\": \"/location\\\\.reload\\\\s*\\\\(/\"\n    },\n    {\n      \"id\": \"ADAPTER_FORBIDDEN_EXECUTABLE_ABSENT\",\n      \"detail\": \"/\\\\.deploy\\\\s*\\\\(/\"\n    },\n    {\n      \"id\": \"ADAPTER_FORBIDDEN_EXECUTABLE_ABSENT\",\n      \"detail\": \"/https?:\\\\/\\\\/[^'\\\"\\\\s]*make\\\\.com/i\"\n    },\n    {\n      \"id\": \"ADAPTER_FORBIDDEN_EXECUTABLE_ABSENT\",\n      \"detail\": \"/(?:GoogleGenerativeAI|generativelanguage\\\\.googleapis|CX\\\\.gemini\\\\s*[.(])/i\"\n    },\n    {\n      \"id\": \"AB_COMPOSITION_UNIT\",\n      \"detail\": \"23 checks\"\n    },\n    {\n      \"id\": \"MODULE_STATUS_HONEST\",\n      \"detail\": \"app/modules/dashboard.js:APPROVED_UI_PRESENT_RUNTIME_RECONCILIATION_REQUIRED\"\n    },\n    {\n      \"id\": \"MODULE_STATUS_HONEST\",\n      \"detail\": \"app/modules/crm.js:BEST_TECHNICAL_PENDING_VISUAL\"\n    },\n    {\n      \"id\": \"MODULE_STATUS_HONEST\",\n      \"detail\": \"app/modules/clientes.js:BEST_TECHNICAL_PENDING_VISUAL\"\n    },\n    {\n      \"id\": \"MODULE_STATUS_HONEST\",\n      \"detail\": \"app/modules/comercial.js:BEST_TECHNICAL_PENDING_VISUAL\"\n    },\n    {\n      \"id\": \"MODULE_STATUS_HONEST\",\n      \"detail\": \"app/modules/marketing.js:BEST_TECHNICAL_PENDING_VISUAL\"\n    },\n    {\n      \"id\": \"MODULE_STATUS_HONEST\",\n      \"detail\": \"app/modules/rutas.js:BEST_TECHNICAL_PENDING_VISUAL\"\n    },\n    {\n      \"id\": \"BUILD_LOCK_NOT_FALSELY_FROZEN\",\n      \"detail\": \"REPLACE_AFTER_SOURCE_GATES\"\n    }\n  ],\n  \"failures\": [],\n  \"safeState\": {\n    \"providerWrites\": 0,\n    \"deploy\": 0,\n    \"merge\": false,\n    \"production\": false\n  },\n  \"next\": \"RUNTIME_SMOKE_THEN_SINGLE_DEV_AUTHORIZATION\"\n}\nPASS AB_CUMULATIVE_SOURCE_GATE · manifest, blobs, load order, unit and safe-state PASS\nPASS C6_UNIFIED_NORMAL_ENTRY\nPASS C6_NORMAL_ENTRY_CANONICAL_FLAGS\nPASS C6_NO_FROZEN_RUNTIME_COUNTS\nPASS C6_NO_DIRECT_ROLE_OVERRIDE\nPASS C6_NO_HIDDEN_VISUAL_SESSION_OVERLAY\nPASS C6_PRODUCT_LOGIN_AND_HR_AUTHORITY\nPASS C6_TECHNICAL_E2E_PRESERVED_HUMAN_UNAFFECTED\nPASS C6_CANONICAL_AB_DOMAIN_SHOPPER_FINANCE\nPASS C6_PROJECT_FINANCIAL_MODEL_LOAD_ORDER\nPASS C6_DELEGATED_GUARD_LOAD_ORDER\nPASS AB_COMPOSITION_AFTER_MODULES_BEFORE_C6_DOMAIN\nPASS C6_SHOPPER_AUTH_GUARD_LOAD_ORDER\nPASS C6_AUTHENTICATED_PREVIEW_CONFIG\nPASS C6_SINGLE_VISIBLE_PRODUCT_LOGIN\nPASS C6_HR_AUTHORITY_DYNAMIC_EXACT_COMPOSITION\nPASS C6_LIVE_KPI_PHASE_HISTORY_CERTIFICATION\nPASS C6_SHOPPER_PROFILE_HISTORY_CONTRACT\nPASS C6_UNIFIED_CLIENT_HISTORY_PROJECT_CONFIG\nPASS C6_EARLY_ROLE_CLICK_CANNOT_BYPASS_AUTH\nPASS C6_PROTECTED_SHOPPER_CARD_CANNOT_USE_DEV_PICKER\nPASS C6_PROJECT_CREATION_DIRECT_DELEGATED_SELECTABLE\nPASS C6_PROJECT_MODEL_CONFIGURABLE_FAIL_CLOSED_NOT_NAME_HARDCODED\nPASS C6_LOCAL_DELEGATED_REGIONAL_BACKEND_CONTRACT\nPASS C6_ROYALTIES_AND_LOCAL_TAX_DIRECT_ONLY\nPASS C6_DELEGATED_AND_UNCONFIGURED_INCOME_FAIL_CLOSED\nPASS C6_CINEPOLIS_DELEGATED_CONFIGURATION\nPASS C6_CINEPOLIS_NO_LOCAL_ROYALTY_REGRESSION\nPASS C6_UNIFIED_RUNTIME_DELEGATED_COMMISSION_MODEL\nPASS C6_NO_DELEGATED_ROYALTY_IN_RUNTIME_METADATA\nPASS C6_NO_ZERO_HONORARIO_CONFIG\nPASS C6_CURRENT_HR_PERIOD_SNAPSHOT · 14\nPASS C6_CURRENT_HR_RANGE_2025_06_TO_2026_07 · 2025-06..2026-07\nPASS C6_NO_AUGUST_WITHOUT_SOURCE\nPASS C6_READONLY_NO_PRODUCTION\nDECISION REDACTED_LONG_VALUE\n",
   "staticRootFixLogTail": "PASS C6_SHOPPER_NEW_TAB_RESTORED_SESSION_CONTRACT\nPASS C6_SHOPPER_NEW_TAB_BOUNDED_HR_RETRY\nPASS C6_SHOPPER_NEW_TAB_BOOT_RECONCILE_SCHEDULER\nPASS C6_SHOPPER_NEW_TAB_AUTH_READY_RECONCILE\nPASS C6_SHOPPER_NEW_TAB_BACKEND_READY_RECONCILE\nPASS C6_SHOPPER_NEW_TAB_DOM_READY_RECONCILE\nPASS C6_SHOPPER_NEW_TAB_FOCUS_VISIBILITY_RECOVERY\nPASS C6_SHOPPER_NEW_TAB_PROTECTED_BACKEND_GUARD\nPASS C6_SHOPPER_NEW_TAB_RUNTIME_DEPENDENCY_GUARD\nPASS C6_SHOPPER_NEW_TAB_IDEMPOTENT_RECONCILE_GUARD\nPASS C6_SHOPPER_NEW_TAB_NEW_TAB_RECOVERY_METADATA\nPASS C6_SHOPPER_NEW_TAB_ZERO_PROVIDER_WRITES\nPASS C6_SHOPPER_NEW_TAB_NO_WRITE_APIS\nDECISION PASS_C6_SHOPPER_NEW_TAB_AUTHORITY_ROOT_FIX_STATIC_GATE\n",
   "firebaseCliVersion": "15.25.1\n",
-  "deployLogTail": "\n\u001b[1m\u001b[37m===\u001b[39m Deploying to 'cxorbia-backend-dev'...\u001b[22m\n\n\u001b[36m\u001b[1mi \u001b[22m\u001b[39m deploying \u001b[1mhosting\u001b[22m\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m beginning deploy...\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m found 2301 files in \u001b[1mapp\u001b[22m\n\u001b[36m\u001b[1mi  hosting:\u001b[22m\u001b[39m uploading new files [3/13] (\u001b[1m\u001b[32m23%\u001b[39m\u001b[22m)\n\u001b[36m\u001b[1mi  hosting:\u001b[22m\u001b[39m upload complete\n\u001b[32m\u001b[1m✔  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m file upload complete\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m finalizing version...\n\u001b[32m\u001b[1m✔  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m version finalized\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m releasing new version...\n\u001b[32m\u001b[1m✔  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m release complete\n\n\u001b[32m\u001b[1m✔ \u001b[22m\u001b[39m \u001b[1m\u001b[4mDeploy complete!\u001b[24m\u001b[22m\n\n\u001b[1mProject Console:\u001b[22m https://console.firebase.google.com/project/cxorbia-backend-dev/overview\n\u001b[1mHosting URL:\u001b[22m https://cxorbia-backend-dev.web.app\n",
+  "deployLogTail": "\n\u001b[1m\u001b[37m===\u001b[39m Deploying to 'cxorbia-backend-dev'...\u001b[22m\n\n\u001b[36m\u001b[1mi \u001b[22m\u001b[39m deploying \u001b[1mhosting\u001b[22m\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m beginning deploy...\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m found 2320 files in \u001b[1mapp\u001b[22m\n\u001b[36m\u001b[1mi  hosting:\u001b[22m\u001b[39m adding files to version [1000/2320] (\u001b[1m\u001b[32m43%\u001b[39m\u001b[22m)\n\u001b[36m\u001b[1mi  hosting:\u001b[22m\u001b[39m upload complete\n\u001b[32m\u001b[1m✔  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m file upload complete\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m finalizing version...\n\u001b[32m\u001b[1m✔  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m version finalized\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m releasing new version...\n\u001b[32m\u001b[1m✔  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m release complete\n\n\u001b[32m\u001b[1m✔ \u001b[22m\u001b[39m \u001b[1m\u001b[4mDeploy complete!\u001b[24m\u001b[22m\n\n\u001b[1mProject Console:\u001b[22m https://console.firebase.google.com/project/cxorbia-backend-dev/overview\n\u001b[1mHosting URL:\u001b[22m https://cxorbia-backend-dev.web.app\n",
   "firebaseDebugTail": null,
   "parity": {
     "schemaVersion": "cxorbia.c6.hosting-dev-remote-parity.v4",
-    "generatedAt": "2026-08-02T22:47:18.041Z",
+    "generatedAt": "2026-08-03T00:53:45.973Z",
     "decision": "PASS_C6_HOSTING_DEV_REMOTE_PARITY_AND_LIVE_HR",
     "root": "https://cxorbia-backend-dev.web.app",
-    "attempt": 1,
+    "attempt": 2,
     "maxAttempts": 30,
     "allCriticalAssetsMatch": true,
     "files": [
       {
         "path": "index-backend-dev.html",
         "status": 200,
-        "localSha256": "3f4ab6a01772ba54a32461c6c165410c464e3a5e74094fe8a803cfa04c96d47c",
-        "remoteSha256": "3f4ab6a01772ba54a32461c6c165410c464e3a5e74094fe8a803cfa04c96d47c",
+        "localSha256": "e3473ac4883f86408b989e938d9f544923219cbac6646158ce0250a9c01f931e",
+        "remoteSha256": "e3473ac4883f86408b989e938d9f544923219cbac6646158ce0250a9c01f931e",
         "match": true,
         "error": null
       },
@@ -208,7 +208,7 @@
     "liveEndpoint": {
       "status": 200,
       "ok": true,
-      "revision": "f52d748dddcb43b444d3ea59bc1e19fe4792028403c0eef344b6a73d301db6a3",
+      "revision": "27aacd3c4bbaa7b5248e9df77958df32af1ee07577a5871b4d1b268cd6bb0374",
       "runtimeRead": true,
       "sourceSafe": true,
       "contentType": "application/json; charset=utf-8",
@@ -230,7 +230,7 @@
   },
   "staffShopper": {
     "schemaVersion": "cxorbia.c6.unified-human-auth-browser-smoke.v3",
-    "generatedAt": "2026-08-02T22:48:25.005Z",
+    "generatedAt": "2026-08-03T00:54:41.471Z",
     "decision": "PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY",
     "root": "https://cxorbia-backend-dev.web.app",
     "local": false,
@@ -290,7 +290,7 @@
   },
   "client": {
     "schemaVersion": "cxorbia.c6.client-auth-browser-smoke.v1",
-    "generatedAt": "2026-08-02T22:49:03.588Z",
+    "generatedAt": "2026-08-03T00:55:05.347Z",
     "decision": "PASS_C6_CLIENT_AUTH_EXISTING_CREDENTIAL_RUNTIME",
     "authenticated": true,
     "existingCredentialSelected": true,
@@ -320,7 +320,7 @@
   },
   "financeDiagnostic": {
     "schemaVersion": "cxorbia.c6.remote-finance-model-diagnostic.v1",
-    "generatedAt": "2026-08-02T22:49:09.855Z",
+    "generatedAt": "2026-08-03T00:55:10.998Z",
     "decision": "DIAGNOSTIC_C6_REMOTE_FINANCE_MODEL_CAPTURED",
     "currentProjectId": "cinepolis",
     "currentPeriodId": "cinepolis-2026-07",
@@ -387,7 +387,7 @@
       "splitValuesInvented": false,
       "providerWrites": 0,
       "production": false,
-      "at": "2026-08-02T22:49:09.836Z"
+      "at": "2026-08-03T00:55:10.976Z"
     },
     "projectFinancialConfiguration": {
       "applied": true,
@@ -412,7 +412,7 @@
       "source": "project_configuration",
       "providerWrites": 0,
       "production": false,
-      "at": "2026-08-02T22:49:09.840Z"
+      "at": "2026-08-03T00:55:10.984Z"
     },
     "delegatedCoordinationGuard": {
       "ready": true,
@@ -423,7 +423,7 @@
       "splitValuesInvented": false,
       "providerWrites": 0,
       "production": false,
-      "at": "2026-08-02T22:49:04.487Z"
+      "at": "2026-08-03T00:55:06.473Z"
     },
     "projectCount": 14,
     "credentialsExposed": false,
