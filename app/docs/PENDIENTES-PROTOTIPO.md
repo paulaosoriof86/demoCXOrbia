@@ -1,129 +1,151 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `RECONSTRUCTION_ACTIVE__A_PLUS_B_SCOPE_LOCKED__TARGET_SHAS_AND_DELTA_PENDING__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `A_PLUS_B_SOURCE_ASSEMBLED__PRECHECK_PASS__EXACT_CHECKOUT_GATE_PENDING__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Bloqueante actual
+## 1. Bloqueante actual único
 
-Falta cerrar la composición objetivo A+B con:
+La fuente A+B está ensamblada. El bloqueo real ya no es recuperar módulos ni definir SHAs.
 
-- última aprobación/commit por módulo;
-- SHA objetivo por archivo;
-- dependencias reconciliadas;
-- delta completo;
-- gates source-only.
+Pendiente:
 
-No se publicará un nuevo build antes de ese cierre.
+1. ejecutar `tools/qa/tya-ab-cumulative-candidate-source-gate.mjs` sobre checkout exacto;
+2. ejecutar gates estáticos/cumulativos sin proveedores;
+3. aplicar `STOP_RETRY` si aparece cualquier fallo;
+4. solo con PASS, autorizar un único Hosting DEV;
+5. Paula valida visualmente el Checkpoint 1.
 
-## 2. Familia A
+## 2. Cerrado en este bloque
 
-- recuperar aprobación/commit de shell, config, router y Proyecto/Periodo;
-- neutralizar tenant/identidad local en modo conectado;
-- preservar interfaz completa `CX.data`;
-- retirar/delegar read guards y bridges duplicados;
-- neutralizar defaults directo/ISR5/regalía10;
-- reemplazar build-lock V174 y cache ID al ensamblar;
-- crear gates de interfaz, precedencia, no-demo, Auth y caché.
+- proveniencia M1/Corte 1, Corte 2A y V182;
+- matriz SHA A+B;
+- manifest de 23 archivos;
+- adapter de composición;
+- orden de carga;
+- supresión de fixtures identificados;
+- preservación de registros creados por usuario;
+- unit gate PASS con 23 verificaciones;
+- evidencia source-only preliminar.
 
-## 3. Familia B
+## 3. Archivos funcionales vigentes
+
+### Adapter
+
+`app/adapters/tya-ab-cumulative-composition-v1.js`
+
+Blob:
+
+`9c0d76382531b8393cc0866ec694935a2a5e25a6`.
+
+### Entrada DEV
+
+`app/index-backend-dev.html`
+
+Blob:
+
+`b9a4aaf063d97305c3f4f53eba8f02b526d61761`.
+
+### Módulos preservados sin reescritura
+
+- Dashboard;
+- CRM;
+- Clientes;
+- Comercial;
+- Marketing;
+- Hojas de Ruta.
+
+## 4. Pendientes del Checkpoint Visual 1
+
+### Shell y contexto
+
+- entrada humana única;
+- tenant `tya`;
+- proyecto `cinepolis`;
+- periodo separado;
+- fuente HR viva;
+- navegación completa por rol;
+- ausencia de Demo comercial/usuarios sintéticos.
 
 ### Dashboard
 
-- una sola semántica para tiles, fases, comparativo y drilldowns;
-- cero históricos, márgenes, porcentajes o scores fabricados;
-- no depender de bridge DOM como autoridad.
+- tile ↔ fase ↔ comparativo ↔ drilldown;
+- misma semántica canónica;
+- cero métricas fabricadas;
+- revisión del impacto de bridges C6.
 
 ### CRM Ops Leads
 
-- recuperar mejor aprobación visual;
-- preservar suite completa;
-- pending-source honesto sin backend CRM real;
-- no fixtures en conectado;
-- no writes backend todavía.
+- suite completa visible;
+- estado vacío/pending-source honesto sin backend CRM;
+- alta local preservada con proveniencia;
+- cero fixtures.
 
 ### Clientes
 
-- retirar contactos, correos, prospectos y scores sintéticos;
-- conservar Cliente→Proyecto por IDs estables.
+- solo clientes derivados/configurados o creados con proveniencia;
+- cero prospectos/contactos placeholder;
+- relación por IDs estables.
 
 ### Comercial
 
-- modelo financiero por proyecto;
-- Cinépolis delegado, regalía 0, localBilling false, Q60/L200;
+- validar que se percibe como herramienta de planificación, no como dato contractual confirmado;
+- modelo delegado/regalía 0 preservado;
 - IA/web/plantillas gateadas.
 
 ### Marketing
 
-- retirar mes/contenido/métricas ficticias en conectado;
-- Gemini/Make inactivos hasta su bloque real;
-- conservar UI y pending-source.
+- cero contenido/métricas ficticias;
+- mes correcto;
+- nuevas piezas con proveniencia;
+- Make/Gemini inactivos.
 
 ### Hojas de Ruta
 
-- proyecto/periodo correcto;
-- HR viva;
-- IA/import/Google Sheets y writes gateados.
+- HR viva y periodo correcto;
+- acciones de importación/sincronización/IA no activadas sin gate.
 
-## 4. Scope lock
+## 5. Scope diferido
 
-No abrir ahora:
+No abrir ahora salvo P0 transversal:
 
-- `operacion-extra.js` y experiencia Shopper → Familia D;
-- `cliente-extra.js`, reportes/exportaciones → Familias F/G;
-- `cliente-insights.js`, Portal Cliente/benchmark → Familia F;
+- Operación e histórico;
+- Shopper y certificaciones;
 - Finanzas completa;
-- Academia;
-- integraciones.
+- Portal Cliente/reportes/Insights;
+- administración e integraciones;
+- Academia.
 
-Solo una dependencia transversal P0 demostrada permite tocar estos módulos durante A+B.
+## 6. Cerrado y protegido
 
-## 5. Cerrado y protegido
+No reabrir sin regresión reproducible:
 
-No reabrir sin regresión nueva:
-
-- Staff/Shopper/Cliente remoto estable;
-- Shopper nueva pestaña e identidad exacta;
-- `ownVisits=1`;
 - 14 periodos y 616 visitas;
+- Staff/Shopper/Cliente remoto estable;
+- identidad Shopper exacta y `ownVisits=1`;
 - `tya::cinepolis` delegado;
-- facturación local false;
+- localBilling false;
 - regalía 0;
+- Q60 GT / L200 HN;
 - 14 delegados, 0 directos, 0 sin configurar y 0 violaciones;
 - producción intacta.
 
-## 6. Checkpoint Visual 1
+## 7. Criterio de salida A+B
 
-Paula revisará sobre un solo build:
-
-- acceso, shell, tenant, proyecto, periodo, fuente y navegación;
-- CRM Ops Leads;
-- Dashboard;
-- Hojas de Ruta;
-- Clientes;
-- Comercial;
-- Marketing;
-- indicadores y drilldowns.
-
-## 7. Criterios de cierre A+B
-
-- cero dependencias `UNKNOWN`;
-- SHA objetivo por archivo;
-- una sola fuente/semántica;
-- delta completo contra HEAD;
-- gates source-only PASS;
-- manifest/build-lock/SW coherentes;
-- una sola URL DEV;
-- aprobación visual de Paula.
+- source gate exacto PASS;
+- static/cumulative gates PASS;
+- un solo build/URL DEV;
+- validación visual de Paula módulo por módulo;
+- correcciones sobre la misma candidata;
+- build-lock/freeze solo después del PASS visual.
 
 ## 8. Siguiente bloque exacto
 
-`PROVENIENCIA/APROBACIONES A+B → SHAS OBJETIVO → DELTA Y GATES SOURCE-ONLY`.
+`EXACT CHECKOUT A+B SOURCE GATE → STATIC/CUMULATIVE GATES → STOP_RETRY SI FALLA → SOLO SI PASS, AUTORIZACIÓN DE UN HOSTING DEV → CHECKPOINT VISUAL 1`.
 
 ## 9. Prohibiciones
 
-- no deploy durante inventario;
-- no nueva candidata, rama, PR, Firebase o Hosting;
-- no expansión a familias posteriores;
-- no seeds ni métricas falsas;
-- no parche UI desde backend;
-- no merge ni producción antes de composición y aprobación visual.
+- no nueva candidata, rama, PR o metodología;
+- no expansión a C–G;
+- no seeds/métricas falsas;
+- no deploy antes del gate;
+- no merge ni producción antes de aprobación visual.
