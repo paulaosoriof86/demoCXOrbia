@@ -9,6 +9,7 @@ Se reconstruye una única candidata acumulativa. El primer checkpoint queda limi
 
 Fuentes vivas:
 
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
 - `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-CONTRATO-Y-PRECEDENCIA-20260802.md`;
 - `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-B-INVENTARIO-INICIAL-20260802.md`;
 - `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-A-B-SCOPE-LOCK-OVERLAYS-20260802.md`;
@@ -20,26 +21,17 @@ Fuentes vivas:
 - HEAD de arranque: `c646af04b8fba0ca8685fa4d6ce0a46e62221276`.
 - Contrato Familia A: `92651f41acc423841d909487558d68be5d10b2b6`.
 - Inventario Familia B: `06fbfac28a1971d229ab121778ee6babdd1fd904`.
-- Matriz A+B: `cbc1e6cecbb29bbc9f139074e3073d8fa5662b31`.
 - Scope lock A+B: `94c440a06212dd194c34b43df00197d5d56c6024`.
-- Índice actualizado: `f2af97dd5485f5566d6b9b7f1b22b9667ed28832`.
+- Matriz maestra A+B: `8d2f59a9ea8854f91efe3fb9532b35d04992fd64`.
+- Índice vigente: `53b64ea789c592812d22e414270e5ea337089fb5`.
 - Producción `tya-plataforma`: intacta.
 - Agosto 2026 todavía no existe en HR.
 
 ## 3. Causa raíz confirmada
 
-El runtime tenía múltiples autoridades superpuestas:
+El runtime tenía múltiples autoridades superpuestas: demo/localStorage, HR source-safe, Firestore protegido, read guards, read model, semántica canónica, bridges y módulos UI. Un módulo fuente correcto podía verse mal porque una capa posterior cambiaba su estado o render.
 
-- demo/localStorage;
-- HR source-safe;
-- Firestore protegido;
-- read guards;
-- read model;
-- semántica canónica;
-- bridges que modifican métodos o DOM;
-- módulos UI.
-
-Un módulo fuente correcto podía verse mal porque una capa posterior cambiaba su estado o render. La reconstrucción fija precedencia antes de seleccionar SHAs.
+La reconstrucción fija precedencia antes de seleccionar SHAs.
 
 ## 4. Familia A — contrato técnico
 
@@ -58,29 +50,24 @@ Un módulo fuente correcto podía verse mal porque una capa posterior cambiaba s
 ## 5. Familia B — objetivo
 
 - Dashboard: misma semántica para tiles, fases, comparativos y drilldowns.
-- CRM Ops Leads: suite completa, sin fixtures aparentes en modo conectado.
+- CRM Ops Leads: suite completa, sin fixtures aparentes en conectado.
 - Hojas de Ruta: HR viva, proyecto/periodo correctos y acciones gateadas.
 - Clientes: sin contactos, correos, prospectos o scores inventados.
 - Comercial: contrato financiero por proyecto, Cinépolis delegado/regalía 0.
 - Marketing: sin fechas/métricas ficticias ni Gemini/Make aparentes.
 
-## 6. Scope lock confirmado
+## 6. Scope lock
 
-Archivos inspeccionados y diferidos:
+Diferidos sin cambios durante A+B:
 
-- `operacion-extra.js` → Familia D, preservar sin cambios;
-- `cliente-extra.js` → Familias F/G, preservar sin cambios;
-- `cliente-insights.js` → Familia F, reconciliar después.
-
-No se abren ahora:
-
-- experiencia Shopper;
-- Portal Cliente;
-- reportes/exportaciones;
-- Insights/Benchmark;
+- `operacion-extra.js` y experiencia Shopper → Familia D;
+- `cliente-extra.js`, reportes/exportaciones → Familias F/G;
+- `cliente-insights.js`, Portal Cliente/benchmark → Familia F;
 - Finanzas completa;
 - Academia;
 - integraciones.
+
+Solo dependencia transversal P0 demostrada permite abrirlos.
 
 Overlays que sí afectan A+B:
 
@@ -119,14 +106,13 @@ Paula revisará en un solo build:
 
 No se avanza al Checkpoint 2 sin esa validación.
 
-## 9. Pendiente real inmediato
+## 9. Pendiente inmediato
 
 1. recuperar aprobaciones y commits históricos A+B;
 2. fijar SHA objetivo por archivo;
-3. producir delta completo focalizado;
-4. crear gates source-only de interfaz, autoridad, fixtures, semántica, finanzas e integraciones;
-5. ejecutar gates;
-6. solicitar un único deploy DEV para Checkpoint Visual 1.
+3. producir delta acumulativo focalizado;
+4. crear y ejecutar gates source-only;
+5. solicitar un único DEV para Checkpoint Visual 1.
 
 ## 10. Siguiente bloque exacto
 
