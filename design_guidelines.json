@@ -1,0 +1,149 @@
+{
+  "project_context": {
+    "name": "TyA Consultores Platform",
+    "type": "Hybrid B2B SaaS (Desktop Dashboard + Mobile Audit Field App)",
+    "audience": "Corporate administrators, field auditors, supervisors",
+    "theme": "Light theme default for high data visibility, dark mode optional.",
+    "vibe": "Swiss & High-Contrast, Professional, Authoritative, Data-Dense"
+  },
+  "typography": {
+    "strategy": "Swiss Brutalist meets Corporate Utility",
+    "headings": {
+      "family": "Cabinet Grotesk",
+      "weights": ["500", "700", "800"],
+      "usage": "High-impact page titles, module headers, marketing elements.",
+      "letter_spacing": "tracking-tight"
+    },
+    "body": {
+      "family": "IBM Plex Sans",
+      "weights": ["400", "500", "600"],
+      "usage": "Data tables, form inputs, audit checklists, long-form text.",
+      "letter_spacing": "tracking-normal"
+    },
+    "mono": {
+      "family": "IBM Plex Mono",
+      "usage": "Audit IDs, timestamps, numeric KPIs, coordinates."
+    },
+    "hierarchy": {
+      "h1": "text-3xl md:text-4xl lg:text-5xl tracking-tight font-bold",
+      "h2": "text-2xl md:text-3xl tracking-tight font-semibold",
+      "h3": "text-xl md:text-2xl font-medium",
+      "h4": "text-lg md:text-xl font-medium",
+      "body_large": "text-base md:text-lg",
+      "body_base": "text-sm md:text-base",
+      "small_labels": "text-xs tracking-[0.05em] uppercase font-semibold text-slate-500"
+    }
+  },
+  "colors": {
+    "archetype": "Swiss & High-Contrast (Authority, Clarity, Truth)",
+    "background": {
+      "primary": "#FFFFFF",
+      "secondary": "#F8FAFC",
+      "tertiary": "#F1F5F9"
+    },
+    "text": {
+      "primary": "#0F172A",
+      "secondary": "#475569",
+      "disabled": "#94A3B8"
+    },
+    "brand": {
+      "primary": "#0F52BA",
+      "hover": "#0C4399",
+      "active": "#083377"
+    },
+    "status": {
+      "success": "#16A34A",
+      "success_bg": "#DCFCE7",
+      "warning": "#D97706",
+      "warning_bg": "#FEF3C7",
+      "error": "#DC2626",
+      "error_bg": "#FEE2E2",
+      "info": "#2563EB",
+      "info_bg": "#DBEAFE"
+    },
+    "borders": {
+      "subtle": "#E2E8F0",
+      "strong": "#CBD5E1",
+      "focus": "#0F52BA"
+    }
+  },
+  "visual_enhancers": {
+    "surface_strategy": "Grid Borders (The Technical Look). Expose the skeleton, make the grid visible.",
+    "borders": "1px solid borders everywhere. border-slate-200 for containers.",
+    "shadows": "Zero soft shadows. Rely on 1px borders and slight background color shifts (slate-50 to white). For floating elements (menus, modals), use a very crisp shadow: shadow-[0_8px_30px_rgba(0,0,0,0.12)].",
+    "radius": "Minimal. Use rounded-sm (2px) or rounded-md (4px) max. Avoid pill shapes unless it's a specific status badge.",
+    "glassmorphism": "Avoid in data-heavy views. Use solid white backgrounds to prevent visual refraction of data."
+  },
+  "components_and_patterns": {
+    "cards": "Cardless look or strict rectangles. border border-slate-200 bg-white rounded-md p-4 to p-6.",
+    "data_tables": "Dense list patterns. Progressive disclosure. Compact data tables with sticky headers, sortable columns, right-aligned numbers for metrics, zebra striping optional but clear row hover states (hover:bg-slate-50) are mandatory.",
+    "forms_and_inputs": "Shadcn UI standard. Rectangular, subtle borders. Clear focus rings (focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2). Labels must be bold or semi-bold. Input padding optimized for touch on mobile.",
+    "buttons": "Flat, sharp edges or small radius. Primary buttons use brand blue. Secondary buttons are transparent with 1px border. Explicit hover states (e.g., hover:bg-blue-800 hover:text-white).",
+    "chatbot": "Floating bottom-right. Sharp rectangular container, not a playful bubble. Serious tone.",
+    "dashboard_kpis": "Top-level stat cards followed by detailed tables. Use an F-pattern layout.",
+    "mobile_execution": "Bento grid for touch targets. Bottom navigation bar. Large camera/audio upload buttons. Offline-first visual indicators."
+  },
+  "grids_and_layouts": {
+    "desktop": "Sidebar navigation (left, 240px or 64px collapsed). Top header with breadcrumbs and user profile. Main content uses grid-cols-12 with gap-6.",
+    "mobile": "Mobile-first for the field auditor app. Stacked grid-cols-1 with gap-4. Touch targets minimum 48x48px.",
+    "padding": "Generous internal padding for containers (p-6 or p-8) to avoid text collision with borders."
+  },
+  "motion": {
+    "strategy": "Functional and snappy. No bouncy or slow animations.",
+    "transitions": "transition-colors duration-200 ease-in-out for hovers. transition-transform duration-200 for drawer/sidebar sliding.",
+    "loading": "Skeleton loaders (animate-pulse on gray rectangles) instead of spinners for data tables to maintain layout stability.",
+    "avoid": "Parallax, heavy 3D, or decorative motion. This is an operational tool."
+  },
+  "accessibility": {
+    "contrast": "Strict WCAG AA or APCA compliance. Grey text must be at least text-slate-500 on white.",
+    "focus": "All interactive elements must have a visible focus ring.",
+    "testing_tags": "All buttons, inputs, and links MUST have data-testid attributes (e.g., data-testid='login-submit-button').",
+    "aria": "Use aria-expanded, aria-controls for dropdowns and sidebars. aria-live for AI chatbot responses and OCR processing status."
+  },
+  "media_and_icons": {
+    "icons": "Phosphor Icons (via @phosphor-icons/react). Use 'regular' weight for UI, 'fill' for active states. Serious, technical geometry.",
+    "images_strategy": "Use realistic corporate and field worker images for placeholders, empty states, or landing mockups. No illustrations."
+  },
+  "image_urls": [
+    {
+      "url": "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHw0fHxidXNpbmVzcyUyMGF1ZGl0b3IlMjBjaGVja2luZ3xlbnwwfHx8fDE3ODU3NjQyMTV8MA&ixlib=rb-4.1.0&q=85",
+      "category": "dashboard_hero_or_profile",
+      "description": "Executive/Supervisor analyzing data on tablet"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1697305592218-d5d0c1bab2e3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2ODh8MHwxfHNlYXJjaHwyfHxmaWVsZCUyMHdvcmtlciUyMHRhYmxldHxlbnwwfHx8fDE3ODU3NjQyMTV8MA&ixlib=rb-4.1.0&q=85",
+      "category": "mobile_app_onboarding",
+      "description": "Field worker/auditor using tablet on-site"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1549637642-90187f64f420?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxNzV8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBjb3Jwb3JhdGUlMjBvZmZpY2V8ZW58MHx8fHwxNzg1NzY0MjE1fDA&ixlib=rb-4.1.0&q=85",
+      "category": "backgrounds",
+      "description": "Professional corporate office for login background"
+    }
+  ],
+  "instructions_to_main_agent": [
+    "Ensure all Shadcn components are styled with sharp edges (rounded-none or rounded-sm) to match the Swiss aesthetic.",
+    "Do not use generic 'blue-to-purple' gradients. This is a serious B2B consulting app.",
+    "Use data-dense table layouts for Campaign and Form modules. Ensure progressive disclosure.",
+    "The mobile view (for field auditors) must prioritize large buttons and clear checklist UI.",
+    "Implement a persistent, non-intrusive floating chatbot with a technical, chat-window style (not a playful bubble).",
+    "Use IBM Plex Sans for body text and Cabinet Grotesk for headings. Install via Google Fonts or Fontsource.",
+    "Never apply universal 'transition: all' in CSS. Target specific properties.",
+    "Include data-testid on every clickable element.",
+    "Create a solid header with a white or slate-50 background. No transparent headers over content.",
+    "Ensure Javascript (.js/.jsx) is used as requested, not TSX. Avoid TypeScript syntax.",
+    "Create comprehensive layouts and dashboards integrating KPIs, forms, lists and modals matching the data-dense list patterns."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. Avoid the 'AI slop' aesthetic. Create distinctive, serious B2B frontends.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Create depth through layered design elements and 1px borders, rather than soft shadows.",
+    "You MUST NOT apply universal transition (e.g., transition: all). This breaks transforms.",
+    "You MUST NOT center align the app container. Left-align text for readability.",
+    "Use modern button styles (sharp or slightly rounded) with interaction animations & color relevant to the app style.",
+    "NEVER use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯 for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, and entrance animations.",
+    "Subtle grain textures, custom cursors, and loading animations separate good from extraordinary.",
+    "Prioritize using pre-existing components from src/components/ui. Use Sonner for toasts."
+  ]
+}
