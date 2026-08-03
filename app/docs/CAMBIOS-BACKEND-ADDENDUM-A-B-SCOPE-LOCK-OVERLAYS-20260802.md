@@ -3,9 +3,10 @@
 **Fecha:** 2026-08-02  
 **Estado:** `SOURCE_ONLY_SCOPE_LOCK__DOCUMENTATION_COMPLETE__NO_FUNCTIONAL_CHANGE__NO_DEPLOY`
 
-## Archivos creados/actualizados en el bloque
+## Archivos creados/actualizados
 
 - `app/docs/RECONSTRUCCION-CANDIDATA-ACUMULATIVA-A-B-SCOPE-LOCK-OVERLAYS-20260802.md`;
+- `app/docs/RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
 - `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 - `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 - `app/docs/RESUMEN-PARA-CLAUDE.md`;
@@ -40,6 +41,12 @@ No se abren ahora:
 - integraciones.
 
 Solo una dependencia transversal P0 demostrada permite tocar estos módulos durante A+B.
+
+## Cierre documental
+
+- matriz actualizada: `8d2f59a9ea8854f91efe3fb9532b35d04992fd64`;
+- checkpoint actualizado: `916d865c6730634f77b15016095e85b051fea313`;
+- índice vigente actualizado: `6247932d976e37702571401a0321009df13e4977`.
 
 ## Siguiente bloque exacto
 
