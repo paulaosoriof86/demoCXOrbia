@@ -38,17 +38,31 @@ Registra blobs vivos, autoridad histórica, estado y gate requerido para base, O
 
 `MANIFEST-PHASE-A-COMPLETA-INVENTARIO-VIVO-20260803.json`
 
+Commit: `ebbc74a3b3c9203cc261edad274e53535bd1d617`.
+
 Estado:
 
 `INVENTORY_ONLY_APPROVED_SHA_RECOVERY_PENDING`.
 
 Incluye 30 archivos Phase A. No se presenta como manifest final ni como prueba de aprobación.
 
+### Manifest A+B reclasificado
+
+`MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json`
+
+Commit: `c323fae76361a3935f4ce99145b5a10b7e01c530`.
+
+Estado:
+
+`SUPERSEDED_PARTIAL_MANIFEST_NOT_SUFFICIENT_FOR_PHASE_A_FREEZE`.
+
+No se eliminó el trabajo A+B. Queda preservado como línea posterior, pero ya no puede confundirse con la candidata completa ni usarse como gate visual.
+
 ## 3. Fuentes actualizadas
 
 - `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md` — commit `09db06ca59e84838c69081e8a1ae34c7b99e18e0`;
 - `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md` — commit `e7ee921b1aede82ee78939e824b2c8b9814f4527`;
-- `00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md` — commit `2b1c87d5db7852936b220186bda568127ec3ba16`;
+- `00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md` — commits `2b1c87d5db7852936b220186bda568127ec3ba16` y `1541fa65b0bdacc178a9fdb0d766d186812f8e25`;
 - `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md` — commit `95d2cc677f6e8f0338453710f86c3c503f807e2d`;
 - `RESUMEN-PARA-CLAUDE.md` — commit `7d401efa1e3811d4541074686a0de861f51529e1`;
 - `PENDIENTES-PROTOTIPO.md` — commit `4da23a7ed1bb71bdd46605f9213fc6562b54d07d`;
