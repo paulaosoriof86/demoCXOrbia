@@ -3,11 +3,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
+import { spawnSync } from 'node:child_process';
 
 const root=path.resolve(process.cwd());
 const manifestPath='app/docs/MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json';
 const indexPath='app/index-backend-dev.html';
 const adapterPath='app/adapters/tya-ab-cumulative-composition-v1.js';
+const unitPath='tools/qa/tya-ab-cumulative-composition-unit.mjs';
 const failures=[];
 const passes=[];
 const fail=(id,detail)=>failures.push({id,detail});
@@ -17,7 +19,7 @@ const text=p=>read(p).toString('utf8');
 const exists=p=>fs.existsSync(path.join(root,p));
 const gitBlob=buf=>crypto.createHash('sha1').update(Buffer.concat([Buffer.from(`blob ${buf.length}\0`),buf])).digest('hex');
 
-for(const p of [manifestPath,indexPath,adapterPath]){
+for(const p of [manifestPath,indexPath,adapterPath,unitPath]){
   if(exists(p))pass('FILE_PRESENT',p);else fail('FILE_MISSING',p);
 }
 if(failures.length){console.log(JSON.stringify({status:'FAIL',failures,passes},null,2));process.exit(1);}
@@ -95,6 +97,15 @@ for(const pattern of forbidden){
   if(pattern.test(adapter))fail('ADAPTER_FORBIDDEN_EXECUTABLE',String(pattern));
   else pass('ADAPTER_FORBIDDEN_EXECUTABLE_ABSENT',String(pattern));
 }
+
+const unit=spawnSync(process.execPath,[unitPath],{cwd:root,encoding:'utf8',maxBuffer:4*1024*1024});
+if(unit.status===0){
+  try{
+    const result=JSON.parse(unit.stdout);
+    if(result.status==='PASS')pass('AB_COMPOSITION_UNIT',`${result.checks?.length||0} checks`);
+    else fail('AB_COMPOSITION_UNIT_STATUS',result.status||'unknown');
+  }catch(error){fail('AB_COMPOSITION_UNIT_JSON',error.message);}
+}else fail('AB_COMPOSITION_UNIT_FAILED',(unit.stderr||unit.stdout||'').slice(0,2000));
 
 const modulePaths=['dashboard','crm','clientes','comercial','marketing','rutas'].map(n=>`app/modules/${n}.js`);
 for(const p of modulePaths){
