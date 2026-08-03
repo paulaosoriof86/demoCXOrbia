@@ -26,6 +26,7 @@ Ninguna familia se declara aprobada por PASS técnico. Paula debe validarla visu
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - HEAD de arranque: `c646af04b8fba0ca8685fa4d6ce0a46e62221276`.
+- HEAD documental actual del bloque: `940fd8b5459396fe19f51118074f4c94e6d981ad`.
 - Contrato Familia A: `92651f41acc423841d909487558d68be5d10b2b6`.
 - Inventario Familia B: `06fbfac28a1971d229ab121778ee6babdd1fd904`.
 - Scope lock A+B: `94c440a06212dd194c34b43df00197d5d56c6024`.
