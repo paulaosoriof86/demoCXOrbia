@@ -1,130 +1,117 @@
 # ACADEMIA — IMPACTO DE LA RECONSTRUCCIÓN DE CANDIDATA ACUMULATIVA
 
 **Fecha:** 2026-08-02  
-**Estado:** `DOCUMENTED_NON_BLOCKING__A_PLUS_B_SOURCE_ASSEMBLED__VISUAL_PENDING`
+**Estado:** `DOCUMENTED_NON_BLOCKING__A_PLUS_B_VISIBLE_IN_DEV__VISUAL_APPROVAL_PENDING`
 
 ## 1. Regla
 
-Academia se alinea al build realmente aprobado por Paula. El unit/source precheck no autoriza actualizar cursos ni presentar A+B como aprobado visualmente.
+Academia debe reflejar únicamente el build aprobado visualmente por Paula. La publicación en DEV y los PASS técnicos no autorizan todavía a cambiar cursos, manuales ni `app/modules/academia.js`.
 
 Academia no bloquea CRM Ops Leads/Phase A salvo P0 demostrado.
 
-## 2. Estado A+B que debe preservarse
+## 2. Build de referencia para revisión
 
-La composición ya:
+`https://cxorbia-backend-dev.web.app/index-backend-dev.html`
 
-- mantiene módulos frontend sin reescritura;
-- preserva HR viva y la interfaz `CX.data`;
-- oculta fixtures CRM/Marketing en conectado;
-- retira prospectos/contactos placeholder;
-- preserva registros creados por usuario con proveniencia;
-- mantiene `tya/cinepolis`, proyecto/periodo y modelo delegado.
+Estado:
 
-Fuentes:
+- candidata única y acumulativa visible;
+- un deploy DEV;
+- paridad remota confirmada;
+- revisión visual pendiente;
+- producción no activada.
 
-- `MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json`;
-- `EVIDENCE-A-B-CUMULATIVE-SOURCE-PRECHECK-20260802.json`;
-- `CAMBIOS-BACKEND-ADDENDUM-A-B-COMPOSICION-MANIFEST-GATES-20260802.md`.
+## 3. Contenido que deberá actualizarse después del PASS visual
 
-## 3. Impacto futuro después del Checkpoint Visual 1
+### Acceso y contexto
 
-### Familia A
-
-Actualizar manuales/troubleshooting de:
-
-- entrada humana autenticada;
-- sesión y nueva pestaña;
+- login humano único;
 - tenant, proyecto y periodo;
 - fuente HR viva;
-- roles, permisos y scopes;
-- estados canónicos;
-- modo read-only;
-- caché/build exacto.
+- roles y navegación;
+- sesión, recarga y nueva pestaña;
+- lectura vs acciones bloqueadas.
 
 ### Dashboard
 
-- KPI, fase, comparativo y drilldown desde la misma fuente;
+- tiles, fases, comparativos y drilldowns;
+- misma fuente y semántica;
 - histórico real;
-- pending-source vs dato exacto;
 - cero métricas fabricadas.
 
 ### CRM Ops Leads
 
-- pipeline, leads, cuentas, contactos, actividades, ficha 360, metas y reportes;
-- modo conectado sin backend CRM;
-- estado vacío/pending-source;
-- alta local con proveniencia `platform_user`;
-- diferencia entre demo y fuente real.
+- pipeline, leads, cuentas, contactos, actividades y ficha 360;
+- estado vacío/pending-source sin backend CRM;
+- altas con proveniencia `platform_user`;
+- diferencia entre fixture y dato operativo.
 
 ### Clientes
 
 - Cliente→Proyecto por IDs;
-- datos reales vs sin dato;
-- no enseñar prospectos/contactos placeholder como operación.
+- ausencia de prospectos/contactos placeholder;
+- tratamiento honesto de campos sin fuente.
 
 ### Comercial
 
-- herramienta de planificación vs contrato operativo;
+- planificación/propuesta vs valor contractual;
 - modelo financiero por proyecto;
-- honorario vs ingreso;
-- delegado/localBilling false/regalía 0;
-- propuestas e integraciones gateadas.
+- Cinépolis delegado, localBilling false y regalía 0;
+- integraciones gateadas.
 
 ### Marketing
 
-- calendario y estados;
-- métricas solo con fuente;
 - periodo activo;
-- registros con proveniencia;
-- Gemini/Make no activos por defecto.
+- contenido y métricas solo con fuente;
+- Make/Gemini inactivos por defecto.
 
 ### Hojas de Ruta
 
 - HR como autoridad;
 - proyecto/periodo;
-- lectura vs importación/sincronización;
-- acciones habilitadas vs gateadas.
+- acciones habilitadas vs bloqueadas.
 
-## 4. Scope lock
+## 4. Incidencia del gate semántico
 
-Durante A+B no se modifica `app/modules/academia.js` ni se reestructura contenido de:
+El último cierre STOP_RETRY fue provocado por una inconsistencia del gate entre `financiero` y `finanzas`, no por una decisión pedagógica ni por un cambio en Academia.
+
+El root fix QA no altera rutas, cursos, manuales o contenidos de usuarios.
+
+## 5. Scope diferido
+
+No actualizar todavía contenido de:
 
 - Operación/Shopper;
-- Portal Cliente/reportes/Insights;
+- certificaciones;
 - Finanzas completa;
+- Portal Cliente/reportes/Insights;
 - integraciones.
 
-Estos impactos quedan para sus checkpoints.
+## 6. Criterio de actualización
 
-## 5. Criterio de actualización
+Después del PASS visual, cada curso/manual debe contener:
 
-Por módulo, después de aprobación visual:
-
-- build/manifest exacto;
-- audiencia correcta;
-- ruta y botones reales;
-- fuente/estado de datos;
-- pasos y checklist;
+- build exacto;
+- audiencia y rol;
+- rutas/botones reales;
+- fuente y estado del dato;
+- checklist;
 - errores frecuentes;
 - troubleshooting;
 - notificaciones relacionadas;
-- manual separado del curso.
+- evidencia visual aprobada.
 
-## 6. Estado actual
+## 7. Estado actual
 
 - `app/modules/academia.js`: sin cambios;
-- contenido existente: preservado;
-- Checkpoint Visual 1: pendiente;
-- actualización de Academia: diferida hasta aprobación visual.
+- Academia: preservada;
+- impacto: documentado;
+- actualización: pendiente del Checkpoint Visual 1.
 
-## 7. Clasificación
+## 8. Clasificación
 
-- **Reusable CXOrbia:** contenidos vinculados a fuente, provenance y build.
-- **Exclusivo cliente:** TyA/Cinépolis y reglas HR/financieras.
-- **Claude/prototipo:** UX y contenido de cursos/manuales después del PASS visual.
-- **Academia:** impacto documentado, no aplicado todavía.
-- **Sin impacto Claude:** manifest, gates, blobs y evidence.
-
-## 8. Estado seguro
-
-Sin cambios UI, deploy, proveedores, writes, merge o producción.
+- **Reusable CXOrbia:** formación vinculada al build real.
+- **Exclusivo cliente:** TyA/Cinépolis y HR.
+- **Claude/prototipo:** actualización de contenido posterior al PASS visual.
+- **Academia:** impacto directo, todavía no aplicado.
+- **Sin impacto Claude:** QA, hashes y evidencia.
