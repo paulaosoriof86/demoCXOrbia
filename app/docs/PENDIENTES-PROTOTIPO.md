@@ -1,74 +1,81 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `RECONSTRUCTION_ACTIVE__FAMILY_A_CONTRACT_DEFINED__FAMILY_B_INVENTORY_ACTIVE__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `RECONSTRUCTION_ACTIVE__A_PLUS_B_SCOPE_LOCKED__TARGET_SHAS_AND_DELTA_PENDING__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Bloqueante principal
+## 1. Bloqueante actual
 
-Todavía no existe la composición objetivo A+B con SHA final por archivo y dependencias reconciliadas. No se publicará un nuevo build hasta cerrar esa matriz y sus gates source-only.
+Falta cerrar la composición objetivo A+B con:
 
-Fuentes vivas:
+- última aprobación/commit por módulo;
+- SHA objetivo por archivo;
+- dependencias reconciliadas;
+- delta completo;
+- gates source-only.
 
-- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-CONTRATO-Y-PRECEDENCIA-20260802.md`;
-- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-B-INVENTARIO-INICIAL-20260802.md`.
+No se publicará un nuevo build antes de ese cierre.
 
-## 2. Familia A — pendiente real
+## 2. Familia A
 
-- recuperar última aprobación/commit de shell, config, router y Proyecto/Periodo;
+- recuperar aprobación/commit de shell, config, router y Proyecto/Periodo;
 - neutralizar tenant/identidad local en modo conectado;
 - preservar interfaz completa `CX.data`;
-- decidir retiro/delegación de read guards y bridges duplicados;
-- neutralizar defaults directo/ISR5/regalía10 del live apply;
-- reemplazar build-lock V174 y cache ID solo al ensamblar;
+- retirar/delegar read guards y bridges duplicados;
+- neutralizar defaults directo/ISR5/regalía10;
+- reemplazar build-lock V174 y cache ID al ensamblar;
 - crear gates de interfaz, precedencia, no-demo, Auth y caché.
 
-## 3. Familia B — hallazgos pendientes
+## 3. Familia B
 
 ### Dashboard
 
-- eliminar divergencia entre tiles, fases, comparativo y bridges;
-- consumir read model/canonical semantics;
-- cero históricos, porcentajes, márgenes o scores fabricados.
+- una sola semántica para tiles, fases, comparativo y drilldowns;
+- cero históricos, márgenes, porcentajes o scores fabricados;
+- no depender de bridge DOM como autoridad.
 
 ### CRM Ops Leads
 
 - recuperar mejor aprobación visual;
 - preservar suite completa;
-- definir estado conectado sin fuente real;
-- evitar fixtures fuera de demo;
-- no activar writes backend todavía.
+- pending-source honesto sin backend CRM real;
+- no fixtures en conectado;
+- no writes backend todavía.
 
 ### Clientes
 
-- retirar contactos/correos/prospectos sintéticos en modo conectado;
-- conservar ficha y Cliente→Proyecto por IDs estables;
-- no generar score desde rating Shopper cuando no exista fuente.
+- retirar contactos, correos, prospectos y scores sintéticos;
+- conservar Cliente→Proyecto por IDs estables.
 
 ### Comercial
 
-- reconciliar calculadora con modelo financiero por proyecto;
-- Cinépolis delegado, regalía 0 y localBilling false;
-- IA, investigación web y plantillas con gates honestos.
+- modelo financiero por proyecto;
+- Cinépolis delegado, regalía 0, localBilling false, Q60/L200;
+- IA/web/plantillas gateadas.
 
 ### Marketing
 
-- retirar mes/contenido/métricas ficticias en modo conectado;
-- Gemini/Make/integraciones inactivas hasta su bloque real;
-- conservar la UI y mostrar pending-source.
+- retirar mes/contenido/métricas ficticias en conectado;
+- Gemini/Make inactivos hasta su bloque real;
+- conservar UI y pending-source.
 
 ### Hojas de Ruta
 
-- comprobar proyecto/periodo correcto;
-- HR viva como autoridad;
-- gatear IA/import/Google Sheets y writes.
+- proyecto/periodo correcto;
+- HR viva;
+- IA/import/Google Sheets y writes gateados.
 
-## 4. Familias posteriores
+## 4. Scope lock
 
-- C: operación e histórico;
-- D: experiencia Shopper y certificaciones;
-- E: Finanzas, liquidaciones, movimientos, beneficios y pagos;
-- F: portales y reportes;
-- G: administración, integraciones y Academia.
+No abrir ahora:
+
+- `operacion-extra.js` y experiencia Shopper → Familia D;
+- `cliente-extra.js`, reportes/exportaciones → Familias F/G;
+- `cliente-insights.js`, Portal Cliente/benchmark → Familia F;
+- Finanzas completa;
+- Academia;
+- integraciones.
+
+Solo una dependencia transversal P0 demostrada permite tocar estos módulos durante A+B.
 
 ## 5. Cerrado y protegido
 
@@ -76,7 +83,7 @@ No reabrir sin regresión nueva:
 
 - Staff/Shopper/Cliente remoto estable;
 - Shopper nueva pestaña e identidad exacta;
-- `ownVisits=1` para el caso probado;
+- `ownVisits=1`;
 - 14 periodos y 616 visitas;
 - `tya::cinepolis` delegado;
 - facturación local false;
@@ -86,7 +93,7 @@ No reabrir sin regresión nueva:
 
 ## 6. Checkpoint Visual 1
 
-Paula debe revisar sobre un solo build A+B:
+Paula revisará sobre un solo build:
 
 - acceso, shell, tenant, proyecto, periodo, fuente y navegación;
 - CRM Ops Leads;
@@ -104,19 +111,19 @@ Paula debe revisar sobre un solo build A+B:
 - una sola fuente/semántica;
 - delta completo contra HEAD;
 - gates source-only PASS;
-- un manifest y build-lock;
+- manifest/build-lock/SW coherentes;
 - una sola URL DEV;
 - aprobación visual de Paula.
 
 ## 8. Siguiente bloque exacto
 
-`OVERLAYS/EXTRAS B → PROVENIENCIA/APROBACIONES → MATRIZ SHA A+B → DELTA Y GATES SOURCE-ONLY`.
+`PROVENIENCIA/APROBACIONES A+B → SHAS OBJETIVO → DELTA Y GATES SOURCE-ONLY`.
 
 ## 9. Prohibiciones
 
 - no deploy durante inventario;
 - no nueva candidata, rama, PR, Firebase o Hosting;
-- no shell reducido;
-- no seeds ni métricas falsas en modo conectado;
-- no parche UI desde backend como autoridad final;
-- no merge ni producción antes de composición y aprobación humana.
+- no expansión a familias posteriores;
+- no seeds ni métricas falsas;
+- no parche UI desde backend;
+- no merge ni producción antes de composición y aprobación visual.
