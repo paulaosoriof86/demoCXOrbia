@@ -34,8 +34,11 @@ export default function Login() {
             <div className="hidden md:flex flex-col justify-between bg-slate-900 text-white p-12 relative overflow-hidden">
                 <div className="absolute inset-0 grid-bg opacity-30" />
                 <div className="relative">
-                    <div className="eyebrow text-slate-400">Tenant activo</div>
-                    <div className="mt-3 bg-white p-3 inline-block"><TyALogo className="h-14" /></div>
+                    <div className="eyebrow text-slate-400 mb-3">Tenant activo</div>
+                    {/* White surface strip to guarantee logo contrast on dark bg */}
+                    <div className="bg-white inline-flex items-center px-5 py-3">
+                        <TyALogo className="h-14" withSurface={false} />
+                    </div>
                 </div>
                 <div className="relative">
                     <h1 className="font-display text-3xl leading-tight font-semibold max-w-md">

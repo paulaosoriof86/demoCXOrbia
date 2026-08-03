@@ -1,0 +1,25 @@
+{
+  "summary": "Frontend-only visual/branding bug verification for TyA logo. Confirmed the real PNG (/tya-logo.png, 3878 bytes, 225x225) is now served with 200 and rendered in all 3 required surfaces: Login left panel, sidebar Tenant strip, and mobile header. All wrapping strips have a solid white background (rgb(255,255,255)) providing high contrast on the dark Login panel and matching the sidebar's white theme. Regression: login with paula.osorio.f86@gmail.com/TyA2026! succeeds and redirects to /; navigation to Projects, Postulations, Shoppers and Dashboard works. Language switcher visible. AIChat 'Asistente IA' floating button renders on dashboard.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Dashboard", "issues": ["Console warning (non-blocking): Recharts container reports width(-1) height(-1) on initial render of Distribución/Estado de visitas chart. Consider adding minWidth/minHeight or wrapping in a sized container. Not related to logo fix."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "TyALogo.jsx correctly uses <img src='/tya-logo.png'> from public/ – good. Consider adding width/height attributes on the <img> to avoid CLS.",
+    "Recharts container in Dashboard renders with width/height -1 initially; add explicit min sizes to avoid warnings and empty first paint."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "100%"},
+  "seed_data_creation": "None",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_self_test": true,
+  "test_credentials": "paula.osorio.f86@gmail.com / TyA2026! (super_admin) - works",
+  "context_for_next_testing_agent": "Logo branding fix is complete and verified. PNG served 200, naturalWidth=225 in login/sidebar/mobile header, all white strips confirmed rgb(255,255,255). Only outstanding non-blocking observation is a Recharts width/height=-1 warning on Dashboard first paint.",
+  "rca_of_the_issue": "Previous SVG-inline logo was replaced with real PNG asset (/tya-logo.png) via TyALogo.jsx. White surface wrappers added around logo instances (Login: div.bg-white px-5 py-3; Sidebar: parent div.bg-white; Mobile header: parent header.bg-white). Verified via computed styles and image naturalWidth."
+}

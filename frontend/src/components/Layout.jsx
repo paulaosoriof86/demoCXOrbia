@@ -35,10 +35,10 @@ export default function Layout({ children }) {
         <div className="min-h-screen flex bg-slate-50">
             {/* Sidebar */}
             <aside className="hidden md:flex md:flex-col w-[260px] bg-white border-r border-slate-200 shrink-0">
-                {/* Tenant brand */}
-                <div className="px-6 py-5 border-b border-slate-200">
-                    <div className="eyebrow">Tenant</div>
-                    <div className="mt-2"><TyALogo className="h-11" /></div>
+                {/* Tenant brand — white strip for guaranteed contrast */}
+                <div className="px-4 py-4 border-b border-slate-200 bg-white">
+                    <div className="eyebrow mb-2">Tenant</div>
+                    <TyALogo className="h-11" withSurface={false} />
                 </div>
 
                 <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
@@ -103,7 +103,7 @@ export default function Layout({ children }) {
 
                 {/* Mobile header */}
                 <header className="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
-                    <TyALogo className="h-8" />
+                    <TyALogo className="h-8" withSurface={false} />
                     <div className="flex items-center gap-2">
                         <LanguageSwitcher />
                         <button onClick={logout} data-testid="btn-logout-mobile" className="p-2 text-slate-600"><LogOut className="h-5 w-5" /></button>
