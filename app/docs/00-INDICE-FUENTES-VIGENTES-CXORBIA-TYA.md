@@ -11,27 +11,30 @@ La prioridad vigente es reconstruir una única candidata acumulativa con la mejo
 Fuentes operativas principales:
 
 - `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
-- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-SHELL-RUNTIME.md`;
 - `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-CONTRATO-Y-PRECEDENCIA-20260802.md`;
 - `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-B-INVENTARIO-INICIAL-20260802.md`;
 - `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-A-B-SCOPE-LOCK-OVERLAYS-20260802.md`;
 - `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`.
 
-Hasta cerrar la composición A+B quedan suspendidos nuevos diagnósticos C6 aislados, deploys, shells reducidos, candidatas paralelas y correcciones de síntomas que no pertenezcan al primer checkpoint acumulativo.
+Hasta cerrar la composición A+B quedan suspendidos diagnósticos C6 aislados, deploys, shells reducidos, candidatas paralelas y correcciones no vinculadas al primer checkpoint.
 
-Ninguna familia se declara funcionalmente aprobada por PASS técnico. Paula debe validarla visualmente sobre el build acumulativo exacto correspondiente.
+Ninguna familia se declara aprobada por PASS técnico. Paula debe validarla visualmente sobre el build acumulativo exacto.
 
 ## 1. Repositorio y destinos
 
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama viva: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
-- HEAD de arranque de reconstrucción: `c646af04b8fba0ca8685fa4d6ce0a46e62221276`.
+- HEAD de arranque: `c646af04b8fba0ca8685fa4d6ce0a46e62221276`.
 - Contrato Familia A: `92651f41acc423841d909487558d68be5d10b2b6`.
 - Inventario Familia B: `06fbfac28a1971d229ab121778ee6babdd1fd904`.
-- Matriz A+B: `cbc1e6cecbb29bbc9f139074e3073d8fa5662b31`.
 - Scope lock A+B: `94c440a06212dd194c34b43df00197d5d56c6024`.
-- CAMBIOS scope lock: `39c2e4a62508a07aa9b3a7d1698c7b5b816ea9e6`.
+- Checkpoint scope lock: `09b5ed4053e97ad904f2e2e812032af28c34d9dd`.
+- Claude: `dc61347b0e2d22ec3f9bf30fb6d6e4bb21baf934`.
+- Pendientes: `16dd9d726a8267a866418d7519ecaa47ae42c17e`.
+- Academia: `cefa222d7f14fc6187129603888abd0c72d5c323`.
+- CAMBIOS scope lock: `07a4b4bb3589bbb5fa1f22bf1a738f6a70b23c94`.
+- Matriz maestra A+B actualizada: `8d2f59a9ea8854f91efe3fb9532b35d04992fd64`.
 - Hosting DEV existente: `cxorbia-backend-dev`, target `cxorbia-dev`.
 - Producción `tya-plataforma`: intacta.
 
@@ -46,7 +49,7 @@ Ninguna familia se declara funcionalmente aprobada por PASS técnico. Paula debe
 7. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 8. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 9. addenda CAMBIOS de reconstrucción A+B;
-10. addenda C6 de Shopper/Finanzas/STOP_RETRY como evidencia histórica preservada;
+10. addenda C6 de Shopper/Finanzas/STOP_RETRY como evidencia histórica;
 11. `RESUMEN-PARA-CLAUDE.md`;
 12. `PENDIENTES-PROTOTIPO.md`;
 13. `ACADEMIA-IMPACTO-RECONSTRUCCION-CANDIDATA-ACUMULATIVA-20260802.md`;
@@ -80,34 +83,34 @@ Estos PASS no equivalen a aprobación visual acumulativa.
 - Firestore solo enriquece por llaves exactas;
 - read model + canonical semantics gobiernan estados/KPIs;
 - localStorage no concede Auth ni scope;
-- bridges DOM no pueden ser autoridad final;
-- build-lock V174 y caché se sustituyen con la candidata final.
+- bridges DOM no son autoridad final;
+- build-lock V174/caché se sustituyen con la candidata final.
 
 ## 5. Familia B — composición objetivo
 
 - Dashboard: misma semántica para tiles, fases, comparativos y drilldowns.
 - CRM Ops Leads: suite completa; pending-source honesto sin backend CRM real.
 - Clientes: sin contactos, correos, prospectos o scores inventados.
-- Comercial: contrato financiero por proyecto; Cinépolis delegado, regalía 0.
+- Comercial: contrato financiero por proyecto; Cinépolis delegado/regalía 0.
 - Marketing: sin contenido/métricas ficticias ni Gemini/Make aparentes.
 - Hojas de Ruta: HR viva y acciones gateadas.
 
 ## 6. Scope lock A+B
 
-Dentro del primer checkpoint:
+Durante el primer checkpoint:
 
-- `operacion-extra.js` queda en Familia D y no se modifica;
-- `cliente-extra.js` queda en Familias F/G y no se modifica;
-- `cliente-insights.js` queda en Familia F y no se modifica;
+- `operacion-extra.js` → Familia D, sin cambios;
+- `cliente-extra.js` → Familias F/G, sin cambios;
+- `cliente-insights.js` → Familia F, reconciliación posterior;
 - Portal Cliente, reportes, Insights, Shopper, Finanzas completa y Academia quedan diferidos;
-- solo una dependencia transversal P0 demostrada permite tocar un módulo posterior.
+- solo dependencia transversal P0 demostrada permite abrir un módulo posterior.
 
 Overlays que sí afectan A+B:
 
-- `tya-c6-domain-consistency-bridge.js`;
-- `tya-c6-unified-human-runtime-v1.js`;
+- domain consistency bridge;
+- unified human runtime;
 - read guards/normalizadores;
-- configuración tenant/proyecto/periodo;
+- tenant/proyecto/periodo;
 - build-lock/service worker.
 
 ## 7. Checkpoint Visual 1
@@ -127,7 +130,7 @@ No se avanza al Checkpoint 2 sin validación visual del build exacto.
 
 ## 8. Secuencia vigente
 
-`PROVENIENCIA/APROBACIONES A+B → SHAS OBJETIVO → DELTA ACUMULATIVO FOCALIZADO → GATES SOURCE-ONLY → ÚNICO DEV → CHECKPOINT VISUAL 1 → CORRECCIÓN SOBRE MISMA CANDIDATA`.
+`PROVENIENCIA/APROBACIONES A+B → SHAS OBJETIVO → DELTA ACUMULATIVO FOCALIZADO → GATES SOURCE-ONLY → ÚNICO DEV → CHECKPOINT VISUAL 1`.
 
 ## 9. Gate inmediato
 
