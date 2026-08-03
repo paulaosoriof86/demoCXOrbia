@@ -1,120 +1,110 @@
 # ACADEMIA — IMPACTO DE LA RECONSTRUCCIÓN DE CANDIDATA ACUMULATIVA
 
 **Fecha:** 2026-08-02  
-**Estado:** `DOCUMENTED_NON_BLOCKING_PRIORITY_PHASE_A__FAMILIES_A_B_ACTIVE`
+**Estado:** `DOCUMENTED_NON_BLOCKING__A_PLUS_B_SCOPE_LOCKED`
 
 ## 1. Regla
 
-Academia debe quedar alineada con la versión realmente seleccionada de cada módulo, pero no bloqueará CRM Ops Leads/Phase A salvo P0 demostrado.
+Academia debe alinearse al build realmente aprobado, pero no bloqueará CRM Ops Leads/Phase A salvo P0 demostrado.
 
-No se actualizan cursos o manuales a partir de PASS técnicos solamente. Deben corresponder al build visualmente aprobado por Paula.
+No se actualizan cursos/manuales por PASS técnicos ni durante el inventario A+B.
 
-## 2. Familia A — impacto documentado
+## 2. Impacto Familia A
 
-Los contenidos futuros deben explicar una sola versión de:
+Después del Checkpoint Visual 1 se documentarán:
 
 - acceso humano y Auth protegida;
 - sesión y nueva pestaña;
 - tenant, proyecto y periodo;
 - fuente HR viva;
-- `CX.data` como interfaz estable;
 - roles, permisos y scopes;
 - diferencia entre marca visual y llave técnica;
 - estados canónicos;
-- modo read-only y acciones bloqueadas;
-- troubleshooting de caché/build.
+- modo read-only;
+- troubleshooting de build/caché.
 
-No deben enseñar:
-
-- un segundo login técnico;
-- `tenant-demo` como autoridad;
-- Proyecto y Periodo mezclados;
-- localStorage como permiso;
-- un bridge DOM como flujo funcional oficial.
-
-## 3. Familia B — impacto documentado
+## 3. Impacto Familia B
 
 ### Dashboard
 
-- lectura de KPIs y drilldowns desde la misma fuente;
-- diferencia entre dato exacto, pendiente de fuente y no disponible;
+- KPI y drilldown desde la misma fuente;
 - comparativo histórico real;
+- pending-source vs dato exacto;
 - cero métricas fabricadas.
 
 ### CRM Ops Leads
 
 - pipeline, leads, cuentas, contactos, actividades y ficha 360;
-- estado vacío/pending-source cuando no exista backend CRM;
-- diferencia entre modo demo y datos reales;
-- gates de edición y trazabilidad.
+- modo conectado sin backend CRM;
+- diferencia entre demo y fuente real;
+- gates y trazabilidad.
 
 ### Clientes
 
-- relación Cliente→Proyecto;
-- contactos reales vs información no disponible;
-- no enseñar prospectos o correos de fixture como datos operativos.
+- Cliente→Proyecto;
+- contactos reales vs sin dato;
+- no enseñar semillas como datos operativos.
 
 ### Comercial
 
-- calculadora por configuración de proyecto;
+- modelo por proyecto;
 - honorario vs ingreso;
 - regalías solo cuando apliquen;
 - delegado/localBilling false para Cinépolis;
-- propuestas y plantillas con gates.
+- propuestas y gates.
 
 ### Marketing
 
 - calendario y estados;
 - métricas solo con fuente;
-- Gemini/Make como integraciones futuras y gateadas, no activas por defecto.
+- Gemini/Make no activos por defecto.
 
 ### Hojas de Ruta
 
 - HR como autoridad;
 - proyecto/periodo;
 - lectura, importación y sincronización;
-- qué acciones están habilitadas y cuáles requieren gate.
+- acciones habilitadas vs gateadas.
 
-## 4. Requisito por módulo seleccionado
+## 4. Scope lock
+
+Durante A+B no se modifica ni reestructura Academia por contenidos de:
+
+- Shopper/Mi Perfil;
+- Portal Cliente;
+- reportes/exportaciones;
+- Insights/benchmark;
+- Finanzas completa;
+- integraciones.
+
+Estos impactos quedan diferidos a los checkpoints correspondientes.
+
+## 5. Criterio futuro por módulo
 
 - manual separado del curso;
-- audiencia/rol correcto;
-- ruta y botones reales;
+- audiencia correcta;
+- rutas y botones reales;
 - fuente y estado de datos;
-- pasos concretos;
 - checklist;
 - errores frecuentes;
 - troubleshooting;
-- notificaciones relacionadas;
-- evidencia del build visualmente aprobado.
+- notificaciones;
+- evidencia del build aprobado visualmente.
 
-## 5. Estado actual
+## 6. Estado actual
 
-- no se modifica todavía `app/modules/academia.js`;
-- no se declara Academia acumulativa cerrada;
+- no se modifica `app/modules/academia.js`;
+- no se declara Academia cerrada;
 - se preserva el contenido existente;
-- los cambios se aplicarán después de la validación visual de cada checkpoint;
-- Academia no bloquea el ensamblaje A+B salvo P0 real.
-
-## 6. Próximo impacto
-
-Después del Checkpoint Visual 1 se compararán los cursos/manuales existentes contra:
-
-- shell y acceso aprobado;
-- CRM Ops Leads;
-- Dashboard;
-- Hojas de Ruta;
-- Clientes;
-- Comercial;
-- Marketing.
+- cambios posteriores se basarán en la validación visual de cada checkpoint.
 
 ## 7. Clasificación
 
-- **Reusable CXOrbia:** Academia vinculada a build, fuente y contrato real.
+- **Reusable CXOrbia:** Academia vinculada a build/fuente real.
 - **Exclusivo cliente:** reglas TyA/Cinépolis.
-- **Claude/prototipo:** contenido, interacción y UX de cursos/manuales.
-- **Academia:** impacto directo.
-- **Sin impacto Claude:** hashes, manifests y gates.
+- **Claude/prototipo:** contenido y UX de cursos/manuales.
+- **Academia:** impacto directo diferido.
+- **Sin impacto Claude:** SHAs/manifests/gates.
 
 ## 8. Estado seguro
 
