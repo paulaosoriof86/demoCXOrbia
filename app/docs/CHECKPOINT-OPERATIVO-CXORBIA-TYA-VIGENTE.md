@@ -1,115 +1,135 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-02  
-**Estado:** `A_PLUS_B_VISIBLE_ON_SINGLE_DEV__SOURCE_AND_REMOTE_CORE_PASS__SEMANTIC_GATE_FALSE_NEGATIVE_FIXED_SOURCE_ONLY__VISUAL_REVIEW_OPEN`
+**Fecha:** 2026-08-03  
+**Estado:** `PHASE_A_COMPLETE_CUMULATIVE_RECONSTRUCTION_ACTIVE__FRAGMENTED_AB_VISUAL_REVIEW_CANCELLED__NO_PRODUCTION`
 
 ## 1. Decisión prevalente
 
-La candidata acumulativa única ya está visible en el Hosting DEV existente. No se crea otra candidata, rama, PR, shell ni metodología.
+La revisión A+B centrada en CRM Ops Leads, Clientes comerciales, Comercial y Marketing queda cancelada. No corresponde al estado real de Phase A.
 
-URL exacta:
+La única operación vigente es reconstruir y demostrar una candidata acumulativa que incluya toda la Phase A indispensable antes de volver a solicitar revisión visual.
+
+Fuentes prevalentes:
+
+- `ADDENDUM-MAESTRO-CORRECCION-RECONSTRUCCION-PHASE-A-COMPLETA-20260803.md`;
+- `MATRIZ-CANDIDATA-ACUMULATIVA-PHASE-A-COMPLETA-20260803.md`;
+- `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md` corregido;
+- `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+- evidencia y comentarios autoritativos del PR #7.
+
+## 2. Repositorio y estado seguro
+
+- repo: `paulaosoriof86/demoCXOrbia`;
+- rama única: `docs-tya-v6-v71-audit`;
+- PR #7: draft/open/no merge;
+- Hosting DEV actual: existe como punto técnico de comparación, no como candidata definitiva;
+- último build desplegado: source lock `b908daa8c9cce0bd1c06cb05e3aceb9ff1b98beb`;
+- producción `tya-plataforma`: intacta;
+- nuevo deploy durante este bloque: 0.
+
+## 3. Causa raíz metodológica cerrada
+
+El esquema A+B/C+D/E+F/G fragmentó módulos que ya formaban parte de Phase A y colocó CRM/Comercial/Marketing antes de:
+
+- Dashboard Operativo acumulativo;
+- Visitas y Revisión;
+- Postulaciones y Reservas;
+- Histórico y refresh;
+- Shoppers y experiencia por perfiles;
+- Finanzas completa;
+- Portal Cliente/Shopper;
+- Reportes y exportaciones.
+
+Ese orden contradice:
+
+- el visual smoke RC Phase A;
+- M1/Corte 1 y Corte 2A frozen/aprobados;
+- Corte 3 frozen active baseline;
+- el gate C6 que fijó `entrada → Dashboard/hoja de ruta → histórico → Shoppers/portales → Finanzas → Reportes → Reservas`.
+
+## 4. Matriz Phase A completa iniciada
+
+Se inventariaron y fijaron los Git blobs vivos de:
+
+- base transversal;
+- Dashboard, Histórico, Visitas, ficha, Revisión, Postulaciones, Reservas y Shoppers;
+- Mis Visitas, Mi Perfil/reportes Shopper, Certificación, Cuestionario, Beneficios y Documentos;
+- motor financiero, liquidación, costos y UI financiera completa;
+- Portal Cliente, Reportes Cliente e Insights;
+- navegación `mireportes` y rutas por rol.
+
+La matriz no confunde blob vivo con blob aprobado. Cada fila queda pendiente de comparación exacta con su linaje aprobado.
+
+## 5. Autoridades históricas preservadas
+
+- RC Phase A technical + visual smoke PASS;
+- M1/Corte 1: aprobado/frozen con P1/P2 documentados;
+- Corte 2A/V174: frozen/aprobado;
+- Corte 3/V182: `FROZEN_ACTIVE_BASELINE`;
+- C6: entrada directa por perfiles, HR, Staff, Shopper, Cliente, Finanzas, Portal Shopper y Reservas técnicamente preservados;
+- Reportes Admin/Cliente/Shopper y `mireportes` son parte del alcance aprobado/obligatorio y no pueden diferirse detrás de CRM.
+
+## 6. Estado del DEV actual
+
+La URL actual sigue disponible:
 
 `https://cxorbia-backend-dev.web.app/index-backend-dev.html`
 
-La revisión humana se realiza sobre este mismo build. No se avanza a Operación/Shopper ni se congela producción antes de cerrar el Checkpoint Visual 1.
+Pero queda clasificada como:
 
-## 2. Repositorio y build
+`TECHNICAL_COMPARISON_BUILD__NOT_FINAL_PHASE_A_CANDIDATE`.
 
-- repo: `paulaosoriof86/demoCXOrbia`;
-- rama: `docs-tya-v6-v71-audit`;
-- PR #7: draft/open/no merge;
-- source lock desplegado: `b908daa8c9cce0bd1c06cb05e3aceb9ff1b98beb`;
-- trigger del macro: `32506d18507ed7b9b6729eca89137f37f83d78ee`;
-- evidencia STOP_RETRY: `7f5b06a98403d9140a75c81ff656cd2321091f68`;
-- root fix QA source-only: `68f1b49b3c03d53e0d9c74d15d0f55e286653a0e`;
-- archivos publicados: 2320;
-- Hosting DEV deploys: 1;
-- segundo deploy: 0;
-- producción `tya-plataforma`: intacta.
+Razón:
 
-## 3. PASS demostrados
+- contiene físicamente un árbol amplio;
+- pasó gates de HR/Auth/Finanzas/roles;
+- el manifest activo solo certifica A+B y no prueba mejor versión aprobada de toda Phase A;
+- no corresponde pedir a Paula una revisión fragmentada.
 
-### Source/predeploy
+## 7. Próxima revisión humana válida
 
-- manifest A+B y 23 Git blobs;
-- orden de carga;
-- sintaxis;
-- unit gate 23/23;
-- adapter sin provider calls;
-- static cumulative;
-- Shopper new-tab root fix static.
+Únicamente:
 
-### Remoto sobre el build publicado
+`CHECKPOINT_VISUAL_PHASE_A_COMPLETA`
 
-- paridad exacta de activos críticos;
-- endpoint HR vivo;
-- 14 periodos y 616 visitas;
-- Staff estable en recargas y nueva pestaña;
-- Shopper: 208 perfiles, identidad exacta, `ownVisits=1`, recargas y nueva pestaña estables;
-- Cliente: tenant `tya`, proyecto `cinepolis`, 14 periodos y 616 visitas;
-- Finanzas: delegado, `localBilling=false`, regalía 0, Q60 GT/L200 HN, 14 delegados y cero violaciones.
+Incluye:
 
-## 4. STOP_RETRY y causa raíz
+1. entrada/contexto/navegación;
+2. Dashboard/hoja de ruta/Historico/refresh;
+3. Visitas/Postulaciones/Reservas;
+4. Shoppers y experiencia por perfiles;
+5. Finanzas completa;
+6. Portal Cliente/Shopper;
+7. Reportes y exportaciones;
+8. smoke multirol y nueva pestaña.
 
-El macro cerró con:
-
-`FAIL_C6_REMOTE_GATES_AFTER_SINGLE_DEV_HOSTING_DEPLOY_STOP_RETRY`
-
-Stage:
-
-`remote_domain_finance_portals_reservations`
-
-La evidencia quedó `semantic:null`; por eso no se atribuye el fallo a un módulo funcional sin prueba.
-
-Sí quedó demostrado un error del gate:
-
-- el módulo financiero real se registra como `financiero`;
-- el gate buscaba `finanzas`;
-- esto hacía fallar `CANONICAL_MODULE_MISSING` aunque el módulo estuviera cargado.
-
-El gate fue corregido en source-only y ahora persiste `failedStage`, `errorCode` y snapshots parciales sanitizados. No se alteró `app/` y no hubo segundo deploy.
-
-## 5. Estado de la candidata
-
-- físicamente disponible y con paridad remota;
-- única y acumulativa sobre la rama viva;
-- no frozen;
-- no aprobada visualmente todavía;
-- no lista para producción hasta revisión humana y revalidación semántica read-only del mismo build.
-
-## 6. Checkpoint Visual 1
-
-Paula revisará:
-
-- login/shell;
-- tenant, proyecto, periodo y fuente;
-- navegación;
-- CRM Ops Leads;
-- Dashboard y drilldowns;
-- Hojas de Ruta;
-- Clientes;
-- Comercial;
-- Marketing.
-
-Toda observación se corrige sobre el mismo linaje acumulativo, sin nueva candidata.
-
-## 7. Fuentes vigentes
-
-- `CAMBIOS-BACKEND-ADDENDUM-A-B-DEV-VISIBLE-GATE-FALSE-NEGATIVE-20260802.md`;
-- `MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json`;
-- `EVIDENCE-A-B-CUMULATIVE-SOURCE-PRECHECK-20260802.json`;
-- `app/docs/evidence/CORTE6-CANONICAL-HEAD-DEV-DEPLOY-GATES-FAILURE-LATEST.json`;
-- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
-- `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`.
+CRM, Clientes comerciales, Comercial y Marketing permanecen preservados, pero no bloquean este freeze.
 
 ## 8. Siguiente bloque exacto
 
-`PAULA CHECKPOINT VISUAL 1 SOBRE EL DEV EXISTENTE + REVALIDACIÓN SEMÁNTICA READ-ONLY DEL MISMO BUILD SIN REDEPLOY`.
+`RECUPERAR SHAS APROBADOS Y SOURCE LOCKS POR MÓDULO PHASE A → COMPARAR CON BLOBS VIVOS → CLASIFICAR PRESERVAR/RESTAURAR/RECONCILIAR → MANIFEST PHASE A COMPLETA → GATES ACUMULATIVOS MULTIROL/FINANZAS/REPORTES/RESERVAS → DELTA ÚNICO SI APLICA`.
+
+Después:
+
+- un solo DEV de reemplazo únicamente si cambia `app/`;
+- Checkpoint Visual Phase A completa;
+- freeze;
+- fuente exacta agosto/disponibles/postulaciones;
+- cutover autorizado.
 
 ## 9. Estado seguro
 
-- Cloud Run deploys: 0;
-- Firestore/Auth/Rules/Storage/HR writes: 0;
+- cambios funcionales en este bloque: 0;
+- Hosting deploy nuevo: 0;
+- Cloud Run/Firestore/Auth/Rules/Storage/HR writes: 0;
 - Make/Gemini/pagos: 0;
 - merge: false;
-- producción: false.
+- producción: intacta.
+
+## 10. Clasificación
+
+- **Reusable CXOrbia:** recuperación por linaje y smoke anti-regresión.
+- **Exclusivo cliente:** TyA/Cinépolis, HR, GT/HN y reglas financieras.
+- **Claude/prototipo:** preservar todas las superficies aprobadas de Phase A.
+- **Academia:** actualización posterior al build completo aprobado.
+- **Sin impacto Claude:** matriz de blobs, gates y trazabilidad.
