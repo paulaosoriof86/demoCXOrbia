@@ -1,151 +1,118 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `A_PLUS_B_SOURCE_ASSEMBLED__PRECHECK_PASS__EXACT_CHECKOUT_GATE_PENDING__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `A_PLUS_B_VISIBLE_ON_SINGLE_DEV__VISUAL_REVIEW_OPEN__SEMANTIC_READONLY_REVALIDATION_PENDING__NO_PRODUCTION`
 
-## 1. Bloqueante actual único
+## 1. Pendiente inmediato
 
-La fuente A+B está ensamblada. El bloqueo real ya no es recuperar módulos ni definir SHAs.
+La candidata única ya está visible en:
 
-Pendiente:
+`https://cxorbia-backend-dev.web.app/index-backend-dev.html`
 
-1. ejecutar `tools/qa/tya-ab-cumulative-candidate-source-gate.mjs` sobre checkout exacto;
-2. ejecutar gates estáticos/cumulativos sin proveedores;
-3. aplicar `STOP_RETRY` si aparece cualquier fallo;
-4. solo con PASS, autorizar un único Hosting DEV;
-5. Paula valida visualmente el Checkpoint 1.
+El trabajo pendiente es:
 
-## 2. Cerrado en este bloque
+1. Checkpoint Visual 1 de Paula sobre ese mismo build;
+2. revalidación semántica read-only usando el gate corregido, sin redeploy;
+3. ajustes focalizados sobre la misma candidata si Paula identifica regresiones;
+4. freeze/build-lock únicamente después del PASS visual y técnico.
+
+## 2. Cerrado
 
 - proveniencia M1/Corte 1, Corte 2A y V182;
 - matriz SHA A+B;
 - manifest de 23 archivos;
-- adapter de composición;
-- orden de carga;
-- supresión de fixtures identificados;
-- preservación de registros creados por usuario;
-- unit gate PASS con 23 verificaciones;
-- evidencia source-only preliminar.
+- adapter acumulativo;
+- source gate exacto PASS;
+- unit gate 23/23;
+- static cumulative PASS;
+- deploy único a Hosting DEV;
+- paridad remota PASS;
+- HR, Staff, Shopper, Cliente y Finanzas remotas PASS.
 
-## 3. Archivos funcionales vigentes
+## 3. Gate semántico
 
-### Adapter
+El workflow terminó STOP_RETRY porque el gate final no persistió `remote-semantic.json`.
 
-`app/adapters/tya-ab-cumulative-composition-v1.js`
+Causa reproducible corregida:
 
-Blob:
+- módulo real: `financiero`;
+- alias incorrecto usado por el gate: `finanzas`.
 
-`9c0d76382531b8393cc0866ec694935a2a5e25a6`.
+Root fix:
 
-### Entrada DEV
+`68f1b49b3c03d53e0d9c74d15d0f55e286653a0e`
 
-`app/index-backend-dev.html`
+Ahora el gate usa el ID correcto y guarda el error exacto antes de terminar. No se modificó la candidata desplegada.
 
-Blob:
+## 4. Checklist visual A+B
 
-`b9a4aaf063d97305c3f4f53eba8f02b526d61761`.
+### Shell/contexto
 
-### Módulos preservados sin reescritura
-
-- Dashboard;
-- CRM;
-- Clientes;
-- Comercial;
-- Marketing;
-- Hojas de Ruta.
-
-## 4. Pendientes del Checkpoint Visual 1
-
-### Shell y contexto
-
-- entrada humana única;
+- login único;
 - tenant `tya`;
 - proyecto `cinepolis`;
-- periodo separado;
+- periodo correcto;
 - fuente HR viva;
-- navegación completa por rol;
-- ausencia de Demo comercial/usuarios sintéticos.
-
-### Dashboard
-
-- tile ↔ fase ↔ comparativo ↔ drilldown;
-- misma semántica canónica;
-- cero métricas fabricadas;
-- revisión del impacto de bridges C6.
+- navegación por rol;
+- ausencia de identidades o datos demo aparentes.
 
 ### CRM Ops Leads
 
-- suite completa visible;
-- estado vacío/pending-source honesto sin backend CRM;
-- alta local preservada con proveniencia;
-- cero fixtures.
+- pipeline, cuentas, contactos, actividades y ficha 360;
+- estado vacío/pending-source honesto;
+- cero fixtures;
+- altas nuevas preservadas.
 
-### Clientes
+### Dashboard
 
-- solo clientes derivados/configurados o creados con proveniencia;
-- cero prospectos/contactos placeholder;
-- relación por IDs estables.
-
-### Comercial
-
-- validar que se percibe como herramienta de planificación, no como dato contractual confirmado;
-- modelo delegado/regalía 0 preservado;
-- IA/web/plantillas gateadas.
-
-### Marketing
-
-- cero contenido/métricas ficticias;
-- mes correcto;
-- nuevas piezas con proveniencia;
-- Make/Gemini inactivos.
+- tiles, fases, comparativo y drilldowns coherentes;
+- GT/HN correctos;
+- cero cifras inventadas.
 
 ### Hojas de Ruta
 
-- HR viva y periodo correcto;
-- acciones de importación/sincronización/IA no activadas sin gate.
+- HR y periodo correctos;
+- acciones no activadas claramente gateadas.
+
+### Clientes
+
+- sin prospectos/contactos placeholder;
+- relación Cliente→Proyecto por IDs.
+
+### Comercial
+
+- herramienta de planificación, no cifra contractual falsa;
+- Cinépolis delegado, localBilling false, regalía 0.
+
+### Marketing
+
+- periodo correcto;
+- sin contenido/métricas ficticias;
+- Make/Gemini inactivos.
 
 ## 5. Scope diferido
 
-No abrir ahora salvo P0 transversal:
+Hasta cerrar el Checkpoint 1, no abrir salvo P0 transversal:
 
 - Operación e histórico;
-- Shopper y certificaciones;
+- experiencia Shopper/certificaciones;
 - Finanzas completa;
 - Portal Cliente/reportes/Insights;
-- administración e integraciones;
+- administración/integraciones;
 - Academia.
 
-## 6. Cerrado y protegido
+## 6. Protegido
 
-No reabrir sin regresión reproducible:
-
-- 14 periodos y 616 visitas;
-- Staff/Shopper/Cliente remoto estable;
-- identidad Shopper exacta y `ownVisits=1`;
-- `tya::cinepolis` delegado;
-- localBilling false;
+- 14 periodos;
+- 616 visitas;
+- 208 shoppers en el carril Shopper;
+- `ownVisits=1`;
+- Cliente `tya/cinepolis`;
+- Q60 GT/L200 HN;
 - regalía 0;
-- Q60 GT / L200 HN;
-- 14 delegados, 0 directos, 0 sin configurar y 0 violaciones;
+- segundo deploy 0;
 - producción intacta.
 
-## 7. Criterio de salida A+B
+## 7. Siguiente bloque exacto
 
-- source gate exacto PASS;
-- static/cumulative gates PASS;
-- un solo build/URL DEV;
-- validación visual de Paula módulo por módulo;
-- correcciones sobre la misma candidata;
-- build-lock/freeze solo después del PASS visual.
-
-## 8. Siguiente bloque exacto
-
-`EXACT CHECKOUT A+B SOURCE GATE → STATIC/CUMULATIVE GATES → STOP_RETRY SI FALLA → SOLO SI PASS, AUTORIZACIÓN DE UN HOSTING DEV → CHECKPOINT VISUAL 1`.
-
-## 9. Prohibiciones
-
-- no nueva candidata, rama, PR o metodología;
-- no expansión a C–G;
-- no seeds/métricas falsas;
-- no deploy antes del gate;
-- no merge ni producción antes de aprobación visual.
+`PAULA REVISA EL DEV ÚNICO → SE DOCUMENTAN HALLAZGOS → SOLO DELTA FOCALIZADO SOBRE LA MISMA CANDIDATA`.
