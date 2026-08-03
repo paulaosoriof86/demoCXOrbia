@@ -7,7 +7,8 @@
   "headBeforeFunctionalDelta": "754639e0c0682c638cc799fd26bfcd2c744b0b6a",
   "functionalCommits": [
     "b8c5323b9887fc97375f805cec9320dfc8b9afa7",
-    "90d6c045c9ad7aaee284ad69bbbb146fbbd09326"
+    "90d6c045c9ad7aaee284ad69bbbb146fbbd09326",
+    "4c5f0d829efe0094707235fab1472539d950b81e"
   ],
   "approvalAuthorities": {
     "m1VisualFreeze": {
@@ -151,7 +152,7 @@
     },
     {
       "path": "app/adapters/tya-ab-cumulative-composition-v1.js",
-      "gitBlob": "a8a5eb7e37039faad271489d65d87423f801227c",
+      "gitBlob": "9c0d76382531b8393cc0866ec694935a2a5e25a6",
       "origin": "AB_RECONSTRUCTION_20260802",
       "status": "NEW_SOURCE_PENDING_GATE",
       "action": "VALIDATE"
