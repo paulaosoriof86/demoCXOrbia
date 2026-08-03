@@ -1,117 +1,131 @@
 # ACADEMIA — IMPACTO DE LA RECONSTRUCCIÓN DE CANDIDATA ACUMULATIVA
 
-**Fecha:** 2026-08-02  
-**Estado:** `DOCUMENTED_NON_BLOCKING__A_PLUS_B_VISIBLE_IN_DEV__VISUAL_APPROVAL_PENDING`
+**Fecha original:** 2026-08-02  
+**Corrección prevalente:** 2026-08-03  
+**Estado:** `DOCUMENTED_NON_BLOCKING__PHASE_A_COMPLETE_RECONSTRUCTION_ACTIVE__VISUAL_PENDING`
 
 ## 1. Regla
 
-Academia debe reflejar únicamente el build aprobado visualmente por Paula. La publicación en DEV y los PASS técnicos no autorizan todavía a cambiar cursos, manuales ni `app/modules/academia.js`.
+Academia debe reflejar únicamente el build Phase A completo que Paula apruebe visualmente.
 
-Academia no bloquea CRM Ops Leads/Phase A salvo P0 demostrado.
+La revisión A+B centrada en CRM/Comercial/Marketing quedó anulada. Academia no debe aprender ni documentar una secuencia que deje para después Operación, Visitas, Reservas, Finanzas, Reportes o perfiles.
 
-## 2. Build de referencia para revisión
+Academia continúa sin bloquear la salida operativa salvo P0 demostrado.
+
+## 2. Build actual
 
 `https://cxorbia-backend-dev.web.app/index-backend-dev.html`
 
-Estado:
+Clasificación:
 
-- candidata única y acumulativa visible;
-- un deploy DEV;
-- paridad remota confirmada;
-- revisión visual pendiente;
-- producción no activada.
+`TECHNICAL_COMPARISON_BUILD__NOT_FINAL_PHASE_A_CANDIDATE`.
 
-## 3. Contenido que deberá actualizarse después del PASS visual
+No actualizar cursos/manuales con base exclusiva en este build ni presentarlo como freeze final.
 
-### Acceso y contexto
+## 3. Alcance que debe corresponder al build aprobado
 
-- login humano único;
+### Base y roles
+
+- entrada directa por Administración/Coordinación, Portal Cliente y Shopper/Evaluador;
 - tenant, proyecto y periodo;
-- fuente HR viva;
-- roles y navegación;
-- sesión, recarga y nueva pestaña;
-- lectura vs acciones bloqueadas.
+- HR viva y actualización in-place;
+- navegación/permisos por rol;
+- fuente y estados honestos.
 
-### Dashboard
+### Operación
 
-- tiles, fases, comparativos y drilldowns;
-- misma fuente y semántica;
-- histórico real;
-- cero métricas fabricadas.
+- Dashboard Operativo y drilldowns;
+- Mi Día/hoja de ruta;
+- Histórico;
+- Visitas, ficha y Revisión;
+- Postulaciones;
+- Reservas;
+- Shoppers.
 
-### CRM Ops Leads
+### Shopper/perfiles
 
-- pipeline, leads, cuentas, contactos, actividades y ficha 360;
-- estado vacío/pending-source sin backend CRM;
-- altas con proveniencia `platform_user`;
-- diferencia entre fixture y dato operativo.
+- Disponibles;
+- Mis Visitas;
+- Reservas;
+- Mi Perfil;
+- cuestionario;
+- certificaciones presentadas e histórico;
+- documentos;
+- beneficios;
+- reportes Shopper.
 
-### Clientes
+### Finanzas
 
-- Cliente→Proyecto por IDs;
-- ausencia de prospectos/contactos placeholder;
-- tratamiento honesto de campos sin fuente.
+- Dashboard Financiero;
+- Liquidaciones;
+- Movimientos;
+- Costos;
+- CxP/CxC;
+- lotes/pagos en su estado real;
+- revisión financiera, conciliación y pago como conceptos distintos;
+- multi-país/multi-moneda;
+- modelo delegado, localBilling false y regalía 0.
 
-### Comercial
+### Portales y reportes
 
-- planificación/propuesta vs valor contractual;
-- modelo financiero por proyecto;
-- Cinépolis delegado, localBilling false y regalía 0;
-- integraciones gateadas.
+- Portal Cliente y Portal Shopper;
+- Reportes Admin/Cliente/Shopper;
+- PDF/XLSX/PPTX;
+- periodo, alcance, fuente, filas, branding y gráficas;
+- ausencia de métricas, NPS, porcentajes, responsables o hallazgos fabricados.
 
-### Marketing
+## 4. Autoridades históricas
 
-- periodo activo;
-- contenido y métricas solo con fuente;
-- Make/Gemini inactivos por defecto.
+Los contenidos deberán reconocer que ya existieron:
 
-### Hojas de Ruta
+- RC Phase A smoke técnico y visual/consola PASS;
+- M1/Corte 1 frozen/aprobado;
+- Corte 2A/V174 frozen/aprobado;
+- Corte 3/V182 frozen active baseline;
+- C6 técnico multirol y dominio/Finanzas/Reservas PASS.
 
-- HR como autoridad;
-- proyecto/periodo;
-- acciones habilitadas vs bloqueadas.
+La reconstrucción actual recupera la composición aprobada; no reinicia funcionalmente la plataforma.
 
-## 4. Incidencia del gate semántico
+## 5. Actualizaciones posteriores al Checkpoint Visual Phase A completa
 
-El último cierre STOP_RETRY fue provocado por una inconsistencia del gate entre `financiero` y `finanzas`, no por una decisión pedagógica ni por un cambio en Academia.
+Por módulo:
 
-El root fix QA no altera rutas, cursos, manuales o contenidos de usuarios.
-
-## 5. Scope diferido
-
-No actualizar todavía contenido de:
-
-- Operación/Shopper;
-- certificaciones;
-- Finanzas completa;
-- Portal Cliente/reportes/Insights;
-- integraciones.
-
-## 6. Criterio de actualización
-
-Después del PASS visual, cada curso/manual debe contener:
-
-- build exacto;
-- audiencia y rol;
-- rutas/botones reales;
-- fuente y estado del dato;
-- checklist;
+- build y manifest exactos;
+- audiencia/rol;
+- ruta real;
+- fuente y alcance;
+- pasos operativos;
+- estados y gates;
 - errores frecuentes;
 - troubleshooting;
-- notificaciones relacionadas;
-- evidencia visual aprobada.
+- notificaciones;
+- separación entre manual y curso.
+
+Temas obligatorios:
+
+- HR como autoridad operacional;
+- identidad Shopper exacta;
+- fuente real vs `Pendiente de fuente`;
+- revisión financiera vs conciliación vs pago;
+- rollover de periodo;
+- reportes por rol;
+- integraciones apagadas hasta autorización.
+
+## 6. Módulos posteriores
+
+CRM Ops Leads, Clientes comerciales, Comercial y Marketing se documentarán en su bloque posterior. No deben desplazar los contenidos Phase A ni aparecer como requisito previo para el freeze actual.
 
 ## 7. Estado actual
 
-- `app/modules/academia.js`: sin cambios;
-- Academia: preservada;
-- impacto: documentado;
-- actualización: pendiente del Checkpoint Visual 1.
+- `app/modules/academia.js`: sin cambios funcionales en este bloque;
+- cursos/manuales: preservados;
+- actualización de contenido: pendiente de `FINAL_HUMAN_VISUAL_APPROVED`;
+- deploy/provider writes: 0.
 
 ## 8. Clasificación
 
-- **Reusable CXOrbia:** formación vinculada al build real.
-- **Exclusivo cliente:** TyA/Cinépolis y HR.
-- **Claude/prototipo:** actualización de contenido posterior al PASS visual.
-- **Academia:** impacto directo, todavía no aplicado.
-- **Sin impacto Claude:** QA, hashes y evidencia.
+- **Reusable CXOrbia:** cursos vinculados a build, rol, fuente y gates.
+- **Exclusivo cliente:** TyA/Cinépolis, HR, GT/HN y configuración financiera.
+- **Claude/prototipo:** UX y rutas que deben coincidir con el build aprobado.
+- **Academia:** impacto completo documentado, aplicación diferida.
+- **Sin impacto Claude:** SHAs, manifests y evidencia técnica.
