@@ -1,151 +1,98 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-02  
-**Estado vivo:** `A_PLUS_B_SOURCE_ASSEMBLED__PRECHECK_PASS__EXACT_CHECKOUT_GATE_PENDING__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `A_PLUS_B_VISIBLE_ON_SINGLE_DEV__VISUAL_REVIEW_OPEN__NO_NEW_CANDIDATE__NO_PRODUCTION`
 
 ## 1. Baseline única
 
-Continuar exclusivamente sobre `docs-tya-v6-v71-audit`. No crear candidata, shell reducido, rama, PR, Firebase, Hosting o workflow paralelo.
+Continuar exclusivamente sobre:
 
-Leer primero:
+- repo `paulaosoriof86/demoCXOrbia`;
+- rama `docs-tya-v6-v71-audit`;
+- PR #7 draft/open/no merge;
+- DEV exacto: `https://cxorbia-backend-dev.web.app/index-backend-dev.html`.
 
-- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
-- `MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json`;
-- `EVIDENCE-A-B-CUMULATIVE-SOURCE-PRECHECK-20260802.json`;
-- `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-- `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`.
+No crear candidata, shell reducido, rama, PR, Firebase, Hosting o workflow paralelo.
 
-## 2. Qué ya se aplicó
+## 2. Qué ya está publicado
 
-Se creó:
+La candidata A+B fue desplegada una vez con 2320 archivos y paridad remota exacta.
 
-`app/adapters/tya-ab-cumulative-composition-v1.js`
+Componentes acumulativos:
 
-Blob final:
-
-`9c0d76382531b8393cc0866ec694935a2a5e25a6`.
-
-Se incorporó una sola vez en:
-
-`app/index-backend-dev.html`
-
-Blob:
-
-`b9a4aaf063d97305c3f4f53eba8f02b526d61761`.
+- `app/adapters/tya-ab-cumulative-composition-v1.js`;
+- `app/index-backend-dev.html`;
+- módulos Dashboard, CRM, Clientes, Comercial, Marketing y Rutas preservados;
+- runtime/Auth/HR/Shopper/Cliente/Finanzas C6 preservados.
 
 El adapter:
 
-- no reescribe módulos frontend;
-- preserva HR viva, `CX.data`, Auth y configuración financiera;
-- retira prospectos sintéticos y contactos placeholder en conectado;
-- oculta fixtures CRM y Marketing;
-- conserva registros creados por usuario con proveniencia `platform_user`;
-- alinea Marketing al periodo activo;
-- no borra localStorage ni escribe proveedores.
+- retira prospectos sintéticos y contactos placeholder;
+- oculta fixtures CRM/Marketing;
+- conserva altas con `platform_user`;
+- preserva HR, `CX.data`, Auth y finanzas canónicas;
+- no escribe proveedores.
 
-## 3. Módulos A+B preservados
+## 3. PASS demostrados
 
-No modificar por rutina:
+- source gate A+B;
+- manifest de 23 blobs;
+- unit gate 23/23;
+- static cumulative;
+- paridad remota;
+- HR 14 periodos/616 visitas;
+- Staff estable;
+- Shopper 208 perfiles, identidad exacta y `ownVisits=1`;
+- Cliente `tya/cinepolis`;
+- Finanzas delegada, localBilling false, regalía 0, Q60/L200.
 
-- `dashboard.js`;
-- `crm.js`;
-- `clientes.js`;
-- `comercial.js`;
-- `marketing.js`;
-- `rutas.js`;
-- `app.js`;
-- `layout.css`.
+## 4. False negative del gate semántico
 
-Proveniencia:
+El cierre STOP_RETRY no demostró una regresión del módulo financiero. El gate buscaba `CX.modules.finanzas`, pero el módulo se registra como `CX.module('financiero', ...)`.
 
-- M1/Corte 1 aprobado: `67c0943260f076f5686284ac509458ed5fd34dbd`;
-- Corte 2A no cambió A+B;
-- V182 frozen preservado en `app.js` y `layout.css`.
+Root fix QA:
 
-Dashboard conserva UI aprobada, pero el runtime compuesto debe revisarse. Los demás módulos son `BEST_TECHNICAL_PENDING_VISUAL`, no se deben presentar como aprobados antes de la revisión de Paula.
+`68f1b49b3c03d53e0d9c74d15d0f55e286653a0e`
 
-## 4. Reglas frontend del Checkpoint 1
+Ahora:
 
-### Dashboard
+- valida `financiero`;
+- persiste `failedStage`, `errorCode` y snapshots parciales;
+- no toca `app/`;
+- no requiere otra candidata.
 
-- tile, fase, comparativo y drilldown deben coincidir;
-- usar HR/read model/semántica canónica;
-- cero métricas fabricadas;
-- cualquier bridge posterior forma parte del build a validar y no puede esconder regresiones.
+## 5. Checkpoint Visual 1
 
-### CRM Ops Leads
+Paula revisará en el mismo build:
 
-- conservar pipeline, leads, cuentas, contactos, actividades, ficha 360, metas y reportes;
-- sin backend CRM real: vacío/pending-source honesto;
-- no fixtures aparentes;
-- nuevos registros locales deben conservar proveniencia `platform_user`.
-
-### Clientes
-
-- conservar Cliente→Proyecto;
-- no mostrar prospectos/contactos/correos placeholder;
-- no deduplicar por nombre visual.
-
-### Comercial
-
-- conservar como herramienta de planificación/propuestas;
-- no presentar defaults como valores contractuales confirmados;
-- Cinépolis permanece delegado, localBilling false, regalía 0, Q60/L200;
-- IA/web/plantillas no activas sin gate.
-
-### Marketing
-
-- conservar UI/calendario;
-- sin contenido, alcance, interacciones o leads ficticios en conectado;
-- mes alineado al periodo activo;
-- Make/Gemini inactivos.
-
-### Hojas de Ruta
-
-- HR viva;
-- proyecto y periodo correctos;
-- IA/import/Google Sheets y writes gateados.
-
-## 5. Gates
-
-- `tya-ab-cumulative-composition-unit.mjs`: PASS, 23 verificaciones;
-- `tya-ab-cumulative-candidate-source-gate.mjs`: listo, pendiente de checkout exacto;
-- no afirmar PASS integral todavía;
-- no deploy antes de ese PASS.
-
-## 6. Scope lock
-
-No tocar durante A+B salvo P0 transversal demostrado:
-
-- Operación/Shopper;
-- Finanzas completa;
-- Portal Cliente/reportes/Insights;
-- configuración/integraciones;
-- Academia.
-
-## 7. Validación visual obligatoria
-
-Primer build único:
-
-- login/shell/tenant/proyecto/periodo/fuente/navegación;
+- login/shell/tenant/proyecto/periodo/fuente;
+- navegación;
 - CRM Ops Leads;
-- Dashboard;
+- Dashboard y drilldowns;
 - Hojas de Ruta;
 - Clientes;
 - Comercial;
-- Marketing;
-- indicadores y drilldowns.
+- Marketing.
 
-No avanzar a C+D por PASS técnico solamente.
+No presentar como aprobado visualmente antes de su respuesta.
 
-## 8. Próximo bloque
+## 6. Reglas para ajustes frontend
 
-`EXACT CHECKOUT SOURCE GATE → STATIC/CUMULATIVE GATES → SI PASS, UN SOLO HOSTING DEV AUTORIZADO → CHECKPOINT VISUAL 1`.
+- corregir sobre la misma rama/candidata;
+- no restaurar versiones por número;
+- no insertar seeds o métricas ficticias;
+- no parchear desde backend lo que corresponda al módulo UI;
+- preservar IDs, contratos y PASS técnicos;
+- no abrir Operación/Shopper/Finanzas completa/Portales/Academia hasta cerrar el checkpoint, salvo P0 transversal reproducible.
 
-## 9. Prohibiciones
+## 7. Próximo bloque
 
-- no nueva candidata o metodología;
-- no reescritura frontend arbitraria;
-- no seeds/métricas falsas;
-- no expandir alcance;
-- no deploy, merge o producción sin autorización y gate.
+`OBSERVACIONES VISUALES DE PAULA SOBRE EL DEV EXISTENTE → DELTA FOCALIZADO EN LA MISMA CANDIDATA → REVALIDACIÓN READ-ONLY SIN REDEPLOY INNECESARIO`.
+
+## 8. Estado seguro
+
+- Hosting DEV deploys del macro: 1;
+- segundo deploy: 0;
+- provider writes: 0;
+- merge: false;
+- producción: false.
