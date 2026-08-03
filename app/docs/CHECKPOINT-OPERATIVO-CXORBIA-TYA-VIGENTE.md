@@ -1,99 +1,116 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-02  
-**Estado:** `RECONSTRUCTION_ACTIVE__A_PLUS_B_SCOPE_LOCKED__TARGET_SHAS_AND_DELTA_PENDING__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `A_PLUS_B_SOURCE_ASSEMBLED__PRECHECK_PASS__EXACT_CHECKOUT_GATE_PENDING__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Decisión prevalente
 
-Se reconstruye una única candidata acumulativa. El primer checkpoint queda limitado a Base + CRM Ops Leads. No se permiten diagnósticos C6 aislados, shells paralelos, nuevas candidatas ni expansión a módulos posteriores sin dependencia P0 demostrada.
+La candidata acumulativa A+B ya fue ensamblada sobre la rama viva. No se abre otra candidata, rama, PR, shell o metodología. El siguiente paso no es continuar a C+D: primero se ejecutan los gates exactos y Paula valida visualmente A+B sobre un único DEV.
 
-Fuentes vivas:
+Fuentes vivas obligatorias:
 
 - `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`;
-- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-A-CONTRATO-Y-PRECEDENCIA-20260802.md`;
-- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-FAMILIA-B-INVENTARIO-INICIAL-20260802.md`;
-- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-A-B-SCOPE-LOCK-OVERLAYS-20260802.md`;
+- `MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json`;
+- `EVIDENCE-A-B-CUMULATIVE-SOURCE-PRECHECK-20260802.json`;
+- `CAMBIOS-BACKEND-ADDENDUM-A-B-COMPOSICION-MANIFEST-GATES-20260802.md`;
 - `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`.
 
-## 2. Estado protegido
+## 2. Repositorio y estado protegido
 
-- Repo/rama/PR: `paulaosoriof86/demoCXOrbia` / `docs-tya-v6-v71-audit` / PR #7 draft/open/no merge.
-- HEAD de arranque: `c646af04b8fba0ca8685fa4d6ce0a46e62221276`.
-- Contrato Familia A: `92651f41acc423841d909487558d68be5d10b2b6`.
-- Inventario Familia B: `06fbfac28a1971d229ab121778ee6babdd1fd904`.
-- Scope lock A+B: `94c440a06212dd194c34b43df00197d5d56c6024`.
-- Matriz maestra A+B: `8d2f59a9ea8854f91efe3fb9532b35d04992fd64`.
-- Índice vigente: `712ba9b28e785a6cc61fbc0edfd05bd790184cbf`.
-- Producción `tya-plataforma`: intacta.
-- Agosto 2026 todavía no existe en HR.
+- repo: `paulaosoriof86/demoCXOrbia`;
+- rama: `docs-tya-v6-v71-audit`;
+- PR #7: draft/open/no merge;
+- HEAD anterior al delta funcional: `754639e0c0682c638cc799fd26bfcd2c744b0b6a`;
+- producción `tya-plataforma`: intacta;
+- Hosting DEV durante este bloque: 0;
+- agosto 2026: ausente en HR, no inventado.
 
-## 3. Causa raíz confirmada
+## 3. Proveniencia recuperada
 
-El runtime tenía múltiples autoridades superpuestas: demo/localStorage, HR source-safe, Firestore protegido, read guards, read model, semántica canónica, bridges y módulos UI. Un módulo fuente correcto podía verse mal porque una capa posterior cambiaba su estado o render.
+- M1/Corte 1 visual aprobado: `67c0943260f076f5686284ac509458ed5fd34dbd`;
+- Corte 2A/V174 no cambió módulos A+B;
+- V182 frozen preservado en `app/app.js` y `app/styles/layout.css`;
+- módulos Dashboard/CRM/Clientes/Comercial/Marketing/Rutas conservan sus blobs históricos, sin reescritura durante la reconstrucción;
+- fixes C6 de Auth, HR, Shopper, Cliente y Finanzas se preservan como dependencias técnicas.
 
-La reconstrucción fija precedencia antes de seleccionar SHAs.
+## 4. Delta funcional aplicado
 
-## 4. Familia A — contrato técnico
+### `app/adapters/tya-ab-cumulative-composition-v1.js`
 
-- tenant `tya`;
-- proyecto `cinepolis`;
-- periodos `cinepolis-YYYY-MM`;
-- HR viva gobierna periodos, visitas y estado operacional;
-- Firestore solo enriquece por llaves exactas;
-- `CX.data` conserva su interfaz;
-- read model + canonical semantics gobiernan estados/KPIs;
-- localStorage no concede Auth, rol o scope;
-- guards bloquean writes sin sustituir datos;
-- bridges DOM no son autoridad final;
-- build-lock V174 y caché se reemplazan al ensamblar.
+Git blob final:
 
-## 5. Familia B — objetivo
+`9c0d76382531b8393cc0866ec694935a2a5e25a6`.
 
-- Dashboard: misma semántica para tiles, fases, comparativos y drilldowns.
-- CRM Ops Leads: suite completa, sin fixtures aparentes en conectado.
-- Hojas de Ruta: HR viva, proyecto/periodo correctos y acciones gateadas.
-- Clientes: sin contactos, correos, prospectos o scores inventados.
-- Comercial: contrato financiero por proyecto, Cinépolis delegado/regalía 0.
-- Marketing: sin fechas/métricas ficticias ni Gemini/Make aparentes.
+Responsabilidad:
 
-## 6. Scope lock
+- carril humano autenticado canónico;
+- HR viva y `CX.data` preservados;
+- prospectos sintéticos y contactos placeholder retirados en conectado;
+- fixtures CRM/Marketing ocultos;
+- registros creados por usuario preservados y marcados `platform_user`;
+- Marketing alineado al periodo activo;
+- modelo delegado/localBilling false/regalía 0/Q60-L200 preservado;
+- cero provider writes.
 
-Diferidos sin cambios durante A+B:
+### `app/index-backend-dev.html`
 
-- `operacion-extra.js` y experiencia Shopper → Familia D;
-- `cliente-extra.js`, reportes/exportaciones → Familias F/G;
-- `cliente-insights.js`, Portal Cliente/benchmark → Familia F;
-- Finanzas completa;
-- Academia;
-- integraciones.
+Git blob:
 
-Solo dependencia transversal P0 demostrada permite abrirlos.
+`b9a4aaf063d97305c3f4f53eba8f02b526d61761`.
 
-Overlays que sí afectan A+B:
+Carga el adapter una sola vez después de los módulos y antes de los bridges C6.
 
-- domain consistency bridge;
-- unified human runtime;
-- read guards/normalizadores;
-- tenant/proyecto/periodo;
-- build-lock/SW.
+## 5. Manifest ejecutable
 
-## 7. PASS técnicos preservados
+`app/docs/MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json`
 
-- 14 periodos y 616 visitas;
+Contiene 23 archivos con:
+
+- Git blob;
+- origen/aprobación;
+- estado honesto;
+- acción;
+- facts preservados.
+
+Estado:
+
+`SOURCE_ASSEMBLED_PENDING_GATES_AND_VISUAL`.
+
+## 6. Gates
+
+### Ejecutado
+
+`tools/qa/tya-ab-cumulative-composition-unit.mjs`
+
+Resultado:
+
+`PASS` — 23 verificaciones sobre copia exacta del blob del adapter.
+
+### Preparado, pendiente de checkout exacto
+
+`tools/qa/tya-ab-cumulative-candidate-source-gate.mjs`
+
+Valida manifest, blobs, orden, sintaxis, unit, ausencia de proveedores y estado honesto por módulo.
+
+No se declara ejecutado en esta sesión porque el conector GitHub no ofrece shell checkout ni dispatch. Esto no autoriza deploy ni se maquilla como PASS.
+
+## 7. PASS técnicos que permanecen protegidos
+
+- HR: 14 periodos y 616 visitas;
 - Staff/Shopper/Cliente remoto estable;
 - identidad Shopper exacta y `ownVisits=1`;
 - Cliente `tya/cinepolis`;
 - modelo financiero delegado;
-- facturación local false;
+- localBilling false;
 - regalía 0;
 - Q60 GT / L200 HN;
 - 14 delegados, 0 directos, 0 sin configurar y 0 violaciones.
 
-No equivalen a aprobación visual.
+No equivalen a aprobación visual A+B.
 
 ## 8. Checkpoint Visual 1
 
-Paula revisará en un solo build:
+Paula debe revisar el mismo build:
 
 - login/shell/tenant/proyecto/periodo/fuente/navegación;
 - CRM Ops Leads;
@@ -104,24 +121,17 @@ Paula revisará en un solo build:
 - Marketing;
 - indicadores y drilldowns.
 
-No se avanza al Checkpoint 2 sin esa validación.
+No se avanza a Operación/Shopper sin esa validación.
 
-## 9. Pendiente inmediato
+## 9. Pendiente real y siguiente bloque exacto
 
-1. recuperar aprobaciones y commits históricos A+B;
-2. fijar SHA objetivo por archivo;
-3. producir delta acumulativo focalizado;
-4. crear y ejecutar gates source-only;
-5. solicitar un único DEV para Checkpoint Visual 1.
+`EXACT CHECKOUT A+B SOURCE GATE → STATIC/CUMULATIVE GATES → STOP_RETRY SI FALLA → SOLO SI PASS, AUTORIZACIÓN DE UN HOSTING DEV → CHECKPOINT VISUAL 1`.
 
-## 10. Siguiente bloque exacto
+## 10. Estado seguro
 
-`PROVENIENCIA/APROBACIONES A+B → SHAS OBJETIVO → DELTA Y GATES SOURCE-ONLY`.
-
-## 11. Estado seguro
-
-- cambios funcionales: 0;
+- módulos frontend reescritos: 0;
 - deploy: 0;
-- Cloud Run/Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos: 0;
+- Cloud Run/Firestore/Auth/Rules/Storage/HR writes: 0;
+- Make/Gemini/pagos: 0;
 - merge: false;
 - producción: false.
