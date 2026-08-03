@@ -1,56 +1,53 @@
-import { useEffect } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-import { HOME } from "@/constants/testIds";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "@/context/AuthContext";
+import { Toaster } from "@/components/ui/sonner";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import Layout from "@/components/Layout";
+import Login from "@/pages/Login";
+import Dashboard from "@/pages/Dashboard";
+import Campaigns from "@/pages/Campaigns";
+import CampaignDetail from "@/pages/CampaignDetail";
+import Visits from "@/pages/Visits";
+import VisitExecute from "@/pages/VisitExecute";
+import Forms from "@/pages/Forms";
+import Evaluations from "@/pages/Evaluations";
+import Reports from "@/pages/Reports";
+import Users from "@/pages/Users";
+import Clients from "@/pages/Clients";
+import DocumentAnalysis from "@/pages/DocumentAnalysis";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
-
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          data-testid={HOME.emergentLink}
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+function Shell({ children }) {
+    return (
+        <ProtectedRoute>
+            <Layout>{children}</Layout>
+        </ProtectedRoute>
+    );
+}
 
 function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
-  );
+    return (
+        <AuthProvider>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/" element={<Shell><Dashboard /></Shell>} />
+                    <Route path="/campaigns" element={<Shell><Campaigns /></Shell>} />
+                    <Route path="/campaigns/:id" element={<Shell><CampaignDetail /></Shell>} />
+                    <Route path="/visits" element={<Shell><Visits /></Shell>} />
+                    <Route path="/visits/:id" element={<Shell><VisitExecute /></Shell>} />
+                    <Route path="/forms" element={<Shell><Forms /></Shell>} />
+                    <Route path="/evaluations" element={<Shell><Evaluations /></Shell>} />
+                    <Route path="/reports" element={<Shell><Reports /></Shell>} />
+                    <Route path="/documents" element={<Shell><DocumentAnalysis /></Shell>} />
+                    <Route path="/users" element={<Shell><Users /></Shell>} />
+                    <Route path="/clients" element={<Shell><Clients /></Shell>} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+                <Toaster />
+            </BrowserRouter>
+        </AuthProvider>
+    );
 }
 
 export default App;
