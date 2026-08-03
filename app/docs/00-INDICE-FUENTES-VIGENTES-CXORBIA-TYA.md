@@ -16,7 +16,7 @@ Fuentes operativas principales:
 - `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-A-B-SCOPE-LOCK-OVERLAYS-20260802.md`;
 - `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`.
 
-Hasta cerrar la composición A+B quedan suspendidos diagnósticos C6 aislados, deploys, shells reducidos, candidatas paralelas y correcciones no vinculadas al primer checkpoint.
+Hasta cerrar A+B quedan suspendidos diagnósticos C6 aislados, deploys, shells reducidos, candidatas paralelas y correcciones no vinculadas al primer checkpoint.
 
 Ninguna familia se declara aprobada por PASS técnico. Paula debe validarla visualmente sobre el build acumulativo exacto.
 
@@ -34,7 +34,7 @@ Ninguna familia se declara aprobada por PASS técnico. Paula debe validarla visu
 - Claude: `dc61347b0e2d22ec3f9bf30fb6d6e4bb21baf934`.
 - Pendientes: `16dd9d726a8267a866418d7519ecaa47ae42c17e`.
 - Academia: `cefa222d7f14fc6187129603888abd0c72d5c323`.
-- CAMBIOS scope lock: `07a4b4bb3589bbb5fa1f22bf1a738f6a70b23c94`.
+- CAMBIOS scope lock: `c1c241525c8e9d6676f54dfa69257d62040f9eb2`.
 - Hosting DEV existente: `cxorbia-backend-dev`, target `cxorbia-dev`.
 - Producción `tya-plataforma`: intacta.
 
