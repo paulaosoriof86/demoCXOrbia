@@ -1,135 +1,185 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-03  
-**Estado:** `PHASE_A_COMPLETE_CUMULATIVE_RECONSTRUCTION_ACTIVE__FRAGMENTED_AB_VISUAL_REVIEW_CANCELLED__NO_PRODUCTION`
+**Estado:** `PHASE_A_COMPLETE_RECONSTRUCTION__24_EXACT_OR_JUSTIFIED_BLOB_DECISIONS__REMAINING_COMPOSITION_RECOVERY_ACTIVE__NO_PRODUCTION`
 
 ## 1. Decisión prevalente
 
-La revisión A+B centrada en CRM Ops Leads, Clientes comerciales, Comercial y Marketing queda cancelada. No corresponde al estado real de Phase A.
-
-La única operación vigente es reconstruir y demostrar una candidata acumulativa que incluya toda la Phase A indispensable antes de volver a solicitar revisión visual.
+La revisión A+B centrada en CRM Ops Leads, Clientes comerciales, Comercial y Marketing está cancelada. La única operación vigente es reconstruir y demostrar toda la Phase A indispensable antes de solicitar una nueva revisión visual.
 
 Fuentes prevalentes:
 
 - `ADDENDUM-MAESTRO-CORRECCION-RECONSTRUCCION-PHASE-A-COMPLETA-20260803.md`;
 - `MATRIZ-CANDIDATA-ACUMULATIVA-PHASE-A-COMPLETA-20260803.md`;
-- `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md` corregido;
-- `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-- evidencia y comentarios autoritativos del PR #7.
+- `MANIFEST-PHASE-A-COMPLETA-INVENTARIO-VIVO-20260803.json`;
+- `COMPARACION-SHAS-APROBADOS-PHASE-A-BLOQUE1-M1-CORTE2A-20260803.md`;
+- `COMPARACION-SHAS-PHASE-A-BLOQUE2-C6-DEPLOY-TECNICO-20260803.md`;
+- `COMPARACION-SHAS-PHASE-A-BLOQUE3-V182-CORTE3-Y-C6-20260803.md`;
+- `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`.
 
 ## 2. Repositorio y estado seguro
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama única: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- Hosting DEV actual: existe como punto técnico de comparación, no como candidata definitiva;
-- último build desplegado: source lock `b908daa8c9cce0bd1c06cb05e3aceb9ff1b98beb`;
+- Hosting DEV actual: comparación técnica, no candidata final;
+- último source lock desplegado: `b908daa8c9cce0bd1c06cb05e3aceb9ff1b98beb`;
 - producción `tya-plataforma`: intacta;
-- nuevo deploy durante este bloque: 0.
+- nuevo deploy durante esta reconstrucción corregida: 0.
 
 ## 3. Causa raíz metodológica cerrada
 
-El esquema A+B/C+D/E+F/G fragmentó módulos que ya formaban parte de Phase A y colocó CRM/Comercial/Marketing antes de:
+El esquema A+B/C+D/E+F/G fragmentó Phase A y colocó módulos posteriores antes de Dashboard, Visitas, Reservas, perfiles, Finanzas y Reportes. Ese esquema fue sustituido por un único gate acumulativo Phase A completa.
 
-- Dashboard Operativo acumulativo;
-- Visitas y Revisión;
-- Postulaciones y Reservas;
-- Histórico y refresh;
-- Shoppers y experiencia por perfiles;
-- Finanzas completa;
-- Portal Cliente/Shopper;
-- Reportes y exportaciones.
+## 4. Inventario vivo
 
-Ese orden contradice:
-
-- el visual smoke RC Phase A;
-- M1/Corte 1 y Corte 2A frozen/aprobados;
-- Corte 3 frozen active baseline;
-- el gate C6 que fijó `entrada → Dashboard/hoja de ruta → histórico → Shoppers/portales → Finanzas → Reportes → Reservas`.
-
-## 4. Matriz Phase A completa iniciada
-
-Se inventariaron y fijaron los Git blobs vivos de:
+El manifest de inventario registra 30 archivos de:
 
 - base transversal;
-- Dashboard, Histórico, Visitas, ficha, Revisión, Postulaciones, Reservas y Shoppers;
-- Mis Visitas, Mi Perfil/reportes Shopper, Certificación, Cuestionario, Beneficios y Documentos;
-- motor financiero, liquidación, costos y UI financiera completa;
-- Portal Cliente, Reportes Cliente e Insights;
-- navegación `mireportes` y rutas por rol.
+- operación;
+- experiencia Shopper/perfiles;
+- Finanzas completa;
+- portales y reportes.
 
-La matriz no confunde blob vivo con blob aprobado. Cada fila queda pendiente de comparación exacta con su linaje aprobado.
+Estado:
 
-## 5. Autoridades históricas preservadas
+`INVENTORY_ONLY_APPROVED_SHA_RECOVERY_PENDING`.
 
-- RC Phase A technical + visual smoke PASS;
-- M1/Corte 1: aprobado/frozen con P1/P2 documentados;
-- Corte 2A/V174: frozen/aprobado;
-- Corte 3/V182: `FROZEN_ACTIVE_BASELINE`;
-- C6: entrada directa por perfiles, HR, Staff, Shopper, Cliente, Finanzas, Portal Shopper y Reservas técnicamente preservados;
-- Reportes Admin/Cliente/Shopper y `mireportes` son parte del alcance aprobado/obligatorio y no pueden diferirse detrás de CRM.
+El manifest A+B fue reclasificado:
 
-## 6. Estado del DEV actual
+`SUPERSEDED_PARTIAL_MANIFEST_NOT_SUFFICIENT_FOR_PHASE_A_FREEZE`.
 
-La URL actual sigue disponible:
+## 5. Recuperación de SHAs — resultados comprobados
+
+### Bloque 1 — M1/Corte 1 y Corte 2A
+
+Ocho blobs vivos coinciden exactamente con la autoridad aprobada/frozen:
+
+- Dashboard Operativo;
+- Configuración/navegación;
+- Router;
+- Visitas;
+- Postulaciones;
+- Novedades;
+- Mi Perfil/Reportes Shopper (`operacion-extra.js`);
+- Reportes Cliente (`cliente-extra.js`).
+
+Decisión:
+
+`PRESERVAR_APROBADO_O_FROZEN__NO_RESTORE`.
+
+### Bloque 2 — source lock C6 desplegado
+
+Trece blobs vivos coinciden exactamente con el source lock técnico desplegado:
+
+- `app.js`;
+- Mi Día;
+- Histórico;
+- Reservas;
+- Shoppers;
+- Mis Visitas;
+- Certificación;
+- Cuestionario Shopper;
+- Beneficios;
+- Finanzas UI;
+- motor financiero;
+- liquidación;
+- Portal Cliente.
+
+Decisión:
+
+`PRESERVAR_C6_DEPLOYED_SHA__COMPOSITION_AND_VISUAL_SMOKE_PENDING`.
+
+### Bloque 3 — V182/Corte 3
+
+Desde los bytes del ZIP V182 entregado por Paula se recuperaron cinco blobs:
+
+- `app.js`, Beneficios y `layout.css` coinciden exactamente con V182;
+- `finanzas-core.js` y `finanzas.js` difieren porque contienen root fixes C6 posteriores demostrados.
+
+Decisión:
+
+- preservar los tres exactos V182;
+- preservar los dos archivos financieros C6;
+- prohibido restaurar V182 completo de manera ciega.
+
+### Resultado acumulado
+
+No se ha encontrado todavía ningún archivo Phase A que requiera restauración por pérdida de SHA.
+
+Se han cerrado 24 decisiones únicas o justificadas de preservación; las coincidencias superpuestas entre V182 y C6 no se cuentan dos veces.
+
+## 6. Archivos restantes o pendientes de composición
+
+La recuperación continúa sobre:
+
+- ficha de visita;
+- Revisión Admin restaurada desde V89;
+- Documentos;
+- Costos;
+- `cliente-data.js`;
+- report kit y exportadores;
+- Reportes Admin/Cliente/Shopper como resultado transversal;
+- overlays y orden efectivo de carga;
+- navegación completa por rol;
+- misma fuente/periodo/sourceRevision entre Dashboard, Finanzas, portales y reportes.
+
+Los blobs de ficha, Revisión, Documentos, Costos y `cliente-data.js` ya fueron comprobados como idénticos al source lock C6; falta cerrar su autoridad funcional y composición.
+
+## 7. Estado del DEV actual
 
 `https://cxorbia-backend-dev.web.app/index-backend-dev.html`
 
-Pero queda clasificada como:
+Clasificación:
 
 `TECHNICAL_COMPARISON_BUILD__NOT_FINAL_PHASE_A_CANDIDATE`.
 
-Razón:
+No se solicita a Paula revisión fragmentada. El mismo DEV podrá reutilizarse sin redeploy únicamente si el manifest final demuestra que no requiere delta funcional.
 
-- contiene físicamente un árbol amplio;
-- pasó gates de HR/Auth/Finanzas/roles;
-- el manifest activo solo certifica A+B y no prueba mejor versión aprobada de toda Phase A;
-- no corresponde pedir a Paula una revisión fragmentada.
-
-## 7. Próxima revisión humana válida
+## 8. Próxima revisión humana válida
 
 Únicamente:
 
 `CHECKPOINT_VISUAL_PHASE_A_COMPLETA`
 
-Incluye:
+Orden:
 
 1. entrada/contexto/navegación;
-2. Dashboard/hoja de ruta/Historico/refresh;
+2. Dashboard/hoja de ruta/Histórico/refresh;
 3. Visitas/Postulaciones/Reservas;
-4. Shoppers y experiencia por perfiles;
+4. Shoppers y perfiles;
 5. Finanzas completa;
 6. Portal Cliente/Shopper;
-7. Reportes y exportaciones;
+7. Reportes/exportaciones;
 8. smoke multirol y nueva pestaña.
 
-CRM, Clientes comerciales, Comercial y Marketing permanecen preservados, pero no bloquean este freeze.
+CRM, Clientes comerciales, Comercial y Marketing permanecen preservados como trabajo posterior.
 
-## 8. Siguiente bloque exacto
+## 9. Siguiente bloque exacto
 
-`RECUPERAR SHAS APROBADOS Y SOURCE LOCKS POR MÓDULO PHASE A → COMPARAR CON BLOBS VIVOS → CLASIFICAR PRESERVAR/RESTAURAR/RECONCILIAR → MANIFEST PHASE A COMPLETA → GATES ACUMULATIVOS MULTIROL/FINANZAS/REPORTES/RESERVAS → DELTA ÚNICO SI APLICA`.
+`CERRAR AUTORIDAD DE ARCHIVOS RESTANTES + INVENTARIAR REPORT KIT/EXPORTADORES/OVERLAYS/NAVEGACIÓN MULTIROL → MANIFEST FINAL PHASE A → GATES SOURCE/STATIC ACUMULATIVOS → DELTA ÚNICO SOLO SI SE DEMUESTRA`.
 
 Después:
 
 - un solo DEV de reemplazo únicamente si cambia `app/`;
 - Checkpoint Visual Phase A completa;
 - freeze;
-- fuente exacta agosto/disponibles/postulaciones;
+- agosto/disponibles/postulaciones;
 - cutover autorizado.
 
-## 9. Estado seguro
+## 10. Estado seguro
 
-- cambios funcionales en este bloque: 0;
+- archivos funcionales modificados: 0;
 - Hosting deploy nuevo: 0;
 - Cloud Run/Firestore/Auth/Rules/Storage/HR writes: 0;
 - Make/Gemini/pagos: 0;
 - merge: false;
 - producción: intacta.
 
-## 10. Clasificación
+## 11. Clasificación
 
 - **Reusable CXOrbia:** recuperación por linaje y smoke anti-regresión.
 - **Exclusivo cliente:** TyA/Cinépolis, HR, GT/HN y reglas financieras.
-- **Claude/prototipo:** preservar todas las superficies aprobadas de Phase A.
+- **Claude/prototipo:** preservar superficies aprobadas y validar composición.
 - **Academia:** actualización posterior al build completo aprobado.
-- **Sin impacto Claude:** matriz de blobs, gates y trazabilidad.
+- **Sin impacto Claude:** SHAs, manifests, gates y trazabilidad.
