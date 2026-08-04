@@ -1,54 +1,96 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-04  
-**Estado vivo:** `PHASE_A_FINAL_COMPOSITION_MANIFEST_SOURCE_COMPLETE__STATIC_GATE_PENDING_EXECUTION__NO_PRODUCTION`
+**Estado vivo:** `SOURCE_STATIC_PASS__RUNTIME_MULTIROLE_PENDING__CLAUDE_PORTABLE_V4_HOLD__NO_PRODUCTION`
 
-## 1. Bloqueante actual único
+## 1. Bloqueante actual real
 
-La recuperación de autoridades y el manifest final source-only ya quedaron cerrados.
+El gate source/static ya fue ejecutado sobre checkout autenticado y obtuvo:
 
-Bloqueante real:
+`PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS`.
 
-`SOURCE_STATIC_GATE_NOT_EXECUTED_ON_AUTHENTICATED_EXACT_HEAD`.
+Evidencia:
 
-No corresponde solicitar capturas ni aprobación visual antes de ejecutar los gates acumulativos.
+- run `30910224561`;
+- artifact `8892730161`;
+- 53/53 blobs críticos;
+- repositorio sin delta después del gate;
+- cero provider/data writes.
 
-## 2. Logros cerrados
+El bloqueante actual pasa a:
+
+`RUNTIME_MULTIROLE_ACCUMULATIVE_GATE_NOT_EXECUTED`.
+
+No corresponde solicitar aprobación visual final antes de ese runtime.
+
+## 2. Causas raíces del carril ya cerradas
+
+- runner histórico referenciaba gates renombrados;
+- override `backend-dev-auth.local.js` fue confundido con asset obligatorio aunque está gitignored por diseño;
+- el escáner de secretos detectaba sus propios patrones;
+- se instaló clasificación exacta de fixtures conocidos sin permitir hits desconocidos;
+- la solicitud exitosa quedó desactivada después de una ejecución.
+
+Esto evita repetir el mismo ciclo de FAIL por causas instrumentales.
+
+## 3. Logros cerrados
 
 - RC Phase A smoke técnico y visual/consola PASS preservado;
 - M1/Corte 1 FROZEN/APROBADO preservado;
 - Corte 2A/V174 FROZEN/APROBADO preservado;
 - Corte 3/V182 `FROZEN_ACTIVE_BASELINE` preservado;
-- C6 entrada/HR/Staff/Shopper/Cliente/Finanzas/Reservas técnicamente preservado;
-- 29 decisiones únicas de preservar/reconciliar cerradas;
+- C6 entrada/HR/Staff/Shopper/Cliente/Finanzas/Reservas preservado;
+- 29 decisiones únicas cerradas;
 - 0 restauraciones requeridas;
-- autoridad de Ficha, Revisión, Documentos, Costos y `cliente-data.js` cerrada;
-- report kit y consumidores inventariados;
-- load order y overlays inventariados;
+- Ficha, Revisión, Documentos, Costos y `cliente-data.js` cerrados;
+- report kit inventariado;
 - manifest final creado;
-- gate source/static creado.
+- gate source/static PASS.
+
+## 4. Pendiente inmediato
+
+1. preparar gate runtime multirol acumulativo;
+2. ejecutar Admin, Cliente y Shopper con tenant/proyecto/periodo/sourceRevision coherentes;
+3. validar login/sesión, recarga y nueva pestaña;
+4. validar Dashboard, Mi Día, Histórico, Visitas, Ficha, Revisión, Postulaciones y Reservas;
+5. validar Shoppers, Perfil, Certificación, Cuestionario, Documentos, Beneficios y reportes;
+6. validar Finanzas y portales;
+7. decidir overlay A+B solo con prueba de no pérdida;
+8. integrar Login Claude únicamente después de un paquete corregido GO;
+9. único DEV si cambia `app/`;
+10. `CHECKPOINT_VISUAL_PHASE_A_COMPLETA`;
+11. freeze;
+12. agosto/disponibles/postulaciones;
+13. cutover autorizado.
+
+## 5. Claude portable v4
+
+Paquete:
+
+`Prototype development request (20).zip`  
+SHA-256: `862e415df3d3a24be09ffbd48cb74f98779a59d2a2265587969c1880b48841c9`.
+
+Decisión:
+
+`HOLD_CLAUDE_LOGIN_PORTABLE_V4__NOT_READY_FOR_APPLY_DELTA_DIRECTLY`.
+
+Bloqueos documentados:
+
+- evidencia móvil no válida: `preview-mobile.png` es `924×540`;
+- selector multi-país incompleto;
+- token `--gcx-navy-2` indefinido;
+- README con HEAD obsoleto;
+- paquete no contiene integración, bridge ni ruta canónica.
 
 Fuentes:
 
-- `COMPARACION-SHAS-PHASE-A-BLOQUE4-AUTORIDADES-Y-COMPOSICION-20260804.md`;
-- `MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json`;
-- `tools/qa/tya-phase-a-complete-composition-source-gate.mjs`.
+- `AUDITORIA-FOCAL-CLAUDE-LOGIN-PORTABLE-V4-20260804.md`;
+- `PROMPT-CLAUDE-CORRECCION-LOGIN-PORTABLE-V4-20260804.md`;
+- `MATRIZ-TRAZABILIDAD-FORENSE-A-IMPLEMENTACION-Y-CLAUDE-20260804.md`.
 
-## 3. Pendiente inmediato
+No aplicar archivos del paquete actual a `app/`.
 
-1. obtener checkout autenticado del HEAD exacto;
-2. ejecutar `tools/qa/tya-phase-a-complete-composition-source-gate.mjs`;
-3. guardar evidencia sanitizada del resultado;
-4. si PASS, ejecutar gate runtime multirol acumulativo;
-5. si FAIL, aplicar un único delta focalizado y repetir una sola vez;
-6. reutilizar el DEV actual si `app/` no cambia o hacer un único deploy DEV si cambia;
-7. ejecutar `CHECKPOINT_VISUAL_PHASE_A_COMPLETA`;
-8. freeze;
-9. reconciliar agosto;
-10. validar disponibles/postulaciones;
-11. cutover autorizado.
-
-## 4. Phase A que debe cubrir el runtime
+## 6. Phase A que debe cubrir el runtime
 
 ### Base
 
@@ -78,7 +120,7 @@ Fuentes:
 - Mi Día;
 - Mi Perfil;
 - cuestionario;
-- certificaciones presentadas/históricas;
+- certificaciones históricas/presentadas;
 - documentos;
 - beneficios;
 - reportes Shopper.
@@ -93,7 +135,7 @@ Fuentes:
 - lotes/pagos en estado real;
 - multi-país/multi-moneda;
 - revisión, conciliación y pago separados;
-- modelo delegado, localBilling false, regalía 0, Q60/L200.
+- modelo delegado, `localBilling=false`, regalía 0, Q60/L200.
 
 ### Portales/reportes
 
@@ -102,9 +144,9 @@ Fuentes:
 - Reportes Admin/Cliente/Shopper;
 - PDF/XLSX/PPTX;
 - branding, periodo, alcance, fuente y filas coherentes;
-- cero métricas/NPS/hallazgos fabricados.
+- cero métricas fabricadas.
 
-## 5. Overlay pendiente de decisión
+## 7. Overlay pendiente de decisión
 
 `app/adapters/tya-ab-cumulative-composition-v1.js`
 
@@ -112,56 +154,45 @@ Clasificación:
 
 `P1_SUPERSEDED_LOADED_OVERLAY__NOT_P0_PROVEN`.
 
-No remover sin prueba. El gate debe decidir si:
+No remover sin runtime acumulativo.
 
-- se conserva temporalmente;
-- se sustituye por un guard Phase A completa;
-- se elimina mediante delta focalizado sin pérdida.
+## 8. Auth y seguridad pendientes
 
-## 6. Auth y seguridad pendientes
-
-- cerrar claims completos por tenant/persona/proyecto/país;
-- activación/reset seguro para credenciales históricas;
+- claims completos tenant/persona/proyecto/país;
+- activación/reset seguro;
 - eliminar dependencia productiva de patrón predecible;
-- mantener Firebase Auth como autoridad;
+- Firebase Auth como autoridad;
 - no JWT Emergent;
 - no PII/rol en URL;
 - no token en localStorage;
-- rotar/revocar la cuenta de servicio expuesta en el paquete Emergent;
-- Storage y documentos sensibles solo con rules/auditoría;
-- pagos reales continúan bloqueados.
+- rotar/revocar la cuenta de servicio expuesta en Emergent;
+- Storage sensible solo con rules/auditoría;
+- pagos reales bloqueados.
 
-## 7. Multi-país
+## 9. Multi-país
 
-El modelo es genérico. Falta probar UX con:
+Falta probar:
 
 - 1 país;
 - 2–3 países;
 - 10–12 países;
-- selector buscable;
+- búsqueda/multiselect;
 - scope autorizado;
 - monedas separadas;
 - sin sumar monedas incompatibles.
 
-## 8. P1/P2 no bloqueantes
+Claude corrige la UI portable. ChatGPT valida y aplica scopes reales.
 
+## 10. P1/P2 vivos
+
+- overlay A+B superseded;
 - PDF sin algunas gráficas;
 - Excel con formato básico;
-- mejoras visuales transversales de exportación.
+- override Auth DEV local no versionado por diseño.
 
-No se convierten en P0 mientras datos, filas, periodo, alcance y fuente sean correctos.
+## 11. Estado seguro
 
-## 9. DEV actual
-
-`https://cxorbia-backend-dev.web.app/index-backend-dev.html`
-
-Clasificación:
-
-`TECHNICAL_COMPARISON_BUILD__NOT_FINAL_PHASE_A_CANDIDATE`.
-
-## 10. Estado seguro
-
-- cambios funcionales en este bloque: 0;
+- Login Claude aplicado: no;
 - deploy nuevo: 0;
 - provider writes: 0;
 - Make/Gemini/pagos: 0;
