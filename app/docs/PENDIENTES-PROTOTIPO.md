@@ -1,110 +1,122 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-04  
-**Estado vivo:** `CLIENT_RUNTIME_ROUTE_WAIT_FAIL__ROLLBACK_EXACT__LIFECYCLE_ROOT_CAUSE_PROVEN__CLOUD_V6_NOT_AUDITED_LANE_BLOCKED__NO_PRODUCTION`
+**Estado vivo:** `FORENSIC_CONTROL_PLANE_SOURCE_STATIC_PASS_LOCAL__CORE_OPERATIONS_SHOPPER_RELEASE_SLICE_DEFINED__CLOUD_V6_NOT_AUDITED__NO_PRODUCTION`
 
-## 1. Bloqueante backend vigente
+## 1. Control plane
 
-La solicitud one-shot `c6-client-access-repair-runtime-20260804-routefix-01` fue consumida exactamente una vez.
+Cerrado source-only:
 
-Resultado:
+- una máquina de estados única;
+- una sola autoridad browser futura;
+- acceso/membership separado del runtime read-only;
+- checkout detached por SHA exacto;
+- snapshots y clasificación por etapa;
+- gates históricos preservados fuera del camino activo.
 
-`FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK`.
+PASS local determinista:
 
-Etapa interna:
+```text
+PASS_FORENSIC_CONTROL_PLANE_STABILIZATION
+PASS_C6_CLIENT_ROUTE_SOURCE_STATIC
+```
 
-`client_route_wait`.
+No existe todavía PASS runtime sobre el nuevo control plane.
 
-Error:
+## 2. Pendiente de telemetría remota
 
-`page.waitForFunction: Timeout 30000ms exceeded`.
+La solicitud `forensic-control-plane-stabilization-20260804-01` fue registrada con runtime y provider reads deshabilitados. El conector no expuso un run/job/status verificable. No se declara PASS remoto.
 
-Rollback:
+Esto no invalida el PASS local source-only, pero debe quedar resuelto antes de usar el runner como evidencia de release.
 
-`PASS_C6_CLIENT_AUTH_MEMBERSHIP_ROLLBACK_EXACT`.
+## 3. Cloud V6
 
-El preestado quedó restaurado: membership temporal eliminado, claims sin cambio, usuarios/password changes en cero y producción intacta.
+- archivo `Prototype development request V6.zip`;
+- SHA-256 `0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407`;
+- estado `NOT_AUDITED__EXECUTION_LANE_NOT_READY`;
+- no existe GO/HOLD;
+- delta aplicado: 0.
 
-## 2. Causa raíz identificada
+Pendiente:
 
-El helper de login considera listo el acceso cuando Auth, HR y `#app.on` están activos. Sin embargo:
+1. obtener ZIP extraído + checkout autenticado + rama viva en la misma sesión;
+2. auditar composición completa;
+3. separar delta nuevo, heredado, pendiente resuelto, regresión y redundancia;
+4. aplicar únicamente con GO sin P0;
+5. mantener una sola candidata acumulativa.
 
-- `CX.app.enter()` activa `#app.on` antes de `CX.router.mount()`;
-- `router.mount()` puede quedar diferido por confidencialidad;
-- el gate exige inmediatamente `session.view`, nav activa, encabezado y texto;
-- el nav solo existe después de construir el rail.
+## 4. Primer release slice
 
-Por tanto, el gate confundía **app visible** con **shell/router listo**. El PASS source/static anterior validó marcadores, no el orden temporal real.
+Prioridad operativa:
 
-## 3. Pendiente source-only inmediato
+`ADMIN/OPERACIONES + SHOPPER`.
 
-1. separar `AUTH_READY` de `SHELL_READY`;
-2. esperar router y rail antes de navegar;
-3. hacer observable `confidentialityPending`;
-4. capturar en timeout `sessionRole`, `sessionView`, `routerAvailable`, `railBuilt`, `navItemPresent`, `navActive`, `pageHeader` y `viewRendered`;
-5. validar ruta/render y highlight como capas separadas;
-6. ejecutar sintaxis y gate local/estático;
-7. detenerse antes de otro runtime.
+Pendientes de validación final:
 
-No corresponde reintentar con la autorización consumida.
+- Hoja de Ruta viva;
+- Dashboard Operativo;
+- Visitas;
+- Visitas Disponibles;
+- Postulaciones y ficha;
+- Shoppers;
+- Reservas/asignación;
+- Finanzas Phase A;
+- Mi Perfil, Mis Visitas, certificaciones, histórico y pagos Shopper.
 
-## 4. Cloud V6 recibida
+Portal Cliente queda en carril paralelo y no bloquea el primer cutover.
 
-Archivo:
+## 5. Laboratorio dentro de la plataforma
 
-`Prototype development request V6.zip`.
+Pendiente de implementación y ejecución con autorización propia:
 
-SHA-256:
+- `CORE_OPERATIONS_ADMIN`;
+- `SHOPPER_FULL_CYCLE`;
+- `CROSS_MODULE_CONSISTENCY`;
+- `RELOAD_NEW_TAB_STABILITY`;
+- `EXPORTS_AND_VISIBLE_EVIDENCE`.
 
-`0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407`.
+Requisitos:
 
-Estado:
+- datos `AUDIT-*` sintéticos;
+- UI y contratos normales;
+- PASS/FAIL/BLOCKED por etapa;
+- screenshots y timeline;
+- fingerprints antes/después;
+- cleanup exacto;
+- `baselineRestoredAfterCleanup=true`.
 
-`NOT_AUDITED__EXECUTION_LANE_NOT_READY`.
-
-El ZIP está extraído, pero falta checkout autenticado de la rama viva en la misma sesión. El entorno local no resuelve `github.com`; el conector no sustituye el checkout exigido ni permite un empalme fragmentado archivo por archivo.
-
-No se declaró GO/HOLD y no se aplicó ningún delta.
-
-## 5. Regla de composición V6
-
-La candidata se auditará contra el HEAD vivo como una sola composición acumulativa. Debe preservar todo lo aprobado y separar:
-
-- delta nuevo V6;
-- mejoras válidas heredadas de V5;
-- pendientes P1/P2 realmente atendidos;
-- regresiones;
-- archivos redundantes o parciales;
-- elementos que no correspondan al frontend.
-
-Nunca se empalmará únicamente el Login ni una colección de módulos sueltos.
-
-## 6. Warnings P1/P2 vivos
+## 6. P1/P2 vivos
 
 - overlay A+B superseded aún cargado;
 - PDF puede omitir gráficas;
 - Excel mantiene formato básico;
-- responsive parcial en superficies densas;
-- Cloud V6 todavía no auditada.
+- responsive parcial;
+- Cloud V6 no auditada.
 
-## 7. Secuencia exacta
+Estos hallazgos no bloquean por sí solos el primer release slice, salvo que impidan un flujo esencial.
+
+## 7. Siguiente secuencia
 
 ```text
-SOURCE-ONLY CLIENT SHELL READINESS ROOT FIX
-→ PASS LOCAL/ESTÁTICO
-→ EXECUTION_LANE_READY
-→ AUDITORÍA FOCAL ACUMULATIVA CLOUD V6
-→ APPLY_DELTA_DIRECTLY SOLO SI GO Y SIN P0
-→ GATES
+EXECUTION_LANE_READY
+→ AUDITORÍA ACUMULATIVA CLOUD V6
+→ APPLY_DELTA_DIRECTLY SOLO SI GO SIN P0
+→ SOURCE/STATIC
 → DEV ÚNICO SI CAMBIA app/
+→ LABORATORIO ADMIN/OPERACIONES + SHOPPER
+→ CLEANUP EXACTO
+→ CHECKPOINT VISUAL
+→ CUTOVER AUTORIZADO DEL SLICE
 ```
 
 ## 8. Estado seguro
 
 - cambios funcionales `app/`: 0;
-- estado proveedor restaurado: sí;
-- Firestore de negocio/HR/Rules/Storage: 0;
+- runtime/credenciales: 0;
+- provider reads/writes: 0;
+- Auth/Firestore/membership writes: 0;
 - Hosting/Cloud Run: 0;
+- HR/Rules/Storage: 0;
 - Make/Gemini/pagos: 0;
 - merge: false;
-- producción: intacta.
+- producción intacta.
