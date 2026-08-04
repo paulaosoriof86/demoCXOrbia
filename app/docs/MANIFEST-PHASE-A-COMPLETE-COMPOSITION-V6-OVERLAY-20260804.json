@@ -10,7 +10,7 @@
   "candidateAggregateSha256": "1f1af3a316c9dabf1df1ef5b07a7abd2fe62a8da09e704719912be7af328e825",
   "baseManifest": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
   "cloudManifest": "app/docs/MANIFEST-CLOUD-V6-CORE-OPS-SHOPPER-20260804.json",
-  "status": "V6_EMPALMED__VISUAL_HOLD__SOURCE_GATE_REBASE_MATERIALIZED_PENDING_RUN__NO_DEPLOY",
+  "status": "V6_EMPALMED__VISUAL_HOLD__SOURCE_GATE_MARKER_FIX_MATERIALIZED_PENDING_RERUN__NO_DEPLOY",
   "criticalFileOverrides": [
     {
       "path": "app/app.js",
@@ -58,8 +58,8 @@
     },
     {
       "path": "app/core/dev-scenario-lab.js",
-      "gitBlob": "1da601389f481f7b6e8c3ae7f859efa986db0248",
-      "authority": "CHATGPT_DEV_LAB_HONEST_EVIDENCE_SHELL",
+      "gitBlob": "dee47d449ef4849ccadd422cad143a1ad007f5c3",
+      "authority": "CHATGPT_DEV_LAB_HONEST_EVIDENCE_SHELL_WITH_STATIC_OBSERVABILITY_MARKER",
       "decision": "REQUIRE_CONTROLLED_RUNNER_EVIDENCE"
     },
     {
