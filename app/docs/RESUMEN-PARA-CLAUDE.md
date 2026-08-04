@@ -112,15 +112,25 @@ No tocar ni intentar resolver:
 
 Los textos financieros pueden corregirse visualmente, pero Cloud no calcula ni modifica reglas.
 
-## 7. Estado backend paralelo
+## 7. Estado backend paralelo — sin impacto Cloud
 
-La reejecución final Cliente fue consumida y terminó con rollback exacto:
+La última reejecución Cliente terminó con rollback exacto. Después se corrigió exclusivamente el gate backend:
 
-`FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK`.
+- navegación explícita a `cli_dashboard`;
+- marker estable de ruta/render;
+- evidencia separada de módulo, ruta, Panorama y bloqueo;
+- etapa original preservada antes del rollback.
 
-El fallo pertenece al gate runtime: después del login Cliente no navega explícitamente a `cli_dashboard` y utiliza copy del Panorama como prueba de ruta. El provider quedó restaurado y no se modificó `app/`.
+El correctivo obtuvo:
 
-Este punto no debe ser tratado ni mencionado como tarea frontend de Cloud. Cloud continúa únicamente con la V6 visual acumulativa.
+- run `30936681878`;
+- `PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT`;
+- gate interno `PASS_C6_CLIENT_ROUTE_SOURCE_STATIC`;
+- provider reads 0;
+- writes 0;
+- runtime no reejecutado.
+
+Este punto no es una tarea frontend y no modifica el alcance ni los entregables de Cloud V6.
 
 ## 8. Entrega esperada
 
