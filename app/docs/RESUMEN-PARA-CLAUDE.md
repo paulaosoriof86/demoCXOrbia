@@ -1,88 +1,133 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-04  
-**Estado frontend:** `CLAUDE_PORTABLE_V4_CORRECTION_IN_PROGRESS__NOT_INTEGRATED`
+**Estado frontend:** `CLOUD_PORTABLE_V5_HOLD__V6_ACCUMULATIVE_FRONTEND_REQUIRED__NOT_INTEGRATED`
 
-## 1. Responsabilidad de Claude
+## 1. Decisión vigente
 
-Claude trabaja únicamente sobre el paquete frontend portable `gravicentra-login-portable`.
+El paquete `Prototype development request V5.zip` fue auditado y quedó:
 
-Debe corregir acumulativamente:
+`HOLD_CLOUD_V5_FRONTEND__NO_APROBADO_PARA_INTEGRACION`.
 
-- Login React presentacional;
-- órbita y fidelidad visual;
-- responsive real desktop/tablet/móvil;
-- branding dinámico del tenant;
-- banderas de todos los países recibidos por props;
-- tokens CSS;
-- i18n;
-- accesibilidad;
-- FAB portable;
-- ficha shopper como especificación;
-- inventario visual de marca;
-- capturas y manifest de hashes.
+SHA-256:
 
-Fuente vigente:
+`c55f83fedb9263a99705f9e2cc41ade8a186fe7d9c2e675689d901de43089ed1`.
 
-`PROMPT-CLAUDE-CORRECCION-LOGIN-PORTABLE-V4-20260804.md`.
+No se aplicó ningún archivo de V5 a `app/`.
 
-## 2. Países en el Login
+Fuente de auditoría:
 
-Las banderas representan cobertura del tenant.
+`AUDITORIA-FOCAL-CLOUD-LOGIN-PORTABLE-V5-20260804.md`.
 
-Claude debe:
+Fuente única para la siguiente entrega:
 
-- recibir `countries` mediante props;
+`PROMPT-CLOUD-FRONTEND-ACUMULADO-V6-20260804.md`.
+
+## 2. Trabajo frontend de Cloud
+
+Cloud debe trabajar acumulativamente sobre V5 y entregar una V6 que incluya:
+
+1. Login y órbita refinados para desktop, tablet y móvil;
+2. branding dinámico del tenant;
+3. países dinámicos recibidos por props;
+4. responsive P1 en tablas, fichas, tarjetas y modales;
+5. PDF P1 con el reporte seleccionado y gráficas existentes válidas;
+6. Excel P2 con presentación útil;
+7. opción visual `Regional` en el wizard de proyectos;
+8. copy correcto del modelo financiero delegado;
+9. Ficha Shopper presentacional responsive;
+10. capturas reales, comparación V5/V6 y manifest completo.
+
+No reconstruir desde cero y no devolver una entrega parcial.
+
+## 3. Problema visual principal de V5
+
+En desktop:
+
+- la órbita es demasiado grande;
+- domina el panel izquierdo;
+- la franja blanca transversal rompe la composición;
+- el formulario es demasiado alto;
+- el núcleo, glow, anillos, nodos y labels compiten entre sí;
+- la composición queda por debajo de la calidad visual de la referencia Emergent.
+
+Objetivo `1440×900`:
+
+- órbita aproximada de 390–430 px;
+- panel oscuro 48–50 %;
+- formulario útil 420–460 px;
+- contenido completo o casi completo sin scroll prolongado.
+
+## 4. Evidencia requerida
+
+Capturas reales:
+
+- `1920×1080`;
+- `1440×900`;
+- `768×1024`;
+- `412×915`;
+- `390×844`.
+
+Escenarios de países:
+
+- 1;
+- 2;
+- 8;
+- 12.
+
+Todas las capturas deben figurar en `MANIFEST.json` con path, bytes y SHA-256.
+
+V5 no cumple este punto: sus archivos desktop y mobile miden ambos `924×540` y no están incluidos en el manifest.
+
+## 5. Países
+
+Las banderas representan cobertura visual del tenant.
+
+Cloud debe:
+
 - mostrar todos los países recibidos;
+- conservar bandera, nombre y orden;
 - no hardcodear países;
 - no usar `+N`;
 - no implementar multiselect;
 - no exigir selección de país;
-- mantener banderas visibles y responsive.
+- mantenerlos visibles y responsive.
 
-Permisos, monedas, scopes y reglas no corresponden al paquete frontend.
+## 6. Fuera del alcance de Cloud
 
-## 3. Trabajo que no corresponde a Claude
+No tocar ni intentar resolver:
 
-No tocar ni resolver:
-
-- GitHub o PR #7;
 - Firebase Auth;
 - claims o memberships;
 - `CX.data`;
 - HR;
-- Finanzas;
-- report kit;
+- APIs o bases de datos;
+- cálculos financieros;
+- permisos o scopes;
 - adapters canónicos;
-- módulos legacy;
-- backend;
-- runtime multirol;
-- deploy, freeze o producción.
+- backend, tools o workflows;
+- GitHub o PR #7;
+- deploy, freeze o producción;
+- Make, Gemini o pagos.
 
-## 4. Estado de integración
+Los textos financieros pueden corregirse visualmente, pero Cloud no calcula ni modifica reglas.
 
-El paquete actual no ha sido integrado.
+## 7. Estado backend paralelo
 
-ChatGPT continúa en paralelo con:
+ChatGPT confirmó que el HOLD Cliente anterior provenía de un selector legacy que omitía una identidad canónica ya existente. El macrobloque autorizado avanzó hasta el gate de dominio y restauró exactamente el preestado después de detectar un nombre histórico incorrecto de módulo en el propio test.
 
-- runtime multirol;
-- autoridad HR dinámica;
-- acceso Cliente DEV;
-- bridge seguro de integración;
-- gates y DEV.
+Este trabajo no cambia el alcance frontend de Cloud.
 
-El bloqueo runtime actual no modifica el alcance frontend de Claude.
+## 8. Entrega esperada
 
-## 5. Entrega esperada de Claude
+Un único ZIP V6 con:
 
-Un único ZIP acumulativo con:
+- `login-portable-v6/`;
+- `frontend-pending-delta/`;
+- reportes de cambios, responsive y tokens;
+- comparación visual V5/V6;
+- capturas reales;
+- escenarios 1/2/8/12 países;
+- manifest completo.
 
-- archivos frontend corregidos;
-- `MANIFEST.json` con path, bytes y SHA-256;
-- capturas reales `390×844`, `412×915`, `768×1024` y `1440×900`;
-- escenarios de 1, 2, 8 y 12 países;
-- reporte de tokens;
-- reporte responsive;
-- resumen por archivo.
-
-Claude no debe afirmar integración, GO, deploy ni producción.
+Cloud no debe afirmar integración, GO, deploy ni producción.
