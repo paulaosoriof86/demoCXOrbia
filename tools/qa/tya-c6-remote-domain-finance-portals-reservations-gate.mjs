@@ -99,18 +99,53 @@ try{
 
   stage='client_login';
   const clientSession=await openAndLogin(browser,'cliente',credentials.client,'staff');
+  stage='client_route_navigation';
+  const clientNavigation=await clientSession.page.evaluate(()=>{
+    const clientModule=typeof window.CX?.modules?.cli_dashboard==='function';
+    const routerAvailable=typeof window.CX?.router?.nav==='function';
+    if(clientModule&&routerAvailable)window.CX.router.nav('cli_dashboard');
+    return {clientModule,routerAvailable,requested:true,routeAfterRequest:window.CX?.session?.view||null};
+  });
+  partial.client={navigation:clientNavigation};
+  stage='client_route_wait';
+  await clientSession.page.waitForFunction(()=>{
+    const routeId=window.CX?.session?.view||null;
+    const navActive=document.getElementById('nav-cli_dashboard')?.classList.contains('active')===true;
+    const pageHeader=document.querySelector('#view .ph');
+    const viewText=(document.getElementById('view')?.innerText||'').trim();
+    return routeId==='cli_dashboard'&&navActive&&Boolean(pageHeader)&&viewText.length>0;
+  },null,{timeout:30000});
   stage='client_snapshot';
   const client=await clientSession.page.evaluate(()=>{
     const ctx=window.CX?.backendAuth?.context?.()||null;
-    const view=document.getElementById('view')?.innerText||'';
+    const viewText=document.getElementById('view')?.innerText||'';
     const d=window.CX?.data||{};
-    return {role:ctx.role||null,namespace:ctx.authNamespace||null,tenantId:ctx.tenantId||null,projectIds:Array.isArray(ctx.projectIds)?ctx.projectIds.slice():[],periods:Array.isArray(d.projects)?d.projects.length:-1,visits:Array.isArray(d._visitas)?d._visitas.length:-1,currentProjectId:d.currentProjectId||null,currentPeriodId:d.currentPeriodId||null,clientModule:typeof window.CX?.modules?.cli_dashboard==='function',panorama:/Panorama|Operación del periodo|Resultados de evaluación/i.test(view),blocked:/Fuente de datos no disponible|Sin proyectos disponibles/i.test(view)};
+    const routeId=window.CX?.session?.view||null;
+    const navActive=document.getElementById('nav-cli_dashboard')?.classList.contains('active')===true;
+    const pageHeader=document.querySelector('#view .ph');
+    const viewRendered=Boolean(document.getElementById('view')&&viewText.trim().length>0);
+    return {
+      role:ctx.role||null,namespace:ctx.authNamespace||null,tenantId:ctx.tenantId||null,projectIds:Array.isArray(ctx.projectIds)?ctx.projectIds.slice():[],
+      periods:Array.isArray(d.projects)?d.projects.length:-1,visits:Array.isArray(d._visitas)?d._visitas.length:-1,currentProjectId:d.currentProjectId||null,currentPeriodId:d.currentPeriodId||null,
+      clientModule:typeof window.CX?.modules?.cli_dashboard==='function',
+      route:routeId==='cli_dashboard'&&navActive,
+      routeId,
+      navActive,
+      panorama:Boolean(pageHeader&&viewRendered),
+      pageHeader:Boolean(pageHeader),
+      heading:pageHeader?.querySelector('.ph-t')?.textContent?.trim()||null,
+      viewRendered,
+      blocked:/Fuente de datos no disponible|Sin proyectos disponibles/i.test(viewText)
+    };
   });
-  partial.client=client;
+  partial.client={...partial.client,...client};
   stage='client_assertions';
   assert(['cliente','client'].includes(String(client.role||''))&&client.namespace==='staff'&&client.tenantId==='tya'&&client.projectIds.includes('cinepolis'),'CLIENT_SCOPE_INVALID');
   assert(client.periods===staff.authority.periods&&client.visits===staff.authority.visits&&client.currentProjectId==='cinepolis','CLIENT_DATA_PARITY_INVALID');
-  assert(client.clientModule&&client.panorama&&!client.blocked,'CLIENT_PORTAL_INVALID');
+  assert(client.clientModule,'CLIENT_MODULE_MISSING');
+  assert(client.route,'CLIENT_ROUTE_INVALID');
+  assert(client.panorama,'CLIENT_PANORAMA_NOT_RENDERED');
+  assert(client.blocked===false,'CLIENT_PORTAL_BLOCKED');
   await clientSession.page.evaluate(async()=>{try{await window.CX?.backendAuth?.signOut?.();}catch{}});
   await clientSession.context.close();
 
@@ -135,14 +170,14 @@ try{
 
   stage='persist_pass';
   const evidence={
-    schemaVersion:'cxorbia.phase-a.remote-domain-finance-portals-reservations.dynamic.v1',
+    schemaVersion:'cxorbia.phase-a.remote-domain-finance-portals-reservations.dynamic.v2',
     generatedAt:new Date().toISOString(),
     decision:'PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC',
     source:{periods:staff.authority.periods,visits:staff.authority.visits,shoppers:staff.authority.shoppers,firstPeriod:staff.authority.firstPeriod,latestPeriod:staff.authority.latestPeriod,revisionDynamic:true},
     latestPeriod:{periodKey:staff.data.periodKey,total:Number(s.total),assigned:Number(s.assigned),scheduled:Number(s.scheduled),realized:Number(s.realized),questionnaireCompleted:Number(s.questionnaireCompleted),submitted:Number(s.submitted),outOfRange:Number(s.outOfRange)},
     finance:{model:staff.finance.project.modelo,localBilling:staff.finance.project.localBilling,royaltyPct:staff.finance.project.regalias,shopperHonorariumUsedAsIncomeFallback:false,valuesInvented:false},
     reservations:{source:'protected_canonical_or_empty',browserLocalStorageAsSource:false,mutationsEnabled:false},
-    client:{authenticated:true,projectScope:'cinepolis',panoramaVisible:true},
+    client:{authenticated:true,projectScope:'cinepolis',clientModule:client.clientModule,route:client.route,routeId:client.routeId,panorama:client.panorama,blocked:client.blocked,heading:client.heading},
     shopper:{authenticated:true,exactIdentity:true,ownVisits:shopper.ownVisits,fullHistory:true,certificationVisible:true},
     modules:{clientDashboard:'cli_dashboard',shopperProfile:'miperfil',finance:'financiero',reservations:'reservas'},
     credentialsExposed:false,tokensExposed:false,authWrites:0,firestoreWrites:0,hrWrites:0,rulesDeploys:0,storageWrites:0,cloudRunDeploys:0,hostingDeploys:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,merge:false,production:false
@@ -151,7 +186,7 @@ try{
   console.log(JSON.stringify(evidence));
 }catch(error){
   const failure={
-    schemaVersion:'cxorbia.phase-a.remote-domain-finance-portals-reservations.dynamic.failure.v1',
+    schemaVersion:'cxorbia.phase-a.remote-domain-finance-portals-reservations.dynamic.failure.v2',
     generatedAt:new Date().toISOString(),
     decision:'FAIL_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC',
     failedStage:stage,
