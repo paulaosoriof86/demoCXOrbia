@@ -1,17 +1,17 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "forensic-control-plane-stabilization-20260804-01",
-  "enabled": false,
-  "issuedAt": "2026-08-04",
+  "requestId": "cloud-v6-source-static-rebase-20260804-01",
+  "enabled": true,
+  "issuedAt": "2026-08-04T16:04:00-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "d4e25ee7e04e724f91f19c15b8394fd9b3b2a648",
-  "profile": "SOURCE_ONLY_CONTRACT_VALIDATION",
+  "targetHeadSha": "979b945f5efa5b2b60d1f1d7746204bc57b238a9",
+  "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": [
-    "SOURCE_ONLY_CONTRACT_VALIDATION"
+    "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
   ],
-  "allowedExecutions": 0,
+  "allowedExecutions": 1,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": false,
@@ -36,5 +36,5 @@
   },
   "containsPii": false,
   "containsSecrets": false,
-  "purpose": "Authorized forensic control-plane stabilization source/static validation only. Validate the single runtime authority, immutable source SHA, separated access/runtime transactions and deterministic state machine. No credentials, browser, provider reads/writes, deploy, merge or production."
+  "purpose": "Execute the corrected Cloud V6 complete-composition source/static gate on immutable target HEAD 979b945f5efa5b2b60d1f1d7746204bc57b238a9. Validate base manifest plus V6 overlay, local assets, load order, role modules, ReportKit, dependency pins, strict secret scan and honest DEV scenario-lab source contract. No browser, credentials, provider reads/writes, deploy, merge or production."
 }
