@@ -1,17 +1,21 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-04  
-**Estado vivo:** `SOURCE_STATIC_PASS__CLIENT_PRESTATE_RESTORED__DOMAIN_GATE_ROOT_FIX_APPLIED__FINAL_RUNTIME_RETRY_PENDING__CLOUD_V5_HOLD__NO_PRODUCTION`
+**Estado vivo:** `SOURCE_STATIC_PASS__FINAL_RUNTIME_RETRY_CONSUMED_FAIL__CLIENT_PORTAL_ROUTE_ASSERTION__ROLLBACK_EXACT__CLOUD_V5_HOLD__NO_PRODUCTION`
 
 ## 1. Bloqueante real vigente
 
-El macrobloque Cliente autorizado fue ejecutado y se detuvo con rollback exacto.
+La reejecución final Cliente autorizada fue consumida y terminó con rollback exacto.
 
 Resultado:
 
 `FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK`.
 
-No existe un cambio incompleto en proveedor.
+Fallo:
+
+`client_assertions → CLIENT_PORTAL_INVALID`.
+
+No existe cambio incompleto en proveedor.
 
 Estado restaurado:
 
@@ -22,75 +26,48 @@ Estado restaurado:
 - passwords cambiados o restablecidos: 0;
 - producción intacta.
 
-## 2. Causas raíces confirmadas
+## 2. Causa raíz vigente
 
-### 2.1 Selector Cliente regresivo — corregido
+El gate Cliente usa una aserción compuesta:
 
-El selector runtime buscaba únicamente registros legacy y omitía la identidad Cliente canónica materializada y validada el 2 de agosto.
+```text
+clientModule && panorama && !blocked
+```
 
-No era necesario crear otro usuario.
+Las etapas previas del mismo run ya probaron:
 
-Correctivo:
+- módulo `cli_dashboard` presente;
+- login Cliente y app activa;
+- HR y contexto con paridad;
+- ausencia de bloqueo de fuente/proyectos.
 
-- UID y correo interno exactos;
-- claims, membership y sign-in obligatorios;
-- bloqueo ante ambigüedad o colisión;
-- cero dependencia del bundle legacy para Cliente.
+El gate no navega explícitamente a `cli_dashboard`; asume que la vista posterior al login ya muestra el Panorama y exige copy visible específico.
 
-### 2.2 Membership faltante — diagnosticado y revertido
+La condición residual es la expectativa de ruta/copy, no la identidad, los claims, el membership, HR o el módulo.
 
-La identidad canónica tenía claims válidos, pero no tenía el documento:
+## 3. Pendiente inmediato backend
 
-`tenants/tya/users/cxorbia-c6-client-tya-cinepolis-v1`.
+Bloque permitido siguiente, sin provider writes:
 
-La ejecución creó temporalmente exactamente un membership autorizado. Al fallar un gate posterior, el rollback lo eliminó y restauró el preestado.
+1. corregir source-only el gate Cliente;
+2. navegar explícitamente a `cli_dashboard`;
+3. esperar el render del módulo;
+4. usar marker/selector estable;
+5. registrar separadamente `clientModule`, `route`, `panorama` y `blocked`;
+6. ejecutar gate local/estático;
+7. detenerse para autorización nueva.
 
-### 2.3 Nombre histórico de módulo en el gate — corregido
+La autorización consumida no puede reutilizarse. No corresponde otro reintento silencioso.
 
-El gate esperaba:
+## 4. Autoridad HR viva
 
-`CX.modules.cliente`.
-
-La ruta canónica real del Portal Cliente es:
-
-`CX.modules.cli_dashboard`.
-
-Por eso emitió `CANONICAL_MODULE_MISSING` aunque el módulo funcional existía y el source/static ya había validado navegación Cliente.
-
-El gate ahora:
-
-- comprueba `cli_dashboard`, `miperfil`, `financiero` y `reservas`;
-- informa exactamente cuál módulo falta;
-- deriva el último periodo de la autoridad HR viva;
-- no congela julio de 2026.
-
-## 3. Autoridad HR viva
-
-La última ejecución observó:
+Última ejecución:
 
 - 15 periodos;
 - 660 visitas;
 - 209 shoppers.
 
-Esto demuestra que el periodo vivo avanzó más allá del snapshot histórico 14/616. La validación final debe conservar paridad entre HR, Staff, Cliente y Shopper sin volver a fijar conteos o meses.
-
-## 4. Pendiente inmediato backend
-
-La autorización anterior permitía una sola repetición runtime y ya fue consumida.
-
-Pendiente exacto:
-
-1. autorizar una única reejecución final después del correctivo del gate;
-2. snapshot de la identidad y membership;
-3. máximo un membership write y, solo si fuera necesario, un claims write;
-4. idempotencia y readback;
-5. runtime Staff, Cliente y Shopper;
-6. tres recargas y nueva pestaña;
-7. HR dinámica, Finanzas, portales y Reservas;
-8. conservar el membership solo con PASS completo;
-9. rollback automático ante cualquier fallo.
-
-No corresponde otra auditoría general.
+La validación posterior debe conservar paridad multirol sin fijar conteos ni meses.
 
 ## 5. Cloud V5
 
@@ -98,7 +75,7 @@ Decisión:
 
 `HOLD_CLOUD_V5_FRONTEND__NO_APROBADO_PARA_INTEGRACION`.
 
-Problemas principales:
+Problemas:
 
 - órbita demasiado grande en desktop;
 - franja superior transversal pesada;
@@ -107,12 +84,7 @@ Problemas principales:
 - archivos desktop y mobile con la misma dimensión `924×540`;
 - capturas fuera del manifest;
 - residuos V4 y HEAD histórico;
-- entrega limitada al Login, sin pendientes frontend acumulados.
-
-Fuente:
-
-- `AUDITORIA-FOCAL-CLOUD-LOGIN-PORTABLE-V5-20260804.md`;
-- `PROMPT-CLOUD-FRONTEND-ACUMULADO-V6-20260804.md`.
+- entrega sin backlog frontend acumulado.
 
 No aplicar V5 a `app/`.
 
@@ -132,15 +104,17 @@ Cloud no toca Auth, datos, backend, permisos, cálculos, deploy ni producción.
 ## 7. Secuencia posterior
 
 ```text
-FINAL_RUNTIME_RETRY
+ROOT FIX SOURCE-ONLY GATE CLIENTE
+→ PASS LOCAL/ESTÁTICO
+→ NUEVA AUTORIZACIÓN EXPRESA
+→ RUNTIME MULTIROL
 → AUDITORÍA FOCAL CLOUD V6
 → APPLY_DELTA_DIRECTLY SOLO CON GO
-→ BRIDGE FIREBASE SEGURO
-→ GATES ACUMULATIVOS
-→ ÚNICO DEV SI CAMBIA app/
-→ CHECKPOINT_VISUAL_PHASE_A_COMPLETA
+→ GATES
+→ DEV ÚNICO SI CAMBIA app/
+→ CHECKPOINT VISUAL PHASE A COMPLETA
 → FREEZE
-→ CONFIRMAR PERIODO NUEVO/DISPONIBLES/POSTULACIONES
+→ PERIODO NUEVO/DISPONIBLES/POSTULACIONES
 → CUTOVER AUTORIZADO
 ```
 
@@ -151,11 +125,9 @@ FINAL_RUNTIME_RETRY
 - Excel mantiene formato básico;
 - responsive parcial en superficies densas.
 
-V6 recibe estos pendientes frontend; no bloquean por sí solos la operación hasta demostrar un P0.
-
 ## 9. Estado seguro
 
-- cambios funcionales en `app/` durante este bloque: 0;
+- cambios funcionales `app/`: 0;
 - estado proveedor restaurado: sí;
 - Hosting/Cloud Run deploys: 0;
 - Firestore de negocio/HR/Rules/Storage: 0;
