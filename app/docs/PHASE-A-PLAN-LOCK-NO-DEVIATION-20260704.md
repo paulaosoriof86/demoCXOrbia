@@ -36,15 +36,11 @@ FUENTES Y APROBACIONES
 → CUTOVER
 ```
 
-No dividir la aprobación en candidatas o shells parciales.
-
 ## 3. Estado alcanzado
 
-- `29_UNIQUE_PRESERVE_OR_RECONCILE_DECISIONS_CLOSED__0_RESTORE_REQUIRED`;
-- RC Phase A smoke técnico y visual PASS;
-- M1/Corte 1 aprobado/frozen;
-- Corte 2A/V174 aprobado/frozen;
-- Corte 3/V182 frozen active baseline;
+- 29 decisiones únicas cerradas;
+- 0 restauraciones requeridas;
+- M1/Corte 1, Corte 2A/V174 y Corte 3/V182 preservados;
 - manifest final Phase A;
 - source/static PASS con 53/53 blobs;
 - HR dinámica, Staff, Shopper, Finanzas y Reservas preservados;
@@ -52,17 +48,13 @@ No dividir la aprobación en candidatas o shells parciales.
 
 ## 4. Autoridad HR
 
-Último runtime observado:
-
 - 15 periodos;
 - 660 visitas;
 - 209 shoppers.
 
-Queda prohibido usar `616` o `2026-07` como invariantes runtime.
+No usar `616` o `2026-07` como invariantes runtime.
 
-## 5. Reejecución Cliente previa
-
-La solicitud fue consumida exactamente una vez.
+## 5. Runtime Cliente previo
 
 Resultado:
 
@@ -72,110 +64,60 @@ Rollback:
 
 `PASS_C6_CLIENT_AUTH_MEMBERSHIP_ROLLBACK_EXACT`.
 
-Estado final:
+Provider prestate restaurado y producción intacta.
 
-- membership temporal eliminado;
-- claims finales sin cambio;
-- usuarios creados 0;
-- cambios/resets de contraseña 0;
-- provider prestate restaurado;
-- producción intacta.
+## 6. Root fix Cliente — cerrado
 
-## 6. Causa raíz del gate Cliente — corregida
+Correctivo:
 
-El gate anterior:
+1. navegación explícita a `cli_dashboard`;
+2. espera de ruta activa;
+3. marker estable `#view .ph`;
+4. evidencia separada `clientModule`, `route`, `panorama`, `blocked`;
+5. errores específicos;
+6. etapa original preservada antes del rollback.
 
-- no navegaba explícitamente a `cli_dashboard`;
-- dependía de la vista inicial posterior al login;
-- mezclaba módulo, ruta, render y bloqueo en una sola aserción;
-- permitía que el rollback sobrescribiera la etapa original del fallo.
+Gate:
 
-Correctivo cerrado:
-
-1. `window.CX.router.nav('cli_dashboard')` explícito;
-2. espera de `CX.session.view === 'cli_dashboard'`;
-3. navegación `#nav-cli_dashboard` activa;
-4. marker estable `#view .ph`;
-5. evidencia separada `clientModule`, `route`, `panorama`, `blocked`;
-6. errores específicos por capa;
-7. `failedStageBeforeRollback` preservado.
-
-## 7. Gate source/static focal — PASS
-
-Ejecución:
-
-- commit `5caca10137250d2a70308dd995262e368f981322`;
 - run `30936681878`;
 - job `92084479259`;
-- decisión `PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT`;
-- gate interno `PASS_C6_CLIENT_ROUTE_SOURCE_STATIC`;
+- `PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT`;
+- interno `PASS_C6_CLIENT_ROUTE_SOURCE_STATIC`;
 - blockers 0;
-- warnings 0.
+- warnings 0;
+- provider reads, runtime y writes 0.
 
-Alcance:
+## 7. Cloud frontend
 
-- provider reads 0;
-- credenciales 0;
-- runtime 0;
-- Auth/Firestore/membership writes 0;
-- deploy 0.
+V5 sigue HOLD. V6 acumulativa debe incluir Login/órbita, responsive P1, PDF P1, Excel P2, Regional, copy delegado, Ficha Shopper y evidencia completa.
 
-## 8. Cloud frontend
-
-V5 permanece:
-
-`HOLD_CLOUD_V5_FRONTEND__NO_APROBADO_PARA_INTEGRACION`.
-
-V6 acumulativa debe incluir:
-
-- Login y órbita refinados;
-- responsive P1;
-- PDF P1;
-- Excel P2;
-- opción Regional;
-- copy delegado;
-- Ficha Shopper presentacional;
-- capturas reales y manifest completo.
-
-Cloud no toca backend, Auth, datos, cálculos, permisos, deploy ni producción.
-
-## 9. P1/P2 vivos
+## 8. P1/P2 vivos
 
 - overlay A+B superseded;
-- algunas gráficas no aparecen en PDF;
-- Excel tiene presentación básica;
+- PDF con gráficas incompletas;
+- Excel básico;
 - responsive parcial.
 
-No reabrir autoridades funcionales sin P0 demostrado.
+## 9. Prohibiciones
 
-## 10. Prohibiciones
-
-- no candidata, rama, PR, shell, Firebase o Hosting paralelos;
-- no aprobación fragmentada;
+- no baseline paralela;
 - no parche UI desde backend;
 - no usuario Cliente nuevo;
-- no JWT Emergent;
 - no conteos/meses congelados;
 - no reutilizar autorizaciones consumidas;
 - no reintento silencioso;
-- no writes fuera de autorización;
-- no Make/Gemini/pagos;
-- no merge/producción antes del PASS acumulativo y humano.
+- no writes, deploy, merge o producción fuera de autorización.
 
-## 11. Siguiente bloque exacto
+## 10. Siguiente bloque exacto
 
-El root fix source-only está cerrado. Solo con nueva autorización expresa:
+Solo con nueva autorización:
 
 ```text
 SNAPSHOT CLIENTE
 → MEMBERSHIP IDEMPOTENTE
 → READBACK
-→ RUNTIME STAFF/CLIENTE/SHOPPER
-→ TRES RECARGAS Y NUEVA PESTAÑA
-→ HR DINÁMICA
-→ FINANZAS/PORTALES/RESERVAS
-→ CONSERVAR SOLO CON PASS
-→ ROLLBACK AUTOMÁTICO SI FAIL
+→ RUNTIME MULTIROL CON GATE CORREGIDO
+→ CONSERVAR SOLO CON PASS / ROLLBACK SI FAIL
 ```
 
 En paralelo:
@@ -186,10 +128,10 @@ CLOUD V6
 → APPLY_DELTA_DIRECTLY SOLO CON GO
 ```
 
-## 12. Estado seguro
+## 11. Estado seguro
 
 - cambios funcionales `app/`: 0;
-- provider reads en el bloque source-only: 0;
+- provider reads: 0;
 - Auth/Firestore/membership writes: 0;
 - Hosting/Cloud Run: 0;
 - HR/Rules/Storage: 0;
