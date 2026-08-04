@@ -38,7 +38,7 @@ La aserción anterior mezclaba:
 clientModule && panorama && !blocked
 ```
 
-El correctivo source-only ya quedó validado:
+El correctivo source-only quedó validado:
 
 - navegación explícita a `cli_dashboard`;
 - espera de `CX.session.view === 'cli_dashboard'`;
