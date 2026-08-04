@@ -5,7 +5,7 @@
 
 ## 1. Decisión vigente
 
-El paquete `Prototype development request V5.zip` fue auditado y quedó:
+El paquete `Prototype development request V5.zip` quedó:
 
 `HOLD_CLOUD_V5_FRONTEND__NO_APROBADO_PARA_INTEGRACION`.
 
@@ -114,9 +114,13 @@ Los textos financieros pueden corregirse visualmente, pero Cloud no calcula ni m
 
 ## 7. Estado backend paralelo
 
-ChatGPT confirmó que el HOLD Cliente anterior provenía de un selector legacy que omitía una identidad canónica ya existente. El macrobloque autorizado avanzó hasta el gate de dominio y restauró exactamente el preestado después de detectar un nombre histórico incorrecto de módulo en el propio test.
+La reejecución final Cliente fue consumida y terminó con rollback exacto:
 
-Este trabajo no cambia el alcance frontend de Cloud.
+`FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK`.
+
+El fallo pertenece al gate runtime: después del login Cliente no navega explícitamente a `cli_dashboard` y utiliza copy del Panorama como prueba de ruta. El provider quedó restaurado y no se modificó `app/`.
+
+Este punto no debe ser tratado ni mencionado como tarea frontend de Cloud. Cloud continúa únicamente con la V6 visual acumulativa.
 
 ## 8. Entrega esperada
 
