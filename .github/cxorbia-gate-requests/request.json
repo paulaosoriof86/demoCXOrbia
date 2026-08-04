@@ -1,17 +1,24 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
   "requestId": "cloud-v6-source-static-marker-fix-20260804-02",
-  "enabled": true,
+  "enabled": false,
   "issuedAt": "2026-08-04T16:08:00-06:00",
+  "consumedAt": "2026-08-04T16:10:29-06:00",
+  "status": "consumed_pass",
+  "decision": "PASS_READONLY_POST_GATES",
+  "gateDecision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
+  "workflowRunId": 30955339976,
+  "artifactId": 8910775999,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "targetHeadSha": "b9050ad4c46b0356095e670ba677c47b214b287d",
+  "requestCommitSha": "c10e112d4fea4d05bed9873abcefee7f3d4a1c60",
   "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
   ],
-  "allowedExecutions": 1,
+  "allowedExecutions": 0,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": false,
@@ -36,5 +43,5 @@
   },
   "containsPii": false,
   "containsSecrets": false,
-  "purpose": "Re-run the corrected Cloud V6 complete-composition source/static gate after exposing the exact controlled-runner requirement marker in the honest DEV scenario-lab shell and updating the V6 overlay blob. No browser, credentials, provider reads/writes, deploy, merge or production."
+  "purpose": "Consumed successful Cloud V6 complete-composition source/static validation. A new request and a new immutable target HEAD are required after Cloud V7 is approved and empalmed."
 }
