@@ -1,145 +1,274 @@
-# Prompt para Claude · corrección focal Login portable v4
+# Prompt para Claude · corrección frontend-only del Login portable v4
 
-Trabajá únicamente sobre el paquete portable `gravicentra-login-portable`. No tocar GitHub, backend, Auth real, `data.js`, HR adapters, módulos legacy, Firebase, deploy ni producción.
+Trabajá únicamente sobre el último paquete portable `gravicentra-login-portable` que ya entregaste.
 
-## Fuente de decisión
+No reconstruyas desde cero y no generes otro frontend. Conservá todo lo que ya funciona y corregí acumulativamente los puntos indicados aquí.
 
-La auditoría focal de ChatGPT clasificó la versión v4 como:
+## Objetivo
 
-```text
-HOLD_CLAUDE_LOGIN_PORTABLE_V4__NOT_READY_FOR_APPLY_DELTA_DIRECTLY
-```
+Entregar una nueva versión portable del Login de **Gravicentra CX** con:
 
-No abras una nueva metodología ni rediseñes libremente. Corregí exclusivamente los puntos siguientes.
+- fidelidad visual cercana a la referencia aprobada;
+- órbita visible en desktop, tablet y móvil;
+- branding dinámico del tenant;
+- banderas de todos los países configurados para ese tenant;
+- responsive real;
+- tokens CSS completos;
+- evidencia visual reproducible.
 
-## 1. Responsive y evidencia real
+Tu responsabilidad en este bloque es exclusivamente frontend visual y presentacional.
 
-La imagen `docs/preview-mobile.png` entregada mide `924 × 540`, por lo que no demuestra comportamiento móvil.
+## 1. Archivos que podés modificar
 
-Debés generar evidencia real en:
+Trabajá solamente sobre:
 
-- 390 × 844;
-- 412 × 915;
-- tablet vertical;
-- desktop 1440 × 900 o equivalente.
+- `src/Login.jsx`;
+- `src/Login.css`;
+- `src/gravicentra-tokens.css`;
+- `src/i18n.js`;
+- `src/flags.jsx`;
+- `adapters/cliente-preview-button.js`;
+- `docs/ESPEC-FICHA-SHOPPER.md`;
+- `docs/INVENTARIO-REFERENCIAS-MARCA.md`;
+- `README.md`;
+- previews, pruebas y manifest del propio paquete.
 
-Criterios:
+No toques módulos ni archivos externos a este paquete portable.
 
-- la franja superior no se solapa;
-- la órbita permanece visible;
-- la órbita no queda recortada;
-- el formulario usa el ancho disponible;
-- países y roles no forman una columna excesivamente angosta;
-- se puede recorrer y enviar el formulario con teclado;
-- no hay scroll horizontal;
-- no hay texto cortado.
+## 2. Datos que recibe el componente
 
-## 2. Selector multi-país
-
-El README afirma `Todos los países`, pero la implementación mantiene un único `country` y solo muestra chips.
-
-Implementar el contrato aprobado:
-
-### 1 país
-
-- mostrar contexto fijo;
-- sin selector innecesario.
-
-### 2–3 países
-
-- chips rápidos;
-- opción `Todos mis países` únicamente cuando el flujo permita vista agregada.
-
-### 4–12+ países
-
-- tres recientes;
-- botón `+N`;
-- panel/multiselect buscable;
-- selección de todos los países autorizados;
-- agrupación por región opcional;
-- móvil mediante bottom sheet;
-- comparación máxima de tres cuando el modo sea comparativo.
-
-El componente sigue sin conceder permisos. Solo devuelve selección mediante callback. Proponer una API portable como:
+El Login debe recibir la identidad visual del tenant mediante `props`, por ejemplo:
 
 ```js
-onCountryScopeChange({ mode, countryIds })
+tenantBranding: {
+  name,
+  logo,
+  subtitle,
+  countries,
+  theme
+}
 ```
 
-No enviar PII ni rol por URL.
+Cada elemento de `countries` puede tener una forma equivalente a:
 
-## 3. Tokens CSS
+```js
+{
+  id: 'GT',
+  name: 'Guatemala',
+  flagCode: 'GT'
+}
+```
+
+No decidas qué países tiene un tenant. Renderizá únicamente los que reciba el componente.
+
+## 3. Banderas de países
+
+Las banderas del Login representan los países en los que trabaja el tenant.
+
+Implementá lo siguiente:
+
+- mostrar todos los países recibidos en `tenantBranding.countries`;
+- mostrar bandera y nombre;
+- conservar el orden recibido;
+- no hardcodear Guatemala, Honduras ni ningún listado global;
+- no ocultar países mediante `+N`;
+- no convertir las banderas en multiselect;
+- no exigir seleccionar un país para iniciar sesión;
+- no usar las banderas como permisos;
+- mantenerlas visibles en desktop, tablet y móvil.
+
+### Comportamiento responsive de las banderas
+
+- con pocos países: chips visibles en una o varias filas;
+- con muchos países: reducir espaciado y permitir varias filas;
+- en móvil puede usarse scroll horizontal solo dentro del contenedor de banderas cuando sea necesario;
+- no debe existir scroll horizontal general en la página;
+- ningún país puede quedar oculto permanentemente.
+
+## 4. Responsive real
+
+La evidencia móvil anterior no fue válida porque `preview-mobile.png` tenía dimensiones horizontales.
+
+Generá evidencia real en:
+
+- `390 × 844`;
+- `412 × 915`;
+- `768 × 1024`;
+- `1440 × 900`.
+
+### Desktop
+
+- layout de dos columnas;
+- órbita en el panel izquierdo;
+- formulario en el panel derecho;
+- franja superior integrada.
+
+### Tablet vertical
+
+- franja superior visible;
+- órbita visible como hero;
+- formulario debajo o en composición adaptativa;
+- banderas visibles.
+
+### Móvil
+
+- franja superior compacta;
+- órbita visible arriba;
+- banderas visibles;
+- formulario debajo;
+- no usar `display:none` para ocultar la órbita;
+- no recortar la órbita;
+- no generar solapamientos;
+- no cortar textos;
+- mantener controles táctiles y accesibles.
+
+## 5. Fidelidad visual de la órbita
+
+Conservá y afiná la dirección visual aprobada:
+
+- fondo navy profundo;
+- grid técnico fino;
+- anillos orbitales equilibrados;
+- núcleo central con `Gravicentra CX`;
+- acento coral;
+- nodos alrededor;
+- texto `FIELD OPERATIONS INTELLIGENCE`;
+- tagline inferior.
+
+Mantener los nodos:
+
+- CLIENTES;
+- TECNOLOGÍA;
+- PERSONAS;
+- OPERACIÓN;
+- PROCESOS;
+- INFORMACIÓN.
+
+La órbita debe:
+
+- verse más cercana a la referencia entregada;
+- mantener proporción estable;
+- permanecer centrada;
+- no quedar recortada;
+- adaptarse mediante CSS/SVG/HTML;
+- no convertirse en una imagen raster fija;
+- respetar los colores definidos por tokens.
+
+## 6. Tokens CSS
 
 `Login.css` usa `--gcx-navy-2`, pero el token no está definido.
 
-Corregir de una de estas maneras:
+Corregí ese problema y asegurá que todos los tokens usados existan.
 
-- definir `--gcx-navy-2` en `gravicentra-tokens.css`; o
-- sustituirlo por un token ya definido.
+Mantener o definir tokens equivalentes a:
 
-Entregar un gate o comprobación que falle si cualquier `var(--gcx-*)` usado no está definido.
+```css
+--gcx-tenant-strip-bg
+--gcx-tenant-strip-text
+--gcx-orbit-bg
+--gcx-orbit-grid
+--gcx-orbit-grid-strong
+--gcx-orbit-ring
+--gcx-orbit-node
+--gcx-orbit-core
+--gcx-orbit-brand
+--gcx-orbit-accent
+--gcx-panel-right-bg
+--gcx-country-chip-bg
+--gcx-country-chip-border
+--gcx-country-chip-text
+```
 
-## 4. Baseline
+Los colores principales deben salir de tokens para que puedan cambiar según `theme`.
 
-Eliminar del README el HEAD fijo `3be7763`.
+Agregá una prueba simple que falle cuando un `var(--gcx-*)` usado no esté definido.
 
-Usar:
+## 7. Marca producto y marca tenant
+
+Mantener esta separación:
+
+- producto: `Gravicentra CX`;
+- tenant: logo, nombre, subtítulo, países y paleta recibidos por `props`.
+
+No hagas reemplazos globales de nombres técnicos.
+
+En el inventario de marca distinguí:
+
+- marca portable ya actualizada;
+- marca dinámica del tenant;
+- referencias visuales pendientes fuera del paquete;
+- identificadores técnicos que no deben tocarse.
+
+## 8. Formulario y accesibilidad
+
+Mantener:
+
+- usuario como `type="text"`;
+- contraseña como `type="password"`;
+- loading state;
+- error state;
+- ES/EN;
+- selección visual de perfil;
+- labels asociados;
+- focus visible;
+- navegación completa por teclado;
+- envío mediante callback.
+
+El componente puede exponer callbacks equivalentes a:
+
+```js
+onSubmit({ username, password, roleHint })
+onSignup()
+onLanguageChange(locale)
+```
+
+No implementes autenticación ni navegación real. Entregá únicamente el componente visual y presentacional.
+
+## 9. README
+
+Eliminá cualquier HEAD fijo del repositorio.
+
+Usá:
 
 ```text
 TARGET_HEAD_RESOLVED_BY_CHATGPT_AT_INTEGRATION_TIME
 ```
 
-El paquete es portable y no decide la autoridad de integración.
+El README debe indicar solamente que:
 
-## 5. Rebranding
+- es un paquete frontend portable;
+- todavía no está integrado;
+- la integración será realizada posteriormente;
+- esta entrega contiene diseño, responsive, branding, banderas y callbacks visuales.
 
-Mantener:
+## 10. Entregables
 
-- producto visible `Gravicentra CX`;
-- tenant/consultora dinámico;
-- `window.CX`, `CX.*`, constantes `CXORBIA_*`, storage keys, IDs, rutas y nombres técnicos sin renombrar.
+Devolvé un único ZIP acumulativo con:
 
-No afirmar que el árbol canónico está rebrandeado. El inventario debe distinguir claramente:
+- archivos frontend corregidos;
+- `MANIFEST.json` con path, bytes y SHA-256;
+- capturas reales de los cuatro viewports;
+- prueba con tenants de 1, 2, 8 y 12 países;
+- reporte breve de responsive;
+- reporte de tokens usados y definidos;
+- inventario de archivos modificados;
+- resumen por archivo de qué cambió.
 
-- portable ya rebrandeado;
-- árbol canónico propuesto/no aplicado.
+## 11. Criterio de aceptación
 
-## 6. Entregables acumulativos
+La entrega debe cumplir todo esto:
 
-Devolver un único paquete que contenga:
+1. la órbita se ve en desktop, tablet y móvil;
+2. la órbita no queda recortada;
+3. las capturas corresponden realmente a los viewports declarados;
+4. todas las banderas recibidas se muestran;
+5. no hay países hardcodeados;
+6. no hay `+N`, multiselect ni selección obligatoria de país en el Login;
+7. no hay scroll horizontal general;
+8. todos los tokens usados están definidos;
+9. el formulario es usable por teclado y táctilmente;
+10. el README no fija un HEAD histórico;
+11. el manifest de hashes coincide;
+12. el paquete sigue siendo frontend portable y acumulativo.
 
-- `Login.jsx` corregido;
-- `Login.css` corregido;
-- `gravicentra-tokens.css` corregido;
-- i18n/flags;
-- FAB portable;
-- especificación ficha shopper;
-- inventario de marca;
-- README actualizado;
-- manifest JSON con path, bytes y SHA-256;
-- capturas reales desktop/tablet/móvil;
-- resumen de pruebas y viewports.
-
-## 7. Prohibiciones
-
-- no integrar Auth;
-- no crear JWT;
-- no usar localStorage/sessionStorage para tokens;
-- no PII/rol en URL;
-- no endpoint inventado;
-- no copiar código Emergent inseguro;
-- no tocar `app/modules`, `app/core`, adapters actuales ni backend;
-- no nueva rama/PR/deploy;
-- no afirmar GO o integración.
-
-## 8. Criterio de aceptación
-
-ChatGPT solo podrá aplicar el delta cuando:
-
-1. no haya token CSS huérfano;
-2. el selector cumpla 1 / 2–3 / 4–12+ países;
-3. las capturas sean realmente de los viewports declarados;
-4. la órbita sea visible y usable en móvil;
-5. el paquete no fije un HEAD histórico;
-6. el manifest de hashes coincida;
-7. no existan Auth, PII, storage o endpoint inseguros.
+Realizá directamente las correcciones y devolvé el ZIP completo con la evidencia. No esperes una nueva autorización.
