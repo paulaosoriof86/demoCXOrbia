@@ -6,30 +6,15 @@
 **Baseline canónica:** repo `paulaosoriof86/demoCXOrbia`, rama `docs-tya-v6-v71-audit`, PR #7 draft/open/no merge  
 **Decisión:** `HOLD_CLAUDE_LOGIN_PORTABLE_V4__NOT_READY_FOR_APPLY_DELTA_DIRECTLY`
 
-## 1. Alcance y relación con la auditoría forense integral
+## 1. Alcance
 
-No se abrió una segunda auditoría forense general. Esta revisión es una auditoría focal de delta contra:
+Esta es una auditoría focal del paquete frontend portable. No se abrió una segunda auditoría forense general.
 
-- el manifest final Phase A;
-- las 29 autoridades cerradas;
-- la selección quirúrgica Emergent;
-- `RESUMEN-PARA-CLAUDE.md`;
-- `PENDIENTES-PROTOTIPO.md`;
-- el contrato multi-país/multirol;
-- los gates de Auth, HR, Finanzas, reportes y composición.
-
-Una nueva auditoría forense general solo sería necesaria si:
-
-1. cambia el árbol funcional canónico fuera de un delta autorizado;
-2. aparece una fuente contradictoria con el source lock;
-3. se demuestra un P0 nuevo que invalide la autoridad actual;
-4. se propone sustituir Firebase/CX.data/HR/Finanzas por otra arquitectura.
-
-Ninguna de esas condiciones ocurrió. El gate source/static acumulativo verificó 53/53 blobs críticos exactos y repositorio sin delta después de la ejecución.
+El árbol canónico continúa preservado y el gate source/static confirmó 53/53 blobs críticos exactos.
 
 ## 2. Archivos del paquete
 
-El paquete contiene 12 archivos:
+El paquete contiene:
 
 - `src/Login.jsx`;
 - `src/Login.css`;
@@ -41,35 +26,35 @@ El paquete contiene 12 archivos:
 - `docs/INVENTARIO-REFERENCIAS-MARCA.md`;
 - previews y harness.
 
-No contiene backend, Auth real, adapter HR, `data.js`, módulos legacy ni deploy. Esto respeta el STOP de trabajo portable.
+No contiene backend, Auth real, adapter HR, `data.js`, módulos legacy ni deploy.
 
 ## 3. Hallazgos positivos
 
-### 3.1 Rebranding portable
+### Rebranding portable
 
-PASS en el paquete portable:
+PASS:
 
 - producto visible `Gravicentra CX`;
 - tenant/consultora separado de la marca producto;
 - franja superior dinámica;
 - órbita y textos ES/EN;
-- inventario que preserva `window.CX`, `CX.*`, constantes `CXORBIA_*`, storage keys, IDs técnicos y rutas.
+- inventario que preserva identificadores técnicos.
 
-Esto no significa que el árbol canónico ya esté rebrandeado. El propio inventario declara que los cambios del árbol canónico son propuestos y no aplicados.
+Esto no significa que el árbol canónico ya esté rebrandeado.
 
-### 3.2 Seguridad del componente presentacional
+### Seguridad presentacional
 
 PASS estático:
 
 - no usa `localStorage` ni `sessionStorage`;
 - no construye URLs con PII/rol;
-- no contiene endpoint/Auth inventado;
+- no contiene endpoint o Auth inventado;
 - usuario `type="text"` y contraseña `type="password"`;
-- entrega credenciales únicamente mediante callback;
+- entrega datos únicamente mediante callback;
 - no muestra contraseñas de ejemplo;
 - FAB usa `textContent`, Escape y focus trap.
 
-### 3.3 Sintaxis
+### Sintaxis
 
 PASS de parseo para:
 
@@ -82,91 +67,90 @@ PASS de parseo para:
 
 ### 4.1 Evidencia móvil inválida
 
-`docs/preview-mobile.png` mide `924 × 540`, exactamente el mismo tamaño que el preview desktop. No es una captura móvil reproducible.
+`docs/preview-mobile.png` mide `924 × 540`, igual que el preview desktop. No demuestra un viewport móvil real.
 
-Por tanto, la afirmación de que el responsive móvil fue verificado no está sustentada. El CSS intenta mantener la órbita visible, pero falta evidencia real en al menos:
+Se requiere evidencia real en:
 
 - `390 × 844`;
 - `412 × 915`;
-- tablet vertical.
+- tablet vertical;
+- desktop.
 
-La evidencia debe mostrar franja, órbita completa, formulario utilizable y cero solapamientos.
+La evidencia debe mostrar franja, órbita, banderas, formulario utilizable y cero solapamientos.
 
-### 4.2 Selector multi-país no cumple el contrato
+### 4.2 Banderas del tenant
 
-El README afirma que con más de tres países aparece `Todos los países`, pero `Login.jsx`:
+Corrección de criterio:
 
-- mantiene un único estado escalar `country`;
-- renderiza todos los países como chips;
-- no implementa `Todos mis países`;
-- no implementa `+N`;
-- no implementa búsqueda;
-- no implementa multiselección;
-- no implementa recientes, regiones, vistas guardadas ni comparación máxima de tres.
+- las banderas del Login representan los países configurados para el tenant;
+- deben recibirse dinámicamente mediante `props`;
+- deben mostrarse todas;
+- no deben hardcodearse;
+- no deben convertirse en selector operativo, multiselect, permisos ni scopes;
+- no corresponde exigir `+N`, búsqueda o `Todos mis países` en el Login.
 
-Con 10–12 países se vuelve extenso y no cumple la arquitectura multi-país aprobada.
+El paquete debe demostrar comportamiento responsive con tenants de 1, 2, 8 y 12 países.
 
 ### 4.3 Token CSS indefinido
 
-`Login.css` consume `--gcx-navy-2` en:
+`Login.css` consume `--gcx-navy-2`, pero `gravicentra-tokens.css` no lo define.
 
-- logo tenant;
-- icono del rol Admin.
-
-`gravicentra-tokens.css` no define ese token. Debe definirse o sustituirse por un token existente. No se acepta fallback silencioso.
+Debe definirse o sustituirse por un token existente y agregarse una comprobación de tokens usados/definidos.
 
 ### 4.4 Baseline obsoleta en README
 
-El README fija HEAD `3be7763`, pero la rama viva ya avanzó. Un paquete portable no debe fijar un HEAD histórico como si fuera el destino de integración. Debe declarar:
+El README fija un HEAD histórico. Un paquete portable no decide el destino de integración.
+
+Debe usar:
 
 `TARGET_HEAD_RESOLVED_BY_CHATGPT_AT_INTEGRATION_TIME`.
 
-### 4.5 No es una candidata acumulativa completa
+### 4.5 No es candidata acumulativa completa
 
-El propio README indica que no es candidata. No contiene:
+El paquete es frontend portable. No contiene ruta canónica, integración de sesión ni conexión con el entrypoint actual.
 
-- ruta React canónica;
-- bridge Firebase Auth;
-- no-flash/single-login;
-- logout y revocación;
-- integración con claims/scopes;
-- carga desde `index-backend-dev.html`;
-- build-lock/service worker;
-- gates runtime;
-- rebranding visible del árbol canónico.
+Eso no es trabajo de Claude; será resuelto por ChatGPT durante el empalme.
 
-Por ello no puede empalmarse como candidata completa ni sustituir el frontend actual.
+Por tanto, el paquete no puede sustituir directamente el frontend actual.
 
-## 5. Cobertura contra el trabajo permitido a Claude
+## 5. Cobertura del trabajo frontend
 
-| Entregable Claude | Estado |
+| Entregable frontend | Estado |
 |---|---|
 | Login React presentacional | Entregado |
 | Tokens CSS | Entregado con token indefinido |
 | i18n ES/EN | Entregado |
 | Órbita y branding | Entregado; evidencia móvil pendiente |
 | FAB comercial | Entregado portable |
-| Selector multi-país | Incompleto frente al contrato aprobado |
-| Mockup ficha shopper | Entregado como especificación, no implementación |
+| Banderas del tenant | Deben quedar dinámicas y responsive |
+| Mockup ficha shopper | Entregado como especificación |
 | Inventario de rebranding visible | Entregado como propuesta, no aplicado |
 
-## 6. Asuntos que no corresponden a Claude
+## 6. Separación de responsabilidades
 
-Permanecen bajo responsabilidad de ChatGPT/backend/integración:
+### Claude
 
-- Firebase Auth y claims;
-- safe bridge de sesión;
-- scopes tenant/proyecto/país;
-- `CX.data` y adapters;
-- HR viva;
-- Finanzas y pagos;
-- report kit;
-- overlay A+B superseded;
-- runtime multirol;
-- agosto/disponibles/postulaciones;
-- deploy DEV, freeze y producción.
+- diseño y código frontend portable;
+- responsive;
+- órbita;
+- branding;
+- banderas dinámicas;
+- tokens;
+- i18n;
+- accesibilidad;
+- previews y pruebas visuales.
 
-No se debe pedir a Claude que resuelva esos puntos dentro del paquete visual.
+### ChatGPT
+
+- integración con la plataforma;
+- autenticación;
+- permisos;
+- datos;
+- backend;
+- runtime;
+- DEV, freeze y producción.
+
+Claude no debe resolver ni documentar técnicamente esos componentes de integración.
 
 ## 7. Decisión de empalme
 
@@ -174,28 +158,28 @@ No se debe pedir a Claude que resuelva esos puntos dentro del paquete visual.
 HOLD_CLAUDE_LOGIN_PORTABLE_V4__NOT_READY_FOR_APPLY_DELTA_DIRECTLY
 ```
 
-No existe autorización técnica para copiarlo al árbol canónico mientras persistan:
+Persisten:
 
 1. evidencia móvil inválida;
-2. selector multi-país incompleto;
+2. banderas todavía no demostradas como dinámicas y responsive;
 3. token CSS indefinido;
-4. baseline obsoleta;
-5. ausencia del contrato de integración seguro.
+4. README con HEAD histórico;
+5. falta del paquete corregido con manifest de hashes.
 
 No se aplicó ningún archivo del paquete a `app/`.
 
 ## 8. Siguiente acción exacta
 
-Claude debe devolver un delta portable corregido, sin tocar GitHub, con:
+Claude debe devolver un único paquete frontend corregido con:
 
-- token CSS completo;
-- selector 1 / 2–3 / 4–12+ países;
+- órbita visible en móvil;
+- todas las banderas del tenant visibles;
+- tokens completos;
 - capturas reales desktop/tablet/móvil;
-- prueba de órbita visible y formulario usable;
 - README sin HEAD fijo;
 - manifest de archivos y hashes.
 
-Después ChatGPT hará una única auditoría de delta y, únicamente con GO y sin P0, integrará el componente mediante el bridge Firebase/Auth canónico y ejecutará gates antes de DEV.
+Después ChatGPT realizará una única auditoría del delta y, únicamente con GO y sin P0, integrará el componente a la plataforma canónica.
 
 ## 9. Estado seguro
 
