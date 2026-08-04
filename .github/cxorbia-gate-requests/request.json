@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "c6-client-route-source-static-validation-20260804-02",
+  "requestId": "forensic-control-plane-stabilization-20260804-01",
   "enabled": false,
   "issuedAt": "2026-08-04",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "aeee5a560d419bc80facb61f5d2f40fff781a9e5",
+  "targetHeadSha": "d4e25ee7e04e724f91f19c15b8394fd9b3b2a648",
   "profile": "SOURCE_ONLY_CONTRACT_VALIDATION",
   "allowedProfiles": [
     "SOURCE_ONLY_CONTRACT_VALIDATION"
@@ -36,5 +36,5 @@
   },
   "containsPii": false,
   "containsSecrets": false,
-  "purpose": "Source-only Client route contract validation completed. Request remains disabled; no runtime profile, provider read, credential preparation, browser execution or write path is authorized."
+  "purpose": "Authorized forensic control-plane stabilization source/static validation only. Validate the single runtime authority, immutable source SHA, separated access/runtime transactions and deterministic state machine. No credentials, browser, provider reads/writes, deploy, merge or production."
 }
