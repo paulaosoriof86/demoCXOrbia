@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "phase-a-runtime-multirole-dynamic-live-authority-20260804-02",
-  "enabled": true,
+  "requestId": "phase-a-runtime-multirole-hold-client-claims-20260804-02",
+  "enabled": false,
   "issuedAt": "2026-08-04",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "59bdd705255f4fad1768a6d07a8dafaf52ee754f",
+  "targetHeadSha": "b9bbc9dcc8050cb221d53fb4843333c809963922",
   "profile": "PHASE_A_COMPLETE_RUNTIME_MULTIROLE",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_RUNTIME_MULTIROLE"
@@ -39,11 +39,26 @@
   },
   "containsPii": false,
   "containsSecrets": false,
-  "rootCauseFix": {
-    "classification": "FROZEN_RUNTIME_SOURCE_INVARIANTS",
-    "previousVisitCount": 616,
-    "observedLiveVisitCount": 660,
-    "fix": "derive counts and latest period from live HR authority; retain stable identity and zero-duplicate gates",
-    "singleRetry": true
+  "lastExecution": {
+    "runId": 30918871765,
+    "artifactId": 8896223753,
+    "decision": "HOLD_RUNTIME_PREP_CLIENT_CLAIMS_NOT_FOUND",
+    "staffShopperCredentialSelection": "PASS",
+    "observedLiveVisits": 660,
+    "protectedVisits": 616,
+    "exactProtectedMatches": 616,
+    "newLiveVisitsBeyondProtectedSnapshot": 44,
+    "clientCredentialSelection": "HOLD_CLIENT_R4_A3_C0_H0_S0",
+    "clientRecordsReviewed": 4,
+    "clientAuthUsersMatched": 3,
+    "clientClaimMatches": 0,
+    "repositoryUnchanged": true,
+    "providerWrites": 0,
+    "dataWrites": 0
+  },
+  "rootCause": {
+    "sourceAuthority": "historical gate froze 616 while live HR advanced to 660; dynamic selector fixed",
+    "clientAccess": "existing Auth identities were found but none had the required cliente/client tenant+project claim contract",
+    "nextRequiredGate": "single DEV Auth claim/membership repair with snapshot, exact target, idempotence and rollback; then one runtime retry"
   }
 }
