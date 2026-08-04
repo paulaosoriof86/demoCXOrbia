@@ -1,129 +1,152 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-04  
-**Estado frontend:** `CLOUD_V6_RECEIVED__NOT_AUDITED__EXECUTION_LANE_NOT_READY__NOT_INTEGRATED`
+**Estado frontend:** `CLOUD_V6_EMPALMED__VISUAL_HOLD__CLOUD_V7_DELTA_PENDING__NO_DEPLOY`
 
-## 1. Paquetes
+## 1. Estado acumulativo
 
-V5:
+Cloud V6 fue empalmada mecánicamente sobre la rama viva:
 
-`HOLD_CLOUD_V5_FRONTEND__NO_APROBADO_PARA_INTEGRACION`.
+- HEAD previo: `a2ccfb0c3709cad6f5e6a9c16dcb7f9293532d6e`;
+- commit funcional: `f961253f18c388ae04619bb5175269015c8349c3`;
+- SHA-256 del ZIP V6: `0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407`;
+- candidata acumulativa preservada;
+- deploy DEV: 0;
+- producción: intacta.
 
-SHA-256 V5:
+Codex solo realizó el empalme mecánico. No audita ni decide visualmente.
 
-`c55f83fedb9263a99705f9e2cc41ade8a186fe7d9c2e675689d901de43089ed1`.
+## 2. Decisión visual V6
 
-V6:
+`HOLD_FRONTEND_VISUAL`.
 
-`Prototype development request V6.zip`.
+La versión de escritorio empalmada no reproduce la composición aprobada de Emergent:
 
-SHA-256 V6:
+- panel derecho con apariencia de portada/demo;
+- logo grande CXOrbia y título genérico;
+- accesos de validación y pie técnico visibles;
+- campos de usuario/contraseña y botón fuera de la composición inicial;
+- tarjetas demasiado grandes y redondeadas;
+- órbita más rígida y pesada;
+- jerarquía distinta de la referencia.
 
-`0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407`.
+No se solicita reconstruir V6. El siguiente entregable es un delta visual V7 sobre la misma candidata acumulativa.
 
-Estado V6:
+## 3. Instrucción V7 vigente
 
-`NOT_AUDITED__EXECUTION_LANE_NOT_READY`.
+Fuente:
 
-No se aplicó ningún archivo de V5 o V6 a `app/`.
+`PROMPT-CLOUD-V7-CORRECCION-VISUAL-LOGIN-ORBIT-20260804.md`.
 
-## 2. Regla acumulativa
+Alcance principal permitido:
 
-V6 se audita como un único paquete frontend acumulativo. No se revisará ni empalmará únicamente el Login ni módulos aislados.
+- `app/app.js`;
+- `app/styles/layout.css`.
 
-La comparación debe separar:
+Objetivo:
 
-- delta nuevo V6;
-- mejoras heredadas de V5;
-- P1/P2 realmente atendidos;
-- regresiones;
-- archivos redundantes;
-- piezas fuera del alcance frontend;
-- impacto en Login, órbita, responsive, PDF, Excel, Regional, copy delegado y Ficha Shopper.
+- Emergent como autoridad estricta de composición, proporción, densidad y jerarquía;
+- Orbit 360 como autoridad de estilo orbital;
+- identidad Gravicentra CX;
+- cero cambios backend o funcionales.
 
-Con GO y sin P0, el único método permitido será `APPLY_DELTA_DIRECTLY` sobre la rama viva.
+## 4. Resultado visual obligatorio
 
-## 3. Motivo del estado pendiente
+Panel izquierdo:
 
-`EXECUTION_LANE_READY` exige en la misma sesión:
+- marca Gravicentra CX;
+- órbita compacta estilo Orbit;
+- seis conceptos;
+- centro pequeño y elegante;
+- tagline aprobado.
 
-- ZIP extraído;
-- checkout autenticado;
-- rama viva exacta.
+Panel derecho, en este orden:
 
-El ZIP está extraído, pero no se ha demostrado todavía el checkout autenticado requerido. Por ello no existe decisión GO/HOLD sobre V6.
+1. `INGRESO`;
+2. `Iniciá sesión`;
+3. subtítulo corporativo;
+4. todos los países del tenant;
+5. `PERFIL`;
+6. tres tarjetas;
+7. usuario;
+8. contraseña;
+9. botón `Ingresar`;
+10. registro Shopper.
 
-## 4. Alcance frontend esperado
+No mostrar:
 
-1. Login y órbita refinados en desktop, tablet y móvil;
-2. branding dinámico del tenant;
-3. países dinámicos recibidos por props;
-4. responsive P1;
-5. PDF P1 con gráficas existentes válidas;
-6. Excel P2;
-7. opción visual `Regional`;
-8. copy delegado correcto;
-9. Ficha Shopper presentacional responsive;
-10. capturas reales y manifest completo.
+- `Field Operations Platform`;
+- `Selecciona un perfil para entrar al demo`;
+- accesos de validación;
+- Operativo/Coordinador/Aliado;
+- `Desarrollado por CXOrbia`;
+- instalar como app;
+- demo comercial/datos ficticios;
+- credenciales de ejemplo o textos técnicos DEV.
 
-## 5. Fuera del alcance de Cloud
+## 5. Países
 
-No tocar:
+- dinámicos;
+- todos los configurados;
+- orden recibido;
+- bandera + nombre;
+- sin `+N`;
+- sin multiselect;
+- sin selección obligatoria;
+- evidencia con 1, 2, 8 y 12 países.
 
-- Firebase Auth;
-- claims o memberships;
-- `CX.data`;
-- HR;
-- APIs o bases de datos;
-- cálculos financieros;
-- permisos o scopes;
-- adapters canónicos;
-- backend, tools o workflows;
-- GitHub o PR #7;
-- deploy, freeze o producción;
-- Make, Gemini o pagos.
-
-## 6. Backend paralelo — sin tarea para Cloud
-
-El control plane fue estabilizado source-only:
-
-- máquina de estados única;
-- autoridad browser única futura;
-- ejecución fijada a SHA;
-- acceso separado del runtime;
-- diagnóstico por etapa;
-- gates duplicados fuera del camino activo.
-
-Esto no exige cambios de Cloud y no debe incorporarse al ZIP frontend.
-
-## 7. Pruebas dentro de la plataforma
-
-Se documentó un futuro Laboratorio DEV para validar Admin/Operaciones y Shopper con escenarios `AUDIT-*`, actividad visible, diagnóstico exacto y cleanup.
-
-Cloud solo podría intervenir posteriormente en la presentación visual del panel de resultados mediante una especificación frontend concreta. No debe implementar el runner, las escrituras, la lógica de pruebas ni la integración.
-
-## 8. Estrategia visible
-
-El primer corte operativo prioriza:
-
-`ADMIN/OPERACIONES + SHOPPER`.
-
-El Portal Cliente continúa como corte paralelo. Esta decisión de release no cambia el alcance frontend acumulativo de V6, pero evita presentar Cliente como condición de salida inicial.
-
-## 9. Evidencia V6 requerida
+## 6. Evidencia V7
 
 - `1920×1080`;
 - `1440×900`;
 - `768×1024`;
 - `412×915`;
 - `390×844`;
-- escenarios de 1, 2, 8 y 12 países;
-- todos los archivos y capturas en `MANIFEST.json` con path, bytes y SHA-256.
+- comparación V6/V7 en `1440×900`;
+- manifest con path, bytes y SHA-256 de todos los archivos y capturas.
+
+## 7. Fuera del alcance de Cloud
+
+No tocar:
+
+- Firebase Auth;
+- claims/memberships;
+- `CX.data` o HR;
+- cálculos o fuentes financieras;
+- permisos/scopes;
+- backend/adapters/workflows;
+- laboratorio o runner;
+- GitHub, gates, deploy o producción;
+- Make, Gemini o pagos.
+
+## 8. Gate y laboratorio — sin tarea Cloud
+
+ChatGPT corrigió source-only:
+
+- manifest base + overlay V6;
+- asset Auth local fail-closed sin secretos;
+- falso positivo del scanner;
+- shell del Laboratorio para no declarar escenarios o cleanup inexistentes.
+
+El runner real y las pruebas dentro de la plataforma continúan bajo responsabilidad de ChatGPT después del empalme V7 y del deploy DEV autorizado.
+
+## 9. Secuencia
+
+```text
+CLOUD V7 VISUAL DELTA
+→ AUDITORÍA VISUAL CHATGPT
+→ CODEX SOLO EMPALME
+→ SOURCE LOCK Y GATES
+→ ÚNICO HOSTING DEV
+→ LABORATORIO REAL
+→ CLEANUP
+→ VALIDACIÓN HUMANA
+```
 
 ## 10. Estado seguro
 
-- V6 auditada: no;
-- V6 integrada: no;
-- delta aplicado: 0;
+- V6 empalmada: sí;
+- V6 visual aprobada: no;
+- V7 recibida: no;
 - deploy: 0;
-- producción intacta.
+- producción: intacta.
