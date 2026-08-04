@@ -53,8 +53,8 @@ function validateRequest(r){
   const prior=readJson('app/docs/evidence/CORTE6-CLIENT-AUTH-MATERIALIZATION-LATEST.json');
   assert(prior.decision==='PASS_C6_CLIENT_AUTH_MATERIALIZED_AND_RUNTIME_VALIDATED','PRIOR_CANONICAL_CLIENT_EVIDENCE_MISSING');
 }
-function publicFailure(error,rollback){
-  return {schemaVersion:'cxorbia.c6.client-access-repair-runtime-failure.v2',generatedAt:new Date().toISOString(),decision:rollback?.restoredPreState===true?'FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK':'P0_C6_CLIENT_ACCESS_ROLLBACK_FAILED',failedStage:fs.existsSync(stagePath)?fs.readFileSync(stagePath,'utf8').trim():'unknown',errorCode:String(error?.message||error).replace(/[^A-Z0-9_:.\/-]/gi,'_').slice(0,500),rollback,...safeState};
+function publicFailure(error,rollback,failedStage){
+  return {schemaVersion:'cxorbia.c6.client-access-repair-runtime-failure.v2',generatedAt:new Date().toISOString(),decision:rollback?.restoredPreState===true?'FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK':'P0_C6_CLIENT_ACCESS_ROLLBACK_FAILED',failedStage:failedStage||'unknown',errorCode:String(error?.message||error).replace(/[^A-Z0-9_:.\/-]/gi,'_').slice(0,500),rollback,...safeState};
 }
 
 try{
@@ -121,6 +121,7 @@ try{
   fs.writeFileSync(resultPath,JSON.stringify(evidence,null,2)+'\n','utf8');
   console.log(JSON.stringify({decision:evidence.decision,resultPath,authWrites:evidence.repair.authWrites,membershipWrites:evidence.repair.membershipWrites,liveVisits:liveJson.visits,latestPeriod:liveJson.latestPeriod}));
 }catch(error){
+  const failedStageBeforeRollback=fs.existsSync(stagePath)?fs.readFileSync(stagePath,'utf8').trim():'unknown';
   let rollback={decision:'PASS_C6_CLIENT_ACCESS_ROLLBACK_NOT_REQUIRED',restoredPreState:true,authWrites:0,membershipWrites:0};
   if(applyCompleted&&fs.existsSync(privateSnapshot)){
     try{
@@ -128,7 +129,7 @@ try{
       rollback=runJson('rollback_after_failure','tools/qa/cxorbia-c6-client-auth-materialization.mjs',['--mode=rollback'],{},file);
     }catch(rollbackError){rollback={decision:'P0_C6_CLIENT_ACCESS_ROLLBACK_FAILED',restoredPreState:false,errorCode:String(rollbackError?.message||rollbackError).slice(0,300)};}
   }
-  const failure=publicFailure(error,rollback);
+  const failure=publicFailure(error,rollback,failedStageBeforeRollback);
   fs.writeFileSync(resultPath,JSON.stringify(failure,null,2)+'\n','utf8');
   console.error(JSON.stringify({decision:failure.decision,failedStage:failure.failedStage,errorCode:failure.errorCode}));
   process.exitCode=1;
