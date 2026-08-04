@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "phase-a-runtime-multirole-accumulative-hold-source-growth-20260804-01",
-  "enabled": false,
+  "requestId": "phase-a-runtime-multirole-dynamic-live-authority-20260804-02",
+  "enabled": true,
   "issuedAt": "2026-08-04",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "9c5ce935fa7dc64e70062f9f1565f5baed58d7c6",
+  "targetHeadSha": "59bdd705255f4fad1768a6d07a8dafaf52ee754f",
   "profile": "PHASE_A_COMPLETE_RUNTIME_MULTIROLE",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_RUNTIME_MULTIROLE"
@@ -39,15 +39,11 @@
   },
   "containsPii": false,
   "containsSecrets": false,
-  "lastExecution": {
-    "runId": 30918138163,
-    "artifactId": 8895927317,
-    "decision": "HOLD_RUNTIME_PREP_LIVE_SOURCE_GREW",
-    "failedStage": "existing_credential_selection_before_browser",
-    "observedLiveVisits": 660,
-    "legacyFrozenExpectedVisits": 616,
-    "repositoryUnchanged": true,
-    "providerWrites": 0,
-    "dataWrites": 0
+  "rootCauseFix": {
+    "classification": "FROZEN_RUNTIME_SOURCE_INVARIANTS",
+    "previousVisitCount": 616,
+    "observedLiveVisitCount": 660,
+    "fix": "derive counts and latest period from live HR authority; retain stable identity and zero-duplicate gates",
+    "singleRetry": true
   }
 }
