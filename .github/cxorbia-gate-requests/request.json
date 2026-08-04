@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "cloud-v6-source-static-rebase-20260804-01",
+  "requestId": "cloud-v6-source-static-marker-fix-20260804-02",
   "enabled": true,
-  "issuedAt": "2026-08-04T16:04:00-06:00",
+  "issuedAt": "2026-08-04T16:08:00-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "979b945f5efa5b2b60d1f1d7746204bc57b238a9",
+  "targetHeadSha": "b9050ad4c46b0356095e670ba677c47b214b287d",
   "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
@@ -36,5 +36,5 @@
   },
   "containsPii": false,
   "containsSecrets": false,
-  "purpose": "Execute the corrected Cloud V6 complete-composition source/static gate on immutable target HEAD 979b945f5efa5b2b60d1f1d7746204bc57b238a9. Validate base manifest plus V6 overlay, local assets, load order, role modules, ReportKit, dependency pins, strict secret scan and honest DEV scenario-lab source contract. No browser, credentials, provider reads/writes, deploy, merge or production."
+  "purpose": "Re-run the corrected Cloud V6 complete-composition source/static gate after exposing the exact controlled-runner requirement marker in the honest DEV scenario-lab shell and updating the V6 overlay blob. No browser, credentials, provider reads/writes, deploy, merge or production."
 }
