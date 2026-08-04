@@ -22,42 +22,21 @@ Estado restaurado:
 
 ## 2. Causas raíces confirmadas y estado
 
-### 2.1 Selector Cliente regresivo — corregido
+- selector Cliente regresivo: corregido;
+- membership faltante: diagnosticado y revertido;
+- nombre histórico `CX.modules.cliente`: corregido a `cli_dashboard`;
+- ruta Cliente no explícita: corregida y gateada.
 
-El selector runtime examinaba registros legacy y omitía la identidad Cliente canónica ya existente.
+El correctivo source-only ahora:
 
-Correctivo:
-
-- UID y correo interno exactos;
-- claims, membership y sign-in obligatorios;
-- bloqueo ante ambigüedad;
-- cero usuario nuevo.
-
-### 2.2 Membership faltante — diagnosticado y revertido
-
-La identidad tenía claims válidos, pero faltaba el membership canónico. El runtime lo materializó temporalmente y el rollback lo eliminó al fallar una etapa posterior.
-
-### 2.3 Nombre histórico de módulo — corregido
-
-El gate esperaba `CX.modules.cliente`; la autoridad real es `CX.modules.cli_dashboard`.
-
-### 2.4 Ruta Cliente no explícita — corregida y gateada
-
-El gate iniciaba sesión como Cliente, pero no navegaba a `cli_dashboard`. Después dependía de la vista inicial y de una aserción compuesta:
-
-`clientModule && panorama && !blocked`.
-
-Correctivo source-only:
-
-- navegación explícita a `cli_dashboard`;
-- espera de ruta activa y marker estable `#view .ph`;
-- `clientModule`, `route`, `panorama` y `blocked` separados;
-- errores específicos por capa;
-- etapa original del fallo preservada antes del rollback.
+- navega explícitamente a `cli_dashboard`;
+- espera ruta activa y marker `#view .ph`;
+- separa `clientModule`, `route`, `panorama` y `blocked`;
+- emite errores específicos;
+- conserva la etapa original antes del rollback.
 
 Gate focal:
 
-- commit `5caca10137250d2a70308dd995262e368f981322`;
 - run `30936681878`;
 - job `92084479259`;
 - `PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT`;
@@ -70,8 +49,6 @@ Gate focal:
 
 ## 3. Autoridad HR viva
 
-Última observación runtime:
-
 - 15 periodos;
 - 660 visitas;
 - 209 shoppers.
@@ -80,82 +57,67 @@ No restaurar conteos o meses congelados.
 
 ## 4. Pendiente inmediato backend
 
-El bloque source-only quedó cerrado. No hay autorización runtime vigente.
+El bloque source-only está cerrado. No hay autorización runtime vigente.
 
-Próximo macrobloque, solo con nueva autorización expresa:
+Próximo macrobloque, solo con autorización expresa:
 
 1. snapshot Cliente;
-2. máximo un membership write y claims solo si fuera necesario;
-3. idempotencia y readback;
+2. membership idempotente y claims solo si fuera necesario;
+3. readback;
 4. runtime Staff, Cliente y Shopper;
 5. tres recargas y nueva pestaña;
 6. HR dinámica, Finanzas, portales y Reservas;
-7. conservar membership solo con PASS completo;
-8. rollback automático ante cualquier fallo.
+7. conservar membership solo con PASS;
+8. rollback automático ante fallo.
 
 No corresponde otra auditoría general.
 
-## 5. Cloud V5
+## 5. Cloud V5/V6
 
-Decisión:
+V5 permanece:
 
 `HOLD_CLOUD_V5_FRONTEND__NO_APROBADO_PARA_INTEGRACION`.
 
-Problemas principales:
-
-- órbita demasiado grande en desktop;
-- franja superior pesada;
-- formulario demasiado alto;
-- evidencia responsive inválida;
-- capturas fuera del manifest;
-- residuos V4/HEAD histórico;
-- falta de pendientes frontend acumulados.
-
-No aplicar V5 a `app/`.
-
-## 6. Pendientes frontend acumulados para V6
+V6 debe incluir:
 
 - Login y órbita refinados;
-- responsive P1 de tablas, fichas, tarjetas y modales;
-- PDF P1 con gráficas válidas existentes;
-- Excel P2 con presentación útil;
-- opción visual Regional;
-- copy delegado correcto;
-- Ficha Shopper presentacional;
-- capturas reales y manifest completo.
+- responsive P1;
+- PDF P1;
+- Excel P2;
+- opción Regional;
+- copy delegado;
+- Ficha Shopper;
+- evidencia y manifest completos.
 
-Cloud no toca Auth, datos, backend, permisos, cálculos, deploy ni producción.
+Cloud no toca backend, Auth, datos, cálculos, permisos, deploy ni producción.
 
-## 7. Secuencia posterior
+## 6. Secuencia posterior
 
 ```text
 RUNTIME MULTIROL AUTORIZADO
 → AUDITORÍA FOCAL CLOUD V6
 → APPLY_DELTA_DIRECTLY SOLO CON GO
-→ BRIDGE FIREBASE SEGURO
-→ GATES ACUMULATIVOS
-→ ÚNICO DEV SI CAMBIA app/
+→ GATES
+→ DEV ÚNICO SI CAMBIA app/
 → CHECKPOINT VISUAL PHASE A COMPLETA
 → FREEZE
 → PERIODO NUEVO/DISPONIBLES/POSTULACIONES
 → CUTOVER AUTORIZADO
 ```
 
-## 8. Warnings P1/P2 vivos
+## 7. Warnings P1/P2 vivos
 
-- overlay A+B superseded aún cargado;
+- overlay A+B superseded;
 - PDF puede omitir gráficas;
 - Excel mantiene formato básico;
-- responsive parcial en superficies densas.
+- responsive parcial.
 
-V6 recibe estas deudas frontend; no bloquean por sí solas la operación sin P0 demostrado.
+## 8. Estado seguro
 
-## 9. Estado seguro
-
-- cambios funcionales `app/` durante el bloque: 0;
+- cambios funcionales `app/`: 0;
 - provider reads: 0;
 - Auth/Firestore/membership writes: 0;
-- Hosting/Cloud Run deploys: 0;
+- Hosting/Cloud Run: 0;
 - HR/Rules/Storage: 0;
 - Make/Gemini/pagos: 0;
 - merge: false;
