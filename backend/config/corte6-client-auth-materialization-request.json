@@ -6,9 +6,9 @@
   "retryReason": "client route gate source/static PASS: explicit cli_dashboard navigation, stable render marker, separate clientModule/route/panorama/blocked evidence and original failure stage preservation",
   "authorizedAt": "2026-08-04T12:28:00-06:00",
   "authorizedBy": "Paula",
-  "status": "authorized_one_shot",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_fail",
+  "enabled": false,
+  "consumed": true,
   "allowedExecutions": 1,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -51,5 +51,9 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false
+  "production": false,
+  "consumedAt": "2026-08-04T18:35:51.179Z",
+  "decision": "FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK",
+  "nextGate": "STOP_RETRY_ROOT_CAUSE_REQUIRED",
+  "failedStage": "runtime_domain_finance_portals_reservations"
 }
