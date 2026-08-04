@@ -1,200 +1,115 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-04  
-**Estado vivo:** `SOURCE_STATIC_PASS__RUNTIME_MULTIROLE_PENDING__CLAUDE_PORTABLE_V4_HOLD__NO_PRODUCTION`
+**Estado vivo:** `SOURCE_STATIC_PASS__RUNTIME_MULTIROLE_HOLD_CLIENT_CLAIMS__LIVE_HR_660__NO_PRODUCTION`
 
-## 1. Bloqueante actual real
+## 1. Bloqueante real vigente
 
-El gate source/static ya fue ejecutado sobre checkout autenticado y obtuvo:
+El gate source/static está en PASS. El runtime acumulativo avanzó hasta selección de identidades reales.
 
-`PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS`.
+Bloqueante actual:
 
-Evidencia:
+```text
+CLIENT_AUTH_CLAIMS_CONTRACT_NOT_MATERIALIZED_IN_DEV
+```
 
-- run `30910224561`;
-- artifact `8892730161`;
-- 53/53 blobs críticos;
-- repositorio sin delta después del gate;
-- cero provider/data writes.
+Evidencia sanitizada:
 
-El bloqueante actual pasa a:
+- cuatro registros Cliente candidatos revisados;
+- tres identidades Auth existentes encontradas;
+- cero identidades con claims completos `cliente/client + tenant TyA + proyecto Cinépolis`;
+- cero usuarios creados;
+- cero passwords cambiados;
+- cero Auth writes.
 
-`RUNTIME_MULTIROLE_ACCUMULATIVE_GATE_NOT_EXECUTED`.
+Portal Cliente no se validará con identidad Staff simulada.
 
-No corresponde solicitar aprobación visual final antes de ese runtime.
+## 2. Hallazgo HR vivo
 
-## 2. Causas raíces del carril ya cerradas
+La HR viva contiene `660` visitas, mientras el snapshot protegido utilizado para relaciones históricas contiene `616`.
 
-- runner histórico referenciaba gates renombrados;
-- override `backend-dev-auth.local.js` fue confundido con asset obligatorio aunque está gitignored por diseño;
-- el escáner de secretos detectaba sus propios patrones;
-- se instaló clasificación exacta de fixtures conocidos sin permitir hits desconocidos;
-- la solicitud exitosa quedó desactivada después de una ejecución.
+El selector dinámico comprobó:
 
-Esto evita repetir el mismo ciclo de FAIL por causas instrumentales.
+- 616 coincidencias exactas;
+- 44 visitas vivas adicionales;
+- 208 relaciones shopper;
+- 194 shoppers protegidos con histórico;
+- Staff/Shopper credential selection PASS.
 
-## 3. Logros cerrados
+Todavía debe demostrarse mediante el gate de autoridad dinámica qué periodo corresponde a las 44 visitas adicionales. No afirmar agosto únicamente por diferencia aritmética.
 
-- RC Phase A smoke técnico y visual/consola PASS preservado;
-- M1/Corte 1 FROZEN/APROBADO preservado;
-- Corte 2A/V174 FROZEN/APROBADO preservado;
-- Corte 3/V182 `FROZEN_ACTIVE_BASELINE` preservado;
-- C6 entrada/HR/Staff/Shopper/Cliente/Finanzas/Reservas preservado;
-- 29 decisiones únicas cerradas;
-- 0 restauraciones requeridas;
-- Ficha, Revisión, Documentos, Costos y `cliente-data.js` cerrados;
-- report kit inventariado;
-- manifest final creado;
-- gate source/static PASS.
+## 3. Causa raíz transversal corregida
+
+Los gates históricos congelaban:
+
+- conteo exacto `616`;
+- último periodo `2026-07`.
+
+Eso impedía que una fuente viva creciera normalmente.
+
+Correctivo aplicado:
+
+- autoridad HR dinámica;
+- conteos y último periodo derivados de la fuente;
+- identidad estable obligatoria;
+- cero duplicados obligatorios;
+- paridad entre autoridad, Staff, Cliente y Shopper;
+- ningún fallo desconocido se relaja.
 
 ## 4. Pendiente inmediato
 
-1. preparar gate runtime multirol acumulativo;
-2. ejecutar Admin, Cliente y Shopper con tenant/proyecto/periodo/sourceRevision coherentes;
-3. validar login/sesión, recarga y nueva pestaña;
-4. validar Dashboard, Mi Día, Histórico, Visitas, Ficha, Revisión, Postulaciones y Reservas;
-5. validar Shoppers, Perfil, Certificación, Cuestionario, Documentos, Beneficios y reportes;
-6. validar Finanzas y portales;
-7. decidir overlay A+B solo con prueba de no pérdida;
-8. integrar Login Claude únicamente después de un paquete corregido GO;
-9. único DEV si cambia `app/`;
+1. ejecutar diagnóstico read-only agregado de claims Cliente;
+2. construir plan exacto de reparación DEV con snapshot, target opaco, idempotencia y rollback;
+3. obtener una sola autorización expresa para Auth/membership DEV;
+4. ejecutar una única reparación;
+5. repetir una sola vez runtime multirol;
+6. auditar el paquete Claude corregido;
+7. aplicar directamente solo con GO;
+8. ejecutar gates acumulativos;
+9. un único DEV si cambia `app/`;
 10. `CHECKPOINT_VISUAL_PHASE_A_COMPLETA`;
 11. freeze;
-12. agosto/disponibles/postulaciones;
+12. confirmar periodo nuevo, disponibles y postulaciones;
 13. cutover autorizado.
 
-## 5. Claude portable v4
+## 5. Pendientes Phase A después del claims fix
 
-Paquete:
+- Staff/Admin: login, navegación, tres recargas y nueva pestaña;
+- Cliente: login real, scope Cinépolis y panorama;
+- Shopper: identidad exacta, histórico, certificación y portal;
+- HR: 660 visitas vivas y periodo más reciente dinámico;
+- Finanzas: modelo delegado, `localBilling=false`, regalía 0, Q60/L200;
+- Reservas: fail-closed sin fuente canónica de escritura;
+- reportes PDF/XLSX/PPTX;
+- Login Gravicentra CX portable corregido e integrado mediante bridge seguro.
 
-`Prototype development request (20).zip`  
-SHA-256: `862e415df3d3a24be09ffbd48cb74f98779a59d2a2265587969c1880b48841c9`.
+## 6. Claude frontend
 
-Decisión:
+Claude continúa exclusivamente con:
 
-`HOLD_CLAUDE_LOGIN_PORTABLE_V4__NOT_READY_FOR_APPLY_DELTA_DIRECTLY`.
+- Login portable;
+- órbita;
+- responsive;
+- banderas dinámicas del tenant;
+- tokens;
+- i18n;
+- evidencia visual.
 
-Bloqueos documentados:
+Claude no resuelve Auth, claims, backend, HR, Finanzas, runtime o deploy.
 
-- evidencia móvil no válida: `preview-mobile.png` es `924×540`;
-- selector multi-país incompleto;
-- token `--gcx-navy-2` indefinido;
-- README con HEAD obsoleto;
-- paquete no contiene integración, bridge ni ruta canónica.
+## 7. Warnings P1/P2
 
-Fuentes:
+- overlay A+B superseded aún cargado;
+- algunas gráficas no aparecen en PDF;
+- XLSX mantiene formato básico.
 
-- `AUDITORIA-FOCAL-CLAUDE-LOGIN-PORTABLE-V4-20260804.md`;
-- `PROMPT-CLAUDE-CORRECCION-LOGIN-PORTABLE-V4-20260804.md`;
-- `MATRIZ-TRAZABILIDAD-FORENSE-A-IMPLEMENTACION-Y-CLAUDE-20260804.md`.
+No son P0 demostrados.
 
-No aplicar archivos del paquete actual a `app/`.
+## 8. Estado seguro
 
-## 6. Phase A que debe cubrir el runtime
-
-### Base
-
-- entrada y single-login;
-- tenant/proyecto/periodo;
-- Auth/claims/scopes;
-- HR viva y refresh in-place;
-- `CX.data` canónico;
-- build-lock, PWA y service worker.
-
-### Operación
-
-- Dashboard Operativo y drilldowns;
-- Mi Día/hoja de ruta;
-- Proyectos, Periodos, HR e Histórico;
-- Visitas, Ficha y Revisión Admin;
-- Postulaciones;
-- Reservas;
-- Shoppers;
-- notificaciones.
-
-### Shopper/perfiles
-
-- Disponibles;
-- Mis Visitas;
-- Reservas;
-- Mi Día;
-- Mi Perfil;
-- cuestionario;
-- certificaciones históricas/presentadas;
-- documentos;
-- beneficios;
-- reportes Shopper.
-
-### Finanzas
-
-- Dashboard Financiero;
-- Liquidaciones;
-- Movimientos;
-- Costos;
-- CxP/CxC;
-- lotes/pagos en estado real;
-- multi-país/multi-moneda;
-- revisión, conciliación y pago separados;
-- modelo delegado, `localBilling=false`, regalía 0, Q60/L200.
-
-### Portales/reportes
-
-- Portal Cliente;
-- Portal Shopper;
-- Reportes Admin/Cliente/Shopper;
-- PDF/XLSX/PPTX;
-- branding, periodo, alcance, fuente y filas coherentes;
-- cero métricas fabricadas.
-
-## 7. Overlay pendiente de decisión
-
-`app/adapters/tya-ab-cumulative-composition-v1.js`
-
-Clasificación:
-
-`P1_SUPERSEDED_LOADED_OVERLAY__NOT_P0_PROVEN`.
-
-No remover sin runtime acumulativo.
-
-## 8. Auth y seguridad pendientes
-
-- claims completos tenant/persona/proyecto/país;
-- activación/reset seguro;
-- eliminar dependencia productiva de patrón predecible;
-- Firebase Auth como autoridad;
-- no JWT Emergent;
-- no PII/rol en URL;
-- no token en localStorage;
-- rotar/revocar la cuenta de servicio expuesta en Emergent;
-- Storage sensible solo con rules/auditoría;
-- pagos reales bloqueados.
-
-## 9. Multi-país
-
-Falta probar:
-
-- 1 país;
-- 2–3 países;
-- 10–12 países;
-- búsqueda/multiselect;
-- scope autorizado;
-- monedas separadas;
-- sin sumar monedas incompatibles.
-
-Claude corrige la UI portable. ChatGPT valida y aplica scopes reales.
-
-## 10. P1/P2 vivos
-
-- overlay A+B superseded;
-- PDF sin algunas gráficas;
-- Excel con formato básico;
-- override Auth DEV local no versionado por diseño.
-
-## 11. Estado seguro
-
-- Login Claude aplicado: no;
-- deploy nuevo: 0;
-- provider writes: 0;
+- cambios funcionales en `app/`: 0;
+- Hosting deploy: 0;
+- Auth/Firestore/Rules/Storage/HR writes: 0;
 - Make/Gemini/pagos: 0;
 - merge: false;
 - producción: intacta.
