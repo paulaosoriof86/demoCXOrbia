@@ -1,27 +1,63 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-04  
-**Estado frontend:** `CLOUD_PORTABLE_V5_HOLD__V6_ACCUMULATIVE_FRONTEND_REQUIRED__NOT_INTEGRATED`
+**Estado frontend:** `CLOUD_V6_RECEIVED__NOT_AUDITED__EXECUTION_LANE_NOT_READY__NOT_INTEGRATED`
 
-## 1. Decisión vigente
+## 1. Paquetes recibidos
 
-El paquete `Prototype development request V5.zip` quedó:
+V5:
 
 `HOLD_CLOUD_V5_FRONTEND__NO_APROBADO_PARA_INTEGRACION`.
 
-SHA-256:
+SHA-256 V5:
 
 `c55f83fedb9263a99705f9e2cc41ade8a186fe7d9c2e675689d901de43089ed1`.
 
-No se aplicó ningún archivo de V5 a `app/`.
+V6 recibida:
 
-Fuente única para la siguiente entrega:
+`Prototype development request V6.zip`.
 
-`PROMPT-CLOUD-FRONTEND-ACUMULADO-V6-20260804.md`.
+SHA-256 V6:
 
-## 2. Trabajo frontend de Cloud
+`0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407`.
 
-Cloud debe entregar una V6 acumulativa que incluya:
+Estado V6:
+
+`NOT_AUDITED__EXECUTION_LANE_NOT_READY`.
+
+No se aplicó ningún archivo de V5 o V6 a `app/`.
+
+## 2. Regla de composición acumulativa
+
+V6 no se evaluará como un Login aislado ni como una colección de módulos sueltos.
+
+La auditoría deberá comparar el ZIP completo contra el HEAD vivo y separar:
+
+- delta nuevo V6;
+- mejoras heredadas y preservadas de V5;
+- pendientes P1/P2 atendidos;
+- regresiones;
+- archivos redundantes;
+- piezas que no correspondan al frontend;
+- impacto en Login, responsive, PDF, Excel, wizard Regional, copy delegado y Ficha Shopper.
+
+Con GO y sin P0, el único método permitido será `APPLY_DELTA_DIRECTLY` sobre la rama viva, preservando la candidata acumulativa única.
+
+## 3. Motivo por el que V6 aún no fue auditada
+
+El ZIP fue extraído y tiene hash registrado, pero `EXECUTION_LANE_READY` exige en la misma sesión:
+
+- ZIP extraído;
+- checkout autenticado;
+- rama viva exacta.
+
+El entorno local no resuelve `github.com`. El conector GitHub permite operaciones puntuales, pero no sustituye el checkout autenticado exigido ni autoriza un empalme fragmentado archivo por archivo.
+
+Por ello no existe todavía decisión GO/HOLD sobre V6.
+
+## 4. Alcance frontend esperado
+
+La entrega acumulativa debe conservar o resolver:
 
 1. Login y órbita refinados para desktop, tablet y móvil;
 2. branding dinámico del tenant;
@@ -32,61 +68,9 @@ Cloud debe entregar una V6 acumulativa que incluya:
 7. opción visual `Regional`;
 8. copy correcto del modelo financiero delegado;
 9. Ficha Shopper presentacional responsive;
-10. capturas reales, comparación V5/V6 y manifest completo.
+10. capturas reales y manifest completo.
 
-No reconstruir desde cero y no devolver una entrega parcial.
-
-## 3. Problema visual principal de V5
-
-En desktop:
-
-- órbita demasiado grande;
-- franja transversal pesada;
-- formulario demasiado alto;
-- jerarquía visual inferior a la referencia Emergent;
-- evidencia responsive inválida y fuera del manifest.
-
-Objetivo `1440×900`:
-
-- órbita aproximada de 390–430 px;
-- panel oscuro 48–50 %;
-- formulario útil 420–460 px;
-- contenido completo o casi completo sin scroll prolongado.
-
-## 4. Evidencia requerida
-
-Capturas reales:
-
-- `1920×1080`;
-- `1440×900`;
-- `768×1024`;
-- `412×915`;
-- `390×844`.
-
-Escenarios de países:
-
-- 1;
-- 2;
-- 8;
-- 12.
-
-Todas las capturas deben figurar en `MANIFEST.json` con path, bytes y SHA-256.
-
-## 5. Países
-
-Las banderas representan cobertura visual del tenant.
-
-Cloud debe:
-
-- mostrar todos los países recibidos;
-- conservar bandera, nombre y orden;
-- no hardcodear países;
-- no usar `+N`;
-- no implementar multiselect;
-- no exigir selección de país;
-- mantenerlos visibles y responsive.
-
-## 6. Fuera del alcance de Cloud
+## 5. Fuera del alcance de Cloud
 
 No tocar:
 
@@ -103,36 +87,43 @@ No tocar:
 - deploy, freeze o producción;
 - Make, Gemini o pagos.
 
-## 7. Estado backend paralelo — sin impacto Cloud
+## 6. Estado backend paralelo — sin impacto Cloud
 
-Se corrigió exclusivamente el gate Cliente:
+La reejecución runtime posterior al route fix terminó:
 
-- navegación explícita a `cli_dashboard`;
-- marker estable de ruta/render;
-- evidencia separada de módulo, ruta, Panorama y bloqueo;
-- etapa original preservada antes del rollback.
+`FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK`.
 
-Resultado source/static:
+Etapa interna:
 
-- run `30936681878`;
-- `PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT`;
-- gate interno `PASS_C6_CLIENT_ROUTE_SOURCE_STATIC`;
-- provider reads 0;
-- writes 0;
-- runtime no reejecutado.
+`client_route_wait`.
 
-Este punto no es una tarea frontend y no modifica los entregables de Cloud V6.
+La causa source-level es un contrato de ciclo de vida incorrecto: el helper considera listo el login con `#app.on`, aunque `CX.app.enter()` activa ese estado antes de `CX.router.mount()`. El gate exige luego nav, ruta y render simultáneamente.
 
-## 8. Entrega esperada
+Este punto no es tarea frontend de Cloud y no debe mezclarse con la candidata V6.
 
-Un único ZIP V6 con:
+## 7. Evidencia requerida para V6
 
-- `login-portable-v6/`;
-- `frontend-pending-delta/`;
-- reportes de cambios, responsive y tokens;
-- comparación visual V5/V6;
-- capturas reales;
-- escenarios 1/2/8/12 países;
-- manifest completo.
+Capturas reales:
 
-Cloud no debe afirmar integración, GO, deploy ni producción.
+- `1920×1080`;
+- `1440×900`;
+- `768×1024`;
+- `412×915`;
+- `390×844`.
+
+Escenarios de países:
+
+- 1;
+- 2;
+- 8;
+- 12.
+
+Todos los archivos, incluidas las capturas, deben figurar en `MANIFEST.json` con path, bytes y SHA-256.
+
+## 8. Estado seguro
+
+- V6 auditada: no;
+- V6 integrada: no;
+- delta aplicado: 0;
+- deploy: 0;
+- producción: intacta.
