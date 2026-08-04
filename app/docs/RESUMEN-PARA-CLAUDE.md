@@ -3,7 +3,7 @@
 **Última actualización:** 2026-08-04  
 **Estado frontend:** `CLOUD_V6_RECEIVED__NOT_AUDITED__EXECUTION_LANE_NOT_READY__NOT_INTEGRATED`
 
-## 1. Paquetes recibidos
+## 1. Paquetes
 
 V5:
 
@@ -13,7 +13,7 @@ SHA-256 V5:
 
 `c55f83fedb9263a99705f9e2cc41ade8a186fe7d9c2e675689d901de43089ed1`.
 
-V6 recibida:
+V6:
 
 `Prototype development request V6.zip`.
 
@@ -27,46 +27,42 @@ Estado V6:
 
 No se aplicó ningún archivo de V5 o V6 a `app/`.
 
-## 2. Regla de composición acumulativa
+## 2. Regla acumulativa
 
-V6 no se evaluará como un Login aislado ni como una colección de módulos sueltos.
+V6 se audita como un único paquete frontend acumulativo. No se revisará ni empalmará únicamente el Login ni módulos aislados.
 
-La auditoría deberá comparar el ZIP completo contra el HEAD vivo y separar:
+La comparación debe separar:
 
 - delta nuevo V6;
-- mejoras heredadas y preservadas de V5;
-- pendientes P1/P2 atendidos;
+- mejoras heredadas de V5;
+- P1/P2 realmente atendidos;
 - regresiones;
 - archivos redundantes;
-- piezas que no correspondan al frontend;
-- impacto en Login, responsive, PDF, Excel, wizard Regional, copy delegado y Ficha Shopper.
+- piezas fuera del alcance frontend;
+- impacto en Login, órbita, responsive, PDF, Excel, Regional, copy delegado y Ficha Shopper.
 
-Con GO y sin P0, el único método permitido será `APPLY_DELTA_DIRECTLY` sobre la rama viva, preservando la candidata acumulativa única.
+Con GO y sin P0, el único método permitido será `APPLY_DELTA_DIRECTLY` sobre la rama viva.
 
-## 3. Motivo por el que V6 aún no fue auditada
+## 3. Motivo del estado pendiente
 
-El ZIP fue extraído y tiene hash registrado, pero `EXECUTION_LANE_READY` exige en la misma sesión:
+`EXECUTION_LANE_READY` exige en la misma sesión:
 
 - ZIP extraído;
 - checkout autenticado;
 - rama viva exacta.
 
-El entorno local no resuelve `github.com`. El conector GitHub permite operaciones puntuales, pero no sustituye el checkout autenticado exigido ni autoriza un empalme fragmentado archivo por archivo.
-
-Por ello no existe todavía decisión GO/HOLD sobre V6.
+El ZIP está extraído, pero no se ha demostrado todavía el checkout autenticado requerido. Por ello no existe decisión GO/HOLD sobre V6.
 
 ## 4. Alcance frontend esperado
 
-La entrega acumulativa debe conservar o resolver:
-
-1. Login y órbita refinados para desktop, tablet y móvil;
+1. Login y órbita refinados en desktop, tablet y móvil;
 2. branding dinámico del tenant;
 3. países dinámicos recibidos por props;
-4. responsive P1 en tablas, fichas, tarjetas y modales;
+4. responsive P1;
 5. PDF P1 con gráficas existentes válidas;
-6. Excel P2 con presentación útil;
+6. Excel P2;
 7. opción visual `Regional`;
-8. copy correcto del modelo financiero delegado;
+8. copy delegado correcto;
 9. Ficha Shopper presentacional responsive;
 10. capturas reales y manifest completo.
 
@@ -87,43 +83,47 @@ No tocar:
 - deploy, freeze o producción;
 - Make, Gemini o pagos.
 
-## 6. Estado backend paralelo — sin impacto Cloud
+## 6. Backend paralelo — sin tarea para Cloud
 
-La reejecución runtime posterior al route fix terminó:
+El control plane fue estabilizado source-only:
 
-`FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK`.
+- máquina de estados única;
+- autoridad browser única futura;
+- ejecución fijada a SHA;
+- acceso separado del runtime;
+- diagnóstico por etapa;
+- gates duplicados fuera del camino activo.
 
-Etapa interna:
+Esto no exige cambios de Cloud y no debe incorporarse al ZIP frontend.
 
-`client_route_wait`.
+## 7. Pruebas dentro de la plataforma
 
-La causa source-level es un contrato de ciclo de vida incorrecto: el helper considera listo el login con `#app.on`, aunque `CX.app.enter()` activa ese estado antes de `CX.router.mount()`. El gate exige luego nav, ruta y render simultáneamente.
+Se documentó un futuro Laboratorio DEV para validar Admin/Operaciones y Shopper con escenarios `AUDIT-*`, actividad visible, diagnóstico exacto y cleanup.
 
-Este punto no es tarea frontend de Cloud y no debe mezclarse con la candidata V6.
+Cloud solo podría intervenir posteriormente en la presentación visual del panel de resultados mediante una especificación frontend concreta. No debe implementar el runner, las escrituras, la lógica de pruebas ni la integración.
 
-## 7. Evidencia requerida para V6
+## 8. Estrategia visible
 
-Capturas reales:
+El primer corte operativo prioriza:
+
+`ADMIN/OPERACIONES + SHOPPER`.
+
+El Portal Cliente continúa como corte paralelo. Esta decisión de release no cambia el alcance frontend acumulativo de V6, pero evita presentar Cliente como condición de salida inicial.
+
+## 9. Evidencia V6 requerida
 
 - `1920×1080`;
 - `1440×900`;
 - `768×1024`;
 - `412×915`;
-- `390×844`.
+- `390×844`;
+- escenarios de 1, 2, 8 y 12 países;
+- todos los archivos y capturas en `MANIFEST.json` con path, bytes y SHA-256.
 
-Escenarios de países:
-
-- 1;
-- 2;
-- 8;
-- 12.
-
-Todos los archivos, incluidas las capturas, deben figurar en `MANIFEST.json` con path, bytes y SHA-256.
-
-## 8. Estado seguro
+## 10. Estado seguro
 
 - V6 auditada: no;
 - V6 integrada: no;
 - delta aplicado: 0;
 - deploy: 0;
-- producción: intacta.
+- producción intacta.
