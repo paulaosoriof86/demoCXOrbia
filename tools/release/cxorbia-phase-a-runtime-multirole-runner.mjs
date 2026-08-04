@@ -18,12 +18,12 @@ const EXPECTED_SAFE_STATE={
   authWrites:false,storageWrites:false,hrWrites:false
 };
 const report={
-  schemaVersion:'1.0.0',runner:'CXORBIA_READONLY_POST_GATES_RUNNER',
+  schemaVersion:'1.1.0',runner:'CXORBIA_READONLY_POST_GATES_RUNNER',
   generatedAt:new Date().toISOString(),status:'HOLD_NOT_RUN',
   repository:process.env.GITHUB_REPOSITORY||null,branch:process.env.GITHUB_REF_NAME||null,
   requestPath:REQUEST_PATH,requestId:null,requestCommitSha:null,targetHeadSha:null,
   profile:PROFILE,profileDefinition:{browserRequired:true,providerReads:true,
-    purpose:'Validate the accumulated Phase A runtime for Staff/Admin, Client and Shopper on the existing DEV Hosting without writes or deploy.'},
+    purpose:'Validate the accumulated Phase A runtime for Staff/Admin, Client and Shopper against the current live HR authority without frozen visit or month invariants.'},
   checks:[],blockers:[],commands:[],artifacts:[],summary:null,
   safeState:{...EXPECTED_SAFE_STATE,providerReads:true}
 };
@@ -95,9 +95,10 @@ async function main(){
   check(fs.existsSync(PRIVATE_PATH),'private_credentials_present');
 
   const scripts=[
+    'tools/qa/tya-live-hr-dynamic-authority-gate.mjs',
     'tools/qa/tya-c6-remote-parity-gate.mjs',
     'tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs',
-    'tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs'
+    'tools/qa/tya-phase-a-remote-domain-dynamic-wrapper.mjs'
   ];
   for(const script of scripts){
     check(fs.existsSync(path.join(ROOT,script)),'runtime_script_present',script);
@@ -105,6 +106,7 @@ async function main(){
   }
 
   fs.mkdirSync(RUNTIME_DIR,{recursive:true});
+  const liveAuthorityPath=path.join(RUNTIME_DIR,'live-hr-authority.json');
   const parityPath=path.join(RUNTIME_DIR,'remote-parity.json');
   const humanPath=path.join(RUNTIME_DIR,'human-auth.json');
   const domainPath=path.join(RUNTIME_DIR,'domain-finance-portals-reservations.json');
@@ -112,6 +114,15 @@ async function main(){
     CXORBIA_DEV_ROOT_URL:request.devRootUrl,
     CXORBIA_E2E_PRIVATE_CREDENTIALS:PRIVATE_PATH
   };
+
+  run('node',['tools/qa/tya-live-hr-dynamic-authority-gate.mjs',request.devRootUrl],{
+    ...common,CXORBIA_LIVE_AUTHORITY_OUTPUT:liveAuthorityPath
+  });
+  const live=parseJsonFile(liveAuthorityPath,'live_authority');
+  check(live.decision==='PASS_TYA_LIVE_HR_DYNAMIC_AUTHORITY','live_authority_pass',String(live.decision||''));
+  check(Number(live.visits||0)>0&&Number(live.periods||0)>0,'live_authority_non_empty',`${live.periods||0}/${live.visits||0}`);
+  check(live.duplicateStableKeys===0&&live.missingStableKeys===0&&live.missingPeriods===0,'live_authority_stable_identity');
+  check(live.frozenVisitCountAssumed===false&&live.frozenLatestPeriodAssumed===false,'live_authority_no_frozen_invariants');
 
   run('node',['tools/qa/tya-c6-remote-parity-gate.mjs',request.devRootUrl],{
     ...common,CXORBIA_REMOTE_PARITY_OUTPUT:parityPath,CXORBIA_REMOTE_PARITY_ATTEMPTS:'3',CXORBIA_REMOTE_PARITY_WAIT_MS:'3000'
@@ -130,19 +141,26 @@ async function main(){
   check(human.shopper?.reloadsStable===true&&human.shopper?.newTabStable===true,'shopper_reload_newtab_stable');
   check(Number(human.shopper?.ownVisits||0)>0,'shopper_history_present',String(human.shopper?.ownVisits||0));
   check(human.client?.integratedCredentialRoute===true,'client_integrated_route_ready');
+  check(Number(human.staff?.visits||0)===Number(live.visits),'human_live_visit_parity',`${human.staff?.visits||0}/${live.visits}`);
+  check(Number(human.staff?.periods||0)===Number(live.periods),'human_live_period_parity',`${human.staff?.periods||0}/${live.periods}`);
+  check(human.staff?.latestPeriod===live.latestPeriod,'human_latest_period_dynamic',`${human.staff?.latestPeriod||''}/${live.latestPeriod||''}`);
 
-  run('node',['tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs',request.devRootUrl],{
+  run('node',['tools/qa/tya-phase-a-remote-domain-dynamic-wrapper.mjs',request.devRootUrl],{
     ...common,CXORBIA_REMOTE_SEMANTIC_OUTPUT:domainPath
   });
   const domain=parseJsonFile(domainPath,'domain_runtime');
-  check(domain.decision==='PASS_C6_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS','domain_runtime_pass',String(domain.decision||''));
+  check(domain.decision==='PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC','domain_runtime_pass',String(domain.decision||''));
   check(domain.client?.authenticated===true&&domain.client?.panoramaVisible===true,'client_portal_authenticated');
   check(domain.shopper?.authenticated===true&&domain.shopper?.exactIdentity===true&&domain.shopper?.fullHistory===true,'shopper_portal_authenticated');
   check(domain.finance?.model==='delegado'&&Number(domain.finance?.royaltyPct||0)===0&&domain.finance?.valuesInvented===false,'finance_delegated_truth');
   check(domain.reservations?.browserLocalStorageAsSource===false&&domain.reservations?.mutationsEnabled===false,'reservations_fail_closed');
-  check(domain.source?.firstPeriod==='2025-06'&&domain.source?.latestPeriod==='2026-07','source_period_range',`${domain.source?.firstPeriod||''}..${domain.source?.latestPeriod||''}`);
+  check(Number(domain.source?.visits||0)===Number(live.visits),'domain_live_visit_parity',`${domain.source?.visits||0}/${live.visits}`);
+  check(Number(domain.source?.periods||0)===Number(live.periods),'domain_live_period_parity',`${domain.source?.periods||0}/${live.periods}`);
+  check(domain.source?.firstPeriod===live.firstPeriod&&domain.source?.latestPeriod===live.latestPeriod,'domain_live_period_range',`${domain.source?.firstPeriod||''}..${domain.source?.latestPeriod||''}`);
+  check(domain.latestPeriod?.periodKey===live.latestPeriod,'domain_current_period_is_live_latest',`${domain.latestPeriod?.periodKey||''}/${live.latestPeriod||''}`);
 
   report.artifacts=[
+    '.tmp/phase-a-runtime-multirole/live-hr-authority.json',
     '.tmp/phase-a-runtime-multirole/remote-parity.json',
     '.tmp/phase-a-runtime-multirole/human-auth.json',
     '.tmp/phase-a-runtime-multirole/domain-finance-portals-reservations.json'
@@ -150,7 +168,8 @@ async function main(){
   report.summary={
     status:'PASS_READONLY_POST_GATES',profile:PROFILE,
     devRootUrl:request.devRootUrl,providerReads:true,providerWrites:false,dataWrites:false,
-    remoteParity:{decision:parity.decision,assets:parity.files?.length||0,liveHrOk:parity.liveEndpoint?.ok===true,revision:parity.liveEndpoint?.revision||null},
+    liveAuthority:{visits:live.visits,shoppers:live.shoppers,periods:live.periods,firstPeriod:live.firstPeriod,latestPeriod:live.latestPeriod,periodCounts:live.periodCounts,frozenVisitCountAssumed:false,frozenLatestPeriodAssumed:false},
+    remoteParity:{decision:parity.decision,assets:parity.files?.length||0,liveHrOk:parity.liveEndpoint?.ok===true,revision:parity.liveEndpoint?.revision||live.source?.revision||null},
     staff:{role:human.staff?.role||null,periods:human.staff?.periods||null,visits:human.staff?.visits||null,shoppers:human.staff?.shoppers||null,reloadsStable:true,newTabStable:true},
     client:{authenticated:domain.client?.authenticated===true,projectScope:domain.client?.projectScope||null,panoramaVisible:domain.client?.panoramaVisible===true},
     shopper:{authenticated:domain.shopper?.authenticated===true,exactIdentity:domain.shopper?.exactIdentity===true,ownVisits:domain.shopper?.ownVisits||null,fullHistory:domain.shopper?.fullHistory===true,certificationVisible:domain.shopper?.certificationVisible===true,reloadsStable:true,newTabStable:true},
