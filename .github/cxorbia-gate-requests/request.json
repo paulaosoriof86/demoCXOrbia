@@ -1,22 +1,26 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "phase-a-final-composition-source-static-pass-closed-20260804-04",
-  "enabled": false,
+  "requestId": "phase-a-runtime-multirole-accumulative-20260804-01",
+  "enabled": true,
   "issuedAt": "2026-08-04",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "601f8acf2622852baaeb57951dd765c336741948",
-  "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
+  "targetHeadSha": "2c85cf17775c4e70e885edad4d8f9cdb026d983b",
+  "profile": "PHASE_A_COMPLETE_RUNTIME_MULTIROLE",
   "allowedProfiles": [
-    "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
+    "PHASE_A_COMPLETE_RUNTIME_MULTIROLE"
   ],
   "allowedExecutions": 1,
   "repositoryWrites": false,
   "dataWrites": false,
+  "providerReads": true,
   "deploy": false,
   "merge": false,
   "production": false,
+  "devRootUrl": "https://cxorbia-backend-dev.web.app",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
   "sourceLockDocument": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
   "safeState": {
     "repositoryWrites": false,
@@ -34,11 +38,5 @@
     "hrWrites": false
   },
   "containsPii": false,
-  "containsSecrets": false,
-  "lastExecution": {
-    "runId": 30910224561,
-    "artifactId": 8892730161,
-    "decision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
-    "repositoryUnchanged": true
-  }
+  "containsSecrets": false
 }
