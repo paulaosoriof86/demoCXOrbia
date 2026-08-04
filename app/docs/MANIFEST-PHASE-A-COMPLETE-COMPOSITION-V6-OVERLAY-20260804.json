@@ -10,7 +10,7 @@
   "candidateAggregateSha256": "1f1af3a316c9dabf1df1ef5b07a7abd2fe62a8da09e704719912be7af328e825",
   "baseManifest": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
   "cloudManifest": "app/docs/MANIFEST-CLOUD-V6-CORE-OPS-SHOPPER-20260804.json",
-  "status": "V6_EMPALMED__VISUAL_HOLD__SOURCE_GATE_REBASE_IN_PROGRESS__NO_DEPLOY",
+  "status": "V6_EMPALMED__VISUAL_HOLD__SOURCE_GATE_REBASE_MATERIALIZED_PENDING_RUN__NO_DEPLOY",
   "criticalFileOverrides": [
     {
       "path": "app/app.js",
@@ -58,9 +58,9 @@
     },
     {
       "path": "app/core/dev-scenario-lab.js",
-      "gitBlob": "ae7d857c12e6d38d677672b1e75db267dc8d5dab",
-      "authority": "CLOUD_V6_DEV_LAB_PRESENTATION_SHELL",
-      "decision": "HOLD_RUNTIME_UNTIL_REAL_SCENARIO_RUNNER"
+      "gitBlob": "1da601389f481f7b6e8c3ae7f859efa986db0248",
+      "authority": "CHATGPT_DEV_LAB_HONEST_EVIDENCE_SHELL",
+      "decision": "REQUIRE_CONTROLLED_RUNNER_EVIDENCE"
     },
     {
       "path": "app/core/backend-dev-auth.local.js",
@@ -74,7 +74,7 @@
     "reason": "The integrated login does not yet match the approved Emergent composition and must receive a cumulative Cloud correction delta before DEV visual approval."
   },
   "runtimeDecision": {
-    "scenarioLab": "NOT_YET_REAL_OPERATIONAL_TEST",
+    "scenarioLab": "VISIBLE_SHELL_READY__REAL_CONTROLLED_RUNNER_PENDING",
     "deployAllowedByThisManifest": false
   },
   "safety": {
