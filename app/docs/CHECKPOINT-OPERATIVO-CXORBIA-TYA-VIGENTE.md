@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-04  
-**Estado:** `SOURCE_STATIC_PASS__CLIENT_PRESTATE_RESTORED__DOMAIN_GATE_ROOT_FIX_APPLIED__FINAL_RUNTIME_RETRY_PENDING__CLOUD_V5_HOLD__NO_PRODUCTION`
+**Estado:** `SOURCE_STATIC_PASS__FINAL_RUNTIME_RETRY_CONSUMED_FAIL__CLIENT_PORTAL_ROUTE_ASSERTION__ROLLBACK_EXACT__CLOUD_V5_HOLD__NO_PRODUCTION`
 
 ## 1. Carril vigente
 
@@ -23,199 +23,115 @@ Producción `tya-plataforma` permanece intacta.
 - Corte 3/V182 frozen active baseline;
 - 29 decisiones únicas cerradas;
 - 0 restauraciones requeridas;
-- 53/53 blobs críticos PASS en gate source/static;
-- navegación y módulos Admin/Cliente/Shopper confirmados por source/static.
+- 53/53 blobs críticos PASS;
+- HR dinámica, Staff, Shopper, Finanzas y Reservas preservados.
 
-## 3. Gate source/static
+## 3. Autoridad HR dinámica
 
-PASS confirmado:
-
-- run `30910224561`;
-- artifact `8892730161`;
-- 53/53 blobs;
-- 111 scripts;
-- cero duplicados;
-- report kit PDF/XLSX/PPTX;
-- repositorio sin delta;
-- writes 0.
-
-## 4. Autoridad HR dinámica
-
-Los gates históricos fueron corregidos para no congelar `616` visitas ni `2026-07`.
-
-Última observación runtime:
+Última ejecución:
 
 - 15 periodos;
 - 660 visitas;
-- 209 shoppers;
-- primera autoridad histórica preservada desde 2025-06;
-- último periodo derivado de la fuente viva.
+- 209 shoppers.
 
-Se mantienen como gates:
+Queda prohibido restaurar `616` o `2026-07` como invariantes runtime.
 
-- stable keys;
-- cero duplicados;
-- identidad shopper exacta;
-- paridad entre HR, Staff, Cliente y Shopper.
+## 4. Reejecución final Cliente
 
-## 5. Acceso Cliente — causa raíz corregida
+Solicitud consumida:
 
-El HOLD `HOLD_CLIENT_R4_A3_C0_H0_S0` provenía de un selector que solo examinaba el bundle legacy y omitía la identidad Cliente canónica ya materializada el 2 de agosto.
+- request `c6-client-access-repair-runtime-20260804-final-01`;
+- commit de autorización `a6a7f984aae362d465e6070660f480217511e1e1`;
+- commit de resultado `56c71b796d58cf0429d87bc09d226b725c6d20ff`.
 
-Identidad canónica preservada:
+Resultado:
 
-- UID `cxorbia-c6-client-tya-cinepolis-v1`;
-- rol `cliente`;
-- namespace `staff`;
-- tenant `tya`;
-- proyecto `cinepolis`.
+`FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK`.
 
-Se corrigió:
+La ejecución alcanzó el gate de dominio después de snapshot, reparación idempotente, readback, Staff, Shopper, Cliente, HR dinámica y paridad remota.
 
-- selección por UID y correo interno exactos;
-- validación de claims, membership y sign-in;
-- bloqueo ante ambigüedad o colisión;
-- cero creación de usuarios;
-- cero cambios/resets de contraseña.
+## 5. Causa raíz vigente
 
-## 6. Ejecución autorizada y rollback
+El fallo fue:
 
-La ejecución detectó que faltaba el membership:
+`client_assertions → CLIENT_PORTAL_INVALID`.
 
-`tenants/tya/users/cxorbia-c6-client-tya-cinepolis-v1`.
+La aserción mezclaba tres condiciones:
 
-Creó temporalmente exactamente un documento membership dentro del límite autorizado y avanzó al runtime acumulativo.
+```text
+clientModule && panorama && !blocked
+```
 
-El gate de dominio se detuvo con:
+El módulo `cli_dashboard` y el estado no bloqueado ya estaban probados por etapas inmediatamente anteriores. La condición residual es la expectativa de copy/ruta del Panorama.
 
-`CANONICAL_MODULE_MISSING`.
+El gate abre la app después del login pero no navega explícitamente a `cli_dashboard`; luego exige encontrar `Panorama`, `Operación del periodo` o `Resultados de evaluación` en la vista actual.
 
-El rollback automático obtuvo:
+Por tanto, el bloqueo vigente pertenece al gate de ruta/copy observable, no demuestra ausencia del módulo, fallo de Auth, pérdida de HR ni falta de datos.
+
+## 6. Rollback
 
 `PASS_C6_CLIENT_AUTH_MEMBERSHIP_ROLLBACK_EXACT`.
 
 Estado final:
 
 - preestado restaurado: sí;
-- claims finales alterados: no;
 - membership temporal conservado: no;
+- claims finales alterados: no;
 - usuarios creados: 0;
 - password changes/resets: 0;
-- deploy/merge/producción: 0.
+- deploy/merge/producción: 0;
+- Firestore de negocio/HR/Rules/Storage: 0.
 
-Evidencia:
+## 7. Próximo bloque exacto
 
-`app/docs/evidence/CORTE6-CLIENT-ACCESS-RUNTIME-FAILURE-LATEST.json`.
+```text
+SOURCE-ONLY ROOT FIX DEL GATE CLIENTE
+→ NAVEGAR EXPLÍCITAMENTE A cli_dashboard
+→ REGISTRAR clientModule/route/panorama/blocked POR SEPARADO
+→ VALIDAR SELECTOR O MARKER ESTABLE
+→ GATE LOCAL/ESTÁTICO SIN PROVIDER WRITES
+→ DETENERSE PARA NUEVA AUTORIZACIÓN
+```
 
-## 7. Causa raíz del HOLD de dominio
+La autorización final ya fue consumida. Queda prohibido reintentar silenciosamente.
 
-El test esperaba el nombre histórico inexistente:
+## 8. Cloud V5/V6
 
-`CX.modules.cliente`.
-
-La autoridad funcional real es:
-
-`CX.modules.cli_dashboard`.
-
-Correctivo aplicado:
-
-- gate valida `cli_dashboard`, `miperfil`, `financiero` y `reservas`;
-- cualquier fallo identifica el módulo exacto;
-- el último periodo se deriva directamente de HR;
-- el wrapper deja de reescribir código temporalmente y solo verifica el contrato dinámico.
-
-No se modificó la UI para compensar un error del test.
-
-## 8. Cloud V5
-
-Paquete:
-
-`Prototype development request V5.zip`  
-SHA-256: `c55f83fedb9263a99705f9e2cc41ade8a186fe7d9c2e675689d901de43089ed1`.
-
-Decisión:
+V5 permanece:
 
 `HOLD_CLOUD_V5_FRONTEND__NO_APROBADO_PARA_INTEGRACION`.
 
-Razones principales:
+V6 debe incluir Login/órbita, responsive P1, PDF P1, Excel P2, Regional, copy delegado, Ficha Shopper y evidencia completa.
 
-- órbita sobredimensionada en desktop;
-- encabezado transversal pesado;
-- formulario demasiado alto;
-- jerarquía orbital inferior a la referencia;
-- desktop y mobile miden ambos `924×540`;
-- capturas fuera del manifest;
-- residuos V4/HEAD histórico;
-- no incluye el backlog frontend acumulado.
-
-Fuentes:
-
-- `AUDITORIA-FOCAL-CLOUD-LOGIN-PORTABLE-V5-20260804.md`;
-- `PROMPT-CLOUD-FRONTEND-ACUMULADO-V6-20260804.md`;
-- `RESUMEN-PARA-CLAUDE.md`.
-
-No se aplicó V5 a `app/`.
-
-## 9. Pendiente exacto
-
-### ChatGPT
-
-La autorización anterior exigía una sola repetición y quedó consumida. Falta una única autorización de reejecución final para:
+## 9. Secuencia posterior
 
 ```text
-SNAPSHOT CLIENTE
-→ MEMBERSHIP IDEMPOTENTE
-→ READBACK
-→ RUNTIME STAFF/CLIENTE/SHOPPER
-→ TRES RECARGAS Y NUEVA PESTAÑA
-→ HR DINÁMICA
-→ FINANZAS/PORTALES/RESERVAS
-→ CONSERVAR SOLO CON PASS
-→ ROLLBACK AUTOMÁTICO ANTE CUALQUIER FALLO
-```
-
-### Cloud
-
-Entregar V6 frontend acumulativa:
-
-- Login/órbita refinados;
-- responsive P1;
-- PDF P1;
-- Excel P2;
-- opción Regional;
-- copy delegado;
-- Ficha Shopper;
-- evidencia real y manifest completo.
-
-## 10. Secuencia posterior
-
-```text
-FINAL_RUNTIME_RETRY
+ROOT FIX SOURCE-ONLY GATE CLIENTE
+→ NUEVA AUTORIZACIÓN EXPRESA SOLO DESPUÉS DEL PASS LOCAL
+→ RUNTIME MULTIROL
 → AUDITORÍA FOCAL CLOUD V6
 → APPLY_DELTA_DIRECTLY SOLO CON GO
-→ BRIDGE FIREBASE SEGURO
-→ GATES ACUMULATIVOS
-→ ÚNICO DEV SI CAMBIA app/
-→ CHECKPOINT_VISUAL_PHASE_A_COMPLETA
+→ GATES
+→ DEV ÚNICO SI CAMBIA app/
+→ CHECKPOINT VISUAL PHASE A COMPLETA
 → FREEZE
-→ CONFIRMAR PERIODO NUEVO/DISPONIBLES/POSTULACIONES
+→ PERIODO NUEVO/DISPONIBLES/POSTULACIONES
 → CUTOVER AUTORIZADO
 ```
 
-## 11. Estado seguro
+## 10. Estado seguro
 
-- cambios funcionales `app/` en este bloque: 0;
+- cambios funcionales `app/`: 0;
 - estado proveedor restaurado: sí;
 - Hosting/Cloud Run deploys: 0;
-- Firestore de negocio/HR/Rules/Storage: 0;
 - Make/Gemini/pagos: 0;
 - merge: false;
 - producción: intacta.
 
-## 12. Clasificación
+## 11. Clasificación
 
-- **Reusable CXOrbia:** autoridad HR dinámica, identidad Cliente canónica, membership idempotente, rollback y gate por módulos reales.
-- **Exclusivo cliente:** `tya/cinepolis`, 15 periodos, 660 visitas y 209 shoppers.
-- **Cloud/prototipo:** V5 HOLD y V6 acumulativa requerida.
-- **Academia:** impacto documentado, actualización final pendiente del GO.
-- **Sin impacto Cloud:** Auth, membership, HR, runtime y producción.
+- **Reusable CXOrbia:** gate por ruta explícita y evidencia booleana separada.
+- **Exclusivo cliente:** membership `tya/cinepolis`.
+- **Cloud/prototipo:** V5 HOLD, V6 pendiente.
+- **Academia:** Auth, membership, ruta y copy deben enseñarse como capas diferentes.
+- **Sin impacto Cloud:** este resultado no modifica frontend.
