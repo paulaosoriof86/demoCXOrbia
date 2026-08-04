@@ -1,12 +1,12 @@
 # 00 - ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-03  
+**Fecha:** 2026-08-04  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `PHASE_A_COMPLETE_RECONSTRUCTION__24_EXACT_OR_JUSTIFIED_BLOB_DECISIONS__REMAINING_COMPOSITION_RECOVERY_ACTIVE`
+**Estado vivo:** `PHASE_A_FINAL_COMPOSITION_MANIFEST_SOURCE_COMPLETE__STATIC_GATE_PENDING_EXECUTION`
 
 ## 0. Lock prevalente
 
-La revisión fragmentada A+B queda anulada. La única candidata válida para nueva revisión humana será la composición completa de Phase A.
+La revisión fragmentada A+B continúa anulada. La única candidata válida para revisión humana será la composición Phase A completa después de gates acumulativos.
 
 Repo/rama/PR:
 
@@ -18,94 +18,104 @@ No crear candidata, shell, rama, PR, Firebase, Hosting o metodología paralela.
 
 ## 1. Leer primero y en este orden
 
-1. `ADDENDUM-MAESTRO-CORRECCION-RECONSTRUCCION-PHASE-A-COMPLETA-20260803.md`;
-2. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `MATRIZ-CANDIDATA-ACUMULATIVA-PHASE-A-COMPLETA-20260803.md`;
-4. `MANIFEST-PHASE-A-COMPLETA-INVENTARIO-VIVO-20260803.json`;
-5. `COMPARACION-SHAS-APROBADOS-PHASE-A-BLOQUE1-M1-CORTE2A-20260803.md`;
-6. `COMPARACION-SHAS-PHASE-A-BLOQUE2-C6-DEPLOY-TECNICO-20260803.md`;
-7. `COMPARACION-SHAS-PHASE-A-BLOQUE3-V182-CORTE3-Y-C6-20260803.md`;
-8. `CAMBIOS-BACKEND-ADDENDUM-CORRECCION-RECONSTRUCCION-PHASE-A-COMPLETA-20260803.md`;
-9. `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md` corregido;
-10. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-11. `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md`, solo como trazabilidad del error A+B;
-12. `MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json`, manifest parcial superseded;
+1. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+2. `ADDENDUM-MAESTRO-CORRECCION-RECONSTRUCCION-PHASE-A-COMPLETA-20260803.md`;
+3. `COMPARACION-SHAS-PHASE-A-BLOQUE4-AUTORIDADES-Y-COMPOSICION-20260804.md`;
+4. `MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json`;
+5. `CAMBIOS-BACKEND-ADDENDUM-PHASE-A-MANIFEST-FINAL-Y-GATE-SOURCE-STATIC-20260804.md`;
+6. `ACADEMIA-IMPACTO-PHASE-A-MANIFEST-FINAL-Y-GATE-COMPOSICION-20260804.md`;
+7. `MATRIZ-CANDIDATA-ACUMULATIVA-PHASE-A-COMPLETA-20260803.md`;
+8. `COMPARACION-SHAS-APROBADOS-PHASE-A-BLOQUE1-M1-CORTE2A-20260803.md`;
+9. `COMPARACION-SHAS-PHASE-A-BLOQUE2-C6-DEPLOY-TECNICO-20260803.md`;
+10. `COMPARACION-SHAS-PHASE-A-BLOQUE3-V182-CORTE3-Y-C6-20260803.md`;
+11. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+12. `PROTOCOLO-VALIDACION-VISUAL-ACUMULATIVA-POR-CHECKPOINTS-20260802.md`;
 13. `RESUMEN-PARA-CLAUDE.md`;
 14. `PENDIENTES-PROTOTIPO.md`;
-15. `ACADEMIA-IMPACTO-RECONSTRUCCION-CANDIDATA-ACUMULATIVA-20260802.md`;
-16. reglas maestras/addenda activos;
-17. PR #7 y HEAD vivo.
+15. reglas maestras/addenda activos;
+16. PR #7 y HEAD vivo.
+
+Fuentes superseded solo para trazabilidad:
+
+- `MANIFEST-PHASE-A-COMPLETA-INVENTARIO-VIVO-20260803.json` — inventario previo;
+- `MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json` — manifest parcial A+B anulado;
+- `RECONSTRUCCION-CANDIDATA-ACUMULATIVA-MATRIZ-MAESTRA.md` — historia del error fragmentado.
 
 ## 2. Autoridades históricas que no se reabren
 
 - RC Phase A smoke técnico y visual/consola PASS;
-- M1/Corte 1: FROZEN/APROBADO con P1/P2 documentados;
-- Corte 2A/V174: FROZEN/APROBADO;
-- Corte 3/V182: `FROZEN_ACTIVE_BASELINE`;
-- C6: entrada por perfiles, HR, Staff, Shopper, Cliente, Finanzas, Portal Shopper y Reservas técnicamente preservados.
-
-Estas aprobaciones se someten a comparación de SHA y smoke antirretroceso, no a reauditoría desde cero.
+- M1/Corte 1 FROZEN/APROBADO;
+- Corte 2A/V174 FROZEN/APROBADO;
+- Corte 3/V182 `FROZEN_ACTIVE_BASELINE`;
+- C6 entrada por perfiles, HR, Staff, Shopper, Cliente, Finanzas, Portal Shopper y Reservas técnicamente PASS.
 
 ## 3. Recuperación de SHAs alcanzada
 
-### M1/Corte 2A
+Resultado acumulado:
 
-Ocho blobs vivos coinciden exactamente con su autoridad aprobada/frozen:
+`29_UNIQUE_PRESERVE_OR_RECONCILE_DECISIONS_CLOSED__0_RESTORE_REQUIRED`.
 
-- Dashboard;
-- Configuración;
-- Router;
-- Visitas;
-- Postulaciones;
-- Novedades;
-- Mi Perfil/Reportes Shopper;
-- Reportes Cliente.
+Incluye:
 
-### C6 desplegado
+- ocho blobs exactos M1/Corte 1/Corte 2A;
+- trece blobs exactos C6;
+- preservación de root fixes financieros posteriores a V182;
+- Ficha;
+- Revisión Admin;
+- Documentos;
+- Costos;
+- `cliente-data.js`.
 
-Trece blobs vivos coinciden con el source lock técnico desplegado, incluyendo:
+## 4. Manifest activo
 
-- app/shell;
-- Mi Día e Histórico;
-- Reservas;
-- Shoppers/Mis Visitas/Certificación/Cuestionario/Beneficios;
-- Finanzas UI/core/liquidación;
-- Portal Cliente.
+Manifest vigente:
 
-### V182/Corte 3
-
-- `app.js`, Beneficios y `layout.css`: exactos V182;
-- `finanzas-core.js` y `finanzas.js`: diferencias posteriores justificadas por root fixes C6; no restaurar V182.
-
-Resultado:
-
-`24_UNIQUE_PRESERVE_OR_RECONCILE_DECISIONS_CLOSED__0_RESTORE_REQUIRED_SO_FAR`.
-
-## 4. Inventario Phase A activo
-
-El manifest de inventario vivo contiene 30 archivos de base, operación, perfiles, Finanzas, portales y Reportes.
+`MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json`.
 
 Estado:
 
-`INVENTORY_ONLY_APPROVED_SHA_RECOVERY_PENDING`.
+`FINAL_COMPOSITION_MANIFEST_SOURCE_COMPLETE__SOURCE_STATIC_GATE_PENDING`.
 
-No es todavía el manifest final. Un blob vivo no se convierte en aprobado sin recuperar su linaje y probar su composición.
+El inventario de 30 archivos anterior queda superseded por este manifest final de composición.
 
-## 5. Alcance Phase A obligatorio
+## 5. Gate activo
+
+Script:
+
+`tools/qa/tya-phase-a-complete-composition-source-gate.mjs`.
+
+Estado:
+
+`CREATED_NOT_EXECUTED`.
+
+No afirmar PASS hasta ejecutarlo en un checkout autenticado del HEAD exacto.
+
+## 6. Alcance Phase A obligatorio
 
 - entrada/shell/contexto/navegación;
-- Dashboard Operativo/hoja de ruta/Histórico/refresh;
-- Visitas, ficha, Revisión, Postulaciones y Reservas;
+- Dashboard/hoja de ruta/Histórico/refresh;
+- Proyectos, Periodos y HR;
+- Visitas, Ficha, Revisión, Postulaciones y Reservas;
 - Shoppers y experiencia transversal por perfiles;
-- Mi Día, Disponibles, Mis Visitas, Mi Perfil, cuestionario, certificaciones, documentos y beneficios;
+- cuestionario, certificaciones, documentos y beneficios;
 - Finanzas completa;
 - Portal Cliente y Portal Shopper;
-- Reportes Admin/Cliente/Shopper y exportaciones;
-- smoke multirol y nueva pestaña.
+- Reportes Admin/Cliente/Shopper y PDF/XLSX/PPTX;
+- smoke multirol, recarga y nueva pestaña.
 
-CRM Ops Leads, Clientes comerciales, Comercial y Marketing se preservan, pero no bloquean el freeze Phase A.
+CRM Ops Leads, Clientes comerciales, Comercial y Marketing se preservan como trabajo posterior.
 
-## 6. DEV actual
+## 7. Overlay superseded controlado
+
+`app/adapters/tya-ab-cumulative-composition-v1.js`
+
+Clasificación:
+
+`P1_SUPERSEDED_LOADED_OVERLAY__NOT_P0_PROVEN`.
+
+No retirar sin gate de no pérdida.
+
+## 8. DEV actual
 
 `https://cxorbia-backend-dev.web.app/index-backend-dev.html`
 
@@ -113,13 +123,15 @@ Clasificación:
 
 `TECHNICAL_COMPARISON_BUILD__NOT_FINAL_PHASE_A_CANDIDATE`.
 
-No se solicita revisión humana fragmentada. Se reutilizará solo si el manifest final demuestra que no requiere delta; si cambia `app/`, se publicará un único reemplazo autorizado.
+## 9. Siguiente bloque exacto
 
-## 7. Siguiente bloque exacto
+`CHECKOUT AUTENTICADO → EJECUTAR GATE SOURCE/STATIC → EJECUTAR RUNTIME MULTIROL SI PASS → DELTA ÚNICO SOLO SI SE DEMUESTRA → DEV ÚNICO SI CAMBIA APP → CHECKPOINT_VISUAL_PHASE_A_COMPLETA`.
 
-`CERRAR AUTORIDAD DE FICHA/REVISIÓN/DOCUMENTOS/COSTOS/CLIENTE-DATA + INVENTARIAR REPORT KIT/EXPORTADORES/OVERLAYS/NAVEGACIÓN MULTIROL → MANIFEST FINAL PHASE A → GATES ACUMULATIVOS`.
+Después:
 
-## 8. Estado seguro
+`FREEZE → AGOSTO/DISPONIBLES/POSTULACIONES → CUTOVER AUTORIZADO`.
+
+## 10. Estado seguro
 
 - archivos funcionales modificados: 0;
 - deploy nuevo: 0;
