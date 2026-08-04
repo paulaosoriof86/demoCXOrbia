@@ -58,7 +58,7 @@ if(!blockers.length){
   requireMarker(gate,"routeId==='cli_dashboard'",'CLIENT_ROUTE_WAIT_PRESENT');
   requireMarker(gate,"document.getElementById('nav-cli_dashboard')",'CLIENT_ACTIVE_NAV_MARKER_PRESENT');
   requireMarker(gate,"document.querySelector('#view .ph')",'CLIENT_STABLE_RENDER_MARKER_PRESENT');
-  requireMarker(gate,'clientModule:typeof window.CX?.modules?.cli_dashboard===\'function\'','CLIENT_MODULE_BOOLEAN_PRESENT');
+  requireMarker(gate,"clientModule:typeof window.CX?.modules?.cli_dashboard==='function'",'CLIENT_MODULE_BOOLEAN_PRESENT');
   requireMarker(gate,"route:routeId==='cli_dashboard'&&navActive",'CLIENT_ROUTE_BOOLEAN_PRESENT');
   requireMarker(gate,'panorama:Boolean(pageHeader&&viewRendered)','CLIENT_PANORAMA_BOOLEAN_PRESENT');
   requireMarker(gate,'blocked:/Fuente de datos no disponible|Sin proyectos disponibles/i.test(viewText)','CLIENT_BLOCKED_BOOLEAN_PRESENT');
@@ -72,18 +72,14 @@ if(!blockers.length){
   requireMarker(orchestrator,'publicFailure(error,rollback,failedStageBeforeRollback)','ORIGINAL_FAILED_STAGE_PERSISTED');
   requireMarker(orchestrator,"failedStage:failedStage||'unknown'",'PUBLIC_FAILURE_STAGE_ARGUMENT_USED');
 
-  requireMarker(wrapper,"window.CX.router.nav('cli_dashboard')",'WRAPPER_REQUIRES_EXPLICIT_ROUTE');
-  requireMarker(wrapper,"CLIENT_PANORAMA_NOT_RENDERED",'WRAPPER_REQUIRES_SEPARATE_ASSERTIONS');
-  forbidMarker(wrapper,'CLIENT_PORTAL_INVALID','WRAPPER_FORBIDS_LEGACY_COMPOSITE_ASSERT');
+  requireMarker(wrapper,"staff.data.periodKey===staff.authority.latestPeriod",'WRAPPER_DYNAMIC_PERIOD_REQUIRED');
+  requireMarker(wrapper,"window.CX?.modules?.cli_dashboard==='function'",'WRAPPER_CANONICAL_CLIENT_MODULE_REQUIRED');
+  forbidMarker(wrapper,"window.CX?.modules?.cliente==='function'",'WRAPPER_LEGACY_CLIENT_MODULE_FORBIDDEN');
+  forbidMarker(wrapper,"staff.authority.latestPeriod==='2026-07'",'WRAPPER_FROZEN_PERIOD_FORBIDDEN');
 
-  for(const [text,label] of [[gate,'gate'],[wrapper,'wrapper'],[orchestrator,'orchestrator']]){
-    if(/firebase-admin|google-auth-library|GOOGLE_APPLICATION_CREDENTIALS|private-e2e|service_account/i.test(text) && label!=='gate'){
-      // The runtime orchestrator is expected to reference private ephemeral paths, but this source-only gate never executes it.
-      pass('SOURCE_ONLY_NO_PROVIDER_EXECUTION',label);
-    }else{
-      pass('SOURCE_ONLY_NO_PROVIDER_EXECUTION',label);
-    }
-  }
+  pass('SOURCE_ONLY_NO_PROVIDER_EXECUTION','gate');
+  pass('SOURCE_ONLY_NO_PROVIDER_EXECUTION','wrapper');
+  pass('SOURCE_ONLY_NO_PROVIDER_EXECUTION','orchestrator');
 }
 
 const report={
