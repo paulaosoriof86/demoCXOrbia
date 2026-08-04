@@ -1,8 +1,8 @@
 # CXOrbia TyA — PLAN PHASE A SIN DESVIACIÓN
 
 **Fecha original:** 2026-07-04  
-**Corrección prevalente:** 2026-08-03  
-**Estado:** `ACTIVE_COMPLETE_PHASE_A_CUMULATIVE_RECONSTRUCTION__NO_FRAGMENTED_AB_GATE`
+**Corrección prevalente:** 2026-08-04  
+**Estado:** `FINAL_COMPOSITION_MANIFEST_SOURCE_COMPLETE__STATIC_GATE_PENDING_EXECUTION__NO_PRODUCTION`
 
 ## 1. Objetivo
 
@@ -16,18 +16,61 @@ Baseline:
 - DEV canónico `cxorbia-backend-dev`;
 - producción `tya-plataforma`, intacta hasta cutover autorizado.
 
-## 2. Secuencia obligatoria
+## 2. Secuencia obligatoria vigente
 
-`FUENTES Y APROBACIONES → MATRIZ SHA COMPLETA → COMPOSICIÓN PHASE A → GATES SOURCE/STATIC → RUNTIME MULTIROL → DEV ÚNICO → VALIDACIÓN HUMANA COMPLETA → FREEZE → AGOSTO/DISPONIBLES/POSTULACIONES → CUTOVER`.
+`FUENTES Y APROBACIONES → MATRIZ SHA COMPLETA → MANIFEST FINAL DE COMPOSICIÓN → GATE SOURCE/STATIC → RUNTIME MULTIROL → DELTA ÚNICO SOLO SI SE DEMUESTRA → DEV ÚNICO SI CAMBIA APP → VALIDACIÓN HUMANA COMPLETA → FREEZE → AGOSTO/DISPONIBLES/POSTULACIONES → CUTOVER`.
 
-No se divide la aprobación en A+B/C+D/E+F/G. Ese esquema queda superado.
+No se divide la aprobación en A+B/C+D/E+F/G.
 
-## 3. Phase A indispensable
+## 3. Estado alcanzado
+
+### Autoridades
+
+Se cerraron:
+
+`29_UNIQUE_PRESERVE_OR_RECONCILE_DECISIONS_CLOSED__0_RESTORE_REQUIRED`.
+
+Incluyen:
+
+- RC Phase A smoke técnico y visual/consola PASS;
+- M1/Corte 1 aprobado/frozen;
+- Corte 2A/V174 aprobado/frozen;
+- Corte 3/V182 frozen active baseline;
+- C6 entrada/HR/roles/perfiles/Finanzas/Reservas técnicamente PASS;
+- Ficha;
+- Revisión Admin;
+- Documentos;
+- Costos;
+- `cliente-data.js`.
+
+### Manifest final
+
+Fuente activa:
+
+`MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json`.
+
+Estado:
+
+`FINAL_COMPOSITION_MANIFEST_SOURCE_COMPLETE`.
+
+### Gate
+
+Creado:
+
+`tools/qa/tya-phase-a-complete-composition-source-gate.mjs`.
+
+Estado:
+
+`CREATED_NOT_EXECUTED`.
+
+No se afirma PASS hasta ejecutarlo en un checkout autenticado del HEAD exacto.
+
+## 4. Phase A indispensable
 
 ### Base transversal
 
 - entrada directa por Administración/Coordinación, Portal Cliente y Shopper/Evaluador;
-- Auth técnica aislada;
+- Firebase Auth como autoridad;
 - tenant/proyecto/periodo;
 - HR viva y refresh in-place;
 - `CX.data` canónico;
@@ -74,30 +117,40 @@ No se divide la aprobación en A+B/C+D/E+F/G. Ese esquema queda superado.
 - Portal Cliente;
 - Portal Shopper;
 - Reportes Admin/Cliente/Shopper;
-- PDF/XLSX/PPTX donde corresponda;
+- PDF/XLSX/PPTX;
 - periodo, alcance, fuente, filas, branding y gráficas coherentes;
 - cero métricas, NPS, porcentajes o hallazgos fabricados.
 
-## 4. Aprobaciones históricas preservadas
+## 5. Report kit y deuda no bloqueante
 
-- RC Phase A smoke técnico y visual/consola PASS;
-- M1/Corte 1 aprobado/frozen;
-- Corte 2A/V174 aprobado/frozen;
-- Corte 3/V182 frozen active baseline;
-- C6 entrada/HR/roles/perfiles/Finanzas/Reservas técnicamente PASS.
+`CX.reportKit` está inventariado como proveedor transversal para Admin, Cliente, Shopper y Finanzas.
 
-Estas autoridades se validan por SHA y smoke antirretroceso. No se reinicia cada módulo desde cero.
+P1/P2 preservados:
 
-## 5. CRM y módulos posteriores
+- algunas gráficas no aparecen en rutas de impresión PDF;
+- Excel tiene presentación básica.
+
+No bloquean mientras datos, filas, periodo, alcance y fuente sean correctos.
+
+## 6. Overlay superseded
+
+`app/adapters/tya-ab-cumulative-composition-v1.js`
+
+Clasificación:
+
+`P1_SUPERSEDED_LOADED_OVERLAY__NOT_P0_PROVEN`.
+
+No retirar sin prueba de no pérdida.
+
+## 7. CRM y módulos posteriores
 
 CRM Ops Leads, Clientes comerciales, Comercial y Marketing:
 
 - se preservan;
 - continúan después del freeze Phase A;
-- no sustituyen ni bloquean la reconstrucción de Operación/Finanzas/Reportes/perfiles;
-- solo bloquean si demuestran un P0 transversal.
+- no bloquean Phase A salvo P0 transversal demostrado.
 
-## 6. Gate visual correcto
+## 8. Gate visual correcto
 
 `CHECKPOINT_VISUAL_PHASE_A_COMPLETA`
 
@@ -112,38 +165,31 @@ Orden:
 7. Reportes/exportaciones;
 8. smoke multirol y nueva pestaña.
 
-## 7. Post-freeze urgente
-
-Después de `FINAL_HUMAN_VISUAL_APPROVED`:
-
-1. fuente exacta agosto;
-2. rollover actual seguro;
-3. disponibles;
-4. postulaciones;
-5. gate multirol;
-6. autorización de cutover;
-7. producción.
-
-## 8. Prohibiciones
+## 9. Prohibiciones
 
 - no candidata, rama, PR, shell, Firebase o Hosting paralelos;
-- no aprobación fragmentada centrada en CRM;
+- no aprobación fragmentada;
 - no selección por número de versión;
 - no nombre visual como llave;
 - no parche UI desde backend;
+- no JWT Emergent como reemplazo de Firebase Auth;
 - no writes Firestore/Auth/HR/Rules/Storage;
 - no Make/Gemini/pagos;
 - no merge/producción antes del PASS acumulativo y humano.
 
-## 9. Estado vigente
-
-- matriz Phase A completa iniciada;
-- blobs vivos de módulos indispensables registrados;
-- recuperación de SHA aprobado/source lock en curso;
-- DEV actual clasificado como comparación técnica, no candidato final;
-- deploy nuevo: 0;
-- producción: intacta.
-
 ## 10. Siguiente bloque exacto
 
-`RECUPERAR SHAS APROBADOS PHASE A → COMPARAR CON BLOBS VIVOS → PRESERVAR/RESTAURAR/RECONCILIAR → MANIFEST COMPLETO → GATES ACUMULATIVOS`.
+`OBTENER CHECKOUT AUTENTICADO → EJECUTAR GATE SOURCE/STATIC SOBRE HEAD EXACTO → SI PASS, GATE RUNTIME MULTIROL; SI FAIL, APLICAR UN SOLO DELTA PROBADO`.
+
+Después:
+
+`DEV ÚNICO SI CAMBIA APP → CHECKPOINT VISUAL PHASE A COMPLETA → FREEZE → AGOSTO/DISPONIBLES/POSTULACIONES → CUTOVER`.
+
+## 11. Estado seguro
+
+- archivos funcionales modificados en el bloque: 0;
+- deploy: 0;
+- provider writes: 0;
+- Make/Gemini/pagos: 0;
+- merge: false;
+- producción: intacta.
