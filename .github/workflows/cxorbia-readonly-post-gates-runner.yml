@@ -16,7 +16,13 @@ on:
       - .github/workflows/cxorbia-readonly-post-gates-runner.yml
       - tools/release/cxorbia-readonly-post-gates-runner.mjs
       - tools/release/cxorbia-phase-a-complete-composition-source-static-runner.mjs
+      - tools/release/cxorbia-phase-a-runtime-multirole-runner.mjs
       - tools/qa/tya-phase-a-complete-composition-source-gate.mjs
+      - tools/qa/tya-c6-remote-parity-gate.mjs
+      - tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs
+      - tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs
+      - tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs
+      - tools/qa/cxorbia-c6-existing-client-e2e-credential.mjs
       - tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs
       - tools/qa/tya-corte3-canonical-finance-ui-export-r23-gate.mjs
 
@@ -37,7 +43,7 @@ jobs:
   post-gates:
     name: Run authorized CXOrbia read-only profile
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
 
     steps:
       - name: Checkout exact live branch
@@ -68,13 +74,18 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `profile=${x.profile || ''}\n`);
           NODE
 
-      - name: Install Playwright runtime for browser profiles
+      - name: Install transient tooling for browser profiles
         if: >-
           steps.request.outputs.enabled == 'true' &&
           (steps.request.outputs.profile == 'V174_R20_M1_CORTE2A' ||
-           steps.request.outputs.profile == 'CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23')
+           steps.request.outputs.profile == 'CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23' ||
+           steps.request.outputs.profile == 'PHASE_A_COMPLETE_RUNTIME_MULTIROLE')
         run: |
-          npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0
+          if [ "${{ steps.request.outputs.profile }}" = "PHASE_A_COMPLETE_RUNTIME_MULTIROLE" ]; then
+            npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0 firebase-admin@13.4.0
+          else
+            npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0
+          fi
           npx playwright install --with-deps chromium
 
       - name: Prepare exact V174 source-safe binding for Corte 3 UI
@@ -86,6 +97,56 @@ jobs:
             --app-dir app \
             --out .tmp/tya-corte3-canonical-finance-source-safe-binding-r23
 
+      - name: Prepare existing DEV credentials privately for runtime profile
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.profile == 'PHASE_A_COMPLETE_RUNTIME_MULTIROLE'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          PRIVATE_DIR=.tmp/phase-a-runtime-private
+          PRIVATE_E2E=$PRIVATE_DIR/private-e2e.json
+          mkdir -p "$PRIVATE_DIR" .tmp/phase-a-runtime-multirole
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let parsed=null;try{parsed=JSON.parse(raw);}catch{}
+          if(!(parsed&&parsed.type==='service_account'&&parsed.project_id==='cxorbia-backend-dev'&&parsed.client_email&&parsed.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync('.tmp/phase-a-runtime-private/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/$PRIVATE_DIR/credentials.json" >> "$GITHUB_ENV"
+          echo "CXORBIA_EXPECTED_PROJECT=cxorbia-backend-dev" >> "$GITHUB_ENV"
+          echo "CXORBIA_DEV_ROOT_URL=https://cxorbia-backend-dev.web.app" >> "$GITHUB_ENV"
+          echo "CXORBIA_E2E_PRIVATE_CREDENTIALS=$PRIVATE_E2E" >> "$GITHUB_ENV"
+          echo "PRIVATE_DIR=$PRIVATE_DIR" >> "$GITHUB_ENV"
+          echo "OUT_DIR=.tmp/phase-a-runtime-multirole" >> "$GITHUB_ENV"
+
+          GOOGLE_APPLICATION_CREDENTIALS="${GITHUB_WORKSPACE}/$PRIVATE_DIR/credentials.json" \
+          CXORBIA_EXPECTED_PROJECT=cxorbia-backend-dev \
+          CXORBIA_DEV_ROOT_URL=https://cxorbia-backend-dev.web.app \
+          CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E" \
+          PRIVATE_DIR="$PRIVATE_DIR" OUT_DIR=.tmp/phase-a-runtime-multirole \
+          node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs \
+            > .tmp/phase-a-runtime-multirole/credential-selection-staff-shopper.source-safe.json
+
+          GOOGLE_APPLICATION_CREDENTIALS="${GITHUB_WORKSPACE}/$PRIVATE_DIR/credentials.json" \
+          CXORBIA_EXPECTED_PROJECT=cxorbia-backend-dev \
+          CXORBIA_DEV_ROOT_URL=https://cxorbia-backend-dev.web.app \
+          CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E" \
+          PRIVATE_DIR="$PRIVATE_DIR" OUT_DIR=.tmp/phase-a-runtime-multirole \
+          node tools/qa/cxorbia-c6-existing-client-e2e-credential.mjs \
+            > .tmp/phase-a-runtime-multirole/credential-selection-client.source-safe.json
+
+          node <<'NODE'
+          const fs=require('fs');
+          const a=JSON.parse(fs.readFileSync('.tmp/phase-a-runtime-multirole/credential-selection-staff-shopper.source-safe.json','utf8'));
+          const b=JSON.parse(fs.readFileSync('.tmp/phase-a-runtime-multirole/credential-selection-client.source-safe.json','utf8'));
+          const p=JSON.parse(fs.readFileSync('.tmp/phase-a-runtime-private/private-e2e.json','utf8'));
+          if(a.decision!=='PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION'||a.authWrites!==0||a.passwordChanges!==0||a.valuesExported!==false)throw new Error('staff_shopper_credential_selection_not_safe_pass');
+          if(b.decision!=='PASS_C6_EXISTING_CLIENT_CREDENTIAL_SELECTION'||b.authWrites!==0||b.passwordChanges!==0||b.valuesExported!==false)throw new Error('client_credential_selection_not_safe_pass');
+          if(!p?.staff?.login||!p?.staff?.password||!p?.shopper?.login||!p?.shopper?.password||!p?.client?.login||!p?.client?.password)throw new Error('private_e2e_bundle_incomplete');
+          NODE
+          chmod 600 "$PRIVATE_E2E"
+
       - name: Execute authorized read-only gate profile
         if: steps.request.outputs.enabled == 'true'
         id: gates
@@ -94,6 +155,9 @@ jobs:
           set +e
           if [ "${{ steps.request.outputs.profile }}" = "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC" ]; then
             node tools/release/cxorbia-phase-a-complete-composition-source-static-runner.mjs \
+              .github/cxorbia-gate-requests/request.json
+          elif [ "${{ steps.request.outputs.profile }}" = "PHASE_A_COMPLETE_RUNTIME_MULTIROLE" ]; then
+            node tools/release/cxorbia-phase-a-runtime-multirole-runner.mjs \
               .github/cxorbia-gate-requests/request.json
           else
             node tools/release/cxorbia-readonly-post-gates-runner.mjs \
@@ -130,6 +194,7 @@ jobs:
             .tmp/cxorbia-readonly-post-gates-runner
             .tmp/cxorbia-repository-status
             .tmp/phase-a-complete-composition-source-static
+            .tmp/phase-a-runtime-multirole
             .tmp/tya-project-period-kpi-history-r20
             .tmp/tya-corte2a-shopper-operation-canonical
             .tmp/tya-corte1-report-frontend-runtime
@@ -239,6 +304,10 @@ jobs:
             if (!response.ok) throw new Error(`comment_failed_HTTP_${response.status}:${await response.text()}`);
           }).catch(error => { console.error(error); process.exitCode = 1; });
           NODE
+
+      - name: Cleanup private runtime material
+        if: always()
+        run: rm -rf .tmp/phase-a-runtime-private
 
       - name: Enforce gate result
         if: always() && steps.request.outputs.enabled == 'true'
