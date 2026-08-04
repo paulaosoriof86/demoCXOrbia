@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "phase-a-final-composition-source-static-20260804-04",
-  "enabled": true,
+  "requestId": "phase-a-final-composition-source-static-pass-closed-20260804-04",
+  "enabled": false,
   "issuedAt": "2026-08-04",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "469d3db6e36274e75188e81c0a7fc8e5bbc2f335",
+  "targetHeadSha": "601f8acf2622852baaeb57951dd765c336741948",
   "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
@@ -34,5 +34,11 @@
     "hrWrites": false
   },
   "containsPii": false,
-  "containsSecrets": false
+  "containsSecrets": false,
+  "lastExecution": {
+    "runId": 30910224561,
+    "artifactId": 8892730161,
+    "decision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
+    "repositoryUnchanged": true
+  }
 }
