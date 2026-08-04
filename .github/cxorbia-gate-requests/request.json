@@ -1,26 +1,23 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "phase-a-runtime-multirole-hold-client-claims-20260804-02",
+  "requestId": "c6-client-route-source-static-validation-20260804-01",
   "enabled": false,
   "issuedAt": "2026-08-04",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "b9bbc9dcc8050cb221d53fb4843333c809963922",
-  "profile": "PHASE_A_COMPLETE_RUNTIME_MULTIROLE",
+  "targetHeadSha": "1b1f03c0c033748cef605420215d484d17fb7c55",
+  "profile": "SOURCE_ONLY_CONTRACT_VALIDATION",
   "allowedProfiles": [
-    "PHASE_A_COMPLETE_RUNTIME_MULTIROLE"
+    "SOURCE_ONLY_CONTRACT_VALIDATION"
   ],
-  "allowedExecutions": 1,
+  "allowedExecutions": 0,
   "repositoryWrites": false,
   "dataWrites": false,
-  "providerReads": true,
+  "providerReads": false,
   "deploy": false,
   "merge": false,
   "production": false,
-  "devRootUrl": "https://cxorbia-backend-dev.web.app",
-  "tenantId": "tya",
-  "projectId": "cinepolis",
   "sourceLockDocument": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
   "safeState": {
     "repositoryWrites": false,
@@ -39,26 +36,5 @@
   },
   "containsPii": false,
   "containsSecrets": false,
-  "lastExecution": {
-    "runId": 30918871765,
-    "artifactId": 8896223753,
-    "decision": "HOLD_RUNTIME_PREP_CLIENT_CLAIMS_NOT_FOUND",
-    "staffShopperCredentialSelection": "PASS",
-    "observedLiveVisits": 660,
-    "protectedVisits": 616,
-    "exactProtectedMatches": 616,
-    "newLiveVisitsBeyondProtectedSnapshot": 44,
-    "clientCredentialSelection": "HOLD_CLIENT_R4_A3_C0_H0_S0",
-    "clientRecordsReviewed": 4,
-    "clientAuthUsersMatched": 3,
-    "clientClaimMatches": 0,
-    "repositoryUnchanged": true,
-    "providerWrites": 0,
-    "dataWrites": 0
-  },
-  "rootCause": {
-    "sourceAuthority": "historical gate froze 616 while live HR advanced to 660; dynamic selector fixed",
-    "clientAccess": "existing Auth identities were found but none had the required cliente/client tenant+project claim contract",
-    "nextRequiredGate": "single DEV Auth claim/membership repair with snapshot, exact target, idempotence and rollback; then one runtime retry"
-  }
+  "purpose": "Trigger the existing controlled runner contract step only. The request is disabled, so no runtime profile, provider read, credential preparation, browser execution or write path is allowed."
 }
