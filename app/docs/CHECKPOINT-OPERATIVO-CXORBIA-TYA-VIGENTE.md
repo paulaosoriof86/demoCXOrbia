@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-04  
-**Estado:** `V6_EMPALMED__SOURCE_GATE_ROOT_FIX_MATERIALIZED__VISUAL_HOLD__CLOUD_V7_PENDING__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `V6_EMPALMED__SOURCE_STATIC_PASS_WITH_WARNINGS__VISUAL_HOLD__CLOUD_V7_PENDING__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Carril vigente
 
@@ -40,41 +40,83 @@ La captura de escritorio no replica la referencia Emergent:
 - la órbita es más rígida y pesada;
 - no existe equivalencia visual binaria con Emergent.
 
-Se emitió un delta Cloud V7 con:
+Cloud V7 está trabajando un delta exclusivamente visual con:
 
 - Emergent como autoridad visual;
 - Orbit 360 como autoridad de estilo orbital;
 - alcance principal limitado a `app/app.js` y `app/styles/layout.css`.
 
-## 5. Gate posterior al empalme
+## 5. Gate posterior al empalme — cerrado PASS
 
-El gate completo quedó en FAIL por:
+El primer FAIL se explicó por:
 
-1. blobs históricos de cinco archivos legítimamente modificados por V6;
+1. blobs históricos modificados legítimamente por V6;
 2. ausencia de `app/core/backend-dev-auth.local.js`;
-3. falso positivo de secreto sobre el código de un scanner.
+3. falso positivo de secreto sobre el código de un scanner;
+4. un marker de laboratorio construido dinámicamente que no era observable de forma literal por el gate.
 
-Correctivos aplicados:
+Correctivos:
 
 - manifest overlay V6 sin borrar la autoridad histórica;
-- placeholder local Auth fail-closed sin secretos;
-- secret scan separado para archivos que definen patrones;
-- source gate rebasado a manifest base + overlay.
+- placeholder Auth local fail-closed sin secretos;
+- secret scan diferenciado para archivos que definen patrones;
+- source gate rebasado a manifest base + overlay;
+- marker literal `BLOCKED_SCENARIO_EXECUTED_AWAITING_CONTROLLED_RUNNER`.
 
-No se afirma PASS hasta ejecutar el gate actualizado.
+Reejecución:
+
+- request `cloud-v6-source-static-marker-fix-20260804-02`;
+- target `b9050ad4c46b0356095e670ba677c47b214b287d`;
+- request commit `c10e112d4fea4d05bed9873abcefee7f3d4a1c60`;
+- run `30955339976`;
+- artifact `8910775999`;
+- status success.
+
+Decisiones:
+
+```text
+PASS_READONLY_POST_GATES
+PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
+```
+
+Comprobado:
+
+- base 53/53;
+- adicionales V6 4/4;
+- overrides V6 5/5;
+- assets faltantes 0;
+- scripts duplicados 0;
+- secretos 0;
+- módulos, navegación, ReportKit y pins PASS;
+- contrato source del laboratorio PASS;
+- repositorio intacto tras gates.
+
+Advertencias no bloqueantes:
+
+- overlay A+B superseded;
+- PDF puede omitir gráficas;
+- Excel mantiene formato básico.
 
 ## 6. Laboratorio
 
-Se detectó un defecto metodológico real: el shell V6 marcaba `SCENARIO_EXECUTED` y `CLEANUP_VERIFIED` aunque no ejecutaba operaciones.
+El shell V6 ya no marca `SCENARIO_EXECUTED` ni `CLEANUP_VERIFIED` sin ejecución real.
 
-Quedó corregido para:
+Actualmente:
 
-- mostrar `BLOCKED_AWAITING_CONTROLLED_RUNNER`;
-- no inventar PASS;
-- aceptar evidencia únicamente por `CX.devScenarioLab.ingest(report)`;
-- exigir fingerprints y cleanup reales.
+- muestra `BLOCKED_AWAITING_CONTROLLED_RUNNER`;
+- no inventa PASS;
+- acepta evidencia únicamente por `CX.devScenarioLab.ingest(report)`;
+- exige fingerprints y cleanup reales.
 
-El runner operativo real sigue pendiente y se ejecutará aquí, no en Codex ni Cloud.
+Mientras Cloud termina V7 se continúa source-only con:
+
+- runner real;
+- matriz de acciones UI Admin/Operaciones y Shopper;
+- fingerprint ampliado;
+- cleanup exacto;
+- evidencia y capturas.
+
+No se ejecutará runtime antes del único deploy DEV de la candidata visual final.
 
 ## 7. Estrategia de salida
 
@@ -87,11 +129,12 @@ Portal Cliente queda en carril paralelo.
 ## 8. Siguiente secuencia
 
 ```text
-CLOUD V7
+PREPARAR RUNNER/LAB SOURCE-ONLY EN PARALELO
++ CLOUD V7
 → AUDITORÍA VISUAL CHATGPT
 → CODEX SOLO EMPALME
 → ACTUALIZAR SOURCE LOCK
-→ SOURCE/STATIC PASS
+→ SOURCE/STATIC PASS FINAL
 → ÚNICO HOSTING DEV
 → LABORATORIO REAL
 → CLEANUP EXACTO
@@ -101,7 +144,7 @@ CLOUD V7
 
 ## 9. Estado seguro
 
-- cambios proveedor: 0;
+- provider changes: 0;
 - Hosting/Cloud Run: 0;
 - producción/merge: 0;
 - Auth/Firestore/Storage/HR writes: 0;
@@ -109,8 +152,8 @@ CLOUD V7
 
 ## 10. Clasificación
 
-- **Reusable CXOrbia:** manifest overlay, scanner sin self-match y laboratorio honesto.
+- **Reusable CXOrbia:** manifest overlay, scanner sin self-match, marker observable y laboratorio honesto.
 - **Exclusivo TyA:** release slice Admin/Operaciones + Shopper.
 - **Cloud/prototipo:** V7 visual pendiente.
-- **Academia:** diferencia entre observación y ejecución real.
+- **Academia:** diferencia entre observación, ejecución real y observabilidad estática.
 - **Sin impacto producción:** producción intacta.
