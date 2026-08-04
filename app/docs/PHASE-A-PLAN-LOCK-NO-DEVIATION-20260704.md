@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Corrección prevalente:** 2026-08-04  
-**Estado:** `SOURCE_STATIC_PASS__FINAL_RUNTIME_RETRY_CONSUMED_FAIL__CLIENT_PORTAL_ROUTE_ASSERTION__ROLLBACK_EXACT__CLOUD_V5_HOLD__NO_PRODUCTION`
+**Estado:** `SOURCE_STATIC_PASS__CLIENT_ROUTE_SOURCE_STATIC_PASS__RUNTIME_RETRY_NOT_AUTHORIZED__CLOUD_V5_HOLD__NO_PRODUCTION`
 
 ## 1. Objetivo
 
@@ -24,6 +24,8 @@ FUENTES Y APROBACIONES
 → GATE SOURCE/STATIC
 → RUNTIME MULTIROL
 → ROOT FIX SOURCE-ONLY SI EL GATE ES DEFECTUOSO
+→ GATE LOCAL/ESTÁTICO
+→ RUNTIME MULTIROL SOLO CON AUTORIZACIÓN EXPRESA
 → CLOUD FRONTEND ACUMULADO
 → APPLY_DELTA_DIRECTLY SOLO CON GO
 → GATES
@@ -45,11 +47,12 @@ No dividir la aprobación en candidatas o shells parciales.
 - Corte 3/V182 frozen active baseline;
 - manifest final Phase A;
 - source/static PASS con 53/53 blobs;
-- HR dinámica, Staff, Shopper, Finanzas y Reservas preservados.
+- HR dinámica, Staff, Shopper, Finanzas y Reservas preservados;
+- gate Cliente source/static focal PASS.
 
 ## 4. Autoridad HR
 
-Último runtime:
+Último runtime observado:
 
 - 15 periodos;
 - 660 visitas;
@@ -57,17 +60,13 @@ No dividir la aprobación en candidatas o shells parciales.
 
 Queda prohibido usar `616` o `2026-07` como invariantes runtime.
 
-## 5. Reejecución final Cliente
+## 5. Reejecución Cliente previa
 
-Paula autorizó una única reejecución final. La solicitud fue consumida exactamente una vez.
+La solicitud fue consumida exactamente una vez.
 
 Resultado:
 
 `FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK`.
-
-Fallo:
-
-`client_assertions → CLIENT_PORTAL_INVALID`.
 
 Rollback:
 
@@ -82,26 +81,46 @@ Estado final:
 - provider prestate restaurado;
 - producción intacta.
 
-## 6. Causa raíz vigente
+## 6. Causa raíz del gate Cliente — corregida
 
-El gate Cliente combina:
+El gate anterior:
 
-```text
-clientModule && panorama && !blocked
-```
+- no navegaba explícitamente a `cli_dashboard`;
+- dependía de la vista inicial posterior al login;
+- mezclaba módulo, ruta, render y bloqueo en una sola aserción;
+- permitía que el rollback sobrescribiera la etapa original del fallo.
 
-Las etapas anteriores ya habían probado el módulo `cli_dashboard`, Auth, HR/paridad y estado no bloqueado. El gate no navega explícitamente al Portal Cliente y depende de encontrar copy de Panorama en la vista posterior al login.
+Correctivo cerrado:
 
-La corrección siguiente debe ser source-only y localizada en el gate:
+1. `window.CX.router.nav('cli_dashboard')` explícito;
+2. espera de `CX.session.view === 'cli_dashboard'`;
+3. navegación `#nav-cli_dashboard` activa;
+4. marker estable `#view .ph`;
+5. evidencia separada `clientModule`, `route`, `panorama`, `blocked`;
+6. errores específicos por capa;
+7. `failedStageBeforeRollback` preservado.
 
-1. navegación explícita a `cli_dashboard`;
-2. espera de render;
-3. marker/selector estable del módulo;
-4. evidencia separada por condición;
-5. gate local/estático sin provider writes;
-6. detenerse antes de cualquier nueva ejecución DEV.
+## 7. Gate source/static focal — PASS
 
-## 7. Cloud frontend
+Ejecución:
+
+- commit `5caca10137250d2a70308dd995262e368f981322`;
+- run `30936681878`;
+- job `92084479259`;
+- decisión `PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT`;
+- gate interno `PASS_C6_CLIENT_ROUTE_SOURCE_STATIC`;
+- blockers 0;
+- warnings 0.
+
+Alcance:
+
+- provider reads 0;
+- credenciales 0;
+- runtime 0;
+- Auth/Firestore/membership writes 0;
+- deploy 0.
+
+## 8. Cloud frontend
 
 V5 permanece:
 
@@ -120,7 +139,7 @@ V6 acumulativa debe incluir:
 
 Cloud no toca backend, Auth, datos, cálculos, permisos, deploy ni producción.
 
-## 8. P1/P2 vivos
+## 9. P1/P2 vivos
 
 - overlay A+B superseded;
 - algunas gráficas no aparecen en PDF;
@@ -129,7 +148,7 @@ Cloud no toca backend, Auth, datos, cálculos, permisos, deploy ni producción.
 
 No reabrir autoridades funcionales sin P0 demostrado.
 
-## 9. Prohibiciones
+## 10. Prohibiciones
 
 - no candidata, rama, PR, shell, Firebase o Hosting paralelos;
 - no aprobación fragmentada;
@@ -137,20 +156,26 @@ No reabrir autoridades funcionales sin P0 demostrado.
 - no usuario Cliente nuevo;
 - no JWT Emergent;
 - no conteos/meses congelados;
-- no reutilizar la autorización consumida;
+- no reutilizar autorizaciones consumidas;
 - no reintento silencioso;
 - no writes fuera de autorización;
 - no Make/Gemini/pagos;
 - no merge/producción antes del PASS acumulativo y humano.
 
-## 10. Siguiente bloque exacto
+## 11. Siguiente bloque exacto
+
+El root fix source-only está cerrado. Solo con nueva autorización expresa:
 
 ```text
-SOURCE-ONLY ROOT FIX DEL GATE CLIENTE
-→ NAVEGACIÓN EXPLÍCITA A cli_dashboard
-→ EVIDENCIA clientModule/route/panorama/blocked
-→ GATE LOCAL/ESTÁTICO SIN PROVIDER WRITES
-→ DETENERSE PARA NUEVA AUTORIZACIÓN
+SNAPSHOT CLIENTE
+→ MEMBERSHIP IDEMPOTENTE
+→ READBACK
+→ RUNTIME STAFF/CLIENTE/SHOPPER
+→ TRES RECARGAS Y NUEVA PESTAÑA
+→ HR DINÁMICA
+→ FINANZAS/PORTALES/RESERVAS
+→ CONSERVAR SOLO CON PASS
+→ ROLLBACK AUTOMÁTICO SI FAIL
 ```
 
 En paralelo:
@@ -161,12 +186,13 @@ CLOUD V6
 → APPLY_DELTA_DIRECTLY SOLO CON GO
 ```
 
-## 11. Estado seguro
+## 12. Estado seguro
 
 - cambios funcionales `app/`: 0;
-- provider prestate restaurado: sí;
+- provider reads en el bloque source-only: 0;
+- Auth/Firestore/membership writes: 0;
 - Hosting/Cloud Run: 0;
-- Firestore de negocio/HR/Rules/Storage: 0;
+- HR/Rules/Storage: 0;
 - Make/Gemini/pagos: 0;
 - merge: false;
 - producción: intacta.
