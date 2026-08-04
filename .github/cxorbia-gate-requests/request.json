@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "phase-a-final-composition-scanner-self-match-maintenance-20260804-03",
-  "enabled": false,
+  "requestId": "phase-a-final-composition-source-static-20260804-04",
+  "enabled": true,
   "issuedAt": "2026-08-04",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "60f2e96a76ba40905f91782682e9971c71bd77db",
+  "targetHeadSha": "469d3db6e36274e75188e81c0a7fc8e5bbc2f335",
   "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
