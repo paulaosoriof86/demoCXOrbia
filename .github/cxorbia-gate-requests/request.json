@@ -36,5 +36,5 @@
   },
   "containsPii": false,
   "containsSecrets": false,
-  "purpose": "Trigger the existing controlled runner contract step only. The request is disabled, so no runtime profile, provider read, credential preparation, browser execution or write path is allowed."
+  "purpose": "Source-only Client route contract validation completed. Request remains disabled; no runtime profile, provider read, credential preparation, browser execution or write path is authorized."
 }
