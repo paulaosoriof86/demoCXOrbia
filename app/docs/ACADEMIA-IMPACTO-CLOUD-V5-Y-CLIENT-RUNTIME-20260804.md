@@ -1,7 +1,7 @@
-# Impacto en Academia — Cloud V6 y ciclo de vida del acceso Cliente
+# Impacto en Academia — Control plane, Cloud V6 y pruebas dentro de la plataforma
 
 **Fecha:** 2026-08-04  
-**Estado:** `DOCUMENTADO__CLIENT_RUNTIME_ROUTE_WAIT_ROLLED_BACK__CLOUD_V6_NOT_AUDITED`
+**Estado:** `DOCUMENTADO__CONTROL_PLANE_SOURCE_STATIC_PASS_LOCAL__CLOUD_V6_NOT_AUDITED__LABORATORIO_PENDIENTE`
 
 ## 1. Login y white-label
 
@@ -9,87 +9,110 @@ Después del GO real de Cloud V6, Academia debe explicar:
 
 - diferencia entre marca producto y marca tenant;
 - países del tenant como información visual, no como permisos;
-- composición responsive en desktop, tablet y móvil;
-- accesibilidad mediante teclado, foco y reducción de movimiento;
-- evidencia real por viewport y manifest de hashes;
-- composición acumulativa: una candidata completa, no módulos o pantallas fragmentadas.
+- responsive desktop/tablet/móvil;
+- teclado, foco y reducción de movimiento;
+- evidencia real por viewport y manifest;
+- candidata acumulativa única.
 
-Cloud V6 fue recibida, pero todavía no existe auditoría ni GO porque falta `EXECUTION_LANE_READY` con checkout autenticado. No actualizar capturas de cursos o manuales como definitivas.
+Cloud V6 sigue sin auditoría ni GO. No actualizar capturas definitivas.
 
-## 2. Capas del acceso Cliente
+## 2. Máquina de estados reusable
 
-Los materiales técnicos deben separar:
+La validación técnica ya no debe explicar el acceso como un único estado. La secuencia vigente es:
 
-1. identidad existente en Firebase Auth;
-2. claims de rol, tenant y proyecto;
-3. membership canónica;
-4. sign-in válido;
-5. aplicación visible;
-6. shell/router montado;
-7. rail construido;
-8. ruta funcional activa;
-9. módulo renderizado;
-10. highlight de navegación;
-11. datos autorizados.
+```text
+AUTH_READY
+→ CLAIMS_READY
+→ MEMBERSHIP_READY
+→ DATA_READY
+→ SHELL_READY
+→ ROUTE_READY
+→ VIEW_READY
+→ DOMAIN_READY
+```
 
-`#app.on` no prueba por sí solo que el router y el rail estén listos.
+Cada estado tiene una condición, snapshot, timeout y error específico.
 
-## 3. Lección nueva del runtime
+El highlight del menú es evidencia visual, pero no reemplaza la autoridad de ruta y render.
 
-La reejecución posterior al route fix terminó:
+## 3. Transacciones separadas
 
-`FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK`.
+Academia debe diferenciar:
 
-Etapa interna:
+### Acceso
 
-`client_route_wait`.
+```text
+snapshot → apply si hace falta → idempotencia → readback → rollback dry-run → PASS_ACCESS
+```
 
-El código demuestra que:
+### Runtime read-only
 
-- `openAndLogin()` espera Auth, HR y `#app.on`;
-- `CX.app.enter()` activa `#app.on` antes de `CX.router.mount()`;
-- el mount puede quedar diferido detrás del gate de confidencialidad;
-- el gate esperaba simultáneamente ruta, nav activa, encabezado y texto.
+```text
+HR viva → paridad → único browser gate multirol
+```
 
-Patrón reusable:
+Un fallo de Finanzas, Reservas o navegación posterior no debe deshacer automáticamente un acceso que ya pasó su propia prueba.
 
-- separar `AUTH_READY` y `SHELL_READY`;
-- no convertir un estado visual temprano en señal de readiness total;
-- no usar condiciones compuestas en esperas críticas;
-- capturar cada booleano al producirse un timeout;
-- tratar ruta/render y highlight como pruebas distintas;
-- conservar rollback exacto y la etapa original del fallo.
+## 4. Pruebas dentro de la plataforma
 
-## 4. Rollback y seguridad
+Se incorpora como patrón reusable, tomado del proyecto Finanzas sin copiar su dominio:
 
-`PASS_C6_CLIENT_AUTH_MEMBERSHIP_ROLLBACK_EXACT`.
+- escenarios realistas `AUDIT-*`;
+- ejecución visible en DEV;
+- PASS, FAIL o BLOCKED por etapa;
+- actividad observable en los módulos;
+- sincronización entre módulos;
+- tres recargas y nueva pestaña;
+- screenshots y timeline;
+- fingerprints antes/después;
+- cleanup exacto;
+- `baselineRestoredAfterCleanup=true`.
 
-- membership temporal eliminado;
-- claims finales sin cambio;
-- usuarios y password changes: 0;
-- Firestore de negocio/HR/Rules/Storage: 0;
-- deploy/merge/producción: 0.
+Lección central:
 
-## 5. Cloud V6
+> una prueba de archivos o DOM no sustituye la demostración de que una operación real puede atravesar el producto y reflejarse correctamente en sus módulos relacionados.
 
-Archivo recibido:
+## 5. Primer release slice
 
-`Prototype development request V6.zip`.
+La primera salida operativa prioriza:
 
-SHA-256:
+`ADMIN/OPERACIONES + SHOPPER`.
 
-`0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407`.
+El Portal Cliente queda en un corte paralelo. Academia debe señalarlo de manera honesta: no bloquea el primer cutover, pero tampoco se considera terminado.
 
-Estado:
+## 6. Gates source-only
 
-`NOT_AUDITED__EXECUTION_LANE_NOT_READY`.
+Resultados de la sesión:
 
-Academia no debe usar todavía sus capturas, componentes ni nomenclatura como autoridad.
+```text
+PASS_FORENSIC_CONTROL_PLANE_STABILIZATION
+PASS_C6_CLIENT_ROUTE_SOURCE_STATIC
+```
 
-## 6. Clasificación
+- blockers: 0;
+- warnings: 0;
+- sin credenciales;
+- sin navegador/runtime;
+- sin provider reads/writes;
+- sin deploy.
 
-- **Reusable CXOrbia:** Auth ready, shell ready, ruta, render y navegación como capas independientes.
-- **Exclusivo TyA:** membership y alcance `tya/cinepolis`.
-- **Cloud/prototipo:** V6 recibida, no auditada.
-- **Academia:** patrón de ciclo de vida y trazabilidad de rollback.
-- **Sin impacto frontend:** el runtime no modificó `app/`.
+No existe telemetría remota verificable del runner; no se presenta como PASS de Actions.
+
+## 7. Seguridad y rollback
+
+El runtime previo terminó con rollback exacto y producción intacta. El nuevo diseño exige:
+
+- SHA fuente inmutable;
+- requestId estable;
+- evidencia sanitizada;
+- transacciones separadas;
+- cleanup exacto para datos de auditoría;
+- falla de cleanup clasificada como P0 del laboratorio.
+
+## 8. Clasificación
+
+- **Reusable CXOrbia:** state machine, control plane único, laboratorio, fingerprints y cleanup.
+- **Exclusivo TyA:** rutas de Admin/Operaciones y Shopper y ejemplos `tya/cinepolis`.
+- **Cloud/prototipo:** V6 pendiente de auditoría acumulativa.
+- **Academia:** materiales actualizados conceptualmente; capturas definitivas pendientes.
+- **Sin impacto frontend:** ningún archivo funcional `app/` cambió en este macrobloque.
