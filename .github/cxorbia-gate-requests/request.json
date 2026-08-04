@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "phase-a-final-composition-preflight-v174-r20-20260804-01",
-  "enabled": true,
+  "requestId": "phase-a-final-composition-static-gate-maintenance-20260804-01",
+  "enabled": false,
   "issuedAt": "2026-08-04",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "57b66555c57b8a0daadd1dccd997aa64d711cbd7",
-  "profile": "V174_R20_M1_CORTE2A",
+  "targetHeadSha": "057e9a5eac20ea515a6d2e1a1f91fa966496e2ec",
+  "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": [
-    "V174_R20_M1_CORTE2A"
+    "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
   ],
   "allowedExecutions": 1,
   "repositoryWrites": false,
