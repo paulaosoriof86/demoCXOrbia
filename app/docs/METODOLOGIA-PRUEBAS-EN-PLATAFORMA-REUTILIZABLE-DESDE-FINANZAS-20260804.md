@@ -261,4 +261,4 @@ La implementación y ejecución requieren un macrobloque posterior con límites,
 - **Exclusivo TyA:** rutas y ejemplos de Hoja de Ruta, Visitas, Postulaciones, Shoppers y Phase A financiera.
 - **Cloud/prototipo:** únicamente presentación visual del laboratorio si posteriormente se solicita; Cloud no implementa backend ni ejecución.
 - **Academia:** patrón de validación visible y reproducible.
-- **Sin impacto producción:** diseño/documentación בלבד; no se ejecutaron escenarios ni se modificó `app/`.
+- **Sin impacto producción:** solo diseño/documentación; no se ejecutaron escenarios ni se modificó `app/`.
