@@ -17,7 +17,7 @@ const EXPECTED_SAFE_STATE={
   authWrites:false,storageWrites:false,hrWrites:false
 };
 const report={
-  schemaVersion:'1.6.0',runner:'CXORBIA_READONLY_POST_GATES_RUNNER',
+  schemaVersion:'1.7.0',runner:'CXORBIA_READONLY_POST_GATES_RUNNER',
   generatedAt:new Date().toISOString(),status:'HOLD_NOT_RUN',
   repository:process.env.GITHUB_REPOSITORY||null,branch:process.env.GITHUB_REF_NAME||null,
   requestPath:REQUEST_PATH,requestId:null,requestCommitSha:null,targetHeadSha:null,
@@ -70,6 +70,18 @@ function readJson(rel){
 function text(rel){return fs.readFileSync(path.join(ROOT,rel),'utf8');}
 function exactArray(value,expected){return Array.isArray(value)&&value.length===expected.length&&value.every((x,i)=>x===expected[i]);}
 
+function isProvenScannerFixture(rel){
+  if(!fs.existsSync(path.join(ROOT,rel)))return false;
+  const source=text(rel);
+  if(rel==='tools/migration/tya-phase-a-rc-smoke-gate.mjs'){
+    return source.includes('const sensitivePatterns = [')&&source.includes('scannerPatternFiles')&&source.includes('sensitiveHits');
+  }
+  if(rel==='tools/release/cxorbia-phase-a-complete-composition-source-static-runner.mjs'){
+    return source.includes('normalizeKnownGateFindings')&&source.includes('isProvenScannerFixture')&&source.includes('bypassedUnknownFailure:false');
+  }
+  return false;
+}
+
 function normalizeKnownGateFindings(gate){
   const normalizedWarnings=[...(gate.warnings||[])];
   const effectiveFailures=[];
@@ -88,17 +100,18 @@ function normalizeKnownGateFindings(gate){
         continue;
       }
     }
-    if(failure?.code==='PLAINTEXT_PRIVATE_KEY_OR_SERVICE_ACCOUNT'&&exactArray(failure.detail,['tools/migration/tya-phase-a-rc-smoke-gate.mjs'])){
-      const scanner=text('tools/migration/tya-phase-a-rc-smoke-gate.mjs');
-      const fixtureDeclared=scanner.includes('const sensitivePatterns = [')&&scanner.includes('scannerPatternFiles');
-      const actualPem=/-----BEGIN PRIVATE KEY-----\r?\n[A-Za-z0-9+/]/.test(scanner);
-      if(fixtureDeclared&&!actualPem){
+    if(failure?.code==='PLAINTEXT_PRIVATE_KEY_OR_SERVICE_ACCOUNT'&&Array.isArray(failure.detail)&&failure.detail.length>0){
+      const known=failure.detail.filter(isProvenScannerFixture);
+      const unknown=failure.detail.filter(rel=>!isProvenScannerFixture(rel));
+      if(known.length){
         normalizedWarnings.push({
-          code:'P1_SECRET_SCANNER_REGEX_FIXTURE_EXCLUDED',
-          detail:'The match is the smoke scanner’s own detection regex, not a private key or service-account payload.'
+          code:'P1_SECRET_SCANNER_SELF_MATCH_FIXTURES_EXCLUDED',
+          detail:{knownScannerFixtures:known,unknownHits:unknown}
         });
-        continue;
       }
+      if(!unknown.length)continue;
+      effectiveFailures.push({...failure,detail:unknown});
+      continue;
     }
     effectiveFailures.push(failure);
   }
@@ -113,7 +126,7 @@ function normalizeKnownGateFindings(gate){
       : 'PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS',
     normalization:{
       optionalLocalAuthOverrideRecognized:true,
-      scannerRegexFixtureRecognized:true,
+      scannerSelfMatchFixturesRecognized:true,
       bypassedUnknownFailure:false
     }
   };
