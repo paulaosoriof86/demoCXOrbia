@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "c6-client-route-source-static-validation-20260804-01",
+  "requestId": "c6-client-route-source-static-validation-20260804-02",
   "enabled": false,
   "issuedAt": "2026-08-04",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "1b1f03c0c033748cef605420215d484d17fb7c55",
+  "targetHeadSha": "aeee5a560d419bc80facb61f5d2f40fff781a9e5",
   "profile": "SOURCE_ONLY_CONTRACT_VALIDATION",
   "allowedProfiles": [
     "SOURCE_ONLY_CONTRACT_VALIDATION"
