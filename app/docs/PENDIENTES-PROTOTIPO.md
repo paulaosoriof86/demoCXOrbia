@@ -1,124 +1,110 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-04  
-**Estado vivo:** `SOURCE_STATIC_PASS__CLIENT_ROUTE_SOURCE_STATIC_PASS__RUNTIME_RETRY_NOT_AUTHORIZED__CLOUD_V5_HOLD__NO_PRODUCTION`
+**Estado vivo:** `CLIENT_RUNTIME_ROUTE_WAIT_FAIL__ROLLBACK_EXACT__LIFECYCLE_ROOT_CAUSE_PROVEN__CLOUD_V6_NOT_AUDITED_LANE_BLOCKED__NO_PRODUCTION`
 
-## 1. Estado del acceso Cliente
+## 1. Bloqueante backend vigente
 
-La última reejecución Cliente terminó en rollback exacto:
+La solicitud one-shot `c6-client-access-repair-runtime-20260804-routefix-01` fue consumida exactamente una vez.
+
+Resultado:
 
 `FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK`.
 
-No quedó ningún cambio incompleto en proveedor.
+Etapa interna:
 
-Estado restaurado:
+`client_route_wait`.
 
-- identidad Cliente canónica existente;
-- claims sin alteración final;
-- membership temporal eliminado;
-- usuarios creados: 0;
-- passwords cambiados o restablecidos: 0;
-- producción intacta.
+Error:
 
-## 2. Causas raíces confirmadas y estado
+`page.waitForFunction: Timeout 30000ms exceeded`.
 
-- selector Cliente regresivo: corregido;
-- membership faltante: diagnosticado y revertido;
-- nombre histórico `CX.modules.cliente`: corregido a `cli_dashboard`;
-- ruta Cliente no explícita: corregida y gateada.
+Rollback:
 
-El correctivo source-only ahora:
+`PASS_C6_CLIENT_AUTH_MEMBERSHIP_ROLLBACK_EXACT`.
 
-- navega explícitamente a `cli_dashboard`;
-- espera ruta activa y marker `#view .ph`;
-- separa `clientModule`, `route`, `panorama` y `blocked`;
-- emite errores específicos;
-- conserva la etapa original antes del rollback.
+El preestado quedó restaurado: membership temporal eliminado, claims sin cambio, usuarios/password changes en cero y producción intacta.
 
-Gate focal:
+## 2. Causa raíz identificada
 
-- run `30936681878`;
-- job `92084479259`;
-- `PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT`;
-- gate interno `PASS_C6_CLIENT_ROUTE_SOURCE_STATIC`;
-- blockers 0;
-- warnings 0;
-- provider reads 0;
-- runtime 0;
-- writes 0.
+El helper de login considera listo el acceso cuando Auth, HR y `#app.on` están activos. Sin embargo:
 
-## 3. Autoridad HR viva
+- `CX.app.enter()` activa `#app.on` antes de `CX.router.mount()`;
+- `router.mount()` puede quedar diferido por confidencialidad;
+- el gate exige inmediatamente `session.view`, nav activa, encabezado y texto;
+- el nav solo existe después de construir el rail.
 
-- 15 periodos;
-- 660 visitas;
-- 209 shoppers.
+Por tanto, el gate confundía **app visible** con **shell/router listo**. El PASS source/static anterior validó marcadores, no el orden temporal real.
 
-No restaurar conteos o meses congelados.
+## 3. Pendiente source-only inmediato
 
-## 4. Pendiente inmediato backend
+1. separar `AUTH_READY` de `SHELL_READY`;
+2. esperar router y rail antes de navegar;
+3. hacer observable `confidentialityPending`;
+4. capturar en timeout `sessionRole`, `sessionView`, `routerAvailable`, `railBuilt`, `navItemPresent`, `navActive`, `pageHeader` y `viewRendered`;
+5. validar ruta/render y highlight como capas separadas;
+6. ejecutar sintaxis y gate local/estático;
+7. detenerse antes de otro runtime.
 
-El bloque source-only está cerrado. No hay autorización runtime vigente.
+No corresponde reintentar con la autorización consumida.
 
-Próximo macrobloque, solo con autorización expresa:
+## 4. Cloud V6 recibida
 
-1. snapshot Cliente;
-2. membership idempotente y claims solo si fuera necesario;
-3. readback;
-4. runtime Staff, Cliente y Shopper;
-5. tres recargas y nueva pestaña;
-6. HR dinámica, Finanzas, portales y Reservas;
-7. conservar membership solo con PASS;
-8. rollback automático ante fallo.
+Archivo:
 
-No corresponde otra auditoría general.
+`Prototype development request V6.zip`.
 
-## 5. Cloud V5/V6
+SHA-256:
 
-V5 permanece:
+`0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407`.
 
-`HOLD_CLOUD_V5_FRONTEND__NO_APROBADO_PARA_INTEGRACION`.
+Estado:
 
-V6 debe incluir:
+`NOT_AUDITED__EXECUTION_LANE_NOT_READY`.
 
-- Login y órbita refinados;
-- responsive P1;
-- PDF P1;
-- Excel P2;
-- opción Regional;
-- copy delegado;
-- Ficha Shopper;
-- evidencia y manifest completos.
+El ZIP está extraído, pero falta checkout autenticado de la rama viva en la misma sesión. El entorno local no resuelve `github.com`; el conector no sustituye el checkout exigido ni permite un empalme fragmentado archivo por archivo.
 
-Cloud no toca backend, Auth, datos, cálculos, permisos, deploy ni producción.
+No se declaró GO/HOLD y no se aplicó ningún delta.
 
-## 6. Secuencia posterior
+## 5. Regla de composición V6
 
-```text
-RUNTIME MULTIROL AUTORIZADO
-→ AUDITORÍA FOCAL CLOUD V6
-→ APPLY_DELTA_DIRECTLY SOLO CON GO
-→ GATES
-→ DEV ÚNICO SI CAMBIA app/
-→ CHECKPOINT VISUAL PHASE A COMPLETA
-→ FREEZE
-→ PERIODO NUEVO/DISPONIBLES/POSTULACIONES
-→ CUTOVER AUTORIZADO
-```
+La candidata se auditará contra el HEAD vivo como una sola composición acumulativa. Debe preservar todo lo aprobado y separar:
 
-## 7. Warnings P1/P2 vivos
+- delta nuevo V6;
+- mejoras válidas heredadas de V5;
+- pendientes P1/P2 realmente atendidos;
+- regresiones;
+- archivos redundantes o parciales;
+- elementos que no correspondan al frontend.
 
-- overlay A+B superseded;
+Nunca se empalmará únicamente el Login ni una colección de módulos sueltos.
+
+## 6. Warnings P1/P2 vivos
+
+- overlay A+B superseded aún cargado;
 - PDF puede omitir gráficas;
 - Excel mantiene formato básico;
-- responsive parcial.
+- responsive parcial en superficies densas;
+- Cloud V6 todavía no auditada.
+
+## 7. Secuencia exacta
+
+```text
+SOURCE-ONLY CLIENT SHELL READINESS ROOT FIX
+→ PASS LOCAL/ESTÁTICO
+→ EXECUTION_LANE_READY
+→ AUDITORÍA FOCAL ACUMULATIVA CLOUD V6
+→ APPLY_DELTA_DIRECTLY SOLO SI GO Y SIN P0
+→ GATES
+→ DEV ÚNICO SI CAMBIA app/
+```
 
 ## 8. Estado seguro
 
 - cambios funcionales `app/`: 0;
-- provider reads: 0;
-- Auth/Firestore/membership writes: 0;
+- estado proveedor restaurado: sí;
+- Firestore de negocio/HR/Rules/Storage: 0;
 - Hosting/Cloud Run: 0;
-- HR/Rules/Storage: 0;
 - Make/Gemini/pagos: 0;
 - merge: false;
 - producción: intacta.
