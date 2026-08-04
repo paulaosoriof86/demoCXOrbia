@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-08-04  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `CLIENT_RUNTIME_ROUTE_WAIT_FAIL__ROLLBACK_EXACT__LIFECYCLE_ROOT_CAUSE_PROVEN__CLOUD_V6_NOT_AUDITED_LANE_BLOCKED__NO_PRODUCTION`
+**Estado vivo:** `FORENSIC_CONTROL_PLANE_SOURCE_STATIC_PASS_LOCAL__CORE_OPERATIONS_SHOPPER_RELEASE_SLICE_DEFINED__CLOUD_V6_NOT_AUDITED__NO_RUNTIME__NO_PRODUCTION`
 
 ## 0. Lock prevalente
 
@@ -10,23 +10,27 @@
 
 - repo `paulaosoriof86/demoCXOrbia`;
 - rama `docs-tya-v6-v71-audit`;
-- PR #7 draft/open/no merge.
+- PR #7 draft/open/no merge;
+- producción `tya-plataforma` intacta.
 
-Producción `tya-plataforma` intacta. No crear candidata, shell, rama, PR, Firebase, Hosting o metodología paralela.
+No crear candidata, shell, rama, PR, Firebase, Hosting o metodología paralela. Cloud V6 se evalúa y empalma como composición acumulativa única.
 
 ## 1. Fuentes activas — orden obligatorio
 
 1. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `CAMBIOS-BACKEND-ADDENDUM-C6-CLIENT-RUNTIME-ROUTE-WAIT-20260804.md`;
-3. `app/docs/evidence/CORTE6-CLIENT-ACCESS-RUNTIME-FAILURE-LATEST.json`;
-4. `CAMBIOS-BACKEND-ADDENDUM-C6-CLIENT-ROUTE-SOURCE-STATIC-20260804.md`;
-5. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-6. `PROMPT-CLOUD-FRONTEND-ACUMULADO-V6-20260804.md`;
-7. `RESUMEN-PARA-CLAUDE.md`;
-8. `PENDIENTES-PROTOTIPO.md`;
-9. `MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json`;
-10. reglas maestras/addenda activos;
-11. PR #7 y HEAD vivo.
+2. `CAMBIOS-BACKEND-ADDENDUM-FORENSIC-CONTROL-PLANE-STABILIZATION-20260804.md`;
+3. `backend/contracts/cxorbia-active-runtime-control-plane-v1.json`;
+4. `backend/contracts/tya-phase-a-core-operations-shopper-release-slice-v1.json`;
+5. `METODOLOGIA-PRUEBAS-EN-PLATAFORMA-REUTILIZABLE-DESDE-FINANZAS-20260804.md`;
+6. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+7. `CAMBIOS-BACKEND-ADDENDUM-C6-CLIENT-RUNTIME-ROUTE-WAIT-20260804.md`;
+8. `app/docs/evidence/CORTE6-CLIENT-ACCESS-RUNTIME-FAILURE-LATEST.json`;
+9. `PROMPT-CLOUD-FRONTEND-ACUMULADO-V6-20260804.md`;
+10. `RESUMEN-PARA-CLAUDE.md`;
+11. `PENDIENTES-PROTOTIPO.md`;
+12. `MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json`;
+13. reglas maestras/addenda activos;
+14. PR #7 y HEAD vivo.
 
 ## 2. Autoridades preservadas
 
@@ -35,39 +39,71 @@ Producción `tya-plataforma` intacta. No crear candidata, shell, rama, PR, Fireb
 - source/static acumulativo 53/53 PASS;
 - M1/Corte 1, Corte 2A/V174 y Corte 3/V182 preservados;
 - HR viva conocida: 15 periodos, 660 visitas y 209 shoppers;
+- Finanzas y Reservas canónicas preservadas;
 - producción intacta.
 
-## 3. Runtime Cliente posterior al route fix
+## 3. Causa sistémica y estabilización
 
-Solicitud:
+Causa confirmada:
 
-`c6-client-access-repair-runtime-20260804-routefix-01`.
+`CONTROL PLANE FRAGMENTADO + GATES DUPLICADOS + READINESS CONTRADICTORIO + TRANSACCIÓN MONOLÍTICA + SOURCE HEAD MÓVIL`.
 
-- commit de autorización `f95adea1073633e7e6d638183ff4ec04bedaf979`;
-- commit de evidencia `7924b1c83bc99e6fdf9a4d081e1bb6c11d24aefc`;
-- consumida una sola vez;
-- resultado `FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK`;
-- etapa interna `client_route_wait`;
-- timeout 30 segundos;
-- rollback exacto PASS.
+Correctivo source-only materializado:
 
-## 4. Causa raíz vigente
+```text
+AUTH_READY
+→ CLAIMS_READY
+→ MEMBERSHIP_READY
+→ DATA_READY
+→ SHELL_READY
+→ ROUTE_READY
+→ VIEW_READY
+→ DOMAIN_READY
+```
 
-`openAndLogin()` prueba Auth, HR y `#app.on`, pero `CX.app.enter()` activa `#app.on` antes de `CX.router.mount()`. El mount puede quedar diferido por confidencialidad. El gate después exige ruta, nav activa, encabezado y texto en una sola espera.
+Además:
 
-La causa es un contrato de ciclo de vida incorrecto: **app visible no equivale a shell/router/rail listo**.
+- una sola autoridad browser futura;
+- acceso/membership separado del runtime read-only;
+- checkout detached por SHA inmutable;
+- nav highlight separado de la autoridad de ruta/render;
+- snapshots y clasificación por etapa;
+- gates históricos preservados pero fuera del camino activo.
 
-Pendiente:
+Gates deterministas ejecutados en la sesión:
 
-- separar `AUTH_READY` y `SHELL_READY`;
-- snapshot de timeout por condición;
-- confidencialidad pendiente observable;
-- ruta/render y highlight separados;
-- gate local/estático antes de otro runtime.
+```text
+PASS_FORENSIC_CONTROL_PLANE_STABILIZATION
+PASS_C6_CLIENT_ROUTE_SOURCE_STATIC
+```
 
-## 5. Cloud V6
+Blockers 0, warnings 0. No se declara PASS remoto de Actions porque no hubo telemetría verificable expuesta por el conector.
 
-Recibido:
+## 4. Estrategia de producción
+
+Primer corte operativo definido:
+
+`ADMIN/OPERACIONES + SHOPPER`.
+
+El Portal Cliente se valida en un corte paralelo y no bloquea el cutover inicial. Esto no autoriza producción ni permite presentar Cliente como terminado.
+
+## 5. Pruebas dentro de la plataforma
+
+Se adopta únicamente el patrón reusable del proyecto Finanzas:
+
+- escenarios realistas y temporales `AUDIT-*`;
+- ejecución visible dentro de DEV;
+- PASS/FAIL/BLOCKED por etapa;
+- validación entre módulos;
+- tres recargas y pestaña nueva;
+- capturas, timeline y fingerprints;
+- cleanup exacto con `baselineRestoredAfterCleanup=true`.
+
+No se copia lógica ni datos del dominio financiero.
+
+## 6. Cloud V6
+
+Archivo:
 
 `Prototype development request V6.zip`.
 
@@ -79,26 +115,29 @@ Estado:
 
 `NOT_AUDITED__EXECUTION_LANE_NOT_READY`.
 
-El ZIP está extraído. Falta checkout autenticado de la rama viva en la misma sesión; el entorno local no resuelve `github.com`. No se inició auditoría, no se declaró GO/HOLD y no se aplicó delta alguno.
+No existe GO/HOLD sobre V6 y no se aplicó delta.
 
-## 6. Siguiente bloque exacto
+## 7. Siguiente bloque exacto
 
 ```text
-SOURCE-ONLY CLIENT SHELL READINESS ROOT FIX
-→ GATE LOCAL/ESTÁTICO
-→ EXECUTION_LANE_READY CON CHECKOUT AUTENTICADO
-→ AUDITORÍA FOCAL ACUMULATIVA CLOUD V6
-→ APPLY_DELTA_DIRECTLY SOLO SI GO Y SIN P0
+EXECUTION_LANE_READY
+→ AUDITORÍA ACUMULATIVA CLOUD V6
+→ APPLY_DELTA_DIRECTLY SOLO SI GO SIN P0
+→ SOURCE/STATIC
+→ LABORATORIO DEV CORE_OPERATIONS_ADMIN + SHOPPER_FULL_CYCLE
+→ CLEANUP EXACTO
+→ CHECKPOINT VISUAL HUMANO
+→ DECISIÓN DE CUTOVER ADMIN/OPERACIONES + SHOPPER
 ```
 
-## 7. Estado seguro
+## 8. Estado seguro
 
 - cambios funcionales `app/`: 0;
-- membership temporal eliminado;
-- claims finales sin cambio;
-- usuarios/password changes: 0;
-- Firestore de negocio/HR/Rules/Storage: 0;
+- runtime con credenciales: 0;
+- provider reads/writes: 0;
+- Auth/Firestore/membership writes: 0;
 - Hosting/Cloud Run: 0;
+- HR/Rules/Storage: 0;
 - Make/Gemini/pagos: 0;
 - merge: false;
 - producción: intacta.
