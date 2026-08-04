@@ -25,7 +25,7 @@ Sus hallazgos ya están convertidos en decisiones, owners y gates mediante:
 - `MATRIZ-TRAZABILIDAD-FORENSE-A-IMPLEMENTACION-Y-CLAUDE-20260804.md`;
 - manifest final Phase A;
 - gate source/static;
-- contratos Auth, HR, Finanzas, reportes y multi-país.
+- contratos Auth, HR, Finanzas y reportes.
 
 ## 3. Autoridades cerradas
 
@@ -88,15 +88,22 @@ PASS portable:
 - inventario de marca;
 - sin Auth/JWT/localStorage/PII URL.
 
-Bloqueos:
+Bloqueos vigentes:
 
 1. `preview-mobile.png` mide `924×540`; no demuestra móvil;
-2. selector 4–12+ países no cumple búsqueda/multiselect/+N/recientes;
+2. las banderas deben recibir y mostrar dinámicamente todos los países configurados para el tenant;
 3. `--gcx-navy-2` se usa y no está definido;
 4. README fija un HEAD histórico;
 5. no contiene ruta/bridge/single-login, por lo que no es candidata acumulativa.
 
-Prompt correctivo:
+Corrección de criterio:
+
+- el Login no implementa selector operativo multi-país;
+- no debe usar `+N`, multiselect, búsqueda ni `Todos mis países`;
+- debe mostrar todas las banderas configuradas para el tenant;
+- permisos, monedas, scopes y reglas no corresponden a Claude ni al componente portable.
+
+Prompt correctivo vigente:
 
 `PROMPT-CLAUDE-CORRECCION-LOGIN-PORTABLE-V4-20260804.md`.
 
@@ -104,19 +111,19 @@ Claude no debe tocar GitHub ni backend.
 
 ## 6. Separación de responsabilidades
 
-### Claude
+### Claude — frontend portable únicamente
 
 - corregir Login portable;
-- tokens;
+- tokens CSS;
 - i18n;
 - órbita;
 - responsive con evidencia real;
-- selector multi-país;
+- banderas dinámicas del tenant;
 - FAB;
 - mockup shopper;
 - inventario de marca visible.
 
-### ChatGPT
+### ChatGPT — integración y backend
 
 - bridge Firebase Auth;
 - ruta e integración single-login;
@@ -156,7 +163,7 @@ No solicitar todavía aprobación visual final.
 
 En paralelo:
 
-1. Claude corrige el paquete v4 según el prompt focal;
+1. Claude corrige el paquete v4 según el prompt frontend-only;
 2. ChatGPT prepara y ejecuta el gate runtime multirol acumulativo sobre la candidata canónica actual.
 
 Luego:
