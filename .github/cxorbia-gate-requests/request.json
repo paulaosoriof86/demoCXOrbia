@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "corte4-cxdata-firestore-readonly-hardening-20260729-03",
+  "requestId": "phase-a-final-composition-preflight-v174-r20-20260804-01",
   "enabled": true,
-  "issuedAt": "2026-07-29",
+  "issuedAt": "2026-08-04",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "3e4e88f06b6d0d517b5055d9955e8353eed5916c",
-  "profile": "CORTE4_CXDATA_FIRESTORE_READONLY",
+  "targetHeadSha": "57b66555c57b8a0daadd1dccd997aa64d711cbd7",
+  "profile": "V174_R20_M1_CORTE2A",
   "allowedProfiles": [
-    "CORTE4_CXDATA_FIRESTORE_READONLY"
+    "V174_R20_M1_CORTE2A"
   ],
   "allowedExecutions": 1,
   "repositoryWrites": false,
@@ -17,7 +17,7 @@
   "deploy": false,
   "merge": false,
   "production": false,
-  "sourceLockDocument": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
+  "sourceLockDocument": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
   "safeState": {
     "repositoryWrites": false,
     "dataWrites": false,
