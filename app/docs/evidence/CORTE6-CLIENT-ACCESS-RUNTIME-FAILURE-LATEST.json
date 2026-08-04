@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.c6.client-access-repair-runtime-failure.v2",
-  "generatedAt": "2026-08-04T15:34:50.900Z",
+  "generatedAt": "2026-08-04T17:06:09.791Z",
   "decision": "FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK",
   "failedStage": "rollback_after_failure",
-  "errorCode": "COMMAND_FAILED:runtime_domain_finance_portals_reservations:__schemaVersion_:_cxorbia.c6.remote-domain-finance-portals-reservations.failure.v2___generatedAt_:_2026-08-04T15:34:49.618Z___decision_:_FAIL_C6_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS___failedStage_:_staff_assertions___errorCode_:_CANONICAL_MODULE_MISSING___partial_:__staff_:__role_:_coordinador___namespace_:_staff___tenantId_:_tya___projectIds_:__cinepolis____authority_:__applied_:true__periods_:15__visits_:660__shoppers_:209__first",
+  "errorCode": "COMMAND_FAILED:runtime_domain_finance_portals_reservations:__schemaVersion_:_cxorbia.phase-a.remote-domain-finance-portals-reservations.dynamic.failure.v1___generatedAt_:_2026-08-04T17:06:08.325Z___decision_:_FAIL_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC___failedStage_:_client_assertions___errorCode_:_CLIENT_PORTAL_INVALID___partial_:__staff_:__role_:_coordinador___namespace_:_staff___tenantId_:_tya___projectIds_:__cinepolis____authority_:__applied_:true__periods_:15__visits_:6",
   "rollback": {
     "schemaVersion": "cxorbia.c6.client-auth-membership-rollback.v2",
     "decision": "PASS_C6_CLIENT_AUTH_MEMBERSHIP_ROLLBACK_EXACT",

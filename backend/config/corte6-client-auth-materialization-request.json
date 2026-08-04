@@ -6,9 +6,9 @@
   "retryReason": "domain gate corrected to canonical modules and dynamic live period",
   "authorizedAt": "2026-08-04T11:01:00-06:00",
   "authorizedBy": "Paula",
-  "status": "authorized_final_retry",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_fail",
+  "enabled": false,
+  "consumed": true,
   "allowedExecutions": 1,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -51,5 +51,9 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false
+  "production": false,
+  "consumedAt": "2026-08-04T17:06:10.273Z",
+  "decision": "FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK",
+  "nextGate": "STOP_RETRY_ROOT_CAUSE_REQUIRED",
+  "failedStage": "rollback_after_failure"
 }
