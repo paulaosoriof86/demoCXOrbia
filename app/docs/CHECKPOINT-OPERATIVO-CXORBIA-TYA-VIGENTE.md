@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-04  
-**Estado:** `PHASE_A_FINAL_COMPOSITION_MANIFEST_SOURCE_COMPLETE__STATIC_GATE_PENDING_EXECUTION__NO_PRODUCTION`
+**Estado:** `SOURCE_STATIC_PASS__RUNTIME_MULTIROLE_PENDING__CLAUDE_PORTABLE_V4_HOLD__NO_PRODUCTION`
 
 ## 1. Decisión prevalente
 
@@ -17,124 +17,128 @@ Producción `tya-plataforma` permanece intacta.
 
 ## 2. Autoridades históricas preservadas
 
-No reabrir desde cero:
-
 - RC Phase A smoke técnico y visual/consola PASS;
 - M1/Corte 1 frozen/aprobado;
 - Corte 2A/V174 frozen/aprobado;
 - Corte 3/V182 frozen active baseline;
-- C6 entrada, HR, Staff, Shopper, Cliente, Finanzas, Portal Shopper y Reservas técnicamente PASS.
+- C6 entrada, HR, Staff, Shopper, Cliente, Finanzas, Portal Shopper y Reservas técnicamente PASS;
+- 29 decisiones únicas cerradas;
+- 0 restauraciones requeridas.
 
-## 3. Recuperación de SHAs cerrada
-
-Resultado acumulado:
-
-`29_UNIQUE_PRESERVE_OR_RECONCILE_DECISIONS_CLOSED__0_RESTORE_REQUIRED`.
-
-También quedaron cerradas las cinco autoridades que faltaban:
-
-- Ficha de visita;
-- Revisión Admin;
-- Documentos;
-- Costos;
-- `cliente-data.js`.
-
-Fuente:
-
-`COMPARACION-SHAS-PHASE-A-BLOQUE4-AUTORIDADES-Y-COMPOSICION-20260804.md`.
-
-## 4. Manifest final de composición
+## 3. Manifest final
 
 Fuente:
 
 `MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json`.
 
-Estado:
-
-`FINAL_COMPOSITION_MANIFEST_SOURCE_COMPLETE`.
-
-El manifest fija:
+Fija:
 
 - source lock C6;
-- árbol `app/` exacto;
-- blobs críticos;
+- 53 archivos críticos;
 - autoridades por archivo;
+- Auth, HR, composer y estados;
+- Finanzas y portales;
 - report kit;
-- orden de carga;
-- navegación y roles;
-- overlays;
-- módulos posteriores;
-- gates obligatorios.
+- load order;
+- navegación por rol;
+- overlays y gates.
 
-El árbol funcional `app/` no cambió durante este bloque.
+## 4. Gate source/static — PASS
 
-## 5. Report kit
+Ejecución:
 
-Proveedor:
+- request `phase-a-final-composition-source-static-20260804-04`;
+- run `30910224561`;
+- artifact `8892730161`;
+- request commit `601f8acf2622852baaeb57951dd765c336741948`.
 
-`app/modules/cliente-extra.js` → `CX.reportKit`.
+Resultado:
 
-Consumidores:
+```text
+PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
+```
 
-- Admin `informes`;
-- Shopper `mireportes`;
-- Cliente `cli_reportes`;
-- Finanzas.
+Evidencia:
 
-Formatos:
+- 53/53 blobs críticos exactos;
+- 111 scripts locales inventariados;
+- cero scripts duplicados;
+- orden canónico verificado;
+- módulos/registro/navegación completos para Admin, Cliente y Shopper;
+- report kit PDF/XLSX/PPTX presente;
+- dependencias externas fijadas;
+- repositorio sin delta después del gate;
+- cero provider/data writes.
 
-- PDF;
-- XLSX;
-- PPTX.
+## 5. Causa raíz del carril cerrada
 
-P1/P2 preservados:
+El FAIL previo no provenía de la aplicación. Provenía de:
 
-- algunas gráficas faltan en impresión PDF;
-- Excel conserva formato básico.
+1. runner histórico desalineado con nombres vigentes de gates;
+2. override Auth DEV local tratado erróneamente como asset obligatorio;
+3. escáner de secretos detectando sus propios patrones.
 
-## 6. Overlay superseded
+Correctivo:
 
-El entrypoint todavía carga:
+- runner focal para composición completa;
+- clasificación exacta del override gitignored;
+- exclusión solo de fixtures de scanner conocidos;
+- cualquier hit desconocido sigue bloqueando;
+- solicitud exitosa cerrada después de una ejecución.
 
-`app/adapters/tya-ab-cumulative-composition-v1.js`.
+## 6. Warnings vivos
 
-Clasificación:
+- `P1_SUPERSEDED_AB_OVERLAY_LOADED`;
+- PDF puede omitir algunas gráficas;
+- XLSX mantiene formato básico;
+- `backend-dev-auth.local.js` es override DEV opcional no versionado.
 
-`P1_SUPERSEDED_LOADED_OVERLAY__NOT_P0_PROVEN`.
+No son P0 demostrados.
 
-No se modifica sin gate de no pérdida.
+## 7. Claude portable v4
 
-## 7. Gate source/static
+Paquete:
 
-Creado:
+`Prototype development request (20).zip`  
+SHA-256: `862e415df3d3a24be09ffbd48cb74f98779a59d2a2265587969c1880b48841c9`.
 
-`tools/qa/tya-phase-a-complete-composition-source-gate.mjs`.
+Decisión:
 
-Valida:
+```text
+HOLD_CLAUDE_LOGIN_PORTABLE_V4__NOT_READY_FOR_APPLY_DELTA_DIRECTLY
+```
 
-- blobs;
-- scripts y estilos;
-- orden de carga;
-- módulos y navegación por rol;
-- report kit;
-- dependencias;
-- secrets;
-- warnings P1/P2.
+Bloqueos:
 
-Estado real:
+- preview móvil inválido: mide `924×540`;
+- selector multi-país no cumple 4–12+ países;
+- token `--gcx-navy-2` indefinido;
+- README fija HEAD histórico;
+- paquete no incluye bridge/ruta/single-login y no es candidata acumulativa.
 
-`SOURCE_STATIC_GATE_CREATED_NOT_EXECUTED`.
+Documentos:
 
-Causa exacta:
+- `AUDITORIA-FOCAL-CLAUDE-LOGIN-PORTABLE-V4-20260804.md`;
+- `PROMPT-CLAUDE-CORRECCION-LOGIN-PORTABLE-V4-20260804.md`;
+- `MATRIZ-TRAZABILIDAD-FORENSE-A-IMPLEMENTACION-Y-CLAUDE-20260804.md`.
 
-- el contenedor no dispone de `gh`;
-- `git` no resuelve `github.com`;
-- no existe checkout autenticado local;
-- no se creó ni activó workflow nuevo.
+No se aplicó ningún archivo del ZIP a `app/`.
 
-Por ello no se afirma PASS.
+## 8. Auditoría forense
 
-## 8. DEV actual
+No se requiere otra auditoría forense general ahora.
+
+La auditoría integral sigue vigente porque:
+
+- el árbol funcional continúa bajo el source lock;
+- el gate confirmó los 53 blobs;
+- no apareció una fuente contradictoria;
+- no se propuso sustituir la arquitectura canónica;
+- los hallazgos están trazados a owners, gates y acciones.
+
+Solo se harán auditorías focales de delta a nuevas entregas Claude o cambios autorizados.
+
+## 9. DEV actual
 
 `https://cxorbia-backend-dev.web.app/index-backend-dev.html`
 
@@ -142,25 +146,42 @@ Clasificación:
 
 `TECHNICAL_COMPARISON_BUILD__NOT_FINAL_PHASE_A_CANDIDATE`.
 
-No solicitar revisión humana todavía.
+## 10. Próxima secuencia obligatoria
 
-## 9. Próxima secuencia obligatoria
+En paralelo:
 
-`CHECKOUT AUTENTICADO → GATE SOURCE/STATIC → GATE RUNTIME MULTIROL → DELTA ÚNICO SOLO SI SE DEMUESTRA → DEV ÚNICO SI CAMBIA APP → CHECKPOINT_VISUAL_PHASE_A_COMPLETA → FREEZE → AGOSTO → CUTOVER`.
+```text
+CHATGPT: RUNTIME_MULTIROLE_ACCUMULATIVE_GATE
+CLAUDE: CORRECCION_PORTABLE_V4
+```
 
-## 10. Estado seguro
+Después:
 
-- archivos funcionales modificados: 0;
+```text
+AUDITORIA_UNICA_DELTA_CLAUDE
+→ APPLY_DELTA_DIRECTLY SOLO CON GO
+→ BRIDGE FIREBASE SEGURO
+→ GATES ACUMULATIVOS
+→ DEV ÚNICO SI CAMBIA APP
+→ CHECKPOINT_VISUAL_PHASE_A_COMPLETA
+→ FREEZE
+→ AGOSTO/DISPONIBLES/POSTULACIONES
+→ CUTOVER AUTORIZADO
+```
+
+## 11. Estado seguro
+
+- archivos funcionales `app/` modificados: 0;
 - Hosting deploy: 0;
 - Cloud Run/Firestore/Auth/Rules/Storage/HR writes: 0;
 - Make/Gemini/pagos: 0;
 - merge: false;
 - producción: intacta.
 
-## 11. Clasificación
+## 12. Clasificación
 
-- **Reusable CXOrbia:** manifest por blobs, composición y gate multirol.
+- **Reusable CXOrbia:** manifest, runner controlado, secret-scan exacto, auditoría focal y multi-país.
 - **Exclusivo cliente:** TyA/Cinépolis, HR, GT/HN, Q60/L200 y modelo delegado.
-- **Claude/prototipo:** trabajo portable separado, sin tocar la rama.
-- **Academia:** impacto documentado, publicación pendiente del PASS.
-- **Sin impacto Claude:** source locks, hashes y bloqueo del checkout local.
+- **Claude/prototipo:** Login portable v4 HOLD y prompt correctivo.
+- **Academia:** sin cambio funcional; gate posterior al Login.
+- **Sin impacto Claude:** Auth/HR/Finanzas/runtime/agosto/deploy.
