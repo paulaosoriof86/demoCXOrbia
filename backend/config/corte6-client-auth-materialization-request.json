@@ -4,9 +4,9 @@
   "authorizationId": "C6_CLIENT_ACCESS_REPAIR_RUNTIME_20260804",
   "authorizedAt": "2026-08-04T09:10:00-06:00",
   "authorizedBy": "Paula",
-  "status": "ready",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_fail",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -48,5 +48,9 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false
+  "production": false,
+  "consumedAt": "2026-08-04T15:34:51.521Z",
+  "decision": "FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK",
+  "nextGate": "STOP_RETRY_ROOT_CAUSE_REQUIRED",
+  "failedStage": "rollback_after_failure"
 }
