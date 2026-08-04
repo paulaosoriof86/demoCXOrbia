@@ -15,25 +15,21 @@ SHA-256:
 
 No se aplicó ningún archivo de V5 a `app/`.
 
-Fuente de auditoría:
-
-`AUDITORIA-FOCAL-CLOUD-LOGIN-PORTABLE-V5-20260804.md`.
-
 Fuente única para la siguiente entrega:
 
 `PROMPT-CLOUD-FRONTEND-ACUMULADO-V6-20260804.md`.
 
 ## 2. Trabajo frontend de Cloud
 
-Cloud debe trabajar acumulativamente sobre V5 y entregar una V6 que incluya:
+Cloud debe entregar una V6 acumulativa que incluya:
 
 1. Login y órbita refinados para desktop, tablet y móvil;
 2. branding dinámico del tenant;
 3. países dinámicos recibidos por props;
 4. responsive P1 en tablas, fichas, tarjetas y modales;
-5. PDF P1 con el reporte seleccionado y gráficas existentes válidas;
+5. PDF P1 con gráficas existentes válidas;
 6. Excel P2 con presentación útil;
-7. opción visual `Regional` en el wizard de proyectos;
+7. opción visual `Regional`;
 8. copy correcto del modelo financiero delegado;
 9. Ficha Shopper presentacional responsive;
 10. capturas reales, comparación V5/V6 y manifest completo.
@@ -44,12 +40,11 @@ No reconstruir desde cero y no devolver una entrega parcial.
 
 En desktop:
 
-- la órbita es demasiado grande;
-- domina el panel izquierdo;
-- la franja blanca transversal rompe la composición;
-- el formulario es demasiado alto;
-- el núcleo, glow, anillos, nodos y labels compiten entre sí;
-- la composición queda por debajo de la calidad visual de la referencia Emergent.
+- órbita demasiado grande;
+- franja transversal pesada;
+- formulario demasiado alto;
+- jerarquía visual inferior a la referencia Emergent;
+- evidencia responsive inválida y fuera del manifest.
 
 Objetivo `1440×900`:
 
@@ -77,8 +72,6 @@ Escenarios de países:
 
 Todas las capturas deben figurar en `MANIFEST.json` con path, bytes y SHA-256.
 
-V5 no cumple este punto: sus archivos desktop y mobile miden ambos `924×540` y no están incluidos en el manifest.
-
 ## 5. Países
 
 Las banderas representan cobertura visual del tenant.
@@ -95,7 +88,7 @@ Cloud debe:
 
 ## 6. Fuera del alcance de Cloud
 
-No tocar ni intentar resolver:
+No tocar:
 
 - Firebase Auth;
 - claims o memberships;
@@ -110,18 +103,16 @@ No tocar ni intentar resolver:
 - deploy, freeze o producción;
 - Make, Gemini o pagos.
 
-Los textos financieros pueden corregirse visualmente, pero Cloud no calcula ni modifica reglas.
-
 ## 7. Estado backend paralelo — sin impacto Cloud
 
-La última reejecución Cliente terminó con rollback exacto. Después se corrigió exclusivamente el gate backend:
+Se corrigió exclusivamente el gate Cliente:
 
 - navegación explícita a `cli_dashboard`;
 - marker estable de ruta/render;
 - evidencia separada de módulo, ruta, Panorama y bloqueo;
 - etapa original preservada antes del rollback.
 
-El correctivo obtuvo:
+Resultado source/static:
 
 - run `30936681878`;
 - `PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT`;
@@ -130,7 +121,7 @@ El correctivo obtuvo:
 - writes 0;
 - runtime no reejecutado.
 
-Este punto no es una tarea frontend y no modifica el alcance ni los entregables de Cloud V6.
+Este punto no es una tarea frontend y no modifica los entregables de Cloud V6.
 
 ## 8. Entrega esperada
 
