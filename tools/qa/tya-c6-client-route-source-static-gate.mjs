@@ -14,7 +14,8 @@ const files={
   wrapper:'tools/qa/tya-phase-a-remote-domain-dynamic-wrapper.mjs',
   orchestrator:'tools/qa/cxorbia-c6-client-access-runtime-orchestrator.mjs',
   router:'app/core/router.js',
-  client:'app/modules/cliente.js'
+  client:'app/modules/cliente.js',
+  ui:'app/core/ui.js'
 };
 const add=(code,detail='')=>blockers.push(detail?`${code}:${detail}`:code);
 const pass=(code,detail='')=>checks.push(detail?`${code}:${detail}`:code);
@@ -47,12 +48,13 @@ if(!blockers.length){
   const orchestrator=read(files.orchestrator);
   const router=read(files.router);
   const client=read(files.client);
+  const ui=read(files.ui);
 
   requireMarker(router,'nav(id){','ROUTER_NAV_PRESENT');
   requireMarker(router,'CX.session.view=id; CX.session.save();','ROUTER_ROUTE_STATE_PRESENT');
   requireMarker(router,'this.render(id);','ROUTER_RENDER_PRESENT');
   requireMarker(client,"CX.module('cli_dashboard'",'CLIENT_DASHBOARD_MODULE_PRESENT');
-  requireMarker(client,'class="ph"','CLIENT_DASHBOARD_STABLE_PAGE_HEADER_PRESENT');
+  requireMarker(ui,'class="ph"','CLIENT_DASHBOARD_STABLE_PAGE_HEADER_PRESENT');
 
   requireMarker(gate,"window.CX.router.nav('cli_dashboard')",'CLIENT_EXPLICIT_NAV_PRESENT');
   requireMarker(gate,"routeId==='cli_dashboard'",'CLIENT_ROUTE_WAIT_PRESENT');
@@ -74,8 +76,9 @@ if(!blockers.length){
 
   requireMarker(wrapper,"staff.data.periodKey===staff.authority.latestPeriod",'WRAPPER_DYNAMIC_PERIOD_REQUIRED');
   requireMarker(wrapper,"window.CX?.modules?.cli_dashboard==='function'",'WRAPPER_CANONICAL_CLIENT_MODULE_REQUIRED');
-  forbidMarker(wrapper,"window.CX?.modules?.cliente==='function'",'WRAPPER_LEGACY_CLIENT_MODULE_FORBIDDEN');
-  forbidMarker(wrapper,"staff.authority.latestPeriod==='2026-07'",'WRAPPER_FROZEN_PERIOD_FORBIDDEN');
+  requireMarker(wrapper,"window.CX?.modules?.cliente==='function'",'WRAPPER_GUARDS_LEGACY_CLIENT_MODULE');
+  requireMarker(wrapper,"staff.authority.latestPeriod==='2026-07'",'WRAPPER_GUARDS_FROZEN_PERIOD');
+  requireMarker(wrapper,"if(source.includes(marker))throw new Error",'WRAPPER_ENFORCES_FORBIDDEN_MARKERS');
 
   pass('SOURCE_ONLY_NO_PROVIDER_EXECUTION','gate');
   pass('SOURCE_ONLY_NO_PROVIDER_EXECUTION','wrapper');
