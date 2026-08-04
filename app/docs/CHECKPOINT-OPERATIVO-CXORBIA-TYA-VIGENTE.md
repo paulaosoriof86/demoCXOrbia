@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-04  
-**Estado:** `SOURCE_STATIC_PASS__FINAL_RUNTIME_RETRY_CONSUMED_FAIL__CLIENT_PORTAL_ROUTE_ASSERTION__ROLLBACK_EXACT__CLOUD_V5_HOLD__NO_PRODUCTION`
+**Estado:** `SOURCE_STATIC_PASS__CLIENT_ROUTE_SOURCE_STATIC_PASS__RUNTIME_RETRY_NOT_AUTHORIZED__CLOUD_V5_HOLD__NO_PRODUCTION`
 
 ## 1. Carril vigente
 
@@ -28,7 +28,7 @@ Producción `tya-plataforma` permanece intacta.
 
 ## 3. Autoridad HR dinámica
 
-Última ejecución:
+Última ejecución runtime observó:
 
 - 15 periodos;
 - 660 visitas;
@@ -36,7 +36,7 @@ Producción `tya-plataforma` permanece intacta.
 
 Queda prohibido restaurar `616` o `2026-07` como invariantes runtime.
 
-## 4. Reejecución final Cliente
+## 4. Última reejecución Cliente
 
 Solicitud consumida:
 
@@ -48,67 +48,94 @@ Resultado:
 
 `FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK`.
 
-La ejecución alcanzó el gate de dominio después de snapshot, reparación idempotente, readback, Staff, Shopper, Cliente, HR dinámica y paridad remota.
-
-## 5. Causa raíz vigente
-
-El fallo fue:
-
-`client_assertions → CLIENT_PORTAL_INVALID`.
-
-La aserción mezclaba tres condiciones:
-
-```text
-clientModule && panorama && !blocked
-```
-
-El módulo `cli_dashboard` y el estado no bloqueado ya estaban probados por etapas inmediatamente anteriores. La condición residual es la expectativa de copy/ruta del Panorama.
-
-El gate abre la app después del login pero no navega explícitamente a `cli_dashboard`; luego exige encontrar `Panorama`, `Operación del periodo` o `Resultados de evaluación` en la vista actual.
-
-Por tanto, el bloqueo vigente pertenece al gate de ruta/copy observable, no demuestra ausencia del módulo, fallo de Auth, pérdida de HR ni falta de datos.
-
-## 6. Rollback
+Rollback:
 
 `PASS_C6_CLIENT_AUTH_MEMBERSHIP_ROLLBACK_EXACT`.
 
-Estado final:
+Estado proveedor restaurado: membership temporal eliminado, claims sin cambio, usuarios/password changes en cero.
 
-- preestado restaurado: sí;
-- membership temporal conservado: no;
-- claims finales alterados: no;
-- usuarios creados: 0;
-- password changes/resets: 0;
-- deploy/merge/producción: 0;
-- Firestore de negocio/HR/Rules/Storage: 0.
+## 5. Causa raíz del gate Cliente — corregida
 
-## 7. Próximo bloque exacto
+El gate iniciaba sesión como Cliente, pero no navegaba explícitamente a `cli_dashboard`. Después exigía una aserción compuesta dependiente de la vista inicial y de copy visible.
 
-```text
-SOURCE-ONLY ROOT FIX DEL GATE CLIENTE
-→ NAVEGAR EXPLÍCITAMENTE A cli_dashboard
-→ REGISTRAR clientModule/route/panorama/blocked POR SEPARADO
-→ VALIDAR SELECTOR O MARKER ESTABLE
-→ GATE LOCAL/ESTÁTICO SIN PROVIDER WRITES
-→ DETENERSE PARA NUEVA AUTORIZACIÓN
-```
+Correctivo source-only:
 
-La autorización final ya fue consumida. Queda prohibido reintentar silenciosamente.
+- `window.CX.router.nav('cli_dashboard')` explícito;
+- espera de `CX.session.view === 'cli_dashboard'`;
+- `#nav-cli_dashboard` activo;
+- marker estable `#view .ph` y vista renderizada;
+- evidencia separada de:
+  - `clientModule`;
+  - `route` / `routeId`;
+  - `panorama`;
+  - `blocked`;
+- errores específicos por capa;
+- eliminación de `CLIENT_PORTAL_INVALID` como aserción compuesta.
 
-## 8. Cloud V5/V6
+El orquestador ahora conserva `failedStageBeforeRollback`; el rollback ya no sobrescribe la etapa original.
+
+## 6. Gate source/static focal — PASS
+
+Ejecución:
+
+- commit `5caca10137250d2a70308dd995262e368f981322`;
+- run `30936681878`;
+- job `92084479259`;
+- decisión contractual `PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT`;
+- gate interno requerido `PASS_C6_CLIENT_ROUTE_SOURCE_STATIC`;
+- blockers 0;
+- warnings 0.
+
+La solicitud estaba deshabilitada y solo activó el paso contractual:
+
+- runtime ejecutado: no;
+- Playwright instalado: no;
+- credenciales preparadas: no;
+- provider reads: 0;
+- Auth/Firestore/membership writes: 0.
+
+Fuente:
+
+`CAMBIOS-BACKEND-ADDENDUM-C6-CLIENT-ROUTE-SOURCE-STATIC-20260804.md`.
+
+## 7. Cloud V5/V6
 
 V5 permanece:
 
 `HOLD_CLOUD_V5_FRONTEND__NO_APROBADO_PARA_INTEGRACION`.
 
-V6 debe incluir Login/órbita, responsive P1, PDF P1, Excel P2, Regional, copy delegado, Ficha Shopper y evidencia completa.
+V6 debe incluir Login/órbita, responsive P1, PDF P1, Excel P2, Regional, copy delegado, Ficha Shopper y evidencia completa. Cloud continúa exclusivamente frontend.
+
+## 8. Siguiente bloque exacto
+
+El bloque source-only está cerrado y se detiene aquí, como fue autorizado.
+
+Solo después de una nueva autorización expresa:
+
+```text
+SNAPSHOT CLIENTE
+→ MEMBERSHIP IDEMPOTENTE
+→ READBACK
+→ RUNTIME STAFF/CLIENTE/SHOPPER
+→ TRES RECARGAS Y NUEVA PESTAÑA
+→ HR DINÁMICA
+→ FINANZAS/PORTALES/RESERVAS
+→ CONSERVAR SOLO CON PASS
+→ ROLLBACK AUTOMÁTICO ANTE CUALQUIER FALLO
+```
+
+En paralelo:
+
+```text
+CLOUD V6
+→ AUDITORÍA FOCAL DELTA
+→ APPLY_DELTA_DIRECTLY SOLO CON GO
+```
 
 ## 9. Secuencia posterior
 
 ```text
-ROOT FIX SOURCE-ONLY GATE CLIENTE
-→ NUEVA AUTORIZACIÓN EXPRESA SOLO DESPUÉS DEL PASS LOCAL
-→ RUNTIME MULTIROL
+RUNTIME MULTIROL AUTORIZADO
 → AUDITORÍA FOCAL CLOUD V6
 → APPLY_DELTA_DIRECTLY SOLO CON GO
 → GATES
@@ -122,16 +149,18 @@ ROOT FIX SOURCE-ONLY GATE CLIENTE
 ## 10. Estado seguro
 
 - cambios funcionales `app/`: 0;
-- estado proveedor restaurado: sí;
+- provider reads en este bloque: 0;
+- Auth/Firestore/membership writes: 0;
 - Hosting/Cloud Run deploys: 0;
+- HR/Rules/Storage: 0;
 - Make/Gemini/pagos: 0;
 - merge: false;
 - producción: intacta.
 
 ## 11. Clasificación
 
-- **Reusable CXOrbia:** gate por ruta explícita y evidencia booleana separada.
-- **Exclusivo cliente:** membership `tya/cinepolis`.
+- **Reusable CXOrbia:** ruta explícita, marker estable, evidencia por capa y etapa original preservada.
+- **Exclusivo cliente:** futura validación TyA/Cinépolis.
 - **Cloud/prototipo:** V5 HOLD, V6 pendiente.
-- **Academia:** Auth, membership, ruta y copy deben enseñarse como capas diferentes.
-- **Sin impacto Cloud:** este resultado no modifica frontend.
+- **Academia:** separar módulo, ruta, render y copy.
+- **Sin impacto Cloud:** este bloque no modifica frontend.
