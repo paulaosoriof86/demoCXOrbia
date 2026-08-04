@@ -16,6 +16,7 @@ window.CX = window.CX || {};
     'RELOAD_NEW_TAB_STABILITY',
     'EXPORTS_AND_VISIBLE_EVIDENCE'
   ];
+  const CONTROLLED_RUNNER_REQUIRED_CODE='BLOCKED_SCENARIO_EXECUTED_AWAITING_CONTROLLED_RUNNER';
 
   function isDev(){
     try{
@@ -92,7 +93,7 @@ window.CX = window.CX || {};
     const pending=STATES.slice(8).map(state=>({
       state,
       status:'BLOCKED',
-      code:`BLOCKED_${state}_AWAITING_CONTROLLED_RUNNER`,
+      code:state==='SCENARIO_EXECUTED'?CONTROLLED_RUNNER_REQUIRED_CODE:`BLOCKED_${state}_AWAITING_CONTROLLED_RUNNER`,
       module:'scenario-runner',
       route:'pending',
       action:'await_controlled_ui_scenario',
