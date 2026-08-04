@@ -1,21 +1,25 @@
-/* CXOrbia source lock runtime V174 Corte 2A R20 source identity fix */
-var CX_SOURCE_LOCK={
-  "manifestFile": "docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json",
-  "aggregateSha256": "ab11bc47dfd096cbe6a110db250c46e656c2dc9760ad832c07958b6c9a886818",
-  "fileCount": 1895,
-  "generatedAt": "2026-07-23T16:45:21.090Z",
-  "candidateSha256": "e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f",
-  "packageSha256": "e48452a4385e5dd2647437c04fdae47c9887e97af7b5a8de97d4f8ce522e2b2f",
-  "headBefore": "0fd63faf2a873640e042421c40749714a4d12fd4",
-  "empalmeCommit": "b21e494d127fb4b902de5576e3fab0292362b097",
-  "holdFixCommit": "0acdc6772f2d4a7743dea0992a4279241dcb79d7",
-  "r20SourceIdentityFixCommits": [
-    "396efcf3cc98fb196a756067ef23dba13f348f61",
-    "d78f4f79821755ec705a7ef7aacdf8a1f2fcbc20"
-  ],
-  "sourceAccessMode": "public_gviz_gid_verified_inventory",
-  "status": "V174_R20_SOURCE_IDENTITY_FIX_PENDING_FINAL_GATES",
-  "note": "BUILD_ID = primeros 16 hex del aggregateSha256; app/ excluye build-lock y manifest V174."
+/* CXOrbia source lock runtime Cloud V6 Core Operations + Shopper */
+var CX_SOURCE_LOCK = {
+  manifestFile: 'docs/MANIFEST-CLOUD-V6-CORE-OPS-SHOPPER-20260804.json',
+  aggregateSha256: '1f1af3a316c9dabf1df1ef5b07a7abd2fe62a8da09e704719912be7af328e825',
+  fileCount: 2351,
+  generatedAt: '2026-08-04T20:44:07.0101444Z',
+  candidateId: 'PAQUETE-CLOUD-FRONTEND-ACUMULADO-V6',
+  candidateSha256: '0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407',
+  packageSha256: '0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407',
+  repository: 'paulaosoriof86/demoCXOrbia',
+  branch: 'docs-tya-v6-v71-audit',
+  pullRequest: 7,
+  headBefore: 'a2ccfb0c3709cad6f5e6a9c16dcb7f9293532d6e',
+  status: 'V6_EMPALMED_PENDING_DEV_LAB_AND_VISUAL',
+  releaseSlice: 'ADMIN_OPERACIONES_PLUS_SHOPPER',
+  devOnlyLab: true,
+  production: false,
+  note: 'BUILD_ID = primeros 16 hex del aggregateSha256; app/ excluye build-lock y manifest Cloud V6.'
 };
-var CX_BUILD_ID=CX_SOURCE_LOCK.aggregateSha256.slice(0,16);
-if(typeof window!=='undefined'){window.CX=window.CX||{};window.CX.BUILD_ID=CX_BUILD_ID;window.CX.SOURCE_LOCK=CX_SOURCE_LOCK;}
+var CX_BUILD_ID = CX_SOURCE_LOCK.aggregateSha256.slice(0, 16);
+if (typeof window !== 'undefined') {
+  window.CX = window.CX || {};
+  window.CX.BUILD_ID = CX_BUILD_ID;
+  window.CX.SOURCE_LOCK = CX_SOURCE_LOCK;
+}

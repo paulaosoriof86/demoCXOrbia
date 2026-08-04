@@ -3,6 +3,36 @@
    ============================================================ */
 window.CX = window.CX || {};
 
+CX.loginCountryEntries = function(countries){
+  return (Array.isArray(countries) ? countries : []).map(item=>{
+    const raw = typeof item === 'string' ? item : (item && (item.id || item.c || item.code || item.country));
+    if(!raw)return null;
+    const code=String(raw).toUpperCase();
+    return {id:code,name:(item&&item.name)||(CX.paisName?CX.paisName(code):code),flag:CX.paisFlag?CX.paisFlag(code):code};
+  }).filter(Boolean);
+};
+
+CX.loginOrbitHTML = function(){
+  const nodes=[['CLIENTES',0],['TECNOLOGÍA',60],['PERSONAS',120],['OPERACIÓN',180],['PROCESOS',240],['INFORMACIÓN',300]]
+    .map(([label,angle])=>{const a=(angle-90)*Math.PI/180;return{label,left:50+45*Math.cos(a),top:50+45*Math.sin(a),dx:50+33*Math.cos(a),dy:50+33*Math.sin(a)};});
+  return `<div class="login-orbit-wrap" aria-hidden="true">
+    <svg class="login-orbit" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" focusable="false">
+      <circle class="login-orbit-ring login-orbit-ring-dash" cx="50" cy="50" r="46"></circle>
+      <circle class="login-orbit-ring" cx="50" cy="50" r="45"></circle>
+      <circle class="login-orbit-ring" cx="50" cy="50" r="33"></circle>
+      <circle class="login-orbit-ring" cx="50" cy="50" r="19"></circle>
+      ${nodes.map(n=>`<line class="login-orbit-spoke" x1="50" y1="50" x2="${n.dx.toFixed(2)}" y2="${n.dy.toFixed(2)}"></line>`).join('')}
+      ${nodes.map(n=>`<circle class="login-orbit-dot" cx="${n.dx.toFixed(2)}" cy="${n.dy.toFixed(2)}" r="1"></circle>`).join('')}
+      <g class="login-orbit-sat login-orbit-sat-a"><circle cx="50" cy="4" r="1.2"></circle></g>
+      <g class="login-orbit-sat login-orbit-sat-b"><circle cx="83" cy="50" r="0.9"></circle></g>
+      <g class="login-orbit-sat login-orbit-sat-c"><circle cx="50" cy="31" r="0.8"></circle></g>
+      <circle class="login-orbit-core" cx="50" cy="50" r="1.4"></circle>
+    </svg>
+    ${nodes.map(n=>`<span class="login-orbit-node" style="left:${n.left.toFixed(2)}%;top:${n.top.toFixed(2)}%">${n.label}</span>`).join('')}
+    <div class="login-orbit-label"><b>Gravicentra <em>CX</em></b><span>CORE</span></div>
+  </div>`;
+};
+
 /* ---------- Favicon dinámico = logo de la consultora ---------- */
 CX.setFavicon = function(){
   try{
@@ -125,13 +155,21 @@ CX.app = {
         </div>`
           : `<div class="flex" style="gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px">${altRolesBtnsHTML}</div>`)
       : '';
-    const flagsRow = paises.length
-      ? `<div class="login-flags">${paises.slice(0,8).map(c=>`<span class="cflag" title="${CX.paisName?CX.paisName(c):c}"><img src="https://flagcdn.com/24x18/${c.toLowerCase()}.png" alt="${c}" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'${c}',className:'cflag-txt'}))"><span>${c}</span></span>`).join('')}${paises.length>8?`<span style="font-size:11px;color:var(--t3);align-self:center">+${paises.length-8}</span>`:''}</div>`
+    const countryEntries = CX.loginCountryEntries(paises);
+    const flagsRow = countryEntries.length
+      ? `<div class="login-flags" role="list" aria-label="Países configurados">${countryEntries.map(c=>`<span class="cflag" role="listitem" title="${c.name}" aria-label="${c.name}"><span class="cflag-emoji" aria-hidden="true">${c.flag}</span><span>${c.name}</span></span>`).join('')}</div>`
       : '';
     /* logo pequeño de CXOrbia como "desarrollado por" (siempre visible en el pie del login) */
     const cxLogo = `<svg width="16" height="16" viewBox="0 0 64 64" style="vertical-align:middle"><rect width="64" height="64" rx="14" fill="#0d2740"/><circle cx="32" cy="32" r="15" fill="none" stroke="#4ab4e6" stroke-width="6" stroke-dasharray="58 26"/><circle cx="44" cy="22" r="4.5" fill="#fff"/></svg>`;
     const devForFooter = `<div class="login-poweredby">${cxLogo} <span>Desarrollado por <b>CXOrbia</b></span></div>`;
     lg.innerHTML=`
+      <div class="login-shell-v6">
+      <aside class="login-orbit-panel">
+        <div class="login-product-brand"><span class="login-product-mark">◆</span><b>Gravicentra CX</b></div>
+        ${CX.loginOrbitHTML()}
+        <div class="login-field-copy"><span>FIELD OPERATIONS INTELLIGENCE</span><p>Donde cada visita, cada dato y cada decisión orbitan alrededor de lo que importa hoy.</p></div>
+      </aside>
+      <main class="login-form-panel">
       <div class="login-card">
         <div class="login-brand">
           ${brandBlock}
@@ -171,6 +209,8 @@ CX.app = {
         ${(()=>{const std=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;const iOS=/iPad|iPhone|iPod/.test(navigator.userAgent);if(std)return '<div style="text-align:center;margin-top:14px;font-size:11px;color:var(--green)">✓ App instalada</div>';return `<div style="text-align:center;margin-top:14px"><button class="btn btn-ghost btn-sm" id="pwaBtn">📲 ${iOS?'Instalar (guía iOS)':'Instalar como app'}</button></div>`;})()}
         ${b.demoMode?`<div style="text-align:center;margin-top:10px;font-size:11px;color:var(--t3)">
           <span class="bdg bdg-a">● Demo comercial · datos ficticios</span></div>`:''}
+      </div>
+      </main>
       </div>`;
     lg.querySelectorAll('.role-btn').forEach(b=>b.addEventListener('click',()=>{
       /* CORTE 3 P0-7 — en DEV, el acceso Shopper permite elegir una identidad real EXISTENTE desde
@@ -207,15 +247,15 @@ CX.app = {
         <div><label class="lbl">Sexo</label><select class="sel" id="rgSexo"><option value="">Selecciona…</option><option>Femenino</option><option>Masculino</option><option>Otro</option><option>Prefiero no decir</option></select></div>
       </div>
       <div id="rgCreds" style="background:var(--brand-light);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--brand-dark);margin:14px 0">
-        Tu usuario y contraseña se generan automáticamente según el patrón del cliente
-        (<b>${CX.CREDS.userExample()}</b> · <b>${CX.CREDS.passExample()}</b>). Edad y sexo se usan para automatizar la asignación de visitas.</div>
+        Tu usuario y credencial inicial se generan automáticamente según el patrón del cliente
+        (<b>${CX.CREDS.userExample()}</b>). La credencial inicial no se muestra en pantalla.</div>
       <div style="text-align:right"><button class="btn btn-green" id="rgSave">Crear mi cuenta</button></div>
     `, {onMount:(ov,close)=>{
       CX.geo.wire(ov, ids);
       // previsualizar credenciales al escribir nombre/apellido
       const upd=()=>{
         const f=ov.querySelector('#rgFirst').value, l=ov.querySelector('#rgLast').value;
-        if(f&&l) ov.querySelector('#rgCreds').innerHTML=`Tu cuenta será — usuario: <b>${CX.CREDS.user(f,l)}</b> · contraseña: <b>${CX.CREDS.pass(f,l)}</b>. Edad y sexo se usan para automatizar la asignación de visitas.`;
+        if(f&&l) ov.querySelector('#rgCreds').innerHTML=`Tu cuenta será — usuario: <b>${CX.CREDS.user(f,l)}</b>. La credencial inicial queda protegida y no se muestra en pantalla.`;
       };
       ov.querySelector('#rgFirst').addEventListener('input',upd);
       ov.querySelector('#rgLast').addEventListener('input',upd);
@@ -249,7 +289,7 @@ CX.app = {
       </div>
       <div style="background:var(--brand-light);border-radius:12px;padding:14px 16px;margin:14px 0">
         <div class="between" style="margin-bottom:8px"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Usuario</span><b style="font-family:var(--disp)">${s.user}</b></div>
-        <div class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Contraseña</span><b style="font-family:var(--disp)">${s.pass}</b></div>
+        <div class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Credencial inicial</span><b style="font-family:var(--disp)">Protegida</b></div>
       </div>
       <p style="font-size:12.5px;color:var(--t2);line-height:1.6">Al ingresar podrás <b>completar tu perfil</b> (documento, ciudad, cuenta de pago) y empezar a postularte a visitas de tu país.</p>
       <div class="flex" style="justify-content:flex-end;margin-top:14px"><button class="btn btn-ghost btn-sm" data-x2>Cerrar</button><button class="btn btn-pr" id="rgEnter">Entrar a mi portal →</button></div>

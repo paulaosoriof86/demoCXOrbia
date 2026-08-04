@@ -143,7 +143,7 @@ CX.module('shoppers', ({data,ui})=>{
       </div>
       <div style="background:var(--brand-light);border-radius:10px;padding:9px 13px;font-size:12px;color:var(--brand-dark);margin-bottom:14px" class="between">
         <span>Usuario: <b style="font-family:var(--disp)">${s.user||'—'}</b></span>
-        <span>Contraseña: <b style="font-family:var(--disp)">${s.pass||'—'}</b></span>
+        <span>Credencial: <b style="font-family:var(--disp)">Protegida</b></span>
       </div>
       <div class="grid g4" style="margin-bottom:8px" id="shKpis">
         <div data-k="all" style="cursor:pointer">${ui.kpi('Visitas',st.total,'b')}</div>
@@ -245,12 +245,12 @@ CX.module('shoppers', ({data,ui})=>{
           <div><label class="lbl">Sexo</label><select class="sel" id="al_sexo"><option value="">Selecciona…</option><option>Femenino</option><option>Masculino</option><option>Otro</option><option>Prefiero no decir</option></select></div>
         </div>
       </details>
-      <div id="al_creds" style="background:var(--brand-light);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--brand-dark);margin:6px 0 14px">Credenciales automáticas según el patrón: <b>${CX.CREDS.userExample()}</b> · <b>${CX.CREDS.passExample()}</b></div>
+      <div id="al_creds" style="background:var(--brand-light);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--brand-dark);margin:6px 0 14px">Credencial inicial: usuario según patrón configurado. La contraseña no se muestra en pantalla.</div>
       <div style="text-align:right"><button class="btn btn-green" id="al_save">Crear shopper</button></div>
     `, {onMount:(ov,close)=>{
       CX.geo.wire(ov, ids);
       const upd=()=>{const f=ov.querySelector('#al_first').value,l=ov.querySelector('#al_last').value;
-        if(f&&l)ov.querySelector('#al_creds').innerHTML=`Credenciales: usuario <b>${CX.CREDS.user(f,l)}</b> · contraseña <b>${CX.CREDS.pass(f,l)}</b>`;};
+        if(f&&l)ov.querySelector('#al_creds').innerHTML=`Credencial inicial: usuario <b>${CX.CREDS.user(f,l)}</b> · contraseña protegida`;};
       ov.querySelector('#al_first').addEventListener('input',upd);
       ov.querySelector('#al_last').addEventListener('input',upd);
       ov.querySelector('#al_save').addEventListener('click',()=>{

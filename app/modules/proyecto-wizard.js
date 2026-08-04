@@ -61,10 +61,12 @@ CX.projectWizard = function(data, ui){
 
     if(st.step===3) return `
       <label class="lbl">Modelo del proyecto</label>
-      <div class="grid g2" style="gap:10px;margin-bottom:14px">
+      <div class="cards-grid" style="margin-bottom:14px">
         <label class="card hov card-p" style="cursor:pointer;${st.modelo==='directo'?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}"><input type="radio" name="wmod" value="directo" ${st.modelo==='directo'?'checked':''} style="margin-right:6px"><b>Facturado directamente</b><div style="font-size:11.5px;color:var(--t3);margin-top:4px">Tú facturas al cliente. Se registran costos: honorarios, ISR/impuestos, regalías.</div></label>
-        <label class="card hov card-p" style="cursor:pointer;${st.modelo==='delegado'?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}"><input type="radio" name="wmod" value="delegado" ${st.modelo==='delegado'?'checked':''} style="margin-right:6px"><b>Delegado (franquicia)</b><div style="font-size:11.5px;color:var(--t3);margin-top:4px">Solo se relaciona el honorario recibido y los pagos asociados.</div></label>
+        <label class="card hov card-p" style="cursor:pointer;${st.modelo==='delegado'?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}"><input type="radio" name="wmod" value="delegado" ${st.modelo==='delegado'?'checked':''} style="margin-right:6px"><b>Delegado</b><div style="font-size:11.5px;color:var(--t3);margin-top:4px">Coordinacion delegada a un aliado; remuneracion configurada por proyecto.</div></label>
+        <label class="card hov card-p" style="cursor:pointer;${st.modelo==='regional'?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}"><input type="radio" name="wmod" value="regional" ${st.modelo==='regional'?'checked':''} style="margin-right:6px"><b>Regional</b><div style="font-size:11.5px;color:var(--t3);margin-top:4px">Operacion multipais coordinada a nivel regional; reparto configurable cuando corresponda.</div></label>
       </div>
+      <div class="bdg bdg-n" style="margin-bottom:10px">Los valores se configuran por proyecto; esta pantalla no calcula montos ni porcentajes.</div>
       <div id="directoCosts" style="${st.modelo==='directo'?'':'display:none'}">
         <div class="grid g2" style="gap:10px">
           <div><label class="lbl">ISR / impuesto local (%)</label><input class="inp" id="f_isr" type="number" value="${st.isr}"></div>
