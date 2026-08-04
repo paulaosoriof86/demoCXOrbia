@@ -1,115 +1,164 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-04  
-**Estado vivo:** `SOURCE_STATIC_PASS__RUNTIME_MULTIROLE_HOLD_CLIENT_CLAIMS__LIVE_HR_660__NO_PRODUCTION`
+**Estado vivo:** `SOURCE_STATIC_PASS__CLIENT_PRESTATE_RESTORED__DOMAIN_GATE_ROOT_FIX_APPLIED__FINAL_RUNTIME_RETRY_PENDING__CLOUD_V5_HOLD__NO_PRODUCTION`
 
 ## 1. Bloqueante real vigente
 
-El gate source/static está en PASS. El runtime acumulativo avanzó hasta selección de identidades reales.
+El macrobloque Cliente autorizado fue ejecutado y se detuvo con rollback exacto.
 
-Bloqueante actual:
+Resultado:
+
+`FAIL_C6_CLIENT_ACCESS_RUNTIME_ROLLED_BACK`.
+
+No existe un cambio incompleto en proveedor.
+
+Estado restaurado:
+
+- identidad Cliente canónica existente;
+- claims sin alteración final;
+- membership temporal eliminado;
+- usuarios creados: 0;
+- passwords cambiados o restablecidos: 0;
+- producción intacta.
+
+## 2. Causas raíces confirmadas
+
+### 2.1 Selector Cliente regresivo — corregido
+
+El selector runtime buscaba únicamente registros legacy y omitía la identidad Cliente canónica materializada y validada el 2 de agosto.
+
+No era necesario crear otro usuario.
+
+Correctivo:
+
+- UID y correo interno exactos;
+- claims, membership y sign-in obligatorios;
+- bloqueo ante ambigüedad o colisión;
+- cero dependencia del bundle legacy para Cliente.
+
+### 2.2 Membership faltante — diagnosticado y revertido
+
+La identidad canónica tenía claims válidos, pero no tenía el documento:
+
+`tenants/tya/users/cxorbia-c6-client-tya-cinepolis-v1`.
+
+La ejecución creó temporalmente exactamente un membership autorizado. Al fallar un gate posterior, el rollback lo eliminó y restauró el preestado.
+
+### 2.3 Nombre histórico de módulo en el gate — corregido
+
+El gate esperaba:
+
+`CX.modules.cliente`.
+
+La ruta canónica real del Portal Cliente es:
+
+`CX.modules.cli_dashboard`.
+
+Por eso emitió `CANONICAL_MODULE_MISSING` aunque el módulo funcional existía y el source/static ya había validado navegación Cliente.
+
+El gate ahora:
+
+- comprueba `cli_dashboard`, `miperfil`, `financiero` y `reservas`;
+- informa exactamente cuál módulo falta;
+- deriva el último periodo de la autoridad HR viva;
+- no congela julio de 2026.
+
+## 3. Autoridad HR viva
+
+La última ejecución observó:
+
+- 15 periodos;
+- 660 visitas;
+- 209 shoppers.
+
+Esto demuestra que el periodo vivo avanzó más allá del snapshot histórico 14/616. La validación final debe conservar paridad entre HR, Staff, Cliente y Shopper sin volver a fijar conteos o meses.
+
+## 4. Pendiente inmediato backend
+
+La autorización anterior permitía una sola repetición runtime y ya fue consumida.
+
+Pendiente exacto:
+
+1. autorizar una única reejecución final después del correctivo del gate;
+2. snapshot de la identidad y membership;
+3. máximo un membership write y, solo si fuera necesario, un claims write;
+4. idempotencia y readback;
+5. runtime Staff, Cliente y Shopper;
+6. tres recargas y nueva pestaña;
+7. HR dinámica, Finanzas, portales y Reservas;
+8. conservar el membership solo con PASS completo;
+9. rollback automático ante cualquier fallo.
+
+No corresponde otra auditoría general.
+
+## 5. Cloud V5
+
+Decisión:
+
+`HOLD_CLOUD_V5_FRONTEND__NO_APROBADO_PARA_INTEGRACION`.
+
+Problemas principales:
+
+- órbita demasiado grande en desktop;
+- franja superior transversal pesada;
+- formulario demasiado alto;
+- jerarquía orbital poco refinada;
+- archivos desktop y mobile con la misma dimensión `924×540`;
+- capturas fuera del manifest;
+- residuos V4 y HEAD histórico;
+- entrega limitada al Login, sin pendientes frontend acumulados.
+
+Fuente:
+
+- `AUDITORIA-FOCAL-CLOUD-LOGIN-PORTABLE-V5-20260804.md`;
+- `PROMPT-CLOUD-FRONTEND-ACUMULADO-V6-20260804.md`.
+
+No aplicar V5 a `app/`.
+
+## 6. Pendientes frontend acumulados para V6
+
+- Login y órbita refinados;
+- responsive P1 de tablas, fichas, tarjetas y modales;
+- PDF P1 con gráficas válidas existentes;
+- Excel P2 con presentación útil;
+- opción visual Regional;
+- copy delegado correcto;
+- Ficha Shopper presentacional;
+- capturas reales y manifest completo.
+
+Cloud no toca Auth, datos, backend, permisos, cálculos, deploy ni producción.
+
+## 7. Secuencia posterior
 
 ```text
-CLIENT_AUTH_CLAIMS_CONTRACT_NOT_MATERIALIZED_IN_DEV
+FINAL_RUNTIME_RETRY
+→ AUDITORÍA FOCAL CLOUD V6
+→ APPLY_DELTA_DIRECTLY SOLO CON GO
+→ BRIDGE FIREBASE SEGURO
+→ GATES ACUMULATIVOS
+→ ÚNICO DEV SI CAMBIA app/
+→ CHECKPOINT_VISUAL_PHASE_A_COMPLETA
+→ FREEZE
+→ CONFIRMAR PERIODO NUEVO/DISPONIBLES/POSTULACIONES
+→ CUTOVER AUTORIZADO
 ```
 
-Evidencia sanitizada:
-
-- cuatro registros Cliente candidatos revisados;
-- tres identidades Auth existentes encontradas;
-- cero identidades con claims completos `cliente/client + tenant TyA + proyecto Cinépolis`;
-- cero usuarios creados;
-- cero passwords cambiados;
-- cero Auth writes.
-
-Portal Cliente no se validará con identidad Staff simulada.
-
-## 2. Hallazgo HR vivo
-
-La HR viva contiene `660` visitas, mientras el snapshot protegido utilizado para relaciones históricas contiene `616`.
-
-El selector dinámico comprobó:
-
-- 616 coincidencias exactas;
-- 44 visitas vivas adicionales;
-- 208 relaciones shopper;
-- 194 shoppers protegidos con histórico;
-- Staff/Shopper credential selection PASS.
-
-Todavía debe demostrarse mediante el gate de autoridad dinámica qué periodo corresponde a las 44 visitas adicionales. No afirmar agosto únicamente por diferencia aritmética.
-
-## 3. Causa raíz transversal corregida
-
-Los gates históricos congelaban:
-
-- conteo exacto `616`;
-- último periodo `2026-07`.
-
-Eso impedía que una fuente viva creciera normalmente.
-
-Correctivo aplicado:
-
-- autoridad HR dinámica;
-- conteos y último periodo derivados de la fuente;
-- identidad estable obligatoria;
-- cero duplicados obligatorios;
-- paridad entre autoridad, Staff, Cliente y Shopper;
-- ningún fallo desconocido se relaja.
-
-## 4. Pendiente inmediato
-
-1. ejecutar diagnóstico read-only agregado de claims Cliente;
-2. construir plan exacto de reparación DEV con snapshot, target opaco, idempotencia y rollback;
-3. obtener una sola autorización expresa para Auth/membership DEV;
-4. ejecutar una única reparación;
-5. repetir una sola vez runtime multirol;
-6. auditar el paquete Claude corregido;
-7. aplicar directamente solo con GO;
-8. ejecutar gates acumulativos;
-9. un único DEV si cambia `app/`;
-10. `CHECKPOINT_VISUAL_PHASE_A_COMPLETA`;
-11. freeze;
-12. confirmar periodo nuevo, disponibles y postulaciones;
-13. cutover autorizado.
-
-## 5. Pendientes Phase A después del claims fix
-
-- Staff/Admin: login, navegación, tres recargas y nueva pestaña;
-- Cliente: login real, scope Cinépolis y panorama;
-- Shopper: identidad exacta, histórico, certificación y portal;
-- HR: 660 visitas vivas y periodo más reciente dinámico;
-- Finanzas: modelo delegado, `localBilling=false`, regalía 0, Q60/L200;
-- Reservas: fail-closed sin fuente canónica de escritura;
-- reportes PDF/XLSX/PPTX;
-- Login Gravicentra CX portable corregido e integrado mediante bridge seguro.
-
-## 6. Claude frontend
-
-Claude continúa exclusivamente con:
-
-- Login portable;
-- órbita;
-- responsive;
-- banderas dinámicas del tenant;
-- tokens;
-- i18n;
-- evidencia visual.
-
-Claude no resuelve Auth, claims, backend, HR, Finanzas, runtime o deploy.
-
-## 7. Warnings P1/P2
+## 8. Warnings P1/P2 vivos
 
 - overlay A+B superseded aún cargado;
-- algunas gráficas no aparecen en PDF;
-- XLSX mantiene formato básico.
+- PDF puede omitir gráficas;
+- Excel mantiene formato básico;
+- responsive parcial en superficies densas.
 
-No son P0 demostrados.
+V6 recibe estos pendientes frontend; no bloquean por sí solos la operación hasta demostrar un P0.
 
-## 8. Estado seguro
+## 9. Estado seguro
 
-- cambios funcionales en `app/`: 0;
-- Hosting deploy: 0;
-- Auth/Firestore/Rules/Storage/HR writes: 0;
+- cambios funcionales en `app/` durante este bloque: 0;
+- estado proveedor restaurado: sí;
+- Hosting/Cloud Run deploys: 0;
+- Firestore de negocio/HR/Rules/Storage: 0;
 - Make/Gemini/pagos: 0;
 - merge: false;
 - producción: intacta.
