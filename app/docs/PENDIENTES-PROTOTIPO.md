@@ -1,122 +1,118 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-04  
-**Estado vivo:** `FORENSIC_CONTROL_PLANE_SOURCE_STATIC_PASS_LOCAL__CORE_OPERATIONS_SHOPPER_RELEASE_SLICE_DEFINED__CLOUD_V6_NOT_AUDITED__NO_PRODUCTION`
+**Estado vivo:** `V6_EMPALMED__SOURCE_GATE_ROOT_FIX_MATERIALIZED__VISUAL_HOLD__CLOUD_V7_PENDING__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Control plane
+## 1. Cloud V6 empalmada
 
-Cerrado source-only:
+- commit funcional: `f961253f18c388ae04619bb5175269015c8349c3`;
+- SHA-256 candidata: `0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407`;
+- una sola baseline acumulativa preservada;
+- deploy: 0.
 
-- una máquina de estados única;
-- una sola autoridad browser futura;
-- acceso/membership separado del runtime read-only;
-- checkout detached por SHA exacto;
-- snapshots y clasificación por etapa;
-- gates históricos preservados fuera del camino activo.
+## 2. Bloqueante visual vigente
 
-PASS local determinista:
+`HOLD_FRONTEND_VISUAL`.
 
-```text
-PASS_FORENSIC_CONTROL_PLANE_STABILIZATION
-PASS_C6_CLIENT_ROUTE_SOURCE_STATIC
-```
+Problemas de la pantalla de escritorio:
 
-No existe todavía PASS runtime sobre el nuevo control plane.
+- composición tipo demo en lugar de login corporativo;
+- jerarquía distinta de Emergent;
+- campos de acceso fuera de la primera composición;
+- accesos de validación y pie técnico visibles;
+- órbita pesada y rígida;
+- tarjetas sobredimensionadas;
+- evidencia insuficiente para declarar equivalencia visual.
 
-## 2. Pendiente de telemetría remota
+Pendiente Cloud V7, exclusivamente visual, principalmente sobre:
 
-La solicitud `forensic-control-plane-stabilization-20260804-01` fue registrada con runtime y provider reads deshabilitados. El conector no expuso un run/job/status verificable. No se declara PASS remoto.
+- `app/app.js`;
+- `app/styles/layout.css`.
 
-Esto no invalida el PASS local source-only, pero debe quedar resuelto antes de usar el runner como evidencia de release.
+## 3. Source gate posterior al empalme
 
-## 3. Cloud V6
+FAIL original:
 
-- archivo `Prototype development request V6.zip`;
-- SHA-256 `0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407`;
-- estado `NOT_AUDITED__EXECUTION_LANE_NOT_READY`;
-- no existe GO/HOLD;
-- delta aplicado: 0.
+- blobs históricos de cinco archivos modificados por V6;
+- `app/core/backend-dev-auth.local.js` ausente;
+- falso positivo de secreto sobre el código del scanner.
 
-Pendiente:
+Correctivos materializados:
 
-1. obtener ZIP extraído + checkout autenticado + rama viva en la misma sesión;
-2. auditar composición completa;
-3. separar delta nuevo, heredado, pendiente resuelto, regresión y redundancia;
-4. aplicar únicamente con GO sin P0;
-5. mantener una sola candidata acumulativa.
+- overlay V6 sobre manifest base;
+- placeholder Auth local fail-closed sin secretos;
+- scanner diferenciado para definiciones de patrones;
+- gate rebasado a manifest base + overlay.
 
-## 4. Primer release slice
+Pendiente ejecutar y comprobar el gate actualizado. No se declara PASS todavía.
 
-Prioridad operativa:
+## 4. Laboratorio DEV
+
+El shell recibido marcaba escenarios y cleanup como ejecutados sin haber realizado operaciones reales.
+
+Corregido:
+
+- no inventa PASS;
+- estado `BLOCKED_AWAITING_CONTROLLED_RUNNER`;
+- contrato de evidencia por `CX.devScenarioLab.ingest(report)`;
+- fingerprints y cleanup obligatorios.
+
+Pendiente bajo ChatGPT:
+
+- runner real por UI/contratos normales;
+- `CORE_OPERATIONS_ADMIN`;
+- `SHOPPER_FULL_CYCLE`;
+- `CROSS_MODULE_CONSISTENCY`;
+- tres recargas y nueva pestaña;
+- exportaciones/evidencia;
+- cleanup exacto.
+
+## 5. Primer release slice
 
 `ADMIN/OPERACIONES + SHOPPER`.
 
-Pendientes de validación final:
+Validar:
 
-- Hoja de Ruta viva;
-- Dashboard Operativo;
-- Visitas;
-- Visitas Disponibles;
+- Hoja de Ruta e histórico;
+- Dashboard;
+- Visitas/Disponibles;
 - Postulaciones y ficha;
 - Shoppers;
 - Reservas/asignación;
 - Finanzas Phase A;
-- Mi Perfil, Mis Visitas, certificaciones, histórico y pagos Shopper.
+- Mi Perfil, certificaciones, Mis Visitas, histórico y pagos Shopper.
 
-Portal Cliente queda en carril paralelo y no bloquea el primer cutover.
-
-## 5. Laboratorio dentro de la plataforma
-
-Pendiente de implementación y ejecución con autorización propia:
-
-- `CORE_OPERATIONS_ADMIN`;
-- `SHOPPER_FULL_CYCLE`;
-- `CROSS_MODULE_CONSISTENCY`;
-- `RELOAD_NEW_TAB_STABILITY`;
-- `EXPORTS_AND_VISIBLE_EVIDENCE`.
-
-Requisitos:
-
-- datos `AUDIT-*` sintéticos;
-- UI y contratos normales;
-- PASS/FAIL/BLOCKED por etapa;
-- screenshots y timeline;
-- fingerprints antes/después;
-- cleanup exacto;
-- `baselineRestoredAfterCleanup=true`.
+Portal Cliente continúa en carril paralelo.
 
 ## 6. P1/P2 vivos
 
-- overlay A+B superseded aún cargado;
+- overlay A+B superseded cargado;
 - PDF puede omitir gráficas;
-- Excel mantiene formato básico;
-- responsive parcial;
-- Cloud V6 no auditada.
+- Excel básico;
+- responsive no crítico pendiente de visual V7.
 
-Estos hallazgos no bloquean por sí solos el primer release slice, salvo que impidan un flujo esencial.
+No bloquean por sí solos el primer corte salvo que impidan un flujo esencial.
 
-## 7. Siguiente secuencia
+## 7. Secuencia exacta
 
 ```text
-EXECUTION_LANE_READY
-→ AUDITORÍA ACUMULATIVA CLOUD V6
-→ APPLY_DELTA_DIRECTLY SOLO SI GO SIN P0
-→ SOURCE/STATIC
-→ DEV ÚNICO SI CAMBIA app/
-→ LABORATORIO ADMIN/OPERACIONES + SHOPPER
+CLOUD V7
+→ AUDITORÍA VISUAL CHATGPT
+→ CODEX SOLO EMPALME
+→ ACTUALIZAR OVERLAY
+→ SOURCE/STATIC PASS
+→ ÚNICO HOSTING DEV
+→ LABORATORIO REAL ADMIN/OPERACIONES + SHOPPER
 → CLEANUP EXACTO
-→ CHECKPOINT VISUAL
-→ CUTOVER AUTORIZADO DEL SLICE
+→ CHECKPOINT VISUAL HUMANO
+→ CUTOVER AUTORIZADO
 ```
 
 ## 8. Estado seguro
 
-- cambios funcionales `app/`: 0;
-- runtime/credenciales: 0;
-- provider reads/writes: 0;
-- Auth/Firestore/membership writes: 0;
 - Hosting/Cloud Run: 0;
-- HR/Rules/Storage: 0;
+- provider writes: 0;
+- Auth/Firestore/Storage/HR writes: 0;
 - Make/Gemini/pagos: 0;
-- merge: false;
+- merge/producción: 0;
 - producción intacta.
