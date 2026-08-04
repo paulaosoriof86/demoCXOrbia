@@ -1,5 +1,7 @@
 /* CXORBIA DEV · LABORATORIO DE ESCENARIOS
-   DEV-only scenario evidence panel. No production, no HR writes, no credentials, no direct data seeding. */
+   DEV-only visible evidence panel.
+   This file never invents scenario execution, cleanup or writes. Real evidence must be
+   supplied by the controlled browser runner after using the visible product flows. */
 window.CX = window.CX || {};
 
 (function(){
@@ -7,11 +9,6 @@ window.CX = window.CX || {};
     'AUTH_READY','CLAIMS_READY','MEMBERSHIP_READY','DATA_READY','SHELL_READY','ROUTE_READY',
     'VIEW_READY','DOMAIN_READY','SCENARIO_READY','SCENARIO_EXECUTED','CROSS_MODULE_VERIFIED','CLEANUP_VERIFIED'
   ];
-  const TIMEOUTS = {
-    AUTH_READY:3000, CLAIMS_READY:3000, MEMBERSHIP_READY:3000, DATA_READY:4000, SHELL_READY:3000,
-    ROUTE_READY:3000, VIEW_READY:3000, DOMAIN_READY:4000, SCENARIO_READY:2000, SCENARIO_EXECUTED:6000,
-    CROSS_MODULE_VERIFIED:4000, CLEANUP_VERIFIED:3000
-  };
   const PROFILES = [
     'CORE_OPERATIONS_ADMIN',
     'SHOPPER_FULL_CYCLE',
@@ -26,76 +23,117 @@ window.CX = window.CX || {};
       return window.CX_DEV_BUILD===true || h==='localhost' || h==='127.0.0.1' ||
         h==='cxorbia-backend-dev.web.app' || h==='cxorbia-backend-dev.firebaseapp.com' ||
         new URLSearchParams(location.search).get('cxDevLab')==='1';
-    }catch(e){ return false; }
+    }catch(_){ return false; }
   }
+
+  function stableList(value){
+    return Array.isArray(value) ? value : [];
+  }
+
   function fingerprint(){
     const d=CX.data||{};
-    const visits=Array.isArray(d.visits)?d.visits:[];
-    const shoppers=Array.isArray(d.shoppers)?d.shoppers:[];
-    const postulaciones=Array.isArray(d.postulaciones)?d.postulaciones:[];
+    const visits=stableList(d._visitas||d.visits);
+    const shoppers=stableList(d.shoppers);
+    const postulaciones=stableList(d.postulaciones);
     const project=d.period?d.period():null;
-    const base = {
-      tenantId: CX.BRAND && CX.BRAND.id,
-      projectId: project && project.id,
-      periodId: d.currentPeriodId,
-      visits: visits.length,
-      shoppers: shoppers.length,
-      postulaciones: postulaciones.length,
-      auditEntities: visits.concat(shoppers,postulaciones).filter(x=>String((x&&x.id)||'').startsWith('AUDIT-')).length
+    const base={
+      tenantId:(CX.backendAuth&&CX.backendAuth.context&&CX.backendAuth.context()?.tenantId)||(CX.BRAND&&CX.BRAND.id)||null,
+      projectId:(project&&project.id)||d.currentProjectId||null,
+      periodId:d.currentPeriodId||null,
+      visits:visits.length,
+      shoppers:shoppers.length,
+      postulaciones:postulaciones.length,
+      auditEntities:visits.concat(shoppers,postulaciones).filter(x=>String((x&&x.id)||'').startsWith('AUDIT-')).length
     };
-    base.hash = btoa(unescape(encodeURIComponent(JSON.stringify(base)))).slice(0,24);
+    try{ base.hash=btoa(unescape(encodeURIComponent(JSON.stringify(base)))).slice(0,24); }
+    catch(_){ base.hash=JSON.stringify(base); }
     return base;
   }
-  function condition(state){
+
+  function preflightState(state){
     const d=CX.data||{};
-    const role=CX.session && CX.session.role;
+    const ctx=(CX.backendAuth&&CX.backendAuth.context&&CX.backendAuth.context())||null;
+    const role=CX.session&&CX.session.role;
     const view=document.getElementById('view');
-    const route=CX.session && CX.session.view;
+    const route=CX.session&&CX.session.view;
     const project=d.period?d.period():null;
-    const dataReady=Array.isArray(d.visits)&&Array.isArray(d.shoppers)&&Array.isArray(d.projects);
+    const dataReady=Array.isArray(d._visitas||d.visits)&&Array.isArray(d.shoppers)&&Array.isArray(d.projects);
+    const shellReady=!!document.querySelector('#app.on #rail')&&typeof CX.router?.nav==='function';
     const map={
-      AUTH_READY: {ok:!!role, observed:role||'no_session', expected:'session role present'},
-      CLAIMS_READY: {ok:!!(CX.session&&CX.session.user), observed:(CX.session&&CX.session.user&&CX.session.user.role)||'no_user', expected:'session user/role snapshot'},
-      MEMBERSHIP_READY: {ok:!!project, observed:project?project.id:'no_project', expected:'project membership context'},
-      DATA_READY: {ok:dataReady, observed:dataReady?`visits=${d.visits.length}; shoppers=${d.shoppers.length}`:'missing data arrays', expected:'CX.data arrays loaded'},
-      SHELL_READY: {ok:!!document.querySelector('#app.on .rail'), observed:document.querySelector('#app.on .rail')?'shell_on':'shell_missing', expected:'app shell visible'},
-      ROUTE_READY: {ok:!!route, observed:route||'no_route', expected:'CX.session.view set'},
-      VIEW_READY: {ok:!!(view&&view.children.length), observed:view?String(view.children.length):'no_view', expected:'rendered view children'},
-      DOMAIN_READY: {ok:!!(project&&project.countries), observed:project?(project.name||project.id):'no_project', expected:'tenant/project/period domain'},
-      SCENARIO_READY: {ok:true, observed:'AUDIT synthetic id reserved', expected:'AUDIT-* sanitized scenario id'},
-      SCENARIO_EXECUTED: {ok:true, observed:'read-only route and DOM evidence captured', expected:'visible product flow evidence'},
-      CROSS_MODULE_VERIFIED: {ok:dataReady, observed:`project=${project&&project.id}; period=${d.currentPeriodId}`, expected:'same tenant/project/period across modules'},
-      CLEANUP_VERIFIED: {ok:true, observed:'no direct writes performed by lab', expected:'baselineRestoredAfterCleanup=true'}
+      AUTH_READY:{ok:ctx?.authenticated===true||!!role,observed:ctx?.authenticated===true?'firebase_authenticated':(role||'no_session'),expected:'authenticated session'},
+      CLAIMS_READY:{ok:!!(ctx?.role||(CX.session&&CX.session.user)),observed:ctx?.role||(CX.session&&CX.session.user&&CX.session.user.role)||'no_claims',expected:'role/tenant/project context'},
+      MEMBERSHIP_READY:{ok:!!project,observed:project?project.id:'no_project',expected:'project membership context'},
+      DATA_READY:{ok:dataReady,observed:dataReady?`visits=${stableList(d._visitas||d.visits).length}; shoppers=${stableList(d.shoppers).length}`:'missing canonical arrays',expected:'canonical CX.data arrays loaded'},
+      SHELL_READY:{ok:shellReady,observed:shellReady?'router_and_rail_ready':'shell_not_ready',expected:'app shell, router and rail ready'},
+      ROUTE_READY:{ok:!!route,observed:route||'no_route',expected:'CX.session.view set'},
+      VIEW_READY:{ok:!!(view&&view.children.length),observed:view?String(view.children.length):'no_view',expected:'rendered view children'},
+      DOMAIN_READY:{ok:!!(project&&d.currentPeriodId),observed:project?(project.name||project.id):'no_project',expected:'tenant/project/period domain'}
     };
-    return map[state] || {ok:false, observed:'unknown', expected:'known state'};
+    return map[state]||null;
   }
-  function runProfile(profile){
+
+  function pendingRunnerReport(){
     const before=fingerprint();
-    const auditId='AUDIT-'+Date.now().toString(36).toUpperCase();
-    const steps=STATES.map((state,index)=>{
-      const c=condition(state);
+    const auditId='AUDIT-PENDING-'+Date.now().toString(36).toUpperCase();
+    const preflight=STATES.slice(0,8).map(state=>{
+      const c=preflightState(state)||{ok:false,observed:'unknown',expected:'known state'};
       return {
-        state, timeoutMs:TIMEOUTS[state], status:c.ok?'PASS':'BLOCKED',
+        state,
+        status:c.ok?'PASS':'BLOCKED',
         code:c.ok?`PASS_${state}`:`BLOCKED_${state}`,
-        module:CX.session&&CX.session.view||'login',
-        route:CX.session&&CX.session.view||'none',
-        action:index<8?'observe_platform_state':'record_scenario_evidence',
+        module:(CX.session&&CX.session.view)||'login',
+        route:(CX.session&&CX.session.view)||'none',
+        action:'read_only_preflight',
         expected:c.expected,
         observed:c.observed,
         snapshot:fingerprint()
       };
     });
-    const after=fingerprint();
-    const cleanupOk = before.hash===after.hash;
-    if(!cleanupOk){
-      steps.push({state:'CLEANUP_VERIFIED', timeoutMs:TIMEOUTS.CLEANUP_VERIFIED, status:'FAIL', code:'P0_CLEANUP_FINGERPRINT_CHANGED', module:'lab', route:'lab', action:'cleanup', expected:before.hash, observed:after.hash, snapshot:after});
-    }
+    const pending=STATES.slice(8).map(state=>({
+      state,
+      status:'BLOCKED',
+      code:`BLOCKED_${state}_AWAITING_CONTROLLED_RUNNER`,
+      module:'scenario-runner',
+      route:'pending',
+      action:'await_controlled_ui_scenario',
+      expected:'runner evidence from visible product flows and exact cleanup',
+      observed:'no runner evidence ingested',
+      snapshot:fingerprint()
+    }));
     return {
-      profile, auditId, decision:steps.some(s=>s.status==='FAIL')?'FAIL':(steps.some(s=>s.status==='BLOCKED')?'BLOCKED':'PASS'),
-      before, after, baselineRestoredAfterCleanup:cleanupOk, steps,
-      captures:[{id:auditId+'-PANEL', label:'Panel del laboratorio', hash:after.hash}]
+      schemaVersion:'cxorbia.dev-scenario-lab.visible-shell.v2',
+      generatedAt:new Date().toISOString(),
+      activeScenario:auditId,
+      stage:'SCENARIO_READY',
+      decision:'BLOCKED_AWAITING_CONTROLLED_RUNNER',
+      cleanup:null,
+      baselineRestoredAfterCleanup:null,
+      fingerprintBefore:before,
+      fingerprintAfter:null,
+      profiles:PROFILES.map(profile=>({profile,auditId,decision:'BLOCKED',steps:preflight.concat(pending)})),
+      captures:[]
     };
   }
+
+  function sanitizeEvidence(value){
+    const raw=JSON.parse(JSON.stringify(value||{}));
+    const text=JSON.stringify(raw);
+    if(/-----BEGIN .*PRIVATE KEY-----|"private_key"\s*:|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/i.test(text)){
+      throw new Error('DEV_LAB_EVIDENCE_NOT_SANITIZED');
+    }
+    return raw;
+  }
+
+  function validRunnerReport(report){
+    return report&&
+      report.schemaVersion==='cxorbia.dev-scenario-lab.runner-evidence.v1'&&
+      Array.isArray(report.profiles)&&
+      report.profiles.length===PROFILES.length&&
+      report.profiles.every(p=>PROFILES.includes(p.profile)&&Array.isArray(p.steps))&&
+      typeof report.baselineRestoredAfterCleanup==='boolean'&&
+      report.fingerprintBefore&&report.fingerprintAfter;
+  }
+
   function render(report){
     let root=document.getElementById('cx-dev-lab');
     if(!root){
@@ -104,44 +142,56 @@ window.CX = window.CX || {};
       root.className='cx-dev-lab';
       document.body.appendChild(root);
     }
-    const rows=(report?report.profiles:[]).flatMap(p=>p.steps.map(s=>({profile:p.profile,...s})));
+    const rows=(report?.profiles||[]).flatMap(p=>(p.steps||[]).map(s=>({profile:p.profile,...s})));
     root.innerHTML=`<div class="cx-dev-lab__head">
-      <div><b>CXORBIA DEV · LABORATORIO DE ESCENARIOS</b><span>${report?report.activeScenario:'sin ejecutar'}</span></div>
+      <div><b>CXORBIA DEV · LABORATORIO DE ESCENARIOS</b><span>${report?.activeScenario||'sin ejecutar'}</span></div>
       <button type="button" id="cxDevLabRun">Ejecutar pruebas</button>
     </div>
     <div class="cx-dev-lab__meta">
-      <span>Escenario activo: ${report?report.activeScenario:'-'}</span>
-      <span>Etapa actual: ${report?report.stage:'-'}</span>
-      <span>Cleanup: ${report?String(report.cleanup):'-'}</span>
+      <span>Decisión: ${report?.decision||'-'}</span>
+      <span>Etapa: ${report?.stage||'-'}</span>
+      <span>Cleanup: ${report?.baselineRestoredAfterCleanup==null?'pendiente':String(report.baselineRestoredAfterCleanup)}</span>
     </div>
-    <div class="cx-dev-lab__timeline">${rows.map(r=>`<div class="cx-dev-step is-${String(r.status).toLowerCase()}"><b>${r.status}</b><span>${r.profile}</span><small>${r.state}</small><em>${r.module} / ${r.route}</em><code>${r.code}</code><p>${r.expected} → ${r.observed}</p></div>`).join('')||'<div class="cx-dev-step">Pendiente de ejecución DEV autorizada</div>'}</div>
-    <pre>${report?JSON.stringify({fingerprintBefore:report.fingerprintBefore,fingerprintAfter:report.fingerprintAfter,captures:report.captures},null,2):''}</pre>`;
-    root.querySelector('#cxDevLabRun').addEventListener('click',()=>CX.devScenarioLab.run());
+    <div class="cx-dev-lab__timeline">${rows.map(r=>`<div class="cx-dev-step is-${String(r.status||'blocked').toLowerCase()}"><b>${r.status||'BLOCKED'}</b><span>${r.profile}</span><small>${r.state||'-'}</small><em>${r.module||'-'} / ${r.route||'-'}</em><code>${r.code||'-'}</code><p>${r.expected||'-'} → ${r.observed||'-'}</p></div>`).join('')||'<div class="cx-dev-step">Pendiente de evidencia del runner controlado</div>'}</div>
+    <pre>${JSON.stringify({fingerprintBefore:report?.fingerprintBefore||null,fingerprintAfter:report?.fingerprintAfter||null,captures:report?.captures||[]},null,2)}</pre>`;
+    root.querySelector('#cxDevLabRun').addEventListener('click',()=>CX.devScenarioLab.requestRun());
   }
-  CX.devScenarioLab = {
+
+  CX.devScenarioLab={
     enabled:isDev(),
+    profiles:PROFILES.slice(),
     lastReport:null,
-    run(){
-      if(!isDev()) return null;
-      const reports=PROFILES.map(runProfile);
-      const firstBlocked=reports.flatMap(r=>r.steps).find(s=>s.status!=='PASS');
-      this.lastReport={
-        schemaVersion:'cxorbia.dev-scenario-lab.v6',
-        generatedAt:new Date().toISOString(),
-        activeScenario:reports[0].auditId,
-        stage:firstBlocked?firstBlocked.state:'CLEANUP_VERIFIED',
-        decision:reports.some(r=>r.decision==='FAIL')?'FAIL':(reports.some(r=>r.decision==='BLOCKED')?'BLOCKED':'PASS'),
-        cleanup:reports.every(r=>r.baselineRestoredAfterCleanup),
-        fingerprintBefore:reports[0]&&reports[0].before,
-        fingerprintAfter:reports[reports.length-1]&&reports[reports.length-1].after,
-        profiles:reports,
-        captures:reports.flatMap(r=>r.captures)
-      };
+    mount(){
+      if(!isDev()) return;
+      this.lastReport=this.lastReport||pendingRunnerReport();
       render(this.lastReport);
+    },
+    requestRun(){
+      if(!isDev()) return null;
+      this.lastReport=pendingRunnerReport();
+      this.lastReport.decision='RUN_REQUESTED_AWAITING_CONTROLLED_RUNNER';
+      this.lastReport.stage='SCENARIO_READY';
+      render(this.lastReport);
+      window.dispatchEvent(new CustomEvent('cxorbia:dev-lab-run-request',{detail:{profiles:PROFILES.slice(),fingerprintBefore:this.lastReport.fingerprintBefore}}));
       return this.lastReport;
     },
-    mount(){ if(isDev()) render(this.lastReport); }
+    ingest(report){
+      if(!isDev()) throw new Error('DEV_LAB_DISABLED');
+      const safe=sanitizeEvidence(report);
+      if(!validRunnerReport(safe)) throw new Error('DEV_LAB_RUNNER_EVIDENCE_INVALID');
+      this.lastReport=safe;
+      render(this.lastReport);
+      return this.lastReport;
+    }
   };
+
+  window.addEventListener('message',event=>{
+    if(event.source!==window) return;
+    if(event.data?.type!=='CXORBIA_DEV_LAB_RUNNER_EVIDENCE') return;
+    try{ CX.devScenarioLab.ingest(event.data.report); }
+    catch(error){ console.error('[CX DEV LAB]',error); }
+  });
+
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>CX.devScenarioLab.mount());
   else CX.devScenarioLab.mount();
 })();
