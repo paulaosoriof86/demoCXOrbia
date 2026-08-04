@@ -1,7 +1,7 @@
 # Impacto en Academia — Cloud V5 y acceso Cliente runtime
 
 **Fecha:** 2026-08-04  
-**Estado:** `DOCUMENTADO__FINAL_RUNTIME_RETRY_ROLLED_BACK__ACTUALIZACION_DEFINITIVA_POST_PASS`
+**Estado:** `DOCUMENTADO__CLIENT_ROUTE_SOURCE_STATIC_PASS__ACTUALIZACION_DEFINITIVA_POST_RUNTIME_PASS`
 
 ## 1. Login y white-label
 
@@ -30,39 +30,60 @@ Los materiales técnicos deben separar:
 
 Un usuario autenticado no equivale por sí solo a una membership válida. Una membership válida tampoco prueba que el navegador esté situado en la ruta correcta.
 
-## 3. Lección del gate final
+## 3. Patrón reusable del gate Cliente
 
-La reejecución final terminó con rollback exacto porque el gate Cliente mezclaba en una sola aserción:
+La aserción anterior mezclaba:
 
 ```text
 clientModule && panorama && !blocked
 ```
 
-Las capas de autenticación, HR, paridad y módulo ya habían pasado. El gate no navegaba explícitamente a `cli_dashboard` y dependía de copy incidental del Panorama.
+El correctivo source-only ya quedó validado:
 
-Patrón reusable para Academia:
+- navegación explícita a `cli_dashboard`;
+- espera de `CX.session.view === 'cli_dashboard'`;
+- navegación activa `#nav-cli_dashboard`;
+- marker estable `#view .ph`;
+- evidencia separada de `clientModule`, `route`, `panorama` y `blocked`;
+- errores específicos por capa;
+- etapa original preservada antes de ejecutar rollback.
+
+Gate:
+
+- run `30936681878`;
+- job `92084479259`;
+- decisión `PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT`;
+- gate interno `PASS_C6_CLIENT_ROUTE_SOURCE_STATIC`;
+- blockers 0;
+- warnings 0;
+- provider reads y writes 0.
+
+## 4. Lecciones para cursos y manuales
 
 - navegar explícitamente antes de validar una pantalla;
-- utilizar markers o selectores estables;
+- usar markers o selectores estables;
 - registrar cada condición por separado;
-- no usar un texto visible como única prueba de ruta;
+- no usar copy visible como única prueba de ruta;
+- distinguir módulo registrado, ruta activa, render y contenido;
 - distinguir fallo de aplicación y fallo de test;
+- capturar la etapa original antes del rollback;
 - conservar rollback exacto cuando una escritura temporal no alcanza PASS total.
 
-## 4. Estado actual
+## 5. Estado actual
 
 - Cloud V5: no aprobado;
 - Cloud V6: pendiente de entrega;
-- acceso Cliente: preestado restaurado;
+- acceso Cliente: preestado restaurado tras la última ejecución;
 - membership temporal: eliminado;
 - claims finales: sin cambio;
-- gate de ruta Cliente: pendiente de root fix source-only;
+- gate de ruta Cliente: source/static PASS;
+- runtime con gate corregido: pendiente de nueva autorización;
 - actualización definitiva de cursos/manuales: pendiente del PASS runtime y GO frontend.
 
-## 5. Clasificación
+## 6. Clasificación
 
-- **Reusable CXOrbia:** white-label, responsive, claims/membership, navegación explícita y gates observables.
+- **Reusable CXOrbia:** white-label, responsive, claims/membership, navegación explícita, markers estables y gates observables.
 - **Exclusivo TyA:** ejemplos `tya/cinepolis`.
 - **Cloud/prototipo:** capturas y componentes V6.
-- **Academia:** actualizar después del PASS final.
-- **Sin impacto proveedor:** este documento no ejecuta writes.
+- **Academia:** contenido técnico documentado; capturas definitivas después del PASS final.
+- **Sin impacto proveedor:** este bloque no ejecutó provider reads ni writes.
