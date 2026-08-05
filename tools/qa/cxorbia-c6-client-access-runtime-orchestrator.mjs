@@ -80,7 +80,7 @@ function validateRequest(request) {
   assert(request.targetProjectId === expectedProject && request.tenantId === 'tya' && request.projectId === 'cinepolis', 'PROVIDER_SCOPE');
   assert(request.claims?.role === 'cliente' && request.claims?.authNamespace === 'staff' && request.claims?.tenantId === 'tya' && JSON.stringify(request.claims?.projectIds) === '["cinepolis"]', 'CLAIMS_SCOPE');
   assert(request.membershipPath === 'tenants/tya/users/cxorbia-c6-client-tya-cinepolis-v1', 'MEMBERSHIP_SCOPE');
-  assert(request.maxUserCreates === 0 && request.maxPasswordChanges === 0 && request.maxPasswordResets === 0 && request.maxClaimsWrites === 1 && request.maxMembershipWrites === 1, 'WRITE_BOUNDS');
+  assert(request.membershipOnlyRepair === true && request.maxUserCreates === 0 && request.maxPasswordChanges === 0 && request.maxPasswordResets === 0 && request.maxClaimsWrites === 0 && request.maxMembershipWrites === 1, 'MEMBERSHIP_ONLY_WRITE_BOUNDS');
   assert(request.uniqueExactTargetRequired === true && request.snapshotRequired === true && request.idempotencyRequired === true && request.readbackRequired === true, 'ACCESS_GATES_REQUIRED');
   assert(request.accessCommitPolicy === 'retain_after_access_pass', 'ACCESS_COMMIT_POLICY_INVALID');
   assert(request.runtimeReadOnly === true && request.rollbackAccessOnRuntimeFailure === false, 'RUNTIME_SEPARATION_POLICY_INVALID');
