@@ -1,99 +1,112 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-05  
-**Estado:** `DEV_ROOT_REDIRECT_DEPLOYED__REMOTE_PARITY_PASS__MULTIROLE_FUNCTIONAL_PASS__POSTDEPLOY_REPOSITORY_HYGIENE_HOLD__STOP_RETRY__NO_SECOND_DEPLOY__NO_PRODUCTION`
+**Estado:** `HUMAN_LOGIN_SINGLE_FORM_SOURCE_FIX_PASS__SHOPPER_IDENTITY_AUDIT_PASS_WITH_FINDINGS__NO_DEPLOY__IDENTITY_REPAIR_REQUIRED__NO_PRODUCTION`
 
-## Rama y control
+## 1. Rama y control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
 - producción: intacta;
 - Hosting DEV acumulado: `3`;
-- Hosting DEV de este bloque: `1`;
+- Hosting DEV de este bloque: `0`;
 - deploy adicional autorizado: `0`.
 
-## Corrección predeploy
+## 2. P0 humano demostrado
 
-Se corrigieron exclusivamente los dos terminadores heredoc del step `Execute one Hosting deploy and root-only accumulated gates`.
+La validación humana mostró dos pares de campos de acceso:
+
+1. `#loginForm`, `#lgUser` y `#lgPass` visibles desde el inicio, pero con submit inerte;
+2. un segundo bloque `#cxIntegratedAuthStep` agregado después de seleccionar el rol.
 
 ```text
-commit=e1f06f67e9021d430721328372b20a4bec631a47
-workflowBlob=bd25e9a843496f6962e6e8cc1b987c82620e0a36
-productFilesChanged=0
+P0_PROVEN=true
+CODE=HUMAN_LOGIN_SINGLE_FORM_CONTRACT_BROKEN
 ```
 
-El manifest activo se repinó únicamente al nuevo blob del workflow.
+Los gates anteriores autenticaban una identidad técnica elegida desde un paquete privado y no comprobaron el flujo humano completo ni toda la población Shopper.
 
-## Source/static — PASS
+## 3. Corrección source-only aplicada
+
+`app/core/backend-browser-auth.js` ahora:
+
+- reutiliza exclusivamente `#loginForm`, `#lgUser`, `#lgPass` y `#lgSubmit`;
+- exige seleccionar el perfil antes de autenticar;
+- valida que el rol real corresponda al perfil elegido;
+- elimina cualquier overlay legado `#cxIntegratedAuthStep` si aparece;
+- instala un guard final después de los wrappers acumulativos;
+- no guarda contraseñas, tokens, correos internos ni UID.
+
+No se modificaron módulos, diseño, lógica de negocio ni `CX.data`. No hubo deploy.
+
+## 4. Source/static — PASS
 
 ```text
-workflowRunId=31037730522
-workflowJobId=92414066321
-artifactId=8943265325
-artifactDigest=sha256:2b7a3619d45054ef0c296b396172df01001063d53f247852aef082373a313ff0
+workflowRunId=31041288528
+workflowJobId=92425994929
+artifactId=8944661204
+artifactDigest=sha256:2eaade7708636d49e44eafb32416b9f54f66e496cf95ae4830dbd2c2a42c92b9
 PASS_READONLY_POST_GATES
 PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
 PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
 PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY
 ```
 
-## Único Hosting DEV — ejecutado
+## 5. Auditoría completa de identidad Shopper — PASS con hallazgos
 
 ```text
-workflowRunId=31037828442
-workflowJobId=92414393948
-artifactId=8943383623
-artifactDigest=sha256:6c275fa95d9b729ffefa2e17c660b8a25c02df916a5c57740b538e902b00d3f5
-hostingDeploysThisBlock=1
-hostingSite=cxorbia-backend-dev
+workflowRunId=31041406837
+workflowJobId=92426382117
+artifactId=8944714638
+artifactDigest=sha256:6c9451c7ef698e23e054dd9653db433472ff5c6ffa0a1c7f0b70758baad2abaf
+PASS_C6_HUMAN_LOGIN_SHOPPER_IDENTITY_AUDIT_WITH_FINDINGS
 ```
 
-El dominio raíz quedó publicado con redirect `302` hacia `/index-backend-dev.html`.
+Resultados source-safe:
 
-## Gates funcionales desde `/`
+| Control | Resultado |
+|---|---:|
+| Perfiles Shopper en Firestore | 340 |
+| Registros Shopper con credencial heredada | 109 |
+| Logins únicos | 109 |
+| Usuarios Auth encontrados | 88 |
+| Claims válidos | 88 |
+| Scope Cinépolis válido | 88 |
+| Perfiles enlazados por `shopperId` | 88 |
+| Perfiles sin mapeo de credencial | 252 |
+| Patrón `nombre.apellido` | 79 |
+| Hash compatible con `Nombre123*` | 81 |
+| Sign-in compatible | 85 |
+| Excepciones con contraseña exacta compatible | 4 |
+| Identidades Auth faltantes | 21 |
+| Memberships Shopper en `tenants/tya/users` | 0 de 109 |
 
-Pasaron antes del hold final:
+Conclusión: el patrón `nombre.apellido` / `Nombre123*` no es universal y no debe comunicarse todavía como regla para todos los shoppers.
 
-- paridad remota exacta entre `/` y `/index-backend-dev.html`;
-- Staff autenticado, recargas y nueva pestaña;
-- Shopper autenticado, identidad exacta, histórico, certificación, recargas y nueva pestaña;
-- Portal Cliente autenticado, ruta y vista semántica;
-- Portal Shopper;
-- Finanzas con modelo delegado, regalías `0` y sin valores inventados;
-- Reservas con fuente protegida y mutaciones deshabilitadas.
+## 6. Identidad de Paula
+
+La auditoría encontró dos candidatas source-safe asociadas a Paula: una Staff y una Shopper.
 
 ```text
-PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY
-PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY
-PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC
+candidates=2
+staffCandidates=1
+shopperCandidates=1
+authUsers=1
+claimsValid=1
+membershipsValid=0
+passwordPatternCompatible=0
+passwordSignInCompatible=0
+fullReady=0
+ambiguous=true
 ```
 
-## HOLD final y STOP_RETRY
+No se expusieron nombres de usuario, contraseñas, correos internos, UID ni tokens.
 
-El wrapper final devolvió:
-
-```text
-FAIL_C6_DEV_ROOT_RUNTIME_ACCUMULATIVE
-errorCode=REPOSITORY_CHANGED_BY_ROOT_RUNTIME_GATE
-```
-
-La única diferencia detectada fue el archivo efímero no rastreado generado por `google-github-actions/auth`:
+## 7. Estado seguro
 
 ```text
-gha-creds-035f622bd48bcf7e.json
-```
-
-No hubo delta rastreado ni cambio de producto. El archivo fue eliminado por el cleanup de la acción. Aun así, el contrato exigía repositorio limpio durante la aserción y activó HOLD.
-
-Se aplicó `STOP_RETRY`: request consumido, `allowedExecutions=0`, cero reintentos y cero segundo deploy.
-
-## Estado seguro
-
-```text
-HOSTING_DEPLOYS_TOTAL=3
-HOSTING_DEPLOYS_THIS_BLOCK=1
-ADDITIONAL_DEPLOYS_AUTHORIZED=0
+HOSTING_DEPLOYS_THIS_BLOCK=0
 CLOUD_RUN_DEPLOYS=0
 FIRESTORE_WRITES=0
 AUTH_WRITES=0
@@ -106,17 +119,22 @@ MAKE_CALLS=0
 GEMINI_CALLS=0
 PAYMENTS_WRITES=0
 CREDENTIALS_EXPOSED=false
-TOKENS_EXPOSED=false
 MERGE=false
 PRODUCTION=false
 ```
 
-## Impacto Phase A y Academia
+## 8. Phase A preservada
 
-Phase A, HR, histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, multi-tenant, multi-proyecto, Finanzas, portales, Reservas y Academia permanecen preservados. No hubo cambio funcional de Academia, manuales, cursos, rutas por rol o notificaciones.
+Se preservaron HR, histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, multi-tenant, multi-proyecto, Finanzas, Portal Cliente, Portal Shopper, Reservas, sincronización HR/plataforma y Academia.
 
-## Siguiente bloque exacto
+## 9. Siguiente bloque exacto
 
-La URL raíz ya puede ser validada humanamente. El hold técnico restante pertenece exclusivamente a higiene del harness y no autoriza otro deploy.
+Antes de cualquier write debe definirse el contrato objetivo:
 
-`VALIDACIÓN HUMANA DEL DOMINIO RAÍZ DEV → DOCUMENTAR RESULTADO → CORREGIR SOLO EL HARNESS DE HIGIENE EN UN BLOQUE POSTERIOR SIN DEPLOY, SI SE AUTORIZA`.
+1. confirmar si cada Shopper requiere membership en `tenants/tya/users` o si claims + perfil constituyen el contrato canónico;
+2. resolver la identidad dual de Paula;
+3. preparar un plan idempotente por población para 21 Auth faltantes, 24 credenciales incompatibles, 30 excepciones de login y 252 perfiles sin mapeo;
+4. ejecutar primero dry-run completo y conteos esperados;
+5. solicitar autorización expresa antes de cualquier creación de usuario, cambio de contraseña o membership write.
+
+No hay deploy autorizado ni requerido en este punto.
