@@ -1,7 +1,7 @@
 # PHASE A — Tracker de avance por bloques TyA
 
 **Actualización:** 2026-08-05  
-**Estado:** `LOGIN_ROOT_FIX_DEPLOYED__AUTH_MULTIROLE_PASS__CLIENT_ROUTE_WAIT_HOLD__NO_MORE_DEPLOY`
+**Estado:** `LOGIN_ROOT_FIX_DEPLOYED__AUTH_MULTIROLE_PASS__CLIENT_ROUTE_PRODUCT_PASS__HARNESS_ONLY_PENDING__NO_MORE_DEPLOY`
 
 ## Microbloques de salida
 
@@ -12,20 +12,21 @@
 | 2 — Empalme/composición acumulativa | COMPLETADO | V7.2-P0F1 empalmada |
 | 3 — Root fix selector Login | COMPLETADO | Dos archivos exactos con `.lg2-card, .login-card` |
 | 4 — Reconciliación de pins | COMPLETADO | Solo dos pins actualizados en overlay activo |
-| 5 — Source/static posterior | PASS | Run `31025221503`; composición y Lab PASS |
+| 5 — Source/static posterior | PASS | Composición y Lab PASS |
 | 6 — Primer Hosting DEV | COMPLETADO HISTÓRICO | Release y paridad PASS; descubrió P0 selector |
 | 7 — Segundo Hosting DEV correctivo | COMPLETADO | Release completa; paridad remota PASS |
 | 8A — Staff | PASS | Login, reload y nueva pestaña |
 | 8B — Shopper | PASS | Login, tres recargas, nueva pestaña y visita propia |
 | 8C — Cliente Auth | PASS | Credencial existente, recarga y nueva pestaña |
 | 8D — Finanzas/Reservas diagnóstico | PASS PARCIAL | Modelo delegado y guard fail-closed observados |
-| 8E — Gate remoto acumulativo | HOLD | Timeout en `client_route_wait` |
-| 9 — Validación humana y freeze | PENDIENTE | No iniciar como aprobación mientras el gate acumulativo esté en HOLD |
+| 8E — Diagnóstico `client_route_wait` | PASS CLASIFICADO | Producto renderiza; fallo pertenece al harness |
+| 8F — Predicado semántico del harness | PENDIENTE | Debe quitar dependencia de `#nav-cli_dashboard.active` |
+| 9 — Validación humana y freeze | PENDIENTE | Requiere rerun semántico read-only PASS |
 | 10 — Cutover/producción | PENDIENTE | Requiere freeze y autorización expresa |
 
-## Estado del P0 original
+## P0 original
 
-El P0 `LEGACY_LOGIN_CONTAINER_SELECTOR_AFTER_V7_2_MARKUP_CHANGE` queda cerrado técnicamente:
+`LEGACY_LOGIN_CONTAINER_SELECTOR_AFTER_V7_2_MARKUP_CHANGE` permanece cerrado técnicamente:
 
 - source fix aplicado;
 - pins reconciliados;
@@ -33,20 +34,30 @@ El P0 `LEGACY_LOGIN_CONTAINER_SELECTOR_AFTER_V7_2_MARKUP_CHANGE` queda cerrado t
 - deploy correctivo completo;
 - Login Staff, Shopper y Cliente PASS.
 
-## HOLD actual
+## Diagnóstico focal cerrado
 
 ```text
-FAIL_C6_REMOTE_GATES_AFTER_SINGLE_DEV_HOSTING_DEPLOY_STOP_RETRY
-failedStage=remote_domain_finance_portals_reservations
-semantic.failedStage=client_route_wait
+PASS_C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC_CLASSIFIED
+OWNER=HARNESS
+CODE=HARNESS_NAV_ACTIVE_SUBCONDITION_MISMATCH
 ```
 
-El router aceptó `cli_dashboard`, pero el gate no observó dentro de 30 segundos todo el predicado visual combinado. Falta identificar de manera separada nav activa, `.ph`, contenido de `#view` y excepción de render.
+```text
+sessionView=cli_dashboard
+navElementExists=false
+navActive=false
+viewExists=true
+pageHeaderExists=true
+viewTextLength=690
+renderException=null
+```
+
+No existe P0 de producto demostrado: la ruta Cliente fue aceptada, `#view` existe, `.ph` existe y el contenido se renderizó. La condición incorrecta está únicamente en el harness.
 
 ## Siguiente bloque exacto
 
-`DIAGNÓSTICO READ-ONLY FOCAL client_route_wait → CAPTURA POR SUBCONDICIÓN → PRODUCTO VS HARNESS → STOP SIN DEPLOY`.
+`HARNESS-ONLY: CORREGIR PREDICADO CLIENTE → RERUN SEMÁNTICO READ-ONLY → CERO DEPLOY → STOP PARA VALIDACIÓN HUMANA`.
 
 ## Estado seguro
 
-Hosting DEV acumulado `2`; deploys adicionales autorizados `0`. Cloud Run, Firestore/Auth/Rules/Storage/HR writes del bloque, Make, Gemini, pagos, merge y producción: `0/false`.
+Hosting DEV acumulado `2`; deploys adicionales autorizados `0`. Cloud Run, Firestore/Auth/Rules/Storage/HR writes, Make, Gemini, pagos, merge y producción: `0/false`.
