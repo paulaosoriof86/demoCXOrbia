@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.corte6-protected-shopper-identity-readonly.v1",
-  "generatedAt": "2026-08-05T16:03:16.898Z",
+  "generatedAt": "2026-08-05T19:47:07.726Z",
   "decision": "PASS_C6_PROTECTED_IDENTITY_READONLY_RUNTIME_READY",
   "target": {
     "firebaseProjectId": "cxorbia-backend-dev",
