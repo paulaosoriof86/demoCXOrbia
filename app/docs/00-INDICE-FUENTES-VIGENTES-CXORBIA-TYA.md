@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-08-04  
 **Estado:** ACTIVO  
-**Estado vivo:** `V7_2_RECEIVED_PREFLIGHT__EXECUTION_LANE_NOT_READY_FOR_FINAL_AUDIT_APPLY__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `EXECUTION_LANE_RECOVERY_ATTEMPTED__BLOCKED_BY_RUNTIME_NETWORK__NO_AUDIT__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Fuentes activas y orden de prevalencia
 
@@ -19,15 +19,13 @@
 
 Ante conflicto, mandan este índice y el checkpoint vigente. Los estados antiguos de C6, Hosting o candidatas previas son evidencia histórica, no el bloqueo actual.
 
-## 2. Estado recuperado de la conversación anterior
-
-La conversación bloqueada sí dejó avances en repo:
+## 2. Estado recuperado
 
 - composición source/static PASS;
 - contrato del Laboratorio PASS;
 - run `30971991900` y artifact `8916850770`;
-- auditoría V7.1 HOLD por P0 responsive e evidencia incompleta;
-- handoff frontend V7.2;
+- auditoría V7.1 HOLD por P0 responsive;
+- V7.2 recibida en preflight;
 - cero empalme, deploy o producción.
 
 ## 3. Composición canónica
@@ -40,8 +38,6 @@ Preserva las mejores autoridades por archivo/módulo, pero todavía no es candid
 
 ## 4. V7.2
 
-Paquete recibido y extraíble:
-
 - SHA-256 `d3b7551b3b0b30e1b071dfc74beb20009c9c523c2955cce760148da6b8727686`;
 - 23,243 bytes;
 - 4 entradas;
@@ -51,24 +47,36 @@ Paquete recibido y extraíble:
 
 Estado: `PREFLIGHT_ONLY`. No es GO y no está empalmada.
 
-## 5. Carril
+## 5. Intento de carril ejecutado
+
+La sesión comprobó ZIP, Git cliente, repo/rama e identidad administrativa. El checkout nativo no pudo materializarse:
+
+```text
+git ls-remote https://github.com/paulaosoriof86/demoCXOrbia.git
+→ fatal: Could not resolve host: github.com
+```
+
+La conexión HTTPS directa también está bloqueada.
+
+El artifact `8916850770` fue recuperado y confirma PASS y worktree limpio del run, pero contiene solo reportes; no sustituye un checkout.
 
 ```text
 CANDIDATE_BYTES_AVAILABLE=true
 CANDIDATE_EXTRACTABLE=true
-REPO_AND_BRANCH_VERIFIED=true
 GITHUB_ADMIN_ACCESS=true
+NATIVE_GITHUB_NETWORK_AVAILABLE=false
 REPO_CHECKOUT_COLOCATED_WITH_ZIP=false
 AUTHENTICATED_DIRECT_APPLY_FROM_CHECKOUT=false
 EXECUTION_LANE_READY=false
 ```
 
-No auditar extensamente ni aplicar hasta que el mismo workspace tenga ZIP extraído, checkout autenticado y rama viva.
+Owner: workspace/runtime. No requiere acción manual de Paula.
 
 ## 6. Secuencia única
 
 ```text
-EXECUTION_LANE_READY
+WORKSPACE CON RED GIT NATIVA + CHECKOUT AUTENTICADO
+→ EXECUTION_LANE_READY
 → AUDITORÍA FINAL FOCALIZADA V7.2
 → GO SIN P0
 → APPLY_DELTA_DIRECTLY
@@ -91,11 +99,13 @@ EXECUTION_LANE_READY
 - no Contents API archivo por archivo para empalme;
 - no blobs/trees o workflow como transportador;
 - no PowerShell ni tareas manuales para Paula;
+- no reconstrucción desde V182;
 - no segundo deploy DEV;
 - no reabrir bloques protegidos sin regresión reproducible.
 
 ## 8. Estado seguro
 
+- auditoría final V7.2: no iniciada;
 - V7.2 aplicada: no;
 - empalme: 0;
 - runtime/datos AUDIT: 0;
