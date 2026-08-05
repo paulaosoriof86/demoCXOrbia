@@ -1,26 +1,19 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "c6-shopper-identity-canonicalization-source-static-20260805-01",
-  "enabled": false,
-  "issuedAt": "2026-08-05T16:20:00-06:00",
-  "consumedAt": "2026-08-05T16:22:00-06:00",
-  "consumed": true,
-  "status": "consumed_hold_stop_retry",
-  "decision": "HOLD_READONLY_POST_GATES",
+  "requestId": "c6-shopper-identity-canonicalization-source-static-20260805-02",
+  "enabled": true,
+  "issuedAt": "2026-08-05T16:45:00-06:00",
+  "consumed": false,
+  "status": "authorized_execute_once",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "dd8f8c00858837e28a91ff4f248e82d665f648e5",
-  "requestCommitSha": "876dcdbf51746c7c4c16939f04072b2f62c92493",
-  "workflowRunId": 31052425207,
-  "workflowJobId": 92462414462,
-  "artifactId": 8948908689,
-  "artifactDigest": "sha256:fe1373b49c0aef22c03d8d476c1c2c6c9503d49607d7131d121d15bfbc8ab184",
+  "targetHeadSha": "f224b3e4d5fa05323bfc3d619b257db8a0faaf06",
   "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
   ],
-  "allowedExecutions": 0,
+  "allowedExecutions": 1,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": false,
@@ -31,23 +24,17 @@
   "tenantId": "tya",
   "projectId": "cinepolis",
   "sourceLockDocument": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
+  "activeOverlayManifest": "app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json",
   "canonicalIdentityContract": "backend/contracts/c6-shopper-identity-canonicalization-v1.json",
-  "requiredSourceFiles": [
-    "tools/qa/cxorbia-c6-shopper-identity-canonical-plan.mjs",
-    "tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs"
-  ],
+  "reconciledPin": {
+    "path": "tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs",
+    "previousBlob": "8fe4b0c5050d9fe9ba6c3120ef81a75b00bb8535",
+    "currentBlob": "80622606ce3635f0d53997a41932b6ced5dc25d4"
+  },
   "requiredDecisions": [
     "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
     "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT"
   ],
-  "failure": {
-    "code": "V6_ADDITIONAL_CRITICAL_BLOB_MISMATCH",
-    "path": "tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs",
-    "expectedBlob": "8fe4b0c5050d9fe9ba6c3120ef81a75b00bb8535",
-    "actualBlob": "80622606ce3635f0d53997a41932b6ced5dc25d4",
-    "effectiveFailures": 1,
-    "labDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT"
-  },
   "safeState": {
     "repositoryWrites": false,
     "dataWrites": false,
@@ -66,9 +53,9 @@
   "containsPii": false,
   "containsSecrets": false,
   "authorizedBy": "Paula",
-  "authorizationScope": "Validate source-only the canonical TyA Shopper identity contract, the 340-profile census tooling, universal nombre.apellido and Nombre123* policy, membership-independent Shopper access and separated Staff/Shopper principals. No provider reads, deploy, writes, merge or production.",
+  "authorizationScope": "Reconcile exclusively the canonical Shopper auditor blob pin, execute one accumulated source/static gate and, only on PASS, allow one separate read-only 340-profile census. No provider reads in this gate, Auth/password/membership/Firestore/Rules/Storage/HR writes, deploy, Cloud Run, Make, Gemini, payments, merge or production.",
   "repositoryUnchangedByGate": true,
   "stopRetryOnFailure": true,
-  "nextGate": "RECONCILE_ONLY_THE_ACTIVE_MANIFEST_PIN_FOR_THE_CANONICAL_AUDITOR_THEN_REQUEST_NEW_EXPLICIT_AUTHORIZATION",
-  "purpose": "Consumed after source/static manifest pin mismatch. STOP_RETRY applied; no provider reads, Auth writes or deploy were executed."
+  "nextGate": "ON_PASS_EXECUTE_ONE_READONLY_340_PROFILE_CANONICAL_CENSUS",
+  "purpose": "One-shot source/static revalidation after the explicitly authorized single-pin reconciliation."
 }
