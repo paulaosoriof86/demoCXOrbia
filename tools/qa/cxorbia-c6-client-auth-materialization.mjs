@@ -234,6 +234,7 @@ if(mode==='apply'){
   if(target.disabled||target.displayName!==displayName)fail('CANONICAL_CLIENT_IDENTITY_DRIFT');
   let authWrites=0,claimsWrites=0,membershipWrites=0;
   if(!claimsExact(target.customClaims||{})){
+    if(process.env.CXORBIA_MEMBERSHIP_ONLY_REPAIR==='1')fail('MEMBERSHIP_ONLY_REPAIR_CLAIMS_DRIFT');
     const merged={...(target.customClaims||{}),...requiredClaims};
     await auth.setCustomUserClaims(uid,merged);authWrites++;claimsWrites++;
     target=await auth.getUser(uid);
