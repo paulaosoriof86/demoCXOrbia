@@ -134,16 +134,17 @@ try {
   }
 
   const snapshot = runJson('access_snapshot', 'tools/qa/cxorbia-c6-client-auth-materialization.mjs', ['--mode=snapshot'], {}, outputFile('access-snapshot.source-safe.json'));
-  assert(snapshot.decision === 'PASS_C6_CLIENT_AUTH_MEMBERSHIP_PREWRITE_SNAPSHOT' && snapshot.targetUnique === true && snapshot.passwordSignIn === true, 'ACCESS_SNAPSHOT_NOT_PASS');
+  assert(snapshot.decision === 'PASS_C6_CLIENT_AUTH_MEMBERSHIP_PREWRITE_SNAPSHOT' && snapshot.targetUnique === true && snapshot.target?.claimsExact === true && snapshot.passwordSignIn === true, 'ACCESS_SNAPSHOT_NOT_PASS');
   assert(snapshot.authWrites === 0 && snapshot.membershipWrites === 0 && snapshot.authUserCreates === 0, 'ACCESS_SNAPSHOT_UNSAFE');
 
-  const apply = runJson('access_apply', 'tools/qa/cxorbia-c6-client-auth-materialization.mjs', ['--mode=apply'], {}, outputFile('access-apply.source-safe.json'));
+  const membershipOnlyEnv = { CXORBIA_MEMBERSHIP_ONLY_REPAIR: '1' };
+  const apply = runJson('access_apply', 'tools/qa/cxorbia-c6-client-auth-materialization.mjs', ['--mode=apply'], membershipOnlyEnv, outputFile('access-apply.source-safe.json'));
   applyCompleted = true;
   assert(['PASS_C6_CLIENT_AUTH_MEMBERSHIP_REPAIRED', 'PASS_C6_CLIENT_AUTH_MEMBERSHIP_IDEMPOTENT_NOOP'].includes(apply.decision), 'ACCESS_APPLY_DECISION');
-  assert(Number(apply.authWrites || 0) <= 1 && Number(apply.membershipWrites || 0) <= 1 && Number(apply.authUserCreates || 0) === 0 && apply.passwordSignIn === true, 'ACCESS_APPLY_BOUNDS');
+  assert(Number(apply.authWrites || 0) === 0 && Number(apply.claimsWrites || 0) === 0 && Number(apply.membershipWrites || 0) <= 1 && Number(apply.authUserCreates || 0) === 0 && apply.passwordSignIn === true, 'MEMBERSHIP_ONLY_APPLY_BOUNDS');
 
-  const idempotency = runJson('access_idempotency', 'tools/qa/cxorbia-c6-client-auth-materialization.mjs', ['--mode=apply'], {}, outputFile('access-idempotency.source-safe.json'));
-  assert(idempotency.decision === 'PASS_C6_CLIENT_AUTH_MEMBERSHIP_IDEMPOTENT_NOOP' && idempotency.authWrites === 0 && idempotency.membershipWrites === 0, 'ACCESS_IDEMPOTENCY_NOT_PASS');
+  const idempotency = runJson('access_idempotency', 'tools/qa/cxorbia-c6-client-auth-materialization.mjs', ['--mode=apply'], membershipOnlyEnv, outputFile('access-idempotency.source-safe.json'));
+  assert(idempotency.decision === 'PASS_C6_CLIENT_AUTH_MEMBERSHIP_IDEMPOTENT_NOOP' && idempotency.authWrites === 0 && idempotency.claimsWrites === 0 && idempotency.membershipWrites === 0, 'ACCESS_IDEMPOTENCY_NOT_PASS');
 
   const readback = runJson('access_readback', 'tools/qa/cxorbia-c6-client-auth-materialization.mjs', ['--mode=readback'], {}, outputFile('access-readback.source-safe.json'));
   assert(readback.decision === 'PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK' && readback.target?.claimsExact === true && readback.membership?.membershipExact === true && readback.passwordSignIn === true, 'ACCESS_READBACK_NOT_PASS');
