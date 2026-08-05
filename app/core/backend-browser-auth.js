@@ -257,7 +257,7 @@ window.CX = window.CX || {};
       return;
     }
     const loginRoot = document.getElementById('login');
-    const card = loginRoot && loginRoot.querySelector('.login-card');
+    const card = loginRoot && loginRoot.querySelector('.lg2-card, .login-card');
     if(!card) return;
     clearCredentialStep();
 
