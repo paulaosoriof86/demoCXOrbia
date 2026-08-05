@@ -1,33 +1,25 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "c6-login-selector-two-pin-reconciliation-source-static-20260805-02",
-  "enabled": false,
-  "issuedAt": "2026-08-05T10:23:00-06:00",
-  "consumedAt": "2026-08-05T10:26:00-06:00",
-  "status": "consumed_pass",
-  "decision": "PASS_READONLY_POST_GATES",
-  "compositionDecision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
-  "labSourceContractDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
-  "workflowRunId": 31025221503,
-  "artifactId": 8938295964,
-  "artifactDigest": "sha256:5482f4d00b69ac37b926771f69226efdd18ff4aa36e22288ba9c3d5578c4d9ad",
+  "requestId": "c6-client-route-wait-focal-diagnostic-20260805-01",
+  "enabled": true,
+  "issuedAt": "2026-08-05T10:52:00-06:00",
+  "status": "authorized_execute_once",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "8642e87c655edfa81f813d1a3ccad9236312c5ea",
-  "requestCommitSha": "1ba87399e84d890ace30fbdc0d92c448e8c0e64a",
-  "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
+  "targetHeadSha": "85a91f933a0b71712734cdc19e1bc66179962a3d",
+  "profile": "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC",
   "allowedProfiles": [
-    "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
+    "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC"
   ],
-  "allowedExecutions": 0,
+  "allowedExecutions": 1,
   "repositoryWrites": false,
   "dataWrites": false,
-  "providerReads": false,
+  "providerReads": true,
   "deploy": false,
   "merge": false,
   "production": false,
-  "sourceLockDocument": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
+  "sourceLockDocument": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
   "safeState": {
     "repositoryWrites": false,
     "dataWrites": false,
@@ -46,17 +38,17 @@
   "containsPii": false,
   "containsSecrets": false,
   "authorizedBy": "Paula",
-  "authorizationScope": "Update only the two authorized login selector blob pins in the active composition authority and execute one source/static gate. No deploy unless this gate passes under the separately authorized continuation.",
-  "authorizedBlobPins": [
-    {
-      "path": "app/core/backend-browser-auth.js",
-      "gitBlob": "35c4fa2fab09fc4fd17a7547b721e4693f93f495"
-    },
-    {
-      "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
-      "gitBlob": "3acc508ac242407ea688b6a4ba964409af1125ba"
-    }
+  "authorizationScope": "Execute one focal read-only diagnosis of client_route_wait, capture session.view, navElementExists, navActive, viewExists, pageHeaderExists, viewTextLength and renderException separately, classify product versus harness, and stop without deploy or writes.",
+  "requiredObservations": [
+    "session.view",
+    "navElementExists",
+    "navActive",
+    "viewExists",
+    "pageHeaderExists",
+    "viewTextLength",
+    "renderException"
   ],
+  "stopAfterClassification": true,
   "stopRetryOnFailure": true,
-  "purpose": "Consumed successful source/static revalidation after reconciling exactly the two authorized login selector blob pins. Repository remained unchanged by the gate; deployment continuation is separately controlled."
+  "purpose": "Classify the last remote client_route_wait failure without modifying runtime, deploying, writing providers, merging or touching production."
 }
