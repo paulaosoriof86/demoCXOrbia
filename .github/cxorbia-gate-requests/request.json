@@ -1,25 +1,32 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
   "requestId": "c6-client-route-wait-focal-diagnostic-runtime-profile-20260805-04",
-  "enabled": true,
+  "enabled": false,
   "issuedAt": "2026-08-05T11:13:00-06:00",
-  "status": "authorized_execute_once_after_preflight_no_diagnostic",
+  "consumedAt": "2026-08-05T11:13:03-06:00",
+  "status": "consumed_pass_classified_harness",
+  "decision": "PASS_READONLY_POST_GATES",
+  "diagnosticDecision": "PASS_C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC_CLASSIFIED",
+  "classificationOwner": "HARNESS",
+  "classificationCode": "HARNESS_NAV_ACTIVE_SUBCONDITION_MISMATCH",
+  "classificationReason": "The client dashboard rendered with content, but the navigation-element assumption did not become true.",
   "continuationOf": "c6-client-route-wait-focal-diagnostic-runtime-profile-20260805-03",
-  "continuationReason": "The prior run stopped in private credential preflight before the focal browser diagnostic. The canonical Client credential was valid and password sign-in passed, but the old workflow expected the compatibility decision alias. The QA selector now emits both the legacy-compatible decision and canonicalDecision, with zero Auth, password or membership writes.",
   "priorDiagnosticExecutionsObserved": 0,
-  "priorWorkflowRunId": 31025221503,
-  "priorWorkflowJobId": 92383474428,
-  "priorFailedStage": "private_client_credential_decision_alias_preflight",
+  "workflowRunId": 31025221503,
+  "workflowJobId": 92384251301,
+  "artifactId": 8939818306,
+  "artifactDigest": "sha256:5016033fe024f48f4f0b21dfae400a18dbc2a015a3bad70c49c2d5892a811ee4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "targetHeadSha": "ab79011ff69518bd4104393f9c46ecc050d01846",
-  "profile": "PHASE_A_COMPLETE_RUNTIME_MULTIROLE",
+  "requestCommitSha": "c3d7bc540d7e55ccf21abfa339239300f9c6d4e1",
+  "profile": "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC",
   "allowedProfiles": [
-    "PHASE_A_COMPLETE_RUNTIME_MULTIROLE"
+    "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC"
   ],
   "diagnosticMode": "client_route_wait",
-  "allowedExecutions": 1,
+  "allowedExecutions": 0,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": true,
@@ -30,6 +37,15 @@
   "tenantId": "tya",
   "projectId": "cinepolis",
   "sourceLockDocument": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
+  "observations": {
+    "sessionView": "cli_dashboard",
+    "navElementExists": false,
+    "navActive": false,
+    "viewExists": true,
+    "pageHeaderExists": true,
+    "viewTextLength": 690,
+    "renderException": null
+  },
   "safeState": {
     "repositoryWrites": false,
     "dataWrites": false,
@@ -48,17 +64,8 @@
   "containsPii": false,
   "containsSecrets": false,
   "authorizedBy": "Paula",
-  "authorizationScope": "Execute one focal read-only diagnosis of client_route_wait, capture session.view, navElementExists, navActive, viewExists, pageHeaderExists, viewTextLength and renderException separately, classify product versus harness, and stop without deploy or writes.",
-  "requiredObservations": [
-    "session.view",
-    "navElementExists",
-    "navActive",
-    "viewExists",
-    "pageHeaderExists",
-    "viewTextLength",
-    "renderException"
-  ],
   "stopAfterClassification": true,
   "stopRetryOnFailure": true,
-  "purpose": "Classify the last remote client_route_wait failure without modifying runtime, deploying, writing providers, merging or touching production."
+  "nextGate": "REPLACE_THE_INVALID_NAV_ACTIVE_SUBCONDITION_IN_THE_REMOTE_SEMANTIC_HARNESS__RERUN_READONLY_ONLY__NO_DEPLOY",
+  "purpose": "Consumed successful focal diagnosis. Product route, view container, page header and rendered content are present; the prior timeout belongs to the harness assumption that #nav-cli_dashboard must exist and become active."
 }
