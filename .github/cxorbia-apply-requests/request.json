@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "cxorbia.atomic-apply-request.v1",
+  "requestId": "c6-client-readback-decision-compat-20260805-01",
+  "mode": "focal_text_patch_v1",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "expectedParentSha": "aff82f51875107fb607c5b3ff644aa63e32c36bd",
+  "targetPath": "tools/qa/cxorbia-c6-client-auth-materialization.mjs",
+  "expectedCurrentGitBlobSha": "39a1c7c3dee11a6b67d7ac5eed48f53deb097a80",
+  "findText": "  output({schemaVersion:'cxorbia.c6.client-auth-membership-readback.v2',decision:'PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK',\n    target:publicUser(target),membership:publicMembership(true,membership.data),passwordSignIn:true,\n    authWrites:0,claimsWrites:0,membershipWrites:0,firestoreWrites:0});",
+  "replaceText": "  const readbackDecision=process.env.CXORBIA_PRIVATE_COMPAT_DIR\n    ? 'PASS_C6_CLIENT_AUTH_READBACK'\n    : 'PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK';\n  output({schemaVersion:'cxorbia.c6.client-auth-membership-readback.v2',decision:readbackDecision,\n    canonicalDecision:'PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK',compatibilityAlias:readbackDecision!=='PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK',\n    target:publicUser(target),membership:publicMembership(true,membership.data),passwordSignIn:true,\n    authWrites:0,claimsWrites:0,membershipWrites:0,firestoreWrites:0});",
+  "commitMessage": "fix(c6): preserve canonical client readback with legacy gate alias",
+  "deploy": false,
+  "merge": false,
+  "production": false,
+  "providerWrites": false,
+  "dataWrites": false
+}
