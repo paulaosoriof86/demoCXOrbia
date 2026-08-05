@@ -1,19 +1,28 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
   "requestId": "c6-shopper-identity-canonicalization-source-static-20260805-02",
-  "enabled": true,
+  "enabled": false,
   "issuedAt": "2026-08-05T16:45:00-06:00",
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "consumedAt": "2026-08-05T16:50:00-06:00",
+  "consumed": true,
+  "status": "consumed_pass_source_static_reconciled_shopper_auditor",
+  "decision": "PASS_READONLY_POST_GATES",
+  "compositionDecision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
+  "labDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "targetHeadSha": "f224b3e4d5fa05323bfc3d619b257db8a0faaf06",
+  "requestCommitSha": "c55ba57bccfd2492fb3ca2493fef0fb03e9435ca",
+  "workflowRunId": 31054156634,
+  "workflowJobId": 92467888669,
+  "artifactId": 8949587605,
+  "artifactDigest": "sha256:6d206129b723988c7d7d0cb8f628e907b30be3dcc18b113782e293a808fd7ed4",
   "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
   ],
-  "allowedExecutions": 1,
+  "allowedExecutions": 0,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": false,
@@ -56,6 +65,6 @@
   "authorizationScope": "Reconcile exclusively the canonical Shopper auditor blob pin, execute one accumulated source/static gate and, only on PASS, allow one separate read-only 340-profile census. No provider reads in this gate, Auth/password/membership/Firestore/Rules/Storage/HR writes, deploy, Cloud Run, Make, Gemini, payments, merge or production.",
   "repositoryUnchangedByGate": true,
   "stopRetryOnFailure": true,
-  "nextGate": "ON_PASS_EXECUTE_ONE_READONLY_340_PROFILE_CANONICAL_CENSUS",
-  "purpose": "One-shot source/static revalidation after the explicitly authorized single-pin reconciliation."
+  "nextGate": "EXECUTE_ONE_READONLY_340_PROFILE_CANONICAL_CENSUS",
+  "purpose": "Consumed successful source/static revalidation after the explicitly authorized single-pin reconciliation."
 }
