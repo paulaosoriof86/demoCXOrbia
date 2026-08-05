@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-identity-canonicalization-source-static-hold.v1",
+  "generatedAt": "2026-08-05T22:21:33.242Z",
+  "decision": "HOLD_C6_SHOPPER_IDENTITY_CANONICALIZATION_SOURCE_STATIC_STOP_RETRY",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceHead": "dd8f8c00858837e28a91ff4f248e82d665f648e5",
+  "requestCommitSha": "876dcdbf51746c7c4c16939f04072b2f62c92493",
+  "workflow": {
+    "runId": 31052425207,
+    "jobId": 92462414462,
+    "artifactId": 8948908689,
+    "artifactDigest": "sha256:fe1373b49c0aef22c03d8d476c1c2c6c9503d49607d7131d121d15bfbc8ab184"
+  },
+  "sourcePrepared": {
+    "contract": "backend/contracts/c6-shopper-identity-canonicalization-v1.json",
+    "canonicalPlan": "tools/qa/cxorbia-c6-shopper-identity-canonical-plan.mjs",
+    "auditor": "tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs",
+    "usernameContract": "nombre.apellido",
+    "passwordContract": "Nombre123*",
+    "membershipRequired": false,
+    "paulaStaffShopperPrincipalsSeparated": true
+  },
+  "gate": {
+    "runnerStatus": "HOLD_READONLY_POST_GATES",
+    "compositionDecision": "FAIL_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE",
+    "effectiveFailures": 1,
+    "labDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
+    "failure": {
+      "code": "V6_ADDITIONAL_CRITICAL_BLOB_MISMATCH",
+      "path": "tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs",
+      "expectedBlob": "8fe4b0c5050d9fe9ba6c3120ef81a75b00bb8535",
+      "actualBlob": "80622606ce3635f0d53997a41932b6ced5dc25d4"
+    },
+    "warnings": [
+      "P1_SUPERSEDED_AB_OVERLAY_LOADED",
+      "P1_PDF_CHART_EXPORT_DEBT",
+      "P2_XLSX_PRESENTATION_DEBT"
+    ]
+  },
+  "executionBoundary": {
+    "censusExecuted": false,
+    "providerReads": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipsWritten": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false,
+    "credentialsExposed": false
+  },
+  "stopRetry": {
+    "applied": true,
+    "requestConsumed": true,
+    "automaticRetry": false,
+    "providerPhaseBlocked": true,
+    "deployPhaseBlocked": true,
+    "nextExactBlock": "Reconcile only the active composition manifest blob pin for tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs, run a new explicitly authorized source/static gate, and stop again before provider reads unless it passes."
+  }
+}
