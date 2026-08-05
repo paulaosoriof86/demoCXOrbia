@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Corrección prevalente:** 2026-08-04  
-**Estado:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_COMPLETED__CLOUD_V7_HOLD__LAB_SOURCE_ONLY_PREPARED__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_COMPLETED__LAB_SOURCE_CONTRACT_PASS__CLOUD_V7_1_HOLD__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Objetivo
 
@@ -12,18 +12,19 @@ Poner en producción un primer corte operativo sobre una sola baseline acumulati
 
 Portal Cliente continúa en carril paralelo y no bloquea este primer corte.
 
-## 2. Estado real de la candidata frontend
+## 2. Estado frontend
 
-No existe un empalme V6 aprobado/completado.
+No existe empalme V6 aprobado/completado.
 
-Cloud V7 fue auditada y quedó:
+Cloud V7.1 fue auditada y quedó:
 
 `HOLD_NO_SEND_TO_EMPALME`.
 
 P0:
 
-1. paquete completo fuera del alcance estrecho;
-2. Login responsive superpuesto en tablet y móvil.
+1. `#login` mantiene flex/centrado/padding heredados bajo 900 px;
+2. clipping lateral y contenido fuera del scroll real en 390/412 px;
+3. evidencias de viewport incompletas e inválidas.
 
 ## 3. Arquitectura de validación
 
@@ -42,19 +43,34 @@ AUTH_READY
 → CLEANUP_VERIFIED
 ```
 
-## 4. Trabajo adelantado source-only
+## 4. Laboratorio — source contract PASS
 
-Ya quedaron preparados:
+Materializado:
 
-- contrato del runner del Laboratorio;
+- contrato del runner;
 - schema de evidencia;
 - matriz Admin/Operaciones + Shopper;
 - fingerprints;
 - política `AUDIT-*`;
 - cleanup exacto;
-- gate source-only.
+- gate source-only;
+- integración del gate al perfil source/static acumulativo.
 
-No se ejecutaron navegador, runtime, provider reads/writes ni deploy.
+Ejecución comprobada:
+
+- run `30971991900`;
+- artifact `8916850770`;
+- digest `sha256:75953c600b68450a11cfac6667ac5b5cfa8eceea5c94a6a0856850a501e77dd8`.
+
+Decisiones:
+
+```text
+PASS_READONLY_POST_GATES
+PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
+PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
+```
+
+No se ejecutaron navegador, runtime, credenciales, provider reads/writes ni deploy.
 
 ## 5. Primer release slice
 
@@ -72,13 +88,13 @@ Validar después del único deploy DEV:
 ## 6. Secuencia obligatoria
 
 ```text
-CLAUDE CORRIGE V7
+CLOUD V7.2
 → DELTA ESTRECHO + MANIFEST + EVIDENCIAS
 → EXECUTION_LANE_READY
 → AUDITORÍA FINAL
 → GO SIN P0
-→ APPLY_DELTA_DIRECTLY
-→ SOURCE/STATIC FINAL + GATE DEL LABORATORIO
+→ CODEX SOLO EMPALME
+→ SOURCE/STATIC FINAL + GATE LAB
 → ÚNICO HOSTING DEV AUTORIZADO
 → LABORATORIO REAL
 → CLEANUP EXACTO
@@ -90,8 +106,8 @@ CLAUDE CORRIGE V7
 ## 7. Prohibiciones
 
 - no describir materialización provisional como empalme;
-- no enviar ZIP completo a Codex;
-- no empalme fragmentado ni selección improvisada;
+- no enviar candidata HOLD a Codex;
+- no empalme fragmentado;
 - no runtime antes de candidata final y deploy único;
 - no datos `AUDIT-*` sin autorización aplicable y snapshot;
 - no segundo deploy ni reintento automático;
@@ -121,8 +137,8 @@ CLAUDE CORRIGE V7
 
 ## 10. Clasificación
 
-- **Reusable CXOrbia:** control plane, runner contract, evidence schema, fingerprints y cleanup.
+- **Reusable CXOrbia:** runner combinado, contratos, schema, fingerprints y cleanup.
 - **Exclusivo TyA:** release slice y matriz operativa.
-- **Claude/prototipo:** corrección frontend V7.
+- **Cloud/prototipo:** corrección frontend V7.2.
 - **Academia:** laboratorio visible y trazabilidad.
-- **Sin impacto producción:** preparación source-only.
+- **Sin impacto producción:** source-only.
