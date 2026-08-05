@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-05  
-**Estado:** `LOGIN_ROOT_FIX_DEPLOYED__AUTH_MULTIROLE_PASS__REMOTE_DOMAIN_SEMANTIC_PASS__CLIENT_HARNESS_PREDICATE_CORRECTED__HUMAN_VALIDATION_PENDING__NO_MORE_DEPLOY__NO_PRODUCTION`
+**Estado:** `DEV_ROOT_ENTRYPOINT_SOURCE_FIX_APPLIED__SOURCE_STATIC_PASS__HOSTING_PREDEPLOY_HOLD_WORKFLOW_HEREDOC__STOP_RETRY__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -10,87 +10,99 @@
 - PR #7: draft/open/no merge;
 - producción: intacta;
 - Hosting DEV acumulado: `2`;
+- Hosting DEV de este bloque: `0`;
 - deploys adicionales autorizados: `0`.
 
-## 2. Estado preservado
+## 2. P0 comprobado
 
-- V7.2-P0F1 y composición Phase A acumulativa preservadas;
-- root fix del Login aplicado en los dos bridges con `.lg2-card, .login-card`;
-- source/static, contrato de Laboratorio, paridad remota y HR viva: PASS;
-- Staff, Shopper y Cliente Auth: PASS;
-- Shopper: tres recargas, nueva pestaña y visita propia PASS;
-- Cliente: credencial existente, recarga y nueva pestaña PASS;
-- ningún cambio de runtime, frontend o Hosting en este bloque.
-
-## 3. Corrección harness-only
-
-Se eliminó exclusivamente del predicado de QA la dependencia de:
+La validación humana abrió `https://cxorbia-backend-dev.web.app/`, que servía `app/index.html`, mientras los gates técnicos abrían `/index-backend-dev.html`.
 
 ```text
-#nav-cli_dashboard.active
+P0_PROVEN=true
+CODE=DEV_ROOT_ENTRYPOINT_CANONICAL_RUNTIME_MISMATCH
+GATE_URL_NE_HUMAN_VALIDATION_URL=true
 ```
 
-El predicado semántico vigente es:
+El shell raíz carecía de Firebase/Auth y adapters protegidos, por lo que podía presentar el bloqueo genérico de fuente conectada. No fue un error de credenciales ni de operación de Paula.
+
+## 3. Corrección source-only aplicada
+
+`firebase.json` contiene ahora un redirect temporal exacto:
 
 ```text
-session.view=cli_dashboard
-#view existe
-#view .ph existe
-#view contiene texto
-renderException=null
+/ → /index-backend-dev.html
+HTTP 302
 ```
 
-Versión: `session-view-canonical-render-v1`.
+Se preservaron el rewrite de HR viva y el fallback explícito de demo. No se modificaron módulos, diseño, Login, Auth ni lógica de negocio.
 
-La corrección se aplica de forma efímera dentro del wrapper de QA; no modifica los archivos desplegados ni la interfaz del producto.
+Se agregaron gates permanentes para:
 
-## 4. Revalidación semántica read-only — PASS
+- paridad source del entrypoint raíz;
+- paridad remota `/` contra `/index-backend-dev.html`;
+- runtime acumulativo desde `/` para Staff, Shopper, Cliente, Finanzas y Reservas.
+
+## 4. Source/static — PASS
 
 ```text
-workflowRunId=31025221503
-workflowJobId=92392748352
-artifactId=8940832844
-artifactDigest=sha256:787116945227cef56422a33988692b485988ee3f64e11bb8b444b590665c454b
+workflowRunId=31035432458
+workflowJobId=92406210890
+artifactId=8942354869
+artifactDigest=sha256:d0b75352b58f2723a57bafaae8e9e77b2aef016a2a7c7d5ecc48a45c779d979f
 PASS_READONLY_POST_GATES
-PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC
+PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
+PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
+PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY
 ```
 
-Portal Cliente:
+Fallos efectivos: `0`. El gate no modificó el repositorio.
+
+## 5. Hosting DEV — STOP_RETRY antes del deploy
+
+La ejecución autorizada se detuvo al interpretar el step del workflow:
 
 ```text
-routeId=cli_dashboard
-routeAccepted=true
-viewExists=true
-pageHeaderExists=true
-viewTextLength=690
-renderException=null
-panoramaVisible=true
-blocked=false
+workflowRunId=31035653127
+workflowJobId=92406957537
+artifactId=8942474073
+artifactDigest=sha256:bf3014ddc059b86ae2dde18d397b266b8e5c9f5db92bcf7a3fee13246f30060f
+failedStage=predeploy_workflow_shell_parse
+errorCode=BASH_HEREDOC_TERMINATOR_INDENTATION_INVALID
 ```
 
-También pasaron:
-
-- Portal Shopper: identidad exacta, histórico y certificación;
-- Finanzas: modelo delegado, regalías `0`, valores inventados `false`;
-- Reservas: fuente protegida/canónica, localStorage no es fuente y mutaciones deshabilitadas;
-- fuente dinámica: `15` periodos, `660` visitas, `209` shoppers, periodo vigente `2026-08`.
-
-## 5. Cierre del bloqueo
-
-`client_route_wait` queda cerrado. No existe P0 de producto demostrado y no se requiere otro deploy.
+Los terminadores `NODE` estaban indentados dentro del subshell Bash y no fueron reconocidos. El script falló antes del gate source predeploy y antes de ejecutar Firebase.
 
 ```text
-CLIENT_ROUTE_WAIT_BLOCKER_CLOSED=true
-PRODUCT_CHANGE_REQUIRED=false
-RUNTIME_CHANGE_REQUIRED=false
-HOSTING_DEPLOY_REQUIRED=false
+deployAttempted=false
+deploySucceeded=false
+hostingDeploysThisBlock=0
+rootRuntimeGatesExecuted=false
+remoteRootCorrected=false
 ```
 
-## 6. Estado seguro
+Se aplicó `STOP_RETRY`: los requests quedaron consumidos, deshabilitados y con cero ejecuciones disponibles. No hubo reintento.
+
+## 6. Estado preservado
+
+Permanecen preservados:
+
+- V7.2-P0F1 y composición Phase A acumulativa;
+- root fix anterior del Login;
+- HR e histórico;
+- shoppers, postulaciones y certificaciones;
+- liquidaciones/pagos;
+- multi-tenant y multi-proyecto;
+- Finanzas, Portal Cliente, Portal Shopper y Reservas;
+- sincronización HR/plataforma y Academia.
+
+El root DEV todavía no está corregido remotamente. La validación humana y el freeze no pueden continuar hasta desplegar y validar el redirect.
+
+## 7. Estado seguro
 
 ```text
 HOSTING_DEPLOYS_TOTAL=2
 HOSTING_DEPLOYS_THIS_BLOCK=0
+HOSTING_DEPLOY_ATTEMPTS_THIS_BLOCK=0
 ADDITIONAL_DEPLOYS_AUTHORIZED=0
 CLOUD_RUN_DEPLOYS=0
 FIRESTORE_WRITES_THIS_BLOCK=0
@@ -105,17 +117,12 @@ GEMINI_CALLS=0
 PAYMENTS_WRITES=0
 CREDENTIALS_EXPOSED=false
 TOKENS_EXPOSED=false
-REPOSITORY_UNCHANGED_BY_GATE=true
 MERGE=false
 PRODUCTION=false
 ```
 
-El paso opcional de comentario automático en PR devolvió HTTP 403 por permisos de integración. No afectó el gate: ejecución, artifact, commit status, limpieza y enforcement finalizaron PASS. El PR se actualiza mediante el conector autorizado.
-
-## 7. Phase A preservada
-
-Se preservan HR e histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, multi-tenant, multi-proyecto, Finanzas, Portal Cliente, Portal Shopper, Reservas, sincronización HR/plataforma y Academia.
-
 ## 8. Siguiente bloque exacto
 
-`VALIDACIÓN HUMANA VISUAL SOBRE LA RELEASE DEV EXISTENTE → CONFIRMAR PORTALES, FINANZAS Y RESERVAS → FREEZE DOCUMENTAL SI PASS → CERO DEPLOY, MERGE O PRODUCCIÓN HASTA AUTORIZACIÓN EXPRESA`.
+Requiere autorización expresa nueva:
+
+`CORREGIR EXCLUSIVAMENTE LA INDENTACIÓN DE LOS TERMINADORES HEREDOC DEL WORKFLOW → REPINAR SOLO EL BLOB DEL WORKFLOW → SOURCE/STATIC → SOLO CON PASS, UNA ÚNICA EJECUCIÓN HOSTING DEV → PARIDAD Y GATES ACUMULATIVOS DESDE / → VALIDACIÓN HUMANA`.
