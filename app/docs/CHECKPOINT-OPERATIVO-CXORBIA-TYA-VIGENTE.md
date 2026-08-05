@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-04  
-**Estado:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_COMPLETED__LAB_SOURCE_ONLY_PREPARED__CLOUD_V7_1_HOLD__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_COMPLETED__LAB_SOURCE_CONTRACT_PASS__CLOUD_V7_1_HOLD__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Carril vigente
 
@@ -13,78 +13,75 @@
 
 No existe empalme V6 aprobado y completado.
 
-## 2. Trabajo adelantado
+## 2. Laboratorio — preparación y gate cerrados
 
-Quedaron preparados source-only:
+Quedaron materializados:
 
-- contrato del runner del Laboratorio;
+- contrato del runner;
 - schema de evidencia;
 - gate source-only;
 - matriz Admin/Operaciones + Shopper;
 - límites `AUDIT-*`;
-- fingerprints y cleanup exacto.
+- fingerprints antes/después;
+- cleanup exacto y P0 ante fallo de limpieza.
 
-No se ejecutaron navegador, runtime, provider reads/writes o datos temporales.
+Se amplió el runner source/static para ejecutar también el gate del contrato del Laboratorio.
 
-## 3. Cloud V7.1 auditada
+## 3. Ejecución comprobada
 
-- ZIP: `Prototype development request V 7.1.zip`;
-- SHA-256: `649b9d50ae8f80cf4e0b4fcb303e60b35e8fda1b7de1215ae716b7be6f4355ca`;
-- entradas: 5;
-- alcance funcional: `app/app.js` y `app/styles/layout.css`;
-- decisión: `HOLD_NO_SEND_TO_EMPALME`.
+- request `phase-a-composition-plus-lab-source-contract-20260804-01`;
+- target HEAD `646a05a0f54cf33236b2e1e30122d8c52f30d2a1`;
+- request commit `6d5abeb4cea8541f12a3851601dbaae681f50ab7`;
+- run `30971991900`;
+- artifact `8916850770`;
+- digest `sha256:75953c600b68450a11cfac6667ac5b5cfa8eceea5c94a6a0856850a501e77dd8`;
+- status success.
 
-## 4. PASS parciales
+Decisiones:
 
-- paquete estrecho;
-- sintaxis PASS;
-- UTF-8 sin BOM;
+```text
+PASS_READONLY_POST_GATES
+PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
+PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
+```
+
+Comprobado:
+
+- composición base 53/53;
+- adicionales 4/4;
+- overrides 5/5;
+- assets faltantes 0;
+- scripts duplicados 0;
 - secretos 0;
-- desktop 1920×1080 y 1440×900 correcto;
-- países 1/2/8/12 en orden y sin `+N`;
-- doce países accesibles en 1440×900;
-- tres perfiles y formulario completos en desktop;
-- copy demo/técnico ausente.
+- cinco perfiles exactos;
+- estados Auth→cleanup;
+- política `AUDIT-*` fail-closed;
+- fingerprint y cleanup exactos;
+- schema de evidencia alineado;
+- falsos PASS de escenario/cleanup ausentes;
+- repositorio sin delta después del gate.
 
-## 5. P0 responsive reproducible
+La solicitud quedó consumida y deshabilitada.
 
-La corrección no anuló la regla legacy de `#login` que conserva:
+## 4. Warnings no bloqueantes
 
-- `display:flex`;
-- `align-items:center`;
-- `justify-content:center`;
-- `padding:24px`.
+- overlay A+B superseded;
+- PDF puede omitir gráficas;
+- Excel básico;
+- mapa source path desactualizado para `miperfil`, `misvisitas`, `aprendizaje` y `cert`; el registro global de las cuatro rutas sí fue comprobado.
 
-En móvil, `.lg2` pasa a bloque pero sigue siendo un flex item centrado dentro del contenedor fixed.
+## 5. Cloud V7.1
 
-Evidencia `390×844`:
+- ZIP `Prototype development request V 7.1.zip`;
+- SHA-256 `649b9d50ae8f80cf4e0b4fcb303e60b35e8fda1b7de1215ae716b7be6f4355ca`;
+- decisión `HOLD_NO_SEND_TO_EMPALME`.
 
-- aside/main: x = -81 px, width = 552 px;
-- card: x = -65 px, width = 520 px;
-- strip top = -191.30 px;
-- registro bottom = 1011.30 px;
-- document scrollHeight = 844 px.
+P0:
 
-Resultado:
+- responsive continúa recortado por flex/centrado/padding heredados de `#login`;
+- evidencia de viewports incompleta e inválida.
 
-- clipping lateral;
-- franja superior fuera de pantalla;
-- texto y controles recortados;
-- parte inferior fuera del scroll vertical real.
-
-También se reproduce en `412×915`; en `768×1024` la franja superior queda cortada.
-
-## 6. Evidencia candidata
-
-La única captura llamada `02-desktop-1440x900.png` mide realmente `924×540` y es JPEG.
-
-Faltan:
-
-- cuatro viewports;
-- comparación antes/después;
-- capturas 1/2/8/12 países.
-
-## 7. Decisión
+## 6. Decisión
 
 ```text
 V7_1_GO = false
@@ -92,19 +89,7 @@ SEND_TO_EMPALME = false
 EXECUTION_LANE_READY_FOR_APPLY = false
 ```
 
-No enviar a Codex.
-
-## 8. Corrección V7.2 requerida
-
-Bajo 900 px Cloud debe establecer explícitamente:
-
-- `#login{display:block;padding:0;align-items:initial;justify-content:initial;overflow:auto}`;
-- ancho real 100 %;
-- cero coordenadas negativas;
-- `scrollHeight` suficiente hasta el registro;
-- capturas reales de todos los viewports.
-
-## 9. Siguiente secuencia
+## 7. Siguiente secuencia
 
 ```text
 CLOUD V7.2
@@ -118,20 +103,22 @@ CLOUD V7.2
 → VALIDACIÓN HUMANA
 ```
 
-## 10. Estado seguro
+## 8. Estado seguro
 
 - V7.1 aplicada: no;
 - empalme: 0;
+- navegador/runtime: 0;
+- provider reads/writes: 0;
 - entidades `AUDIT-*`: 0;
 - Hosting/Cloud Run: 0;
 - Auth/Firestore/Storage/HR writes: 0;
 - Make/Gemini/pagos: 0;
 - merge/producción: 0.
 
-## 11. Clasificación
+## 9. Clasificación
 
-- **Reusable CXOrbia:** contratos, fingerprints, cleanup y auditoría geométrica.
+- **Reusable CXOrbia:** runner combinado, contratos, schema, fingerprints y cleanup.
 - **Exclusivo TyA:** matriz Admin/Operaciones + Shopper.
 - **Cloud/prototipo:** V7.2 pendiente.
-- **Academia:** capturas finales pendientes.
-- **Sin impacto producción:** no se aplicó ni desplegó nada.
+- **Academia:** evidencia source-only reproducible.
+- **Sin impacto producción:** no deploy ni provider interaction.
