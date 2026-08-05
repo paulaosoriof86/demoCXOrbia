@@ -36,7 +36,7 @@
       "${s.pass}"
     ]
   },
-  "status": "C6_DEV_ROOT_ENTRYPOINT_SOURCE_FIX_APPLIED__SOURCE_STATIC_PASS__HOSTING_PREDEPLOY_HOLD__STOP_RETRY__NO_DEPLOY",
+  "status": "C6_HUMAN_LOGIN_SINGLE_FORM_SOURCE_FIX_APPLIED__SHOPPER_IDENTITY_AUDIT_READY__SOURCE_STATIC_PENDING__NO_DEPLOY",
   "criticalFileOverrides": [
     {
       "path": "app/app.js",
@@ -52,9 +52,9 @@
     },
     {
       "path": "app/core/backend-browser-auth.js",
-      "gitBlob": "35c4fa2fab09fc4fd17a7547b721e4693f93f495",
-      "authority": "C6_LOGIN_SELECTOR_ROOT_FIX_AUTHORIZED_20260805",
-      "decision": "PRESERVE_ACCUMULATIVE_LG2_AND_LEGACY_LOGIN"
+      "gitBlob": "cb9ceb89d2282fe6d3c8b4ffc8c2cd1f52263cac",
+      "authority": "C6_HUMAN_LOGIN_SINGLE_FORM_P0_AUTHORIZED_20260805",
+      "decision": "GATE_SINGLE_VISIBLE_LOGIN_FORM_NO_CXINTEGRATEDAUTHSTEP"
     },
     {
       "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
@@ -140,7 +140,19 @@
       "path": ".github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml",
       "gitBlob": "bd25e9a843496f6962e6e8cc1b987c82620e0a36",
       "authority": "C6_DEV_ROOT_ENTRYPOINT_P0_AUTHORIZED_20260805",
-      "decision": "HOLD_PREDEPLOY_HEREDOC_INDENTATION_REQUIRES_NEW_AUTHORIZATION"
+      "decision": "PRESERVE_CONSUMED_ONE_SHOT_WORKFLOW"
+    },
+    {
+      "path": "tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs",
+      "gitBlob": "8fe4b0c5050d9fe9ba6c3120ef81a75b00bb8535",
+      "authority": "C6_HUMAN_LOGIN_SHOPPER_IDENTITY_P0_AUTHORIZED_20260805",
+      "decision": "GATE_SOURCE_SAFE_ALL_SHOPPER_IDENTITY_MATRIX"
+    },
+    {
+      "path": ".github/workflows/cxorbia-c6-human-login-shopper-identity-audit.yml",
+      "gitBlob": "ec4fc5a5000edba7efc7327db7f4758e1e1dc86d",
+      "authority": "C6_HUMAN_LOGIN_SHOPPER_IDENTITY_P0_AUTHORIZED_20260805",
+      "decision": "GATE_CONTROLLED_READONLY_PROVIDER_AUDIT"
     }
   ],
   "preservation": {
@@ -148,22 +160,23 @@
     "immutableV6SnapshotCreated": true,
     "allOtherCriticalBlobsRemainExact": true,
     "functionalDeltaAddedByThisReconciliation": false,
-    "rootEntrypointHostingDeltaOnly": true,
+    "humanLoginBridgeDeltaOnly": true,
+    "productModulesChanged": false,
+    "designChanged": false,
+    "businessLogicChanged": false,
     "gateRemainsFailClosed": true,
     "singleCandidate": true,
     "singleBranch": true
   },
   "visualDecision": {
-    "status": "P0_ROOT_ENTRYPOINT_SOURCE_STATIC_PASS_HOSTING_PREDEPLOY_HOLD",
-    "reason": "The source correction and permanent root parity gates passed source/static. The one-shot Hosting workflow stopped before Firebase because indented Bash heredoc terminators were not recognized; no deploy occurred and the remote root remains unfixed."
+    "status": "P0_HUMAN_LOGIN_SINGLE_FORM_SOURCE_FIX_PENDING_SOURCE_STATIC_AND_IDENTITY_AUDIT",
+    "reason": "Human validation proved the canonical login displayed one inert credential pair and appended a second credential block after role selection. The authorized source fix reuses only #loginForm, #lgUser and #lgPass and adds a source-safe all-Shopper identity audit without exposing credential values."
   },
   "runtimeDecision": {
-    "scenarioLab": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT_WITH_ROOT_ENTRYPOINT_PARITY",
-    "sourceStaticPass": true,
-    "hostingExecution": "STOP_RETRY_PREDEPLOY_WORKFLOW_SHELL_PARSE",
-    "rootRuntimeExecuted": false,
+    "sourceStaticPass": false,
+    "identityAuditExecuted": false,
     "deployAllowedByThisManifest": false,
-    "newAuthorizationRequired": true
+    "newDeployAuthorized": false
   },
   "safety": {
     "secrets": false,
