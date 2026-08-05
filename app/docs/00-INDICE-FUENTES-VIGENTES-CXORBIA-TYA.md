@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-08-04  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_COMPLETED__LAB_SOURCE_ONLY_PREPARED__CLOUD_V7_1_HOLD__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_COMPLETED__LAB_SOURCE_CONTRACT_PASS__CLOUD_V7_1_HOLD__NO_DEPLOY__NO_PRODUCTION`
 
 ## 0. Lock vigente
 
@@ -17,9 +17,9 @@ No existe empalme V6 aprobado/completado. Codex solo puede empalmar un delta exa
 ## 1. Fuentes activas — orden obligatorio
 
 1. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `AUDITORIA-REAL-CANDIDATA-CLOUD-V7-1-20260804-HOLD.md`;
-3. `CAMBIOS-BACKEND-ADDENDUM-V7-1-AUDIT-HOLD-20260804.md`;
-4. `CAMBIOS-BACKEND-ADDENDUM-LABORATORIO-SOURCE-ONLY-PREPARATION-20260804.md`;
+2. `CAMBIOS-BACKEND-ADDENDUM-LAB-SOURCE-CONTRACT-PASS-20260804.md`;
+3. `AUDITORIA-REAL-CANDIDATA-CLOUD-V7-1-20260804-HOLD.md`;
+4. `CAMBIOS-BACKEND-ADDENDUM-V7-1-AUDIT-HOLD-20260804.md`;
 5. `backend/contracts/tya-dev-scenario-lab-runner-v1.json`;
 6. `backend/contracts/tya-dev-scenario-lab-evidence-schema-v1.json`;
 7. `MATRIZ-EJECUCION-LABORATORIO-ADMIN-SHOPPER-20260804.md`;
@@ -29,52 +29,61 @@ No existe empalme V6 aprobado/completado. Codex solo puede empalmar un delta exa
 11. contratos y addenda activos;
 12. PR #7 y HEAD vivo.
 
-## 2. Trabajo source-only adelantado
+## 2. Laboratorio — source contract PASS
 
-Quedaron preparados sin ejecución runtime:
+Ejecución controlada:
 
-- contrato del runner del Laboratorio;
+- request `phase-a-composition-plus-lab-source-contract-20260804-01`;
+- target `646a05a0f54cf33236b2e1e30122d8c52f30d2a1`;
+- request commit `6d5abeb4cea8541f12a3851601dbaae681f50ab7`;
+- run `30971991900`;
+- artifact `8916850770`;
+- artifact digest `sha256:75953c600b68450a11cfac6667ac5b5cfa8eceea5c94a6a0856850a501e77dd8`.
+
+Decisiones:
+
+```text
+PASS_READONLY_POST_GATES
+PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
+PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
+```
+
+Comprobado:
+
+- composición base 53/53;
+- adicionales 4/4;
+- overrides 5/5;
+- assets faltantes 0;
+- scripts duplicados 0;
+- secretos 0;
+- cinco perfiles del Laboratorio;
+- estados Auth→cleanup;
+- política `AUDIT-*` fail-closed;
+- fingerprints;
+- cleanup exacto;
 - schema de evidencia;
-- gate source-only;
-- matriz Admin/Operaciones + Shopper;
-- fingerprints y cleanup exacto;
-- clasificación P0 ante fallo de limpieza.
+- cero falsos PASS.
 
-No se usaron credenciales, navegador, provider reads/writes, datos `AUDIT-*` ni deploy.
+Advertencias no bloqueantes:
+
+- overlay A+B superseded;
+- PDF puede omitir gráficas;
+- Excel básico;
+- cuatro rutas del Laboratorio tienen source path esperado desactualizado, aunque su registro global sí está comprobado.
+
+La solicitud quedó consumida y deshabilitada.
 
 ## 3. Auditoría Cloud V7.1
 
-Paquete:
-
-- `Prototype development request V 7.1.zip`;
+- paquete `Prototype development request V 7.1.zip`;
 - SHA-256 `649b9d50ae8f80cf4e0b4fcb303e60b35e8fda1b7de1215ae716b7be6f4355ca`;
-- cinco entradas;
-- delta funcional limitado a `app/app.js` y `app/styles/layout.css`.
+- decisión `HOLD_NO_SEND_TO_EMPALME`.
 
-Decisión:
+P0:
 
-```text
-HOLD_NO_SEND_TO_EMPALME
-```
-
-PASS parciales:
-
-- paquete estrecho;
-- sintaxis, UTF-8 y secret scan PASS;
-- escritorio correcto;
-- países 1/2/8/12 visibles y ordenados;
-- doce países accesibles en `1440×900`.
-
-P0 reproducible:
-
-- la regla legacy de `#login` conserva `display:flex`, centrado y `padding:24px`;
-- bajo 900 px la composición continúa centrada como flex item de ~552 px;
-- en 390/412 px aparecen coordenadas negativas, clipping lateral, franja superior fuera de pantalla y controles por debajo del scrollHeight real.
-
-Evidencia candidata inválida/incompleta:
-
-- la captura rotulada `1440×900` mide realmente `924×540` y es JPEG;
-- faltan cuatro viewports, comparación y escenarios visuales 1/2/8/12.
+- `#login` conserva flex/centrado/padding heredados bajo 900 px;
+- clipping lateral y contenido fuera del scroll real en 390/412 px;
+- evidencia de viewports incompleta e inválida.
 
 ## 4. Carril
 
@@ -84,15 +93,10 @@ SEND_TO_EMPALME = false
 EXECUTION_LANE_READY_FOR_APPLY = false
 ```
 
-El checkout local autenticado continúa bloqueado por DNS. Esto no impide declarar HOLD con evidencia reproducible, pero prohíbe aplicar cualquier delta.
-
 ## 5. Siguiente secuencia
 
 ```text
-CLOUD ENTREGA V7.2 FRONTEND
-→ CORRIGE #login FLEX/PADDING BAJO 900PX
-→ ENTREGA EVIDENCIAS REALES
-→ EXECUTION_LANE_READY
+CLOUD V7.2
 → AUDITORÍA FINAL
 → GO SIN P0
 → CODEX SOLO EMPALME
@@ -107,9 +111,10 @@ CLOUD ENTREGA V7.2 FRONTEND
 
 - V7.1 aplicada: no;
 - empalme: 0;
+- navegador/runtime: 0;
 - datos `AUDIT-*`: 0;
 - Hosting/Cloud Run: 0;
 - provider writes: 0;
-- Firestore/Auth/Storage/HR writes: 0;
+- Auth/Firestore/Storage/HR writes: 0;
 - Make/Gemini/pagos: 0;
 - merge/producción: 0.
