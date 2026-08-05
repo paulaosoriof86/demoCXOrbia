@@ -1,9 +1,28 @@
-# Pendientes prototipo — reconciliación directa V7.2-P0F1
+# Pendientes prototipo — posterior a reconciliación directa V7.2-P0F1
 
-1. Aplicar el delta por runner atómico.
-2. Ejecutar composición source/static y contrato Lab sobre el HEAD exacto.
-3. Solo con PASS acumulativo, decidir el único Hosting DEV.
-4. Validación visual humana de Login y composición acumulativa.
-5. Laboratorio real, cleanup y baseline canónica.
+## Cerrado
 
-P1/P2 preservados: overlay A+B superseded, warnings shopper preexistentes y deuda PDF/XLSX documentada.
+- P0F1 empalmada;
+- autoridad canónica reconciliada;
+- runner directo independiente de Codex;
+- composición source/static PASS;
+- contrato Lab source-only PASS;
+- repositorio sin delta posterior a gates.
+
+## Pendiente real
+
+1. autorización expresa para un único Hosting DEV del HEAD vigente;
+2. validación acumulativa de Login responsive y rutas Admin/Shopper/Cliente;
+3. Laboratorio real controlado;
+4. cleanup y validación humana;
+5. freeze `ACTIVE_CANONICAL_BASELINE`;
+6. cutover/producción únicamente con autorización posterior.
+
+## P1/P2 no bloqueantes
+
+- overlay A+B superseded aún cargado;
+- exportación PDF de gráficas;
+- formato XLSX básico;
+- cuatro rutas shopper pendientes de confirmar por nombre de archivo en el contrato Lab.
+
+No reabrir Login, módulos, core, HR, Finanzas, Shopper o Cliente sin regresión reproducible.
