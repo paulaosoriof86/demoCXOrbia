@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-05  
-**Estado:** `LOGIN_SELECTOR_SOURCE_FIX_APPLIED__LAB_CONTRACT_PASS__SOURCE_STATIC_HOLD_MANIFEST_BLOB_PINS_STALE__STOP_RETRY__NO_SECOND_DEPLOY__NO_PRODUCTION`
+**Estado:** `LOGIN_ROOT_FIX_DEPLOYED__STAFF_SHOPPER_CLIENT_AUTH_PASS__REMOTE_SEMANTIC_CLIENT_ROUTE_WAIT_STOP_RETRY__NO_MORE_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -10,95 +10,144 @@
 - PR #7: draft/open/no merge;
 - producción: intacta;
 - carril: ChatGPT + runners controlados de GitHub;
-- Hosting DEV acumulado antes de este bloque: `1`;
-- segundo Hosting DEV ejecutado en este bloque: `0`.
+- Hosting DEV acumulado: `2`;
+- deploys adicionales autorizados: `0`.
 
-## 2. Estado preservado antes del bloque
+## 2. Root fix de Login
 
-- membresía Cliente reparada con un único write y readback exacto;
-- Auth/claims/user/password writes: `0`;
-- Hosting DEV anterior: release completa;
-- paridad remota anterior y HR viva: PASS;
-- P0 comprobado: el Login V7.2 usa `.lg2-card`, mientras los bridges buscaban solo `.login-card`.
+La compatibilidad acumulativa quedó aplicada en:
 
-## 3. Root fix source-only aplicado
+- `app/core/backend-browser-auth.js`;
+- `app/adapters/tya-c6-unified-human-runtime-v1.js`.
 
-Se aplicó exactamente el selector acumulativo autorizado:
+Selector vigente:
 
 ```js
 loginRoot.querySelector('.lg2-card, .login-card')
 ```
 
-Archivos y commits:
+El fix conserva el Login V7.2 y compatibilidad legacy. No se modificaron `app/app.js`, CSS, módulos, credenciales, Auth, memberships ni HR.
 
-- `app/core/backend-browser-auth.js` — `d5cd7741dafd032138bd4f61d2f0500e9c68e64a`;
-- `app/adapters/tya-c6-unified-human-runtime-v1.js` — `9e59fcb81290c80e43233e5202356983a340bf4b`.
+## 3. Reconciliación contractual — PASS
 
-No se modificaron `app/app.js`, CSS, credenciales, usuarios Auth, memberships, HR ni módulos de negocio.
+Se actualizaron únicamente los dos pins autorizados en:
 
-## 4. Gate source/static ejecutado
+`app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json`
 
-Request:
+Commit:
 
-```text
-c6-login-container-selector-root-fix-source-static-20260805-01
-```
+`8642e87c655edfa81f813d1a3ccad9236312c5ea`
 
-Evidencia:
+Gate source/static:
 
 ```text
-workflowRunId=31023829902
-artifactId=8937732266
-artifactDigest=sha256:59442b8fa74ec77ab61c655a3380134ddbd91feec7c99c17bbe09128ef1df0f8
-repositoryUnchangedByGate=true
-```
-
-Resultados:
-
-```text
+run=31025221503
+artifact=8938295964
+digest=sha256:5482f4d00b69ac37b926771f69226efdd18ff4aa36e22288ba9c3d5578c4d9ad
+PASS_READONLY_POST_GATES
+PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
 PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
-HOLD_READONLY_POST_GATES
-FAIL_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE
 ```
 
-## 5. Causa raíz del HOLD
+## 4. Segundo Hosting DEV correctivo
 
-El código autorizado no presentó un fallo semántico adicional. El gate encontró exactamente dos diferencias de blob porque el manifiesto acumulativo aún fija las versiones anteriores de los dos archivos corregidos:
+El deploy autorizado se ejecutó una sola vez y completó la release en:
+
+`https://cxorbia-backend-dev.web.app`
 
 ```text
-app/core/backend-browser-auth.js
-manifest expected=d052a4b62e5320817d42055946e94de463914b24
-actual authorized=35c4fa2fab09fc4fd17a7547b721e4693f93f495
-
-app/adapters/tya-c6-unified-human-runtime-v1.js
-manifest expected=7c00752d9a34209366f3c328ea3e5f5fddb4e1db
-actual authorized=3acc508ac242407ea688b6a4ba964409af1125ba
+deployAttempted=true
+deploySucceeded=true
+hostingDeploysThisRun=1
+hostingDeployAttempts=1
+automaticSecondDeploys=0
 ```
 
-Clasificación:
+## 5. Gates remotos aprobados
+
+### Paridad y HR viva
 
 ```text
-ROOT_CAUSE=ACTIVE_COMPOSITION_MANIFEST_STILL_PINS_PRE_FIX_AUTH_BRIDGE_BLOBS
-SCOPE_OF_MISMATCH=EXACTLY_THE_TWO_AUTHORIZED_FILES
+PASS_C6_HOSTING_DEV_REMOTE_PARITY_AND_LIVE_HR
+allCriticalAssetsMatch=true
+liveEndpoint.ok=true
 ```
 
-No se detectaron archivos faltantes, scripts duplicados, secretos, regresión de rutas ni fallo del contrato de Laboratorio.
+Los dos archivos corregidos coinciden entre fuente y Hosting DEV.
 
-## 6. STOP_RETRY aplicado
-
-Como el source/static no obtuvo PASS:
-
-- no se intentó el segundo Hosting DEV;
-- no se ejecutaron gates remotos contra un build nuevo;
-- no hubo reintento automático;
-- el request quedó consumido y deshabilitado;
-- se registró evidencia en `app/docs/evidence/CORTE6-LOGIN-SELECTOR-SOURCE-STATIC-HOLD-LATEST.json`.
-
-## 7. Estado seguro
+### Staff y Shopper
 
 ```text
-HOSTING_DEPLOYS_TOTAL=1
-SECOND_HOSTING_DEPLOYS=0
+PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY
+```
+
+- Login Staff: PASS;
+- Login Shopper: PASS;
+- tres recargas: PASS;
+- nueva pestaña: PASS;
+- visita propia Shopper: PASS;
+- credenciales/tokens expuestos: false.
+
+La fuente remota observó `15` periodos, `660` visitas y periodo vigente `2026-08`.
+
+### Cliente
+
+```text
+PASS_C6_CLIENT_AUTH_EXISTING_CREDENTIAL_RUNTIME
+```
+
+- credencial existente seleccionada;
+- autenticación Cliente: PASS;
+- tenant `tya`, proyecto `cinepolis`;
+- recarga y nueva pestaña: PASS;
+- cambios de contraseña/Auth: `0`.
+
+## 6. STOP_RETRY vigente
+
+El gate acumulativo de dominio/Finanzas/portales/Reservas se detuvo en:
+
+```text
+failedStage=remote_domain_finance_portals_reservations
+semantic.failedStage=client_route_wait
+errorCode=page.waitForFunction: Timeout 30000ms exceeded.
+```
+
+Antes del timeout quedó comprobado:
+
+```text
+clientModule=true
+routerAvailable=true
+requested=true
+routeAfterRequest=cli_dashboard
+```
+
+La evidencia no separó cuál condición visual quedó falsa entre:
+
+- `#nav-cli_dashboard.active`;
+- `#view .ph`;
+- contenido no vacío de `#view`.
+
+No se ha demostrado todavía si corresponde a producto o harness/timing. No modificar runtime ni repetir deploy sin diagnóstico focal y autorización nueva.
+
+## 7. Finanzas, Reservas y dominio preservados
+
+Antes del timeout se observó:
+
+- modelo financiero delegado;
+- `localBilling=false`;
+- regalías `0`;
+- contrato financiero listo;
+- cero valores inventados;
+- Reservas fail-closed;
+- mutaciones de Reservas deshabilitadas;
+- módulos de Cliente, Shopper, Finanzas y Reservas registrados.
+
+## 8. Estado seguro
+
+```text
+HOSTING_DEPLOYS_TOTAL=2
+HOSTING_DEPLOYS_THIS_BLOCK=1
+ADDITIONAL_DEPLOYS_AUTHORIZED=0
 CLOUD_RUN_DEPLOYS=0
 FIRESTORE_MEMBERSHIP_WRITES_TOTAL=1
 FIRESTORE_WRITES_THIS_BLOCK=0
@@ -106,20 +155,27 @@ AUTH_WRITES=0
 CLAIMS_WRITES=0
 USER_CREATES=0
 PASSWORD_CHANGES=0
+PASSWORD_RESETS=0
 RULES_WRITES=0
 STORAGE_WRITES=0
 HR_WRITES=0
 MAKE_WRITES=0
 GEMINI_CALLS=0
 PAYMENTS_WRITES=0
+CREDENTIALS_EXPOSED=false
+TOKENS_EXPOSED=false
 MERGE=false
 PRODUCTION=false
 ```
 
-## 8. Phase A preservada
+## 9. Phase A preservada
 
-Se preservan V7.2-P0F1, la composición acumulativa Phase A, HR e histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, multi-tenant, multi-proyecto, Finanzas, Portal Cliente, Portal Shopper, Reservas, sincronización HR/plataforma y Academia.
+Se preservan V7.2-P0F1, composición acumulativa Phase A, HR e histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, multi-tenant, multi-proyecto, Finanzas, Portal Cliente, Portal Shopper, Reservas, sincronización HR/plataforma y Academia.
 
-## 9. Siguiente acción exacta
+El P0 original del Login queda cerrado técnicamente. El cierre completo del gate acumulativo permanece en HOLD por `client_route_wait`.
 
-Reconciliar únicamente los dos blob pins autorizados en el manifiesto/build-lock activo, ejecutar un nuevo gate source/static y, solo con PASS, continuar con el segundo Hosting DEV correctivo y la cadena remota ya autorizada. No modificar nuevamente el Login ni abrir una auditoría general.
+## 10. Siguiente bloque exacto
+
+Requiere autorización expresa nueva:
+
+`DIAGNÓSTICO READ-ONLY FOCAL DE client_route_wait → CAPTURAR session.view, navElementExists, navActive, viewExists, pageHeaderExists, viewTextLength Y renderException POR SEPARADO → CLASIFICAR PRODUCTO VS HARNESS → DETENERSE SIN DEPLOY`.
