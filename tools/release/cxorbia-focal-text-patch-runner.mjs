@@ -8,12 +8,25 @@ import { spawnSync } from 'node:child_process';
 const root=process.cwd();
 const requestPath=process.argv[2]||'.github/cxorbia-apply-requests/request.json';
 const outDir=path.join(root,'.tmp/cxorbia-atomic-apply-runner');
-const report={schemaVersion:'1.0.0',runner:'CXORBIA_ATOMIC_APPLY_RUNNER',mode:'focal_text_patch_v1',status:'HOLD_ATOMIC_APPLY',requestId:null,expectedParentSha:null,requestCommitSha:null,functionalCommitSha:null,files:[],blockers:[],safeState:{deploy:false,merge:false,production:false,providerWrites:false,dataWrites:false,forcePush:false,newBranch:false,newPullRequest:false}};
+const report={schemaVersion:'1.1.0',runner:'CXORBIA_ATOMIC_APPLY_RUNNER',mode:'focal_text_patch_v1',status:'HOLD_ATOMIC_APPLY',requestId:null,expectedParentSha:null,requestCommitSha:null,functionalCommitSha:null,files:[],blockers:[],safeState:{deploy:false,merge:false,production:false,providerWrites:false,dataWrites:false,forcePush:false,newBranch:false,newPullRequest:false}};
 
 function save(){fs.mkdirSync(outDir,{recursive:true});fs.writeFileSync(path.join(outDir,'report.json'),JSON.stringify(report,null,2)+'\n','utf8');fs.writeFileSync(path.join(outDir,'report.md'),['# CXOrbia focal atomic apply','',`- Status: \`${report.status}\``,`- Request: \`${report.requestId||'n/a'}\``,`- Parent: \`${report.expectedParentSha||'n/a'}\``,`- Commit: \`${report.functionalCommitSha||'n/a'}\``,'','## Blockers',...(report.blockers.length?report.blockers.map(x=>`- ${x}`):['- none'])].join('\n')+'\n','utf8');}
 function fail(message){throw new Error(message);}
 function run(command,args){const result=spawnSync(command,args,{cwd:root,encoding:'utf8',maxBuffer:20*1024*1024});if(result.status!==0)fail(`command_failed:${command} ${args.join(' ')}:${String(result.stderr||result.stdout||'').slice(0,1200)}`);return String(result.stdout||'').trim();}
 function sha256(data){return crypto.createHash('sha256').update(data).digest('hex');}
+function validateUpdatedTarget(targetPath,updated){
+  if(/\.(?:mjs|cjs|js)$/.test(targetPath)){
+    run('node',['--check',targetPath]);
+    return;
+  }
+  if(/\.ya?ml$/.test(targetPath)){
+    const required=['name:','on:','jobs:','runs-on:'];
+    for(const marker of required)if(!updated.includes(marker))fail(`yaml_structure_marker_missing:${marker}`);
+    if(!updated.endsWith('\n'))fail('yaml_final_newline_required');
+    return;
+  }
+  fail(`unsupported_target_type:${targetPath}`);
+}
 
 try{
   if(!fs.existsSync(path.join(root,requestPath)))fail(`request_missing:${requestPath}`);
@@ -27,7 +40,8 @@ try{
   const allowed=[
     'tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs',
     'app/core/finanzas-core.js',
-    'app/modules/finanzas.js'
+    'app/modules/finanzas.js',
+    '.github/workflows/cxorbia-c6-live-domain-readonly-audit.yml'
   ];
   if(!allowed.includes(request.targetPath))fail(`target_not_allowlisted:${request.targetPath}`);
   const parent=run('git',['rev-parse','HEAD^']);
@@ -43,7 +57,7 @@ try{
   if(updated===original)fail('patch_no_change');
   if(updated.charCodeAt(0)===0xFEFF)fail('utf8_bom_forbidden');
   fs.writeFileSync(path.join(root,request.targetPath),updated,'utf8');
-  run('node',['--check',request.targetPath]);
+  validateUpdatedTarget(request.targetPath,updated);
   run('git',['rm','--',requestPath]);
   const unstaged=run('git',['diff','--name-only']).split(/\r?\n/).filter(Boolean);
   const staged=run('git',['diff','--cached','--name-only']).split(/\r?\n/).filter(Boolean);
