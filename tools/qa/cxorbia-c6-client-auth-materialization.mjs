@@ -254,7 +254,11 @@ if(mode==='readback'){
   existing.client={login,password,namespace:authNamespace,role,tenantId,projectIds:[projectId]};
   fs.mkdirSync(path.dirname(privateCredentialPath),{recursive:true});
   fs.writeFileSync(privateCredentialPath,JSON.stringify(existing,null,2)+'\n',{encoding:'utf8',mode:0o600});
-  output({schemaVersion:'cxorbia.c6.client-auth-membership-readback.v2',decision:'PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK',
+  const readbackDecision=process.env.CXORBIA_PRIVATE_COMPAT_DIR
+    ? 'PASS_C6_CLIENT_AUTH_READBACK'
+    : 'PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK';
+  output({schemaVersion:'cxorbia.c6.client-auth-membership-readback.v2',decision:readbackDecision,
+    canonicalDecision:'PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK',compatibilityAlias:readbackDecision!=='PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK',
     target:publicUser(target),membership:publicMembership(true,membership.data),passwordSignIn:true,
     authWrites:0,claimsWrites:0,membershipWrites:0,firestoreWrites:0});
   process.exit(0);
