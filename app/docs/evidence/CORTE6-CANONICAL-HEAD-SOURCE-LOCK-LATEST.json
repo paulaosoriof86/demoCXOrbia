@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.c6.canonical-head-source-lock.v1",
-  "generatedAt": "2026-08-05T14:09:54.163Z",
-  "sourceLockHead": "06e120d11776307cd63dbc78ed72b8b814a3a0a7",
-  "triggerHead": "868995dc402f537019c9e087b794b9ceb42792cd",
-  "lockedAppTree": "d705a7847f91fe68f6340c3650cd5a84980901a8",
-  "currentAppTree": "d705a7847f91fe68f6340c3650cd5a84980901a8",
-  "lockedQaTree": "93469b7a22f32c878e487b2625e21dcb9f74d40a",
-  "currentQaTree": "93469b7a22f32c878e487b2625e21dcb9f74d40a",
+  "generatedAt": "2026-08-05T14:16:24.590Z",
+  "sourceLockHead": "23aebfedeb03a0e041312a6e3b97bf5916f64d41",
+  "triggerHead": "04ee6e8b58e539890fdbc717f43022b5ac52699d",
+  "lockedAppTree": "ec2e29898557c57435521f1c80a6581658b11cd8",
+  "currentAppTree": "ec2e29898557c57435521f1c80a6581658b11cd8",
+  "lockedQaTree": "315d732268309c3faac53215729994edf9c1c58a",
+  "currentQaTree": "315d732268309c3faac53215729994edf9c1c58a",
   "appFiles": 2386,
-  "appBytes": 17405237,
-  "appManifestSha256": "ecc424338458fa7c671aacab5e685ecc51f1198b33d8afeff9121392912fc2de",
+  "appBytes": 17405198,
+  "appManifestSha256": "b1443d6648230f99635cfc02ce92b6558677dcec10c8838097869e18be4f35bb",
   "criticalQa": [
     {
       "path": "tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs",
@@ -45,7 +45,7 @@
     },
     {
       "path": "tools/qa/cxorbia-c6-client-auth-materialization.mjs",
-      "sha256": "3a4252d0babaaf2d2a56278a250a8f270c1a0964b8e3814612f0093c8ed4bcea"
+      "sha256": "1bf4e33004a326032a2104b900ce6e7a852dad1b57733856e6090676d2348483"
     }
   ],
   "deployConfigPath": "firebase.deploy.json",
