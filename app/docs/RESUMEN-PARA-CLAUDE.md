@@ -41,7 +41,7 @@ La corrección de `.lg2` no basta porque la regla legacy de `#login` sigue activ
 }
 ```
 
-En móvil, todo el Login queda centrado como un flex item más ancho que el viewport.
+En móvil, el Login queda centrado como un flex item más ancho que el viewport.
 
 Resultado real en 390×844:
 
@@ -120,13 +120,13 @@ No incluir `index.html`, core, módulos, backend, documentación histórica ni a
 
 ## 8. Trabajo paralelo de ChatGPT — sin tarea para Cloud
 
-El contrato source-only del Laboratorio ya obtuvo PASS remoto:
+El contrato source-only del Laboratorio obtuvo PASS remoto:
 
 ```text
 PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
 ```
 
-Esto no requiere ningún cambio de Cloud. No incluir ni modificar archivos del laboratorio, contracts, gates o runner.
+Esto no requiere ningún cambio de Cloud. No incluir ni modificar archivos del laboratorio, contratos, gates o runner.
 
 ## 9. Estado seguro
 
