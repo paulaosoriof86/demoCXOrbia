@@ -36,7 +36,7 @@
       "${s.pass}"
     ]
   },
-  "status": "C6_HUMAN_LOGIN_SINGLE_FORM_SOURCE_FIX_APPLIED__SHOPPER_IDENTITY_AUDIT_READY__SOURCE_STATIC_PENDING__NO_DEPLOY",
+  "status": "C6_HUMAN_LOGIN_SINGLE_FORM_SOURCE_FIX_APPLIED__SOURCE_STATIC_PASS__SHOPPER_IDENTITY_AUDIT_PASS_WITH_FINDINGS__IDENTITY_REPAIR_REQUIRED__NO_DEPLOY",
   "criticalFileOverrides": [
     {
       "path": "app/app.js",
@@ -169,14 +169,18 @@
     "singleBranch": true
   },
   "visualDecision": {
-    "status": "P0_HUMAN_LOGIN_SINGLE_FORM_SOURCE_FIX_PENDING_SOURCE_STATIC_AND_IDENTITY_AUDIT",
-    "reason": "Human validation proved the canonical login displayed one inert credential pair and appended a second credential block after role selection. The authorized source fix reuses only #loginForm, #lgUser and #lgPass and adds a source-safe all-Shopper identity audit without exposing credential values."
+    "status": "P0_HUMAN_LOGIN_SINGLE_FORM_SOURCE_FIX_PASS_IDENTITY_REPAIR_REQUIRED",
+    "reason": "The single-form bridge passed source/static. The source-safe full-population audit proved that the legacy login/password convention is not universal and that Paula has an ambiguous Staff/Shopper identity. No deploy or identity write is authorized."
   },
   "runtimeDecision": {
-    "sourceStaticPass": false,
-    "identityAuditExecuted": false,
+    "sourceStaticPass": true,
+    "sourceStaticRunId": 31041288528,
+    "identityAuditExecuted": true,
+    "identityAuditDecision": "PASS_C6_HUMAN_LOGIN_SHOPPER_IDENTITY_AUDIT_WITH_FINDINGS",
+    "identityAuditRunId": 31041406837,
     "deployAllowedByThisManifest": false,
-    "newDeployAuthorized": false
+    "newDeployAuthorized": false,
+    "identityWritesAuthorized": false
   },
   "safety": {
     "secrets": false,
