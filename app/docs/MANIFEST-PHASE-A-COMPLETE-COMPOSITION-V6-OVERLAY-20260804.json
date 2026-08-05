@@ -144,7 +144,7 @@
     },
     {
       "path": "tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs",
-      "gitBlob": "8fe4b0c5050d9fe9ba6c3120ef81a75b00bb8535",
+      "gitBlob": "80622606ce3635f0d53997a41932b6ced5dc25d4",
       "authority": "C6_HUMAN_LOGIN_SHOPPER_IDENTITY_P0_AUTHORIZED_20260805",
       "decision": "GATE_SOURCE_SAFE_ALL_SHOPPER_IDENTITY_MATRIX"
     },
