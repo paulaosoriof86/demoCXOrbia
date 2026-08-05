@@ -1,11 +1,19 @@
-# ACADEMIA — Impacto C6 client route harness
+# ACADEMIA — Impacto C6 Client route harness
 
 **Fecha:** 2026-08-05  
 **Clasificación:** Academia · Sin impacto funcional
 
-## Resultado
+## Resultado final
 
-El diagnóstico `client_route_wait` clasificó el timeout como una condición incorrecta del harness, no como una falla del producto.
+El timeout `client_route_wait` quedó clasificado y cerrado como una condición incorrecta del harness. La revalidación semántica obtuvo:
+
+```text
+PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC
+```
+
+El Portal Cliente aceptó `cli_dashboard`, presentó `#view`, encabezado `.ph`, 690 caracteres de contenido y ninguna excepción de render.
+
+## Sin cambios en Academia
 
 No se modificaron:
 
@@ -16,15 +24,15 @@ No se modificaron:
 - certificaciones;
 - notificaciones;
 - datos de aprendizaje;
-- navegación del Portal Cliente.
+- navegación funcional del Portal Cliente.
 
-## Evidencia relevante
+## Manuales y cursos
 
-El Portal Cliente aceptó `cli_dashboard`, presentó encabezado y contenido y no produjo excepción de render. La única condición ausente fue el nodo `#nav-cli_dashboard`, requerido incorrectamente por el gate.
+No es necesario cambiar capturas, instrucciones o recorridos por este incidente. La ruta Cliente vigente se conserva.
 
-## Acción documental futura
+## Pendiente
 
-Después de que el harness corregido obtenga PASS y Paula valide visualmente, los manuales podrán mantener la ruta Cliente vigente sin cambio de capturas ni instrucciones por este incidente.
+Después de la validación humana visual y el freeze, registrar únicamente el estado final de release. No existe trabajo académico funcional pendiente derivado del harness.
 
 ## Seguridad
 
