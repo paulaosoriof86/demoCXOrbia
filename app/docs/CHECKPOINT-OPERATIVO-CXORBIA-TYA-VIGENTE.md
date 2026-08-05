@@ -1,14 +1,13 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-04  
-**Estado:** `V7_2_RECEIVED_PREFLIGHT__EXECUTION_LANE_NOT_READY_FOR_FINAL_AUDIT_APPLY__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `EXECUTION_LANE_RECOVERY_ATTEMPTED__BLOCKED_BY_RUNTIME_NETWORK__NO_AUDIT__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Carril
 
 - repo `paulaosoriof86/demoCXOrbia`;
 - rama `docs-tya-v6-v71-audit`;
 - PR #7 draft/open/no merge;
-- HEAD de código previo al bloque documental: `35fcc44c89df33b374ce010d06c031320e28126a`;
 - producción intacta;
 - candidata canónica activa: no.
 
@@ -52,24 +51,59 @@ P0 reproducible: Login responsive recortado por flex/centrado/padding heredados.
 
 Estado: preflight de recepción, no auditoría final y no GO.
 
-## 6. Bloqueo exacto
+## 6. Ejecución de la siguiente acción exacta
+
+Se intentó materializar el carril file-aware en la sesión actual.
+
+Comprobado:
 
 ```text
 CANDIDATE_BYTES_AVAILABLE=true
 CANDIDATE_EXTRACTABLE=true
-REPO_AND_BRANCH_VERIFIED=true
+GIT_CLIENT_AVAILABLE=true
+REPO_AND_BRANCH_VERIFIED_THROUGH_CONNECTOR=true
 GITHUB_ADMIN_ACCESS=true
+```
+
+Pruebas de checkout Git nativo:
+
+```text
+git ls-remote https://github.com/paulaosoriof86/demoCXOrbia.git
+→ fatal: Could not resolve host: github.com
+```
+
+También falló la conexión HTTPS directa por IP. El runtime no tiene salida de red nativa hacia GitHub.
+
+El artifact `8916850770` fue recuperado e inspeccionado. Confirma:
+
+- request `phase-a-composition-plus-lab-source-contract-20260804-01`;
+- target HEAD `646a05a0f54cf33236b2e1e30122d8c52f30d2a1`;
+- PASS de gates;
+- `status-porcelain`, `tracked-delta` y `untracked` vacíos.
+
+El artifact contiene reportes y evidencia, no un checkout ni los bytes completos del repositorio. Por tanto no satisface `EXECUTION_LANE_READY`.
+
+## 7. Bloqueo exacto
+
+```text
 REPO_CHECKOUT_COLOCATED_WITH_ZIP=false
 AUTHENTICATED_DIRECT_APPLY_FROM_CHECKOUT=false
+NATIVE_GITHUB_NETWORK_AVAILABLE=false
 EXECUTION_LANE_READY=false
 ```
 
-La sesión actual no tiene checkout Git autenticado co-localizado con el ZIP. No se sustituye por Contents API archivo por archivo, blobs/trees, workflow transportador, PowerShell, nueva rama/PR o tareas manuales de Paula.
+**Owner:** capacidad del workspace/runtime de ejecución.
 
-## 7. Siguiente acción exacta
+**No requiere acción manual de Paula.**
+
+No se sustituye por Contents API archivo por archivo, blobs/trees, workflow transportador, PowerShell, nueva rama/PR o reconstrucción desde V182.
+
+## 8. Siguiente acción exacta obligatoria
 
 ```text
-EXECUTION_LANE_READY
+WORKSPACE CON RED GIT NATIVA + CHECKOUT AUTENTICADO
+→ VERIFICAR HEAD VIVO
+→ EXECUTION_LANE_READY
 → AUDITORÍA FINAL FOCALIZADA V7.2
 → GO SIN P0
 → APPLY_DELTA_DIRECTLY
@@ -83,25 +117,27 @@ EXECUTION_LANE_READY
 → CUTOVER AUTORIZADO
 ```
 
-No se necesita auditoría general, nueva candidata, shell reducido ni composición paralela.
+No se abre auditoría general, nueva candidata, shell reducido ni composición paralela.
 
-## 8. Pendientes Phase A reales
+## 9. Pendientes Phase A reales
 
-1. audit/apply V7.2;
-2. único deploy DEV del mismo HEAD;
-3. Laboratorio real Admin/Operaciones + Shopper;
-4. evidencia sanitizada y cleanup con fingerprints iguales;
-5. validación humana de una única URL;
-6. freeze canónico;
-7. resolver solo deltas actuales de datos sin repetir histórico;
-8. producción con rollback y autorización expresa.
+1. carril Git nativo;
+2. audit/apply V7.2;
+3. único deploy DEV del mismo HEAD;
+4. Laboratorio real Admin/Operaciones + Shopper;
+5. evidencia sanitizada y cleanup con fingerprints iguales;
+6. validación humana de una única URL;
+7. freeze canónico;
+8. resolver solo deltas actuales de datos sin repetir histórico;
+9. producción con rollback y autorización expresa.
 
 Portal Cliente continúa sobre la misma candidata en paralelo; no crea rama o build alterno.
 
-## 9. Estado seguro
+## 10. Estado seguro
 
+- auditoría final V7.2: no iniciada;
 - empalme: 0;
-- navegador/runtime en esta recepción: 0;
+- navegador/runtime funcional: 0;
 - Hosting/Cloud Run: 0;
 - Firestore/Auth/Storage/HR writes: 0;
 - Make/Gemini/pagos: 0;
