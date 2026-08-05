@@ -113,6 +113,65 @@ async function main(){
     return;
   }
 
+  if(request.diagnosticMode==='remote_domain_semantic_only'){
+    check(Array.isArray(request.requiredClientPredicate),'semantic_client_predicate_declared');
+    const expectedPredicate=['session.view=cli_dashboard','#view exists','#view .ph exists','#view text non-empty','renderException=null'];
+    check(JSON.stringify(request.requiredClientPredicate)===JSON.stringify(expectedPredicate),'semantic_client_predicate_exact');
+    const scripts=[
+      'tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs',
+      'tools/qa/tya-phase-a-remote-domain-dynamic-wrapper.mjs'
+    ];
+    for(const script of scripts){
+      check(fs.existsSync(path.join(ROOT,script)),'semantic_script_present',script);
+      run('node',['--check',script]);
+    }
+    fs.mkdirSync(RUNTIME_DIR,{recursive:true});
+    const domainPath=path.join(RUNTIME_DIR,'domain-finance-portals-reservations.json');
+    run('node',['tools/qa/tya-phase-a-remote-domain-dynamic-wrapper.mjs',request.devRootUrl],{
+      CXORBIA_DEV_ROOT_URL:request.devRootUrl,
+      CXORBIA_E2E_PRIVATE_CREDENTIALS:PRIVATE_PATH,
+      CXORBIA_REMOTE_SEMANTIC_OUTPUT:domainPath
+    });
+    const domain=parseJsonFile(domainPath,'domain_semantic_runtime');
+    check(domain.decision==='PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC','domain_semantic_pass',String(domain.decision||''));
+    check(domain.client?.routeId==='cli_dashboard'&&domain.client?.routeAccepted===true,'client_route_accepted');
+    check(domain.client?.viewExists===true,'client_view_exists');
+    check(domain.client?.pageHeader===true,'client_page_header_exists');
+    check(Number(domain.client?.viewTextLength||0)>0,'client_view_text_non_empty',String(domain.client?.viewTextLength||0));
+    check(domain.client?.renderException===null,'client_render_exception_absent');
+    check(domain.client?.panoramaVisible===true&&domain.client?.blocked===false,'client_panorama_visible');
+    check(domain.shopper?.authenticated===true&&domain.shopper?.exactIdentity===true&&domain.shopper?.fullHistory===true,'shopper_portal_authenticated');
+    check(domain.finance?.model==='delegado'&&Number(domain.finance?.royaltyPct||0)===0&&domain.finance?.valuesInvented===false,'finance_delegated_truth');
+    check(domain.reservations?.browserLocalStorageAsSource===false&&domain.reservations?.mutationsEnabled===false,'reservations_fail_closed');
+    report.artifacts=['.tmp/phase-a-runtime-multirole/domain-finance-portals-reservations.json'];
+    report.summary={
+      status:'PASS_READONLY_POST_GATES',
+      profile:PROFILE,
+      diagnosticMode:'remote_domain_semantic_only',
+      decision:domain.decision,
+      predicateVersion:domain.client?.predicateVersion||null,
+      client:{
+        routeId:domain.client?.routeId||null,
+        routeAccepted:domain.client?.routeAccepted===true,
+        viewExists:domain.client?.viewExists===true,
+        pageHeader:domain.client?.pageHeader===true,
+        viewTextLength:Number(domain.client?.viewTextLength||0),
+        renderException:domain.client?.renderException??null,
+        panoramaVisible:domain.client?.panoramaVisible===true,
+        blocked:domain.client?.blocked===true
+      },
+      shopper:domain.shopper,
+      finance:domain.finance,
+      reservations:domain.reservations,
+      source:domain.source,
+      providerReads:true,providerWrites:false,dataWrites:false,
+      credentialsExposed:false,tokensExposed:false,authWrites:0,firestoreWrites:0,hrWrites:0,storageWrites:0,hostingDeploys:0,cloudRunDeploys:0,merge:false,production:false
+    };
+    check(run('git',['status','--porcelain'])==='','repository_unchanged_after_semantic_gate');
+    report.status='PASS_READONLY_POST_GATES';
+    return;
+  }
+
   const scripts=[
     'tools/qa/tya-live-hr-dynamic-authority-gate.mjs',
     'tools/qa/tya-c6-remote-parity-gate.mjs',
