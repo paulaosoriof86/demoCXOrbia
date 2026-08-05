@@ -7,6 +7,13 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "redirects": [
+      {
+        "source": "/",
+        "destination": "/index-backend-dev.html",
+        "type": 302
+      }
+    ],
     "rewrites": [
       {
         "source": "/api/tya/cinepolis/hr-live",
