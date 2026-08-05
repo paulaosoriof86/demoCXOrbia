@@ -6,25 +6,17 @@
 
 ## 1. Objetivo
 
-Poner en producción un primer corte operativo sobre una sola baseline acumulativa:
+Poner en producción el primer corte operativo:
 
 `ADMIN/OPERACIONES + SHOPPER`.
 
-Portal Cliente continúa en carril paralelo y no bloquea este primer corte.
+Portal Cliente continúa en carril paralelo.
 
 ## 2. Estado frontend
 
 No existe empalme V6 aprobado/completado.
 
-Cloud V7.1 fue auditada y quedó:
-
-`HOLD_NO_SEND_TO_EMPALME`.
-
-P0:
-
-1. `#login` mantiene flex/centrado/padding heredados bajo 900 px;
-2. clipping lateral y contenido fuera del scroll real en 390/412 px;
-3. evidencias de viewport incompletas e inválidas.
+Cloud V7.1 quedó `HOLD_NO_SEND_TO_EMPALME` por responsive recortado y evidencia incompleta.
 
 ## 3. Arquitectura de validación
 
@@ -44,19 +36,6 @@ AUTH_READY
 ```
 
 ## 4. Laboratorio — source contract PASS
-
-Materializado:
-
-- contrato del runner;
-- schema de evidencia;
-- matriz Admin/Operaciones + Shopper;
-- fingerprints;
-- política `AUDIT-*`;
-- cleanup exacto;
-- gate source-only;
-- integración del gate al perfil source/static acumulativo.
-
-Ejecución comprobada:
 
 - run `30971991900`;
 - artifact `8916850770`;
@@ -89,44 +68,29 @@ Validar después del único deploy DEV:
 
 ```text
 CLOUD V7.2
-→ DELTA ESTRECHO + MANIFEST + EVIDENCIAS
+→ DELTA ESTRECHO + EVIDENCIAS
 → EXECUTION_LANE_READY
 → AUDITORÍA FINAL
 → GO SIN P0
 → CODEX SOLO EMPALME
 → SOURCE/STATIC FINAL + GATE LAB
-→ ÚNICO HOSTING DEV AUTORIZADO
+→ ÚNICO HOSTING DEV
 → LABORATORIO REAL
 → CLEANUP EXACTO
-→ CHECKPOINT VISUAL HUMANO
-→ FREEZE DEL SLICE
+→ CHECKPOINT VISUAL
 → CUTOVER AUTORIZADO
 ```
 
 ## 7. Prohibiciones
 
-- no describir materialización provisional como empalme;
 - no enviar candidata HOLD a Codex;
 - no empalme fragmentado;
 - no runtime antes de candidata final y deploy único;
-- no datos `AUDIT-*` sin autorización aplicable y snapshot;
+- no datos `AUDIT-*` sin snapshot y autorización aplicable;
 - no segundo deploy ni reintento automático;
-- no Make/Gemini/pagos sin bloque propio;
 - no producción antes de cleanup y validación humana.
 
-## 8. P0 que sí bloquean
-
-- app no inicia;
-- Admin/Operaciones o Shopper no autentican;
-- HR viva inconsistente;
-- ruta esencial inexistente;
-- pérdida/corrupción/fuga cross-tenant;
-- secreto expuesto;
-- write/deploy no autorizado;
-- flujo operativo Phase A imposible;
-- cleanup no restaura el baseline.
-
-## 9. Estado seguro
+## 8. Estado seguro
 
 - empalme aprobado/completado: no;
 - Hosting/Cloud Run: 0;
@@ -134,11 +98,3 @@ CLOUD V7.2
 - provider writes: 0;
 - entidades `AUDIT-*`: 0;
 - merge/producción: 0.
-
-## 10. Clasificación
-
-- **Reusable CXOrbia:** runner combinado, contratos, schema, fingerprints y cleanup.
-- **Exclusivo TyA:** release slice y matriz operativa.
-- **Cloud/prototipo:** corrección frontend V7.2.
-- **Academia:** laboratorio visible y trazabilidad.
-- **Sin impacto producción:** source-only.
