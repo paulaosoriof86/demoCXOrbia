@@ -1,7 +1,7 @@
 # PHASE A — Tracker de avance por bloques TyA
 
 **Actualización:** 2026-08-05  
-**Estado:** `LOGIN_ROOT_FIX_DEPLOYED__AUTH_MULTIROLE_PASS__CLIENT_ROUTE_PRODUCT_PASS__HARNESS_ONLY_PENDING__NO_MORE_DEPLOY`
+**Estado:** `LOGIN_ROOT_FIX_DEPLOYED__AUTH_MULTIROLE_PASS__REMOTE_DOMAIN_SEMANTIC_PASS__HUMAN_VALIDATION_PENDING__NO_MORE_DEPLOY`
 
 ## Microbloques de salida
 
@@ -18,45 +18,46 @@
 | 8A — Staff | PASS | Login, reload y nueva pestaña |
 | 8B — Shopper | PASS | Login, tres recargas, nueva pestaña y visita propia |
 | 8C — Cliente Auth | PASS | Credencial existente, recarga y nueva pestaña |
-| 8D — Finanzas/Reservas diagnóstico | PASS PARCIAL | Modelo delegado y guard fail-closed observados |
-| 8E — Diagnóstico `client_route_wait` | PASS CLASIFICADO | Producto renderiza; fallo pertenece al harness |
-| 8F — Predicado semántico del harness | PENDIENTE | Debe quitar dependencia de `#nav-cli_dashboard.active` |
-| 9 — Validación humana y freeze | PENDIENTE | Requiere rerun semántico read-only PASS |
+| 8D — Finanzas/Reservas | PASS | Modelo delegado y Reservas fail-closed |
+| 8E — Diagnóstico `client_route_wait` | PASS CLASIFICADO | Producto renderiza; fallo pertenecía al harness |
+| 8F — Predicado semántico del harness | PASS | `session-view-canonical-render-v1` |
+| 8G — Gate remoto semántico acumulativo | PASS | Cliente, Shopper, Finanzas y Reservas |
+| 9 — Validación humana y freeze | LISTO / PENDIENTE HUMANO | No requiere deploy; confirmar visualmente DEV vigente |
 | 10 — Cutover/producción | PENDIENTE | Requiere freeze y autorización expresa |
 
-## P0 original
-
-`LEGACY_LOGIN_CONTAINER_SELECTOR_AFTER_V7_2_MARKUP_CHANGE` permanece cerrado técnicamente:
-
-- source fix aplicado;
-- pins reconciliados;
-- source/static PASS;
-- deploy correctivo completo;
-- Login Staff, Shopper y Cliente PASS.
-
-## Diagnóstico focal cerrado
+## Gates técnicos cerrados
 
 ```text
-PASS_C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC_CLASSIFIED
-OWNER=HARNESS
-CODE=HARNESS_NAV_ACTIVE_SUBCONDITION_MISMATCH
+PASS_READONLY_POST_GATES
+PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC
 ```
 
 ```text
-sessionView=cli_dashboard
-navElementExists=false
-navActive=false
+routeId=cli_dashboard
+routeAccepted=true
 viewExists=true
 pageHeaderExists=true
 viewTextLength=690
 renderException=null
+panoramaVisible=true
+blocked=false
 ```
 
-No existe P0 de producto demostrado: la ruta Cliente fue aceptada, `#view` existe, `.ph` existe y el contenido se renderizó. La condición incorrecta está únicamente en el harness.
+El gate utilizó el predicado corregido y no dependió de `#nav-cli_dashboard.active`.
+
+## Evidencia
+
+```text
+workflowRunId=31025221503
+workflowJobId=92392748352
+artifactId=8940832844
+artifactDigest=sha256:787116945227cef56422a33988692b485988ee3f64e11bb8b444b590665c454b
+repositoryUnchanged=true
+```
 
 ## Siguiente bloque exacto
 
-`HARNESS-ONLY: CORREGIR PREDICADO CLIENTE → RERUN SEMÁNTICO READ-ONLY → CERO DEPLOY → STOP PARA VALIDACIÓN HUMANA`.
+`VALIDACIÓN HUMANA VISUAL EN DEV EXISTENTE → CONFIRMAR PORTAL CLIENTE, PORTAL SHOPPER, FINANZAS Y RESERVAS → FREEZE DOCUMENTAL SI PASS → SIN DEPLOY, MERGE O PRODUCCIÓN`.
 
 ## Estado seguro
 
