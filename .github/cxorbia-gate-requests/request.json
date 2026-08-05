@@ -1,19 +1,28 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
   "requestId": "c6-shopper-identity-resolution-source-static-20260805-01",
-  "enabled": true,
+  "enabled": false,
   "issuedAt": "2026-08-05T17:15:00-06:00",
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "consumedAt": "2026-08-05T17:19:00-06:00",
+  "consumed": true,
+  "status": "consumed_pass_identity_resolution_source_static",
+  "decision": "PASS_READONLY_POST_GATES",
+  "compositionDecision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
+  "labDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "targetHeadSha": "8a2193479c0abe18541128ec72b6b347d22e829f",
+  "requestCommitSha": "aca5fa58b123cc8f4985558bc934598ac76ef2dd",
+  "workflowRunId": 31055889684,
+  "workflowJobId": 92473179280,
+  "artifactId": 8950210279,
+  "artifactDigest": "sha256:7d78d480b15b836ab98ded284a2bfca2b0ebe2517531c36825bc77159de915dd",
   "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
   ],
-  "allowedExecutions": 1,
+  "allowedExecutions": 0,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": false,
@@ -55,6 +64,6 @@
   "authorizationScope": "Validate source-only the technical-key identity resolution reviewer for the 12 collisions, 23 incomplete names, 23 login-collision profiles, Paula's two Shopper candidates and the 21/30/28 versus 0/9/7 baseline reconciliation. No provider reads in this gate and no Auth/password/membership/Firestore/Rules/Storage/HR writes, deploy, Cloud Run, Make, Gemini, payments, merge or production.",
   "repositoryUnchangedByGate": true,
   "stopRetryOnFailure": true,
-  "nextGate": "ON_PASS_EXECUTE_ONE_SOURCE_SAFE_IDENTITY_RESOLUTION_REVIEW",
-  "purpose": "One-shot accumulated source/static gate before the authorized read-only identity resolution review."
+  "nextGate": "EXECUTE_ONE_SOURCE_SAFE_IDENTITY_RESOLUTION_REVIEW",
+  "purpose": "Consumed successful accumulated source/static gate before the authorized read-only identity resolution review."
 }
