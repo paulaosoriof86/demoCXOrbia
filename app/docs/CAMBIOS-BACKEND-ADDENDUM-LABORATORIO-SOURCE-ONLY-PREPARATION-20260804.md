@@ -13,107 +13,60 @@ No se tocó el frontend pendiente de Claude y no se ejecutaron navegador, runtim
 
 ### `backend/contracts/tya-dev-scenario-lab-runner-v1.json`
 
-Commit inicial:
+Commit inicial `8cf9e8cb8fe6b32dc4cb7545e2c4d134b8e0a902`.
 
-`8cf9e8cb8fe6b32dc4cb7545e2c4d134b8e0a902`
-
-Define:
-
-- release slice Admin/Operaciones + Shopper;
-- doce estados desde Auth hasta cleanup;
-- cinco perfiles de escenario;
-- límites máximos de entidades temporales;
-- política `AUDIT-*` sintética;
-- fingerprint obligatorio;
-- cleanup exacto;
-- evidencia sanitizada;
-- gates previos a cualquier ejecución;
-- modo actual source-only, sin autorización de writes.
+Define release slice, doce estados, cinco perfiles, límites temporales, política `AUDIT-*`, fingerprints, cleanup, evidencia sanitizada y gates previos.
 
 ### `backend/contracts/tya-dev-scenario-lab-evidence-schema-v1.json`
 
-Commit inicial:
+Commit inicial `caefb401469d377f8a6003aacaed596012de7395`.
 
-`caefb401469d377f8a6003aacaed596012de7395`.
-
-Define el esquema de evidencia futura:
-
-- runId `AUDIT-*`;
-- source HEAD exacto;
-- perfiles y pasos;
-- fingerprints inicial/final;
-- cleanup;
-- capturas con hashes;
-- decisiones PASS/FAIL/P0 cleanup;
-- seguridad sin secretos, credenciales, PII ni producción.
+Define runId, source HEAD, perfiles/pasos, fingerprints, cleanup, capturas con hashes y seguridad sin secretos/PII.
 
 ### `tools/qa/tya-dev-scenario-lab-source-contract-gate.mjs`
 
-Commit inicial:
+Commit inicial `dbb90639ffd9d35fe2e36e331fec37185a797583`.
 
-`dbb90639ffd9d35fe2e36e331fec37185a797583`.
+Valida source-only contrato, schema, perfiles, rutas, políticas fail-closed, fingerprints, cleanup, ingestión y ausencia de falsos PASS.
 
-Gate source-only que validará:
-
-- archivos y sintaxis;
-- contrato y schema;
-- cinco perfiles exactos;
-- rutas mínimas Admin y Shopper;
-- política fail-closed;
-- fingerprints y cleanup;
-- contrato de ingestión del panel visible;
-- ausencia de falsos PASS de escenario o cleanup;
-- registros de módulos disponibles;
-- cero secretos/PII en contratos.
-
-No fue ejecutado todavía mediante runner remoto; queda preparado para integrarlo al próximo source/static sobre la candidata visual final.
+No fue ejecutado mediante runner remoto; queda preparado para el source/static final.
 
 ### `app/docs/MATRIZ-EJECUCION-LABORATORIO-ADMIN-SHOPPER-20260804.md`
 
-Commit inicial:
+Commit inicial `0a4280c4eb8faf66754b5489ec3c00480e3a9b60`.
 
-`0a4280c4eb8faf66754b5489ec3c00480e3a9b60`.
+Cierra el recorrido Admin/Operaciones + Shopper, estabilidad, exportaciones y cleanup.
 
-Deja cerrado el recorrido futuro:
+### `app/docs/ACADEMIA-IMPACTO-LABORATORIO-SOURCE-ONLY-20260804.md`
 
-- preflight;
-- fingerprint;
-- Hoja de Ruta/Dashboard;
-- Visitas y Disponibles;
-- Postulaciones y ficha;
-- asignación;
-- Shoppers;
-- Reservas;
-- Finanzas;
-- Mi Perfil, certificaciones, Mis Visitas e histórico Shopper;
-- tres recargas y nueva pestaña;
-- exportaciones y evidencia;
-- cleanup exacto.
+Documento creado correctamente. Un intento redundante posterior de actualización falló con `409 SHA mismatch`; el archivo no fue sobrescrito y su contenido original permanece vigente.
 
-## 3. Qué no se hizo
+## 3. Documentación sincronizada
+
+- índice vigente;
+- checkpoint;
+- plan Phase A;
+- pendientes;
+- resumen para Claude;
+- impacto en Academia.
+
+## 4. Qué no se hizo
 
 - no se auditó una nueva entrega Claude;
 - no se empalmó ningún delta;
 - no se modificó `app/app.js` ni `app/styles/layout.css`;
-- no se ejecutó navegador;
+- no se ejecutó navegador/runtime;
 - no se usaron credenciales;
 - no se crearon entidades temporales;
 - no se leyó/escribió proveedor;
 - no se desplegó DEV;
 - no se tocó producción.
 
-## 4. Dependencia real
+## 5. Dependencia real
 
-La ejecución del Laboratorio continúa bloqueada correctamente hasta:
+La ejecución continúa bloqueada hasta delta frontend corregido, GO sin P0, empalme aprobado, source/static final, único Hosting DEV y autorización aplicable de escrituras temporales con snapshot/cleanup.
 
-1. delta frontend estrecho corregido;
-2. auditoría GO sin P0;
-3. empalme aprobado/completado;
-4. source/static final PASS;
-5. único Hosting DEV autorizado;
-6. autorización explícita de escrituras temporales `AUDIT-*` con snapshot y cleanup.
-
-## 5. Clasificación
+## 6. Clasificación
 
 - **Reusable CXOrbia:** contrato, schema, gate, fingerprints y cleanup.
 - **Exclusivo TyA:** rutas y matriz operativa.
@@ -121,7 +74,7 @@ La ejecución del Laboratorio continúa bloqueada correctamente hasta:
 - **Academia:** estructura reproducible de prueba dentro del producto.
 - **Sin impacto producción:** preparación source-only.
 
-## 6. Siguiente bloque exacto
+## 7. Siguiente bloque exacto
 
 ```text
 CLAUDE ENTREGA DELTA ESTRECHO
