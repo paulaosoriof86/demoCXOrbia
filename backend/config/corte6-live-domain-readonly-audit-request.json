@@ -19,9 +19,9 @@
   "labSourceContractDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
   "sourceGateRunId": 31009570981,
   "sourceGateArtifactId": 8931809583,
-  "status": "authorized_execute_once_no_automatic_redeploy",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_fail_stop_retry",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -78,5 +78,9 @@
   "paymentsWrites": 0,
   "merge": false,
   "production": false,
-  "stopRetryOnFailure": true
+  "stopRetryOnFailure": true,
+  "consumedAt": "2026-08-05T14:21:54.131Z",
+  "decision": "FAIL_C6_PREDEPLOY_OR_HOSTING_DEPLOY_STOP_RETRY",
+  "nextGate": "ROOT_CAUSE_REVIEW_NO_AUTOMATIC_REDEPLOY",
+  "stopRetry": true
 }
