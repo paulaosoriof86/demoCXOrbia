@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-identity-canonical-census-hold.v1",
+  "generatedAt": "2026-08-05T22:51:14.988Z",
+  "decision": "HOLD_C6_SHOPPER_IDENTITY_CANONICALIZATION_CENSUS",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceStatic": {
+    "decision": "PASS_READONLY_POST_GATES",
+    "compositionDecision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
+    "labDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
+    "runId": 31054156634,
+    "jobId": 92467888669,
+    "artifactId": 8949587605,
+    "artifactDigest": "sha256:6d206129b723988c7d7d0cb8f628e907b30be3dcc18b113782e293a808fd7ed4",
+    "reconciledManifest": "app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json",
+    "reconciledPath": "tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs",
+    "previousBlob": "8fe4b0c5050d9fe9ba6c3120ef81a75b00bb8535",
+    "currentBlob": "80622606ce3635f0d53997a41932b6ced5dc25d4"
+  },
+  "census": {
+    "runId": 31054262787,
+    "jobId": 92468210043,
+    "artifactId": 8949634992,
+    "artifactDigest": "sha256:efdfc1b20007aabe54baac9d87212c54a6b1f376913be3e4279d9350c591f172",
+    "requestCommitSha": "0ef34b9f84a97210a27cee0bd9563abff09930b0",
+    "targetHeadSha": "1323376d68a2671348e7306613c2498f1c51439c",
+    "providerReads": true,
+    "providerWrites": false,
+    "classificationComplete": true,
+    "classificationTotal": 340,
+    "source": {
+      "firestoreProfiles": 340,
+      "firestoreMemberships": 1,
+      "authUsersTotal": 110,
+      "credentialShopperRecords": 109,
+      "legacyMapped": 88,
+      "unmappedCredentials": 21
+    },
+    "classification": {
+      "activeEligible": 105,
+      "historical": 189,
+      "activeHold": 46
+    },
+    "holds": {
+      "total": 46,
+      "canonicalNameIncomplete": 23,
+      "canonicalLoginCollisionProfiles": 23
+    },
+    "collisions": {
+      "total": 12,
+      "credentialMapping": 0,
+      "profileTechnical": 0,
+      "authIdentity": 1,
+      "canonicalLogin": 11,
+      "targetEmail": 0
+    },
+    "paulaIdentity": {
+      "staffCandidates": 1,
+      "shopperCandidates": 2,
+      "staffAuthPresent": 1,
+      "shopperAuthPresent": 0,
+      "separated": false
+    },
+    "proposedActionCounts": {
+      "createAuth": 25,
+      "updateEmail": 1,
+      "updatePassword": 8,
+      "updateClaims": 80,
+      "noOp": 0
+    },
+    "planDigest": "e2573400e560b6955880241fb46fc01f45cefd86d7bd56d97a4013f977937a63",
+    "blockers": [
+      "legacy baseline drift: current mapped view reports 0 missing Auth, 9 login exceptions and 7 password exceptions instead of the previous 21/30/28 baseline",
+      "12 unresolved collisions",
+      "Paula has 1 Staff candidate and 2 Shopper candidates; technical separation is not yet resolved",
+      "proposed action categories overlap and are not a one-action partition"
+    ]
+  },
+  "contract": {
+    "visibleUsername": "nombre.apellido",
+    "visiblePassword": "Nombre123*",
+    "membershipRequired": false,
+    "authority": "Firebase Auth + exact claims + exact shopperId profile"
+  },
+  "stopRetry": {
+    "applied": true,
+    "requestConsumed": true,
+    "automaticRetry": false,
+    "authRepairBlocked": true,
+    "deployBlocked": true
+  },
+  "safety": {
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "credentialsExposed": false,
+    "rawNamesExported": false,
+    "rawLoginsExported": false,
+    "rawPasswordsExported": false,
+    "merge": false,
+    "production": false
+  },
+  "nextExactBlock": "Run one source-safe collision-resolution review over the 12 collision fingerprints, 23 incomplete canonical names, 23 login-collision profiles and Paula's two Shopper candidates; reconcile the current 0/9/7 mapped baseline against the previous 21/30/28 population baseline; produce a non-overlapping idempotent repair plan and stop before any Auth or password write."
+}
