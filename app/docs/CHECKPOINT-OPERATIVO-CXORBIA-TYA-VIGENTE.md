@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-05  
-**Estado:** `LOGIN_ROOT_FIX_DEPLOYED__STAFF_SHOPPER_CLIENT_AUTH_PASS__REMOTE_SEMANTIC_CLIENT_ROUTE_WAIT_STOP_RETRY__NO_MORE_DEPLOY__NO_PRODUCTION`
+**Estado:** `LOGIN_ROOT_FIX_DEPLOYED__AUTH_MULTIROLE_PASS__CLIENT_ROUTE_PRODUCT_PASS__HARNESS_NAV_ASSUMPTION_PROVEN__NO_MORE_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -9,157 +9,97 @@
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
 - producción: intacta;
-- carril: ChatGPT + runners controlados de GitHub;
 - Hosting DEV acumulado: `2`;
 - deploys adicionales autorizados: `0`.
 
-## 2. Root fix de Login
+## 2. Estado preservado
 
-La compatibilidad acumulativa quedó aplicada en:
+- V7.2-P0F1 y composición Phase A acumulativa preservadas;
+- root fix del Login aplicado en los dos bridges con `.lg2-card, .login-card`;
+- dos blob pins reconciliados;
+- source/static y contrato de Laboratorio: PASS;
+- segundo Hosting DEV correctivo: release completa;
+- paridad remota y HR viva: PASS;
+- Staff, Shopper y Cliente Auth: PASS;
+- Shopper con tres recargas, nueva pestaña y visita propia: PASS;
+- Cliente con credencial existente, recarga y nueva pestaña: PASS.
 
-- `app/core/backend-browser-auth.js`;
-- `app/adapters/tya-c6-unified-human-runtime-v1.js`.
+## 3. Diagnóstico focal `client_route_wait`
 
-Selector vigente:
+Request consumido:
 
-```js
-loginRoot.querySelector('.lg2-card, .login-card')
-```
+`c6-client-route-wait-focal-diagnostic-runtime-profile-20260805-04`
 
-El fix conserva el Login V7.2 y compatibilidad legacy. No se modificaron `app/app.js`, CSS, módulos, credenciales, Auth, memberships ni HR.
-
-## 3. Reconciliación contractual — PASS
-
-Se actualizaron únicamente los dos pins autorizados en:
-
-`app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json`
-
-Commit:
-
-`8642e87c655edfa81f813d1a3ccad9236312c5ea`
-
-Gate source/static:
+Ejecución:
 
 ```text
-run=31025221503
-artifact=8938295964
-digest=sha256:5482f4d00b69ac37b926771f69226efdd18ff4aa36e22288ba9c3d5578c4d9ad
+workflowRunId=31025221503
+workflowJobId=92384251301
+artifactId=8939818306
+artifactDigest=sha256:5016033fe024f48f4f0b21dfae400a18dbc2a015a3bad70c49c2d5892a811ee4
 PASS_READONLY_POST_GATES
-PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
-PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
+PASS_C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC_CLASSIFIED
 ```
 
-## 4. Segundo Hosting DEV correctivo
-
-El deploy autorizado se ejecutó una sola vez y completó la release en:
-
-`https://cxorbia-backend-dev.web.app`
+Observaciones separadas:
 
 ```text
-deployAttempted=true
-deploySucceeded=true
-hostingDeploysThisRun=1
-hostingDeployAttempts=1
-automaticSecondDeploys=0
+sessionView=cli_dashboard
+navElementExists=false
+navActive=false
+viewExists=true
+pageHeaderExists=true
+viewTextLength=690
+renderException=null
 ```
 
-## 5. Gates remotos aprobados
-
-### Paridad y HR viva
+## 4. Clasificación comprobada
 
 ```text
-PASS_C6_HOSTING_DEV_REMOTE_PARITY_AND_LIVE_HR
-allCriticalAssetsMatch=true
-liveEndpoint.ok=true
+OWNER=HARNESS
+CODE=HARNESS_NAV_ACTIVE_SUBCONDITION_MISMATCH
+P0_PRODUCT_REGRESSION_PROVEN=false
 ```
 
-Los dos archivos corregidos coinciden entre fuente y Hosting DEV.
+El Portal Cliente aceptó `cli_dashboard`, conservó `session.view`, presentó el contenedor canónico `#view`, renderizó el encabezado `.ph` y produjo contenido no vacío. No hubo excepción de render.
 
-### Staff y Shopper
+El timeout anterior fue causado por una suposición inválida del gate: exigir que `#nav-cli_dashboard` exista y quede activo después de una navegación directa del router. La ausencia de ese nodo no impidió el render del Portal Cliente.
+
+No corresponde tocar runtime, módulos, Login ni Hosting para este hallazgo.
+
+## 5. Preflight de credencial Cliente
+
+El selector canónico confirmó:
 
 ```text
-PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY
+PASS_C6_EXISTING_CLIENT_CREDENTIAL_SELECTION
+canonicalDecision=PASS_C6_EXISTING_CANONICAL_CLIENT_CREDENTIAL_SELECTION
+claimsValid=true
+membershipValid=true
+passwordSignIn=true
+authWrites=0
+passwordChanges=0
+passwordResets=0
+membershipWrites=0
 ```
 
-- Login Staff: PASS;
-- Login Shopper: PASS;
-- tres recargas: PASS;
-- nueva pestaña: PASS;
-- visita propia Shopper: PASS;
-- credenciales/tokens expuestos: false.
+Se preservó un alias de decisión compatible para el runner legado. No se cambió identidad, contraseña, claims ni membership.
 
-La fuente remota observó `15` periodos, `660` visitas y periodo vigente `2026-08`.
-
-### Cliente
-
-```text
-PASS_C6_CLIENT_AUTH_EXISTING_CREDENTIAL_RUNTIME
-```
-
-- credencial existente seleccionada;
-- autenticación Cliente: PASS;
-- tenant `tya`, proyecto `cinepolis`;
-- recarga y nueva pestaña: PASS;
-- cambios de contraseña/Auth: `0`.
-
-## 6. STOP_RETRY vigente
-
-El gate acumulativo de dominio/Finanzas/portales/Reservas se detuvo en:
-
-```text
-failedStage=remote_domain_finance_portals_reservations
-semantic.failedStage=client_route_wait
-errorCode=page.waitForFunction: Timeout 30000ms exceeded.
-```
-
-Antes del timeout quedó comprobado:
-
-```text
-clientModule=true
-routerAvailable=true
-requested=true
-routeAfterRequest=cli_dashboard
-```
-
-La evidencia no separó cuál condición visual quedó falsa entre:
-
-- `#nav-cli_dashboard.active`;
-- `#view .ph`;
-- contenido no vacío de `#view`.
-
-No se ha demostrado todavía si corresponde a producto o harness/timing. No modificar runtime ni repetir deploy sin diagnóstico focal y autorización nueva.
-
-## 7. Finanzas, Reservas y dominio preservados
-
-Antes del timeout se observó:
-
-- modelo financiero delegado;
-- `localBilling=false`;
-- regalías `0`;
-- contrato financiero listo;
-- cero valores inventados;
-- Reservas fail-closed;
-- mutaciones de Reservas deshabilitadas;
-- módulos de Cliente, Shopper, Finanzas y Reservas registrados.
-
-## 8. Estado seguro
+## 6. Estado seguro
 
 ```text
 HOSTING_DEPLOYS_TOTAL=2
-HOSTING_DEPLOYS_THIS_BLOCK=1
+HOSTING_DEPLOYS_THIS_BLOCK=0
 ADDITIONAL_DEPLOYS_AUTHORIZED=0
 CLOUD_RUN_DEPLOYS=0
-FIRESTORE_MEMBERSHIP_WRITES_TOTAL=1
 FIRESTORE_WRITES_THIS_BLOCK=0
 AUTH_WRITES=0
-CLAIMS_WRITES=0
-USER_CREATES=0
 PASSWORD_CHANGES=0
 PASSWORD_RESETS=0
 RULES_WRITES=0
 STORAGE_WRITES=0
 HR_WRITES=0
-MAKE_WRITES=0
+MAKE_CALLS=0
 GEMINI_CALLS=0
 PAYMENTS_WRITES=0
 CREDENTIALS_EXPOSED=false
@@ -168,14 +108,14 @@ MERGE=false
 PRODUCTION=false
 ```
 
-## 9. Phase A preservada
+## 7. Phase A preservada
 
-Se preservan V7.2-P0F1, composición acumulativa Phase A, HR e histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, multi-tenant, multi-proyecto, Finanzas, Portal Cliente, Portal Shopper, Reservas, sincronización HR/plataforma y Academia.
+Se preservan HR e histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, multi-tenant, multi-proyecto, Finanzas, Portal Cliente, Portal Shopper, Reservas, sincronización HR/plataforma y Academia.
 
-El P0 original del Login queda cerrado técnicamente. El cierre completo del gate acumulativo permanece en HOLD por `client_route_wait`.
+El P0 de Login permanece cerrado. `client_route_wait` deja de ser un bloqueo de producto y queda clasificado como deuda del harness.
 
-## 10. Siguiente bloque exacto
+## 8. Siguiente bloque exacto
 
 Requiere autorización expresa nueva:
 
-`DIAGNÓSTICO READ-ONLY FOCAL DE client_route_wait → CAPTURAR session.view, navElementExists, navActive, viewExists, pageHeaderExists, viewTextLength Y renderException POR SEPARADO → CLASIFICAR PRODUCTO VS HARNESS → DETENERSE SIN DEPLOY`.
+`CORREGIR SOLO EL PREDICADO DEL HARNESS REMOTO DE PORTAL CLIENTE → SUSTITUIR LA EXIGENCIA #nav-cli_dashboard.active POR session.view=cli_dashboard + #view + .ph + CONTENIDO NO VACÍO + SIN renderException → EJECUTAR SOLO EL GATE SEMÁNTICO READ-ONLY → SIN DEPLOY → DETENERSE PARA VALIDACIÓN HUMANA`.
