@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "cxorbia.atomic-apply-request.v1",
+  "requestId": "v7-2-p0f1-canonical-lock-direct-runner-20260805-01",
+  "enabled": true,
+  "mode": "blob_delta_v1",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "expectedParentSha": "39098a97aac2ee1c064026adda743b759bad5103",
+  "candidateSha256": "09606d1cc133a1e1e138be76bd8c6aadeb1f70d7967d506aae3f81bf5e9c6fce",
+  "packageSha256": "6fc9dddfbb66e2a92e8bf77be946e026d2fa9c7389640893370d674d44a344fd",
+  "commitMessage": "chore(source-lock): reconcile canonical composition for V7.2-P0F1",
+  "sourceLockDocument": "app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json",
+  "allowedExecutions": 1,
+  "atomicApply": true,
+  "containsPii": false,
+  "containsSecrets": false,
+  "providerWrites": false,
+  "dataWrites": false,
+  "deploy": false,
+  "merge": false,
+  "production": false,
+  "files": [
+    {
+      "path": "app/docs/ACADEMIA-IMPACTO-RECONCILIACION-DIRECTA-LOCK-V7-2-P0F1-20260805.md",
+      "operation": "create",
+      "sha256": "eba7a1425cd522ddcf1d03bea81e6523fd3776f220b865bcf606a8621fc4de2e",
+      "expectedCurrentSha256": null,
+      "gitBlobSha": "6067684055069bcd045d2f1e5dcfdc82c1456a20",
+      "sizeBytes": 561
+    },
+    {
+      "path": "app/docs/AUDITORIA-RECONCILIACION-LOCK-CANONICO-V7-2-P0F1-20260805.md",
+      "operation": "create",
+      "sha256": "21b0ceebfa35758d8dca8539d92cb6d294494cded8776a5f7bce55e58534f9ff",
+      "expectedCurrentSha256": null,
+      "gitBlobSha": "231100d42fa3b95084a0b1f77a272b366ac7899f",
+      "sizeBytes": 1417
+    },
+    {
+      "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-RECONCILIACION-DIRECTA-LOCK-V7-2-P0F1-20260805.md",
+      "operation": "create",
+      "sha256": "1f30a3c0304d8f425e23e25982a759ecb0bfda3dab43b78dc8ae78615df8c460",
+      "expectedCurrentSha256": null,
+      "gitBlobSha": "f438da091655563ab8fc561cbcf2e36c3991529d",
+      "sizeBytes": 998
+    },
+    {
+      "path": "app/docs/DIRECT-GITHUB-RUNNER-INDEPENDENCE-20260805.md",
+      "operation": "create",
+      "sha256": "44adee73592d1e28059a03bc37ed201c5374f622a07af70c35588a7d76aa316c",
+      "expectedCurrentSha256": null,
+      "gitBlobSha": "7cc19be3c54c6ceee7a3af395b25bf45a033bda7",
+      "sizeBytes": 837
+    },
+    {
+      "path": "app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json",
+      "operation": "replace",
+      "sha256": "632ee1d18247614ad9fc97768d891bf9c3f882943d0cbb8d1c20734d3f68cf77",
+      "expectedCurrentSha256": "54a67cbc72ee360c77db59d38f644f750f66ca9b90f068dc76d5bad6b95835f3",
+      "gitBlobSha": "e38b1d8b951a75475a0ce4b66fb7006fab426295",
+      "sizeBytes": 4814
+    },
+    {
+      "path": "app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-HISTORICAL-20260804.json",
+      "operation": "create",
+      "sha256": "54a67cbc72ee360c77db59d38f644f750f66ca9b90f068dc76d5bad6b95835f3",
+      "expectedCurrentSha256": null,
+      "gitBlobSha": "94fbb474188d6907915df9226e01f0a86860518c",
+      "sizeBytes": 3367
+    },
+    {
+      "path": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-RECONCILIACION-DIRECTA-V7-2-P0F1-20260805.md",
+      "operation": "create",
+      "sha256": "13ecbc7d5dc27fd17ab97caf5cb6a5eb8b6a85f1aecc6b208c86783d6b5257ae",
+      "expectedCurrentSha256": null,
+      "gitBlobSha": "c9a49dfca50fe44ec33c9635223de14b5e07906d",
+      "sizeBytes": 462
+    },
+    {
+      "path": "app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-RECONCILIACION-DIRECTA-V7-2-P0F1-20260805.md",
+      "operation": "create",
+      "sha256": "fe10021dc879e19f6a516f52647c0626f31d99b91fea2bbab1612a7790dc44b8",
+      "expectedCurrentSha256": null,
+      "gitBlobSha": "deb549711b3c3a75ae628e975bab118f17a78d17",
+      "sizeBytes": 474
+    }
+  ]
+}
