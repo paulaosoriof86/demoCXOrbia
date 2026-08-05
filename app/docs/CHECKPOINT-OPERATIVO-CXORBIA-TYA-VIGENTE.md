@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-05  
-**Estado:** `SHOPPER_IDENTITY_CANONICAL_CONTRACT_SOURCE_PREPARED__SOURCE_STATIC_MANIFEST_PIN_HOLD__STOP_RETRY__NO_PROVIDER_READS__NO_AUTH_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `SHOPPER_IDENTITY_SOURCE_STATIC_PASS__340_PROFILE_CENSUS_COMPLETE__12_COLLISIONS__46_ACTIVE_HOLD__STOP_RETRY__NO_AUTH_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -10,96 +10,128 @@
 - PR #7: draft/open/no merge;
 - producción: intacta;
 - Hosting DEV acumulado anterior: `3`;
-- Hosting DEV de este bloque: `0`;
-- deploy adicional ejecutado: `0`.
+- Hosting DEV de este bloque: `0`.
 
 ## 2. Contrato canónico Shopper TyA
-
-Quedó fijado source-only como regla universal:
 
 ```text
 Usuario visible: nombre.apellido
 Contraseña: Nombre123*
 Namespace: shopper
 Membership requerido: no
+Autoridad: Firebase Auth + claims exactos + shopperId canónico
 ```
 
-El acceso se autoriza por Firebase Auth, claims exactos y `shopperId` canónico. Los principals Staff y Shopper de Paula son identidades técnicas separadas y válidas; no deben fusionarse ni tratarse como ambigüedad humana.
+Paula Staff y Paula Shopper deben permanecer como principals técnicos distintos. No se permite deduplicar por nombre.
 
-Contrato:
+## 3. Reconciliación del pin — COMPLETADA
 
-- `backend/contracts/c6-shopper-identity-canonicalization-v1.json`;
-- commit `4b81bd620cecb7227d3038972b510224fd280ed1`.
-
-## 3. Source preparado
-
-Se creó:
-
-- `tools/qa/cxorbia-c6-shopper-identity-canonical-plan.mjs`;
-- clasificación prevista para los 340 perfiles;
-- categorías activo elegible, activo hold, histórico, histórico preservado e inactivo;
-- detección previa de colisiones;
-- plan idempotente Auth DEV source-safe.
-
-Se corrigió:
-
-- `tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs`;
-- membership eliminado de la condición de readiness;
-- política universal `nombre.apellido / Nombre123*`;
-- Paula Staff/Shopper separados por namespace;
-- blob vigente `80622606ce3635f0d53997a41932b6ced5dc25d4`.
-
-Commit source: `dd8f8c00858837e28a91ff4f248e82d665f648e5`.
-
-## 4. Gate source/static — HOLD
+Se modificó exclusivamente el pin activo de:
 
 ```text
-workflowRunId=31052425207
-workflowJobId=92462414462
-artifactId=8948908689
-artifactDigest=sha256:fe1373b49c0aef22c03d8d476c1c2c6c9503d49607d7131d121d15bfbc8ab184
-HOLD_READONLY_POST_GATES
-FAIL_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE
+tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs
+```
+
+```text
+anterior=8fe4b0c5050d9fe9ba6c3120ef81a75b00bb8535
+vigente=80622606ce3635f0d53997a41932b6ced5dc25d4
+commit=f224b3e4d5fa05323bfc3d619b257db8a0faaf06
+```
+
+No se modificó ningún otro pin, runtime, módulo, diseño ni `CX.data`.
+
+## 4. Source/static — PASS
+
+```text
+workflowRunId=31054156634
+workflowJobId=92467888669
+artifactId=8949587605
+artifactDigest=sha256:6d206129b723988c7d7d0cb8f628e907b30be3dcc18b113782e293a808fd7ed4
+PASS_READONLY_POST_GATES
+PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
 PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
 ```
 
-Fallo único:
+## 5. Censo read-only de 340 perfiles — COMPLETO CON HOLD
 
 ```text
-V6_ADDITIONAL_CRITICAL_BLOB_MISMATCH
-path=tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs
-expected=8fe4b0c5050d9fe9ba6c3120ef81a75b00bb8535
-actual=80622606ce3635f0d53997a41932b6ced5dc25d4
+workflowRunId=31054262787
+workflowJobId=92468210043
+artifactId=8949634992
+artifactDigest=sha256:efdfc1b20007aabe54baac9d87212c54a6b1f376913be3e4279d9350c591f172
+HOLD_C6_SHOPPER_IDENTITY_CANONICALIZATION_CENSUS
 ```
 
-Causa raíz: el manifiesto activo conserva el pin del auditor anterior. El laboratorio source-only pasó; el source no llegó al censo porque la composición contractual no estaba reconciliada.
+Clasificación completa:
 
-## 5. STOP_RETRY aplicado
+| Categoría | Total |
+|---|---:|
+| ACTIVE_ELIGIBLE | 105 |
+| HISTORICAL | 189 |
+| ACTIVE_HOLD | 46 |
+| **Total** | **340** |
 
-- request consumido y deshabilitado;
-- no se corrigió el pin en el mismo bloque;
-- no se reintentó el gate;
-- censo provider read-only no ejecutado;
-- Auth repair no iniciado;
-- Hosting DEV no ejecutado.
-
-## 6. Baseline heredado pendiente de validar con el nuevo censo
+## 6. Bloqueos comprobados
 
 ```text
-Firestore Shopper profiles=340
-credential Shopper records=109
-existing Auth=88
-missing Auth=21
-login exceptions=30
-password exceptions=28
+COLLISIONS_TOTAL=12
+AUTH_IDENTITY_COLLISIONS=1
+CANONICAL_LOGIN_COLLISIONS=11
+CANONICAL_NAME_INCOMPLETE=23
+LOGIN_COLLISION_HOLD_PROFILES=23
 ```
 
-Estos conteos siguen como baseline de entrada. No se reclasificó la población ni se realizó ninguna escritura.
-
-## 7. Estado seguro
+Identidad Paula:
 
 ```text
-PROVIDER_READS_THIS_BLOCK=0
+STAFF_CANDIDATES=1
+SHOPPER_CANDIDATES=2
+STAFF_AUTH_PRESENT=1
+SHOPPER_AUTH_PRESENT=0
+SEPARATED=false
+```
+
+No corresponde crear o modificar Auth hasta resolver las dos candidatas Shopper por claves técnicas.
+
+## 7. Drift de baseline
+
+Baseline anterior:
+
+```text
+missingAuth=21
+loginExceptions=30
+passwordExceptions=28
+```
+
+Lectura del censo vigente sobre los 109 registros legacy mapeados:
+
+```text
+missingAuth=0
+loginExceptions=9
+passwordExceptions=7
+```
+
+Este drift no se interpreta como reparación: no hubo writes. Debe reconciliarse la diferencia entre población legacy, mapeo actual y usuarios Auth existentes.
+
+## 8. Acciones calculadas, no autorizadas
+
+```text
+createAuth=25
+updateEmail=1
+updatePassword=8
+updateClaims=80
+noOp=0
+```
+
+Estas categorías se superponen; todavía no conforman una partición idempotente de una acción por identidad.
+
+## 9. STOP_RETRY y estado seguro
+
+El censo se detuvo ante colisiones y holds, conforme a la autorización.
+
+```text
+PROVIDER_READS=true
+PROVIDER_WRITES=false
 AUTH_WRITES=0
 PASSWORD_CHANGES=0
 PASSWORD_RESETS=0
@@ -112,24 +144,30 @@ HOSTING_DEPLOYS_THIS_BLOCK=0
 CLOUD_RUN_DEPLOYS=0
 MAKE_CALLS=0
 GEMINI_CALLS=0
-PAYMENTS_WRITES=0
+PAYMENT_WRITES=0
 CREDENTIALS_EXPOSED=false
+RAW_NAMES_EXPORTED=false
+RAW_LOGINS_EXPORTED=false
+RAW_PASSWORDS_EXPORTED=false
 MERGE=false
 PRODUCTION=false
 ```
 
-## 8. Phase A preservada
+## 10. Phase A preservada
 
 Se preservaron frontend canónico, `CX.data`, HR, histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, multi-tenant, multi-proyecto, Finanzas, Portal Cliente, Portal Shopper, Reservas, sincronización HR/plataforma y Academia.
 
-## 9. Siguiente bloque exacto
+## 11. Siguiente bloque exacto
 
 ```text
-RECONCILIAR EXCLUSIVAMENTE EL BLOB PIN ACTIVO DE
- tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs
-→ EJECUTAR NUEVO SOURCE/STATIC EXPRESAMENTE AUTORIZADO
-→ SOLO CON PASS HABILITAR EL CENSO READ-ONLY DE 340 PERFILES
-→ DETENERSE NUEVAMENTE ANTES DE AUTH WRITES SI APARECE CUALQUIER HOLD O COLISIÓN
+REVISIÓN SOURCE-SAFE FOCAL DE:
+- 12 colisiones;
+- 23 nombres canónicos incompletos;
+- 23 perfiles retenidos por login colisionado;
+- 2 candidatas Shopper de Paula;
+- drift 21/30/28 vs 0/9/7;
+→ PRODUCIR PLAN IDÉMPOTENTE NO SUPERPUESTO
+→ DETENERSE ANTES DE CUALQUIER AUTH/PASSWORD WRITE O DEPLOY
 ```
 
-No hay autorización residual para retry, provider reads, Auth writes ni deploy.
+No existe autorización residual para repair, retry, deploy, merge o producción.
