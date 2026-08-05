@@ -2,17 +2,17 @@
 
 **Fecha:** 2026-08-05  
 **Estado:** ACTIVO  
-**Estado vivo:** `HOSTING_DEV_DEPLOYED__REMOTE_PARITY_PASS__P0_LOGIN_CONTAINER_SELECTOR_MISMATCH__STOP_RETRY__NO_SECOND_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `LOGIN_SELECTOR_SOURCE_FIX_APPLIED__LAB_CONTRACT_PASS__SOURCE_STATIC_HOLD_MANIFEST_BLOB_PINS_STALE__STOP_RETRY__NO_SECOND_DEPLOY__NO_PRODUCTION`
 
 ## 1. Fuentes activas y orden de prevalencia
 
 1. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `AUDITORIA-P0-LOGIN-CONTAINER-SELECTOR-POST-HOSTING-DEV-20260805.md`;
-3. `CAMBIOS-BACKEND-ADDENDUM-C6-MEMBERSHIP-PASS-HOSTING-DEV-P0-LOGIN-SELECTOR-20260805.md`;
-4. `PENDIENTES-PROTOTIPO-ADDENDUM-C6-HOSTING-DEV-P0-LOGIN-SELECTOR-20260805.md`;
-5. `RESUMEN-PARA-CLAUDE-ADDENDUM-C6-HOSTING-DEV-P0-LOGIN-SELECTOR-20260805.md`;
-6. `ACADEMIA-IMPACTO-C6-HOSTING-DEV-P0-LOGIN-SELECTOR-20260805.md`;
-7. `app/docs/evidence/CORTE6-PHASE-A-RUNTIME-HOLD-AFTER-ACCESS-PASS-LATEST.json`;
+2. `app/docs/evidence/CORTE6-LOGIN-SELECTOR-SOURCE-STATIC-HOLD-LATEST.json`;
+3. `AUDITORIA-P0-LOGIN-CONTAINER-SELECTOR-POST-HOSTING-DEV-20260805.md`;
+4. `CAMBIOS-BACKEND-ADDENDUM-C6-MEMBERSHIP-PASS-HOSTING-DEV-P0-LOGIN-SELECTOR-20260805.md`;
+5. `PENDIENTES-PROTOTIPO-ADDENDUM-C6-HOSTING-DEV-P0-LOGIN-SELECTOR-20260805.md`;
+6. `RESUMEN-PARA-CLAUDE-ADDENDUM-C6-HOSTING-DEV-P0-LOGIN-SELECTOR-20260805.md`;
+7. `ACADEMIA-IMPACTO-C6-HOSTING-DEV-P0-LOGIN-SELECTOR-20260805.md`;
 8. `app/docs/evidence/CORTE6-CANONICAL-HEAD-DEV-DEPLOY-GATES-FAILURE-LATEST.json`;
 9. `app/docs/evidence/CORTE6-CANONICAL-HEAD-SOURCE-LOCK-LATEST.json`;
 10. `MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json`;
@@ -28,55 +28,53 @@ Ante conflicto, mandan este índice, el checkpoint, el lock de empalme directo y
 ## 2. Estado técnico verificado
 
 - V7.2-P0F1 empalmada: sí;
-- composición Phase A y Lab source/static: PASS;
 - membresía Cliente: reparada y readback exacto;
-- membership writes: `1`;
+- membership writes acumulados: `1`;
 - Auth/claims/user/password writes: `0`;
-- Hosting DEV: desplegado una vez;
-- paridad remota y HR viva: PASS;
+- Hosting DEV acumulado: `1`;
+- paridad remota y HR viva del deploy anterior: PASS;
+- selector acumulativo `.lg2-card, .login-card`: aplicado en los dos bridges autorizados;
+- Lab source contract posterior al fix: PASS;
+- source/static acumulativo posterior al fix: HOLD por dos blob pins antiguos del manifiesto;
 - segundo deploy: `0`;
 - merge: false;
 - producción: intacta.
 
-## 3. P0 vigente
+## 3. HOLD vigente
 
 ```text
-FAIL_C6_UNIFIED_HUMAN_AUTH_CREDENTIAL_STEP
-failedPrincipal=staff
+HOLD_READONLY_POST_GATES
+FAIL_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE
+ROOT_CAUSE=ACTIVE_COMPOSITION_MANIFEST_STILL_PINS_PRE_FIX_AUTH_BRIDGE_BLOBS
 ```
 
-Causa reproducible:
+El gate encontró exactamente dos mismatches y corresponden a los dos archivos modificados de forma autorizada:
 
-- V7.2 monta el Login en `.lg2-card`;
-- `app/core/backend-browser-auth.js` busca `.login-card`;
-- `app/adapters/tya-c6-unified-human-runtime-v1.js` busca `.login-card`;
-- el formulario `#cxIntegratedAuthStep` no se crea.
+- `app/core/backend-browser-auth.js`;
+- `app/adapters/tya-c6-unified-human-runtime-v1.js`.
 
-Correctivo source-only exacto:
-
-```js
-loginRoot.querySelector('.lg2-card, .login-card')
-```
+No se detectó un tercer archivo runtime distinto, secreto, ruta faltante, script duplicado ni fallo del contrato de Laboratorio.
 
 ## 4. Carril operativo
 
 ```text
-P0_PROVEN
-→ AUTORIZACIÓN NUEVA
-→ FIX SOURCE-ONLY EN DOS ARCHIVOS
-→ GATES SOURCE/STATIC
-→ SEGUNDO HOSTING DEV DE CORRECCIÓN
-→ GATES REMOTOS ACUMULATIVOS
+RECONCILIAR SOLO DOS BLOB PINS DEL MANIFIESTO/BUILD-LOCK
+→ NUEVO GATE SOURCE/STATIC
+→ SOLO CON PASS: SEGUNDO HOSTING DEV CORRECTIVO
+→ PARIDAD
+→ STAFF
+→ SHOPPER 3 RECARGAS + NUEVA PESTAÑA
+→ CLIENTE
+→ DOMINIO/FINANZAS/PORTALES/RESERVAS
 → VALIDACIÓN HUMANA
 ```
 
-Codex continúa opcional. Paula no usa terminal o PowerShell.
-
 ## 5. Prohibiciones vigentes
 
-- segundo deploy sin autorización expresa;
+- segundo deploy mientras el source/static siga en HOLD;
+- reintento automático del request consumido;
 - nueva candidata, rama o PR;
-- rediseño del Login;
-- cambios de credenciales, Auth, claims o membresías;
+- cambios adicionales al Login o a módulos;
+- cambios de credenciales, Auth, claims o memberships;
 - Firestore/HR/Rules/Storage writes;
 - merge o producción.
