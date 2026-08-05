@@ -1,31 +1,19 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-04  
-**Estado frontend:** `CLOUD_V7_1_HOLD__V7_2_REQUIRED__DO_NOT_SEND_TO_EMPALME`
+**Estado frontend:** `CLOUD_V7_1_HOLD__V7_2_REQUIRED`
 
-## Alcance
+Cloud solo corrige frontend.
 
-Cloud modifica únicamente frontend. No tocar backend, core, módulos, autenticación, datos, laboratorio, gates, GitHub, deploy o producción.
+## Preservar
 
-## V7.1
+- desktop;
+- órbita;
+- países dinámicos 1/2/8/12;
+- perfiles y formulario.
 
-- SHA-256 `649b9d50ae8f80cf4e0b4fcb303e60b35e8fda1b7de1215ae716b7be6f4355ca`;
-- decisión `HOLD_NO_SEND_TO_EMPALME`.
+## Corregir
 
-Preservar desktop, órbita, países 1/2/8/12, perfiles y formulario.
-
-## Corrección V7.2
-
-Bajo 900 px anular expresamente en `#login`:
-
-```css
-display:flex;
-align-items:center;
-justify-content:center;
-padding:24px;
-```
-
-Aplicar flujo vertical real, ancho 100 %, cero coordenadas negativas y scroll hasta el registro.
+Bajo 900 px, anular en `#login` flex, centrado y padding heredados. Garantizar ancho 100 %, cero clipping y scroll hasta el registro.
 
 Criterios:
 
@@ -36,18 +24,12 @@ Criterios:
 - scrollWidth == viewportWidth;
 - scrollHeight >= goReg.bottom.
 
-## Evidencia
+## Entrega
 
-PNG reales 1920×1080, 1440×900, 768×1024, 412×915 y 390×844; comparación y escenarios 1/2/8/12 países; manifest con path, bytes y SHA-256.
+- `app/app.js`;
+- `app/styles/layout.css`;
+- reporte V7.2;
+- manifest;
+- PNG reales de cinco viewports, comparación y escenarios 1/2/8/12.
 
-## Paquete
-
-```text
-app/app.js
-app/styles/layout.css
-REPORTE-V7-2-CORRECCION-RESPONSIVE.md
-MANIFEST.json
-capturas/
-```
-
-El Laboratorio backend ya obtuvo PASS source-only. Cloud no debe modificarlo.
+El Laboratorio backend ya obtuvo PASS source-only. No tocar contratos, gates, runner, backend o producción.
