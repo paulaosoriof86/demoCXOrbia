@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-08-04  
 **Estado:** ACTIVO Y OBLIGATORIO  
-**Estado vivo:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_APPROVED_NOT_COMPLETED__CLOUD_V7_HOLD__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_APPROVED_NOT_COMPLETED__CLOUD_V7_HOLD__LAB_SOURCE_ONLY_PREPARED__NO_DEPLOY__NO_PRODUCTION`
 
 ## 0. Corrección prevalente
 
@@ -29,16 +29,20 @@ Codex únicamente puede empalmar un delta exacto después de auditoría GO y sin
 
 1. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 2. `AUDITORIA-REAL-CANDIDATA-CLOUD-V7-20260804-HOLD.md`;
-3. `PROMPT-CLOUD-V7-CORRECCION-VISUAL-LOGIN-ORBIT-20260804.md`;
-4. `CAMBIOS-BACKEND-ADDENDUM-CLOUD-V6-SOURCE-STATIC-PASS-20260804.md`;
-5. `MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json` como evidencia provisional, no como prueba de empalme aprobado;
-6. `CAMBIOS-BACKEND-ADDENDUM-FORENSIC-CONTROL-PLANE-STABILIZATION-20260804.md`;
-7. contratos activos de runtime y release slice;
-8. `METODOLOGIA-PRUEBAS-EN-PLATAFORMA-REUTILIZABLE-DESDE-FINANZAS-20260804.md`;
-9. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-10. `RESUMEN-PARA-CLAUDE.md`;
-11. `PENDIENTES-PROTOTIPO.md`;
-12. PR #7 y HEAD vivo.
+3. `CAMBIOS-BACKEND-ADDENDUM-LABORATORIO-SOURCE-ONLY-PREPARATION-20260804.md`;
+4. `backend/contracts/tya-dev-scenario-lab-runner-v1.json`;
+5. `backend/contracts/tya-dev-scenario-lab-evidence-schema-v1.json`;
+6. `MATRIZ-EJECUCION-LABORATORIO-ADMIN-SHOPPER-20260804.md`;
+7. `PROMPT-CLOUD-V7-CORRECCION-VISUAL-LOGIN-ORBIT-20260804.md`;
+8. `CAMBIOS-BACKEND-ADDENDUM-CLOUD-V6-SOURCE-STATIC-PASS-20260804.md`;
+9. `MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json` como evidencia provisional, no como prueba de empalme aprobado;
+10. `CAMBIOS-BACKEND-ADDENDUM-FORENSIC-CONTROL-PLANE-STABILIZATION-20260804.md`;
+11. contratos activos de runtime y release slice;
+12. `METODOLOGIA-PRUEBAS-EN-PLATAFORMA-REUTILIZABLE-DESDE-FINANZAS-20260804.md`;
+13. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+14. `RESUMEN-PARA-CLAUDE.md`;
+15. `PENDIENTES-PROTOTIPO.md`;
+16. PR #7 y HEAD vivo.
 
 ## 3. Auditoría Cloud V7
 
@@ -59,25 +63,20 @@ P0 comprobados:
 1. el ZIP completo sobrescribiría archivos vivos distintos de `index.html`, `build-lock.js`, Shoppers y Finanzas;
 2. el responsive del Login se superpone en `768×1024`, `412×915` y `390×844`, ocultando encabezado, países, perfil y parte de la primera tarjeta.
 
-Evidencia contractual faltante:
+## 4. Trabajo adelantado en paralelo
 
-- manifest V7;
-- cinco capturas solicitadas;
-- comparación V6/V7;
-- reporte V7 específico;
-- evidencia entregada de 1/2/8/12 países.
+Mientras Claude corrige únicamente frontend, quedó preparado source-only:
 
-## 4. Qué sí pasó
+- contrato del runner real del Laboratorio;
+- schema de evidencia;
+- gate source-only del contrato;
+- matriz Admin/Operaciones + Shopper;
+- fingerprints;
+- límites `AUDIT-*`;
+- cleanup exacto;
+- decisiones PASS/FAIL/P0 cleanup.
 
-La auditoría aislada confirmó:
-
-- JavaScript sin errores de sintaxis;
-- cero secretos detectados;
-- escritorio `1920×1080` y `1440×900` visualmente mejorado;
-- países dinámicos 1/2/8/12 en orden y sin `+N`;
-- formulario, tres perfiles y órbita visibles en escritorio.
-
-Estos PASS parciales no autorizan empalme.
+No se ejecutaron navegador, runtime, provider reads/writes, datos temporales ni deploy.
 
 ## 5. Carril de aplicación
 
@@ -97,7 +96,7 @@ CLOUD CORRIGE V7
 → EXECUTION_LANE_READY
 → AUDITORÍA COMPARATIVA FINAL
 → SOLO SI GO Y SIN P0: APPLY_DELTA_DIRECTLY
-→ SOURCE/STATIC FINAL
+→ SOURCE/STATIC FINAL, INCLUYENDO GATE DEL LABORATORIO
 → ÚNICO HOSTING DEV AUTORIZADO
 → LABORATORIO REAL
 → CLEANUP
@@ -109,6 +108,8 @@ CLOUD CORRIGE V7
 
 - empalme V6 aprobado/completado: no;
 - empalme V7: 0;
+- navegador/runtime del Laboratorio: 0;
+- datos `AUDIT-*`: 0;
 - Hosting/Cloud Run: 0;
 - provider writes: 0;
 - Firestore/Auth/Storage/HR writes: 0;
