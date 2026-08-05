@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-04  
-**Estado vivo:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_COMPLETED__LAB_SOURCE_ONLY_PREPARED__CLOUD_V7_1_HOLD__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_COMPLETED__LAB_SOURCE_CONTRACT_PASS__CLOUD_V7_1_HOLD__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Cloud V7.1 — P0 vivo
 
@@ -9,8 +9,7 @@ La entrega ya es estrecha, pero el responsive continúa roto.
 
 Causa:
 
-- la primera regla de `#login` conserva `display:flex`, centrado y `padding:24px`;
-- la regla V7 posterior no los anula;
+- `#login` conserva `display:flex`, centrado y `padding:24px`;
 - bajo 900 px `.lg2` queda centrado como flex item más ancho que el viewport.
 
 Efectos:
@@ -29,8 +28,6 @@ Correctivo V7.2:
   .lg2-card{width:100%;max-width:520px}
 }
 ```
-
-Debe comprobar `scrollHeight >= goReg.bottom` y cero coordenadas negativas.
 
 ## 2. Evidencia V7.1 pendiente
 
@@ -55,7 +52,37 @@ Faltan:
 - 12 países accesibles en 1440×900;
 - copy demo/técnico ausente.
 
-## 4. Carril de empalme
+## 4. Laboratorio — source contract cerrado PASS
+
+Run comprobado:
+
+- `30971991900`;
+- artifact `8916850770`;
+- digest `sha256:75953c600b68450a11cfac6667ac5b5cfa8eceea5c94a6a0856850a501e77dd8`.
+
+Decisiones:
+
+```text
+PASS_READONLY_POST_GATES
+PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
+PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
+```
+
+Cerrado:
+
+- cinco perfiles;
+- estados Auth→cleanup;
+- política `AUDIT-*`;
+- fingerprints;
+- cleanup exacto;
+- schema de evidencia;
+- prohibición de falsos PASS.
+
+Pendiente no bloqueante:
+
+- corregir el mapa source path esperado de `miperfil`, `misvisitas`, `aprendizaje` y `cert` antes del runtime final.
+
+## 5. Carril de empalme
 
 ```text
 V7_1_GO = false
@@ -64,27 +91,6 @@ EXECUTION_LANE_READY_FOR_APPLY = false
 ```
 
 No enviar a Codex.
-
-## 5. Laboratorio — preparación cerrada
-
-Ya existen:
-
-- contrato del runner;
-- schema de evidencia;
-- gate source-only;
-- matriz Admin/Operaciones + Shopper;
-- política `AUDIT-*`;
-- fingerprints;
-- cleanup exacto.
-
-Pendiente:
-
-- candidata visual GO;
-- empalme aprobado/completado;
-- source/static final + gate del laboratorio;
-- único Hosting DEV;
-- autorización aplicable para escrituras temporales;
-- ejecución real y cleanup.
 
 ## 6. Primer release slice
 
@@ -96,7 +102,8 @@ Portal Cliente continúa en carril paralelo.
 
 - overlay A+B superseded;
 - PDF puede omitir gráficas;
-- Excel básico.
+- Excel básico;
+- cuatro warnings de mapa source path del Laboratorio.
 
 ## 8. Secuencia exacta
 
