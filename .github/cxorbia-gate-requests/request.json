@@ -1,32 +1,26 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "c6-client-route-wait-focal-diagnostic-runtime-profile-20260805-04",
-  "enabled": false,
-  "issuedAt": "2026-08-05T11:13:00-06:00",
-  "consumedAt": "2026-08-05T11:13:03-06:00",
-  "status": "consumed_pass_classified_harness",
-  "decision": "PASS_READONLY_POST_GATES",
-  "diagnosticDecision": "PASS_C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC_CLASSIFIED",
-  "classificationOwner": "HARNESS",
-  "classificationCode": "HARNESS_NAV_ACTIVE_SUBCONDITION_MISMATCH",
-  "classificationReason": "The client dashboard rendered with content, but the navigation-element assumption did not become true.",
-  "continuationOf": "c6-client-route-wait-focal-diagnostic-runtime-profile-20260805-03",
-  "priorDiagnosticExecutionsObserved": 0,
-  "workflowRunId": 31025221503,
-  "workflowJobId": 92384251301,
-  "artifactId": 8939818306,
-  "artifactDigest": "sha256:5016033fe024f48f4f0b21dfae400a18dbc2a015a3bad70c49c2d5892a811ee4",
+  "requestId": "c6-remote-domain-semantic-client-predicate-rerun-20260805-01",
+  "enabled": true,
+  "issuedAt": "2026-08-05T11:36:00-06:00",
+  "status": "authorized_execute_once",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "ab79011ff69518bd4104393f9c46ecc050d01846",
-  "requestCommitSha": "c3d7bc540d7e55ccf21abfa339239300f9c6d4e1",
-  "profile": "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC",
+  "targetHeadSha": "fb2251ebf53603990e09bdd513aa51990418839f",
+  "profile": "PHASE_A_COMPLETE_RUNTIME_MULTIROLE",
   "allowedProfiles": [
-    "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC"
+    "PHASE_A_COMPLETE_RUNTIME_MULTIROLE"
   ],
-  "diagnosticMode": "client_route_wait",
-  "allowedExecutions": 0,
+  "diagnosticMode": "remote_domain_semantic_only",
+  "requiredClientPredicate": [
+    "session.view=cli_dashboard",
+    "#view exists",
+    "#view .ph exists",
+    "#view text non-empty",
+    "renderException=null"
+  ],
+  "allowedExecutions": 1,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": true,
@@ -37,15 +31,6 @@
   "tenantId": "tya",
   "projectId": "cinepolis",
   "sourceLockDocument": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
-  "observations": {
-    "sessionView": "cli_dashboard",
-    "navElementExists": false,
-    "navActive": false,
-    "viewExists": true,
-    "pageHeaderExists": true,
-    "viewTextLength": 690,
-    "renderException": null
-  },
   "safeState": {
     "repositoryWrites": false,
     "dataWrites": false,
@@ -64,8 +49,8 @@
   "containsPii": false,
   "containsSecrets": false,
   "authorizedBy": "Paula",
-  "stopAfterClassification": true,
+  "authorizationScope": "Correct only the Client predicate of the remote semantic harness by replacing the #nav-cli_dashboard.active dependency with session.view=cli_dashboard, #view, #view .ph, non-empty view text and renderException=null; execute one semantic read-only rerun and stop for human validation. No runtime or frontend changes, deploy, Cloud Run, provider writes, merge or production.",
+  "stopAfterSemanticGate": true,
   "stopRetryOnFailure": true,
-  "nextGate": "REPLACE_THE_INVALID_NAV_ACTIVE_SUBCONDITION_IN_THE_REMOTE_SEMANTIC_HARNESS__RERUN_READONLY_ONLY__NO_DEPLOY",
-  "purpose": "Consumed successful focal diagnosis. Product route, view container, page header and rendered content are present; the prior timeout belongs to the harness assumption that #nav-cli_dashboard must exist and become active."
+  "purpose": "One harness-only semantic rerun after the focal diagnosis proved the prior client_route_wait timeout belonged to the navigation-element assumption rather than the product."
 }
