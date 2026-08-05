@@ -1,143 +1,137 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-04  
-**Estado:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_APPROVED_NOT_COMPLETED__CLOUD_V7_HOLD__LAB_SOURCE_ONLY_PREPARED__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_COMPLETED__LAB_SOURCE_ONLY_PREPARED__CLOUD_V7_1_HOLD__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Corrección obligatoria
-
-No existe un empalme V6 aprobado y completado.
-
-La rama viva contiene archivos derivados de V6 materializados provisionalmente, pero Paula no validó ni cerró ese empalme. La documentación anterior que decía `V6 empalmada` fue incorrecta y queda sustituida por este checkpoint.
-
-## 2. Carril vigente
+## 1. Carril vigente
 
 - repo `paulaosoriof86/demoCXOrbia`;
 - rama `docs-tya-v6-v71-audit`;
 - PR #7 draft/open/no merge;
-- producción `tya-plataforma` intacta;
+- producción intacta;
 - deploy DEV: 0.
 
-## 3. Cloud V7
+No existe empalme V6 aprobado y completado.
 
-- ZIP: `Prototype development request V7.zip`;
-- SHA-256: `e834a5797230d246504e325cb7b3e3a48e44086b08a75f4a857470c89faad261`;
-- archivos: 259;
+## 2. Trabajo adelantado
+
+Quedaron preparados source-only:
+
+- contrato del runner del Laboratorio;
+- schema de evidencia;
+- gate source-only;
+- matriz Admin/Operaciones + Shopper;
+- límites `AUDIT-*`;
+- fingerprints y cleanup exacto.
+
+No se ejecutaron navegador, runtime, provider reads/writes o datos temporales.
+
+## 3. Cloud V7.1 auditada
+
+- ZIP: `Prototype development request V 7.1.zip`;
+- SHA-256: `649b9d50ae8f80cf4e0b4fcb303e60b35e8fda1b7de1215ae716b7be6f4355ca`;
+- entradas: 5;
+- alcance funcional: `app/app.js` y `app/styles/layout.css`;
 - decisión: `HOLD_NO_SEND_TO_EMPALME`.
 
-P0 comprobados:
+## 4. PASS parciales
 
-1. el paquete completo sobrescribiría archivos vivos distintos de runtime, Shoppers y Finanzas;
-2. el Login responsive se superpone en tablet y móvil.
+- paquete estrecho;
+- sintaxis PASS;
+- UTF-8 sin BOM;
+- secretos 0;
+- desktop 1920×1080 y 1440×900 correcto;
+- países 1/2/8/12 en orden y sin `+N`;
+- doce países accesibles en 1440×900;
+- tres perfiles y formulario completos en desktop;
+- copy demo/técnico ausente.
 
-Claude trabaja únicamente la corrección frontend estrecha.
+## 5. P0 responsive reproducible
 
-## 4. Trabajo adelantado por ChatGPT
+La corrección no anuló la regla legacy de `#login` que conserva:
 
-Sin interferir con Claude quedó materializado source-only:
+- `display:flex`;
+- `align-items:center`;
+- `justify-content:center`;
+- `padding:24px`.
 
-### Contrato del runner
+En móvil, `.lg2` pasa a bloque pero sigue siendo un flex item centrado dentro del contenedor fixed.
 
-`backend/contracts/tya-dev-scenario-lab-runner-v1.json`
+Evidencia `390×844`:
 
-Define:
+- aside/main: x = -81 px, width = 552 px;
+- card: x = -65 px, width = 520 px;
+- strip top = -191.30 px;
+- registro bottom = 1011.30 px;
+- document scrollHeight = 844 px.
 
-- cinco perfiles de prueba;
-- estados Auth→cleanup;
-- límites máximos de entidades `AUDIT-*`;
-- fingerprints inicial/final;
-- cleanup exacto;
-- gates previos;
-- modo actual sin ejecución ni writes.
+Resultado:
 
-### Schema de evidencia
+- clipping lateral;
+- franja superior fuera de pantalla;
+- texto y controles recortados;
+- parte inferior fuera del scroll vertical real.
 
-`backend/contracts/tya-dev-scenario-lab-evidence-schema-v1.json`
+También se reproduce en `412×915`; en `768×1024` la franja superior queda cortada.
 
-Exige:
+## 6. Evidencia candidata
 
-- source HEAD exacto;
-- runId `AUDIT-*`;
-- perfiles/pasos;
-- fingerprints;
-- cleanup;
-- capturas con SHA-256;
-- cero secretos, credenciales, PII y producción.
+La única captura llamada `02-desktop-1440x900.png` mide realmente `924×540` y es JPEG.
 
-### Gate source-only
+Faltan:
 
-`tools/qa/tya-dev-scenario-lab-source-contract-gate.mjs`
+- cuatro viewports;
+- comparación antes/después;
+- capturas 1/2/8/12 países.
 
-Queda preparado para integrarse al próximo source/static final. No se ejecutó todavía mediante runner remoto.
-
-### Matriz operativa
-
-`MATRIZ-EJECUCION-LABORATORIO-ADMIN-SHOPPER-20260804.md`
-
-Cierra el recorrido futuro de:
-
-- Hoja de Ruta/Dashboard;
-- Visitas/Disponibles;
-- Postulaciones/ficha;
-- asignación;
-- Shoppers;
-- Reservas;
-- Finanzas;
-- Mi Perfil/certificaciones/Mis Visitas/histórico/pagos Shopper;
-- tres recargas/nueva pestaña;
-- exportaciones;
-- cleanup.
-
-## 5. Dependencias antes de ejecutar el Laboratorio
-
-1. delta Claude estrecho y corregido;
-2. auditoría GO sin P0;
-3. empalme aprobado/completado;
-4. source/static final PASS;
-5. único Hosting DEV autorizado;
-6. autorización aplicable de escrituras temporales `AUDIT-*`;
-7. snapshot de proveedor y cleanup exacto.
-
-## 6. Carril de aplicación
+## 7. Decisión
 
 ```text
-EXECUTION_LANE_READY_FOR_APPLY = false
-V7_GO = false
+V7_1_GO = false
 SEND_TO_EMPALME = false
+EXECUTION_LANE_READY_FOR_APPLY = false
 ```
 
-No se aplicará ningún delta antes de recibir la entrega corregida y completar el carril.
+No enviar a Codex.
 
-## 7. Siguiente secuencia
+## 8. Corrección V7.2 requerida
+
+Bajo 900 px Cloud debe establecer explícitamente:
+
+- `#login{display:block;padding:0;align-items:initial;justify-content:initial;overflow:auto}`;
+- ancho real 100 %;
+- cero coordenadas negativas;
+- `scrollHeight` suficiente hasta el registro;
+- capturas reales de todos los viewports.
+
+## 9. Siguiente secuencia
 
 ```text
-CLAUDE ENTREGA DELTA ESTRECHO
+CLOUD V7.2
 → AUDITORÍA FINAL
 → GO SIN P0
-→ EMPALME APROBADO
-→ SOURCE/STATIC FINAL + GATE DEL LABORATORIO
+→ CODEX SOLO EMPALME
+→ SOURCE/STATIC FINAL + GATE LAB
 → ÚNICO HOSTING DEV
 → LABORATORIO REAL
-→ CLEANUP EXACTO
+→ CLEANUP
 → VALIDACIÓN HUMANA
-→ CUTOVER AUTORIZADO
 ```
 
-## 8. Estado seguro
+## 10. Estado seguro
 
-- empalme V6 aprobado/completado: no;
-- empalme V7: 0;
-- browser/runtime: 0;
-- provider reads/writes: 0;
+- V7.1 aplicada: no;
+- empalme: 0;
 - entidades `AUDIT-*`: 0;
 - Hosting/Cloud Run: 0;
 - Auth/Firestore/Storage/HR writes: 0;
 - Make/Gemini/pagos: 0;
 - merge/producción: 0.
 
-## 9. Clasificación
+## 11. Clasificación
 
-- **Reusable CXOrbia:** contrato, schema, gate, fingerprints y cleanup.
+- **Reusable CXOrbia:** contratos, fingerprints, cleanup y auditoría geométrica.
 - **Exclusivo TyA:** matriz Admin/Operaciones + Shopper.
-- **Claude/prototipo:** sin impacto; continúa frontend responsive.
-- **Academia:** estructura visible y reproducible de prueba.
-- **Sin impacto producción:** preparación source-only.
+- **Cloud/prototipo:** V7.2 pendiente.
+- **Academia:** capturas finales pendientes.
+- **Sin impacto producción:** no se aplicó ni desplegó nada.
