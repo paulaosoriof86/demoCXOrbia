@@ -10,6 +10,8 @@ const schemaPath = 'backend/contracts/tya-dev-scenario-lab-evidence-schema-v1.js
 const labPath = 'app/core/dev-scenario-lab.js';
 const stateMachinePath = 'tools/qa/cxorbia-runtime-state-machine.mjs';
 const releaseSlicePath = 'backend/contracts/tya-phase-a-core-operations-shopper-release-slice-v1.json';
+const rootEntryGatePath = 'tools/qa/tya-c6-dev-root-entrypoint-source-gate.mjs';
+const rootEntryOutputPath = '.tmp/tya-dev-scenario-lab-source-contract/root-entrypoint-source-report.json';
 const outputPath = process.env.CXORBIA_SCENARIO_LAB_SOURCE_GATE_OUTPUT || '.tmp/tya-dev-scenario-lab-source-contract/report.json';
 const blockers = [];
 const warnings = [];
@@ -49,18 +51,38 @@ function unique(values) {
   return new Set(values).size === values.length;
 }
 
-for (const file of [contractPath, schemaPath, labPath, stateMachinePath, releaseSlicePath]) requireFile(file);
+for (const file of [contractPath, schemaPath, labPath, stateMachinePath, releaseSlicePath, rootEntryGatePath, 'firebase.json', 'app/index-backend-dev.html', 'app/index.html']) requireFile(file);
 
 let contract = null;
 let schema = null;
 let release = null;
+let rootEntry = null;
 if (!blockers.length) {
   contract = parse(contractPath);
   schema = parse(schemaPath);
   release = parse(releaseSlicePath);
   syntax(labPath);
   syntax(stateMachinePath);
+  syntax(rootEntryGatePath);
   syntax('tools/qa/tya-dev-scenario-lab-source-contract-gate.mjs');
+
+  const rootRun = spawnSync(process.execPath, [rootEntryGatePath], {
+    cwd: root,
+    encoding: 'utf8',
+    env: { ...process.env, CXORBIA_ROOT_ENTRY_SOURCE_OUTPUT: rootEntryOutputPath },
+    maxBuffer: 10 * 1024 * 1024
+  });
+  try {
+    rootEntry = JSON.parse(String(rootRun.stdout || '').trim());
+  } catch (error) {
+    add(blockers, 'ROOT_ENTRYPOINT_SOURCE_GATE_OUTPUT_INVALID', {
+      error: error.message,
+      stderr: String(rootRun.stderr || '').slice(0, 1200)
+    });
+  }
+  if (rootRun.status !== 0) add(blockers, 'ROOT_ENTRYPOINT_SOURCE_GATE_EXIT_NONZERO', rootRun.status);
+  if (rootEntry?.decision !== 'PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY') add(blockers, 'ROOT_ENTRYPOINT_SOURCE_GATE_NOT_PASS', rootEntry?.decision || null);
+  if (rootEntry?.decision === 'PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY') add(checks, 'ROOT_ENTRYPOINT_SOURCE_GATE_PASS', rootEntry.decision);
 }
 
 if (contract && schema && release) {
@@ -149,20 +171,23 @@ if (contract && schema && release) {
   }
 
   const serialized = JSON.stringify({ contract, schema });
-  if (/-----BEGIN .*PRIVATE KEY-----|"private_key"\s*:|"type"\s*:\s*"service_account"|@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/i.test(serialized)) add(blockers, 'CONTRACT_CONTAINS_SECRET_OR_PII_PATTERN');
+  if (/-----BEGIN .*PRIVATE KEY-----|\"private_key\"\s*:|\"type\"\s*:\s*\"service_account\"|@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/i.test(serialized)) add(blockers, 'CONTRACT_CONTAINS_SECRET_OR_PII_PATTERN');
   else add(checks, 'CONTRACT_SECRET_PII_SCAN_PASS');
 }
 
 const report = {
-  schemaVersion: 'cxorbia.tya-dev-scenario-lab-source-contract-gate.v1',
+  schemaVersion: 'cxorbia.tya-dev-scenario-lab-source-contract-gate.v2',
   generatedAt: new Date().toISOString(),
   decision: blockers.length ? 'HOLD_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT' : 'PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT',
   blockers,
   warnings,
   checks,
+  rootEntrypoint: rootEntry,
   fingerprints: {
     contractSha256: exists(contractPath) ? crypto.createHash('sha256').update(read(contractPath)).digest('hex') : null,
-    evidenceSchemaSha256: exists(schemaPath) ? crypto.createHash('sha256').update(read(schemaPath)).digest('hex') : null
+    evidenceSchemaSha256: exists(schemaPath) ? crypto.createHash('sha256').update(read(schemaPath)).digest('hex') : null,
+    firebaseConfigSha256: exists('firebase.json') ? crypto.createHash('sha256').update(read('firebase.json')).digest('hex') : null,
+    canonicalEntrypointSha256: exists('app/index-backend-dev.html') ? crypto.createHash('sha256').update(read('app/index-backend-dev.html')).digest('hex') : null
   },
   safety: {
     sourceOnly: true,
