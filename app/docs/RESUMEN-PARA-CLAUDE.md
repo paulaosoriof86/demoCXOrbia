@@ -41,117 +41,50 @@ No se puede enviar el ZIP completo a empalme porque sobrescribiría archivos viv
 
 ## 4. Problema responsive reproducible
 
-La auditoría aislada confirmó que desktop mejora, pero tablet y móvil fallan.
+En `768×1024`, `412×915` y `390×844`, el panel oscuro se superpone al formulario y oculta encabezado, países, `PERFIL` y parte de la primera tarjeta.
 
-En:
+Bajo `max-width:900px` debe existir flujo vertical real: panel orbital y después formulario completo, sin superposición ni overflow horizontal.
 
-- `768×1024`;
-- `412×915`;
-- `390×844`;
+## 5. Qué sí funciona y debe preservarse
 
-el panel oscuro se superpone al formulario y oculta:
+- escritorio mejorado;
+- órbita y seis conceptos;
+- países dinámicos 1/2/8/12 en orden y sin `+N`;
+- tres perfiles;
+- usuario, contraseña, botón y registro;
+- textos demo/validación/instalación fuera del Login canónico;
+- sintaxis PASS y secretos 0.
 
-- `INGRESO`;
-- `Iniciá sesión`;
-- subtítulo;
-- países;
-- `PERFIL`;
-- parte de la primera tarjeta.
-
-Causa:
-
-- `.lg2` queda encerrado en el viewport;
-- `.lg2-body` cambia a una columna, pero mantiene una sola fila `minmax(0,1fr)`;
-- aside y main no entran en flujo vertical real.
-
-## 5. Corrección obligatoria
-
-Bajo `max-width:900px`:
-
-- convertir el cuerpo a flujo vertical real;
-- usar `grid-template-rows:auto auto`, bloque o equivalente;
-- permitir altura documental real;
-- asegurar que `.lg2-main` empiece después de `.lg2-aside`;
-- eliminar cualquier superposición;
-- mantener visible la órbita;
-- mantener visibles título, subtítulo, países, perfil y primera tarjeta;
-- cero scroll horizontal general.
-
-En `1440×900` con 12 países:
-
-- botón y enlace de registro deben permanecer visibles o accesibles sin corte visual.
-
-## 6. Qué sí funciona
-
-- escritorio `1920×1080` y `1440×900` tiene mejor composición;
-- órbita visible;
-- seis conceptos visibles;
-- países dinámicos en orden;
-- pruebas aisladas de 1/2/8/12 países sin `+N`;
-- tres perfiles, usuario, contraseña, botón y registro;
-- textos de demo, validación, instalación y patrones de credencial eliminados del Login canónico;
-- sintaxis JS PASS;
-- cero secretos detectados.
-
-Preservar estos avances.
-
-## 7. Nueva entrega exacta
+## 6. Nueva entrega exacta
 
 Entregar un único ZIP estrecho con:
 
 1. `app/app.js`;
 2. `app/styles/layout.css`;
 3. `MANIFEST.json` con path, bytes y SHA-256;
-4. `REPORTE-V7-CORRECCION.md`;
-5. capturas reales:
-   - `1920×1080`;
-   - `1440×900`;
-   - `768×1024`;
-   - `412×915`;
-   - `390×844`;
-6. comparación antes/después en `1440×900`;
-7. evidencia de 1, 2, 8 y 12 países.
+4. reporte específico;
+5. capturas reales `1920×1080`, `1440×900`, `768×1024`, `412×915`, `390×844`;
+6. comparación antes/después `1440×900`;
+7. evidencia 1/2/8/12 países.
 
-No incluir:
+No incluir aplicación completa, `index.html`, `core/`, `modules/`, documentación histórica ni capturas antiguas.
 
-- aplicación completa;
-- `index.html`;
-- `core/`;
-- `modules/`;
-- documentación histórica;
-- manifests V109–V156;
-- capturas antiguas.
+## 7. Trabajo paralelo de ChatGPT — sin tarea para Claude
 
-## 8. Aceptación
+Mientras Claude corrige únicamente el frontend, ChatGPT preparó source-only:
 
-La nueva candidata solo podrá ser GO cuando:
+- contrato del runner del Laboratorio;
+- schema de evidencia;
+- matriz Admin/Operaciones + Shopper;
+- fingerprints;
+- cleanup exacto;
+- gate source-only.
 
-- no exista superposición en ningún viewport;
-- todos los elementos iniciales del formulario sean visibles;
-- el ZIP tenga alcance exacto;
-- el manifest valide todos sus archivos;
-- las evidencias correspondan realmente a los viewports solicitados;
-- el caso de 12 países no corte el cierre del formulario.
+Claude no debe tocar, implementar ni incluir estos elementos. No debe modificar backend, laboratorio, runner, gates, deploy ni producción.
 
-## 9. Fuera del alcance de Cloud
-
-No tocar:
-
-- backend;
-- Firebase Auth;
-- claims/memberships;
-- CX.data/HR;
-- permisos/scopes;
-- Finanzas;
-- Shoppers;
-- build lock;
-- index/load order;
-- laboratorio/runner;
-- GitHub/gates/deploy/producción.
-
-## 10. Estado seguro
+## 8. Estado seguro
 
 - V7 enviada a empalme: no;
-- archivos funcionales aplicados: 0;
+- archivos funcionales de V7 aplicados: 0;
 - deploy: 0;
 - producción: intacta.
