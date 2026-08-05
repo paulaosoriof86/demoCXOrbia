@@ -22,16 +22,16 @@ const warn = (ok, code, detail='') => {
   else console.log(`PASS ${code}${detail ? ` · ${detail}` : ''}`);
 };
 
-const abGate = spawnSync(process.execPath, ['tools/qa/tya-ab-cumulative-candidate-source-gate.mjs'], {
+const compositionGate = spawnSync(process.execPath, ['tools/qa/tya-phase-a-complete-composition-source-gate.mjs'], {
   cwd: root,
   encoding: 'utf8',
-  maxBuffer: 8 * 1024 * 1024
+  maxBuffer: 16 * 1024 * 1024
 });
-if (abGate.stdout) process.stdout.write(abGate.stdout);
-if (abGate.stderr) process.stderr.write(abGate.stderr);
-must(abGate.status === 0,
-  'AB_CUMULATIVE_SOURCE_GATE',
-  abGate.status === 0 ? 'manifest, blobs, load order, unit and safe-state PASS' : `exit=${abGate.status}`);
+if (compositionGate.stdout) process.stdout.write(compositionGate.stdout);
+if (compositionGate.stderr) process.stderr.write(compositionGate.stderr);
+must(compositionGate.status === 0,
+  'PHASE_A_COMPLETE_COMPOSITION_SOURCE_GATE',
+  compositionGate.status === 0 ? 'active manifest, exact blobs, roles, report kit, Lab markers and safe-state PASS' : `exit=${compositionGate.status}`);
 
 const index = read('app/index-backend-dev.html');
 const preview = read('app/core/backend-config-preview-dev.js');
