@@ -19,28 +19,11 @@ Efectos:
 - formulario con coordenadas negativas;
 - botón/registro fuera del scrollHeight real.
 
-Correctivo V7.2:
-
-```css
-@media(max-width:900px){
-  #login{display:block;padding:0;align-items:initial;justify-content:initial;overflow:auto}
-  .lg2,.lg2-body,.lg2-aside,.lg2-main{width:100%}
-  .lg2-card{width:100%;max-width:520px}
-}
-```
-
 ## 2. Evidencia V7.1 pendiente
 
 La única captura llamada 1440×900 mide realmente 924×540 y es JPEG.
 
-Faltan:
-
-- 1920×1080;
-- 768×1024;
-- 412×915;
-- 390×844;
-- comparación antes/después;
-- capturas 1/2/8/12 países.
+Faltan cuatro viewports, comparación antes/después y capturas 1/2/8/12 países.
 
 ## 3. PASS preservables
 
@@ -54,9 +37,7 @@ Faltan:
 
 ## 4. Laboratorio — source contract cerrado PASS
 
-Run comprobado:
-
-- `30971991900`;
+- run `30971991900`;
 - artifact `8916850770`;
 - digest `sha256:75953c600b68450a11cfac6667ac5b5cfa8eceea5c94a6a0856850a501e77dd8`.
 
@@ -68,19 +49,7 @@ PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
 PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
 ```
 
-Cerrado:
-
-- cinco perfiles;
-- estados Auth→cleanup;
-- política `AUDIT-*`;
-- fingerprints;
-- cleanup exacto;
-- schema de evidencia;
-- prohibición de falsos PASS.
-
-Pendiente no bloqueante:
-
-- corregir el mapa source path esperado de `miperfil`, `misvisitas`, `aprendizaje` y `cert` antes del runtime final.
+Pendiente no bloqueante: corregir el mapa source path esperado de `miperfil`, `misvisitas`, `aprendizaje` y `cert` antes del runtime final.
 
 ## 5. Carril de empalme
 
