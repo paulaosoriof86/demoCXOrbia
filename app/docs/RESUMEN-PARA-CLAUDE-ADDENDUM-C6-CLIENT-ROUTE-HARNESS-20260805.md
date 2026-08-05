@@ -1,11 +1,11 @@
-# RESUMEN PARA CLAUDE — Addendum C6 client route harness
+# RESUMEN PARA CLAUDE — Addendum C6 Client route harness
 
 **Fecha:** 2026-08-05  
 **Clasificación:** Claude/prototipo · Sin cambio frontend solicitado
 
-## Estado comprobado
+## Estado final comprobado
 
-El Portal Cliente no presentó una regresión funcional en el diagnóstico focal:
+El Portal Cliente pasó la revalidación semántica con el predicado correcto:
 
 ```text
 session.view=cli_dashboard
@@ -13,39 +13,31 @@ session.view=cli_dashboard
 #view .ph existe=true
 contenido renderizado=690 caracteres
 renderException=null
+panoramaVisible=true
+blocked=false
 ```
-
-La condición que falló pertenece al harness remoto:
 
 ```text
-#nav-cli_dashboard existe=false
-#nav-cli_dashboard.active=false
+PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC
 ```
 
-El gate asumía que el nodo de navegación debía existir y quedar activo después de invocar directamente `CX.router.nav('cli_dashboard')`. Esa suposición no es requisito de producto cuando la ruta, el encabezado y el contenido ya están renderizados.
+La dependencia de `#nav-cli_dashboard.active` fue retirada exclusivamente del harness de QA. No se agregó ni modificó ningún elemento visual para satisfacer la prueba.
 
 ## Para Claude
 
 - No modificar `app/modules/cliente.js`.
-- No modificar `app/core/router.js` por este hallazgo.
-- No agregar nodos invisibles ni parches UI para satisfacer el gate.
-- No reabrir el P0 de Login.
-- Mantener el Portal Cliente acumulativo vigente.
+- No modificar `app/core/router.js`.
+- No modificar Login, navegación ni estilos por este incidente.
+- No agregar nodos invisibles o estados artificiales.
+- Mantener la candidata acumulativa vigente.
 
-## Ajuste pendiente fuera del frontend
+## Estado de otros módulos
 
-El equipo backend/QA debe corregir exclusivamente el predicado del harness para observar:
+- Portal Shopper: PASS;
+- Finanzas: PASS con modelo delegado y cero valores inventados;
+- Reservas: PASS en estado fail-closed;
+- Academia: sin impacto funcional.
 
-```text
-session.view === 'cli_dashboard'
-#view existe
-#view .ph existe
-#view contiene texto
-renderException === null
-```
+## Pendiente real
 
-La presencia de `#nav-cli_dashboard.active` no debe bloquear el PASS cuando la navegación directa no construye ese elemento.
-
-## Impacto frontend
-
-Ninguno demostrado. No existe delta frontend autorizado ni requerido en este bloque.
+Solo falta validación humana visual y freeze documental. No existe delta frontend pendiente derivado de `client_route_wait`.
