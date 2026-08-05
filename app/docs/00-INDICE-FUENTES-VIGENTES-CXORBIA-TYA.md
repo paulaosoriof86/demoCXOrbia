@@ -2,22 +2,22 @@
 
 **Fecha:** 2026-08-05  
 **Estado:** ACTIVO  
-**Estado vivo:** `DEV_ROOT_ENTRYPOINT_SOURCE_FIX_APPLIED__SOURCE_STATIC_PASS__HOSTING_PREDEPLOY_HOLD_WORKFLOW_HEREDOC__STOP_RETRY__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `DEV_ROOT_REDIRECT_DEPLOYED__REMOTE_PARITY_PASS__MULTIROLE_FUNCTIONAL_PASS__POSTDEPLOY_REPOSITORY_HYGIENE_HOLD__STOP_RETRY__NO_SECOND_DEPLOY__HUMAN_VALIDATION_PENDING__NO_PRODUCTION`
 
 ## 1. Fuentes activas y orden de prevalencia
 
 1. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/evidence/CORTE6-DEV-ROOT-ENTRYPOINT-PREDEPLOY-STOP-RETRY-LATEST.json`;
+2. `app/docs/evidence/CORTE6-DEV-ROOT-ENTRYPOINT-DEPLOYED-FUNCTIONAL-PASS-QA-HYGIENE-HOLD-LATEST.json`;
 3. `backend/config/corte6-dev-root-entrypoint-hosting-execute.json`;
 4. `.github/cxorbia-gate-requests/request.json`;
 5. `app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json`;
-6. `CAMBIOS-BACKEND-ADDENDUM-C6-DEV-ROOT-ENTRYPOINT-STOP-RETRY-20260805.md`;
-7. `RESUMEN-PARA-CLAUDE-ADDENDUM-C6-DEV-ROOT-ENTRYPOINT-STOP-RETRY-20260805.md`;
-8. `PENDIENTES-PROTOTIPO-ADDENDUM-C6-DEV-ROOT-ENTRYPOINT-STOP-RETRY-20260805.md`;
-9. `ACADEMIA-IMPACTO-C6-DEV-ROOT-ENTRYPOINT-STOP-RETRY-20260805.md`;
+6. `CAMBIOS-BACKEND-ADDENDUM-C6-DEV-ROOT-DEPLOY-FUNCTIONAL-PASS-QA-HYGIENE-HOLD-20260805.md`;
+7. `RESUMEN-PARA-CLAUDE-ADDENDUM-C6-DEV-ROOT-DEPLOY-FUNCTIONAL-PASS-QA-HYGIENE-HOLD-20260805.md`;
+8. `PENDIENTES-PROTOTIPO-ADDENDUM-C6-DEV-ROOT-DEPLOY-FUNCTIONAL-PASS-QA-HYGIENE-HOLD-20260805.md`;
+9. `ACADEMIA-IMPACTO-C6-DEV-ROOT-DEPLOY-FUNCTIONAL-PASS-QA-HYGIENE-HOLD-20260805.md`;
 10. `PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`;
-11. `app/docs/evidence/CORTE6-REMOTE-DOMAIN-SEMANTIC-CLIENT-PREDICATE-PASS-LATEST.json` — PASS técnico anterior sobre el entrypoint explícito;
-12. `app/docs/evidence/CORTE6-CLIENT-ROUTE-WAIT-DIAGNOSTIC-LATEST.json`;
+11. `app/docs/evidence/CORTE6-DEV-ROOT-ENTRYPOINT-PREDEPLOY-STOP-RETRY-LATEST.json` — evidencia histórica previa al correctivo heredoc;
+12. `app/docs/evidence/CORTE6-REMOTE-DOMAIN-SEMANTIC-CLIENT-PREDICATE-PASS-LATEST.json`;
 13. `MANIFEST-V7-2-P0F1-RESPONSIVE-20260804.json`;
 14. `DIRECT-GITHUB-RUNNER-INDEPENDENCE-20260805.md`;
 15. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
@@ -25,70 +25,86 @@
 17. `AGENTS.md`;
 18. PR #7 y HEAD vivo.
 
-Ante conflicto, mandan este índice, el checkpoint, el lock de empalme directo y la evidencia observable del último runner.
+Ante conflicto, mandan este índice, el checkpoint vigente, la evidencia observable más reciente y el lock de empalme directo.
 
 ## 2. Estado técnico verificado
 
-- P0 root DEV demostrado: `/` servía el shell demo mientras los gates usaban `/index-backend-dev.html`;
-- corrección source-only del redirect raíz: aplicada;
-- módulos, diseño, Login, Auth y negocio modificados por este P0: no;
-- gate permanente de paridad source: agregado;
-- gate permanente de paridad remota: agregado;
-- source/static, composición y Laboratorio: PASS;
-- Hosting DEV de este bloque: `0`;
-- deploy intentado: false;
-- root remoto corregido: false;
-- root runtime acumulativo: no ejecutado;
+- corrección heredoc-only: aplicada en dos terminadores, sin cambio de lógica;
+- workflow repinado: únicamente su blob;
+- source/static, composición, Laboratorio y paridad source: PASS;
+- único Hosting DEV autorizado: ejecutado y publicado correctamente;
+- dominio raíz `/`: redirect `302` vivo hacia `/index-backend-dev.html`;
+- paridad remota raíz/canónica: PASS exacto;
+- Staff desde `/`: PASS, recargas y nueva pestaña;
+- Shopper desde `/`: PASS, identidad, histórico, certificación, tres recargas y nueva pestaña;
+- Cliente y Portal Cliente desde `/`: PASS;
+- Portal Shopper: PASS;
+- Finanzas: PASS, modelo delegado, regalías `0`, sin valores inventados;
+- Reservas: PASS, fuente protegida y mutaciones deshabilitadas;
+- HOLD final: solo higiene del harness por archivo efímero `gha-creds-*.json` observado antes del cleanup de la acción Auth;
+- delta rastreado del repositorio durante el gate: ninguno;
+- producto/runtime remoto fallido: no;
 - STOP_RETRY: aplicado;
-- Hosting DEV acumulado: `2`;
-- writes del bloque: `0`;
+- Hosting DEV acumulado: `3`;
+- Hosting DEV de este bloque: `1`;
+- deploy adicional autorizado: `0`;
+- Cloud Run y writes: `0`;
 - merge: false;
 - producción: intacta.
 
-## 3. Source/static PASS
+## 3. Evidencia source/static
 
 ```text
-run=31035432458
-job=92406210890
-artifact=8942354869
-digest=sha256:d0b75352b58f2723a57bafaae8e9e77b2aef016a2a7c7d5ecc48a45c779d979f
+run=31037730522
+job=92414066321
+artifact=8943265325
+digest=sha256:2b7a3619d45054ef0c296b396172df01001063d53f247852aef082373a313ff0
 PASS_READONLY_POST_GATES
 PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
 PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
 PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY
 ```
 
-## 4. HOLD predeploy
+## 4. Evidencia Hosting y runtime raíz
 
 ```text
-run=31035653127
-job=92406957537
-artifact=8942474073
-digest=sha256:bf3014ddc059b86ae2dde18d397b266b8e5c9f5db92bcf7a3fee13246f30060f
-failedStage=predeploy_workflow_shell_parse
-errorCode=BASH_HEREDOC_TERMINATOR_INDENTATION_INVALID
-deployAttempted=false
-hostingDeploysThisBlock=0
+run=31037828442
+job=92414393948
+artifact=8943383623
+digest=sha256:6c275fa95d9b729ffefa2e17c660b8a25c02df916a5c57740b538e902b00d3f5
+HOSTING_DEPLOY_SUCCEEDED=true
+PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY
+PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY
+PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC
+```
+
+```text
+FINAL_AUTOMATION_HOLD=REPOSITORY_CHANGED_BY_ROOT_RUNTIME_GATE
+CLASSIFICATION=QA_WORKFLOW_HYGIENE_ONLY
+TRACKED_DELTA=0
+SECOND_DEPLOY=0
 ```
 
 ## 5. Carril operativo
 
 ```text
-CORREGIR SOLO INDENTACIÓN HEREDOC DEL WORKFLOW
-→ REPINAR SOLO ESE BLOB
-→ SOURCE/STATIC
-→ NUEVA AUTORIZACIÓN EXPRESA
-→ UNA ÚNICA EJECUCIÓN HOSTING DEV
-→ PARIDAD Y GATES DESDE /
-→ VALIDACIÓN HUMANA
+VALIDACIÓN HUMANA SOBRE LA RELEASE DEV EXISTENTE
+→ STAFF
+→ SHOPPER: 3 RECARGAS + NUEVA PESTAÑA
+→ CLIENTE Y PORTAL CLIENTE
+→ PORTAL SHOPPER
+→ FINANZAS
+→ RESERVAS
+→ DOCUMENTAR RESULTADO
+→ CERO REDEPLOY
 ```
 
 ## 6. Prohibiciones vigentes
 
 - reintentar el request consumido;
-- ejecutar un deploy sin nueva autorización;
-- modificar módulos, diseño, Login, Auth o negocio por este hallazgo;
+- realizar un segundo deploy;
+- modificar módulos, diseño, Login, Auth o negocio por el HOLD de higiene;
 - nueva candidata, rama o PR;
 - Firestore/Auth/HR/Rules/Storage writes;
 - Cloud Run, Make, Gemini o pagos;
-- merge o producción.
+- merge o producción sin autorización expresa.
