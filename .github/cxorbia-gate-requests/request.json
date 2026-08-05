@@ -1,26 +1,18 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "phase-a-v7-2-p0f1-composition-plus-lab-20260805-01",
-  "enabled": false,
-  "issuedAt": "2026-08-05T07:20:00-06:00",
-  "consumedAt": "2026-08-05T07:18:29-06:00",
-  "status": "consumed_pass",
-  "decision": "PASS_READONLY_POST_GATES",
-  "compositionDecision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
-  "labSourceContractDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
-  "workflowRunId": 31009570981,
-  "artifactId": 8931809583,
-  "artifactDigest": "sha256:db3a8adb2e2c39f5825d359382b737fd97c9821d5828f6808c5d1c82b82b0c8f",
+  "requestId": "c6-login-container-selector-root-fix-source-static-20260805-01",
+  "enabled": true,
+  "issuedAt": "2026-08-05T09:50:00-06:00",
+  "status": "authorized_once",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "fb8d8897bb24f2f634bc5594dca4e8d610daf910",
-  "requestCommitSha": "ef6c43e41db59508d7f0f631dcb52fa5a545cce5",
+  "targetHeadSha": "9e59fcb81290c80e43233e5202356983a340bf4b",
   "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
   ],
-  "allowedExecutions": 0,
+  "allowedExecutions": 1,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": false,
@@ -45,5 +37,5 @@
   },
   "containsPii": false,
   "containsSecrets": false,
-  "purpose": "Consumed successful read-only revalidation of reconciled V7.2-P0F1 canonical composition and DEV scenario laboratory source contract. A new request and exact target HEAD are required for any future execution."
+  "purpose": "Authorized read-only source/static validation after the exact P0 login container selector root fix in the two approved authentication bridge files. No deploy or provider writes in this request."
 }
