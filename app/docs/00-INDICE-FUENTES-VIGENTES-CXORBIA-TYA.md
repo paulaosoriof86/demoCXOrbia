@@ -2,114 +2,93 @@
 
 **Fecha:** 2026-08-04  
 **Estado:** ACTIVO  
-**Estado vivo:** `CODEX_EXECUTION_HANDOFF_READY__AWAITING_CODEX_WORKSPACE_WITH_V7_2__NO_AUDIT__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `V7_2_P0_PROVEN__V7_2_P0F1_PREPARED__PENDING_FOCUSED_REAUDIT__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Fuentes activas y orden de prevalencia
 
 1. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-3. `CAMBIOS-BACKEND-ADDENDUM-RECUPERACION-PLAN-CANONICO-V7-2-20260804.md`;
-4. `CAMBIOS-BACKEND-ADDENDUM-CODEX-EXECUTION-LANE-V7-2-20260804.md`;
-5. `CODEX-EXECUTION-TASK-V7-2-20260804.md`;
-6. `CAMBIOS-BACKEND-ADDENDUM-LAB-SOURCE-CONTRACT-PASS-20260804.md`;
-7. `AUDITORIA-REAL-CANDIDATA-CLOUD-V7-1-20260804-HOLD.md`;
-8. `MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json`;
-9. contratos/schema/matriz del Laboratorio;
-10. `RESUMEN-PARA-CLAUDE.md`;
-11. `PENDIENTES-PROTOTIPO.md`;
+2. `AUDITORIA-FOCALIZADA-V7-2-P0-CREDENCIALES-20260804.md`;
+3. `CAMBIOS-BACKEND-ADDENDUM-V7-2-P0-CREDENCIALES-P0F1-20260804.md`;
+4. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+5. `ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`;
+6. `MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json`;
+7. `CODEX-EXECUTION-TASK-V7-2-20260804.md`;
+8. `RESUMEN-PARA-CLAUDE-ADDENDUM-V7-2-P0F1-20260804.md`;
+9. `PENDIENTES-PROTOTIPO-ADDENDUM-V7-2-P0F1-20260804.md`;
+10. `ACADEMIA-IMPACTO-V7-2-P0-CREDENCIALES-20260804.md`;
+11. contratos/schema/matriz del Laboratorio;
 12. `AGENTS.md`;
 13. PR #7 y HEAD vivo.
 
-Ante conflicto, mandan este índice, el checkpoint y el lock de empalme directo vigente. Los estados antiguos de C6, Hosting o candidatas previas son evidencia histórica, no el bloqueo actual.
+Ante conflicto, mandan este índice, el checkpoint y el lock de empalme directo. Los estados anteriores de “Codex handoff ready”, C6, Hosting o candidatas previas son evidencia histórica.
 
-## 2. Estado recuperado
+## 2. Estado verificado
 
-- composición source/static PASS;
-- contrato del Laboratorio PASS;
-- run `30971991900` y artifact `8916850770`;
-- auditoría V7.1 HOLD por P0 responsive;
-- V7.2 recibida en preflight;
-- cero empalme, deploy o producción.
+- `EXECUTION_LANE_READY`: confirmado por Codex;
+- auditoría focalizada V7.2: ejecutada;
+- decisión: `P0_PROVEN`;
+- HEAD auditado: `da42e818c626e8bba56407869f5f3b32b61f49eb`;
+- V7.2 aplicada: no;
+- worktree final: limpio;
+- deploy/producción: 0.
 
-## 3. Composición canónica
+## 3. P0 V7.2
 
-Existe una única composición source-only:
+V7.2 reintrodujo exposición visible de contraseñas en `app/app.js` mediante:
 
-`CXORBIA-TYA-PHASE-A-COMPLETE-CANONICAL-COMPOSITION-20260804`.
+- `${CX.CREDS.passExample()}`;
+- `${CX.CREDS.pass(f,l)}`;
+- `${s.pass}`.
 
-Preserva las mejores autoridades por archivo/módulo, pero todavía no es candidata activa porque falta empalme V7.2, gates finales, Hosting DEV, Laboratorio real, cleanup y validación humana.
+El HEAD vivo preserva la credencial inicial como protegida y no muestra valores.
 
-## 4. V7.2
+## 4. Correctivo vigente
 
-- SHA-256 `d3b7551b3b0b30e1b071dfc74beb20009c9c523c2955cce760148da6b8727686`;
-- 23,243 bytes;
-- 4 entradas;
-- delta declarado en `app/app.js` y `app/styles/layout.css`;
-- correctivo CSS responsive presente;
-- capturas contractuales ausentes.
+Revisión corregida de la misma V7.2:
 
-Estado: `PREFLIGHT_ONLY`. No es GO y no está empalmada.
+- `Prototype development request V7.2-P0F1.zip`;
+- SHA-256 `09606d1cc133a1e1e138be76bd8c6aadeb1f70d7967d506aae3f81bf5e9c6fce`;
+- alcance `app/app.js`, `app/styles/layout.css`;
+- CSS responsive preservado;
+- tres exposiciones eliminadas;
+- `node --check`: PASS;
+- UTF-8 sin BOM: PASS.
 
-## 5. Carril anterior bloqueado
+P0F1 todavía requiere auditoría focalizada; no es GO ni está empalmada.
 
-La conversación comprobó ZIP, Git cliente, repo/rama e identidad administrativa. El checkout nativo no pudo materializarse porque el runtime no tenía salida de red hacia GitHub.
-
-```text
-CANDIDATE_BYTES_AVAILABLE=true
-CANDIDATE_EXTRACTABLE=true
-GITHUB_ADMIN_ACCESS=true
-NATIVE_GITHUB_NETWORK_AVAILABLE=false
-REPO_CHECKOUT_COLOCATED_WITH_ZIP=false
-AUTHENTICATED_DIRECT_APPLY_FROM_CHECKOUT=false
-EXECUTION_LANE_READY=false
-```
-
-El artifact `8916850770` confirma PASS y worktree limpio del run anterior, pero contiene reportes y no sustituye un checkout.
-
-## 6. Carril Codex vigente
-
-El repositorio ya quedó preparado para ejecutar la siguiente acción en Codex sin reiniciar metodología:
-
-- `AGENTS.md` reconciliado con el lock prevalente;
-- eliminado el permiso contradictorio de blobs/trees vía conectores;
-- tarea ejecutable `CODEX-EXECUTION-TASK-V7-2-20260804.md` creada;
-- addendum del carril Codex creado;
-- checkpoint actualizado.
-
-Secuencia única:
+## 5. Secuencia única
 
 ```text
-CODEX WORKSPACE + ZIP V7.2 + CHECKOUT AUTENTICADO
+MISMO WORKSPACE CODEX
+→ ACTUALIZAR RAMA VIVA
 → EXECUTION_LANE_READY
-→ AUDITORÍA FINAL FOCALIZADA V7.2
+→ AUDITORÍA FOCALIZADA V7.2-P0F1
 → GO SIN P0
 → APPLY_DELTA_DIRECTLY
-→ MANIFEST / BUILD-LOCK / VERIFICADOR
-→ SOURCE/STATIC FINAL + GATE LAB
-→ TECHNICAL_PASS_PENDING_DEV_VISUAL
+→ COMMIT/PUSH ATÓMICO
+→ MANIFEST/BUILD-LOCK/VERIFICADOR
+→ SOURCE/STATIC + COMPOSICIÓN CANÓNICA + CONTRATO LAB
+→ DETENER ANTES DE DEPLOY
 ```
 
-La tarea debe leer `AGENTS.md` y ejecutar íntegramente `CODEX-EXECUTION-TASK-V7-2-20260804.md`. No puede crear rama, PR, workflow, deploy o writes.
+## 6. Prohibiciones antirretroceso
 
-## 7. Prohibiciones antirretroceso
-
-- no auditoría general nueva;
-- no nueva candidata si V7.2 queda GO;
-- no shell reducido ni composición por módulos;
+- no auditoría general;
+- no V7.3;
 - no nueva rama/PR;
-- no Contents API archivo por archivo para empalme;
-- no blobs/trees o workflow como sustituto del checkout;
-- no PowerShell ni copias manuales de código;
-- no reconstrucción desde V182;
-- no segundo deploy DEV;
-- no reabrir bloques protegidos sin regresión reproducible.
+- no shell reducido ni composición paralela;
+- no Contents API, blobs/trees o workflows como transporte de empalme;
+- no PowerShell ni trabajo manual de Paula;
+- no segundo método;
+- no deploy en este bloque;
+- no reabrir módulos protegidos sin regresión reproducible.
 
-## 8. Estado seguro
+## 7. Estado seguro
 
-- tarea Codex iniciada: no;
-- auditoría final V7.2: no iniciada;
-- V7.2 aplicada: no;
+- P0F1 aplicada: no;
 - empalme: 0;
 - runtime/datos AUDIT: 0;
-- deploy/producción: 0;
-- merge: false.
+- Hosting/Cloud Run: 0;
+- Firestore/Auth/Storage/HR writes: 0;
+- Make/Gemini/pagos: 0;
+- merge/producción: 0.
