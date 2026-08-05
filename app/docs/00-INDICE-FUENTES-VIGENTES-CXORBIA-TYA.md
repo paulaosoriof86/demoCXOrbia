@@ -2,87 +2,99 @@
 
 **Fecha:** 2026-08-05  
 **Estado:** ACTIVO  
-**Estado vivo:** `HUMAN_LOGIN_SINGLE_FORM_SOURCE_FIX_PASS__SHOPPER_IDENTITY_AUDIT_PASS_WITH_FINDINGS__NO_DEPLOY__IDENTITY_REPAIR_REQUIRED__NO_PRODUCTION`
+**Estado vivo:** `SHOPPER_IDENTITY_CANONICAL_CONTRACT_SOURCE_PREPARED__SOURCE_STATIC_MANIFEST_PIN_HOLD__STOP_RETRY__NO_PROVIDER_READS__NO_AUTH_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Fuentes activas y orden de prevalencia
 
 1. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/evidence/CORTE6-HUMAN-LOGIN-SHOPPER-IDENTITY-AUDIT-LATEST.json`;
-3. `backend/config/corte6-human-login-shopper-identity-audit.json`;
-4. `.github/cxorbia-gate-requests/request.json`;
-5. `app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json`;
-6. `CAMBIOS-BACKEND-ADDENDUM-C6-HUMAN-LOGIN-SHOPPER-IDENTITY-20260805.md`;
-7. `RESUMEN-PARA-CLAUDE-ADDENDUM-C6-HUMAN-LOGIN-SHOPPER-IDENTITY-20260805.md`;
-8. `PENDIENTES-PROTOTIPO-ADDENDUM-C6-HUMAN-LOGIN-SHOPPER-IDENTITY-20260805.md`;
-9. `ACADEMIA-IMPACTO-C6-HUMAN-LOGIN-SHOPPER-IDENTITY-20260805.md`;
-10. `PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`;
-11. `app/docs/evidence/CORTE6-DEV-ROOT-ENTRYPOINT-DEPLOYED-FUNCTIONAL-PASS-QA-HYGIENE-HOLD-LATEST.json` — evidencia anterior del root DEV;
-12. `MANIFEST-V7-2-P0F1-RESPONSIVE-20260804.json`;
-13. `DIRECT-GITHUB-RUNNER-INDEPENDENCE-20260805.md`;
+2. `app/docs/evidence/CORTE6-SHOPPER-IDENTITY-CANONICALIZATION-SOURCE-STATIC-HOLD-LATEST.json`;
+3. `.github/cxorbia-gate-requests/request.json`;
+4. `backend/contracts/c6-shopper-identity-canonicalization-v1.json`;
+5. `tools/qa/cxorbia-c6-shopper-identity-canonical-plan.mjs`;
+6. `tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs`;
+7. `app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json`;
+8. `CAMBIOS-BACKEND-ADDENDUM-C6-SHOPPER-IDENTITY-SOURCE-STATIC-HOLD-20260805.md`;
+9. `RESUMEN-PARA-CLAUDE-ADDENDUM-C6-SHOPPER-IDENTITY-SOURCE-STATIC-HOLD-20260805.md`;
+10. `PENDIENTES-PROTOTIPO-ADDENDUM-C6-SHOPPER-IDENTITY-SOURCE-STATIC-HOLD-20260805.md`;
+11. `ACADEMIA-IMPACTO-C6-SHOPPER-IDENTITY-SOURCE-STATIC-HOLD-20260805.md`;
+12. `PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-C6-SHOPPER-IDENTITY-SOURCE-STATIC-HOLD-20260805.md`;
+13. `app/docs/evidence/CORTE6-HUMAN-LOGIN-SHOPPER-IDENTITY-AUDIT-LATEST.json` — baseline anterior;
 14. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 15. `ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`;
-16. `AGENTS.md`;
-17. PR #7 y HEAD vivo.
+16. `DIRECT-GITHUB-RUNNER-INDEPENDENCE-20260805.md`;
+17. `AGENTS.md`;
+18. PR #7 y HEAD vivo.
 
-Ante conflicto, mandan este índice, el checkpoint vigente, la evidencia observable más reciente y el lock de empalme directo.
+Ante conflicto, prevalecen este índice, el checkpoint vigente, la evidencia observable más reciente y el lock de ejecución directa.
 
-## 2. Estado técnico verificado
+## 2. Contrato vigente
 
-- dominio raíz DEV: corregido y desplegado previamente;
-- P0 Login humano: doble formulario demostrado;
-- bridge single-form: aplicado en source, sin deploy;
-- formulario canónico: `#loginForm`, `#lgUser`, `#lgPass`, `#lgSubmit`;
-- overlay legado: ya no se crea desde el bridge y se elimina si otro wrapper intenta conservarlo;
-- source/static acumulativo: PASS;
-- auditoría read-only de identidad: PASS con hallazgos;
-- perfiles Shopper Firestore: `340`;
-- registros de credencial Shopper: `109`;
-- usuarios Auth encontrados: `88`;
-- sign-in compatible: `85`;
-- patrón `nombre.apellido`: `79/109`;
-- patrón `Nombre123*`: `81/109`;
-- memberships Shopper: `0/109`;
-- identidad Paula: dos candidatas, ninguna completamente lista;
-- writes/deploy del bloque: `0`;
+```text
+Tenant: TyA
+Shopper visible login: nombre.apellido
+Shopper password: Nombre123*
+Namespace: shopper
+Membership required: false
+Authority: Firebase Auth + claims + exact shopperId profile
+Paula Staff/Shopper: separate technical principals
+```
+
+Este contrato ya no está pendiente de definición. Las excepciones existentes son deuda de materialización, no formatos alternativos aceptados.
+
+## 3. Estado técnico verificado
+
+- contrato canónico creado;
+- planificador de censo de los 340 perfiles creado;
+- auditor corregido source-only;
+- frontend y `CX.data` preservados;
+- laboratorio source-only: PASS;
+- source/static acumulativo: HOLD por un único pin desactualizado;
+- censo provider: no ejecutado;
+- Auth writes: `0`;
+- password changes: `0`;
+- membership writes: `0`;
+- Hosting DEV del bloque: `0`;
 - merge: false;
 - producción: intacta.
 
-## 3. Evidencia source/static
+## 4. Evidencia del HOLD
 
 ```text
-run=31041288528
-job=92425994929
-artifact=8944661204
-digest=sha256:2eaade7708636d49e44eafb32416b9f54f66e496cf95ae4830dbd2c2a42c92b9
-PASS_READONLY_POST_GATES
+run=31052425207
+job=92462414462
+artifact=8948908689
+digest=sha256:fe1373b49c0aef22c03d8d476c1c2c6c9503d49607d7131d121d15bfbc8ab184
+HOLD_READONLY_POST_GATES
 ```
 
-## 4. Evidencia identidad
-
 ```text
-run=31041406837
-job=92426382117
-artifact=8944714638
-digest=sha256:6c9451c7ef698e23e054dd9653db433472ff5c6ffa0a1c7f0b70758baad2abaf
-PASS_C6_HUMAN_LOGIN_SHOPPER_IDENTITY_AUDIT_WITH_FINDINGS
+V6_ADDITIONAL_CRITICAL_BLOB_MISMATCH
+path=tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs
+expected=8fe4b0c5050d9fe9ba6c3120ef81a75b00bb8535
+actual=80622606ce3635f0d53997a41932b6ced5dc25d4
 ```
 
-## 5. Carril operativo
+## 5. Carril operativo vigente
 
 ```text
-DEFINIR CONTRATO CANÓNICO DE IDENTIDAD SHOPPER
-→ ACLARAR MEMBERSHIP O CLAIMS+PERFIL
-→ RESOLVER IDENTIDAD DUAL DE PAULA
-→ PLAN IDÉMPOTENTE EN DRY-RUN
-→ AUTORIZACIÓN EXPRESA ANTES DE CUALQUIER WRITE
+RECONCILIAR SOLO EL PIN DEL AUDITOR EN EL MANIFIESTO ACTIVO
+→ NUEVO SOURCE/STATIC BAJO AUTORIZACIÓN EXPRESA
+→ SOLO CON PASS, CENSO READ-ONLY DE LOS 340 PERFILES
+→ SOLO CON CLASIFICACIÓN COMPLETA Y CERO COLISIONES, REPAIR AUTH DEV
+→ READBACK N/N Y LOGIN REAL
+→ SOLO CON PASS, UN HOSTING DEV Y GATES REMOTOS
+→ VALIDACIÓN HUMANA
+→ PRODUCCIÓN REQUIERE AUTORIZACIÓN SEPARADA
 ```
 
 ## 6. Prohibiciones vigentes
 
-- comunicar `nombre.apellido / Nombre123*` como regla universal;
-- crear usuarios o cambiar/restablecer contraseñas sin autorización;
-- escribir memberships en bloque sin contrato y dry-run;
-- desplegar el bridge source-only actual;
-- Firestore/Auth/HR/Rules/Storage writes;
+- reintentar automáticamente el gate fallido;
+- ejecutar provider reads con el pin desactualizado;
+- crear o modificar Auth antes del censo PASS;
+- escribir memberships Shopper;
+- desplegar Hosting DEV en este estado;
+- crear nueva rama, PR, candidata o workflow transportador;
+- Firestore/Rules/Storage/HR writes;
 - Cloud Run, Make, Gemini o pagos;
 - merge o producción.
