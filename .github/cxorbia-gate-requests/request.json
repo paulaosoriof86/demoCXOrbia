@@ -1,24 +1,18 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "c6-login-container-selector-root-fix-source-static-20260805-01",
-  "enabled": false,
-  "issuedAt": "2026-08-05T09:50:00-06:00",
-  "consumedAt": "2026-08-05T10:08:48-06:00",
-  "status": "consumed_hold_stop_retry",
-  "decision": "HOLD_READONLY_POST_GATES",
-  "workflowRunId": 31023829902,
-  "artifactId": 8937732266,
-  "artifactDigest": "sha256:59442b8fa74ec77ab61c655a3380134ddbd91feec7c99c17bbe09128ef1df0f8",
+  "requestId": "c6-login-selector-two-pin-reconciliation-source-static-20260805-02",
+  "enabled": true,
+  "issuedAt": "2026-08-05T10:23:00-06:00",
+  "status": "authorized_execute_once",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "9e59fcb81290c80e43233e5202356983a340bf4b",
-  "requestCommitSha": "6b1f116cd9330f199c4f2b504423d12baa1adf11",
+  "targetHeadSha": "8642e87c655edfa81f813d1a3ccad9236312c5ea",
   "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
   ],
-  "allowedExecutions": 0,
+  "allowedExecutions": 1,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": false,
@@ -43,11 +37,18 @@
   },
   "containsPii": false,
   "containsSecrets": false,
-  "blockers": [
-    "CRITICAL_BLOB_MISMATCH:app/core/backend-browser-auth.js:manifest_expected_d052a4b62e5320817d42055946e94de463914b24:actual_35c4fa2fab09fc4fd17a7547b721e4693f93f495",
-    "CRITICAL_BLOB_MISMATCH:app/adapters/tya-c6-unified-human-runtime-v1.js:manifest_expected_7c00752d9a34209366f3c328ea3e5f5fddb4e1db:actual_3acc508ac242407ea688b6a4ba964409af1125ba"
+  "authorizedBy": "Paula",
+  "authorizationScope": "Update only the two authorized login selector blob pins in the active composition authority and execute one source/static gate. No deploy unless this gate passes under the separately authorized continuation.",
+  "authorizedBlobPins": [
+    {
+      "path": "app/core/backend-browser-auth.js",
+      "gitBlob": "35c4fa2fab09fc4fd17a7547b721e4693f93f495"
+    },
+    {
+      "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+      "gitBlob": "3acc508ac242407ea688b6a4ba964409af1125ba"
+    }
   ],
-  "labSourceContractDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
-  "nextGate": "RECONCILE_ONLY_THE_TWO_AUTHORIZED_MANIFEST_BLOB_PINS_THEN_NEW_EXPLICIT_EXECUTION",
-  "purpose": "Consumed source/static gate after the exact login selector root fix. The source contract and Lab passed, but the composition manifest still pins the pre-fix blobs for the same two authorized files. STOP_RETRY applied; no Hosting deploy was attempted."
+  "stopRetryOnFailure": true,
+  "purpose": "Revalidate the complete Phase A composition after reconciling exactly the two authorized login selector blob pins. No provider calls, deploy, data writes, merge or production in this gate."
 }
