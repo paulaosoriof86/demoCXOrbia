@@ -36,7 +36,7 @@
       "${s.pass}"
     ]
   },
-  "status": "C6_HUMAN_LOGIN_SINGLE_FORM_SOURCE_FIX_APPLIED__SOURCE_STATIC_PASS__SHOPPER_IDENTITY_AUDIT_PASS_WITH_FINDINGS__IDENTITY_REPAIR_REQUIRED__NO_DEPLOY",
+  "status": "C6_SHOPPER_IDENTITY_RESOLUTION_REVIEW_SOURCE_PREPARED__NO_PROVIDER_WRITE__NO_DEPLOY",
   "criticalFileOverrides": [
     {
       "path": "app/app.js",
@@ -144,9 +144,15 @@
     },
     {
       "path": "tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs",
-      "gitBlob": "80622606ce3635f0d53997a41932b6ced5dc25d4",
-      "authority": "C6_HUMAN_LOGIN_SHOPPER_IDENTITY_P0_AUTHORIZED_20260805",
-      "decision": "GATE_SOURCE_SAFE_ALL_SHOPPER_IDENTITY_MATRIX"
+      "gitBlob": "fd4969858bbc6ade6bc69d0a6ee40dfca70488d3",
+      "authority": "C6_SHOPPER_IDENTITY_SOURCE_SAFE_RESOLUTION_AUTHORIZED_20260805",
+      "decision": "GATE_CENSUS_AND_RESOLUTION_DISPATCH"
+    },
+    {
+      "path": "tools/qa/cxorbia-c6-shopper-identity-resolution-review.mjs",
+      "gitBlob": "f4c1b0c778ba8395b7553100c4f08481cd3f57c1",
+      "authority": "C6_SHOPPER_IDENTITY_SOURCE_SAFE_RESOLUTION_AUTHORIZED_20260805",
+      "decision": "GATE_TECHNICAL_KEY_ONLY_COLLISION_RESOLUTION"
     },
     {
       "path": ".github/workflows/cxorbia-c6-human-login-shopper-identity-audit.yml",
@@ -160,7 +166,6 @@
     "immutableV6SnapshotCreated": true,
     "allOtherCriticalBlobsRemainExact": true,
     "functionalDeltaAddedByThisReconciliation": false,
-    "humanLoginBridgeDeltaOnly": true,
     "productModulesChanged": false,
     "designChanged": false,
     "businessLogicChanged": false,
@@ -169,18 +174,15 @@
     "singleBranch": true
   },
   "visualDecision": {
-    "status": "P0_HUMAN_LOGIN_SINGLE_FORM_SOURCE_FIX_PASS_IDENTITY_REPAIR_REQUIRED",
-    "reason": "The single-form bridge passed source/static. The source-safe full-population audit proved that the legacy login/password convention is not universal and that Paula has an ambiguous Staff/Shopper identity. No deploy or identity write is authorized."
+    "status": "NO_VISUAL_CHANGE_SOURCE_SAFE_IDENTITY_RESOLUTION_ONLY",
+    "reason": "The source-safe resolver uses exact shopperId, legacy, HR and provider relations and never resolves by visual name. No frontend or product module change is authorized."
   },
   "runtimeDecision": {
-    "sourceStaticPass": true,
-    "sourceStaticRunId": 31041288528,
-    "identityAuditExecuted": true,
-    "identityAuditDecision": "PASS_C6_HUMAN_LOGIN_SHOPPER_IDENTITY_AUDIT_WITH_FINDINGS",
-    "identityAuditRunId": 31041406837,
+    "sourceStaticRequired": true,
+    "resolutionReviewAuthorized": true,
+    "identityWritesAuthorized": false,
     "deployAllowedByThisManifest": false,
-    "newDeployAuthorized": false,
-    "identityWritesAuthorized": false
+    "newDeployAuthorized": false
   },
   "safety": {
     "secrets": false,
