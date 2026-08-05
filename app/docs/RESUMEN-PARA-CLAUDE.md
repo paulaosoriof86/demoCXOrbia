@@ -41,9 +41,7 @@ La corrección de `.lg2` no basta porque la regla legacy de `#login` sigue activ
 }
 ```
 
-La regla V7 posterior no anula esas propiedades.
-
-En móvil, todo el Login queda como un flex item centrado de aproximadamente 552 px dentro de un viewport de 390/412 px.
+En móvil, todo el Login queda centrado como un flex item más ancho que el viewport.
 
 Resultado real en 390×844:
 
@@ -52,8 +50,6 @@ Resultado real en 390×844:
 - strip top = -191.30 px;
 - registro bottom = 1011.30 px;
 - document scrollHeight = 844 px.
-
-Esto causa recorte lateral, franja superior perdida y controles fuera del scroll real.
 
 ## 5. Corrección frontend V7.2
 
@@ -87,20 +83,16 @@ Bajo `max-width:900px`, anular expresamente el flex heredado:
 }
 ```
 
-Puede ajustarse la implementación, pero deben cumplirse estos criterios geométricos:
+Criterios geométricos:
 
 - `strip.top >= 0`;
 - `aside.left >= 0`;
 - `main.left >= 0`;
 - `main.width <= viewportWidth`;
 - `documentElement.scrollWidth == viewportWidth`;
-- `documentElement.scrollHeight >= goReg.bottom`;
-- cero recorte lateral;
-- scroll vertical natural hasta el registro.
+- `documentElement.scrollHeight >= goReg.bottom`.
 
 ## 6. Evidencia obligatoria real
-
-La captura V7.1 llamada `1440×900` mide realmente `924×540` y es JPEG. No es evidencia válida.
 
 Entregar PNG reales:
 
@@ -126,7 +118,17 @@ capturas/
 
 No incluir `index.html`, core, módulos, backend, documentación histórica ni archivos del laboratorio.
 
-## 8. Estado seguro
+## 8. Trabajo paralelo de ChatGPT — sin tarea para Cloud
+
+El contrato source-only del Laboratorio ya obtuvo PASS remoto:
+
+```text
+PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
+```
+
+Esto no requiere ningún cambio de Cloud. No incluir ni modificar archivos del laboratorio, contracts, gates o runner.
+
+## 9. Estado seguro
 
 - V7.1 enviada a empalme: no;
 - archivos V7.1 aplicados: 0;
