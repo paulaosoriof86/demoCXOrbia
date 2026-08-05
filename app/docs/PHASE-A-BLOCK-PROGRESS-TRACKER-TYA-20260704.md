@@ -1,40 +1,41 @@
-# Phase A block progress tracker TyA
+# PHASE A — Tracker de avance por bloques TyA
 
-**Fecha original:** 2026-07-04  
-**Última actualización:** 2026-07-31  
-**Estado:** `C3_FROZEN__C5_1406_PASS__C6_HUMAN_P0__DOMAIN_FINANCE_SHOPPER_FIX_PASS__LIVE_HR_AUDIT_PASS__PENDING_HOSTING_DEV`
+**Actualización:** 2026-08-05  
+**Estado:** `SOURCE_FIX_APPLIED__SOURCE_STATIC_HOLD__NO_SECOND_DEPLOY`
 
-## 1. Protegido
-- Corte3 FROZEN; R17N1,406/1,406;616 visitas;572 liquidaciones;77 certificaciones.
-- Corte5 14 periodos/current2026-07 PASS.
-- Auth91/91, claims5/5, Rules PASS.
-- HR live/auto-month PASS.
-- Perfil protegido120 docs/329 campos PASS.
-- Finanzas/pagos canónicos preservados.
+## Microbloques de salida
 
-## 2. Human visual C6 — FAIL P0
-KPIs/fases contradictorios, comparativo vacío, refresh con saltos, shoppers210/219, perfiles/histórico/certificación divididos, portal Shopper incompleto, periodo financiero divergente y33 submitidas omitidas de Liquidaciones.
+| Microbloque | Estado | Evidencia |
+|---|---|---|
+| 0 — Carril único | COMPLETADO | Rama viva y PR #7 preservados |
+| 1 — Auditoría focalizada V7.2 | COMPLETADO | P0 selector reproducible |
+| 2 — Empalme/composición acumulativa | COMPLETADO | V7.2-P0F1 empalmada |
+| 3 — Gates source/static previos | COMPLETADO antes del P0 | Composición y Lab PASS previos |
+| 4 — Primer Hosting DEV | COMPLETADO | Release y paridad remota PASS |
+| 5A — Repair membresía Cliente | COMPLETADO | Un write, readback e idempotencia PASS |
+| 5B — Root fix selector Login | SOURCE COMPLETADO | Dos archivos exactos modificados |
+| 5C — Source/static posterior al fix | HOLD | Manifiesto fija los dos blobs pre-fix |
+| 5D — Segundo Hosting DEV correctivo | NO EJECUTADO | Condicionado a PASS source/static |
+| 5E — Gates remotos acumulativos | NO EJECUTADOS | No existe build nuevo desplegado |
+| 6 — Validación humana y freeze | PENDIENTE | Requiere gates remotos PASS |
+| 7 — Cutover/producción | PENDIENTE | Requiere freeze y autorización expresa |
 
-## 3. Diagnóstico raíz
-Máquinas de estado múltiples; perfiles sin crosswalk anexados; watcher con DOM/scroll no canónicos; completitud por flag; portal reducido por estado; liquidación sin `submitida`.
+## Root fix aplicado
 
-## 4. Root fix — CODE PASS
-Composer, semántica, watcher, bridge transversal, finance/liquidation read model, Shopper portal canónico y wiring DEV. Módulos/core intactos.
+- `app/core/backend-browser-auth.js` — selector `.lg2-card, .login-card`.
+- `app/adapters/tya-c6-unified-human-runtime-v1.js` — selector `.lg2-card, .login-card`.
 
-## 5. Gates — PASS
-- `PASS_C6_CANONICAL_DOMAIN_CONSISTENCY`;
-- `PASS_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS`;
-- `PASS_C6_CANONICAL_SHOPPER_PORTAL_CONTRACT`;
-- `PASS_C6_LIVE_HR_ROW_LEVEL_CANONICAL_STATE`.
+## Gate actual
 
-HR:14 periodos/616 visitas/208 shoppers; JUL44 GT34/HN10; realizadas40; cuestionario38; submitidas33; liquidationCandidates33; fuera de rango accionable1; evidencia7; duplicados0.
+- Run: `31023829902`.
+- Lab source contract: PASS.
+- Source/static: HOLD por dos `CRITICAL_BLOB_MISMATCH` exactamente en los archivos autorizados.
+- Segundo deploy: `0`.
 
-## 6. Gate pendiente
-Código no desplegado; autorización anterior consumida.
+## Siguiente bloque exacto
 
-`AUTORIZACIÓN FRESCA 1x HOSTING DEV → REMOTE SMOKE SEMÁNTICO INTEGRAL → HUMAN VISUAL PASS → FREEZE C6 → AGOSTO`.
+Reconciliar solo los dos blob pins del manifiesto/build-lock, ejecutar un nuevo source/static y continuar al deploy/gates remotos únicamente con PASS.
 
-Smoke obligatorio: Dashboard, Visitas, Shoppers, Reportes, Reservas, Finanzas, Liquidaciones y portal Shopper.
+## Estado seguro
 
-## 7. Seguridad
-Hosting0; Cloud Run0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos0; merge=false; producción=false.
+Sin nuevo Hosting, Cloud Run, Firestore/Auth/Rules/Storage/HR writes, Make, Gemini, pagos, merge o producción.
