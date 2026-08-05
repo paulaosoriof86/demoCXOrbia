@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-04  
-**Estado:** `EXECUTION_LANE_RECOVERY_ATTEMPTED__BLOCKED_BY_RUNTIME_NETWORK__NO_AUDIT__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `CODEX_EXECUTION_HANDOFF_READY__AWAITING_CODEX_WORKSPACE_WITH_V7_2__NO_AUDIT__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Carril
 
@@ -51,9 +51,9 @@ P0 reproducible: Login responsive recortado por flex/centrado/padding heredados.
 
 Estado: preflight de recepción, no auditoría final y no GO.
 
-## 6. Ejecución de la siguiente acción exacta
+## 6. Intento de carril en la conversación actual
 
-Se intentó materializar el carril file-aware en la sesión actual.
+Se intentó materializar el checkout file-aware en el runtime de esta conversación.
 
 Comprobado:
 
@@ -65,65 +65,75 @@ REPO_AND_BRANCH_VERIFIED_THROUGH_CONNECTOR=true
 GITHUB_ADMIN_ACCESS=true
 ```
 
-Pruebas de checkout Git nativo:
+El acceso Git nativo falló por ausencia de red del runtime:
 
 ```text
 git ls-remote https://github.com/paulaosoriof86/demoCXOrbia.git
 → fatal: Could not resolve host: github.com
 ```
 
-También falló la conexión HTTPS directa por IP. El runtime no tiene salida de red nativa hacia GitHub.
+El artifact `8916850770` fue recuperado e inspeccionado. Confirma PASS y worktree limpio del run anterior, pero contiene reportes y no un checkout completo.
 
-El artifact `8916850770` fue recuperado e inspeccionado. Confirma:
-
-- request `phase-a-composition-plus-lab-source-contract-20260804-01`;
-- target HEAD `646a05a0f54cf33236b2e1e30122d8c52f30d2a1`;
-- PASS de gates;
-- `status-porcelain`, `tracked-delta` y `untracked` vacíos.
-
-El artifact contiene reportes y evidencia, no un checkout ni los bytes completos del repositorio. Por tanto no satisface `EXECUTION_LANE_READY`.
-
-## 7. Bloqueo exacto
+Resultado:
 
 ```text
+NATIVE_GITHUB_NETWORK_AVAILABLE=false
 REPO_CHECKOUT_COLOCATED_WITH_ZIP=false
 AUTHENTICATED_DIRECT_APPLY_FROM_CHECKOUT=false
-NATIVE_GITHUB_NETWORK_AVAILABLE=false
 EXECUTION_LANE_READY=false
 ```
 
-**Owner:** capacidad del workspace/runtime de ejecución.
+Owner del bloqueo anterior: runtime de esta conversación.
 
-**No requiere acción manual de Paula.**
+## 7. Carril Codex preparado
 
-No se sustituye por Contents API archivo por archivo, blobs/trees, workflow transportador, PowerShell, nueva rama/PR o reconstrucción desde V182.
+Para evitar repetir el bloqueo y mantener auditoría+aplicación en la misma sesión:
+
+- `AGENTS.md` fue reconciliado con el lock prevalente;
+- se eliminó la autorización contradictoria de blobs/trees por conectores;
+- se creó `app/docs/CODEX-EXECUTION-TASK-V7-2-20260804.md`;
+- la tarea Codex exige checkout autenticado, ZIP V7.2 extraído, HEAD vivo, worktree limpio y capacidad de commit/push antes de auditar;
+- con GO sin P0 obliga a `APPLY_DELTA_DIRECTLY` en la misma tarea;
+- no permite rama, PR, workflow, PowerShell, deploy, writes, merge o producción.
+
+Commits de preparación:
+
+- `7a9cfc9ef955c4866476de1f81f791648c245557` — `AGENTS.md`;
+- `0173773fb109123ec91be860337e3fc7f84fbaea` — tarea Codex;
+- `b82c127db7a8115950cb946be4ae61a03196fbf0` — addendum del carril Codex.
+
+La herramienta Codex no está expuesta como invocación dentro de esta conversación. La tarea ya quedó preparada en el repositorio para ejecutarse desde un workspace Codex conectado al mismo repo y rama.
 
 ## 8. Siguiente acción exacta obligatoria
 
+En Codex, seleccionar el repositorio y rama existentes, adjuntar el mismo ZIP V7.2 y ejecutar:
+
 ```text
-WORKSPACE CON RED GIT NATIVA + CHECKOUT AUTENTICADO
-→ VERIFICAR HEAD VIVO
+Lee AGENTS.md y ejecuta íntegramente
+app/docs/CODEX-EXECUTION-TASK-V7-2-20260804.md.
+No crees rama ni PR. Detente antes de cualquier deploy.
+```
+
+Secuencia obligatoria:
+
+```text
+CODEX WORKSPACE + ZIP V7.2 + CHECKOUT AUTENTICADO
 → EXECUTION_LANE_READY
 → AUDITORÍA FINAL FOCALIZADA V7.2
 → GO SIN P0
 → APPLY_DELTA_DIRECTLY
 → MANIFEST / BUILD-LOCK / VERIFICADOR
 → SOURCE/STATIC FINAL + GATE LAB
-→ ÚNICO HOSTING DEV
-→ LABORATORIO REAL ACUMULATIVO
-→ CLEANUP
-→ VALIDACIÓN HUMANA
-→ ACTIVE_CANONICAL_BASELINE
-→ CUTOVER AUTORIZADO
+→ TECHNICAL_PASS_PENDING_DEV_VISUAL
 ```
 
 No se abre auditoría general, nueva candidata, shell reducido ni composición paralela.
 
 ## 9. Pendientes Phase A reales
 
-1. carril Git nativo;
-2. audit/apply V7.2;
-3. único deploy DEV del mismo HEAD;
+1. iniciar tarea Codex con el ZIP V7.2;
+2. audit/apply V7.2 en la misma tarea;
+3. único deploy DEV del mismo HEAD, en bloque posterior y con autorización;
 4. Laboratorio real Admin/Operaciones + Shopper;
 5. evidencia sanitizada y cleanup con fingerprints iguales;
 6. validación humana de una única URL;
@@ -135,6 +145,7 @@ Portal Cliente continúa sobre la misma candidata en paralelo; no crea rama o bu
 
 ## 10. Estado seguro
 
+- tarea Codex iniciada: no;
 - auditoría final V7.2: no iniciada;
 - empalme: 0;
 - navegador/runtime funcional: 0;
