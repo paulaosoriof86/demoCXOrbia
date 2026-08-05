@@ -13,7 +13,7 @@ El primer request atómico se detuvo correctamente porque los reportes transitor
 
 - reemplazo controlado del alias activo `MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json`;
 - copia histórica exacta `MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-HISTORICAL-20260804.json`;
-- auditoría, independencia de Codex, resumen Claude, pendientes y Academia.
+- auditoría, resumen Claude, pendientes y Academia.
 
 Archivos funcionales nuevos: **0**.
 
