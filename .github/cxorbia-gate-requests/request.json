@@ -1,28 +1,19 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "c6-human-login-single-form-source-static-20260805-03",
-  "enabled": false,
-  "issuedAt": "2026-08-05T13:50:00-06:00",
-  "consumedAt": "2026-08-05T13:51:00-06:00",
-  "status": "consumed_pass_source_static_human_login_single_form",
-  "decision": "PASS_READONLY_POST_GATES",
-  "compositionDecision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
-  "labDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
-  "rootSourceDecision": "PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY",
+  "requestId": "c6-shopper-identity-canonicalization-source-static-20260805-01",
+  "enabled": true,
+  "issuedAt": "2026-08-05T16:20:00-06:00",
+  "consumed": false,
+  "status": "authorized_execute_once",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "0a7987ffb06b27e664db3045448fbd9f0967c4b4",
-  "requestCommitSha": "c2c3a34f0f8bc921d70ce6d3f99dc96a43a5f270",
-  "workflowRunId": 31041288528,
-  "workflowJobId": 92425994929,
-  "artifactId": 8944661204,
-  "artifactDigest": "sha256:2eaade7708636d49e44eafb32416b9f54f66e496cf95ae4830dbd2c2a42c92b9",
+  "targetHeadSha": "dd8f8c00858837e28a91ff4f248e82d665f648e5",
   "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
   ],
-  "allowedExecutions": 0,
+  "allowedExecutions": 1,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": false,
@@ -33,10 +24,14 @@
   "tenantId": "tya",
   "projectId": "cinepolis",
   "sourceLockDocument": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
+  "canonicalIdentityContract": "backend/contracts/c6-shopper-identity-canonicalization-v1.json",
+  "requiredSourceFiles": [
+    "tools/qa/cxorbia-c6-shopper-identity-canonical-plan.mjs",
+    "tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs"
+  ],
   "requiredDecisions": [
     "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
-    "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
-    "PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY"
+    "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT"
   ],
   "safeState": {
     "repositoryWrites": false,
@@ -56,9 +51,9 @@
   "containsPii": false,
   "containsSecrets": false,
   "authorizedBy": "Paula",
-  "authorizationScope": "Validate the human single-form Login bridge correction, exact active manifest pin, source-safe all-Shopper identity audit tooling and accumulated Phase A source/static contracts. No provider reads, deploy, writes, merge or production.",
+  "authorizationScope": "Validate source-only the canonical TyA Shopper identity contract, the 340-profile census tooling, universal nombre.apellido and Nombre123* policy, membership-independent Shopper access and separated Staff/Shopper principals. No provider reads, deploy, writes, merge or production.",
   "repositoryUnchangedByGate": true,
   "stopRetryOnFailure": true,
-  "nextGate": "EXECUTE_ONE_SOURCE_SAFE_PROVIDER_READ_IDENTITY_AUDIT",
-  "purpose": "Consumed successful source/static execution after the authorized human Login single-form correction and source-safe identity audit preparation."
+  "nextGate": "EXECUTE_ONE_READONLY_340_PROFILE_CANONICAL_CENSUS",
+  "purpose": "One-shot source/static gate before any provider read or Auth DEV canonicalization."
 }
