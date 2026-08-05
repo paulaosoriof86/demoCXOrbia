@@ -1,49 +1,50 @@
-# PENDIENTES PROTOTIPO — Addendum C6 client route harness
+# PENDIENTES PROTOTIPO — Addendum C6 Client route harness
 
 **Fecha:** 2026-08-05
 
-## Pendiente activo
+## Resuelto
 
-### P1 QA — predicado inválido del gate de Portal Cliente
+### P1 QA — predicado inválido del Portal Cliente
 
-El gate remoto acumulativo exige `#nav-cli_dashboard.active` después de una navegación directa mediante `CX.router.nav('cli_dashboard')`.
+Estado: `RESUELTO_PASS`.
 
-Diagnóstico reproducible:
+La dependencia de `#nav-cli_dashboard.active` fue sustituida en el harness por observabilidad real:
 
 ```text
-sessionView=cli_dashboard
-navElementExists=false
-navActive=false
-viewExists=true
-pageHeaderExists=true
-viewTextLength=690
+session.view=cli_dashboard
+#view existe
+#view .ph existe
+#view texto no vacío
 renderException=null
 ```
 
-Clasificación:
+Resultado:
 
 ```text
-OWNER=HARNESS
-CODE=HARNESS_NAV_ACTIVE_SUBCONDITION_MISMATCH
-PRODUCT_P0=false
+PASS_READONLY_POST_GATES
+PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC
+predicateVersion=session-view-canonical-render-v1
 ```
 
-Acción pendiente:
+No se requirió parche del Portal Cliente, router, Login ni Hosting.
 
-- ajustar solo `tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs` o su wrapper vigente;
-- sustituir la dependencia del nodo de navegación por observabilidad real de ruta y render;
-- ejecutar un gate semántico read-only focal;
-- no desplegar.
+## Pendiente activo
 
-## No pendientes de producto derivados de este hallazgo
+### Validación humana y freeze
 
-- Portal Cliente no requiere parche.
-- Router no requiere parche.
-- Login no requiere parche adicional.
-- Auth, claims, membership y contraseña no requieren cambios.
+- revisar visualmente Portal Cliente en la release DEV vigente;
+- confirmar Portal Shopper, Finanzas y Reservas;
+- registrar aceptación o hallazgos concretos;
+- emitir freeze documental únicamente con PASS humano.
+
+No requiere deploy para iniciar.
 
 ## Deuda no bloqueante preservada
 
-- PDF: algunas rutas todavía pueden omitir gráficas.
-- Excel: formato visual básico.
-- La validación humana y freeze continúan pendientes después del rerun semántico.
+- PDF: algunas rutas todavía pueden omitir gráficas;
+- Excel: formato visual básico;
+- mejoras P1/P2 de presentación deben mantenerse separadas del cierre de Phase A.
+
+## Prohibiciones
+
+No reabrir `client_route_wait` como defecto del producto sin evidencia nueva reproducible. Cero cambios de frontend/runtime, deploy, writes, merge o producción en el cierre humano.
