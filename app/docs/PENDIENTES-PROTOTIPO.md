@@ -1,47 +1,21 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-04  
-**Estado vivo:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_COMPLETED__LAB_SOURCE_CONTRACT_PASS__CLOUD_V7_1_HOLD__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `LAB_SOURCE_CONTRACT_PASS__CLOUD_V7_1_HOLD__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Cloud V7.1 — P0 vivo
+## Cloud V7.1
 
-La entrega ya es estrecha, pero el responsive continúa roto.
+P0:
 
-Causa:
+- `#login` mantiene flex/centrado/padding bajo 900 px;
+- clipping lateral y controles fuera del scroll real;
+- evidencia de viewports incompleta.
 
-- `#login` conserva `display:flex`, centrado y `padding:24px`;
-- bajo 900 px `.lg2` queda centrado como flex item más ancho que el viewport.
+V7.1 no se envía a Codex.
 
-Efectos:
+## Laboratorio
 
-- clipping lateral en 412×915 y 390×844;
-- franja superior fuera de pantalla;
-- formulario con coordenadas negativas;
-- botón/registro fuera del scrollHeight real.
-
-## 2. Evidencia V7.1 pendiente
-
-La única captura llamada 1440×900 mide realmente 924×540 y es JPEG.
-
-Faltan cuatro viewports, comparación antes/después y capturas 1/2/8/12 países.
-
-## 3. PASS preservables
-
-- paquete estrecho;
-- app.js/layout.css únicamente;
-- sintaxis, UTF-8 y secretos PASS;
-- desktop correcto;
-- países 1/2/8/12 en orden;
-- 12 países accesibles en 1440×900;
-- copy demo/técnico ausente.
-
-## 4. Laboratorio — source contract cerrado PASS
-
-- run `30971991900`;
-- artifact `8916850770`;
-- digest `sha256:75953c600b68450a11cfac6667ac5b5cfa8eceea5c94a6a0856850a501e77dd8`.
-
-Decisiones:
+PASS source-only:
 
 ```text
 PASS_READONLY_POST_GATES
@@ -49,32 +23,11 @@ PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
 PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
 ```
 
-Pendiente no bloqueante: corregir el mapa source path esperado de `miperfil`, `misvisitas`, `aprendizaje` y `cert` antes del runtime final.
+Run `30971991900`, artifact `8916850770`.
 
-## 5. Carril de empalme
+Pendiente no bloqueante: actualizar cuatro source paths esperados del mapa de rutas.
 
-```text
-V7_1_GO = false
-SEND_TO_EMPALME = false
-EXECUTION_LANE_READY_FOR_APPLY = false
-```
-
-No enviar a Codex.
-
-## 6. Primer release slice
-
-`ADMIN/OPERACIONES + SHOPPER`.
-
-Portal Cliente continúa en carril paralelo.
-
-## 7. Deuda no bloqueante por sí sola
-
-- overlay A+B superseded;
-- PDF puede omitir gráficas;
-- Excel básico;
-- cuatro warnings de mapa source path del Laboratorio.
-
-## 8. Secuencia exacta
+## Secuencia
 
 ```text
 CLOUD V7.2
@@ -85,16 +38,11 @@ CLOUD V7.2
 → ÚNICO HOSTING DEV
 → LABORATORIO REAL
 → CLEANUP
-→ CHECKPOINT HUMANO
-→ CUTOVER AUTORIZADO
+→ VALIDACIÓN HUMANA
 ```
 
-## 9. Estado seguro
+## Estado seguro
 
-- V7.1 aplicada: no;
 - empalme: 0;
-- laboratorio runtime: 0;
-- datos `AUDIT-*`: 0;
-- Hosting/Cloud Run: 0;
-- provider writes: 0;
-- merge/producción: 0.
+- runtime/datos AUDIT: 0;
+- deploy/producción: 0.
