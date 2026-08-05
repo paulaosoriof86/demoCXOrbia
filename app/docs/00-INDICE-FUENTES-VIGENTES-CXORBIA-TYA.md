@@ -2,22 +2,25 @@
 
 **Fecha:** 2026-08-04  
 **Estado:** ACTIVO  
-**Estado vivo:** `EXECUTION_LANE_RECOVERY_ATTEMPTED__BLOCKED_BY_RUNTIME_NETWORK__NO_AUDIT__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `CODEX_EXECUTION_HANDOFF_READY__AWAITING_CODEX_WORKSPACE_WITH_V7_2__NO_AUDIT__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Fuentes activas y orden de prevalencia
 
 1. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 2. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 3. `CAMBIOS-BACKEND-ADDENDUM-RECUPERACION-PLAN-CANONICO-V7-2-20260804.md`;
-4. `CAMBIOS-BACKEND-ADDENDUM-LAB-SOURCE-CONTRACT-PASS-20260804.md`;
-5. `AUDITORIA-REAL-CANDIDATA-CLOUD-V7-1-20260804-HOLD.md`;
-6. `MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json`;
-7. contratos/schema/matriz del Laboratorio;
-8. `RESUMEN-PARA-CLAUDE.md`;
-9. `PENDIENTES-PROTOTIPO.md`;
-10. PR #7 y HEAD vivo.
+4. `CAMBIOS-BACKEND-ADDENDUM-CODEX-EXECUTION-LANE-V7-2-20260804.md`;
+5. `CODEX-EXECUTION-TASK-V7-2-20260804.md`;
+6. `CAMBIOS-BACKEND-ADDENDUM-LAB-SOURCE-CONTRACT-PASS-20260804.md`;
+7. `AUDITORIA-REAL-CANDIDATA-CLOUD-V7-1-20260804-HOLD.md`;
+8. `MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json`;
+9. contratos/schema/matriz del Laboratorio;
+10. `RESUMEN-PARA-CLAUDE.md`;
+11. `PENDIENTES-PROTOTIPO.md`;
+12. `AGENTS.md`;
+13. PR #7 y HEAD vivo.
 
-Ante conflicto, mandan este índice y el checkpoint vigente. Los estados antiguos de C6, Hosting o candidatas previas son evidencia histórica, no el bloqueo actual.
+Ante conflicto, mandan este índice, el checkpoint y el lock de empalme directo vigente. Los estados antiguos de C6, Hosting o candidatas previas son evidencia histórica, no el bloqueo actual.
 
 ## 2. Estado recuperado
 
@@ -47,18 +50,9 @@ Preserva las mejores autoridades por archivo/módulo, pero todavía no es candid
 
 Estado: `PREFLIGHT_ONLY`. No es GO y no está empalmada.
 
-## 5. Intento de carril ejecutado
+## 5. Carril anterior bloqueado
 
-La sesión comprobó ZIP, Git cliente, repo/rama e identidad administrativa. El checkout nativo no pudo materializarse:
-
-```text
-git ls-remote https://github.com/paulaosoriof86/demoCXOrbia.git
-→ fatal: Could not resolve host: github.com
-```
-
-La conexión HTTPS directa también está bloqueada.
-
-El artifact `8916850770` fue recuperado y confirma PASS y worktree limpio del run, pero contiene solo reportes; no sustituye un checkout.
+La conversación comprobó ZIP, Git cliente, repo/rama e identidad administrativa. El checkout nativo no pudo materializarse porque el runtime no tenía salida de red hacia GitHub.
 
 ```text
 CANDIDATE_BYTES_AVAILABLE=true
@@ -70,25 +64,32 @@ AUTHENTICATED_DIRECT_APPLY_FROM_CHECKOUT=false
 EXECUTION_LANE_READY=false
 ```
 
-Owner: workspace/runtime. No requiere acción manual de Paula.
+El artifact `8916850770` confirma PASS y worktree limpio del run anterior, pero contiene reportes y no sustituye un checkout.
 
-## 6. Secuencia única
+## 6. Carril Codex vigente
+
+El repositorio ya quedó preparado para ejecutar la siguiente acción en Codex sin reiniciar metodología:
+
+- `AGENTS.md` reconciliado con el lock prevalente;
+- eliminado el permiso contradictorio de blobs/trees vía conectores;
+- tarea ejecutable `CODEX-EXECUTION-TASK-V7-2-20260804.md` creada;
+- addendum del carril Codex creado;
+- checkpoint actualizado.
+
+Secuencia única:
 
 ```text
-WORKSPACE CON RED GIT NATIVA + CHECKOUT AUTENTICADO
+CODEX WORKSPACE + ZIP V7.2 + CHECKOUT AUTENTICADO
 → EXECUTION_LANE_READY
 → AUDITORÍA FINAL FOCALIZADA V7.2
 → GO SIN P0
 → APPLY_DELTA_DIRECTLY
 → MANIFEST / BUILD-LOCK / VERIFICADOR
 → SOURCE/STATIC FINAL + GATE LAB
-→ ÚNICO HOSTING DEV
-→ LABORATORIO REAL
-→ CLEANUP
-→ VALIDACIÓN HUMANA
-→ ACTIVE_CANONICAL_BASELINE
-→ CUTOVER AUTORIZADO
+→ TECHNICAL_PASS_PENDING_DEV_VISUAL
 ```
+
+La tarea debe leer `AGENTS.md` y ejecutar íntegramente `CODEX-EXECUTION-TASK-V7-2-20260804.md`. No puede crear rama, PR, workflow, deploy o writes.
 
 ## 7. Prohibiciones antirretroceso
 
@@ -97,14 +98,15 @@ WORKSPACE CON RED GIT NATIVA + CHECKOUT AUTENTICADO
 - no shell reducido ni composición por módulos;
 - no nueva rama/PR;
 - no Contents API archivo por archivo para empalme;
-- no blobs/trees o workflow como transportador;
-- no PowerShell ni tareas manuales para Paula;
+- no blobs/trees o workflow como sustituto del checkout;
+- no PowerShell ni copias manuales de código;
 - no reconstrucción desde V182;
 - no segundo deploy DEV;
 - no reabrir bloques protegidos sin regresión reproducible.
 
 ## 8. Estado seguro
 
+- tarea Codex iniciada: no;
 - auditoría final V7.2: no iniciada;
 - V7.2 aplicada: no;
 - empalme: 0;
