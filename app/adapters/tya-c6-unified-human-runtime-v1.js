@@ -165,7 +165,7 @@
 
   function clientCredentialStep(){
     const loginRoot=document.getElementById('login');
-    const card=loginRoot&&loginRoot.querySelector('.login-card');
+    const card=loginRoot&&loginRoot.querySelector('.lg2-card, .login-card');
     if(!card||!CX.backendAuth)return;
     card.querySelector('#cxIntegratedAuthStep')?.remove();
     const step=document.createElement('div');
