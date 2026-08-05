@@ -1,21 +1,79 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-04  
-**Estado:** `V7_2_P0_PROVEN__V7_2_P0F1_PREPARED__PENDING_FOCUSED_REAUDIT__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
+**Fecha:** 2026-08-05  
+**Estado:** `TECHNICAL_PASS_PENDING_DEV_VISUAL__DIRECT_GITHUB_RUNNERS_ACTIVE__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Carril
+## 1. Rama y control
 
-- repo `paulaosoriof86/demoCXOrbia`;
-- rama viva `docs-tya-v6-v71-audit`;
-- PR #7 draft/open/no merge;
-- producción intacta;
-- candidata canónica activa: no.
+- repo: `paulaosoriof86/demoCXOrbia`;
+- rama viva: `docs-tya-v6-v71-audit`;
+- PR #7: draft/open/no merge;
+- producción: intacta;
+- Codex: opcional, no dependencia operativa.
 
-## 2. Composición canónica preservada
+El carril directo vigente usa:
 
-Existe `CXORBIA-TYA-PHASE-A-COMPLETE-CANONICAL-COMPOSITION-20260804`, con una sola rama/candidata y autoridades por archivo/módulo. No es todavía `ACTIVE_CANONICAL_BASELINE`.
+- `CXORBIA_ATOMIC_APPLY_RUNNER` para commit/push atómico;
+- `CXORBIA_READONLY_POST_GATES_RUNNER` para gates observables;
+- solicitudes de una sola ejecución;
+- cero terminal, PowerShell o trabajo manual de Paula.
 
-Gates históricos preservados:
+`AGENTS.md` fue corregido en `39098a97aac2ee1c064026adda743b759bad5103` para eliminar la dependencia desactualizada de Codex.
+
+## 2. V7.2-P0F1 empalmada
+
+- ZIP: `09606d1cc133a1e1e138be76bd8c6aadeb1f70d7967d506aae3f81bf5e9c6fce`;
+- decisión: `AUDITED_GO_READY_DIRECT_APPLY`;
+- commit funcional de Login: `33d6f4f14272f82dca9d9c7c0cc119a9f89619bd`;
+- `app/app.js`: credenciales visibles ausentes;
+- `app/styles/layout.css`: responsive preservado;
+- manifest, build-lock y verificador: creados;
+- deploy o writes: cero.
+
+## 3. Reconciliación del lock canónico
+
+Causa raíz: el gate seguía comparando tres autoridades V6 sustituidas por P0F1:
+
+- `app/app.js`;
+- `app/styles/layout.css`;
+- `app/core/build-lock.js`.
+
+No era una regresión funcional. Era un lock desactualizado.
+
+Se preservó una copia byte a byte del overlay V6 y se actualizó su ruta estable como alias activo compatible, con procedencia P0F1 explícita y gate fail-closed.
+
+Primer intento runner:
+
+- run `31009291341`;
+- estado `HOLD_ATOMIC_APPLY`;
+- causa exacta: evidencia transitoria `.tmp/` aparecía como delta no permitido;
+- resultado: ningún commit funcional ni cambio parcial.
+
+Correctivo de causa raíz:
+
+- `.tmp/` quedó excluido en `.gitignore` mediante `ff55c4d1c2c4d1676d0e53a2ce1a73d762df1664`;
+- no se relajó el runner ni su allowlist.
+
+Aplicación válida:
+
+- request commit: `48746fcdaf71872fbc0f42217c6f843194e5aa38`;
+- commit funcional: `fb8d8897bb24f2f634bc5594dca4e8d610daf910`;
+- mensaje: `chore(source-lock): reconcile canonical composition for V7.2-P0F1`;
+- push directo: PASS;
+- request eliminado por el commit funcional;
+- archivos funcionales adicionales: cero.
+
+## 4. Gates post-aplicación
+
+Request read-only:
+
+- commit `ef6c43e41db59508d7f0f631dcb52fa5a545cce5`;
+- target técnico exacto `fb8d8897bb24f2f634bc5594dca4e8d610daf910`;
+- run `31009570981`;
+- artifact `8931809583`;
+- digest `sha256:db3a8adb2e2c39f5825d359382b737fd97c9821d5828f6808c5d1c82b82b0c8f`.
+
+Resultado:
 
 ```text
 PASS_READONLY_POST_GATES
@@ -23,95 +81,46 @@ PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
 PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
 ```
 
-Run `30971991900`, artifact `8916850770`, digest `sha256:75953c600b68450a11cfac6667ac5b5cfa8eceea5c94a6a0856850a501e77dd8`.
+Composición:
 
-## 3. Auditoría focalizada V7.2
+- critical blobs base: `53/53`;
+- additional critical files: `4/4`;
+- failures: `0`;
+- assets faltantes: `0`;
+- módulos, registro y navegación faltantes: `0`;
+- report kit Admin/Cliente/Shopper/Finanzas: PASS;
+- secretos: `0`;
+- repositorio sin delta después de gates: PASS.
 
-Carril Codex:
+Warnings no bloqueantes preservados:
 
-```text
-EXECUTION_LANE_READY=true
-HEAD_BEFORE=da42e818c626e8bba56407869f5f3b32b61f49eb
-WORKTREE_CLEAN=true
-```
+- P1 overlay A+B superseded aún cargado;
+- P1 exportación PDF de gráficas;
+- P2 presentación XLSX;
+- cuatro rutas shopper del contrato Lab pendientes de confirmar por nombre de archivo, sin bloquear el contrato.
 
-Paquete auditado:
+## 5. Avance Phase A
 
-- `Prototype development request V7.2.zip`;
-- SHA-256 `d3b7551b3b0b30e1b071dfc74beb20009c9c523c2955cce760148da6b8727686`.
+Preservado y cubierto por composición:
 
-Decisión:
+- HR e histórico;
+- shoppers, postulaciones y certificaciones;
+- liquidaciones/pagos;
+- multi-proyecto y multi-tenant;
+- Finanzas, Portal Cliente, Portal Shopper y Reservas;
+- sincronización HR/plataforma;
+- Academia y rutas por rol.
 
-```text
-P0_PROVEN
-```
+## 6. Siguiente bloque exacto
 
-Causa: `app/app.js` reintrodujo exposición visible de contraseñas en tres puntos:
+`AUTORIZACIÓN EXPRESA → ÚNICO HOSTING DEV DEL HEAD VIGENTE → PARIDAD Y RUTAS ACUMULATIVAS → LOGIN RESPONSIVE → LABORATORIO REAL READ-ONLY/CONTROLADO → CLEANUP → VALIDACIÓN HUMANA`.
 
-- `${CX.CREDS.passExample()}`;
-- `${CX.CREDS.pass(f,l)}`;
-- `${s.pass}`.
-
-El HEAD vivo ya protegía esos puntos mostrando solo usuario, mensaje de credencial inicial protegida y `Protegida`.
-
-Resultado:
-
-- V7.2 aplicada: no;
-- archivos modificados: 0;
-- commit/push: no;
-- worktree final: limpio;
-- deploy/producción: 0.
-
-## 4. Correctivo focalizado V7.2-P0F1
-
-Se preparó una revisión de la misma V7.2, no V7.3:
-
-- archivo `Prototype development request V7.2-P0F1.zip`;
-- SHA-256 `09606d1cc133a1e1e138be76bd8c6aadeb1f70d7967d506aae3f81bf5e9c6fce`;
-- mantiene byte a byte el `layout.css` responsive de V7.2;
-- restaura en `app/app.js` los tres textos seguros del HEAD vivo;
-- `node --check`: PASS;
-- UTF-8 sin BOM: PASS;
-- patrones sensibles: ausentes.
-
-P0F1 aún no es GO y no está empalmada.
-
-## 5. Siguiente acción exacta
-
-En el mismo workspace Codex existente:
-
-```text
-ACTUALIZAR RAMA VIVA POR FAST-FORWARD
-→ EXECUTION_LANE_READY
-→ AUDITORÍA FOCALIZADA V7.2-P0F1 SOLO app/app.js + app/styles/layout.css
-→ EVIDENCIA 5 VIEWPORTS + 1/2/8/12 PAÍSES
-→ GO SIN P0
-→ APPLY_DELTA_DIRECTLY
-→ UN COMMIT/PUSH ATÓMICO
-→ MANIFEST/BUILD-LOCK/VERIFICADOR
-→ SOURCE/STATIC + COMPOSICIÓN CANÓNICA + CONTRATO LAB
-→ DETENER ANTES DE DEPLOY
-```
-
-No auditoría general, V7.3, nueva rama/PR, workflow transportador, PowerShell, Contents API para empalme ni reapertura de bloques protegidos.
-
-## 6. Pendientes Phase A reales
-
-1. reauditoría focalizada P0F1;
-2. empalme y post-gates si GO;
-3. único Hosting DEV en bloque posterior y autorizado;
-4. Laboratorio real Admin/Operaciones + Shopper;
-5. cleanup y validación humana;
-6. freeze `ACTIVE_CANONICAL_BASELINE`;
-7. cutover/producción solo con autorización expresa.
-
-Portal Cliente continúa dentro de la misma composición y no crea candidata paralela.
+No ejecutar deploy todavía.
 
 ## 7. Estado seguro
 
-- V7.2/P0F1 aplicada: no;
-- empalme: 0;
 - Hosting/Cloud Run: 0;
-- Firestore/Auth/Storage/HR writes: 0;
+- Firestore/Auth/Rules/Storage/HR writes: 0;
 - Make/Gemini/pagos: 0;
-- merge/producción: 0.
+- merge: false;
+- producción: intacta.
