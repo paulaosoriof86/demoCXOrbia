@@ -44,6 +44,7 @@ try{
     'tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs',
     'tools/qa/cxorbia-c6-existing-users-e2e-envelope-compat.mjs',
     'tools/qa/cxorbia-c6-client-auth-materialization.mjs',
+    'tools/qa/cxorbia-c6-client-access-runtime-orchestrator.mjs',
     '.github/workflows/cxorbia-c6-live-domain-readonly-audit.yml'
   ];
   if(!allowed.includes(request.targetPath))fail(`target_not_allowlisted:${request.targetPath}`);
