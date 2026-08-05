@@ -94,6 +94,25 @@ async function main(){
   check(request.containsPii===false&&request.containsSecrets===false,'request_sanitized');
   check(fs.existsSync(PRIVATE_PATH),'private_credentials_present');
 
+  if(request.diagnosticMode==='client_route_wait'){
+    const diagnosticRequestPath=path.join(ROOT,'.tmp/c6-client-route-wait-diagnostic/request.runtime-profile.json');
+    fs.mkdirSync(path.dirname(diagnosticRequestPath),{recursive:true});
+    fs.writeFileSync(diagnosticRequestPath,JSON.stringify({
+      ...request,
+      profile:'C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC',
+      allowedProfiles:['C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC']
+    },null,2)+'\n','utf8');
+    run('node',['tools/qa/tya-c6-client-route-wait-diagnostic.mjs',path.relative(ROOT,diagnosticRequestPath)],{
+      CXORBIA_DEV_ROOT_URL:request.devRootUrl,
+      CXORBIA_E2E_PRIVATE_CREDENTIALS:PRIVATE_PATH
+    });
+    const diagnostic=parseJsonFile(REPORT_JSON,'client_route_diagnostic_runner');
+    check(diagnostic.status==='PASS_READONLY_POST_GATES','client_route_diagnostic_pass',String(diagnostic.status||''));
+    check(diagnostic.summary?.classification?.owner==='PRODUCT'||diagnostic.summary?.classification?.owner==='HARNESS'||diagnostic.summary?.classification?.owner==='INCONCLUSIVE','client_route_classification_present');
+    Object.assign(report,diagnostic);
+    return;
+  }
+
   const scripts=[
     'tools/qa/tya-live-hr-dynamic-authority-gate.mjs',
     'tools/qa/tya-c6-remote-parity-gate.mjs',
