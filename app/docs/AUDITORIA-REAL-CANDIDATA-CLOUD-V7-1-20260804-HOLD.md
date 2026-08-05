@@ -3,7 +3,7 @@
 **Fecha:** 2026-08-04  
 **Paquete:** `Prototype development request V 7.1.zip`  
 **SHA-256:** `649b9d50ae8f80cf4e0b4fcb303e60b35e8fda1b7de1215ae716b7be6f4355ca`  
-**Decisión:** `HOLD_NO_SEND_TO_EMALME`
+**Decisión:** `HOLD_NO_SEND_TO_EMPALME`
 
 ## 1. Alcance recibido
 
