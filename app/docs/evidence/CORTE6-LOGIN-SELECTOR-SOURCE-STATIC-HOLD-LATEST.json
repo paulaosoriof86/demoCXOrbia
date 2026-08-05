@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "cxorbia.c6.login-selector-source-static-hold.v1",
+  "generatedAt": "2026-08-05T10:08:48-06:00",
+  "decision": "HOLD_C6_LOGIN_SELECTOR_SOURCE_STATIC_STOP_RETRY",
+  "rootFix": {
+    "files": [
+      "app/core/backend-browser-auth.js",
+      "app/adapters/tya-c6-unified-human-runtime-v1.js"
+    ],
+    "selectorBefore": ".login-card",
+    "selectorAfter": ".lg2-card, .login-card",
+    "sourceCommits": [
+      "d5cd7741dafd032138bd4f61d2f0500e9c68e64a",
+      "9e59fcb81290c80e43233e5202356983a340bf4b"
+    ],
+    "scopeExact": true
+  },
+  "gate": {
+    "workflowRunId": 31023829902,
+    "requestCommitSha": "6b1f116cd9330f199c4f2b504423d12baa1adf11",
+    "targetHeadSha": "9e59fcb81290c80e43233e5202356983a340bf4b",
+    "artifactId": 8937732266,
+    "artifactDigest": "sha256:59442b8fa74ec77ab61c655a3380134ddbd91feec7c99c17bbe09128ef1df0f8",
+    "status": "HOLD_READONLY_POST_GATES",
+    "labSourceContractDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
+    "sourceStaticDecision": "FAIL_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE",
+    "blockers": [
+      {
+        "code": "CRITICAL_BLOB_MISMATCH",
+        "path": "app/core/backend-browser-auth.js",
+        "manifestExpectedBlob": "d052a4b62e5320817d42055946e94de463914b24",
+        "actualAuthorizedBlob": "35c4fa2fab09fc4fd17a7547b721e4693f93f495"
+      },
+      {
+        "code": "CRITICAL_BLOB_MISMATCH",
+        "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+        "manifestExpectedBlob": "7c00752d9a34209366f3c328ea3e5f5fddb4e1db",
+        "actualAuthorizedBlob": "3acc508ac242407ea688b6a4ba964409af1125ba"
+      }
+    ],
+    "rootCause": "The cumulative composition manifest still pins the two pre-fix blobs. The authorized source change itself is the only observed mismatch.",
+    "repositoryUnchangedByGate": true
+  },
+  "safety": {
+    "hostingDeployAttempted": false,
+    "secondHostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextExactAction": "Reconcile only the two authorized blob pins in the active composition manifest/build lock, execute a new source/static gate, and only with PASS continue to the already authorized second Hosting DEV correction and remote cumulative gates."
+}
