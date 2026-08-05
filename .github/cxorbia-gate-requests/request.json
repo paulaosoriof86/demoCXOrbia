@@ -1,13 +1,16 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "c6-client-route-wait-focal-diagnostic-20260805-01",
+  "requestId": "c6-client-route-wait-focal-diagnostic-20260805-02",
   "enabled": true,
-  "issuedAt": "2026-08-05T10:52:00-06:00",
-  "status": "authorized_execute_once",
+  "issuedAt": "2026-08-05T11:05:00-06:00",
+  "status": "authorized_execute_once_after_zero_execution",
+  "continuationOf": "c6-client-route-wait-focal-diagnostic-20260805-01",
+  "continuationReason": "The prior request produced no workflow run, commit status, artifact or diagnostic execution. This is the same authorized focal block with zero prior execution and zero deploy.",
+  "priorExecutionsObserved": 0,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "85a91f933a0b71712734cdc19e1bc66179962a3d",
+  "targetHeadSha": "a4507aabdbd4d9fce1d629ee5443b7a0cac93f0d",
   "profile": "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC",
   "allowedProfiles": [
     "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC"
