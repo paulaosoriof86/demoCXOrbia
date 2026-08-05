@@ -1,6 +1,6 @@
 {
   "contractId": "cxorbia-controlled-runners-v1",
-  "schemaVersion": "1.7.0",
+  "schemaVersion": "1.8.0",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -46,7 +46,8 @@
         "V174_R20_M1_CORTE2A",
         "CORTE3_FINANCIAL_RECONCILIATION_R20",
         "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23",
-        "CORTE4_CXDATA_FIRESTORE_READONLY"
+        "CORTE4_CXDATA_FIRESTORE_READONLY",
+        "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC"
       ],
       "stableVisitIdentity": {
         "version": "tya-stable-visit-id-r20-row-identity-v1",
@@ -144,6 +145,23 @@
           ],
           "outputs": [
             ".tmp/cxdata-firestore-readonly-corte4-gate/report.json"
+          ]
+        },
+        "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC": {
+          "browserRequired": true,
+          "providerReads": true,
+          "stableVisitIdentityRequired": false,
+          "runtimeInventoryFilterRequired": false,
+          "purpose": "Capture session.view, nav existence and active state, view existence, page header, view text length and render exceptions separately to classify the remote client_route_wait failure as product, harness or inconclusive without deploy or writes.",
+          "inputs": [
+            "app/index-backend-dev.html",
+            "app/core/router.js",
+            "app/modules/cliente.js",
+            "tools/qa/tya-c6-client-route-wait-diagnostic.mjs"
+          ],
+          "outputs": [
+            ".tmp/c6-client-route-wait-diagnostic/report.json",
+            ".tmp/cxorbia-readonly-post-gates-runner/report.json"
           ]
         }
       },
