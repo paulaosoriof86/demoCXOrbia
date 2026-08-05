@@ -4,10 +4,10 @@
    Corte 6 P0 single-login:
    - Firebase Auth sigue siendo la autoridad real.
    - NO crea un gate/pantalla de autenticación separada.
-   - El login normal del tenant/proyecto sigue siendo el unico punto visible.
+   - El login normal del tenant/proyecto sigue siendo el único punto visible.
    - Una sesión Firebase válida se restaura silenciosamente.
-   - Si hace falta autenticar, Usuario + Contraseña se solicitan dentro
-     del mismo flujo visible del login del producto.
+   - Usuario + Contraseña se capturan exclusivamente en #loginForm,
+     usando #lgUser y #lgPass.
    - Usuario + namespace se traducen a un identificador Firebase interno.
    - Nunca guarda password/token/UID en localStorage.
    ============================================================ */
@@ -23,6 +23,7 @@ window.CX = window.CX || {};
   let currentContext = null;
   let resolveInteractive = null;
   let rejectInteractive = null;
+  let selectedRole = '';
 
   function list(value){
     if(Array.isArray(value)) return value.map(String).map(function(x){return x.trim();}).filter(Boolean);
@@ -126,7 +127,7 @@ window.CX = window.CX || {};
       authNamespace: claimNamespace || expectedNamespace,
       authenticated: true,
       provider: 'firebase',
-      source: 'custom-claims-current-rules',
+      source: 'custom-claims-current-rules'
     };
   }
 
@@ -152,7 +153,7 @@ window.CX = window.CX || {};
       scopeProjectId: ctx.projectIds.length === 1 ? ctx.projectIds[0] : undefined,
       projectIds: ctx.projectIds.slice(),
       scopePaises: ctx.country ? [ctx.country] : undefined,
-      clienteRole: isClient ? 'director' : undefined,
+      clienteRole: isClient ? 'director' : undefined
     };
     CX.session.view = null;
     CX.session.save();
@@ -161,15 +162,25 @@ window.CX = window.CX || {};
   function namespaceForSelectedRole(role){
     const r = String(role || '').trim().toLowerCase();
     if(r === 'shopper') return 'shopper';
-    if(STAFF_ROLES.has(r)) return 'staff';
+    if(STAFF_ROLES.has(r) || r === 'cliente' || r === 'client') return 'staff';
     return '';
   }
 
   function selectedRoleLabel(role){
     const r = String(role || '').trim().toLowerCase();
     if(r === 'shopper') return 'Shopper / Evaluador';
+    if(r === 'cliente' || r === 'client') return 'Portal del Cliente';
     if(STAFF_ROLES.has(r)) return 'Administración / Coordinación';
     return roleLabel(r);
+  }
+
+  function roleMatchesSelection(ctx, role){
+    const selected = String(role || '').trim().toLowerCase();
+    const actual = String(ctx && ctx.role || '').trim().toLowerCase();
+    if(selected === 'shopper') return actual === 'shopper';
+    if(selected === 'cliente' || selected === 'client') return actual === 'cliente' || actual === 'client';
+    if(selected === 'admin') return STAFF_ROLES.has(actual);
+    return selected === actual;
   }
 
   function authErrorMessage(err){
@@ -177,8 +188,8 @@ window.CX = window.CX || {};
     if(/auth\/(wrong-password|invalid-credential|user-not-found|invalid-email)/i.test(code) || /LOGIN_REQUIRED/i.test(code)){
       return 'Usuario o contraseña no válidos.';
     }
-    if(/LOGIN_NAMESPACE_MISMATCH|ROLE_NAMESPACE_MISMATCH/i.test(code)){
-      return 'La cuenta es válida, pero no corresponde al tipo de acceso seleccionado.';
+    if(/LOGIN_NAMESPACE_MISMATCH|ROLE_NAMESPACE_MISMATCH|ROLE_SELECTION_MISMATCH/i.test(code)){
+      return 'La cuenta es válida, pero no corresponde al perfil seleccionado.';
     }
     if(/TENANT_NOT_ALLOWED|PROJECT_SCOPE_REQUIRED|SHOPPER_SCOPE_REQUIRED|ROLE_NOT_ALLOWED/i.test(code)){
       return 'La cuenta es válida, pero no tiene el alcance necesario para este acceso. Solicita revisión al equipo TyA.';
@@ -186,19 +197,52 @@ window.CX = window.CX || {};
     return 'No fue posible validar el acceso. Verifica usuario y contraseña o solicita revisión al equipo TyA.';
   }
 
-  function clearCredentialStep(){
+  function removeLegacyCredentialOverlay(){
     const step = document.getElementById('cxIntegratedAuthStep');
     if(step && step.parentNode) step.parentNode.removeChild(step);
   }
 
+  function visibleLoginForm(){
+    const form = document.getElementById('loginForm');
+    const login = document.getElementById('lgUser');
+    const password = document.getElementById('lgPass');
+    const submit = document.getElementById('lgSubmit');
+    return form && login && password && submit ? {form, login, password, submit} : null;
+  }
+
+  function ensureCredentialError(){
+    const visible = visibleLoginForm();
+    if(!visible) return null;
+    let err = document.getElementById('cxIntegratedAuthError');
+    if(err) return err;
+    err = document.createElement('div');
+    err.id = 'cxIntegratedAuthError';
+    err.setAttribute('aria-live','polite');
+    err.style.cssText = 'display:none;font-size:11.5px;color:#b42318;background:#fef3f2;border-radius:8px;padding:8px 10px;margin:-2px 0 9px';
+    visible.submit.parentNode.insertBefore(err, visible.submit);
+    return err;
+  }
+
   function setCredentialError(message){
-    const err = document.getElementById('cxIntegratedAuthError');
+    const err = ensureCredentialError();
     if(!err) return;
     err.textContent = message || '';
     err.style.display = message ? 'block' : 'none';
   }
 
-  async function signIn(login, password, namespace){
+  function markSelectedRole(role){
+    selectedRole = String(role || '').trim().toLowerCase();
+    const form = document.getElementById('loginForm');
+    if(form) form.dataset.selectedRole = selectedRole;
+    document.querySelectorAll('#login .role-btn[data-role]').forEach(function(button){
+      const active = String(button.dataset.role || '').toLowerCase() === selectedRole;
+      button.setAttribute('aria-pressed', active ? 'true' : 'false');
+      button.dataset.selected = active ? 'true' : 'false';
+    });
+    setCredentialError('');
+  }
+
+  async function signIn(login, password, namespace, requestedRole){
     ensureFirebase();
     const ns = normalizeNamespace(namespace);
     const providerEmail = await internalFirebaseEmail(login, ns);
@@ -206,6 +250,7 @@ window.CX = window.CX || {};
     try{
       const cred = await auth.signInWithEmailAndPassword(providerEmail, String(password || ''));
       const ctx = await contextFromUser(cred.user, ns);
+      if(requestedRole && !roleMatchesSelection(ctx, requestedRole)) throw new Error('ROLE_SELECTION_MISMATCH');
       currentContext = ctx;
       applyCxSession(ctx);
       if(resolveInteractive){
@@ -250,70 +295,100 @@ window.CX = window.CX || {};
     return readyPromise;
   }
 
-  function showCredentialStep(selectedRole){
-    const namespace = namespaceForSelectedRole(selectedRole);
+  async function submitVisibleLogin(){
+    const visible = visibleLoginForm();
+    if(!visible) return;
+    removeLegacyCredentialOverlay();
+    setCredentialError('');
+    const role = selectedRole || String(visible.form.dataset.selectedRole || '').trim().toLowerCase();
+    const namespace = namespaceForSelectedRole(role);
+    if(!namespace){
+      setCredentialError('Selecciona primero el perfil con el que vas a ingresar.');
+      return;
+    }
+    const login = String(visible.login.value || '').trim();
+    const password = String(visible.password.value || '');
+    if(!login || !password){
+      setCredentialError('Completa usuario y contraseña.');
+      return;
+    }
+    visible.submit.disabled = true;
+    visible.submit.textContent = 'Validando...';
+    try{
+      await signIn(login, password, namespace, role);
+      visible.password.value = '';
+      visible.login.value = '';
+      visible.submit.textContent = 'Cargando...';
+    }catch(e){
+      visible.password.value = '';
+      setCredentialError(authErrorMessage(e));
+      visible.submit.disabled = false;
+      visible.submit.textContent = 'Ingresar';
+      visible.password.focus();
+    }
+  }
+
+  function bindVisibleLoginForm(){
+    removeLegacyCredentialOverlay();
+    const visible = visibleLoginForm();
+    if(!visible || visible.form.__cxSingleFormAuthBound) return visible;
+    visible.form.__cxSingleFormAuthBound = true;
+    ensureCredentialError();
+    visible.form.addEventListener('submit', function(event){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      submitVisibleLogin();
+    }, true);
+    return visible;
+  }
+
+  function showCredentialStep(role){
+    removeLegacyCredentialOverlay();
+    const namespace = namespaceForSelectedRole(role);
     if(!namespace){
       if(CX.ui && CX.ui.toast) CX.ui.toast('Este perfil aún no tiene una identidad Firebase habilitada en Corte 6.','warn');
       return;
     }
-    const loginRoot = document.getElementById('login');
-    const card = loginRoot && loginRoot.querySelector('.lg2-card, .login-card');
-    if(!card) return;
-    clearCredentialStep();
-
-    const step = document.createElement('div');
-    step.id = 'cxIntegratedAuthStep';
-    step.style.cssText = 'margin-top:14px;padding-top:14px;border-top:1px solid var(--border);text-align:left';
-    step.innerHTML =
-      '<div style="font-size:12px;font-weight:800;color:var(--t1);margin-bottom:3px">'+selectedRoleLabel(selectedRole)+'</div>'+
-      '<div style="font-size:11.5px;color:var(--t3);line-height:1.45;margin-bottom:10px">Ingresa con tu usuario y contraseña habituales de TyA.</div>'+
-      '<label class="lbl" for="cxIntegratedAuthLogin">Usuario</label>'+
-      '<input class="inp" id="cxIntegratedAuthLogin" type="text" autocomplete="username" style="width:100%;margin-bottom:9px">'+
-      '<label class="lbl" for="cxIntegratedAuthPassword">Contraseña</label>'+
-      '<input class="inp" id="cxIntegratedAuthPassword" type="password" autocomplete="current-password" style="width:100%;margin-bottom:9px">'+
-      '<div id="cxIntegratedAuthError" aria-live="polite" style="display:none;font-size:11.5px;color:#b42318;background:#fef3f2;border-radius:8px;padding:8px 10px;margin-bottom:9px"></div>'+
-      '<div class="flex" style="justify-content:flex-end;gap:8px">'+
-        '<button class="btn btn-ghost btn-sm" type="button" id="cxIntegratedAuthBack">Volver</button>'+
-        '<button class="btn btn-pr btn-sm" type="button" id="cxIntegratedAuthSubmit">Ingresar</button>'+
-      '</div>';
-    card.appendChild(step);
-
-    const loginEl = step.querySelector('#cxIntegratedAuthLogin');
-    const passEl = step.querySelector('#cxIntegratedAuthPassword');
-    const submit = step.querySelector('#cxIntegratedAuthSubmit');
-    const back = step.querySelector('#cxIntegratedAuthBack');
-    loginEl.focus();
-
-    back.addEventListener('click', function(){ clearCredentialStep(); });
-    async function submitAuth(){
-      setCredentialError('');
-      const login = String(loginEl.value || '').trim();
-      const password = String(passEl.value || '');
-      if(!login || !password){ setCredentialError('Completa usuario y contraseña.'); return; }
-      submit.disabled = true;
-      submit.textContent = 'Validando...';
-      try{
-        await signIn(login, password, namespace);
-        passEl.value = '';
-        loginEl.value = '';
-        submit.textContent = 'Cargando...';
-      }catch(e){
-        passEl.value = '';
-        setCredentialError(authErrorMessage(e));
-        submit.disabled = false;
-        submit.textContent = 'Ingresar';
-        passEl.focus();
+    const visible = bindVisibleLoginForm();
+    if(!visible) return;
+    markSelectedRole(role);
+    if(currentContext){
+      if(roleMatchesSelection(currentContext, role)){
+        applyCxSession(currentContext);
+        if(CX.app && typeof CX.app.enter === 'function') CX.app.enter();
+      }else{
+        setCredentialError('La sesión activa no corresponde al perfil seleccionado. Cierra sesión e ingresa con la cuenta correcta.');
       }
+      return;
     }
-    submit.addEventListener('click', submitAuth);
-    passEl.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); submitAuth(); } });
+    visible.login.focus();
+  }
+
+  function resetVisibleLoginState(){
+    selectedRole = '';
+    removeLegacyCredentialOverlay();
+    const visible = bindVisibleLoginForm();
+    if(visible){
+      visible.form.dataset.selectedRole = '';
+      visible.submit.disabled = false;
+      visible.submit.textContent = 'Ingresar';
+    }
+    document.querySelectorAll('#login .role-btn[data-role]').forEach(function(button){
+      button.setAttribute('aria-pressed','false');
+      button.dataset.selected = 'false';
+    });
+    setCredentialError('');
   }
 
   function enterAfterBackendReady(){
     if(!currentContext || !CX.app || typeof CX.app.enter !== 'function') return;
     applyCxSession(currentContext);
-    clearCredentialStep();
+    removeLegacyCredentialOverlay();
     CX.app.enter();
+  }
+
+  function protectedLoginEnabled(){
+    return cfg.enabled === true && cfg.previewMode === true && cfg.devPreviewAuth && cfg.devPreviewAuth.enabled === true;
   }
 
   function wrapAppLoginAndLogout(){
@@ -324,16 +399,14 @@ window.CX = window.CX || {};
     const originalEnter = typeof CX.app.enter === 'function' ? CX.app.enter.bind(CX.app) : null;
 
     CX.app.showLogin = function(){
-      clearCredentialStep();
-      if(originalShowLogin) return originalShowLogin();
+      removeLegacyCredentialOverlay();
+      const result = originalShowLogin ? originalShowLogin() : undefined;
+      resetVisibleLoginState();
+      return result;
     };
 
     CX.app.selectRole = function(role){
-      if(cfg.enabled === true && cfg.previewMode === true && cfg.devPreviewAuth && cfg.devPreviewAuth.enabled === true){
-        if(currentContext){
-          applyCxSession(currentContext);
-          return originalEnter ? originalEnter() : undefined;
-        }
+      if(protectedLoginEnabled()){
         showCredentialStep(role);
         return;
       }
@@ -341,9 +414,10 @@ window.CX = window.CX || {};
     };
 
     CX.app.enter = function(){
-      if(cfg.enabled === true && cfg.previewMode === true && cfg.devPreviewAuth && cfg.devPreviewAuth.enabled === true){
+      if(protectedLoginEnabled()){
         if(!currentContext){
           if(originalShowLogin) originalShowLogin();
+          resetVisibleLoginState();
           return;
         }
         applyCxSession(currentContext);
@@ -358,9 +432,11 @@ window.CX = window.CX || {};
         readyPromise = null;
         resolveInteractive = null;
         rejectInteractive = null;
-        clearCredentialStep();
+        selectedRole = '';
+        removeLegacyCredentialOverlay();
         if(CX.session) CX.session.clear();
         if(originalShowLogin) originalShowLogin();
+        resetVisibleLoginState();
         if(CX.ui && CX.ui.toast) CX.ui.toast('Sesión cerrada','');
         return;
       }
@@ -368,6 +444,28 @@ window.CX = window.CX || {};
     };
 
     CX.app.__firebaseBrowserAuthWrapped = true;
+    bindVisibleLoginForm();
+  }
+
+  function installFinalSingleFormRoleGuard(){
+    if(!CX.app || CX.app.__c6SingleFormRoleGuard) return;
+    const previous = typeof CX.app.selectRole === 'function' ? CX.app.selectRole.bind(CX.app) : null;
+    CX.app.selectRole = function(role){
+      if(protectedLoginEnabled()){
+        removeLegacyCredentialOverlay();
+        showCredentialStep(role);
+        return;
+      }
+      if(previous) return previous.apply(CX.app, arguments);
+    };
+    CX.app.__c6SingleFormRoleGuard = true;
+    removeLegacyCredentialOverlay();
+    bindVisibleLoginForm();
+  }
+
+  function bootLoginBridge(){
+    wrapAppLoginAndLogout();
+    setTimeout(installFinalSingleFormRoleGuard, 0);
   }
 
   CX.backendAuth = {
@@ -381,20 +479,22 @@ window.CX = window.CX || {};
       readyPromise = null;
       resolveInteractive = null;
       rejectInteractive = null;
+      selectedRole = '';
       if(CX.session) CX.session.clear();
     },
     showForRole: showCredentialStep,
     isReady: function(){ return !!currentContext; },
+    selectedRole: function(){ return selectedRole; },
+    singleVisibleForm: true
   };
 
   if(CX.bus && typeof CX.bus.on === 'function'){
     CX.bus.on('backend-ready', enterAfterBackendReady);
     CX.bus.on('backend-error', function(payload){
-      const step = document.getElementById('cxIntegratedAuthStep');
-      if(step && payload && payload.message) setCredentialError('El acceso fue validado, pero no fue posible cargar el contexto autorizado. Solicita revisión al equipo TyA.');
+      if(payload && payload.message) setCredentialError('El acceso fue validado, pero no fue posible cargar el contexto autorizado. Solicita revisión al equipo TyA.');
     });
   }
 
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wrapAppLoginAndLogout);
-  else wrapAppLoginAndLogout();
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootLoginBridge);
+  else bootLoginBridge();
 })();
