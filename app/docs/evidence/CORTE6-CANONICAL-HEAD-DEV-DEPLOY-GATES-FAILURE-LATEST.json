@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.c6.canonical-head-single-dev-deploy-failure.v1",
-  "generatedAt": "2026-08-05T14:06:02.153Z",
+  "generatedAt": "2026-08-05T14:10:51.286Z",
   "decision": "FAIL_C6_PREDEPLOY_OR_HOSTING_DEPLOY_STOP_RETRY",
-  "failedStage": "select_existing_credentials_v6__LIVE_HR_VISITS_MISMATCH_660",
+  "failedStage": "credentials_readonly",
   "sourceLock": {
     "schemaVersion": "cxorbia.c6.canonical-head-source-lock.v1",
-    "generatedAt": "2026-08-05T14:05:07.554Z",
-    "sourceLockHead": "26062218d1f2527f6815caf99f94b3cea94944da",
-    "triggerHead": "bea71429a10e2755afe9f3fd755d7262773c89af",
-    "lockedAppTree": "13efd1fcaa44a2556813d7fc321fd219bc810550",
-    "currentAppTree": "13efd1fcaa44a2556813d7fc321fd219bc810550",
-    "lockedQaTree": "b15eabb5e43a91313b68f0ecb6cea6f2d02ed68f",
-    "currentQaTree": "b15eabb5e43a91313b68f0ecb6cea6f2d02ed68f",
+    "generatedAt": "2026-08-05T14:09:54.163Z",
+    "sourceLockHead": "06e120d11776307cd63dbc78ed72b8b814a3a0a7",
+    "triggerHead": "868995dc402f537019c9e087b794b9ceb42792cd",
+    "lockedAppTree": "d705a7847f91fe68f6340c3650cd5a84980901a8",
+    "currentAppTree": "d705a7847f91fe68f6340c3650cd5a84980901a8",
+    "lockedQaTree": "93469b7a22f32c878e487b2625e21dcb9f74d40a",
+    "currentQaTree": "93469b7a22f32c878e487b2625e21dcb9f74d40a",
     "appFiles": 2386,
-    "appBytes": 17404319,
-    "appManifestSha256": "907011fd0e122bf52cf19e0f36702b40c94991266910bffd61820ab48125b63a",
+    "appBytes": 17405237,
+    "appManifestSha256": "ecc424338458fa7c671aacab5e685ecc51f1198b33d8afeff9121392912fc2de",
     "criticalQa": [
       {
         "path": "tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs",
@@ -46,7 +46,7 @@
       },
       {
         "path": "tools/qa/cxorbia-c6-existing-users-e2e-envelope-compat.mjs",
-        "sha256": "0d87587aed5b227631fd6d895b098fb42293850becb4099c344d920bba42a37d"
+        "sha256": "917dd202cae2265e85e2a4c71a3c139872a0c21a97a9afdb6203a495d6b2667d"
       },
       {
         "path": "tools/qa/cxorbia-c6-client-auth-materialization.mjs",
