@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.c6.canonical-head-source-lock.v1",
-  "generatedAt": "2026-08-03T00:52:21.748Z",
-  "sourceLockHead": "b908daa8c9cce0bd1c06cb05e3aceb9ff1b98beb",
-  "triggerHead": "32506d18507ed7b9b6729eca89137f37f83d78ee",
-  "lockedAppTree": "ef0b80be9ff828f7e5d29f8b5732a3d6e8a284aa",
-  "currentAppTree": "ef0b80be9ff828f7e5d29f8b5732a3d6e8a284aa",
-  "lockedQaTree": "db41d3a201387a7e33c099f71defba65fb8acf1e",
-  "currentQaTree": "db41d3a201387a7e33c099f71defba65fb8acf1e",
-  "appFiles": 2321,
-  "appBytes": 15864403,
-  "appManifestSha256": "3e3526a071da1a176f89db3fa44c8b3579a9b95954144433aeb80c737004b6e3",
+  "generatedAt": "2026-08-05T13:55:58.056Z",
+  "sourceLockHead": "57039432a1868da13b2bdd8ce7e681d72ed9e773",
+  "triggerHead": "436ba2a1dfac15c545a61160f90c982b0581a23c",
+  "lockedAppTree": "85b23e38e553b40398da5ca24747a77c4342103d",
+  "currentAppTree": "85b23e38e553b40398da5ca24747a77c4342103d",
+  "lockedQaTree": "8b8a20c83466643655f287d64c009821eaa074a0",
+  "currentQaTree": "8b8a20c83466643655f287d64c009821eaa074a0",
+  "appFiles": 2386,
+  "appBytes": 17419332,
+  "appManifestSha256": "8d260c30394ae26e647b3d8478609043b23fc48c6f2cf9d5782f19aee06dd481",
   "criticalQa": [
     {
       "path": "tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs",
@@ -37,7 +37,7 @@
     },
     {
       "path": "tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs",
-      "sha256": "278cae769b1dca7220f8dbf9ede2b587a09f09d1902dad033ea1107e2dafdd2a"
+      "sha256": "67f62d0e8a875b6f26874414a1a54a2f236465ecf4fd3bd9dfee6f1533123db5"
     },
     {
       "path": "tools/qa/cxorbia-c6-existing-users-e2e-envelope-compat.mjs",
@@ -45,7 +45,7 @@
     },
     {
       "path": "tools/qa/cxorbia-c6-client-auth-materialization.mjs",
-      "sha256": "a43d66f71a53a1d7fd9a1e56eb98841453779e138a2d366fb90c18999cfeaecb"
+      "sha256": "3a4252d0babaaf2d2a56278a250a8f270c1a0964b8e3814612f0093c8ed4bcea"
     }
   ],
   "deployConfigPath": "firebase.deploy.json",
