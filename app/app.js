@@ -3,36 +3,6 @@
    ============================================================ */
 window.CX = window.CX || {};
 
-CX.loginCountryEntries = function(countries){
-  return (Array.isArray(countries) ? countries : []).map(item=>{
-    const raw = typeof item === 'string' ? item : (item && (item.id || item.c || item.code || item.country));
-    if(!raw)return null;
-    const code=String(raw).toUpperCase();
-    return {id:code,name:(item&&item.name)||(CX.paisName?CX.paisName(code):code),flag:CX.paisFlag?CX.paisFlag(code):code};
-  }).filter(Boolean);
-};
-
-CX.loginOrbitHTML = function(){
-  const nodes=[['CLIENTES',0],['TECNOLOGÍA',60],['PERSONAS',120],['OPERACIÓN',180],['PROCESOS',240],['INFORMACIÓN',300]]
-    .map(([label,angle])=>{const a=(angle-90)*Math.PI/180;return{label,left:50+45*Math.cos(a),top:50+45*Math.sin(a),dx:50+33*Math.cos(a),dy:50+33*Math.sin(a)};});
-  return `<div class="login-orbit-wrap" aria-hidden="true">
-    <svg class="login-orbit" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" focusable="false">
-      <circle class="login-orbit-ring login-orbit-ring-dash" cx="50" cy="50" r="46"></circle>
-      <circle class="login-orbit-ring" cx="50" cy="50" r="45"></circle>
-      <circle class="login-orbit-ring" cx="50" cy="50" r="33"></circle>
-      <circle class="login-orbit-ring" cx="50" cy="50" r="19"></circle>
-      ${nodes.map(n=>`<line class="login-orbit-spoke" x1="50" y1="50" x2="${n.dx.toFixed(2)}" y2="${n.dy.toFixed(2)}"></line>`).join('')}
-      ${nodes.map(n=>`<circle class="login-orbit-dot" cx="${n.dx.toFixed(2)}" cy="${n.dy.toFixed(2)}" r="1"></circle>`).join('')}
-      <g class="login-orbit-sat login-orbit-sat-a"><circle cx="50" cy="4" r="1.2"></circle></g>
-      <g class="login-orbit-sat login-orbit-sat-b"><circle cx="83" cy="50" r="0.9"></circle></g>
-      <g class="login-orbit-sat login-orbit-sat-c"><circle cx="50" cy="31" r="0.8"></circle></g>
-      <circle class="login-orbit-core" cx="50" cy="50" r="1.4"></circle>
-    </svg>
-    ${nodes.map(n=>`<span class="login-orbit-node" style="left:${n.left.toFixed(2)}%;top:${n.top.toFixed(2)}%">${n.label}</span>`).join('')}
-    <div class="login-orbit-label"><b>Gravicentra <em>CX</em></b><span>CORE</span></div>
-  </div>`;
-};
-
 /* ---------- Favicon dinámico = logo de la consultora ---------- */
 CX.setFavicon = function(){
   try{
@@ -155,63 +125,69 @@ CX.app = {
         </div>`
           : `<div class="flex" style="gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px">${altRolesBtnsHTML}</div>`)
       : '';
-    const countryEntries = CX.loginCountryEntries(paises);
-    const flagsRow = countryEntries.length
-      ? `<div class="login-flags" role="list" aria-label="Países configurados">${countryEntries.map(c=>`<span class="cflag" role="listitem" title="${c.name}" aria-label="${c.name}"><span class="cflag-emoji" aria-hidden="true">${c.flag}</span><span>${c.name}</span></span>`).join('')}</div>`
+    const flagsRow = paises.length
+      ? `<div class="login-flags">${paises.slice(0,8).map(c=>`<span class="cflag" title="${CX.paisName?CX.paisName(c):c}"><img src="https://flagcdn.com/24x18/${c.toLowerCase()}.png" alt="${c}" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'${c}',className:'cflag-txt'}))"><span>${c}</span></span>`).join('')}${paises.length>8?`<span style="font-size:11px;color:var(--t3);align-self:center">+${paises.length-8}</span>`:''}</div>`
       : '';
     /* logo pequeño de CXOrbia como "desarrollado por" (siempre visible en el pie del login) */
     const cxLogo = `<svg width="16" height="16" viewBox="0 0 64 64" style="vertical-align:middle"><rect width="64" height="64" rx="14" fill="#0d2740"/><circle cx="32" cy="32" r="15" fill="none" stroke="#4ab4e6" stroke-width="6" stroke-dasharray="58 26"/><circle cx="44" cy="22" r="4.5" fill="#fff"/></svg>`;
     const devForFooter = `<div class="login-poweredby">${cxLogo} <span>Desarrollado por <b>CXOrbia</b></span></div>`;
+    /* CLOUD V7 — pantalla de login canónica estilo Emergent: dos columnas.
+       Izq: panel orbit de marca (producto Gravicentra CX). Der: acceso corporativo.
+       Se elimina de ESTA pantalla el copy de demo/validación; los accesos alternos y el
+       área de test se conservan en la lógica pero fuera del login canónico (via _isDevAccess). */
+    const NODES_V7=[['CLIENTES',0],['TECNOLOGÍA',60],['PERSONAS',120],['OPERACIÓN',180],['PROCESOS',240],['INFORMACIÓN',300]];
+    const pol=(a,r)=>{const t=(a-90)*Math.PI/180;return[50+r*Math.cos(t),50+r*Math.sin(t)];};
+    const orbitSVG=`<svg class="lo-orbit" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs><radialGradient id="loCore" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#4a86e8" stop-opacity=".14"/><stop offset="100%" stop-color="#4a86e8" stop-opacity="0"/></radialGradient></defs>
+        <circle class="lo-ring lo-ring--d" cx="50" cy="50" r="46"/><circle class="lo-ring" cx="50" cy="50" r="45"/><circle class="lo-ring" cx="50" cy="50" r="33"/><circle class="lo-ring" cx="50" cy="50" r="19"/>
+        <circle cx="50" cy="50" r="10" fill="url(#loCore)"/>
+        ${NODES_V7.map(([,a])=>{const[dx,dy]=pol(a,33);return `<line class="lo-spoke" x1="50" y1="50" x2="${dx.toFixed(1)}" y2="${dy.toFixed(1)}"/>`;}).join('')}
+        ${NODES_V7.map(([,a])=>{const[dx,dy]=pol(a,33);return `<circle class="lo-dot" cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="0.9"/>`;}).join('')}
+        <g class="lo-sat lo-sat--a"><circle cx="50" cy="4" r="1.15"/></g>
+        <g class="lo-sat lo-sat--b"><circle cx="83" cy="50" r="0.9"/></g>
+        <g class="lo-sat lo-sat--c"><circle cx="50" cy="31" r="0.8"/></g>
+        <circle class="lo-core" cx="50" cy="58" r="0"/>
+      </svg>
+      ${NODES_V7.map(([label,a])=>{const[lx,ly]=pol(a,45);return `<span class="lo-node" style="left:${lx.toFixed(1)}%;top:${ly.toFixed(1)}%">${label}</span>`;}).join('')}
+      <div class="lo-corelabel"><span class="lo-brand">Gravicentra<em>CX</em></span><span class="lo-core-lbl"><i></i>CORE</span></div>`;
+    const flagsV7 = paises.length
+      ? `<div class="lg2-flags" role="list">${paises.map(c=>`<span role="listitem" class="lg2-flag" title="${CX.paisName?CX.paisName(c):c}"><img src="https://flagcdn.com/24x18/${c.toLowerCase()}.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'${c}'}))"><span>${CX.paisName?CX.paisName(c):c}</span></span>`).join('')}</div>`
+      : '';
+    const roleCard=(role,ic,tt,dd)=>`<button class="lg2-role role-btn role-${role}" data-role="${role}"><span class="lg2-role__ic">${ic}</span><span class="lg2-role__b"><span class="lg2-role__t">${tt}</span><span class="lg2-role__d">${dd}</span></span></button>`;
+    /* tenant visible en la franja: nunca el nombre de producto legacy 'CXOrbia' */
+    const tenantName = (b.clientName && b.clientName!=='CXOrbia') ? b.clientName : (b.consultora || 'T&A Consultores');
     lg.innerHTML=`
-      <div class="login-shell-v6">
-      <aside class="login-orbit-panel">
-        <div class="login-product-brand"><span class="login-product-mark">◆</span><b>Gravicentra CX</b></div>
-        ${CX.loginOrbitHTML()}
-        <div class="login-field-copy"><span>FIELD OPERATIONS INTELLIGENCE</span><p>Donde cada visita, cada dato y cada decisión orbitan alrededor de lo que importa hoy.</p></div>
-      </aside>
-      <main class="login-form-panel">
-      <div class="login-card">
-        <div class="login-brand">
-          ${brandBlock}
+      <div class="lg2">
+        <header class="lg2-strip">
+          <div class="lg2-strip__tenant">${(b.clientName&&hasClientLogo)?`<img class="lg2-strip__logo lg2-strip__logo--img" src="${b.logoUrl||b.logo}" alt="${tenantName}">`:`<span class="lg2-strip__logo lg2-strip__logo--txt">${((tenantName).match(/[A-Za-z&]+/g)||['T&A'])[0].slice(0,3)}</span><span class="lg2-strip__id"><b>${tenantName}</b><small>${b.clientTag||'Consultora · Field Operations'}</small></span>`}</div>
+          <div class="lg2-strip__center"><span class="lg2-strip__micro">ECOSISTEMA CENTRADO EN EL CLIENTE</span><span class="lg2-strip__sub">Consultora · Field Operations</span></div>
+        </header>
+        <div class="lg2-body">
+        <aside class="lg2-aside">
+          <div class="lg2-stage">${orbitSVG}</div>
+          <div class="lg2-intel"><p class="lg2-intel__t">FIELD OPERATIONS INTELLIGENCE</p><p class="lg2-intel__p">Donde <strong>cada visita, cada dato y cada decisión</strong> orbitan alrededor de lo que <strong>realmente importa hoy.</strong></p><p class="lg2-intel__foot">v1.0 · ${new Date().getFullYear()} · Powered by Gravicentra CX</p></div>
+        </aside>
+        <main class="lg2-main">
+          <form class="lg2-card" id="loginForm" novalidate>
+            <div class="lg2-head">${(b.clientName&&hasClientLogo)?`<img class="lg2-tenantlogo" src="${b.logoUrl||b.logo}" alt="">`:''}<button type="button" class="lg2-lang" id="lgLang" aria-label="Idioma">🌐 ES</button></div>
+            <span class="lg2-eyebrow">INGRESO</span>
+            <h1 class="lg2-h">Iniciá sesión</h1>
+            <p class="lg2-sub">Accedé con tu cuenta corporativa para gestionar operaciones de campo.</p>
+            ${paises.length?`<div class="lg2-field lg2-field--flags">${flagsV7}</div>`:''}
+            <div class="lg2-field"><span class="lg2-label lg2-label--eyebrow">PERFIL</span><div class="lg2-roles">
+              ${showAdminBtn?roleCard('admin','🖥️','Administración / Coordinación','Operación, proyectos, finanzas y configuración'):''}
+              ${showClienteBtn?roleCard('cliente','📈','Portal del Cliente','Resultados, score por sucursal, acciones y reportes'):''}
+              ${showShopperBtn?roleCard('shopper','📱','Shopper / Evaluador','Portal móvil: visitas, certificación y pagos'):''}
+            </div></div>
+            <div class="lg2-field"><label class="lg2-label" for="lgUser">Usuario o correo corporativo</label><input id="lgUser" class="lg2-input" type="text" autocomplete="username" name="username" inputmode="text" autocapitalize="none" spellcheck="false" placeholder="usuario o correo"></div>
+            <div class="lg2-field"><label class="lg2-label" for="lgPass">Contraseña</label><input id="lgPass" class="lg2-input" type="password" autocomplete="current-password" name="password" placeholder="••••••••"></div>
+            <button type="submit" class="lg2-submit" id="lgSubmit">Ingresar</button>
+            ${showShopperReg?`<div class="lg2-foot"><a id="goReg">¿Sos evaluador nuevo? Registrate acá →</a></div>`:''}
+          </form>
+        </main>
         </div>
-        <div class="login-divider"></div>
-        <div class="login-title">${functionalTitle}</div>
-        <div class="login-sub">Selecciona un perfil para entrar al ${b.demoMode?'demo':'sistema'}</div>
-        ${flagsRow}
-        ${showAdminBtn?`<button class="role-btn role-admin" data-role="admin">
-          <div class="r-ic">🖥️</div>
-          <div><div class="r-t">Administración / Coordinación</div>
-          <div class="r-d">Operación, proyectos, finanzas y configuración</div></div>
-        </button>`:''}
-        ${showClienteBtn?`<button class="role-btn role-cliente" data-role="cliente">
-          <div class="r-ic">📈</div>
-          <div><div class="r-t">Portal del Cliente (marca evaluada)</div>
-          <div class="r-d">Resultados, score por sucursal, acciones y reportes</div></div>
-        </button>`:''}
-        ${showShopperBtn?`<button class="role-btn role-shopper" data-role="shopper">
-          <div class="r-ic">📱</div>
-          <div><div class="r-t">Shopper / Evaluador</div>
-          <div class="r-d">Portal móvil: visitas, certificación y pagos</div></div>
-        </button>`:''}
-        ${showShopperReg?`<div style="text-align:center;margin-top:6px"><a id="goReg" style="font-size:12.5px;color:var(--brand);font-weight:600;cursor:pointer">¿Eres evaluador nuevo? Regístrate aquí →</a></div>`:''}
-        ${altRolesBlock}
-        ${(()=>{let us=[];try{us=JSON.parse(localStorage.getItem('cx_users')||'[]');}catch(e){}
-          if(!us.length) return '';
-          return `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
-            <div style="font-size:11px;color:var(--t3);text-align:center;margin-bottom:6px">O entra como un usuario invitado (Configuración → Usuarios)</div>
-            <div class="flex" style="gap:6px;justify-content:center">
-              <select class="sel" id="loginUserSel" style="width:auto;max-width:220px;font-size:12px">${us.map((u,i)=>`<option value="${i}">${u.name} · ${(CX.PERSONAS.find(p=>p.id===u.persona)||{}).label||u.rol}</option>`).join('')}</select>
-              <button class="btn btn-soft btn-sm" id="loginAsUser">Entrar</button>
-            </div>
-          </div>`;})()}
-        ${(b.clientName&&hasClientLogo)?`<div class="login-devfor">Plataforma operativa para <b>${b.clientName}</b></div>`:''}
-        ${devForFooter}
-        ${(()=>{const std=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;const iOS=/iPad|iPhone|iPod/.test(navigator.userAgent);if(std)return '<div style="text-align:center;margin-top:14px;font-size:11px;color:var(--green)">✓ App instalada</div>';return `<div style="text-align:center;margin-top:14px"><button class="btn btn-ghost btn-sm" id="pwaBtn">📲 ${iOS?'Instalar (guía iOS)':'Instalar como app'}</button></div>`;})()}
-        ${b.demoMode?`<div style="text-align:center;margin-top:10px;font-size:11px;color:var(--t3)">
-          <span class="bdg bdg-a">● Demo comercial · datos ficticios</span></div>`:''}
-      </div>
-      </main>
       </div>`;
+    lg.querySelector('#loginForm')?.addEventListener('submit',(e)=>{e.preventDefault();});
     lg.querySelectorAll('.role-btn').forEach(b=>b.addEventListener('click',()=>{
       /* CORTE 3 P0-7 — en DEV, el acceso Shopper permite elegir una identidad real EXISTENTE desde
          el flujo visible (no inyección oculta). En live/producción se mantiene el guard fail-closed. */

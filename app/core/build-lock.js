@@ -1,21 +1,21 @@
-/* CXOrbia source lock runtime Cloud V6 Core Operations + Shopper */
+/* CXOrbia source lock runtime Cloud V7.2-P0F1 responsive */
 var CX_SOURCE_LOCK = {
-  manifestFile: 'docs/MANIFEST-CLOUD-V6-CORE-OPS-SHOPPER-20260804.json',
-  aggregateSha256: '1f1af3a316c9dabf1df1ef5b07a7abd2fe62a8da09e704719912be7af328e825',
-  fileCount: 2351,
-  generatedAt: '2026-08-04T20:44:07.0101444Z',
-  candidateId: 'PAQUETE-CLOUD-FRONTEND-ACUMULADO-V6',
-  candidateSha256: '0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407',
-  packageSha256: '0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407',
+  manifestFile: 'docs/MANIFEST-V7-2-P0F1-RESPONSIVE-20260804.json',
+  aggregateSha256: 'ecc725866acc3eb8aab292000be3ec31d1c46b5c14a53c8889fa7d6716a997e2',
+  fileCount: 2377,
+  generatedAt: '2026-08-05T05:35:36.3102786Z',
+  candidateId: 'CLOUD-V7-2-P0F1-RESPONSIVE',
+  candidateSha256: '09606d1cc133a1e1e138be76bd8c6aadeb1f70d7967d506aae3f81bf5e9c6fce',
+  packageSha256: '09606d1cc133a1e1e138be76bd8c6aadeb1f70d7967d506aae3f81bf5e9c6fce',
   repository: 'paulaosoriof86/demoCXOrbia',
   branch: 'docs-tya-v6-v71-audit',
   pullRequest: 7,
-  headBefore: 'a2ccfb0c3709cad6f5e6a9c16dcb7f9293532d6e',
-  status: 'V6_EMPALMED_PENDING_DEV_LAB_AND_VISUAL',
+  headBefore: '4b52a23b0d7eb7bbff679bd921b0af5dd9a30181',
+  status: 'V7_2_P0F1_EMPALMED_PENDING_POST_GATES',
   releaseSlice: 'ADMIN_OPERACIONES_PLUS_SHOPPER',
   devOnlyLab: true,
   production: false,
-  note: 'BUILD_ID = primeros 16 hex del aggregateSha256; app/ excluye build-lock y manifest Cloud V6.'
+  note: 'BUILD_ID = primeros 16 hex del aggregateSha256; app/ excluye build-lock y manifest V7.2-P0F1.'
 };
 var CX_BUILD_ID = CX_SOURCE_LOCK.aggregateSha256.slice(0, 16);
 if (typeof window !== 'undefined') {
