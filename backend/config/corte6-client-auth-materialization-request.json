@@ -5,9 +5,9 @@
   "authorizedAt": "2026-08-05T08:55:00-06:00",
   "authorizedBy": "Paula",
   "authorizationText": "Autorizo un único repair DEV de la membresía Cliente tenants/tya/users/cxorbia-c6-client-tya-cinepolis-v1, con snapshot previo, máximo un Firestore membership write, cero creación de usuarios o cambios de contraseña, idempotencia, readback y rollback dry-run; únicamente con PASS, continuar con el único Hosting DEV ya autorizado y todavía no consumido.",
-  "status": "authorized_execute_once",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_runtime_hold",
+  "enabled": false,
+  "consumed": true,
   "allowedExecutions": 1,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -55,5 +55,9 @@
   "geminiCalls": 0,
   "paymentsWrites": 0,
   "merge": false,
-  "production": false
+  "production": false,
+  "consumedAt": "2026-08-05T15:05:38.539Z",
+  "decision": "HOLD_PHASE_A_RUNTIME_AFTER_ACCESS_PASS",
+  "failedStage": "runtime_remote_parity",
+  "nextGate": "STOP_RETRY_CLASSIFIED_ROOT_CAUSE_REQUIRED"
 }
