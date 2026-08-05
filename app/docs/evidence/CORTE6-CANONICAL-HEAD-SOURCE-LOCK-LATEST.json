@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.c6.canonical-head-source-lock.v1",
-  "generatedAt": "2026-08-05T15:09:24.926Z",
-  "sourceLockHead": "dba3c346130aa51d0b0db91c38865899556e4cdb",
-  "triggerHead": "7c7d08a0aa6719ae8e53be0f31754cd1e60d9bee",
-  "lockedAppTree": "779120c604a05d970d81f17e0f5c936eace4e0bf",
-  "currentAppTree": "779120c604a05d970d81f17e0f5c936eace4e0bf",
+  "generatedAt": "2026-08-05T16:28:24.881Z",
+  "sourceLockHead": "eca4d938e9f09ae446b41355bfaefcbd7e33cf7b",
+  "triggerHead": "dc955da8086e879dc6072b16611065fed7f0a687",
+  "lockedAppTree": "1f9896f5e15009fd5d7ca2cd6a22f129fc6c536b",
+  "currentAppTree": "1f9896f5e15009fd5d7ca2cd6a22f129fc6c536b",
   "lockedQaTree": "aead24d215551c081c83a5a8ae0730e65b9dfec1",
   "currentQaTree": "aead24d215551c081c83a5a8ae0730e65b9dfec1",
-  "appFiles": 2391,
-  "appBytes": 17406996,
-  "appManifestSha256": "99a0ab7affda7a51d1e30a8f949a215f2ca7360b596a12e972f09ee63c699ad6",
+  "appFiles": 2401,
+  "appBytes": 17441509,
+  "appManifestSha256": "e927f18c5225768ed822f49ccf300ce47dce7e677a32317b8195a954c723bddd",
   "criticalQa": [
     {
       "path": "tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs",

@@ -39,9 +39,9 @@
   "sourceGateRunId": 31025221503,
   "sourceGateArtifactId": 8938295964,
   "sourceGateArtifactDigest": "sha256:5482f4d00b69ac37b926771f69226efdd18ff4aa36e22288ba9c3d5578c4d9ad",
-  "status": "authorized_execute_once_second_corrective_hosting_dev",
-  "enabled": true,
-  "consumed": false,
+  "status": "consumed_fail_stop_retry",
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -99,5 +99,9 @@
   "paymentsWrites": 0,
   "merge": false,
   "production": false,
-  "stopRetryOnFailure": true
+  "stopRetryOnFailure": true,
+  "consumedAt": "2026-08-05T16:32:08.484Z",
+  "decision": "FAIL_C6_REMOTE_GATES_AFTER_SINGLE_DEV_HOSTING_DEPLOY_STOP_RETRY",
+  "nextGate": "ROOT_CAUSE_REVIEW_NO_AUTOMATIC_REDEPLOY",
+  "stopRetry": true
 }
