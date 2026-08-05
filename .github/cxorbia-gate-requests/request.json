@@ -1,26 +1,17 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "phase-a-composition-plus-lab-source-contract-20260804-01",
-  "enabled": false,
-  "issuedAt": "2026-08-04T21:20:00-06:00",
-  "consumedAt": "2026-08-04T21:22:00-06:00",
-  "status": "consumed_pass",
-  "decision": "PASS_READONLY_POST_GATES",
-  "compositionDecision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
-  "labSourceContractDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
-  "workflowRunId": 30971991900,
-  "artifactId": 8916850770,
-  "artifactDigest": "sha256:75953c600b68450a11cfac6667ac5b5cfa8eceea5c94a6a0856850a501e77dd8",
+  "requestId": "phase-a-v7-2-p0f1-composition-plus-lab-20260805-01",
+  "enabled": true,
+  "issuedAt": "2026-08-05T07:20:00-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "646a05a0f54cf33236b2e1e30122d8c52f30d2a1",
-  "requestCommitSha": "6d5abeb4cea8541f12a3851601dbaae681f50ab7",
+  "targetHeadSha": "fb8d8897bb24f2f634bc5594dca4e8d610daf910",
   "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
   ],
-  "allowedExecutions": 0,
+  "allowedExecutions": 1,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": false,
@@ -45,5 +36,5 @@
   },
   "containsPii": false,
   "containsSecrets": false,
-  "purpose": "Consumed successful immutable source-only validation combining Phase A complete composition and DEV scenario laboratory source-contract gates. A new request and exact target HEAD are required after a future frontend GO is applied."
+  "purpose": "Read-only revalidation of the reconciled V7.2-P0F1 canonical composition authority and DEV scenario laboratory source contract. No deploy or writes."
 }
