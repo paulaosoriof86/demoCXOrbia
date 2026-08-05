@@ -1,70 +1,14 @@
 {
   "schemaVersion": "cxorbia.c6.canonical-head-single-dev-deploy-failure.v1",
-  "generatedAt": "2026-08-05T14:21:53.709Z",
+  "generatedAt": "2026-08-05T15:07:14.177Z",
   "decision": "FAIL_C6_PREDEPLOY_OR_HOSTING_DEPLOY_STOP_RETRY",
-  "failedStage": "client_auth_materialization__readback__CLIENT_MEMBERSHIP_READBACK_MISMATCH",
-  "sourceLock": {
-    "schemaVersion": "cxorbia.c6.canonical-head-source-lock.v1",
-    "generatedAt": "2026-08-05T14:20:52.812Z",
-    "sourceLockHead": "fc65fe85d12744dfcfeb21f682c23a4cebb788da",
-    "triggerHead": "9f12d05d6dcb57eb97621343dd2265e8da5cda4f",
-    "lockedAppTree": "937217538fa0062b5f911e9858b3367fe16f7bbb",
-    "currentAppTree": "937217538fa0062b5f911e9858b3367fe16f7bbb",
-    "lockedQaTree": "6e8952ae1b18ec0eb4adf1a265dd815d56635a83",
-    "currentQaTree": "6e8952ae1b18ec0eb4adf1a265dd815d56635a83",
-    "appFiles": 2386,
-    "appBytes": 17405198,
-    "appManifestSha256": "8a73ab5373587f824effefd7e180daad663f4db101933c562d7578883d3e6bba",
-    "criticalQa": [
-      {
-        "path": "tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs",
-        "sha256": "ee905967b151aeef42985913523483c1129261816d175ec6d9fbb74c25d699f2"
-      },
-      {
-        "path": "tools/qa/tya-c6-shopper-new-tab-authority-root-fix-gate.mjs",
-        "sha256": "531dd1ddd884dd6899203dbfb79547329e55b777bc38c7c7496f3a2549260c41"
-      },
-      {
-        "path": "tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs",
-        "sha256": "f8db1163f9e0f058d93f83a36564bf89d5d77cb732642465883b2af68b573634"
-      },
-      {
-        "path": "tools/qa/tya-c6-client-auth-browser-smoke.mjs",
-        "sha256": "5110c5ee040e2802a0311a315a038df190df5332af58938591385380d5d4451c"
-      },
-      {
-        "path": "tools/qa/tya-c6-remote-parity-gate.mjs",
-        "sha256": "63e4de25321729a244707cbef3dd5430d58a7c9c21023f76d08761fef9f3f1c0"
-      },
-      {
-        "path": "tools/qa/tya-c6-remote-finance-model-diagnostic.mjs",
-        "sha256": "8d5b316631e5f1d6588f2c33ee99fae79d04d7e24d331ef18973849990fc53e6"
-      },
-      {
-        "path": "tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs",
-        "sha256": "67f62d0e8a875b6f26874414a1a54a2f236465ecf4fd3bd9dfee6f1533123db5"
-      },
-      {
-        "path": "tools/qa/cxorbia-c6-existing-users-e2e-envelope-compat.mjs",
-        "sha256": "917dd202cae2265e85e2a4c71a3c139872a0c21a97a9afdb6203a495d6b2667d"
-      },
-      {
-        "path": "tools/qa/cxorbia-c6-client-auth-materialization.mjs",
-        "sha256": "d00560a5c9f0dce1c37791e3b80a1ac15fd5c24919768a1eb498e4bf73522d4e"
-      }
-    ],
-    "deployConfigPath": "firebase.deploy.json",
-    "deployConfigSha256": "0f31046cfb83bd0d7d6f71cf0be3477191b36142ad09538458b63f4bd630c0f3",
-    "runtimeAndQaExact": true,
-    "hostingDeploysBeforeGate": 0,
-    "providerWrites": 0,
-    "production": false
-  },
+  "failedStage": "source_lock_and_static_gates",
+  "sourceLock": null,
   "deployAttempted": false,
   "deploySucceeded": false,
-  "staticCumulativeLogTail": "      \"missingNav\": []\n    },\n    \"reportKit\": {\n      \"provider\": true,\n      \"client\": true,\n      \"admin\": true,\n      \"shopper\": true,\n      \"finance\": true,\n      \"pdf\": true,\n      \"xlsx\": true,\n      \"pptx\": true\n    },\n    \"externalPins\": {\n      \"firebase\": true,\n      \"sheetjs\": true,\n      \"mammoth\": true\n    },\n    \"secretScan\": {\n      \"hits\": [],\n      \"scannerSourcesChecked\": [\n        \"tools/migration/tya-phase-a-rc-smoke-gate.mjs\",\n        \"tools/quality/tya-p0-operational-copy-scanner.mjs\"\n      ]\n    },\n    \"devScenarioLab\": {\n      \"visibleShellPresent\": true,\n      \"controlledRunnerEvidenceRequired\": true,\n      \"ingestContractPresent\": true,\n      \"falseScenarioPassAbsent\": true,\n      \"falseCleanupPassAbsent\": true\n    }\n  },\n  \"failures\": [],\n  \"warnings\": [\n    {\n      \"code\": \"P1_SUPERSEDED_AB_OVERLAY_LOADED\",\n      \"detail\": \"The partial A+B overlay remains loaded. Do not remove it without a proved no-loss delta.\"\n    },\n    {\n      \"code\": \"P1_PDF_CHART_EXPORT_DEBT\",\n      \"detail\": \"Some print paths may omit charts. Rows/scope/source must still match.\"\n    },\n    {\n      \"code\": \"P2_XLSX_PRESENTATION_DEBT\",\n      \"detail\": \"Spreadsheet formatting is basic but data contract remains required.\"\n    }\n  ],\n  \"safety\": {\n    \"providerWrites\": 0,\n    \"deploys\": 0,\n    \"firestoreWrites\": 0,\n    \"authWrites\": 0,\n    \"storageWrites\": 0,\n    \"hrWrites\": 0,\n    \"makeCalls\": 0,\n    \"geminiCalls\": 0,\n    \"paymentWrites\": 0,\n    \"merge\": false,\n    \"production\": false\n  },\n  \"decision\": \"PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS\"\n}\nPASS PHASE_A_COMPLETE_COMPOSITION_SOURCE_GATE · active manifest, exact blobs, roles, report kit, Lab markers and safe-state PASS\nPASS C6_UNIFIED_NORMAL_ENTRY\nPASS C6_NORMAL_ENTRY_CANONICAL_FLAGS\nPASS C6_NO_FROZEN_RUNTIME_COUNTS\nPASS C6_NO_DIRECT_ROLE_OVERRIDE\nPASS C6_NO_HIDDEN_VISUAL_SESSION_OVERLAY\nPASS C6_PRODUCT_LOGIN_AND_HR_AUTHORITY\nPASS C6_TECHNICAL_E2E_PRESERVED_HUMAN_UNAFFECTED\nPASS C6_CANONICAL_AB_DOMAIN_SHOPPER_FINANCE\nPASS C6_PROJECT_FINANCIAL_MODEL_LOAD_ORDER\nPASS C6_DELEGATED_GUARD_LOAD_ORDER\nPASS AB_COMPOSITION_AFTER_MODULES_BEFORE_C6_DOMAIN\nPASS C6_SHOPPER_AUTH_GUARD_LOAD_ORDER\nPASS C6_AUTHENTICATED_PREVIEW_CONFIG\nPASS C6_SINGLE_VISIBLE_PRODUCT_LOGIN\nPASS C6_HR_AUTHORITY_DYNAMIC_EXACT_COMPOSITION\nPASS C6_LIVE_KPI_PHASE_HISTORY_CERTIFICATION\nPASS C6_SHOPPER_PROFILE_HISTORY_CONTRACT\nPASS C6_UNIFIED_CLIENT_HISTORY_PROJECT_CONFIG\nPASS C6_EARLY_ROLE_CLICK_CANNOT_BYPASS_AUTH\nPASS C6_PROTECTED_SHOPPER_CARD_CANNOT_USE_DEV_PICKER\nPASS C6_PROJECT_CREATION_DIRECT_DELEGATED_SELECTABLE\nPASS C6_REGIONAL_FRONTEND_OPTION_PENDING_CLAUDE · backend contract supports regional; wizard option remains a documented frontend delta\nPASS C6_PROJECT_MODEL_CONFIGURABLE_FAIL_CLOSED_NOT_NAME_HARDCODED\nPASS C6_LOCAL_DELEGATED_REGIONAL_BACKEND_CONTRACT\nPASS C6_ROYALTIES_AND_LOCAL_TAX_DIRECT_ONLY\nPASS C6_DELEGATED_AND_UNCONFIGURED_INCOME_FAIL_CLOSED\nPASS C6_CINEPOLIS_DELEGATED_CONFIGURATION\nPASS C6_CINEPOLIS_NO_LOCAL_ROYALTY_REGRESSION\nPASS C6_UNIFIED_RUNTIME_DELEGATED_COMMISSION_MODEL\nPASS C6_NO_DELEGATED_ROYALTY_IN_RUNTIME_METADATA\nPASS C6_NO_ZERO_HONORARIO_CONFIG\nPASS C6_CURRENT_HR_PERIOD_SNAPSHOT · 14\nPASS C6_CURRENT_HR_RANGE_2025_06_TO_2026_07 · 2025-06..2026-07\nPASS C6_NO_AUGUST_WITHOUT_SOURCE\nPASS C6_READONLY_NO_PRODUCTION\nDECISION REDACTED_LONG_VALUE\n",
-  "staticRootFixLogTail": "PASS C6_SHOPPER_NEW_TAB_RESTORED_SESSION_CONTRACT\nPASS C6_SHOPPER_NEW_TAB_BOUNDED_HR_RETRY\nPASS C6_SHOPPER_NEW_TAB_BOOT_RECONCILE_SCHEDULER\nPASS C6_SHOPPER_NEW_TAB_AUTH_READY_RECONCILE\nPASS C6_SHOPPER_NEW_TAB_BACKEND_READY_RECONCILE\nPASS C6_SHOPPER_NEW_TAB_DOM_READY_RECONCILE\nPASS C6_SHOPPER_NEW_TAB_FOCUS_VISIBILITY_RECOVERY\nPASS C6_SHOPPER_NEW_TAB_PROTECTED_BACKEND_GUARD\nPASS C6_SHOPPER_NEW_TAB_RUNTIME_DEPENDENCY_GUARD\nPASS C6_SHOPPER_NEW_TAB_IDEMPOTENT_RECONCILE_GUARD\nPASS C6_SHOPPER_NEW_TAB_NEW_TAB_RECOVERY_METADATA\nPASS C6_SHOPPER_NEW_TAB_ZERO_PROVIDER_WRITES\nPASS C6_SHOPPER_NEW_TAB_NO_WRITE_APIS\nDECISION PASS_C6_SHOPPER_NEW_TAB_AUTHORITY_ROOT_FIX_STATIC_GATE\n",
-  "firebaseCliVersion": "15.25.1\n",
+  "staticCumulativeLogTail": null,
+  "staticRootFixLogTail": null,
+  "firebaseCliVersion": null,
   "deployLogTail": null,
   "firebaseDebugTail": null,
   "parity": null,
