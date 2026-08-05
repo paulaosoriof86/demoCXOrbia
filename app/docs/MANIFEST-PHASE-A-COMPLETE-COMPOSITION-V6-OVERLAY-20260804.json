@@ -36,7 +36,7 @@
       "${s.pass}"
     ]
   },
-  "status": "C6_DEV_ROOT_ENTRYPOINT_P0_SOURCE_FIX_PREPARED__SOURCE_STATIC_PENDING__NO_DEPLOY",
+  "status": "C6_DEV_ROOT_ENTRYPOINT_SOURCE_FIX_APPLIED__SOURCE_STATIC_PASS__HOSTING_PREDEPLOY_HOLD__STOP_RETRY__NO_DEPLOY",
   "criticalFileOverrides": [
     {
       "path": "app/app.js",
@@ -140,7 +140,7 @@
       "path": ".github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml",
       "gitBlob": "a01f1f9be4891a9cc707707c58ce47abb706284b",
       "authority": "C6_DEV_ROOT_ENTRYPOINT_P0_AUTHORIZED_20260805",
-      "decision": "ONE_SHOT_HOSTING_DEV_AND_ROOT_GATES"
+      "decision": "HOLD_PREDEPLOY_HEREDOC_INDENTATION_REQUIRES_NEW_AUTHORIZATION"
     }
   ],
   "preservation": {
@@ -154,13 +154,16 @@
     "singleBranch": true
   },
   "visualDecision": {
-    "status": "P0_ROOT_ENTRYPOINT_SOURCE_FIX_PREPARED_SOURCE_STATIC_PENDING",
-    "reason": "The DEV root served the demo shell while automated gates used index-backend-dev.html. The authorized fix redirects only / to the canonical human entry and adds permanent source and remote parity gates."
+    "status": "P0_ROOT_ENTRYPOINT_SOURCE_STATIC_PASS_HOSTING_PREDEPLOY_HOLD",
+    "reason": "The source correction and permanent root parity gates passed source/static. The one-shot Hosting workflow stopped before Firebase because indented Bash heredoc terminators were not recognized; no deploy occurred and the remote root remains unfixed."
   },
   "runtimeDecision": {
-    "scenarioLab": "SOURCE_CONTRACT_MUST_INCLUDE_ROOT_ENTRYPOINT_PARITY",
+    "scenarioLab": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT_WITH_ROOT_ENTRYPOINT_PARITY",
+    "sourceStaticPass": true,
+    "hostingExecution": "STOP_RETRY_PREDEPLOY_WORKFLOW_SHELL_PARSE",
+    "rootRuntimeExecuted": false,
     "deployAllowedByThisManifest": false,
-    "deployRequiresSourceStaticPass": true
+    "newAuthorizationRequired": true
   },
   "safety": {
     "secrets": false,
