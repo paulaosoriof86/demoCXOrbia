@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "cxorbia.atomic-apply-request.v1",
+  "requestId": "c6-client-membership-only-claims-guard-20260805-01",
+  "mode": "focal_text_patch_v1",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "expectedParentSha": "1e02eb3f17a9ccf85bd2e45b03422fee327f0139",
+  "targetPath": "tools/qa/cxorbia-c6-client-auth-materialization.mjs",
+  "expectedCurrentGitBlobSha": "17809c30d856633ef1027d6f2786b02ab934eb43",
+  "findText": "  if(!claimsExact(target.customClaims||{})){\n    const merged={...(target.customClaims||{}),...requiredClaims};\n    await auth.setCustomUserClaims(uid,merged);authWrites++;claimsWrites++;\n    target=await auth.getUser(uid);\n  }",
+  "replaceText": "  if(!claimsExact(target.customClaims||{})){\n    if(process.env.CXORBIA_MEMBERSHIP_ONLY_REPAIR==='1')fail('MEMBERSHIP_ONLY_REPAIR_CLAIMS_DRIFT');\n    const merged={...(target.customClaims||{}),...requiredClaims};\n    await auth.setCustomUserClaims(uid,merged);authWrites++;claimsWrites++;\n    target=await auth.getUser(uid);\n  }",
+  "commitMessage": "fix(c6): forbid claims writes in membership-only repair",
+  "deploy": false,
+  "merge": false,
+  "production": false,
+  "providerWrites": false,
+  "dataWrites": false
+}
