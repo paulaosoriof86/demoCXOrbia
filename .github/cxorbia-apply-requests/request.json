@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "cxorbia.atomic-apply-request.v1",
+  "requestId": "c6-client-auth-diagnostic-stage-20260805-01",
+  "mode": "focal_text_patch_v1",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "expectedParentSha": "90803129a55652eb8345b1ed6602f7097f4f75bb",
+  "targetPath": "tools/qa/cxorbia-c6-client-auth-materialization.mjs",
+  "expectedCurrentGitBlobSha": "17809c30d856633ef1027d6f2786b02ab934eb43",
+  "findText": "function fail(code,detail={}){\n  const err=new Error(code);\n  err.code=code;\n  err.detail=detail;\n  throw err;\n}\nfunction output(payload){\n  console.log(JSON.stringify({",
+  "replaceText": "function writeDiagnosticStage(value){\n  if(!process.env.OUT_DIR)return;\n  try{\n    fs.mkdirSync(process.env.OUT_DIR,{recursive:true});\n    const safe=String(value||'unknown').replace(/[^A-Z0-9_:-]/gi,'_').slice(0,180);\n    fs.writeFileSync(path.join(process.env.OUT_DIR,'stage'),safe+'\\n','utf8');\n  }catch{}\n}\nfunction fail(code,detail={}){\n  writeDiagnosticStage(`client_auth_materialization__${mode}__${code}`);\n  const err=new Error(code);\n  err.code=code;\n  err.detail=detail;\n  throw err;\n}\nfunction output(payload){\n  writeDiagnosticStage(`client_auth_materialization__${mode}__${payload?.decision||'OUTPUT'}`);\n  console.log(JSON.stringify({",
+  "commitMessage": "chore(c6): expose sanitized client auth diagnostic stage",
+  "deploy": false,
+  "merge": false,
+  "production": false,
+  "providerWrites": false,
+  "dataWrites": false
+}
