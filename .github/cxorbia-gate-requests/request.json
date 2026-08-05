@@ -1,13 +1,22 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
   "requestId": "c6-remote-domain-semantic-client-predicate-rerun-20260805-01",
-  "enabled": true,
+  "enabled": false,
   "issuedAt": "2026-08-05T11:36:00-06:00",
-  "status": "authorized_execute_once",
+  "consumedAt": "2026-08-05T11:45:30-06:00",
+  "status": "consumed_pass_semantic_harness",
+  "decision": "PASS_READONLY_POST_GATES",
+  "semanticDecision": "PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC",
+  "predicateVersion": "session-view-canonical-render-v1",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "targetHeadSha": "fb2251ebf53603990e09bdd513aa51990418839f",
+  "requestCommitSha": "a98c8cb52c08ade9d8d2c012eb95c0a906985eed",
+  "workflowRunId": 31025221503,
+  "workflowJobId": 92392748352,
+  "artifactId": 8940832844,
+  "artifactDigest": "sha256:787116945227cef56422a33988692b485988ee3f64e11bb8b444b590665c454b",
   "profile": "PHASE_A_COMPLETE_RUNTIME_MULTIROLE",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_RUNTIME_MULTIROLE"
@@ -20,7 +29,17 @@
     "#view text non-empty",
     "renderException=null"
   ],
-  "allowedExecutions": 1,
+  "observations": {
+    "routeId": "cli_dashboard",
+    "routeAccepted": true,
+    "viewExists": true,
+    "pageHeaderExists": true,
+    "viewTextLength": 690,
+    "renderException": null,
+    "panoramaVisible": true,
+    "blocked": false
+  },
+  "allowedExecutions": 0,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": true,
@@ -50,7 +69,10 @@
   "containsSecrets": false,
   "authorizedBy": "Paula",
   "authorizationScope": "Correct only the Client predicate of the remote semantic harness by replacing the #nav-cli_dashboard.active dependency with session.view=cli_dashboard, #view, #view .ph, non-empty view text and renderException=null; execute one semantic read-only rerun and stop for human validation. No runtime or frontend changes, deploy, Cloud Run, provider writes, merge or production.",
-  "stopAfterSemanticGate": true,
-  "stopRetryOnFailure": true,
-  "purpose": "One harness-only semantic rerun after the focal diagnosis proved the prior client_route_wait timeout belonged to the navigation-element assumption rather than the product."
+  "repositoryUnchangedByGate": true,
+  "credentialsExposed": false,
+  "tokensExposed": false,
+  "telemetryNote": "The optional PR comment step returned HTTP 403, but the gate, artifact upload, commit status, cleanup and enforced result all passed; PR metadata is updated through the authorized GitHub connector.",
+  "nextGate": "HUMAN_VISUAL_VALIDATION_AND_FREEZE__NO_DEPLOY__NO_MERGE__NO_PRODUCTION",
+  "purpose": "Consumed successful harness-only semantic rerun. The corrected predicate passed and the prior client_route_wait blocker is closed without any product or Hosting change."
 }
