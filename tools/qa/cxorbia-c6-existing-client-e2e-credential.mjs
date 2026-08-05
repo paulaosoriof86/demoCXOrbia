@@ -82,6 +82,10 @@ existing.schemaVersion='cxorbia.c6.e2e-private-credentials.v10';
 existing.client={login,password,namespace:authNamespace,role,tenantId,projectIds:[projectId]};
 fs.mkdirSync(path.dirname(outPath),{recursive:true});
 fs.writeFileSync(outPath,JSON.stringify(existing,null,2)+'\n',{encoding:'utf8',mode:0o600});
-console.log(JSON.stringify({decision:'PASS_C6_EXISTING_CANONICAL_CLIENT_CREDENTIAL_SELECTION',role,namespace:authNamespace,tenantId,projectScope:true,
+console.log(JSON.stringify({
+  decision:'PASS_C6_EXISTING_CLIENT_CREDENTIAL_SELECTION',
+  canonicalDecision:'PASS_C6_EXISTING_CANONICAL_CLIENT_CREDENTIAL_SELECTION',
+  role,namespace:authNamespace,tenantId,projectScope:true,
   identityFingerprint:sha256(uid),membershipFingerprint:sha256(membershipPath),claimsValid:true,membershipValid:true,passwordSignIn:true,
-  authWrites:0,passwordChanges:0,passwordResets:0,membershipWrites:0,valuesExported:false,credentialsExposed:false,production:false}));
+  authWrites:0,passwordChanges:0,passwordResets:0,membershipWrites:0,valuesExported:false,credentialsExposed:false,production:false
+}));
