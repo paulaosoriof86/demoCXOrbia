@@ -1,11 +1,11 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-04  
-**Estado vivo:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_COMPLETED__CLOUD_V7_HOLD__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_COMPLETED__CLOUD_V7_HOLD__LAB_SOURCE_ONLY_PREPARED__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Corrección documental
 
-Pendiente cerrado mediante corrección:
+Pendiente cerrado:
 
 - no volver a describir V6 como empalmada;
 - distinguir materialización provisional de empalme aprobado/completado.
@@ -14,50 +14,24 @@ Pendiente cerrado mediante corrección:
 
 ### P0-1 — paquete fuera de alcance
 
-La entrega contiene 259 archivos y una aplicación completa. No puede enviarse a empalme.
-
-Debe eliminarse todo salvo:
-
-- `app/app.js`;
-- `app/styles/layout.css`;
-- manifest;
-- reporte;
-- capturas y comparación solicitadas.
+La entrega contiene 259 archivos y una aplicación completa. Debe regresar como delta estrecho con `app/app.js`, `app/styles/layout.css`, manifest, reporte y evidencias.
 
 ### P0-2 — responsive del Login
 
-Corregir superposición del panel orbital y formulario en:
+Corregir superposición del panel orbital y formulario en `768×1024`, `412×915` y `390×844`.
 
-- `768×1024`;
-- `412×915`;
-- `390×844`.
+## 3. Cloud V7 — P1/P2
 
-Criterios:
+- manifest con hashes;
+- cinco capturas reales;
+- comparación V6/V7;
+- evidencia 1/2/8/12 países;
+- reporte específico;
+- doce países sin cortar botón/registro;
+- fallback seguro de banderas;
+- retirar documentación histórica y manifests antiguos.
 
-- formulario debajo del panel oscuro;
-- `INGRESO`, título, subtítulo, países y `PERFIL` visibles;
-- primera tarjeta completa;
-- órbita visible;
-- cero scroll horizontal general.
-
-## 3. Cloud V7 — P1
-
-- crear `MANIFEST.json` con path, bytes y SHA-256;
-- entregar las cinco capturas requeridas;
-- entregar comparación V6/V7 en `1440×900`;
-- entregar evidencia de 1/2/8/12 países;
-- crear reporte V7 específico;
-- evitar corte del registro en `1440×900` con 12 países;
-- definir fallback seguro para banderas si falla `flagcdn.com`.
-
-## 4. Cloud V7 — P2
-
-- retirar documentación histórica del ZIP;
-- retirar manifests antiguos;
-- corregir mojibake en cualquier documento realmente incluido;
-- validar si el footer `v1.0 · 2026 · Powered by Gravicentra CX` pertenece al criterio de marca.
-
-## 5. Carril de empalme
+## 4. Carril de empalme
 
 ```text
 EXECUTION_LANE_READY_FOR_APPLY = false
@@ -70,25 +44,34 @@ Después de recibir la corrección:
 1. extraer ZIP;
 2. confirmar checkout autenticado y rama viva;
 3. comparar delta exacto;
-4. ejecutar auditoría semántica, sintáctica y visual;
-5. únicamente con GO y sin P0, aplicar delta directamente.
+4. auditoría sintáctica, semántica y visual;
+5. únicamente con GO sin P0, aplicar delta directamente.
 
-## 6. Backend/laboratorio pendiente
+## 5. Laboratorio — preparación source-only cerrada
 
-Sin cambio:
+Ya quedaron creados:
 
-- runner real por UI normal;
-- `CORE_OPERATIONS_ADMIN`;
-- `SHOPPER_FULL_CYCLE`;
-- consistencia cross-módulo;
-- tres recargas y nueva pestaña;
-- exportaciones/evidencia;
+- contrato del runner;
+- schema de evidencia;
+- gate source-only;
+- matriz Admin/Operaciones + Shopper;
+- política `AUDIT-*`;
 - fingerprints;
-- cleanup exacto.
+- cleanup exacto;
+- decisiones PASS/FAIL/P0 cleanup.
 
-No ejecutar antes del único deploy DEV de una candidata visual aprobada.
+Pendiente antes de ejecutarlo:
 
-## 7. Primer release slice
+- candidata frontend final aprobada;
+- empalme completado;
+- source/static final PASS;
+- único Hosting DEV;
+- autorización aplicable de escrituras temporales;
+- snapshot y runner real.
+
+No ejecutar antes del deploy DEV final.
+
+## 6. Primer release slice
 
 `ADMIN/OPERACIONES + SHOPPER`.
 
@@ -105,13 +88,13 @@ Validar después del deploy autorizado:
 
 Portal Cliente continúa en carril paralelo.
 
-## 8. Deuda viva no bloqueante por sí sola
+## 7. Deuda viva no bloqueante por sí sola
 
 - overlay A+B superseded;
 - PDF puede omitir gráficas;
 - Excel básico.
 
-## 9. Secuencia exacta
+## 8. Secuencia exacta
 
 ```text
 CORRECCIÓN CLOUD V7
@@ -120,18 +103,20 @@ CORRECCIÓN CLOUD V7
 → AUDITORÍA FINAL
 → GO SIN P0
 → APPLY_DELTA_DIRECTLY
-→ SOURCE/STATIC FINAL
-→ ÚNICO HOSTING DEV AUTORIZADO
+→ SOURCE/STATIC FINAL + GATE DEL LABORATORIO
+→ ÚNICO HOSTING DEV
 → LABORATORIO REAL
 → CLEANUP
 → CHECKPOINT HUMANO
 → CUTOVER AUTORIZADO
 ```
 
-## 10. Estado seguro
+## 9. Estado seguro
 
 - empalme V6 aprobado/completado: no;
 - empalme V7: 0;
+- laboratorio browser/runtime: 0;
+- entidades `AUDIT-*`: 0;
 - Hosting/Cloud Run: 0;
 - provider writes: 0;
 - Auth/Firestore/Storage/HR writes: 0;
