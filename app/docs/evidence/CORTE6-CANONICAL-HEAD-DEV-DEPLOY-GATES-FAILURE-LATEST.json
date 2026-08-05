@@ -1,26 +1,341 @@
 {
   "schemaVersion": "cxorbia.c6.canonical-head-single-dev-deploy-failure.v1",
-  "generatedAt": "2026-08-05T15:07:14.177Z",
-  "decision": "FAIL_C6_PREDEPLOY_OR_HOSTING_DEPLOY_STOP_RETRY",
-  "failedStage": "source_lock_and_static_gates",
-  "sourceLock": null,
-  "deployAttempted": false,
-  "deploySucceeded": false,
-  "staticCumulativeLogTail": null,
-  "staticRootFixLogTail": null,
-  "firebaseCliVersion": null,
-  "deployLogTail": null,
+  "generatedAt": "2026-08-05T15:10:53.619Z",
+  "decision": "FAIL_C6_REMOTE_GATES_AFTER_SINGLE_DEV_HOSTING_DEPLOY_STOP_RETRY",
+  "failedStage": "remote_staff_shopper",
+  "sourceLock": {
+    "schemaVersion": "cxorbia.c6.canonical-head-source-lock.v1",
+    "generatedAt": "2026-08-05T15:09:24.926Z",
+    "sourceLockHead": "dba3c346130aa51d0b0db91c38865899556e4cdb",
+    "triggerHead": "7c7d08a0aa6719ae8e53be0f31754cd1e60d9bee",
+    "lockedAppTree": "779120c604a05d970d81f17e0f5c936eace4e0bf",
+    "currentAppTree": "779120c604a05d970d81f17e0f5c936eace4e0bf",
+    "lockedQaTree": "aead24d215551c081c83a5a8ae0730e65b9dfec1",
+    "currentQaTree": "aead24d215551c081c83a5a8ae0730e65b9dfec1",
+    "appFiles": 2391,
+    "appBytes": 17406996,
+    "appManifestSha256": "99a0ab7affda7a51d1e30a8f949a215f2ca7360b596a12e972f09ee63c699ad6",
+    "criticalQa": [
+      {
+        "path": "tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs",
+        "sha256": "ee905967b151aeef42985913523483c1129261816d175ec6d9fbb74c25d699f2"
+      },
+      {
+        "path": "tools/qa/tya-c6-shopper-new-tab-authority-root-fix-gate.mjs",
+        "sha256": "531dd1ddd884dd6899203dbfb79547329e55b777bc38c7c7496f3a2549260c41"
+      },
+      {
+        "path": "tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs",
+        "sha256": "f8db1163f9e0f058d93f83a36564bf89d5d77cb732642465883b2af68b573634"
+      },
+      {
+        "path": "tools/qa/tya-c6-client-auth-browser-smoke.mjs",
+        "sha256": "5110c5ee040e2802a0311a315a038df190df5332af58938591385380d5d4451c"
+      },
+      {
+        "path": "tools/qa/tya-c6-remote-parity-gate.mjs",
+        "sha256": "63e4de25321729a244707cbef3dd5430d58a7c9c21023f76d08761fef9f3f1c0"
+      },
+      {
+        "path": "tools/qa/tya-c6-remote-finance-model-diagnostic.mjs",
+        "sha256": "8d5b316631e5f1d6588f2c33ee99fae79d04d7e24d331ef18973849990fc53e6"
+      },
+      {
+        "path": "tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs",
+        "sha256": "67f62d0e8a875b6f26874414a1a54a2f236465ecf4fd3bd9dfee6f1533123db5"
+      },
+      {
+        "path": "tools/qa/cxorbia-c6-existing-users-e2e-envelope-compat.mjs",
+        "sha256": "917dd202cae2265e85e2a4c71a3c139872a0c21a97a9afdb6203a495d6b2667d"
+      },
+      {
+        "path": "tools/qa/cxorbia-c6-client-auth-materialization.mjs",
+        "sha256": "08c0fe89ffc018e949cc2d15613c830d7d5b14955589259d987692422db4d153"
+      }
+    ],
+    "deployConfigPath": "firebase.deploy.json",
+    "deployConfigSha256": "0f31046cfb83bd0d7d6f71cf0be3477191b36142ad09538458b63f4bd630c0f3",
+    "runtimeAndQaExact": true,
+    "hostingDeploysBeforeGate": 0,
+    "providerWrites": 0,
+    "production": false
+  },
+  "deployAttempted": true,
+  "deploySucceeded": true,
+  "staticCumulativeLogTail": "      \"missingNav\": []\n    },\n    \"reportKit\": {\n      \"provider\": true,\n      \"client\": true,\n      \"admin\": true,\n      \"shopper\": true,\n      \"finance\": true,\n      \"pdf\": true,\n      \"xlsx\": true,\n      \"pptx\": true\n    },\n    \"externalPins\": {\n      \"firebase\": true,\n      \"sheetjs\": true,\n      \"mammoth\": true\n    },\n    \"secretScan\": {\n      \"hits\": [],\n      \"scannerSourcesChecked\": [\n        \"tools/migration/tya-phase-a-rc-smoke-gate.mjs\",\n        \"tools/quality/tya-p0-operational-copy-scanner.mjs\"\n      ]\n    },\n    \"devScenarioLab\": {\n      \"visibleShellPresent\": true,\n      \"controlledRunnerEvidenceRequired\": true,\n      \"ingestContractPresent\": true,\n      \"falseScenarioPassAbsent\": true,\n      \"falseCleanupPassAbsent\": true\n    }\n  },\n  \"failures\": [],\n  \"warnings\": [\n    {\n      \"code\": \"P1_SUPERSEDED_AB_OVERLAY_LOADED\",\n      \"detail\": \"The partial A+B overlay remains loaded. Do not remove it without a proved no-loss delta.\"\n    },\n    {\n      \"code\": \"P1_PDF_CHART_EXPORT_DEBT\",\n      \"detail\": \"Some print paths may omit charts. Rows/scope/source must still match.\"\n    },\n    {\n      \"code\": \"P2_XLSX_PRESENTATION_DEBT\",\n      \"detail\": \"Spreadsheet formatting is basic but data contract remains required.\"\n    }\n  ],\n  \"safety\": {\n    \"providerWrites\": 0,\n    \"deploys\": 0,\n    \"firestoreWrites\": 0,\n    \"authWrites\": 0,\n    \"storageWrites\": 0,\n    \"hrWrites\": 0,\n    \"makeCalls\": 0,\n    \"geminiCalls\": 0,\n    \"paymentWrites\": 0,\n    \"merge\": false,\n    \"production\": false\n  },\n  \"decision\": \"PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS\"\n}\nPASS PHASE_A_COMPLETE_COMPOSITION_SOURCE_GATE · active manifest, exact blobs, roles, report kit, Lab markers and safe-state PASS\nPASS C6_UNIFIED_NORMAL_ENTRY\nPASS C6_NORMAL_ENTRY_CANONICAL_FLAGS\nPASS C6_NO_FROZEN_RUNTIME_COUNTS\nPASS C6_NO_DIRECT_ROLE_OVERRIDE\nPASS C6_NO_HIDDEN_VISUAL_SESSION_OVERLAY\nPASS C6_PRODUCT_LOGIN_AND_HR_AUTHORITY\nPASS C6_TECHNICAL_E2E_PRESERVED_HUMAN_UNAFFECTED\nPASS C6_CANONICAL_AB_DOMAIN_SHOPPER_FINANCE\nPASS C6_PROJECT_FINANCIAL_MODEL_LOAD_ORDER\nPASS C6_DELEGATED_GUARD_LOAD_ORDER\nPASS AB_COMPOSITION_AFTER_MODULES_BEFORE_C6_DOMAIN\nPASS C6_SHOPPER_AUTH_GUARD_LOAD_ORDER\nPASS C6_AUTHENTICATED_PREVIEW_CONFIG\nPASS C6_SINGLE_VISIBLE_PRODUCT_LOGIN\nPASS C6_HR_AUTHORITY_DYNAMIC_EXACT_COMPOSITION\nPASS C6_LIVE_KPI_PHASE_HISTORY_CERTIFICATION\nPASS C6_SHOPPER_PROFILE_HISTORY_CONTRACT\nPASS C6_UNIFIED_CLIENT_HISTORY_PROJECT_CONFIG\nPASS C6_EARLY_ROLE_CLICK_CANNOT_BYPASS_AUTH\nPASS C6_PROTECTED_SHOPPER_CARD_CANNOT_USE_DEV_PICKER\nPASS C6_PROJECT_CREATION_DIRECT_DELEGATED_SELECTABLE\nPASS C6_REGIONAL_FRONTEND_OPTION_PENDING_CLAUDE · backend contract supports regional; wizard option remains a documented frontend delta\nPASS C6_PROJECT_MODEL_CONFIGURABLE_FAIL_CLOSED_NOT_NAME_HARDCODED\nPASS C6_LOCAL_DELEGATED_REGIONAL_BACKEND_CONTRACT\nPASS C6_ROYALTIES_AND_LOCAL_TAX_DIRECT_ONLY\nPASS C6_DELEGATED_AND_UNCONFIGURED_INCOME_FAIL_CLOSED\nPASS C6_CINEPOLIS_DELEGATED_CONFIGURATION\nPASS C6_CINEPOLIS_NO_LOCAL_ROYALTY_REGRESSION\nPASS C6_UNIFIED_RUNTIME_DELEGATED_COMMISSION_MODEL\nPASS C6_NO_DELEGATED_ROYALTY_IN_RUNTIME_METADATA\nPASS C6_NO_ZERO_HONORARIO_CONFIG\nPASS C6_CURRENT_HR_PERIOD_SNAPSHOT · 14\nPASS C6_CURRENT_HR_RANGE_2025_06_TO_2026_07 · 2025-06..2026-07\nPASS C6_NO_AUGUST_WITHOUT_SOURCE\nPASS C6_READONLY_NO_PRODUCTION\nDECISION REDACTED_LONG_VALUE\n",
+  "staticRootFixLogTail": "PASS C6_SHOPPER_NEW_TAB_RESTORED_SESSION_CONTRACT\nPASS C6_SHOPPER_NEW_TAB_BOUNDED_HR_RETRY\nPASS C6_SHOPPER_NEW_TAB_BOOT_RECONCILE_SCHEDULER\nPASS C6_SHOPPER_NEW_TAB_AUTH_READY_RECONCILE\nPASS C6_SHOPPER_NEW_TAB_BACKEND_READY_RECONCILE\nPASS C6_SHOPPER_NEW_TAB_DOM_READY_RECONCILE\nPASS C6_SHOPPER_NEW_TAB_FOCUS_VISIBILITY_RECOVERY\nPASS C6_SHOPPER_NEW_TAB_PROTECTED_BACKEND_GUARD\nPASS C6_SHOPPER_NEW_TAB_RUNTIME_DEPENDENCY_GUARD\nPASS C6_SHOPPER_NEW_TAB_IDEMPOTENT_RECONCILE_GUARD\nPASS C6_SHOPPER_NEW_TAB_NEW_TAB_RECOVERY_METADATA\nPASS C6_SHOPPER_NEW_TAB_ZERO_PROVIDER_WRITES\nPASS C6_SHOPPER_NEW_TAB_NO_WRITE_APIS\nDECISION PASS_C6_SHOPPER_NEW_TAB_AUTHORITY_ROOT_FIX_STATIC_GATE\n",
+  "firebaseCliVersion": "15.25.1\n",
+  "deployLogTail": "\n\u001b[1m\u001b[37m===\u001b[39m Deploying to 'cxorbia-backend-dev'...\u001b[22m\n\n\u001b[36m\u001b[1mi \u001b[22m\u001b[39m deploying \u001b[1mhosting\u001b[22m\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m beginning deploy...\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m found 2390 files in \u001b[1mapp\u001b[22m\n\u001b[36m\u001b[1mi  hosting:\u001b[22m\u001b[39m adding files to version [0/2390] (\u001b[1m\u001b[32m0%\u001b[39m\u001b[22m)\n\u001b[36m\u001b[1mi  hosting:\u001b[22m\u001b[39m uploading new files [85/87] (\u001b[1m\u001b[32m97%\u001b[39m\u001b[22m)\n\u001b[36m\u001b[1mi  hosting:\u001b[22m\u001b[39m upload complete\n\u001b[32m\u001b[1m✔  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m file upload complete\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m finalizing version...\n\u001b[32m\u001b[1m✔  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m version finalized\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m releasing new version...\n\u001b[32m\u001b[1m✔  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m release complete\n\n\u001b[32m\u001b[1m✔ \u001b[22m\u001b[39m \u001b[1m\u001b[4mDeploy complete!\u001b[24m\u001b[22m\n\n\u001b[1mProject Console:\u001b[22m https://console.firebase.google.com/project/cxorbia-backend-dev/overview\n\u001b[1mHosting URL:\u001b[22m https://cxorbia-backend-dev.web.app\n",
   "firebaseDebugTail": null,
-  "parity": null,
-  "staffShopper": null,
+  "parity": {
+    "schemaVersion": "cxorbia.c6.hosting-dev-remote-parity.v4",
+    "generatedAt": "2026-08-05T15:10:51.230Z",
+    "decision": "PASS_C6_HOSTING_DEV_REMOTE_PARITY_AND_LIVE_HR",
+    "root": "https://cxorbia-backend-dev.web.app",
+    "attempt": 1,
+    "maxAttempts": 30,
+    "allCriticalAssetsMatch": true,
+    "files": [
+      {
+        "path": "index-backend-dev.html",
+        "status": 200,
+        "localSha256": "e3473ac4883f86408b989e938d9f544923219cbac6646158ce0250a9c01f931e",
+        "remoteSha256": "e3473ac4883f86408b989e938d9f544923219cbac6646158ce0250a9c01f931e",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "core/backend-browser-auth.js",
+        "status": 200,
+        "localSha256": "541451e5e8a20b8d08f62e2ab63a5796ec1d4f2dba0ba24cf95f471ef3293e3d",
+        "remoteSha256": "541451e5e8a20b8d08f62e2ab63a5796ec1d4f2dba0ba24cf95f471ef3293e3d",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "core/tya-phase-a-source-safe-preview.js",
+        "status": 200,
+        "localSha256": "009f968ce8221db4fe1a26cf2b6020ffe6b0b157b6e2ae10b133ec9a0e0dfceb",
+        "remoteSha256": "009f968ce8221db4fe1a26cf2b6020ffe6b0b157b6e2ae10b133ec9a0e0dfceb",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-c6-unified-human-runtime-v1.js",
+        "status": 200,
+        "localSha256": "afd9f0a2bce52fe5943772232b4633af7c881884d4da2d6ec2e1535f82c88f6b",
+        "remoteSha256": "afd9f0a2bce52fe5943772232b4633af7c881884d4da2d6ec2e1535f82c88f6b",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-c6-shopper-auth-click-guard-v1.js",
+        "status": 200,
+        "localSha256": "b084c9ed045b855dd92b6018688eca896dbb138f81fe6ab6443dc9ed254bea06",
+        "remoteSha256": "b084c9ed045b855dd92b6018688eca896dbb138f81fe6ab6443dc9ed254bea06",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "status": 200,
+        "localSha256": "a4f1f2667e7c004576c05774c643354d13cf6d86a715b7e966cbe9b82aa66ef0",
+        "remoteSha256": "a4f1f2667e7c004576c05774c643354d13cf6d86a715b7e966cbe9b82aa66ef0",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-cumulative-read-model-v2.js",
+        "status": 200,
+        "localSha256": "107e071e8a34e17111dd9eccd53fa78878d75f12ef47cf6b03b0ed704d45ee12",
+        "remoteSha256": "107e071e8a34e17111dd9eccd53fa78878d75f12ef47cf6b03b0ed704d45ee12",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-c6-domain-consistency-bridge.js",
+        "status": 200,
+        "localSha256": "a9ec50eecb5dc3625363f6f65c40b79cf863129b2f3a48607ca5026e9ded93b4",
+        "remoteSha256": "a9ec50eecb5dc3625363f6f65c40b79cf863129b2f3a48607ca5026e9ded93b4",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-canonical-shopper-portal-v2.js",
+        "status": 200,
+        "localSha256": "71987e67011c384a331f739a362375dc32e20f898cd7b73bd1abe3d111d9a907",
+        "remoteSha256": "71987e67011c384a331f739a362375dc32e20f898cd7b73bd1abe3d111d9a907",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-canonical-finance-read-model-v2.js",
+        "status": 200,
+        "localSha256": "993d3edb51ce5d087b2248366ea7d4efc16108517721f03317fb6433fa70114c",
+        "remoteSha256": "993d3edb51ce5d087b2248366ea7d4efc16108517721f03317fb6433fa70114c",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-project-financial-model-contract-v1.js",
+        "status": 200,
+        "localSha256": "164629e5bc5869eca02e0bfd8110220505e58cd88d11808e279a97bb9b9aad6d",
+        "remoteSha256": "164629e5bc5869eca02e0bfd8110220505e58cd88d11808e279a97bb9b9aad6d",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-delegated-coordination-finance-guard-v1.js",
+        "status": 200,
+        "localSha256": "4a0342d67d14c3d7681326f5aeb7fdf27f1aa13a9999c6e85df5b7c4f9357cb3",
+        "remoteSha256": "4a0342d67d14c3d7681326f5aeb7fdf27f1aa13a9999c6e85df5b7c4f9357cb3",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-canonical-reservations-guard-v2.js",
+        "status": 200,
+        "localSha256": "bc762625bb830bde6b4d64f384f0bc58ae20fdba3e8e5e7fa74702b2aa6a42a0",
+        "remoteSha256": "bc762625bb830bde6b4d64f384f0bc58ae20fdba3e8e5e7fa74702b2aa6a42a0",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "modules/cliente.js",
+        "status": 200,
+        "localSha256": "7efcc315a8e2f0f7f66c97e089d1e3f3aebf6ecc4d91a17177ead0390a041ffd",
+        "remoteSha256": "7efcc315a8e2f0f7f66c97e089d1e3f3aebf6ecc4d91a17177ead0390a041ffd",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "modules/finanzas.js",
+        "status": 200,
+        "localSha256": "3228420f225c083d2077bbbe3d5a21fd79738569b4b483eb120950bd50583a98",
+        "remoteSha256": "3228420f225c083d2077bbbe3d5a21fd79738569b4b483eb120950bd50583a98",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "app.js",
+        "status": 200,
+        "localSha256": "abecbc1bc006218ff7c363a04ea7f5b5296483328887aa472db1fff74252a0f0",
+        "remoteSha256": "abecbc1bc006218ff7c363a04ea7f5b5296483328887aa472db1fff74252a0f0",
+        "match": true,
+        "error": null
+      }
+    ],
+    "liveEndpoint": {
+      "status": 200,
+      "ok": true,
+      "revision": "568813916dbcfb287eeb1f1b17bf80415fd7f8902537d8547ea96d65f427dcaf",
+      "runtimeRead": true,
+      "sourceSafe": true,
+      "contentType": "application/json; charset=utf-8",
+      "responseBytes": 826,
+      "parseableJson": true,
+      "error": null
+    },
+    "safety": {
+      "hostingDeploys": 0,
+      "cloudRunDeploys": 0,
+      "firestoreWrites": 0,
+      "authWrites": 0,
+      "rulesDeploys": 0,
+      "storageWrites": 0,
+      "hrWrites": 0,
+      "merge": false,
+      "production": false
+    }
+  },
+  "staffShopper": {
+    "schemaVersion": "cxorbia.c6.unified-human-auth-browser-smoke-failure.v2",
+    "generatedAt": "2026-08-05T15:10:53.531Z",
+    "decision": "FAIL_C6_UNIFIED_HUMAN_AUTH_CREDENTIAL_STEP",
+    "failedPrincipal": "staff",
+    "before": {
+      "label": "staff_before_role_click",
+      "readyState": "complete",
+      "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
+      "backendEnabled": true,
+      "previewMode": true,
+      "devPreviewAuthEnabled": true,
+      "backendAuthPresent": true,
+      "backendAuthReady": false,
+      "appPresent": true,
+      "firebaseWrapper": true,
+      "clientWrapper": true,
+      "earlyGuardInstalled": true,
+      "earlyGuardIntercepts": 0,
+      "earlyGuardLastRole": null,
+      "directRoleEntryAllowed": false,
+      "integratedStep": false,
+      "integratedLogin": false,
+      "technicalForm": false,
+      "appOn": false,
+      "loginHidden": false,
+      "sessionRole": null,
+      "roleButtons": [
+        {
+          "role": "admin",
+          "visible": true
+        },
+        {
+          "role": "cliente",
+          "visible": true
+        },
+        {
+          "role": "shopper",
+          "visible": true
+        }
+      ],
+      "canonicalLane": "authenticated-human-canonical",
+      "protectedRuntime": true,
+      "loginText": "TyA TyA Consultora · Field Operations ECOSISTEMA CENTRADO EN EL CLIENTE Consultora · Field Operations CLIENTES TECNOLOGÍA PERSONAS OPERACIÓN PROCESOS INFORMACIÓN GravicentraCX CORE FIELD OPERATIONS INTELLIGENCE Donde cada visita, cada dato y cada decisión orbitan alrededor de lo que realmente importa hoy. v1.0 · 2026 · Powered by Gravicentra CX 🌐 ES INGRESO Iniciá sesión Accedé con tu cuenta corporativa para gestionar operaciones de campo. Guatemala Honduras PERFIL 🖥️ Administración / Coordinación Operación, proyectos, finanzas y configuración 📈 Portal del Cliente Resultados, score por sucursal, acciones y reportes 📱 Shopper / Evaluador Portal móvil: visitas, certificación y pagos Usuari"
+    },
+    "after": {
+      "label": "staff_after_role_click",
+      "readyState": "complete",
+      "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
+      "backendEnabled": true,
+      "previewMode": true,
+      "devPreviewAuthEnabled": true,
+      "backendAuthPresent": true,
+      "backendAuthReady": false,
+      "appPresent": true,
+      "firebaseWrapper": true,
+      "clientWrapper": true,
+      "earlyGuardInstalled": true,
+      "earlyGuardIntercepts": 0,
+      "earlyGuardLastRole": null,
+      "directRoleEntryAllowed": false,
+      "integratedStep": false,
+      "integratedLogin": false,
+      "technicalForm": false,
+      "appOn": false,
+      "loginHidden": false,
+      "sessionRole": null,
+      "roleButtons": [
+        {
+          "role": "admin",
+          "visible": true
+        },
+        {
+          "role": "cliente",
+          "visible": true
+        },
+        {
+          "role": "shopper",
+          "visible": true
+        }
+      ],
+      "canonicalLane": "authenticated-human-canonical",
+      "protectedRuntime": true,
+      "loginText": "TyA TyA Consultora · Field Operations ECOSISTEMA CENTRADO EN EL CLIENTE Consultora · Field Operations CLIENTES TECNOLOGÍA PERSONAS OPERACIÓN PROCESOS INFORMACIÓN GravicentraCX CORE FIELD OPERATIONS INTELLIGENCE Donde cada visita, cada dato y cada decisión orbitan alrededor de lo que realmente importa hoy. v1.0 · 2026 · Powered by Gravicentra CX 🌐 ES INGRESO Iniciá sesión Accedé con tu cuenta corporativa para gestionar operaciones de campo. Guatemala Honduras PERFIL 🖥️ Administración / Coordinación Operación, proyectos, finanzas y configuración 📈 Portal del Cliente Resultados, score por sucursal, acciones y reportes 📱 Shopper / Evaluador Portal móvil: visitas, certificación y pagos Usuari"
+    },
+    "progress": {
+      "staff": null,
+      "shopper": null,
+      "client": null
+    },
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "hostingDeploys": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "merge": false,
+    "production": false
+  },
   "client": null,
   "financeDiagnostic": null,
   "semantic": null,
   "stopRetry": true,
   "automaticSecondDeployAuthorized": false,
   "safety": {
-    "hostingDeploysThisRun": 0,
-    "hostingDeployAttempts": 0,
+    "hostingDeploysThisRun": 1,
+    "hostingDeployAttempts": 1,
     "automaticSecondDeploys": 0,
     "cloudRunDeploys": 0,
     "firestoreWrites": 0,
