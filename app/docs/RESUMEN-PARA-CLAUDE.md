@@ -1,90 +1,134 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-04  
-**Estado frontend:** `CLOUD_V7_HOLD__DO_NOT_SEND_TO_EMPALME__CORRECTION_REQUIRED`
+**Estado frontend:** `CLOUD_V7_1_HOLD__DO_NOT_SEND_TO_EMPALME__V7_2_REQUIRED`
 
-## 1. Corrección de continuidad
+## 1. Alcance correcto
 
-No existe un empalme V6 aprobado y completado.
+No existe empalme V6 aprobado/completado.
 
-El repo contiene archivos derivados de V6 materializados provisionalmente, pero Paula no validó ni cerró ese empalme. No usar `V6 empalmada` como estado.
+Cloud trabaja únicamente frontend. No tocar backend, core, módulos de negocio, autenticación, datos, laboratorio, gates, GitHub, deploy o producción.
 
-## 2. V7 recibida
+## 2. V7.1 auditada
 
-Paquete auditado:
+- ZIP: `Prototype development request V 7.1.zip`;
+- SHA-256: `649b9d50ae8f80cf4e0b4fcb303e60b35e8fda1b7de1215ae716b7be6f4355ca`;
+- alcance recibido: `app/app.js` y `app/styles/layout.css` más reporte, manifest y una captura;
+- decisión: `HOLD_NO_SEND_TO_EMPALME`.
 
-- `Prototype development request V7.zip`;
-- SHA-256 `e834a5797230d246504e325cb7b3e3a48e44086b08a75f4a857470c89faad261`;
-- 259 archivos.
+## 3. Qué sí está bien y debe preservarse
 
-Decisión:
-
-```text
-HOLD_NO_SEND_TO_EMPALME
-```
-
-## 3. Problema de alcance
-
-La instrucción solicitó un delta estrecho, principalmente:
-
-- `app/app.js`;
-- `app/styles/layout.css`.
-
-La entrega contiene la aplicación completa, core, módulos, documentación histórica y archivos no solicitados.
-
-No se puede enviar el ZIP completo a empalme porque sobrescribiría archivos vivos diferentes, incluyendo:
-
-- `app/index.html`;
-- `app/core/build-lock.js`;
-- `app/modules/shoppers.js`;
-- `app/modules/finanzas.js`.
-
-## 4. Problema responsive reproducible
-
-En `768×1024`, `412×915` y `390×844`, el panel oscuro se superpone al formulario y oculta encabezado, países, `PERFIL` y parte de la primera tarjeta.
-
-Bajo `max-width:900px` debe existir flujo vertical real: panel orbital y después formulario completo, sin superposición ni overflow horizontal.
-
-## 5. Qué sí funciona y debe preservarse
-
-- escritorio mejorado;
+- paquete estrecho;
+- composición desktop;
 - órbita y seis conceptos;
-- países dinámicos 1/2/8/12 en orden y sin `+N`;
+- países dinámicos 1/2/8/12, en orden y sin `+N`;
 - tres perfiles;
 - usuario, contraseña, botón y registro;
-- textos demo/validación/instalación fuera del Login canónico;
-- sintaxis PASS y secretos 0.
+- doce países accesibles en 1440×900;
+- copy técnico/demo ausente;
+- sintaxis y secret scan PASS.
 
-## 6. Nueva entrega exacta
+## 4. Defecto responsive exacto
 
-Entregar un único ZIP estrecho con:
+La corrección de `.lg2` no basta porque la regla legacy de `#login` sigue activa:
 
-1. `app/app.js`;
-2. `app/styles/layout.css`;
-3. `MANIFEST.json` con path, bytes y SHA-256;
-4. reporte específico;
-5. capturas reales `1920×1080`, `1440×900`, `768×1024`, `412×915`, `390×844`;
-6. comparación antes/después `1440×900`;
-7. evidencia 1/2/8/12 países.
+```css
+#login{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+```
 
-No incluir aplicación completa, `index.html`, `core/`, `modules/`, documentación histórica ni capturas antiguas.
+La regla V7 posterior no anula esas propiedades.
 
-## 7. Trabajo paralelo de ChatGPT — sin tarea para Claude
+En móvil, todo el Login queda como un flex item centrado de aproximadamente 552 px dentro de un viewport de 390/412 px.
 
-Mientras Claude corrige únicamente el frontend, ChatGPT preparó source-only:
+Resultado real en 390×844:
 
-- contrato del runner del Laboratorio;
-- schema de evidencia;
-- matriz Admin/Operaciones + Shopper;
-- fingerprints;
-- cleanup exacto;
-- gate source-only.
+- aside/main x = -81 px y width = 552 px;
+- card x = -65 px y width = 520 px;
+- strip top = -191.30 px;
+- registro bottom = 1011.30 px;
+- document scrollHeight = 844 px.
 
-Claude no debe tocar, implementar ni incluir estos elementos. No debe modificar backend, laboratorio, runner, gates, deploy ni producción.
+Esto causa recorte lateral, franja superior perdida y controles fuera del scroll real.
+
+## 5. Corrección frontend V7.2
+
+Modificar únicamente:
+
+- `app/app.js` solo si es estrictamente necesario;
+- `app/styles/layout.css`.
+
+Bajo `max-width:900px`, anular expresamente el flex heredado:
+
+```css
+#login{
+  display:block;
+  padding:0;
+  align-items:initial;
+  justify-content:initial;
+  overflow:auto;
+}
+.lg2{
+  width:100%;
+  min-height:100vh;
+}
+.lg2-body,
+.lg2-aside,
+.lg2-main{
+  width:100%;
+}
+.lg2-card{
+  width:100%;
+  max-width:520px;
+}
+```
+
+Puede ajustarse la implementación, pero deben cumplirse estos criterios geométricos:
+
+- `strip.top >= 0`;
+- `aside.left >= 0`;
+- `main.left >= 0`;
+- `main.width <= viewportWidth`;
+- `documentElement.scrollWidth == viewportWidth`;
+- `documentElement.scrollHeight >= goReg.bottom`;
+- cero recorte lateral;
+- scroll vertical natural hasta el registro.
+
+## 6. Evidencia obligatoria real
+
+La captura V7.1 llamada `1440×900` mide realmente `924×540` y es JPEG. No es evidencia válida.
+
+Entregar PNG reales:
+
+- `1920×1080`;
+- `1440×900`;
+- `768×1024`;
+- `412×915`;
+- `390×844`;
+- comparación antes/después 1440×900;
+- escenarios 1/2/8/12 países.
+
+`MANIFEST.json` debe registrar path, bytes y SHA-256 de cada archivo y captura.
+
+## 7. Paquete exacto
+
+```text
+app/app.js
+app/styles/layout.css
+REPORTE-V7-2-CORRECCION-RESPONSIVE.md
+MANIFEST.json
+capturas/
+```
+
+No incluir `index.html`, core, módulos, backend, documentación histórica ni archivos del laboratorio.
 
 ## 8. Estado seguro
 
-- V7 enviada a empalme: no;
-- archivos funcionales de V7 aplicados: 0;
+- V7.1 enviada a empalme: no;
+- archivos V7.1 aplicados: 0;
 - deploy: 0;
-- producción: intacta.
+- producción intacta.
