@@ -41,6 +41,7 @@ try{
     'tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs',
     'app/core/finanzas-core.js',
     'app/modules/finanzas.js',
+    'tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs',
     '.github/workflows/cxorbia-c6-live-domain-readonly-audit.yml'
   ];
   if(!allowed.includes(request.targetPath))fail(`target_not_allowlisted:${request.targetPath}`);
