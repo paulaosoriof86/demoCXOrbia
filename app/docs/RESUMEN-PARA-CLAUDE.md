@@ -1,152 +1,157 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-04  
-**Estado frontend:** `CLOUD_V6_EMPALMED__VISUAL_HOLD__CLOUD_V7_DELTA_PENDING__NO_DEPLOY`
+**Estado frontend:** `CLOUD_V7_HOLD__DO_NOT_SEND_TO_EMPALME__CORRECTION_REQUIRED`
 
-## 1. Estado acumulativo
+## 1. Corrección de continuidad
 
-Cloud V6 fue empalmada mecánicamente sobre la rama viva:
+No existe un empalme V6 aprobado y completado.
 
-- HEAD previo: `a2ccfb0c3709cad6f5e6a9c16dcb7f9293532d6e`;
-- commit funcional: `f961253f18c388ae04619bb5175269015c8349c3`;
-- SHA-256 del ZIP V6: `0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407`;
-- candidata acumulativa preservada;
-- deploy DEV: 0;
-- producción: intacta.
+El repo contiene archivos derivados de V6 materializados provisionalmente, pero Paula no validó ni cerró ese empalme. No usar `V6 empalmada` como estado.
 
-Codex solo realizó el empalme mecánico. No audita ni decide visualmente.
+## 2. V7 recibida
 
-## 2. Decisión visual V6
+Paquete auditado:
 
-`HOLD_FRONTEND_VISUAL`.
+- `Prototype development request V7.zip`;
+- SHA-256 `e834a5797230d246504e325cb7b3e3a48e44086b08a75f4a857470c89faad261`;
+- 259 archivos.
 
-La versión de escritorio empalmada no reproduce la composición aprobada de Emergent:
+Decisión:
 
-- panel derecho con apariencia de portada/demo;
-- logo grande CXOrbia y título genérico;
-- accesos de validación y pie técnico visibles;
-- campos de usuario/contraseña y botón fuera de la composición inicial;
-- tarjetas demasiado grandes y redondeadas;
-- órbita más rígida y pesada;
-- jerarquía distinta de la referencia.
+```text
+HOLD_NO_SEND_TO_EMPALME
+```
 
-No se solicita reconstruir V6. El siguiente entregable es un delta visual V7 sobre la misma candidata acumulativa.
+## 3. Problema de alcance
 
-## 3. Instrucción V7 vigente
-
-Fuente:
-
-`PROMPT-CLOUD-V7-CORRECCION-VISUAL-LOGIN-ORBIT-20260804.md`.
-
-Alcance principal permitido:
+La instrucción solicitó un delta estrecho, principalmente:
 
 - `app/app.js`;
 - `app/styles/layout.css`.
 
-Objetivo:
+La entrega contiene la aplicación completa, core, módulos, documentación histórica y archivos no solicitados.
 
-- Emergent como autoridad estricta de composición, proporción, densidad y jerarquía;
-- Orbit 360 como autoridad de estilo orbital;
-- identidad Gravicentra CX;
-- cero cambios backend o funcionales.
+No se puede enviar el ZIP completo a empalme porque sobrescribiría archivos vivos diferentes, incluyendo:
 
-## 4. Resultado visual obligatorio
+- `app/index.html`;
+- `app/core/build-lock.js`;
+- `app/modules/shoppers.js`;
+- `app/modules/finanzas.js`.
 
-Panel izquierdo:
+## 4. Problema responsive reproducible
 
-- marca Gravicentra CX;
-- órbita compacta estilo Orbit;
-- seis conceptos;
-- centro pequeño y elegante;
-- tagline aprobado.
+La auditoría aislada confirmó que desktop mejora, pero tablet y móvil fallan.
 
-Panel derecho, en este orden:
+En:
 
-1. `INGRESO`;
-2. `Iniciá sesión`;
-3. subtítulo corporativo;
-4. todos los países del tenant;
-5. `PERFIL`;
-6. tres tarjetas;
-7. usuario;
-8. contraseña;
-9. botón `Ingresar`;
-10. registro Shopper.
-
-No mostrar:
-
-- `Field Operations Platform`;
-- `Selecciona un perfil para entrar al demo`;
-- accesos de validación;
-- Operativo/Coordinador/Aliado;
-- `Desarrollado por CXOrbia`;
-- instalar como app;
-- demo comercial/datos ficticios;
-- credenciales de ejemplo o textos técnicos DEV.
-
-## 5. Países
-
-- dinámicos;
-- todos los configurados;
-- orden recibido;
-- bandera + nombre;
-- sin `+N`;
-- sin multiselect;
-- sin selección obligatoria;
-- evidencia con 1, 2, 8 y 12 países.
-
-## 6. Evidencia V7
-
-- `1920×1080`;
-- `1440×900`;
 - `768×1024`;
 - `412×915`;
 - `390×844`;
-- comparación V6/V7 en `1440×900`;
-- manifest con path, bytes y SHA-256 de todos los archivos y capturas.
 
-## 7. Fuera del alcance de Cloud
+el panel oscuro se superpone al formulario y oculta:
+
+- `INGRESO`;
+- `Iniciá sesión`;
+- subtítulo;
+- países;
+- `PERFIL`;
+- parte de la primera tarjeta.
+
+Causa:
+
+- `.lg2` queda encerrado en el viewport;
+- `.lg2-body` cambia a una columna, pero mantiene una sola fila `minmax(0,1fr)`;
+- aside y main no entran en flujo vertical real.
+
+## 5. Corrección obligatoria
+
+Bajo `max-width:900px`:
+
+- convertir el cuerpo a flujo vertical real;
+- usar `grid-template-rows:auto auto`, bloque o equivalente;
+- permitir altura documental real;
+- asegurar que `.lg2-main` empiece después de `.lg2-aside`;
+- eliminar cualquier superposición;
+- mantener visible la órbita;
+- mantener visibles título, subtítulo, países, perfil y primera tarjeta;
+- cero scroll horizontal general.
+
+En `1440×900` con 12 países:
+
+- botón y enlace de registro deben permanecer visibles o accesibles sin corte visual.
+
+## 6. Qué sí funciona
+
+- escritorio `1920×1080` y `1440×900` tiene mejor composición;
+- órbita visible;
+- seis conceptos visibles;
+- países dinámicos en orden;
+- pruebas aisladas de 1/2/8/12 países sin `+N`;
+- tres perfiles, usuario, contraseña, botón y registro;
+- textos de demo, validación, instalación y patrones de credencial eliminados del Login canónico;
+- sintaxis JS PASS;
+- cero secretos detectados.
+
+Preservar estos avances.
+
+## 7. Nueva entrega exacta
+
+Entregar un único ZIP estrecho con:
+
+1. `app/app.js`;
+2. `app/styles/layout.css`;
+3. `MANIFEST.json` con path, bytes y SHA-256;
+4. `REPORTE-V7-CORRECCION.md`;
+5. capturas reales:
+   - `1920×1080`;
+   - `1440×900`;
+   - `768×1024`;
+   - `412×915`;
+   - `390×844`;
+6. comparación antes/después en `1440×900`;
+7. evidencia de 1, 2, 8 y 12 países.
+
+No incluir:
+
+- aplicación completa;
+- `index.html`;
+- `core/`;
+- `modules/`;
+- documentación histórica;
+- manifests V109–V156;
+- capturas antiguas.
+
+## 8. Aceptación
+
+La nueva candidata solo podrá ser GO cuando:
+
+- no exista superposición en ningún viewport;
+- todos los elementos iniciales del formulario sean visibles;
+- el ZIP tenga alcance exacto;
+- el manifest valide todos sus archivos;
+- las evidencias correspondan realmente a los viewports solicitados;
+- el caso de 12 países no corte el cierre del formulario.
+
+## 9. Fuera del alcance de Cloud
 
 No tocar:
 
+- backend;
 - Firebase Auth;
 - claims/memberships;
-- `CX.data` o HR;
-- cálculos o fuentes financieras;
+- CX.data/HR;
 - permisos/scopes;
-- backend/adapters/workflows;
-- laboratorio o runner;
-- GitHub, gates, deploy o producción;
-- Make, Gemini o pagos.
-
-## 8. Gate y laboratorio — sin tarea Cloud
-
-ChatGPT corrigió source-only:
-
-- manifest base + overlay V6;
-- asset Auth local fail-closed sin secretos;
-- falso positivo del scanner;
-- shell del Laboratorio para no declarar escenarios o cleanup inexistentes.
-
-El runner real y las pruebas dentro de la plataforma continúan bajo responsabilidad de ChatGPT después del empalme V7 y del deploy DEV autorizado.
-
-## 9. Secuencia
-
-```text
-CLOUD V7 VISUAL DELTA
-→ AUDITORÍA VISUAL CHATGPT
-→ CODEX SOLO EMPALME
-→ SOURCE LOCK Y GATES
-→ ÚNICO HOSTING DEV
-→ LABORATORIO REAL
-→ CLEANUP
-→ VALIDACIÓN HUMANA
-```
+- Finanzas;
+- Shoppers;
+- build lock;
+- index/load order;
+- laboratorio/runner;
+- GitHub/gates/deploy/producción.
 
 ## 10. Estado seguro
 
-- V6 empalmada: sí;
-- V6 visual aprobada: no;
-- V7 recibida: no;
+- V7 enviada a empalme: no;
+- archivos funcionales aplicados: 0;
 - deploy: 0;
 - producción: intacta.
