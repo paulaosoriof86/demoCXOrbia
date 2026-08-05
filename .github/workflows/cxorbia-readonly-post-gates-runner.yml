@@ -21,6 +21,7 @@ on:
       - tools/qa/tya-c6-remote-parity-gate.mjs
       - tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs
       - tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs
+      - tools/qa/tya-c6-client-route-wait-diagnostic.mjs
       - tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs
       - tools/qa/cxorbia-c6-existing-client-e2e-credential.mjs
       - tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs
@@ -79,9 +80,10 @@ jobs:
           steps.request.outputs.enabled == 'true' &&
           (steps.request.outputs.profile == 'V174_R20_M1_CORTE2A' ||
            steps.request.outputs.profile == 'CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23' ||
-           steps.request.outputs.profile == 'PHASE_A_COMPLETE_RUNTIME_MULTIROLE')
+           steps.request.outputs.profile == 'PHASE_A_COMPLETE_RUNTIME_MULTIROLE' ||
+           steps.request.outputs.profile == 'C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC')
         run: |
-          if [ "${{ steps.request.outputs.profile }}" = "PHASE_A_COMPLETE_RUNTIME_MULTIROLE" ]; then
+          if [ "${{ steps.request.outputs.profile }}" = "PHASE_A_COMPLETE_RUNTIME_MULTIROLE" ] || [ "${{ steps.request.outputs.profile }}" = "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC" ]; then
             npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0 firebase-admin@13.4.0
           else
             npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0
@@ -98,14 +100,17 @@ jobs:
             --out .tmp/tya-corte3-canonical-finance-source-safe-binding-r23
 
       - name: Prepare existing DEV credentials privately for runtime profile
-        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.profile == 'PHASE_A_COMPLETE_RUNTIME_MULTIROLE'
+        if: >-
+          steps.request.outputs.enabled == 'true' &&
+          (steps.request.outputs.profile == 'PHASE_A_COMPLETE_RUNTIME_MULTIROLE' ||
+           steps.request.outputs.profile == 'C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC')
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
           set -euo pipefail
           PRIVATE_DIR=.tmp/phase-a-runtime-private
           PRIVATE_E2E=$PRIVATE_DIR/private-e2e.json
-          mkdir -p "$PRIVATE_DIR" .tmp/phase-a-runtime-multirole
+          mkdir -p "$PRIVATE_DIR" .tmp/phase-a-runtime-multirole .tmp/c6-client-route-wait-diagnostic
           node <<'NODE'
           const fs=require('fs');
           const raw=process.env.EXISTING_DEV_JSON||'';
@@ -159,6 +164,9 @@ jobs:
           elif [ "${{ steps.request.outputs.profile }}" = "PHASE_A_COMPLETE_RUNTIME_MULTIROLE" ]; then
             node tools/release/cxorbia-phase-a-runtime-multirole-runner.mjs \
               .github/cxorbia-gate-requests/request.json
+          elif [ "${{ steps.request.outputs.profile }}" = "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC" ]; then
+            node tools/qa/tya-c6-client-route-wait-diagnostic.mjs \
+              .github/cxorbia-gate-requests/request.json
           else
             node tools/release/cxorbia-readonly-post-gates-runner.mjs \
               .github/cxorbia-gate-requests/request.json
@@ -195,6 +203,7 @@ jobs:
             .tmp/cxorbia-repository-status
             .tmp/phase-a-complete-composition-source-static
             .tmp/phase-a-runtime-multirole
+            .tmp/c6-client-route-wait-diagnostic
             .tmp/tya-project-period-kpi-history-r20
             .tmp/tya-corte2a-shopper-operation-canonical
             .tmp/tya-corte1-report-frontend-runtime
