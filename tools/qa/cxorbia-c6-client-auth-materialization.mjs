@@ -52,13 +52,23 @@ const requiredMembership={
   managedBy
 };
 
+function writeDiagnosticStage(value){
+  if(!process.env.OUT_DIR)return;
+  try{
+    fs.mkdirSync(process.env.OUT_DIR,{recursive:true});
+    const safe=String(value||'unknown').replace(/[^A-Z0-9_:-]/gi,'_').slice(0,180);
+    fs.writeFileSync(path.join(process.env.OUT_DIR,'stage'),safe+'\n','utf8');
+  }catch{}
+}
 function fail(code,detail={}){
+  writeDiagnosticStage(`client_auth_materialization__${mode}__${code}`);
   const err=new Error(code);
   err.code=code;
   err.detail=detail;
   throw err;
 }
 function output(payload){
+  writeDiagnosticStage(`client_auth_materialization__${mode}__${payload?.decision||'OUTPUT'}`);
   console.log(JSON.stringify({
     ...payload,
     targetFingerprint,
