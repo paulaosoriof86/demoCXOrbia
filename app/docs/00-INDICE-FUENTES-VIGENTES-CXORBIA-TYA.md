@@ -2,32 +2,33 @@
 
 **Fecha:** 2026-08-05  
 **Estado:** ACTIVO  
-**Estado vivo:** `SHOPPER_IDENTITY_SOURCE_STATIC_PASS__340_PROFILE_CENSUS_COMPLETE__12_COLLISIONS__46_ACTIVE_HOLD__STOP_RETRY__NO_AUTH_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `SHOPPER_IDENTITY_RESOLUTION_SOURCE_STATIC_PASS__READONLY_REVIEW_COMPLETE__RESOLVER_OVERHOLD_PROVEN__STOP_RETRY__NO_AUTH_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Fuentes activas y orden de prevalencia
 
 1. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/evidence/CORTE6-SHOPPER-IDENTITY-CANONICAL-CENSUS-HOLD-LATEST.json`;
+2. `app/docs/evidence/CORTE6-SHOPPER-IDENTITY-SOURCE-SAFE-RESOLUTION-HOLD-LATEST.json`;
 3. `backend/config/corte6-human-login-shopper-identity-audit.json`;
 4. `.github/cxorbia-gate-requests/request.json`;
 5. `backend/contracts/c6-shopper-identity-canonicalization-v1.json`;
-6. `tools/qa/cxorbia-c6-shopper-identity-canonical-plan.mjs`;
+6. `tools/qa/cxorbia-c6-shopper-identity-resolution-review.mjs`;
 7. `tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs`;
-8. `app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json`;
-9. `CAMBIOS-BACKEND-ADDENDUM-C6-SHOPPER-CANONICAL-CENSUS-HOLD-20260805.md`;
-10. `RESUMEN-PARA-CLAUDE-ADDENDUM-C6-SHOPPER-CANONICAL-CENSUS-HOLD-20260805.md`;
-11. `PENDIENTES-PROTOTIPO-ADDENDUM-C6-SHOPPER-CANONICAL-CENSUS-HOLD-20260805.md`;
-12. `ACADEMIA-IMPACTO-C6-SHOPPER-CANONICAL-CENSUS-HOLD-20260805.md`;
-13. `PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-C6-SHOPPER-CANONICAL-CENSUS-HOLD-20260805.md`;
-14. `app/docs/evidence/CORTE6-SHOPPER-IDENTITY-CANONICALIZATION-SOURCE-STATIC-HOLD-LATEST.json` — evidencia histórica del pin anterior;
-15. `app/docs/evidence/CORTE6-HUMAN-LOGIN-SHOPPER-IDENTITY-AUDIT-LATEST.json` — baseline histórico anterior;
-16. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-17. `ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`;
-18. `DIRECT-GITHUB-RUNNER-INDEPENDENCE-20260805.md`;
-19. `AGENTS.md`;
-20. PR #7 y HEAD vivo.
+8. `tools/qa/cxorbia-c6-shopper-identity-canonical-plan.mjs`;
+9. `app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json`;
+10. `CAMBIOS-BACKEND-ADDENDUM-C6-SHOPPER-IDENTITY-RESOLUTION-HOLD-20260805.md`;
+11. `RESUMEN-PARA-CLAUDE-ADDENDUM-C6-SHOPPER-IDENTITY-RESOLUTION-HOLD-20260805.md`;
+12. `PENDIENTES-PROTOTIPO-ADDENDUM-C6-SHOPPER-IDENTITY-RESOLUTION-HOLD-20260805.md`;
+13. `ACADEMIA-IMPACTO-C6-SHOPPER-IDENTITY-RESOLUTION-HOLD-20260805.md`;
+14. `PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-C6-SHOPPER-IDENTITY-RESOLUTION-HOLD-20260805.md`;
+15. `app/docs/evidence/CORTE6-SHOPPER-IDENTITY-CANONICAL-CENSUS-HOLD-LATEST.json` — censo anterior;
+16. `app/docs/evidence/CORTE6-HUMAN-LOGIN-SHOPPER-IDENTITY-AUDIT-LATEST.json` — baseline histórico;
+17. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+18. `ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`;
+19. `DIRECT-GITHUB-RUNNER-INDEPENDENCE-20260805.md`;
+20. `AGENTS.md`;
+21. PR #7 y HEAD vivo.
 
-Ante conflicto, prevalecen este índice, el checkpoint vigente, la evidencia observable del censo y el lock de ejecución directa.
+Ante conflicto, prevalecen este índice, el checkpoint vigente, la evidencia observable de la revisión y el lock de ejecución directa.
 
 ## 2. Contrato vigente
 
@@ -43,51 +44,53 @@ Paula Staff/Shopper: separate technical principals
 
 Las excepciones existentes son deuda de materialización, no formatos alternativos aceptados.
 
-## 3. Source/static verificado
-
-El pin del auditor se reconcilió exclusivamente:
+## 3. Source/static vigente
 
 ```text
-previous=8fe4b0c5050d9fe9ba6c3120ef81a75b00bb8535
-current=80622606ce3635f0d53997a41932b6ced5dc25d4
-commit=f224b3e4d5fa05323bfc3d619b257db8a0faaf06
-```
-
-```text
-run=31054156634
-job=92467888669
-artifact=8949587605
-digest=sha256:6d206129b723988c7d7d0cb8f628e907b30be3dcc18b113782e293a808fd7ed4
+run=31055889684
+job=92473179280
+artifact=8950210279
+digest=sha256:7d78d480b15b836ab98ded284a2bfca2b0ebe2517531c36825bc77159de915dd
 PASS_READONLY_POST_GATES
 PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
 PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
 ```
 
-## 4. Censo vigente
+## 4. Revisión source-safe vigente
 
 ```text
-run=31054262787
-job=92468210043
-artifact=8949634992
-digest=sha256:efdfc1b20007aabe54baac9d87212c54a6b1f376913be3e4279d9350c591f172
-HOLD_C6_SHOPPER_IDENTITY_CANONICALIZATION_CENSUS
+run=31056005286
+job=92473531087
+artifact=8950260575
+digest=sha256:28bcefd758c53efa4357d0d4766488662c3b0701ce2ccfce551816c92d7edb88
+HOLD_C6_SHOPPER_IDENTITY_RESOLUTION_REVIEW
 ```
 
 ```text
-TOTAL=340
-ACTIVE_ELIGIBLE=105
-HISTORICAL=189
-ACTIVE_HOLD=46
-COLLISIONS=12
-AUTH_IDENTITY_COLLISIONS=1
-CANONICAL_LOGIN_COLLISIONS=11
-CANONICAL_NAME_INCOMPLETE=23
-LOGIN_COLLISION_HOLD_PROFILES=23
+PROFILES=340
+CREDENTIALS=109
+MAPPED=101
+UNMAPPED=8
+MISSING_AUTH=21 = 13 mapped + 8 unmapped
+LOGIN_EXCEPTIONS_CURRENT_SCOPE=16
+PASSWORD_EXCEPTIONS_CURRENT_SCOPE=18
+PLAN_ROWS=340
+CREATE_AUTH=22
+UPDATE_AUTH=8
+NO_OP=73
+HOLD=110
+PRESERVE_NO_AUTH=127
 ```
 
-Paula tiene 1 candidata Staff y 2 candidatas Shopper; la separación técnica Shopper todavía no está resuelta.
+## 5. Causa raíz vigente
 
-## 5. Estado seguro
+```text
+RESOLVER_CANONICAL_NAME_BASIS_TOO_RESTRICTIVE
+```
+
+El resolver enlazó identidades por `shopperId` y claves técnicas, pero después no utilizó el nombre completo o login técnico del perfil exacto ya enlazado. Esto creó 109 falsos holds de nombre incompleto y ocultó la matriz real de colisiones de `nombre.apellido`.
+
+## 6. Estado seguro
 
 ```text
 AUTH_WRITES=0
@@ -102,25 +105,28 @@ MERGE=false
 PRODUCTION=false
 ```
 
-## 6. Carril operativo vigente
+## 7. Carril operativo vigente
 
 ```text
-REVISIÓN SOURCE-SAFE FOCAL DE:
-12 COLISIONES
-+ 23 NOMBRES INCOMPLETOS
-+ 23 PERFILES CON LOGIN COLISIONADO
-+ 2 CANDIDATAS SHOPPER DE PAULA
-+ DRIFT 21/30/28 vs 0/9/7
-→ PLAN IDÉMPOTENTE NO SUPERPUESTO
-→ STOP ANTES DE AUTH/PASSWORD WRITE
+FIX SOURCE-ONLY DEL RESOLVER
+→ usar nombre completo/login técnico solo después de shopperId binding
+→ resumen técnico source-safe de 2 candidatas Shopper de Paula
+→ baseline por conjuntos, no igualdad 30/28
+→ recalcular colisiones reales
+→ plan primario único por perfil
+→ repin resolver y dispatcher
+→ source/static
+→ nueva revisión read-only autorizada
+→ STOP antes de Auth/password write o deploy
 ```
 
-## 7. Prohibiciones vigentes
+## 8. Prohibiciones vigentes
 
+- reintentar automáticamente el request consumido;
 - crear o modificar Auth;
 - cambiar o restablecer contraseñas;
 - escribir memberships;
-- deduplicar por nombre;
+- deduplicar por nombre visual;
 - desplegar Hosting DEV;
 - crear nueva rama, PR o candidata;
 - Firestore/Rules/Storage/HR writes;
